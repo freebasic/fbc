@@ -81,24 +81,10 @@ function cSymbolTypeFuncPtr _
 
 	proc = symbPreAddProc( NULL )
 
-	'' ('(' Parameters? ')')
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-        lexSkipToken( )
-
-		cParameters( proc, mode, TRUE )
+	'' Parameters?
+	if( cParameters( NULL, proc, mode, TRUE ) = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
-		end if
-
-    	if( lexGetToken( ) <> CHAR_RPRNT ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
-		else
-			lexSkipToken( )
 		end if
 	end if
 
@@ -302,7 +288,7 @@ function cSymbolType _
 			do
 				sym = chain_->sym
 				select case symbGetClass( sym )
-				case FB_SYMBCLASS_UDT
+				case FB_SYMBCLASS_STRUCT
 					lexSkipToken( )
 					dtype = FB_DATATYPE_STRUCT
 					subtype = sym
@@ -321,7 +307,7 @@ function cSymbolType _
 					dtype = symbGetType( sym )
 					subtype = symbGetSubtype( sym )
 					lgt = symbGetLen( sym )
-					ptrcnt = sym->ptrcnt
+					ptrcnt = symbGetPtrCnt( sym )
 					exit do
 				end select
 

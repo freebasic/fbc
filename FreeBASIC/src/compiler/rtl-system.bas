@@ -92,6 +92,18 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 	 	), _
+		/' atexit CDECL ( byval proc as sub cdecl() ) as void '/ _
+		( _
+			@FB_RTL_ATEXIT, @"atexit", _
+	 		FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+	 		1, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+	 	), _
 		/' command ( byval argc as integer = -1 ) as string '/ _
 		( _
 			@"command", @"fb_Command", _
@@ -751,6 +763,28 @@ private function hMultithread_cb _
 	env.clopt.multithreaded = TRUE
 
 	return TRUE
+
+end function
+
+'':::::
+function rtlAtExit _
+	( _
+		byval procexpr as ASTNODE ptr _
+	) as ASTNODE ptr static
+
+    dim as ASTNODE ptr proc
+
+	function = NULL
+
+	'' RtInit( )
+    proc = astNewCALL( PROCLOOKUP( ATEXIT ) )
+
+    '' sub cdecl()
+    if( astNewARG( proc, procexpr ) = NULL ) then
+    	exit function
+    end if
+
+    function = proc
 
 end function
 

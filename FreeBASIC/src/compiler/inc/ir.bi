@@ -87,209 +87,250 @@ end type
 ''
 ''
 ''
+declare sub irInit _
+	( _
+	)
 
-declare sub 		irInit				( _
-										)
+declare sub irEnd _
+	( _
+	)
 
-declare sub 		irEnd				( _
-										)
+declare function irAllocVREG _
+	( _
+		byval dtype as integer _
+	) as IRVREG ptr
 
-declare function 	irAllocVREG			( _
-											byval dtype as integer _
-										) as IRVREG ptr
+declare function irAllocVRIMM _
+	( _
+		byval dtype as integer, _
+		byval value as integer _
+	) as IRVREG ptr
 
-declare function 	irAllocVRIMM		( _
-											byval dtype as integer, _
-											byval value as integer _
-										) as IRVREG ptr
+declare function irAllocVRIMM64 _
+	( _
+		byval dtype as integer, _
+		byval value as longint _
+	) as IRVREG ptr
 
-declare function 	irAllocVRIMM64		( _
-											byval dtype as integer, _
-											byval value as longint _
-										) as IRVREG ptr
+declare function irAllocVRVAR _
+	( _
+		byval dtype as integer, _
+		byval symbol as FBSYMBOL ptr, _
+		byval ofs as integer _
+	) as IRVREG ptr
 
-declare function 	irAllocVRVAR		( _
-											byval dtype as integer, _
-											byval symbol as FBSYMBOL ptr, _
-											byval ofs as integer _
-										) as IRVREG ptr
+declare function irAllocVRIDX _
+	( _
+		byval dtype as integer, _
+		byval symbol as FBSYMBOL ptr, _
+		byval ofs as integer, _
+		byval mult as integer, _
+		byval vidx as IRVREG ptr _
+	) as IRVREG ptr
 
-declare function 	irAllocVRIDX		( _
-											byval dtype as integer, _
-											byval symbol as FBSYMBOL ptr, _
-											byval ofs as integer, _
-											byval mult as integer, _
-											byval vidx as IRVREG ptr _
-										) as IRVREG ptr
+declare function irAllocVRPTR _
+	( _
+		byval dtype as integer, _
+		byval ofs as integer, _
+		byval vidx as IRVREG ptr _
+	) as IRVREG ptr
 
-declare function 	irAllocVRPTR		( _
-											byval dtype as integer, _
-											byval ofs as integer, _
-											byval vidx as IRVREG ptr _
-										) as IRVREG ptr
+declare function irAllocVROFS _
+	( _
+		byval dtype as integer, _
+		byval symbol as FBSYMBOL ptr, _
+		byval ofs as integer _
+	) as IRVREG ptr
 
-declare function 	irAllocVROFS		( _
-											byval dtype as integer, _
-											byval symbol as FBSYMBOL ptr, _
-											byval ofs as integer _
-										) as IRVREG ptr
+declare sub irProcBegin _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
 
-declare sub 		irProcBegin			( _
-											byval proc as FBSYMBOL ptr _
-										)
+declare sub irProcEnd _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
 
-declare sub 		irProcEnd			( _
-											byval proc as FBSYMBOL ptr _
-										)
+declare sub irScopeBegin _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
 
-declare sub 		irScopeBegin		( _
-											byval s as FBSYMBOL ptr _
-										)
+declare sub irScopeEnd _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
 
-declare sub 		irScopeEnd			( _
-											byval s as FBSYMBOL ptr _
-										)
+declare sub irEmit _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
+		byval ex1 as FBSYMBOL ptr = NULL, _
+		byval ex2 as integer = 0 _
+	)
 
-declare sub 		irEmit				( _
-											byval op as integer, _
-											byval v1 as IRVREG ptr, _
-											byval v2 as IRVREG ptr, _
-											byval vr as IRVREG ptr, _
-											byval ex1 as FBSYMBOL ptr = NULL, _
-											byval ex2 as integer = 0 _
-										)
+declare sub irEmitPROCBEGIN _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval initlabel as FBSYMBOL ptr _
+	)
 
-declare sub 		irEmitPROCBEGIN		( _
-											byval proc as FBSYMBOL ptr, _
-											byval initlabel as FBSYMBOL ptr _
-										)
+declare sub irEmitPROCEND _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval initlabel as FBSYMBOL ptr, _
+		byval exitlabel as FBSYMBOL ptr _
+	)
 
-declare sub 		irEmitPROCEND		( _
-											byval proc as FBSYMBOL ptr, _
-											byval initlabel as FBSYMBOL ptr, _
-											byval exitlabel as FBSYMBOL ptr _
-										)
+declare sub irEmitVARINIBEGIN _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)
 
-declare sub 		irEmitVARINIBEGIN	( _
-											byval sym as FBSYMBOL ptr _
-										)
+declare sub irEmitVARINIEND _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)
 
-declare sub 		irEmitVARINIEND		( _
-											byval sym as FBSYMBOL ptr _
-										)
+declare sub irEmitVARINIi _
+	( _
+		byval dtype as integer, _
+		byval value as integer _
+	)
 
-declare sub 		irEmitVARINIi		( _
-											byval dtype as integer, _
-											byval value as integer _
-										)
+declare sub irEmitVARINIf _
+	( _
+		byval dtype as integer, _
+		byval value as double _
+	)
 
-declare sub 		irEmitVARINIf		( _
-											byval dtype as integer, _
-											byval value as double _
-										)
+declare sub irEmitVARINI64 _
+	( _
+		byval dtype as integer, _
+		byval value as longint _
+	)
 
-declare sub 		irEmitVARINI64		( _
-											byval dtype as integer, _
-											byval value as longint _
-										)
+declare sub irEmitVARINIOFS _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval ofs as integer _
+	)
 
-declare sub 		irEmitVARINIOFS		( _
-											byval sym as FBSYMBOL ptr, _
-											byval ofs as integer _
-										)
+declare sub irEmitVARINISTR _
+	( _
+		byval totlgt as integer, _
+		byval litstr as zstring ptr, _
+		byval litlgt as integer _
+	)
 
-declare sub 		irEmitVARINISTR		( _
-											byval totlgt as integer, _
-											byval litstr as zstring ptr, _
-											byval litlgt as integer _
-										)
+declare sub irEmitVARINIWSTR _
+	( _
+		byval totlgt as integer, _
+		byval litstr as wstring ptr, _
+		byval litlgt as integer _
+	)
 
-declare sub 		irEmitVARINIWSTR	( _
-											byval totlgt as integer, _
-											byval litstr as wstring ptr, _
-											byval litlgt as integer _
-										)
+declare sub irEmitVARINIPAD _
+	( _
+		byval bytes as integer _
+	)
 
-declare sub 		irEmitVARINIPAD		( _
-											byval bytes as integer _
-										)
+declare sub irEmitCONVERT _
+	( _
+		byval v1 as IRVREG ptr, _
+		byval dtype1 as integer, _
+		byval v2 as IRVREG ptr, _
+		byval dtype2 as integer _
+	)
 
-declare sub 		irEmitCONVERT		( _
-											byval v1 as IRVREG ptr, _
-											byval dtype1 as integer, _
-											byval v2 as IRVREG ptr, _
-											byval dtype2 as integer _
-										)
+declare sub irEmitLABEL _
+	( _
+		byval label as FBSYMBOL ptr _
+	)
 
-declare sub 		irEmitLABEL			( _
-											byval label as FBSYMBOL ptr _
-										)
+declare sub irEmitRETURN _
+	( _
+		byval bytestopop as integer _
+	)
 
-declare sub 		irEmitRETURN		( _
-											byval bytestopop as integer _
-										)
+declare function irEmitPUSHARG _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval param as FBSYMBOL ptr, _
+		byval vr as IRVREG ptr, _
+		byval pmode as integer, _
+		byval plen as integer _
+	) as integer
 
-declare function	irEmitPUSHARG		( _
-											byval proc as FBSYMBOL ptr, _
-											byval param as FBSYMBOL ptr, _
-											byval vr as IRVREG ptr, _
-											byval pmode as integer, _
-											byval plen as integer _
-										) as integer
+declare sub irEmitASM _
+	( _
+		byval text as zstring ptr _
+	)
 
-declare sub 		irEmitASM			( _
-											byval text as zstring ptr _
-										)
+declare sub irEmitCOMMENT _
+	( _
+		byval text as zstring ptr _
+	)
 
-declare sub 		irEmitCOMMENT		( _
-											byval text as zstring ptr _
-										)
+declare sub irEmitJMPTB _
+	( _
+		byval dtype as integer, _
+		byval label as FBSYMBOL ptr _
+	)
 
-declare sub 		irEmitJMPTB			( _
-											byval dtype as integer, _
-											byval label as FBSYMBOL ptr _
-										)
+declare sub irEmitDBG _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval op as integer, _
+		byval ex as integer _
+	)
 
-declare sub 		irEmitDBG			( _
-											byval proc as FBSYMBOL ptr, _
-											byval op as integer, _
-											byval ex as integer _
-										)
+declare function irGetVRDataClass _
+	( _
+		byval vreg as IRVREG ptr _
+	) as integer
 
-declare function 	irGetVRDataClass	( _
-											byval vreg as IRVREG ptr _
-										) as integer
+declare function irGetVRDataSize _
+	( _
+		byval vreg as IRVREG ptr _
+	) as integer
 
-declare function 	irGetVRDataSize		( _
-											byval vreg as IRVREG ptr _
-										) as integer
+declare sub irFlush _
+	( _
+	)
 
-declare sub 		irFlush 			( _
-										)
+declare function irGetDistance _
+	( _
+		byval vreg as IRVREG ptr _
+	) as uinteger
 
-declare function 	irGetDistance		( _
-											byval vreg as IRVREG ptr _
-										) as uinteger
+declare sub irLoadVR _
+	( _
+		byval reg as integer, _
+		byval vreg as IRVREG ptr, _
+		byval doload as integer = TRUE _
+	)
 
-declare sub 		irLoadVR			( _
-											byval reg as integer, _
-											byval vreg as IRVREG ptr, _
-											byval doload as integer = TRUE _
-										)
+declare sub irStoreVR _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval reg as integer _
+	)
 
-declare sub 		irStoreVR			( _
-											byval vreg as IRVREG ptr, _
-											byval reg as integer _
-										)
+declare sub irSetVR _
+	( _
+		byval reg as integer, _
+		byval vreg as IRVREG ptr _
+	)
 
-declare sub 		irSetVR				( _
-											byval reg as integer, _
-											byval vreg as IRVREG ptr _
-										)
+declare sub irXchgTOS _
+	( _
+		byval reg as integer _
+	)
 
-declare sub 		irXchgTOS			( _
-											byval reg as integer _
-										)
 
 ''
 '' macros

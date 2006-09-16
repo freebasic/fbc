@@ -72,16 +72,14 @@ function cArrayStmt _
 				else
 					if( symbGetIsDynamic( s ) ) then
 						expr1 = rtlArrayErase( expr1 )
-						if( expr1 <> NULL ) then
-							astAdd( expr1 )
-						end if
-
 					else
-						if( rtlArrayClear( expr1 ) = FALSE ) then
-							if( errGetLast( ) <> FB_ERRMSG_OK ) then
-								exit function
-							end if
-						end if
+						expr1 = rtlArrayClear( expr1, TRUE )
+					end if
+
+					astAdd( expr1 )
+
+					if( errGetLast( ) <> FB_ERRMSG_OK ) then
+						exit function
 					end if
 				end if
 			end if

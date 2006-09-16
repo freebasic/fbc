@@ -62,9 +62,9 @@ function cNamespaceStmtBegin _
 	'' ID?
 	palias = NULL
 
-	select case lexGetToken( )
+	select case as const lexGetToken( )
 	'' COMMENT|NEWLINE?
-	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL, FB_TK_EOF, FB_TK_STATSEPCHAR
+	case FB_TK_COMMENT, FB_TK_REM, FB_TK_EOL, FB_TK_EOF, FB_TK_STMTSEP
 
 		'' anonymous namespace..
 		sym = symbAddNamespace( hMakeTmpStr( ), NULL )
@@ -82,6 +82,11 @@ function cNamespaceStmtBegin _
 
     levels = 0
     do
+		if( parser.nspcrec + levels >= FB_MAXNAMESPCRECLEVEL ) then
+			errReport( FB_ERRMSG_RECLEVELTOODEEP )
+			exit function
+		end if
+
         levels += 1
 
     	'' not an id?
@@ -204,6 +209,8 @@ function cNamespaceStmtBegin _
 
 	stk->nspc.levels = levels
 
+	parser.nspcrec += levels
+
 	function = TRUE
 
 end function
@@ -227,6 +234,8 @@ function cNamespaceStmtEnd as integer
 	lexSkipToken( )
 
 	levels = stk->nspc.levels
+
+	parser.nspcrec -= levels
 
 	do while( levels > 0 )
 		'' back to parent
@@ -267,7 +276,7 @@ function cUsingStmt as integer
 
     do
     	'' ID
-    	sym = cNamespace( FALSE )
+    	sym = cParentId( FB_IDOPT_DONTCHKPERIOD )
     	if( sym = NULL ) then
     		if( lexGetToken( ) <> FB_TK_ID ) then
 				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then

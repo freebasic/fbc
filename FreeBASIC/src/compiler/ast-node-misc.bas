@@ -23,6 +23,7 @@
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\lex.bi"
+#include once "inc\parser.bi"
 #include once "inc\ir.bi"
 #include once "inc\ast.bi"
 #include once "inc\emit.bi"
@@ -52,8 +53,8 @@ function astNewLABEL _
 	if( symbIsLabel( sym ) ) then
 		if( symbGetLabelIsDeclared( sym ) = FALSE ) then
 			symbSetLabelIsDeclared( sym )
-			symbGetLabelStmt( sym ) = env.stmtcnt
-			symbGetLabelParent( sym ) = env.currblock
+			symbGetLabelStmt( sym ) = parser.stmtcnt
+			symbGetLabelParent( sym ) = parser.currblock
 		end if
 	end if
 
@@ -172,7 +173,7 @@ function astLoadASM _
 			ZstrFree( node->text )
 		end if
 
-		listDelNode( @env.asmtoklist, node )
+		listDelNode( @parser.asmtoklist, node )
 		node = nxt
 	loop
 
@@ -251,7 +252,7 @@ function astNewMEM _
 		return NULL
 	end if
 
-	n->mem.op  = op
+	n->mem.op = op
 	n->l = l
 	n->r = r
 	n->mem.bytes = bytes
@@ -316,3 +317,14 @@ function astNewNOP _
 
 end function
 
+'':::::
+function astLoadNOP	_
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
+	'' do nothing
+
+	function = NULL
+
+end function

@@ -48,70 +48,118 @@ type IR_CTX
 	vregTB			as TFLIST
 end type
 
-declare sub 		hFlushUOP			( byval op as integer, _
-										  byval v1 as IRVREG ptr, _
-										  byval vr as IRVREG ptr )
+declare sub hFlushUOP _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	)
 
-declare sub 		hFlushBOP			( byval op as integer, _
-										  byval v1 as IRVREG ptr, _
-										  byval v2 as IRVREG ptr, _
-										  byval vr as IRVREG ptr )
+declare sub hFlushBOP _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	)
 
-declare sub 		hFlushCOMP			( byval op as integer, _
-										  byval v1 as IRVREG ptr, _
-										  byval v2 as IRVREG ptr, _
-										  byval vr as IRVREG ptr, _
-										  byval label as FBSYMBOL ptr )
+declare sub hFlushCOMP _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
+		byval label as FBSYMBOL ptr _
+	)
 
-declare sub 		hFlushSTORE			( byval op as integer, _
-										  byval v1 as IRVREG ptr, _
-										  byval v2 as IRVREG ptr )
+declare sub hFlushSTORE _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr _
+	)
 
-declare sub 		hFlushLOAD			( byval op as integer, _
-										  byval v1 as IRVREG ptr, _
-										  byval vr as IRVREG ptr )
+declare sub hFlushLOAD _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	)
 
-declare sub 		hFlushCONVERT		( byval op as integer, _
-										  byval v1 as IRVREG ptr, _
-										  byval v2 as IRVREG ptr )
+declare sub hFlushCONVERT _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr _
+	)
 
-declare sub 		hFlushCALL			( byval op as integer, _
-										  byval proc as FBSYMBOL ptr, _
-										  byval bytestopop as integer, _
-										  byval v1 as IRVREG ptr, _
-										  byval vr as IRVREG ptr )
+declare sub hFlushCALL _
+	( _
+		byval op as integer, _
+		byval proc as FBSYMBOL ptr, _
+		byval bytestopop as integer, _
+		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	)
 
-declare sub 		hFlushBRANCH		( byval op as integer, _
-										  byval label as FBSYMBOL ptr )
+declare sub hFlushBRANCH _
+	( _
+		byval op as integer, _
+		byval label as FBSYMBOL ptr _
+	)
 
-declare sub 		hFlushSTACK			( byval op as integer, _
-										  byval v1 as IRVREG ptr, _
-										  byval ex as integer )
+declare sub hFlushSTACK _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval ex as integer _
+	)
 
-declare sub 		hFlushADDR			( byval op as integer, _
-										  byval v1 as IRVREG ptr, _
-										  byval vr as IRVREG ptr )
+declare sub hFlushADDR _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	)
 
-declare sub 		hFlushMEM			( byval op as integer, _
-										  byval v1 as IRVREG ptr, _
-										  byval v2 as IRVREG ptr, _
-										  byval bytes as integer, _
-										  byval extra as any ptr )
+declare sub hFlushMEM _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval bytes as integer, _
+		byval extra as any ptr _
+	)
 
-declare sub 		hFreeIDX			( byval vreg as IRVREG ptr, _
-										  byval force as integer = FALSE )
+declare sub hFreeIDX _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval force as integer = FALSE _
+	)
 
-declare sub 		hFreeREG			( byval vreg as IRVREG ptr, _
-										  byval force as integer = FALSE )
+declare sub hFreeREG _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval force as integer = FALSE _
+	)
 
-declare sub 		hCreateTMPVAR		( byval vreg as IRVREG ptr )
+declare sub hCreateTMPVAR _
+	( _
+		byval vreg as IRVREG ptr _
+	)
 
-declare sub 		hFreePreservedRegs	( )
+declare sub hFreePreservedRegs _
+	( _
+ 		_
+	)
 
-declare sub 		irDump				( byval op as integer, _
-										  byval v1 as IRVREG ptr, _
-										  byval v2 as IRVREG ptr, _
-										  byval vr as IRVREG ptr )
+declare sub irDump _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	)
 
 '' globals
 	dim shared ir as IR_CTX
@@ -359,7 +407,14 @@ sub irEmitPROCBEGIN _
 		byval initlabel as FBSYMBOL ptr _
 	) static
 
+	dim as integer class_
+
     irFlush( )
+
+	'' clear regs so they aren't different from one proc to another
+	for class_ = 0 to EMIT_REGCLASSES-1
+		regTB(class_)->Clear( regTB(class_) )
+	next
 
 	emitPROCHEADER( proc, initlabel )
 
@@ -1247,26 +1302,26 @@ end sub
 
 '':::::
 private sub hFreePreservedRegs( ) static
-    dim as integer class, reg
+    dim as integer class_, reg
 
 	'' for each reg class
-	for class = 0 to EMIT_REGCLASSES-1
+	for class_ = 0 to EMIT_REGCLASSES-1
 
 		'' for each register on that class
-		reg = regTB(class)->getFirst( regTB(class) )
+		reg = regTB(class_)->getFirst( regTB(class_) )
 		do until( reg = INVALID )
 			'' if not free
-			if( regTB(class)->isFree( regTB(class), reg ) = FALSE ) then
+			if( regTB(class_)->isFree( regTB(class_), reg ) = FALSE ) then
 
-        		assert( emitIsRegPreserved( class, reg ) )
+        		assert( emitIsRegPreserved( class_, reg ) )
 
         		'' free reg
-        		regTB(class)->free( regTB(class), reg )
+        		regTB(class_)->free( regTB(class_), reg )
 
 			end if
 
         	'' next reg
-        	reg = regTB(class)->getNext( regTB(class), reg )
+        	reg = regTB(class_)->getNext( regTB(class_), reg )
 		loop
 
 	next
@@ -1286,14 +1341,14 @@ private sub hPreserveRegs _
     dim as string dname, sname
     dim as integer freg							'' free reg
     dim as integer npreg						'' don't preserve reg (used with CALLPTR)
-    dim as integer class
+    dim as integer class_
 
 	'' for each reg class
-	for class = 0 to EMIT_REGCLASSES-1
+	for class_ = 0 to EMIT_REGCLASSES-1
 
     	'' set the register that shouldn't be preserved (used for CALLPTR only)
     	npreg = INVALID
-    	if( class = FB_DATACLASS_INTEGER ) then
+    	if( class_ = FB_DATACLASS_INTEGER ) then
     		if( ptrvreg <> NULL ) then
 
     			select case ptrvreg->typ
@@ -1312,13 +1367,13 @@ private sub hPreserveRegs _
     	end if
 
 		'' for each register on that class
-		reg = regTB(class)->getFirst( regTB(class) )
+		reg = regTB(class_)->getFirst( regTB(class_) )
 		do until( reg = INVALID )
 			'' if not free
-			if( (regTB(class)->isFree( regTB(class), reg ) = FALSE) and (reg <> npreg) ) then
+			if( (regTB(class_)->isFree( regTB(class_), reg ) = FALSE) and (reg <> npreg) ) then
 
 				'' get the attached vreg
-				vr = regTB(class)->getVreg( regTB(class), reg )
+				vr = regTB(class_)->getVreg( regTB(class_), reg )
                 assert( vr <> NULL )
                 hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
@@ -1346,7 +1401,7 @@ private sub hPreserveRegs _
         	end if
 
         	'' next reg
-        	reg = regTB(class)->getNext( regTB(class), reg )
+        	reg = regTB(class_)->getNext( regTB(class_), reg )
 		loop
 
 	next
@@ -1795,29 +1850,29 @@ end sub
 private sub hSpillRegs( ) static
     dim as IRVREG ptr vr
     dim as integer reg
-    dim as integer class
+    dim as integer class_
 
 	'' for each reg class
-	for class = 0 to EMIT_REGCLASSES-1
+	for class_ = 0 to EMIT_REGCLASSES-1
 
 		'' for each register on that class
-		reg = regTB(class)->getFirst( regTB(class) )
+		reg = regTB(class_)->getFirst( regTB(class_) )
 		do until( reg = INVALID )
 			'' if not free
-			if( regTB(class)->isFree( regTB(class), reg ) = FALSE ) then
+			if( regTB(class_)->isFree( regTB(class_), reg ) = FALSE ) then
 
 				'' get the attached vreg
-				vr = regTB(class)->getVreg( regTB(class), reg )
+				vr = regTB(class_)->getVreg( regTB(class_), reg )
 
         		'' spill
         		irStoreVR( vr, reg )
 
         		'' free reg
-        		regTB(class)->free( regTB(class), reg )
+        		regTB(class_)->free( regTB(class_), reg )
         	end if
 
         	'' next reg
-        	reg = regTB(class)->getNext( regTB(class), reg )
+        	reg = regTB(class_)->getNext( regTB(class_), reg )
 		loop
 
 	next

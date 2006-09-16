@@ -80,7 +80,7 @@ sub ppInit( )
 
 	''
 	hashInit( )
-	symbHashTbInit( @pp.keyhash, NULL, SYMB_MAXKEYWORDS )
+	symbHashTbInit( pp.keyhash, NULL, SYMB_MAXKEYWORDS )
 
 	for i = 0 to SYMB_MAXKEYWORDS-1
     	if( kwdTb(i).name = NULL ) then
@@ -205,7 +205,7 @@ function ppParse( ) as integer
     case FB_TK_PP_UNDEF
     	lexSkipToken( LEXCHECK_NODEFINE )
 
-    	chain_ = cIdentifier( FALSE, FALSE )
+    	chain_ = cIdentifier( FB_IDOPT_NONE )
     	if( chain_ <> NULL ) then
     		dim as FBSYMBOL ptr sym = chain_->sym
     		'' don't remove if it was defined inside any namespace (any
@@ -215,7 +215,13 @@ function ppParse( ) as integer
     				exit function
     			end if
     		else
-    			symbDelSymbol( sym )
+    			if( symbGetCantUndef( sym ) ) then
+    				if( errReport( FB_ERRMSG_CANTUNDEF ) = FALSE ) then
+    					exit function
+    				end if
+    			else
+    				symbDelSymbol( sym )
+    			end if
     		end if
     	end if
 
@@ -479,7 +485,7 @@ function ppReadLiteral _
 
     		continue do
 
-		case FB_TK_COMMENTCHAR, FB_TK_REM
+		case FB_TK_COMMENT, FB_TK_REM
 			if( ismultiline = FALSE ) then
 				exit do
 			end if
@@ -618,7 +624,7 @@ function ppReadLiteralW _
 
     		continue do
 
-		case FB_TK_COMMENTCHAR, FB_TK_REM
+		case FB_TK_COMMENT, FB_TK_REM
 			if( ismultiline = FALSE ) then
 				exit do
 			end if

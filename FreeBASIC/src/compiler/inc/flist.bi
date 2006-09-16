@@ -35,30 +35,36 @@ type TFLIST
 	listtb 		as TLISTTB ptr
 end type
 
-declare function flistNew		( _
-									byval flist as TFLIST ptr, _
-								  	byval items as integer, _
-								  	byval itemlen as integer _
-								) as integer
+declare function flistNew _
+	( _
+		byval flist as TFLIST ptr, _
+		byval items as integer, _
+		byval itemlen as integer _
+	) as integer
 
-declare function flistFree		( _
-									byval flist as TFLIST ptr _
-								) as integer
+declare function flistFree _
+	( _
+		byval flist as TFLIST ptr _
+	) as integer
 
-declare function flistNewItem	( _
-									byval flist as TFLIST ptr _
-								) as any ptr
+declare function flistNewItem _
+	( _
+		byval flist as TFLIST ptr _
+	) as any ptr
 
-declare sub 	 flistReset		( _
-									byval flist as TFLIST ptr _
-								)
+declare sub flistReset _
+	( _
+		byval flist as TFLIST ptr _
+	)
 
-declare function flistGetHead	( _
-									byval flist as TFLIST ptr _
-								) as any ptr
+declare function flistGetHead _
+	( _
+		byval flist as TFLIST ptr _
+	) as any ptr
 
-declare function flistGetNext	( _
-									byval node as any ptr _
-								) as any ptr
+declare function flistGetNext _
+	( _
+		byval node as any ptr _
+	) as any ptr
 
 #endif '' __FLIST_BI__

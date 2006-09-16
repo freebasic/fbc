@@ -37,7 +37,7 @@ function cTypedefDecl _
     static as zstring * FB_MAXNAMELEN+1 id, tname, tname_uc
     dim as zstring ptr ptname
     dim as integer dtype, lgt, ptrcnt, isfwd, ismult
-    dim as FBSYMBOL ptr ns, subtype
+    dim as FBSYMBOL ptr parent, subtype
 
     function = FALSE
 
@@ -83,12 +83,10 @@ function cTypedefDecl _
 
     	else
 			'' don't allow explicit namespaces
-			ns = cNamespace( )
-    		if( ns <> NULL ) then
-				if( ns <> symbGetCurrentNamespc( ) ) then
-					if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-						exit function
-					end if
+			parent = cParentId( )
+    		if( parent <> NULL ) then
+				if( hDeclCheckParent( parent ) = FALSE ) then
+					exit function
     			end if
     		else
     			if( errGetLast( ) <> FB_ERRMSG_OK ) then

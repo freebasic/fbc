@@ -93,7 +93,7 @@ function ppCondIf( ) as integer
 	case FB_TK_PP_IFDEF
         lexSkipToken( LEXCHECK_NODEFINE )
 
-		if( cIdentifier( FALSE, FALSE ) <> NULL ) then
+		if( cIdentifier( FB_IDOPT_NONE ) <> NULL ) then
 			'' any symbol is okay or type's wouldn't be found
 			istrue = TRUE
 		end if
@@ -103,7 +103,7 @@ function ppCondIf( ) as integer
 	case FB_TK_PP_IFNDEF
         lexSkipToken( LEXCHECK_NODEFINE )
 
-		if( cIdentifier( FALSE, FALSE ) = NULL ) then
+		if( cIdentifier( FB_IDOPT_NONE ) = NULL ) then
 			'' ditto
 			istrue = TRUE
 		end if
@@ -790,7 +790,7 @@ private function ppParentExpr _
 		parexpr.dtype = FB_DATATYPE_INTEGER
 
 		parexpr.num.int = FALSE
-		if( cIdentifier( FALSE, FALSE ) <> NULL ) then
+		if( cIdentifier( FB_IDOPT_NONE ) <> NULL ) then
 			parexpr.num.int = TRUE
 		end if
 

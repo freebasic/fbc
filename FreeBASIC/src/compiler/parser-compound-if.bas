@@ -161,9 +161,9 @@ function cIfStmtBegin as integer
 		lexSkipToken( )
 	end if
 
-	select case lexGetToken( )
+	select case as const lexGetToken( )
 	'' COMMENT|NEWLINE?
-	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL, FB_TK_EOF, FB_TK_STATSEPCHAR
+	case FB_TK_COMMENT, FB_TK_REM, FB_TK_EOL, FB_TK_EOF, FB_TK_STMTSEP
 		stk->if.issingle = FALSE
 		stk->scopenode = astScopeBegin( )
 

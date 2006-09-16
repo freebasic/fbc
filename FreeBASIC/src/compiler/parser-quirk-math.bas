@@ -192,9 +192,9 @@ function cMathFunct _
 
 		expr = NULL
 		if( cSymbolType( typ, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
-			env.checkarray = FALSE
+			fbSetCheckArray( FALSE )
 			if( cExpression( expr ) = FALSE ) then
-				env.checkarray = TRUE
+				fbSetCheckArray( TRUE )
 				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else
@@ -202,14 +202,14 @@ function cMathFunct _
 					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				end if
 			end if
-			env.checkarray = TRUE
+			fbSetCheckArray( TRUE )
 		end if
 
 		'' string expressions with SIZEOF() are not allowed
 		if( expr <> NULL ) then
 			if( islen = FALSE ) then
 				if( astGetDataClass( expr ) = FB_DATACLASS_STRING ) then
-					if( (astGetSymbol( expr ) = NULL) or (astIsFUNCT( expr )) ) then
+					if( (astGetSymbol( expr ) = NULL) or (astIsCALL( expr )) ) then
 						if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
 							exit function
 						else

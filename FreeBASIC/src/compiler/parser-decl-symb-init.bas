@@ -33,12 +33,43 @@ type FB_INITCTX
 	dim 		as FBVARDIM ptr
 	dimcnt		as integer
 	tree		as ASTNODE ptr
+	isobj		as integer
 end type
 
 declare function 	hUDTInit			( _
 											byref ctx as FB_INITCTX _
 					  	   				) as integer
 
+'':::::
+private function hDoAssign _
+	( _
+		byref ctx as FB_INITCTX, _
+		byval expr as ASTNODE ptr _
+	) as integer static
+
+    dim as ASTNODE lside
+
+    astBuildVAR( @lside, NULL, 0, symbGetType( ctx.sym ), symbGetSubtype( ctx.sym ) )
+
+    '' don't build a FIELD node if it's an UDTElm symbol,
+    '' that doesn't matter with checkASSIGN
+
+    if( astCheckASSIGN( @lside, expr ) = FALSE ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+        	return FALSE
+        else
+        	'' error recovery: create a fake expression
+        	astDelTree( expr )
+        	expr = astNewCONSTz( symbGetType( ctx.sym ) )
+        end if
+	end if
+
+	''
+	astTypeIniAddAssign( ctx.tree, expr, ctx.sym )
+
+	function = TRUE
+
+end function
 
 '':::::
 private function hElmInit _
@@ -46,15 +77,15 @@ private function hElmInit _
 		byref ctx as FB_INITCTX _
 	) as integer
 
-    dim as ASTNODE ptr expr
-    dim as FBSYMBOL ptr oldsym
+    dim as ASTNODE ptr expr = any
+    dim as FBSYMBOL ptr oldsym = any
 
     function = FALSE
 
     '' set the context symbol to allow taking the address of overloaded
     '' procs and also to allow anonymous UDT's
-    oldsym = env.ctxsym
-    env.ctxsym = symbGetSubType( ctx.sym )
+    oldsym = parser.ctxsym
+    parser.ctxsym = symbGetSubType( ctx.sym )
 
 	if( cExpression( expr ) = FALSE ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
@@ -66,30 +97,9 @@ private function hElmInit _
 		end if
 	end if
 
-	env.ctxsym = oldsym
+	parser.ctxsym = oldsym
 
-    ''
-    static as ASTNODE lside
-
-    astBuildVAR( @lside, NULL, 0, symbGetType( ctx.sym ), symbGetSubtype( ctx.sym ) )
-
-    '' don't build a FIELD node if it's an UDTElm symbol,
-    '' that doesn't matter with checkASSIGN
-
-    if( astCheckASSIGN( @lside, expr ) = FALSE ) then
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-        	exit function
-        else
-        	'' error recovery: create a fake expression
-        	astDelTree( expr )
-        	expr = astNewCONSTz( symbGetType( ctx.sym ) )
-        end if
-	end if
-
-	''
-	astTypeIniAddExpr( ctx.tree, expr, ctx.sym )
-
-	function = TRUE
+	function = hDoAssign( ctx, expr )
 
 end function
 
@@ -99,8 +109,9 @@ private function hArrayInit _
 		byref ctx as FB_INITCTX _
 	) as integer
 
-    dim as integer dimensions, elements, elm_cnt, pad_lgt, isarray
-    dim as FBVARDIM ptr old_dim
+    dim as integer dimensions = any, elements = any, elm_cnt = any
+    dim as integer pad_lgt = any, isarray = any
+    dim as FBVARDIM ptr old_dim = any
 
 	function = FALSE
 
@@ -109,7 +120,9 @@ private function hArrayInit _
 
 	'' '{'?
 	isarray = FALSE
-	if( hMatch( CHAR_LBRACE ) ) then
+	if( lexGetToken( ) = CHAR_LBRACE ) then
+		lexSkipToken( )
+
 		ctx.dimcnt += 1
 		'' too many dimensions?
 		if( ctx.dimcnt > dimensions ) then
@@ -168,16 +181,17 @@ private function hArrayInit _
 			end if
 
 		else
-			if( symbGetType( ctx.sym ) <> FB_DATATYPE_STRUCT ) then
-				if( hElmInit( ctx ) = FALSE ) then
-					exit function
-				end if
-
-			else
+			select case symbGetType( ctx.sym )
+			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 				if( hUDTInit( ctx ) = FALSE ) then
 					exit function
 				end if
-			end if
+
+			case else
+				if( hElmInit( ctx ) = FALSE ) then
+					exit function
+				end if
+			end select
 		end if
 
 		elm_cnt += 1
@@ -189,27 +203,40 @@ private function hArrayInit _
 	loop while( hMatch( CHAR_COMMA ) )
 
 	'' pad
-	if( elm_cnt < elements ) then
-		pad_lgt = (elements - elm_cnt) * symbGetLen( ctx.sym )
-
+	elements -= elm_cnt
+	if( elements > 0 ) then
 		'' not the last dimension?
 		if( ctx.dim->next ) then
-			pad_lgt *= symbCalcArrayElements( ctx.sym, ctx.dim->next )
+			elements *= symbCalcArrayElements( ctx.sym, ctx.dim->next )
 		end if
 
-		astTypeIniAddPad( ctx.tree, pad_lgt )
-		astTypeIniGetOfs( ctx.tree ) += pad_lgt
+		dim as FBSYMBOL ptr ctor = NULL
+		if( ctx.isobj ) then
+			ctor = symbGetCompDefCtor( symbGetSubtype( ctx.sym ) )
+		end if
+
+		if( ctor <> NULL ) then
+			astTypeIniAddCtorList( ctx.tree, ctx.sym, elements )
+		else
+			pad_lgt = elements * symbGetLen( ctx.sym )
+			astTypeIniAddPad( ctx.tree, pad_lgt )
+			astTypeIniGetOfs( ctx.tree ) += pad_lgt
+		end if
+
 	end if
 
 	if( isarray ) then
 		'' '}'
-		if( hMatch( CHAR_RBRACE ) = FALSE ) then
+		if( lexGetToken( ) <> CHAR_RBRACE ) then
 			if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip until next '}'
 				hSkipUntil( CHAR_RBRACE, TRUE )
 			end if
+
+		else
+			lexSkipToken( )
 		end if
 
 		ctx.dim = old_dim
@@ -226,11 +253,35 @@ private function hUDTInit _
 		byref ctx as FB_INITCTX _
 	) as integer
 
-	dim as integer elements, elm_cnt, elm_ofs, lgt, baseofs, pad_lgt
-    dim as FBSYMBOL ptr elm, udt
+	dim as integer elements = any, elm_cnt = any, elm_ofs = any
+	dim as integer lgt = any, baseofs = any, pad_lgt = any
+    dim as FBSYMBOL ptr elm = any, udt = any
     dim as FB_INITCTX old_ctx = any
 
     function = FALSE
+
+    '' ctor?
+    if( ctx.isobj ) then
+    	dim as ASTNODE ptr expr = any
+
+    	'' Expression
+    	if( cExpression( expr ) = FALSE ) then
+    		exit function
+    	end if
+
+    	dim as integer is_ctorcall = any
+    	expr = cCtorCall( expr, ctx.sym, is_ctorcall )
+        if( expr = NULL ) then
+        	exit function
+        end if
+
+    	if( is_ctorcall ) then
+    		return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr ) <> NULL
+    	else
+    		'' try to assign it (do a shallow copy)
+        	return hDoAssign( ctx, expr )
+        end if
+    end if
 
 	'' '('
 	if( hMatch( CHAR_LPRNT ) = FALSE ) then
@@ -316,13 +367,14 @@ private function hUDTInit _
 end function
 
 '':::::
-function cVariableInit _
+function cInitializer _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval isinitializer as integer _
 	) as ASTNODE ptr
 
     dim as FB_INITCTX ctx = any
+    dim as FBSYMBOL ptr subtype = any
 
 	function = NULL
 
@@ -340,14 +392,22 @@ function cVariableInit _
 		end if
 	end if
 
+	subtype = symbGetSubtype( sym )
+
 	ctx.sym = sym
 	ctx.dim = NULL
 	ctx.dimcnt = 0
-	ctx.tree = astTypeIniBegin( symbGetType( sym ), symbGetSubtype( sym ) )
+	ctx.tree = astTypeIniBegin( symbGetType( sym ), subtype )
+	ctx.isobj = FALSE
 
-	if( hArrayInit( ctx ) = FALSE ) then
-		exit function
+	if( subtype <> NULL ) then
+		select case symbGetType( sym )
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			ctx.isobj = symbGetHasCtor( subtype )
+		end select
 	end if
+
+	dim as integer res = hArrayInit( ctx )
 
 	astTypeIniEnd( ctx.tree, isinitializer )
 
@@ -357,7 +417,7 @@ function cVariableInit _
 	end if
 
 	''
-	function = ctx.tree
+	function = iif( res, ctx.tree, NULL )
 
 end function
 

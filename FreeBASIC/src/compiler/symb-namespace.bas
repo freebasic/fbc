@@ -23,6 +23,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\parser.bi"
 
 '':::::
 function symbAddNamespace _
@@ -36,22 +37,24 @@ function symbAddNamespace _
     '' no explict alias given?
     if( id_alias = NULL ) then
     	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( env.mangling <> FB_MANGLING_BASIC ) then
+    	if( parser.mangling <> FB_MANGLING_BASIC ) then
     		id_alias = id
     	end if
     end if
 
-    s = symbNewSymbol( NULL, _
-    				   NULL, NULL, TRUE, _
+    s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    				   NULL, _
+    				   NULL, NULL,  _
     				   FB_SYMBCLASS_NAMESPACE, _
-    				   TRUE, id, id_alias )
+    				   id, id_alias, _
+    				   FB_DATATYPE_NAMESPC, NULL, 0 )
     if( s = NULL ) then
     	return NULL
     end if
 
-	symbSymTbInit( @s->nspc.symtb, s )
+	symbSymbTbInit( s->nspc.symtb, s )
 
-    symbHashTbInit( @s->nspc.hashtb, s, FB_INITSYMBOLNODES \ 10 )
+    symbHashTbInit( s->nspc.hashtb, s, FB_INITSYMBOLNODES \ 10 )
 
     s->nspc.cnt = 0
     s->nspc.implist.head = NULL
@@ -177,10 +180,13 @@ private function hAddImport _
 
     '' easier to be added as a symbol because it will be removed when
     '' respecting the scope blocks (or procs)
-    s = symbNewSymbol( NULL, _
-    				   symb.symtb, symb.hashtb, env.scope = FB_MAINSCOPE, _
+    s = symbNewSymbol( FB_SYMBOPT_NONE, _
+    				   NULL, _
+    				   symb.symtb, symb.hashtb, _
     				   FB_SYMBCLASS_NSIMPORT, _
-    				   FALSE, NULL, NULL )
+    				   NULL, NULL, _
+    				   INVALID, NULL, 0, _
+    				   iif( parser.scope = FB_MAINSCOPE, FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_LOCAL ) )
     if( s = NULL ) then
     	return NULL
     end if
@@ -475,45 +481,4 @@ sub symbNamespaceRemove _
 
 end sub
 
-'':::::
-sub symbNamespaceInsertChain _
-	( _
-		byval ns as FBSYMBOL ptr _
-	) static
 
-	dim as FBHASHTB ptr hashtb, lasttb
-	dim as FBSYMBOL ptr s
-
-	'' add this ns to hash list and all parents, but the global one
-
-	hashtb = @symbGetNamespaceHashTb( ns )
-	symbHashListAdd( hashtb, FALSE )
-
-	'' in reverse other, child ns must be the tail, parents follow
-	lasttb = hashtb
-	s = symbGetNamespace( ns )
-	do until( s = @symbGetGlobalNamespc( ) )
-
-		hashtb = @symbGetNamespaceHashTb( s )
-		symbHashListAddBefore( lasttb, hashtb )
-
-		lasttb = hashtb
-		s = symbGetNamespace( s )
-	loop
-
-end sub
-
-'':::::
-sub symbNamespaceRemoveChain _
-	( _
-		byval ns as FBSYMBOL ptr _
-	) static
-
-	'' remove this ns to hash list and all parents, but the global one
-	do
-		symbHashListDel( @symbGetNamespaceHashTb( ns ) )
-
-		ns = symbGetNamespace( ns )
-	loop until( ns = @symbGetGlobalNamespc( ) )
-
-end sub

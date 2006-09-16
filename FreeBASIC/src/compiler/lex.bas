@@ -26,6 +26,7 @@
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\lex.bi"
+#include once "inc\parser.bi"
 #include once "inc\pp.bi"
 #include once "inc\ast.bi"
 
@@ -1468,7 +1469,7 @@ re_read:
 
 			else
 				UPDATE_LINENUM( )
-				env.stmtcnt += 1
+				parser.stmtcnt += 1
 				islinecont = FALSE
 				continue do
 			end if
@@ -1737,8 +1738,18 @@ read_char:
 				goto re_read
 			end if
 
-		'' '(', ')', ',', ':', ';', '.', '{', '}', '[', ']'?
-		case CHAR_LPRNT, CHAR_RPRNT, CHAR_COMMA, CHAR_COLON, _
+		'' '''
+		case CHAR_APOST
+			t->class = FB_TKCLASS_DELIMITER
+			t->id = FB_TK_COMMENT
+
+		'' ':'
+		case CHAR_COLON
+			t->class = FB_TKCLASS_DELIMITER
+			t->id = FB_TK_STMTSEP
+
+		'' '(', ')', ',', ';', '.', '{', '}', '[', ']'?
+		case CHAR_LPRNT, CHAR_RPRNT, CHAR_COMMA, _
 			 CHAR_SEMICOLON, CHAR_DOT, CHAR_LBRACE, CHAR_RBRACE, _
 			 CHAR_LBRACKET, CHAR_RBRACKET
 			t->class = FB_TKCLASS_DELIMITER
@@ -1796,14 +1807,14 @@ private sub hMultiLineComment( ) static
 			end if
 
 			UPDATE_LINENUM()
-			env.stmtcnt += 1
+			parser.stmtcnt += 1
 
 		'' EOL?
 		case CHAR_LF
 			lexEatChar( )
 
 			UPDATE_LINENUM( )
-			env.stmtcnt += 1
+			parser.stmtcnt += 1
 
 		'' '/'?
 		case CHAR_SLASH
@@ -1937,9 +1948,10 @@ sub lexSkipToken _
     select case lex->head->id
     case FB_TK_EOL
     	UPDATE_LINENUM( )
-    	env.stmtcnt += 1
-    case FB_TK_STATSEPCHAR
-    	env.stmtcnt += 1
+    	parser.stmtcnt += 1
+
+    case FB_TK_STMTSEP
+    	parser.stmtcnt += 1
     end select
 
 	'' if no macro text been read, reset
@@ -2093,13 +2105,15 @@ end sub
 '':::::
 function lexPeekCurrentLine _
 	( _
-		byref token_pos as string _
+		byref token_pos as string, _
+		byval do_trim as integer _
 	) as string
 
 	static as zstring * 1024+1 buffer
 	dim as string res
 	dim as integer p, old_p, start, token_len
 	dim as ubyte ptr c
+	dim as uinteger char
 
 	function = ""
 
@@ -2125,25 +2139,76 @@ function lexPeekCurrentLine _
 	token_len = 0
 	if( start > 0 ) then
 		c -= 1
-		while( ( *c <> 10 ) and ( *c <> 13 ) and ( start > 0 ) )
+		do
+			char = *c
+			select case char
+			case CHAR_CR, CHAR_LF
+				exit do
+			end select
+
+			if( start <= 0 ) then
+				exit do
+			end if
+
 			token_len += 1
 			c -= 1
 			start -= 1
-		wend
+		loop
 		c += 1
 	end if
 
 	'' build source line
 	res = ""
 	token_pos = ""
-	while( ( *c <> 0 ) and ( *c <> 10 ) and ( *c <> 13 ) )
-		res += chr(*c)
+	do
+		char = *c
+		select case char
+		case 0, CHAR_CR, CHAR_LF
+			exit do
+		end select
+
+		res += chr( char )
 		if( token_len > 0 ) then
-			token_pos += chr( iif( *c = 9, 9, 32 ) )
+			token_pos += chr( iif( char = CHAR_TAB, CHAR_TAB, CHAR_SPACE ) )
 			token_len -= 1
 		end if
+
 		c += 1
-	wend
+	loop
+
+	if( do_trim ) then
+		dim as integer i
+		'' ltrim
+		for i = 0 to len( res )-1
+			select case res[i]
+			case CHAR_TAB, CHAR_SPACE
+
+			case else
+				exit for
+			end select
+		next
+
+		if( i < len( res ) ) then
+			res = mid( res, 1+i )
+		else
+			res = ""
+		end if
+
+		'' rtrim
+		for i = len( res )-1 to 0 step -1
+			select case res[i]
+			case CHAR_TAB, CHAR_SPACE
+
+			case else
+				exit for
+			end select
+		next
+
+		if( i > 0 ) then
+			res = left( res, 1+i )
+		end if
+	end if
+
 	token_pos += "^"
 
 	function = res

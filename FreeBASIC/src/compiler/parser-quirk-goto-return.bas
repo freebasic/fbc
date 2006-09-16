@@ -33,7 +33,7 @@ private function hFuncReturn( ) as integer
 
     function = FALSE
 
-	if( env.stmt.proc.endlabel = NULL ) then
+	if( parser.stmt.proc.endlabel = NULL ) then
 		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
 			exit function
 		else
@@ -46,13 +46,13 @@ private function hFuncReturn( ) as integer
 	lexSkipToken( )
 
 	'' function?
-	if( symbGetType( env.currproc ) <> FB_DATATYPE_VOID ) then
+	if( symbGetType( parser.currproc ) <> FB_DATATYPE_VOID ) then
 		checkexpr = TRUE
 
 	else
 		'' Comment|StmtSep|EOF? just exit
-		select case lexGetToken( )
-		case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
+		select case as const lexGetToken( )
+		case FB_TK_EOL, FB_TK_STMTSEP, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM
 			checkexpr = FALSE
 		case else
 			checkexpr = TRUE
@@ -60,13 +60,13 @@ private function hFuncReturn( ) as integer
 	end if
 
 	if( checkexpr ) then
-		if( cAssignFunctResult( env.currproc ) = FALSE ) then
+		if( cAssignFunctResult( parser.currproc, TRUE ) = FALSE ) then
 			exit function
 		end if
 	end if
 
 	'' do an implicit exit function
-	function = astScopeBreak( env.stmt.proc.endlabel )
+	function = astScopeBreak( parser.stmt.proc.endlabel )
 
 end function
 
@@ -97,7 +97,7 @@ function cGotoStmt _
 										  FB_SYMBCLASS_LABEL )
 
 		else
-			chain_ = cIdentifier( TRUE )
+			chain_ = cIdentifier( FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
@@ -133,7 +133,7 @@ function cGotoStmt _
 										  FB_SYMBCLASS_LABEL )
 
 		else
-			chain_ = cIdentifier( TRUE )
+			chain_ = cIdentifier( FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
@@ -163,8 +163,8 @@ function cGotoStmt _
 		lexSkipToken( )
 
 		'' Comment|StmtSep|EOF|ELSE? just return
-		select case lexGetToken( )
-		case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, _
+		select case as const lexGetToken( )
+		case FB_TK_EOL, FB_TK_STMTSEP, FB_TK_EOF, FB_TK_COMMENT, _
 			 FB_TK_REM, FB_TK_ELSE
 
 			'' return 0
@@ -178,7 +178,7 @@ function cGotoStmt _
 											  FB_SYMBCLASS_LABEL )
 
 			else
-				chain_ = cIdentifier( TRUE )
+				chain_ = cIdentifier( FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 				if( errGetLast( ) <> FB_ERRMSG_OK ) then
 					exit function
 				end if

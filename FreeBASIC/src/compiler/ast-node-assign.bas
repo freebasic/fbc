@@ -105,11 +105,6 @@ private function hCheckUDTOps _
 			exit function
 		end if
 
-		'' any dynamic fields?
-		if( symbGetUDTDynCnt( l->subtype ) <> 0 ) then
-			errReportWarn( FB_WARNINGMSG_DYNAMICFIELDS )
-		end if
-
 	'' r isn't an UDT
 	else
 		'' not a function returning an UDT on regs?
@@ -127,11 +122,6 @@ private function hCheckUDTOps _
         '' different subtypes?
 		if( l->subtype <> proc->subtype ) then
 			exit function
-		end if
-
-		'' any pointer fields?
-		if( symbGetUDTDynCnt( l->subtype ) <> 0 ) then
-			errReportWarn( FB_WARNINGMSG_DYNAMICFIELDS )
 		end if
 
 	end if
@@ -403,7 +393,7 @@ function astNewASSIGN _
 		proc = symbFindBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			return astBuildCALL( proc, 2, l, r )
+			return astBuildCall( proc, 2, l, r )
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL
@@ -419,7 +409,7 @@ function astNewASSIGN _
 	proc = symbFindCastOvlProc( ldtype, lsubtype, r, @err_num )
 	if( proc <> NULL ) then
 		'' build a proc call
-		r = astBuildCALL( proc, 1, r )
+		r = astBuildCall( proc, 1, r )
 	else
 		if( err_num <> FB_ERRMSG_OK ) then
 			return NULL
@@ -467,7 +457,7 @@ function astNewASSIGN _
 				end if
 			end if
 
-			'' do a mem copy..
+			'' do a shallow copy..
 			return astNewMEM( AST_OP_MEMMOVE, l, r, symbGetUDTUnpadLen( l->subtype ) )
 
 		'' r is function returning an UDT on registers

@@ -15,7 +15,7 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-'' AST addresing nodes
+'' AST addressing nodes
 '' l = expression; r = NULL
 ''
 '' chng: sep/2004 written [v1ctor]
@@ -49,7 +49,7 @@ function astNewOFFSET _
 
 	n->l = l
 	n->sym = l->sym
-	n->ofs.ofs = 0
+	n->ofs.ofs = l->var.ofs
 
 	'' access counter must be updated here too
 	'' because the var initializers used with static strings
@@ -154,7 +154,7 @@ function astNewADDR _
 		proc = symbFindUopOvlProc( op, l, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			return astBuildCALL( proc, 1, l )
+			return astBuildCall( proc, 1, l )
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
 				exit function

@@ -38,10 +38,16 @@ private sub hAllocTempStruct _
 	) static
 
 	'' follow GCC 3.x's ABI
-	if( sym->typ = FB_DATATYPE_STRUCT ) then
+	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
+		'' stills a struct?
 		if( sym->proc.realtype = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
-			'' create a temp struct
-			n->call.res = symbAddTempVarEx( FB_DATATYPE_STRUCT, sym->subtype )
+
+			'' create a temp struct (can't be static, could be an object)
+			n->call.res = symbAddTempVarEx( FB_DATATYPE_STRUCT, _
+											symbGetSubtype( sym ), _
+											FALSE, _
+											FALSE )
+
 		end if
 	end if
 
@@ -60,28 +66,22 @@ function astNewCALL _
     dim as integer dtype = any
     dim as FBSYMBOL ptr subtype = any
 
+	assert( sym <> NULL )
+
 	'' if return type is an UDT, change to the real one
-	if( sym <> NULL ) then
-		dtype   = symbGetType( sym )
-		subtype = symbGetSubType( sym )
-		if( dtype = FB_DATATYPE_STRUCT ) then
-			'' only if it's not a pointer, but a reg (integer or fpoint)
-			if( sym->proc.realtype < FB_DATATYPE_POINTER ) then
-				dtype   = sym->proc.realtype
-				subtype = NULL
-			end if
-		end if
+	dtype = symbGetType( sym )
+	subtype = symbGetSubType( sym )
 
-		''
-		symbSetIsCalled( sym )
-
-	else
-		if( ptrexpr = NULL ) then
-			return NULL
+	if( dtype = FB_DATATYPE_STRUCT ) then
+		'' only if it's not a pointer, but a reg (integer or fpoint)
+		if( sym->proc.realtype < FB_DATATYPE_POINTER ) then
+			dtype   = sym->proc.realtype
+			subtype = NULL
 		end if
-		dtype   = ptrexpr->dtype
-		subtype = ptrexpr->subtype
 	end if
+
+	''
+	symbSetIsCalled( sym )
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CALL, dtype, subtype )
@@ -108,7 +108,6 @@ function astNewCALL _
 		n->call.isrtl = FALSE
 	end if
 
-	n->call.arraytail = NULL
 	n->call.strtail = NULL
 
 	'' handle functions that return structs
@@ -129,29 +128,25 @@ function astNewCALL _
 end function
 
 '':::::
-function astBuildCALL cdecl _
+function astNewCALLCTOR _
 	( _
-		byval proc as FBSYMBOL ptr, _
-		byval args as integer, _
-		... _
+		byval procexpr as ASTNODE ptr, _
+		byval instptr as ASTNODE ptr _
 	) as ASTNODE ptr static
 
-    dim as ASTNODE ptr p
-    dim as any ptr arg
-    dim as integer i
+	dim as ASTNODE ptr n
 
-    p = astNewCALL( proc )
+	n = astNewNode( AST_NODECLASS_CALLCTOR, _
+					astGetDataType( instptr ), _
+					astGetSubtype( instptr ) )
+	if( n = NULL ) then
+		return NULL
+	end if
 
-    arg = va_first( )
-    for i = 0 to args-1
-    	if( astNewARG( p, va_arg( arg, ASTNODE ptr ) ) = NULL ) then
-    		'' ...
-    	end if
+	n->l = procexpr
+	n->r = instptr
 
-    	arg = va_next( arg, ASTNODE ptr )
-    next
-
-    function = p
+	function = n
 
 end function
 
@@ -168,18 +163,6 @@ private function hCallProc _
     dim as IRVREG ptr vreg, vr
     dim as ASTNODE ptr p
     dim as integer dtype
-
-	'' ordinary pointer?
-	if( sym = NULL ) then
-		p = n->l
-		vr = astLoad( p )
-		astDelNode( p )
-		if( ast.doemit ) then
-			irEmitCALLPTR( vr, NULL, 0 )
-		end if
-
-		return NULL
-	end if
 
 	dtype = n->dtype
 
@@ -285,31 +268,6 @@ private sub hCheckTmpStrings _
 end sub
 
 '':::::
-private sub hFreeTempArrayDescs _
-	( _
-		byval f as ASTNODE ptr _
-	)
-
-    dim as ASTNODE ptr t = any
-    dim as ASTTEMPARRAY ptr n = any, p = any
-
-	n = f->call.arraytail
-	do while( n <> NULL )
-
-		t = rtlArrayFreeTempDesc( n->pdesc )
-		if( t <> NULL ) then
-			astLoad( t )
-			astDelNode( t )
-		end if
-
-		p = n->prev
-		listDelNode( @ast.temparray, n )
-		n = p
-	loop
-
-end sub
-
-'':::::
 private sub hCheckTempStruct _
 	( _
 		byval n as ASTNODE ptr, _
@@ -324,13 +282,13 @@ private sub hCheckTempStruct _
 	end if
 
 	'' follow GCC 3.x's ABI
-	if( sym->typ = FB_DATATYPE_STRUCT ) then
+	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
 		if( sym->proc.realtype = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
         	'' pass the address of the temp struct
         	vr = astLoad( astNewVar( n->call.res, _
         							 0, _
         							 FB_DATATYPE_STRUCT, _
-        							 sym->subtype ) )
+        							 symbGetSubtype( sym ) ) )
 
         	a.typ = FB_DATATYPE_VOID
         	a.param.mode = FB_PARAMMODE_BYREF
@@ -347,42 +305,13 @@ function astLoadCALL _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr arg = any, nextarg = any, l = any, pstart = any, pend = any
-    dim as FBSYMBOL ptr sym = any, param = any, lastparam = any
-    dim as integer mode = any, bytestopop = any, toalign = any
+    dim as ASTNODE ptr arg = any, next_arg = any, l = any
+    dim as FBSYMBOL ptr sym = any, param = any, last_param = any
+    dim as integer mode = any, topop = any, toalign = any
     dim as integer params = any, inc = any, args = any
     dim as IRVREG ptr vr = any, pcvr = any
 
-	''
 	sym = n->sym
-
-    ''
-	pstart = n->call.profbegin
-	pend = n->call.profend
-
-	'' ordinary pointer?
-	if( sym = NULL ) then
-
-		'' signal function start for profiling
-		if( pstart <> NULL ) then
-			pcvr = astLoad( pstart )
-			astDelNode( pstart )
-		end if
-
-		vr = hCallProc( n, NULL, INVALID, 0, 0 )
-
-		'' signal function end for profiling
-		if( pend <> NULL ) then
-			if( ast.doemit ) then
-				irEmitPUSH( pcvr )
-			end if
-			sym = pend->sym
-			hCallProc( pend, sym, sym->proc.mode, 0, 0 )
-			astDelNode( pend )
-		end if
-
-		return vr
-	end if
 
     ''
     mode = sym->proc.mode
@@ -394,12 +323,12 @@ function astLoadCALL _
 		inc = -1
 	end if
 
-	bytestopop = symbGetProcParamsLen( sym )
+	topop = symbGetProcParamsLen( sym )
 	toalign = 0
 
 	''
 	params = symbGetProcParams( sym )
-	lastparam = symbGetProcTailParam( sym )
+	last_param = symbGetProcTailParam( sym )
 
 	if( args <= params ) then
 		param = symbGetProcFirstParam( sym )
@@ -412,7 +341,7 @@ function astLoadCALL _
 		else
 #ifdef DO_STACK_ALIGN
 			toalign = ((FB_INTEGERSIZE*4) - _
-					  (bytestopop and (FB_INTEGERSIZE*4-1))) and (FB_INTEGERSIZE*4-1)
+					  (topop and (FB_INTEGERSIZE*4-1))) and (FB_INTEGERSIZE*4-1)
 			if( toalign > 0 ) then
 				if( ast.doemit ) then
 					irEmitSTACKALIGN( toalign )
@@ -422,20 +351,20 @@ function astLoadCALL _
 		end if
 	'' vararg
 	else
-		param = lastparam
+		param = last_param
 	end if
 
 	'' for each argument..
 	arg = n->r
 	do while( arg <> NULL )
-		nextarg = arg->r
+		next_arg = arg->r
 
 		l = arg->l
 
 		''
-		if( param = lastparam ) then
+		if( param = last_param ) then
 			if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
-				bytestopop += FB_ROUNDLEN( symbCalcLen( l->dtype, NULL ) )
+				topop += FB_ROUNDLEN( symbCalcLen( l->dtype, NULL ) )
 			end if
 		end if
 
@@ -454,38 +383,58 @@ function astLoadCALL _
 			param = symbGetProcNextParam( sym, param )
 		end if
 
-		arg = nextarg
+		arg = next_arg
 	loop
 
 	'' handle functions returning structs
 	hCheckTempStruct( n, sym )
 
 	'' signal function start for profiling
-	if( pstart <> NULL ) then
-		pcvr = astLoad( pstart )
-		astDelNode( pstart )
+	if( n->call.profbegin <> NULL ) then
+		pcvr = astLoad( n->call.profbegin )
+		astDelNode( n->call.profbegin )
 	end if
 
 	'' return proc's result
-	vr = hCallProc( n, sym, mode, bytestopop, toalign )
+	vr = hCallProc( n, sym, mode, topop, toalign )
 
 	'' signal function end for profiling
-	if( pend <> NULL ) then
+	if( n->call.profend <> NULL ) then
 		if( ast.doemit ) then
 			irEmitPUSH( pcvr )
 		end if
-		sym = pend->sym
-		hCallProc( pend, sym, sym->proc.mode, 0, 0 )
-		astDelNode( pend )
+		sym = n->call.profend->sym
+		hCallProc( n->call.profend, sym, sym->proc.mode, 0, 0 )
+		astDelNode( n->call.profend )
 	end if
 
 	'' del temp strings and copy back if needed
 	hCheckTmpStrings( n )
 
-	'' del temp arrays descriptors created for array fields passed by desc
-	hFreeTempArrayDescs( n )
-
     function = vr
+
+end function
+
+'':::::
+function astLoadCALLCTOR _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = any
+
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	astLoad( n->l )
+	astDelNode( n->l )
+
+	'' return the anon var
+	vr = astLoad( n->r )
+	astDelNode( n->r )
+
+	function = vr
 
 end function
 

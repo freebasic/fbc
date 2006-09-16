@@ -40,6 +40,21 @@ private function hParamError _
 end function
 
 '':::::
+private function hIsClass _
+	( _
+		byval parent as FBSYMBOL ptr _
+	) as integer
+
+    select case symbGetClass( parent )
+    case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
+    	return TRUE
+    case else
+    	return FALSE
+    end select
+
+end function
+
+'':::::
 private function hCheckPrototype _
 	( _
 		byval proto as FBSYMBOL ptr, _
@@ -136,34 +151,15 @@ private function hGetId _
 		byval is_sub as integer _
 	) as FBSYMBOL ptr static
 
-    dim as FBSYMCHAIN ptr chain_
 	dim as FBSYMBOL ptr sym
 
 	function = NULL
 
 	'' ID
-	chain_ = cIdentifier( TRUE )
-
-    '' symbol found?
-    if( chain_ <> NULL ) then
-    	'' proc?
-    	sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
-    	if( sym <> NULL ) then
-    		'' from a different namespace?
-    		if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
-    			'' allow dups if not the global ns
-    			if( symbIsGlobalNamespc( ) = FALSE ) then
-    				sym = NULL
-    			end if
-    		end if
-    	end if
-
-    else
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-    	sym = NULL
-    end if
+	sym = hDeclLookupId( FB_SYMBCLASS_PROC )
+	if( errGetLast( ) <> FB_ERRMSG_OK ) then
+		exit function
+	end if
 
 	select case lexGetClass( )
 	case FB_TKCLASS_IDENTIFIER
@@ -180,7 +176,7 @@ private function hGetId _
 
 	case FB_TKCLASS_QUIRKWD
 		'' only if inside a ns and if not local
-		if( (symbIsGlobalNamespc( )) or (env.scope > FB_MAINSCOPE) ) then
+		if( (symbIsGlobalNamespc( )) or (parser.scope > FB_MAINSCOPE) ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     			exit function
     		else
@@ -263,7 +259,8 @@ end function
 '':::::
 private function hParseAttributes _
 	( _
-		byref attrib as integer _
+		byref attrib as FB_SYMBATTRIB, _
+		byval stats as FB_SYMBSTATS _
 	) as integer
 
 	function = FALSE
@@ -277,7 +274,7 @@ private function hParseAttributes _
     '' EXPORT?
     if( lexGetToken( ) = FB_TK_EXPORT ) then
 		'' ctor or dtor?
-		if( (attrib and (FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
+		if( (stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALCTOR)) <> 0 ) then
     		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     			exit function
     		else
@@ -311,7 +308,10 @@ private function hParseAttributes _
 end function
 
 '':::::
-function cProcCallingConv as integer
+function cProcCallingConv _
+	( _
+		byval default as FB_FUNCMODE _
+	) as FB_FUNCMODE
 
 	'' (CDECL|STDCALL|PASCAL)?
 	select case as const lexGetToken( )
@@ -328,9 +328,9 @@ function cProcCallingConv as integer
 		lexSkipToken( )
 
 	case else
-		select case as const env.mangling
+		select case as const parser.mangling
 		case FB_MANGLING_BASIC
-			function = FB_DEFAULT_FUNCMODE
+			function = default
 
 		case FB_MANGLING_CDECL, FB_MANGLING_CPP
 			function = FB_FUNCMODE_CDECL
@@ -346,27 +346,56 @@ end function
 	symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, dtype, subtype, ptrcnt, attrib, mode )
 
 '':::::
+private function hDoNesting _
+	( _
+		byval ns as FBSYMBOL ptr _
+	) as integer static
+
+	'' proc body can be declared outside the original namespace
+	'' if the prototype was declared inside one (as in C++), so
+	'' change the hashtb too
+
+	if( ns = symbGetCurrentNamespc( ) ) then
+		return FALSE
+	end if
+
+	symbNestBegin( ns, TRUE )
+
+	function = TRUE
+
+end function
+
+'':::::
 ''ProcHeader   		=  ID CallConvention? OVERLOAD? (ALIAS LIT_STRING)?
-''                     ('(' Parameters? ')')? ((AS SymbolType)? | CONSTRUCTOR|DESTRUCTOR)?
+''                     Parameters? ((AS SymbolType)? | CONSTRUCTOR|DESTRUCTOR)?
 ''					   STATIC? EXPORT?
 ''
 function cProcHeader _
 	( _
 		byval is_sub as integer, _
 		byval is_prototype as integer, _
-		byval attrib as integer _
+		byval attrib as integer, _
+		byref is_nested as integer _
 	) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXNAMELEN+1 id, aliasid, libname
     dim as integer dtype, mode, lgt, ptrcnt
-    dim as FBSYMBOL ptr sym, proc, subtype
+    dim as FBSYMBOL ptr head_proc, proc, subtype, parent
     dim as zstring ptr palias, plib
+    dim as FB_SYMBSTATS stats
 
 	function = NULL
 
+	is_nested = FALSE
+
 	'' ID
-	sym = hGetId( @id, @dtype, is_sub )
-	if( sym = NULL ) then
+	if( (attrib and FB_SYMBATTRIB_METHOD) <> 0 ) then
+		parent = symbGetCurrentNamespc( )
+		attrib or= FB_SYMBATTRIB_OVERLOADED
+	end if
+
+	head_proc = hGetId( @id, @dtype, is_sub )
+	if( head_proc = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
@@ -376,6 +405,7 @@ function cProcHeader _
 
 	subtype = NULL
 	ptrcnt = 0
+	stats = 0
 
 	'' CallConvention?
 	mode = cProcCallingConv( )
@@ -428,21 +458,18 @@ function cProcHeader _
 
 	proc = symbPreAddProc( @id )
 
-	'' ('(' Parameters? ')')?
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-		lexSkipToken( )
+	'' extern implementation?
+	if( is_prototype = FALSE ) then
+		'' must be done before parsing the params
+		if( head_proc <> NULL ) then
+			is_nested = hDoNesting( symbGetNamespace( head_proc ) )
+		end if
+	end if
 
-		cParameters( proc, mode, is_prototype )
-
-		if( lexGetToken( ) <> CHAR_RPRNT ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
-		else
-			lexSkipToken( )
+	'' Parameters?
+	if( cParameters( NULL, proc, mode, is_prototype ) = NULL ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+			exit function
 		end if
 	end if
 
@@ -450,27 +477,35 @@ function cProcHeader _
     '' (CONSTRUCTOR | DESTRUCTOR)?
     case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
 
-        '' not a sub?
-        if( is_sub = FALSE ) then
+        '' method?
+        if( (attrib and FB_SYMBATTRIB_METHOD) <> 0) then
         	if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
         		exit function
         	end if
-        end if
 
-        '' not argless?
-        if( symbGetProcParams( proc ) <> 0 ) then
-        	if( errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE ) = FALSE ) then
-        		exit function
+        else
+        	'' not a sub?
+        	if( is_sub = FALSE ) then
+        		if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+        			exit function
+        		end if
         	end if
-        end if
 
-		if( lexGetToken( ) = FB_TK_CONSTRUCTOR ) then
-			attrib or= FB_SYMBATTRIB_CONSTRUCTOR
-		else
-			attrib or= FB_SYMBATTRIB_DESTRUCTOR
+        	'' not argless?
+        	if( symbGetProcParams( proc ) <> 0 ) then
+        		if( errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE ) = FALSE ) then
+        			exit function
+        		end if
+        	end if
+
+			if( lexGetToken( ) = FB_TK_CONSTRUCTOR ) then
+				stats or= FB_SYMBSTATS_GLOBALCTOR
+			else
+				stats or= FB_SYMBSTATS_GLOBALDTOR
+			end if
+
+			lexSkipToken( )
 		end if
-
-		lexSkipToken( )
 
     '' (AS SymbolType)?
     case FB_TK_AS
@@ -524,31 +559,31 @@ function cProcHeader _
 
 	'' prototype?
 	if( is_prototype ) then
-    	sym = symbAddPrototype( proc, @id, palias, plib, _
-    						 	dtype, subtype, ptrcnt, _
-    					     	attrib, mode )
-    	if( sym = NULL ) then
+    	proc = symbAddPrototype( proc, @id, palias, plib, _
+    						 	 dtype, subtype, ptrcnt, _
+    					     	 attrib, mode )
+    	if( proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     			exit function
     		end if
     	end if
 
-    	return sym
+    	return proc
     end if
 
 	'' function body..
 
-	if( hParseAttributes( attrib ) = FALSE ) then
+	if( hParseAttributes( attrib, stats ) = FALSE ) then
 		exit function
 	end if
 
     '' no preview proc or proto with the same name?
-    if( sym = NULL ) then
-    	sym = symbAddProc( proc, @id, palias, NULL, _
-    					   dtype, subtype, ptrcnt, _
-    					   attrib, mode )
+    if( head_proc = NULL ) then
+    	head_proc = symbAddProc( proc, @id, palias, NULL, _
+    					   		 dtype, subtype, ptrcnt, _
+    					   		 attrib, mode )
 
-    	if( sym = NULL ) then
+    	if( head_proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
     			exit function
     		else
@@ -557,24 +592,24 @@ function cProcHeader _
     		end if
 
     	else
-    		proc = sym
+    		proc = head_proc
     	end if
 
     '' another proc or proto defined already..
     else
     	'' overloaded?
-    	if( symbGetProcIsOverloaded( sym ) ) then
+    	if( symbGetProcIsOverloaded( head_proc ) ) then
 
             '' try to find a prototype with the same signature
-    		sym = symbFindOverloadProc( sym, proc )
+    		head_proc = symbFindOverloadProc( head_proc, proc )
 
     		'' none found? then try to overload..
-    		if( sym = NULL ) then
-    			sym = symbAddProc( proc, @id, palias, NULL, _
-    							   dtype, subtype, ptrcnt, _
-    							   attrib, mode )
+    		if( head_proc = NULL ) then
+    			head_proc = symbAddProc( proc, @id, palias, NULL, _
+    							   		 dtype, subtype, ptrcnt, _
+    							   		 attrib, mode )
     			'' dup def?
-    			if( sym = NULL ) then
+    			if( head_proc = NULL ) then
     				if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
     					exit function
     				else
@@ -582,7 +617,7 @@ function cProcHeader _
     					return CREATEFAKEID( proc )
     				end if
     			else
-    				return sym
+    				return head_proc
     			end if
     		end if
 
@@ -590,7 +625,7 @@ function cProcHeader _
     	end if
 
     	'' already parsed?
-    	if( symbGetIsDeclared( sym ) ) then
+    	if( symbGetIsDeclared( head_proc ) ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
     			exit function
     		else
@@ -601,7 +636,7 @@ function cProcHeader _
 
     	'' there's already a prototype for this proc, check for
     	'' declaration conflits and fix up the arguments
-    	if( hCheckPrototype( sym, proc, dtype, subtype ) = FALSE ) then
+    	if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
     		else
@@ -611,24 +646,26 @@ function cProcHeader _
     	end if
 
     	'' check calling convention
-    	if( symbGetProcMode( sym ) <> mode ) then
+    	if( symbGetProcMode( head_proc ) <> mode ) then
     		if( errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
     			exit function
     		end if
     	end if
 
+    	'' use the prototype
+    	proc = head_proc
+
     	''
-    	symbSetIsDeclared( sym )
+    	symbSetIsDeclared( proc )
 
-    	symbSetAttrib( sym, attrib )
-
-    	'' return the prototype
-    	proc = sym
+    	symbSetAttrib( proc, attrib )
     end if
 
-	'' ctor or dtor? even if private it should be always emitted
-	if( (attrib and (FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
-    	symbSetIsCalled( proc )
+	'' ctor or dtor?
+	if( (stats and FB_SYMBSTATS_GLOBALCTOR) <> 0 ) then
+    	symbSetIsGlobalCtor( proc )
+    elseif( (stats and FB_SYMBSTATS_GLOBALDTOR) <> 0 ) then
+    	symbSetIsGlobalDtor( proc )
     end if
 
     ''
@@ -641,119 +678,146 @@ end function
 '':::::
 private function hCheckOpOvlParams _
 	( _
+		byval parent as FBSYMBOL ptr, _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval proc_dtype as integer, _
-		byval proc_subtype as FBSYMBOL ptr _
+		byval attrib as FB_SYMBATTRIB _
 	) as integer
+
+    dim as integer is_method = (attrib and FB_SYMBATTRIB_METHOD) <> 0
 
 	function = FALSE
 
 	'' 1st) check the number of params
-    dim as integer params = iif( astGetOpClass( op ) = AST_NODECLASS_UOP, 1, 2 )
+    dim as integer params = any
+    select case astGetOpClass( op )
+    case AST_NODECLASS_UOP, AST_NODECLASS_CONV
+    	params = 1
+
+    '' bop or assign..
+    case else
+    	params = 2
+    end select
+
     if( symbGetProcParams( proc ) <> params ) then
     	errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
     	exit function
     end if
 
-    '' 2nd) check the params, at least one param must be an
+    '' 2nd) check method-only ops
+    select case astGetOpClass( op )
+    case AST_NODECLASS_CONV, AST_NODECLASS_ASSIGN
+    	if( is_method = FALSE ) then
+    		errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
+    	end if
+
+    case AST_NODECLASS_BOP
+    	if( is_method or astGetOpIsSelf( op ) ) then
+    		if( parent = NULL ) then
+    			errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
+    		end if
+    	else
+    		if( parent <> NULL ) then
+    			errReport( FB_ERRMSG_OPCANNOTBEAMETHOD, TRUE )
+    		end if
+    	end if
+
+    case else
+    	if( is_method ) then
+    		errReport( FB_ERRMSG_OPCANNOTBEAMETHOD, TRUE )
+    	end if
+    end select
+
+    '' 3rd) check the params, at least one param must be an
     ''      user-defined type (struct, enum or class)
     dim as FBSYMBOL ptr param = symbGetProcHeadParam( proc )
 
+    '' vararg?
+    if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
+    	hParamError( proc, 1, FB_ERRMSG_VARARGPARAMNOTALLOWED )
+    	exit function
+    end if
+
+    '' optional?
+    if( symbGetIsOptional( param ) ) then
+    	hParamError( proc, 1, FB_ERRMSG_PARAMCANTBEOPTIONAL )
+    	exit function
+    end if
+
+    select case astGetOpClass( op )
     '' unary?
-    if( astGetOpClass( op ) = AST_NODECLASS_UOP ) then
-
-    	'' vararg?
-    	if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
-    		hParamError( proc, 1, FB_ERRMSG_VARARGPARAMNOTALLOWED )
-    		exit function
-    	end if
-
-    	'' optional?
-    	if( symbGetIsOptional( param ) ) then
-    		hParamError( proc, 1, FB_ERRMSG_PARAMCANTBEOPTIONAL )
-    		exit function
-    	end if
-
+    case AST_NODECLASS_UOP, AST_NODECLASS_CONV
     	'' is the param an UDT?
     	select case symbGetType( param )
-    	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+    	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
 
     	case else
     		errReport( FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT, TRUE )
     		exit function
     	end select
 
-    '' binary or assignment..
-    else
+    '' binary?
+    case AST_NODECLASS_BOP, AST_NODECLASS_ASSIGN
+
     	dim as FBSYMBOL ptr nxtparam = param->next
 
     	'' vararg?
-    	if( (symbGetParamMode( param ) = FB_PARAMMODE_VARARG) or _
-    		(symbGetParamMode( nxtparam ) = FB_PARAMMODE_VARARG) ) then
-    		errReport( FB_ERRMSG_VARARGPARAMNOTALLOWED, TRUE )
+    	if( symbGetParamMode( nxtparam ) = FB_PARAMMODE_VARARG ) then
+    		hParamError( proc, 2, FB_ERRMSG_VARARGPARAMNOTALLOWED )
     		exit function
     	end if
 
     	'' optional?
-    	if( (symbGetIsOptional( param ) = FB_PARAMMODE_VARARG) or _
-    		(symbGetIsOptional( nxtparam ) = FB_PARAMMODE_VARARG) ) then
-    		errReport( FB_ERRMSG_PARAMCANTBEOPTIONAL, TRUE )
+    	if( symbGetIsOptional( nxtparam ) = FB_PARAMMODE_VARARG ) then
+    		hParamError( proc, 2, FB_ERRMSG_PARAMCANTBEOPTIONAL )
     		exit function
     	end if
 
     	'' is the 1st param an UDT?
     	select case symbGetType( param )
-    	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+    	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
 
     	case else
-    		'' self? the 1st param must be an UDT
-    		if( astGetOpIsSelf( op ) ) then
-    			hParamError( proc, 1, FB_ERRMSG_INVALIDDATATYPES )
+    		'' try the 2nd one..
+    		select case symbGetType( nxtparam )
+    		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
+
+    		case else
+    			errReport( FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT, TRUE )
     			exit function
-
-    		else
-    			'' try the 2nd one..
-    			select case symbGetType( nxtparam )
-    			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
-
-    			case else
-    				errReport( FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT, TRUE )
-    				exit function
-    			end select
-    		end if
+    		end select
     	end select
 
-    end if
+    end select
 
-    '' 3rd) check the result
+    '' 4th) check the result
 
     select case astGetOpClass( op )
-    '' unary?
-    case AST_NODECLASS_UOP
-    	'' casting? special case..
-    	if( op = AST_OP_CAST ) then
-
-    		'' return and param types can't be the same
-    		if( proc_dtype = symbGetType( param ) ) then
-    			if( proc_subtype = symbGetSubType( param ) ) then
-    				errReport( FB_ERRMSG_SAMEPARAMANDRESULTTYPES, TRUE )
-    				exit function
-    			end if
-    		end if
+    case AST_NODECLASS_CONV
+    	'' return and param types can't be the same
+    	if( symbGetSubtype( proc ) = parent ) then
+    		errReport( FB_ERRMSG_SAMEPARAMANDRESULTTYPES, TRUE )
+    		exit function
     	end if
 
     	'' return type can't be a void
-    	if( proc_dtype = FB_DATATYPE_VOID ) then
+    	if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
+    		errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
+    		exit function
+    	end if
+
+    '' unary?
+    case AST_NODECLASS_UOP
+    	'' return type can't be a void
+    	if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
     		errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
     		exit function
     	end if
 
     '' assignment?
     case AST_NODECLASS_ASSIGN
-
     	'' it must be a SUB
-    	if( proc_dtype <> FB_DATATYPE_VOID ) then
+    	if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
     		errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
     		exit function
     	end if
@@ -764,7 +828,7 @@ private function hCheckOpOvlParams _
    		select case as const op
    		'' relational? it must return an integer
    		case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-   			if( proc_dtype <> FB_DATATYPE_INTEGER ) then
+   			if( symbGetType( proc ) <> FB_DATATYPE_INTEGER ) then
    				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
    				exit function
    			end if
@@ -772,14 +836,14 @@ private function hCheckOpOvlParams _
    		'' self? must be a SUB
    		case else
    			if( astGetOpIsSelf( op ) ) then
-    			if( proc_dtype <> FB_DATATYPE_VOID ) then
+    			if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
     				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
     				exit function
     			end if
 
    			'' anything else, it can't be a void
    			else
-    			if( proc_dtype = FB_DATATYPE_VOID ) then
+    			if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
     				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
     				exit function
     			end if
@@ -795,28 +859,57 @@ end function
 
 '':::::
 ''OperatorHeader   	=  Operator CallConvention? (ALIAS LIT_STRING)?
-''                     '(' Parameters ')' (AS SymbolType)? STATIC? EXPORT?
-''
+''                     Parameters? (AS SymbolType)? STATIC? EXPORT?
 ''
 function cOperatorHeader _
 	( _
 		byval is_prototype as integer, _
-		byval attrib as integer _
+		byval attrib as integer, _
+		byref is_nested as integer _
 	) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXNAMELEN+1 aliasid, libname
-    dim as integer op, dtype, mode, lgt, ptrcnt
-    dim as FBSYMBOL ptr proc, subtype, sym
+    dim as integer op, dtype, mode, lgt, ptrcnt, is_extern
+    dim as FBSYMBOL ptr proc, subtype, parent
     dim as zstring ptr palias, plib
 
 	function = NULL
 
+	is_nested = FALSE
+	is_extern = FALSE
+
 	attrib or= FB_SYMBATTRIB_OPERATOR or FB_SYMBATTRIB_OVERLOADED
+
+	if( (attrib and FB_SYMBATTRIB_METHOD) <> 0 ) then
+		parent = symbGetCurrentNamespc( )
+
+	else
+		parent = cParentId( FB_IDOPT_ISOPERATOR or FB_IDOPT_ALLOWSTRUCT )
+		if( parent = NULL ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+				exit function
+			end if
+
+		else
+			'' ns used in a prototype?
+			if( is_prototype ) then
+				if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
+					exit function
+				end if
+        	end if
+
+        	if( hIsClass( parent ) ) then
+        		attrib or= FB_SYMBATTRIB_METHOD
+        	end if
+
+			is_extern = TRUE
+		end if
+	end if
 
 	'' Operator
 	op = cOperator( )
 	if( op = INVALID ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDOPERATOR ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake an op
@@ -865,29 +958,17 @@ function cOperatorHeader _
 
 	proc = symbPreAddProc( NULL )
 
-	'' '(' Parameters ')'
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-		lexSkipToken( )
-
-		if( cParameters( proc, mode, is_prototype ) = NULL ) then
-			if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
-				exit function
-			end if
+	'' extern implementation?
+	if( is_prototype = FALSE ) then
+		'' must be done before parsing the params
+		if( parent <> NULL ) then
+			is_nested = hDoNesting( parent )
 		end if
+	end if
 
-		if( lexGetToken( ) <> CHAR_RPRNT ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
-		else
-			lexSkipToken( )
-		end if
-
-	else
-		if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
+	'' Parameters?
+	if( cParameters( parent, proc, mode, is_prototype ) = NULL ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 	end if
@@ -943,37 +1024,51 @@ function cOperatorHeader _
     	end if
     end select
 
+    '' needed to allow CAST to be checked
+    symbGetType( proc ) = dtype
+    symbGetSubtype( proc ) = subtype
+
 	''
-	if( hCheckOpOvlParams( op, proc, dtype, subtype ) = FALSE ) then
+	if( hCheckOpOvlParams( parent, op, proc, attrib ) = FALSE ) then
 		exit function
 	end if
 
 	if( is_prototype ) then
-    	sym = symbAddOpOvlPrototype( proc, op, palias, plib, _
-    						 		 dtype, subtype, ptrcnt, _
-    					     		 attrib, mode )
-    	if( sym = NULL ) then
+    	proc = symbAddOperator( proc, op, palias, plib, _
+    						    dtype, subtype, ptrcnt, _
+    					        attrib, mode )
+    	if( proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     			exit function
     		end if
     	end if
 
-    	return sym
+    	return proc
 	end if
 
 	''
-	if( hParseAttributes( attrib ) = FALSE ) then
+	if( hParseAttributes( attrib, 0 ) = FALSE ) then
 		exit function
 	end if
 
-    '' no preview proc or proto for this operator?
-    sym = symbGetGlobOpOvlParent( op, symbGetProcHeadParam( proc ) )
-    if( sym = NULL ) then
-    	sym = symbAddOpOvlProc( proc, op, palias, NULL, _
-    					   		dtype, subtype, ptrcnt, _
-    					   		attrib, mode )
+    dim as FBSYMBOL ptr head_proc
 
-    	if( sym = NULL ) then
+    '' no preview proc or proto for this operator?
+    head_proc = symbGetCompOpOvlHead( parent, op )
+    if( head_proc = NULL ) then
+    	'' extern decl but no prototype?
+    	if( is_extern ) then
+			if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
+				exit function
+			end if
+    	end if
+
+    	head_proc = symbAddOperator( proc, op, palias, NULL, _
+    					   		  	 dtype, subtype, ptrcnt, _
+	    					   	  	 attrib, mode, _
+    					   		  	 FB_SYMBOPT_DECLARING )
+
+    	if( head_proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
     			exit function
     		else
@@ -982,22 +1077,30 @@ function cOperatorHeader _
     		end if
 
     	else
-    		proc = sym
+    		proc = head_proc
     	end if
 
     '' another proc or proto defined already..
     else
 		'' try to find a prototype with the same signature
-    	sym = symbFindOpOvlProc( op, sym, proc )
+    	head_proc = symbFindOpOvlProc( op, head_proc, proc )
 
 		'' none found? then try to overload..
-    	if( sym = NULL ) then
-    		sym = symbAddOpOvlProc( proc, op, palias, NULL, _
-    						   		dtype, subtype, ptrcnt, _
-    						   		attrib, mode )
+    	if( head_proc = NULL ) then
+    		'' extern decl but no prototype?
+    		if( is_extern ) then
+				if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
+					exit function
+				end if
+    		end if
+
+    		head_proc = symbAddOperator( proc, op, palias, NULL, _
+    						   		  	 dtype, subtype, ptrcnt, _
+    						   		  	 attrib, mode, _
+    						   		  	 FB_SYMBOPT_DECLARING )
 
     		'' dup def?
-    		if( sym = NULL ) then
+    		if( head_proc = NULL ) then
     			if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
     				exit function
     			else
@@ -1005,12 +1108,12 @@ function cOperatorHeader _
     				return CREATEFAKEID( proc )
     			end if
     		else
-    			return sym
+    			return head_proc
     		end if
     	end if
 
     	'' already parsed?
-    	if( symbGetIsDeclared( sym ) ) then
+    	if( symbGetIsDeclared( head_proc ) ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
     			exit function
     		else
@@ -1021,7 +1124,7 @@ function cOperatorHeader _
 
     	'' there's already a prototype for this operator, check for
     	'' declaration conflits and fix up the arguments
-    	if( hCheckPrototype( sym, proc, dtype, subtype ) = FALSE ) then
+    	if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
     		else
@@ -1031,19 +1134,290 @@ function cOperatorHeader _
     	end if
 
     	'' check calling convention
-    	if( symbGetProcMode( sym ) <> mode ) then
+    	if( symbGetProcMode( head_proc ) <> mode ) then
     		if( errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
     			exit function
     		end if
     	end if
 
+    	'' use the prototype
+    	proc = head_proc
+
     	''
-    	symbSetIsDeclared( sym )
+    	symbSetIsDeclared( proc )
 
-    	symbSetAttrib( sym, attrib )
+    	symbSetAttrib( proc, attrib )
+	end if
 
-    	'' return the prototype
-    	proc = sym
+    ''
+    symbSetProcIncFile( proc, env.inf.incfile )
+
+    function = proc
+
+end function
+
+'':::::
+''CtorHeader   		=  (ALIAS LIT_STRING)? Parameters? STATIC? EXPORT?
+''
+function cCtorHeader _
+	( _
+		byval is_prototype as integer, _
+		byval attrib as integer, _
+		byref is_nested as integer _
+	) as FBSYMBOL ptr static
+
+    static as zstring * FB_MAXNAMELEN+1 aliasid, libname
+    dim as integer mode, lgt, is_extern, is_ctor
+    dim as FBSYMBOL ptr proc, parent
+    dim as zstring ptr palias, plib
+
+	function = NULL
+
+	is_nested = FALSE
+	is_ctor = (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0
+	is_extern = FALSE
+
+	if( is_ctor ) then
+		attrib or= FB_SYMBATTRIB_OVERLOADED
+	end if
+
+	if( (attrib and FB_SYMBATTRIB_METHOD) <> 0 ) then
+		parent = symbGetCurrentNamespc( )
+
+	else
+		parent = cParentId( FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_DONTCHKPERIOD )
+		if( parent = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDCLASSID )
+			exit function
+		end if
+
+		'' ns used in a prototype?
+		if( is_prototype ) then
+			if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
+				exit function
+			end if
+        end if
+
+		select case symbGetClass( parent )
+		case FB_SYMBCLASS_STRUCT
+			'' UNION?
+			if( symbGetUDTIsUnion( parent ) ) then
+				if( errReport( iif( is_ctor, _
+									FB_ERRMSG_CTORINUNION, _
+									FB_ERRMSG_DTORINUNION ) ) = FALSE ) then
+					exit function
+				end if
+			end if
+
+		case FB_SYMBCLASS_CLASS
+
+		case else
+			errReport( FB_ERRMSG_PARENTISNOTACLASS )
+			exit function
+
+		end select
+
+		attrib or= FB_SYMBATTRIB_METHOD
+
+		is_extern = TRUE
+	end if
+
+	'' CallConvention?
+	'' ctors and dtors must be always CDECL if passed to REDIM
+	mode = cProcCallingConv( FB_FUNCMODE_CDECL )
+
+	plib = NULL
+	if( is_prototype ) then
+		'' (LIB STR_LIT)?
+		if( lexGetToken( ) = FB_TK_LIB ) then
+			lexSkipToken( )
+			if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+					exit function
+				end if
+
+			else
+				lexEatToken( libname )
+				plib = @libname
+			end if
+		end if
+	end if
+
+	'' (ALIAS LIT_STRING)?
+	palias = NULL
+	if( lexGetToken( ) = FB_TK_ALIAS ) then
+		lexSkipToken( )
+
+		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			end if
+
+		else
+			lexEatToken( aliasid )
+			palias = @aliasid
+		end if
+	end if
+
+	proc = symbPreAddProc( NULL )
+
+	'' extern implementation?
+	if( is_prototype = FALSE ) then
+		'' must be done before parsing the params
+		if( parent <> NULL ) then
+			is_nested = hDoNesting( parent )
+		end if
+	end if
+
+	'' Parameters?
+	if( cParameters( parent, proc, mode, is_prototype ) = NULL ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+	end if
+
+	'' dtor?
+	if( is_ctor = FALSE ) then
+		if( symbGetProcParams( proc ) > 1 ) then
+			if( errReport( FB_ERRMSG_DTORCANTCONTAINPARAMS ) = FALSE ) then
+				exit function
+			end if
+		end if
+	else
+    	'' vararg?
+    	if( symbGetParamMode( symbGetProcTailParam( proc ) ) = FB_PARAMMODE_VARARG ) then
+    		if( hParamError( proc, 0, FB_ERRMSG_VARARGPARAMNOTALLOWED ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: remove the param
+    			dim as FBSYMBOL ptr param
+    			param = symbGetProcTailParam( proc )
+    			symbGetProcTailParam( proc ) = param->prev
+    			if( param->prev <> NULL ) then
+    				param->prev->next = NULL
+    			end if
+    			symbGetProcParams( proc ) -= 1
+    			symbFreeSymbol( param )
+    		end if
+    	end if
+	end if
+
+	if( is_prototype ) then
+    	proc = symbAddCtor( proc, palias, plib, _
+    						attrib, mode )
+    	if( proc = NULL ) then
+    		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+    			exit function
+    		end if
+    	end if
+
+    	return proc
+	end if
+
+	''
+	if( hParseAttributes( attrib, 0 ) = FALSE ) then
+		exit function
+	end if
+
+    dim as FBSYMBOL ptr head_proc
+
+    '' no preview proc or proto?
+    if( is_ctor ) then
+    	head_proc = symbGetCompCtorHead( parent )
+    else
+    	head_proc = symbGetCompDtor( parent )
+    end if
+
+    if( head_proc = NULL ) then
+    	'' extern decl but no prototype?
+    	if( is_extern ) then
+			if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
+				exit function
+			end if
+    	end if
+
+    	head_proc = symbAddCtor( proc, palias, NULL, _
+	    					   	 attrib, mode, _
+    					   		 FB_SYMBOPT_DECLARING )
+
+    	if( head_proc = NULL ) then
+    		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: create a fake symbol
+    			proc = symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, FB_DATATYPE_VOID, NULL, 0, attrib, mode )
+    		end if
+
+    	else
+    		proc = head_proc
+    	end if
+
+    '' another proc or proto defined already..
+    else
+		'' try to find a prototype with the same signature
+    	head_proc = symbFindCtorProc( head_proc, proc )
+
+		'' none found? then try to overload..
+    	if( head_proc = NULL ) then
+    		'' extern decl but no prototype?
+    		if( is_extern ) then
+				if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
+					exit function
+				end if
+    		end if
+
+    		head_proc = symbAddCtor( proc, palias, NULL, _
+    						   		 attrib, mode, _
+    						   		 FB_SYMBOPT_DECLARING )
+
+    		'' dup def?
+    		if( head_proc = NULL ) then
+    			if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: create a fake symbol
+    				return symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, FB_DATATYPE_VOID, NULL, 0, attrib, mode )
+    			end if
+    		else
+    			return head_proc
+    		end if
+    	end if
+
+    	'' already parsed?
+    	if( symbGetIsDeclared( head_proc ) ) then
+    		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: create a fake symbol
+    			return symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, FB_DATATYPE_VOID, NULL, 0, attrib, mode )
+    		end if
+    	end if
+
+    	'' there's already a prototype for this operator, check for
+    	'' declaration conflits and fix up the arguments
+    	if( hCheckPrototype( head_proc, proc, FB_DATATYPE_VOID, NULL ) = FALSE ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+				exit function
+    		else
+    			'' error recovery: create a fake symbol
+    			return symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, FB_DATATYPE_VOID, NULL, 0, attrib, mode )
+    		end if
+    	end if
+
+    	'' check calling convention
+    	if( symbGetProcMode( head_proc ) <> mode ) then
+    		if( errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
+    			exit function
+    		end if
+    	end if
+
+    	'' use the prototype
+    	proc = head_proc
+
+    	''
+    	symbSetIsDeclared( proc )
+
+    	symbSetAttrib( proc, attrib )
 	end if
 
     ''
@@ -1062,7 +1436,7 @@ function cProcStmtBegin _
 		_
 	) as integer static
 
-	dim as integer tkn, attrib
+	dim as integer tkn, attrib, is_nested
     dim as FBSYMBOL ptr proc
     dim as ASTNODE ptr expr, procnode
     dim as FB_CMPSTMTSTK ptr stk
@@ -1092,13 +1466,11 @@ function cProcStmtBegin _
 	select case as const tkn
 	case FB_TK_SUB, FB_TK_FUNCTION
 
-/'
 	case FB_TK_CONSTRUCTOR
 	     attrib or= FB_SYMBATTRIB_CONSTRUCTOR
 
 	case FB_TK_DESTRUCTOR
 		attrib or= FB_SYMBATTRIB_DESTRUCTOR
-'/
 
 	case FB_TK_OPERATOR
         if( fbLangOptIsSet( FB_LANG_OPT_OPEROVL ) = FALSE ) then
@@ -1124,15 +1496,13 @@ function cProcStmtBegin _
 	'' ProcHeader
 	select case as const tkn
 	case FB_TK_SUB, FB_TK_FUNCTION
-		proc = cProcHeader( tkn = FB_TK_SUB, FALSE, attrib )
+		proc = cProcHeader( tkn = FB_TK_SUB, FALSE, attrib, is_nested )
 
-/'
 	case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
-		proc = cCtorHeader( attrib )
-'/
+		proc = cCtorHeader( FALSE, attrib, is_nested )
 
 	case FB_TK_OPERATOR
-        proc = cOperatorHeader( FALSE, attrib )
+        proc = cOperatorHeader( FALSE, attrib, is_nested )
 
 	end select
 
@@ -1152,9 +1522,10 @@ function cProcStmtBegin _
 
 	stk->proc.tkn = tkn
 	stk->proc.node = procnode
+	stk->proc.is_nested = is_nested
 
-	env.stmt.proc.cmplabel = NULL
-	env.stmt.proc.endlabel = astGetProcExitlabel( procnode )
+	parser.stmt.proc.cmplabel = NULL
+	parser.stmt.proc.endlabel = astGetProcExitlabel( procnode )
 
 	'' init
 	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
@@ -1204,7 +1575,7 @@ function cProcStmtEnd _
 	'' function and the result wasn't set?
 	dim as FBSYMBOL ptr proc_res
 
-	proc_res = symbGetProcResult( env.currproc )
+	proc_res = symbGetProcResult( parser.currproc )
 	if( proc_res <> NULL ) then
 		if( symbGetIsAccessed( proc_res ) = FALSE ) then
 			errReportWarn( FB_WARNINGMSG_NOFUNCTIONRESULT )
@@ -1213,6 +1584,11 @@ function cProcStmtEnd _
 
     '' always finish
 	function = astProcEnd( stk->proc.node, FALSE )
+
+	'' was the namespace changed?
+	if( stk->proc.is_nested ) then
+		symbNestEnd( TRUE )
+	end if
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )

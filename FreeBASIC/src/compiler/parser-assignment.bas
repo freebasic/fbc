@@ -215,26 +215,29 @@ function cAssignment _
     	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
     			exit function
+    		else
+    			'' error recovery: skip stmt
+    			hSkipStmt( )
+    			return TRUE
     		end if
-    	else
-    		lexSkipToken( )
     	end if
+
+    	lexSkipToken( )
 
     	'' assuming _SELF comes right-after the binary op
     	op += 1
-
 	else
     	lexSkipToken( )
     end if
 
     '' set the context symbol to allow taking the address of overloaded
     '' procs and also to allow anonymous UDT's
-    env.ctxsym = astGetSubType( assgexpr )
+    parser.ctxsym = astGetSubType( assgexpr )
 
     '' Expression
     if( cExpression( expr ) = FALSE ) then
        	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-       		env.ctxsym = NULL
+       		parser.ctxsym = NULL
        		exit function
        	else
     		'' error recovery: skip until next stmt
@@ -243,7 +246,7 @@ function cAssignment _
        	end if
     end if
 
-    env.ctxsym = NULL
+    parser.ctxsym = NULL
 
     '' BOP?
     if( op <> INVALID ) then
@@ -267,7 +270,7 @@ function cAssignment _
     	expr = astNewASSIGN( assgexpr, expr )
 
     	if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT ) = FALSE ) then
 				exit function
 			end if
 		else
@@ -297,7 +300,7 @@ function cAssignmentOrPtrCallEx _
     end if
 
     '' ordinary assignment?
-    if( astIsFUNCT( expr ) = FALSE ) then
+    if( astIsCALL( expr ) = FALSE ) then
     	return cAssignment( expr )
     end if
 

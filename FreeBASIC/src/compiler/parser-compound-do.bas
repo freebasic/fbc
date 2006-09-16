@@ -102,8 +102,8 @@ function cDoStmtBegin as integer
 	stk->do.attop = (expr <> NULL)
 	stk->do.inilabel = il
 
-	env.stmt.do.cmplabel = cl
-	env.stmt.do.endlabel = el
+	parser.stmt.do.cmplabel = cl
+	parser.stmt.do.endlabel = el
 
 	function = TRUE
 
@@ -150,8 +150,8 @@ function cDoStmtEnd as integer
 	end if
 
 	'' emit comp label, if needed
-	if( env.stmt.do.cmplabel <> stk->do.inilabel ) then
-		astAdd( astNewLABEL( env.stmt.do.cmplabel ) )
+	if( parser.stmt.do.cmplabel <> stk->do.inilabel ) then
+		astAdd( astNewLABEL( parser.stmt.do.cmplabel ) )
 	end if
 
 	'' bottom check?
@@ -194,7 +194,7 @@ function cDoStmtEnd as integer
 	end if
 
     '' end label (loop exit)
-    astAdd( astNewLABEL( env.stmt.do.endlabel ) )
+    astAdd( astNewLABEL( parser.stmt.do.endlabel ) )
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )

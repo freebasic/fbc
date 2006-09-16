@@ -160,6 +160,24 @@ enum FB_ERRMSG
 	FB_ERRMSG_SUFFIXONLYVALIDINLANG
 	FB_ERRMSG_IMPLICITVARSONLYVALIDINLANG
 	FB_ERRMSG_INVALIDARRAYINDEX
+	FB_ERRMSG_OPMUSTBEAMETHOD
+	FB_ERRMSG_METHODINANONUDT
+	FB_ERRMSG_OPCANNOTBEAMETHOD
+	FB_ERRMSG_EXPECTEDOPERATOR
+	FB_ERRMSG_DECLOUTSIDECLASS
+	FB_ERRMSG_DTORCANTCONTAINPARAMS
+	FB_ERRMSG_EXPECTEDCLASSID
+	FB_ERRMSG_VARLENSTRINGINUNION
+	FB_ERRMSG_CTORINUNION
+	FB_ERRMSG_DTORINUNION
+	FB_ERRMSG_ILLEGALOUTSIDEACTOR
+	FB_ERRMSG_STRUCTISNOTUNIQUE
+	FB_ERRMSG_PARENTISNOTACLASS
+	FB_ERRMSG_CALLTOCTORMUSTBETHEFIRSTSTMT
+	FB_ERRMSG_REDIMCTORMUSTBECDEL
+	FB_ERRMSG_CANTUNDEF
+	FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED
+	FB_ERRMSG_ILLEGALASSIGNMENT
 
 	FB_ERRMSGS
 end enum
@@ -184,6 +202,7 @@ enum FB_WARNINGMSG
 	FB_WARNINGMSG_POSSIBLEESCSEQ
 	FB_WARNINGMSG_PARAMSIZETOOBIG
 	FB_WARNINGMSG_PARAMLISTSIZETOOBIG
+	FB_WARNINGMSG_ANYINITHASNOEFFECT
 
 	FB_WARNINGMSGS
 end enum
@@ -225,64 +244,76 @@ enum FB_ERRMSGOPT
 	FB_ERRMSGOPT_DEFAULT	= FB_ERRMSGOPT_ADDCOMMA
 end enum
 
-declare	sub 		errInit					( _
-											)
+declare	sub errInit _
+	( _
+	)
 
-declare	sub 		errEnd					( _
-											)
+declare	sub errEnd _
+	( _
+	)
 
-declare function	errReportEx				( _
-												byval errnum as integer, _
-												byval msgex as zstring ptr, _
-												byval linenum as integer = 0, _
-												byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
-											) as integer
+declare function errReportEx _
+	( _
+		byval errnum as integer, _
+		byval msgex as zstring ptr, _
+		byval linenum as integer = 0, _
+		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
+	) as integer
 
-declare function	errReport				( _
-												byval errnum as integer, _
-												byval isbefore as integer = FALSE _
-											) as integer
+declare function errReport _
+	( _
+		byval errnum as integer, _
+		byval isbefore as integer = FALSE _
+	) as integer
 
-declare sub 		errReportWarn			( _
-												byval msgnum as integer, _
-												byval msgex as zstring ptr = NULL, _
-												byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
-											)
+declare sub errReportWarn _
+	( _
+		byval msgnum as integer, _
+		byval msgex as zstring ptr = NULL, _
+		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
+	)
 
-declare sub 		errReportWarnEx			( _
-												byval msgnum as integer, _
-												byval msgex as zstring ptr = NULL, _
-												byval linenum as integer = 0, _
-												byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
-											)
+declare sub errReportWarnEx _
+	( _
+		byval msgnum as integer, _
+		byval msgex as zstring ptr = NULL, _
+		byval linenum as integer = 0, _
+		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
+	)
 
-declare function	errReportParam			( _
-												byval proc as any ptr, _
-												byval pnum as integer, _
-												byval pid as zstring ptr, _
-												byval msgnum as integer _
-											) as integer
+declare function errReportParam _
+	( _
+		byval proc as any ptr, _
+		byval pnum as integer, _
+		byval pid as zstring ptr, _
+		byval msgnum as integer _
+	) as integer
 
-declare sub 		errReportParamWarn		( _
-												byval proc as any ptr, _
-												byval pnum as integer, _
-												byval pid as zstring ptr, _
-												byval msgnum as integer _
-											)
+declare sub errReportParamWarn _
+	( _
+		byval proc as any ptr, _
+		byval pnum as integer, _
+		byval pid as zstring ptr, _
+		byval msgnum as integer _
+	)
 
-declare function	errReportUndef			( _
-												byval errnum as integer, _
-												byval id as zstring ptr _
-											) as integer
+declare function errReportUndef _
+	( _
+		byval errnum as integer, _
+		byval id as zstring ptr _
+	) as integer
 
-declare function	errReportNotAllowed		( _
-												byval opt as FB_LANG_OPT, _
-												byval errnum as integer = FB_ERRMSG_ONLYVALIDINLANG, _
-												byval msgex as zstring ptr = NULL _
-											) as integer
+declare function errReportNotAllowed _
+	( _
+		byval opt as FB_LANG_OPT, _
+		byval errnum as integer = FB_ERRMSG_ONLYVALIDINLANG, _
+		byval msgex as zstring ptr = NULL _
+	) as integer
 
-declare function	errFatal				( _
-											) as integer
+declare function errFatal _
+	( _
+	) as integer
+
 
 ''
 '' macros

@@ -25,27 +25,20 @@
 #include once "inc\fb.bi"
 
 const FB_MAXINTNAMELEN		= 1 + FB_MAXNAMELEN + 1 + 1 + 2
-
 const FB_MAXINTLITLEN		= FB_MAXLITLEN + 32
 
 const FB_MAXGOTBITEMS		= 64
 
 ''
 const FB_INITSYMBOLNODES	= 8000
-
+const FB_INITFIELDNODES		= 16
 const FB_INITDEFARGNODES	= 500
 const FB_INITDEFTOKNODES	= 1000
-
 const FB_INITDIMNODES		= 400
-
 const FB_INITLIBNODES		= 20
-
 const FB_INITFWDREFNODES	= 500
-
 const FB_INITVARININODES	= 1000
-
 const FB_INITINCFILES		= 256
-
 const FB_INITSTMTSTACKNODES	= 128
 
 ''
@@ -133,6 +126,10 @@ end enum
 const FB_MAINSCOPE = 0
 const FB_MAINPROCNAME = "__FB_MAINPROC__"
 const FB_MODLEVELNAME = "__FB_MODLEVELPROC__"
+const FB_GLOBCTORNAME = "_GLOBAL__I"
+const FB_GLOBDTORNAME = "_GLOBAL__D"
+
+const FB_INSTANCEPTR = "THIS"
 
 ''
 ''
@@ -219,6 +216,10 @@ const FB_INTSCAPECHAR		= CHAR_ESC
 enum FB_TOKEN
 	FB_TK_EOF					= 256
 	FB_TK_EOL
+	FB_TK_STMTSEP
+	FB_TK_COMMENT
+	FB_TK_REM
+
 	FB_TK_NUMLIT
 	FB_TK_STRLIT
 	FB_TK_STRLIT_ESC
@@ -247,8 +248,6 @@ enum FB_TOKEN
 	FB_TK_SCOPE
 	FB_TK_NAMESPACE
 	FB_TK_USING
-
-	FB_TK_REM
 
 	FB_TK_AND
 	FB_TK_OR
@@ -304,6 +303,7 @@ enum FB_TOKEN
 	FB_TK_TYPE
 	FB_TK_UNION
 	FB_TK_ENUM
+	FB_TK_CLASS
 	FB_TK_END
 	FB_TK_EXPORT
 	FB_TK_IMPORT
@@ -311,6 +311,10 @@ enum FB_TOKEN
 	FB_TK_ASM
 	FB_TK_SUB
 	FB_TK_FUNCTION
+	FB_TK_CONSTRUCTOR
+	FB_TK_DESTRUCTOR
+	FB_TK_OPERATOR
+	FB_TK_PROPERTY
 
 	FB_TK_BYTE
 	FB_TK_UBYTE
@@ -340,7 +344,8 @@ enum FB_TOKEN
 	FB_TK_ALIAS
 	FB_TK_LIB
 	FB_TK_OVERLOAD
-	FB_TK_OPERATOR
+	FB_TK_NEW
+	FB_TK_DELETE
 
 	FB_TK_LET
 	FB_TK_RETURN
@@ -439,9 +444,6 @@ enum FB_TOKEN
 	FB_TK_RESUME
 	FB_TK_IIF
 
-	FB_TK_CONSTRUCTOR
-	FB_TK_DESTRUCTOR
-
 	FB_TK_PSET
 	FB_TK_PRESET
 	FB_TK_POINT
@@ -455,8 +457,6 @@ enum FB_TOKEN
 end enum
 
 '' single char tokens
-const FB_TK_STATSEPCHAR			= CHAR_COLON	'' :
-const FB_TK_COMMENTCHAR			= CHAR_APOST	'' '
 const FB_TK_DIRECTIVECHAR		= CHAR_DOLAR	'' $
 const FB_TK_DECLSEPCHAR			= CHAR_COMMA	'' ,
 const FB_TK_ASSIGN				= FB_TK_EQ		'' special case, because lex
@@ -506,7 +506,7 @@ enum FB_FUNCMODE
 	FB_FUNCMODE_PASCAL
 end enum
 
-const FB_DEFAULT_FUNCMODE		= FB_FUNCMODE_STDCALL
+const FB_FUNCMODE_DEFAULT		= FB_FUNCMODE_STDCALL
 
 ''
 enum FB_DATACLASS
@@ -537,12 +537,15 @@ enum FB_DATATYPE
 	FB_DATATYPE_STRING
 	FB_DATATYPE_FIXSTR
 	FB_DATATYPE_STRUCT
+	FB_DATATYPE_NAMESPC
 	FB_DATATYPE_FUNCTION
 	FB_DATATYPE_FWDREF
 	FB_DATATYPE_POINTER            				'' must be the last
 
-	FB_DATATYPES
+	FB_DATATYPE_REFERENCE		= &h00010000	'' used when mangling
 end enum
+
+const FB_DATATYPES = FB_DATATYPE_POINTER + 1
 
 
 #include once "inc\hash.bi"
@@ -565,7 +568,6 @@ type FB_ASMTOK
 
 	next			as FB_ASMTOK ptr
 end type
-
 
 ''
 enum FBFILE_FORMAT
@@ -612,24 +614,6 @@ type FBMAIN
 	initnode		as ASTNODE ptr
 end type
 
-type FBCMPSTMT
-	cmplabel		as FBSYMBOL ptr				'' or inilabel
-    endlabel		as FBSYMBOL ptr
-end type
-
-type FBENV_STMT_WITH
-	sym				as FBSYMBOL ptr
-end type
-
-type FBENV_STMT
-	for				as FBCMPSTMT
-	do				as FBCMPSTMT
-	while			as FBCMPSTMT
-	select			as FBCMPSTMT
-	proc			as FBCMPSTMT
-	with			as FBENV_STMT_WITH
-end type
-
 type FBENV
 	inf				as FBFILE					'' source file
 	outf			as FBFILE					'' destine file
@@ -639,32 +623,8 @@ type FBENV
 	incfilehash		as THASH
 	includerec		as integer					'' >0 if parsing an include file
 
-	'' stmt recursion
-	stmtstk			as TSTACK
-	stmt			as FBENV_STMT
-	stmtcnt			as integer					'' keep track of :'s to help scope break's
-
-	'' globals
-	scope			as uinteger					'' current scope (0=main module)
-
-	mangling		as FB_MANGLING				'' current EXTERN's mangling
-	currlib			as FBLIBRARY ptr			'' current EXTERN's library
-
-	currproc 		as FBSYMBOL ptr				'' current proc
-	currblock 		as FBSYMBOL ptr				'' current scope block (= proc if outside any block)
-
 	main			as FBMAIN
 
-	asmtoklist		as TLIST					'' inline ASM list
-
-	'' hacks
-	prntcnt			as integer					'' ()'s count, to allow optional ()'s on SUB's
-	prntopt			as integer					'' /
-	checkarray		as integer					'' used by LEN() to handle expr's and ()-less arrays
-	ctxsym			as FBSYMBOL ptr				'' used to resolve the address of overloaded procs
-	isexpr 			as integer					'' parsing an expression?
-
-	''
 	langopt			as FB_LANG_OPT				'' language supported features
 	clopt			as FBCMMLINEOPT				'' cmm-line options
 	target			as FBTARGET					'' target specific
@@ -678,7 +638,6 @@ end type
 ''
 '' macros
 ''
-#define fbIsModLevel( ) (env.currproc = env.main.proc)
 
 '' x86 assumption!
 #define FB_ROUNDLEN(lgt) ((lgt + (FB_INTEGERSIZE-1)) and not (FB_INTEGERSIZE-1))
@@ -686,6 +645,6 @@ end type
 ''
 '' super globals
 ''
-common shared env as FBENV
+common shared as FBENV env
 
 #endif ''__FBINT_BI__

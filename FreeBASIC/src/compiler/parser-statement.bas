@@ -38,7 +38,7 @@
 function cStatement as integer
 
 	'' ':'?
-	if( lexGetToken( ) = FB_TK_STATSEPCHAR ) then
+	if( lexGetToken( ) = FB_TK_STMTSEP ) then
 		lexSkipToken( )
 	end if
 
@@ -58,7 +58,7 @@ function cStatement as integer
 		end if
 
 		'' ':'?
-		if( lexGetToken( ) <> FB_TK_STATSEPCHAR ) then
+		if( lexGetToken( ) <> FB_TK_STMTSEP ) then
 			exit do
 		end if
 		lexSkipToken( )
@@ -77,7 +77,7 @@ function cStmtSeparator( byval lexflags as LEXCHECK ) as integer
 
 	do
 		select case lexGetToken( lexflags )
-		case FB_TK_STATSEPCHAR, FB_TK_EOL
+		case FB_TK_STMTSEP, FB_TK_EOL
         	lexSkipToken( lexflags )
 		case else
 			exit do

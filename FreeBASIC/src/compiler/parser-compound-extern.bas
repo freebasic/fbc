@@ -110,11 +110,11 @@ function cExternStmtBegin _
 						 FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
 						 					 and (not FB_CMPSTMT_MASK_DATA) )
 
-	stk->ext.lastmang = env.mangling
-	env.mangling = mangling
+	stk->ext.lastmang = parser.mangling
+	parser.mangling = mangling
 
 	stk->ext.lastlib = library
-	env.currlib = library
+	parser.currlib = library
 
 	function = TRUE
 
@@ -138,8 +138,8 @@ function cExternStmtEnd as integer
 	lexSkipToken( )
 
 	'' pop from stmt stack
-	env.currlib = stk->ext.lastlib
-	env.mangling = stk->ext.lastmang
+	parser.currlib = stk->ext.lastlib
+	parser.mangling = stk->ext.lastmang
 	cCompStmtPop( stk )
 
 	function = TRUE

@@ -27,19 +27,97 @@
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
 
+declare function hCtorChain	( ) as integer
+
+'':::::
+function cCtorCall _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byref is_ctorcall as integer _
+	) as ASTNODE ptr
+
+    dim as FBSYMBOL ptr subtype = any
+
+	is_ctorcall = FALSE
+
+	subtype = symbGetSubType( sym )
+
+    '' check ctor call
+    if( astIsCALLCTOR( expr ) ) then
+    	if( symbGetSubtype( expr ) = subtype ) then
+    		is_ctorcall = TRUE
+    		'' remove the the anon/temp instance
+    		return astCallCtorToCall( expr )
+    	end if
+    end if
+
+    '' try calling any ctor with the expression
+ 	dim as FB_CALL_ARG argTb(0 to 1) = any
+ 	dim as integer err_num = any
+
+ 	argTb(0).expr = astBuildMockInstPtr( subtype )
+ 	argTb(0).mode = FB_PARAMMODE_BYVAL
+ 	argTb(0).next = @argtb(1)
+
+ 	argTb(1).expr = expr
+ 	argTb(1).mode = INVALID
+ 	argTb(1).next = NULL
+
+    dim as FBSYMBOL ptr proc = any
+
+ 	proc = symbFindClosestOvlProc( symbGetCompCtorHead( subtype ), _
+ 								   2, _
+ 								   @argTb(0), _
+ 								   @err_num )
+	if( proc = NULL ) then
+		'' delete the mock node
+		astDelTree( argTb(0).expr )
+
+		if( err_num <> FB_ERRMSG_OK ) then
+			errReportParam( symbGetCompCtorHead( subtype ), 0, NULL, err_num )
+			return NULL
+		end if
+
+		'' could be a shallow copy..
+        return expr
+	end if
+
+    '' build a ctor call
+    expr = astNewCALL( proc )
+
+    '' push the mock instance ptr
+    astNewARG( expr, argTb(0).expr, INVALID, FB_PARAMMODE_BYVAL )
+
+    astNewARG( expr, argTb(1).expr )
+
+    '' add the optional params, if any
+    dim as integer params = symbGetProcParams( proc ) - 2
+    do while( params > 0 )
+    	astNewARG( expr, NULL )
+    	params -= 1
+    loop
+
+    is_ctorcall = TRUE
+    function = expr
+
+end function
+
 '':::::
 function cAssignFunctResult _
 	( _
-		byval proc as FBSYMBOL ptr _
+		byval proc as FBSYMBOL ptr, _
+		byval is_return as integer _
 	) as integer static
 
-    dim as FBSYMBOL ptr s
-    dim as ASTNODE ptr assg, expr
+    dim as FBSYMBOL ptr res, subtype
+    dim as ASTNODE ptr rhs
+    dim as integer has_ctor, has_defctor
 
     function = FALSE
 
-    s = symbGetProcResult( proc )
-    if( s = NULL ) then
+    res = symbGetProcResult( proc )
+    if( res = NULL ) then
     	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     		exit function
     	else
@@ -49,13 +127,49 @@ function cAssignFunctResult _
     	end if
     end if
 
+    subtype = symbGetSubType( proc )
+
+    select case symbGetType( proc )
+    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+        has_ctor = symbGetHasCtor( subtype )
+        has_defctor = symbGetCompDefCtor( subtype ) <> NULL
+
+    case else
+    	has_ctor = FALSE
+    	has_defctor = FALSE
+    end select
+
+	'' RETURN?
+	if( is_return ) then
+		if( symbGetProcStatAssignUsed( proc ) ) then
+			if( has_defctor ) then
+				if( errReport( FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED ) = FALSE ) then
+					return FALSE
+				end if
+			end if
+		end if
+
+		symbSetProcStatReturnUsed( proc )
+
+	else
+		if( symbGetProcStatReturnUsed( proc ) ) then
+			if( has_defctor ) then
+				if( errReport( FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED ) = FALSE ) then
+					return FALSE
+				end if
+			end if
+		end if
+
+		symbSetProcStatAssignUsed( proc )
+	end if
+
     '' set the context symbol to allow taking the address of overloaded
     '' procs and also to allow anonymous UDT's
-    env.ctxsym = symbGetSubType( proc )
+    parser.ctxsym = subtype
 
 	'' Expression
-	if( cExpression( expr ) = FALSE ) then
-		env.ctxsym = NULL
+	if( cExpression( rhs ) = FALSE ) then
+		parser.ctxsym = NULL
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
@@ -65,32 +179,41 @@ function cAssignFunctResult _
     	end if
 	end if
 
-	env.ctxsym = NULL
-
-    assg = astNewVAR( s, 0, symbGetType( s ), symbGetSubtype( s ) )
+	parser.ctxsym = NULL
 
     '' set accessed flag here, as proc will be ended before AST is flushed
-    symbSetIsAccessed( s )
+    symbSetIsAccessed( res )
 
-	'' proc returns an UDT?
-	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
-		'' pointer? deref
-		if( symbGetProcRealType( proc ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
-			assg = astNewPTR( 0, assg, FB_DATATYPE_STRUCT, symbGetSubType( proc ) )
-		end if
-	end if
-
-    assg = astNewASSIGN( assg, expr )
-    if( assg = NULL ) then
-    	astDelTree( expr )
-    	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    '' RETURN and has ctor? try to initialize..
+    if( is_return and has_ctor ) then
+    	dim as integer is_ctorcall
+    	rhs = cCtorCall( rhs, res, is_ctorcall )
+    	if( rhs = NULL ) then
     		exit function
-    	else
+    	end if
+
+    	if( is_ctorcall ) then
+    		astAdd( astPatchCtorCall( rhs, _
+    								  astBuildProcResultVar( proc, res ) ) )
+
     		return TRUE
     	end if
     end if
 
-    astAdd( assg )
+    dim as ASTNODE ptr expr
+
+    '' do the assignment
+    expr = astNewASSIGN( astBuildProcResultVar( proc, res ), rhs )
+    if( expr = NULL ) then
+   		astDelTree( rhs )
+
+   		if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT ) = FALSE ) then
+   			exit function
+   		end if
+
+   	else
+   		astAdd( expr )
+   	end if
 
     function = TRUE
 
@@ -102,6 +225,7 @@ function cProcCall _
 		byval sym as FBSYMBOL ptr, _
 		byref procexpr as ASTNODE ptr, _
 		byval ptrexpr as ASTNODE ptr, _
+		byval thisexpr as ASTNODE ptr, _
 		byval checkprnts as integer = FALSE _
 	) as integer
 
@@ -132,20 +256,20 @@ function cProcCall _
 
 	end if
 
-	env.prntcnt = 0
-	env.prntopt	= not checkprnts
+	parser.prntcnt = 0
+	fbSetPrntOptional( not checkprnts )
 
 	'' ProcArgList
-	procexpr = cProcArgList( sym, ptrexpr, FALSE, FALSE )
+	procexpr = cProcArgList( sym, ptrexpr, thisexpr, FALSE, FALSE )
 	if( procexpr = NULL ) then
 		exit function
 	end if
 
 	'' ')'
-	if( (checkprnts) or (env.prntcnt > 0) ) then
+	if( (checkprnts) or (parser.prntcnt > 0) ) then
 
 		'' --parent cnt
-		env.prntcnt -= 1
+		parser.prntcnt -= 1
 
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
 			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
@@ -155,17 +279,17 @@ function cProcCall _
 				hSkipUntil( CHAR_RPRNT, TRUE )
 			end if
 
-		elseif( env.prntcnt > 0 ) then
+		elseif( parser.prntcnt > 0 ) then
 			'' error recovery: skip until all ')'s are found
-			do while( env.prntcnt > 0 )
+			do while( parser.prntcnt > 0 )
 				hSkipUntil( CHAR_RPRNT, TRUE )
-				env.prntcnt -= 1
+				parser.prntcnt -= 1
 			loop
 		end if
 
 	end if
 
-	env.prntopt	= FALSE
+	fbSetPrntOptional( FALSE )
 
 	sym = astGetSymbol( procexpr )
 	dtype = astGetDataType( procexpr )
@@ -199,7 +323,7 @@ function cProcCall _
 
 				'' if it stills a function, unless type = string (ie: implicit pointer),
 				'' flush it, as the assignment would be invalid
-				if( astIsFUNCT( procexpr ) ) then
+				if( astIsCALL( procexpr ) ) then
 					if( dtype <> FB_DATATYPE_STRING ) then
 						doflush = TRUE
 					end if
@@ -279,7 +403,7 @@ private function hAssignOrCall _
     do while( chain_ <> NULL )
 
     	s = chain_->sym
-    	select case symbGetClass( s )
+    	select case as const symbGetClass( s )
     	'' proc?
     	case FB_SYMBCLASS_PROC
     		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
@@ -315,7 +439,7 @@ private function hAssignOrCall _
             	end if
 
             	'' check if name is valid (or if overloaded)
-				if( symbIsProcOverloadOf( env.currproc, s ) = FALSE ) then
+				if( symbIsProcOverloadOf( parser.currproc, s ) = FALSE ) then
 					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
 						exit function
 					else
@@ -328,16 +452,23 @@ private function hAssignOrCall _
        			'' skip the '='
        			lexSkipToken( )
 
-       			return cAssignFunctResult( env.currproc )
+       			return cAssignFunctResult( parser.currproc, FALSE )
 			end if
 
-    	'' variable?
-    	case FB_SYMBCLASS_VAR
-        	'' must process variables here, multiple calls to
-        	'' Identifier() will fail if a namespace was explicitly
-    	    '' given, because the next call will return an inner symbol
-        	if( cVariableEx( chain_, expr, TRUE ) = FALSE ) then
-        		exit function
+    	'' variable or field?
+    	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
+
+        	if( symbIsVar( s ) ) then
+        		'' must process variables here, multiple calls to
+        		'' Identifier() will fail if a namespace was explicitly
+    	    	'' given, because the next call will return an inner symbol
+        		if( cVariableEx( chain_, expr, TRUE ) = FALSE ) then
+        			exit function
+        		end if
+        	else
+        		if( cFieldVariable( NULL, chain_, expr, TRUE ) = FALSE ) then
+        			exit function
+        		end if
         	end if
 
     		'' CALL?
@@ -348,7 +479,7 @@ private function hAssignOrCall _
     			end if
 
     			'' not a ptr call?
-    			if( astIsFUNCT( expr ) = FALSE ) then
+    			if( astIsCALL( expr ) = FALSE ) then
     				astDelTree( expr )
 					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 						exit function
@@ -395,7 +526,7 @@ function cProcCallOrAssign as integer
 
   	case FB_TKCLASS_KEYWORD
 
-		select case lexGetToken( )
+		select case as const lexGetToken( )
 		'' FUNCTION?
 		case FB_TK_FUNCTION
 
@@ -414,7 +545,7 @@ function cProcCallOrAssign as integer
 				lexSkipToken( )
 				lexSkipToken( )
 
-    	    	return cAssignFunctResult( env.currproc )
+    	    	return cAssignFunctResult( parser.currproc, FALSE )
 			end if
 
 		'' OPERATOR?
@@ -425,7 +556,7 @@ function cProcCallOrAssign as integer
 				'' '='?
 				if( lexGetLookAhead( 1 ) = FB_TK_ASSIGN ) then
 					'' not inside an OPERATOR function?
-					if( symbIsOperator( env.currproc ) = FALSE ) then
+					if( symbIsOperator( parser.currproc ) = FALSE ) then
 						if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANOPERATOR ) = FALSE ) then
 							exit function
 						else
@@ -438,8 +569,27 @@ function cProcCallOrAssign as integer
 					lexSkipToken( )
 					lexSkipToken( )
 
-	        		return cAssignFunctResult( env.currproc )
+	        		return cAssignFunctResult( parser.currproc, FALSE )
     	    	end if
+			end if
+
+		'' CONSTRUCTOR?
+		case FB_TK_CONSTRUCTOR
+
+			'' ambiguity: it could be an external ctor definition
+			if( fbIsModLevel( ) = FALSE ) then
+				'' not inside a ctor?
+				if( symbIsConstructor( parser.currproc ) = FALSE ) then
+					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEACTOR ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip stmt, return
+						hSkipStmt( )
+						return TRUE
+					end if
+				end if
+
+				return hCtorChain( )
 			end if
 
 		'' CALL?
@@ -488,10 +638,10 @@ function cProcCallOrAssign as integer
 					exit function
 				end if
 
-  				if( env.stmt.with.sym <> NULL ) then
-  					if( cWithVariable( env.stmt.with.sym, _
+  				if( parser.stmt.with.sym <> NULL ) then
+  					if( cWithVariable( parser.stmt.with.sym, _
   									   expr, _
-  									   env.checkarray ) = FALSE ) then
+  									   fbGetCheckArray( ) ) = FALSE ) then
   						exit function
   					end if
 
@@ -501,6 +651,49 @@ function cProcCallOrAssign as integer
   		end if
 
 	end select
+
+end function
+
+'':::::
+private function hCtorChain _
+	( _
+		_
+	) as integer static
+
+	dim as FBSYMBOL ptr proc, parent, this_, ctor_head
+	dim as ASTNODE ptr expr, this_expr
+
+	proc = parser.currproc
+
+	parent = symbGetNamespace( proc )
+
+	'' not the first stmt?
+	if( symbGetIsCtorInited( proc ) ) then
+		if( errReport( FB_ERRMSG_CALLTOCTORMUSTBETHEFIRSTSTMT ) = FALSE ) then
+			return FALSE
+		end if
+	end if
+
+	'' CONSTRUCTOR
+	lexSkipToken( )
+
+	ctor_head = symbGetCompCtorHead( parent )
+	if( ctor_head = NULL ) then
+		return FALSE
+	end if
+
+	'' this must be set before doing any AST call, or the ctor
+	'' initialization would be trigged
+	symbSetIsCtorInited( proc )
+
+	this_ = symbGetProcHeadParam( proc )
+	if( this_ = NULL ) then
+		return FALSE
+	end if
+
+	this_expr = astBuildInstPtr( symbGetParamVar( this_ ) )
+
+	return cProcCall( ctor_head, expr, NULL, this_expr )
 
 end function
 

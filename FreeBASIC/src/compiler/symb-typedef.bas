@@ -24,6 +24,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\parser.bi"
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
 
@@ -67,15 +68,15 @@ private sub hFixForwardRef _
 	( _
 		byval f as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval class as integer _
+		byval class_ as integer _
 	)
 
     dim as FBFWDREF ptr n, p
     dim as FBSYMBOL ptr ref
     dim as integer dtype, ptrcnt
 
-	select case as const class
-	case FB_SYMBCLASS_UDT
+	select case as const class_
+	case FB_SYMBCLASS_STRUCT
 		dtype = FB_DATATYPE_STRUCT
 		ptrcnt 	= 0
 
@@ -84,9 +85,9 @@ private sub hFixForwardRef _
 		ptrcnt = 0
 
 	case FB_SYMBCLASS_TYPEDEF
-		dtype = sym->typ
-		ptrcnt = sym->ptrcnt
-		sym = sym->subtype
+		dtype = symbGetType( sym )
+		ptrcnt = symbGetPtrCnt( sym )
+		sym = symbGetSubtype( sym )
 	end select
 
 	n = f->fwd.reftail
@@ -95,10 +96,10 @@ private sub hFixForwardRef _
 
 		ref = n->ref
 
-		ref->typ = dtype + (ref->ptrcnt * FB_DATATYPE_POINTER)
-		ref->subtype = sym
-		ref->ptrcnt = ptrcnt
-		ref->lgt = symbCalcLen( ref->typ, sym )
+		symbGetType( ref ) = dtype + (symbGetPtrCnt( ref ) * FB_DATATYPE_POINTER)
+		symbGetSubtype( ref ) = sym
+		symbGetPtrCnt( ref ) = ptrcnt
+		ref->lgt = symbCalcLen( symbGetType( ref ), sym )
 
 		listDelNode( @symb.fwdlist, n )
 
@@ -115,7 +116,7 @@ end sub
 sub symbCheckFwdRef _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval class as integer _
+		byval class_ as integer _
 	) static
 
 	dim as FBSYMBOL ptr fwd
@@ -133,7 +134,7 @@ sub symbCheckFwdRef _
 
 	fwd = symbFindByClass( chain_, FB_SYMBCLASS_FWDREF )
 	if( fwd <> NULL ) then
-		hFixForwardRef( fwd, sym, class )
+		hFixForwardRef( fwd, sym, class_ )
 	end if
 
 end sub
@@ -153,10 +154,11 @@ function symbAddTypedef _
     function = NULL
 
     '' allocate new node
-    t = symbNewSymbol( NULL, _
-    				   NULL, NULL, 0, _
+    t = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    				   NULL, _
+    				   NULL, NULL, _
     				   FB_SYMBCLASS_TYPEDEF, _
-    				   TRUE, id, NULL, _
+    				   id, NULL, _
     				   dtype, subtype, ptrcnt )
     if( t = NULL ) then
     	exit function
@@ -189,16 +191,18 @@ function symbAddFwdRef _
     '' no explict alias given?
     if( id_alias = NULL ) then
     	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( env.mangling <> FB_MANGLING_BASIC ) then
+    	if( parser.mangling <> FB_MANGLING_BASIC ) then
     		id_alias = id
     	end if
     end if
 
     '' allocate new node
-    f = symbNewSymbol( NULL, _
-    				   NULL, NULL, 0, _
+    f = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    				   NULL, _
+    				   NULL, NULL, _
     				   FB_SYMBCLASS_FWDREF, _
-    				   TRUE, id, id_alias )
+    				   id, id_alias, _
+    				   INVALID, NULL, 0 )
     if( f = NULL ) then
     	exit function
     end if

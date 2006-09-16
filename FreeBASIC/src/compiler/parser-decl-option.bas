@@ -25,11 +25,12 @@
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
 
+declare function hUndefSymbol( ) as integer
+
 '':::::
 ''OptDecl         =   OPTION (EXPLICIT|BASE NUM_LIT|BYVAL|PRIVATE|ESCAPE|DYNAMIC|STATIC)
 ''
 function cOptDecl as integer
-	dim s as FBSYMBOL ptr
 
 	function = FALSE
 
@@ -144,74 +145,9 @@ function cOptDecl as integer
 			lexSkipToken( LEXCHECK_NODEFINE )
 
 			do
-				select case as const lexGetClass( LEXCHECK_NODEFINE )
-				case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-					if( symbDelKeyword( lexGetSymChain( )->sym ) = FALSE ) then
-						if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-							exit function
-						end if
-					end if
-
-					lexSkipToken( )
-
-				case FB_TKCLASS_IDENTIFIER
-					'' proc?
-					s = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_PROC )
-					if( s <> NULL ) then
-
-						'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
-						if( symbGetIsRTL( s ) = FALSE ) then
-							if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-								exit function
-							end if
-
-						else
-    						'' don't remove if it was defined inside any namespace (any
-    						'' USING ref to that ns would break its linked-list)
-    						if( symbGetNamespace( s ) <> @symbGetGlobalNamespc( ) ) then
-								if( errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
-									exit function
-								end if
-
-							else
-								symbDelPrototype( s )
-							end if
-						end if
-
-
-					else
-						'' macro?
-						s = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_DEFINE )
-						if( s = NULL ) then
-							if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-								exit function
-							end if
-
-						else
-    						'' don't remove if it was defined inside any namespace (any
-    						'' USING ref to that ns would break its linked-list)
-    						if( symbGetNamespace( s ) <> @symbGetGlobalNamespc( ) ) then
-								if( errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
-									exit function
-								end if
-
-							else
-								symbDelDefine( s )
-							end if
-						end if
-
-					end if
-
-					lexSkipToken( )
-
-				case else
-					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip until next ','
-						hSkipUntil( CHAR_COMMA )
-					end if
-				end select
+                if( hUndefSymbol( ) = FALSE ) then
+                	exit function
+                end if
 
 				'' ','?
 				if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -233,3 +169,92 @@ function cOptDecl as integer
 
 end function
 
+'':::::
+private function hUndefSymbol( ) as integer
+	dim s as FBSYMBOL ptr
+
+	function = FALSE
+
+	select case as const lexGetClass( LEXCHECK_NODEFINE )
+	case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+		if( symbDelKeyword( lexGetSymChain( )->sym ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+				exit function
+			end if
+		end if
+
+		lexSkipToken( )
+
+	case FB_TKCLASS_IDENTIFIER
+		'' proc?
+		s = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_PROC )
+		if( s <> NULL ) then
+
+			'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
+			if( symbGetIsRTL( s ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+					exit function
+				end if
+
+			else
+				'' don't remove if it was defined inside any namespace (any
+				'' USING ref to that ns would break its linked-list)
+				if( symbGetNamespace( s ) <> @symbGetGlobalNamespc( ) ) then
+					if( errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
+						exit function
+					end if
+
+				else
+					if( symbGetCantUndef( s ) ) then
+						if( errReport( FB_ERRMSG_CANTUNDEF ) = FALSE ) then
+							exit function
+						end if
+					else
+						symbDelPrototype( s )
+					end if
+				end if
+			end if
+
+		else
+			'' macro?
+			s = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_DEFINE )
+			if( s = NULL ) then
+				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+					exit function
+				end if
+
+			else
+				'' don't remove if it was defined inside any namespace (any
+				'' USING ref to that ns would break its linked-list)
+				if( symbGetNamespace( s ) <> @symbGetGlobalNamespc( ) ) then
+					if( errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
+						exit function
+					end if
+
+				else
+					if( symbGetCantUndef( s ) ) then
+						if( errReport( FB_ERRMSG_CANTUNDEF ) = FALSE ) then
+							exit function
+						end if
+					else
+						symbDelDefine( s )
+					end if
+				end if
+			end if
+
+		end if
+
+		lexSkipToken( )
+
+	case else
+		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip until next ','
+			hSkipUntil( CHAR_COMMA )
+		end if
+	end select
+
+	function = TRUE
+
+end function

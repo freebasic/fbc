@@ -28,17 +28,46 @@
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
-declare sub		parserCompoundStmtInit		( )
+declare sub	parserCompoundStmtInit ( )
 
-declare sub		parserCompoundStmtEnd		( )
+declare sub	parserCompoundStmtEnd ( )
 
-declare sub		parserProcCallInit			( )
+declare sub	parserCompoundStmtSetCtx ( )
 
-declare sub		parserProcCallEnd			( )
+declare sub	parserProcCallInit ( )
 
-declare sub		parserAsmInit				( )
+declare sub	parserProcCallEnd ( )
 
-declare sub		parserAsmEnd           		( )
+declare sub	parserAsmInit ( )
+
+declare sub	parserAsmEnd ( )
+
+'' globals
+	dim shared as PARSERCTX parser
+
+'':::::
+sub parserSetCtx( )
+
+	parser.scope = FB_MAINSCOPE
+
+	parser.currproc	= NULL
+	parser.currblock = NULL
+
+	parser.nspcrec = 0
+
+	parser.mangling = FB_MANGLING_BASIC
+
+	parser.currlib = NULL
+
+	parser.stmtcnt = 0
+
+	parser.prntcnt = 0
+	parser.options = FB_PARSEROPT_CHKARRAY
+	parser.ctxsym = NULL
+
+	parserCompoundStmtSetCtx( )
+
+end sub
 
 '':::::
 sub	parserInit( )
@@ -156,7 +185,7 @@ sub hSkipUntil _
 		case FB_TK_EOL
 			exit do
 
-		case FB_TK_STATSEPCHAR, FB_TK_COMMENTCHAR, FB_TK_REM
+		case FB_TK_STMTSEP, FB_TK_COMMENT, FB_TK_REM
 			'' anything but EOL? exit..
 			if( token <> FB_TK_EOL ) then
 				exit do
@@ -252,7 +281,7 @@ sub hSkipCompound _
 		case FB_TK_EOL
 			iscomment = FALSE
 
-		case FB_TK_COMMENTCHAR, FB_TK_REM
+		case FB_TK_COMMENT, FB_TK_REM
 			iscomment = TRUE
 
 		case FB_TK_END

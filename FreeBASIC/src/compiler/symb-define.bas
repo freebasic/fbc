@@ -24,6 +24,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\parser.bi"
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
 #include once "inc\lex.bi"
@@ -143,9 +144,9 @@ end function
 '':::::
 private function hDefFunction_cb( ) as string static
 
-	if( symbIsMainProc( env.currproc ) ) then
+	if( symbGetIsMainProc( parser.currproc ) ) then
 		function = FB_MAINPROCNAME
-	elseif( symbIsModLevelProc( env.currproc ) ) then
+	elseif( symbGetIsModLevelProc( parser.currproc ) ) then
 		function = FB_MODLEVELNAME
 	else
 		function = *symbGetCurrentProcName( )
@@ -369,11 +370,12 @@ function symbAddDefine _
     function = NULL
 
     '' allocate new node (always on global hash, ns' won't work in lexer)
-    sym = symbNewSymbol( NULL, _
-    					 NULL, @symbGetGlobalHashTb( ), fbIsModLevel( ), _
+    sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    					 NULL, _
+    					 NULL, @symbGetGlobalHashTb( ), _
     					 FB_SYMBCLASS_DEFINE, _
-    				   	 TRUE, symbol, NULL, _
-    				   	 FB_DATATYPE_CHAR, NULL )
+    				   	 symbol, NULL, _
+    				   	 FB_DATATYPE_CHAR, NULL, 0 )
     if( sym = NULL ) then
     	exit function
     end if
@@ -407,11 +409,12 @@ function symbAddDefineW _
     function = NULL
 
     '' allocate new node (always on global hash, ns' won't work in lexer)
-    sym = symbNewSymbol( NULL, _
-    					 NULL, @symbGetGlobalHashTb( ), fbIsModLevel( ), _
+    sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    					 NULL, _
+    					 NULL, @symbGetGlobalHashTb( ), _
     					 FB_SYMBCLASS_DEFINE, _
-    				   	 TRUE, symbol, NULL, _
-    				   	 FB_DATATYPE_WCHAR, NULL )
+    				   	 symbol, NULL, _
+    				   	 FB_DATATYPE_WCHAR, NULL, 0 )
     if( sym = NULL ) then
     	exit function
     end if
@@ -443,10 +446,12 @@ function symbAddDefineMacro _
     function = NULL
 
     '' allocate new node (always on global hash, ns' won't work in lexer)
-    sym = symbNewSymbol( NULL, _
-    					 NULL, @symbGetGlobalHashTb( ), fbIsModLevel( ), _
+    sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    					 NULL, _
+    					 NULL, @symbGetGlobalHashTb( ), _
     					 FB_SYMBCLASS_DEFINE, _
-    				   	 TRUE, symbol, NULL )
+    				   	 symbol, NULL, _
+    				   	 INVALID, NULL, 0 )
     if( sym = NULL ) then
     	exit function
     end if

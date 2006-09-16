@@ -129,7 +129,7 @@ function cEnumBody _
 
 				case FB_TKCLASS_QUIRKWD
 					'' only if inside a ns and if not local
-					if( (symbIsGlobalNamespc( )) or (env.scope > FB_MAINSCOPE) ) then
+					if( (symbIsGlobalNamespc( )) or (parser.scope > FB_MAINSCOPE) ) then
     					if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     						exit function
     					else
@@ -205,7 +205,7 @@ function cEnumDecl _
 
     static as zstring * FB_MAXNAMELEN+1 id, id_alias
     dim as zstring ptr palias
-    dim as FBSYMBOL ptr ns, e
+    dim as FBSYMBOL ptr parent, e
 
 	function = FALSE
 
@@ -213,12 +213,10 @@ function cEnumDecl _
 	lexSkipToken( )
 
 	'' don't allow explicit namespaces
-	ns = cNamespace( )
-    if( ns <> NULL ) then
-		if( ns <> symbGetCurrentNamespc( ) ) then
-			if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-				exit function
-			end if
+	parent = cParentId( )
+    if( parent <> NULL ) then
+		if( hDeclCheckParent( parent ) = FALSE ) then
+			exit function
     	end if
     else
     	if( errGetLast( ) <> FB_ERRMSG_OK ) then

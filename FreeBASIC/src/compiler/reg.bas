@@ -40,7 +40,7 @@ declare sub sregInitClass		( byval reg as REGCLASS ptr )
 '':::::
 function regNewClass _
 	( _
-		byval class as integer, _
+		byval class_ as integer, _
 		byval regs as integer, _
 		byval isstack as integer _
 	) as REGCLASS ptr
@@ -49,9 +49,9 @@ function regNewClass _
 
 	reg = callocate( len( REGCLASS ) )
 
-	reg->class 	= class
-	reg->regs 	= regs
-	reg->isstack= isstack
+	reg->class = class_
+	reg->regs = regs
+	reg->isstack = isstack
 
 	if( reg->isstack = FALSE ) then
 		regInitClass( reg )
@@ -99,6 +99,7 @@ private sub regPush _
 		sp -= 1
 		this_->fstack(sp) = r
 	end if
+
 	this_->sp = sp
 
 end sub
@@ -118,6 +119,7 @@ private function regPop _
 	else
 		function = INVALID
 	end if
+
 	this_->sp = sp
 
 end function
@@ -156,7 +158,7 @@ private sub regClear _
 
     dim as integer r
 
-	this_->sp 	  = this_->regs
+	this_->sp = this_->regs
 	this_->freeTB = -1
 
 	for r = 0 to this_->regs - 1
@@ -393,6 +395,7 @@ private sub regInitClass _
 	reg->getNext	= @regGetNext
 	reg->getVreg	= @regGetVreg
 	reg->getRealReg	= @regGetRealReg
+	reg->clear 		= @regClear
 	reg->dump		= @regDump
 
 end sub
@@ -714,12 +717,12 @@ private sub sregDump _
 end sub
 
 '':::::
-private sub sregInitClass _
+private sub sregClear _
 	( _
 		byval reg as REGCLASS ptr _
 	)
 
-	dim as integer r
+	dim as integer r = any
 
 	reg->fregs = reg->regs
 
@@ -727,6 +730,16 @@ private sub sregInitClass _
 		reg->regTB(r)	= INVALID
 		reg->vregTB(r) 	= NULL
 	next
+
+end sub
+
+'':::::
+private sub sregInitClass _
+	( _
+		byval reg as REGCLASS ptr _
+	)
+
+	sregClear( reg )
 
 	reg->ensure 	= @sregEnsure
 	reg->allocate 	= @sregAllocate
@@ -739,6 +752,7 @@ private sub sregInitClass _
 	reg->getNext	= @sregGetNext
 	reg->getVreg	= @sregGetVreg
 	reg->getRealReg	= @sregGetRealReg
+	reg->clear		= @sregClear
 	reg->dump		= @sregDump
 
 end sub

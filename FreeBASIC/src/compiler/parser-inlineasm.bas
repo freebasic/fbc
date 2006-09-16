@@ -32,14 +32,14 @@
 '':::::
 sub parserAsmInit static
 
-	listNew( @env.asmtoklist, 16, len( FB_ASMTOK ) )
+	listNew( @parser.asmtoklist, 16, len( FB_ASMTOK ) )
 
 end sub
 
 '':::::
 sub parserAsmEnd static
 
-	listFree( @env.asmtoklist )
+	listFree( @parser.asmtoklist )
 
 end sub
 
@@ -60,8 +60,8 @@ function cAsmCode as integer static
 	tail = NULL
 	do
 		'' !(END|Comment|NEWLINE)
-		select case lexGetToken( LEXCHECK_NOWHITESPC )
-		case FB_TK_END, FB_TK_EOL, FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOF
+		select case as const lexGetToken( LEXCHECK_NOWHITESPC )
+		case FB_TK_END, FB_TK_EOL, FB_TK_COMMENT, FB_TK_REM, FB_TK_EOF
 			exit do
 		end select
 
@@ -120,7 +120,7 @@ function cAsmCode as integer static
 		case FB_TKCLASS_KEYWORD
 			'' FUNCTION?
 			if( lexGetToken( LEXCHECK_NOWHITESPC ) = FB_TK_FUNCTION ) then
-    			sym = symbGetProcResult( env.currproc )
+    			sym = symbGetProcResult( parser.currproc )
     			if( sym = NULL ) then
     				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     					exit function
@@ -137,7 +137,7 @@ function cAsmCode as integer static
 
 		''
 		if( doskip = FALSE ) then
-			node = listNewNode( @env.asmtoklist )
+			node = listNewNode( @parser.asmtoklist )
 			if( tail <> NULL ) then
 				tail->next = node
 			else

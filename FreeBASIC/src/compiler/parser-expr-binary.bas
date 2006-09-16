@@ -43,12 +43,12 @@ function cExpression _
 		byref expr as ASTNODE ptr _
 	) as integer
 
-	env.isexpr = TRUE
+	fbSetIsExpression( TRUE )
 
 	'' LogExpression
 	function = cLogExpression( expr )
 
-	env.isexpr = FALSE
+	fbSetIsExpression( FALSE )
 
 end function
 

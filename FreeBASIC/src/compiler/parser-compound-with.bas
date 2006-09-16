@@ -90,8 +90,8 @@ function cWithStmtBegin as integer
 	'' push to stmt stack
 	stk = cCompStmtPush( FB_TK_WITH )
 
-	stk->with.last = env.stmt.with.sym
-	env.stmt.with.sym = sym
+	stk->with.last = parser.stmt.with.sym
+	parser.stmt.with.sym = sym
 
 	function = TRUE
 
@@ -115,7 +115,7 @@ function cWithStmtEnd as integer
 	lexSkipToken( )
 
 	'' pop from stmt stack
-	env.stmt.with.sym = stk->with.last
+	parser.stmt.with.sym = stk->with.last
 	cCompStmtPop( stk )
 
 	function = TRUE

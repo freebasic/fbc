@@ -43,11 +43,12 @@ function symbAddBitField _
     '' at main(), it will be deleted before some private function
     '' accessing the bitfield
 
-    sym = symbNewSymbol( NULL, _
-    					 NULL, NULL, 0, _
+    sym = symbNewSymbol( FB_SYMBOPT_NONE, _
+    					 NULL, _
+    					 NULL, NULL, _
     					 FB_SYMBCLASS_BITFIELD, _
-    				   	 FALSE, NULL, NULL, _
-    				   	 dtype, NULL )
+    				   	 NULL, NULL, _
+    				   	 dtype, NULL, 0 )
 	if( sym = NULL ) then
 		return NULL
 	end if

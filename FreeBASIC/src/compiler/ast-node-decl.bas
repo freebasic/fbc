@@ -15,7 +15,7 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-'' AST declaration nodes (VAR, CONST, etc)
+'' AST decl nodes (VAR, CONST, etc)
 ''
 '' chng: jun/2006 written [v1ctor]
 
@@ -26,58 +26,115 @@
 #include once "inc\ast.bi"
 
 '':::::
-private function hClearVar _
+private sub hCtorList _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) static
+
+	dim as FBSYMBOL ptr cnt, label, this_, subtype
+
+	subtype = symbGetSubtype( sym )
+
+    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL )
+    label = symbAddLabel( NULL, TRUE )
+    this_ = symbAddTempVar( FB_DATATYPE_POINTER + symbGetType( sym ), subtype )
+
+    '' fld = @sym(0)
+    astAdd( astBuildVarAssign( this_, _
+    						   astNewADDR( AST_OP_ADDROF, _
+    						   			   astNewVAR( sym, _
+   											 		  0, _
+   											 		  symbGetType( sym ), _
+   											 		  subtype ) ) ) )
+
+	'' for cnt = 0 to symbGetArrayElements( sym )-1
+	astBuildForBegin( cnt, label, 0 )
+
+    '' sym.constructor( )
+	astAdd( astBuildCtorCall( symbGetSubtype( sym ), astBuildVarDeref( this_ ) ) )
+
+	'' this_ += 1
+    astAdd( astBuildVarInc( this_, 1 ) )
+
+    '' next
+    astBuildForEnd( cnt, label, 1, symbGetArrayElements( sym ) )
+
+end sub
+
+'':::::
+private function hCallCtor _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr _
 	) as ASTNODE ptr static
 
 	dim as integer lgt
+   	dim as FBSYMBOL ptr subtype
+
+    function = NULL
 
     '' static, shared (includes extern/public) or common? do nothing..
     if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
        	 						   FB_SYMBATTRIB_SHARED or _
        	 						   FB_SYMBATTRIB_COMMON or _
        	 						   FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
-
-    	return NULL
+    	exit function
     end if
 
     '' local..
 
    	'' initialized? do nothing..
    	if( initree <> NULL ) then
-   		'' unless it's a var-len string or UDT containing var-len string fields..
-   		select case symbGetType( sym )
-   		case FB_DATATYPE_STRING
-
-   		case FB_DATATYPE_STRUCT
-            if( symbGetUDTDynCnt( symbGetSubtype( sym ) ) = 0 ) then
-            	return NULL
-            end if
-
-   		case else
-   			return NULL
-   		end select
+   		'' unless it's a var-len string..
+   		if( symbGetType( sym ) <> FB_DATATYPE_STRING ) then
+   			exit function
+   		end if
    	end if
 
    	'' not initialized..
+   	subtype = symbGetSubtype( sym )
 
-   	'' don't clear?
+   	select case symbGetType( sym )
+   	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+   		'' has a default ctor?
+   		if( symbGetCompDefCtor( subtype ) <> NULL ) then
+   			'' proc result? astProcEnd() will take care of this
+   			if( (symbGetAttrib( sym ) and FB_SYMBATTRIB_FUNCRESULT) <> 0 ) then
+   				exit function
+   			end if
+
+   			'' scalar?
+   			if( (symbGetArrayDimensions( sym ) = 0) or _
+   				(symbGetArrayElements( sym ) = 1) ) then
+   				'' sym.constructor( )
+   				return astBuildCtorCall( subtype, _
+   										 astNewVAR( sym, _
+   											 		0, _
+   											 		symbGetType( sym ), _
+   											 		subtype ) )
+
+   			'' array..
+   			else
+                hCtorList( sym )
+                return NULL
+   			end if
+   		end if
+   	end select
+
+   	'' do not clear?
    	if( symbGetDontInit( sym ) ) then
-   		return NULL
+   		exit function
    	end if
 
-    '' clear..
     lgt = symbGetLen( sym ) * symbGetArrayElements( sym )
 
     function = astNewMEM( AST_OP_MEMCLEAR, _
-    				  	  astNewVAR( sym, _
-    				  		  	 	 0, _
-    				   			 	 symbGetType( sym ), _
-    				   			 	 symbGetSubtype( sym ) ), _
-    				  	  NULL, _
-    				  	  lgt )
+    			  	  	  astNewVAR( sym, _
+    			  		  	 	 	 0, _
+    			   			 	 	 symbGetType( sym ), _
+    			   			 	 	 subtype ), _
+    			  	  	  NULL, _
+    			  	  	  lgt )
 
 end function
 
@@ -99,7 +156,7 @@ function astNewDECL _
 
 	select case symclass
 	case FB_SYMBCLASS_VAR
-		n->l = hClearVar( sym, initree )
+		n->l = hCallCtor( sym, initree )
 	end select
 
 	function = n
@@ -112,7 +169,7 @@ function astLoadDECL _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-	'' do clean up?
+	'' call ctor?
 	if( n->l <> NULL ) then
 		astLoad( n->l )
 		astDelNode( n->l )

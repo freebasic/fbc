@@ -24,10 +24,10 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\parser.bi"
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
 #include once "inc\ast.bi"
-#include once "inc\rtl.bi"
 #include once "inc\emit.bi"
 
 type FB_SYMVAR_CTX
@@ -85,25 +85,25 @@ private sub hCreateDescDimType _
    	ctx.array_dimtype = symbAddUDT( NULL, NULL, NULL, FALSE, 0 )
 
 	'' elements		as integer
-	symbAddUDTElement( ctx.array_dimtype, _
-				   	   NULL, _
-				   	   0, dTB(), _
-				   	   FB_DATATYPE_INTEGER, NULL, 0, _
-				   	   FB_INTEGERSIZE, 0 )
+	symbAddField( ctx.array_dimtype, _
+				  NULL, _
+				  0, dTB(), _
+				  FB_DATATYPE_INTEGER, NULL, 0, _
+				  FB_INTEGERSIZE, 0 )
 
 	'' lbound		as integer
-	symbAddUDTElement( ctx.array_dimtype, _
-				   	   NULL, _
-				   	   0, dTB(), _
-				   	   FB_DATATYPE_INTEGER, NULL, 0, _
-				   	   FB_INTEGERSIZE, 0 )
+	symbAddField( ctx.array_dimtype, _
+				  NULL, _
+				  0, dTB(), _
+				  FB_DATATYPE_INTEGER, NULL, 0, _
+				  FB_INTEGERSIZE, 0 )
 
 	'' ubound		as integer
-	symbAddUDTElement( ctx.array_dimtype, _
-				   	   NULL, _
-				   	   0, dTB(), _
-				   	   FB_DATATYPE_INTEGER, NULL, 0, _
-				   	   FB_INTEGERSIZE, 0 )
+	symbAddField( ctx.array_dimtype, _
+				  NULL, _
+				  0, dTB(), _
+				  FB_DATATYPE_INTEGER, NULL, 0, _
+				  FB_INTEGERSIZE, 0 )
 
     ''
 	symbRoundUDTSize( ctx.array_dimtype )
@@ -123,39 +123,39 @@ private function hCreateDescType _
     sym = symbAddUDT( NULL, NULL, NULL, FALSE, 0 )
 
     '' data			as any ptr
-	symbAddUDTElement( sym, _
-					   NULL, _
-					   0, dTB(), _
-					   FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
-					   FB_POINTERSIZE, 0 )
+	symbAddField( sym, _
+				  NULL, _
+				  0, dTB(), _
+				  FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
+				  FB_POINTERSIZE, 0 )
 
 	'' ptr			as any ptr
-	symbAddUDTElement( sym, _
-					   NULL, _
-					   0, dTB(), _
-					   FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
-					   FB_POINTERSIZE, 0 )
+	symbAddField( sym, _
+				  NULL, _
+				  0, dTB(), _
+				  FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
+				  FB_POINTERSIZE, 0 )
 
     '' size			as integer
-	symbAddUDTElement( sym, _
-					   NULL, _
-					   0, dTB(), _
-					   FB_DATATYPE_INTEGER, NULL, 0, _
-					   FB_INTEGERSIZE, 0 )
+	symbAddField( sym, _
+				  NULL, _
+				  0, dTB(), _
+				  FB_DATATYPE_INTEGER, NULL, 0, _
+				  FB_INTEGERSIZE, 0 )
 
     '' element_len	as integer
-	symbAddUDTElement( sym, _
-					   NULL, _
-					   0, dTB(), _
-					   FB_DATATYPE_INTEGER, NULL, 0, _
-					   FB_INTEGERSIZE, 0 )
+	symbAddField( sym, _
+				  NULL, _
+				  0, dTB(), _
+				  FB_DATATYPE_INTEGER, NULL, 0, _
+				  FB_INTEGERSIZE, 0 )
 
     '' dimensions	as integer
-	symbAddUDTElement( sym, _
-					   NULL, _
-					   0, dTB(), _
-					   FB_DATATYPE_INTEGER, NULL, 0, _
-					   FB_INTEGERSIZE, 0 )
+	symbAddField( sym, _
+				  NULL, _
+				  0, dTB(), _
+				  FB_DATATYPE_INTEGER, NULL, 0, _
+				  FB_INTEGERSIZE, 0 )
 
 
 	if( dims = -1 ) then
@@ -168,11 +168,11 @@ private function hCreateDescType _
 
 	dimtype = ctx.array_dimtype
 
-	symbAddUDTElement( sym, _
-				   	   NULL, _
-				   	   1, dTB(), _
-					   FB_DATATYPE_STRUCT, dimtype, 0, _
-					   symbGetLen( dimtype ), 0 )
+	symbAddField( sym, _
+				  NULL, _
+				  1, dTB(), _
+				  FB_DATATYPE_STRUCT, dimtype, 0, _
+				  symbGetLen( dimtype ), 0 )
 
 	''
 	symbRoundUDTSize( sym )
@@ -185,10 +185,11 @@ end function
 private function hCreateDescIniTree _
 	( _
 		byval desc as FBSYMBOL ptr, _
-		byval array as FBSYMBOL ptr _
+		byval array as FBSYMBOL ptr, _
+		byval array_expr as ASTNODE ptr _
 	) as ASTNODE ptr static
 
-    dim as ASTNODE ptr tree, array_expr
+    dim as ASTNODE ptr tree
     dim as integer dtype, dims
     dim as FBSYMBOL ptr elm, dimtb, subtype
 
@@ -211,48 +212,53 @@ private function hCreateDescIniTree _
 
 	elm = symbGetUDTFirstElm( symbGetSubtype( desc ) )
 
-    if( symbGetIsDynamic( array ) ) then
-    	array_expr = astNewCONSTi( 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
+    if( array_expr = NULL ) then
+    	if( symbGetIsDynamic( array ) ) then
+    		array_expr = astNewCONSTi( 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
+    	else
+    		array_expr = astNewADDR( AST_OP_ADDROF, astNewVAR( array, 0, dtype, subtype ) )
+    	end if
+
     else
-    	array_expr = astNewADDR( AST_OP_ADDROF, astNewVAR( array, 0, dtype, subtype ) )
+    	array_expr = astNewADDR( AST_OP_ADDROF, array_expr )
     end if
 
     '' .data = @array(0) + diff
-	astTypeIniAddExpr( tree, _
-					   astNewBOP( AST_OP_ADD, _
-								  astCloneTree( array_expr ), _
-					   			  astNewCONSTi( symbGetArrayOffset( array ), _
-					   			  				FB_DATATYPE_INTEGER ) ), _
-					   elm )
+	astTypeIniAddAssign( tree, _
+					   	 astNewBOP( AST_OP_ADD, _
+								  	astCloneTree( array_expr ), _
+					   			  	astNewCONSTi( symbGetArrayOffset( array ), _
+					   			  				  FB_DATATYPE_INTEGER ) ), _
+					   	 elm )
 
 	elm = symbGetUDTNextElm( elm )
 
 	'' .ptr	= @array(0)
-	astTypeIniAddExpr( tree, array_expr, elm )
+	astTypeIniAddAssign( tree, array_expr, elm )
 
     elm = symbGetUDTNextElm( elm )
 
     '' .size = len( array ) * elements( array )
-    astTypeIniAddExpr( tree, _
-    				   astNewCONSTi( symbGetLen( array ) * symbGetArrayElements( array ), _
-    				   				 FB_DATATYPE_INTEGER ), _
-    				   elm )
+    astTypeIniAddAssign( tree, _
+    				   	 astNewCONSTi( symbGetLen( array ) * symbGetArrayElements( array ), _
+    				   				   FB_DATATYPE_INTEGER ), _
+    				   	 elm )
 
     elm = symbGetUDTNextElm( elm )
 
     '' .element_len	= len( array )
-    astTypeIniAddExpr( tree, _
-    				   astNewCONSTi( symbGetLen( array ), _
-    				   				 FB_DATATYPE_INTEGER ), _
-    				   elm )
+    astTypeIniAddAssign( tree, _
+    				   	 astNewCONSTi( symbGetLen( array ), _
+    				   				   FB_DATATYPE_INTEGER ), _
+    				   	 elm )
 
     elm = symbGetUDTNextElm( elm )
 
     '' .dimensions = dims( array )
-    astTypeIniAddExpr( tree, _
-    				   astNewCONSTi( dims, _
-    				   				 FB_DATATYPE_INTEGER ), _
-    				   elm )
+    astTypeIniAddAssign( tree, _
+    				   	 astNewCONSTi( dims, _
+    				   				   FB_DATATYPE_INTEGER ), _
+    				   	 elm )
 
     elm = symbGetUDTNextElm( elm )
 
@@ -268,26 +274,26 @@ private function hCreateDescIniTree _
 			elm = dimtb
 
 			'' .elements = (ubound( array, d ) - lbound( array, d )) + 1
-    		astTypeIniAddExpr( tree, _
-    				   		   astNewCONSTi( d->upper - d->lower + 1, _
-    				   				 		 FB_DATATYPE_INTEGER ), _
-    				   		   elm )
+    		astTypeIniAddAssign( tree, _
+    				   		     astNewCONSTi( d->upper - d->lower + 1, _
+    				   				 		   FB_DATATYPE_INTEGER ), _
+    				   		     elm )
 
 			elm = symbGetUDTNextElm( elm )
 
 			'' .lbound = lbound( array, d )
-    		astTypeIniAddExpr( tree, _
-    				   		   astNewCONSTi( d->lower, _
-    				   				 		 FB_DATATYPE_INTEGER ), _
-    				   		   elm )
+    		astTypeIniAddAssign( tree, _
+    				   		     astNewCONSTi( d->lower, _
+    				   				 		   FB_DATATYPE_INTEGER ), _
+    				   		     elm )
 
 			elm = symbGetUDTNextElm( elm )
 
 			'' .ubound = ubound( array, d )
-    		astTypeIniAddExpr( tree, _
-    				   		   astNewCONSTi( d->upper, _
-    				   				 		 FB_DATATYPE_INTEGER ), _
-    				   		   elm )
+    		astTypeIniAddAssign( tree, _
+    				   		     astNewCONSTi( d->upper, _
+    				   				 		   FB_DATATYPE_INTEGER ), _
+    				   		     elm )
 
 			d = d->next
     	loop
@@ -309,49 +315,92 @@ private function hCreateDescIniTree _
 end function
 
 '':::::
-private function hCreateArrayDesc _
+function symbAddArrayDesc _
 	( _
 		byval array as FBSYMBOL ptr, _
+		byval array_expr as ASTNODE ptr, _
 		byval dimensions as integer _
 	) as FBSYMBOL ptr static
 
     dim as zstring ptr id, id_alias
     dim as FBSYMBOL ptr desc, desctype
-    dim as integer isshared, isstatic, isdynamic, iscommon, ispubext
+    dim as FB_SYMBATTRIB attrib
+    dim as FBSYMBOLTB ptr symbtb
+    dim as integer isdynamic, ispubext
 
 	function = NULL
 
     '' don't add if it's a jump table
-    if( symbIsJumpTb( array ) ) then
+    if( symbGetIsJumpTb( array ) ) then
     	exit function
     end if
 
-	isshared = symbIsShared( array )
-	isstatic = symbIsStatic( array )
-	isdynamic = symbIsDynamic( array )
-	iscommon = symbIsCommon( array )
-	ispubext = (array->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0
+	id_alias = NULL
 
-	'' common or public and dynamic? use the array name for the descriptor,
-	'' as only it will be allocated or seen by other modules
-	if( iscommon or (ispubext and isdynamic) ) then
-		id = array->id.name
-		id_alias = array->id.alias
-
-	'' otherwise, create a temporary name..
-	else
+	'' field?
+	if( symbIsField( array ) ) then
 		id = hMakeTmpStr( FALSE )
-		id_alias = NULL
+
+		attrib = FB_SYMBATTRIB_LOCAL
+
+		'' can't be ever static, the address has to be always
+		'' calculated at runtime
+
+	'' var..
+	else
+		isdynamic = symbIsDynamic( array )
+		ispubext = (array->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0
+
+		'' common or public and dynamic? use the array name for the descriptor,
+		'' as only it will be allocated or seen by other modules
+		if( symbIsCommon( array ) or (ispubext and isdynamic) ) then
+			id = array->id.name
+			id_alias = array->id.alias
+
+		'' otherwise, create a temporary name..
+		else
+			id = hMakeTmpStr( FALSE )
+		end if
+
+		attrib = array->attrib and (FB_SYMBATTRIB_SHARED or _
+				     			 	FB_SYMBATTRIB_COMMON or _
+				     			 	FB_SYMBATTRIB_STATIC or _
+				     			 	FB_SYMBATTRIB_EXTERN or _
+				     			 	FB_SYMBATTRIB_PUBLIC or _
+				     			 	FB_SYMBATTRIB_LOCAL)
+
+		'' not dynamic?
+		if( isdynamic = FALSE ) then
+			'' extern? always emit the descriptor (if accessed),
+			'' because the original one won't be accessible (or may don't
+			'' exist, if it's a "C" extern array)
+			if( symbIsExtern( array ) ) then
+				attrib and= not FB_SYMBATTRIB_EXTERN
+			end if
+
+			'' if not-dynamic, the descriptor can't be ever public
+			attrib and= not FB_SYMBATTRIB_PUBLIC
+		end if
 	end if
+
+	attrib or= FB_SYMBATTRIB_DESCRIPTOR
 
 	desctype = hCreateDescType( dimensions )
 
-	desc = symbNewSymbol( NULL, _
-					   	  array->symtb, NULL, symbIsLocal( array ) = FALSE, _
+	'' field?
+	if( symbIsField( array ) ) then
+		symbtb = @symbGetProcSymbTb( parser.currproc )
+	else
+		symbtb = array->symtb
+	end if
+
+	desc = symbNewSymbol( FB_SYMBOPT_PRESERVECASE, _
+						  NULL, _
+					   	  symbtb, NULL, _
 					   	  FB_SYMBCLASS_VAR, _
-					   	  FALSE, id, id_alias, _
+					   	  id, id_alias, _
 					   	  FB_DATATYPE_STRUCT, desctype, 0, _
-					   	  TRUE )
+					   	  attrib )
     if( desc = NULL ) then
     	exit function
     end if
@@ -359,28 +408,6 @@ private function hCreateArrayDesc _
 	''
 	desc->lgt = symbGetLen( desctype )
 	desc->ofs = 0
-
-	desc->attrib = (array->attrib and _
-				    (FB_SYMBATTRIB_SHARED or _
-				     FB_SYMBATTRIB_COMMON or _
-				     FB_SYMBATTRIB_STATIC or _
-				     FB_SYMBATTRIB_EXTERN or _
-				     FB_SYMBATTRIB_PUBLIC or _
-				     FB_SYMBATTRIB_LOCAL)) or _
-				   FB_SYMBATTRIB_DESCRIPTOR
-
-	'' not dynamic?
-	if( isdynamic = FALSE ) then
-		'' extern? always emit the descriptor (if accessed),
-		'' because the original one won't be accessible (or may don't
-		'' exist, if it's a "C" extern array)
-		if( symbIsExtern( array ) ) then
-			desc->attrib and= not FB_SYMBATTRIB_EXTERN
-		end if
-
-		'' if not-dynamic, the descriptor can't be ever public
-		desc->attrib and= not FB_SYMBATTRIB_PUBLIC
-	end if
 
 	desc->stats = array->stats and (FB_SYMBSTATS_ALLOCATED or _
 									FB_SYMBSTATS_ACCESSED or _
@@ -394,7 +421,7 @@ private function hCreateArrayDesc _
 	desc->var.array.dimtail = NULL
 	desc->var.array.elms = 1
     desc->var.suffix = INVALID
-    desc->var.initree = hCreateDescIniTree( desc, array )
+    desc->var.initree = hCreateDescIniTree( desc, array, array_expr )
 
 	''
 	function = desc
@@ -480,7 +507,7 @@ sub symbSetArrayDimTb _
 	'' dims can be -1 with COMMON arrays..
 	if( dimensions <> 0 ) then
 		if( s->var.array.desc = NULL ) then
-			s->var.array.desc = hCreateArrayDesc( s, dimensions )
+			s->var.array.desc = symbAddArrayDesc( s, NULL, dimensions )
 		end if
 	else
 		s->var.array.desc = NULL
@@ -498,7 +525,6 @@ private sub hSetupVar _
 		byval lgt as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval attrib as integer, _
 		byval stats as integer _
 	) static
 
@@ -507,7 +533,6 @@ private sub hSetupVar _
 	end if
 
 	''
-	s->attrib or= attrib
 	s->stats or= stats
 
 	s->lgt = lgt
@@ -528,7 +553,7 @@ private sub hSetupVar _
 
 	s->var.initree = NULL
 
-	s->var.stmtnum = env.stmtcnt
+	s->var.stmtnum = parser.stmtcnt
 
 end sub
 
@@ -588,7 +613,7 @@ function symbAddVarEx _
     '' no explict alias?
     if( id_alias = NULL ) then
     	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( env.mangling <> FB_MANGLING_BASIC ) then
+    	if( parser.mangling <> FB_MANGLING_BASIC ) then
     		id_alias = id
     	end if
     	stats = 0
@@ -599,11 +624,13 @@ function symbAddVarEx _
 
 	'' local? add to local symb & hash tbs
 	if( isglobal = FALSE ) then
+		attrib or= FB_SYMBATTRIB_LOCAL
+
 		'' QB quirk: implicit variables are moved to the function scope..
 		if( (options and FB_SYMBOPT_UNSCOPE) = 0 ) then
 			symtb = symb.symtb
 		else
-			symtb = @symbGetProcLocTb( env.currproc )
+			symtb = @symbGetProcSymbTb( parser.currproc )
 		end if
 
 		hashtb = symb.hashtb
@@ -618,8 +645,8 @@ function symbAddVarEx _
 		if( (symbIsGlobalNamespc( ) = FALSE) and _
 			((attrib and FB_SYMBATTRIB_LITCONST) = 0) ) then
 
-			symtb = @symbGetNamespaceTb( symb.namespc )
-			hashtb = @symbGetNamespaceHashTb( symb.namespc )
+			symtb = symbGetCompSymbTb( symb.namespc )
+			hashtb = symbGetCompHashTb( symb.namespc )
 
 		'' module-level..
 		else
@@ -628,12 +655,13 @@ function symbAddVarEx _
 		end if
 	end if
 
-	s = symbNewSymbol( NULL, _
-					   symtb, hashtb, isglobal, _
+	s = symbNewSymbol( options or FB_SYMBOPT_DOHASH, _
+					   NULL, _
+					   symtb, hashtb, _
 					   FB_SYMBCLASS_VAR, _
-					   TRUE, id, id_alias, _
+					   id, id_alias, _
 					   dtype, subtype, ptrcnt, _
-					   (options and FB_SYMBOPT_PRESERVECASE) <> 0, _
+					   attrib, _
 					   suffix )
 
 	if( s = NULL ) then
@@ -641,18 +669,18 @@ function symbAddVarEx _
 	end if
 
 	''
-	hSetupVar( s, id, dtype, subtype, lgt, dimensions, dTB(), attrib, stats )
+	hSetupVar( s, id, dtype, subtype, lgt, dimensions, dTB(), stats )
 
-	'' QB quirk: see the above
+	'' QB quirk: see above
 	if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
-		if( (env.currproc->attrib and (FB_SYMBATTRIB_MAINPROC or _
-									   FB_SYMBATTRIB_MODLEVELPROC)) <> 0 ) then
+		if( (parser.currproc->stats and (FB_SYMBSTATS_MAINPROC or _
+									  	 FB_SYMBSTATS_MODLEVELPROC)) <> 0 ) then
 			s->scope = FB_MAINSCOPE
 		else
-			s->scope = env.currproc->scope + 1
+			s->scope = parser.currproc->scope + 1
 		end if
 
-		s->var.stmtnum = env.currproc->proc.ext->stmtnum + 1
+		s->var.stmtnum = parser.currproc->proc.ext->stmtnum + 1
 	end if
 
 	function = s
@@ -697,7 +725,7 @@ function symbAddTempVar _
 	attrib = FB_SYMBATTRIB_TEMP
 	if( checkstatic ) then
 		if( fbIsModLevel( ) = FALSE ) then
-			if( symbIsStatic( env.currproc ) ) then
+			if( symbIsStatic( parser.currproc ) ) then
 				attrib or= FB_SYMBATTRIB_STATIC
 			end if
 		end if
@@ -715,7 +743,7 @@ function symbAddTempVar _
     	'' not static?
     	if( (s->attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
 
-			s->ofs = emitAllocLocal( env.currproc, s->lgt )
+			s->ofs = emitAllocLocal( parser.currproc, s->lgt )
 
 		end if
 	end if
@@ -750,7 +778,7 @@ function symbAddTempVarEx _
 
 		'' UDT with var-len string fields?
 		case FB_DATATYPE_STRUCT
-            if( symbGetUDTDynCnt( subtype ) <> 0 ) then
+            if( symbGetUDTHasCtorField( subtype ) ) then
             	lgt = symbGetLen( s )
             end if
 
@@ -845,39 +873,7 @@ private function hCalcArrayElements _
 end function
 
 '':::::
-function symbVarIsLocalDyn _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer static
-
-    function = FALSE
-
-    '' shared, static, param or temp?
-    if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
-    					FB_SYMBATTRIB_STATIC or _
-    					FB_SYMBATTRIB_COMMON or _
-    					FB_SYMBATTRIB_PARAMBYDESC or _
-    		  			FB_SYMBATTRIB_PARAMBYVAL or _
-    		  			FB_SYMBATTRIB_PARAMBYREF or _
-    		  			FB_SYMBATTRIB_TEMP or _
-    		  			FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
-		exit function
-	end if
-
-	'' dyn string?
-	if( s->typ = FB_DATATYPE_STRING ) then
-		function = TRUE
-
-	'' array? dims can be -1 with "DIM foo()" arrays..
-	elseif( s->var.array.dims <> 0 ) then
-		'' dynamic?
-		function = symbIsDynamic( s )
-	end if
-
-end function
-
-'':::::
-function symbVarIsLocalObj _
+function symbGetVarHasCtor _
 	( _
 		byval s as FBSYMBOL ptr _
 	) as integer static
@@ -895,18 +891,72 @@ function symbVarIsLocalObj _
 		return FALSE
 	end if
 
-	'' dyn string?
-	if( s->typ = FB_DATATYPE_STRING ) then
-		function = TRUE
+   	select case symbGetType( s )
+	'' var-len string?
+	case FB_DATATYPE_STRING
+		return TRUE
 
-	else
-		'' array? dims can be -1 with "DIM foo()" arrays..
+   	'' has a default ctor?
+   	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+   		if( symbGetCompDefCtor( symbGetSubtype( s ) ) <> NULL ) then
+   			return TRUE
+   		end if
+
+   	end select
+
+	'' array? dims can be -1 with "DIM foo()" arrays..
+	if( symbGetArrayDimensions( s ) <> 0 ) then
 		'' (note: it doesn't matter if it's dynamic array or not, local
-		'' 		  non-dynamic array allocations will do calls to
-		''        ArraySetDesc, so arrays can't be accessed before that)
-
-		function = (s->var.array.dims <> 0)
+		'' 		  non-dynamic array allocations will have to fill
+		''        the descriptor, so arrays can't be accessed before that)
+		return TRUE
 	end if
+
+	function = FALSE
+
+end function
+
+'':::::
+function symbGetVarHasDtor _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer static
+
+    '' shared, static or param?
+    if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
+    					FB_SYMBATTRIB_STATIC or _
+    					FB_SYMBATTRIB_COMMON or _
+    					FB_SYMBATTRIB_PARAMBYDESC or _
+    		  			FB_SYMBATTRIB_PARAMBYVAL or _
+    		  			FB_SYMBATTRIB_PARAMBYREF or _
+    		  			FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
+		return FALSE
+	end if
+
+   	select case symbGetType( s )
+	'' var-len string?
+	case FB_DATATYPE_STRING
+    	'' temp strings are destroyed right-after then function
+    	'' call, or the temp str descriptors could be exhausted
+		return (symbIsTemp( s ) = FALSE)
+
+   	'' has dtor?
+   	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+   		if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
+   			return TRUE
+   		end if
+
+   	end select
+
+	'' array? dims can be -1 with "DIM foo()" arrays..
+	if( symbGetArrayDimensions( s ) <> 0 ) then
+		'' dynamic?
+		if( symbIsDynamic( s ) ) then
+			return TRUE
+		end if
+	end if
+
+	function = FALSE
 
 end function
 
@@ -977,67 +1027,5 @@ sub symbDelVar _
     symbFreeSymbol( s )
 
 end sub
-
-'':::::
-function symbFreeDynVar _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	'' assuming conditions were checked already
-
-	'' array? dims can be -1 with "DIM foo()" arrays..
-	if( s->var.array.dims <> 0 ) then
-		'' dynamic?
-		if( symbIsDynamic( s ) ) then
-			function = rtlArrayErase( astNewVAR( s, 0, s->typ ) )
-
-		'' array of dyn strings?
-		elseif( s->typ = FB_DATATYPE_STRING ) then
-			function = rtlArrayStrErase( s )
-		end if
-
-	'' dyn string?
-	elseif( s->typ = FB_DATATYPE_STRING ) then
-		function = rtlStrDelete( astNewVAR( s, 0, FB_DATATYPE_STRING ) )
-
-	else
-		function = NULL
-	end if
-
-end function
-
-'':::::
-sub symbFreeLocalDynVars _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-    dim as FBSYMBOL ptr s
-
-	s = symb.symtb->head
-    do while( s <> NULL )
-    	'' variable?
-    	if( s->class = FB_SYMBCLASS_VAR ) then
-    		'' not shared, static, param or temp?
-    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
-    							FB_SYMBATTRIB_STATIC or _
-    							FB_SYMBATTRIB_COMMON or _
-    							FB_SYMBATTRIB_PARAMBYDESC or _
-    				  			FB_SYMBATTRIB_PARAMBYVAL or _
-    				  			FB_SYMBATTRIB_PARAMBYREF or _
-    				  			FB_SYMBATTRIB_TEMP or _
-    				  			FB_SYMBATTRIB_FUNCRESULT)) = 0 ) then
-
-				astAdd( symbFreeDynVar( s ) )
-
-			end if
-    	end if
-
-    	s = s->next
-    loop
-
-end sub
-
 
 

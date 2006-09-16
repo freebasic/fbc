@@ -190,12 +190,12 @@ function cTypeField _
 		byref subtype as FBSYMBOL ptr, _
 		byref expr as ASTNODE ptr, _
 		byref derefcnt as integer, _
-		byval checkarray as integer, _
-		byval checkderef as integer _
+		byval options as FB_FIELDOPT _
 	) as FBSYMBOL ptr
 
     dim as ASTNODE ptr constexpr = any
     dim as FBSYMBOL ptr sym = any
+    dim as integer is_method = any
 
 	function = NULL
 
@@ -211,7 +211,7 @@ function cTypeField _
 
        	'' ('->' DREF* TypeField)*
        	case FB_TK_FIELDDEREF
-       		if( checkderef = FALSE ) then
+       		if( (options and FB_FIELDOPT_CHECKDEREF) = 0 ) then
        			exit do
        		end if
 
@@ -224,7 +224,12 @@ function cTypeField _
 			loop
 
 		case else
-			exit do
+			if( (options and FB_FIELDOPT_ISMETHOD) = 0 ) then
+				exit do
+			end if
+
+			'' only once
+			options and= not FB_FIELDOPT_ISMETHOD
 		end select
 
 		'' ID?
@@ -237,7 +242,7 @@ function cTypeField _
 			exit function
 		end select
 
-    	sym = symbLookupUDTElm( subtype, lexGetText( ) )
+    	sym = symbLookupCompField( subtype, lexGetText( ) )
     	if( sym = NULL ) then
     		if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) <> FALSE ) then
     			'' no error recovery: caller will take care
@@ -294,7 +299,7 @@ function cTypeField _
 
         else
 			'' array and no index?
-			if( checkarray ) then
+			if( (options and FB_FIELDOPT_CHECKARRAY) <> 0 ) then
 				if( symbGetArrayDimensions( sym ) <> 0 ) then
     				if( errReport( FB_ERRMSG_EXPECTEDINDEX ) = FALSE ) then
     					exit function
@@ -392,7 +397,7 @@ function cDerefFields _
 					varexpr = astUpdStrConcat( varexpr )
 
 					'' function deref?
-					if( astIsFUNCT( varexpr ) ) then
+					if( astIsCALL( varexpr ) ) then
 						'' not allowed, STRING and WCHAR results are temporary
 						if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
 							exit function
@@ -502,7 +507,11 @@ function cDerefFields _
 
 		'' TypeField
 		expr = NULL
-		sym = cTypeField( dtype, subtype, expr, derefcnt, checkarray, TRUE )
+		sym = cTypeField( dtype, subtype, _
+						  expr, derefcnt, _
+						  iif( checkarray, _
+						  	   FB_FIELDOPT_CHECKARRAY or FB_FIELDOPT_CHECKDEREF, _
+						  	   FB_FIELDOPT_CHECKDEREF ) )
 		if( sym = NULL ) then
 			if( isfield ) then
 				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
@@ -622,7 +631,7 @@ function cFuncPtrOrDerefFields _
 
 		'' sub..
 		else
-			if( env.isexpr = FALSE ) then
+			if( fbGetIsExpression( ) = FALSE ) then
 				if( cProcCall( subtype, funcexpr, varexpr ) = FALSE ) then
 					exit function
 				end if
@@ -1017,7 +1026,7 @@ private function hVarAddUndecl _
 
 	function = NULL
 
-	if( symbIsStatic( env.currproc ) ) then
+	if( symbIsStatic( parser.currproc ) ) then
 		attrib = FB_SYMBATTRIB_STATIC
 	else
 		attrib = 0
@@ -1051,7 +1060,7 @@ private function hVarAddUndecl _
 			astAdd( var )
 		'' move to function scope..
 		else
-			astAddDecl( var )
+			astAddUnscoped( var )
 		end if
 
 	end if
@@ -1158,7 +1167,7 @@ function cVariableEx _
 		end if
 
 		'' show warning if inside an expression (ie: var was never set)
-		if( env.isexpr ) then
+		if( fbGetIsExpression( ) ) then
 			if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
 				errReportWarn( FB_WARNINGMSG_IMPLICITALLOCATION, id )
 			end if
@@ -1248,7 +1257,9 @@ function cVariableEx _
    	if( isfuncptr = FALSE ) then
    		if( checkfields ) then
    			'' TypeField?
-   			elm = cTypeField( dtype, subtype, idxexpr, drefcnt, checkarray, FALSE )
+   			elm = cTypeField( dtype, subtype, _
+   							  idxexpr, drefcnt, _
+   							  iif( checkarray, FB_FIELDOPT_CHECKARRAY, FB_FIELDOPT_NONE ) )
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
@@ -1309,7 +1320,7 @@ function cWithVariable _
 	) as integer
 
 	dim as integer dtype = any, drefcnt = any, isfuncptr = any
-	dim as FBSYMBOL ptr elm = any, subtype = any
+	dim as FBSYMBOL ptr fld = any, subtype = any
 
 	function = FALSE
 
@@ -1320,14 +1331,16 @@ function cWithVariable _
 
    	'' TypeField
    	dtype -= FB_DATATYPE_POINTER
-   	elm = cTypeField( dtype, subtype, varexpr, drefcnt, checkarray, FALSE )
-	if( elm = NULL ) then
+   	fld = cTypeField( dtype, subtype, _
+   					  varexpr, drefcnt, _
+   					  iif( checkarray, FB_FIELDOPT_CHECKARRAY, FB_FIELDOPT_NONE ) )
+	if( fld = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' no error recovery: caller will take care
 		exit function
 	end if
 
-   	'' check for calling functions through pointers
+   	'' check if calling functions through pointers
    	isfuncptr = FALSE
    	if( lexGetToken( ) = CHAR_LPRNT ) then
    		if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
@@ -1338,8 +1351,8 @@ function cWithVariable _
 	'' deref the with temp pointer
 	varexpr = astNewPTR( 0, varexpr, dtype, subtype )
 
-    if( elm <> NULL ) then
-    	varexpr = astNewFIELD( varexpr, elm, dtype, subtype )
+    if( fld <> NULL ) then
+    	varexpr = astNewFIELD( varexpr, fld, dtype, subtype )
     end if
 
     '' FuncPtrOrDerefFields?
@@ -1365,7 +1378,7 @@ function cVariable _
 	    function = cVariableEx( chain_, varexpr, checkarray )
 
 	case else
-		if( env.stmt.with.sym = NULL ) then
+		if( parser.stmt.with.sym = NULL ) then
 			return FALSE
 		end if
 
@@ -1374,8 +1387,73 @@ function cVariable _
 			return FALSE
 		end if
 
-		function = cWithVariable( env.stmt.with.sym, varexpr, checkarray )
+		function = cWithVariable( parser.stmt.with.sym, varexpr, checkarray )
 	end select
+
+end function
+
+'':::::
+''FieldVariable    =   TypeField? FuncPtrOrDerefFields? .
+''
+function cFieldVariable _
+	( _
+		byval this_ as FBSYMBOL ptr, _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byref varexpr as ASTNODE ptr, _
+		byval checkarray as integer _
+	) as integer
+
+	dim as integer dtype = any, drefcnt = any, isfuncptr = any
+	dim as FBSYMBOL ptr fld = any, subtype = any
+	dim as ASTNODE ptr fldexpr = NULL
+
+	function = FALSE
+
+	if( this_ = NULL ) then
+		this_ = symbGetParamVar( symbGetProcHeadParam( parser.currproc ) )
+	end if
+
+   	dtype = symbGetType( this_ )
+   	subtype = symbGetSubtype( this_ )
+
+   	'' TypeField
+   	fld = cTypeField( dtype, subtype, _
+   					  fldexpr, drefcnt, _
+   					  iif( checkarray, _
+   					  	   FB_FIELDOPT_ISMETHOD or FB_FIELDOPT_CHECKARRAY, _
+   					  	   FB_FIELDOPT_ISMETHOD ) )
+	if( fld = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' no error recovery: caller will take care
+		exit function
+	end if
+
+   	'' check if calling functions through pointers
+   	isfuncptr = FALSE
+   	if( lexGetToken( ) = CHAR_LPRNT ) then
+   		if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
+	  		isfuncptr = TRUE
+   		end if
+   	end if
+
+   	'' build this.field
+   	varexpr = astNewVAR( this_, 0, FB_DATATYPE_POINTER, NULL )
+
+	if( fldexpr <> NULL ) then
+		varexpr = astNewBOP( AST_OP_ADD, varexpr, fldexpr )
+	end if
+
+	'' deref the with temp pointer
+	varexpr = astNewPTR( 0, varexpr, dtype, subtype )
+
+    if( fld <> NULL ) then
+    	varexpr = astNewFIELD( varexpr, fld, dtype, subtype )
+    end if
+
+    '' FuncPtrOrDerefFields?
+	cFuncPtrOrDerefFields( dtype, subtype, varexpr, isfuncptr, TRUE )
+
+	function = (errGetLast( ) = FB_ERRMSG_OK)
 
 end function
 
@@ -1389,13 +1467,15 @@ function cVarOrDeref _
 		byval check_addrof as integer _
 	) as integer
 
-	dim as integer res
+	dim as integer res = any
+	dim as FB_PARSEROPT options = any
 
-	swap env.checkarray, check_array
+	options = parser.options
+	fbSetCheckArray( check_array )
 
 	res = cHighestPrecExpr( NULL, varexpr )
 
-	swap env.checkarray, check_array
+	parser.options = options
 
 	if( res ) then
 		if( varexpr <> NULL ) then

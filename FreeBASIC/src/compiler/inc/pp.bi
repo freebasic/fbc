@@ -46,50 +46,82 @@ type PP_CTX
 	level 		as integer
 end type
 
-declare sub 		ppInit					( )
+declare sub ppInit _
+	( _
+	)
 
-declare sub 		ppEnd					( )
+declare sub ppEnd _
+	( _
+	)
 
-declare sub 		ppCheck					( )
+declare sub ppCheck _
+	( _
+	)
 
-declare function 	ppParse 				( ) as integer
+declare function ppParse _
+	( _
+	) as integer
 
-declare sub		 	ppDefineInit			( )
+declare sub ppDefineInit _
+	( _
+	)
 
-declare sub		 	ppDefineEnd				( )
+declare sub ppDefineEnd _
+	( _
+	)
 
-declare function 	ppDefine				( _
-												byval ismultiline as integer _
-											) as integer
+declare function ppDefine _
+	( _
+		byval ismultiline as integer _
+	) as integer
 
-declare function 	ppDefineLoad			( _
-												byval s as FBSYMBOL ptr _
-											) as integer
+declare function ppDefineLoad _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer
 
-declare sub		 	ppPragmaInit			( )
+declare sub ppPragmaInit _
+	( _
+	)
 
-declare sub		 	ppPragmaEnd				( )
+declare sub ppPragmaEnd _
+	( _
+	)
 
-declare function 	ppPragma				( ) as integer
+declare function ppPragma _
+	( _
+	) as integer
 
-declare sub		 	ppCondInit				( )
+declare sub ppCondInit _
+	( _
+	)
 
-declare sub		 	ppCondEnd				( )
+declare sub ppCondEnd _
+	( _
+	)
 
-declare function 	ppCondIf 				( ) as integer
+declare function ppCondIf _
+	( _
+	) as integer
 
-declare function 	ppCondElse 				( )  as integer
+declare function ppCondElse _
+	( _
+	) as integer
 
-declare function 	ppCondEndIf 			( ) as integer
+declare function ppCondEndIf _
+	( _
+	) as integer
 
+declare function ppReadLiteral _
+	( _
+		byval ismultiline as integer = FALSE _
+	) as zstring ptr
 
-declare function 	ppReadLiteral			( _
-												byval ismultiline as integer = FALSE _
-											) as zstring ptr
+declare function ppReadLiteralW _
+	( _
+		byval ismultiline as integer = FALSE _
+	) as wstring ptr
 
-declare function 	ppReadLiteralW			( _
-												byval ismultiline as integer = FALSE _
-											) as wstring ptr
 
 ''
 '' inter-module globals

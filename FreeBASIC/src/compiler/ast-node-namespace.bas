@@ -40,15 +40,8 @@ function astNamespaceBegin _
 	end if
 
 	n->sym = sym
-	n->nspc.lastsymtb = symbGetCurrentSymTb( )
-	n->nspc.lasthashtb = symbGetCurrentHashTb( )
-	n->nspc.lastns = symbGetCurrentNamespc( )
 
-	symbSetCurrentSymTb( @symbGetNamespaceTb( sym ) )
-	symbSetCurrentHashTb( @symbGetNamespaceHashTb( sym ) )
-	symbSetCurrentNamespc( sym )
-
-	symbHashListAdd( @symbGetNamespaceHashTb( sym ) )
+	symbNestBegin( sym )
 
 	function = n
 
@@ -64,11 +57,7 @@ sub astNamespaceEnd _
 
 	ns = n->sym
 
-	symbHashListDel( @symbGetNamespaceHashTb( ns ) )
-
-	symbSetCurrentHashTb( n->nspc.lasthashtb )
-	symbSetCurrentSymTb( n->nspc.lastsymtb )
-	symbSetCurrentNamespc( n->nspc.lastns )
+	symbNestEnd( )
 
 	symbGetNamespaceCnt( ns ) += 1
 

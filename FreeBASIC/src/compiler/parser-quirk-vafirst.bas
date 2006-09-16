@@ -39,7 +39,7 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 		exit function
 	end if
 
-	proc = env.currproc
+	proc = parser.currproc
 
 	if( proc->proc.mode <> FB_FUNCMODE_CDECL ) then
 		exit function

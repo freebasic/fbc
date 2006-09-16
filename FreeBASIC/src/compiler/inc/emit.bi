@@ -289,470 +289,573 @@ end type
 ''
 ''
 ''
-
-declare sub 		emitInit			( _
-											_
-										)
-
-declare sub 		emitEnd				( _
-											_
-										)
-
-declare function 	emitOpen			( _
-											_
-										) as integer
-
-declare sub 		emitClose			( _
-											byval tottime as double _
-										)
-
-declare function 	emitGetRegClass		( _
-											byval dclass as integer _
-										) as REGCLASS ptr
-
-declare	function 	emitGetPos 			( _
-											_
-										) as integer
-
-declare function 	emitIsKeyword		( _
-											byval text as zstring ptr _
-										) as integer
-
-declare sub 		emitProcBegin		( _
-											byval proc as FBSYMBOL ptr _
-										)
-
-declare sub 		emitProcEnd			( _
-											byval proc as FBSYMBOL ptr _
-										)
-
-declare function 	emitGetVarName		( _
-											byval s as FBSYMBOL ptr _
-										) as string
-
-declare function 	emitIsRegPreserved 	( _
-											byval dclass as integer, _
-											byval reg as integer _
-										) as integer
-
-declare sub			emitGetResultReg 	( _
-											byval dtype as integer, _
-											byval dclass as integer, _
-											byref r1 as integer, _
-											byref r2 as integer _
-										)
-
-declare function 	emitGetFreePreservedReg( _
-											byval dclass as integer _
-										) as integer
-
-declare function 	emitAllocLocal		( _
-											byval proc as FBSYMBOL ptr, _
-											byval lgt as integer _
-										) as integer
-
-declare function 	emitAllocArg		( _
-											byval proc as FBSYMBOL ptr, _
-											byval lgt as integer _
-										) as integer
-
-declare sub 		emitDeclVariable 	( _
-											byval s as FBSYMBOL ptr _
-										)
-
-declare function 	emitGetFramePtrName ( _
-											_
-										) as zstring ptr
-
-declare sub 		emitPROCHEADER		( _
-											byval proc as FBSYMBOL ptr, _
-											byval initlabel as FBSYMBOL ptr _
-										)
-
-declare sub 		emitPROCFOOTER		( _
-											byval proc as FBSYMBOL ptr, _
-											byval bytestopop as integer, _
-											byval initlabel as FBSYMBOL ptr, _
-											byval exitlabel as FBSYMBOL ptr _
-										)
-
-declare function	emitASM				( _
-											byval text as zstring ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitCOMMENT			( _
-											byval text as zstring ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitLIT				( _
-											byval text as zstring ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitJMPTB			( _
-											byval dtype as integer, _
-											byval text as zstring ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitALIGN			( _
-											byval bytes as integer _
-										) as EMIT_NODE ptr
-
-declare function	emitSTACKALIGN		( _
-											byval bytes as integer _
-										) as EMIT_NODE ptr
-
-declare function	emitCALL			( _
-											byval label as FBSYMBOL ptr, _
-											byval bytestopop as integer _
-										) as EMIT_NODE ptr
-
-declare function	emitCALLPTR			( _
-											byval svreg as IRVREG ptr, _
-											byval bytestopop as integer _
-										) as EMIT_NODE ptr
-
-declare function	emitJUMP			( _
-											byval label as FBSYMBOL ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitJUMPPTR			( _
-											byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitLABEL			( _
-											byval label as FBSYMBOL ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitRET				( _
-											byval bytestopop as integer _
-										) as EMIT_NODE ptr
-
-declare function	emitPUBLIC			( _
-											byval label as FBSYMBOL ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitBRANCH			( _
-											byval op as integer, _
-											byval label as FBSYMBOL ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitXchgTOS			( _
-											byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitMOV				( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitSTORE			( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitLOAD			( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitADD				( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitSUB				( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitMUL				( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitDIV				( _
-											byval dvreg as IRVREG ptr, _
-		     							  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitINTDIV			( _
-											byval dvreg as IRVREG ptr, _
-		     							  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitMOD				( _
-											byval dvreg as IRVREG ptr, _
-		     							  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitSHL				( _
-											byval dvreg as IRVREG ptr, _
-			 					  	 	  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitSHR				( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitAND				( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitOR				( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitXOR				( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitEQV				( _
-											byval dvreg as IRVREG ptr, _
-			 					  		 	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitIMP				( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitADDROF			( _
-											byval dvreg as IRVREG ptr, _
-			    						  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitDEREF			( _
-											byval dvreg as IRVREG ptr, _
-			    						  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitGT				( _
-											byval rvreg as IRVREG ptr, _
-											byval label as FBSYMBOL ptr, _
-								  		  	byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitLT				( _
-											byval rvreg as IRVREG ptr, _
-											byval label as FBSYMBOL ptr, _
-								  		  	byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitEQ				( _
-											byval rvreg as IRVREG ptr, _
-											byval label as FBSYMBOL ptr, _
-								  		  	byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitNE				( _
-											byval rvreg as IRVREG ptr, _
-											byval label as FBSYMBOL ptr, _
-								  		  	byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitLE				( _
-											byval rvreg as IRVREG ptr, _
-											byval label as FBSYMBOL ptr, _
-								  		  	byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitGE				( _
-											byval rvreg as IRVREG ptr, _
-											byval label as FBSYMBOL ptr, _
-								  		  	byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitATN2			( _
-											byval dvreg as IRVREG ptr, _
-			   							  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitPOW				( _
-											byval dvreg as IRVREG ptr, _
-			   							  	byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitNEG				( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitNOT				( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitABS				( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitSGN				( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitSIN				( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitASIN			( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitCOS				( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitACOS			( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitTAN				( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitATAN			( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitSQRT			( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitLOG				( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitFLOOR			( _
-											byval dvreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitPUSH			( _
-											byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitPUSHUDT			( _
-											byval svreg as IRVREG ptr, _
-											byval sdsize as integer _
-										) as EMIT_NODE ptr
-
-declare function	emitPOP				( _
-											byval svreg as IRVREG ptr _
-										) as EMIT_NODE ptr
-
-declare function	emitMEMMOVE			( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr, _
-			 					  		  	byval bytes as integer _
-										) as EMIT_NODE ptr
-
-declare function	emitMEMSWAP			( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr, _
-			 					  		  	byval bytes as integer _
-										) as EMIT_NODE ptr
-
-declare function	emitMEMCLEAR		( _
-											byval dvreg as IRVREG ptr, _
-			 					  		  	byval bytes as integer _
-										) as EMIT_NODE ptr
-
-declare function	emitSTKCLEAR		( _
-											byval bytes as integer, _
-				  						  	byval baseofs as integer _
-										) as EMIT_NODE ptr
-
-declare sub 		emitSECTION			( _
-											byval section as integer _
-										)
-
-declare sub 		emitDATALABEL		( _
-											byval label as zstring ptr _
-										)
-
-declare sub 		emitDATABEGIN		( _
-											byval lname as zstring ptr _
-										)
-
-declare sub 		emitDATA			( _
-											byval litext as zstring ptr, _
-											byval litlen as integer, _
-											byval dtype as integer _
-										)
-
-declare sub 		emitDATAW			( _
-											byval litext as wstring ptr, _
-											byval litlen as integer, _
-											byval dtype as integer _
-										)
-
-declare sub 		emitDATAOFS			( _
-											byval sname as zstring ptr _
-										)
-
-declare sub 		emitDATAEND			( _
-											_
-										)
-
-declare sub 		emitVARINIBEGIN		( _
-											byval sym as FBSYMBOL ptr _
-										)
-
-declare sub 		emitVARINIEND		( _
-											byval sym as FBSYMBOL ptr _
-										)
-
-declare sub 		emitVARINIi			( _
-											byval dtype as integer, _
-											byval value as integer _
-										)
-
-declare sub 		emitVARINIf			( _
-											byval dtype as integer, _
-											byval value as double _
-										)
-
-declare sub 		emitVARINI64		( _
-											byval dtype as integer, _
-											byval value as longint _
-										)
-
-declare sub 		emitVARINIOFS		( _
-											byval sname as zstring ptr, _
-											byval ofs as integer _
-										)
-
-declare sub 		emitVARINISTR		( _
-											byval s as zstring ptr _
-										)
-
-declare sub 		emitVARINIWSTR		( _
-											byval s as zstring ptr _
-										)
-
-declare sub 		emitVARINIPAD		( _
-											byval bytes as integer _
-										)
-
-declare sub 		hWriteStr			( _
-											byval addtab as integer, _
-											byval s as zstring ptr _
-										)
-
-declare sub 		emitReset			( _
-											_
-										)
-
-declare sub 		emitFlush			( _
-											_
-										)
+declare sub emitInit _
+	( _
+		_
+	)
+
+declare sub emitEnd _
+	( _
+		_
+	)
+
+declare function emitOpen _
+	( _
+		_
+	) as integer
+
+declare sub emitClose _
+	( _
+		byval tottime as double _
+	)
+
+declare function emitGetRegClass _
+	( _
+		byval dclass as integer _
+	) as REGCLASS ptr
+
+declare	function emitGetPos _
+	( _
+		_
+	) as integer
+
+declare function emitIsKeyword _
+	( _
+		byval text as zstring ptr _
+	) as integer
+
+declare sub emitProcBegin _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+declare sub emitProcEnd _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+declare function emitProcAllocStaticVars _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as integer
+
+declare function emitGetVarName _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as string
+
+declare function emitIsRegPreserved _
+	( _
+		byval dclass as integer, _
+		byval reg as integer _
+	) as integer
+
+declare sub emitGetResultReg _
+	( _
+		byval dtype as integer, _
+		byval dclass as integer, _
+		byref r1 as integer, _
+		byref r2 as integer _
+	)
+
+declare function emitGetFreePreservedReg _
+	( _
+		byval dclass as integer _
+	) as integer
+
+declare function emitAllocLocal _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lgt as integer _
+	) as integer
+
+declare function emitAllocArg _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lgt as integer _
+	) as integer
+
+declare sub emitDeclVariable _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+declare function emitGetFramePtrName _
+	( _
+		_
+	) as zstring ptr
+
+declare sub emitPROCHEADER _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval initlabel as FBSYMBOL ptr _
+	)
+
+declare sub emitPROCFOOTER _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval bytestopop as integer, _
+		byval initlabel as FBSYMBOL ptr, _
+		byval exitlabel as FBSYMBOL ptr _
+	)
+
+declare function emitASM _
+	( _
+		byval text as zstring ptr _
+	) as EMIT_NODE ptr
+
+declare function emitCOMMENT _
+	( _
+		byval text as zstring ptr _
+	) as EMIT_NODE ptr
+
+declare function emitLIT _
+	( _
+		byval text as zstring ptr _
+	) as EMIT_NODE ptr
+
+declare function emitJMPTB _
+	( _
+		byval dtype as integer, _
+		byval text as zstring ptr _
+	) as EMIT_NODE ptr
+
+declare function emitALIGN _
+	( _
+		byval bytes as integer _
+	) as EMIT_NODE ptr
+
+declare function emitSTACKALIGN _
+	( _
+		byval bytes as integer _
+	) as EMIT_NODE ptr
+
+declare function emitCALL _
+	( _
+		byval label as FBSYMBOL ptr, _
+		byval bytestopop as integer _
+	) as EMIT_NODE ptr
+
+declare function emitCALLPTR _
+	( _
+		byval svreg as IRVREG ptr, _
+		byval bytestopop as integer _
+	) as EMIT_NODE ptr
+
+declare function emitJUMP _
+	( _
+		byval label as FBSYMBOL ptr _
+	) as EMIT_NODE ptr
+
+declare function emitJUMPPTR _
+	( _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitLABEL _
+	( _
+		byval label as FBSYMBOL ptr _
+	) as EMIT_NODE ptr
+
+declare function emitRET _
+	( _
+		byval bytestopop as integer _
+	) as EMIT_NODE ptr
+
+declare function emitPUBLIC _
+	( _
+		byval label as FBSYMBOL ptr _
+	) as EMIT_NODE ptr
+
+declare function emitBRANCH _
+	( _
+		byval op as integer, _
+		byval label as FBSYMBOL ptr _
+	) as EMIT_NODE ptr
+
+declare function emitXchgTOS _
+	( _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitMOV _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitSTORE _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitLOAD _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitADD _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitSUB _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitMUL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitDIV _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitINTDIV _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitMOD _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitSHL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitSHR _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitAND _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitOR _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitXOR _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitEQV _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitIMP _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitADDROF _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitDEREF _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitGT _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitLT _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitEQ _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitNE _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitLE _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitGE _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitATN2 _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitPOW _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitNEG _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitNOT _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitABS _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitSGN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitSIN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitASIN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitCOS _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitACOS _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitTAN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitATAN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitSQRT _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitLOG _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitFLOOR _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitPUSH _
+	( _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitPUSHUDT _
+	( _
+		byval svreg as IRVREG ptr, _
+		byval sdsize as integer _
+	) as EMIT_NODE ptr
+
+declare function emitPOP _
+	( _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitMEMMOVE _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval bytes as integer _
+	) as EMIT_NODE ptr
+
+declare function emitMEMSWAP _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval bytes as integer _
+	) as EMIT_NODE ptr
+
+declare function emitMEMCLEAR _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval bytes as integer _
+	) as EMIT_NODE ptr
+
+declare function emitSTKCLEAR _
+	( _
+		byval bytes as integer, _
+		byval baseofs as integer _
+	) as EMIT_NODE ptr
+
+declare sub emitSECTION _
+	( _
+		byval section as integer _
+	)
+
+declare sub emitDATALABEL _
+	( _
+		byval label as zstring ptr _
+	)
+
+declare sub emitDATABEGIN _
+	( _
+		byval lname as zstring ptr _
+	)
+
+declare sub emitDATA _
+	( _
+		byval litext as zstring ptr, _
+		byval litlen as integer, _
+		byval dtype as integer _
+	)
+
+declare sub emitDATAW _
+	( _
+		byval litext as wstring ptr, _
+		byval litlen as integer, _
+		byval dtype as integer _
+	)
+
+declare sub emitDATAOFS _
+	( _
+		byval sname as zstring ptr _
+	)
+
+declare sub emitDATAEND _
+	( _
+		_
+	)
+
+declare sub emitVARINIBEGIN _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)
+
+declare sub emitVARINIEND _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)
+
+declare sub emitVARINIi _
+	( _
+		byval dtype as integer, _
+		byval value as integer _
+	)
+
+declare sub emitVARINIf _
+	( _
+		byval dtype as integer, _
+		byval value as double _
+	)
+
+declare sub emitVARINI64 _
+	( _
+		byval dtype as integer, _
+		byval value as longint _
+	)
+
+declare sub emitVARINIOFS _
+	( _
+		byval sname as zstring ptr, _
+		byval ofs as integer _
+	)
+
+declare sub emitVARINISTR _
+	( _
+		byval s as zstring ptr _
+	)
+
+declare sub emitVARINIWSTR _
+	( _
+		byval s as zstring ptr _
+	)
+
+declare sub emitVARINIPAD _
+	( _
+		byval bytes as integer _
+	)
+
+declare sub hWriteStr _
+	( _
+		byval addtab as integer, _
+		byval s as zstring ptr _
+	)
+
+declare sub emitReset _
+	( _
+		_
+	)
+
+declare sub emitFlush _
+	( _
+		_
+	)
 
 #define emitGetLocalOfs(p) p->proc.ext->stk.localofs
 

@@ -116,3 +116,122 @@ function cTypeConvExpr _
 
 end function
 
+'':::::
+'' AnonUDT			=	TYPE ('<' Symbol '>')? '(' ... ')'
+function cAnonUDT _
+	( _
+		byref expr as ASTNODE ptr _
+	) as integer
+
+    dim as FBSYMBOL ptr sym = any, subtype = any
+    dim as FBSYMCHAIN ptr chain_ = any
+
+	function = FALSE
+
+	'' TYPE
+	lexSkipToken( )
+
+    '' ('<' Symbol '>')?
+    if( lexGetToken( ) = FB_TK_LT ) then
+    	lexSkipToken( )
+    	chain_ = cIdentifier( )
+    	if( chain_ = NULL ) then
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next '>', fake a node
+				hSkipUntil( FB_TK_GT, TRUE )
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
+    	end if
+
+    	subtype = chain_->sym
+
+		'' typedef? resolve..
+		if( symbIsTypedef( subtype ) ) then
+			subtype = symbGetSubtype( subtype )
+
+    		if( subtype = NULL ) then
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip until next '>', fake a node
+					hSkipUntil( FB_TK_GT, TRUE )
+					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+					return TRUE
+				end if
+			end if
+		end if
+
+    	if( symbIsStruct( subtype ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next '>', fake a node
+				hSkipUntil( FB_TK_GT, TRUE )
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
+    	end if
+
+    	lexSkipToken( )
+
+    	'' '>'
+    	if( lexGetToken( ) <> FB_TK_GT ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next '>'
+				hSkipUntil( FB_TK_GT, TRUE )
+			end if
+
+    	else
+    		lexSkipToken( )
+    	end if
+
+    else
+    	subtype = parser.ctxsym
+
+		if( subtype <> NULL ) then
+			'' typedef? resolve..
+			if( symbIsTypedef( subtype ) ) then
+				subtype = symbGetSubtype( subtype )
+			end if
+		end if
+
+    	if( subtype = NULL ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a node
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
+    	end if
+
+    	if( symbIsStruct( subtype ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a node
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
+		end if
+    end if
+
+    '' alloc temp var
+    sym = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE, FALSE )
+
+    '' let the initializer do the rest..
+    expr = cInitializer( sym, FALSE )
+
+    '' del temp var
+    symbDelVar( sym )
+
+    function = (expr <> NULL)
+
+end function
+
+

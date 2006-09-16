@@ -27,17 +27,17 @@
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
 
-declare function 	hVarDecl 				( _
-												byval attrib as integer, _
-												byval dopreserve as integer, _
-                                              	byval token as integer _
-											) as integer
-
+declare function hVarDecl _
+	( _
+		byval attrib as integer, _
+		byval dopreserve as integer, _
+        byval token as integer _
+	) as integer
 
 '':::::
 private function hCheckScope( ) as integer
 
-	if( env.scope > FB_MAINSCOPE ) then
+	if( parser.scope > FB_MAINSCOPE ) then
 		if( fbIsModLevel( ) = FALSE ) then
 			errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
 		else
@@ -180,7 +180,7 @@ function cVariableDecl( ) as integer
 	end if
 
 	''
-	if( symbIsStatic( env.currproc ) ) then
+	if( symbIsStatic( parser.currproc ) ) then
 		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
 			attrib or= FB_SYMBATTRIB_STATIC
 		end if
@@ -380,7 +380,7 @@ private function hDeclStaticVar _
     	end if
 
 	else
-		ns = @symbGetGlobalNamespc( )
+		ns = symbGetCurrentNamespc( )
     end if
 
     '' remove attrib, because COMMON and $dynamic..
@@ -457,7 +457,7 @@ private function hDeclDynArray _
 	if( sym <> NULL ) then
 		ns = symbGetNamespace( sym )
 	else
-		ns = @symbGetGlobalNamespc( )
+		ns = symbGetCurrentNamespc( )
 	end if
 
     ''
@@ -615,19 +615,34 @@ end sub
 private function hVarInit _
 	( _
         byval sym as FBSYMBOL ptr, _
-        byval attrib as integer, _
-        byval isdecl as integer _
+        byval isdecl as integer, _
+        byval has_ctor as integer _
 	) as ASTNODE ptr static
 
+    dim as integer attrib
 	dim as ASTNODE ptr initree
 
 	function = NULL
+
+	attrib = symbGetAttrib( sym )
 
 	'' '=' | '=>' ?
 	select case lexGetToken( )
 	case FB_TK_DBLEQ, FB_TK_EQ
 
 	case else
+    	'' ctor?
+    	if( has_ctor ) then
+			'' not already declared, extern, common or dynamic?
+			if( isdecl = FALSE ) then
+				if( ((attrib and (FB_SYMBATTRIB_EXTERN or _
+								  FB_SYMBATTRIB_COMMON or _
+								  FB_SYMBATTRIB_DYNAMIC)) = 0) ) then
+					function = astBuildTypeIniCtorList( sym )
+				end if
+			end if
+    	end if
+
 		exit function
 	end select
 
@@ -663,26 +678,23 @@ private function hVarInit _
 	if( lexGetToken( ) = FB_TK_ANY ) then
 
 		'' don't allow var-len strings
-		select case symbGetType( sym )
-		case FB_DATATYPE_STRING
+		if( symbGetType( sym ) = FB_DATATYPE_STRING ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 
-		case FB_DATATYPE_STRUCT
-    		if( symbGetUDTDynCnt( symbGetSubtype( sym ) ) <> 0 ) then
-    			errReport( FB_ERRMSG_INVALIDDATATYPES )
-    		end if
+		else
+			if( has_ctor ) then
+				errReportWarn( FB_WARNINGMSG_ANYINITHASNOEFFECT )
+			end if
 
-		case else
 			symbSetDontInit( sym )
-
-		end select
+		end if
 
 		lexSkipToken( )
 
 		exit function
 	end if
 
-	initree = cVariableInit( sym, TRUE )
+	initree = cInitializer( sym, TRUE )
 	if( initree = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
@@ -692,18 +704,167 @@ private function hVarInit _
 	'' static or shared?
 	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
   						   	   	   FB_SYMBATTRIB_SHARED)) <> 0 ) then
-		if( astTypeIniIsConst( initree ) = FALSE ) then
-			if( errGetLast( ) = FB_ERRMSG_OK ) then
-				'' error recovery: discard the tree
-				astDelTree( initree )
+
+		'' only if it's not an object, static or global instances are allowed
+		if( has_ctor = FALSE ) then
+			if( astTypeIniIsConst( initree ) = FALSE ) then
+				if( errGetLast( ) = FB_ERRMSG_OK ) then
+					'' error recovery: discard the tree
+					astDelTree( initree )
+				end if
+				exit function
 			end if
-			exit function
 		end if
+
 	end if
 
 	function = initree
 
 end function
+
+'':::::
+private sub hCallStaticCtor _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval initree as ASTNODE ptr, _
+		byval has_dtor as integer _
+	) static
+
+	dim as FBARRAYDIM dTB(0)
+	dim as FBSYMBOL ptr flag, label
+
+	if( (initree = NULL) and (has_dtor = FALSE) ) then
+		exit sub
+	end if
+
+	'' create a static flag
+	flag = symbAddVarEx( hMakeTmpStr(), NULL, _
+					  	 FB_DATATYPE_INTEGER, NULL, 0, _
+					  	 0, 0, dTB(), _
+					     FB_SYMBATTRIB_STATIC )
+
+	astAdd( astNewDECL( FB_SYMBCLASS_VAR, flag, NULL ) )
+
+	'' if flag = 0 then
+	label = symbAddLabel( NULL, TRUE )
+
+    astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
+    									  astNewVAR( flag, _
+            										 0, _
+            										 FB_DATATYPE_INTEGER ), _
+            							  astNewCONSTi( 0, _
+            											FB_DATATYPE_INTEGER ) ), _
+            				   label, _
+            				   FALSE ) )
+
+	'' flag = 1
+	astAdd( astBuildVarAssign( flag, 1 ) )
+
+	if( initree <> NULL ) then
+		'' initialize it
+		astTypeIniFlush( initree, sym, FALSE, TRUE )
+	end if
+
+	'' has a dtor?
+	if( has_dtor ) then
+	    dim as FBSYMBOL ptr proc
+	    proc = astProcAddStaticInstance( sym )
+
+	    '' atexit( @static_proc )
+	    astAdd( rtlAtExit( astBuildProcAddrof( proc ) ) )
+	end if
+
+	'' end if
+	astAdd( astNewLABEL( label ) )
+
+end sub
+
+'':::::
+private sub hCallGlobalCtor _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval initree as ASTNODE ptr, _
+		byval has_dtor as integer _
+	) static
+
+	if( (initree = NULL) and (has_dtor = FALSE) ) then
+		exit sub
+	end if
+
+	astProcAddGlobalInstance( sym, initree, has_dtor )
+
+end sub
+
+'':::::
+private sub hFlushInitializer _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval initree as ASTNODE ptr, _
+		byval has_ctor as integer, _
+		byval has_dtor as integer _
+	) static
+
+	'' no initializer?
+	if( initree = NULL ) then
+		'' static or shared?
+        if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+        						   	   FB_SYMBATTRIB_SHARED or _
+        						   	   FB_SYMBATTRIB_COMMON)) <> 0 ) then
+			'' object?
+        	if( has_dtor ) then
+        		'' local?
+           		if( symbIsLocal( sym ) ) then
+           			hCallStaticCtor( sym, NULL, TRUE )
+
+           		'' global..
+          		else
+        			hCallGlobalCtor( sym, NULL, TRUE )
+           		end if
+			end if
+		end if
+
+		exit sub
+	end if
+
+	'' not static or shared?
+    if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+    							   FB_SYMBATTRIB_SHARED or _
+    							   FB_SYMBATTRIB_COMMON)) = 0 ) then
+
+		astTypeIniFlush( initree, sym, FALSE, TRUE )
+
+		exit sub
+	end if
+
+	'' not an object?
+    if( has_ctor = FALSE ) then
+    	'' let emit flush it..
+    	symbSetTypeIniTree( sym, initree )
+
+    	'' no dtor?
+    	if( has_dtor = FALSE ) then
+    		exit sub
+    	end if
+
+    	'' must be added to the dtor list..
+    	initree = NULL
+    end if
+
+    '' don't let emit handle this global/static symbol
+    symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
+
+    '' local?
+    if( symbIsLocal( sym ) ) then
+       	'' the only possibility is static, SHARED can't be
+        '' used in -lang fb..
+        hCallStaticCtor( sym, initree, has_dtor )
+
+	'' global.. add to the list, to be emitted later
+    else
+    	hCallGlobalCtor( sym, initree, has_dtor )
+	end if
+
+end sub
 
 '':::::
 ''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
@@ -720,7 +881,6 @@ private function hVarDecl _
     static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype, ns
-    dim as FBSYMCHAIN ptr chain_
     dim as ASTNODE ptr initree
     dim as integer addsuffix, isdynamic, ismultdecl, istypeless, suffix
     dim as integer dtype, lgt, ofs, ptrcnt, dimensions, isdecl
@@ -764,27 +924,10 @@ private function hVarDecl _
     end if
 
     do
-    	chain_ = cIdentifier( TRUE )
+    	sym = hDeclLookupId( FB_SYMBCLASS_VAR )
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
-
-    	'' symbol found?
-    	if( chain_ <> NULL ) then
-    		'' any var?
-    		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
-    		if( sym <> NULL ) then
-    			'' from a different namespace? (because USING)
-    			if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
-    				'' allow dup, unless it's the global ns (same as in C++)
-    				if( symbIsGlobalNamespc( ) = FALSE ) then
-    					sym = NULL
-    				end if
-    			end if
-    		end if
-    	else
-    		sym = NULL
-    	end if
 
     	'' ID
     	select case lexGetClass( )
@@ -808,7 +951,7 @@ private function hVarDecl _
 
 		case FB_TKCLASS_QUIRKWD
 			'' only if inside a ns and if not local
-			if( (symbIsGlobalNamespc( )) or (env.scope > FB_MAINSCOPE) ) then
+			if( (symbIsGlobalNamespc( )) or (parser.scope > FB_MAINSCOPE) ) then
     			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     				exit function
     			else
@@ -1046,8 +1189,22 @@ private function hVarDecl _
     		isdecl = symbGetIsDeclared( sym )
     	end if
 
+   		''
+   		dim as integer has_ctor, has_dtor
+   		has_ctor = FALSE
+   		has_dtor = FALSE
+   		if( sym <> NULL ) then
+   			select case symbGetType( sym )
+   			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+				'' has a default ctor?
+				has_ctor = symbGetCompDefCtor( symbGetSubtype( sym ) ) <> NULL
+				'' dtor?
+				has_dtor = symbGetCompDtor( symbGetSubtype( sym ) ) <> NULL
+			end select
+		end if
+
 		'' check for an initializer
-		initree = hVarInit( sym, attrib, isdecl )
+		initree = hVarInit( sym, isdecl, has_ctor )
 
 		if( initree = NULL ) then
     		if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -1071,7 +1228,7 @@ private function hVarDecl _
 					astAdd( var )
 				'' move to function scope..
 				else
-					astAddDecl( var )
+					astAddUnscoped( var )
 				end if
 
 				'' add the descriptor too, if any
@@ -1085,7 +1242,7 @@ private function hVarDecl _
 					if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
 						astAdd( var )
 					else
-						astAddDecl( var )
+						astAddUnscoped( var )
 					end if
 				end if
 
@@ -1132,20 +1289,11 @@ private function hVarDecl _
 
 				'' all set as declared
 				symbSetIsDeclared( sym )
-			end if
 
-			'' handle ini trees (ditto)
-			if( initree <> NULL ) then
-				'' not static or shared?
-        		if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-        									   FB_SYMBATTRIB_SHARED or _
-        									   FB_SYMBATTRIB_COMMON)) = 0 ) then
-
-					astTypeIniFlush( initree, sym, FALSE, TRUE )
-
-				else
-                	'' let emit flush it..
-       				symbSetTypeIniTree( sym, initree )
+				'' not declared already?
+    			if( isdecl = FALSE ) then
+            		'' flush the init tree (must be done after adding the decl node)
+					hFlushInitializer( sym, initree, has_ctor, has_dtor )
 				end if
 			end if
 

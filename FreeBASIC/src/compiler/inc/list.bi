@@ -54,45 +54,54 @@ type TLIST
 	flags	as LIST_FLAGS
 end type
 
-declare function listNew		( _
-									byval list as TLIST ptr, _
-								  	byval nodes as integer, _
-								  	byval nodelen as integer, _
-								  	byval flags as LIST_FLAGS = LIST_FLAGS_ALL _
-								) as integer
+declare function listNew _
+	( _
+		byval list as TLIST ptr, _
+		byval nodes as integer, _
+		byval nodelen as integer, _
+		byval flags as LIST_FLAGS = LIST_FLAGS_ALL _
+	) as integer
 
-declare function listFree		( _
-									byval list as TLIST ptr _
-								) as integer
+declare function listFree _
+	( _
+		byval list as TLIST ptr _
+	) as integer
 
-declare function listNewNode	( _
-									byval list as TLIST ptr _
-								) as any ptr
+declare function listNewNode _
+	( _
+		byval list as TLIST ptr _
+	) as any ptr
 
-declare sub 	 listDelNode	( _
-									byval list as TLIST ptr, _
-								  	byval node as any ptr _
-								)
+declare sub listDelNode _
+	( _
+		byval list as TLIST ptr, _
+		byval node as any ptr _
+	)
 
-declare function listAllocTB	( _
-									byval list as TLIST ptr, _
-					  			  	byval nodes as integer _
-					  			) as integer
+declare function listAllocTB _
+	( _
+		byval list as TLIST ptr, _
+		byval nodes as integer _
+	) as integer
 
-declare function listGetHead	( _
-									byval list as TLIST ptr _
-								) as any ptr
+declare function listGetHead _
+	( _
+		byval list as TLIST ptr _
+	) as any ptr
 
-declare function listGetTail	( _
-									byval list as TLIST ptr _
-								) as any ptr
+declare function listGetTail _
+	( _
+		byval list as TLIST ptr _
+	) as any ptr
 
-declare function listGetPrev	( _
-									byval node as any ptr _
-								) as any ptr
+declare function listGetPrev _
+	( _
+		byval node as any ptr _
+	) as any ptr
 
-declare function listGetNext	( _
-									byval node as any ptr _
-								) as any ptr
+declare function listGetNext _
+	( _
+		byval node as any ptr _
+	) as any ptr
 
 #endif '' __LIST_BI__

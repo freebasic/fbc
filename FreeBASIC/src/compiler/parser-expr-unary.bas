@@ -26,8 +26,6 @@
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
-declare function 	cAnonUDT			( byref expr as ASTNODE ptr ) as integer
-
 declare function 	cCastingExpr		( byref expr as ASTNODE ptr ) as integer
 
 '':::::
@@ -160,7 +158,7 @@ function cStrIdxOrFieldDeref _
    				dim as integer drefcnt = any
     			dim as FBSYMBOL ptr sym = any
 
-    			sym = cTypeField( dtype, subtype, expr, drefcnt, TRUE, FALSE )
+    			sym = cTypeField( dtype, subtype, expr, drefcnt, FB_FIELDOPT_CHECKARRAY )
 				if( sym = NULL ) then
 					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 				else
@@ -247,10 +245,6 @@ function cHighestPrecExpr _
 				exit function
 			end if
 
-		'' TYPE
-		case FB_TK_TYPE
-			return cAnonUDT( highexpr )
-
 		'' Atom
 		case else
 			return cAtom( chain_, highexpr )
@@ -261,124 +255,6 @@ function cHighestPrecExpr _
 
 	''
 	function = cStrIdxOrFieldDeref( highexpr )
-
-end function
-
-'':::::
-'' AnonUDT			=	TYPE ('<' Symbol '>')? '(' ... ')'
-function cAnonUDT _
-	( _
-		byref expr as ASTNODE ptr _
-	) as integer
-
-    dim as FBSYMBOL ptr sym = any, subtype = any
-    dim as FBSYMCHAIN ptr chain_ = any
-
-	function = FALSE
-
-	'' TYPE
-	lexSkipToken( )
-
-    '' ('<' Symbol '>')?
-    if( lexGetToken( ) = FB_TK_LT ) then
-    	lexSkipToken( )
-    	chain_ = cIdentifier( )
-    	if( chain_ = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next '>', fake a node
-				hSkipUntil( FB_TK_GT, TRUE )
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				return TRUE
-			end if
-    	end if
-
-    	subtype = chain_->sym
-
-		'' typedef? resolve..
-		if( symbIsTypedef( subtype ) ) then
-			subtype = symbGetSubtype( subtype )
-
-    		if( subtype = NULL ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip until next '>', fake a node
-					hSkipUntil( FB_TK_GT, TRUE )
-					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-					return TRUE
-				end if
-			end if
-		end if
-
-    	if( symbIsUDT( subtype ) = FALSE ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next '>', fake a node
-				hSkipUntil( FB_TK_GT, TRUE )
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				return TRUE
-			end if
-    	end if
-
-    	lexSkipToken( )
-
-    	'' '>'
-    	if( lexGetToken( ) <> FB_TK_GT ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next '>'
-				hSkipUntil( FB_TK_GT, TRUE )
-			end if
-
-    	else
-    		lexSkipToken( )
-    	end if
-
-    else
-    	subtype = env.ctxsym
-
-		if( subtype <> NULL ) then
-			'' typedef? resolve..
-			if( symbIsTypedef( subtype ) ) then
-				subtype = symbGetSubtype( subtype )
-			end if
-		end if
-
-    	if( subtype = NULL ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a node
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				return TRUE
-			end if
-    	end if
-
-    	if( symbIsUDT( subtype ) = FALSE ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a node
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				return TRUE
-			end if
-		end if
-    end if
-
-    '' alloc temp var
-    sym = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE, FALSE )
-
-    '' let the initializer do the rest..
-    expr = cVariableInit( sym, FALSE )
-
-    '' del temp var
-    symbDelVar( sym )
-
-    function = (expr <> NULL)
 
 end function
 
@@ -692,9 +568,9 @@ private function hProcPtrBody _
 
 	'' resolve overloaded procs
 	if( symbIsOverloaded( proc ) ) then
-        if( env.ctxsym <> NULL ) then
-        	if( symbIsProc( env.ctxsym ) ) then
-        		sym = symbFindOverloadProc( proc, env.ctxsym )
+        if( parser.ctxsym <> NULL ) then
+        	if( symbIsProc( parser.ctxsym ) ) then
+        		sym = symbFindOverloadProc( proc, parser.ctxsym )
         		if( sym <> NULL ) then
         			proc = sym
         		end if

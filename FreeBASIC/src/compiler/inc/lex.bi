@@ -113,77 +113,96 @@ type LEX_CTX
 	lastfilepos 	as integer
 end type
 
-declare sub 		lexInit                 ( _
-												byval isinclude as integer _
-											)
+declare sub lexInit _
+	( _
+		byval isinclude as integer _
+	)
 
-declare sub 		lexEnd					( _
-											)
+declare sub lexEnd _
+	( _
+	)
 
-declare sub 		lexPushCtx				( _
-											)
+declare sub lexPushCtx _
+	( _
+	)
 
-declare sub 		lexPopCtx				( _
-											)
+declare sub lexPopCtx _
+	( _
+	)
 
-declare function 	lexGetToken 			( _
-												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
-											) as integer
+declare function lexGetToken _
+	( _
+		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
+	) as integer
 
-declare function 	lexGetClass 			( _
-												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
-											) as integer
+declare function lexGetClass _
+	( _
+		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
+	) as integer
 
-declare function 	lexGetText 				( _
-											) as zstring ptr
+declare function lexGetText _
+	( _
+	) as zstring ptr
 
-declare sub 		lexEatToken 			( _
-												byval token as zstring ptr, _
-												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
-											)
+declare sub lexEatToken _
+	( _
+		byval token as zstring ptr, _
+		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
+	)
 
-declare sub 		lexSkipToken			( _
-												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
-											)
+declare sub lexSkipToken _
+	( _
+		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
+	)
 
-declare function 	lexGetLookAheadClass 	( _
-												byval k as integer, _
-												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
-											) as integer
+declare function lexGetLookAheadClass _
+	( _
+		byval k as integer, _
+		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
+	) as integer
 
-declare function 	lexGetLookAhead 		( _
-												byval k as integer, _
-												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
-											) as integer
+declare function lexGetLookAhead _
+	( _
+		byval k as integer, _
+		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
+	) as integer
 
-declare sub 		lexReadLine				( _
-												byval endchar as uinteger = INVALID, _
-												byval dst as zstring ptr, _
-												byval skipline as integer = FALSE _
-											)
+declare sub lexReadLine _
+	( _
+		byval endchar as uinteger = INVALID, _
+		byval dst as zstring ptr, _
+		byval skipline as integer = FALSE _
+	)
 
-declare sub 		lexSkipLine				( _
-											)
+declare sub lexSkipLine _
+	( _
+	)
 
-declare sub 		lexNextToken 			( _
-												byval t as FBTOKEN ptr, _
-												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
-											)
+declare sub lexNextToken _
+	( _
+		byval t as FBTOKEN ptr, _
+		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
+	)
 
-declare function 	lexCurrentChar          ( _
-												byval skipwhitespc as integer = FALSE _
-											) as uinteger
+declare function lexCurrentChar _
+	( _
+		byval skipwhitespc as integer = FALSE _
+	) as uinteger
 
-declare function 	lexGetLookAheadChar     ( _
-												byval skipwhitespc as integer = FALSE _
-											) as uinteger
+declare function lexGetLookAheadChar _
+	( _
+		byval skipwhitespc as integer = FALSE _
+	) as uinteger
 
-declare function 	lexEatChar              ( _
-											) as uinteger
+declare function lexEatChar _
+	( _
+	) as uinteger
 
-declare function	lexPeekCurrentLine		( _
-												byref token_pos as string _
-											) as string
+declare function lexPeekCurrentLine _
+	( _
+		byref token_pos as string, _
+		byval do_trim as integer _
+	) as string
 
 
 ''

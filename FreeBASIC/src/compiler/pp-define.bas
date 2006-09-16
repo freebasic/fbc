@@ -749,7 +749,7 @@ private function hReadMacroText _
 
     		continue do
 
-		case FB_TK_COMMENTCHAR, FB_TK_REM
+		case FB_TK_COMMENT, FB_TK_REM
 			if( ismultiline = FALSE ) then
 				exit do
 			end if
@@ -869,7 +869,13 @@ private function hReadMacroText _
 
     		'' none matched, read as-is
     		else
-    			ZstrAssign( @toktail->text, lexGetText( ) )
+    			'' restore the '#'?
+    			if( addquotes ) then
+    			    ZstrAssign( @toktail->text, "#" )
+    			    ZstrConcatAssign( @toktail->text, lexGetText( ) )
+    			else
+    				ZstrAssign( @toktail->text, lexGetText( ) )
+    			end if
     		end if
 
     		lexSkipToken( LEX_FLAGS )
@@ -983,7 +989,7 @@ function ppDefine _
 	function = FALSE
 
 	'' don't allow explicit namespaces
-	chain_ = cIdentifier( TRUE )
+	chain_ = cIdentifier( FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 	if( errGetLast( ) <> FB_ERRMSG_OK ) then
 		exit function
 	end if

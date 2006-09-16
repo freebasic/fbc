@@ -32,87 +32,105 @@ const INVALID = -1
 '' helper module protos
 ''
 
+declare sub hlpInit _
+	( _
+	)
 
-declare	sub 		hlpInit					( _
-											)
+declare sub hlpEnd _
+	( _
+	)
 
-declare	sub 		hlpEnd					( _
-											)
+declare function hMatch _
+	( _
+		byval token as integer _
+	) as integer
 
-declare function 	hMatch					( _
-												byval token as integer _
-											) as integer
+declare function hMakeTmpStr _
+	( _
+		byval islabel as integer = TRUE _
+	) as zstring ptr
 
-declare function 	hMakeTmpStr 			( _
-												byval islabel as integer = TRUE _
-											) as zstring ptr
+declare function hFBrelop2IRrelop _
+	( _
+		byval op as integer _
+	) as integer
 
-declare function 	hFBrelop2IRrelop		( _
-												byval op as integer _
-											) as integer
+declare function hFileExists _
+	( _
+		byval filename as zstring ptr _
+	) as integer
 
-declare function 	hFileExists				( _
-												byval filename as zstring ptr _
-											) as integer
+declare sub hClearName _
+	( _
+		byval src as zstring ptr _
+	)
 
-declare sub 		hClearName				( _
-												byval src as zstring ptr _
-											)
+declare sub hUcase _
+	( _
+		byval src as zstring ptr, _
+		byval dst as zstring ptr _
+	)
 
-declare sub 		hUcase					( _
-												byval src as zstring ptr, _
-												byval dst as zstring ptr _
-											)
+declare function hStripUnderscore _
+	( _
+		byval symbol as zstring ptr _
+	) as string
 
-declare function 	hStripUnderscore		( _
-												byval symbol as zstring ptr _
-											) as string
+declare function hStripExt _
+	( _
+		byval filename as zstring ptr _
+	) as string
 
-declare function 	hStripExt				( _
-												byval filename as zstring ptr _
-											) as string
+declare function hStripPath _
+	( _
+		byval filename as zstring ptr _
+	) as string
 
-declare function 	hStripPath				( _
-												byval filename as zstring ptr _
-											) as string
+declare function hStripFilename _
+	( _
+		byval filename as zstring ptr _
+	) as string
 
-declare function 	hStripFilename 			( _
-												byval filename as zstring ptr _
-											) as string
+declare function hGetFileExt _
+	( _
+		byval fname as zstring ptr _
+	) as string
 
-declare function 	hGetFileExt				( _
-												byval fname as zstring ptr _
-											) as string
+declare function hRevertSlash _
+	( _
+		byval s as zstring ptr, _
+		byval allocnew as integer _
+	) as zstring ptr
 
-declare function 	hRevertSlash			( _
-												byval s as zstring ptr, _
-												byval allocnew as integer _
-											) as zstring ptr
-
-declare function 	hToPow2					( _
-												byval value as uinteger _
-											) as uinteger
+declare function hToPow2 _
+	( _
+		byval value as uinteger _
+	) as uinteger
 
 #ifdef FBVALUE
-declare sub 		hConvertValue			( _
-												byval src as FBVALUE ptr, _
-												byval sdtype as integer, _
-												byval dst as FBVALUE ptr, _
-												byval ddtype as integer _
-											)
+declare sub hConvertValue _
+	( _
+		byval src as FBVALUE ptr, _
+		byval sdtype as integer, _
+		byval dst as FBVALUE ptr, _
+		byval ddtype as integer _
+	)
 #endif
 
-declare function 	hJumpTbAllocSym			( _
-											) as any ptr
+declare function hJumpTbAllocSym _
+	( _
+	) as any ptr
 
-declare function 	hFloatToStr				( _
-												byval value as double, _
-												byref typ as integer _
-											) as string
+declare function hFloatToStr _
+	( _
+		byval value as double, _
+		byref typ as integer _
+	) as string
 
-declare function 	hCheckFileFormat		( _
-												byval f as integer _
-											) as integer
+declare function hCheckFileFormat _
+	( _
+		byval f as integer _
+	) as integer
 
 
 #include once "inc\hlp-str.bi"

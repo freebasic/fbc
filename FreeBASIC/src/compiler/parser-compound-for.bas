@@ -158,7 +158,7 @@ function cForStmtBegin as integer
 	lexSkipToken( )
 
 	'' ID
-	chain_ = cIdentifier( TRUE )
+	chain_ = cIdentifier( FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 	if( errGetLast( ) <> FB_ERRMSG_OK ) then
 		exit function
 	end if
@@ -359,8 +359,8 @@ function cForStmtBegin as integer
 	stk->for.testlabel = tl
 	stk->for.inilabel = il
 
-	env.stmt.for.cmplabel = cl
-	env.stmt.for.endlabel = el
+	parser.stmt.for.cmplabel = cl
+	parser.stmt.for.endlabel = el
 
 	function = TRUE
 
@@ -383,7 +383,7 @@ private function hForStmtClose _
 	end if
 
 	'' cmp label
-	astAdd( astNewLABEL( env.stmt.for.cmplabel ) )
+	astAdd( astNewLABEL( parser.stmt.for.cmplabel ) )
 
 	'' counter += step
 	hFlushSelfBOP( AST_OP_ADD, dtype, _
@@ -431,7 +431,7 @@ private function hForStmtClose _
 				   stk->for.endc, @stk->for.eval, _
 				   stk->for.inilabel )
 		'' exit loop
-		astAdd( astNewBRANCH( AST_OP_JMP, env.stmt.for.endlabel ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, parser.stmt.for.endlabel ) )
     	'' control label
     	astAdd( astNewLABEL( cl, FALSE ) )
     	'' positive, loop if <=
@@ -442,7 +442,7 @@ private function hForStmtClose _
     end if
 
     '' end label (loop exit)
-    astAdd( astNewLABEL( env.stmt.for.endlabel ) )
+    astAdd( astNewLABEL( parser.stmt.for.endlabel ) )
 
 	function = TRUE
 

@@ -152,6 +152,10 @@ const SYMB_MAXKEYWORDS = 210
         (@"CONSTRUCTOR", FB_TK_CONSTRUCTOR	, FB_TKCLASS_KEYWORD), _
         (@"DESTRUCTOR", FB_TK_DESTRUCTOR	, FB_TKCLASS_KEYWORD), _
         (@"OPERATOR", FB_TK_OPERATOR		, FB_TKCLASS_KEYWORD), _
+        (@"PROPERTY", FB_TK_PROPERTY		, FB_TKCLASS_KEYWORD), _
+        (@"NEW"		, FB_TK_NEW				, FB_TKCLASS_KEYWORD), _
+        (@"DELETE"	, FB_TK_DELETE			, FB_TKCLASS_KEYWORD), _
+        (@"CLASS"	, FB_TK_CLASS			, FB_TKCLASS_KEYWORD), _
         (@"DYNAMIC"	, FB_TK_DYNAMIC			, FB_TKCLASS_QUIRKWD), _
         (@"INCLUDE"	, FB_TK_INCLUDE			, FB_TKCLASS_QUIRKWD), _
         (@"GOSUB"	, FB_TK_GOSUB			, FB_TKCLASS_QUIRKWD), _
@@ -266,24 +270,25 @@ function symbAddKeyword _
 	( _
 		byval symbol as zstring ptr, _
 		byval id as integer, _
-		byval class as integer, _
+		byval class_ as integer, _
 		byval hashtb as FBHASHTB ptr _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr k
 
-    k = symbNewSymbol( NULL, _
-    				   @symbGetGlobalTb( ), hashtb, TRUE, _
+    k = symbNewSymbol( FB_SYMBOPT_DOHASH or FB_SYMBOPT_PRESERVECASE, _
+    				   NULL, _
+    				   @symbGetGlobalTb( ), hashtb, _
     				   FB_SYMBCLASS_KEYWORD, _
-    				   TRUE, symbol, NULL, _
-    				   TRUE )
+    				   symbol, NULL, _
+    				   INVALID, NULL, 0 )
     if( k = NULL ) then
     	return NULL
     end if
 
     ''
     k->key.id = id
-    k->key.tkclass = class
+    k->key.tkclass = class_
 
     function = k
 

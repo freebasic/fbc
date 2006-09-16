@@ -40,6 +40,8 @@ declare sub 		astProcListInit		( )
 
 declare sub 		astProcListEnd		( )
 
+declare function 	astLoadNOP			( byval n as ASTNODE ptr ) as IRVREG ptr
+
 declare function 	astLoadASSIGN		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadCONV			( byval n as ASTNODE ptr ) as IRVREG ptr
@@ -57,6 +59,8 @@ declare function 	astLoadIDX			( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function 	astLoadPTR			( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadCALL			( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	astLoadCALLCTOR		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadADDR			( byval n as ASTNODE ptr ) as IRVREG ptr
 
@@ -101,49 +105,54 @@ declare function 	astLoadDECL			( byval n as ASTNODE ptr ) as IRVREG ptr
 '' globals
 	dim shared as ASTCTX ast
 
-	dim shared as uinteger ast_bitmaskTB( 0 to 32 ) = _
+	'' same order as AST_NODECLASS
+	dim shared ast_classTB( 0 to AST_CLASSES-1 ) as AST_CLASSINFO => _
 	{ _
-		0, _
-		1, 3, 7, 15, 31, 63, 127, 255, _
-		511, 1023, 2047, 4095, 8191, 16383, 32767, 65565, _
-        131071, 262143, 524287, 1048575, 2097151, 4194303, 8388607, 16777215, _
-        33554431, 67108863, 134217727, 268435455, 536870911, 1073741823, 2147483647, 4294967295 _
-	}
-
-	dim shared as longint ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) = _
-	{ _
-		-128LL, _								'' byte
-		0LL, _                                  '' ubyte
-		0LL, _                                  '' char
-		-32768LL, _                             '' short
-		0LL, _                                  '' ushort
-		0LL, _                                  '' wchar
-		-2147483648LL, _                        '' int
-		0LL, _                                  '' uint
-		-2147483648LL, _                        '' enum
-		0LL, _                                  '' bitfield
-		-9223372036854775808LL, _               '' longint
-		0LL _                                   '' ulongint
-	}
-
-	dim shared as ulongint ast_maxlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) = _
-	{ _
-		127ULL, _                               '' ubyte
-		255ULL, _                               '' byte
-		255ULL, _                               '' char
-		32767ULL, _                             '' short
-		65535ULL, _                             '' ushort
-		65535ULL, _                             '' wchar
-		2147483647ULL, _                        '' int
-		4294967295ULL, _                        '' uint
-		2147483647ULL, _                        '' enum
-		4294967295ULL, _                        '' bitfield
-		9223372036854775807ULL, _               '' longint
-		18446744073709551615ULL _               '' ulongint
+		( @astLoadNOP			, FALSE			), _	'' AST_NODECLASS_NOP
+		( @astLoadLOAD			, TRUE			), _	'' AST_NODECLASS_LOAD
+		( @astLoadASSIGN		, TRUE			), _	'' AST_NODECLASS_ASSIGN
+		( @astLoadBOP			, TRUE			), _	'' AST_NODECLASS_BOP
+		( @astLoadUOP			, TRUE			), _	'' AST_NODECLASS_UOP
+		( @astLoadCONV			, TRUE			), _	'' AST_NODECLASS_CONV
+		( @astLoadADDR			, TRUE			), _	'' AST_NODECLASS_ADDR
+		( @astLoadBRANCH		, TRUE			), _	'' AST_NODECLASS_BRANCH
+		( @astLoadCALL			, TRUE			), _	'' AST_NODECLASS_CALL
+		( @astLoadCALLCTOR		, TRUE			), _	'' AST_NODECLASS_CALLCTOR
+		( @astLoadSTACK			, TRUE			), _	'' AST_NODECLASS_STACK
+		( @astLoadMEM			, TRUE			), _	'' AST_NODECLASS_MEM
+		( @astLoadNOP			, FALSE			), _	'' AST_NODECLASS_COMP
+		( @astLoadLINK			, FALSE			), _	'' AST_NODECLASS_LINK
+		( @astLoadCONST			, FALSE			), _	'' AST_NODECLASS_CONST
+		( @astLoadVAR			, TRUE			), _	'' AST_NODECLASS_VAR
+		( @astLoadIDX			, TRUE			), _	'' AST_NODECLASS_IDX
+		( @astLoadFIELD			, TRUE			), _	'' AST_NODECLASS_FIELD
+		( @astLoadENUM			, FALSE			), _	'' AST_NODECLASS_ENUM
+		( @astLoadPTR			, TRUE			), _	'' AST_NODECLASS_PTR
+		( @astLoadLABEL			, FALSE			), _	'' AST_NODECLASS_LABEL
+		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_ARG
+		( @astLoadOFFSET		, FALSE			), _	'' AST_NODECLASS_OFFSET
+		( @astLoadDECL			, FALSE			), _	'' AST_NODECLASS_DECL
+		( @astLoadIIF			, TRUE			), _	'' AST_NODECLASS_IIF
+		( @astLoadLIT			, FALSE			), _	'' AST_NODECLASS_LIT
+		( @astLoadASM			, TRUE			), _	'' AST_NODECLASS_ASM
+		( @astLoadJMPTB			, TRUE			), _	'' AST_NODECLASS_JMPTB
+		( @astLoadDBG			, FALSE			), _	'' AST_NODECLASS_DBG
+		( @astLoadBOUNDCHK		, TRUE			), _	'' AST_NODECLASS_BOUNDCHK
+		( @astLoadPTRCHK		, TRUE			), _	'' AST_NODECLASS_PTRCHK
+		( @astLoadSCOPEBEGIN	, TRUE			), _	'' AST_NODECLASS_SCOPEBEGIN
+		( @astLoadSCOPEEND		, TRUE			), _	'' AST_NODECLASS_SCOPEEND
+		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_SCOPE_BREAK
+		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_TYPEINI
+		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_TYPEINI_PAD
+		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_TYPEINI_ASSIGN
+		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_TYPEINI_CTORCALL
+		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_TYPEINI_CTORLIST
+		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_PROC
+		( @astLoadNOP			, FALSE			) _		'' AST_NODECLASS_NAMESPC
 	}
 
 	'' same order as AST_OP
-	dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPERATOR => _
+	dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
 	{ _
 		( AST_NODECLASS_LOAD	, AST_OPFLAGS_NONE ), _ '' AST_OP_LOAD
 		( AST_NODECLASS_LOAD	, AST_OPFLAGS_NONE ), _ '' AST_OP_LOADRES
@@ -200,7 +209,7 @@ declare function 	astLoadDECL			( byval n as ASTNODE ptr ) as IRVREG ptr
 		( AST_NODECLASS_UOP		, AST_OPFLAGS_NONE ), _	'' AST_OP_FLOOR
 		( AST_NODECLASS_ADDR	, AST_OPFLAGS_NONE ), _	'' AST_OP_ADDROF
 		( AST_NODECLASS_ADDR 	, AST_OPFLAGS_NONE ), _	'' AST_OP_DEREF
-		( AST_NODECLASS_UOP 	, AST_OPFLAGS_NONE ), _	'' AST_OP_CAST
+		( AST_NODECLASS_CONV 	, AST_OPFLAGS_NONE ), _	'' AST_OP_CAST
 		( AST_NODECLASS_CONV	, AST_OPFLAGS_NONE ), _	'' AST_OP_TOINT
 		( AST_NODECLASS_CONV	, AST_OPFLAGS_NONE ), _	'' AST_OP_TOFLT
 		( AST_NODECLASS_STACK	, AST_OPFLAGS_NONE ), _	'' AST_OP_PUSH
@@ -226,20 +235,57 @@ declare function 	astLoadDECL			( byval n as ASTNODE ptr ) as IRVREG ptr
 		( AST_NODECLASS_MEM		, AST_OPFLAGS_NONE ) _	'' AST_OP_STKCLEAR
 	}
 
+	dim shared as uinteger ast_bitmaskTB( 0 to 32 ) = _
+	{ _
+		0, _
+		1, 3, 7, 15, 31, 63, 127, 255, _
+		511, 1023, 2047, 4095, 8191, 16383, 32767, 65565, _
+        131071, 262143, 524287, 1048575, 2097151, 4194303, 8388607, 16777215, _
+        33554431, 67108863, 134217727, 268435455, 536870911, 1073741823, 2147483647, 4294967295 _
+	}
+
+	dim shared as longint ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) = _
+	{ _
+		-128LL, _								'' byte
+		0LL, _                                  '' ubyte
+		0LL, _                                  '' char
+		-32768LL, _                             '' short
+		0LL, _                                  '' ushort
+		0LL, _                                  '' wchar
+		-2147483648LL, _                        '' int
+		0LL, _                                  '' uint
+		-2147483648LL, _                        '' enum
+		0LL, _                                  '' bitfield
+		-9223372036854775808LL, _               '' longint
+		0LL _                                   '' ulongint
+	}
+
+	dim shared as ulongint ast_maxlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) = _
+	{ _
+		127ULL, _                               '' ubyte
+		255ULL, _                               '' byte
+		255ULL, _                               '' char
+		32767ULL, _                             '' short
+		65535ULL, _                             '' ushort
+		65535ULL, _                             '' wchar
+		2147483647ULL, _                        '' int
+		4294967295ULL, _                        '' uint
+		2147483647ULL, _                        '' enum
+		4294967295ULL, _                        '' bitfield
+		9223372036854775807ULL, _               '' longint
+		18446744073709551615ULL _               '' ulongint
+	}
+
 
 '':::::
 private sub hInitTempLists
 
 	listNew( @ast.tempstr, AST_INITTEMPSTRINGS, len( ASTTEMPSTR ), LIST_FLAGS_NOCLEAR )
 
-	listNew( @ast.temparray, AST_INITTEMPARRAYS, len( ASTTEMPARRAY ), LIST_FLAGS_NOCLEAR )
-
 end sub
 
 '':::::
 private sub hEndTempLists
-
-	listFree( @ast.temparray )
 
 	listFree( @ast.tempstr )
 
@@ -853,7 +899,7 @@ end function
 '':::::
 function astIsClassOnTree _
 	( _
-		byval class as integer, _
+		byval class_ as integer, _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
@@ -864,24 +910,24 @@ function astIsClassOnTree _
 		return NULL
 	end if
 
-	if( n->class = class ) then
+	if( n->class = class_ ) then
 		return n
 	end if
 
 	'' walk
-	m = astIsClassOnTree( class, n->l )
+	m = astIsClassOnTree( class_, n->l )
 	if( m <> NULL ) then
 		return m
 	end if
 
-	m = astIsClassOnTree( class, n->r )
+	m = astIsClassOnTree( class_, n->r )
 	if( m <> NULL ) then
 		return m
 	end if
 
 	'' profiled function have sub nodes
 	if( n->class = AST_NODECLASS_CALL ) then
-		m = astIsClassOnTree( class, n->call.profbegin )
+		m = astIsClassOnTree( class_, n->call.profbegin )
 		if( m <> NULL ) then
 			return m
 		end if
@@ -1256,100 +1302,8 @@ function astLoad _
 		return NULL
 	end if
 
-	select case as const n->class
-	case AST_NODECLASS_NOP
-		return NULL
-
-	case AST_NODECLASS_LINK
-		return astLoadLINK( n )
-
-	case AST_NODECLASS_ASSIGN
-		return astLoadASSIGN( n )
-
-	case AST_NODECLASS_CONV
-		return astLoadCONV( n )
-
-	case AST_NODECLASS_CONST
-		return astLoadCONST( n )
-
-	case AST_NODECLASS_VAR
-		return astLoadVAR( n )
-
-	case AST_NODECLASS_IDX
-		return astLoadIDX( n )
-
-    case AST_NODECLASS_FIELD
-    	return astLoadFIELD( n )
-
-	case AST_NODECLASS_ENUM
-		return astLoadENUM( n )
-
-	case AST_NODECLASS_BOP
-		return astLoadBOP( n )
-
-	case AST_NODECLASS_UOP
-		return astLoadUOP( n )
-
-	case AST_NODECLASS_CALL
-		return astLoadCALL( n )
-
-	case AST_NODECLASS_PTR
-		return astLoadPTR( n )
-
-	case AST_NODECLASS_ADDR
-		return astLoadADDR( n )
-
-	case AST_NODECLASS_OFFSET
-		return astLoadOFFSET( n )
-
-	case AST_NODECLASS_LOAD
-		return astLoadLOAD( n )
-
-	case AST_NODECLASS_BRANCH
-		return astLoadBRANCH( n )
-
-    case AST_NODECLASS_IIF
-    	return astLoadIIF( n )
-
-    case AST_NODECLASS_STACK
-    	return astLoadSTACK( n )
-
-    case AST_NODECLASS_LABEL
-    	return astLoadLABEL( n )
-
-    case AST_NODECLASS_LIT
-    	return astLoadLIT( n )
-
-    case AST_NODECLASS_ASM
-    	return astLoadASM( n )
-
-    case AST_NODECLASS_JMPTB
-    	return astLoadJMPTB( n )
-
-    case AST_NODECLASS_DBG
-    	return astLoadDBG( n )
-
-    case AST_NODECLASS_MEM
-    	return astLoadMEM( n )
-
-    case AST_NODECLASS_BOUNDCHK
-    	return astLoadBOUNDCHK( n )
-
-    case AST_NODECLASS_PTRCHK
-    	return astLoadPTRCHK( n )
-
-    case AST_NODECLASS_SCOPEBEGIN
-    	return astLoadSCOPEBEGIN( n )
-
-    case AST_NODECLASS_SCOPEEND
-    	return astLoadSCOPEEND( n )
-
-    case AST_NODECLASS_DECL
-    	return astLoadDECL( n )
-
-    end select
+	function = astGetClassLoadCB( n->class )( n )
 
 end function
-
 
 

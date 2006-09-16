@@ -24,6 +24,7 @@
 #include once "inc\fbint.bi"
 #include once "inc\ir.bi"
 #include once "inc\lex.bi"
+#include once "inc\parser.bi"
 
 type FBWARNING
 	level		as integer
@@ -54,7 +55,8 @@ end type
 		( 0, @"No explicit BYREF or BYVAL" ), _
 		( 0, @"Possible escape sequence found in" ), _
 		( 0, @"The type length is too large, consider passing BYREF" ), _
-		( 1, @"The length of the parameters list is too large, consider passing UDT's BYREF" ) _
+		( 1, @"The length of the parameters list is too large, consider passing UDT's BYREF" ), _
+		( 1, @"The ANY initializer has no effect on UDT's with default constructors" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
@@ -196,7 +198,25 @@ end type
 		@"Default types or suffixes are only valid in -lang", _
 		@"Suffixes are only valid in -lang", _
 		@"Implicit variables are only valid in -lang", _
-		@"Invalid array index" _
+		@"Invalid array index", _
+		@"Operator must be a member function", _
+		@"Operator cannot be a member function", _
+		@"Member function not allowed in anonymous UDT's", _
+		@"Expected operator", _
+		@"Declaration outside the original namespace or class", _
+		@"A destructor should not have any parameters", _
+		@"Expected class or UDT identifier", _
+		@"Dynamic strings cannot be part of UNION's", _
+		@"Fields with constructors cannot be part of UNION's", _
+		@"Fields with destructors cannot be part of UNION's", _
+		@"Illegal outside a constructor", _
+		@"UDT's with methods must have unique names", _
+		@"Parent is not a class or UDT", _
+		@"Call to another constructor must be the first statement", _
+		@"The constructor or destructor calling convention must be CDECL", _
+		@"This symbol cannot be undefined", _
+		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _
+		@"Invalid assignment/conversion" _
 	}
 
 
@@ -261,13 +281,13 @@ private sub hPrintErrMsg _
 		if( linenum > 0 ) then
 			print str( linenum );
 		end if
-		print ") : ";
+		print ") ";
 	end if
 
 	print "error";
 
 	if( errnum >= 0 ) then
-		print " "; str( errnum ); ": "; *msg;
+		print " " & errnum & ": " & *msg;
 
 		if( showerror ) then
 			showerror = (linenum > 0)
@@ -294,12 +314,17 @@ private sub hPrintErrMsg _
 		end if
 
 		if( showerror ) then
-			if( fbLangOptIsSet( FB_LANG_OPT_SINGERRLINE ) ) then
-				print ": "; lexPeekCurrentLine( token_pos )
-			else
-				print
-				print lexPeekCurrentLine( token_pos )
-				print token_pos
+			dim as string ln
+			ln = lexPeekCurrentLine( token_pos, fbLangOptIsSet( FB_LANG_OPT_SINGERRLINE ) )
+
+			if( len( ln ) > 0 ) then
+				if( fbLangOptIsSet( FB_LANG_OPT_SINGERRLINE ) ) then
+					print " in '" & ln & "'"
+				else
+					print
+					print lexPeekCurrentLine( token_pos, FALSE )
+					print token_pos
+				end if
 			end if
 		else
 			print
@@ -328,7 +353,7 @@ function errReportEx _
 	if( linenum = 0 ) then
 		if( env.clopt.showsusperrors = FALSE ) then
 			'' only one error per stmt
-			if( env.stmtcnt = errctx.laststmt ) then
+			if( parser.stmtcnt = errctx.laststmt ) then
 				return TRUE
 			end if
 		end if
@@ -337,7 +362,7 @@ function errReportEx _
 
 		errctx.lastmsg = errnum
 		errctx.lastline = linenum
-    	errctx.laststmt = env.stmtcnt
+    	errctx.laststmt = parser.stmtcnt
 	end if
 
     hPrintErrMsg( errnum, msgex, options, linenum, env.clopt.showerror )
@@ -382,9 +407,9 @@ private function hAddToken _
 			end if
 
 			if( isbefore ) then
-				res += "before: '"
+				res += "before '"
 			else
-				res += "found: '"
+				res += "found '"
 			end if
 
 			res += token + "'"
@@ -426,10 +451,11 @@ sub errReportWarnEx _
 	print env.inf.name;
 
 	if( linenum > 0 ) then
-		print "("; str( linenum ); ")";
+		print "(" & linenum & ")";
 	end if
 
-	print " : warning: "; *warningMsgs(msgnum).text;
+	print " warning " & msgnum & "(" & warningMsgs(msgnum).level & "): ";
+	print *warningMsgs(msgnum).text;
 
 	if( msgex <> NULL ) then
 		if( (options and FB_ERRMSGOPT_ADDCOMMA) <> 0 ) then
@@ -556,7 +582,7 @@ private function hReportMakeDesc _
 
 		else
 			'' function pointer?
-			if( symbIsFunctionPtr( proc ) ) then
+			if( symbGetIsFuncPtr( proc ) ) then
 				pname = symbDemangleFunctionPtr( proc )
 			end if
 		end if
@@ -564,10 +590,27 @@ private function hReportMakeDesc _
 		if( showname ) then
 			if( pname = NULL ) then
 				addprnts = TRUE
-				pname = symbGetName( proc )
-				if( pname <> NULL ) then
-					if( len( *pname ) = 0 ) then
-						pname = symbGetMangledName( proc )
+				if( (symbGetAttrib( proc ) and (FB_SYMBATTRIB_CONSTRUCTOR or _
+											    FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
+
+					static as string ctorname
+
+					ctorname = *symbGetName( symbGetNamespace( proc ) )
+
+					if( symbIsConstructor( proc ) ) then
+					 	ctorname += ".constructor"
+					else
+						ctorname += ".destructor"
+					end if
+
+					pname = strptr( ctorname )
+
+				else
+					pname = symbGetName( proc )
+					if( pname <> NULL ) then
+						if( len( *pname ) = 0 ) then
+							pname = symbGetMangledName( proc )
+						end if
 					end if
 				end if
 			else
@@ -603,6 +646,13 @@ function errReportParam _
 	static as integer lastpnum = -1
 	dim as integer cnt
 
+	'' don't count the instance pointer
+	if( symbIsMethod( cast( FBSYMBOL ptr, proc ) ) ) then
+		if( pnum > 1 ) then
+			pnum -= 1
+		end if
+	end if
+
 	'' don't report more than one error in a single param
 	if( proc = lastproc ) then
 		if( pnum = lastpnum ) then
@@ -635,6 +685,13 @@ sub errReportParamWarn _
 		byval pid as zstring ptr, _
 		byval msgnum as integer _
 	)
+
+	'' don't count the instance pointer
+	if( symbIsMethod( cast( FBSYMBOL ptr, proc ) ) ) then
+		if( pnum > 1 ) then
+			pnum -= 1
+		end if
+	end if
 
 	errReportWarn( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
 

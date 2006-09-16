@@ -64,13 +64,13 @@ function cLabel as integer
 			end if
 
 			'' fake a ':'
-			env.stmtcnt += 1
+			parser.stmtcnt += 1
 		end if
 
 	'' ID (labels can't be quirk-keywords)
 	case FB_TKCLASS_IDENTIFIER
 		'' ':'
-		if( lexGetLookAhead( 1 ) = CHAR_COLON ) then
+		if( lexGetLookAhead( 1 ) = FB_TK_STMTSEP ) then
 
 			'' ambiguity: it could be a proc call followed by a ':' stmt separator..
 

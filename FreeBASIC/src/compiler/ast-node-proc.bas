@@ -29,21 +29,72 @@
 #include once "inc\fbint.bi"
 #include once "inc\list.bi"
 #include once "inc\lex.bi"
+#include once "inc\parser.bi"
 #include once "inc\ir.bi"
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
+#include once "inc\emit.bi"
 
-declare function 	hNewProcNode		( ) as ASTNODE ptr
+type FB_GLOBINSTANCE
+	sym				as FBSYMBOL_ ptr			'' for symbol
+	initree			as ASTNODE ptr				'' can't store in sym, or emit will use it
+	has_dtor		as integer
+end type
 
-declare function 	hModLevelIsEmpty	( byval p as ASTNODE ptr ) as integer
+declare function hNewProcNode _
+	( _
+		_
+	) as ASTNODE ptr
 
-declare sub 		hModLevelAddRtInit	( byval p as ASTNODE ptr )
+declare function hModLevelIsEmpty _
+	( _
+		byval p as ASTNODE ptr _
+	) as integer
 
-declare sub 		hLoadProcResult 	( byval proc as FBSYMBOL ptr )
+declare sub hModLevelAddRtInit _
+	( _
+		byval p as ASTNODE ptr _
+	)
 
-declare function 	hDeclProcParams		( byval proc as FBSYMBOL ptr ) as integer
+declare sub hLoadProcResult _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
 
-declare function 	hUpdScopeBreakList	( byval n as ASTNODE ptr ) as integer
+declare function hDeclProcParams _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as integer
+
+declare function hUpdScopeBreakList	_
+	( _
+		byval n as ASTNODE ptr _
+	) as integer
+
+declare sub	hCallCtors _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+declare sub hCallDtors _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+declare sub hDestroyVars _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+declare sub hGenStaticInstancesDtors _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+declare sub hGenGlobalInstancesCtor _
+	( _
+		_
+	)
 
 ''::::
 sub astProcListInit( )
@@ -51,17 +102,27 @@ sub astProcListInit( )
 	ast.proc.head = NULL
 	ast.proc.tail = NULL
 	ast.proc.curr = NULL
-    ast.proc.oldsymtb = NULL
+
+	''
+	listNew( @ast.globinst.list, 32, len( FB_GLOBINSTANCE ), LIST_FLAGS_NOCLEAR )
+
+	ast.globinst.ctorcnt = 0
+	ast.globinst.dtorcnt = 0
 
 end sub
 
 ''::::
 sub astProcListEnd( )
 
+	ast.globinst.dtorcnt = 0
+	ast.globinst.ctorcnt = 0
+
+	listFree( @ast.globinst.list )
+
+	''
 	ast.proc.head = NULL
 	ast.proc.tail = NULL
 	ast.proc.curr = NULL
-	ast.proc.oldsymtb = NULL
 
 end sub
 
@@ -96,30 +157,39 @@ private sub hProcFlush _
 	( _
 		byval p as ASTNODE ptr, _
 		byval doemit as integer _
-	) static
+	)
 
-    dim as ASTNODE ptr n, nxt
-    dim as FBSYMBOL ptr sym
+    dim as ASTNODE ptr n = any, nxt = any
+    dim as FBSYMBOL ptr sym = any
+
+	sym = p->sym
+
+	if( doemit ) then
+		'' emit the static dtor wrappers
+		hGenStaticInstancesDtors( sym )
+	end if
 
 	''
 	ast.proc.curr = p
 	ast.currblock = p
 	ast.doemit = doemit
 
-	sym = p->sym
+	''
+	parser.scope = iif( p->block.proc.ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
+	parser.currproc = sym
+	parser.currblock = sym
 
-	env.scope = iif( p->block.ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
-	env.currproc = sym
-	env.currblock = sym
-	symbSetCurrentSymTb( @sym->proc.symtb )
+	''
+	symbNestBegin( sym )
 
 	'' allocate the non-static local variables on stack
 	symbProcAllocLocalVars( sym )
 
-	'' add a call to fb_init if it's a static constructor
+	'' add a call to fb_init if it's a static/global constructor
 	'' (note: must be done here or ModLevelIsEmpty() will fail)
 	if( doemit ) then
-		if( symbIsConstructor( sym ) ) then
+		'' global ctor?
+		if( symbGetIsGlobalCtor( sym ) ) then
            	hModLevelAddRtInit( p )
 		end if
 	end if
@@ -144,10 +214,13 @@ private sub hProcFlush _
     end if
 
     '' emit static local variables
-    symbProcAllocStaticVars( symbGetProcLocTbHead( sym ) )
+    emitProcAllocStaticVars( symbGetProcSymbTbHead( sym ) )
 
     '' del symbols from hash and symbol tb's
     symbDelSymbolTb( @sym->proc.symtb, FALSE )
+
+    ''
+    symbNestEnd( )
 
 	''
 	hDelProcNode( p )
@@ -158,18 +231,26 @@ private sub hProcFlush _
 end sub
 
 ''::::
-private sub hProcFlushAll( ) static
-    dim as ASTNODE ptr n
-    dim as integer doemit
-    dim as FBSYMBOL ptr sym
+private sub hProcFlushAll _
+	( _
+		_
+	)
+
+    dim as ASTNODE ptr n = any
+    dim as integer doemit = any
+    dim as FBSYMBOL ptr sym = any
 
 	'' procs should be sorted by include file
 
+	'' gen the global ctors/dtors, if any (done before emitting main()
+	'' because the ctors/dtors could be private and not called yet)
+	hGenGlobalInstancesCtor( )
+
 	do
-        n = ast.proc.head
-        if( n = NULL ) then
-        	exit do
-        end if
+		n = ast.proc.head
+		if( n = NULL ) then
+			exit do
+		end if
 
 		sym = n->sym
 
@@ -183,7 +264,7 @@ private sub hProcFlushAll( ) static
 					doemit = FALSE
 
 				'' module-level?
-				elseif( symbIsModLevelProc( sym ) ) then
+				elseif( symbGetIsModLevelProc( sym ) ) then
 					doemit = (hModLevelIsEmpty( n ) = FALSE)
 				end if
 			end if
@@ -197,15 +278,34 @@ private sub hProcFlushAll( ) static
 
 end sub
 
+'':::::
+#macro hCheckCtor( n )
+	'' ctor?
+	if( symbIsConstructor( ast.proc.curr->sym ) ) then
+		'' not initialized yet?
+		if( symbGetIsCtorInited( ast.proc.curr->sym ) = FALSE ) then
+			'' does the node being added result in executable code?
+			if( astGetClassIsCode( n->class ) ) then
+				'' must be set first, because recursion
+				symbSetIsCtorInited( ast.proc.curr->sym )
+				'' call ctors
+				hCallCtors( ast.proc.curr->sym )
+			end if
+		end if
+	end if
+#endmacro
+
 ''::::
-sub astAdd _
+function astAdd _
 	( _
 		byval n as ASTNODE ptr _
-	) static
+	) as ASTNODE ptr
 
 	if( n = NULL ) then
-		exit sub
+		return NULL
 	end if
+
+	hCheckCtor( n )
 
 	'' do updates and optimizations now as they can
 	'' allocate new vars and create/delete nodes
@@ -225,64 +325,43 @@ sub astAdd _
 	n->next = NULL
 	ast.proc.curr->r = n
 
-end sub
+	function = n
+
+end function
 
 ''::::
-sub astAddAfter _
+function astAddAfter _
 	( _
 		byval n as ASTNODE ptr, _
 		byval p as ASTNODE ptr _
-	) static
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr _tail = any, _next = any
 
 	if( (p = NULL) or (n = NULL) ) then
-		exit sub
+		return NULL
 	end if
 
-	'' note: this function can't be used if node contains
-	'' type-ini tree or strings assignment/concatenations
+	_tail = ast.proc.curr->r
+	ast.proc.curr->r = p
 
-	''
-	if( p->next = NULL ) then
-		ast.proc.curr->r = n
-	else
-		p->next->prev = n
+	_next = p->next
+	p->next = NULL
+
+	n = astAdd( n )
+
+	if( _next <> NULL ) then
+		_next->prev = n
+		n->next = _next
+		ast.proc.curr->r = _tail
 	end if
 
-	n->prev = p
-	n->next = p->next
-	p->next = n
+	function = n
 
-end sub
+end function
 
 ''::::
-sub astAddBefore _
-	( _
-		byval n as ASTNODE ptr, _
-		byval p as ASTNODE ptr _
-	) static
-
-	if( (p = NULL) or (n = NULL) ) then
-		exit sub
-	end if
-
-	'' note: this function can't be used if node contains
-	'' type-ini tree or strings assignment/concatenations
-
-	''
-	if( p->prev = NULL ) then
-		ast.proc.curr->l = n
-	else
-		p->prev->next = n
-	end if
-
-	n->next = p
-	n->prev = p->prev
-	p->prev = n
-
-end sub
-
-''::::
-sub astAddDecl _
+sub astAddUnscoped _
 	( _
 		byval n as ASTNODE ptr _
 	) static
@@ -293,18 +372,18 @@ sub astAddDecl _
 		exit sub
 	end if
 
-	last = ast.proc.curr->block.decl_last
+	last = ast.proc.curr->block.proc.decl_last
 	if( last = NULL ) then
 		last = ast.proc.curr->l
 	end if
 
 	if( last = NULL ) then
-		astAdd( n )
+		n = astAdd( n )
 	else
-		astAddAfter( n, last )
+		n = astAddAfter( n, last )
 	end if
 
-	ast.proc.curr->block.decl_last = n
+	ast.proc.curr->block.proc.decl_last = n
 
 end sub
 
@@ -338,10 +417,9 @@ function astProcBegin _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval ismain as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
-    dim as FBSYMBOL ptr ns
+    dim as ASTNODE ptr n = any
 
 	function = NULL
 
@@ -352,7 +430,7 @@ function astProcBegin _
 	end if
 
 	''
-	symbSymTbInit( @sym->proc.symtb, sym )
+	symbSymbTbInit( sym->proc.symtb, sym )
 
 	''
 	if( sym->proc.ext = NULL ) then
@@ -363,29 +441,11 @@ function astProcBegin _
 	ast.proc.curr = n
 	ast.currblock = n
 
-	env.scope = iif( ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
-	env.currproc = sym
-	env.currblock = sym
+	parser.scope = iif( ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
+	parser.currproc = sym
+	parser.currblock = sym
 
-	ast.proc.oldsymtb = symbGetCurrentSymTb( )
-	symbSetCurrentSymTb( @sym->proc.symtb )
-
-	'' proc body can be declared outside the original namespace
-	'' if the prototype was declared inside one (as in C++), so
-	'' change the hashtb too
-	ns = symbGetNamespace( sym )
-	if( ns <> symbGetCurrentNamespc( ) ) then
-		symbNamespaceInsertChain( ns )
-
-		ast.proc.oldns = symbGetCurrentNamespc( )
-		symbSetCurrentNamespc( ns )
-
-		ast.proc.oldhashtb = symbGetCurrentHashTb( )
-		symbSetCurrentHashTb( @symbGetNamespaceHashTb( ns ) )
-
-	else
-		ast.proc.oldns = NULL
-	end if
+	symbNestBegin( sym )
 
 	'' add init and exit labels (see the note in the top,
 	'' procs don't create an implicit scope block)
@@ -395,16 +455,16 @@ function astProcBegin _
 	''
 	n->sym = sym
 
-	n->block.ismain = ismain
+	n->block.proc.ismain = ismain
 	n->block.parent = NULL
-	n->block.inistmt = env.stmtcnt
+	n->block.inistmt = parser.stmtcnt
 
 	'' break list
 	n->block.breaklist.head = NULL
 	n->block.breaklist.tail = NULL
 
 	''
-	n->block.decl_last = NULL
+	n->block.proc.decl_last = NULL
 
 	''
 	irProcBegin( sym )
@@ -434,7 +494,7 @@ function astProcBegin _
 		end if
 	end with
 
-	sym->proc.ext->stmtnum = env.stmtcnt
+	sym->proc.ext->stmtnum = parser.stmtcnt
 
 	function = n
 
@@ -476,22 +536,64 @@ private sub hRestoreErrHnd _
 end sub
 
 '':::::
+private sub hCallResultCtor _
+	( _
+		byval n as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
+	) static
+
+    dim as FBSYMBOL ptr res, subtype
+
+    subtype = symbGetSubtype( sym )
+
+    if( symbGetCompDefCtor( subtype ) = NULL ) then
+    	exit sub
+    end if
+
+    res = symbGetProcResult( sym )
+    if( res = NULL ) then
+    	exit sub
+    end if
+
+    astAddAfter( astBuildCtorCall( subtype, _
+    							   astBuildProcResultVar( sym, res ) ), _
+    			 n->l )
+
+end sub
+
+'':::::
 function astProcEnd _
 	( _
 		byval n as ASTNODE ptr, _
 		byval callrtexit as integer _
-	) as integer static
+	) as integer
 
-    dim as integer res
-    dim as FBSYMBOL ptr sym
+    static as integer rec_cnt = 0
+    dim as integer res = any, do_flush = any
+    dim as FBSYMBOL ptr sym = any
 
+	''
+	rec_cnt += 1
+
+	''
 	sym = n->sym
 
-	n->block.endstmt = env.stmtcnt
+	n->block.endstmt = parser.stmtcnt
 
-	'' del dynamic arrays and all var-len strings (see the note in
-	'' the top, procs don't create an implicit scope block)
-	symbFreeLocalDynVars( sym )
+	if( errGetCount( ) = 0 ) then
+		'' if the function body is empty, no ctor initialization will be done
+		hCheckCtor( n )
+
+		'' del dynamic arrays and all var-len strings (see the note in
+		'' the top, procs don't create an implicit scope block)
+		hDestroyVars( sym )
+
+		'' dtor?
+		if( symbIsDestructor( sym ) ) then
+			'' call dtors
+			hCallDtors( sym )
+		end if
+	end if
 
    	''
    	astAdd( astNewLABEL( n->block.exitlabel ) )
@@ -512,13 +614,21 @@ function astProcEnd _
 		'' if main(), END 0 must be called because it's not safe to return to crt if
 		'' an ON ERROR module-level handler was called while inside some proc
 		if( callrtexit ) then
-			if( n->block.ismain ) then
+			if( n->block.proc.ismain ) then
 				rtlExitApp( NULL )
 			end if
 		end if
 
 		'' if it's a function, load result
 		if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
+
+			select case symbGetType( sym )
+			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+				if( symbGetProcStatAssignUsed( sym ) ) then
+					hCallResultCtor( n, sym )
+				end if
+			end select
+
         	hLoadProcResult( sym )
 		end if
 	end if
@@ -526,23 +636,26 @@ function astProcEnd _
 	''
 	irProcEnd( sym )
 
+	do_flush = FALSE
 	if( (res = TRUE) and (errGetCount( ) = 0) ) then
 		symbSetIsParsed( sym )
 
-		if( n->block.ismain = FALSE ) then
-			'' not private or inline? flush it..
-			if( symbIsPrivate( sym ) = FALSE ) then
-				hProcFlush( n, TRUE )
+		'' not into a recursion?
+		if( rec_cnt = 1 ) then
+			if( n->block.proc.ismain = FALSE ) then
+				'' not private or inline? flush it..
+				if( symbIsPrivate( sym ) = FALSE ) then
+					do_flush = TRUE
 
-			'' remove from hash tb only
+				'' remove from hash tb only
+				else
+					symbDelSymbolTb( @sym->proc.symtb, TRUE )
+				end if
+
+			'' main? flush all remaining, it's the latest
 			else
-				symbDelSymbolTb( @sym->proc.symtb, TRUE )
+				do_flush = TRUE
 			end if
-
-		'' main? flush all remaining, it's the latest
-		else
-			hProcFlushAll( )
-
 		end if
 
 	'' errors.. just remove from hash so no false dups will appear
@@ -550,25 +663,28 @@ function astProcEnd _
 		symbDelSymbolTb( @sym->proc.symtb, TRUE )
 	end if
 
+	''
+	symbNestEnd( )
+
+	''
+	if( do_flush ) then
+	    if( n->block.proc.ismain = FALSE ) then
+			hProcFlush( n, TRUE )
+		else
+			hProcFlushAll( )
+		end if
+	end if
+
 	'' back to main (or NULL if main was emitted already)
 	ast.proc.curr = ast.proc.head
 	ast.currblock = ast.proc.head
 
-    env.scope = FB_MAINSCOPE
-    env.currproc = env.main.proc
-    env.currblock = env.main.proc
+    parser.scope = FB_MAINSCOPE
+    parser.currproc = env.main.proc
+    parser.currblock = env.main.proc
 
-	'' was the namespace changed? see procBegin()
-	if( ast.proc.oldns <> NULL ) then
-		symbNamespaceRemoveChain( symbGetCurrentNamespc( ) )
-
-		symbSetCurrentHashTb( ast.proc.oldhashtb )
-		symbSetCurrentNamespc( ast.proc.oldns )
-
-		ast.proc.oldns = NULL
-	end if
-
-	symbSetCurrentSymTb( ast.proc.oldsymtb )
+    ''
+    rec_cnt -= 1
 
 	function = res
 
@@ -659,7 +775,7 @@ private function hModLevelIsEmpty _
 
 	'' an empty module-level proc will have just the
 	'' initial and final labels as nodes and nothing else
-	'' (note: when debugging it will be emmited even if empty)
+	'' (note: when debugging it will be emitted even if empty)
 
 	n = p->l
 	if( n = NULL ) then
@@ -707,4 +823,549 @@ private sub hModLevelAddRtInit _
 
 end sub
 
+'':::::
+private sub hCallCtorList _
+	( _
+		byval is_ctor as integer, _
+		byval this_ as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr _
+	) static
+
+	dim as FBSYMBOL ptr cnt, label, iter, subtype
+	dim as ASTNODE ptr fldexpr
+	dim as integer dtype, elements
+
+	'' instance? (this function is also used by the static dtor wrapper)
+	if( fld <> NULL ) then
+		dtype = symbGetType( fld )
+		subtype = symbGetSubtype( fld )
+		elements = symbGetArrayElements( fld )
+	else
+		dtype = symbGetType( this_ )
+		subtype = symbGetSubtype( this_ )
+		elements = symbGetArrayElements( this_ )
+	end if
+
+    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL )
+    label = symbAddLabel( NULL, TRUE )
+    iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype )
+
+	if( fld <> NULL ) then
+    	if( is_ctor ) then
+    		'' iter = @this.field(0)
+    		fldexpr = astBuildInstPtr( this_, fld )
+    	else
+    		'' iter = @this.field(elements-1)
+    		fldexpr = astBuildInstPtr( this_, _
+    							   	   fld, _
+    							   	   astNewCONSTi( elements - 1, _
+    							   				 	 FB_DATATYPE_INTEGER ) )
+    	end if
+
+    '' not an instance..
+    else
+    	if( is_ctor ) then
+    		'' iter = @symbol(0)
+    		fldexpr = astBuildVarField( this_, NULL, 0 )
+    	else
+    		'' iter = @symbol(0) + (elements - 1)
+    		fldexpr = astBuildVarField( this_, _
+    									NULL, _
+    									(elements - 1) * symbGetLen( subtype ) )
+    	end if
+    end if
+
+    astAdd( astBuildVarAssign( iter, astNewADDR( AST_OP_ADDROF, fldexpr ) ) )
+
+	'' for cnt = 0 to symbGetArrayElements( fld )-1
+	astBuildForBegin( cnt, label, 0 )
+
+	if( is_ctor ) then
+		'' ctor( *iter )
+    	astAdd( astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
+	else
+		'' dtor( *iter )
+    	astAdd( astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
+    end if
+
+	'' iter += 1
+    astAdd( astBuildVarInc( iter, iif( is_ctor, 1, -1 ) ) )
+
+    '' next
+    astBuildForEnd( cnt, label, 1, elements )
+
+end sub
+
+'':::::
+private sub hCallFieldCtor _
+	( _
+		byval this_ as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr _
+	) static
+
+	dim as FBSYMBOL ptr subtype
+
+	subtype = symbGetSubtype( fld )
+
+	select case symbGetType( fld )
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+
+       	'' has a default ctor too?
+       	if( symbGetCompDefCtor( subtype ) <> NULL ) then
+
+			'' !!!FIXME!!! assuming only static arrays will be allowed in fields
+
+      		'' not an array?
+       		if( (symbGetArrayDimensions( fld ) = 0) or _
+       			(symbGetArrayElements( fld ) = 1) ) then
+
+       			'' ctor( this.field )
+       			astAdd( astBuildCtorCall( subtype, _
+     									  astBuildInstPtr( this_, fld ) ) )
+
+       		'' array..
+       		else
+       			hCallCtorList( TRUE, this_, fld )
+       		end if
+
+       		exit sub
+       	end if
+	end select
+
+   	'' do not clear?
+   	if( symbGetDontInit( fld ) ) then
+   		exit sub
+   	end if
+
+	astAdd( astNewMEM( AST_OP_MEMCLEAR, _
+    	  	  		   astBuildInstPtr( this_, fld ), _
+    	  	  		   NULL, _
+    	  	  		   symbGetLen( fld ) * symbGetArrayElements( fld ) ) )
+
+end sub
+
+'':::::
+private sub hFlushFieldInitTree _
+	( _
+		byval this_ as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr _
+	) static
+
+	dim as ASTNODE ptr initree
+
+	initree = astCloneTree( symbGetTypeIniTree( fld ) )
+
+	astTypeIniFlush( initree, this_, FALSE, TRUE )
+
+end sub
+
+'':::::
+private sub hCallFieldCtors _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _
+	) static
+
+	dim as FBSYMBOL ptr fld, this_, subtype
+
+	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+
+    '' for each field..
+    fld = symbGetCompSymbTb( parent )->head
+    do while( fld <> NULL )
+
+		if( symbIsField( fld ) ) then
+			if( symbGetTypeIniTree( fld ) = NULL ) then
+				hCallFieldCtor( this_, fld )
+			else
+				hFlushFieldInitTree( this_, fld )
+			end if
+		end if
+
+		fld = fld->next
+	loop
+
+end sub
+
+'':::::
+private sub hCallCtors _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
+
+	dim as FBSYMBOL ptr parent
+
+	parent = symbGetNamespace( proc )
+
+	'' 1st) base dtors
+    '' ...
+
+	'' 2nd) base dtors
+    hCallFieldCtors( parent, proc )
+
+end sub
+
+'':::::
+private sub hCallFieldDtors _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _
+	) static
+
+	dim as FBSYMBOL ptr fld, this_
+
+	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+
+    '' for each field (in inverse order)..
+    fld = symbGetCompSymbTb( parent )->tail
+    do while( fld <> NULL )
+
+		'' !!!FIXME!!! assuming only static arrays will be allowed in fields
+
+		if( symbIsField( fld ) ) then
+
+			select case symbGetType( fld )
+			case FB_DATATYPE_STRING
+				dim as ASTNODE ptr fldexpr
+
+        		fldexpr = astBuildInstPtr( this_, fld )
+
+            	'' not an array?
+            	if( (symbGetArrayDimensions( fld ) = 0) or _
+            		(symbGetArrayElements( fld ) = 1) ) then
+
+            		astAdd( rtlStrDelete( fldexpr ) )
+
+        		'' array..
+        		else
+        	    	astAdd( rtlArrayStrErase( fldexpr ) )
+				end if
+
+			case FB_DATATYPE_STRUCT
+            	dim as FBSYMBOL ptr subtype
+
+            	subtype = symbGetSubtype( fld )
+
+            	'' has a dtor too?
+            	if( symbGetHasDtor( subtype ) ) then
+
+            		'' not an array?
+            		if( (symbGetArrayDimensions( fld ) = 0) or _
+            			(symbGetArrayElements( fld ) = 1) ) then
+
+            			'' dtor( this.field )
+            			astAdd( astBuildDtorCall( subtype, _
+            									  astBuildInstPtr( this_, fld ) ) )
+
+            		'' array..
+            		else
+            			hCallCtorList( FALSE, this_, fld )
+            		end if
+
+            	end if
+
+			end select
+		end if
+
+		fld = fld->prev
+	loop
+
+end sub
+
+'':::::
+private sub hCallDtors _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
+
+	dim as FBSYMBOL ptr parent
+
+	parent = symbGetNamespace( proc )
+
+	'' 1st) fields dtors
+    hCallFieldDtors( parent, proc )
+
+	'' 2nd) base dtors
+	'' ...
+
+end sub
+
+'':::::
+private sub hDestroyVars _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
+
+    dim as FBSYMBOL ptr s
+
+	'' for each var (in inverse order)
+	s = symbGetProcSymbTb( proc ).tail
+    do while( s <> NULL )
+    	'' variable?
+    	if( symbGetClass( s ) = FB_SYMBCLASS_VAR ) then
+    		'' not shared, static, param or temp?
+    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
+    							FB_SYMBATTRIB_STATIC or _
+    							FB_SYMBATTRIB_COMMON or _
+    							FB_SYMBATTRIB_PARAMBYDESC or _
+    				  			FB_SYMBATTRIB_PARAMBYVAL or _
+    				  			FB_SYMBATTRIB_PARAMBYREF or _
+    				  			FB_SYMBATTRIB_FUNCRESULT)) = 0 ) then
+
+				astAdd( astBuildVarDtorCall( s ) )
+
+			end if
+    	end if
+
+    	s = s->prev
+    loop
+
+end sub
+
+'':::::
+private sub hCallStaticCtor _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval initree as ASTNODE ptr _
+	)
+
+	'' ctor?
+	if( initree <> NULL ) then
+        astTypeIniFlush( initree, sym, FALSE, TRUE )
+		exit sub
+	end if
+
+	'' dynamic?
+	if( symbIsDynamic( sym ) ) then
+       	'' call ERASE..
+       	astAdd( rtlArrayErase( astBuildVarField( sym, NULL, 0 ) ) )
+
+    else
+    	'' not an array?
+    	if( (symbGetArrayDimensions( sym ) = 0) or _
+    		(symbGetArrayElements( sym ) = 1) ) then
+
+        	'' dtor( var )
+        	astAdd( astBuildDtorCall( symbGetSubtype( sym ), _
+            				  	  	  astBuildVarField( sym, NULL, 0 ) ) )
+
+		'' array..
+    	else
+    		hCallCtorList( FALSE, sym, NULL )
+		end if
+	end if
+
+end sub
+
+'':::::
+private sub hGenStaticInstancesDtors _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+	dim as TLIST ptr dtorlist = any
+	dim as FB_DTORWRAPPER ptr wrap = any
+	dim as ASTNODE ptr n = any
+
+	dtorlist = proc->proc.ext->statdtor
+
+	if( dtorlist = NULL ) then
+		exit sub
+	end if
+
+    '' for each node..
+    wrap = listGetHead( dtorlist )
+    do while( wrap <> NULL )
+    	n = astBuildProcBegin( wrap->proc )
+
+        '' call the dtor
+        hCallStaticCtor( wrap->sym, NULL )
+
+		astBuildProcEnd( n )
+
+		'' must be flushed before the proc that has the static vars, because
+		'' they will be removed from hash and symbols table right-after that
+		'' proc is flushed
+		hProcFlush( n, TRUE )
+
+    	wrap = listGetNext( wrap )
+    loop
+
+    '' destroy list
+    listFree( dtorlist )
+    deallocate( proc->proc.ext->statdtor )
+    proc->proc.ext->statdtor = NULL
+
+end sub
+
+'':::::
+function astProcAddStaticInstance _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	dim as TLIST ptr dtorlist = any
+	dim as FB_DTORWRAPPER ptr wrap = any
+	dim as FBSYMBOL ptr proc = any
+
+	dtorlist = parser.currproc->proc.ext->statdtor
+
+	'' create a new list
+	if( dtorlist = NULL ) then
+		dtorlist = callocate( len( TLIST ) )
+		parser.currproc->proc.ext->statdtor = dtorlist
+
+		listNew( dtorlist, 16, len( FB_DTORWRAPPER ), LIST_FLAGS_NOCLEAR )
+	end if
+
+    ''
+    wrap = listNewNode( dtorlist )
+
+	proc = symbAddProc( symbPreAddProc( NULL ), _
+    					hMakeTmpStr( ), _
+						NULL, _
+						NULL, _
+						FB_DATATYPE_VOID, NULL, 0, _
+						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
+						FB_FUNCMODE_CDECL )
+
+    wrap->proc = proc
+    wrap->sym = sym
+
+    '' can't be undefined
+	symbSetCantUndef( sym )
+
+	function = proc
+
+end function
+
+'':::::
+sub astProcAddGlobalInstance _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval initree as ASTNODE ptr, _
+		byval has_dtor as integer _
+	)
+
+    dim as FB_GLOBINSTANCE ptr wrap
+
+    ''
+    wrap = listNewNode( @ast.globinst.list )
+
+    wrap->sym = sym
+    wrap->initree = initree
+    wrap->has_dtor = has_dtor
+
+    '' can't be undefined
+	symbSetCantUndef( sym )
+
+	if( initree <> NULL ) then
+		ast.globinst.ctorcnt += 1
+	end if
+
+	if( has_dtor ) then
+		ast.globinst.dtorcnt += 1
+	end if
+
+end sub
+
+'':::::
+private function hCtorBegin _
+	( _
+		byval is_ctor as integer _
+	) as ASTNODE ptr
+
+    dim as FBSYMBOL ptr proc = any
+    dim as ASTNODE ptr n = any
+
+	proc = symbAddProc( symbPreAddProc( NULL ), _
+    					hMakeTmpStr( ), _
+						iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
+						NULL, _
+						FB_DATATYPE_VOID, NULL, 0, _
+						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
+						FB_FUNCMODE_CDECL )
+
+	if( is_ctor ) then
+		symbSetIsGlobalCtor( proc )
+    else
+    	symbSetIsGlobalDtor( proc )
+    end if
+
+    n = astBuildProcBegin( proc )
+
+    function = n
+
+end function
+
+'':::::
+private sub hCtorEnd _
+	( _
+		byval n as ASTNODE ptr _
+	)
+
+	astBuildProcEnd( n )
+
+	symbSetIsCalled( n->sym )
+	symbSetIsParsed( n->sym )
+
+end sub
+
+'':::::
+private sub hGenGlobalInstancesCtor _
+	( _
+		_
+	)
+
+	dim as FB_GLOBINSTANCE ptr inst = any
+	dim as ASTNODE ptr n = any
+	dim as FBSYMBOL ptr sym = any
+
+	inst = listGetHead( @ast.globinst.list )
+	if( inst = NULL ) then
+		exit sub
+	end if
+
+    '' any global instance with ctors?
+    if( ast.globinst.ctorcnt > 0 ) then
+		n = hCtorBegin( TRUE )
+
+    	'' for each node..
+    	do while( inst <> NULL )
+
+        	'' has ctor?
+        	if( inst->initree <> NULL ) then
+        		'' call ctor
+                hCallStaticCtor( inst->sym, inst->initree )
+			end if
+
+    		inst = listGetNext( inst )
+    	loop
+
+    	hCtorEnd( n )
+    end if
+
+    '' any global instance with dtors?
+    if( ast.globinst.dtorcnt > 0 ) then
+		n = hCtorBegin( FALSE )
+
+    	'' for each node (in inverse order)..
+    	inst = listGetTail( @ast.globinst.list )
+    	do while( inst <> NULL )
+
+            '' has dtor?
+        	if( inst->has_dtor ) then
+        		'' call dtor
+                hCallStaticCtor( inst->sym, NULL )
+			end if
+
+    		inst = listGetPrev( inst )
+    	loop
+
+    	hCtorEnd( n )
+    end if
+
+    '' list will be deleted by astProcListEnd( )
+
+end sub
 

@@ -190,6 +190,9 @@ function cQuirkFunction _
          FB_TK_CSIGN, FB_TK_CUNSG
 		res = cTypeConvExpr( tk, funcexpr )
 
+	case FB_TK_TYPE
+		return cAnonUDT( funcexpr )
+
 	case FB_TK_VIEW
 		res = cViewStmt( TRUE, funcexpr )
 

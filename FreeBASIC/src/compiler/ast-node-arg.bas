@@ -53,25 +53,26 @@ end sub
 '':::::
 private function hAllocTmpArrayDesc _
 	( _
-		byval parent as ASTNODE ptr, _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+		byval array as FBSYMBOL ptr, _
+		byval array_expr as ASTNODE ptr _
+	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr s
-	dim as ASTTEMPARRAY ptr t
+	dim as FBSYMBOL ptr desc = any
 
-	'' alloc a node
-	t = listNewNode( @ast.temparray )
-	t->prev = parent->call.arraytail
-	parent->call.arraytail = t
+	'' create
+	desc = symbAddArrayDesc( array, array_expr, symbGetArrayDimensions( array ) )
 
-	'' create a pointer
-	s = symbAddTempVar( FB_DATATYPE_UINT )
+	'' declare
+	astAdd( astNewDECL( FB_SYMBCLASS_VAR, _
+					    desc, _
+					    symbGetTypeIniTree( desc ) ) )
 
-	t->pdesc = s
+	'' flush (see symbAddArrayDesc(), the desc can't never be static)
+	astTypeIniFlush( symbGetTypeIniTree( desc ), desc, FALSE, TRUE )
 
-	''
-	return rtlArrayAllocTmpDesc( n, s )
+	symbSetTypeIniTree( desc, NULL )
+
+	function = desc
 
 end function
 
@@ -304,7 +305,7 @@ private function hStrParamToPtrArg _
 	if( symbGetDataClass( arg_dtype ) = FB_DATACLASS_STRING ) then
 
 		'' if it's a function returning a STRING, it will have to be
-		'' deleted automagically when the proc been called return
+		'' deleted automagically when the proc being called return
 		if( arg->class = AST_NODECLASS_CALL ) then
 			'' create a temp string to pass as parameter (no copy is
 			'' done at rtlib, as the returned string is a temp too)
@@ -344,7 +345,7 @@ private function hStrParamToPtrArg _
 		case FB_DATATYPE_WCHAR
 
 			'' if it's a function returning a WSTRING, it will have to be
-			'' deleted automatically when the proc been called return
+			'' deleted automatically when the proc being called return
 			if( arg->class = AST_NODECLASS_CALL ) then
             	n->l = hAllocTmpWstrPtr( parent, arg )
 
@@ -373,12 +374,11 @@ private function hCheckArrayParam _
 		byval adclass as integer _
 	) as integer
 
-	dim as FBSYMBOL ptr s, d
-    dim as ASTNODE ptr arg
+	dim as FBSYMBOL ptr s = any, desc = any
+    dim as ASTNODE ptr arg = any
 
 	arg = n->l
 
-	'' type field?
 	s = astGetSymbol( arg )
 
 	if( s = NULL ) then
@@ -388,59 +388,67 @@ private function hCheckArrayParam _
 
 	'' same type? (don't check if it's a rtl proc)
 	if( parent->call.isrtl = FALSE ) then
-		if( (adclass <> symbGetDataClass( s->typ ) ) or _
-			(symbGetDataSize( adtype ) <> symbGetDataSize( s->typ )) ) then
+		if( (adclass <> symbGetDataClass( symbGetType( s ) ) ) or _
+			(symbGetDataSize( adtype ) <> symbGetDataSize( symbGetType( s ) )) ) then
 			hParamError( parent )
 			return FALSE
 		end if
 	end if
 
-	if( s->class = FB_SYMBCLASS_UDTELM ) then
+	'' type field?
+	if( symbGetClass( s ) = FB_SYMBCLASS_FIELD ) then
 		'' not an array?
 		if( symbGetArrayDimensions( s ) = 0 ) then
 			hParamError( parent )
 			return FALSE
 		end if
 
-		'' address of?
-		''''''''if( astIsADDR( p ) ) then
-		''''''''	hParamError( f )
-		''''''''	return FALSE
-		''''''''end if
-
 		'' create a temp array descriptor
-		n->l = hAllocTmpArrayDesc( parent, arg )
-		n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
+		desc = hAllocTmpArrayDesc( s, arg )
 
 	else
-
 		'' an argument passed by descriptor?
 		if( symbIsParamByDesc( s ) ) then
         	'' it's a pointer, but could be seen as anything else
         	'' (ie: if it were "s() as string"), so, create an alias
-        	n->l = astNewVAR( s, 0, FB_DATATYPE_UINT )
+        	astDelTree( n->l )
+        	n->l = astNewVAR( s, 0, FB_DATATYPE_POINTER + FB_DATATYPE_VOID )
         	n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
+        	return TRUE
+        end if
 
-    	else
-			'' not an array?
-			d = s->var.array.desc
-			if( d = NULL ) then
-				hParamError( parent )
-				return FALSE
-			end if
+		'' not an array?
+		desc = symbGetArrayDescriptor( s )
+		if( desc = NULL ) then
+			hParamError( parent )
+			return FALSE
+		end if
 
-        	''
-        	n->l = astNewADDR( AST_OP_ADDROF, _
-        					   astNewVAR( d, 0, FB_DATATYPE_UINT ) )
-        	n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
-
-    	end if
-
+        astDelTree( n->l )
     end if
+
+    n->l = astNewADDR( AST_OP_ADDROF, _
+        			   astNewVAR( desc, _
+        					   	  0, _
+        					   	  FB_DATATYPE_VOID ) )
+
+    n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
 
     function = TRUE
 
 end function
+
+'':::::
+#macro hBuildBurefArg( n, arg )
+
+	arg = astNewADDR( AST_OP_ADDROF, arg )
+
+	n->l = arg
+	n->dtype = arg->dtype
+	n->subtype = arg->subtype
+	n->arg.mode = FB_PARAMMODE_BYVAL
+
+#endmacro
 
 '':::::
 private function hCheckByRefArg _
@@ -482,12 +490,7 @@ private function hCheckByRefArg _
 	end select
 
 	'' take the address of
-	arg = astNewADDR( AST_OP_ADDROF, arg )
-
-	n->l = arg
-	n->dtype = arg->dtype
-	n->subtype = arg->subtype
-	n->arg.mode = FB_PARAMMODE_BYVAL
+    hBuildBurefArg( n, arg )
 
 	function = arg
 
@@ -497,22 +500,15 @@ end function
 private function hCheckParam _
 	( _
 		byval parent as ASTNODE ptr, _
+		byval param as FBSYMBOL ptr, _
 		byval n as ASTNODE ptr _
 	) as integer
 
-    dim as FBSYMBOL ptr param = any
     dim as integer param_dtype = any, param_dclass = any, param_mode = any
-    dim as ASTNODE ptr arg = any
     dim as integer arg_dtype = any, arg_dclass = any, arg_mode = any, arg_nodeclass = any
+    dim as ASTNODE ptr arg = any
 
     function = FALSE
-
-	''
-	if( parent->call.args >= parent->sym->proc.params ) then
-		param = symbGetProcTailParam( parent->sym )
-	else
-		param = parent->call.currarg
-	end if
 
 	'' parameter
 	param_mode = symbGetParamMode( param )
@@ -596,6 +592,18 @@ private function hCheckParam _
     end if
 
     '' byval or byref (but as any)..
+
+	'' passing a BYVAL ptr to an BYREF arg?
+	if( (arg_mode = FB_PARAMMODE_BYVAL) and (param_mode = FB_PARAMMODE_BYREF) ) then
+
+		if( (arg_dclass <> FB_DATACLASS_INTEGER) or _
+			(symbGetDataSize( arg_dtype ) <> FB_POINTERSIZE) ) then
+			hParamError( parent )
+			exit function
+		end if
+
+		return TRUE
+	end if
 
     '' string argument?
     if( param_dclass = FB_DATACLASS_STRING ) then
@@ -708,23 +716,13 @@ private function hCheckParam _
 
 	'' anything but strings..
 
-	'' passing a BYVAL ptr to an BYREF arg?
-	if( (arg_mode = FB_PARAMMODE_BYVAL) and (param_mode = FB_PARAMMODE_BYREF) ) then
-		if( (arg_dclass <> FB_DATACLASS_INTEGER) or _
-			(symbGetDataSize( arg_dtype ) <> FB_POINTERSIZE) ) then
-			hParamError( parent )
-			exit function
-		end if
-
-		return TRUE
-	end if
-
 	'' UDT arg? check if the same, can't convert
 	if( param_dtype = FB_DATATYPE_STRUCT ) then
 		dim as FBSYMBOL ptr s = any
+
 		'' not another UDT?
 		if( arg_dtype <> FB_DATATYPE_STRUCT ) then
-			'' not a proc? (can be an UDT been returned in registers)
+			'' not a proc? (can be an UDT being returned in registers)
 			if( arg_nodeclass <> AST_NODECLASS_CALL ) then
 				hParamError( parent )
 				exit function
@@ -737,7 +735,7 @@ private function hCheckParam _
 				exit function
 			end if
 
-			'' byref argument? can't create a tempory UDT..
+			'' byref argument? can't create a temporary UDT..
 			if( param_mode = FB_PARAMMODE_BYREF ) then
 				hParamError( parent, FB_ERRMSG_CANTPASSUDTRESULTBYREF )
 				exit function
@@ -748,10 +746,10 @@ private function hCheckParam _
 			s = s->subtype
 
 		else
-			if( arg_nodeclass <> AST_NODECLASS_CALL ) then
-				s = arg->subtype
-			else
+			if( arg_nodeclass = AST_NODECLASS_CALL ) then
 				s = arg->sym->subtype
+			else
+				s = arg->subtype
 			end if
 		end if
 
@@ -761,10 +759,25 @@ private function hCheckParam _
 			exit function
 		end if
 
-		'' set the length if it's been passed by value
+		'' set the length if it's being passed by value
 		if( param_mode = FB_PARAMMODE_BYVAL ) then
-			if( arg_dtype = FB_DATATYPE_STRUCT ) then
-				n->arg.lgt = FB_ROUNDLEN( symbGetLen( s ) )
+            dim as FBSYMBOL ptr param_subtype = symbGetSubtype( param )
+
+			'' no dtor, copy-ctor or virtual members?
+			if( symbIsTrivial( param_subtype ) ) then
+				if( arg_dtype = FB_DATATYPE_STRUCT ) then
+					n->arg.lgt = FB_ROUNDLEN( symbGetLen( s ) )
+				end if
+
+			'' non-trivial type, pass a pointer to a temp copy
+			else
+				dim as FBSYMBOL ptr tmp = any
+				tmp = symbAddTempVar( param_dtype, param_subtype, FALSE, FALSE )
+
+				arg = astNewCALLCTOR( astBuildCopyCtorCall( astBuildVarField( tmp ), arg ), _
+									  astBuildVarField( tmp ) )
+
+				hBuildBurefArg( n, arg )
 			end if
 		end if
 
@@ -878,6 +891,27 @@ private function hCheckParam _
 end function
 
 '':::::
+private function hCreateOptArg _
+	( _
+		byval param as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr tree = any
+
+	'' make a clone
+	tree = astCloneTree( symbGetParamOptExpr( param ) )
+
+	'' UDT?
+	if( symbGetType( param ) = FB_DATATYPE_STRUCT ) then
+		'' update the counters
+		astTypeIniUpdCnt( tree )
+	end if
+
+	function = tree
+
+end function
+
+'':::::
 function astNewARG _
 	( _
 		byval parent as ASTNODE ptr, _
@@ -887,7 +921,20 @@ function astNewARG _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any, t = any
-    dim as FBSYMBOL ptr sym = any
+    dim as FBSYMBOL ptr sym = any, param = any
+
+	sym = parent->sym
+
+	if( parent->call.args >= sym->proc.params ) then
+		param = symbGetProcTailParam( sym )
+	else
+		param = parent->call.currarg
+	end if
+
+	'' optional/default?
+	if( arg = NULL ) then
+		arg = hCreateOptArg( param )
+	end if
 
 	if( dtype = INVALID ) then
 		dtype = astGetDataType( arg )
@@ -906,8 +953,6 @@ function astNewARG _
 	n->arg.lgt = 0
 
 	'' add param node to function's list
-	sym = parent->sym
-
 	t = parent->r
 
 	'' pascal mode, first param added will be the first pushed
@@ -929,7 +974,7 @@ function astNewARG _
 	end if
 
 	''
-	if( hCheckParam( parent, n ) = FALSE ) then
+	if( hCheckParam( parent, param, n ) = FALSE ) then
 		return NULL
 	end if
 
@@ -942,3 +987,56 @@ function astNewARG _
 
 end function
 
+'':::::
+function astReplaceARG _
+	( _
+		byval parent as ASTNODE ptr, _
+		byval argnum as integer, _
+		byval expr as ASTNODE ptr, _
+		byval dtype as integer = INVALID, _
+		byval mode as integer = INVALID _
+	) as ASTNODE ptr static
+
+	dim as FBSYMBOL ptr sym, param
+	dim as integer cnt
+	dim as ASTNODE ptr n
+
+	sym = parent->sym
+
+	if( dtype = INVALID ) then
+		dtype = astGetDataType( expr )
+	end if
+
+	'' find the argument (assuming argnum is valid)
+	cnt = parent->call.args
+	param = symbGetProcFirstParam( sym )
+	n = parent->r
+	do while( n <> NULL )
+
+		cnt -= 1
+		if( cnt = argnum ) then
+			exit do
+		end if
+
+		param = symbGetProcNextParam( sym, param )
+		n = n->r
+	loop
+
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	astDelTree( n->l )
+
+	n->l = expr
+	n->arg.mode = mode
+	n->arg.lgt = 0
+	n->dtype = dtype
+
+	if( hCheckParam( parent, param, n ) = FALSE ) then
+		return NULL
+	end if
+
+	function = n
+
+end function

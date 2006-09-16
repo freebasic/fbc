@@ -48,6 +48,7 @@ const FB_MAXPATHLEN			= 260
 const FB_MAXINCRECLEVEL		= 16
 const FB_MAXARGRECLEVEL		= 8
 const FB_MAXPRAGMARECLEVEL	= 8
+const FB_MAXNAMESPCRECLEVEL	= 64
 
 const FB_MAXINCPATHS		= 16
 
@@ -226,7 +227,6 @@ enum FB_LANG
 	FB_LANG_FB
 	FB_LANG_FB_DEPRECATED
 	FB_LANG_QB
-	FB_LANG_VB
 
 	FB_LANGS
 end enum
@@ -276,91 +276,113 @@ end enum
 ''
 ''
 ''
-declare function 	fbInit			( _
-										byval ismain as integer _
-									) as integer
+declare function fbInit _
+	( _
+		byval ismain as integer _
+	) as integer
 
-declare sub 		fbEnd			( _
-									)
+declare sub fbEnd _
+	( _
+	)
 
-declare function 	fbCompile		( _
-										byval infname as zstring ptr, _
-										byval outfname as zstring ptr, _
-										byval ismain as integer, _
-				    				  	preincTb() as string, _
-										byval preincfiles as integer _
-									) as integer
+declare function fbCompile _
+	( _
+		byval infname as zstring ptr, _
+		byval outfname as zstring ptr, _
+		byval ismain as integer, _
+	  	preincTb() as string, _
+		byval preincfiles as integer _
+	) as integer
 
-declare sub 		fbSetPaths		( _
-										byval target as integer _
-									)
+declare sub fbSetPaths _
+	( _
+		byval target as integer _
+	)
 
-declare function 	fbGetPath		( _
-										byval path as integer _
-									) as zstring ptr
+declare function fbGetPath _
+	( _
+		byval path as integer _
+	) as zstring ptr
 
-declare sub 		fbSetDefaultOptions ( _
-									)
+declare sub fbSetDefaultOptions _
+	( _
+	)
 
-declare sub 		fbSetOption		( _
-										byval opt as integer, _
-										byval value as integer _
-									)
+declare sub fbSetOption _
+	( _
+		byval opt as integer, _
+		byval value as integer _
+	)
 
-declare function 	fbGetOption 	( _
-										byval opt as integer _
-									) as integer
+declare function fbGetOption _
+	( _
+		byval opt as integer _
+	) as integer
 
-declare function 	fbListLibs		( _
-										namelist() as string, _
-										byval index as integer _
-									) as integer
-declare sub 		fbAddIncPath	( _
-										byval path as zstring ptr _
-									)
+declare function fbListLibs _
+	( _
+		namelist() as string, _
+		byval index as integer _
+	) as integer
+declare sub fbAddIncPath _
+	( _
+		byval path as zstring ptr _
+	)
 
-declare function	fbAddLibPath	( _
-										byval path as zstring ptr _
-									) as integer
+declare function fbAddLibPath _
+	( _
+		byval path as zstring ptr _
+	) as integer
 
-declare sub 		fbAddDefine		( _
-										byval dname as zstring ptr, _
-										byval dtext as zstring ptr _
-									)
+declare sub fbAddDefine _
+	( _
+		byval dname as zstring ptr, _
+		byval dtext as zstring ptr _
+	)
 
-declare function 	fbIncludeFile	( _
-										byval filename as zstring ptr, _
-										byval isonce as integer _
-									) as integer
+declare function fbIncludeFile _
+	( _
+		byval filename as zstring ptr, _
+		byval isonce as integer _
+	) as integer
 
-declare function 	fbGetEntryPoint ( _
-									) as string
+declare function fbGetEntryPoint _
+	( _
+	) as string
 
-declare function 	fbGetModuleEntry( _
-									) as string
+declare function fbGetModuleEntry _
+	( _
+	) as string
 
-declare sub 		fbAddDefaultLibs( _
-									)
+declare sub fbAddDefaultLibs _
+	( _
+	)
 
-declare sub 		fbMainBegin		( _
-									)
+declare sub fbMainBegin _
+	( _
+	)
 
-declare sub 		fbMainEnd		( _
- 									)
+declare sub fbMainEnd _
+	( _
+	)
 
-declare sub 		fbReportRtError	( _
-										byval modname as zstring ptr, _
-										byval funname as zstring ptr, _
-										byval errnum as integer _
-									)
+declare sub fbReportRtError _
+	( _
+		byval modname as zstring ptr, _
+		byval funname as zstring ptr, _
+		byval errnum as integer _
+	)
 
-declare function 	fbGetLangOptions( _
-										byval lang as FB_LANG _
-									) as FB_LANG_OPT
+declare function fbGetLangOptions _
+	( _
+		byval lang as FB_LANG _
+	) as FB_LANG_OPT
 
-declare function	fbGetLangName	( _
-										byval lang as FB_LANG _
-									) as string
+declare function fbGetLangName _
+	( _
+		byval lang as FB_LANG _
+	) as string
+
 
 ''
 '' macros

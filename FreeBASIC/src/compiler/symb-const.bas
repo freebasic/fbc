@@ -41,11 +41,12 @@ function symbAddConst _
 
     function = NULL
 
-    sym = symbNewSymbol( NULL, _
-    					 NULL, NULL, 0, _
+    sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    					 NULL, _
+    					 NULL, NULL, _
     					 FB_SYMBCLASS_CONST, _
-    				   	 TRUE, symbol, NULL, _
-    				   	 dtype, subtype )
+    				   	 symbol, NULL, _
+    				   	 dtype, subtype, 0 )
 	if( sym = NULL ) then
 		exit function
 	end if

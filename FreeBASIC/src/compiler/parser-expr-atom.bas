@@ -44,11 +44,11 @@ function cParentExpression _
   	lexSkipToken( )
 
   	'' ++parent cnt
-  	env.prntcnt += 1
+  	parser.prntcnt += 1
 
   	if( cExpression( parexpr ) = FALSE ) then
   		'' calling a SUB? it could be a BYVAL or nothing due the optional ()'s
-  		if( env.prntopt ) then
+  		if( fbGetPrntOptional( ) ) then
   			exit function
   		end if
 
@@ -66,11 +66,11 @@ function cParentExpression _
   	if( lexGetToken( ) = CHAR_RPRNT ) then
   		lexSkipToken( )
   		'' --parent cnt
-  		env.prntcnt -= 1
+  		parser.prntcnt -= 1
 
   	else
   		'' not calling a SUB or parent cnt = 0?
-  		if( (env.prntopt = FALSE) or (env.prntcnt = 0) ) then
+  		if( (fbGetPrntOptional( ) = FALSE) or (parser.prntcnt = 0) ) then
   			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
   				exit function
   			else
@@ -81,6 +81,69 @@ function cParentExpression _
   	end if
 
   	function = TRUE
+
+end function
+
+'':::::
+private function hCtorCall _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byref atom as ASTNODE ptr _
+	) as integer
+
+	dim as FBSYMBOL ptr tmp = any
+	dim as integer isprnt = any
+	dim as ASTNODE ptr procexpr = any
+
+	'' skip symbol
+	lexSkipToken( )
+
+    '' alloc temp var
+    tmp = symbAddTempVar( symbGetType( sym ), _
+    					  sym, _
+    					  FALSE, _
+    					  FALSE )
+
+
+	'' '('?
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		lexSkipToken( )
+		isprnt = TRUE
+	else
+		isprnt = FALSE
+	end if
+
+	procexpr = cProcArgList( symbGetCompCtorHead( sym ), _
+					  		 NULL, _
+					  		 astBuildVarField( tmp ), _
+					  		 TRUE, _
+					  		 FALSE )
+	if( procexpr = NULL ) then
+		return FALSE
+	end if
+
+	if( isprnt ) then
+		'' ')'?
+		if( lexGetToken( ) <> CHAR_RPRNT ) then
+			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+				return FALSE
+			else
+				'' error recovery: skip until next ')'
+				hSkipUntil( CHAR_RPRNT, TRUE )
+			end if
+		else
+			lexSkipToken( )
+		end if
+	end if
+
+	'' error recovery..
+	if( astIsCALL( procexpr ) ) then
+		atom = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
+	else
+		atom = procexpr
+	end if
+
+	function = ( atom <> NULL )
 
 end function
 
@@ -103,11 +166,19 @@ private function hFindId _
 			return cFunctionEx( sym, atom )
 
 		case FB_SYMBCLASS_VAR
-           	return cVariableEx( chain_, atom, env.checkarray )
+           	return cVariableEx( chain_, atom, fbGetCheckArray( ) )
+
+        case FB_SYMBCLASS_FIELD
+        	return cFieldVariable( NULL, chain_, atom, fbGetCheckArray( ) )
 
   		'' quirk-keyword?
   		case FB_SYMBCLASS_KEYWORD
   			return cQuirkFunction( sym->key.id, atom )
+
+		case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
+			if( symbGetHasCtor( sym ) ) then
+				return hCtorCall( sym, atom )
+			end if
 		end select
 
     	chain_ = symbChainGetNext( chain_ )
@@ -160,7 +231,7 @@ function cAtom _
   			return FALSE
   		end if
 
-  		return cVariableEx( NULL, atom, env.checkarray )
+  		return cVariableEx( NULL, atom, fbGetCheckArray( ) )
 
 	case FB_TKCLASS_NUMLITERAL
 		return cNumLiteral( atom )
@@ -187,8 +258,8 @@ function cAtom _
 				exit function
 			end if
 
-  			if( env.stmt.with.sym <> NULL ) then
-  				return cWithVariable( env.stmt.with.sym, atom, env.checkarray )
+  			if( parser.stmt.with.sym <> NULL ) then
+  				return cWithVariable( parser.stmt.with.sym, atom, fbGetCheckArray( ) )
   			end if
   		end if
 

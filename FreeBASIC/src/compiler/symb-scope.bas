@@ -23,6 +23,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\parser.bi"
 #include once "inc\list.bi"
 #include once "inc\ast.bi"
 #include once "inc\emit.bi"
@@ -36,12 +37,14 @@ function symbAddScope _
 
     dim as FBSYMBOL ptr s
 
-    s = symbNewSymbol( NULL, _
-    				   symb.symtb, NULL, TRUE, _
+    s = symbNewSymbol( FB_SYMBOPT_NONE, _
+    				   NULL, _
+    				   symb.symtb, NULL, _
     				   FB_SYMBCLASS_SCOPE, _
-    				   FALSE, NULL, NULL )
+    				   NULL, NULL, _
+    				   INVALID, NULL, 0 )
 
-	symbSymTbInit( @s->scp.symtb, s )
+	symbSymbTbInit( s->scp.symtb, s )
     s->scp.backnode = backnode
 
 	function = s
@@ -111,7 +114,7 @@ function symbScopeAllocLocals _
 
     function = FALSE
 
-    s = symbGetScopeTbHead( scp )
+    s = symbGetScopeSymbTbHead( scp )
     do while( s <> NULL )
 		'' variable?
 		if( s->class = FB_SYMBCLASS_VAR ) then
@@ -120,7 +123,7 @@ function symbScopeAllocLocals _
     			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
 
 				lgt = s->lgt * symbGetArrayElements( s )
-				s->ofs = emitAllocLocal( env.currproc, lgt )
+				s->ofs = emitAllocLocal( parser.currproc, lgt )
 
 				symbSetIsAllocated( s )
 
@@ -134,33 +137,5 @@ function symbScopeAllocLocals _
     function = TRUE
 
 end function
-
-'':::::
-sub symbFreeScopeDynVars _
-	( _
-		byval scp as FBSYMBOL ptr _
-	) static
-
-    dim as FBSYMBOL ptr s
-
-	'' for each symbol declared inside the SCOPE block..
-	s = scp->scp.symtb.head
-    do while( s <> NULL )
-    	'' variable?
-    	if( s->class = FB_SYMBCLASS_VAR ) then
-    		'' not shared, static or temp (for locals)
-    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
-    							FB_SYMBATTRIB_STATIC or _
-    							FB_SYMBATTRIB_TEMP)) = 0 ) then
-
-    			astAdd( symbFreeDynVar( s ) )
-
-    		end if
-    	end if
-
-    	s = s->next
-    loop
-
-end sub
 
 

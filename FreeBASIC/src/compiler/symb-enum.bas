@@ -24,6 +24,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\parser.bi"
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
 
@@ -41,15 +42,17 @@ function symbAddEnum _
 	'' no explict alias given?
     if( id_alias = NULL ) then
     	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( env.mangling <> FB_MANGLING_BASIC ) then
+    	if( parser.mangling <> FB_MANGLING_BASIC ) then
     		id_alias = id
     	end if
     end if
 
-    e = symbNewSymbol( NULL, _
-    				   NULL, NULL, 0, _
+    e = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    				   NULL, _
+    				   NULL, NULL, _
     				   FB_SYMBCLASS_ENUM, _
-    				   TRUE, id, id_alias )
+    				   id, id_alias, _
+    				   INVALID, NULL, 0 )
 	if( e = NULL ) then
 		exit function
 	end if
@@ -80,11 +83,12 @@ function symbAddEnumElement _
 
 	dim as FBSYMBOL ptr s
 
-    s = symbNewSymbol( NULL, _
-    				   NULL, NULL, 0, _
+    s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    				   NULL, _
+    				   NULL, NULL, _
     				   FB_SYMBCLASS_CONST, _
-    				   TRUE, id, NULL, _
-    				   FB_DATATYPE_ENUM, parent )
+    				   id, NULL, _
+    				   FB_DATATYPE_ENUM, parent, 0 )
 	if( s = NULL ) then
 		exit function
 	end if

@@ -31,64 +31,76 @@ DECL_STRTYPE( DSTRING, any )
 DECL_STRTYPE( DZSTRING, zstring )
 DECL_STRTYPE( DWSTRING, wstring )
 
+declare sub DZstrZero _
+	( _
+		byref dst as DZSTRING _
+	)
 
-declare sub 	DZstrZero 					( _
-												byref dst as DZSTRING _
-											)
+declare sub DZstrAllocate _
+	( _
+		byref dst as DZSTRING, _
+		byval chars as integer _
+	)
 
-declare sub 	DZstrAllocate				( _
-												byref dst as DZSTRING, _
-				 								byval chars as integer _
-				 							)
+declare sub DZstrAssign _
+	( _
+		byref dst as DZSTRING, _
+		byval src as zstring ptr _
+	)
 
-declare sub 	DZstrAssign 				( _
-												byref dst as DZSTRING, _
-				  								byval src as zstring ptr _
-				  							)
+declare sub DZstrAssignW _
+	( _
+		byref dst as DZSTRING, _
+		byval src as wstring ptr _
+	)
 
-declare sub 	DZstrAssignW 				( _
-												byref dst as DZSTRING, _
-				   								byval src as wstring ptr _
-				   							)
+declare sub DZstrConcatAssign _
+	( _
+		byref dst as DZSTRING, _
+		byval src as zstring ptr _
+	)
 
-declare sub 	DZstrConcatAssign 			( _
-												byref dst as DZSTRING, _
-											  	byval src as zstring ptr _
-											)
-
-declare sub 	DZstrConcatAssignW 			( _
-												byref dst as DZSTRING, _
-						 					  	byval src as wstring ptr _
-						 					)
+declare sub DZstrConcatAssignW _
+	( _
+		byref dst as DZSTRING, _
+		byval src as wstring ptr _
+	)
 
 
-declare sub 	DWstrZero 					( _
-												byref dst as DWSTRING _
-											)
+declare sub DWstrZero _
+	( _
+		byref dst as DWSTRING _
+	)
 
-declare sub 	DWstrAllocate				( _
-												byref dst as DWSTRING, _
-				 							  	byval chars as integer _
-				 							)
+declare sub DWstrAllocate _
+	( _
+		byref dst as DWSTRING, _
+		byval chars as integer _
+	)
 
-declare sub 	DWstrAssign 				( _
-												byref dst as DWSTRING, _
-				  							  	byval src as wstring ptr _
-				  							)
+declare sub DWstrAssign _
+	( _
+		byref dst as DWSTRING, _
+		byval src as wstring ptr _
+	)
 
-declare sub 	DWstrAssignA 				( _
-												byref dst as DWSTRING, _
-				   							  	byval src as zstring ptr _
-				   							)
+declare sub DWstrAssignA _
+	( _
+		byref dst as DWSTRING, _
+		byval src as zstring ptr _
+	)
 
-declare sub 	DWstrConcatAssign 			( _
-												byref dst as DWSTRING, _
-											  	byval src as wstring ptr _
-											)
+declare sub DWstrConcatAssign _
+	( _
+		byref dst as DWSTRING, _
+		byval src as wstring ptr _
+	)
 
-declare sub 	DWstrConcatAssignA 			( _
-												byref dst as DWSTRING, _
-						 					  	byval src as zstring ptr _
-						 					)
+declare sub DWstrConcatAssignA _
+	( _
+		byref dst as DWSTRING, _
+		byval src as zstring ptr _
+	)
+
 
 #endif ''__DSTR_BI__

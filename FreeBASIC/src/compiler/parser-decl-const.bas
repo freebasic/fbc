@@ -94,18 +94,16 @@ function cConstAssign _
     static as zstring * FB_MAXNAMELEN+1 id
     dim as integer edtype, doskip
     dim as ASTNODE ptr expr
-    dim as FBSYMBOL ptr ns, litsym
+    dim as FBSYMBOL ptr parent, litsym
     dim as FBVALUE value
 
 	function = FALSE
 
 	'' don't allow explicit namespaces
-	ns = cNamespace( )
-    if( ns <> NULL ) then
-		if( ns <> symbGetCurrentNamespc( ) ) then
-			if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-				exit function
-			end if
+	parent = cParentId( )
+    if( parent <> NULL ) then
+		if( hDeclCheckParent( parent ) = FALSE ) then
+			exit function
     	end if
     else
     	if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -129,7 +127,7 @@ function cConstAssign _
 
 	case FB_TKCLASS_QUIRKWD
 		'' only if inside a ns and if not local
-		if( (symbIsGlobalNamespc( )) or (env.scope > FB_MAINSCOPE) ) then
+		if( (symbIsGlobalNamespc( )) or (parser.scope > FB_MAINSCOPE) ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     			exit function
     		else

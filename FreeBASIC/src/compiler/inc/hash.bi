@@ -39,46 +39,57 @@ type THASH
 	delstr		as integer
 end type
 
-declare sub 		hashInit		( )
+declare sub hashInit _
+	( _
+	)
 
-declare sub 		hashEnd			( )
+declare sub hashEnd	 _
+	( _
+	)
 
-declare sub 		hashNew			( _
-										byval hash as THASH ptr, _
-								  	  	byval nodes as integer, _
-								  	  	byval delstr as integer = FALSE _
-								  	)
+declare sub hashNew _
+	( _
+		byval hash as THASH ptr, _
+		byval nodes as integer, _
+		byval delstr as integer = FALSE _
+	)
 
-declare sub 		hashFree		( _
-										byval hash as THASH ptr _
-									)
+declare sub hashFree _
+	( _
+		byval hash as THASH ptr _
+	)
 
-declare function 	hashHash		( _
-										byval symbol as zstring ptr _
-									) as uinteger
+declare function hashHash _
+	( _
+		byval symbol as zstring ptr _
+	) as uinteger
 
-declare function 	hashLookup		( _
-										byval hash as THASH ptr, _
-									  	byval symbol as zstring ptr _
-									) as any ptr
+declare function hashLookup _
+	( _
+		byval hash as THASH ptr, _
+		byval symbol as zstring ptr _
+	) as any ptr
 
-declare function 	hashLookupEx	( _
-										byval hash as THASH ptr, _
-									  	byval symbol as zstring ptr, _
-									  	byval index as uinteger _
-									) as any ptr
+declare function hashLookupEx _
+	( _
+		byval hash as THASH ptr, _
+		byval symbol as zstring ptr, _
+		byval index as uinteger _
+	) as any ptr
 
-declare function	hashAdd			( _
-										byval hash as THASH ptr, _
-									  	byval symbol as zstring ptr, _
-									  	byval userdata as any ptr, _
-									  	byval index as uinteger _
-									) as HASHITEM ptr
+declare function hashAdd _
+	( _
+		byval hash as THASH ptr, _
+		byval symbol as zstring ptr, _
+		byval userdata as any ptr, _
+		byval index as uinteger _
+	) as HASHITEM ptr
 
-declare sub 		hashDel			( _
-										byval hash as THASH ptr, _
-									  	byval item as HASHITEM ptr, _
-									  	byval index as uinteger _
-									)
+declare sub hashDel _
+	( _
+		byval hash as THASH ptr, _
+		byval item as HASHITEM ptr, _
+		byval index as uinteger _
+	)
 
 #endif '' __HASH_BI__

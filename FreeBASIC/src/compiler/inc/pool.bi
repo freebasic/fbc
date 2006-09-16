@@ -30,28 +30,31 @@ type TPOOL
 	chunkTb		as TLIST ptr
 end type
 
-declare function	poolNew 		( _
-										byval pool as TPOOL ptr, _
-										byval items as integer, _
-										byval minlen as integer, _
-										byval maxlen as integer _
-									) as integer
+declare function poolNew _
+	( _
+		byval pool as TPOOL ptr, _
+		byval items as integer, _
+		byval minlen as integer, _
+		byval maxlen as integer _
+	) as integer
 
 
-declare sub 		poolFree 		( _
-										byval pool as TPOOL ptr _
-									)
+declare sub poolFree _
+	( _
+		byval pool as TPOOL ptr _
+	)
 
+declare function poolNewItem _
+	( _
+		byval pool as TPOOL ptr, _
+		byval len_ as integer _
+	) as any ptr
 
-declare function 	poolNewItem 	( _
-										byval pool as TPOOL ptr, _
-										byval len_ as integer _
-									) as any ptr
-
-declare sub 		poolDelItem		( _
-										byval pool as TPOOL ptr, _
-										byval node as any ptr _
-									)
+declare sub poolDelItem _
+	( _
+		byval pool as TPOOL ptr, _
+		byval node as any ptr _
+	)
 
 
 #endif '' __POOL_BI__

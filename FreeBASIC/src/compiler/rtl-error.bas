@@ -23,6 +23,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\parser.bi"
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
@@ -452,7 +453,7 @@ sub rtlErrorSetHandler _
     expr = NULL
     if( savecurrent ) then
     	if( fbIsModLevel( ) = FALSE ) then
-    		with env.currproc->proc.ext->err
+    		with parser.currproc->proc.ext->err
     			if( .lasthnd = NULL ) then
 					.lasthnd = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
                 	expr = astNewVAR( .lasthnd, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )

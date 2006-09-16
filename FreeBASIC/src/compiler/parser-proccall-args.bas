@@ -31,6 +31,8 @@ type FBCTX
 	arglist		as TLIST
 end type
 
+#define hInstPtrMode(ip) iif( astIsCONST( ip ), FB_PARAMMODE_BYVAL, INVALID )
+
 '' globals
 	dim shared ctx as FBCTX
 
@@ -47,27 +49,6 @@ sub parserProcCallEnd( )
 	listFree( @ctx.arglist )
 
 end sub
-
-'':::::
-private function hCreateOptArg _
-	( _
-		byval param as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr tree = any
-
-	'' make a clone
-	tree = astCloneTree( symbGetParamOptExpr( param ) )
-
-	'' UDT?
-	if( symbGetType( param ) = FB_DATATYPE_STRUCT ) then
-		'' update the counters
-		astTypeIniUpdCnt( tree )
-	end if
-
-	function = tree
-
-end function
 
 '':::::
 ''ProcArg        =   BYVAL? (ID(('(' ')')? | Expression) .
@@ -92,19 +73,20 @@ private function hProcArg _
 	expr = NULL
 
 	'' BYVAL?
-	if( hMatch( FB_TK_BYVAL ) ) then
+	if( lexGetToken( ) = FB_TK_BYVAL ) then
+		lexSkipToken( )
 		amode = FB_PARAMMODE_BYVAL
 	end if
 
-	oldsym = env.ctxsym
-	env.ctxsym = symbGetSubType( param )
+	oldsym = parser.ctxsym
+	parser.ctxsym = symbGetSubType( param )
 
 	'' Expression
 	if( cExpression( expr ) = FALSE ) then
 
 		'' error?
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			env.ctxsym = oldsym
+			parser.ctxsym = oldsym
 			exit function
 		end if
 
@@ -114,7 +96,7 @@ private function hProcArg _
 		else
 			'' failed and expr not null?
 			if( expr <> NULL ) then
-				env.ctxsym = oldsym
+				parser.ctxsym = oldsym
 				exit function
 			end if
 
@@ -132,7 +114,7 @@ private function hProcArg _
 
 	end if
 
-	env.ctxsym = oldsym
+	parser.ctxsym = oldsym
 
 	if( expr = NULL ) then
 
@@ -149,9 +131,6 @@ private function hProcArg _
 			else
 				exit function
 			end if
-
-		else
-			expr = hCreateOptArg( param )
 		end if
 
 	else
@@ -220,15 +199,15 @@ private function hOvlProcArg _
 		arg->mode = FB_PARAMMODE_BYVAL
 	end if
 
-	oldsym = env.ctxsym
-	env.ctxsym = NULL
+	oldsym = parser.ctxsym
+	parser.ctxsym = NULL
 
 	'' Expression
 	if( cExpression( arg->expr ) = FALSE ) then
 
 		'' error?
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			env.ctxsym = oldsym
+			parser.ctxsym = oldsym
 			exit function
 		end if
 
@@ -239,7 +218,7 @@ private function hOvlProcArg _
 		else
 			'' failed and expr not null?
 			if( arg->expr <> NULL ) then
-				env.ctxsym = oldsym
+				parser.ctxsym = oldsym
 				exit function
 			end if
 
@@ -257,7 +236,7 @@ private function hOvlProcArg _
 
 	end if
 
-	env.ctxsym = oldsym
+	parser.ctxsym = oldsym
 
 	'' not optional?
 	if( arg->expr <> NULL ) then
@@ -298,12 +277,24 @@ private sub hDelArgNodes _
 end sub
 
 '':::::
+#macro hAllocOvlProcArg( arg, arg_head, arg_tail )
+	arg = listNewNode( @ctx.arglist )
+	if( arg_head = NULL ) then
+		arg_head = arg
+	else
+		arg_tail->next = arg
+	end if
+	arg_tail = arg
+	arg->next = NULL
+#endmacro
+
+'':::::
 ''ProcArgList     =    ProcArg (DECL_SEPARATOR ProcArg)* .
 ''
 private function hOvlProcArgList _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval ptrexpr as ASTNODE ptr, _
+		byval thisexpr as ASTNODE ptr, _
 		byval isfunc as integer, _
 		byval optonly as integer _
 	) as ASTNODE ptr
@@ -320,7 +311,7 @@ private function hOvlProcArgList _
 	params = symGetProcOvlMaxParams( proc )
 
 	'' no parms? (could happen by mistake..)
-	if( params = 0 ) then
+	if( params = iif( thisexpr = NULL, 0, 1 ) ) then
 		'' sub? check the optional parentheses
 		if( isfunc = FALSE ) then
 			'' '('
@@ -337,11 +328,33 @@ private function hOvlProcArgList _
 			end if
 		end if
 
-		return astNewCALL( proc, ptrexpr )
+		procexpr = astNewCALL( proc, NULL )
+
+		'' method call?
+		if( thisexpr <> NULL ) then
+			if( astNewARG( procexpr, _
+						   thisexpr, _
+						   INVALID, _
+					   	   hInstPtrMode( thisexpr ) ) = NULL ) then
+				exit function
+			end if
+		end if
+
+		return procexpr
 	end if
 
 	arg_head = NULL
 	arg_tail = NULL
+
+	'' method call?
+	if( thisexpr <> NULL ) then
+        '' alloc a new arg
+		hAllocOvlProcArg( arg, arg_head, arg_tail )
+
+		arg->expr = thisexpr
+		arg->mode = hInstPtrMode( thisexpr )
+		args += 1
+	end if
 
 	if( optonly = FALSE ) then
 		do
@@ -363,14 +376,7 @@ private function hOvlProcArgList _
 			end if
 
 			'' alloc a new arg
-			arg = listNewNode( @ctx.arglist )
-			if( arg_head = NULL ) then
-				arg_head = arg
-			else
-				arg_tail->next = arg
-			end if
-			arg_tail = arg
-			arg->next = NULL
+			hAllocOvlProcArg( arg, arg_head, arg_tail )
 
 			if( hOvlProcArg( args, arg, isfunc ) = FALSE ) then
 				'' not an error? (could be an optional)
@@ -400,9 +406,11 @@ private function hOvlProcArgList _
 	'' try finding the closest overloaded proc
 	ovlproc = symbFindClosestOvlProc( proc, args, arg_head, @err_num )
 	if( ovlproc = NULL ) then
-		if( err_num <> FB_ERRMSG_OK ) then
-			errReportParam( proc, 0, NULL, err_num )
+		if( err_num = FB_ERRMSG_OK ) then
+			err_num = FB_ERRMSG_NOMATCHINGPROC
 		end if
+
+		errReportParam( proc, 0, NULL, err_num )
 
 		hDelArgNodes( arg_head )
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -416,19 +424,13 @@ private function hOvlProcArgList _
 
 	proc = ovlproc
 
-	procexpr = astNewCALL( proc, ptrexpr )
+	procexpr = astNewCALL( proc, NULL )
 
     '' add to tree
 	param = symbGetProcLastParam( proc )
 	arg = arg_head
 	for i = 0 to args-1
         nxt = arg->next
-
-		'' optional arg not at end of list? fill it..
-		if( arg->expr = NULL ) then
-			arg->expr = hCreateOptArg( param )
-			arg->mode = INVALID
-		end if
 
 		if( astNewARG( procexpr, arg->expr, INVALID, arg->mode ) = NULL ) then
 			hDelArgNodes( arg )
@@ -452,7 +454,7 @@ private function hOvlProcArgList _
 	'' add the end-of-list optional args, if any
 	params = symbGetProcParams( proc )
     do while( args < params )
-		astNewARG( procexpr, hCreateOptArg( param ), INVALID, INVALID )
+		astNewARG( procexpr, NULL, INVALID, INVALID )
 
 		'' next
 		args += 1
@@ -470,6 +472,7 @@ function cProcArgList _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
+		byval thisexpr as ASTNODE ptr, _
 		byval isfunc as integer, _
 		byval optonly as integer _
 	) as ASTNODE ptr
@@ -482,7 +485,7 @@ function cProcArgList _
 	if( symbGetProcIsOverloaded( proc ) ) then
 		'' only if there's more than one overloaded function
 		if( symbGetProcOvlNext( proc ) <> NULL ) then
-			return hOvlProcArgList( proc, ptrexpr, isfunc, optonly )
+			return hOvlProcArgList( proc, thisexpr, isfunc, optonly )
 		end if
 	end if
 
@@ -490,9 +493,25 @@ function cProcArgList _
 
     procexpr = astNewCALL( proc, ptrexpr )
 
-	'' proc has no args?
+	args = 0
 	params = symbGetProcParams( proc )
-	if( params = 0 ) then
+	param = symbGetProcLastParam( proc )
+
+	'' method call?
+	if( thisexpr <> NULL ) then
+		if( astNewARG( procexpr, _
+					   thisexpr, _
+					   INVALID, _
+					   hInstPtrMode( thisexpr ) ) = NULL ) then
+			exit function
+		end if
+
+		args += 1
+		param = symbGetProcPrevParam( proc, param )
+	end if
+
+	'' proc has no args?
+	if( params = iif( thisexpr <> NULL, 1, 0 ) ) then
 		'' sub? check the optional parentheses
 		if( isfunc = FALSE ) then
 			'' '('
@@ -514,9 +533,6 @@ function cProcArgList _
 
 		return procexpr
 	end if
-
-	args = 0
-	param = symbGetProcLastParam( proc )
 
 	if( optonly = FALSE ) then
 		do
@@ -600,7 +616,7 @@ function cProcArgList _
 		end if
 
 		'' add to tree
-		if( astNewARG( procexpr, hCreateOptArg( param ), INVALID, INVALID ) = NULL ) then
+		if( astNewARG( procexpr, NULL, INVALID, INVALID ) = NULL ) then
 			exit function
 		end if
 

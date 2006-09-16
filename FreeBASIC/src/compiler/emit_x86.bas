@@ -87,7 +87,8 @@ declare function 	hGetTypeString		( byval typ as integer ) as string
 		( FB_DATACLASS_FPOINT , 8			    , 3, "qword ptr" ), _	'' double
 		( FB_DATACLASS_STRING , FB_STRDESCLEN	, 0, ""          ), _	'' string
 		( FB_DATACLASS_STRING , 1               , 0, "byte ptr"  ), _	'' fix-len string
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' udt
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' struct
+		( FB_DATACLASS_INTEGER, 0  				, 0, "" 		), _	'' namespace
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' function
 		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' fwd-ref
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ) _	'' pointer
@@ -418,8 +419,11 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private function hIsRegFree( byval dclass as integer, _
-							 byval reg as integer ) as integer static
+private function hIsRegFree _
+	( _
+		byval dclass as integer, _
+		byval reg as integer _
+	) as integer static
 
 	'' if EBX, EDI or ESI and if they weren't ever used, return false,
 	'' because hCreateFrame didn't preserve them
@@ -442,8 +446,11 @@ private function hIsRegFree( byval dclass as integer, _
 end function
 
 '':::::
-private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
-							   		byval noSIDI as integer = FALSE ) as integer static
+private function hFindRegNotInVreg _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval noSIDI as integer = FALSE _
+	) as integer static
 
     dim as integer r, reg, reg2, regs
 
@@ -542,7 +549,10 @@ private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 end function
 
 '':::::
-private function hFindFreeReg( byval dclass as integer ) as integer static
+private function hFindFreeReg _
+	( _
+		byval dclass as integer _
+	) as integer static
     dim as integer r
 
 	function = INVALID
@@ -557,8 +567,11 @@ private function hFindFreeReg( byval dclass as integer ) as integer static
 end function
 
 '':::::
-private function hIsRegInVreg( byval vreg as IRVREG ptr, _
-						  	   byval reg as integer ) as integer static
+private function hIsRegInVreg _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval reg as integer _
+	) as integer static
 
 	function = FALSE
 
@@ -590,8 +603,11 @@ private function hIsRegInVreg( byval vreg as IRVREG ptr, _
 end function
 
 '':::::
-private function hGetRegName( byval dtype as integer, _
-						 	  byval reg as integer ) as zstring ptr static
+private function hGetRegName _
+	( _
+		byval dtype as integer, _
+		byval reg as integer _
+	) as zstring ptr static
 
     dim as integer tb
 
@@ -754,8 +770,11 @@ private sub hPrepOperand64 _
 end sub
 
 '':::::
-private sub outEx( byval s as zstring ptr, _
-				   byval bytes as integer = 0 ) static
+private sub outEx _
+	( _
+		byval s as zstring ptr, _
+		byval bytes as integer = 0 _
+	) static
 
 	if( bytes = 0 ) then
 		bytes = len( *s )
@@ -767,7 +786,11 @@ private sub outEx( byval s as zstring ptr, _
 end sub
 
 '':::::
-private sub outp( byval s as zstring ptr ) static
+private sub outp _
+	( _
+		byval s as zstring ptr _
+	) static
+
     dim as integer p, char
     dim as string ostr
 
@@ -798,8 +821,12 @@ private sub outp( byval s as zstring ptr ) static
 end sub
 
 '':::::
-private sub hBRANCH( byval mnemonic as zstring ptr, _
-			 		 byval label as zstring ptr ) static
+private sub hBRANCH _
+	( _
+		byval mnemonic as zstring ptr, _
+		byval label as zstring ptr _
+	) static
+
     dim ostr as string
 
 	ostr = *mnemonic
@@ -810,7 +837,11 @@ private sub hBRANCH( byval mnemonic as zstring ptr, _
 end sub
 
 '':::::
-private sub hPUSH( byval rname as zstring ptr ) static
+private sub hPUSH _
+	( _
+		byval rname as zstring ptr _
+	) static
+
     dim ostr as string
 
 	ostr = "push "
@@ -820,7 +851,11 @@ private sub hPUSH( byval rname as zstring ptr ) static
 end sub
 
 '':::::
-private sub hPOP( byval rname as zstring ptr ) static
+private sub hPOP _
+	( _
+		byval rname as zstring ptr _
+	) static
+
     dim ostr as string
 
     ostr = "pop "
@@ -830,8 +865,12 @@ private sub hPOP( byval rname as zstring ptr ) static
 end sub
 
 '':::::
-private sub hMOV( byval dname as zstring ptr, _
-		  		  byval sname as zstring ptr ) static
+private sub hMOV _
+	( _
+		byval dname as zstring ptr, _
+		byval sname as zstring ptr _
+	) static
+
     dim ostr as string
 
 	ostr = "mov "
@@ -843,8 +882,12 @@ private sub hMOV( byval dname as zstring ptr, _
 end sub
 
 '':::::
-private sub hXCHG( byval dname as zstring ptr, _
-		   		   byval sname as zstring ptr ) static
+private sub hXCHG _
+	( _
+		byval dname as zstring ptr, _
+		byval sname as zstring ptr _
+	) static
+
     dim ostr as string
 
 	ostr = "xchg "
@@ -856,7 +899,11 @@ private sub hXCHG( byval dname as zstring ptr, _
 end sub
 
 '':::::
-private sub hCOMMENT( byval s as zstring ptr ) static
+private sub hCOMMENT _
+	( _
+		byval s as zstring ptr _
+	) static
+
     dim ostr as string
 
     ostr = TABCHAR + "#"
@@ -867,7 +914,11 @@ private sub hCOMMENT( byval s as zstring ptr ) static
 end sub
 
 '':::::
-private sub hPUBLIC( byval label as zstring ptr ) static
+private sub hPUBLIC _
+	( _
+		byval label as zstring ptr _
+	) static
+
     dim ostr as string
 
 	ostr = NEWLINE + ".globl "
@@ -878,7 +929,11 @@ private sub hPUBLIC( byval label as zstring ptr ) static
 end sub
 
 '':::::
-private sub hLABEL( byval label as zstring ptr ) static
+private sub hLABEL _
+	( _
+		byval label as zstring ptr _
+	) static
+
     dim ostr as string
 
 	ostr = *label
@@ -888,7 +943,11 @@ private sub hLABEL( byval label as zstring ptr ) static
 end sub
 
 '':::::
-private sub hALIGN( byval bytes as integer ) static
+private sub hALIGN _
+	( _
+		byval bytes as integer _
+	) static
+
     dim ostr as string
 
     ostr = ".balign " + str( bytes ) + NEWLINE
@@ -901,7 +960,9 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub _emitLIT( byval s as zstring ptr )
+private sub _emitLIT _
+	( _
+		byval s as zstring ptr )
     dim ostr as string
 
     ostr = *s + NEWLINE
@@ -910,7 +971,11 @@ private sub _emitLIT( byval s as zstring ptr )
 end sub
 
 '':::::
-private sub _emitALIGN( byval vreg as IRVREG ptr ) static
+private sub _emitALIGN _
+	( _
+		byval vreg as IRVREG ptr _
+	) static
+
     dim ostr as string
 
     ostr = ".balign " + str( vreg->value )
@@ -919,7 +984,11 @@ private sub _emitALIGN( byval vreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitSTKALIGN( byval vreg as IRVREG ptr ) static
+private sub _emitSTKALIGN _
+	( _
+		byval vreg as IRVREG ptr _
+	) static
+
     dim ostr as string
 
     if( vreg->value > 0 ) then
@@ -933,8 +1002,12 @@ private sub _emitSTKALIGN( byval vreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitJMPTB( byval dtype as integer, _
-			  		    byval symbol as zstring ptr ) static
+private sub _emitJMPTB _
+	( _
+		byval dtype as integer, _
+		byval symbol as zstring ptr _
+	) static
+
     dim ostr as string
 
 	ostr = hGetTypeString( dtype ) + " " + *symbol
@@ -943,9 +1016,13 @@ private sub _emitJMPTB( byval dtype as integer, _
 end sub
 
 '':::::
-private sub _emitCALL( byval unused as IRVREG ptr, _
-			  		   byval label as FBSYMBOL ptr, _
-			  		   byval bytestopop as integer ) static
+private sub _emitCALL _
+	( _
+		byval unused as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval bytestopop as integer _
+	) static
+
     dim ostr as string
 
 	ostr = "call "
@@ -960,9 +1037,13 @@ private sub _emitCALL( byval unused as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitCALLPTR( byval svreg as IRVREG ptr, _
-				 		  byval unused as FBSYMBOL ptr, _
-				 		  byval bytestopop as integer ) static
+private sub _emitCALLPTR _
+	( _
+		byval svreg as IRVREG ptr, _
+		byval unused as FBSYMBOL ptr, _
+		byval bytestopop as integer _
+	) static
+
     dim src as string
     dim ostr as string
 
@@ -979,9 +1060,13 @@ private sub _emitCALLPTR( byval svreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitBRANCH( byval unused as IRVREG ptr, _
-						 byval label as FBSYMBOL ptr, _
-						 byval op as integer ) static
+private sub _emitBRANCH _
+	( _
+		byval unused as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval op as integer _
+	) static
+
     dim ostr as string
 
 	select case as const op
@@ -1005,9 +1090,13 @@ private sub _emitBRANCH( byval unused as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitJUMP( byval unused1 as IRVREG ptr, _
-				 	   byval label as FBSYMBOL ptr, _
-				 	   byval unused2 as integer ) static
+private sub _emitJUMP _
+	( _
+		byval unused1 as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval unused2 as integer _
+	) static
+
     dim ostr as string
 
 	ostr = "jmp "
@@ -1017,9 +1106,13 @@ private sub _emitJUMP( byval unused1 as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitJUMPPTR( byval svreg as IRVREG ptr, _
-				 		  byval unused1 as FBSYMBOL ptr, _
-				 		  byval unused2 as integer ) static
+private sub _emitJUMPPTR _
+	( _
+		byval svreg as IRVREG ptr, _
+		byval unused1 as FBSYMBOL ptr, _
+		byval unused2 as integer _
+	) static
+
     dim src as string
     dim ostr as string
 
@@ -1031,7 +1124,11 @@ private sub _emitJUMPPTR( byval svreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitRET( byval vreg as IRVREG ptr ) static
+private sub _emitRET _
+	( _
+		byval vreg as IRVREG ptr _
+	) static
+
     dim ostr as string
 
     ostr = "ret " + str( vreg->value )
@@ -1040,7 +1137,11 @@ private sub _emitRET( byval vreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitPUBLIC( byval label as FBSYMBOL ptr ) static
+private sub _emitPUBLIC _
+	( _
+		byval label as FBSYMBOL ptr _
+	) static
+
     dim ostr as string
 
 	ostr = NEWLINE + ".globl "
@@ -1051,7 +1152,11 @@ private sub _emitPUBLIC( byval label as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-private sub _emitLABEL( byval label as FBSYMBOL ptr ) static
+private sub _emitLABEL _
+	( _
+		byval label as FBSYMBOL ptr _
+	) static
+
     dim ostr as string
 
 	ostr = *symbGetMangledName( label )
@@ -1061,7 +1166,11 @@ private sub _emitLABEL( byval label as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub emitSECTION( byval section as integer ) static
+sub emitSECTION _
+	( _
+		byval section as integer _
+	) static
+
     dim as string ostr
 
     if( section = emit.lastsection ) then
@@ -1106,7 +1215,11 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hULONG2DBL( byval svreg as IRVREG ptr ) static
+private sub hULONG2DBL _
+	( _
+		byval svreg as IRVREG ptr _
+	) static
+
 	dim as string label, src, ostr
 
 	label = *hMakeTmpStr( )
@@ -1128,8 +1241,12 @@ private sub hULONG2DBL( byval svreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitSTORL2L( byval dvreg as IRVREG ptr, _
-			           	  byval svreg as IRVREG ptr ) static
+private sub _emitSTORL2L _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst1, dst2, src1, src2, ostr
 
 	hPrepOperand64( dvreg, dst1, dst2 )
@@ -1144,8 +1261,12 @@ private sub _emitSTORL2L( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitSTORI2L( byval dvreg as IRVREG ptr, _
-			           	  byval svreg as IRVREG ptr ) static
+private sub _emitSTORI2L _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst1, dst2, src1, ext, ostr
     dim sdsize as integer
 
@@ -1208,8 +1329,12 @@ private sub _emitSTORI2L( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitSTORF2L( byval dvreg as IRVREG ptr, _
-						  byval svreg as IRVREG ptr ) static
+private sub _emitSTORF2L _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst
     dim as string ostr
 
@@ -1225,8 +1350,12 @@ private sub _emitSTORF2L( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitSTORI2I( byval dvreg as IRVREG ptr, _
-						  byval svreg as IRVREG ptr ) static
+private sub _emitSTORI2I _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst, src, aux, aux8, aux16
     dim as integer ddsize, reg, isfree
     dim as string ostr
@@ -1325,8 +1454,11 @@ storeSIDI:		reg = hFindRegNotInVreg( dvreg, TRUE )
 end sub
 
 '':::::
-private sub _emitSTORL2I( byval dvreg as IRVREG ptr, _
-						  byval svreg as IRVREG ptr ) static
+private sub _emitSTORL2I _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	'' been too complex due the SI/DI crap, leave it to I2I
 	_emitSTORI2I( dvreg, svreg )
@@ -1334,8 +1466,12 @@ private sub _emitSTORL2I( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitSTORF2I( byval dvreg as IRVREG ptr, _
-						  byval svreg as IRVREG ptr ) static
+private sub _emitSTORF2I _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst, src, aux, aux8, aux16
     dim as integer ddsize, reg, isfree
     dim as string ostr
@@ -1426,8 +1562,12 @@ private sub _emitSTORF2I( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitSTORL2F( byval dvreg as IRVREG ptr, _
-			        	  byval svreg as IRVREG ptr ) static
+private sub _emitSTORL2F _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst, src, aux
     dim as string ostr
 
@@ -1482,8 +1622,12 @@ private sub _emitSTORL2F( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitSTORI2F( byval dvreg as IRVREG ptr, _
-			        	  byval svreg as IRVREG ptr ) static
+private sub _emitSTORI2F _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst, src, aux
     dim as integer ddsize, sdsize, reg, isfree
     dim as string ostr
@@ -1609,8 +1753,12 @@ private sub _emitSTORI2F( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitSTORF2F( byval dvreg as IRVREG ptr, _
-			        	  byval svreg as IRVREG ptr ) static
+private sub _emitSTORF2F _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst, src
     dim as integer ddsize, sdsize
     dim as string ostr
@@ -1665,8 +1813,12 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub _emitLOADL2L( byval dvreg as IRVREG ptr, _
-			              byval svreg as IRVREG ptr ) static
+private sub _emitLOADL2L _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -1682,8 +1834,12 @@ private sub _emitLOADL2L( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitLOADI2L( byval dvreg as IRVREG ptr, _
-			              byval svreg as IRVREG ptr ) static
+private sub _emitLOADI2L _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string, src1 as string
     dim sdsize as integer
     dim ostr as string
@@ -1740,8 +1896,11 @@ private sub _emitLOADI2L( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitLOADF2L( byval dvreg as IRVREG ptr, _
-			      		  byval svreg as IRVREG ptr ) static
+private sub _emitLOADF2L _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
     dim as string dst, src, aux
     dim as string ostr
@@ -1778,8 +1937,11 @@ private sub _emitLOADF2L( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitLOADI2I( byval dvreg as IRVREG ptr, _
-			      		  byval svreg as IRVREG ptr ) static
+private sub _emitLOADI2I _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
     dim as string dst, src, aux, aux8, aux16
     dim as integer ddsize, reg, isfree
@@ -1887,8 +2049,11 @@ loadSIDI:			reg = hFindRegNotInVreg( dvreg, TRUE )
 end sub
 
 '':::::
-private sub _emitLOADL2I( byval dvreg as IRVREG ptr, _
-			      		  byval svreg as IRVREG ptr ) static
+private sub _emitLOADL2I _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	'' been too complex due the SI/DI crap, leave it to I2I
 	_emitLOADI2I( dvreg, svreg )
@@ -1896,8 +2061,11 @@ private sub _emitLOADL2I( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitLOADF2I( byval dvreg as IRVREG ptr, _
-			      		  byval svreg as IRVREG ptr ) static
+private sub _emitLOADF2I _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
     dim as string dst, src, aux, aux8
     dim as integer ddsize, reg, isfree
@@ -2005,8 +2173,12 @@ private sub _emitLOADF2I( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitLOADL2F( byval dvreg as IRVREG ptr, _
-			      		  byval svreg as IRVREG ptr ) static
+private sub _emitLOADL2F _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst, src, aux
     dim as string ostr
 
@@ -2061,8 +2233,12 @@ private sub _emitLOADL2F( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitLOADI2F( byval dvreg as IRVREG ptr, _
-			      		  byval svreg as IRVREG ptr ) static
+private sub _emitLOADI2F _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst, src, aux
     dim as integer sdsize, isfree, reg
     dim as string ostr
@@ -2181,8 +2357,12 @@ private sub _emitLOADI2F( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitLOADF2F( byval dvreg as IRVREG ptr, _
-			      		  byval svreg as IRVREG ptr ) static
+private sub _emitLOADF2F _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string src
     dim as string ostr
 
@@ -2198,8 +2378,11 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub _emitMOVL( byval dvreg as IRVREG ptr, _
-			   		   byval svreg as IRVREG ptr ) static
+private sub _emitMOVL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
     dim as string dst1, dst2, src1, src2, ostr
 
@@ -2215,8 +2398,11 @@ private sub _emitMOVL( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitMOVI( byval dvreg as IRVREG ptr, _
-			 		   byval svreg as IRVREG ptr ) static
+private sub _emitMOVI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
     dim as string dst, src, ostr
 
@@ -2236,16 +2422,23 @@ private sub _emitMOVI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitMOVF( byval dvreg as IRVREG ptr, _
-			 		   byval svreg as IRVREG ptr ) static
+private sub _emitMOVF _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	'' do nothing, both are regs
 
 end sub
 
 '':::::
-private sub _emitADDL( byval dvreg as IRVREG ptr, _
-			    	   byval svreg as IRVREG ptr ) static
+private sub _emitADDL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -2261,8 +2454,12 @@ private sub _emitADDL( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitADDI( byval dvreg as IRVREG ptr, _
-			  		   byval svreg as IRVREG ptr ) static
+private sub _emitADDI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst as string, src as string
     dim doinc as integer, dodec as integer
     dim ostr as string
@@ -2295,8 +2492,12 @@ private sub _emitADDI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitADDF( byval dvreg as IRVREG ptr, _
-			  		   byval svreg as IRVREG ptr ) static
+private sub _emitADDF _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim src as string
     dim ostr as string
 
@@ -2318,8 +2519,12 @@ private sub _emitADDF( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitSUBL( byval dvreg as IRVREG ptr, _
-			   		   byval svreg as IRVREG ptr ) static
+private sub _emitSUBL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -2335,8 +2540,12 @@ private sub _emitSUBL( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitSUBI( byval dvreg as IRVREG ptr, _
-			 		   byval svreg as IRVREG ptr ) static
+private sub _emitSUBI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst as string, src as string
     dim doinc as integer, dodec as integer
     dim ostr as string
@@ -2369,8 +2578,12 @@ private sub _emitSUBI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitSUBF( byval dvreg as IRVREG ptr, _
-			 		   byval svreg as IRVREG ptr ) static
+private sub _emitSUBF _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim src as string
     dim doinc as integer, dodec as integer
     dim ostr as string
@@ -2392,8 +2605,12 @@ private sub _emitSUBF( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitMULI( byval dvreg as IRVREG ptr, _
-			      	   byval svreg as IRVREG ptr ) static
+private sub _emitMULI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim eaxfree as integer, edxfree as integer
     dim edxtrashed as integer
     dim eaxinsource as integer, eaxindest as integer, edxindest as integer
@@ -2483,8 +2700,12 @@ private sub _emitMULI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitMULL( byval dvreg as IRVREG ptr, _
-			      	   byval svreg as IRVREG ptr ) static
+private sub _emitMULL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim iseaxfree as integer, isedxfree as integer
     dim eaxindest as integer, edxindest as integer
@@ -2588,8 +2809,11 @@ private sub _emitMULL( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitSMULI( byval dvreg as IRVREG ptr, _
-			      		byval svreg as IRVREG ptr ) static
+private sub _emitSMULI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
     dim reg as integer, isfree as integer, rname as string
     dim ostr as string
@@ -2626,8 +2850,12 @@ private sub _emitSMULI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitMULF( byval dvreg as IRVREG ptr, _
-		     		   byval svreg as IRVREG ptr ) static
+private sub _emitMULF _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim src as string
     dim ostr as string
 
@@ -2649,8 +2877,12 @@ end sub
 
 
 '':::::
-private sub _emitDIVF( byval dvreg as IRVREG ptr, _
-		     		   byval svreg as IRVREG ptr ) static
+private sub _emitDIVF _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim src as string
     dim ostr as string
 
@@ -2671,8 +2903,12 @@ private sub _emitDIVF( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitDIVI( byval dvreg as IRVREG ptr, _
-		               byval svreg as IRVREG ptr ) static
+private sub _emitDIVI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst, src
     dim as integer ecxtrashed
     dim as integer eaxfree, ecxfree, edxfree
@@ -2817,8 +3053,12 @@ private sub _emitDIVI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitMODI( byval dvreg as IRVREG ptr, _
-		     		   byval svreg as IRVREG ptr ) static
+private sub _emitMODI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst, src
     dim as integer ecxtrashed
     dim as integer eaxfree, ecxfree, edxfree
@@ -2965,9 +3205,13 @@ private sub _emitMODI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub hSHIFTL( byval op as integer, _
-				 	 byval dvreg as IRVREG ptr, _
-			     	 byval svreg as IRVREG ptr ) static
+private sub hSHIFTL _
+	( _
+		byval op as integer, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string dst1, dst2, src, ostr, label, mnemonic
     dim as integer iseaxfree, isedxfree, isecxfree
     dim as integer eaxindest, edxindest, ecxindest
@@ -3176,9 +3420,12 @@ private sub hSHIFTL( byval op as integer, _
 end sub
 
 '':::::
-private sub hSHIFTI( byval op as integer, _
-			   		 byval dvreg as IRVREG ptr, _
-		       		 byval svreg as IRVREG ptr ) static
+private sub hSHIFTI _
+	( _
+		byval op as integer, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
     dim eaxpreserved as integer, ecxpreserved as integer
     dim eaxfree as integer, ecxfree as integer
@@ -3295,40 +3542,56 @@ private sub hSHIFTI( byval op as integer, _
 end sub
 
 '':::::
-private sub _emitSHLL( byval dvreg as IRVREG ptr, _
-		       		   byval svreg as IRVREG ptr ) static
+private sub _emitSHLL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hSHIFTL( AST_OP_SHL, dvreg, svreg )
 
 end sub
 
 '':::::
-private sub _emitSHLI( byval dvreg as IRVREG ptr, _
-		       		   byval svreg as IRVREG ptr ) static
+private sub _emitSHLI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hSHIFTI( AST_OP_SHL, dvreg, svreg )
 
 end sub
 
 '':::::
-private sub _emitSHRL( byval dvreg as IRVREG ptr, _
-		       		   byval svreg as IRVREG ptr ) static
+private sub _emitSHRL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hSHIFTL( AST_OP_SHR, dvreg, svreg )
 
 end sub
 
 '':::::
-private sub _emitSHRI( byval dvreg as IRVREG ptr, _
-		       		   byval svreg as IRVREG ptr ) static
+private sub _emitSHRI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hSHIFTI( AST_OP_SHR, dvreg, svreg )
 
 end sub
 
 '':::::
-private sub _emitANDL( byval dvreg as IRVREG ptr, _
-			   			   byval svreg as IRVREG ptr ) static
+private sub _emitANDL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -3344,8 +3607,12 @@ private sub _emitANDL( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitANDI( byval dvreg as IRVREG ptr, _
-			 		   byval svreg as IRVREG ptr ) static
+private sub _emitANDI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst as string, src as string
     dim ostr as string
 
@@ -3358,8 +3625,12 @@ private sub _emitANDI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitORL( byval dvreg as IRVREG ptr, _
-			  		  byval svreg as IRVREG ptr ) static
+private sub _emitORL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -3375,8 +3646,12 @@ private sub _emitORL( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitORI( byval dvreg as IRVREG ptr, _
-					  byval svreg as IRVREG ptr ) static
+private sub _emitORI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst as string, src as string
     dim ostr as string
 
@@ -3389,8 +3664,12 @@ private sub _emitORI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitXORL( byval dvreg as IRVREG ptr, _
-			   			byval svreg as IRVREG ptr ) static
+private sub _emitXORL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -3406,8 +3685,12 @@ private sub _emitXORL( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitXORI( byval dvreg as IRVREG ptr, _
-			 		   byval svreg as IRVREG ptr ) static
+private sub _emitXORI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst as string, src as string
     dim ostr as string
 
@@ -3420,8 +3703,12 @@ private sub _emitXORI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitEQVL( byval dvreg as IRVREG ptr, _
-			   		   byval svreg as IRVREG ptr ) static
+private sub _emitEQVL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -3443,8 +3730,12 @@ private sub _emitEQVL( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitEQVI( byval dvreg as IRVREG ptr, _
-			 		   byval svreg as IRVREG ptr ) static
+private sub _emitEQVI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst as string, src as string
     dim ostr as string
 
@@ -3460,8 +3751,12 @@ private sub _emitEQVI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitIMPL( byval dvreg as IRVREG ptr, _
-			   		   byval svreg as IRVREG ptr ) static
+private sub _emitIMPL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -3483,8 +3778,12 @@ private sub _emitIMPL( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitIMPI( byval dvreg as IRVREG ptr, _
-			 		   byval svreg as IRVREG ptr ) static
+private sub _emitIMPI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim dst as string, src as string
     dim ostr as string
 
@@ -3500,8 +3799,11 @@ private sub _emitIMPI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitATN2( byval dvreg as IRVREG ptr, _
-			    	   byval svreg as IRVREG ptr ) static
+private sub _emitATN2 _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
     dim src as string
     dim ostr as string
@@ -3519,8 +3821,11 @@ private sub _emitATN2( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitPOW( byval dvreg as IRVREG ptr, _
-			  		  byval svreg as IRVREG ptr ) static
+private sub _emitPOW _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	dim src as string
 	dim ostr as string
@@ -3552,14 +3857,17 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hCMPL( byval rvreg as IRVREG ptr, _
-			       byval label as FBSYMBOL ptr, _
-			       byval mnemonic as zstring ptr, _
-			       byval rev_mnemonic as zstring ptr, _
-			       byval usg_mnemonic as zstring ptr, _
-			       byval dvreg as IRVREG ptr, _
-			       byval svreg as IRVREG ptr, _
-			       byval isinverse as integer = FALSE ) static
+private sub hCMPL _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval mnemonic as zstring ptr, _
+		byval rev_mnemonic as zstring ptr, _
+		byval usg_mnemonic as zstring ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval isinverse as integer = FALSE _
+	) static
 
     dim as string dst1, dst2, src1, src2, rname, ostr, lname, falselabel
 
@@ -3615,11 +3923,14 @@ private sub hCMPL( byval rvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub hCMPI( byval rvreg as IRVREG ptr, _
-		   		   byval label as FBSYMBOL ptr, _
-		   		   byval mnemonic as zstring ptr, _
-		   		   byval dvreg as IRVREG ptr, _
-		   		   byval svreg as IRVREG ptr ) static
+private sub hCMPI _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval mnemonic as zstring ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
     dim as string rname, rname8, dst, src, ostr, lname
     dim as integer isedxfree, dotest
@@ -3712,12 +4023,15 @@ private sub hCMPI( byval rvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub hCMPF( byval rvreg as IRVREG ptr, _
-		   		   byval label as FBSYMBOL ptr, _
-		   		   byval mnemonic as zstring ptr, _
-		   		   byval mask as zstring ptr, _
-		   		   byval dvreg as IRVREG ptr, _
-		   		   byval svreg as IRVREG ptr ) static
+private sub hCMPF _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval mnemonic as zstring ptr, _
+		byval mask as zstring ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	dim as string rname, rname8, dst, src, ostr, lname
     dim as integer iseaxfree, isedxfree
@@ -3828,10 +4142,14 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitCGTL( byval rvreg as IRVREG ptr, _
-		      		   byval label as FBSYMBOL ptr, _
-		      		   byval dvreg as IRVREG ptr, _
-		      		   byval svreg as IRVREG ptr ) static
+private sub _emitCGTL _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
 	dim jmp as string, rjmp as string
 
 	if( symbIsSigned( dvreg->dtype ) ) then
@@ -3847,10 +4165,14 @@ private sub _emitCGTL( byval rvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitCGTI( byval rvreg as IRVREG ptr, _
-		      		   byval label as FBSYMBOL ptr, _
-		      		   byval dvreg as IRVREG ptr, _
-		      		   byval svreg as IRVREG ptr ) static
+private sub _emitCGTI _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
 	dim jmp as string
 
 	if( symbIsSigned( dvreg->dtype ) ) then
@@ -3864,20 +4186,27 @@ private sub _emitCGTI( byval rvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitCGTF( byval rvreg as IRVREG ptr, _
-		      		   byval label as FBSYMBOL ptr, _
-		      		   byval dvreg as IRVREG ptr, _
-		      		   byval svreg as IRVREG ptr ) static
+private sub _emitCGTF _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hCMPF( rvreg, label, "z", "0b01000001", dvreg, svreg )
 
 end sub
 
 '':::::
-private sub _emitCLTL( byval rvreg as IRVREG ptr, _
-		      		   byval label as FBSYMBOL ptr, _
-		      		   byval dvreg as IRVREG ptr, _
-		      		   byval svreg as IRVREG ptr ) static
+private sub _emitCLTL _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
 	dim jmp as string, rjmp as string
 
 	if( symbIsSigned( dvreg->dtype ) ) then
@@ -3893,10 +4222,14 @@ private sub _emitCLTL( byval rvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitCLTI( byval rvreg as IRVREG ptr, _
-		      		   byval label as FBSYMBOL ptr, _
-		      		   byval dvreg as IRVREG ptr, _
-		      		   byval svreg as IRVREG ptr ) static
+private sub _emitCLTI _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
 	dim jmp as string
 
 	if( symbIsSigned( dvreg->dtype ) ) then
@@ -3910,80 +4243,105 @@ private sub _emitCLTI( byval rvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitCLTF( byval rvreg as IRVREG ptr, _
-		      		   byval label as FBSYMBOL ptr, _
-		      		   byval dvreg as IRVREG ptr, _
-		      		   byval svreg as IRVREG ptr ) static
+private sub _emitCLTF _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hCMPF( rvreg, label, "nz", "0b00000001", dvreg, svreg )
 
 end sub
 
 '':::::
-private sub _emitCEQL( byval rvreg as IRVREG ptr, _
-					   byval label as FBSYMBOL ptr, _
-					   byval dvreg as IRVREG ptr, _
-					   byval svreg as IRVREG ptr ) static
+private sub _emitCEQL _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hCMPL( rvreg, label, "ne", "", "e", dvreg, svreg, TRUE )
 
 end sub
 
 '':::::
-private sub _emitCEQI( byval rvreg as IRVREG ptr, _
-					   byval label as FBSYMBOL ptr, _
-					   byval dvreg as IRVREG ptr, _
-					   byval svreg as IRVREG ptr ) static
+private sub _emitCEQI _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hCMPI( rvreg, label, "e", dvreg, svreg )
 
 end sub
 
 '':::::
-private sub _emitCEQF( byval rvreg as IRVREG ptr, _
-					   byval label as FBSYMBOL ptr, _
-					   byval dvreg as IRVREG ptr, _
-					   byval svreg as IRVREG ptr ) static
+private sub _emitCEQF _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hCMPF( rvreg, label, "nz", "0b01000000", dvreg, svreg )
 
 end sub
 
 '':::::
-private sub _emitCNEL( byval rvreg as IRVREG ptr, _
-					   byval label as FBSYMBOL ptr, _
-					   byval dvreg as IRVREG ptr, _
-					   byval svreg as IRVREG ptr ) static
+private sub _emitCNEL _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hCMPL( rvreg, label, "ne", "", "ne", dvreg, svreg )
 
 end sub
 
 '':::::
-private sub _emitCNEI( byval rvreg as IRVREG ptr, _
-					   byval label as FBSYMBOL ptr, _
-					   byval dvreg as IRVREG ptr, _
-					   byval svreg as IRVREG ptr ) static
+private sub _emitCNEI _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hCMPI( rvreg, label, "ne", dvreg, svreg )
 
 end sub
 
 '':::::
-private sub _emitCNEF( byval rvreg as IRVREG ptr, _
-					   byval label as FBSYMBOL ptr, _
-					   byval dvreg as IRVREG ptr, _
-					   byval svreg as IRVREG ptr ) static
+private sub _emitCNEF _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hCMPF( rvreg, label, "z", "0b01000000", dvreg, svreg )
 
 end sub
 
 '':::::
-private sub _emitCLEL( byval rvreg as IRVREG ptr, _
-					   byval label as FBSYMBOL ptr, _
-					   byval dvreg as IRVREG ptr, _
-					   byval svreg as IRVREG ptr ) static
+private sub _emitCLEL _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
 	dim jmp as string, rjmp as string
 
 	if( symbIsSigned( dvreg->dtype ) ) then
@@ -3999,10 +4357,14 @@ private sub _emitCLEL( byval rvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitCLEI( byval rvreg as IRVREG ptr, _
-					   byval label as FBSYMBOL ptr, _
-					   byval dvreg as IRVREG ptr, _
-					   byval svreg as IRVREG ptr ) static
+private sub _emitCLEI _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
 	dim jmp as string
 
 	if( symbIsSigned( dvreg->dtype ) ) then
@@ -4017,10 +4379,13 @@ end sub
 
 
 '':::::
-private sub _emitCLEF( byval rvreg as IRVREG ptr, _
-					   byval label as FBSYMBOL ptr, _
-					   byval dvreg as IRVREG ptr, _
-					   byval svreg as IRVREG ptr ) static
+private sub _emitCLEF _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hCMPF( rvreg, label, "nz", "0b01000001", dvreg, svreg )
 
@@ -4028,10 +4393,14 @@ end sub
 
 
 '':::::
-private sub _emitCGEL( byval rvreg as IRVREG ptr, _
-					   byval label as FBSYMBOL ptr, _
-					   byval dvreg as IRVREG ptr, _
-					   byval svreg as IRVREG ptr ) static
+private sub _emitCGEL _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
 	dim jmp as string, rjmp as string
 
 	if( symbIsSigned( dvreg->dtype ) ) then
@@ -4047,10 +4416,14 @@ private sub _emitCGEL( byval rvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitCGEI( byval rvreg as IRVREG ptr, _
-					   byval label as FBSYMBOL ptr, _
-					   byval dvreg as IRVREG ptr, _
-					   byval svreg as IRVREG ptr ) static
+private sub _emitCGEI _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
 	dim jmp as string
 
 	if( symbIsSigned( dvreg->dtype ) ) then
@@ -4064,10 +4437,13 @@ private sub _emitCGEI( byval rvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitCGEF( byval rvreg as IRVREG ptr, _
-					   byval label as FBSYMBOL ptr, _
-					   byval dvreg as IRVREG ptr, _
-					   byval svreg as IRVREG ptr ) static
+private sub _emitCGEF _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	hCMPF( rvreg, label, "ae", "", dvreg, svreg )
 
@@ -4079,7 +4455,11 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub _emitNEGL( byval dvreg as IRVREG ptr ) static
+private sub _emitNEGL _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string
     dim ostr as string
 
@@ -4097,7 +4477,11 @@ private sub _emitNEGL( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitNEGI( byval dvreg as IRVREG ptr ) static
+private sub _emitNEGI _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
+
     dim dst as string
     dim ostr as string
 
@@ -4109,14 +4493,21 @@ private sub _emitNEGI( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitNEGF( byval dvreg as IRVREG ptr ) static
+private sub _emitNEGF _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
 
 	outp "fchs"
 
 end sub
 
 '':::::
-private sub _emitNOTL( byval dvreg as IRVREG ptr ) static
+private sub _emitNOTL _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string
     dim ostr as string
 
@@ -4131,7 +4522,11 @@ private sub _emitNOTL( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitNOTI( byval dvreg as IRVREG ptr ) static
+private sub _emitNOTI _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
+
     dim dst as string
     dim ostr as string
 
@@ -4143,7 +4538,11 @@ private sub _emitNOTI( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitABSL( byval dvreg as IRVREG ptr ) static
+private sub _emitABSL _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string
     dim reg as integer, isfree as integer, rname as string
     dim ostr as string
@@ -4183,7 +4582,11 @@ private sub _emitABSL( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitABSI( byval dvreg as IRVREG ptr ) static
+private sub _emitABSI _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
+
     dim dst as string
     dim reg as integer, isfree as integer, rname as string, bits as integer
     dim ostr as string
@@ -4219,14 +4622,21 @@ private sub _emitABSI( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitABSF( byval dvreg as IRVREG ptr ) static
+private sub _emitABSF _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
 
 	outp "fabs"
 
 end sub
 
 '':::::
-private sub _emitSGNL( byval dvreg as IRVREG ptr ) static
+private sub _emitSGNL _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
+
     dim dst1 as string, dst2 as string
     dim ostr as string
     dim label1 as string, label2 as string
@@ -4256,7 +4666,11 @@ private sub _emitSGNL( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitSGNI( byval dvreg as IRVREG ptr ) static
+private sub _emitSGNI _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
+
     dim dst as string
     dim label as string
     dim ostr as string
@@ -4278,21 +4692,30 @@ private sub _emitSGNI( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitSGNF( byval dvreg as IRVREG ptr ) static
+private sub _emitSGNF _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
 
 	'' hack! floating-point SGN is done by a rtlib function, called by AST
 
 end sub
 
 '':::::
-private sub _emitSIN( byval dvreg as IRVREG ptr ) static
+private sub _emitSIN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
 
 	outp "fsin"
 
 end sub
 
 '':::::
-private sub _emitASIN( byval dvreg as IRVREG ptr ) static
+private sub _emitASIN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
 
 	'' asin( x ) = atn( sqr( (x*x) / (1-x*x) ) )
 	outp "fld st(0)"
@@ -4308,14 +4731,20 @@ private sub _emitASIN( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitCOS( byval dvreg as IRVREG ptr ) static
+private sub _emitCOS _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
 
 	outp "fcos"
 
 end sub
 
 '':::::
-private sub _emitACOS( byval dvreg as IRVREG ptr ) static
+private sub _emitACOS _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
 
 	'' acos( x ) = atn( sqr( (1-x*x) / (x*x) ) )
 	outp "fld st(0)"
@@ -4331,7 +4760,10 @@ private sub _emitACOS( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitTAN( byval dvreg as IRVREG ptr ) static
+private sub _emitTAN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
 
 	outp "fptan"
 	outp "fstp st(0)"
@@ -4339,7 +4771,10 @@ private sub _emitTAN( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitATAN( byval dvreg as IRVREG ptr ) static
+private sub _emitATAN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
 
 	outp "fld1"
 	outp "fpatan"
@@ -4347,14 +4782,20 @@ private sub _emitATAN( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitSQRT( byval dvreg as IRVREG ptr ) static
+private sub _emitSQRT _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
 
 	outp "fsqrt"
 
 end sub
 
 '':::::
-private sub _emitLOG( byval dvreg as IRVREG ptr ) static
+private sub _emitLOG _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
 
 	'' log( x ) = log2( x ) / log2( e ).
 
@@ -4367,7 +4808,10 @@ private sub _emitLOG( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitFLOOR( byval dvreg as IRVREG ptr ) static
+private sub _emitFLOOR _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
 
 	dim as integer reg, isfree
 	dim as string rname, ostr
@@ -4402,7 +4846,11 @@ private sub _emitFLOOR( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-private sub _emitXchgTOS( byval svreg as IRVREG ptr ) static
+private sub _emitXchgTOS _
+	( _
+		byval svreg as IRVREG ptr _
+	) static
+
     dim as string src
     dim as string ostr
 
@@ -4418,8 +4866,12 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub _emitPUSHL( byval svreg as IRVREG ptr, _
-						byval unused as integer ) static
+private sub _emitPUSHL _
+	( _
+		byval svreg as IRVREG ptr, _
+		byval unused as integer _
+	) static
+
     dim src1 as string, src2 as string
     dim ostr as string
 
@@ -4434,8 +4886,12 @@ private sub _emitPUSHL( byval svreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitPUSHI( byval svreg as IRVREG ptr, _
-						byval unused as integer ) static
+private sub _emitPUSHI _
+	( _
+		byval svreg as IRVREG ptr, _
+		byval unused as integer _
+	) static
+
     dim src as string, sdsize as integer
     dim ostr as string
 
@@ -4460,8 +4916,12 @@ private sub _emitPUSHI( byval svreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitPUSHF( byval svreg as IRVREG ptr, _
-						byval unused as integer ) static
+private sub _emitPUSHF _
+	( _
+		byval svreg as IRVREG ptr, _
+		byval unused as integer _
+	) static
+
     dim src as string, sdsize as integer
     dim ostr as string
 
@@ -4493,8 +4953,12 @@ private sub _emitPUSHF( byval svreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitPUSHUDT( byval svreg as IRVREG ptr, _
-				 		  byval sdsize as integer ) static
+private sub _emitPUSHUDT _
+	( _
+		byval svreg as IRVREG ptr, _
+		byval sdsize as integer _
+	) static
+
     dim as integer ofs
     dim as string ostr, src
 
@@ -4514,8 +4978,12 @@ private sub _emitPUSHUDT( byval svreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitPOPL( byval dvreg as IRVREG ptr, _
-					   byval unused as integer ) static
+private sub _emitPOPL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval unused as integer _
+	) static
+
     dim dst1 as string, dst2 as string
     dim ostr as string
 
@@ -4530,8 +4998,12 @@ private sub _emitPOPL( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitPOPI( byval dvreg as IRVREG ptr, _
-					   byval unused as integer ) static
+private sub _emitPOPI _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval unused as integer _
+	) static
+
     dim as string dst, ostr
     dim as integer dsize
 
@@ -4570,8 +5042,12 @@ private sub _emitPOPI( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitPOPF( byval dvreg as IRVREG ptr, _
-					   byval unused as integer ) static
+private sub _emitPOPF _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval unused as integer _
+	) static
+
     dim as string dst, ostr
     dim as integer dsize
 
@@ -4607,8 +5083,11 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub _emitADDROF( byval dvreg as IRVREG ptr, _
-			    		 byval svreg as IRVREG ptr ) static
+private sub _emitADDROF _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	dim as string dst, src
 	dim as string ostr
@@ -4622,8 +5101,11 @@ private sub _emitADDROF( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitDEREF( byval dvreg as IRVREG ptr, _
-			   			byval svreg as IRVREG ptr ) static
+private sub _emitDEREF _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
 
 	dim as string dst, src
 	dim as string ostr
@@ -4712,7 +5194,7 @@ private sub hMemMoveRep _
 		end if
 	end if
 
-	bytes and= 3
+		bytes and= 3
 	if( bytes > 0 ) then
 		if( bytes >= 2 ) then
 			outp "mov cx, [esi]"
@@ -4890,14 +5372,14 @@ private sub hMemClearRep _
 		end if
 	end if
 
-	if( eaxfree = FALSE ) then
-		hPOP( "eax" )
-	end if
 	if( edifree = FALSE ) then
 		hPOP( "edi" )
 	end if
 	if( ecxfree = FALSE ) then
 		hPOP( "ecx" )
+	end if
+	if( eaxfree = FALSE ) then
+		hPOP( "eax" )
 	end if
 
 end sub
@@ -5057,13 +5539,13 @@ private sub hCreateFrame _
 
     if( (bytestoalloc <> 0) or _
     	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
-        symbIsMainProc( proc ) or _
+        symbGetIsMainProc( proc ) or _
         env.clopt.debug ) then
 
     	hPUSH( "ebp" )
     	outp( "mov ebp, esp" )
 
-        if( symbIsMainProc( proc ) ) then
+        if( symbGetIsMainProc( proc ) ) then
 			outp( "and esp, 0xFFFFFFF0" )
 	    end if
 
@@ -5114,7 +5596,7 @@ private sub hDestroyFrame _
 
     if( (bytestoalloc <> 0) or _
     	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
-        symbIsMainProc( proc ) or _
+        symbGetIsMainProc( proc ) or _
         env.clopt.debug ) then
     	outp( "mov esp, ebp" )
     	hPOP( "ebp" )
@@ -5194,9 +5676,9 @@ sub emitPROCFOOTER _
     edbgEmitProcFooter( proc, initlabel, exitlabel )
 
     emit_cdtor_ptr = TRUE
-    if( symbIsConstructor( proc ) ) then
+    if( symbGetIsGlobalCtor( proc ) ) then
 		emitSECTION( EMIT_SECTYPE_CONSTRUCTOR )
-    elseif( symbIsDestructor( proc ) ) then
+    elseif( symbGetIsGlobalDtor( proc ) ) then
 		emitSECTION( EMIT_SECTYPE_DESTRUCTOR )
     else
     	emit_cdtor_ptr = FALSE
@@ -5247,7 +5729,11 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitDATALABEL( byval label as zstring ptr ) static
+sub emitDATALABEL _
+	( _
+		byval label as zstring ptr _
+	) static
+
     dim ostr as string
 
 	ostr = *label
@@ -5257,7 +5743,11 @@ sub emitDATALABEL( byval label as zstring ptr ) static
 end sub
 
 '':::::
-sub emitDATABEGIN( byval lname as zstring ptr ) static
+sub emitDATABEGIN _
+	( _
+		byval lname as zstring ptr _
+	) static
+
     dim as string ostr
     dim as integer currpos
 
@@ -5292,9 +5782,12 @@ sub emitDATAEND static
 end sub
 
 '':::::
-sub emitDATA ( byval litext as zstring ptr, _
-			   byval litlen as integer, _
-			   byval typ as integer ) static
+sub emitDATA _
+	( _
+		byval litext as zstring ptr, _
+		byval litlen as integer, _
+		byval typ as integer _
+	) static
 
     static as zstring ptr esctext
     dim as string ostr
@@ -5317,9 +5810,12 @@ sub emitDATA ( byval litext as zstring ptr, _
 end sub
 
 '':::::
-sub emitDATAW( byval litext as wstring ptr, _
-			   byval litlen as integer, _
-			   byval typ as integer ) static
+sub emitDATAW _
+	( _
+		byval litext as wstring ptr, _
+		byval litlen as integer, _
+		byval typ as integer _
+	) static
 
     static as zstring ptr esctext
     dim as string ostr
@@ -5340,7 +5836,11 @@ sub emitDATAW( byval litext as wstring ptr, _
 end sub
 
 '':::::
-sub emitDATAOFS ( byval sname as zstring ptr ) static
+sub emitDATAOFS _
+	( _
+		byval sname as zstring ptr _
+	) static
+
     dim ostr as string
 
 	outEx( ".short 0xfffe" + NEWLINE )
@@ -5357,7 +5857,10 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
+sub emitVARINIBEGIN _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) static
 
 	emitSECTION( EMIT_SECTYPE_DATA )
 
@@ -5382,13 +5885,19 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub emitVARINIEND( byval sym as FBSYMBOL ptr ) static
+sub emitVARINIEND _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) static
 
 end sub
 
 '':::::
-sub emitVARINIi( byval dtype as integer, _
-				 byval value as integer ) static
+sub emitVARINIi _
+	( _
+		byval dtype as integer, _
+		byval value as integer _
+	) static
 
 	dim ostr as string
 
@@ -5398,8 +5907,11 @@ sub emitVARINIi( byval dtype as integer, _
 end sub
 
 '':::::
-sub emitVARINIf( byval dtype as integer, _
-				 byval value as double ) static
+sub emitVARINIf _
+	( _
+		byval dtype as integer, _
+		byval value as double _
+	) static
 
 	dim as string svalue, ostr
 
@@ -5412,8 +5924,12 @@ sub emitVARINIf( byval dtype as integer, _
 end sub
 
 '':::::
-sub emitVARINI64( byval dtype as integer, _
-				  byval value as longint ) static
+sub emitVARINI64 _
+	( _
+		byval dtype as integer, _
+		byval value as longint _
+	) static
+
 	dim ostr as string
 
 	ostr = hGetTypeString( dtype ) + " 0x" + hex( value ) + NEWLINE
@@ -5442,7 +5958,11 @@ sub emitVARINIOFS _
 end sub
 
 '':::::
-sub emitVARINISTR( byval s as zstring ptr ) static
+sub emitVARINISTR _
+	( _
+		byval s as zstring ptr _
+	) static
+
     dim ostr as string
 
 	ostr = ".ascii " + QUOTE
@@ -5453,7 +5973,11 @@ sub emitVARINISTR( byval s as zstring ptr ) static
 end sub
 
 '':::::
-sub emitVARINIWSTR( byval s as zstring ptr ) static
+sub emitVARINIWSTR _
+	( _
+		byval s as zstring ptr _
+	) static
+
     dim ostr as string
 
 	ostr = ".ascii " + QUOTE
@@ -5465,7 +5989,11 @@ sub emitVARINIWSTR( byval s as zstring ptr ) static
 end sub
 
 '':::::
-sub emitVARINIPAD( byval bytes as integer ) static
+sub emitVARINIPAD _
+	( _
+		byval bytes as integer _
+	) static
+
     dim ostr as string
 
 	ostr = ".skip " + str( bytes ) + ",0" + NEWLINE
@@ -5503,7 +6031,10 @@ sub emitWriteHeader( ) static
 end sub
 
 '':::::
-sub emitWriteFooter( byval tottime as double ) static
+sub emitWriteFooter _
+	( _
+		byval tottime as double _
+	) static
 
 	hCOMMENT( env.inf.name + "' compilation took " + str( tottime ) + " secs" )
 
@@ -5513,7 +6044,10 @@ sub emitWriteFooter( byval tottime as double ) static
 end sub
 
 '':::::
-private function hGetTypeString( byval typ as integer ) as string static
+private function hGetTypeString _
+	( _
+		byval typ as integer _
+	) as string static
 
 	select case as const typ
     case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
@@ -5605,18 +6139,20 @@ private sub hEmitVarBss _
 end sub
 
 '':::::
-sub emitWriteBss( byval s as FBSYMBOL ptr )
+sub emitWriteBss _
+	( _
+		byval s as FBSYMBOL ptr )
 
     do while( s <> NULL )
 
     	select case symbGetClass( s )
 		'' name space?
 		case FB_SYMBCLASS_NAMESPACE
-			emitWriteBss( symbGetNamespaceTb( s ).head )
+			emitWriteBss( symbGetNamespaceTbHead( s ) )
 
 		'' scope block?
 		case FB_SYMBCLASS_SCOPE
-			emitWriteBss( symbGetScopeTbHead( s ) )
+			emitWriteBss( symbGetScopeSymbTbHead( s ) )
 
     	'' variable?
     	case FB_SYMBCLASS_VAR
@@ -5672,18 +6208,20 @@ private sub hEmitVarConst _
 end sub
 
 '':::::
-sub emitWriteConst( byval s as FBSYMBOL ptr )
+sub emitWriteConst _
+	( _
+		byval s as FBSYMBOL ptr )
 
     do while( s <> NULL )
 
     	select case symbGetClass( s )
 		'' name space?
 		case FB_SYMBCLASS_NAMESPACE
-			emitWriteConst( symbGetNamespaceTb( s ).head )
+			emitWriteConst( symbGetNamespaceTbHead( s ) )
 
 		'' scope block?
 		case FB_SYMBCLASS_SCOPE
-			emitWriteConst( symbGetScopeTbHead( s ) )
+			emitWriteConst( symbGetScopeSymbTbHead( s ) )
 
     	'' variable?
     	case FB_SYMBCLASS_VAR
@@ -5696,18 +6234,20 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
 end sub
 
 '':::::
-sub emitWriteData( byval s as FBSYMBOL ptr )
+sub emitWriteData _
+	( _
+		byval s as FBSYMBOL ptr )
 
     do while( s <> NULL )
 
     	select case symbGetClass( s )
 		'' name space?
 		case FB_SYMBCLASS_NAMESPACE
-			emitWriteData( symbGetNamespaceTb( s ).head )
+			emitWriteData( symbGetNamespaceTbHead( s ) )
 
 		'' scope block?
 		case FB_SYMBCLASS_SCOPE
-			emitWriteData( symbGetScopeTbHead( s ) )
+			emitWriteData( symbGetScopeSymbTbHead( s ) )
 
     	'' variable?
     	case FB_SYMBCLASS_VAR
@@ -5722,6 +6262,7 @@ end sub
 
 '':::::
 sub emitWriteExport( ) static
+
     dim as FBSYMBOL ptr s
     dim as string sname
 
@@ -5787,8 +6328,9 @@ sub emitDeclVariable _
 	if( symbGetIsInitialized( s ) ) then
 
 		'' extern or jump-tb?
-    	if( (symbGetAttrib( s ) and _
-			 (FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_JUMPTB)) <> 0 ) then
+    	if( symbIsExtern( s ) ) then
+			return
+		elseif( symbGetIsJumpTb( s ) ) then
 			return
 		end if
 

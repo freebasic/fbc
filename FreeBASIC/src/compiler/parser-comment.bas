@@ -37,7 +37,7 @@ function cComment _
 	) as integer
 
 	select case lexGetToken( lexflags )
-	case FB_TK_COMMENTCHAR, FB_TK_REM
+	case FB_TK_COMMENT, FB_TK_REM
     	lexSkipToken( LEX_FLAGS )
 
     	if( lexGetToken( LEX_FLAGS ) = FB_TK_DIRECTIVECHAR ) then
@@ -99,7 +99,7 @@ function cDirective as integer static
 			end if
 
 			'' ':'
-			if( hMatch( CHAR_COLON ) = FALSE ) then
+			if( hMatch( FB_TK_STMTSEP ) = FALSE ) then
 				function = errReport( FB_ERRMSG_SYNTAXERROR )
 				exit select
 			end if

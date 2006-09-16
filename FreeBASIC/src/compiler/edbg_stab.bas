@@ -508,7 +508,7 @@ private sub hDeclArgs _
 
 	dim as FBSYMBOL ptr s
 
-	s = symbGetProcLocTbHead( proc )
+	s = symbGetProcSymbTbHead( proc )
 	do while( s <> NULL )
 
     	if( symbIsVar( s ) ) then
@@ -554,7 +554,7 @@ sub edbgEmitProcHeader _
 	end if
 
 	'' main?
-	if( symbIsMainProc( proc ) ) then
+	if( symbGetIsMainProc( proc ) ) then
 		'' main proc (the entry point)
 		hEmitSTABS( STAB_TYPE_MAIN, _
 					fbGetEntryPoint( ), _
@@ -610,11 +610,11 @@ private sub hDeclLocalVars _
 
 	'' proc?
 	if( symbIsProc( blk ) ) then
-		shead = symbGetProcLocTbHead( blk )
+		shead = symbGetProcSymbTbHead( blk )
 
 	'' scope block..
 	else
-		shead = symbGetScopeTbHead( blk )
+		shead = symbGetScopeSymbTbHead( blk )
 	end if
 
 	'' for each symbol..

@@ -49,8 +49,7 @@ end sub
 '':::::
 private function hGlobalId _
 	( _
-		byval isdecl as integer = FALSE, _
-		byval showerror as integer = TRUE _
+		byval options as FB_IDOPT = FB_IDOPT_SHOWERROR _
 	) as FBSYMCHAIN ptr
 
 	function = NULL
@@ -62,12 +61,12 @@ private function hGlobalId _
 
     else
     	'' with inside a WITH block, a single '.' is ambiguous..
-    	if( env.stmt.with.sym <> NULL ) then
+    	if( parser.stmt.with.sym <> NULL ) then
     		exit function
     	end if
     end if
 
-    if( isdecl ) then
+    if( (options and FB_IDOPT_ISDECL) <> 0 ) then
     	'' different name spaces?
     	if( symbIsGlobalNamespc( ) = FALSE ) then
     		if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
@@ -84,7 +83,7 @@ private function hGlobalId _
     case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
     case else
-    	if( showerror ) then
+    	if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
     		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
     	end if
     	exit function
@@ -95,17 +94,33 @@ private function hGlobalId _
 end function
 
 '':::::
-'' Identifier	= (ID{namespace} '.')* ID
+#macro hCheckDecl( base_parent, options )
+    if( base_parent <> NULL ) then
+    	'' declaration?
+    	if( (options and FB_IDOPT_ISDECL) <> 0 ) then
+    		'' different parents?
+    		if( symbGetParent( base_parent ) <> symbGetCurrentNamespc( ) ) then
+				if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+    				if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+    					exit function
+    				end if
+    			end if
+			end if
+		end if
+    end if
+#endmacro
+
+'':::::
+'' Identifier	= (ID{namespace|class} '.')* ID
 ''				|  ID ('.' ID)* .
 ''
 function cIdentifier _
 	( _
-		byval isdecl as integer, _
-		byval showerror as integer _
+		byval options as FB_IDOPT _
 	) as FBSYMCHAIN ptr static
 
     dim as FBSYMCHAIN ptr chain_
-    dim as FBSYMBOL ptr ns
+    dim as FBSYMBOL ptr parent, base_parent
 
     chain_ = lexGetSymChain( )
 
@@ -119,95 +134,122 @@ function cIdentifier _
     		return NULL
     	end if
 
-    	chain_ = hGlobalId( isdecl, showerror )
+    	chain_ = hGlobalId( options )
     	if( chain_ = NULL ) then
     		return NULL
     	end if
     end if
 
-    do while( symbGetClass( chain_->sym ) = FB_SYMBCLASS_NAMESPACE )
+    base_parent = NULL
 
-    	ns = chain_->sym
+    do
+    	parent = chain_->sym
 
-    	'' declaration?
-    	if( isdecl ) then
-    		'' different name spaces?
-    		if( ns <> symbGetCurrentNamespc( ) ) then
-    			'' anything but the global one? (same as in C++)
-    			if( symbIsGlobalNamespc( ) = FALSE ) then
-    				if( showerror ) then
-    					if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-    						exit function
-    					end if
+    	select case as const symbGetClass( parent )
+    	case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS
+
+    	case FB_SYMBCLASS_STRUCT
+    		if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
+    			exit do
+    		end if
+
+    		'' ordinary struct?
+    		if( symbGetHasMethod( parent ) = FALSE ) then
+    			exit do
+    		end if
+
+    	case else
+    		exit do
+    	end select
+
+    	'' '.'?
+    	if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
+    		'' if it's a namespace, the '.' is obligatory, the
+    		'' namespace itself isn't a composite type
+    		if( symbGetClass( parent ) = FB_SYMBCLASS_NAMESPACE ) then
+    			'' skip id
+    			lexSkipToken( LEXCHECK_NOPERIOD )
+
+    			if( (options and FB_IDOPT_DONTCHKPERIOD) <> 0 ) then
+    				exit do
+    			end if
+
+    			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+    				if( errReport( FB_ERRMSG_EXPECTEDPERIOD ) = FALSE ) then
+    					return NULL
     				end if
     			end if
     		end if
 
-    		'' check only the base ns
-    		isdecl = FALSE
+    		exit do
     	end if
 
+    	'' skip id
     	lexSkipToken( LEXCHECK_NOPERIOD )
 
-    	'' '.'?
-    	if( lexGetToken( ) <> CHAR_DOT ) then
-    		if( showerror ) then
-    			if( errReport( FB_ERRMSG_EXPECTEDPERIOD ) = FALSE ) then
-    				return NULL
-    			else
-    				exit do
-    			end if
-    		else
-    			exit do
-    		end if
+    	'' skip '.'
+    	lexSkipToken( LEXCHECK_NOPERIOD )
+
+    	if( base_parent = NULL ) then
+    		base_parent = parent
     	end if
-
-    	lexSkipToken( LEXCHECK_NOPERIOD )
 
     	'' ID
-    	select case lexGetClass( )
+    	select case as const lexGetClass( )
     	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
+    	case FB_TKCLASS_OPERATOR, FB_TKCLASS_KEYWORD
+    		if( (options and FB_IDOPT_ISOPERATOR ) <> 0 ) then
+    			exit do
+    		end if
+
+    		if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+    			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+    		end if
+
+    		return NULL
+
     	case else
-    		if( showerror ) then
+    		if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
     			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
     		end if
 
     		return NULL
     	end select
 
-    	chain_ = symbLookupAt( ns, lexGetText( ), FALSE )
+    	chain_ = symbLookupAt( parent, lexGetText( ), FALSE )
     	if( chain_ = NULL ) then
-           	if( showerror ) then
-           		errReportUndef( FB_ERRMSG_UNDEFINEDSYMBOL, lexGetText( ) )
+          	if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+          		errReportUndef( FB_ERRMSG_UNDEFINEDSYMBOL, lexGetText( ) )
     		else
     			hSkipSymbol( )
            	end if
 
-           	return NULL
+    	    return NULL
     	end if
     loop
+
+	''
+	hCheckDecl( base_parent, options )
 
 	function = chain_
 
 end function
 
 '':::::
-'' Identifier	= ID{namespace} ('.' ID{namespace})* .
+'' ParentId		= ID{namespace|class} ('.' ID{namespace|class})* .
 ''
-function cNamespace _
+function cParentId _
 	( _
-		byval checkdot as integer _
+		byval options as FB_IDOPT _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMCHAIN ptr chain_
-    dim as FBSYMBOL ptr ns
+    dim as FBSYMBOL ptr parent, base_parent
 
 	if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
 	    return NULL
 	end if
-
-    ns = NULL
 
     chain_ = lexGetSymChain( )
     if( chain_ = NULL ) then
@@ -217,18 +259,36 @@ function cNamespace _
     	end if
     end if
 
+    parent = NULL
+    base_parent = NULL
+
     do while( chain_ <> NULL )
 
-    	if( symbGetClass( chain_->sym ) <> FB_SYMBCLASS_NAMESPACE ) then
-    		exit do
-    	end if
-    	ns = chain_->sym
+    	select case as const symbGetClass( chain_->sym )
+    	case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS
 
-    	lexSkipToken( LEXCHECK_NOPERIOD )
+    	case FB_SYMBCLASS_STRUCT
+    		if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
+    			exit do
+    		end if
+
+    		'' ordinary struct?
+    		if( symbGetHasMethod( chain_->sym ) = FALSE ) then
+    			exit do
+    		end if
+
+    	case else
+    		exit do
+    	end select
+
+    	parent = chain_->sym
 
     	'' '.'?
-    	if( lexGetToken( ) <> CHAR_DOT ) then
-    		if( checkdot = FALSE ) then
+    	if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
+    		'' skip id
+    		lexSkipToken( LEXCHECK_NOPERIOD )
+
+    		if( (options and FB_IDOPT_DONTCHKPERIOD) <> 0 ) then
     			exit do
     		end if
 
@@ -239,11 +299,30 @@ function cNamespace _
     		end if
     	end if
 
+    	'' skip id
     	lexSkipToken( LEXCHECK_NOPERIOD )
 
+    	'' skip '.'
+    	lexSkipToken( LEXCHECK_NOPERIOD )
+
+    	if( base_parent = NULL ) then
+    		base_parent = parent
+    	end if
+
     	'' ID
-    	select case lexGetClass( )
+    	select case as const lexGetClass( )
     	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+
+    	case FB_TKCLASS_OPERATOR, FB_TKCLASS_KEYWORD
+    		if( (options and FB_IDOPT_ISOPERATOR ) <> 0 ) then
+    			exit do
+    		end if
+
+    		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    			return NULL
+    		else
+    			exit do
+    		end if
 
     	case else
     		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
@@ -253,10 +332,13 @@ function cNamespace _
     		end if
     	end select
 
-    	chain_ = symbLookupAt( chain_->sym, lexGetText( ), FALSE )
+    	chain_ = symbLookupAt( parent, lexGetText( ), FALSE )
     loop
 
-	function = ns
+	''
+	hCheckDecl( base_parent, options )
+
+	function = parent
 
 end function
 

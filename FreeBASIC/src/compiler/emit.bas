@@ -108,7 +108,10 @@ function emitOpen( ) as integer
 end function
 
 '':::::
-sub emitClose( byval tottime as double )
+sub emitClose _
+	( _
+		byval tottime as double _
+	)
 
     ''
     emitWriteFooter( tottime )
@@ -138,8 +141,12 @@ sub emitClose( byval tottime as double )
 end sub
 
 '':::::
-sub hWriteStr( byval addtab as integer, _
-			   byval s as zstring ptr ) static
+sub hWriteStr _
+	( _
+		byval addtab as integer, _
+		byval s as zstring ptr _
+	) static
+
     dim as string ostr
 
 	if( addtab ) then
@@ -234,7 +241,10 @@ sub emitFlush( ) static
 end sub
 
 '':::::
-function emitGetRegClass( byval dclass as integer ) as REGCLASS ptr
+function emitGetRegClass _
+	( _
+		byval dclass as integer _
+	) as REGCLASS ptr
 
 	function = emit.regTB(dclass)
 
@@ -252,7 +262,10 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitProcBegin( byval proc as FBSYMBOL ptr ) static
+sub emitProcBegin _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
 
     proc->proc.ext->stk.localofs = EMIT_LOCSTART
     proc->proc.ext->stk.localmax = EMIT_LOCSTART
@@ -261,18 +274,55 @@ sub emitProcBegin( byval proc as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub emitProcEnd( byval proc as FBSYMBOL ptr ) static
+sub emitProcEnd _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
 
 	'' do nothing
 
 end sub
+
+'':::::
+function emitProcAllocStaticVars _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer static
+
+    function = FALSE
+
+    do while( s <> NULL )
+
+    	select case s->class
+    	'' scope block? recursion..
+    	case FB_SYMBCLASS_SCOPE
+    		emitProcAllocStaticVars( symbGetScopeSymbTbHead( s ) )
+
+    	'' variable?
+    	case FB_SYMBCLASS_VAR
+    		'' static?
+    		if( symbIsStatic( s ) ) then
+				emitDeclVariable( s )
+			end if
+		end select
+
+    	s = s->next
+    loop
+
+    function = TRUE
+
+end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' node creation
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private function hNewVR( byval v as IRVREG ptr ) as IRVREG ptr
+private function hNewVR _
+	( _
+		byval v as IRVREG ptr _
+	) as IRVREG ptr
+
     dim as IRVREG ptr n
     dim as integer dclass
 
@@ -305,14 +355,18 @@ private function hNewVR( byval v as IRVREG ptr ) as IRVREG ptr
 end function
 
 '':::::
-private function hNewNode( byval class as EMIT_NODECLASS_ENUM, _
-						   byval updatepos as integer = TRUE ) as EMIT_NODE ptr static
+private function hNewNode _
+	( _
+		byval class_ as EMIT_NODECLASS_ENUM, _
+		byval updatepos as integer = TRUE _
+	) as EMIT_NODE ptr static
+
 	dim as EMIT_NODE ptr n
 	dim as integer i
 
 	n = flistNewItem( @emit.nodeTB )
 
-	n->class 	= class
+	n->class = class_
 
 	'' save register's state
 	for i = 0 to EMIT_REGCLASSES-1
@@ -328,9 +382,12 @@ private function hNewNode( byval class as EMIT_NODECLASS_ENUM, _
 end function
 
 '':::::
-private function hNewBOP( byval op as integer, _
-					 	  byval dvreg as IRVREG ptr, _
-			 		 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+private function hNewBOP _
+	( _
+		byval op as integer, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
@@ -345,8 +402,11 @@ private function hNewBOP( byval op as integer, _
 end function
 
 '':::::
-private function hNewUOP( byval op as integer, _
-					 	  byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+private function hNewUOP _
+	( _
+		byval op as integer, _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
@@ -360,11 +420,14 @@ private function hNewUOP( byval op as integer, _
 end function
 
 '':::::
-private function hNewREL( byval op as integer, _
-					 	  byval rvreg as IRVREG ptr, _
-					 	  byval label as FBSYMBOL ptr, _
-					 	  byval dvreg as IRVREG ptr, _
-			 		 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+private function hNewREL _
+	( _
+		byval op as integer, _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
@@ -381,9 +444,12 @@ private function hNewREL( byval op as integer, _
 end function
 
 '':::::
-private function hNewSTK( byval op as integer, _
-					 	  byval vreg as IRVREG ptr, _
-					 	  byval extra as integer = 0 ) as EMIT_NODE ptr static
+private function hNewSTK _
+	( _
+		byval op as integer, _
+		byval vreg as IRVREG ptr, _
+		byval extra as integer = 0 _
+	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
@@ -398,10 +464,13 @@ private function hNewSTK( byval op as integer, _
 end function
 
 '':::::
-private function hNewBRANCH( byval op as integer, _
-					 	  	 byval vreg as IRVREG ptr, _
-					 	  	 byval sym as FBSYMBOL ptr, _
-					 	  	 byval extra as integer = 0 ) as EMIT_NODE ptr static
+private function hNewBRANCH _
+	( _
+		byval op as integer, _
+		byval vreg as IRVREG ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval extra as integer = 0 _
+	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
@@ -417,8 +486,11 @@ private function hNewBRANCH( byval op as integer, _
 end function
 
 '':::::
-private function hNewSYMOP( byval op as integer, _
-					 	    byval sym as FBSYMBOL ptr ) as EMIT_NODE ptr static
+private function hNewSYMOP _
+	( _
+		byval op as integer, _
+		byval sym as FBSYMBOL ptr _
+	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
@@ -432,8 +504,11 @@ private function hNewSYMOP( byval op as integer, _
 end function
 
 '':::::
-private function hNewLIT( byval text as zstring ptr, _
-						  byval doupdate as integer ) as EMIT_NODE ptr static
+private function hNewLIT _
+	( _
+		byval text as zstring ptr, _
+		byval doupdate as integer _
+	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
@@ -447,8 +522,11 @@ private function hNewLIT( byval text as zstring ptr, _
 end function
 
 '':::::
-private function hNewJMPTB( byval dtype as integer, _
-							byval text as zstring ptr ) as EMIT_NODE ptr static
+private function hNewJMPTB _
+	( _
+		byval dtype as integer, _
+		byval text as zstring ptr _
+	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
@@ -463,11 +541,14 @@ private function hNewJMPTB( byval dtype as integer, _
 end function
 
 '':::::
-private function hNewMEM( byval op as integer, _
-					 	  byval dvreg as IRVREG ptr, _
-			 		 	  byval svreg as IRVREG ptr, _
-			 		 	  byval bytes as integer, _
-			 		 	  byval extra as integer = 0 ) as EMIT_NODE ptr static
+private function hNewMEM _
+	( _
+		byval op as integer, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval bytes as integer, _
+		byval extra as integer = 0 _
+	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
@@ -488,8 +569,11 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function emitLOAD( byval dvreg as IRVREG ptr, _
-			  	   byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitLOAD _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -544,8 +628,11 @@ function emitLOAD( byval dvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitSTORE( byval dvreg as IRVREG ptr, _
-			   		byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitSTORE _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -604,8 +691,11 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function emitMOV( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitMOV _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -623,8 +713,11 @@ function emitMOV( byval dvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitADD( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitADD _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -642,8 +735,11 @@ function emitADD( byval dvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitSUB( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitSUB _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -661,8 +757,11 @@ function emitSUB( byval dvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitMUL( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitMUL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -684,32 +783,44 @@ function emitMUL( byval dvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitDIV( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitDIV _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewBOP( EMIT_OP_DIVF, dvreg, svreg )
 
 end function
 
 '':::::
-function emitINTDIV( byval dvreg as IRVREG ptr, _
-			    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitINTDIV _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewBOP( EMIT_OP_DIVI, dvreg, svreg )
 
 end function
 
 '':::::
-function emitMOD( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitMOD _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewBOP( EMIT_OP_MODI, dvreg, svreg )
 
 end function
 
 '':::::
-function emitSHL( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitSHL _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
@@ -723,8 +834,11 @@ function emitSHL( byval dvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitSHR( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitSHR _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
@@ -738,8 +852,11 @@ function emitSHR( byval dvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitAND( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitAND _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
@@ -753,8 +870,11 @@ function emitAND( byval dvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitOR( byval dvreg as IRVREG ptr, _
-			 	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitOR _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
@@ -768,8 +888,11 @@ function emitOR( byval dvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitXOR( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitXOR _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
@@ -783,8 +906,11 @@ function emitXOR( byval dvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitEQV( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitEQV _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
@@ -798,8 +924,11 @@ function emitEQV( byval dvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitIMP( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitIMP _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
@@ -813,32 +942,44 @@ function emitIMP( byval dvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitATN2( byval dvreg as IRVREG ptr, _
-			  	   byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitATN2 _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewBOP( EMIT_OP_ATN2, dvreg, svreg )
 
 end function
 
 '':::::
-function emitPOW( byval dvreg as IRVREG ptr, _
-			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitPOW _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewBOP( EMIT_OP_POW, dvreg, svreg )
 
 end function
 
 '':::::
-function emitADDROF( byval dvreg as IRVREG ptr, _
-			    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitADDROF _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewBOP( EMIT_OP_ADDROF, dvreg, svreg )
 
 end function
 
 '':::::
-function emitDEREF( byval dvreg as IRVREG ptr, _
-			   		byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitDEREF _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewBOP( EMIT_OP_DEREF, dvreg, svreg )
 
@@ -849,10 +990,13 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function emitGT( byval rvreg as IRVREG ptr, _
-		    	 byval label as FBSYMBOL ptr, _
-		    	 byval dvreg as IRVREG ptr, _
-		    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitGT _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -870,10 +1014,13 @@ function emitGT( byval rvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitLT( byval rvreg as IRVREG ptr, _
-		    	 byval label as FBSYMBOL ptr, _
-		    	 byval dvreg as IRVREG ptr, _
-		    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitLT _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -891,10 +1038,13 @@ function emitLT( byval rvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitEQ( byval rvreg as IRVREG ptr, _
-		    	 byval label as FBSYMBOL ptr, _
-		    	 byval dvreg as IRVREG ptr, _
-		    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitEQ _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -912,10 +1062,13 @@ function emitEQ( byval rvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitNE( byval rvreg as IRVREG ptr, _
-		    	 byval label as FBSYMBOL ptr, _
-		    	 byval dvreg as IRVREG ptr, _
-		    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitNE _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -933,10 +1086,13 @@ function emitNE( byval rvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitGE( byval rvreg as IRVREG ptr, _
-		    	 byval label as FBSYMBOL ptr, _
-		    	 byval dvreg as IRVREG ptr, _
-		    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitGE _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -954,10 +1110,13 @@ function emitGE( byval rvreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitLE( byval rvreg as IRVREG ptr, _
-		    	 byval label as FBSYMBOL ptr, _
-		    	 byval dvreg as IRVREG ptr, _
-		    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitLE _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -979,7 +1138,10 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function emitNEG( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitNEG _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -997,7 +1159,10 @@ function emitNEG( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 end function
 
 '':::::
-function emitNOT( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitNOT _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
@@ -1011,7 +1176,10 @@ function emitNOT( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 end function
 
 '':::::
-function emitABS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitABS _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -1029,7 +1197,10 @@ function emitABS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 end function
 
 '':::::
-function emitSGN( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitSGN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -1047,70 +1218,100 @@ function emitSGN( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 end function
 
 '':::::
-function emitSIN( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitSIN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewUOP( EMIT_OP_SIN, dvreg )
 
 end function
 
 '':::::
-function emitASIN( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitASIN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewUOP( EMIT_OP_ASIN, dvreg )
 
 end function
 
 '':::::
-function emitCOS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitCOS _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewUOP( EMIT_OP_COS, dvreg )
 
 end function
 
 '':::::
-function emitACOS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitACOS _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewUOP( EMIT_OP_ACOS, dvreg )
 
 end function
 
 '':::::
-function emitTAN( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitTAN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewUOP( EMIT_OP_TAN, dvreg )
 
 end function
 
 '':::::
-function emitATAN( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitATAN _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewUOP( EMIT_OP_ATAN, dvreg )
 
 end function
 
 '':::::
-function emitSQRT( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitSQRT _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewUOP( EMIT_OP_SQRT, dvreg )
 
 end function
 
 '':::::
-function emitLOG( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitLOG _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewUOP( EMIT_OP_LOG, dvreg )
 
 end function
 
 '':::::
-function emitFLOOR( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitFLOOR _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewUOP( EMIT_OP_FLOOR, dvreg )
 
 end function
 
 '':::::
-function emitXchgTOS( byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitXchgTOS _
+	( _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewUOP( EMIT_OP_XCHGTOS, svreg )
 
@@ -1121,7 +1322,10 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function emitPUSH( byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitPUSH _
+	( _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const svreg->dtype
 	'' longint?
@@ -1139,7 +1343,10 @@ function emitPUSH( byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 end function
 
 '':::::
-function emitPOP( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitPOP _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -1157,8 +1364,11 @@ function emitPOP( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 end function
 
 '':::::
-function emitPUSHUDT( byval svreg as IRVREG ptr, _
-				 byval sdsize as integer ) as EMIT_NODE ptr static
+function emitPUSHUDT _
+	( _
+		byval svreg as IRVREG ptr, _
+		byval sdsize as integer _
+	) as EMIT_NODE ptr static
 
 	function = hNewSTK( EMIT_OP_PUSHUDT, svreg, sdsize )
 
@@ -1169,14 +1379,20 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function emitCOMMENT( byval text as zstring ptr ) as EMIT_NODE ptr static
+function emitCOMMENT _
+	( _
+		byval text as zstring ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewLIT( "##" + *text, FALSE )
 
 end function
 
 '':::::
-function emitASM( byval text as zstring ptr ) as EMIT_NODE ptr static
+function emitASM _
+	( _
+		byval text as zstring ptr _
+	) as EMIT_NODE ptr static
     dim as integer c
 
     function = hNewLIT( text, TRUE )
@@ -1189,14 +1405,20 @@ function emitASM( byval text as zstring ptr ) as EMIT_NODE ptr static
 end function
 
 '':::::
-function emitLIT( byval text as zstring ptr ) as EMIT_NODE ptr static
+function emitLIT _
+	( _
+		byval text as zstring ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewLIT( text, FALSE )
 
 end function
 
 '':::::
-function emitALIGN( byval bytes as integer ) as EMIT_NODE ptr static
+function emitALIGN _
+	( _
+		byval bytes as integer _
+	) as EMIT_NODE ptr static
     static as IRVREG vr
 
 	vr.typ   = IR_VREGTYPE_IMM
@@ -1206,7 +1428,10 @@ function emitALIGN( byval bytes as integer ) as EMIT_NODE ptr static
 end function
 
 '':::::
-function emitSTACKALIGN( byval bytes as integer ) as EMIT_NODE ptr static
+function emitSTACKALIGN _
+	( _
+		byval bytes as integer _
+	) as EMIT_NODE ptr static
     static as IRVREG vr
 
 	vr.typ   = IR_VREGTYPE_IMM
@@ -1216,53 +1441,74 @@ function emitSTACKALIGN( byval bytes as integer ) as EMIT_NODE ptr static
 end function
 
 '':::::
-function emitJMPTB( byval dtype as integer, _
-			   		byval text as zstring ptr ) as EMIT_NODE ptr static
+function emitJMPTB _
+	( _
+		byval dtype as integer, _
+		byval text as zstring ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewJMPTB( dtype, text )
 
 end function
 
 '':::::
-function emitCALL( byval label as FBSYMBOL ptr, _
-			  	   byval bytestopop as integer ) as EMIT_NODE ptr static
+function emitCALL _
+	( _
+		byval label as FBSYMBOL ptr, _
+		byval bytestopop as integer _
+	) as EMIT_NODE ptr static
 
 	function = hNewBRANCH( EMIT_OP_CALL, NULL, label, bytestopop )
 
 end function
 
 '':::::
-function emitCALLPTR( byval svreg as IRVREG ptr, _
-				 	  byval bytestopop as integer ) as EMIT_NODE ptr static
+function emitCALLPTR _
+	( _
+		byval svreg as IRVREG ptr, _
+		byval bytestopop as integer _
+	) as EMIT_NODE ptr static
 
 	function = hNewBRANCH( EMIT_OP_CALLPTR, svreg, NULL, bytestopop )
 
 end function
 
 '':::::
-function emitBRANCH( byval op as integer, _
-		 			 byval label as FBSYMBOL ptr ) as EMIT_NODE ptr static
+function emitBRANCH _
+	( _
+		byval op as integer, _
+		byval label as FBSYMBOL ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewBRANCH( EMIT_OP_BRANCH, NULL, label, op )
 
 end function
 
 '':::::
-function emitJUMP( byval label as FBSYMBOL ptr ) as EMIT_NODE ptr static
+function emitJUMP _
+	( _
+		byval label as FBSYMBOL ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewBRANCH( EMIT_OP_JUMP, NULL, label )
 
 end function
 
 '':::::
-function emitJUMPPTR( byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+function emitJUMPPTR _
+	( _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewBRANCH( EMIT_OP_JUMPPTR, svreg, NULL )
 
 end function
 
 '':::::
-function emitRET( byval bytestopop as integer ) as EMIT_NODE ptr static
+function emitRET _
+	( _
+		byval bytestopop as integer _
+	) as EMIT_NODE ptr static
     static as IRVREG vr
 
 	vr.typ   = IR_VREGTYPE_IMM
@@ -1272,14 +1518,20 @@ function emitRET( byval bytestopop as integer ) as EMIT_NODE ptr static
 end function
 
 '':::::
-function emitLABEL( byval label as FBSYMBOL ptr ) as EMIT_NODE ptr static
+function emitLABEL _
+	( _
+		byval label as FBSYMBOL ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewSYMOP( EMIT_OP_LABEL, label )
 
 end function
 
 '':::::
-function emitPUBLIC( byval label as FBSYMBOL ptr ) as EMIT_NODE ptr static
+function emitPUBLIC _
+	( _
+		byval label as FBSYMBOL ptr _
+	) as EMIT_NODE ptr static
 
 	function = hNewSYMOP( EMIT_OP_PUBLIC, label )
 

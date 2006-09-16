@@ -32,38 +32,77 @@ declare function 	hParamDecl			( _
 				   			 			  	byval isproto as integer _
 				   			 			) as FBSYMBOL ptr
 
+declare function 	hParamDeclInstPtr 	( _
+											byval parent as FBSYMBOL ptr, _
+											byval proc as FBSYMBOL ptr _
+										) as FBSYMBOL ptr
+
 '':::::
-''Parameters=   ParamDecl (',' ParamDecl)* .
+''Parameters=   '(' ParamDecl (',' ParamDecl)* ')' .
 ''
 function cParameters _
 	( _
+		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
 		byval procmode as integer, _
 		byval isproto as integer _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr n = any
+	dim as FBSYMBOL ptr param = any
+
+    '' method? add the instance pointer (must be done here
+    '' to check for dups)
+    if( parent <> NULL ) then
+    	param = symAddProcInstancePtr( parent, proc )
+    else
+    	param = NULL
+    end if
+
+	'' '('?
+	if( lexGetToken( ) <> CHAR_LPRNT ) then
+		return param
+	end if
+
+	lexSkipToken( )
+
+	'' ')'?
+	if( lexGetToken( ) = CHAR_RPRNT ) then
+		lexSkipToken( )
+		return param
+	end if
 
 	do
-		n = hParamDecl( proc, procmode, isproto )
-		if( n = NULL ) then
-			return NULL
+		param = hParamDecl( proc, procmode, isproto )
+		if( param = NULL ) then
+			exit do
 		end if
 
 		'' vararg?
-		if( n->param.mode = FB_PARAMMODE_VARARG ) then
+		if( param->param.mode = FB_PARAMMODE_VARARG ) then
 			exit do
 		end if
 
 		'' ','
-	    if( lexGetToken( ) <> CHAR_COMMA ) then
-	    	exit do
-	    end if
+	   	if( lexGetToken( ) <> CHAR_COMMA ) then
+	   		exit do
+	   	end if
 
 		lexSkipToken( )
 	loop
 
-	function = n
+	'' ')'?
+	if( lexGetToken( ) <> CHAR_RPRNT ) then
+		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip until ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
+		end if
+	else
+		lexSkipToken( )
+	end if
+
+	function = param
 
 end function
 
@@ -117,8 +156,17 @@ private function hOptionalExpr _
     	end if
     end if
 
-    '' anything but an UDT?
-    if( dtype <> FB_DATATYPE_STRUCT ) then
+    select case dtype
+    '' UDT? let SymbolInit() build a tree..
+    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    	sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+
+    	expr = cInitializer( sym, TRUE )
+
+    	symbDelVar( sym )
+
+    '' anything else..
+	case else
     	if( cExpression( expr ) = FALSE ) then
     		exit function
     	end if
@@ -132,12 +180,7 @@ private function hOptionalExpr _
         	exit function
 		end if
 
-    '' UDT, let SymbolInit() build a tree..
-    else
-    	sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
-    	expr = cVariableInit( sym, TRUE )
-    	symbDelVar( sym )
-    end if
+    end select
 
 	function = expr
 
@@ -446,6 +489,16 @@ private function hParamDecl _
     			'' error recovery: fake correct type
     			param_dtype += FB_DATATYPE_POINTER
     		end if
+
+    	else
+    		if( param_mode = FB_PARAMMODE_BYVAL ) then
+    			if( hParamError( proc, param_id ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: fake correct param
+    				param_dtype += FB_DATATYPE_POINTER
+    			end if
+    		end if
     	end if
 
     case FB_DATATYPE_STRUCT
@@ -460,39 +513,14 @@ private function hParamDecl _
     end select
 
     '' calc len
-    select case param_mode
-    case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-    	param_len = FB_POINTERSIZE
-
-    case FB_PARAMMODE_BYVAL
-
-    	'' check for invalid args
-    	if( isproto ) then
-    		select case param_dtype
-    		case FB_DATATYPE_VOID
-    			if( hParamError( proc, param_id ) = FALSE ) then
-    				exit function
-    			else
-    				'' error recovery: fake correct param
-    				param_dtype += FB_DATATYPE_POINTER
-    			end if
-    		end select
-    	end if
-
-    	if( param_dtype = FB_DATATYPE_STRING ) then
-    		param_len = FB_POINTERSIZE
-    	else
-    		param_len = symbCalcLen( param_dtype, param_subtype )
-    	end if
-
-   		if( isproto = FALSE ) then
-   			if( param_len > (FB_INTEGERSIZE * 4) ) then
-   				if( fbPdCheckIsSet( FB_PDCHECK_PARAMSIZE ) ) then
-   					hParamWarning( proc, param_id, FB_WARNINGMSG_PARAMSIZETOOBIG )
-   				end if
+   	param_len = symbCalcProcParamLen( param_dtype, param_subtype, param_mode )
+   	if( isproto = FALSE ) then
+   		if( param_len > (FB_INTEGERSIZE * 4) ) then
+   			if( fbPdCheckIsSet( FB_PDCHECK_PARAMSIZE ) ) then
+   				hParamWarning( proc, param_id, FB_WARNINGMSG_PARAMSIZETOOBIG )
    			end if
    		end if
-    end select
+   	end if
 
     '' default values
     attrib = 0
@@ -558,5 +586,4 @@ private function hParamDecl _
 	function = s
 
 end function
-
 

@@ -25,19 +25,27 @@
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\lex.bi"
+#include once "inc\parser.bi"
 #include once "inc\ast.bi"
 #include once "inc\ir.bi"
 #include once "inc\emit.bi"
 
-declare function hCheckBranch			( _
-										  	byval proc as ASTNODE ptr, _
-										  	byval n as ASTNODE ptr _
-										) as integer
+declare function hCheckBranch _
+	( _
+		byval proc as ASTNODE ptr, _
+		byval n as ASTNODE ptr _
+	) as integer
 
-declare sub 	 hDelLocals				( _
-											byval n as ASTNODE ptr, _
-										  	byval check_backward as integer _
-										)
+declare sub hDelLocals _
+	( _
+		byval n as ASTNODE ptr, _
+		byval check_backward as integer _
+	)
+
+declare sub hDestroyVars _
+	( _
+		byval scp as FBSYMBOL ptr _
+	)
 
 '':::::
 function astScopeBegin _
@@ -48,7 +56,7 @@ function astScopeBegin _
     dim as ASTNODE ptr n
     dim as FBSYMBOL ptr s
 
-	if( env.scope >= FB_MAXSCOPEDEPTH ) then
+	if( parser.scope >= FB_MAXSCOPEDEPTH ) then
 		return NULL
 	end if
 
@@ -62,18 +70,18 @@ function astScopeBegin _
 
 	'' must update the stmt count or any internal label
 	'' allocated/emitted previously will lie in the same stmt
-	env.stmtcnt += 1
+	parser.stmtcnt += 1
 
     '' change to scope's symbol tb
     n->sym = s
     n->block.parent = ast.currblock
-	n->block.inistmt = env.stmtcnt
+	n->block.inistmt = parser.stmtcnt
 
-    astAdd( n )
+    n = astAdd( n )
 
 	''
-	env.scope += 1
-	env.currblock = s
+	parser.scope += 1
+	parser.currblock = s
     ast.currblock = n
 
 	symbSetCurrentSymTb( @s->scp.symtb )
@@ -120,18 +128,18 @@ function astScopeBreak _
 	n = astNewNode( AST_NODECLASS_SCOPE_BREAK, INVALID, NULL )
 
 	n->sym = target
-	n->l = astNewBRANCH( AST_OP_JMP, target )
 	n->break.parent = ast.currblock
-	n->break.scope = env.scope
+	n->break.scope = parser.scope
 	n->break.linenum = lexLineNum( )
-	n->break.stmtnum = env.stmtcnt
-
-	hAddToBreakList( @ast.proc.curr->block.breaklist, n )
+	n->break.stmtnum = parser.stmtcnt
 
 	'' the branch node is added, not the break itself, any
 	'' destructor will be added before this node when
 	'' processing the proc's branch list
-	astAdd( n->l )
+	n->l = astAdd( astNewBRANCH( AST_OP_JMP, target ) )
+
+	''
+	hAddToBreakList( @ast.proc.curr->block.breaklist, n )
 
 	function = TRUE
 
@@ -149,12 +157,12 @@ sub astScopeEnd _
 
 	'' must update the stmt count or any internal label
 	'' allocated/emitted previously will lie in the same stmt
-	env.stmtcnt += 1
+	parser.stmtcnt += 1
 
-	n->block.endstmt = env.stmtcnt
+	n->block.endstmt = parser.stmtcnt
 
 	'' free dynamic vars
-	symbFreeScopeDynVars( s )
+	hDestroyVars( s )
 
 	'' remove symbols from hash table
 	symbDelScopeTb( s )
@@ -166,8 +174,8 @@ sub astScopeEnd _
 	symbSetCurrentSymTb( s->symtb )
 
 	ast.currblock = n->block.parent
-	env.currblock = ast.currblock->sym
-	env.scope -= 1
+	parser.currblock = ast.currblock->sym
+	parser.scope -= 1
 
 	''
 	astAdd( astNewDBG( AST_OP_DBG_SCOPEEND, cint( s ) ) )
@@ -304,9 +312,9 @@ private function hCheckCrossing _
 	'' 		label:
 
     if( symbIsScope( blk ) ) then
-    	s = blk->scp.symtb.head
+    	s = symbGetScopeSymbtb( blk ).head
     else
-    	s = blk->proc.symtb.head
+    	s = symbGetProcSymbtb( blk ).head
     end if
 
     do while( s <> NULL )
@@ -314,7 +322,7 @@ private function hCheckCrossing _
     		stmt = symbGetVarStmt( s )
     		if( stmt > top_stmt ) then
     			if( stmt < bot_stmt ) then
-    				if( symbVarIsLocalObj( s ) ) then
+    				if( symbGetVarHasCtor( s ) ) then
     					if( hBranchError( FB_ERRMSG_BRANCHCROSSINGDYNDATADEF, n, s ) = FALSE ) then
     						return FALSE
     					end if
@@ -384,22 +392,23 @@ private function hCheckScopeLocals _
 end function
 
 '':::::
-private function hDelBlockLocals _
+private sub hDestroyBlockLocals _
 	( _
 		byval blk as FBSYMBOL ptr, _
 		byval top_stmt as integer, _
 		byval bot_stmt as integer, _
-		byval base_expr as ASTNODE ptr _
-	) as ASTNODE ptr static
+		byval base_expr as ASTNODE ptr _	'' the node before the branch, not itself!
+	) static
 
 	dim as FBSYMBOL ptr s
 	dim as ASTNODE ptr expr
 	dim as integer stmt
 
+    '' for each now (in reverse order)
     if( symbIsScope( blk ) ) then
-    	s = blk->scp.symtb.head
+    	s = symbGetScopeSymbTb( blk ).tail
     else
-    	s = blk->proc.symtb.head
+    	s = symbGetProcSymbTb( blk ).tail
     end if
 
     do while( s <> NULL )
@@ -407,23 +416,22 @@ private function hDelBlockLocals _
     		stmt = symbGetVarStmt( s )
     		if( stmt > top_stmt ) then
     			if( stmt < bot_stmt ) then
-   					if( symbVarIsLocalDyn( s ) ) then
-                    	expr = symbFreeDynVar( s )
+                    '' has a dtor?
+                    if( symbGetVarHasDtor( s ) ) then
+                    	'' call it..
+                    	expr = astBuildVarDtorCall( s )
                     	if( expr <> NULL ) then
-                    		astAddBefore( expr, base_expr )
-                    		base_expr = expr
+                    		base_expr = astAddAfter( expr, base_expr )
                     	end if
-    				end if
+                    end if
     			end if
     		end if
     	end if
 
-    	s = s->next
+    	s = s->prev
     loop
 
-    function = base_expr
-
-end function
+end sub
 
 '':::::
 private sub hDelBackwardLocals _
@@ -433,10 +441,10 @@ private sub hDelBackwardLocals _
 
     '' free any dyn var allocated between the block's
     '' beginning and the branch
-    hDelBlockLocals( n->break.parent->sym, _
-    				 symbGetLabelStmt( n->sym ), _
-    				 n->break.stmtnum, _
-    				 n->l )
+    hDestroyBlockLocals( n->break.parent->sym, _
+    				 	 symbGetLabelStmt( n->sym ), _
+    				 	 n->break.stmtnum, _
+    				 	 astGetPrev( n->l ) )
 
 end sub
 
@@ -454,18 +462,20 @@ private sub hDelLocals _
 
 	dim as FBSYMBOL ptr s
 	dim as integer dst_stmt, src_stmt
-	dim as ASTNODE ptr blk, expr
+	dim as ASTNODE ptr blk
 
 	dst_stmt = symbGetLabelStmt( n->sym )
 	src_stmt = n->break.stmtnum
 
-    expr = n->l
-
+    '' for each parent (starting from the branch ones)
     blk = n->break.parent
     do
-    	'' free any dyn var allocated between the block's
-    	'' beginning and the branch
-    	expr = hDelBlockLocals( blk->sym, 0, src_stmt, expr )
+    	'' destroy any var created between the beginning of
+    	'' the block and the branch
+    	hDestroyBlockLocals( blk->sym, _
+    						 0, _
+    						 src_stmt, _
+    						 astGetPrev( n->l ) ) '' prev node will change
 
     	blk = blk->block.parent
     	if( blk = NULL ) then
@@ -478,7 +488,10 @@ private sub hDelLocals _
     			'' if backward, free any dyn var allocated
     			'' between the target label and the branch
 				if( dst_stmt <= src_stmt ) then
-    				hDelBlockLocals( blk->sym, dst_stmt, src_stmt, expr )
+    				hDestroyBlockLocals( blk->sym, _
+    									 dst_stmt, _
+    									 src_stmt, _
+    									 astGetPrev( n->l ) )
     			end if
     		end if
 
@@ -496,10 +509,10 @@ private function hIsTargetOutside _
 	) as integer
 
 	'' main?
-	if( (proc->attrib and (FB_SYMBATTRIB_MAINPROC or _
-						   FB_SYMBATTRIB_MODLEVELPROC)) <> 0 ) then
+	if( (proc->stats and (FB_SYMBSTATS_MAINPROC or _
+						  FB_SYMBSTATS_MODLEVELPROC)) <> 0 ) then
 
-		function = symbGetParent( label ) <> NULL
+		function = symbGetParent( label ) <> @symbGetGlobalNamespc( )
 
 	else
 		function = symbGetParent( label ) <> proc
@@ -623,7 +636,33 @@ private function hCheckBranch _
 
 end function
 
-dim shared cnt as integer = 0
+'':::::
+private sub hDestroyVars _
+	( _
+		byval scp as FBSYMBOL ptr _
+	) static
+
+    dim as FBSYMBOL ptr s
+
+	'' for each symbol declared inside the SCOPE block (in reverse order)..
+	s = symbGetScopeSymbTb( scp ).tail
+    do while( s <> NULL )
+    	'' variable?
+    	if( symbGetClass( s ) = FB_SYMBCLASS_VAR ) then
+    		'' not shared, static or temp (for locals)
+    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
+    							FB_SYMBATTRIB_STATIC or _
+    							FB_SYMBATTRIB_TEMP)) = 0 ) then
+
+    			astAdd( astBuildVarDtorCall( s ) )
+
+    		end if
+    	end if
+
+    	s = s->prev
+    loop
+
+end sub
 
 '':::::
 function astLoadSCOPEBEGIN _
@@ -635,7 +674,7 @@ function astLoadSCOPEBEGIN _
 
 	s = n->sym
 
-	s->scp.emit.baseofs = emitGetLocalOfs( env.currproc )
+	s->scp.emit.baseofs = emitGetLocalOfs( parser.currproc )
 
 	symbScopeAllocLocals( s )
 
@@ -661,9 +700,10 @@ function astLoadSCOPEEND _
 		irEmitSCOPEEND( s )
 	end if
 
-    emitSetLocalOfs( env.currproc, s->scp.emit.baseofs )
+    emitSetLocalOfs( parser.currproc, s->scp.emit.baseofs )
 
     function = NULL
 
 end function
+
 

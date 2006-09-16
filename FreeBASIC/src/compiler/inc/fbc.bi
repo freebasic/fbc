@@ -138,15 +138,25 @@ end type
 ''
 '' prototypes
 ''
-declare function fbcInit_dos			( ) as integer
+declare function fbcInit_dos _
+	( _
+	) as integer
 
-declare function fbcInit_linux			( ) as integer
+declare function fbcInit_linux _
+	( _
+	) as integer
 
-declare function fbcInit_win32			( ) as integer
+declare function fbcInit_win32 _
+	( _
+	) as integer
 
-declare function fbcInit_cygwin			( ) as integer
+declare function fbcInit_cygwin _
+	( _
+	) as integer
 
-declare function fbcInit_xbox			( ) as integer
+declare function fbcInit_xbox _
+	( _
+	) as integer
 
 ''
 '' globals

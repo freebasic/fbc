@@ -31,7 +31,8 @@ function cFunctionCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byref funcexpr as ASTNODE ptr, _
-		byval ptrexpr as ASTNODE ptr _
+		byval ptrexpr as ASTNODE ptr, _
+		byval thisexpr as ASTNODE ptr _
 	) as integer
 
 	dim as integer dtype = any, isfuncptr = any
@@ -48,7 +49,7 @@ function cFunctionCall _
 		lexSkipToken( )
 
 		'' ProcArgList
-		funcexpr = cProcArgList( sym, ptrexpr, TRUE, FALSE )
+		funcexpr = cProcArgList( sym, ptrexpr, thisexpr, TRUE, FALSE )
 		if( funcexpr = NULL ) then
 			exit function
 		end if
@@ -67,7 +68,7 @@ function cFunctionCall _
 
 	else
 		'' ProcArgList (function can have optional params)
-		funcexpr = cProcArgList( sym, ptrexpr, TRUE, TRUE )
+		funcexpr = cProcArgList( sym, ptrexpr, thisexpr, TRUE, TRUE )
 		if( funcexpr = NULL ) then
 			exit function
 		end if

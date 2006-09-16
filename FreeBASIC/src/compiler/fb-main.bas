@@ -139,8 +139,10 @@ const fbargv = "__FB_ARGV__"
 	'' function main cdecl( byval argc as integer, byval argv as zstring ptr ptr) as integer
 	env.main.proc = symbAddProc( proc, NULL, fbGetEntryPoint( ), NULL, _
 								 FB_DATATYPE_INTEGER, NULL, 0, _
-								 attrib or FB_SYMBATTRIB_MAINPROC, _
+								 attrib, _
 								 FB_FUNCMODE_CDECL )
+
+    symbSetIsMainProc( env.main.proc )
 
     ''
 	env.main.node = astProcBegin( env.main.proc, TRUE )
@@ -171,9 +173,11 @@ private sub hModLevelBegin( )
 	env.main.proc = symbAddProc( symbPreAddProc( NULL ), _
 								 "{modlevel}", fbGetModuleEntry( ), NULL, _
 								 FB_DATATYPE_VOID, NULL, 0, _
-								 FB_SYMBATTRIB_PRIVATE or FB_SYMBATTRIB_CONSTRUCTOR or _
-								 FB_SYMBATTRIB_MODLEVELPROC, _
+								 FB_SYMBATTRIB_PRIVATE, _
 								 FB_FUNCMODE_CDECL )
+
+    symbSetIsModLevelProc( env.main.proc )
+    symbSetIsGlobalCtor( env.main.proc )
 
     ''
 	env.main.node = astProcBegin( env.main.proc, TRUE )

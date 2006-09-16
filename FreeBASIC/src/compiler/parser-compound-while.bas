@@ -71,8 +71,8 @@ function cWhileStmtBegin as integer
 	stk = cCompStmtPush( FB_TK_WHILE )
 	stk->scopenode = astScopeBegin( )
 
-	env.stmt.while.cmplabel = il
-	env.stmt.while.endlabel = el
+	parser.stmt.while.cmplabel = il
+	parser.stmt.while.endlabel = el
 
 	function = TRUE
 
@@ -98,10 +98,10 @@ function cWhileStmtEnd as integer
 		astScopeEnd( stk->scopenode )
 	end if
 
-    astAdd( astNewBRANCH( AST_OP_JMP, env.stmt.while.cmplabel ) )
+    astAdd( astNewBRANCH( AST_OP_JMP, parser.stmt.while.cmplabel ) )
 
     '' end label (loop exit)
-    astAdd( astNewLABEL( env.stmt.while.endlabel ) )
+    astAdd( astNewLABEL( parser.stmt.while.endlabel ) )
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )

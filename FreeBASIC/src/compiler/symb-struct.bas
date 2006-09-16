@@ -24,6 +24,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\parser.bi"
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
 #include once "inc\ir.bi"
@@ -42,45 +43,54 @@ function symbAddUDT _
 		byval align as integer _
 	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr t
+    dim as FBSYMBOL ptr s
 
     function = NULL
 
     '' no explict alias given?
     if( id_alias = NULL ) then
     	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( env.mangling <> FB_MANGLING_BASIC ) then
+    	if( parser.mangling <> FB_MANGLING_BASIC ) then
     		id_alias = id
     	end if
     end if
 
-    t = symbNewSymbol( NULL, _
-    				   NULL, NULL, 0, _
-    				   FB_SYMBCLASS_UDT, _
-    				   TRUE, id, id_alias )
-	if( t = NULL ) then
+    s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    				   NULL, _
+    				   NULL, NULL, _
+    				   FB_SYMBCLASS_STRUCT, _
+    				   id, id_alias, _
+    				   FB_DATATYPE_STRUCT, NULL, 0 )
+	if( s = NULL ) then
 		exit function
 	end if
 
-	t->udt.parent = parent
-	t->udt.isunion = isunion
-	t->udt.elements = 0
-	t->udt.fldtb.owner = t
-	t->udt.fldtb.head = NULL
-	t->udt.fldtb.tail = NULL
-	t->ofs = 0
-	t->udt.align = align
-	t->udt.lfldlen = 0
-	t->udt.bitpos = 0
-	t->udt.unpadlgt	= 0
-	t->udt.ptrcnt = 0
-	t->udt.dyncnt = 0
+	s->udt.options = iif( isunion, FB_UDTOPT_ISUNION, 0 )
+	s->udt.elements = 0
 
-	t->udt.dbg.typenum = INVALID
+	symbSymbTbInit( s->udt.symtb, s )
 
-	t->udt.opovl.cast = NULL
+    '' not anon? create a new hash tb
+    if( parent = NULL ) then
+    	symbHashTbInit( s->udt.hashtb, s, FB_INITFIELDNODES )
 
-	function = t
+    '' anonymous, use the parent's hash tb..
+    else
+    	s->udt.anonparent = parent
+    	s->udt.options or= FB_UDTOPT_ISANON
+    end if
+
+	s->ofs = 0
+	s->udt.align = align
+	s->udt.lfldlen = 0
+	s->udt.bitpos = 0
+	s->udt.unpadlgt	= 0
+
+	s->udt.dbg.typenum = INVALID
+
+	s->udt.ext = NULL
+
+	function = s
 
 end function
 
@@ -183,9 +193,9 @@ function symbCheckBitField _
 end function
 
 '':::::
-function symbAddUDTElement _
+function symbAddField _
 	( _
-		byval t as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
@@ -196,37 +206,11 @@ function symbAddUDTElement _
 		byval bits as integer _
 	) as FBSYMBOL ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 ename
-    dim as FBSYMBOL ptr p, e, tail
-    dim as integer pad, i, updateudt, elen
+    dim as FBSYMBOL ptr sym, tail, base_parent
+    dim as integer pad, updateudt, elen
+    dim as FBHASHTB ptr hashtb
 
     function = NULL
-
-    if( id <> NULL ) then
-    	hUcase( id, @ename )
-
-    	'' check if element already exists in the current struct and parents
-
-    	'' !!!FIXME!!! don't do this check for system headers !!!FIXME!!!
-
-    	p = t
-    	do
-    		e = p->udt.fldtb.head
-    		do while( e <> NULL )
-    			if( *e->id.name = ename ) then
-    				exit function
-    			end if
-
-    			'' next
-    			e = e->next
-    		loop
-
-    		p = p->udt.parent
-    	loop while( p <> NULL )
-
-    else
-    	ename[0] = 0
-    end if
 
     '' calc length if it wasn't given
 	if( lgt <= 0 ) then
@@ -244,11 +228,11 @@ function symbAddUDTElement _
     updateudt = TRUE
     if( bits > 0 ) then
     	'' last field was a bitfield too? try to merge..
-    	if( t->udt.bitpos > 0 ) then
-    		tail = t->udt.fldtb.tail
+    	if( parent->udt.bitpos > 0 ) then
+    		tail = parent->udt.symtb.tail
     		'' does it fit? if not, start at a new pos..
-    		if( t->udt.bitpos + bits > tail->lgt*8 ) then
-    			t->udt.bitpos = 0
+    		if( parent->udt.bitpos + bits > tail->lgt*8 ) then
+    			parent->udt.bitpos = 0
     		else
     			'' if it fits but len is different, make it the same
     			if( lgt <> tail->lgt ) then
@@ -259,17 +243,17 @@ function symbAddUDTElement _
     	end if
 
 		'' don't update if there are enough bits left
-		if( t->udt.bitpos <> 0 ) then
+		if( parent->udt.bitpos <> 0 ) then
 			updateudt = FALSE
 		end if
 
     else
-    	t->udt.bitpos = 0
+    	parent->udt.bitpos = 0
     end if
 
 	''
 	if( updateudt ) then
-		pad = hCalcALign( lgt, t->ofs, t->udt.align, dtype, subtype )
+		pad = hCalcALign( lgt, parent->ofs, parent->udt.align, dtype, subtype )
 		if( pad > 0 ) then
 
 			'' bitfield?
@@ -305,113 +289,146 @@ function symbAddUDTElement _
 				end if
 			end if
 
-			t->ofs += pad
+			parent->ofs += pad
 		end if
 
 		'' update largest field len
 		elen = hGetRealLen( lgt, dtype, subtype )
 
 		'' larger?
-		if( elen > t->udt.lfldlen ) then
-			t->udt.lfldlen = elen
+		if( elen > parent->udt.lfldlen ) then
+			parent->udt.lfldlen = elen
 		end if
 	end if
 
 	'' bitfield?
 	if( bits > 0 ) then
-		subtype = symbAddBitField( t->udt.bitpos, bits, dtype, lgt )
+		subtype = symbAddBitField( parent->udt.bitpos, bits, dtype, lgt )
 		dtype = FB_DATATYPE_BITFIELD
 	end if
 
-	''
-    e = symbNewSymbol( NULL, _
-    				   @t->udt.fldtb, NULL, symbIsLocal( t ) = FALSE, _
-    				   FB_SYMBCLASS_UDTELM, _
-    				   FALSE, @ename, NULL, _
-    				   dtype, subtype, ptrcnt, _
-    				   TRUE )
-    if( e = NULL ) then
+    '' use the base parent hashtb if it's an anonymous type
+    base_parent = parent
+    do while( symbGetUDTIsAnon( base_parent ) )
+    	base_parent = symbGetUDTAnonParent( base_parent )
+	loop
+
+	hashtb = @symbGetUDTHashTb( base_parent )
+
+    ''
+    sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    				     NULL, _
+    				     @symbGetUDTSymbTb( parent ), hashtb, _
+    				     FB_SYMBCLASS_FIELD, _
+    				     id, NULL, _
+    				     dtype, subtype, ptrcnt, _
+    				     iif( symbIsLocal( parent ), _
+    				     	  FB_SYMBATTRIB_LOCAL, _
+    				     	  FB_SYMBATTRIB_NONE ) )
+    if( sym = NULL ) then
     	exit function
     end if
 
 	'' add to parent's linked-list
-    e->var.elm.parent = t
-    t->udt.elements	+= 1
+    parent->udt.elements += 1
 
-	e->lgt = lgt
+	sym->lgt = lgt
 
-	if( updateudt or t->udt.isunion ) then
-		e->ofs = t->ofs
+	if( updateudt or ((parent->udt.options and FB_UDTOPT_ISUNION) <> 0) ) then
+		sym->ofs = parent->ofs
 	else
-		e->ofs = t->ofs - lgt
+		sym->ofs = parent->ofs - lgt
 	end if
 
 	'' array fields
-	e->var.array.desc = NULL
-	e->var.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
-	e->var.array.dimhead = NULL
-	e->var.array.dimtail = NULL
+	sym->var.array.desc = NULL
+	sym->var.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
+	sym->var.array.dimhead = NULL
+	sym->var.array.dimtail = NULL
 
-	e->var.array.dims = dimensions
+	sym->var.array.dims = dimensions
 	if( dimensions > 0 ) then
+		dim as integer i
 		for i = 0 to dimensions-1
-			if( symbNewArrayDim( e, dTB(i).lower, dTB(i).upper ) = NULL ) then
+			if( symbNewArrayDim( sym, dTB(i).lower, dTB(i).upper ) = NULL ) then
 			end if
 		next
 	end if
 
-	e->var.array.elms = symbCalcArrayElements( e )
+	sym->var.array.elms = symbCalcArrayElements( sym )
 
 	'' multiple len by all array elements (if any)
-	lgt *= e->var.array.elms
+	lgt *= sym->var.array.elms
 
-	'' check ptr or var-len string fields
 	select case dtype
-	case is >= FB_DATATYPE_POINTER
-		p = t
-		do
-			p->udt.ptrcnt += 1
-    		p = p->udt.parent
-    	loop while( p <> NULL )
-
+	'' var-len string fields? must add a ctor, copyctor and dtor
     case FB_DATATYPE_STRING
-		p = t
-		do
-			p->udt.dyncnt += 1
-    		p = p->udt.parent
-    	loop while( p <> NULL )
+		'' if it's an anon udt, it or parent is an UNION
+		if( symbGetUDTIsAnon( parent ) ) then
+			errReport( FB_ERRMSG_VARLENSTRINGINUNION )
+		else
+			symbSetHasCtor( parent )
+			symbSetHasDtor( parent )
+			symbSetUDTHasCtorField( parent )
+		end if
+
+    '' struct with a ctor or dtor? must add a ctor or dtor too
+    case FB_DATATYPE_STRUCT
+		if( symbGetCompDefCtor( subtype ) <> NULL ) then
+			'' if it's an anon udt, it or parent is an UNION
+			if( symbGetUDTIsAnon( parent ) ) then
+				errReport( FB_ERRMSG_CTORINUNION )
+			else
+				symbSetHasCtor( parent )
+				symbSetUDTHasCtorField( parent )
+			end if
+    	end if
+
+		if( symbGetHasDtor( subtype ) ) then
+			'' if it's an anon udt, it or parent is an UNION
+			if( symbGetUDTIsAnon( parent ) ) then
+				errReport( FB_ERRMSG_DTORINUNION )
+			else
+				symbSetHasDtor( parent )
+			end if
+    	end if
+
+	'' check pointers
+	case is >= FB_DATATYPE_POINTER
+		base_parent->udt.options or= FB_UDTOPT_HASPTRFIELD
+
 	end select
 
 	'' struct?
-	if( t->udt.isunion = FALSE ) then
+	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
 		if( updateudt ) then
-			t->ofs += lgt
-			t->lgt = t->ofs
+			parent->ofs += lgt
+			parent->lgt = parent->ofs
 		end if
 
 	'' union..
 	else
 		'' always update, been it a bitfield or not
-		t->ofs = 0
-		if( lgt > t->lgt ) then
-			t->lgt = lgt
+		parent->ofs = 0
+		if( lgt > parent->lgt ) then
+			parent->lgt = lgt
 		end if
 	end if
 
 	'' update the bit position, wrapping around
 	if( bits > 0 ) then
-		t->udt.bitpos += bits
-		t->udt.bitpos and= (symbGetDataBits( dtype ) - 1)
+		parent->udt.bitpos += bits
+		parent->udt.bitpos and= (symbGetDataBits( dtype ) - 1)
 	end if
 
-    function = e
+    function = sym
 
 end function
 
 '':::::
 sub symbInsertInnerUDT _
 	( _
-		byval t as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr, _
 		byval inner as FBSYMBOL ptr _
 	) static
 
@@ -419,31 +436,33 @@ sub symbInsertInnerUDT _
     dim as FBSYMBOLTB ptr symtb
     dim as integer pad
 
-	if( t->udt.isunion = FALSE ) then
-		'' calc padding (should be aligned like if an UDT field were been added)
-		pad = hCalcALign( inner->udt.lfldlen, t->ofs, t->udt.align, _
-						  FB_DATATYPE_VOID, NULL )
+	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
+		'' calc padding (should be aligned like if an UDT field was being added)
+		pad = hCalcALign( inner->udt.lfldlen, _
+						  parent->ofs, _
+						  parent->udt.align, _
+						  FB_DATATYPE_VOID, _
+						  NULL )
 		if( pad > 0 ) then
-			t->ofs += pad
+			parent->ofs += pad
 		end if
 	end if
 
     '' move the nodes from inner to parent
-    e = inner->udt.fldtb.head
+    e = inner->udt.symtb.head
 
-    e->prev = t->udt.fldtb.tail
-    if( t->udt.fldtb.tail = NULL ) then
-    	t->udt.fldtb.head = e
+    e->prev = parent->udt.symtb.tail
+    if( parent->udt.symtb.tail = NULL ) then
+    	parent->udt.symtb.head = e
     else
-    	t->udt.fldtb.tail->next = e
+    	parent->udt.symtb.tail->next = e
     end if
 
-    symtb = @t->udt.fldtb
+    symtb = @parent->udt.symtb
 
-    if( t->udt.isunion ) then
+    if( (parent->udt.options and FB_UDTOPT_ISUNION) <> 0 ) then
     	'' link to parent
     	do while( e <> NULL )
-    		e->var.elm.parent = t
     		e->symtb = symtb
 
     		'' next
@@ -453,59 +472,57 @@ sub symbInsertInnerUDT _
     else
     	'' link to parent
     	do while( e <> NULL )
-    		e->var.elm.parent = t
     		e->symtb = symtb
 
-			'' update the offsets
-			t->ofs += e->ofs
-			e->ofs = t->ofs
+			'' update the offset
+			e->ofs += parent->ofs
 
     		'' next
     		e = e->next
     	loop
     end if
 
-    t->udt.fldtb.tail = inner->udt.fldtb.tail
+    parent->udt.symtb.tail = inner->udt.symtb.tail
 
     '' update elements
-    t->udt.elements	+= inner->udt.elements
+    parent->udt.elements += inner->udt.elements
 
 	'' struct? update ofs + len
-	if( t->udt.isunion = FALSE ) then
-		t->ofs += inner->udt.unpadlgt
-		t->lgt = t->ofs
+	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
+		parent->ofs += inner->udt.unpadlgt
+		parent->lgt = parent->ofs
 
 	'' union.. update len, if bigger
 	else
-		t->ofs = 0
-		if( inner->udt.unpadlgt > t->lgt ) then
-			t->lgt = inner->udt.unpadlgt
+		parent->ofs = 0
+		if( inner->udt.unpadlgt > parent->lgt ) then
+			parent->lgt = inner->udt.unpadlgt
 		end if
 	end if
 
 	'' update the largest field len
-	if( inner->udt.lfldlen > t->udt.lfldlen ) then
-		t->udt.lfldlen = inner->udt.lfldlen
+	if( inner->udt.lfldlen > parent->udt.lfldlen ) then
+		parent->udt.lfldlen = inner->udt.lfldlen
 	end if
 
     '' reset bitfield
-    t->udt.bitpos = 0
+    parent->udt.bitpos = 0
 
     '' remove from inner udt list
-    inner->udt.fldtb.head = NULL
-    inner->udt.fldtb.tail = NULL
+    inner->udt.symtb.head = NULL
+    inner->udt.symtb.tail = NULL
 
 end sub
 
 '':::::
 sub symbRoundUDTSize _
 	( _
-		byval t as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr _
 	) static
 
     dim as integer align, pad
 
-	align = t->udt.align
+	align = sym->udt.align
 
 	'' default?
 	if( align = 0 ) then
@@ -513,64 +530,32 @@ sub symbRoundUDTSize _
 	end if
 
 	'' save length w/o padding
-	t->udt.unpadlgt = t->lgt
+	sym->udt.unpadlgt = sym->lgt
 
 	'' do round?
 	if( align > 1 ) then
 		'' first pad with the alignament given
-		pad = (align - (t->lgt and (align-1))) and (align-1)
+		pad = (align - (sym->lgt and (align-1))) and (align-1)
 		if( pad > 0 ) then
-			t->lgt += pad
+			sym->lgt += pad
 		end if
 
 		'' plus the largest scalar field size (GCC 3.x ABI)
-		pad = hCalcALign( t->udt.lfldlen, t->lgt, t->udt.align, FB_DATATYPE_VOID, NULL )
+		pad = hCalcALign( sym->udt.lfldlen, sym->lgt, sym->udt.align, FB_DATATYPE_VOID, NULL )
 		if( pad > 0 ) then
-			t->lgt += pad
+			sym->lgt += pad
 		end if
 	end if
 
+	'' generate the default members
+	symbCompAddDefMembers( sym )
+
 	'' check for forward references
 	if( symb.fwdrefcnt > 0 ) then
-		symbCheckFwdRef( t, FB_SYMBCLASS_UDT )
+		symbCheckFwdRef( sym, FB_SYMBCLASS_STRUCT )
 	end if
 
 end sub
-
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' lookup
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-function symbLookupUDTElm _
-	( _
-		byval parent as FBSYMBOL ptr, _
-		byval id as zstring ptr _
-	) as FBSYMBOL ptr static
-
-	static as zstring * FB_MAXNAMELEN+1 ename
-	dim as FBSYMBOL ptr fld
-
-	if( parent = NULL ) then
-		return NULL
-	end if
-
-    hUcase( id, ename )
-
-	'' for each field
-	fld = parent->udt.fldtb.head
-	do while( fld <> NULL )
-        '' names match?
-        if( *fld->id.name = ename ) then
-    		exit do
-        end if
-
-		fld = fld->next
-    loop
-
-    function = fld
-
-end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' del
@@ -579,37 +564,50 @@ end function
 '':::::
 sub symbDelUDT _
 	( _
-		byval udt as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr _
 	)
 
-    dim as FBSYMBOL ptr fld, nxt
-    dim as FBVARDIM ptr dimn, dimnxt
+    dim as FBSYMBOL ptr fld
+    dim as FBVARDIM ptr dim_, dim_nxt
 
-    if( udt = NULL ) then
+    if( s = NULL ) then
     	exit sub
     end if
 
     '' del all udt elements
-    fld = udt->udt.fldtb.head
-    do while( fld <> NULL )
-        nxt = fld->next
+    do
+		fld = s->udt.symtb.head
+		if( fld = NULL ) then
+			exit do
+		end if
 
-    	'' del array dims if not a scalar type
-    	dimn = fld->var.array.dimhead
-    	do while( dimn <> NULL )
-    		dimnxt = dimn->next
+    	'' an ordinary field?
+    	if( symbGetClass( fld ) = FB_SYMBCLASS_FIELD ) then
+    		'' del array dims if not a scalar type
+    		dim_ = fld->var.array.dimhead
+    		do while( dim_ <> NULL )
+    			dim_nxt = dim_->next
 
-    		listDelNode( @symb.dimlist, dimn )
+    			listDelNode( @symb.dimlist, dim_ )
 
-    		dimn = dimnxt
-    	loop
+    			dim_ = dim_nxt
+    		loop
 
-    	symbFreeSymbol( fld )
-    	fld = nxt
+    		symbFreeSymbol( fld )
+
+    	'' ctor, dtor, operator or method's local symbol
+    	else
+    		symbDelSymbol( fld )
+    	end if
     loop
 
+    if( s->udt.ext <> NULL ) then
+    	deallocate( s->udt.ext )
+    	s->udt.ext = NULL
+    end if
+
 	'' del the udt node
-	symbFreeSymbol( udt )
+	symbFreeSymbol( s )
 
 end sub
 

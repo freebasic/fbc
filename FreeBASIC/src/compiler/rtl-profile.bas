@@ -23,6 +23,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\parser.bi"
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
@@ -130,8 +131,8 @@ function rtlProfileBeginCall _
 	function = NULL
 
 	'' don't add profiling inside a ctor or dtor
-	if( (symbGetAttrib( env.currproc ) and _
-		(FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
+	if( (symbGetStats( parser.currproc ) and _
+		(FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR)) <> 0 ) then
 		exit function
 	end if
 

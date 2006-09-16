@@ -184,8 +184,8 @@ function cSelectStmtBegin as integer
 	stk->select.dtype = dtype
 	stk->select.casecnt = 0
 
-	env.stmt.select.cmplabel = symbAddLabel( NULL, FALSE )
-	env.stmt.select.endlabel = el
+	parser.stmt.select.cmplabel = symbAddLabel( NULL, FALSE )
+	parser.stmt.select.endlabel = el
 
 	function = TRUE
 
@@ -375,10 +375,10 @@ function cSelectStmtNext( ) as integer
 
 	if( stk->select.casecnt > 0 ) then
 		'' break from block
-		astAdd( astNewBRANCH( AST_OP_JMP, env.stmt.select.endlabel ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, parser.stmt.select.endlabel ) )
 
-		astAdd( astNewLABEL( env.stmt.select.cmplabel ) )
-		env.stmt.select.cmplabel = symbAddLabel( NULL, TRUE )
+		astAdd( astNewLABEL( parser.stmt.select.cmplabel ) )
+		parser.stmt.select.cmplabel = symbAddLabel( NULL, TRUE )
 	end if
 
 	'' ELSE?
@@ -427,7 +427,7 @@ function cSelectStmtNext( ) as integer
 			'' add next label
 			nl = symbAddLabel( NULL, FALSE )
 		else
-			nl = env.stmt.select.cmplabel
+			nl = parser.stmt.select.cmplabel
 		end if
 
 		if( ctx.caseTB(cntbase+i).typ <> FB_CASETYPE_ELSE ) then
@@ -499,8 +499,8 @@ function cSelectStmtEnd as integer
 	end if
 
     '' emit end label
-    astAdd( astNewLABEL( env.stmt.select.cmplabel ) )
-    astAdd( astNewLABEL( env.stmt.select.endlabel ) )
+    astAdd( astNewLABEL( parser.stmt.select.cmplabel ) )
+    astAdd( astNewLABEL( parser.stmt.select.endlabel ) )
 
 	'' if a temp string was allocated, delete it
 	select case stk->select.dtype

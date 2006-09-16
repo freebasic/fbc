@@ -27,15 +27,32 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-declare sub 	 parserSelectStmtInit		( )
+declare sub parserSelectStmtInit ( )
 
-declare sub 	 parserSelectStmtEnd		( )
+declare sub parserSelectStmtEnd	( )
 
-declare sub 	 parserSelConstStmtInit		( )
+declare sub parserSelConstStmtInit ( )
 
-declare sub 	 parserSelConstStmtEnd		( )
+declare sub parserSelConstStmtEnd ( )
 
-declare function cCompoundEnd				( ) as integer
+declare function cCompoundEnd ( ) as integer
+
+'':::::
+sub parserCompoundStmtSetCtx( )
+
+	parser.stmt.for.cmplabel = NULL
+	parser.stmt.for.endlabel = NULL
+	parser.stmt.do.cmplabel	= NULL
+	parser.stmt.do.endlabel	= NULL
+	parser.stmt.while.cmplabel = NULL
+	parser.stmt.while.endlabel = NULL
+	parser.stmt.select.cmplabel = NULL
+	parser.stmt.select.endlabel = NULL
+	parser.stmt.proc.cmplabel = NULL
+	parser.stmt.proc.endlabel = NULL
+	parser.stmt.with.sym = NULL
+
+end sub
 
 '':::::
 sub parserCompoundStmtInit( )
@@ -164,8 +181,8 @@ function cEndStatement as integer
 	lexSkipToken( )
 
   	'' Expression?
-  	select case lexGetToken( )
-  	case FB_TK_STATSEPCHAR, FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
+  	select case as const lexGetToken( )
+  	case FB_TK_STMTSEP, FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM
   		errlevel = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 
   	case else
@@ -193,19 +210,19 @@ function cExitStatement as integer
 	'' (FOR | DO | WHILE | SELECT | SUB | FUNCTION)
 	select case as const lexGetToken( )
 	case FB_TK_FOR
-		label = env.stmt.for.endlabel
+		label = parser.stmt.for.endlabel
 
 	case FB_TK_DO
-		label = env.stmt.do.endlabel
+		label = parser.stmt.do.endlabel
 
 	case FB_TK_WHILE
-		label = env.stmt.while.endlabel
+		label = parser.stmt.while.endlabel
 
 	case FB_TK_SELECT
-		label = env.stmt.select.endlabel
+		label = parser.stmt.select.endlabel
 
 	case FB_TK_SUB, FB_TK_FUNCTION
-		label = env.stmt.proc.endlabel
+		label = parser.stmt.proc.endlabel
 
 		if( label = NULL ) then
 			if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
@@ -218,7 +235,7 @@ function cExitStatement as integer
 		end if
 
 		'' useless check
-		if( lexGetToken( ) <> iif( symbGetType( env.currproc ) = FB_DATATYPE_VOID, _
+		if( lexGetToken( ) <> iif( symbGetType( parser.currproc ) = FB_DATATYPE_VOID, _
 								   FB_TK_SUB, _
 								   FB_TK_FUNCTION ) ) then
 
@@ -273,13 +290,13 @@ function cContinueStatement as integer
 	'' (FOR | DO | WHILE)
 	select case as const lexGetToken( )
 	case FB_TK_FOR
-		label = env.stmt.for.cmplabel
+		label = parser.stmt.for.cmplabel
 
 	case FB_TK_DO
-		label = env.stmt.do.cmplabel
+		label = parser.stmt.do.cmplabel
 
 	case FB_TK_WHILE
-		label = env.stmt.while.cmplabel
+		label = parser.stmt.while.cmplabel
 
 	case else
 		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASTMT ) = FALSE ) then
@@ -352,7 +369,7 @@ function cCompStmtCheck( ) as integer
     dim as integer errmsg
     dim as FB_CMPSTMTSTK ptr stk
 
-    stk = stackGetTOS( @env.stmtstk )
+    stk = stackGetTOS( @parser.stmtstk )
     if( stk = NULL ) then
     	return TRUE
     end if
@@ -416,7 +433,7 @@ function cCompStmtPush _
 
 	dim as FB_CMPSTMTSTK ptr stk
 
-	stk = stackPush( @env.stmtstk )
+	stk = stackPush( @parser.stmtstk )
 	stk->id = id
 	stk->allowmask = allowmask
 	stk->scopenode = NULL
@@ -424,19 +441,19 @@ function cCompStmtPush _
 	'' same current values, if any
 	select case as const id
 	case FB_TK_DO
-		stk->last = env.stmt.do
+		stk->last = parser.stmt.do
 
 	case FB_TK_FOR
-		stk->last = env.stmt.for
+		stk->last = parser.stmt.for
 
 	case FB_TK_SELECT
-		stk->last = env.stmt.select
+		stk->last = parser.stmt.select
 
 	case FB_TK_WHILE
-		stk->last = env.stmt.while
+		stk->last = parser.stmt.while
 
 	case FB_TK_FUNCTION
-		stk->last = env.stmt.proc
+		stk->last = parser.stmt.proc
 	end select
 
 	function = stk
@@ -453,7 +470,7 @@ function cCompStmtGetTOS _
 	dim as FB_CMPSTMTSTK ptr stk
 	dim as integer iserror
 
-	stk = stackGetTOS( @env.stmtstk )
+	stk = stackGetTOS( @parser.stmtstk )
 	iserror = (stk = NULL)
 
 	if( iserror = FALSE ) then
@@ -521,22 +538,22 @@ sub cCompStmtPop _
 	'' restore old values if any
 	select case as const stk->id
 	case FB_TK_DO
-		env.stmt.do = stk->last
+		parser.stmt.do = stk->last
 
 	case FB_TK_FOR
-		env.stmt.for = stk->last
+		parser.stmt.for = stk->last
 
 	case FB_TK_SELECT
-		env.stmt.select = stk->last
+		parser.stmt.select = stk->last
 
 	case FB_TK_WHILE
-		env.stmt.while = stk->last
+		parser.stmt.while = stk->last
 
 	case FB_TK_FUNCTION
-		env.stmt.proc = stk->last
+		parser.stmt.proc = stk->last
 	end select
 
-	stackPop( @env.stmtstk )
+	stackPop( @parser.stmtstk )
 
 end sub
 
@@ -548,7 +565,7 @@ function cCompStmtIsAllowed _
 
 	dim as FB_CMPSTMTSTK ptr stk
 
-	stk = stackGetTOS( @env.stmtstk )
+	stk = stackGetTOS( @parser.stmtstk )
 
 	'' module-level? anything allowed..
 	if( stk = NULL ) then

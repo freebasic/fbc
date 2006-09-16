@@ -1279,7 +1279,7 @@ function rtlFilePut _
 
     '' any pointer fields?
     if( astGetDataType( src ) = FB_DATATYPE_STRUCT ) then
-    	if( symbGetUDTPtrCnt( astGetSubType( src ) ) <> 0 ) then
+    	if( symbGetUDTHasPtrField( astGetSubType( src ) ) ) then
             errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
     end if
@@ -1343,7 +1343,7 @@ function rtlFilePutArray _
 
     '' any pointer fields?
     if( astGetDataType( src ) = FB_DATATYPE_STRUCT ) then
-    	if( symbGetUDTPtrCnt( astGetSubType( src ) ) <> 0 ) then
+    	if( symbGetUDTHasPtrField( astGetSubType( src ) ) ) then
             errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
     end if
@@ -1425,7 +1425,7 @@ function rtlFileGet _
 
     '' any pointer fields?
     if( astGetDataType( dst ) = FB_DATATYPE_STRUCT ) then
-    	if( symbGetUDTPtrCnt( astGetSubType( dst ) ) <> 0 ) then
+    	if( symbGetUDTHasPtrField( astGetSubType( dst ) ) ) then
             errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
     end if
@@ -1489,7 +1489,7 @@ function rtlFileGetArray _
 
     '' any pointer fields?
     if( astGetDataType( dst ) = FB_DATATYPE_STRUCT ) then
-    	if( symbGetUDTPtrCnt( astGetSubType( dst ) ) <> 0 ) then
+    	if( symbGetUDTHasPtrField( astGetSubType( dst ) ) ) then
             errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
     end if

@@ -38,7 +38,9 @@ function astTypeIniBegin _
     dim as ASTNODE ptr n
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_TYPEINI, dtype, subtype )
+	n = astNewNode( AST_NODECLASS_TYPEINI, _
+					dtype, _
+					subtype )
 	function = n
 
 	if( n = NULL ) then
@@ -72,7 +74,7 @@ sub astTypeIniEnd _
     n = tree->l
     do while( n <> NULL )
     	'' expression node?
-    	if( n->class <> AST_NODECLASS_TYPEINI_PAD ) then
+    	if( n->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
 			l = n->l
 			'' is it an ini tree too?
 			if( l->class = AST_NODECLASS_TYPEINI ) then
@@ -144,7 +146,10 @@ function astTypeIniAddPad _
 
 	dim as ASTNODE ptr n
 
-	n = hAddNode( tree, AST_NODECLASS_TYPEINI_PAD, INVALID, NULL )
+	n = hAddNode( tree, _
+				  AST_NODECLASS_TYPEINI_PAD, _
+				  INVALID, _
+				  NULL )
 
 	n->typeini.bytes = bytes
 	n->typeini.ofs = tree->typeini.ofs
@@ -154,7 +159,7 @@ function astTypeIniAddPad _
 end function
 
 '':::::
-function astTypeIniAddExpr _
+function astTypeIniAddAssign _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval expr as ASTNODE ptr, _
@@ -163,7 +168,10 @@ function astTypeIniAddExpr _
 
 	dim as ASTNODE ptr n
 
-	n = hAddNode( tree, AST_NODECLASS_TYPEINI_EXPR, expr->dtype, expr->subtype )
+	n = hAddNode( tree, _
+				  AST_NODECLASS_TYPEINI_ASSIGN, _
+				  expr->dtype, _
+				  expr->subtype )
 
 	n->l = expr
 	n->sym = sym
@@ -174,6 +182,142 @@ function astTypeIniAddExpr _
 	function = n
 
 end function
+
+'':::::
+function astTypeIniAddCtorCall _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval procexpr as ASTNODE ptr _
+	) as ASTNODE ptr static
+
+	dim as ASTNODE ptr n
+
+	n = hAddNode( tree, _
+				  AST_NODECLASS_TYPEINI_CTORCALL, _
+				  INVALID, _
+				  NULL )
+
+	n->sym = sym
+	n->typeini.ofs = tree->typeini.ofs
+	n->l = procexpr
+
+	tree->typeini.ofs += symbGetLen( sym )
+
+	function = n
+
+end function
+
+'':::::
+function astTypeIniAddCtorList _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval elements as integer _
+	) as ASTNODE ptr static
+
+	dim as ASTNODE ptr n
+
+	n = hAddNode( tree, _
+				  AST_NODECLASS_TYPEINI_CTORLIST, _
+				  INVALID, _
+				  NULL )
+
+	n->sym = sym
+	n->typeini.ofs = tree->typeini.ofs
+	n->typeini.elements = elements
+
+	tree->typeini.ofs += symbGetLen( sym ) * elements
+
+	function = n
+
+end function
+
+'':::::
+private sub hCallCtor _
+	( _
+		byval n as ASTNODE ptr, _
+		byval basesym as FBSYMBOL ptr _
+	) static
+
+	dim as FBSYMBOL ptr sym
+	dim as integer ofs
+
+	sym = n->sym
+
+	ofs = n->typeini.ofs
+	if( symbIsField( sym ) ) then
+		'' astBuildVarField() will add the field offset
+		ofs -= symbGetOfs( sym )
+	else
+		sym = NULL
+	end if
+
+	'' replace the instance pointer
+	n->l = astPatchCtorCall( n->l, _
+							 astBuildVarField( basesym, sym, ofs ) )
+
+	'' do call
+	astAdd( n->l )
+
+end sub
+
+'':::::
+private sub hCallCtorList _
+	( _
+		byval n as ASTNODE ptr, _
+		byval basesym as FBSYMBOL ptr _
+	) static
+
+	dim as FBSYMBOL ptr subtype, sym
+	dim as ASTNODE ptr fldexpr
+	dim as integer dtype, ofs, elements
+
+	sym = n->sym
+
+	dtype = symbGetType( sym )
+	subtype = symbGetSubtype( sym )
+
+	ofs = n->typeini.ofs
+	if( symbIsField( sym ) ) then
+		'' astBuildVarField() will add the field offset
+		ofs -= symbGetOfs( sym )
+	else
+		sym = NULL
+	end if
+
+	elements = n->typeini.elements
+
+	'' iter = *cast( subtype ptr, cast( byte ptr, @array(0) ) + ofs) )
+	fldexpr = astBuildVarField( basesym, sym, ofs )
+
+	if( elements > 1 ) then
+    	dim as FBSYMBOL ptr cnt, label, iter
+
+    	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL )
+    	label = symbAddLabel( NULL, TRUE )
+    	iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype )
+
+		astAdd( astBuildVarAssign( iter, astNewADDR( AST_OP_ADDROF, fldexpr ) ) )
+
+		'' for cnt = 0 to elements-1
+		astBuildForBegin( cnt, label, 0 )
+
+		'' ctor( *iter )
+		astAdd( astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
+
+		'' iter += 1
+    	astAdd( astBuildVarInc( iter, 1 ) )
+
+    	'' next
+    	astBuildForEnd( cnt, label, 1, elements )
+
+    else
+    	'' ctor( this )
+    	astAdd( astBuildCtorCall( subtype, fldexpr ) )
+    end if
+
+end sub
 
 '':::::
 private function hFlushTree _
@@ -192,34 +336,57 @@ private function hFlushTree _
     do while( n <> NULL )
         nxt = n->r
 
-    	if( n->class <> AST_NODECLASS_TYPEINI_PAD ) then
+    	select case as const n->class
+    	case AST_NODECLASS_TYPEINI_ASSIGN
         	sym = n->sym
 
-        	'' !!FIXME!! can't be used with complex l-hand side expressions
-        	lside = astNewVAR( basesym, _
-        					   n->typeini.ofs, _
-        					   symbGetType( sym ), _
-        					   symbGetSubtype( sym ) )
+        	if( symbIsParamInstance( basesym ) ) then
+        		lside = astBuildInstPtr( basesym, _
+        								 sym, _
+        								 NULL, _
+        								 n->typeini.ofs )
+        	else
+        		lside = astNewVAR( basesym, _
+        					   	   n->typeini.ofs, _
+        					   	   symbGetType( sym ), _
+        					   	   symbGetSubtype( sym ) )
 
-        	'' field?
-        	if( symbIsUDTElm( sym ) ) then
-        		lside = astNewFIELD( lside, _
-        							 sym, _
-        							 symbGetType( sym ), _
-        							 symbGetSubtype( sym ) )
-        	end if
+        		'' field?
+        		if( symbIsField( sym ) ) then
+        			lside = astNewFIELD( lside, _
+        						 	 	 sym, _
+        						 	 	 symbGetType( sym ), _
+        						 	 	 symbGetSubtype( sym ) )
+        		end if
+            end if
 
 			astAdd( astNewASSIGN( lside, n->l, FALSE ) )
 
-    	else
+    	case AST_NODECLASS_TYPEINI_PAD
+        	if( symbIsParamInstance( basesym ) ) then
+        		lside = astBuildInstPtr( basesym, _
+        								 NULL, _
+        								 NULL, _
+        								 n->typeini.ofs )
+            else
+				lside = astNewVAR( basesym, _
+        					  	   n->typeini.ofs, _
+        					  	   symbGetType( basesym ), _
+        					  	   symbGetSubtype( basesym ) )
+    		end if
+
     		astAdd( astNewMEM( AST_OP_MEMCLEAR, _
-    						   astNewVAR( basesym, _
-        					  			  n->typeini.ofs, _
-        					  			  symbGetType( basesym ), _
-        					  			  symbGetSubtype( basesym ) ), _
+    						   lside, _
     						   NULL, _
     						   n->typeini.bytes ) )
-    	end if
+
+    	case AST_NODECLASS_TYPEINI_CTORCALL
+    		hCallCtor( n, basesym )
+
+    	case AST_NODECLASS_TYPEINI_CTORLIST
+    		hCallCtorList( n, basesym )
+
+    	end select
 
     	astDelNode( n )
     	n = nxt
@@ -374,6 +541,8 @@ function astTypeIniFlush _
 		byval isinitializer as integer _
 	) as integer static
 
+	assert( tree <> NULL )
+
 	if( isinitializer = FALSE ) then
 		ast.typeinicnt -= 1
 	end if
@@ -429,7 +598,7 @@ private function hExprIsConst _
 		end if
 
 		'' bit field?
-		if( symbIsUDTElm( sym ) ) then
+		if( symbIsField( sym ) ) then
 		    if( symbGetType( sym ) = FB_DATATYPE_BITFIELD ) then
 		    	errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				exit function
@@ -488,11 +657,15 @@ function astTypeIniIsConst _
     n = tree->l
     do while( n <> NULL )
 
-    	if( n->class <> AST_NODECLASS_TYPEINI_PAD ) then
+    	select case n->class
+    	case AST_NODECLASS_TYPEINI_ASSIGN
 			if( hExprIsConst( n ) = FALSE ) then
 				exit function
 			end if
-    	end if
+
+    	case AST_NODECLASS_TYPEINI_CTORCALL, AST_NODECLASS_TYPEINI_CTORLIST
+    		exit function
+    	end select
 
     	n = n->r
     loop
@@ -512,7 +685,10 @@ private sub hWalk _
     dim as FBSYMBOL ptr sym = any
 
 	if( node->class = AST_NODECLASS_TYPEINI ) then
-		sym = symbAddTempVar( node->dtype, node->subtype, FALSE, FALSE )
+		sym = symbAddTempVar( node->dtype, _
+							  node->subtype, _
+							  FALSE, _
+							  FALSE )
 
 		expr = astNewVAR( sym, 0, node->dtype, node->subtype )
 		if( parent->l = node ) then

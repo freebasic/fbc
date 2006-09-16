@@ -187,7 +187,7 @@ function cPeekFunct _
     end if
 
     ''
-    sym = cTypeField( dtype, subtype, expr, cnt, TRUE, FALSE )
+    sym = cTypeField( dtype, subtype, expr, cnt, FB_FIELDOPT_CHECKARRAY )
 
 	if( expr <> NULL ) then
 		funcexpr = astNewPTR( 0, expr, dtype, subtype )

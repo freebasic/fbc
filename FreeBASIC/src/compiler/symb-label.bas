@@ -24,6 +24,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\parser.bi"
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
 #include once "inc\lex.bi"
@@ -73,9 +74,9 @@ function symbAddLabel _
 
     			'' set the right values
     			l->lbl.declared = TRUE
-    			l->lbl.parent = env.currblock
-    			l->lbl.stmtnum = env.stmtcnt
-    			l->scope = env.scope
+    			l->lbl.parent = parser.currblock
+    			l->lbl.stmtnum = parser.stmtcnt
+    			l->scope = parser.scope
     			return l
 
     		else
@@ -110,13 +111,16 @@ function symbAddLabel _
     '' current scope because labels inside scopes are unique,
     '' and branching to them from other scopes must be allowed
     else
-    	symtb = @env.currproc->proc.symtb
+    	symtb = @parser.currproc->proc.symtb
     end if
 
-    l = symbNewSymbol( NULL, _
-    				   symtb, NULL, fbIsModLevel( ), _
+    l = symbNewSymbol( iif( symbol = NULL, FB_SYMBOPT_NONE, FB_SYMBOPT_DOHASH ), _
+    				   NULL, _
+    				   symtb, NULL, _
     				   FB_SYMBCLASS_LABEL, _
-    				   symbol <> NULL, id, id_alias )
+    				   id, id_alias, _
+    				   INVALID, NULL, 0, _
+    				   iif( fbIsModLevel( ), FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_LOCAL ) )
     if( l = NULL ) then
     	exit function
     end if
@@ -126,8 +130,8 @@ function symbAddLabel _
 	if( declaring ) then
 		'' label parent won't be the current proc block is
 		'' it's been defined inside a scope block
-		l->lbl.parent = env.currblock
-		l->lbl.stmtnum = env.stmtcnt
+		l->lbl.parent = parser.currblock
+		l->lbl.stmtnum = parser.stmtcnt
 	end if
 
 	function = l
@@ -180,7 +184,7 @@ function symbCheckLocalLabels( ) as integer
 
     cnt = 0
 
-    s = env.currproc->proc.symtb.head
+    s = parser.currproc->proc.symtb.head
     do while( s <> NULL )
 
     	if( s->class = FB_SYMBCLASS_LABEL ) then

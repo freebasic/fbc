@@ -218,13 +218,13 @@ function rtlProcLookup _
 		byval pidx as integer _
 	) as FBSYMBOL ptr static
 
-    dim as integer id, class
+    dim as integer id, class_
     dim as FBSYMCHAIN ptr chain_
 
     '' not cached yet? -- this won't work if #undef is used
     '' what is pretty unlikely with internal fb_* procs
 	if( rtlLookupTB( pidx ) = NULL ) then
-		chain_ = symbLookup( pname, id, class )
+		chain_ = symbLookup( pname, id, class_ )
 		if( chain_ = NULL ) then
 			errReportEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
 			rtlLookupTB( pidx ) = NULL

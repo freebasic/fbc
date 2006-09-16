@@ -36,9 +36,11 @@ type FB_LANG_INFO
 	options		as FB_LANG_OPT
 end type
 
-declare sub		 parserInit				( )
+declare sub	parserInit ( )
 
-declare sub		 parserEnd				( )
+declare sub	parserEnd ( )
+
+declare sub	parserSetCtx ( )
 
 
 '' globals
@@ -98,25 +100,6 @@ declare sub		 parserEnd				( )
     		FB_LANG_OPT_QBOPT or _
     		FB_LANG_OPT_ONERROR or _
     		FB_LANG_OPT_SHAREDLOCAL or _
-    		FB_LANG_OPT_QUIRKFUNC _
-		) _
-		, _
-		( _
-			@"vb", _
-			FB_LANG_OPT_MT or _
-			FB_LANG_OPT_NAMESPC or _
-			FB_LANG_OPT_EXTERN or _
-			FB_LANG_OPT_FUNCOVL or _
-			FB_LANG_OPT_INITIALIZER or _
-			FB_LANG_OPT_CALL or _
-			FB_LANG_OPT_LET or _
-            FB_LANG_OPT_IMPLICIT or _
-            FB_LANG_OPT_DEFTYPE or _
-            FB_LANG_OPT_METACMD or _
-    		FB_LANG_OPT_QBOPT or _
-    		FB_LANG_OPT_DEPRECTOPT or _
-    		FB_LANG_OPT_ONERROR or _
-    		FB_LANG_OPT_VBSYMB or _
     		FB_LANG_OPT_QUIRKFUNC _
 		) _
 	}
@@ -260,41 +243,13 @@ end sub
 '':::::
 private sub hSetCtx( )
 
-	env.scope				= FB_MAINSCOPE
-	env.includerec			= 0
-	env.currproc 			= NULL
-	env.currblock 			= NULL
-
-	env.mangling			= FB_MANGLING_BASIC
-	env.currlib				= NULL
-
-	env.main.proc			= NULL
+	env.includerec = 0
+	env.main.proc = NULL
 
 	hSetLangCtx( env.clopt.lang )
 
-	env.stmtcnt				= 0
-
-	env.prntcnt				= 0
-	env.prntopt				= FALSE
-	env.checkarray			= TRUE
-	env.ctxsym 				= NULL
-	env.isexpr 				= FALSE
-
 	''
-	env.stmt.for.cmplabel	= NULL
-	env.stmt.for.endlabel	= NULL
-	env.stmt.do.cmplabel	= NULL
-	env.stmt.do.endlabel	= NULL
-	env.stmt.while.cmplabel	= NULL
-	env.stmt.while.endlabel	= NULL
-	env.stmt.select.cmplabel= NULL
-	env.stmt.select.endlabel= NULL
-	env.stmt.proc.cmplabel	= NULL
-	env.stmt.proc.endlabel	= NULL
-	env.stmt.with.sym		= NULL
-
-	''
-	env.incpaths			= 0
+	env.incpaths = 0
 
 	fbAddIncPath( exepath( ) + *fbGetPath( FB_PATH_INC ) )
 
@@ -312,6 +267,9 @@ private sub hSetCtx( )
 	end select
 
 	env.target.wchar.doconv = ( len( wstring ) = env.target.wchar.size )
+
+	''
+	parserSetCtx( )
 
 end sub
 
@@ -336,14 +294,14 @@ end sub
 '':::::
 private sub stmtStackInit( )
 
-	stackNew( @env.stmtstk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
+	stackNew( @parser.stmtstk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
 
 end sub
 
 '':::::
 private sub stmtStackEnd( )
 
-	stackFree( @env.stmtstk )
+	stackFree( @parser.stmtstk )
 
 end sub
 
@@ -900,7 +858,7 @@ function fbIncludeFile _
 
 	''
 	if( isonce ) then
-           '' we should respect the path
+        '' we should respect the path
        	if( hFindIncFile( incfile ) <> NULL ) then
        		return TRUE
        	end if
@@ -963,8 +921,8 @@ sub fbReportRtError _
 		end if
 	end if
 	print " while parsing "; env.inf.name;
-	if( env.currproc <> NULL ) then
-		print ":"; *symbGetName( env.currproc );
+	if( parser.currproc <> NULL ) then
+		print ":"; *symbGetName( parser.currproc );
 	end if
 	print "("; cuint( lexLineNum( ) ); ")"
 

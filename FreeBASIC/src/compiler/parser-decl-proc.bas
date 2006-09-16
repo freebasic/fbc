@@ -30,6 +30,7 @@
 ''ProcDecl        =   DECLARE ((SUB | FUNCTION) ProcHeader | OPERATOR OperatorHeader ) .
 ''
 function cProcDecl as integer
+    dim as integer is_nested = any
 
     function = FALSE
 
@@ -43,22 +44,22 @@ function cProcDecl as integer
 	select case as const lexGetToken( )
 	case FB_TK_SUB
 		lexSkipToken( )
-		function = cProcHeader( TRUE, TRUE, 0 ) <> NULL
+		function = cProcHeader( TRUE, TRUE, 0, is_nested ) <> NULL
 
 	case FB_TK_FUNCTION
 		lexSkipToken( )
-		function = cProcHeader( FALSE, TRUE, 0 ) <> NULL
+		function = cProcHeader( FALSE, TRUE, 0, is_nested ) <> NULL
 
 	case FB_TK_OPERATOR
 		lexSkipToken( )
-		function = cOperatorHeader( TRUE, 0 ) <> NULL
+		function = cOperatorHeader( TRUE, 0, is_nested ) <> NULL
 
 	case else
 		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: try to parse the prototype
-			function = cProcHeader( FALSE, TRUE, 0 ) <> NULL
+			function = cProcHeader( FALSE, TRUE, 0, is_nested ) <> NULL
 		end if
 	end select
 
