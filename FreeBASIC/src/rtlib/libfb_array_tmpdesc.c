@@ -1,3 +1,5 @@
+/*!!!REMOVEME!!!*/
+
 /*
  *  libfb - FreeBASIC's runtime library
  *	Copyright (C) 2004-2006 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and
@@ -53,7 +55,10 @@ static FB_LIST tmpdsList = { 0 };
 static FB_ARRAY_TMPDESC fb_tmpdsTB[FB_ARRAY_TMPDESCRIPTORS];
 
 /*:::::*/
-FBARRAY *fb_hArrayAllocTmpDesc( void )
+FBARRAY *fb_hArrayAllocTmpDesc
+	( 
+		void 
+	)
 {
 	FB_ARRAY_TMPDESC *dsc;
 
@@ -68,7 +73,10 @@ FBARRAY *fb_hArrayAllocTmpDesc( void )
 }
 
 /*:::::*/
-void fb_hArrayFreeTmpDesc( FBARRAY *src )
+void fb_hArrayFreeTmpDesc
+	( 
+		FBARRAY *src 
+	)
 {
 	FB_ARRAY_TMPDESC *dsc;
 
@@ -78,81 +86,74 @@ void fb_hArrayFreeTmpDesc( FBARRAY *src )
 }
 
 /*:::::*/
-FBARRAY *fb_ArrayAllocTempDesc( FBARRAY **pdesc, void *arraydata, int element_len, int dimensions, ... )
+FBARRAY *fb_ArrayAllocTempDesc
+	( 
+		FBARRAY **pdesc, 
+		void *arraydata, 
+		int element_len, 
+		int dimensions, 
+		... 
+	)
 {
-    va_list 	ap;
-    int			i;
-    int			elements, diff;
-    FBARRAY		*array;
-    FBARRAYDIM	*p;
-    int			lbTB[FB_MAXDIMENSIONS];
-    int			ubTB[FB_MAXDIMENSIONS];
+    va_list ap;
+    int	i, elements, diff;
+    FBARRAY	*array;
+    FBARRAYDIM *dim;
+    int	lbTB[FB_MAXDIMENSIONS];
+    int	ubTB[FB_MAXDIMENSIONS];
 
 	FB_LOCK();
-
     array = fb_hArrayAllocTmpDesc( );
-
-    if( array != NULL )
-    {
-    	if( dimensions == 0) {
-
-    		/* special case for GET temp arrays */
-    		array->size = 0;
-    		*pdesc = array;
-
-			FB_UNLOCK();
-
-       		return array;
-    	}
-
-    	va_start( ap, dimensions );
-
-    	p = &array->dimTB[0];
-
-    	for( i = 0; i < dimensions; i++ )
-    	{
-    		lbTB[i] = va_arg( ap, int );
-    		ubTB[i] = va_arg( ap, int );
-
-    		p->elements = (ubTB[i] - lbTB[i]) + 1;
-    		p->lbound 	= lbTB[i];
-    		p->ubound 	= ubTB[i];
-    		++p;
-    	}
-
-    	va_end( ap );
-
-    	elements = fb_hArrayCalcElements( dimensions, &lbTB[0], &ubTB[0] );
-    	diff 	 = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
-
-    	array->ptr = arraydata;
-
-    	FB_ARRAY_SETDESC( array, element_len, dimensions, elements * element_len, diff );
-    }
-
     FB_UNLOCK();
 
     *pdesc = array;
+
+    if( array == NULL )
+    	return NULL;
+    	
+   	if( dimensions == 0) 
+   	{
+   		/* special case for GET temp arrays */
+   		array->size = 0;
+		return array;
+   	}
+
+    va_start( ap, dimensions );
+
+	dim = &array->dimTB[0];
+
+    for( i = 0; i < dimensions; i++ )
+    {
+    	lbTB[i] = va_arg( ap, int );
+    	ubTB[i] = va_arg( ap, int );
+
+    	dim->elements = (ubTB[i] - lbTB[i]) + 1;
+    	dim->lbound = lbTB[i];
+    	dim->ubound = ubTB[i];
+    	++dim;
+    }
+
+    va_end( ap );
+
+    elements = fb_hArrayCalcElements( dimensions, &lbTB[0], &ubTB[0] );
+    diff = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
+
+    array->ptr = arraydata;
+
+    FB_ARRAY_SETDESC( array, element_len, dimensions, elements * element_len, diff );
 
     return array;
 }
 
 /*:::::*/
-FBCALL void fb_ArrayFreeTempDesc( FBARRAY *pdesc )
+FBCALL void fb_ArrayFreeTempDesc
+	( 
+		FBARRAY *pdesc 
+	)
 {
 
 	FB_LOCK();
-
 	fb_hArrayFreeTmpDesc( pdesc );
-
 	FB_UNLOCK();
 
 }
-
-
-
-
-
-
-
-

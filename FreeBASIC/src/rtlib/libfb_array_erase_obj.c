@@ -31,24 +31,65 @@
  */
 
 /*
- * array_ubound.c -- ubound function
+ * array_erase_obj.c -- ERASE function for dynamic arrays of objects
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: sep/2006 written [v1ctor]
  *
  */
 
+#include <malloc.h>
 #include "fb.h"
 
-
 /*:::::*/
-FBCALL int fb_ArrayUBound
+void fb_hArrayDtorObj
 	( 
 		FBARRAY *array, 
-		int dimension 
+		FB_DEFCTOR dtor,
+		int base_idx
 	)
 {
-	if( dimension > 0 )
-		--dimension;
+	int	elements, element_len, i;
+	FBARRAYDIM *dim;
+	const char *this_;
 
-    return array->dimTB[dimension].ubound;
+    dim = &array->dimTB[0];
+    elements = dim->elements - base_idx;
+    ++dim;
+
+    for( i = 1; i < array->dimensions; i++, dim++ )
+	   	elements *= dim->elements;
+
+	/* call dtors in the inverse order */
+	element_len = array->element_len;
+	this_ = (const char *)array->ptr + ((elements-1) * element_len);
+	
+	while( elements > 0 )
+	{
+		/* !!!FIXME!!! check exceptions (only if rewritten in C++) */
+		dtor( this_ );
+		
+		this_ -= element_len;
+		--elements;
+	}
+}
+
+/*:::::*/
+FBCALL int fb_ArrayEraseObj
+	( 
+		FBARRAY *array, 
+		FB_DEFCTOR dtor
+	)
+{
+    /* not an error, dynamic arrays declared as static could be never 
+       allocated, but the dtor wrapper will be invoked anyways */
+    if( array->ptr == NULL )
+    	return fb_ErrorSetNum( FB_RTERROR_OK );
+    
+    fb_hArrayDtorObj( array, dtor, 0 );
+
+    free( array->ptr );
+    array->ptr = NULL;
+    array->data = NULL;
+
+    return fb_ErrorSetNum( FB_RTERROR_OK );
 }

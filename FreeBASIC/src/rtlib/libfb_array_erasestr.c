@@ -41,47 +41,47 @@
 #include "fb.h"
 
 /*:::::*/
-int fb_hArrayFreeVarLenStrs( FBARRAY *array, int base )
+void fb_hArrayDtorStr
+	( 
+		FBARRAY *array, 
+		FB_DEFCTOR dtor,
+		int base_idx
+	)
 {
-	int			i;
-	int 		elements;
-	FBSTRING 	*p;
-	FBARRAYDIM	*d;
+	int	elements, i;
+	FBARRAYDIM *dim;
+	FBSTRING *this_;
 
-	p = (FBSTRING *)array->ptr;
-	if (p == NULL)
-		return FB_FALSE;
-	p += base;
+    dim = &array->dimTB[0];
+    elements = dim->elements - base_idx;
+    ++dim;
 
-    d = &array->dimTB[0];
-    elements = d->elements - base;
-    ++d;
-    for( i = 1; i < array->dimensions; i++, d++ )
-    	elements *= d->elements;
+    for( i = 1; i < array->dimensions; i++, dim++ )
+    	elements *= dim->elements;
+
+	/* call dtors in the inverse order */
+	this_ = (FBSTRING *)array->ptr + (elements-1);
 
 	FB_STRLOCK();
 
-	while( elements != 0 )
+	while( elements > 0 )
 	{
+		if( this_->data != NULL )
+			fb_StrDelete_NoLock( this_ );
+		--this_;
 		--elements;
-		if( p->data != NULL )
-			fb_StrDelete_NoLock( p );
-		++p;
 	}
 
 	FB_STRUNLOCK();
-
-	return FB_TRUE;
 }
 
 /*:::::*/
-FBCALL void fb_ArrayStrErase( FBARRAY *array )
+FBCALL void fb_ArrayStrErase
+	( 
+		FBARRAY *array 
+	)
 {
-	FB_LOCK();
-
     if( array->ptr != NULL )
-    	fb_hArrayFreeVarLenStrs( array, 0 );
-
-    FB_UNLOCK();
+    	fb_hArrayDtorStr( array, NULL, 0 );
 }
 

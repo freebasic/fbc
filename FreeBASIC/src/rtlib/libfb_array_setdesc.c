@@ -1,3 +1,5 @@
+/*!!!REMOVEME!!!*/
+
 /*
  *  libfb - FreeBASIC's runtime library
  *	Copyright (C) 2004-2006 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and
@@ -43,41 +45,43 @@
 
 
 /*:::::*/
-void fb_ArraySetDesc( FBARRAY *array, void *ptr, int element_len, int dimensions, ... )
+void fb_ArraySetDesc
+	( 
+		FBARRAY *array, 
+		void *ptr, 
+		int element_len, 
+		int dimensions, 
+		... 
+	)
 {
-    va_list 	ap;
-    int			i;
-    int			elements, diff;
-    FBARRAYDIM	*p;
-    int			lbTB[FB_MAXDIMENSIONS];
-    int			ubTB[FB_MAXDIMENSIONS];
-
-    FB_LOCK();
+    va_list ap;
+    int	i, elements, diff;
+    FBARRAYDIM *dim;
+    int	lbTB[FB_MAXDIMENSIONS];
+    int	ubTB[FB_MAXDIMENSIONS];
 
     va_start( ap, dimensions );
 
-    p = &array->dimTB[0];
+    dim = &array->dimTB[0];
 
     for( i = 0; i < dimensions; i++ )
     {
     	lbTB[i] = va_arg( ap, int );
     	ubTB[i] = va_arg( ap, int );
 
-    	p->elements = (ubTB[i] - lbTB[i]) + 1;
-    	p->lbound 	= lbTB[i];
-    	p->ubound 	= ubTB[i];
-    	++p;
+    	dim->elements = (ubTB[i] - lbTB[i]) + 1;
+    	dim->lbound = lbTB[i];
+    	dim->ubound = ubTB[i];
+    	++dim;
     }
 
     va_end( ap );
 
     elements = fb_hArrayCalcElements( dimensions, &lbTB[0], &ubTB[0] );
-    diff 	 = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
+    diff = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
 
-    array->ptr 	= ptr;
+    array->ptr = ptr;
 
     FB_ARRAY_SETDESC( array, element_len, dimensions, elements * element_len, diff );
-
-    FB_UNLOCK();
 }
 

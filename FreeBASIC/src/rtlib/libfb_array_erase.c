@@ -41,27 +41,24 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL int fb_ArrayErase( FBARRAY *array, int isvarlen )
+FBCALL int fb_ArrayErase
+	( 
+		FBARRAY *array, 
+		int isvarlen 
+	)
 {
-	FB_LOCK();
-
-    if( array->ptr != NULL )
-    {
-    	if( isvarlen != 0 )
-    		fb_hArrayFreeVarLenStrs( array, 0 );
-
-    	free( array->ptr );
-    	array->ptr  = NULL;
-    	array->data = NULL;
-
-		FB_UNLOCK();
-
+    /* not an error, see fb_ArrayEraseObj() */
+    if( array->ptr == NULL )
     	return fb_ErrorSetNum( FB_RTERROR_OK );
-    }
+    
+    if( isvarlen != 0 )
+    	fb_hArrayDtorStr( array, NULL, 0 );
 
-	FB_UNLOCK();
+    free( array->ptr );
+    array->ptr = NULL;
+    array->data = NULL;
 
-    return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 

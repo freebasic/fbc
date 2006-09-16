@@ -41,7 +41,11 @@
 
 
 /*:::::*/
-FBCALL int fb_ArrayLBound( FBARRAY *array, int dimension )
+FBCALL int fb_ArrayLBound
+	( 
+		FBARRAY *array, 
+		int dimension 
+	)
 {
 	if( dimension > 0 )
 		--dimension;

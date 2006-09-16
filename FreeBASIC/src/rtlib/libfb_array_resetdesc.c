@@ -1,3 +1,5 @@
+/*!!!REMOVEME!!!*/
+
 /*
  *  libfb - FreeBASIC's runtime library
  *	Copyright (C) 2004-2006 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and
@@ -41,27 +43,28 @@
 #include <limits.h>
 
 /*:::::*/
-FBCALL void fb_ArrayResetDesc( FBARRAY *array, int element_len, int maxdimensions )
+FBCALL void fb_ArrayResetDesc
+	( 
+		FBARRAY *array, 
+		int element_len, 
+		int maxdimensions 
+	)
 {
-    int			i;
-    FBARRAYDIM	*p;
+    int	i;
+    FBARRAYDIM *dim;
 
-    FB_LOCK();
-
-    p = &array->dimTB[0];
+    dim = &array->dimTB[0];
 
     for( i = 0; i < maxdimensions; i++ )
     {
-    	p->elements = 0;
-    	p->lbound 	= INT_MAX;
-    	p->ubound 	= INT_MIN;
-    	++p;
+    	dim->elements = 0;
+    	dim->lbound = INT_MAX;
+    	dim->ubound = INT_MIN;
+    	++dim;
     }
 
     array->ptr = NULL;
 
     FB_ARRAY_SETDESC( array, element_len, 0, 0, 0 );
-
-    FB_UNLOCK();
 }
 

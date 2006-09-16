@@ -31,24 +31,46 @@
  */
 
 /*
- * array_ubound.c -- ubound function
+ * array_redimpresv.c -- redim preserve function
  *
  * chng: oct/2004 written [v1ctor]
  *
  */
 
+#include <malloc.h>
+#include <stdarg.h>
 #include "fb.h"
 
-
 /*:::::*/
-FBCALL int fb_ArrayUBound
+int fb_ArrayRedimPresvObj
 	( 
 		FBARRAY *array, 
-		int dimension 
+		int element_len, 
+		FB_DEFCTOR ctor,
+		FB_DEFCTOR dtor,
+		int dimensions, 
+		... 
 	)
 {
-	if( dimension > 0 )
-		--dimension;
+	va_list ap;
+	int res;
+	
+	va_start( ap, dimensions );
 
-    return array->dimTB[dimension].ubound;
+    /* new? */
+    if( array->ptr == NULL )
+    {
+    	res = fb_hArrayAlloc( array, element_len, FB_FALSE, ctor, dimensions, ap );
+    }	
+    /* realloc.. */
+    else
+	{	
+		FB_DTORMULT dtor_mult = (dtor != NULL? &fb_hArrayDtorObj : NULL );
+		
+		res = fb_hArrayRealloc( array, element_len, FB_FALSE, ctor, dtor_mult, dtor, dimensions, ap );
+	}
+
+    va_end( ap );
+    
+    return res;
 }

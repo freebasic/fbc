@@ -42,45 +42,35 @@
 #include "fb.h"
 
 /*:::::*/
-static int hRedim( FBARRAY *array, int element_len, int doclear, int isvarlen, int dimensions, va_list ap )
+int fb_hArrayAlloc
+	( 
+		FBARRAY *array, 
+		int element_len, 
+		int doclear, 
+		FB_DEFCTOR ctor,
+		int dimensions, 
+		va_list ap 
+	)
 {
-    int	i;
-    int	elements, diff, size;
-    FBARRAYDIM *p;
+    int	i, elements, diff, size;
+    FBARRAYDIM *dim;
     int	lbTB[FB_MAXDIMENSIONS];
     int	ubTB[FB_MAXDIMENSIONS];
 
-	FB_LOCK();
-
-    /* free old */
-    if( array->ptr != NULL )
-    {
-    	if( isvarlen != 0 )
-    		fb_hArrayFreeVarLenStrs( array, 0 );
-    	free( array->ptr );
-
-    	array->ptr  = NULL;
-    	array->data = NULL;
-    }
-
     /* load bounds */
-    p = &array->dimTB[0];
+    dim = &array->dimTB[0];
     for( i = 0; i < dimensions; i++ )
     {
     	lbTB[i] = va_arg( ap, int );
         ubTB[i] = va_arg( ap, int );
 
         if( lbTB[i] > ubTB[i] )
-        {
-            FB_UNLOCK();
-            /* should be: subscript out of range */
             return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        }
 
-    	p->elements = (ubTB[i] - lbTB[i]) + 1;
-    	p->lbound = lbTB[i];
-    	p->ubound = ubTB[i];
-    	++p;
+    	dim->elements = (ubTB[i] - lbTB[i]) + 1;
+    	dim->lbound = lbTB[i];
+    	dim->ubound = ubTB[i];
+    	++dim;
     }
 
     /* calc size */
@@ -95,21 +85,64 @@ static int hRedim( FBARRAY *array, int element_len, int doclear, int isvarlen, i
     	array->ptr = malloc( size );
     
     if( array->ptr == NULL )
-    {
-    	FB_UNLOCK();
     	return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
-    }
 
     /* set descriptor */
     FB_ARRAY_SETDESC( array, element_len, dimensions, size, diff );
 
-	FB_UNLOCK();
+   	/* call ctor for each element */
+   	if( ctor != NULL )
+   	{
+		const char *this_ = (const char *)array->ptr;
+		while( elements > 0 )
+		{
+			/* !!!FIXME!!! check exceptions (only if rewritten in C++) */
+			ctor( this_ );
+			
+			this_ += element_len;
+			--elements;
+		}
+	}
 
-    return fb_ErrorSetNum( FB_RTERROR_OK );
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*:::::*/
-int fb_ArrayRedimEx( FBARRAY *array, int element_len, int doclear, int isvarlen, int dimensions, ... )
+static int hRedim
+	( 
+		FBARRAY *array, 
+		int element_len, 
+		int doclear, 
+		int isvarlen, 
+		int dimensions, 
+		va_list ap 
+	)
+{
+
+    /* free old */
+    if( array->ptr != NULL )
+    {
+    	if( isvarlen != 0 )
+    		fb_hArrayDtorStr( array, NULL, 0 );
+    	
+    	free( array->ptr );
+    	array->ptr = NULL;
+    	array->data = NULL;
+    }
+    
+    return fb_hArrayAlloc( array, element_len, doclear, NULL, dimensions, ap );
+}
+
+/*:::::*/
+int fb_ArrayRedimEx
+	( 
+		FBARRAY *array, 
+		int element_len, 
+		int doclear, 
+		int isvarlen, 
+		int dimensions, 
+		... 
+	)
 {
 	va_list ap;
 	int res;
@@ -122,7 +155,14 @@ int fb_ArrayRedimEx( FBARRAY *array, int element_len, int doclear, int isvarlen,
 }
 
 /*:::::*/
-int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int dimensions, ... )
+int fb_ArrayRedim
+	( 
+		FBARRAY *array, 
+		int element_len, 
+		int isvarlen, 
+		int dimensions, 
+		... 
+	)
 {
 	va_list ap;
 	int res;

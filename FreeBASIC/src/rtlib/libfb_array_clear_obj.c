@@ -31,24 +31,36 @@
  */
 
 /*
- * array_ubound.c -- ubound function
+ * array_clear_obj.c -- ERASE function for static arrays of objects
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
+#include <malloc.h>
 #include "fb.h"
 
-
 /*:::::*/
-FBCALL int fb_ArrayUBound
+FBCALL int fb_ArrayClearObj
 	( 
 		FBARRAY *array, 
-		int dimension 
+		FB_DEFCTOR dtor, 
+		int dofill
 	)
 {
-	if( dimension > 0 )
-		--dimension;
+    /* not an error, see fb_ArrayEraseObj() */
+    if( array->ptr == NULL )
+    	return fb_ErrorSetNum( FB_RTERROR_OK );
+    
+    /* call dtors */
+    fb_hArrayDtorStr( array, dtor, 0 );
+	
+	if( dofill != FB_FALSE )
+	{
+		/* clear stills needed, the default dtor will just call other dtors
+	   	   and free dynamic data, the non-dynamic fields would still the same */ 
+		memset( array->ptr, 0, array->size );
+	}
 
-    return array->dimTB[dimension].ubound;
+   	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

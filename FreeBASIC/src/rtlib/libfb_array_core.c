@@ -41,7 +41,12 @@
 #include "fb.h"
 
 /*:::::*/
-int fb_hArrayCalcElements( int dimensions, const int *lboundTB, const int *uboundTB )
+int fb_hArrayCalcElements
+	( 
+		int dimensions, 
+		const int *lboundTB, 
+		const int *uboundTB 
+	)
 {
 	int i;
 	int elements;
@@ -54,7 +59,12 @@ int fb_hArrayCalcElements( int dimensions, const int *lboundTB, const int *uboun
 }
 
 /*:::::*/
-int fb_hArrayCalcDiff( int dimensions, const int *lboundTB, const int *uboundTB )
+int fb_hArrayCalcDiff
+	( 
+		int dimensions, 
+		const int *lboundTB, 
+		const int *uboundTB 
+	)
 {
 	int i;
 	int elements;
@@ -73,5 +83,4 @@ int fb_hArrayCalcDiff( int dimensions, const int *lboundTB, const int *uboundTB 
 
 	return -diff;
 }
-
 
