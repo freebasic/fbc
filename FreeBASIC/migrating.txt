@@ -128,5 +128,5 @@ use "-lang qb" (without quotes) option on the command-line when running FBC.
            making local initializers too difficult to support.
      
      
-    The -lang qb and -lang deprecated options will always be supported in
-future versions.
+    The -lang qb option will always be supported in future versions, now
+-lang deprecated will probably be removed when version 1.0 is released.

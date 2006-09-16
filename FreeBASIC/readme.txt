@@ -316,7 +316,7 @@ Most Important Features:
       INPUT from console doesn't allow wide-characters to be entered yet.
 
   o Name spaces:
-    - Recursive (to an unlimited number of levels):
+    - Recursive (up to 64 levels):
 
       NAMESPACE outer
         DIM foo        
@@ -336,17 +336,17 @@ Most Important Features:
     - Imported name spaces go out of scope if used inside compound statements or 
       routines:
 
-      NAMESPACE ns1
+      NAMESPACE ns1.ns2.ns3  '' multi-nesting 
         DIM foo = 1
       END NAMESPACE
 
-      SCOPE
-        USING ns1
-        PRINT "ns1.foo ="; foo
-      END SCOPE
+      IF TRUE THEN
+        USING ns1.ns2.ns3
+        PRINT "ns1.ns2.ns3.foo ="; foo
+      END IF
 
       DIM foo = 2
-      PRINT "ns1.foo ="; ns1.foo, "foo ="; foo
+      PRINT "ns1.ns2.ns3.foo ="; ns1.ns2.ns3.foo, "foo ="; foo
 
     - Symbols are mangled following the GCC 3.x ABI, allowing C++ global 
       functions and variables defined inside name spaces to be accessed directly:
@@ -377,7 +377,6 @@ Most Important Features:
 
     - Unicode Strings (WSTRING): like ZSTRING, but with support for wide 
       characters. Use the Windows unicode API functions directly, etc.
-
 
   o User-defined Types (UDT's):
 
@@ -453,6 +452,54 @@ Most Important Features:
       DIM E AS MyEnum
 
       E = C
+
+  o Constructors and Destructors for User Defined Types (TYPE or CLASS):
+  
+    - Constructors can be overloaded and take default parameters
+    
+    - Constructor chaining is supported (as in Java):
+    
+      CONSTRUCTOR foo( BYVAL bar AS INTEGER )
+      	this.bar = bar
+      END CONSTRUCTOR
+
+      CONSTRUCTOR foo( )
+      	CONSTRUCTOR( 1234 )
+      END CONSTRUCTOR
+    
+    - Global and local static instances also allow constructors and/or 
+      destructors
+  
+  o Operator Overloading for User Defined Types (TYPE, ENUM or CLASS):
+  
+    - All binary operators can be overloaded, but the relational ones
+    
+    - Operators to self (op=) can be handled separated for better performance
+    
+    - Most unary operator can be overloaded (casting included), but address-
+      of (@) and pointer dereference (*)
+      
+    - The assignment operator can also be overloaded
+    
+    - Operators can be global or member functions:
+    
+      TYPE foo
+      	bar AS INTEGER
+      	DECLARE OPERATOR CAST ( ) AS STRING	
+      	DECLARE CONSTRUCTOR ( BYVAL bar AS INTEGER )
+      END TYPE
+      
+      CONSTRUCTOR foo ( BYVAL bar AS INTEGER )
+      	this.bar = bar
+      END CONSTRUCTOR
+      
+      OPERATOR foo.CAST ( ) AS STRING
+      	RETURN STR( this.bar )
+      END OPERATOR 
+      
+      OPERATOR + ( BYREF lhs AS FOO, BYREF rhs AS FOO ) AS FOO
+      	RETURN FOO( lhs.bar + rhs.bar )
+      END OPERATOR
 
   o Arrays:
 
@@ -698,8 +745,9 @@ What FreeBASIC Isn't:
       for a list of differences.
 
     - While FB is certainly the BASIC compiler that most resembles the Microsoft
-      BASIC compilers for DOS, don't expect to compile old source-codes filled
-      with unsupported statements or external libraries, that won't work.
+      BASIC compilers for DOS (when using the -lang qb option), don't expect to 
+      compile old source-codes filled with unsupported statements or external 
+      libraries, that won't work.
 
   o FreeBASIC is not a Visual Basic alternative.
 
@@ -712,14 +760,6 @@ What FreeBASIC Isn't:
       tested enough. There are no alpha/beta closed testing groups, so the final
       users are also testers. Regression tests are always added when a bug
       is fixed.
-
-
-Possible Additions to Next Versions:
-
-  o CLASS data structure (for object-oriented programming):
-
-    - GUI code would be much easier to write.
-    - Eventually allowing interfaces with object-oriented c++ libraries
 
 
 Credits (in alphabetic order):
