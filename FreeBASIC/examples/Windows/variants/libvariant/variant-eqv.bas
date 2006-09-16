@@ -12,24 +12,39 @@ VAR_GEN_BOP( eqv, VarEqv, ulongint, UI8 )
 '':::::
 operator eqv _
 	( _
-		byref lhs as VARIANT, _
-		byref rhs as VARIANT _
-	) as VARIANT
+		byref lhs as CVariant, _
+		byref rhs as CVariant _
+	) as CVariant
 	
 	dim as VARIANT res = any
 	
-	VarEqv( @lhs, @rhs, @res )
+	VarEqv( @lhs.var, @rhs.var, @res )
 	
-	operator = res
+	return CVariant( res )
 	
 end operator
 
 '':::::
 operator eqv _
 	( _
-		byref lhs as VARIANT, _
+		byref lhs as CVariant, _
+		byref rhs as VARIANT _
+	) as CVariant
+	
+	dim as VARIANT res = any
+	
+	VarEqv( @lhs.var, @rhs, @res )
+	
+	return CVariant( res )
+	
+end operator
+
+'':::::
+operator eqv _
+	( _
+		byref lhs as CVariant, _
 		byval rhs as zstring ptr _
-	) as VARIANT
+	) as CVariant
 	
 	dim as VARIANT tmp = any, res = any
 	
@@ -37,20 +52,20 @@ operator eqv _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringByteLen( rhs, len( *rhs ) )
 	
-	VarEqv( @lhs, @tmp, @res )
-	
-	operator = res
+	VarEqv( @lhs.var, @tmp, @res )
 	
 	VariantClear( @tmp )
+	
+	return CVariant( res )
 	
 end operator
 
 '':::::
 operator eqv _
 	( _
-		byref lhs as VARIANT, _
+		byref lhs as CVariant, _
 		byval rhs as wstring ptr _
-	) as VARIANT
+	) as CVariant
 	
 	dim as VARIANT tmp = any, res = any
 	
@@ -58,11 +73,11 @@ operator eqv _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringLen( rhs, len( *rhs ) )
 	
-	VarEqv( @lhs, @tmp, @res )
-	
-	operator = res
+	VarEqv( @lhs.var, @tmp, @res )
 	
 	VariantClear( @tmp )
+	
+	return CVariant( res )
 	
 end operator
 

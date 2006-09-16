@@ -10,17 +10,30 @@ VAR_GEN_SELFOP( ^=, VarPow, ulongint, UI8 )
 VAR_GEN_SELFOP( ^=, VarPow, single, R4 )
 VAR_GEN_SELFOP( ^=, VarPow, double, R8 )
 
-operator ^= _
+operator CVariant.^= _
 	( _
-		byref lhs as VARIANT, _
+		byref rhs as CVariant _
+	)
+		
+	dim as VARIANT res = any
+	
+	VarPow( @this.var, @rhs.var, @res )
+		
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @res )
+		
+end operator
+
+operator CVariant.^= _
+	( _
 		byref rhs as VARIANT _
 	)
 		
 	dim as VARIANT res = any
 	
-	VarPow( @lhs, @rhs, @res )
+	VarPow( @this.var, @rhs, @res )
 		
-	VariantClear( @lhs )
-	VariantCopy( @lhs, @res )
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @res )
 		
 end operator

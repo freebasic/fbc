@@ -9,61 +9,32 @@ VAR_GEN_SELFOP( eqv=, VarEqv, longint, I8 )
 VAR_GEN_SELFOP( eqv=, VarEqv, ulongint, UI8 )
 
 '':::::
-operator eqv= _
+operator CVariant.eqv= _
 	( _
-		byref lhs as VARIANT, _
+		byref rhs as CVariant _
+	)
+	
+	dim as VARIANT res = any
+	
+	VarEqv( @this.var, @rhs.var, @res )
+	
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @res )
+	
+end operator
+
+'':::::
+operator CVariant.eqv= _
+	( _
 		byref rhs as VARIANT _
 	)
 	
 	dim as VARIANT res = any
 	
-	VarEqv( @lhs, @rhs, @res )
+	VarEqv( @this.var, @rhs, @res )
 	
-	VariantClear( @lhs )
-	VariantCopy( @lhs, @res )
-	
-end operator
-
-'':::::
-operator eqv= _
-	( _
-		byref lhs as VARIANT, _
-		byval rhs as zstring ptr _
-	)
-	
-	dim as VARIANT tmp = any, res = any
-	
-	VariantInit( @tmp )
-	V_VT(@tmp) = VT_BSTR
-	V_BSTR(@tmp) = SysAllocStringByteLen( rhs, len( *rhs ) )
-	
-	VarEqv( @lhs, @tmp, @res )
-	
-	VariantClear( @lhs )
-	VariantCopy( @lhs, @res )
-	
-	VariantClear( @tmp )
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @res )
 	
 end operator
 
-'':::::
-operator eqv= _
-	( _
-		byref lhs as VARIANT, _
-		byval rhs as wstring ptr _
-	)
-	
-	dim as VARIANT tmp = any, res = any
-	
-	VariantInit( @tmp )
-	V_VT(@tmp) = VT_BSTR
-	V_BSTR(@tmp) = SysAllocStringLen( rhs, len( *rhs ) )
-	
-	VarEqv( @lhs, @tmp, @res )
-	
-	VariantClear( @lhs )
-	VariantCopy( @lhs, @res )
-	
-	VariantClear( @tmp )
-	
-end operator

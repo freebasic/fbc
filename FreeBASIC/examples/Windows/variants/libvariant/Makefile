@@ -3,7 +3,7 @@
 LIBNAME := variant
 LIBDEST := ../
 
-SRCS := variant-assign.bas variant-cast.bas
+SRCS := variant-ctor.bas variant-dtor.bas variant-assign.bas variant-cast.bas
 SRCS += variant-add.bas variant-add-self.bas variant-sub.bas variant-sub-self.bas
 SRCS += variant-mul.bas variant-mul-self.bas variant-div.bas variant-div-self.bas
 SRCS += variant-idiv.bas variant-idiv-self.bas variant-mod.bas variant-mod-self.bas 

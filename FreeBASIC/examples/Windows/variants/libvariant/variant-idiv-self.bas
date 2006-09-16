@@ -10,19 +10,34 @@ VAR_GEN_SELFOP( \=, VarIdiv, ulongint, UI8 )
 VAR_GEN_SELFOP( \=, VarIdiv, single, R4 )
 VAR_GEN_SELFOP( \=, VarIdiv, double, R8 )
 
+
 '':::::
-operator \= _
+operator CVariant.\= _
 	( _
-		byref lhs as VARIANT, _
+		byref rhs as CVariant _
+	)
+	
+	dim as VARIANT res = any
+	
+	VarIdiv( @this.var, @rhs.var, @res )
+	
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @res )
+	
+end operator
+
+'':::::
+operator CVariant.\= _
+	( _
 		byref rhs as VARIANT _
 	)
 	
 	dim as VARIANT res = any
 	
-	VarIdiv( @lhs, @rhs, @res )
+	VarIdiv( @this.var, @rhs, @res )
 	
-	VariantClear( @lhs )
-	VariantCopy( @lhs, @res )
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @res )
 	
 end operator
 

@@ -12,24 +12,39 @@ VAR_GEN_BOP( imp, VarImp, ulongint, UI8 )
 '':::::
 operator imp _
 	( _
-		byref lhs as VARIANT, _
-		byref rhs as VARIANT _
-	) as VARIANT
+		byref lhs as CVariant, _
+		byref rhs as CVariant _
+	) as CVariant
 	
 	dim as VARIANT res = any
 	
-	VarImp( @lhs, @rhs, @res )
+	VarImp( @lhs.var, @rhs.var, @res )
 	
-	operator = res
+	return CVariant( res )
 	
 end operator
 
 '':::::
 operator imp _
 	( _
-		byref lhs as VARIANT, _
+		byref lhs as CVariant, _
+		byref rhs as VARIANT _
+	) as CVariant
+	
+	dim as VARIANT res = any
+	
+	VarImp( @lhs.var, @rhs, @res )
+	
+	return CVariant( res )
+	
+end operator
+
+'':::::
+operator imp _
+	( _
+		byref lhs as CVariant, _
 		byval rhs as zstring ptr _
-	) as VARIANT
+	) as CVariant
 	
 	dim as VARIANT tmp = any, res = any
 	
@@ -37,9 +52,9 @@ operator imp _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringByteLen( rhs, len( *rhs ) )
 	
-	VarImp( @lhs, @tmp, @res )
+	VarImp( @lhs.var, @tmp, @res )
 	
-	operator = res
+	return CVariant( res )
 	
 	VariantClear( @tmp )
 	
@@ -48,9 +63,9 @@ end operator
 '':::::
 operator imp _
 	( _
-		byref lhs as VARIANT, _
+		byref lhs as CVariant, _
 		byval rhs as wstring ptr _
-	) as VARIANT
+	) as CVariant
 	
 	dim as VARIANT tmp = any, res = any
 	
@@ -58,9 +73,9 @@ operator imp _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringLen( rhs, len( *rhs ) )
 	
-	VarImp( @lhs, @tmp, @res )
+	VarImp( @lhs.var, @tmp, @res )
 	
-	operator = res
+	return CVariant( res )
 	
 	VariantClear( @tmp )
 	

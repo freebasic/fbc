@@ -14,24 +14,39 @@ VAR_GEN_BOP( +, VarAdd, double, R8 )
 '':::::
 operator + _
 	( _
-		byref lhs as VARIANT, _
-		byref rhs as VARIANT _
-	) as VARIANT
+		byref lhs as CVariant, _
+		byref rhs as CVariant _
+	) as CVariant
 	
 	dim as VARIANT res = any
 	
-	VarAdd( @lhs, @rhs, @res )
+	VarAdd( @lhs.var, @rhs.var, @res )
 	
-	operator = res
+	return CVariant( res )
 	
 end operator
 
 '':::::
 operator + _
 	( _
-		byref lhs as VARIANT, _
+		byref lhs as CVariant, _
+		byref rhs as VARIANT _
+	) as CVariant
+	
+	dim as VARIANT res = any
+	
+	VarAdd( @lhs.var, @rhs, @res )
+	
+	return CVariant( res )
+	
+end operator
+
+'':::::
+operator + _
+	( _
+		byref lhs as CVariant, _
 		byval rhs as zstring ptr _
-	) as VARIANT
+	) as CVariant
 	
 	dim as VARIANT tmp = any, res = any
 	
@@ -39,20 +54,20 @@ operator + _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringByteLen( rhs, len( *rhs ) )
 	
-	VarAdd( @lhs, @tmp, @res )
-	
-	operator = res
+	VarAdd( @lhs.var, @tmp, @res )
 	
 	VariantClear( @tmp )
+	
+	return CVariant( res )
 	
 end operator
 
 '':::::
 operator + _
 	( _
-		byref lhs as VARIANT, _
+		byref lhs as CVariant, _
 		byval rhs as wstring ptr _
-	) as VARIANT
+	) as CVariant
 	
 	dim as VARIANT tmp = any, res = any
 	
@@ -60,11 +75,11 @@ operator + _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringLen( rhs, len( *rhs ) )
 	
-	VarAdd( @lhs, @tmp, @res )
-	
-	operator = res
+	VarAdd( @lhs.var, @tmp, @res )
 	
 	VariantClear( @tmp )
+	
+	return CVariant( res )
 	
 end operator
 

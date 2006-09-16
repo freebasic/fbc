@@ -9,18 +9,32 @@ VAR_GEN_SELFOP( xor=, VarXor, longint, I8 )
 VAR_GEN_SELFOP( xor=, VarXor, ulongint, UI8 )
 
 '':::::
-operator xor= _
+operator CVariant.xor= _
 	( _
-		byref lhs as VARIANT, _
+		byref rhs as CVariant _
+	)
+	
+	dim as VARIANT res = any
+	
+	VarXor( @this.var, @rhs.var, @res )
+	
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @res )
+	
+end operator
+
+'':::::
+operator CVariant.xor= _
+	( _
 		byref rhs as VARIANT _
 	)
 	
 	dim as VARIANT res = any
 	
-	VarXor( @lhs, @rhs, @res )
+	VarXor( @this.var, @rhs, @res )
 	
-	VariantClear( @lhs )
-	VariantCopy( @lhs, @res )
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @res )
 	
 end operator
 

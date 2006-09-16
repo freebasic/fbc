@@ -11,25 +11,38 @@ VAR_GEN_SELFOP( +=, VarAdd, single, R4 )
 VAR_GEN_SELFOP( +=, VarAdd, double, R8 )
 
 '':::::
-operator += _
+operator CVariant.+= _
 	( _
-		byref lhs as VARIANT, _
+		byref rhs as CVariant _
+	)
+	
+	dim as VARIANT res = any
+	
+	VarAdd( @this.var, @rhs.var, @res )
+	
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @res )
+	
+end operator
+
+'':::::
+operator CVariant.+= _
+	( _
 		byref rhs as VARIANT _
 	)
 	
 	dim as VARIANT res = any
 	
-	VarAdd( @lhs, @rhs, @res )
+	VarAdd( @this.var, @rhs, @res )
 	
-	VariantClear( @lhs )
-	VariantCopy( @lhs, @res )
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @res )
 	
 end operator
 
 '':::::
-operator += _
+operator CVariant.+= _
 	( _
-		byref lhs as VARIANT, _
 		byval rhs as zstring ptr _
 	)
 	
@@ -39,19 +52,18 @@ operator += _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringByteLen( rhs, len( *rhs ) )
 	
-	VarAdd( @lhs, @tmp, @res )
+	VarAdd( @this.var, @tmp, @res )
 	
-	VariantClear( @lhs )
-	VariantCopy( @lhs, @res )
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @res )
 	
 	VariantClear( @tmp )
 	
 end operator
 
 '':::::
-operator += _
+operator CVariant.+= _
 	( _
-		byref lhs as VARIANT, _
 		byval rhs as wstring ptr _
 	)
 	
@@ -61,10 +73,10 @@ operator += _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringLen( rhs, len( *rhs ) )
 	
-	VarAdd( @lhs, @tmp, @res )
+	VarAdd( @this.var, @tmp, @res )
 	
-	VariantClear( @lhs )
-	VariantCopy( @lhs, @res )
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @res )
 	
 	VariantClear( @tmp )
 	

@@ -1,32 +1,48 @@
-
 '':::::
-#macro VAR_GEN_ASSIGN( r_type, vt_type )
-	operator let _
+#macro VAR_GEN_CTOR( r_type, vt_type )
+	constructor CVariant _
 		( _
-			byref lhs as VARIANT, _
 			byval rhs as r_type _
 		)
 		
-		VariantClear( @lhs )
+		VariantInit( @this.var )
 	
-		V_VT(@lhs) = VT_##vt_type
-		V_##vt_type(@lhs) = rhs
+		V_VT(@this.var) = VT_##vt_type
+		V_##vt_type(@this.var) = rhs
+		
+	end constructor
+#endmacro
+
+'':::::
+#macro VAR_GEN_ASSIGN( r_type, vt_type )
+	operator CVariant.let _
+		( _
+			byval rhs as r_type _
+		)
+		
+		VariantClear( @this.var )
+	
+		V_VT(@this.var) = VT_##vt_type
+		V_##vt_type(@this.var) = rhs
 		
 	end operator
 #endmacro
 
 '':::::
 #macro VAR_GEN_CAST( ret_type, vt_type )
-	operator cast _
+	operator CVariant.cast _
 		( _
-			byref lhs as VARIANT _
+			_
 		) as ret_type
 		
 		dim as VARIANT tmp = any
 		
-		VariantChangeTypeEx( @tmp, @lhs, NULL, VARIANT_NOVALUEPROP, VT_##vt_type )
+		VariantInit( @tmp )
+		VariantChangeTypeEx( @tmp, @this.var, NULL, VARIANT_NOVALUEPROP, VT_##vt_type )
 		
-		function = V_##vt_type(@tmp)
+		operator = V_##vt_type(@tmp)
+		
+		VariantClear( @tmp )
 		
 	end operator
 #endmacro
@@ -35,9 +51,9 @@
 #macro VAR_GEN_BOP( op, proc, r_type, vt_type )
 	operator op _
 		( _
-			byref lhs as VARIANT, _
+			byref lhs as CVariant, _
 			byval rhs as r_type _
-		) as VARIANT
+		) as CVariant
 		
 		dim as VARIANT tmp = any, res = any
 		
@@ -45,18 +61,17 @@
 		V_VT(@tmp) = VT_##vt_type
 		V_##vt_type(@tmp) = rhs
 		
-		proc( @lhs, @tmp, @res )
+		proc( @lhs.var, @tmp, @res )
 		
-		operator = res
+		return CVariant( res )
 		
 	end operator
 #endmacro
 
 '':::::
 #macro VAR_GEN_SELFOP( op, proc, r_type, vt_type )
-	operator op _
+	operator CVariant.##op _
 		( _
-			byref lhs as VARIANT, _
 			byval rhs as r_type _
 		)
 		
@@ -66,10 +81,10 @@
 		V_VT(@tmp) = VT_##vt_type
 		V_##vt_type(@tmp) = rhs
 		
-		proc( @lhs, @tmp, @res )
+		proc( @this.var, @tmp, @res )
 		
-		VariantClear( @lhs )
-		VariantCopy( @lhs, @res )
+		VariantClear( @this.var )
+		VariantCopy( @this.var, @res )
 		
 	end operator
 #endmacro
@@ -78,7 +93,7 @@
 #macro VAR_GEN_COMP( op, r_type, vt_type )
 	operator op _
 		( _
-			byref lhs as VARIANT, _
+			byref lhs as CVariant, _
 			byval rhs as r_type _
 		) as integer
 		
@@ -88,7 +103,7 @@
 		V_VT(@tmp) = VT_##vt_type
 		V_##vt_type(@tmp) = rhs
 		
-		operator = VarCmp( @lhs, @tmp, NULL, 0 ) op VARCMP_EQ
+		operator = VarCmp( @lhs.var, @tmp, NULL, 0 ) op VARCMP_EQ
 		
 	end operator
 #endmacro

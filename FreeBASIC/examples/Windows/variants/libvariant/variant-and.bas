@@ -12,15 +12,30 @@ VAR_GEN_BOP( and, VarAnd, ulongint, UI8 )
 '':::::
 operator and _
 	( _
-		byref lhs as VARIANT, _
-		byref rhs as VARIANT _
-	) as VARIANT
+		byref lhs as CVariant, _
+		byref rhs as CVariant _
+	) as CVariant
 	
 	dim as VARIANT res = any
 	
-	VarAnd( @lhs, @rhs, @res )
+	VarAnd( @lhs.var, @rhs.var, @res )
 	
-	operator = res
+	return CVariant( res )
+	
+end operator
+
+'':::::
+operator and _
+	( _
+		byref lhs as CVariant, _
+		byref rhs as VARIANT _
+	) as CVariant
+	
+	dim as VARIANT res = any
+	
+	VarAnd( @lhs.var, @rhs, @res )
+	
+	return CVariant( res )
 	
 end operator
 

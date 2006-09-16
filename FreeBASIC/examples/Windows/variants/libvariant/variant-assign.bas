@@ -11,53 +11,60 @@ VAR_GEN_ASSIGN( single, R4 )
 VAR_GEN_ASSIGN( double, R8 )
 
 '':::::
-operator let _
+operator CVariant.let _
 	( _
-		byref lhs as VARIANT, _
 		byval rhs as VARIANT_NOTHING _
 	)
 	
-	VariantClear( @lhs )
+	VariantClear( @this.var )
 
 end operator
 
 '':::::
-operator let _
+operator CVariant.let _
 	( _
-		byref lhs as VARIANT, _
+		byref rhs as Cvariant _
+	)
+	
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @rhs.var )
+	
+end operator
+
+'':::::
+operator CVariant.let _
+	( _
 		byref rhs as VARIANT _
 	)
 	
-	VariantClear( @lhs )
-	VariantCopy( @lhs, @rhs )
+	VariantClear( @this.var )
+	VariantCopy( @this.var, @rhs )
 	
 end operator
 
 '':::::
-operator let _
+operator CVariant.let _
 	( _
-		byref lhs as VARIANT, _
 		byval rhs as zstring ptr _
 	)
 	
-	VariantClear( @lhs )
+	VariantClear( @this.var )
 
-	V_VT(@lhs) = VT_BSTR
-	V_BSTR(@lhs) = SysAllocStringByteLen( rhs, len( *rhs ) )
+	V_VT(@this.var) = VT_BSTR
+	V_BSTR(@this.var) = SysAllocStringByteLen( rhs, len( *rhs ) )
 	
 end operator
 
 '':::::
-operator let _
+operator CVariant.let _
 	( _
-		byref lhs as VARIANT, _
 		byval rhs as wstring ptr _
 	)
 	
-	VariantClear( @lhs )
+	VariantClear( @this.var )
 
-	V_VT(@lhs) = VT_BSTR
-	V_BSTR(@lhs) = SysAllocStringLen( rhs, len( *rhs ) )
+	V_VT(@this.var) = VT_BSTR
+	V_BSTR(@this.var) = SysAllocStringLen( rhs, len( *rhs ) )
 	
 end operator
 

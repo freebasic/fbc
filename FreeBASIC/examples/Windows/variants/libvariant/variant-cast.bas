@@ -11,14 +11,15 @@ VAR_GEN_CAST( single, R4 )
 VAR_GEN_CAST( double, R8 )
 
 '':::::
-operator cast _
+operator CVariant.cast _
 	( _
-		byref lhs as VARIANT _
+		_
 	) as string
 	
 	dim as VARIANT tmp = any
 		
-	VariantChangeTypeEx( @tmp, @lhs, NULL, VARIANT_NOVALUEPROP, VT_BSTR )
+	VariantInit( @tmp )
+	VariantChangeTypeEx( @tmp, @this.var, NULL, VARIANT_NOVALUEPROP, VT_BSTR )
 
 	function = *cast( wstring ptr, V_BSTR(@tmp) )
 	
@@ -27,14 +28,15 @@ operator cast _
 end operator
 
 '':::::
-operator cast _
+operator CVariant.cast _
 	( _
-		byref lhs as VARIANT _
+		_
 	) as wstring ptr
 	
 	dim as VARIANT tmp = any
 		
-	VariantChangeTypeEx( @tmp, @lhs, NULL, VARIANT_NOVALUEPROP, VT_BSTR )
+	VariantInit( @tmp )
+	VariantChangeTypeEx( @tmp, @this.var, NULL, VARIANT_NOVALUEPROP, VT_BSTR )
 
 	'' !!!FIXME!!! the pointer returned will leak
 
