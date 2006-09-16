@@ -1,3 +1,4 @@
+' TEST_MODE : MULTI_MODULE_TEST
 
 '' simple
 
@@ -8,8 +9,8 @@ extern "c++" lib "cpp"
 	end namespace
 end extern
 
-	CU_ASSERT( cpp.sum( 1, 2 ) = 3 )
-	CU_ASSERT( cpp.dec( 2, 1 ) = 1 )
+	ASSERT( cpp.sum( 1, 2 ) = 3 )
+	ASSERT( cpp.dec( 2, 1 ) = 1 )
 
 
 '' nested
@@ -21,8 +22,8 @@ extern "c++" lib "cpp"
 	end namespace
 end extern
 
-	CU_ASSERT( cpp.foo.bar.sum( 2, 2 ) = 4 )
-	CU_ASSERT( cpp.foo.bar.dec( 1, 1 ) = 0 )
+	ASSERT( cpp.foo.bar.sum( 2, 2 ) = 4 )
+	ASSERT( cpp.foo.bar.dec( 1, 1 ) = 0 )
 
 
 '' nested + udts
@@ -38,8 +39,8 @@ extern "c++" lib "cpp"
 	end namespace
 end extern
 
-	CU_ASSERT( cpp.foo.bar.sum_udt( @type<cpp.foo.bar.udt>(2), @type<cpp.foo.bar.udt>(2) ) = 4 )
-	CU_ASSERT( cpp.foo.bar.dec_udt( @type<cpp.foo.bar.udt>(1), @type<cpp.foo.bar.udt>(1) ) = 0 )
+	ASSERT( cpp.foo.bar.sum_udt( @type<cpp.foo.bar.udt>(2), @type<cpp.foo.bar.udt>(2) ) = 4 )
+	ASSERT( cpp.foo.bar.dec_udt( @type<cpp.foo.bar.udt>(1), @type<cpp.foo.bar.udt>(1) ) = 0 )
 
 '' nested + func ptr
 
@@ -67,5 +68,5 @@ private function fun_v2 cdecl ( byval baz as cpp.foo.bar.baz ptr) as integer
 	function = baz->v2
 end function
 
-	CU_ASSERT( cpp.foo.bar.sum_fn( @type<cpp.foo.bar.baz>(1,2), @fun_v1, @fun_v2 ) = 3 )
-	CU_ASSERT( cpp.foo.bar.dec_fn( @type<cpp.foo.bar.baz>(1,2), @fun_v1, @fun_v2 ) = -1 )
+	ASSERT( cpp.foo.bar.sum_fn( @type<cpp.foo.bar.baz>(1,2), @fun_v1, @fun_v2 ) = 3 )
+	ASSERT( cpp.foo.bar.dec_fn( @type<cpp.foo.bar.baz>(1,2), @fun_v1, @fun_v2 ) = -1 )
