@@ -20,7 +20,7 @@ operator and _
 	
 	VarAnd( @lhs.var, @rhs.var, @res )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 
@@ -35,7 +35,7 @@ operator and _
 	
 	VarAnd( @lhs.var, @rhs, @res )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 

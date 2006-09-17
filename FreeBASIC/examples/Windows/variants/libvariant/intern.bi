@@ -63,7 +63,7 @@
 		
 		proc( @lhs.var, @tmp, @res )
 		
-		return CVariant( res )
+		return CVariant( res, FALSE )
 		
 	end operator
 #endmacro
@@ -84,7 +84,7 @@
 		proc( @this.var, @tmp, @res )
 		
 		VariantClear( @this.var )
-		VariantCopy( @this.var, @res )
+		this.var = res
 		
 	end operator
 #endmacro

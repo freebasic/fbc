@@ -20,7 +20,7 @@ operator eqv _
 	
 	VarEqv( @lhs.var, @rhs.var, @res )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 
@@ -35,7 +35,7 @@ operator eqv _
 	
 	VarEqv( @lhs.var, @rhs, @res )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 
@@ -56,7 +56,7 @@ operator eqv _
 	
 	VariantClear( @tmp )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 
@@ -77,7 +77,7 @@ operator eqv _
 	
 	VariantClear( @tmp )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 

@@ -15,7 +15,9 @@ type CVariant
  	
  	declare constructor ( )
  	declare constructor ( byref rhs as CVariant )
+	declare constructor ( byref rhs as CVariant, byval deep_copy as integer )
 	declare constructor ( byref rhs as VARIANT )
+	declare constructor ( byref rhs as VARIANT, byval deep_copy as integer )
 	declare constructor ( byval rhs as integer )
 	declare constructor ( byval rhs as uinteger )
 	declare constructor ( byval rhs as longint )
@@ -159,6 +161,12 @@ type CVariant
 	declare operator ^= ( byval rhs as double ) 
 end type
 
+'' neg
+declare operator - ( byref rhs as CVariant ) as CVariant
+
+'' not
+declare operator not ( byref rhs as CVariant ) as CVariant
+
 '' add
 declare operator + ( byref lhs as CVariant, byref rhs as CVariant ) as CVariant
 declare operator + ( byref lhs as CVariant, byref rhs as VARIANT ) as CVariant
@@ -237,7 +245,6 @@ declare operator and ( byref lhs as CVariant, byval rhs as uinteger ) as CVarian
 declare operator and ( byref lhs as CVariant, byval rhs as longint ) as CVariant
 declare operator and ( byref lhs as CVariant, byval rhs as ulongint ) as CVariant
 
-
 '' or
 declare operator or ( byref lhs as CVariant, byref rhs as CVariant ) as CVariant
 declare operator or ( byref lhs as CVariant, byref rhs as VARIANT ) as CVariant
@@ -279,7 +286,6 @@ declare operator ^ ( byref lhs as CVariant, byval rhs as longint ) as CVariant
 declare operator ^ ( byref lhs as CVariant, byval rhs as ulongint ) as CVariant
 declare operator ^ ( byref lhs as CVariant, byval rhs as single ) as CVariant
 declare operator ^ ( byref lhs as CVariant, byval rhs as double ) as CVariant
-
 
 '' eq
 declare operator = ( byref lhs as CVariant, byref rhs as CVariant ) as integer

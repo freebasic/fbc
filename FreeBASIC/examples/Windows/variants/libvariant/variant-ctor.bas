@@ -34,11 +34,45 @@ end constructor
 '':::::
 constructor CVariant _
 	( _
+		byref rhs as CVariant, _
+		byval deep_copy as integer _
+	) 
+	
+	VariantInit( @this.var )
+	
+	if( deep_copy ) then
+		VariantCopy( @this.var, @rhs.var )
+	else
+		this.var = rhs.var
+	end if
+		
+end constructor
+
+'':::::
+constructor CVariant _
+	( _
 		byref rhs as VARIANT _
 	) 
 	
 	VariantInit( @this.var )
 	VariantCopy( @this.var, @rhs )
+		
+end constructor
+
+'':::::
+constructor CVariant _
+	( _
+		byref rhs as VARIANT, _
+		byval deep_copy as integer _
+	) 
+	
+	VariantInit( @this.var )
+	
+	if( deep_copy ) then
+		VariantCopy( @this.var, @rhs )
+	else
+		this.var = rhs
+	end if
 		
 end constructor
 

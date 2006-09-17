@@ -22,7 +22,7 @@ operator + _
 	
 	VarAdd( @lhs.var, @rhs.var, @res )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 
@@ -37,7 +37,7 @@ operator + _
 	
 	VarAdd( @lhs.var, @rhs, @res )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 
@@ -58,7 +58,7 @@ operator + _
 	
 	VariantClear( @tmp )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 
@@ -79,7 +79,7 @@ operator + _
 	
 	VariantClear( @tmp )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 

@@ -20,7 +20,7 @@ operator xor _
 	
 	VarXor( @lhs.var, @rhs.var, @res )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 
@@ -36,7 +36,7 @@ operator xor _
 	
 	VarXor( @lhs.var, @rhs, @res )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 

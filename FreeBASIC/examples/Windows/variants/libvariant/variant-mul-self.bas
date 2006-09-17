@@ -21,7 +21,7 @@ operator CVariant.*= _
 	VarMul( @this.var, @rhs.var, @res )
 		
 	VariantClear( @this.var )
-	VariantCopy( @this.var, @res )
+	this.var = res
 		
 end operator
 
@@ -36,6 +36,6 @@ operator CVariant.*= _
 	VarMul( @this.var, @rhs, @res )
 		
 	VariantClear( @this.var )
-	VariantCopy( @this.var, @res )
+	this.var = res
 		
 end operator

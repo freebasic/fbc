@@ -19,7 +19,7 @@ operator CVariant.xor= _
 	VarXor( @this.var, @rhs.var, @res )
 	
 	VariantClear( @this.var )
-	VariantCopy( @this.var, @res )
+	this.var = res
 	
 end operator
 
@@ -34,7 +34,7 @@ operator CVariant.xor= _
 	VarXor( @this.var, @rhs, @res )
 	
 	VariantClear( @this.var )
-	VariantCopy( @this.var, @res )
+	this.var = res
 	
 end operator
 

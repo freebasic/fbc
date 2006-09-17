@@ -21,7 +21,7 @@ operator CVariant./= _
 	VarDiv( @this.var, @rhs.var, @res )
 	
 	VariantClear( @this.var )
-	VariantCopy( @this.var, @res )
+	this.var = res
 	
 end operator
 
@@ -36,7 +36,7 @@ operator CVariant./= _
 	VarDiv( @this.var, @rhs, @res )
 	
 	VariantClear( @this.var )
-	VariantCopy( @this.var, @res )
+	this.var = res
 	
 end operator
 

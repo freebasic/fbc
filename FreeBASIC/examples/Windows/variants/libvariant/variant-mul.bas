@@ -22,7 +22,7 @@ operator * _
 	
 	VarMul( @lhs.var, @rhs.var, @res )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 
@@ -37,7 +37,7 @@ operator * _
 	
 	VarMul( @lhs.var, @rhs, @res )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 

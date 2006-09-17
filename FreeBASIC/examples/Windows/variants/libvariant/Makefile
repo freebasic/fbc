@@ -12,7 +12,7 @@ SRCS += variant-and.bas variant-and-self.bas variant-or.bas variant-or-self.bas
 SRCS += variant-xor.bas variant-xor-self.bas variant-imp.bas variant-imp-self.bas
 SRCS += variant-eqv.bas variant-eqv-self.bas variant-pow.bas variant-pow-self.bas
 SRCS += variant-eq.bas variant-ne.bas variant-lt.bas variant-gt.bas
-SRCS += variant-le.bas variant-ge.bas 
+SRCS += variant-le.bas variant-ge.bas variant-neg.bas variant-not.bas 
 OBJS := $(patsubst %.bas,obj/%.o,$(SRCS))
 
 ##########################

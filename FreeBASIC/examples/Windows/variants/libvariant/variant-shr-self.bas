@@ -17,9 +17,8 @@ operator CVariant.shr= _
 	VarIdiv( @this.var, @tmp, @res )
 		
 	VariantClear( @this.var )
-	VariantCopy( @this.var, @res )
+	this.var = res
 	
-	VariantClear( @res )
 	VariantClear( @tmp )
 		
 end operator
@@ -38,9 +37,8 @@ operator CVariant.shr= _
 	VarIdiv( @this.var, @tmp, @res )
 		
 	VariantClear( @this.var )
-	VariantCopy( @this.var, @res )
+	this.var = res
 	
-	VariantClear( @res )
 	VariantClear( @tmp )
 		
 end operator

@@ -20,7 +20,7 @@ operator shl _
 	
 	VariantClear( @tmp )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 
@@ -40,7 +40,7 @@ operator shl _
 	
 	VariantClear( @tmp )
 	
-	return CVariant( res )
+	return CVariant( res, FALSE )
 	
 end operator
 
