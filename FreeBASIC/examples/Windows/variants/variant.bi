@@ -108,6 +108,12 @@ type CVariant
 	declare operator mod= ( byval rhs as single ) 
 	declare operator mod= ( byval rhs as double ) 
 	
+	declare operator shl= ( byref rhs as CVariant )
+	declare operator shl= ( byval rhs as integer ) 
+
+	declare operator shr= ( byref rhs as CVariant )
+	declare operator shr= ( byval rhs as integer ) 
+
 	declare operator and= ( byref rhs as CVariant )
 	declare operator and= ( byref rhs as VARIANT ) 
 	declare operator and= ( byval rhs as integer ) 
@@ -214,6 +220,14 @@ declare operator mod ( byref lhs as CVariant, byval rhs as longint ) as CVariant
 declare operator mod ( byref lhs as CVariant, byval rhs as ulongint ) as CVariant
 declare operator mod ( byref lhs as CVariant, byval rhs as single ) as CVariant
 declare operator mod ( byref lhs as CVariant, byval rhs as double ) as CVariant
+
+'' shl
+declare operator shl ( byref lhs as CVariant, byref rhs as CVariant ) as CVariant
+declare operator shl ( byref lhs as CVariant, byval rhs as integer ) as CVariant
+
+'' shr
+declare operator shr ( byref lhs as CVariant, byref rhs as CVariant ) as CVariant
+declare operator shr ( byref lhs as CVariant, byval rhs as integer ) as CVariant
 
 '' and
 declare operator and ( byref lhs as CVariant, byref rhs as CVariant ) as CVariant
