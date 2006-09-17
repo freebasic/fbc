@@ -170,12 +170,8 @@ function astNewUOP _
     		exit function
     	end if
 
-    '' UDT's?
-    case FB_DATATYPE_STRUCT
-    	exit function
-
 	'' pointer?
-	case IS >= FB_DATATYPE_POINTER
+	case is >= FB_DATATYPE_POINTER
     	'' only NOT allowed
     	if( op <> AST_OP_NOT ) then
     		exit function
@@ -218,8 +214,19 @@ function astNewUOP _
 
 	'' '+'? do nothing..
 	case AST_OP_PLUS
-		return o
+		select case dtype
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			exit function
+
+		case else
+			return o
+		end select
 	end select
+
+	'' bad conversion?
+	if( o = NULL ) then
+		exit function
+	end if
 
 	'' constant folding
 	if( o->defined ) then

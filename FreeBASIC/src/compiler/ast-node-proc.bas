@@ -1103,17 +1103,9 @@ private sub hDestroyVars _
     do while( s <> NULL )
     	'' variable?
     	if( symbGetClass( s ) = FB_SYMBCLASS_VAR ) then
-    		'' not shared, static, param or temp?
-    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
-    							FB_SYMBATTRIB_STATIC or _
-    							FB_SYMBATTRIB_COMMON or _
-    							FB_SYMBATTRIB_PARAMBYDESC or _
-    				  			FB_SYMBATTRIB_PARAMBYVAL or _
-    				  			FB_SYMBATTRIB_PARAMBYREF or _
-    				  			FB_SYMBATTRIB_FUNCRESULT)) = 0 ) then
-
+			'' has a dtor?
+			if( symbGetVarHasDtor( s ) ) then
 				astAdd( astBuildVarDtorCall( s ) )
-
 			end if
     	end if
 

@@ -171,12 +171,6 @@ function astBuildVarDtorCall _
 		select case symbGetType( s )
 		'' dyn string?
 		case FB_DATATYPE_STRING
-			'' temp strings are deleted right-after the call, to not run out
-			'' of temporary string descriptors (that are allocated at runtime)
-			if( symbIsTemp( s ) ) then
-				exit function
-			end if
-
 			function = rtlStrDelete( astNewVAR( s, 0, FB_DATATYPE_STRING ) )
 
 		'' struct or class?
@@ -410,6 +404,66 @@ function astCallCtorToCall _
 	function = procexpr
 
 end function
+
+''::::
+function astBuildImplicitCtorCall _
+	( _
+		byval subtype as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr, _
+		byref is_ctorcall as integer _
+	) as ASTNODE ptr
+
+ 	dim as FB_CALL_ARG argTb(0 to 1) = any
+ 	dim as integer err_num = any
+
+ 	argTb(0).expr = astBuildMockInstPtr( subtype )
+ 	argTb(0).mode = FB_PARAMMODE_BYVAL
+ 	argTb(0).next = @argtb(1)
+
+ 	argTb(1).expr = expr
+ 	argTb(1).mode = INVALID
+ 	argTb(1).next = NULL
+
+    dim as FBSYMBOL ptr proc = any
+
+ 	proc = symbFindClosestOvlProc( symbGetCompCtorHead( subtype ), _
+ 								   2, _
+ 								   @argTb(0), _
+ 								   @err_num )
+	if( proc = NULL ) then
+		'' delete the mock node
+		astDelTree( argTb(0).expr )
+		is_ctorcall = FALSE
+
+		if( err_num <> FB_ERRMSG_OK ) then
+			errReportParam( symbGetCompCtorHead( subtype ), 0, NULL, err_num )
+			return NULL
+		end if
+
+		'' could be a shallow copy..
+        return expr
+	end if
+
+    '' build a ctor call
+    expr = astNewCALL( proc )
+
+    '' push the mock instance ptr
+    astNewARG( expr, argTb(0).expr, INVALID, FB_PARAMMODE_BYVAL )
+
+    astNewARG( expr, argTb(1).expr )
+
+    '' add the optional params, if any
+    dim as integer params = symbGetProcParams( proc ) - 2
+    do while( params > 0 )
+    	astNewARG( expr, NULL )
+    	params -= 1
+    loop
+
+    is_ctorcall = TRUE
+    function = expr
+
+end function
+
 
 ''
 '' procs

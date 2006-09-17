@@ -591,7 +591,8 @@ private function hReportMakeDesc _
 			if( pname = NULL ) then
 				addprnts = TRUE
 				if( (symbGetAttrib( proc ) and (FB_SYMBATTRIB_CONSTRUCTOR or _
-											    FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
+											    FB_SYMBATTRIB_DESTRUCTOR or _
+											    FB_SYMBATTRIB_OPERATOR)) <> 0 ) then
 
 					static as string ctorname
 
@@ -599,6 +600,8 @@ private function hReportMakeDesc _
 
 					if( symbIsConstructor( proc ) ) then
 					 	ctorname += ".constructor"
+					elseif( symbIsOperator( proc ) ) then
+						ctorname += ".operator"
 					else
 						ctorname += ".destructor"
 					end if

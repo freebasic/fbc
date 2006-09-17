@@ -928,8 +928,7 @@ function symbGetVarHasDtor _
     					FB_SYMBATTRIB_COMMON or _
     					FB_SYMBATTRIB_PARAMBYDESC or _
     		  			FB_SYMBATTRIB_PARAMBYVAL or _
-    		  			FB_SYMBATTRIB_PARAMBYREF or _
-    		  			FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
+    		  			FB_SYMBATTRIB_PARAMBYREF )) <> 0 ) then
 		return FALSE
 	end if
 
@@ -938,7 +937,12 @@ function symbGetVarHasDtor _
 	case FB_DATATYPE_STRING
     	'' temp strings are destroyed right-after then function
     	'' call, or the temp str descriptors could be exhausted
-		return (symbIsTemp( s ) = FALSE)
+    	if( (s->attrib and (FB_SYMBATTRIB_TEMP or _
+    		  				FB_SYMBATTRIB_FUNCRESULT )) <> 0 ) then
+			return FALSE
+		else
+			return TRUE
+		end if
 
    	'' has dtor?
    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS

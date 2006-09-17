@@ -780,8 +780,8 @@ declare function cProcCall _
 
 declare function cCtorCall _
 	( _
-		byval expr as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr, _
 		byref is_ctorcall as integer _
 	) as ASTNODE ptr
 

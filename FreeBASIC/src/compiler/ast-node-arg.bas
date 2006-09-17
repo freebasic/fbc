@@ -439,7 +439,7 @@ private function hCheckArrayParam _
 end function
 
 '':::::
-#macro hBuildBurefArg( n, arg )
+#macro hBuildByrefArg( n, arg )
 
 	arg = astNewADDR( AST_OP_ADDROF, arg )
 
@@ -490,9 +490,48 @@ private function hCheckByRefArg _
 	end select
 
 	'' take the address of
-    hBuildBurefArg( n, arg )
+    hBuildByrefArg( n, arg )
 
 	function = arg
+
+end function
+
+'':::::
+private function hImplicitCtor _
+	( _
+		byval param_subtype as FBSYMBOL ptr, _
+		byval arg as ASTNODE ptr _
+	) as ASTNODE ptr
+
+   	static as integer rec_cnt = 0
+
+   	if( symbGetHasCtor( param_subtype ) = FALSE ) then
+   		return NULL
+   	end if
+
+    '' recursion? (astBuildImplicitCtorCall() will call newARG with the same expr)
+    if( rec_cnt <> 0 ) then
+    	return NULL
+    end if
+
+    dim as integer is_ctorcall = any
+
+    '' try calling any ctor with the expression
+    rec_cnt += 1
+    arg = astBuildImplicitCtorCall( param_subtype, arg, is_ctorcall )
+    rec_cnt -= 1
+
+    if( is_ctorcall = FALSE ) then
+    	return NULL
+    end if
+
+    dim as FBSYMBOL ptr tmp = symbAddTempVar( symbGetType( param_subtype ), _
+    				  						  param_subtype, _
+    				  						  FALSE, _
+    				  						  FALSE )
+
+    function = astNewCALLCTOR( astPatchCtorCall( arg, astBuildVarField( tmp ) ), _
+    						   astBuildVarField( tmp ) )
 
 end function
 
@@ -507,12 +546,14 @@ private function hCheckParam _
     dim as integer param_dtype = any, param_dclass = any, param_mode = any
     dim as integer arg_dtype = any, arg_dclass = any, arg_mode = any, arg_nodeclass = any
     dim as ASTNODE ptr arg = any
+    dim as FBSYMBOL ptr param_subtype = any
 
     function = FALSE
 
 	'' parameter
 	param_mode = symbGetParamMode( param )
 	param_dtype = symbGetType( param )
+	param_subtype = symbGetSubtype( param )
 	if( param_dtype <> INVALID ) then
 		param_dclass = symbGetDataClass( param_dtype )
 	end if
@@ -603,6 +644,34 @@ private function hCheckParam _
 		end if
 
 		return TRUE
+	end if
+
+	'' try implicit casting op overloading
+	dim as integer err_num = any
+	dim as FBSYMBOL ptr proc = any
+
+	proc = symbFindCastOvlProc( param_dtype, param_subtype, arg, @err_num )
+	if( proc <> NULL ) then
+    	static as integer rec_cnt = 0
+    	'' recursion? (astBuildCall() will call newARG with the same expr)
+    	if( rec_cnt = 0 ) then
+			'' build a proc call
+			rec_cnt += 1
+			arg = astBuildCall( proc, 1, arg )
+			rec_cnt -= 1
+			arg_dtype = param_dtype
+			arg_dclass = symbGetDataClass( arg_dtype )
+			arg_nodeclass = AST_NODECLASS_CALL
+
+			n->l = arg
+			n->dtype = param_dtype
+			n->subtype = param_subtype
+		end if
+
+	else
+		if( err_num <> FB_ERRMSG_OK ) then
+			return NULL
+		end if
 	end if
 
     '' string argument?
@@ -724,15 +793,27 @@ private function hCheckParam _
 		if( arg_dtype <> FB_DATATYPE_STRUCT ) then
 			'' not a proc? (can be an UDT being returned in registers)
 			if( arg_nodeclass <> AST_NODECLASS_CALL ) then
-				hParamError( parent )
-				exit function
+				arg = hImplicitCtor( param_subtype, arg )
+				if( arg = NULL ) then
+					hParamError( parent )
+					exit function
+				else
+					n->l = arg
+					return TRUE
+				end if
 			end if
 
 			'' it's a proc call, but was it originally returning an UDT?
 			s = arg->sym
 			if( s->typ <> FB_DATATYPE_STRUCT ) then
-				hParamError( parent )
-				exit function
+				arg = hImplicitCtor( param_subtype, arg )
+				if( arg = NULL ) then
+					hParamError( parent )
+					exit function
+				else
+					n->l = arg
+					return TRUE
+				end if
 			end if
 
 			'' byref argument? can't create a temporary UDT..
@@ -742,11 +823,11 @@ private function hCheckParam _
 			end if
 
 			'' set type..
-			n->dtype = arg_dtype
+			n->dtype = arg->dtype
 			s = s->subtype
 
 		else
-			if( arg_nodeclass = AST_NODECLASS_CALL ) then
+			if( arg->class = AST_NODECLASS_CALL ) then
 				s = arg->sym->subtype
 			else
 				s = arg->subtype
@@ -754,18 +835,22 @@ private function hCheckParam _
 		end if
 
         '' check for invalid UDT's (different subtypes)
-		if( symbGetSubtype( param ) <> s ) then
-			hParamError( parent )
-			exit function
+		if( param_subtype <> s ) then
+			arg = hImplicitCtor( param_subtype, arg )
+			if( arg = NULL ) then
+				hParamError( parent )
+				exit function
+			else
+				n->l = arg
+				return TRUE
+			end if
 		end if
 
 		'' set the length if it's being passed by value
 		if( param_mode = FB_PARAMMODE_BYVAL ) then
-            dim as FBSYMBOL ptr param_subtype = symbGetSubtype( param )
-
 			'' no dtor, copy-ctor or virtual members?
 			if( symbIsTrivial( param_subtype ) ) then
-				if( arg_dtype = FB_DATATYPE_STRUCT ) then
+				if( arg->dtype = FB_DATATYPE_STRUCT ) then
 					n->arg.lgt = FB_ROUNDLEN( symbGetLen( s ) )
 				end if
 
@@ -777,7 +862,7 @@ private function hCheckParam _
 				arg = astNewCALLCTOR( astBuildCopyCtorCall( astBuildVarField( tmp ), arg ), _
 									  astBuildVarField( tmp ) )
 
-				hBuildBurefArg( n, arg )
+				hBuildByrefArg( n, arg )
 			end if
 		end if
 
@@ -854,21 +939,21 @@ private function hCheckParam _
 			end if
 		end if
 
-		arg = astNewCONV( param_dtype, symbGetSubtype( param ), arg )
+		arg = astNewCONV( param_dtype, param_subtype, arg )
 		if( arg = NULL ) then
 			hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
 
 		n->dtype = param_dtype
-		n->subtype = symbGetSubtype( param )
+		n->subtype = param_subtype
 		n->l = arg
 
 	end if
 
 	'' pointer checking
 	if( param_dtype >= FB_DATATYPE_POINTER ) then
-		if( astPtrCheck( param_dtype, symbGetSubtype( param ), arg ) = FALSE ) then
+		if( astPtrCheck( param_dtype, param_subtype, arg ) = FALSE ) then
 			if( arg->dtype < FB_DATATYPE_POINTER ) then
 				hParamWarning( parent, FB_WARNINGMSG_PASSINGSCALARASPTR )
 			else
@@ -882,7 +967,7 @@ private function hCheckParam _
 
 	'' byref arg? check if a temp param isn't needed
 	if( param_mode = FB_PARAMMODE_BYREF ) then
-		arg = hCheckByRefArg( param_dtype, symbGetSubtype( param ), n )
+		arg = hCheckByRefArg( param_dtype, param_subtype, n )
         '' it's an implicit pointer
 	end if
 

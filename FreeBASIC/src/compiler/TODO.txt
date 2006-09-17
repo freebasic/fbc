@@ -1,4 +1,13 @@
+
+[ ] check implicit casting and implicit ctor call for arguments
+	- they will only work for non-overloaded functions if done at newARG
+	- variants won't work if the non-variant param is to be returned
+	  byref (like for getmouse), the temp var used should be assigned
+	  back to the variant
+	  - does C++ do that?
+
 [ ] ctor/dtor
+	- should FB_SYMBATTRIB_FUNCRESULT be allowed in symbGetVarHasDtor() ?
 	- ArrayClear will be used instead of a dtor call looping to destroy
 	  local non-dynamic arrays
 	  - callVarDtor will have to use astAddAfter then with scope blocks..
@@ -16,11 +25,9 @@
 	- add method call support to cTypeField( )
 
 [ ] operator overloading:
+    - add implicit casting to BOP
+      - what if both sides are UDT's?
     - add method operators support for ENUM's (mainly for cast())
-    - implicit casting must be checked if UDT's, classes or enum's are passed
-      - in binary operations
-      - in assignments
-      - when passing args
     - binary:
       OPERATOR & ( l, r ) AS TYPE
     - unary:

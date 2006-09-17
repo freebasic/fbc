@@ -1411,7 +1411,7 @@ private function hCalcTypesDiff _
 						return 0
 					end if
 
-					return FB_OVLPROC_FULLMATCH
+					return FB_OVLPROC_HALFMATCH
 				end if
 
 				'' param is an any ptr?
