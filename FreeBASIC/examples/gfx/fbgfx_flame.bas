@@ -26,7 +26,7 @@ end type
 declare sub animate_fire(byval buffer as ubyte ptr, byval new as integer = 0)
 
 
-sub animate_fire(byval buffer as ubyte ptr, byval new as integer = 0)
+sub animate_fire(byval buffer as ubyte ptr, byval new_ as integer = 0)
 	
 	dim w as integer, h as integer, x as integer, y as integer, i as integer
 	dim c0 as integer, c1 as integer, c2 as integer, c3 as integer
@@ -34,7 +34,7 @@ sub animate_fire(byval buffer as ubyte ptr, byval new as integer = 0)
 	w = cast(short ptr, buffer)[0] shr 3
 	h = cast(short ptr, buffer)[1]
 	
-	if new then
+	if new_ then
 		line buffer, (0, 0)-(w-1, h-1), 0, bf
 		for i = 0 to 5
 			circle buffer, ((w\4)+(rnd*(w\2)), (h\4)+(rnd*(h\2))), (w\6), 191,,,,F

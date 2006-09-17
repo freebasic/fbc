@@ -36,7 +36,7 @@ Sub remove_book Cdecl( Byval button As GtkButton Ptr, Byval notebook As GtkNoteb
 	gtk_widget_queue_draw (GTK_WIDGET (notebook))
 End Sub
 
-Function delete Cdecl( Byval widget As GtkWidget Ptr, Byval event As GtkWidget, Byval user_data As gpointer ) As gint
+Function delete_ Cdecl( Byval widget As GtkWidget Ptr, Byval event As GtkWidget, Byval user_data As gpointer ) As gint
 	gtk_main_quit ()
 	Return FALSE
 End Function
@@ -61,7 +61,7 @@ End Function
 	
 	win = gtk_window_new (GTK_WINDOW_TOPLEVEL)
 	gtk_window_set_title (GTK_WINDOW (win), "Notebook")
-	g_signal_connect (G_OBJECT (win), "delete_event", G_CALLBACK (@delete), NULL)
+	g_signal_connect (G_OBJECT (win), "delete_event", G_CALLBACK (@delete_), NULL)
 	
 	gtk_container_set_border_width (GTK_CONTAINER (win), 10)
 	
@@ -123,7 +123,7 @@ End Function
 	
 	' Create a bunch of buttons 
 	button = gtk_button_new_with_label ("close")
-	g_signal_connect_swapped (G_OBJECT (button), "clicked", G_CALLBACK (@delete), NULL)
+	g_signal_connect_swapped (G_OBJECT (button), "clicked", G_CALLBACK (@delete_), NULL)
 	gtk_table_attach_defaults (GTK_TABLE (table), button, 0, 1, 1, 2)
 	gtk_widget_show (button)
 	
