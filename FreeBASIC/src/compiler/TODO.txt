@@ -7,7 +7,6 @@
 	  - does C++ do that?
 
 [ ] ctor/dtor
-	- should FB_SYMBATTRIB_FUNCRESULT be allowed in symbGetVarHasDtor() ?
 	- ArrayClear will be used instead of a dtor call looping to destroy
 	  local non-dynamic arrays
 	  - callVarDtor will have to use astAddAfter then with scope blocks..
@@ -30,11 +29,12 @@
     - add method operators support for ENUM's (mainly for cast())
     - binary:
       OPERATOR & ( l, r ) AS TYPE
+    - convert the binary op in member functions to op= if they take just one param
     - unary:
       OPERATOR INT()|FIX()|ABS()|*|@ ( l ) AS TYPE
+    - type<>() is borked with RETURN
     - PRINT and pseudo-overloaded functions should try to convert the UDT, ENUM, CLASS to
       string
-    - do commutative for +|*|and|or|<>, check D for more rules
 
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode

@@ -1982,26 +1982,50 @@ function symbFindCastOvlProc _
 	max_matches = 0
 	amb_cnt = 0
 
-	'' for each overloaded proc..
-	proc = proc_head
-	do while( proc <> NULL )
+	if( to_dtype <> FB_DATATYPE_VOID ) then
+		'' for each overloaded proc..
+		proc = proc_head
+		do while( proc <> NULL )
 
-		matches = hCheckCastOvl( proc, to_dtype, to_subtype )
-		if( matches > max_matches ) then
-		   	closest_proc = proc
-		   	max_matches = matches
-		   	amb_cnt = 0
+			matches = hCheckCastOvl( proc, to_dtype, to_subtype )
+			if( matches > max_matches ) then
+		   		closest_proc = proc
+		   		max_matches = matches
+		   		amb_cnt = 0
 
-		'' same? ambiguity..
-		elseif( matches = max_matches ) then
-			if( max_matches > 0 ) then
-				amb_cnt += 1
+			'' same? ambiguity..
+			elseif( matches = max_matches ) then
+				if( max_matches > 0 ) then
+					amb_cnt += 1
+				end if
 			end if
-		end if
 
-		'' next
-		proc = symbGetProcOvlNext( proc )
-	loop
+			'' next
+			proc = symbGetProcOvlNext( proc )
+		loop
+
+	'' find the most precise possible..
+	else
+		'' for each overloaded proc..
+		proc = proc_head
+		do while( proc <> NULL )
+
+			'' simple type?
+			if( symbGetSubType( proc ) = NULL ) then
+				if( symbGetType( proc ) <= FB_DATATYPE_DOUBLE ) then
+					'' more precise than the last?
+					if( symbGetType( proc ) > to_dtype ) then
+		   				closest_proc = proc
+		   				to_dtype = symbGetType( proc )
+					end if
+				end if
+			end if
+
+			'' next
+			proc = symbGetProcOvlNext( proc )
+		loop
+
+	end if
 
 	'' more than one possibility?
 	if( amb_cnt > 0 ) then

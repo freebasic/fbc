@@ -155,14 +155,14 @@ function astNewUOP _
 	end if
 
 	dtype = o->dtype
+    dclass = symbGetDataClass( dtype )
 
     '' string? can't operate
-    dclass = symbGetDataClass( dtype )
     if( dclass = FB_DATACLASS_STRING ) then
     	exit function
     end if
 
-    select case dtype
+    select case as const dtype
     '' CHAR and WCHAR literals are also from the INTEGER class..
     case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	'' only if it's a deref pointer, to allow "NOT *p" etc
@@ -170,11 +170,23 @@ function astNewUOP _
     		exit function
     	end if
 
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		'' try to convert to the most precise type
+		o = astNewCONV( FB_DATATYPE_VOID, NULL, o )
+		if( o = NULL ) then
+			exit function
+		end if
+
+		dtype = o->dtype
+    	dclass = symbGetDataClass( dtype )
+
 	'' pointer?
-	case is >= FB_DATATYPE_POINTER
-    	'' only NOT allowed
-    	if( op <> AST_OP_NOT ) then
-    		exit function
+	case else
+		if( dtype >= FB_DATATYPE_POINTER ) then
+    		'' only NOT allowed
+    		if( op <> AST_OP_NOT ) then
+    			exit function
+    		end if
     	end if
     end select
 
@@ -214,19 +226,9 @@ function astNewUOP _
 
 	'' '+'? do nothing..
 	case AST_OP_PLUS
-		select case dtype
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			exit function
+		return o
 
-		case else
-			return o
-		end select
 	end select
-
-	'' bad conversion?
-	if( o = NULL ) then
-		exit function
-	end if
 
 	'' constant folding
 	if( o->defined ) then
