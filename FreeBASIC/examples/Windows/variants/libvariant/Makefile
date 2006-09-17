@@ -7,6 +7,7 @@ SRCS := variant-ctor.bas variant-dtor.bas variant-assign.bas variant-cast.bas
 SRCS += variant-add.bas variant-add-self.bas variant-sub.bas variant-sub-self.bas
 SRCS += variant-mul.bas variant-mul-self.bas variant-div.bas variant-div-self.bas
 SRCS += variant-idiv.bas variant-idiv-self.bas variant-mod.bas variant-mod-self.bas 
+SRCS += variant-shl.bas variant-shl-self.bas variant-shr.bas variant-shr-self.bas
 SRCS += variant-and.bas variant-and-self.bas variant-or.bas variant-or-self.bas 
 SRCS += variant-xor.bas variant-xor-self.bas variant-imp.bas variant-imp-self.bas
 SRCS += variant-eqv.bas variant-eqv-self.bas variant-pow.bas variant-pow-self.bas
