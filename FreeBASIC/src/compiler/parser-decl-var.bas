@@ -624,7 +624,11 @@ private function hVarInit _
 
 	function = NULL
 
-	attrib = symbGetAttrib( sym )
+	if( sym <> NULL ) then
+		attrib = symbGetAttrib( sym )
+	else
+		attrib = 0
+	end if
 
 	'' '=' | '=>' ?
 	select case lexGetToken( )
