@@ -323,11 +323,12 @@ function symbCanDuplicate _
 					exit function
 				end if
 
-			'' allow fields dups, if it's a param being added
+			'' allow fields dups, if in a different scope
 			case FB_SYMBCLASS_FIELD
-				if( symbIsParam( s ) = FALSE ) then
-					exit function
-				end if
+				'' same scope?
+				if( s->scope = sym->scope ) then
+	    			exit function
+    			end if
 
 			'' and other vars if they have different suffixes -- if any
 			'' with suffix exist, a suffix-less will not be accepted (and vice-versa)
