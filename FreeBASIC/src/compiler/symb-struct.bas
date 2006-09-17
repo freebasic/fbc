@@ -340,6 +340,9 @@ function symbAddField _
 		sym->ofs = parent->ofs - lgt
 	end if
 
+	''
+	sym->var.initree = NULL
+
 	'' array fields
 	sym->var.array.desc = NULL
 	sym->var.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
