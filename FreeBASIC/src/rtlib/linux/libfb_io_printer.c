@@ -112,7 +112,7 @@ int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDev
 				/* does printer exist */
 				strcpy(filename, "lpstat -v \"");
 				strcat(filename, lpt_proto->name);
-				strcat(filename, "\" 2>&1");	
+				strcat(filename, "\" 2>&1 ");	
 				if( exec_lp_cmd( filename, FALSE ) != 0 )
 				{
 					if( lpt_proto!=NULL )
@@ -136,6 +136,9 @@ int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDev
 						free(lpt_proto);
 					return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 				}
+
+				/* build command for spooler */
+				strcpy(filename, "lp ");
 			}
 
 			/* set title, if not default */
