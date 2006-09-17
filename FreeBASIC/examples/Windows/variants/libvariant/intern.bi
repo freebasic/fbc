@@ -69,6 +69,27 @@
 #endmacro
 
 '':::::
+#macro VAR_GEN_BOP_INV( op, proc, r_type, vt_type )
+	operator op _
+		( _
+			byval lhs as r_type, _
+			byref rhs as CVariant _
+		) as CVariant
+		
+		dim as VARIANT tmp = any, res = any
+		
+		VariantInit( @tmp )
+		V_VT(@tmp) = VT_##vt_type
+		V_##vt_type(@tmp) = lhs
+		
+		proc( @tmp, @rhs.var, @res )
+		
+		return CVariant( res, FALSE )
+		
+	end operator
+#endmacro
+
+'':::::
 #macro VAR_GEN_SELFOP( op, proc, r_type, vt_type )
 	operator CVariant.##op _
 		( _
@@ -104,6 +125,25 @@
 		V_##vt_type(@tmp) = rhs
 		
 		operator = VarCmp( @lhs.var, @tmp, NULL, 0 ) op VARCMP_EQ
+		
+	end operator
+#endmacro
+
+'':::::
+#macro VAR_GEN_COMP_INV( op, r_type, vt_type )
+	operator op _
+		( _
+			byval lhs as r_type, _
+			byref rhs as CVariant _
+		) as integer
+		
+		dim as VARIANT tmp = any
+		
+		VariantInit( @tmp )
+		V_VT(@tmp) = VT_##vt_type
+		V_##vt_type(@tmp) = lhs
+		
+		operator = VarCmp( @tmp, @rhs.var, NULL, 0 ) op VARCMP_EQ
 		
 	end operator
 #endmacro

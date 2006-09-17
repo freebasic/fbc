@@ -359,4 +359,173 @@ declare operator >= ( byref lhs as CVariant, byval rhs as double ) as integer
 declare operator >= ( byref lhs as CVariant, byval rhs as zstring ptr ) as integer
 declare operator >= ( byref lhs as CVariant, byval rhs as wstring ptr ) as integer
 
+'' inverse
+
+'' add
+declare operator + ( byref lhs as VARIANT, byref rhs as CVariant ) as CVariant
+declare operator + ( byval lhs as integer, byref rhs as CVariant ) as CVariant
+declare operator + ( byval lhs as uinteger, byref rhs as CVariant ) as CVariant
+declare operator + ( byval lhs as longint, byref rhs as CVariant ) as CVariant
+declare operator + ( byval lhs as ulongint, byref rhs as CVariant ) as CVariant
+declare operator + ( byval lhs as single, byref rhs as CVariant ) as CVariant
+declare operator + ( byval lhs as double, byref rhs as CVariant ) as CVariant
+declare operator + ( byval lhs as zstring ptr, byref rhs as CVariant ) as CVariant
+declare operator + ( byval lhs as wstring ptr, byref rhs as CVariant ) as CVariant
+
+'' sub
+declare operator - ( byref lhs as VARIANT, byref rhs as CVariant ) as CVariant
+declare operator - ( byval lhs as integer, byref rhs as CVariant ) as CVariant
+declare operator - ( byval lhs as uinteger, byref rhs as CVariant ) as CVariant
+declare operator - ( byval lhs as longint, byref rhs as CVariant ) as CVariant
+declare operator - ( byval lhs as ulongint, byref rhs as CVariant ) as CVariant
+declare operator - ( byval lhs as single, byref rhs as CVariant ) as CVariant
+declare operator - ( byval lhs as double, byref rhs as CVariant ) as CVariant
+
+'' mul
+declare operator * ( byref lhs as VARIANT, byref rhs as CVariant ) as CVariant
+declare operator * ( byval lhs as integer, byref rhs as CVariant ) as CVariant
+declare operator * ( byval lhs as uinteger, byref rhs as CVariant ) as CVariant
+declare operator * ( byval lhs as longint, byref rhs as CVariant ) as CVariant
+declare operator * ( byval lhs as ulongint, byref rhs as CVariant ) as CVariant
+declare operator * ( byval lhs as single, byref rhs as CVariant ) as CVariant
+declare operator * ( byval lhs as double, byref rhs as CVariant ) as CVariant
+
+'' div
+declare operator / ( byref lhs as VARIANT, byref rhs as CVariant ) as CVariant
+declare operator / ( byval lhs as integer, byref rhs as CVariant ) as CVariant
+declare operator / ( byval lhs as uinteger, byref rhs as CVariant ) as CVariant
+declare operator / ( byval lhs as longint, byref rhs as CVariant ) as CVariant
+declare operator / ( byval lhs as ulongint, byref rhs as CVariant ) as CVariant
+declare operator / ( byval lhs as single, byref rhs as CVariant ) as CVariant
+declare operator / ( byval lhs as double, byref rhs as CVariant ) as CVariant
+
+'' idiv
+declare operator \ ( byref lhs as VARIANT, byref rhs as CVariant ) as CVariant
+declare operator \ ( byval lhs as integer, byref rhs as CVariant ) as CVariant
+declare operator \ ( byval lhs as uinteger, byref rhs as CVariant ) as CVariant
+declare operator \ ( byval lhs as longint, byref rhs as CVariant ) as CVariant
+declare operator \ ( byval lhs as ulongint, byref rhs as CVariant ) as CVariant
+declare operator \ ( byval lhs as single, byref rhs as CVariant ) as CVariant
+declare operator \ ( byval lhs as double, byref rhs as CVariant ) as CVariant
+
+'' mod
+declare operator mod ( byref lhs as VARIANT, byref rhs as CVariant ) as CVariant
+declare operator mod ( byval lhs as integer, byref rhs as CVariant ) as CVariant
+declare operator mod ( byval lhs as uinteger, byref rhs as CVariant ) as CVariant
+declare operator mod ( byval lhs as longint, byref rhs as CVariant ) as CVariant
+declare operator mod ( byval lhs as ulongint, byref rhs as CVariant ) as CVariant
+declare operator mod ( byval lhs as single, byref rhs as CVariant ) as CVariant
+declare operator mod ( byval lhs as double, byref rhs as CVariant ) as CVariant
+
+'' and
+declare operator and ( byref lhs as VARIANT, byref rhs as CVariant ) as CVariant
+declare operator and ( byval lhs as integer, byref rhs as CVariant ) as CVariant
+declare operator and ( byval lhs as uinteger, byref rhs as CVariant ) as CVariant
+declare operator and ( byval lhs as longint, byref rhs as CVariant ) as CVariant
+declare operator and ( byval lhs as ulongint, byref rhs as CVariant ) as CVariant
+
+'' or
+declare operator or ( byref lhs as VARIANT, byref rhs as CVariant ) as CVariant
+declare operator or ( byval lhs as integer, byref rhs as CVariant ) as CVariant
+declare operator or ( byval lhs as uinteger, byref rhs as CVariant ) as CVariant
+declare operator or ( byval lhs as longint, byref rhs as CVariant ) as CVariant
+declare operator or ( byval lhs as ulongint, byref rhs as CVariant ) as CVariant
+
+'' xor
+declare operator xor ( byref lhs as VARIANT, byref rhs as CVariant ) as CVariant
+declare operator xor ( byval lhs as integer, byref rhs as CVariant ) as CVariant
+declare operator xor ( byval lhs as uinteger, byref rhs as CVariant ) as CVariant
+declare operator xor ( byval lhs as longint, byref rhs as CVariant ) as CVariant
+declare operator xor ( byval lhs as ulongint, byref rhs as CVariant ) as CVariant
+
+'' imp
+declare operator imp ( byref lhs as VARIANT, byref rhs as CVariant ) as CVariant
+declare operator imp ( byval lhs as integer, byref rhs as CVariant ) as CVariant
+declare operator imp ( byval lhs as uinteger, byref rhs as CVariant ) as CVariant
+declare operator imp ( byval lhs as longint, byref rhs as CVariant ) as CVariant
+declare operator imp ( byval lhs as ulongint, byref rhs as CVariant ) as CVariant
+
+'' eqv
+declare operator eqv ( byref lhs as VARIANT, byref rhs as CVariant ) as CVariant
+declare operator eqv ( byval lhs as integer, byref rhs as CVariant ) as CVariant
+declare operator eqv ( byval lhs as uinteger, byref rhs as CVariant ) as CVariant
+declare operator eqv ( byval lhs as longint, byref rhs as CVariant ) as CVariant
+declare operator eqv ( byval lhs as ulongint, byref rhs as CVariant ) as CVariant
+
+'' pow
+declare operator ^ ( byref lhs as VARIANT, byref rhs as CVariant ) as CVariant
+declare operator ^ ( byval lhs as integer, byref rhs as CVariant ) as CVariant
+declare operator ^ ( byval lhs as uinteger, byref rhs as CVariant ) as CVariant
+declare operator ^ ( byval lhs as longint, byref rhs as CVariant ) as CVariant
+declare operator ^ ( byval lhs as ulongint, byref rhs as CVariant ) as CVariant
+declare operator ^ ( byval lhs as single, byref rhs as CVariant ) as CVariant
+declare operator ^ ( byval lhs as double, byref rhs as CVariant ) as CVariant
+
+'' eq
+declare operator = ( byref lhs as VARIANT, byref rhs as CVariant ) as integer
+declare operator = ( byval lhs as integer, byref rhs as CVariant ) as integer
+declare operator = ( byval lhs as uinteger, byref rhs as CVariant ) as integer
+declare operator = ( byval lhs as longint, byref rhs as CVariant ) as integer
+declare operator = ( byval lhs as ulongint, byref rhs as CVariant ) as integer
+declare operator = ( byval lhs as single, byref rhs as CVariant ) as integer
+declare operator = ( byval lhs as double, byref rhs as CVariant ) as integer
+declare operator = ( byval lhs as zstring ptr, byref rhs as CVariant ) as integer
+declare operator = ( byval lhs as wstring ptr, byref rhs as CVariant ) as integer
+
+'' ne
+declare operator <> ( byref lhs as VARIANT, byref rhs as CVariant ) as integer
+declare operator <> ( byval lhs as integer, byref rhs as CVariant ) as integer
+declare operator <> ( byval lhs as uinteger, byref rhs as CVariant ) as integer
+declare operator <> ( byval lhs as longint, byref rhs as CVariant ) as integer
+declare operator <> ( byval lhs as ulongint, byref rhs as CVariant ) as integer
+declare operator <> ( byval lhs as single, byref rhs as CVariant ) as integer
+declare operator <> ( byval lhs as double, byref rhs as CVariant ) as integer
+declare operator <> ( byval lhs as zstring ptr, byref rhs as CVariant ) as integer
+declare operator <> ( byval lhs as wstring ptr, byref rhs as CVariant ) as integer
+
+'' lt
+declare operator < ( byref lhs as VARIANT, byref rhs as CVariant ) as integer
+declare operator < ( byval lhs as integer, byref rhs as CVariant ) as integer
+declare operator < ( byval lhs as uinteger, byref rhs as CVariant ) as integer
+declare operator < ( byval lhs as longint, byref rhs as CVariant ) as integer
+declare operator < ( byval lhs as ulongint, byref rhs as CVariant ) as integer
+declare operator < ( byval lhs as single, byref rhs as CVariant ) as integer
+declare operator < ( byval lhs as double, byref rhs as CVariant ) as integer
+declare operator < ( byval lhs as zstring ptr, byref rhs as CVariant ) as integer
+declare operator < ( byval lhs as wstring ptr, byref rhs as CVariant ) as integer
+
+'' gt
+declare operator > ( byref lhs as VARIANT, byref rhs as CVariant ) as integer
+declare operator > ( byval lhs as integer, byref rhs as CVariant ) as integer
+declare operator > ( byval lhs as uinteger, byref rhs as CVariant ) as integer
+declare operator > ( byval lhs as longint, byref rhs as CVariant ) as integer
+declare operator > ( byval lhs as ulongint, byref rhs as CVariant ) as integer
+declare operator > ( byval lhs as single, byref rhs as CVariant ) as integer
+declare operator > ( byval lhs as double, byref rhs as CVariant ) as integer
+declare operator > ( byval lhs as zstring ptr, byref rhs as CVariant ) as integer
+declare operator > ( byval lhs as wstring ptr, byref rhs as CVariant ) as integer
+
+'' le
+declare operator <= ( byref lhs as VARIANT, byref rhs as CVariant ) as integer
+declare operator <= ( byval lhs as integer, byref rhs as CVariant ) as integer
+declare operator <= ( byval lhs as uinteger, byref rhs as CVariant ) as integer
+declare operator <= ( byval lhs as longint, byref rhs as CVariant ) as integer
+declare operator <= ( byval lhs as ulongint, byref rhs as CVariant ) as integer
+declare operator <= ( byval lhs as single, byref rhs as CVariant ) as integer
+declare operator <= ( byval lhs as double, byref rhs as CVariant ) as integer
+declare operator <= ( byval lhs as zstring ptr, byref rhs as CVariant ) as integer
+declare operator <= ( byval lhs as wstring ptr, byref rhs as CVariant ) as integer
+
+'' ge
+declare operator >= ( byref lhs as VARIANT, byref rhs as CVariant ) as integer
+declare operator >= ( byval lhs as integer, byref rhs as CVariant ) as integer
+declare operator >= ( byval lhs as uinteger, byref rhs as CVariant ) as integer
+declare operator >= ( byval lhs as longint, byref rhs as CVariant ) as integer
+declare operator >= ( byval lhs as ulongint, byref rhs as CVariant ) as integer
+declare operator >= ( byval lhs as single, byref rhs as CVariant ) as integer
+declare operator >= ( byval lhs as double, byref rhs as CVariant ) as integer
+declare operator >= ( byval lhs as zstring ptr, byref rhs as CVariant ) as integer
+declare operator >= ( byval lhs as wstring ptr, byref rhs as CVariant ) as integer
+
+
 #endif
