@@ -69,8 +69,7 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_HASCOPYCTOR	= &h00100000
 	FB_SYMBSTATS_HASDTOR		= &h00200000
 	FB_SYMBSTATS_HASVIRTUAL		= &h00400000
-	FB_SYMBSTATS_HASCASTOP		= &h00800000
-	FB_SYMBSTATS_CANTUNDEF		= &h01000000
+	FB_SYMBSTATS_CANTUNDEF		= &h00800000
 
 	FB_SYMBSTATS_CTORINITED		= FB_SYMBSTATS_INITIALIZED
 end enum
@@ -275,12 +274,14 @@ type FB_ANON_METHODS
 	defctor			as FBSYMBOL_ ptr			'' default ctor
 	copyctor		as FBSYMBOL_ ptr			'' copy ctor
 	dtor			as FBSYMBOL_ ptr			'' destructor
-	assign			as FBSYMBOL_ ptr			'' clone() for non-trivial types
-	cast			as FBSYMBOL_ ptr			'' cast( some_type, expr{this_type} )
+	clone			as FBSYMBOL_ ptr
 end type
 
 type FB_STRUCTEXT
 	anon			as FB_ANON_METHODS
+	opovlTb ( _
+				0 to AST_OP_SELFOPS-1 _
+			) 		as FBSYMBOL_ ptr
 end type
 
 type FBS_STRUCT
@@ -306,15 +307,10 @@ type FBS_BITFLD
 end type
 
 ''
-type FB_ENUM_OPOVL
-	cast			as FBSYMBOL_ ptr			'' cast( some_type, expr{this_type} )
-end type
-
 type FBS_ENUM
 	elmtb			as FBSYMBOLTB				'' elements symbol tb
 	elements		as integer
 	dbg				as FB_STRUCT_DBG
-	opovl			as FB_ENUM_OPOVL
 end type
 
 ''
@@ -669,6 +665,14 @@ declare function symbFindClosestOvlProc _
 	) as FBSYMBOL ptr
 
 declare function symbFindBopOvlProc _
+	( _
+		byval op as AST_OP, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
+		byval err_num as FB_ERRMSG ptr _
+	) as FBSYMBOL ptr
+
+declare function symbFindSelfBopOvlProc _
 	( _
 		byval op as AST_OP, _
 		byval l as ASTNODE ptr, _
@@ -1496,7 +1500,7 @@ declare sub symbSetCompDtor _
 		byval proc as FBSYMBOL ptr _
 	)
 
-declare function symbGetCompAssignOp _
+declare function symbGetCompCloneProc _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
@@ -1642,10 +1646,6 @@ declare function symbLookupCompField _
 #define symbGetHasVirtual(s) ((s->stats and FB_SYMBSTATS_HASVIRTUAL) <> 0)
 
 #define symbSetHasVirtual(s) s->stats or= FB_SYMBSTATS_HASVIRTUAL
-
-#define symbGetHasCastOp(s) ((s->stats and FB_SYMBSTATS_HASCASTOP) <> 0)
-
-#define symbSetHasCastOp(s) s->stats or= FB_SYMBSTATS_HASCASTOP
 
 #define symbGetIsGlobalCtor(s) ((s->stats and FB_SYMBSTATS_GLOBALCTOR) <> 0)
 
@@ -1845,6 +1845,8 @@ declare function symbLookupCompField _
 #define symbGetUDTAnonParent(s) s->udt.anonparent
 
 #define symbGetUDTRetType(s) s->udt.ret_dtype
+
+#define symbGetUDTOpOvlTb(s) s->udt.ext->opovlTb
 
 #define symbGetEnumFirstElm(s) s->enum.elmtb.head
 

@@ -343,7 +343,7 @@ sub symbCompAddDefMembers _
 		end if
 
 		'' must be defined before the copy ctor
-		if( symbGetCompAssignOp( sym ) = NULL ) then
+		if( symbGetCompCloneProc( sym ) = NULL ) then
 			hAddClone( sym )
 		end if
 
@@ -679,7 +679,7 @@ sub symbSetCompDtor _
 end sub
 
 '':::::
-function symbGetCompAssignOp _
+function symbGetCompCloneProc _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr static
@@ -690,11 +690,7 @@ function symbGetCompAssignOp _
 
     select case symbGetClass( sym )
     case FB_SYMBCLASS_STRUCT
-    	if( sym->udt.ext = NULL ) then
-    		return NULL
-    	else
-    		return sym->udt.ext->anon.assign
-    	end if
+    	return sym->udt.ext->anon.clone
 
     case FB_SYMBCLASS_CLASS
     	'return ...
@@ -712,29 +708,28 @@ function symbGetCompOpOvlHead _
 		byval op as AST_OP _
 	) as FBSYMBOL ptr
 
-    '' special case: casting
-    if( op = AST_OP_CAST ) then
+   	'' self?
+   	if( astGetOpIsSelf( op ) ) then
    		select case symbGetClass( sym )
    		case FB_SYMBCLASS_STRUCT
-   			if( symbGetHasCastOp( sym ) ) then
-   				function = sym->udt.ext->anon.cast
-   			else
-   				function = NULL
+   			if( sym->udt.ext = NULL ) then
+   				return NULL
    			end if
 
+   			function = symbGetUDTOpOvlTb(sym)(op - AST_OP_SELFBASE)
+
    		case FB_SYMBCLASS_ENUM
-   			function = sym->enum.opovl.cast
+   			function = NULL
 
    		case FB_SYMBCLASS_CLASS
    			'' ...
 
    		end select
 
-	'' anything else..
-	else
-       	function = symb.globOpOvlTb(op).head
-
-	end if
+   	'' not self..
+   	else
+   		function = symb.globOpOvlTb(op).head
+   	end if
 
 end function
 
@@ -747,51 +742,42 @@ sub symbSetCompOpOvlHead _
 
 	dim as AST_OP op = proc->proc.ext->opovl.op
 
-    select case op
-	'' casting?
-    case AST_OP_CAST
+   	'' self?
+   	if( astGetOpIsSelf( op ) ) then
   		select case symbGetClass( sym )
    		case FB_SYMBCLASS_STRUCT
 			if( sym->udt.ext = NULL ) then
 				sym->udt.ext = callocate( len( FB_STRUCTEXT ) )
 			end if
 
-			sym->udt.ext->anon.cast = proc
+			symbGetUDTOpOvlTb(sym)(op - AST_OP_SELFBASE) = proc
 
    		case FB_SYMBCLASS_ENUM
-			sym->enum.opovl.cast = proc
 
-   		case FB_SYMBCLASS_CLASS
+		case FB_SYMBCLASS_CLASS
    			'' ...
 
    		end select
 
-   		symbSetHasCastOp( sym )
+    	'' assign?
+    	if( op = AST_OP_ASSIGN ) then
+  			'' clone?
+  			if( hIsLhsEqRhs( sym, proc ) ) then
+  				select case symbGetClass( sym )
+   				case FB_SYMBCLASS_STRUCT
+   					sym->udt.ext->anon.clone = proc
 
-    '' assign?
-    case AST_OP_ASSIGN
-  		'' clone?
-  		if( hIsLhsEqRhs( sym, proc ) ) then
-  			select case symbGetClass( sym )
-   			case FB_SYMBCLASS_STRUCT
-				if( sym->udt.ext = NULL ) then
-					sym->udt.ext = callocate( len( FB_STRUCTEXT ) )
-				end if
+   				case FB_SYMBCLASS_CLASS
+   			 		'' ...
 
-   				sym->udt.ext->anon.assign = proc
+   				end select
+   			end if
+    	end if
 
-   			case FB_SYMBCLASS_CLASS
-   			 	'' ...
-
-   			end select
-   		end if
-
-    	symb.globOpOvlTb(AST_OP_ASSIGN).head = proc
-
-    '' anything else
-    case else
+    '' not self..
+    else
    		symb.globOpOvlTb(op).head = proc
-	end select
+   	end if
 
 end sub
 

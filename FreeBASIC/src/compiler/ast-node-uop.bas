@@ -133,10 +133,10 @@ function astNewUOP _
 		byval o as ASTNODE ptr _
 	) as ASTNODE ptr static
 
-    dim as ASTNODE ptr n
-    dim as integer dclass, dtype
-    dim as FBSYMBOL ptr proc
-    dim as FB_ERRMSG err_num
+    dim as ASTNODE ptr n = any
+    dim as integer dclass = any, dtype = any
+    dim as FBSYMBOL ptr proc = any
+    dim as FB_ERRMSG err_num = any
 
 	function = NULL
 

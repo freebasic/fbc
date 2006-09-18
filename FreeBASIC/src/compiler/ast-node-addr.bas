@@ -30,9 +30,9 @@
 function astNewOFFSET _
 	( _
 		byval l as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n
+	dim as ASTNODE ptr n = any
 
 	if( l = NULL ) then
 		return NULL
@@ -65,11 +65,11 @@ end function
 function astLoadOFFSET _
 	( _
 		byval n as ASTNODE ptr _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-    dim as ASTNODE ptr v
-    dim as IRVREG ptr vr
-    dim as FBSYMBOL ptr sym
+    dim as ASTNODE ptr v = any
+    dim as IRVREG ptr vr = any
+    dim as FBSYMBOL ptr sym = any
 
 	v = n->l
 	if( v = NULL ) then
@@ -138,12 +138,12 @@ function astNewADDR _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
-    dim as integer delchild, dtype
-    dim as FBSYMBOL ptr subtype, s, proc
-    dim as FB_ERRMSG err_num
+    dim as ASTNODE ptr n = any
+    dim as integer delchild = any, dtype = any
+    dim as FBSYMBOL ptr subtype = any, s = any, proc = any
+    dim as FB_ERRMSG err_num = any
 
 	if( l = NULL ) then
 		return NULL

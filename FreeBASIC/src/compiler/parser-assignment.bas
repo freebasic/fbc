@@ -208,8 +208,8 @@ function cOperator _
     '' '='?
     if( lexGetToken( ) = FB_TK_ASSIGN ) then
     	lexSkipToken( )
-    	'' assuming _SELF comes right-after the binary op
-    	op += 1
+    	'' get the self version
+    	op = astGetOpSelfVer( op )
     end if
 
     function = op
@@ -256,8 +256,8 @@ function cAssignment _
 
     	lexSkipToken( )
 
-    	'' assuming _SELF comes right-after the binary op
-    	op += 1
+    	'' get the self version
+    	op = astGetOpSelfVer( op )
 	else
     	lexSkipToken( )
     end if

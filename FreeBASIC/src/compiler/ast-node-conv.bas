@@ -236,8 +236,8 @@ end function
 '':::::
 #macro hDoGlobOpOverload( to_dtype, to_subtype, node )
 	scope
-		dim as FBSYMBOL ptr proc
-		dim as FB_ERRMSG err_num
+		dim as FBSYMBOL ptr proc = any
+		dim as FB_ERRMSG err_num = any
 
 		proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num )
 		if( proc <> NULL ) then
@@ -259,10 +259,10 @@ function astNewCONV _
 		byval l as ASTNODE ptr, _
 		byval op as AST_OP, _
 		byval check_str as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
-    dim as integer ldclass, ldtype
+    dim as ASTNODE ptr n = any
+    dim as integer ldclass = any, ldtype = any
 
 	function = NULL
 
@@ -423,7 +423,7 @@ function astNewOvlCONV _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
 	'' try casting op overloading only
 	hDoGlobOpOverload( to_dtype, to_subtype, l )

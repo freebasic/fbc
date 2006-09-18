@@ -973,8 +973,8 @@ function cOperatorHeader _
 		end if
 	end if
 
-    '' LET or self?
-    if( (op = AST_OP_ASSIGN) or (astGetOpIsSelf( op )) ) then
+    '' self? (but type casting)
+    if( astGetOpIsSelf( op ) and (op <> AST_OP_CAST) ) then
     	dtype = FB_DATATYPE_VOID
     	subtype = NULL
 

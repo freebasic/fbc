@@ -362,24 +362,21 @@ function astNewASSIGN _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
-    dim as FB_DATATYPE ldtype= any, rdtype= any
-    dim as FB_DATACLASS ldclass= any, rdclass= any
-    dim as FBSYMBOL ptr lsubtype= any, proc= any
-	dim as FB_ERRMSG err_num= any
+    dim as FB_DATATYPE ldtype = any, rdtype = any
+    dim as FB_DATACLASS ldclass = any, rdclass = any
+    dim as FBSYMBOL ptr lsubtype = any, proc = any
+	dim as FB_ERRMSG err_num = any
 
 	function = NULL
 
 	'' 1st) check assign op overloading
-	if( symb.globOpOvlTb(AST_OP_ASSIGN).head <> NULL ) then
-
-		proc = symbFindBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
-		if( proc <> NULL ) then
-			'' build a proc call
-			return astBuildCall( proc, 2, l, r )
-		else
-			if( err_num <> FB_ERRMSG_OK ) then
-				return NULL
-			end if
+	proc = symbFindSelfBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
+	if( proc <> NULL ) then
+		'' build a proc call
+		return astBuildCall( proc, 2, l, r )
+	else
+		if( err_num <> FB_ERRMSG_OK ) then
+			return NULL
 		end if
 	end if
 

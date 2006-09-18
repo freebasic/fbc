@@ -62,7 +62,6 @@ function symbAddEnum _
 	e->enum.elmtb.head = NULL
 	e->enum.elmtb.tail = NULL
 	e->enum.dbg.typenum = INVALID
-	e->enum.opovl.cast = NULL
 
 	'' check for forward references
 	if( symb.fwdrefcnt > 0 ) then

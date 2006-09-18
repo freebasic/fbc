@@ -538,10 +538,10 @@ private function hDoPointerArith _
 		byval op as integer, _
 		byval p as ASTNODE ptr, _
 		byval e as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as integer edtype
-    dim as integer lgt
+    dim as integer edtype = any
+    dim as integer lgt = any
 
     function = NULL
 
@@ -623,8 +623,8 @@ end function
 	)
 
 	if( symb.globOpOvlTb(op).head <> NULL ) then
-		dim as FBSYMBOL ptr proc
-		dim as FB_ERRMSG err_num
+		dim as FBSYMBOL ptr proc = any
+		dim as FB_ERRMSG err_num = any
 
 		proc = symbFindBopOvlProc( op, l, r, @err_num )
 		if( proc <> NULL ) then
@@ -661,13 +661,13 @@ function astNewBOP _
 		byval r as ASTNODE ptr, _
 		byval ex as FBSYMBOL ptr, _
 		byval options as AST_OPOPT _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
-    dim as integer ldtype, rdtype, dtype
-    dim as integer ldclass, rdclass
-    dim as integer is_str
-    dim as FBSYMBOL ptr litsym, subtype
+    dim as ASTNODE ptr n = any
+    dim as integer ldtype = any, rdtype = any, dtype = any
+    dim as integer ldclass = any, rdclass = any
+    dim as integer is_str = any
+    dim as FBSYMBOL ptr litsym = any, subtype = any
 
 	function = NULL
 
@@ -1227,6 +1227,29 @@ function astNewBOP _
 end function
 
 '':::::
+#macro hDoSelfOpOverload _
+	( _
+		op, l, r _
+	)
+
+	scope
+		dim as FBSYMBOL ptr proc = any
+		dim as FB_ERRMSG err_num = any
+
+		proc = symbFindSelfBopOvlProc( op, l, r, @err_num )
+		if( proc <> NULL ) then
+			'' build a proc call
+			return astBuildCall( proc, 2, l, r )
+		else
+			if( err_num <> FB_ERRMSG_OK ) then
+				return NULL
+			end if
+		end if
+	end scope
+
+#endmacro
+
+'':::::
 function astNewSelfBOP _
 	( _
 		byval op as integer, _
@@ -1234,14 +1257,15 @@ function astNewSelfBOP _
 		byval r as ASTNODE ptr, _
 		byval ex as FBSYMBOL ptr, _
 		byval options as AST_OPOPT _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
 	function = NULL
 
 	'' check op overloading
-	hDoGlobOpOverload( op, l, r )
+	hDoSelfOpOverload( op, l, r )
 
-	'' assuming _SELF comes right-after the binary op
+	'' get the not-to-self version
+	op = astGetOpSelfVer( op )
 
 	'' if there's a function call in lvalue, convert to tmp = @lvalue, *tmp = *tmp op rhs:
 	if( astIsClassOnTree( AST_NODECLASS_CALL, l ) ) then
@@ -1265,7 +1289,7 @@ function astNewSelfBOP _
 				   		   			   			  subtype ),_
 				   		   			   dtype, _
 				   		   			   subtype ), _
-						   astNewBOP( op - 1, _
+						   astNewBOP( op, _
 				   		   			  astNewPTR( 0, _
 				   		   			   			  astNewVAR( tmp, _
 				   		   			   			  			 0, _
@@ -1281,7 +1305,7 @@ function astNewSelfBOP _
 
 	'' no side-effects, convert it to lvalue = lvalue op rhs and let it be optimized later
 	else
-		r = astNewBOP( op - 1, astCloneTree( l ), r, ex, options or AST_OPOPT_ALLOCRES )
+		r = astNewBOP( op, astCloneTree( l ), r, ex, options or AST_OPOPT_ALLOCRES )
 
  		if( r = NULL ) then
  			exit function

@@ -1745,31 +1745,19 @@ function symbFindBopOvlProc _
 
    	*err_num = FB_ERRMSG_OK
 
-	'' self?
-	if( astGetOpIsSelf( op ) ) then
-		'' lhs must be an UDT
-   		select case astGetDataType( l )
+	'' at least one must be an UDT
+   	select case astGetDataType( l )
+   	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+
+   	case else
+   		'' try the 2nd one..
+   		select case astGetDataType( r )
    		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 
    		case else
    			return NULL
    		end select
-
-	else
-		'' at least one must be an UDT
-   		select case astGetDataType( l )
-   		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
-
-   		case else
-   			'' try the 2nd one..
-   			select case astGetDataType( r )
-   			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
-
-   			case else
-   				return NULL
-   			end select
-   		end select
-   	end if
+   	end select
 
 	'' try (l, r)
 	argTb(0).expr = l
@@ -1781,6 +1769,65 @@ function symbFindBopOvlProc _
 	argTb(1).next = NULL
 
 	proc = symbFindClosestOvlProc( symb.globOpOvlTb(op).head, 2, @argTb(0), err_num )
+
+	if( proc = NULL ) then
+		if( *err_num <> FB_ERRMSG_OK ) then
+			errReport( *err_num, TRUE )
+		end if
+	end if
+
+	function = proc
+
+end function
+
+'':::::
+function symbFindSelfBopOvlProc _
+	( _
+		byval op as AST_OP, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
+		byval err_num as FB_ERRMSG ptr _
+	) as FBSYMBOL ptr
+
+	dim as FB_CALL_ARG argTb(0 to 1) = any
+	dim as FBSYMBOL ptr proc = any, head_proc = any
+
+   	*err_num = FB_ERRMSG_OK
+
+	'' lhs must be an UDT
+   	select case astGetDataType( l )
+   	case FB_DATATYPE_STRUCT
+   		dim as FBSYMBOL ptr subtype = astGetSubType( l )
+
+   		if( subtype->udt.ext = NULL ) then
+			return NULL
+		end if
+
+   		head_proc = symbGetUDTOpOvlTb( subtype )(op - AST_OP_SELFBASE)
+
+   	'case FB_DATATYPE_CLASS
+
+   	case FB_DATATYPE_ENUM
+   		return NULL
+
+   	case else
+   		return NULL
+   	end select
+
+   	if( head_proc = NULL ) then
+   		return NULL
+   	end if
+
+	'' try (l, r)
+	argTb(0).expr = l
+	argTb(0).mode = INVALID
+	argTb(0).next = @argTb(1)
+
+	argTb(1).expr = r
+	argTb(1).mode = INVALID
+	argTb(1).next = NULL
+
+	proc = symbFindClosestOvlProc( head_proc, 2, @argTb(0), err_num )
 
 	if( proc = NULL ) then
 		if( *err_num <> FB_ERRMSG_OK ) then
@@ -1904,11 +1951,11 @@ function symbFindCastOvlProc _
    			return NULL
    		end if
 
-   		if( symbGetHasCastOp( subtype ) = FALSE ) then
+   		if( subtype->udt.ext = NULL ) then
 			return NULL
 		end if
 
-   		proc_head = subtype->udt.ext->anon.cast
+   		proc_head = symbGetUDTOpOvlTb( subtype )(AST_OP_CAST - AST_OP_SELFBASE)
 
    	case FB_DATATYPE_ENUM
    		subtype = astGetSubType( l )
@@ -1916,7 +1963,7 @@ function symbFindCastOvlProc _
    			return NULL
    		end if
 
-   		proc_head = subtype->enum.opovl.cast
+   		proc_head = NULL
 
    	case else
    		return NULL
