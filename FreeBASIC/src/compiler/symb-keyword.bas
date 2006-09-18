@@ -49,6 +49,10 @@ const SYMB_MAXKEYWORDS = 210
         (@"SHR"		, FB_TK_SHR				, FB_TKCLASS_OPERATOR), _
         (@"REM"		, FB_TK_REM				, FB_TKCLASS_KEYWORD), _
         (@"DIM"		, FB_TK_DIM				, FB_TKCLASS_KEYWORD), _
+        (@"ABS"		, FB_TK_ABS				, FB_TKCLASS_KEYWORD), _
+        (@"SGN"		, FB_TK_SGN				, FB_TKCLASS_KEYWORD), _
+        (@"FIX"		, FB_TK_FIX				, FB_TKCLASS_KEYWORD), _
+        (@"INT"		, FB_TK_INT				, FB_TKCLASS_KEYWORD), _
         (@"STATIC"	, FB_TK_STATIC			, FB_TKCLASS_KEYWORD), _
         (@"SHARED"	, FB_TK_SHARED			, FB_TKCLASS_KEYWORD), _
         (@"BYTE"	, FB_TK_BYTE			, FB_TKCLASS_KEYWORD), _
@@ -177,9 +181,6 @@ const SYMB_MAXKEYWORDS = 210
         (@"SADD"	, FB_TK_SADD			, FB_TKCLASS_QUIRKWD), _
         (@"ON"		, FB_TK_ON				, FB_TKCLASS_QUIRKWD), _
         (@"ERROR"	, FB_TK_ERROR			, FB_TKCLASS_QUIRKWD), _
-        (@"ABS"		, FB_TK_ABS				, FB_TKCLASS_QUIRKWD), _
-        (@"SGN"		, FB_TK_SGN				, FB_TKCLASS_QUIRKWD), _
-        (@"FIX"		, FB_TK_FIX				, FB_TKCLASS_QUIRKWD), _
         (@"SIN"		, FB_TK_SIN				, FB_TKCLASS_QUIRKWD), _
         (@"ASIN"	, FB_TK_ASIN			, FB_TKCLASS_QUIRKWD), _
         (@"COS"		, FB_TK_COS				, FB_TKCLASS_QUIRKWD), _
@@ -188,7 +189,6 @@ const SYMB_MAXKEYWORDS = 210
         (@"ATN"		, FB_TK_ATN				, FB_TKCLASS_QUIRKWD), _
         (@"SQR"		, FB_TK_SQR				, FB_TKCLASS_QUIRKWD), _
         (@"LOG"		, FB_TK_LOG				, FB_TKCLASS_QUIRKWD), _
-        (@"INT"		, FB_TK_INT				, FB_TKCLASS_QUIRKWD), _
         (@"ATAN2"	, FB_TK_ATAN2			, FB_TKCLASS_QUIRKWD), _
         (@"RESUME"	, FB_TK_RESUME			, FB_TKCLASS_QUIRKWD), _
         (@"ERR"		, FB_TK_ERR				, FB_TKCLASS_QUIRKWD), _

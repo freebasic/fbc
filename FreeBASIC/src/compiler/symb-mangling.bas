@@ -992,6 +992,18 @@ private function hGetOperatorName _
 	case AST_OP_PLUS
 		function = @"ps"
 
+	case AST_OP_ABS
+		function = @"ab"
+
+	case AST_OP_FIX
+		function = @"fx"
+
+	case AST_OP_SGN
+		function = @"sg"
+
+	case AST_OP_FLOOR
+		function = @"fl"
+
 	case AST_OP_CAST
 		static as string res
 

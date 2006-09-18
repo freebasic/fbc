@@ -28,6 +28,36 @@
 #include once "inc\ast.bi"
 
 '':::::
+private function hMathOp _
+	( _
+		byval op as AST_OP, _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
+	dim as ASTNODE ptr expr = any
+
+	lexSkipToken( )
+
+	hMatchLPRNT( )
+
+	hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
+
+	hMatchRPRNT( )
+
+	funcexpr = astNewUOP( op, expr )
+	if( funcexpr = NULL ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			return FALSE
+		else
+			funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
+	end if
+
+	function = TRUE
+
+end function
+
+'':::::
 '' cMathFunct	=	ABS( Expression )
 '' 				|   SGN( Expression )
 ''				|   FIX( Expression )
@@ -40,122 +70,53 @@ function cMathFunct _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr expr, expr2
-    dim as integer islen, typ, lgt, ptrcnt, op
-    dim as FBSYMBOL ptr sym, subtype
+    dim as ASTNODE ptr expr = any, expr2 = any
+    dim as integer islen = any, dtype = any, lgt = any, ptrcnt = any
+    dim as FBSYMBOL ptr sym = any, subtype = any
 
 	function = FALSE
 
 	select case as const tk
 	'' ABS( Expression )
 	case FB_TK_ABS
-		lexSkipToken( )
-
-		hMatchLPRNT( )
-
-		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
-
-		hMatchRPRNT( )
-
-		'' hack! implemented as Unary OP for better speed on x86's
-		funcexpr = astNewUOP( AST_OP_ABS, expr )
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
-		end if
-
-		function = TRUE
+		function = hMathOp( AST_OP_ABS, funcexpr )
 
 	'' SGN( Expression )
 	case FB_TK_SGN
-		lexSkipToken( )
-
-		hMatchLPRNT( )
-
-		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
-
-		hMatchRPRNT( )
-
-		'' hack! implemented as Unary OP for better speed on x86's
-		funcexpr = astNewUOP( AST_OP_SGN, expr )
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
-		end if
-
-		function = TRUE
+		function = hMathOp( AST_OP_SGN, funcexpr )
 
 	'' FIX( Expression )
 	case FB_TK_FIX
-		lexSkipToken( )
+		function = hMathOp( AST_OP_FIX, funcexpr )
 
-		hMatchLPRNT( )
-
-		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
-
-		hMatchRPRNT( )
-
-		funcexpr = rtlMathFIX( expr )
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
-		end if
-
-		function = TRUE
+	'' INT( Expression )
+	case FB_TK_INT
+		function = hMathOp( AST_OP_FLOOR, funcexpr )
 
 	'' SIN/COS/...( Expression )
-	case FB_TK_SIN, FB_TK_ASIN, FB_TK_COS, FB_TK_ACOS, FB_TK_TAN, FB_TK_ATN, _
-		 FB_TK_SQR, FB_TK_LOG, FB_TK_INT
+	case FB_TK_SIN
+		function = hMathOp( AST_OP_SIN, funcexpr )
 
-		select case as const tk
-		case FB_TK_SIN
-			op = AST_OP_SIN
-		case FB_TK_ASIN
-			op = AST_OP_ASIN
-		case FB_TK_COS
-			op = AST_OP_COS
-		case FB_TK_ACOS
-			op = AST_OP_ACOS
-		case FB_TK_TAN
-			op = AST_OP_TAN
-		case FB_TK_ATN
-			op = AST_OP_ATAN
-		case FB_TK_SQR
-			op = AST_OP_SQRT
-		case FB_TK_LOG
-			op = AST_OP_LOG
-		case FB_TK_INT
-			op = AST_OP_FLOOR
-		end select
+	case FB_TK_ASIN
+		function = hMathOp( AST_OP_ASIN, funcexpr )
 
-		lexSkipToken( )
+	case FB_TK_COS
+		function = hMathOp( AST_OP_COS, funcexpr )
 
-		hMatchLPRNT( )
+	case FB_TK_ACOS
+		function = hMathOp( AST_OP_ACOS, funcexpr )
 
-		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
+	case FB_TK_TAN
+		function = hMathOp( AST_OP_TAN, funcexpr )
 
-		hMatchRPRNT( )
+	case FB_TK_ATN
+		function = hMathOp( AST_OP_ATAN, funcexpr )
 
-		'' hack! implemented as Unary OP for better speed on x86's
-		funcexpr = astNewUOP( op, expr )
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
-		end if
+	case FB_TK_SQR
+		function = hMathOp( AST_OP_SQRT, funcexpr )
 
-		function = TRUE
+	case FB_TK_LOG
+		function = hMathOp( AST_OP_LOG, funcexpr )
 
 	'' ATAN2( Expression ',' Expression )
 	case FB_TK_ATAN2
@@ -191,7 +152,7 @@ function cMathFunct _
 		hMatchLPRNT( )
 
 		expr = NULL
-		if( cSymbolType( typ, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
+		if( cSymbolType( dtype, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
 			fbSetCheckArray( FALSE )
 			if( cExpression( expr ) = FALSE ) then
 				fbSetCheckArray( TRUE )

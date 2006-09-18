@@ -142,6 +142,38 @@ function cOperator _
     	lexSkipToken( )
     	return AST_OP_CAST
 
+	case FB_TK_ABS
+    	if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+    		exit function
+    	end if
+
+    	lexSkipToken( )
+    	return AST_OP_ABS
+
+	case FB_TK_SGN
+    	if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+    		exit function
+    	end if
+
+    	lexSkipToken( )
+    	return AST_OP_SGN
+
+	case FB_TK_FIX
+    	if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+    		exit function
+    	end if
+
+    	lexSkipToken( )
+    	return AST_OP_FIX
+
+	case FB_TK_INT
+    	if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+    		exit function
+    	end if
+
+    	lexSkipToken( )
+    	return AST_OP_FLOOR
+
 	case else
    		select case as const lexGetToken( )
    		case CHAR_PLUS
@@ -343,7 +375,11 @@ end function
 ''Assignment      =   LET? Variable BOP? '=' Expression
 ''				  |	  Variable{function ptr} '(' ProcParamList ')' .
 ''
-function cAssignmentOrPtrCall as integer
+function cAssignmentOrPtrCall _
+	( _
+		_
+	) as integer
+
 	dim as integer islet = any
 	dim as ASTNODE ptr expr = any
 

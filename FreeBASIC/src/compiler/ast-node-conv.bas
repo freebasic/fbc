@@ -269,10 +269,11 @@ function astNewCONV _
 	'' try casting op overloading
 	hDoGlobOpOverload( to_dtype, to_subtype, l )
 
-	'' UDT? can't convert..
-	if( to_dtype = FB_DATATYPE_STRUCT ) then
+	'' UDT? as op overloading failed, refuse..
+	select case to_dtype
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		exit function
-	end if
+	end select
 
     ldtype = l->dtype
 

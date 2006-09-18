@@ -96,6 +96,9 @@ private sub hUOPConstFoldFlt _
 
 	case AST_OP_FLOOR
 		v->con.val.float = int( v->con.val.float )
+
+	case AST_OP_FIX
+		v->con.val.float = fix( v->con.val.float )
 	end select
 
 end sub
@@ -218,10 +221,19 @@ function astNewUOP _
 
 	'' transcendental can only operate on floats
 	case AST_OP_SIN, AST_OP_ASIN, AST_OP_COS, AST_OP_ACOS, _
-		 AST_OP_TAN, AST_OP_ATAN, AST_OP_SQRT, AST_OP_LOG, AST_OP_FLOOR
+		 AST_OP_TAN, AST_OP_ATAN, AST_OP_SQRT, AST_OP_LOG, _
+		 AST_OP_FLOOR
+
 		if( dclass <> FB_DATACLASS_FPOINT ) then
 			dtype = FB_DATATYPE_DOUBLE
 			o = astNewCONV( dtype, NULL, o )
+		end if
+
+	'' fix only takes floats
+	case AST_OP_FIX
+		'' integer? do nothing..
+		if( dclass = FB_DATACLASS_INTEGER ) then
+			return o
 		end if
 
 	'' '+'? do nothing..
@@ -266,8 +278,10 @@ function astNewUOP _
 		select case as const o->dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    hUOPConstFold64( op, o )
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			hUOPConstFoldFlt( op, o )
+
 		case else
 			'' byte's, short's, int's and enum's
 			hUOPConstFoldInt( op, o )
@@ -287,6 +301,9 @@ function astNewUOP _
 
 	case AST_OP_ASIN, AST_OP_ACOS, AST_OP_LOG
 		return rtlMathTRANS( op, o )
+
+	case AST_OP_FIX
+		return rtlMathFIX( o )
 	end select
 
 	'' alloc new node

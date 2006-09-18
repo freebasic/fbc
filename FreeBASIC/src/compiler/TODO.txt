@@ -25,7 +25,7 @@
       OPERATOR & ( l, r ) AS TYPE
     - convert the binary op in member functions to op= if they take just one param
     - unary:
-      OPERATOR INT()|FIX()|ABS()|*|@ ( l ) AS TYPE
+      OPERATOR *|@ ( l ) AS TYPE
     - PRINT and pseudo-overloaded functions should try to convert the UDT, ENUM, CLASS to
       string
     - variants won't work if the non-variant param is to be returned
