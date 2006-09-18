@@ -23,6 +23,8 @@ Version 0.17 Beta:
 - thread*, cond* and mutex* ids are now "any ptr", not integers, to allow easy and safe migration to 64-bit platforms in future (v1c)
 - string fields in UDT's are now pseudo-objects, with that change, UDT's containing those fields can only be initialized if a 
   constructor is explicitly defined (v1c)
+- pointers to z|wtrings can't be passed byval to string params directly anymore, dereference them first (v1c)
+- pointers to byte|ubyte arrays can't be passed byval to string params directly anymore, use type casting (v1c)
 
 [added]
 - the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)
@@ -49,6 +51,7 @@ Version 0.17 Beta:
 - ISDATE function in rtlibx (jeffm)
 - serial device support in Linux, written by Jose Manuel Postigo (v1c)
 - the __PATH__ intrinsic define, that returns the __FILE__'s path - the patch was sent by cha0s (v1c)
+- byval structs returned in registers can now be passed byref to other functions (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
