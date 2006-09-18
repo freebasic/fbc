@@ -349,7 +349,7 @@ function astUpdStrConcat _
 	'' this proc will be called for each function param, same
 	'' with assignment -- assuming here that IIF won't
 	'' support strings
-	select case n->dtype
+	select case as const n->dtype
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_WCHAR
 

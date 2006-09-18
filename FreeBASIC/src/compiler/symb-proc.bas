@@ -1346,6 +1346,28 @@ const FB_OVLPROC_HALFMATCH = FB_DATATYPES
 const FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
 
 '':::::
+#macro hCheckCtorOvl _
+	( _
+		rec_cnt, _
+		param_subtype, _
+		arg_expr _
+	)
+
+	if( rec_cnt = 0 ) then
+		dim as integer err_num = any
+		dim as FBSYMBOL ptr proc = any
+
+		rec_cnt += 1
+		proc = symbFindCtorOvlProc( param_subtype, arg_expr, @err_num )
+		rec_cnt -= 1
+
+		if( proc <> NULL ) then
+			return FB_OVLPROC_HALFMATCH
+		end if
+	end if
+#endmacro
+
+'':::::
 private function hCalcTypesDiff _
 	( _
 		byval param_dtype as integer, _
@@ -1354,9 +1376,9 @@ private function hCalcTypesDiff _
 		byval arg_dtype as integer, _
 		byval arg_subtype as FBSYMBOL ptr, _
 	  	byval arg_expr as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-	dim as integer arg_dclass
+	dim as integer arg_dclass = any
 
 	arg_dclass = symbGetDataClass( arg_dtype )
 
@@ -1521,7 +1543,9 @@ private function hCalcTypesDiff _
 	'' user-defined..
 	case FB_DATACLASS_UDT
 
-		dim as FBSYMBOL ptr s
+		dim as FBSYMBOL ptr s = any
+
+		static as integer ctor_rec_cnt = 0
 
 		'' not another udt?
 		if( arg_dclass <> FB_DATACLASS_UDT ) then
@@ -1532,12 +1556,18 @@ private function hCalcTypesDiff _
 
 			'' not a proc? (could be an UDT being returned in registers)
 			if( astGetClass( arg_expr ) <> AST_NODECLASS_CALL ) then
+				'' try to find a ctor
+				hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
+
 				return 0
 			end if
 
 			'' it's a proc, but was it originally returning an UDT?
 			s = astGetSymbol( arg_expr )
 			if( symbGetType( s ) <> FB_DATATYPE_STRUCT ) then
+				'' try to find a ctor
+				hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
+
 				return 0
 			end if
 
@@ -1551,6 +1581,9 @@ private function hCalcTypesDiff _
 
         '' can't be different
 		if( param_subtype <> s ) then
+			'' try to find a ctor
+			hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
+
 			return 0
 		end if
 
@@ -1570,10 +1603,10 @@ private function hCheckOvlParam _
 		byval param as FBSYMBOL ptr, _
 	  	byval arg_expr as ASTNODE ptr, _
 		byval arg_mode as integer _
-	) as integer static
+	) as integer
 
-	dim as integer param_dtype, arg_dtype, param_ptrcnt
-	dim as FBSYMBOL ptr param_subtype, arg_subtype
+	dim as integer param_dtype = any, arg_dtype = any, param_ptrcnt = any
+	dim as FBSYMBOL ptr param_subtype = any, arg_subtype = any
 
 	'' arg not passed?
 	if( arg_expr = NULL ) then
@@ -1592,8 +1625,9 @@ private function hCheckOvlParam _
 	arg_dtype = astGetDataType( arg_expr )
 	arg_subtype = astGetSubType( arg_expr )
 
+	select case symbGetParamMode( param )
 	'' by descriptor param?
-	if( symbGetParamMode( param ) = FB_PARAMMODE_BYDESC ) then
+	case FB_PARAMMODE_BYDESC
 		'' but arg isn't?
 		if( arg_mode <> FB_PARAMMODE_BYDESC ) then
 			return 0
@@ -1610,20 +1644,13 @@ private function hCheckOvlParam _
 
 		return FB_OVLPROC_FULLMATCH
 
-	'' but arg passed by descriptor?
-	elseif( arg_mode = FB_PARAMMODE_BYDESC ) then
-		'' refuse
-		return 0
-	end if
-
 	'' arg being passed by value?
-	if( arg_mode = FB_PARAMMODE_BYVAL ) then
+	case FB_PARAMMODE_BYVAL
 		'' to a byref param?
 		if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-			'' invalid type?
+			'' invalid type? refuse..
 			if( (symbGetDataClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
 				(symbGetDataSize( arg_dtype ) <> FB_POINTERSIZE) ) then
-               	'' refuse
                	return 0
 			end if
 
@@ -1631,38 +1658,63 @@ private function hCheckOvlParam _
 			param_dtype += FB_DATATYPE_POINTER
 			param_ptrcnt += 1
 		end if
+	end select
+
+	'' arg passed by descriptor? refuse..
+	if( arg_mode = FB_PARAMMODE_BYDESC ) then
+		return 0
 	end if
+
+	'' try implicit casting op overloading
+	static as integer cast_rec_cnt = 0
+	if( cast_rec_cnt = 0 ) then
+		dim as integer err_num = any
+		dim as FBSYMBOL ptr proc = any
+
+		cast_rec_cnt += 1
+		proc = symbFindCastOvlProc( param_dtype, _
+									param_subtype, _
+									arg_expr, _
+									@err_num )
+		cast_rec_cnt -= 1
+
+		if( proc <> NULL ) then
+			return FB_OVLPROC_HALFMATCH
+		end if
+	end if
+
+	static as integer ctor_rec_cnt = 0
 
 	'' same types?
 	if( param_dtype = arg_dtype ) then
-		'' check the subtype
-		if( param_subtype <> arg_subtype ) then
+		'' same subtype? full match..
+		if( param_subtype = arg_subtype ) then
+			return FB_OVLPROC_FULLMATCH
+		end if
 
-			select case param_dtype
-			'' UDT or ENUM? can't be different..
-			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
-				return 0
+		select case param_dtype
+		'' UDT or ENUM? can't be different..
+		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
+            '' try to find a ctor
+            hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
 
-			'' pointer? ditto
-			case is >= FB_DATATYPE_POINTER
-				if( astPtrCheck( param_dtype, _
-					 			 param_subtype, _
-					 			 arg_expr ) ) then
+			return 0
 
-					return FB_OVLPROC_FULLMATCH
-				end if
+		'' pointer? ditto
+		case is >= FB_DATATYPE_POINTER
+			if( astPtrCheck( param_dtype, _
+				 			 param_subtype, _
+				 			 arg_expr ) ) then
 
-				return 0
+				return FB_OVLPROC_FULLMATCH
+			end if
 
-			'' can't happen?
-			case else
-				return FB_OVLPROC_HALFMATCH
-			end select
+			return 0
 
-        end if
-
-		'' same subtype too, full match..
-		return FB_OVLPROC_FULLMATCH
+		'' can't happen?
+		case else
+			return FB_OVLPROC_HALFMATCH
+		end select
 	end if
 
 	'' different types..
@@ -1670,6 +1722,9 @@ private function hCheckOvlParam _
 	'' enum param? refuse any other argument type, even integers,
 	'' or operator overloading wouldn't work (as in C++)
 	if( param_dtype = FB_DATATYPE_ENUM ) then
+		'' try to find a ctor
+		hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
+
 		return 0
 	end if
 
@@ -1690,11 +1745,12 @@ function symbFindClosestOvlProc _
 		byval args as integer, _
 		byval arg_head as FB_CALL_ARG ptr, _
 		byval err_num as FB_ERRMSG ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr proc, closest_proc, param
-	dim as integer i, arg_matches, matches, max_matches, amb_cnt
-	dim as FB_CALL_ARG ptr arg
+	dim as FBSYMBOL ptr proc = any, closest_proc = any, param = any
+	dim as integer i = any, arg_matches = any, matches = any
+	dim as integer max_matches = any, amb_cnt = any
+	dim as FB_CALL_ARG ptr arg = any
 
 	*err_num = FB_ERRMSG_OK
 
@@ -1786,10 +1842,10 @@ function symbFindBopOvlProc _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
 		byval err_num as FB_ERRMSG ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FB_CALL_ARG argTb(0 to 1)
-	dim as FBSYMBOL ptr proc
+	dim as FB_CALL_ARG argTb(0 to 1) = any
+	dim as FBSYMBOL ptr proc = any
 
    	*err_num = FB_ERRMSG_OK
 
@@ -1846,10 +1902,10 @@ function symbFindUopOvlProc _
 		byval op as AST_OP, _
 		byval l as ASTNODE ptr, _
 		byval err_num as FB_ERRMSG ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FB_CALL_ARG argTb(0)
-	dim as FBSYMBOL ptr proc
+	dim as FB_CALL_ARG argTb(0) = any
+	dim as FBSYMBOL ptr proc = any
 
    	*err_num = FB_ERRMSG_OK
 
@@ -1884,10 +1940,10 @@ private function hCheckCastOvl _
 		byval proc as FBSYMBOL ptr, _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-	dim as integer proc_dtype
-	dim as FBSYMBOL ptr proc_subtype
+	dim as integer proc_dtype = any
+	dim as FBSYMBOL ptr proc_subtype = any
 
 	proc_dtype = symbGetType( proc )
 	proc_subtype = symbGetSubType( proc )
@@ -1938,10 +1994,9 @@ function symbFindCastOvlProc _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr, _
 		byval err_num as FB_ERRMSG ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr proc_head, proc, closest_proc, subtype
-	dim as integer matches, max_matches, amb_cnt
+	dim as FBSYMBOL ptr proc_head = any, subtype = any
 
    	*err_num = FB_ERRMSG_OK
 
@@ -1975,7 +2030,8 @@ function symbFindCastOvlProc _
    		return NULL
    	end if
 
-	dim as FBSYMBOL ptr p
+	dim as FBSYMBOL ptr p = any, proc = any, closest_proc = any
+	dim as integer matches = any, max_matches = any, amb_cnt = any
 
 	'' must check the return type, not the parameter..
 	closest_proc = NULL
@@ -2035,6 +2091,36 @@ function symbFindCastOvlProc _
 	else
 		function = closest_proc
 	end if
+
+end function
+
+'':::::
+function symbFindCtorOvlProc _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr, _
+		byval err_num as FB_ERRMSG ptr _
+	) as FBSYMBOL ptr
+
+ 	dim as FB_CALL_ARG argTb(0 to 1) = any
+
+ 	argTb(0).expr = astBuildMockInstPtr( sym )
+ 	argTb(0).mode = FB_PARAMMODE_BYVAL
+ 	argTb(0).next = @argtb(1)
+
+ 	argTb(1).expr = expr
+ 	argTb(1).mode = INVALID
+ 	argTb(1).next = NULL
+
+    dim as FBSYMBOL ptr proc = any
+
+ 	function = symbFindClosestOvlProc( symbGetCompCtorHead( sym ), _
+ 								   	   2, _
+ 								   	   @argTb(0), _
+ 								   	   err_num )
+
+	'' delete the mock node
+	astDelTree( argTb(0).expr )
 
 end function
 

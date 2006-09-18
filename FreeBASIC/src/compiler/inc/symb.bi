@@ -690,6 +690,13 @@ declare function symbFindCastOvlProc _
 		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr
 
+declare function symbFindCtorOvlProc _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr, _
+		byval err_num as FB_ERRMSG ptr _
+	) as FBSYMBOL ptr
+
 declare function symbFindCtorProc _
 	( _
 		byval head_proc as FBSYMBOL ptr, _
