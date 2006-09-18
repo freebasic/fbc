@@ -307,6 +307,7 @@ end enum
 type AST_OPINFO
 	class			as AST_NODECLASS
 	flags 			as AST_OPFLAGS
+	id				as zstring ptr
 end type
 
 type AST_LOADCB as function (byval n as ASTNODE ptr) as IRVREG ptr
@@ -1113,6 +1114,8 @@ declare function astBuildImplicitCtorCall _
 #define astGetOpIsCommutative( op ) ((ast_opTB(op).flags and AST_OPFLAGS_COMM) <> 0)
 
 #define astGetOpIsSelf( op ) ((ast_opTB(op).flags and AST_OPFLAGS_SELF) <> 0)
+
+#define astGetOpId( op ) ast_opTB(op).id
 
 #define astGetClassLoadCB( cl ) ast_classTB(cl).loadcb
 

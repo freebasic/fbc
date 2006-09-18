@@ -98,32 +98,13 @@ private function hCheckUDTOps _
 	end if
 
     '' is r an UDT?
-	if( r->dtype = FB_DATATYPE_STRUCT ) then
+	if( r->dtype <> FB_DATATYPE_STRUCT ) then
+		exit function
+	end if
 
-    	'' different subtypes?
-		if( l->subtype <> r->subtype ) then
-			exit function
-		end if
-
-	'' r isn't an UDT
-	else
-		'' not a function returning an UDT on regs?
-		if( r->class <> AST_NODECLASS_CALL ) then
-			exit function
-		end if
-
-        '' handle functions returning UDT's when type isn't a pointer,
-        '' but an integer or fpoint register
-        proc = r->sym
-        if( proc->typ <> FB_DATATYPE_STRUCT ) then
-        	exit function
-		end if
-
-        '' different subtypes?
-		if( l->subtype <> proc->subtype ) then
-			exit function
-		end if
-
+   	'' different subtypes?
+	if( l->subtype <> r->subtype ) then
+		exit function
 	end if
 
 	function = TRUE
@@ -378,18 +359,19 @@ function astNewASSIGN _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
 		byval checktypes as integer = TRUE _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
-    dim as FB_DATATYPE ldtype, rdtype
-    dim as FB_DATACLASS ldclass, rdclass
-    dim as FBSYMBOL ptr lsubtype, proc
-	dim as FB_ERRMSG err_num
+    dim as ASTNODE ptr n = any
+    dim as FB_DATATYPE ldtype= any, rdtype= any
+    dim as FB_DATACLASS ldclass= any, rdclass= any
+    dim as FBSYMBOL ptr lsubtype= any, proc= any
+	dim as FB_ERRMSG err_num= any
 
 	function = NULL
 
 	'' 1st) check assign op overloading
 	if( symb.globOpOvlTb(AST_OP_ASSIGN).head <> NULL ) then
+
 		proc = symbFindBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
@@ -443,8 +425,12 @@ function astNewASSIGN _
 		end if
 
         '' r is an UDT too?
-		if( rdtype = FB_DATATYPE_STRUCT ) then
+        dim as integer is_udt = TRUE
+        if( astIsCALL( r ) ) then
+        	is_udt = symbGetUDTRetType( r->subtype ) = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT
+        end if
 
+		if( is_udt ) then
 			'' type ini tree?
 			if( r->class = AST_NODECLASS_TYPEINI ) then
 				'' !!FIXME!! can't be used with complex l-hand side expressions
@@ -462,10 +448,15 @@ function astNewASSIGN _
 
 		'' r is function returning an UDT on registers
 		else
-            '' fake l's type
-            ldtype   = r->sym->proc.realtype
+            '' patch both type
+            ldtype = symbGetUDTRetType( r->subtype )
             lsubtype = NULL
-            astSetDataType( l, ldtype )
+            ldclass = symbGetDataClass( ldtype )
+            astSetType( l, ldtype, NULL )
+
+            rdtype = ldtype
+            rdclass = ldclass
+            astSetType( r, rdtype, NULL )
 		end if
 
     '' wstrings?

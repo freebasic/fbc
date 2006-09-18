@@ -295,6 +295,7 @@ type FBS_STRUCT
 	options			as short					'' FB_UDTOPT
 	bitpos			as ubyte
 	align			as ubyte
+	ret_dtype		as FB_DATATYPE				'' the type this struct is returned from procs
 	dbg				as FB_STRUCT_DBG
 	ext				as FB_STRUCTEXT ptr
 end type
@@ -395,7 +396,7 @@ type FBS_PROC
 	optparams		as short					'' number of optional/default params
 	paramtb			as FBSYMBOLTB				'' parameters symbol tb
 	mode			as FB_FUNCMODE				'' calling convention
-	realtype		as integer					'' used with STRING and UDT functions
+	real_dtype		as FB_DATATYPE				'' used with STRING and UDT functions
 	lib				as FBLIBRARY ptr
 	lgt				as integer					'' parameters length (in bytes)
 	rtl				as FB_PROCRTL
@@ -1843,6 +1844,8 @@ declare function symbLookupCompField _
 
 #define symbGetUDTAnonParent(s) s->udt.anonparent
 
+#define symbGetUDTRetType(s) s->udt.ret_dtype
+
 #define symbGetEnumFirstElm(s) s->enum.elmtb.head
 
 #define symbGetEnumNextElm(e) e->next
@@ -1905,7 +1908,7 @@ declare function symbLookupCompField _
 
 #define symbGetProcIncFile(f) f->proc.ext->dbg.incfile
 
-#define symbGetProcRealType(f) f->proc.realtype
+#define symbGetProcRealType(f) f->proc.real_dtype
 
 #define symbGetProcSymbTb(f) f->proc.symtb
 

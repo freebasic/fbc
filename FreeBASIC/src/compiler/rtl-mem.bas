@@ -288,13 +288,32 @@ function rtlMemSwap _
 	) as integer static
 
     dim as ASTNODE ptr proc
-    dim as integer bytes
+    dim as integer bytes, src_dtype, dst_dtype
+    dim as FBSYMBOL ptr subtype
 
     function = FALSE
 
+	src_dtype = astGetDataType( src )
+	dst_dtype = astGetDataType( dst )
+
+	select case src_dtype
+	case FB_DATATYPE_STRUCT
+		'' returned in registers?
+		if( astIsCALL( src ) ) then
+			subtype = src->subtype
+			if( symbGetUDTRetType( subtype ) <> FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
+				'' patch type
+				astSetType( src, symbGetUDTRetType( subtype ), NULL )
+			end if
+		end if
+
+	'case FB_DATATYPE_CLASS
+		' ...
+	end select
+
 	'' simple type?
 	'' !!!FIXME!!! other classes should be allowed too, but pointers??
-	if( (astGetDataType( dst ) <> FB_DATATYPE_STRUCT) and (astIsVAR( dst )) ) then
+	if( (dst_dtype <> FB_DATATYPE_STRUCT) and (astIsVAR( dst )) ) then
 
 		'' push src
 		astAdd( astNewSTACK( AST_OP_PUSH, astCloneTree( src ) ) )

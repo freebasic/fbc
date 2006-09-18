@@ -1,4 +1,10 @@
 [ ] ctor/dtor
+	- don't clear union fields again and again
+	  - selecting the largest one at ctor time won't be simple if it's
+	    not set at struct allocation time
+
+	- add SWAP for structs with copy-ctors and/or destructors
+
 	- ArrayClear will be used instead of a dtor call looping to destroy
 	  local non-dynamic arrays
 	  - callVarDtor will have to use astAddAfter then with scope blocks..

@@ -35,18 +35,21 @@ function astNewLINK _
 
 	dim as ASTNODE ptr n
 	dim as integer dtype
+	dim as FBSYMBOL ptr subtype
 
 	if( l = NULL ) then
 		if( r = NULL ) then
 			return NULL
 		end if
 		dtype =	r->dtype
+		subtype = r->subtype
 	else
 		dtype =	l->dtype
+		subtype = l->subtype
 	end if
 
 	''
-	n = astNewNode( AST_NODECLASS_LINK, dtype )
+	n = astNewNode( AST_NODECLASS_LINK, dtype, subtype )
 	if( n = NULL ) then
 		return NULL
 	end if

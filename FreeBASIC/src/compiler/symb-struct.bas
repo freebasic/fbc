@@ -518,6 +518,98 @@ sub symbInsertInnerUDT _
 end sub
 
 '':::::
+private function hGetReturnType _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer static
+
+	'' udt has a dtor, copy-ctor or virtual methods? it's never
+	'' returned in registers
+	if( symbIsTrivial( sym ) = FALSE ) then
+		return FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT
+	end if
+
+	'' use the un-padded UDT len
+	select case as const symbGetUDTUnpadLen( sym )
+	case 1
+		return FB_DATATYPE_BYTE
+
+	case 2
+		return FB_DATATYPE_SHORT
+
+	case 3
+		'' return as int only if first is a short
+		if( symbGetUDTFirstElm( sym )->lgt = 2 ) then
+			'' and if the struct is not packed
+			if( sym->lgt >= FB_INTEGERSIZE ) then
+				return FB_DATATYPE_INTEGER
+			end if
+		end if
+
+	case FB_INTEGERSIZE
+
+		'' return in ST(0) if there's only one element and it's a SINGLE
+		if( sym->udt.elements = 1 ) then
+			do
+				if( symbGetUDTFirstElm( sym )->typ = FB_DATATYPE_SINGLE ) then
+					return FB_DATATYPE_SINGLE
+				end if
+
+				if( symbGetUDTFirstElm( sym )->typ <> FB_DATATYPE_STRUCT ) then
+					exit do
+				end if
+
+				sym = symbGetUDTFirstElm( sym )->subtype
+
+				if( sym->udt.elements <> 1 ) then
+					exit do
+				end if
+			loop
+		end if
+
+		return FB_DATATYPE_INTEGER
+
+	case FB_INTEGERSIZE + 1, FB_INTEGERSIZE + 2, FB_INTEGERSIZE + 3
+
+		'' return as longint only if first is a int
+		if( symbGetUDTFirstElm( sym )->lgt = FB_INTEGERSIZE ) then
+			'' and if the struct is not packed
+			if( sym->lgt >= FB_INTEGERSIZE*2 ) then
+				return FB_DATATYPE_LONGINT
+			end if
+		end if
+
+	case FB_INTEGERSIZE*2
+
+		'' return in ST(0) if there's only one element and it's a DOUBLE
+		if( sym->udt.elements = 1 ) then
+			do
+				if( symbGetUDTFirstElm( sym )->typ = FB_DATATYPE_DOUBLE ) then
+					return FB_DATATYPE_DOUBLE
+				end if
+
+				if( symbGetUDTFirstElm( sym )->typ <> FB_DATATYPE_STRUCT ) then
+					exit do
+				end if
+
+				sym = symbGetUDTFirstElm( sym )->subtype
+
+				if( sym->udt.elements <> 1 ) then
+					exit do
+				end if
+			loop
+		end if
+
+		return FB_DATATYPE_LONGINT
+
+	end select
+
+	'' if nothing matched, it's the pointer that was passed as the 1st arg
+	function = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT
+
+end function
+
+'':::::
 sub symbRoundUDTSize _
 	( _
 		byval sym as FBSYMBOL ptr _
@@ -549,6 +641,9 @@ sub symbRoundUDTSize _
 			sym->lgt += pad
 		end if
 	end if
+
+	'' set the real data type used to return this struct from procs
+	sym->udt.ret_dtype = hGetReturnType( sym )
 
 	'' generate the default members
 	symbCompAddDefMembers( sym )

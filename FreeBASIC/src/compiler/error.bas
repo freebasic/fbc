@@ -602,6 +602,9 @@ private function hReportMakeDesc _
 					 	ctorname += ".constructor"
 					elseif( symbIsOperator( proc ) ) then
 						ctorname += ".operator"
+						if( proc->proc.ext <> NULL ) then
+							ctorname += " " + *astGetOpId( proc->proc.ext->opovl.op )
+						end if
 					else
 						ctorname += ".destructor"
 					end if

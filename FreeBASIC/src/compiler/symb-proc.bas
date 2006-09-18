@@ -222,94 +222,13 @@ private function hGetProcRealType _
     '' UDT? follow GCC 3.x's ABI
     case FB_DATATYPE_STRUCT
 
-		'' check if not returning a byval result to self
+		'' still parsing the struct? patch it later..
 		if( subtype = symbGetCurrentNamespc( ) ) then
 			symbSetUdtHasRecByvalRes( subtype )
+			return dtype
 		end if
 
-		'' udt has a dtor, copy-ctor or virtual methods? it's never
-		'' returned in registers
-		if( symbIsTrivial( subtype ) = FALSE ) then
-			return FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT
-		end if
-
-		'' use the un-padded UDT len
-		select case as const symbGetUDTUnpadLen( subtype )
-		case 1
-			return FB_DATATYPE_BYTE
-
-		case 2
-			return FB_DATATYPE_SHORT
-
-		case 3
-			'' return as int only if first is a short
-			if( symbGetUDTFirstElm( subtype )->lgt = 2 ) then
-				'' and if the struct is not packed
-				if( subtype->lgt >= FB_INTEGERSIZE ) then
-					return FB_DATATYPE_INTEGER
-				end if
-			end if
-
-		case FB_INTEGERSIZE
-
-			'' return in ST(0) if there's only one element and it's a SINGLE
-			if( subtype->udt.elements = 1 ) then
-				do
-					if( symbGetUDTFirstElm( subtype )->typ = FB_DATATYPE_SINGLE ) then
-						return FB_DATATYPE_SINGLE
-					end if
-
-					if( symbGetUDTFirstElm( subtype )->typ <> FB_DATATYPE_STRUCT ) then
-						exit do
-					end if
-
-					subtype = symbGetUDTFirstElm( subtype )->subtype
-
-					if( subtype->udt.elements <> 1 ) then
-						exit do
-					end if
-				loop
-			end if
-
-			return FB_DATATYPE_INTEGER
-
-		case FB_INTEGERSIZE + 1, FB_INTEGERSIZE + 2, FB_INTEGERSIZE + 3
-
-			'' return as longint only if first is a int
-			if( symbGetUDTFirstElm( subtype )->lgt = FB_INTEGERSIZE ) then
-				'' and if the struct is not packed
-				if( subtype->lgt >= FB_INTEGERSIZE*2 ) then
-					return FB_DATATYPE_LONGINT
-				end if
-			end if
-
-		case FB_INTEGERSIZE*2
-
-			'' return in ST(0) if there's only one element and it's a DOUBLE
-			if( subtype->udt.elements = 1 ) then
-				do
-					if( symbGetUDTFirstElm( subtype )->typ = FB_DATATYPE_DOUBLE ) then
-						return FB_DATATYPE_DOUBLE
-					end if
-
-					if( symbGetUDTFirstElm( subtype )->typ <> FB_DATATYPE_STRUCT ) then
-						exit do
-					end if
-
-					subtype = symbGetUDTFirstElm( subtype )->subtype
-
-					if( subtype->udt.elements <> 1 ) then
-						exit do
-					end if
-				loop
-			end if
-
-			return FB_DATATYPE_LONGINT
-
-		end select
-
-		'' if nothing matched, it's the pointer that was passed as the 1st arg
-		return FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT
+		return symbGetUDTRetType( subtype )
 
 	'' type is the same
 	case else
@@ -793,7 +712,7 @@ add_proc:
 	end if
 
 	proc->proc.mode	= mode
-	proc->proc.realtype	= hGetProcRealType( dtype, subtype )
+	proc->proc.real_dtype = hGetProcRealType( dtype, subtype )
 
 	'' note: symbCalcProcParamsLen() depends on proc.realtype to be set
 	proc->proc.lgt = symbCalcProcParamsLen( sym )
@@ -1125,7 +1044,7 @@ function symbAddProcResultParam _
 	end if
 
 	'' returning a ptr?
-	if( proc->proc.realtype <> FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
+	if( proc->proc.real_dtype <> FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
 		return NULL
 	end if
 
@@ -1160,7 +1079,7 @@ function symbAddProcResult _
 	'' UDT?
 	if( proc->typ = FB_DATATYPE_STRUCT ) then
 		'' returning a ptr? result is at the hidden arg
-		if( proc->proc.realtype = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
+		if( proc->proc.real_dtype = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
 			return symbGetProcResult( proc )
 		end if
 	end if
@@ -1543,44 +1462,21 @@ private function hCalcTypesDiff _
 	'' user-defined..
 	case FB_DATACLASS_UDT
 
-		dim as FBSYMBOL ptr s = any
-
 		static as integer ctor_rec_cnt = 0
 
 		'' not another udt?
 		if( arg_dclass <> FB_DATACLASS_UDT ) then
 			'' not an expression?
-			if( arg_expr = NULL ) then
-				return 0
-			end if
-
-			'' not a proc? (could be an UDT being returned in registers)
-			if( astGetClass( arg_expr ) <> AST_NODECLASS_CALL ) then
+			if( arg_expr <> NULL ) then
 				'' try to find a ctor
 				hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
-
-				return 0
 			end if
 
-			'' it's a proc, but was it originally returning an UDT?
-			s = astGetSymbol( arg_expr )
-			if( symbGetType( s ) <> FB_DATATYPE_STRUCT ) then
-				'' try to find a ctor
-				hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
-
-				return 0
-			end if
-
-			'' get the original subtype
-			s = symbGetSubType( s )
-
-		'' udt..
-		else
-           	s = arg_subtype
+			return 0
 		end if
 
         '' can't be different
-		if( param_subtype <> s ) then
+		if( param_subtype <> arg_subtype ) then
 			'' try to find a ctor
 			hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
 
@@ -1644,10 +1540,10 @@ private function hCheckOvlParam _
 
 		return FB_OVLPROC_FULLMATCH
 
-	'' arg being passed by value?
-	case FB_PARAMMODE_BYVAL
-		'' to a byref param?
-		if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
+	'' byref param?
+	case FB_PARAMMODE_BYREF
+		'' arg being passed by value?
+		if( arg_mode = FB_PARAMMODE_BYVAL ) then
 			'' invalid type? refuse..
 			if( (symbGetDataClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
 				(symbGetDataSize( arg_dtype ) <> FB_POINTERSIZE) ) then

@@ -639,8 +639,19 @@ private sub hUDTPassByval _
 
 	'' no dtor, copy-ctor or virtual members?
 	if( symbIsTrivial( symbGetSubtype( param ) ) ) then
-		if( arg->dtype = FB_DATATYPE_STRUCT ) then
+		dim as FBSYMBOL ptr subtype = arg->subtype
+
+		'' not returned in registers?
+		dim as integer is_udt = TRUE
+		if( astIsCALL( arg ) ) then
+			is_udt = symbGetUDTRetType( subtype ) = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT
+		end if
+
+		if( is_udt ) then
 			n->arg.lgt = FB_ROUNDLEN( symbGetLen( symbGetSubtype( param ) ) )
+		else
+			'' patch the type
+			astSetType( arg, symbGetUDTRetType( subtype ), NULL )
 		end if
 
 		exit sub
@@ -717,48 +728,38 @@ private function hCheckUDTParam _
 	) as integer
 
 	dim as ASTNODE ptr arg = n->l
-	dim as FBSYMBOL ptr sym = any
 
 	'' not another UDT?
 	if( arg->dtype <> FB_DATATYPE_STRUCT ) then
-		'' not a proc? (can be an UDT being returned in registers)
-		if( arg->class <> AST_NODECLASS_CALL ) then
-			if( hImplicitCtor( param, n ) = FALSE ) then
-				hParamError( parent )
-				return FALSE
-			end if
-			return TRUE
-		end if
-
-		'' it's a proc call, but was it originally returning an UDT?
-		sym = arg->sym
-		if( symbGetType( sym ) <> FB_DATATYPE_STRUCT ) then
-			if( hImplicitCtor( param, n ) = FALSE ) then
-				hParamError( parent )
-				return FALSE
-			end if
-			return TRUE
-		end if
-
-		'' byref argument? can't create a temporary UDT..
-		if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-			hParamError( parent, FB_ERRMSG_CANTPASSUDTRESULTBYREF )
+		if( hImplicitCtor( param, n ) = FALSE ) then
+			hParamError( parent )
 			return FALSE
 		end if
+		return TRUE
+	end if
 
-		'' set type..
-		sym = sym->subtype
+	'' it's a proc call, but was it originally returning an UDT?
+    if( astIsCALL( arg ) ) then
+		if( symbGetUDTRetType( arg->subtype ) <> FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
+			'' byref argument? create a temporary UDT and pass it..
+			if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
+				dim as FBSYMBOL ptr tmp = any
+				tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
+									  arg->subtype, _
+									  FALSE, _
+									  FALSE )
 
-	else
-		if( arg->class = AST_NODECLASS_CALL ) then
-			sym = arg->sym->subtype
-		else
-			sym = arg->subtype
+				'' assuming it's safe to use CALLCTOR here
+				n->l = astNewCALLCTOR( astNewASSIGN( astBuildVarField( tmp ), arg ), _
+									   astBuildVarField( tmp ) )
+
+				arg = n->l
+			end if
 		end if
 	end if
 
     '' check for invalid UDT's (different subtypes)
-	if( symbGetSubtype( param ) <> sym ) then
+	if( symbGetSubtype( param ) <> arg->subtype ) then
 		if( hImplicitCtor( param, n ) = FALSE ) then
 			hParamError( parent )
 			return FALSE
@@ -1069,11 +1070,11 @@ function astReplaceARG _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer = INVALID, _
 		byval mode as integer = INVALID _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr sym, param
-	dim as integer cnt
-	dim as ASTNODE ptr n
+	dim as FBSYMBOL ptr sym = any, param = any
+	dim as integer cnt = any
+	dim as ASTNODE ptr n = any
 
 	sym = parent->sym
 
@@ -1096,7 +1097,7 @@ function astReplaceARG _
 		n = n->r
 	loop
 
-	if( n = NULL ) then
+	if( (n = NULL) or (param = NULL) ) then
 		return NULL
 	end if
 

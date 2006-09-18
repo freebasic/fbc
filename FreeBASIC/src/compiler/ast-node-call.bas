@@ -39,8 +39,8 @@ private sub hAllocTempStruct _
 
 	'' follow GCC 3.x's ABI
 	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-		'' stills a struct?
-		if( sym->proc.realtype = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
+		'' not returned in registers?
+		if( symbGetProcRealType( sym ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
 
 			'' create a temp struct (can't be static, could be an object)
 			n->call.res = symbAddTempVarEx( FB_DATATYPE_STRUCT, _
@@ -68,17 +68,9 @@ function astNewCALL _
 
 	assert( sym <> NULL )
 
-	'' if return type is an UDT, change to the real one
+	''
 	dtype = symbGetType( sym )
 	subtype = symbGetSubType( sym )
-
-	if( dtype = FB_DATATYPE_STRUCT ) then
-		'' only if it's not a pointer, but a reg (integer or fpoint)
-		if( sym->proc.realtype < FB_DATATYPE_POINTER ) then
-			dtype   = sym->proc.realtype
-			subtype = NULL
-		end if
-	end if
 
 	''
 	symbSetIsCalled( sym )
@@ -166,13 +158,17 @@ private function hCallProc _
 
 	dtype = n->dtype
 
-	'' function returns as string? it's actually a pointer to a
-	'' string descriptor, same with UDT's..
 	select case dtype
-	case FB_DATATYPE_STRING, _
-		 FB_DATATYPE_STRUCT, _
-		 FB_DATATYPE_WCHAR
+	'' returning an string? it's actually a pointer to a string descriptor
+	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
 		dtype += FB_DATATYPE_POINTER
+
+	'' UDT's can be returned in regs or as a pointer to the hidden param passed
+	case FB_DATATYPE_STRUCT
+		dtype = symbGetUDTRetType( n->subtype )
+
+	'case FB_DATATYPE_CLASS
+		' ...
 	end select
 
 	if( ast.doemit ) then
@@ -218,14 +214,19 @@ private function hCallProc _
 	end if
 
 	if( ast.doemit ) then
-		'' handle strings and UDT's returned by functions that are actually
-		'' pointers to string descriptors or the hidden pointer passed as
-		'' the 1st argument
 		select case n->dtype
-		case FB_DATATYPE_STRING, _
-			 FB_DATATYPE_STRUCT, _
-			 FB_DATATYPE_WCHAR
+		'' string or wstring? it's actually a pointer to a descriptor
+		case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
 			vreg = irAllocVRPTR( n->dtype, 0, vreg )
+
+		'' udt? if not retuned in registers, deref the pointer
+		case FB_DATATYPE_STRUCT
+			if( symbGetUDTRetType( n->subtype ) = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
+				vreg = irAllocVRPTR( FB_DATATYPE_STRUCT, 0, vreg )
+			end if
+
+		'case FB_DATATYPE_CLASS
+			' ...
 		end select
 	end if
 
@@ -283,7 +284,7 @@ private sub hCheckTempStruct _
 
 	'' follow GCC 3.x's ABI
 	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-		if( sym->proc.realtype = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
+		if( symbGetProcRealType( sym ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
         	'' pass the address of the temp struct
         	vr = astLoad( astNewVar( n->call.res, _
         							 0, _
