@@ -159,7 +159,7 @@ int fb_dos_get_mouse(int *x, int *y, int *z, int *buttons)
 	
 	*x = fb_dos_mouse_x;
 	*y = fb_dos_mouse_y;
-	*z = (fb_dos.mouse_wheel_ok ? fb_dos_mouse_z : -1);
+	*z = (fb_dos.mouse_wheel_ok ? fb_dos_mouse_z : 0);
 	*buttons = fb_dos_mouse_buttons;
 	
 	return 0;
