@@ -1459,33 +1459,7 @@ private function hCalcTypesDiff _
 			return 0
 		end select
 
-	'' user-defined..
-	case FB_DATACLASS_UDT
-
-		static as integer ctor_rec_cnt = 0
-
-		'' not another udt?
-		if( arg_dclass <> FB_DATACLASS_UDT ) then
-			'' not an expression?
-			if( arg_expr <> NULL ) then
-				'' try to find a ctor
-				hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
-			end if
-
-			return 0
-		end if
-
-        '' can't be different
-		if( param_subtype <> arg_subtype ) then
-			'' try to find a ctor
-			hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
-
-			return 0
-		end if
-
-		return FB_OVLPROC_FULLMATCH
-
-	'' can't happen?
+	'' anything else, this function is only used when nothing matches
 	case else
 		return 0
 
@@ -1561,24 +1535,6 @@ private function hCheckOvlParam _
 		return 0
 	end if
 
-	'' try implicit casting op overloading
-	static as integer cast_rec_cnt = 0
-	if( cast_rec_cnt = 0 ) then
-		dim as integer err_num = any
-		dim as FBSYMBOL ptr proc = any
-
-		cast_rec_cnt += 1
-		proc = symbFindCastOvlProc( param_dtype, _
-									param_subtype, _
-									arg_expr, _
-									@err_num )
-		cast_rec_cnt -= 1
-
-		if( proc <> NULL ) then
-			return FB_OVLPROC_HALFMATCH
-		end if
-	end if
-
 	static as integer ctor_rec_cnt = 0
 
 	'' same types?
@@ -1588,16 +1544,8 @@ private function hCheckOvlParam _
 			return FB_OVLPROC_FULLMATCH
 		end if
 
-		select case param_dtype
-		'' UDT or ENUM? can't be different..
-		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-            '' try to find a ctor
-            hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
-
-			return 0
-
-		'' pointer? ditto
-		case is >= FB_DATATYPE_POINTER
+		'' pointer? check if valid (could be a NULL)
+		if( param_dtype >= FB_DATATYPE_POINTER ) then
 			if( astPtrCheck( param_dtype, _
 				 			 param_subtype, _
 				 			 arg_expr ) ) then
@@ -1606,31 +1554,52 @@ private function hCheckOvlParam _
 			end if
 
 			return 0
-
-		'' can't happen?
-		case else
-			return FB_OVLPROC_HALFMATCH
-		end select
+		end if
 	end if
 
 	'' different types..
 
+	select case param_dtype
+	'' UDT? try to find a ctor
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+        hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
+		return 0
+
 	'' enum param? refuse any other argument type, even integers,
 	'' or operator overloading wouldn't work (as in C++)
-	if( param_dtype = FB_DATATYPE_ENUM ) then
-		'' try to find a ctor
-		hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
+    case FB_DATATYPE_ENUM
+       	return 0
 
-		return 0
-	end if
+    case else
+		select case arg_dtype
+		'' UDT arg? try implicit casting..
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			static as integer cast_rec_cnt = 0
+			if( cast_rec_cnt <> 0 ) then
+				return 0
+			end if
 
-	''
+			dim as integer err_num = any
+			dim as FBSYMBOL ptr proc = any
+
+			cast_rec_cnt += 1
+			proc = symbFindCastOvlProc( param_dtype, _
+										param_subtype, _
+										arg_expr, _
+										@err_num )
+			cast_rec_cnt -= 1
+
+			return iif( proc <> NULL, FB_OVLPROC_HALFMATCH, 0 )
+		end select
+    end select
+
+	'' last resource, calc the differences
 	function = hCalcTypesDiff( param_dtype, _
-							   param_subtype, _
-							   param_ptrcnt, _
-							   arg_dtype, _
-							   arg_subtype, _
-							   arg_expr )
+						  	   param_subtype, _
+						  	   param_ptrcnt, _
+						  	   arg_dtype, _
+						  	   arg_subtype, _
+						  	   arg_expr )
 
 end function
 
@@ -1893,40 +1862,40 @@ private function hCheckCastOvl _
 
 	'' same types?
 	if( proc_dtype = to_dtype ) then
-		'' check the subtype
-		if( proc_subtype <> to_subtype ) then
-
-			select case proc_dtype
-			'' UDT, ENUM or pointer? can't be different..
-			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM, is >= FB_DATATYPE_POINTER
-				return 0
-
-			'' can't happen?
-			case else
-				return FB_OVLPROC_HALFMATCH
-			end select
-
+		'' same subtype?
+		if( proc_subtype = to_subtype ) then
+			return FB_OVLPROC_FULLMATCH
 		end if
 
-		'' same subtype too, full match..
-		return FB_OVLPROC_FULLMATCH
+		if( proc_dtype >= FB_DATATYPE_POINTER ) then
+			return 0
+		end if
 	end if
 
 	'' different types..
 
-	'' enum res? refuse any other cast type, even integers,
-	'' or operator overloading wouldn't work (as in C++)
-	if( proc_dtype = FB_DATATYPE_ENUM ) then
+	select case proc_dtype
+	'' UDT or enum? can't be different (this is the last resource,
+	'' don't try to do coercion inside a casting routine)
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
 		return 0
-	end if
 
-	''
+	case else
+		select case to_dtype
+		'' UDT arg? refuse
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			return 0
+		end select
+
+	end select
+
+	'' last resource, calc the differences
 	function = hCalcTypesDiff( proc_dtype, _
-							   proc_subtype, _
-							   symbGetPtrCnt( proc ), _
-							   to_dtype, _
-							   to_subtype, _
-							   NULL )
+						   	   proc_subtype, _
+						   	   symbGetPtrCnt( proc ), _
+						   	   to_dtype, _
+						   	   to_subtype, _
+						   	   NULL )
 
 end function
 

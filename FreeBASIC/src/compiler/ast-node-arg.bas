@@ -822,34 +822,6 @@ private function hCheckParam _
 		end if
 	end select
 
-	'' try implicit casting op overloading
-	scope
-		dim as integer err_num = any
-		dim as FBSYMBOL ptr proc = any
-
-		proc = symbFindCastOvlProc( param_dtype, _
-									symbGetSubtype( param ), _
-									arg, _
-									@err_num )
-		if( proc <> NULL ) then
-    		static as integer rec_cnt = 0
-    		'' recursion? (astBuildCall() will call newARG with the same expr)
-    		if( rec_cnt = 0 ) then
-				'' build a proc call
-				rec_cnt += 1
-				n->l = astBuildCall( proc, 1, arg )
-				rec_cnt -= 1
-
-				arg = n->l
-			end if
-
-		else
-			if( err_num <> FB_ERRMSG_OK ) then
-				return NULL
-			end if
-		end if
-	end scope
-
     select case symbGetType( param )
     '' string argument?
     case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
@@ -889,10 +861,32 @@ private function hCheckParam _
 		hStrParamToPtrArg( parent, n, TRUE )
 		arg = n->l
 
-	'' can't convert UDT's to other types
-	case FB_DATATYPE_STRUCT
-		hParamError( parent )
-		exit function
+	'' UDT? convert to param type if possible
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		'' try implicit casting op overloading
+		dim as integer err_num = any
+		dim as FBSYMBOL ptr proc = any
+
+		proc = symbFindCastOvlProc( param_dtype, _
+									symbGetSubtype( param ), _
+									arg, _
+									@err_num )
+		if( proc <> NULL ) then
+    		static as integer rec_cnt = 0
+    		'' recursion? (astBuildCall() will call newARG with the same expr)
+    		if( rec_cnt = 0 ) then
+				'' build a proc call
+				rec_cnt += 1
+				n->l = astBuildCall( proc, 1, arg )
+				rec_cnt -= 1
+
+				arg = n->l
+			end if
+
+		else
+			hParamError( parent )
+			exit function
+		end if
 	end select
 
 	'' different types? convert..
