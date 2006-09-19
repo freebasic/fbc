@@ -131,7 +131,7 @@ function astNewUOP _
 	( _
 		byval op as integer, _
 		byval o as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
     dim as integer dclass = any, dtype = any

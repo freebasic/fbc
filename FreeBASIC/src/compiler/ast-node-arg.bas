@@ -83,10 +83,10 @@ private function hAllocTmpStrNode _
 		byval n as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval copyback as integer _
-	) as ASTTEMPSTR ptr static
+	) as ASTTEMPSTR ptr
 
-	dim as ASTTEMPSTR ptr t
-	dim as FBSYMBOL ptr s
+	dim as ASTTEMPSTR ptr t = any
+	dim as FBSYMBOL ptr s = any
 
 	'' alloc a node
 	t = listNewNode( @ast.tempstr )
@@ -114,7 +114,7 @@ private function hAllocTmpString _
 		byval copyback as integer _
 	) as ASTNODE ptr
 
-	dim as ASTTEMPSTR ptr t
+	dim as ASTTEMPSTR ptr t = any
 
 	'' create temp string to pass as parameter
 	t = hAllocTmpStrNode( parent, n, FB_DATATYPE_STRING, copyback )
@@ -131,7 +131,7 @@ private function hAllocTmpWstrPtr _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTTEMPSTR ptr t
+	dim as ASTTEMPSTR ptr t = any
 
 	'' create temp wstring ptr to pass as parameter
 	t = hAllocTmpStrNode( parent, NULL, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FALSE )
@@ -822,6 +822,31 @@ private function hCheckParam _
 		end if
 	end select
 
+	'' UDT? convert to param type if possible (including strings)
+	select case arg->dtype
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		'' try implicit casting op overloading
+		dim as integer err_num = any
+		dim as FBSYMBOL ptr proc = any
+
+		proc = symbFindCastOvlProc( param_dtype, _
+									symbGetSubtype( param ), _
+									arg, _
+									@err_num )
+		if( proc <> NULL ) then
+    		static as integer rec_cnt = 0
+    		'' recursion? (astBuildCall() will call newARG with the same expr)
+    		if( rec_cnt = 0 ) then
+				'' build a proc call
+				rec_cnt += 1
+				n->l = astBuildCall( proc, 1, arg )
+				rec_cnt -= 1
+
+				arg = n->l
+			end if
+		end if
+	end select
+
     select case symbGetType( param )
     '' string argument?
     case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
@@ -861,32 +886,10 @@ private function hCheckParam _
 		hStrParamToPtrArg( parent, n, TRUE )
 		arg = n->l
 
-	'' UDT? convert to param type if possible
+	'' UDT? implicit casting failed, can't convert..
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		'' try implicit casting op overloading
-		dim as integer err_num = any
-		dim as FBSYMBOL ptr proc = any
-
-		proc = symbFindCastOvlProc( param_dtype, _
-									symbGetSubtype( param ), _
-									arg, _
-									@err_num )
-		if( proc <> NULL ) then
-    		static as integer rec_cnt = 0
-    		'' recursion? (astBuildCall() will call newARG with the same expr)
-    		if( rec_cnt = 0 ) then
-				'' build a proc call
-				rec_cnt += 1
-				n->l = astBuildCall( proc, 1, arg )
-				rec_cnt -= 1
-
-				arg = n->l
-			end if
-
-		else
-			hParamError( parent )
-			exit function
-		end if
+		hParamError( parent )
+		exit function
 	end select
 
 	'' different types? convert..

@@ -35,10 +35,10 @@ function astNewBRANCH _
 		byval op as integer, _
 		byval label as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
-    dim as integer dtype
+    dim as ASTNODE ptr n = any
+    dim as integer dtype = any
 
     if( l = NULL ) then
     	dtype = INVALID
@@ -112,9 +112,9 @@ function astNewJMPTB _
 	( _
 		byval dtype as integer, _
 		byval label as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_JMPTB, dtype )

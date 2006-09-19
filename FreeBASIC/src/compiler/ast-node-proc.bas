@@ -364,9 +364,9 @@ end function
 sub astAddUnscoped _
 	( _
 		byval n as ASTNODE ptr _
-	) static
+	)
 
-	dim as ASTNODE ptr last
+	dim as ASTNODE ptr last = any
 
 	if( n = NULL ) then
 		exit sub
@@ -391,9 +391,9 @@ end sub
 private function hNewProcNode _
 	(  _
 		_
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n
+	dim as ASTNODE ptr n = any
 
 	n = astNewNode( AST_NODECLASS_PROC, INVALID, NULL )
 
@@ -504,7 +504,7 @@ end function
 private sub hRestoreErrHnd _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) static
+	)
 
 	with sym->proc.ext->err
 		if( .lastfun <> NULL ) then
@@ -540,9 +540,9 @@ private sub hCallResultCtor _
 	( _
 		byval n as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
-	) static
+	)
 
-    dim as FBSYMBOL ptr res, subtype
+    dim as FBSYMBOL ptr res = any, subtype = any
 
     subtype = symbGetSubtype( sym )
 
@@ -694,10 +694,10 @@ end function
 private function hDeclProcParams _
 	( _
 		byval proc as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-    dim as integer i
-    dim as FBSYMBOL ptr p
+    dim as integer i = any
+    dim as FBSYMBOL ptr p = any
 
 	function = FALSE
 
@@ -732,11 +732,11 @@ end function
 private sub hLoadProcResult _
 	( _
 		byval proc as FBSYMBOL ptr _
-	) static
+	)
 
-    dim as FBSYMBOL ptr s
-    dim as ASTNODE ptr n, t
-    dim as integer dtype
+    dim as FBSYMBOL ptr s = any
+    dim as ASTNODE ptr n = any, t = any
+    dim as integer dtype = any
 
 	s = symbGetProcResult( proc )
 	dtype = symbGetType( proc )
@@ -771,7 +771,7 @@ private function hModLevelIsEmpty _
 		byval p as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr n, nxt
+    dim as ASTNODE ptr n = any, nxt = any
 
 	'' an empty module-level proc will have just the
 	'' initial and final labels as nodes and nothing else
@@ -808,7 +808,7 @@ private sub hModLevelAddRtInit _
 		byval p as ASTNODE ptr _
 	)
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
     n = p->l
     if( n = NULL ) then
@@ -829,11 +829,11 @@ private sub hCallCtorList _
 		byval is_ctor as integer, _
 		byval this_ as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as FBSYMBOL ptr cnt, label, iter, subtype
-	dim as ASTNODE ptr fldexpr
-	dim as integer dtype, elements
+	dim as FBSYMBOL ptr cnt = any, label = any, iter = any, subtype = any
+	dim as ASTNODE ptr fldexpr = any
+	dim as integer dtype = any, elements = any
 
 	'' instance? (this function is also used by the static dtor wrapper)
 	if( fld <> NULL ) then
@@ -901,9 +901,9 @@ private sub hCallFieldCtor _
 	( _
 		byval this_ as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as FBSYMBOL ptr subtype
+	dim as FBSYMBOL ptr subtype = any
 
 	subtype = symbGetSubtype( fld )
 
@@ -949,9 +949,9 @@ private sub hFlushFieldInitTree _
 	( _
 		byval this_ as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as ASTNODE ptr initree
+	dim as ASTNODE ptr initree = any
 
 	initree = astCloneTree( symbGetTypeIniTree( fld ) )
 
@@ -964,9 +964,9 @@ private sub hCallFieldCtors _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as FBSYMBOL ptr fld, this_, subtype
+	dim as FBSYMBOL ptr fld = any, this_ = any, subtype = any
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
@@ -991,9 +991,9 @@ end sub
 private sub hCallCtors _
 	( _
 		byval proc as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as FBSYMBOL ptr parent
+	dim as FBSYMBOL ptr parent = any
 
 	parent = symbGetNamespace( proc )
 
@@ -1010,9 +1010,9 @@ private sub hCallFieldDtors _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as FBSYMBOL ptr fld, this_
+	dim as FBSYMBOL ptr fld = any, this_ = any
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
@@ -1076,9 +1076,9 @@ end sub
 private sub hCallDtors _
 	( _
 		byval proc as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as FBSYMBOL ptr parent
+	dim as FBSYMBOL ptr parent = any
 
 	parent = symbGetNamespace( proc )
 
@@ -1094,9 +1094,9 @@ end sub
 private sub hDestroyVars _
 	( _
 		byval proc as FBSYMBOL ptr _
-	) static
+	)
 
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr s = any
 
 	'' for each var (in inverse order)
 	s = symbGetProcSymbTb( proc ).tail
@@ -1239,7 +1239,7 @@ sub astProcAddGlobalInstance _
 		byval has_dtor as integer _
 	)
 
-    dim as FB_GLOBINSTANCE ptr wrap
+    dim as FB_GLOBINSTANCE ptr wrap = any
 
     ''
     wrap = listNewNode( @ast.globinst.list )

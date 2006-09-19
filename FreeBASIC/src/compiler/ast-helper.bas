@@ -66,10 +66,10 @@ function astBuildVarInc _
 	( _
 		byval lhs as FBSYMBOL ptr, _
 		byval rhs as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as AST_OPOPT options
-	dim as AST_OP op
+	dim as AST_OPOPT options = any
+	dim as AST_OP op = any
 
 	options = AST_OPOPT_DEFAULT
 	if( symbGetType( lhs ) >= FB_DATATYPE_POINTER ) then
@@ -196,9 +196,9 @@ function astBuildVarField _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr, _
 		byval ofs as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr
+	dim as ASTNODE ptr expr = any
 
 	if( fld <> NULL ) then
 		ofs += symbGetOfs( fld )
@@ -268,18 +268,18 @@ function astBuildCall cdecl _
 		byval proc as FBSYMBOL ptr, _
 		byval args as integer, _
 		... _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr p
-    dim as any ptr arg
-    dim as integer i
+    dim as ASTNODE ptr p = any
+    dim as any ptr arg  = any
+    dim as integer i  = any
 
     p = astNewCALL( proc )
 
     arg = va_first( )
     for i = 0 to args-1
     	if( astNewARG( p, va_arg( arg, ASTNODE ptr ) ) = NULL ) then
-    		'' ...
+    		return NULL
     	end if
 
     	arg = va_next( arg, ASTNODE ptr )
@@ -294,11 +294,11 @@ function astBuildCtorCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval thisexpr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr ctor
-    dim as ASTNODE ptr proc
-    dim as integer params
+    dim as FBSYMBOL ptr ctor = any
+    dim as ASTNODE ptr proc = any
+    dim as integer params = any
 
     ctor = symbGetCompDefCtor( sym )
     if( ctor = NULL ) then
@@ -325,9 +325,9 @@ function astBuildDtorCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval thisexpr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
     proc = astNewCALL( symbGetCompDtor( sym ) )
 
@@ -342,10 +342,10 @@ function astBuildCopyCtorCall _
 	( _
 		byval dst as ASTNODE ptr, _
 		byval src as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr copyctor
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr copyctor = any
 
 	copyctor = symbGetCompCopyCtor( astGetSubtype( dst ) )
 
@@ -382,10 +382,10 @@ end function
 function astCallCtorToCall _
 	( _
 		byval n as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr sym
-	dim as ASTNODE ptr procexpr
+	dim as FBSYMBOL ptr sym = any
+	dim as ASTNODE ptr procexpr = any
 
 	sym = astGetSymbol( n->r )
 
@@ -531,11 +531,11 @@ function astBuildInstPtr _
 		byval fld as FBSYMBOL ptr, _
 		byval idxexpr as ASTNODE ptr, _
 		byval ofs as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr
-	dim as integer dtype
-	dim as FBSYMBOL ptr subtype
+	dim as ASTNODE ptr expr = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	dtype = symbGetType( sym )
 	subtype = symbGetSubtype( sym )

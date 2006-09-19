@@ -868,7 +868,7 @@ declare function symbAddConst _
 		byval value as FBVALUE ptr _
 	) as FBSYMBOL ptr
 
-declare function symbAddUDT _
+declare function symbStructBegin _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
@@ -894,6 +894,11 @@ declare sub symbInsertInnerUDT _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval inner as FBSYMBOL ptr _
+	)
+
+declare sub symbStructEnd _
+	( _
+		byval t as FBSYMBOL ptr _
 	)
 
 declare function symbAddEnum _
@@ -1050,11 +1055,6 @@ declare sub symbAddToFwdRef _
 	( _
 		byval f as FBSYMBOL ptr, _
 		byval ref as FBSYMBOL ptr _
-	)
-
-declare sub symbRoundUDTSize _
-	( _
-		byval t as FBSYMBOL ptr _
 	)
 
 declare sub symbRecalcUDTSize _

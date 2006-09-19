@@ -32,11 +32,11 @@ function astNewIIF _
 		byval condexpr as ASTNODE ptr, _
 		byval truexpr as ASTNODE ptr, _
 		byval falsexpr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
-    dim as integer true_dtype, false_dtype
-    dim as FBSYMBOL ptr falselabel
+    dim as ASTNODE ptr n = any
+    dim as integer true_dtype = any, false_dtype = any
+    dim as FBSYMBOL ptr falselabel = any
 
 	function = NULL
 

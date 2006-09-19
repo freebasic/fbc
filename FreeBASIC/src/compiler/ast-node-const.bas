@@ -30,9 +30,9 @@
 function astNewCONSTstr _
 	( _
 		byval v as zstring ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr tc
+    dim as FBSYMBOL ptr tc = any
 
 	'' assuming no escape sequences are used
 	tc = symbAllocStrConst( v, -1 )
@@ -48,9 +48,9 @@ end function
 function astNewCONSTwstr _
 	( _
 		byval v as wstring ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr tc
+    dim as FBSYMBOL ptr tc = any
 
 	'' assuming no escape sequences are used
 	tc = symbAllocWstrConst( v, -1 )
@@ -69,9 +69,9 @@ function astNewCONSTi _
 		byval value as integer, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CONST, dtype, subtype )
@@ -91,9 +91,9 @@ function astNewCONSTf _
 	( _
 		byval value as double, _
 		byval dtype as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CONST, dtype )
@@ -113,9 +113,9 @@ function astNewCONSTl _
 	( _
 		byval value as longint, _
 		byval dtype as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CONST, dtype )
@@ -136,9 +136,9 @@ function astNewCONST _
 		byval v as FBVALUE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CONST, dtype, subtype )
@@ -207,7 +207,7 @@ end function
 function astLoadCONST _
 	( _
 		byval n as ASTNODE ptr _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr s = any

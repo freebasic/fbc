@@ -82,7 +82,7 @@ private sub hCreateDescDimType _
 	static as FBARRAYDIM dTB(0)
 
    	''
-   	ctx.array_dimtype = symbAddUDT( NULL, NULL, NULL, FALSE, 0 )
+   	ctx.array_dimtype = symbStructBegin( NULL, NULL, NULL, FALSE, 0 )
 
 	'' elements		as integer
 	symbAddField( ctx.array_dimtype, _
@@ -106,7 +106,7 @@ private sub hCreateDescDimType _
 				  FB_INTEGERSIZE, 0 )
 
     ''
-	symbRoundUDTSize( ctx.array_dimtype )
+	symbStructEnd( ctx.array_dimtype )
 
 end sub
 
@@ -120,7 +120,7 @@ private function hCreateDescType _
     dim as FBSYMBOL ptr sym, dimtype
 
     ''
-    sym = symbAddUDT( NULL, NULL, NULL, FALSE, 0 )
+    sym = symbStructBegin( NULL, NULL, NULL, FALSE, 0 )
 
     '' data			as any ptr
 	symbAddField( sym, _
@@ -175,7 +175,7 @@ private function hCreateDescType _
 				  symbGetLen( dimtype ), 0 )
 
 	''
-	symbRoundUDTSize( sym )
+	symbStructEnd( sym )
 
 	function = sym
 

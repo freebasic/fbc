@@ -33,10 +33,10 @@ function astNewPTR _
 		byval l as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
-    dim as integer delchild
+    dim as ASTNODE ptr n = any
+    dim as integer delchild = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_PTR, _

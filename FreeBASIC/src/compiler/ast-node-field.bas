@@ -33,9 +33,9 @@ function astNewFIELD _
 		byval sym as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr = NULL _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	if( dtype = FB_DATATYPE_BITFIELD ) then
 		'' final type is always an unsigned int
@@ -61,10 +61,10 @@ private function hGetBitField _
 	( _
 		byval n as ASTNODE ptr, _
 		byval dtype as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr c
-	dim as FBSYMBOL ptr s
+	dim as ASTNODE ptr c = any
+	dim as FBSYMBOL ptr s = any
 
 	s = n->subtype
 

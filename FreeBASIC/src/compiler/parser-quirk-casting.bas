@@ -67,19 +67,20 @@ function cTypeConvExpr _
 		dtype = FB_DATATYPE_DOUBLE
 
 	case FB_TK_CSIGN
-		dtype = FB_DATATYPE_VOID				'' hack! AST will handle that
 		op = AST_OP_TOSIGNED
+
 	case FB_TK_CUNSG
-		dtype = FB_DATATYPE_VOID				'' hack! /
 		op = AST_OP_TOUNSIGNED
 
 	end select
 
 	if( dtype = INVALID ) then
-		exit function
-	else
-		lexSkipToken( )
+		if( op = INVALID ) then
+			exit function
+		end if
 	end if
+
+	lexSkipToken( )
 
 	'' '('
 	if( hMatch( CHAR_LPRNT ) = FALSE ) then
@@ -96,7 +97,14 @@ function cTypeConvExpr _
 		end if
 	end if
 
-	expr = astNewCONV( dtype, NULL, expr, op, TRUE )
+	select case op
+	case AST_OP_TOSIGNED
+		dtype = symbGetSignedType( astGetDataType( expr ) )
+	case AST_OP_TOUNSIGNED
+	    dtype = symbGetUnsignedType( astGetDataType( expr ) )
+	end select
+
+	expr = astNewCONV( dtype, NULL, expr, INVALID, TRUE )
     if( expr = NULL ) Then
     	if( errReport( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
     		exit function

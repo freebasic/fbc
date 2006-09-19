@@ -30,17 +30,17 @@
 '':::::
 private sub hCONVConstEvalInt _
 	( _
-		byval dtype as integer, _
+		byval to_dtype as integer, _
 		byval v as ASTNODE ptr _
-	) static
+	)
 
-	if( dtype > FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_POINTER
+	if( to_dtype > FB_DATATYPE_POINTER ) then
+		to_dtype = FB_DATATYPE_POINTER
 	end if
 
 	select case as const v->dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		select case as const dtype
+		select case as const to_dtype
 		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.long )
 
@@ -63,7 +63,7 @@ private sub hCONVConstEvalInt _
 
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 
-		select case as const dtype
+		select case as const to_dtype
 		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.float )
 
@@ -85,7 +85,7 @@ private sub hCONVConstEvalInt _
 		end select
 
 	case else
-		select case as const dtype
+		select case as const to_dtype
 		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.int )
 
@@ -106,11 +106,11 @@ end sub
 '':::::
 private sub hCONVConstEvalFlt _
 	( _
-		byval dtype as integer, _
+		byval to_dtype as integer, _
 		byval v as ASTNODE ptr _
-	) static
+	)
 
-	dim as integer vdtype
+	dim as integer vdtype = any
 
     vdtype = v->dtype
 	if( vdtype > FB_DATATYPE_POINTER ) then
@@ -123,7 +123,7 @@ private sub hCONVConstEvalFlt _
 
 	case FB_DATATYPE_LONGINT
 
-		if( dtype = FB_DATATYPE_SINGLE ) then
+		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( v->con.val.long )
 		else
 			v->con.val.float = cdbl( v->con.val.long )
@@ -131,7 +131,7 @@ private sub hCONVConstEvalFlt _
 
 	case FB_DATATYPE_ULONGINT
 
-		if( dtype = FB_DATATYPE_SINGLE ) then
+		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( cunsg( v->con.val.long ) )
 		else
 			v->con.val.float = cdbl( cunsg( v->con.val.long ) )
@@ -139,7 +139,7 @@ private sub hCONVConstEvalFlt _
 
 	case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
 
-		if( dtype = FB_DATATYPE_SINGLE ) then
+		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( cunsg( v->con.val.int ) )
 		else
 			v->con.val.float = cdbl( cunsg( v->con.val.int ) )
@@ -147,7 +147,7 @@ private sub hCONVConstEvalFlt _
 
 	case else
 
-		if( dtype = FB_DATATYPE_SINGLE ) then
+		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( v->con.val.int )
 		else
 			v->con.val.float = cdbl( v->con.val.int )
@@ -160,16 +160,16 @@ end sub
 '':::::
 private sub hCONVConstEval64 _
 	( _
-		byval dtype as integer, _
+		byval to_dtype as integer, _
 		byval v as ASTNODE ptr _
-	) static
+	)
 
 	select case as const v->dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		'' do nothing
 
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		if( dtype = FB_DATATYPE_LONGINT ) then
+		if( to_dtype = FB_DATATYPE_LONGINT ) then
 			v->con.val.long = clngint( v->con.val.float )
 		else
 			v->con.val.long = culngint( v->con.val.float )
@@ -178,7 +178,7 @@ private sub hCONVConstEval64 _
 	case else
 		'' when expanding to 64bit, we must take care of signedness of source operand
 
-		if( dtype = FB_DATATYPE_LONGINT ) then
+		if( to_dtype = FB_DATATYPE_LONGINT ) then
 			if( symbIsSigned( v->dtype ) ) then
 				v->con.val.long = clngint( v->con.val.int )
 			else
@@ -202,7 +202,7 @@ function astCheckCONV _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr _
-	) as integer static
+	) as integer
 
 	function = FALSE
 
@@ -269,23 +269,37 @@ function astNewCONV _
 	'' try casting op overloading
 	hDoGlobOpOverload( to_dtype, to_subtype, l )
 
-	'' UDT? as op overloading failed, refuse..
 	select case to_dtype
+	'' UDT? as op overloading failed, refuse..
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		exit function
+
+	'' ditto with void (used by uop/bop to cast to be most precise possible)
+	case FB_DATATYPE_VOID
 		exit function
 	end select
 
     ldtype = l->dtype
+    ldclass = symbGetDataClass( ldtype )
 
+    select case op
     '' pointer typecasting?
-    if( op = AST_OP_TOPOINTER ) then
+    case AST_OP_TOPOINTER
 		'' assuming all type-checking was done already
     	astSetType( l, to_dtype, to_subtype )
 
     	return l
 
-    '' else, to pointer? only allow integers..
-    elseif( to_dtype >= FB_DATATYPE_POINTER ) then
+	'' sign conversion?
+	case AST_OP_TOSIGNED, AST_OP_TOUNSIGNED
+		'' float? invalid
+		if( ldclass <> FB_DATACLASS_INTEGER ) then
+			exit function
+		end if
+    end select
+
+    '' to pointer? only allow integers..
+    if( to_dtype >= FB_DATATYPE_POINTER ) then
 		select case as const ldtype
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
 		case else
@@ -304,9 +318,6 @@ function astNewCONV _
 			end if
 		end select
     end if
-
-    ''
-    ldclass = symbGetDataClass( ldtype )
 
     '' string?
 	if( check_str ) then
@@ -331,30 +342,6 @@ function astNewCONV _
     	    end select
     	end if
     end if
-
-	'' UDT's? ditto
-	if( ldtype = FB_DATATYPE_STRUCT ) then
-		exit function
-    end if
-
-	'' if it's just a sign conversion, change node's sign and create no new node
-	if( op <> INVALID ) then
-
-		'' float? invalid
-		if( ldclass <> FB_DATACLASS_INTEGER ) then
-			exit function
-		end if
-
-		if( op = AST_OP_TOSIGNED ) then
-			to_dtype = symbGetSignedType( ldtype )
-		else
-			to_dtype = symbGetUnsignedType( ldtype )
-		end if
-
-		astSetDataType( l, to_dtype )
-
-		return l
-	end if
 
 	'' constant? evaluate at compile-time
 	if( l->defined ) then

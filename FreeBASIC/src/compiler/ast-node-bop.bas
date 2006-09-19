@@ -35,7 +35,7 @@ private function hStrLiteralConcat _
 		byval r as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr s, ls, rs
+    dim as FBSYMBOL ptr s = any, ls = any, rs = any
 
 	ls = astGetSymbol( l )
 	rs = astGetSymbol( r )
@@ -58,7 +58,7 @@ private function hWstrLiteralConcat _
 		byval r as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr s, ls, rs
+    dim as FBSYMBOL ptr s = any, ls = any, rs = any
 
 	ls = astGetSymbol( l )
 	rs = astGetSymbol( r )
@@ -90,10 +90,10 @@ private function hStrLiteralCompare _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
     static as DZSTRING ltext, rtext
-    dim as integer res
+    dim as integer res = any
 
    	DZstrAssign( ltext, hUnescape( symbGetVarLitText( astGetSymbol( l ) ) ) )
    	DZstrAssign( rtext, hUnescape( symbGetVarLitText( astGetSymbol( r ) ) ) )
@@ -126,12 +126,12 @@ private function hWStrLiteralCompare _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr ls, rs
+    dim as FBSYMBOL ptr ls = any, rs = any
     static as DZSTRING textz
     static as DWSTRING ltextw, rtextw
-    dim as integer res
+    dim as integer res = any
 
 	ls = astGetSymbol( l )
 	rs = astGetSymbol( r )
@@ -617,6 +617,87 @@ private function hDoPointerArith _
 end function
 
 '':::::
+private function hConvertUDT_l _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
+		byval ex as FBSYMBOL ptr, _
+		byval options as AST_OPOPT _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr t = any
+
+	'' try to convert to l type
+	t = astNewCONV( l->dtype, l->subtype, r )
+    if( t <> NULL ) then
+    	t = astNewBOP( op, l, t, ex, options or AST_OPOPT_NOCOERCION )
+    	if( t <> NULL ) then
+    		return t
+    	end if
+	end if
+
+    '' try convert to r type
+	t = astNewCONV( r->dtype, r->subtype, l )
+    if( t <> NULL ) then
+    	t = astNewBOP( op, t, r, ex, options or AST_OPOPT_NOCOERCION )
+    	if( t <> NULL ) then
+    		return t
+    	end if
+	end if
+
+    '' try convert to the most precise type
+	t = astNewCONV( FB_DATATYPE_VOID, NULL, l )
+    if( t <> NULL ) then
+    	'' coercion allowed, so hConvertUDT_r() can be called if r is an UDT too
+    	return astNewBOP( op, t, r, ex, options )
+	end if
+
+	function = NULL
+
+end function
+
+'':::::
+private function hConvertUDT_r _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
+		byval ex as FBSYMBOL ptr, _
+		byval options as AST_OPOPT _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr t = any
+
+	'' try to convert to r type
+	t = astNewCONV( r->dtype, r->subtype, l )
+	if( t <> NULL ) then
+    	t = astNewBOP( op, t, r, ex, options or AST_OPOPT_NOCOERCION )
+    	if( t <> NULL ) then
+    		return t
+    	end if
+	end if
+
+    '' try convert to l type
+	t = astNewCONV( l->dtype, l->subtype, r )
+    if( t <> NULL ) then
+    	t = astNewBOP( op, l, t, ex, options or AST_OPOPT_NOCOERCION )
+    	if( t <> NULL ) then
+    		return t
+    	end if
+	end if
+
+    '' try convert to the most precise type
+	t = astNewCONV( FB_DATATYPE_VOID, NULL, r )
+    if( t <> NULL ) then
+    	return astNewBOP( op, l, t, ex, options or AST_OPOPT_NOCOERCION )
+	end if
+
+	function = NULL
+
+end function
+
+'':::::
 #macro hDoGlobOpOverload _
 	( _
 		op, l, r _
@@ -636,7 +717,7 @@ end function
 			end if
 
 			'' commutative?
-			if( astGetOpIsCommutative( op ) ) then
+			/'if( astGetOpIsCommutative( op ) ) then
 				'' try (r, l) too
 				proc = symbFindBopOvlProc( op, r, l, @err_num )
 				if( proc <> NULL ) then
@@ -647,7 +728,7 @@ end function
 						return NULL
 					end if
 				end if
-			end if
+			end if'/
 		end if
 	end if
 
@@ -681,6 +762,25 @@ function astNewBOP _
 	ldclass = symbGetDataClass( ldtype )
 	rdclass = symbGetDataClass( rdtype )
 
+	'' UDT's? try auto-coercion
+	if( (ldtype = FB_DATATYPE_STRUCT) or _
+		(rdtype = FB_DATATYPE_STRUCT) ) then
+
+		'' recursion?
+		if( (options and AST_OPOPT_NOCOERCION) <> 0 ) then
+			exit function
+		end if
+
+		'' l or both UDTs?
+		if( ldtype = FB_DATATYPE_STRUCT ) then
+			return hConvertUDT_l( op, l, r, ex, options )
+
+		'' only r is..
+		else
+			return hConvertUDT_r( op, l, r, ex, options )
+		end if
+    end if
+
 	''::::::
     '' pointers?
     if( ldtype >= FB_DATATYPE_POINTER ) then
@@ -702,12 +802,6 @@ function astNewBOP _
     			exit function
     		end if
 		end if
-    end if
-
-	'' UDT's? can't operate
-	if( (ldtype = FB_DATATYPE_STRUCT) or _
-		(rdtype = FB_DATATYPE_STRUCT) ) then
-		exit function
     end if
 
     '' enums?

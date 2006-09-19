@@ -95,9 +95,9 @@ end function
 private sub removeNullPtrCheck _
 	( _
 		byval l as ASTNODE ptr _
-	) static
+	)
 
-	dim as ASTNODE ptr n, t
+	dim as ASTNODE ptr n = any, t = any
 
 	'' ptr checks must be removed because a null pointer is ok
 	'' when taking the address-of an expression

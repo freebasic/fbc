@@ -37,9 +37,9 @@ function astNewBOUNDCHK _
 		byval lb as ASTNODE ptr, _
 		byval ub as ASTNODE ptr, _
 		byval linenum as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' lbound is a const?
 	if( lb->defined ) then
@@ -150,11 +150,11 @@ function astNewPTRCHK _
 	( _
 		byval l as ASTNODE ptr, _
 		byval linenum as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
-    dim as integer dtype
-    dim as FBSYMBOL ptr subtype
+    dim as ASTNODE ptr n = any
+    dim as integer dtype = any
+    dim as FBSYMBOL ptr subtype = any
 
 	'' constant? don't break OffsetOf() when used with Const's..
 	if( l->class = AST_NODECLASS_CONST ) then

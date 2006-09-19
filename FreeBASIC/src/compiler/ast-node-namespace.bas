@@ -30,9 +30,9 @@
 function astNamespaceBegin _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	n = astNewNode( AST_NODECLASS_NAMESPC, INVALID )
 	if( n = NULL ) then
@@ -51,9 +51,9 @@ end function
 sub astNamespaceEnd _
 	( _
 		byval n as ASTNODE ptr _
-	) static
+	)
 
-	dim as FBSYMBOL ptr ns
+	dim as FBSYMBOL ptr ns = any
 
 	ns = n->sym
 

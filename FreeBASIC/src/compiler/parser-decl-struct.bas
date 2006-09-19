@@ -529,13 +529,13 @@ private function hTypeAdd _
 
 	function = NULL
 
-	s = symbAddUDT( parent, id, id_alias, isunion, align )
+	s = symbStructBegin( parent, id, id_alias, isunion, align )
 	if( s = NULL ) then
     	if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
     		exit function
     	else
     		'' error recovery: create a fake symbol
-    		s = symbAddUDT( parent, hMakeTmpStr( ), NULL, isunion, align )
+    		s = symbStructBegin( parent, hMakeTmpStr( ), NULL, isunion, align )
     	end if
 	end if
 
@@ -560,8 +560,8 @@ private function hTypeAdd _
 		exit function
 	end if
 
-	'' pad the UDT if needed
-	symbRoundUDTSize( s )
+	'' finalize
+	symbStructEnd( s )
 
 	'' END TYPE|UNION
 	if( lexGetToken( ) <> FB_TK_END ) then

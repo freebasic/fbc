@@ -34,7 +34,7 @@ private function hCheckStringOps _
 		byval ldclass as FB_DATACLASS, _
 		byval r as ASTNODE ptr, _
 		byval rdclass as FB_DATACLASS _
-	) as integer static
+	) as integer
 
 	function = FALSE
 
@@ -81,9 +81,9 @@ private function hCheckUDTOps _
 		byval ldclass as FB_DATACLASS, _
 		byval r as ASTNODE ptr, _
 		byval rdclass as FB_DATACLASS _
-	) as integer static
+	) as integer
 
-	dim as FBSYMBOL ptr proc
+	dim as FBSYMBOL ptr proc = any
 
 	function = FALSE
 
@@ -119,7 +119,7 @@ private function hCheckWstringOps _
 		byval r as ASTNODE ptr, _
 		byref rdtype as FB_DATATYPE, _
 		byref is_zstr as integer _
-	) as integer static
+	) as integer
 
 	function = FALSE
 
@@ -171,7 +171,7 @@ private function hCheckZstringOps _
 		byref ldtype as FB_DATATYPE, _
 		byval r as ASTNODE ptr, _
 		byref rdtype as FB_DATATYPE _
-	) as integer static
+	) as integer
 
 	function = FALSE
 
@@ -204,7 +204,7 @@ private function hCheckEnumOps _
 		byval ldclass as FB_DATACLASS, _
 		byval r as ASTNODE ptr, _
 		byval rdclass as FB_DATACLASS _
-	) as integer static
+	) as integer
 
 	function = FALSE
 
@@ -227,7 +227,7 @@ private function hCheckPointerOps _
 		byval ldtype as FB_DATATYPE, _
 		byval r as ASTNODE ptr, _
 		byval rdtype as FB_DATATYPE _
-	) as integer static
+	) as integer
 
 	function = FALSE
 
@@ -250,11 +250,11 @@ function astCheckASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr n
-    dim as FB_DATATYPE ldtype, rdtype
-    dim as FB_DATACLASS ldclass, rdclass
+    dim as ASTNODE ptr n = any
+    dim as FB_DATATYPE ldtype = any, rdtype = any
+    dim as FB_DATACLASS ldclass = any, rdclass = any
 
 	function = FALSE
 
@@ -549,9 +549,9 @@ private function hSetBitField _
 	( _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr s = any
 
 	s = l->subtype
 

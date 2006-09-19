@@ -33,9 +33,9 @@ function astTypeIniBegin _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_TYPEINI, _
@@ -56,10 +56,10 @@ sub astTypeIniEnd _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval isinitializer as integer _
-	) static
+	)
 
-    dim as ASTNODE ptr n, p, l, r
-    dim as integer ofs
+    dim as ASTNODE ptr n = any, p = any, l = any, r = any
+    dim as integer ofs = any
 
 	'' can't leave r pointing to the any node as the
 	'' tail node is linked already
@@ -142,9 +142,9 @@ function astTypeIniAddPad _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval bytes as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n
+	dim as ASTNODE ptr n = any
 
 	n = hAddNode( tree, _
 				  AST_NODECLASS_TYPEINI_PAD, _
@@ -164,9 +164,9 @@ function astTypeIniAddAssign _
 		byval tree as ASTNODE ptr, _
 		byval expr as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n
+	dim as ASTNODE ptr n = any
 
 	n = hAddNode( tree, _
 				  AST_NODECLASS_TYPEINI_ASSIGN, _
@@ -189,9 +189,9 @@ function astTypeIniAddCtorCall _
 		byval tree as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval procexpr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n
+	dim as ASTNODE ptr n = any
 
 	n = hAddNode( tree, _
 				  AST_NODECLASS_TYPEINI_CTORCALL, _
@@ -214,9 +214,9 @@ function astTypeIniAddCtorList _
 		byval tree as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval elements as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n
+	dim as ASTNODE ptr n = any
 
 	n = hAddNode( tree, _
 				  AST_NODECLASS_TYPEINI_CTORLIST, _
@@ -238,10 +238,10 @@ private sub hCallCtor _
 	( _
 		byval n as ASTNODE ptr, _
 		byval basesym as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as FBSYMBOL ptr sym
-	dim as integer ofs
+	dim as FBSYMBOL ptr sym = any
+	dim as integer ofs = any
 
 	sym = n->sym
 
@@ -267,11 +267,11 @@ private sub hCallCtorList _
 	( _
 		byval n as ASTNODE ptr, _
 		byval basesym as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as FBSYMBOL ptr subtype, sym
-	dim as ASTNODE ptr fldexpr
-	dim as integer dtype, ofs, elements
+	dim as FBSYMBOL ptr subtype = any, sym = any
+	dim as ASTNODE ptr fldexpr = any
+	dim as integer dtype = any, ofs = any, elements = any
 
 	sym = n->sym
 
@@ -401,11 +401,11 @@ private function hFlushExprStatic _
 	( _
 		byval n as ASTNODE ptr, _
 		byval basesym as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-	dim as ASTNODE ptr expr
-	dim as integer edtype, sdtype
-	dim as FBSYMBOL ptr sym, litsym
+	dim as ASTNODE ptr expr = any
+	dim as integer edtype = any, sdtype = any
+	dim as FBSYMBOL ptr sym = any, litsym = any
 
 	function = FALSE
 
@@ -504,9 +504,9 @@ private function hFlushTreeStatic _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval basesym as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr n, nxt
+    dim as ASTNODE ptr n = any, nxt = any
 
 	function = FALSE
 
@@ -539,7 +539,7 @@ function astTypeIniFlush _
 		byval basesym as FBSYMBOL ptr, _
 		byval isstatic as integer, _
 		byval isinitializer as integer _
-	) as integer static
+	) as integer
 
 	assert( tree <> NULL )
 
@@ -561,11 +561,11 @@ end function
 private function hExprIsConst _
 	( _
 		byval n as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as FBSYMBOL ptr sym, litsym
-    dim as ASTNODE ptr expr
-    dim as integer sdtype, edtype
+    dim as FBSYMBOL ptr sym = any, litsym = any
+    dim as ASTNODE ptr expr = any
+    dim as integer sdtype = any, edtype = any
 
     sym = n->sym
     expr = n->l
@@ -648,9 +648,9 @@ end function
 function astTypeIniIsConst _
 	( _
 		byval tree as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	function = FALSE
 
@@ -721,7 +721,7 @@ function astTypeIniUpdate _
 		byval tree as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr expr
+    dim as ASTNODE ptr expr = any
 
 	function = tree
 

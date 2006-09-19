@@ -31,9 +31,9 @@ function astNewSTACK _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
     if( l = NULL ) then
     	return NULL

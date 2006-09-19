@@ -51,10 +51,10 @@ declare sub hDestroyVars _
 function astScopeBegin _
 	( _
 		_
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
-    dim as FBSYMBOL ptr s
+    dim as ASTNODE ptr n = any
+    dim as FBSYMBOL ptr s = any
 
 	if( parser.scope >= FB_MAXSCOPEDEPTH ) then
 		return NULL
@@ -119,9 +119,9 @@ end sub
 function astScopeBreak _
 	( _
 		byval target as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-	dim as ASTNODE ptr n
+	dim as ASTNODE ptr n = any
 
 	function = FALSE
 
@@ -149,9 +149,9 @@ end function
 sub astScopeEnd _
 	( _
 		byval n as ASTNODE ptr _
-	) static
+	)
 
-	dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr s = any
 
 	s = n->sym
 
@@ -191,9 +191,9 @@ end sub
 function astScopeUpdBreakList _
 	( _
 		byval proc as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
     function = FALSE
 
@@ -301,10 +301,10 @@ private function hCheckCrossing _
 		byval blk as FBSYMBOL ptr, _
 		byval top_stmt as integer, _
 		byval bot_stmt as integer _
-	) as integer static
+	) as integer
 
-	dim as FBSYMBOL ptr s
-	dim as integer stmt
+	dim as FBSYMBOL ptr s = any
+	dim as integer stmt = any
 
 	'' search for:
 	'' 		goto label
@@ -353,10 +353,10 @@ end function
 private function hCheckScopeLocals _
 	( _
 		byval n as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as FBSYMBOL ptr dst, blk, src_blk
-    dim as integer dst_stmt, src_stmt
+    dim as FBSYMBOL ptr dst = any, blk = any, src_blk = any
+    dim as integer dst_stmt = any, src_stmt = any
 
     dst = n->sym
     dst_stmt = symbGetLabelStmt( dst )
@@ -398,11 +398,11 @@ private sub hDestroyBlockLocals _
 		byval top_stmt as integer, _
 		byval bot_stmt as integer, _
 		byval base_expr as ASTNODE ptr _	'' the node before the branch, not itself!
-	) static
+	)
 
-	dim as FBSYMBOL ptr s
-	dim as ASTNODE ptr expr
-	dim as integer stmt
+	dim as FBSYMBOL ptr s = any
+	dim as ASTNODE ptr expr = any
+	dim as integer stmt = any
 
     '' for each now (in reverse order)
     if( symbIsScope( blk ) ) then
@@ -458,11 +458,11 @@ private sub hDelLocals _
 	( _
 		byval n as ASTNODE ptr, _
 		byval check_backward as integer _
-	) static
+	)
 
-	dim as FBSYMBOL ptr s
-	dim as integer dst_stmt, src_stmt
-	dim as ASTNODE ptr blk
+	dim as FBSYMBOL ptr s = any
+	dim as integer dst_stmt = any, src_stmt = any
+	dim as ASTNODE ptr blk = any
 
 	dst_stmt = symbGetLabelStmt( n->sym )
 	src_stmt = n->break.stmtnum
@@ -525,11 +525,12 @@ private function hCheckBranch _
 	( _
 		byval proc as ASTNODE ptr, _
 		byval n as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr src_parent
-    dim as FBSYMBOL ptr dst, dst_parent
-    dim as integer src_scope, dst_scope, src_stmt, dst_stmt, isparent
+    dim as ASTNODE ptr src_parent = any
+    dim as FBSYMBOL ptr dst = any, dst_parent = any
+    dim as integer src_scope = any, dst_scope = any
+    dim as integer src_stmt = any, dst_stmt = any, isparent = any
 
 	function = FALSE
 
@@ -640,9 +641,9 @@ end function
 private sub hDestroyVars _
 	( _
 		byval scp as FBSYMBOL ptr _
-	) static
+	)
 
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr s = any
 
 	'' for each symbol declared inside the SCOPE block (in reverse order)..
 	s = symbGetScopeSymbTb( scp ).tail
@@ -664,9 +665,9 @@ end sub
 function astLoadSCOPEBEGIN _
 	( _
 		byval n as ASTNODE ptr _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr s = any
 
 	s = n->sym
 
@@ -686,9 +687,9 @@ end function
 function astLoadSCOPEEND _
 	( _
 		byval n as ASTNODE ptr _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr s = any
 
     s = n->sym
 

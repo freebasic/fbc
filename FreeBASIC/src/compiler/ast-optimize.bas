@@ -962,14 +962,63 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+private sub hDivToShift_Signed _
+	( _
+		byval n as ASTNODE ptr, _
+		byval const_val as integer _
+	) static
+
+	dim as ASTNODE ptr l, l_cpy
+	dim as integer dtype, bits
+
+	l = n->l
+
+	'' !!FIXME!!! while there's no common sub-expr
+	'' 	          elimination, only allow VAR nodes
+	if( l->class <> AST_NODECLASS_VAR ) then
+		exit sub
+	end if
+
+	dtype = l->dtype
+
+	bits = symbGetDataBits( dtype ) - 1
+	'' bytes are converted to int's..
+	if( bits = 7 ) then
+		bits = symbGetDataBits( FB_DATATYPE_INTEGER ) - 1
+	end if
+
+	l_cpy = astCloneTree( l )
+
+	n->l = astNewCONV( dtype, _
+					   NULL, _
+					   astNewBOP( AST_OP_ADD, _
+				       			  l_cpy, _
+				       			  astNewBOP( AST_OP_SHR, _
+					  			  			 astNewCONV( symbGetUnsignedType( dtype ), _
+					  			  			  			 NULL, _
+					  			  			  			 l, _
+					  			  			  			 AST_OP_TOUNSIGNED _
+					  			  			  		   ), _
+					  			  			 astNewCONSTi( bits, _
+					  									   FB_DATATYPE_INTEGER ), _
+										   ), _
+								), _
+					   AST_OP_TOSIGNED _
+					 )
+
+	n->op.op = AST_OP_SHR
+	n->r->con.val.int = const_val
+
+end sub
+
+'':::::
 private sub hOptToShift _
 	( _
 		byval n as ASTNODE ptr _
 	)
 
 	static as ASTNODE ptr l, r
-	static as integer v, op
-	static as integer bits
+	static as integer const_val, op
 
 	if( n = NULL ) then
 		exit sub
@@ -987,53 +1036,25 @@ private sub hOptToShift _
 			if( r->defined ) then
 				if( symbGetDataClass( n->dtype ) = FB_DATACLASS_INTEGER ) then
 					if( symbGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
-						v = r->con.val.int
-						if( v > 0 ) then
-							v = hToPow2( v )
-							if( v > 0 ) then
+						const_val = r->con.val.int
+						if( const_val > 0 ) then
+							const_val = hToPow2( const_val )
+							if( const_val > 0 ) then
 								select case op
 								case AST_OP_MUL
-									if( v <= 32 ) then
+									if( const_val <= 32 ) then
 										n->op.op = AST_OP_SHL
-										r->con.val.int = v
+										r->con.val.int = const_val
 									end if
 
 								case AST_OP_INTDIV
-									if( v <= 32 ) then
+									if( const_val <= 32 ) then
 										l = n->l
 										if( symbIsSigned( l->dtype ) = FALSE ) then
 											n->op.op = AST_OP_SHR
-											r->con.val.int = v
+											r->con.val.int = const_val
 										else
-											'' !!FIXME!!! while there's no common sub-expr
-											'' 	          elimination, only allow VAR nodes
-											if( l->class = AST_NODECLASS_VAR ) then
-												bits = symbGetDataBits( l->dtype ) - 1
-												'' bytes are converted to int's..
-												if( bits = 7 ) then
-													bits = symbGetDataBits( FB_DATATYPE_INTEGER ) - 1
-												end if
-
-												n->l = astNewCONV( 0, _
-																   NULL, _
-																   astNewBOP( AST_OP_ADD, _
-															       			  astCloneTree( l ), _
-															       			  astNewBOP( AST_OP_SHR, _
-																  			  			 astNewCONV( 0, _
-																  			  			  			 NULL, _
-																  			  			  			 l, _
-																  			  			  			 AST_OP_TOUNSIGNED _
-																  			  			  		   ), _
-																  			  			 astNewCONSTi( bits, _
-																  									   FB_DATATYPE_INTEGER ), _
-																					   ), _
-																   			), _
-																   	AST_OP_TOSIGNED _
-																 )
-
-												n->op.op = AST_OP_SHR
-												r->con.val.int = v
-											end if
+                                            hDivToShift_Signed( n, const_val )
 										end if
 									end if
 

@@ -29,9 +29,9 @@
 private sub hCtorList _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as FBSYMBOL ptr cnt, label, this_, subtype
+	dim as FBSYMBOL ptr cnt = any, label = any, this_ = any, subtype = any
 
 	subtype = symbGetSubtype( sym )
 
@@ -66,10 +66,10 @@ private function hCallCtor _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as integer lgt
-   	dim as FBSYMBOL ptr subtype
+	dim as integer lgt = any
+   	dim as FBSYMBOL ptr subtype = any
 
     function = NULL
 
@@ -144,9 +144,9 @@ function astNewDECL _
 		byval symclass as FB_SYMBCLASS, _
 		byval sym as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DECL, INVALID )

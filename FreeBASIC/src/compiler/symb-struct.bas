@@ -34,7 +34,7 @@
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbAddUDT _
+function symbStructBegin _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
@@ -441,11 +441,11 @@ sub symbInsertInnerUDT _
 
 	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
 		'' calc padding (should be aligned like if an UDT field was being added)
-		pad = hCalcALign( inner->udt.lfldlen, _
+		pad = hCalcALign( 0, _
 						  parent->ofs, _
 						  parent->udt.align, _
-						  FB_DATATYPE_VOID, _
-						  NULL )
+						  FB_DATATYPE_STRUCT, _
+						  inner )
 		if( pad > 0 ) then
 			parent->ofs += pad
 		end if
@@ -610,33 +610,20 @@ private function hGetReturnType _
 end function
 
 '':::::
-sub symbRoundUDTSize _
+sub symbStructEnd _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) static
 
-    dim as integer align, pad
-
-	align = sym->udt.align
-
-	'' default?
-	if( align = 0 ) then
-		align = FB_INTEGERSIZE
-	end if
+    dim as integer pad
 
 	'' save length w/o padding
 	sym->udt.unpadlgt = sym->lgt
 
 	'' do round?
-	if( align > 1 ) then
-		'' first pad with the alignament given
-		pad = (align - (sym->lgt and (align-1))) and (align-1)
-		if( pad > 0 ) then
-			sym->lgt += pad
-		end if
-
+	if( sym->udt.align <> 1 ) then
 		'' plus the largest scalar field size (GCC 3.x ABI)
-		pad = hCalcALign( sym->udt.lfldlen, sym->lgt, sym->udt.align, FB_DATATYPE_VOID, NULL )
+		pad = hCalcALign( 0, sym->lgt, sym->udt.align, FB_DATATYPE_STRUCT, sym )
 		if( pad > 0 ) then
 			sym->lgt += pad
 		end if

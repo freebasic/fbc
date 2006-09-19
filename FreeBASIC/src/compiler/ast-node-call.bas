@@ -124,9 +124,9 @@ function astNewCALLCTOR _
 	( _
 		byval procexpr as ASTNODE ptr, _
 		byval instptr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n
+	dim as ASTNODE ptr n = any
 
 	n = astNewNode( AST_NODECLASS_CALLCTOR, _
 					astGetDataType( instptr ), _
@@ -150,11 +150,11 @@ private function hCallProc _
 		byval mode as integer, _
 		byval bytestopop as integer, _
 		byval bytesaligned as integer _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-    dim as IRVREG ptr vreg, vr
-    dim as ASTNODE ptr p
-    dim as integer dtype
+    dim as IRVREG ptr vreg = any, vr = any
+    dim as ASTNODE ptr p = any
+    dim as integer dtype = any
 
 	dtype = n->dtype
 
@@ -273,10 +273,10 @@ private sub hCheckTempStruct _
 	( _
 		byval n as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as IRVREG ptr vr
-	dim as FBSYMBOL a
+	dim as IRVREG ptr vr = any
+	dim as FBSYMBOL a = any
 
 	if( ast.doemit = FALSE ) then
 		exit sub
