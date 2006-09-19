@@ -23,7 +23,7 @@ type sqlite as any
 declare function sqlite_open cdecl alias "sqlite_open" (byval filename as zstring ptr, byval mode as integer, byval errmsg as byte ptr ptr) as sqlite ptr
 declare sub sqlite_close cdecl alias "sqlite_close" (byval as sqlite ptr)
 
-type sqlite_callback as function cdecl(byval as any ptr, byval as integer, byval as byte ptr ptr, byval as byte ptr ptr) as integer
+type sqlite_callback as function cdecl(byval as any ptr, byval as integer, byval as zstring ptr ptr, byval as zstring ptr ptr) as integer
 
 declare function sqlite_exec cdecl alias "sqlite_exec" (byval as sqlite ptr, byval sql as zstring ptr, byval as sqlite_callback, byval as any ptr, byval errmsg as byte ptr ptr) as integer
 
