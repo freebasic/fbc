@@ -6,7 +6,7 @@
 
 #include once "sqlite3.bi" 
 
-const DEFAULT_DATABASE = "test.db"
+const DEFAULT_DATABASE = "sqlite3_test.db"
 const DEFAULT_QUERY	   = "select * from features"
 
 declare sub showusage( )
