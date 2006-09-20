@@ -245,7 +245,11 @@ end sub
 
 
 '':::::
-function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
+function rtlDataRead _
+	( _
+		byval varexpr as ASTNODE ptr _
+	) as integer static
+
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
     dim as integer args, dtype, lgt
@@ -344,10 +348,12 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
 end function
 
 '':::::
-function rtlDataRestore( byval label as FBSYMBOL ptr, _
-						 byval afternode as ASTNODE ptr, _
-						 byval isprofiler as integer = FALSE _
-					   ) as integer static
+function rtlDataRestore _
+	( _
+		byval label as FBSYMBOL ptr, _
+		byval afternode as ASTNODE ptr, _
+		byval isprofiler as integer = FALSE _
+	) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 lname
     dim as ASTNODE ptr proc, expr
@@ -451,10 +457,12 @@ sub rtlDataStoreBegin static
 end sub
 
 '':::::
-function rtlDataStore( byval littext as zstring ptr, _
-					   byval litlen as integer, _
-					   byval typ as integer _
-					 ) as integer static
+function rtlDataStore _
+	( _
+		byval littext as zstring ptr, _
+		byval litlen as integer, _
+		byval typ as integer _
+	) as integer static
 
 	'' emit will take care of all dirty details
 	emitDATA( littext, litlen, typ )
@@ -464,10 +472,12 @@ function rtlDataStore( byval littext as zstring ptr, _
 end function
 
 '':::::
-function rtlDataStoreW( byval littext as wstring ptr, _
-					    byval litlen as integer, _
-					    byval typ as integer _
-					  ) as integer static
+function rtlDataStoreW _
+	( _
+		byval littext as wstring ptr, _
+		byval litlen as integer, _
+		byval typ as integer _
+	) as integer static
 
 	'' emit will take care of all dirty details
 	emitDATAW( littext, litlen, typ )
@@ -477,7 +487,10 @@ function rtlDataStoreW( byval littext as wstring ptr, _
 end function
 
 '':::::
-function rtlDataStoreOFS( byval sym as FBSYMBOL ptr ) as integer static
+function rtlDataStoreOFS _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer static
 
 	emitDATAOFS( symbGetMangledName( sym ) )
 

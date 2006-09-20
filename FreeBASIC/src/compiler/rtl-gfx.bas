@@ -27,8 +27,15 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
-declare function    hGfxlib_cb          ( byval sym as FBSYMBOL ptr ) as integer
-declare function 	hPorts_cb			( byval sym as FBSYMBOL ptr ) as integer
+declare function hGfxlib_cb _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
+declare function hPorts_cb _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
 
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to 44 ) = _
@@ -947,7 +954,11 @@ sub rtlGfxModEnd( )
 end sub
 
 '':::::
-private function hPorts_cb( byval sym as FBSYMBOL ptr ) as integer
+private function hPorts_cb _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
     static as integer libsAdded = FALSE
 
 	if( libsadded = FALSE ) then
@@ -964,7 +975,11 @@ private function hPorts_cb( byval sym as FBSYMBOL ptr ) as integer
 end function
 
 '':::::
-function rtlMultinput_cb( byval sym as FBSYMBOL ptr ) as integer static
+function rtlMultinput_cb _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer static
+    
     static as integer libsAdded = FALSE
 
 	if( libsadded = FALSE ) then
@@ -981,7 +996,10 @@ function rtlMultinput_cb( byval sym as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer static
+private function hGfxlib_cb _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer static
     static as integer libsAdded = FALSE
 
 	if( libsadded = FALSE ) then
@@ -1013,13 +1031,16 @@ private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-function rtlGfxPset( byval target as ASTNODE ptr, _
-					 byval targetisptr as integer, _
-					 byval xexpr as ASTNODE ptr, _
-					 byval yexpr as ASTNODE ptr, _
-					 byval cexpr as ASTNODE ptr, _
-					 byval coordtype as integer, _
-					 byval ispreset as integer ) as integer
+function rtlGfxPset _
+	( _
+		byval target as ASTNODE ptr, _
+		byval targetisptr as integer, _
+		byval xexpr as ASTNODE ptr, _
+		byval yexpr as ASTNODE ptr, _
+		byval cexpr as ASTNODE ptr, _
+		byval coordtype as integer, _
+		byval ispreset as integer _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as integer targetmode
@@ -1076,10 +1097,13 @@ function rtlGfxPset( byval target as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxPoint( byval target as ASTNODE ptr, _
-					  byval targetisptr as integer, _
-					  byval xexpr as ASTNODE ptr, _
-					  byval yexpr as ASTNODE ptr ) as ASTNODE ptr
+function rtlGfxPoint _
+	( _
+		byval target as ASTNODE ptr, _
+		byval targetisptr as integer, _
+		byval xexpr as ASTNODE ptr, _
+		byval yexpr as ASTNODE ptr _
+	) as ASTNODE ptr
 
 	dim as ASTNODE ptr proc
 	dim as integer targetmode
@@ -1121,16 +1145,19 @@ function rtlGfxPoint( byval target as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxLine( byval target as ASTNODE ptr, _
-					 byval targetisptr as integer, _
-					 byval x1expr as ASTNODE ptr, _
-					 byval y1expr as ASTNODE ptr, _
-					 byval x2expr as ASTNODE ptr, _
-					 byval y2expr as ASTNODE ptr, _
-					 byval cexpr as ASTNODE ptr, _
-					 byval linetype as integer, _
-					 byval styleexpr as ASTNODE ptr, _
-					 byval coordtype as integer ) as integer
+function rtlGfxLine _
+	( _
+		byval target as ASTNODE ptr, _
+		byval targetisptr as integer, _
+		byval x1expr as ASTNODE ptr, _
+		byval y1expr as ASTNODE ptr, _
+		byval x2expr as ASTNODE ptr, _
+		byval y2expr as ASTNODE ptr, _
+		byval cexpr as ASTNODE ptr, _
+		byval linetype as integer, _
+		byval styleexpr as ASTNODE ptr, _
+		byval coordtype as integer _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as integer targetmode
@@ -1205,17 +1232,20 @@ function rtlGfxLine( byval target as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxCircle( byval target as ASTNODE ptr, _
-					   byval targetisptr as integer, _
-					   byval xexpr as ASTNODE ptr, _
-					   byval yexpr as ASTNODE ptr, _
-					   byval radexpr as ASTNODE ptr, _
-					   byval cexpr as ASTNODE ptr, _
-					   byval aspexpr as ASTNODE ptr, _
-					   byval iniexpr as ASTNODE ptr, _
-					   byval endexpr as ASTNODE ptr, _
-					   byval fillflag as integer, _
-					   byval coordtype as integer ) as integer
+function rtlGfxCircle _
+	( _
+		byval target as ASTNODE ptr, _
+		byval targetisptr as integer, _
+		byval xexpr as ASTNODE ptr, _
+		byval yexpr as ASTNODE ptr, _
+		byval radexpr as ASTNODE ptr, _
+		byval cexpr as ASTNODE ptr, _
+		byval aspexpr as ASTNODE ptr, _
+		byval iniexpr as ASTNODE ptr, _
+		byval endexpr as ASTNODE ptr, _
+		byval fillflag as integer, _
+		byval coordtype as integer _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as integer targetmode
@@ -1301,13 +1331,16 @@ function rtlGfxCircle( byval target as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxPaint( byval target as ASTNODE ptr, _
-					  byval targetisptr as integer, _
-					  byval xexpr as ASTNODE ptr, _
-					  byval yexpr as ASTNODE ptr, _
-					  byval pexpr as ASTNODE ptr, _
-					  byval bexpr as ASTNODE ptr, _
-					  byval coord_type as integer ) as integer
+function rtlGfxPaint _
+	( _
+		byval target as ASTNODE ptr, _
+		byval targetisptr as integer, _
+		byval xexpr as ASTNODE ptr, _
+		byval yexpr as ASTNODE ptr, _
+		byval pexpr as ASTNODE ptr, _
+		byval bexpr as ASTNODE ptr, _
+		byval coord_type as integer _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as integer targetmode, pattern
@@ -1390,9 +1423,12 @@ function rtlGfxPaint( byval target as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxDraw( byval target as ASTNODE ptr, _
-					 byval targetisptr as integer, _
-					 byval cexpr as ASTNODE ptr ) as integer
+function rtlGfxDraw _
+	( _
+		byval target as ASTNODE ptr, _
+		byval targetisptr as integer, _
+		byval cexpr as ASTNODE ptr _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as integer targetmode
@@ -1429,19 +1465,23 @@ function rtlGfxDraw( byval target as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxDrawString( byval target as ASTNODE ptr, _
-						   byval targetisptr as integer, _
-						   byval xexpr as ASTNODE ptr, _
-						   byval yexpr as ASTNODE ptr, _
-						   byval sexpr as ASTNODE ptr, _
-						   byval cexpr as ASTNODE ptr, _
-						   byval fexpr as ASTNODE ptr, _
-						   byval fisptr as integer, _
-						   byval coord_type as integer, _
-						   byval mode as integer, _
-						   byval alphaexpr as ASTNODE ptr, _
-						   byval funcexpr as ASTNODE ptr, _
-						   byval paramexpr as ASTNODE ptr ) as integer
+function rtlGfxDrawString _
+	( _
+		byval target as ASTNODE ptr, _
+		byval targetisptr as integer, _
+		byval xexpr as ASTNODE ptr, _
+		byval yexpr as ASTNODE ptr, _
+		byval sexpr as ASTNODE ptr, _
+		byval cexpr as ASTNODE ptr, _
+		byval fexpr as ASTNODE ptr, _
+		byval fisptr as integer, _
+		byval coord_type as integer, _
+		byval mode as integer, _
+		byval alphaexpr as ASTNODE ptr, _
+		byval funcexpr as ASTNODE ptr, _
+		byval paramexpr as ASTNODE ptr _
+	) as integer
+    
     dim as ASTNODE ptr proc
     dim as integer targetmode
     dim as FBSYMBOL ptr reslabel
@@ -1542,13 +1582,16 @@ function rtlGfxDrawString( byval target as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxView( byval x1expr as ASTNODE ptr, _
-					 byval y1expr as ASTNODE ptr, _
-					 byval x2expr as ASTNODE ptr, _
-					 byval y2expr as ASTNODE ptr, _
-			    	 byval fillexpr as ASTNODE ptr, _
-			    	 byval bordexpr as ASTNODE ptr, _
-			    	 byval screenflag as integer ) as integer
+function rtlGfxView _
+	( _
+		byval x1expr as ASTNODE ptr, _
+		byval y1expr as ASTNODE ptr, _
+		byval x2expr as ASTNODE ptr, _
+		byval y2expr as ASTNODE ptr, _
+		byval fillexpr as ASTNODE ptr, _
+		byval bordexpr as ASTNODE ptr, _
+		byval screenflag as integer _
+	) as integer
 
     dim as ASTNODE ptr proc
 
@@ -1617,11 +1660,14 @@ function rtlGfxView( byval x1expr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxWindow( byval x1expr as ASTNODE ptr, _
-					   byval y1expr as ASTNODE ptr, _
-					   byval x2expr as ASTNODE ptr, _
-					   byval y2expr as ASTNODE ptr, _
-					   byval screenflag as integer ) as integer
+function rtlGfxWindow _
+	( _
+		byval x1expr as ASTNODE ptr, _
+		byval y1expr as ASTNODE ptr, _
+		byval x2expr as ASTNODE ptr, _
+		byval y2expr as ASTNODE ptr, _
+		byval screenflag as integer _
+	) as integer
 
     dim as ASTNODE ptr proc
 
@@ -1674,11 +1720,14 @@ function rtlGfxWindow( byval x1expr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxPalette ( byval attexpr as ASTNODE ptr, _
-						 byval rexpr as ASTNODE ptr, _
-						 byval gexpr as ASTNODE ptr, _
-						 byval bexpr as ASTNODE ptr, _
-						 byval isget as integer ) as integer
+function rtlGfxPalette  _
+	( _
+		byval attexpr as ASTNODE ptr, _
+		byval rexpr as ASTNODE ptr, _
+		byval gexpr as ASTNODE ptr, _
+		byval bexpr as ASTNODE ptr, _
+		byval isget as integer _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -1742,9 +1791,12 @@ function rtlGfxPalette ( byval attexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxPaletteUsing ( byval arrayexpr as ASTNODE ptr, _
-							  byval isptr as integer, _
-							  byval isget as integer ) as integer
+function rtlGfxPaletteUsing  _
+	( _
+		byval arrayexpr as ASTNODE ptr, _
+		byval isptr as integer, _
+		byval isget as integer _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -1773,21 +1825,24 @@ function rtlGfxPaletteUsing ( byval arrayexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxPut( byval target as ASTNODE ptr, _
-					byval targetisptr as integer, _
-					byval xexpr as ASTNODE ptr, _
-					byval yexpr as ASTNODE ptr, _
-			   		byval arrayexpr as ASTNODE ptr, _
-			   		byval isptr as integer, _
-					byval x1expr as ASTNODE ptr, _
-					byval x2expr as ASTNODE ptr, _
-					byval y1expr as ASTNODE ptr, _
-					byval y2expr as ASTNODE ptr, _
-			   		byval mode as integer, _
-			   		byval alphaexpr as ASTNODE ptr, _
-			   		byval funcexpr as ASTNODE ptr, _
-			   		byval paramexpr as ASTNODE ptr, _
-			   		byval coordtype as integer ) as integer
+function rtlGfxPut _
+	( _
+		byval target as ASTNODE ptr, _
+		byval targetisptr as integer, _
+		byval xexpr as ASTNODE ptr, _
+		byval yexpr as ASTNODE ptr, _
+		byval arrayexpr as ASTNODE ptr, _
+		byval isptr as integer, _
+		byval x1expr as ASTNODE ptr, _
+		byval x2expr as ASTNODE ptr, _
+		byval y1expr as ASTNODE ptr, _
+		byval y2expr as ASTNODE ptr, _
+		byval mode as integer, _
+		byval alphaexpr as ASTNODE ptr, _
+		byval funcexpr as ASTNODE ptr, _
+		byval paramexpr as ASTNODE ptr, _
+		byval coordtype as integer _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as integer targetmode, argmode
@@ -1899,16 +1954,19 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxGet( byval target as ASTNODE ptr, _
-					byval targetisptr as integer, _
-					byval x1expr as ASTNODE ptr, _
-					byval y1expr as ASTNODE ptr, _
-					byval x2expr as ASTNODE ptr, _
-					byval y2expr as ASTNODE ptr, _
-			   		byval arrayexpr as ASTNODE ptr, _
-			   		byval isptr as integer, _
-			   		byval symbol as FBSYMBOL ptr, _
-			   		byval coordtype as integer ) as integer
+function rtlGfxGet _
+	( _
+		byval target as ASTNODE ptr, _
+		byval targetisptr as integer, _
+		byval x1expr as ASTNODE ptr, _
+		byval y1expr as ASTNODE ptr, _
+		byval x2expr as ASTNODE ptr, _
+		byval y2expr as ASTNODE ptr, _
+		byval arrayexpr as ASTNODE ptr, _
+		byval isptr as integer, _
+		byval symbol as FBSYMBOL ptr, _
+		byval coordtype as integer _
+	) as integer
 
     dim as ASTNODE ptr proc, descexpr
     dim as integer targetmode, argmode
@@ -1993,12 +2051,15 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxScreenSet( byval wexpr as ASTNODE ptr, _
-						  byval hexpr as ASTNODE ptr, _
-						  byval dexpr as ASTNODE ptr, _
-						  byval pexpr as ASTNODE ptr, _
-						  byval fexpr as ASTNODE ptr, _
-						  byval rexpr as ASTNODE ptr ) as integer
+function rtlGfxScreenSet _
+	( _
+		byval wexpr as ASTNODE ptr, _
+		byval hexpr as ASTNODE ptr, _
+		byval dexpr as ASTNODE ptr, _
+		byval pexpr as ASTNODE ptr, _
+		byval fexpr as ASTNODE ptr, _
+		byval rexpr as ASTNODE ptr _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f, reslabel

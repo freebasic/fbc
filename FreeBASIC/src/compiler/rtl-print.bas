@@ -1145,6 +1145,15 @@ function rtlWrite _
 		args = 2
 	else
 
+		'' UDT? try to convert to string with type casting op overloading
+		select case astGetDataType( expr )
+		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+			expr = astNewOvlCONV( FB_DATATYPE_STRING, NULL, expr )
+			if( expr = NULL ) then
+				exit function
+			end if
+		end select
+
 		dtype = astGetDataType( expr )
 
 		select case as const dtype
@@ -1315,6 +1324,15 @@ function rtlPrintUsing _
     if( expr = NULL ) then
     	exit function
     end if
+
+	'' UDT? try to convert to double with type casting op overloading
+	select case astGetDataType( expr )
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+		expr = astNewOvlCONV( FB_DATATYPE_DOUBLE, NULL, expr )
+		if( expr = NULL ) then
+			exit function
+		end if
+	end select
 
 	select case astGetDataType( expr )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR

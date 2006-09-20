@@ -1780,9 +1780,6 @@ function symbFindSelfBopOvlProc _
 
    	'case FB_DATATYPE_CLASS
 
-   	case FB_DATATYPE_ENUM
-   		return NULL
-
    	case else
    		return NULL
    	end select
@@ -1929,14 +1926,6 @@ function symbFindCastOvlProc _
 		end if
 
    		proc_head = symbGetUDTOpOvlTb( subtype )(AST_OP_CAST - AST_OP_SELFBASE)
-
-   	case FB_DATATYPE_ENUM
-   		subtype = astGetSubType( l )
-   		if( subtype = NULL ) then
-   			return NULL
-   		end if
-
-   		proc_head = NULL
 
    	case else
    		return NULL
