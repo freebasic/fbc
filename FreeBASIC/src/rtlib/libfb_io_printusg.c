@@ -228,7 +228,7 @@ FBCALL int fb_PrintUsingStr
 			break;
 
 		case '\\':
-			if( nc == ' ' || strchars != -1 )
+			if( (strchars != -1) || (nc == ' ') || (nc == '\\') )
 			{
 				if( strchars > 0 )
 				{
