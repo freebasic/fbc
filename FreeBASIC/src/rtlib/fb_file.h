@@ -85,6 +85,8 @@ typedef enum _FB_FILE_ENCOD {
 
 #include <stdio.h>
 
+typedef long fb_off_t;
+
 struct _FB_FILE;
 
 typedef int (*FnFileSetWidth) 		( struct _FB_FILE *handle, int new_width );
@@ -94,8 +96,8 @@ typedef int (*FnFileOpen)     		( struct _FB_FILE *handle, const char *filename,
 									  size_t filename_len );
 typedef int (*FnFileEof)      		( struct _FB_FILE *handle );
 typedef int (*FnFileClose)    		( struct _FB_FILE *handle );
-typedef int (*FnFileSeek)     		( struct _FB_FILE *handle, long offset, int whence );
-typedef int (*FnFileTell)     		( struct _FB_FILE *handle, long *pOffset );
+typedef int (*FnFileSeek)     		( struct _FB_FILE *handle, fb_off_t offset, int whence );
+typedef int (*FnFileTell)     		( struct _FB_FILE *handle, fb_off_t *pOffset );
 typedef int (*FnFileRead)     		( struct _FB_FILE *handle, void *value,
 									  size_t *pValuelen );
 typedef int (*FnFileReadWstr) 		( struct _FB_FILE *handle, FB_WCHAR *value,
@@ -272,16 +274,16 @@ FBCALL int          fb_FileGetStr       ( int fnum, long pos, void *str, int str
 FBCALL int          fb_FileGetArray     ( int fnum, long pos, FBARRAY *dst );
 FBCALL int          fb_FileEof          ( int fnum );
        int          fb_FileEofEx        ( FB_FILE *handle );
-FBCALL long         fb_FileTell         ( int fnum );
-       long         fb_FileTellEx       ( FB_FILE *handle );
-FBCALL int          fb_FileSeek         ( int fnum, long newpos );
-       int          fb_FileSeekEx       ( FB_FILE *handle, long newpos );
+FBCALL fb_off_t     fb_FileTell         ( int fnum );
+       fb_off_t     fb_FileTellEx       ( FB_FILE *handle );
+FBCALL int          fb_FileSeek         ( int fnum, fb_off_t newpos );
+       int          fb_FileSeekEx       ( FB_FILE *handle, fb_off_t newpos );
 FBCALL long         fb_FileLocation     ( int fnum );
        long         fb_FileLocationEx   ( FB_FILE *handle );
 FBCALL int          fb_FileKill         ( FBSTRING *str );
 FBCALL void         fb_FileReset        ( void );
-FBCALL unsigned int fb_FileSize         ( int fnum );
-       unsigned int fb_FileSizeEx       ( FB_FILE *handle );
+FBCALL fb_off_t     fb_FileSize         ( int fnum );
+       fb_off_t     fb_FileSizeEx       ( FB_FILE *handle );
 FBCALL int          fb_FilePutBack      ( int fnum, const void *data, size_t length );
 FBCALL int 			fb_FilePutBackWstr	( int fnum, const FB_WCHAR *src, size_t chars );
        int          fb_FilePutBackEx    ( FB_FILE *handle, const void *data,

@@ -43,9 +43,9 @@
 
 
 /*:::::*/
-long fb_FileTellEx( FB_FILE *handle )
+fb_off_t fb_FileTellEx( FB_FILE *handle )
 {
-	long pos;
+	fb_off_t pos;
 
     if( !FB_HANDLE_USED(handle) )
 		return 0;
@@ -76,7 +76,7 @@ long fb_FileTellEx( FB_FILE *handle )
 }
 
 /*:::::*/
-FBCALL long fb_FileTell( int fnum )
+FBCALL fb_off_t fb_FileTell( int fnum )
 {
     return fb_FileTellEx( FB_FILE_TO_HANDLE(fnum) );
 }

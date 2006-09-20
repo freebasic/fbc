@@ -43,7 +43,7 @@
 
 
 /*:::::*/
-int fb_FileSeekEx( FB_FILE *handle, long newpos )
+int fb_FileSeekEx( FB_FILE *handle, fb_off_t newpos )
 {
 	int res;
 
@@ -72,7 +72,7 @@ int fb_FileSeekEx( FB_FILE *handle, long newpos )
 }
 
 /*:::::*/
-FBCALL int fb_FileSeek( int fnum, long newpos )
+FBCALL int fb_FileSeek( int fnum, fb_off_t newpos )
 {
     return fb_FileSeekEx( FB_FILE_TO_HANDLE(fnum), newpos );
 }

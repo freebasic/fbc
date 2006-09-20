@@ -44,7 +44,7 @@
 #include "fb.h"
 
 /*:::::*/
-int fb_DevFileTell( struct _FB_FILE *handle, long *pOffset )
+int fb_DevFileTell( struct _FB_FILE *handle, fb_off_t *pOffset )
 {
     FILE *fp;
 

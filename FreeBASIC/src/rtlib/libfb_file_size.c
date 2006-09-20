@@ -43,9 +43,9 @@
 #include "fb.h"
 
 /*:::::*/
-unsigned int fb_FileSizeEx( FB_FILE *handle )
+fb_off_t fb_FileSizeEx( FB_FILE *handle )
 {
-	long res = 0;
+	fb_off_t res = 0;
 
     if( !FB_HANDLE_USED(handle) )
 		return res;
@@ -74,7 +74,7 @@ unsigned int fb_FileSizeEx( FB_FILE *handle )
 }
 
 /*:::::*/
-FBCALL unsigned int fb_FileSize( int fnum )
+FBCALL fb_off_t fb_FileSize( int fnum )
 {
     return fb_FileSizeEx(FB_FILE_TO_HANDLE(fnum));
 }

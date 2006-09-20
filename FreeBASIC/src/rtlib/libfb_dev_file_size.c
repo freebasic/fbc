@@ -78,7 +78,7 @@ int fb_hDevFileSeekStart
 }
 
 /*:::::*/
-long fb_DevFileGetSize
+fb_off_t fb_DevFileGetSize
 	(
 		FILE *fp,
 		int mode,

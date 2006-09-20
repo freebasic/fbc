@@ -42,7 +42,7 @@
 #include <stdio.h>
 
 
-FBCALL int fb_FileLen 
+FBCALL fb_off_t fb_FileLen 
 	( 
 		const char *filename 
 	)

@@ -44,7 +44,7 @@
 #include "fb.h"
 
 /*:::::*/
-int fb_DevFileSeek( struct _FB_FILE *handle, long offset, int whence )
+int fb_DevFileSeek( struct _FB_FILE *handle, fb_off_t offset, int whence )
 {
     int res;
     FILE *fp;
