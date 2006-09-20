@@ -973,6 +973,17 @@ function cOperatorHeader _
 		end if
 	end if
 
+    '' convert op to op= if this is a method
+    if( (attrib and FB_SYMBATTRIB_METHOD) <> 0 ) then
+    	if( symbGetProcParams( proc ) = 1 + 1 ) then
+    		if( astGetOpIsSelf( op ) = FALSE ) then
+    			if( astGetOpSelfVer( op ) <> 0 ) then
+    				op = astGetOpSelfVer( op )
+    			end if
+    		end if
+    	end if
+    end if
+
     '' self? (but type casting)
     if( astGetOpIsSelf( op ) and (op <> AST_OP_CAST) ) then
     	dtype = FB_DATATYPE_VOID

@@ -13,21 +13,15 @@
 	      the sjlj (setjmp and longjmp) method isn't used in ELF (it seems)
 	  - no support for vectors []'s
 
-    	- type<>() is borked with RETURN or FUNCTION =
-
 [ ] methods in TYPE's
 	- add checks for scoped symbols in procHeader()
 	- add method call support to cTypeField( )
 
 [ ] operator overloading:
-    - add method operators support for ENUM's (mainly for cast())
     - binary:
       OPERATOR & ( l, r ) AS TYPE
-    - convert the binary op in member functions to op= if they take just one param
     - unary:
       OPERATOR *|@ ( l ) AS TYPE
-    - PRINT and pseudo-overloaded functions should try to convert the UDT, ENUM, CLASS to
-      string
     - variants won't work if the non-variant param is to be returned
       byref (like for getmouse), the temp var used should be assigned
       back to the variant
