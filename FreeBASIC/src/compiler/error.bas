@@ -216,7 +216,8 @@ end type
 		@"The constructor or destructor calling convention must be CDECL", _
 		@"This symbol cannot be undefined", _
 		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _
-		@"Invalid assignment/conversion" _
+		@"Invalid assignment/conversion", _
+		@"Invalid array subscript" _
 	}
 
 

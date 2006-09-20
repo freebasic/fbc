@@ -1242,7 +1242,7 @@ function rtlFilePut _
 
 	''
 	dtype = astGetDataType( src )
-	isstring = hIsString( dtype )
+	isstring = symbIsString( dtype )
 	if( isstring ) then
 		f = PROCLOOKUP( FILEPUTSTR )
 	else
@@ -1388,7 +1388,7 @@ function rtlFileGet _
 
 	''
 	dtype = astGetDataType( dst )
-	isstring = hIsString( dtype )
+	isstring = symbIsString( dtype )
 	if( isstring ) then
 		f = PROCLOOKUP( FILEGETSTR )
 	else

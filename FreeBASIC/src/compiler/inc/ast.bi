@@ -56,6 +56,8 @@ enum AST_NODECLASS
 	AST_NODECLASS_OFFSET
 	AST_NODECLASS_DECL
 
+	AST_NODECLASS_NIDXARRAY
+
 	AST_NODECLASS_IIF
 	AST_NODECLASS_LIT
 	AST_NODECLASS_ASM
@@ -748,14 +750,10 @@ declare function astNewDECL _
 		byval initree as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare sub astDump _
+declare function astNewNIDXARRAY _
 	( _
-		byval p as ASTNODE ptr, _
-		byval n as ASTNODE ptr, _
-		byval isleft as integer, _
-		byval ln as integer, _
-		byval cn as integer _
-	)
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
 
 declare function astNewNode _
 	( _
@@ -1072,6 +1070,8 @@ declare function astBuildImplicitCtorCall _
 #define astIsFIELD(n) (n->class = AST_NODECLASS_FIELD)
 
 #define astIsBITFIELD(n) iif( astIsFIELD(n), (n->l->dtype = FB_DATATYPE_BITFIELD), FALSE )
+
+#define astIsNIDXARRAY(n) (n->class = AST_NODECLASS_NIDXARRAY)
 
 #define astGetValue(n) n->con.val
 

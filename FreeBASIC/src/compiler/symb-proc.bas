@@ -522,19 +522,15 @@ private function hSetupProc _
     	stats = FB_SYMBSTATS_HASALIAS
     end if
 
-	''
-	parent = symbGetCurrentNamespc( )
-    symbtb = symbGetCompSymbTb( parent )
-    hashtb = symbGetCompHashTb( parent )
-
 	'' move to global ns? (needed for function ptr protos)
 	if( (options and FB_SYMBOPT_MOVETOGLOB) <> 0 ) then
-    	'' only if not inside a scope block..
-    	if( parser.scope = FB_MAINSCOPE ) then
-			parent = @symbGetGlobalNamespc( )
-			symbtb = @symbGetGlobalTb( )
-			hashtb = @symbGetGlobalHashTb( )
-		end if
+		parent = @symbGetGlobalNamespc( )
+		symbtb = @symbGetGlobalTb( )
+		hashtb = @symbGetGlobalHashTb( )
+	else
+		parent = symbGetCurrentNamespc( )
+    	symbtb = symbGetCompSymbTb( parent )
+    	hashtb = symbGetCompHashTb( parent )
 	end if
 
 	head_proc = NULL
@@ -908,13 +904,23 @@ function symbAddProcPtr _
 
 	dim as zstring ptr id
 	dim as FBSYMCHAIN ptr chain_
-	dim as FBSYMBOL ptr sym
+	dim as FBSYMBOL ptr sym, parent
+	dim as FB_SYMBOPT options
 
 	id = hMangleFunctionPtr( proc, dtype, subtype, mode )
 
+    '' if in main (or inside a NS), add the func ptr to the main table
+    if( parser.scope = FB_MAINSCOPE ) then
+		parent = @symbGetGlobalNamespc( )
+		options = FB_SYMBOPT_MOVETOGLOB
+    else
+    	parent = symbGetCurrentNamespc( )
+    	options = 0
+	end if
+
 	'' already exists? (it's ok to use LookupAt, literal str's are always
 	'' prefixed with {fbsc}, there will be clashes with func ptr mangled names )
-    chain_ = symbLookupAt( @symbGetGlobalNamespc( ), id, TRUE )
+    chain_ = symbLookupAt( parent, id, TRUE )
 	if( chain_ <> NULL ) then
 		return chain_->sym
 	end if
@@ -924,9 +930,7 @@ function symbAddProcPtr _
 							id, NULL, NULL, _
 							dtype, subtype, ptrcnt, _
 							0, mode, _
-							FB_SYMBOPT_DECLARING or _
-							FB_SYMBOPT_MOVETOGLOB or _
-							FB_SYMBOPT_PRESERVECASE )
+							options or FB_SYMBOPT_DECLARING or FB_SYMBOPT_PRESERVECASE )
 
 	if( sym <> NULL ) then
 		symbSetIsFuncPtr( sym )

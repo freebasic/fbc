@@ -1269,6 +1269,16 @@ declare function symbIsProcOverloadOf _
 		byval parent as FBSYMBOL ptr _
 	) as integer
 
+declare function symbIsArray _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
+declare function symbIsString _
+	( _
+		byval dtype as integer _
+	) as integer
+
 declare function symbGetVarHasCtor _
 	( _
 		byval s as FBSYMBOL ptr _
@@ -1938,11 +1948,6 @@ declare function symbLookupCompField _
 
 #define symbGetIsDynamic(s) ((s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) <> 0 )
 
-#define symbIsArray(s) iif( (s->class = FB_SYMBCLASS_VAR) or (s->class = FB_SYMBCLASS_FIELD), _
-							iif( (s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) > 0, _
-								 TRUE, s->var.array.dims > 0 ), _
-							FALSE )
-
 #define symbIsShared(s) ((s->attrib and FB_SYMBATTRIB_SHARED) <> 0)
 
 #define symbIsStatic(s) ((s->attrib and FB_SYMBATTRIB_STATIC) <> 0)
@@ -1998,8 +2003,6 @@ declare function symbLookupCompField _
 #define symbIsTrivial(s) ((symbGetStats( s ) and (FB_SYMBSTATS_HASCOPYCTOR or _
 										  		  FB_SYMBSTATS_HASDTOR or _
 										  		  FB_SYMBSTATS_HASVIRTUAL)) = 0)
-
-#define hIsString(t) ((t = FB_DATATYPE_STRING) or (t = FB_DATATYPE_FIXSTR) or (t = FB_DATATYPE_CHAR) or (t = FB_DATATYPE_WCHAR))
 
 ''
 '' inter-module globals

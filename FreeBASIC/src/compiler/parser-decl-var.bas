@@ -607,6 +607,10 @@ private sub hMakeArrayDimTB _
 		expr = exprTB(i, 1)
 		dTB(i).upper = astGetValueAsInt( expr )
 		astDelNode( expr )
+
+    	if( dTB(i).upper < dTB(i).lower ) then
+			errReport( FB_ERRMSG_INVALIDSUBSCRIPT )
+    	end if
 	next
 
 end sub
@@ -1402,6 +1406,12 @@ function cStaticArrayDecl _
     	else
     	    dTB(i).upper = dTB(i).lower
     		dTB(i).lower = env.opt.base
+    	end if
+
+    	if( dTB(i).upper < dTB(i).lower ) then
+			if( errReport( FB_ERRMSG_INVALIDSUBSCRIPT ) = FALSE ) then
+				exit function
+			end if
     	end if
 
     	dimensions += 1

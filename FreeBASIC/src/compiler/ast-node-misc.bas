@@ -328,3 +328,40 @@ function astLoadNOP	_
 	function = NULL
 
 end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' Non-Indexed Array (l = expr; r = NULL)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewNIDXARRAY _
+	( _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr static
+
+    dim as ASTNODE ptr n
+
+	'' alloc new node
+	n = astNewNode( AST_NODECLASS_NIDXARRAY, INVALID )
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	n->l = expr
+
+	function = n
+
+end function
+
+'':::::
+function astLoadNIDXARRAY	_
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
+	astDelTree( n->l )
+
+	function = NULL
+
+end function
+

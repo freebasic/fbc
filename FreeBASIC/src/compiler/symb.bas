@@ -1124,6 +1124,40 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+function symbIsArray _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
+	select case sym->class
+	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
+		if( (sym->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) <> 0 ) then
+			return TRUE
+		else
+			return sym->var.array.dims <> 0
+		end if
+	end select
+
+	function = FALSE
+
+end function
+
+'':::::
+function symbIsString _
+	( _
+		byval dtype as integer _
+	) as integer
+
+	select case as const dtype
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		function = TRUE
+	case else
+		function = FALSE
+	end select
+
+end function
+
+'':::::
 function symbIsEqual _
 	( _
 		byval sym1 as FBSYMBOL ptr, _

@@ -197,12 +197,44 @@ private sub hCONVConstEval64 _
 end sub
 
 '':::::
+#macro hCheckPtr _
+	( _
+		to_dtype, _
+		ldtype _
+	)
+
+    '' to pointer? only allow integers..
+    if( to_dtype >= FB_DATATYPE_POINTER ) then
+		select case as const ldtype
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
+		case else
+			if( ldtype < FB_DATATYPE_POINTER ) then
+				exit function
+			end if
+		end select
+
+    '' from pointer? only allow integers..
+    elseif( ldtype >= FB_DATATYPE_POINTER ) then
+		select case as const to_dtype
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
+		case else
+			if( to_dtype < FB_DATATYPE_POINTER ) then
+				exit function
+			end if
+		end select
+    end if
+
+#endmacro
+
+'':::::
 function astCheckCONV _
 	( _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr _
 	) as integer
+
+	dim as integer ldtype = any
 
 	function = FALSE
 
@@ -211,12 +243,17 @@ function astCheckCONV _
 		exit function
 	end if
 
+	ldtype = l->dtype
+
     '' string? neither
-    if( symbGetDataClass( l->dtype ) = FB_DATACLASS_STRING ) then
+    if( symbGetDataClass( ldtype ) = FB_DATACLASS_STRING ) then
     	exit function
 	end if
 
-	select case l->dtype
+	'' check pointers
+	hCheckPtr( to_dtype, ldtype )
+
+	select case ldtype
 	'' CHAR and WCHAR literals are also from the INTEGER class
     case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	'' don't allow, unless it's a deref pointer
@@ -298,26 +335,8 @@ function astNewCONV _
 		end if
     end select
 
-    '' to pointer? only allow integers..
-    if( to_dtype >= FB_DATATYPE_POINTER ) then
-		select case as const ldtype
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
-		case else
-			if( ldtype < FB_DATATYPE_POINTER ) then
-				exit function
-			end if
-		end select
-
-    '' from pointer? only allow integers..
-    elseif( ldtype >= FB_DATATYPE_POINTER ) then
-		select case as const to_dtype
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
-		case else
-			if( to_dtype < FB_DATATYPE_POINTER ) then
-				exit function
-			end if
-		end select
-    end if
+	'' check pointers
+	hCheckPtr( to_dtype, ldtype )
 
     '' string?
 	if( check_str ) then

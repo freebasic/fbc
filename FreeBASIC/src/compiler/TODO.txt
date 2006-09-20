@@ -24,8 +24,6 @@
 	- add method call support to cTypeField( )
 
 [ ] operator overloading:
-    - add implicit casting to BOP
-      - what if both sides are UDT's?
     - add method operators support for ENUM's (mainly for cast())
     - binary:
       OPERATOR & ( l, r ) AS TYPE

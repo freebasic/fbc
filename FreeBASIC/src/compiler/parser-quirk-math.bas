@@ -71,8 +71,6 @@ function cMathFunct _
 	) as integer
 
     dim as ASTNODE ptr expr = any, expr2 = any
-    dim as integer islen = any, dtype = any, lgt = any, ptrcnt = any
-    dim as FBSYMBOL ptr sym = any, subtype = any
 
 	function = FALSE
 
@@ -146,7 +144,10 @@ function cMathFunct _
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
 	case FB_TK_LEN, FB_TK_SIZEOF
-		islen = (tk = FB_TK_LEN)
+    	dim as integer is_len = any, dtype = any, lgt = any, ptrcnt = any
+    	dim as FBSYMBOL ptr sym = any, subtype = any
+
+		is_len = (tk = FB_TK_LEN)
 		lexSkipToken( )
 
 		hMatchLPRNT( )
@@ -162,13 +163,23 @@ function cMathFunct _
 					'' error recovery: fake an expr
 					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				end if
+
+			else
+				'' ugly hack to deal with arrays w/o indexes
+				if( astIsNIDXARRAY( expr ) ) then
+					is_len = FALSE
+					expr2 = astGetLeft( expr )
+					astDelNode( expr )
+					expr = expr2
+				end if
 			end if
+
 			fbSetCheckArray( TRUE )
 		end if
 
 		'' string expressions with SIZEOF() are not allowed
 		if( expr <> NULL ) then
-			if( islen = FALSE ) then
+			if( is_len = FALSE ) then
 				if( astGetDataClass( expr ) = FB_DATACLASS_STRING ) then
 					if( (astGetSymbol( expr ) = NULL) or (astIsCALL( expr )) ) then
 						if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
@@ -186,7 +197,7 @@ function cMathFunct _
 		hMatchRPRNT( )
 
 		if( expr <> NULL ) then
-			funcexpr = rtlMathLen( expr, islen )
+			funcexpr = rtlMathLen( expr, is_len )
 		else
 			funcexpr = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
 		end if

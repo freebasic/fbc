@@ -406,7 +406,7 @@ function rtlMathLen _
 
 	'' LEN()?
 	if( islen ) then
-		select case dtype
+		select case as const dtype
 		'' dyn-len or zstring?
 		case FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 
@@ -460,6 +460,7 @@ function rtlMathLen _
 
 		'' anything else..
 		case else
+type_size:
 			lgt = rtlCalcExprLen( expr, FALSE )
 
 			'' handle fix-len strings (evaluated at compile-time)

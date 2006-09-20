@@ -584,15 +584,15 @@ private function hExprIsConst _
 	if( litsym = NULL ) then
 
 		'' string?
-		if( hIsString( sdtype ) ) then
-			if( hIsString( edtype ) ) then
+		if( symbIsString( sdtype ) ) then
+			if( symbIsString( edtype ) ) then
 				errReport( FB_ERRMSG_EXPECTEDCONST, TRUE )
 			else
 				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			end if
 			exit function
 
-		elseif( hIsString( edtype ) ) then
+		elseif( symbIsString( edtype ) ) then
 		    errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			exit function
 		end if
@@ -627,7 +627,7 @@ private function hExprIsConst _
 	'' literal string..
 	else
 		'' not a string?
-		if( hIsString( sdtype ) = FALSE ) then
+		if( symbIsString( sdtype ) = FALSE ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			exit function
 		end if

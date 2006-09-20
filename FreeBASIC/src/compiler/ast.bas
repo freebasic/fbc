@@ -102,6 +102,9 @@ declare function 	astLoadSCOPEEND		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadDECL			( byval n as ASTNODE ptr ) as IRVREG ptr
 
+declare function 	astLoadNIDXARRAY	( byval n as ASTNODE ptr ) as IRVREG ptr
+
+
 '' globals
 	dim shared as ASTCTX ast
 
@@ -132,6 +135,7 @@ declare function 	astLoadDECL			( byval n as ASTNODE ptr ) as IRVREG ptr
 		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_ARG
 		( @astLoadOFFSET		, FALSE			), _	'' AST_NODECLASS_OFFSET
 		( @astLoadDECL			, FALSE			), _	'' AST_NODECLASS_DECL
+		( @astLoadNIDXARRAY		, TRUE			), _	'' AST_NODECLASS_NIDXARRAY
 		( @astLoadIIF			, TRUE			), _	'' AST_NODECLASS_IIF
 		( @astLoadLIT			, FALSE			), _	'' AST_NODECLASS_LIT
 		( @astLoadASM			, TRUE			), _	'' AST_NODECLASS_ASM

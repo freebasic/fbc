@@ -299,14 +299,20 @@ function cTypeField _
 
         else
 			'' array and no index?
-			if( (options and FB_FIELDOPT_CHECKARRAY) <> 0 ) then
-				if( symbGetArrayDimensions( sym ) <> 0 ) then
+			if( symbGetArrayDimensions( sym ) <> 0 ) then
+				if( (options and FB_FIELDOPT_CHECKARRAY) <> 0 ) then
     				if( errReport( FB_ERRMSG_EXPECTEDINDEX ) = FALSE ) then
     					exit function
     				end if
     				'' error recovery: no need to fake an expr, field arrays
     				'' are never dynamic (for now)
+
+   				'' non-indexed array..
+   				else
+   					expr = astNewNIDXARRAY( expr )
    				end if
+
+   				exit do
    			end if
         end if
 
@@ -1109,10 +1115,9 @@ function cVariableEx _
 	) as integer
 
 	dim as zstring ptr id = any
-	dim as integer dtype = any, deftyp = any, drefcnt = any, checkfields = any
-	dim as ASTNODE ptr idxexpr = any
+	dim as integer dtype = any, deftyp = any, drefcnt = any
 	dim as FBSYMBOL ptr sym = any, elm = any, subtype = any
-	dim as integer isbyref = any, isfuncptr = any, isimport = any, isarray = any
+	dim as ASTNODE ptr idxexpr = any
 
 	''
 	id = lexGetText( )
@@ -1183,20 +1188,26 @@ function cVariableEx _
 	end if
 
     ''
+	dim as integer is_byref = any, is_funcptr = any, is_import = any
+	dim as integer is_array = any, checkfields = any, is_nidxarray = any
+
 	elm	= NULL
-    isbyref = symbIsParamByRef( sym )
-	isimport = symbIsImport( sym )
-	isarray = symbIsArray( sym )
+
+    is_byref = symbIsParamByRef( sym )
+	is_import = symbIsImport( sym )
+	is_array = symbIsArray( sym )
+	is_funcptr = FALSE
+	is_nidxarray = FALSE
+
+    idxexpr = NULL
+	checkfields = TRUE
 
     '' check for '('')', it's not an array, just passing by desc
-    idxexpr = NULL
-    isfuncptr = FALSE
-	checkfields = TRUE
     if( lexGetToken( ) = CHAR_LPRNT ) then
     	if( lexGetLookAhead( 1 ) <> CHAR_RPRNT ) then
 
     		'' ArrayIdx?
-    		if( isarray ) then
+    		if( is_array ) then
     			'' '('
     			lexSkipToken( )
 
@@ -1215,11 +1226,11 @@ function cVariableEx _
     		else
    				'' check if calling functions through pointers
    				if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-	   				isfuncptr = TRUE
+	   				is_funcptr = TRUE
     			end if
 
     			'' using (...) with scalars?
-    			if( (isarray = FALSE) and (isfuncptr = FALSE) ) then
+    			if( (is_array = FALSE) and (is_funcptr = FALSE) ) then
     				if( errReport( FB_ERRMSG_ARRAYNOTALLOCATED, TRUE ) = FALSE ) then
     					exit function
     				else
@@ -1232,14 +1243,14 @@ function cVariableEx _
 
     	else
     		'' array? could be a func ptr call too..
-    		if( isarray ) then
+    		if( is_array ) then
     			checkfields = FALSE
     		end if
     	end if
 
     else
 		'' array and no index?
-		if( isarray ) then
+		if( is_array ) then
    			if( checkarray ) then
    				if( errReport( FB_ERRMSG_EXPECTEDINDEX, TRUE ) = FALSE ) then
    					exit function
@@ -1249,32 +1260,48 @@ function cVariableEx _
    				end if
    			else
    				checkfields = FALSE
+   				is_nidxarray = TRUE
    			end if
     	end if
     end if
 
    	''
-   	if( isfuncptr = FALSE ) then
+   	if( is_funcptr = FALSE ) then
    		if( checkfields ) then
    			'' TypeField?
    			elm = cTypeField( dtype, subtype, _
    							  idxexpr, drefcnt, _
    							  iif( checkarray, FB_FIELDOPT_CHECKARRAY, FB_FIELDOPT_NONE ) )
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
+
+			if( elm = NULL ) then
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
+					exit function
+				end if
+			else
+				if( idxexpr <> NULL ) then
+					'' ugly hack to deal with arrays w/o indexes
+					if( astIsNIDXARRAY( idxexpr ) ) then
+						varexpr = astGetLeft( idxexpr )
+						astDelNode( idxexpr )
+						idxexpr = varexpr
+
+						checkfields = FALSE
+						is_nidxarray = TRUE
+					end if
+				end if
 			end if
 
    			'' check for calling functions through pointers
    			if( lexGetToken( ) = CHAR_LPRNT ) then
    				if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-	   				isfuncptr = TRUE
+	   				is_funcptr = TRUE
    				end if
    			end if
    		end if
    	end if
 
 	'' AST will handle descriptor pointers
-	if( isbyref or isimport ) then
+	if( is_byref or is_import ) then
 		'' byref or import? by now it's a pointer var, the real type will be set bellow
 		varexpr = astNewVAR( sym, 0, FB_DATATYPE_POINTER, NULL )
 	else
@@ -1284,7 +1311,7 @@ function cVariableEx _
 	'' has index?
 	if( idxexpr <> NULL ) then
 		'' byref or import's are already pointers
-		if( isbyref or isimport ) then
+		if( is_byref or is_import ) then
 			varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
 		else
 			varexpr = astNewIDX( varexpr, idxexpr, dtype, subtype )
@@ -1292,7 +1319,7 @@ function cVariableEx _
 	end if
 
 	'' check arguments passed by reference (implicity pointer's)
-	if( isbyref or isimport ) then
+	if( is_byref or is_import ) then
    		varexpr = astNewPTR( 0, varexpr, dtype, subtype )
 	end if
 
@@ -1302,7 +1329,11 @@ function cVariableEx _
 
     if( checkfields ) then
     	'' FuncPtrOrDerefFields?
-		cFuncPtrOrDerefFields( dtype, subtype, varexpr, isfuncptr, checkarray )
+		cFuncPtrOrDerefFields( dtype, subtype, varexpr, is_funcptr, checkarray )
+
+	'' non-indexed array?
+	elseif( is_nidxarray ) then
+        varexpr = astNewNIDXARRAY( varexpr )
 	end if
 
 	function = (errGetLast( ) = FB_ERRMSG_OK)
@@ -1481,7 +1512,7 @@ function cVarOrDeref _
 		if( varexpr <> NULL ) then
 			select case as const astGetClass( varexpr )
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
-				 AST_NODECLASS_PTR, AST_NODECLASS_CALL
+				 AST_NODECLASS_PTR, AST_NODECLASS_CALL, AST_NODECLASS_NIDXARRAY
 
 			case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
 				if( check_addrof = FALSE ) then

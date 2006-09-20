@@ -54,6 +54,13 @@ function cArrayStmt _
 				end if
 
 			else
+				'' ugly hack to deal with arrays w/o indexes
+				if( astIsNIDXARRAY( expr1 ) ) then
+					expr2 = astGetLeft( expr1 )
+					astDelNode( expr1 )
+					expr1 = expr2
+				end if
+
 				'' array?
     			s = astGetSymbol( expr1 )
     			if( s <> NULL ) then
@@ -179,9 +186,9 @@ function cArrayFunct _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
-	dim as ASTNODE ptr sexpr, expr
-	dim as integer islbound
-	dim as FBSYMBOL ptr s
+	dim as ASTNODE ptr arrayexpr = any, dimexpr = any
+	dim as integer is_lbound = any
+	dim as FBSYMBOL ptr s = any
 
 	function = FALSE
 
@@ -190,9 +197,9 @@ function cArrayFunct _
 	'' (LBOUND|UBOUND) '(' ID (',' Expression)? ')'
 	case FB_TK_LBOUND, FB_TK_UBOUND
 		if( tk = FB_TK_LBOUND ) then
-			islbound = TRUE
+			is_lbound = TRUE
 		else
-			islbound = FALSE
+			is_lbound = FALSE
 		end if
 		lexSkipToken( )
 
@@ -200,7 +207,7 @@ function cArrayFunct _
 		hMatchLPRNT( )
 
 		'' ID
-		if( cVarOrDeref( sexpr, FALSE ) = FALSE ) then
+		if( cVarOrDeref( arrayexpr, FALSE ) = FALSE ) then
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else
@@ -211,8 +218,15 @@ function cArrayFunct _
 			end if
 		end if
 
+		'' ugly hack to deal with arrays w/o indexes
+		if( astIsNIDXARRAY( arrayexpr ) ) then
+			dim as ASTNODE ptr expr = astGetLeft( arrayexpr )
+			astDelNode( arrayexpr )
+			arrayexpr = expr
+		end if
+
 		'' array?
-		s = astGetSymbol( sexpr )
+		s = astGetSymbol( arrayexpr )
 		if( s <> NULL ) then
 			if( symbIsArray( s ) = FALSE ) then
 				s = NULL
@@ -232,15 +246,15 @@ function cArrayFunct _
 
 		'' (',' Expression)?
 		if( hMatch( CHAR_COMMA ) ) then
-			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
+			hMatchExpressionEx( dimexpr, FB_DATATYPE_INTEGER )
 		else
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		'' ')'
 		hMatchRPRNT( )
 
-		funcexpr = rtlArrayBound( sexpr, expr, islbound )
+		funcexpr = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
 
 		function = funcexpr <> NULL
 

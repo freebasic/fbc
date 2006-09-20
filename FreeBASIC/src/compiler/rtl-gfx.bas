@@ -1343,7 +1343,7 @@ function rtlGfxPaint( byval target as ASTNODE ptr, _
 
 	'' byval color as uinteger
 	pattern = astGetDataType( pexpr )
-	if( hIsString( pattern ) ) then
+	if( symbIsString( pattern ) ) then
 		pattern = TRUE
 		if( astNewARG( proc, astNewCONSTi( &hFFFF0000, FB_DATATYPE_INTEGER ) ) = NULL ) then
  			exit function

@@ -148,7 +148,7 @@ function cWidthStmt _
 	else
 		hMatchExpressionEx( dev_name, FB_DATATYPE_STRING )
         ' fb_WidthDev
-        if( hIsString( astGetDataType( dev_name ) ) ) then
+        if( symbIsString( astGetDataType( dev_name ) ) ) then
         	if( hMatch( CHAR_COMMA ) ) then
             	hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
 			else

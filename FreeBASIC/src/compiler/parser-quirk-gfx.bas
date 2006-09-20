@@ -61,7 +61,7 @@ private function hMakeArrayIndex _
 
     dim as ASTNODE ptr idxexpr
 
-    '' field?
+    '' field? (assuming field arrays can't be dynamic)
     if( astIsFIELD( varexpr ) ) then
     	return varexpr
     end if
@@ -106,25 +106,33 @@ private function hGetTarget _
 		byref isptr as integer _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr s = any
 
 	function = NULL
 
 	isptr = FALSE
-
 	expr = NULL
-	if( lexGetToken( ) <> CHAR_LPRNT ) then
-		if( cVarOrDeref( expr, FALSE, TRUE ) = FALSE ) then
-			exit function
-		end if
-	else
+
+	if( lexGetToken( ) = CHAR_LPRNT ) then
 		exit function
 	end if
 
+	if( cVarOrDeref( expr, FALSE, TRUE ) = FALSE ) then
+		exit function
+	end if
+
+	'' ugly hack to deal with arrays w/o indexes
+	if( astIsNIDXARRAY( expr ) ) then
+		dim as ASTNODE ptr arrayexpr = astGetLeft( expr )
+		astDelNode( expr )
+		s = astGetSymbol( arrayexpr )
+		expr = hMakeArrayIndex( s, arrayexpr )
+
 	'' address of?
-	if( astIsADDR( expr ) ) then
+	elseif( astIsADDR( expr ) ) then
 		isptr = TRUE
 		return NULL
+
 	else
 		s = astGetSymbol( expr )
 		if( s = NULL ) then
@@ -800,7 +808,7 @@ function cGfxPalette as integer
 			hMatchCOMMA( )
 
 			if( isget ) then
-				if( cVarOrDeref( rexpr, FALSE, TRUE ) = FALSE ) then
+				if( cVarOrDeref( rexpr ) = FALSE ) then
 		            errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		            exit function
 		        end if
@@ -810,7 +818,7 @@ function cGfxPalette as integer
 
 			if( hMatch( CHAR_COMMA ) ) then
 				if( isget ) then
-					if( cVarOrDeref( gexpr, FALSE, TRUE ) = FALSE ) then
+					if( cVarOrDeref( gexpr ) = FALSE ) then
 			            errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			            exit function
 			        end if
@@ -821,7 +829,7 @@ function cGfxPalette as integer
 				hMatchCOMMA( )
 
 				if( isget ) then
-					if( cVarOrDeref( bexpr, FALSE, TRUE ) = FALSE ) then
+					if( cVarOrDeref( bexpr ) = FALSE ) then
 			            errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			            exit function
 			        end if

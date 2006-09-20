@@ -795,7 +795,7 @@ function cAddrOfExpression _
 
 		dtype = astGetDataType( expr )
 
-		if( hIsString( dtype ) = FALSE ) then
+		if( symbIsString( dtype ) = FALSE ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
 			else

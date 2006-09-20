@@ -1334,19 +1334,28 @@ private function hIsMultStrConcat _
 
 	if( r->class = AST_NODECLASS_BOP ) then
 		select case l->class
-		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-			 AST_NODECLASS_FIELD	'' !!!FIXME!!! check if this is okay w/ pointers
+		case AST_NODECLASS_VAR, AST_NODECLASS_IDX
 			sym = astGetSymbol( l )
 			if( sym <> NULL ) then
 				if( (sym->attrib and _
 					(FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
 
-					if( astIsSymbolOnTree( sym, r ) = FALSE ) then
-						function = TRUE
-					end if
+					function = (astIsSymbolOnTree( sym, r ) = FALSE)
 
 				end if
 			end if
+
+		case AST_NODECLASS_FIELD
+			select case l->l->class
+			case AST_NODECLASS_VAR, AST_NODECLASS_IDX
+
+				'' byref params would be AST_NODECLASS_PTR
+
+				sym = astGetSymbol( l )
+				if( sym <> NULL ) then
+					function = (astIsSymbolOnTree( sym, r ) = FALSE)
+				end if
+			end select
 		end select
 	end if
 
@@ -1366,11 +1375,36 @@ private function hOptStrAssignment _
 
 	'' is right side a bin operation?
 	if( r->class = AST_NODECLASS_BOP ) then
+		dim as FBSYMBOL ptr sym
+
 		'' is left side a var?
 		select case as const l->class
-		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-			 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
-			optimize = astIsTreeEqual( l, r->l )
+		case AST_NODECLASS_VAR, AST_NODECLASS_IDX
+			'' !!!FIXME!!! can't include AST_NODECLASS_PTR, unless -noaliasing is added
+
+			if( astIsTreeEqual( l, r->l ) ) then
+				sym = astGetSymbol( l )
+				if( sym <> NULL ) then
+					if( (sym->attrib and _
+						(FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
+
+						optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
+					end if
+				end if
+			end if
+
+		case AST_NODECLASS_FIELD
+			select case as const l->l->class
+			case AST_NODECLASS_VAR, AST_NODECLASS_IDX
+
+				if( astIsTreeEqual( l, r->l ) ) then
+					sym = astGetSymbol( l )
+					if( sym <> NULL ) then
+						optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
+					end if
+				end if
+
+			end select
 		end select
 	end if
 

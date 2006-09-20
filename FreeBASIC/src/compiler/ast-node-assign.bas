@@ -258,10 +258,10 @@ function astCheckASSIGN _
 
 	function = FALSE
 
-	ldtype   = l->dtype
-	rdtype   = r->dtype
-	ldclass  = symbGetDataClass( ldtype )
-	rdclass	 = symbGetDataClass( rdtype )
+	ldtype = l->dtype
+	rdtype = r->dtype
+	ldclass = symbGetDataClass( ldtype )
+	rdclass = symbGetDataClass( rdtype )
 
     '' strings?
     if( (ldclass = FB_DATACLASS_STRING) or _
@@ -275,57 +275,54 @@ function astCheckASSIGN _
 		end if
 
 		return TRUE
-	end if
 
 	'' UDT's?
-	if( (ldtype = FB_DATATYPE_STRUCT) or _
-		(rdtype = FB_DATATYPE_STRUCT) ) then
+	elseif( (ldtype = FB_DATATYPE_STRUCT) or _
+			(rdtype = FB_DATATYPE_STRUCT) ) then
 
 		if( hCheckUDTOps( l, ldclass, r, rdclass ) = FALSE ) then
 			exit function
 		end if
 
 		return TRUE
-	end if
 
     '' wstrings?
-    if( (ldtype = FB_DATATYPE_WCHAR) or _
-    	(rdtype = FB_DATATYPE_WCHAR) ) then
+    elseif( (ldtype = FB_DATATYPE_WCHAR) or _
+    		(rdtype = FB_DATATYPE_WCHAR) ) then
 
-		'' both not wstrings?
+		'' both = wstrings?
 		if( ldtype <> rdtype ) then
     		dim as integer is_zstr
 			if( hCheckWstringOps( l, ldtype, r, rdtype, is_zstr ) = FALSE ) then
 				exit function
 			end if
-		end if
 
-		return TRUE
-	end if
-
-    '' zstrings?
-    if( (ldtype = FB_DATATYPE_CHAR) or _
-    	(rdtype = FB_DATATYPE_CHAR) ) then
-
-		'' both not zstrings?
-		if( ldtype <> rdtype ) then
-			if( hCheckZstringOps( l, ldtype, r, rdtype ) = FALSE ) then
-				exit function
+			if( is_zstr ) then
+				return TRUE
 			end if
 		end if
 
-    	return TRUE
-    end if
+    '' zstrings?
+    elseif( (ldtype = FB_DATATYPE_CHAR) or _
+    		(rdtype = FB_DATATYPE_CHAR) ) then
+
+		'' both zstrings?
+		if( ldtype = rdtype ) then
+			return TRUE
+		end if
+
+		if( hCheckZstringOps( l, ldtype, r, rdtype ) = FALSE ) then
+			exit function
+		end if
 
     '' enums?
-    if( (ldtype = FB_DATATYPE_ENUM) or _
-    	(rdtype = FB_DATATYPE_ENUM) ) then
+    elseif( (ldtype = FB_DATATYPE_ENUM) or _
+    		(rdtype = FB_DATATYPE_ENUM) ) then
 
 		if( hCheckEnumOps( l, ldclass, r, rdclass ) = FALSE ) then
 			exit function
 		end if
 
-		return TRUE
 	end if
 
     '' check pointers
@@ -335,19 +332,21 @@ function astCheckASSIGN _
 
 	'' convert types if needed
 	if( ldtype <> rdtype ) then
-		'' constant?
-		if( r->defined ) then
-			r = astCheckConst( l->dtype, r )
-			if( r = NULL ) then
+		'' don't convert strings
+		if( rdclass <> FB_DATACLASS_STRING ) then
+			'' constant?
+			if( r->defined ) then
+				r = astCheckConst( l->dtype, r )
+				if( r = NULL ) then
+					exit function
+				end if
+			end if
+
+			if( astCheckCONV( ldtype, l->subtype, r ) = FALSE ) then
 				exit function
 			end if
 		end if
-
-		if( astCheckCONV( ldtype, l->subtype, r ) = FALSE ) then
-			exit function
-		end if
 	end if
-
 
 	function = TRUE
 
