@@ -469,6 +469,12 @@
 #define TTM_ADJUSTRECT (1024+31)
 #define TTM_SETTITLEA (1024+32)
 #define TTM_SETTITLEW (1024+33)
+#define TTN_GETDISPINFOA (TTN_FIRST - 0)
+#define TTN_GETDISPINFOW (TTN_FIRST - 10)
+#define TTN_NEEDTEXTA TTN_GETDISPINFOA
+#define TTN_NEEDTEXTW TTN_GETDISPINFOW
+#define TTN_SHOW (TTN_FIRST-1)
+#define TTN_POP (TTN_FIRST-2)
 #define UD_MAXVAL &h7fff
 #define UD_MINVAL (-&h7fff)
 #define UDS_WRAP 1
@@ -2330,6 +2336,7 @@ type TC_ITEMHEADERA
 	iImage as integer
 end type
 
+#define TC_ITEMA TCITEMA
 type TCITEMA
 	mask as UINT
 	dwState as DWORD
@@ -2369,6 +2376,7 @@ type TC_ITEMHEADERW
 	iImage as integer
 end type
 
+#define TC_ITEMW TCITEMW
 type TCITEMW
 	mask as UINT
 	dwState as DWORD
