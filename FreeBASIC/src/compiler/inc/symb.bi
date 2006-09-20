@@ -70,6 +70,7 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_HASDTOR		= &h00200000
 	FB_SYMBSTATS_HASVIRTUAL		= &h00400000
 	FB_SYMBSTATS_CANTUNDEF		= &h00800000
+	FB_SYMBSTATS_UNIONFIELD		= &h01000000
 
 	FB_SYMBSTATS_CTORINITED		= FB_SYMBSTATS_INITIALIZED
 end enum
@@ -1673,9 +1674,9 @@ declare function symbLookupCompField _
 
 #define symbSetCantUndef(s) s->stats or= FB_SYMBSTATS_CANTUNDEF
 
-#define symbGetIsDestroyed(s) ((s->stats and FB_SYMBSTATS_DESTROYED) <> 0)
+#define symbGetIsUnionField(s) ((s->stats and FB_SYMBSTATS_UNIONFIELD) <> 0)
 
-#define symbSetIsDestroyed(s) s->stats or= FB_SYMBSTATS_DESTROYED
+#define symbSetIsUnionField(s) s->stats or= FB_SYMBSTATS_UNIONFIELD
 
 #define symbGetStats(s) s->stats
 

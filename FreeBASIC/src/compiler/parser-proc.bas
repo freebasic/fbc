@@ -1199,17 +1199,7 @@ function cCtorHeader _
         end if
 
 		select case symbGetClass( parent )
-		case FB_SYMBCLASS_STRUCT
-			'' UNION?
-			if( symbGetUDTIsUnion( parent ) ) then
-				if( errReport( iif( is_ctor, _
-									FB_ERRMSG_CTORINUNION, _
-									FB_ERRMSG_DTORINUNION ) ) = FALSE ) then
-					exit function
-				end if
-			end if
-
-		case FB_SYMBCLASS_CLASS
+		case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
 
 		case else
 			errReport( FB_ERRMSG_PARENTISNOTACLASS )

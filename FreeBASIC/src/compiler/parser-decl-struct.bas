@@ -194,6 +194,20 @@ private function hFieldInit _
 		exit function
 	end if
 
+	if( sym <> NULL ) then
+		'' union or anon?
+		if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
+									  FB_UDTOPT_ISANON)) <> 0 ) then
+
+		    if( errReport( FB_ERRMSG_CTORINUNION ) ) then
+				'' error recovery: skip
+				hSkipUntil( FB_TK_EOL )
+			end if
+
+			exit function
+		end if
+	end if
+
 	lexSkipToken( )
 
 	if( sym = NULL ) then

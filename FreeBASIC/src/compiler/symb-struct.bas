@@ -367,7 +367,8 @@ function symbAddField _
 	'' var-len string fields? must add a ctor, copyctor and dtor
     case FB_DATATYPE_STRING
 		'' if it's an anon udt, it or parent is an UNION
-		if( symbGetUDTIsAnon( parent ) ) then
+		if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
+									  FB_UDTOPT_ISANON)) <> 0 ) then
 			errReport( FB_ERRMSG_VARLENSTRINGINUNION )
 		else
 			symbSetHasCtor( parent )
@@ -379,7 +380,8 @@ function symbAddField _
     case FB_DATATYPE_STRUCT
 		if( symbGetCompDefCtor( subtype ) <> NULL ) then
 			'' if it's an anon udt, it or parent is an UNION
-			if( symbGetUDTIsAnon( parent ) ) then
+			if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
+										  FB_UDTOPT_ISANON)) <> 0 ) then
 				errReport( FB_ERRMSG_CTORINUNION )
 			else
 				symbSetHasCtor( parent )
@@ -389,7 +391,8 @@ function symbAddField _
 
 		if( symbGetHasDtor( subtype ) ) then
 			'' if it's an anon udt, it or parent is an UNION
-			if( symbGetUDTIsAnon( parent ) ) then
+			if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
+										  FB_UDTOPT_ISANON)) <> 0 ) then
 				errReport( FB_ERRMSG_DTORINUNION )
 			else
 				symbSetHasDtor( parent )
@@ -411,6 +414,8 @@ function symbAddField _
 
 	'' union..
 	else
+		symbSetIsUnionField( sym )
+
 		'' always update, been it a bitfield or not
 		parent->ofs = 0
 		if( lgt > parent->lgt ) then
@@ -435,7 +440,7 @@ sub symbInsertInnerUDT _
 		byval inner as FBSYMBOL ptr _
 	) static
 
-    dim as FBSYMBOL ptr e
+    dim as FBSYMBOL ptr fld
     dim as FBSYMBOLTB ptr symtb
     dim as integer pad
 
@@ -452,36 +457,39 @@ sub symbInsertInnerUDT _
 	end if
 
     '' move the nodes from inner to parent
-    e = inner->udt.symtb.head
+    fld = inner->udt.symtb.head
 
-    e->prev = parent->udt.symtb.tail
+    fld->prev = parent->udt.symtb.tail
     if( parent->udt.symtb.tail = NULL ) then
-    	parent->udt.symtb.head = e
+    	parent->udt.symtb.head = fld
     else
-    	parent->udt.symtb.tail->next = e
+    	parent->udt.symtb.tail->next = fld
     end if
 
     symtb = @parent->udt.symtb
 
     if( (parent->udt.options and FB_UDTOPT_ISUNION) <> 0 ) then
     	'' link to parent
-    	do while( e <> NULL )
-    		e->symtb = symtb
+    	do while( fld <> NULL )
+    		fld->symtb = symtb
+
+			''
+			symbSetIsUnionField( fld )
 
     		'' next
-    		e = e->next
+    		fld = fld->next
     	loop
 
     else
     	'' link to parent
-    	do while( e <> NULL )
-    		e->symtb = symtb
+    	do while( fld <> NULL )
+    		fld->symtb = symtb
 
 			'' update the offset
-			e->ofs += parent->ofs
+			fld->ofs += parent->ofs
 
     		'' next
-    		e = e->next
+    		fld = fld->next
     	loop
     end if
 

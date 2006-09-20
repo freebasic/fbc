@@ -206,9 +206,9 @@ end type
 		@"Declaration outside the original namespace or class", _
 		@"A destructor should not have any parameters", _
 		@"Expected class or UDT identifier", _
-		@"Dynamic strings cannot be part of UNION's", _
-		@"Fields with constructors cannot be part of UNION's", _
-		@"Fields with destructors cannot be part of UNION's", _
+		@"Dynamic strings cannot be part of UNION's or nested TYPE's", _
+		@"Fields with constructors cannot be part of UNION's or nested TYPE's", _
+		@"Fields with destructors cannot be part of UNION's or nested TYPE's", _
 		@"Illegal outside a constructor", _
 		@"UDT's with methods must have unique names", _
 		@"Parent is not a class or UDT", _

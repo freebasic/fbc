@@ -937,10 +937,16 @@ private sub hCallFieldCtor _
    		exit sub
    	end if
 
-	astAdd( astNewMEM( AST_OP_MEMCLEAR, _
-    	  	  		   astBuildInstPtr( this_, fld ), _
-    	  	  		   NULL, _
-    	  	  		   symbGetLen( fld ) * symbGetArrayElements( fld ) ) )
+	'' bitfield?
+	if( symbGetType( fld ) = FB_DATATYPE_BITFIELD ) then
+	    astAdd( astNewASSIGN( astBuildInstPtr( this_, fld ), _
+	    					  astNewCONSTi( 0, FB_DATATYPE_UINT ) ) )
+	else
+		astAdd( astNewMEM( AST_OP_MEMCLEAR, _
+    	  	  		   	   astBuildInstPtr( this_, fld ), _
+    	  	  		   	   NULL, _
+    	  	  		   	   symbGetLen( fld ) * symbGetArrayElements( fld ) ) )
+	end if
 
 end sub
 
@@ -960,6 +966,44 @@ private sub hFlushFieldInitTree _
 end sub
 
 '':::::
+private function hClearUnionFields _
+	( _
+		byval this_ as FBSYMBOL ptr, _
+		byval base_fld as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr fld = any
+	dim as integer bytes = any, lgt = any, base_ofs = any
+
+	'' merge all union fields
+	fld = base_fld
+	bytes = 0
+	base_ofs = symbGetOfs( base_fld )
+
+	do
+		lgt = (symbGetLen( fld ) * symbGetArrayElements( fld )) + _
+			  (symbGetOfs( fld ) - base_ofs)
+		if( lgt > bytes ) then
+			bytes = lgt
+		end if
+
+		fld = fld->next
+		if( fld = NULL ) then
+			exit do
+		end if
+	loop while( symbGetIsUnionField( fld ) )
+
+    '' clear all them at once
+	astAdd( astNewMEM( AST_OP_MEMCLEAR, _
+    	  	  		   astBuildInstPtr( this_, base_fld ), _
+    	  	  		   NULL, _
+    	  	  		   bytes ) )
+
+	function = fld
+
+end function
+
+'':::::
 private sub hCallFieldCtors _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -975,10 +1019,17 @@ private sub hCallFieldCtors _
     do while( fld <> NULL )
 
 		if( symbIsField( fld ) ) then
-			if( symbGetTypeIniTree( fld ) = NULL ) then
-				hCallFieldCtor( this_, fld )
+			'' part of an union?
+			if( symbGetIsUnionField( fld ) ) then
+				fld = hClearUnionFields( this_, fld )
+				continue do
+
 			else
-				hFlushFieldInitTree( this_, fld )
+				if( symbGetTypeIniTree( fld ) = NULL ) then
+					hCallFieldCtor( this_, fld )
+				else
+					hFlushFieldInitTree( this_, fld )
+				end if
 			end if
 		end if
 

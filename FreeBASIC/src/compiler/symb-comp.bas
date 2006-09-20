@@ -255,6 +255,45 @@ private sub hAssignList _
 
 end sub
 
+'':::::
+private function hCopyUnionFields _
+	( _
+		byval this_ as FBSYMBOL ptr, _
+		byval rhs as FBSYMBOL ptr, _
+		byval base_fld as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr fld = any
+	dim as integer bytes = any, lgt = any, base_ofs = any
+
+	'' merge all union fields
+	fld = base_fld
+	bytes = 0
+	base_ofs = symbGetOfs( base_fld )
+
+	do
+		lgt = (symbGetLen( fld ) * symbGetArrayElements( fld )) + _
+			  (symbGetOfs( fld ) - base_ofs)
+		if( lgt > bytes ) then
+			bytes = lgt
+		end if
+
+		fld = fld->next
+		if( fld = NULL ) then
+			exit do
+		end if
+	loop while( symbGetIsUnionField( fld ) )
+
+    '' copy all them at once
+	astAdd( astNewMEM( AST_OP_MEMMOVE, _
+    	  	  		   astBuildInstPtr( this_, base_fld ), _
+    	  	  		   astBuildInstPtr( rhs, base_fld ), _
+    	  	  		   bytes ) )
+
+	function = fld
+
+end function
+
 ':::::
 private sub hCloneBody _
 	( _
@@ -274,19 +313,26 @@ private sub hCloneBody _
 
 		if( symbIsField( fld ) ) then
 
-			dstexpr = astBuildInstPtr( this_, fld )
-			srcexpr = astBuildInstPtr( rhs, fld )
+			'' part of an union?
+			if( symbGetIsUnionField( fld ) ) then
+				fld = hCopyUnionFields( this_, rhs, fld )
+				continue do
 
-            '' not an array?
-            if( (symbGetArrayDimensions( fld ) = 0) or _
-            	(symbGetArrayElements( fld ) = 1) ) then
+			else
+				dstexpr = astBuildInstPtr( this_, fld )
+				srcexpr = astBuildInstPtr( rhs, fld )
 
-				'' this.field = rhs.field
-            	astAdd( astNewASSIGN( dstexpr, srcexpr ) )
+            	'' not an array?
+            	if( (symbGetArrayDimensions( fld ) = 0) or _
+            		(symbGetArrayElements( fld ) = 1) ) then
 
-            '' array..
-            else
-            	hAssignList( fld, dstexpr, srcexpr )
+					'' this.field = rhs.field
+            		astAdd( astNewASSIGN( dstexpr, srcexpr ) )
+
+            	'' array..
+            	else
+            		hAssignList( fld, dstexpr, srcexpr )
+            	end if
             end if
 		end if
 
