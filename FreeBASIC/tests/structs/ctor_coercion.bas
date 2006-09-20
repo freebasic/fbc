@@ -19,15 +19,15 @@ const TEST_F as single = 1234.5
 const TEST_D as double = 12345678.9
 
 type bar
-	t as BAR_TYPE
+	t as BAR_TYPE = any
 	
 	union
-		b as byte = any
-		s as short = any
-		i as integer = any
-		l as longint = any
-		f as single = any
-		d as double = any
+		b as byte
+		s as short
+		i as integer
+		l as longint
+		f as single
+		d as double
 	end union
 	
 	declare constructor( byval v as byte )
