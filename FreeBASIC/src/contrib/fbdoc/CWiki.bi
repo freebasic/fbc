@@ -103,11 +103,9 @@ type WikiToken
 	as WIKI_TOKEN			id
 	as string 				text
 	
-	union 
 		as WikiToken_Action action
 		as WikiToken_Link 	link
 		as WikiToken_Indent	indent
-	end union
 end type
 
 type WikiPageLink

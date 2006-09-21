@@ -668,11 +668,11 @@ end function
 '':::::
 private function _actionGenImage( byval _this as CWakka2Html ptr, byval paramsTb as Wiki_ActionParam ptr ) as string
 	
-	dim as string res, class, strAlt, strUrl
+	dim as string res, cssclass, strAlt, strUrl
 
-	class = *_this->cssClassTb(WIKI_TOKEN_ACTION_IMG)
+	cssclass = *_this->cssClassTb(WIKI_TOKEN_ACTION_IMG)
 
-	res = "<div class=""" + class + """><img"
+	res = "<div class=""" + cssclass + """><img"
 
 	strAlt = CWiki_GetActionParamValue( paramsTb, "alt" )
 	strUrl = CWiki_GetActionParamValue( paramsTb, "url" )
