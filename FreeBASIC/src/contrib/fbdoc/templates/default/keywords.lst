@@ -60,6 +60,7 @@ Chdir
 Chr
 Cint
 Circle
+Class
 Clear
 Clng
 Clngint
@@ -120,6 +121,7 @@ Defubyte
 Defuint
 Defulngint
 Defushort
+Delete
 Destructor
 Dim
 Dir
@@ -240,6 +242,7 @@ Mutexunlock
 Name
 Namespace
 Next
+New
 Nokeyword
 Not
 Now
@@ -253,6 +256,7 @@ Open Err
 Open Lpt
 Open Pipe
 Open Scrn
+Operator
 Option
 Option Base
 Option Byval
@@ -261,7 +265,6 @@ Option Explicit
 Option Nokeyword
 Option Private
 Or
-
 Out
 Output
 Overload
