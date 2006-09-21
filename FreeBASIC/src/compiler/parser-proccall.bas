@@ -175,16 +175,16 @@ end function
 function cProcCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byref procexpr as ASTNODE ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr, _
 		byval checkprnts as integer = FALSE _
-	) as integer
+	) as ASTNODE ptr
 
 	dim as integer dtype = any, isfuncptr = any, doflush = any
 	dim as FBSYMBOL ptr subtype = any, reslabel = any
+	dim as ASTNODE ptr procexpr = any
 
-	function = FALSE
+	function = NULL
 
 	if( checkprnts = TRUE ) then
 		'' if the sub has no args, prnts are optional
@@ -258,85 +258,83 @@ function cProcCall _
    		end if
 
 		'' FuncPtrOrDerefFields?
-		if( cFuncPtrOrDerefFields( dtype, subtype, _
-								   procexpr, isfuncptr, _
-								   TRUE ) = FALSE ) then
-			'' error?
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-			end if
+		procexpr = cFuncPtrOrDerefFields( dtype, _
+										  subtype, _
+								   		  procexpr, _
+								   		  isfuncptr, _
+								   		  TRUE )
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
 
 		'' type changed
-		else
-			doflush = FALSE
-			'' if it's a SUB, the expr will be NULL
-			if( procexpr <> NULL ) then
-				dtype = astGetDataType( procexpr )
+		doflush = FALSE
 
-				'' if it stills a function, unless type = string (ie: implicit pointer),
-				'' flush it, as the assignment would be invalid
-				if( astIsCALL( procexpr ) ) then
-					if( dtype <> FB_DATATYPE_STRING ) then
-						doflush = TRUE
-					end if
+		'' if it's a SUB, the expr will be NULL
+		if( procexpr <> NULL ) then
+			dtype = astGetDataType( procexpr )
+
+			'' if it stills a function, unless type = string (ie: implicit pointer),
+			'' flush it, as the assignment would be invalid
+			if( astIsCALL( procexpr ) ) then
+				if( dtype <> FB_DATATYPE_STRING ) then
+					doflush = TRUE
 				end if
-        	end if
-		end if
+			end if
+        end if
 
 	end if
 
-	''
-	if( doflush ) then
-		'' can proc's result be skipped?
-		if( dtype <> FB_DATATYPE_VOID ) then
-			if( symbGetDataClass( dtype ) <> FB_DATACLASS_INTEGER ) then
+	if( doflush = FALSE ) then
+		return procexpr
+	end if
+
+	'' can proc's result be skipped?
+	if( dtype <> FB_DATATYPE_VOID ) then
+		if( symbGetDataClass( dtype ) <> FB_DATACLASS_INTEGER ) then
+			if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip
+				astDelTree( procexpr )
+				exit function
+			end if
+
+    	'' CHAR and WCHAR literals are also from the INTEGER class
+    	else
+    		select case dtype
+    		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip
 					astDelTree( procexpr )
-					procexpr = NULL
-					return TRUE
+				exit function
 				end if
-
-    		'' CHAR and WCHAR literals are also from the INTEGER class
-    		else
-    			select case dtype
-    			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-					if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip
-						astDelTree( procexpr )
-						procexpr = NULL
-						return TRUE
-					end if
-				end select
-			end if
+			end select
 		end if
-
-		'' check error?
-		if( sym <> NULL ) then
-			if( symbGetIsThrowable( sym ) ) then
-    			if( env.clopt.resumeerr ) then
-					reslabel = symbAddLabel( NULL )
-    				astAdd( astNewLABEL( reslabel ) )
-    			else
-    				reslabel = NULL
-    			end if
-
-				function = rtlErrorCheck( procexpr, reslabel, lexLineNum( ) )
-				procexpr = NULL
-				return TRUE
-			end if
-		end if
-
-		astSetDataType( procexpr, FB_DATATYPE_VOID )
-		astAdd( procexpr )
-		procexpr = NULL
 	end if
 
-	function = TRUE
+	'' check error?
+	if( sym <> NULL ) then
+		if( symbGetIsThrowable( sym ) ) then
+    		if( env.clopt.resumeerr ) then
+				reslabel = symbAddLabel( NULL )
+    			astAdd( astNewLABEL( reslabel ) )
+    		else
+    			reslabel = NULL
+    		end if
+
+			rtlErrorCheck( procexpr, reslabel, lexLineNum( ) )
+			exit function
+		end if
+	end if
+
+	astSetDataType( procexpr, FB_DATATYPE_VOID )
+
+	astAdd( procexpr )
+
+	function = NULL
 
 end function
 
@@ -366,7 +364,15 @@ private function hAssignOrCall _
 
 			'' ID ProcParamList?
 			if( lexGetToken( ) <> FB_TK_ASSIGN ) then
-				if( cProcCall( s, expr, NULL ) = FALSE ) then
+				dim as ASTNODE ptr this_ = NULL
+				if( symbIsMethod( s ) ) then
+					this_ = astBuildInstPtr( _
+								symbGetParamVar( _
+									symbGetProcHeadParam( parser.currproc ) ) )
+				end if
+
+				expr = cProcCall( s, NULL, this_ )
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
 					exit function
 				end if
 
@@ -610,10 +616,10 @@ end function
 private function hCtorChain _
 	( _
 		_
-	) as integer static
+	) as integer
 
-	dim as FBSYMBOL ptr proc, parent, this_, ctor_head
-	dim as ASTNODE ptr expr, this_expr
+	dim as FBSYMBOL ptr proc = any, parent = any, this_ = any, ctor_head = any
+	dim as ASTNODE ptr this_expr = any
 
 	proc = parser.currproc
 
@@ -645,7 +651,9 @@ private function hCtorChain _
 
 	this_expr = astBuildInstPtr( symbGetParamVar( this_ ) )
 
-	return cProcCall( ctor_head, expr, NULL, this_expr )
+	cProcCall( ctor_head, NULL, this_expr )
+
+	function = (errGetLast( ) = FB_ERRMSG_OK)
 
 end function
 

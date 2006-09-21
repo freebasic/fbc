@@ -67,14 +67,14 @@ end function
 private function hFieldArray _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byref idxexpr as ASTNODE ptr _
-	) as integer
+		byval idxexpr as ASTNODE ptr _
+	) as ASTNODE ptr
 
     dim as FBVARDIM ptr d = any
     dim as integer maxdims = any, dims = any, diff = any
     dim as ASTNODE ptr expr = any, dimexpr = any, constexpr = any
 
-    function = FALSE
+    function = NULL
 
     ''
     maxdims = symbGetArrayDimensions( sym )
@@ -177,60 +177,31 @@ private function hFieldArray _
     	idxexpr = astNewBOP( AST_OP_ADD, idxexpr, expr )
     end if
 
-    function = TRUE
+    function = idxexpr
 
 end function
 
 '':::::
-''TypeField       =   ArrayIdx? ('.' ID ArrayIdx?)*
+''TypeField       =   (ID ArrayIdx? '.')*
 ''
 function cTypeField _
 	( _
-		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byref expr as ASTNODE ptr, _
-		byref derefcnt as integer, _
-		byval options as FB_FIELDOPT _
+		byref method_sym as FBSYMBOL ptr, _
+		byval checkarray as integer _
 	) as FBSYMBOL ptr
 
     dim as ASTNODE ptr constexpr = any
-    dim as FBSYMBOL ptr sym = any
-    dim as integer is_method = any
+    dim as FBSYMBOL ptr fld = any, sym = any
 
 	function = NULL
 
-	sym = NULL
-	derefcnt = 0
+	fld = NULL
+	method_sym = NULL
 
 	do while( dtype = FB_DATATYPE_STRUCT )
-
-		select case lexGetToken( )
-		'' '.'?
-		case CHAR_DOT
-			lexSkipToken( LEXCHECK_NOPERIOD )
-
-       	'' ('->' DREF* TypeField)*
-       	case FB_TK_FIELDDEREF
-       		if( (options and FB_FIELDOPT_CHECKDEREF) = 0 ) then
-       			exit do
-       		end if
-
-       		lexSkipToken( LEXCHECK_NOPERIOD )
-
-       		'' DREF*
-			do while( lexGetToken( ) = FB_TK_DEREFCHAR )
-				lexSkipToken( LEXCHECK_NOPERIOD )
-				derefcnt += 1
-			loop
-
-		case else
-			if( (options and FB_FIELDOPT_ISMETHOD) = 0 ) then
-				exit do
-			end if
-
-			'' only once
-			options and= not FB_FIELDOPT_ISMETHOD
-		end select
 
 		'' ID?
 		select case as const lexGetClass( )
@@ -251,8 +222,18 @@ function cTypeField _
     		exit function
     	end if
 
-    	if( symbGetOfs( sym ) <> 0 ) then
-    		constexpr = astNewCONSTi( symbGetOfs( sym ), FB_DATATYPE_INTEGER )
+		'' method call?
+		if( symbIsField( sym ) = FALSE ) then
+			method_sym = sym
+			exit do
+		end if
+
+		lexSkipToken( )
+
+		fld = sym
+
+    	if( symbGetOfs( fld ) <> 0 ) then
+    		constexpr = astNewCONSTi( symbGetOfs( fld ), FB_DATATYPE_INTEGER )
     		if( expr = NULL ) then
     			expr = constexpr
     		else
@@ -260,16 +241,14 @@ function cTypeField _
     		end if
     	end if
 
-    	dtype = symbGetType( sym )
-    	subtype = symbGetSubType( sym )
-
-		lexSkipToken( )
+    	dtype = symbGetType( fld )
+    	subtype = symbGetSubType( fld )
 
 		'' '('?
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 
 			'' if field isn't an array, it can be function field, exit
-			if( symbGetArrayDimensions( sym ) = 0 ) then
+			if( symbGetArrayDimensions( fld ) = 0 ) then
 				exit do
 			end if
 
@@ -280,7 +259,8 @@ function cTypeField _
 
     		lexSkipToken( )
 
-			if( hFieldArray( sym, expr ) = FALSE ) then
+			expr = hFieldArray( fld, expr )
+			if( expr = NULL ) then
 				exit do
 			end if
 
@@ -299,10 +279,10 @@ function cTypeField _
 
         else
 			'' array and no index?
-			if( symbGetArrayDimensions( sym ) <> 0 ) then
-				if( (options and FB_FIELDOPT_CHECKARRAY) <> 0 ) then
+			if( symbGetArrayDimensions( fld ) <> 0 ) then
+				if( checkarray ) then
     				if( errReport( FB_ERRMSG_EXPECTEDINDEX ) = FALSE ) then
-    					exit function
+	    				exit function
     				end if
     				'' error recovery: no need to fake an expr, field arrays
     				'' are never dynamic (for now)
@@ -316,39 +296,43 @@ function cTypeField _
    			end if
         end if
 
+		'' '.'?
+		if( lexGetToken( ) <> CHAR_DOT ) then
+			exit do
+		end if
+
+		lexSkipToken( LEXCHECK_NOPERIOD )
     loop
 
-    function = sym
+    function = fld
 
 end function
 
 '':::::
-''DerefFields	=   (('->' DREF* | '[' Expression ']') TypeField)* .
+''DerefFields	=   (('->' DREF* | '[' Expression ']' '.'?) TypeField)* .
 ''
 function cDerefFields _
 	( _
-		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr, _
-		byref varexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval varexpr as ASTNODE ptr, _
 		byval checkarray as integer _
-	) as integer
+	) as ASTNODE ptr
 
-	dim as integer derefcnt = any, isfield = any, lgt = any
+	dim as integer derefcnt = any, is_field = any, lgt = any
 	dim as ASTNODE ptr expr = any, idxexpr = any
-	dim as FBSYMBOL ptr sym = any
+	dim as FBSYMBOL ptr fld = any, method_sym = any
 
-	function = FALSE
+	function = NULL
 
 	do
 		idxexpr = NULL
 		derefcnt = 0
-		isfield = FALSE
 
         select case lexGetToken( )
         '' ('->' DREF* TypeField)*
         case FB_TK_FIELDDEREF
-        	'' ditto..
-        	isfield = TRUE
+        	is_field = TRUE
 
 			if( dtype < FB_DATATYPE_POINTER ) then
 				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
@@ -358,6 +342,14 @@ function cDerefFields _
 			else
 				dtype -= FB_DATATYPE_POINTER
 			end if
+
+       		lexSkipToken( LEXCHECK_NOPERIOD )
+
+       		'' DREF*
+			do while( lexGetToken( ) = FB_TK_DEREFCHAR )
+				lexSkipToken( LEXCHECK_NOPERIOD )
+				derefcnt += 1
+			loop
 
 		'' '['
 		case CHAR_LBRACKET
@@ -444,10 +436,7 @@ function cDerefFields _
 					'' make a pointer
 					varexpr = astNewPTR( 0, varexpr, dtype, NULL )
 
-					'' reset type
-					subtype = NULL
-
-					return TRUE
+					exit do
 
 				case else
 					if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
@@ -481,9 +470,15 @@ function cDerefFields _
 
 			dtype -= FB_DATATYPE_POINTER
 
+			'' '.'?
+			is_field = (lexGetToken( ) = CHAR_DOT)
+			if( is_field ) then
+				lexSkipToken( LEXCHECK_NOPERIOD )
+			end if
+
 		'' exit..
 		case else
-			exit function
+			exit do
 
 		end select
 
@@ -498,10 +493,10 @@ function cDerefFields _
 				subtype = NULL
 			end if
 
-		case FB_DATATYPE_STRUCT
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 
 		case else
-			if( isfield ) then
+			if( is_field ) then
 				if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
 					exit function
 				else
@@ -511,21 +506,25 @@ function cDerefFields _
 
 		end select
 
-		'' TypeField
 		expr = NULL
-		sym = cTypeField( dtype, subtype, _
-						  expr, derefcnt, _
-						  iif( checkarray, _
-						  	   FB_FIELDOPT_CHECKARRAY or FB_FIELDOPT_CHECKDEREF, _
-						  	   FB_FIELDOPT_CHECKDEREF ) )
-		if( sym = NULL ) then
-			if( isfield ) then
-				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-					exit function
-				else
-					exit do
+		if( is_field ) then
+			'' TypeField
+			fld = cTypeField( dtype, subtype, expr, method_sym, checkarray )
+			if( fld = NULL ) then
+				if( method_sym = NULL ) then
+					if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+						exit function
+					else
+						exit do
+					end if
 				end if
+			else
+    			dtype = symbGetType( fld )
+    			subtype = symbGetSubType( fld )
 			end if
+		else
+			fld = NULL
+			method_sym = NULL
 		end if
 
 		'' null pointer checking
@@ -549,15 +548,26 @@ function cDerefFields _
 		varexpr = astNewPTR( 0, varexpr, dtype, subtype )
 
         ''
-		if( sym <> NULL ) then
-			varexpr = astNewFIELD( varexpr, sym, dtype, subtype )
+		if( fld <> NULL ) then
+			varexpr = astNewFIELD( varexpr, fld, dtype, subtype )
  		end if
+
+		'' method call?
+		if( method_sym <> NULL ) then
+			varexpr = cMethodCall( method_sym, varexpr )
+			if( varexpr = NULL ) then
+				return FALSE
+			else
+    			dtype = astGetDataType( varexpr )
+    			subtype = astGetSubType( varexpr )
+			end if
+		end if
 
 		''
 		do while( derefcnt > 0 )
 			if( dtype < FB_DATATYPE_POINTER ) then
 				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-					return FALSE
+					exit function
 				else
 					exit do
 				end if
@@ -588,7 +598,7 @@ function cDerefFields _
 
 	loop
 
-	function = TRUE
+	function = varexpr
 
 end function
 
@@ -600,23 +610,24 @@ function cFuncPtrOrDerefFields _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byref varexpr as ASTNODE ptr, _
+		byval expr as ASTNODE ptr, _
 		byval isfuncptr as integer, _
 		byval checkarray as integer _
-	) as integer
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr funcexpr = any
-
-	function = FALSE
+	function = NULL
 
 	''
 	if( isfuncptr = FALSE ) then
 		'' DerefFields?
-		cDerefFields( dtype, subtype, varexpr, checkarray )
+		expr = cDerefFields( dtype, subtype, expr, checkarray )
 
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+		if( expr = NULL ) then
 			exit function
 		end if
+
+		dtype = astGetDataType( expr )
+		subtype = astGetSubType( expr )
 
    		'' check for functions called through pointers
    		if( lexGetToken( ) = CHAR_LPRNT ) then
@@ -627,36 +638,32 @@ function cFuncPtrOrDerefFields _
 	end if
 
 	'' function pointer dref? call it
-	if( isfuncptr ) then
-
-		'' function?
-		if( symbGetType( subtype ) <> FB_DATATYPE_VOID ) then
-			if( cFunctionCall( subtype, funcexpr, varexpr ) = FALSE ) then
-				exit function
-			end if
-
-		'' sub..
-		else
-			if( fbGetIsExpression( ) = FALSE ) then
-				if( cProcCall( subtype, funcexpr, varexpr ) = FALSE ) then
-					exit function
-				end if
-
-			else
-				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
-			end if
-		end if
-
-		varexpr = funcexpr
-
+	if( isfuncptr = FALSE ) then
+		return expr
 	end if
 
-	function = TRUE
+	'' function?
+	if( symbGetType( subtype ) <> FB_DATATYPE_VOID ) then
+		expr = cFunctionCall( subtype, expr )
+		if( expr = NULL ) then
+			exit function
+		end if
+
+	'' sub..
+	else
+		if( fbGetIsExpression( ) = FALSE ) then
+			expr = cProcCall( subtype, expr )
+		else
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+	end if
+
+	function = expr
 
 end function
 
@@ -1115,8 +1122,8 @@ function cVariableEx _
 	) as integer
 
 	dim as zstring ptr id = any
-	dim as integer dtype = any, deftyp = any, drefcnt = any
-	dim as FBSYMBOL ptr sym = any, elm = any, subtype = any
+	dim as integer dtype = any, deftyp = any
+	dim as FBSYMBOL ptr sym = any, subtype = any
 	dim as ASTNODE ptr idxexpr = any
 
 	''
@@ -1188,13 +1195,14 @@ function cVariableEx _
 	end if
 
     ''
-	dim as integer is_byref = any, is_funcptr = any, is_import = any
+	dim as integer is_byref = any, is_funcptr = any
 	dim as integer is_array = any, checkfields = any, is_nidxarray = any
+	dim as FBSYMBOL ptr fld = any, method_sym = any
 
-	elm	= NULL
+	fld	= NULL
+	method_sym = NULL
 
-    is_byref = symbIsParamByRef( sym )
-	is_import = symbIsImport( sym )
+    is_byref = symbIsParamByRef( sym ) or symbIsImport( sym )
 	is_array = symbIsArray( sym )
 	is_funcptr = FALSE
 	is_nidxarray = FALSE
@@ -1225,9 +1233,7 @@ function cVariableEx _
 
     		else
    				'' check if calling functions through pointers
-   				if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-	   				is_funcptr = TRUE
-    			end if
+   				is_funcptr = (dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION)
 
     			'' using (...) with scalars?
     			if( (is_array = FALSE) and (is_funcptr = FALSE) ) then
@@ -1268,40 +1274,45 @@ function cVariableEx _
    	''
    	if( is_funcptr = FALSE ) then
    		if( checkfields ) then
-   			'' TypeField?
-   			elm = cTypeField( dtype, subtype, _
-   							  idxexpr, drefcnt, _
-   							  iif( checkarray, FB_FIELDOPT_CHECKARRAY, FB_FIELDOPT_NONE ) )
+   			'' ('.' TypeField)?
+   			if( lexGetToken( ) = CHAR_DOT ) then
+    			lexSkipToken( LEXCHECK_NOPERIOD )
 
-			if( elm = NULL ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-				end if
-			else
-				if( idxexpr <> NULL ) then
-					'' ugly hack to deal with arrays w/o indexes
-					if( astIsNIDXARRAY( idxexpr ) ) then
-						varexpr = astGetLeft( idxexpr )
-						astDelNode( idxexpr )
-						idxexpr = varexpr
+   				fld = cTypeField( dtype, subtype, idxexpr, method_sym, checkarray )
 
-						checkfields = FALSE
-						is_nidxarray = TRUE
+				if( fld = NULL ) then
+					if( errGetLast( ) <> FB_ERRMSG_OK ) then
+						exit function
+					end if
+				else
+    				dtype = symbGetType( fld )
+    				subtype = symbGetSubType( fld )
+
+					if( idxexpr <> NULL ) then
+						'' ugly hack to deal with arrays w/o indexes
+						if( astIsNIDXARRAY( idxexpr ) ) then
+							varexpr = astGetLeft( idxexpr )
+							astDelNode( idxexpr )
+							idxexpr = varexpr
+
+							checkfields = FALSE
+							is_nidxarray = TRUE
+						end if
 					end if
 				end if
-			end if
 
-   			'' check for calling functions through pointers
-   			if( lexGetToken( ) = CHAR_LPRNT ) then
-   				if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-	   				is_funcptr = TRUE
+   				if( method_sym = NULL ) then
+   					'' check if calling functions through pointers
+   					if( lexGetToken( ) = CHAR_LPRNT ) then
+   						is_funcptr = (dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION)
+   					end if
    				end if
-   			end if
+			end if
    		end if
    	end if
 
 	'' AST will handle descriptor pointers
-	if( is_byref or is_import ) then
+	if( is_byref ) then
 		'' byref or import? by now it's a pointer var, the real type will be set bellow
 		varexpr = astNewVAR( sym, 0, FB_DATATYPE_POINTER, NULL )
 	else
@@ -1311,7 +1322,7 @@ function cVariableEx _
 	'' has index?
 	if( idxexpr <> NULL ) then
 		'' byref or import's are already pointers
-		if( is_byref or is_import ) then
+		if( is_byref ) then
 			varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
 		else
 			varexpr = astNewIDX( varexpr, idxexpr, dtype, subtype )
@@ -1319,24 +1330,42 @@ function cVariableEx _
 	end if
 
 	'' check arguments passed by reference (implicity pointer's)
-	if( is_byref or is_import ) then
+	if( is_byref ) then
    		varexpr = astNewPTR( 0, varexpr, dtype, subtype )
 	end if
 
-    if( elm <> NULL ) then
-    	varexpr = astNewFIELD( varexpr, elm, dtype, subtype )
+    if( fld <> NULL ) then
+    	varexpr = astNewFIELD( varexpr, fld, dtype, subtype )
     end if
+
+	'' method call?
+	if( method_sym <> NULL ) then
+		varexpr = cMethodCall( method_sym, varexpr )
+		if( varexpr = NULL ) then
+			exit function
+		else
+    		dtype = astGetDataType( varexpr )
+    		subtype = astGetSubType( varexpr )
+		end if
+	end if
 
     if( checkfields ) then
     	'' FuncPtrOrDerefFields?
-		cFuncPtrOrDerefFields( dtype, subtype, varexpr, is_funcptr, checkarray )
+		varexpr = cFuncPtrOrDerefFields( dtype, _
+										 subtype, _
+										 varexpr, _
+										 is_funcptr, _
+										 checkarray )
+
+		return (errGetLast( ) = FB_ERRMSG_OK)
+	end if
 
 	'' non-indexed array?
-	elseif( is_nidxarray ) then
+	if( is_nidxarray ) then
         varexpr = astNewNIDXARRAY( varexpr )
 	end if
 
-	function = (errGetLast( ) = FB_ERRMSG_OK)
+	function = varexpr <> NULL
 
 end function
 
@@ -1350,8 +1379,8 @@ function cWithVariable _
 		byval checkarray as integer _
 	) as integer
 
-	dim as integer dtype = any, drefcnt = any, isfuncptr = any
-	dim as FBSYMBOL ptr fld = any, subtype = any
+	dim as integer dtype = any, isfuncptr = any
+	dim as FBSYMBOL ptr fld = any, subtype = any, method_sym = any
 
 	function = FALSE
 
@@ -1362,22 +1391,22 @@ function cWithVariable _
 
    	'' TypeField
    	dtype -= FB_DATATYPE_POINTER
-   	fld = cTypeField( dtype, subtype, _
-   					  varexpr, drefcnt, _
-   					  iif( checkarray, FB_FIELDOPT_CHECKARRAY, FB_FIELDOPT_NONE ) )
-	if( fld = NULL ) then
-		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-		'' no error recovery: caller will take care
-		exit function
-	end if
 
-   	'' check if calling functions through pointers
-   	isfuncptr = FALSE
-   	if( lexGetToken( ) = CHAR_LPRNT ) then
-   		if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-	  		isfuncptr = TRUE
-   		end if
-   	end if
+    '' '.'
+    lexSkipToken( LEXCHECK_NOPERIOD )
+
+   	'' TypeField
+   	fld = cTypeField( dtype, subtype, varexpr, method_sym, checkarray )
+	if( fld = NULL ) then
+		if( method_sym = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			'' no error recovery: caller will take care
+			exit function
+		end if
+	else
+    	dtype = symbGetType( fld )
+    	subtype = symbGetSubType( fld )
+	end if
 
 	'' deref the with temp pointer
 	varexpr = astNewPTR( 0, varexpr, dtype, subtype )
@@ -1386,8 +1415,30 @@ function cWithVariable _
     	varexpr = astNewFIELD( varexpr, fld, dtype, subtype )
     end if
 
+   	isfuncptr = FALSE
+
+	'' method call?
+	if( method_sym <> NULL ) then
+		varexpr = cMethodCall( method_sym, varexpr )
+		if( varexpr = NULL ) then
+			exit function
+		else
+    		dtype = astGetDataType( varexpr )
+    		subtype = astGetSubType( varexpr )
+		end if
+	else
+   		'' check if calling functions through pointers
+   		if( lexGetToken( ) = CHAR_LPRNT ) then
+   			isfuncptr = (dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION)
+   		end if
+	end if
+
     '' FuncPtrOrDerefFields?
-	cFuncPtrOrDerefFields( dtype, subtype, varexpr, isfuncptr, checkarray )
+	varexpr = cFuncPtrOrDerefFields( dtype, _
+									 subtype, _
+									 varexpr, _
+									 isfuncptr, _
+									 checkarray )
 
 	function = (errGetLast( ) = FB_ERRMSG_OK)
 
@@ -1434,8 +1485,8 @@ function cFieldVariable _
 		byval checkarray as integer _
 	) as integer
 
-	dim as integer dtype = any, drefcnt = any, isfuncptr = any
-	dim as FBSYMBOL ptr fld = any, subtype = any
+	dim as integer dtype = any, isfuncptr = any
+	dim as FBSYMBOL ptr fld = any, subtype = any, method_sym = any
 	dim as ASTNODE ptr fldexpr = NULL
 
 	function = FALSE
@@ -1448,24 +1499,16 @@ function cFieldVariable _
    	subtype = symbGetSubtype( this_ )
 
    	'' TypeField
-   	fld = cTypeField( dtype, subtype, _
-   					  fldexpr, drefcnt, _
-   					  iif( checkarray, _
-   					  	   FB_FIELDOPT_ISMETHOD or FB_FIELDOPT_CHECKARRAY, _
-   					  	   FB_FIELDOPT_ISMETHOD ) )
+   	fld = cTypeField( dtype, subtype, fldexpr, method_sym, checkarray )
 	if( fld = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' no error recovery: caller will take care
 		exit function
-	end if
 
-   	'' check if calling functions through pointers
-   	isfuncptr = FALSE
-   	if( lexGetToken( ) = CHAR_LPRNT ) then
-   		if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-	  		isfuncptr = TRUE
-   		end if
-   	end if
+	else
+    	dtype = symbGetType( fld )
+    	subtype = symbGetSubType( fld )
+	end if
 
    	'' build this.field
    	varexpr = astNewVAR( this_, 0, FB_DATATYPE_POINTER, NULL )
@@ -1474,15 +1517,38 @@ function cFieldVariable _
 		varexpr = astNewBOP( AST_OP_ADD, varexpr, fldexpr )
 	end if
 
-	'' deref the with temp pointer
+	'' deref the instance pointer
 	varexpr = astNewPTR( 0, varexpr, dtype, subtype )
 
     if( fld <> NULL ) then
     	varexpr = astNewFIELD( varexpr, fld, dtype, subtype )
     end if
 
+   	isfuncptr = FALSE
+
+	'' method call?
+	if( method_sym <> NULL ) then
+		varexpr = cMethodCall( method_sym, varexpr )
+		if( varexpr = NULL ) then
+			exit function
+		else
+    		dtype = astGetDataType( varexpr )
+    		subtype = astGetSubType( varexpr )
+		end if
+
+	else
+   		'' check if calling functions through pointers
+   		if( lexGetToken( ) = CHAR_LPRNT ) then
+   			isfuncptr = (dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION)
+   		end if
+	end if
+
     '' FuncPtrOrDerefFields?
-	cFuncPtrOrDerefFields( dtype, subtype, varexpr, isfuncptr, TRUE )
+	varexpr = cFuncPtrOrDerefFields( dtype, _
+									 subtype, _
+									 varexpr, _
+									 isfuncptr, _
+									 TRUE )
 
 	function = (errGetLast( ) = FB_ERRMSG_OK)
 

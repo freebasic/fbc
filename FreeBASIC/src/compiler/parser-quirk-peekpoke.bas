@@ -116,8 +116,8 @@ function cPeekFunct _
 	) as integer
 
 	dim as ASTNODE ptr expr = any
-	dim as integer dtype = any, lgt = any, cnt = any
-	dim as FBSYMBOL ptr sym = any, subtype = any
+	dim as integer dtype = any, lgt = any, ptrcnt = any
+	dim as FBSYMBOL ptr subtype = any
 
 	function = FALSE
 
@@ -128,7 +128,7 @@ function cPeekFunct _
 	hMatchLPRNT( )
 
 	'' (SymbolType ',')?
-	if( cSymbolType( dtype, subtype, lgt, cnt ) ) then
+	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) ) then
 
 		'' check for invalid types
 		select case dtype
@@ -186,15 +186,33 @@ function cPeekFunct _
     	expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
 
-    ''
-    sym = cTypeField( dtype, subtype, expr, cnt, FB_FIELDOPT_CHECKARRAY )
+	dim as FBSYMBOL ptr fld = NULL, method_sym = NULL
+
+   	'' ('.' TypeField)?
+   	if( lexGetToken( ) = CHAR_DOT ) then
+    	lexSkipToken( LEXCHECK_NOPERIOD )
+
+    	fld = cTypeField( dtype, subtype, expr, method_sym, TRUE )
+    	if( fld <> NULL ) then
+    		dtype = symbGetType( fld )
+    		subtype = symbGetSubType( fld )
+    	end if
+    end if
 
 	if( expr <> NULL ) then
 		funcexpr = astNewPTR( 0, expr, dtype, subtype )
 	end if
 
-	if( sym <> NULL ) then
-    	funcexpr = astNewFIELD( funcexpr, sym, dtype, subtype )
+	if( fld <> NULL ) then
+    	funcexpr = astNewFIELD( funcexpr, fld, dtype, subtype )
+	end if
+
+	'' method call?
+	if( method_sym <> NULL ) then
+		funcexpr = cMethodCall( method_sym, funcexpr )
+		if( funcexpr = NULL ) then
+			exit function
+		end if
 	end if
 
 	''

@@ -146,20 +146,31 @@ end function
 '':::::
 private function hGetId _
 	( _
+		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval dtype as integer ptr, _
 		byval is_sub as integer _
 	) as FBSYMBOL ptr static
 
+	dim as FBSYMCHAIN ptr chain_
 	dim as FBSYMBOL ptr sym
 
 	function = NULL
 
-	'' ID
-	sym = hDeclLookupId( FB_SYMBCLASS_PROC )
-	if( errGetLast( ) <> FB_ERRMSG_OK ) then
-		exit function
+	'' no parent? read as-is
+	if( parent = NULL ) then
+		chain_ = lexGetSymChain( )
+    else
+		chain_ = symbLookupAt( parent, lexGetText( ), FALSE )
 	end if
+
+    '' any symbol found?
+    if( chain_ <> NULL ) then
+    	'' same class?
+    	sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
+    else
+    	sym = NULL
+    end if
 
 	select case lexGetClass( )
 	case FB_TKCLASS_IDENTIFIER
@@ -176,7 +187,7 @@ private function hGetId _
 
 	case FB_TKCLASS_QUIRKWD
 		'' only if inside a ns and if not local
-		if( (symbIsGlobalNamespc( )) or (parser.scope > FB_MAINSCOPE) ) then
+		if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     			exit function
     		else
@@ -379,7 +390,7 @@ function cProcHeader _
 	) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXNAMELEN+1 id, aliasid, libname
-    dim as integer dtype, mode, lgt, ptrcnt
+    dim as integer dtype, mode, lgt, ptrcnt, is_extern
     dim as FBSYMBOL ptr head_proc, proc, subtype, parent
     dim as zstring ptr palias, plib
     dim as FB_SYMBSTATS stats
@@ -387,14 +398,40 @@ function cProcHeader _
 	function = NULL
 
 	is_nested = FALSE
+	is_extern = FALSE
 
 	'' ID
 	if( (attrib and FB_SYMBATTRIB_METHOD) <> 0 ) then
 		parent = symbGetCurrentNamespc( )
-		attrib or= FB_SYMBATTRIB_OVERLOADED
+
+	else
+		parent = cParentId( FB_IDOPT_ALLOWSTRUCT )
+		if( parent = NULL ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+				exit function
+			end if
+
+			if( symbGetCurrentNamespc( ) <> @symbGetGlobalNamespc( ) ) then
+				parent = symbGetCurrentNamespc( )
+			end if
+
+		else
+			'' ns used in a prototype?
+			if( is_prototype ) then
+				if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
+					exit function
+				end if
+        	end if
+
+        	if( hIsClass( parent ) ) then
+        		attrib or= FB_SYMBATTRIB_METHOD
+        	end if
+
+			is_extern = TRUE
+		end if
 	end if
 
-	head_proc = hGetId( @id, @dtype, is_sub )
+	head_proc = hGetId( parent, @id, @dtype, is_sub )
 	if( head_proc = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
@@ -461,13 +498,13 @@ function cProcHeader _
 	'' extern implementation?
 	if( is_prototype = FALSE ) then
 		'' must be done before parsing the params
-		if( head_proc <> NULL ) then
-			is_nested = hDoNesting( symbGetNamespace( head_proc ) )
+		if( parent <> NULL ) then
+			is_nested = hDoNesting( parent )
 		end if
 	end if
 
 	'' Parameters?
-	if( cParameters( NULL, proc, mode, is_prototype ) = NULL ) then
+	if( cParameters( parent, proc, mode, is_prototype ) = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
@@ -579,6 +616,13 @@ function cProcHeader _
 
     '' no preview proc or proto with the same name?
     if( head_proc = NULL ) then
+    	'' extern decl but no prototype?
+    	if( is_extern ) then
+			if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
+				exit function
+			end if
+    	end if
+
     	head_proc = symbAddProc( proc, @id, palias, NULL, _
     					   		 dtype, subtype, ptrcnt, _
     					   		 attrib, mode )
@@ -619,6 +663,7 @@ function cProcHeader _
     			else
     				return head_proc
     			end if
+
     		end if
 
     		attrib or= FB_SYMBATTRIB_OVERLOADED

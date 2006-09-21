@@ -30,15 +30,15 @@
 function cFunctionCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byref funcexpr as ASTNODE ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr _
-	) as integer
+	) as ASTNODE ptr
 
 	dim as integer dtype = any, isfuncptr = any
 	dim as FBSYMBOL ptr subtype = any
+	dim as ASTNODE ptr funcexpr = any
 
-	function = FALSE
+	function = NULL
 
     if( sym = NULL ) then
     	exit function
@@ -81,12 +81,15 @@ function cFunctionCall _
 	if( dtype = FB_DATATYPE_VOID ) then
 		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			exit function
+		else
+			'' error recovery: remove the SUB call, return a fake node
+			astDelTree( funcexpr )
+			funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 	end if
 
 	'' if function returns a pointer, check for field deref
 	if( dtype >= FB_DATATYPE_POINTER ) then
-
 		isfuncptr = FALSE
    		if( lexGetToken( ) = CHAR_LPRNT ) then
    			if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
@@ -95,19 +98,18 @@ function cFunctionCall _
    		end if
 
 		'' FuncPtrOrDerefFields?
-		cFuncPtrOrDerefFields( dtype, subtype, funcexpr, isfuncptr, TRUE )
+		funcexpr = cFuncPtrOrDerefFields( dtype, _
+										  subtype, _
+										  funcexpr, _
+										  isfuncptr, _
+										  TRUE )
 
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+		if( funcexpr = NULL ) then
 			exit function
 		end if
-
-	'' error recovery: remove the SUB call, return a fake node
-	elseif( dtype = FB_DATATYPE_VOID ) then
-		astDelTree( funcexpr )
-		funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
-	function = TRUE
+	function = funcexpr
 
 end function
 
@@ -120,9 +122,54 @@ function cFunctionEx _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
+	dim as ASTNODE ptr this_ = NULL
+
 	'' ID
 	lexSkipToken( )
 
-	function = cFunctionCall( sym, funcexpr, NULL )
+	if( symbIsMethod( sym ) ) then
+		this_ = astBuildInstPtr( _
+					symbGetParamVar( _
+						symbGetProcHeadParam( parser.currproc ) ) )
+	end if
+
+	funcexpr = cFunctionCall( sym, NULL, this_ )
+
+	function = funcexpr <> NULL
 
 end function
+
+'':::::
+function cMethodCall _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval thisexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr expr = any
+
+	'' ID
+	lexSkipToken( )
+
+	'' function?
+	if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
+		expr = cFunctionCall( sym, NULL, thisexpr )
+
+	'' sub..
+	else
+		if( fbGetIsExpression( ) = FALSE ) then
+			expr = cProcCall( sym, NULL, thisexpr )
+		else
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				expr = NULL
+			else
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+	end if
+
+	function = expr
+
+end function
+

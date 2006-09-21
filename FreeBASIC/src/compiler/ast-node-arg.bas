@@ -749,8 +749,13 @@ private function hCheckUDTParam _
 									  FALSE, _
 									  FALSE )
 
-				'' assuming it's safe to use CALLCTOR here
-				n->l = astNewCALLCTOR( astNewASSIGN( astBuildVarField( tmp ), arg ), _
+				'' assuming it's safe to use CALLCTOR here (can't use ASSIGN, tmp
+				'' wasn't initialized, if the assignment op is overloaded, any attempt
+				'' to deallocate pointers would fail)
+				n->l = astNewCALLCTOR( astNewMEM( AST_OP_MEMMOVE, _
+									   			  astBuildVarField( tmp ), _
+									   			  arg, _
+									   			  symbGetUDTUnpadLen( arg->subtype ) ), _
 									   astBuildVarField( tmp ) )
 
 				arg = n->l

@@ -147,49 +147,68 @@ function cStrIdxOrFieldDeref _
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
 		'' '['?
 		if( lexGetToken( ) = CHAR_LBRACKET ) then
-			cDerefFields( dtype, subtype, expr, TRUE )
+			expr = cDerefFields( dtype, subtype, expr, TRUE )
 		end if
 
-	case else
+		return expr <> NULL
 
-		'' udt '.' ?
-		if( dtype = FB_DATATYPE_STRUCT ) then
-			if( lexGetToken( ) = CHAR_DOT ) then
-   				dim as integer drefcnt = any
-    			dim as FBSYMBOL ptr sym = any
+	'' udt '.' ?
+	case FB_DATATYPE_STRUCT
+		if( lexGetToken( ) = CHAR_DOT ) then
+    		lexSkipToken( LEXCHECK_NOPERIOD )
 
-    			sym = cTypeField( dtype, subtype, expr, drefcnt, FB_FIELDOPT_CHECKARRAY )
-				if( sym = NULL ) then
+    		dim as FBSYMBOL ptr fld = any, method_sym = any
+
+    		fld = cTypeField( dtype, subtype, expr, method_sym, TRUE )
+			if( fld = NULL ) then
+				if( method_sym = NULL ) then
 					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-				else
-    				expr = astNewFIELD( expr, sym, dtype, subtype )
 				end if
+			else
+    			dtype = symbGetType( fld )
+    			subtype = symbGetSubType( fld )
+    			expr = astNewFIELD( expr, fld, dtype, subtype )
 			end if
-		end if
 
-		'' FuncPtrOrDerefFields?
-		if( dtype >= FB_DATATYPE_POINTER ) then
-			dim as integer isfuncptr = FALSE, isfield = FALSE
-
-			select case lexGetToken( )
-			'' function ptr '(' ?
-			case CHAR_LPRNT
-				isfuncptr = ( dtype = FB_DATATYPE_POINTER+FB_DATATYPE_FUNCTION )
-				isfield = isfuncptr
-
-			'' ptr ('->' | '[') ?
-			case FB_TK_FIELDDEREF, CHAR_LBRACKET
-				isfield = TRUE
-		    end select
-
-			if( isfield ) then
-				cFuncPtrOrDerefFields( dtype, subtype, expr, isfuncptr, TRUE )
+			'' method call?
+			if( method_sym <> NULL ) then
+				expr = cMethodCall( method_sym, expr )
+				if( expr = NULL ) then
+					return FALSE
+				else
+    				dtype = astGetDataType( expr )
+    				subtype = astGetSubType( expr )
+				end if
 			end if
 		end if
 
 	end select
 
-	function = (errGetLast() = FB_ERRMSG_OK)
+	'' FuncPtrOrDerefFields?
+	if( dtype >= FB_DATATYPE_POINTER ) then
+		dim as integer isfuncptr = FALSE, isfield = FALSE
+
+		select case lexGetToken( )
+		'' function ptr '(' ?
+		case CHAR_LPRNT
+			isfuncptr = ( dtype = FB_DATATYPE_POINTER+FB_DATATYPE_FUNCTION )
+			isfield = isfuncptr
+
+		'' ptr ('->' | '[') ?
+		case FB_TK_FIELDDEREF, CHAR_LBRACKET
+			isfield = TRUE
+	    end select
+
+		if( isfield ) then
+			expr = cFuncPtrOrDerefFields( dtype, _
+										  subtype, _
+										  expr, _
+										  isfuncptr, _
+										  TRUE )
+		end if
+	end if
+
+	function = (errGetLast( ) = FB_ERRMSG_OK)
 
 end function
 

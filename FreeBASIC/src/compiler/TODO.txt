@@ -13,10 +13,6 @@
 	      the sjlj (setjmp and longjmp) method isn't used in ELF (it seems)
 	  - no support for vectors []'s
 
-[ ] methods in TYPE's
-	- add checks for scoped symbols in procHeader()
-	- add method call support to cTypeField( )
-
 [ ] operator overloading:
       OPERATOR *|@ ( l ) AS TYPE
 

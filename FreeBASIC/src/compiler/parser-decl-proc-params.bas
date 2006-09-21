@@ -52,10 +52,11 @@ function cParameters _
 
     '' method? add the instance pointer (must be done here
     '' to check for dups)
+    param = NULL
     if( parent <> NULL ) then
-    	param = symAddProcInstancePtr( parent, proc )
-    else
-    	param = NULL
+    	if( symbIsNamespace( parent ) = FALSE ) then
+    		param = symAddProcInstancePtr( parent, proc )
+    	end if
     end if
 
 	'' '('?

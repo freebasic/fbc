@@ -148,14 +148,6 @@ enum FB_IDOPT
 	FB_IDOPT_DEFAULT			= FB_IDOPT_SHOWERROR
 end enum
 
-enum FB_FIELDOPT
-	FB_FIELDOPT_NONE			= &h00000000
-
-	FB_FIELDOPT_CHECKARRAY		= &h00000001
-	FB_FIELDOPT_CHECKDEREF		= &h00000002
-	FB_FIELDOPT_ISMETHOD		= &h00000004
-end enum
-
 ''
 type FBPARSER_STMT_WITH
 	sym				as FBSYMBOL ptr
@@ -764,19 +756,17 @@ declare function cProcCallingConv _
 declare function cFunctionCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byref funcexpr as ASTNODE ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr = NULL _
-	) as integer
+	) as ASTNODE ptr
 
 declare function cProcCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byref procexpr as ASTNODE ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr = NULL, _
 		byval checkparents as integer = FALSE _
-	) as integer
+	) as ASTNODE ptr
 
 declare function cCtorCall _
 	( _
@@ -785,31 +775,37 @@ declare function cCtorCall _
 		byref is_ctorcall as integer _
 	) as ASTNODE ptr
 
+declare function cMethodCall _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval thisexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
 declare function cTypeField _
 	( _
-		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byref expr as ASTNODE ptr, _
-		byref derefcnt as integer, _
-		byval options as FB_FIELDOPT _
+		byref method_sym as FBSYMBOL ptr, _
+		byval checkarray as integer _
 	) as FBSYMBOL ptr
 
 declare function cDerefFields _
 	( _
-		byref typ as integer, _
-		byref subtype as FBSYMBOL ptr, _
-		byref varexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval varexpr as ASTNODE ptr, _
 		byval checkarray as integer _
-	) as integer
+	) as ASTNODE ptr
 
 declare function cFuncPtrOrDerefFields _
 	( _
-		byval typ as integer, _
+		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byref varexpr as ASTNODE ptr, _
+		byval varexpr as ASTNODE ptr, _
 		byval isfuncptr as integer, _
 		byval checkarray as integer _
-	) as integer
+	) as ASTNODE ptr
 
 declare function cStrIdxOrFieldDeref _
 	( _
