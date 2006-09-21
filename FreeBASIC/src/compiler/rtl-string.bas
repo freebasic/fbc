@@ -3054,9 +3054,9 @@ end function
 function rtlWstrToA _
 	( _
 		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
     function = NULL
 
@@ -3075,9 +3075,9 @@ end function
 function rtlAToWstr _
 	( _
 		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
     function = NULL
 
@@ -3096,10 +3096,10 @@ end function
 function rtlToStr _
 	( _
 		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f, litsym
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any, litsym = any
 
     function = NULL
 
@@ -3188,10 +3188,10 @@ end function
 function rtlToWstr _
 	( _
 		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f, litsym
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any, litsym = any
 
     function = NULL
 
@@ -3280,12 +3280,12 @@ function rtlStrToVal _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval to_dtype as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f, s
-    dim as FB_CALL_ARG arg
-    dim as FB_ERRMSG err_num
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any, s = any
+    dim as FB_CALL_ARG arg = any
+    dim as FB_ERRMSG err_num = any
 
     function = NULL
 

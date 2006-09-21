@@ -18,13 +18,7 @@
 	- add method call support to cTypeField( )
 
 [ ] operator overloading:
-    - binary:
-      OPERATOR & ( l, r ) AS TYPE
-    - unary:
       OPERATOR *|@ ( l ) AS TYPE
-    - variants won't work if the non-variant param is to be returned
-      byref (like for getmouse), the temp var used should be assigned
-      back to the variant
 
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode

@@ -302,28 +302,6 @@ function cCatExpression _
 		exit function
 	end if
 
-	'' &
-	if( lexGetToken( ) = CHAR_AMP ) then
-
-    	'' convert operand to string if needed
-    	select case as const astGetDataType( catexpr )
-    	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-    		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-
-    	'' not a string..
-    	case else
-    		catexpr = rtlToStr( catexpr )
-   			if( catexpr = NULL ) then
-   				if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-   					exit function
-   				else
-   					'' error recovery: fake a new node
-   					catexpr = astNewCONSTstr( NULL )
-   				end if
-    		end if
-    	end select
-	end if
-
 	'' ( ... )*
 	do
 		'' &
@@ -342,32 +320,8 @@ function cCatExpression _
     		end if
     	end if
 
-		'' convert operand to string if needed
-    	select case as const astGetDataType( expr )
-    	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-    		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-
-    	'' not a string..
-    	case else
-	   		'' expression is not a wstring?
-	   		if( astGetDataType( catexpr ) <> FB_DATATYPE_WCHAR ) then
-	   			expr = rtlToStr( expr )
-	   		else
-	   			expr = rtlToWstr( expr )
-	   		end if
-
-	   		if( expr = NULL ) then
-	   			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-	   				exit function
-	   			else
-   					'' error recovery: fake a new node
-   					expr = astNewCONSTstr( NULL )
-   				end if
-	   		end if
-    	end select
-
     	'' concatenate
-    	catexpr = astNewBOP( AST_OP_ADD, catexpr, expr )
+    	catexpr = astNewBOP( AST_OP_CONCAT, catexpr, expr )
 
         if( catexpr = NULL ) then
 			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then

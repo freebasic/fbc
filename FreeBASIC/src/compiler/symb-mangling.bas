@@ -965,6 +965,12 @@ private function hGetOperatorName _
 	case AST_OP_POW_SELF
 		function = @"pO"
 
+	case AST_OP_CONCAT
+		function = @"ct"
+
+	case AST_OP_CONCAT_SELF
+		function = @"cT"
+
 	case AST_OP_EQ
 		function = @"eq"
 

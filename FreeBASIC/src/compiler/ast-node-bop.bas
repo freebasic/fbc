@@ -206,6 +206,60 @@ private function hWStrLiteralCompare _
 end function
 
 '':::::
+private function hToStr _
+	( _
+		byref l as ASTNODE ptr, _
+		byref r as ASTNODE ptr _
+	) as integer
+
+    '' convert left operand to string if needed
+    select case as const astGetDataType( l )
+    case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+    	 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+
+    '' not a string..
+    case else
+    	l = rtlToStr( l )
+   		if( l = NULL ) then
+   			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+   				return FALSE
+   			else
+   				'' error recovery: fake a new node
+   				l = astNewCONSTstr( NULL )
+   			end if
+    	end if
+    end select
+
+
+	'' convert the right operand to string if needed
+   	select case as const astGetDataType( r )
+   	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+   		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+
+   	'' not a string..
+   	case else
+   		'' expression is not a wstring?
+   		if( astGetDataType( l ) <> FB_DATATYPE_WCHAR ) then
+   			r = rtlToStr( r )
+   		else
+   			r = rtlToWstr( r )
+   		end if
+
+   		if( r = NULL ) then
+   			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+   				return FALSE
+   			else
+  				'' error recovery: fake a new node
+				r = astNewCONSTstr( NULL )
+			end if
+   		end if
+   	end select
+
+   	function = TRUE
+
+end function
+
+'':::::
 private sub hBOPConstFoldInt _
 	( _
 		byval op as integer, _
@@ -756,6 +810,14 @@ function astNewBOP _
 	hDoGlobOpOverload( op, l, r )
 
 	is_str = FALSE
+
+	'' special case..
+	if( op = AST_OP_CONCAT ) then
+		if( hToStr( l, r ) = FALSE ) then
+			exit function
+		end if
+		op = AST_OP_ADD
+	end if
 
 	ldtype = l->dtype
 	rdtype = r->dtype

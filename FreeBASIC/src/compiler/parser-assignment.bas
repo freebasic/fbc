@@ -194,6 +194,9 @@ function cOperator _
         case CHAR_CART
         	op = AST_OP_POW
 
+        case CHAR_AMP
+        	op = AST_OP_CONCAT
+
         case else
         	exit function
         end select
