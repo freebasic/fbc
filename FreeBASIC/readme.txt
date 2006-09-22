@@ -764,6 +764,12 @@ What FreeBASIC Isn't:
 
 Credits (in alphabetic order):
 
+  o Abdullah Ali (voodooattack[at]hotmail.com):
+    - Fixed and finished the Windows NT DDK headers at the inc/win/ddk dir,
+      translated by the SWIG FB wrapper. 
+    - Wrote the Windows NT DDK test at the examples/Windows/ddk/driver dir.
+    - Added DLL hot-linking support to the Windows port (disabled at the moment).
+
   o Angelo Mottola (a.mottola[at]libero.it) - Project Member:
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
