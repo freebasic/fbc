@@ -270,7 +270,7 @@ private function hUDTInit _
     	end if
 
     	dim as integer is_ctorcall = any
-    	expr = cCtorCall( ctx.sym, expr, is_ctorcall )
+    	expr = astBuildImplicitCtorCallEx( ctx.sym, expr, is_ctorcall )
         if( expr = NULL ) then
         	exit function
         end if

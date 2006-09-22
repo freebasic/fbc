@@ -1027,6 +1027,13 @@ declare function astBuildImplicitCtorCall _
 		byref is_ctorcall as integer _
 	) as ASTNODE ptr
 
+declare function astBuildImplicitCtorCallEx _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr, _
+		byref is_ctorcall as integer _
+	) as ASTNODE ptr
+
 ''
 '' macros
 ''

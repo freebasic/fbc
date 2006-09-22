@@ -775,18 +775,17 @@ declare function cProcCall _
 		byval checkparents as integer = FALSE _
 	) as ASTNODE ptr
 
-declare function cCtorCall _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr, _
-		byref is_ctorcall as integer _
-	) as ASTNODE ptr
-
 declare function cMethodCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval thisexpr as ASTNODE ptr _
 	) as ASTNODE ptr
+
+declare function cCtorCall _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byref atom as ASTNODE ptr _
+	) as integer
 
 declare function cTypeField _
 	( _

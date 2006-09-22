@@ -234,14 +234,22 @@ function cAnonUDT _
 		end if
     end if
 
-    '' alloc temp var
-    sym = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE, FALSE )
+    '' has a ctor?
+    if( symbGetHasCtor( subtype ) ) then
+    	if( cCtorCall( subtype, expr ) = FALSE ) then
+    		exit function
+    	end if
 
-    '' let the initializer do the rest..
-    expr = cInitializer( sym, FALSE )
+    else
+    	'' alloc temp var
+    	sym = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE, FALSE )
 
-    '' del temp var
-    symbDelVar( sym )
+    	'' let the initializer do the rest..
+    	expr = cInitializer( sym, FALSE )
+
+    	'' del temp var
+    	symbDelVar( sym )
+    end if
 
     function = (expr <> NULL)
 

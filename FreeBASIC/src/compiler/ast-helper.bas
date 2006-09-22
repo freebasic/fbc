@@ -449,6 +449,31 @@ function astBuildImplicitCtorCall _
 
 end function
 
+'':::::
+function astBuildImplicitCtorCallEx _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr, _
+		byref is_ctorcall as integer _
+	) as ASTNODE ptr
+
+    dim as FBSYMBOL ptr subtype = any
+
+	subtype = symbGetSubType( sym )
+
+    '' check ctor call
+    if( astIsCALLCTOR( expr ) ) then
+    	if( symbGetSubtype( expr ) = subtype ) then
+    		is_ctorcall = TRUE
+    		'' remove the the anon/temp instance
+    		return astCallCtorToCall( expr )
+    	end if
+    end if
+
+    '' try calling any ctor with the expression
+    function = astBuildImplicitCtorCall( subtype, expr, is_ctorcall )
+
+end function
 
 ''
 '' procs

@@ -85,69 +85,6 @@ function cParentExpression _
 end function
 
 '':::::
-private function hCtorCall _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byref atom as ASTNODE ptr _
-	) as integer
-
-	dim as FBSYMBOL ptr tmp = any
-	dim as integer isprnt = any
-	dim as ASTNODE ptr procexpr = any
-
-	'' skip symbol
-	lexSkipToken( )
-
-    '' alloc temp var
-    tmp = symbAddTempVar( symbGetType( sym ), _
-    					  sym, _
-    					  FALSE, _
-    					  FALSE )
-
-
-	'' '('?
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-		lexSkipToken( )
-		isprnt = TRUE
-	else
-		isprnt = FALSE
-	end if
-
-	procexpr = cProcArgList( symbGetCompCtorHead( sym ), _
-					  		 NULL, _
-					  		 astBuildVarField( tmp ), _
-					  		 TRUE, _
-					  		 FALSE )
-	if( procexpr = NULL ) then
-		return FALSE
-	end if
-
-	if( isprnt ) then
-		'' ')'?
-		if( lexGetToken( ) <> CHAR_RPRNT ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-				return FALSE
-			else
-				'' error recovery: skip until next ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
-		else
-			lexSkipToken( )
-		end if
-	end if
-
-	'' error recovery..
-	if( astIsCALL( procexpr ) ) then
-		atom = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
-	else
-		atom = procexpr
-	end if
-
-	function = ( atom <> NULL )
-
-end function
-
-'':::::
 private function hFindId _
 	( _
 		byval chain_ as FBSYMCHAIN ptr, _
@@ -177,7 +114,10 @@ private function hFindId _
 
 		case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
 			if( symbGetHasCtor( sym ) ) then
-				return hCtorCall( sym, atom )
+				'' skip ID, ctorCall() is also used by type<>(...)
+				lexSkipToken( )
+
+				return cCtorCall( sym, atom )
 			end if
 		end select
 

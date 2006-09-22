@@ -30,32 +30,6 @@
 declare function hCtorChain	( ) as integer
 
 '':::::
-function cCtorCall _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr, _
-		byref is_ctorcall as integer _
-	) as ASTNODE ptr
-
-    dim as FBSYMBOL ptr subtype = any
-
-	subtype = symbGetSubType( sym )
-
-    '' check ctor call
-    if( astIsCALLCTOR( expr ) ) then
-    	if( symbGetSubtype( expr ) = subtype ) then
-    		is_ctorcall = TRUE
-    		'' remove the the anon/temp instance
-    		return astCallCtorToCall( expr )
-    	end if
-    end if
-
-    '' try calling any ctor with the expression
-    function = astBuildImplicitCtorCall( subtype, expr, is_ctorcall )
-
-end function
-
-'':::::
 function cAssignFunctResult _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -139,7 +113,7 @@ function cAssignFunctResult _
     '' RETURN and has ctor? try to initialize..
     if( is_return and has_ctor ) then
     	dim as integer is_ctorcall
-    	rhs = cCtorCall( res, rhs, is_ctorcall )
+    	rhs = astBuildImplicitCtorCallEx( res, rhs, is_ctorcall )
     	if( rhs = NULL ) then
     		exit function
     	end if
