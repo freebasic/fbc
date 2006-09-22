@@ -638,7 +638,8 @@ declare function cAddrOfExpression _
 declare function cTypeConvExpr _
 	( _
 		byval tk as FB_TOKEN, _
-		byref tconvexpr as ASTNODE ptr _
+		byref tconvexpr as ASTNODE ptr, _
+		byval isASM as integer = FALSE _
 	) as integer
 
 declare function cParentExpression _

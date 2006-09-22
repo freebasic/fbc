@@ -25,11 +25,13 @@ Version 0.17 Beta:
   constructor is explicitly defined (v1c)
 - pointers to z|wtrings can't be passed byval to string params directly anymore, dereference them first (v1c)
 - pointers to byte|ubyte arrays can't be passed byval to string params directly anymore, use type casting (v1c)
+- offsetof() can now be used inside inline asm blocks - the patch was sent by cha0s (v1c)
 
 [added]
 - the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)
 - operator overloading for UDT's (TYPE's and ENUM's) (W.I.P.) (v1c)
 - constructor and destructor support UDT's (TYPE's) (v1c)
+- method support UDT's (TYPE's) (v1c)
 - #macro .. #endmacro, to better support multi-line pre-processor defines (v1c)
 - TYPE's, UNION's, ENUM's and typedefs can now be declared inside functions and scope blocks (v1c)
 - FileCopy, FileAttr, and FileLen VB-compatability functions [DrV]

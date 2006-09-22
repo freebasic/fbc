@@ -872,6 +872,8 @@ Credits (in alphabetic order):
   o Ruben Rodriguez (rubentbstk[at]gmail.com):
     - Corrected the errors in English in readme.txt and migrating.txt, plus
       the messages in compiler/error.bas.
+    - Added the __PATH__ intrinsic define, and made OFFSETOF() work inside inline
+      asm blocks.
 
   o Sterling Christensen (sterling[at]engineer.com):
     - Ex-project member, developer of the QB-like graphics library (later 

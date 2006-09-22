@@ -32,7 +32,8 @@
 function cTypeConvExpr _
 	( _
 		byval tk as FB_TOKEN, _
-		byref expr as ASTNODE ptr _
+		byref expr as ASTNODE ptr, _
+		byval isASM as integer = FALSE _
 	) as integer
 
     dim as integer dtype, op
@@ -112,11 +113,15 @@ function cTypeConvExpr _
     end if
 
 	'' ')'
-	if( hMatch( CHAR_RPRNT ) = FALSE ) then
+	if( lexGetToken( ) <> CHAR_RPRNT ) then
 		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
 			exit function
 		else
 			hSkipUntil( CHAR_RPRNT, TRUE )
+		end if
+	else
+		if isASM = FALSE then
+			lexSkipToken( )
 		end if
 	end if
 

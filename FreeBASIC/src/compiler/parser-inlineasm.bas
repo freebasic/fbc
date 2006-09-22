@@ -52,7 +52,7 @@ function cAsmCode as integer static
 	dim as FBSYMBOL ptr sym
 	dim as ASTNODE ptr expr
 	dim as FB_ASMTOK ptr head, tail, node
-	dim as integer doskip
+	dim as integer doskip, thisTok
 
 	function = FALSE
 
@@ -60,7 +60,8 @@ function cAsmCode as integer static
 	tail = NULL
 	do
 		'' !(END|Comment|NEWLINE)
-		select case as const lexGetToken( LEXCHECK_NOWHITESPC )
+		thisTok = lexGetToken( LEXCHECK_NOWHITESPC )
+		select case as const thisTok
 		case FB_TK_END, FB_TK_EOL, FB_TK_COMMENT, FB_TK_REM, FB_TK_EOF
 			exit do
 		end select
@@ -118,8 +119,9 @@ function cAsmCode as integer static
 
 		''
 		case FB_TKCLASS_KEYWORD
+			select case thisTok
+			case FB_TK_FUNCTION
 			'' FUNCTION?
-			if( lexGetToken( LEXCHECK_NOWHITESPC ) = FB_TK_FUNCTION ) then
     			sym = symbGetProcResult( parser.currproc )
     			if( sym = NULL ) then
     				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
@@ -131,8 +133,43 @@ function cAsmCode as integer static
     			else
     				symbSetIsAccessed( sym )
     			end if
-			end if
 
+			case FB_TK_CINT
+                
+                '' CINT( valid expression )?
+				if( cTypeConvExpr( thisTok, expr, TRUE ) = TRUE ) then
+
+                    '' constant expression?
+					if( astIsCONST( expr ) = TRUE ) then
+						'' text replacement
+					    text = str( symbGetConstValInt( expr ) )
+					else
+				        '' error limit?
+						if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+							exit function
+						else
+							'' skip emission
+							doskip = TRUE
+						end if
+					
+					end if
+					
+					astDelNode( expr )
+ 
+				else
+
+					'' error limit?
+					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+						exit function
+					else
+						'' skip emission
+						doskip = TRUE
+					end if
+
+				end if
+				
+			end select
+			
 		end select
 
 		''
