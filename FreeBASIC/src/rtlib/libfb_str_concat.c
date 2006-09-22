@@ -69,8 +69,6 @@ FBCALL FBSTRING *fb_StrConcat
 	const char *str1_ptr, *str2_ptr;
 	int str1_len, str2_len;
 
-	FB_STRLOCK();
-
 	FB_STRSETUP_FIX( str1, str1_size, str1_ptr, str1_len );
 
 	FB_STRSETUP_FIX( str2, str2_size, str2_ptr, str2_len );
@@ -78,17 +76,19 @@ FBCALL FBSTRING *fb_StrConcat
 	/* NULL? */
 	if( str1_len+str2_len == 0 )
 	{
-		fb_StrDelete_NoLock( dst );
+		fb_StrDelete( dst );
 	}
 	else
 	{
 		/* alloc temp string */
-        if( !fb_hStrAllocTemp_NoLock( dst, str1_len+str2_len ) )
+        if( !fb_hStrAllocTemp( dst, str1_len+str2_len ) )
             DBG_ASSERT( FALSE );
 
 		/* do the concatenation */
 		fb_hStrConcat( dst->data, str1_ptr, str1_len, str2_ptr, str2_len );
 	}
+
+	FB_STRLOCK();
 
 	/* delete temps? */
 	if( str1_size == -1 )

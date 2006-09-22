@@ -159,7 +159,6 @@ static __inline__ void fb_hStrSetLength( FBSTRING *str, size_t size ) {
 FBCALL FBSTRING    *fb_hStrAllocTmpDesc 	( void );
 FBCALL int          fb_hStrDelTempDesc  	( FBSTRING *str );
 FBCALL FBSTRING    *fb_hStrRealloc      	( FBSTRING *str, int size, int preserve );
-FBCALL FBSTRING    *fb_hStrRealloc_NoLock	( FBSTRING *str, int size, int preserve );
 FBCALL FBSTRING    *fb_hStrAllocTemp    	( FBSTRING *str, int size );
 FBCALL FBSTRING    *fb_hStrAllocTemp_NoLock	( FBSTRING *str, int size );
 FBCALL int          fb_hStrDelTemp      	( FBSTRING *str );
@@ -172,7 +171,6 @@ FBCALL char        *fb_hStrSkipCharRev  	( char *s, int len, int c );
 /* public */
 
 FBCALL void         fb_StrDelete        ( FBSTRING *str );
-FBCALL void         fb_StrDelete_NoLock ( FBSTRING *str );
 FBCALL void        *fb_StrAssign        ( void *dst, int dst_size, void *src, int src_size,
 										  int fillrem );
 FBCALL FBSTRING    *fb_StrConcat        ( FBSTRING *dst, void *str1, int str1_size,

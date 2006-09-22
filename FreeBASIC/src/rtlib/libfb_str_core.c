@@ -111,7 +111,7 @@ FBCALL int fb_hStrDelTempDesc( FBSTRING *str )
  **********/
 
 /*:::::*/
-FBCALL FBSTRING *fb_hStrRealloc_NoLock( FBSTRING *str, int size, int preserve )
+FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 {
 	int newsize;
 
@@ -124,7 +124,7 @@ FBCALL FBSTRING *fb_hStrRealloc_NoLock( FBSTRING *str, int size, int preserve )
 	{
 		if( preserve == FB_FALSE )
 		{
-			fb_StrDelete_NoLock( str );
+			fb_StrDelete( str );
 
 			str->data = (char *)malloc( newsize + 1 );
 			/* failed? try the original request */
@@ -164,20 +164,6 @@ FBCALL FBSTRING *fb_hStrRealloc_NoLock( FBSTRING *str, int size, int preserve )
 	fb_hStrSetLength( str, size );
 
     return str;
-}
-
-/*:::::*/
-FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
-{
-	FBSTRING *res;
-
-	FB_STRLOCK( );
-
-	res = fb_hStrRealloc_NoLock( str, size, preserve );
-
-	FB_STRUNLOCK( );
-
-	return res;
 }
 
 /*:::::*/
@@ -226,7 +212,7 @@ FBCALL int fb_hStrDelTemp_NoLock( FBSTRING *str )
 
 	/* is it really a temp? */
 	if( FB_ISTEMP( str ) )
-        fb_StrDelete_NoLock( str );
+        fb_StrDelete( str );
 
     /* del descriptor (must be done by last as it will be cleared) */
     return fb_hStrDelTempDesc( str );

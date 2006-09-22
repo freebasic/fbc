@@ -42,8 +42,8 @@
 
 /*:::::*/
 void fb_hArrayDtorStr
-	( 
-		FBARRAY *array, 
+	(
+		FBARRAY *array,
 		FB_DEFCTOR dtor,
 		int base_idx
 	)
@@ -62,23 +62,19 @@ void fb_hArrayDtorStr
 	/* call dtors in the inverse order */
 	this_ = (FBSTRING *)array->ptr + (elements-1);
 
-	FB_STRLOCK();
-
 	while( elements > 0 )
 	{
 		if( this_->data != NULL )
-			fb_StrDelete_NoLock( this_ );
+			fb_StrDelete( this_ );
 		--this_;
 		--elements;
 	}
-
-	FB_STRUNLOCK();
 }
 
 /*:::::*/
 FBCALL void fb_ArrayStrErase
-	( 
-		FBARRAY *array 
+	(
+		FBARRAY *array
 	)
 {
     if( array->ptr != NULL )

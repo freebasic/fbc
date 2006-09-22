@@ -78,14 +78,14 @@ FBCALL void *fb_StrAssign
 		/* src NULL? */
 		if( src_len == 0 )
 		{
-			fb_StrDelete_NoLock( dstr );
+			fb_StrDelete( dstr );
 		}
 		else
 		{
 			/* if src is a temp, just copy the descriptor */
 			if( (src_size == -1) && FB_ISTEMP(src) )
 			{
-				fb_StrDelete_NoLock( dstr );
+				fb_StrDelete( dstr );
 
 				dstr->data = (char *)src_ptr;
 				dstr->len = src_len;
@@ -106,7 +106,7 @@ FBCALL void *fb_StrAssign
         	dst_len = FB_STRSIZE( dst );
 
 			if( dst_len != src_len )
-				fb_hStrRealloc_NoLock( dstr, src_len, FB_FALSE );
+				fb_hStrRealloc( dstr, src_len, FB_FALSE );
 
 			fb_hStrCopy( dstr->data, src_ptr, src_len );
 		}

@@ -42,7 +42,7 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_StrDelete_NoLock ( FBSTRING *str )
+FBCALL void fb_StrDelete ( FBSTRING *str )
 {
     if( (str == NULL) || (str->data == NULL) )
     	return;
@@ -54,13 +54,4 @@ FBCALL void fb_StrDelete_NoLock ( FBSTRING *str )
 	str->size = 0;
 }
 
-/*:::::*/
-FBCALL void fb_StrDelete ( FBSTRING *str )
-{
-	FB_STRLOCK();
-
-	fb_StrDelete_NoLock( str );
-
-	FB_STRUNLOCK();
-}
 

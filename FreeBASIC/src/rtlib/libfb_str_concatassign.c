@@ -55,15 +55,11 @@ FBCALL void *fb_StrConcatAssign
 	const char *src_ptr;
 	int src_len, dst_len;
 
-	FB_STRLOCK();
-
 	if( dst == NULL )
 	{
 		/* delete temp? */
 		if( src_size == -1 )
-			fb_hStrDelTemp_NoLock( (FBSTRING *)src );
-
-		FB_STRUNLOCK();
+			fb_hStrDelTemp( (FBSTRING *)src );
 
 		return dst;
 	}
@@ -80,7 +76,7 @@ FBCALL void *fb_StrConcatAssign
         	dstr = (FBSTRING *)dst;
         	dst_len = FB_STRSIZE( dst );
 
-			fb_hStrRealloc_NoLock( dstr, dst_len+src_len, FB_TRUE );
+			fb_hStrRealloc( dstr, dst_len+src_len, FB_TRUE );
 
 			fb_hStrCopy( &dstr->data[dst_len], src_ptr, src_len );
 		}
@@ -113,9 +109,7 @@ FBCALL void *fb_StrConcatAssign
 
 	/* delete temp? */
 	if( src_size == -1 )
-		fb_hStrDelTemp_NoLock( (FBSTRING *)src );
-
-	FB_STRUNLOCK();
+		fb_hStrDelTemp( (FBSTRING *)src );
 
 	return dst;
 }
