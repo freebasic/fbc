@@ -180,18 +180,6 @@ private sub hAddCtor _
 	dim as ASTNODE ptr proc_node
 	dim as FBSYMBOL ptr proc
 
-   	'' if the UDT has no ctors fields, don't add a copy or default ctor
-   	select case symbGetClass( sym )
-   	case FB_SYMBCLASS_STRUCT
-   		if( symbGetUDTHasCtorField( sym ) = FALSE ) then
-   			exit sub
-   		end if
-
-   	case FB_SYMBCLASS_CLASS
-   		'' ...
-
-   	end select
-
     proc_node = hProcBegin( sym, _
     						INVALID, _
     						iif( is_ctor, _
@@ -350,18 +338,6 @@ private sub hAddClone _
 	dim as ASTNODE ptr proc_node
 	dim as FBSYMBOL ptr proc
 
-    '' if the UDT has no ctors fields, don't add a clone
-    select case symbGetClass( sym )
-    case FB_SYMBCLASS_STRUCT
-    	if( symbGetUDTHasCtorField( sym ) = FALSE ) then
-    		exit sub
-    	end if
-
-    case FB_SYMBCLASS_CLASS
-    	'' ...
-
-    end select
-
     proc_node = hProcBegin( sym, _
     						AST_OP_ASSIGN, _
     						FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR, _
@@ -382,10 +358,14 @@ sub symbCompAddDefMembers _
 		byval sym as FBSYMBOL ptr _
 	) static
 
-	'' has a ctor?
-	if( symbGetHasCtor( sym ) ) then
-		if( symbGetCompDefCtor( sym ) = NULL ) then
-			hAddCtor( sym, TRUE, FALSE )
+	'' has fields with ctors?
+	if( symbGetUDTHasCtorField( sym ) ) then
+		'' any ctor explicitly defined?
+		if( symbGetHasCtor( sym ) = FALSE ) then
+			'' no default ctor?
+			if( symbGetCompDefCtor( sym ) = NULL ) then
+				hAddCtor( sym, TRUE, FALSE )
+			end if
 		end if
 
 		'' must be defined before the copy ctor
@@ -396,10 +376,12 @@ sub symbCompAddDefMembers _
 		if( symbGetCompCopyCtor( sym ) = NULL ) then
 			hAddCtor( sym, TRUE, TRUE )
 		end if
+
 	end if
 
-	'' has a dtor?
-	if( symbGetHasDtor( sym ) ) then
+	'' has fields with dtors?
+	if( symbGetUDTHasDtorField( sym ) ) then
+		'' no default dtor explicitly defined?
 		if( symbGetCompDtor( sym ) = NULL ) then
 			hAddCtor( sym, FALSE, FALSE )
 		end if

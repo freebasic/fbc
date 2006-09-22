@@ -620,11 +620,11 @@ private function hVarInit _
 	( _
         byval sym as FBSYMBOL ptr, _
         byval isdecl as integer, _
-        byval has_ctor as integer _
-	) as ASTNODE ptr static
+        byval has_defctor as integer _
+	) as ASTNODE ptr
 
-    dim as integer attrib
-	dim as ASTNODE ptr initree
+    dim as integer attrib = any
+	dim as ASTNODE ptr initree = any
 
 	function = NULL
 
@@ -639,8 +639,12 @@ private function hVarInit _
 	case FB_TK_DBLEQ, FB_TK_EQ
 
 	case else
+    	if( sym = NULL ) then
+    		exit function
+    	end if
+
     	'' ctor?
-    	if( has_ctor ) then
+    	if( has_defctor ) then
 			'' not already declared, extern, common or dynamic?
 			if( isdecl = FALSE ) then
 				if( ((attrib and (FB_SYMBATTRIB_EXTERN or _
@@ -649,6 +653,15 @@ private function hVarInit _
 					function = astBuildTypeIniCtorList( sym )
 				end if
 			end if
+
+    	else
+    		'' no default ctor but other ctors defined?
+    		select case symbGetType( sym )
+    		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    			if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
+    				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+    			end if
+    		end select
     	end if
 
 		exit function
@@ -690,7 +703,7 @@ private function hVarInit _
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 
 		else
-			if( has_ctor ) then
+			if( has_defctor ) then
 				errReportWarn( FB_WARNINGMSG_ANYINITHASNOEFFECT )
 			end if
 
@@ -712,6 +725,13 @@ private function hVarInit _
 	'' static or shared?
 	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
   						   	   	   FB_SYMBATTRIB_SHARED)) <> 0 ) then
+
+    	dim as integer has_ctor = FALSE
+
+    	select case symbGetType( sym )
+    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    		has_ctor = symbGetHasCtor( symbGetSubtype( sym ) )
+    	end select
 
 		'' only if it's not an object, static or global instances are allowed
 		if( has_ctor = FALSE ) then

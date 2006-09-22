@@ -371,9 +371,8 @@ function symbAddField _
 									  FB_UDTOPT_ISANON)) <> 0 ) then
 			errReport( FB_ERRMSG_VARLENSTRINGINUNION )
 		else
-			symbSetHasCtor( parent )
-			symbSetHasDtor( parent )
 			symbSetUDTHasCtorField( parent )
+			symbSetUDTHasDtorField( parent )
 		end if
 
     '' struct with a ctor or dtor? must add a ctor or dtor too
@@ -384,7 +383,6 @@ function symbAddField _
 										  FB_UDTOPT_ISANON)) <> 0 ) then
 				errReport( FB_ERRMSG_CTORINUNION )
 			else
-				symbSetHasCtor( parent )
 				symbSetUDTHasCtorField( parent )
 			end if
     	end if
@@ -395,7 +393,7 @@ function symbAddField _
 										  FB_UDTOPT_ISANON)) <> 0 ) then
 				errReport( FB_ERRMSG_DTORINUNION )
 			else
-				symbSetHasDtor( parent )
+				symbSetUDTHasDtorField( parent )
 			end if
     	end if
 

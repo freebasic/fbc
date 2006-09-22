@@ -172,9 +172,9 @@ private function hFieldInit _
 	( _
         byval parent as FBSYMBOL ptr, _
         byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr initree
+	dim as ASTNODE ptr initree = any
 
 	function = NULL
 
@@ -183,6 +183,17 @@ private function hFieldInit _
 	case FB_TK_DBLEQ, FB_TK_EQ
 
 	case else
+    	select case symbGetType( sym )
+    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    		'' has ctors?
+    		if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
+    			'' but no default ctor defined?
+    			if( symbGetCompDefCtor( symbGetSubtype( sym ) ) = NULL ) then
+    				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+    			end if
+    		end if
+    	end select
+
 		exit function
 	end select
 
@@ -248,7 +259,6 @@ private function hFieldInit _
 	end if
 
 	'' make sure a default ctor is added
-	symbSetHasCtor( parent )
 	symbSetUDTHasCtorField( parent )
 
 	'' UDT now must be unique

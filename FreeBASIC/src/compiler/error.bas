@@ -217,7 +217,8 @@ end type
 		@"This symbol cannot be undefined", _
 		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _
 		@"Invalid assignment/conversion", _
-		@"Invalid array subscript" _
+		@"Invalid array subscript", _
+		@"TYPE or CLASS has no default constructor" _
 	}
 
 

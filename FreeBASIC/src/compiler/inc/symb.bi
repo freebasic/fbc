@@ -262,8 +262,9 @@ enum FB_UDTOPT
 	FB_UDTOPT_ISANON			= &h0002
 	FB_UDTOPT_HASPTRFIELD		= &h0004
 	FB_UDTOPT_HASCTORFIELD		= &h0008
-	FB_UDTOPT_HASRECBYVALPARAM  = &h0010
-	FB_UDTOPT_HASRECBYVALRES 	= &h0020
+	FB_UDTOPT_HASDTORFIELD		= &h0010
+	FB_UDTOPT_HASRECBYVALPARAM  = &h0020
+	FB_UDTOPT_HASRECBYVALRES 	= &h0040
 end enum
 
 type FB_STRUCT_DBG
@@ -1837,6 +1838,10 @@ declare function symbLookupCompField _
 #define symbSetUDTHasCtorField(s) s->udt.options or= FB_UDTOPT_HASCTORFIELD
 
 #define symbGetUDTHasCtorField(s) ((s->udt.options and FB_UDTOPT_HASCTORFIELD) <> 0)
+
+#define symbSetUDTHasDtorField(s) s->udt.options or= FB_UDTOPT_HASDTORFIELD
+
+#define symbGetUDTHasDtorField(s) ((s->udt.options and FB_UDTOPT_HASDTORFIELD) <> 0)
 
 #define symbGetUDTIsAnon(s) ((s->udt.options and FB_UDTOPT_ISANON) <> 0)
 
