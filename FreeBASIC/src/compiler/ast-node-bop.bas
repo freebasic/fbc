@@ -1395,7 +1395,8 @@ end function
 		proc = symbFindSelfBopOvlProc( op, l, r, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			return astBuildCall( proc, 2, l, r )
+			function = astBuildCall( proc, 2, l, r )
+			exit function
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL

@@ -1432,6 +1432,11 @@ declare function symbDemangleFunctionPtr _
 		byval proc as FBSYMBOL ptr _
 	) as zstring ptr
 
+declare function symbDemangleMethod _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as zstring ptr
+
 declare function symbTypeToStr _
 	( _
 		byval dtype as integer, _

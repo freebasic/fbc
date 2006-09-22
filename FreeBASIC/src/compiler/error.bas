@@ -585,39 +585,23 @@ private function hReportMakeDesc _
 			'' function pointer?
 			if( symbGetIsFuncPtr( proc ) ) then
 				pname = symbDemangleFunctionPtr( proc )
-			end if
+
+			'' method?
+			elseif( (symbGetAttrib( proc ) and (FB_SYMBATTRIB_CONSTRUCTOR or _
+											    FB_SYMBATTRIB_DESTRUCTOR or _
+											    FB_SYMBATTRIB_OPERATOR)) <> 0 ) then
+
+				pname = symbDemangleMethod( proc )
+            end if
 		end if
 
 		if( showname ) then
 			if( pname = NULL ) then
 				addprnts = TRUE
-				if( (symbGetAttrib( proc ) and (FB_SYMBATTRIB_CONSTRUCTOR or _
-											    FB_SYMBATTRIB_DESTRUCTOR or _
-											    FB_SYMBATTRIB_OPERATOR)) <> 0 ) then
-
-					static as string ctorname
-
-					ctorname = *symbGetName( symbGetNamespace( proc ) )
-
-					if( symbIsConstructor( proc ) ) then
-					 	ctorname += ".constructor"
-					elseif( symbIsOperator( proc ) ) then
-						ctorname += ".operator"
-						if( proc->proc.ext <> NULL ) then
-							ctorname += " " + *astGetOpId( proc->proc.ext->opovl.op )
-						end if
-					else
-						ctorname += ".destructor"
-					end if
-
-					pname = strptr( ctorname )
-
-				else
-					pname = symbGetName( proc )
-					if( pname <> NULL ) then
-						if( len( *pname ) = 0 ) then
-							pname = symbGetMangledName( proc )
-						end if
+				pname = symbGetName( proc )
+				if( pname <> NULL ) then
+					if( len( *pname ) = 0 ) then
+						pname = symbGetMangledName( proc )
 					end if
 				end if
 			else

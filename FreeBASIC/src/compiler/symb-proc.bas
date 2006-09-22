@@ -1285,7 +1285,7 @@ const FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
 		rec_cnt -= 1
 
 		if( proc <> NULL ) then
-			return FB_OVLPROC_HALFMATCH
+			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT
 		end if
 	end if
 #endmacro
@@ -1593,7 +1593,7 @@ private function hCheckOvlParam _
 										@err_num )
 			cast_rec_cnt -= 1
 
-			return iif( proc <> NULL, FB_OVLPROC_HALFMATCH, 0 )
+			return iif( proc <> NULL, FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT, 0 )
 		end select
     end select
 
@@ -2259,11 +2259,13 @@ private function hMangleFunctionPtr _
 
 end function
 
-'':::::
-function symbDemangleFunctionPtr _
+private function hDemangleParams _
 	( _
 		byval proc as FBSYMBOL ptr _
 	) as zstring ptr
+
+	static as string res
+	dim as FBSYMBOL ptr param
 
 	static as zstring ptr parammodeTb( FB_PARAMMODE_BYVAL to FB_PARAMMODE_VARARG ) = _
 	{ _
@@ -2272,15 +2274,8 @@ function symbDemangleFunctionPtr _
 		@"bydesc", _
 		@"vararg" _
 	}
-	static as string res
-	dim as FBSYMBOL ptr param
 
-	'' sub or function?
-	if( proc->typ <> FB_DATATYPE_VOID ) then
-		res = "function("
-	else
-		res = "sub("
-	end if
+    res = ""
 
     '' for each param..
     param = symbGetProcHeadParam( proc )
@@ -2301,6 +2296,64 @@ function symbDemangleFunctionPtr _
     		res += ", "
     	end if
     loop
+
+    function = strptr( res )
+
+end function
+
+'':::::
+function symbDemangleFunctionPtr _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as zstring ptr
+
+	static as string res
+
+	'' sub or function?
+	if( proc->typ <> FB_DATATYPE_VOID ) then
+		res = "function("
+	else
+		res = "sub("
+	end if
+
+	res += *hDemangleParams( proc )
+
+	res += ")"
+
+	'' any return type?
+	if( proc->typ <> FB_DATATYPE_VOID ) then
+    	res += " as "
+    	res += *symbTypeToStr( proc->typ, proc->subtype )
+	end if
+
+	function = strptr( res )
+
+end function
+
+'':::::
+function symbDemangleMethod _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as zstring ptr
+
+	static as string res
+
+	res = *symbGetName( symbGetNamespace( proc ) )
+
+	if( symbIsConstructor( proc ) ) then
+	 	res += ".constructor"
+	elseif( symbIsOperator( proc ) ) then
+		res += ".operator"
+		if( proc->proc.ext <> NULL ) then
+			res += " " + *astGetOpId( proc->proc.ext->opovl.op )
+		end if
+	else
+		res += ".destructor"
+	end if
+
+	res += "("
+
+	res += *hDemangleParams( proc )
 
 	res += ")"
 
