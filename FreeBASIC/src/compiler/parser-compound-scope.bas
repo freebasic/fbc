@@ -56,6 +56,11 @@ function cScopeStmtBegin as integer
 	stk = cCompStmtPush( FB_TK_SCOPE )
 	stk->scopenode = n
 
+	'' deprecated quirk: implicit vars inside implicit scope blocks
+	'' must be allocated in the function scope
+	stk->scp.lastis_scope = fbGetIsScope( )
+	fbSetIsScope( TRUE )
+
 	function = TRUE
 
 end function
@@ -76,6 +81,8 @@ function cScopeStmtEnd as integer
 	'' END SCOPE
 	lexSkipToken( )
 	lexSkipToken( )
+
+	fbSetIsScope( stk->scp.lastis_scope )
 
 	''
 	if( stk->scopenode <> NULL ) then

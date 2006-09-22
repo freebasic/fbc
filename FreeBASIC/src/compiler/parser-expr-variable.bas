@@ -1047,7 +1047,15 @@ private function hVarAddUndecl _
 
 	options = FB_SYMBOPT_ADDSUFFIX
 
-	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+	'' respect scopes?
+	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
+		'' deprecated quirk: not inside an explicit SCOPE .. END SCOPE block?
+		if( fbGetIsScope( ) = FALSE ) then
+ 			options or= FB_SYMBOPT_UNSCOPE
+		end if
+
+	'' no scopes..
+	else
 		options or= FB_SYMBOPT_UNSCOPE
 	end if
 
@@ -1068,12 +1076,13 @@ private function hVarAddUndecl _
 	else
 		var = astNewDECL( FB_SYMBCLASS_VAR, s, NULL )
 
-		'' respect scopes?
-		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-			astAdd( var )
-		'' move to function scope..
-		else
+		'' move to function scope?
+		if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
 			astAddUnscoped( var )
+
+		'' respect the scope..
+		else
+			astAdd( var )
 		end if
 
 	end if

@@ -82,11 +82,6 @@ use "-lang qb" (without quotes) option on the command-line when running FBC.
            "-lang qb" mode, allowing fast execution ("-lang qb" doesn't 
            support multi-threading, while "-lang deprecated" does).
 
-      2) Implicit or explicit variables will always respect the scope
-         blocks, implicit (opened by compound statements like IF, DO, etc)
-         or explicit (SCOPE .. END SCOPE), use "-lang qb" to compile
-         old sources that depend on the absence of scope rules.
-     
       Not supported:
      
       1) Classes
@@ -94,6 +89,9 @@ use "-lang qb" (without quotes) option on the command-line when running FBC.
            ambiguous.
      
       2) Operator overloading
+         - Ditto.
+
+      3) Constructors, destructors and methods in TYPE's.
          - Ditto.
      
    
@@ -103,7 +101,7 @@ use "-lang qb" (without quotes) option on the command-line when running FBC.
       
       1) CALL can be used with forward-referenced functions. (W.I.P.)
      
-      2) SHARED can be used inside functions.   (W.I.P.)
+      2) SHARED can be used inside functions. (W.I.P.)
      
       3) All variables, implicit or explicit, are always allocated in
          the function scope, as in QB.
@@ -118,12 +116,14 @@ use "-lang qb" (without quotes) option on the command-line when running FBC.
       2) Classes and Namespaces
      
       3) Function and operator overloading
+
+      4) Constructors, destructors and methods in TYPE's
      
-      4) SCOPE blocks
+      5) SCOPE blocks
      
-      5) EXTERN blocks
+      6) EXTERN blocks
       
-      6) Variable initializers
+      7) Variable initializers
          - All variables are moved to the function scope (as in QB), 
            making local initializers too difficult to support.
      

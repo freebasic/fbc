@@ -41,62 +41,66 @@ type FBCMPSTMT
 end type
 
 type FB_CMPSTMT_DO
-	attop		as integer
-	inilabel	as FBSYMBOL ptr
+	attop			as integer
+	inilabel		as FBSYMBOL ptr
 end type
 
 type FB_CMPSTMT_FOR
-	inilabel	as FBSYMBOL ptr
-	testlabel	as FBSYMBOL ptr
-	iscomplex	as integer
-	ispositive	as integer
-	cnt			as FBSYMBOL ptr
-	endc		as FBSYMBOL ptr
-	stp			as FBSYMBOL ptr
-	eval		as FBVALUE
-	sval		as FBVALUE
+	inilabel		as FBSYMBOL ptr
+	testlabel		as FBSYMBOL ptr
+	iscomplex		as integer
+	ispositive		as integer
+	cnt				as FBSYMBOL ptr
+	endc			as FBSYMBOL ptr
+	stp				as FBSYMBOL ptr
+	eval			as FBVALUE
+	sval			as FBVALUE
 end type
 
 type FB_CMPSTMT_IF
-	issingle	as integer
-	nxtlabel	as FBSYMBOL ptr
-	endlabel	as FBSYMBOL ptr
-	elsecnt		as integer
+	issingle		as integer
+	nxtlabel		as FBSYMBOL ptr
+	endlabel		as FBSYMBOL ptr
+	elsecnt			as integer
 end type
 
 type FB_CMPSTMT_PROC
-	tkn			as FB_TOKEN
-	node		as ASTNODE ptr
-	is_nested	as integer
+	tkn				as FB_TOKEN
+	node			as ASTNODE ptr
+	is_nested		as integer
 end type
 
 type FB_CMPSTMT_SELCONST
-	base		as integer
-	deflabel 	as FBSYMBOL ptr
-	minval		as uinteger
-	maxval		as uinteger
+	base			as integer
+	deflabel 		as FBSYMBOL ptr
+	minval			as uinteger
+	maxval			as uinteger
 end type
 
 type FB_CMPSTMT_SELECT
-	isconst		as integer
-	sym			as FBSYMBOL ptr
-	dtype		as FB_DATATYPE
-	casecnt		as integer
-	const		as FB_CMPSTMT_SELCONST
+	isconst			as integer
+	sym				as FBSYMBOL ptr
+	dtype			as FB_DATATYPE
+	casecnt			as integer
+	const			as FB_CMPSTMT_SELCONST
 end type
 
 type FB_CMPSTMT_WITH
-	last		as FBSYMBOL ptr
+	last			as FBSYMBOL ptr
 end type
 
 type FB_CMPSTMT_NAMESPACE
-	node		as ASTNODE ptr
-	levels		as integer						'' nesting level
+	node			as ASTNODE ptr
+	levels			as integer					'' nesting level
 end type
 
 type FB_CMPSTMT_EXTERN
-	lastlib		as FBLIBRARY ptr
-	lastmang	as FB_MANGLING
+	lastlib			as FBLIBRARY ptr
+	lastmang		as FB_MANGLING
+end type
+
+type FB_CMPSTMT_SCOPE
+	lastis_scope	as integer
 end type
 
 type FB_CMPSTMTSTK
@@ -113,6 +117,7 @@ type FB_CMPSTMTSTK
 		with	as FB_CMPSTMT_WITH
 		nspc	as FB_CMPSTMT_NAMESPACE
 		ext		as FB_CMPSTMT_EXTERN
+		scp		as FB_CMPSTMT_SCOPE
 	end union
 end type
 
@@ -166,6 +171,7 @@ enum FB_PARSEROPT
 	FB_PARSEROPT_PRNTOPT		= &h0001
 	FB_PARSEROPT_CHKARRAY		= &h0002		'' used by LEN() to handle expr's and ()-less arrays
 	FB_PARSEROPT_ISEXPR			= &h0004		'' parsing an expression?
+	FB_PARSEROPT_ISSCOPE		= &h0008
 end enum
 
 type PARSERCTX
@@ -1101,6 +1107,17 @@ declare function hDeclCheckParent _
 		parser.options or= FB_PARSEROPT_ISEXPR
 	else
 		parser.options and= not FB_PARSEROPT_ISEXPR
+	end if
+#endmacro
+
+#define fbGetIsScope( ) ((parser.options and FB_PARSEROPT_ISSCOPE) <> 0)
+
+'':::::
+#macro fbSetIsScope( _bool )
+	if( _bool ) then
+		parser.options or= FB_PARSEROPT_ISSCOPE
+	else
+		parser.options and= not FB_PARSEROPT_ISSCOPE
 	end if
 #endmacro
 
