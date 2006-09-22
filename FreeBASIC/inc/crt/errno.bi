@@ -52,7 +52,10 @@
 
 #ifdef __FB_WIN32__
 declare function _errno cdecl alias "_errno" () as integer ptr
-#define	errno	(*_errno)
+
+private function errno cdecl () as integer
+	return *_errno
+end function
 
 #else
 	extern errno alias "errno" as integer
