@@ -513,9 +513,8 @@ static int hPrintDouble
 	value = fabs( value );
 
 	/* forced sign? */
-	if( !signatend && isneg )
+	if( isneg && !signatini && !signatend )
 	{
-		signatini = 1;
 		/* one digit less.. */
 		if( intdigs > 0 )
 			--intdigs;
@@ -609,11 +608,13 @@ static int hPrintDouble
 	}
 
 	/* sign */
-	if( signatini )
+	if( signatini || (isneg && !signatend) )
 	{
 		memmove( &fix_buf[1], fix_buf, fix_len+1 );
 		fix_buf[0] = (isneg? '-' : '+');
 		++fix_len;
+		if( !signatini )
+			++intdigs;
 		isneg = 0;						/* QB quirk */
 	}
 
