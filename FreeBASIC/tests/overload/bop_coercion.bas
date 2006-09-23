@@ -58,7 +58,7 @@ end operator
 
 sub test cdecl ()
 	dim t1 as VARIANT
-	dim t2 as MyVariant
+	dim t2 as MyVariant = t1
 	
 	CU_ASSERT_EQUAL( t2 - t1, TEST_RES_MV_V )
 	
