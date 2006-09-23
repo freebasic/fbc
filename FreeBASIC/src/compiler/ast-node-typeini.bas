@@ -360,7 +360,7 @@ private function hFlushTree _
         		end if
             end if
 
-			astAdd( astNewASSIGN( lside, n->l, FALSE ) )
+			astAdd( astNewASSIGN( lside, n->l, AST_OPOPT_DONTCHKPTR ) )
 
     	case AST_NODECLASS_TYPEINI_PAD
         	if( symbIsParamInstance( basesym ) ) then

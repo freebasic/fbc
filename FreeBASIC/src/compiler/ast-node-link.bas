@@ -63,22 +63,40 @@ function astNewLINK _
 end function
 
 '':::::
+sub astSetTypeLINK _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
+
+    n->dtype = dtype
+    n->subtype = subtype
+
+	n->l->dtype = dtype
+	n->l->subtype = subtype
+
+end sub
+
+'':::::
 function astLoadLINK _
 	( _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
+	dim as IRVREG ptr vr = any
+
 	if( n = NULL ) then
 		return NULL
 	end if
 
-	astLoad( n->l )
+	vr = astLoad( n->l )
 	astDelNode( n->l )
 
 	astLoad( n->r )
 	astDelNode( n->r )
 
-	function = NULL
+	function = vr
 
 end function
 

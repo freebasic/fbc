@@ -287,7 +287,7 @@ function astNewUOP _
 			hUOPConstFoldInt( op, o )
 		end select
 
-		astSetDataType( o, dtype )
+		astSetType( o, dtype, NULL )
 
 		return o
 	end if

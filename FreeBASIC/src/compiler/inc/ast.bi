@@ -90,6 +90,9 @@ enum AST_OPOPT
 	AST_OPOPT_LPTRARITH		= &h00000002
 	AST_OPOPT_RPTRARITH		= &h00000004
 	AST_OPOPT_NOCOERCION	= &h00000008
+	AST_OPOPT_DONTCHKPTR	= &h00000010
+	AST_OPOPT_DONTCHKOPOVL	= &h00000020
+
 	AST_OPOPT_DOPTRARITH	= AST_OPOPT_LPTRARITH or AST_OPOPT_RPTRARITH
 
 	AST_OPOPT_DEFAULT		= AST_OPOPT_ALLOCRES
@@ -314,10 +317,21 @@ type AST_OPINFO
 	selfop			as AST_OP						'' self version
 end type
 
-type AST_LOADCB as function (byval n as ASTNODE ptr) as IRVREG ptr
+type AST_LOADCB as function _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
+type AST_SETTYPECB as sub _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
 
 type AST_CLASSINFO
 	loadcb			as AST_LOADCB
+	settypecb		as AST_SETTYPECB
 	iscode			as integer
 end type
 
@@ -487,7 +501,7 @@ declare function astNewASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval checktypes as integer = TRUE _
+		byval options as AST_OPOPT = AST_OPOPT_NONE _
 	) as ASTNODE ptr
 
 declare function astNewCONV _
@@ -1102,19 +1116,7 @@ declare function astBuildImplicitCtorCallEx _
 
 #define astGetProcExitlabel(n) n->block.exitlabel
 
-#define astSetDataType(n, _dtype) 							_
-    n->dtype = _dtype                                       :_
-	if( n->class = AST_NODECLASS_FIELD ) then               :_
-		n->l->dtype = _dtype                                :_
-	end if
-
-#define astSetType(n, _dtype, _subtype) 					_
-    n->dtype   = _dtype                                     :_
-    n->subtype = _subtype                                   :_
-	if( n->class = AST_NODECLASS_FIELD ) then               :_
-		n->l->dtype   = _dtype                              :_
-		n->l->subtype = _subtype                            :_
-	end if
+#define astSetType(n, dtype, subtype) ast_classTB(n->class).settypecb( n, dtype, subtype )
 
 #define astTypeIniGetOfs( n ) n->typeini.ofs
 

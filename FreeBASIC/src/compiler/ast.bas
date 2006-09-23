@@ -35,74 +35,194 @@
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
 
+declare sub astProcListInit _
+	( _
+	)
 
-declare sub 		astProcListInit		( )
+declare sub astProcListEnd _
+	( _
+	)
 
-declare sub 		astProcListEnd		( )
+declare function astLoadNOP _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadNOP			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadASSIGN _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadASSIGN		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadCONV _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadCONV			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadBOP _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadBOP			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadUOP _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadUOP			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadCONST _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadCONST		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadVAR _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadVAR			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadIDX _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadIDX			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadPTR _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadPTR			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadCALL _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadCALL			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadCALLCTOR _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadCALLCTOR		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadADDR _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadADDR			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLOAD _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadLOAD			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadBRANCH _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadBRANCH		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadIIF _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadIIF			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadOFFSET _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadOFFSET		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLINK _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadLINK			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadSTACK _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadSTACK		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadENUM _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadENUM			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLABEL _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadLABEL		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLIT _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadLIT			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadASM _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadASM			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadJMPTB _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadJMPTB		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadDBG _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadDBG			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadMEM _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadMEM			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadBOUNDCHK _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadBOUNDCHK		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadPTRCHK _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadPTRCHK		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadFIELD _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadFIELD		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadSCOPEBEGIN _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadSCOPEBEGIN	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadSCOPEEND _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadSCOPEEND		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadDECL _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadDECL			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadNIDXARRAY _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
-declare function 	astLoadNIDXARRAY	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare sub astSetTypeFIELD _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
+
+declare sub astSetTypeLINK _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
+
+declare sub hSetType _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
 
 
 '' globals
@@ -111,48 +231,48 @@ declare function 	astLoadNIDXARRAY	( byval n as ASTNODE ptr ) as IRVREG ptr
 	'' same order as AST_NODECLASS
 	dim shared ast_classTB( 0 to AST_CLASSES-1 ) as AST_CLASSINFO => _
 	{ _
-		( @astLoadNOP			, FALSE			), _	'' AST_NODECLASS_NOP
-		( @astLoadLOAD			, TRUE			), _	'' AST_NODECLASS_LOAD
-		( @astLoadASSIGN		, TRUE			), _	'' AST_NODECLASS_ASSIGN
-		( @astLoadBOP			, TRUE			), _	'' AST_NODECLASS_BOP
-		( @astLoadUOP			, TRUE			), _	'' AST_NODECLASS_UOP
-		( @astLoadCONV			, TRUE			), _	'' AST_NODECLASS_CONV
-		( @astLoadADDR			, TRUE			), _	'' AST_NODECLASS_ADDR
-		( @astLoadBRANCH		, TRUE			), _	'' AST_NODECLASS_BRANCH
-		( @astLoadCALL			, TRUE			), _	'' AST_NODECLASS_CALL
-		( @astLoadCALLCTOR		, TRUE			), _	'' AST_NODECLASS_CALLCTOR
-		( @astLoadSTACK			, TRUE			), _	'' AST_NODECLASS_STACK
-		( @astLoadMEM			, TRUE			), _	'' AST_NODECLASS_MEM
-		( @astLoadNOP			, FALSE			), _	'' AST_NODECLASS_COMP
-		( @astLoadLINK			, FALSE			), _	'' AST_NODECLASS_LINK
-		( @astLoadCONST			, FALSE			), _	'' AST_NODECLASS_CONST
-		( @astLoadVAR			, TRUE			), _	'' AST_NODECLASS_VAR
-		( @astLoadIDX			, TRUE			), _	'' AST_NODECLASS_IDX
-		( @astLoadFIELD			, TRUE			), _	'' AST_NODECLASS_FIELD
-		( @astLoadENUM			, FALSE			), _	'' AST_NODECLASS_ENUM
-		( @astLoadPTR			, TRUE			), _	'' AST_NODECLASS_PTR
-		( @astLoadLABEL			, FALSE			), _	'' AST_NODECLASS_LABEL
-		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_ARG
-		( @astLoadOFFSET		, FALSE			), _	'' AST_NODECLASS_OFFSET
-		( @astLoadDECL			, FALSE			), _	'' AST_NODECLASS_DECL
-		( @astLoadNIDXARRAY		, TRUE			), _	'' AST_NODECLASS_NIDXARRAY
-		( @astLoadIIF			, TRUE			), _	'' AST_NODECLASS_IIF
-		( @astLoadLIT			, FALSE			), _	'' AST_NODECLASS_LIT
-		( @astLoadASM			, TRUE			), _	'' AST_NODECLASS_ASM
-		( @astLoadJMPTB			, TRUE			), _	'' AST_NODECLASS_JMPTB
-		( @astLoadDBG			, FALSE			), _	'' AST_NODECLASS_DBG
-		( @astLoadBOUNDCHK		, TRUE			), _	'' AST_NODECLASS_BOUNDCHK
-		( @astLoadPTRCHK		, TRUE			), _	'' AST_NODECLASS_PTRCHK
-		( @astLoadSCOPEBEGIN	, TRUE			), _	'' AST_NODECLASS_SCOPEBEGIN
-		( @astLoadSCOPEEND		, TRUE			), _	'' AST_NODECLASS_SCOPEEND
-		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_SCOPE_BREAK
-		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_TYPEINI
-		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_TYPEINI_PAD
-		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_TYPEINI_ASSIGN
-		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_TYPEINI_CTORCALL
-		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_TYPEINI_CTORLIST
-		( @astLoadNOP			, TRUE			), _	'' AST_NODECLASS_PROC
-		( @astLoadNOP			, FALSE			) _		'' AST_NODECLASS_NAMESPC
+		( @astLoadNOP		, @hSetType			, FALSE	), _	'' AST_NODECLASS_NOP
+		( @astLoadLOAD		, @hSetType			, TRUE	), _	'' AST_NODECLASS_LOAD
+		( @astLoadASSIGN	, @hSetType			, TRUE	), _	'' AST_NODECLASS_ASSIGN
+		( @astLoadBOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_BOP
+		( @astLoadUOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_UOP
+		( @astLoadCONV		, @hSetType			, TRUE	), _	'' AST_NODECLASS_CONV
+		( @astLoadADDR		, @hSetType			, TRUE	), _	'' AST_NODECLASS_ADDR
+		( @astLoadBRANCH	, @hSetType			, TRUE	), _	'' AST_NODECLASS_BRANCH
+		( @astLoadCALL		, @hSetType			, TRUE	), _	'' AST_NODECLASS_CALL
+		( @astLoadCALLCTOR	, @hSetType			, TRUE	), _	'' AST_NODECLASS_CALLCTOR
+		( @astLoadSTACK		, @hSetType			, TRUE	), _	'' AST_NODECLASS_STACK
+		( @astLoadMEM		, @hSetType			, TRUE	), _	'' AST_NODECLASS_MEM
+		( @astLoadNOP		, @hSetType			, FALSE	), _	'' AST_NODECLASS_COMP
+		( @astLoadLINK		, @astSetTypeLINK	, FALSE	), _	'' AST_NODECLASS_LINK
+		( @astLoadCONST		, @hSetType			, FALSE	), _	'' AST_NODECLASS_CONST
+		( @astLoadVAR		, @hSetType			, TRUE	), _	'' AST_NODECLASS_VAR
+		( @astLoadIDX		, @hSetType			, TRUE	), _	'' AST_NODECLASS_IDX
+		( @astLoadFIELD		, @astSetTypeFIELD	, TRUE	), _	'' AST_NODECLASS_FIELD
+		( @astLoadENUM		, @hSetType			, FALSE	), _	'' AST_NODECLASS_ENUM
+		( @astLoadPTR		, @hSetType			, TRUE	), _	'' AST_NODECLASS_PTR
+		( @astLoadLABEL		, @hSetType			, FALSE	), _	'' AST_NODECLASS_LABEL
+		( @astLoadNOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_ARG
+		( @astLoadOFFSET	, @hSetType			, FALSE	), _	'' AST_NODECLASS_OFFSET
+		( @astLoadDECL		, @hSetType			, FALSE	), _	'' AST_NODECLASS_DECL
+		( @astLoadNIDXARRAY	, @hSetType			, TRUE	), _	'' AST_NODECLASS_NIDXARRAY
+		( @astLoadIIF		, @hSetType			, TRUE	), _	'' AST_NODECLASS_IIF
+		( @astLoadLIT		, @hSetType			, FALSE	), _	'' AST_NODECLASS_LIT
+		( @astLoadASM		, @hSetType			, TRUE	), _	'' AST_NODECLASS_ASM
+		( @astLoadJMPTB		, @hSetType			, TRUE	), _	'' AST_NODECLASS_JMPTB
+		( @astLoadDBG		, @hSetType			, FALSE	), _	'' AST_NODECLASS_DBG
+		( @astLoadBOUNDCHK	, @hSetType			, TRUE	), _	'' AST_NODECLASS_BOUNDCHK
+		( @astLoadPTRCHK	, @hSetType			, TRUE	), _	'' AST_NODECLASS_PTRCHK
+		( @astLoadSCOPEBEGIN, @hSetType			, TRUE	), _	'' AST_NODECLASS_SCOPEBEGIN
+		( @astLoadSCOPEEND	, @hSetType			, TRUE	), _	'' AST_NODECLASS_SCOPEEND
+		( @astLoadNOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_SCOPE_BREAK
+		( @astLoadNOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_TYPEINI
+		( @astLoadNOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_TYPEINI_PAD
+		( @astLoadNOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_TYPEINI_ASSIGN
+		( @astLoadNOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_TYPEINI_CTORCALL
+		( @astLoadNOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_TYPEINI_CTORLIST
+		( @astLoadNOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_PROC
+		( @astLoadNOP		, @hSetType			, FALSE	) _		'' AST_NODECLASS_NAMESPC
 	}
 
 	'' same order as AST_OP
@@ -1313,4 +1433,16 @@ function astLoad _
 
 end function
 
+'':::::
+private sub hSetType _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
+
+    n->dtype = dtype
+    n->subtype = subtype
+
+end sub
 

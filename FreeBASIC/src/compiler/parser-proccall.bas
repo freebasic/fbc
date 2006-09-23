@@ -154,8 +154,8 @@ function cProcCall _
 		byval checkprnts as integer = FALSE _
 	) as ASTNODE ptr
 
-	dim as integer dtype = any, isfuncptr = any, doflush = any
-	dim as FBSYMBOL ptr subtype = any, reslabel = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr reslabel = any
 	dim as ASTNODE ptr procexpr = any
 
 	function = NULL
@@ -217,79 +217,48 @@ function cProcCall _
 
 	fbSetPrntOptional( FALSE )
 
-	sym = astGetSymbol( procexpr )
-	dtype = astGetDataType( procexpr )
-	subtype = astGetSubType( procexpr )
-
-	'' if function returns a pointer, check for field deref
-	doflush = TRUE
-	if( dtype >= FB_DATATYPE_POINTER ) then
-		isfuncptr = FALSE
-   		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-				isfuncptr = TRUE
-   			end if
-   		end if
-
-		'' FuncPtrOrDerefFields?
-		procexpr = cFuncPtrOrDerefFields( dtype, _
-										  subtype, _
-								   		  procexpr, _
-								   		  isfuncptr, _
-								   		  TRUE )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-
-		'' type changed
-		doflush = FALSE
-
-		'' if it's a SUB, the expr will be NULL
-		if( procexpr <> NULL ) then
-			dtype = astGetDataType( procexpr )
-
-			'' if it stills a function, unless type = string (ie: implicit pointer),
-			'' flush it, as the assignment would be invalid
-			if( astIsCALL( procexpr ) ) then
-				if( dtype <> FB_DATATYPE_STRING ) then
-					doflush = TRUE
-				end if
-			end if
-        end if
-
+	if( cStrIdxOrFieldDeref( procexpr ) = FALSE ) then
+		exit function
 	end if
 
-	if( doflush = FALSE ) then
+	'' if it's a SUB, the expr will be NULL
+	if( procexpr = NULL ) then
+		exit function
+	end if
+
+	dtype = astGetDataType( procexpr )
+
+	'' not a function? (because cStrIdxOrFieldDeref())
+	if( astIsCALL( procexpr ) = FALSE ) then
 		return procexpr
 	end if
 
 	'' can proc's result be skipped?
 	if( dtype <> FB_DATATYPE_VOID ) then
 		if( symbGetDataClass( dtype ) <> FB_DATACLASS_INTEGER ) then
-			if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
-				exit function
-			else
+			if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) <> FALSE ) then
 				'' error recovery: skip
 				astDelTree( procexpr )
-				exit function
 			end if
+
+			exit function
 
     	'' CHAR and WCHAR literals are also from the INTEGER class
     	else
     		select case dtype
     		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-				if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
-					exit function
-				else
+				if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) <> FALSE ) then
 					'' error recovery: skip
 					astDelTree( procexpr )
-				exit function
 				end if
+
+				exit function
 			end select
 		end if
 	end if
 
 	'' check error?
+	sym = astGetSymbol( procexpr )
 	if( sym <> NULL ) then
 		if( symbGetIsThrowable( sym ) ) then
     		if( env.clopt.resumeerr ) then
@@ -304,7 +273,7 @@ function cProcCall _
 		end if
 	end if
 
-	astSetDataType( procexpr, FB_DATATYPE_VOID )
+	astSetType( procexpr, FB_DATATYPE_VOID, NULL )
 
 	astAdd( procexpr )
 

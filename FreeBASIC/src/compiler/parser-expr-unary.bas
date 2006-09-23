@@ -130,6 +130,78 @@ function cNegNotExpression _
 
 end function
 
+'':::::
+private function hFieldAccess _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as FBSYMBOL ptr fld = any, method_sym = any
+	dim as ASTNODE ptr fldexpr = NULL
+
+	fld = cTypeField( dtype, subtype, fldexpr, method_sym, TRUE )
+	if( fld = NULL ) then
+		if( method_sym = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			return NULL
+		end if
+
+	else
+		dtype = symbGetType( fld )
+		subtype = symbGetSubType( fld )
+
+		'' it's a proc call, but was it originally returning an UDT?
+		if( astIsCALL( expr ) ) then
+			if( symbGetUDTRetType( astGetSubtype( expr ) ) <> _
+				FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
+
+				'' it's returning the result in registers, move to a temp var
+				dim as FBSYMBOL ptr tmp = any
+
+				tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
+							  	  	  astGetSubtype( expr ), _
+							  	  	  FALSE, _
+							  	  	  FALSE )
+
+				expr = astNewASSIGN( astBuildVarField( tmp ), _
+							  	  	 expr, _
+							  	  	 AST_OPOPT_DONTCHKOPOVL )
+
+        		expr = astNewLINK( astBuildVarField( tmp ), expr )
+        	end if
+        end if
+
+ 		'' build: cast( udt ptr, (cast( byte ptr, @udt) + fldexpr))->field
+ 		expr = astNewADDR( AST_OP_ADDROF, expr )
+
+ 		'' can't be 0, or PTR will remove the ADDROF, and we are taking the
+ 		'' address-of a CALL result that can't be changed, ditto with LINK ..
+ 		if( fldexpr = NULL ) then
+ 			fldexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+ 		end if
+
+ 		expr = astNewPTR( 0, _
+ 			 			  astNewBOP( AST_OP_ADD, expr, fldexpr ), _
+ 						  dtype, _
+ 						  subtype )
+
+ 		expr = astNewFIELD( expr, fld, dtype, subtype )
+	end if
+
+	'' method call?
+	if( method_sym <> NULL ) then
+		expr = cMethodCall( method_sym, expr )
+		if( expr = NULL ) then
+			return NULL
+		end if
+	end if
+
+	function = expr
+
+end function
+
 ''::::
 function cStrIdxOrFieldDeref _
 	( _
@@ -153,33 +225,17 @@ function cStrIdxOrFieldDeref _
 		return expr <> NULL
 
 	'' udt '.' ?
-	case FB_DATATYPE_STRUCT
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		if( lexGetToken( ) = CHAR_DOT ) then
     		lexSkipToken( LEXCHECK_NOPERIOD )
 
-    		dim as FBSYMBOL ptr fld = any, method_sym = any
-
-    		fld = cTypeField( dtype, subtype, expr, method_sym, TRUE )
-			if( fld = NULL ) then
-				if( method_sym = NULL ) then
-					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-				end if
-			else
-    			dtype = symbGetType( fld )
-    			subtype = symbGetSubType( fld )
-    			expr = astNewFIELD( expr, fld, dtype, subtype )
+			expr = hFieldAccess( dtype, subtype, expr )
+			if( expr = NULL ) then
+				return FALSE
 			end if
 
-			'' method call?
-			if( method_sym <> NULL ) then
-				expr = cMethodCall( method_sym, expr )
-				if( expr = NULL ) then
-					return FALSE
-				else
-    				dtype = astGetDataType( expr )
-    				subtype = astGetSubType( expr )
-				end if
-			end if
+ 			dtype = astGetDataType( expr )
+ 			subtype = astGetSubType( expr )
 		end if
 
 	end select

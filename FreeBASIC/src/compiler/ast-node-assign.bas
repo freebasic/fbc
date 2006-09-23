@@ -357,7 +357,7 @@ function astNewASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval checktypes as integer = TRUE _
+		byval options as AST_OPOPT _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -368,14 +368,16 @@ function astNewASSIGN _
 
 	function = NULL
 
-	'' 1st) check assign op overloading
-	proc = symbFindSelfBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
-	if( proc <> NULL ) then
-		'' build a proc call
-		return astBuildCall( proc, 2, l, r )
-	else
-		if( err_num <> FB_ERRMSG_OK ) then
-			return NULL
+	if( (options and AST_OPOPT_DONTCHKOPOVL) = 0 ) then
+		'' 1st) check assign op overloading
+		proc = symbFindSelfBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
+		if( proc <> NULL ) then
+			'' build a proc call
+			return astBuildCall( proc, 2, l, r )
+		else
+			if( err_num <> FB_ERRMSG_OK ) then
+				return NULL
+			end if
 		end if
 	end if
 
@@ -383,14 +385,16 @@ function astNewASSIGN _
 	ldclass = symbGetDataClass( ldtype )
 	lsubtype = l->subtype
 
-	'' 2nd) implicit casting op overloading
-	proc = symbFindCastOvlProc( ldtype, lsubtype, r, @err_num )
-	if( proc <> NULL ) then
-		'' build a proc call
-		r = astBuildCall( proc, 1, r )
-	else
-		if( err_num <> FB_ERRMSG_OK ) then
-			return NULL
+	if( (options and AST_OPOPT_DONTCHKOPOVL) = 0 ) then
+		'' 2nd) implicit casting op overloading
+		proc = symbFindCastOvlProc( ldtype, lsubtype, r, @err_num )
+		if( proc <> NULL ) then
+			'' build a proc call
+			r = astBuildCall( proc, 1, r )
+		else
+			if( err_num <> FB_ERRMSG_OK ) then
+				return NULL
+			end if
 		end if
 	end if
 
@@ -498,7 +502,7 @@ function astNewASSIGN _
 	end if
 
     '' check pointers
-    if( checktypes ) then
+    if( (options and AST_OPOPT_DONTCHKPTR) = 0 ) then
 		if( hCheckPointerOps( l, ldtype, r, rdtype ) = FALSE ) then
 			exit function
 		end if
@@ -536,8 +540,8 @@ function astNewASSIGN _
 		return NULL
 	end if
 
-	n->l  = l
-	n->r  = r
+	n->l = l
+	n->r = r
 
 	function = n
 

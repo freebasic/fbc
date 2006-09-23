@@ -34,8 +34,6 @@ function cFunctionCall _
 		byval thisexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as integer dtype = any, isfuncptr = any
-	dim as FBSYMBOL ptr subtype = any
 	dim as ASTNODE ptr funcexpr = any
 
 	function = NULL
@@ -74,39 +72,20 @@ function cFunctionCall _
 		end if
 	end if
 
-    dtype = astGetDataType( funcexpr )
-    subtype = astGetSubtype( funcexpr )
-
 	'' is it really a function?
-	if( dtype = FB_DATATYPE_VOID ) then
+	if( astGetDataType( funcexpr ) = FB_DATATYPE_VOID ) then
 		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: remove the SUB call, return a fake node
 			astDelTree( funcexpr )
 			funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			exit function
 		end if
 	end if
 
-	'' if function returns a pointer, check for field deref
-	if( dtype >= FB_DATATYPE_POINTER ) then
-		isfuncptr = FALSE
-   		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-				isfuncptr = TRUE
-   			end if
-   		end if
-
-		'' FuncPtrOrDerefFields?
-		funcexpr = cFuncPtrOrDerefFields( dtype, _
-										  subtype, _
-										  funcexpr, _
-										  isfuncptr, _
-										  TRUE )
-
-		if( funcexpr = NULL ) then
-			exit function
-		end if
+	if( cStrIdxOrFieldDeref( funcexpr ) = FALSE ) then
+		exit function
 	end if
 
 	function = funcexpr

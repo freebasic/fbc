@@ -38,6 +38,29 @@ function astNewPTR _
     dim as ASTNODE ptr n = any
     dim as integer delchild = any
 
+	if( l <> NULL ) then
+		if( ofs = 0 ) then
+			delchild = FALSE
+
+			'' convert *@ to nothing
+			select case l->class
+			case AST_NODECLASS_ADDR
+				delchild = (l->op.op = AST_OP_ADDROF)
+
+			case AST_NODECLASS_OFFSET
+				delchild = (l->ofs.ofs = 0)
+			end select
+
+			''
+			if( delchild ) then
+				n = l->l
+				astSetType( n, dtype, subtype )
+				astDelNode( l )
+				return n
+			end if
+		end if
+	end if
+
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_PTR, _
 					dtype, _
@@ -46,27 +69,6 @@ function astNewPTR _
 
 	if( n = NULL ) then
 		exit function
-	end if
-
-	if( l <> NULL ) then
-		delchild = FALSE
-
-		'' convert *@ to nothing
-		select case l->class
-		case AST_NODECLASS_ADDR
-			delchild = (l->op.op = AST_OP_ADDROF)
-
-		case AST_NODECLASS_OFFSET
-			delchild = (l->ofs.ofs = 0)
-		end select
-
-		''
-		if( delchild ) then
-			n = l->l
-			astSetType( n, dtype, subtype )
-			astDelNode( l )
-			return n
-		end if
 	end if
 
 	n->l = l

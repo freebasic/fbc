@@ -306,15 +306,24 @@ function astNewCONV _
 	'' try casting op overloading
 	hDoGlobOpOverload( to_dtype, to_subtype, l )
 
-	select case to_dtype
-	'' UDT? as op overloading failed, refuse.. ditto with void (used by uop/bop
+    ldtype = l->dtype
+
+	select case as const to_dtype
+	'' to UDT? as op overloading failed, refuse.. ditto with void (used by uop/bop
 	'' to cast to be most precise possible) and strings
 	case FB_DATATYPE_VOID, FB_DATATYPE_STRING, _
 		 FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		exit function
+
+	case else
+		select case ldtype
+		'' from UDT? ditto..
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			exit function
+		end select
+
 	end select
 
-    ldtype = l->dtype
     ldclass = symbGetDataClass( ldtype )
 
     select case op

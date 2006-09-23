@@ -351,7 +351,7 @@ function astBuildCopyCtorCall _
 
 	'' no copy ctor? do a shallow copy..
 	if( copyctor = NULL ) then
-    	return astNewASSIGN( dst, src, FALSE )
+    	return astNewASSIGN( dst, src, AST_OPOPT_DONTCHKPTR )
     end if
 
     '' call the copy ctor
