@@ -38,6 +38,11 @@ declare function hMangleFunctionPtr	_
 		byval mode as integer _
 	) as zstring ptr
 
+declare function hDemangleParams _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as zstring ptr
+
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' add
@@ -2056,36 +2061,26 @@ sub symbDelPrototype _
 		byval s as FBSYMBOL ptr _
 	)
 
-	dim as FBSYMBOL ptr n
-
     if( s = NULL ) then
     	exit sub
     end if
 
-	do
-		'' overloaded?
-		if( symbIsOverloaded( s ) ) then
-			n = symbGetProcOvlNext( s )
-		else
-			n = NULL
-		end if
+	'' del args..
+	if( s->proc.params > 0 ) then
+		hDelParams( s )
+	end if
 
-		'' del args..
-		if( s->proc.params > 0 ) then
-			hDelParams( s )
-		end if
+    ''
+    if( s->proc.ext <> NULL ) then
+    	deallocate( s->proc.ext )
+    	s->proc.ext = NULL
+    end if
 
-    	''
-    	if( s->proc.ext <> NULL ) then
-    		deallocate( s->proc.ext )
-    		s->proc.ext = NULL
-    	end if
+    symbFreeSymbol( s )
 
-    	symbFreeSymbol( s )
-
-    	'' next overload
-    	s = n
-    loop while( s <> NULL )
+    '' note: can't delete the next overloaded procs in the list here
+    '' because global operators can be declared inside namespaces,
+    '' but they will be linked together
 
 end sub
 
