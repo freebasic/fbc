@@ -101,9 +101,8 @@ end function
     		'' different parents?
     		if( symbGetParent( base_parent ) <> symbGetCurrentNamespc( ) ) then
 				if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
-    				if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-    					exit function
-    				end if
+    				errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
+    				return NULL
     			end if
 			end if
 		end if

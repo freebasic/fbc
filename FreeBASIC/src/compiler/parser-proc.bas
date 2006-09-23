@@ -405,7 +405,9 @@ function cProcHeader _
 		parent = symbGetCurrentNamespc( )
 
 	else
-		parent = cParentId( FB_IDOPT_ALLOWSTRUCT )
+		parent = cParentId( FB_IDOPT_ISDECL or _
+							FB_IDOPT_SHOWERROR or _
+							FB_IDOPT_ALLOWSTRUCT )
 		if( parent = NULL ) then
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
@@ -929,7 +931,10 @@ function cOperatorHeader _
 		parent = symbGetCurrentNamespc( )
 
 	else
-		parent = cParentId( FB_IDOPT_ISOPERATOR or FB_IDOPT_ALLOWSTRUCT )
+		parent = cParentId( FB_IDOPT_ISOPERATOR or _
+							FB_IDOPT_ISDECL or _
+							FB_IDOPT_SHOWERROR or _
+							FB_IDOPT_ALLOWSTRUCT )
 		if( parent = NULL ) then
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
@@ -1086,6 +1091,13 @@ function cOperatorHeader _
 
 	''
 	if( hCheckOpOvlParams( parent, op, proc, attrib ) = FALSE ) then
+		if( is_prototype ) then
+			hSkipStmt( )
+		else
+			'' error recovery: skip the whole compound stmt
+    		hSkipCompound( FB_TK_OPERATOR )
+    	end if
+
 		exit function
 	end if
 
@@ -1241,10 +1253,35 @@ function cCtorHeader _
 		parent = symbGetCurrentNamespc( )
 
 	else
-		parent = cParentId( FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_DONTCHKPERIOD )
+		parent = cParentId( FB_IDOPT_DONTCHKPERIOD or _
+							FB_IDOPT_ISDECL or _
+							FB_IDOPT_SHOWERROR or _
+							FB_IDOPT_ALLOWSTRUCT )
+
 		if( parent = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDCLASSID )
+			if( errReport( FB_ERRMSG_EXPECTEDCLASSID ) <> FALSE ) then
+			    if( is_prototype ) then
+			    	hSkipStmt( )
+			    else
+			     	'' error recovery: skip the whole compound stmt
+    				hSkipCompound( FB_TK_CONSTRUCTOR )
+    			end if
+    		end if
+
 			exit function
+		end if
+
+    	if( symbGetParent( parent ) <> symbGetCurrentNamespc( ) ) then
+    		if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) <> FALSE ) then
+			    if( is_prototype ) then
+			    	hSkipStmt( )
+			    else
+			     	'' error recovery: skip the whole compound stmt
+    				hSkipCompound( FB_TK_CONSTRUCTOR )
+    			end if
+    		end if
+
+    		exit function
 		end if
 
 		'' ns used in a prototype?
@@ -1258,9 +1295,16 @@ function cCtorHeader _
 		case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
 
 		case else
-			errReport( FB_ERRMSG_PARENTISNOTACLASS )
-			exit function
+			if( errReport( FB_ERRMSG_PARENTISNOTACLASS ) <> FALSE ) then
+			    if( is_prototype ) then
+			    	hSkipStmt( )
+			    else
+			     	'' error recovery: skip the whole compound stmt
+    				hSkipCompound( FB_TK_CONSTRUCTOR )
+    			end if
+    		end if
 
+			exit function
 		end select
 
 		attrib or= FB_SYMBATTRIB_METHOD
