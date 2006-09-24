@@ -182,21 +182,21 @@ function cForStmtBegin as integer
 		end if
 	end if
 
-	stk = cCompStmtPush( FB_TK_FOR )
-	stk->for.cnt = astGetSymbol( idexpr )
-
-	dtype = symbGetType( stk->for.cnt )
+	dtype = astGetDataType( idexpr )
 
 	if( (dtype < FB_DATATYPE_BYTE) or (dtype > FB_DATATYPE_DOUBLE) ) then
 		if( errReport( FB_ERRMSG_EXPECTEDSCALAR, TRUE ) = FALSE ) then
-			cCompStmtPop( stk )
 			exit function
 		else
 			'' error recovery: fake a var
 			astDelTree( idexpr )
 			idexpr = CREATEFAKEID( )
+			dtype = astGetDataType( idexpr )
 		end if
 	end if
+
+	stk = cCompStmtPush( FB_TK_FOR )
+	stk->for.cnt = astGetSymbol( idexpr )
 
 	'' =
 	if( lexGetToken( ) <> FB_TK_ASSIGN) then

@@ -14,7 +14,9 @@
 	  - no support for vectors []'s
 
 [ ] operator overloading:
-      OPERATOR *|@ ( l ) AS TYPE
+      - OPERATOR *|@ ( l ) AS TYPE
+      - add support for UDT's in FOR
+        - check if + or += and < > ops were overloaded
 
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
