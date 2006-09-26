@@ -404,6 +404,8 @@ function cProcHeader _
 	if( (attrib and FB_SYMBATTRIB_METHOD) <> 0 ) then
 		parent = symbGetCurrentNamespc( )
 
+		attrib or= FB_SYMBATTRIB_OVERLOADED
+
 	else
 		parent = cParentId( FB_IDOPT_ISDECL or _
 							FB_IDOPT_SHOWERROR or _
@@ -426,7 +428,7 @@ function cProcHeader _
         	end if
 
         	if( hIsClass( parent ) ) then
-        		attrib or= FB_SYMBATTRIB_METHOD
+        		attrib or= FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_OVERLOADED
         	end if
 
 			is_extern = TRUE
