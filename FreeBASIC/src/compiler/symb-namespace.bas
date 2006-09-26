@@ -178,7 +178,7 @@ private function hAddImport _
 
     dim as FBSYMBOL ptr s
 
-    '' easier to be added as a symbol because it will be removed when
+    '' easier to be added as a symbol because it will be removed
     '' respecting the scope blocks (or procs)
     s = symbNewSymbol( FB_SYMBOPT_NONE, _
     				   NULL, _
@@ -186,7 +186,9 @@ private function hAddImport _
     				   FB_SYMBCLASS_NSIMPORT, _
     				   NULL, NULL, _
     				   INVALID, NULL, 0, _
-    				   iif( parser.scope = FB_MAINSCOPE, FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_LOCAL ) )
+    				   iif( parser.scope = FB_MAINSCOPE, _
+    				   		FB_SYMBATTRIB_NONE, _
+    				   		FB_SYMBATTRIB_LOCAL ) )
     if( s = NULL ) then
     	return NULL
     end if
@@ -229,7 +231,13 @@ private function hIsOnImportList _
 
 	dim as FBSYMBOL ptr s
 
-	s = symb.namespc->nspc.implist.head
+	'' find the real namespace (the current one could be an TYPE or CLASS)
+	s = symbGetCurrentNamespc( )
+	do until( symbIsNamespace( s ) )
+		s = symbGetNamespace( s )
+	loop
+
+	s = s->nspc.implist.head
 	do while( s <> NULL )
 	    if( s->nsimp.ns = ns ) then
 	    	return TRUE
@@ -247,14 +255,20 @@ private sub hAddToImportList _
 		byval imp_ as FBSYMBOL ptr _
 	) static
 
-	with *symb.namespc
-		if( .nspc.implist.tail <> NULL ) then
-			.nspc.implist.tail->nsimp.imp_next = imp_
-		else
-			.nspc.implist.head = imp_
-		end if
-		.nspc.implist.tail = imp_
-	end with
+	dim as FBSYMBOL ptr ns
+
+	'' find the real namespace (the current one could be an TYPE or CLASS)
+	ns = symbGetCurrentNamespc( )
+	do until( symbIsNamespace( ns ) )
+		ns = symbGetNamespace( ns )
+	loop
+
+	if( ns->nspc.implist.tail <> NULL ) then
+		ns->nspc.implist.tail->nsimp.imp_next = imp_
+	else
+		ns->nspc.implist.head = imp_
+	end if
+	ns->nspc.implist.tail = imp_
 
 	imp_->nsimp.imp_next = NULL
 
@@ -268,7 +282,12 @@ private sub hDelFromImportList _
 
 	dim as FBSYMBOL ptr currns, ns, s, prev
 
+	'' find the real namespace (the current one could be an TYPE or CLASS)
 	currns = symbGetNameSpace( imp_ )
+	do until( symbIsNamespace( currns ) )
+		currns = symbGetNamespace( currns )
+	loop
+
 	ns = imp_->nsimp.ns
 
 	prev = NULL
