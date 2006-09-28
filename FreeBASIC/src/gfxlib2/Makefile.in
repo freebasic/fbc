@@ -26,7 +26,7 @@ LIBICONV = @LIBICONV@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 SHELL = @SHELL@
-VPATH = @srcdir@ @srcdir@/@FBRT_TARGET@
+VPATH = @srcdir@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_CPU@
 
 datadir = @datadir@
 exec_prefix = @prefix@
@@ -62,6 +62,8 @@ FBRT_OBJS += $(patsubst @srcdir@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/*.s
 FBRT_OBJS += $(FBRT_OBJDEST)/libfb_gfx_data.o
 FBRT_OSDEPOBJS := $(patsubst @srcdir@/@FBRT_TARGET@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.c))
 FBRT_OSDEPOBJS += $(patsubst @srcdir@/@FBRT_TARGET@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.s))
+FBRT_CPUDEPOBJS := $(patsubst @srcdir@/@FBRT_CPU@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_CPU@/*.c))
+FBRT_CPUDEPOBJS += $(patsubst @srcdir@/@FBRT_CPU@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_CPU@/*.s))
 FBRT_HEADERS := $(wildcard @srcdir@/*.h)
 FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_TARGET@/*.h)
 
@@ -82,8 +84,8 @@ $(FBRT_OBJDEST)/%.o : %.c $(FBRT_HEADERS)
 $(FBRT_OBJDEST)/%.o : %.s fb_gfx_mmx.h
 	$(CC) $(ALL_CFLAGS) $(DEFS) -x assembler-with-cpp -c $< -o $@
 
-$(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_OSDEPOBJS)
-	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_OSDEPOBJS) 
+$(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS)
+	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS)
 	$(RANLIB) $(FBRT_LIB)
 
 @srcdir@/libfb_gfx_data.c: $(FBRT_OBJDEST)/mk_dat$(EXEEXT) @srcdir@/data/data.lst $(FBRT_DATAFILES)
@@ -130,7 +132,7 @@ $(srcdir)/config.in: @MAINT@ $(srcdir)/configure
 # Other miscellaneous targets.
 
 mostlyclean:
-	-rm -rf $(FBRT_OBJS) $(FBRT_OSDEPOBJS)
+	-rm -rf $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OBJDEST)/mk_dat$(EXEEXT) $(FBRT_OBJDEST)/mk_dat.o
 	-rm -f $(srcdir)/data/data.dat $(srcdir)/libfb_gfx_data.c
 
 clean: mostlyclean

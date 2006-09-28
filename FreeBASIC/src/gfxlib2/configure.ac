@@ -40,8 +40,13 @@ AC_SUBST([FBRT_TARGET])
 case "$target_cpu" in
 	i?86 | x86 )
 		AC_DEFINE([TARGET_X86],1,[x86 build])
+		FBRT_CPU=x86;;
+	*)
+		AC_MSG_ERROR([Unsupported CPU])
 		;;
 esac
+
+AC_SUBST([FBRT_CPU])
 
 # Checks for programs.
 AC_PROG_MAKE_SET
