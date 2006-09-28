@@ -219,15 +219,19 @@ static void *fb_hPixelCpy4(void *dest, const void *src, size_t size)
 /*:::::*/
 void fb_hSetupFuncs(void)
 {
+#if defined(TARGET_X86)
 	if (fb_CpuDetect() & 0x800000) {
 		fb_mode->flags |= HAS_MMX;
 		fb_hMemCpy = fb_hMemCpyMMX;
 		fb_hMemSet = fb_hMemSetMMX;
 	}
 	else {
+#endif
 		fb_hMemCpy = memcpy;
 		fb_hMemSet = memset;
+#if defined(TARGET_X86)
 	}
+#endif
 	switch (fb_mode->depth) {
 		case 1:
 		case 2:

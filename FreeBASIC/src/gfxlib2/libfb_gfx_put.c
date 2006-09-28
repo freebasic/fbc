@@ -28,6 +28,7 @@
 #include "fb_gfx_mmx.h"
 
 
+#if defined(TARGET_X86)
 /* MMX functions declarations */
 extern void fb_hPutAdd2MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
 extern void fb_hPutAdd4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
@@ -42,7 +43,7 @@ extern void fb_hPutPResetMMX(unsigned char *src, unsigned char *dest, int w, int
 extern void fb_hPutAndMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
 extern void fb_hPutOrMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
 extern void fb_hPutXorMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-
+#endif
 
 /* Local vars */
 static void (*fb_hPutAdd)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param) = NULL;
@@ -504,6 +505,8 @@ static void fb_hPutCustom4(unsigned char *src, unsigned char *dest, int w, int h
 /*:::::*/
 static void init_put(void)
 {
+
+#if defined(TARGET_X86)
 	if (fb_mode->flags & HAS_MMX) {
 		fb_hPutPSet = fb_hPutPSetMMX;
 		fb_hPutPReset = fb_hPutPResetMMX;
@@ -542,6 +545,7 @@ static void init_put(void)
 		}
 	}
 	else {
+#endif
 		fb_hPutPSet = fb_hPutPSetC;
 		fb_hPutPReset = fb_hPutPResetC;
 		fb_hPutAnd = fb_hPutAndC;
@@ -577,7 +581,9 @@ static void init_put(void)
 				fb_hPutCustom = fb_hPutCustom4;
 				break;
 		}
+#if defined(TARGET_X86)
 	}
+#endif
 	put_initialized_depth = fb_mode->depth;
 }
 
