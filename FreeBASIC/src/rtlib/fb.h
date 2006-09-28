@@ -186,7 +186,7 @@ extern "C" {
  * CPU-dependent macros and inline functions
  */
 #ifdef TARGET_X86
-#include "fb_x86.h"
+#include "x86/fb_x86.h"
 #else
 #include "fb_port.h"
 #endif
