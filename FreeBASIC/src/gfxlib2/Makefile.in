@@ -42,7 +42,7 @@ ifdef DEBUG
     DEFS += -DDEBUG
 endif
 
-INCLUDES = -I$(srcdir) -I$(srcdir)/@FBRT_TARGET@ -I.
+INCLUDES = -I$(srcdir) -I$(srcdir)/@FBRT_TARGET@ -I$(srcdir)/@FBRT_CPU@ -I.
 
 FBRT_LIB = libfbgfx.a
 FBRT_OBJDEST = .
