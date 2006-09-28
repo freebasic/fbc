@@ -385,11 +385,11 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	lock_code(fb_hBlit_code_start, fb_hBlit_code_end);
 	lock_data(fb_hBlitMMX_data_start, fb_hBlitMMX_data_end);
 	lock_code(fb_hBlitMMX_code_start, fb_hBlitMMX_code_end);
-	lock_code(fb_MMX_code_start, fb_MMX_code_end);
+	lock_code(fb_MMX_code_start, fb_MMX_code_end); /* hMemCpyMMX, hMemSetMMX */
+	lock_var(fb_hMemCpy);
+	lock_var(fb_hMemSet);
 	fb_dos_lock_code(memcpy, 1024); /* we don't know how big memcpy and memset are,
 	fb_dos_lock_code(memset, 1024);    so we guess 1k each... */
-	
-	/* TODO: lock fb_hMemCpy and fb_hMemSet (the actual code and the pointers) */
 	
 	fb_dos.w = w;
 	fb_dos.h = h;
@@ -456,6 +456,8 @@ void fb_dos_exit(void)
 	unlock_data(fb_hBlitMMX_data_start, fb_hBlitMMX_data_end);
 	unlock_code(fb_hBlitMMX_code_start, fb_hBlitMMX_code_end);
 	unlock_code(fb_MMX_code_start, fb_MMX_code_end);
+	unlock_var(fb_hMemCpy);
+	unlock_var(fb_hMemSet);
 	fb_dos_unlock_code(memcpy, 1024); /* we don't know how big memcpy and memset are,
 	fb_dos_unlock_code(memset, 1024);    so we guess 1k each... */
 	

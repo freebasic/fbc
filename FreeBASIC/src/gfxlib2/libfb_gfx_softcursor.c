@@ -109,6 +109,11 @@ static int color_distance(int index, int r, int g, int b)
 void fb_hSoftCursorInit(void)
 {
 	cursor_area = malloc(CURSOR_W * CURSOR_H * fb_mode->bpp);
+
+#if defined(TARGET_DOS)
+	fb_dos_lock_data(cursor_area, CURSOR_W * CURSOR_H * fb_mode->bpp);
+#endif
+
 	if (fb_mode->bpp == 1) {
 		white = 15;
 		black = 0;
@@ -123,6 +128,9 @@ void fb_hSoftCursorInit(void)
 /*:::::*/
 void fb_hSoftCursorExit(void)
 {
+#if defined(TARGET_DOS)
+	fb_dos_unlock_data(cursor_area, CURSOR_W * CURSOR_H * fb_mode->bpp);
+#endif
 	free(cursor_area);
 }
 
