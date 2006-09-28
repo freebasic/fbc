@@ -42,7 +42,7 @@ fb_CpuDetect:
 	or eax, eax
 	jz detect
 	
-	ret # already detected (return family)
+	ret # already detected (return detected_cpu)
 	
 detect:	
 	push ebp

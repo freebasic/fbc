@@ -26,7 +26,7 @@ LIBICONV = @LIBICONV@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 SHELL = @SHELL@
-VPATH = @srcdir@ @srcdir@/@FBRT_TARGET@
+VPATH = @srcdir@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_CPU@
 
 datadir = @datadir@
 exec_prefix = @prefix@
@@ -42,7 +42,7 @@ ifdef DEBUG
     DEFS += -DDEBUG
 endif
 
-INCLUDES = -I$(srcdir) -I$(srcdir)/@FBRT_TARGET@ -I.
+INCLUDES = -I$(srcdir) -I$(srcdir)/@FBRT_TARGET@ -I$(srcdir)/@FBRT_CPU@ -I.
 
 ifdef MULTITHREADED
 	FBRT_LIB = libfbmt.a
@@ -67,8 +67,11 @@ FBRT_OBJS := $(patsubst @srcdir@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/*.c
 FBRT_OBJS += $(patsubst @srcdir@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/*.s))
 FBRT_OSDEPOBJS := $(patsubst @srcdir@/@FBRT_TARGET@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.c))
 FBRT_OSDEPOBJS += $(patsubst @srcdir@/@FBRT_TARGET@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.s))
+FBRT_CPUDEPOBJS := $(patsubst @srcdir@/@FBRT_CPU@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_CPU@/*.c))
+FBRT_CPUDEPOBJS += $(patsubst @srcdir@/@FBRT_CPU@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_CPU@/*.s))
 FBRT_HEADERS := $(wildcard @srcdir@/*.h)
 FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_TARGET@/*.h)
+FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_CPU@/*.h)
 
 ##################################################################
 
@@ -83,8 +86,8 @@ $(FBRT_OBJDEST)/%.o : %.c $(FBRT_HEADERS)
 $(FBRT_OBJDEST)/%.o : %.s
 	$(CC) -x assembler-with-cpp -c $(CFLAGS) $< -o $@
 
-$(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_OSDEPOBJS)
-	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_OSDEPOBJS)
+$(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS)
+	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS)
 	$(RANLIB) $(FBRT_LIB)
 
 ##################################################################
@@ -119,7 +122,7 @@ $(srcdir)/config.in: @MAINT@ $(srcdir)/configure
 # Other miscellaneous targets.
 
 mostlyclean:
-	-rm -rf $(FBRT_OBJS) $(FBRT_OSDEPOBJS)
+	-rm -rf $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS)
 
 clean: mostlyclean
 	-rm -rf makedepend$(EXEEXT) $(FBRT_LIB) $(srcdir)/autom4te.cache
