@@ -187,8 +187,8 @@ end type
 
 
 declare sub ApplyTranslation cdecl alias "ApplyTranslation" (byval Image as SavedImage ptr, byval Translation as GifPixelType ptr)
-declare sub MakeExtension cdecl alias "MakeExtension" (byval New as SavedImage ptr, byval Function as integer)
-declare function AddExtensionBlock cdecl alias "AddExtensionBlock" (byval New as SavedImage ptr, byval Len as integer, byval ExtData as ubyte ptr) as integer
+declare sub MakeExtension cdecl alias "MakeExtension" (byval New_ as SavedImage ptr, byval Function as integer)
+declare function AddExtensionBlock cdecl alias "AddExtensionBlock" (byval New_ as SavedImage ptr, byval Len as integer, byval ExtData as ubyte ptr) as integer
 declare sub FreeExtension cdecl alias "FreeExtension" (byval Image as SavedImage ptr)
 declare function MakeSavedImage cdecl alias "MakeSavedImage" (byval GifFile as GifFileType ptr, byval CopyFrom as SavedImage ptr) as SavedImage ptr
 declare sub FreeSavedImages cdecl alias "FreeSavedImages" (byval GifFile as GifFileType ptr)
