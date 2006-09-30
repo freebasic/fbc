@@ -109,6 +109,8 @@ function cTypeConvExpr _
     if( expr = NULL ) Then
     	if( errReport( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
     		exit function
+		else
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	end if
     end if
 

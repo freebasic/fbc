@@ -183,16 +183,18 @@ private function hFieldInit _
 	case FB_TK_DBLEQ, FB_TK_EQ
 
 	case else
-    	select case symbGetType( sym )
-    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    		'' has ctors?
-    		if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
-    			'' but no default ctor defined?
-    			if( symbGetCompDefCtor( symbGetSubtype( sym ) ) = NULL ) then
-    				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+    	if( sym <> NULL ) then
+    		select case symbGetType( sym )
+    		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    			'' has ctors?
+    			if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
+    				'' but no default ctor defined?
+    				if( symbGetCompDefCtor( symbGetSubtype( sym ) ) = NULL ) then
+    					errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+    				end if
     			end if
-    		end if
-    	end select
+    		end select
+    	end if
 
 		exit function
 	end select
