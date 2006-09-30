@@ -1,5 +1,5 @@
-#ifndef __FBDOC_LOADER_BI__
-#define __FBDOC_LOADER_BI__
+#ifndef __FBDOC_LOADER_WEB_BI__
+#define __FBDOC_LOADER_WEB_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
 ''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
@@ -20,12 +20,10 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 #include once "common.bi"
+#include once "CWikiCon.bi"
 
-declare function LoadPage _
-	( _
-		byval sPage as zstring ptr, _
-		byval bNoReload as integer = FALSE, _
-		byval bCacheFromWeb as integer = FALSE _
-	) as string
+declare sub Connection_SetUrl( byval url as zstring ptr )
+declare function Connection_Create( ) as CWikiCon ptr
+declare sub Connection_Destroy( )
 
 #endif

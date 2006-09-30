@@ -45,13 +45,23 @@ declare function 	CWikiCon_LoadPage			( _
 												  byval _this as CWikiCon ptr, _
 												  byval page as zstring ptr, _
 												  byval israw as integer, _
-													byval getid as integer = TRUE _
-												) as string
-
-declare function 	CWikiCon_StorePage			( _
-												  byval _this as CWikiCon ptr, _
-												  byval body as zstring ptr _
+												  byval getid as integer = TRUE, _
+												  byref body as string _
 												) as integer
+
+declare function CWikiCon_StorePage _
+	( _
+		byval _this as CWikiCon ptr, _
+		byval body as zstring ptr, _
+		byval note as zstring ptr _
+	) as integer
+
+declare function CWikiCon_StoreNewPage _
+	( _
+		byval _this as CWikiCon ptr, _
+		byval body as zstring ptr, _
+		byval pagename as zstring ptr _
+	) as integer
 
 declare function CWikiCon_GetPageID _
 	( _

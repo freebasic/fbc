@@ -20,6 +20,7 @@
 '' CWikiCon
 ''
 '' chng: apr/2006 written [v1ctor]
+'' chng: sep/2006 updated [coderJeff]
 ''
 
 #include once "CHttp.bi"
@@ -223,6 +224,32 @@ private function get_response _
 end function
 
 '':::::
+private sub remove_http_headers( byref body as string )
+
+	dim as integer i = 1, n = len(body)
+	const whitespace = chr(9,10,13,32)
+	const crlfcrlf = chr(13,10,13,10)
+
+	while( i <= n )
+		if instr(whitespace,mid(body, i, 1)) = 0 then
+			exit while
+		end if
+		i += 1
+	wend
+
+	if ( i < n ) then
+		if( mid(body, i, 5) = "HTTP/" ) then
+			i = instr( i, body, crlfcrlf )
+			if( i > 0 ) then
+				body = mid( body, i + 4 )
+			end if
+
+		end if
+	end if
+
+end sub
+
+'':::::
 private function get_pageid _
 	( _
 		byval _this as CWikiCon ptr _
@@ -237,15 +264,17 @@ private function get_pageid _
 		exit function
 	end if
 		
-	dim as string body
+	dim as string body, URL
+	URL = build_url( _this, NULL, wakka_getid )
 	
-	if( CHttpStream_Receive( stream, build_url( _this, NULL, wakka_getid ) ) ) then
+	if( CHttpStream_Receive( stream, URL, TRUE ) ) then
 		body = CHttpStream_Read( stream )
 	end if
-	
+
 	CHttpStream_Delete( stream )
 	
 	if( check_iserror( body ) = FALSE ) then
+		remove_http_headers( body )
 		function = valint( get_response( body ) )
 	end if
 	
@@ -257,14 +286,20 @@ function CWikiCon_LoadPage _
 		byval _this as CWikiCon ptr, _
 		byval page as zstring ptr, _
 		byval israw as integer, _
-		byval getid as integer _
-	) as string
+		byval getid as integer, _
+		byref body as string _
+	) as integer
 
-	function = ""
+	function = FALSE
+	body = ""
 	
 	if( _this = NULL ) then
 		exit function
 	end if
+
+	_this->pageid = -1
+	_this->pagename = reallocate( _this->pagename, len( *page ) + 1 )
+	*_this->pagename = *page
 	
 	dim as CHttpStream ptr stream
 	
@@ -273,33 +308,31 @@ function CWikiCon_LoadPage _
 		exit function
 	end if
 		
-	_this->pagename = reallocate( _this->pagename, len( *page ) + 1 )
-	*_this->pagename = *page
-	
-	''
-	dim as string body
-	
 	dim as zstring ptr rawmethod = iif( israw, @wakka_raw, NULL )
 	
-	if( CHttpStream_Receive( stream, build_url( _this, NULL, rawmethod ) ) ) then
+	dim URL as string
+	URL = build_url( _this, NULL, rawmethod )
+
+	if( CHttpStream_Receive( stream, URL, TRUE ) ) then
 		body = CHttpStream_Read( stream )
+		remove_http_headers( body )
 	end if
 	
 	CHttpStream_Delete( stream )
 	
 	if( getid ) then
-		if( len( body ) > 0 ) then
+		'if( len( body ) > 0 ) then
 			_this->pageid = get_pageid( _this )
-		else
-			_this->pageid = -1
-		end if
+		'else
+		'	_this->pageid = -1
+		'end if
 	else
 			_this->pageid = -1
 	end if	
 
 	''body += chr( 13, 10 )
 	
-	function = body
+	function = TRUE
 	
 end function
 
@@ -307,14 +340,15 @@ end function
 function CWikiCon_StorePage _
 	( _
 		byval _this as CWikiCon ptr, _
-		byval body as zstring ptr _
+		byval body as zstring ptr, _
+		byval note as zstring ptr _
 	) as integer
 
 	if( _this = NULL ) then
 		return FALSE
 	end if
 
-	if( _this->pageid = -1 ) then
+	if( _this->pageid <= 0 ) then
 		return FALSE
 	end if
 	
@@ -324,17 +358,26 @@ function CWikiCon_StorePage _
 	if( form = NULL ) then
 		return FALSE
 	end if
-	
+
 	CHttpForm_Add4( form, "wakka", *_this->pagename + wakka_edit )
+
 	CHttpForm_Add3( form, "previous",  _this->pageid )
 	CHttpForm_Add4( form, "body", body, "text/html" )
-	CHttpForm_Add4( form, "note", "new format" )
+	if( note ) then
+		CHttpForm_Add4( form, "note", *note )
+	else
+		CHttpForm_Add4( form, "note", "new format" )
+	end if
+
 	CHttpForm_Add4( form, "submit", "Store" )
-	
-	dim as string response = CHttp_Post( _this->http, build_url( _this, NULL, wakka_edit ), form )
-	
+
+	dim url as string 
+	URL = build_url( _this, NULL, wakka_edit )
+
+	dim as string response = CHttp_Post( _this->http, url, form )
+
 	dim as integer res = ( check_iserror( response ) = FALSE )
-	
+
 	if( res ) then 
 		_this->pageid = get_pageid( _this )
 	end if
@@ -345,6 +388,50 @@ function CWikiCon_StorePage _
 	
 end function
 
+'':::::
+function CWikiCon_StoreNewPage _
+	( _
+		byval _this as CWikiCon ptr, _
+		byval body as zstring ptr, _
+		byval pagename as zstring ptr _
+	) as integer
+
+	if( _this = NULL ) then
+		return FALSE
+	end if
+
+	dim as CHttpForm ptr form
+	
+	form = CHttpForm_New( )
+	if( form = NULL ) then
+		return FALSE
+	end if
+
+	CHttpForm_Add4( form, "wakka", *pagename + wakka_edit )
+
+	CHttpForm_Add4( form, "previous",  " " )
+	CHttpForm_Add4( form, "body", body, "text/html" )
+	CHttpForm_Add4( form, "note", "new page" )
+	CHttpForm_Add4( form, "submit", "Store" )
+	
+	dim URL as string
+	URL = build_url( _this, pagename, wakka_edit )
+	
+	dim as string response = CHttp_Post( _this->http, URL, form )
+	
+	dim as integer res = ( check_iserror( response ) = FALSE )
+
+	if( res ) then 
+		_this->pageid = get_pageid( _this )
+	end if
+	
+	CHttpForm_Delete( form )
+	
+	function = res
+	
+end function
+
+'':::::
 function CWikiCon_GetPageID _
 	( _
 		byval _this as CWikiCon ptr _

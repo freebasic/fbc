@@ -378,6 +378,7 @@ private function _codeToHtml( byval _this as CWakka2Html ptr, byval text as zstr
 		case FB_TOKEN_NULL	
 			exit while
 		case FB_TOKEN_SPACE
+			token->text = ReplaceSubStr( token->text, chr(9), space(4) )
 			res += Text2Html( token->text, FALSE, TRUE )
 		case FB_TOKEN_NEWLINE
 			if bHaveCode = FALSE then

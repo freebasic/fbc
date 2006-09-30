@@ -25,7 +25,6 @@
 #include once "common.bi"
 #include once "CWiki.bi"
 #include once "CWakka2fbhelp.bi"
-
 #include once "CFbCode.bi"
 
 const chBreak = chr(10)
@@ -815,6 +814,7 @@ private function _emitCode _
 			exit while
 
 		case FB_TOKEN_SPACE
+			token->text = ReplaceSubStr( token->text, chr(9), space(3) )
 			_emitTextNoWrap( _this, token->text, TRUE )
 
 		case FB_TOKEN_NEWLINE

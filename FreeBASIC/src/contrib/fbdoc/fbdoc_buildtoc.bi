@@ -1,5 +1,5 @@
-#ifndef __FBDOC_LOADER_BI__
-#define __FBDOC_LOADER_BI__
+#ifndef __FBDOC_BUILDTOC_BI__
+#define __FBDOC_BUILDTOC_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
 ''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
@@ -19,13 +19,22 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-#include once "common.bi"
+#include once "CPageList.bi"
 
-declare function LoadPage _
+declare function FBDoc_BuildTOC _
 	( _
-		byval sPage as zstring ptr, _
-		byval bNoReload as integer = FALSE, _
-		byval bCacheFromWeb as integer = FALSE _
-	) as string
+		byval tocpagename as zstring ptr, _
+		byval tocpagetitle as zstring ptr, _
+		byval paglist as CPageList ptr ptr, _
+		byval toclist as CPageList ptr ptr _
+	) as integer
+
+declare function FBDoc_BuildSinglePage _
+	( _
+		byval toc_pagename as zstring ptr, _
+		byval toc_pagetitle as zstring ptr, _
+		byval paglist as CPageList ptr ptr, _
+		byval toclist as CPageList ptr ptr _
+	) as integer
 
 #endif

@@ -488,6 +488,14 @@ private sub CWiki_AddToken_Text _
 		byval text as zstring ptr _
 	)
 
+	if( _this = NULL ) then
+		exit sub
+	end if
+
+	if( text = NULL ) then
+		exit sub
+	end if
+
 	if( *cast( short ptr, text ) = &h0a0d ) then
 		exit sub
 	end if

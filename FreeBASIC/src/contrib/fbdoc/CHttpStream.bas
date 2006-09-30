@@ -20,6 +20,7 @@
 '' CHttpStream
 ''
 '' chng: apr/2006 written [v1ctor]
+'' chng: sep/2006 updated [coderJeff]
 ''
 
 #include once "CHttp.bi"

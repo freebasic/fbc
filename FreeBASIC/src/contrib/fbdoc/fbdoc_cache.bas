@@ -1,6 +1,3 @@
-#ifndef __FBDOC_LOADER_BI__
-#define __FBDOC_LOADER_BI__
-
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
 ''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
 ''  the FreeBASIC development team.
@@ -19,13 +16,55 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
+
+'' fbdoc_cache  - global pseudo class for local cache
+''
+''
+'' chng: sep/2006 written [coderJeff]
+''
+
 #include once "common.bi"
+#include once "CwikiCache.bi"
+#include once "fbdoc_cache.bi"
 
-declare function LoadPage _
+dim shared as CWikiCache ptr wikicache
+
+'':::::
+function LocalCache_Create _
 	( _
-		byval sPage as zstring ptr, _
-		byval bNoReload as integer = FALSE, _
-		byval bCacheFromWeb as integer = FALSE _
-	) as string
+		byval sLocalDir as zstring ptr, _
+		byval bRefresh as integer _
+	) as integer
 
-#endif
+	if( wikicache <> NULL ) then
+		return TRUE
+	end if
+
+	wikicache = CWikiCache_New( sLocalDir, bRefresh )
+	
+	if( wikicache = NULL ) then
+		return FALSE
+	end if
+
+	function = TRUE
+end function
+
+'':::::
+sub LocalCache_Destroy( )
+
+	if( wikicache = NULL ) then
+		exit sub
+	end if
+	
+	CWikiCache_Delete( wikicache )
+	wikicache = NULL
+
+end sub
+
+'':::::
+function LocalCache_Get( ) as CWikiCache ptr
+	return wikicache
+end function
+
+
+

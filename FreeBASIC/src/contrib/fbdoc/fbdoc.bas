@@ -24,12 +24,16 @@
 
 #include once "common.bi"
 
-#include once "CWikiCache.bi"
 #include once "CWiki2Chm.bi"
 #include once "CWiki2fbhelp.bi"
 #include once "COptions.bi"
+
 #include once "fbdoc_lang.bi"
+#include once "fbdoc_cache.bi"
 #include once "fbdoc_loader.bi"
+#include once "fbdoc_loader_web.bi"
+#include once "fbdoc_loader_sql.bi"
+#include once "fbdoc_buildtoc.bi"
 #include once "fbdoc_templates.bi"
 #include once "fbdoc_keywords.bi"
 #include once "fbdoc_misc.bi"
@@ -87,7 +91,10 @@ const default_CacheDir = "cache/"
 		? "   -fbhelp        generate output for fbhelp viewer"
 		? "   -version       show version"
 		? "   -getpage page1 [page2 [ ... pageN ]]]"
-		? "                  retrieve specified pages from web and store in the cache"
+		? "                  get specified pages from web and store in the cache"
+		? "   -getpage @listfile"
+		? "                  get specified pages using a list file from web and 
+		? "                  store in the cache"
 		? "   -makepage  pagename"
 		? "                  process a single page (and links on page) only"
 		? ""
@@ -107,11 +114,34 @@ const default_CacheDir = "cache/"
 			if left( command(i), 1) = "-" then
 				bWebPages = FALSE
 			else
-				webPageCount += 1
-				if( webPageCount > ubound(webPageList) ) then
-					redim preserve webPageList(1 to Ubound(webPageList) * 2)
+				if left( command(i), 1) = "@" then
+					scope
+						dim h as integer, x as string
+						h = freefile
+						if open( mid(command(i),2) for input access read as #h ) <> 0 then
+							print "Error reading '" + command(i) + "'"
+						else
+							while eof(h) = 0
+								line input #h, x
+								x = trim(x, any " " + chr(9))
+								if( x > "" ) then 
+									webPageCount += 1
+									if( webPageCount > ubound(webPageList) ) then
+										redim preserve webPageList(1 to Ubound(webPageList) * 2)
+									end if
+									webPageList(webPageCount) = x
+								end if
+							wend
+							close #h
+						end if
+					end scope
+				else
+					webPageCount += 1
+					if( webPageCount > ubound(webPageList) ) then
+						redim preserve webPageList(1 to Ubound(webPageList) * 2)
+					end if
+					webPageList(webPageCount) = command(i)
 				end if
-				webPageList(webPageCount) = command(i)
 			end if
 		end if
 

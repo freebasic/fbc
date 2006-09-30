@@ -1,6 +1,3 @@
-#ifndef __FBDOC_LOADER_BI__
-#define __FBDOC_LOADER_BI__
-
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
 ''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
 ''  the FreeBASIC development team.
@@ -19,13 +16,47 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
+
+'' fbdoc_loader_web
+''
+''
+'' chng: jun/2006 written [coderJeff]
+''
+
 #include once "common.bi"
+#include once "CwikiCon.bi"
 
-declare function LoadPage _
-	( _
-		byval sPage as zstring ptr, _
-		byval bNoReload as integer = FALSE, _
-		byval bCacheFromWeb as integer = FALSE _
-	) as string
+dim shared as CWikiCon ptr wikicon
+dim shared as string wiki_url
 
-#endif
+'' --------------------------------------------------------------------------
+'' Wiki Connection and Page Loader
+'' --------------------------------------------------------------------------
+
+'':::::
+sub Connection_SetUrl( byval url as zstring ptr )
+	wiki_url = *url
+end sub
+
+'':::::
+function Connection_Create( ) as CWikiCon Ptr
+	if( wikicon <> NULL ) then
+		return wikicon
+	end if
+	
+	wikicon = CWikiCon_New( wiki_url )
+
+	return wikicon
+	
+end function
+
+'':::::
+sub Connection_Destroy( )
+	if( wikicon = NULL ) then
+		exit sub
+	end if
+	
+	CWikiCon_Delete( wikicon )
+	wikicon = NULL
+	
+end sub

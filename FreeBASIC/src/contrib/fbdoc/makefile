@@ -12,7 +12,11 @@ SRCS += CWakka2fbhelp.bas
 SRCS += fbdoc_misc.bas
 SRCS += CFbCode.bas
 SRCS += fbdoc_lang.bas
+SRCS += fbdoc_cache.bas
 SRCS += fbdoc_loader.bas
+SRCS += fbdoc_loader_web.bas
+SRCS += fbdoc_loader_sql.bas
+SRCS += fbdoc_buildtoc.bas
 SRCS += fbdoc_templates.bas
 SRCS += fbdoc_keywords.bas
 SRCS += COptions.bas
@@ -37,7 +41,7 @@ endif
 OBJS := $(patsubst %.bas,$(objpath)/%.o,$(SRCS))
 
 ifneq ($(LIBDIR),)
-LIBS := -p $(LIBDIR)/$(TARGET)
+LIBS := -p $(LIBDIR)
 else
 LIBS :=
 endif

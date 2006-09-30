@@ -1,5 +1,5 @@
-#ifndef __FBDOC_LOADER_BI__
-#define __FBDOC_LOADER_BI__
+#ifndef __FBDOC_LOADER_SQL_BI__
+#define __FBDOC_LOADER_SQL_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
 ''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
@@ -19,13 +19,13 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-#include once "common.bi"
-
-declare function LoadPage _
+declare function Fetch_Pages_From_Database _
 	( _
-		byval sPage as zstring ptr, _
-		byval bNoReload as integer = FALSE, _
-		byval bCacheFromWeb as integer = FALSE _
-	) as string
+		byval db_host as zstring ptr, _
+		byval db_user as zstring ptr, _
+		byval db_pass as zstring ptr, _
+		byval db_name as zstring ptr, _
+		byval db_port as integer _
+	) as integer
 
 #endif
