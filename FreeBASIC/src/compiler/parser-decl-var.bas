@@ -790,7 +790,7 @@ private sub hCallStaticCtor _
 
 	if( initree <> NULL ) then
 		'' initialize it
-		astTypeIniFlush( initree, sym, FALSE, TRUE )
+		astAdd( astTypeIniFlush( initree, sym, FALSE, TRUE ) )
 	end if
 
 	'' has a dtor?
@@ -859,7 +859,7 @@ private sub hFlushInitializer _
     							   FB_SYMBATTRIB_SHARED or _
     							   FB_SYMBATTRIB_COMMON)) = 0 ) then
 
-		astTypeIniFlush( initree, sym, FALSE, TRUE )
+		astAdd( astTypeIniFlush( initree, sym, FALSE, TRUE ) )
 
 		exit sub
 	end if
@@ -1292,10 +1292,10 @@ private function hVarDecl _
 
 							'' bydesc array params have no descriptor
 							if( desc <> NULL ) then
-								astTypeIniFlush( symbGetTypeIniTree( desc ), _
-											 	 desc, _
-											 	 FALSE, _
-											  	 TRUE )
+								astAdd( astTypeIniFlush( symbGetTypeIniTree( desc ), _
+											 	 		 desc, _
+											 	 		 FALSE, _
+											  	 		 TRUE ) )
 
 								symbSetTypeIniTree( desc, NULL )
 							end if

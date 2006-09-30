@@ -31,25 +31,18 @@ function astNewLINK _
 	( _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n
-	dim as integer dtype
-	dim as FBSYMBOL ptr subtype
+	dim as ASTNODE ptr n = any
 
 	if( l = NULL ) then
-		if( r = NULL ) then
-			return NULL
-		end if
-		dtype =	r->dtype
-		subtype = r->subtype
-	else
-		dtype =	l->dtype
-		subtype = l->subtype
+		return r
+	elseif( r = NULL ) then
+		return l
 	end if
 
 	''
-	n = astNewNode( AST_NODECLASS_LINK, dtype, subtype )
+	n = astNewNode( AST_NODECLASS_LINK, l->dtype, l->subtype )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -85,10 +78,6 @@ function astLoadLINK _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any
-
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	vr = astLoad( n->l )
 	astDelNode( n->l )

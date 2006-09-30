@@ -2901,10 +2901,10 @@ end function
 function rtlStrDelete _
 	( _
 		byval strg as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer dtype
+    dim as ASTNODE ptr proc = any
+    dim as integer dtype = any
 
 	function = NULL
 

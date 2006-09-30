@@ -645,8 +645,8 @@ function symbAddVarEx _
 		if( (symbIsGlobalNamespc( ) = FALSE) and _
 			((attrib and FB_SYMBATTRIB_LITCONST) = 0) ) then
 
-			symtb = symbGetCompSymbTb( symb.namespc )
-			hashtb = symbGetCompHashTb( symb.namespc )
+			symtb = symbGetCompSymbTb( symbGetCurrentNamespc( ) )
+			hashtb = symbGetCompHashTb( symbGetCurrentNamespc( ) )
 
 		'' module-level..
 		else
@@ -922,13 +922,13 @@ function symbGetVarHasDtor _
 		byval s as FBSYMBOL ptr _
 	) as integer static
 
-    '' shared, static or param?
+    '' shared, static, param?
     if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
     					FB_SYMBATTRIB_STATIC or _
     					FB_SYMBATTRIB_COMMON or _
     					FB_SYMBATTRIB_PARAMBYDESC or _
     		  			FB_SYMBATTRIB_PARAMBYVAL or _
-    		  			FB_SYMBATTRIB_PARAMBYREF )) <> 0 ) then
+    		  			FB_SYMBATTRIB_PARAMBYREF)) <> 0 ) then
 		return FALSE
 	end if
 
@@ -938,7 +938,7 @@ function symbGetVarHasDtor _
     	'' temp strings are destroyed right-after then function
     	'' call, or the temp str descriptors could be exhausted
     	if( (s->attrib and (FB_SYMBATTRIB_TEMP or _
-    		  				FB_SYMBATTRIB_FUNCRESULT )) <> 0 ) then
+    		  				FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
 			return FALSE
 		else
 			return TRUE
@@ -947,7 +947,13 @@ function symbGetVarHasDtor _
    	'' has dtor?
    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
    		if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
-   			return TRUE
+
+   			if( symbIsTemp( s ) ) then
+   				'' needed while foo().bar().int isn't handled at AST
+   				return (symbGetIsDestroyed( s ) = FALSE)
+   			else
+   				return TRUE
+   			end if
    		end if
 
    	end select

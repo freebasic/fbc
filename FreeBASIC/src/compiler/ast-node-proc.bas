@@ -105,7 +105,6 @@ sub astProcListInit( )
 
 	''
 	listNew( @ast.globinst.list, 32, len( FB_GLOBINSTANCE ), LIST_FLAGS_NOCLEAR )
-
 	ast.globinst.ctorcnt = 0
 	ast.globinst.dtorcnt = 0
 
@@ -116,7 +115,6 @@ sub astProcListEnd( )
 
 	ast.globinst.dtorcnt = 0
 	ast.globinst.ctorcnt = 0
-
 	listFree( @ast.globinst.list )
 
 	''
@@ -125,6 +123,31 @@ sub astProcListEnd( )
 	ast.proc.curr = NULL
 
 end sub
+
+'':::::
+private function hNewProcNode _
+	(  _
+		_
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr n = any
+
+	n = astNewNode( AST_NODECLASS_PROC, INVALID, NULL )
+
+	'' add to list
+	if( ast.proc.tail <> NULL ) then
+		ast.proc.tail->next = n
+	else
+		ast.proc.head = n
+	end if
+
+	n->prev = ast.proc.tail
+	n->next = NULL
+	ast.proc.tail = n
+
+	function = n
+
+end function
 
 '':::::
 private sub hDelProcNode _
@@ -305,6 +328,7 @@ function astAdd _
 		return NULL
 	end if
 
+	''
 	hCheckCtor( n )
 
 	'' do updates and optimizations now as they can
@@ -386,31 +410,6 @@ sub astAddUnscoped _
 	ast.proc.curr->block.proc.decl_last = n
 
 end sub
-
-'':::::
-private function hNewProcNode _
-	(  _
-		_
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr n = any
-
-	n = astNewNode( AST_NODECLASS_PROC, INVALID, NULL )
-
-	'' add to list
-	if( ast.proc.tail <> NULL ) then
-		ast.proc.tail->next = n
-	else
-		ast.proc.head = n
-	end if
-
-	n->prev = ast.proc.tail
-	n->next = NULL
-	ast.proc.tail = n
-
-	function = n
-
-end function
 
 '':::::
 function astProcBegin _
@@ -584,7 +583,7 @@ function astProcEnd _
 		'' if the function body is empty, no ctor initialization will be done
 		hCheckCtor( n )
 
-		'' del dynamic arrays and all var-len strings (see the note in
+		'' del local dynamic arrays and var-len strings (see the note in
 		'' the top, procs don't create an implicit scope block)
 		hDestroyVars( sym )
 
@@ -961,7 +960,7 @@ private sub hFlushFieldInitTree _
 
 	initree = astCloneTree( symbGetTypeIniTree( fld ) )
 
-	astTypeIniFlush( initree, this_, FALSE, TRUE )
+	astAdd( astTypeIniFlush( initree, this_, FALSE, TRUE ) )
 
 end sub
 
@@ -1174,7 +1173,7 @@ private sub hCallStaticCtor _
 
 	'' ctor?
 	if( initree <> NULL ) then
-        astTypeIniFlush( initree, sym, FALSE, TRUE )
+        astAdd( astTypeIniFlush( initree, sym, FALSE, TRUE ) )
 		exit sub
 	end if
 

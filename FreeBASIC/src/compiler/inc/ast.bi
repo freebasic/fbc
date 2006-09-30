@@ -22,8 +22,6 @@
 #include once "inc\list.bi"
 #include once "inc\ast-op.bi"
 
-const AST_INITTEMPSTRINGS		= 32*4
-
 const AST_INITNODES				= 8192
 const AST_INITPROCNODES			= 128
 
@@ -102,10 +100,15 @@ end enum
 type ASTNODE_ as ASTNODE
 #endif
 
-type ASTTEMPSTR
-	tmpsym			as FBSYMBOL ptr
+type AST_TMPSTRLIST_ITEM
+	sym				as FBSYMBOL ptr
 	srctree			as ASTNODE_ ptr
-	prev			as ASTTEMPSTR ptr
+	prev			as AST_TMPSTRLIST_ITEM ptr
+end type
+
+type AST_DTORLIST_ITEM
+	sym 			as FBSYMBOL ptr
+	prev		    as AST_DTORLIST_ITEM ptr
 end type
 
 ''
@@ -114,8 +117,9 @@ type AST_NODE_CALL
 	args			as integer
 	currarg			as FBSYMBOL ptr
 	lastarg			as ASTNODE_ ptr					'' used to speed up PASCAL conv. only
-	strtail 		as ASTTEMPSTR ptr
-	res             as FBSYMBOL ptr					'' temp result structure, if needed
+	strtail 		as AST_TMPSTRLIST_ITEM ptr
+	dtortail		as AST_DTORLIST_ITEM ptr
+	tmpres          as FBSYMBOL ptr					'' temp result structure, if needed
 	profbegin		as ASTNODE_ ptr
 	profend			as ASTNODE_ ptr
 end type
@@ -274,9 +278,9 @@ type AST_PROCCTX
 	curr			as ASTNODE ptr					'' current proc
 end type
 
-type ASTVALUE
-	dtype			as integer
-	val				as FBVALUE
+type AST_CALLCTX
+	dtorlist		as TLIST						'' list of temp vars' dtors
+	tmpstrlist		as TLIST						'' list of temp strings
 end type
 
 type AST_GLOBINSTCTX
@@ -285,19 +289,22 @@ type AST_GLOBINSTCTX
 	dtorcnt			as integer						''      /    dtors       /
 end type
 
+type ASTVALUE
+	dtype			as integer
+	val				as FBVALUE
+end type
+
 type ASTCTX
 	astTB			as TLIST
 
 	proc			as AST_PROCCTX
+	call			as AST_CALLCTX
+	globinst		as AST_GLOBINSTCTX				'' global instances
 
 	currblock		as ASTNODE ptr					'' current scope block (PROC or SCOPE)
 
-	globinst		as AST_GLOBINSTCTX				'' global instances
-
 	doemit			as integer
 	isopt			as integer
-
-	tempstr			as TLIST
 
 	typeinicnt		as integer
 end Type
@@ -791,6 +798,11 @@ declare function astOptAssignment _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function astDtorListAdd _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as AST_DTORLIST_ITEM ptr
+
 declare function astCheckConst _
 	( _
 		byval dtype as integer, _
@@ -877,7 +889,7 @@ declare function astTypeIniFlush _
 		byval basesym as FBSYMBOL ptr, _
 		byval isstatic as integer, _
 		byval isinitializer as integer _
-	) as integer
+	) as ASTNODE ptr
 
 declare function astTypeIniIsConst _
 	( _
@@ -903,6 +915,11 @@ declare function astGetInverseLogOp _
 	( _
 		byval op as integer _
 	) as integer
+
+declare function astFindTempVarWithDtor _
+	( _
+		byval n as ASTNODE ptr _
+	) as FBSYMBOL ptr
 
 declare function astBuildVarAddrof _
 	( _
@@ -964,12 +981,29 @@ declare function astBuildCopyCtorCall _
 		byval src as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function astBuildForBeginEx _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval cnt as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval inivalue as integer _
+	) as ASTNODE ptr
+
 declare sub astBuildForBegin _
 	( _
 		byval cnt as FBSYMBOL ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval inivalue as integer _
 	)
+
+declare function astBuildForEndEx _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval cnt as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval stepvalue as integer, _
+		byval endvalue as integer _
+	) as ASTNODE ptr
 
 declare sub astBuildForEnd _
 	( _
@@ -1120,6 +1154,8 @@ declare function astBuildImplicitCtorCallEx _
 
 #define astTypeIniGetOfs( n ) n->typeini.ofs
 
+#define astProcGetTmpResult( n ) n->call.tmpres
+
 #define astGetOpClass( op ) ast_opTB(op).class
 
 #define astGetOpIsCommutative( op ) ((ast_opTB(op).flags and AST_OPFLAGS_COMM) <> 0)
@@ -1133,6 +1169,7 @@ declare function astBuildImplicitCtorCallEx _
 #define astGetClassLoadCB( cl ) ast_classTB(cl).loadcb
 
 #define astGetClassIsCode( cl ) ast_classTB(cl).iscode
+
 
 ''
 '' inter-module globals

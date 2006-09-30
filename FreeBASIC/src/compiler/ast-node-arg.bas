@@ -54,21 +54,28 @@ end sub
 private function hAllocTmpArrayDesc _
 	( _
 		byval array as FBSYMBOL ptr, _
-		byval array_expr as ASTNODE ptr _
+		byval array_expr as ASTNODE ptr, _
+		byref tree as ASTNODE ptr _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr desc = any
 
 	'' create
-	desc = symbAddArrayDesc( array, array_expr, symbGetArrayDimensions( array ) )
+	desc = symbAddArrayDesc( array, _
+							 array_expr, _
+							 symbGetArrayDimensions( array ) )
 
 	'' declare
-	astAdd( astNewDECL( FB_SYMBCLASS_VAR, _
-					    desc, _
-					    symbGetTypeIniTree( desc ) ) )
+	tree = astNewDECL( FB_SYMBCLASS_VAR, _
+					   desc, _
+					   symbGetTypeIniTree( desc ) )
 
 	'' flush (see symbAddArrayDesc(), the desc can't never be static)
-	astTypeIniFlush( symbGetTypeIniTree( desc ), desc, FALSE, TRUE )
+	tree = astNewLINK( tree, _
+					   astTypeIniFlush( symbGetTypeIniTree( desc ), _
+					   					desc, _
+					   					FALSE, _
+					   					TRUE ) )
 
 	symbSetTypeIniTree( desc, NULL )
 
@@ -77,25 +84,66 @@ private function hAllocTmpArrayDesc _
 end function
 
 '':::::
-private function hAllocTmpStrNode _
+private function hDtorListAdd _
+	( _
+		byval parent as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as AST_DTORLIST_ITEM ptr
+
+	dim as AST_DTORLIST_ITEM ptr n = any
+
+	'' alloc a node
+	n = listNewNode( @ast.call.dtorlist )
+
+	n->prev = parent->call.dtortail
+	parent->call.dtortail = n
+
+	n->sym = sym
+
+	'' already destroyed (needed while foo().bar().int isn't handled at AST)
+	symbSetIsDestroyed( sym )
+
+	function = n
+
+end function
+
+'':::::
+private sub hDtorListCheckArg _
+	( _
+		byval parent as ASTNODE ptr, _
+		byval arg as ASTNODE ptr _
+	)
+
+	dim as FBSYMBOL ptr sym = astFindTempVarWithDtor( arg )
+	if( sym <> NULL ) then
+		'' only once
+		symbSetIsTempWithDtor( sym, FALSE )
+		hDtorListAdd( parent, sym )
+	end if
+
+end sub
+
+'':::::
+private function hTmpStrListAdd _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval copyback as integer _
-	) as ASTTEMPSTR ptr
+	) as AST_TMPSTRLIST_ITEM ptr
 
-	dim as ASTTEMPSTR ptr t = any
+	dim as AST_TMPSTRLIST_ITEM ptr t = any
 	dim as FBSYMBOL ptr s = any
 
 	'' alloc a node
-	t = listNewNode( @ast.tempstr )
+	t = listNewNode( @ast.call.tmpstrlist )
+
 	t->prev = parent->call.strtail
 	parent->call.strtail = t
 
 	s = symbAddTempVarEx( dtype )
 
-	t->tmpsym = s
+	t->sym = s
 	if( copyback ) then
 		t->srctree = astOptimize( astCloneTree( n ) )
 	else
@@ -114,13 +162,13 @@ private function hAllocTmpString _
 		byval copyback as integer _
 	) as ASTNODE ptr
 
-	dim as ASTTEMPSTR ptr t = any
+	dim as AST_TMPSTRLIST_ITEM ptr t = any
 
 	'' create temp string to pass as parameter
-	t = hAllocTmpStrNode( parent, n, FB_DATATYPE_STRING, copyback )
+	t = hTmpStrListAdd( parent, n, FB_DATATYPE_STRING, copyback )
 
 	'' temp string = src string
-	return rtlStrAssign( astNewVAR( t->tmpsym, 0, FB_DATATYPE_STRING ), n )
+	return rtlStrAssign( astNewVAR( t->sym, 0, FB_DATATYPE_STRING ), n )
 
 end function
 
@@ -131,15 +179,15 @@ private function hAllocTmpWstrPtr _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTTEMPSTR ptr t = any
+	dim as AST_TMPSTRLIST_ITEM ptr t = any
 
 	'' create temp wstring ptr to pass as parameter
-	t = hAllocTmpStrNode( parent, NULL, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FALSE )
+	t = hTmpStrListAdd( parent, NULL, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FALSE )
 
 	n = astNewCONV( FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, NULL, n, AST_OP_TOPOINTER )
 
 	'' temp string = src string
-	return astNewASSIGN( astNewVAR( t->tmpsym, 0, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), n )
+	return astNewASSIGN( astNewVAR( t->sym, 0, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), n )
 
 end function
 
@@ -311,10 +359,18 @@ private function hStrParamToPtrArg _
 
 		'' not fixed-len? deref var-len (ptr at offset 0)
 		if( arg_dtype <> FB_DATATYPE_FIXSTR ) then
-    		n->l = astNewCONV( FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
-    						   NULL, _
-    						   astNewADDR( AST_OP_DEREF, n->l ), _
-    						   AST_OP_TOPOINTER )
+    		'' call?
+    		if( astIsCALL( n->l ) ) then
+    			n->l = astNewCONV( FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
+    						   	   NULL, _
+    						   	   astNewADDR( AST_OP_DEREF, n->l ), _
+    						   	   AST_OP_TOPOINTER )
+			else
+    			n->l = astNewPTR( 0, _
+    						   	  astNewADDR( AST_OP_ADDROF, n->l ), _
+    						   	  FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
+    						   	  NULL )
+			end if
 
         '' fixed-len..
         else
@@ -391,7 +447,7 @@ private function hCheckByRefArg _
 			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			return TRUE
 
-		'' UDT? do nothing, just take the addr of
+		'' UDT? do nothing, just take the address of
 		case FB_DATATYPE_STRUCT
 
 		case else
@@ -421,7 +477,7 @@ private function hCheckByDescParam _
 		byval n as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr arg = n->l
+    dim as ASTNODE ptr arg = n->l, desc_tree = any
 
 	'' param a pointer?
 	if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
@@ -455,14 +511,14 @@ private function hCheckByDescParam _
 		end if
 
 		'' create a temp array descriptor
-		desc = hAllocTmpArrayDesc( s, arg )
+		desc = hAllocTmpArrayDesc( s, arg, desc_tree )
 
 	else
 		'' an argument passed by descriptor?
 		if( symbIsParamByDesc( s ) ) then
         	'' it's a pointer, but could be seen as anything else
         	'' (ie: if it were "s() as string"), so, create an alias
-        	astDelTree( n->l )
+        	astDelTree( arg )
         	n->l = astNewVAR( s, 0, FB_DATATYPE_POINTER + FB_DATATYPE_VOID )
         	return TRUE
         end if
@@ -474,13 +530,18 @@ private function hCheckByDescParam _
 			return FALSE
 		end if
 
-        astDelTree( n->l )
+    	desc_tree = NULL
+
+    	'' remove node
+    	astDelTree( arg )
     end if
 
-    n->l = astNewADDR( AST_OP_ADDROF, _
-        			   astNewVAR( desc, _
-        					   	  0, _
-        					   	  FB_DATATYPE_VOID ) )
+    '' create a new
+    n->l = astNewLINK( astNewADDR( AST_OP_ADDROF, _
+        			   			   astNewVAR( desc, _
+        					   	  			  0, _
+        					   	  			  FB_DATATYPE_VOID ) ), _
+        			   desc_tree )
 
     function = TRUE
 
@@ -496,7 +557,7 @@ private function hCheckVarargParam _
 
     dim as ASTNODE ptr arg = n->l
 
-	select case symbGetDataClass( arg->dtype )
+	select case as const symbGetDataClass( arg->dtype )
 	'' var-len string? check..
 	case FB_DATACLASS_STRING
 		return hStrParamToPtrArg( parent, n, FALSE )
@@ -523,6 +584,10 @@ private function hCheckVarargParam _
 		if( arg->dtype = FB_DATATYPE_SINGLE ) then
 			n->l = astNewCONV( FB_DATATYPE_DOUBLE, NULL, arg )
 		end if
+
+	case else
+		hParamError( parent )
+		return FALSE
 	end select
 
 	function = TRUE
@@ -543,6 +608,9 @@ private function hCheckVoidParam _
 		'' another quirk: BYVAL strings passed to BYREF ANY args..
 		return hStrParamToPtrArg( parent, n, FALSE )
 	end if
+
+	''
+	hDtorListCheckArg( parent, arg )
 
 	'' byref arg, check if a temp param isn't needed
 	'' use the param type, not the arg type (as it's VOID)
@@ -570,7 +638,7 @@ private function hCheckStrParam _
 		end select
 	end if
 
-	select case arg->dtype
+	select case as const arg->dtype
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
 
 	'' a z|wstring?
@@ -631,6 +699,7 @@ end function
 '':::::
 private sub hUDTPassByval _
 	( _
+		byval parent as ASTNODE ptr, _
 		byval param as FBSYMBOL ptr, _
 		byval n as ASTNODE ptr _
 	)
@@ -669,11 +738,16 @@ private sub hUDTPassByval _
 
 	hBuildByrefArg( n, arg )
 
+	if( symbGetHasDtor( symbGetSubtype( tmp ) ) ) then
+		hDtorListAdd( parent, tmp )
+	end if
+
 end sub
 
 '':::::
 private function hImplicitCtor _
 	( _
+		byval parent as ASTNODE ptr, _
 		byval param as FBSYMBOL ptr, _
 		byval n as ASTNODE ptr _
 	) as integer
@@ -712,7 +786,11 @@ private function hImplicitCtor _
     					   astBuildVarField( tmp ) )
 
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
-		hUDTPassByval( param, n )
+		hUDTPassByval( parent, param, n )
+	end if
+
+	if( symbGetHasDtor( subtype ) ) then
+		hDtorListAdd( parent, tmp )
 	end if
 
 	function = TRUE
@@ -729,9 +807,12 @@ private function hCheckUDTParam _
 
 	dim as ASTNODE ptr arg = n->l
 
+	''
+	hDtorListCheckArg( parent, arg )
+
 	'' not another UDT?
 	if( arg->dtype <> FB_DATATYPE_STRUCT ) then
-		if( hImplicitCtor( param, n ) = FALSE ) then
+		if( hImplicitCtor( parent, param, n ) = FALSE ) then
 			hParamError( parent )
 			return FALSE
 		end if
@@ -744,16 +825,17 @@ private function hCheckUDTParam _
 			'' byref argument? create a temporary UDT and pass it..
 			if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
 				dim as FBSYMBOL ptr tmp = any
+
+				'' (note: if it's being returned in regs, there's no DTOR)
 				tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
 									  arg->subtype, _
 									  FALSE, _
 									  FALSE )
 
-				'' assuming it's safe to use CALLCTOR here
-				n->l = astNewCALLCTOR( astNewASSIGN( astBuildVarField( tmp ), _
-									   			  	 arg, _
-									   			  	 AST_OPOPT_DONTCHKOPOVL ), _
-									   astBuildVarField( tmp ) )
+				n->l = astNewLink( astBuildVarField( tmp ), _
+								   astNewASSIGN( astBuildVarField( tmp ), _
+									   			 arg, _
+									   			 AST_OPOPT_DONTCHKOPOVL ) )
 
 				arg = n->l
 			end if
@@ -762,7 +844,7 @@ private function hCheckUDTParam _
 
     '' check for invalid UDT's (different subtypes)
 	if( symbGetSubtype( param ) <> arg->subtype ) then
-		if( hImplicitCtor( param, n ) = FALSE ) then
+		if( hImplicitCtor( parent, param, n ) = FALSE ) then
 			hParamError( parent )
 			return FALSE
 		end if
@@ -771,7 +853,7 @@ private function hCheckUDTParam _
 
 	'' set the length if it's being passed by value
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
-		hUDTPassByval( param, n )
+		hUDTPassByval( parent, param, n )
 	end if
 
 	function = TRUE

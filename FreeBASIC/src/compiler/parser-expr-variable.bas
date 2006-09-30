@@ -309,6 +309,61 @@ function cTypeField _
 end function
 
 '':::::
+private function hStrIndexing _
+	( _
+		byval dtype as integer, _
+		byval varexpr as ASTNODE ptr, _
+		byval idxexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	'' string concatenation is delayed because optimizations..
+	varexpr = astUpdStrConcat( varexpr )
+
+	'' function deref?
+	if( astIsCALL( varexpr ) ) then
+		'' not allowed, STRING and WCHAR results are temporary
+		if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+			return NULL
+		end if
+	end if
+
+	if( dtype = FB_DATATYPE_STRING ) then
+		'' deref
+		varexpr = astNewADDR( AST_OP_DEREF, varexpr )
+	else
+		'' address of
+		varexpr = astNewADDR( AST_OP_ADDROF, varexpr )
+	end if
+
+	'' add index
+	if( dtype = FB_DATATYPE_WCHAR ) then
+		'' times sizeof( wchar ) if it's wstring
+		idxexpr = astNewBOP( AST_OP_SHL, _
+				   			 idxexpr, _
+				   			 astNewCONSTi( hToPow2( symbGetDataSize( FB_DATATYPE_WCHAR ) ), _
+				   				 		   FB_DATATYPE_INTEGER ) )
+	end if
+
+	'' null pointer checking
+	if( env.clopt.extraerrchk ) then
+		varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
+	end if
+
+	varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
+
+	'' not a wstring?
+	if( dtype <> FB_DATATYPE_WCHAR ) then
+		dtype = FB_DATATYPE_UBYTE
+	else
+		dtype = env.target.wchar.type
+	end if
+
+	'' make a pointer
+	function = astNewPTR( 0, varexpr, dtype, NULL )
+
+end function
+
+'':::::
 ''DerefFields	=   (('->' DREF* | '[' Expression ']' '.'?) TypeField)* .
 ''
 function cDerefFields _
@@ -320,7 +375,7 @@ function cDerefFields _
 	) as ASTNODE ptr
 
 	dim as integer derefcnt = any, is_field = any, lgt = any
-	dim as ASTNODE ptr expr = any, idxexpr = any
+	dim as ASTNODE ptr fldexpr = any, idxexpr = any
 	dim as FBSYMBOL ptr fld = any, method_sym = any
 
 	function = NULL
@@ -391,51 +446,7 @@ function cDerefFields _
 				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 					 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
-					'' string concatenation is delayed because optimizations..
-					varexpr = astUpdStrConcat( varexpr )
-
-					'' function deref?
-					if( astIsCALL( varexpr ) ) then
-						'' not allowed, STRING and WCHAR results are temporary
-						if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-							exit function
-						end if
-					end if
-
-					if( dtype = FB_DATATYPE_STRING ) then
-						'' deref
-						varexpr = astNewADDR( AST_OP_DEREF, varexpr )
-					else
-						'' address of
-						varexpr = astNewADDR( AST_OP_ADDROF, varexpr )
-					end if
-
-					'' add index
-					if( dtype = FB_DATATYPE_WCHAR ) then
-						'' times sizeof( wchar ) if it's wstring
-						idxexpr = astNewBOP( AST_OP_SHL, _
-								   			 idxexpr, _
-								   			 astNewCONSTi( hToPow2( symbGetDataSize( FB_DATATYPE_WCHAR ) ), _
-								   				 		   FB_DATATYPE_INTEGER ) )
-					end if
-
-					'' null pointer checking
-					if( env.clopt.extraerrchk ) then
-						varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
-					end if
-
-					varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
-
-					'' not a wstring?
-					if( dtype <> FB_DATATYPE_WCHAR ) then
-						dtype = FB_DATATYPE_UBYTE
-					else
-						dtype = env.target.wchar.type
-					end if
-
-					'' make a pointer
-					varexpr = astNewPTR( 0, varexpr, dtype, NULL )
-
+					varexpr = hStrIndexing( dtype, varexpr, idxexpr )
 					exit do
 
 				case else
@@ -506,10 +517,10 @@ function cDerefFields _
 
 		end select
 
-		expr = NULL
+		fldexpr = NULL
 		if( is_field ) then
 			'' TypeField
-			fld = cTypeField( dtype, subtype, expr, method_sym, checkarray )
+			fld = cTypeField( dtype, subtype, fldexpr, method_sym, checkarray )
 			if( fld = NULL ) then
 				if( method_sym = NULL ) then
 					if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
@@ -533,10 +544,10 @@ function cDerefFields _
 		end if
 
 		'' fields at ofs 0 aren't returned as expressions by cTypeField()
-		if( expr <> NULL ) then
+		if( fldexpr <> NULL ) then
 			'' this should be optimized by AST, when expr is a constant and
 			'' varexpr is a scalar var
-			varexpr = astNewBOP( AST_OP_ADD, varexpr, expr )
+			varexpr = astNewBOP( AST_OP_ADD, varexpr, fldexpr )
 		end if
 
 		''

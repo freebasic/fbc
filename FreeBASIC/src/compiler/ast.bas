@@ -43,6 +43,14 @@ declare sub astProcListEnd _
 	( _
 	)
 
+declare sub astCallInit _
+	( _
+	)
+
+declare sub astCallEnd _
+	( _
+	)
+
 declare function astLoadNOP _
 	( _
 		byval n as ASTNODE ptr _
@@ -294,6 +302,10 @@ declare sub hSetType _
 		( AST_NODECLASS_BOP		, AST_OPFLAGS_SELF, @"shr="	, AST_OP_SHR		), _	'' AST_OP_SHR_SELF
 		( AST_NODECLASS_BOP		, AST_OPFLAGS_SELF, @"pow="	, AST_OP_POW		), _	'' AST_OP_POW_SELF
 		( AST_NODECLASS_BOP		, AST_OPFLAGS_SELF, @"&="	, AST_OP_CONCAT		), _	'' AST_OP_CONCAT_SELF
+		( AST_NODECLASS_MEM 	, AST_OPFLAGS_SELF, @"new"						), _	'' AST_OP_NEW
+		( AST_NODECLASS_MEM 	, AST_OPFLAGS_SELF, @"new[]"					), _	'' AST_OP_NEW_VEC
+		( AST_NODECLASS_MEM 	, AST_OPFLAGS_SELF, @"delete"					), _	'' AST_OP_DELETE
+		( AST_NODECLASS_MEM 	, AST_OPFLAGS_SELF, @"delete[]"					), _	'' AST_OP_DELETE_VEC
 		( AST_NODECLASS_CONV 	, AST_OPFLAGS_SELF, @"cast"						), _	'' AST_OP_CAST
 		( AST_NODECLASS_BOP		, AST_OPFLAGS_COMM, @"+"	, AST_OP_ADD_SELF	), _	'' AST_OP_ADD
 		( AST_NODECLASS_BOP		, AST_OPFLAGS_NONE, @"-"	, AST_OP_SUB_SELF	), _	'' AST_OP_SUB
@@ -405,28 +417,12 @@ declare sub hSetType _
 
 
 '':::::
-private sub hInitTempLists
-
-	listNew( @ast.tempstr, AST_INITTEMPSTRINGS, len( ASTTEMPSTR ), LIST_FLAGS_NOCLEAR )
-
-end sub
-
-'':::::
-private sub hEndTempLists
-
-	listFree( @ast.tempstr )
-
-end sub
-
-'':::::
 sub astInit static
 
 	''
     listNew( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
 
     ''
-    hInitTempLists( )
-
     ast.doemit = TRUE
     ast.isopt = FALSE
     ast.typeinicnt = 0
@@ -437,6 +433,8 @@ sub astInit static
 	ast_maxlimitTB(FB_DATATYPE_WCHAR) = ast_maxlimitTB(env.target.wchar.type)
 
     ''
+    astCallInit( )
+
     astProcListInit( )
 
 end sub
@@ -445,10 +443,9 @@ end sub
 sub astEnd static
 
 	''
-	hEndTempLists( )
-
-	''
 	astProcListEnd( )
+
+    astCallEnd( )
 
 	''
 	listFree( @ast.astTB )
@@ -792,6 +789,33 @@ function astGetInverseLogOp _
 	end select
 
 	function = op
+
+end function
+
+'':::::
+function astFindTempVarWithDtor _
+	( _
+		byval n as ASTNODE ptr _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr sym = NULL
+
+	function = NULL
+
+	select case n->class
+	case AST_NODECLASS_CALL
+		sym = n->call.tmpres
+
+	case AST_NODECLASS_CALLCTOR
+       	sym = astGetSymbol( n->r )
+
+	end select
+
+	if( sym <> NULL ) then
+		if( symbGetIsTempWithDtor( sym ) ) then
+			function = sym
+		end if
+	end if
 
 end function
 

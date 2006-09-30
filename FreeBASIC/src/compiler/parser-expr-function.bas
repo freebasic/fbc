@@ -204,6 +204,11 @@ function cCtorCall _
 	'' error recovery..
 	if( astIsCALL( procexpr ) ) then
 		atom = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
+
+		if( symbGetHasDtor( sym ) ) then
+			symbSetIsTempWithDtor( tmp, TRUE )
+		end if
+
 	else
 		atom = procexpr
 	end if

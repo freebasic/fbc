@@ -31,11 +31,29 @@
 '''''#define DO_STACK_ALIGN
 
 '':::::
+sub astCallInit
+
+	listNew( @ast.call.tmpstrlist, 32, len( AST_TMPSTRLIST_ITEM ), LIST_FLAGS_NOCLEAR )
+	listNew( @ast.call.dtorlist, 32, len( AST_DTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
+
+end sub
+
+'':::::
+sub astCallEnd
+
+	listFree( @ast.call.dtorlist )
+	listFree( @ast.call.tmpstrlist )
+
+end sub
+
+'':::::
 private sub hAllocTempStruct _
 	( _
 		byval n as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
 	) static
+
+	n->call.tmpres = NULL
 
 	'' follow GCC 3.x's ABI
 	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
@@ -43,11 +61,14 @@ private sub hAllocTempStruct _
 		if( symbGetProcRealType( sym ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
 
 			'' create a temp struct (can't be static, could be an object)
-			n->call.res = symbAddTempVarEx( FB_DATATYPE_STRUCT, _
-											symbGetSubtype( sym ), _
-											FALSE, _
-											FALSE )
+			n->call.tmpres = symbAddTempVarEx( FB_DATATYPE_STRUCT, _
+											   symbGetSubtype( sym ), _
+											   FALSE, _
+											   FALSE )
 
+			if( symbGetHasDtor( symbGetSubtype( sym ) ) ) then
+				symbSetIsTempWithDtor( n->call.tmpres, TRUE )
+			end if
 		end if
 	end if
 
@@ -101,6 +122,7 @@ function astNewCALL _
 	end if
 
 	n->call.strtail = NULL
+	n->call.dtortail = NULL
 
 	'' handle functions that return structs
 	hAllocTempStruct( n, sym )
@@ -241,7 +263,7 @@ private sub hCheckTmpStrings _
 	)
 
     dim as ASTNODE ptr t = any
-    dim as ASTTEMPSTR ptr n = any, p = any
+    dim as AST_TMPSTRLIST_ITEM ptr n = any, p = any
 
 	'' copy-back any fix-len string passed as parameter and
 	'' delete all temp strings used as parameters
@@ -251,20 +273,42 @@ private sub hCheckTmpStrings _
 		'' copy back if needed
 		if( n->srctree <> NULL ) then
 			t = rtlStrAssign( n->srctree, _
-							  astNewVAR( n->tmpsym, 0, FB_DATATYPE_STRING ) )
+							  astNewVAR( n->sym, 0, FB_DATATYPE_STRING ) )
 			astLoad( t )
 			astDelNode( t )
 		end if
 
 		'' delete the temp string (or wstring)
-		t = rtlStrDelete( astNewVAR( n->tmpsym, 0, symbGetType( n->tmpsym ) ) )
+		t = rtlStrDelete( astNewVAR( n->sym, 0, symbGetType( n->sym ) ) )
 		astLoad( t )
 		astDelNode( t )
 
 		p = n->prev
-		listDelNode( @ast.tempstr, n )
+		listDelNode( @ast.call.tmpstrlist, n )
 		n = p
 	loop
+
+end sub
+
+'':::::
+private sub hDtorListFlush _
+	( _
+		byval f as ASTNODE ptr _
+	)
+
+    dim as ASTNODE ptr t = any
+    dim as AST_DTORLIST_ITEM ptr n = any, p = any
+
+	n = f->call.dtortail
+	do while( n <> NULL )
+        t = astBuildVarDtorCall( n->sym )
+        astLoad( t )
+        astDelNode( t )
+
+		p = n->prev
+		listDelNode( @ast.call.dtorlist, n )
+		n = p
+    loop
 
 end sub
 
@@ -286,7 +330,7 @@ private sub hCheckTempStruct _
 	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
 		if( symbGetProcRealType( sym ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
         	'' pass the address of the temp struct
-        	vr = astLoad( astNewVar( n->call.res, _
+        	vr = astLoad( astNewVAR( n->call.tmpres, _
         							 0, _
         							 FB_DATATYPE_STRUCT, _
         							 symbGetSubtype( sym ) ) )
@@ -408,6 +452,9 @@ function astLoadCALL _
 		hCallProc( n->call.profend, sym, sym->proc.mode, 0, 0 )
 		astDelNode( n->call.profend )
 	end if
+
+	''
+	hDtorListFlush( n )
 
 	'' del temp strings and copy back if needed
 	hCheckTmpStrings( n )

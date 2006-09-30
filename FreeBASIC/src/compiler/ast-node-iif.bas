@@ -101,7 +101,23 @@ function astNewIIF _
 
 	n->sym = symbAddTempVar( true_dtype, truexpr->subtype )
 	n->l = condexpr
+
+	'' assign true to temp
+	truexpr = astNewASSIGN( astNewVAR( n->sym, _
+									   0, _
+									   symbGetType( n->sym ), _
+									   symbGetSubType( n->sym ) ), _
+					  		truexpr )
+
+	'' assign false to temp
+	falsexpr = astNewASSIGN( astNewVAR( n->sym, _
+										0, _
+										symbGetType( n->sym ), _
+										symbGetSubType( n->sym ) ), _
+					  		 falsexpr )
+
 	n->r = astNewLINK( truexpr, falsexpr )
+
 	n->iif.falselabel = falselabel
 
 end function
@@ -140,13 +156,7 @@ function astLoadIIF _
 	exitlabel = symbAddLabel( NULL )
 
 	'' true expr
-	t = astNewASSIGN( astNewVAR( n->sym, _
-								 0, _
-								 symbGetType( n->sym ), _
-								 symbGetSubType( n->sym ) ), _
-					  r->l )
-	astLoad( t )
-	astDelNode( t )
+	astLoad( r->l )
 
 	if( ast.doemit ) then
 		irEmitBRANCH( AST_OP_JMP, exitlabel )
@@ -164,13 +174,7 @@ function astLoadIIF _
 		'''''end if
 	end if
 
-	t = astNewASSIGN( astNewVAR( n->sym, _
-								 0, _
-								 symbGetType( n->sym ), _
-								 symbGetSubType( n->sym ) ), _
-					  r->r )
-	astLoad( t )
-	astDelNode( t )
+	astLoad( r->r )
 
     if( ast.doemit ) then
 		'' exit
@@ -181,6 +185,8 @@ function astLoadIIF _
 	function = astLoad( t )
 	astDelNode( t )
 
+	astDelNode( r->l )
+	astDelNode( r->r )
 	astDelNode( r )
 
 end function

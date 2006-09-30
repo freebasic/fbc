@@ -26,12 +26,13 @@
 #include once "inc\ast.bi"
 
 '':::::
-private sub hCtorList _
+private function hCtorList _
 	( _
 		byval sym as FBSYMBOL ptr _
-	)
+	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr cnt = any, label = any, this_ = any, subtype = any
+	dim as ASTNODE ptr tree = NULL
 
 	subtype = symbGetSubtype( sym )
 
@@ -40,26 +41,31 @@ private sub hCtorList _
     this_ = symbAddTempVar( FB_DATATYPE_POINTER + symbGetType( sym ), subtype )
 
     '' fld = @sym(0)
-    astAdd( astBuildVarAssign( this_, _
-    						   astNewADDR( AST_OP_ADDROF, _
-    						   			   astNewVAR( sym, _
-   											 		  0, _
-   											 		  symbGetType( sym ), _
-   											 		  subtype ) ) ) )
+    tree = astNewLINK( tree, _
+    				   astBuildVarAssign( this_, _
+    						   			  astNewADDR( AST_OP_ADDROF, _
+    						   			   			  astNewVAR( sym, _
+   											 		  		     0, _
+   											 		  			 symbGetType( sym ), _
+   											 		  			 subtype ) ) ) )
 
 	'' for cnt = 0 to symbGetArrayElements( sym )-1
-	astBuildForBegin( cnt, label, 0 )
+	tree = astBuildForBeginEx( tree, cnt, label, 0 )
 
     '' sym.constructor( )
-	astAdd( astBuildCtorCall( symbGetSubtype( sym ), astBuildVarDeref( this_ ) ) )
+	tree = astNewLINK( tree, _
+					   astBuildCtorCall( symbGetSubtype( sym ), _
+					   					  astBuildVarDeref( this_ ) ) )
 
 	'' this_ += 1
-    astAdd( astBuildVarInc( this_, 1 ) )
+    tree = astNewLINK( tree, astBuildVarInc( this_, 1 ) )
 
     '' next
-    astBuildForEnd( cnt, label, 1, symbGetArrayElements( sym ) )
+    tree = astBuildForEndEx( tree, cnt, label, 1, symbGetArrayElements( sym ) )
 
-end sub
+	function = tree
+
+end function
 
 '':::::
 private function hCallCtor _
@@ -115,8 +121,7 @@ private function hCallCtor _
 
    			'' array..
    			else
-                hCtorList( sym )
-                return NULL
+                return hCtorList( sym )
    			end if
    		end if
    	end select

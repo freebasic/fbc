@@ -234,11 +234,12 @@ function astTypeIniAddCtorList _
 end function
 
 '':::::
-private sub hCallCtor _
+private function hCallCtor _
 	( _
+		byval flush_tree as ASTNODE ptr, _
 		byval n as ASTNODE ptr, _
 		byval basesym as FBSYMBOL ptr _
-	)
+	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr sym = any
 	dim as integer ofs = any
@@ -258,16 +259,19 @@ private sub hCallCtor _
 							 astBuildVarField( basesym, sym, ofs ) )
 
 	'' do call
-	astAdd( n->l )
+	flush_tree = astNewLINK( flush_tree, n->l )
 
-end sub
+	function = flush_tree
+
+end function
 
 '':::::
-private sub hCallCtorList _
+private function hCallCtorList _
 	( _
+		byval flush_tree as ASTNODE ptr, _
 		byval n as ASTNODE ptr, _
 		byval basesym as FBSYMBOL ptr _
-	)
+	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr subtype = any, sym = any
 	dim as ASTNODE ptr fldexpr = any
@@ -298,39 +302,46 @@ private sub hCallCtorList _
     	label = symbAddLabel( NULL, TRUE )
     	iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype )
 
-		astAdd( astBuildVarAssign( iter, astNewADDR( AST_OP_ADDROF, fldexpr ) ) )
+		flush_tree = astNewLINK( flush_tree, _
+								 astBuildVarAssign( iter, _
+								 					astNewADDR( AST_OP_ADDROF, fldexpr ) ) )
 
 		'' for cnt = 0 to elements-1
-		astBuildForBegin( cnt, label, 0 )
+		flush_tree = astBuildForBeginEx( flush_tree, cnt, label, 0 )
 
 		'' ctor( *iter )
-		astAdd( astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
+		flush_tree = astNewLINK( flush_tree, _
+								 astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
 
 		'' iter += 1
-    	astAdd( astBuildVarInc( iter, 1 ) )
+    	flush_tree = astNewLINK( flush_tree, _
+    							 astBuildVarInc( iter, 1 ) )
 
     	'' next
-    	astBuildForEnd( cnt, label, 1, elements )
+    	flush_tree = astBuildForEndEx( flush_tree, cnt, label, 1, elements )
 
     else
     	'' ctor( this )
-    	astAdd( astBuildCtorCall( subtype, fldexpr ) )
+    	flush_tree = astNewLINK( flush_tree, _
+    							 astBuildCtorCall( subtype, fldexpr ) )
     end if
 
-end sub
+	function = flush_tree
+
+end function
 
 '':::::
 private function hFlushTree _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval basesym as FBSYMBOL ptr _
-	) as integer
+	) as ASTNODE ptr
 
     static as ASTNODE ptr lside
     static as FBSYMBOL ptr sym
-    dim as ASTNODE ptr n = any, nxt = any
+    dim as ASTNODE ptr n = any, nxt = any, flush_tree = NULL
 
-	function = FALSE
+	function = NULL
 
     n = tree->l
     do while( n <> NULL )
@@ -360,7 +371,8 @@ private function hFlushTree _
         		end if
             end if
 
-			astAdd( astNewASSIGN( lside, n->l, AST_OPOPT_DONTCHKPTR ) )
+			flush_tree = astNewLINK( flush_tree, _
+									 astNewASSIGN( lside, n->l, AST_OPOPT_DONTCHKPTR ) )
 
     	case AST_NODECLASS_TYPEINI_PAD
         	if( symbIsParamInstance( basesym ) ) then
@@ -375,16 +387,17 @@ private function hFlushTree _
         					  	   symbGetSubtype( basesym ) )
     		end if
 
-    		astAdd( astNewMEM( AST_OP_MEMCLEAR, _
-    						   lside, _
-    						   NULL, _
-    						   n->typeini.bytes ) )
+    		flush_tree = astNewLINK( flush_tree, _
+    								 astNewMEM( AST_OP_MEMCLEAR, _
+    						   		 			lside, _
+    						   		 			NULL, _
+    						   		 			n->typeini.bytes ) )
 
     	case AST_NODECLASS_TYPEINI_CTORCALL
-    		hCallCtor( n, basesym )
+    		flush_tree = hCallCtor( flush_tree, n, basesym )
 
     	case AST_NODECLASS_TYPEINI_CTORLIST
-    		hCallCtorList( n, basesym )
+    		flush_tree = hCallCtorList( flush_tree, n, basesym )
 
     	end select
 
@@ -392,7 +405,7 @@ private function hFlushTree _
     	n = nxt
     loop
 
-	function = TRUE
+	function = flush_tree
 
 end function
 
@@ -539,7 +552,7 @@ function astTypeIniFlush _
 		byval basesym as FBSYMBOL ptr, _
 		byval isstatic as integer, _
 		byval isinitializer as integer _
-	) as integer
+	) as ASTNODE ptr
 
 	assert( tree <> NULL )
 
@@ -548,7 +561,8 @@ function astTypeIniFlush _
 	end if
 
 	if( isstatic ) then
-		function = hFlushTreeStatic( tree, basesym )
+		hFlushTreeStatic( tree, basesym )
+		function = NULL
 	else
 		function = hFlushTree( tree, basesym )
 	end if
@@ -697,7 +711,7 @@ private sub hWalk _
 			parent->r = expr
 		end if
 
-		astTypeIniFlush( node, sym, FALSE, FALSE )
+		astAdd( astTypeIniFlush( node, sym, FALSE, FALSE ) )
 
     	exit sub
     end if

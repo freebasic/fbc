@@ -475,11 +475,11 @@ end function
 function rtlArrayErase _
 	( _
 		byval arrayexpr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer dtype
-    dim as FBSYMBOL ptr dtor
+    dim as ASTNODE ptr proc = any
+    dim as integer dtype = any
+    dim as FBSYMBOL ptr dtor = any
 
 	function = NULL
 
@@ -523,11 +523,11 @@ function rtlArrayClear _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
 		byval dofill as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer dtype
-    dim as FBSYMBOL ptr dtor
+    dim as ASTNODE ptr proc = any
+    dim as integer dtype = any
+    dim as FBSYMBOL ptr dtor = any
 
     function = NULL
 
@@ -575,9 +575,9 @@ end function
 function rtlArrayStrErase _
 	( _
 		byval arrayexpr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = NULL
 

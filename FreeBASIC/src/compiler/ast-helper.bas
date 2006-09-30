@@ -219,6 +219,25 @@ end function
 ''
 
 '':::::
+function astBuildForBeginEx _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval cnt as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval inivalue as integer _
+	) as ASTNODE ptr
+
+	'' cnt = 0
+    tree = astNewLINK( tree, astBuildVarAssign( cnt, inivalue ) )
+
+    '' do
+    tree = astNewLINK( tree, astNewLABEL( label ) )
+
+    function = tree
+
+end function
+
+'':::::
 sub astBuildForBegin _
 	( _
 		byval cnt as FBSYMBOL ptr, _
@@ -226,13 +245,36 @@ sub astBuildForBegin _
 		byval inivalue as integer _
 	)
 
-	'' cnt = 0
-    astAdd( astBuildVarAssign( cnt, inivalue ) )
-
-    '' do
-    astAdd( astNewLABEL( label ) )
+    astAdd( astBuildForBeginEx( NULL, cnt, label, inivalue ) )
 
 end sub
+
+'':::::
+function astBuildForEndEx _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval cnt as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval stepvalue as integer, _
+		byval endvalue as integer _
+	) as ASTNODE ptr
+
+	'' next
+    tree = astNewLINK( tree, astBuildVarInc( cnt, stepvalue ) )
+
+    '' next
+    tree = astNewLINK( tree, astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
+    									  		astNewVAR( cnt, _
+            										 	   0, _
+            										 	   FB_DATATYPE_INTEGER ), _
+            							  		astNewCONSTi( endvalue, _
+            												  FB_DATATYPE_INTEGER ) ), _
+            				   					label, _
+            				   					FALSE ) )
+
+	function = tree
+
+end function
 
 '':::::
 sub astBuildForEnd _
@@ -243,18 +285,7 @@ sub astBuildForEnd _
 		byval endvalue as integer _
 	)
 
-	'' next
-    astAdd( astBuildVarInc( cnt, stepvalue ) )
-
-    '' next
-    astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
-    									  astNewVAR( cnt, _
-            										 0, _
-            										 FB_DATATYPE_INTEGER ), _
-            							  astNewCONSTi( endvalue, _
-            											FB_DATATYPE_INTEGER ) ), _
-            				   label, _
-            				   FALSE ) )
+    astAdd( astBuildForEndEx( NULL, cnt, label, stepvalue, endvalue ) )
 
 end sub
 

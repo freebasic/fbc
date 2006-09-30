@@ -1,9 +1,38 @@
+[ ] remove the internal profiler and use gprof instead, the former won't work with
+    destructors
+
+[ ] ___fixunsdfdi() will do int/floor() to convert the floating-point value to
+    unsigned, while culongint() should do round()
+
 [ ] ctor/dtor
-	- add SWAP for structs with copy-ctors and/or destructors
+	- how to handle: if( foo().bar().baz(0,1,3).int = 0 ) then ...
+
+	  temp instances created in a function call, must be destroyed right after
+	  the function return because exception handling - if baz() throws an
+	  exception, the bar() and foo() temp results MUST be destroyed
+
+	  GOTO will also screw them if dtors are only called when closing the
+	  current scope
+
+	  		goto xxx
+	  		print foo().bar().int
+	  	xxx:
+
+	  - easiest way?? add a flag (byte) at function scope, setting it to 1
+	    after the ctor is called if:
+	    1) the temp has a dtor
+	    2) a GOTO is targetting the current scope
+	       - GOSUB can't be used with objects, remove var-len string fields
+	         from -lang qb
 
 	- ArrayClear will be used instead of a dtor call looping to destroy
 	  local non-dynamic arrays
 	  - callVarDtor will have to use astAddAfter then with scope blocks..
+	    - rather: do the clean up on every BRANCH added, and when
+	      the scope is closed, only delay the checks as the forward
+	      declarations are unknown
+
+	- add SWAP for structs with copy-ctors and/or destructors
 
 	- add NEW and DELETE as operator
 	  - only allow overloading if methods, no global support,

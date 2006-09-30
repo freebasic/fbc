@@ -424,9 +424,22 @@ function astNewASSIGN _
 			exit function
 		end if
 
+        '' handle temporary instances with dtors..
+		dim as ASTNODE ptr dtorcall = NULL
+        dim as FBSYMBOL ptr tmp = astFindTempVarWithDtor( r )
+		if( tmp <> NULL ) then
+			'' only once
+			symbSetIsTempWithDtor( tmp, FALSE )
+
+			'' already destroyed (needed while foo().bar().int isn't handled at AST)
+			symbSetIsDestroyed( tmp )
+
+			dtorcall = astBuildVarDtorCall( tmp )
+		end if
+
         '' r is an UDT too?
         dim as integer is_udt = TRUE
-        if( astIsCALL( r ) ) then
+        if( r->class = AST_NODECLASS_CALL ) then
         	is_udt = symbGetUDTRetType( r->subtype ) = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT
         end if
 
@@ -436,15 +449,16 @@ function astNewASSIGN _
 				'' !!FIXME!! can't be used with complex l-hand side expressions
 				if( l->class = AST_NODECLASS_VAR ) then
 					'' no double assign, just flush the tree
-					astTypeIniFlush( r, l->sym, FALSE, FALSE )
-
-					'' must return something..
-					return astNewNOP(  )
+					return astTypeIniFlush( r, l->sym, FALSE, FALSE )
 				end if
 			end if
 
 			'' do a shallow copy..
-			return astNewMEM( AST_OP_MEMMOVE, l, r, symbGetUDTUnpadLen( l->subtype ) )
+			return astNewLINK( astNewMEM( AST_OP_MEMMOVE, _
+										  l, _
+										  r, _
+										  symbGetUDTUnpadLen( l->subtype ) ), _
+							   dtorcall )
 
 		'' r is function returning an UDT on registers
 		else

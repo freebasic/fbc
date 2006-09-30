@@ -158,6 +158,7 @@ private function hFieldAccess _
 				FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
 
 				'' it's returning the result in registers, move to a temp var
+				'' (note: if it's being returned in regs, there's no DTOR)
 				dim as FBSYMBOL ptr tmp = any
 
 				tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
