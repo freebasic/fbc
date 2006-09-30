@@ -23,7 +23,7 @@ type EXPLOSION_TYPE
 end type
 
 
-declare sub animate_fire(byval buffer as ubyte ptr, byval new as integer = 0)
+declare sub animate_fire(byval buffer as ubyte ptr, byval new_ as integer = 0)
 
 
 sub animate_fire(byval buffer as ubyte ptr, byval new_ as integer = 0)
