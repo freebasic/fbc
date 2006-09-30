@@ -1239,7 +1239,7 @@ type IPropertySetStorageVtbl
 	Release as function (byval as IPropertySetStorage ptr) as ULONG
 	Create as function (byval as IPropertySetStorage ptr, byval as REFFMTID, byval as CLSID ptr, byval as DWORD, byval as DWORD, byval as LPPROPERTYSTORAGE ptr) as HRESULT
 	Open as function (byval as IPropertySetStorage ptr, byval as REFFMTID, byval as DWORD, byval as LPPROPERTYSTORAGE ptr) as HRESULT
-	Delete as function (byval as IPropertySetStorage ptr, byval as REFFMTID) as HRESULT
+	Del as function (byval as IPropertySetStorage ptr, byval as REFFMTID) as HRESULT
 	Enum as function (byval as IPropertySetStorage ptr, byval as IEnumSTATPROPSETSTG ptr ptr) as HRESULT
 end type
 extern IID_IClientSecurity alias "IID_IClientSecurity" as IID
