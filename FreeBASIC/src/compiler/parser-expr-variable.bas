@@ -289,6 +289,11 @@ function cTypeField _
 
    				'' non-indexed array..
    				else
+   					'' don't let the offset expr be NULL
+   					if( expr = NULL ) then
+   						expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+   					end if
+
    					expr = astNewNIDXARRAY( expr )
    				end if
 
@@ -544,7 +549,16 @@ function cDerefFields _
 		end if
 
 		'' fields at ofs 0 aren't returned as expressions by cTypeField()
+		dim as integer is_nidxarray = FALSE
 		if( fldexpr <> NULL ) then
+			'' ugly hack to deal with arrays w/o indexes
+			if( astIsNIDXARRAY( fldexpr ) ) then
+				dim as ASTNODE ptr tmpexpr = astGetLeft( fldexpr )
+				astDelNode( fldexpr )
+				fldexpr = tmpexpr
+				is_nidxarray = TRUE
+			end if
+
 			'' this should be optimized by AST, when expr is a constant and
 			'' varexpr is a scalar var
 			varexpr = astNewBOP( AST_OP_ADD, varexpr, fldexpr )
@@ -562,6 +576,19 @@ function cDerefFields _
 		if( fld <> NULL ) then
 			varexpr = astNewFIELD( varexpr, fld, dtype, subtype )
  		end if
+
+		'' non-indexed array?
+		if( is_nidxarray ) then
+        	varexpr = astNewNIDXARRAY( varexpr )
+
+			if( derefcnt > 0 ) then
+				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+					exit function
+				end if
+			end if
+
+			exit do
+		end if
 
 		'' method call?
 		if( method_sym <> NULL ) then
