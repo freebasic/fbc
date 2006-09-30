@@ -63,7 +63,7 @@ static int hReadChar
     /* console.. */
     else
     {
-		if( ctx->index >= FB_STRSIZE( &ctx->str.len ) )
+		if( ctx->index >= FB_STRSIZE( &ctx->str ) )
 			return EOF;
 		else
 			return ctx->str.data[ctx->index++];

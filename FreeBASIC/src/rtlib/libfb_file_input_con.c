@@ -61,6 +61,7 @@ FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 
     ctx = FB_TLSGETCTX( INPUT );
 
+	fb_StrDelete( &ctx->str );
 	ctx->handle = 0;
 	ctx->status = 0;
 	ctx->index = 0;
