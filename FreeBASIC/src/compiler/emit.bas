@@ -39,7 +39,7 @@ declare sub 	 emitWriteFooter		( byval tottime as double )
 declare sub 	 emitWriteBss			( byval s as FBSYMBOL ptr )
 declare sub 	 emitWriteConst			( byval s as FBSYMBOL ptr )
 declare sub 	 emitWriteData			( byval s as FBSYMBOL ptr )
-declare sub 	 emitWriteExport		( )
+declare sub 	 emitWriteExport		( byval s as FBSYMBOL ptr )
 
 
 '' globals
@@ -127,7 +127,7 @@ sub emitClose _
 
 	''
 	if( env.clopt.export ) then
-		emitWriteExport( )
+		emitWriteExport( symbGetGlobalTbHead( ) )
 	end if
 
 	''

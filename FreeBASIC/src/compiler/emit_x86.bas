@@ -6261,16 +6261,21 @@ sub emitWriteData _
 end sub
 
 '':::::
-sub emitWriteExport( ) static
+sub emitWriteExport _
+	(  _
+		byval s as FBSYMBOL ptr _
+	) static
 
-    dim as FBSYMBOL ptr s
     dim as string sname
 
     '' for each proc exported..
-    s = symbGetGlobalTbHead( )
     do while( s <> NULL )
+    	select case symbGetClass( s )
+		'' name space?
+		case FB_SYMBCLASS_NAMESPACE
+			emitWriteExport( symbGetNamespaceTbHead( s ) )
 
-    	if( symbIsPROC( s ) ) then
+    	case FB_SYMBCLASS_PROC
     		if( symbGetIsDeclared( s ) ) then
     			if( symbIsExport( s ) ) then
     				hEmitExportHeader( )
@@ -6278,7 +6283,7 @@ sub emitWriteExport( ) static
     				hWriteStr( TRUE, ".ascii " + QUOTE + " -export:" + sname + (QUOTE + NEWLINE) )
     			end if
     		end if
-    	end if
+    	end select
 
     	s = s->next
     loop
