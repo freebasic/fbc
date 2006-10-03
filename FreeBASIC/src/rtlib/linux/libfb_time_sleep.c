@@ -72,6 +72,6 @@ void fb_ConsoleSleep ( int msecs )
 			msecs -= 50;
 		}
 
-	if( msecs > 0 )
+	if( msecs >= 0 )
 		fb_Delay( msecs );
 }
