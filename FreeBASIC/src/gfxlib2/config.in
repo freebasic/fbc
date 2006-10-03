@@ -124,6 +124,12 @@
 /* Linux build */
 #undef TARGET_LINUX
 
+/* Powerpc64 build */
+#undef TARGET_POWERPC64
+
+/* Sparc64 build */
+#undef TARGET_SPARC64
+
 /* Win32 build */
 #undef TARGET_WIN32
 
