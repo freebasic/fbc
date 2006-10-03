@@ -45,7 +45,7 @@
 int fb_FilePutDataEx
 	(
 		FB_FILE *handle,
-		long pos,
+		fb_off_t pos,
 		const void *data,
 		size_t length,
 		int adjust_rec_pos,
@@ -167,7 +167,7 @@ int fb_FilePutDataEx
 int fb_FilePutData
 	(
 		int fnum,
-		long pos,
+		fb_off_t pos,
 		const void *data,
 		size_t length,
 		int adjust_rec_pos,

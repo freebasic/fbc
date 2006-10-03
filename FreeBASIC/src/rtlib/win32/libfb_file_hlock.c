@@ -48,22 +48,22 @@
 #endif
 
 /*:::::*/
-int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int size )
+int fb_hFileLock( FILE *f, fb_off_t inipos, fb_off_t size )
 {
-    int res;
+	int res;
 
-    res = LockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, size, 0 );
+	res = LockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, size, 0 );
 
 	return fb_ErrorSetNum( res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO );
 
 }
 
 /*:::::*/
-int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int size )
+int fb_hFileUnlock( FILE *f, fb_off_t inipos, fb_off_t size )
 {
-    int res;
+	int res;
 
-    res = UnlockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, size, 0 );
+	res = UnlockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, size, 0 );
 
 	return fb_ErrorSetNum( res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO );
 

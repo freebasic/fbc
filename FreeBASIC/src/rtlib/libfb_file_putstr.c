@@ -42,7 +42,7 @@
 #include "fb.h"
 
 /*:::::*/
-int fb_FilePutStrEx( FB_FILE *handle, long pos, void *str, int str_len )
+int fb_FilePutStrEx( FB_FILE *handle, fb_off_t pos, void *str, int str_len )
 {
     int res;
     long len;

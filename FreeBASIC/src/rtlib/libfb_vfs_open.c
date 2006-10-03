@@ -46,32 +46,32 @@
 void fb_hFileCtx ( int doinit );
 
 /*::::::*/
-static long hFileGetSize
+static fb_off_t hFileGetSize
 	(
 		FB_FILE *handle
 	)
 {
-	long size = 0;
+	fb_off_t size = 0;
 
 	if( handle->hooks->pfnSeek == NULL || handle->hooks->pfnTell == NULL )
 		return size;
 
 	switch( handle->mode )
-    {
-    	case FB_FILE_MODE_BINARY:
-        case FB_FILE_MODE_RANDOM:
-        case FB_FILE_MODE_INPUT:
-            if( handle->hooks->pfnSeek( handle, 0, SEEK_END ) != 0 )
-            	return -1;
+	{
+	case FB_FILE_MODE_BINARY:
+	case FB_FILE_MODE_RANDOM:
+	case FB_FILE_MODE_INPUT:
+		if( handle->hooks->pfnSeek( handle, 0, SEEK_END ) != 0 )
+			return -1;
 
-            handle->hooks->pfnTell( handle, &size );
+		handle->hooks->pfnTell( handle, &size );
 
-			handle->hooks->pfnSeek( handle, 0, SEEK_SET );
-            break;
+		handle->hooks->pfnSeek( handle, 0, SEEK_SET );
+		break;
 
-		case FB_FILE_MODE_APPEND:
-        	handle->hooks->pfnTell( handle, &size );
-            break;
+	case FB_FILE_MODE_APPEND:
+		handle->hooks->pfnTell( handle, &size );
+		break;
 	}
 
 	return size;

@@ -72,17 +72,20 @@ AC_CHECK_HEADERS([fcntl.h float.h malloc.h math.h stddef.h stdlib.h stdio.h stri
 AC_C_BIGENDIAN
 AC_C_CONST
 AC_C_VOLATILE
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
 AC_HEADER_TIME
-AC_STRUCT_TM
 AC_OBJEXT
+AC_STRUCT_TM
+AC_SYS_LARGEFILE
+AC_TYPE_OFF_T
+AC_TYPE_PID_T
 AC_TYPE_SIGNAL
+AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_FORK
+AC_FUNC_FSEEKO
 AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
 AC_FUNC_REALLOC
@@ -92,6 +95,7 @@ AC_FUNC_STAT
 AC_FUNC_STRTOD
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([atexit chdir floor getcwd gettimeofday memchr memmove memset mkdir pow pclose popen putenv rint rmdir select strcasecmp strchr strdup strncasecmp strrchr strstr strtof strtod strtoul strtoull snprintf wcstoll wcstoull])
+AC_CHECK_FUNCS([fopen64 fseeko64 ftello64 stat64 freopen64])
 
 AC_ARG_ENABLE([maintainer-mode],
 [  --enable-maintainer-mode enable rules only needed by maintainers],,

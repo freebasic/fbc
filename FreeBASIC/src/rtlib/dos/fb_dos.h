@@ -59,6 +59,8 @@
 
 typedef int FB_DIRCTX; /* dummy to make fb.h happy */
 
+typedef long fb_off_t;
+
 typedef struct {
     unsigned long edi;
     unsigned long esi;

@@ -51,30 +51,30 @@ int fb_hDevFileSeekStart
 	)
 {
 	/* skip the BOM if in UTF-mode */
-    int ofs;
+	int ofs;
 
-    switch( encod )
-    {
-    case FB_FILE_ENCOD_UTF8:
-    	ofs = 3;
-        break;
+	switch( encod )
+	{
+	case FB_FILE_ENCOD_UTF8:
+		ofs = 3;
+		break;
 
 	case FB_FILE_ENCOD_UTF16:
-    	ofs = sizeof( UTF_16 );
-        break;
+		ofs = sizeof( UTF_16 );
+		break;
 
 	case FB_FILE_ENCOD_UTF32:
-    	ofs = sizeof( UTF_32 );
-        break;
+		ofs = sizeof( UTF_32 );
+		break;
 
 	default:
-    	if( seek_zero == FALSE )
-    		return 0;
+		if( seek_zero == FALSE )
+			return 0;
 
-    	ofs = 0;
+		ofs = 0;
 	}
 
-	return fseek( fp, ofs, SEEK_SET );
+	return fseeko( fp, ofs, SEEK_SET );
 }
 
 /*:::::*/
@@ -86,26 +86,26 @@ fb_off_t fb_DevFileGetSize
 		int seek_back
 	)
 {
-	long size = 0;
+	fb_off_t size = 0;
 
 	switch( mode )
-    {
-    case FB_FILE_MODE_BINARY:
+	{
+	case FB_FILE_MODE_BINARY:
 	case FB_FILE_MODE_RANDOM:
-    case FB_FILE_MODE_INPUT:
+	case FB_FILE_MODE_INPUT:
 
-		if( fseek( fp, 0, SEEK_END ) != 0 )
+		if( fseeko( fp, 0, SEEK_END ) != 0 )
 			return -1;
 
-		size = ftell( fp );
+		size = ftello( fp );
 
 		if( seek_back )
 			fb_hDevFileSeekStart( fp, mode, encod, TRUE );
 
-    	break;
+		break;
 
 	case FB_FILE_MODE_APPEND:
-    	size = ftell( fp );
+		size = ftello( fp );
 	}
 
 	return size;

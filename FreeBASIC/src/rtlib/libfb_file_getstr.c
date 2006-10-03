@@ -43,7 +43,7 @@
 
 
 /*:::::*/
-int fb_FileGetStrEx( FB_FILE *handle, long pos, void *str, int str_len )
+int fb_FileGetStrEx( FB_FILE *handle, fb_off_t pos, void *str, int str_len )
 {
     int res;
     size_t len;

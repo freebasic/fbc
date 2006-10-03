@@ -40,7 +40,7 @@
 #include "fb.h"
 
 /*:::::*/
-int fb_FileGetWstrEx( FB_FILE *handle, long pos, FB_WCHAR *dst, int dst_chars )
+int fb_FileGetWstrEx( FB_FILE *handle, fb_off_t pos, FB_WCHAR *dst, int dst_chars )
 {
     int res;
 

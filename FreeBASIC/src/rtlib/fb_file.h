@@ -85,57 +85,56 @@ typedef enum _FB_FILE_ENCOD {
 
 #include <stdio.h>
 
-typedef long fb_off_t;
 
 struct _FB_FILE;
 
-typedef int (*FnFileSetWidth) 		( struct _FB_FILE *handle, int new_width );
-typedef int (*FnFileTest)     		( struct _FB_FILE *handle, const char *filename,
-									  size_t filename_len );
-typedef int (*FnFileOpen)     		( struct _FB_FILE *handle, const char *filename,
-									  size_t filename_len );
-typedef int (*FnFileEof)      		( struct _FB_FILE *handle );
-typedef int (*FnFileClose)    		( struct _FB_FILE *handle );
-typedef int (*FnFileSeek)     		( struct _FB_FILE *handle, fb_off_t offset, int whence );
-typedef int (*FnFileTell)     		( struct _FB_FILE *handle, fb_off_t *pOffset );
-typedef int (*FnFileRead)     		( struct _FB_FILE *handle, void *value,
-									  size_t *pValuelen );
-typedef int (*FnFileReadWstr) 		( struct _FB_FILE *handle, FB_WCHAR *value,
-									  size_t *pValuelen );
-typedef int (*FnFileWrite)    		( struct _FB_FILE *handle, const void *value,
-									  size_t valuelen );
-typedef int (*FnFileWriteWstr)		( struct _FB_FILE *handle, const FB_WCHAR *value,
-									  size_t valuelen );
-typedef int (*FnFileLock)     		( struct _FB_FILE *handle, unsigned int position,
-									  unsigned int size );
-typedef int (*FnFileUnlock)   		( struct _FB_FILE *handle, unsigned int position,
-									  unsigned int size );
-typedef int (*FnFileReadLine) 		( struct _FB_FILE *handle, FBSTRING *dst );
-typedef int (*FnFileReadLineWstr)	( struct _FB_FILE *handle, FB_WCHAR *dst, int dst_chars );
-typedef int (*FnFileFlush)			( struct _FB_FILE *handle );
+typedef int (*FnFileSetWidth)       ( struct _FB_FILE *handle, int new_width );
+typedef int (*FnFileTest)           ( struct _FB_FILE *handle, const char *filename,
+                                      size_t filename_len );
+typedef int (*FnFileOpen)           ( struct _FB_FILE *handle, const char *filename,
+                                      size_t filename_len );
+typedef int (*FnFileEof)            ( struct _FB_FILE *handle );
+typedef int (*FnFileClose)          ( struct _FB_FILE *handle );
+typedef int (*FnFileSeek)           ( struct _FB_FILE *handle, fb_off_t offset, int whence );
+typedef int (*FnFileTell)           ( struct _FB_FILE *handle, fb_off_t *pOffset );
+typedef int (*FnFileRead)           ( struct _FB_FILE *handle, void *value,
+                                      size_t *pValuelen );
+typedef int (*FnFileReadWstr)       ( struct _FB_FILE *handle, FB_WCHAR *value,
+                                      size_t *pValuelen );
+typedef int (*FnFileWrite)          ( struct _FB_FILE *handle, const void *value,
+                                      size_t valuelen );
+typedef int (*FnFileWriteWstr)      ( struct _FB_FILE *handle, const FB_WCHAR *value,
+                                      size_t valuelen );
+typedef int (*FnFileLock)           ( struct _FB_FILE *handle, fb_off_t position,
+                                      fb_off_t size );
+typedef int (*FnFileUnlock)         ( struct _FB_FILE *handle, fb_off_t position,
+                                      fb_off_t size );
+typedef int (*FnFileReadLine)       ( struct _FB_FILE *handle, FBSTRING *dst );
+typedef int (*FnFileReadLineWstr)   ( struct _FB_FILE *handle, FB_WCHAR *dst, int dst_chars );
+typedef int (*FnFileFlush)          ( struct _FB_FILE *handle );
 
 typedef struct _FB_FILE_HOOKS {
-    FnFileEof       	pfnEof;
-    FnFileClose     	pfnClose;
-    FnFileSeek      	pfnSeek;
-    FnFileTell      	pfnTell;
-    FnFileRead      	pfnRead;
-    FnFileReadWstr  	pfnReadWstr;
-    FnFileWrite     	pfnWrite;
-    FnFileWriteWstr 	pfnWriteWstr;
-    FnFileLock      	pfnLock;
-    FnFileUnlock    	pfnUnlock;
-    FnFileReadLine  	pfnReadLine;
+    FnFileEof           pfnEof;
+    FnFileClose         pfnClose;
+    FnFileSeek          pfnSeek;
+    FnFileTell          pfnTell;
+    FnFileRead          pfnRead;
+    FnFileReadWstr      pfnReadWstr;
+    FnFileWrite         pfnWrite;
+    FnFileWriteWstr     pfnWriteWstr;
+    FnFileLock          pfnLock;
+    FnFileUnlock        pfnUnlock;
+    FnFileReadLine      pfnReadLine;
     FnFileReadLineWstr  pfnReadLineWstr;
-    FnFileSetWidth  	pfnSetWidth;
-    FnFileFlush     	pfnFlush;
+    FnFileSetWidth      pfnSetWidth;
+    FnFileFlush         pfnFlush;
 } FB_FILE_HOOKS;
 
 typedef struct _FB_FILE {
     int             mode;
     int             len;
-    FB_FILE_ENCOD	encod;
-    long            size;
+    FB_FILE_ENCOD   encod;
+    fb_off_t        size;
     int             type;
     int             access;
     int             lock;
@@ -183,39 +182,39 @@ extern int __fb_io_is_exiting;
 
 static __inline__ struct _FB_FILE *FB_FILE_TO_HANDLE(int index)
 {
-    if( index==0 )
-        return FB_HANDLE_SCREEN;
-    if( index==-1 )
-        return FB_HANDLE_PRINTER;
-    if( FB_FILE_INDEX_VALID(index) )
-        return fb_fileTB + index - 1 + FB_RESERVED_FILES;
-    return NULL;
+	if( index==0 )
+		return FB_HANDLE_SCREEN;
+	if( index==-1 )
+		return FB_HANDLE_PRINTER;
+	if( FB_FILE_INDEX_VALID(index) )
+		return fb_fileTB + index - 1 + FB_RESERVED_FILES;
+	return NULL;
 }
 
 
 static __inline__ struct _FB_FILE *FB_HANDLE_DEREF(struct _FB_FILE *handle)
 {
-    if( handle != NULL ) {
-        FB_LOCK();
-        while( handle->redirection_to != NULL ) {
-            handle = handle->redirection_to;
-        }
-        FB_UNLOCK();
-    }
-    return handle;
+	if( handle != NULL ) {
+		FB_LOCK();
+		while( handle->redirection_to != NULL ) {
+			handle = handle->redirection_to;
+		}
+		FB_UNLOCK();
+	}
+	return handle;
 }
 
-       int          fb_FilePutData      ( int fnum, long pos, const void *data,
-       									  size_t length, int adjust_rec_pos,
-       									  int checknewline );
-       int          fb_FilePutDataEx    ( FB_FILE *handle, long pos, const void *data,
-       									  size_t length, int adjust_rec_pos,
-       									  int checknewline, int isunicode );
-       int          fb_FileGetData      ( int fnum, long pos, void *data,
+       int          fb_FilePutData      ( int fnum, fb_off_t pos, const void *data,
+                                          size_t length, int adjust_rec_pos,
+                                          int checknewline );
+       int          fb_FilePutDataEx    ( FB_FILE *handle, fb_off_t pos, const void *data,
+                                          size_t length, int adjust_rec_pos,
+                                          int checknewline, int isunicode );
+       int          fb_FileGetData      ( int fnum, fb_off_t pos, void *data,
                                           size_t length, int adjust_rec_pos );
-       int          fb_FileGetDataEx    ( FB_FILE *handle, long pos, void *data,
-       									  size_t *pLength, int adjust_rec_pos,
-       									  int isunicode );
+       int          fb_FileGetDataEx    ( FB_FILE *handle, fb_off_t pos, void *data,
+                                          size_t *pLength, int adjust_rec_pos,
+                                          int isunicode );
 
        int          fb_FileOpenVfsRawEx ( FB_FILE *handle, const char *filename,
                                           size_t filename_length,
@@ -247,8 +246,8 @@ FBCALL int          fb_FileOpenCom      ( FBSTRING *str_filename, unsigned int m
 
 FBCALL int          fb_FileFree         ( void );
 FBCALL int          fb_FileOpen         ( FBSTRING *str, unsigned int mode,
-										  unsigned int access, unsigned int lock,
-										  int fnum, int len );
+                                          unsigned int access, unsigned int lock,
+                                          int fnum, int len );
        int          fb_FileOpenEx       ( FB_FILE *handle, FBSTRING *str,
                                           unsigned int mode, unsigned int access,
                                           unsigned int lock, int len );
@@ -259,37 +258,37 @@ FBCALL int          fb_FileOpenShort    ( FBSTRING *str_file_mode, int fnum,
 FBCALL int          fb_FileClose        ( int fnum );
        int          fb_FileCloseEx      ( FB_FILE *handle );
 FBCALL int          fb_FilePut          ( int fnum, long pos, void* value,
-										  unsigned int valuelen );
-       int          fb_FilePutEx        ( FB_FILE *handle, long pos, void* value,
-       									  unsigned int valuelen );
+                                          unsigned int valuelen );
+       int          fb_FilePutEx        ( FB_FILE *handle, fb_off_t pos, void* value,
+                                          unsigned int valuelen );
 FBCALL int          fb_FilePutStr       ( int fnum, long pos, void *str, int str_len );
-       int          fb_FilePutStrEx     ( FB_FILE *handle, long pos, void *str, int str_len );
+       int          fb_FilePutStrEx     ( FB_FILE *handle, fb_off_t pos, void *str, int str_len );
 FBCALL int          fb_FilePutArray     ( int fnum, long pos, FBARRAY *src );
 FBCALL int          fb_FileGet          ( int fnum, long pos, void* value,
-										  unsigned int valuelen );
-       int          fb_FileGetEx        ( FB_FILE *handle, long pos, void* value,
-       									  unsigned int valuelen );
+                                          unsigned int valuelen );
+       int          fb_FileGetEx        ( FB_FILE *handle, fb_off_t pos, void* value,
+                                          unsigned int valuelen );
 FBCALL int          fb_FileGetStr       ( int fnum, long pos, void *str, int str_len );
-       int          fb_FileGetStrEx     ( FB_FILE *handle, long pos, void *str, int str_len );
+       int          fb_FileGetStrEx     ( FB_FILE *handle, fb_off_t pos, void *str, int str_len );
 FBCALL int          fb_FileGetArray     ( int fnum, long pos, FBARRAY *dst );
 FBCALL int          fb_FileEof          ( int fnum );
        int          fb_FileEofEx        ( FB_FILE *handle );
-FBCALL fb_off_t     fb_FileTell         ( int fnum );
+FBCALL long         fb_FileTell         ( int fnum );
        fb_off_t     fb_FileTellEx       ( FB_FILE *handle );
-FBCALL int          fb_FileSeek         ( int fnum, fb_off_t newpos );
+FBCALL int          fb_FileSeek         ( int fnum, long newpos );
        int          fb_FileSeekEx       ( FB_FILE *handle, fb_off_t newpos );
 FBCALL long         fb_FileLocation     ( int fnum );
        long         fb_FileLocationEx   ( FB_FILE *handle );
 FBCALL int          fb_FileKill         ( FBSTRING *str );
 FBCALL void         fb_FileReset        ( void );
-FBCALL fb_off_t     fb_FileSize         ( int fnum );
+FBCALL long         fb_FileSize         ( int fnum );
        fb_off_t     fb_FileSizeEx       ( FB_FILE *handle );
 FBCALL int          fb_FilePutBack      ( int fnum, const void *data, size_t length );
-FBCALL int 			fb_FilePutBackWstr	( int fnum, const FB_WCHAR *src, size_t chars );
+FBCALL int          fb_FilePutBackWstr  ( int fnum, const FB_WCHAR *src, size_t chars );
        int          fb_FilePutBackEx    ( FB_FILE *handle, const void *data,
-       									  size_t length );
-	   int 			fb_FilePutBackWstrEx( FB_FILE *handle, const FB_WCHAR *src,
-	   									  size_t chars );
+                                          size_t length );
+       int          fb_FilePutBackWstrEx( FB_FILE *handle, const FB_WCHAR *src,
+                                          size_t chars );
 
 
 FBCALL FBSTRING    *fb_FileStrInput     ( int bytes, int fnum );
@@ -300,17 +299,17 @@ FBCALL int          fb_FileLineInput    ( int fnum, void *dst, int dst_len, int 
        int          fb_hFilePrintBufferWstr ( int fnum, const FB_WCHAR *buffer );
        int          fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len );
        int          fb_hFilePrintBufferWstrEx( FB_FILE *handle, const FB_WCHAR *buffer,
-       										   size_t len );
+                                               size_t len );
 
-       int          fb_hFileLock        ( FILE *f, unsigned int inipos, unsigned int size );
-       int          fb_hFileUnlock      ( FILE *f, unsigned int inipos, unsigned int size );
+       int          fb_hFileLock        ( FILE *f, fb_off_t inipos, fb_off_t size );
+       int          fb_hFileUnlock      ( FILE *f, fb_off_t inipos, fb_off_t size );
        char        *fb_hConvertPath     ( char *path, int len );
 
-	  FB_FILE_ENCOD fb_hFileStrToEncoding( const char *encoding );
+       FB_FILE_ENCOD fb_hFileStrToEncoding( const char *encoding );
 
 FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
 
-	   int 			fb_FileInputNextToken	( char *buffer, int maxlen, int isstring, int *isfp );
+       int          fb_FileInputNextToken  ( char *buffer, int maxlen, int isstring, int *isfp );
 
 #define FB_INPUT_MAXINTLEN 11
 #define FB_INPUT_MAXDBLLEN (16 + 1 + 1 + 1 + 3)

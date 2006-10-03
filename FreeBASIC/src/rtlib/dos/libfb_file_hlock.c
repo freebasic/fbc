@@ -42,7 +42,7 @@
 #include <io.h>
 
 /*:::::*/
-int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int size )
+int fb_hFileLock( FILE *f, fb_off_t inipos, fb_off_t size )
 {
 	int res;
 	res = _dos_lock(fileno(f), inipos, size );
@@ -50,7 +50,7 @@ int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int size )
 }
 
 /*:::::*/
-int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int size )
+int fb_hFileUnlock( FILE *f, fb_off_t inipos, fb_off_t size )
 {
 	int res;
 	res = _dos_unlock(fileno(f), inipos, size);

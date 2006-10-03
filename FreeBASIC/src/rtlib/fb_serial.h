@@ -77,7 +77,7 @@ typedef struct _FB_SERIAL_OPTIONS {
                                           const char *pszDevice,
                                           void **ppvHandle );
        int          fb_SerialGetRemaining( struct _FB_FILE *handle,
-                                           void *pvHandle, long *pLength );
+                                           void *pvHandle, fb_off_t *pLength );
        int          fb_SerialWrite      ( struct _FB_FILE *handle,
                                           void *pvHandle, const void *data, size_t length );
        int          fb_SerialWriteWstr  ( struct _FB_FILE *handle,

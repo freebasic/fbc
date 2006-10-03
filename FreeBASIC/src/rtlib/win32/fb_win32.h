@@ -77,6 +77,8 @@ typedef struct _FB_DIRCTX
 #endif
 } FB_DIRCTX;
 
+typedef off64_t fb_off_t;
+
 #ifdef MULTITHREADED
 extern CRITICAL_SECTION fb_global_mutex;
 extern CRITICAL_SECTION fb_string_mutex;

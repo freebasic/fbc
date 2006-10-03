@@ -305,7 +305,7 @@ int fb_SerialOpen( struct _FB_FILE *handle,
 }
 
 int fb_SerialGetRemaining( struct _FB_FILE *handle,
-                           void *pvHandle, long *pLength )
+                           void *pvHandle, fb_off_t *pLength )
 {
     W32_SERIAL_INFO *pInfo = (W32_SERIAL_INFO*) pvHandle;
     DWORD dwErrors;

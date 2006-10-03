@@ -58,7 +58,7 @@ int fb_DevFileSeek( struct _FB_FILE *handle, fb_off_t offset, int whence )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
-	res = fb_ErrorSetNum( fseek( fp, offset, whence ) == 0 ? FB_RTERROR_OK : FB_RTERROR_FILEIO );
+	res = fb_ErrorSetNum( fseeko( fp, offset, whence ) == 0 ? FB_RTERROR_OK : FB_RTERROR_FILEIO );
 
 	FB_UNLOCK();
 

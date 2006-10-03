@@ -41,7 +41,7 @@
 #include "fb.h"
 
 /*:::::*/
-int fb_FileLockEx( FB_FILE *handle, unsigned int inipos, unsigned int endpos )
+int fb_FileLockEx( FB_FILE *handle, fb_off_t inipos, fb_off_t endpos )
 {
 	int		res;
 
@@ -80,7 +80,7 @@ FBCALL int fb_FileLock( int fnum, unsigned int inipos, unsigned int endpos )
 }
 
 /*:::::*/
-int fb_FileUnlockEx( FB_FILE *handle, unsigned int inipos, unsigned int endpos )
+int fb_FileUnlockEx( FB_FILE *handle, fb_off_t inipos, fb_off_t endpos )
 {
 	int 	res;
 

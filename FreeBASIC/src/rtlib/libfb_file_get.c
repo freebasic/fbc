@@ -44,7 +44,7 @@
 
 
 /*:::::*/
-int fb_FileGetDataEx( FB_FILE *handle, long pos, void *dst, size_t *pchars,
+int fb_FileGetDataEx( FB_FILE *handle, fb_off_t pos, void *dst, size_t *pchars,
 					  int adjust_rec_pos, int is_unicode )
 {
     int res;
@@ -196,7 +196,7 @@ int fb_FileGetDataEx( FB_FILE *handle, long pos, void *dst, size_t *pchars,
 }
 
 /*:::::*/
-int fb_FileGetData( int fnum, long pos, void *dst, size_t chars, int adjust_rec_pos )
+int fb_FileGetData( int fnum, fb_off_t pos, void *dst, size_t chars, int adjust_rec_pos )
 {
     return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum),
     						 pos,

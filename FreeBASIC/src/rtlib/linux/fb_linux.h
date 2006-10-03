@@ -140,6 +140,8 @@ typedef struct FBCONSOLE
 	void (*gfx_exit)(void);
 } FBCONSOLE;
 
+typedef off_t fb_off_t;
+
 extern FBCONSOLE fb_con;
 
 extern int fb_hTermOut( int code, int param1, int param2);

@@ -44,9 +44,9 @@
 #include "fb.h"
 
 /*:::::*/
-int fb_DevFileLock( struct _FB_FILE *handle, unsigned int position, unsigned int size )
+int fb_DevFileLock( struct _FB_FILE *handle, fb_off_t position, fb_off_t size )
 {
-    FILE *fp;
+	FILE *fp;
 	int		res;
 
 	if( size==0 )
@@ -54,7 +54,7 @@ int fb_DevFileLock( struct _FB_FILE *handle, unsigned int position, unsigned int
 
 	FB_LOCK();
 
-    fp = (FILE*) handle->opaque;
+	fp = (FILE*) handle->opaque;
 
 	if( fp == NULL ) {
 		FB_UNLOCK();

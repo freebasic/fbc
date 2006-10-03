@@ -92,4 +92,16 @@ static __inline__ int snprintf (char *buffer, size_t n, const char *format, ...)
  #endif /* TARGET_WIN32 */
 #endif /* HAVE_SNPRINTF */
 
+#if !defined(HAVE_FSEEKO)
+ #undef fseeko
+ #undef ftello
+ #if defined(HAVE_FSEEKO64)
+  #define fseeko(x, y, z) fseeko64(x, y, z)
+  #define ftello(x)       ftello64(x)
+ #else
+  #define fseeko(x, y, z) fseek(x, y, z)
+  #define ftello(x)       ftell(x)
+ #endif
+#endif
+
 #endif /* __FB_CONFIG_H__ */

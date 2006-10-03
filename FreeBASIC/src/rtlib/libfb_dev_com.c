@@ -120,7 +120,7 @@ static int fb_DevComReadWstr( struct _FB_FILE *handle, FB_WCHAR *value, size_t *
 	return fb_DevComRead( handle, (void *)value, &len );
 }
 
-static int fb_DevComTell( struct _FB_FILE *handle, long *pOffset )
+static int fb_DevComTell( struct _FB_FILE *handle, fb_off_t *pOffset )
 {
     int res;
     DEV_COM_INFO *pInfo;
@@ -140,7 +140,7 @@ static int fb_DevComTell( struct _FB_FILE *handle, long *pOffset )
 static int fb_DevComEof( struct _FB_FILE *handle )
 {
     int res;
-    long offset;
+    fb_off_t offset;
     DEV_COM_INFO *pInfo;
 
     FB_LOCK();
