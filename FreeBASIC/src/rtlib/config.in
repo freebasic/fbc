@@ -188,6 +188,9 @@
 /* Define to 1 if you have the <sys/ioctl.h> header file. */
 #undef HAVE_SYS_IOCTL_H
 
+/* Define to 1 if you have the <sys/io.h> header file. */
+#undef HAVE_SYS_IO_H
+
 /* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
    */
 #undef HAVE_SYS_NDIR_H
@@ -301,6 +304,9 @@
 
 /* Linux build */
 #undef TARGET_LINUX
+
+/* Sparc64 build */
+#undef TARGET_SPARC64
 
 /* Win32 build */
 #undef TARGET_WIN32

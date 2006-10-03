@@ -41,6 +41,9 @@ case "$target_cpu" in
 	i?86 | x86 )
 		AC_DEFINE([TARGET_X86],1,[x86 build])
 		FBRT_CPU=x86;;
+	sparc64 )
+		AC_DEFINE([TARGET_SPARC64],1,[Sparc64 build])
+		FBRT_CPU=sparc64;;
 	*)
 		AC_MSG_ERROR([Unsupported CPU])
 		;;
@@ -66,7 +69,7 @@ AC_PATH_X
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([fcntl.h float.h malloc.h math.h stddef.h stdlib.h stdio.h string.h sys/file.h sys/ioctl.h sys/time.h termios.h unistd.h wchar.h wctype.h])
+AC_CHECK_HEADERS([fcntl.h float.h malloc.h math.h stddef.h stdlib.h stdio.h string.h sys/file.h sys/io.h sys/ioctl.h sys/time.h termios.h unistd.h wchar.h wctype.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN

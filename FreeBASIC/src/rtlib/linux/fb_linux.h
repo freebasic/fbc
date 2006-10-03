@@ -52,7 +52,9 @@
 #include <pthread.h>
 #include <termcap.h>
 #include <sys/mman.h>
-#include <sys/io.h>
+#ifdef HAVE_SYS_IO_H
+ #include <sys/io.h>
+#endif
 #include <sys/ioctl.h>
 
 #define INIT_CONSOLE		1
