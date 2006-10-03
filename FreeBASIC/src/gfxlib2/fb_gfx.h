@@ -69,7 +69,7 @@ extern "C" {
  #define RORW(num, bits) __asm__ __volatile__("rorw %1, %0" : "=m"(num) : "c"(bits) : "memory")
  #define RORW1(num)      __asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
 #else
- #define RORW(num, bits) num = ((num) >> (bits)) | ((num << (16 - bits))
+ #define RORW(num, bits) num = ( (num) >> (bits) ) | (num << (16 - bits) )
  #define RORW1(num)      RORW(num, 1)
 #endif
 
