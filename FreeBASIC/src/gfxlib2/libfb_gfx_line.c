@@ -149,7 +149,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 			for (y = y1; y <= y2; y++) {
 				if (style & bit)
 					fb_hPutPixel(x1, y, color);
-				__asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+				RORW1(bit);
 			}
 		}
 		else if (y1 == y2) {
@@ -164,7 +164,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 				for (x = x1; x <= x2; x++) {
 					if (style & bit)
 						fb_hPutPixel(x, y1, color);
-					__asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+					RORW1(bit);
 				}
 			}
 		}
@@ -190,7 +190,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 				for (; len; len--) {
 					if (style & bit)
 						fb_hPutPixel(x, y, color);
-					__asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+					RORW1(bit);
 					if (d >= 0) {
 						y += ay;
 						d -= dx;
@@ -207,7 +207,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 				for (; len; len--) {
 					if (style & bit)
 						fb_hPutPixel(x, y, color);
-					__asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+					RORW1(bit);
 					if (d >= 0) {
 						x += ax;
 						d -= dy;

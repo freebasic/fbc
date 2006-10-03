@@ -65,6 +65,14 @@ extern "C" {
 #endif
 #define SWAP(a,b)		((a) ^= (b), (b) ^= (a), (a) ^= (b))
 
+#ifdef TARGET_X86
+ #define RORW(num, bits) __asm__ __volatile__("rorw %1, %0" : "=m"(num) : "c"(bits) : "memory")
+ #define RORW1(num)      __asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+#else
+ #define RORW(num, bits) num = ((num) >> (bits)) | ((num << (16 - bits))
+ #define RORW1(num)      RORW(num, 1)
+#endif
+
 #define BYTES_PER_PIXEL(d)	(((d) + 7) / 8)
 
 #define DRIVER_LOCK()		{ if (!(fb_mode->flags & (SCREEN_LOCKED | SCREEN_AUTOLOCKED))) { fb_mode->driver->lock(); fb_mode->flags |= SCREEN_LOCKED | SCREEN_AUTOLOCKED; } }

@@ -26,7 +26,6 @@
 
 #include "fb_gfx.h"
 
-
 /* Assumes x1,y1 to be upper left corner and x2,y2 lower right one.
  * Assumes coordinates to be physical ones.
  * Also assumes color is already masked. */
@@ -61,7 +60,7 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, un
 		bit = 0x8000;
 		if (style != 0xFFFF) {
 			rot = (clipped_x1 - x1) & 0xF;
-			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+			RORW(bit, rot);
 		}
 		if (y2 < fb_mode->view_y + fb_mode->view_h) {
 			if (style == 0xFFFF)
@@ -70,17 +69,17 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, un
 				for (w = clipped_x1; w <= clipped_x2; w++) {
 					if (style & bit)
 						fb_hPutPixel(w, y2, color);
-					__asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+					RORW1(bit);
 				}
 			}
 		}
 		else if (style != 0xFFFF) {
 			rot = (clipped_x2 - clipped_x1 + 1) & 0xF;
-			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+			RORW(bit, rot);
 		}
 		if (style != 0xFFFF) {
 			rot = ((x2 - clipped_x2) + (clipped_x1 - x1)) & 0xF;
-			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+			RORW(bit, rot);
 		}
 		
 		if (y1 >= fb_mode->view_y) {
@@ -90,38 +89,38 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, un
 				for (w = clipped_x1; w <= clipped_x2; w++) {
 					if (style & bit)
 						fb_hPutPixel(w, y1, color);
-					__asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+					RORW1(bit);
 				}
 			}
 		}
 		else if (style != 0xFFFF) {
 			rot = (clipped_x2 - clipped_x1 + 1) & 0xF;
-			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+			RORW(bit, rot);
 		}
 		if (style != 0xFFFF) {
 			rot = ((x2 - clipped_x2) + (clipped_y1 - y1)) & 0xF;
-			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+			RORW(bit, rot);
 		}
 		if (x2 < fb_mode->view_x + fb_mode->view_w) {
 			for (h = clipped_y1; h <= clipped_y2; h++) {
 				if (style & bit)
 					fb_hPutPixel(x2, h, color);
-				__asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+				RORW1(bit);
 			}
 		}
 		else if (style != 0xFFFF) {
 			rot = (clipped_y2 - clipped_y1 + 1) & 0xF;
-			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+			RORW(bit, rot);
 		}
 		if (style != 0xFFFF) {
 			rot = ((y2 - clipped_y2) + (clipped_y1 - y1)) & 0xF;
-			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+			RORW(bit, rot);
 		}
 		if (x1 >= fb_mode->view_x) {
 			for (h = clipped_y1; h <= clipped_y2; h++) {
 				if (style & bit)
 					fb_hPutPixel(x1, h, color);
-				__asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+				RORW1(bit);
 			}
 		}
 	}
