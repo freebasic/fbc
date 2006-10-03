@@ -1498,6 +1498,13 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBRT_CPU=sparc64;;
+	powerpc64 )
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_POWERPC64 1
+_ACEOF
+
+		FBRT_CPU=powerpc64;;
 	*)
 		{ { echo "$as_me:$LINENO: error: Unsupported CPU" >&5
 echo "$as_me: error: Unsupported CPU" >&2;}

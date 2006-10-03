@@ -305,6 +305,9 @@
 /* Linux build */
 #undef TARGET_LINUX
 
+/* Powerpc64 build */
+#undef TARGET_POWERPC64
+
 /* Sparc64 build */
 #undef TARGET_SPARC64
 

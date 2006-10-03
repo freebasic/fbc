@@ -44,6 +44,9 @@ case "$target_cpu" in
 	sparc64 )
 		AC_DEFINE([TARGET_SPARC64],1,[Sparc64 build])
 		FBRT_CPU=sparc64;;
+	powerpc64 )
+		AC_DEFINE([TARGET_POWERPC64],1,[Powerpc64 build])
+		FBRT_CPU=powerpc64;;
 	*)
 		AC_MSG_ERROR([Unsupported CPU])
 		;;
