@@ -118,6 +118,14 @@ extern "C" {
 #define MASK_COLOR_32		0xFF00FF
 #define MASK_COLOR_16		0xF81F
 
+#define MASK_RB_32			0x00FF00FF
+#define MASK_G_32			0x0000FF00
+
+#define MASK_RB_16			0xF81F
+#define MASK_R_16			0xF800
+#define MASK_G_16			0x07E0
+#define MASK_B_16			0x001F
+
 #define PUT_MODE_TRANS		0
 #define PUT_MODE_PSET		1
 #define PUT_MODE_PRESET		2

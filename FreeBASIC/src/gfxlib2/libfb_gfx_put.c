@@ -25,10 +25,12 @@
  */
 
 #include "fb_gfx.h"
-#include "fb_gfx_mmx.h"
 
 
 #if defined(TARGET_X86)
+
+#include "fb_gfx_mmx.h"
+
 /* MMX functions declarations */
 extern void fb_hPutAdd2MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
 extern void fb_hPutAdd4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
