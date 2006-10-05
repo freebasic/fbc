@@ -101,6 +101,7 @@ Version 0.17 Beta:
 - Linux X11 gfx driver kept the program window hidden when starting in fullscreen mode (lillo)
 - 'DRAW "X" & @cmd' did reset coordinates before executing cmd to the starting position before running the whole DRAW statement (lillo)
 - padding of UDT's was incorrect if only byte and/or short fields were present (v1c)
+- High-intensity background colors are now enabled in Linux console, but only inside an xterm (lillo)
 
 
 Version 0.16 Beta:

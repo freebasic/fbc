@@ -46,24 +46,39 @@
 int fb_ConsoleColor( int fc, int bc )
 {
 	const char map[8] = { 0, 4, 2, 6, 1, 5, 3, 7 };
-	int cur = fb_con.fg_color | (fb_con.bg_color << 16);
+	int old_fg = fb_con.fg_color;
+	int old_bg = fb_con.bg_color;
 	
 	if (!fb_con.inited)
-		return cur;
+		return old_fg | (old_bg << 16);
 	
 	fb_hResize();
 	
 	if (fc >= 0)
 		fb_con.fg_color = (fc & 0xF);
 	if (bc >= 0)
-		fb_con.bg_color = (bc & 0x7);
+		fb_con.bg_color = (bc & 0xF);
+	
 	fb_hTermOut(SEQ_RESET_COLOR, 0, 0);
-	if (fb_con.fg_color & 0x8)
-		fb_hTermOut(SEQ_BRIGHT_COLOR, 0, 0);
-	fb_hTermOut(SEQ_FG_COLOR, 0, map[fb_con.fg_color & 0x7]);
-	fb_hTermOut(SEQ_BG_COLOR, 0, map[fb_con.bg_color]);
-
-	return cur;
+	if ((fb_con.inited == INIT_CONSOLE) || (fb_con.term_type == TERM_ETERM)) {
+		/* console and eterm do not support extended color attributes and only allow 16+8 colors */
+		if (fb_con.fg_color != old_fg) {
+			if (fb_con.fg_color & 0x8)
+				fb_hTermOut(SEQ_BRIGHT_COLOR, 0, 0);
+			fb_hTermOut(SEQ_FG_COLOR, 0, map[fb_con.fg_color & 0x7]);
+		}
+		if (fb_con.bg_color != old_bg)
+			fb_hTermOut(SEQ_BG_COLOR, 0, map[fb_con.bg_color & 0x7]);
+	}
+	else {
+		/* generic xterm supports 16+16 colors */
+		if (fb_con.fg_color != old_fg)
+			fb_hTermOut(SEQ_SET_COLOR_EX, map[fb_con.fg_color & 0x7] + (fb_con.fg_color > 7 ? 90 : 30), 0);
+		if (fb_con.bg_color != old_bg)
+			fb_hTermOut(SEQ_SET_COLOR_EX, map[fb_con.bg_color & 0x7] + (fb_con.bg_color > 7 ? 100 : 40), 0);
+	}
+	
+	return old_fg | (old_bg << 16);
 }
 
 /*:::::*/

@@ -161,7 +161,15 @@ int fb_hTermOut( int code, int param1, int param2 )
 
 	fflush(stdout);
 	if (code > SEQ_MAX) {
-		fputs(extra_seq[code - SEQ_EXTRA], fb_con.f_out);
+		switch (code) {
+			case SEQ_SET_COLOR_EX:
+				fprintf(fb_con.f_out, "\e[%dm", param1);
+				break;
+				
+			default:
+				fputs(extra_seq[code - SEQ_EXTRA], fb_con.f_out);
+				break;
+		}
 	}
 	else {
 		if (!fb_con.seq[code])
@@ -296,6 +304,10 @@ void fb_hInit ( void )
 		fb_con.inited = INIT_CONSOLE;
 	else
 		fb_con.inited = INIT_X11;
+	if (!strncasecmp(term, "eterm", 5))
+		fb_con.term_type = TERM_ETERM;
+	else
+		fb_con.term_type = TERM_GENERIC;
 	if (fb_hInitConsole()) {
 		fb_con.inited = FALSE;
 		return;
@@ -312,5 +324,6 @@ void fb_hInit ( void )
 
 	fb_con.char_buffer = NULL;
 	fb_con.resized = TRUE;
+	fb_con.fg_color = fb_con.bg_color = -1;
 	fb_hResize();
 }

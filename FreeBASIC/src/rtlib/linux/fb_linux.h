@@ -60,6 +60,10 @@
 #define INIT_CONSOLE		1
 #define INIT_X11			2
 
+#define TERM_GENERIC		0
+#define TERM_ETERM			1
+
+
 #define BG_LOCK()			pthread_mutex_lock(&fb_con.bg_mutex);
 #define BG_UNLOCK()			pthread_mutex_unlock(&fb_con.bg_mutex);
 
@@ -105,6 +109,7 @@ extern pthread_mutex_t fb_string_mutex;
 #define SEQ_INIT_XMOUSE		104			/* xxxx - enable X11 mouse */
 #define SEQ_EXIT_XMOUSE		105			/* xxxx - disable X11 mouse */
 #define SEQ_EXIT_GFX_MODE	106			/* xxxx - cleanup after console gfx mode */
+#define SEQ_SET_COLOR_EX	107			/* xxxx - extended set color */
 
 
 typedef struct _FB_DIRCTX
@@ -119,6 +124,7 @@ typedef struct _FB_DIRCTX
 typedef struct FBCONSOLE
 {
 	int inited;
+	int term_type;
 	int h_out, h_in;
 	FILE *f_out, *f_in;
 	struct termios old_term_out, old_term_in;
