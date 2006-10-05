@@ -11,10 +11,13 @@ const DEFAULT_QUERY	   = "select * from features"
 
 declare sub showusage( )
 
-declare function callback cdecl ( byval NotUsed as any ptr, _
-								  byval argc as integer, _
-								  byval argv as zstring ptr ptr, _
-						 		  byval colName as zstring ptr ptr ) as integer
+declare function callback cdecl _
+	( _
+		byval NotUsed as any ptr, _
+		byval argc as integer, _
+		byval argv as zstring ptr ptr, _
+		byval colName as zstring ptr ptr _
+	) as integer
 
 	dim as sqlite3 ptr db
 	dim as zstring ptr errMsg 
@@ -53,21 +56,26 @@ declare function callback cdecl ( byval NotUsed as any ptr, _
 	sqlite3_close(db) 
 
 '':::::
-function callback cdecl ( byval NotUsed as any ptr, _
-						  byval argc as integer, _
-						  byval argv as zstring ptr ptr, _
-						  byval colName as zstring ptr ptr ) as integer
+function callback cdecl _
+	( _
+		byval NotUsed as any ptr, _
+		byval argc as integer, _
+		byval argv as zstring ptr ptr, _
+		byval colName as zstring ptr ptr _
+	) as integer
   
 	dim as integer i 
+	dim as string text
 
 	for i = 0 to argc - 1
-		print *colName[i], " = '";
-		if *argv[i] <> 0 then 
-			print *argv[i];
-		else 
-			print "NULL";
+		text = "NULL"
+		if( argv[i] <> 0 ) then
+			if *argv[i] <> 0 then 
+				text = *argv[i]
+			end if
 		end if
-		print "'"
+			
+		print *colName[i], " = '"; text; "'"
 	next 
 	
 	print
