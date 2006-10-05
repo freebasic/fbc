@@ -57,22 +57,22 @@ type int_fast32_t as integer
 type int_fast64_t as longint
 '#endif
 
-type uint_fast8_t ubyte
+type uint_fast8_t as ubyte
 '#if __WORDSIZE = 64
-'type uint_fast16_t ulong
-'type uint_fast32_t ulong
-'type uint_fast64_t ulong
+'type uint_fast16_t as ulong
+'type uint_fast32_t as ulong
+'type uint_fast64_t as ulong
 '#else
-type uint_fast16_t uinteger
-type uint_fast32_t uinteger
-type uint_fast64_t ulongint
+type uint_fast16_t as uinteger
+type uint_fast32_t as uinteger
+type uint_fast64_t as ulongint
 '#endif
 
 '#if __WORDSIZE = 64
 '# ifndef intptr_t
 'type intptr_t as long
 '# endif
-'type uintptr_t ulong
+'type uintptr_t as ulong
 '#else
 # ifndef intptr_t
 type intptr_t as integer
@@ -88,13 +88,13 @@ type intmax_t as longint
 type uintmax_t as ulongint
 '#endif
 
-#if __WORDSIZE = 64
-# define __INT64_C(c)  c ## L
-# define __UINT64_C(c) c ## UL
-#else
+'#if __WORDSIZE = 64
+'# define __INT64_C(c)  c ## L
+'# define __UINT64_C(c) c ## UL
+'#else
 # define __INT64_C(c)  c ## LL
 # define __UINT64_C(c) c ## ULL
-#endif
+'#endif
 
 # define INT8_MIN               (-128)
 # define INT16_MIN              (-32767-1)
