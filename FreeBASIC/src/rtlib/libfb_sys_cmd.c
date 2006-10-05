@@ -53,7 +53,7 @@ FBCALL FBSTRING *fb_Command ( int arg )
 	if( arg < 0 )
 	{
 		/* no args? */
-		if( fb_argc == 1 )
+		if( fb_argc <= 1 )
 			return &fb_strNullDesc;
 
 		/* concatenate all args but 0 */
