@@ -1,0 +1,33 @@
+''
+''
+'' bits\select -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __crt_sys_linux_select_bi__
+#define __crt_sys_linux_select_bi__
+
+'' begin include: bits/sigset.bi
+type __sig_atomic_t as integer
+
+type __sigset_t
+	__val(0 to (1024\(8*len(uinteger)))-1) as uinteger
+end type
+'' end include: bits/sigset.bi
+
+#macro __FD_ZERO(set)
+  scope
+    dim as uinteger __i
+    dim as fd_set ptr __arr = (set)
+    for __i = 0 to (len(fd_set) \ len(__fd_mask))-1
+      __FDS_BITS(__arr)(__i) = 0
+  end scope
+#endmacro
+
+#define __FD_SET(d, set) __FDS_BITS(set)(__FDELT (d)) or= __FDMASK(d)
+#define __FD_CLR(d, set) __FDS_BITS(set)(__FDELT (d)) and= not __FDMASK(d)
+#define __FD_ISSET(d, set) ((__FDS_BITS(set)(__FDELT(d)) and __FDMASK(d)) <> 0)
+
+#endif

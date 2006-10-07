@@ -17,6 +17,7 @@
 #include once "crt/sys/dos/types.bi"
 #elseif defined(__FB_LINUX__)
 #include once "crt/sys/linux/types.bi"
+#include once "crt/sys/select.bi"
 #else
 #error Platform unsupported
 #endif
