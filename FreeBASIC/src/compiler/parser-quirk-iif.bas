@@ -68,6 +68,9 @@ function cIIFFunct _
 	if( funcexpr = NULL ) then
 		if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
 			exit function
+		else
+			'' error recovery: fake an expr
+			funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 	end if
 
