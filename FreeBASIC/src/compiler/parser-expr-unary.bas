@@ -298,8 +298,15 @@ function cHighestPrecExpr _
 
 	'' ParentExpression
 	case CHAR_LPRNT
+		dim as integer is_opt = fbGetPrntOptional( )
+
 		if( cParentExpression( highexpr ) = FALSE ) then
 			exit function
+		end if
+
+		'' if parsing a SUB, don't call StrIdxOrFieldDeref() twice
+		if( is_opt ) then
+			return TRUE
 		end if
 
 	case else

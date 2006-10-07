@@ -46,9 +46,12 @@ function cParentExpression _
   	'' ++parent cnt
   	parser.prntcnt += 1
 
+  	dim as integer is_opt = fbGetPrntOptional( )
+  	fbSetPrntOptional( FALSE )
+
   	if( cExpression( parexpr ) = FALSE ) then
   		'' calling a SUB? it could be a BYVAL or nothing due the optional ()'s
-  		if( fbGetPrntOptional( ) ) then
+  		if( is_opt ) then
   			exit function
   		end if
 
@@ -70,7 +73,7 @@ function cParentExpression _
 
   	else
   		'' not calling a SUB or parent cnt = 0?
-  		if( (fbGetPrntOptional( ) = FALSE) or (parser.prntcnt = 0) ) then
+  		if( (is_opt = FALSE) or (parser.prntcnt = 0) ) then
   			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
   				exit function
   			else
