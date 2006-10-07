@@ -132,7 +132,6 @@ static int fb_PrintUsingFmtStr
 		case '\\':
 		case '&':
 		case '+':
-		case ',':
 		case '#':
 			doexit = 1;
 			break;
@@ -463,7 +462,6 @@ static int hPrintDouble
 			break;
 
 		case '$':
-
 			if( nc == '$' || lc == '$' || lc == '*' )
 				adddolar = 1;
 			else
@@ -471,14 +469,20 @@ static int hPrintDouble
 			break;
 
 		case ',':
-			if( nc == '#' )
-			{
-				if( addcomma == 0 )
-					++intdigs;
-				addcomma = 1;
-			}
+			if( decdigs != -1 )
+				doexit = 1;
 			else
-				endcomma = 1;
+			{
+				if( nc == '#' )
+				{
+					if( addcomma == 0 )
+						++intdigs;
+					addcomma = 1;
+				}
+				else
+					endcomma = 1;
+			}
+
 			break;
 
 		case '+':
