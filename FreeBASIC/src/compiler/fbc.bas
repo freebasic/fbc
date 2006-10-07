@@ -927,6 +927,10 @@ private function processOptions( ) as integer
 					value = FB_ERR_INFINITE
 				else
 					value = valint( argv(i+1) )
+					if( value <= 0 ) then
+						value = 1
+						printInvalidOpt( i )
+					end if
 				end if
 
 				fbSetOption( FB_COMPOPT_MAXERRORS, value )
