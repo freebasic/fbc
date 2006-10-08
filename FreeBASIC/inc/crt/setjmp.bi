@@ -31,10 +31,12 @@ type __jmp_buf
 	as integer __opaque(0 to 6-1)
 end type
 
+#ifndef __sigset_t
 const _SIGSET_NWORDS =1024 \ (8 * len(uinteger))
 type __sigset_t
     as uinteger __val(0 to _SIGSET_NWORDS-1)
 end type
+#endif
 
 type jmp_buf
     as __jmp_buf __jmpbuf

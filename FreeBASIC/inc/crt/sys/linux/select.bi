@@ -12,9 +12,12 @@
 '' begin include: bits/sigset.bi
 type __sig_atomic_t as integer
 
+#ifndef __sigset_t
+const _SIGSET_NWORDS =1024 \ (8 * len(uinteger))
 type __sigset_t
-	__val(0 to (1024\(8*len(uinteger)))-1) as uinteger
+    as uinteger __val(0 to _SIGSET_NWORDS-1)
 end type
+#endif
 '' end include: bits/sigset.bi
 
 #macro __FD_ZERO(set)
