@@ -635,7 +635,7 @@ declare sub curl_easy_reset cdecl alias "curl_easy_reset" (byval curl as CURL pt
 #ifdef __FB_WIN32__
 # include once "win/winsock2.bi"
 #else
-# include once "sys/socket.bi"
+# include once "crt/sys/socket.bi"
 #endif
 #include once "crt/sys/time.bi"
 #include once "crt/sys/types.bi"
