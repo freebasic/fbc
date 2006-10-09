@@ -270,7 +270,7 @@ static void keyboard_console_handler(void)
 							if (ioctl(key_fd, VT_GETSTATE, &vt_state) >= 0) {
 								orig_vt = vt_state.v_active;
 								if (vt != orig_vt) {
-									if (fb_con.gfx_exit) {
+									if (__fb_con.gfx_exit) {
 										gfx_save();
 										ioctl(key_fd, KDSETMODE, KD_TEXT);
 									}
@@ -278,7 +278,7 @@ static void keyboard_console_handler(void)
 									ioctl(key_fd, VT_WAITACTIVE, vt);
 									while (ioctl(key_fd, VT_WAITACTIVE, orig_vt) < 0)
 									    usleep(50000);
-									if (fb_con.gfx_exit) {
+									if (__fb_con.gfx_exit) {
 										ioctl(key_fd, KDSETMODE, KD_GRAPHICS);
 										gfx_restore();
 									}
@@ -336,10 +336,10 @@ static int keyboard_init(void)
 	struct termios term;
 
 	main_pid = getpid();
-	old_getch = fb_con.keyboard_getch;
+	old_getch = __fb_con.keyboard_getch;
 
-	if(fb_con.inited == INIT_CONSOLE) {
-		key_fd = dup(fb_con.h_in);
+	if(__fb_con.inited == INIT_CONSOLE) {
+		key_fd = dup(__fb_con.h_in);
 		
 		term.c_iflag = 0;
 		term.c_cflag = CS8;
@@ -353,8 +353,8 @@ static int keyboard_init(void)
 			close(key_fd);
 			return -1;
 		}
-		fb_con.keyboard_handler = keyboard_console_handler;
-		fb_con.keyboard_getch = keyboard_console_getch;
+		__fb_con.keyboard_handler = keyboard_console_handler;
+		__fb_con.keyboard_getch = keyboard_console_getch;
 		key_head = key_tail = 0;
 		ioctl(key_fd, KDGETLED, &key_leds);
 	}
@@ -381,11 +381,11 @@ static int keyboard_init(void)
 		}
 
 		fb_hXTermInitFocus();
-		fb_con.keyboard_handler = keyboard_x11_handler;
+		__fb_con.keyboard_handler = keyboard_x11_handler;
 	}
 
-	fb_con.keyboard_init = keyboard_init;
-	fb_con.keyboard_exit = keyboard_exit;
+	__fb_con.keyboard_init = keyboard_init;
+	__fb_con.keyboard_exit = keyboard_exit;
 	
 	return 0;
 }
@@ -394,19 +394,19 @@ static int keyboard_init(void)
 /*:::::*/
 static void keyboard_exit(void)
 {
-	if (fb_con.inited == INIT_CONSOLE) {
+	if (__fb_con.inited == INIT_CONSOLE) {
 		ioctl(key_fd, KDSKBMODE, key_old_mode);
 		close(key_fd);
 		key_fd = -1;
 	}
-	else if (fb_con.inited == INIT_X11) {
+	else if (__fb_con.inited == INIT_X11) {
 		X.CloseDisplay(display);
 		fb_hDynUnload(&xlib);
 		fb_hXTermExitFocus();
 	}
-	fb_con.keyboard_getch = old_getch;
-	fb_con.keyboard_handler = NULL;
-	fb_con.keyboard_exit = NULL;
+	__fb_con.keyboard_getch = old_getch;
+	__fb_con.keyboard_handler = NULL;
+	__fb_con.keyboard_exit = NULL;
 }
 
 
@@ -416,21 +416,21 @@ int fb_ConsoleMultikey(int scancode)
 {
 	int res;
 
-	if (!fb_con.inited)
+	if (!__fb_con.inited)
 		return FB_FALSE;
 
-	pthread_mutex_lock(&fb_con.bg_mutex);
+	pthread_mutex_lock(&__fb_con.bg_mutex);
 
-	if ((!fb_con.keyboard_handler) && (!keyboard_init())) {
+	if ((!__fb_con.keyboard_handler) && (!keyboard_init())) {
 		/* Let the handler execute at least once to fill in states */
-		pthread_mutex_unlock(&fb_con.bg_mutex);
+		pthread_mutex_unlock(&__fb_con.bg_mutex);
 		usleep(50000);
-		pthread_mutex_lock(&fb_con.bg_mutex);
+		pthread_mutex_lock(&__fb_con.bg_mutex);
 	}
 
 	res = (key_state[scancode & 0x7F]? FB_TRUE : FB_FALSE);
 
-	pthread_mutex_unlock(&fb_con.bg_mutex);
+	pthread_mutex_unlock(&__fb_con.bg_mutex);
 
 	return res;
 }
@@ -440,13 +440,13 @@ int fb_ConsoleMultikey(int scancode)
 int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void))
 {
 	BG_LOCK();
-	fb_con.gfx_exit = gfx_exit;
+	__fb_con.gfx_exit = gfx_exit;
 	if (gfx_exit) {
-		fb_hooks.multikeyproc = NULL;
-		fb_hooks.inkeyproc = NULL;
-		fb_hooks.getkeyproc = NULL;
-		fb_hooks.keyhitproc = NULL;
-		fb_hooks.sleepproc = NULL;
+		__fb_ctx.hooks.multikeyproc = NULL;
+		__fb_ctx.hooks.inkeyproc = NULL;
+		__fb_ctx.hooks.getkeyproc = NULL;
+		__fb_ctx.hooks.keyhitproc = NULL;
+		__fb_ctx.hooks.sleepproc = NULL;
 		gfx_save = save;
 		gfx_restore = restore;
 		if (keyboard_init()) {

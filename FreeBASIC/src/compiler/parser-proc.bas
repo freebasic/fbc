@@ -712,9 +712,10 @@ function cProcHeader _
 
 	'' ctor or dtor?
 	if( (stats and FB_SYMBSTATS_GLOBALCTOR) <> 0 ) then
-    	symbSetIsGlobalCtor( proc )
+    	symbAddGlobalCtor( proc )
+
     elseif( (stats and FB_SYMBSTATS_GLOBALDTOR) <> 0 ) then
-    	symbSetIsGlobalDtor( proc )
+    	symbAddGlobalDtor( proc )
     end if
 
     ''

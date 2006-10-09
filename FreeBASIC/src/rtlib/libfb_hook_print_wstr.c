@@ -44,8 +44,8 @@ FBCALL void fb_PrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask )
 {
 	FB_LOCK();
 
-    if( fb_hooks.printbuffwproc )
-        fb_hooks.printbuffwproc( buffer, len, mask );
+    if( __fb_ctx.hooks.printbuffwproc )
+        __fb_ctx.hooks.printbuffwproc( buffer, len, mask );
     else
         fb_ConsolePrintBufferWstrEx( buffer, len, mask );
 

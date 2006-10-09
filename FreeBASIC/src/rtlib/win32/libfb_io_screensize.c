@@ -59,5 +59,5 @@ void fb_ConsoleGetScreenSizeEx( HANDLE hConsole, int *cols, int *rows )
 /*:::::*/
 FBCALL void fb_ConsoleGetScreenSize( int *cols, int *rows )
 {
-    fb_ConsoleGetScreenSizeEx( fb_out_handle, cols, rows );
+    fb_ConsoleGetScreenSizeEx( __fb_out_handle, cols, rows );
 }

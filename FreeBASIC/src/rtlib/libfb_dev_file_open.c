@@ -59,7 +59,7 @@ long fb_DevFileGetSize
 		int seek_back
 	);
 
-static FB_FILE_HOOKS fb_hooks_dev_file = {
+static FB_FILE_HOOKS hooks_dev_file = {
     fb_DevFileEof,
     fb_DevFileClose,
     fb_DevFileSeek,
@@ -98,7 +98,7 @@ int fb_DevFileOpen
     /* Convert directory separators to whatever the current platform supports */
     fb_hConvertPath( fname, fname_len );
 
-    handle->hooks = &fb_hooks_dev_file;
+    handle->hooks = &hooks_dev_file;
 
     openmask = NULL;
     switch( handle->mode )

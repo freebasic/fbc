@@ -54,7 +54,7 @@ typedef int FB_DIRCTX; /* dummy to make fb.h happy */
 
 typedef long fb_off_t;
 
-extern HANDLE fb_in_handle, fb_out_handle;
-extern const unsigned char fb_keytable[][3];
+extern HANDLE __fb_in_handle, __fb_out_handle;
+extern const unsigned char __fb_keytable[][3];
 
 #endif

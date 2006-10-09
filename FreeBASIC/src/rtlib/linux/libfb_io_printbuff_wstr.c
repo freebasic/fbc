@@ -49,7 +49,7 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 	size_t avail, avail_len;
 	char *temp;
 
-    if( !fb_con.inited )
+    if( !__fb_con.inited )
     {
         /* !!!FIXME!!! is this ok or should it be converted to UTF-8 too? */
         fwrite( buffer, sizeof( FB_WCHAR ), chars, stdout );
@@ -62,7 +62,7 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 	temp = alloca( chars * 4 + 1 );
 
 	/* ToDo: handle scrolling for internal characters/attributes buffer? */
-    avail = (fb_con.w * fb_con.h) - (((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1);
+    avail = (__fb_con.w * fb_con.h) - (((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1);
     avail_len = chars;
 	if (avail < avail_len)
 		avail_len = avail;
@@ -71,12 +71,12 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 				   slowing down non-unicode printing.. */
 	fb_wstr_ConvToA( temp, buffer, avail_len );
 
-	memcpy( fb_con.char_buffer + ((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1,
+	memcpy( __fb_con.char_buffer + ((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1,
 		    temp,
 		    avail_len );
 
-	memset( fb_con.attr_buffer + ((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1,
-			fb_con.fg_color | (fb_con.bg_color << 4),
+	memset( __fb_con.attr_buffer + ((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1,
+			__fb_con.fg_color | (__fb_con.bg_color << 4),
 	        avail_len );
 
 	/* convert wchar_t to UTF-8 */
@@ -86,26 +86,26 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
     /* add null-term */
     temp[bytes] = '\0';
 
-	fputs( ENTER_UTF8, fb_con.f_out );
+	fputs( ENTER_UTF8, __fb_con.f_out );
 
-    fputs( temp, fb_con.f_out );
+    fputs( temp, __fb_con.f_out );
 
-	fputs( EXIT_UTF8, fb_con.f_out );
+	fputs( EXIT_UTF8, __fb_con.f_out );
 
 	/* update x and y coordinates.. */
 	for( ; chars; chars--, buffer++ )
 	{
-		++fb_con.cur_x;
-		if( (*buffer == _LC('\n')) || (fb_con.cur_x >= fb_con.w) )
+		++__fb_con.cur_x;
+		if( (*buffer == _LC('\n')) || (__fb_con.cur_x >= __fb_con.w) )
 		{
-			fb_con.cur_x = 1;
-			++fb_con.cur_y;
-			if( fb_con.cur_y > fb_con.h )
-				fb_con.cur_y = fb_con.h;
+			__fb_con.cur_x = 1;
+			++__fb_con.cur_y;
+			if( __fb_con.cur_y > fb_con.h )
+				__fb_con.cur_y = fb_con.h;
 		}
 	}
 
-	fflush( fb_con.f_out );
+	fflush( __fb_con.f_out );
 }
 
 /*:::::*/

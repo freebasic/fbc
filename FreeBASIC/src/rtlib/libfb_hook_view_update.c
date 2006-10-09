@@ -45,8 +45,8 @@ FBCALL void fb_ViewUpdate( void )
 {
     FB_LOCK();
 
-    if( fb_hooks.viewupdateproc ) {
-        fb_hooks.viewupdateproc( );
+    if( __fb_ctx.hooks.viewupdateproc ) {
+        __fb_ctx.hooks.viewupdateproc( );
     } else {
         fb_ConsoleViewUpdate( );
     }

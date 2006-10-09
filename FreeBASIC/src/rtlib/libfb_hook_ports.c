@@ -46,8 +46,8 @@ FBCALL int fb_In( unsigned short port )
 	
 	FB_LOCK();
 	
-	if( fb_hooks.inproc)
-		res = fb_hooks.inproc( port );
+	if( __fb_ctx.hooks.inproc)
+		res = __fb_ctx.hooks.inproc( port );
 	if( res < 0 )
 		res = fb_hIn( port );
 	
@@ -63,8 +63,8 @@ FBCALL int fb_Out( unsigned short port, unsigned char value )
 	
 	FB_LOCK();
 	
-	if( fb_hooks.outproc)
-		res = fb_hooks.outproc( port, value );
+	if( __fb_ctx.hooks.outproc)
+		res = __fb_ctx.hooks.outproc( port, value );
 	if( res < 0 )
 		res = fb_hOut( port, value );
 	

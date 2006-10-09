@@ -49,7 +49,7 @@ FBCALL FBSTRING *fb_RTRIM ( FBSTRING *src )
 	char		*p;
 
 	if( src == NULL )
-		return &fb_strNullDesc;
+		return &__fb_ctx.null_desc;
 
    	FB_STRLOCK();
 
@@ -74,10 +74,10 @@ FBCALL FBSTRING *fb_RTRIM ( FBSTRING *src )
 			fb_hStrCopy( dst->data, src->data, len );
 		}
 		else
-			dst = &fb_strNullDesc;
+			dst = &__fb_ctx.null_desc;
     }
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	/* del if temp */
 	fb_hStrDelTemp_NoLock( src );

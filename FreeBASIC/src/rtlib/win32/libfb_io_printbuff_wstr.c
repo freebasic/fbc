@@ -215,7 +215,7 @@ void fb_ConsolePrintBufferWstrEx
 
         while( bytes !=0 )
         {
-			if( WriteFile( fb_out_handle, pachText, bytes, &dwBytesWritten, NULL ) != TRUE )
+			if( WriteFile( __fb_out_handle, pachText, bytes, &dwBytesWritten, NULL ) != TRUE )
 				break;
 
             pachText += dwBytesWritten;
@@ -237,7 +237,7 @@ void fb_ConsolePrintBufferWstrEx
     hooks.Border.Right  = win_left + win_cols - 1;
     hooks.Border.Bottom = win_top + view_bottom - 1;
 
-    info.hOutput        = fb_out_handle;
+    info.hOutput        = __fb_out_handle;
     info.rWindow.Left   = win_left;
     info.rWindow.Top    = win_top;
     info.rWindow.Right  = win_left + win_cols - 1;
@@ -248,7 +248,7 @@ void fb_ConsolePrintBufferWstrEx
     {
         CONSOLE_SCREEN_BUFFER_INFO screen_info;
 
-        if( !GetConsoleScreenBufferInfo( fb_out_handle, &screen_info ) )
+        if( !GetConsoleScreenBufferInfo( __fb_out_handle, &screen_info ) )
         {
             hooks.Coord.X = hooks.Border.Left;
             hooks.Coord.Y = hooks.Border.Top;
@@ -265,9 +265,9 @@ void fb_ConsolePrintBufferWstrEx
             info.wAttributes = screen_info.wAttributes;
         }
 
-        if( ScrollWasOff )
+        if( __fb_ScrollWasOff )
         {
-            ScrollWasOff = FALSE;
+            __fb_ScrollWasOff = FALSE;
             ++hooks.Coord.Y;
             hooks.Coord.X = hooks.Border.Left;
             fb_hConCheckScroll( &hooks );
@@ -282,7 +282,7 @@ void fb_ConsolePrintBufferWstrEx
         }
         else
         {
-            ScrollWasOff = TRUE;
+            __fb_ScrollWasOff = TRUE;
             hooks.Coord.X = hooks.Border.Right;
             hooks.Coord.Y = hooks.Border.Bottom;
         }

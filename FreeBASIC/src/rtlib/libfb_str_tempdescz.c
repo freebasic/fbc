@@ -54,7 +54,7 @@ FBCALL FBSTRING *fb_StrAllocTempDescZEx( const char *str, int len )
     FB_STRUNLOCK();
 
     if( dsc == NULL )
-    	return &fb_strNullDesc;
+    	return &__fb_ctx.null_desc;
 
 	dsc->data = (char *)str;
 	dsc->len = len;

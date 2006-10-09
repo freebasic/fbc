@@ -41,7 +41,7 @@
 
 #ifndef fbhandlesdefined
 #include "fb_xbox.h"
-HANDLE fb_in_handle, fb_out_handle;
+HANDLE __fb_in_handle, __fb_out_handle;
 #define fbhandlesdefined
 #endif
 

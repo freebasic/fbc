@@ -44,8 +44,8 @@ FBCALL void fb_GetSize( int *cols, int *rows )
 {
 	FB_LOCK();
 
-	if( fb_hooks.getsizeproc )
-		fb_hooks.getsizeproc( cols, rows );
+	if( __fb_ctx.hooks.getsizeproc )
+		__fb_ctx.hooks.getsizeproc( cols, rows );
 	else
 		fb_ConsoleGetSize( cols, rows );
 

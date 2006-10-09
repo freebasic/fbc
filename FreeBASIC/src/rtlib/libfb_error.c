@@ -99,7 +99,7 @@ static void fb_Die
 	error_buffer[FB_ERROR_MESSAGE_SIZE-1] = '\0';
 	
 	/* save buffer so we can show message after console is cleaned up */
-	fb_error_message = error_buffer;
+	__fb_ctx.error_msg = error_buffer;
 
 	fb_End( err_num );
 }

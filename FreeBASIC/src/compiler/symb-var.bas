@@ -409,7 +409,7 @@ function symbAddArrayDesc _
 	desc->lgt = symbGetLen( desctype )
 	desc->ofs = 0
 
-	desc->stats = array->stats and (FB_SYMBSTATS_ALLOCATED or _
+	desc->stats = array->stats and (FB_SYMBSTATS_VARALLOCATED or _
 									FB_SYMBSTATS_ACCESSED or _
 									FB_SYMBSTATS_HASALIAS)
 

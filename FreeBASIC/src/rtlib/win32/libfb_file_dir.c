@@ -172,11 +172,11 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 			fb_hStrCopy( res->data, name, len );
 		}
 		else
-			res = &fb_strNullDesc;
+			res = &__fb_ctx.null_desc;
 	}
 	else
 	{
-		res = &fb_strNullDesc;
+		res = &__fb_ctx.null_desc;
 		*out_attrib = 0;
 	}
 

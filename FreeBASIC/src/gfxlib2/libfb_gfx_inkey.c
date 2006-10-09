@@ -145,7 +145,7 @@ FBSTRING *fb_GfxInkey(void)
 			return fb_CHR( 1, key );
 	}
 
-	return &fb_strNullDesc;
+	return &__fb_ctx.null_desc;
 }
 
 /*:::::*/

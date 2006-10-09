@@ -1182,21 +1182,27 @@ sub emitSECTION _
 	select case as const section
 	case EMIT_SECTYPE_CONST
 		ostr += "rodata"
+
 	case EMIT_SECTYPE_DATA
 		ostr += "data"
+
 	case EMIT_SECTYPE_BSS
 		ostr += "bss"
+
 	case EMIT_SECTYPE_CODE
 		ostr += "text"
+
 	case EMIT_SECTYPE_DIRECTIVE
 		ostr += "drectve"
+
 	case EMIT_SECTYPE_CONSTRUCTOR
-		ostr += "ctors"
+		ostr += "fb_ctors"
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
 			ostr += ", " + QUOTE + "aw" + QUOTE + ", @progbits"
 		end if
+
 	case EMIT_SECTYPE_DESTRUCTOR
-		ostr += "dtors"
+		ostr += "fb_dtors"
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
 			ostr += ", " + QUOTE +  "aw" + QUOTE + ", @progbits"
 		end if
@@ -5638,7 +5644,7 @@ sub emitPROCFOOTER _
 		byval exitlabel as FBSYMBOL ptr _
 	) static
 
-    dim as integer oldpos, ispublic, emit_cdtor_ptr
+    dim as integer oldpos, ispublic
 
     ispublic = symbIsPublic( proc )
 
@@ -5675,19 +5681,6 @@ sub emitPROCFOOTER _
 
     edbgEmitProcFooter( proc, initlabel, exitlabel )
 
-    emit_cdtor_ptr = TRUE
-    if( symbGetIsGlobalCtor( proc ) ) then
-		emitSECTION( EMIT_SECTYPE_CONSTRUCTOR )
-    elseif( symbGetIsGlobalDtor( proc ) ) then
-		emitSECTION( EMIT_SECTYPE_DESTRUCTOR )
-    else
-    	emit_cdtor_ptr = FALSE
-    end if
-
-    if( emit_cdtor_ptr ) then
-    	emitVARINIOFS( symbGetMangledName( proc ), 0 )
-    end if
-
 end sub
 
 '':::::
@@ -5723,6 +5716,33 @@ function emitAllocArg _
     proc->proc.ext->stk.argofs += ((lgt + 3) and not 3)
 
 end function
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' global ctors
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+sub emitWriteCtorSection _
+	( _
+		byval proc_head as FB_GLOBCTORLIST_ITEM ptr, _
+		byval is_ctor as integer _
+	)
+
+    if( proc_head = NULL ) then
+    	exit sub
+    end if
+
+    do
+    	'' was it emitted?
+    	if( symbGetProcIsEmitted( proc_head->sym ) ) then
+    		emitSECTION( iif( is_ctor, EMIT_SECTYPE_CONSTRUCTOR, EMIT_SECTYPE_DESTRUCTOR ) )
+    		emitVARINIOFS( symbGetMangledName( proc_head->sym ), 0 )
+    	end if
+
+    	proc_head = proc_head->next
+    loop while( proc_head <> NULL )
+
+end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' data
@@ -6297,11 +6317,11 @@ sub emitDeclVariable _
 	) static
 
     '' already allocated?
-	if( symbGetIsAllocated( s ) ) then
+	if( symbGetVarIsAllocated( s ) ) then
 		return
 	end if
 
-	symbSetIsAllocated( s )
+	symbSetVarIsAllocated( s )
 
 	'' literal?
     if( symbGetIsLiteral( s ) ) then

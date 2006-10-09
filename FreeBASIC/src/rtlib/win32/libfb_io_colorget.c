@@ -53,6 +53,6 @@ int fb_ConsoleGetColorAttEx( HANDLE hConsole )
 /*:::::*/
 int fb_ConsoleGetColorAtt( void )
 {
-    return fb_ConsoleGetColorAttEx( fb_out_handle );
+    return fb_ConsoleGetColorAttEx( __fb_out_handle );
 }
 

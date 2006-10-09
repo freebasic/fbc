@@ -52,7 +52,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 	const unsigned char *cbuffer = (const unsigned char *) buffer;
 	unsigned int c;
 	
-    if (!fb_con.inited) {
+    if (!__fb_con.inited) {
         fwrite(buffer, len, 1, stdout);
         fflush(stdout);
 		return;
@@ -61,12 +61,12 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 	fb_hResize();
 	
 	/* ToDo: handle scrolling for internal characters/attributes buffer? */
-    avail = (fb_con.w * fb_con.h) - (((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1);
+    avail = (__fb_con.w * fb_con.h) - (((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1);
     avail_len = len;
 	if (avail < avail_len)
 		avail_len = avail;
-	memcpy(fb_con.char_buffer + ((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1, buffer, avail_len);
-	memset(fb_con.attr_buffer + ((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1, fb_con.fg_color | (fb_con.bg_color << 4), avail_len);
+	memcpy(__fb_con.char_buffer + ((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1, buffer, avail_len);
+	memset(__fb_con.attr_buffer + ((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1, __fb_con.fg_color | (__fb_con.bg_color << 4), avail_len);
 	
 	for (; len; len--, cbuffer++) {
 		c = *cbuffer;
@@ -78,28 +78,28 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 				/* This character can't be printed, we must use unicode
 				 * Enter UTF-8 and start constructing 0xF000 code
 				 */
-				fputs(ENTER_UTF8 "\xEF\x80", fb_con.f_out);
+				fputs(ENTER_UTF8 "\xEF\x80", __fb_con.f_out);
 				/* Set the last 6 bits */
-				fputc(c | 0x80, fb_con.f_out);
+				fputc(c | 0x80, __fb_con.f_out);
 				/* Escape UTF-8 */
-				fputs(EXIT_UTF8, fb_con.f_out);
+				fputs(EXIT_UTF8, __fb_con.f_out);
 			}
 			else
-				fputc( c, fb_con.f_out);
+				fputc( c, __fb_con.f_out);
 		}
 		else
-			fputc(c, fb_con.f_out);
+			fputc(c, __fb_con.f_out);
 		
-		fb_con.cur_x++;
-		if ((c == 10) || (fb_con.cur_x >= fb_con.w)) {
-			fb_con.cur_x = 1;
-			fb_con.cur_y++;
-			if (fb_con.cur_y > fb_con.h)
-				fb_con.cur_y = fb_con.h;
+		__fb_con.cur_x++;
+		if ((c == 10) || (__fb_con.cur_x >= __fb_con.w)) {
+			__fb_con.cur_x = 1;
+			__fb_con.cur_y++;
+			if (__fb_con.cur_y > fb_con.h)
+				__fb_con.cur_y = fb_con.h;
 		}
 	}
 
-	fflush(fb_con.f_out);
+	fflush(__fb_con.f_out);
 }
 
 /*:::::*/

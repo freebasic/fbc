@@ -61,10 +61,10 @@ FBCALL FBSTRING *fb_ExePath ( void )
 			fb_hStrCopy( dst->data, tmp, len );
 		}
 		else
-			dst = &fb_strNullDesc;
+			dst = &__fb_ctx.null_desc;
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	return dst;
 }

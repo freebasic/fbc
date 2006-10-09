@@ -58,8 +58,8 @@ FBCALL int fb_LocateEx( int row, int col, int cursor, int *current_pos )
 
         FB_LOCK();
 
-        if( fb_hooks.locateproc ) {
-            tmp_current_pos = fb_hooks.locateproc( row, col, cursor );
+        if( __fb_ctx.hooks.locateproc ) {
+            tmp_current_pos = __fb_ctx.hooks.locateproc( row, col, cursor );
         } else {
             tmp_current_pos = fb_ConsoleLocate( row, col, cursor );
         }

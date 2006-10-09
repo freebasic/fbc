@@ -470,9 +470,9 @@ int ptc_open(char *title,int width,int height)
 
 #endif
 
-    fb_hooks.inkeyproc = fb_TinyPtcInkey;
-    fb_hooks.getkeyproc = fb_TinyPtcGetkey;
-    fb_hooks.keyhitproc = fb_TinyPtcKeyHit;
+    __fb_ctx.hooks.inkeyproc = fb_TinyPtcInkey;
+    __fb_ctx.hooks.getkeyproc = fb_TinyPtcGetkey;
+    __fb_ctx.hooks.keyhitproc = fb_TinyPtcKeyHit;
 
     // success
     return 1;
@@ -611,9 +611,9 @@ void ptc_close()
 
 #endif
 
-    fb_hooks.inkeyproc = NULL;
-    fb_hooks.getkeyproc = NULL;
-    fb_hooks.keyhitproc = NULL;
+    __fb_ctx.hooks.inkeyproc = NULL;
+    __fb_ctx.hooks.getkeyproc = NULL;
+    __fb_ctx.hooks.keyhitproc = NULL;
 }
 
 

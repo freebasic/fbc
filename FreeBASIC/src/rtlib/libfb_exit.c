@@ -40,7 +40,9 @@
 #include <stdlib.h>
 #include "fb.h"
 
-char *fb_error_message = NULL;
+void fb_CallGlobalDtors( void );
+
+extern int __fb_is_initialized;
 
 
 /*:::::*/
@@ -59,6 +61,11 @@ void fb_RtExit ( void )
     int i;
 #endif
 
+	/* only call the globals dtors if an exception didn't happen while 
+	   calling the global ctors  */
+	if( __fb_is_initialized )
+		fb_CallGlobalDtors( );
+	
 	/* os-dep termination */
 	fb_hEnd( 0 );
 
@@ -69,13 +76,15 @@ void fb_RtExit ( void )
      	fb_TlsDelCtx( i );
 
 		/* del key/index */
-		FB_TLSFREE( fb_tls_ctxtb[i] );
+		FB_TLSFREE( __fb_ctx.tls_ctxtb[i] );
 	}
 #endif
 
 	/* if an error has to be displayed, do it now */
-	if( fb_error_message )
-		fprintf( stderr, fb_error_message );
+	if( __fb_ctx.error_msg )
+		fprintf( stderr, __fb_ctx.error_msg );
+		
+	__fb_is_initialized = FALSE;
 }
 
 

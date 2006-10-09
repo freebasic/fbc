@@ -46,8 +46,8 @@ FBCALL int fb_GetX( void )
 
 	FB_LOCK();
 
-	if( fb_hooks.getxproc )
-		res = fb_hooks.getxproc( );
+	if( __fb_ctx.hooks.getxproc )
+		res = __fb_ctx.hooks.getxproc( );
 	else
 		res = fb_ConsoleGetX( );
 

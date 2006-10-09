@@ -44,7 +44,7 @@ FBCALL void fb_Sleep ( int msecs )
 {
     FB_SLEEPPROC sleepproc;
     FB_LOCK();
-    sleepproc = fb_hooks.sleepproc;
+    sleepproc = __fb_ctx.hooks.sleepproc;
     FB_UNLOCK();
     if( sleepproc ) {
         sleepproc( msecs );

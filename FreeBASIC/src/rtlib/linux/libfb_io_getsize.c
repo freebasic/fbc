@@ -48,14 +48,14 @@ FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 	fb_hResize();
 	
 	if (cols) {
-		if (fb_con.inited)
-			*cols = fb_con.w;
+		if (__fb_con.inited)
+			*cols = __fb_con.w;
 		else
 			*cols = 80;
 	}
 	
     if (rows) {
-		if (fb_con.inited)
+		if (__fb_con.inited)
 			*rows = fb_con.h;
 		else
 			*rows = 24;

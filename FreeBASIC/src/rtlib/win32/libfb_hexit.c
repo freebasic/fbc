@@ -46,8 +46,8 @@ void fb_hEnd ( int unused )
 {
 
 #ifdef MULTITHREADED
-	DeleteCriticalSection(&fb_global_mutex);
-	DeleteCriticalSection(&fb_string_mutex);
+	DeleteCriticalSection(&__fb_global_mutex);
+	DeleteCriticalSection(&__fb_string_mutex);
 #endif
 
 }

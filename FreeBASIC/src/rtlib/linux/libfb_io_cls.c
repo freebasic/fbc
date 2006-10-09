@@ -47,7 +47,7 @@ void fb_ConsoleClear( int mode )
 {
 	int start, end, i;
 	
-	if (!fb_con.inited || mode==1)
+	if (!__fb_con.inited || mode==1)
 		return;
 	
 	fb_hResize();
@@ -58,14 +58,14 @@ void fb_ConsoleClear( int mode )
 		end = fb_ConsoleGetMaxRow();
 	}
 	for (i = start; i <= end; i++) {
-		memset(fb_con.char_buffer + ((i - 1) * fb_con.w), ' ', fb_con.w);
-		memset(fb_con.attr_buffer + ((i - 1) * fb_con.w), fb_con.fg_color | (fb_con.bg_color << 4), fb_con.w);
+		memset(__fb_con.char_buffer + ((i - 1) * __fb_con.w), ' ', __fb_con.w);
+		memset(__fb_con.attr_buffer + ((i - 1) * __fb_con.w), __fb_con.fg_color | (__fb_con.bg_color << 4), __fb_con.w);
 		fb_hTermOut(SEQ_LOCATE, 0, i-1);
 		fb_hTermOut(SEQ_CLEOL, 0, 0);
 	}
 	fb_hTermOut(SEQ_HOME, 0, 0);
-	fb_con.cur_y = start;
-	fb_con.cur_x = 1;
+	__fb_con.cur_y = start;
+	__fb_con.cur_x = 1;
 }
 
 

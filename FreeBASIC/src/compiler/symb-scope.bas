@@ -125,7 +125,7 @@ function symbScopeAllocLocals _
 				lgt = s->lgt * symbGetArrayElements( s )
 				s->ofs = emitAllocLocal( parser.currproc, lgt )
 
-				symbSetIsAllocated( s )
+				symbSetVarIsAllocated( s )
 
 			end if
 

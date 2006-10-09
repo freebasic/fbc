@@ -50,7 +50,7 @@ FBCALL FBSTRING *fb_UCASE ( FBSTRING *src )
 	char		*s, *d;
 
 	if( src == NULL )
-		return &fb_strNullDesc;
+		return &__fb_ctx.null_desc;
 
 	FB_STRLOCK();
 
@@ -88,7 +88,7 @@ FBCALL FBSTRING *fb_UCASE ( FBSTRING *src )
 		*d = '\0';
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	/* del if temp */
 	fb_hStrDelTemp_NoLock( src );

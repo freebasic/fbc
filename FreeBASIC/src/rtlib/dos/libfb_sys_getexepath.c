@@ -39,14 +39,12 @@
 
 #include "fb.h"
 
-extern char **fb_argv;
-
 /*:::::*/
 char *fb_hGetExePath( char *dst, int maxlen )
 {
 	char *p;
 
-	strncpy(dst, fb_argv[0], maxlen);
+	strncpy(dst, __fb_ctx.argv[0], maxlen);
 
 	p = strrchr( dst, '/' );
 	if( p != NULL )

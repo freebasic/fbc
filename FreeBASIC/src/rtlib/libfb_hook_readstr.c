@@ -47,8 +47,8 @@ char *fb_ReadString( char *buffer, int len, FILE *f )
 	if( f != stdin )
 		return fgets( buffer, len, f );
 	else {
-		if( fb_hooks.readstrproc )
-			return fb_hooks.readstrproc( buffer, len );
+		if( __fb_ctx.hooks.readstrproc )
+			return __fb_ctx.hooks.readstrproc( buffer, len );
 		else
 			return fb_ConsoleReadStr( buffer, len );
 	}

@@ -39,18 +39,15 @@
 
 #include "fb.h"
 
-FB_TLSENTRY fb_tls_ctxtb[FB_TLSKEYS] = { 0 };
-
-
 /*:::::*/
 FBCALL void *fb_TlsGetCtx( int index, int len )
 {
-	void *ctx = (void *)FB_TLSGET( fb_tls_ctxtb[index] );
+	void *ctx = (void *)FB_TLSGET( __fb_ctx.tls_ctxtb[index] );
 
 	if( ctx == NULL )
 	{
 		ctx = (void *)calloc( 1, len );
-		FB_TLSSET( fb_tls_ctxtb[index], ctx );
+		FB_TLSSET( __fb_ctx.tls_ctxtb[index], ctx );
 	}
 
 	return ctx;
@@ -59,13 +56,13 @@ FBCALL void *fb_TlsGetCtx( int index, int len )
 /*:::::*/
 FBCALL void fb_TlsDelCtx( int index )
 {
-    void *ctx = (void *)FB_TLSGET( fb_tls_ctxtb[index] );
+    void *ctx = (void *)FB_TLSGET( __fb_ctx.tls_ctxtb[index] );
 
 	/* free mem block if any */
 	if( ctx != NULL )
 	{
 		free( ctx );
-		FB_TLSSET( fb_tls_ctxtb[index], NULL );
+		FB_TLSSET( __fb_ctx.tls_ctxtb[index], NULL );
 	}
 }
 
@@ -77,6 +74,5 @@ FBCALL void fb_TlsFreeCtxTb( void )
 	/* free all thread local storage ctx's */
 	for( i = 0; i < FB_TLSKEYS; i++ )
      	fb_TlsDelCtx( i );
-
 }
 

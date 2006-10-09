@@ -200,7 +200,7 @@ FBSTRING *fb_hBuildDouble
         dst->data[LenTotal] = 0;
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	return dst;
 }
@@ -1161,7 +1161,7 @@ FBCALL FBSTRING *fb_hStrFormat
         size_t mask_length
 	)
 {
-    FBSTRING *dst = &fb_strNullDesc;
+    FBSTRING *dst = &__fb_ctx.null_desc;
     const char *pszIntlResult;
     char chDecimalPoint, chThousandsSep, chDateSep, chTimeSep;
 
@@ -1200,7 +1200,7 @@ FBCALL FBSTRING *fb_hStrFormat
         dst = fb_hStrAllocTemp( NULL, info.length_min + info.length_opt );
         if( dst == NULL ) {
             fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
-            return &fb_strNullDesc;
+            return &__fb_ctx.null_desc;
         }
 
         /* Build the new string according to the mask */

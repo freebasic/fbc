@@ -58,7 +58,7 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
     if( !FB_HANDLE_USED(handle) )
     {
 		FB_UNLOCK();
-		return &fb_strNullDesc;
+		return &__fb_ctx.null_desc;
 	}
 
     dst = fb_hStrAllocTemp( NULL, bytes );
@@ -117,7 +117,7 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
         if( dst != NULL )
             fb_hStrDelTemp( dst );
 
-        dst = &fb_strNullDesc;
+        dst = &__fb_ctx.null_desc;
     }
 
     FB_UNLOCK();

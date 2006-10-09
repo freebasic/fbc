@@ -48,7 +48,7 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 	int k, x, y, cols, pos = 0;
 	char ch[2] = { 0, '\0' };
 	
-	if (!fb_con.inited)
+	if (!__fb_con.inited)
 		return fgets(buffer, len, stdin);
 	
 	fb_ConsoleGetSize(&cols, NULL);
@@ -83,11 +83,11 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 				buffer[pos++] = ch[0] = k;
 				fb_ConsolePrintBuffer(ch, 0);
 				if (x == cols)
-					fputc('\n', fb_con.f_out);
+					fputc('\n', __fb_con.f_out);
 			}
 		}
 	} while (k != '\r');
-	fputc('\n', fb_con.f_out);
+	fputc('\n', __fb_con.f_out);
 	buffer[pos] = '\0';
 	
 	return buffer;

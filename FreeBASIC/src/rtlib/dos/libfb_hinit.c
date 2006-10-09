@@ -46,9 +46,9 @@
 #include <sys/farptr.h>
 
 /* globals */
-int ScrollWasOff = FALSE;
-FB_DOS_TXTMODE fb_dos_txtmode;
-int fb_force_input_buffer_changed = FALSE;
+int __fb_ScrollWasOff = FALSE;
+FB_DOS_TXTMODE __fb_dos_txtmode;
+int __fb_force_input_buffer_changed = FALSE;
 
 
 /*:::::*/

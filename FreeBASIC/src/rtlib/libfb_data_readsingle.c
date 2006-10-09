@@ -55,20 +55,20 @@ FBCALL void fb_DataReadSingle( float *dst )
 	}
 	else if( len == FB_DATATYPE_OFS )
 	{
-		*dst = *(unsigned int *)fb_DataPtr;
-		fb_DataPtr += sizeof( unsigned int );
+		*dst = *(unsigned int *)__fb_data_ptr;
+		__fb_data_ptr += sizeof( unsigned int );
 	}
 	/* wstring? */
 	else if( len & 0x8000 )
 	{
         len &= 0x7FFF;
-        *dst = (float)fb_WstrToDouble( (FB_WCHAR *)fb_DataPtr, len );
-		fb_DataPtr += (len + 1) * sizeof( FB_WCHAR );
+        *dst = (float)fb_WstrToDouble( (FB_WCHAR *)__fb_data_ptr, len );
+		__fb_data_ptr += (len + 1) * sizeof( FB_WCHAR );
 	}
 	else
 	{
-        *dst = (float)fb_hStr2Double( (char *)fb_DataPtr, len );
-		fb_DataPtr += len + 1;
+        *dst = (float)fb_hStr2Double( (char *)__fb_data_ptr, len );
+		__fb_data_ptr += len + 1;
 	}
 
 	FB_UNLOCK();

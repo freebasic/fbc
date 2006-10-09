@@ -81,7 +81,7 @@ static void hUTF16ToUTF8( const FB_WCHAR *src, int chars, UTF_8 *dst, int *total
 			*--dst = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
 			c >>= 6;
 		case 1:
-			*--dst = (c | fb_utf8_bmarkTb[bytes]);
+			*--dst = (c | __fb_utf8_bmarkTb[bytes]);
 		}
 
 		dst += bytes;
@@ -123,7 +123,7 @@ static void hUTF32ToUTF8( const FB_WCHAR *src, int chars, UTF_8 *dst, int *total
 			*--dst = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
 			c >>= 6;
 		case 1:
-			*--dst = (c | fb_utf8_bmarkTb[bytes]);
+			*--dst = (c | __fb_utf8_bmarkTb[bytes]);
 		}
 
 		dst += bytes;

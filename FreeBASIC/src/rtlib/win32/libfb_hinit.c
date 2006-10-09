@@ -41,13 +41,14 @@
 #include <float.h>
 #include "fb.h"
 
+/* globals */
 #ifdef MULTITHREADED
-CRITICAL_SECTION fb_global_mutex;
-CRITICAL_SECTION fb_string_mutex;
+CRITICAL_SECTION __fb_global_mutex;
+CRITICAL_SECTION __fb_string_mutex;
 #endif
 
-int ConsoleSetByUser = FALSE;
-int ScrollWasOff = FALSE;
+int __fb_ConsoleSetByUser = FALSE;
+int __fb_ScrollWasOff = FALSE;
 
 
 /*:::::*/
@@ -69,8 +70,8 @@ void fb_hInit ( void )
 #endif
 
 #ifdef MULTITHREADED
-	InitializeCriticalSection(&fb_global_mutex);
-	InitializeCriticalSection(&fb_string_mutex);
+	InitializeCriticalSection(&__fb_global_mutex);
+	InitializeCriticalSection(&__fb_string_mutex);
 #endif
 
 }

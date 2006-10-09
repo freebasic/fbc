@@ -52,7 +52,7 @@ int fb_ConsoleGetRawXEx( HANDLE hConsole )
 /*:::::*/
 int fb_ConsoleGetRawX( void )
 {
-    return fb_ConsoleGetRawXEx( fb_out_handle );
+    return fb_ConsoleGetRawXEx( __fb_out_handle );
 }
 
 /*:::::*/

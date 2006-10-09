@@ -67,7 +67,7 @@ typedef enum _FB_FILE_ENCOD {
 
 
 #define FB_FILE_FROM_HANDLE(handle) \
-    (((handle) - fb_fileTB) + 1 - FB_RESERVED_FILES)
+    (((handle) - __fb_ctx.fileTB) + 1 - FB_RESERVED_FILES)
 #define FB_FILE_INDEX_VALID(index) \
     ((index)>=1 && ((index)<(FB_MAX_FILES-FB_RESERVED_FILES)))
 
@@ -80,8 +80,8 @@ typedef enum _FB_FILE_ENCOD {
 #define FB_HANDLE_USED(handle) \
     ((handle)!=NULL && ((handle)->hooks!=NULL))
 
-#define FB_HANDLE_SCREEN    fb_fileTB
-#define FB_HANDLE_PRINTER   (fb_fileTB+1)
+#define FB_HANDLE_SCREEN    __fb_ctx.fileTB
+#define FB_HANDLE_PRINTER   (__fb_ctx.fileTB+1)
 
 #include <stdio.h>
 
@@ -167,30 +167,28 @@ typedef FBCALL int (*FnDevOpenHook)( FBSTRING *filename,
                                      int rec_len,
                                      FnFileOpen *pfnFileOpen );
 
-extern FB_FILE                fb_fileTB[];
-extern FnDevOpenHook          fb_pfnDevOpenHook;
+
 #ifdef MULTITHREADED
-extern int __fb_io_is_exiting;
 #define FB_IO_EXIT_LOCK() \
-    if( !__fb_io_is_exiting) FB_LOCK()
+    if( !__fb_ctx.io_is_exiting) FB_LOCK()
 #define FB_IO_EXIT_UNLOCK() \
-    if( !__fb_io_is_exiting) FB_UNLOCK()
+    if( !__fb_ctx.io_is_exiting) FB_UNLOCK()
 #else
 #define FB_IO_EXIT_LOCK()
 #define FB_IO_EXIT_UNLOCK()
 #endif
 
-static __inline__ struct _FB_FILE *FB_FILE_TO_HANDLE(int index)
-{
-	if( index==0 )
-		return FB_HANDLE_SCREEN;
-	if( index==-1 )
-		return FB_HANDLE_PRINTER;
-	if( FB_FILE_INDEX_VALID(index) )
-		return fb_fileTB + index - 1 + FB_RESERVED_FILES;
-	return NULL;
-}
-
+#define FB_FILE_TO_HANDLE( index )															\
+	( (index) == 0? 																		\
+	  ((struct _FB_FILE *)FB_HANDLE_SCREEN) : 												\
+	  ( (index) == -1? 																		\
+	  	((struct _FB_FILE *)FB_HANDLE_PRINTER) : 											\
+	  	( FB_FILE_INDEX_VALID( (index) )?													\
+		  ((struct _FB_FILE *)(__fb_ctx.fileTB + (index) - 1 + FB_RESERVED_FILES)) :		\
+		  ((struct _FB_FILE *)(NULL))														\
+		)																					\
+	  )																						\
+	)
 
 static __inline__ struct _FB_FILE *FB_HANDLE_DEREF(struct _FB_FILE *handle)
 {
@@ -320,7 +318,7 @@ FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
  * UTF Encoding
  **************************************************************************************************/
 
-extern const UTF_8 fb_utf8_bmarkTb[7];
+extern const UTF_8 __fb_utf8_bmarkTb[7];
 
 void fb_hCharToUTF8 
 	( 

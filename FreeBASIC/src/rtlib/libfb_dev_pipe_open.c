@@ -45,7 +45,7 @@
 
 #ifndef TARGET_XBOX
 
-static FB_FILE_HOOKS fb_hooks_dev_pipe = {
+static FB_FILE_HOOKS hooks_dev_pipe = {
     fb_DevFileEof,
     fb_DevPipeClose,
     NULL,
@@ -73,7 +73,7 @@ int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filena
     fname = filename;
     str_len = filename_len;
 
-    handle->hooks = &fb_hooks_dev_pipe;
+    handle->hooks = &hooks_dev_pipe;
 
     openmask[0] = 0;
 

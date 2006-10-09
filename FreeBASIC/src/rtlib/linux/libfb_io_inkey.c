@@ -140,13 +140,13 @@ static int get_input()
 	NODE *node;
 	int k, cb, cx, cy;
 
-	k = fb_con.keyboard_getch();
+	k = __fb_con.keyboard_getch();
 	if (k == 0x7F)
 		k = 8;
 	else if (k == '\n')
 		k = '\r';
 	else if (k == '\e') {
-		k = fb_con.keyboard_getch();
+		k = __fb_con.keyboard_getch();
 		if (k == EOF)
 			return 27;
 		if (!root_node)
@@ -156,16 +156,16 @@ static int get_input()
 			if (k == node->key) {
 				if (node->code) {
 					if (node->code == KEY_MOUSE) {
-						cb = fb_con.keyboard_getch();
-						cx = fb_con.keyboard_getch();
-						cy = fb_con.keyboard_getch();
-						if (fb_con.mouse_update)
-							fb_con.mouse_update(cb, cx, cy);
+						cb = __fb_con.keyboard_getch();
+						cx = __fb_con.keyboard_getch();
+						cy = __fb_con.keyboard_getch();
+						if (__fb_con.mouse_update)
+							__fb_con.mouse_update(cb, cx, cy);
 						return -1;
 					}
 					return node->code;
 				}
-				k = fb_con.keyboard_getch();
+				k = __fb_con.keyboard_getch();
 				if (k == -1)
 					return -1;
 				node = node->child;
@@ -173,7 +173,7 @@ static int get_input()
 			}
 			node = node->next;
 		}
-		while(fb_con.keyboard_getch() >= 0)
+		while(__fb_con.keyboard_getch() >= 0)
 			;
 		return -1;
 	}
@@ -209,8 +209,8 @@ FBSTRING *fb_ConsoleInkey( void )
 	FBSTRING *res;
 	int ch, chars;
 
-	if (!fb_con.inited)
-		return &fb_strNullDesc;
+	if (!__fb_con.inited)
+		return &__fb_ctx.null_desc;
 
 	fb_hResize();
 	
@@ -231,7 +231,7 @@ FBSTRING *fb_ConsoleInkey( void )
 		res->data[chars-0] = '\0';
 	}
 	else
-		res = &fb_strNullDesc;
+		res = &__fb_ctx.null_desc;
 
 	return res;
 }
@@ -242,7 +242,7 @@ int fb_ConsoleGetkey( void )
 {
 	int k = 0;
 
-	if (!fb_con.inited)
+	if (!__fb_con.inited)
 		return fgetc(stdin);
 
 	fb_hResize();
@@ -260,7 +260,7 @@ int fb_ConsoleGetkey( void )
 /*:::::*/
 int fb_ConsoleKeyHit( void )
 {
-	if (!fb_con.inited)
+	if (!__fb_con.inited)
 		return feof(stdin) ? FALSE : TRUE;
 
 	fb_hResize();

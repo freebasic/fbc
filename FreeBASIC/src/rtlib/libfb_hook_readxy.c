@@ -46,8 +46,8 @@ FBCALL unsigned int fb_ReadXY( int col, int row, int colorflag )
 
     FB_LOCK();
 
-    if( fb_hooks.readxyproc ) {
-        res = fb_hooks.readxyproc( col, row, colorflag );
+    if( __fb_ctx.hooks.readxyproc ) {
+        res = __fb_ctx.hooks.readxyproc( col, row, colorflag );
     } else {
         res = fb_ConsoleReadXY( col, row, colorflag );
     }

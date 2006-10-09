@@ -42,8 +42,8 @@
 
 #include "fb.h"
 
-extern const char fb_utf8_trailingTb[256];
-extern const UTF_32 fb_utf8_offsetsTb[6];
+extern const char __fb_utf8_trailingTb[256];
+extern const UTF_32 __fb_utf8_offsetsTb[6];
 
 /*:::::*/
 char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, int *chars )
@@ -59,7 +59,7 @@ char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, int *chars )
 	    charsleft = 0;
 	    do 
 	    {
-			extbytes = fb_utf8_trailingTb[(unsigned int)*src];
+			extbytes = __fb_utf8_trailingTb[(unsigned int)*src];
 	
 			c = 0;
 			switch( extbytes )
@@ -78,7 +78,7 @@ char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, int *chars )
 					c += *src++;
 			}
 	
-			c -= fb_utf8_offsetsTb[extbytes];
+			c -= __fb_utf8_offsetsTb[extbytes];
 	
 			if( c > 255 )
 				c = '?';
@@ -106,7 +106,7 @@ char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, int *chars )
 	    charsleft = *chars;
 	    while( charsleft > 0 )
 	    {
-			extbytes = fb_utf8_trailingTb[*src];
+			extbytes = __fb_utf8_trailingTb[*src];
 	
 			c = 0;
 			switch( extbytes )
@@ -125,7 +125,7 @@ char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, int *chars )
 					c += *src++;
 			}
 	
-			c -= fb_utf8_offsetsTb[extbytes];
+			c -= __fb_utf8_offsetsTb[extbytes];
 
 			if( c > 255 )
 				c = '?';

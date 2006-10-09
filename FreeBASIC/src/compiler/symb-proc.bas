@@ -43,6 +43,30 @@ declare function hDemangleParams _
 		byval proc as FBSYMBOL ptr _
 	) as zstring ptr
 
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' init
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+sub symbProcInit( )
+
+	symb.globctorlist.head = NULL
+	symb.globctorlist.tail = NULL
+	listNew( @symb.globctorlist.list, 8, len( FB_GLOBCTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
+
+	symb.globdtorlist.head = NULL
+	symb.globdtorlist.tail = NULL
+	listNew( @symb.globdtorlist.list, 8, len( FB_GLOBCTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
+
+end sub
+
+'':::::
+sub symbProcEnd( )
+
+	listFree( @symb.globdtorlist.list )
+	listFree( @symb.globctorlist.list )
+
+end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' add
@@ -2085,6 +2109,62 @@ sub symbDelPrototype _
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' global ctors
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+private function hAddToGlobCtorList _
+	( _
+		byval list as FB_GLOBCTORLIST ptr, _
+		byval proc as FBSYMBOL ptr _
+	) as FB_GLOBCTORLIST_ITEM ptr
+
+    dim as FB_GLOBCTORLIST_ITEM ptr n = any
+
+    n = listNewNode( @list->list )
+
+    '' add to list
+    if( list->tail <> NULL ) then
+    	list->tail->next = n
+    else
+    	list->head = n
+    end if
+
+    n->next = NULL
+    list->tail = n
+
+    ''
+    n->sym = proc
+
+    function = n
+
+end function
+
+'':::::
+function symbAddGlobalCtor _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as FB_GLOBCTORLIST_ITEM ptr
+
+    symbSetIsGlobalCtor( proc )
+
+	function = hAddToGlobCtorList( @symb.globctorlist, proc )
+
+end function
+
+'':::::
+function symbAddGlobalDtor _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as FB_GLOBCTORLIST_ITEM ptr
+
+    symbSetIsGlobalDtor( proc )
+
+	function = hAddToGlobCtorList( @symb.globdtorlist, proc )
+
+end function
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -2124,7 +2204,7 @@ function symbProcAllocLocalVars _
 
 				end if
 
-				symbSetIsAllocated( s )
+				symbSetVarIsAllocated( s )
 
 			end if
 

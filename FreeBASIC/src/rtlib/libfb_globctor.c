@@ -31,70 +31,46 @@
  */
 
 /*
- * io_color.c -- color (console, no gfx) function for Windows
+ * globctor.c -- global constructors/destructors handling
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: oct/2004 written [v1ctor]
  *
  */
 
+#include <stdlib.h>
 #include "fb.h"
-#include "fb_colors.h"
 
-/* globals */
-int colorlut[16] = { FB_COLOR_BLACK, FB_COLOR_BLUE,
-					 FB_COLOR_GREEN, FB_COLOR_CYAN,
-					 FB_COLOR_RED, FB_COLOR_MAGENTA,
-					 FB_COLOR_BROWN, FB_COLOR_WHITE,
-					 FB_COLOR_GREY, FB_COLOR_LBLUE,
-					 FB_COLOR_LGREEN, FB_COLOR_LCYAN,
-					 FB_COLOR_LRED, FB_COLOR_LMAGENTA,
-					 FB_COLOR_YELLOW, FB_COLOR_BWHITE };
+/* prototypes for the FB constructors and destructors */
+typedef void (*FnCTOR)(void);
+typedef void (*FnDTOR)(void);
 
-int fb_last_bc = FB_COLOR_BLACK,
-	fb_last_fc = FB_COLOR_WHITE;
+/* variable pointing to the list of FB constructors/destructors */
+extern FnCTOR __FB_GLOBCTOR_INI__, __FB_GLOBCTOR_END__;
+extern FnDTOR __FB_GLOBDTOR_INI__, __FB_GLOBDTOR_END__;
 
 /*:::::*/
-void fb_ConsoleColorEx( HANDLE hConsole, int fc, int bc )
+void fb_CallGlobalCtors( void )
 {
-    int last_attr = fb_ConsoleGetColorAttEx( hConsole );
-    int last_bc = (last_attr >> 4) & 0xF, last_fc = (last_attr & 0xF);
-
-    if( fc >= 0 ) {
-        fc = colorlut[fc & 15];
-    } else {
-        fc = last_fc;
+    FnCTOR *pCTOR;
+    
+    /* LIFO */
+    for (pCTOR = &__FB_GLOBCTOR_END__; pCTOR != &__FB_GLOBCTOR_INI__; ) 
+    {
+        --pCTOR;
+        (*pCTOR)( );
     }
-
-    if( bc >= 0 ) {
-        bc = colorlut[bc & 15];
-    } else {
-        bc = last_bc;
-    }
-
-    SetConsoleTextAttribute( hConsole, fc + (bc << 4) );
 }
 
 /*:::::*/
-int fb_ConsoleColor( int fc, int bc )
+void fb_CallGlobalDtors( void )
 {
-    int cur = fb_last_fc | (fb_last_bc << 16);
-
-    if( fc >= 0 ) {
-        fb_last_fc = (fc & 0xF);
-        fc = colorlut[fb_last_fc];
-    } else {
-        fc = fb_last_fc;
+    FnDTOR *pDTOR;
+    
+    /* FIFO */
+    for( pDTOR = &__FB_GLOBDTOR_INI__; pDTOR != &__FB_GLOBDTOR_END__; ) 
+    {
+        (*pDTOR)( );
+        ++pDTOR;
     }
-
-    if( bc >= 0 ) {
-        fb_last_bc = (bc & 0xF);
-        bc = colorlut[fb_last_bc];
-    } else {
-        bc = fb_last_bc;
-    }
-
-    SetConsoleTextAttribute( __fb_out_handle, fc + (bc << 4) );
-
-	return cur;
 }
 

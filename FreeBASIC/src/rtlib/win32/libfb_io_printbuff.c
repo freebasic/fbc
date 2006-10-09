@@ -199,7 +199,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
         /* output was redirected! */
         DWORD dwBytesWritten;
         while( len!=0 &&
-               WriteFile( fb_out_handle,
+               WriteFile( __fb_out_handle,
                           pachText,
                           len,
                           &dwBytesWritten,
@@ -223,7 +223,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
     hooks.Border.Right  = win_left + win_cols - 1;
     hooks.Border.Bottom = win_top + view_bottom - 1;
 
-    info.hOutput        = fb_out_handle;
+    info.hOutput        = __fb_out_handle;
     info.rWindow.Left   = win_left;
     info.rWindow.Top    = win_top;
     info.rWindow.Right  = win_left + win_cols - 1;
@@ -234,7 +234,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
     {
         CONSOLE_SCREEN_BUFFER_INFO screen_info;
 
-        if( !GetConsoleScreenBufferInfo( fb_out_handle, &screen_info ) ) {
+        if( !GetConsoleScreenBufferInfo( __fb_out_handle, &screen_info ) ) {
             hooks.Coord.X = hooks.Border.Left;
             hooks.Coord.Y = hooks.Border.Top;
             info.BufferSize.X = FB_SCRN_DEFAULT_WIDTH;
@@ -248,8 +248,8 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
             info.wAttributes = screen_info.wAttributes;
         }
 
-        if( ScrollWasOff ) {
-            ScrollWasOff = FALSE;
+        if( __fb_ScrollWasOff ) {
+            __fb_ScrollWasOff = FALSE;
             ++hooks.Coord.Y;
             hooks.Coord.X = hooks.Border.Left;
             fb_hConCheckScroll( &hooks );
@@ -265,7 +265,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
         {
             fb_hConCheckScroll( &hooks );
         } else {
-            ScrollWasOff = TRUE;
+            __fb_ScrollWasOff = TRUE;
             hooks.Coord.X = hooks.Border.Right;
             hooks.Coord.Y = hooks.Border.Bottom;
         }

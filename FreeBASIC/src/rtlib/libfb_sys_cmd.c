@@ -40,9 +40,6 @@
 #include <string.h>
 #include "fb.h"
 
-extern int fb_argc;
-extern char **fb_argv;
-
 /*:::::*/
 FBCALL FBSTRING *fb_Command ( int arg )
 {
@@ -53,23 +50,23 @@ FBCALL FBSTRING *fb_Command ( int arg )
 	if( arg < 0 )
 	{
 		/* no args? */
-		if( fb_argc <= 1 )
-			return &fb_strNullDesc;
+		if( __fb_ctx.argc <= 1 )
+			return &__fb_ctx.null_desc;
 
 		/* concatenate all args but 0 */
 		len = 0;
-		for( i = 1; i < fb_argc; i++ )
-			len += strlen( fb_argv[i] );
+		for( i = 1; i < __fb_ctx.argc; i++ )
+			len += strlen( __fb_ctx.argv[i] );
 
-		dst = fb_hStrAllocTemp( NULL, len + fb_argc-2 );
+		dst = fb_hStrAllocTemp( NULL, len + __fb_ctx.argc-2 );
 		if( dst == NULL )
-			return &fb_strNullDesc;
+			return &__fb_ctx.null_desc;
 
 		dst->data[0] = '\0';
-		for( i = 1; i < fb_argc; i++ )
+		for( i = 1; i < __fb_ctx.argc; i++ )
 		{
-			strcat( dst->data, fb_argv[i] );
-			if( i != fb_argc-1 )
+			strcat( dst->data, __fb_ctx.argv[i] );
+			if( i != __fb_ctx.argc-1 )
 				strcat( dst->data, " " );
     	}
 
@@ -77,14 +74,14 @@ FBCALL FBSTRING *fb_Command ( int arg )
 	}
 
     /* return just one argument */
-	if( arg >= fb_argc )
-	    return &fb_strNullDesc;
+	if( arg >= __fb_ctx.argc )
+	    return &__fb_ctx.null_desc;
 
-    dst = fb_hStrAllocTemp( NULL, strlen( fb_argv[arg] ) );
+    dst = fb_hStrAllocTemp( NULL, strlen( __fb_ctx.argv[arg] ) );
 	if( dst == NULL )
-		return &fb_strNullDesc;
+		return &__fb_ctx.null_desc;
 
-	strcpy( dst->data, fb_argv[arg] );
+	strcpy( dst->data, __fb_ctx.argv[arg] );
 
 	return dst;
 }

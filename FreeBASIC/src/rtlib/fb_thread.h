@@ -80,8 +80,6 @@ enum {
 	FB_TLSLEN_PRINTUSG  = sizeof( FB_PRINTUSGCTX ),
 };
 
-extern FB_TLSENTRY fb_tls_ctxtb[];
-
 FBCALL void		   *fb_TlsGetCtx		( int index, int len );
 FBCALL void			fb_TlsDelCtx		( int index );
 FBCALL void 		fb_TlsFreeCtxTb		( void );

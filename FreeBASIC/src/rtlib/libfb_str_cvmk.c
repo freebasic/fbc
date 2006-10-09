@@ -142,7 +142,7 @@ static FBSTRING *hMK( int len, void *num )
 		dst->data[len] = '\0';
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	return dst;
 }

@@ -50,7 +50,7 @@ FBCALL FBSTRING *fb_LTrimEx ( FBSTRING *src, FBSTRING *pattern )
 
     if( src == NULL ) {
         fb_hStrDelTemp( pattern );
-        return &fb_strNullDesc;
+        return &__fb_ctx.null_desc;
     }
 
 	FB_STRLOCK();
@@ -90,10 +90,10 @@ FBCALL FBSTRING *fb_LTrimEx ( FBSTRING *src, FBSTRING *pattern )
 			fb_hStrCopy( dst->data, p, len );
 		}
 		else
-			dst = &fb_strNullDesc;
+			dst = &__fb_ctx.null_desc;
     }
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	/* del if temp */
 	fb_hStrDelTemp_NoLock( src );

@@ -6,6 +6,7 @@
 #ifndef __TINYPTC_H__
 #define __TINYPTC_H__
 
+#define HAVE_CONFIG_H 1
 #include "../../rtlib/fb.h"
 #include "../../gfxlib2/fb_gfx.h"
 

@@ -43,8 +43,8 @@
 #include "fb_xbox.h"
 
 #ifdef MULTITHREADED
-CRITICAL_SECTION fb_global_mutex;
-CRITICAL_SECTION fb_string_mutex;
+CRITICAL_SECTION __fb_global_mutex;
+CRITICAL_SECTION __fb_string_mutex;
 #endif
 
 void DrawPixel(SDL_Surface *screen, int x, int y, unsigned char R, unsigned char G, unsigned char B)
@@ -87,8 +87,8 @@ void fb_hInit ( void )
 
 	/* !!!FIXME!!! replace with xbox/openxdk equivalents */
 
-	InitializeCriticalSection(&fb_global_mutex);
-	InitializeCriticalSection(&fb_string_mutex);
+	InitializeCriticalSection(&__fb_global_mutex);
+	InitializeCriticalSection(&__fb_string_mutex);
 
 #endif
 

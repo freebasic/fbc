@@ -95,7 +95,7 @@ static void mouse_handler(void)
 	struct timeval tv = { 0, 0 };
 	int count = 0;
 	
-	if (fb_con.inited == INIT_X11) {
+	if (__fb_con.inited == INIT_X11) {
 		if (fb_hXTermHasFocus()) {
 			if (!has_focus)
 				mouse_buttons = 0;
@@ -120,7 +120,7 @@ static void mouse_handler(void)
 			mouse_x += event.dx;
 			mouse_y += event.dy;
 			if (mouse_x < 0) mouse_x = 0;
-			if (mouse_x >= fb_con.w) mouse_x = fb_con.w - 1;
+			if (mouse_x >= __fb_con.w) mouse_x = __fb_con.w - 1;
 			if (mouse_y < 0) mouse_y = 0;
 			if (mouse_y >= fb_con.h) mouse_y = fb_con.h - 1;
 			mouse_z += event.wdy;
@@ -139,7 +139,7 @@ static int mouse_init(void)
 {
     const char *funcs[] = { "Gpm_Open", "Gpm_Close", "Gpm_GetEvent", "gpm_fd" };
     
-	if (fb_con.inited == INIT_CONSOLE) {
+	if (__fb_con.inited == INIT_CONSOLE) {
 	    gpm_lib = fb_hDynLoad("libgpm.so.1", funcs, (void **)&gpm);
 	    if (!gpm_lib)
 			return -1;
@@ -155,7 +155,7 @@ static int mouse_init(void)
 	}
 	else {
 		fb_hTermOut(SEQ_INIT_XMOUSE, 0, 0);
-		fb_con.mouse_update = mouse_update;
+		__fb_con.mouse_update = mouse_update;
 		fb_hXTermInitFocus();
 	}
 	return 0;
@@ -165,17 +165,17 @@ static int mouse_init(void)
 /*:::::*/
 static void mouse_exit(void)
 {
-	if (fb_con.inited == INIT_CONSOLE) {
+	if (__fb_con.inited == INIT_CONSOLE) {
 		gpm.Close();
 		fb_hDynUnload(&gpm_lib);
 	}
 	else {
 		fb_hTermOut(SEQ_EXIT_XMOUSE, 0, 0);
 		fb_hXTermExitFocus();
-		fb_con.mouse_update = NULL;
+		__fb_con.mouse_update = NULL;
 	}
-	fb_con.mouse_handler = NULL;
-	fb_con.mouse_exit = NULL;
+	__fb_con.mouse_handler = NULL;
+	__fb_con.mouse_exit = NULL;
 }
 
 
@@ -184,7 +184,7 @@ int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons)
 {
 	int temp_z, temp_buttons;
 	
-	if (!fb_con.inited)
+	if (!__fb_con.inited)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
 	if (!z)
@@ -194,11 +194,11 @@ int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons)
 
 	BG_LOCK();
 	
-	if (!fb_con.mouse_handler) {
+	if (!__fb_con.mouse_handler) {
 		if (!mouse_init()) {
-			fb_con.mouse_init = mouse_init;
-			fb_con.mouse_exit = mouse_exit;
-			fb_con.mouse_handler = mouse_handler;
+			__fb_con.mouse_init = mouse_init;
+			__fb_con.mouse_exit = mouse_exit;
+			__fb_con.mouse_handler = mouse_handler;
 		}
 		else {
 			*x = *y = *z = *buttons = -1;
@@ -206,7 +206,7 @@ int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons)
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 		}
 	}
-	if (fb_con.inited != INIT_CONSOLE)
+	if (__fb_con.inited != INIT_CONSOLE)
 		fb_hGetCh(FALSE);
 	*x = mouse_x;
 	*y = mouse_y;

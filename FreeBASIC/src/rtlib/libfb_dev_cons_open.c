@@ -43,7 +43,7 @@
 #include <malloc.h>
 #include "fb.h"
 
-static FB_FILE_HOOKS fb_hooks_dev_cons = {
+static FB_FILE_HOOKS hooks_dev_cons = {
     fb_DevFileEof,
     fb_DevStdIoClose,
     NULL,
@@ -73,7 +73,7 @@ int fb_DevConsOpen( struct _FB_FILE *handle, const char *filename, size_t filena
 
     FB_LOCK();
 
-    handle->hooks = &fb_hooks_dev_cons;
+    handle->hooks = &hooks_dev_cons;
 
     if ( handle->access == FB_FILE_ACCESS_ANY)
         handle->access = FB_FILE_ACCESS_WRITE;

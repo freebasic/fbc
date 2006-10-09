@@ -56,10 +56,10 @@ void fb_ConsoleClear( int mode )
     if( FB_CONSOLE_WINDOW_EMPTY() || mode==1 )
         return;
 
-    win_top = srConsoleWindow.Top;
-    win_left = srConsoleWindow.Left;
-    win_right = srConsoleWindow.Right;
-    win_bottom = srConsoleWindow.Bottom;
+    win_top = __fb_srConsoleWindow.Top;
+    win_left = __fb_srConsoleWindow.Left;
+    win_right = __fb_srConsoleWindow.Right;
+    win_bottom = __fb_srConsoleWindow.Bottom;
 
 	if( (mode == 2) || (mode == 0xFFFF0000) )	/* same as gfxlib's DEFAULT_COLOR */
     {
@@ -82,5 +82,5 @@ void fb_ConsoleClear( int mode )
     DBG_ASSERT(view_left <= view_right);
     DBG_ASSERT(view_top <= view_bottom);
 
-    fb_ConsoleClearViewRawEx( fb_out_handle, view_left, view_top, view_right, view_bottom );
+    fb_ConsoleClearViewRawEx( __fb_out_handle, view_left, view_top, view_right, view_bottom );
 }

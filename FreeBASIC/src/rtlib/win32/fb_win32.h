@@ -80,12 +80,12 @@ typedef struct _FB_DIRCTX
 typedef off64_t fb_off_t;
 
 #ifdef MULTITHREADED
-extern CRITICAL_SECTION fb_global_mutex;
-extern CRITICAL_SECTION fb_string_mutex;
-# define FB_LOCK()					EnterCriticalSection(&fb_global_mutex)
-# define FB_UNLOCK()				LeaveCriticalSection(&fb_global_mutex)
-# define FB_STRLOCK()				EnterCriticalSection(&fb_string_mutex)
-# define FB_STRUNLOCK()				LeaveCriticalSection(&fb_string_mutex)
+extern CRITICAL_SECTION __fb_global_mutex;
+extern CRITICAL_SECTION __fb_string_mutex;
+# define FB_LOCK()					EnterCriticalSection(&__fb_global_mutex)
+# define FB_UNLOCK()				LeaveCriticalSection(&__fb_global_mutex)
+# define FB_STRLOCK()				EnterCriticalSection(&__fb_string_mutex)
+# define FB_STRUNLOCK()				LeaveCriticalSection(&__fb_string_mutex)
 # define FB_TLSENTRY				DWORD
 # define FB_TLSALLOC(key) 			key = TlsAlloc( )
 # define FB_TLSFREE(key)			TlsFree( (key) )
@@ -98,17 +98,17 @@ extern CRITICAL_SECTION fb_string_mutex;
 struct _FBSTRING;
 typedef void (*fb_FnProcessMouseEvent)(const MOUSE_EVENT_RECORD *pEvent);
 
-#define fb_in_handle fb_hConsoleGetHandle( TRUE )
-#define fb_out_handle fb_hConsoleGetHandle( FALSE )
-extern const unsigned char fb_keytable[][3];
-extern SMALL_RECT srConsoleWindow;
-extern fb_FnProcessMouseEvent MouseEventHook;
-extern int ConsoleSetByUser;
-extern int ScrollWasOff;
+#define __fb_in_handle fb_hConsoleGetHandle( TRUE )
+#define __fb_out_handle fb_hConsoleGetHandle( FALSE )
+extern const unsigned char __fb_keytable[][3];
+extern SMALL_RECT __fb_srConsoleWindow;
+extern fb_FnProcessMouseEvent __fb_MouseEventHook;
+extern int __fb_ConsoleSetByUser;
+extern int __fb_ScrollWasOff;
 
 #define FB_CON_CORRECT_POSITION() \
     do { \
-        if( ScrollWasOff ) \
+        if( __fb_ScrollWasOff ) \
             fb_ConsolePrintBufferEx( NULL, 0, FB_PRINT_FORCE_ADJUST ); \
     } while (0)
 
@@ -146,8 +146,8 @@ FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
        HANDLE fb_hConsoleGetHandle		( int is_input );
 
 #define FB_CONSOLE_WINDOW_EMPTY() \
-    ((srConsoleWindow.Left==srConsoleWindow.Right) \
-    || (srConsoleWindow.Top==srConsoleWindow.Bottom))
+    ((__fb_srConsoleWindow.Left==__fb_srConsoleWindow.Right) \
+    || (__fb_srConsoleWindow.Top==__fb_srConsoleWindow.Bottom))
 
        char *fb_hGetLocaleInfo          ( LCID Locale, LCTYPE LCType,
                                           char *pszBuffer, size_t uiSize );

@@ -50,6 +50,10 @@ declare sub 		symbVarInit			( )
 
 declare sub 		symbVarEnd			( )
 
+declare sub 		symbProcInit		( )
+
+declare sub 		symbProcEnd			( )
+
 declare sub 		symbMangleInit		( )
 
 declare sub 		symbMangleEnd		( )
@@ -164,6 +168,9 @@ sub symbInit _
 	symbVarInit( )
 
 	''
+	symbProcInit( )
+
+	''
 	hInitDefTypeTb( )
 
     ''
@@ -192,6 +199,8 @@ sub symbEnd
     hashFree( @symb.globnspc.nspc.hashtb.tb )
 
 	''
+	symbProcEnd( )
+
 	symbVarEnd( )
 
 	symbLibEnd( )

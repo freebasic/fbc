@@ -49,7 +49,7 @@ int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
     FB_LINEINPUTPROC lineinputproc;
 
     FB_LOCK();
-    lineinputproc = fb_hooks.lineinputproc;
+    lineinputproc = __fb_ctx.hooks.lineinputproc;
     FB_UNLOCK();
 
     if( lineinputproc )

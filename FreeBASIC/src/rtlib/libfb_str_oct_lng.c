@@ -75,7 +75,7 @@ FBCALL FBSTRING *fb_OCTEx_l ( unsigned long long num, int digits )
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, totdigs );
 	if( dst == NULL )
-		return &fb_strNullDesc;
+		return &__fb_ctx.null_desc;
 
 	/* convert */
 	buf = dst->data;

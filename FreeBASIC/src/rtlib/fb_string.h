@@ -141,13 +141,6 @@ typedef struct _FB_STR_TMPDESC {
 
 /* protos */
 
-/* intern */
-/** Descriptor for an empty string, descriptors can't be NULL,
- *  only the data field, or passing them to a BYVAL string
- *  argument would cause an exception.
- */
-extern    FBSTRING     fb_strNullDesc;
-
 /** Sets the length of a string (without reallocation).
  *
  * This function preserves any flags set for this string descriptor.

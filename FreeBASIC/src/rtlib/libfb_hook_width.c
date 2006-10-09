@@ -48,8 +48,8 @@ FBCALL int fb_Width( int cols, int rows )
 
 	FB_LOCK();
 
-	if( fb_hooks.widthproc )
-		cur = fb_hooks.widthproc( cols, rows );
+	if( __fb_ctx.hooks.widthproc )
+		cur = __fb_ctx.hooks.widthproc( cols, rows );
 	else
         cur = fb_ConsoleWidth( cols, rows );
 

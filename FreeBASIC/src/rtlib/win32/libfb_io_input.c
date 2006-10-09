@@ -40,6 +40,10 @@
 
 #include "fb.h"
 
+/* globals */
+fb_FnProcessMouseEvent __fb_MouseEventHook = (fb_FnProcessMouseEvent) NULL;
+
+
 #define KEY_BUFFER_LEN 512
 static int key_buffer[KEY_BUFFER_LEN];
 static size_t key_head = 0, key_tail = 0;
@@ -292,7 +296,7 @@ void fb_hConsolePutBackEvents( void )
         DWORD dwEventsWritten = 0;
         size_t count = (key_idx > key_tail) ? (KEY_BUFFER_LEN - key_idx) : (key_tail - key_idx);
 
-        WriteConsoleInput( fb_in_handle,
+        WriteConsoleInput( __fb_in_handle,
                            input_events + key_idx,
                            count,
                            &dwEventsWritten );
@@ -304,8 +308,6 @@ void fb_hConsolePutBackEvents( void )
 
     FB_UNLOCK();
 }
-
-fb_FnProcessMouseEvent MouseEventHook = (fb_FnProcessMouseEvent) NULL;
 
 static __inline__
 void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
@@ -439,12 +441,12 @@ int fb_ConsoleProcessEvents( void )
     fb_hInitControlHandler();
 
     do {
-        if( !PeekConsoleInput( fb_in_handle, &ir, 1, &dwRead ) )
+        if( !PeekConsoleInput( __fb_in_handle, &ir, 1, &dwRead ) )
             dwRead = 0;
 
         if( dwRead > 0 )
         {
-            ReadConsoleInput( fb_in_handle, &ir, 1, &dwRead );
+            ReadConsoleInput( __fb_in_handle, &ir, 1, &dwRead );
 
             FB_LOCK();
 
@@ -460,9 +462,9 @@ int fb_ConsoleProcessEvents( void )
                 break;
 
             case MOUSE_EVENT:
-                if( MouseEventHook != (fb_FnProcessMouseEvent) NULL )
+                if( __fb_MouseEventHook != (fb_FnProcessMouseEvent) NULL )
                 {
-                    MouseEventHook( &ir.Event.MouseEvent );
+                    __fb_MouseEventHook( &ir.Event.MouseEvent );
                     got_event = TRUE;
                 }
                 break;

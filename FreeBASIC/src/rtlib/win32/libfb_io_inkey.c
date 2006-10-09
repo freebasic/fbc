@@ -47,7 +47,7 @@ FBSTRING *fb_ConsoleInkey( void )
 
     if( key==-1 )
     {
-        res = &fb_strNullDesc;
+        res = &__fb_ctx.null_desc;
     }
     else if( key > 255 )
     {
@@ -70,7 +70,7 @@ FBSTRING *fb_ConsoleInkey( void )
     }
 
     if( res==NULL )
-        res = &fb_strNullDesc;
+        res = &__fb_ctx.null_desc;
 
 	return res;
 }

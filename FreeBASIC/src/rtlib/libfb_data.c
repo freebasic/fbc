@@ -45,21 +45,21 @@ short fb_DataRead( void )
 {
 	short len;
 
-	if( fb_DataPtr == NULL )
+	if( __fb_data_ptr == NULL )
 		return 0;
 
-	len = *((short *)fb_DataPtr);
-	fb_DataPtr += sizeof(short);
+	len = *((short *)__fb_data_ptr);
+	__fb_data_ptr += sizeof(short);
 
 	/* link? */
 	while ( len == FB_DATATYPE_LINK )
 	{
-		fb_DataPtr = (char *)(*(int *)fb_DataPtr);
-		if( fb_DataPtr == NULL )
+		__fb_data_ptr = (char *)(*(int *)__fb_data_ptr);
+		if( __fb_data_ptr == NULL )
 			return 0;
 
-		len = *((short *)fb_DataPtr);
-		fb_DataPtr += sizeof(short);
+		len = *((short *)__fb_data_ptr);
+		__fb_data_ptr += sizeof(short);
 	}
 
 	return len;

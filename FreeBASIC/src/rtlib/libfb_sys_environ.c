@@ -63,10 +63,10 @@ FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 			fb_hStrCopy( dst->data, tmp, len );
 		}
 		else
-			dst = &fb_strNullDesc;
+			dst = &__fb_ctx.null_desc;
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	/* del if temp */
 	fb_hStrDelTemp_NoLock( varname );

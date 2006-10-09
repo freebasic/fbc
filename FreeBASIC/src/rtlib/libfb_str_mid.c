@@ -73,13 +73,13 @@ FBCALL FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
 				dst->data[len] = '\0';
             }
         	else
-        		dst = &fb_strNullDesc;
+        		dst = &__fb_ctx.null_desc;
         }
         else
-        	dst = &fb_strNullDesc;
+        	dst = &__fb_ctx.null_desc;
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	/* del if temp */
 	fb_hStrDelTemp_NoLock( src );

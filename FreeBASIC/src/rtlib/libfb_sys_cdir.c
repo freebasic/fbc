@@ -61,10 +61,10 @@ FBCALL FBSTRING *fb_CurDir ( void )
 			memcpy( dst->data, tmp, len + 1 );
 		}
 		else
-			dst = &fb_strNullDesc;
+			dst = &__fb_ctx.null_desc;
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	FB_UNLOCK();
 

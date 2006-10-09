@@ -41,8 +41,8 @@
 #include "fb_win32.h"
 #include "fb_scancodes.h"
 
-
-const unsigned char fb_keytable[][3] = {
+/* globals */
+const unsigned char __fb_keytable[][3] = {
 	{ SC_ESCAPE,	VK_ESCAPE,	0			},	{ SC_1,			'1',		0			},
 	{ SC_2,			'2',		0			},	{ SC_3,			'3',		0			},
 	{ SC_4,			'4',		0			},	{ SC_5,			'5',		0			},
@@ -118,9 +118,9 @@ int fb_ConsoleMultikey( int scancode )
 	if ( find_window() != GetForegroundWindow() )
 		return FB_FALSE;
 
-	for( i = 0; fb_keytable[i][0]; i++ ) {
-		if( fb_keytable[i][0] == scancode ) {
-			return ((GetAsyncKeyState(fb_keytable[i][1]) | GetAsyncKeyState(fb_keytable[i][2])) & 0x8000) ? FB_TRUE : FB_FALSE;
+	for( i = 0; __fb_keytable[i][0]; i++ ) {
+		if( __fb_keytable[i][0] == scancode ) {
+			return ((GetAsyncKeyState(__fb_keytable[i][1]) | GetAsyncKeyState(__fb_keytable[i][2])) & 0x8000) ? FB_TRUE : FB_FALSE;
 		}
 	}
 	return FB_FALSE;

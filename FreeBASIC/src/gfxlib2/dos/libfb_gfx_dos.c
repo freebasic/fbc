@@ -101,11 +101,11 @@ extern void fb_MMX_code_end(void);
 /*:::::*/
 static void fb_dos_kb_init(void)
 {
-	fb_hooks.inkeyproc  = NULL;
-	fb_hooks.getkeyproc = NULL;
-	fb_hooks.keyhitproc = NULL;
-	fb_hooks.multikeyproc = NULL;
-	fb_hooks.sleepproc = NULL;
+	__fb_ctx.hooks.inkeyproc  = NULL;
+	__fb_ctx.hooks.getkeyproc = NULL;
+	__fb_ctx.hooks.keyhitproc = NULL;
+	__fb_ctx.hooks.multikeyproc = NULL;
+	__fb_ctx.hooks.sleepproc = NULL;
 	return;
 }
 

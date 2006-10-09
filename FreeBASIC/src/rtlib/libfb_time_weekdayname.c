@@ -46,7 +46,7 @@ FBCALL FBSTRING *fb_WeekdayName( int weekday, int abbreviation, int first_day_of
 
     if( weekday < 1 || weekday > 7 || first_day_of_week < 0 || first_day_of_week > 7 ) {
         fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-        return &fb_strNullDesc;
+        return &__fb_ctx.null_desc;
     }
 
     fb_ErrorSetNum( FB_RTERROR_OK );
@@ -63,7 +63,7 @@ FBCALL FBSTRING *fb_WeekdayName( int weekday, int abbreviation, int first_day_of
     res = fb_IntlGetWeekdayName( weekday, abbreviation, FALSE );
     if( res==NULL ) {
         fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-        res = &fb_strNullDesc;
+        res = &__fb_ctx.null_desc;
     }
 
     return res;

@@ -68,11 +68,11 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 	if( inited == -1 ) {
 		inited = GetSystemMetrics( SM_CMOUSEBUTTONS );
 		if( inited ) {
-			GetConsoleMode( fb_in_handle, &dwMode );
+			GetConsoleMode( __fb_in_handle, &dwMode );
 			dwMode |= ENABLE_MOUSE_INPUT;
-			SetConsoleMode( fb_in_handle, dwMode );
+			SetConsoleMode( __fb_in_handle, dwMode );
 #if 1
-            MouseEventHook = ProcessMouseEvent;
+            __fb_MouseEventHook = ProcessMouseEvent;
 #endif
             last_x = last_y = 1;
             fb_hConvertToConsole( &last_x, &last_y, NULL, NULL );
@@ -83,18 +83,18 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 	if( inited > 0) {
-		GetConsoleMode( fb_in_handle, &dwMode );
+		GetConsoleMode( __fb_in_handle, &dwMode );
 		if( !(dwMode & ENABLE_MOUSE_INPUT) )
 		{
 			dwMode |= ENABLE_MOUSE_INPUT;
-			SetConsoleMode( fb_in_handle, dwMode );
+			SetConsoleMode( __fb_in_handle, dwMode );
 		}
 	}
 
 #if 0
-	if( PeekConsoleInput( fb_in_handle, &ir, 1, &dwRead ) ) {
+	if( PeekConsoleInput( __fb_in_handle, &ir, 1, &dwRead ) ) {
 		if( dwRead > 0 ) {
-			ReadConsoleInput( fb_in_handle, &ir, 1, &dwRead );
+			ReadConsoleInput( __fb_in_handle, &ir, 1, &dwRead );
             if( ir.EventType == MOUSE_EVENT ) {
                 ProcessMouseEvent( &ir.Event.MouseEvent );
 			}

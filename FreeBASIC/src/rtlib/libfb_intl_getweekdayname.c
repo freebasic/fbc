@@ -77,7 +77,7 @@ FBSTRING *fb_IntlGetWeekdayName( int weekday, int short_names, int disallow_loca
     } else {
         res = fb_StrAllocTempDescZ( pszWeekdayNamesLong[weekday-1] );
     }
-    if( res==&fb_strNullDesc )
+    if( res==&__fb_ctx.null_desc )
         return NULL;
     return res;
 }

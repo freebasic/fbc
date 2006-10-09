@@ -50,7 +50,7 @@ FBSTRING *fb_CHR ( int args, ... )
 	int i;
 
 	if( args <= 0 )
-		return &fb_strNullDesc;
+		return &__fb_ctx.null_desc;
 
 	va_start( ap, args );
 
@@ -67,7 +67,7 @@ FBSTRING *fb_CHR ( int args, ... )
 		dst->data[args] = '\0';
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	va_end( ap );
 

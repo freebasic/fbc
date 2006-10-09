@@ -46,7 +46,7 @@ end enum
 
 '' symbol state mask
 enum FB_SYMBSTATS
-	FB_SYMBSTATS_ALLOCATED		= &h00000001
+	FB_SYMBSTATS_VARALLOCATED	= &h00000001
 	FB_SYMBSTATS_ACCESSED		= &h00000002
 	FB_SYMBSTATS_INITIALIZED	= &h00000004
 	FB_SYMBSTATS_DECLARED		= &h00000008
@@ -74,6 +74,7 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_TEMPWITHDTOR	= &h02000000
 	FB_SYMBSTATS_DESTROYED		= &h04000000
 
+	FB_SYMBSTATS_PROCEMITTED	= FB_SYMBSTATS_VARALLOCATED
 	FB_SYMBSTATS_CTORINITED		= FB_SYMBSTATS_INITIALIZED
 end enum
 
@@ -537,6 +538,17 @@ type SYMB_OVLOP
 	head			as FBSYMBOL ptr				'' head proc
 end type
 
+type FB_GLOBCTORLIST_ITEM
+	sym				as FBSYMBOL ptr
+	next			as FB_GLOBCTORLIST_ITEM ptr
+end type
+
+type FB_GLOBCTORLIST
+	head			as FB_GLOBCTORLIST_ITEM ptr
+	tail			as FB_GLOBCTORLIST_ITEM ptr
+	list			as TLIST
+end type
+
 type SYMBCTX
 	inited			as integer
 
@@ -558,13 +570,16 @@ type SYMBCTX
 	libhash			as THASH
 
 	dimlist			as TLIST					'' array dimensions
+
 	fwdlist			as TLIST					'' forward typedef refs
+	fwdrefcnt 		as integer
 
 	def				as SYMB_DEF_CTX				'' #define context
 
 	lastlbl			as FBSYMBOL ptr
 
-	fwdrefcnt 		as integer
+	globctorlist	as FB_GLOBCTORLIST			'' global ctors list
+	globdtorlist	as FB_GLOBCTORLIST			'' global dtors list
 
 	globOpOvlTb ( _
 					0 to AST_OPCODES-1 _
@@ -1535,6 +1550,16 @@ declare function symbLookupCompField _
 		byval id as zstring ptr _
 	) as FBSYMBOL ptr
 
+declare function symbAddGlobalCtor _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as FB_GLOBCTORLIST_ITEM ptr
+
+declare function symbAddGlobalDtor _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as FB_GLOBCTORLIST_ITEM ptr
+
 '':::::
 #macro symbHashTbInit _
 	( _
@@ -1594,13 +1619,17 @@ declare function symbLookupCompField _
 #define symbLookupAt(sym, id, preservecase) _
 	symbLookupAtTb( symbGetCompHashTb( sym ), id, preservecase )
 
+#define symbGetGlobCtorListHead( ) symb.globctorlist.head
+
+#define symbGetGlobDtorListHead( ) symb.globdtorlist.head
+
 #define symbGetIsAccessed(s) ((s->stats and FB_SYMBSTATS_ACCESSED) <> 0)
 
 #define symbSetIsAccessed(s) s->stats or= FB_SYMBSTATS_ACCESSED
 
-#define symbGetIsAllocated(s) ((s->stats and FB_SYMBSTATS_ALLOCATED) <> 0)
+#define symbGetVarIsAllocated(s) ((s->stats and FB_SYMBSTATS_VARALLOCATED) <> 0)
 
-#define symbSetIsAllocated(s) s->stats or= FB_SYMBSTATS_ALLOCATED
+#define symbSetVarIsAllocated(s) s->stats or= FB_SYMBSTATS_VARALLOCATED
 
 #define symbGetIsInitialized(s) ((s->stats and FB_SYMBSTATS_INITIALIZED) <> 0)
 
@@ -1700,6 +1729,10 @@ declare function symbLookupCompField _
 		s->stats and= not FB_SYMBSTATS_TEMPWITHDTOR
 	end if
 #endmacro
+
+#define symbGetProcIsEmitted(s) ((s->stats and FB_SYMBSTATS_PROCEMITTED) <> 0)
+
+#define symbSetProcIsEmitted(s) s->stats or= FB_SYMBSTATS_PROCEMITTED
 
 #define symbGetStats(s) s->stats
 

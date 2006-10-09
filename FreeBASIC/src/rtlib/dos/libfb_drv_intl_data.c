@@ -40,7 +40,7 @@
 #include <stddef.h>
 #include "fb.h"
 
-const FB_LOCALE_INFOS fb_locale_infos[] = {
+const FB_LOCALE_INFOS __fb_locale_infos[] = {
     {
         49,         /* German */
         {
@@ -141,4 +141,4 @@ const FB_LOCALE_INFOS fb_locale_infos[] = {
     }
 };
 
-const size_t         fb_locale_info_count = sizeof(fb_locale_infos) / sizeof(FB_LOCALE_INFOS);
+const size_t         __fb_locale_info_count = sizeof(__fb_locale_infos) / sizeof(FB_LOCALE_INFOS);

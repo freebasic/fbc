@@ -121,7 +121,7 @@ FBSTRING *fb_TinyPtcInkey(void)
                 res->data[1] = key_code;
                 res->data[2] = '\0';
             } else {
-                res = &fb_strNullDesc;
+                res = &__fb_ctx.null_desc;
             }
 
 			return res;
@@ -130,5 +130,5 @@ FBSTRING *fb_TinyPtcInkey(void)
 			return fb_CHR( 1, key );
 	}
 
-	return &fb_strNullDesc;
+	return &__fb_ctx.null_desc;
 }

@@ -119,11 +119,11 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 
 		}
 		else
-			res = &fb_strNullDesc;
+			res = &__fb_ctx.null_desc;
 	}
 	else
 	{
-		res = &fb_strNullDesc;
+		res = &__fb_ctx.null_desc;
 		*out_attrib = 0;
 	}
 

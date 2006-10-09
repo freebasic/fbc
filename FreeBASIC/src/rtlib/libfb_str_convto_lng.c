@@ -66,7 +66,7 @@ FBCALL FBSTRING *fb_LongintToStr ( long long num )
         fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	return dst;
 }
@@ -90,7 +90,7 @@ FBCALL FBSTRING *fb_ULongintToStr ( unsigned long long num )
         fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	return dst;
 }

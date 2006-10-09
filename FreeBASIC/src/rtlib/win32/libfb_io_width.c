@@ -55,7 +55,7 @@ int fb_ConsoleWidth( int cols, int rows )
     if( FB_CONSOLE_WINDOW_EMPTY() )
         return 0;
 
-   	max = GetLargestConsoleWindowSize( fb_out_handle );
+   	max = GetLargestConsoleWindowSize( __fb_out_handle );
     fb_hConsoleGetWindow( NULL, NULL, &ncols, &nrows );
 
     if( cols > 0 )
@@ -98,35 +98,35 @@ int fb_ConsoleWidth( int cols, int rows )
             memcpy( &rTmp, &rect, sizeof(SMALL_RECT) );
             if( rTmp.Right >= ncols )
                 rTmp.Right = ncols - 1;
-            SetConsoleWindowInfo( fb_out_handle, TRUE, &rTmp );
+            SetConsoleWindowInfo( __fb_out_handle, TRUE, &rTmp );
         } else if( rect.Right < (ncols-1) ) {
             SMALL_RECT rTmp;
             memcpy( &rTmp, &rect, sizeof(SMALL_RECT) );
             if( rTmp.Bottom >= nrows )
                 rTmp.Bottom = nrows - 1;
-            SetConsoleWindowInfo( fb_out_handle, TRUE, &rTmp );
+            SetConsoleWindowInfo( __fb_out_handle, TRUE, &rTmp );
         }
 
         /* Now set the screen buffer size and ensure that the window is
          * large enough to show the whole buffer */
-        SetConsoleScreenBufferSize( fb_out_handle, size );
-        SetConsoleWindowInfo( fb_out_handle, TRUE, &rect );
+        SetConsoleScreenBufferSize( __fb_out_handle, size );
+        SetConsoleWindowInfo( __fb_out_handle, TRUE, &rect );
 #if 0
         /* Shouldn't be required any more ... */
-        SetConsoleScreenBufferSize( fb_out_handle, size );
-        SetConsoleWindowInfo( fb_out_handle, TRUE, &rect );
+        SetConsoleScreenBufferSize( __fb_out_handle, size );
+        SetConsoleWindowInfo( __fb_out_handle, TRUE, &rect );
 #endif
     }
 
-    SetConsoleActiveScreenBuffer( fb_out_handle );
+    SetConsoleActiveScreenBuffer( __fb_out_handle );
 
     if( do_change ) {
         /* Re-enable updating */
-        ConsoleSetByUser = FALSE;
+        __fb_ConsoleSetByUser = FALSE;
 
         fb_hUpdateConsoleWindow( );
 
-        ConsoleSetByUser = TRUE;
+        __fb_ConsoleSetByUser = TRUE;
     }
 
 	return cur;

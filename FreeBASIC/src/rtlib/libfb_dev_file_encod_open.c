@@ -58,7 +58,7 @@ int fb_DevFileReadEncodWstr( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *max
 int fb_DevFileReadLineEncod( struct _FB_FILE *handle, FBSTRING *dst );
 int fb_DevFileReadLineEncodWstr( struct _FB_FILE *handle, FB_WCHAR *dst, int max_chars );
 
-static FB_FILE_HOOKS fb_hooks_dev_file = {
+static FB_FILE_HOOKS hooks_dev_file = {
     fb_DevFileEof,
     fb_DevFileClose,
     fb_DevFileSeek,
@@ -182,7 +182,7 @@ int fb_DevFileOpenEncod
     /* Convert directory separators to whatever the current platform supports */
     fb_hConvertPath( fname, fname_len );
 
-    handle->hooks = &fb_hooks_dev_file;
+    handle->hooks = &hooks_dev_file;
 
     openmask = NULL;
     switch( handle->mode )

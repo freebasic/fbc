@@ -46,8 +46,8 @@ FBCALL int fb_GetMouse( int *x, int *y, int *z, int *buttons )
 	
 	FB_LOCK();
 	
-	if( fb_hooks.getmouseproc )
-		res = fb_hooks.getmouseproc( x, y, z, buttons );
+	if( __fb_ctx.hooks.getmouseproc )
+		res = __fb_ctx.hooks.getmouseproc( x, y, z, buttons );
 	else
 		res = fb_ConsoleGetMouse( x, y, z, buttons );
 
@@ -64,8 +64,8 @@ FBCALL int fb_SetMouse( int x, int y, int cursor )
 	
 	FB_LOCK();
 	
-	if( fb_hooks.getmouseproc )
-		res = fb_hooks.setmouseproc( x, y, cursor );
+	if( __fb_ctx.hooks.getmouseproc )
+		res = __fb_ctx.hooks.setmouseproc( x, y, cursor );
 	else
 		res = fb_ConsoleSetMouse( x, y, cursor );
 

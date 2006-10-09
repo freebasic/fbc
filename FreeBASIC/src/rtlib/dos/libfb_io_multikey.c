@@ -137,7 +137,7 @@ static int fb_MultikeyHandler(unsigned irq_number)
             }
             if( code!=0 ) {
                 /* Remeber scancode status */
-                fb_force_input_buffer_changed =
+                __fb_force_input_buffer_changed =
                     key[code] = !release_code;
             }
         }
@@ -156,7 +156,7 @@ static void fb_ConsoleMultikeyExit(void)
     unlock_proc(fb_MultikeyHandler);
 	unlock_array(key);
     unlock_var(got_extended_key);
-    unlock_var(fb_force_input_buffer_changed);
+    unlock_var(__fb_force_input_buffer_changed);
 }
 
 void fb_ConsoleMultikeyInit( void )
@@ -170,7 +170,7 @@ void fb_ConsoleMultikeyInit( void )
     /* We have to lock the memory BEFORE we redirect the ISR! */
     lock_array(key);
     lock_var(got_extended_key);
-    lock_var(fb_force_input_buffer_changed);
+    lock_var(__fb_force_input_buffer_changed);
     lock_proc(fb_MultikeyHandler);
     fb_isr_set( 1,
                 fb_MultikeyHandler,

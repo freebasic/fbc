@@ -46,8 +46,8 @@ FBCALL int fb_Color( int fc, int bc )
 
 	FB_LOCK();
 
-	if( fb_hooks.colorproc )
-		cur = fb_hooks.colorproc( fc, bc );
+	if( __fb_ctx.hooks.colorproc )
+		cur = __fb_ctx.hooks.colorproc( fc, bc );
 	else
 		cur = fb_ConsoleColor( fc, bc );
 

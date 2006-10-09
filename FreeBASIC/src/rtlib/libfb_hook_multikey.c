@@ -46,8 +46,8 @@ FBCALL int fb_Multikey( int scancode )
 	
 	FB_LOCK();
 	
-	if( fb_hooks.multikeyproc )
-		res = fb_hooks.multikeyproc( scancode );
+	if( __fb_ctx.hooks.multikeyproc )
+		res = __fb_ctx.hooks.multikeyproc( scancode );
 	else
 		res = fb_ConsoleMultikey( scancode );
 

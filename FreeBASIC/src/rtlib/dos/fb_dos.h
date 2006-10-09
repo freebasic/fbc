@@ -78,12 +78,12 @@ typedef struct _FB_DOS_TXTMODE {
 	unsigned long phys_addr;
 } FB_DOS_TXTMODE;
 
-extern FB_DOS_TXTMODE fb_dos_txtmode;
+extern FB_DOS_TXTMODE __fb_dos_txtmode;
 
 typedef int (*FnIntHandler)(unsigned irq_number);
 
-extern int ScrollWasOff;
-extern int fb_force_input_buffer_changed;
+extern int __fb_ScrollWasOff;
+extern int __fb_force_input_buffer_changed;
 
 int fb_ConsoleLocate_BIOS( int row, int col, int cursor );
 void fb_ConsoleGetXY_BIOS( int *col, int *row );
@@ -131,8 +131,8 @@ typedef struct _FB_LOCALE_INFOS {
  *
  * The last entry contains a country_code of -1.
  */
-extern const FB_LOCALE_INFOS fb_locale_infos[];
-extern const size_t          fb_locale_info_count;
+extern const FB_LOCALE_INFOS __fb_locale_infos[];
+extern const size_t          __fb_locale_info_count;
 
 struct _DOS_COUNTRY_INFO_GENERAL {
 	unsigned char   info_id;

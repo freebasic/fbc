@@ -21,7 +21,6 @@
 '' chng: jun/2005 written [v1ctor]
 ''
 
-
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\reg.bi"
@@ -31,15 +30,48 @@
 #include once "inc\emitdbg.bi"
 #include once "inc\symb.bi"
 
-declare sub 	 emitSubInit			( )
-declare sub 	 emitSubEnd				( )
+declare sub emitSubInit	_
+	( _
+	)
 
-declare sub 	 emitWriteHeader		( )
-declare sub 	 emitWriteFooter		( byval tottime as double )
-declare sub 	 emitWriteBss			( byval s as FBSYMBOL ptr )
-declare sub 	 emitWriteConst			( byval s as FBSYMBOL ptr )
-declare sub 	 emitWriteData			( byval s as FBSYMBOL ptr )
-declare sub 	 emitWriteExport		( byval s as FBSYMBOL ptr )
+declare sub emitSubEnd _
+	( _
+	)
+
+declare sub emitWriteHeader	_
+	( _
+	)
+
+declare sub emitWriteFooter	_
+	( _
+		byval tottime as double _
+	)
+
+declare sub emitWriteBss _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+declare sub emitWriteConst _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+declare sub emitWriteData _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+declare sub emitWriteExport	_
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+declare sub emitWriteCtorSection _
+	( _
+		byval proc_head as FB_GLOBCTORLIST_ITEM ptr, _
+		byval is_ctor as integer _
+	)
 
 
 '' globals
@@ -62,8 +94,8 @@ sub emitInit static
 	flistNew( @emit.vregTB, EMIT_INITVREGNODES, len( IRVREG ) )
 
 	''
-	emit.inited 		= TRUE
-	emit.pos			= 0
+	emit.inited = TRUE
+	emit.pos = 0
 
 	''
 	edbgInit( )
@@ -129,6 +161,10 @@ sub emitClose _
 	if( env.clopt.export ) then
 		emitWriteExport( symbGetGlobalTbHead( ) )
 	end if
+
+	''
+	emitWriteCtorSection( symbGetGlobCtorListHead( ), TRUE )
+	emitWriteCtorSection( symbGetGlobDtorListHead( ), FALSE )
 
 	''
 	edbgEmitFooter( )

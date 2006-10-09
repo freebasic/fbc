@@ -51,11 +51,6 @@ declare function hModLevelIsEmpty _
 		byval p as ASTNODE ptr _
 	) as integer
 
-declare sub hModLevelAddRtInit _
-	( _
-		byval p as ASTNODE ptr _
-	)
-
 declare sub hLoadProcResult _
 	( _
 		byval proc as FBSYMBOL ptr _
@@ -208,17 +203,10 @@ private sub hProcFlush _
 	'' allocate the non-static local variables on stack
 	symbProcAllocLocalVars( sym )
 
-	'' add a call to fb_init if it's a static/global constructor
-	'' (note: must be done here or ModLevelIsEmpty() will fail)
-	if( doemit ) then
-		'' global ctor?
-		if( symbGetIsGlobalCtor( sym ) ) then
-           	hModLevelAddRtInit( p )
-		end if
-	end if
-
-	''
+	'' emit header
 	if( ast.doemit ) then
+		symbSetProcIsEmitted( sym )
+
 		irEmitPROCBEGIN( sym, p->block.initlabel )
 	end if
 
@@ -231,7 +219,7 @@ private sub hProcFlush _
 		n = nxt
 	loop
 
-    ''
+    '' emit footer
     if( ast.doemit ) then
     	irEmitPROCEND( sym, p->block.initlabel, p->block.exitlabel )
     end if
@@ -801,27 +789,6 @@ private function hModLevelIsEmpty _
 
 end function
 
-''::::
-private sub hModLevelAddRtInit _
-	( _
-		byval p as ASTNODE ptr _
-	)
-
-    dim as ASTNODE ptr n = any
-
-    n = p->l
-    if( n = NULL ) then
-    	exit sub
-    end if
-
-	'' fb rt must be initialized before any static constructor
-	'' is called but in any platform (but Windows) the .ctors
-	'' list will be processed before main() is called by crt
-
-	astAddAfter( rtlInitRt( ), n )
-
-end sub
-
 '':::::
 private sub hCallCtorList _
 	( _
@@ -1312,7 +1279,7 @@ sub astProcAddGlobalInstance _
 end sub
 
 '':::::
-private function hCtorBegin _
+private function hGlobCtorBegin _
 	( _
 		byval is_ctor as integer _
 	) as ASTNODE ptr
@@ -1329,9 +1296,9 @@ private function hCtorBegin _
 						FB_FUNCMODE_CDECL )
 
 	if( is_ctor ) then
-		symbSetIsGlobalCtor( proc )
+		symbAddGlobalCtor( proc )
     else
-    	symbSetIsGlobalDtor( proc )
+    	symbAddGlobalDtor( proc )
     end if
 
     n = astBuildProcBegin( proc )
@@ -1363,16 +1330,12 @@ private sub hGenGlobalInstancesCtor _
 	dim as ASTNODE ptr n = any
 	dim as FBSYMBOL ptr sym = any
 
-	inst = listGetHead( @ast.globinst.list )
-	if( inst = NULL ) then
-		exit sub
-	end if
-
     '' any global instance with ctors?
     if( ast.globinst.ctorcnt > 0 ) then
-		n = hCtorBegin( TRUE )
+		n = hGlobCtorBegin( TRUE )
 
     	'' for each node..
+    	inst = listGetHead( @ast.globinst.list )
     	do while( inst <> NULL )
 
         	'' has ctor?
@@ -1389,7 +1352,7 @@ private sub hGenGlobalInstancesCtor _
 
     '' any global instance with dtors?
     if( ast.globinst.dtorcnt > 0 ) then
-		n = hCtorBegin( FALSE )
+		n = hGlobCtorBegin( FALSE )
 
     	'' for each node (in inverse order)..
     	inst = listGetTail( @ast.globinst.list )

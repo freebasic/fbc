@@ -94,7 +94,7 @@ int fb_ConsoleLocate_BIOS( int row, int col, int cursor )
 int fb_ConsoleLocate( int row, int col, int cursor )
 {
     int result = fb_ConsoleLocate_BIOS( row-1, col-1, cursor );
-    ScrollWasOff = FALSE;
+    __fb_ScrollWasOff = FALSE;
     return result + 0x0101;
 }
 

@@ -78,7 +78,7 @@ FBCALL FBSTRING *fb_FloatToStr ( float num )
         fb_hStrSetLength( dst, tmp_len );
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	return dst;
 }
@@ -115,7 +115,7 @@ FBCALL FBSTRING *fb_DoubleToStr ( double num )
 		fb_hStrSetLength( dst, tmp_len );
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	return dst;
 }

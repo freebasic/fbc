@@ -52,7 +52,7 @@ FBCALL FBSTRING *fb_StrAllocTempResult ( FBSTRING *src )
  	dsc = fb_hStrAllocTmpDesc( );
     if( dsc == NULL ) {
     	FB_STRUNLOCK();
-    	return &fb_strNullDesc;
+    	return &__fb_ctx.null_desc;
     }
 
     /* copy just the descriptor, setting it as a temp string */

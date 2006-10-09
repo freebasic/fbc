@@ -71,7 +71,7 @@ FBSTRING *fb_ConsoleInkey( void )
         fb_hConsoleInputBufferChanged();
     }
 	else
-		res = &fb_strNullDesc;
+		res = &__fb_ctx.null_desc;
 
 	return res;
 }

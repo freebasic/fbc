@@ -11,18 +11,18 @@
 
 .section .text
 
-FUNC(fb_hDrvIntHandler_start)
+FUNC(__fb_hDrvIntHandler_start)
 
 /* This stores all pointers to the old IRQ handlers */
-FUNC(fb_hDrvIntHandler_OldIRQs)
+FUNC(__fb_hDrvIntHandler_OldIRQs)
         .fill 16, 8, 0
 
 /* This stores all pointers to the current IRQ handlers */
-FUNC(fb_hDrvIntHandler)
+FUNC(__fb_hDrvIntHandler)
         .fill 16, 4, 0
 
 /* This stores all ISR stack informations (position and size) */
-FUNC(fb_hDrvIntStacks)
+FUNC(__fb_hDrvIntStacks)
         .fill 16, 8, 0
 
 /* This stores a flag for all ISR's that shows if the ISR was called
@@ -31,11 +31,11 @@ FUNC(fb_hDrvIntInISR)
         .fill 16, 1, 0
 
 /* DS selector */
-FUNC(fb_hDrvSelectors)
+FUNC(__fb_hDrvSelectors)
         .fill 5, 4, 0
 
 /* DOS cli level for nested CLI/STI */
-FUNC(dos_cli_level)
+FUNC(__fb_dos_cli_level)
         .fill 1, 4, 0
 
 
@@ -45,8 +45,8 @@ FUNC(dos_cli_level)
 FUNC(fb_dos_cli)
 	push eax
 
-	mov eax, [GLOBL(dos_cli_level)]
-	inc dword ptr [GLOBL(dos_cli_level)]
+	mov eax, [GLOBL(__fb_dos_cli_level)]
+	inc dword ptr [GLOBL(__fb_dos_cli_level)]
 	test eax, eax
 	jnz 1f
 	cli
@@ -57,8 +57,8 @@ FUNC(fb_dos_cli)
 FUNC(fb_dos_sti)
 	push eax
 
-	dec dword ptr [GLOBL(dos_cli_level)]
-	mov eax, [GLOBL(dos_cli_level)]
+	dec dword ptr [GLOBL(__fb_dos_cli_level)]
+	mov eax, [GLOBL(__fb_dos_cli_level)]
 	test eax, eax
 	jnz 1f
 	sti
@@ -70,7 +70,7 @@ FUNC(fb_dos_sti)
 
 
 
-.macro fb_hDrvIntHandler_STD INT_HANDLER_NAME, PIC_PORT_BASE
+.macro __fb_hDrvIntHandler_STD INT_HANDLER_NAME, PIC_PORT_BASE
 /* Interrupt handler for PIC1 */
 FUNC(\INT_HANDLER_NAME)
 	/* Reserve space for the address of the old ISR */
@@ -93,8 +93,8 @@ FUNC(\INT_HANDLER_NAME)
 .endif
 
 	/* Calculate offsets to the pointers to the ISRs */
-	lea eax, [GLOBL(fb_hDrvIntHandler_OldIRQs) + ebx * 8]
-	lea ecx, [GLOBL(fb_hDrvIntHandler) + ebx * 4]
+	lea eax, [GLOBL(__fb_hDrvIntHandler_OldIRQs) + ebx * 8]
+	lea ecx, [GLOBL(__fb_hDrvIntHandler) + ebx * 4]
 
 	/* Test if the ISR is already executed to avoid clobbering of
 	 * ISR stack */
@@ -121,13 +121,13 @@ FUNC(\INT_HANDLER_NAME)
 	push gs
 
 	/* Load the applications selectors */
-	mov eax, cs:[GLOBL(fb_hDrvSelectors) + 12]
+	mov eax, cs:[GLOBL(__fb_hDrvSelectors) + 12]
 	mov gs, ax
-	mov eax, cs:[GLOBL(fb_hDrvSelectors) + 8]
+	mov eax, cs:[GLOBL(__fb_hDrvSelectors) + 8]
 	mov fs, ax
-	mov eax, cs:[GLOBL(fb_hDrvSelectors) + 4]
+	mov eax, cs:[GLOBL(__fb_hDrvSelectors) + 4]
 	mov es, ax
-	mov eax, cs:[GLOBL(fb_hDrvSelectors)]
+	mov eax, cs:[GLOBL(__fb_hDrvSelectors)]
 	mov ds, ax
         
 	/* Switch to user-stack */
@@ -135,7 +135,7 @@ FUNC(\INT_HANDLER_NAME)
 	mov ax, ss
 	nop
         
-	lea esi, [GLOBL(fb_hDrvIntStacks) + ebx * 8]
+	lea esi, [GLOBL(__fb_hDrvIntStacks) + ebx * 8]
 	mov ecx, [esi]        /* Stack offset */
 	test ecx, ecx
 	jz 3f                 /* OFFSET==0 -> no stack switch */
@@ -160,7 +160,7 @@ FUNC(\INT_HANDLER_NAME)
 
 	/* Ensure that fb_dos_cli and fb_dos_sti work as expected and
 	 * don't enable IF acciedentally */
-	inc dword ptr [GLOBL(dos_cli_level)]
+	inc dword ptr [GLOBL(__fb_dos_cli_level)]
 
 	/* Save FPU state */
 	sub esp, 108
@@ -183,14 +183,14 @@ FUNC(\INT_HANDLER_NAME)
 
 	pop ebx               /* Restore the IRQ number */
 
-	/* Test if the "dos_cli_level" was reset manually in the ISR.
+	/* Test if the "__fb_dos_cli_level" was reset manually in the ISR.
 	 * This is a tweak to allow debugging of ISRs. */
-	mov edx, [GLOBL(dos_cli_level)]
+	mov edx, [GLOBL(__fb_dos_cli_level)]
 	test edx, edx
 	jz 4f
 
 	/* Reset the CLI level */
-	dec dword ptr [GLOBL(dos_cli_level)]
+	dec dword ptr [GLOBL(__fb_dos_cli_level)]
 
 4:
 	/* Restore old stack segment/offset */
@@ -250,7 +250,7 @@ FUNC(\INT_HANDLER_NAME)
 	/* Reserved space was unused ... */
 	add esp, 8
 
-	/* Turn it on regardless of the current "dos_cli_level" value */
+	/* Turn it on regardless of the current "__fb_dos_cli_level" value */
 	sti         /* IRET doesn't restore the I flag in "virtual" mode
 	             * so we have to restore it ourselves */
 
@@ -261,10 +261,10 @@ FUNC(\INT_HANDLER_NAME)
 
 
 
-fb_hDrvIntHandler_STD  fb_hDrvIntHandler_PIC1, 0x20
-fb_hDrvIntHandler_STD  fb_hDrvIntHandler_PIC2, 0xA0
+__fb_hDrvIntHandler_STD  __fb_hDrvIntHandler_PIC1, 0x20
+__fb_hDrvIntHandler_STD  __fb_hDrvIntHandler_PIC2, 0xA0
 
-FUNC(fb_hDrvIntHandler_end)
+FUNC(__fb_hDrvIntHandler_end)
 
 .end
 

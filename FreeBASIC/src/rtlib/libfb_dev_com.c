@@ -158,7 +158,7 @@ static int fb_DevComEof( struct _FB_FILE *handle )
 	return res;
 }
 
-static FB_FILE_HOOKS fb_hooks_dev_com = {
+static FB_FILE_HOOKS hooks_dev_com = {
     fb_DevComEof,
     fb_DevComClose,
     NULL,
@@ -407,7 +407,7 @@ int fb_DevComOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
     }
 
     if( res == FB_RTERROR_OK ) {
-        handle->hooks = &fb_hooks_dev_com;
+        handle->hooks = &hooks_dev_com;
         handle->opaque = info;
     } else {
         if( info->pszDevice )
@@ -437,8 +437,8 @@ int fb_DevSerialSetWidth( const char *pszDevice, int width, int default_width )
          i!=FB_MAX_FILES;
          ++i )
     {
-        FB_FILE *tmp_handle = fb_fileTB + i;
-        if( tmp_handle->hooks==&fb_hooks_dev_com
+        FB_FILE *tmp_handle = __fb_ctx.fileTB + i;
+        if( tmp_handle->hooks==&hooks_dev_com
             && tmp_handle->redirection_to==NULL )
         {
             DEV_COM_INFO *tmp_info = (DEV_COM_INFO*) tmp_handle->opaque;

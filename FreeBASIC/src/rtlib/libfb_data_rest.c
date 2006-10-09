@@ -40,7 +40,7 @@
 #include "fb.h"
 
 
-char *fb_DataPtr = NULL;
+char *__fb_data_ptr = NULL;
 
 
 /*:::::*/
@@ -48,7 +48,7 @@ FBCALL void fb_DataRestore( char *labeladdr )
 {
 	FB_LOCK();
 
-	fb_DataPtr = labeladdr;
+	__fb_data_ptr = labeladdr;
 
 	FB_UNLOCK();
 }

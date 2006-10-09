@@ -59,10 +59,10 @@ FBCALL FBSTRING *fb_StrFill1 ( int cnt, int fchar )
 			dst->data[cnt] = '\0';
 		}
 		else
-			dst = &fb_strNullDesc;
+			dst = &__fb_ctx.null_desc;
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	return dst;
 }
@@ -79,7 +79,7 @@ FBCALL FBSTRING *fb_StrFill2 ( int cnt, FBSTRING *src )
 		dst = fb_StrFill1( cnt, fchar );
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	/* del if temp */
 	fb_hStrDelTemp( src );

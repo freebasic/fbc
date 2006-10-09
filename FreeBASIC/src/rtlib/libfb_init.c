@@ -40,20 +40,13 @@
 #include <stdlib.h>
 #include "fb.h"
 
+void fb_CallGlobalCtors( void );
+
 /* globals */
-int fb_argc = 0;
-char **fb_argv = NULL;
+int __fb_is_initialized = FALSE;
 
-FB_HOOKSTB fb_hooks = { NULL };
-FB_FILE fb_fileTB[FB_MAX_FILES];
-int __fb_file_handles_cleared = FALSE;
-#ifdef MULTITHREADED
-int __fb_io_is_exiting = FALSE;
-#endif
+FB_RTLIB_CTX __fb_ctx /* not initialized */;
 
-FBSTRING fb_strNullDesc = { NULL, 0 };
-
-FnDevOpenHook fb_pfnDevOpenHook = NULL;
 
 /*:::::*/
 FBCALL void fb_RtInit ( void )
@@ -62,37 +55,37 @@ FBCALL void fb_RtInit ( void )
 	int i;
 #endif
 
-	static int inited = FALSE;
-
 	/* already initialized? */
-	if( inited )
+	if( __fb_is_initialized )
 		return;
 
-	inited = TRUE;
-
-	/* initialize files table */
-    memset( fb_fileTB, 0, sizeof( fb_fileTB ) );
-    __fb_file_handles_cleared = TRUE;
-
+	/* initialize context */
+    memset( &__fb_ctx, 0, sizeof( FB_RTLIB_CTX ) );
+    
 	/* os-dep initialization */
     fb_hInit( );
 
 #ifdef MULTITHREADED
 	/* allocate thread local storage keys */
 	for( i = 0; i < FB_TLSKEYS; i++ )
-		FB_TLSALLOC( fb_tls_ctxtb[i] );
+		FB_TLSALLOC( __fb_ctx.tls_ctxtb[i] );
 #endif
 
 	/* add rtlib's exit() to queue */
 	atexit( &fb_RtExit );
+
+	/* called after atexit(), RtExit() should be called if an exception occur */
+	fb_CallGlobalCtors( );
+
+	__fb_is_initialized = TRUE;
 }
 
 /*:::::*/
 FBCALL void fb_Init ( int argc, char **argv )
 {
-	fb_argc = argc;
-	fb_argv = argv;
-
 	fb_RtInit( );
+
+	__fb_ctx.argc = argc;
+	__fb_ctx.argv = argv;
 }
 

@@ -55,5 +55,5 @@ void fb_ConsoleScroll( int nrows )
     fb_ConsoleGetView( &toprow, &botrow );
     fb_hConvertToConsole( &left, &toprow, &right, &botrow );
 
-    fb_ConsoleScrollRawEx( fb_out_handle, left, toprow, right, botrow, nrows );
+    fb_ConsoleScrollRawEx( __fb_out_handle, left, toprow, right, botrow, nrows );
 }

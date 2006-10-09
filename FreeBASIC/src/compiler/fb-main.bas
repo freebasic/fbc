@@ -177,7 +177,8 @@ private sub hModLevelBegin( )
 								 FB_FUNCMODE_CDECL )
 
     symbSetIsModLevelProc( env.main.proc )
-    symbSetIsGlobalCtor( env.main.proc )
+
+    symbAddGlobalCtor( env.main.proc )
 
     ''
 	env.main.node = astProcBegin( env.main.proc, TRUE )

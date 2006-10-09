@@ -46,8 +46,8 @@ FBCALL int fb_GetY( void )
 
 	FB_LOCK();
 
-	if( fb_hooks.getyproc )
-		res = fb_hooks.getyproc( );
+	if( __fb_ctx.hooks.getyproc )
+		res = __fb_ctx.hooks.getyproc( );
 	else
 		res = fb_ConsoleGetY( );
 

@@ -42,8 +42,8 @@
 
 #include "fb.h"
 
-extern const char fb_utf8_trailingTb[256];
-extern const UTF_32 fb_utf8_offsetsTb[6];
+extern const char __fb_utf8_trailingTb[256];
+extern const UTF_32 __fb_utf8_offsetsTb[6];
 
 /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*
  * to char                                                                              *
@@ -62,7 +62,7 @@ static int hReadUTF8ToChar( FILE *fp, char *dst, int max_chars )
 		if( fread( &c[0], 1, 1, fp ) != 1 )
 			break;
 
-		extbytes = fb_utf8_trailingTb[(unsigned int)c[0]];
+		extbytes = __fb_utf8_trailingTb[(unsigned int)c[0]];
 
 		if( extbytes > 0 )
 			if( fread( &c[1], extbytes, 1, fp ) != 1 )
@@ -91,7 +91,7 @@ static int hReadUTF8ToChar( FILE *fp, char *dst, int max_chars )
 				wc += *p++;
 		}
 
-		wc -= fb_utf8_offsetsTb[extbytes];
+		wc -= __fb_utf8_offsetsTb[extbytes];
 
 		if( wc > 255 )
 			wc = '?';
@@ -191,7 +191,7 @@ static int hUTF8ToUTF16( FILE *fp, FB_WCHAR *dst, int max_chars )
 		if( fread( &c[0], 1, 1, fp ) != 1 )
 			break;
 
-		extbytes = fb_utf8_trailingTb[(unsigned int)c[0]];
+		extbytes = __fb_utf8_trailingTb[(unsigned int)c[0]];
 
 		if( extbytes > 0 )
 			if( fread( &c[1], extbytes, 1, fp ) != 1 )
@@ -220,7 +220,7 @@ static int hUTF8ToUTF16( FILE *fp, FB_WCHAR *dst, int max_chars )
 				wc += *p++;
 		}
 
-		wc -= fb_utf8_offsetsTb[extbytes];
+		wc -= __fb_utf8_offsetsTb[extbytes];
 
 		if( wc <= UTF16_MAX_BMP )
 		{
@@ -256,7 +256,7 @@ static int hUTF8ToUTF32( FILE *fp, FB_WCHAR *dst, int max_chars )
 		if( fread( &c[0], 1, 1, fp ) != 1 )
 			break;
 
-		extbytes = fb_utf8_trailingTb[(unsigned int)c[0]];
+		extbytes = __fb_utf8_trailingTb[(unsigned int)c[0]];
 
 		if( extbytes > 0 )
 			if( fread( &c[1], extbytes, 1, fp ) != 1 )
@@ -285,7 +285,7 @@ static int hUTF8ToUTF32( FILE *fp, FB_WCHAR *dst, int max_chars )
 				wc += *p++;
 		}
 
-		wc -= fb_utf8_offsetsTb[extbytes];
+		wc -= __fb_utf8_offsetsTb[extbytes];
 
 		*dst++ = wc;
 		--chars;

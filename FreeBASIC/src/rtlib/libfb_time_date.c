@@ -61,7 +61,7 @@ FBCALL FBSTRING *fb_Date ( void )
         FB_UNLOCK();
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	return dst;
 }

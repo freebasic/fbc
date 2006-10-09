@@ -236,12 +236,12 @@ static void gdi_thread(HANDLE running_event)
 
         if( fb_win32.is_active ) {
             GetKeyboardState(keystate);
-            for (i = 0; fb_keytable[i][0]; i++) {
-                if (fb_keytable[i][2])
-                    fb_mode->key[fb_keytable[i][0]] = ((keystate[fb_keytable[i][1]] & 0x80) |
-                                                       (keystate[fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
+            for (i = 0; __fb_keytable[i][0]; i++) {
+                if (__fb_keytable[i][2])
+                    fb_mode->key[__fb_keytable[i][0]] = ((keystate[__fb_keytable[i][1]] & 0x80) |
+                                                       (keystate[__fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
                 else
-                    fb_mode->key[fb_keytable[i][0]] = (keystate[fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
+                    fb_mode->key[__fb_keytable[i][0]] = (keystate[__fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
             }
         }
 

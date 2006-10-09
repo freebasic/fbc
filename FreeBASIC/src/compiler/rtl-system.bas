@@ -52,13 +52,6 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 	 	), _
-		/' fb_RtInit ( ) as void '/ _
-		( _
-			@FB_RTL_RTINIT, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		0 _
-	 	), _
 		/' fb_InitSignals ( ) as void '/ _
 		( _
 			@FB_RTL_INITSIGNALS, NULL, _
@@ -701,20 +694,6 @@ function rtlInitApp _
     		rtlCpuCheck( )
     	end if
     end if
-
-end function
-
-'':::::
-function rtlInitRt( ) as ASTNODE ptr static
-
-    dim as ASTNODE ptr proc
-
-	function = NULL
-
-	'' RtInit( )
-    proc = astNewCALL( PROCLOOKUP( RTINIT ), NULL, TRUE )
-
-    function = proc
 
 end function
 

@@ -121,7 +121,7 @@ FBCALL int 			fb_IsRedirected		( int is_input );
        int 			fb_ConsoleIsRedirected( int is_input );
 typedef int         (*FB_ISREDIRPROC)  	( int is_input );
 
-typedef struct _FB_HOOKSTB {
+typedef struct FB_HOOKSTB {
     FB_INKEYPROC    		inkeyproc;
     FB_GETKEYPROC   		getkeyproc;
     FB_KEYHITPROC   		keyhitproc;
@@ -148,7 +148,5 @@ typedef struct _FB_HOOKSTB {
     FB_SLEEPPROC    		sleepproc;
     FB_ISREDIRPROC			isredirproc;
 } FB_HOOKSTB;
-
-extern FB_HOOKSTB   fb_hooks;
 
 #endif /* __FB_HOOK_H__ */

@@ -58,10 +58,10 @@ FBCALL FBSTRING *fb_SPACE ( int len )
 			dst->data[len] = '\0';
 		}
 		else
-			dst = &fb_strNullDesc;
+			dst = &__fb_ctx.null_desc;
     }
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	return dst;
 }

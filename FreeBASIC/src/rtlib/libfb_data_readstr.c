@@ -54,20 +54,20 @@ FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
 	if( len == FB_DATATYPE_OFS )
 	{
 		/* !!!WRITEME!!! */
-		fb_DataPtr += sizeof( unsigned int );
+		__fb_data_ptr += sizeof( unsigned int );
 	}
 	/* wstring? convert.. */
 	else if( len & 0x8000 )
 	{
 		len &= 0x7FFF;
-		fb_WstrAssignToA( dst, dst_size, (FB_WCHAR *)fb_DataPtr, fillrem );
-		fb_DataPtr += (len + 1) * sizeof( FB_WCHAR );
+		fb_WstrAssignToA( dst, dst_size, (FB_WCHAR *)__fb_data_ptr, fillrem );
+		__fb_data_ptr += (len + 1) * sizeof( FB_WCHAR );
 	}
 	/* zstring.. */
 	else
 	{
-		fb_StrAssign( dst, dst_size, (void *)fb_DataPtr, 0, fillrem );
-		fb_DataPtr += (len + 1);
+		fb_StrAssign( dst, dst_size, (void *)__fb_data_ptr, 0, fillrem );
+		__fb_data_ptr += (len + 1);
 	}
 
 	FB_UNLOCK();

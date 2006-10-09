@@ -64,7 +64,7 @@ FBCALL FBSTRING *fb_IntToStr ( int num )
         fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	return dst;
 }
@@ -87,7 +87,7 @@ FBCALL FBSTRING *fb_UIntToStr ( unsigned int num )
         fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else
-		dst = &fb_strNullDesc;
+		dst = &__fb_ctx.null_desc;
 
 	return dst;
 }

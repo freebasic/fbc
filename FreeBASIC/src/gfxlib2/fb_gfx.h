@@ -355,7 +355,7 @@ FBCALL void fb_GfxImageConvertRow( const unsigned char *src, int src_bpp, unsign
  * This implementation is a hack until I found a better way to detect this.
  */
 #define FB_GFX_ACTIVE() \
-    (fb_hooks.printbuffproc!=NULL)
+    (__fb_ctx.hooks.printbuffproc!=NULL)
 
 /** Returns the code page as integral value.
  *

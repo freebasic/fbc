@@ -45,7 +45,7 @@
 /*:::::*/
 void fb_ConsoleViewUpdate(void)
 {
-	if (!fb_con.inited)
+	if (!__fb_con.inited)
 		return;
 
 	fb_hResize();

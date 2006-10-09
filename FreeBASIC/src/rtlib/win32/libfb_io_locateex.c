@@ -59,19 +59,19 @@ void fb_ConsoleLocateRawEx( HANDLE hConsole, int row, int col, int cursor )
 
   	if( cursor >= 0 ) {
         CONSOLE_CURSOR_INFO info;
-        GetConsoleCursorInfo( fb_out_handle, &info );
+        GetConsoleCursorInfo( __fb_out_handle, &info );
   		info.bVisible = ( cursor ? TRUE : FALSE );
   		SetConsoleCursorInfo( hConsole, &info );
   	}
 
-    ScrollWasOff = FALSE;
+    __fb_ScrollWasOff = FALSE;
     SetConsoleCursorPosition( hConsole, c );
 }
 
 /*:::::*/
 FBCALL void fb_ConsoleLocateRaw( int row, int col, int cursor )
 {
-	fb_ConsoleLocateRawEx( fb_out_handle, row, col, cursor );
+	fb_ConsoleLocateRawEx( __fb_out_handle, row, col, cursor );
 }
 
 

@@ -244,7 +244,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 		/* findnext */
 
 		if( !dir_data.in_use )
-			res = &fb_strNullDesc;
+			res = &__fb_ctx.null_desc;
 		else
 			name = find_next( );
 	}
@@ -262,10 +262,10 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 			fb_hStrCopy( res->data, name, len );
 		}
 		else
-			res = &fb_strNullDesc;
+			res = &__fb_ctx.null_desc;
 	}
 	else
-		res = &fb_strNullDesc;
+		res = &__fb_ctx.null_desc;
 
 	fb_hStrDelTemp_NoLock( filespec );
 

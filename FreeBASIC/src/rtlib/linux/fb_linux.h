@@ -64,16 +64,16 @@
 #define TERM_ETERM			1
 
 
-#define BG_LOCK()			pthread_mutex_lock(&fb_con.bg_mutex);
-#define BG_UNLOCK()			pthread_mutex_unlock(&fb_con.bg_mutex);
+#define BG_LOCK()			pthread_mutex_lock(&__fb_con.bg_mutex);
+#define BG_UNLOCK()			pthread_mutex_unlock(&__fb_con.bg_mutex);
 
 #ifdef MULTITHREADED
-extern pthread_mutex_t fb_global_mutex;
-extern pthread_mutex_t fb_string_mutex;
-# define FB_LOCK()					pthread_mutex_lock(&fb_global_mutex)
-# define FB_UNLOCK()				pthread_mutex_unlock(&fb_global_mutex)
-# define FB_STRLOCK()				pthread_mutex_lock(&fb_string_mutex)
-# define FB_STRUNLOCK()				pthread_mutex_unlock(&fb_string_mutex)
+extern pthread_mutex_t __fb_global_mutex;
+extern pthread_mutex_t __fb_string_mutex;
+# define FB_LOCK()					pthread_mutex_lock(&__fb_global_mutex)
+# define FB_UNLOCK()				pthread_mutex_unlock(&__fb_global_mutex)
+# define FB_STRLOCK()				pthread_mutex_lock(&__fb_string_mutex)
+# define FB_STRUNLOCK()				pthread_mutex_unlock(&__fb_string_mutex)
 # define FB_TLSENTRY				pthread_key_t
 # define FB_TLSALLOC(key) 			pthread_key_create( &(key), NULL )
 # define FB_TLSFREE(key)			pthread_key_delete( (key) )
@@ -150,7 +150,7 @@ typedef struct FBCONSOLE
 
 typedef off_t fb_off_t;
 
-extern FBCONSOLE fb_con;
+extern FBCONSOLE __fb_con;
 
 extern int fb_hTermOut( int code, int param1, int param2);
 extern int fb_hGetCh(int remove);

@@ -33,7 +33,7 @@
 #ifndef __FB_DATA_H__
 #define __FB_DATA_H__
 
-extern char        *fb_DataPtr;
+extern char        *__fb_data_ptr;
 
 #define FB_DATATYPE_LINK -1
 #define FB_DATATYPE_OFS  -2

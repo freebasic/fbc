@@ -42,7 +42,7 @@
 #include <malloc.h>
 #include "fb.h"
 
-static FB_FILE_HOOKS fb_hooks_dev_scrn_null = { 0 };
+static FB_FILE_HOOKS hooks_dev_scrn_null = { 0 };
 
 void fb_DevScrnInit_Screen( void )
 {
@@ -70,7 +70,7 @@ void fb_DevScrnInit_NoOpen( void )
 
         fb_DevScrnInit_Screen( );
 
-        FB_HANDLE_SCREEN->hooks = &fb_hooks_dev_scrn_null;
+        FB_HANDLE_SCREEN->hooks = &hooks_dev_scrn_null;
 
         FB_UNLOCK();
     }

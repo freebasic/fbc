@@ -107,7 +107,7 @@ int  fb_hHookConWrite_MEM (struct _fb_ConHooks *handle,
     }
 
     _movedataw( _my_ds(), (int) puchBuffer,
-                _dos_ds, fb_dos_txtmode.phys_addr + (fb_dos_txtmode.w << 1) * tmp_y + (tmp_x << 1),
+                _dos_ds, __fb_dos_txtmode.phys_addr + (__fb_dos_txtmode.w << 1) * tmp_y + (tmp_x << 1),
                 length );
 
     return TRUE;
@@ -137,20 +137,20 @@ void fb_ConsolePrintBufferEx_SCRN( const void *buffer, size_t len, int mask )
 
     {
         unsigned char uchCurrentMode = _farpeekb( _dos_ds, 0x465 );
-        fb_dos_txtmode.w = win_cols;
-        fb_dos_txtmode.h = win_rows;
+        __fb_dos_txtmode.w = win_cols;
+        __fb_dos_txtmode.h = win_rows;
         if( uchCurrentMode & 0x02 ) {
-            fb_dos_txtmode.phys_addr = 0x00000;
+            __fb_dos_txtmode.phys_addr = 0x00000;
         } else if( uchCurrentMode & 0x04 ) {
-            fb_dos_txtmode.phys_addr = 0xB0000;
+            __fb_dos_txtmode.phys_addr = 0xB0000;
         } else {
-            fb_dos_txtmode.phys_addr = 0xB8000;
+            __fb_dos_txtmode.phys_addr = 0xB8000;
         }
 
     }
 
     hooks.Opaque        = &info;
-    if( fb_dos_txtmode.phys_addr ) {
+    if( __fb_dos_txtmode.phys_addr ) {
         hooks.Scroll        = fb_hHookConScroll_BIOS;
         hooks.Write         = fb_hHookConWrite_MEM;
     } else {
@@ -167,8 +167,8 @@ void fb_ConsolePrintBufferEx_SCRN( const void *buffer, size_t len, int mask )
     {
         fb_ConsoleGetXY_BIOS( &hooks.Coord.X, &hooks.Coord.Y );
 
-        if( ScrollWasOff ) {
-            ScrollWasOff = FALSE;
+        if( __fb_ScrollWasOff ) {
+            __fb_ScrollWasOff = FALSE;
             ++hooks.Coord.Y;
             hooks.Coord.X = hooks.Border.Left;
             fb_hConCheckScroll( &hooks );
@@ -184,7 +184,7 @@ void fb_ConsolePrintBufferEx_SCRN( const void *buffer, size_t len, int mask )
         {
             fb_hConCheckScroll( &hooks );
         } else {
-            ScrollWasOff = TRUE;
+            __fb_ScrollWasOff = TRUE;
             hooks.Coord.X = hooks.Border.Right;
             hooks.Coord.Y = hooks.Border.Bottom;
         }

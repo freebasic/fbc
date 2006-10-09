@@ -1,8 +1,3 @@
-[ ] our own crt*.o will be needed for EACH platform, 
-    we can't do the shutdown at fb_hExit() because it will be called
-    before the global destructors are
-    - after that is added, remove the fb_RtInit() calls done inside global ctors
-
 [ ] remove the internal profiler and use gprof instead, the former won't work with
     destructors
 
@@ -203,11 +198,6 @@
       will break *all* functions assuming the latter - they would have to be
       declared as zstring ptr, what will need more changes in users' code, because
       the non-implicit pointer deref
-
-[ ] remove fb_init:
-    - remove all globals
-    - use getters and setters that should do the initializing when needed
-    - FPU won't be set to 64-bit internally in x86..
 
 *** *** *** *** ***
 [ ] proc def:

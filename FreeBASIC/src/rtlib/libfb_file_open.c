@@ -49,14 +49,12 @@ static void atexit_cb( void )
 {
 
 #ifdef MULTITHREADED
-	__fb_io_is_exiting = TRUE;
+	__fb_ctx.io_is_exiting = TRUE;
 #endif
 
-	fb_hFileCtx( 0 );
+	fb_hFileCtx( FALSE );
 
 }
-
-extern int __fb_file_handles_cleared;
 
 /*::::: make it accessible for all VFS functions too */
 void fb_hFileCtx ( int doinit )
@@ -70,15 +68,8 @@ void fb_hFileCtx ( int doinit )
 	{
 		if( !inited )
 		{
-
-        	if( !__fb_file_handles_cleared ) {
-            	memset( fb_fileTB, 0, sizeof( FB_FILE ) * FB_MAX_FILES );
-            	__fb_file_handles_cleared = TRUE;
-        	}
-
 			atexit( &atexit_cb );
-
-			inited = 1;
+			inited = TRUE;
 		}
 	}
 
@@ -88,8 +79,7 @@ void fb_hFileCtx ( int doinit )
 		if( inited )
 		{
 			fb_FileReset( );
-
-			inited = 0;
+			inited = FALSE;
 		}
 	}
 
@@ -104,7 +94,7 @@ int fb_FileOpenEx( FB_FILE *handle, FBSTRING *str_filename, unsigned int mode,
     FBSTRING *filename, str_tmp = { 0 };
     FnFileOpen pfnFileOpen = NULL;
 
-    if( fb_pfnDevOpenHook != NULL )
+    if( __fb_ctx.pfnDevOpenHook != NULL )
     {
     	/*
      	 * We have to copy it here because the hook might modify this string
@@ -114,7 +104,7 @@ int fb_FileOpenEx( FB_FILE *handle, FBSTRING *str_filename, unsigned int mode,
     	fb_StrAssign( (void *)filename, -1, (void *)str_filename, -1, FALSE );
 
         /* Call the OPEN hook */
-        res = fb_pfnDevOpenHook( filename,
+        res = __fb_ctx.pfnDevOpenHook( filename,
                                  mode,
                                  access,
                                  lock,
@@ -149,7 +139,7 @@ int fb_FileOpenEx( FB_FILE *handle, FBSTRING *str_filename, unsigned int mode,
         fb_ErrorSetNum( res );
     }
 
-    if( fb_pfnDevOpenHook != NULL )
+    if( __fb_ctx.pfnDevOpenHook != NULL )
     {
     	/* Release temporary string */
     	fb_StrDelete( &str_tmp );

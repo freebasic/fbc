@@ -42,8 +42,8 @@
 
 #include "fb.h"
 
-extern const char fb_utf8_trailingTb[256];
-extern const UTF_32 fb_utf8_offsetsTb[6];
+extern const char __fb_utf8_trailingTb[256];
+extern const UTF_32 __fb_utf8_offsetsTb[6];
 
 char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, int *chars );
 char *fb_hUTF16ToChar( const UTF_16 *src, char *dst, int *chars );
@@ -63,7 +63,7 @@ static FB_WCHAR *hUTF8ToUTF16( const UTF_8 *src, FB_WCHAR *dst, int *chars )
 	    charsleft = 0;
 	    do 
 	    {
-			extbytes = fb_utf8_trailingTb[(unsigned int)*src];
+			extbytes = __fb_utf8_trailingTb[(unsigned int)*src];
 	
 			c = 0;
 			switch( extbytes )
@@ -82,7 +82,7 @@ static FB_WCHAR *hUTF8ToUTF16( const UTF_8 *src, FB_WCHAR *dst, int *chars )
 					c += *src++;
 			}
 	
-			c -= fb_utf8_offsetsTb[extbytes];
+			c -= __fb_utf8_offsetsTb[extbytes];
 	
 			if( charsleft <= 1 )
 			{
@@ -115,7 +115,7 @@ static FB_WCHAR *hUTF8ToUTF16( const UTF_8 *src, FB_WCHAR *dst, int *chars )
 	    charsleft = *chars;
 	    while( charsleft > 0 )
 	    {
-			extbytes = fb_utf8_trailingTb[*src];
+			extbytes = __fb_utf8_trailingTb[*src];
 	
 			c = 0;
 			switch( extbytes )
@@ -134,7 +134,7 @@ static FB_WCHAR *hUTF8ToUTF16( const UTF_8 *src, FB_WCHAR *dst, int *chars )
 					c += *src++;
 			}
 	
-			c -= fb_utf8_offsetsTb[extbytes];
+			c -= __fb_utf8_offsetsTb[extbytes];
 
 			if( c <= UTF16_MAX_BMP )
 				*dst++ = c;
@@ -175,7 +175,7 @@ static FB_WCHAR *hUTF8ToUTF32( const UTF_8 *src, FB_WCHAR *dst, int *chars )
 	    charsleft = 0;
 	    do 
 	    {
-			extbytes = fb_utf8_trailingTb[(unsigned int)*src];
+			extbytes = __fb_utf8_trailingTb[(unsigned int)*src];
 	
 			c = 0;
 			switch( extbytes )
@@ -194,7 +194,7 @@ static FB_WCHAR *hUTF8ToUTF32( const UTF_8 *src, FB_WCHAR *dst, int *chars )
 					c += *src++;
 			}
 	
-			c -= fb_utf8_offsetsTb[extbytes];
+			c -= __fb_utf8_offsetsTb[extbytes];
 	
 			if( charsleft <= 1 )
 			{
@@ -219,7 +219,7 @@ static FB_WCHAR *hUTF8ToUTF32( const UTF_8 *src, FB_WCHAR *dst, int *chars )
 	    charsleft = *chars;
 	    while( charsleft > 0 )
 	    {
-			extbytes = fb_utf8_trailingTb[*src];
+			extbytes = __fb_utf8_trailingTb[*src];
 	
 			c = 0;
 			switch( extbytes )
@@ -238,7 +238,7 @@ static FB_WCHAR *hUTF8ToUTF32( const UTF_8 *src, FB_WCHAR *dst, int *chars )
 					c += *src++;
 			}
 	
-			c -= fb_utf8_offsetsTb[extbytes];
+			c -= __fb_utf8_offsetsTb[extbytes];
 
 			*dst++ = c;
 

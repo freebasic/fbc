@@ -196,7 +196,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
     case 0:
     case 3:
     case 4:
-        memset(&fb_hooks, 0, sizeof(fb_hooks));
+        memset(&__fb_ctx.hooks, 0, sizeof(__fb_ctx.hooks));
 
         if (flags != SCREEN_EXIT) {
             /* set and clear text screen mode or the width and line_len will be wrong */
@@ -210,31 +210,31 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         break;
 
     default:
-        fb_hooks.inkeyproc = fb_GfxInkey;
-        fb_hooks.getkeyproc = fb_GfxGetkey;
-        fb_hooks.keyhitproc = fb_GfxKeyHit;
-        fb_hooks.clsproc = fb_GfxClear;
-        fb_hooks.colorproc = fb_GfxColor;
-        fb_hooks.locateproc = fb_GfxLocate;
-        fb_hooks.widthproc = fb_GfxWidth;
-        fb_hooks.getxproc = fb_GfxGetX;
-        fb_hooks.getyproc = fb_GfxGetY;
-        fb_hooks.getxyproc = fb_GfxGetXY;
-        fb_hooks.getsizeproc = fb_GfxGetSize;
-        fb_hooks.printbuffproc = fb_GfxPrintBufferEx;
-        fb_hooks.printbuffwproc = fb_GfxPrintBufferWstrEx;
-        fb_hooks.readstrproc = fb_GfxReadStr;
-        fb_hooks.multikeyproc = fb_GfxMultikey;
-        fb_hooks.getmouseproc = fb_GfxGetMouse;
-        fb_hooks.setmouseproc = fb_GfxSetMouse;
-        fb_hooks.inproc = fb_GfxIn;
-        fb_hooks.outproc = fb_GfxOut;
-        fb_hooks.viewupdateproc = fb_GfxViewUpdate;
-        fb_hooks.lineinputproc = fb_GfxLineInput;
-        fb_hooks.lineinputwproc = fb_GfxLineInputWstr;
-        fb_hooks.readxyproc = fb_GfxReadXY;
-        fb_hooks.sleepproc = fb_GfxSleep;
-        fb_hooks.isredirproc = fb_GfxIsRedir;
+        __fb_ctx.hooks.inkeyproc = fb_GfxInkey;
+        __fb_ctx.hooks.getkeyproc = fb_GfxGetkey;
+        __fb_ctx.hooks.keyhitproc = fb_GfxKeyHit;
+        __fb_ctx.hooks.clsproc = fb_GfxClear;
+        __fb_ctx.hooks.colorproc = fb_GfxColor;
+        __fb_ctx.hooks.locateproc = fb_GfxLocate;
+        __fb_ctx.hooks.widthproc = fb_GfxWidth;
+        __fb_ctx.hooks.getxproc = fb_GfxGetX;
+        __fb_ctx.hooks.getyproc = fb_GfxGetY;
+        __fb_ctx.hooks.getxyproc = fb_GfxGetXY;
+        __fb_ctx.hooks.getsizeproc = fb_GfxGetSize;
+        __fb_ctx.hooks.printbuffproc = fb_GfxPrintBufferEx;
+        __fb_ctx.hooks.printbuffwproc = fb_GfxPrintBufferWstrEx;
+        __fb_ctx.hooks.readstrproc = fb_GfxReadStr;
+        __fb_ctx.hooks.multikeyproc = fb_GfxMultikey;
+        __fb_ctx.hooks.getmouseproc = fb_GfxGetMouse;
+        __fb_ctx.hooks.setmouseproc = fb_GfxSetMouse;
+        __fb_ctx.hooks.inproc = fb_GfxIn;
+        __fb_ctx.hooks.outproc = fb_GfxOut;
+        __fb_ctx.hooks.viewupdateproc = fb_GfxViewUpdate;
+        __fb_ctx.hooks.lineinputproc = fb_GfxLineInput;
+        __fb_ctx.hooks.lineinputwproc = fb_GfxLineInputWstr;
+        __fb_ctx.hooks.readxyproc = fb_GfxReadXY;
+        __fb_ctx.hooks.sleepproc = fb_GfxSleep;
+        __fb_ctx.hooks.isredirproc = fb_GfxIsRedir;
         fb_mode = (MODE *)calloc(1, sizeof(MODE));
         break;
     }

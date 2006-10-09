@@ -68,7 +68,7 @@ FBSTRING *fb_hIntlConvertToWC(FBSTRING *source, UINT source_cp )
                              CharsRequired );
         *((WCHAR*) (res->data + idx)) = 0;
     } else {
-        res = &fb_strNullDesc;
+        res = &__fb_ctx.null_desc;
     }
 
     fb_hStrDelTemp_NoLock( source );
@@ -108,7 +108,7 @@ FBSTRING *fb_hIntlConvertFromWC(FBSTRING *source, UINT dest_cp )
                              NULL );
         res->data[CharsRequired] = 0;
     } else {
-        res = &fb_strNullDesc;
+        res = &__fb_ctx.null_desc;
     }
 
     fb_hStrDelTemp_NoLock( source );

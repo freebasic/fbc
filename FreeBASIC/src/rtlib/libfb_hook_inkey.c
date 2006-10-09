@@ -46,8 +46,8 @@ FBCALL FBSTRING *fb_Inkey( void )
 	
 	FB_LOCK();
 	
-	if( fb_hooks.inkeyproc )
-		res = fb_hooks.inkeyproc( );
+	if( __fb_ctx.hooks.inkeyproc )
+		res = __fb_ctx.hooks.inkeyproc( );
 	else
 		res = fb_ConsoleInkey( );
 
@@ -63,8 +63,8 @@ FBCALL int fb_Getkey( void )
 	
 	FB_LOCK();
 	
-	if( fb_hooks.getkeyproc )
-		res = fb_hooks.getkeyproc( );
+	if( __fb_ctx.hooks.getkeyproc )
+		res = __fb_ctx.hooks.getkeyproc( );
 	else
 		res = fb_ConsoleGetkey( );
 
@@ -80,8 +80,8 @@ FBCALL int fb_KeyHit( void )
 	
 	FB_LOCK();
 
-	if( fb_hooks.keyhitproc )
-		res = fb_hooks.keyhitproc( );
+	if( __fb_ctx.hooks.keyhitproc )
+		res = __fb_ctx.hooks.keyhitproc( );
 	else
 		res = fb_ConsoleKeyHit( );
 	

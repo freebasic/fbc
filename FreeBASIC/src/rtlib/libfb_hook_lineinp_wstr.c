@@ -47,7 +47,7 @@ FBCALL int fb_LineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
     FB_LINEINPUTWPROC fn;
 
     FB_LOCK();
-    fn = fb_hooks.lineinputwproc;
+    fn = __fb_ctx.hooks.lineinputwproc;
     FB_UNLOCK();
 
     if( fn )

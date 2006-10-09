@@ -52,7 +52,7 @@ FB_FILE * fb_DevLptFindDeviceByName( int iPort, char * filename, int no_redir )
 			 i!=FB_MAX_FILES;
 			 ++i )
 	{
-		FB_FILE *handle = fb_fileTB + i;
+		FB_FILE *handle = __fb_ctx.fileTB + i;
 		if( handle->type == FB_FILE_TYPE_PRINTER )
 		{
 			if( no_redir==FALSE || handle->redirection_to==NULL )
@@ -90,7 +90,7 @@ char * fb_DevLptMakeDeviceName( DEV_LPT_PROTOCOL *lpt_proto )
 	return( NULL );
 }
 
-static FB_FILE_HOOKS fb_hooks_dev_lpt = {
+static FB_FILE_HOOKS hooks_dev_lpt = {
     NULL,
     fb_DevLptClose,
     NULL,
@@ -160,7 +160,7 @@ int fb_DevLptOpen( FB_FILE *handle, const char *filename, size_t filename_len )
     }
 
     if( res == FB_RTERROR_OK ) {
-        handle->hooks = &fb_hooks_dev_lpt;
+        handle->hooks = &hooks_dev_lpt;
         handle->opaque = devInfo;
 				handle->type = FB_FILE_TYPE_PRINTER;
     } else {

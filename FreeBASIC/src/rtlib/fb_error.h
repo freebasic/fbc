@@ -54,7 +54,6 @@ typedef enum _FB_RTERROR {
 } FB_RTERROR;
 
 #define FB_ERROR_MESSAGE_SIZE		1024
-extern char *fb_error_message;
 
 typedef void (*FB_ERRHANDLER) (void);
 

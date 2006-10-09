@@ -46,7 +46,7 @@ void fb_InitConsoleWindow( void );
 /*:::::*/
 void fb_ConsoleGetMaxWindowSize( int *cols, int *rows )
 {
-    COORD max = GetLargestConsoleWindowSize( fb_out_handle );
+    COORD max = GetLargestConsoleWindowSize( __fb_out_handle );
     if( cols != NULL )
         *cols = (max.X==0 ? FB_SCRN_DEFAULT_WIDTH : max.X);
     if( rows != NULL )

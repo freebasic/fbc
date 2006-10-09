@@ -55,15 +55,15 @@ static int isr_inited = FALSE;
 static size_t function_sizes[16] = { 0 };
 
 /* This is the code layout for isr.S */
-extern char fb_hDrvIntHandler_start;
-extern __dpmi_paddr fb_hDrvIntHandler_OldIRQs[16];
-extern FnIntHandler fb_hDrvIntHandler[16];
-extern FB_DOS_STACK_INFO fb_hDrvIntStacks[16];
-extern unsigned fb_hDrvSelectors[5];
-extern int dos_cli_level;
-void fb_hDrvIntHandler_PIC1(void);
-void fb_hDrvIntHandler_PIC2(void);
-extern char fb_hDrvIntHandler_end;
+extern char __fb_hDrvIntHandler_start;
+extern __dpmi_paddr __fb_hDrvIntHandler_OldIRQs[16];
+extern FnIntHandler __fb_hDrvIntHandler[16];
+extern FB_DOS_STACK_INFO __fb_hDrvIntStacks[16];
+extern unsigned __fb_hDrvSelectors[5];
+extern int __fb_dos_cli_level;
+void __fb_hDrvIntHandler_PIC1(void);
+void __fb_hDrvIntHandler_PIC2(void);
+extern char __fb_hDrvIntHandler_end;
 
 /** Ensures that the specified memory region isn't swappable.
  */
@@ -154,7 +154,7 @@ static void fb_isr_exit(void)
     /* restore ISR offsets for master PIC */
     for( i=0; i!=8; ++i ) {
         int irq_vector = version.master_pic + i;
-        __dpmi_paddr *offset = fb_hDrvIntHandler_OldIRQs + i;
+        __dpmi_paddr *offset = __fb_hDrvIntHandler_OldIRQs + i;
         if( __dpmi_set_protected_mode_interrupt_vector( irq_vector, offset ) != 0 ) {
             FB_UNLOCK();
             abort();
@@ -165,7 +165,7 @@ static void fb_isr_exit(void)
     /* restore ISR offsets for slave PIC */
     for( i=0; i!=8; ++i ) {
         int irq_vector = version.slave_pic + i;
-        __dpmi_paddr *offset = fb_hDrvIntHandler_OldIRQs + i + 8;
+        __dpmi_paddr *offset = __fb_hDrvIntHandler_OldIRQs + i + 8;
         if( __dpmi_set_protected_mode_interrupt_vector( irq_vector, offset ) != 0 ) {
             FB_UNLOCK();
             abort();
@@ -192,11 +192,11 @@ static int fb_isr_init(void)
     }
 
     /* store all selectors */
-    fb_hDrvSelectors[0] = _my_ds();
-    fb_hDrvSelectors[1] = _my_es();
-    fb_hDrvSelectors[2] = _my_fs();
-    fb_hDrvSelectors[3] = _my_gs();
-    fb_hDrvSelectors[4] = _my_ss();
+    __fb_hDrvSelectors[0] = _my_ds();
+    __fb_hDrvSelectors[1] = _my_es();
+    __fb_hDrvSelectors[2] = _my_fs();
+    __fb_hDrvSelectors[3] = _my_gs();
+    __fb_hDrvSelectors[4] = _my_ss();
 
     /* query DPMI version */
     if( __dpmi_get_version( &version )!=0 ) {
@@ -207,7 +207,7 @@ static int fb_isr_init(void)
     /* query ISR offsets for master PIC */
     for( i=0; i!=8; ++i ) {
         int irq_vector = version.master_pic + i;
-        __dpmi_paddr *offset = fb_hDrvIntHandler_OldIRQs + i;
+        __dpmi_paddr *offset = __fb_hDrvIntHandler_OldIRQs + i;
         if( __dpmi_get_protected_mode_interrupt_vector( irq_vector, offset ) != 0 ) {
             FB_UNLOCK();
             return FALSE;
@@ -217,7 +217,7 @@ static int fb_isr_init(void)
     /* query ISR offsets for slave PIC */
     for( i=0; i!=8; ++i ) {
         int irq_vector = version.slave_pic + i;
-        __dpmi_paddr *offset = fb_hDrvIntHandler_OldIRQs + i + 8;
+        __dpmi_paddr *offset = __fb_hDrvIntHandler_OldIRQs + i + 8;
         if( __dpmi_get_protected_mode_interrupt_vector( irq_vector, offset ) != 0 ) {
             FB_UNLOCK();
             return FALSE;
@@ -225,7 +225,7 @@ static int fb_isr_init(void)
     }
 
     /* lock all generic ISR code/data */
-    if( fb_lock_memory_data( fb_hDrvIntHandler )!=0 ) {
+    if( fb_lock_memory_data( __fb_hDrvIntHandler )!=0 ) {
         FB_UNLOCK();
         return FALSE;
     }
@@ -237,14 +237,14 @@ static int fb_isr_init(void)
     for( i=0; i!=8; ++i ) {
         int irq_vector = version.master_pic + i;
         __dpmi_paddr offset = {
-            (unsigned long) fb_hDrvIntHandler_PIC1,
+            (unsigned long) __fb_hDrvIntHandler_PIC1,
             (unsigned short) _my_cs()
         };
         if( __dpmi_set_protected_mode_interrupt_vector( irq_vector, &offset )!=0 ) {
             /* When an error occurred, restore the old ISR offsets */
             for( j=0; j!=i; ++j ) {
                 int irq_vector = version.master_pic + j;
-                __dpmi_paddr *offset = fb_hDrvIntHandler_OldIRQs + j;
+                __dpmi_paddr *offset = __fb_hDrvIntHandler_OldIRQs + j;
                 __dpmi_set_protected_mode_interrupt_vector( irq_vector, offset );
             }
             succeeded = FALSE;
@@ -256,7 +256,7 @@ static int fb_isr_init(void)
         for( i=0; i!=8; ++i ) {
             int irq_vector = version.slave_pic + i;
             __dpmi_paddr offset = {
-                (unsigned long) fb_hDrvIntHandler_PIC2,
+                (unsigned long) __fb_hDrvIntHandler_PIC2,
                 (unsigned short) _my_cs()
             };
             if( __dpmi_set_protected_mode_interrupt_vector( irq_vector, &offset )!=0 ) {
@@ -264,12 +264,12 @@ static int fb_isr_init(void)
                  * for both the master and the slave PIC */
                 for( j=0; j!=8; ++j ) {
                     int irq_vector = version.master_pic + j;
-                    __dpmi_paddr *offset = fb_hDrvIntHandler_OldIRQs + j;
+                    __dpmi_paddr *offset = __fb_hDrvIntHandler_OldIRQs + j;
                     __dpmi_set_protected_mode_interrupt_vector( irq_vector, offset );
                 }
                 for( j=0; j!=i; ++j ) {
                     int irq_vector = version.slave_pic + j;
-                    __dpmi_paddr *offset = fb_hDrvIntHandler_OldIRQs + j + 8;
+                    __dpmi_paddr *offset = __fb_hDrvIntHandler_OldIRQs + j + 8;
                     __dpmi_set_protected_mode_interrupt_vector( irq_vector, offset );
                 }
                 succeeded = FALSE;
@@ -303,7 +303,7 @@ int fb_isr_set( unsigned irq_number,
     if( !fb_isr_init() )
         return FALSE;
 
-    if( fb_hDrvIntHandler[irq_number]!=NULL )
+    if( __fb_hDrvIntHandler[irq_number]!=NULL )
         fb_isr_reset( irq_number );
 
     if( fb_dos_lock_code( pfnIntHandler, fn_size )!=0 )
@@ -329,9 +329,9 @@ int fb_isr_set( unsigned irq_number,
 
     fb_dos_cli();
     function_sizes[irq_number] = fn_size;
-    fb_hDrvIntHandler[irq_number] = pfnIntHandler;
-    fb_hDrvIntStacks[irq_number].offset = pStack;
-    fb_hDrvIntStacks[irq_number].size   = stack_size;
+    __fb_hDrvIntHandler[irq_number] = pfnIntHandler;
+    __fb_hDrvIntStacks[irq_number].offset = pStack;
+    __fb_hDrvIntStacks[irq_number].size   = stack_size;
     fb_dos_sti();
 
     return TRUE;
@@ -344,22 +344,22 @@ int fb_isr_reset( unsigned irq_number )
     if( !fb_isr_init() )
         return FALSE;
 
-    if( fb_hDrvIntHandler[irq_number]!=NULL ) {
+    if( __fb_hDrvIntHandler[irq_number]!=NULL ) {
         void *pStack;
         size_t stack_size;
         FnIntHandler pfnIntHandler;
         size_t fn_size;
 
         fb_dos_cli();
-        pfnIntHandler = fb_hDrvIntHandler[irq_number];
+        pfnIntHandler = __fb_hDrvIntHandler[irq_number];
         fn_size = function_sizes[irq_number];
-        fb_hDrvIntHandler[irq_number] = NULL;
+        __fb_hDrvIntHandler[irq_number] = NULL;
         function_sizes[irq_number] = 0;
 
-        pStack = fb_hDrvIntStacks[irq_number].offset;
-        stack_size = fb_hDrvIntStacks[irq_number].size;
-        fb_hDrvIntStacks[irq_number].offset = NULL;
-        fb_hDrvIntStacks[irq_number].size = 0;
+        pStack = __fb_hDrvIntStacks[irq_number].offset;
+        stack_size = __fb_hDrvIntStacks[irq_number].size;
+        __fb_hDrvIntStacks[irq_number].offset = NULL;
+        __fb_hDrvIntStacks[irq_number].size = 0;
         fb_dos_sti();
 
         fb_dos_unlock_code( pfnIntHandler, fn_size );
@@ -374,5 +374,5 @@ int fb_isr_reset( unsigned irq_number )
 FnIntHandler fb_isr_get( unsigned irq_number )
 {
     DBG_ASSERT( irq_number < 16 );
-    return fb_hDrvIntHandler[irq_number];
+    return __fb_hDrvIntHandler[irq_number];
 }

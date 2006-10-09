@@ -69,21 +69,21 @@ endif
 
 ifeq ($(TARGET),win32)
     OSDEPPATH := win32
-    CFLAGS += -DTARGET_WIN32 -DTARGET_X86
+    CFLAGS += -DTARGET_WIN32 -DTARGET_X86 -I ../../rtlib/obj/win32
     AFLAGS += -DTARGET_WIN32
     NASMFLAGS += -f win32
 endif
     
 ifeq ($(TARGET),dos)
     OSDEPPATH := dos
-    CFLAGS += -DTARGET_DOS -DTARGET_X86
+    CFLAGS += -DTARGET_DOS -DTARGET_X86 -I ../../rtlib/obj/dos
     AFLAGS += -DTARGET_DOS
     NASMFLAGS += -f coff
 endif
     
 ifeq ($(TARGET),linux)
     OSDEPPATH := linux
-    CFLAGS += -DTARGET_LINUX -DTARGET_X86
+    CFLAGS += -DTARGET_LINUX -DTARGET_X86 -I ../../rtlib/obj/linux
     AFLAGS += -DTARGET_LINUX
     NASMFLAGS += -f elf
 endif
@@ -91,14 +91,14 @@ endif
 ifeq ($(TARGET),cygwin)
     OSDEPPATH := linux
     OSOBJPATH := cygwin
-    CFLAGS += -DTARGET_CYGWIN -DTARGET_X86
+    CFLAGS += -DTARGET_CYGWIN -DTARGET_X86 -I ../../rtlib/obj/win32
     AFLAGS += -DTARGET_CYGWIN
     NASMFLAGS += -f win32
 endif
 
 ifeq ($(TARGET),xbox)
     OSDEPPATH := xbox
-    CFLAGS += -DTARGET_XBOX -DTARGET_X86
+    CFLAGS += -DTARGET_XBOX -DTARGET_X86 -I ../../rtlib/obj/xbox
     SDLFLAGS := -DENABLE_XBOX -DDISABLE_CDROM
     CFLAGS += -std=gnu99 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-exceptions -mno-cygwin -march=i386 $(SDLFLAGS)
     CFLAGS += -I../../rtlib/xbox/inc -I../../rtlib/xbox/inc/SDL

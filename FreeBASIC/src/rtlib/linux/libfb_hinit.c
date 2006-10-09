@@ -42,15 +42,15 @@
 #include "fb_linux.h"
 
 #ifdef MULTITHREADED
-pthread_mutex_t fb_global_mutex;
-pthread_mutex_t fb_string_mutex;
+pthread_mutex_t __fb_global_mutex;
+pthread_mutex_t __fb_string_mutex;
 #ifndef PTHREAD_MUTEX_RECURSIVE
 #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
 #endif
 extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int kind);
 #endif
 
-FBCONSOLE fb_con;
+FBCONSOLE __fb_con;
 
 typedef void (*SIGHANDLER)(int);
 static SIGHANDLER old_sighandler[NSIG];
@@ -61,13 +61,13 @@ static const char *seq[] = { "cm", "ho", "cs", "cl", "ce", "WS", "bl", "AF", "AB
 /*:::::*/
 static void *bg_thread(void *arg)
 {
-	while (fb_con.inited) {
+	while (__fb_con.inited) {
 
 		BG_LOCK();
-		if (fb_con.keyboard_handler)
-			fb_con.keyboard_handler();
-		if (fb_con.mouse_handler)
-			fb_con.mouse_handler();
+		if (__fb_con.keyboard_handler)
+			__fb_con.keyboard_handler();
+		if (__fb_con.mouse_handler)
+			__fb_con.mouse_handler();
 		BG_UNLOCK();
 
 		usleep(30000);
@@ -79,7 +79,7 @@ static void *bg_thread(void *arg)
 /*:::::*/
 static int default_getch(void)
 {
-	return fgetc(fb_con.f_in);
+	return fgetc(__fb_con.f_in);
 }
 
 
@@ -97,7 +97,7 @@ static void signal_handler(int sig)
 /*:::::*/
 static void console_resize(int sig)
 {
-	fb_con.resized = TRUE;
+	__fb_con.resized = TRUE;
 	signal(SIGWINCH, console_resize);
 }
 
@@ -109,11 +109,11 @@ void fb_hResize()
 	struct winsize win;
 	int r, c, w, h;
 
-	if ((!fb_con.inited) || (!fb_con.resized))
+	if ((!__fb_con.inited) || (!__fb_con.resized))
 		return;
 
 	win.ws_row = 0xFFFF;
-	ioctl(fb_con.h_out, TIOCGWINSZ, &win);
+	ioctl(__fb_con.h_out, TIOCGWINSZ, &win);
 	if (win.ws_row == 0xFFFF) {
 		fb_hTermOut(SEQ_QUERY_WINDOW, 0, 0);
 		if (fscanf(stdin, "\e[8;%d;%dt", &r, &c) == 2) {
@@ -128,24 +128,24 @@ void fb_hResize()
 
 	char_buffer = calloc(1, win.ws_row * win.ws_col * 2);
 	attr_buffer = char_buffer + (win.ws_row * win.ws_col);
-	if (fb_con.char_buffer) {
+	if (__fb_con.char_buffer) {
 		h = (fb_con.h < win.ws_row) ? fb_con.h : win.ws_row;
-		w = (fb_con.w < win.ws_col) ? fb_con.w : win.ws_col;
+		w = (__fb_con.w < win.ws_col) ? __fb_con.w : win.ws_col;
 		for (r = 0; r < h; r++) {
-			memcpy(char_buffer + (r * win.ws_col), fb_con.char_buffer + (r * fb_con.w), w);
-			memcpy(attr_buffer + (r * win.ws_col), fb_con.attr_buffer + (r * fb_con.w), w);
+			memcpy(char_buffer + (r * win.ws_col), __fb_con.char_buffer + (r * __fb_con.w), w);
+			memcpy(attr_buffer + (r * win.ws_col), __fb_con.attr_buffer + (r * __fb_con.w), w);
 		}
-		free(fb_con.char_buffer);
+		free(__fb_con.char_buffer);
 	}
-	fb_con.char_buffer = char_buffer;
-	fb_con.attr_buffer = attr_buffer;
+	__fb_con.char_buffer = char_buffer;
+	__fb_con.attr_buffer = attr_buffer;
 	fb_con.h = win.ws_row;
-	fb_con.w = win.ws_col;
+	__fb_con.w = win.ws_col;
 	fflush(stdin);
 	fb_hTermOut(SEQ_QUERY_CURSOR, 0, 0);
-	fscanf(stdin, "\e[%d;%dR", &fb_con.cur_y, &fb_con.cur_x);
+	fscanf(stdin, "\e[%d;%dR", &__fb_con.cur_y, &__fb_con.cur_x);
 
-	fb_con.resized = FALSE;
+	__fb_con.resized = FALSE;
 }
 
 
@@ -156,25 +156,25 @@ int fb_hTermOut( int code, int param1, int param2 )
 		"\e[?1000h\e[?1003h", "\e[?1003l\e[?1000l", "\e[H\e[J\e[0m" };
 	char *str;
 
-	if (!fb_con.inited)
+	if (!__fb_con.inited)
 		return -1;
 
 	fflush(stdout);
 	if (code > SEQ_MAX) {
 		switch (code) {
 			case SEQ_SET_COLOR_EX:
-				fprintf(fb_con.f_out, "\e[%dm", param1);
+				fprintf(__fb_con.f_out, "\e[%dm", param1);
 				break;
 				
 			default:
-				fputs(extra_seq[code - SEQ_EXTRA], fb_con.f_out);
+				fputs(extra_seq[code - SEQ_EXTRA], __fb_con.f_out);
 				break;
 		}
 	}
 	else {
-		if (!fb_con.seq[code])
+		if (!__fb_con.seq[code])
 			return -1;
-		str = tgoto(fb_con.seq[code], param1, param2);
+		str = tgoto(__fb_con.seq[code], param1, param2);
 		if (!str)
 			return -1;
 		tputs(str, 1, putchar);
@@ -188,31 +188,31 @@ int fb_hInitConsole ( )
 {
 	struct termios term_out, term_in;
 
-	if (!fb_con.inited)
+	if (!__fb_con.inited)
 		return -1;
 
 	/* Init terminal I/O */
-	fb_con.f_out = stdout;
-	fb_con.h_out = fileno(stdout);
-	if (!isatty(fb_con.h_out) || !isatty(fileno(stdin)))
+	__fb_con.f_out = stdout;
+	__fb_con.h_out = fileno(stdout);
+	if (!isatty(__fb_con.h_out) || !isatty(fileno(stdin)))
 		return -1;
-	fb_con.f_in = fopen("/dev/tty", "r+b");
-	if (!fb_con.f_in)
+	__fb_con.f_in = fopen("/dev/tty", "r+b");
+	if (!__fb_con.f_in)
 		return -1;
-	fb_con.h_in = fileno(fb_con.f_in);
+	__fb_con.h_in = fileno(__fb_con.f_in);
 
 	/* Output setup */
-	if (tcgetattr(fb_con.h_out, &fb_con.old_term_out))
+	if (tcgetattr(__fb_con.h_out, &__fb_con.old_term_out))
 		return -1;
-	memcpy(&term_out, &fb_con.old_term_out, sizeof(term_out));
+	memcpy(&term_out, &__fb_con.old_term_out, sizeof(term_out));
 	term_out.c_oflag |= OPOST;
-	if (tcsetattr(fb_con.h_out, TCSANOW, &term_out))
+	if (tcsetattr(__fb_con.h_out, TCSANOW, &term_out))
 		return -1;
 
 	/* Input setup */
-	if (tcgetattr(fb_con.h_in, &fb_con.old_term_in))
+	if (tcgetattr(__fb_con.h_in, &__fb_con.old_term_in))
 		return -1;
-	memcpy(&term_in, &fb_con.old_term_in, sizeof(term_in));
+	memcpy(&term_in, &__fb_con.old_term_in, sizeof(term_in));
 	/* Send SIGINT on control-C */
 	term_in.c_iflag |= BRKINT;
 	/* Disable Xon/off and input BREAK condition ignoring */
@@ -223,23 +223,23 @@ int fb_hInitConsole ( )
 	term_in.c_cc[VMIN] = 1;
 	term_in.c_cc[VTIME] = 0;
 
-	if (tcsetattr(fb_con.h_in, TCSANOW, &term_in))
+	if (tcsetattr(__fb_con.h_in, TCSANOW, &term_in))
 		return -1;
 	/* Don't block */
-	fb_con.old_in_flags = fcntl(fb_con.h_in, F_GETFL, 0);
-	fb_con.in_flags = fb_con.old_in_flags | O_NONBLOCK;
-	fcntl(fb_con.h_in, F_SETFL, fb_con.in_flags);
+	__fb_con.old_in_flags = fcntl(__fb_con.h_in, F_GETFL, 0);
+	__fb_con.in_flags = __fb_con.old_in_flags | O_NONBLOCK;
+	fcntl(__fb_con.h_in, F_SETFL, __fb_con.in_flags);
 
-	if (fb_con.inited == INIT_CONSOLE)
+	if (__fb_con.inited == INIT_CONSOLE)
 		fb_hTermOut(SEQ_INIT_CHARSET, 0, 0);
 	fb_hTermOut(SEQ_INIT_KEYPAD, 0, 0);
 
 	/* Initialize keyboard and mouse handlers if set */
 	BG_LOCK();
-	if (fb_con.keyboard_init)
-		fb_con.keyboard_init();
-	if (fb_con.mouse_init)
-		fb_con.mouse_init();
+	if (__fb_con.keyboard_init)
+		__fb_con.keyboard_init();
+	if (__fb_con.mouse_init)
+		__fb_con.mouse_init();
 	BG_UNLOCK();
 
 	return 0;
@@ -275,15 +275,15 @@ void fb_hInit ( void )
 	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
 
 	/* Init multithreading support */
-	pthread_mutex_init(&fb_global_mutex, &attr);
-	pthread_mutex_init(&fb_string_mutex, &attr);
+	pthread_mutex_init(&__fb_global_mutex, &attr);
+	pthread_mutex_init(&__fb_string_mutex, &attr);
 #endif
 
-	pthread_mutex_init( &fb_con.bg_mutex, NULL );
+	pthread_mutex_init( &__fb_con.bg_mutex, NULL );
 
-	memset(&fb_con, 0, sizeof(fb_con));
+	memset(&__fb_con, 0, sizeof(__fb_con));
 
-	fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
+	__fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
 
 	/* Init termcap */
 	term = getenv("TERM");
@@ -298,23 +298,23 @@ void fb_hInit ( void )
 	if (!tgetflag("am"))
 		return;
 	for (i = 0; i < SEQ_MAX; i++)
-		fb_con.seq[i] = tgetstr(seq[i], NULL);
+		__fb_con.seq[i] = tgetstr(seq[i], NULL);
 
 	if ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5)))
-		fb_con.inited = INIT_CONSOLE;
+		__fb_con.inited = INIT_CONSOLE;
 	else
-		fb_con.inited = INIT_X11;
+		__fb_con.inited = INIT_X11;
 	if (!strncasecmp(term, "eterm", 5))
-		fb_con.term_type = TERM_ETERM;
+		__fb_con.term_type = TERM_ETERM;
 	else
-		fb_con.term_type = TERM_GENERIC;
+		__fb_con.term_type = TERM_GENERIC;
 	if (fb_hInitConsole()) {
-		fb_con.inited = FALSE;
+		__fb_con.inited = FALSE;
 		return;
 	}
-	fb_con.keyboard_getch = default_getch;
+	__fb_con.keyboard_getch = default_getch;
 
-	pthread_create( &fb_con.bg_thread, NULL, bg_thread, NULL );
+	pthread_create( &__fb_con.bg_thread, NULL, bg_thread, NULL );
 
 	/* Install signal handlers to quietly shut down */
 	for (i = 0; sigs[i] >= 0; i++)
@@ -322,8 +322,8 @@ void fb_hInit ( void )
 
 	signal(SIGWINCH, console_resize);
 
-	fb_con.char_buffer = NULL;
-	fb_con.resized = TRUE;
-	fb_con.fg_color = fb_con.bg_color = -1;
+	__fb_con.char_buffer = NULL;
+	__fb_con.resized = TRUE;
+	__fb_con.fg_color = __fb_con.bg_color = -1;
 	fb_hResize();
 }

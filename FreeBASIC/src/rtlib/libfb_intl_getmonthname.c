@@ -87,7 +87,7 @@ FBSTRING *fb_IntlGetMonthName( int month, int short_names, int disallow_localize
     } else {
         res = fb_StrAllocTempDescZ( pszMonthNamesLong[month-1] );
     }
-    if( res==&fb_strNullDesc )
+    if( res==&__fb_ctx.null_desc )
         return NULL;
     return res;
 }
