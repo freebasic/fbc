@@ -129,7 +129,7 @@ void fb_hResize()
 	char_buffer = calloc(1, win.ws_row * win.ws_col * 2);
 	attr_buffer = char_buffer + (win.ws_row * win.ws_col);
 	if (__fb_con.char_buffer) {
-		h = (fb_con.h < win.ws_row) ? fb_con.h : win.ws_row;
+		h = (__fb_con.h < win.ws_row) ? __fb_con.h : win.ws_row;
 		w = (__fb_con.w < win.ws_col) ? __fb_con.w : win.ws_col;
 		for (r = 0; r < h; r++) {
 			memcpy(char_buffer + (r * win.ws_col), __fb_con.char_buffer + (r * __fb_con.w), w);
@@ -139,7 +139,7 @@ void fb_hResize()
 	}
 	__fb_con.char_buffer = char_buffer;
 	__fb_con.attr_buffer = attr_buffer;
-	fb_con.h = win.ws_row;
+	__fb_con.h = win.ws_row;
 	__fb_con.w = win.ws_col;
 	fflush(stdin);
 	fb_hTermOut(SEQ_QUERY_CURSOR, 0, 0);

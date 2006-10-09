@@ -50,5 +50,5 @@ int fb_ConsoleGetMaxRow( void )
 	if (!__fb_con.inited)
 		return 24;
 	
-	return fb_con.h;
+	return __fb_con.h;
 }

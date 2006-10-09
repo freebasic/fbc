@@ -62,7 +62,7 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 	temp = alloca( chars * 4 + 1 );
 
 	/* ToDo: handle scrolling for internal characters/attributes buffer? */
-    avail = (__fb_con.w * fb_con.h) - (((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1);
+    avail = (__fb_con.w * __fb_con.h) - (((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1);
     avail_len = chars;
 	if (avail < avail_len)
 		avail_len = avail;
@@ -100,8 +100,8 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 		{
 			__fb_con.cur_x = 1;
 			++__fb_con.cur_y;
-			if( __fb_con.cur_y > fb_con.h )
-				__fb_con.cur_y = fb_con.h;
+			if( __fb_con.cur_y > __fb_con.h )
+				__fb_con.cur_y = __fb_con.h;
 		}
 	}
 

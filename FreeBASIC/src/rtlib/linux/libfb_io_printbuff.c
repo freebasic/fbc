@@ -61,7 +61,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 	fb_hResize();
 	
 	/* ToDo: handle scrolling for internal characters/attributes buffer? */
-    avail = (__fb_con.w * fb_con.h) - (((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1);
+    avail = (__fb_con.w * __fb_con.h) - (((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1);
     avail_len = len;
 	if (avail < avail_len)
 		avail_len = avail;
@@ -94,8 +94,8 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 		if ((c == 10) || (__fb_con.cur_x >= __fb_con.w)) {
 			__fb_con.cur_x = 1;
 			__fb_con.cur_y++;
-			if (__fb_con.cur_y > fb_con.h)
-				__fb_con.cur_y = fb_con.h;
+			if (__fb_con.cur_y > __fb_con.h)
+				__fb_con.cur_y = __fb_con.h;
 		}
 	}
 

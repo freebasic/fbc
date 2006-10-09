@@ -67,10 +67,10 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 		__fb_con.cur_x = x;
 	else
 		__fb_con.cur_x = __fb_con.w;
-	if (y <= fb_con.h)
+	if (y <= __fb_con.h)
 		__fb_con.cur_y = y;
 	else
-		__fb_con.cur_y = fb_con.h;
+		__fb_con.cur_y = __fb_con.h;
 	fb_hTermOut(SEQ_LOCATE, x-1, y-1);
 	if (cursor == 0) {
 		fb_hTermOut(SEQ_HIDE_CURSOR, 0, 0);
@@ -136,7 +136,7 @@ FBCALL unsigned int fb_ConsoleReadXY( int x, int y, int colorflag )
 
 	fb_hResize();
 
-	if ((!__fb_con.inited) || (x < 1) || (x > __fb_con.w) || (y < 1) || (y > fb_con.h))
+	if ((!__fb_con.inited) || (x < 1) || (x > __fb_con.w) || (y < 1) || (y > __fb_con.h))
 		return 0;
 
 	if (colorflag)
