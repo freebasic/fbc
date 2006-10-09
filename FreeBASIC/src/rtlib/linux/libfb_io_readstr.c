@@ -53,21 +53,26 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 	
 	fb_ConsoleGetSize(&cols, NULL);
 	
-	do {
-		while (((k = fb_hGetCh(TRUE)) == -1) || (k & 0x100))
-			;
+	do 
+	{
+		while( ((k = fb_hGetCh(TRUE)) == -1) || (k & 0x100) )
+			fb_Delay( 10 );
+
 		/* drop subsequent keypresses, if any; this is needed to avoid escape
 		 * sequence parsing problems in the fb_ConsoleGetXY() call below.
 		 */
-		while (fb_hGetCh(TRUE) >= 0)
-			;
+		while( fb_hGetCh(TRUE) >= 0 )
+			fb_Delay( 10 );
 		
 		fb_ConsoleGetXY(&x, &y);
 		
-		if (k == 8) {
-			if (pos > 0) {
+		if (k == 8) 
+		{
+			if (pos > 0) 
+			{
 				x--;
-				if (x <= 0) {
+				if (x <= 0) 
+				{
 					x = cols;
 					y--;
 					if (y <= 0)
@@ -78,8 +83,10 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 				pos--;
 			}
 		}
-		else if (k != '\t') {
-			if (pos < len - 1) {
+		else if (k != '\t') 
+		{
+			if (pos < len - 1) 
+			{
 				buffer[pos++] = ch[0] = k;
 				fb_ConsolePrintBuffer(ch, 0);
 				if (x == cols)
@@ -87,6 +94,7 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 			}
 		}
 	} while (k != '\r');
+
 	fputc('\n', __fb_con.f_out);
 	buffer[pos] = '\0';
 	
