@@ -1919,6 +1919,8 @@ private sub _emitLOADF2L _
 		outp ostr
 	end if
 
+	hPrepOperand64( dvreg, dst, aux )
+
 	'' signed?
 	if( symbIsSigned( dvreg->dtype ) ) then
 
@@ -1927,18 +1929,24 @@ private sub _emitLOADF2L _
 		ostr = "fistp " + dtypeTB(dvreg->dtype).mname + " [esp]"
 		outp ostr
 
-		hPrepOperand64( dvreg, dst, aux )
-
-		hPOP( dst )
-		hPOP( aux )
-
-
 	'' unsigned.. try a bigger type
 	else
-
-		'' handled by AST already..
-
+		outp "fld st(0)"
+		'' UWtype hi = (UWtype)(a / Wtype_MAXp1_F)
+		outp "push 0x4f800000"
+		outp "fdiv dword ptr [esp]"
+		outp "fistp dword ptr [esp]"
+		'' UWtype lo = (UWtype)(a - ((DFtype)hi) * Wtype_MAXp1_F)
+		outp "fild dword ptr [esp]"
+		outp "push 0x4f800000"
+		outp "fmul dword ptr [esp]"
+		outp "fsubp"
+		outp "fistp dword ptr [esp]"
+		'' ((UDWtype) hi << W_TYPE_SIZE) | lo
 	end if
+
+	hPOP( dst )
+	hPOP( aux )
 
 end sub
 

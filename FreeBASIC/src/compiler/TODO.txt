@@ -1,9 +1,6 @@
 [ ] remove the internal profiler and use gprof instead, the former won't work with
     destructors
 
-[ ] ___fixunsdfdi() will do int/floor() to convert the floating-point value to
-    unsigned, while culongint() should do round()
-
 [ ] ctor/dtor
 	- how to handle: if( foo().bar().baz(0,1,3).int = 0 ) then ...
 

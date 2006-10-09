@@ -411,13 +411,6 @@ function astNewCONV _
 		end if
 	end if
 
-	'' handle special cases..
-	if( to_dtype = FB_DATATYPE_ULONGINT ) then
-		if( ldclass = FB_DATACLASS_FPOINT ) then
-			return rtlMathFp2ULongint( l, ldtype )
-		end if
-	end if
-
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CONV, to_dtype, to_subtype )
 	if( n = NULL ) then
