@@ -77,7 +77,6 @@ typedef struct MODESLIST {
  */
 typedef HRESULT (WINAPI *DIRECTDRAWCREATE)(GUID FAR *lpGUID,LPDIRECTDRAW FAR *lplpDD,IUnknown FAR *pUnkOuter);
 typedef HRESULT (WINAPI *DIRECTINPUTCREATE)(HINSTANCE hinst,DWORD dwVersion,LPDIRECTINPUT *lplpDI,LPUNKNOWN pUnkOuter);
-typedef BOOL (WINAPI *SETLAYEREDWINDOWATTRIBUTES)(HWND hWnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
 
 /* Unfortunately c_dfDIKeyboard is a required global variable
  * defined in import library LIBDINPUT.A, and as we're not
@@ -144,12 +143,11 @@ static int directx_init(void)
 	LPDIRECTDRAWCLIPPER lpDDC = NULL;
 	DIRECTDRAWCREATE DirectDrawCreate;
 	DIRECTINPUTCREATE DirectInputCreate;
-	SETLAYEREDWINDOWATTRIBUTES SetLayeredWindowAttributes;
 	DDSURFACEDESC desc;
 	DDPIXELFORMAT format;
 	HRESULT res;
 	HMODULE module;
-	DWORD style, ex_style = 0;
+	DWORD style;
 	int i, depth, is_rgb = FALSE, height, flags;
 
 	lpDD = NULL;
@@ -221,16 +219,6 @@ static int directx_init(void)
 	else {
 		if (fb_win32.flags & DRIVER_NO_FRAME) {
 			style = WS_POPUP | WS_VISIBLE;
-			if (fb_win32.flags & DRIVER_SHAPED_WINDOW) {
-				if (fb_win32.version < 0x500)
-					return -1;
-				ex_style = WS_EX_LAYERED;
-				if (!(module = GetModuleHandle("user32.dll")))
-					return -1;
-				SetLayeredWindowAttributes = (SETLAYEREDWINDOWATTRIBUTES)GetProcAddress(module, "SetLayeredWindowAttributes");
-				if (!SetLayeredWindowAttributes)
-					return -1;
-			}
 		}
 		else {
 			style = (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE;
@@ -240,14 +228,12 @@ static int directx_init(void)
 		AdjustWindowRect(&rect, style, 0);
 		rect.right -= rect.left;
 		rect.bottom -= rect.top;
-		fb_win32.wnd = CreateWindowEx(ex_style, fb_win32.window_class, fb_win32.window_title, style,
+		fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title, style,
 				   (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
 				   (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1,
 				   rect.right, rect.bottom, NULL, NULL, fb_win32.hinstance, NULL);
 		if (!fb_win32.wnd)
 			return -1;
-		if (fb_win32.flags & DRIVER_SHAPED_WINDOW)
-			SetLayeredWindowAttributes(fb_win32.wnd, (fb_win32.depth > 8) ? RGB(255, 0, 255) : 0, 0, LWA_COLORKEY);
 		if (IDirectDraw2_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_NORMAL) != DD_OK)
 			return -1;
 		if (IDirectDraw2_CreateClipper(lpDD, 0, &lpDDC, NULL) != DD_OK)
@@ -438,7 +424,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 {
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
 
-	if (flags & DRIVER_OPENGL)
+	if (flags & (DRIVER_OPENGL | DRIVER_SHAPED_WINDOW))
 		return -1;
 	fb_win32.init = directx_init;
 	fb_win32.exit = directx_exit;
