@@ -27,10 +27,11 @@ type __fd_mask as integer
 
 #define __NFDBITS (8 * len(__fd_mask))
 #define	__FDELT(d) ((d) \ __NFDBITS)
-#define	__FDMASK(d) ((__fd_mask) 1 shl ((d) mod __NFDBITS))
+#define	__FDMASK(d) cast(__fd_mask, 1 shl ((d) mod __NFDBITS))
 
 type fd_set
-	__fds_bits(0 to 1024 \ (8 * len(__fd_mask))-1) as __fd_mask
+	___fds_bits(0 to 1024 \ (8 * len(__fd_mask))-1) as __fd_mask
+	#define __FDS_BITS(set) (set)->___fds_bits
 end type
 
 #define	FD_SETSIZE __FD_SETSIZE

@@ -22,15 +22,16 @@ end type
 
 #macro __FD_ZERO(set)
   scope
-    dim as uinteger __i
+    dim as integer __i
     dim as fd_set ptr __arr = (set)
     for __i = 0 to (len(fd_set) \ len(__fd_mask))-1
       __FDS_BITS(__arr)(__i) = 0
+	next
   end scope
 #endmacro
 
-#define __FD_SET(d, set) __FDS_BITS(set)(__FDELT (d)) or= __FDMASK(d)
-#define __FD_CLR(d, set) __FDS_BITS(set)(__FDELT (d)) and= not __FDMASK(d)
-#define __FD_ISSET(d, set) ((__FDS_BITS(set)(__FDELT(d)) and __FDMASK(d)) <> 0)
+#define __FD_SET(d, set) __FDS_BITS(set) __FDELT(d) or= __FDMASK(d)
+#define __FD_CLR(d, set) __FDS_BITS(set) __FDELT(d) and= not __FDMASK(d)
+#define __FD_ISSET(d, set) ((__FDS_BITS(set) __FDELT(d) and __FDMASK(d)) <> 0)
 
 #endif
