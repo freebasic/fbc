@@ -54,6 +54,7 @@ Version 0.17 Beta:
 - serial device support in Linux, written by Jose Manuel Postigo (v1c)
 - the __PATH__ intrinsic define, that returns the __FILE__'s path - the patch was sent by cha0s (v1c)
 - byval structs returned in registers can now be passed byref to other functions (v1c)
+- all gfx primitives can now respect the alpha channel; just init the screen with the new GFX_ALPHA_PRIMITIVES flag (&h20) (lillo)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)

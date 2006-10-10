@@ -539,7 +539,7 @@ static void init_put(void)
 			case 24:
 			case 32:
 				fb_hPutTrans = fb_hPutTrans4MMX;
-				fb_hPutAlpha = fb_hPutAlpha4MMX;
+				fb_hPutAlpha = fb_hPutAlpha4C;//MMX;
 				fb_hPutBlend = fb_hPutBlend4MMX;
 				fb_hPutAdd = fb_hPutAdd4MMX;
 				fb_hPutCustom = fb_hPutCustom4;
@@ -637,7 +637,7 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	if (!fb_mode)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
-	fb_hPrepareTarget(target);
+	fb_hPrepareTarget(target, MASK_A_32);
 	
 	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
 	

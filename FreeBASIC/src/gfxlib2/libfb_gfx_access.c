@@ -64,7 +64,7 @@ FBCALL void *fb_GfxScreenPtr(void)
 {
 	if (!fb_mode)
 		return NULL;
-	fb_hPrepareTarget(NULL);
+	fb_hPrepareTarget(NULL, MASK_A_32);
 	
 	return fb_mode->line[0];
 }

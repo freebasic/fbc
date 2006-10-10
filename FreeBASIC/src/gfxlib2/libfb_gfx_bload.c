@@ -184,7 +184,7 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
 
-	fb_hPrepareTarget(NULL);
+	fb_hPrepareTarget(NULL, MASK_A_32);
 
 	id = fgetc(f);
 	switch (id) {

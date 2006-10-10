@@ -35,7 +35,7 @@ FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, 
 	if (!fb_mode)
 		return;
 
-	fb_hPrepareTarget(NULL);
+	fb_hPrepareTarget(NULL, border_color);
 
 	fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
 

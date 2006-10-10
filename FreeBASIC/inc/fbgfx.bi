@@ -32,6 +32,7 @@
 #define GFX_NO_SWITCH		&h04
 #define GFX_NO_FRAME		&h08
 #define GFX_SHAPED_WINDOW	&h10
+#define GFX_ALPHA_PRIMITIVES	&h20
 '' OpenGL options
 #define GFX_STENCIL_BUFFER	&h10000
 #define GFX_ACCUMULATION_BUFFER	&h20000

@@ -85,6 +85,7 @@ extern "C" {
 #define DRIVER_NO_SWITCH	0x00000004
 #define DRIVER_NO_FRAME		0x00000008
 #define DRIVER_SHAPED_WINDOW	0x00000010
+#define DRIVER_ALPHA_PRIMITIVES	0x00000020
 #define DRIVER_OPENGL_OPTIONS	0x000F0000
 #define HAS_STENCIL_BUFFER	0x00010000
 #define HAS_ACCUMULATION_BUFFER	0x00020000
@@ -100,6 +101,7 @@ extern "C" {
 #define SCREEN_AUTOLOCKED	0x00000020
 #define PRINT_SCROLL_WAS_OFF	0x00000040
 #define VIEW_PORT_SET		0x00000080
+#define ALPHA_PRIMITIVES	0x00000100
 
 #define COORD_TYPE_AA		0
 #define COORD_TYPE_AR		1
@@ -120,6 +122,7 @@ extern "C" {
 
 #define MASK_RB_32			0x00FF00FF
 #define MASK_G_32			0x0000FF00
+#define MASK_A_32			0xFF000000
 
 #define MASK_RB_16			0xF81F
 #define MASK_R_16			0xF800
@@ -256,7 +259,7 @@ extern PUTTER *fb_hGetPutter(int mode, int *alpha);
 extern unsigned int fb_hMakeColor(unsigned int index, int r, int g, int b);
 extern unsigned int fb_hFixColor(unsigned int color);
 extern void fb_hRestorePalette(void);
-extern void fb_hPrepareTarget(void *target);
+extern void fb_hPrepareTarget(void *target, unsigned int color);
 extern void fb_hTranslateCoord(float fx, float fy, int *x, int *y);
 extern void fb_hFixRelative(int coord_type, float *x1, float *y1, float *x2, float *y2);
 extern void fb_hFixCoordsOrder(int *x1, int *y1, int *x2, int *y2);
@@ -351,11 +354,9 @@ void fb_image_convert_32bgrto32(const unsigned char *src, unsigned char *dest, i
 FBCALL void fb_GfxImageConvertRow( const unsigned char *src, int src_bpp, unsigned char *dest, int dst_bpp, int width, int isrgb );
 
 /** Returns TRUE if application is in graphics mode.
- *
- * This implementation is a hack until I found a better way to detect this.
  */
 #define FB_GFX_ACTIVE() \
-    (__fb_ctx.hooks.printbuffproc!=NULL)
+    (fb_mode!=NULL)
 
 /** Returns the code page as integral value.
  *

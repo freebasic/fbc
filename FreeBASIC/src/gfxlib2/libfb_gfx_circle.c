@@ -28,12 +28,13 @@
 
 
 /*:::::*/
-static void draw_scanline(int y, int x1, int x2, unsigned int color, int fill)
+static void draw_scanline(int y, int x1, int x2, unsigned int color, int fill, char *filled)
 {
 	if ((y >= fb_mode->view_y) && (y < fb_mode->view_y + fb_mode->view_h)) {
 		if (fill) {
-			if ((x2 < fb_mode->view_x) || (x1 >= fb_mode->view_x + fb_mode->view_w))
+			if ((x2 < fb_mode->view_x) || (x1 >= fb_mode->view_x + fb_mode->view_w) || (filled[y - fb_mode->view_y]))
 				return;
+			filled[y - fb_mode->view_y] = TRUE;
 			x1 = MAX(x1, fb_mode->view_x);
 			x2 = MIN(x2, fb_mode->view_x + fb_mode->view_w - 1);
 			fb_hPixelSet(fb_mode->line[y] + (x1 * fb_mode->bpp), color, x2 - x1 + 1);
@@ -53,17 +54,19 @@ static void draw_ellipse(int x, int y, float a, float b, unsigned int color, int
 {
 	int d, x1, y1, x2, y2;
 	long long dx, dy, aq, bq, r, rx, ry;
+	char filled[fb_mode->view_h];
 
 	x1 = x - a;
 	x2 = x + a;
 	y1 = y2 = y;
+	fb_hMemSet(filled, 0, fb_mode->view_h);
 	
 	if (!b) {
-		draw_scanline(y, x1, x2, color, TRUE);
+		draw_scanline(y, x1, x2, color, TRUE, filled);
 		return;
 	}
 	else
-		draw_scanline(y, x1, x2, color, fill);
+		draw_scanline(y, x1, x2, color, fill, filled);
 	
 	aq = a * a;
 	bq = b * b;
@@ -88,8 +91,8 @@ static void draw_ellipse(int x, int y, float a, float b, unsigned int color, int
 			rx -= dy;
 			r += rx;
 		}
-		draw_scanline(y1, x1, x2, color, fill);
-		draw_scanline(y2, x1, x2, color, fill);
+		draw_scanline(y1, x1, x2, color, fill, filled);
+		draw_scanline(y2, x1, x2, color, fill, filled);
 	}
 }
 
@@ -128,7 +131,7 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 	else
 		color = fb_hFixColor(color);
 	
-	fb_hPrepareTarget(target);
+	fb_hPrepareTarget(target, color);
 	
 	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
 	

@@ -78,7 +78,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 	if ((!fb_mode) || (!command) || (!command->data))
 		return;
 	
-	fb_hPrepareTarget(target);
+	fb_hPrepareTarget(target, MASK_A_32);
 
 	x = fb_mode->last_x + 0.5;
 	y = fb_mode->last_y + 0.5;

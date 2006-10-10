@@ -128,7 +128,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 		color = fb_hFixColor(color);
 	style &= 0xFFFF;
 
-	fb_hPrepareTarget(target);
+	fb_hPrepareTarget(target, color);
 	
 	fb_hFixRelative(coord_type, &fx1, &fy1, &fx2, &fy2);
 

@@ -32,6 +32,10 @@
 
 #define WINDOW_CLASS_PREFIX "fbgfxclass_"
 
+#ifndef LWA_COLORKEY
+#define LWA_COLORKEY	0x00000001
+#endif
+
 
 typedef struct WIN32DRIVER
 {

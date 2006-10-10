@@ -55,7 +55,7 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 		return;
 	}
 	
-	fb_hPrepareTarget(NULL);
+	fb_hPrepareTarget(NULL, MASK_A_32);
 
 	if (from_page < 0)
 		src = fb_mode->line[0];

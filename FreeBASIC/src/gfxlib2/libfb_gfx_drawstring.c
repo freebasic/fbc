@@ -73,7 +73,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 			color = fb_hFixColor(color);
 	}
 	
-	fb_hPrepareTarget(target);
+	fb_hPrepareTarget(target, color);
 	
 	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
 	

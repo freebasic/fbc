@@ -169,7 +169,7 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
 	
-	fb_hPrepareTarget(NULL);
+	fb_hPrepareTarget(NULL, MASK_A_32);
 
 	p = strrchr(filename->data, '.');
 	if ((p) && (!strcasecmp(p + 1, "bmp")))

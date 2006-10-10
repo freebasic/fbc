@@ -44,7 +44,7 @@ FBCALL void fb_GfxPset(void *target, float fx, float fy, unsigned int color, int
 	else
 		color = fb_hFixColor(color);
 	
-	fb_hPrepareTarget(target);
+	fb_hPrepareTarget(target, color);
 	
 	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
 	

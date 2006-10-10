@@ -35,7 +35,7 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 	if (!fb_mode)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
-	fb_hPrepareTarget(target);
+	fb_hPrepareTarget(target, MASK_A_32);
 
 	fb_hFixRelative(coord_type, &fx1, &fy1, &fx2, &fy2);
 

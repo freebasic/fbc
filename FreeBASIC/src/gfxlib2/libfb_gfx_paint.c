@@ -82,7 +82,7 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	else
 		border_color = fb_hFixColor(border_color);
 
-	fb_hPrepareTarget(target);
+	fb_hPrepareTarget(target, color);
 
 	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
 

@@ -224,7 +224,7 @@ void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask)
             return;
     }
 
-	fb_hPrepareTarget(NULL);
+	fb_hPrepareTarget(NULL, MASK_A_32);
 
 	DRIVER_LOCK();
 

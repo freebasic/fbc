@@ -188,7 +188,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 
 	/* normalize flags */
 	if ((flags >= 0) && (flags & DRIVER_SHAPED_WINDOW))
-		flags = DRIVER_SHAPED_WINDOW | DRIVER_NO_FRAME | DRIVER_NO_SWITCH;
+		flags |= DRIVER_SHAPED_WINDOW | DRIVER_NO_FRAME | DRIVER_NO_SWITCH;
 	
     release_gfx_mem();
 
@@ -280,6 +280,8 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         fb_mode->color_association = (unsigned char *)malloc(16);
         fb_mode->key = (char *)calloc(1, 128);
         fb_color_conv_16to32 = (unsigned int *)malloc(sizeof(int) * 512);
+        if ((flags != DRIVER_NULL) && (flags & DRIVER_ALPHA_PRIMITIVES))
+        	fb_mode->flags |= ALPHA_PRIMITIVES;
 
         fb_hSetupFuncs();
         fb_hSetupData();
