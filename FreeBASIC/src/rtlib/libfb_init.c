@@ -40,23 +40,22 @@
 #include <stdlib.h>
 #include "fb.h"
 
-void fb_CallGlobalCtors( void );
-
 /* globals */
-int __fb_is_initialized = FALSE;
+int __fb_is_inicnt = 0;
 
 FB_RTLIB_CTX __fb_ctx /* not initialized */;
 
 
 /*:::::*/
-FBCALL void fb_RtInit ( void )
+void fb_hRtInit ( void )
 {
 #ifdef MULTITHREADED
 	int i;
 #endif
 
 	/* already initialized? */
-	if( __fb_is_initialized )
+	++__fb_is_inicnt;
+	if( __fb_is_inicnt != 1 )
 		return;
 
 	/* initialize context */
@@ -71,19 +70,12 @@ FBCALL void fb_RtInit ( void )
 		FB_TLSALLOC( __fb_ctx.tls_ctxtb[i] );
 #endif
 
-	/* add rtlib's exit() to queue */
-	atexit( &fb_RtExit );
-
-	/* called after atexit(), RtExit() should be called if an exception occur */
-	fb_CallGlobalCtors( );
-
-	__fb_is_initialized = TRUE;
 }
 
 /*:::::*/
 FBCALL void fb_Init ( int argc, char **argv )
 {
-	fb_RtInit( );
+	/* note: fb_RtInit() will be called from static/libfb_ctor.c */
 
 	__fb_ctx.argc = argc;
 	__fb_ctx.argv = argv;

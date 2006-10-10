@@ -47,19 +47,27 @@ FBCALL void fb_FileReset ( void )
 {
 	int i;
 
-    FB_IO_EXIT_LOCK();
+	if( __fb_ctx.do_file_reset == FALSE )
+		return;
 
-    for( i = 1; i != (FB_MAX_FILES - FB_RESERVED_FILES); i++ ) {
-        FB_FILE *handle = FB_FILE_TO_HANDLE(i);
-        if (handle->hooks!=NULL) {
+	__fb_ctx.do_file_reset = FALSE;
+
+    FB_LOCK();
+
+    for( i = 1; i != (FB_MAX_FILES - FB_RESERVED_FILES); i++ ) 
+	{
+        FB_FILE *handle = FB_FILE_TO_HANDLE_VALID( i );
+        if( handle->hooks != NULL ) 
+		{
             DBG_ASSERT(handle->hooks->pfnClose!=NULL);
             handle->hooks->pfnClose( handle );
         }
     }
-    /* clear all file handles */
-    memset(FB_FILE_TO_HANDLE(1),
-           0,
-           sizeof(FB_FILE) * (FB_MAX_FILES - FB_RESERVED_FILES));
+    
+	/* clear all file handles */
+    memset( FB_FILE_TO_HANDLE_VALID( 1 ),
+            0,
+            sizeof(FB_FILE) * (FB_MAX_FILES - FB_RESERVED_FILES) );
 
-    FB_IO_EXIT_UNLOCK();
+    FB_UNLOCK();
 }

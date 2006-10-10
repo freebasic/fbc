@@ -45,10 +45,10 @@
 /*:::::*/
 int fb_FileCloseEx( FB_FILE *handle )
 {
-    FB_IO_EXIT_LOCK();
+    FB_LOCK();
 
     if( !FB_HANDLE_USED(handle) ) {
-        FB_IO_EXIT_UNLOCK();
+    	FB_UNLOCK();
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
@@ -56,14 +56,14 @@ int fb_FileCloseEx( FB_FILE *handle )
     DBG_ASSERT(handle->hooks->pfnClose != NULL);
     int result = handle->hooks->pfnClose( handle );
     if (result != 0) {
-        FB_IO_EXIT_UNLOCK();
+        FB_UNLOCK();
         return result;
     }
 
     /* clear structure */
     memset(handle, 0, sizeof(FB_FILE));
 
-    FB_IO_EXIT_UNLOCK();
+    FB_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

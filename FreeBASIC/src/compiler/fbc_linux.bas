@@ -171,8 +171,9 @@ private function _linkFiles as integer
     ldcline += "-) "
 
 	'' crt end stuff
-	ldcline += " " + QUOTE + libdir + ("/crtend.o" + QUOTE)
-	ldcline += " " + QUOTE + libdir + ("/crtn.o" + QUOTE)
+	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
+	ldcline += QUOTE + libdir + ("/crtend.o" + QUOTE + " ")
+	ldcline += QUOTE + libdir + ("/crtn.o" + QUOTE + " ")
 
     '' invoke ld
     if( fbc.verbose ) then

@@ -282,7 +282,8 @@ private function _linkFiles as integer
     '' group
     ldcline += " -( " + liblist + "-) "
 
-	'' crt end
+	'' crt end stuff
+	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
 	ldcline += QUOTE + libdir + (RSLASH + "crtend.o" + QUOTE)
 
     if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then

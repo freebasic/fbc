@@ -40,32 +40,35 @@
 #include <stdlib.h>
 #include "fb.h"
 
-void fb_CallGlobalDtors( void );
-
-extern int __fb_is_initialized;
+extern int __fb_is_inicnt;
 
 
 /*:::::*/
 FBCALL void fb_End ( int errlevel )
 {
-	/* do nothing, real job is done at fb_RtExit(), invoked by atexit() */
+	/* note: fb_RtExit() will be called from static/libfb_ctor.c */
 
 	exit( errlevel );
 }
 
 
 /*:::::*/
-void fb_RtExit ( void )
+void fb_hRtExit ( void )
 {
 #ifdef MULTITHREADED
     int i;
 #endif
 
-	/* only call the globals dtors if an exception didn't happen while 
-	   calling the global ctors  */
-	if( __fb_is_initialized )
-		fb_CallGlobalDtors( );
-	
+	--__fb_is_inicnt;
+	if( __fb_is_inicnt != 0 )
+		return;
+
+	/* atexit() can't be used because if OPEN is called in a global ctor inside 
+	   a shared-lib and any other file function is called in the respective global
+	   dtor, it would be already reseted - the atexit() chain is called before the 
+	   global dtors one*/
+	fb_FileReset( );
+
 	/* os-dep termination */
 	fb_hEnd( 0 );
 
@@ -84,7 +87,6 @@ void fb_RtExit ( void )
 	if( __fb_ctx.error_msg )
 		fprintf( stderr, __fb_ctx.error_msg );
 		
-	__fb_is_initialized = FALSE;
 }
 
 

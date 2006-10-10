@@ -48,7 +48,7 @@ int fb_DevLptClose( struct _FB_FILE *handle )
     int res;
     DEV_LPT_INFO *devInfo;
 
-    FB_IO_EXIT_LOCK();
+    FB_LOCK();
 
     devInfo = (DEV_LPT_INFO*) handle->opaque;
     if( devInfo->uiRefCount==1 ) {
@@ -65,7 +65,7 @@ int fb_DevLptClose( struct _FB_FILE *handle )
         res = fb_ErrorSetNum( FB_RTERROR_OK );
     }
 
-    FB_IO_EXIT_UNLOCK();
+    FB_UNLOCK();
 
 	return res;
 }

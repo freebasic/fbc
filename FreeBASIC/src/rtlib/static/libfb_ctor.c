@@ -31,46 +31,35 @@
  */
 
 /*
- * globctor.c -- global constructors/destructors handling
+ * ctor.c -- rtlib initialization and cleanup
  *
  * chng: oct/2004 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
-/* prototypes for the FB constructors and destructors */
-typedef void (*FnCTOR)(void);
-typedef void (*FnDTOR)(void);
+void fb_hRtInit ( void );
+void fb_hRtExit ( void );
 
-/* variable pointing to the list of FB constructors/destructors */
-extern FnCTOR __FB_GLOBCTOR_INI__, __FB_GLOBCTOR_END__;
-extern FnDTOR __FB_GLOBDTOR_INI__, __FB_GLOBDTOR_END__;
+/* note: they must be static, or shared libraries in Linux would reuse the 
+		 same function */
 
 /*:::::*/
-void fb_CallGlobalCtors( void )
+static void fb_hDoInit( void ) __attribute__((constructor));
+static void fb_hDoInit( void )
 {
-    FnCTOR *pCTOR;
-    
-    /* LIFO */
-    for (pCTOR = &__FB_GLOBCTOR_END__; pCTOR != &__FB_GLOBCTOR_INI__; ) 
-    {
-        --pCTOR;
-        (*pCTOR)( );
-    }
+	/* the last to be defined, the first that will be called */
+
+	fb_hRtInit( );
 }
 
 /*:::::*/
-void fb_CallGlobalDtors( void )
+static void fb_hDoExit( void ) __attribute__((destructor));
+static void fb_hDoExit( void )
 {
-    FnDTOR *pDTOR;
-    
-    /* FIFO */
-    for( pDTOR = &__FB_GLOBDTOR_INI__; pDTOR != &__FB_GLOBDTOR_END__; ) 
-    {
-        (*pDTOR)( );
-        ++pDTOR;
-    }
+	/* the last to be defined, the last that will be called */
+
+	fb_hRtExit( );
 }
 

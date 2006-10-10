@@ -26,7 +26,7 @@ LIBICONV = @LIBICONV@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 SHELL = @SHELL@
-VPATH = @srcdir@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_CPU@
+VPATH = @srcdir@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_CPU@ @srcdir@/static
 
 datadir = @datadir@
 exec_prefix = @prefix@
@@ -69,13 +69,14 @@ FBRT_OSDEPOBJS := $(patsubst @srcdir@/@FBRT_TARGET@/%.c,$(FBRT_OBJDEST)/%.o,$(wi
 FBRT_OSDEPOBJS += $(patsubst @srcdir@/@FBRT_TARGET@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.s))
 FBRT_CPUDEPOBJS := $(patsubst @srcdir@/@FBRT_CPU@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_CPU@/*.c))
 FBRT_CPUDEPOBJS += $(patsubst @srcdir@/@FBRT_CPU@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_CPU@/*.s))
+FBRT_STATICOBJS := $(patsubst @srcdir@/static/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/static/*.c))
 FBRT_HEADERS := $(wildcard @srcdir@/*.h)
 FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_TARGET@/*.h)
 FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_CPU@/*.h)
 
 ##################################################################
 
-all: $(FBRT_LIB)
+all: $(FBRT_LIB) $(FBRT_STATICOBJS)
 
 .SUFFIXES:
 .SUFFIXES: .c .s .o
@@ -122,7 +123,7 @@ $(srcdir)/config.in: @MAINT@ $(srcdir)/configure
 # Other miscellaneous targets.
 
 mostlyclean:
-	-rm -rf $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS)
+	-rm -rf $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_STATICOBJS)
 
 clean: mostlyclean
 	-rm -rf makedepend$(EXEEXT) $(FBRT_LIB) $(srcdir)/autom4te.cache
@@ -144,7 +145,10 @@ html:
 info:
 install-info:
 install-man:
+
 install:
+	cp libfb*.a ../../../../lib/linux -v
+	cp $(FBRT_STATICOBJS) ../../../../lib/linux -v
 
 .PHONY: installdirs install install-strip mostlyclean clean distclean \
   maintainer-clean check installcheck dvi html info install-info \

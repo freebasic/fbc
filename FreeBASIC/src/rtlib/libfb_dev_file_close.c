@@ -48,7 +48,7 @@ int fb_DevFileClose( struct _FB_FILE *handle )
 {
     FILE *fp;
 
-    FB_IO_EXIT_LOCK();
+    FB_LOCK();
 
     fp = (FILE*) handle->opaque;
 
@@ -58,7 +58,7 @@ int fb_DevFileClose( struct _FB_FILE *handle )
 
 	handle->opaque = NULL;
 
-    FB_IO_EXIT_UNLOCK();
+    FB_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

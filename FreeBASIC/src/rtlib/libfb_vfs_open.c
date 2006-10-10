@@ -43,8 +43,6 @@
 #include <malloc.h>
 #include "fb.h"
 
-void fb_hFileCtx ( int doinit );
-
 /*::::::*/
 static fb_off_t hFileGetSize
 	(
@@ -93,14 +91,14 @@ int fb_FileOpenVfsRawEx
 {
     int result;
 
-    fb_hFileCtx ( TRUE );
-
     FB_LOCK();
 
     if (handle->hooks!=NULL) {
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
+
+	__fb_ctx.do_file_reset = TRUE;
 
     /* clear handle */
     memset(handle, 0, sizeof(FB_FILE));

@@ -1,3 +1,13 @@
+[ ] change the rtlib handling AGAIN:
+	- no direct calls to fb_RtInit, it should be called by a constructor defined in libfb_end.o
+      - being the last ctor defined, it will be the first called
+	- no direct calls to fb_RtEnd, it should be called by a destructor defined in libfb_end.o
+      - being the last dtor defined, it will be the last called
+	- both ctor and dtor should be static, or shared libs will reuse the same function
+	- remove the __FB__?TOR crap, it's not needed, because the .ctors defined in .bas files
+      will be called after the libfb_end one, same for the dtors, they will be called before
+      the libfb_end one
+
 [ ] remove the internal profiler and use gprof instead, the former won't work with
     destructors
 

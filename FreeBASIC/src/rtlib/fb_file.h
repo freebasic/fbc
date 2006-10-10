@@ -167,16 +167,8 @@ typedef FBCALL int (*FnDevOpenHook)( FBSTRING *filename,
                                      int rec_len,
                                      FnFileOpen *pfnFileOpen );
 
-
-#ifdef MULTITHREADED
-#define FB_IO_EXIT_LOCK() \
-    if( !__fb_ctx.io_is_exiting) FB_LOCK()
-#define FB_IO_EXIT_UNLOCK() \
-    if( !__fb_ctx.io_is_exiting) FB_UNLOCK()
-#else
-#define FB_IO_EXIT_LOCK()
-#define FB_IO_EXIT_UNLOCK()
-#endif
+#define FB_FILE_TO_HANDLE_VALID( index ) \
+	((struct _FB_FILE *)(__fb_ctx.fileTB + (index) - 1 + FB_RESERVED_FILES))
 
 #define FB_FILE_TO_HANDLE( index )															\
 	( (index) == 0? 																		\
@@ -184,7 +176,7 @@ typedef FBCALL int (*FnDevOpenHook)( FBSTRING *filename,
 	  ( (index) == -1? 																		\
 	  	((struct _FB_FILE *)FB_HANDLE_PRINTER) : 											\
 	  	( FB_FILE_INDEX_VALID( (index) )?													\
-		  ((struct _FB_FILE *)(__fb_ctx.fileTB + (index) - 1 + FB_RESERVED_FILES)) :		\
+		  FB_FILE_TO_HANDLE_VALID( (index) ) :												\
 		  ((struct _FB_FILE *)(NULL))														\
 		)																					\
 	  )																						\

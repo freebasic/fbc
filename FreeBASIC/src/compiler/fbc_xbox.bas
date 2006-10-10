@@ -63,7 +63,7 @@ end function
 '':::::
 private function _linkFiles as integer
 	dim as integer i
-	dim as string ldcline, ldpath, libname
+	dim as string ldcline, ldpath, libname, libdir
 	dim as string cxbepath, cxbecline
 
 	function = FALSE
@@ -113,7 +113,9 @@ private function _linkFiles as integer
     ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
     '' default lib path
-    ldcline += " -L " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + QUOTE
+	libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
+    
+	ldcline += " -L " + QUOTE + libdir + QUOTE
     '' and the current path to libs search list
     ldcline += " -L " + QUOTE + "./" + QUOTE
 
@@ -136,6 +138,9 @@ private function _linkFiles as integer
 
     '' end lib group
     ldcline += "-) "
+
+	'' crt end stuff
+	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
 
     '' invoke ld
     if( fbc.verbose ) then

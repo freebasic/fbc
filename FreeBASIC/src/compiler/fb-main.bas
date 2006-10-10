@@ -30,7 +30,7 @@
 #include once "inc\symb.bi"
 
 ':::::
-private sub hDllMainBegin ( )
+private sub hDllMainBegin_Win32 ( )
 
     dim as FBSYMBOL ptr proc, label, param
    	dim as ASTNODE ptr reason, main, procnode
@@ -99,6 +99,46 @@ const fbdllreason = "__FB_DLLREASON__"
 
    	''
    	astProcEnd( procnode, FALSE )
+
+end sub
+
+':::::
+private sub hDllMainBegin_GlobCtor ( )
+    dim as FBSYMBOL ptr proc, label
+   	dim as ASTNODE ptr main, procnode
+
+	'' sub ctor cdecl( )
+	proc = symbAddProc( symbPreAddProc( NULL ), NULL, "__fb_DllMain_ctor", NULL, _
+						FB_DATATYPE_VOID, NULL, 0, FB_SYMBATTRIB_PRIVATE, _
+						FB_FUNCMODE_CDECL )
+
+	procnode = astProcBegin( proc, FALSE )
+
+    symbSetProcIncFile( proc, NULL )
+	symbAddGlobalCtor( proc )
+
+   	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
+
+	'' main( 0, NULL )
+    main = astNewCALL( env.main.proc )
+    astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
+    astNewARG( main, astNewCONSTi( NULL, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) )
+    astAdd( main )
+
+   	astProcEnd( procnode, FALSE )
+
+end sub
+
+':::::
+private sub hDllMainBegin ( )
+
+	'' handle systems where main() or dllmain() won't be called automatically
+	select case env.clopt.target
+	case FB_COMPTARGET_WIN32
+		hDllMainBegin_Win32( )
+	case else
+		hDllMainBegin_GlobCtor( )
+	end select
 
 end sub
 
@@ -192,19 +232,10 @@ end sub
 
 '':::::
 sub fbMainBegin( )
-    dim as integer isdllmain
-
 	if( env.outf.ismain ) then
-		isdllmain = FALSE
-		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
-			if( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB ) then
-				isdllmain = TRUE
-			end if
-		end if
+		hMainBegin( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB )
 
-		hMainBegin( isdllmain )
-
-		if( isdllmain ) then
+		if( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB ) then
 			hDllMainBegin( )
 		end if
 
@@ -244,17 +275,9 @@ end sub
 
 '':::::
 sub fbMainEnd( )
-	dim as integer isdllmain
 
     if( env.outf.ismain ) then
-		isdllmain = FALSE
-		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
-			if( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB ) then
-				isdllmain = TRUE
-			end if
-		end if
-
-    	hMainEnd( isdllmain )
+    	hMainEnd( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB )
 
     else
     	hModLevelEnd( )

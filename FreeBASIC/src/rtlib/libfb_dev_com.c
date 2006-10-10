@@ -61,7 +61,7 @@ static int fb_DevComClose( struct _FB_FILE *handle )
     int res;
     DEV_COM_INFO *pInfo;
 
-    FB_IO_EXIT_LOCK();
+    FB_LOCK();
 
     pInfo = (DEV_COM_INFO*) handle->opaque;
     res = fb_SerialClose( handle, pInfo->hSerial );
@@ -70,7 +70,7 @@ static int fb_DevComClose( struct _FB_FILE *handle )
         free(pInfo);
     }
 
-    FB_IO_EXIT_UNLOCK();
+    FB_UNLOCK();
 
 	return res;
 }

@@ -1196,16 +1196,17 @@ sub emitSECTION _
 		ostr += "drectve"
 
 	case EMIT_SECTYPE_CONSTRUCTOR
-		ostr += "fb_ctors"
+		ostr += "ctors"
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
 			ostr += ", " + QUOTE + "aw" + QUOTE + ", @progbits"
 		end if
 
 	case EMIT_SECTYPE_DESTRUCTOR
-		ostr += "fb_dtors"
+		ostr += "dtors"
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
 			ostr += ", " + QUOTE +  "aw" + QUOTE + ", @progbits"
 		end if
+
 	end select
 
 	ostr += NEWLINE

@@ -42,50 +42,6 @@
 #include <stdlib.h>
 #include "fb.h"
 
-void fb_hFileCtx ( int doinit );
-
-/*:::::*/
-static void atexit_cb( void )
-{
-
-#ifdef MULTITHREADED
-	__fb_ctx.io_is_exiting = TRUE;
-#endif
-
-	fb_hFileCtx( FALSE );
-
-}
-
-/*::::: make it accessible for all VFS functions too */
-void fb_hFileCtx ( int doinit )
-{
-	static int inited = 0;
-
-    FB_IO_EXIT_LOCK();
-
-	// initialize?
-	if( doinit )
-	{
-		if( !inited )
-		{
-			atexit( &atexit_cb );
-			inited = TRUE;
-		}
-	}
-
-	// finalize..
-	else
-	{
-		if( inited )
-		{
-			fb_FileReset( );
-			inited = FALSE;
-		}
-	}
-
-    FB_IO_EXIT_UNLOCK();
-}
-
 /*:::::*/
 int fb_FileOpenEx( FB_FILE *handle, FBSTRING *str_filename, unsigned int mode,
                    unsigned int access, unsigned int lock, int len )

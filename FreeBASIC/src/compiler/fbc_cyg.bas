@@ -189,6 +189,9 @@ private function _linkFiles as integer
     '' end lib group
     ldcline += "-) "
 
+	'' crt end stuff
+	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
+
 	'' crt end
     if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
         '' create the def list to use when creating the import library

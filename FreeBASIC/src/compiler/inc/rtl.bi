@@ -134,7 +134,6 @@
 #define FB_RTL_INIT 					"fb_Init"
 #define FB_RTL_INITSIGNALS 				"fb_InitSignals"
 #define FB_RTL_INITPROFILE 				"fb_InitProfile"
-#define FB_RTL_INITCTOR 				"fb_CallCTORS"
 #define FB_RTL_INITCRTCTOR 				"__main"
 #define FB_RTL_END 						"fb_End"
 #define FB_RTL_ATEXIT					"{atexit}"
@@ -423,7 +422,6 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_INIT
 	FB_RTL_IDX_INITSIGNALS
 	FB_RTL_IDX_INITPROFILE
-	FB_RTL_IDX_INITCTOR
 	FB_RTL_IDX_INITCRTCTOR
 	FB_RTL_IDX_END
 	FB_RTL_IDX_ATEXIT

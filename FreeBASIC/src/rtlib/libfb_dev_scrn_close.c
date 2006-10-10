@@ -44,12 +44,12 @@
 /*:::::*/
 int fb_DevScrnClose( struct _FB_FILE *handle )
 {
-    FB_IO_EXIT_LOCK();
+    FB_LOCK();
 
     if( handle->opaque != NULL )
         free(handle->opaque);
 
-    FB_IO_EXIT_UNLOCK();
+    FB_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

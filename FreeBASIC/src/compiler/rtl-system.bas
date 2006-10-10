@@ -69,7 +69,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		/' __main CDECL ( ) as void '/ _
 		( _
 			@FB_RTL_INITCRTCTOR, NULL, _
-	 		FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
+	 		FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		0 _
 	 	), _
@@ -755,10 +755,9 @@ function rtlAtExit _
 
 	function = NULL
 
-	'' RtInit( )
+	'' atexit( proc )
     proc = astNewCALL( PROCLOOKUP( ATEXIT ) )
 
-    '' sub cdecl()
     if( astNewARG( proc, procexpr ) = NULL ) then
     	exit function
     end if
@@ -766,5 +765,6 @@ function rtlAtExit _
     function = proc
 
 end function
+
 
 
