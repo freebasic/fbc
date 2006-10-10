@@ -280,10 +280,15 @@ private function _linkFiles as integer
     ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
     '' group
-    ldcline += " -( " + liblist + "-) "
+    ldcline += " -( " + liblist
+
+	'' note: for some odd reason, this object must be included in the group when
+	'' 		 linking a DLL, or LD will fail with an "undefined symbol" msg. at least
+	'' 		 the order the .ctors/.dtors appeared will be preserved, so the rtlib ones
+	'' 		 will be the first/last called, respectively
+	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " -) ")
 
 	'' crt end stuff
-	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
 	ldcline += QUOTE + libdir + (RSLASH + "crtend.o" + QUOTE)
 
     if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then

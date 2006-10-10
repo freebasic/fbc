@@ -170,8 +170,10 @@ private function _linkFiles as integer
     '' end lib group
     ldcline += "-) "
 
-	'' crt end stuff
+	'' rtlib initialization and termination
 	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
+
+	'' crt end stuff
 	ldcline += QUOTE + libdir + ("/crtend.o" + QUOTE + " ")
 	ldcline += QUOTE + libdir + ("/crtn.o" + QUOTE + " ")
 

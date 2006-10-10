@@ -85,8 +85,8 @@ private function _linkFiles as integer
 	end if
 
 	'' set script file and subsystem
-	ldcline = "-T " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_BIN ) + "i386pe.x" + QUOTE + _
-			  " -nostdlib --file-alignment 0x20 --section-alignment 0x20 -shared"
+	ldcline = "-T " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_BIN ) + ("i386pe.x" + QUOTE + _
+			  " -nostdlib --file-alignment 0x20 --section-alignment 0x20 -shared")
 
     if( len( fbc.mapfile ) > 0) then
         ldcline += " -Map " + fbc.mapfile
@@ -114,7 +114,7 @@ private function _linkFiles as integer
 
     '' default lib path
 	libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
-    
+
 	ldcline += " -L " + QUOTE + libdir + QUOTE
     '' and the current path to libs search list
     ldcline += " -L " + QUOTE + "./" + QUOTE
@@ -139,7 +139,7 @@ private function _linkFiles as integer
     '' end lib group
     ldcline += "-) "
 
-	'' crt end stuff
+	'' rtlib initialization and termination
 	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
 
     '' invoke ld
