@@ -28,7 +28,7 @@
 
 	dim shared as FB_RTL_MACRODEF macrodata(0 to 15) = _
 	{ _
-		/' #define RGB(r,g,b) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b)) '/ _
+		/' #define RGB(r,g,b) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or &hFF000000) '/ _
 		( _
 			@"RGB", _
 	 		FB_RTL_OPT_NONE, _
@@ -43,7 +43,7 @@
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
 	 			( FB_DEFTOK_TYPE_TEX, @") shl 8) or cuint(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 2 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @"))" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @") or &hFF000000)" ), _
 	 			( -1 ) _
 	 		} _
 	 	), _
