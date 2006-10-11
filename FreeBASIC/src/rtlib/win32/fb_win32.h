@@ -77,7 +77,11 @@ typedef struct _FB_DIRCTX
 #endif
 } FB_DIRCTX;
 
+#ifdef TARGET_CYGWIN
+typedef _off64_t fb_off_t;
+#else
 typedef off64_t fb_off_t;
+#endif
 
 #ifdef MULTITHREADED
 extern CRITICAL_SECTION __fb_global_mutex;
