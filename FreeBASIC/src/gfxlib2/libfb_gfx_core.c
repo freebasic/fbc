@@ -41,6 +41,8 @@ extern void *fb_hPixelSetAlpha4MMX(void *dest, int color, size_t size);
 /*:::::*/
 void fb_hPrepareTarget(void *target, unsigned int color)
 {
+	PUT_HEADER *header;
+	unsigned char *data;
 	int i, h;
 	
 	if (target) {
@@ -51,17 +53,27 @@ void fb_hPrepareTarget(void *target, unsigned int color)
 				old_view_w = fb_mode->view_w;
 				old_view_h = fb_mode->view_h;
 			}
+			header = (PUT_HEADER *)target;
 			fb_mode->view_x = 0;
 			fb_mode->view_y = 0;
-			fb_mode->view_w = *((short *)target) >> 3;
-			fb_mode->view_h = h = *((short *)(target + 2));
-			fb_mode->target_pitch = fb_mode->view_w * fb_mode->bpp;
+			if (header->type == PUT_HEADER_NEW) {
+				fb_mode->view_w = header->width;
+				fb_mode->view_h = h = header->height;
+				fb_mode->target_pitch = header->pitch;
+				data = (unsigned char *)target + sizeof(PUT_HEADER);
+			}
+			else {
+				fb_mode->view_w = header->old.width;
+				fb_mode->view_h = h = header->old.height;
+				fb_mode->target_pitch = fb_mode->view_w * fb_mode->bpp;
+				data = (unsigned char *)target + 4;
+			}
 			if (h > fb_mode->max_h) {
 				fb_mode->line = (unsigned char **)realloc(fb_mode->line, h * sizeof(unsigned char *));
 				fb_mode->max_h = h;
 			}
 			for (i = 0; i < h; i++)
-				fb_mode->line[i] = (unsigned char *)target + 4 + (i * fb_mode->target_pitch);
+				fb_mode->line[i] = data + (i * fb_mode->target_pitch);
 			fb_mode->flags |= BUFFER_SET;
 		}
 	}

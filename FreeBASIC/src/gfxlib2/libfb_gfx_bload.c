@@ -57,6 +57,7 @@ typedef struct BMP_HEADER
 static int load_bmp(FILE *f, void *dest)
 {
 	BMP_HEADER header;
+	PUT_HEADER *put_header;
 	unsigned char *buffer, *d = NULL;
 	int result = FB_RTERROR_OK;
 	int i, j, color, rgb[3], expand, size, padding, palette[256], palette_entries;
@@ -78,9 +79,13 @@ static int load_bmp(FILE *f, void *dest)
 	}
 
 	if (dest) {
-		*(unsigned short *)dest = (header.biWidth << 3) | fb_mode->bpp;
-		*(unsigned short *)(dest + 2) = header.biHeight;
-		d = (unsigned char *)dest + 4;
+		put_header = (PUT_HEADER *)dest;
+		put_header->type = PUT_HEADER_NEW;
+		put_header->bpp = fb_mode->bpp;
+		put_header->width = header.biWidth;
+		put_header->height = header.biHeight;
+		put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
+		d = (unsigned char *)dest + sizeof(PUT_HEADER);
 	}
 
 	expand = (header.biBitCount < 8) ? header.biBitCount : 0;
@@ -146,7 +151,7 @@ static int load_bmp(FILE *f, void *dest)
 			break;
 		}
 		if (dest)
-			convert(buffer, d + (i * header.biWidth * fb_mode->bpp), header.biWidth);
+			convert(buffer, d + (i * put_header->pitch), header.biWidth);
 		else if (i < fb_mode->h)
 			convert(buffer, fb_mode->line[i], MIN(fb_mode->w, header.biWidth));
 	}

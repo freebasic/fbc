@@ -30,8 +30,9 @@
 /*:::::*/
 FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color)
 {
-	unsigned short *image;
-	int size;
+	void *image;
+	PUT_HEADER *header;
+	int size, pitch;
 	
 	if (!fb_mode)
 		return NULL;
@@ -46,13 +47,19 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color)
 	}
 	else
 		color = fb_hFixColor(color);
-	size = width * height;
-	image = (unsigned short *)malloc((size * fb_mode->bpp) + 4);
-	fb_hPixelSet(&image[2], color, size);
-	image[0] = (width << 3) | fb_mode->bpp;
-	image[1] = height;
+	pitch = ((width * fb_mode->bpp) + 0xF) & ~0xF;
+	size = pitch * height;
 	
-	return (void *)image;
+	image = malloc(size + sizeof(PUT_HEADER));
+	header = (PUT_HEADER *)image;
+	header->type = PUT_HEADER_NEW;
+	header->bpp = fb_mode->bpp;
+	header->width = width;
+	header->height = height;
+	header->pitch = pitch;
+	fb_hPixelSet(image + sizeof(PUT_HEADER), color, (pitch / header->bpp) * height);
+	
+	return image;
 }
 
 

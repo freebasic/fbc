@@ -58,10 +58,11 @@ typedef struct FBGFX_CHAR
 FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font, int mode, BLENDER *blender, void *param)
 {
 	FBGFX_CHAR char_data[256], *ch;
+	PUT_HEADER *header;
 	PUTTER *put;
 	int font_height, x, y, px, py, i, w, h, pitch, bpp, first, last;
 	int offset, bytes_count, res = FB_RTERROR_OK;
-	unsigned char *data;
+	unsigned char *data, *width;
 	
 	if ((!fb_mode) || (!string) || (!string->data))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
@@ -88,25 +89,35 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 		if (!put)
 			goto exit_error;
 
-		bpp = (int)*(unsigned short *)font;
-		pitch = (bpp >> 3) * fb_mode->bpp;
-		font_height = (int)*(unsigned short *)(font + 2) - 1;
-
+		header = (PUT_HEADER *)header;
+		if (header->type == PUT_HEADER_NEW) {
+			bpp = header->bpp;
+			font_height = header->height - 1;
+			pitch = header->pitch;
+			data = (unsigned char *)font + sizeof(PUT_HEADER_NEW);
+		}
+		else {
+			bpp = header->old.bpp;
+			font_height = header->old.height - 1;
+			pitch = header->old.width * fb_mode->bpp;
+			data = (unsigned char *)font + 4;
+		}
+		
 		if ((y + font_height <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
 			goto exit_error;
 		
-		bpp &= 0x7;
-		if (((bpp) && (bpp != fb_mode->bpp)) || (pitch < 4) || (font_height <= 0) || (*((unsigned char *)font + 4) != 0)) {
+		if (((bpp) && (bpp != fb_mode->bpp)) || (pitch < 4) || (font_height <= 0) || (data[0] != 0)) {
 			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
 			goto exit_error;
 		}
 		
-		first = (int)*(unsigned char *)(font + 5);
-		last = (int)*(unsigned char *)(font + 6);
+		first = (int)data[1];
+		last = (int)data[2];
+		width = &data[3];
 		if (first > last)
 			SWAP(first, last);
 		fb_hMemSet(char_data, 0, sizeof(FBGFX_CHAR) * 256);
-		data = font + 4 + pitch;
+		data += pitch;
 		if (y < fb_mode->view_y) {
 			data += (pitch * (fb_mode->view_y - y));
 			font_height -= (fb_mode->view_y - y);
@@ -116,12 +127,12 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 			font_height -= ((y + font_height) - (fb_mode->view_y + fb_mode->view_h));
 		
 		for (w = 0, i = first; i <= last; i++) {
-			char_data[i].width = (int)*(unsigned char *)(font + 7 + i - first);
+			char_data[i].width = (int)width[i - first];
 			char_data[i].data = data;
 			data += (char_data[i].width * fb_mode->bpp);
 			w += char_data[i].width;
 		}
-		if (w > ((int)*(unsigned short *)font >> 3)) {
+		if (w > (pitch / bpp)) {
 			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
 			goto exit_error;
 		}

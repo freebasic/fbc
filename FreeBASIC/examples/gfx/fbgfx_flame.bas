@@ -9,6 +9,7 @@
 #define MAX_EXPLOSIONS		32
 #define MAX_EXPLOSION_SIZE	100
 
+#include "fbgfx.bi"
 
 
 const FALSE = 0
@@ -28,11 +29,15 @@ declare sub animate_fire(byval buffer as ubyte ptr, byval new_ as integer = 0)
 
 sub animate_fire(byval buffer as ubyte ptr, byval new_ as integer = 0)
 	
-	dim w as integer, h as integer, x as integer, y as integer, i as integer
+	dim w as integer, h as integer, pitch as integer
+	dim x as integer, y as integer, i as integer
 	dim c0 as integer, c1 as integer, c2 as integer, c3 as integer
+	dim header as PUT_HEADER ptr
 	
-	w = cast(short ptr, buffer)[0] shr 3
-	h = cast(short ptr, buffer)[1]
+	header = cast(PUT_HEADER ptr, buffer)
+	w = header->width
+	h = header->height
+	pitch = header->pitch
 	
 	if new_ then
 		line buffer, (0, 0)-(w-1, h-1), 0, bf
@@ -42,13 +47,13 @@ sub animate_fire(byval buffer as ubyte ptr, byval new_ as integer = 0)
 	else
 		for y = 1 to h-2
 			for x = 1 to w-2
-				c0 = buffer[4 + (y * w) + x - 1]
-				c1 = buffer[4 + (y * w) + x + 1]
-				c2 = buffer[4 + ((y - 1) * w) + x]
-				c3 = buffer[4 + ((y + 1) * w) + x]
+				c0 = buffer[32 + (y * pitch) + x - 1]
+				c1 = buffer[32 + (y * pitch) + x + 1]
+				c2 = buffer[32 + ((y - 1) * pitch) + x]
+				c3 = buffer[32 + ((y + 1) * pitch) + x]
 				c0 = ((c0 + c1 + c2 + c3) \ 4) - rnd*2
 				if (cint(c0) < 0) then c0 = 0
-				buffer[4 + (y * w) + x] = c0
+				buffer[32 + (y * pitch) + x] = c0
 			next x
 		next y
 	end if

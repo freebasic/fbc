@@ -633,6 +633,7 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 {
 	int x, y, w, h, pitch, bpp;
 	PUTTER *put;
+	PUT_HEADER *header;
 	
 	if (!fb_mode)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
@@ -643,13 +644,22 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	
 	fb_hTranslateCoord(fx, fy, &x, &y);
 	
-	bpp = (int)*(unsigned short *)src;
-	w = pitch = bpp >> 3;
-	pitch *= fb_mode->bpp;
-	h = (int)*(unsigned short *)(src + 2);
-	src += 4;
+	header = (PUT_HEADER *)src;
+	if (header->type == PUT_HEADER_NEW) {
+		bpp = header->bpp;
+		w = header->width;
+		h = header->height;
+		pitch = header->pitch;
+		src += sizeof(PUT_HEADER);
+	}
+	else {
+		bpp = header->old.bpp;
+		w = header->old.width;
+		h = header->old.height;
+		pitch = w;
+		src += 4;
+	}
 
-	bpp &= 0x7;
 	if ((bpp) && (bpp != fb_mode->bpp))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	

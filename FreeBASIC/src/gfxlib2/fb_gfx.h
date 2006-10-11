@@ -129,6 +129,8 @@ extern "C" {
 #define MASK_G_16			0x07E0
 #define MASK_B_16			0x001F
 
+#define PUT_HEADER_NEW		0x7
+
 #define PUT_MODE_TRANS		0
 #define PUT_MODE_PSET		1
 #define PUT_MODE_PRESET		2
@@ -229,6 +231,24 @@ typedef struct FONT
     const int h;
 	const unsigned char *data;
 } FONT;
+
+
+struct _PUT_HEADER {
+	union {
+		struct {
+			unsigned short bpp:3;
+			unsigned short width:13;
+			unsigned short height;
+		} old;
+		unsigned int type;
+	};
+	int bpp;
+	unsigned int width;
+	unsigned int height;
+	unsigned int pitch;
+	char _reserved[12];
+} __attribute__((__packed__));
+typedef struct _PUT_HEADER PUT_HEADER;
 
 
 typedef void (BLITTER)(unsigned char *, int);

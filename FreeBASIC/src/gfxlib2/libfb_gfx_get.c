@@ -30,7 +30,8 @@
 /*:::::*/
 FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, unsigned char *dest, int coord_type, FBARRAY *array)
 {
-	int x1, y1, x2, y2, w, h;
+	PUT_HEADER *header;
+	int x1, y1, x2, y2, w, h, pitch;
 
 	if (!fb_mode)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
@@ -55,15 +56,30 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 		if ((array->size > 0) && ((int)dest + 4 + (w * h) > (int)array->ptr + array->size))
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
-	*(unsigned short *)dest = (w << 3) | fb_mode->bpp;
-	*(unsigned short *)(dest + 2) = h;
-	dest += 4;
+	header = (PUT_HEADER *)dest;
+	if (fb_mode->bpp <= 8) {
+		/* use old-style header for compatibility */
+		header->old.bpp = fb_mode->bpp;
+		header->old.width = w;
+		header->old.height = h;
+		pitch = w * fb_mode->bpp;
+		dest += 4;
+	}
+	else {
+		/* use new-style header */
+		header->type = PUT_HEADER_NEW;
+		header->width = w;
+		header->height = h;
+		header->bpp = fb_mode->bpp;
+		pitch = header->pitch = ((w * fb_mode->bpp) + 0xF) & ~0xF;
+		dest += sizeof(PUT_HEADER);
+	}
 
 	DRIVER_LOCK();
 
 	for (; y1 <= y2; y1++) {
 		fb_hPixelCpy(dest, fb_mode->line[y1] + (x1 * fb_mode->bpp), w);
-		dest += (w * fb_mode->bpp);
+		dest += pitch;
 	}
 
 	DRIVER_UNLOCK();

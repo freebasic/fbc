@@ -38,6 +38,29 @@
 #define GFX_ACCUMULATION_BUFFER	&h20000
 
 
+'' image buffer header
+''
+type _OLD_HEADER field = 1
+	bpp : 3 as ushort
+	width : 13 as ushort
+	height as ushort
+end type
+
+type PUT_HEADER field = 1
+	union
+		old as _OLD_HEADER
+		type as uinteger
+	end union
+	bpp as integer
+	width as uinteger
+	height as uinteger
+	pitch as uinteger
+	_reserved(1 to 12) as ubyte
+end type
+
+#define PUT_HEADER_NEW		&h7
+
+
 '' Keyboard scancodes returned by MULTIKEY
 ''
 #define SC_ESCAPE		&h01

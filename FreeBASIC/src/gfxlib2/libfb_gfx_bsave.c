@@ -52,14 +52,24 @@ typedef struct BMP_HEADER
 static int save_bmp(FILE *f, void *src)
 {
 	BMP_HEADER header;
+	PUT_HEADER *put_header;
 	int w, h, i, bfSize, biSizeImage, bfOffBits, biClrUsed, filler, pitch, color;
 	unsigned char *s, *buffer, *p;
 	
 	if (src) {
-		w = ((unsigned short *)src)[0] >> 3;
-		h = ((unsigned short *)src)[1];
-		s = (unsigned char *)src + 4;
-		pitch = w * fb_mode->bpp;
+		put_header = (PUT_HEADER *)src;
+		if (put_header->type == PUT_HEADER_NEW) {
+			w = put_header->width;
+			h = put_header->height;
+			s = (unsigned char *)src + 4;
+			pitch = put_header->pitch;
+		}
+		else {
+			w = put_header->old.width;
+			h = put_header->old.height;
+			s = (unsigned char *)src + sizeof(PUT_HEADER);
+			pitch = w * (put_header->old.bpp ? put_header->old.bpp : fb_mode->bpp);
+		}
 	}
 	else {
 		w = fb_mode->w;
