@@ -167,11 +167,12 @@ private function _linkFiles as integer
 		ldcline += "-l" + libname + " "
 	next
 
+	'' rtlib initialization and termination (must be included in the group or
+	'' dlopen() will fail because fb_hRtExit() will be undefined)
+	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
+
     '' end lib group
     ldcline += "-) "
-
-	'' rtlib initialization and termination
-	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
 
 	'' crt end stuff
 	ldcline += QUOTE + libdir + ("/crtend.o" + QUOTE + " ")
