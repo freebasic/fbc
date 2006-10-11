@@ -42,20 +42,20 @@
 #include <stdio.h>
 
 
-FBCALL fb_off_t fb_FileLen 
+fb_off_t fb_FileLenEx 
 	( 
 		const char *filename 
 	)
 {
 	FILE *fp;
-	long len;
+	fb_off_t len;
 	
 	fp = fopen( filename, "rb" );	
 	if( fp != NULL )
 	{
-		if( fseek( fp, 0, SEEK_END ) == 0 ) 
+		if( fseeko( fp, 0, SEEK_END ) == 0 ) 
 		{
-			if( (len = ftell( fp )) != -1 ) 
+			if( (len = ftello( fp )) != -1 ) 
 			{
 				fclose( fp );
 				fb_ErrorSetNum( FB_RTERROR_OK );
@@ -68,4 +68,13 @@ FBCALL fb_off_t fb_FileLen
 
 	fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	return 0;
+}
+
+
+FBCALL long long fb_FileLen
+	(
+		const char *filename
+	)
+{
+	return fb_FileLenEx( filename );
 }
