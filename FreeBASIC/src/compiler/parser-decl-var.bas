@@ -620,7 +620,8 @@ private function hVarInit _
 	( _
         byval sym as FBSYMBOL ptr, _
         byval isdecl as integer, _
-        byval has_defctor as integer _
+        byval has_defctor as integer, _
+        byval has_dtor as integer _
 	) as ASTNODE ptr
 
     dim as integer attrib = any
@@ -703,11 +704,11 @@ private function hVarInit _
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 
 		else
-			if( has_defctor ) then
+			if( has_defctor or has_dtor ) then
 				errReportWarn( FB_WARNINGMSG_ANYINITHASNOEFFECT )
+			else
+				symbSetDontInit( sym )
 			end if
-
-			symbSetDontInit( sym )
 		end if
 
 		lexSkipToken( )
@@ -828,7 +829,7 @@ private sub hFlushInitializer _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr, _
-		byval has_ctor as integer, _
+		byval has_defctor as integer, _
 		byval has_dtor as integer _
 	) static
 
@@ -863,6 +864,12 @@ private sub hFlushInitializer _
 
 		exit sub
 	end if
+
+    dim as integer has_ctor = FALSE
+    select case symbGetType( sym )
+    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    	has_ctor = symbGetHasCtor( symbGetSubtype( sym ) )
+    end select
 
 	'' not an object?
     if( has_ctor = FALSE ) then
@@ -1218,21 +1225,21 @@ private function hVarDecl _
     	end if
 
    		''
-   		dim as integer has_ctor, has_dtor
-   		has_ctor = FALSE
+   		dim as integer has_defctor, has_dtor
+   		has_defctor = FALSE
    		has_dtor = FALSE
    		if( sym <> NULL ) then
    			select case symbGetType( sym )
    			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 				'' has a default ctor?
-				has_ctor = symbGetCompDefCtor( symbGetSubtype( sym ) ) <> NULL
+				has_defctor = symbGetCompDefCtor( symbGetSubtype( sym ) ) <> NULL
 				'' dtor?
 				has_dtor = symbGetCompDtor( symbGetSubtype( sym ) ) <> NULL
 			end select
 		end if
 
 		'' check for an initializer
-		initree = hVarInit( sym, isdecl, has_ctor )
+		initree = hVarInit( sym, isdecl, has_defctor, has_dtor )
 
 		if( initree = NULL ) then
     		if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -1321,7 +1328,7 @@ private function hVarDecl _
 				'' not declared already?
     			if( isdecl = FALSE ) then
             		'' flush the init tree (must be done after adding the decl node)
-					hFlushInitializer( sym, initree, has_ctor, has_dtor )
+					hFlushInitializer( sym, initree, has_defctor, has_dtor )
 				end if
 			end if
 
