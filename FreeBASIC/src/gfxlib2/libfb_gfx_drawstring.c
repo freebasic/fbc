@@ -48,7 +48,7 @@
 
 typedef struct FBGFX_CHAR
 {
-	int width;
+	unsigned int width;
 	unsigned char *data;
 } FBGFX_CHAR;
 
@@ -89,12 +89,12 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 		if (!put)
 			goto exit_error;
 
-		header = (PUT_HEADER *)header;
+		header = (PUT_HEADER *)font;
 		if (header->type == PUT_HEADER_NEW) {
 			bpp = header->bpp;
 			font_height = header->height - 1;
 			pitch = header->pitch;
-			data = (unsigned char *)font + sizeof(PUT_HEADER_NEW);
+			data = (unsigned char *)font + sizeof(PUT_HEADER);
 		}
 		else {
 			bpp = header->old.bpp;
@@ -127,12 +127,12 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 			font_height -= ((y + font_height) - (fb_mode->view_y + fb_mode->view_h));
 		
 		for (w = 0, i = first; i <= last; i++) {
-			char_data[i].width = (int)width[i - first];
+			char_data[i].width = (unsigned int)width[i - first];
 			char_data[i].data = data;
 			data += (char_data[i].width * fb_mode->bpp);
 			w += char_data[i].width;
 		}
-		if (w > (pitch / bpp)) {
+		if (w > (pitch / fb_mode->bpp)) {
 			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
 			goto exit_error;
 		}
