@@ -441,13 +441,28 @@ private function hIsLhsEqRhs _
 		byval proc as FBSYMBOL ptr _
 	) as integer static
 
-	dim as FBSYMBOL ptr param
+	dim as FBSYMBOL ptr param, subtype
 
 	function = FALSE
 
 	param = symbGetProcTailParam( proc )
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-		if( symbGetSubtype( param ) = parent ) then
+		subtype = symbGetSubtype( param )
+
+		'' forward?
+		if( symbGetClass( subtype ) = FB_SYMBCLASS_FWDREF ) then
+			'' not a pointer?
+			if( symbGetType( param ) = FB_DATATYPE_FWDREF ) then
+				'' same name?
+				if( subtype->hash.chain->index = parent->hash.chain->index ) then
+					return TRUE
+				end if
+			end if
+
+			return FALSE
+		end if
+
+		if( subtype = parent ) then
 			select case symbGetClass( parent )
 			case FB_SYMBCLASS_STRUCT
 				function = ( symbGetType( param ) = FB_DATATYPE_STRUCT )
