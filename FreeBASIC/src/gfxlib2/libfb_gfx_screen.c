@@ -205,7 +205,6 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         }
         /* reset viewport to console dimensions */
         fb_ConsoleSetTopBotRows(-1, -1);
-        fb_ConsoleViewUpdate();
         
         break;
 

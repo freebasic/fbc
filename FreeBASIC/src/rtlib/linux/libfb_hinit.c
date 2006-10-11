@@ -299,7 +299,7 @@ void fb_hInit ( void )
 		return;
 	for (i = 0; i < SEQ_MAX; i++)
 		__fb_con.seq[i] = tgetstr(seq[i], NULL);
-
+	
 	if ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5)))
 		__fb_con.inited = INIT_CONSOLE;
 	else

@@ -50,7 +50,7 @@ void fb_hExitConsole( void )
 	if (__fb_con.inited) {
 		
 		fb_hResize();
-
+		
 		if (__fb_con.gfx_exit)
 			__fb_con.gfx_exit();
 		
@@ -68,7 +68,7 @@ void fb_hExitConsole( void )
 			fb_hTermOut(SEQ_CLS, 0, 0);
 			fb_hTermOut(SEQ_HOME, 0, 0);
 		}
-
+		
 		/* Cleanup terminal */
 		if (__fb_con.inited == INIT_CONSOLE)
 			fb_hTermOut(SEQ_EXIT_CHARSET, 0, 0);
