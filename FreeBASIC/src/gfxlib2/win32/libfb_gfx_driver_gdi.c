@@ -218,10 +218,12 @@ static void gdi_thread(HANDLE running_event)
 
 				SetDIBitsToDevice(hdc, 0, y1, fb_win32.w, h, 0, 0, 0, h, source, bitmap_info, DIB_RGB_COLORS);
 				
-				rect.top = y1;
-				rect.bottom = h;
-				InvalidateRect(fb_win32.wnd, &rect, FALSE);
-
+				if (fb_win32.version < 0x500) {
+					rect.top = y1;
+					rect.bottom = h;
+					InvalidateRect(fb_win32.wnd, &rect, FALSE);
+				}
+				
 				break;
 			}
 		}
