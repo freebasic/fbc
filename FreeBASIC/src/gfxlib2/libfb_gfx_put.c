@@ -539,7 +539,7 @@ static void init_put(void)
 			case 24:
 			case 32:
 				fb_hPutTrans = fb_hPutTrans4MMX;
-				fb_hPutAlpha = fb_hPutAlpha4C;//MMX;
+				fb_hPutAlpha = fb_hPutAlpha4MMX;
 				fb_hPutBlend = fb_hPutBlend4MMX;
 				fb_hPutAdd = fb_hPutAdd4MMX;
 				fb_hPutCustom = fb_hPutCustom4;

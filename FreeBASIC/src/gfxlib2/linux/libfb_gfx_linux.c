@@ -204,7 +204,7 @@ static void *window_thread(void *arg)
 		
 		fb_hX11Unlock();
 		
-		usleep(1000000 / ((fb_linux.refresh_rate > 0) ? fb_linux.refresh_rate : 60));
+		usleep(30000);
 	}
 	
 	fb_linux.exit();
@@ -534,9 +534,7 @@ void fb_hX11SetPalette(int index, int r, int g, int b)
 /*:::::*/
 void fb_hX11WaitVSync(void)
 {
-	pthread_mutex_lock(&mutex);
-	pthread_cond_wait(&cond, &mutex);
-	pthread_mutex_unlock(&mutex);
+	usleep(1000000 / ((fb_linux.refresh_rate > 0) ? fb_linux.refresh_rate : 60));
 }
 
 
