@@ -211,3 +211,10 @@ FBCALL int fb_FileGet( int fnum, long pos, void *dst, unsigned int chars )
 {
 	return fb_FileGetData( fnum, pos, dst, chars, TRUE );
 }
+
+/*:::::*/
+FBCALL int fb_FileGetLarge( int fnum, long long pos, void *dst, unsigned int chars )
+{
+	return fb_FileGetData( fnum, pos, dst, chars, TRUE );
+}
+

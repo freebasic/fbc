@@ -27,7 +27,7 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 49 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 60 ) = _
 	{ _
 		/' fb_FileOpen( byref s as string, byval mode as integer, byval access as integer,
 				        byval lock as integer, byval filenum as integer, _
@@ -349,6 +349,28 @@
 	 			) _
 	 		} _
 		), _
+		/' fb_FilePutLarge ( byval filenum as integer, byval offset as longint,
+						value as any, byval valuelen as integer ) as integer '/ _
+		( _
+			@FB_RTL_FILEPUTLARGE, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
 		/' fb_FilePutStr ( byval filenum as integer, byval offset as uinteger,
 						   byref str as any, byval strlen as integer ) as integer '/ _
 		( _
@@ -362,6 +384,28 @@
 	 			), _
 	 			( _
 					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FilePutStrLarge ( byval filenum as integer, byval offset as longint,
+						   byref str as any, byval strlen as integer ) as integer '/ _
+		( _
+			@FB_RTL_FILEPUTSTRLARGE, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
@@ -390,6 +434,25 @@
 	 			) _
 	 		} _
 		), _
+		/' fb_FilePutArrayLarge ( byval filenum as integer, byval offset as longint,
+							 array() as any ) as integer '/ _
+		( _
+			@FB_RTL_FILEPUTARRAYLARGE, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+	 			) _
+	 		} _
+		), _
 		/' fb_FileGet ( byval filenum as integer, byval offset as uinteger,
 						byref value as any, byval valuelen as integer ) as integer '/ _
 		( _
@@ -403,6 +466,28 @@
 	 			), _
 	 			( _
 					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FileGetLarge ( byval filenum as integer, byval offset as longint,
+						byref value as any, byval valuelen as integer ) as integer '/ _
+		( _
+			@FB_RTL_FILEGETLARGE, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
@@ -434,6 +519,28 @@
 	 			) _
 	 		} _
 		), _
+		/' fb_FileGetStrLarge ( byval filenum as integer, byval offset as longint,
+						   byref str as any, byval strlen as integer ) as integer '/ _
+		( _
+			@FB_RTL_FILEGETSTRLARGE, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
 		/' fb_FileGetArray ( byval filenum as integer, byval offset as uinteger,
 							 array() as any ) as integer '/ _
 		( _
@@ -453,10 +560,29 @@
 	 			) _
 	 		} _
 		), _
-		/' fb_FileTell ( byval filenum as integer ) as uinteger '/ _
+		/' fb_FileGetArrayLarge ( byval filenum as integer, byval offset as longint,
+							 array() as any ) as integer '/ _
+		( _
+			@FB_RTL_FILEGETARRAYLARGE, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FileTell ( byval filenum as integer ) as longint '/ _
 		( _
 			@FB_RTL_FILETELL, NULL, _
-			FB_DATATYPE_UINT, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_LONGINT, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -477,6 +603,21 @@
 	 			), _
 	 			( _
 					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FileSeekLarge ( byval filenum as integer, byval newpos as longint ) as integer '/ _
+		( _
+			@FB_RTL_FILESEEKLARGE, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -788,7 +929,7 @@
 	 			) _
 	 		} _
 		), _
-		/' fb_FileLock ( byval inipos as integer, byval endpos as integer ) as integer '/ _
+		/' fb_FileLock ( byval filenum as integer, byval inipos as integer, byval endpos as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILELOCK, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
@@ -806,7 +947,25 @@
 	 			) _
 	 		} _
 		), _
-		/' fb_FileUnlock ( byval inipos as integer, byval endpos as integer ) as integer '/ _
+		/' fb_FileLockLarge ( byval filenum as integer, byval inipos as longint, byval endpos as longint ) as integer '/ _
+		( _
+			@FB_RTL_FILELOCKLARGE, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 			) _
+	 		} _
+		), _
+		/' fb_FileUnlock ( byval filenum as integer, byval inipos as integer, byval endpos as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEUNLOCK, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
@@ -821,6 +980,24 @@
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 			) _
+	 		} _
+		), _
+		/' fb_FileUnlockLarge ( byval filenum as integer, byval inipos as longint, byval endpos as longint ) as integer '/ _
+		( _
+			@FB_RTL_FILEUNLOCKLARGE, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			) _
 	 		} _
 		), _
@@ -892,10 +1069,10 @@
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
-		/' lof ( byval filenum as integer ) as uinteger '/ _
+		/' lof ( byval filenum as integer ) as longint '/ _
 		( _
 			@"lof", @"fb_FileSize", _
-			FB_DATATYPE_UINT, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_LONGINT, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -904,10 +1081,10 @@
 	 			) _
 	 		} _
 		), _
-		/' loc ( byval filenum as integer ) as uinteger '/ _
+		/' loc ( byval filenum as integer ) as longint '/ _
 		( _
 			@"loc", @"fb_FileLocation", _
-			FB_DATATYPE_UINT, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_LONGINT, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -1176,7 +1353,12 @@ function rtlFileSeek _
 	function = FALSE
 
 	''
-    proc = astNewCALL( PROCLOOKUP( FILESEEK ) )
+	select case astGetDataType( newpos )
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		proc = astNewCALL( PROCLOOKUP( FILESEEKLARGE ) )
+	case else
+	    proc = astNewCALL( PROCLOOKUP( FILESEEK ) )
+	end select
 
     '' byval filenum as integer
     if( astNewARG( proc, filenum ) = NULL ) then
@@ -1235,7 +1417,7 @@ function rtlFilePut _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc, bytes
-    dim as integer dtype, lgt, isstring
+    dim as integer dtype, lgt, isstring, offsetdtype, islarge
     dim as FBSYMBOL ptr f, reslabel
 
     function = NULL
@@ -1243,10 +1425,24 @@ function rtlFilePut _
 	''
 	dtype = astGetDataType( src )
 	isstring = symbIsString( dtype )
+	
+	if( offset <> NULL ) then
+		offsetdtype = astGetDataType( offset )
+		islarge = ( offsetdtype = FB_DATATYPE_LONGINT ) or ( offsetdtype = FB_DATATYPE_ULONGINT )
+	end if
+	
 	if( isstring ) then
-		f = PROCLOOKUP( FILEPUTSTR )
+		if( islarge ) then
+			f = PROCLOOKUP( FILEPUTSTRLARGE )
+		else
+			f = PROCLOOKUP( FILEPUTSTR )
+		end if
 	else
-		f = PROCLOOKUP( FILEPUT )
+		if( islarge ) then
+			f = PROCLOOKUP( FILEPUTLARGE )
+		else
+			f = PROCLOOKUP( FILEPUT )
+		end if
 	end if
 
     proc = astNewCALL( f )
@@ -1326,7 +1522,14 @@ function rtlFilePutArray _
     function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( FILEPUTARRAY ) )
+	if( offset <> NULL) then
+		select case astGetDataType( offset )
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+			proc = astNewCALL( PROCLOOKUP( FILEPUTARRAYLARGE ) )
+		case else
+		    proc = astNewCALL( PROCLOOKUP( FILEPUTARRAY ) )
+		end select
+	end if
 
     '' byval filenum as integer
     if( astNewARG( proc, filenum ) = NULL ) then
@@ -1381,7 +1584,7 @@ function rtlFileGet _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc, bytes
-    dim as integer dtype, lgt, isstring
+    dim as integer dtype, lgt, isstring, offsetdtype, islarge
     dim as FBSYMBOL ptr f, reslabel
 
     function = NULL
@@ -1389,10 +1592,24 @@ function rtlFileGet _
 	''
 	dtype = astGetDataType( dst )
 	isstring = symbIsString( dtype )
+	
+	if( offset <> NULL) then
+		offsetdtype = astGetDataType( offset )
+		islarge = ( offsetdtype = FB_DATATYPE_LONGINT ) or ( offsetdtype = FB_DATATYPE_ULONGINT )
+	end if
+	
 	if( isstring ) then
-		f = PROCLOOKUP( FILEGETSTR )
+		if( islarge ) then
+			f = PROCLOOKUP( FILEGETSTRLARGE )
+		else
+			f = PROCLOOKUP( FILEGETSTR )
+		end if
 	else
-		f = PROCLOOKUP( FILEGET )
+		if( islarge ) then
+			f = PROCLOOKUP( FILEGETLARGE )
+		else
+			f = PROCLOOKUP( FILEGET )
+		end if
 	end if
 
     proc = astNewCALL( f )
@@ -1472,7 +1689,14 @@ function rtlFileGetArray _
 	function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( FILEGETARRAY ) )
+	if( offset <> NULL) then
+		select case astGetDataType( offset )
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+			proc = astNewCALL( PROCLOOKUP( FILEGETARRAYLARGE ) )
+		case else
+		    proc = astNewCALL( PROCLOOKUP( FILEGETARRAY ) )
+		end select
+	end if
 
     '' byval filenum as integer
     if( astNewARG( proc, filenum ) = NULL ) then
@@ -1854,14 +2078,28 @@ function rtlFileLock _
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
+    dim as integer inidtype, enddtype, islarge
 
 	function = FALSE
 
 	''
+	inidtype = astGetDataType( iniexpr )
+	enddtype = astGetDataType( endexpr )
+	islarge = ( inidtype = FB_DATATYPE_LONGINT ) or ( inidtype = FB_DATATYPE_ULONGINT ) or _
+	          ( enddtype = FB_DATATYPE_LONGINT ) or ( enddtype = FB_DATATYPE_ULONGINT )
+	
 	if( islock ) then
-		f = PROCLOOKUP( FILELOCK )
+		if( islarge ) then
+			f = PROCLOOKUP( FILELOCKLARGE )
+		else
+			f = PROCLOOKUP( FILELOCK )
+		end if
 	else
-		f = PROCLOOKUP( FILEUNLOCK )
+		if( islarge ) then
+			f = PROCLOOKUP( FILEUNLOCKLARGE )
+		else
+			f = PROCLOOKUP( FILEUNLOCK )
+		end if
 	end if
 
     proc = astNewCALL( f )

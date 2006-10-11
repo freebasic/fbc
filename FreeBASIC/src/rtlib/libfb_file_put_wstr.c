@@ -61,3 +61,8 @@ FBCALL int fb_FilePutWstr( int fnum, long pos, FB_WCHAR *str, int str_len )
 	return fb_FilePutWstrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len);
 }
 
+/*:::::*/
+FBCALL int fb_FilePutWstrLarge( int fnum, long long pos, FB_WCHAR *str, int str_len )
+{
+	return fb_FilePutWstrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len);
+}

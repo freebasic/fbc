@@ -76,7 +76,7 @@ fb_off_t fb_FileTellEx( FB_FILE *handle )
 }
 
 /*:::::*/
-FBCALL long fb_FileTell( int fnum )
+FBCALL long long fb_FileTell( int fnum )
 {
     return fb_FileTellEx( FB_FILE_TO_HANDLE(fnum) );
 }

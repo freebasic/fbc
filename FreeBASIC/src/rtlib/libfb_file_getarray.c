@@ -50,3 +50,11 @@ FBCALL int fb_FileGetArray( int fnum, long pos, FBARRAY *dst )
 
 }
 
+
+/*:::::*/
+FBCALL int fb_FileGetArrayLarge( int fnum, long long pos, FBARRAY *dst )
+{
+
+	return fb_FileGetData( fnum, pos, dst->ptr, dst->size, TRUE );
+
+}

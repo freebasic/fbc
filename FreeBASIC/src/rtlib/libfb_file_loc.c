@@ -43,9 +43,9 @@
 
 
 /*:::::*/
-long fb_FileLocationEx( FB_FILE *handle )
+fb_off_t fb_FileLocationEx( FB_FILE *handle )
 {
-    long pos;
+    fb_off_t pos;
 
     if( !FB_HANDLE_USED(handle) )
 		return 0;
@@ -72,7 +72,7 @@ long fb_FileLocationEx( FB_FILE *handle )
 }
 
 /*:::::*/
-FBCALL long fb_FileLocation( int fnum )
+FBCALL long long fb_FileLocation( int fnum )
 {
     return fb_FileLocationEx( FB_FILE_TO_HANDLE(fnum) );
 }

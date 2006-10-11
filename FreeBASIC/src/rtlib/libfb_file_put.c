@@ -189,3 +189,16 @@ FBCALL int fb_FilePut
 {
 	return fb_FilePutData( fnum, pos, value, valuelen, TRUE, FALSE );
 }
+
+/*:::::*/
+FBCALL int fb_FilePutLarge
+	(
+		int fnum,
+		long long pos,
+		void *value,
+		unsigned int valuelen
+	)
+{
+	return fb_FilePutData( fnum, pos, value, valuelen, TRUE, FALSE );
+}
+

@@ -76,3 +76,9 @@ FBCALL int fb_FileGetStr( int fnum, long pos, void *str, int str_len )
 	return fb_FileGetStrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len);
 }
 
+/*:::::*/
+FBCALL int fb_FileGetStrLarge( int fnum, long long pos, void *str, int str_len )
+{
+	return fb_FileGetStrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len);
+}
+

@@ -80,6 +80,12 @@ FBCALL int fb_FileLock( int fnum, unsigned int inipos, unsigned int endpos )
 }
 
 /*:::::*/
+FBCALL int fb_FileLockLarge( int fnum, long long inipos, long long endpos )
+{
+    return fb_FileLockEx(FB_FILE_TO_HANDLE(fnum), inipos, endpos);
+}
+
+/*:::::*/
 int fb_FileUnlockEx( FB_FILE *handle, fb_off_t inipos, fb_off_t endpos )
 {
 	int 	res;
@@ -122,3 +128,10 @@ FBCALL int fb_FileUnlock( int fnum, unsigned int inipos, unsigned int endpos )
     return fb_FileUnlockEx(FB_FILE_TO_HANDLE(fnum), inipos, endpos);
 }
 
+/*:::::*/
+FBCALL int fb_FileUnlockLarge( int fnum, long long inipos, long long endpos )
+{
+    if( !FB_FILE_INDEX_VALID(fnum) )
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    return fb_FileUnlockEx(FB_FILE_TO_HANDLE(fnum), inipos, endpos);
+}

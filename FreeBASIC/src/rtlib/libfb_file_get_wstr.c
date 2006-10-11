@@ -69,3 +69,8 @@ FBCALL int fb_FileGetWstr( int fnum, long pos, FB_WCHAR *dst, int dst_chars )
 	return fb_FileGetWstrEx( FB_FILE_TO_HANDLE(fnum), pos, dst, dst_chars );
 }
 
+/*:::::*/
+FBCALL int fb_FileGetWstrLarge( int fnum, long long pos, FB_WCHAR *dst, int dst_chars )
+{
+	return fb_FileGetWstrEx( FB_FILE_TO_HANDLE(fnum), pos, dst, dst_chars );
+}

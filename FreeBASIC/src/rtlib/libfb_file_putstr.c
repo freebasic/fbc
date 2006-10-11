@@ -70,3 +70,9 @@ FBCALL int fb_FilePutStr( int fnum, long pos, void *str, int str_len )
 	return fb_FilePutStrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len);
 }
 
+/*:::::*/
+FBCALL int fb_FilePutStrLarge( int fnum, long long pos, void *str, int str_len )
+{
+	return fb_FilePutStrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len);
+}
+

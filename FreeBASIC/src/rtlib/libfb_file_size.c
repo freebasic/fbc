@@ -74,7 +74,7 @@ fb_off_t fb_FileSizeEx( FB_FILE *handle )
 }
 
 /*:::::*/
-FBCALL long fb_FileSize( int fnum )
+FBCALL long long fb_FileSize( int fnum )
 {
 	return fb_FileSizeEx(FB_FILE_TO_HANDLE(fnum));
 }

@@ -76,3 +76,9 @@ FBCALL int fb_FileSeek( int fnum, long newpos )
 {
     return fb_FileSeekEx( FB_FILE_TO_HANDLE(fnum), newpos );
 }
+
+/*:::::*/
+FBCALL int fb_FileSeekLarge( int fnum, long long newpos )
+{
+    return fb_FileSeekEx( FB_FILE_TO_HANDLE(fnum), newpos );
+}
