@@ -215,20 +215,17 @@ FBSTRING *fb_ConsoleInkey( void )
 	fb_hResize();
 	
 	if ((ch = fb_hGetCh(TRUE)) >= 0) {
-		chars = 1;
-		if (ch & 0x100) {
-			chars = 2;
-			ch &= 0xFF;
-        }
+        if (ch & 0x100) {
+            res = (FBSTRING *)fb_hStrAllocTmpDesc();
+            fb_hStrAllocTemp(res, 2);
+            res->data[0] = FB_EXT_CHAR;
+            res->data[1] = (unsigned char)(ch & 0xFF);
+			res->data[2] = '\0';
 
-        res = fb_hStrAllocTemp( NULL, chars );
-        DBG_ASSERT( res!=NULL );
-
-		if( chars > 1 )
-			res->data[0] = FB_EXT_CHAR;		/* note: can't use '\0' here as in qb */
-
-		res->data[chars-1] = (unsigned char)ch;
-		res->data[chars-0] = '\0';
+			return res;
+		}
+		else
+			return fb_CHR( 1, ch );
 	}
 	else
 		res = &__fb_ctx.null_desc;

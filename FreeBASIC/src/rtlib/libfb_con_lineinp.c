@@ -44,7 +44,7 @@
 
 static const char *pszDefaultQuestion = "? ";
 
-#if defined(TARGET_WIN32) || defined(TARGET_CYGWIN) || defined(TARGET_DOS)
+#if defined(TARGET_WIN32) || defined(TARGET_CYGWIN) || defined(TARGET_DOS) || defined(TARGET_LINUX)
 
 int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
 						 int addquestion, int addnewline )
