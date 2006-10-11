@@ -1486,6 +1486,12 @@ declare sub symbSetCompOpOvlHead _
 		byval proc as FBSYMBOL ptr _
 	)
 
+declare sub symbCheckCompClone _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _
+	)
+
 declare function symbGetCompSymbTb _
 	( _
 		byval sym as FBSYMBOL ptr _

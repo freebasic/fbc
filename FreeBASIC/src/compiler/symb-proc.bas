@@ -662,6 +662,11 @@ private function hSetupProc _
 			if( proc = NULL ) then
 				exit function
 			end if
+
+			'' assign? could be a clone..
+			if( op = AST_OP_ASSIGN ) then
+				symbCheckCompClone( parent, proc )
+			end if
         end if
 
 	'' ordinary proc..

@@ -762,6 +762,27 @@ function symbGetCompOpOvlHead _
 end function
 
 '':::::
+sub symbCheckCompClone _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _
+	) static
+
+  	'' clone?
+  	if( hIsLhsEqRhs( sym, proc ) ) then
+  		select case symbGetClass( sym )
+   		case FB_SYMBCLASS_STRUCT
+   			sym->udt.ext->anon.clone = proc
+
+   		case FB_SYMBCLASS_CLASS
+   	 		'' ...
+
+   		end select
+   	end if
+
+end sub
+
+'':::::
 sub symbSetCompOpOvlHead _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -789,17 +810,7 @@ sub symbSetCompOpOvlHead _
 
     	'' assign?
     	if( op = AST_OP_ASSIGN ) then
-  			'' clone?
-  			if( hIsLhsEqRhs( sym, proc ) ) then
-  				select case symbGetClass( sym )
-   				case FB_SYMBCLASS_STRUCT
-   					sym->udt.ext->anon.clone = proc
-
-   				case FB_SYMBCLASS_CLASS
-   			 		'' ...
-
-   				end select
-   			end if
+    		symbCheckCompClone( sym, proc )
     	end if
 
     '' not self..
