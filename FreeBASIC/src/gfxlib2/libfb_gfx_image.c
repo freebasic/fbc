@@ -34,9 +34,7 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color)
 	PUT_HEADER *header;
 	int size, pitch;
 	
-	if (!fb_mode)
-		return NULL;
-	if ((width <= 0) || (width > 0x1FFF) || (height <= 0) || (height > 0xFFFF))
+	if ((!fb_mode) || (width <= 0) || (height <= 0))
 		return NULL;
 
 	if (color == DEFAULT_COLOR) {
