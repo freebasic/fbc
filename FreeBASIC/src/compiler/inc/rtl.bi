@@ -234,26 +234,26 @@
 #define FB_RTL_FILECLOSE 				"fb_FileClose"
 
 #define FB_RTL_FILEPUT 					"fb_FilePut"
-#define FB_RTL_FILEPUTLARGE 				"fb_FilePutLarge"
+#define FB_RTL_FILEPUTLARGE 			"fb_FilePutLarge"
 #define FB_RTL_FILEPUTSTR 				"fb_FilePutStr"
-#define FB_RTL_FILEPUTSTRLARGE 				"fb_FilePutStrLarge"
+#define FB_RTL_FILEPUTSTRLARGE 			"fb_FilePutStrLarge"
 #define FB_RTL_FILEPUTWSTR 				"fb_FilePutWstr"
-#define FB_RTL_FILEPUTWSTRLARGE 			"fb_FilePutWstrLarge"
+#define FB_RTL_FILEPUTWSTRLARGE 		"fb_FilePutWstrLarge"
 #define FB_RTL_FILEPUTARRAY 			"fb_FilePutArray"
 #define FB_RTL_FILEPUTARRAYLARGE		"fb_FilePutArrayLarge"
 
 #define FB_RTL_FILEGET 					"fb_FileGet"
-#define FB_RTL_FILEGETLARGE 				"fb_FileGetLarge"
+#define FB_RTL_FILEGETLARGE 			"fb_FileGetLarge"
 #define FB_RTL_FILEGETSTR 				"fb_FileGetStr"
-#define FB_RTL_FILEGETSTRLARGE 				"fb_FileGetStrLarge"
+#define FB_RTL_FILEGETSTRLARGE 			"fb_FileGetStrLarge"
 #define FB_RTL_FILEGETWSTR 				"fb_FileGetWstr"
-#define FB_RTL_FILEGETWSTRLARGE 			"fb_FileGetWstrLarge"
+#define FB_RTL_FILEGETWSTRLARGE 		"fb_FileGetWstrLarge"
 #define FB_RTL_FILEGETARRAY 			"fb_FileGetArray"
 #define FB_RTL_FILEGETARRAYLARGE 		"fb_FileGetArrayLarge"
 
 #define FB_RTL_FILETELL 				"fb_FileTell"
 #define FB_RTL_FILESEEK 				"fb_FileSeek"
-#define FB_RTL_FILESEEKLARGE 				"fb_FileSeekLarge"
+#define FB_RTL_FILESEEKLARGE 			"fb_FileSeekLarge"
 
 #define FB_RTL_FILESTRINPUT 			"fb_FileStrInput"
 #define FB_RTL_FILELINEINPUT 			"fb_FileLineInput"
@@ -277,9 +277,9 @@
 #define FB_RTL_INPUTWSTR 				"fb_InputWstr"
 
 #define FB_RTL_FILELOCK 				"fb_FileLock"
-#define FB_RTL_FILELOCKLARGE 				"fb_FileLockLarge"
+#define FB_RTL_FILELOCKLARGE 			"fb_FileLockLarge"
 #define FB_RTL_FILEUNLOCK 				"fb_FileUnlock"
-#define FB_RTL_FILEUNLOCKLARGE 				"fb_FileUnlockLarge"
+#define FB_RTL_FILEUNLOCKLARGE 			"fb_FileUnlockLarge"
 #define FB_RTL_FILERENAME 				"rename"
 
 #define FB_RTL_WIDTH 					"fb_Width"
@@ -576,7 +576,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_INPUTWSTR
 
 	FB_RTL_IDX_FILELOCK
-	FB_RTL_IDX_FILELOCKLARGE 
+	FB_RTL_IDX_FILELOCKLARGE
 	FB_RTL_IDX_FILEUNLOCK
 	FB_RTL_IDX_FILEUNLOCKLARGE
 	FB_RTL_IDX_FILERENAME
