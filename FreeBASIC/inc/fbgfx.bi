@@ -38,7 +38,13 @@
 #define GFX_ACCUMULATION_BUFFER	&h20000
 
 
-'' image buffer header
+'' Color values for transparency
+''
+#define MASK_COLOR_INDEX	0
+#define MASK_COLOR		&hFF00FF
+
+
+'' Image buffer header, old style
 ''
 type _OLD_HEADER field = 1
 	bpp : 3 as ushort
@@ -46,6 +52,9 @@ type _OLD_HEADER field = 1
 	height as ushort
 end type
 
+
+'' Image buffer header, new style (incorporates old header)
+''
 type PUT_HEADER field = 1
 	union
 		old as _OLD_HEADER
@@ -58,7 +67,18 @@ type PUT_HEADER field = 1
 	_reserved(1 to 12) as ubyte
 end type
 
+
+'' Constant identifying new style headers
+'' (header.type must be equal to this value in new style headers)
+''
 #define PUT_HEADER_NEW		&h7
+
+
+'' Mouse button constants to be used with GETMOUSE
+''
+#define BUTTON_LEFT		&h1
+#define BUTTON_RIGHT		&h2
+#define BUTTON_MIDDLE		&h4
 
 
 '' Keyboard scancodes returned by MULTIKEY
