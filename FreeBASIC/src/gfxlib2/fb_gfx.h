@@ -294,6 +294,7 @@ extern void fb_hSoftCursorExit(void);
 extern void fb_hSoftCursorPut(int x, int y);
 extern void fb_hSoftCursorUnput(int x, int y);
 extern void fb_hSoftCursorPaletteChanged(void);
+extern void *fb_hPixelSetAlpha4(void *dest, int color, size_t size);
 
 
 /* Public API */

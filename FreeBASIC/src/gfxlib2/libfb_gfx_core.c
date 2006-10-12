@@ -249,7 +249,7 @@ static void *fb_hPixelSet4(void *dest, int color, size_t size)
 
 
 /*:::::*/
-static void *fb_hPixelSetAlpha4(void *dest, int color, size_t size)
+void *fb_hPixelSetAlpha4(void *dest, int color, size_t size)
 {
 	unsigned int sc, srb, sg, sa, dc, drb, dg, a, irb, ig;
 	unsigned int *d = (unsigned int *)dest;
