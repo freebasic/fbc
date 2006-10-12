@@ -26,36 +26,37 @@
 
 #include "fb_gfx.h"
 
-#define CURSOR_W	12
-#define CURSOR_H	21
+#define CURSOR_W	13
+#define CURSOR_H	22
 
-#define BIT_ENCODE(p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11)		\
-	((p0)|(p1<<2)|(p2<<4)|(p3<<6)|(p4<<8)|(p5<<10)|(p6<<12)|(p7<<14)|(p8<<16)|(p9<<18)|(p10<<20)|(p11<<22))
+#define BIT_ENCODE(p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12) \
+	((p0)|(p1<<2)|(p2<<4)|(p3<<6)|(p4<<8)|(p5<<10)|(p6<<12)|(p7<<14)|(p8<<16)|(p9<<18)|(p10<<20)|(p11<<22)|(p12<<24))
 
 char fb_hSoftCursor_data_start;
 
 static const unsigned int cursor_data[] = {
-	BIT_ENCODE(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-	BIT_ENCODE(2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-	BIT_ENCODE(2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-	BIT_ENCODE(2, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0),
-	BIT_ENCODE(2, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0),
-	BIT_ENCODE(2, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0),
-	BIT_ENCODE(2, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0),
-	BIT_ENCODE(2, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0),
-	BIT_ENCODE(2, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0),
-	BIT_ENCODE(2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0),
-	BIT_ENCODE(2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0),
-	BIT_ENCODE(2, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2),
-	BIT_ENCODE(2, 1, 1, 1, 2, 1, 1, 2, 0, 0, 0, 0),
-	BIT_ENCODE(2, 1, 1, 2, 2, 1, 1, 2, 0, 0, 0, 0),
-	BIT_ENCODE(2, 1, 2, 0, 0, 2, 1, 1, 2, 0, 0, 0),
-	BIT_ENCODE(2, 2, 0, 0, 0, 2, 1, 1, 2, 0, 0, 0),
-	BIT_ENCODE(2, 0, 0, 0, 0, 0, 2, 1, 1, 2, 0, 0),
-	BIT_ENCODE(0, 0, 0, 0, 0, 0, 2, 1, 1, 2, 0, 0),
-	BIT_ENCODE(0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 2, 0),
-	BIT_ENCODE(0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 2, 0),
-	BIT_ENCODE(0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0)
+	BIT_ENCODE(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+	BIT_ENCODE(2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+	BIT_ENCODE(2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+	BIT_ENCODE(2, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+	BIT_ENCODE(2, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0),
+	BIT_ENCODE(2, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0),
+	BIT_ENCODE(2, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0),
+	BIT_ENCODE(2, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0),
+	BIT_ENCODE(2, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0),
+	BIT_ENCODE(2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0),
+	BIT_ENCODE(2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0),
+	BIT_ENCODE(2, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 0),
+	BIT_ENCODE(2, 1, 1, 1, 2, 1, 1, 2, 3, 3, 3, 3, 3),
+	BIT_ENCODE(2, 1, 1, 2, 2, 1, 1, 2, 3, 0, 0, 0, 0),
+	BIT_ENCODE(2, 1, 2, 3, 3, 2, 1, 1, 2, 0, 0, 0, 0),
+	BIT_ENCODE(2, 2, 3, 0, 0, 2, 1, 1, 2, 3, 0, 0, 0),
+	BIT_ENCODE(2, 3, 0, 0, 0, 0, 2, 1, 1, 2, 0, 0, 0),
+	BIT_ENCODE(0, 0, 0, 0, 0, 0, 2, 1, 1, 2, 3, 0, 0),
+	BIT_ENCODE(0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 2, 0, 0),
+	BIT_ENCODE(0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 2, 3, 0),
+	BIT_ENCODE(0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 3, 3, 0),
+	BIT_ENCODE(0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0)
 };
 
 static unsigned char *cursor_area;
@@ -150,15 +151,17 @@ void fb_hSoftCursorPut(int x, int y)
 		for (px = 0; px < w; px++) {
 			pixel = (cursor_data[py] >> (px << 1)) & 0x3;
 			d = fb_mode->framebuffer + ((y + py) * fb_mode->pitch) + ((x + px) * fb_mode->bpp);
+			if (pixel == 0x3) {
+				if (fb_mode->bpp == 4)
+					fb_hPixelSetAlpha4(d, 0x40000000, 1);
+				continue;
+			}
 			if (pixel & 0x1)
 				color = white;
 			else if (pixel & 0x2)
 				color = black;
-			if (pixel) {
-				if (fb_mode->bpp == 1)      *d = color;
-				else if (fb_mode->bpp == 2) *(unsigned short *)d = color;
-				else                        *(unsigned int *)d = color;
-			}
+			if (pixel)
+				fb_hPixelSet(d, color, 1);
 		}
 		fb_mode->dirty[y + py] = TRUE;
 	}
