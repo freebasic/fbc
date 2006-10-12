@@ -139,31 +139,36 @@ void fb_hSoftCursorExit(void)
 /*:::::*/
 void fb_hSoftCursorPut(int x, int y)
 {
-	unsigned char *d;
-	int w, h, px, py, pixel;
-	unsigned int color = 0;
+	unsigned char *d, *dest;
+	int w, h, px, py, pixel, count;
+	unsigned int data;
+	const unsigned int *cursor;
 	
 	copy_cursor_area(x, y, FALSE);
 	
 	w = MIN(CURSOR_W, fb_mode->w - x);
 	h = MIN(CURSOR_H, fb_mode->h - y);
+	dest = fb_mode->framebuffer + (y * fb_mode->pitch) + (x * fb_mode->bpp);
+	cursor = cursor_data;
 	for (py = 0; py < h; py++) {
-		for (px = 0; px < w; px++) {
-			pixel = (cursor_data[py] >> (px << 1)) & 0x3;
-			d = fb_mode->framebuffer + ((y + py) * fb_mode->pitch) + ((x + px) * fb_mode->bpp);
+		d = dest;
+		data = *cursor++;
+		for (px = 0; px < w;) {
+			pixel = data & 0x3;
+			for (count = 0; (px < w) && ((data & 0x3) == pixel); px++, data >>= 2)
+				count++;
 			if (pixel == 0x3) {
 				if (fb_mode->bpp == 4)
-					fb_hPixelSetAlpha4(d, 0x40000000, 1);
-				continue;
+					fb_hPixelSetAlpha4(d, 0x40000000, count);
 			}
-			if (pixel & 0x1)
-				color = white;
-			else if (pixel & 0x2)
-				color = black;
-			if (pixel)
-				fb_hPixelSet(d, color, 1);
+			else {
+				if (pixel)
+					fb_hPixelSet(d, (pixel & 0x1) ? white : black, count);
+			}
+			d += (count * fb_mode->bpp);
 		}
 		fb_mode->dirty[y + py] = TRUE;
+		dest += fb_mode->pitch;
 	}
 }
 
