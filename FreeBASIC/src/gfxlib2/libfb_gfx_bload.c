@@ -57,7 +57,7 @@ typedef struct BMP_HEADER
 static int load_bmp(FILE *f, void *dest)
 {
 	BMP_HEADER header;
-	PUT_HEADER *put_header;
+	PUT_HEADER *put_header = NULL;
 	unsigned char *buffer, *d = NULL;
 	int result = FB_RTERROR_OK;
 	int i, j, color, rgb[3], expand, size, padding, palette[256], palette_entries;
