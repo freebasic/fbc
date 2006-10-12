@@ -28,103 +28,141 @@ type REG_FREETB 	as integer
 
 #include once "inc\ir.bi"
 
+enum REG_SIZEMASK
+	REG_SIZEMASK_8	= &h0001
+	REG_SIZEMASK_16	= &h0002
+	REG_SIZEMASK_32	= &h0004
+	REG_SIZEMASK_64	= &h0008
+end enum
+
+type REG_REG
+	num				as integer
+	prev			as REG_REG ptr
+end type
+
+'' f/ non-stacked sets only
+type REG_REGCTX
+	freetail		as REG_REG ptr
+	usedtail		as REG_REG ptr
+
+	freeTB 			as REG_FREETB 	'' bitmask
+
+	regTB ( _
+				0 to REG_MAXREGS-1 _
+		  ) 		as REG_REG
+
+	sizeTB ( _
+				0 to REG_MAXREGS-1 _
+		   ) 		as REG_SIZEMASK
+
+	nextTB ( _
+				0 to REG_MAXREGS-1 _
+		   )		as uinteger		'' distance of next vreg usage
+end type
+
+'' f/ stacked sets only
+type REG_STKCTX
+	regTB ( _
+				0 to REG_MAXREGS-1 _
+		  )			as integer		'' real register (st(#))
+
+	fregs			as integer      '' free regs
+end type
 
 type REGCLASS
 
 	'' methods
-	ensure						as function _
+	ensure			as function _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _
+		byval size as uinteger, _				'' in bytes
 		byval doload as integer = TRUE _
 	) as integer
 
-	allocate					as function _
+	allocate		as function _
 	( _
 		byval this_ as REGCLASS ptr, _
-		byval vreg as IRVREG ptr _
+		byval vreg as IRVREG ptr, _
+		byval size as uinteger _				'' in bytes
 	) as integer
 
-	allocateReg					as function _
+	allocateReg		as function _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer, _
 		byval vreg as IRVREG ptr _
 	) as integer
 
-	free						as sub _
+	free			as sub _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer _
 	)
 
-	isFree						as function _
+	isFree			as function _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer _
 	) as integer
 
-	setOwner					as sub _
+	setOwner		as sub _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer, _
 		byval vreg as IRVREG ptr _
 	)
 
-	getMaxRegs					as function _
+	getMaxRegs		as function _
 	( _
 		byval this_ as REGCLASS ptr _
 	) as integer
 
-	getFirst					as function _
+	getFirst		as function _
 	( _
 		byval this_ as REGCLASS ptr _
 	) as integer
 
-	getNext						as function _
+	getNext			as function _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer _
 	) as integer
 
-	getVreg						as function _
+	getVreg			as function _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer _
 	) as IRVREG ptr
 
-	getRealReg					as function _
+	getRealReg		as function _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer _
 	) as integer
 
-	clear						as sub _
+	clear			as sub _
 	( _
 		byval this_ as REGCLASS ptr _
 	)
 
-	dump						as sub _
+	dump			as sub _
 	( _
 		byval this_ as REGCLASS ptr _
 	)
 
 	'' private data
-	class 						as integer
-	isstack						as integer
-	regs						as integer
+	class 			as integer
+	isstack			as integer
+	regs			as integer
 
-	vregTB(0 to REG_MAXREGS-1) 	as IRVREG ptr	'' virtual register name (index)
+	vregTB ( _
+				0 to REG_MAXREGS-1_
+		   )		as IRVREG ptr	'' virtual register name (index)
 
-	'' f/ non-stacked sets only
-	freeTB 						as REG_FREETB 	'' bitmask
-	nextTB(0 to REG_MAXREGS-1) 	as uinteger		'' distance of next vreg usage
-	fstack(0 to REG_MAXREGS-1) 	as integer		'' free regs stack
-    sp							as integer      '' stack pointer
+	regctx			as REG_REGCTX
 
-	'' f/ stacked sets only
-	regTB(0 to REG_MAXREGS-1)	as integer		'' real register (st(#))
-	fregs						as integer      '' free regs
+	stkctx			as REG_STKCTX
 end type
 
 #define REG_ISFREE(m,r) ((m and (1 shl r)) <> 0)
@@ -139,12 +177,13 @@ declare function regNewClass _
 	( _
 		byval class as integer, _
 		byval regs as integer, _
+		sizeTb() as REG_SIZEMASK, _
 		byval isstack as integer _
 	) as REGCLASS ptr
 
 declare function regDelClass _
 	( _
-		byval reg as REGCLASS ptr _
+		byval this_ as REGCLASS ptr _
 	) as integer
 
 #endif '' __REG_BI__

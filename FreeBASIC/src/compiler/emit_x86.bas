@@ -206,47 +206,44 @@ end sub
 private sub hInitRegTB
 	dim as integer lastclass, regs, i
 
-	static as integer regclass( 0 to (EMIT_REGCLASSES*EMIT_MAXRNAMES)-1 ) = _
+	'' ebp and esp are reserved
+	const int_regs = 6
+
+	static as REG_SIZEMASK int_bitsmask(0 to int_regs-1) = _
 	{ _
-		FB_DATACLASS_INTEGER, _ '' edx
-		FB_DATACLASS_INTEGER, _ '' edi
-		FB_DATACLASS_INTEGER, _ '' esi
-		FB_DATACLASS_INTEGER, _ '' ecx
-		FB_DATACLASS_INTEGER, _ '' ebx
-		FB_DATACLASS_INTEGER, _ '' eax
-							  _ '' ebp and esp are reserved
-		FB_DATACLASS_FPOINT , _ '' st(0)
-		FB_DATACLASS_FPOINT , _ '' st(1)
-		FB_DATACLASS_FPOINT , _ '' st(2)
-		FB_DATACLASS_FPOINT , _ '' st(3)
-		FB_DATACLASS_FPOINT , _ '' st(4)
-		FB_DATACLASS_FPOINT , _ '' st(5)
-		FB_DATACLASS_FPOINT , _ '' st(6)
-		INVALID 			  _ '' no st(7) as STORE/LOAD/POW/.. need a free reg to work
+		REG_SIZEMASK_8 or REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' edx
+						  REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' edi
+						  REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' esi
+		REG_SIZEMASK_8 or REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' ecx
+		REG_SIZEMASK_8 or REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' ebx
+		REG_SIZEMASK_8 or REG_SIZEMASK_16 or REG_SIZEMASK_32 _		'' eax
 	}
 
-	''
-	lastclass = INVALID
-	regs = 0
-	i = 0
-	do
-		if( lastclass <> regclass(i) ) then
-			if( lastclass <> INVALID ) then
-				emit.regTB(lastclass) = regNewClass( lastclass, _
-								 					 regs, _
-								 					 lastclass = FB_DATACLASS_FPOINT )
-			end if
-			regs = 0
-			lastclass = regclass(i)
-		end if
+	emit.regTB(FB_DATACLASS_INTEGER) = _
+		regNewClass( FB_DATACLASS_INTEGER, _
+					 int_regs, _
+					 int_bitsmask( ), _
+					 FALSE )
 
-		if( regclass(i) = INVALID ) then
-			exit do
-		end if
+	'' no st(7) as STORE/LOAD/POW/.. need a free reg to work
+	const flt_regs = 7
 
-		regs += 1
-		i += 1
-	loop
+	static as REG_SIZEMASK flt_bitsmask(0 to flt_regs-1) = _
+	{ _
+		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(0)
+		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(1)
+		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(2)
+		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(3)
+		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(4)
+		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(5)
+		REG_SIZEMASK_32 or REG_SIZEMASK_64 _						'' st(6)
+	}
+
+	emit.regTB(FB_DATACLASS_FPOINT) = _
+		regNewClass( FB_DATACLASS_FPOINT, _
+					 flt_regs, _
+					 flt_bitsmask( ), _
+					 TRUE )
 
 end sub
 
@@ -1363,8 +1360,8 @@ private sub _emitSTORI2I _
 		byval svreg as IRVREG ptr _
 	) static
 
-    dim as string dst, src, aux, aux8, aux16
-    dim as integer ddsize, reg, isfree
+    dim as string dst, src
+    dim as integer ddsize
     dim as string ostr
 
 	hPrepOperand( dvreg, dst )
@@ -1383,21 +1380,12 @@ private sub _emitSTORI2I _
 		(dvreg->dtype = svreg->dtype) or _
 		(symbMaxDataType( dvreg->dtype, svreg->dtype ) = INVALID) ) then
 
-		'' handle SI/DI as byte
-		if( ddsize = 1 ) then
-			if( svreg->typ = IR_VREGTYPE_REG ) then
-				if( (svreg->reg = EMIT_REG_ESI) or (svreg->reg = EMIT_REG_EDI) ) then
-					aux = *hGetRegName( dvreg->dtype, svreg->reg )
-					goto storeSIDI
-				end if
-			end if
-		end if
-
 		ostr = "mov " + dst + COMMA + src
 		outp ostr
 
 	'' sizes are different..
 	else
+    	dim as string aux
 
 		aux = *hGetRegName( dvreg->dtype, svreg->reg )
 
@@ -1416,39 +1404,38 @@ private sub _emitSTORI2I _
 
 		'' dst size < src size
 		else
-			'' handle DI/SI as byte
-			if( (ddsize = 1) and _
-				((svreg->reg = EMIT_REG_ESI) or (svreg->reg = EMIT_REG_EDI)) ) then
+            '' handle DI/SI as source stored into a byte destine
+            dim as integer is_disi
 
-storeSIDI:		reg = hFindRegNotInVreg( dvreg, TRUE )
+            is_disi = FALSE
+            if( ddsize = 1 ) then
+            	if( svreg->typ = IR_VREGTYPE_REG ) then
+            		is_disi = (svreg->reg = EMIT_REG_ESI) or (svreg->reg = EMIT_REG_EDI)
+            	end if
+            end if
 
-				aux8  = *hGetRegName( FB_DATATYPE_BYTE, reg )
-				aux16 = *hGetRegName( FB_DATATYPE_SHORT, reg )
+			if( is_disi ) then
+    			dim as string aux8
+    			dim as integer reg, isfree
+
+				reg = hFindRegNotInVreg( dvreg, TRUE )
+
+				aux8 = *hGetRegName( FB_DATATYPE_BYTE, reg )
+				aux = *hGetRegName( svreg->dtype, reg )
 
 				isfree = hIsRegFree(FB_DATACLASS_INTEGER, reg )
-
 				if( isfree = FALSE ) then
-					hPUSH aux16
+					hPUSH aux
 				end if
 
-				hMOV aux16, aux
+				ostr = "mov " + aux + COMMA + src
+				outp ostr
 
-            	'' handle DI/SI as destine
-            	if( (dvreg->typ = IR_VREGTYPE_REG) and _
-            		((dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI)) ) then
-					if( symbIsSigned( dvreg->dtype ) ) then
-						ostr = "movsx "
-					else
-						ostr = "movzx "
-					end if
-					ostr += dst + COMMA + aux8
-					outp ostr
-				else
-					hMOV dst, aux8
-				end if
+				ostr = "mov " + dst + COMMA + aux8
+				outp ostr
 
 				if( isfree = FALSE ) then
-					hPOP aux16
+					hPOP aux
 				end if
 
 			else
@@ -1479,8 +1466,8 @@ private sub _emitSTORF2I _
 		byval svreg as IRVREG ptr _
 	) static
 
-    dim as string dst, src, aux, aux8, aux16
-    dim as integer ddsize, reg, isfree
+    dim as string dst, src
+    dim as integer ddsize
     dim as string ostr
 
 	hPrepOperand( dvreg, dst )
@@ -1497,25 +1484,13 @@ private sub _emitSTORF2I _
         '' destine is a reg?
         if( dvreg->typ = IR_VREGTYPE_REG ) then
 
-           	'' handle DI/SI as destine
-           	if( (dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI) ) then
-
-           		if( symbIsSigned( dvreg->dtype ) ) then
-	           		ostr = "movsx "
-           		else
-           			ostr = "movzx "
-           		end if
-           		ostr += dst + ", byte ptr [esp]"
-           		outp ostr
-
-           	else
-           		hMOV dst, "byte ptr [esp]"
-           	end if
-
+           	hMOV dst, "byte ptr [esp]"
            	outp "add esp, 4"
 
 		'' destine is a var/idx/ptr
 		else
+            dim as integer reg, isfree
+            dim as string aux, aux8
 
 			reg = hFindRegNotInVreg( dvreg, TRUE )
 
@@ -1635,8 +1610,8 @@ private sub _emitSTORI2F _
 		byval svreg as IRVREG ptr _
 	) static
 
-    dim as string dst, src, aux
-    dim as integer ddsize, sdsize, reg, isfree
+    dim as string dst, src
+    dim as integer ddsize, sdsize
     dim as string ostr
 
 	hPrepOperand( dvreg, dst )
@@ -1647,6 +1622,8 @@ private sub _emitSTORI2F _
 
 	'' byte source? damn..
 	if( sdsize = 1 ) then
+    	dim as string aux
+    	dim as integer reg, isfree
 
 		reg = hFindRegNotInVreg( svreg )
 
@@ -1826,8 +1803,8 @@ private sub _emitLOADL2L _
 		byval svreg as IRVREG ptr _
 	) static
 
-    dim dst1 as string, dst2 as string, src1 as string, src2 as string
-    dim ostr as string
+    dim as string dst1, dst2, src1, src2
+    dim as string ostr
 
 	hPrepOperand64( dvreg, dst1, dst2 )
 	hPrepOperand64( svreg, src1, src2 )
@@ -1847,9 +1824,9 @@ private sub _emitLOADI2L _
 		byval svreg as IRVREG ptr _
 	) static
 
-    dim dst1 as string, dst2 as string, src1 as string
-    dim sdsize as integer
-    dim ostr as string
+    dim as string dst1, dst2, src1
+    dim as integer sdsize
+    dim as string ostr
 
 	sdsize = symbGetDataSize( svreg->dtype )
 
@@ -1958,8 +1935,8 @@ private sub _emitLOADI2I _
 		byval svreg as IRVREG ptr _
 	) static
 
-    dim as string dst, src, aux, aux8, aux16
-    dim as integer ddsize, reg, isfree
+    dim as string dst, src
+    dim as integer ddsize
     dim as string ostr
 
 	hPrepOperand( dvreg, dst )
@@ -1976,17 +1953,6 @@ private sub _emitLOADI2I _
 	'' dst size = src size
 	if( (dvreg->dtype = svreg->dtype) or _
 		(symbMaxDataType( dvreg->dtype, svreg->dtype ) = INVALID) ) then
-
-		'' handle SI/DI as byte destine and source
-		if( ddsize = 1 ) then
-			if( (dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI) ) then
-				goto loadSIDI
-			elseif( svreg->typ = IR_VREGTYPE_REG ) then
-				if( (svreg->reg = EMIT_REG_ESI) or (svreg->reg = EMIT_REG_EDI) ) then
-					goto loadSIDI
-				end if
-			end if
-		end if
 
 		ostr = "mov " + dst + COMMA + src
 		outp ostr
@@ -2006,57 +1972,33 @@ private sub _emitLOADI2I _
 		else
 			'' is src a reg too?
 			if( svreg->typ = IR_VREGTYPE_REG ) then
+				'' not the same?
 				if( svreg->reg <> dvreg->reg ) then
-					aux = *hGetRegName( dvreg->dtype, svreg->reg )
+					dim as string aux
+					dim as integer dtype
+
+					dtype = dvreg->dtype
+
+					'' handle [E]DI/[E]SI source loaded to a byte destine
+					if( ddsize = 1 ) then
+						if( (svreg->reg = EMIT_REG_ESI) or _
+							(svreg->reg = EMIT_REG_EDI) ) then
+
+							dtype = FB_DATATYPE_INTEGER
+							dst = *hGetRegName( dtype, dvreg->reg )
+						end if
+					end if
+
+					aux = *hGetRegName( dtype, svreg->reg )
 					ostr = "mov " + dst + COMMA + aux
 					outp ostr
 				end if
 
 			'' src is not a reg
 			else
-				'' handle DI/SI as byte
-				if( (ddsize = 1) and _
-					((dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI)) ) then
-
-loadSIDI:			reg = hFindRegNotInVreg( dvreg, TRUE )
-
-					aux8  = *hGetRegName( FB_DATATYPE_BYTE, reg )
-					aux16 = *hGetRegName( FB_DATATYPE_SHORT, reg )
-
-					isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
-
-					if( isfree = FALSE ) then
-						hPUSH aux16
-					end if
-
-					hPrepOperand( svreg, src, dvreg->dtype )
-
-					'' handle SI/DI as source
-					if( (svreg->typ = IR_VREGTYPE_REG) and _
-           				((svreg->reg = EMIT_REG_ESI) or (svreg->reg = EMIT_REG_EDI)) ) then
-						hMOV aux16, src
-					else
-						hMOV aux8, src
-					end if
-
-					if( symbIsSigned( svreg->dtype ) ) then
-						ostr = "movsx "
-					else
-						ostr = "movzx "
-					end if
-					ostr += dst + COMMA + aux8
-					outp ostr
-
-					if( isfree = FALSE ) then
-						hPOP aux16
-					end if
-
-				'' SI/DI not used as byte
-				else
-					hPrepOperand( svreg, src, dvreg->dtype )
-					ostr = "mov " + dst + COMMA + src
-					outp ostr
-				end if
+				hPrepOperand( svreg, src, dvreg->dtype )
+				ostr = "mov " + dst + COMMA + src
+				outp ostr
 			end if
 		end if
 	end if
@@ -2082,8 +2024,8 @@ private sub _emitLOADF2I _
 		byval svreg as IRVREG ptr _
 	) static
 
-    dim as string dst, src, aux, aux8
-    dim as integer ddsize, reg, isfree
+    dim as string dst, src
+    dim as integer ddsize
     dim as string ostr
 
 	hPrepOperand( dvreg, dst )
@@ -2104,24 +2046,13 @@ private sub _emitLOADF2I _
 
     	'' destine is a reg
     	if( dvreg->typ = IR_VREGTYPE_REG ) then
-    		'' handle DI/SI as destine
-        	if( (dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI) ) then
-				if( symbIsSigned( dvreg->dtype ) ) then
-					ostr = "movsx "
-				else
-					ostr = "movzx "
-				end if
-				ostr += dst + ", byte ptr [esp]"
-				outp ostr
-
-			else
-				hMOV dst, "byte ptr [esp]"
-			end if
-
+			hMOV dst, "byte ptr [esp]"
 			outp "add esp, 4"
 
 		'' destine is a var/idx/ptr
         else
+    		dim as string aux, aux8
+    		dim as integer reg, isfree
 
 			reg = hFindRegNotInVreg( dvreg, TRUE )
 
@@ -2254,8 +2185,8 @@ private sub _emitLOADI2F _
 		byval svreg as IRVREG ptr _
 	) static
 
-    dim as string dst, src, aux
-    dim as integer sdsize, isfree, reg
+    dim as string dst, src
+    dim as integer sdsize
     dim as string ostr
 
 	hPrepOperand( dvreg, dst )
@@ -2265,6 +2196,8 @@ private sub _emitLOADI2F _
 
 	'' byte source? damn..
 	if( sdsize = 1 ) then
+    	dim as string aux
+    	dim as integer isfree, reg
 
 		reg = hFindRegNotInVreg( svreg )
 

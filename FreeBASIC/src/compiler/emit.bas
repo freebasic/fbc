@@ -406,7 +406,7 @@ private function hNewNode _
 
 	'' save register's state
 	for i = 0 to EMIT_REGCLASSES-1
-		n->regFreeTB(i) = emit.regTB(i)->freeTB
+		n->regFreeTB(i) = emit.regTB(i)->regctx.freeTB
 	next
 
 	if( updatepos ) then

@@ -32,50 +32,58 @@
 
 '' internals
 
-declare sub regInitClass		( byval reg as REGCLASS ptr )
+declare sub regInitClass _
+	( _
+		byval this_ as REGCLASS ptr, _
+		sizeTb() as REG_SIZEMASK _
+	)
 
-declare sub sregInitClass		( byval reg as REGCLASS ptr )
-
+declare sub sregInitClass _
+	( _
+		byval this_ as REGCLASS ptr, _
+		sizeTb() as REG_SIZEMASK _
+	)
 
 '':::::
 function regNewClass _
 	( _
 		byval class_ as integer, _
 		byval regs as integer, _
+		sizeTb() as REG_SIZEMASK, _
 		byval isstack as integer _
 	) as REGCLASS ptr
 
-    dim as REGCLASS ptr reg
+    dim as REGCLASS ptr this_
 
-	reg = callocate( len( REGCLASS ) )
+	this_ = callocate( len( REGCLASS ) )
 
-	reg->class = class_
-	reg->regs = regs
-	reg->isstack = isstack
+	this_->class = class_
+	this_->regs = regs
+	this_->isstack = isstack
 
-	if( reg->isstack = FALSE ) then
-		regInitClass( reg )
+	if( this_->isstack = FALSE ) then
+		regInitClass( this_, sizeTb() )
 	else
-		sregInitClass( reg )
+		sregInitClass( this_, sizeTb() )
 	end if
 
-	function = reg
+	function = this_
 
 end function
 
 '':::::
 function regDelClass _
 	( _
-		byval reg as REGCLASS ptr _
+		byval this_ as REGCLASS ptr _
 	) as integer
 
 	function = FALSE
 
-	if( reg = NULL ) then
+	if( this_ = NULL ) then
 		exit function
 	end if
 
-	deallocate( reg )
+	deallocate( this_ )
 
 	function = TRUE
 
@@ -89,38 +97,51 @@ end function
 private sub regPush _
 	( _
 		byval this_ as REGCLASS ptr, _
-		byval r as integer _
+		byval n as integer _
 	) static
 
-    dim as integer sp
+    dim as REG_REG ptr r
 
-	sp = this_->sp
-	if( sp > 0 ) then
-		sp -= 1
-		this_->fstack(sp) = r
-	end if
+    '' take from used list
+    r = this_->regctx.usedtail
 
-	this_->sp = sp
+    this_->regctx.usedtail = r->prev
+
+	'' add to free list
+	r->prev = this_->regctx.freetail
+	this_->regctx.freetail = r
+
+	r->num = n
 
 end sub
 
 '':::::
 private function regPop _
 	( _
-		byval this_ as REGCLASS ptr _
+		byval this_ as REGCLASS ptr, _
+		byval size as integer _					'' in bytes
 	) as integer static
 
-    dim as integer sp
+    dim as REG_REG ptr r
 
-	sp = this_->sp
-	if( sp < this_->regs ) then
-		function = this_->fstack(sp)
-		sp += 1
-	else
-		function = INVALID
-	end if
+	r = this_->regctx.freetail
+	do while( r <> NULL )
+		'' same size?
+		if( (this_->regctx.sizeTB(r->num) and size) <> 0 ) then
+			'' remove from free list
+			this_->regctx.freetail = r->prev
 
-	this_->sp = sp
+			'' add to used list
+			r->prev = this_->regctx.usedtail
+			this_->regctx.usedtail = r
+
+			return r->num
+		end if
+
+		r = r->prev
+	loop
+
+	function = INVALID
 
 end function
 
@@ -128,25 +149,35 @@ end function
 private sub regPopReg _
 	( _
 		byval this_ as REGCLASS ptr, _
-		byval r as integer _
+		byval n as integer _
 	) static
 
-    dim as integer i, p
+    dim as REG_REG ptr r, last
 
-	p = this_->sp + 1
+	r = this_->regctx.freetail
+	do while( r <> NULL )
+		'' same?
+		if( r->num = n ) then
+			'' remove from free list
+			if( this_->regctx.freetail = r ) then
+				this_->regctx.freetail = r->prev
+			else
+				last->prev = r->prev
+			end if
 
-	for i = this_->sp to this_->regs - 1
-		if( this_->fstack(i) = r ) then
-			p = i
-			exit for
+			'' add to used list
+			r->prev = this_->regctx.usedtail
+			this_->regctx.usedtail = r
+
+			exit sub
 		end if
-	next
 
-	for i = p to this_->sp + 1 step -1
-		this_->fstack(i) = this_->fstack(i - 1)
-	next
+		last = r
+		r = r->prev
+	loop
 
-	this_->sp += 1
+	'' loop shouldn't fail
+	assert( TRUE = FALSE )
 
 end sub
 
@@ -156,15 +187,24 @@ private sub regClear _
 		byval this_ as REGCLASS ptr _
 	) static
 
-    dim as integer r
+    dim as REG_REG ptr r
+    dim as integer n
 
-	this_->sp = this_->regs
-	this_->freeTB = -1
+	this_->regctx.freeTB = -1
+	this_->regctx.freetail = NULL
+	this_->regctx.usedtail = NULL
 
-	for r = 0 to this_->regs - 1
-		this_->vregTB(r) = NULL
-		this_->nextTB(r) = 0
-		regPush( this_, r )
+	for n = 0 to this_->regs - 1
+		this_->vregTB(n) = NULL
+		this_->regctx.nextTB(n) = 0
+
+		r = @this_->regctx.regTB(n)
+
+		'' add to free list
+		r->prev = this_->regctx.freetail
+		this_->regctx.freetail = r
+
+		r->num = n
 	next
 
 end sub
@@ -172,18 +212,25 @@ end sub
 '':::::
 private function regFindFarest _
 	( _
-		byval this_ as REGCLASS ptr _
+		byval this_ as REGCLASS ptr, _
+		byval size as integer _					'' in bytes
 	) as integer static
 
-    dim as integer i, r
+    dim as integer n, r
     dim as uinteger maxdist
+
+    '' all regs must be used atm
 
     maxdist = 0
     r = INVALID
-    for i = 0 to this_->regs - 1
-    	if( this_->nextTB(i) > maxdist ) then
-    		maxdist = this_->nextTB(i)
-    		r = i
+    for n = 0 to this_->regs - 1
+		'' valid bits?
+		if( (this_->regctx.sizeTB(n) and size) <> 0 ) then
+    		''
+    		if( this_->regctx.nextTB(n) > maxdist ) then
+    			maxdist = this_->regctx.nextTB(n)
+    			r = n
+    		end if
     	end if
     next
 
@@ -195,21 +242,21 @@ end function
 private function regAllocate _
 	( _
 		byval this_ as REGCLASS ptr, _
-		byval vreg as IRVREG ptr _
+		byval vreg as IRVREG ptr, _
+		byval size as uinteger _				'' in bytes
 	) as integer static
 
     dim as integer r
 
-	if( this_->sp < this_->regs ) then
-		r = regPop( this_ )
-	else
-		r = regFindFarest( this_ )
+	r = regPop( this_, size )
+	if( r = INVALID ) then
+		r = regFindFarest( this_, size )
 	    irStoreVR( this_->vregTB(r), r )
 	end if
 
-	REG_SETUSED( this_->freeTB, r )
-	this_->vregTB(r)	= vreg
-	this_->nextTB(r)	= irGetDistance( vreg )
+	REG_SETUSED( this_->regctx.freeTB, r )
+	this_->vregTB(r) = vreg
+	this_->regctx.nextTB(r) = irGetDistance( vreg )
 
 	function = r
 
@@ -223,13 +270,13 @@ private function regAllocateReg _
 		byval vreg as IRVREG ptr _
 	) as integer static
 
-	if( REG_ISFREE( this_->freeTB, r ) ) then
+	if( REG_ISFREE( this_->regctx.freeTB, r ) ) then
 		regPopReg( this_, r )
-		REG_SETUSED( this_->freeTB, r )
+		REG_SETUSED( this_->regctx.freeTB, r )
 	end if
 
-	this_->vregTB(r)	= vreg
-	this_->nextTB(r)	= irGetDistance( vreg )
+	this_->vregTB(r) = vreg
+	this_->regctx.nextTB(r) = irGetDistance( vreg )
 
 	function = r
 
@@ -240,6 +287,7 @@ private function regEnsure _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _
+		byval size as uinteger, _
 		byval doload as integer _
 	) as integer static
 
@@ -247,7 +295,7 @@ private function regEnsure _
 
     r = vreg->reg
     if( r = INVALID ) then
-    	r = regAllocate( this_, vreg )
+    	r = regAllocate( this_, vreg, size )
     	irLoadVR( r, vreg, doload )
     end if
 
@@ -263,9 +311,9 @@ private sub regSetOwner _
 		byval vreg as IRVREG ptr _
 	)
 
-	REG_SETUSED( this_->freeTB, r )
+	REG_SETUSED( this_->regctx.freeTB, r )
 	this_->vregTB(r) = vreg
-	this_->nextTB(r) = irGetDistance( vreg )
+	this_->regctx.nextTB(r) = irGetDistance( vreg )
 
 end sub
 
@@ -276,10 +324,10 @@ private sub regFree _
 		byval r as integer _
 	) static
 
-	if( REG_ISUSED( this_->freeTB, r ) ) then
-		REG_SETFREE( this_->freeTB, r )
+	if( REG_ISUSED( this_->regctx.freeTB, r ) ) then
+		REG_SETFREE( this_->regctx.freeTB, r )
 		this_->vregTB(r) = NULL
-		this_->nextTB(r) = 0
+		this_->regctx.nextTB(r) = 0
 		regPush( this_, r )
 	end if
 
@@ -292,7 +340,7 @@ private function regIsFree _
 		byval r as integer _
 	) as integer static
 
-	function = REG_ISFREE( this_->freeTB, r )
+	function = REG_ISFREE( this_->regctx.freeTB, r )
 
 end function
 
@@ -366,7 +414,7 @@ private sub regDump _
 
 	cnt = 0
 	for i = 0 to this_->regs - 1
-		if( REG_ISUSED( this_->freeTB, i ) ) then
+		if( REG_ISUSED( this_->regctx.freeTB, i ) ) then
 			print i;
 			cnt += 1
 		end If
@@ -379,24 +427,31 @@ end sub
 '':::::
 private sub regInitClass _
 	( _
-		byval reg as REGCLASS ptr _
-	)
+		byval this_ as REGCLASS ptr, _
+		sizeTb() as REG_SIZEMASK _
+	) static
 
-	regClear( reg )
+	dim as integer i
 
-	reg->ensure 	= @regEnsure
-	reg->allocate 	= @regAllocate
-	reg->allocateReg= @regAllocateReg
-	reg->free 		= @regFree
-	reg->isFree 	= @regIsFree
-	reg->setOwner 	= @regSetOwner
-	reg->getMaxRegs	= @regGetMaxRegs
-	reg->getFirst	= @regGetFirst
-	reg->getNext	= @regGetNext
-	reg->getVreg	= @regGetVreg
-	reg->getRealReg	= @regGetRealReg
-	reg->clear 		= @regClear
-	reg->dump		= @regDump
+	regClear( this_ )
+
+	for i = 0 to this_->regs
+		this_->regctx.sizeTb(i) = sizeTb(i)
+	next
+
+	this_->ensure = @regEnsure
+	this_->allocate = @regAllocate
+	this_->allocateReg = @regAllocateReg
+	this_->free = @regFree
+	this_->isFree = @regIsFree
+	this_->setOwner = @regSetOwner
+	this_->getMaxRegs = @regGetMaxRegs
+	this_->getFirst = @regGetFirst
+	this_->getNext = @regGetNext
+	this_->getVreg = @regGetVreg
+	this_->getRealReg = @regGetRealReg
+	this_->clear = @regClear
+	this_->dump	= @regDump
 
 end sub
 
@@ -415,12 +470,12 @@ private function sregFindReg _
 
 	function = INVALID
 
-	if( this_->fregs = this_->regs ) then
+	if( this_->stkctx.fregs = this_->regs ) then
 		exit function
 	end if
 
 	for r = 0 to this_->regs - 1
-		if( this_->regTB(r) <> INVALID ) then
+		if( this_->stkctx.regTB(r) <> INVALID ) then
 			if( this_->vregTB(r) = vreg ) then
 				return r
 			end If
@@ -443,13 +498,13 @@ private sub sregXchg _
 	r2 = INVALID
 
 	for i = 0 to this_->regs - 1
-		if( this_->regTB(i) = 0 ) then
+		if( this_->stkctx.regTB(i) = 0 ) then
 			r2 = i
 			exit for
 		end if
 	next
 
-	swap this_->regTB(r1), this_->regTB(r2)
+	swap this_->stkctx.regTB(r1), this_->stkctx.regTB(r2)
 
 end sub
 
@@ -463,12 +518,12 @@ private function sregFindFreeReg _
 
     function = INVALID
 
-    if( this_->fregs = 0 ) then
+    if( this_->stkctx.fregs = 0 ) then
     	exit function
     end if
 
 	for r = 0 to this_->regs - 1
-		if( this_->regTB(r) = INVALID ) then
+		if( this_->stkctx.regTB(r) = INVALID ) then
 			return r
 		end If
 	next
@@ -487,9 +542,9 @@ private function sregFindLowestReg _
 	lowest = -32768
 
 	for r = 0 to this_->regs - 1
-		if( this_->regTB(r) <> INVALID ) then
-			if( this_->regTB(r) > lowest ) then
-				lowest = this_->regTB(r)
+		if( this_->stkctx.regTB(r) <> INVALID ) then
+			if( this_->stkctx.regTB(r) > lowest ) then
+				lowest = this_->stkctx.regTB(r)
 				i = r
 			end if
 		end If
@@ -508,7 +563,7 @@ private function sregFindTOSReg _
 	dim as integer r
 
 	for r = 0 to this_->regs - 1
-		if( this_->regTB(r) = 0 ) then
+		if( this_->stkctx.regTB(r) = 0 ) then
 			return r
 		end If
 	next
@@ -521,7 +576,8 @@ end function
 private function sregAllocate _
 	( _
 		byval this_ as REGCLASS ptr, _
-		byval vreg as IRVREG ptr _
+		byval vreg as IRVREG ptr, _
+		byval size as uinteger _				'' unused
 	) as integer Static
 
 	dim as integer r, i
@@ -533,17 +589,17 @@ private function sregAllocate _
 	    irStoreVR( this_->vregTB(r), r )
 
 	else
-		this_->fregs -= 1
+		this_->stkctx.fregs -= 1
 
 		for i = 0 to this_->regs - 1
-			if( this_->regTB(i) <> INVALID ) then
-				this_->regTB(i) += 1
+			if( this_->stkctx.regTB(i) <> INVALID ) then
+				this_->stkctx.regTB(i) += 1
 			end If
 		next
 	end If
 
 	this_->vregTB(r) = vreg
-	this_->regTB(r)  = 0
+	this_->stkctx.regTB(r)  = 0
 
 	function = r
 
@@ -558,7 +614,7 @@ private function sregAllocateReg _
 	) as integer Static
 
 	'' assuming r will be always 0 (result, TOS)
-    function = sregAllocate( this_, vreg )
+    function = sregAllocate( this_, vreg, REG_SIZEMASK_64 )
 
 end function
 
@@ -567,6 +623,7 @@ private function sregEnsure _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _
+		byval size as uinteger, _				'' unused
 		byval doload as integer _
 	) as integer Static
 
@@ -574,11 +631,11 @@ private function sregEnsure _
 
 	r = sregFindReg( this_, vreg )
 	if( r = INVALID ) then
-		r = sregAllocate( this_, vreg )
+		r = sregAllocate( this_, vreg, REG_SIZEMASK_64 )
 		irLoadVR( r, vreg, doload )
 	else
 		assert( vreg->reg = r )
-		if( this_->regTB(r) <> 0 ) then
+		if( this_->stkctx.regTB(r) <> 0 ) then
 			sregXchg( this_, r )
 		end if
 	end if
@@ -596,23 +653,23 @@ private sub sregFree _
 
 	dim as integer i, realreg
 
-	if( this_->regTB(r) = INVALID ) then
+	if( this_->stkctx.regTB(r) = INVALID ) then
 		exit sub
 	end if
 
-	realreg = this_->regTB(r)
-	this_->regTB(r) = INVALID
+	realreg = this_->stkctx.regTB(r)
+	this_->stkctx.regTB(r) = INVALID
 	this_->vregTB(r) = NULL
 
 	for i = 0 to this_->regs - 1
-		if( this_->regTB(i) <> INVALID ) then
-			if( this_->regTB(i) > realreg ) then
-				this_->regTB(i) -= 1
+		if( this_->stkctx.regTB(i) <> INVALID ) then
+			if( this_->stkctx.regTB(i) > realreg ) then
+				this_->stkctx.regTB(i) -= 1
 			end if
 		end If
 	next
 
-	this_->fregs += 1
+	this_->stkctx.fregs += 1
 
 end sub
 
@@ -623,7 +680,7 @@ private function sregIsFree _
 		byval r as integer _
 	) as integer static
 
-	function = this_->regTB(r) = INVALID
+	function = this_->stkctx.regTB(r) = INVALID
 
 end function
 
@@ -646,7 +703,7 @@ private function sregGetRealReg _
 		byval r as integer _
 	) as integer static
 
-	function = this_->regTB(r)
+	function = this_->stkctx.regTB(r)
 
 end function
 
@@ -706,7 +763,7 @@ private sub sregDump _
 
 	cnt = 0
 	for i = 0 to this_->regs - 1
-		if( this_->regTB(i) <> INVALID ) then
+		if( this_->stkctx.regTB(i) <> INVALID ) then
 			print i;
 			cnt += 1
 		end If
@@ -724,11 +781,11 @@ private sub sregClear _
 
 	dim as integer r = any
 
-	reg->fregs = reg->regs
+	reg->stkctx.fregs = reg->regs
 
 	for r = 0 to reg->regs - 1
-		reg->regTB(r)	= INVALID
-		reg->vregTB(r) 	= NULL
+		reg->stkctx.regTB(r) = INVALID
+		reg->vregTB(r) = NULL
 	next
 
 end sub
@@ -736,24 +793,27 @@ end sub
 '':::::
 private sub sregInitClass _
 	( _
-		byval reg as REGCLASS ptr _
+		byval this_ as REGCLASS ptr, _
+		sizeTb() as REG_SIZEMASK _
 	)
 
-	sregClear( reg )
+	'' sizeTb() is unused (x86 assumption)
 
-	reg->ensure 	= @sregEnsure
-	reg->allocate 	= @sregAllocate
-	reg->allocateReg= @sregAllocateReg
-	reg->free 		= @sregFree
-	reg->isFree 	= @sregIsFree
-	reg->setOwner 	= @sregSetOwner
-	reg->getMaxRegs	= @sregGetMaxRegs
-	reg->getFirst	= @sregGetFirst
-	reg->getNext	= @sregGetNext
-	reg->getVreg	= @sregGetVreg
-	reg->getRealReg	= @sregGetRealReg
-	reg->clear		= @sregClear
-	reg->dump		= @sregDump
+	sregClear( this_ )
+
+	this_->ensure = @sregEnsure
+	this_->allocate	= @sregAllocate
+	this_->allocateReg = @sregAllocateReg
+	this_->free = @sregFree
+	this_->isFree = @sregIsFree
+	this_->setOwner = @sregSetOwner
+	this_->getMaxRegs = @sregGetMaxRegs
+	this_->getFirst	= @sregGetFirst
+	this_->getNext = @sregGetNext
+	this_->getVreg = @sregGetVreg
+	this_->getRealReg = @sregGetRealReg
+	this_->clear = @sregClear
+	this_->dump	= @sregDump
 
 end sub
 
