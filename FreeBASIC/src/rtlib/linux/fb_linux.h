@@ -61,7 +61,8 @@
 #define INIT_X11			2
 
 #define TERM_GENERIC		0
-#define TERM_ETERM			1
+#define TERM_XTERM			1
+#define TERM_ETERM			2
 
 
 #define BG_LOCK()			pthread_mutex_lock(&__fb_con.bg_mutex);
@@ -160,7 +161,7 @@ extern void fb_hExitConsole(void);
 extern int fb_hXTermInitFocus(void);
 extern void fb_hXTermExitFocus(void);
 extern int fb_hXTermHasFocus(void);
-extern int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void));
+extern int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void), void (*key_handler)(int));
 extern void *fb_hDynLoad(const char *libname, const char **funcname, void **funcptr);
 extern void fb_hDynUnload(void **lib);
 

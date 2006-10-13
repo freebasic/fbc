@@ -58,6 +58,7 @@ static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
 static void *window_thread(void *arg)
 {
 	XEvent event;
+	EVENT e;
 	int k;
 	unsigned char key[8];
 	
@@ -87,46 +88,66 @@ static void *window_thread(void *arg)
 				case FocusIn:
 					fb_hMemSet(fb_mode->dirty, TRUE, fb_linux.h);
 					has_focus = TRUE;
+					e.type = EVENT_WINDOW_GOT_FOCUS;
+					fb_hPostEvent(&e);
 					break;
 				
 				case FocusOut:
 					fb_hMemSet(fb_mode->key, FALSE, 128);
 					has_focus = mouse_on = FALSE;
+					e.type = EVENT_WINDOW_LOST_FOCUS;
+					fb_hPostEvent(&e);
 					break;
 				
 				case EnterNotify:
 					mouse_on = TRUE;
+					e.type = EVENT_MOUSE_ENTER;
+					fb_hPostEvent(&e);
 					break;
 				
 				case LeaveNotify:
 					mouse_on = FALSE;
+					e.type = EVENT_MOUSE_EXIT;
+					fb_hPostEvent(&e);
 					break;
 				
 				case MotionNotify:
+					e.dx = event.xmotion.x - mouse_x;
+					e.dy = event.xmotion.y - mouse_y;
 					mouse_x = event.xmotion.x;
 					mouse_y = event.xmotion.y - fb_linux.display_offset;
 					if ((mouse_y < 0) || (mouse_y >= fb_linux.h))
 						mouse_on = FALSE;
 					else
 						mouse_on = TRUE;
+					if (mouse_on) {
+						e.type = EVENT_MOUSE_MOVE;
+						e.x = mouse_x;
+						e.y = mouse_y;
+						fb_hPostEvent(&e);
+					}
 					break;
 				
 				case ButtonPress:
+					e.type = EVENT_MOUSE_BUTTON_PRESS;
 					switch (event.xbutton.button) {
-						case Button1:	mouse_buttons |= 0x1; break;
-						case Button3:	mouse_buttons |= 0x2; break;
-						case Button2:	mouse_buttons |= 0x4; break;
-						case Button4:	mouse_wheel++; break;
-						case Button5:	mouse_wheel--; break;
+						case Button1:	mouse_buttons |= 0x1; e.button = 0x1; break;
+						case Button3:	mouse_buttons |= 0x2; e.button = 0x2; break;
+						case Button2:	mouse_buttons |= 0x4; e.button = 0x4; break;
+						case Button4:	e.z = mouse_wheel++; e.type = EVENT_MOUSE_WHEEL; break;
+						case Button5:	e.z = mouse_wheel--; e.type = EVENT_MOUSE_WHEEL; break;
 					}
+					fb_hPostEvent(&e);
 					break;
 					
 				case ButtonRelease:
+					e.type = EVENT_MOUSE_BUTTON_RELEASE;
 					switch (event.xbutton.button) {
-						case Button1:	mouse_buttons &= ~0x1; break;
-						case Button3:	mouse_buttons &= ~0x2; break;
-						case Button2:	mouse_buttons &= ~0x4; break;
+						case Button1:	mouse_buttons &= ~0x1; e.button = 0x1; break;
+						case Button3:	mouse_buttons &= ~0x2; e.button = 0x2; break;
+						case Button2:	mouse_buttons &= ~0x4; e.button = 0x4; break;
 					}
+					fb_hPostEvent(&e);
 					break;
 				
 				
@@ -141,8 +162,11 @@ static void *window_thread(void *arg)
 
 				case KeyPress:
 					if (has_focus) {
-						if (event.type == KeyPress)
-							fb_mode->key[fb_linux.keymap[event.xkey.keycode]] = TRUE;
+						if (event.type == KeyPress) {
+							e.scancode = fb_linux.keymap[event.xkey.keycode];
+							e.ascii = 0;
+							fb_mode->key[e.scancode] = TRUE;
+						}
 						if ((fb_mode->key[0x1C]) && (fb_mode->key[0x38]) && (!(fb_linux.flags & DRIVER_NO_SWITCH))) {
 							fb_linux.exit();
 							fb_linux.flags ^= DRIVER_FULLSCREEN;
@@ -155,8 +179,10 @@ static void *window_thread(void *arg)
 							fb_hRestorePalette();
 							fb_hMemSet(fb_mode->key, FALSE, 128);
 						}
-						else if (XLookupString(&event.xkey, (char *)key, 8, NULL, NULL) == 1)
+						else if (XLookupString(&event.xkey, (char *)key, 8, NULL, NULL) == 1) {
 							fb_hPostKey(key[0]);
+							e.ascii = key[0];
+						}
 						else {
 							switch (XKeycodeToKeysym(fb_linux.display, event.xkey.keycode, 0)) {
 								case XK_Up:		k = KEY_UP;		break;
@@ -184,17 +210,28 @@ static void *window_thread(void *arg)
 							if (k)
 								fb_hPostKey(k);
 						}
+						if (event.type == KeyPress) {
+							e.type = EVENT_KEY_PRESS;
+							fb_hPostEvent(&e);
+						}
 					}
 					break;
 				
 				case KeyRelease:
-					if (has_focus)
-						fb_mode->key[fb_linux.keymap[event.xkey.keycode]] = FALSE;
+					if (has_focus) {
+						e.scancode = fb_linux.keymap[event.xkey.keycode];
+						fb_mode->key[e.scancode] = FALSE;
+						e.type = EVENT_KEY_RELEASE;
+						fb_hPostEvent(&e);
+					}
 					break;
 				
 				case ClientMessage:
-					if ((Atom)event.xclient.data.l[0] == wm_delete_window)
+					if ((Atom)event.xclient.data.l[0] == wm_delete_window) {
 						fb_hPostKey(KEY_QUIT);
+						e.type = EVENT_WINDOW_CLOSE;
+						fb_hPostEvent(&e);
+					}
 					break;
 				
 			}

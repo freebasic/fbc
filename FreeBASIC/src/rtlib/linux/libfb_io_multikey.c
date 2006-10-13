@@ -77,6 +77,7 @@ static unsigned short key_buffer[KEY_BUFFER_SIZE], key_head, key_tail;
 static int (*old_getch)(void);
 static void (*gfx_save)(void);
 static void (*gfx_restore)(void);
+static void (*gfx_key_handler)(int);
 
 static const char pad_numlock_ascii[NUM_PAD_KEYS] = "0123456789+-*/\r,.";
 static const char pad_ascii[NUM_PAD_KEYS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '+', '-', '*', '/', '\r', 0, 0 };
@@ -181,7 +182,7 @@ static int keyboard_console_getch(void)
 static void keyboard_console_handler(void)
 {
 	unsigned char buffer[128], scancode;
-	int num_bytes, i, ascii, extended = 0;
+	int pressed, num_bytes, i, ascii, extended;
 	int vt, orig_vt;
 	struct kbentry entry;
 	struct vt_stat vt_state;
@@ -190,117 +191,119 @@ static void keyboard_console_handler(void)
 	if (num_bytes > 0) {
 		for (i = 0; i < num_bytes; i++) {
 			scancode = kernel_to_scancode[buffer[i] & 0x7F];
-			if (buffer[i] & 0x80)
-				key_state[scancode] = FALSE;
-			else {
-				key_state[scancode] = TRUE;
+			pressed = (buffer[i] & 0x80) ^ 0x80;
+			key_state[scancode] = pressed;
 
-				/* Since we took over keyboard control, we have to map our keypresses to ascii
-				 * in order to report them in our own keyboard buffer */
+			/* Since we took over keyboard control, we have to map our keypresses to ascii
+			 * in order to report them in our own keyboard buffer */
 
-				switch (scancode) {
-					case SC_CAPSLOCK:	key_leds ^= LED_CAP; break;
-					case SC_NUMLOCK:	key_leds ^= LED_NUM; break;
-					case SC_SCROLLLOCK:	key_leds ^= LED_SCR; break;
-					case SC_UP:			extended = 'H'; break;
-					case SC_DOWN:		extended = 'P'; break;
-					case SC_LEFT:		extended = 'K'; break;
-					case SC_RIGHT:		extended = 'M'; break;
-					case SC_INSERT:		extended = 'R'; break;
-					case SC_DELETE:		extended = 'S'; break;
-					case SC_HOME:		extended = 'G'; break;
-					case SC_END:		extended = 'O'; break;
-					case SC_PAGEUP:		extended = 'I'; break;
-					case SC_PAGEDOWN:	extended = 'Q'; break;
-					case SC_F1:			extended = ';'; break;
-					case SC_F2:			extended = '<'; break;
-					case SC_F3:			extended = '='; break;
-					case SC_F4:			extended = '>'; break;
-					case SC_F5:			extended = '?'; break;
-					case SC_F6:			extended = '@'; break;
-					case SC_F7:			extended = 'A'; break;
-					case SC_F8:			extended = 'B'; break;
-					case SC_F9:			extended = 'C'; break;
-					case SC_F10:		extended = 'D'; break;
-					default:			extended = 0; break;
-				}
-
-				entry.kb_table = 0;
-                if (key_state[SC_LSHIFT] || key_state[SC_RSHIFT])
-                	entry.kb_table |= 0x1;
-                if (key_state[SC_ALTGR])
-                	entry.kb_table |= 0x2;
-                if (key_state[SC_CONTROL])
-                	entry.kb_table |= 0x4;
-                if (key_state[SC_ALT])
-                	entry.kb_table |= 0x8;
-
-                entry.kb_index = scancode;
-                ioctl(key_fd, KDGKBENT, &entry);
-                if (scancode == SC_BACKSPACE)
-                	ascii = 8;
-                else if (entry.kb_value == K_NOSUCHMAP)
-                	ascii = 0;
-                else {
-                	ascii = KVAL(entry.kb_value);
-	                switch (KTYP(entry.kb_value)) {
-						case KT_LETTER:
-							if (key_leds & LED_CAP)
-								ascii ^= 0x20;
-							break;
-						case KT_LATIN:
-						case KT_ASCII:
-							break;
-						case KT_PAD:
-							if (ascii < NUM_PAD_KEYS) {
-								if (key_leds & LED_NUM)
-									ascii = pad_numlock_ascii[ascii];
-								else
-									ascii = pad_ascii[ascii];
-							}
-							else
-								ascii = 0;
-							break;
-						case KT_SPEC:
-							if (scancode == SC_ENTER)
-								ascii = '\r';
-							break;
-						case KT_CONS:
-							vt = ascii + 1;
-							if (ioctl(key_fd, VT_GETSTATE, &vt_state) >= 0) {
-								orig_vt = vt_state.v_active;
-								if (vt != orig_vt) {
-									if (__fb_con.gfx_exit) {
-										gfx_save();
-										ioctl(key_fd, KDSETMODE, KD_TEXT);
-									}
-									ioctl(key_fd, VT_ACTIVATE, vt);
-									ioctl(key_fd, VT_WAITACTIVE, vt);
-									while (ioctl(key_fd, VT_WAITACTIVE, orig_vt) < 0)
-									    usleep(50000);
-									if (__fb_con.gfx_exit) {
-										ioctl(key_fd, KDSETMODE, KD_GRAPHICS);
-										gfx_restore();
-									}
-									memset(key_state, FALSE, 128);
-									extended = 0;
-								}
-							}
-							/* fallthrough */
- 						default:
-							ascii = 0;
-							break;
-	                }
-				}
-				if (extended)
-					ascii = 0x100 | extended;
-				if (ascii) {
-					key_buffer[key_tail] = ascii;
-					if (((key_tail + 1) & (KEY_BUFFER_SIZE - 1)) == key_head)
-						key_head = (key_head + 1) & (KEY_BUFFER_SIZE - 1);
-					key_tail = (key_tail + 1) & (KEY_BUFFER_SIZE - 1);
-                }
+			extended = 0;
+			switch (scancode) {
+				case SC_CAPSLOCK:	if (pressed) key_leds ^= LED_CAP; break;
+				case SC_NUMLOCK:	if (pressed) key_leds ^= LED_NUM; break;
+				case SC_SCROLLLOCK:	if (pressed) key_leds ^= LED_SCR; break;
+				case SC_UP:			extended = 'H'; break;
+				case SC_DOWN:		extended = 'P'; break;
+				case SC_LEFT:		extended = 'K'; break;
+				case SC_RIGHT:		extended = 'M'; break;
+				case SC_INSERT:		extended = 'R'; break;
+				case SC_DELETE:		extended = 'S'; break;
+				case SC_HOME:		extended = 'G'; break;
+				case SC_END:		extended = 'O'; break;
+				case SC_PAGEUP:		extended = 'I'; break;
+				case SC_PAGEDOWN:	extended = 'Q'; break;
+				case SC_F1:			extended = ';'; break;
+				case SC_F2:			extended = '<'; break;
+				case SC_F3:			extended = '='; break;
+				case SC_F4:			extended = '>'; break;
+				case SC_F5:			extended = '?'; break;
+				case SC_F6:			extended = '@'; break;
+				case SC_F7:			extended = 'A'; break;
+				case SC_F8:			extended = 'B'; break;
+				case SC_F9:			extended = 'C'; break;
+				case SC_F10:		extended = 'D'; break;
 			}
+
+			entry.kb_table = 0;
+			if (key_state[SC_LSHIFT] || key_state[SC_RSHIFT])
+				entry.kb_table |= 0x1;
+			if (key_state[SC_ALTGR])
+				entry.kb_table |= 0x2;
+			if (key_state[SC_CONTROL])
+				entry.kb_table |= 0x4;
+			if (key_state[SC_ALT])
+				entry.kb_table |= 0x8;
+
+			entry.kb_index = scancode;
+			ioctl(key_fd, KDGKBENT, &entry);
+			if (scancode == SC_BACKSPACE)
+				ascii = 8;
+			else if (entry.kb_value == K_NOSUCHMAP)
+				ascii = 0;
+			else {
+				ascii = KVAL(entry.kb_value);
+				switch (KTYP(entry.kb_value)) {
+					case KT_LETTER:
+						if (key_leds & LED_CAP)
+							ascii ^= 0x20;
+						break;
+					case KT_LATIN:
+					case KT_ASCII:
+						break;
+					case KT_PAD:
+						if (ascii < NUM_PAD_KEYS) {
+							if (key_leds & LED_NUM)
+								ascii = pad_numlock_ascii[ascii];
+							else
+								ascii = pad_ascii[ascii];
+						}
+						else
+							ascii = 0;
+						break;
+					case KT_SPEC:
+						if (scancode == SC_ENTER)
+							ascii = '\r';
+						break;
+					case KT_CONS:
+						vt = ascii + 1;
+						if ((pressed) && (ioctl(key_fd, VT_GETSTATE, &vt_state) >= 0)) {
+							orig_vt = vt_state.v_active;
+							if (vt != orig_vt) {
+								if (__fb_con.gfx_exit) {
+									gfx_save();
+									ioctl(key_fd, KDSETMODE, KD_TEXT);
+								}
+								ioctl(key_fd, VT_ACTIVATE, vt);
+								ioctl(key_fd, VT_WAITACTIVE, vt);
+								while (ioctl(key_fd, VT_WAITACTIVE, orig_vt) < 0)
+								    usleep(50000);
+								if (__fb_con.gfx_exit) {
+									ioctl(key_fd, KDSETMODE, KD_GRAPHICS);
+									gfx_restore();
+								}
+								memset(key_state, FALSE, 128);
+								extended = 0;
+							}
+						}
+
+					/* fallthrough */
+					default:
+						ascii = 0;
+						break;
+				}
+			}
+			
+			if (extended)
+				ascii = 0x100 | extended;
+			if ((pressed) && (ascii)) {
+				key_buffer[key_tail] = ascii;
+				if (((key_tail + 1) & (KEY_BUFFER_SIZE - 1)) == key_head)
+					key_head = (key_head + 1) & (KEY_BUFFER_SIZE - 1);
+				key_tail = (key_tail + 1) & (KEY_BUFFER_SIZE - 1);
+			}
+			
+			if (gfx_key_handler)
+				gfx_key_handler((pressed ? 0x80 : 0) | (int)scancode | (ascii << 16));
 		}
 	}
 	if (key_state[0x1D] & key_state[0x2E])
@@ -428,7 +431,7 @@ int fb_ConsoleMultikey(int scancode)
 		pthread_mutex_lock(&__fb_con.bg_mutex);
 	}
 
-	res = (key_state[scancode & 0x7F]? FB_TRUE : FB_FALSE);
+	res = key_state[scancode & 0x7F] ? FB_TRUE : FB_FALSE;
 
 	pthread_mutex_unlock(&__fb_con.bg_mutex);
 
@@ -437,7 +440,7 @@ int fb_ConsoleMultikey(int scancode)
 
 
 /*:::::*/
-int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void))
+int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void), void (*key_handler)(int))
 {
 	BG_LOCK();
 	__fb_con.gfx_exit = gfx_exit;
@@ -449,6 +452,7 @@ int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restor
 		__fb_ctx.hooks.sleepproc = NULL;
 		gfx_save = save;
 		gfx_restore = restore;
+		gfx_key_handler = key_handler;
 		if (keyboard_init()) {
 			BG_UNLOCK();
 			return -1;

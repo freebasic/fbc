@@ -39,6 +39,21 @@ extern void *fb_hPixelSetAlpha4MMX(void *dest, int color, size_t size);
 
 
 /*:::::*/
+void fb_hPostEvent(EVENT *e)
+{
+	EVENT *slot;
+	
+	EVENT_LOCK();
+	slot = &fb_mode->event_queue[fb_mode->event_tail];
+	fb_hMemCpy(slot, e, sizeof(EVENT));
+	if (((fb_mode->event_tail + 1) & (MAX_EVENTS - 1)) == fb_mode->event_head)
+		fb_mode->event_head = (fb_mode->event_head + 1) & (MAX_EVENTS - 1);
+	fb_mode->event_tail = (fb_mode->event_tail + 1) & (MAX_EVENTS - 1);
+	EVENT_UNLOCK();
+}
+
+
+/*:::::*/
 void fb_hPrepareTarget(void *target, unsigned int color)
 {
 	PUT_HEADER *header;

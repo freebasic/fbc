@@ -60,8 +60,8 @@ int fb_ConsoleColor( int fc, int bc )
 		__fb_con.bg_color = (bc & 0xF);
 	
 	fb_hTermOut(SEQ_RESET_COLOR, 0, 0);
-	if ((__fb_con.inited == INIT_CONSOLE) || (__fb_con.term_type == TERM_ETERM)) {
-		/* console and eterm do not support extended color attributes and only allow 16+8 colors */
+	if ((__fb_con.inited == INIT_CONSOLE) || (__fb_con.term_type != TERM_XTERM)) {
+		/* console and any terminal but xterm do not support extended color attributes and only allow 16+8 colors */
 		if (__fb_con.fg_color != old_fg) {
 			if (__fb_con.fg_color & 0x8)
 				fb_hTermOut(SEQ_BRIGHT_COLOR, 0, 0);

@@ -79,6 +79,9 @@ extern "C" {
 #define DRIVER_UNLOCK()		{ if (fb_mode->flags & SCREEN_AUTOLOCKED) { fb_mode->driver->unlock(); fb_mode->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED); } }
 #define SET_DIRTY(y,h)		{ if (fb_mode->framebuffer == fb_mode->line[0]) fb_hMemSet(fb_mode->dirty + (y), TRUE, (h)); }
 
+#define EVENT_LOCK()		{ fb_MutexLock(fb_mode->event_mutex); }
+#define EVENT_UNLOCK()		{ fb_MutexUnlock(fb_mode->event_mutex); }
+
 #define DRIVER_NULL		-1
 #define DRIVER_FULLSCREEN	0x00000001
 #define DRIVER_OPENGL		0x00000002
@@ -159,10 +162,43 @@ extern "C" {
 
 #define WINDOW_TITLE_SIZE	128
 
+#define EVENT_KEY_PRESS				1
+#define EVENT_KEY_RELEASE			2
+#define EVENT_MOUSE_MOVE			3
+#define EVENT_MOUSE_BUTTON_PRESS	4
+#define EVENT_MOUSE_BUTTON_RELEASE	5
+#define EVENT_MOUSE_WHEEL			6
+#define EVENT_MOUSE_ENTER			7
+#define EVENT_MOUSE_EXIT			8
+#define EVENT_WINDOW_GOT_FOCUS		9
+#define EVENT_WINDOW_LOST_FOCUS		10
+#define EVENT_WINDOW_CLOSE			11
+
+#define MAX_EVENTS					128
+
+
 typedef struct _GFX_CHAR_CELL {
     FB_WCHAR ch;
     unsigned fg, bg;
 } GFX_CHAR_CELL;
+
+
+typedef struct EVENT {
+	int type;
+	union {
+		struct {			/* keyboard events */
+			int scancode;
+			int ascii;
+		};
+		struct {			/* mouse events */
+			int x, y;
+			int dx, dy;
+		};
+		int button;
+		int z;
+	};
+} EVENT;
+
 
 typedef struct MODE
 {
@@ -198,6 +234,9 @@ typedef struct MODE
     int refresh_rate;				/* Driver refresh rate */
     int flags;					/* Status flags */
     GFX_CHAR_CELL **con_pages;                  /* Character information for all pages */
+    EVENT *event_queue;				/* The OS events queue array */
+    int event_head, event_tail;			/* Indices for the head and tail event in the array */
+    struct _FBMUTEX *event_mutex;		/* Mutex lock for accessing the events queue */
 } MODE;
 
 
@@ -273,6 +312,7 @@ extern void fb_hSetupFuncs(void);
 extern void fb_hSetupData(void);
 extern FBCALL int fb_hEncode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
 extern FBCALL int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
+extern void fb_hPostEvent(EVENT *e);
 extern void fb_hPostKey(int key);
 extern BLITTER *fb_hGetBlitter(int device_depth, int is_rgb);
 extern PUTTER *fb_hGetPutter(int mode, int *alpha);
@@ -328,6 +368,7 @@ extern FBCALL void fb_GfxUnlock(int start_line, int end_line);
 extern FBCALL void *fb_GfxScreenPtr(void);
 extern FBCALL void fb_GfxSetWindowTitle(FBSTRING *title);
 extern FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8);
+extern FBCALL int fb_GfxEvent(EVENT *event);
 
 /* Runtime library hooks */
 int fb_GfxGetkey(void);

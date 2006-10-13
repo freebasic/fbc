@@ -92,7 +92,8 @@ static void *driver_thread(void *arg)
 	fd_set set;
 	struct timeval tv = { 0, 0 };
 	unsigned char buffer[1024];
-	int bytes_read, bytes_left = 0;
+	int buttons, bytes_read, bytes_left = 0;
+	EVENT e;
 	
 	(void)arg;
 	
@@ -117,15 +118,34 @@ static void *driver_thread(void *arg)
 						   ((mouse_packet_size == 4) && ((buffer[0] & 0xC8) != 0x08)))
 							bytes_read = 1;
 						else {
-							mouse_x += buffer[1];
-							if (buffer[0] & 0x10) mouse_x -= 256;
-							mouse_y -= buffer[2];
-							if (buffer[0] & 0x20) mouse_y += 256;
-							mouse_x = MID(0, mouse_x, fb_mode->w - 1);
-							mouse_y = MID(0, mouse_y, fb_mode->h - 1);
+							e.dx = (unsigned int)buffer[1] - ((int)(buffer[0] & 0x10) << 4);
+							e.dy = -(unsigned int)buffer[2] + ((int)(buffer[0] & 0x20) << 3);
+							mouse_x += e.dx;
+							mouse_y += e.dy;
+							e.x = mouse_x = MID(0, mouse_x, fb_mode->w - 1);
+							e.y = mouse_y = MID(0, mouse_y, fb_mode->h - 1);
+							if (e.dx || e.dy) {
+								e.type = EVENT_MOUSE_MOVE;
+								fb_hPostEvent(&e);
+							}
+							buttons = mouse_buttons;
 							mouse_buttons = buffer[0] & 0x7;
-							if ((mouse_packet_size == 4) && (buffer[3] & 0xF))
+							if ((mouse_packet_size == 4) && (buffer[3] & 0xF)) {
 								mouse_z += (((buffer[3] & 0xF) - 7) >> 3);
+								e.type = EVENT_MOUSE_WHEEL;
+								e.z = mouse_z;
+								fb_hPostEvent(&e);
+							}
+							buttons = (mouse_buttons ^ buttons) & 0x7;
+							for (e.button = 0x4; e.button; e.button >>= 1) {
+								if (buttons & e.button) {
+									if (mouse_buttons & e.button)
+										e.type = EVENT_MOUSE_BUTTON_PRESS;
+									else
+										e.type = EVENT_MOUSE_BUTTON_RELEASE;
+									fb_hPostEvent(&e);
+								}
+							}
 							bytes_read = mouse_packet_size;
 						}
 						bytes_left -= bytes_read;
@@ -181,22 +201,42 @@ static void *driver_thread(void *arg)
 /*:::::*/
 static void driver_save_screen(void)
 {
+	EVENT e;
+	
 	pthread_mutex_lock(&mutex);
 	is_active = FALSE;
 	pthread_mutex_unlock(&mutex);
 	ioctl(device_fd, FBIOPUTCMAP, &orig_cmap);
+	e.type = EVENT_WINDOW_LOST_FOCUS;
+	fb_hPostEvent(&e);
 }
 
 
 /*:::::*/
 static void driver_restore_screen(void)
 {
+	EVENT e;
+	
 	pthread_mutex_lock(&mutex);
 	is_active = TRUE;
 	is_palette_changed = TRUE;
 	fb_hMemSet(framebuffer, 0, device_info.smem_len);
 	fb_hMemSet(fb_mode->dirty, TRUE, fb_linux.h);
 	pthread_mutex_unlock(&mutex);
+	e.type = EVENT_WINDOW_GOT_FOCUS;
+	fb_hPostEvent(&e);
+}
+
+
+/*:::::*/
+static void driver_key_handler(int key)
+{
+	EVENT e;
+	
+	e.scancode = key & 0x7F;
+	e.type = (key & 0x80) ? EVENT_KEY_PRESS : EVENT_KEY_RELEASE;
+	e.ascii = (key >> 16) & 0x1FF;
+	fb_hPostEvent(&e);
 }
 
 
@@ -320,7 +360,7 @@ got_mode:
 	if (!blitter)
 		return -1;
 	
-	if (fb_hConsoleGfxMode(driver_exit, driver_save_screen, driver_restore_screen))
+	if (fb_hConsoleGfxMode(driver_exit, driver_save_screen, driver_restore_screen, driver_key_handler))
 		return -1;
 	
 	mouse_packet_size = 3;
@@ -392,7 +432,7 @@ static void driver_exit(void)
 	}
 	
 	if (device_fd >= 0) {
-		fb_hConsoleGfxMode(NULL, NULL, NULL);
+		fb_hConsoleGfxMode(NULL, NULL, NULL, NULL);
 		if (framebuffer) {
 			munmap(framebuffer, device_info.smem_len);
 			framebuffer = NULL;

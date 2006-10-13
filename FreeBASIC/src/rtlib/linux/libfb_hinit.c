@@ -306,6 +306,8 @@ void fb_hInit ( void )
 		__fb_con.inited = INIT_X11;
 	if (!strncasecmp(term, "eterm", 5))
 		__fb_con.term_type = TERM_ETERM;
+	else if (!strncmp(term, "xterm", 5))
+		__fb_con.term_type = TERM_XTERM;
 	else
 		__fb_con.term_type = TERM_GENERIC;
 	if (fb_hInitConsole()) {

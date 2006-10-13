@@ -44,6 +44,40 @@
 #define MASK_COLOR		&hFF00FF
 
 
+'' Event type IDs
+''
+#define EVENT_KEY_PRESS				1
+#define EVENT_KEY_RELEASE			2
+#define EVENT_MOUSE_MOVE			3
+#define EVENT_MOUSE_BUTTON_PRESS	4
+#define EVENT_MOUSE_BUTTON_RELEASE	5
+#define EVENT_MOUSE_WHEEL			6
+#define EVENT_MOUSE_ENTER			7
+#define EVENT_MOUSE_EXIT			8
+#define EVENT_WINDOW_GOT_FOCUS		9
+#define EVENT_WINDOW_LOST_FOCUS		10
+#define EVENT_WINDOW_CLOSE			11
+
+
+type EVENT
+	type as integer
+	union
+		type
+			scancode as integer
+			ascii as integer
+		end type
+		type
+			x as integer
+			y as integer
+			dx as integer
+			dy as integer
+		end type
+		button as integer
+		z as integer
+	end union
+end type
+
+
 '' Image buffer header, old style
 ''
 type _OLD_HEADER field = 1

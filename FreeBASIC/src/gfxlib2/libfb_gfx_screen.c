@@ -98,6 +98,10 @@ static void release_gfx_mem(void)
 			free(fb_mode->dirty);
 		if (fb_mode->key)
 			free(fb_mode->key);
+		if (fb_mode->event_queue) {
+			free(fb_mode->event_queue);
+			fb_MutexDestroy(fb_mode->event_mutex);
+		}
 		free(fb_mode);
         fb_mode = NULL;
 	}
@@ -278,6 +282,8 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         fb_mode->palette = (unsigned int *)calloc(1, sizeof(int) * 256);
         fb_mode->color_association = (unsigned char *)malloc(16);
         fb_mode->key = (char *)calloc(1, 128);
+        fb_mode->event_queue = (EVENT *)malloc(sizeof(EVENT) * MAX_EVENTS);
+        fb_mode->event_mutex = fb_MutexCreate();
         fb_color_conv_16to32 = (unsigned int *)malloc(sizeof(int) * 512);
         if ((flags != DRIVER_NULL) && (flags & DRIVER_ALPHA_PRIMITIVES))
         	fb_mode->flags |= ALPHA_PRIMITIVES;
