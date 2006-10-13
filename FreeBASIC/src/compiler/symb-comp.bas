@@ -449,6 +449,10 @@ private function hIsLhsEqRhs _
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
 		subtype = symbGetSubtype( param )
 
+		if( subtype = NULL ) then
+			return FALSE
+		end if
+
 		'' forward?
 		if( symbGetClass( subtype ) = FB_SYMBCLASS_FWDREF ) then
 			'' not a pointer?
