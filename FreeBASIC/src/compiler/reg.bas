@@ -435,7 +435,7 @@ private sub regInitClass _
 
 	regClear( this_ )
 
-	for i = 0 to this_->regs
+	for i = 0 to this_->regs - 1
 		this_->regctx.sizeTb(i) = sizeTb(i)
 	next
 
