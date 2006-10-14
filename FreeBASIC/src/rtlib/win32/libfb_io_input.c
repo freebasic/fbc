@@ -477,3 +477,99 @@ int fb_ConsoleProcessEvents( void )
 
 	return got_event;
 }
+
+
+/** Translates an ASCII character, Virtual scan code and Virtual key code to
+ *  a single QB-compatible keyboard code.
+ *
+ * @returns -1 if key not translatable
+ */
+int fb_hConsoleTranslateKey( char AsciiChar,
+                             WORD wVsCode,
+                             WORD wVkCode,
+                             DWORD dwControlKeyState,
+                             int bEnhancedKeysOnly )
+{
+    int KeyCode = 0, AddKeyCode = FALSE;
+    int is_ext_code = AsciiChar==0;
+
+    /* Process ENHANCED_KEY's in a different way */
+    if( (dwControlKeyState & ENHANCED_KEY)!=0 && is_ext_code) {
+        size_t i;
+        for( i=0; i!=FB_KEY_LIST_SIZE; ++i ) {
+            const FB_KEY_LIST_ENTRY *entry =
+                fb_ext_key_entries + i;
+            if(entry->scan_code==wVsCode) {
+                const FB_KEY_CODES *codes = &entry->codes;
+                if( dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED) ) {
+                    KeyCode = codes->value_alt;
+                    AddKeyCode = KeyCode!=0;
+                } else if( dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED) ) {
+                    KeyCode = codes->value_ctrl;
+                    AddKeyCode = KeyCode!=0;
+                } else if( dwControlKeyState & SHIFT_PRESSED ) {
+                    KeyCode = codes->value_shift;
+                    AddKeyCode = KeyCode!=0;
+                } else {
+                    KeyCode = codes->value_normal;
+                    AddKeyCode = TRUE;
+                }
+                break;
+            }
+        }
+    } else {
+        unsigned uiAsciiChar = (unsigned) (unsigned char) AsciiChar;
+        unsigned uiNormalKey, uiNormalKeyOtherCase;
+        /* Test if we must translate a "normal" key into an enhanced key */
+        if( wVsCode < FB_KEY_CODES_SIZE ) {
+            const FB_KEY_CODES *codes = fb_asc_key_codes + wVsCode;
+
+            uiNormalKey = MapVirtualKey( wVkCode, 2 ) & 0xFFFF;
+            if( isupper( (int) uiNormalKey ) ) {
+                uiNormalKeyOtherCase = tolower( (int) uiNormalKey );
+            } else if( islower( (int) uiNormalKey ) ) {
+                uiNormalKeyOtherCase = toupper( (int) uiNormalKey );
+            } else {
+                uiNormalKeyOtherCase = uiNormalKey;
+            }
+
+            if( dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED) ) {
+                KeyCode = codes->value_alt;
+            } else if( dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED) ) {
+                KeyCode = codes->value_ctrl;
+            } else if( dwControlKeyState & SHIFT_PRESSED ) {
+                KeyCode = codes->value_shift;
+            } else {
+                if( uiAsciiChar==0 ) {
+                    KeyCode = codes->value_normal;
+                } else {
+                    KeyCode = uiNormalKey;
+                }
+            }
+            /* Add the found key code only when the following conditions are
+             * met:
+             * 1. KeyCode must be > 255 (enhanced)
+             * 2. The ASCII character provided must be different from the
+             *    "normal" character - this test is required to allow
+             *    AltGr+character combinations that are language-specific
+             *    and therefore quite hard to detect ... */
+            AddKeyCode = (KeyCode > 255)
+                && ((uiAsciiChar==uiNormalKey) || (uiAsciiChar==uiNormalKeyOtherCase));
+        }
+
+        if( !AddKeyCode && !bEnhancedKeysOnly) {
+            if( !is_ext_code ) {
+                /* The key code is simply the returned ASCII character */
+                KeyCode = uiAsciiChar;
+                AddKeyCode = TRUE;
+            }
+        }
+    }
+
+    if( AddKeyCode ) {
+        if( KeyCode > 255 )
+            KeyCode = FB_MAKE_EXT_KEY((char) (KeyCode >> 8));
+        return KeyCode;
+    }
+    return -1;
+}
