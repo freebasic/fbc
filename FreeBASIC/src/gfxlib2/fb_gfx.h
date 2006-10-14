@@ -183,7 +183,7 @@ typedef struct _GFX_CHAR_CELL {
 } GFX_CHAR_CELL;
 
 
-typedef struct EVENT {
+struct _EVENT {
 	int type;
 	union {
 		struct {			/* keyboard events */
@@ -197,7 +197,8 @@ typedef struct EVENT {
 		int button;
 		int z;
 	};
-} EVENT;
+} __attribute__((__packed__));
+typedef struct _EVENT EVENT;
 
 
 typedef struct MODE

@@ -59,7 +59,7 @@
 #define EVENT_WINDOW_CLOSE			11
 
 
-type EVENT
+type EVENT field = 1
 	type as integer
 	union
 		type

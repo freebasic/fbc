@@ -53,6 +53,6 @@ end function
 				print "program window lost focus"
 			case EVENT_WINDOW_CLOSE
 				end
-		end select
-	end if
-loop
+			end select
+		end if
+	loop
