@@ -933,7 +933,7 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 	 	), _
-		/' fb_GfxEvent ( e as EVENT ptr ) as integer '/ _
+		/' fb_GfxEvent ( byval e as any ptr = NULL ) as integer '/ _
 		( _
 			@"screenevent", @"fb_GfxEvent", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
@@ -941,7 +941,7 @@ declare function hPorts_cb _
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			) _
 	 		} _
 		), _
