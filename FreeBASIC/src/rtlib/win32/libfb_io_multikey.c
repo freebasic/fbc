@@ -111,6 +111,18 @@ static HWND find_window()
 
 
 /*:::::*/
+int fb_hVirtualToScancode(int vkey)
+{
+	int i;
+	
+	for (i = 0; __fb_keytable[i][0]; i++)
+		if ((__fb_keytable[i][2] == vkey) || (__fb_keytable[i][1] == vkey))
+			return __fb_keytable[i][0];
+	return 0;
+}
+
+
+/*:::::*/
 int fb_ConsoleMultikey( int scancode )
 {
 	int i;

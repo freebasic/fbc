@@ -121,6 +121,8 @@ extern int __fb_ScrollWasOff;
                                           WORD wVkCode,
                                           DWORD dwControlKeyState,
                                           int bEnhancedKeysOnly );
+       
+	   int fb_hVirtualToScancode(int vkey);
 
 FBCALL void fb_hRestoreConsoleWindow    ( void );
 FBCALL void fb_hUpdateConsoleWindow     ( void );
