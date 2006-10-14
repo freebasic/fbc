@@ -44,16 +44,18 @@ const GFXDRIVER *fb_gfx_driver_list[] = {
 
 static CRITICAL_SECTION update_lock;
 static HANDLE handle;
-static BOOL screensaver_active, cursor_shown;
+static BOOL screensaver_active, cursor_shown, has_focus = FALSE;
 static UINT msg_cursor;
-static int mouse_buttons, mouse_wheel;
+static int mouse_buttons, mouse_wheel, mouse_x, mouse_y;
+static BOOL (WINAPI *_TrackMouseEvent)(TRACKMOUSEEVENT *) = NULL;
 
 
+/*:::::*/
 static void ToggleFullScreen( void )
 {
     if (fb_win32.flags & DRIVER_NO_SWITCH)
         return;
-
+    
     fb_win32.exit();
     fb_win32.flags ^= DRIVER_FULLSCREEN;
     if (fb_win32.init()) {
@@ -64,13 +66,44 @@ static void ToggleFullScreen( void )
     fb_hRestorePalette();
     fb_hMemSet(fb_mode->dirty, TRUE, fb_win32.h);
     fb_win32.is_active = TRUE;
+    has_focus = FALSE;
 }
+
+
+/*:::::*/
+static VOID CALLBACK fb_hTrackMouseTimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
+{
+	RECT rect;
+	POINT pt;
+
+	GetClientRect(fb_win32.wnd, &rect);
+	MapWindowPoints(fb_win32.wnd, NULL, (LPPOINT)&rect, 2);
+	GetCursorPos(&pt);
+	if ((!PtInRect(&rect, pt)) || (WindowFromPoint(pt) != fb_win32.wnd)) {
+		KillTimer(fb_win32.wnd, idEvent);
+		PostMessage(fb_win32.wnd, WM_MOUSELEAVE, 0, 0);
+	}
+}
+
+
+/*:::::*/
+static BOOL WINAPI fb_hTrackMouseEvent(TRACKMOUSEEVENT *e)
+{
+	if (e->dwFlags == TME_LEAVE)
+		return SetTimer(e->hwndTrack, e->dwFlags, 100, (TIMERPROC)fb_hTrackMouseTimerProc);
+	return FALSE;
+}
+
 
 /*:::::*/
 LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	BYTE key_state[256];
-
+	TRACKMOUSEEVENT track_e;
+	EVENT e;
+	
+	e.type = 0;
+	
 	if (message == msg_cursor) {
 		ShowCursor(wParam);
 		return FALSE;
@@ -83,39 +116,80 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			fb_hMemSet(fb_mode->key, FALSE, 128);
 			mouse_buttons = 0;
 			fb_hMemSet(fb_mode->dirty, TRUE, fb_win32.h);
+			if ((has_focus) && (!wParam))
+				PostMessage(fb_win32.wnd, WM_MOUSELEAVE, 0, 0);
+			e.type = wParam ? EVENT_WINDOW_GOT_FOCUS : EVENT_WINDOW_LOST_FOCUS;
+			break;
+		
+		case WM_MOUSEMOVE:
+			e.type = EVENT_MOUSE_MOVE;
+			e.x = lParam & 0xFFFF;
+			e.y = (lParam >> 16) & 0xFFFF;
+			e.dx = e.x - mouse_x;
+			e.dy = e.y - mouse_y;
+			mouse_x = e.x;
+			mouse_y = e.y;
+			if ((!e.dx) && (!e.dy))
+				e.type = 0;
+			if (!has_focus) {
+				track_e.cbSize = sizeof(TRACKMOUSEEVENT);
+				track_e.dwFlags = TME_LEAVE;
+				track_e.hwndTrack = hWnd;
+				_TrackMouseEvent(&track_e);
+				has_focus = TRUE;
+				e.type = EVENT_MOUSE_ENTER;
+			}
 			break;
 
+		case WM_MOUSELEAVE:
+			e.type = EVENT_MOUSE_EXIT;
+			fb_hPostEvent(&e);
+			has_focus = FALSE;
+			return 0;
+		
 		case WM_LBUTTONDOWN:
 			SetCapture( hWnd );
 			mouse_buttons |= 0x1;
+			e.type = EVENT_MOUSE_BUTTON_PRESS;
+			e.button = 0x1;
 			break;
 
 		case WM_LBUTTONUP:
 			mouse_buttons &= ~0x1;
 			if(!mouse_buttons && GetCapture() == hWnd)
 				ReleaseCapture();
+			e.type = EVENT_MOUSE_BUTTON_RELEASE;
+			e.button = 0x1;
 			break;
 
 		case WM_RBUTTONDOWN:
 			SetCapture( hWnd );
 			mouse_buttons |= 0x2;
+			e.type = EVENT_MOUSE_BUTTON_PRESS;
+			e.button = 0x2;
 			break;
 
 		case WM_RBUTTONUP:
 			mouse_buttons &= ~0x2;
 			if(!mouse_buttons && GetCapture() == hWnd)
 				ReleaseCapture();
+			e.type = EVENT_MOUSE_BUTTON_RELEASE;
+			e.button = 0x2;
 			break;
 
 		case WM_MBUTTONDOWN:
 			SetCapture( hWnd );
 			mouse_buttons |= 0x4;
+			e.type = EVENT_MOUSE_BUTTON_PRESS;
+			e.button = 0x4;
 			break;
 
 		case WM_MBUTTONUP:
 			mouse_buttons &= ~0x4;
 			if(!mouse_buttons && GetCapture() == hWnd)
 				ReleaseCapture();
+			e.type = EVENT_MOUSE_BUTTON_RELEASE;
+			e.button = 0x4;
 			break;
 
 		case WM_MOUSEWHEEL:
@@ -125,6 +199,8 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				mouse_wheel++;
 			else
 				mouse_wheel--;
+			e.type = EVENT_MOUSE_WHEEL;
+			e.z = mouse_wheel;
 			break;
 
 		case WM_SIZE:
@@ -135,6 +211,10 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
                 int is_alt_enter = ((message == WM_SYSKEYDOWN) && (wParam == VK_RETURN) && (lParam & 0x20000000));
                 int is_maximize = ((message == WM_SIZE) && (wParam == SIZE_MAXIMIZED));
                 if ( is_maximize || is_alt_enter) {
+                	if (has_focus) {
+						e.type = EVENT_MOUSE_EXIT;
+	                	fb_hPostEvent(&e);
+	                }
                     ToggleFullScreen();
                     return FALSE;
                 }
@@ -143,6 +223,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
             }
 
         case WM_KEYDOWN:
+		case WM_KEYUP:
             {
                 WORD wVkCode = (WORD) wParam;
                 WORD wVsCode = (WORD) (( lParam & 0xFF0000 ) >> 16);
@@ -187,18 +268,25 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
                                              wVkCode,
                                              dwControlKeyState,
                                              FALSE );
-                if ( key>255 ) {
-                    while( repeat_count-- ) {
-                        fb_hPostKey(key);
-                    }
+                if (message == WM_KEYDOWN) {
+					if (key > 0xFF) {
+	   	                while( repeat_count-- ) {
+    	   	                fb_hPostKey(key);
+        	   	        }
+        	   	    }
+        	   	    e.type = EVENT_KEY_PRESS;
                 }
+                else
+                	e.type = EVENT_KEY_RELEASE;
+                e.scancode = fb_hVirtualToScancode(wVkCode);
+                e.ascii = key < 0 ? 0 : key;
 
                 /* We don't want to enter the menu ... */
                 if( wVkCode==VK_F10 || wVkCode==VK_MENU || key==0x6BFF )
                     return FALSE;
             }
             break;
-
+			
         case WM_CHAR:
             {
                 size_t repeat_count = ( lParam & 0xFFFF );
@@ -229,12 +317,17 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 		case WM_CLOSE:
 			fb_hPostKey(0x6BFF); /* ALT + F4 */
+			e.type = EVENT_WINDOW_CLOSE;
+			fb_hPostEvent(&e);
 			return FALSE;
 
 		case WM_PAINT:
 			fb_win32.paint();
 			break;
 	}
+	
+	if (e.type)
+		fb_hPostEvent(&e);
 
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
@@ -256,6 +349,7 @@ void fb_hHandleMessages(void)
 int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	OSVERSIONINFO info;
+	HMODULE module;
 	HANDLE events[2];
 	long result;
 
@@ -265,6 +359,14 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 
 	msg_cursor = RegisterWindowMessage("FB mouse cursor");
 	cursor_shown = TRUE;
+	
+	if (!_TrackMouseEvent) {
+		module = GetModuleHandle("user32.dll");
+		if (module)
+			_TrackMouseEvent = (BOOL (WINAPI *)(TRACKMOUSEEVENT *))GetProcAddress(module, "TrackMouseEvent");
+		if (!_TrackMouseEvent)
+			_TrackMouseEvent = fb_hTrackMouseEvent;
+	}
 
 	SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &screensaver_active, 0);
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
@@ -377,23 +479,9 @@ int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons)
 
 	if (!fb_win32.is_active)
 		return -1;
-
-	GetCursorPos(&point);
-
-	if (fb_win32.flags & DRIVER_FULLSCREEN) {
-		*x = MID(0, point.x, fb_win32.w - 1);
-		*y = MID(0, point.y, fb_win32.h - 1);
-	}
-	else {
-		ScreenToClient(fb_win32.wnd, &point);
-		if ((point.x < 0) || (point.x >= fb_win32.w) || (point.y < 0) || (point.y >= fb_win32.h)) {
-			return -1;
-		}
-		else {
-			*x = point.x;
-			*y = point.y;
-		}
-	}
+	
+	*x = mouse_x;
+	*y = mouse_y;
 	*z = mouse_wheel;
 	*buttons = mouse_buttons;
 
@@ -412,6 +500,8 @@ void fb_hWin32SetMouse(int x, int y, int cursor)
 		if (!(fb_win32.flags & DRIVER_FULLSCREEN))
 			ClientToScreen(fb_win32.wnd, &point);
 		SetCursorPos(point.x, point.y);
+		mouse_x = x;
+		mouse_y = y;
 	}
 
 	if ((cursor == 0) && (cursor_shown)) {
