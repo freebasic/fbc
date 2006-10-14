@@ -38,6 +38,8 @@ extern void *fb_hPixelSetAlpha4MMX(void *dest, int color, size_t size);
 #endif
 
 
+void fb_hPostEvent_code_start(void) { }
+
 /*:::::*/
 void fb_hPostEvent(EVENT *e)
 {
@@ -51,6 +53,8 @@ void fb_hPostEvent(EVENT *e)
 	fb_mode->event_tail = (fb_mode->event_tail + 1) & (MAX_EVENTS - 1);
 	EVENT_UNLOCK();
 }
+
+void fb_hPostEvent_code_end(void) { }
 
 
 /*:::::*/

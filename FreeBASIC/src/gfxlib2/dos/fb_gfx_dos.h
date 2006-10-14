@@ -83,10 +83,6 @@ typedef struct fb_dos_t {
 	int mouse_ok;
 	int mouse_wheel_ok;
 	int mouse_cursor;
-	int mouse_x;
-	int mouse_y;
-	int mouse_z;
-	int mouse_buttons;
 
 	int bios_mode;
 	
@@ -113,6 +109,12 @@ typedef struct fb_dos_t {
 	VesaModeInfo vesa_mode_info;
 	VesaModeInfo *vesa_modes;
 	int num_vesa_modes;
+
+	int mouse_x_old;
+	int mouse_y_old;
+	int mouse_z_old;
+	int mouse_buttons_old;
+	char key_old[128];
 	
 } fb_dos_t;
 

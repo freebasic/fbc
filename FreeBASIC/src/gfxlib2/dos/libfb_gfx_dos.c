@@ -85,6 +85,106 @@ extern void fb_hBlitMMX_code_end(void);
 extern void fb_MMX_code_start(void);
 extern void fb_MMX_code_end(void);
 
+/* from libfb_gfx_core.c */
+void fb_hPostEvent_code_start(void);
+void fb_hPostEvent_code_end(void);
+
+#define KB_EXTENDED (255 << 8)
+
+#define X KB_EXTENDED
+static const unsigned short kb_scan_to_ascii[128][3] = {
+	/*
+	normal
+		   +shift
+	                +ctrl
+	*/
+	{    0,     0,     0},
+	{   27,    27,     0},	/* esc */
+	{   49,    33,     0},	/* 1 ! */
+	{   50,    64,   X|3},	/* 2 @ */
+	{   51,    35,     0},	/* 3 # */
+	{   52,    36,     0},	/* 4 $ */
+	{   53,    37,     0},	/* 5 % */
+	{   54,    94,     0},	/* 6 ^ */
+	{   55,    38,     0},	/* 7 & */
+	{   56,    42,     0},	/* 8 * */
+	{   57,    40,     0},	/* 9 ( */
+	{   48,    41,     0},	/* 0 ) */
+	{   45,    95,     0},	/* - _ */
+	{   61,    43,     0},	/* = + */
+	{    8,     8,   127},	/* backspace */
+	{    9,     9, X|148},	/* tab */
+	{  113,    81,    17},	/* q Q */
+	{  119,    87,    23},	/* w W */
+	{  101,    69,     5},	/* e E */
+	{  114,    82,    18},	/* r R */
+	{  116,    84,    20},	/* t T */
+	{  121,    89,    25},	/* y Y */
+	{  117,    85,    21},	/* u U */
+	{  105,    73,     9},	/* i I */
+	{  111,    79,    15},	/* o O */
+	{  112,    80,    16},	/* p P */
+	{   91,   123,    27},	/* [ { */
+	{   93,   125,    29},	/* ] } */
+	{   13,    13,    10},	/* enter */
+	{    0,     0,     0},	/* ctrl */
+	{   97,    65,     1},	/* a A */
+	{  115,    83,     0},	/* s S */
+	{  100,    68,     4},	/* d D */
+	{  102,    70,     6},	/* f F */
+	{  103,    71,     7},	/* g G */
+	{  104,    72,     8},	/* h H */
+	{  106,    74,    10},	/* j J */
+	{  107,    75,    11},	/* k K */
+	{  108,    76,    12},	/* l L */
+	{   59,    58,     0},	/* ; : */
+	{   39,    34,     0},	/* ' " */
+	{   96,   126,     0},	/* ` ~ */
+	{    0,     0,     0},	/* lshift */
+	{   92,   124,    28},	/* \ | */
+	{  122,    90,    26},	/* z Z */
+	{  120,    88,    24},	/* x X */
+	{   99,    67,     0},	/* c C */
+	{  118,    86,    22},	/* v V */
+	{   98,    66,     2},	/* b B */
+	{  110,    78,    14},	/* n N */
+	{  109,    77,    13},	/* m M */
+	{   44,    60,     0},	/* , < */
+	{   46,    62,     0},	/* . > */
+	{   47,    63,     0},	/* / ? */
+	{    0,     0,     0},	/* rshift */
+	{   42,    42,     0},	/* numpad * */
+	{    0,     0,     0},	/* alt */
+	{   32,    32,    32},	/* space */
+	{    0,     0,     0},	/* caps lock */
+	{ X|59,  X|84,  X|94},	/* F1  */
+	{ X|60,  X|85,  X|95},	/* F2  */
+	{ X|61,  X|86,  X|96},	/* F3  */
+	{ X|62,  X|87,  X|97},	/* F4  */
+	{ X|63,  X|88,  X|98},	/* F5  */
+	{ X|64,  X|89,  X|99},	/* F6  */
+	{ X|65,  X|90, X|100},	/* F7  */
+	{ X|66,  X|91, X|101},	/* F8  */
+	{ X|67,  X|92, X|102},	/* F9  */
+	{ X|68,  X|93, X|103},	/* F10 */
+	{    0,     0,     0},	/* num lock */
+	{    0,     0,     0},	/* scroll lock */
+	{ X|71,  X|71, X|119},	/* home */
+	{ X|72,  X|72, X|141},	/* up */
+	{ X|73,  X|73, X|134},	/* page up */
+	{ X|75,  X|75, X|115},	/* left */
+	{ X|77,  X|77, X|116},	/* right */
+	{   43,    43,     0},	/* numpad + */
+	{ X|79,  X|79, X|117},	/* end */
+	{ X|80,  X|80, X|145},	/* down */
+	{ X|81,  X|81, X|118},	/* page down */
+	{ X|82,  X|82, X|146},	/* insert */
+	{ X|83,  X|83, X|147},	/* delete */
+	{X|133, X|135, X|137},	/* F11 */
+	{X|134, X|138, X|138}	/* F12 */
+};
+#undef X
+
 
 #define lock_var(var)         fb_dos_lock_data( &(var), sizeof(var) )
 #define lock_array(array)     fb_dos_lock_data( (array), sizeof(array) )
@@ -204,6 +304,10 @@ static int fb_dos_timer_handler(unsigned irq)
 {
 	int do_abort;
 	int mouse_x = 0, mouse_y = 0;
+	int i, mask, key;
+	int buttons;
+	int ctrl, shift;
+	EVENT e;
 
 	fb_dos.timer_ticks += fb_dos.timer_step;
 	if( (do_abort = fb_dos.timer_ticks < 65536)==FALSE )
@@ -222,9 +326,9 @@ static int fb_dos_timer_handler(unsigned irq)
 	if( fb_dos.set_palette )
 		fb_dos.set_palette();
 	
+	mouse_x = fb_dos_mouse_x;
+	mouse_y = fb_dos_mouse_y;
 	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
-		mouse_x = fb_dos_mouse_x;
-		mouse_y = fb_dos_mouse_y;
 		fb_hSoftCursorPut(mouse_x, mouse_y);
 	}
 	
@@ -233,6 +337,63 @@ static int fb_dos_timer_handler(unsigned irq)
 
 	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
 		fb_hSoftCursorUnput(mouse_x, mouse_y);
+	}
+	
+	e.type = 0;
+
+	if ( fb_dos.mouse_ok ) {	
+	
+		if ( (fb_dos.mouse_x_old != mouse_x) || (fb_dos.mouse_y_old != mouse_y) ) {
+			e.type = EVENT_MOUSE_MOVE;
+			e.x = mouse_x;
+			e.y = mouse_y;
+			e.dx = mouse_x - fb_dos.mouse_x_old;
+			e.dy = mouse_y - fb_dos.mouse_y_old;
+			fb_hPostEvent(&e);
+		}
+		
+		if ( fb_dos.mouse_z_old != fb_dos_mouse_z ) {
+			e.type = EVENT_MOUSE_WHEEL;
+			e.z = fb_dos_mouse_z;
+			fb_hPostEvent(&e);
+		}
+
+		if (fb_dos_mouse_buttons != fb_dos.mouse_buttons_old) {
+			buttons = (fb_dos_mouse_buttons ^ fb_dos.mouse_buttons_old) & 0x7;
+			for (e.button = 0x4; e.button; e.button >>= 1) {
+				if (buttons & e.button) {
+					if (fb_dos_mouse_buttons & e.button)
+						e.type = EVENT_MOUSE_BUTTON_PRESS;
+					else
+						e.type = EVENT_MOUSE_BUTTON_RELEASE;
+					fb_hPostEvent(&e);
+				}
+			}
+		}
+
+		fb_dos.mouse_x_old = mouse_x;
+		fb_dos.mouse_y_old = mouse_y;
+		fb_dos.mouse_z_old = fb_dos_mouse_z;
+		fb_dos.mouse_buttons_old = fb_dos_mouse_buttons;
+	}
+	
+	ctrl = fb_ConsoleMultikey(SC_CONTROL);
+	shift = fb_ConsoleMultikey(SC_LSHIFT) || fb_ConsoleMultikey(SC_RSHIFT);
+	for (i = 0; i < 128; i++) {
+		e.type = 0;
+		key = fb_ConsoleMultikey( i );
+		if ( key && !fb_dos.key_old[i] ) {
+			e.type = EVENT_KEY_PRESS;
+		} else if ( !key && fb_dos.key_old[i] ) {
+			e.type = EVENT_KEY_RELEASE;
+		}
+		if ( e.type ) {
+			e.scancode = i;
+			
+			e.ascii = kb_scan_to_ascii[i][ctrl ? 2 : (shift ? 1 : 0)]; /* FIXME */
+			fb_hPostEvent(&e);
+		}	
+		fb_dos.key_old[i] = key;
 	}
 	
 	fb_dos.in_interrupt = FALSE;
@@ -390,6 +551,9 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	lock_var(fb_hMemSet);
 	fb_dos_lock_code(memcpy, 1024); /* we don't know how big memcpy and memset are,
 	fb_dos_lock_code(memset, 1024);    so we guess 1k each... */
+	lock_code(fb_hPostEvent_code_start, fb_hPostEvent_code_end);
+	fb_dos_lock_data(&fb_mode->event_queue, sizeof(EVENT) * MAX_EVENTS);
+	lock_array(kb_scan_to_ascii);
 	
 	fb_dos.w = w;
 	fb_dos.h = h;
@@ -460,6 +624,9 @@ void fb_dos_exit(void)
 	unlock_var(fb_hMemSet);
 	fb_dos_unlock_code(memcpy, 1024); /* we don't know how big memcpy and memset are,
 	fb_dos_unlock_code(memset, 1024);    so we guess 1k each... */
+	unlock_code(fb_hPostEvent_code_start, fb_hPostEvent_code_end);
+	fb_dos_unlock_data(&fb_mode->event_queue, sizeof(EVENT) * MAX_EVENTS);
+	unlock_array(kb_scan_to_ascii);
 	
 	fb_dos_restore_video_mode();
 
