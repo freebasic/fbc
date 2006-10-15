@@ -22,7 +22,7 @@
 
 #include once "common.bi"
 #include once "CPage.bi"
-#include once "CPagelist.bi"
+#include once "CPageList.bi"
 
 type CWiki2Chm as CWiki2Chm_
 

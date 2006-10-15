@@ -24,7 +24,7 @@
 ''
 
 #include once "common.bi"
-#include once "CwikiCon.bi"
+#include once "CWikiCon.bi"
 
 dim shared as CWikiCon ptr wikicon
 dim shared as string wiki_url

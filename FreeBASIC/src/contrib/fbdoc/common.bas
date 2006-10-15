@@ -23,6 +23,7 @@
 ''
 
 #include once "common.bi"
+#include once "fbdoc_keywords.bi"
 
 '':::::
 sub ZFree( byval s as zstring ptr ptr )
@@ -153,32 +154,6 @@ function CapFirstLetter( byref a as string ) as string
 end function
 
 '':::::
-function FormatPageTitle(byref a as string) as string
-
-	dim as string r = a
-	dim as integer i = 0, n = len(a), c = 1
-	while i < n
-		select case r[i]
-		case asc("a") to asc("z")
-			if (c) then 
-				r[i] -= 32
-				c = 0
-			end if
-		case asc("A") to asc("Z")
-			if (c=0) then
-				r[i] += 32
-			end if
-			c = 0
-		case else
-			c = 1
-		end select
-		i += 1
-	wend
-	function = r
-
-end function
-
-'':::::
 function Text2Html _
 	( _
 		byref text as string, _
@@ -232,5 +207,37 @@ function Text2Html _
 	next i
 
 	return res
+
+end function
+
+'':::::
+function FormatPageTitle(byref a as string) as string
+
+	dim k as string
+	k = fbdoc_FindKeyword( a )
+	if( len(k) > 0 ) then
+		return k
+	end if
+
+	dim as string r = a
+	dim as integer i = 0, n = len(a), c = 1
+	while i < n
+		select case r[i]
+		case asc("a") to asc("z")
+			if (c) then 
+				r[i] -= 32
+				c = 0
+			end if
+		case asc("A") to asc("Z")
+			if (c=0) then
+				r[i] += 32
+			end if
+			c = 0
+		case else
+			c = 1
+		end select
+		i += 1
+	wend
+	function = r
 
 end function

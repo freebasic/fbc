@@ -24,7 +24,7 @@
 ''
 
 #include once "common.bi"
-#include once "CwikiCache.bi"
+#include once "CWikiCache.bi"
 #include once "fbdoc_cache.bi"
 
 dim shared as CWikiCache ptr wikicache

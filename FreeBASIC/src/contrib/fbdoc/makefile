@@ -49,7 +49,7 @@ endif
 ifeq ($(TARGET),win32)
 LIBS += -l curl-3 -l pcre -l mysql
 else
-LIBS += -l curl -l pcre	-l mysql
+LIBS += -l curl -l pcre	-l mysqlclient
 endif
 
 RCS  := 
@@ -102,4 +102,4 @@ fbdoc.chm:
 .PHONY : clean
 clean:
 	-rm -f $(OBJS) $(APP)
-	-rm -f $(objpath)/mkfbhelpfile.o mkfbhelpfile.exe
+	-rm -f $(objpath)/mkfbhelpfile.o $(APP2)

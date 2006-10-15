@@ -41,9 +41,6 @@ Installing:
     - type "make TARGET=linux" in the fbdoc directory at the command prompt.  
 	  This will generate "fbdoc"
 
-	- At the time of this writing, not all of the required headers may be
-	  available to build the program.  fbdoc has not been tested in linux
-
   o DOS:
 
     - not supported

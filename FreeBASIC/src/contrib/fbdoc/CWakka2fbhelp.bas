@@ -1308,6 +1308,10 @@ private function _emitToken(byval _this as CWakka2fbhelp ptr, byval token as Wik
 		return _emitList( _this, token->indent.level )
 
 	case WIKI_TOKEN_TEXT:
+		if( (_this->tagFlags(WIKI_TAG_BOLD) and 1) _
+			and (_this->tagFlags(WIKI_TAG_MONOSPACE) and 1)) then
+			return _emitText( _this, FormatPageTitle( token->text ))
+		end if
 		return _emitText( _this, token->text )
 
 	case WIKI_TOKEN_RAW:

@@ -50,7 +50,6 @@ declare function LoadFileAsString _
 	) as string
 
 declare function CapFirstLetter( byref a as string ) as string
-declare function FormatPageTitle( byref a as string) as string
 
 declare function Text2Html _
 	( _
@@ -58,5 +57,7 @@ declare function Text2Html _
 		byval br as integer = FALSE, _
 		byval sp as integer = FALSE _
 	) as string
+
+declare function FormatPageTitle(byref a as string) as string
 
 #endif

@@ -871,6 +871,10 @@ private function _tokenToHtml(byval _this as CWakka2Html ptr, byval token as Wik
 		return _listToHtml( _this, token->indent.level )
 
 	case WIKI_TOKEN_TEXT, WIKI_TOKEN_RAW:
+		if( (_this->tagFlags(WIKI_TAG_BOLD) and 1) _
+			and (_this->tagFlags(WIKI_TAG_MONOSPACE) and 1)) then
+			return FormatPageTitle( token->text )
+		end if
 		return token->text
 
 	case WIKI_TOKEN_ACTION:

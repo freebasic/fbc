@@ -620,7 +620,7 @@ sub CWiki_Dump _
 		case WIKI_TOKEN_TEXT
 			t = "text"
 		case WIKI_TOKEN_RAW
-			t = "text"
+			t = "raw"
 		case WIKI_TOKEN_FORCENL
 			t = "forcenl"
 		case WIKI_TOKEN_HORZLINE
@@ -775,7 +775,8 @@ function CWiki_GetDocTocLinks _
 			if( useboldlinks ) then
 				if( token->id = WIKI_TOKEN_BOLD_SECTION ) then
 					token = cast( WikiToken ptr, listGetNext( token ) )
-					_AddPageLink( @_this->pagelinklist, FormatPageTitle( token->text ), "", 0 ) 
+					''_AddPageLink( @_this->pagelinklist, FormatPageTitle( token->text ), "", 0 ) 
+					_AddPageLink( @_this->pagelinklist, token->text, "", 0 ) 
 					level = 1
 					token = cast( WikiToken ptr, listGetNext( token ) )
 				end if

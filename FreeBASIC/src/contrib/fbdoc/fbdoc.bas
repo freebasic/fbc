@@ -174,7 +174,7 @@ const default_CacheDir = "cache/"
 				bEmitfbhelp = TRUE
 			case "-getpage"
 				bWebPages = TRUE
-			case "-s"
+			case "-makepage"
 				bSinglePage = TRUE
 			case else
 				? "Unrecognized option '" + command(i) + "'"
