@@ -39,6 +39,7 @@
  */
 
 #include "fb.h"
+#include <ctype.h>
 
 /* globals */
 fb_FnProcessMouseEvent __fb_MouseEventHook = (fb_FnProcessMouseEvent) NULL;
