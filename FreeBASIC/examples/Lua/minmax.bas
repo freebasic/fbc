@@ -1,12 +1,12 @@
 ''
 '' Lua (script language) example
 ''
-'' translated from PB source, originally written by Marco Pontello (marcopon@myrealbox.com)
+'' translated from a PB source, originally written by Marco Pontello (marcopon[at]myrealbox.com)
 ''
 
 
 #include once "Lua/lua.bi"
-#include once "Lua/luauxlib.bi"
+#include once "Lua/lauxlib.bi"
 #include once "Lua/lualib.bi"
 
 
@@ -65,7 +65,7 @@ end function
   	lua_register( L, "MinMax", @minmax )
 
   	' execute the lua script from a file
-  	lua_dofile( L, "minmax.lua" )
+  	luaL_dofile( L, "minmax.lua" )
 
   	' release the lua state
   	lua_close( L )
