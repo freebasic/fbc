@@ -251,3 +251,18 @@ function symbGetConstValueAsStr _
 
 end function
 
+'':::::
+function symbCloneConst _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	'' no need to make a copy of fbvalue.str, if it's a literal,
+	'' it will be a non-local var
+
+	function = symbAddConst( NULL, _
+							 symbGetType( sym ), _
+							 symbGetSubType( sym ), _
+							 @sym->con.val )
+
+end function

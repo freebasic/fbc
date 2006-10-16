@@ -136,12 +136,12 @@ function cSelectStmtBegin as integer
 
     '' not a wstring?
 	if( dtype <> FB_DATATYPE_WCHAR ) then
-		sym = symbAddTempVarEx( dtype, subtype )
+		sym = symbAddTempVar( dtype, subtype )
 		if( sym = NULL ) then
 			exit function
 		end if
 
-		expr = astNewASSIGN( astNewVAR( sym, 0, dtype, subtype ), expr )
+		expr = astNewASSIGN( astNewVAR( sym, 0, dtype, subtype, TRUE ), expr )
 		if( expr <> NULL ) then
 			astAdd( expr )
 		end if

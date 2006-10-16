@@ -61,9 +61,14 @@ private function hAllocTmpArrayDesc _
 	dim as FBSYMBOL ptr desc = any
 
 	'' create
-	desc = symbAddArrayDesc( array, _
-							 array_expr, _
-							 symbGetArrayDimensions( array ) )
+	desc = symbAddArrayDesc( array, symbGetArrayDimensions( array ) )
+
+	'' don't let NewDECL() fill it
+	symbGetTypeIniTree( desc ) = astBuildArrayDescIniTree( desc, _
+														   array, _
+														   array_expr )
+
+
 
 	'' declare
 	tree = astNewDECL( FB_SYMBCLASS_VAR, _
@@ -141,7 +146,7 @@ private function hTmpStrListAdd _
 	t->prev = parent->call.strtail
 	parent->call.strtail = t
 
-	s = symbAddTempVarEx( dtype )
+	s = symbAddTempVar( dtype, NULL, FALSE, FALSE )
 
 	t->sym = s
 	if( copyback ) then
@@ -168,7 +173,12 @@ private function hAllocTmpString _
 	t = hTmpStrListAdd( parent, n, FB_DATATYPE_STRING, copyback )
 
 	'' temp string = src string
-	return rtlStrAssign( astNewVAR( t->sym, 0, FB_DATATYPE_STRING ), n )
+	return rtlStrAssign( astNewVAR( t->sym, _
+									0, _
+									FB_DATATYPE_STRING, _
+									NULL, _
+									TRUE ), _
+						 n )
 
 end function
 
@@ -187,7 +197,12 @@ private function hAllocTmpWstrPtr _
 	n = astNewCONV( FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, NULL, n, AST_OP_TOPOINTER )
 
 	'' temp string = src string
-	return astNewASSIGN( astNewVAR( t->sym, 0, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), n )
+	return astNewASSIGN( astNewVAR( t->sym, _
+									0, _
+									FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, _
+									NULL, _
+									TRUE ), _
+						 n )
 
 end function
 
@@ -452,7 +467,7 @@ private function hCheckByRefArg _
 
 		case else
 			'' scalars: store param to a temp var and pass it
-			arg = astNewASSIGN( astNewVAR( symbAddTempVar( dtype, subtype ), _
+			arg = astNewASSIGN( astNewVAR( symbAddTempVar( dtype, subtype, FALSE, FALSE ), _
 									 	   0, _
 									 	   dtype, _
 									 	   subtype ), _
@@ -1052,10 +1067,18 @@ private function hCreateOptArg _
 		byval param as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr tree = any
+	dim as ASTNODE ptr tree = symbGetParamOptExpr( param )
+
+	if( tree = NULL ) then
+		return NULL
+	end if
 
 	'' make a clone
-	tree = astCloneTree( symbGetParamOptExpr( param ) )
+	if( tree->class = AST_NODECLASS_TYPEINI ) then
+		tree = astTypeIniClone( tree )
+	else
+		tree = astCloneTree( tree )
+	end if
 
 	'' UDT?
 	if( symbGetType( param ) = FB_DATATYPE_STRUCT ) then

@@ -61,10 +61,10 @@ private sub hAllocTempStruct _
 		if( symbGetProcRealType( sym ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
 
 			'' create a temp struct (can't be static, could be an object)
-			n->call.tmpres = symbAddTempVarEx( FB_DATATYPE_STRUCT, _
-											   symbGetSubtype( sym ), _
-											   FALSE, _
-											   FALSE )
+			n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, _
+										     symbGetSubtype( sym ), _
+										     FALSE, _
+										     FALSE )
 
 			if( symbGetHasDtor( symbGetSubtype( sym ) ) ) then
 				symbSetIsTempWithDtor( n->call.tmpres, TRUE )
@@ -329,11 +329,14 @@ private sub hCheckTempStruct _
 	'' follow GCC 3.x's ABI
 	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
 		if( symbGetProcRealType( sym ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
-        	'' pass the address of the temp struct
+
+        	'' pass the address of the temp struct (it must be cleared if it
+        	'' includes string fields)
         	vr = astLoad( astNewVAR( n->call.tmpres, _
         							 0, _
         							 FB_DATATYPE_STRUCT, _
-        							 symbGetSubtype( sym ) ) )
+        							 symbGetSubtype( sym ), _
+        							 TRUE ) )
 
         	a.typ = FB_DATATYPE_VOID
         	a.param.mode = FB_PARAMMODE_BYREF
@@ -486,3 +489,147 @@ function astLoadCALLCTOR _
 
 end function
 
+'':::::
+sub astCloneCALL _
+	( _
+		byval n as ASTNODE ptr, _
+		byval c as ASTNODE ptr _
+	)
+
+	'' profiled function have sub nodes
+	scope
+		dim as ASTNODE ptr t = any
+
+		t = n->call.profbegin
+		if( t <> NULL ) then
+			c->call.profbegin = astCloneTree( t )
+			c->call.profend = astCloneTree( n->call.profend )
+		end if
+	end scope
+
+    '' temp string list
+    scope
+    	dim as AST_TMPSTRLIST_ITEM ptr sn = any, sc = any
+
+		c->call.strtail = NULL
+		sn = n->call.strtail
+		do while( sn <> NULL )
+        	sc = listNewNode( @ast.call.tmpstrlist )
+
+        	sc->sym = sn->sym
+        	sc->srctree = astCloneTree( sn->srctree )
+        	sc->prev = c->call.strtail
+
+        	c->call.strtail = sc
+
+			sn = sn->prev
+		loop
+	end scope
+
+    '' temp dtor list
+    scope
+    	dim as AST_DTORLIST_ITEM ptr dn = any, dc = any
+
+		c->call.dtortail = NULL
+		dn = n->call.dtortail
+		do while( dn <> NULL )
+        	dc = listNewNode( @ast.call.dtorlist )
+
+        	dc->sym = dn->sym
+        	dc->prev = c->call.dtortail
+
+        	c->call.dtortail = dc
+
+			dn = dn->prev
+		loop
+	end scope
+
+end sub
+
+'':::::
+sub astDelCALL _
+	( _
+		byval n as ASTNODE ptr _
+	)
+
+	'' profiled function have sub nodes
+	if( n->call.profbegin <> NULL ) then
+		astDelTree( n->call.profbegin )
+		astDelTree( n->call.profend )
+	end if
+
+    '' temp strings list
+    scope
+	    dim as AST_TMPSTRLIST_ITEM ptr s = any, p = any
+		s = n->call.strtail
+		do while( s <> NULL )
+			p = s->prev
+
+			astDelTree( s->srctree )
+
+			listDelNode( @ast.call.tmpstrlist, s )
+			s = p
+    	loop
+    end scope
+
+    '' temp dtor list
+    scope
+	    dim as AST_DTORLIST_ITEM ptr d = any, p = any
+		d = n->call.dtortail
+		do while( d <> NULL )
+			p = d->prev
+			listDelNode( @ast.call.dtorlist, d )
+			d = p
+    	loop
+    end scope
+
+end sub
+
+'':::::
+sub astReplaceSymbolOnCALL _
+	( _
+		byval n as ASTNODE ptr, _
+		byval old_sym as FBSYMBOL ptr, _
+		byval new_sym as FBSYMBOL ptr _
+	)
+
+	'' profiled function have sub nodes
+	if( n->call.profbegin <> NULL ) then
+		astReplaceSymbolOnTree( n->call.profbegin, old_sym, new_sym )
+		astReplaceSymbolOnTree( n->call.profend, old_sym, new_sym )
+	end if
+
+	'' check temp res
+	if( n->call.tmpres = old_sym ) then
+		n->call.tmpres = new_sym
+	end if
+
+    '' temp strings list
+    scope
+	    dim as AST_TMPSTRLIST_ITEM ptr s = any
+		s = n->call.strtail
+		do while( s <> NULL )
+			if( s->sym = old_sym ) then
+				s->sym = new_sym
+			end if
+
+			astReplaceSymbolOnTree( s->srctree, old_sym, new_sym )
+
+			s = s->prev
+    	loop
+    end scope
+
+    '' temp dtor list
+    scope
+	    dim as AST_DTORLIST_ITEM ptr d = any
+		d = n->call.dtortail
+		do while( d <> NULL )
+			if( d->sym = old_sym ) then
+				d->sym = new_sym
+			end if
+
+			d = d->prev
+    	loop
+    end scope
+
+end sub

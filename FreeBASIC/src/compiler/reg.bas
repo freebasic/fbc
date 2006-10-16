@@ -177,7 +177,7 @@ private sub regPopReg _
 	loop
 
 	'' loop shouldn't fail
-	assert( TRUE = FALSE )
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 

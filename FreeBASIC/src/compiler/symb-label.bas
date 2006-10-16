@@ -139,6 +139,16 @@ function symbAddLabel _
 end function
 
 '':::::
+function symbCloneLabel _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	function = symbAddLabel( NULL )
+
+end function
+
+'':::::
 sub symbDelLabel _
 	( _
 		byval s as FBSYMBOL ptr _

@@ -1,6 +1,3 @@
-[ ] ini_tree's that include calls shouldn't include any temp vars (allocated on newARG),
-    because they can be moved to another functions
-
 [ ] remove the internal profiler and use gprof instead, the former won't work with
     destructors
 

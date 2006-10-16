@@ -204,7 +204,18 @@ function astBuildVarField _
 		ofs += symbGetOfs( fld )
 	end if
 
-	expr = astNewVAR( sym, ofs, symbGetType( sym ), symbGetSubtype( sym ) )
+	'' byref or import?
+	if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
+		expr = astNewPTR( ofs, _
+						  astNewVAR( sym, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL ), _
+						  symbGetType( sym ), _
+						  symbGetSubtype( sym ) )
+	else
+		expr = astNewVAR( sym, _
+						  ofs, _
+						  symbGetType( sym ), _
+						  symbGetSubtype( sym ) )
+	end if
 
 	if( fld <> NULL ) then
 		expr = astNewFIELD( expr, fld, symbGetType( fld ), symbGetSubtype( fld ) )
@@ -596,6 +607,7 @@ function astBuildInstPtr _
 	dtype = symbGetType( sym )
 	subtype = symbGetSubtype( sym )
 
+	'' it's always an param
 	expr = astNewVAR( sym, 0, FB_DATATYPE_POINTER + dtype, subtype )
 
 	if( fld <> NULL ) then
@@ -664,13 +676,150 @@ function astBuildTypeIniCtorList _
 
 	dim as ASTNODE ptr tree
 
-	tree = astTypeIniBegin( symbGetType( sym ), symbGetSubtype( sym ) )
+	tree = astTypeIniBegin( symbGetType( sym ), symbGetSubtype( sym ), TRUE )
 
 	astTypeIniAddCtorList( tree, sym, symbGetArrayElements( sym ) )
 
 	astTypeIniEnd( tree, TRUE )
 
 	function = tree
+
+end function
+
+''
+'' arrays
+''
+
+'':::::
+function astBuildArrayDescIniTree _
+	( _
+		byval desc as FBSYMBOL ptr, _
+		byval array as FBSYMBOL ptr, _
+		byval array_expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+    dim as ASTNODE ptr tree = any
+    dim as integer dtype = any, dims = any
+    dim as FBSYMBOL ptr elm = any, dimtb = any, subtype = any
+
+    '' COMMON?
+    if( symbIsCommon( array ) ) then
+    	return NULL
+    end if
+
+    ''
+    tree = astTypeIniBegin( symbGetType( desc ), symbGetSubtype( desc ), TRUE )
+
+    dtype = symbGetType( array )
+    subtype = symbGetSubType( array )
+    dims = symbGetArrayDimensions( array )
+
+	'' unknown dimensions? use max..
+	if( dims = -1 ) then
+		dims = FB_MAXARRAYDIMS
+	end if
+
+	elm = symbGetUDTFirstElm( symbGetSubtype( desc ) )
+
+    if( array_expr = NULL ) then
+    	if( symbGetIsDynamic( array ) ) then
+    		array_expr = astNewCONSTi( 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
+    	else
+    		array_expr = astNewADDR( AST_OP_ADDROF, astNewVAR( array, 0, dtype, subtype ) )
+    	end if
+
+    else
+    	array_expr = astNewADDR( AST_OP_ADDROF, array_expr )
+    end if
+
+    '' .data = @array(0) + diff
+	astTypeIniAddAssign( tree, _
+					   	 astNewBOP( AST_OP_ADD, _
+								  	astCloneTree( array_expr ), _
+					   			  	astNewCONSTi( symbGetArrayOffset( array ), _
+					   			  				  FB_DATATYPE_INTEGER ) ), _
+					   	 elm )
+
+	elm = symbGetUDTNextElm( elm )
+
+	'' .ptr	= @array(0)
+	astTypeIniAddAssign( tree, array_expr, elm )
+
+    elm = symbGetUDTNextElm( elm )
+
+    '' .size = len( array ) * elements( array )
+    astTypeIniAddAssign( tree, _
+    				   	 astNewCONSTi( symbGetLen( array ) * symbGetArrayElements( array ), _
+    				   				   FB_DATATYPE_INTEGER ), _
+    				   	 elm )
+
+    elm = symbGetUDTNextElm( elm )
+
+    '' .element_len	= len( array )
+    astTypeIniAddAssign( tree, _
+    				   	 astNewCONSTi( symbGetLen( array ), _
+    				   				   FB_DATATYPE_INTEGER ), _
+    				   	 elm )
+
+    elm = symbGetUDTNextElm( elm )
+
+    '' .dimensions = dims( array )
+    astTypeIniAddAssign( tree, _
+    				   	 astNewCONSTi( dims, _
+    				   				   FB_DATATYPE_INTEGER ), _
+    				   	 elm )
+
+    elm = symbGetUDTNextElm( elm )
+
+    '' setup dimTB
+    dimtb = symbGetUDTFirstElm( symbGetSubtype( elm ) )
+
+    '' static array?
+    if( symbGetIsDynamic( array ) = FALSE ) then
+    	dim as FBVARDIM ptr d
+
+    	d = symbGetArrayFirstDim( array )
+    	do while( d <> NULL )
+			elm = dimtb
+
+			'' .elements = (ubound( array, d ) - lbound( array, d )) + 1
+    		astTypeIniAddAssign( tree, _
+    				   		     astNewCONSTi( d->upper - d->lower + 1, _
+    				   				 		   FB_DATATYPE_INTEGER ), _
+    				   		     elm )
+
+			elm = symbGetUDTNextElm( elm )
+
+			'' .lbound = lbound( array, d )
+    		astTypeIniAddAssign( tree, _
+    				   		     astNewCONSTi( d->lower, _
+    				   				 		   FB_DATATYPE_INTEGER ), _
+    				   		     elm )
+
+			elm = symbGetUDTNextElm( elm )
+
+			'' .ubound = ubound( array, d )
+    		astTypeIniAddAssign( tree, _
+    				   		     astNewCONSTi( d->upper, _
+    				   				 		   FB_DATATYPE_INTEGER ), _
+    				   		     elm )
+
+			d = d->next
+    	loop
+
+    '' dynamic..
+    else
+        '' just fill with 0's
+        astTypeIniAddPad( tree, dims * len( FB_ARRAYDESCDIM ) )
+    end if
+
+    ''
+    astTypeIniEnd( tree, TRUE )
+
+    ''
+    symbSetIsInitialized( desc )
+
+    function = tree
 
 end function
 

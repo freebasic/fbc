@@ -1200,6 +1200,19 @@ private function hVarDecl _
     		end if
     	end if
 
+		'' inside a namespace but outside a proc?
+		if( symbIsGlobalNamespc() = FALSE ) then
+			if( fbIsModLevel( ) ) then
+				if( (attrib and (FB_SYMBATTRIB_SHARED or _
+								 FB_SYMBATTRIB_COMMON or _
+								 FB_SYMBATTRIB_PUBLIC or _
+								 FB_SYMBATTRIB_EXTERN)) = 0 ) then
+					'' they are never allocated on stack..
+					attrib or= FB_SYMBATTRIB_STATIC
+				end if
+			end if
+		end if
+
     	''
     	if( isdynamic ) then
     		sym = hDeclDynArray( sym, id, palias, _

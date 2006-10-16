@@ -1432,7 +1432,7 @@ function astNewSelfBOP _
 
 		dtype = astGetDataType( l )
 		subtype = astGetSubType( l )
-		tmp = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype )
+		tmp = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
 
 		'' tmp = @lvalue
 		ll = astNewASSIGN( astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _

@@ -812,9 +812,9 @@ private sub hCallCtorList _
 		elements = symbGetArrayElements( this_ )
 	end if
 
-    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL )
+    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
     label = symbAddLabel( NULL, TRUE )
-    iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype )
+    iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
 
 	if( fld <> NULL ) then
     	if( is_ctor ) then
@@ -925,7 +925,7 @@ private sub hFlushFieldInitTree _
 
 	dim as ASTNODE ptr initree = any
 
-	initree = astCloneTree( symbGetTypeIniTree( fld ) )
+	initree = astTypeIniClone( symbGetTypeIniTree( fld ) )
 
 	astAdd( astTypeIniFlush( initree, this_, FALSE, TRUE ) )
 
@@ -988,11 +988,16 @@ private sub hCallFieldCtors _
 			'' part of an union?
 			if( symbGetIsUnionField( fld ) ) then
 				fld = hClearUnionFields( this_, fld )
+
+				'' skip next
 				continue do
 
 			else
+				'' not initialized?
 				if( symbGetTypeIniTree( fld ) = NULL ) then
 					hCallFieldCtor( this_, fld )
+
+				'' flush the tree..
 				else
 					hFlushFieldInitTree( this_, fld )
 				end if
@@ -1140,7 +1145,7 @@ private sub hCallStaticCtor _
 
 	'' ctor?
 	if( initree <> NULL ) then
-        astAdd( astTypeIniFlush( initree, sym, FALSE, TRUE ) )
+        astAdd( astTypeIniFlush( initree, sym, FALSE, TRUE, TRUE ) )
 		exit sub
 	end if
 

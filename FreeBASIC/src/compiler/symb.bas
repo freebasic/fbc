@@ -972,42 +972,80 @@ sub symbDelFromHash _
 end sub
 
 '':::::
+#macro doUnlink( s )
+
+    scope
+	    dim as FBSYMBOLTB ptr tb
+    	dim as FBSYMBOL ptr prv, nxt
+
+    	'' del from table
+    	tb = s->symtb
+
+    	prv = s->prev
+    	nxt = s->next
+    	if( prv <> NULL ) then
+    		prv->next = nxt
+    	else
+    		tb->head = nxt
+    	end if
+
+    	if( nxt <> NULL ) then
+    		nxt->prev = prv
+    	else
+    		tb->tail = prv
+    	end if
+
+    	s->prev = NULL
+    	s->next = NULL
+    end scope
+
+#endmacro
+
+'':::::
+#macro doRemove( s )
+
+    '' remove from symbol tb
+    poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
+
+    ZstrFree( s->id.alias )
+    ZstrFree( s->id.mangled )
+
+    listDelNode( @symb.symlist, s )
+
+#endmacro
+
+'':::::
 sub symbFreeSymbol _
 	( _
 		byval s as FBSYMBOL ptr _
 	) static
 
-    dim as FBSYMBOLTB ptr tb
-    dim as FBSYMBOL ptr prv, nxt
-
 	'' revove from hash tb
 	symbDelFromHash( s )
 
-    '' del from table
-    tb = s->symtb
+	doUnlink( s )
 
-    prv = s->prev
-    nxt = s->next
-    if( prv <> NULL ) then
-    	prv->next = nxt
-    else
-    	tb->head = nxt
-    end if
+    doRemove( s )
 
-    if( nxt <> NULL ) then
-    	nxt->prev = prv
-    else
-    	tb->tail = prv
-    end if
+end sub
 
-    '' remove from symbol tb
-    s->prev = NULL
-    s->next = NULL
-    poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
-    ZstrFree( s->id.alias )
-    ZstrFree( s->id.mangled )
+'':::::
+sub symbFreeSymbol_RemOnly _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
 
-    listDelNode( @symb.symlist, s )
+    doRemove( s )
+
+end sub
+
+'':::::
+sub symbFreeSymbol_UnlinkOnly _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
+
+	doUnlink( s )
 
 end sub
 
@@ -1040,7 +1078,7 @@ sub symbDelSymbol _
 		symbDelEnum( s )
 
     case FB_SYMBCLASS_STRUCT
-    	symbDelUDT( s )
+    	symbDelStruct( s )
 
     case FB_SYMBCLASS_SCOPE
     	symbDelScope( s )
@@ -1060,6 +1098,35 @@ sub symbDelSymbol _
     end select
 
 end sub
+
+'':::::
+function symbCloneSymbol _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	'' assuming only non-complex symbols will be passed,
+	'' for use by astTypeIniClone() mainly
+
+	select case as const s->class
+    case FB_SYMBCLASS_VAR
+    	function = symbCloneVar( s )
+
+    case FB_SYMBCLASS_CONST
+		function = symbCloneConst( s )
+
+    case FB_SYMBCLASS_LABEL
+    	function = symbCloneLabel( s )
+
+    case FB_SYMBCLASS_STRUCT
+    	function = symbCloneStruct( s )
+
+    case else
+    	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+    	function = NULL
+    end select
+
+end function
 
 '':::::
 sub symbDelGlobalTb( ) static

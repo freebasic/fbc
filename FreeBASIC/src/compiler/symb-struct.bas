@@ -648,12 +648,53 @@ sub symbStructEnd _
 
 end sub
 
+'':::::
+function symbCloneStruct _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	static as FBARRAYDIM dTB(0)
+	dim as FBSYMBOL ptr clone = any, fld = any
+
+	'' assuming only simple structs will be cloned (ie: the ones
+	'' created by symbAddArrayDesc())
+
+	clone = symbStructBegin( NULL, _
+						 	 NULL, _
+						 	 NULL, _
+						 	 (sym->udt.options and FB_UDTOPT_ISUNION) <> 0, _
+							 sym->udt.align )
+
+
+    fld = sym->udt.symtb.head
+    do while( fld <> NULL )
+    	symbAddField( clone, _
+    				  NULL, _
+    				  0, _
+    				  dTB(), _
+    				  symbGetType( fld ), _
+    				  symbGetSubType( fld ), _
+    				  fld->ptrcnt, _
+    				  fld->lgt, _
+    				  0 )
+
+
+		fld = fld->next
+	loop
+
+	symbStructEnd( clone )
+
+	function = clone
+
+end function
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' del
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub symbDelUDT _
+sub symbDelStruct _
 	( _
 		byval s as FBSYMBOL ptr _
 	)

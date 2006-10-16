@@ -36,9 +36,12 @@ private function hCtorList _
 
 	subtype = symbGetSubtype( sym )
 
-    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL )
+    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
     label = symbAddLabel( NULL, TRUE )
-    this_ = symbAddTempVar( FB_DATATYPE_POINTER + symbGetType( sym ), subtype )
+    this_ = symbAddTempVar( FB_DATATYPE_POINTER + symbGetType( sym ), _
+    					    subtype, _
+    					    FALSE, _
+    					    FALSE )
 
     '' fld = @sym(0)
     tree = astNewLINK( tree, _

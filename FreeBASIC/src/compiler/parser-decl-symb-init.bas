@@ -213,6 +213,9 @@ private function hArrayInit _
 		dim as FBSYMBOL ptr ctor = NULL
 		if( ctx.isobj ) then
 			ctor = symbGetCompDefCtor( symbGetSubtype( ctx.sym ) )
+			if( ctor = NULL ) then
+				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+			end if
 		end if
 
 		if( ctor <> NULL ) then
@@ -375,6 +378,7 @@ function cInitializer _
 
     dim as FB_INITCTX ctx = any
     dim as FBSYMBOL ptr subtype = any
+    dim as integer is_local = any
 
 	function = NULL
 
@@ -390,6 +394,12 @@ function cInitializer _
 			errReport( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
 			exit function
 		end if
+
+		is_local = symbIsLocal( sym )
+
+	'' param, struct/class field or anon-udt
+	else
+		is_local = FALSE
 	end if
 
 	subtype = symbGetSubtype( sym )
@@ -397,7 +407,7 @@ function cInitializer _
 	ctx.sym = sym
 	ctx.dim = NULL
 	ctx.dimcnt = 0
-	ctx.tree = astTypeIniBegin( symbGetType( sym ), subtype )
+	ctx.tree = astTypeIniBegin( symbGetType( sym ), subtype, is_local )
 	ctx.isobj = FALSE
 
 	if( subtype <> NULL ) then

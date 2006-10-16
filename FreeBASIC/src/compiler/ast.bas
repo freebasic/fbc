@@ -232,6 +232,24 @@ declare sub hSetType _
 		byval subtype as FBSYMBOL ptr _
 	)
 
+declare sub astCloneCALL _
+	( _
+		byval n as ASTNODE ptr, _
+		byval c as ASTNODE ptr _
+	)
+
+declare sub astDelCALL _
+	( _
+		byval n as ASTNODE ptr _
+	)
+
+declare sub astReplaceSymbolOnCALL _
+	( _
+		byval n as ASTNODE ptr, _
+		byval old_sym as FBSYMBOL ptr, _
+		byval new_sym as FBSYMBOL ptr _
+	)
+
 
 '' globals
 	dim shared as ASTCTX ast
@@ -829,7 +847,7 @@ function astCloneTree _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr nn = any, p = any
+	dim as ASTNODE ptr c = any, t = any
 
 	''
 	if( n = NULL ) then
@@ -837,30 +855,26 @@ function astCloneTree _
 	end if
 
 	''
-	nn = astNewNode( INVALID, INVALID )
-	astCopy( nn, n )
+	c = astNewNode( INVALID, INVALID )
+	astCopy( c, n )
 
 	'' walk
-	p = n->l
-	if( p <> NULL ) then
-		nn->l = astCloneTree( p )
+	t = n->l
+	if( t <> NULL ) then
+		c->l = astCloneTree( t )
 	end if
 
-	p = n->r
-	if( p <> NULL ) then
-		nn->r = astCloneTree( p )
+	t = n->r
+	if( t <> NULL ) then
+		c->r = astCloneTree( t )
 	end if
 
-	'' profiled function have sub nodes
+	'' call nodes are too complex, let a helper function clone it
 	if( n->class = AST_NODECLASS_CALL ) then
-		p = n->call.profbegin
-		if( p <> NULL ) then
-			nn->call.profbegin = astCloneTree( p )
-			nn->call.profend   = astCloneTree( n->call.profend )
-		end if
+		astCloneCALL( n, c )
 	end if
 
-	function = nn
+	function = c
 
 end function
 
@@ -870,31 +884,27 @@ sub astDelTree _
 		byval n as ASTNODE ptr _
 	)
 
-	dim as ASTNODE ptr p = any
+	dim as ASTNODE ptr t = any
 
 	''
 	if( n = NULL ) then
 		exit sub
 	end if
 
-	'' walk
-	p = n->l
-	if( p <> NULL ) then
-		astDelTree( p )
-	end if
-
-	p = n->r
-	if( p <> NULL ) then
-		astDelTree( p )
-	end if
-
-	'' profiled function have sub nodes
+	'' call nodes are too complex, let a helper function del it
 	if( n->class = AST_NODECLASS_CALL ) then
-		p = n->call.profbegin
-		if( p <> NULL ) then
-			astDelTree( p )
-			astDelTree( n->call.profend )
-		end if
+		astDelCALL( n )
+	end if
+
+	'' walk
+	t = n->l
+	if( t <> NULL ) then
+		astDelTree( t )
+	end if
+
+	t = n->r
+	if( t <> NULL ) then
+		astDelTree( t )
 	end if
 
 	''
@@ -1142,10 +1152,56 @@ function astIsSymbolOnTree _
 
 end function
 
+'':::::
+sub astReplaceSymbolOnTree _
+	( _
+		byval n as ASTNODE ptr, _
+		byval old_sym as FBSYMBOL ptr, _
+		byval new_sym as FBSYMBOL ptr _
+	)
+
+	if( n = NULL ) then
+		return
+	end if
+
+	if( n->sym = old_sym ) then
+		n->sym = new_sym
+	end if
+
+	'' assuming no other complex node will be on the
+	'' tree (TypeIniTree's won't have blocks, breaks, etc)
+
+	select case as const n->class
+	case AST_NODECLASS_BOP, AST_NODECLASS_UOP
+		if( n->op.ex = old_sym ) then
+			n->op.ex = new_sym
+		end if
+
+	case AST_NODECLASS_IIF
+		if( n->iif.falselabel = old_sym ) then
+			n->iif.falselabel = new_sym
+		end if
+
+	case AST_NODECLASS_CALL
+		'' too complex, let a helper function replace the symbols
+		astReplaceSymbolOnCALL( n, old_sym, new_sym )
+
+	end select
+
+	'' walk
+	if( n->l <> NULL ) then
+		astReplaceSymbolOnTree( n->l, old_sym, new_sym )
+	end if
+
+	if( n->r <> NULL ) then
+		astReplaceSymbolOnTree( n->r, old_sym, new_sym )
+	end if
+
+end sub
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' tree routines
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
 
 '':::::
 function astNewNode _

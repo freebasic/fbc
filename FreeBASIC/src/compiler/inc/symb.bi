@@ -432,6 +432,10 @@ type FBS_ARRAY
 	desc			as FBSYMBOL_ ptr
 end type
 
+type FBVAR_DESC
+	array			as FBSYMBOL_ ptr			'' back-link
+end type
+
 type FBS_VAR
 	suffix			as integer					'' QB quirk..
 	union
@@ -440,6 +444,7 @@ type FBS_VAR
 		initree		as ASTNODE_ ptr
 	end union
 	array			as FBS_ARRAY
+	desc			as FBVAR_DESC
 	stmtnum			as integer					'' can't use colnum as it's unreliable
 end type
 
@@ -864,18 +869,9 @@ declare function symbAddTempVar _
 		byval checkstatic as integer = TRUE _
 	) as FBSYMBOL ptr
 
-declare function symbAddTempVarEx _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr = NULL, _
-		byval doalloc as integer = FALSE, _
-		byval checkstatic as integer = TRUE _
-	) as FBSYMBOL ptr
-
 declare function symbAddArrayDesc _
 	( _
 		byval array as FBSYMBOL ptr, _
-		byval array_expr as ASTNODE ptr, _
 		byval dimensions as integer _
 	) as FBSYMBOL ptr
 
@@ -1150,7 +1146,7 @@ declare sub symbDelEnum _
 		byval s as FBSYMBOL ptr _
 	)
 
-declare sub symbDelUDT _
+declare sub symbDelStruct _
 	( _
 		byval s as FBSYMBOL ptr _
 	)
@@ -1192,6 +1188,16 @@ declare function symbNewSymbol _
 	) as FBSYMBOL ptr
 
 declare sub symbFreeSymbol _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+declare sub symbFreeSymbol_RemOnly _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+declare sub symbFreeSymbol_UnlinkOnly _
 	( _
 		byval s as FBSYMBOL ptr _
 	)
@@ -1565,6 +1571,31 @@ declare function symbAddGlobalDtor _
 	( _
 		byval proc as FBSYMBOL ptr _
 	) as FB_GLOBCTORLIST_ITEM ptr
+
+declare function symbCloneSymbol _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+declare function symbCloneConst _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+declare function symbCloneVar _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+declare function symbCloneStruct _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+declare function symbCloneLabel _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
 
 '':::::
 #macro symbHashTbInit _
@@ -2064,6 +2095,8 @@ declare function symbAddGlobalDtor _
 #define symbIsOperator(s) ((s->attrib and FB_SYMBATTRIB_OPERATOR) <> 0)
 
 #define symbIsMethod(s) ((s->attrib and FB_SYMBATTRIB_METHOD) <> 0)
+
+#define symbIsLiteralConst(s) ((s->attrib and FB_SYMBATTRIB_LITCONST) <> 0)
 
 #define symbGetCurrentProcName( ) symbGetName( parser.currproc )
 

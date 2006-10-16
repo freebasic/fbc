@@ -2408,20 +2408,21 @@ function rtlStrConcat _
 		byval sdtype1 as integer, _
 		byval str2 as ASTNODE ptr, _
 		byval sdtype2 as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer str1len, str2len
-    dim as FBSYMBOL ptr sym
+    dim as ASTNODE ptr proc = any
+    dim as integer str1len = any, str2len = any
+    dim as FBSYMBOL ptr tmp = any
 
 	function = NULL
 
     proc = astNewCALL( PROCLOOKUP( STRCONCAT ) )
 
-    '' byref dst as string
-    sym = symbAddTempVarEx( FB_DATATYPE_STRING )
+    '' byref dst as string (must be cleaned up due the rtlib assumptions about destine)
+    tmp = symbAddTempVar( FB_DATATYPE_STRING )
+
     if( astNewARG( proc, _
-    			   astNewVAR( sym, 0, FB_DATATYPE_STRING ), _
+    			   astNewVAR( tmp, 0, FB_DATATYPE_STRING, NULL, TRUE ), _
     			   FB_DATATYPE_STRING ) = NULL ) then
     	exit function
     end if

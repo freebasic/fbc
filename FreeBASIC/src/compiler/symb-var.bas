@@ -182,143 +182,9 @@ private function hCreateDescType _
 end function
 
 '':::::
-private function hCreateDescIniTree _
-	( _
-		byval desc as FBSYMBOL ptr, _
-		byval array as FBSYMBOL ptr, _
-		byval array_expr as ASTNODE ptr _
-	) as ASTNODE ptr static
-
-    dim as ASTNODE ptr tree
-    dim as integer dtype, dims
-    dim as FBSYMBOL ptr elm, dimtb, subtype
-
-    '' COMMON?
-    if( symbIsCommon( array ) ) then
-    	return NULL
-    end if
-
-    ''
-    tree = astTypeIniBegin( symbGetType( desc ), symbGetSubtype( desc ) )
-
-    dtype = symbGetType( array )
-    subtype = symbGetSubType( array )
-    dims = symbGetArrayDimensions( array )
-
-	'' unknown dimensions? use max..
-	if( dims = -1 ) then
-		dims = FB_MAXARRAYDIMS
-	end if
-
-	elm = symbGetUDTFirstElm( symbGetSubtype( desc ) )
-
-    if( array_expr = NULL ) then
-    	if( symbGetIsDynamic( array ) ) then
-    		array_expr = astNewCONSTi( 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
-    	else
-    		array_expr = astNewADDR( AST_OP_ADDROF, astNewVAR( array, 0, dtype, subtype ) )
-    	end if
-
-    else
-    	array_expr = astNewADDR( AST_OP_ADDROF, array_expr )
-    end if
-
-    '' .data = @array(0) + diff
-	astTypeIniAddAssign( tree, _
-					   	 astNewBOP( AST_OP_ADD, _
-								  	astCloneTree( array_expr ), _
-					   			  	astNewCONSTi( symbGetArrayOffset( array ), _
-					   			  				  FB_DATATYPE_INTEGER ) ), _
-					   	 elm )
-
-	elm = symbGetUDTNextElm( elm )
-
-	'' .ptr	= @array(0)
-	astTypeIniAddAssign( tree, array_expr, elm )
-
-    elm = symbGetUDTNextElm( elm )
-
-    '' .size = len( array ) * elements( array )
-    astTypeIniAddAssign( tree, _
-    				   	 astNewCONSTi( symbGetLen( array ) * symbGetArrayElements( array ), _
-    				   				   FB_DATATYPE_INTEGER ), _
-    				   	 elm )
-
-    elm = symbGetUDTNextElm( elm )
-
-    '' .element_len	= len( array )
-    astTypeIniAddAssign( tree, _
-    				   	 astNewCONSTi( symbGetLen( array ), _
-    				   				   FB_DATATYPE_INTEGER ), _
-    				   	 elm )
-
-    elm = symbGetUDTNextElm( elm )
-
-    '' .dimensions = dims( array )
-    astTypeIniAddAssign( tree, _
-    				   	 astNewCONSTi( dims, _
-    				   				   FB_DATATYPE_INTEGER ), _
-    				   	 elm )
-
-    elm = symbGetUDTNextElm( elm )
-
-    '' setup dimTB
-    dimtb = symbGetUDTFirstElm( symbGetSubtype( elm ) )
-
-    '' static array?
-    if( symbGetIsDynamic( array ) = FALSE ) then
-    	dim as FBVARDIM ptr d
-
-    	d = symbGetArrayFirstDim( array )
-    	do while( d <> NULL )
-			elm = dimtb
-
-			'' .elements = (ubound( array, d ) - lbound( array, d )) + 1
-    		astTypeIniAddAssign( tree, _
-    				   		     astNewCONSTi( d->upper - d->lower + 1, _
-    				   				 		   FB_DATATYPE_INTEGER ), _
-    				   		     elm )
-
-			elm = symbGetUDTNextElm( elm )
-
-			'' .lbound = lbound( array, d )
-    		astTypeIniAddAssign( tree, _
-    				   		     astNewCONSTi( d->lower, _
-    				   				 		   FB_DATATYPE_INTEGER ), _
-    				   		     elm )
-
-			elm = symbGetUDTNextElm( elm )
-
-			'' .ubound = ubound( array, d )
-    		astTypeIniAddAssign( tree, _
-    				   		     astNewCONSTi( d->upper, _
-    				   				 		   FB_DATATYPE_INTEGER ), _
-    				   		     elm )
-
-			d = d->next
-    	loop
-
-    '' dynamic..
-    else
-        '' just fill with 0's
-        astTypeIniAddPad( tree, dims * len( FB_ARRAYDESCDIM ) )
-    end if
-
-    ''
-    astTypeIniEnd( tree, TRUE )
-
-    ''
-    symbSetIsInitialized( desc )
-
-    function = tree
-
-end function
-
-'':::::
 function symbAddArrayDesc _
 	( _
 		byval array as FBSYMBOL ptr, _
-		byval array_expr as ASTNODE ptr, _
 		byval dimensions as integer _
 	) as FBSYMBOL ptr static
 
@@ -389,7 +255,17 @@ function symbAddArrayDesc _
 
 	'' field?
 	if( symbIsField( array ) ) then
-		symbtb = @symbGetProcSymbTb( parser.currproc )
+		'' if at mod-level, it can't be static, alloc on main()'s stack
+		if( parser.scope = FB_MAINSCOPE ) then
+			symbtb = @symbGetProcSymbTb( parser.currproc )
+
+		'' otherwise, let newSymbol() set it, we could be inside an
+		'' scope block (ie: a var initializer)
+		else
+			symbtb = NULL
+		end if
+
+	'' use the same symb tb as the array
 	else
 		symbtb = array->symtb
 	end if
@@ -413,6 +289,8 @@ function symbAddArrayDesc _
 									FB_SYMBSTATS_ACCESSED or _
 									FB_SYMBSTATS_HASALIAS)
 
+    desc->var.suffix = INVALID
+
 	'' as desc is also a var, clear the var fields
 	desc->var.array.desc = NULL
 	desc->var.array.dif = 0
@@ -420,8 +298,12 @@ function symbAddArrayDesc _
 	desc->var.array.dimhead = NULL
 	desc->var.array.dimtail = NULL
 	desc->var.array.elms = 1
-    desc->var.suffix = INVALID
-    desc->var.initree = hCreateDescIniTree( desc, array, array_expr )
+
+    '' should be set elsewhere
+    desc->var.initree = NULL
+
+    '' back link
+    desc->var.desc.array = array
 
 	''
 	function = desc
@@ -507,7 +389,11 @@ sub symbSetArrayDimTb _
 	'' dims can be -1 with COMMON arrays..
 	if( dimensions <> 0 ) then
 		if( s->var.array.desc = NULL ) then
-			s->var.array.desc = symbAddArrayDesc( s, NULL, dimensions )
+			s->var.array.desc = symbAddArrayDesc( s, dimensions )
+
+			s->var.array.desc->var.initree = _
+				astBuildArrayDescIniTree( s->var.array.desc, s, NULL )
+
 		end if
 	else
 		s->var.array.desc = NULL
@@ -584,14 +470,6 @@ function symbAddVarEx _
 			 				FB_SYMBATTRIB_EXTERN or _
 			 				FB_SYMBATTRIB_SHARED or _
 			 				FB_SYMBATTRIB_COMMON)) <> 0
-
-	'' inside a namespace but outside a proc?
-	if( symbIsGlobalNamespc() = FALSE ) then
-		if( fbIsModLevel( ) ) then
-			'' they are never allocated on stack..
-			attrib or= FB_SYMBATTRIB_STATIC
-		end if
-	end if
 
     ''
     if( lgt <= 0 ) then
@@ -749,51 +627,6 @@ function symbAddTempVar _
 	end if
 
     function = s
-
-end function
-
-'':::::
-function symbAddTempVarEx _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval doalloc as integer, _
-		byval checkstatic as integer _
-	) as FBSYMBOL ptr static
-
-	dim as FBSYMBOL ptr s
-	dim as integer lgt
-
-	s = symbAddTempVar( dtype, subtype, doalloc, checkstatic )
-
-	'' not static?
-	if( (symbGetAttrib( s ) and FB_SYMBATTRIB_STATIC) = 0 ) then
-
-		lgt = 0
-
-		select case dtype
-		'' var-len string?
-		case FB_DATATYPE_STRING
-			lgt = FB_STRDESCLEN
-
-		'' UDT with var-len string fields?
-		case FB_DATATYPE_STRUCT
-            if( symbGetUDTHasCtorField( subtype ) ) then
-            	lgt = symbGetLen( s )
-            end if
-
-		end select
-
-        if( lgt > 0 ) then
-			'' clear memory
-			astAdd( astNewMEM( AST_OP_MEMCLEAR, _
-							   astNewVAR( s, 0, dtype, subtype ), _
-							   NULL, _
-							   lgt ) )
-		end if
-	end if
-
-	function = s
 
 end function
 
@@ -967,6 +800,30 @@ function symbGetVarHasDtor _
 	end if
 
 	function = FALSE
+
+end function
+
+'':::::
+function symbCloneVar _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	'' assuming only temp vars or temp array descs will be cloned
+
+	if( symbIsDescriptor( sym ) ) then
+    	function = symbAddArrayDesc( sym->var.desc.array, _
+    								 symbGetArrayDimensions( sym->var.desc.array ) )
+
+		'' no need to dup desc.initree, it was flushed in newARG() and
+		'' should be fixed up with the new symbol in TypeIniFlush()
+
+	else
+		function = symbAddTempVar( symbGetType( sym ), _
+					    	   	   symbGetSubType( sym ), _
+					   		   	   FALSE, _
+					   		   	   FALSE )
+	end if
 
 end function
 

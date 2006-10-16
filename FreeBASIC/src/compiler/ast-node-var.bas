@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 '' AST variable nodes
-'' l = NULL; r = NULL
+'' l = clean up expr (used with temp strings only, due the rtlib assumptions); r = NULL
 ''
 '' chng: sep/2004 written [v1ctor]
 
@@ -27,12 +27,51 @@
 #include once "inc\ast.bi"
 
 '':::::
+private function hDoCleanup _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	'' static?
+	if( symbIsStatic( sym ) ) then
+		return NULL
+	end if
+
+	dim as integer lgt = 0
+
+	select case symbGetType( sym )
+	'' var-len string?
+	case FB_DATATYPE_STRING
+		lgt = FB_STRDESCLEN
+
+	'' UDT with var-len string fields?
+	case FB_DATATYPE_STRUCT
+    	if( symbGetUDTHasCtorField( symbGetSubtype( sym ) ) ) then
+        	lgt = symbGetLen( sym )
+		else
+			return NULL
+		end if
+
+	case else
+		return NULL
+	end select
+
+	'' clear memory
+	function = astNewMEM( AST_OP_MEMCLEAR, _
+						  astNewVAR( sym, 0, symbGetType( sym ), symbGetSubtype( sym ) ), _
+						  NULL, _
+						  lgt )
+
+end function
+
+'':::::
 function astNewVAR _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval ofs as integer, _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr = NULL _
+		byval subtype as FBSYMBOL ptr = NULL, _
+		byval clean_up as integer = FALSE _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -48,6 +87,11 @@ function astNewVAR _
 	n->sym = sym
 	n->var.ofs = ofs
 
+	'' clean up?
+	if( clean_up ) then
+		n->l = hDoCleanup( sym )
+	end if
+
 end function
 
 '':::::
@@ -58,7 +102,7 @@ sub astBuildVAR _
 		byval ofs as integer, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr = NULL _
-	) static
+	)
 
 	astInitNode( n, AST_NODECLASS_VAR, dtype, subtype )
 
@@ -75,6 +119,12 @@ function astLoadVAR _
 
     dim as FBSYMBOL ptr s = any
     dim as integer ofs = any
+
+	'' clean up?
+	if( n->l <> NULL ) then
+		astLoad( n->l )
+		astDelNode( n->l )
+	end if
 
 	s = n->sym
 	ofs = n->var.ofs

@@ -100,6 +100,7 @@ end enum
 type ASTNODE_ as ASTNODE
 #endif
 
+'' update astCloneCALL( ), astDelCALL() if the next structs are changed
 type AST_TMPSTRLIST_ITEM
 	sym				as FBSYMBOL ptr
 	srctree			as ASTNODE_ ptr
@@ -111,7 +112,6 @@ type AST_DTORLIST_ITEM
 	prev		    as AST_DTORLIST_ITEM ptr
 end type
 
-''
 type AST_NODE_CALL
 	isrtl			as integer
 	args			as integer
@@ -202,6 +202,8 @@ type AST_NODE_TYPEINI
     	bytes		as integer
     	elements	as integer
     end union
+    scp				as FBSYMBOL ptr
+    lastscp			as FBSYMBOL ptr
 end type
 
 type AST_NODE_BREAK
@@ -598,7 +600,8 @@ declare function astNewVAR _
 		byval sym as FBSYMBOL ptr, _
 		byval ofs as integer = 0, _
 		byval dtype as integer = FB_DATATYPE_INTEGER, _
-		byval subtype as FBSYMBOL ptr = NULL _
+		byval subtype as FBSYMBOL ptr = NULL, _
+		byval clean_up as integer = FALSE _
 	) as ASTNODE ptr
 
 declare sub astBuildVAR _
@@ -847,7 +850,8 @@ declare function astGetStrLitSymbol _
 declare function astTypeIniBegin _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval is_local as integer _
 	) as ASTNODE ptr
 
 declare sub astTypeIniEnd _
@@ -888,7 +892,8 @@ declare function astTypeIniFlush _
 		byval tree as ASTNODE ptr, _
 		byval basesym as FBSYMBOL ptr, _
 		byval isstatic as integer, _
-		byval isinitializer as integer _
+		byval isinitializer as integer, _
+		byval do_relink as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function astTypeIniIsConst _
@@ -907,6 +912,11 @@ declare sub astTypeIniUpdCnt _
 	)
 
 declare function astTypeIniGetHead _
+	( _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare function astTypeIniClone _
 	( _
 		byval tree as ASTNODE ptr _
 	) as ASTNODE ptr
@@ -1081,6 +1091,20 @@ declare function astBuildImplicitCtorCallEx _
 		byval expr as ASTNODE ptr, _
 		byref is_ctorcall as integer _
 	) as ASTNODE ptr
+
+declare function astBuildArrayDescIniTree _
+	( _
+		byval desc as FBSYMBOL ptr, _
+		byval array as FBSYMBOL ptr, _
+		byval array_expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare sub astReplaceSymbolOnTree _
+	( _
+		byval n as ASTNODE ptr, _
+		byval old_sym as FBSYMBOL ptr, _
+		byval new_sym as FBSYMBOL ptr _
+	)
 
 ''
 '' macros

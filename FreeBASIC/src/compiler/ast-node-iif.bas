@@ -99,7 +99,10 @@ function astNewIIF _
 		exit function
 	end if
 
-	n->sym = symbAddTempVar( true_dtype, truexpr->subtype )
+	n->sym = symbAddTempVar( true_dtype, _
+							 truexpr->subtype, _
+							 FALSE, _
+							 FALSE )
 	n->l = condexpr
 
 	'' assign true to temp

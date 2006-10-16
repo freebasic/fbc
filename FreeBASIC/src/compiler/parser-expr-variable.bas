@@ -1081,6 +1081,20 @@ private function hVarAddUndecl _
 		attrib = FB_SYMBATTRIB_STATIC
 	else
 		attrib = 0
+
+		'' inside a namespace but outside a proc?
+		if( symbIsGlobalNamespc( ) = FALSE ) then
+			if( fbIsModLevel( ) ) then
+				if( (attrib and (FB_SYMBATTRIB_SHARED or _
+								 FB_SYMBATTRIB_COMMON or _
+								 FB_SYMBATTRIB_PUBLIC or _
+								 FB_SYMBATTRIB_EXTERN)) = 0 ) then
+					'' they are never allocated on stack..
+					attrib or= FB_SYMBATTRIB_STATIC
+				end if
+			end if
+		end if
+
 	end if
 
 	options = FB_SYMBOPT_ADDSUFFIX

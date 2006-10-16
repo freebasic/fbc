@@ -25,6 +25,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\parser.bi"
 #include once "inc\ir.bi"
 #include once "inc\ast.bi"
 
@@ -32,7 +33,8 @@
 function astTypeIniBegin _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval is_local as integer _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -48,6 +50,32 @@ function astTypeIniBegin _
 	end if
 
 	n->typeini.ofs = 0
+
+	dim as integer add_scope = FALSE
+	if( is_local = FALSE ) then
+		if( symbIsScope( parser.currblock ) ) then
+			add_scope = astGetClass( parser.currblock->scp.backnode ) <> AST_NODECLASS_TYPEINI
+		else
+		    add_scope = TRUE
+		end if
+	end if
+
+	if( add_scope ) then
+		'' create a new scope block to handle temp vars allocated inside the
+		'' tree - with shared vars, the temps must be moved to another function
+    	dim as FBSYMBOL ptr s = symbAddScope( n )
+
+		n->typeini.scp = s
+		n->typeini.lastscp = parser.currblock
+
+		parser.scope += 1
+		parser.currblock = s
+
+		symbSetCurrentSymTb( @s->scp.symtb )
+
+	else
+		n->typeini.scp = NULL
+	end if
 
 end function
 
@@ -109,6 +137,20 @@ sub astTypeIniEnd _
 		p = n
 		n = n->r
 	loop
+
+	'' close the scope block
+	if( tree->typeini.scp <> NULL ) then
+		'' remove symbols from hash table
+		symbDelScopeTb( tree->typeini.scp )
+
+		'' back to preview symbol tb
+		symbSetCurrentSymTb( tree->typeini.scp->symtb )
+
+		symbFreeSymbol_UnlinkOnly( tree->typeini.scp )
+
+		parser.currblock = tree->typeini.lastscp
+		parser.scope -= 1
+	end if
 
 end sub
 
@@ -241,22 +283,16 @@ private function hCallCtor _
 		byval basesym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr sym = any
-	dim as integer ofs = any
+	dim as FBSYMBOL ptr fld = any
 
-	sym = n->sym
-
-	ofs = n->typeini.ofs
-	if( symbIsField( sym ) ) then
-		'' astBuildVarField() will add the field offset
-		ofs -= symbGetOfs( sym )
-	else
-		sym = NULL
+	fld = n->sym
+	if( symbIsField( fld ) = FALSE ) then
+		fld = NULL
 	end if
 
 	'' replace the instance pointer
 	n->l = astPatchCtorCall( n->l, _
-							 astBuildVarField( basesym, sym, ofs ) )
+							 astBuildVarField( basesym, fld, n->typeini.ofs ) )
 
 	'' do call
 	flush_tree = astNewLINK( flush_tree, n->l )
@@ -273,34 +309,30 @@ private function hCallCtorList _
 		byval basesym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr subtype = any, sym = any
+	dim as FBSYMBOL ptr subtype = any, fld = any
 	dim as ASTNODE ptr fldexpr = any
-	dim as integer dtype = any, ofs = any, elements = any
+	dim as integer dtype = any, elements = any
 
-	sym = n->sym
+	fld = n->sym
 
-	dtype = symbGetType( sym )
-	subtype = symbGetSubtype( sym )
+	dtype = symbGetType( fld )
+	subtype = symbGetSubtype( fld )
 
-	ofs = n->typeini.ofs
-	if( symbIsField( sym ) ) then
-		'' astBuildVarField() will add the field offset
-		ofs -= symbGetOfs( sym )
-	else
-		sym = NULL
+	if( symbIsField( fld ) = FALSE ) then
+		fld = NULL
 	end if
 
 	elements = n->typeini.elements
 
 	'' iter = *cast( subtype ptr, cast( byte ptr, @array(0) ) + ofs) )
-	fldexpr = astBuildVarField( basesym, sym, ofs )
+	fldexpr = astBuildVarField( basesym, fld, n->typeini.ofs )
 
 	if( elements > 1 ) then
     	dim as FBSYMBOL ptr cnt, label, iter
 
-    	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL )
+    	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
     	label = symbAddLabel( NULL, TRUE )
-    	iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype )
+    	iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
 
 		flush_tree = astNewLINK( flush_tree, _
 								 astBuildVarAssign( iter, _
@@ -546,25 +578,108 @@ private function hFlushTreeStatic _
 end function
 
 '':::::
+private sub hRelinkTemps _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval clone_tree as ASTNODE ptr _
+	) static
+
+	if( tree->typeini.scp = NULL ) then
+		exit sub
+	end if
+
+	dim as FBSYMBOL ptr sym = any
+
+	'' different trees?
+	if( clone_tree <> NULL ) then
+		sym = symbGetScopeSymbTbHead( tree->typeini.scp )
+		do while( sym <> NULL )
+			astReplaceSymbolOnTree( clone_tree, sym, symbCloneSymbol( sym ) )
+
+			sym = sym->next
+		loop
+
+	'' same tree, don't let the old symbols leak..
+	else
+		dim as FBSYMBOL ptr nxt = any
+
+		sym = symbGetScopeSymbTbHead( tree->typeini.scp )
+		do while( sym <> NULL )
+			nxt = sym->next
+
+			astReplaceSymbolOnTree( tree, sym, symbCloneSymbol( sym ) )
+
+			symbFreeSymbol_RemOnly( sym )
+
+			sym = nxt
+		loop
+
+		symbFreeSymbol_RemOnly( tree->typeini.scp )
+
+		tree->typeini.scp = NULL
+	end if
+
+end sub
+
+'':::::
+private sub hDelTemps _
+	( _
+		byval tree as ASTNODE ptr _
+	) static
+
+	dim as FBSYMBOL ptr sym_head = any
+
+	if( tree->typeini.scp = NULL ) then
+		exit sub
+	end if
+
+	dim as FBSYMBOL ptr sym = any, nxt = any
+
+	sym = symbGetScopeSymbTbHead( tree->typeini.scp )
+	do while( sym <> NULL )
+		nxt = sym->next
+
+		symbFreeSymbol_RemOnly( sym )
+
+		sym = nxt
+	loop
+
+	''
+	symbFreeSymbol_RemOnly( tree->typeini.scp )
+
+	tree->typeini.scp = NULL
+
+end sub
+
+'':::::
 function astTypeIniFlush _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval basesym as FBSYMBOL ptr, _
-		byval isstatic as integer, _
-		byval isinitializer as integer _
+		byval is_static as integer, _
+		byval is_initializer as integer, _
+		byval do_relink as integer _
 	) as ASTNODE ptr
 
 	assert( tree <> NULL )
 
-	if( isinitializer = FALSE ) then
+	if( is_initializer = FALSE ) then
 		ast.typeinicnt -= 1
 	end if
 
-	if( isstatic ) then
+	if( do_relink ) then
+		hRelinkTemps( tree, NULL )
+	end if
+
+	if( is_static ) then
 		hFlushTreeStatic( tree, basesym )
 		function = NULL
 	else
 		function = hFlushTree( tree, basesym )
+	end if
+
+	if( do_relink ) then
+		hDelTemps( tree )
 	end if
 
 	astDelNode( tree )
@@ -787,3 +902,21 @@ function astTypeIniGetHead _
 	function = tree->l->l
 
 end function
+
+'':::::
+function astTypeIniClone _
+	( _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr clone_tree = astCloneTree( tree )
+
+	clone_tree->typeini.scp = NULL
+
+	hRelinkTemps( tree, clone_tree )
+
+	function = clone_tree
+
+end function
+
+
