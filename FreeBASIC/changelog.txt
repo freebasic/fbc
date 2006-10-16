@@ -31,6 +31,8 @@ Version 0.17 Beta:
   create images with this new header, while all primitives support both this and the old-style 4 bytes header (lillo)
 - thanks to the new GET/PUT header, pixel data now starts at offset 32 and pixel rows are paragraph-aligned (the pitch of
   a row will always be a multiple of 16 bytes)
+- the Lua headers were replaced by machine-translated ones, some function/macro names were changed by the Lua authors since the last version;
+  also, the luauxlib.bi header was renamed to lauxlib.bi to match the original C one (v1c)
 
 [added]
 - the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)
