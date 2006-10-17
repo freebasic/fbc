@@ -63,7 +63,7 @@ declare function lseek cdecl alias "lseek" (byval __fd as integer, byval __offse
 declare function close_ cdecl alias "close" (byval __fd as integer) as integer
 declare function read_ cdecl alias "read" (byval __fd as integer, byval __buf as any ptr, byval __nbytes as size_t) as ssize_t
 declare function write_ cdecl alias "write" (byval __fd as integer, byval __buf as any ptr, byval __n as size_t) as ssize_t
-declare function pipe cdecl alias "pipe" (byval __pipedes as integer ptr) as integer
+declare function pipe_ cdecl alias "pipe" (byval __pipedes as integer ptr) as integer
 declare function alarm cdecl alias "alarm" (byval __seconds as uinteger) as uinteger
 declare function sleep_ cdecl alias "sleep" (byval __seconds as uinteger) as uinteger
 declare function ualarm cdecl alias "ualarm" (byval __value as __useconds_t, byval __interval as __useconds_t) as __useconds_t
