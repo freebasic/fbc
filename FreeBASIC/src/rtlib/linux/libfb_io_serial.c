@@ -442,7 +442,7 @@ int fb_SerialGetRemaining
 	( 
 		struct _FB_FILE *handle, 
         void *pvHandle, 
-        long *pLength 
+        fb_off_t *pLength 
 	)
 {
     int rBytes;
