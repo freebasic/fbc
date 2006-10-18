@@ -66,6 +66,9 @@ AC_PATH_X
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h limits.h malloc.h stddef.h stdlib.h string.h sys/ioctl.h unistd.h])
 
+# Make sure off_t is 64-bit in *nix
+AC_DEFINE([_FILE_OFFSET_BITS],64,[File offset bits])
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
 AC_C_CONST

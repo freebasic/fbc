@@ -44,6 +44,9 @@ endif
 
 INCLUDES = -I$(srcdir) -I$(srcdir)/@FBRT_TARGET@ -I$(srcdir)/@FBRT_CPU@ -I.
 
+# config.h must be always included before any system header in *nix
+INCLUDES += -include config.h
+
 ifdef MULTITHREADED
 	FBRT_LIB = libfbmt.a
 	DEFS += -DMULTITHREADED
@@ -95,7 +98,7 @@ $(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS)
 
 # Rules to rebuild the configuration
 
-Makefile: $(srcdir)/Makefile.in config.status
+Makefile: $(srcdir)/Makefile.in config.status config.h
 	$(SHELL) ./config.status Makefile
 
 config.status: $(srcdir)/configure
@@ -110,7 +113,7 @@ $(srcdir)/aclocal.m4: @MAINT@ $(srcdir)/../config/acx.m4 \
 	cd $(srcdir) && $(ACLOCAL) -I ../config
 
 config.h: stamp-h1
-	test -f config.h || (rm -f stamp-h1 && $(MAKE) stamp-h1)
+	@test -f config.h || (rm -f stamp-h1 && $(MAKE) stamp-h1)
 
 stamp-h1: $(srcdir)/config.in config.status
 	-rm -f stamp-h1

@@ -149,7 +149,7 @@ typedef struct FBCONSOLE
 	void (*gfx_exit)(void);
 } FBCONSOLE;
 
-typedef long long int fb_off_t;
+typedef off_t fb_off_t;
 
 extern FBCONSOLE __fb_con;
 
