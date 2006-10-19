@@ -285,7 +285,7 @@ function symbCanDuplicate _
 
 			'' struct? only it's not unique
 			case FB_SYMBCLASS_STRUCT
-				if( symbGetHasMethod( chain_->sym ) ) then
+				if( symbGetIsUnique( chain_->sym ) ) then
 					exit function
 				end if
 			end select
@@ -304,7 +304,7 @@ function symbCanDuplicate _
 
 			'' struct? only it's not unique
 			case FB_SYMBCLASS_STRUCT
-				if( symbGetHasMethod( chain_->sym ) ) then
+				if( symbGetIsUnique( chain_->sym ) ) then
 					exit function
 				end if
 
@@ -328,7 +328,7 @@ function symbCanDuplicate _
 
 			'' struct? only it's not unique
 			case FB_SYMBCLASS_STRUCT
-				if( symbGetHasMethod( chain_->sym ) ) then
+				if( symbGetIsUnique( chain_->sym ) ) then
 					exit function
 				end if
 
@@ -376,7 +376,7 @@ function symbCanDuplicate _
 
 			'' struct? only it's not unique
 			case FB_SYMBCLASS_STRUCT
-				if( symbGetHasMethod( chain_->sym ) ) then
+				if( symbGetIsUnique( chain_->sym ) ) then
 					exit function
 				end if
 			end select

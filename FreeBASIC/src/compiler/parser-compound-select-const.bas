@@ -129,10 +129,10 @@ function cSelConstStmtBegin( ) as integer
 	stk->select.isconst = TRUE
 	stk->select.sym = sym
 	stk->select.casecnt = 0
-	stk->select.const.base = ctx.base
-	stk->select.const.deflabel = NULL
-	stk->select.const.minval = &hFFFFFFFFu
-	stk->select.const.maxval = 0
+	stk->select.const_.base = ctx.base
+	stk->select.const_.deflabel = NULL
+	stk->select.const_.minval = &hFFFFFFFFu
+	stk->select.const_.maxval = 0
 
 	parser.stmt.select.cmplabel = cl
 	parser.stmt.select.endlabel = el
@@ -221,8 +221,8 @@ function cSelConstStmtNext _
 	if( lexGetToken( ) = FB_TK_ELSE ) then
 		lexSkipToken( )
 
-		stk->select.const.deflabel = symbAddLabel( NULL, TRUE )
-		astAdd( astNewLABEL( stk->select.const.deflabel ) )
+		stk->select.const_.deflabel = symbAddLabel( NULL, TRUE )
+		astAdd( astNewLABEL( stk->select.const_.deflabel ) )
 
 		'' begin scope
 		stk->scopenode = astScopeBegin( )
@@ -233,7 +233,7 @@ function cSelConstStmtNext _
 	end if
 
 	'' ConstExpression{int} ((',' | TO) ConstExpression{int})*
-	swtbase = stk->select.const.base
+	swtbase = stk->select.const_.base
 
 	'' add label
 	label = symbAddLabel( NULL, FALSE )
@@ -264,8 +264,8 @@ function cSelConstStmtNext _
 		value = astGetValueAsInt( expr1 )
 		astDelNode( expr1 )
 
-		minval = stk->select.const.minval
-		maxval = stk->select.const.maxval
+		minval = stk->select.const_.minval
+		maxval = stk->select.const_.maxval
 
 		'' TO?
 		if( lexGetToken( ) = FB_TK_TO ) then
@@ -312,8 +312,8 @@ function cSelConstStmtNext _
 
 				 	else
 						'' error recovery: reset values
-						minval = stk->select.const.minval
-						maxval = stk->select.const.maxval
+						minval = stk->select.const_.minval
+						maxval = stk->select.const_.maxval
 				 	end if
 
 				 else
@@ -344,8 +344,8 @@ function cSelConstStmtNext _
 					exit function
 				else
 					'' error recovery: reset values
-					minval = stk->select.const.minval
-					maxval = stk->select.const.maxval
+					minval = stk->select.const_.minval
+					maxval = stk->select.const_.maxval
 				end if
 
 			else
@@ -359,8 +359,8 @@ function cSelConstStmtNext _
 
 		end if
 
-		stk->select.const.minval = minval
-		stk->select.const.maxval = maxval
+		stk->select.const_.minval = minval
+		stk->select.const_.maxval = maxval
 
 	loop while( hMatch( CHAR_COMMA ) )
 
@@ -385,14 +385,14 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
 	dim as ASTNODE ptr expr, idxexpr
 	dim as integer i
 
-    minval = stk->select.const.minval
-    maxval = stk->select.const.maxval
+    minval = stk->select.const_.minval
+    maxval = stk->select.const_.maxval
 
 	'' END SELECT
 	lexSkipToken( )
 	lexSkipToken( )
 
-    deflabel = stk->select.const.deflabel
+    deflabel = stk->select.const_.deflabel
     if( deflabel = NULL ) then
     	deflabel = parser.stmt.select.endlabel
     end if
@@ -442,7 +442,7 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
     astAdd( astNewLABEL( tbsym ) )
 
     ''
-    i = stk->select.const.base
+    i = stk->select.const_.base
     for value = minval to maxval
     	if( value = ctx.caseTB(i).value ) then
     		astAdd( astNewJMPTB( FB_DATATYPE_UINT, ctx.caseTB(i).label ) )
@@ -452,7 +452,7 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
     	end if
     next
 
-    ctx.base = stk->select.const.base
+    ctx.base = stk->select.const_.base
 
     '' emit exit label
     astAdd( astNewLABEL( parser.stmt.select.endlabel ) )

@@ -918,11 +918,11 @@ private function hGetDataType _
     '' ENUM?
     case FB_DATATYPE_ENUM
     	subtype = symbGetSubType( sym )
-    	if( subtype->enum.dbg.typenum = INVALID ) then
+    	if( subtype->enum_.dbg.typenum = INVALID ) then
     		hDeclENUM( subtype )
     	end if
 
-    	desc += str( subtype->enum.dbg.typenum )
+    	desc += str( subtype->enum_.dbg.typenum )
 
     '' function pointer?
     case FB_DATATYPE_FUNCTION
@@ -992,12 +992,12 @@ private sub hDeclENUM _
     dim as FBSYMBOL ptr e
     dim as string desc
 
-	sym->enum.dbg.typenum = ctx.typecnt
+	sym->enum_.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
 
 	desc = *symbGetDBGName( sym )
 
-	desc += ":T" + str( sym->enum.dbg.typenum ) + "=e"
+	desc += ":T" + str( sym->enum_.dbg.typenum ) + "=e"
 
 	e = symbGetENUMFirstElm( sym )
 	do while( e <> NULL )

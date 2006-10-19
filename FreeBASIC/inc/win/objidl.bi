@@ -877,7 +877,7 @@ type IMonikerVtbl
 	BindToStorage as function (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
 	Reduce as function (byval as IMoniker ptr, byval as IBindCtx ptr, byval as DWORD, byval as IMoniker ptr ptr, byval as IMoniker ptr ptr) as HRESULT
 	ComposeWith as function (byval as IMoniker ptr, byval as IMoniker ptr, byval as BOOL, byval as IMoniker ptr ptr) as HRESULT
-	Enum as function (byval as IMoniker ptr, byval as BOOL, byval as IEnumMoniker ptr ptr) as HRESULT
+	Enum_ as function (byval as IMoniker ptr, byval as BOOL, byval as IEnumMoniker ptr ptr) as HRESULT
 	IsEqual as function (byval as IMoniker ptr, byval as IMoniker ptr) as HRESULT
 	Hash as function (byval as IMoniker ptr, byval as PDWORD) as HRESULT
 	IsRunning as function (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IMoniker ptr) as HRESULT
@@ -1221,7 +1221,7 @@ type IPropertyStorageVtbl
 	SetClass as function (byval as IPropertyStorage ptr, byval as CLSID ptr) as HRESULT
 	Commit as function (byval as IPropertyStorage ptr, byval as DWORD) as HRESULT
 	Revert as function (byval as IPropertyStorage ptr) as HRESULT
-	Enum as function (byval as IPropertyStorage ptr, byval as IEnumSTATPROPSTG ptr ptr) as HRESULT
+	Enum_ as function (byval as IPropertyStorage ptr, byval as IEnumSTATPROPSTG ptr ptr) as HRESULT
 	Stat as function (byval as IPropertyStorage ptr, byval as STATPROPSTG ptr) as HRESULT
 	SetTimes as function (byval as IPropertyStorage ptr, byval as FILETIME ptr, byval as FILETIME ptr, byval as FILETIME ptr) as HRESULT
 end type
@@ -1240,7 +1240,7 @@ type IPropertySetStorageVtbl
 	Create as function (byval as IPropertySetStorage ptr, byval as REFFMTID, byval as CLSID ptr, byval as DWORD, byval as DWORD, byval as LPPROPERTYSTORAGE ptr) as HRESULT
 	Open as function (byval as IPropertySetStorage ptr, byval as REFFMTID, byval as DWORD, byval as LPPROPERTYSTORAGE ptr) as HRESULT
 	Del as function (byval as IPropertySetStorage ptr, byval as REFFMTID) as HRESULT
-	Enum as function (byval as IPropertySetStorage ptr, byval as IEnumSTATPROPSETSTG ptr ptr) as HRESULT
+	Enum_ as function (byval as IPropertySetStorage ptr, byval as IEnumSTATPROPSETSTG ptr ptr) as HRESULT
 end type
 extern IID_IClientSecurity alias "IID_IClientSecurity" as IID
 

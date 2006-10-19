@@ -82,7 +82,7 @@ type FB_CMPSTMT_SELECT
 	sym				as FBSYMBOL ptr
 	dtype			as FB_DATATYPE
 	casecnt			as integer
-	const			as FB_CMPSTMT_SELCONST
+	const_			as FB_CMPSTMT_SELCONST
 end type
 
 type FB_CMPSTMT_WITH

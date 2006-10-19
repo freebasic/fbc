@@ -47,9 +47,9 @@ declare sub hPatchByvalResultToSelf _
 private function hTypeProtoDecl _
 	( _
 		byval parent as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-	dim as integer is_nested, res
+	dim as integer res = any, is_nested = any
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
@@ -158,7 +158,48 @@ private function hTypeProtoDecl _
 	end select
 
 	'' must be unique
-	symbSetHasMethod( parent )
+	symbSetIsUnique( parent )
+
+	''
+	symbNestEnd( )
+
+	function = res
+
+end function
+
+'':::::
+''TypeEnumDecl 	=	ENUM|CONST ...
+''
+private function hTypeEnumDecl _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval is_const as integer _
+	) as integer
+
+	dim as integer res = any
+
+	'' anon?
+	if( symbGetUDTIsAnon( parent ) ) then
+		if( errReport( FB_ERRMSG_METHODINANONUDT ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: skip stmt
+			hSkipStmt( )
+			return TRUE
+		end if
+	end if
+
+	''
+	symbNestBegin( parent )
+
+	if( is_const ) then
+		res = cConstDecl( )
+	else
+		res = cEnumDecl( )
+	end if
+
+	'' must be unique
+	symbSetIsUnique( parent )
 
 	''
 	symbNestEnd( )
@@ -264,7 +305,7 @@ private function hFieldInit _
 	symbSetUDTHasCtorField( parent )
 
 	'' UDT now must be unique
-	symbSetHasMethod( parent )
+	symbSetIsUnique( parent )
 
 	function = initree
 
@@ -749,6 +790,16 @@ decl_inner:		'' it's an anonymous inner UDT
 				exit function
 			end if
 
+		case FB_TK_ENUM
+			if( hTypeEnumDecl( s, FALSE ) = FALSE ) then
+				exit function
+			end if
+
+		case FB_TK_CONST
+			if( hTypeEnumDecl( s, TRUE ) = FALSE ) then
+				exit function
+			end if
+
 		'' anything else, must be a field
 		case else
 			if( hTypeElementDecl( s ) = FALSE ) then
@@ -948,7 +999,7 @@ function cTypeDecl _
 	end if
 
 	'' has methods? must be unique..
-	if( symbGetHasMethod( sym ) ) then
+	if( symbGetIsUnique( sym ) ) then
 		dim as FBSYMCHAIN ptr chain_
 
 		'' any preview declaration than itself?

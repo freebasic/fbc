@@ -57,11 +57,11 @@ function symbAddEnum _
 		exit function
 	end if
 
-	e->enum.elements = 0
-	e->enum.elmtb.owner = e
-	e->enum.elmtb.head = NULL
-	e->enum.elmtb.tail = NULL
-	e->enum.dbg.typenum = INVALID
+	e->enum_.elements = 0
+	e->enum_.elmtb.owner = e
+	e->enum_.elmtb.head = NULL
+	e->enum_.elmtb.tail = NULL
+	e->enum_.dbg.typenum = INVALID
 
 	'' check for forward references
 	if( symb.fwdrefcnt > 0 ) then
@@ -94,7 +94,7 @@ function symbAddEnumElement _
 
 	s->con.val.int = intval
 
-	parent->enum.elements += 1
+	parent->enum_.elements += 1
 
 	''
 	function = s
@@ -114,7 +114,7 @@ sub symbDelEnum _
     end if
 
     '' del all enum constants
-	e = s->enum.elmtb.head
+	e = s->enum_.elmtb.head
     do while( e <> NULL )
         nxt = e->next
 		symbFreeSymbol( e )

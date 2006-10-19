@@ -148,7 +148,7 @@ function cAtom _
 
   	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
   		if( chain_ = NULL ) then
-  			chain_ = cIdentifier( )
+  			chain_ = cIdentifier( FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
   		end if
 
     	'' declared id?

@@ -153,7 +153,7 @@ function cIdentifier _
     		end if
 
     		'' ordinary struct?
-    		if( symbGetHasMethod( parent ) = FALSE ) then
+    		if( symbGetIsUnique( parent ) = FALSE ) then
     			exit do
     		end if
 
@@ -272,7 +272,7 @@ function cParentId _
     		end if
 
     		'' ordinary struct?
-    		if( symbGetHasMethod( chain_->sym ) = FALSE ) then
+    		if( symbGetIsUnique( chain_->sym ) = FALSE ) then
     			exit do
     		end if
 

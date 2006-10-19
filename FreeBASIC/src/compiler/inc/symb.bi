@@ -64,7 +64,7 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_JUMPTB			= &h00008000
 	FB_SYMBSTATS_GLOBALCTOR		= &h00010000
 	FB_SYMBSTATS_GLOBALDTOR		= &h00020000
-	FB_SYMBSTATS_HASMETHOD		= &h00040000	'' explicit/user-defined only
+	FB_SYMBSTATS_CANTDUP		= &h00040000
 	FB_SYMBSTATS_HASCTOR		= &h00080000
 	FB_SYMBSTATS_HASCOPYCTOR	= &h00100000
 	FB_SYMBSTATS_HASDTOR		= &h00200000
@@ -499,7 +499,7 @@ type FBSYMBOL
 		con			as FBS_CONST
 		udt			as FBS_STRUCT
 		bitfld		as FBS_BITFLD
-		enum		as FBS_ENUM
+		enum_		as FBS_ENUM
 		proc		as FBS_PROC
 		param		as FBS_PARAM
 		lbl			as FBS_LABEL
@@ -1712,9 +1712,9 @@ declare function symbCloneLabel _
 
 #define symbSetIsJumpTb(s) s->stats or= FB_SYMBSTATS_JUMPTB
 
-#define symbGetHasMethod(s) ((s->stats and FB_SYMBSTATS_HASMETHOD) <> 0)
+#define symbGetIsUnique(s) ((s->stats and FB_SYMBSTATS_CANTDUP) <> 0)
 
-#define symbSetHasMethod(s) s->stats or= FB_SYMBSTATS_HASMETHOD
+#define symbSetIsUnique(s) s->stats or= FB_SYMBSTATS_CANTDUP
 
 #define symbGetHasCtor(s) ((s->stats and FB_SYMBSTATS_HASCTOR) <> 0)
 
@@ -1956,11 +1956,11 @@ declare function symbCloneLabel _
 
 #define symbGetUDTOpOvlTb(s) s->udt.ext->opovlTb
 
-#define symbGetEnumFirstElm(s) s->enum.elmtb.head
+#define symbGetEnumFirstElm(s) s->enum_.elmtb.head
 
 #define symbGetEnumNextElm(e) e->next
 
-#define symbGetEnumElements(s) s->enum.elements
+#define symbGetEnumElements(s) s->enum_.elements
 
 #define symbGetScope(s) s->scope
 
