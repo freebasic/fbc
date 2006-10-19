@@ -741,7 +741,19 @@ add_proc:
 		stats or= FB_SYMBSTATS_RTL
 	end if
 
+	''
 	proc->proc.mode	= mode
+
+	'' explicit EXTERN .. END EXTERN block?
+	if( cCompStmtGetTOS( FB_TK_EXTERN, FALSE ) <> NULL ) then
+		'' last compound was an EXTERN, not a CLASS, TYPE or NAMESPACE,
+		'' so don't add parent when mangling, even if inside an UDT,
+		'' unless it's in "c++" mode
+		if( parser.mangling <> FB_MANGLING_CPP ) then
+			stats or= FB_SYMBSTATS_EXCLPARENT
+		end if
+	end if
+
 	proc->proc.real_dtype = hGetProcRealType( dtype, subtype )
 
 	'' note: symbCalcProcParamsLen() depends on proc.realtype to be set

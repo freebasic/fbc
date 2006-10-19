@@ -188,7 +188,6 @@ function cNamespaceStmtBegin _
 		''
 		stk = cCompStmtPush( FB_TK_NAMESPACE, _
 						 	 FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
-						 					 	 and (not FB_CMPSTMT_MASK_EXTERN) _
 						 					 	 and (not FB_CMPSTMT_MASK_DATA) )
 
 		stk->nspc.node = astNamespaceBegin( sym )

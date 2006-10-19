@@ -41,21 +41,25 @@ end type
 const FB_INITMANGARGS = 96
 
 
-declare function 	hDoCppMangling 			( _
-												byval sym as FBSYMBOL ptr _
-											) as integer
+declare function hDoCppMangling _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
 
-declare function	hMangleProc  			( _
-												byval sym as FBSYMBOL ptr _
-											) as zstring ptr
+declare function hMangleProc _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as zstring ptr
 
-declare function	hMangleVariable  		( _
-												byval sym as FBSYMBOL ptr _
-											) as zstring ptr
+declare function hMangleVariable _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as zstring ptr
 
-declare function 	hGetProcParamsTypeCode 	( _
-												byval sym as FBSYMBOL ptr _
-											) as string
+declare function hGetProcParamsTypeCode _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as string
 
 '' globals
 
@@ -498,8 +502,9 @@ private function hDoCppMangling _
     	return TRUE
     end if
 
-    '' RTL?
-    if( symbGetIsRTL( sym ) ) then
+    '' RTL or exclude parent?
+    if( (symbGetStats( sym ) and (FB_SYMBSTATS_RTL or _
+    							  FB_SYMBSTATS_EXCLPARENT)) <> 0 ) then
     	return FALSE
     end if
 
