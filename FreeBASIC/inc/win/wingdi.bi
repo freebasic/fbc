@@ -3057,6 +3057,7 @@ type ICMENUMPROCW as function (byval as LPWSTR, byval as LPARAM) as integer
 #endif ''UNICODE
 
 #define BGR(r,g,b) (cuint(r) or (cuint(g) shl 8) or (cuint(b) shl 16))
+#define BGRA(r,g,b,a) (cuint(r) or (cuint(g) shl 8) or (cuint(b) shl 16) or (cuint(a) shl 24))
 #define MAKEPOINTS(l) *cptr( POINTS ptr, @(l) )
 #define MAKEROP4(f,b) cuint((((b) shl 8) and &hFF000000) or (f))
 #define PALETTEINDEX(i)	(&h01000000 or cuint(i))
