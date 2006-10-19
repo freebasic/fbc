@@ -64,6 +64,7 @@ Version 0.17 Beta:
 - all gfx primitives can now respect the alpha channel; just init the screen with the new GFX_ALPHA_PRIMITIVES flag (&h20) (lillo)
 - the SCREENEVENT function, to retrieve system events. Notifications include mouse and keyboard activity, window focus changes, and more. See
   new example in examples/gfx/fbgfx_events.bas for more info. fbgfx.bi has been updated with the EVENT structure and known event IDs (lillo)
+- the GDI+ headers, import library and examples (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
