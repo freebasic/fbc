@@ -157,6 +157,28 @@ function cIdentifier _
     			exit do
     		end if
 
+    	case FB_SYMBCLASS_TYPEDEF
+    		if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
+    			exit do
+    		end if
+
+            '' typedef of a TYPE/CLASS?
+            select case symbGetType( parent )
+            case FB_DATATYPE_STRUCT
+            	parent = symbGetSubtype( parent )
+
+    			'' ordinary struct?
+    			if( symbGetIsUnique( parent ) = FALSE ) then
+    				exit do
+    			end if
+
+            'case FB_DATATYPE_CLASS
+            	'' ...
+
+            case else
+            	exit do
+            end select
+
     	case else
     		exit do
     	end select
@@ -265,6 +287,7 @@ function cParentId _
 
     	select case as const symbGetClass( chain_->sym )
     	case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS
+    		parent = chain_->sym
 
     	case FB_SYMBCLASS_STRUCT
     		if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
@@ -276,11 +299,38 @@ function cParentId _
     			exit do
     		end if
 
+    		parent = chain_->sym
+
+    	case FB_SYMBCLASS_TYPEDEF
+    		if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
+    			exit do
+    		end if
+
+            dim as FBSYMBOL ptr sym
+
+            '' typedef of a TYPE/CLASS?
+            select case symbGetType( chain_->sym )
+            case FB_DATATYPE_STRUCT
+
+    			sym = symbGetSubtype( chain_->sym )
+
+    			'' ordinary struct?
+    			if( symbGetIsUnique( sym ) = FALSE ) then
+    				exit do
+    			end if
+
+			'case FB_DATATYPE_CLASS
+				'' ...
+
+    		case else
+    			exit do
+    		end select
+
+    		parent = sym
+
     	case else
     		exit do
     	end select
-
-    	parent = chain_->sym
 
     	'' '.'?
     	if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then

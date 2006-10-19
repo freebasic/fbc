@@ -92,9 +92,9 @@ private function hFindId _
 	( _
 		byval chain_ as FBSYMCHAIN ptr, _
 		byref atom as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as FBSYMBOL ptr sym
+    dim as FBSYMBOL ptr sym = any
 
     do
     	sym = chain_->sym
@@ -116,12 +116,22 @@ private function hFindId _
   			return cQuirkFunction( sym->key.id, atom )
 
 		case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
+call_ctor:
 			if( symbGetHasCtor( sym ) ) then
 				'' skip ID, ctorCall() is also used by type<>(...)
 				lexSkipToken( )
 
 				return cCtorCall( sym, atom )
 			end if
+
+		case FB_SYMBCLASS_TYPEDEF
+            '' typedef of a TYPE/CLASS?
+            select case symbGetType( sym )
+            case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+            	sym = symbGetSubtype( sym )
+            	goto call_ctor
+            end select
+
 		end select
 
     	chain_ = symbChainGetNext( chain_ )
