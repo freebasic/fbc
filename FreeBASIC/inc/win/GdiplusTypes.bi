@@ -22,13 +22,13 @@ type REAL as single
 #define REAL_TOLERANCE (FLT_MIN * 100)
 #define REAL_EPSILON 1.192092896e-07F
 
-type CSize as any
-type CSizeF as any
-type CPoint as any
-type CPointF as any
-type CRect as any
-type CRectF as any
-type CCharacterRange as any
+type CSize as Size
+type CSizeF as SizeF
+type CPoint as Point
+type CPointF as PointF
+type CRect as Rect
+type CRectF as RectF
+type CCharacterRange as CharacterRange
 
 enum Status
 	Ok = 0
