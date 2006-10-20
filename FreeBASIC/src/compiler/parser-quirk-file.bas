@@ -46,6 +46,13 @@ function cPrintStmt  _
     	islprint = FALSE
 
 	case FB_TK_LPRINT
+    	if( fbLangOptIsSet( FB_LANG_OPT_QBOPT ) = FALSE ) then
+    		if( errReportNotAllowed( FB_LANG_OPT_QBOPT ) = FALSE ) then
+    			exit function
+        	end if
+        else
+	    	islprint = TRUE
+        end if
 
 	case else
 		exit function
