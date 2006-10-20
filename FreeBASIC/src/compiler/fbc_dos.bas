@@ -148,11 +148,12 @@ private function _linkFiles as integer
 		end if
     next
 
+	'' rtlib initialization and termination
+	'' must be included in the group
+	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
+
     '' end lib group
     ldcline += "-) "
-
-	'' rtlib initialization and termination
-	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
 
     '' invoke ld
     if( fbc.verbose ) then
