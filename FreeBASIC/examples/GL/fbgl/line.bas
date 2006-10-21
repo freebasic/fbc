@@ -25,9 +25,12 @@ const YRES = 480
 		'' clear the working page
 		cls
 		
-		'' draw the contets
+		'' draw the contents
 		for i = 1 to 1000
+			'' use 255 (100%) for alpha 
 			color rgba(rnd * 255, rnd * 255, rnd * 255, 255) 
+	   		
+	   		'' line x1, y2, x2, y2
 	   		line rnd * XRES, rnd * YRES, rnd * XRES, rnd * YRES
 		next
 	   	
