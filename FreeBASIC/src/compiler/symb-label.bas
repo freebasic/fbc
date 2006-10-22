@@ -75,7 +75,7 @@ function symbAddLabel _
     			'' set the right values
     			l->lbl.declared = TRUE
     			l->lbl.parent = parser.currblock
-    			l->lbl.stmtnum = parser.stmtcnt
+    			l->lbl.stmtnum = parser.stmt.cnt
     			l->scope = parser.scope
     			return l
 
@@ -131,7 +131,7 @@ function symbAddLabel _
 		'' label parent won't be the current proc block is
 		'' it's been defined inside a scope block
 		l->lbl.parent = parser.currblock
-		l->lbl.stmtnum = parser.stmtcnt
+		l->lbl.stmtnum = parser.stmt.cnt
 	end if
 
 	function = l

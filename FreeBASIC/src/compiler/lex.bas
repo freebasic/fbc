@@ -1469,7 +1469,7 @@ re_read:
 
 			else
 				UPDATE_LINENUM( )
-				parser.stmtcnt += 1
+				parser.stmt.cnt += 1
 				islinecont = FALSE
 				continue do
 			end if
@@ -1807,14 +1807,14 @@ private sub hMultiLineComment( ) static
 			end if
 
 			UPDATE_LINENUM()
-			parser.stmtcnt += 1
+			parser.stmt.cnt += 1
 
 		'' EOL?
 		case CHAR_LF
 			lexEatChar( )
 
 			UPDATE_LINENUM( )
-			parser.stmtcnt += 1
+			parser.stmt.cnt += 1
 
 		'' '/'?
 		case CHAR_SLASH
@@ -1948,10 +1948,10 @@ sub lexSkipToken _
     select case lex->head->id
     case FB_TK_EOL
     	UPDATE_LINENUM( )
-    	parser.stmtcnt += 1
+    	parser.stmt.cnt += 1
 
     case FB_TK_STMTSEP
-    	parser.stmtcnt += 1
+    	parser.stmt.cnt += 1
     end select
 
 	'' if no macro text been read, reset

@@ -744,11 +744,10 @@ add_proc:
 	''
 	proc->proc.mode	= mode
 
-	'' explicit EXTERN .. END EXTERN block?
-	if( cCompStmtGetTOS( FB_TK_EXTERN, FALSE ) <> NULL ) then
-		'' last compound was an EXTERN, not a CLASS, TYPE or NAMESPACE,
-		'' so don't add parent when mangling, even if inside an UDT,
-		'' unless it's in "c++" mode
+	'' last compound was an EXTERN?
+	if( fbGetCompStmtId( ) = FB_TK_EXTERN ) then
+		'' don't add parent when mangling, even if inside an UDT, unless
+		'' it's in "c++" mode
 		if( parser.mangling <> FB_MANGLING_CPP ) then
 			stats or= FB_SYMBSTATS_EXCLPARENT
 		end if

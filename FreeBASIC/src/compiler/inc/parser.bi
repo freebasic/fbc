@@ -159,6 +159,12 @@ type FBPARSER_STMT_WITH
 end type
 
 type FBPARSER_STMT
+	stk				as TSTACK
+	id				as FB_TOKEN					'' current compound stmt id
+	lastid			as FB_TOKEN					'' preview 	  /       /   /
+
+	cnt				as integer		            '' keep track of :'s to help scope break's
+
 	for				as FBCMPSTMT
 	do				as FBCMPSTMT
 	while			as FBCMPSTMT
@@ -176,9 +182,7 @@ end enum
 
 type PARSERCTX
 	'' stmt recursion
-	stmtstk			as TSTACK
 	stmt			as FBPARSER_STMT
-	stmtcnt			as integer					'' keep track of :'s to help scope break's
 	nspcrec			as integer					'' namespace recursion
 
 	'' globals
@@ -1076,9 +1080,10 @@ declare function hDeclCheckParent _
 
 #define fbIsModLevel( ) (parser.currproc = env.main.proc)
 
+#define fbGetCompStmtId( ) parser.stmt.id
+
 #define fbGetPrntOptional( ) ((parser.options and FB_PARSEROPT_PRNTOPT) <> 0)
 
-'':::::
 #macro fbSetPrntOptional( _bool )
 	if( _bool ) then
 		parser.options or= FB_PARSEROPT_PRNTOPT
@@ -1089,7 +1094,6 @@ declare function hDeclCheckParent _
 
 #define fbGetCheckArray( ) ((parser.options and FB_PARSEROPT_CHKARRAY) <> 0)
 
-'':::::
 #macro fbSetCheckArray( _bool )
 	if( _bool ) then
 		parser.options or= FB_PARSEROPT_CHKARRAY
@@ -1100,7 +1104,6 @@ declare function hDeclCheckParent _
 
 #define fbGetIsExpression( ) ((parser.options and FB_PARSEROPT_ISEXPR) <> 0)
 
-'':::::
 #macro fbSetIsExpression( _bool )
 	if( _bool ) then
 		parser.options or= FB_PARSEROPT_ISEXPR
@@ -1111,7 +1114,6 @@ declare function hDeclCheckParent _
 
 #define fbGetIsScope( ) ((parser.options and FB_PARSEROPT_ISSCOPE) <> 0)
 
-'':::::
 #macro fbSetIsScope( _bool )
 	if( _bool ) then
 		parser.options or= FB_PARSEROPT_ISSCOPE

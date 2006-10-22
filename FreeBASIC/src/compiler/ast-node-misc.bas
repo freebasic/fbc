@@ -53,7 +53,7 @@ function astNewLABEL _
 	if( symbIsLabel( sym ) ) then
 		if( symbGetLabelIsDeclared( sym ) = FALSE ) then
 			symbSetLabelIsDeclared( sym )
-			symbGetLabelStmt( sym ) = parser.stmtcnt
+			symbGetLabelStmt( sym ) = parser.stmt.cnt
 			symbGetLabelParent( sym ) = parser.currblock
 		end if
 	end if

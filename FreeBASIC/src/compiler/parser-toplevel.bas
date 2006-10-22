@@ -59,7 +59,8 @@ sub parserSetCtx( )
 
 	parser.currlib = NULL
 
-	parser.stmtcnt = 0
+	parser.stmt.cnt = 0
+	parser.stmt.id = 0
 
 	parser.prntcnt = 0
 	parser.options = FB_PARSEROPT_CHKARRAY

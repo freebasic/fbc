@@ -64,7 +64,7 @@ function cLabel as integer
 			end if
 
 			'' fake a ':'
-			parser.stmtcnt += 1
+			parser.stmt.cnt += 1
 		end if
 
 	'' ID (labels can't be quirk-keywords)

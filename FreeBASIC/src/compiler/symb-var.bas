@@ -439,7 +439,7 @@ private sub hSetupVar _
 
 	s->var.initree = NULL
 
-	s->var.stmtnum = parser.stmtcnt
+	s->var.stmtnum = parser.stmt.cnt
 
 end sub
 

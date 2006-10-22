@@ -846,6 +846,7 @@ function cTypeDecl _
     dim as ASTNODE ptr expr
     dim as integer align, isunion, checkid
     dim as FBSYMBOL ptr sym
+   	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
@@ -993,7 +994,20 @@ function cTypeDecl _
 		align = 0
 	end if
 
+	'' start a new compound, or any EXTERN..END EXTERN used around this struct
+	'' would turn-off function mangling depending on the mode passed
+	cCompStmtPush( FB_TK_TYPE, _
+	 		   	   FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
+	 					 			        and (not FB_CMPSTMT_MASK_DATA) )
+
 	sym = hTypeAdd( NULL, id, palias, isunion, align )
+
+	'' end the compound
+	stk = cCompStmtGetTOS( FB_TK_TYPE )
+	if( stk <> NULL ) then
+		cCompStmtPop( stk )
+	end if
+
 	if( sym = NULL ) then
 		return FALSE
 	end if

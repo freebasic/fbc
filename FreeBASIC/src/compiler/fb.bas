@@ -294,14 +294,14 @@ end sub
 '':::::
 private sub stmtStackInit( )
 
-	stackNew( @parser.stmtstk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
+	stackNew( @parser.stmt.stk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
 
 end sub
 
 '':::::
 private sub stmtStackEnd( )
 
-	stackFree( @parser.stmtstk )
+	stackFree( @parser.stmt.stk )
 
 end sub
 

@@ -444,7 +444,7 @@ function astProcBegin _
 
 	n->block.proc.ismain = ismain
 	n->block.parent = NULL
-	n->block.inistmt = parser.stmtcnt
+	n->block.inistmt = parser.stmt.cnt
 
 	'' break list
 	n->block.breaklist.head = NULL
@@ -481,7 +481,7 @@ function astProcBegin _
 		end if
 	end with
 
-	sym->proc.ext->stmtnum = parser.stmtcnt
+	sym->proc.ext->stmtnum = parser.stmt.cnt
 
 	function = n
 
@@ -565,7 +565,7 @@ function astProcEnd _
 	''
 	sym = n->sym
 
-	n->block.endstmt = parser.stmtcnt
+	n->block.endstmt = parser.stmt.cnt
 
 	if( errGetCount( ) = 0 ) then
 		'' if the function body is empty, no ctor initialization will be done

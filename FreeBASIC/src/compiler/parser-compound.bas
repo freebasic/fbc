@@ -369,7 +369,7 @@ function cCompStmtCheck( ) as integer
     dim as integer errmsg
     dim as FB_CMPSTMTSTK ptr stk
 
-    stk = stackGetTOS( @parser.stmtstk )
+    stk = stackGetTOS( @parser.stmt.stk )
     if( stk = NULL ) then
     	return TRUE
     end if
@@ -433,7 +433,7 @@ function cCompStmtPush _
 
 	dim as FB_CMPSTMTSTK ptr stk
 
-	stk = stackPush( @parser.stmtstk )
+	stk = stackPush( @parser.stmt.stk )
 	stk->id = id
 	stk->allowmask = allowmask
 	stk->scopenode = NULL
@@ -456,6 +456,9 @@ function cCompStmtPush _
 		stk->last = parser.stmt.proc
 	end select
 
+	parser.stmt.lastid = parser.stmt.id
+	parser.stmt.id = id
+
 	function = stk
 
 end function
@@ -470,7 +473,7 @@ function cCompStmtGetTOS _
 	dim as FB_CMPSTMTSTK ptr stk
 	dim as integer iserror
 
-	stk = stackGetTOS( @parser.stmtstk )
+	stk = stackGetTOS( @parser.stmt.stk )
 	iserror = (stk = NULL)
 
 	if( iserror = FALSE ) then
@@ -553,7 +556,9 @@ sub cCompStmtPop _
 		parser.stmt.proc = stk->last
 	end select
 
-	stackPop( @parser.stmtstk )
+	stackPop( @parser.stmt.stk )
+
+	parser.stmt.id = parser.stmt.lastid
 
 end sub
 
@@ -565,7 +570,7 @@ function cCompStmtIsAllowed _
 
 	dim as FB_CMPSTMTSTK ptr stk
 
-	stk = stackGetTOS( @parser.stmtstk )
+	stk = stackGetTOS( @parser.stmt.stk )
 
 	'' module-level? anything allowed..
 	if( stk = NULL ) then

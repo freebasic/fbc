@@ -355,7 +355,7 @@ function errReportEx _
 	if( linenum = 0 ) then
 		if( env.clopt.showsusperrors = FALSE ) then
 			'' only one error per stmt
-			if( parser.stmtcnt = errctx.laststmt ) then
+			if( parser.stmt.cnt = errctx.laststmt ) then
 				return TRUE
 			end if
 		end if
@@ -364,7 +364,7 @@ function errReportEx _
 
 		errctx.lastmsg = errnum
 		errctx.lastline = linenum
-    	errctx.laststmt = parser.stmtcnt
+    	errctx.laststmt = parser.stmt.cnt
 	end if
 
     hPrintErrMsg( errnum, msgex, options, linenum, env.clopt.showerror )

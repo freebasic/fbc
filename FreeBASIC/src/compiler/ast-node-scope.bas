@@ -70,12 +70,12 @@ function astScopeBegin _
 
 	'' must update the stmt count or any internal label
 	'' allocated/emitted previously will lie in the same stmt
-	parser.stmtcnt += 1
+	parser.stmt.cnt += 1
 
     '' change to scope's symbol tb
     n->sym = s
     n->block.parent = ast.currblock
-	n->block.inistmt = parser.stmtcnt
+	n->block.inistmt = parser.stmt.cnt
 
     n = astAdd( n )
 
@@ -131,7 +131,7 @@ function astScopeBreak _
 	n->break.parent = ast.currblock
 	n->break.scope = parser.scope
 	n->break.linenum = lexLineNum( )
-	n->break.stmtnum = parser.stmtcnt
+	n->break.stmtnum = parser.stmt.cnt
 
 	'' the branch node is added, not the break itself, any
 	'' destructor will be added before this node when
@@ -157,9 +157,9 @@ sub astScopeEnd _
 
 	'' must update the stmt count or any internal label
 	'' allocated/emitted previously will lie in the same stmt
-	parser.stmtcnt += 1
+	parser.stmt.cnt += 1
 
-	n->block.endstmt = parser.stmtcnt
+	n->block.endstmt = parser.stmt.cnt
 
 	'' free dynamic vars
 	hDestroyVars( s )
