@@ -589,13 +589,27 @@ void fb_hX11WaitVSync(void)
 /*:::::*/
 int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons)
 {
+	Window root, child;
+	int root_x, root_y, win_x, win_y;
+	unsigned int buttons_mask;
+	
 	if ((!mouse_on) || (!has_focus))
 		return -1;
 	
-	*x = mouse_x;
-	*y = mouse_y;
+	/* prefer XQueryPointer to have a more responsive mouse position retrieval */
 	*z = mouse_wheel;
-	*buttons = mouse_buttons;
+	if (XQueryPointer(fb_linux.display, fb_linux.window, &root, &child, &root_x, &root_y, &win_x, &win_y, &buttons_mask)) {
+		*x = win_x;
+		*y = win_y;
+		*buttons = (buttons_mask & Button1Mask ? 0x1 : 0) |
+				   (buttons_mask & Button3Mask ? 0x2 : 0) |
+				   (buttons_mask & Button2Mask ? 0x4 : 0);
+	}
+	else {
+		*x = mouse_x;
+		*y = mouse_y;
+		*buttons = mouse_buttons;
+	}
 	
 	return 0;
 }
