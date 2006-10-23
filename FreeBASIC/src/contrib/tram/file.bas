@@ -37,7 +37,7 @@ namespace fb.file.search
 		) as integer
 
 	'':::::
-	function new _
+	function new_ _
 		( _
 			byval root as zstring ptr, _
 			byval dirCb as dirCallback = NULL _
@@ -50,7 +50,7 @@ namespace fb.file.search
 		_this->root = zStr.Dup( root )
 		_this->dirCb = dirCb
 		
-		_this->list = list.new( 30, len( entry ), list.flags_NOCLEAR )
+		_this->list = list.new_( 30, len( entry ), list.flags_NOCLEAR )
 		_this->intrCtx.node = NULL
 		
 		function = _this
@@ -58,7 +58,7 @@ namespace fb.file.search
 	end function
 
 	'':::::
-	function delete _
+	function delete_ _
 		( _
 			byval _this as CSearch ptr _
 		) as integer
@@ -68,7 +68,7 @@ namespace fb.file.search
 		end if
 		
 		_resetList( _this->list )
-		list.delete( _this->list )
+		list.delete_( _this->list )
 		
 		zStr.del( _this->root )
 		
@@ -214,7 +214,7 @@ namespace fb.file.search
 			name	as zstring ptr
 		end type
 		
-		dim as list.CList ptr l = list.new( 16, len( DIRENTRY ), list.flags_NOCLEAR )
+		dim as list.CList ptr l = list.new_( 16, len( DIRENTRY ), list.flags_NOCLEAR )
 		dim as DIRENTRY ptr node = any, nxt = any
 		
 		fname = dir( fpath + "*.*", vbDirectory )
@@ -254,7 +254,7 @@ namespace fb.file.search
 			node = nxt
 		loop
 
-		list.delete( l )
+		list.delete_( l )
 		
 		function = files
 	

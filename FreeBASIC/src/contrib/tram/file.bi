@@ -30,13 +30,13 @@ namespace fb.file.search
 			byval fname as zstring ptr _
 		) as integer
 	
-	declare function new _
+	declare function new_ _
 		( _
 			byval root as zstring ptr, _
 			byval dirCb as dirCallback = NULL _
 		) as CSearch ptr
 
-	declare function delete _
+	declare function delete_ _
 		( _
 			byval _this as CSearch ptr _
 		) as integer

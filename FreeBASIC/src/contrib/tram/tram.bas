@@ -135,7 +135,7 @@ private function processOptions _
 			dim as string d = ucase( mid( arg, 7 ) )
 			
 			if( ctx.exclist = NULL ) then
-				ctx.exclist = list.new( 4, len( excListNode ) )
+				ctx.exclist = list.new_( 4, len( excListNode ) )
 			end if
 			
 			dim as excListNode ptr n = list.insert( ctx.exclist )
@@ -328,7 +328,7 @@ private function main _
 
 	dim as search.dirCallback cb = iif( ctx.exclist <> NULL, @excList_cb, @topDir_cb )
 	
-	ctx.s = search.new( ctx.root, cb )
+	ctx.s = search.new_( ctx.root, cb )
 	
 	if( collectFiles( ) = vbFalse ) then
 		return 1
@@ -338,7 +338,7 @@ private function main _
 	
 	archiveFiles( )
 	
-	search.delete( ctx.s )
+	search.delete_( ctx.s )
 	
 	return 0
 	

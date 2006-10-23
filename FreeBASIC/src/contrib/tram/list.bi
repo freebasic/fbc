@@ -14,14 +14,14 @@ namespace fb.list
 	
 	type CList as CList_
 	
-	declare function new _
+	declare function new_ _
 		( _
 			byval nodes as integer, _
 			byval nodelen as integer, _
 			byval flags as flags = flags_ALL _
 		) as CList ptr
 	
-	declare function delete _
+	declare function delete_ _
 		( _
 			byval _this as CList ptr _
 		) as integer

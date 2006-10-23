@@ -38,7 +38,7 @@ namespace fb.list
 		) as integer
 
 	'':::::
-	function new _
+	function new_ _
 		( _
 			byval nodes as integer, _
 			byval nodelen as integer, _
@@ -66,7 +66,7 @@ namespace fb.list
 	end function
 	
 	'':::::
-	function delete _
+	function delete_ _
 		( _
 			byval _this as CList ptr _
 		) as integer
