@@ -67,7 +67,6 @@ static const MODEINFO mode_info[NUM_MODES] = {
 };
 
 static char window_title_buff[WINDOW_TITLE_SIZE] = { 0 };
-static char *window_title = NULL;
 static int  exit_proc_set = FALSE;
 
 static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int refresh_rate, int flags);
@@ -291,10 +290,10 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         fb_hSetupFuncs();
         fb_hSetupData();
 
-        if (!window_title)
+        if (!__fb_window_title)
         {
-            window_title = fb_hGetExeName( window_title_buff, WINDOW_TITLE_SIZE - 1 );
-            if ((c = strrchr(window_title, '.')))
+            __fb_window_title = fb_hGetExeName( window_title_buff, WINDOW_TITLE_SIZE - 1 );
+            if ((c = strrchr(__fb_window_title, '.')))
                 *c = '\0';
         }
 
@@ -307,7 +306,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
                     driver = fb_gfx_driver_list[i >> 1];
                     if ((driver_name) && !(try_count & 0x1) && (strcasecmp(driver_name, driver->name)))
                         continue;
-                    if (!driver->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, fb_mode->depth, (i & 0x1) ? 0 : refresh_rate, flags))
+                    if (!driver->init(__fb_window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, fb_mode->depth, (i & 0x1) ? 0 : refresh_rate, flags))
                         break;
                     driver->exit();
                     driver = NULL;
@@ -417,10 +416,10 @@ FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 {
 	fb_hMemSet(window_title_buff, 0, WINDOW_TITLE_SIZE);
 	fb_hMemCpy(window_title_buff, title->data, MIN(WINDOW_TITLE_SIZE - 1, FB_STRSIZE(title)));
-	window_title = window_title_buff;
+	__fb_window_title = window_title_buff;
 
 	if ((fb_mode) && (fb_mode->driver->set_window_title))
-		fb_mode->driver->set_window_title(window_title);
+		fb_mode->driver->set_window_title(__fb_window_title);
 
 	/* del if temp */
 	fb_hStrDelTemp( title );

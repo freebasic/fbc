@@ -945,6 +945,46 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
+		/' fb_GfxControl_s ( byval what as integer, byref param as string ) as void '/ _
+		( _
+			@"screencontrol", @"fb_GfxControl_s", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_OVER, _
+			2, _
+			{ _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, TRUE, NULL _
+	 			) _
+	 		} _
+		), _
+		/' fb_GfxControl_i ( byval what as integer, byref param1 as integer, byref param2 as integer, _
+		                                            byref param3 as integer, byref param4 as integer ) as void '/ _
+		( _
+			@"screencontrol", @"fb_GfxControl_i", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_OVER, _
+			5, _
+			{ _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, &h80000000 _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, &h80000000 _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, &h80000000 _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, &h80000000 _
+				) _
+	 		} _
+		), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _

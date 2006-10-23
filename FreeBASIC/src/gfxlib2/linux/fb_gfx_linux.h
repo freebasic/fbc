@@ -74,6 +74,7 @@ extern void fb_hX11WaitVSync(void);
 extern int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons);
 extern void fb_hX11SetMouse(int x, int y, int cursor);
 extern void fb_hX11SetWindowTitle(char *title);
+extern int fb_hX11SetWindowPos(int x, int y);
 extern int *fb_hX11FetchModes(int depth, int *size);
 extern int fb_hX11EnterFullscreen(int h);
 extern void fb_hX11LeaveFullscreen(void);

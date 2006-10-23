@@ -34,3 +34,5 @@ unsigned int (*fb_hGetPixel)(int x, int y) = NULL;
 void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size) = NULL;
 void *(*fb_hPixelSet)(void *dest, int color, size_t size) = NULL;
 unsigned int *fb_color_conv_16to32 = NULL;
+char *__fb_window_title = NULL;
+

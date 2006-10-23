@@ -52,6 +52,7 @@ static Rotation orig_rotation;
 static Cursor blank_cursor, arrow_cursor = None;
 static int is_running = FALSE, has_focus, cursor_shown, xlib_inited = FALSE;
 static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
+static int mouse_x_root, mouse_y_root;
 
 
 /*:::::*/
@@ -68,6 +69,7 @@ static void *window_thread(void *arg)
 	if (fb_linux.init())
 		is_running = FALSE;
 	cursor_shown = TRUE;
+	mouse_x_root = -1;
 	
 	pthread_mutex_lock(&mutex);
 	pthread_cond_signal(&cond);
@@ -112,8 +114,15 @@ static void *window_thread(void *arg)
 					break;
 				
 				case MotionNotify:
-					e.dx = event.xmotion.x - mouse_x;
-					e.dy = event.xmotion.y - mouse_y;
+					if (mouse_x_root < 0) {
+						e.dx = e.dy = 0;
+					}
+					else {
+						e.dx = event.xmotion.x_root - mouse_x_root;
+						e.dy = event.xmotion.y_root - mouse_y_root;
+					}
+					mouse_x_root = event.xmotion.x_root;
+					mouse_y_root = event.xmotion.y_root;
 					mouse_x = event.xmotion.x;
 					mouse_y = event.xmotion.y - fb_linux.display_offset;
 					if ((mouse_y < 0) || (mouse_y >= fb_linux.h))
@@ -146,8 +155,10 @@ static void *window_thread(void *arg)
 						case Button1:	mouse_buttons &= ~0x1; e.button = 0x1; break;
 						case Button3:	mouse_buttons &= ~0x2; e.button = 0x2; break;
 						case Button2:	mouse_buttons &= ~0x4; e.button = 0x4; break;
+						default:		e.type = 0; break;
 					}
-					fb_hPostEvent(&e);
+					if (e.type)
+						fb_hPostEvent(&e);
 					break;
 				
 				
@@ -616,6 +627,32 @@ void fb_hX11SetMouse(int x, int y, int show)
 void fb_hX11SetWindowTitle(char *title)
 {
 	XStoreName(fb_linux.display, fb_linux.window, title);
+}
+
+
+/*:::::*/
+int fb_hX11SetWindowPos(int x, int y)
+{
+	XWindowAttributes attribs;
+	XEvent event;
+	int i;
+	
+	if (fb_linux.flags & DRIVER_FULLSCREEN)
+		return 0;
+	fb_hX11Lock();
+	XGetWindowAttributes(fb_linux.display, fb_linux.window, &attribs);
+	if (x == 0x80000000)
+		x = attribs.x;
+	if (y == 0x80000000)
+		y = attribs.y;
+	
+	XMoveWindow(fb_linux.display, fb_linux.window, x, y);
+	/* remove any mouse motion events */
+	while (XCheckWindowEvent(fb_linux.display, fb_linux.window, PointerMotionMask | ExposureMask | StructureNotifyMask, &event))
+		;
+	fb_hX11Unlock();
+	
+	return (attribs.x & 0xFFFF) | (attribs.y << 16);
 }
 
 

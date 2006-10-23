@@ -65,6 +65,8 @@ Version 0.17 Beta:
 - the SCREENEVENT function, to retrieve system events. Notifications include mouse and keyboard activity, window focus changes, and more. See
   new example in examples/gfx/fbgfx_events.bas for more info. fbgfx.bi has been updated with the EVENT structure and known event IDs (lillo)
 - the GDI+ headers, import library and examples (v1c)
+- the SCREENCONTROL function, to set/get internal gfxlib states. See fbgfx.bi for a list of accepted parameters (lillo)
+- Gfxlib now supports window positioning; just call "SCREENCONTROL SET_WINDOW_POS, x, y" (use GET_WINDOW_POS to retrieve current position) (lillo)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)

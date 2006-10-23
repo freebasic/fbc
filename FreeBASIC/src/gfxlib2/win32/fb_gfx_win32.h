@@ -75,6 +75,7 @@ extern void fb_hWin32WaitVSync(void);
 extern int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons);
 extern void fb_hWin32SetMouse(int x, int y, int cursor);
 extern void fb_hWin32SetWindowTitle(char *title);
+extern int fb_hWin32SetWindowPos(int x, int y);
 
 
 #endif

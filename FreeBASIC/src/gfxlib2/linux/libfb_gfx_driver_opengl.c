@@ -45,6 +45,7 @@ GFXDRIVER fb_gfxDriverOpenGL =
 	fb_hX11GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	fb_hX11SetMouse,	/* void (*set_mouse)(int x, int y, int cursor); */
 	fb_hX11SetWindowTitle,	/* void (*set_window_title)(char *title); */
+	fb_hX11SetWindowPos,	/* int (*set_window_pos)(int x, int y); */
 	fb_hX11FetchModes,	/* int *(*fetch_modes)(void); */
 	driver_flip		/* void (*flip)(void); */
 };

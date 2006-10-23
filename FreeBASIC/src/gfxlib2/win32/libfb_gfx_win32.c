@@ -527,6 +527,14 @@ void fb_hWin32SetWindowTitle(char *title)
 
 
 /*:::::*/
+int fb_hWin32SetWindowPos(int x, int y)
+{
+	/* TODO */
+	return 0;
+}
+
+
+/*:::::*/
 void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 {
 	HDC hdc;

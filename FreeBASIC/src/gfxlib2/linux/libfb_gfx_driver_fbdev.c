@@ -53,6 +53,7 @@ GFXDRIVER fb_gfxDriverFBDev =
 	driver_get_mouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	driver_set_mouse,	/* void (*set_mouse)(int x, int y, int cursor); */
 	NULL,			/* void (*set_window_title)(char *title); */
+	NULL,			/* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,	/* int *(*fetch_modes)(void); */
 	NULL			/* void (*flip)(void); */
 };

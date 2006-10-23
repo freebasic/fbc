@@ -176,6 +176,24 @@ extern "C" {
 
 #define MAX_EVENTS					128
 
+#define GET_WINDOW_POS				0
+#define GET_WINDOW_TITLE			1
+#define GET_DESKTOP_SIZE			2
+#define GET_SCREEN_SIZE				3
+#define GET_SCREEN_DEPTH			4
+#define GET_SCREEN_BPP				5
+#define GET_SCREEN_PITCH			6
+#define GET_SCREEN_REFRESH			7
+#define GET_DRIVER_NAME				8
+#define GET_TRANSPARENT_COLOR		9
+#define GET_VIEWPORT				10
+#define GET_PEN_POS					11
+#define GET_COLOR					12
+
+#define SET_WINDOW_POS				100
+#define SET_WINDOW_TITLE			101
+#define SET_PEN_POS					102
+
 
 typedef struct _GFX_CHAR_CELL {
     FB_WCHAR ch;
@@ -253,6 +271,7 @@ typedef struct GFXDRIVER
 	int (*get_mouse)(int *x, int *y, int *z, int *buttons);
 	void (*set_mouse)(int x, int y, int cursor);
 	void (*set_window_title)(char *title);
+	int (*set_window_pos)(int x, int y);
 	int *(*fetch_modes)(int depth, int *size);
 	void (*flip)(void);
 } GFXDRIVER;
@@ -306,6 +325,7 @@ extern unsigned int (*fb_hGetPixel)(int x, int y);
 extern void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hPixelSet)(void *dest, int color, size_t size);
 extern unsigned int *fb_color_conv_16to32;
+extern char *__fb_window_title;
 #include "fb_gfx_data.h"
 
 /* Internal functions */
@@ -370,6 +390,9 @@ extern FBCALL void *fb_GfxScreenPtr(void);
 extern FBCALL void fb_GfxSetWindowTitle(FBSTRING *title);
 extern FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8);
 extern FBCALL int fb_GfxEvent(EVENT *event);
+extern FBCALL void fb_GfxControl_s(int what, FBSTRING *param);
+extern FBCALL void fb_GfxControl_i(int what, int *param1, int *param2, int *param3, int *param4);
+
 
 /* Runtime library hooks */
 int fb_GfxGetkey(void);

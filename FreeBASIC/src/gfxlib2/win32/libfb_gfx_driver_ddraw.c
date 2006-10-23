@@ -58,6 +58,7 @@ GFXDRIVER fb_gfxDriverDirectDraw =
 	fb_hWin32GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	fb_hWin32SetMouse,	/* void (*set_mouse)(int x, int y, int cursor); */
 	fb_hWin32SetWindowTitle,/* void (*set_window_title)(char *title); */
+	fb_hWin32SetWindowPos,	/* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,	/* int *(*fetch_modes)(int depth, int *size); */
 	NULL			/* void (*flip)(void); */
 };
