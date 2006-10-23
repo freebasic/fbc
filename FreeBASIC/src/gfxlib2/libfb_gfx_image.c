@@ -41,7 +41,7 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color)
 		if (fb_mode->bpp == 1)
 			color = 0;
 		else
-			color = fb_hFixColor(MASK_COLOR_32);
+			color = fb_hFixColor(MASK_COLOR_32 | MASK_A_32);
 	}
 	else
 		color = fb_hFixColor(color);
