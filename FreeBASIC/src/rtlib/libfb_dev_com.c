@@ -49,8 +49,8 @@ int fb_DevComTestProtocolEx( struct _FB_FILE *handle,
                              size_t *pPort );
 
 typedef struct _DEV_COM_INFO {
+    void                     *hSerial;  /* This memmber must be first */
     char                     *pszDevice;
-    void                     *hSerial;
     int                       iPort;
     FB_SERIAL_OPTIONS         Options;
 } DEV_COM_INFO;
@@ -409,6 +409,7 @@ int fb_DevComOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
     if( res == FB_RTERROR_OK ) {
         handle->hooks = &hooks_dev_com;
         handle->opaque = info;
+				handle->type = FB_FILE_TYPE_SERIAL;
     } else {
         if( info->pszDevice )
             free( info->pszDevice );

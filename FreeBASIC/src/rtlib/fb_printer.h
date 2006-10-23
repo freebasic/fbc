@@ -46,8 +46,8 @@ typedef struct _DEV_LPT_PROTOCOL
 } DEV_LPT_PROTOCOL;
 
 typedef struct _DEV_LPT_INFO {
+    void  *driver_opaque; /* this member must be first */
     char  *pszDevice;
-    void  *driver_opaque;
     int    iPort;
     size_t uiRefCount;
 } DEV_LPT_INFO;

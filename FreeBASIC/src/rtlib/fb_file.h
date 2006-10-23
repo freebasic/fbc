@@ -55,6 +55,7 @@
 #define FB_FILE_TYPE_PIPE               3
 #define FB_FILE_TYPE_VFS                4
 #define FB_FILE_TYPE_PRINTER            5
+#define FB_FILE_TYPE_SERIAL             6
 
 typedef enum _FB_FILE_ENCOD {
 	FB_FILE_ENCOD_ASCII,

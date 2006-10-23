@@ -189,11 +189,19 @@ int fb_SerialOpen( struct _FB_FILE *handle,
             } else if( prop.dwMaxTxQueue ) {
                 dwDefaultTxBufferSize = prop.dwMaxTxQueue;
             }
-            if( prop.dwCurrentRxQueue ) {
+
+					  if( prop.dwCurrentRxQueue ) {
                 dwDefaultRxBufferSize = prop.dwCurrentRxQueue;
             } else if( prop.dwMaxRxQueue ) {
                 dwDefaultRxBufferSize = prop.dwMaxRxQueue;
             }
+
+						if( options->TransmitBuffer )
+							dwDefaultTxBufferSize = options->TransmitBuffer;
+
+						if( options->ReceiveBuffer )
+							dwDefaultRxBufferSize = options->ReceiveBuffer;
+
 
             if( !SetupComm( hDevice,
                             dwDefaultRxBufferSize,

@@ -72,8 +72,41 @@ FBCALL int fb_FileAttr
 			break;
 				
 		case FB_FILE_ATTR_HANDLE:
-			ret = (int)file->opaque; /* WARNING: unsafe when sizeof(void *) > sizeof(int) */
-			err = FB_RTERROR_OK;
+
+      /* TODO: standardize the DEV_* structs, or provide a device hook function to get OS handle */
+
+			if( file->type == FB_FILE_TYPE_PRINTER )
+			{
+				if( file->opaque )
+				{
+#if (defined(TARGET_WIN32) || defined(TARGET_CYGWIN))
+					if( *((int*)file->opaque) ) /* WARNING: unsafe when sizeof(void *) > sizeof(int) */
+					{
+					  ret = **((int**)file->opaque); /* WARNING: unsafe when sizeof(void *) > sizeof(int) */
+					  err = FB_RTERROR_OK;
+					}
+#else
+					ret = *((int*)file->opaque); /* WARNING: unsafe when sizeof(void *) > sizeof(int) */
+					err = FB_RTERROR_OK;
+#endif
+				}
+			}
+			else if( file->type == FB_FILE_TYPE_SERIAL )
+			{
+				if( file->opaque )
+				{
+					if( *((int*)file->opaque) ) /* WARNING: unsafe when sizeof(void *) > sizeof(int) */
+					{
+					  ret = **((int**)file->opaque); /* WARNING: unsafe when sizeof(void *) > sizeof(int) */
+					  err = FB_RTERROR_OK;
+					}
+				}
+			}
+			else
+			{
+				ret = (int)file->opaque; /* WARNING: unsafe when sizeof(void *) > sizeof(int) */
+				err = FB_RTERROR_OK;
+			}
 			break;
 				
 		case FB_FILE_ATTR_ENCODING:
