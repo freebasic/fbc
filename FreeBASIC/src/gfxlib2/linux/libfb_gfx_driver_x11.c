@@ -128,7 +128,7 @@ static void update_mask_32(unsigned char *pixel, unsigned char *mask, int w, int
 	for(; h; h--) {
 		b = 0;
 		for (x = 0; x < w; x++) {
-			if (*p++ != MASK_COLOR_32)
+			if (((*p++) & ~MASK_A_32) != MASK_COLOR_32)
 				b |= 1 << (x & 0x7);
 			if ((x & 0x7) == 0x7) {
 				*mask++ = b;
