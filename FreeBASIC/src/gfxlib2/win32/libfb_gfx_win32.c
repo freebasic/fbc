@@ -547,3 +547,10 @@ void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 	ReleaseDC(NULL, hdc);
 }
 
+
+/*:::::*/
+int fb_hGetWindowHandle(void)
+{
+	return (int)fb_win32.wnd;
+}
+

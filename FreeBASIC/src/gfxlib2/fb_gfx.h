@@ -178,17 +178,18 @@ extern "C" {
 
 #define GET_WINDOW_POS				0
 #define GET_WINDOW_TITLE			1
-#define GET_DESKTOP_SIZE			2
-#define GET_SCREEN_SIZE				3
-#define GET_SCREEN_DEPTH			4
-#define GET_SCREEN_BPP				5
-#define GET_SCREEN_PITCH			6
-#define GET_SCREEN_REFRESH			7
-#define GET_DRIVER_NAME				8
-#define GET_TRANSPARENT_COLOR		9
-#define GET_VIEWPORT				10
-#define GET_PEN_POS					11
-#define GET_COLOR					12
+#define GET_WINDOW_HANDLE			2
+#define GET_DESKTOP_SIZE			3
+#define GET_SCREEN_SIZE				4
+#define GET_SCREEN_DEPTH			5
+#define GET_SCREEN_BPP				6
+#define GET_SCREEN_PITCH			7
+#define GET_SCREEN_REFRESH			8
+#define GET_DRIVER_NAME				9
+#define GET_TRANSPARENT_COLOR		10
+#define GET_VIEWPORT				11
+#define GET_PEN_POS					12
+#define GET_COLOR					13
 
 #define SET_WINDOW_POS				100
 #define SET_WINDOW_TITLE			101
@@ -356,6 +357,7 @@ extern void fb_hSoftCursorPut(int x, int y);
 extern void fb_hSoftCursorUnput(int x, int y);
 extern void fb_hSoftCursorPaletteChanged(void);
 extern void *fb_hPixelSetAlpha4(void *dest, int color, size_t size);
+extern int fb_hGetWindowHandle(void);
 
 
 /* Public API */

@@ -736,3 +736,9 @@ void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 	XCloseDisplay(dpy);
 }
 
+
+/*:::::*/
+int fb_hGetWindowHandle(void)
+{
+	return (fb_linux.display ? (int)fb_linux.window : 0);
+}
