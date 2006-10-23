@@ -647,14 +647,21 @@ void fb_hX11SetWindowTitle(char *title)
 /*:::::*/
 int fb_hX11SetWindowPos(int x, int y)
 {
+	Window window, root, parent, *children;
 	XWindowAttributes attribs;
 	XEvent event;
-	int i;
+	unsigned int num_children;
 	
 	if (fb_linux.flags & DRIVER_FULLSCREEN)
 		return 0;
 	fb_hX11Lock();
-	XGetWindowAttributes(fb_linux.display, fb_linux.window, &attribs);
+	parent = fb_linux.window;
+	do {
+		window = parent;
+		XQueryTree(fb_linux.display, window, &root, &parent, &children, &num_children);
+		if (children) XFree(children);
+	} while (parent != root_window);
+	XGetWindowAttributes(fb_linux.display, window, &attribs);
 	if (x == 0x80000000)
 		x = attribs.x;
 	if (y == 0x80000000)
@@ -662,7 +669,7 @@ int fb_hX11SetWindowPos(int x, int y)
 	
 	XMoveWindow(fb_linux.display, fb_linux.window, x, y);
 	/* remove any mouse motion events */
-	while (XCheckWindowEvent(fb_linux.display, fb_linux.window, PointerMotionMask | ExposureMask | StructureNotifyMask, &event))
+	while (XCheckWindowEvent(fb_linux.display, fb_linux.window, PointerMotionMask, &event))
 		;
 	fb_hX11Unlock();
 	
