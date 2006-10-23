@@ -8,6 +8,7 @@
 #ifdef __FB_WIN32__
 	#inclib "gdi32"
 	#inclib "winmm"
+	#inclib "user32"
 #elseif defined(__FB_LINUX__)
 	#libpath "/usr/X11R6/lib"
 	#inclib "X11"
