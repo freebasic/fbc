@@ -263,7 +263,7 @@ sub edbgEmitHeader _
     hEmitSTABS( STAB_TYPE_SO, filename, 0, 0, lname )
 
 	''
-	emitSECTION( EMIT_SECTYPE_CODE )
+	emitSECTION( EMIT_SECTYPE_CODE, 0 )
 	hLABEL( lname )
 
 	'' (known) type definitions
@@ -291,7 +291,7 @@ sub edbgEmitFooter( ) static
 		exit sub
 	end if
 
-	emitSECTION( EMIT_SECTYPE_CODE )
+	emitSECTION( EMIT_SECTYPE_CODE, 0 )
 
 	'' no checkings after this
 	lname = *hMakeTmpStr( )
@@ -1180,7 +1180,7 @@ sub edbgIncludeBegin _
 
 	hEmitSTABS( STAB_TYPE_BINCL, filename, 0, 0 )
 
-	emitSECTION( EMIT_SECTYPE_CODE )
+	emitSECTION( EMIT_SECTYPE_CODE, 0 )
 
 	lname = *hMakeTmpStr( )
 

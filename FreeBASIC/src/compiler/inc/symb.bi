@@ -404,6 +404,7 @@ type FBS_PROC
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
 	ext				as FB_PROCEXT ptr           '' extra fields, not used with prototypes
+	priority		as integer
 end type
 
 type FB_SCOPEDBG
@@ -2034,6 +2035,10 @@ declare function symbCloneLabel _
 #define symbGetProcStatAssignUsed(f) ((f->proc.ext->stats and FB_PROCSTATS_ASSIGNUSED) <> 0)
 
 #define symbSetProcStatAssignUsed(f) f->proc.ext->stats or= FB_PROCSTATS_ASSIGNUSED
+
+#define symbGetProcPriority(f) f->proc.priority
+
+#define symbSetProcPriority(f,p) f->proc.priority = p
 
 #define symbGetParamMode(a) a->param.mode
 

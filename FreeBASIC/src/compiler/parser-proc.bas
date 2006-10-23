@@ -271,10 +271,56 @@ end function
 private function hParseAttributes _
 	( _
 		byref attrib as FB_SYMBATTRIB, _
-		byval stats as FB_SYMBSTATS _
+		byval stats as FB_SYMBSTATS, _
+		byref priority as integer _
 	) as integer
 
 	function = FALSE
+
+	priority = 0
+
+	'' Priority?
+	if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
+	
+		'' not ctor or dtor?
+		if( (stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR)) = 0 ) then
+
+    		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: skip token
+    			lexSkipToken( )
+    		end if
+
+		'' not an integer
+		elseif( lexGetType( ) <> FB_DATATYPE_INTEGER ) then
+		
+    		if( errReport( FB_ERRMSG_INVALIDPRIORITY ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: skip token
+    			lexSkipToken( )
+    		end if
+
+		else
+
+			priority = valint( *lexGetText() )
+			 
+			if priority < 101 or priority > 65535 then
+    			if( errReport( FB_ERRMSG_INVALIDPRIORITY ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: skip token
+    				lexSkipToken( )
+    			end if
+			else
+				priority and= &hffff
+   				lexSkipToken( )
+			end if
+
+		end if
+
+	end if
 
     '' STATIC?
     if( lexGetToken( ) = FB_TK_STATIC ) then
@@ -379,7 +425,7 @@ end function
 '':::::
 ''ProcHeader   		=  ID CallConvention? OVERLOAD? (ALIAS LIT_STRING)?
 ''                     Parameters? ((AS SymbolType)? | CONSTRUCTOR|DESTRUCTOR)?
-''					   STATIC? EXPORT?
+''					   Priority? STATIC? EXPORT?
 ''
 function cProcHeader _
 	( _
@@ -390,7 +436,7 @@ function cProcHeader _
 	) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXNAMELEN+1 id, aliasid, libname
-    dim as integer dtype, mode, lgt, ptrcnt, is_extern
+    dim as integer dtype, mode, lgt, ptrcnt, is_extern, priority
     dim as FBSYMBOL ptr head_proc, proc, subtype, parent
     dim as zstring ptr palias, plib
     dim as FB_SYMBSTATS stats
@@ -546,6 +592,8 @@ function cProcHeader _
 			end if
 
 			lexSkipToken( )
+
+			''
 		end if
 
     '' (AS SymbolType)?
@@ -614,7 +662,7 @@ function cProcHeader _
 
 	'' function body..
 
-	if( hParseAttributes( attrib, stats ) = FALSE ) then
+	if( hParseAttributes( attrib, stats, priority ) = FALSE ) then
 		exit function
 	end if
 
@@ -713,9 +761,12 @@ function cProcHeader _
 	'' ctor or dtor?
 	if( (stats and FB_SYMBSTATS_GLOBALCTOR) <> 0 ) then
     	symbAddGlobalCtor( proc )
+		symbSetProcPriority( proc, priority )
 
     elseif( (stats and FB_SYMBSTATS_GLOBALDTOR) <> 0 ) then
     	symbAddGlobalDtor( proc )
+		symbSetProcPriority( proc, priority )
+
     end if
 
     ''
@@ -1118,7 +1169,7 @@ function cOperatorHeader _
 	end if
 
 	''
-	if( hParseAttributes( attrib, 0 ) = FALSE ) then
+	if( hParseAttributes( attrib, 0, 0 ) = FALSE ) then
 		exit function
 	end if
 
@@ -1408,7 +1459,7 @@ function cCtorHeader _
 	end if
 
 	''
-	if( hParseAttributes( attrib, 0 ) = FALSE ) then
+	if( hParseAttributes( attrib, 0, 0 ) = FALSE ) then
 		exit function
 	end if
 

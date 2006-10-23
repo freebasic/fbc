@@ -272,6 +272,7 @@ sub emitSubInit
 	''
 	emit.dataend = 0
 	emit.lastsection = INVALID
+	emit.lastpriority = INVALID
 
 end sub
 
@@ -1165,12 +1166,13 @@ end sub
 '':::::
 sub emitSECTION _
 	( _
-		byval section as integer _
+		byval section as integer, _
+		byval priority as integer _ 
 	) static
 
     dim as string ostr
 
-    if( section = emit.lastsection ) then
+    if( ( section = emit.lastsection ) and ( priority = emit.lastpriority ) ) then
     	exit sub
     end if
 
@@ -1194,12 +1196,18 @@ sub emitSECTION _
 
 	case EMIT_SECTYPE_CONSTRUCTOR
 		ostr += "ctors"
+		if( priority > 0 ) then
+			ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
+		end if
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
 			ostr += ", " + QUOTE + "aw" + QUOTE + ", @progbits"
 		end if
 
 	case EMIT_SECTYPE_DESTRUCTOR
 		ostr += "dtors"
+		if( priority > 0 ) then
+			ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
+		end if
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
 			ostr += ", " + QUOTE +  "aw" + QUOTE + ", @progbits"
 		end if
@@ -1211,6 +1219,7 @@ sub emitSECTION _
 	outEx( ostr )
 
 	emit.lastsection = section
+	emit.lastpriority = priority
 
 end sub
 
@@ -5590,7 +5599,7 @@ sub emitPROCFOOTER _
 
     ispublic = symbIsPublic( proc )
 
-	emitSECTION( EMIT_SECTYPE_CODE )
+	emitSECTION( EMIT_SECTYPE_CODE, 0 )
 
 	''
 	edbgEmitProcHeader( proc )
@@ -5677,7 +5686,7 @@ sub emitWriteCtorSection _
     do
     	'' was it emitted?
     	if( symbGetProcIsEmitted( proc_head->sym ) ) then
-    		emitSECTION( iif( is_ctor, EMIT_SECTYPE_CONSTRUCTOR, EMIT_SECTYPE_DESTRUCTOR ) )
+    		emitSECTION( iif( is_ctor, EMIT_SECTYPE_CONSTRUCTOR, EMIT_SECTYPE_DESTRUCTOR ), symbGetProcPriority( proc_head->sym ) )
     		emitVARINIOFS( symbGetMangledName( proc_head->sym ), 0 )
     	end if
 
@@ -5824,7 +5833,7 @@ sub emitVARINIBEGIN _
 		byval sym as FBSYMBOL ptr _
 	) static
 
-	emitSECTION( EMIT_SECTYPE_DATA )
+	emitSECTION( EMIT_SECTYPE_DATA, 0 )
 
 	'' add dbg info, if public or shared
     'if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_PUBLIC)) > 0 ) then
@@ -5968,16 +5977,16 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-#define hEmitBssHeader( ) emitSECTION( EMIT_SECTYPE_BSS )
+#define hEmitBssHeader( ) emitSECTION( EMIT_SECTYPE_BSS, 0 )
 
 '':::::
-#define hEmitConstHeader( ) emitSECTION( EMIT_SECTYPE_DATA )
+#define hEmitConstHeader( ) emitSECTION( EMIT_SECTYPE_DATA, 0 )
 
 '':::::
-#define hEmitDataHeader( ) emitSECTION( EMIT_SECTYPE_DATA )
+#define hEmitDataHeader( ) emitSECTION( EMIT_SECTYPE_DATA, 0 )
 
 '':::::
-#define hEmitExportHeader( ) emitSECTION( EMIT_SECTYPE_DIRECTIVE )
+#define hEmitExportHeader( ) emitSECTION( EMIT_SECTYPE_DIRECTIVE, 0 )
 
 '':::::
 sub emitWriteHeader( ) static

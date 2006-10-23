@@ -218,7 +218,8 @@ end type
 		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _
 		@"Invalid assignment/conversion", _
 		@"Invalid array subscript", _
-		@"TYPE or CLASS has no default constructor" _
+		@"TYPE or CLASS has no default constructor", _
+		@"Invalid priority attribute" _
 	}
 
 

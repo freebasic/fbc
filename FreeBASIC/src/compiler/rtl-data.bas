@@ -400,7 +400,7 @@ sub rtlDataStoreBegin static
     dim as FBSYMBOL ptr l, label
 
 	'' switch section, can't be code coz it will screw up debugging
-	emitSECTION( EMIT_SECTYPE_CONST )
+	emitSECTION( EMIT_SECTYPE_CONST, 0 )
 
 	'' emit default label if not yet emited (also if DATA's are
 	'' been used inside procs, the label will get removed)

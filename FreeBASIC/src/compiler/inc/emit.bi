@@ -281,6 +281,7 @@ type EMITCTX
 	dataend								as integer
 
 	lastsection							as integer
+	lastpriority                        as integer
 
 	keyinited							as integer
 	keyhash								as THASH
@@ -755,7 +756,8 @@ declare function emitSTKCLEAR _
 
 declare sub emitSECTION _
 	( _
-		byval section as integer _
+		byval section as integer, _
+		byval ctor_ext as integer _
 	)
 
 declare sub emitDATALABEL _
