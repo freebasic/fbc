@@ -48,6 +48,7 @@ static BOOL screensaver_active, cursor_shown, has_focus = FALSE;
 static UINT msg_cursor;
 static int mouse_buttons, mouse_wheel, mouse_x, mouse_y;
 static BOOL (WINAPI *_TrackMouseEvent)(TRACKMOUSEEVENT *) = NULL;
+static POINT last_mouse_pos;
 
 
 /*:::::*/
@@ -100,6 +101,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 {
 	BYTE key_state[256];
 	TRACKMOUSEEVENT track_e;
+	POINT mouse_pos;
 	EVENT e;
 	
 	e.type = 0;
@@ -122,13 +124,18 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 		
 		case WM_MOUSEMOVE:
+			GetCursorPos(&mouse_pos);
 			e.type = EVENT_MOUSE_MOVE;
-			e.x = lParam & 0xFFFF;
-			e.y = (lParam >> 16) & 0xFFFF;
-			e.dx = e.x - mouse_x;
-			e.dy = e.y - mouse_y;
-			mouse_x = e.x;
-			mouse_y = e.y;
+			mouse_x = e.x = lParam & 0xFFFF;
+			mouse_y = e.y = (lParam >> 16) & 0xFFFF;
+			if (last_mouse_pos.x == 0xFFFF) {
+				e.dx = e.dy = 0;
+			}
+			else {
+				e.dx = mouse_pos.x - last_mouse_pos.x;
+				e.dy = mouse_pos.y - last_mouse_pos.y;
+			}
+			last_mouse_pos = mouse_pos;
 			if ((!e.dx) && (!e.dy))
 				e.type = 0;
 			if (!has_focus) {
@@ -202,7 +209,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			e.type = EVENT_MOUSE_WHEEL;
 			e.z = mouse_wheel;
 			break;
-
+		
 		case WM_SIZE:
         case WM_SYSKEYDOWN:
             if (!fb_win32.is_active)
@@ -359,6 +366,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 
 	msg_cursor = RegisterWindowMessage("FB mouse cursor");
 	cursor_shown = TRUE;
+	last_mouse_pos.x = 0xFFFF;
 	
 	if (!_TrackMouseEvent) {
 		module = GetModuleHandle("user32.dll");
@@ -529,8 +537,20 @@ void fb_hWin32SetWindowTitle(char *title)
 /*:::::*/
 int fb_hWin32SetWindowPos(int x, int y)
 {
-	/* TODO */
-	return 0;
+	RECT rect;
+	
+	if (fb_win32.flags & DRIVER_FULLSCREEN)
+		return 0;
+	
+	GetWindowRect(fb_win32.wnd, &rect);
+	if (x == 0x80000000)
+		x = rect.left;
+	if (y == 0x80000000)
+		y = rect.top;
+	SetWindowPos(fb_win32.wnd, HWND_TOP, x, y, rect.right - rect.left, rect.bottom - rect.top,
+		SWP_ASYNCWINDOWPOS | SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
+
+	return (rect.left & 0xFFFF) | (rect.top << 16);
 }
 
 
