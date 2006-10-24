@@ -386,6 +386,7 @@ type FB_PROCEXT
 	statdtor		as TLIST ptr				'' list of static instances with dtors
 	stats			as FB_PROCSTATS
 	stmtnum			as integer
+	priority		as integer
 end type
 
 type FB_PROCRTL
@@ -404,7 +405,6 @@ type FBS_PROC
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
 	ext				as FB_PROCEXT ptr           '' extra fields, not used with prototypes
-	priority		as integer
 end type
 
 type FB_SCOPEDBG
@@ -2036,9 +2036,9 @@ declare function symbCloneLabel _
 
 #define symbSetProcStatAssignUsed(f) f->proc.ext->stats or= FB_PROCSTATS_ASSIGNUSED
 
-#define symbGetProcPriority(f) f->proc.priority
+#define symbGetProcPriority(f) f->proc.ext->priority
 
-#define symbSetProcPriority(f,p) f->proc.priority = p
+#define symbSetProcPriority(f,p) f->proc.ext->priority = p
 
 #define symbGetParamMode(a) a->param.mode
 

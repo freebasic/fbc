@@ -761,10 +761,16 @@ function cProcHeader _
 	'' ctor or dtor?
 	if( (stats and FB_SYMBSTATS_GLOBALCTOR) <> 0 ) then
     	symbAddGlobalCtor( proc )
+		if( proc->proc.ext = NULL ) then
+			proc->proc.ext = callocate( len( FB_PROCEXT ) )
+		end if
 		symbSetProcPriority( proc, priority )
 
     elseif( (stats and FB_SYMBSTATS_GLOBALDTOR) <> 0 ) then
     	symbAddGlobalDtor( proc )
+		if( proc->proc.ext = NULL ) then
+			proc->proc.ext = callocate( len( FB_PROCEXT ) )
+		end if
 		symbSetProcPriority( proc, priority )
 
     end if
