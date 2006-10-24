@@ -34,6 +34,7 @@ Version 0.17 Beta:
 - the Lua headers were replaced by machine-translated ones, some function/macro names were changed by the Lua authors since the last version;
   also, the luauxlib.bi header was renamed to lauxlib.bi to match the original C one (v1c)
 
+
 [added]
 - the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)
 - operator overloading for UDT's (TYPE's and ENUM's) (W.I.P.) (v1c)
@@ -67,6 +68,7 @@ Version 0.17 Beta:
 - the GDI+ headers, import library and examples (v1c)
 - the SCREENCONTROL function, to set/get internal gfxlib states. See fbgfx.bi for a list of accepted parameters (lillo)
 - Gfxlib now supports window positioning; just call "SCREENCONTROL SET_WINDOW_POS, x, y" (use GET_WINDOW_POS to retrieve current position) (lillo)
+- Module CONSTRUCTOR/DESTRUCTOR support priority attributes 101-65535 (jeffm)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
@@ -116,6 +118,8 @@ Version 0.17 Beta:
 - padding of UDT's was incorrect if only byte and/or short fields were present (v1c)
 - High-intensity background colors are now enabled in Linux console, but only inside an xterm (lillo)
 - Console was still cleared when exiting a gfx mode on certain terminals under Linux (lillo)
+- Serial driver on windows was not setting DTR high when opening the device (jeffm)
+- Serial driver on windows was ignoring RB/TB buffer size parameters (jeffm)
 
 
 Version 0.16 Beta:
