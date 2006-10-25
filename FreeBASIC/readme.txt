@@ -1,6 +1,6 @@
 
   FreeBASIC - A multi-platform 32-bit BASIC Compiler
-  Copyright (C) 2004-2006 Andre Victor T. Vicentini (av1ctor[at]yahoo.com.br)
+  Copyright (C) 2004-2006 The FreeBASIC development team.
 
 
 License:
@@ -770,6 +770,10 @@ Credits (in alphabetic order):
       translated by the SWIG FB wrapper. 
     - Wrote the Windows NT DDK test at the examples/Windows/ddk/driver dir.
     - Added DLL hot-linking support to the Windows port (disabled at the moment).
+
+  o Andre Victor T. Vicentini (av1ctor[at]yahoo.com.br) - Project Member:
+    - Project creator. 
+    - Main compiler developer.
 
   o Angelo Mottola (a.mottola[at]libero.it) - Project Member:
     - Ported FreeBASIC to Linux; port maintainer.
