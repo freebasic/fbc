@@ -1524,7 +1524,8 @@ function cArrayDecl _
 
 		else
     		'' check if non-numeric
-    		if( astGetDataClass( expr ) >= FB_DATACLASS_STRING ) then
+    		select case as const astGetDataType( expr )
+    		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
     				exit function
     			else
@@ -1532,7 +1533,7 @@ function cArrayDecl _
     				astDelTree( expr )
     				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
     			end if
-    		end if
+    		end select
 		end if
 
 		exprTB(i,0) = expr
@@ -1553,14 +1554,15 @@ function cArrayDecl _
 
     		else
     			'' check if non-numeric
-    			if( astGetDataClass( expr ) >= FB_DATACLASS_STRING ) then
+    			select case as const astGetDataType( expr )
+    			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     				if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
     					exit function
     				else
     					'' error recovery: fake an expr
     					expr = astCloneTree( exprTB(i,0) )
     				end if
-    			end if
+    			end select
 			end if
 
 			exprTB(i,1) = expr
