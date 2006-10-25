@@ -4,7 +4,7 @@
 AC_INIT([fbc],[0.16],[http://sourceforge.net/projects/fbc])
 AC_PREREQ([2.59])
 
-AC_COPYRIGHT([Copyright (c) 2004-2006 Andre Victor T. Vicentini (av1ctor@yahoo.com.br) and others])
+AC_COPYRIGHT([Copyright (C) 2004-2007 The FreeBASIC development team])
 
 AC_CONFIG_SRCDIR([inc/fb.bi])
 AC_CONFIG_AUX_DIR([../config])

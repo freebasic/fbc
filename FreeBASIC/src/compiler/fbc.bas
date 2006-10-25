@@ -1,5 +1,5 @@
 ''	FreeBASIC - 32-bit BASIC Compiler.
-''	Copyright (C) 2004-2006 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+''	Copyright (C) 2004-2007 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -155,7 +155,7 @@ declare sub 	 setCompOptions			( )
     ''
     if( fbc.verbose or fbc.showversion ) then
     	print "FreeBASIC Compiler - Version "; FB_VERSION; " for "; FB_HOST; " (target:"; FB_TARGET; ")"
-    	print "Copyright (C) 2004-2006 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)"
+    	print "Copyright (C) 2004-2006 The FreeBASIC development team."
     	print
     	if( fbc.showversion ) then
     		fbcEnd( 0 )
