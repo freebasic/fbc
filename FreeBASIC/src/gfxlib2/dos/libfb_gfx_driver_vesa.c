@@ -27,14 +27,19 @@
 #include "fb_gfx_dos.h"
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
+static void driver_exit(void);
 static void driver_update(void);
 static void end_of_driver_update(void);
+static void fb_dos_vesa_set_bank_int(void);
+static void fb_dos_vesa_set_bank_int_end(void);
+extern void fb_dos_vesa_set_bank_pm(void);
+extern void fb_dos_vesa_set_bank_pm_end(void);
 
 GFXDRIVER fb_gfxDriverVESA =
 {
 	"VESA banked",           /* char *name; */
 	driver_init,             /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
-	fb_dos_exit,             /* void (*exit)(void); */
+	driver_exit,             /* void (*exit)(void); */
 	fb_dos_lock,             /* void (*lock)(void); */
 	fb_dos_unlock,           /* void (*unlock)(void); */
 	fb_dos_set_palette,      /* void (*set_palette)(int index, int r, int g, int b); */
@@ -47,8 +52,33 @@ GFXDRIVER fb_gfxDriverVESA =
 	NULL                     /* void (*flip)(void); */
 };
 
-
 static int detected = FALSE;
+static int data_locked = FALSE;
+static void (*fb_dos_vesa_set_bank)(void) = NULL;
+static VesaPMInfo *vesa_pm_info = NULL;
+
+void *fb_dos_vesa_pm_bank_switcher = NULL;
+int fb_dos_vesa_bank_number = 0;
+
+/*:::::*/
+static void vesa_get_pm_functions(void)
+{
+	if (fb_dos.vesa_info.vbe_version < 0x200)
+		return;
+	
+	fb_dos.regs.x.ax = 0x4F0A;
+	fb_dos.regs.x.bx = 0;
+	__dpmi_int(0x10, &fb_dos.regs);
+	if (fb_dos.regs.h.ah)
+		return;
+	
+	vesa_pm_info = malloc(fb_dos.regs.x.cx);
+	
+	dosmemget(fb_dos.regs.x.es * 16 + fb_dos.regs.x.di, fb_dos.regs.x.cx, vesa_pm_info);
+	
+	fb_dos_vesa_pm_bank_switcher = (char *)vesa_pm_info + vesa_pm_info->setWindow;
+	
+}
 
 
 /*:::::*/
@@ -240,7 +270,20 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (fb_dos_vesa_set_mode(w, h, depth, FALSE))
 		return -1;
 	
+	vesa_get_pm_functions();
+	
+	if (fb_dos_vesa_pm_bank_switcher)
+		fb_dos_vesa_set_bank = fb_dos_vesa_set_bank_pm;
+	else
+		fb_dos_vesa_set_bank = fb_dos_vesa_set_bank_int;
+	
 	refresh_rate = 60; /* FIXME */
+	
+	fb_dos_lock_data(&fb_dos_vesa_set_bank, sizeof(fb_dos_vesa_set_bank));
+	fb_dos_lock_data(&vesa_pm_info, sizeof(vesa_pm_info));
+	fb_dos_lock_code((void *)fb_dos_vesa_set_bank_pm, (void *)fb_dos_vesa_set_bank_pm_end - (void *)fb_dos_vesa_set_bank_pm);
+	fb_dos_lock_code((void *)fb_dos_vesa_set_bank_int, (void *)fb_dos_vesa_set_bank_int_end - (void *)fb_dos_vesa_set_bank_int);
+	data_locked = TRUE;
 
 	fb_dos.update = driver_update;
 	fb_dos.update_len = (unsigned int)end_of_driver_update - (unsigned int)driver_update;
@@ -249,28 +292,52 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	return fb_dos_init(title, w, h, depth, refresh_rate, flags);
 }
 
+/*:::::*/
+static void driver_exit(void)
+{
+	if (data_locked) {
+			fb_dos_unlock_data(&fb_dos_vesa_set_bank, sizeof(fb_dos_vesa_set_bank));
+			fb_dos_unlock_data(&vesa_pm_info, sizeof(vesa_pm_info));
+			data_locked = FALSE;
+	}
+	fb_dos_exit();
+}
+
+/*:::::*/
+static void fb_dos_vesa_set_bank_int(void)
+{
+	/* set write bank of window A based on fb_dos_vesa_bank_number */
+	fb_dos.regs.x.ax = 0x4F05;
+	fb_dos.regs.x.bx = 0;
+	fb_dos.regs.x.dx = fb_dos_vesa_bank_number;
+	__dpmi_int(0x10, &fb_dos.regs);
+}
+static void fb_dos_vesa_set_bank_int_end(void) { }
+
 
 /*:::::*/
 static void driver_update(void)
 {
 	static int curr_bank;
-	unsigned char *memory_buffer;
-	int framebuffer_start;
-	int bank_size = fb_dos.vesa_mode_info.WinSize * 1024;
-	int bank_granularity = fb_dos.vesa_mode_info.WinGranularity * 1024;
-	int bank_number = 0;
-	int todo;
-	int copy_size;
-	int y1, y2;
+	static unsigned char *memory_buffer;
+	static int framebuffer_start;
+	static int bank_size;
+	static int bank_granularity;
+	static int todo;
+	static int copy_size;
+	static int y1, y2;
+	
+	bank_size = fb_dos.vesa_mode_info.WinSize * 1024;
+	bank_granularity = fb_dos.vesa_mode_info.WinGranularity * 1024;
 	
 	for (y1 = 0; y1 < fb_dos.h; y1++) {
 		if (fb_mode->dirty[y1]) {
 			for (y2 = fb_dos.h - 1; !fb_mode->dirty[y2]; y2--)
 				;
 			
-			bank_number = (y1 * fb_mode->pitch) / bank_granularity;
+			fb_dos_vesa_bank_number = (y1 * fb_mode->pitch) / bank_granularity;
 			
-			framebuffer_start = bank_number * bank_granularity;
+			framebuffer_start = fb_dos_vesa_bank_number * bank_granularity;
 			
 			todo = ((y2 + 1) * fb_mode->pitch) - framebuffer_start;
 			
@@ -279,12 +346,10 @@ static void driver_update(void)
 			
 			while (todo > 0) {
 				/* select the appropriate bank */
-				if (curr_bank != bank_number) {
-					curr_bank = bank_number;
-					fb_dos.regs.x.ax = 0x4F05;
-					fb_dos.regs.x.bx = 0;
-					fb_dos.regs.x.dx = bank_number;
-					__dpmi_int(0x10, &fb_dos.regs);
+				if (curr_bank != fb_dos_vesa_bank_number) {
+					curr_bank = fb_dos_vesa_bank_number;
+					
+					fb_dos_vesa_set_bank();
 				}
 				
 				/* how much can we copy in one go? */
@@ -299,7 +364,7 @@ static void driver_update(void)
 				/* move on to the next bank of data */
 				todo -= copy_size;
 				memory_buffer += copy_size;
-				bank_number += bank_size / bank_granularity;
+				fb_dos_vesa_bank_number += bank_size / bank_granularity;
 			}
 			
 			break;

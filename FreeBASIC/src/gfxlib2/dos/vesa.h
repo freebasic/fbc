@@ -1,18 +1,47 @@
+/*
+ *  libgfx2 - FreeBASIC's alternative gfx library
+ *	Copyright (C) 2005 Angelo Mottola (a.mottola@libero.it)
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+/*
+ * vesa.h -- VESA VBE structures and constants
+ *
+ * chng: jun/2005 written [DrV]
+ *
+ */
+
+#ifndef __FB_DOS_VESA_H__
+#define __FB_DOS_VESA_H__
+
 /* Info block for the VESA controller */
 typedef struct VbeInfoBlock
 {
-	char		vbe_signature[4];	/* Must be 'VESA', or 'VBE2' for VESA2          */
-	unsigned short	vbe_version;		/* 0200h for VESA2                              */
-	unsigned int	oem_string_ptr;		/* Pointer to OEM string                        */
-	unsigned int	capabilities;		/* Capabilities of the controller               */
-	unsigned int	video_mode_ptr;		/* Pointer to a video mode list                 */
-	unsigned short	total_memory;		/* Number of 64 KB memory blocks (VESA2)        */
-	unsigned short	oem_software_rev;	/* VBE implementation software revision         */
-	unsigned int	oem_vendor_name;	/* Pointer to Vendor Name string                */
-	unsigned int	oem_product_name;	/* Pointer to Product Name string               */
-	unsigned int	oem_product_rev;	/* Pointer to Product Revision string           */
-	unsigned char	reserved[222];		/* Reserved for VBE implementation scratch area */
-	unsigned char	oem_data[256];		/* Data area for OEM strings                    */
+	char            vbe_signature[4];	/* Must be 'VESA', or 'VBE2' for VESA2          */
+	unsigned short  vbe_version;		/* 0200h for VESA2                              */
+	unsigned int    oem_string_ptr;		/* Pointer to OEM string                        */
+	unsigned int    capabilities;		/* Capabilities of the controller               */
+	unsigned int    video_mode_ptr;		/* Pointer to a video mode list                 */
+	unsigned short  total_memory;		/* Number of 64 KB memory blocks (VESA2)        */
+	unsigned short  oem_software_rev;	/* VBE implementation software revision         */
+	unsigned int    oem_vendor_name;	/* Pointer to Vendor Name string                */
+	unsigned int    oem_product_name;	/* Pointer to Product Name string               */
+	unsigned int    oem_product_rev;	/* Pointer to Product Revision string           */
+	unsigned char   reserved[222];		/* Reserved for VBE implementation scratch area */
+	unsigned char   oem_data[256];		/* Data area for OEM strings                    */
 }
 __attribute__ ((packed)) VbeInfoBlock;
 
@@ -109,3 +138,13 @@ enum
 	VMI_DC_RAMP = 1 << 0, /* Color ramp programmable if set, fixed if not     */
 	VMI_DC_RSVD = 1 << 1  /* Bits in rsvd field are usable by the application */
 };
+
+typedef struct VesaPMInfo
+{
+	unsigned short setWindow;
+	unsigned short setDisplayStart;
+	unsigned short setPalette;
+	unsigned short IOPrivInfo;
+} __attribute__ ((packed)) VesaPMInfo;
+
+#endif
