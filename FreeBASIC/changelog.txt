@@ -120,7 +120,7 @@ Version 0.17 Beta:
 - Console was still cleared when exiting a gfx mode on certain terminals under Linux (lillo)
 - Serial driver on windows was not setting DTR high when opening the device (jeffm)
 - Serial driver on windows was ignoring RB/TB buffer size parameters (jeffm)
-
+- DOS gfxlib always failed when no mouse was detected
 
 Version 0.16 Beta:
 
