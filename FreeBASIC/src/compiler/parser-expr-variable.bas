@@ -397,6 +397,8 @@ function cDerefFields _
 			if( dtype < FB_DATATYPE_POINTER ) then
 				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
 					exit function
+				else
+					exit do
 				end if
 
 			else
