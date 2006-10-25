@@ -1,0 +1,1 @@
+<?php include($this->config['action_path'].'/color.php'); ?>

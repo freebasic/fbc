@@ -1,0 +1,73 @@
+<public:component>
+ <public:property name="selectionStart" get="returnSS" />
+ <public:property name="selectionEnd" get="returnSE" />
+ <public:method name="setSelectionRange" />
+ <script language="javascript">
+   var selectionStart = 0;
+   var selectionEnd = 0;
+
+   function setSelectionRange(startPos, endPos)
+   {
+    var objRange = element.createTextRange();
+    objRange.collapse(true);
+    objRange.move("character", startPos);
+
+    charLength = endPos - startPos;
+    for (var i=1; i<=charLength; i++)
+      objRange.expand("character");
+
+    objRange.select();
+   }
+   function returnSS()
+   {
+     getSelectionRange("start");
+     return selectionStart;
+   }
+   function returnSE()
+   {
+     getSelectionRange("end");
+     return selectionEnd;
+   }
+   function getSelectionRange(type)
+   {
+    var sRange = element.document.selection.createRange();
+    var sRange2 = sRange.duplicate();
+    var iRange = element.document.body.createTextRange();
+    iRange.moveToElementText(element);
+
+      coord = 0;
+      fin = 0;
+
+      while (fin==0)
+      {
+       len = iRange.text.length;
+       move = Math.floor(len/2);
+       _move = iRange.moveStart("character", move);
+       where = iRange.compareEndPoints("StartToStart",sRange2);
+       if (where==1)
+       {
+         iRange.moveStart("character", -_move);
+         iRange.moveEnd("character", -len+move);
+       }
+       else if (where==-1) {
+         coord = coord + move;
+       }
+       else {
+         coord = coord + move;
+         fin = 1;
+       }
+       if (move==0) 
+       {
+         while (iRange.compareEndPoints("StartToStart",sRange2) < 0)
+         {
+           iRange.moveStart("character", 1);
+           coord++;
+         }
+          fin=2;
+       }
+      }
+      selectionStart = coord;
+      selectionEnd = coord+(sRange.text.replace(/\r/g, "")).length;
+   }
+ </script>
+</public:component>

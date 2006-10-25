@@ -1,0 +1,283 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+<title>Andrew Charron</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<script language="JavaScript1.2">
+
+//Gradual-Highlight image script- By Dynamic Drive
+//For full source code and more DHTML scripts, visit http://www.dynamicdrive.com
+//This credit MUST stay intact for use
+
+function high(which2){
+theobject=which2
+highlighting=setInterval("highlightit(theobject)",50)
+}
+function low(which2){
+clearInterval(highlighting)
+if (which2.style.MozOpacity)
+which2.style.MozOpacity=0.3
+else if (which2.filters)
+which2.filters.alpha.opacity=65
+}
+
+function highlightit(cur2){
+if (cur2.style.MozOpacity<1)
+cur2.style.MozOpacity=parseFloat(cur2.style.MozOpacity)+0.1
+else if (cur2.filters&&cur2.filters.alpha.opacity<100)
+cur2.filters.alpha.opacity+=10
+else if (window.highlighting)
+clearInterval(highlighting)
+}
+
+</script>
+<style type="text/css">
+<!--
+/* CSS compliant
+coded by Andrew Charron
+http://www.andrewcharron.tk */
+
+body {
+        background-color: #1F5B97;
+        font-family: Georgia, Arial, Courier New, sans-serif;
+        color: #5784B1;
+        margin: 0px 0px 0px 0px;
+        scrollbar-face-color: #1F5B97;
+        scrollbar-highlight-color: #5784B1;
+        scrollbar-shadow-color: #5784B1;
+        scrollbar-3dlight-color: #5784B1;
+        scrollbar-arrow-color:  #5784B1;
+        scrollbar-track-color: #1F5B97;
+        scrollbar-darkshadow-color: #5784B1;
+        }
+a {
+        color: #5784B1;
+        text-decoration: none;
+        }
+a:hover, a:active {
+        color: #990000;
+        text-decoration: none;
+        }
+table {
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        padding: 10px;
+        }
+table.full {
+        width: 100%;
+        height: 100%;
+        /* text-align: center; */
+        padding: 10px;
+        }
+table.half {
+        width: auto;
+        height: auto;
+        /* text-align: center; */
+        padding: 10px;
+        }
+/* td {
+        border: 1px solid green;
+        )  */
+td.box {
+        width: 62px;
+        height: 62px;
+        }
+td.spacer {
+        width: auto;
+        height: auto;
+        }
+td.name {
+        width: auto;
+        height: 30px;
+        text-align: right;
+        }
+td.namelogo {
+        width: auto;
+        text-align: right;
+        height: 30px;
+        }
+td.content {
+        width: auto;
+        height: auto;
+        font-size: 11px;
+        }
+div.footer {
+        text-align: right;
+        font-size: 11px;
+        }
+td.main {
+        width: 100%;
+        height: 350px;
+        padding: 10px;
+        font-size: 11px;
+        background-image: url('images/misc/logo.jpg');
+        background-position: top right;
+        background-repeat: no-repeat;
+        }
+td.line {
+        width: 100%;
+        height: 2px;
+        background-image: url('images/line/line.gif');
+        }
+td.left {
+        width: 200px;
+        }
+td.logo {
+        width: 151px;
+        height: auto;
+        }
+td.news {
+        width: 400px;
+        height: 100%;
+        color: #5784B1;
+        font-size: 10px;
+        text-align: left;
+        margin-bottom: 20px;
+        }
+td.development {
+        width: 200px;
+        height: 100%;
+        color: #5784B1;
+        font-size: 10px;
+        text-align: left;
+        margin-bottom: 20px;
+        }
+td.spacer2 {
+        width: auto;
+        height: auto;
+        }
+td.spacer3 {
+        width: auto;
+        height: auto;
+        text-align: right;
+        }
+td.full {
+        width: auto;
+        height: auto;
+        color: #5784B1;
+        font-size: 10px;
+        text-align: center;
+        }
+img {
+        border: 0px;
+        }
+div.news {
+        overflow: auto;
+        width: 100%;
+        font-size: 11px;
+        }
+div.newstitle {
+        font-weight: bold;
+        color: #9FB7D1;
+        text-align: right;
+        font-size: 11px;
+        margin-top: 20px;
+        }
+div.comments {
+        font-weight: bold;
+        color: #9FB7D1;
+        font-size: 10px;
+        text-align: right;
+        }
+td.nav {
+        font-size: 11px;
+        color: #9FB7D1;
+        font-weight: bold;
+        width: 100px;;
+        }
+div.development {
+        width: 150px;
+        font-size: 11px;
+        }
+td.buffer {
+        width: 25px;
+        }
+-->
+</style>
+
+</head>
+
+<body>
+
+<table>
+
+        <tr>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+        </tr>
+
+        <tr>
+                <td class="spacer">&nbsp;</td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="spacer">&nbsp;</td>
+        </tr>
+
+        <tr>
+                <td class="spacer" >&nbsp;</td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/alexis_box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="spacer" >&nbsp;</td>
+        </tr>
+        
+        <tr>
+                <td class="spacer" >&nbsp;</td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/music_box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="spacer" >&nbsp;</td>
+        </tr>
+        
+        <tr>
+                <td class="spacer" >&nbsp;</td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/igloo_box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/box.gif" alt="" /></td>
+                <td class="box"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/box/prox_box.gif" alt="" /></td>
+                <td class="spacer" >&nbsp;</td>
+        </tr>
+        
+        <tr>
+                <td class="spacer" >&nbsp;</td>
+                <td class="name" colspan="6"><a href="http://www.andrewcharron.tk"><img style="filter:alpha(opacity=65);-moz-opacity:0.3" onMouseover="high(this)" onMouseout="low(this)" src="images/name.jpg" alt="" border="0" /></a></td>
+                <td class="spacer" >&nbsp;</td>
+        </tr>
+
+        <tr>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+                <td class="spacer" >&nbsp;</td>
+        </tr>
+
+
+
+</table>
+
+</body>
+</html>

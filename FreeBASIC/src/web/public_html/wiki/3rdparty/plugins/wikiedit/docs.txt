@@ -1,0 +1,35 @@
+   HOW TO USE WIKIEDIT
+
+ 1. First of all, you need to make sure it is necessary.
+
+ 2. You need to attach wikiedit2.js to your html page. E.g.:
+     <script language="JavaScript" src="protoedit.js"></script>
+     <script language="JavaScript" src="wikiedit2.js"></script>
+
+ 3. You need to call such javascript after page loading:
+     <script type="text/javascript">
+      wE = new WikiEdit(); wE.init('IdOfTextarea','TextOnToolbar','CCSclassForTextOnToolbar');
+     </script>
+
+ 4. That's all.
+
+
+   WANNA SOMETHING MORE?
+
+ 1. If you want Alt+S shortcut to save, you need to define weSave() 
+ function. E.g.:
+     function weSave()
+     {
+      if (confirm("Really save?"))
+      {
+       var button = document.getElementById("IdOfSaveButton");
+       button.click();
+      }
+     }
+ Or e.g.:
+     function weSave()
+     {
+       document.forms.edit[0].click();
+     }
+
+Roman Ivanov <thingol@mail.ru>, WackoWiki Team.
