@@ -384,10 +384,11 @@ private function hFlushTree _
         	sym = n->sym
 
         	if( symbIsParamInstance( basesym ) ) then
+        		'' offset is always 0
         		lside = astBuildInstPtr( basesym, _
         								 sym, _
         								 NULL, _
-        								 n->typeini.ofs )
+        								 0 )
         	else
         		lside = astNewVAR( basesym, _
         					   	   n->typeini.ofs, _
