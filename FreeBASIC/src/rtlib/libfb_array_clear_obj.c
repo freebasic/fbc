@@ -52,7 +52,7 @@ FBCALL int fb_ArrayClearObj
     	return fb_ErrorSetNum( FB_RTERROR_OK );
     
     /* call dtors */
-    fb_hArrayDtorStr( array, dtor, 0 );
+    fb_hArrayDtorObj( array, dtor, 0 );
 	
 	if( dofill != FB_FALSE )
 	{
