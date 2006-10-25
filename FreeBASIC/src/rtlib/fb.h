@@ -1,7 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *  Copyright (C) 2004-2006 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and
- *  the FreeBASIC development team.
+ *	Copyright (C) 2004-2007 The FreeBASIC development team.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public

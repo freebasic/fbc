@@ -1,7 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2006 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and
- *  the FreeBASIC development team.
+ *	Copyright (C) 2004-2007 The FreeBASIC development team.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -65,5 +64,5 @@ static void fb_hDoExit( void )
 /* This puts the init/exit global ctor/dtor for the rtlib in the sorted ctors/dtors
    section.  A named section of .?tors.65435 = Priority(100) */
 
-static void * priorityhDoInit __attribute__((section(".ctors.65435"))) = fb_hDoInit;
-static void * priorityhDoExit __attribute__((section(".dtors.65435"))) = fb_hDoExit;
+static void * priorityhDoInit __attribute__((section(".ctors.65435"), used)) = fb_hDoInit;
+static void * priorityhDoExit __attribute__((section(".dtors.65435"), used)) = fb_hDoExit;

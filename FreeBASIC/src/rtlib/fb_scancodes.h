@@ -1,6 +1,6 @@
 /*
- *  libgfx2 - FreeBASIC's alternative gfx library
- *	Copyright (C) 2005 Angelo Mottola (a.mottola@libero.it)
+ *  libfb - FreeBASIC's runtime library
+ *	Copyright (C) 2004-2007 The FreeBASIC development team.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
