@@ -218,7 +218,7 @@ static void fb_dos_kb_exit(void)
 static int fb_dos_mouse_init(void)
 {
 	
-	if (!fb_dos.mouse_ok) return 0;
+	if (!fb_dos.mouse_ok) return -1; /* set in fb_dos_detect(); return success if no mouse */
 
 	/* set horizontal range */
 	fb_dos.regs.x.ax = 0x7;
@@ -240,7 +240,7 @@ static int fb_dos_mouse_init(void)
 
 	/* allocate real-mode callback */
 	if (__dpmi_allocate_real_mode_callback(fb_dos_mouse_isr, &fb_dos_mouse_regs, &fb_dos_mouse_isr_rmcb))
-		return -1;
+		return 0; /* failure */
 	
 	/* set user interrupt routine */
 	fb_dos.regs.x.ax = 0x0C;
@@ -249,7 +249,7 @@ static int fb_dos_mouse_init(void)
 	fb_dos.regs.x.dx = fb_dos_mouse_isr_rmcb.offset16;
 	__dpmi_int(0x33, &fb_dos.regs);
 
-	return -1;
+	return -1; /* success */
 }
 
 /*:::::*/
@@ -549,8 +549,8 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	lock_code(fb_MMX_code_start, fb_MMX_code_end); /* hMemCpyMMX, hMemSetMMX */
 	lock_var(fb_hMemCpy);
 	lock_var(fb_hMemSet);
-	fb_dos_lock_code(memcpy, 1024); /* we don't know how big memcpy and memset are,
-	fb_dos_lock_code(memset, 1024);    so we guess 1k each... */
+	fb_dos_lock_code(memcpy, 1024); /* we don't know how big memcpy and memset are, */
+	fb_dos_lock_code(memset, 1024); /* so we guess 1k each... */
 	lock_code(fb_hPostEvent_code_start, fb_hPostEvent_code_end);
 	fb_dos_lock_data(&fb_mode->event_queue, sizeof(EVENT) * MAX_EVENTS);
 	lock_array(kb_scan_to_ascii);
@@ -562,6 +562,7 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	fb_mode->refresh_rate = fb_dos.refresh = refresh_rate;
 	
 	fb_dos_kb_init();
+	
 	if (!fb_dos_mouse_init())
 		return -1;
 	
@@ -622,8 +623,8 @@ void fb_dos_exit(void)
 	unlock_code(fb_MMX_code_start, fb_MMX_code_end);
 	unlock_var(fb_hMemCpy);
 	unlock_var(fb_hMemSet);
-	fb_dos_unlock_code(memcpy, 1024); /* we don't know how big memcpy and memset are,
-	fb_dos_unlock_code(memset, 1024);    so we guess 1k each... */
+	fb_dos_unlock_code(memcpy, 1024); /* we don't know how big memcpy and memset are, */
+	fb_dos_unlock_code(memset, 1024); /* so we guess 1k each... */
 	unlock_code(fb_hPostEvent_code_start, fb_hPostEvent_code_end);
 	fb_dos_unlock_data(&fb_mode->event_queue, sizeof(EVENT) * MAX_EVENTS);
 	unlock_array(kb_scan_to_ascii);
