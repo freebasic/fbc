@@ -34,6 +34,8 @@ static void (*fb_hPutPixelAlpha)(int x, int y, unsigned int color);
 static void *(*fb_hPixelSetAlpha)(void *dest, int color, size_t size);
 
 #if defined(TARGET_X86)
+extern void *fb_hPixelSet2MMX(void *dest, int color, size_t size);
+extern void *fb_hPixelSet4MMX(void *dest, int color, size_t size);
 extern void *fb_hPixelSetAlpha4MMX(void *dest, int color, size_t size);
 #endif
 
@@ -336,14 +338,22 @@ void fb_hSetupFuncs(void)
 		case 16:
 			fb_hPutPixel = fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel2;
 			fb_hGetPixel = fb_hGetPixel2;
-			fb_hPixelSet = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2;
+#if defined(TARGET_X86)
+			if (fb_mode->flags & HAS_MMX)
+				fb_hPixelSet = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2MMX;
+#endif
+				fb_hPixelSet = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2;
 			fb_hPixelCpy = fb_hPixelCpy2;
 			break;
 		
 		default:
 			fb_hPutPixel = fb_hPutPixelSolid = fb_hPutPixel4;
 			fb_hGetPixel = fb_hGetPixel4;
-			fb_hPixelSet = fb_hPixelSetSolid = fb_hPixelSet4;
+#if defined(TARGET_X86)
+			if (fb_mode->flags & HAS_MMX)
+				fb_hPixelSet = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet4MMX;
+#endif
+				fb_hPixelSet = fb_hPixelSetSolid = fb_hPixelSet4;
 			fb_hPixelCpy = fb_hPixelCpy4;
 			if (fb_mode->flags & ALPHA_PRIMITIVES) {
 				fb_hPutPixelAlpha = fb_hPutPixelAlpha4;

@@ -52,7 +52,6 @@ FUNC(fb_hMemCpyMMX)
 	movl ARG1, %edi
 	movl ARG2, %esi
 	movl ARG3, %ecx
-	movl %edi, %eax
 	shrl $1, %ecx
 	jnc memcpy_skip_1
 	movsb
@@ -100,7 +99,6 @@ FUNC(fb_hMemSetMMX)
 	movw %ax, %dx
 	shll $16, %eax
 	movw %dx, %ax
-	movl %edi, %edx
 	shrl $1, %ecx
 	jnc memset_skip_1
 	stosb
@@ -129,6 +127,101 @@ LABEL(memset_loop)
 	emms
 	
 LABEL(memset_end)
+	popl %edi
+	popl %ebp
+	ret
+
+
+/*:::::*/
+FUNC(fb_hPixelSet2MMX)
+	pushl %ebp
+	movl %esp, %ebp
+	pushl %edi
+	
+	movl ARG1, %edi
+	movl ARG2, %eax
+	movl ARG3, %ecx
+	movw %ax, %dx
+	shll $16, %eax
+	movw %dx, %ax
+	shrl $1, %ecx
+	jnc pixelset2_skip_1
+	stosw
+
+LABEL(pixelset2_skip_1)
+	shrl $1, %ecx
+	jnc pixelset2_skip_2
+	stosl
+
+LABEL(pixelset2_skip_2)
+	movd %eax, %mm0
+	punpckldq %mm0, %mm0
+	shrl $1, %ecx
+	jnc pixelset2_skip_4
+	movq %mm0, (%edi)
+	addl $8, %edi
+
+LABEL(pixelset2_skip_4)
+	orl %ecx, %ecx
+	jz pixelset2_end
+	
+LABEL(pixelset2_loop)
+	movq %mm0, (%edi)
+	movq %mm0, 8(%edi)
+	addl $16, %edi
+	decl %ecx
+	jnz pixelset2_loop
+	emms
+	
+LABEL(pixelset2_end)
+	popl %edi
+	popl %ebp
+	ret
+
+
+/*:::::*/
+FUNC(fb_hPixelSet4MMX)
+	pushl %ebp
+	movl %esp, %ebp
+	pushl %edi
+	
+	movl ARG1, %edi
+	movl ARG2, %eax
+	movl ARG3, %ecx
+	shrl $1, %ecx
+	jnc pixelset4_skip_1
+	stosl
+
+LABEL(pixelset4_skip_1)
+	movd %eax, %mm0
+	punpckldq %mm0, %mm0
+	shrl $1, %ecx
+	jnc pixelset4_skip_2
+	movq %mm0, (%edi)
+	addl $8, %edi
+
+LABEL(pixelset4_skip_2)
+	shrl $1, %ecx
+	jnc pixelset4_skip_4
+	movq %mm0, (%edi)
+	movq %mm0, 8(%edi)
+	addl $16, %edi
+
+LABEL(pixelset4_skip_4)
+	orl %ecx, %ecx
+	jz pixelset4_end
+	
+LABEL(pixelset4_loop)
+	movq %mm0, (%edi)
+	movq %mm0, 8(%edi)
+	movq %mm0, 16(%edi)
+	movq %mm0, 24(%edi)
+	addl $32, %edi
+	decl %ecx
+	jnz pixelset4_loop
+	emms
+	
+LABEL(pixelset4_end)
 	popl %edi
 	popl %ebp
 	ret
