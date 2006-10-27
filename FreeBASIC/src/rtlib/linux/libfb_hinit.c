@@ -191,6 +191,10 @@ int fb_hInitConsole ( )
 	if (!__fb_con.f_in)
 		return -1;
 	__fb_con.h_in = fileno(__fb_con.f_in);
+	
+	/* Cannot control console if process was started in background */
+	if (tcgetpgrp(__fb_con.h_out) != getpgid(0))
+		return -1;
 
 	/* Output setup */
 	if (tcgetattr(__fb_con.h_out, &__fb_con.old_term_out))
@@ -199,7 +203,7 @@ int fb_hInitConsole ( )
 	term_out.c_oflag |= OPOST;
 	if (tcsetattr(__fb_con.h_out, TCSANOW, &term_out))
 		return -1;
-
+	
 	/* Input setup */
 	if (tcgetattr(__fb_con.h_in, &__fb_con.old_term_in))
 		return -1;
@@ -208,7 +212,7 @@ int fb_hInitConsole ( )
 	term_in.c_iflag |= BRKINT;
 	/* Disable Xon/off and input BREAK condition ignoring */
 	term_in.c_iflag &= ~(IXOFF | IXON | IGNBRK);
-	/* Character oriented, no echo, no signals */
+	/* Character oriented, no echo */
 	term_in.c_lflag &= ~(ICANON | ECHO);
 	/* No timeout, just don't block */
 	term_in.c_cc[VMIN] = 1;
