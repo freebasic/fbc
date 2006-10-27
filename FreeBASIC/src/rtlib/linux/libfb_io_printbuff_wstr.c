@@ -56,8 +56,6 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 		return;
 	}
 
-	fb_hResize();
-
 	temp = alloca( chars * 4 + 1 );
 
 	/* ToDo: handle scrolling for internal characters/attributes buffer? */

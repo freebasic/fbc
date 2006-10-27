@@ -48,8 +48,6 @@ void fb_hExitConsole( void )
 
 	if (__fb_con.inited) {
 		
-		fb_hResize();
-		
 		if (__fb_con.gfx_exit)
 			__fb_con.gfx_exit();
 		

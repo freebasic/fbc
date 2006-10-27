@@ -96,19 +96,11 @@ static void signal_handler(int sig)
 /*:::::*/
 static void console_resize(int sig)
 {
-	__fb_con.resized = TRUE;
-	signal(SIGWINCH, console_resize);
-}
-
-
-/*:::::*/
-void fb_hResize()
-{
 	unsigned char *char_buffer, *attr_buffer;
 	struct winsize win;
 	int r, c, w, h;
 
-	if ((!__fb_con.inited) || (!__fb_con.resized))
+	if (!__fb_con.inited)
 		return;
 
 	win.ws_row = 0xFFFF;
@@ -144,7 +136,7 @@ void fb_hResize()
 	fb_hTermOut(SEQ_QUERY_CURSOR, 0, 0);
 	fscanf(stdin, "\e[%d;%dR", &__fb_con.cur_y, &__fb_con.cur_x);
 
-	__fb_con.resized = FALSE;
+	signal(SIGWINCH, console_resize);
 }
 
 
@@ -321,10 +313,7 @@ void fb_hInit ( void )
 	for (i = 0; sigs[i] >= 0; i++)
 		old_sighandler[sigs[i]] = signal(sigs[i],  signal_handler);
 
-	signal(SIGWINCH, console_resize);
-
 	__fb_con.char_buffer = NULL;
-	__fb_con.resized = TRUE;
 	__fb_con.fg_color = __fb_con.bg_color = -1;
-	fb_hResize();
+	console_resize(SIGWINCH);
 }

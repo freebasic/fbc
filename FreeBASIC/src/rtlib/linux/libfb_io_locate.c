@@ -50,8 +50,6 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 	if (!__fb_con.inited)
 		return 0;
 
-	fb_hResize();
-
 	if ((row <= 0) || (col <= 0))
 		fb_ConsoleGetXY(&x, &y);
 
@@ -132,8 +130,6 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 FBCALL unsigned int fb_ConsoleReadXY( int x, int y, int colorflag )
 {
 	unsigned char *buffer;
-
-	fb_hResize();
 
 	if ((!__fb_con.inited) || (x < 1) || (x > __fb_con.w) || (y < 1) || (y > __fb_con.h))
 		return 0;

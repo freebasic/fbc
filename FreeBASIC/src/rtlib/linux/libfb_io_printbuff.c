@@ -57,8 +57,6 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 		return;
 	}
 	
-	fb_hResize();
-	
 	/* ToDo: handle scrolling for internal characters/attributes buffer? */
     avail = (__fb_con.w * __fb_con.h) - (((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1);
     avail_len = len;

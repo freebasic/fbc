@@ -44,8 +44,6 @@
 /*:::::*/
 int fb_ConsoleGetMaxRow( void )
 {
-	fb_hResize();
-	
 	if (!__fb_con.inited)
 		return 24;
 	

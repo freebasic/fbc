@@ -131,7 +131,7 @@ typedef struct FBCONSOLE
 	int in_flags, old_in_flags;
 	int fg_color, bg_color;
 	int cur_x, cur_y;
-	int w, h, resized;
+	int w, h;
 	unsigned char *char_buffer, *attr_buffer;
 	pthread_t bg_thread;
 	pthread_mutex_t bg_mutex;
@@ -154,7 +154,6 @@ extern FBCONSOLE __fb_con;
 
 extern int fb_hTermOut( int code, int param1, int param2);
 extern int fb_hGetCh(int remove);
-extern void fb_hResize(void);
 extern int fb_hInitConsole(void);
 extern void fb_hExitConsole(void);
 extern int fb_hXTermInitFocus(void);

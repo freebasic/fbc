@@ -44,8 +44,6 @@
 /*:::::*/
 FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
-	fb_hResize();
-	
 	if (cols) {
 		if (__fb_con.inited)
 			*cols = __fb_con.w;

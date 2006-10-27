@@ -51,8 +51,6 @@ int fb_ConsoleColor( int fc, int bc )
 	if (!__fb_con.inited)
 		return old_fg | (old_bg << 16);
 	
-	fb_hResize();
-	
 	if (fc >= 0)
 		__fb_con.fg_color = (fc & 0xF);
 	if (bc >= 0)

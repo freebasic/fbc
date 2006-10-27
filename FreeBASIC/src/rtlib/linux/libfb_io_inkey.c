@@ -211,8 +211,6 @@ FBSTRING *fb_ConsoleInkey( void )
 	if (!__fb_con.inited)
 		return &__fb_ctx.null_desc;
 
-	fb_hResize();
-	
 	if ((ch = fb_hGetCh(TRUE)) >= 0) {
         if (ch & 0x100) {
             res = (FBSTRING *)fb_hStrAllocTmpDesc();
@@ -240,8 +238,6 @@ int fb_ConsoleGetkey( void )
 
 	if (!__fb_con.inited)
 		return fgetc(stdin);
-
-	fb_hResize();
 	
 	while ((k = fb_hGetCh(TRUE)) < 0)
         ;
@@ -258,8 +254,6 @@ int fb_ConsoleKeyHit( void )
 {
 	if (!__fb_con.inited)
 		return feof(stdin) ? FALSE : TRUE;
-
-	fb_hResize();
 	
 	return (fb_hGetCh(FALSE) < 0) ? 0 : 1;
 }
