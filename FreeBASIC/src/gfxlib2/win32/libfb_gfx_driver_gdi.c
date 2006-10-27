@@ -60,6 +60,30 @@ static SETLAYEREDWINDOWATTRIBUTES SetLayeredWindowAttributes;
 
 
 /*:::::*/
+static void alpha_remover_blitter(unsigned char *dest, int pitch)
+{
+	unsigned int *d, *s;
+	unsigned char *src = fb_mode->framebuffer;
+	unsigned int c;
+	char *dirty = fb_mode->dirty;
+	int x, y;
+	
+	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+		if (*dirty) {
+			s = (unsigned int *)src;
+			d = (unsigned int *)dest;
+			for (x = fb_mode->w; x; x--) {
+				c = *s++;
+				*d++ = c & ~MASK_A_32;
+			}
+		}
+		src += fb_mode->pitch;
+		dest += pitch;
+	}
+}
+
+
+/*:::::*/
 static void gdi_paint(void)
 {
 	memset(fb_mode->dirty, TRUE, fb_mode->h);
@@ -138,11 +162,15 @@ static int gdi_init(void)
 	bitmap_info->bmiHeader.biClrUsed = 256;
 	bitmap_info->bmiHeader.biCompression = BI_RGB;
 
-	if (fb_win32.depth == 16) {
-		fb_win32.blitter = fb_hGetBlitter(15, FALSE);
-		if (!fb_win32.blitter)
-			return -1;
-		buffer = malloc(((fb_win32.w + 1) & ~1) * fb_win32.h * 2);
+	if (fb_win32.depth >= 16) {
+		if (fb_win32.depth == 16) {
+			fb_win32.blitter = fb_hGetBlitter(15, FALSE);
+			if (!fb_win32.blitter)
+				return -1;
+		}
+		if (fb_win32.flags & DRIVER_SHAPED_WINDOW)
+			fb_win32.blitter = alpha_remover_blitter;
+		buffer = malloc(((fb_win32.w + 3) & ~3) * fb_win32.h * fb_mode->bpp);
 		if (!buffer)
 			return -1;
 	}
