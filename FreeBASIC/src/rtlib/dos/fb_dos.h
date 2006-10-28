@@ -57,6 +57,8 @@
 #define FB_NEWLINE "\r\n"
 #define FB_NEWLINE_WSTR _LC("\r\n")
 
+#define FB_DYLIB void* /* define FB_DYLIB to keep the headers happy. */
+
 typedef int FB_DIRCTX; /* dummy to make fb.h happy */
 
 typedef long fb_off_t;
