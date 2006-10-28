@@ -914,13 +914,27 @@ end sub
 '':::::
 private sub hPUBLIC _
 	( _
-		byval label as zstring ptr _
+		byval label as zstring ptr, _
+		byval isexport as integer _
 	) static
 
     dim ostr as string
 
 	ostr = NEWLINE + ".globl "
 	ostr += *label
+
+' PENDING: shared lib compatibility between win32/linux
+'          rtlib/gfxlib needs -fvisibility=hidden, only available in gcc 4
+'	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+'		if( isexport ) then
+'			ostr += NEWLINE + ".protected "
+'			ostr += *label
+'		else
+'			ostr += NEWLINE + ".hidden "
+'			ostr += *label
+'		end if
+'	end if
+
 	ostr += NEWLINE
 	outEx( ostr )
 
@@ -5608,7 +5622,7 @@ sub emitPROCFOOTER _
 	hALIGN( 16 )
 
 	if( ispublic ) then
-		hPUBLIC( symbGetMangledName( proc ) )
+		hPUBLIC( symbGetMangledName( proc ), symbIsExport( proc ) )
 	end if
 
 	hLABEL( symbGetMangledName( proc ) )
@@ -5848,7 +5862,7 @@ sub emitVARINIBEGIN _
 
 	'' public?
 	if( symbIsPublic( sym ) ) then
-		hPUBLIC( *symbGetMangledName( sym ) )
+		hPUBLIC( *symbGetMangledName( sym ), symbIsExport( sym )  )
 	end if
 
 	hLABEL( *symbGetMangledName( sym ) )
@@ -6078,11 +6092,11 @@ private sub hEmitVarBss _
     '' allocation modifier
     if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
       	if( (attrib and FB_SYMBATTRIB_PUBLIC) > 0 ) then
-       		hPUBLIC( *symbGetMangledName( s ) )
+       		hPUBLIC( *symbGetMangledName( s ), TRUE )
 		end if
        	alloc = ".lcomm"
 	else
-       	hPUBLIC( *symbGetMangledName( s ) )
+       	hPUBLIC( *symbGetMangledName( s ), FALSE )
        	alloc = ".comm"
     end if
 
