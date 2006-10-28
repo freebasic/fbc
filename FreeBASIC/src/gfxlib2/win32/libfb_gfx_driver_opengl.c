@@ -61,10 +61,14 @@ typedef HGLRC (APIENTRY *WGLCREATECONTEXT)(HDC);
 typedef BOOL (APIENTRY *WGLMAKECURRENT)(HDC, HGLRC);
 typedef BOOL (APIENTRY *WGLDELETECONTEXT)(HGLRC);
 
-static WGLCREATECONTEXT fb_wglCreateContext;
-static WGLMAKECURRENT fb_wglMakeCurrent;
-static WGLDELETECONTEXT fb_wglDeleteContext;
-static HMODULE library;
+typedef struct FB_WGL {
+	WGLCREATECONTEXT CreateContext;
+	WGLMAKECURRENT MakeCurrent;
+	WGLDELETECONTEXT DeleteContext;
+} FB_WGL;
+
+static FB_DYLIB library;
+static FB_WGL fb_wgl;
 static HGLRC hglrc;
 static HDC hdc;
 
@@ -140,7 +144,8 @@ static void opengl_exit(void)
 /*:::::*/
 static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
-    PIXELFORMATDESCRIPTOR pfd;
+	const char *wgl_funcs[] = { "wglCreateContext", "wglMakeCurrent", "wglDeleteContext", NULL };
+	PIXELFORMATDESCRIPTOR pfd;
     int depth = MAX(8, depth_arg);
 	int pf, gl_options;
 
@@ -161,43 +166,44 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (fb_hWin32Init(title, w, h, depth, refresh_rate, flags))
 		return -1;
 
-	library = (HMODULE)LoadLibrary("opengl32.dll");
+	library = fb_hDynLoad("opengl32.dll", wgl_funcs, (void **)&fb_wgl);
 	if (!library)
 		return -1;
-
-	fb_wglCreateContext = (WGLCREATECONTEXT)GetProcAddress(library, "wglCreateContext");
-	fb_wglMakeCurrent = (WGLMAKECURRENT)GetProcAddress(library, "wglMakeCurrent");
-	fb_wglDeleteContext = (WGLDELETECONTEXT)GetProcAddress(library, "wglDeleteContext");
-	if ((!fb_wglCreateContext) || (!fb_wglMakeCurrent) || (!fb_wglDeleteContext))
-		return -1;
-
+	
 	fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
 				    WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,
 				    0, 0, 320, 200, NULL, NULL, fb_win32.hinstance, NULL);
 	if ((!fb_win32.wnd) || (opengl_init()))
 		return -1;
 
-	fb_hMemSet(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
-	pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-	pfd.nVersion = 1;
-	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-	pfd.iPixelType = PFD_TYPE_RGBA;
-	pfd.cColorBits = fb_win32.depth;
-	pfd.cDepthBits = 32;
-	if (gl_options & HAS_STENCIL_BUFFER)
-		pfd.cStencilBits = 8;
-	if (gl_options & HAS_ACCUMULATION_BUFFER)
-		pfd.cAccumBits = 32;
-	pfd.iLayerType = PFD_MAIN_PLANE;
-
 	hdc = GetDC(fb_win32.wnd);
-	pf = ChoosePixelFormat(hdc, &pfd);
+	if (gl_options & HAS_MULTISAMPLE) {
+
+		/* TODO */
+
+	}
+	else {
+		fb_hMemSet(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
+		pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+		pfd.nVersion = 1;
+		pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+		pfd.iPixelType = PFD_TYPE_RGBA;
+		pfd.cColorBits = fb_win32.depth;
+		pfd.cDepthBits = 32;
+		if (gl_options & HAS_STENCIL_BUFFER)
+			pfd.cStencilBits = 8;
+		if (gl_options & HAS_ACCUMULATION_BUFFER)
+			pfd.cAccumBits = 32;
+		pfd.iLayerType = PFD_MAIN_PLANE;
+
+		pf = ChoosePixelFormat(hdc, &pfd);
+	}
 	if ((!pf) || (!SetPixelFormat(hdc, pf, &pfd)))
 		return -1;
-	hglrc = fb_wglCreateContext(hdc);
+	hglrc = fb_wgl.CreateContext(hdc);
 	if (!hglrc)
 		return -1;
-	fb_wglMakeCurrent(hdc, hglrc);
+	fb_wgl.MakeCurrent(hdc, hglrc);
 
 	return 0;
 }
@@ -208,8 +214,8 @@ static void driver_exit(void)
 {
 	if (library) {
 		if (hglrc) {
-			fb_wglMakeCurrent(NULL, NULL);
-			fb_wglDeleteContext(hglrc);
+			fb_wgl.MakeCurrent(NULL, NULL);
+			fb_wgl.DeleteContext(hglrc);
 		}
 		if (hdc)
 			ReleaseDC(fb_win32.wnd, hdc);
@@ -217,7 +223,7 @@ static void driver_exit(void)
 			ChangeDisplaySettings(NULL, 0);
 		if (fb_win32.wnd)
 			DestroyWindow(fb_win32.wnd);
-		FreeLibrary(library);
+		fb_hDynUnload(&library);
 	}
 
 	fb_hWin32Exit();

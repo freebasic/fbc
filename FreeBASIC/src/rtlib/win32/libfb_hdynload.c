@@ -32,12 +32,11 @@
 /*
  * dynload.c -- Dynamic library functions loading
  *
- * chng: feb/2006 written [lillo]
+ * chng: oct/2006 written [lillo]
  *
  */
 
-#include <stdlib.h>
-#include <dlfcn.h>
+#include "fb.h"
 
 
 /*:::::*/
@@ -46,20 +45,14 @@ FB_DYLIB fb_hDynLoad(const char *libname, const char **funcname, void **funcptr)
 	FB_DYLIB lib;
 	int i;
 	
-	/* First look if library was already statically linked with current executable */
-	if (!(lib = dlopen(NULL, RTLD_LAZY)))
+	if (!(lib = LoadLibrary(libname)))
 		return NULL;
-	if (!dlsym(lib, funcname[0])) {
-		dlclose(lib);
-		if (!(lib = dlopen(libname, RTLD_LAZY)))
-			return NULL;
-	}
 	
 	/* Load functions */
 	for (i = 0; funcname[i]; i++) {
-		funcptr[i] = dlsym(lib, funcname[i]);
+		funcptr[i] = GetProcAddress(lib, funcname[i]);
 		if (!funcptr[i]) {
-			dlclose(lib);
+			FreeLibrary(lib);
 			return NULL;
 		}
 	}
@@ -72,7 +65,7 @@ FB_DYLIB fb_hDynLoad(const char *libname, const char **funcname, void **funcptr)
 void fb_hDynUnload(FB_DYLIB *lib)
 {
     if (*lib) {
-    	dlclose(*lib);
+    	FreeLibrary(*lib);
 	    *lib = NULL;
 	}
 }

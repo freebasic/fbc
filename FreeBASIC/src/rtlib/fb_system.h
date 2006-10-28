@@ -60,6 +60,9 @@ FBCALL void        *fb_DylibLoad        ( FBSTRING *library );
 FBCALL void        *fb_DylibSymbol      ( void *library, FBSTRING *symbol );
 FBCALL void         fb_DylibFree        ( void *library );
 
+       FB_DYLIB     fb_hDynLoad         (const char *libname, const char **funcname, void **funcptr);
+       void         fb_hDynUnload       (FB_DYLIB *lib);
+
        char        *fb_hGetShortPath    ( char *src, char *dst, int maxlen );
 
        int          fb_hGetCurrentDir   ( char *dst, int maxlen );
@@ -69,6 +72,5 @@ FBCALL void         fb_DylibFree        ( void *library );
        int          fb_hIn              ( unsigned short port );
        int          fb_hOut             ( unsigned short port, unsigned char value );
 FBCALL int          fb_Wait             ( unsigned short port, int and, int xor);
-
 
 #endif /* __FB_SYS_H__ */

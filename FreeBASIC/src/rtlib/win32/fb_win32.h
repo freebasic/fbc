@@ -98,6 +98,8 @@ extern CRITICAL_SECTION __fb_string_mutex;
 
 #define FB_THREADID HANDLE
 
+#define FB_DYLIB HMODULE
+
 struct _FBSTRING;
 typedef void (*fb_FnProcessMouseEvent)(const MOUSE_EVENT_RECORD *pEvent);
 

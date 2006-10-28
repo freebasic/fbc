@@ -83,6 +83,8 @@ extern pthread_mutex_t __fb_string_mutex;
 
 #define FB_THREADID pthread_t
 
+#define FB_DYLIB void*
+
 #define SEQ_LOCATE			0			/* "cm" - move cursor */
 #define SEQ_HOME			1			/* "ho" - home cursor */
 #define SEQ_SCROLL_REGION	2			/* "cs" - set scrolling region */
@@ -160,7 +162,5 @@ extern int fb_hXTermInitFocus(void);
 extern void fb_hXTermExitFocus(void);
 extern int fb_hXTermHasFocus(void);
 extern int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void), void (*key_handler)(int));
-extern void *fb_hDynLoad(const char *libname, const char **funcname, void **funcptr);
-extern void fb_hDynUnload(void **lib);
 
 #endif
