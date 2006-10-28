@@ -36,6 +36,7 @@
  *
  */
 
+#include "fb.h"
 #include <stdlib.h>
 #include <dlfcn.h>
 
