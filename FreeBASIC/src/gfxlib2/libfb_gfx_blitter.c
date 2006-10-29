@@ -94,6 +94,10 @@ static void fb_hBlit8to15RGB(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
+			if (fb_mode->w & 0x1) {
+				c1 = pal[*s];
+				*(unsigned short *)d = ((c1 >> 3) & 0x001F) | ((c1 >> 6) & 0x03E0) | ((c1 >> 6) & 0x7C00);
+			}
 		}
 		z++;
 		if (z >= fb_mode->scanline_size) {
@@ -126,6 +130,10 @@ static void fb_hBlit8to15BGR(unsigned char *dest, int pitch)
 				     ((((c2 << 7) & 0x7C00) | ((c2 >> 6) & 0x03E0) | ((c2 >> 19) & 0x001F)) << 16);
 				s += 2;
 				d++;
+			}
+			if (fb_mode->w & 0x1) {
+				c1 = pal[*s];
+				*(unsigned short *)d = ((c1 << 7) & 0x7C00) | ((c1 >> 6) & 0x03E0) | ((c1 >> 19) & 0x001F);
 			}
 		}
 		z++;
@@ -160,6 +168,10 @@ static void fb_hBlit8to16RGB(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
+			if (fb_mode->w & 0x1) {
+				c1 = pal[*s];
+				*(unsigned short *)d = ((c1 >> 3) & 0x001F) | ((c1 >> 5) & 0x07E0) | ((c1 >> 5) & 0xF800);
+			}
 		}
 		z++;
 		if (z >= fb_mode->scanline_size) {
@@ -192,6 +204,10 @@ static void fb_hBlit8to16BGR(unsigned char *dest, int pitch)
 				     ((((c2 << 8) & 0xF800) | ((c2 >> 5) & 0x07E0) | ((c2 >> 19) & 0x001F)) << 16);
 				s += 2;
 				d++;
+			}
+			if (fb_mode->w & 0x1) {
+				c1 = pal[*s];
+				*(unsigned short *)d = ((c1 << 8) & 0xF800) | ((c1 >> 5) & 0x07E0) | ((c1 >> 19) & 0x001F);
 			}
 		}
 		z++;
@@ -357,6 +373,10 @@ static void fb_hBlit16to15RGB(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
+			if (fb_mode->w & 0x1) {
+				c1 = *s;
+				*(unsigned short *)d = ((c1 << 10) & 0x7C00) | ((c1 >> 1) & 0x03E0) | (c1 >> 11);
+			}
 		}
 		z++;
 		if (z >= fb_mode->scanline_size) {
@@ -390,6 +410,10 @@ static void fb_hBlit16to15BGR(unsigned char *dest, int pitch)
 				     (((c2 & 0x001F) | ((c2 >> 1) & 0x7FE0)) << 16);
 				s += 2;
 				d++;
+			}
+			if (fb_mode->w & 0x1) {
+				c1 = *s;
+				*(unsigned short *)d = (c1 & 0x001F) | ((c1 >> 1) & 0x7FE0);
 			}
 		}
 		z++;
@@ -425,6 +449,10 @@ static void fb_hBlit16to16RGB(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
+			if (fb_mode->w & 0x1) {
+				c1 = *s;
+				*(unsigned short *)d = ((c1 << 11) & 0xF800) | (c1 & 0x07E0) | (c1 >> 11);
+			}
 		}
 		z++;
 		if (z >= fb_mode->scanline_size) {
@@ -442,6 +470,8 @@ static void fb_hBlit16to24(unsigned char *dest, int pitch)
 {
 	unsigned char *src = fb_mode->framebuffer;
 	unsigned int *s, *d, c1, c2, c3, temp;
+	unsigned short *ss;
+	unsigned char *dc;
 	char *dirty = fb_mode->dirty;
 	int x, y, z = 0;
 	
@@ -460,6 +490,26 @@ static void fb_hBlit16to24(unsigned char *dest, int pitch)
 				c3 = temp >> 16;
 				*d++ = c3 | ((fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 24) & 0xFF)]) << 8);
 				s++;
+			}
+			dc = (unsigned char *)d;
+			if (fb_mode->w & 0x2) {
+				c1 = fb_color_conv_16to32[*s & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 8) & 0xFF)];
+				c2 = fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 24) & 0xFF)];
+				dc[0] = (c1 >> 16) & 0xFF;
+				dc[1] = (c1 >> 8) & 0xFF;
+				dc[2] = c1 & 0xFF;
+				dc[3] = (c2 >> 16) & 0xFF;
+				dc[4] = (c2 >> 8) & 0xFF;
+				dc[5] = c2 & 0xFF;
+				dc += 6;
+				s++;
+			}
+			if (fb_mode->w & 0x1) {
+				ss = (unsigned short *)s;
+				c1 = fb_color_conv_16to32[*ss & 0xFF] | fb_color_conv_16to32[512 + ((*ss >> 8) & 0xFF)];
+				dc[0] = (c1 >> 16) & 0xFF;
+				dc[1] = (c1 >> 8) & 0xFF;
+				dc[2] = c1 & 0xFF;
 			}
 		}
 		z++;
@@ -490,6 +540,10 @@ static void fb_hBlit16to32(unsigned char *dest, int pitch)
 				c = *s++;
 				*d++ = fb_color_conv_16to32[c & 0xFF] | fb_color_conv_16to32[256 + ((c >> 8) & 0xFF)];
 				*d++ = fb_color_conv_16to32[(c >> 16) & 0xFF] | fb_color_conv_16to32[256 + ((c >> 24) & 0xFF)];
+			}
+			if (fb_mode->w & 0x1) {
+				c = *(unsigned short *)s;
+				*d = fb_color_conv_16to32[c & 0xFF] | fb_color_conv_16to32[256 + ((c >> 8) & 0xFF)];
 			}
 		}
 		z++;
@@ -524,6 +578,10 @@ static void fb_hBlit32to15RGB(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
+			if (fb_mode->w & 0x1) {
+				c1 = *s;
+				*(unsigned short *)d = (c1 >> 19) | ((c1 >> 6) & 0x03E0) | ((c1 << 7) & 0x7C00);
+			}
 		}
 		z++;
 		if (z >= fb_mode->scanline_size) {
@@ -556,6 +614,10 @@ static void fb_hBlit32to15BGR(unsigned char *dest, int pitch)
 				     ((((c2 >> 3) & 0x001F) | ((c2 >> 6) & 0x03E0) | ((c2 >> 9) & 0x7C00)) << 16);
 				s += 2;
 				d++;
+			}
+			if (fb_mode->w & 0x1) {
+				c1 = *s;
+				*(unsigned short *)d = ((c1 >> 3) & 0x001F) | ((c1 >> 6) & 0x03E0) | ((c1 >> 9) & 0x7C00);
 			}
 		}
 		z++;
@@ -590,6 +652,10 @@ static void fb_hBlit32to16RGB(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
+			if (fb_mode->w & 0x1) {
+				c1 = *s;
+				*(unsigned short *)d = (c1 >> 19) | ((c1 >> 5) & 0x07E0) | ((c1 << 8) & 0xF800);
+			}
 		}
 		z++;
 		if (z >= fb_mode->scanline_size) {
@@ -622,6 +688,10 @@ static void fb_hBlit32to16BGR(unsigned char *dest, int pitch)
 				     ((((c2 >> 3) & 0x001F) | ((c2 >> 5) & 0x07E0) | ((c2 >> 8) & 0xF800)) << 16);
 				s += 2;
 				d++;
+			}
+			if (fb_mode->w & 0x1) {
+				c1 = *s;
+				*(unsigned short *)d = ((c1 >> 3) & 0x001F) | ((c1 >> 5) & 0x07E0) | ((c1 >> 8) & 0xF800);
 			}
 		}
 		z++;
@@ -769,7 +839,7 @@ BLITTER *fb_hGetBlitter(int device_depth, int is_rgb)
 	}
 	
 #if defined(TARGET_X86)
-	if ((fb_mode->flags & HAS_MMX) && (fb_mode->scanline_size == 1))
+	if ((fb_mode->flags & HAS_MMX) && (fb_mode->scanline_size == 1) && !(fb_mode->w & 0x3))
 		blitter = &blitter[24];
 #endif
 

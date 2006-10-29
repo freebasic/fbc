@@ -162,9 +162,14 @@ static int gdi_init(void)
 	bitmap_info->bmiHeader.biClrUsed = 256;
 	bitmap_info->bmiHeader.biCompression = BI_RGB;
 
-	if (fb_win32.depth >= 16) {
+	if ((fb_win32.depth >= 16) || (fb_win32.w & 0x3)) {
 		if (fb_win32.depth == 16) {
 			fb_win32.blitter = fb_hGetBlitter(15, FALSE);
+			if (!fb_win32.blitter)
+				return -1;
+		}
+		else if (fb_win32.w & 0x3) {
+			fb_win32.blitter = fb_hGetBlitter(fb_win32.depth, FALSE);
 			if (!fb_win32.blitter)
 				return -1;
 		}

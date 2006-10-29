@@ -86,10 +86,11 @@ static int opengl_init(void)
 	DWORD style;
 	RECT rect;
 	HWND root;
+	UINT flags;
 	int x, y;
 
-	ShowWindow(fb_win32.wnd, SW_HIDE);
-
+	style = GetWindowLong(fb_win32.wnd, GWL_STYLE);
+	flags = SWP_FRAMECHANGED;
 	if (fb_win32.flags & DRIVER_FULLSCREEN) {
 		fb_hMemSet(&mode, 0, sizeof(mode));
 		mode.dmSize = sizeof(mode);
@@ -100,31 +101,35 @@ static int opengl_init(void)
 		mode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 		if (ChangeDisplaySettings(&mode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
 			return -1;
-		style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+		style &= ~WS_OVERLAPPEDWINDOW;
+		style |= WS_POPUP;
 		root = HWND_TOPMOST;
 	}
 	else {
-		if (fb_win32.flags & DRIVER_NO_FRAME)
-			style = WS_POPUP;
+		if (fb_win32.flags & DRIVER_NO_FRAME) {
+			style &= ~WS_OVERLAPPEDWINDOW;
+			style |= WS_POPUP;
+		}
 		else {
-			style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+			style |= WS_OVERLAPPEDWINDOW;
+			style &= ~(WS_POPUP | WS_THICKFRAME);
 			if (fb_win32.flags & DRIVER_NO_SWITCH)
 				style &= ~WS_MAXIMIZEBOX;
 		}
-		root = HWND_NOTOPMOST;
+		root = HWND_TOP;
+		flags |= SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING | SWP_NOZORDER;
 	}
 	SetWindowLong(fb_win32.wnd, GWL_STYLE, style);
-
 	rect.left = rect.top = x = y = 0;
 	rect.right = fb_win32.w;
 	rect.bottom = fb_win32.h;
 	if (!(fb_win32.flags & DRIVER_FULLSCREEN)) {
-		AdjustWindowRectEx(&rect, style, FALSE, 0);
+		AdjustWindowRect(&rect, style, FALSE);
 		x = (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1;
 		y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1;
 	}
-	SetWindowPos(fb_win32.wnd, root, x, y, rect.right - rect.left, rect.bottom - rect.top,
-		     SWP_NOCOPYBITS | SWP_NOACTIVATE | SWP_SHOWWINDOW);
+	SetWindowPos(fb_win32.wnd, 0, x, y, rect.right - rect.left, rect.bottom - rect.top, flags);
+	ShowWindow(fb_win32.wnd, SW_SHOW);
 	SetForegroundWindow(fb_win32.wnd);
 	fb_win32.is_active = TRUE;
 	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
@@ -138,6 +143,7 @@ static void opengl_exit(void)
 {
 	if (fb_win32.flags & DRIVER_FULLSCREEN)
 		ChangeDisplaySettings(NULL, 0);
+	ShowWindow(fb_win32.wnd, SW_HIDE);
 }
 
 
@@ -171,8 +177,8 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		return -1;
 	
 	fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
-				    WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,
-				    0, 0, 320, 200, NULL, NULL, fb_win32.hinstance, NULL);
+				    (WS_CLIPSIBLINGS | WS_CLIPCHILDREN) & ~WS_THICKFRAME,
+				    0, 0, 320, 200, HWND_DESKTOP, NULL, fb_win32.hinstance, NULL);
 	if ((!fb_win32.wnd) || (opengl_init()))
 		return -1;
 
