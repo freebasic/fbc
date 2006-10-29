@@ -131,7 +131,7 @@ static void fb_hPutAdd4C(unsigned char *src, unsigned char *dest, int w, int h, 
 	unsigned int sc, dc, temp1, temp2;
 	int x;
 
-	pitch -= (w << 2);
+	pitch = (pitch >> 2) - w;
 	for (; h; h--) {
 		d = (unsigned int *)dest;
 		for (x = w; x; x--) {
