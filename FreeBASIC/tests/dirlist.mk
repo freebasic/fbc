@@ -23,6 +23,7 @@ numbers \
 optimizations \
 overload \
 pointers \
+quirk \
 scopes \
 string \
 structs \
