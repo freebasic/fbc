@@ -656,7 +656,7 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 		bpp = header->old.bpp;
 		w = header->old.width;
 		h = header->old.height;
-		pitch = w;
+		pitch = w * fb_mode->bpp;
 		src += 4;
 	}
 
