@@ -55,6 +55,7 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color)
 	header->width = width;
 	header->height = height;
 	header->pitch = pitch;
+	fb_hMemSet(header->_reserved, 0, sizeof(header->_reserved));
 	fb_hPixelSet(image + sizeof(PUT_HEADER), color, (pitch / header->bpp) * height);
 	
 	return image;
