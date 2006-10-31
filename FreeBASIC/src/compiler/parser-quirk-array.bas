@@ -61,20 +61,6 @@ function cArrayStmt _
 					expr1 = expr2
 				end if
 
-				'' ugly	hack to	deal with arrays w/o indexes inside	a WITH
-				dim	as ASTNODE ptr peekNode
-				if(	astIsFIELD(	expr1 )	) then
-					peekNode = astGetLeft( expr1 )
-	
-					if(	astIsPTR( peekNode ) ) then
-						peekNode = astGetLeft( peekNode	)
-
-						if(	astIsNIDXARRAY(	peekNode ) ) then
-							astCopy( peekNode, peekNode->l )
-						end	if
-					end	if
-				end	if
-
 				'' array?
     			s = astGetSymbol( expr1 )
     			if( s <> NULL ) then
@@ -238,20 +224,6 @@ function cArrayFunct _
 			astDelNode( arrayexpr )
 			arrayexpr = expr
 		end if
-		
-		'' ugly	hack to	deal with arrays w/o indexes inside	a WITH
-		dim	as ASTNODE ptr peekNode
-		if(	astIsFIELD(	arrayexpr )	) then
-			peekNode = astGetLeft( arrayexpr )
-
-			if(	astIsPTR( peekNode ) ) then
-				peekNode = astGetLeft( peekNode	)
-		
-				if(	astIsNIDXARRAY(	peekNode ) ) then
-					astCopy( peekNode, peekNode->l )
-				end	if
-			end	if
-		end	if
 
 		'' array?
 		s = astGetSymbol( arrayexpr )

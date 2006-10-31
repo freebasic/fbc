@@ -1442,7 +1442,7 @@ function cWithVariable _
 		byval checkarray as integer _
 	) as integer
 
-	dim as integer dtype = any, isfuncptr = any
+	dim as integer dtype = any, isfuncptr = any, is_nidxarray = any
 	dim as FBSYMBOL ptr fld = any, subtype = any, method_sym = any
 
 	function = FALSE
@@ -1460,6 +1460,8 @@ function cWithVariable _
 
    	'' TypeField
    	fld = cTypeField( dtype, subtype, varexpr, method_sym, checkarray )
+
+	is_nidxarray = FALSE
 	if( fld = NULL ) then
 		if( method_sym = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
@@ -1469,6 +1471,16 @@ function cWithVariable _
 	else
     	dtype = symbGetType( fld )
     	subtype = symbGetSubType( fld )
+
+		if( varexpr <> NULL ) then
+			'' ugly hack to deal with arrays w/o indexes
+			if( astIsNIDXARRAY( varexpr ) ) then
+				dim as ASTNODE ptr expr = astGetLeft( varexpr )
+				astDelNode( varexpr )
+				varexpr = expr
+				is_nidxarray = TRUE
+			end if
+		end if
 	end if
 
 	'' deref the with temp pointer
@@ -1496,12 +1508,19 @@ function cWithVariable _
    		end if
 	end if
 
-    '' FuncPtrOrDerefFields?
-	varexpr = cFuncPtrOrDerefFields( dtype, _
-									 subtype, _
-									 varexpr, _
-									 isfuncptr, _
-									 checkarray )
+    if( is_nidxarray = FALSE ) then
+    	'' FuncPtrOrDerefFields?
+		varexpr = cFuncPtrOrDerefFields( dtype, _
+									 	 subtype, _
+									 	 varexpr, _
+									 	 isfuncptr, _
+									 	 checkarray )
+
+
+	'' non-indexed array?
+	else
+        varexpr = astNewNIDXARRAY( varexpr )
+	end if
 
 	function = (errGetLast( ) = FB_ERRMSG_OK)
 
@@ -1548,7 +1567,7 @@ function cFieldVariable _
 		byval checkarray as integer _
 	) as integer
 
-	dim as integer dtype = any, isfuncptr = any
+	dim as integer dtype = any, isfuncptr = any, is_nidxarray = any
 	dim as FBSYMBOL ptr fld = any, subtype = any, method_sym = any
 	dim as ASTNODE ptr fldexpr = NULL
 
@@ -1563,6 +1582,8 @@ function cFieldVariable _
 
    	'' TypeField
    	fld = cTypeField( dtype, subtype, fldexpr, method_sym, checkarray )
+
+	is_nidxarray = FALSE
 	if( fld = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' no error recovery: caller will take care
@@ -1571,6 +1592,16 @@ function cFieldVariable _
 	else
     	dtype = symbGetType( fld )
     	subtype = symbGetSubType( fld )
+
+		if( fldexpr <> NULL ) then
+			'' ugly hack to deal with arrays w/o indexes
+			if( astIsNIDXARRAY( fldexpr ) ) then
+				dim as ASTNODE ptr expr = astGetLeft( fldexpr )
+				astDelNode( fldexpr )
+				fldexpr = expr
+				is_nidxarray = TRUE
+			end if
+		end if
 	end if
 
    	'' build this.field
@@ -1606,12 +1637,18 @@ function cFieldVariable _
    		end if
 	end if
 
-    '' FuncPtrOrDerefFields?
-	varexpr = cFuncPtrOrDerefFields( dtype, _
-									 subtype, _
-									 varexpr, _
-									 isfuncptr, _
-									 TRUE )
+    if( is_nidxarray = FALSE ) then
+    	'' FuncPtrOrDerefFields?
+		varexpr = cFuncPtrOrDerefFields( dtype, _
+									 	 subtype, _
+									 	 varexpr, _
+									 	 isfuncptr, _
+									 	 TRUE )
+
+	'' non-indexed array?
+	else
+        varexpr = astNewNIDXARRAY( varexpr )
+	end if
 
 	function = (errGetLast( ) = FB_ERRMSG_OK)
 
