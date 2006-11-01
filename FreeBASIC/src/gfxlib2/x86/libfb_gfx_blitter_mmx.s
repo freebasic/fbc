@@ -1471,12 +1471,15 @@ LABEL(blit32to24RGB_y_loop)
 
 LABEL(blit32to24RGB_x_loop)
 	lodsl
+	andl $0xFFFFFF, %eax
 	bswap %eax
 	movd %eax, %mm0
 	lodsl
+	andl $0xFFFFFF, %eax
 	bswap %eax
 	movd %eax, %mm1
 	lodsl
+	andl $0xFFFFFF, %eax
 	bswap %eax
 	movd %eax, %mm2
 	lodsl
@@ -1526,9 +1529,11 @@ FUNC(fb_hBlit32to24BGRMMX)
 	movl ARG1, %edi
 	movl FRAMEBUFFER(%ebx), %esi
 	movl MODE_W(%ebx), %edx
+	movl $0xFFFFFF, %ecx
 	movl %edx, %eax
 	shll $2, %edx
 	shrl $2, %eax
+	movd %ecx, %mm5
 	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
 	movl MODE_H(%ebx), %eax
 	movl DIRTY(%ebx), %ebx
@@ -1546,6 +1551,10 @@ LABEL(blit32to24BGR_x_loop)
 	movd 4(%esi), %mm1
 	movd 8(%esi), %mm2
 	movd 12(%esi), %mm3
+	pand %mm5, %mm0
+	pand %mm5, %mm1
+	pand %mm5, %mm2
+	pand %mm5, %mm3
 	addl $12, %edi
 	addl $16, %esi
 	psllq $24, %mm1
