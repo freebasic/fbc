@@ -721,7 +721,7 @@ static void fb_hBlit32to24RGB(unsigned char *dest, int pitch)
 			d = (unsigned char *)dest;
 			for (x = fb_mode->w; x; x--) {
 				c = *s;
-				d[0] = c >> 16;
+				d[0] = (c >> 16) & 0xFF;
 				d[1] = (c >> 8) & 0xFF;
 				d[2] = c & 0xFF;
 				s++;
@@ -757,7 +757,7 @@ static void fb_hBlit32to24BGR(unsigned char *dest, int pitch)
 				c = *s;
 				d[0] = c & 0xFF;
 				d[1] = (c >> 8) & 0xFF;
-				d[2] = c >> 16;
+				d[2] = (c >> 16) & 0xFF;
 				s++;
 				d += 3;
 			}
@@ -787,7 +787,7 @@ static void fb_hBlit32to32RGB(unsigned char *dest, int pitch)
 			s = (unsigned int *)src;
 			d = (unsigned int *)dest;
 			for (x = fb_mode->w; x; x--) {
-				c = *s++;
+				c = (*s++) & 0xFFFFFF;
 				*d++ = (c >> 16) | (c & 0xFF00) | (c << 16);
 			}
 		}
