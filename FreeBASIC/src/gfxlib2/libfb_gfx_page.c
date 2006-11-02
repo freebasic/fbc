@@ -31,24 +31,11 @@
 FBCALL void fb_GfxFlip(int from_page, int to_page)
 {
 	unsigned char *dest, *src;
-    int i, size, lock = FALSE;
-    int src_page, dst_page;
+	int i, size, text_size, lock = FALSE;
+	int src_page, dest_page;
 	
 	if (!fb_mode)
-        return;
-
-    src_page = ((from_page<0) ? fb_mode->work_page : from_page);
-    dst_page = ((  to_page<0) ? fb_mode->work_page :   to_page);
-
-    if( src_page!=dst_page) {
-        /* Copy the character cell pages too */
-        size_t text_size = fb_mode->text_w * fb_mode->text_h;
-        DRIVER_LOCK();
-        fb_hMemCpy( fb_mode->con_pages[dst_page],
-                    fb_mode->con_pages[src_page],
-                    text_size * sizeof(GFX_CHAR_CELL) );
-        DRIVER_UNLOCK();
-    }
+		return;
 	
 	if (fb_mode->driver->flip) {
 		fb_mode->driver->flip();
@@ -57,23 +44,33 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 	
 	fb_hPrepareTarget(NULL, MASK_A_32);
 
-	if (from_page < 0)
+	if (from_page < 0) {
 		src = fb_mode->line[0];
+		src_page = fb_mode->work_page;
+	}
 	else if (from_page >= fb_mode->num_pages)
 		return;
-	else
+	else {
 		src = fb_mode->page[from_page];
-	if (to_page < 0)
+		src_page = from_page;
+	}
+	if (to_page < 0) {
 		dest = fb_mode->framebuffer;
+		dest_page = fb_mode->visible_page;
+	}
 	else if (to_page >= fb_mode->num_pages)
 		return;
-	else
+	else {
 		dest = fb_mode->page[to_page];
+		dest_page = to_page;
+	}
 	
 	if (src == dest)
 		return;
 	if ((dest == fb_mode->framebuffer) && (!(fb_mode->flags & SCREEN_LOCKED)))
 		lock = TRUE;
+
+	text_size = fb_mode->text_w * fb_mode->text_h * sizeof(GFX_CHAR_CELL);
 	
 	src += (fb_mode->view_y * fb_mode->pitch) + (fb_mode->view_x * fb_mode->bpp);
 	dest += (fb_mode->view_y * fb_mode->pitch) + (fb_mode->view_x * fb_mode->bpp);
@@ -86,6 +83,8 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 		dest += fb_mode->pitch;
 		src += fb_mode->pitch;
 	}
+	/* Copy the character cell pages too */
+	fb_hMemCpy(fb_mode->con_pages[dest_page], fb_mode->con_pages[src_page], text_size);
 	if (lock) {
 		fb_hMemSet(fb_mode->dirty + fb_mode->view_y, TRUE, fb_mode->view_h);
 		DRIVER_UNLOCK();
@@ -109,9 +108,10 @@ FBCALL void fb_GfxSetPage(int work_page, int visible_page)
 			fb_mode->line[i] = fb_mode->page[work_page] + (i * fb_mode->pitch);
 		fb_mode->work_page = work_page;
 	}
-	if ((visible_page >= 0) && (visible_page < fb_mode->num_pages) && (fb_mode->page[visible_page] != fb_mode->framebuffer)) {
+	if ((visible_page >= 0) && (visible_page < fb_mode->num_pages) && (visible_page != fb_mode->visible_page)) {
 		DRIVER_LOCK();
 		fb_mode->framebuffer = fb_mode->page[visible_page];
+		fb_mode->visible_page = visible_page;
 		fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
 		DRIVER_UNLOCK();
 	}

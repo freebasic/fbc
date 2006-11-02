@@ -258,6 +258,7 @@ typedef struct MODE
     EVENT *event_queue;				/* The OS events queue array */
     int event_head, event_tail;			/* Indices for the head and tail event in the array */
     struct _FBMUTEX *event_mutex;		/* Mutex lock for accessing the events queue */
+    int visible_page;				/* Current visible page number */
 } MODE;
 
 
