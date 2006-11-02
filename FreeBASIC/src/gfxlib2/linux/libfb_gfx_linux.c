@@ -86,12 +86,14 @@ static void *window_thread(void *arg)
 			XNextEvent(fb_linux.display, &event);
 			switch (event.type) {
 				
-				case Expose:
 				case FocusIn:
-					fb_hMemSet(fb_mode->dirty, TRUE, fb_linux.h);
 					has_focus = TRUE;
 					e.type = EVENT_WINDOW_GOT_FOCUS;
 					fb_hPostEvent(&e);
+					/* fallthrough */
+					
+				case Expose:
+					fb_hMemSet(fb_mode->dirty, TRUE, fb_linux.h);
 					break;
 				
 				case FocusOut:
