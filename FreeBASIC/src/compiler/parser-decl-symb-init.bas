@@ -269,7 +269,12 @@ private function hUDTInit _
 
     	'' Expression
     	if( cExpression( expr ) = FALSE ) then
-    		exit function
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
     	end if
 
     	dim as integer is_ctorcall = any
