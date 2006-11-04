@@ -21,7 +21,7 @@ operator CVariant.cast _
 	VariantInit( @tmp )
 	VariantChangeTypeEx( @tmp, @this.var, NULL, VARIANT_NOVALUEPROP, VT_BSTR )
 
-	function = *cast( wstring ptr, V_BSTR(@tmp) )
+	operator = *cast( wstring ptr, V_BSTR(@tmp) )
 	
 	VariantClear( @tmp )
 	
@@ -40,7 +40,7 @@ operator CVariant.cast _
 
 	'' !!!FIXME!!! the pointer returned will leak
 
-	function = V_BSTR(@tmp)
+	operator = V_BSTR(@tmp)
 	
 	''VariantClear( @tmp )
 	

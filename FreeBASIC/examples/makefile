@@ -1,5 +1,5 @@
 
-DIRLIST := Allegro big_int CGUI cryptlib CUnit Curl curses CVS DB disphelper file
+DIRLIST := Allegro big_int CGUI classes cryptlib CUnit Curl curses CVS DB disphelper file
 DIRLIST += freetype gfx GL GL/NeHe GSL Gtk Gtk/Tutorials IUP libxml Lua namespace
 DIRLIST += pdflib regex SDL sound unicode Windows Windows/gui Windows/winsock wx-c
 
