@@ -30,7 +30,7 @@
 
 type FB_INITCTX
 	sym			as FBSYMBOL ptr
-	dim 		as FBVARDIM ptr
+	dim_ 		as FBVARDIM ptr
 	dimcnt		as integer
 	tree		as ASTNODE ptr
 	isobj		as integer
@@ -116,7 +116,7 @@ private function hArrayInit _
 	function = FALSE
 
 	dimensions = symbGetArrayDimensions( ctx.sym )
-	old_dim = ctx.dim
+	old_dim = ctx.dim_
 
 	'' '{'?
 	isarray = FALSE
@@ -133,17 +133,17 @@ private function hArrayInit _
 			else
 				'' error recovery: skip until next '}'
 				hSkipUntil( CHAR_RBRACE, TRUE )
-				ctx.dim = NULL
+				ctx.dim_ = NULL
 			end if
 
 		else
 			'' first dim?
-			if( ctx.dim = NULL ) then
-				ctx.dim = symbGetArrayFirstDim( ctx.sym )
+			if( ctx.dim_ = NULL ) then
+				ctx.dim_ = symbGetArrayFirstDim( ctx.sym )
 
 			'' next..
 			else
-				ctx.dim = ctx.dim->next
+				ctx.dim_ = ctx.dim_->next
 			end if
 
 			isarray = TRUE
@@ -156,17 +156,17 @@ private function hArrayInit _
 				exit function
 			else
 				ctx.dimcnt += 1
-				if( ctx.dim = NULL ) then
-					ctx.dim = symbGetArrayFirstDim( ctx.sym )
+				if( ctx.dim_ = NULL ) then
+					ctx.dim_ = symbGetArrayFirstDim( ctx.sym )
 				else
-					ctx.dim = ctx.dim->next
+					ctx.dim_ = ctx.dim_->next
 				end if
 			end if
 		end if
 	end if
 
-	if( ctx.dim <> NULL ) then
-		elements = (ctx.dim->upper - ctx.dim->lower) + 1
+	if( ctx.dim_ <> NULL ) then
+		elements = (ctx.dim_->upper - ctx.dim_->lower) + 1
 	else
 		elements = 1
 	end if
@@ -206,8 +206,8 @@ private function hArrayInit _
 	elements -= elm_cnt
 	if( elements > 0 ) then
 		'' not the last dimension?
-		if( ctx.dim->next ) then
-			elements *= symbCalcArrayElements( ctx.sym, ctx.dim->next )
+		if( ctx.dim_->next ) then
+			elements *= symbCalcArrayElements( ctx.sym, ctx.dim_->next )
 		end if
 
 		dim as FBSYMBOL ptr ctor = NULL
@@ -242,7 +242,7 @@ private function hArrayInit _
 			lexSkipToken( )
 		end if
 
-		ctx.dim = old_dim
+		ctx.dim_ = old_dim
 		ctx.dimcnt -= 1
 	end if
 
@@ -330,7 +330,7 @@ private function hUDTInit _
 		astTypeIniGetOfs( ctx.tree ) = baseofs + elm_ofs
 
         ctx.sym = elm
-		ctx.dim = NULL
+		ctx.dim_ = NULL
 		ctx.dimcnt = 0
         if( hArrayInit( ctx ) = FALSE ) then
           	exit function
@@ -405,7 +405,7 @@ function cInitializer _
 	subtype = symbGetSubtype( sym )
 
 	ctx.sym = sym
-	ctx.dim = NULL
+	ctx.dim_ = NULL
 	ctx.dimcnt = 0
 	ctx.tree = astTypeIniBegin( symbGetType( sym ), subtype, is_local )
 	ctx.isobj = FALSE

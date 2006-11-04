@@ -1,6 +1,6 @@
 #include "fbcu.bi"
 
-namespace fbc_tests.functions.bydesc_arrayfield
+namespace fbc_tests.quirk.bydesc_arrayfield
 
 	Type testing_type
 

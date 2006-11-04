@@ -35,12 +35,12 @@ Version 0.17 Beta:
   also, the luauxlib.bi header was renamed to lauxlib.bi to match the original C one (v1c)
 - SetDate and SetTime now return an error when they fail (DrV)
 
-
 [added]
 - the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)
-- operator overloading for UDT's (TYPE's and ENUM's) (W.I.P.) (v1c)
-- constructor and destructor support UDT's (TYPE's) (v1c)
-- method support UDT's (TYPE's) (v1c)
+- operator overloading in UDT's (TYPE's and ENUM's) (W.I.P.) (v1c)
+- constructor and destructor support in UDT's (TYPE's) (v1c)
+- method support in UDT's (TYPE's) (v1c)
+- properties in UDT's (TYPE's) (v1c)
 - #macro .. #endmacro, to better support multi-line pre-processor defines (v1c)
 - TYPE's, UNION's, ENUM's and typedefs can now be declared inside functions and scope blocks (v1c)
 - FileCopy, FileAttr, and FileLen VB-compatability functions (DrV)

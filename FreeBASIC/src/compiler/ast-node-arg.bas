@@ -29,15 +29,15 @@
 #include once "inc\ast.bi"
 
 '':::::
-private sub hParamError _
+private function hParamError _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT _
-	)
+	) as integer
 
-	errReportParam( parent->sym, parent->call.args+1, NULL, msgnum )
+	function = errReportParam( parent->sym, parent->call.args+1, NULL, msgnum )
 
-end sub
+end function
 
 '':::::
 private sub hParamWarning _

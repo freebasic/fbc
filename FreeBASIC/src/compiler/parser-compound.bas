@@ -337,7 +337,8 @@ function cCompoundEnd( ) as integer
 	case FB_TK_SELECT
 		function = cSelectStmtEnd( )
 
-	case FB_TK_SUB, FB_TK_FUNCTION, FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, FB_TK_OPERATOR
+	case FB_TK_SUB, FB_TK_FUNCTION, FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, _
+		 FB_TK_OPERATOR, FB_TK_PROPERTY
 		function = cProcStmtEnd( )
 
 	case FB_TK_SCOPE
@@ -394,7 +395,7 @@ function cCompStmtCheck( ) as integer
     	errmsg = FB_ERRMSG_EXPECTEDENDEXTERN
 
     case FB_TK_FUNCTION
-		select case stk->proc.tkn
+		select case as const stk->proc.tkn
 		case FB_TK_SUB
 			errmsg = FB_ERRMSG_EXPECTEDENDSUB
 		case FB_TK_FUNCTION
@@ -405,6 +406,8 @@ function cCompStmtCheck( ) as integer
 			errmsg = FB_ERRMSG_EXPECTEDENDDTOR
 		case FB_TK_OPERATOR
 			errmsg = FB_ERRMSG_EXPECTEDENDOPERATOR
+		case FB_TK_PROPERTY
+			errmsg = FB_ERRMSG_EXPECTEDENDPROPERTY
 		end select
 
     case FB_TK_DO

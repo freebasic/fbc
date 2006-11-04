@@ -44,6 +44,11 @@
       - add support for UDT's in FOR
         - check if + or += and < > ops were overloaded
 
+[ ] data/function members:
+	- add and check the protected, private and public attributes
+	- add static - data members must be initialized outside the TYPE|CLASS
+	- add virtual (functions only)
+
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
     	- does QB allow that? CONS won't work without INPUT or OUTPUT
@@ -116,7 +121,7 @@
       - refs and ptrs to constants can't be added unless _POINTER is added
         as a new symbol like with BITFIELD? that will need *a lot* of changes..
 
-[ ] disallow:
+[ ] disallow (in -lang qb mode):
 	dim foo as foo
 	.. and later ..
 	const|dim|function|etc foo.bar
@@ -208,9 +213,9 @@
     be automatically dereferenced - but *NOT* deleted, only non-local data can
     be returned by reference in C++
 
-[ ] add fix-len and zstring * support to array args passed by descriptor
+[ ] add "fix-len|w|z|string * expr" support to array args passed by descriptor
 
-[ ] named field initializers: ( "foo" => bar, "udt" => ( 1, { 2, 3 }, 4 ) )
+[ ] named field initializers: ( foo => bar, udt => ( 1, { 2, 3 }, 4 ) )
     - all fields initialized must be named as a special parser routine will have to be used,
       that will keep track of what wasn't initialized to fill 'em with 0's - static only,
       locals are already cleared
@@ -239,7 +244,6 @@
         - function bodies defined outside classes follow the private/public proc rules
     - single inheritance, plus interfaces
     - exceptions - with stack unwind support
-    - properties
     - pure virtual methods
     - down casting
     - some support for RTTI

@@ -379,7 +379,7 @@ Most Important Features:
     - Unicode Strings (WSTRING): like ZSTRING, but with support for wide 
       characters. Use the Windows unicode API functions directly, etc.
 
-  o User-defined Types (UDT's):
+  o Structures (TYPE's and UNION's):
 
     - Unlimited nesting.
 
@@ -454,7 +454,7 @@ Most Important Features:
 
       E = C
 
-  o Constructors and Destructors for User Defined Types (TYPE or CLASS):
+  o Constructors and Destructors in User Defined Types (TYPE or CLASS):
   
     - Constructors can be overloaded and take default parameters
     
@@ -471,7 +471,7 @@ Most Important Features:
     - Global and local static instances also allow constructors and/or 
       destructors
   
-  o Operator Overloading for User Defined Types (TYPE, ENUM or CLASS):
+  o Operator Overloading in User Defined Types (TYPE, ENUM or CLASS):
   
     - All binary operators can be overloaded, but the relational ones
     
@@ -502,6 +502,20 @@ Most Important Features:
       	RETURN FOO( lhs.bar + rhs.bar )
       END OPERATOR
 
+  o Properties in User Defined Types (TYPE or CLASS):
+  
+    - Set:
+      
+      PROPERTY foo.bar( BYVAL new_bar AS INTEGER )
+      	this._bar = new_bar
+      END PROPERTY
+
+    - Get:
+          
+      PROPERTY foo.bar AS INTEGER
+      	return this._bar
+      END PROPERTY
+    
   o Arrays:
 
     - Dynamic and static arrays are supported, up to 2 GB in size.

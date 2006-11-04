@@ -160,16 +160,35 @@ function cProcCall _
 
 	function = NULL
 
-	if( checkprnts = TRUE ) then
-		'' if the sub has no args, prnts are optional
-		if( symbGetProcParams( sym ) = 0 ) then
-			checkprnts = FALSE
+	'' property?
+	if( symbIsProperty( sym ) ) then
+		'' the arg is the lhs expression
+
+		'' '='
+		if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+    			exit function
+    		end if
+
+		else
+			lexSkipToken( )
 		end if
 
-	'' if it's a function pointer, prnts are obligatory
-	elseif( ptrexpr <> NULL ) then
-		checkprnts = TRUE
+		checkprnts = FALSE
 
+	'' anything else..
+	else
+		if( checkprnts = TRUE ) then
+			'' if the sub has no args, prnts are optional
+			if( symbGetProcParams( sym ) = 0 ) then
+				checkprnts = FALSE
+			end if
+
+		'' if it's a function pointer, prnts are obligatory
+		elseif( ptrexpr <> NULL ) then
+			checkprnts = TRUE
+
+		end if
 	end if
 
 	if( checkprnts ) then
@@ -179,7 +198,6 @@ function cProcCall _
 				exit function
 			end if
 		end if
-
 	end if
 
 	parser.prntcnt = 0
@@ -217,8 +235,11 @@ function cProcCall _
 
 	fbSetPrntOptional( FALSE )
 
-	if( cStrIdxOrFieldDeref( procexpr ) = FALSE ) then
-		exit function
+	'' StrIdxOrFieldDeref?
+	if( symbIsProperty( sym ) = FALSE ) then
+		if( cStrIdxOrFieldDeref( procexpr ) = FALSE ) then
+			exit function
+		end if
 	end if
 
 	'' if it's a SUB, the expr will be NULL
@@ -288,15 +309,15 @@ private function hAssignOrCall _
 		byval iscall as integer _
 	) as integer
 
-	dim as FBSYMBOL ptr s = any
+	dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr expr = any
 
 	function = FALSE
 
     do while( chain_ <> NULL )
 
-    	s = chain_->sym
-    	select case as const symbGetClass( s )
+    	sym = chain_->sym
+    	select case as const symbGetClass( sym )
     	'' proc?
     	case FB_SYMBCLASS_PROC
     		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
@@ -305,16 +326,35 @@ private function hAssignOrCall _
 
 			lexSkipToken( )
 
+            ''
+            dim as integer do_call = lexGetToken( ) <> FB_TK_ASSIGN
+
+            if( do_call = FALSE ) then
+            	'' special case: property
+            	if( symbIsProperty( sym ) ) then
+                	do_call = TRUE
+
+                	'' unless it's inside a PROPERTY GET block
+                	if( symbIsProperty( parser.currproc ) ) then
+                		if( symbGetProcParams( parser.currproc ) = 1 ) then
+                			if( symbIsProcOverloadOf( parser.currproc, sym ) ) then
+                				do_call = FALSE
+                			end if
+                		end if
+                	end if
+            	end if
+            end if
+
 			'' ID ProcParamList?
-			if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+			if( do_call ) then
 				dim as ASTNODE ptr this_ = NULL
-				if( symbIsMethod( s ) ) then
+				if( symbIsMethod( sym ) ) then
 					this_ = astBuildInstPtr( _
 								symbGetParamVar( _
 									symbGetProcHeadParam( parser.currproc ) ) )
 				end if
 
-				expr = cProcCall( s, NULL, this_ )
+				expr = cProcCall( sym, NULL, this_ )
 				if( errGetLast( ) <> FB_ERRMSG_OK ) then
 					exit function
 				end if
@@ -340,7 +380,7 @@ private function hAssignOrCall _
             	end if
 
             	'' check if name is valid (or if overloaded)
-				if( symbIsProcOverloadOf( parser.currproc, s ) = FALSE ) then
+				if( symbIsProcOverloadOf( parser.currproc, sym ) = FALSE ) then
 					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
 						exit function
 					else
@@ -359,7 +399,7 @@ private function hAssignOrCall _
     	'' variable or field?
     	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
 
-        	if( symbIsVar( s ) ) then
+        	if( symbIsVar( sym ) ) then
         		'' must process variables here, multiple calls to
         		'' Identifier() will fail if a namespace was explicitly
     	    	'' given, because the next call will return an inner symbol
@@ -396,7 +436,7 @@ private function hAssignOrCall _
 
   		'' quirk-keyword?
   		case FB_SYMBCLASS_KEYWORD
-  			return cQuirkStmt( s->key.id )
+  			return cQuirkStmt( sym->key.id )
 		end select
 
     	chain_ = symbChainGetNext( chain_ )
@@ -407,7 +447,7 @@ end function
 '':::::
 ''ProcCallOrAssign=   CALL ID ('(' ProcParamList ')')?
 ''                |   ID ProcParamList?
-''				  |	  (ID | FUNCTION | OPERATOR) '=' Expression .
+''				  |	  (ID | FUNCTION | OPERATOR | PROPERTY) '=' Expression .
 ''
 function cProcCallOrAssign as integer
 	dim as FBSYMCHAIN ptr chain_ = any
@@ -443,6 +483,18 @@ function cProcCallOrAssign as integer
 					end if
 				end if
 
+				'' useless check.. don't allow FUNCTION inside OPERATOR or PROPERTY
+				if( symbIsOperator( parser.currproc ) ) then
+					if( errReport( FB_ERRMSG_EXPECTEDOPERATOR ) = FALSE ) then
+						exit function
+					end if
+
+				elseif( symbIsProperty( parser.currproc ) ) then
+					if( errReport( FB_ERRMSG_EXPECTEDPROPERTY ) = FALSE ) then
+						exit function
+					end if
+				end if
+
 				lexSkipToken( )
 				lexSkipToken( )
 
@@ -472,6 +524,34 @@ function cProcCallOrAssign as integer
 
 	        		return cAssignFunctResult( parser.currproc, FALSE )
     	    	end if
+			end if
+
+		'' PROPERTY?
+		case FB_TK_PROPERTY
+
+			'' '='?
+			if( lexGetLookAhead( 1 ) = FB_TK_ASSIGN ) then
+				if( fbIsModLevel( ) ) then
+					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip stmt, return
+						hSkipStmt( )
+						return TRUE
+					end if
+
+				else
+					if( symbIsProperty( parser.currproc ) = FALSE ) then
+						if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY ) = FALSE ) then
+							exit function
+						end if
+					end if
+				end if
+
+				lexSkipToken( )
+				lexSkipToken( )
+
+    	    	return cAssignFunctResult( parser.currproc, FALSE )
 			end if
 
 		'' CONSTRUCTOR?

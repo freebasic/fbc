@@ -43,12 +43,13 @@ function cExpression _
 		byref expr as ASTNODE ptr _
 	) as integer
 
+	dim as integer last_isexpr = fbGetIsExpression( )
 	fbSetIsExpression( TRUE )
 
 	'' LogExpression
 	function = cLogExpression( expr )
 
-	fbSetIsExpression( FALSE )
+	fbSetIsExpression( last_isexpr )
 
 end function
 

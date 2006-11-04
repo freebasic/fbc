@@ -148,6 +148,21 @@ private function hTypeProtoDecl _
 			res = FALSE
 		end if
 
+	case FB_TK_PROPERTY
+   		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
+       		if( errReportNotAllowed( FB_LANG_OPT_CLASS ) = FALSE ) then
+        		exit function
+        	end if
+        end if
+
+		lexSkipToken( )
+
+		if( cPropertyHeader( TRUE, _
+						 	 FB_SYMBATTRIB_METHOD, _
+						 	 is_nested ) = NULL ) then
+			res = FALSE
+		end if
+
 	case else
 		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			res = FALSE
@@ -799,6 +814,26 @@ decl_inner:		'' it's an anonymous inner UDT
 			if( hTypeEnumDecl( s, TRUE ) = FALSE ) then
 				exit function
 			end if
+
+		case FB_TK_DIM
+			lexSkipToken( )
+
+			'' multi-decl?
+			if( lexGetToken( ) = FB_TK_AS ) then
+				lexSkipToken( )
+
+				if( hTypeMultElementDecl( s ) = FALSE ) then
+					exit function
+				end if
+
+			else
+				if( hTypeElementDecl( s ) = FALSE ) then
+					exit function
+				end if
+			end if
+
+			'' Comment?
+			cComment( )
 
 		'' anything else, must be a field
 		case else

@@ -1178,8 +1178,6 @@ declare sub astReplaceSymbolOnTree _
 
 #define astTypeIniGetOfs( n ) n->typeini.ofs
 
-#define astProcGetTmpResult( n ) n->call.tmpres
-
 #define astGetOpClass( op ) ast_opTB(op).class
 
 #define astGetOpIsCommutative( op ) ((ast_opTB(op).flags and AST_OPFLAGS_COMM) <> 0)

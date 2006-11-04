@@ -320,6 +320,18 @@ private function hAddOvlProc _
 
 	function = NULL
 
+	'' only one them is a property?
+	if( (attrib and FB_SYMBATTRIB_PROPERTY) <> 0 ) then
+    	if( symbIsProperty( head_proc ) = FALSE ) then
+			exit function
+    	end if
+
+	elseif( symbIsProperty( head_proc ) ) then
+		if( (attrib and FB_SYMBATTRIB_PROPERTY) = 0 ) then
+			exit function
+		end if
+	end if
+
 	'' not arg-less?
 	params = symbGetProcParams( proc )
 	if( params > 0 ) then

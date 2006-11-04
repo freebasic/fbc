@@ -339,6 +339,13 @@ declare function cCtorHeader _
 		byref is_nested as integer _
 	) as FBSYMBOL ptr
 
+declare function cPropertyHeader _
+	( _
+		byval is_prototype as integer, _
+		byval attrib as integer, _
+		byref is_nested as integer _
+	) as FBSYMBOL ptr
+
 declare function cParameters _
 	( _
 		byval proc as FBSYMBOL ptr, _

@@ -8,7 +8,7 @@ type udt
 end type
 
 operator udt.cast as integer
-	function = value
+	operator = value
 end operator
 
 const TEST_VAL = 1234

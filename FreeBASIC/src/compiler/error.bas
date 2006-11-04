@@ -111,7 +111,7 @@ end type
 		@"Undefined label", _
 		@"Too many array dimensions", _
 		@"Expected scalar counter", _
-		@"Illegal outside a SUB or FUNCTION", _
+		@"Illegal outside a SUB or FUNCTION block", _
 		@"Expected dynamic array", _
 		@"Fixed-len strings cannot be returned from functions", _
 		@"Array already dimensioned", _
@@ -181,6 +181,7 @@ end type
 		@"Expected 'END CONSTRUCTOR'", _
 		@"Expected 'END DESTRUCTOR'", _
 		@"Expected 'END OPERATOR'", _
+		@"Expected 'END PROPERTY'", _
 		@"Declaration outside the original namespace", _
 		@"No end of multi-line comment, expected ""'/""", _
 		@"Too many errors, exiting", _
@@ -192,7 +193,7 @@ end type
 		@"Parameter and result can't be of the same type", _
 		@"Invalid result type for this operator", _
 		@"Vararg parameters are not allowed in overloaded functions", _
-		@"Illegal outside an OPERATOR function", _
+		@"Illegal outside an OPERATOR block", _
 		@"Parameter cannot be optional", _
 		@"Only valid in -lang", _
 		@"Default types or suffixes are only valid in -lang", _
@@ -219,7 +220,10 @@ end type
 		@"Invalid assignment/conversion", _
 		@"Invalid array subscript", _
 		@"TYPE or CLASS has no default constructor", _
-		@"Invalid priority attribute" _
+		@"Invalid priority attribute", _
+		@"PROPERTY SET should not return any result", _
+		@"Expected 'PROPERTY'", _
+		@"Illegal outside a PROPERTY block" _
 	}
 
 

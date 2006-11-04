@@ -42,34 +42,45 @@ function cFunctionCall _
     	exit function
     end if
 
-	'' '('?
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-		lexSkipToken( )
-
-		'' ProcArgList
-		funcexpr = cProcArgList( sym, ptrexpr, thisexpr, TRUE, FALSE )
-		if( funcexpr = NULL ) then
-			exit function
-		end if
-
-		'' ')'
-		if( lexGetToken( ) <> CHAR_RPRNT ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: skip until next ')'
-    			hSkipUntil( CHAR_RPRNT, TRUE )
-    		end if
-		else
-			lexSkipToken( )
-		end if
-
-	else
-		'' ProcArgList (function can have optional params)
+	'' property?
+	if( symbIsProperty( sym ) ) then
+		'' no args
 		funcexpr = cProcArgList( sym, ptrexpr, thisexpr, TRUE, TRUE )
 		if( funcexpr = NULL ) then
 			exit function
 		end if
+
+	else
+		'' '('?
+		if( lexGetToken( ) = CHAR_LPRNT ) then
+			lexSkipToken( )
+
+			'' ProcArgList
+			funcexpr = cProcArgList( sym, ptrexpr, thisexpr, TRUE, FALSE )
+			if( funcexpr = NULL ) then
+				exit function
+			end if
+
+			'' ')'
+			if( lexGetToken( ) <> CHAR_RPRNT ) then
+    			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: skip until next ')'
+    				hSkipUntil( CHAR_RPRNT, TRUE )
+    			end if
+			else
+				lexSkipToken( )
+			end if
+
+		else
+			'' ProcArgList (function can have optional params)
+			funcexpr = cProcArgList( sym, ptrexpr, thisexpr, TRUE, TRUE )
+			if( funcexpr = NULL ) then
+				exit function
+			end if
+		end if
+
 	end if
 
 	'' is it really a function?
@@ -130,22 +141,17 @@ function cMethodCall _
 	'' ID
 	lexSkipToken( )
 
-	'' function?
-	if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
+	'' inside an expression? (can't check sym type, it could be an overloaded proc)
+	if( fbGetIsExpression( ) ) then
 		expr = cFunctionCall( sym, NULL, thisexpr )
 
-	'' sub..
+		'' no need to check expr, cFunctionCall() will handle VOID calls
+
+	'' assignment..
 	else
-		if( fbGetIsExpression( ) = FALSE ) then
-			expr = cProcCall( sym, NULL, thisexpr )
-		else
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				expr = NULL
-			else
-				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
-		end if
+		expr = cProcCall( sym, NULL, thisexpr )
+
+		'' ditto
 	end if
 
 	function = expr
