@@ -95,11 +95,6 @@ static void *window_thread(void *arg)
 			switch (event.type) {
 				
 				case FocusIn:
-					has_focus = TRUE;
-					e.type = EVENT_WINDOW_GOT_FOCUS;
-					fb_hPostEvent(&e);
-					/* fallthrough */
-					
 				case MapNotify:
 					if (!has_focus) {
 						has_focus = TRUE;
@@ -249,6 +244,10 @@ static void *window_thread(void *arg)
 				case KeyRelease:
 					if (has_focus) {
 						e.scancode = fb_linux.keymap[event.xkey.keycode];
+						if (XLookupString(&event.xkey, (char *)key, 8, NULL, NULL) == 1)
+							e.ascii = key[0];
+						else
+							e.ascii = 0;
 						fb_mode->key[e.scancode] = FALSE;
 						e.type = EVENT_KEY_RELEASE;
 						fb_hPostEvent(&e);
