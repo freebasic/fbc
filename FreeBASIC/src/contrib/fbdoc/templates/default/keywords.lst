@@ -305,6 +305,7 @@ PokeS
 Pos
 Preserve
 PReset
+Property
 Print
 Print #
 Print Using
@@ -336,7 +337,9 @@ Run
 SAdd
 Scope
 Screen
+ScreenControl
 ScreenCopy
+ScreenEvent
 ScreenInfo
 ScreenList
 ScreenLock
@@ -434,6 +437,8 @@ Xor
 Year
 ZString
 __DATE__
+__FB_ARGC__
+__FB_ARGV__
 __FB_BIGENDIAN__
 __FB_DEBUG__
 __FB_DOS__
