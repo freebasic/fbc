@@ -31,10 +31,13 @@
 extern "C" {
 #endif
 
+#include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+
+#include "fb_gfx_gl.h"
 
 #include "../rtlib/fb.h"
 #include "../rtlib/fb_error.h"
@@ -106,6 +109,7 @@ extern "C" {
 #define PRINT_SCROLL_WAS_OFF	0x00000040
 #define VIEW_PORT_SET		0x00000080
 #define ALPHA_PRIMITIVES	0x00000100
+#define OPENGL_PRIMITIVES	0x00000200
 
 #define COORD_TYPE_AA		0
 #define COORD_TYPE_AR		1
@@ -308,7 +312,9 @@ struct _PUT_HEADER {
 	unsigned int width;
 	unsigned int height;
 	unsigned int pitch;
-	char _reserved[12];
+	GLuint tex;
+	char _reserved[8];
+	unsigned char data[0];
 } __attribute__((__packed__));
 typedef struct _PUT_HEADER PUT_HEADER;
 
@@ -329,6 +335,7 @@ extern void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hPixelSet)(void *dest, int color, size_t size);
 extern unsigned int *fb_color_conv_16to32;
 extern char *__fb_window_title;
+extern FB_GL fb_gl;
 #include "fb_gfx_data.h"
 
 /* Internal functions */
@@ -360,6 +367,8 @@ extern void fb_hSoftCursorUnput(int x, int y);
 extern void fb_hSoftCursorPaletteChanged(void);
 extern void *fb_hPixelSetAlpha4(void *dest, int color, size_t size);
 extern int fb_hGetWindowHandle(void);
+extern int fb_hGL_Init(FB_DYLIB lib);
+extern int fb_hGL_ExtensionSupported(const char *extension);
 
 
 /* Public API */

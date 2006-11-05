@@ -395,7 +395,6 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	fb_win32.wndclass.hIcon = LoadIcon(fb_win32.hinstance, "FB_PROGRAM_ICON");
 	if (!fb_win32.wndclass.hIcon)
 		fb_win32.wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-//	fb_win32.wndclass.style = CS_VREDRAW | CS_HREDRAW | (flags & DRIVER_OPENGL ? CS_OWNDC : 0);
 	fb_win32.wndclass.style = (flags & DRIVER_OPENGL) ? 0 : CS_VREDRAW | CS_HREDRAW;
 	RegisterClass(&fb_win32.wndclass);
 
@@ -484,8 +483,6 @@ void fb_hWin32WaitVSync(void)
 /*:::::*/
 int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons)
 {
-	POINT point;
-
 	if (!fb_win32.is_active)
 		return -1;
 	

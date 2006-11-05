@@ -147,7 +147,6 @@ static int directx_init(void)
 	DDSURFACEDESC desc;
 	DDPIXELFORMAT format;
 	HRESULT res;
-	HMODULE module;
 	DWORD style;
 	int i, depth, is_rgb = FALSE, height, flags;
 
