@@ -431,15 +431,16 @@ private function hTypeMultElementDecl _
 			if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
 				exit function
 			end if
-		end if
 
-		initree = hFieldInit( parent, sym )
-		if( initree = NULL ) then
-    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    			exit function
+		else
+			initree = hFieldInit( parent, sym )
+			if( initree = NULL ) then
+    			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+    				exit function
+    			end if
+    		else
+    			symbSetTypeIniTree( sym, initree )
     		end if
-    	else
-    		symbSetTypeIniTree( sym, initree )
     	end if
 
 		'' ','?
@@ -580,6 +581,9 @@ private function hTypeElementDecl _
 	if( sym = NULL ) then
 		if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
 			exit function
+		else
+			'' error recovery: pretend the field was added
+			return TRUE
 		end if
 	end if
 

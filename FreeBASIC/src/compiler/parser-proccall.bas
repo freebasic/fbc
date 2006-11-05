@@ -174,6 +174,12 @@ function cProcCall _
 			lexSkipToken( )
 		end if
 
+		if( symGetProcOvlMaxParams( sym ) = 1 ) then
+    		if( errReport( FB_ERRMSG_PROPERTYHASNOSETMETHOD ) = FALSE ) then
+    			exit function
+    		end if
+		end if
+
 		checkprnts = FALSE
 
 	'' anything else..

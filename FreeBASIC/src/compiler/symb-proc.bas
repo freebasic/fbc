@@ -797,12 +797,18 @@ add_proc:
 			proc->proc.ovl.next = head_proc->proc.ovl.next
 			head_proc->proc.ovl.next = proc
 
-			if( symbGetProcParams( proc ) > head_proc->proc.ovl.maxparams ) then
-				head_proc->proc.ovl.maxparams = symbGetProcParams( proc )
+			if( symbGetProcParams( proc ) < symGetProcOvlMinParams( head_proc ) ) then
+				symGetProcOvlMinParams( head_proc ) = symbGetProcParams( proc )
 			end if
+
+			if( symbGetProcParams( proc ) > symGetProcOvlMaxParams( head_proc ) ) then
+				symGetProcOvlMaxParams( head_proc ) = symbGetProcParams( proc )
+			end if
+
 		else
 			proc->proc.ovl.next = NULL
-			proc->proc.ovl.maxparams = symbGetProcParams( proc )
+			symGetProcOvlMinParams( proc ) = symbGetProcParams( proc )
+			symGetProcOvlMaxParams( proc ) = symbGetProcParams( proc )
 		end if
 	end if
 

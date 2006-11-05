@@ -44,6 +44,13 @@ function cFunctionCall _
 
 	'' property?
 	if( symbIsProperty( sym ) ) then
+
+		if( symGetProcOvlMinParams( sym ) <> 1 ) then
+    		if( errReport( FB_ERRMSG_PROPERTYHASNOGETMETHOD ) = FALSE ) then
+    			exit function
+    		end if
+		end if
+
 		'' no args
 		funcexpr = cProcArgList( sym, ptrexpr, thisexpr, TRUE, TRUE )
 		if( funcexpr = NULL ) then

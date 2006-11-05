@@ -342,7 +342,8 @@ end type
 type FBRTLCALLBACK as function( byval sym as FBSYMBOL_ ptr ) as integer
 
 type FB_PROCOVL
-	maxparams		as integer
+	minparams		as short
+	maxparams		as short
 	next			as FBSYMBOL_ ptr
 end type
 
@@ -2016,6 +2017,8 @@ declare function symbCloneLabel _
 #define symbSetProcCallback(f,cb) f->proc.rtl.callback = cb
 
 #define symbGetProcIsOverloaded(f) ((f->attrib and FB_SYMBATTRIB_OVERLOADED) > 0)
+
+#define symGetProcOvlMinParams(f) f->proc.ovl.minparams
 
 #define symGetProcOvlMaxParams(f) f->proc.ovl.maxparams
 

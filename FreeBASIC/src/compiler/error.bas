@@ -221,9 +221,12 @@ end type
 		@"Invalid array subscript", _
 		@"TYPE or CLASS has no default constructor", _
 		@"Invalid priority attribute", _
+		@"PROPERTY SET should have a single parameter", _
 		@"PROPERTY SET should not return any result", _
 		@"Expected 'PROPERTY'", _
-		@"Illegal outside a PROPERTY block" _
+		@"Illegal outside a PROPERTY block", _
+		@"PROPERTY has no GET method", _
+		@"PROPERTY has no SET method" _
 	}
 
 
@@ -545,7 +548,7 @@ private function hReportMakeDesc _
 		if( pid = NULL ) then
 			if( proc <> NULL ) then
 				dim as FBSYMBOL ptr param = symbGetProcHeadParam( proc )
-				dim as integer cnt = 1
+				dim as integer cnt = iif( symbIsMethod( proc ), 0, 1 )
 
 				do while( param <> NULL )
 					if( cnt = pnum ) then

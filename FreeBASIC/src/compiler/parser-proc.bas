@@ -1158,6 +1158,7 @@ function cOperatorHeader _
     '' needed to allow CAST to be checked
     symbGetType( proc ) = dtype
     symbGetSubtype( proc ) = subtype
+    symbGetAttrib( proc ) = attrib
 
 	''
 	if( hCheckOpOvlParams( parent, op, proc, attrib ) = FALSE ) then
@@ -1466,12 +1467,14 @@ function cPropertyHeader _
 		end if
 	end if
 
+	symbGetAttrib( proc ) = attrib
+
 	is_propset = symbGetProcParams( proc ) <> 1
 
 	if( is_propset ) then
 		'' not a single param?
 		if( symbGetProcParams( proc ) <> 1+1 ) then
-			if( errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE ) = FALSE ) then
+			if( errReport( FB_ERRMSG_PROPSETHASONLYONEPARAM, TRUE ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -1480,7 +1483,7 @@ function cPropertyHeader _
 		dim as FBSYMBOL ptr param
 		param = symbGetProcTailParam( proc )
 		if( symbGetIsOptional( param ) ) then
-    		if( hParamError( proc, 1, FB_ERRMSG_PARAMCANTBEOPTIONAL ) = FALSE ) then
+    		if( hParamError( proc, 2, FB_ERRMSG_PARAMCANTBEOPTIONAL ) = FALSE ) then
     			exit function
     		end if
 		end if
