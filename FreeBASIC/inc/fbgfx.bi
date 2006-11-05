@@ -37,6 +37,7 @@
 '' OpenGL options
 #define GFX_STENCIL_BUFFER	&h10000
 #define GFX_ACCUMULATION_BUFFER	&h20000
+#define GFX_MULTISAMPLE		&h40000
 
 
 '' Constants accepted by SCREENCONTROL
