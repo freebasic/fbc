@@ -65,10 +65,28 @@ typedef struct {
 	GLXSWAPBUFFERS SwapBuffers;
 } GLXFUNCS;
 
-static void *gl_lib = NULL;
+static FB_DYLIB gl_lib = NULL;
 static GLXFUNCS fb_glX = { NULL };
-static int gl_options;
 static GLXContext context;
+
+
+/*:::::*/
+int fb_hGL_ExtensionSupported(const char *extension)
+{
+	int len, i;
+	char *string = fb_gl.extensions;
+	
+	if (string) {
+		len = strlen(extension);
+		while ((string = strstr(string, extension)) != NULL) {
+			string += len;
+			if ((*string == ' ') || (*string == '\0'))
+				return TRUE;
+		}
+	}
+	
+	return FALSE;
+}
 
 
 /*:::::*/
@@ -131,17 +149,24 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	};
 	int depth = MAX(8, depth_arg);
 	XVisualInfo *info;
-	int gl_attrs[21] = { GLX_RGBA, GLX_DOUBLEBUFFER,
+	int gl_attrs[32] = { GLX_RGBA, GLX_DOUBLEBUFFER,
 			     GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
 			     GLX_DEPTH_SIZE, 16 };
-	int *gl_attr, result, try_count;
+	int *gl_attr, result, try_count, gl_options;
 	
 	context = NULL;
+	gl_options = flags & DRIVER_OPENGL_OPTIONS;
 
 	if (depth > 16)
 		gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 8;
 	
 	gl_attr = &gl_attrs[10];
+	if (gl_options & HAS_MULTISAMPLE) {
+		*gl_attr++ = GLX_SAMPLE_BUFFERS_ARB;
+		*gl_attr++ = GL_TRUE;
+		*gl_attr++ = GLX_SAMPLES_ARB;
+		*gl_attr++ = 4;
+	}
 	if (gl_options & HAS_STENCIL_BUFFER) {
 		*gl_attr++ = GLX_STENCIL_SIZE;
 		*gl_attr++ = 8;
@@ -165,7 +190,6 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	fb_linux.init = opengl_window_init;
 	fb_linux.exit = opengl_window_exit;
 	fb_linux.update = opengl_window_update;
-	gl_options = flags & DRIVER_OPENGL_OPTIONS;
 
 	fb_hXlibInit();
 	
@@ -200,7 +224,13 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 					return -1;
 				gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 1;
 			case 2:
-				return -1;
+				if ((gl_options & HAS_MULTISAMPLE) && (gl_attrs[13] > 2)) {
+					gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 8;
+					gl_attrs[13] -= 2;
+					try_count -= 3;
+				}
+				else
+					return -1;
 		}
 	}
 	
@@ -209,6 +239,12 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		return result;
 	
 	fb_glX.MakeCurrent(fb_linux.display, fb_linux.window, context);
+	
+	if (fb_hGL_Init(gl_lib))
+		return -1;
+	
+	if (gl_options & HAS_MULTISAMPLE)
+		fb_gl.Enable(GL_MULTISAMPLE_ARB);
 	
 	return 0;
 }

@@ -27,7 +27,7 @@
 #ifndef __FB_GFX_GL_H__
 #define __FB_GFX_GL_H__
 
-#include <GL/GL.h>
+#include <GL/gl.h>
 
 #ifdef __cplusplus
 extern "C" {

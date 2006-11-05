@@ -25,7 +25,7 @@
  */
 
 #include "fb_gfx.h"
-#include <GL/GL.h>
+#include <GL/gl.h>
 
 
 FB_GL fb_gl;
