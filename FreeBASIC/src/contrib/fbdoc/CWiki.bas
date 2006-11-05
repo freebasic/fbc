@@ -333,10 +333,15 @@ end sub
 private sub CWiki_AddToken _
 	( _
 		byval _this as CWiki ptr, _
-		byval text as zstring ptr _
+		byval text as zstring ptr, _
+		byval start as integer, _
+		byval length as integer _
 	)
 	
 	dim as WikiToken ptr token = listNewNode( @_this->tokenlist )
+
+	token->start = start
+	token->length = length
 
 	select case *text
 	case "<"
@@ -485,7 +490,9 @@ end sub
 private sub CWiki_AddToken_Text _
 	( _
 		byval _this as CWiki ptr, _
-		byval text as zstring ptr _
+		byval text as zstring ptr, _
+		byval start as integer, _
+		byval length as integer _
 	)
 
 	if( _this = NULL ) then
@@ -502,6 +509,8 @@ private sub CWiki_AddToken_Text _
 
 	dim as WikiToken ptr token = listNewNode( @_this->tokenlist )
 
+	token->start = start
+	token->length = length
 	token->id = WIKI_TOKEN_TEXT
 	token->text = *text
 	
@@ -525,19 +534,19 @@ function CWiki_Parse _
 		do
 			dim as integer mofs = CRegex_GetOfs( _this->re, 0 )
 			if( mofs > ofs ) then
-				CWiki_AddToken_Text( _this, mid( *body, 1+ofs, (mofs - ofs) ) )
+				CWiki_AddToken_Text( _this, mid( *body, 1+ofs, (mofs - ofs) ), 1+ofs, mofs - ofs )
 			end if
 		
-			CWiki_AddToken( _this, CRegex_GetStr( _this->re, 0 ) )
+			CWiki_AddToken( _this, CRegex_GetStr( _this->re, 0 ), 1+mofs, CRegex_GetLen( _this->re, 0 ) )
 		
 			ofs = mofs + CRegex_GetLen( _this->re, 0 )
 		loop while CRegex_SearchNext( _this->re )
 
 		if( ofs < len( *body ) ) then
-			CWiki_AddToken_Text( _this, mid( *body, 1+ofs ) )
+			CWiki_AddToken_Text( _this, mid( *body, 1+ofs ), 1+ofs, len( *body ) - ofs )
 		end if
 	else
-		CWiki_AddToken_Text( _this, *body )
+		CWiki_AddToken_Text( _this, *body, 1, len( *body) )
 	end if
 	
 	function = TRUE
@@ -627,6 +636,7 @@ sub CWiki_Dump _
 			t = "horzline"
 		end select
 		
+		print #f, str(token->start) + "," + str(token->length) + " - ";
 		print #f, "<" + t + ">";
 		if( len( text ) > 0 ) then
 			print #f, text;

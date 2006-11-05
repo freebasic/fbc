@@ -102,6 +102,8 @@ type WikiToken
 
 	as WIKI_TOKEN			id
 	as string 				text
+	as integer              start
+	as integer              length
 	
 		as WikiToken_Action action
 		as WikiToken_Link 	link
