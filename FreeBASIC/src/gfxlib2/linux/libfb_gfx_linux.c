@@ -29,6 +29,13 @@
 #include <unistd.h>
 
 
+typedef struct _XWINDOW {
+	Window win;
+	int x, y;
+	unsigned int w, h;
+} _XWINDOW;
+
+
 LINUXDRIVER fb_linux;
 
 const GFXDRIVER *fb_gfx_driver_list[] = {
@@ -53,6 +60,7 @@ static Cursor blank_cursor, arrow_cursor = None;
 static int is_running = FALSE, has_focus, cursor_shown, xlib_inited = FALSE;
 static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
 static int mouse_x_root, mouse_y_root;
+static _XWINDOW *windows_list = NULL;
 
 
 /*:::::*/
@@ -90,6 +98,14 @@ static void *window_thread(void *arg)
 					has_focus = TRUE;
 					e.type = EVENT_WINDOW_GOT_FOCUS;
 					fb_hPostEvent(&e);
+					/* fallthrough */
+					
+				case MapNotify:
+					if (!has_focus) {
+						has_focus = TRUE;
+						e.type = EVENT_WINDOW_GOT_FOCUS;
+						fb_hPostEvent(&e);
+					}
 					/* fallthrough */
 					
 				case Expose:
@@ -266,8 +282,31 @@ static void *window_thread(void *arg)
 /*:::::*/
 int fb_hX11EnterFullscreen(int h)
 {
+	_XWINDOW *win;
+	Window root, parent, *children;
+	unsigned int num_children, i, dummy;
+	
 	if ((!fb_linux.config) || (target_size < 0))
 		return -1;
+	
+	/* obtain info on visible windows */
+	if (windows_list) {
+		free(windows_list);
+		windows_list = NULL;
+	}
+	if (!XQueryTree(fb_linux.display, root_window, &root, &parent, &children, &num_children)) {
+		windows_list = (_XWINDOW *)malloc(sizeof(_XWINDOW) * (num_children + 1));
+		for (i = 0; i < num_children; i++) {
+			win = &windows_list[i];
+			if (XGetGeometry(fb_linux.display, children[i], &root, &win->x, &win->y, &win->w, &win->h, &dummy, &dummy))
+				win->win = children[i];
+			else
+				win->win = None;
+		}
+		windows_list[num_children].win = None;
+		if (children)
+			XFree(children);
+	}
 	
 	if (target_rate < 0) {
 		if (XRRSetScreenConfig(fb_linux.display, fb_linux.config, root_window, target_size, orig_rotation, CurrentTime) == BadValue)
@@ -296,6 +335,9 @@ int fb_hX11EnterFullscreen(int h)
 /*:::::*/
 void fb_hX11LeaveFullscreen(void)
 {
+	_XWINDOW *win;
+	int i;
+	
 	if ((!fb_linux.config) || (target_size < 0))
 		return;
 	
@@ -305,6 +347,15 @@ void fb_hX11LeaveFullscreen(void)
 		if (XRRSetScreenConfigAndRate(fb_linux.display, fb_linux.config, root_window, orig_size, orig_rotation, orig_rate, CurrentTime) == BadValue)
 			return;
 		current_size = orig_size;
+	}
+	
+	if (windows_list) {
+		for (i = 0; windows_list[i].win != None; i++) {
+			win = &windows_list[i];
+			XMoveResizeWindow(fb_linux.display, win->win, win->x, win->y, win->w, win->h);
+		} 
+		free(windows_list);
+		windows_list = NULL;
 	}
 }
 
