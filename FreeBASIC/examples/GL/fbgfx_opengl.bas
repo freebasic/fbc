@@ -5,13 +5,13 @@
 ''
 
 
-
+#include "fbgfx.bi"
 #include "GL/gl.bi"
 #include "GL/glu.bi"
 
 dim rtri as single, rquad as single
 
-screen 18, 32, , 2
+screen 18, 32, , GFX_OPENGL or GFX_MULTISAMPLE
 
 glViewport 0, 0, 640, 480
 glMatrixMode GL_PROJECTION
