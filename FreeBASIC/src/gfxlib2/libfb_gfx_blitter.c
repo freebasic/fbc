@@ -480,21 +480,21 @@ static void fb_hBlit16to24(unsigned char *dest, int pitch)
 			s = (unsigned int *)src;
 			d = (unsigned int *)dest;
 			for (x = fb_mode->w >> 2; x; x--) {
-				c1 = fb_color_conv_16to32[*s & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 8) & 0xFF)];
-				temp = fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 24) & 0xFF)];
+				c1 = fb_color_conv_16to32[*s & 0xFF] | fb_color_conv_16to32[256 + ((*s >> 8) & 0xFF)];
+				temp = fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[256 + ((*s >> 24) & 0xFF)];
 				*d++ = c1 | (temp << 24);
 				c2 = temp >> 8;
 				s++;
-				temp = fb_color_conv_16to32[*s & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 8) & 0xFF)];
+				temp = fb_color_conv_16to32[*s & 0xFF] | fb_color_conv_16to32[256 + ((*s >> 8) & 0xFF)];
 				*d++ = c2 | (temp << 16);
 				c3 = temp >> 16;
-				*d++ = c3 | ((fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 24) & 0xFF)]) << 8);
+				*d++ = c3 | ((fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[256 + ((*s >> 24) & 0xFF)]) << 8);
 				s++;
 			}
 			dc = (unsigned char *)d;
 			if (fb_mode->w & 0x2) {
-				c1 = fb_color_conv_16to32[*s & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 8) & 0xFF)];
-				c2 = fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 24) & 0xFF)];
+				c1 = fb_color_conv_16to32[*s & 0xFF] | fb_color_conv_16to32[256 + ((*s >> 8) & 0xFF)];
+				c2 = fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[256 + ((*s >> 24) & 0xFF)];
 				dc[0] = (c1 >> 16) & 0xFF;
 				dc[1] = (c1 >> 8) & 0xFF;
 				dc[2] = c1 & 0xFF;
@@ -506,7 +506,7 @@ static void fb_hBlit16to24(unsigned char *dest, int pitch)
 			}
 			if (fb_mode->w & 0x1) {
 				ss = (unsigned short *)s;
-				c1 = fb_color_conv_16to32[*ss & 0xFF] | fb_color_conv_16to32[512 + ((*ss >> 8) & 0xFF)];
+				c1 = fb_color_conv_16to32[*ss & 0xFF] | fb_color_conv_16to32[256 + ((*ss >> 8) & 0xFF)];
 				dc[0] = (c1 >> 16) & 0xFF;
 				dc[1] = (c1 >> 8) & 0xFF;
 				dc[2] = c1 & 0xFF;

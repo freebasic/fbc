@@ -999,38 +999,37 @@ LABEL(blit16to24_x_loop)
 	movb %ah, %dl
 	orl 1024(%ebp, %edx, 4), %ebx
 	shrl $16, %eax
-	movd %ebx, %mm1
-	psrlq $32, %mm0
+	movd %ebx, %mm1		/* mm1 = |             |    r1 g1 b1 | */
 	movb %al, %dl
+	psrlq $32, %mm0
 	movl (%ebp, %edx, 4), %ebx
 	movb %ah, %dl
 	orl 1024(%ebp, %edx, 4), %ebx
 	movd %mm0, %eax
-	movd %ebx, %mm2
+	movd %ebx, %mm2		/* mm2 = |             |    r2 g2 b2 | */
 	movb %al, %dl
 	movl (%ebp, %edx, 4), %ebx
 	movb %ah, %dl
-	orl 1024(%ebp, %edx, 4), %ebx
 	shrl $16, %eax
-	movd %ebx, %mm3
-	addl $8, %esi
-	addl $16, %edi
+	orl 1024(%ebp, %edx, 4), %ebx
 	movb %al, %dl
+	movd %ebx, %mm3		/* mm3 = |             |    r3 g3 b3 | */
+	addl $8, %esi
 	movl (%ebp, %edx, 4), %ebx
 	movb %ah, %dl
-	orl 1024(%ebp, %edx, 4), %ebx
-	movd %ebx, %mm4
+	addl $12, %edi
+	orl 1024(%ebp, %edx, 4), %ebx	  /* ebx = |    r4 g4 b4 | */
 	
-	psllq $24, %mm1
-	psllq $8, %mm3
-	movq %mm2, %mm4
-	por %mm1, %mm0		/* mm0 = |       r2 g2 | b2 r1 g1 b1 | */
-	psrlq $16, %mm4
-	psllq $48, %mm2
-	por %mm4, %mm3		/* mm3 = |             | r4 g4 b4 r3 | */
-	por %mm2, %mm0		/* mm0 = | g3 b3 r2 g2 | b2 r1 g1 b1 | */
-	movd %mm3, -4(%edi)
-	movq %mm0, -12(%edi)
+	psllq $24, %mm2
+	movd %mm3, %eax
+	por %mm2, %mm1
+	psllq $48, %mm3
+	shrl $16, %eax
+	por %mm3, %mm1
+	shll $8, %ebx
+	movq %mm1, -12(%edi)
+	orl %ebx, %eax
+	movl %eax, -4(%edi)
 	decl %ecx
 	jnz blit16to24_x_loop
 	popl %ebp
