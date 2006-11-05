@@ -276,12 +276,15 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
                                              dwControlKeyState,
                                              FALSE );
                 if (message == WM_KEYDOWN) {
+                	if (repeat_count)
+                		e.type = EVENT_KEY_REPEAT;
+                	else
+	        	   	    e.type = EVENT_KEY_PRESS;
 					if (key > 0xFF) {
 	   	                while( repeat_count-- ) {
     	   	                fb_hPostKey(key);
         	   	        }
         	   	    }
-        	   	    e.type = EVENT_KEY_PRESS;
                 }
                 else
                 	e.type = EVENT_KEY_RELEASE;

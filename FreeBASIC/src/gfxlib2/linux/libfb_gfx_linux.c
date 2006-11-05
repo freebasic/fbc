@@ -64,6 +64,27 @@ static _XWINDOW *windows_list = NULL;
 
 
 /*:::::*/
+static int key_repeated(XEvent *event)
+{
+	/* this function is shamelessly copied from SDL, which
+	 * shamelessly copied it from yet another place :P
+	 */
+	XEvent peek_event;
+	int repeated = FALSE;
+
+	if (XPending(fb_linux.display)) {
+		XPeekEvent(fb_linux.display, &peek_event);
+		if ((peek_event.type == KeyPress) && (peek_event.xkey.keycode == event->xkey.keycode) &&
+		    ((peek_event.xkey.time - event->xkey.time) < 2)) {
+			repeated = TRUE;
+			XNextEvent(fb_linux.display, &peek_event);
+		}
+	}
+	return repeated;
+}
+
+
+/*:::::*/
 static void *window_thread(void *arg)
 {
 	XEvent event;
@@ -248,8 +269,13 @@ static void *window_thread(void *arg)
 							e.ascii = key[0];
 						else
 							e.ascii = 0;
-						fb_mode->key[e.scancode] = FALSE;
-						e.type = EVENT_KEY_RELEASE;
+						if (key_repeated(&event)) {
+							e.type = EVENT_KEY_REPEAT;
+						}
+						else {
+							fb_mode->key[e.scancode] = FALSE;
+							e.type = EVENT_KEY_RELEASE;
+						}
 						fb_hPostEvent(&e);
 					}
 					break;

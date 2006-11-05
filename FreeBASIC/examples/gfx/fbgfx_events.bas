@@ -35,6 +35,8 @@ end function
 				print get_ascii(e.ascii) & " was pressed (scancode " & e.scancode & ")"
 			case EVENT_KEY_RELEASE
 				print get_ascii(e.ascii) & " was released (scancode " & e.scancode & ")"
+			case EVENT_KEY_REPEAT
+				print get_ascii(e.ascii) & " is being repeated (scancode " & e.scancode & ")"
 			case EVENT_MOUSE_MOVE
 				print "mouse moved to " & e.x & "," & e.y & " (delta " & e.dx & "," & e.dy & ")"
 			case EVENT_MOUSE_BUTTON_PRESS
