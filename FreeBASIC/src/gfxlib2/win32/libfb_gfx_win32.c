@@ -124,6 +124,8 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 		
 		case WM_MOUSEMOVE:
+			if (!fb_win32.is_active)
+				break;
 			GetCursorPos(&mouse_pos);
 			e.type = EVENT_MOUSE_MOVE;
 			mouse_x = e.x = lParam & 0xFFFF;
@@ -149,6 +151,8 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 
 		case WM_MOUSELEAVE:
+			if (!fb_win32.is_active)
+				break;
 			e.type = EVENT_MOUSE_EXIT;
 			fb_hPostEvent(&e);
 			has_focus = FALSE;
@@ -236,6 +240,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
                 WORD wVsCode = (WORD) (( lParam & 0xFF0000 ) >> 16);
                 int is_ext_keycode = ( lParam & 0x1000000 )!=0;
                 size_t repeat_count = ( lParam & 0xFFFF );
+                int is_repeated = (lParam & 0x40000000);
                 DWORD dwControlKeyState = 0;
                 char chAsciiChar;
                 int is_dead_key;
@@ -276,7 +281,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
                                              dwControlKeyState,
                                              FALSE );
                 if (message == WM_KEYDOWN) {
-                	if (repeat_count)
+                	if (is_repeated)
                 		e.type = EVENT_KEY_REPEAT;
                 	else
 	        	   	    e.type = EVENT_KEY_PRESS;
