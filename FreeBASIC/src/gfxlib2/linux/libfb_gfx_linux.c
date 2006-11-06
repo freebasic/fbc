@@ -112,6 +112,7 @@ static void *window_thread(void *arg)
 		
 		XSync(fb_linux.display, False);
 		while (XPending(fb_linux.display)) {
+			e.type = 0;
 			XNextEvent(fb_linux.display, &event);
 			switch (event.type) {
 				
@@ -120,7 +121,6 @@ static void *window_thread(void *arg)
 					if (!has_focus) {
 						has_focus = TRUE;
 						e.type = EVENT_WINDOW_GOT_FOCUS;
-						fb_hPostEvent(&e);
 					}
 					/* fallthrough */
 					
@@ -132,14 +132,12 @@ static void *window_thread(void *arg)
 					fb_hMemSet(fb_mode->key, FALSE, 128);
 					has_focus = mouse_on = FALSE;
 					e.type = EVENT_WINDOW_LOST_FOCUS;
-					fb_hPostEvent(&e);
 					break;
 				
 				case EnterNotify:
 					if (has_focus) {
 						mouse_on = TRUE;
 						e.type = EVENT_MOUSE_ENTER;
-						fb_hPostEvent(&e);
 					}
 					break;
 				
@@ -147,7 +145,6 @@ static void *window_thread(void *arg)
 					if (has_focus) {
 						mouse_on = FALSE;
 						e.type = EVENT_MOUSE_EXIT;
-						fb_hPostEvent(&e);
 					}
 					break;
 				
@@ -171,7 +168,6 @@ static void *window_thread(void *arg)
 						e.type = EVENT_MOUSE_MOVE;
 						e.x = mouse_x;
 						e.y = mouse_y;
-						fb_hPostEvent(&e);
 					}
 					break;
 				
@@ -184,7 +180,6 @@ static void *window_thread(void *arg)
 						case Button4:	e.z = mouse_wheel++; e.type = EVENT_MOUSE_WHEEL; break;
 						case Button5:	e.z = mouse_wheel--; e.type = EVENT_MOUSE_WHEEL; break;
 					}
-					fb_hPostEvent(&e);
 					break;
 					
 				case ButtonRelease:
@@ -195,8 +190,6 @@ static void *window_thread(void *arg)
 						case Button2:	mouse_buttons &= ~0x4; e.button = 0x4; break;
 						default:		e.type = 0; break;
 					}
-					if (e.type)
-						fb_hPostEvent(&e);
 					break;
 				
 				case ConfigureNotify:
@@ -258,10 +251,8 @@ static void *window_thread(void *arg)
 							if (k)
 								fb_hPostKey(k);
 						}
-						if (event.type == KeyPress) {
+						if (event.type == KeyPress)
 							e.type = EVENT_KEY_PRESS;
-							fb_hPostEvent(&e);
-						}
 					}
 					break;
 				
@@ -279,7 +270,6 @@ static void *window_thread(void *arg)
 							fb_mode->key[e.scancode] = FALSE;
 							e.type = EVENT_KEY_RELEASE;
 						}
-						fb_hPostEvent(&e);
 					}
 					break;
 				
@@ -287,11 +277,12 @@ static void *window_thread(void *arg)
 					if ((Atom)event.xclient.data.l[0] == wm_delete_window) {
 						fb_hPostKey(KEY_QUIT);
 						e.type = EVENT_WINDOW_CLOSE;
-						fb_hPostEvent(&e);
 					}
 					break;
 				
 			}
+			if (e.type)
+				fb_hPostEvent(&e);
 		}
 		
 		pthread_cond_signal(&cond);
