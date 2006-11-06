@@ -136,15 +136,19 @@ static void *window_thread(void *arg)
 					break;
 				
 				case EnterNotify:
-					mouse_on = TRUE;
-					e.type = EVENT_MOUSE_ENTER;
-					fb_hPostEvent(&e);
+					if (has_focus) {
+						mouse_on = TRUE;
+						e.type = EVENT_MOUSE_ENTER;
+						fb_hPostEvent(&e);
+					}
 					break;
 				
 				case LeaveNotify:
-					mouse_on = FALSE;
-					e.type = EVENT_MOUSE_EXIT;
-					fb_hPostEvent(&e);
+					if (has_focus) {
+						mouse_on = FALSE;
+						e.type = EVENT_MOUSE_EXIT;
+						fb_hPostEvent(&e);
+					}
 					break;
 				
 				case MotionNotify:
@@ -163,7 +167,7 @@ static void *window_thread(void *arg)
 						mouse_on = FALSE;
 					else
 						mouse_on = TRUE;
-					if (mouse_on) {
+					if (has_focus) {
 						e.type = EVENT_MOUSE_MOVE;
 						e.x = mouse_x;
 						e.y = mouse_y;
