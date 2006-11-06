@@ -24,7 +24,7 @@ end function
 
 
 	dim e as EVENT
-	screenres 640, 480
+	screenres 640, 480,32,,&h20
 	do
 		if (screenevent(@e)) then
 			select case e.type
