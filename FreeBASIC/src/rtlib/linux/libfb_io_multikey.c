@@ -181,7 +181,7 @@ static int keyboard_console_getch(void)
 static void keyboard_console_handler(void)
 {
 	unsigned char buffer[128], scancode;
-	int pressed, num_bytes, i, ascii, extended;
+	int pressed, repeated, num_bytes, i, ascii, extended;
 	int vt, orig_vt;
 	struct kbentry entry;
 	struct vt_stat vt_state;
@@ -191,6 +191,7 @@ static void keyboard_console_handler(void)
 		for (i = 0; i < num_bytes; i++) {
 			scancode = kernel_to_scancode[buffer[i] & 0x7F];
 			pressed = (buffer[i] & 0x80) ^ 0x80;
+			repeated = ((key_state[scancode]) && (pressed));
 			key_state[scancode] = pressed;
 
 			/* Since we took over keyboard control, we have to map our keypresses to ascii
@@ -302,7 +303,7 @@ static void keyboard_console_handler(void)
 			}
 			
 			if (gfx_key_handler)
-				gfx_key_handler((pressed ? 0x80 : 0) | (int)scancode | (ascii << 16));
+				gfx_key_handler((repeated ? 0x100 : 0) | (pressed ? 0x80 : 0) | (int)scancode | (ascii << 16));
 		}
 	}
 	if (key_state[0x1D] & key_state[0x2E])
