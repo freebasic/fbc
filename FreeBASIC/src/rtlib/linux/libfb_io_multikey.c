@@ -281,8 +281,10 @@ static void keyboard_console_handler(void)
 									ioctl(key_fd, KDSETMODE, KD_GRAPHICS);
 									gfx_restore();
 								}
+								memset(key_state, FALSE, 128);
 							}
-							memset(key_state, FALSE, 128);
+							else
+								key_state[scancode] = 0;
 							extended = 0;
 						}
 
