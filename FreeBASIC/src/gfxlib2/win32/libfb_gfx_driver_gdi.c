@@ -86,7 +86,18 @@ static void alpha_remover_blitter(unsigned char *dest, int pitch)
 /*:::::*/
 static void gdi_paint(void)
 {
-	memset(fb_mode->dirty, TRUE, fb_mode->h);
+	unsigned char *source;
+	HDC hdc;
+	
+	if (fb_win32.blitter)
+		source = buffer;
+	else
+		source = fb_mode->framebuffer;
+	
+	hdc = GetDC(fb_win32.wnd);
+	SetDIBitsToDevice(hdc, 0, 0, fb_win32.w, fb_win32.h, 0, 0, 0, fb_win32.h, source, bitmap_info, DIB_RGB_COLORS);
+	InvalidateRect(fb_win32.wnd, NULL, FALSE);
+	ReleaseDC(fb_win32.wnd, hdc);
 }
 
 
@@ -138,9 +149,7 @@ static int gdi_init(void)
 		x = (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1;
 		y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1;
 	}
-	fb_win32.wnd = CreateWindowEx(ex_style, fb_win32.window_class, fb_win32.window_title, style | WS_VISIBLE,
-			   x, y, rect.right, rect.bottom, NULL, NULL, fb_win32.hinstance, NULL);
-	if (!fb_win32.wnd)
+	if (fb_hInitWindow(style | WS_VISIBLE, ex_style, x, y, rect.right, rect.bottom))
 		return -1;
 	if (fb_win32.flags & DRIVER_SHAPED_WINDOW) {
 		if (!(module = GetModuleHandle("user32.dll")))
@@ -180,7 +189,6 @@ static int gdi_init(void)
 			return -1;
 	}
 
-	SetForegroundWindow(fb_win32.wnd);
 	hdc = GetDC(fb_win32.wnd);
 	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
 	ReleaseDC(fb_win32.wnd, hdc);

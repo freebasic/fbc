@@ -181,9 +181,7 @@ static int directx_init(void)
 	rect.bottom = fb_win32.h;
 
 	if (fb_win32.flags & DRIVER_FULLSCREEN) {
-		fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title, WS_POPUP | WS_VISIBLE, 0, 0,
-				   GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), NULL, NULL, fb_win32.hinstance, NULL);
-		if (!fb_win32.wnd)
+		if (fb_hInitWindow(WS_POPUP | WS_VISIBLE, 0, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN)))
 			return -1;
 		if (IDirectDraw2_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_ALLOWREBOOT | DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE) != DD_OK)
 			return -1;
@@ -228,11 +226,9 @@ static int directx_init(void)
 		AdjustWindowRect(&rect, style, 0);
 		rect.right -= rect.left;
 		rect.bottom -= rect.top;
-		fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title, style,
-				   (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
-				   (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1,
-				   rect.right, rect.bottom, NULL, NULL, fb_win32.hinstance, NULL);
-		if (!fb_win32.wnd)
+		if (fb_hInitWindow(style, 0, (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
+									 (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1,
+									 rect.right, rect.bottom))
 			return -1;
 		if (IDirectDraw2_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_NORMAL) != DD_OK)
 			return -1;
@@ -293,8 +289,6 @@ static int directx_init(void)
 	IDirectDraw2_GetMonitorFrequency(lpDD, (LPDWORD)&fb_mode->refresh_rate);
 
 	vsync_event = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-	SetForegroundWindow(fb_win32.wnd);
 
 	for (i = 0; i < 256; i++) {
 		c_rgodfDIKeyboard[i].pguid = &GUID_Key;

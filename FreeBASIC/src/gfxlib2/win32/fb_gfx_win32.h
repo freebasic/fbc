@@ -66,6 +66,7 @@ extern GFXDRIVER fb_gfxDriverOpenGL;
 
 extern LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 extern void fb_hHandleMessages(void);
+extern int fb_hInitWindow(DWORD style, DWORD ex_style, int x, int y, int w, int h);
 extern int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 extern void fb_hWin32Exit(void);
 extern void fb_hWin32Lock(void);

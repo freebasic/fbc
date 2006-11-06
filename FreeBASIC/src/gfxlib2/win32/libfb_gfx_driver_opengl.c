@@ -311,7 +311,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	hglrc = NULL;
 	hdc = NULL;
 
-	if (!(flags & DRIVER_OPENGL) || (flags & DRIVER_SHAPED_WINDOW))
+	if (!(flags & DRIVER_OPENGL) || (flags & DRIVER_NO_FRAME))
 		return -1;
 
 	library = fb_hDynLoad("opengl32.dll", wgl_funcs, (void **)&fb_wgl);
@@ -328,10 +328,10 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (GL_init(&pfd))
 		return -1;
 	
-	fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
-				    (WS_CLIPSIBLINGS | WS_CLIPCHILDREN) & ~WS_THICKFRAME,
-				    0, 0, 320, 200, HWND_DESKTOP, NULL, fb_win32.hinstance, NULL);
-	if ((!fb_win32.wnd) || (opengl_init()))
+	if (fb_hInitWindow((WS_CLIPSIBLINGS | WS_CLIPCHILDREN) & ~WS_THICKFRAME, 0, 0, 0, 8, 8))
+		return -1;
+	
+	if (opengl_init())
 		return -1;
 
 	hdc = GetDC(fb_win32.wnd);

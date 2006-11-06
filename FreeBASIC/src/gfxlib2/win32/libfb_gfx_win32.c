@@ -124,8 +124,6 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 		
 		case WM_MOUSEMOVE:
-			if (!fb_win32.is_active)
-				break;
 			GetCursorPos(&mouse_pos);
 			e.type = EVENT_MOUSE_MOVE;
 			mouse_x = e.x = lParam & 0xFFFF;
@@ -148,6 +146,8 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				has_focus = TRUE;
 				e.type = EVENT_MOUSE_ENTER;
 			}
+			if (!fb_win32.is_active)
+				e.type = 0;
 			break;
 
 		case WM_MOUSELEAVE:
@@ -357,6 +357,23 @@ void fb_hHandleMessages(void)
 		TranslateMessage(&message);
 		DispatchMessage(&message);
 	}
+}
+
+
+/*:::::*/
+int fb_hInitWindow(DWORD style, DWORD ex_style, int x, int y, int w, int h)
+{
+	fb_win32.wnd = CreateWindowEx(ex_style, fb_win32.window_class, fb_win32.window_title, style,
+		x, y, w, h, HWND_DESKTOP, NULL, fb_win32.hinstance, NULL);
+	if (!fb_win32.wnd)
+		return -1;
+	
+	if (fb_win32.flags & DRIVER_ALWAYS_ON_TOP)
+		SetWindowPos(fb_win32.wnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOSENDCHANGING);
+	
+	SetForegroundWindow(fb_win32.wnd);
+	
+	return 0;
 }
 
 
