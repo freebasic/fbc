@@ -236,7 +236,7 @@ static void driver_key_handler(int key)
 	
 	e.scancode = key & 0x7F;
 	e.type = (key & 0x100) ? EVENT_KEY_REPEAT : ((key & 0x80) ? EVENT_KEY_PRESS : EVENT_KEY_RELEASE);
-	e.ascii = (key >> 16) & 0x1FF;
+	e.ascii = (key & 0x1000000) ? 0 : ((key >> 16) & 0xFF);
 	fb_hPostEvent(&e);
 }
 

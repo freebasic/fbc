@@ -294,7 +294,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
                 else
                 	e.type = EVENT_KEY_RELEASE;
                 e.scancode = fb_hVirtualToScancode(wVkCode);
-                e.ascii = key < 0 ? 0 : key;
+                e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
 
                 /* We don't want to enter the menu ... */
                 if( wVkCode==VK_F10 || wVkCode==VK_MENU || key==0x6BFF )
