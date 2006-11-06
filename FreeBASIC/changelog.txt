@@ -70,6 +70,8 @@ Version 0.17 Beta:
 - the SCREENCONTROL function, to set/get internal gfxlib states. See fbgfx.bi for a list of accepted parameters (lillo)
 - Gfxlib now supports window positioning; just call "SCREENCONTROL SET_WINDOW_POS, x, y" (use GET_WINDOW_POS to retrieve current position) (lillo)
 - Module CONSTRUCTOR/DESTRUCTOR support priority attributes 101-65535 (jeffm)
+- the GFX_MULTISAMPLE flag to SCREEN, to enable fullscreen antialiasing while in OpenGL mode via the ARB_multisample extension (lillo)
+- the GFX_ALWAYS_ON_TOP flag to SCREEN, to let the program window stay always on top (lillo)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
