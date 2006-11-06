@@ -281,9 +281,9 @@ static void keyboard_console_handler(void)
 									ioctl(key_fd, KDSETMODE, KD_GRAPHICS);
 									gfx_restore();
 								}
-								memset(key_state, FALSE, 128);
-								extended = 0;
 							}
+							memset(key_state, FALSE, 128);
+							extended = 0;
 						}
 
 					/* fallthrough */
