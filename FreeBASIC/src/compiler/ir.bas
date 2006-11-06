@@ -1336,19 +1336,14 @@ private sub hPreserveRegs _
 		byval ptrvreg as IRVREG ptr = NULL _
 	) static
 
-    dim as IRVREG ptr vr
-    dim as IRVREG tr
-    dim as integer reg
-    dim as integer vr_dclass, vr_dtype, vr_typ
-    dim as string dname, sname
-    dim as integer freg							'' free reg
-    dim as integer npreg						'' don't preserve reg (used with CALLPTR)
     dim as integer class_
 
 	'' for each reg class
 	for class_ = 0 to EMIT_REGCLASSES-1
 
     	'' set the register that shouldn't be preserved (used for CALLPTR only)
+    	dim as integer npreg
+
     	npreg = INVALID
     	if( class_ = FB_DATACLASS_INTEGER ) then
     		if( ptrvreg <> NULL ) then
@@ -1369,21 +1364,29 @@ private sub hPreserveRegs _
     	end if
 
 		'' for each register on that class
+    	dim as integer reg
+
 		reg = regTB(class_)->getFirst( regTB(class_) )
 		do until( reg = INVALID )
 			'' if not free
-			if( (regTB(class_)->isFree( regTB(class_), reg ) = FALSE) and (reg <> npreg) ) then
+			if( (regTB(class_)->isFree( regTB(class_), reg ) = FALSE) and _
+				(reg <> npreg) ) then
+
+    			dim as IRVREG ptr vr
+    			dim as integer vr_dclass, vr_dtype, vr_typ
 
 				'' get the attached vreg
 				vr = regTB(class_)->getVreg( regTB(class_), reg )
                 assert( vr <> NULL )
+
                 hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
         		'' if reg is not preserved between calls
         		if( emitIsRegPreserved( vr_dclass, reg ) = FALSE ) then
+    				dim as integer freg
 
         			'' find a preserved reg to copy to
-        			freg = emitGetFreePreservedReg( vr_dclass )
+        			freg = emitGetFreePreservedReg( vr_dclass, vr_dtype )
 
         			'' if none free, spill reg
         			if( freg = INVALID ) then
@@ -1391,6 +1394,8 @@ private sub hPreserveRegs _
 
         			'' else, copy it to a preserved reg
         			else
+    					dim as IRVREG tr
+
         				tr = *vr
         				vr->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), freg, vr )
         				emitMOV( vr, @tr )

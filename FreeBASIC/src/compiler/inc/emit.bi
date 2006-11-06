@@ -361,7 +361,8 @@ declare sub emitGetResultReg _
 
 declare function emitGetFreePreservedReg _
 	( _
-		byval dclass as integer _
+		byval dclass as integer, _
+		byval dtype as integer _
 	) as integer
 
 declare function emitAllocLocal _

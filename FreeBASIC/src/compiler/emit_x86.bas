@@ -373,7 +373,8 @@ end sub
 '':::::
 function emitGetFreePreservedReg _
 	( _
-		byval dclass as integer _
+		byval dclass as integer, _
+		byval dtype as integer _
 	) as integer static
 
 	function = INVALID
@@ -388,10 +389,14 @@ function emitGetFreePreservedReg _
 		function = EMIT_REG_EBX
 
 	elseif( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_ESI ) ) then
-		function = EMIT_REG_ESI
+		if( symbGetDataSize( dtype ) <> 1 ) then
+			function = EMIT_REG_ESI
+		end if
 
 	elseif( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_EDI ) ) then
-		function = EMIT_REG_EDI
+		if( symbGetDataSize( dtype ) <> 1 ) then
+			function = EMIT_REG_EDI
+		end if
 	end if
 
 end function
@@ -1181,7 +1186,7 @@ end sub
 sub emitSECTION _
 	( _
 		byval section as integer, _
-		byval priority as integer _ 
+		byval priority as integer _
 	) static
 
     dim as string ostr
