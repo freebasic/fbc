@@ -195,7 +195,6 @@ static void *window_thread(void *arg)
 						fb_hPostEvent(&e);
 					break;
 				
-				
 				case ConfigureNotify:
 					if ((event.xconfigure.width != fb_linux.w) || (event.xconfigure.height != fb_linux.h)) {
 						/* Window has been maximized: simulate ALT-Enter */
@@ -386,6 +385,32 @@ void fb_hX11LeaveFullscreen(void)
 
 
 /*:::::*/
+void fb_hX11InitWindow(int x, int y)
+{
+	XSetWindowAttributes attribs;
+	XEvent event;
+	
+	XMoveResizeWindow(fb_linux.display, fb_linux.window, x, y, fb_linux.w, fb_linux.h);
+	attribs.override_redirect = ((fb_linux.flags & DRIVER_FULLSCREEN) ? True : False);
+	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
+	
+	XMapRaised(fb_linux.display, fb_linux.window);
+	
+	if (fb_linux.flags & DRIVER_ALWAYS_ON_TOP) {
+		fb_hMemSet(&event, 0, sizeof(event));
+		event.xclient.type = ClientMessage;
+		event.xclient.send_event = True;
+		event.xclient.message_type = XInternAtom(fb_linux.display, "_NET_WM_STATE", False);
+		event.xclient.window = fb_linux.window;
+		event.xclient.format = 32;
+		event.xclient.data.l[0] = 1;
+		event.xclient.data.l[1] = XInternAtom(fb_linux.display, "_NET_WM_STATE_ABOVE", False);
+		XSendEvent(fb_linux.display, root_window, False, SubstructureRedirectMask | SubstructureNotifyMask, &event);
+	}
+}
+
+
+/*:::::*/
 void fb_hXlibInit(void)
 {
 	if (!xlib_inited) {
@@ -425,6 +450,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	
 	color_map = None;
 	arrow_cursor = None;
+	wm_intern_hints = None;
 	
 	if (fb_linux.visual) {
 		fb_linux.depth = depth;

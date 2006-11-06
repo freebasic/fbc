@@ -96,14 +96,11 @@ static int opengl_window_init(void)
 	int x = 0, y = 0;
 	char *display_name;
 	
-	if (!fb_linux.flags & DRIVER_FULLSCREEN) {
+	if (!(fb_linux.flags & DRIVER_FULLSCREEN)) {
 		x = (XDisplayWidth(fb_linux.display, fb_linux.screen) - fb_linux.w) >> 1;
 		y = (XDisplayHeight(fb_linux.display, fb_linux.screen) - fb_linux.h) >> 1;
 	}
-	XMoveResizeWindow(fb_linux.display, fb_linux.window, x, y, fb_linux.w, fb_linux.h);
-	attribs.override_redirect = ((fb_linux.flags & DRIVER_FULLSCREEN) ? True : False);
-	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
-	XMapRaised(fb_linux.display, fb_linux.window);
+	fb_hX11InitWindow(x, y);
 	
 	fb_linux.display_offset = 0;
 	if (fb_linux.flags & DRIVER_FULLSCREEN) {

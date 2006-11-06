@@ -144,8 +144,8 @@ static void update_mask_32(unsigned char *pixel, unsigned char *mask, int w, int
 /*:::::*/
 static int x11_init(void)
 {
-	XSetWindowAttributes attribs;
 	XGCValues values;
+	XEvent event;
 	int x = 0, y = 0, h, is_rgb = FALSE;
 	char *display_name;
 	
@@ -165,9 +165,8 @@ static int x11_init(void)
 		x = (XDisplayWidth(fb_linux.display, fb_linux.screen) - fb_linux.w) >> 1;
 		y = (XDisplayHeight(fb_linux.display, fb_linux.screen) - fb_linux.h) >> 1;
 	}
-	XMoveResizeWindow(fb_linux.display, fb_linux.window, x, y, fb_linux.w, fb_linux.h);
-	attribs.override_redirect = ((fb_linux.flags & DRIVER_FULLSCREEN) ? True : False);
-	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
+	fb_hX11InitWindow(x, y);
+	
 	if (fb_linux.flags & DRIVER_SHAPED_WINDOW) {
 		shape_image = XCreateImage(fb_linux.display, fb_linux.visual, 1, XYBitmap, 0, NULL, fb_linux.w, fb_linux.h, 8, 0);
 		shape_image->data = calloc(1, shape_image->bytes_per_line * shape_image->height);
@@ -183,7 +182,6 @@ static int x11_init(void)
 		else
 			update_mask = update_mask_32;
 	}
-	XMapRaised(fb_linux.display, fb_linux.window);
 	
 	fb_linux.display_offset = 0;
 	display_name = XDisplayName(NULL);
