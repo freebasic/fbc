@@ -754,24 +754,39 @@ function symbLookupByNameAndSuffix _
 	) as FBSYMBOL ptr static
 
 	dim as FBSYMCHAIN ptr chain_
-	dim as integer deftyp
 
 	chain_ = symbLookupAt( ns, symbol, preservecase )
 
     '' any found?
     if( chain_ <> NULL ) then
-    	'' get default type if no suffix was given
+		'' check if types match
     	if( suffix = INVALID ) then
-    		deftyp = symbGetDefType( symbol )
+    		function = symbFindVarByDefType( chain_, symbGetDefType( symbol ) )
+    	else
+    		function = symbFindVarBySuffix( chain_, suffix )
     	end if
 
-		'' check if types match
-		function = symbFindBySuffix( chain_, suffix, deftyp )
 	else
 		function = NULL
 	end if
 
 end function
+
+'':::
+#macro hCheckModLevelVar( chain_ )
+	if( fbIsModLevel( ) = FALSE ) then
+		'' local?
+		if( symbIsLocal( chain_->sym ) ) then
+			'' not a main()'s local?
+			if( chain_->sym->scope = FB_MAINSCOPE ) then
+				return NULL
+		    end if
+		'' not shared?
+		elseif( symbIsShared( chain_->sym ) = FALSE ) then
+			return NULL
+		end if
+	end if
+#endmacro
 
 '':::::
 function symbFindByClass _
@@ -794,19 +809,7 @@ function symbFindByClass _
 
 	'' check if symbol isn't a non-shared module level one
 	if( class_ = FB_SYMBCLASS_VAR ) then
-		'' inside a proc? (but main())
-		if( fbIsModLevel( ) = FALSE ) then
-			'' local?
-			if( symbIsLocal( chain_->sym ) ) then
-				'' not a main()'s local?
-				if( chain_->sym->scope = FB_MAINSCOPE ) then
-					return NULL
-			    end if
-			'' not shared?
-			elseif( symbIsShared( chain_->sym ) = FALSE ) then
-				return NULL
-			end if
-		end if
+		hCheckModLevelVar( chain_ )
 	end if
 
 	function = chain_->sym
@@ -814,78 +817,39 @@ function symbFindByClass _
 end function
 
 '':::::
-function symbFindBySuffix _
+function symbFindVarBySuffix _
 	( _
 		byval chain_ as FBSYMCHAIN ptr, _
-		byval suffix as integer, _
-		byval deftyp as integer _
+		byval suffix as integer _
 	) as FBSYMBOL ptr static
 
-    '' symbol has a suffix? lookup a symbol with the same type, suffixed or not
-    if( suffix <> INVALID ) then
+    '' symbol has a suffix: lookup a symbol with the same type, suffixed or not
 
-    	'' QB quirk: fixed-len and zstrings referenced using '$' as suffix..
-    	if( suffix = FB_DATATYPE_STRING ) then
-    		do while( chain_ <> NULL )
-    			if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
-     				select case chain_->sym->typ
-     				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-     					 FB_DATATYPE_CHAR
-     					exit do
-     				end select
-     			end if
+   	'' QB quirk: fixed-len and zstrings referenced using '$' as suffix..
+   	if( suffix = FB_DATATYPE_STRING ) then
+   		do while( chain_ <> NULL )
+    		if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
+     			select case chain_->sym->typ
+     			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+     				 FB_DATATYPE_CHAR
+     				exit do
+     			end select
+     		end if
 
-    			chain_ = chain_->next
-    		loop
+    		chain_ = chain_->next
+    	loop
 
-    	'' anything but strings..
-    	else
-    		do while( chain_ <> NULL )
-    			if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
-     				if( chain_->sym->typ = suffix ) then
-     					exit do
-     				end if
-     			end if
-
-    			chain_ = chain_->next
-    		loop
-    	end if
-
-    '' symbol has no suffix: lookup a symbol w/o suffix or with the
-    '' same type as default type (last DEF###)
+    '' anything but strings..
     else
+    	do while( chain_ <> NULL )
+    		if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
+    			if( chain_->sym->typ = suffix ) then
+    				exit do
+    			end if
+    		end if
 
-    	'' QB quirk: see above
-    	if( deftyp = FB_DATATYPE_STRING ) then
-    		do while( chain_ <> NULL )
-    			if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
-     				if( chain_->sym->var.suffix = INVALID ) then
-     					exit do
-     				end if
-     				select case chain_->sym->typ
-     				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-     					 FB_DATATYPE_CHAR
-     					exit do
-     				end select
-     			end if
-
-    			chain_ = chain_->next
-    		loop
-
-    	'' anything but strings..
-    	else
-    		do while( chain_ <> NULL )
-    			if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
-     				if( chain_->sym->var.suffix = INVALID ) then
-     					exit do
-     				elseif( chain_->sym->typ = deftyp ) then
-     					exit do
-     				end if
-     			end if
-
-    			chain_ = chain_->next
-    		loop
-    	end if
+    		chain_ = chain_->next
+    	loop
     end if
 
 	if( chain_ = NULL ) then
@@ -893,18 +857,89 @@ function symbFindBySuffix _
 	end if
 
 	'' check if symbol isn't a non-shared module level one
-	if( fbIsModLevel( ) = FALSE ) then
-		'' local?
-		if( symbIsLocal( chain_->sym ) ) then
-			'' not a main()'s local?
-			if( chain_->sym->scope = FB_MAINSCOPE ) then
-				return NULL
-		    end if
-		'' not shared?
-		elseif( symbIsShared( chain_->sym ) = FALSE ) then
-			return NULL
-		end if
+	hCheckModLevelVar( chain_ )
+
+	function = chain_->sym
+
+end function
+
+'':::::
+function symbFindVarByDefType _
+	( _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval def_dtype as integer _
+	) as FBSYMBOL ptr static
+
+    '' symbol has no suffix: lookup a symbol w/o suffix or with the
+    '' same type as default type (last DEF###)
+
+    '' QB quirk: see above
+    if( def_dtype = FB_DATATYPE_STRING ) then
+    	do while( chain_ <> NULL )
+    		if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
+    			if( chain_->sym->var.suffix = INVALID ) then
+    				exit do
+    			end if
+
+    			select case chain_->sym->typ
+    			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+    				 FB_DATATYPE_CHAR
+    				exit do
+    			end select
+    		end if
+
+    		chain_ = chain_->next
+    	loop
+
+    '' anything but strings..
+    else
+    	do while( chain_ <> NULL )
+    		if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
+    			if( chain_->sym->var.suffix = INVALID ) then
+    				exit do
+    			elseif( chain_->sym->typ = def_dtype ) then
+    				exit do
+    			end if
+    		end if
+
+    		chain_ = chain_->next
+    	loop
+    end if
+
+	if( chain_ = NULL ) then
+		return NULL
 	end if
+
+	'' check if symbol isn't a non-shared module level one
+	hCheckModLevelVar( chain_ )
+
+	function = chain_->sym
+
+end function
+
+'':::::
+function symbFindVarByType _
+	( _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval dtype as integer _
+	) as FBSYMBOL ptr static
+
+    do while( chain_ <> NULL )
+    	if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
+    		if( chain_->sym->typ = dtype ) then
+    			exit do
+    		end if
+    	end if
+
+    	chain_ = chain_->next
+    loop
+
+	if( chain_ = NULL ) then
+		return NULL
+	end if
+
+	'' check if symbol isn't a non-shared module level one
+	hCheckModLevelVar( chain_ )
 
 	function = chain_->sym
 

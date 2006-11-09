@@ -648,11 +648,22 @@ declare function symbFindByClass _
 		byval class as integer _
 	) as FBSYMBOL ptr
 
-declare function symbFindBySuffix _
+declare function symbFindVarBySuffix _
 	( _
 		byval chain as FBSYMCHAIN ptr, _
-		byval suffix as integer, _
-		byval deftyp as integer _
+		byval suffix as integer _
+	) as FBSYMBOL ptr
+
+declare function symbFindVarByDefType _
+	( _
+		byval chain as FBSYMCHAIN ptr, _
+		byval dtype as integer _
+	) as FBSYMBOL ptr
+
+declare function symbFindVarByType _
+	( _
+		byval chain as FBSYMCHAIN ptr, _
+		byval dtype as integer _
 	) as FBSYMBOL ptr
 
 declare function symbLookupByNameAndClass _

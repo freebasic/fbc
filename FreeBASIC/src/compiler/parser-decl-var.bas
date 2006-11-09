@@ -249,7 +249,7 @@ end sub
 '':::::
 private function hDeclExternVar _
 	( _
-		byval ns as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -259,87 +259,81 @@ private function hDeclExternVar _
 		dTB() as FBARRAYDIM _
 	) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr s, desc
+	dim as FBSYMBOL ptr desc
 	dim as integer setattrib
 
     function = NULL
 
-    s = symbLookupByNameAndSuffix( ns, id, dtype )
-    if( s <> NULL ) then
-    	'' no extern?
-    	if( symbIsExtern( s ) = FALSE ) then
-    		exit function
-    	end if
-
-    	'' check type
-		if( (dtype <> symbGetType( s )) or _
-			(subtype <> symbGetSubType( s )) ) then
-    		if( errReportEx( FB_ERRMSG_TYPEMISMATCH, *id ) = FALSE ) then
-    			exit function
-    		end if
-		end if
-
-		setattrib = TRUE
-
-		'' dynamic?
-		if( symbIsDynamic( s ) ) then
-			if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
-    			if( errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id ) = FALSE ) then
-    				exit function
-    			end if
-    		end if
-
-    	'' static..
-    	else
-			if( (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0 ) then
-    			if( errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id ) = FALSE ) then
-    				exit function
-    			end if
-    		end if
-
-    		'' no extern static as local
-    		if( hCheckScope( ) = FALSE ) then
-				if( errGetCount( ) >= env.clopt.maxerrors ) then
-					exit function
-				else
-					'' error recovery: don't make it shared
-					setattrib = FALSE
-				end if
-			end if
-    	end if
-
-    	'' dup extern?
-    	if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
-    		return s
-    	end if
-
-    	'' set type
-    	if( setattrib ) then
-    		hVarExtToPub( s, attrib )
-		end if
-
-		'' check dimensions
-		if( symbGetArrayDimensions( s ) <> 0 ) then
-			if( dimensions <> symbGetArrayDimensions( s ) ) then
-    			if( errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id ) = FALSE ) then
-    				exit function
-    			end if
-
-    		else
-				'' set dims
-				symbSetArrayDimTb( s, dimensions, dTB() )
-    		end if
-		end if
-
-    else
-    	'' dup extern?
-    	if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
-    		exit function
-    	end if
-
+    if( sym = NULL ) then
+    	exit function
     end if
 
-    function = s
+    '' not extern?
+    if( symbIsExtern( sym ) = FALSE ) then
+    	exit function
+    end if
+
+    '' check type
+	if( (dtype <> symbGetType( sym )) or _
+		(subtype <> symbGetSubType( sym )) ) then
+    	if( errReportEx( FB_ERRMSG_TYPEMISMATCH, *id ) = FALSE ) then
+    		exit function
+    	end if
+	end if
+
+	setattrib = TRUE
+
+	'' dynamic?
+	if( symbIsDynamic( sym ) ) then
+		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
+    		if( errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id ) = FALSE ) then
+    			exit function
+    		end if
+    	end if
+
+    '' static..
+    else
+		if( (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0 ) then
+    		if( errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id ) = FALSE ) then
+    			exit function
+    		end if
+    	end if
+
+    	'' no extern static as local
+    	if( hCheckScope( ) = FALSE ) then
+			if( errGetCount( ) >= env.clopt.maxerrors ) then
+				exit function
+			else
+				'' error recovery: don't make it shared
+				setattrib = FALSE
+			end if
+		end if
+    end if
+
+    '' dup extern?
+    if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
+    	return sym
+    end if
+
+    '' set type
+    if( setattrib ) then
+    	hVarExtToPub( sym, attrib )
+	end if
+
+	'' check dimensions
+	if( symbGetArrayDimensions( sym ) <> 0 ) then
+		if( dimensions <> symbGetArrayDimensions( sym ) ) then
+    		if( errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id ) = FALSE ) then
+    			exit function
+    		end if
+
+    	else
+			'' set dims
+			symbSetArrayDimTb( sym, dimensions, dTB() )
+    	end if
+	end if
+
+    function = sym
 
 end function
 
@@ -359,35 +353,21 @@ private function hDeclStaticVar _
 		dTB() as FBARRAYDIM _
 	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr s, ns
-    dim as integer isextern
     dim as FB_SYMBOPT options
-
-    isextern = FALSE
+    dim as integer is_extern
 
     '' any var already defined?
     if( sym <> NULL ) then
-		ns = symbGetNamespace( sym )
-        '' different namespaces?
-    	if( ns <> symbGetCurrentNamespc( ) ) then
-    		'' not extern?
-    		if( symbIsExtern( sym ) = FALSE ) then
-    			if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-    				exit function
-    			end if
-    		end if
-    		isextern = TRUE
-    	end if
-
-	else
-		ns = symbGetCurrentNamespc( )
+    	is_extern = symbIsExtern( sym )
+    else
+    	is_extern = FALSE
     end if
 
     '' remove attrib, because COMMON and $dynamic..
     attrib and= (not FB_SYMBATTRIB_DYNAMIC)
 
-    ''
-    if( isextern = FALSE ) then
+    '' new (or dup) var?
+    if( is_extern = FALSE ) then
 		options = FB_SYMBOPT_NONE
 
 		if( addsuffix ) then
@@ -398,27 +378,23 @@ private function hDeclStaticVar _
 			options or= FB_SYMBOPT_UNSCOPE
 		end if
 
-    	s = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
-    				  	  lgt, dimensions, dTB(), _
-    				  	  attrib, options )
-	else
-		s = NULL
+    	sym = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
+    				  	  	lgt, dimensions, dTB(), _
+    				  	  	attrib, options )
+
+    '' already declared extern..
+    else
+    	sym = hDeclExternVar( sym, id, dtype, subtype, attrib, _
+    		  			      addsuffix, dimensions, dTB() )
 	end if
 
-    if( s = NULL ) then
-    	'' check if it's not an extern been declared
-    	s = hDeclExternVar( ns, id, dtype, subtype, attrib, _
-    		  			    addsuffix, dimensions, dTB() )
+	if( sym = NULL ) then
+    	errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+    	'' no error recovery: already parsed
+    	return NULL
+    end if
 
-		if( s = NULL ) then
-    		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
-    		'' no error recovery: already parsed
-    		return NULL
-    	end if
-
-	end if
-
-	function = s
+	function = sym
 
 end function
 
@@ -431,7 +407,7 @@ private function hDeclDynArray _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval ptrcnt as integer, _
-		byval istypeless as integer, _
+		byval is_typeless as integer, _
 		byval lgt as integer, _
 		byval addsuffix as integer, _
 		byval attrib as integer, _
@@ -439,8 +415,7 @@ private function hDeclDynArray _
 	) as FBSYMBOL ptr static
 
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)		'' always 0
-    dim as FBSYMBOL ptr s, ns, desc
-    dim as integer isrealloc
+    dim as FBSYMBOL ptr desc
     dim as FB_SYMBOPT options
 
     function = NULL
@@ -454,102 +429,78 @@ private function hDeclDynArray _
 
     attrib or= FB_SYMBATTRIB_DYNAMIC
 
-	if( sym <> NULL ) then
-		ns = symbGetNamespace( sym )
-	else
-		ns = symbGetCurrentNamespc( )
-	end if
-
-    ''
-  	isrealloc = TRUE
-  	s = symbLookupByNameAndSuffix( ns, id, dtype )
-   	if( s = NULL ) then
-
+    '' any variable already defined?
+    if( sym <> NULL ) then
    		'' typeless REDIM's?
-   		if( istypeless ) then
-   			'' try to find a var with the same name
-   			s = symbLookupByNameAndClass( ns, id, FB_SYMBCLASS_VAR )
-   			'' copy type
-   			if( s <> NULL ) then
-   				dtype = symbGetType( s )
-   				subtype = symbGetSubtype( s )
-   				lgt = symbGetLen( s )
-   			end if
+   		if( is_typeless ) then
+   			dtype = symbGetType( sym )
+   			subtype = symbGetSubtype( sym )
+   			ptrcnt = symbGetPtrCnt( sym )
+   			lgt = symbGetLen( sym )
    		end if
+    end if
 
-   		if( s = NULL ) then
-   			isrealloc = FALSE
+    '' new var?
+   	if( sym = NULL ) then
+		options = FB_SYMBOPT_NONE
 
-			options = FB_SYMBOPT_NONE
+		if( addsuffix ) then
+			options or= FB_SYMBOPT_ADDSUFFIX
+		end if
 
-			if( addsuffix ) then
-				options or= FB_SYMBOPT_ADDSUFFIX
-			end if
+		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+			options or= FB_SYMBOPT_UNSCOPE
+		end if
 
-			if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
-				options or= FB_SYMBOPT_UNSCOPE
-			end if
+   		sym = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
+   						    lgt, dimensions, dTB(), _
+   						    attrib, options )
 
-   			s = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
-   							  lgt, dimensions, dTB(), _
-   							  attrib, options )
-   			if( s = NULL ) then
-   				errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
-   				'' no error recovery, caller will take care of that
-   				exit function
-   			end if
-   		end if
-
-   	end if
-
-	'' check reallocation
-	if( isrealloc ) then
+	'' check reallocation..
+	else
 		'' not dynamic?
-		if( symbGetIsDynamic( s ) = FALSE ) then
-
+		if( symbGetIsDynamic( sym ) = FALSE ) then
    			'' could be an external..
-   			s = hDeclExternVar( ns, id, dtype, subtype, attrib, addsuffix, _
-   								dimensions, dTB() )
-   			if( s = NULL ) then
-   				errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
-				'' no error recovery, caller will take care of that
-				exit function
-			end if
+   			sym = hDeclExternVar( sym, id, dtype, subtype, attrib, addsuffix, _
+   								  dimensions, dTB() )
 
 		else
-
 			'' external?
-			if( symbIsExtern( s ) ) then
+			if( symbIsExtern( sym ) ) then
 				if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
-   					errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
-   					'' no error recovery, ditto
-					exit function
+   					sym = NULL
+				else
+					hVarExtToPub( sym, attrib )
 				end if
-
-				hVarExtToPub( s, attrib )
 			end if
 		end if
 	end if
 
-	attrib = symbGetAttrib( s )
+   	if( sym = NULL ) then
+   		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
+		'' no error recovery, caller will take care of that
+		exit function
+	end if
 
-	'' external? don't do any checks
+	attrib = symbGetAttrib( sym )
+
+	'' external? don't do any checks..
 	if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
-		return s
+		return sym
 	end if
 
 	'' not an argument passed by descriptor or a common array?
 	if( (attrib and (FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_COMMON)) = 0 ) then
 
-		if( (dtype <> symbGetType( s )) or _
-			(subtype <> symbGetSubType( s )) ) then
+		if( (dtype <> symbGetType( sym )) or _
+			(subtype <> symbGetSubType( sym )) ) then
     		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
     		'' no error recovery, caller will take care of that
     		exit function
 		end if
 
-		if( symbGetArrayDimensions( s ) > 0 ) then
-			if( dimensions <> symbGetArrayDimensions( s ) ) then
+		if( symbGetArrayDimensions( sym ) > 0 ) then
+			if( dimensions <> symbGetArrayDimensions( sym ) ) then
     			errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
     			'' no error recovery, ditto
     			exit function
@@ -558,8 +509,8 @@ private function hDeclDynArray _
 
 	'' else, can't check it's dimensions at compile-time
 	else
-		if( (dtype <> symbGetType( s )) or _
-			(subtype <> symbGetSubType( s )) ) then
+		if( (dtype <> symbGetType( sym )) or _
+			(subtype <> symbGetSubType( sym )) ) then
     		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
     		'' no error recovery, ditto
     		exit function
@@ -568,17 +519,146 @@ private function hDeclDynArray _
 
 	'' if COMMON, check for max dimensions used
 	if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
-		if( dimensions > symbGetArrayDimensions( s ) ) then
-			symbSetArrayDimensions( s, dimensions )
+		if( dimensions > symbGetArrayDimensions( sym ) ) then
+			symbSetArrayDimensions( sym, dimensions )
 		end if
 
 	'' or if dims = -1 (cause of "DIM|REDIM array()")
-	elseif( symbGetArrayDimensions( s ) = -1 ) then
-		symbSetArrayDimensions( s, dimensions )
+	elseif( symbGetArrayDimensions( sym ) = -1 ) then
+		symbSetArrayDimensions( sym, dimensions )
 
 	end if
 
-    function = s
+    function = sym
+
+end function
+
+'':::::
+private function hGetId _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byref suffix as integer _
+	) as FBSYMCHAIN ptr static
+
+	dim as FBSYMCHAIN ptr chain_
+
+	'' no parent? read as-is
+	if( parent = NULL ) then
+		chain_ = lexGetSymChain( )
+    else
+		chain_ = symbLookupAt( parent, lexGetText( ), FALSE )
+	end if
+
+    '' ID
+    select case lexGetClass( )
+    case FB_TKCLASS_IDENTIFIER
+		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
+			'' if inside a namespace, symbols can't contain periods (.)'s
+			if( symbIsGlobalNamespc( ) = FALSE ) then
+  				if( lexGetPeriodPos( ) > 0 ) then
+  					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+	 					return NULL
+					end if
+				end if
+			end if
+		end if
+
+    	*id = *lexGetText( )
+    	suffix = lexGetType( )
+    	hCheckSuffix( suffix )
+
+    	lexSkipToken( )
+
+	case FB_TKCLASS_QUIRKWD
+		'' only if inside a ns and if not local
+		if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
+    		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+    			return NULL
+    		else
+    			'' error recovery: fake an id
+    			*id = *hMakeTmpStr( )
+    			suffix = INVALID
+    		end if
+
+    	else
+    		*id = *lexGetText( )
+    		suffix = lexGetType( )
+    		hCheckSuffix( suffix )
+    	end if
+
+    	lexSkipToken( )
+
+    case else
+    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    		return NULL
+    	else
+    		'' error recovery: fake an id
+    		*id = *hMakeTmpStr( )
+    		suffix = INVALID
+    	end if
+    end select
+
+    function = chain_
+
+end function
+
+'':::::
+private function hLookupVar _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval is_typeless as integer, _
+		byval dtype as integer, _
+		byval suffix as integer, _
+		byval options as FB_IDOPT _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr sym = any
+
+    if( chain_ = NULL ) then
+    	return NULL
+    end if
+
+    if( is_typeless ) then
+    	if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
+    		sym = symbFindVarByDefType( chain_, dtype )
+    	else
+    		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+    	end if
+    elseif( suffix <> INVALID ) then
+    	sym = symbFindVarBySuffix( chain_, suffix )
+	else
+    	sym = symbFindVarByType( chain_, dtype )
+    end if
+
+    if( sym = NULL ) then
+    	return NULL
+    end if
+
+    '' different namespaces?
+    if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
+    	'' redim? anything allowed..
+    	if( (options and FB_IDOPT_ISDECL) = 0 ) then
+    		return sym
+    	end if
+
+    	'' currently in the global ns?
+    	if( symbIsGlobalNamespc( ) ) then
+    		'' not extern?
+    		if( symbIsExtern( sym ) = FALSE ) then
+    			if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+    				exit function
+    			end if
+    		end if
+
+    	'' inside another ns, allow dups..
+    	else
+    		return NULL
+    	end if
+    end if
+
+    function = sym
 
 end function
 
@@ -914,16 +994,24 @@ private function hVarDecl _
     static as zstring * FB_MAXNAMELEN+1 id, idalias
     static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
-    dim as FBSYMBOL ptr sym, subtype, ns
+    dim as FBSYMBOL ptr sym, subtype
     dim as ASTNODE ptr initree
-    dim as integer addsuffix, isdynamic, ismultdecl, istypeless, suffix
-    dim as integer dtype, lgt, ofs, ptrcnt, dimensions, isdecl
+    dim as integer addsuffix, is_dynamic, is_multdecl, is_typeless, is_decl, check_exprtb
+    dim as integer dtype, lgt, ofs, ptrcnt, dimensions, suffix
     dim as zstring ptr palias
 
     function = FALSE
 
+	'' inside a namespace but outside a proc?
+	if( symbIsGlobalNamespc( ) = FALSE ) then
+		if( fbIsModLevel( ) ) then
+			'' variables will be always shared..
+			attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+		end if
+	end if
+
     '' (AS SymbolType)?
-    ismultdecl = FALSE
+    is_multdecl = FALSE
     if( lexGetToken( ) = FB_TK_AS ) then
     	lexSkipToken( )
 
@@ -954,104 +1042,53 @@ private function hVarDecl _
 
     	addsuffix = FALSE
 
-    	ismultdecl = TRUE
+    	is_multdecl = TRUE
+    end if
+
+    dim as FB_IDOPT options
+    options = FB_IDOPT_DEFAULT
+
+    if( (token <> FB_TK_REDIM) or (options and FB_SYMBATTRIB_SHARED) ) then
+    	options or= FB_IDOPT_ISDECL
     end if
 
     do
-    	sym = hDeclLookupId( FB_SYMBCLASS_VAR )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
+    	dim as FBSYMBOL ptr parent
+		parent = cParentId( options )
 
-    	'' ID
-    	select case lexGetClass( )
-    	case FB_TKCLASS_IDENTIFIER
-			if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
-				'' if inside a namespace, symbols can't contain periods (.)'s
-				if( symbIsGlobalNamespc( ) = FALSE ) then
-  					if( lexGetPeriodPos( ) > 0 ) then
-  						if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-	  						exit function
-						end if
-					end if
-				end if
-			end if
+		dim as FBSYMCHAIN ptr chain_
+		chain_ = hGetId( parent, @id, suffix )
 
-    		id = *lexGetText( )
-    		suffix = lexGetType( )
-    		hCheckSuffix( suffix )
+    	is_typeless = FALSE
 
-    		lexSkipToken( )
-
-		case FB_TKCLASS_QUIRKWD
-			'' only if inside a ns and if not local
-			if( (symbIsGlobalNamespc( )) or (parser.scope > FB_MAINSCOPE) ) then
-    			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-    				exit function
-    			else
-    				'' error recovery: fake an id
-    				id = *hMakeTmpStr( )
-    				suffix = INVALID
-    			end if
-
-    		else
-    			id = *lexGetText( )
-    			suffix = lexGetType( )
-    			hCheckSuffix( suffix )
-    		end if
-
-    		lexSkipToken( )
-
-    	case else
-    		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: fake an id
-    			id = *hMakeTmpStr( )
-    			suffix = INVALID
-    		end if
-    	end select
-
-    	istypeless = FALSE
-
-    	if( ismultdecl = FALSE ) then
+    	if( is_multdecl = FALSE ) then
     		dtype = suffix
     		subtype	= NULL
+    		ptrcnt = 0
     		lgt	= 0
     		addsuffix = TRUE
     	else
     		if( suffix <> INVALID ) then
     			if( errReportEx( FB_ERRMSG_SYNTAXERROR, @id ) = FALSE ) then
     				exit function
+    			else
+    				'' error recovery
+    				suffix = INVALID
     			end if
     		end if
     	end if
 
     	'' ('(' ArrayDecl? ')')?
 		dimensions = 0
+		check_exprtb = FALSE
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 			lexSkipToken( )
 
-			isdynamic = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
-
-            '' QB quirk:
-            '' when the symbol was defined already by a preceeding COMMON
-            '' statement, then a DIM will work the same way as a REDIM
-            if( token = FB_TK_DIM ) then
-                if( sym <> NULL ) then
-                    if( isdynamic = FALSE ) then
-                    	if( symbIsCommon( sym ) ) then
-                    		if( symbGetArrayDimensions( sym ) <> 0 ) then
-                        		isdynamic = TRUE
-                        	end if
-                        end if
-                    end if
-                end if
-            end if
+			is_dynamic = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
 
 			if( lexGetToken( ) = CHAR_RPRNT ) then
 				dimensions = -1 				'' fake it
-				isdynamic = TRUE
+				is_dynamic = TRUE
 
     		else
     			'' only allow subscripts if not COMMON
@@ -1062,7 +1099,7 @@ private function hVarDecl _
 	    					exit function
     					end if
 
-    					isdynamic = FALSE
+    					is_dynamic = FALSE
 
 					'' can be static or dynamic..
 					else
@@ -1070,15 +1107,7 @@ private function hVarDecl _
 	    					exit function
     					end if
 
-						'' if subscripts are constants, convert exprTB to dimTB
-						if( hIsConst( dimensions, exprTB() ) ) then
-							'' only if not explicitly dynamic (ie: not REDIM, COMMON)
-							if( isdynamic = FALSE ) then
-								hMakeArrayDimTB( dimensions, exprTB(), dTB() )
-						    end if
-						else
-							isdynamic = TRUE
-						end if
+						check_exprtb = TRUE
 					end if
 
     			'' COMMON.. no subscripts
@@ -1103,7 +1132,6 @@ private function hVarDecl _
     			lexSkipToken( )
     		end if
 
-
     	'' scalar..
     	else
     		'' REDIM and scalar passed?
@@ -1113,7 +1141,7 @@ private function hVarDecl _
     			end if
     		end if
 
-    		isdynamic = FALSE
+    		is_dynamic = FALSE
     	end if
 
 		'' ALIAS LIT_STR?
@@ -1133,7 +1161,7 @@ private function hVarDecl _
 			end if
 		end if
 
-    	if( ismultdecl = FALSE ) then
+    	if( is_multdecl = FALSE ) then
     		'' (AS SymbolType)?
     		if( lexGetToken( ) = FB_TK_AS ) then
 
@@ -1178,7 +1206,7 @@ private function hVarDecl _
     		else
         		if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
         			'' it's not an error if REDIM'g an already declared array
-        			if( (sym = NULL) or (token <> FB_TK_REDIM) ) then
+        			if( (chain_ = NULL) or (token <> FB_TK_REDIM) ) then
         				if( errReportNotAllowed( FB_LANG_OPT_DEFTYPE, _
         							 		 	 FB_ERRMSG_DEFTYPEONLYVALIDINLANG ) = FALSE ) then
 							exit function
@@ -1190,32 +1218,59 @@ private function hVarDecl _
     			end if
 
 				if( dtype = INVALID ) then
-					istypeless = TRUE
+					is_typeless = TRUE
 					dtype = symbGetDefType( id )
 				end if
 
     			lgt	= symbCalcLen( dtype, subtype )
-
     		end if
     	end if
 
-		'' inside a namespace but outside a proc?
-		if( symbIsGlobalNamespc() = FALSE ) then
-			if( fbIsModLevel( ) ) then
-				if( (attrib and (FB_SYMBATTRIB_SHARED or _
-								 FB_SYMBATTRIB_COMMON or _
-								 FB_SYMBATTRIB_PUBLIC or _
-								 FB_SYMBATTRIB_EXTERN)) = 0 ) then
-					'' they are never allocated on stack..
-					attrib or= FB_SYMBATTRIB_STATIC
+		''
+		sym = hLookupVar( parent, chain_, is_typeless, dtype, suffix, options )
+
+    	if( sym = NULL ) then
+    		'' no symbol was found, check if an explicit namespace was given
+    		if( parent <> NULL ) then
+    			if( parent <> symbGetCurrentNamespc( ) ) then
+    				if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE ) = FALSE ) then
+    					exit function
+    				end if
+    			end if
+    		end if
+    	end if
+
+		''
+		if( dimensions > 0 ) then
+			'' QB quirk: when the symbol was defined already by a preceeding COMMON
+        	'' statement, then a DIM will work the same way as a REDIM
+        	if( token = FB_TK_DIM ) then
+				if( is_dynamic = FALSE ) then
+            		if( sym <> NULL ) then
+						if( symbIsCommon( sym ) ) then
+                    		is_dynamic = (symbGetArrayDimensions( sym ) <> 0)
+						end if
+					end if
+				end if
+			end if
+
+			if( check_exprtb ) then
+				'' if subscripts are constants, convert exprTB to dimTB
+				if( hIsConst( dimensions, exprTB() ) ) then
+					'' only if not explicitly dynamic (ie: not REDIM, COMMON)
+					if( is_dynamic = FALSE ) then
+						hMakeArrayDimTB( dimensions, exprTB(), dTB() )
+		    		end if
+				else
+					is_dynamic = TRUE
 				end if
 			end if
 		end if
 
     	''
-    	if( isdynamic ) then
+    	if( is_dynamic ) then
     		sym = hDeclDynArray( sym, id, palias, _
-    							 dtype, subtype, ptrcnt, istypeless, _
+    							 dtype, subtype, ptrcnt, is_typeless, _
     							 lgt, addsuffix, attrib, _
     							 dimensions )
     	else
@@ -1230,10 +1285,10 @@ private function hVarDecl _
     			exit function
     		end if
 
-    		isdecl = FALSE
+    		is_decl = FALSE
 
     	else
-    		isdecl = symbGetIsDeclared( sym )
+    		is_decl = symbGetIsDeclared( sym )
     	end if
 
    		''
@@ -1251,7 +1306,7 @@ private function hVarDecl _
 		end if
 
 		'' check for an initializer
-		initree = hVarInit( sym, isdecl, has_defctor, has_dtor )
+		initree = hVarInit( sym, is_decl, has_defctor, has_dtor )
 
 		if( initree = NULL ) then
     		if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -1266,7 +1321,7 @@ private function hVarDecl _
 			desc = NULL
 
 			'' not declared already?
-    		if( isdecl = FALSE ) then
+    		if( is_decl = FALSE ) then
     			dim as ASTNODE ptr var
 				var = astNewDECL( FB_SYMBCLASS_VAR, sym, initree )
 
@@ -1301,9 +1356,9 @@ private function hVarDecl _
 			if( token <> FB_TK_EXTERN ) then
 
 				'' array?
-				if( isdynamic or (dimensions > 0) ) then
+				if( is_dynamic or (dimensions > 0) ) then
 					'' not declared yet?
-					if( isdecl = FALSE ) then
+					if( is_decl = FALSE ) then
 						'' local?
 						if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
 												   	   FB_SYMBATTRIB_SHARED or _
@@ -1323,7 +1378,7 @@ private function hVarDecl _
 				end if
 
 				'' dynamic? if the dimensions are known, redim it
-				if( isdynamic ) then
+				if( is_dynamic ) then
 					if( dimensions > 0 ) then
 						rtlArrayRedim( sym, _
 									   symbGetLen( sym ), _
@@ -1338,7 +1393,7 @@ private function hVarDecl _
 				symbSetIsDeclared( sym )
 
 				'' not declared already?
-    			if( isdecl = FALSE ) then
+    			if( is_decl = FALSE ) then
             		'' flush the init tree (must be done after adding the decl node)
 					hFlushInitializer( sym, initree, has_defctor, has_dtor )
 				end if
@@ -1368,10 +1423,10 @@ function cStaticArrayDecl _
 		byref dimensions as integer, _
 		dTB() as FBARRAYDIM, _
 		byval checkprnts as integer _
-	) as integer static
+	) as integer
 
-    dim as integer i
-    dim as ASTNODE ptr expr
+    dim as integer i = any
+    dim as ASTNODE ptr expr = any
 
     function = FALSE
 
@@ -1500,8 +1555,8 @@ function cArrayDecl _
 		exprTB() as ASTNODE ptr _
 	) as integer
 
-    dim as integer i
-    dim as ASTNODE ptr expr
+    dim as integer i = any
+    dim as ASTNODE ptr expr = any
 
     function = FALSE
 

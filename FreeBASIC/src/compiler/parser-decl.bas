@@ -89,41 +89,5 @@ function hDeclCheckParent _
 
 end function
 
-'':::::
-function hDeclLookupId _
-	( _
-		byval for_class as FB_SYMBCLASS _
-	) as FBSYMBOL ptr static
-
-	dim as FBSYMCHAIN ptr chain_
-	dim as FBSYMBOL ptr sym, parent
-
-	chain_ = cIdentifier( FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
-
-    '' no symbol found?
-    if( chain_ = NULL ) then
-    	return NULL
-    end if
-
-    '' same class?
-    sym = symbFindByClass( chain_, for_class )
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-    parent = symbGetCurrentNamespc( )
-
-    '' same parents?
-    if( symbGetNamespace( sym ) = parent ) then
-    	return sym
-
-    '' allow dups if not the global ns
-    elseif( symbIsGlobalNamespc( ) = FALSE ) then
-    	sym = NULL
-    end if
-
-    function = sym
-
-end function
 
 

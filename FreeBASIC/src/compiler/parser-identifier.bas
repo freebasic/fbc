@@ -95,9 +95,9 @@ end function
 
 '':::::
 #macro hCheckDecl( base_parent, options )
-    if( base_parent <> NULL ) then
-    	'' declaration?
-    	if( (options and FB_IDOPT_ISDECL) <> 0 ) then
+    '' declaration?
+    if( (options and FB_IDOPT_ISDECL) <> 0 ) then
+    	if( base_parent <> NULL ) then
     		'' different parents?
     		if( symbGetParent( base_parent ) <> symbGetCurrentNamespc( ) ) then
 				if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then

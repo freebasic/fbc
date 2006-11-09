@@ -1006,11 +1006,6 @@ declare function hMatchExpr _
 	) as ASTNODE ptr
 
 
-declare function hDeclLookupId _
-	( _
-		byval for_class as FB_SYMBCLASS _
-	) as FBSYMBOL ptr
-
 declare function hDeclCheckParent _
 	( _
 		byval s as FBSYMBOL ptr _

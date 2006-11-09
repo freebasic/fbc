@@ -87,7 +87,8 @@ private function hFieldArray _
 			if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
 				exit function
 			else
-				exit do
+				'' error recovery: fake an expr
+				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
     	end if
 
@@ -762,7 +763,9 @@ function cDynArrayIdx _
 				if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
 					exit function
 				else
-					exit do
+					'' error recovery: fake an expr
+					idxexpr = NULL
+					exit function
 				end if
     		end if
     	end if
@@ -981,7 +984,8 @@ function cArrayIdx _
 			if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
 				exit function
 			else
-				exit do
+				idxexpr = NULL
+				exit function
 			end if
     	end if
 
@@ -1185,7 +1189,7 @@ function cVariableEx _
 	) as integer
 
 	dim as zstring ptr id = any
-	dim as integer dtype = any, deftyp = any
+	dim as integer dtype = any
 	dim as FBSYMBOL ptr sym = any, subtype = any
 	dim as ASTNODE ptr idxexpr = any
 
@@ -1200,12 +1204,11 @@ function cVariableEx _
     '' no suffix? lookup the default type (last DEF###) in the
     '' case symbol could not be found..
     if( dtype = INVALID ) then
-    	deftyp = symbGetDefType( id )
+    	sym = symbFindVarByDefType( chain_, symbGetDefType( id ) )
     else
-    	deftyp = INVALID
+    	sym = symbFindVarBySuffix( chain_, dtype )
     end if
 
-    sym = symbFindBySuffix( chain_, dtype, deftyp )
 	if( sym <> NULL ) then
 		dtype = sym->typ
 		subtype = sym->subtype
