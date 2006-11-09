@@ -474,7 +474,7 @@ static int hPrintDouble
 			{
 				if( nc == '#' )
 				{
-					if( addcomma == 0 )
+					/* if( addcomma == 0 ) */
 						++intdigs;
 					addcomma = 1;
 				}
