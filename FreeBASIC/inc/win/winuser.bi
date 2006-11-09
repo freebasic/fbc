@@ -3951,6 +3951,9 @@ declare function wsprintf cdecl alias "wsprintfA" (byval as LPSTR, byval as LPCS
 #define GetWindowTask(hWnd) cptr(HANDLE, GetWindowThreadProcessId(hWnd, NULL))
 #define SetSysModalWindow(h)
 
+#define GetClassLongPtr GetClassLong
+#define SetClassLongPtr SetClassLong
+
 end extern
 
 #endif
