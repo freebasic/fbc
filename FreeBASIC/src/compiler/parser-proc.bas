@@ -705,12 +705,18 @@ function cProcHeader _
 
     	'' overloaded?
     	if( symbGetProcIsOverloaded( head_proc ) ) then
-
             '' try to find a prototype with the same signature
     		head_proc = symbFindOverloadProc( head_proc, proc )
 
     		'' none found? then try to overload..
     		if( head_proc = NULL ) then
+    			'' extern decl but no prototype?
+    			if( is_extern ) then
+					if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
+						exit function
+					end if
+				end if
+
     			head_proc = symbAddProc( proc, @id, palias, NULL, _
     							   		 dtype, subtype, ptrcnt, _
     							   		 attrib, mode )
@@ -1601,6 +1607,14 @@ function cPropertyHeader _
 
     	'' none found? then try to overload..
     	if( head_proc = NULL ) then
+
+    		'' extern decl but no prototype?
+    		if( is_extern ) then
+				if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
+					exit function
+				end if
+			end if
+
     		head_proc = symbAddProc( proc, @id, palias, NULL, _
     						   		 dtype, subtype, ptrcnt, _
     						   		 attrib, mode )
