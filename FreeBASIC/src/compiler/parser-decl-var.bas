@@ -737,11 +737,10 @@ private function hVarInit _
 		'' only if it's not an object, static or global instances are allowed
 		if( has_ctor = FALSE ) then
 			if( astTypeIniIsConst( initree ) = FALSE ) then
-				if( errGetLast( ) = FB_ERRMSG_OK ) then
-					'' error recovery: discard the tree
-					astDelTree( initree )
-				end if
-				exit function
+				'' error recovery: discard the tree
+				astDelTree( initree )
+				initree = NULL
+				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 			end if
 		end if
 
