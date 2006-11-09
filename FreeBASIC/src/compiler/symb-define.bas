@@ -30,6 +30,11 @@
 #include once "inc\lex.bi"
 #include once "inc\hlp.bi"
 
+declare function symbGetFullProcName _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as zstring ptr
+
 type DEFCALLBACK as function() as string
 
 type SYMBDEF
@@ -145,14 +150,14 @@ private function hDefPath_cb( ) as string static
 
 #if defined(__FB_WIN32__) or defined(__FB_DOS__)
 		dim as string cwd
-		
+
 		cwd = curdir( )
-		
+
 		'' check for root directory case (C:\)
 		if( right(cwd, 1) = "\" ) then
 			cwd = left(cwd, len( cwd ) - 1 )
 		end if
-		
+
 		function = cwd + path
 #else
 		function = curdir( ) + path
@@ -163,14 +168,14 @@ private function hDefPath_cb( ) as string static
 end function
 
 '':::::
-private function hDefFunction_cb( ) as string static
+private function hDefFunction_cb( ) as string
 
 	if( symbGetIsMainProc( parser.currproc ) ) then
 		function = FB_MAINPROCNAME
 	elseif( symbGetIsModLevelProc( parser.currproc ) ) then
 		function = FB_MODLEVELNAME
 	else
-		function = *symbGetCurrentProcName( )
+		function = *symbGetFullProcName( parser.currproc )
 	end if
 
 end function

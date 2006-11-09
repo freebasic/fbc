@@ -2440,6 +2440,54 @@ function symbDemangleFunctionPtr _
 end function
 
 '':::::
+function symbGetFullProcName _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as zstring ptr
+
+	static as string res
+
+	res = ""
+
+	dim as FBSYMBOL ptr ns = symbGetNamespace( proc )
+
+	do while( ns <> @symbGetGlobalNamespc( ) )
+		res += *symbGetName( ns )
+		res += "."
+		ns = symbGetNamespace( ns )
+	loop
+
+	if( symbIsConstructor( proc ) ) then
+	 	res += "constructor"
+
+	elseif( symbIsDestructor( proc ) ) then
+		res += "destructor"
+
+	elseif( symbIsOperator( proc ) ) then
+		res += "operator."
+		if( proc->proc.ext <> NULL ) then
+			res += *astGetOpId( proc->proc.ext->opovl.op )
+		end if
+
+	elseif( symbIsProperty( proc ) ) then
+		res += *symbGetName( proc )
+
+		res += ".property."
+		if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
+			res += "get"
+		else
+			res += "set"
+		end if
+
+	else
+		res += *symbGetName( proc )
+	end if
+
+	function = strptr( res )
+
+end function
+
+'':::::
 function symbDemangleMethod _
 	( _
 		byval proc as FBSYMBOL ptr _
@@ -2447,18 +2495,7 @@ function symbDemangleMethod _
 
 	static as string res
 
-	res = *symbGetName( symbGetNamespace( proc ) )
-
-	if( symbIsConstructor( proc ) ) then
-	 	res += ".constructor"
-	elseif( symbIsOperator( proc ) ) then
-		res += ".operator"
-		if( proc->proc.ext <> NULL ) then
-			res += " " + *astGetOpId( proc->proc.ext->opovl.op )
-		end if
-	else
-		res += ".destructor"
-	end if
+	res = *symbGetFullProcName( proc )
 
 	res += "("
 
@@ -2475,5 +2512,4 @@ function symbDemangleMethod _
 	function = strptr( res )
 
 end function
-
 
