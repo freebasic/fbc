@@ -55,6 +55,8 @@
 #define END_OF_FUNCTION(proc)               void end_##proc (void) { }
 #define END_OF_STATIC_FUNCTION(proc) static void end_##proc (void) { }
 
+void (*__fb_dos_multikey_hook)(int scancode, int press, int ctrl_shift) = NULL;
+
 static void end_fb_ConsoleMultikey(void);
 
 static int inited = FALSE;
@@ -119,6 +121,10 @@ static int fb_MultikeyHandler(unsigned irq_number)
 			if( code!=0 ) {
 				/* Remeber scancode status */
 				__fb_force_input_buffer_changed = key[code] = !release_code;
+				if( __fb_dos_multikey_hook != 0 )
+				{
+					__fb_dos_multikey_hook(code, !release_code, (key[SC_CONTROL] ? 2 : ((key[SC_LSHIFT] || key[SC_RSHIFT]) ? 1 : 0)) );
+				}
 			}
 		}
 	}
@@ -138,6 +144,7 @@ static void fb_ConsoleMultikeyExit(void)
 	unlock_array(key);
 	unlock_var(got_extended_key);
 	unlock_var(__fb_force_input_buffer_changed);
+	unlock_var(__fb_dos_multikey_hook);
 }
 
 void fb_ConsoleMultikeyInit( void )
@@ -152,6 +159,7 @@ void fb_ConsoleMultikeyInit( void )
 	lock_array(key);
 	lock_var(got_extended_key);
 	lock_var(__fb_force_input_buffer_changed);
+	lock_var(__fb_dos_multikey_hook);
 	lock_proc(fb_MultikeyHandler);
 	lock_proc(fb_ConsoleMultikey);
 	fb_isr_set( 1,
