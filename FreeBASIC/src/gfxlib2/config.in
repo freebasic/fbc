@@ -24,6 +24,9 @@
 /* Define to 1 if you have the `floor' function. */
 #undef HAVE_FLOOR
 
+/* Define to 1 if you have the <GL/gl.h> header file. */
+#undef HAVE_GL_GL_H
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -142,6 +145,9 @@
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
 #undef WORDS_BIGENDIAN
+
+/* File offset bits */
+#undef _FILE_OFFSET_BITS
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const

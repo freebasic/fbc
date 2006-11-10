@@ -28,6 +28,10 @@ RANLIB = @RANLIB@
 SHELL = @SHELL@
 VPATH = @srcdir@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_CPU@
 
+ifeq (@FBRT_OPENGL@,opengl)
+VPATH += @srcdir@/opengl @srcdir@/opengl/@FBRT_TARGET@
+endif
+
 datadir = @datadir@
 exec_prefix = @prefix@
 libdir = @libdir@
@@ -70,6 +74,13 @@ FBRT_CPUDEPOBJS += $(patsubst @srcdir@/@FBRT_CPU@/%.s,$(FBRT_OBJDEST)/%.o,$(wild
 FBRT_HEADERS := $(wildcard @srcdir@/*.h)
 FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_TARGET@/*.h)
 
+ifeq (@FBRT_OPENGL@,opengl)
+    FBRT_OPENGLDEPOBJS := $(patsubst @srcdir@/opengl/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/opengl/*.c))
+    FBRT_OPENGLDEPOBJS += $(patsubst @srcdir@/opengl/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/opengl/*.s))
+    FBRT_OPENGLDEPOBJS += $(patsubst @srcdir@/opengl/@FBRT_TARGET@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/opengl/@FBRT_TARGET@/*.c))
+    FBRT_OPENGLDEPOBJS += $(patsubst @srcdir@/opengl/@FBRT_TARGET@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/opengl/@FBRT_TARGET@/*.s))
+endif
+
 FBRT_TOOLSOBJS := $(patsubst @srcdir@/tools/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/tools/*.c))
 FBRT_TOOLS     := $(patsubst $(FBRT_OBJDEST)/%.o,$(FBRT_OBJDEST)/%$(EXEEXT),$(FBRT_TOOLSOBJS))
 FBRT_DATAFILES := $(wildcard @srcdir@/data/*.fnt) $(wildcard @srcdir@/data/*.pal)
@@ -87,8 +98,8 @@ $(FBRT_OBJDEST)/%.o : %.c $(FBRT_HEADERS)
 $(FBRT_OBJDEST)/%.o : %.s fb_gfx_mmx.h
 	$(CC) $(ALL_CFLAGS) $(DEFS) -x assembler-with-cpp -c $< -o $@
 
-$(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS)
-	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS)
+$(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OPENGLDEPOBJS)
+	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OPENGLDEPOBJS)
 	$(RANLIB) $(FBRT_LIB)
 
 @srcdir@/libfb_gfx_data.c: $(FBRT_OBJDEST)/mk_dat$(EXEEXT) @srcdir@/data/data.lst $(FBRT_DATAFILES)
@@ -135,7 +146,7 @@ $(srcdir)/config.in: @MAINT@ $(srcdir)/configure
 # Other miscellaneous targets.
 
 mostlyclean:
-	-rm -rf $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OBJDEST)/mk_dat$(EXEEXT) $(FBRT_OBJDEST)/mk_dat.o
+	-rm -rf $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OBJDEST)/mk_dat$(EXEEXT) $(FBRT_OBJDEST)/mk_dat.o $(FBRT_OPENGLDEPOBJS)
 	-rm -f $(srcdir)/data/data.dat $(srcdir)/libfb_gfx_data.c
 
 clean: mostlyclean

@@ -37,7 +37,9 @@ extern "C" {
 #include <string.h>
 #include <math.h>
 
+#if defined(HAVE_GL_GL_H)
 #include "fb_gfx_gl.h"
+#endif
 
 #include "../rtlib/fb.h"
 #include "../rtlib/fb_error.h"
@@ -314,7 +316,11 @@ struct _PUT_HEADER {
 	unsigned int width;
 	unsigned int height;
 	unsigned int pitch;
+#if defined(HAVE_GL_GL_H)
 	GLuint tex;
+#else
+	unsigned int no_tex;
+#endif
 	char _reserved[8];
 	unsigned char data[0];
 } __attribute__((__packed__));
@@ -337,7 +343,9 @@ extern void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hPixelSet)(void *dest, int color, size_t size);
 extern unsigned int *fb_color_conv_16to32;
 extern char *__fb_window_title;
+#if defined(HAVE_GL_GL_H)
 extern FB_GL fb_gl;
+#endif
 #include "fb_gfx_data.h"
 
 /* Internal functions */
