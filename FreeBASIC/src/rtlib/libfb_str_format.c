@@ -183,7 +183,7 @@ FBSTRING *fb_hBuildDouble
     LenTotal = LenSign + LenFix + LenDecPoint + LenFrac;
 
 	/* alloc temp string */
-    dst = fb_hStrAllocTemp( NULL, LenTotal );
+    dst = fb_hStrAllocTemp_NoLock( NULL, LenTotal );
 	if( dst != NULL )
 	{
         if( LenSign!=0 ) {
@@ -1175,40 +1175,49 @@ FBCALL FBSTRING *fb_hStrFormat
     chDateSep = (( pszIntlResult==NULL ) ? '/' : *pszIntlResult );
     pszIntlResult = fb_IntlGet( eFIL_TimeDivider, FALSE );
     chTimeSep = (( pszIntlResult==NULL ) ? ':' : *pszIntlResult );
-    FB_LOCK();
-
+    FB_UNLOCK();
+    
     if( chDecimalPoint==0 )
         chDecimalPoint = '.';
     if( chThousandsSep==0 )
         chThousandsSep = ',';
 
-    if( mask == NULL || mask_length==0 ) {
+    FB_STRLOCK();
+
+    if( mask == NULL || mask_length==0 ) 
+    {
         dst = fb_hBuildDouble( value, chDecimalPoint, 0 );
-    } else {
+    } 
+    else 
+    {
         FormatMaskInfo info;
 
         /* Extract all information from the mask string */
-        if( !fb_hProcessMask( NULL,
+        if( fb_hProcessMask( NULL,
                               mask, mask_length,
                               value, &info,
                               chThousandsSep, chDecimalPoint,
-                              chDateSep, chTimeSep ) ) {
-            return dst;
+                              chDateSep, chTimeSep ) ) 
+        {
+            dst = fb_hStrAllocTemp_NoLock( NULL, info.length_min + info.length_opt );
+            if( dst == NULL ) 
+            {
+                fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+                dst = &__fb_ctx.null_desc;
+            }
+		    else
+            {
+                /* Build the new string according to the mask */
+                fb_hProcessMask( dst,
+                                 mask, mask_length,
+                                 value, &info,
+                                 chThousandsSep, chDecimalPoint,
+                                 chDateSep, chTimeSep );
+            }
         }
-
-        dst = fb_hStrAllocTemp( NULL, info.length_min + info.length_opt );
-        if( dst == NULL ) {
-            fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
-            return &__fb_ctx.null_desc;
-        }
-
-        /* Build the new string according to the mask */
-        fb_hProcessMask( dst,
-                         mask, mask_length,
-                         value, &info,
-                         chThousandsSep, chDecimalPoint,
-                         chDateSep, chTimeSep );
     }
+
+    FB_STRUNLOCK();
 
     return dst;
 }
