@@ -697,10 +697,14 @@ private function hTypeBody _
 
 	do
 		select case as const lexGetToken( )
+		'' single-line comment?
 		case FB_TK_COMMENT, FB_TK_REM
 		    cComment( )
 
+		'' newline?
 		case FB_TK_EOL
+			lexSkipToken( )
+			continue do
 
 		'' EOF?
 		case FB_TK_EOF
@@ -780,9 +784,6 @@ decl_inner:		'' it's an anonymous inner UDT
 
 			end select
 
-			'' Comment?
-			cComment( )
-
 		'' AS?
 		case FB_TK_AS
 			'' isn't it a field called "as"?
@@ -800,9 +801,6 @@ decl_inner:		'' it's an anonymous inner UDT
 					exit function
 				end if
 			end select
-
-			'' Comment?
-			cComment( )
 
 		case FB_TK_DECLARE
 			if( hTypeProtoDecl( s ) = FALSE ) then
@@ -836,19 +834,16 @@ decl_inner:		'' it's an anonymous inner UDT
 				end if
 			end if
 
-			'' Comment?
-			cComment( )
-
 		'' anything else, must be a field
 		case else
 			if( hTypeElementDecl( s ) = FALSE ) then
 				exit function
 			end if
 
-			'' Comment?
-			cComment( )
-
 		end select
+
+		'' Comment?
+		cComment( )
 
 	    if( cStmtSeparator( ) = FALSE ) then
 	    	if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
