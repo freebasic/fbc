@@ -756,7 +756,7 @@ declare function cProcArgList _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
-		byval thisexpr as ASTNODE ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr, _
 		byval isfunc as integer, _
 		byval optonly as integer _
 	) as ASTNODE ptr
@@ -1011,13 +1011,18 @@ declare function hDeclCheckParent _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
+declare function hAllocCallArg _
+	( _
+		byval arg_list as FB_CALL_ARG_LIST ptr _
+	) as FB_CALL_ARG ptr
+
 
 ''
 '' macros
 ''
 #define cCompSetAllowmask(s, v) s->allowmask = v
 
-#define hSkipStmt( ) 													_
+#define hSkipStmt( ) _
 	hSkipUntil( INVALID, FALSE )
 
 '':::::
@@ -1079,6 +1084,8 @@ declare function hDeclCheckParent _
 		end if
 	end if
 #endmacro
+
+#define hGetInstPtrMode(ip) iif( astIsCONST( ip ), FB_PARAMMODE_BYVAL, INVALID )
 
 #define fbIsModLevel( ) (parser.currproc = env.main.proc)
 

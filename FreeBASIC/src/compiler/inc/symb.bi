@@ -270,6 +270,10 @@ enum FB_UDTOPT
 	FB_UDTOPT_HASDTORFIELD		= &h0010
 	FB_UDTOPT_HASRECBYVALPARAM  = &h0020
 	FB_UDTOPT_HASRECBYVALRES 	= &h0040
+	FB_UDTOPT_HASGETPROPERTY	= &h0080
+	FB_UDTOPT_HASSETPROPERTY	= &h0100
+	FB_UDTOPT_HASIDXGETPROPERTY	= &h0200
+	FB_UDTOPT_HASIDXSETPROPERTY	= &h0400
 end enum
 
 type FB_STRUCT_DBG
@@ -330,6 +334,12 @@ type FB_CALL_ARG								'' used by overloaded function calls
 	expr			as ASTNODE_ ptr
 	mode			as FB_PARAMMODE
 	next			as FB_CALL_ARG ptr
+end type
+
+type FB_CALL_ARG_LIST
+	args			as integer
+	head			as FB_CALL_ARG ptr
+	tail			as FB_CALL_ARG ptr
 end type
 
 type FBS_PARAM
@@ -1954,6 +1964,22 @@ declare function symbCloneLabel _
 #define symbGetUDTHasRecByvalRes(s) ((s->udt.options and FB_UDTOPT_HASRECBYVALRES) <> 0)
 
 #define symbSetUDTHasRecByvalRes(s) s->udt.options or= FB_UDTOPT_HASRECBYVALRES
+
+#define symbGetUDTHasGetProp(s) ((s->udt.options and FB_UDTOPT_HASGETPROPERTY) <> 0)
+
+#define symbSetUDTHasGetProp(s) s->udt.options or= FB_UDTOPT_HASGETPROPERTY
+
+#define symbGetUDTHasSetProp(s) ((s->udt.options and FB_UDTOPT_HASSETPROPERTY) <> 0)
+
+#define symbSetUDTHasSetProp(s) s->udt.options or= FB_UDTOPT_HASSETPROPERTY
+
+#define symbGetUDTHasIdxGetProp(s) ((s->udt.options and FB_UDTOPT_HASIDXGETPROPERTY) <> 0)
+
+#define symbSetUDTHasIdxGetProp(s) s->udt.options or= FB_UDTOPT_HASIDXGETPROPERTY
+
+#define symbGetUDTHasIdxSetProp(s) ((s->udt.options and FB_UDTOPT_HASIDXSETPROPERTY) <> 0)
+
+#define symbSetUDTHasIdxSetProp(s) s->udt.options or= FB_UDTOPT_HASIDXSETPROPERTY
 
 #define symbGetUDTAlign(s) s->udt.align
 

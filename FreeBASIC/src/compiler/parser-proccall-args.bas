@@ -31,11 +31,8 @@ type FBCTX
 	arglist		as TLIST
 end type
 
-#define hInstPtrMode(ip) iif( astIsCONST( ip ), FB_PARAMMODE_BYVAL, INVALID )
-
 '' globals
 	dim shared ctx as FBCTX
-
 
 '':::::
 sub parserProcCallInit( )
@@ -47,6 +44,45 @@ end sub
 sub parserProcCallEnd( )
 
 	listFree( @ctx.arglist )
+
+end sub
+
+'':::::
+function hAllocCallArg _
+	( _
+		byval arg_list as FB_CALL_ARG_LIST ptr _
+	) as FB_CALL_ARG ptr
+
+	dim as FB_CALL_ARG ptr arg = listNewNode( @ctx.arglist )
+	if( arg_list->head = NULL ) then
+		arg_list->head = arg
+	else
+		arg_list->tail->next = arg
+	end if
+
+	arg_list->tail = arg
+	arg->next = NULL
+
+	arg_list->args += 1
+
+	function = arg
+
+end function
+
+'':::::
+private sub hDelCallArgs _
+	( _
+		byval arg_list as FB_CALL_ARG_LIST ptr _
+	) static
+
+	dim as FB_CALL_ARG ptr arg, nxt
+
+	arg = arg_list->head
+	do while( arg <> NULL )
+		nxt = arg->next
+		listDelNode( @ctx.arglist, arg )
+		arg = nxt
+	loop
 
 end sub
 
@@ -261,57 +297,29 @@ private function hOvlProcArg _
 end function
 
 '':::::
-private sub hDelArgNodes _
-	( _
-		byval arg as FB_CALL_ARG ptr _
-	) static
-
-	dim as FB_CALL_ARG ptr nxt
-
-	do while( arg <> NULL )
-		nxt = arg->next
-		listDelNode( @ctx.arglist, arg )
-		arg = nxt
-	loop
-
-end sub
-
-'':::::
-#macro hAllocOvlProcArg( arg, arg_head, arg_tail )
-	arg = listNewNode( @ctx.arglist )
-	if( arg_head = NULL ) then
-		arg_head = arg
-	else
-		arg_tail->next = arg
-	end if
-	arg_tail = arg
-	arg->next = NULL
-#endmacro
-
-'':::::
 ''ProcArgList     =    ProcArg (DECL_SEPARATOR ProcArg)* .
 ''
 private function hOvlProcArgList _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval thisexpr as ASTNODE ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr, _
 		byval isfunc as integer, _
 		byval optonly as integer _
 	) as ASTNODE ptr
 
-    dim as integer args = any, i = any, params = any
+    dim as integer i = any, params = any, args = any
     dim as ASTNODE ptr procexpr = any
     dim as FBSYMBOL ptr param = any, ovlproc = any
-    dim as FB_CALL_ARG ptr arg_head = any, arg_tail = any, arg = any, nxt = any
+    dim as FB_CALL_ARG ptr arg = any, nxt = any
     dim as FB_ERRMSG err_num = any
 
 	function = NULL
 
-	args = 0
 	params = symGetProcOvlMaxParams( proc )
+	args = arg_list->args
 
 	'' no parms? (could happen by mistake..)
-	if( params = iif( thisexpr = NULL, 0, 1 ) ) then
+	if( params = iif( symbIsMethod( proc ), 1, 0 ) ) then
 		'' sub? check the optional parentheses
 		if( isfunc = FALSE ) then
 			'' '('
@@ -330,30 +338,24 @@ private function hOvlProcArgList _
 
 		procexpr = astNewCALL( proc, NULL )
 
-		'' method call?
-		if( thisexpr <> NULL ) then
+		'' any pre-defined arg?
+		arg = arg_list->head
+		do while( arg <> NULL )
+			dim as FB_CALL_ARG ptr nxt = arg->next
+
 			if( astNewARG( procexpr, _
-						   thisexpr, _
-						   INVALID, _
-					   	   hInstPtrMode( thisexpr ) ) = NULL ) then
+					   	   arg->expr, _
+					   	   INVALID, _
+				   	   	   arg->mode ) = NULL ) then
 				exit function
 			end if
-		end if
+
+			listDelNode( @ctx.arglist, arg )
+
+			arg = nxt
+		loop
 
 		return procexpr
-	end if
-
-	arg_head = NULL
-	arg_tail = NULL
-
-	'' method call?
-	if( thisexpr <> NULL ) then
-        '' alloc a new arg
-		hAllocOvlProcArg( arg, arg_head, arg_tail )
-
-		arg->expr = thisexpr
-		arg->mode = hInstPtrMode( thisexpr )
-		args += 1
 	end if
 
 	if( optonly = FALSE ) then
@@ -376,12 +378,12 @@ private function hOvlProcArgList _
 			end if
 
 			'' alloc a new arg
-			hAllocOvlProcArg( arg, arg_head, arg_tail )
+			arg = hAllocCallArg( arg_list )
 
 			if( hOvlProcArg( args, arg, isfunc ) = FALSE ) then
 				'' not an error? (could be an optional)
 				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					hDelArgNodes( arg_head )
+					hDelCallArgs( arg_list )
 					exit function
 				end if
 			end if
@@ -404,15 +406,16 @@ private function hOvlProcArgList _
 	end if
 
 	'' try finding the closest overloaded proc
-	ovlproc = symbFindClosestOvlProc( proc, args, arg_head, @err_num )
+	ovlproc = symbFindClosestOvlProc( proc, args, arg_list->head, @err_num )
 	if( ovlproc = NULL ) then
+		hDelCallArgs( arg_list )
+
 		if( err_num = FB_ERRMSG_OK ) then
 			err_num = FB_ERRMSG_NOMATCHINGPROC
 		end if
 
 		errReportParam( proc, 0, NULL, err_num )
 
-		hDelArgNodes( arg_head )
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		else
@@ -428,12 +431,11 @@ private function hOvlProcArgList _
 
     '' add to tree
 	param = symbGetProcLastParam( proc )
-	arg = arg_head
+	arg = arg_list->head
 	for i = 0 to args-1
         nxt = arg->next
 
 		if( astNewARG( procexpr, arg->expr, INVALID, arg->mode ) = NULL ) then
-			hDelArgNodes( arg )
 			if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
 				exit function
 			else
@@ -472,7 +474,7 @@ function cProcArgList _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
-		byval thisexpr as ASTNODE ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr, _
 		byval isfunc as integer, _
 		byval optonly as integer _
 	) as ASTNODE ptr
@@ -485,7 +487,7 @@ function cProcArgList _
 	if( symbGetProcIsOverloaded( proc ) ) then
 		'' only if there's more than one overloaded function
 		if( symbGetProcOvlNext( proc ) <> NULL ) then
-			return hOvlProcArgList( proc, thisexpr, isfunc, optonly )
+			return hOvlProcArgList( proc, arg_list, isfunc, optonly )
 		end if
 	end if
 
@@ -493,25 +495,32 @@ function cProcArgList _
 
     procexpr = astNewCALL( proc, ptrexpr )
 
-	args = 0
 	params = symbGetProcParams( proc )
+	args = arg_list->args
+
 	param = symbGetProcLastParam( proc )
 
-	'' method call?
-	if( thisexpr <> NULL ) then
+	'' any pre-defined args?
+	dim as FB_CALL_ARG ptr arg = arg_list->head
+	do while( arg <> NULL )
+		dim as FB_CALL_ARG ptr nxt = arg->next
+
 		if( astNewARG( procexpr, _
-					   thisexpr, _
+					   arg->expr, _
 					   INVALID, _
-					   hInstPtrMode( thisexpr ) ) = NULL ) then
+					   arg->mode ) = NULL ) then
 			exit function
 		end if
 
-		args += 1
+		listDelNode( @ctx.arglist, arg )
+
+		'' next
 		param = symbGetProcPrevParam( proc, param )
-	end if
+		arg = nxt
+	loop
 
 	'' proc has no args?
-	if( params = iif( thisexpr <> NULL, 1, 0 ) ) then
+	if( params = iif( symbIsMethod( proc ), 1, 0 ) ) then
 		'' sub? check the optional parentheses
 		if( isfunc = FALSE ) then
 			'' '('

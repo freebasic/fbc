@@ -157,12 +157,63 @@ function cProcCall _
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr reslabel = any
 	dim as ASTNODE ptr procexpr = any
+	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
 	function = NULL
 
+	'' method call?
+	if( thisexpr <> NULL ) then
+		dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list )
+		arg->expr = thisexpr
+		arg->mode = hGetInstPtrMode( thisexpr )
+	end if
+
 	'' property?
 	if( symbIsProperty( sym ) ) then
-		'' the arg is the lhs expression
+
+		dim as integer is_indexed = FALSE
+
+		'' '('?
+		if( lexGetToken( ) = CHAR_LPRNT ) then
+			is_indexed = TRUE
+
+			if( symbGetUDTHasIdxSetProp( symbGetParent( sym ) ) = FALSE ) then
+				if( errReport( FB_ERRMSG_PROPERTYHASNOIDXSETMETHOD, TRUE ) = FALSE ) then
+					exit function
+				end if
+			end if
+
+			lexSkipToken( )
+
+			'' index expr
+			dim as ASTNODE ptr expr = 0
+			if( cExpression( expr ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				end if
+			end if
+
+			dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list )
+			arg->expr = expr
+			arg->mode = INVALID
+
+			'' ')'
+			if( lexGetToken( ) <> CHAR_RPRNT ) then
+    			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: skip until next ')'
+    				hSkipUntil( CHAR_RPRNT, TRUE )
+    			end if
+			else
+				lexSkipToken( )
+			end if
+		end if
+
+		'' the value arg is the lhs expression
 
 		'' '='
 		if( lexGetToken( ) <> FB_TK_ASSIGN ) then
@@ -174,10 +225,12 @@ function cProcCall _
 			lexSkipToken( )
 		end if
 
-		if( symGetProcOvlMaxParams( sym ) = 1 ) then
-    		if( errReport( FB_ERRMSG_PROPERTYHASNOSETMETHOD ) = FALSE ) then
-    			exit function
-    		end if
+		if( is_indexed = FALSE ) then
+			if( symbGetUDTHasSetProp( symbGetParent( sym ) ) = FALSE ) then
+    			if( errReport( FB_ERRMSG_PROPERTYHASNOSETMETHOD ) = FALSE ) then
+    				exit function
+    			end if
+			end if
 		end if
 
 		checkprnts = FALSE
@@ -210,7 +263,7 @@ function cProcCall _
 	fbSetPrntOptional( not checkprnts )
 
 	'' ProcArgList
-	procexpr = cProcArgList( sym, ptrexpr, thisexpr, FALSE, FALSE )
+	procexpr = cProcArgList( sym, ptrexpr, @arg_list, FALSE, FALSE )
 	if( procexpr = NULL ) then
 		exit function
 	end if

@@ -359,8 +359,8 @@ Most Important Features:
 
       EXTERN "c++"
         NAMESPACE cpp
-          DECLARE FUNCTION sum ( BYVAL a AS INTEGER, _
-                                 BYVAL b AS INTEGER ) AS INTEGER
+          DECLARE FUNCTION sum ( a AS INTEGER, _
+                                 b AS INTEGER ) AS INTEGER
         END NAMESPACE
       END EXTERN
 
@@ -418,7 +418,7 @@ Most Important Features:
     - Function field types:
 
       TYPE MyType
-         MyFunction AS FUNCTION (BYVAL ArgumentA AS INTEGER) AS INTEGER
+         MyFunction AS FUNCTION (ArgumentA AS INTEGER) AS INTEGER
       END TYPE
 
     - Bit fields:
@@ -460,7 +460,7 @@ Most Important Features:
     
     - Constructor chaining is supported (as in Java):
     
-      CONSTRUCTOR foo( BYVAL bar AS INTEGER )
+      CONSTRUCTOR foo( bar AS INTEGER )
       	this.bar = bar
       END CONSTRUCTOR
 
@@ -487,10 +487,10 @@ Most Important Features:
       TYPE foo
       	bar AS INTEGER
       	DECLARE OPERATOR CAST ( ) AS STRING	
-      	DECLARE CONSTRUCTOR ( BYVAL bar AS INTEGER )
+      	DECLARE CONSTRUCTOR ( bar AS INTEGER )
       END TYPE
       
-      CONSTRUCTOR foo ( BYVAL bar AS INTEGER )
+      CONSTRUCTOR foo ( bar AS INTEGER )
       	this.bar = bar
       END CONSTRUCTOR
       
@@ -504,16 +504,26 @@ Most Important Features:
 
   o Properties in User Defined Types (TYPE or CLASS):
   
-    - Set:
+    - Set (the "value" parameter can be overloaded):
       
-      PROPERTY foo.bar( BYVAL new_bar AS INTEGER )
-      	this._bar = new_bar
+      PROPERTY foo.bar( value AS INTEGER )
+      	this._bar = value
       END PROPERTY
 
     - Get:
           
       PROPERTY foo.bar AS INTEGER
       	return this._bar
+      END PROPERTY
+      
+    - Indexed (the "index" parameter can be overloaded also):
+
+      PROPERTY foo.bar( index AS INTEGER, value AS INTEGER )
+      	this._array(index) = value
+      END PROPERTY
+
+      PROPERTY foo.bar( index AS INTEGER ) AS INTEGER
+      	return this._array(index)
       END PROPERTY
     
   o Arrays:
@@ -548,13 +558,13 @@ Most Important Features:
 
     - Function pointers:
 
-      DIM MyPointer AS SUB(BYVAL ArgumentA AS INTEGER, BYVAL ArgumentB AS DOUBLE)
-      DIM OtherPointer AS FUNCTION(BYVAL ArgumentA AS INTEGER)
+      DIM MyPointer AS SUB(ArgumentA AS INTEGER, ArgumentB AS DOUBLE)
+      DIM OtherPointer AS FUNCTION(ArgumentA AS INTEGER)
 
       MyPointer = @RealSub '' or PROCPTR(RealSub)
       MyPointer(1, 2)
 
-      SUB RealSub(BYVAL ArgumentA AS INTEGER, BYVAL ArgumentB AS DOUBLE)
+      SUB RealSub(ArgumentA AS INTEGER, ArgumentB AS DOUBLE)
          Result = ArgumentA * ArgumentB
       END SUB
 
@@ -608,8 +618,8 @@ Most Important Features:
 
   o Optional function arguments (numeric and strings):
 
-      DECLARE SUB Test(a AS DOUBLE = 12.345, BYVAL b AS BYTE = 255, _
-                       BYVAL s AS STRING = "abc")
+      DECLARE SUB Test(a AS DOUBLE = 12.345, b AS BYTE = 255, _
+                       s AS STRING = "abc")
 
       Test
       Test , 128

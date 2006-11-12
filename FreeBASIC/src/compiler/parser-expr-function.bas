@@ -27,6 +27,20 @@
 #include once "inc\ast.bi"
 
 '':::::
+#macro hParseRPNT( )
+	if( lexGetToken( ) <> CHAR_RPRNT ) then
+    	if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: skip until next ')'
+    		hSkipUntil( CHAR_RPRNT, TRUE )
+    	end if
+	else
+		lexSkipToken( )
+	end if
+#endmacro
+
+'':::::
 function cFunctionCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -35,6 +49,7 @@ function cFunctionCall _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr funcexpr = any
+	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
 	function = NULL
 
@@ -42,19 +57,48 @@ function cFunctionCall _
     	exit function
     end if
 
+	'' method call?
+	if( thisexpr <> NULL ) then
+		dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list )
+		arg->expr = thisexpr
+		arg->mode = hGetInstPtrMode( thisexpr )
+	end if
+
 	'' property?
 	if( symbIsProperty( sym ) ) then
 
-		if( symGetProcOvlMinParams( sym ) <> 1 ) then
-    		if( errReport( FB_ERRMSG_PROPERTYHASNOGETMETHOD ) = FALSE ) then
-    			exit function
-    		end if
-		end if
+		'' '('?
+		if( lexGetToken( ) = CHAR_LPRNT ) then
 
-		'' no args
-		funcexpr = cProcArgList( sym, ptrexpr, thisexpr, TRUE, TRUE )
-		if( funcexpr = NULL ) then
-			exit function
+			if( symbGetUDTHasIdxGetProp( symbGetParent( sym ) ) = FALSE ) then
+				if( errReport( FB_ERRMSG_PROPERTYHASNOIDXGETMETHOD, TRUE ) = FALSE ) then
+					exit function
+				end if
+			end if
+
+			lexSkipToken( )
+
+			funcexpr = cProcArgList( sym, ptrexpr, @arg_list, TRUE, FALSE )
+			if( funcexpr = NULL ) then
+				exit function
+			end if
+
+			'' ')'
+			hParseRPNT( )
+
+		'' not indexed..
+		else
+			if( symbGetUDTHasGetProp( symbGetParent( sym ) ) = FALSE ) then
+    			if( errReport( FB_ERRMSG_PROPERTYHASNOGETMETHOD ) = FALSE ) then
+    				exit function
+    			end if
+			end if
+
+			'' no args
+			funcexpr = cProcArgList( sym, ptrexpr, @arg_list, TRUE, TRUE )
+			if( funcexpr = NULL ) then
+				exit function
+			end if
 		end if
 
 	else
@@ -63,26 +107,17 @@ function cFunctionCall _
 			lexSkipToken( )
 
 			'' ProcArgList
-			funcexpr = cProcArgList( sym, ptrexpr, thisexpr, TRUE, FALSE )
+			funcexpr = cProcArgList( sym, ptrexpr, @arg_list, TRUE, FALSE )
 			if( funcexpr = NULL ) then
 				exit function
 			end if
 
 			'' ')'
-			if( lexGetToken( ) <> CHAR_RPRNT ) then
-    			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-    				exit function
-    			else
-    				'' error recovery: skip until next ')'
-    				hSkipUntil( CHAR_RPRNT, TRUE )
-    			end if
-			else
-				lexSkipToken( )
-			end if
+			hParseRPNT( )
 
 		else
 			'' ProcArgList (function can have optional params)
-			funcexpr = cProcArgList( sym, ptrexpr, thisexpr, TRUE, TRUE )
+			funcexpr = cProcArgList( sym, ptrexpr, @arg_list, TRUE, TRUE )
 			if( funcexpr = NULL ) then
 				exit function
 			end if
@@ -175,6 +210,7 @@ function cCtorCall _
 	dim as FBSYMBOL ptr tmp = any
 	dim as integer isprnt = any
 	dim as ASTNODE ptr procexpr = any
+	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
     '' alloc temp var
     tmp = symbAddTempVar( symbGetType( sym ), _
@@ -191,9 +227,14 @@ function cCtorCall _
 		isprnt = FALSE
 	end if
 
+    '' pass the instance ptr
+	dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list )
+	arg->expr = astBuildVarField( tmp )
+	arg->mode = INVALID
+
 	procexpr = cProcArgList( symbGetCompCtorHead( sym ), _
 					  		 NULL, _
-					  		 astBuildVarField( tmp ), _
+					  		 @arg_list, _
 					  		 TRUE, _
 					  		 FALSE )
 	if( procexpr = NULL ) then

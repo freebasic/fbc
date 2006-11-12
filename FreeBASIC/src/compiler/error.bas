@@ -221,12 +221,14 @@ end type
 		@"Invalid array subscript", _
 		@"TYPE or CLASS has no default constructor", _
 		@"Invalid priority attribute", _
-		@"PROPERTY SET should have a single parameter", _
-		@"PROPERTY SET should not return any result", _
+		@"PROPERTY GET should have no parameter, or just one if indexed", _
+		@"PROPERTY SET should have one parameter, or just two if indexed", _
 		@"Expected 'PROPERTY'", _
 		@"Illegal outside a PROPERTY block", _
-		@"PROPERTY has no GET method", _
-		@"PROPERTY has no SET method" _
+		@"PROPERTY has no GET method/accessor", _
+		@"PROPERTY has no SET method/accessor", _
+		@"PROPERTY has no indexed GET method/accessor", _
+		@"PROPERTY has no indexed SET method/accessor" _
 	}
 
 

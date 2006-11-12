@@ -705,6 +705,8 @@ function cProcHeader _
 
     	'' overloaded?
     	if( symbGetProcIsOverloaded( head_proc ) ) then
+    		attrib or= FB_SYMBATTRIB_OVERLOADED
+
             '' try to find a prototype with the same signature
     		head_proc = symbFindOverloadProc( head_proc, proc )
 
@@ -728,50 +730,49 @@ function cProcHeader _
     					'' error recovery: create a fake symbol
     					return CREATEFAKEID( proc )
     				end if
-    			else
-    				return head_proc
     			end if
 
-    		end if
-
-    		attrib or= FB_SYMBATTRIB_OVERLOADED
-    	end if
-
-    	'' already parsed?
-    	if( symbGetIsDeclared( head_proc ) ) then
-    		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: create a fake symbol
-    			return CREATEFAKEID( proc )
+    			proc = head_proc
     		end if
     	end if
 
-    	'' there's already a prototype for this proc, check for
-    	'' declaration conflits and fix up the arguments
-    	if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-    		else
-    			'' error recovery: create a fake symbol
-    			return CREATEFAKEID( proc )
+    	if( head_proc <> proc ) then
+    		'' already parsed?
+    		if( symbGetIsDeclared( head_proc ) ) then
+    			if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: create a fake symbol
+    				return CREATEFAKEID( proc )
+    			end if
     		end if
-    	end if
 
-    	'' check calling convention
-    	if( symbGetProcMode( head_proc ) <> mode ) then
-    		if( errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
-    			exit function
+    		'' there's already a prototype for this proc, check for
+    		'' declaration conflits and fix up the arguments
+    		if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
+					exit function
+    			else
+    				'' error recovery: create a fake symbol
+    				return CREATEFAKEID( proc )
+    			end if
     		end if
+
+    		'' check calling convention
+    		if( symbGetProcMode( head_proc ) <> mode ) then
+    			if( errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
+    				exit function
+    			end if
+    		end if
+
+    		'' use the prototype
+    		proc = head_proc
+
+    		''
+    		symbSetIsDeclared( proc )
+
+    		symbSetAttrib( proc, attrib )
     	end if
-
-    	'' use the prototype
-    	proc = head_proc
-
-    	''
-    	symbSetIsDeclared( proc )
-
-    	symbSetAttrib( proc, attrib )
     end if
 
 	'' ctor or dtor?
@@ -1252,46 +1253,47 @@ function cOperatorHeader _
     				'' error recovery: create a fake symbol
     				return CREATEFAKEID( proc )
     			end if
-    		else
-    			return head_proc
     		end if
-    	end if
 
-    	'' already parsed?
-    	if( symbGetIsDeclared( head_proc ) ) then
-    		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: create a fake symbol
-    			return CREATEFAKEID( proc )
+    		proc = head_proc
+
+    	else
+    		'' already parsed?
+    		if( symbGetIsDeclared( head_proc ) ) then
+    			if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: create a fake symbol
+    				return CREATEFAKEID( proc )
+    			end if
     		end if
-    	end if
 
-    	'' there's already a prototype for this operator, check for
-    	'' declaration conflits and fix up the arguments
-    	if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-    		else
-    			'' error recovery: create a fake symbol
-    			return CREATEFAKEID( proc )
+    		'' there's already a prototype for this operator, check for
+    		'' declaration conflits and fix up the arguments
+    		if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
+					exit function
+    			else
+    				'' error recovery: create a fake symbol
+    				return CREATEFAKEID( proc )
+    			end if
     		end if
-    	end if
 
-    	'' check calling convention
-    	if( symbGetProcMode( head_proc ) <> mode ) then
-    		if( errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
-    			exit function
+    		'' check calling convention
+    		if( symbGetProcMode( head_proc ) <> mode ) then
+    			if( errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
+    				exit function
+    			end if
     		end if
+
+    		'' use the prototype
+    		proc = head_proc
+
+    		''
+    		symbSetIsDeclared( proc )
+
+    		symbSetAttrib( proc, attrib )
     	end if
-
-    	'' use the prototype
-    	proc = head_proc
-
-    	''
-    	symbSetIsDeclared( proc )
-
-    	symbSetAttrib( proc, attrib )
 	end if
 
     ''
@@ -1365,6 +1367,60 @@ private function hCheckParent _
 end function
 
 '':::::
+private function hCheckPropParams _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval is_propset as integer _
+	) as integer
+
+	dim as integer min_params = any, max_params = any
+
+	function = FALSE
+
+	if( is_propset ) then
+		min_params = 1
+		max_params = 2
+	else
+		min_params = 0
+		max_params = 1
+	end if
+
+	''
+	if( symbGetProcParams( proc ) < 1 + min_params ) then
+		if( errReport( iif( is_propset, _
+							FB_ERRMSG_PARAMCNTFORPROPSET, _
+							FB_ERRMSG_PARAMCNTFORPROPGET ), TRUE ) = FALSE ) then
+			exit function
+		end if
+
+	elseif( symbGetProcParams( proc ) > 1 + max_params ) then
+		if( errReport( iif( is_propset, _
+							FB_ERRMSG_PARAMCNTFORPROPSET, _
+							FB_ERRMSG_PARAMCNTFORPROPGET ), TRUE ) = FALSE ) then
+			exit function
+		end if
+	end if
+
+	'' any optional param?
+	dim as FBSYMBOL ptr param = symbGetProcTailParam( proc )
+	dim as integer i = 0
+	do while( param <> NULL )
+		if( symbGetIsOptional( param ) ) then
+    		if( hParamError( proc, 1+i, FB_ERRMSG_PARAMCANTBEOPTIONAL ) = FALSE ) then
+    			exit function
+    		end if
+		end if
+
+		i += 1
+		param = param->prev
+	loop
+
+	''
+	function = TRUE
+
+end function
+
+'':::::
 ''ProcHeader   		=  ID CallConvention? (ALIAS LIT_STRING)?
 ''                     Parameters? (AS SymbolType)? STATIC? EXPORT?
 ''
@@ -1376,7 +1432,7 @@ function cPropertyHeader _
 	) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXNAMELEN+1 id, aliasid, libname
-    dim as integer dtype, mode, lgt, ptrcnt, is_extern, is_propset
+    dim as integer dtype, mode, lgt, ptrcnt, is_extern, is_propset, is_indexed
     dim as FBSYMBOL ptr head_proc, proc, subtype, parent
     dim as zstring ptr palias, plib
     dim as FB_SYMBSTATS stats
@@ -1475,34 +1531,8 @@ function cPropertyHeader _
 
 	symbGetAttrib( proc ) = attrib
 
-	is_propset = symbGetProcParams( proc ) <> 1
-
-	if( is_propset ) then
-		'' not a single param?
-		if( symbGetProcParams( proc ) <> 1+1 ) then
-			if( errReport( FB_ERRMSG_PROPSETHASONLYONEPARAM, TRUE ) = FALSE ) then
-				exit function
-			end if
-		end if
-
-		'' optional?
-		dim as FBSYMBOL ptr param
-		param = symbGetProcTailParam( proc )
-		if( symbGetIsOptional( param ) ) then
-    		if( hParamError( proc, 2, FB_ERRMSG_PARAMCANTBEOPTIONAL ) = FALSE ) then
-    			exit function
-    		end if
-		end if
-	end if
-
     '' (AS SymbolType)?
     if( lexGetToken( ) = FB_TK_AS ) then
-
-    	if( is_propset ) then
-    		if( errReport( FB_ERRMSG_PROPSETCANTHAVERESULT ) = FALSE ) then
-    			exit function
-    		end if
-    	end if
 
     	lexSkipToken( )
 
@@ -1522,27 +1552,28 @@ function cPropertyHeader _
     		end if
     	end if
 
+    	is_propset = FALSE
+
 	else
-        if( is_propset = FALSE ) then
-        	if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
-        		if( errReportNotAllowed( FB_LANG_OPT_DEFTYPE, _
-         		 					 	 FB_ERRMSG_DEFTYPEONLYVALIDINLANG ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a type
-					dtype = FB_DATATYPE_INTEGER
-				end if
-			end if
-		end if
+		is_propset = TRUE
     end if
+
+	if( hCheckPropParams( proc, is_propset ) = FALSE ) then
+		exit function
+	end if
 
     if( is_propset ) then
     	dtype = FB_DATATYPE_VOID
     	subtype = NULL
+
+		is_indexed = symbGetProcParams( proc ) = 1+2
+
     else
 		if( dtype = INVALID ) then
 			dtype = symbGetDefType( id )
 		end if
+
+		is_indexed = symbGetProcParams( proc ) = 1+1
     end if
 
 	'' prototype?
@@ -1553,6 +1584,20 @@ function cPropertyHeader _
     	if( proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     			exit function
+    		end if
+    	end if
+
+    	if( is_indexed ) then
+    		if( is_propset ) then
+    			symbSetUDTHasIdxSetProp( parent )
+    		else
+    			symbSetUDTHasIdxGetProp( parent )
+    		end if
+    	else
+    		if( is_propset ) then
+    			symbSetUDTHasSetProp( parent )
+    		else
+    			symbSetUDTHasGetProp( parent )
     		end if
     	end if
 
@@ -1626,51 +1671,65 @@ function cPropertyHeader _
     				'' error recovery: create a fake symbol
     				return CREATEFAKEID( proc )
     			end if
-    		else
-    			return head_proc
     		end if
 
-    	end if
+    		proc = head_proc
 
-    	'' already parsed?
-    	if( symbGetIsDeclared( head_proc ) ) then
-    		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: create a fake symbol
-    			return CREATEFAKEID( proc )
+    	else
+    		'' already parsed?
+    		if( symbGetIsDeclared( head_proc ) ) then
+    			if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: create a fake symbol
+    				return CREATEFAKEID( proc )
+    			end if
     		end if
-    	end if
 
-    	'' there's already a prototype for this proc, check for
-    	'' declaration conflits and fix up the arguments
-    	if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-    		else
-    			'' error recovery: create a fake symbol
-    			return CREATEFAKEID( proc )
+    		'' there's already a prototype for this proc, check for
+    		'' declaration conflits and fix up the arguments
+    		if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
+					exit function
+    			else
+    				'' error recovery: create a fake symbol
+    				return CREATEFAKEID( proc )
+    			end if
     		end if
-    	end if
 
-    	'' check calling convention
-    	if( symbGetProcMode( head_proc ) <> mode ) then
-    		if( errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
-    			exit function
+    		'' check calling convention
+    		if( symbGetProcMode( head_proc ) <> mode ) then
+    			if( errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
+    				exit function
+    			end if
     		end if
+
+    		'' use the prototype
+    		proc = head_proc
+
+    		''
+    		symbSetIsDeclared( proc )
+
+    		symbSetAttrib( proc, attrib )
     	end if
-
-    	'' use the prototype
-    	proc = head_proc
-
-    	''
-    	symbSetIsDeclared( proc )
-
-    	symbSetAttrib( proc, attrib )
     end if
 
     ''
     symbSetProcIncFile( proc, env.inf.incfile )
+
+    if( is_indexed ) then
+    	if( is_propset ) then
+    		symbSetUDTHasIdxSetProp( parent )
+    	else
+    		symbSetUDTHasIdxGetProp( parent )
+    	end if
+    else
+    	if( is_propset ) then
+    		symbSetUDTHasSetProp( parent )
+    	else
+    		symbSetUDTHasGetProp( parent )
+    	end if
+    end if
 
     function = proc
 
@@ -1875,46 +1934,63 @@ function cCtorHeader _
     				'' error recovery: create a fake symbol
     				return symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, FB_DATATYPE_VOID, NULL, 0, attrib, mode )
     			end if
-    		else
-    			return head_proc
     		end if
-    	end if
 
-    	'' already parsed?
-    	if( symbGetIsDeclared( head_proc ) ) then
-    		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: create a fake symbol
-    			return symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, FB_DATATYPE_VOID, NULL, 0, attrib, mode )
+    		proc = head_proc
+
+    	else
+    		'' already parsed?
+    		if( symbGetIsDeclared( head_proc ) ) then
+    			if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: create a fake symbol
+    				return symbAddProc( proc, _
+    									hMakeTmpStr( ), _
+    									NULL, _
+    									NULL, _
+    									FB_DATATYPE_VOID, _
+    									NULL, _
+    									0, _
+    									attrib, _
+    									mode )
+    			end if
     		end if
-    	end if
 
-    	'' there's already a prototype for this operator, check for
-    	'' declaration conflits and fix up the arguments
-    	if( hCheckPrototype( head_proc, proc, FB_DATATYPE_VOID, NULL ) = FALSE ) then
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-    		else
-    			'' error recovery: create a fake symbol
-    			return symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, FB_DATATYPE_VOID, NULL, 0, attrib, mode )
+    		'' there's already a prototype for this operator, check for
+    		'' declaration conflits and fix up the arguments
+    		if( hCheckPrototype( head_proc, proc, FB_DATATYPE_VOID, NULL ) = FALSE ) then
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
+					exit function
+    			else
+    				'' error recovery: create a fake symbol
+    				return symbAddProc( proc, _
+    									hMakeTmpStr( ), _
+    									NULL, _
+    									NULL, _
+    									FB_DATATYPE_VOID, _
+    									NULL, _
+    									0, _
+    									attrib, _
+    									mode )
+    			end if
     		end if
-    	end if
 
-    	'' check calling convention
-    	if( symbGetProcMode( head_proc ) <> mode ) then
-    		if( errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
-    			exit function
+    		'' check calling convention
+    		if( symbGetProcMode( head_proc ) <> mode ) then
+    			if( errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
+    				exit function
+    			end if
     		end if
+
+    		'' use the prototype
+    		proc = head_proc
+
+    		''
+    		symbSetIsDeclared( proc )
+
+    		symbSetAttrib( proc, attrib )
     	end if
-
-    	'' use the prototype
-    	proc = head_proc
-
-    	''
-    	symbSetIsDeclared( proc )
-
-    	symbSetAttrib( proc, attrib )
 	end if
 
     ''

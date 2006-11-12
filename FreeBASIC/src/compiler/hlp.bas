@@ -53,10 +53,11 @@ function hMatch _
 		byval token as integer _
 	) as integer
 
-	function = FALSE
 	if( lexGetToken( ) = token ) then
-		function = TRUE
 		lexSkipToken( )
+		function = TRUE
+	else
+		function = FALSE
 	end if
 
 end function
