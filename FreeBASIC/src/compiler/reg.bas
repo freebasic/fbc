@@ -122,14 +122,18 @@ private function regPop _
 		byval size as integer _					'' in bytes
 	) as integer static
 
-    dim as REG_REG ptr r
+    dim as REG_REG ptr r, last
 
 	r = this_->regctx.freetail
 	do while( r <> NULL )
 		'' same size?
 		if( (this_->regctx.sizeTB(r->num) and size) <> 0 ) then
 			'' remove from free list
-			this_->regctx.freetail = r->prev
+			if( this_->regctx.freetail = r ) then
+				this_->regctx.freetail = r->prev
+			else
+				last->prev = r->prev
+			end if
 
 			'' add to used list
 			r->prev = this_->regctx.usedtail
@@ -138,6 +142,7 @@ private function regPop _
 			return r->num
 		end if
 
+		last = r
 		r = r->prev
 	loop
 
