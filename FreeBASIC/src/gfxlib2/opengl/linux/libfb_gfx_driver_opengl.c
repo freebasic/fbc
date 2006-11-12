@@ -29,6 +29,14 @@
 #include "fb_gfx_linux.h"
 #include <GL/glx.h>
 
+/* For compatibility with old Mesa headers */
+#ifndef GLX_SAMPLE_BUFFERS_ARB
+# define GLX_SAMPLE_BUFFERS_ARB             100000
+#endif
+#ifndef GLX_SAMPLES_ARB
+# define GLX_SAMPLES_ARB                    100001
+#endif
+
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_exit(void);
 static void driver_flip(void);
