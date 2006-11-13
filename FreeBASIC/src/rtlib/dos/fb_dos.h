@@ -121,8 +121,10 @@ void (*__fb_dos_multikey_hook)(int scancode, int flags);
 #define KB_REPEAT   0x00000002
 #define KB_SHIFT    0x00000004
 #define KB_CTRL     0x00000008
-#define KB_CAPSLOCK 0x00000010
-#define KB_NUMLOCK  0x00000020
+#define KB_ALT      0x00000010
+#define KB_CAPSLOCK 0x00000020
+#define KB_NUMLOCK  0x00000040
+#define KB_EXTENDED 0x00000080
 
 /**************************************************************************************************
  * VB-compatible functions

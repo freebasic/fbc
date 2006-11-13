@@ -89,10 +89,7 @@ extern void fb_MMX_code_end(void);
 void fb_hPostEvent_code_start(void);
 void fb_hPostEvent_code_end(void);
 
-#define EXTENDED (255 << 8)
-
-#define X EXTENDED
-static const unsigned short kb_scan_to_ascii[128][3] = {
+static const unsigned char kb_scan_to_ascii[128][3] = {
 	/*
 	normal
 		   +shift
@@ -101,7 +98,7 @@ static const unsigned short kb_scan_to_ascii[128][3] = {
 	{    0,     0,     0},
 	{   27,    27,     0},	/* esc */
 	{   49,    33,     0},	/* 1 ! */
-	{   50,    64,   X|3},	/* 2 @ */
+	{   50,    64,     0},	/* 2 @ */
 	{   51,    35,     0},	/* 3 # */
 	{   52,    36,     0},	/* 4 $ */
 	{   53,    37,     0},	/* 5 % */
@@ -113,7 +110,7 @@ static const unsigned short kb_scan_to_ascii[128][3] = {
 	{   45,    95,     0},	/* - _ */
 	{   61,    43,     0},	/* = + */
 	{    8,     8,   127},	/* backspace */
-	{    9,     9, X|148},	/* tab */
+	{    9,     9,     0},	/* tab */
 	{  113,    81,    17},	/* q Q */
 	{  119,    87,    23},	/* w W */
 	{  101,    69,     5},	/* e E */
@@ -157,34 +154,42 @@ static const unsigned short kb_scan_to_ascii[128][3] = {
 	{    0,     0,     0},	/* alt */
 	{   32,    32,    32},	/* space */
 	{    0,     0,     0},	/* caps lock */
-	{ X|59,  X|84,  X|94},	/* F1  */
-	{ X|60,  X|85,  X|95},	/* F2  */
-	{ X|61,  X|86,  X|96},	/* F3  */
-	{ X|62,  X|87,  X|97},	/* F4  */
-	{ X|63,  X|88,  X|98},	/* F5  */
-	{ X|64,  X|89,  X|99},	/* F6  */
-	{ X|65,  X|90, X|100},	/* F7  */
-	{ X|66,  X|91, X|101},	/* F8  */
-	{ X|67,  X|92, X|102},	/* F9  */
-	{ X|68,  X|93, X|103},	/* F10 */
+	{    0,     0,     0},	/* F1  */
+	{    0,     0,     0},	/* F2  */
+	{    0,     0,     0},	/* F3  */
+	{    0,     0,     0},	/* F4  */
+	{    0,     0,     0},	/* F5  */
+	{    0,     0,     0},	/* F6  */
+	{    0,     0,     0},	/* F7  */
+	{    0,     0,     0},	/* F8  */
+	{    0,     0,     0},	/* F9  */
+	{    0,     0,     0},	/* F10 */
 	{    0,     0,     0},	/* num lock */
 	{    0,     0,     0},	/* scroll lock */
-	{ X|71,  X|71, X|119},	/* home */
-	{ X|72,  X|72, X|141},	/* up */
-	{ X|73,  X|73, X|134},	/* page up */
-	{ X|75,  X|75, X|115},	/* left */
-	{ X|77,  X|77, X|116},	/* right */
-	{   43,    43,     0},	/* numpad + */
-	{ X|79,  X|79, X|117},	/* end */
-	{ X|80,  X|80, X|145},	/* down */
-	{ X|81,  X|81, X|118},	/* page down */
-	{ X|82,  X|82, X|146},	/* insert */
-	{ X|83,  X|83, X|147},	/* delete */
-	{X|133, X|135, X|137},	/* F11 */
-	{X|134, X|138, X|138}	/* F12 */
+	{    0,     0,     0},	/* home */
+	{    0,     0,     0},	/* up */
+	{    0,     0,     0},	/* page up */
+	{   45,    45,     0},	/* numpad - */
+	{    0,     0,     0},	/* left */
+	{    0,     0,     0},	/* numpad 5 */
+	{    0,     0,     0},	/* right */
+	{   43,	   43,     0},	/* numpad + */
+	{    0,     0,     0},	/* end */
+	{    0,     0,     0},	/* down */
+	{    0,     0,     0},	/* page down */
+	{    0,     0,     0},	/* insert */
+	{    0,     0,     0},  /* delete */
+	{    0,     0,     0},	/* F11 */
+	{    0,     0,     0}	/* F12 */
 };
-#undef X
 
+static const char kb_numpad_to_ascii[13] = {
+	'7', '8', '9',  0,
+	'4', '5', '6', '+',
+	'1', '2', '3',
+	'0', '.'
+};
+	
 
 #define lock_var(var)         fb_dos_lock_data( &(var), sizeof(var) )
 #define lock_array(array)     fb_dos_lock_data( (array), sizeof(array) )
@@ -230,15 +235,30 @@ static void fb_dos_multikey_hook(int scancode, int flags)
 	
 	e.scancode = scancode;
 	
-	e.ascii = kb_scan_to_ascii[scancode][(flags & KB_CTRL) ? 2 : (flags & KB_SHIFT) ? 1 : 0];
-	
-	if ( flags & KB_CAPSLOCK )
+	if ( flags & KB_ALT )
 	{
-		if ( (flags & KB_SHIFT) && ((e.ascii >= 'A') && (e.ascii <= 'Z') ) )
-			e.ascii += ('a' - 'A');
-		else if ( ((e.ascii >= 'a') && (e.ascii <= 'z') ) )
-			e.ascii -= ('a' - 'A');
-	}			
+		e.ascii = 0;
+	}
+	else
+	{
+		e.ascii = kb_scan_to_ascii[scancode][(flags & KB_CTRL) ? 2 : (flags & KB_SHIFT) ? 1 : 0];
+		
+		if ( flags & KB_CAPSLOCK )
+		{
+			if ( (flags & KB_SHIFT) && ((e.ascii >= 'A') && (e.ascii <= 'Z') ) )
+				e.ascii += ('a' - 'A');
+			else if ( ((e.ascii >= 'a') && (e.ascii <= 'z') ) )
+				e.ascii -= ('a' - 'A');
+		}
+		
+		if ( (flags & KB_NUMLOCK) && !(flags & (KB_EXTENDED | KB_CTRL)) && !(flags & (KB_SHIFT )) )
+		{
+			if ( scancode >= 71 && scancode <= 83 )
+			{
+				e.ascii = kb_numpad_to_ascii[scancode - 71];
+			}
+		}
+	}
 	
 	fb_hPostEvent(&e);
 }
@@ -406,27 +426,6 @@ static int fb_dos_timer_handler(unsigned irq)
 		fb_dos.mouse_buttons_old = fb_dos_mouse_buttons;
 	}
 	
-#if 0
-	ctrl = fb_ConsoleMultikey(SC_CONTROL);
-	shift = fb_ConsoleMultikey(SC_LSHIFT) || fb_ConsoleMultikey(SC_RSHIFT);
-	for (i = 0; i < 128; i++) {
-		e.type = 0;
-		key = fb_ConsoleMultikey( i );
-		if ( key && !fb_dos.key_old[i] ) {
-			e.type = EVENT_KEY_PRESS;
-		} else if ( !key && fb_dos.key_old[i] ) {
-			e.type = EVENT_KEY_RELEASE;
-		}
-		if ( e.type ) {
-			e.scancode = i;
-			
-			e.ascii = kb_scan_to_ascii[i][ctrl ? 2 : (shift ? 1 : 0)]; /* FIXME */
-			fb_hPostEvent(&e);
-		}	
-		fb_dos.key_old[i] = key;
-	}
-#endif
-	
 	fb_dos.in_interrupt = FALSE;
 
 	return do_abort;
@@ -585,6 +584,7 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	lock_code(fb_hPostEvent_code_start, fb_hPostEvent_code_end);
 	fb_dos_lock_data(&fb_mode->event_queue, sizeof(EVENT) * MAX_EVENTS);
 	lock_array(kb_scan_to_ascii);
+	lock_array(kb_numpad_to_ascii);
 	
 	fb_dos.w = w;
 	fb_dos.h = h;
@@ -601,9 +601,15 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		return -1;
 	
 	if (fb_dos.mouse_ok)
+	{
 		fb_dos_set_mouse(fb_dos.w / 2, fb_dos.h / 2, TRUE);
+		fb_dos.mouse_x_old = fb_dos.w / 2;
+		fb_dos.mouse_y_old = fb_dos.h / 2;
+	}
 	else
+	{
 		fb_dos.mouse_cursor = FALSE;
+	}
 	
 	fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
 
@@ -659,6 +665,7 @@ void fb_dos_exit(void)
 	unlock_code(fb_hPostEvent_code_start, fb_hPostEvent_code_end);
 	fb_dos_unlock_data(&fb_mode->event_queue, sizeof(EVENT) * MAX_EVENTS);
 	unlock_array(kb_scan_to_ascii);
+	unlock_array(kb_numpad_to_ascii);
 	
 	fb_dos_restore_video_mode();
 

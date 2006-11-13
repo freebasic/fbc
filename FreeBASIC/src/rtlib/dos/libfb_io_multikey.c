@@ -114,7 +114,6 @@ static int fb_MultikeyHandler(unsigned irq_number)
 			int release_code = (code & 0x80)!=0;
 			code &= 0x7F;
 			if( got_extended_key ) {
-				got_extended_key = FALSE;
 				switch( code ) {
 				case 0x2A:
 					code = 0;
@@ -132,7 +131,7 @@ static int fb_MultikeyHandler(unsigned irq_number)
 				{
 					unsigned int beg, end, fre, nxt;
 					unsigned short old_sel;
-									
+					
 					old_sel = _fargetsel();
 					_farsetsel(_dos_ds);
 					
@@ -175,11 +174,20 @@ static int fb_MultikeyHandler(unsigned irq_number)
 					if( key[SC_LSHIFT] || key[SC_RSHIFT] )
 						flags |= KB_SHIFT;
 					
+					if( key[SC_ALT] )
+						flags |= KB_ALT;
+					
 					if( kbflags & (1 << 6) )
 						flags |= KB_CAPSLOCK;
 					
 					if( kbflags & (1 << 5) )
 						flags |= KB_NUMLOCK;
+					
+					if( got_extended_key )
+					{
+						got_extended_key = FALSE;
+						flags |= KB_EXTENDED;
+					}
 					
 					__fb_dos_multikey_hook(code, flags);
 				}
