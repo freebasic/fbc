@@ -105,9 +105,12 @@ static int fb_MultikeyHandler(unsigned irq_number)
 #else
 		size_t code = scancode_raw;
 #endif
-		if( code==0xE0 ) {
+		if( code==0xE0 )
+		{
 			got_extended_key = TRUE;
-		} else {
+		}
+		else
+		{
 			int release_code = (code & 0x80)!=0;
 			code &= 0x7F;
 			if( got_extended_key ) {
@@ -118,12 +121,36 @@ static int fb_MultikeyHandler(unsigned irq_number)
 					break;
 				}
 			}
-			if( code!=0 ) {
+			if( code != 0 )
+			{
 				/* Remeber scancode status */
 				__fb_force_input_buffer_changed = key[code] = !release_code;
 				if( __fb_dos_multikey_hook != 0 )
 				{
+					/* !!!FIXME!!! this does not take into account the state of caps lock or num lock */
 					__fb_dos_multikey_hook(code, !release_code, (key[SC_CONTROL] ? 2 : ((key[SC_LSHIFT] || key[SC_RSHIFT]) ? 1 : 0)) );
+				}
+				
+				/* make sure there is at least one free entry in the keyboard buffer */
+				{
+					int beg, end, fre, nxt;
+									
+					_farsetsel(_dos_ds);
+					
+					beg = _farnspeekw( (0x40 << 4) | 0x80 );
+					end = _farnspeekw( (0x40 << 4) | 0x82 );
+					fre = _farnspeekw( (0x40 << 4) | 0x1C );
+					nxt = _farnspeekw( (0x40 << 4) | 0x1A );
+					
+					if( (fre == nxt - 2) || ((nxt == beg) && (fre == end - 2)) )
+					{
+						nxt += 2;
+						if( nxt == end )
+						{
+							nxt = beg;
+						}
+						_farnspokew( (0x40 << 4) | 0x1A, nxt);
+					}
 				}
 			}
 		}
