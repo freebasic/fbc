@@ -115,6 +115,15 @@ int fb_dos_lock_code(const void *address, size_t size);
 int fb_dos_unlock_data(const void *address, size_t size);
 int fb_dos_unlock_code(const void *address, size_t size);
 
+void (*__fb_dos_multikey_hook)(int scancode, int flags);
+
+#define KB_PRESS    0x00000001
+#define KB_REPEAT   0x00000002
+#define KB_SHIFT    0x00000004
+#define KB_CTRL     0x00000008
+#define KB_CAPSLOCK 0x00000010
+#define KB_NUMLOCK  0x00000020
+
 /**************************************************************************************************
  * VB-compatible functions
  **************************************************************************************************/

@@ -89,9 +89,9 @@ extern void fb_MMX_code_end(void);
 void fb_hPostEvent_code_start(void);
 void fb_hPostEvent_code_end(void);
 
-#define KB_EXTENDED (255 << 8)
+#define EXTENDED (255 << 8)
 
-#define X KB_EXTENDED
+#define X EXTENDED
 static const unsigned short kb_scan_to_ascii[128][3] = {
 	/*
 	normal
@@ -198,6 +198,8 @@ static const unsigned short kb_scan_to_ascii[128][3] = {
 #define unlock_data(start, end) fb_dos_unlock_data( (&start), (const char *)(&end) - (const char *)(&start) )
 #define unlock_code(start, end) fb_dos_unlock_code( (start), (const char *)(end) - (const char *)(start) )
 
+static void fb_dos_multikey_hook(int scancode, int flags);
+
 /*:::::*/
 static void fb_dos_kb_init(void)
 {
@@ -206,12 +208,39 @@ static void fb_dos_kb_init(void)
 	__fb_ctx.hooks.keyhitproc = NULL;
 	__fb_ctx.hooks.multikeyproc = NULL;
 	__fb_ctx.hooks.sleepproc = NULL;
+	
+	__fb_dos_multikey_hook = fb_dos_multikey_hook;
+	(void)fb_ConsoleMultikey(0); /* ensure the ISR is installed */
+	
 	return;
 }
 
 /*:::::*/
 static void fb_dos_kb_exit(void)
 {
+	__fb_dos_multikey_hook = NULL;
+}
+
+/*:::::*/
+static void fb_dos_multikey_hook(int scancode, int flags)
+{
+	EVENT e;
+	
+	e.type = (flags & KB_PRESS) ? ((flags & KB_REPEAT) ? EVENT_KEY_REPEAT : EVENT_KEY_PRESS) : EVENT_KEY_RELEASE;
+	
+	e.scancode = scancode;
+	
+	e.ascii = kb_scan_to_ascii[scancode][(flags & KB_CTRL) ? 2 : (flags & KB_SHIFT) ? 1 : 0];
+	
+	if ( flags & KB_CAPSLOCK )
+	{
+		if ( (flags & KB_SHIFT) && ((e.ascii >= 'A') && (e.ascii <= 'Z') ) )
+			e.ascii += ('a' - 'A');
+		else if ( ((e.ascii >= 'a') && (e.ascii <= 'z') ) )
+			e.ascii -= ('a' - 'A');
+	}			
+	
+	fb_hPostEvent(&e);
 }
 
 /*:::::*/
@@ -377,6 +406,7 @@ static int fb_dos_timer_handler(unsigned irq)
 		fb_dos.mouse_buttons_old = fb_dos_mouse_buttons;
 	}
 	
+#if 0
 	ctrl = fb_ConsoleMultikey(SC_CONTROL);
 	shift = fb_ConsoleMultikey(SC_LSHIFT) || fb_ConsoleMultikey(SC_RSHIFT);
 	for (i = 0; i < 128; i++) {
@@ -395,6 +425,7 @@ static int fb_dos_timer_handler(unsigned irq)
 		}	
 		fb_dos.key_old[i] = key;
 	}
+#endif
 	
 	fb_dos.in_interrupt = FALSE;
 

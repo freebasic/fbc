@@ -55,7 +55,7 @@
 #define END_OF_FUNCTION(proc)               void end_##proc (void) { }
 #define END_OF_STATIC_FUNCTION(proc) static void end_##proc (void) { }
 
-void (*__fb_dos_multikey_hook)(int scancode, int press, int ctrl_shift) = NULL;
+void (*__fb_dos_multikey_hook)(int scancode, int flags) = NULL;
 
 static void end_fb_ConsoleMultikey(void);
 
@@ -78,7 +78,7 @@ int fb_hWriteControlCommand( unsigned char uchValue )
 /*:::::*/
 static int fb_MultikeyHandler(unsigned irq_number)
 {
-#if 0
+#if 1
     __dpmi_regs regs;
 #endif
 	unsigned char scancode_raw;
@@ -92,7 +92,7 @@ static int fb_MultikeyHandler(unsigned irq_number)
 	printf(":%02x", scancode_raw);
 #endif
 
-#if 0
+#if 1
 	/* Translate scancode */
 	regs.h.ah = 0x4F;
 	regs.h.al = scancode_raw;
@@ -123,18 +123,17 @@ static int fb_MultikeyHandler(unsigned irq_number)
 			}
 			if( code != 0 )
 			{
-				/* Remeber scancode status */
-				__fb_force_input_buffer_changed = key[code] = !release_code;
-				if( __fb_dos_multikey_hook != 0 )
-				{
-					/* !!!FIXME!!! this does not take into account the state of caps lock or num lock */
-					__fb_dos_multikey_hook(code, !release_code, (key[SC_CONTROL] ? 2 : ((key[SC_LSHIFT] || key[SC_RSHIFT]) ? 1 : 0)) );
-				}
+				int prev;
+				int kbflags;
+				
+				prev = key[code];
 				
 				/* make sure there is at least one free entry in the keyboard buffer */
 				{
-					int beg, end, fre, nxt;
+					unsigned int beg, end, fre, nxt;
+					unsigned short old_sel;
 									
+					old_sel = _fargetsel();
 					_farsetsel(_dos_ds);
 					
 					beg = _farnspeekw( (0x40 << 4) | 0x80 );
@@ -151,6 +150,38 @@ static int fb_MultikeyHandler(unsigned irq_number)
 						}
 						_farnspokew( (0x40 << 4) | 0x1A, nxt);
 					}
+					
+					kbflags = _farnspeekb( (0x40 << 4) | 0x17 );
+					
+					_farsetsel(old_sel);
+				}
+				
+				/* Remeber scancode status */
+				__fb_force_input_buffer_changed = key[code] = !release_code;
+				if( __fb_dos_multikey_hook != 0 )
+				{
+					int flags = 0;
+					
+					if( !release_code )
+					{
+						flags |= KB_PRESS;
+						if( prev )
+							flags |= KB_REPEAT;
+					}
+					
+					if( key[SC_CONTROL] )
+						flags |= KB_CTRL;
+					
+					if( key[SC_LSHIFT] || key[SC_RSHIFT] )
+						flags |= KB_SHIFT;
+					
+					if( kbflags & (1 << 6) )
+						flags |= KB_CAPSLOCK;
+					
+					if( kbflags & (1 << 5) )
+						flags |= KB_NUMLOCK;
+					
+					__fb_dos_multikey_hook(code, flags);
 				}
 			}
 		}
