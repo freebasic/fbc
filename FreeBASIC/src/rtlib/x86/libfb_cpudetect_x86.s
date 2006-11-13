@@ -63,18 +63,21 @@ detect:
 	xor eax, edx
 	jnz cpuid_ok
 	
-	# no CPUID; assume 386 and check if 486
+	# no CPUID; assume 386 and check if 486 (try toggling bit 18 (AC) of EFLAGS)
 	mov ebx, 0x03000000
-	pushf
+	mov ecx, esp
+	and esp, 0xFFFFFFFB # round ESP down to a multiple of 4 (must be aligned if AC becomes enabled)
+	pushfd
 	pop eax
 	mov edx, eax
 	xor eax, 0x40000
 	push eax
-	popf
-	pushf
+	popfd
+	pushfd
 	pop eax
-	cmp eax, edx
-	jnz cpu486_not_found
+	xor eax, edx
+	mov esp, ecx
+	jz cpu486_not_found
 
 	mov ebx, 0x04000000
 
