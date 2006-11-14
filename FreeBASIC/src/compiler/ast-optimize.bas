@@ -38,7 +38,7 @@ private sub hOptConstRemNeg _
 		byval p as ASTNODE ptr _
 	)
 
-	static as ASTNODE ptr l, r
+	dim as ASTNODE ptr l = any, r = any
 
 	'' check any UOP node, and if its of the kind "-var + const" convert to "const - var"
 	if( p <> NULL ) then
@@ -82,7 +82,7 @@ private sub hConvDataType _
 		byval v as FBVALUE ptr, _
 		byval vdtype as integer, _
 		byval dtype as integer _
-	) static
+	)
 
 	if( dtype > FB_DATATYPE_POINTER ) then
 		dtype = FB_DATATYPE_POINTER
@@ -162,9 +162,9 @@ private function hPrepConst _
 	( _
 		byval v as ASTVALUE ptr, _
 		byval r as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-	dim as integer dtype
+	dim as integer dtype = any
 
 	'' first node? just copy..
 	if( v->dtype = INVALID ) then
@@ -218,7 +218,7 @@ private function hConstAccumADDSUB _
 
 	dim as ASTNODE ptr l = any, r = any
 	dim as integer o = any
-	static as integer dtype
+	dim as integer dtype = any
 
 	if( n = NULL ) then
 		return NULL
@@ -302,7 +302,7 @@ private function hConstAccumMUL _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr l = any, r = any
-	static as integer dtype
+	dim as integer dtype = any
 
 	if( n = NULL ) then
 		return NULL
@@ -355,8 +355,8 @@ private function hOptConstAccum1 _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	static as ASTNODE ptr l, r, nn
-	static as ASTVALUE v
+	dim as ASTNODE ptr l = any, r = any, nn = any
+	dim as ASTVALUE v = any
 
 	if( n = NULL ) then
 		return NULL
@@ -439,9 +439,9 @@ private sub hOptConstAccum2 _
 		byval n as ASTNODE ptr _
 	)
 
-	static as ASTNODE ptr l, r
-	static as integer dtype, checktype
-	static as ASTVALUE v
+	dim as ASTNODE ptr l = any, r = any
+	dim as integer dtype = any, checktype = any
+	dim as ASTVALUE v = any
 
 	'' check any ADD|SUB|MUL BOP node and then go to child leafs accumulating
 	'' any constants found there, deleting those nodes and then adding the
@@ -539,7 +539,7 @@ private function hConstDistMUL _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr l = any, r = any
-	static as integer dtype
+	dim as integer dtype = any
 
 	if( n = NULL ) then
 		return NULL
@@ -591,8 +591,8 @@ private function hOptConstDistMUL _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	static as ASTNODE ptr l, r
-	static as ASTVALUE v
+	dim as ASTNODE ptr l = any, r = any
+	dim as ASTVALUE v = any
 
 	if( n = NULL ) then
 		return NULL
@@ -697,10 +697,10 @@ private sub hOptConstIDX _
 		byval n as ASTNODE ptr _
 	)
 
-	static as ASTNODE ptr l, r, lr
-	static as integer c, delnode
-	static as ASTVALUE v
-	static as FBSYMBOL ptr s
+	dim as ASTNODE ptr l = any, r = any, lr = any
+	dim as integer c = any, delnode = any
+	dim as ASTVALUE v = any
+	dim as FBSYMBOL ptr s = any
 
 	if( n = NULL ) then
 		exit sub
@@ -842,8 +842,8 @@ private function hOptAssocADD _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	static as ASTNODE ptr l, r, n_old
-	static as integer op, rop
+	dim as ASTNODE ptr l = any, r = any, n_old = any
+	dim as integer op = any, rop = any
 
 	if( n = NULL ) then
 		return NULL
@@ -916,7 +916,7 @@ private function hOptAssocMUL _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	static as ASTNODE ptr l, r, n_old
+	dim as ASTNODE ptr l = any, r = any, n_old = any
 
 	if( n = NULL ) then
 		return NULL
@@ -966,10 +966,10 @@ private sub hDivToShift_Signed _
 	( _
 		byval n as ASTNODE ptr, _
 		byval const_val as integer _
-	) static
+	)
 
-	dim as ASTNODE ptr l, l_cpy
-	dim as integer dtype, bits
+	dim as ASTNODE ptr l = any, l_cpy = any
+	dim as integer dtype = any, bits = any
 
 	l = n->l
 
@@ -1017,8 +1017,8 @@ private sub hOptToShift _
 		byval n as ASTNODE ptr _
 	)
 
-	static as ASTNODE ptr l, r
-	static as integer const_val, op
+	dim as ASTNODE ptr l = any, r = any
+	dim as integer const_val = any, op = any
 
 	if( n = NULL ) then
 		exit sub
@@ -1090,10 +1090,10 @@ end sub
 private function hOptNullOp _
 	( _
 		byval n as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr l, r
-	dim as integer v, op
+	dim as ASTNODE ptr l = any, r = any
+	dim as integer v = any, op = any
 
 	if( n = NULL ) then
 		return n
@@ -1185,8 +1185,8 @@ private function hOptRemConv _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	static as ASTNODE ptr l, r
-	static as integer dorem
+	dim as ASTNODE ptr l = any, r = any
+	dim as integer dorem = any
 
 	if( n = NULL ) then
 		return NULL
@@ -1367,9 +1367,9 @@ private function hOptStrAssignment _
 		byval n as ASTNODE ptr, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as integer optimize, is_wstr
+	dim as integer optimize = any, is_wstr = any
 
 	optimize = FALSE
 
@@ -1465,13 +1465,16 @@ end function
 function astOptAssignment _
 	( _
 		byval n as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr l, r
-	dim as integer dtype, dclass
-	dim as FBSYMBOL ptr s
+	dim as ASTNODE ptr l = any, r = any
+	dim as integer dtype = any, dclass = any
 
 	function = n
+
+	if( n = NULL ) then
+		exit function
+	end if
 
 	'' try to convert "foo = foo op expr" to "foo op= expr" (including unary ops)
 
@@ -1479,8 +1482,9 @@ function astOptAssignment _
 	'' there's just one assignment per tree (always at top), so, just check this node
 	case AST_NODECLASS_ASSIGN
 
-	'' SelfBOP will have to use link( l, r ) to handle side-effects
+	'' SelfBOP and TypeIniFlush will create links to emit trees
 	case AST_NODECLASS_LINK
+		n->l = astOptAssignment( n->l )
 		n->r = astOptAssignment( n->r )
 		exit function
 
