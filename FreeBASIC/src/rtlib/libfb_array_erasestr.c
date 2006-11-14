@@ -59,7 +59,7 @@ void fb_hArrayDtorStr
     	elements *= dim->elements;
 
 	/* call dtors in the inverse order */
-	this_ = (FBSTRING *)array->ptr + (elements-1);
+	this_ = (FBSTRING *)array->ptr + (base_idx + (elements-1));
 
 	while( elements > 0 )
 	{

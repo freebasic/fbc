@@ -41,8 +41,8 @@
 
 /*:::::*/
 void fb_hArrayDtorObj
-	( 
-		FBARRAY *array, 
+	(
+		FBARRAY *array,
 		FB_DEFCTOR dtor,
 		int base_idx
 	)
@@ -60,13 +60,13 @@ void fb_hArrayDtorObj
 
 	/* call dtors in the inverse order */
 	element_len = array->element_len;
-	this_ = (const char *)array->ptr + ((elements-1) * element_len);
-	
+	this_ = (const char *)array->ptr + ((base_idx + (elements-1)) * element_len);
+
 	while( elements > 0 )
 	{
 		/* !!!FIXME!!! check exceptions (only if rewritten in C++) */
 		dtor( this_ );
-		
+
 		this_ -= element_len;
 		--elements;
 	}
@@ -74,16 +74,16 @@ void fb_hArrayDtorObj
 
 /*:::::*/
 FBCALL int fb_ArrayEraseObj
-	( 
-		FBARRAY *array, 
+	(
+		FBARRAY *array,
 		FB_DEFCTOR dtor
 	)
 {
-    /* not an error, dynamic arrays declared as static could be never 
+    /* not an error, dynamic arrays declared as static could be never
        allocated, but the dtor wrapper will be invoked anyways */
     if( array->ptr == NULL )
     	return fb_ErrorSetNum( FB_RTERROR_OK );
-    
+
     fb_hArrayDtorObj( array, dtor, 0 );
 
     free( array->ptr );
