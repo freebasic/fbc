@@ -44,17 +44,6 @@
 #include <go32.h>
 #include <pc.h>
 
-#define lock_var(var)        fb_dos_lock_data( (void *)&(var), sizeof(var) )
-#define lock_array(array)    fb_dos_lock_data( (void *)(array), sizeof(array) )
-#define lock_proc(proc)      fb_dos_lock_code( proc, (unsigned) end_##proc - (unsigned) proc )
-
-#define unlock_var(var)        fb_dos_unlock_data( (void *)&(var), sizeof(var) )
-#define unlock_array(array)    fb_dos_unlock_data( (void *)(array), sizeof(array) )
-#define unlock_proc(proc)      fb_dos_unlock_code( proc, (unsigned) end_##proc - (unsigned) proc )
-
-#define END_OF_FUNCTION(proc)               void end_##proc (void) { }
-#define END_OF_STATIC_FUNCTION(proc) static void end_##proc (void) { }
-
 void (*__fb_dos_multikey_hook)(int scancode, int flags) = NULL;
 
 static void end_fb_ConsoleMultikey(void);

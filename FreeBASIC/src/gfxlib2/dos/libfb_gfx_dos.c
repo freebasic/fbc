@@ -189,19 +189,6 @@ static const char kb_numpad_to_ascii[13] = {
 	'1', '2', '3',
 	'0', '.'
 };
-	
-
-#define lock_var(var)         fb_dos_lock_data( &(var), sizeof(var) )
-#define lock_array(array)     fb_dos_lock_data( (array), sizeof(array) )
-#define lock_proc(proc)       fb_dos_lock_code( proc, (char *)( end_##proc ) - (char *)(proc) )
-#define lock_data(start, end) fb_dos_lock_data( (&start), (const char *)(&end) - (const char *)(&start) )
-#define lock_code(start, end) fb_dos_lock_code( (start), (const char *)(end) - (const char *)(start) )
-
-#define unlock_var(var)         fb_dos_unlock_data( &(var), sizeof(var) )
-#define unlock_array(array)     fb_dos_unlock_data( (array), sizeof(array) )
-#define unlock_proc(proc)       fb_dos_unlock_code( proc, (char *)( end_##proc ) - (char *)(proc) )
-#define unlock_data(start, end) fb_dos_unlock_data( (&start), (const char *)(&end) - (const char *)(&start) )
-#define unlock_code(start, end) fb_dos_unlock_code( (start), (const char *)(end) - (const char *)(start) )
 
 static void fb_dos_multikey_hook(int scancode, int flags);
 

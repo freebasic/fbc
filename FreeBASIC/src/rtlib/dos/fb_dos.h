@@ -115,6 +115,21 @@ int fb_dos_lock_code(const void *address, size_t size);
 int fb_dos_unlock_data(const void *address, size_t size);
 int fb_dos_unlock_code(const void *address, size_t size);
 
+#define lock_var(var)           fb_dos_lock_data(   (void *)&(var), sizeof(var) )
+#define lock_array(array)       fb_dos_lock_data(   (void *)(array), sizeof(array) )
+#define lock_proc(proc)         fb_dos_lock_code(   proc, (unsigned) end_##proc - (unsigned) proc )
+#define lock_data(start, end)   fb_dos_lock_data(   (&start), (const char *)(&end) - (const char *)(&start) )
+#define lock_code(start, end)   fb_dos_lock_code(   (start), (const char *)(end) - (const char *)(start) )
+
+#define unlock_var(var)         fb_dos_unlock_data( (void *)&(var), sizeof(var) )
+#define unlock_array(array)     fb_dos_unlock_data( (void *)(array), sizeof(array) )
+#define unlock_proc(proc)       fb_dos_unlock_code( proc, (unsigned) end_##proc - (unsigned) proc )
+#define unlock_data(start, end) fb_dos_unlock_data( (&start), (const char *)(&end) - (const char *)(&start) )
+#define unlock_code(start, end) fb_dos_unlock_code( (start), (const char *)(end) - (const char *)(start) )
+
+#define END_OF_FUNCTION(proc)               void end_##proc (void) { }
+#define END_OF_STATIC_FUNCTION(proc) static void end_##proc (void) { }
+
 void (*__fb_dos_multikey_hook)(int scancode, int flags);
 
 #define KB_PRESS    0x00000001
