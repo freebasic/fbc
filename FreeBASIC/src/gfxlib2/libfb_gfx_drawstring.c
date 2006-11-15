@@ -64,8 +64,11 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 	int offset, bytes_count, res = FB_RTERROR_OK;
 	unsigned char *data, *width;
 	
-	if ((!fb_mode) || (!string) || (!string->data))
+	if ((!fb_mode) || (!string))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+
+    if(!string->data)
+        return res;
 	
 	if (mode != PUT_MODE_ALPHA) {
 		if (color == DEFAULT_COLOR)
