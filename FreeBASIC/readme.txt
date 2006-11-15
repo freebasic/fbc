@@ -616,7 +616,7 @@ Most Important Features:
         
         DIM localarray(0 to 9) AS INTEGER = ANY
 
-  o Optional function arguments (numeric and strings):
+  o Optional function arguments (numeric, strings or UDT's):
 
       DECLARE SUB Test(a AS DOUBLE = 12.345, b AS BYTE = 255, _
                        s AS STRING = "abc")
@@ -789,23 +789,48 @@ What FreeBASIC Isn't:
 
 Credits (in alphabetic order):
 
-  o Abdullah Ali (voodooattack[at]hotmail.com):
-    - Fixed and finished the Windows NT DDK headers at the inc/win/ddk dir,
-      translated by the SWIG FB wrapper. 
-    - Wrote the Windows NT DDK test at the examples/Windows/ddk/driver dir.
-    - Added DLL hot-linking support to the Windows port (disabled at the moment).
+  Project members:
 
-  o Andre Victor T. Vicentini (av1ctor[at]yahoo.com.br) - Project Member:
+  o Andre Victor T. Vicentini (av1ctor[at]yahoo.com.br):
     - Project creator. 
     - Main compiler developer.
 
-  o Angelo Mottola (a.mottola[at]libero.it) - Project Member:
+  o Angelo Mottola (a.mottola[at]libero.it):
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
     - Added profiling support.
     - Added built-in threads, dynlib support and I/O ports access support.
     - Made the rtlib thread-safe, besides many other runtime lib
       and compiler improvements.
+
+  o Daniel R. Verkamp (i_am_drv[at]yahoo.com):
+    - Ported FreeBASIC to DOS and Xbox; ports maintainer.
+    - Translated the Allegro headers (later replaced by the SWIG FB wrapper 
+      version).
+    - Wrote the DLL and static library automation, plus resource scripts
+      support on Windows.
+    - Developed the VB-compatible file routines in the extended runtime library.
+
+  o Jeff Marshall (coder[at]execulink.com):
+    - Improved and fixed the printer support in all platforms.
+    - Added compiler tests and improved the document translator.
+
+  o Mark Junker (mjscod[at]gmx.de):
+    - Added support for file systems like SCR, LPTx, COM, etc.
+    - Added printer support.
+    - Developer of the FB runtime-lib extended (libfbx).
+    - Added the automated runtime-lib and compiler tests.
+    - Wrote the Windows installer scripts.
+    - Many runtime library fixes and improvements.
+
+
+  Contributors:
+
+  o Abdullah Ali (voodooattack[at]hotmail.com):
+    - Fixed and finished the Windows NT DDK headers at the inc/win/ddk dir,
+      translated by the SWIG FB wrapper. 
+    - Wrote the Windows NT DDK test at the examples/Windows/ddk/driver dir.
+    - Added DLL hot-linking support to the Windows port (disabled at the moment).
 
   o Bryan Stoeberl (b_stoeberl[at]yahoo.com):
     - Translated the OpenGL Extensions header (later replaced by the SWIG 
@@ -820,18 +845,14 @@ Credits (in alphabetic order):
       version).
     - Wrote the OpenAL demonstration in the examples/sound directory.
 
-  o Daniel R. Verkamp (i_am_drv[at]yahoo.com) - Project Member:
-    - Ported FreeBASIC to DOS and Xbox; ports maintainer.
-    - Translated the Allegro headers (later replaced by the SWIG FB wrapper 
-      version).
-    - Wrote the DLL and static library automation, plus resource scripts
-      support on Windows.
-    - Developed the VB-compatible file routines in the extended runtime library.
-
   o Dumbledore
     - Ported the wx-c headers (later replaced by the SWIG FB wrapper version).
     - Wrote the wx demonstration in the examples/wx-c dir.
 
+  o dr0p (dr0p[at]perfectbg.com):
+    - Fixed the PostgreSQL headers translated by the SWIG FB wrapper.
+    - Wrote the postgresql_test.bas example at the examples/DB dir.
+  
   o Edmond Leung (leung.edmond[at]gmail.com):
     - Translated the SDL headers, including SDL_mixer and SDL_image (later 
       replaced by the SWIG FB wrapper version).
@@ -842,10 +863,6 @@ Credits (in alphabetic order):
       wrapper version).
     - Wrote the rel-* graphics demonstrations in the examples/gfx directory.
     - Wrote the examples/GL/fbgfx_texture.bas OpenGL example.
-
-  o Jeff Marshall (coder[at]execulink.com):
-    - Improved and fixed the printer support in all platforms.
-    - Added compiler tests and improved the document translator.
 
   o Florent Heyworth (florent.heyworth[at]swissonline.ch):
     - Translated the Win API sql/obdc headers (later replaced by the SWIG FB 
@@ -879,14 +896,6 @@ Credits (in alphabetic order):
     - Translated the SDL_ttf header (later replaced by the SWIG FB wrapper 
       version).
     - Wrote the SDL_ttf demonstration.
-
-  o Mark Junker (mjscod[at]gmx.de) - Project Member:
-    - Added support for file systems like SCR, LPTx, COM, etc.
-    - Added printer support.
-    - Developer of the FB runtime-lib extended (libfbx).
-    - Added the automated runtime-lib and compiler tests.
-    - Wrote the Windows installer scripts.
-    - Many runtime library fixes and improvements.
 
   o Marzec:
     - Wrote the SDL_bassgl, SDL_opengl, and SDL_key tests in the SDL directory.
@@ -922,20 +931,24 @@ Credits (in alphabetic order):
     - Wrote many of the examples in the examples/Windows/gui directory.
 
 
-  o Third-party tools included:
-    - All platforms:
-      * GNU binutils (http://www.gnu.org/software/binutils/)
+  Third-party tools included:
     
-    - DOS version: 
-      * DJGPP (http://www.delorie.com/)
+  o All platforms:
+    - GNU binutils (http://www.gnu.org/software/binutils/)
+    
+  o DOS version: 
+    - DJGPP (http://www.delorie.com/)
 
-    - Windows version: 
-      * Mingw (http://www.mingw.org/)
-      * GoRC (http://www.godevtool.com/)
+  o Windows version: 
+    - Mingw (http://www.mingw.org/)
+    - GoRC (http://www.godevtool.com/)
 
-    - Xbox version: 
-      * OpenXDK (http://www.openxdk.org/)
+  o Xbox version: 
+    - OpenXDK (http://www.openxdk.org/)
 
+
+  Acknowledges:
+  
   o The long integers (64-bit) division and modulo routines are from the GCC's
     libgcc2 sources.
 
@@ -1045,6 +1058,8 @@ Links:
     - PDCurses: http://pdcurses.sourceforge.net/
 
     - PDFlib: http://www.pdflib.com/ or http://gnuwin32.sourceforge.net/packages/pdflib.htm
+    
+    - PostgreSQL: http://www.postgresql.org/
 
     - SDL: http://www.libsdl.org/ (look under Libraries for SDL_net, SDL_image, SDL_ttf, etc)
 
