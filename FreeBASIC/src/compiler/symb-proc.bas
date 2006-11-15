@@ -2452,8 +2452,7 @@ function symbGetFullProcName _
 	dim as FBSYMBOL ptr ns = symbGetNamespace( proc )
 
 	do while( ns <> @symbGetGlobalNamespc( ) )
-		res += *symbGetName( ns )
-		res += "."
+		res = *symbGetName( ns ) + "." + res
 		ns = symbGetNamespace( ns )
 	loop
 

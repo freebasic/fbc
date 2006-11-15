@@ -48,8 +48,8 @@ static int fb_PrintUsingFmtStr( int fnum );
 
 /*:::::*/
 FBCALL int fb_PrintUsingInit
-	( 
-		FBSTRING *fmtstr 
+	(
+		FBSTRING *fmtstr
 	)
 {
     FB_PRINTUSGCTX *ctx;
@@ -69,8 +69,8 @@ FBCALL int fb_PrintUsingInit
 
 /*:::::*/
 FBCALL int fb_PrintUsingEnd
-	( 
-		int fnum 
+	(
+		int fnum
 	)
 {
 	FB_PRINTUSGCTX *ctx;
@@ -92,8 +92,8 @@ FBCALL int fb_PrintUsingEnd
 
 /*:::::*/
 static int fb_PrintUsingFmtStr
-	( 
-		int fnum 
+	(
+		int fnum
 	)
 {
 	FB_PRINTUSGCTX *ctx;
@@ -174,10 +174,10 @@ static int fb_PrintUsingFmtStr
 
 /*:::::*/
 FBCALL int fb_PrintUsingStr
-	( 
-		int fnum, 
-		FBSTRING *s, 
-		int mask 
+	(
+		int fnum,
+		FBSTRING *s,
+		int mask
 	)
 {
 	FB_PRINTUSGCTX *ctx;
@@ -304,10 +304,10 @@ FBCALL int fb_PrintUsingStr
 
 /*::::*/
 static double hRound
-	( 
-		double value, 
-		int intdigs, 
-		int decdigs 
+	(
+		double value,
+		int intdigs,
+		int decdigs
 	)
 {
 	double fix, frac = modf( value, &fix );
@@ -353,14 +353,14 @@ static double hRound
 
 /*::::*/
 static void hToString
-	( 
+	(
 		double value,
-		char *fix_buf, 
+		char *fix_buf,
 		int *fix_len,
-		char *frac_buf, 
+		char *frac_buf,
 		int *frac_len,
 		int intdigs,
-		int decdigs 
+		int decdigs
 	)
 {
 	double fix, frac = modf( value, &fix );
@@ -390,11 +390,11 @@ static void hToString
 
 /*:::::*/
 static int hPrintDouble
-	( 
-		int fnum, 
-		double value, 
-		int mask, 
-		int maxdigits 
+	(
+		int fnum,
+		double value,
+		int mask,
+		int maxdigits
 	)
 {
 	FB_PRINTUSGCTX *ctx;
@@ -551,9 +551,17 @@ static int hPrintDouble
 	{
 		if( abs( value_exp ) > decdigs-1 )
 		{
-			value_exp -= intdigs;
-			value *= pow( 10.0, -value_exp );
 			doscale = FALSE;
+			if( isexp )
+			{
+				value_exp -= intdigs;
+				value *= pow( 10.0, -value_exp );
+			}
+			else
+			{
+				value_exp = 0;
+				value = 0.0;
+			}
 		}
 		else
 			value_exp = 0;
@@ -718,10 +726,10 @@ static int hPrintDouble
 
 /*:::::*/
 FBCALL int fb_PrintUsingDouble
-	( 
-		int fnum, 
-		double value, 
-		int mask 
+	(
+		int fnum,
+		double value,
+		int mask
 	)
 {
 	return hPrintDouble( fnum, value, mask, 16 );
@@ -729,9 +737,9 @@ FBCALL int fb_PrintUsingDouble
 
 /*:::::*/
 FBCALL int fb_PrintUsingSingle
-	( 
-		int fnum, 
-		float value_f, 
+	(
+		int fnum,
+		float value_f,
 		int mask
 	)
 {
@@ -755,10 +763,10 @@ FBCALL int fb_PrintUsingSingle
 /* !!!FIXME!! remove this function when the chicken-egg is over */
 
 FBCALL int fb_PrintUsingVal
-	( 
-		int fnum, 
-		double value, 
-		int mask 
+	(
+		int fnum,
+		double value,
+		int mask
 	)
 {
 	return fb_PrintUsingDouble( fnum, value, mask );
