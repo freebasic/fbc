@@ -110,7 +110,7 @@ function cDirective as integer static
 
 			else
 				'' '\''
-				if( lexGetToken( LEX_FLAGS or LEXCHECK_NOWHITESPC ) <> CHAR_APOST ) then
+				if( lexGetToken( LEX_FLAGS or LEXCHECK_NOWHITESPC ) <> FB_TK_COMMENT ) then
 					function = errReport( FB_ERRMSG_SYNTAXERROR )
 					exit select
 				else
