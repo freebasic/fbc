@@ -553,6 +553,8 @@ function cProcHeader _
 		end if
 	end if
 
+	symbGetAttrib( proc ) = attrib
+
 	'' Parameters?
 	if( cParameters( parent, proc, mode, is_prototype ) = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -1093,6 +1095,8 @@ function cOperatorHeader _
 		end if
 	end if
 
+    symbGetAttrib( proc ) = attrib
+
 	'' Parameters?
 	if( cParameters( parent, proc, mode, is_prototype ) = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -1165,7 +1169,6 @@ function cOperatorHeader _
     '' needed to allow CAST to be checked
     symbGetType( proc ) = dtype
     symbGetSubtype( proc ) = subtype
-    symbGetAttrib( proc ) = attrib
 
 	''
 	if( hCheckOpOvlParams( parent, op, proc, attrib ) = FALSE ) then
@@ -1522,14 +1525,14 @@ function cPropertyHeader _
 		end if
 	end if
 
+	symbGetAttrib( proc ) = attrib
+
 	'' Parameters?
 	if( cParameters( parent, proc, mode, is_prototype ) = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 	end if
-
-	symbGetAttrib( proc ) = attrib
 
     '' (AS SymbolType)?
     if( lexGetToken( ) = FB_TK_AS ) then
@@ -1824,6 +1827,8 @@ function cCtorHeader _
 			is_nested = hDoNesting( parent )
 		end if
 	end if
+
+	symbGetAttrib( proc ) = attrib
 
 	'' Parameters?
 	if( cParameters( parent, proc, mode, is_prototype ) = NULL ) then
