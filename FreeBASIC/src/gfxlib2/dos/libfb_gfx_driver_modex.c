@@ -123,11 +123,11 @@ static void driver_update(void)
 	
 	_farsetsel(_dos_ds);
 	for (plane = 0; plane < 4; plane++) {
-		buffer = (unsigned char *)fb_mode->framebuffer + plane;
+		buffer = (unsigned char *)__fb_gfx->framebuffer + plane;
 		outportw(SC_INDEX, (0x100 << plane) | 0x02);		/* set write plane */
 		screen = 0xA0000;
 		for (y = 0; y < fb_dos.h; y++) {
-			if (fb_mode->dirty[y]) {
+			if (__fb_gfx->dirty[y]) {
 				for (x = 0; x < fb_dos.w; x += 4, screen++) {
 					_farnspokeb(screen, buffer[x]);
 				}

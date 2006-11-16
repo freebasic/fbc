@@ -32,14 +32,14 @@ FBCALL int fb_GfxEvent(EVENT *event)
 {
 	EVENT *e = NULL;
 	
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return FB_FALSE;
 	
 	EVENT_LOCK();
-	if (fb_mode->event_head != fb_mode->event_tail) {
-		e = &fb_mode->event_queue[fb_mode->event_head];
+	if (__fb_gfx->event_head != __fb_gfx->event_tail) {
+		e = &__fb_gfx->event_queue[__fb_gfx->event_head];
 		if (event)
-			fb_mode->event_head = (fb_mode->event_head + 1) & (MAX_EVENTS - 1);
+			__fb_gfx->event_head = (__fb_gfx->event_head + 1) & (MAX_EVENTS - 1);
 	}
 	if (e && event)
 		fb_hMemCpy(event, e, sizeof(EVENT));

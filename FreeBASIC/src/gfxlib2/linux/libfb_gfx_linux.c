@@ -38,7 +38,7 @@ typedef struct _XWINDOW {
 
 LINUXDRIVER fb_linux;
 
-const GFXDRIVER *fb_gfx_driver_list[] = {
+const GFXDRIVER *__fb_gfx_drivers_list[] = {
 	&fb_gfxDriverX11,
 	&fb_gfxDriverOpenGL,
 	&fb_gfxDriverFBDev,
@@ -125,11 +125,11 @@ static void *window_thread(void *arg)
 					/* fallthrough */
 					
 				case Expose:
-					fb_hMemSet(fb_mode->dirty, TRUE, fb_linux.h);
+					fb_hMemSet(__fb_gfx->dirty, TRUE, fb_linux.h);
 					break;
 				
 				case FocusOut:
-					fb_hMemSet(fb_mode->key, FALSE, 128);
+					fb_hMemSet(__fb_gfx->key, FALSE, 128);
 					has_focus = mouse_on = FALSE;
 					e.type = EVENT_WINDOW_LOST_FOCUS;
 					break;
@@ -195,7 +195,7 @@ static void *window_thread(void *arg)
 				case ConfigureNotify:
 					if ((event.xconfigure.width != fb_linux.w) || (event.xconfigure.height != fb_linux.h)) {
 						/* Window has been maximized: simulate ALT-Enter */
-						fb_mode->key[0x1C] = fb_mode->key[0x38] = TRUE;
+						__fb_gfx->key[0x1C] = __fb_gfx->key[0x38] = TRUE;
 					}
 					else
 						break;
@@ -206,9 +206,9 @@ static void *window_thread(void *arg)
 						if (event.type == KeyPress) {
 							e.scancode = fb_linux.keymap[event.xkey.keycode];
 							e.ascii = 0;
-							fb_mode->key[e.scancode] = TRUE;
+							__fb_gfx->key[e.scancode] = TRUE;
 						}
-						if ((fb_mode->key[0x1C]) && (fb_mode->key[0x38]) && (!(fb_linux.flags & DRIVER_NO_SWITCH))) {
+						if ((__fb_gfx->key[0x1C]) && (__fb_gfx->key[0x38]) && (!(fb_linux.flags & DRIVER_NO_SWITCH))) {
 							fb_linux.exit();
 							fb_linux.flags ^= DRIVER_FULLSCREEN;
 							if (fb_linux.init()) {
@@ -218,7 +218,7 @@ static void *window_thread(void *arg)
 								fb_linux.init();
 							}
 							fb_hRestorePalette();
-							fb_hMemSet(fb_mode->key, FALSE, 128);
+							fb_hMemSet(__fb_gfx->key, FALSE, 128);
 						}
 						else if (XLookupString(&event.xkey, (char *)key, 8, NULL, NULL) == 1) {
 							fb_hPostKey(key[0]);
@@ -267,7 +267,7 @@ static void *window_thread(void *arg)
 							e.type = EVENT_KEY_REPEAT;
 						}
 						else {
-							fb_mode->key[e.scancode] = FALSE;
+							__fb_gfx->key[e.scancode] = FALSE;
 							e.type = EVENT_KEY_RELEASE;
 						}
 					}

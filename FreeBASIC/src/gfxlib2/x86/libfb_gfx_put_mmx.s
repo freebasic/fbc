@@ -53,16 +53,16 @@ FUNC(fb_hPutPSetMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %eax
+	movl GLOBL(__fb_gfx), %eax
 	movl ARG3, %ebx
-	movl BPP(%eax), %ecx
+	movl GFX_BPP(%eax), %ecx
 	shrl $1, %ecx
 	shll %cl, %ebx
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl TARGET_PITCH(%eax), %edx
+	movl ARG6, %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 
@@ -128,16 +128,16 @@ FUNC(fb_hPutPResetMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %eax
+	movl GLOBL(__fb_gfx), %eax
 	movl ARG3, %ebx
-	movl BPP(%eax), %ecx
+	movl GFX_BPP(%eax), %ecx
 	shrl $1, %ecx
 	shll %cl, %ebx
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl TARGET_PITCH(%eax), %edx
+	movl ARG6, %edx
 	movl ARG2, %edi
 	movl $0xFFFFFFFF, %eax
 	subl %ebx, %edx
@@ -215,16 +215,16 @@ FUNC(fb_hPutAndMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %eax
+	movl GLOBL(__fb_gfx), %eax
 	movl ARG3, %ebx
-	movl BPP(%eax), %ecx
+	movl GFX_BPP(%eax), %ecx
 	shrl $1, %ecx
 	shll %cl, %ebx
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl TARGET_PITCH(%eax), %edx
+	movl ARG6, %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 
@@ -299,16 +299,16 @@ FUNC(fb_hPutOrMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %eax
+	movl GLOBL(__fb_gfx), %eax
 	movl ARG3, %ebx
-	movl BPP(%eax), %ecx
+	movl GFX_BPP(%eax), %ecx
 	shrl $1, %ecx
 	shll %cl, %ebx
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl TARGET_PITCH(%eax), %edx
+	movl ARG6, %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 
@@ -383,16 +383,16 @@ FUNC(fb_hPutXorMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %eax
+	movl GLOBL(__fb_gfx), %eax
 	movl ARG3, %ebx
-	movl BPP(%eax), %ecx
+	movl GFX_BPP(%eax), %ecx
 	shrl $1, %ecx
 	shll %cl, %ebx
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl TARGET_PITCH(%eax), %edx
+	movl ARG6, %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 
@@ -471,9 +471,8 @@ FUNC(fb_hPutTrans1MMX)
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
-	movl GLOBL(fb_mode), %eax
 	movl ARG1, %esi
-	movl TARGET_PITCH(%eax), %edx
+	movl ARG6, %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 	pxor %mm1, %mm1
@@ -589,13 +588,12 @@ FUNC(fb_hPutTrans2MMX)
 	pushl %ebx
 	
 	movl ARG3, %ebx
-	movl GLOBL(fb_mode), %eax
 	shll $1, %ebx
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl TARGET_PITCH(%eax), %edx
+	movl ARG6, %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 	movq (mask_16), %mm1
@@ -691,13 +689,12 @@ FUNC(fb_hPutTrans4MMX)
 	pushl %ebx
 	
 	movl ARG3, %ebx
-	movl GLOBL(fb_mode), %eax
 	shll $2, %ebx
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl TARGET_PITCH(%eax), %edx
+	movl ARG6, %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 	movq (mask_32), %mm1
@@ -783,13 +780,12 @@ FUNC(fb_hPutAlpha4MMX)
 	pushl %ebx
 	
 	movl ARG3, %ebx
-	movl GLOBL(fb_mode), %eax
 	shll $2, %ebx
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl TARGET_PITCH(%eax), %edx
+	movl ARG6, %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 	movl %edx, LOCAL2
@@ -893,20 +889,19 @@ FUNC(fb_hPutBlend2MMX)
 	pushl %ebx
 	
 	movl ARG3, %ebx
-	movl GLOBL(fb_mode), %eax
 	shll $1, %ebx
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl TARGET_PITCH(%eax), %edx
+	movl ARG6, %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 	movl %edx, LOCAL2
 	movq (rb_32), %mm5
 	movq %mm5, %mm6
 	psllw $8, %mm6
-	movl ARG6, %ebx
+	movl ARG7, %ebx
 	addl $7, %ebx
 	shrl $3, %ebx
 	movd %ebx, %mm7
@@ -1062,20 +1057,19 @@ FUNC(fb_hPutBlend4MMX)
 	pushl %ebx
 	
 	movl ARG3, %ebx
-	movl GLOBL(fb_mode), %eax
 	shll $2, %ebx
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl TARGET_PITCH(%eax), %edx
+	movl ARG6, %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 	movl %edx, LOCAL2
 	movq (rb_32), %mm5
 	movq %mm5, %mm6
 	psllw $8, %mm6
-	movl ARG6, %ebx
+	movl ARG7, %ebx
 	incl %ebx
 	movd %ebx, %mm2
 	movq (rgb_32), %mm7
@@ -1183,17 +1177,16 @@ FUNC(fb_hPutAdd2MMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %eax
 	movl ARG3, %ebx
 	shll $1, %ebx
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
-	addl $7, ARG6
+	addl $7, ARG7
 	movl ARG1, %esi
-	shrl $3, ARG6
-	movl TARGET_PITCH(%eax), %edx
-	movd ARG6, %mm7
+	shrl $3, ARG7
+	movl ARG6, %edx
+	movd ARG7, %mm7
 	movl ARG2, %edi
 	punpcklwd %mm7, %mm7
 	subl %ebx, %edx
@@ -1374,16 +1367,15 @@ FUNC(fb_hPutAdd4MMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %eax
 	movl ARG3, %ebx
 	shll $2, %ebx
 	movl ARG4, %edx
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl TARGET_PITCH(%eax), %edx
+	movl ARG6, %edx
 	movl ARG2, %edi
-	movd ARG6, %mm7
+	movd ARG7, %mm7
 	subl %ebx, %edx
 	punpcklwd %mm7, %mm7
 	shrl $2, %ebx

@@ -141,7 +141,7 @@ static HDC hdc;
 int fb_hGL_ExtensionSupported(const char *extension)
 {
 	int len, i;
-	char *string, *what[2] = { wgl_extensions, fb_gl.extensions };
+	char *string, *what[2] = { wgl_extensions, __fb_gl.extensions };
 	
 	for (i = 0; i < 2; i++) {
 		string = what[i];
@@ -263,7 +263,7 @@ static int opengl_init(void)
 	ShowWindow(fb_win32.wnd, SW_SHOW);
 	SetForegroundWindow(fb_win32.wnd);
 	fb_win32.is_active = TRUE;
-	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
+	__fb_gfx->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
 
 	return 0;
 }
@@ -356,7 +356,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	fb_wgl.MakeCurrent(hdc, hglrc);
 
 	if (flags & HAS_MULTISAMPLE)
-		fb_gl.Enable(GL_MULTISAMPLE_ARB);
+		__fb_gl.Enable(GL_MULTISAMPLE_ARB);
 	
 	return 0;
 }
@@ -411,10 +411,10 @@ static void driver_flip(void)
         GetKeyboardState(keystate);
         for (i = 0; __fb_keytable[i][0]; i++) {
             if (__fb_keytable[i][2])
-                fb_mode->key[__fb_keytable[i][0]] = ((keystate[__fb_keytable[i][1]] & 0x80) |
+                __fb_gfx->key[__fb_keytable[i][0]] = ((keystate[__fb_keytable[i][1]] & 0x80) |
                                                    (keystate[__fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
             else
-                fb_mode->key[__fb_keytable[i][0]] = (keystate[__fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
+                __fb_gfx->key[__fb_keytable[i][0]] = (keystate[__fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
         }
     }
 

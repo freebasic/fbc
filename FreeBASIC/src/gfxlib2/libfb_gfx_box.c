@@ -33,27 +33,28 @@
 /*:::::*/
 void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, unsigned int style)
 {
+	FB_GFXCTX *context = fb_hGetContext();
 	unsigned char *dest, rot;
 	int clipped_x1, clipped_y1, clipped_x2, clipped_y2, w, h, bit;
 	
-	if ((x2 < fb_mode->view_x) || (y2 < fb_mode->view_y) ||
-	    (x1 >= fb_mode->view_x + fb_mode->view_w) || (y1 >= fb_mode->view_y + fb_mode->view_h))
+	if ((x2 < context->view_x) || (y2 < context->view_y) ||
+	    (x1 >= context->view_x + context->view_w) || (y1 >= context->view_y + context->view_h))
 		return;
 
-	clipped_x1 = MAX(x1, fb_mode->view_x);
-	clipped_y1 = MAX(y1, fb_mode->view_y);
-	clipped_x2 = MIN(x2, fb_mode->view_x + fb_mode->view_w - 1);
-	clipped_y2 = MIN(y2, fb_mode->view_y + fb_mode->view_h - 1);
+	clipped_x1 = MAX(x1, context->view_x);
+	clipped_y1 = MAX(y1, context->view_y);
+	clipped_x2 = MIN(x2, context->view_x + context->view_w - 1);
+	clipped_y2 = MIN(y2, context->view_y + context->view_h - 1);
 	
 	DRIVER_LOCK();
 	
 	if (full) {
 		w = clipped_x2 - clipped_x1 + 1;
 		h = clipped_y2 - clipped_y1 + 1;
-		dest = fb_mode->line[clipped_y1] + (clipped_x1 * fb_mode->bpp);
+		dest = context->line[clipped_y1] + (clipped_x1 * __fb_gfx->bpp);
 		for (; h; h--) {
-			fb_hPixelSet(dest, color, w);
-			dest += fb_mode->target_pitch;
+			context->pixel_set(dest, color, w);
+			dest += context->target_pitch;
 		}
 	}
 	else {
@@ -62,13 +63,13 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, un
 			rot = (clipped_x1 - x1) & 0xF;
 			RORW(bit, rot);
 		}
-		if (y2 < fb_mode->view_y + fb_mode->view_h) {
+		if (y2 < context->view_y + context->view_h) {
 			if (style == 0xFFFF)
-				fb_hPixelSet(fb_mode->line[y2] + (clipped_x1 * fb_mode->bpp), color, clipped_x2 - clipped_x1 + 1);
+				context->pixel_set(context->line[y2] + (clipped_x1 * __fb_gfx->bpp), color, clipped_x2 - clipped_x1 + 1);
 			else {
 				for (w = clipped_x1; w <= clipped_x2; w++) {
 					if (style & bit)
-						fb_hPutPixel(w, y2, color);
+						context->put_pixel(context, w, y2, color);
 					RORW1(bit);
 				}
 			}
@@ -82,13 +83,13 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, un
 			RORW(bit, rot);
 		}
 		
-		if (y1 >= fb_mode->view_y) {
+		if (y1 >= context->view_y) {
 			if (style == 0xFFFF)
-				fb_hPixelSet(fb_mode->line[y1] + (clipped_x1 * fb_mode->bpp), color, clipped_x2 - clipped_x1 + 1);
+				context->pixel_set(context->line[y1] + (clipped_x1 * __fb_gfx->bpp), color, clipped_x2 - clipped_x1 + 1);
 			else {
 				for (w = clipped_x1; w <= clipped_x2; w++) {
 					if (style & bit)
-						fb_hPutPixel(w, y1, color);
+						context->put_pixel(context, w, y1, color);
 					RORW1(bit);
 				}
 			}
@@ -101,10 +102,10 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, un
 			rot = ((x2 - clipped_x2) + (clipped_y1 - y1)) & 0xF;
 			RORW(bit, rot);
 		}
-		if (x2 < fb_mode->view_x + fb_mode->view_w) {
+		if (x2 < context->view_x + context->view_w) {
 			for (h = clipped_y1; h <= clipped_y2; h++) {
 				if (style & bit)
-					fb_hPutPixel(x2, h, color);
+					context->put_pixel(context, x2, h, color);
 				RORW1(bit);
 			}
 		}
@@ -116,16 +117,16 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, un
 			rot = ((y2 - clipped_y2) + (clipped_y1 - y1)) & 0xF;
 			RORW(bit, rot);
 		}
-		if (x1 >= fb_mode->view_x) {
+		if (x1 >= context->view_x) {
 			for (h = clipped_y1; h <= clipped_y2; h++) {
 				if (style & bit)
-					fb_hPutPixel(x1, h, color);
+					context->put_pixel(context, x1, h, color);
 				RORW1(bit);
 			}
 		}
 	}
 	
-	SET_DIRTY(clipped_y1, clipped_y2 - clipped_y1 + 1);
+	SET_DIRTY(context, clipped_y1, clipped_y2 - clipped_y1 + 1);
 	
 	DRIVER_UNLOCK();
 }

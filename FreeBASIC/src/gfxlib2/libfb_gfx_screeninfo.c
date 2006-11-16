@@ -32,19 +32,19 @@ FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int 
 {
 	char *name;
 	
-	if (!fb_mode) {
+	if (!__fb_gfx) {
 		name = "";
 		fb_hScreenInfo(width, height, depth, refresh);
 		*bpp = *pitch = 0;
 	}
 	else {
-		name = fb_mode->driver->name;
-		*width = fb_mode->w;
-		*height = fb_mode->h;
-		*depth = fb_mode->depth;
-		*bpp = fb_mode->bpp;
-		*pitch = fb_mode->pitch;
-		*refresh = fb_mode->refresh_rate;
+		name = __fb_gfx->driver->name;
+		*width = __fb_gfx->w;
+		*height = __fb_gfx->h;
+		*depth = __fb_gfx->depth;
+		*bpp = __fb_gfx->bpp;
+		*pitch = __fb_gfx->pitch;
+		*refresh = __fb_gfx->refresh_rate;
 	}
 	
 	if (fb_hStrDelTemp(driver)) {

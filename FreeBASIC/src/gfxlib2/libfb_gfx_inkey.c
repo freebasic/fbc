@@ -91,7 +91,7 @@ int fb_GfxGetkey(void)
 {
 	int key = 0;
 
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return 0;
 
 	do {
@@ -126,7 +126,7 @@ FBSTRING *fb_GfxInkey(void)
 	FBSTRING *res;
 	int key;
 
-	if ((fb_mode) && (key = get_key())) {
+	if ((__fb_gfx) && (key = get_key())) {
         if (key > 0xFF) {
             res = (FBSTRING *)fb_hStrAllocTmpDesc();
             fb_hStrAllocTemp(res, 2);

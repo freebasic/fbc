@@ -30,23 +30,24 @@
 /*:::::*/
 FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, unsigned char *dest, int coord_type, FBARRAY *array)
 {
+	FB_GFXCTX *context = fb_hGetContext();
 	PUT_HEADER *header;
 	int x1, y1, x2, y2, w, h, pitch;
 
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
-	fb_hPrepareTarget(target, MASK_A_32);
+	fb_hPrepareTarget(context, target, MASK_A_32);
 
-	fb_hFixRelative(coord_type, &fx1, &fy1, &fx2, &fy2);
+	fb_hFixRelative(context, coord_type, &fx1, &fy1, &fx2, &fy2);
 
-	fb_hTranslateCoord(fx1, fy1, &x1, &y1);
-	fb_hTranslateCoord(fx2, fy2, &x2, &y2);
+	fb_hTranslateCoord(context, fx1, fy1, &x1, &y1);
+	fb_hTranslateCoord(context, fx2, fy2, &x2, &y2);
 
 	fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
 
-	if ((x1 < fb_mode->view_x) || (y1 < fb_mode->view_y) ||
-	    (x2 >= fb_mode->view_x + fb_mode->view_w) || (y2 >= fb_mode->view_y + fb_mode->view_h))
+	if ((x1 < context->view_x) || (y1 < context->view_y) ||
+	    (x2 >= context->view_x + context->view_w) || (y2 >= context->view_y + context->view_h))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
 	w = x2 - x1 + 1;
@@ -57,12 +58,12 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
 	header = (PUT_HEADER *)dest;
-	if (fb_mode->bpp == 1) {
+	if (__fb_gfx->bpp == 1) {
 		/* use old-style header for compatibility */
-		header->old.bpp = fb_mode->bpp;
+		header->old.bpp = __fb_gfx->bpp;
 		header->old.width = w;
 		header->old.height = h;
-		pitch = w * fb_mode->bpp;
+		pitch = w * __fb_gfx->bpp;
 		dest += 4;
 	}
 	else {
@@ -70,15 +71,15 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 		header->type = PUT_HEADER_NEW;
 		header->width = w;
 		header->height = h;
-		header->bpp = fb_mode->bpp;
-		pitch = header->pitch = ((w * fb_mode->bpp) + 0xF) & ~0xF;
+		header->bpp = __fb_gfx->bpp;
+		pitch = header->pitch = ((w * __fb_gfx->bpp) + 0xF) & ~0xF;
 		dest += sizeof(PUT_HEADER);
 	}
 
 	DRIVER_LOCK();
 
 	for (; y1 <= y2; y1++) {
-		fb_hPixelCpy(dest, fb_mode->line[y1] + (x1 * fb_mode->bpp), w);
+		fb_hPixelCpy(dest, context->line[y1] + (x1 * __fb_gfx->bpp), w);
 		dest += pitch;
 	}
 

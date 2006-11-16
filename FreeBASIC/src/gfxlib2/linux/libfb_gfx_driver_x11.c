@@ -175,9 +175,9 @@ static int x11_init(void)
 		values.foreground = 1;
 		values.background = 0;											 
 		shape_gc = XCreateGC(fb_linux.display, shape_pixmap, GCForeground | GCBackground, &values);
-		if (fb_mode->bpp == 1)
+		if (__fb_gfx->bpp == 1)
 			update_mask = update_mask_8;
-		else if (fb_mode->bpp == 2)
+		else if (__fb_gfx->bpp == 2)
 			update_mask = update_mask_16;
 		else
 			update_mask = update_mask_32;
@@ -265,8 +265,8 @@ static void x11_update(void)
 	
 	blitter((unsigned char *)image->data, image->bytes_per_line);
 	for (i = 0; i < fb_linux.h; i++) {
-		if (fb_mode->dirty[i]) {
-			for (y = i, h = 0; (fb_mode->dirty[i]) && (i < fb_linux.h); h++, i++)
+		if (__fb_gfx->dirty[i]) {
+			for (y = i, h = 0; (__fb_gfx->dirty[i]) && (i < fb_linux.h); h++, i++)
 				;
 			if (is_shm)
 				XShmPutImage(fb_linux.display, fb_linux.window, fb_linux.gc, image, 0, y, 0, y + fb_linux.display_offset, fb_linux.w, h, False);
@@ -274,14 +274,14 @@ static void x11_update(void)
 				XPutImage(fb_linux.display, fb_linux.window, fb_linux.gc, image, 0, y, 0, y + fb_linux.display_offset, fb_linux.w, h);
 			
 			if (shape_image) {
-				update_mask((unsigned char *)fb_mode->framebuffer + (y * fb_mode->pitch),
+				update_mask((unsigned char *)__fb_gfx->framebuffer + (y * __fb_gfx->pitch),
 							(unsigned char *)shape_image->data + (y * shape_image->bytes_per_line), fb_linux.w, h);
 				XPutImage(fb_linux.display, shape_pixmap, shape_gc, shape_image, 0, y, 0, y, fb_linux.w, h);
 				XShapeCombineMask(fb_linux.display, fb_linux.window, ShapeBounding, 0, 0, shape_pixmap, ShapeSet);
 			}
 		}
 	}
-	fb_hMemSet(fb_mode->dirty, FALSE, fb_linux.h);
+	fb_hMemSet(__fb_gfx->dirty, FALSE, fb_linux.h);
 }
 
 

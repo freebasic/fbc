@@ -54,7 +54,7 @@ typedef struct BMP_HEADER
 
 
 /*:::::*/
-static int load_bmp(FILE *f, void *dest)
+static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest)
 {
 	BMP_HEADER header;
 	PUT_HEADER *put_header = NULL;
@@ -63,7 +63,7 @@ static int load_bmp(FILE *f, void *dest)
 	int i, j, color, rgb[3], expand, size, padding, palette[256], palette_entries;
 	FBGFX_IMAGE_CONVERT convert = NULL;
 
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 
 	/* This will need adjustment if/when we port to big-endian (like PPC) machines */
@@ -81,7 +81,7 @@ static int load_bmp(FILE *f, void *dest)
 	if (dest) {
 		put_header = (PUT_HEADER *)dest;
 		put_header->type = PUT_HEADER_NEW;
-		put_header->bpp = fb_mode->bpp;
+		put_header->bpp = __fb_gfx->bpp;
 		put_header->width = header.biWidth;
 		put_header->height = header.biHeight;
 		put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
@@ -95,7 +95,7 @@ static int load_bmp(FILE *f, void *dest)
 		header.biBitCount = 24;
 	}
 	if (header.biBitCount <= 8) {
-		switch (BYTES_PER_PIXEL(fb_mode->depth)) {
+		switch (BYTES_PER_PIXEL(__fb_gfx->depth)) {
 			case 1: convert = fb_image_convert_8to8;  break;
 			case 2: convert = fb_image_convert_8to16; break;
 			case 3:
@@ -103,7 +103,7 @@ static int load_bmp(FILE *f, void *dest)
 		}
 	}
 	else if (header.biBitCount == 24) {
-		switch (BYTES_PER_PIXEL(fb_mode->depth)) {
+		switch (BYTES_PER_PIXEL(__fb_gfx->depth)) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
 			case 2: convert = fb_image_convert_24bgrto16; break;
 			case 3:
@@ -111,7 +111,7 @@ static int load_bmp(FILE *f, void *dest)
 		}
 	}
 	else {
-		switch (BYTES_PER_PIXEL(fb_mode->depth)) {
+		switch (BYTES_PER_PIXEL(__fb_gfx->depth)) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
 			case 2: convert = fb_image_convert_32bgrto16; break;
 			case 3:
@@ -120,7 +120,7 @@ static int load_bmp(FILE *f, void *dest)
 	}
 
 	DRIVER_LOCK();
-	fb_hMemCpy(fb_mode->device_palette, palette, palette_entries * sizeof(int));
+	fb_hMemCpy(__fb_gfx->device_palette, palette, palette_entries * sizeof(int));
 	fb_hRestorePalette();
 	size = ((header.biWidth * BYTES_PER_PIXEL(header.biBitCount)) + 3) & ~0x3;
 	buffer = (unsigned char *)malloc(size);
@@ -152,12 +152,12 @@ static int load_bmp(FILE *f, void *dest)
 		}
 		if (dest)
 			convert(buffer, d + (i * put_header->pitch), header.biWidth);
-		else if (i < fb_mode->h)
-			convert(buffer, fb_mode->line[i], MIN(fb_mode->w, header.biWidth));
+		else if (i < __fb_gfx->h)
+			convert(buffer, ctx->line[i], MIN(__fb_gfx->w, header.biWidth));
 	}
 
 exit_error:
-	SET_DIRTY(0, fb_mode->h);
+	SET_DIRTY(ctx, 0, __fb_gfx->h);
 	DRIVER_UNLOCK();
 
 	free(buffer);
@@ -170,12 +170,13 @@ exit_error:
 FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 {
 	FILE *f;
+	FB_GFXCTX *context = fb_hGetContext();
 	unsigned char id;
 	unsigned int size = 0;
 	char buffer[MAX_PATH];
 	int result = FB_RTERROR_OK;
 
-	if ((!dest) && (!fb_mode))
+	if ((!dest) && (!__fb_gfx))
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	
 	snprintf(buffer, MAX_PATH-1, "%s", filename->data);
@@ -189,7 +190,7 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
 
-	fb_hPrepareTarget(NULL, MASK_A_32);
+	fb_hPrepareTarget(context, NULL, MASK_A_32);
 
 	id = fgetc(f);
 	switch (id) {
@@ -208,7 +209,7 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 		case 'B':
 			/* Can be a BMP */
 			rewind(f);
-			result = load_bmp(f, dest);
+			result = load_bmp(context, f, dest);
 			fclose(f);
 			fb_hStrDelTemp(filename);
 			return result;
@@ -221,12 +222,12 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 	if (result == FB_RTERROR_OK) {
 		if (!dest) {
 			DRIVER_LOCK();
-			size = MIN(size, fb_mode->pitch * fb_mode->h);
-			if ((!fread(fb_mode->line[0], size, 1, f)) && (!feof(f)))
+			size = MIN(size, __fb_gfx->pitch * __fb_gfx->h);
+			if ((!fread(context->line[0], size, 1, f)) && (!feof(f)))
 				result = FB_RTERROR_FILEIO;
-			SET_DIRTY(0, fb_mode->h);
+			SET_DIRTY(context, 0, __fb_gfx->h);
 			if (!feof(f)) {
-				fread(fb_mode->device_palette, 1024, 1, f);
+				fread(__fb_gfx->device_palette, 1024, 1, f);
 				fb_hRestorePalette();
 			}
 			DRIVER_UNLOCK();

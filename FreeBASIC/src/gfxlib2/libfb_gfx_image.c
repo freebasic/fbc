@@ -30,33 +30,34 @@
 /*:::::*/
 FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color)
 {
+	FB_GFXCTX *context = fb_hGetContext();
 	void *image;
 	PUT_HEADER *header;
 	int size, pitch;
 	
-	if ((!fb_mode) || (width <= 0) || (height <= 0))
+	if ((!__fb_gfx) || (width <= 0) || (height <= 0))
 		return NULL;
 
 	if (color == DEFAULT_COLOR) {
-		if (fb_mode->bpp == 1)
+		if (__fb_gfx->bpp == 1)
 			color = 0;
 		else
 			color = fb_hFixColor(MASK_COLOR_32 | MASK_A_32);
 	}
 	else
 		color = fb_hFixColor(color);
-	pitch = ((width * fb_mode->bpp) + 0xF) & ~0xF;
+	pitch = ((width * __fb_gfx->bpp) + 0xF) & ~0xF;
 	size = pitch * height;
 	
 	image = malloc(size + sizeof(PUT_HEADER));
 	header = (PUT_HEADER *)image;
 	header->type = PUT_HEADER_NEW;
-	header->bpp = fb_mode->bpp;
+	header->bpp = __fb_gfx->bpp;
 	header->width = width;
 	header->height = height;
 	header->pitch = pitch;
 	fb_hMemSet(header->_reserved, 0, sizeof(header->_reserved));
-	fb_hPixelSet(image + sizeof(PUT_HEADER), color, (pitch / header->bpp) * height);
+	context->pixel_set(image + sizeof(PUT_HEADER), color, (pitch / header->bpp) * height);
 	
 	return image;
 }

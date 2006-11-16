@@ -286,7 +286,7 @@ static int directx_init(void)
 	if (!fb_win32.blitter)
 		return -1;
 
-	IDirectDraw2_GetMonitorFrequency(lpDD, (LPDWORD)&fb_mode->refresh_rate);
+	IDirectDraw2_GetMonitorFrequency(lpDD, (LPDWORD)&__fb_gfx->refresh_rate);
 
 	vsync_event = CreateEvent(NULL, TRUE, FALSE, NULL);
 
@@ -386,7 +386,7 @@ static void directx_thread(HANDLE running_event)
 			if (IDirectDrawSurface_Lock(lpDDS_back, NULL, &desc, DDLOCK_WAIT | DDLOCK_SURFACEMEMORYPTR, NULL) == DD_OK) {
 				fb_win32.blitter((unsigned char *)desc.lpSurface + display_offset * desc.lPitch, desc.lPitch);
 				IDirectDrawSurface_Unlock(lpDDS_back, desc.lpSurface);
-				fb_hMemSet(fb_mode->dirty, FALSE, fb_win32.h);
+				fb_hMemSet(__fb_gfx->dirty, FALSE, fb_win32.h);
 			}
 
 			directx_paint();
@@ -399,7 +399,7 @@ static void directx_thread(HANDLE running_event)
             else {
                 /* Simplicistic way to deal with extended scancodes */
                 for (i = 0; i < 128; i++)
-                    fb_mode->key[i] = ((keystate[i] | keystate[i + 128]) & 0x80) ? TRUE : FALSE;
+                    __fb_gfx->key[i] = ((keystate[i] | keystate[i + 128]) & 0x80) ? TRUE : FALSE;
             }
         }
 

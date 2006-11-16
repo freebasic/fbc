@@ -67,17 +67,17 @@ FUNC(fb_hBlit8to15RGBMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %eax
-	movl MODE_H(%ebx), %edx
-	movl %eax, LOCAL3		/* LOCAL3 = fb_mode->pitch */
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %eax
+	movl GFX_MODE_H(%ebx), %edx
+	movl %eax, LOCAL3		/* LOCAL3 = __fb_gfx->pitch */
 	shrl $2, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl %edx, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
-	movl DIRTY(%ebx), %edx
-	movl DEVICE_PALETTE(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl %edx, LOCAL2		/* LOCAL2 = __fb_gfx->GFX_MODE_H */
+	movl GFX_DIRTY(%ebx), %edx
+	movl GFX_DEVICE_PALETTE(%ebx), %ebx
 	movq (const32to15_rb), %mm2
 	movq (const32to15_mul_bgr), %mm3
 	movq (const32to15_g), %mm6
@@ -159,17 +159,17 @@ FUNC(fb_hBlit8to15BGRMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %eax
-	movl MODE_H(%ebx), %edx
-	movl %eax, LOCAL3		/* LOCAL3 = fb_mode->pitch */
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %eax
+	movl GFX_MODE_H(%ebx), %edx
+	movl %eax, LOCAL3		/* LOCAL3 = __fb_gfx->pitch */
 	shrl $2, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl %edx, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
-	movl DIRTY(%ebx), %edx
-	movl DEVICE_PALETTE(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl %edx, LOCAL2		/* LOCAL2 = __fb_gfx->GFX_MODE_H */
+	movl GFX_DIRTY(%ebx), %edx
+	movl GFX_DEVICE_PALETTE(%ebx), %ebx
 	movq (const32to15_rb), %mm2
 	movq (const32to15_mul_rgb), %mm3
 	movq (const32to15_g), %mm6
@@ -251,17 +251,17 @@ FUNC(fb_hBlit8to16RGBMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %eax
-	movl MODE_H(%ebx), %edx
-	movl %eax, LOCAL3		/* LOCAL3 = fb_mode->pitch */
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %eax
+	movl GFX_MODE_H(%ebx), %edx
+	movl %eax, LOCAL3		/* LOCAL3 = __fb_gfx->pitch */
 	shrl $2, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl %edx, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
-	movl DIRTY(%ebx), %edx
-	movl DEVICE_PALETTE(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl %edx, LOCAL2		/* LOCAL2 = __fb_gfx->GFX_MODE_H */
+	movl GFX_DIRTY(%ebx), %edx
+	movl GFX_DEVICE_PALETTE(%ebx), %ebx
 	movq (const32to16_rb), %mm2
 	movq (const32to16_mul_bgr), %mm3
 	movq (const32to16_g), %mm6
@@ -346,17 +346,17 @@ FUNC(fb_hBlit8to16BGRMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %eax
-	movl MODE_H(%ebx), %edx
-	movl %eax, LOCAL3		/* LOCAL3 = fb_mode->pitch */
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %eax
+	movl GFX_MODE_H(%ebx), %edx
+	movl %eax, LOCAL3		/* LOCAL3 = __fb_gfx->pitch */
 	shrl $2, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl %edx, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
-	movl DIRTY(%ebx), %edx
-	movl DEVICE_PALETTE(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl %edx, LOCAL2		/* LOCAL2 = __fb_gfx->GFX_MODE_H */
+	movl GFX_DIRTY(%ebx), %edx
+	movl GFX_DEVICE_PALETTE(%ebx), %ebx
 	movq (const32to16_rb), %mm2
 	movq (const32to16_mul_rgb), %mm3
 	movq (const32to16_g), %mm6
@@ -441,17 +441,17 @@ FUNC(fb_hBlit8to24RGBMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %eax
-	movl %eax, LOCAL3		/* LOCAL3 = fb_mode->pitch */
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %eax
+	movl %eax, LOCAL3		/* LOCAL3 = __fb_gfx->pitch */
 	shrl $2, %eax
-	movl MODE_H(%ebx), %edx
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl %edx, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
-	movl DIRTY(%ebx), %edx
-	movl DEVICE_PALETTE(%ebx), %ebx
+	movl GFX_MODE_H(%ebx), %edx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl %edx, LOCAL2		/* LOCAL2 = __fb_gfx->GFX_MODE_H */
+	movl GFX_DIRTY(%ebx), %edx
+	movl GFX_DEVICE_PALETTE(%ebx), %ebx
 	pxor %mm7, %mm7
 
 LABEL(blit8to24RGB_y_loop)
@@ -523,17 +523,17 @@ FUNC(fb_hBlit8to24BGRMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %eax
-	movl %eax, LOCAL3		/* LOCAL3 = fb_mode->pitch */
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %eax
+	movl %eax, LOCAL3		/* LOCAL3 = __fb_gfx->pitch */
 	shrl $2, %eax
-	movl MODE_H(%ebx), %edx
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl %edx, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
-	movl DIRTY(%ebx), %edx
-	movl DEVICE_PALETTE(%ebx), %ebx
+	movl GFX_MODE_H(%ebx), %edx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl %edx, LOCAL2		/* LOCAL2 = __fb_gfx->GFX_MODE_H */
+	movl GFX_DIRTY(%ebx), %edx
+	movl GFX_DEVICE_PALETTE(%ebx), %ebx
 	pxor %mm7, %mm7
 
 LABEL(blit8to24BGR_y_loop)
@@ -609,17 +609,17 @@ FUNC(fb_hBlit8to32RGBMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %eax
-	movl MODE_H(%ebx), %edx
-	movl %eax, LOCAL3		/* LOCAL3 = fb_mode->pitch */
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %eax
+	movl GFX_MODE_H(%ebx), %edx
+	movl %eax, LOCAL3		/* LOCAL3 = __fb_gfx->pitch */
 	shrl $2, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl %edx, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
-	movl DIRTY(%ebx), %edx
-	movl DEVICE_PALETTE(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl %edx, LOCAL2		/* LOCAL2 = __fb_gfx->GFX_MODE_H */
+	movl GFX_DIRTY(%ebx), %edx
+	movl GFX_DEVICE_PALETTE(%ebx), %ebx
 
 LABEL(blit8to32RGB_y_loop)
 	addl LOCAL3, %esi
@@ -682,17 +682,17 @@ FUNC(fb_hBlit8to32BGRMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %eax
-	movl MODE_H(%ebx), %edx
-	movl %eax, LOCAL3		/* LOCAL3 = fb_mode->pitch */
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %eax
+	movl GFX_MODE_H(%ebx), %edx
+	movl %eax, LOCAL3		/* LOCAL3 = __fb_gfx->pitch */
 	shrl $2, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl %edx, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
-	movl DIRTY(%ebx), %edx
-	movl DEVICE_PALETTE(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl %edx, LOCAL2		/* LOCAL2 = __fb_gfx->GFX_MODE_H */
+	movl GFX_DIRTY(%ebx), %edx
+	movl GFX_DEVICE_PALETTE(%ebx), %ebx
 
 LABEL(blit8to32BGR_y_loop)
 	addl LOCAL3, %esi
@@ -761,16 +761,16 @@ FUNC(fb_hBlit16to15RGBMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %edx
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %edx
 	movl %edx, %eax
 	shll $1, %edx
 	shrl $3, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 3 */
-	movl MODE_H(%ebx), %eax
-	movl DIRTY(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 3 */
+	movl GFX_MODE_H(%ebx), %eax
+	movl GFX_DIRTY(%ebx), %ebx
 	movq (const16to15_g), %mm7
 
 LABEL(blit16to15RGB_y_loop)
@@ -832,16 +832,16 @@ FUNC(fb_hBlit16to15BGRMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %edx
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %edx
 	movl %edx, %eax
 	shll $1, %edx
 	shrl $3, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 3 */
-	movl MODE_H(%ebx), %eax
-	movl DIRTY(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 3 */
+	movl GFX_MODE_H(%ebx), %eax
+	movl GFX_DIRTY(%ebx), %ebx
 	movq (const16to15_r), %mm3
 	movq (const16to15_gb), %mm7
 
@@ -898,16 +898,16 @@ FUNC(fb_hBlit16to16RGBMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %edx
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %edx
 	movl %edx, %eax
 	shll $1, %edx
 	shrl $3, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 3 */
-	movl MODE_H(%ebx), %eax
-	movl DIRTY(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 3 */
+	movl GFX_MODE_H(%ebx), %eax
+	movl GFX_DIRTY(%ebx), %ebx
 	movq (const16to16_g), %mm7
 
 LABEL(blit16to16RGB_y_loop)
@@ -967,18 +967,18 @@ FUNC(fb_hBlit16to24MMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %eax
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %eax
 	shll $1, %eax
-	movl %eax, LOCAL3		/* LOCAL3 = fb_mode->pitch */
+	movl %eax, LOCAL3		/* LOCAL3 = __fb_gfx->pitch */
 	shrl $3, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl MODE_H(%ebx), %eax
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl GFX_MODE_H(%ebx), %eax
 	xorl %edx, %edx
-	movl %eax, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
-	movl DIRTY(%ebx), %ebx
+	movl %eax, LOCAL2		/* LOCAL2 = __fb_gfx->GFX_MODE_H */
+	movl GFX_DIRTY(%ebx), %ebx
 
 LABEL(blit16to24_y_loop)
 	addl LOCAL3, %esi
@@ -989,7 +989,7 @@ LABEL(blit16to24_y_loop)
 	pushl %edi
 	pushl %ebx
 	pushl %ebp
-	movl GLOBL(fb_color_conv_16to32), %ebp
+	movl GLOBL(__fb_color_conv_16to32), %ebp
 
 LABEL(blit16to24_x_loop)
 	movq (%esi), %mm0
@@ -1060,18 +1060,18 @@ FUNC(fb_hBlit16to32MMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %eax
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %eax
 	shll $1, %eax
-	movl %eax, LOCAL3		/* LOCAL3 = fb_mode->pitch */
+	movl %eax, LOCAL3		/* LOCAL3 = __fb_gfx->pitch */
 	shrl $3, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl MODE_H(%ebx), %eax
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl GFX_MODE_H(%ebx), %eax
 	xorl %edx, %edx
-	movl %eax, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
-	movl DIRTY(%ebx), %ebx
+	movl %eax, LOCAL2		/* LOCAL2 = __fb_gfx->GFX_MODE_H */
+	movl GFX_DIRTY(%ebx), %ebx
 
 LABEL(blit16to32_y_loop)
 	addl LOCAL3, %esi
@@ -1082,7 +1082,7 @@ LABEL(blit16to32_y_loop)
 	pushl %edi
 	pushl %ebx
 	pushl %ebp
-	movl GLOBL(fb_color_conv_16to32), %ebp
+	movl GLOBL(__fb_color_conv_16to32), %ebp
 
 LABEL(blit16to32_x_loop)
 	movq (%esi), %mm0
@@ -1148,16 +1148,16 @@ FUNC(fb_hBlit32to15RGBMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %edx
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %edx
 	movl %edx, %eax
 	shll $2, %edx
 	shrl $2, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl MODE_H(%ebx), %eax
-	movl DIRTY(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl GFX_MODE_H(%ebx), %eax
+	movl GFX_DIRTY(%ebx), %ebx
 	movq (const32to15_rb), %mm2
 	movq (const32to15_mul_rgb), %mm3
 	movq (const32to15_g), %mm6
@@ -1220,16 +1220,16 @@ FUNC(fb_hBlit32to15BGRMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %edx
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %edx
 	movl %edx, %eax
 	shll $2, %edx
 	shrl $2, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl MODE_H(%ebx), %eax
-	movl DIRTY(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl GFX_MODE_H(%ebx), %eax
+	movl GFX_DIRTY(%ebx), %ebx
 	movq (const32to15_rb), %mm2
 	movq (const32to15_mul_bgr), %mm3
 	movq (const32to15_g), %mm6
@@ -1292,16 +1292,16 @@ FUNC(fb_hBlit32to16RGBMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %edx
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %edx
 	movl %edx, %eax
 	shll $2, %edx
 	shrl $2, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl MODE_H(%ebx), %eax
-	movl DIRTY(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl GFX_MODE_H(%ebx), %eax
+	movl GFX_DIRTY(%ebx), %ebx
 	movq (const32to16_rb), %mm2
 	movq (const32to16_mul_rgb), %mm3
 	movq (const32to16_g), %mm6
@@ -1370,16 +1370,16 @@ FUNC(fb_hBlit32to16BGRMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %edx
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %edx
 	movl %edx, %eax
 	shll $2, %edx
 	shrl $2, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl MODE_H(%ebx), %eax
-	movl DIRTY(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl GFX_MODE_H(%ebx), %eax
+	movl GFX_DIRTY(%ebx), %ebx
 	movq (const32to16_rb), %mm2
 	movq (const32to16_mul_bgr), %mm3
 	movq (const32to16_g), %mm6
@@ -1448,17 +1448,17 @@ FUNC(fb_hBlit32to24RGBMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %edx
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %edx
 	movl %edx, %eax
 	shll $2, %edx
 	shrl $2, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl MODE_H(%ebx), %eax
-	movl DIRTY(%ebx), %ebx
-	movl %eax, LOCAL2		/* LOCAL2 = fb_mode->h */
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl GFX_MODE_H(%ebx), %eax
+	movl GFX_DIRTY(%ebx), %ebx
+	movl %eax, LOCAL2		/* LOCAL2 = __fb_gfx->h */
 
 LABEL(blit32to24RGB_y_loop)
 	addl %edx, %esi
@@ -1524,18 +1524,18 @@ FUNC(fb_hBlit32to24BGRMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %edx
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %edx
 	movl $0xFFFFFF, %ecx
 	movl %edx, %eax
 	shll $2, %edx
 	shrl $2, %eax
 	movd %ecx, %mm5
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl MODE_H(%ebx), %eax
-	movl DIRTY(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl GFX_MODE_H(%ebx), %eax
+	movl GFX_DIRTY(%ebx), %ebx
 
 LABEL(blit32to24BGR_y_loop)
 	addl %edx, %esi
@@ -1595,16 +1595,16 @@ FUNC(fb_hBlit32to32RGBMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(fb_mode), %ebx
+	movl GLOBL(__fb_gfx), %ebx
 	movl ARG1, %edi
-	movl FRAMEBUFFER(%ebx), %esi
-	movl MODE_W(%ebx), %edx
+	movl GFX_FRAMEBUFFER(%ebx), %esi
+	movl GFX_MODE_W(%ebx), %edx
 	movl %edx, %eax
 	shll $2, %edx
 	shrl $2, %eax
-	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
-	movl MODE_H(%ebx), %eax
-	movl DIRTY(%ebx), %ebx
+	movl %eax, LOCAL1		/* LOCAL1 = __fb_gfx->GFX_MODE_W >> 2 */
+	movl GFX_MODE_H(%ebx), %eax
+	movl GFX_DIRTY(%ebx), %ebx
 	movq (const32to32_g), %mm3
 	movq (const32to32_b), %mm7
 

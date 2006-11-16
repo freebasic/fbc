@@ -222,11 +222,11 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 static void driver_update(void)
 {
 	int y;
-	unsigned int buffer = (unsigned int)fb_mode->framebuffer;
+	unsigned int buffer = (unsigned int)__fb_gfx->framebuffer;
 	unsigned int screen = 0xA0000;
 	
 	for (y = 0; y < fb_dos.h; y++, buffer += fb_dos.w, screen += fb_dos.w) {
-		if (fb_mode->dirty[y]) {
+		if (__fb_gfx->dirty[y]) {
 			movedata(_my_ds(), buffer, _dos_ds, screen, fb_dos.w);
 		}
 	}

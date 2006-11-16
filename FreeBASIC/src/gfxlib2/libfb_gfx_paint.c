@@ -36,15 +36,15 @@ typedef struct SPAN
 
 
 /*:::::*/
-static SPAN *add_span(SPAN **span, int *x, int y, unsigned int border_color)
+static SPAN *add_span(FB_GFXCTX *context, SPAN **span, int *x, int y, unsigned int border_color)
 {
 	SPAN *s;
 	int x1, x2;
 
 	x1 = x2 = *x;
-	while ((x1 > fb_mode->view_x) && (fb_hGetPixel(x1 - 1, y) != border_color))
+	while ((x1 > context->view_x) && (context->get_pixel(context, x1 - 1, y) != border_color))
 		x1--;
-	while ((x2 < fb_mode->view_x + fb_mode->view_w - 1) && (fb_hGetPixel(x2 + 1, y) != border_color))
+	while ((x2 < context->view_x + context->view_w - 1) && (context->get_pixel(context, x2 + 1, y) != border_color))
 		x2++;
 	*x = x2 + 1;
 	for (s = span[y]; s; s = s->row_next) {
@@ -66,15 +66,16 @@ static SPAN *add_span(SPAN **span, int *x, int y, unsigned int border_color)
 /*:::::*/
 FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, unsigned int border_color, FBSTRING *pattern, int mode, int coord_type)
 {
+	FB_GFXCTX *context = fb_hGetContext();
 	int size, x, y;
 	unsigned char data[256], *dest, *src;
 	SPAN **span, *s, *tail, *head;
 
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return;
 
 	if (color == DEFAULT_COLOR)
-		color = fb_mode->fg_color;
+		color = context->fg_color;
 	else
 		color = fb_hFixColor(color);
 	if (border_color == DEFAULT_COLOR)
@@ -82,11 +83,11 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	else
 		border_color = fb_hFixColor(border_color);
 
-	fb_hPrepareTarget(target, color);
+	fb_hPrepareTarget(context, target, color);
 
-	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
+	fb_hFixRelative(context, coord_type, &fx, &fy, NULL, NULL);
 
-	fb_hTranslateCoord(fx, fy, &x, &y);
+	fb_hTranslateCoord(context, fx, fy, &x, &y);
 
 	fb_hMemSet(data, 0, sizeof(data));
 	if ((mode == PAINT_TYPE_PATTERN) && (pattern)) {
@@ -97,25 +98,25 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
         fb_hStrDelTemp( pattern );
     }
 
-	if ((x < fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
-	    (y < fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
+	if ((x < context->view_x) || (x >= context->view_x + context->view_w) ||
+	    (y < context->view_y) || (y >= context->view_y + context->view_h))
 		return;
 
-	if (fb_hGetPixel(x, y) == border_color)
+	if (context->get_pixel(context, x, y) == border_color)
 		return;
 
-	size = sizeof(SPAN *) * (fb_mode->view_y + fb_mode->view_h);
+	size = sizeof(SPAN *) * (context->view_y + context->view_h);
 	span = (SPAN **)malloc(size);
 	fb_hMemSet(span, 0, size);
 
-	tail = head = add_span(span, &x, y, border_color);
+	tail = head = add_span(context, span, &x, y, border_color);
 
 	/* Find all spans to paint */
 	while (tail) {
-		if (tail->y - 1 >= fb_mode->view_y) {
+		if (tail->y - 1 >= context->view_y) {
 			for (x = tail->x1; x <= tail->x2; x++) {
-				if (fb_hGetPixel(x, tail->y - 1) != border_color) {
-					s = add_span(span, &x, tail->y - 1, border_color);
+				if (context->get_pixel(context, x, tail->y - 1) != border_color) {
+					s = add_span(context, span, &x, tail->y - 1, border_color);
 					if (s) {
 						head->next = s;
 						head = s;
@@ -123,10 +124,10 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 				}
 			}
 		}
-		if (tail->y + 1 < fb_mode->view_y + fb_mode->view_h) {
+		if (tail->y + 1 < context->view_y + context->view_h) {
 			for (x = tail->x1; x <= tail->x2; x++) {
-				if (fb_hGetPixel(x, tail->y + 1) != border_color) {
-					s = add_span(span, &x, tail->y + 1, border_color);
+				if (context->get_pixel(context, x, tail->y + 1) != border_color) {
+					s = add_span(context, span, &x, tail->y + 1, border_color);
 					if (s) {
 						head->next = s;
 						head = s;
@@ -140,34 +141,34 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	DRIVER_LOCK();
 
 	/* Fill spans */
-	for (y = fb_mode->view_y; y < fb_mode->view_y + fb_mode->view_h; y++) {
+	for (y = context->view_y; y < context->view_y + context->view_h; y++) {
 		for (s = tail = span[y]; s; s = s->row_next, free(tail), tail = s) {
 
-			dest = fb_mode->line[s->y] + (s->x1 * fb_mode->bpp);
+			dest = context->line[s->y] + (s->x1 * __fb_gfx->bpp);
 
 			if (mode == PAINT_TYPE_FILL)
-				fb_hPixelSet(dest, color, s->x2 - s->x1 + 1);
+				context->pixel_set(dest, color, s->x2 - s->x1 + 1);
 			else {
-				src = data + (((s->y & 0x7) << 3) * fb_mode->bpp);
+				src = data + (((s->y & 0x7) << 3) * __fb_gfx->bpp);
 				if (s->x1 & 0x7) {
 					if ((s->x1 & ~0x7) == (s->x2 & ~0x7))
 						size = s->x2 - s->x1 + 1;
 					else
 						size = 8 - (s->x1 & 0x7);
-					fb_hPixelCpy(dest, src + ((s->x1 & 0x7) * fb_mode->bpp), size);
-					dest += size * fb_mode->bpp;
+					fb_hPixelCpy(dest, src + ((s->x1 & 0x7) * __fb_gfx->bpp), size);
+					dest += size * __fb_gfx->bpp;
 				}
 				s->x2++;
 				for (x = (s->x1 + 7) >> 3; x < (s->x2 & ~0x7) >> 3; x++) {
 					fb_hPixelCpy(dest, src, 8);
-					dest += 8 * fb_mode->bpp;
+					dest += 8 * __fb_gfx->bpp;
 				}
 				if ((s->x2 & 0x7) && ((s->x1 & ~0x7) != (s->x2 & ~0x7)))
 					fb_hPixelCpy(dest, src, s->x2 & 0x7);
 			}
 
-			if (fb_mode->framebuffer == fb_mode->line[0])
-				fb_mode->dirty[fb_mode->view_y + y] = TRUE;
+			if (__fb_gfx->framebuffer == context->line[0])
+				__fb_gfx->dirty[context->view_y + y] = TRUE;
 		}
 	}
 	free(span);

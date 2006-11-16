@@ -331,18 +331,18 @@ static void driver_update(void)
 	bank_granularity = fb_dos.vesa_mode_info.WinGranularity * 1024;
 	
 	for (y1 = 0; y1 < fb_dos.h; y1++) {
-		if (fb_mode->dirty[y1]) {
-			for (y2 = fb_dos.h - 1; !fb_mode->dirty[y2]; y2--)
+		if (__fb_gfx->dirty[y1]) {
+			for (y2 = fb_dos.h - 1; !__fb_gfx->dirty[y2]; y2--)
 				;
 			
-			fb_dos_vesa_bank_number = (y1 * fb_mode->pitch) / bank_granularity;
+			fb_dos_vesa_bank_number = (y1 * __fb_gfx->pitch) / bank_granularity;
 			
 			framebuffer_start = fb_dos_vesa_bank_number * bank_granularity;
 			
-			todo = ((y2 + 1) * fb_mode->pitch) - framebuffer_start;
+			todo = ((y2 + 1) * __fb_gfx->pitch) - framebuffer_start;
 			
 			/* fixme - use blitter here if necessary */
-			memory_buffer = fb_mode->framebuffer + framebuffer_start;
+			memory_buffer = __fb_gfx->framebuffer + framebuffer_start;
 			
 			while (todo > 0) {
 				/* select the appropriate bank */

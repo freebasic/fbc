@@ -63,21 +63,21 @@ static SETLAYEREDWINDOWATTRIBUTES SetLayeredWindowAttributes;
 static void alpha_remover_blitter(unsigned char *dest, int pitch)
 {
 	unsigned int *d, *s;
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int c;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned int *)src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w; x; x--) {
+			for (x = __fb_gfx->w; x; x--) {
 				c = *s++;
 				*d++ = c & ~MASK_A_32;
 			}
 		}
-		src += fb_mode->pitch;
+		src += __fb_gfx->pitch;
 		dest += pitch;
 	}
 }
@@ -92,7 +92,7 @@ static void gdi_paint(void)
 	if (fb_win32.blitter)
 		source = buffer;
 	else
-		source = fb_mode->framebuffer;
+		source = __fb_gfx->framebuffer;
 	
 	hdc = GetDC(fb_win32.wnd);
 	SetDIBitsToDevice(hdc, 0, 0, fb_win32.w, fb_win32.h, 0, 0, 0, fb_win32.h, source, bitmap_info, DIB_RGB_COLORS);
@@ -184,13 +184,13 @@ static int gdi_init(void)
 		}
 		if (fb_win32.flags & DRIVER_SHAPED_WINDOW)
 			fb_win32.blitter = alpha_remover_blitter;
-		buffer = malloc(((fb_win32.w + 3) & ~3) * fb_win32.h * fb_mode->bpp);
+		buffer = malloc(((fb_win32.w + 3) & ~3) * fb_win32.h * __fb_gfx->bpp);
 		if (!buffer)
 			return -1;
 	}
 
 	hdc = GetDC(fb_win32.wnd);
-	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
+	__fb_gfx->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
 	ReleaseDC(fb_win32.wnd, hdc);
 
 	return 0;
@@ -245,17 +245,17 @@ static void gdi_thread(HANDLE running_event)
 		/* Only do a single SetDIBitsToDevice call per frame */
 		hdc = GetDC(fb_win32.wnd);
 		for (y1 = 0; y1 < fb_win32.h; y1++) {
-			if (fb_mode->dirty[y1]) {
-				for (y2 = fb_win32.h - 1; !fb_mode->dirty[y2]; y2--)
+			if (__fb_gfx->dirty[y1]) {
+				for (y2 = fb_win32.h - 1; !__fb_gfx->dirty[y2]; y2--)
 					;
 				h = y2 - y1 + 1;
 				if (fb_win32.blitter) {
-					fb_win32.blitter(buffer, (fb_mode->pitch + 3) & ~3);
-					source = buffer + (y1 * ((fb_mode->pitch + 3) & ~0x3));
+					fb_win32.blitter(buffer, (__fb_gfx->pitch + 3) & ~3);
+					source = buffer + (y1 * ((__fb_gfx->pitch + 3) & ~0x3));
 				}
 				else
 				{
-					source = fb_mode->framebuffer + (y1 * fb_mode->pitch);
+					source = __fb_gfx->framebuffer + (y1 * __fb_gfx->pitch);
 				}
 
 				SetDIBitsToDevice(hdc, 0, y1, fb_win32.w, h, 0, 0, 0, h, source, bitmap_info, DIB_RGB_COLORS);
@@ -271,16 +271,16 @@ static void gdi_thread(HANDLE running_event)
 		}
 		ReleaseDC(fb_win32.wnd, hdc);
 
-		fb_hMemSet(fb_mode->dirty, FALSE, fb_win32.h);
+		fb_hMemSet(__fb_gfx->dirty, FALSE, fb_win32.h);
 
         if( fb_win32.is_active ) {
             GetKeyboardState(keystate);
             for (i = 0; __fb_keytable[i][0]; i++) {
                 if (__fb_keytable[i][2])
-                    fb_mode->key[__fb_keytable[i][0]] = ((keystate[__fb_keytable[i][1]] & 0x80) |
+                    __fb_gfx->key[__fb_keytable[i][0]] = ((keystate[__fb_keytable[i][1]] & 0x80) |
                                                        (keystate[__fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
                 else
-                    fb_mode->key[__fb_keytable[i][0]] = (keystate[__fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
+                    __fb_gfx->key[__fb_keytable[i][0]] = (keystate[__fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
             }
         }
 

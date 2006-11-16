@@ -79,8 +79,8 @@ FBCALL int fb_GfxScreenList(int depth)
 		if (list)
 			free(list);
 		list = NULL;
-		for (i = 0; fb_gfx_driver_list[i]; i++) {
-			driver = fb_gfx_driver_list[i];
+		for (i = 0; __fb_gfx_drivers_list[i]; i++) {
+			driver = __fb_gfx_drivers_list[i];
 			if (driver->fetch_modes) {
 				temp = driver->fetch_modes(depth, &size);
 				if (temp) {

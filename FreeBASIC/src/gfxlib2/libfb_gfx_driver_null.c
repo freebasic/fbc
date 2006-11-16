@@ -31,7 +31,7 @@ static void driver_unlock(void);
 static void driver_set_palette(int index, int r, int g, int b);
 
 
-const GFXDRIVER fb_gfxDriverNull =
+const GFXDRIVER __fb_gfxDriverNull =
 {
 	"Null",			/* char *name; */
 	NULL,			/* int (*init)(int w, int h, char *title, int fullscreen); */

@@ -32,20 +32,20 @@ int fb_GfxWidth(int w, int h)
 {
 	int font_w, font_h;
 	const FONT *font = NULL;
-	int cur = fb_mode->text_w | (fb_mode->text_h << 16);
+	int cur = __fb_gfx->text_w | (__fb_gfx->text_h << 16);
 	
 	if( (w < 1) && (h < 1) )
 		return cur;
 	
 	if (w > 0)
-		font_w = fb_mode->w / w;
+		font_w = __fb_gfx->w / w;
 	else
-		font_w = fb_mode->font->w;
+		font_w = __fb_gfx->font->w;
 	
 	if (h > 0)
-		font_h = fb_mode->h / h;
+		font_h = __fb_gfx->h / h;
 	else
-		font_h = fb_mode->font->h;
+		font_h = __fb_gfx->font->h;
 	
     switch( font_w ) {
     case 8:
@@ -65,11 +65,11 @@ int fb_GfxWidth(int w, int h)
 	
     if (font) {
         /* Update font data */
-		fb_mode->text_w = w;
-		fb_mode->text_h = h;
-        fb_mode->font = font;
+		__fb_gfx->text_w = w;
+		__fb_gfx->text_h = h;
+        __fb_gfx->font = font;
 
-        fb_hResetCharCells(TRUE);
+        fb_hResetCharCells(fb_hGetContext(), TRUE);
 
         /* Reset graphics VIEW */
         fb_GfxView( -32768, -32768,

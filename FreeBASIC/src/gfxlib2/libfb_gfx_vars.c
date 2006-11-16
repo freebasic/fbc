@@ -26,13 +26,11 @@
 
 #include "fb_gfx.h"
 
-MODE *fb_mode = NULL;
+FBGFX *__fb_gfx = NULL;
 void *(*fb_hMemCpy)(void *dest, const void *src, size_t size) = memcpy;
 void *(*fb_hMemSet)(void *dest, int value, size_t size) = memset;
-void (*fb_hPutPixel)(int x, int y, unsigned int color) = NULL;
-unsigned int (*fb_hGetPixel)(int x, int y) = NULL;
 void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size) = NULL;
 void *(*fb_hPixelSet)(void *dest, int color, size_t size) = NULL;
-unsigned int *fb_color_conv_16to32 = NULL;
+unsigned int *__fb_color_conv_16to32 = NULL;
 char *__fb_window_title = NULL;
 

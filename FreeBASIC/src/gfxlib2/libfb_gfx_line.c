@@ -37,17 +37,17 @@
 
 
 /*:::::*/
-static int encode(int x, int y)
+static int encode(FB_GFXCTX *context, int x, int y)
 {
 	int code = 0;
 
-	if (x < fb_mode->view_x)
+	if (x < context->view_x)
 		code |= CLIP_LEFT_EDGE;
-	else if (x >= fb_mode->view_x + fb_mode->view_w)
+	else if (x >= context->view_x + context->view_w)
 		code |= CLIP_RIGHT_EDGE;
-	if (y < fb_mode->view_y)
+	if (y < context->view_y)
 		code |= CLIP_TOP_EDGE;
-	else if (y >= fb_mode->view_y + fb_mode->view_h)
+	else if (y >= context->view_y + context->view_h)
 		code |= CLIP_BOTTOM_EDGE;
 	return code;
 }
@@ -67,14 +67,14 @@ static int reverse_mask(int mask)
 
 
 /*:::::*/
-static int clip_line(int *x1, int *y1, int *x2, int *y2)
+static int clip_line(FB_GFXCTX *context, int *x1, int *y1, int *x2, int *y2)
 {
 	int code1, code2;
 	float m;
 
 	while (1) {
-		code1 = encode(*x1, *y1);
-		code2 = encode(*x2, *y2);
+		code1 = encode(context, *x1, *y1);
+		code2 = encode(context, *x2, *y2);
 
 		if (CLIP_ACCEPT(code1, code2))
 			break;
@@ -90,22 +90,22 @@ static int clip_line(int *x1, int *y1, int *x2, int *y2)
 		else
 			m = 1.0;
 		if (code1 & CLIP_LEFT_EDGE) {
-			*y1 += (fb_mode->view_x - *x1) * m;
-			*x1 = fb_mode->view_x;
+			*y1 += (context->view_x - *x1) * m;
+			*x1 = context->view_x;
 		}
 		else if (code1 & CLIP_RIGHT_EDGE) {
-			*y1 += (fb_mode->view_x + fb_mode->view_w - 1 - *x1) * m;
-			*x1 = fb_mode->view_x + fb_mode->view_w - 1;
+			*y1 += (context->view_x + context->view_w - 1 - *x1) * m;
+			*x1 = context->view_x + context->view_w - 1;
 		}
 		else if (code1 & CLIP_TOP_EDGE) {
 			if (*x1 != *x2)
-				*x1 += (fb_mode->view_y - *y1) / m;
-			*y1 = fb_mode->view_y;
+				*x1 += (context->view_y - *y1) / m;
+			*y1 = context->view_y;
 		}
 		else if (code1 & CLIP_BOTTOM_EDGE) {
 			if (*x1 != *x2)
-				*x1 += (fb_mode->view_y + fb_mode->view_h - 1 - *y1) / m;
-			*y1 = fb_mode->view_y + fb_mode->view_h - 1;
+				*x1 += (context->view_y + context->view_h - 1 - *y1) / m;
+			*y1 = context->view_y + context->view_h - 1;
 		}
 	}
 
@@ -116,27 +116,28 @@ static int clip_line(int *x1, int *y1, int *x2, int *y2)
 /*:::::*/
 FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2, unsigned int color, int type, unsigned int style, int coord_type)
 {
+	FB_GFXCTX *context = fb_hGetContext();
 	int x1, y1, x2, y2;
 	int x, y, len, d, dx, dy, ax, ay, bit = 0x8000;
 
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return;
 
 	if (color == DEFAULT_COLOR)
-		color = fb_mode->fg_color;
+		color = context->fg_color;
 	else
 		color = fb_hFixColor(color);
 	style &= 0xFFFF;
 
-	fb_hPrepareTarget(target, color);
+	fb_hPrepareTarget(context, target, color);
 	
-	fb_hFixRelative(coord_type, &fx1, &fy1, &fx2, &fy2);
+	fb_hFixRelative(context, coord_type, &fx1, &fy1, &fx2, &fy2);
 
-	fb_hTranslateCoord(fx1, fy1, &x1, &y1);
-	fb_hTranslateCoord(fx2, fy2, &x2, &y2);
+	fb_hTranslateCoord(context, fx1, fy1, &x1, &y1);
+	fb_hTranslateCoord(context, fx2, fy2, &x2, &y2);
 
 	if (type == LINE_TYPE_LINE) {
-		if (clip_line(&x1, &y1, &x2, &y2))
+		if (clip_line(context, &x1, &y1, &x2, &y2))
 			return;
 
 		DRIVER_LOCK();
@@ -148,7 +149,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 			}
 			for (y = y1; y <= y2; y++) {
 				if (style & bit)
-					fb_hPutPixel(x1, y, color);
+					context->put_pixel(context, x1, y, color);
 				RORW1(bit);
 			}
 		}
@@ -159,11 +160,11 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 				bit = 1 << ((x2 - x1) & 0xF);
 			}
 			if (style == 0xFFFF)
-				fb_hPixelSet(fb_mode->line[y1] + (x1 * fb_mode->bpp), color, x2 - x1 + 1);
+				context->pixel_set(context->line[y1] + (x1 * __fb_gfx->bpp), color, x2 - x1 + 1);
 			else {
 				for (x = x1; x <= x2; x++) {
 					if (style & bit)
-						fb_hPutPixel(x, y1, color);
+						context->put_pixel(context, x, y1, color);
 					RORW1(bit);
 				}
 			}
@@ -189,7 +190,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 				dx <<= 1;
 				for (; len; len--) {
 					if (style & bit)
-						fb_hPutPixel(x, y, color);
+						context->put_pixel(context, x, y, color);
 					RORW1(bit);
 					if (d >= 0) {
 						y += ay;
@@ -206,7 +207,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 				dy <<= 1;
 				for (; len; len--) {
 					if (style & bit)
-						fb_hPutPixel(x, y, color);
+						context->put_pixel(context, x, y, color);
 					RORW1(bit);
 					if (d >= 0) {
 						x += ax;
@@ -219,7 +220,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 		}
 		if (y1 > y2)
 			SWAP(y1, y2);
-		SET_DIRTY(y1, y2 - y1 + 1);
+		SET_DIRTY(context, y1, y2 - y1 + 1);
 		DRIVER_UNLOCK();
 	}
 	else {

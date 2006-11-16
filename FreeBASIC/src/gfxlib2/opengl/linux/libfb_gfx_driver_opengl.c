@@ -74,7 +74,7 @@ typedef struct {
 } GLXFUNCS;
 
 static FB_DYLIB gl_lib = NULL;
-static GLXFUNCS fb_glX = { NULL };
+static GLXFUNCS __fb_glX = { NULL };
 static GLXContext context;
 
 
@@ -82,7 +82,7 @@ static GLXContext context;
 int fb_hGL_ExtensionSupported(const char *extension)
 {
 	int len, i;
-	char *string = fb_gl.extensions;
+	char *string = __fb_gl.extensions;
 	
 	if (string) {
 		len = strlen(extension);
@@ -203,19 +203,19 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		return -1;
 	fb_linux.screen = XDefaultScreen(fb_linux.display);
 	
-	gl_lib = fb_hDynLoad("libGL.so.1", funcs, (void **)&fb_glX);
+	gl_lib = fb_hDynLoad("libGL.so.1", funcs, (void **)&__fb_glX);
 	if (!gl_lib)
 		return -1;
 	
 	for (try_count = 0; try_count < 3; ++try_count) {
-		if ((info = fb_glX.ChooseVisual(fb_linux.display, fb_linux.screen, gl_attrs))) {
+		if ((info = __fb_glX.ChooseVisual(fb_linux.display, fb_linux.screen, gl_attrs))) {
 			fb_linux.visual = info->visual;
-			context = fb_glX.CreateContext(fb_linux.display, info, NULL, True);
+			context = __fb_glX.CreateContext(fb_linux.display, info, NULL, True);
 			XFree(info);
 			if ((int)context > 0)
 				break;
 			else
-				fb_glX.DestroyContext(fb_linux.display, context);
+				__fb_glX.DestroyContext(fb_linux.display, context);
 		}
 		switch (try_count) {
 			case 0:
@@ -243,13 +243,13 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (result)
 		return result;
 	
-	fb_glX.MakeCurrent(fb_linux.display, fb_linux.window, context);
+	__fb_glX.MakeCurrent(fb_linux.display, fb_linux.window, context);
 	
 	if (fb_hGL_Init(gl_lib))
 		return -1;
 	
 	if (gl_options & HAS_MULTISAMPLE)
-		fb_gl.Enable(GL_MULTISAMPLE_ARB);
+		__fb_gl.Enable(GL_MULTISAMPLE_ARB);
 	
 	return 0;
 }
@@ -259,8 +259,8 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 static void driver_exit(void)
 {
 	if (context > 0) {
-		fb_glX.MakeCurrent(fb_linux.display, None, NULL);
-		fb_glX.DestroyContext(fb_linux.display, context);
+		__fb_glX.MakeCurrent(fb_linux.display, None, NULL);
+		__fb_glX.DestroyContext(fb_linux.display, context);
 	}
 	fb_hX11Exit();
     fb_hDynUnload(&gl_lib);
@@ -271,6 +271,6 @@ static void driver_exit(void)
 static void driver_flip(void)
 {
 	fb_hX11Lock();
-	fb_glX.SwapBuffers(fb_linux.display, fb_linux.window);
+	__fb_glX.SwapBuffers(fb_linux.display, fb_linux.window);
 	fb_hX11Unlock();
 }

@@ -27,10 +27,9 @@
 
 #include "fb_gfx.h"
 
-static int old_view_x, old_view_y, old_view_w, old_view_h;
-static void (*fb_hPutPixelSolid)(int x, int y, unsigned int color);
+static void (*fb_hPutPixelSolid)(FB_GFXCTX *ctx, int x, int y, unsigned int color);
 static void *(*fb_hPixelSetSolid)(void *dest, int color, size_t size);
-static void (*fb_hPutPixelAlpha)(int x, int y, unsigned int color);
+static void (*fb_hPutPixelAlpha)(FB_GFXCTX *ctx, int x, int y, unsigned int color);
 static void *(*fb_hPixelSetAlpha)(void *dest, int color, size_t size);
 
 #if defined(TARGET_X86)
@@ -48,11 +47,11 @@ void fb_hPostEvent(EVENT *e)
 	EVENT *slot;
 	
 	EVENT_LOCK();
-	slot = &fb_mode->event_queue[fb_mode->event_tail];
+	slot = &__fb_gfx->event_queue[__fb_gfx->event_tail];
 	fb_hMemCpy(slot, e, sizeof(EVENT));
-	if (((fb_mode->event_tail + 1) & (MAX_EVENTS - 1)) == fb_mode->event_head)
-		fb_mode->event_head = (fb_mode->event_head + 1) & (MAX_EVENTS - 1);
-	fb_mode->event_tail = (fb_mode->event_tail + 1) & (MAX_EVENTS - 1);
+	if (((__fb_gfx->event_tail + 1) & (MAX_EVENTS - 1)) == __fb_gfx->event_head)
+		__fb_gfx->event_head = (__fb_gfx->event_head + 1) & (MAX_EVENTS - 1);
+	__fb_gfx->event_tail = (__fb_gfx->event_tail + 1) & (MAX_EVENTS - 1);
 	EVENT_UNLOCK();
 }
 
@@ -60,101 +59,122 @@ void fb_hPostEvent_code_end(void) { }
 
 
 /*:::::*/
-void fb_hPrepareTarget(void *target, unsigned int color)
+FB_GFXCTX *fb_hGetContext(void)
+{
+	FB_GFXCTX *context;
+	int i;
+	
+	context = (FB_GFXCTX *)fb_TlsGetCtx(FB_TLSKEY_GFX, sizeof(FB_GFXCTX));
+	if ((__fb_gfx) && (context->id != __fb_gfx->id)) {
+		/* context has to be initialized; default to screen */
+		if (context->line)
+			free(context->line);
+		fb_hMemSet(context, 0, sizeof(FB_GFXCTX));
+		context->id = __fb_gfx->id;
+		context->old_view_w = __fb_gfx->w;
+		context->old_view_h = context->max_h = __fb_gfx->h;
+		context->line = (unsigned char **)malloc(__fb_gfx->h * sizeof(unsigned char *));
+        if ((__fb_gfx->depth > 4) && (__fb_gfx->depth <= 8))
+            context->fg_color = 15;
+        else
+            context->fg_color = __fb_gfx->color_mask;
+		context->flags = CTX_BUFFER_INIT;
+		fb_hPrepareTarget(context, NULL, MASK_A_32);
+	}
+	
+	return context;
+}
+
+
+/*:::::*/
+void fb_hPrepareTarget(FB_GFXCTX *context, void *target, unsigned int color)
 {
 	PUT_HEADER *header;
 	unsigned char *data;
 	int i, h;
 	
 	if (target) {
-		if (target != fb_mode->last_target) {
-			if (fb_mode->last_target == NULL) {
-				old_view_x = fb_mode->view_x;
-				old_view_y = fb_mode->view_y;
-				old_view_w = fb_mode->view_w;
-				old_view_h = fb_mode->view_h;
-			}
+		if (target != context->last_target) {
+			if (context->last_target == NULL)
+				fb_hMemCpy(context->old_view, context->view, sizeof(int) * 4);
 			header = (PUT_HEADER *)target;
-			fb_mode->view_x = 0;
-			fb_mode->view_y = 0;
+			context->view_x = 0;
+			context->view_y = 0;
 			if (header->type == PUT_HEADER_NEW) {
-				fb_mode->view_w = header->width;
-				fb_mode->view_h = h = header->height;
-				fb_mode->target_pitch = header->pitch;
+				context->view_w = header->width;
+				context->view_h = h = header->height;
+				context->target_pitch = header->pitch;
 				data = (unsigned char *)target + sizeof(PUT_HEADER);
 			}
 			else {
-				fb_mode->view_w = header->old.width;
-				fb_mode->view_h = h = header->old.height;
-				fb_mode->target_pitch = fb_mode->view_w * fb_mode->bpp;
+				context->view_w = header->old.width;
+				context->view_h = h = header->old.height;
+				context->target_pitch = context->view_w * __fb_gfx->bpp;
 				data = (unsigned char *)target + 4;
 			}
-			if (h > fb_mode->max_h) {
-				fb_mode->line = (unsigned char **)realloc(fb_mode->line, h * sizeof(unsigned char *));
-				fb_mode->max_h = h;
+			if (h > context->max_h) {
+				context->line = (unsigned char **)realloc(context->line, h * sizeof(unsigned char *));
+				context->max_h = h;
 			}
 			for (i = 0; i < h; i++)
-				fb_mode->line[i] = data + (i * fb_mode->target_pitch);
-			fb_mode->flags |= BUFFER_SET;
+				context->line[i] = data + (i * context->target_pitch);
+			context->flags |= CTX_BUFFER_SET;
 		}
 	}
-	else if (fb_mode->flags & BUFFER_SET) {
-		fb_mode->view_x = old_view_x;
-		fb_mode->view_y = old_view_y;
-		fb_mode->view_w = old_view_w;
-		fb_mode->view_h = old_view_h;
-		fb_mode->target_pitch = fb_mode->pitch;
-		for (i = 0; i < fb_mode->h; i++)
-			fb_mode->line[i] = fb_mode->page[fb_mode->work_page] + (i * fb_mode->pitch);
-		fb_mode->flags &= ~BUFFER_SET;
+	else if (context->flags & (CTX_BUFFER_SET | CTX_BUFFER_INIT)) {
+		fb_hMemCpy(context->view, context->old_view, sizeof(int) * 4);
+		context->target_pitch = __fb_gfx->pitch;
+		for (i = 0; i < __fb_gfx->h; i++)
+			context->line[i] = __fb_gfx->page[context->work_page] + (i * __fb_gfx->pitch);
+		context->flags &= ~(CTX_BUFFER_SET | CTX_BUFFER_INIT);
 	}
-	fb_mode->last_target = target;
-	if ((fb_mode->flags & ALPHA_PRIMITIVES) && ((color & MASK_A_32) != MASK_A_32)) {
-		fb_hPutPixel = fb_hPutPixelAlpha;
-		fb_hPixelSet = fb_hPixelSetAlpha;
+	context->last_target = target;
+	if ((__fb_gfx->flags & ALPHA_PRIMITIVES) && ((color & MASK_A_32) != MASK_A_32)) {
+		context->put_pixel = fb_hPutPixelAlpha;
+		context->pixel_set = fb_hPixelSetAlpha;
 	}
 	else {
-		fb_hPutPixel = fb_hPutPixelSolid;
-		fb_hPixelSet = fb_hPixelSetSolid;
+		context->put_pixel = fb_hPutPixelSolid;
+		context->pixel_set = fb_hPixelSetSolid;
 	}
 }
 
 
 /*:::::*/
-void fb_hTranslateCoord(float fx, float fy, int *x, int *y)
+void fb_hTranslateCoord(FB_GFXCTX *context, float fx, float fy, int *x, int *y)
 {
-	if (fb_mode->flags & WINDOW_ACTIVE) {
-		fx = ((fx - fb_mode->win_x) * fb_mode->view_w) / (fb_mode->win_w - 1);
-		fy = ((fy - fb_mode->win_y) * fb_mode->view_h) / (fb_mode->win_h - 1);
+	if (context->flags & CTX_WINDOW_ACTIVE) {
+		fx = ((fx - context->win_x) * context->view_w) / (context->win_w - 1);
+		fy = ((fy - context->win_y) * context->view_h) / (context->win_h - 1);
 	}
 	
 	*x = (int)(fx > 0 ? fx + 0.5 : fx - 0.5);
 	*y = (int)(fy > 0 ? fy + 0.5 : fy - 0.5);
 	
-	if ((fb_mode->flags & (WINDOW_ACTIVE | WINDOW_SCREEN)) == WINDOW_ACTIVE)
-		*y = fb_mode->view_h - 1 - *y;
+	if ((context->flags & (CTX_WINDOW_ACTIVE | CTX_WINDOW_SCREEN)) == CTX_WINDOW_ACTIVE)
+		*y = context->view_h - 1 - *y;
 		
-	if ((fb_mode->flags & VIEW_SCREEN) == 0) {
-		*x += fb_mode->view_x;
-		*y += fb_mode->view_y;
+	if ((context->flags & CTX_VIEW_SCREEN) == 0) {
+		*x += context->view_x;
+		*y += context->view_y;
 	}
 }
 
 
 /*:::::*/
-void fb_hFixRelative(int coord_type, float *x1, float *y1, float *x2, float *y2)
+void fb_hFixRelative(FB_GFXCTX *context, int coord_type, float *x1, float *y1, float *x2, float *y2)
 {
 	switch (coord_type) {
 		
 		case COORD_TYPE_R:
 		case COORD_TYPE_RA:
-			*x1 += fb_mode->last_x;
-			*y1 += fb_mode->last_y;
+			*x1 += context->last_x;
+			*y1 += context->last_y;
 			break;
 		
 		case COORD_TYPE_RR:
-			*x1 += fb_mode->last_x;
-			*y1 += fb_mode->last_y;
+			*x1 += context->last_x;
+			*y1 += context->last_y;
 			/* fallthrough */
 		
 		case COORD_TYPE_AR:
@@ -164,12 +184,12 @@ void fb_hFixRelative(int coord_type, float *x1, float *y1, float *x2, float *y2)
 	}
 	
 	if (x2) {
-		fb_mode->last_x = *x2;
-		fb_mode->last_y = *y2;
+		context->last_x = *x2;
+		context->last_y = *y2;
 	}
 	else {
-		fb_mode->last_x = *x1;
-		fb_mode->last_y = *y1;
+		context->last_x = *x1;
+		context->last_y = *y1;
 	}
 }
 
@@ -186,31 +206,31 @@ void fb_hFixCoordsOrder(int *x1, int *y1, int *x2, int *y2)
 
 
 /*:::::*/
-static void fb_hPutPixel1(int x, int y, unsigned int color)
+static void fb_hPutPixel1(FB_GFXCTX *ctx, int x, int y, unsigned int color)
 {
-	fb_mode->line[y][x] = color;
+	ctx->line[y][x] = color;
 }
 
 
 /*:::::*/
-static void fb_hPutPixel2(int x, int y, unsigned int color)
+static void fb_hPutPixel2(FB_GFXCTX *ctx, int x, int y, unsigned int color)
 {
-	((unsigned short *)fb_mode->line[y])[x] = color;
+	((unsigned short *)ctx->line[y])[x] = color;
 }
 
 
 /*:::::*/
-static void fb_hPutPixel4(int x, int y, unsigned int color)
+static void fb_hPutPixel4(FB_GFXCTX *ctx, int x, int y, unsigned int color)
 {
-	((unsigned int *)fb_mode->line[y])[x] = color;
+	((unsigned int *)ctx->line[y])[x] = color;
 }
 
 
 /*:::::*/
-static void fb_hPutPixelAlpha4(int x, int y, unsigned int color)
+static void fb_hPutPixelAlpha4(FB_GFXCTX *ctx, int x, int y, unsigned int color)
 {
 	unsigned int dc, srb, sg, drb, dg, a;
-	unsigned int *d = ((unsigned int *)fb_mode->line[y]) + x;
+	unsigned int *d = ((unsigned int *)ctx->line[y]) + x;
 	
 	dc = *d;
 	a = color >> 24;
@@ -225,23 +245,23 @@ static void fb_hPutPixelAlpha4(int x, int y, unsigned int color)
 
 
 /*:::::*/
-static unsigned int fb_hGetPixel1(int x, int y)
+static unsigned int fb_hGetPixel1(FB_GFXCTX *ctx, int x, int y)
 {
-	return fb_mode->line[y][x];
+	return ctx->line[y][x];
 }
 
 
 /*:::::*/
-static unsigned int fb_hGetPixel2(int x, int y)
+static unsigned int fb_hGetPixel2(FB_GFXCTX *ctx, int x, int y)
 {
-	return ((unsigned short *)fb_mode->line[y])[x];
+	return ((unsigned short *)ctx->line[y])[x];
 }
 
 
 /*:::::*/
-static unsigned int fb_hGetPixel4(int x, int y)
+static unsigned int fb_hGetPixel4(FB_GFXCTX *ctx, int x, int y)
 {
-	return ((unsigned int *)fb_mode->line[y])[x];
+	return ((unsigned int *)ctx->line[y])[x];
 }
 
 
@@ -310,9 +330,11 @@ static void *fb_hPixelCpy4(void *dest, const void *src, size_t size)
 /*:::::*/
 void fb_hSetupFuncs(void)
 {
+	FB_GFXCTX *context = fb_hGetContext();
+	
 #if defined(TARGET_X86)
 	if (fb_CpuDetect() & 0x800000) {
-		fb_mode->flags |= HAS_MMX;
+		__fb_gfx->flags |= HAS_MMX;
 		fb_hMemCpy = fb_hMemCpyMMX;
 		fb_hMemSet = fb_hMemSetMMX;
 	}
@@ -323,42 +345,44 @@ void fb_hSetupFuncs(void)
 #if defined(TARGET_X86)
 	}
 #endif
-	switch (fb_mode->depth) {
+	switch (__fb_gfx->depth) {
 		case 1:
 		case 2:
 		case 4:
 		case 8:
-			fb_hPutPixel = fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel1;
-			fb_hGetPixel = fb_hGetPixel1;
-			fb_hPixelSet = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hMemSet;
+			context->put_pixel = fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel1;
+			context->get_pixel = fb_hGetPixel1;
+			context->pixel_set = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hMemSet;
 			fb_hPixelCpy = fb_hMemCpy;
 			break;
 		
 		case 15:
 		case 16:
-			fb_hPutPixel = fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel2;
-			fb_hGetPixel = fb_hGetPixel2;
+			context->put_pixel = fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel2;
+			context->get_pixel = fb_hGetPixel2;
 #if defined(TARGET_X86)
-			if (fb_mode->flags & HAS_MMX)
-				fb_hPixelSet = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2MMX;
+			if (__fb_gfx->flags & HAS_MMX)
+				context->pixel_set = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2MMX;
+			else
 #endif
-				fb_hPixelSet = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2;
+				context->pixel_set = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2;
 			fb_hPixelCpy = fb_hPixelCpy2;
 			break;
 		
 		default:
-			fb_hPutPixel = fb_hPutPixelSolid = fb_hPutPixel4;
-			fb_hGetPixel = fb_hGetPixel4;
+			context->put_pixel = fb_hPutPixelSolid = fb_hPutPixel4;
+			context->get_pixel = fb_hGetPixel4;
 #if defined(TARGET_X86)
-			if (fb_mode->flags & HAS_MMX)
-				fb_hPixelSet = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet4MMX;
+			if (__fb_gfx->flags & HAS_MMX)
+				context->pixel_set = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet4MMX;
+			else
 #endif
-				fb_hPixelSet = fb_hPixelSetSolid = fb_hPixelSet4;
+				context->pixel_set = fb_hPixelSetSolid = fb_hPixelSet4;
 			fb_hPixelCpy = fb_hPixelCpy4;
-			if (fb_mode->flags & ALPHA_PRIMITIVES) {
+			if (__fb_gfx->flags & ALPHA_PRIMITIVES) {
 				fb_hPutPixelAlpha = fb_hPutPixelAlpha4;
 #if defined(TARGET_X86)
-				if (fb_mode->flags & HAS_MMX)
+				if (__fb_gfx->flags & HAS_MMX)
 					fb_hPixelSetAlpha = fb_hPixelSetAlpha4MMX;
 				else
 #endif
@@ -370,4 +394,6 @@ void fb_hSetupFuncs(void)
 			}
 			break;
 	}
+	
+	fb_hPixelSet = fb_hPixelSetSolid;
 }

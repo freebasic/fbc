@@ -28,45 +28,45 @@
 
 
 /*:::::*/
-static void draw_scanline(int y, int x1, int x2, unsigned int color, int fill, char *filled)
+static void draw_scanline(FB_GFXCTX *ctx, int y, int x1, int x2, unsigned int color, int fill, char *filled)
 {
-	if ((y >= fb_mode->view_y) && (y < fb_mode->view_y + fb_mode->view_h)) {
+	if ((y >= ctx->view_y) && (y < ctx->view_y + ctx->view_h)) {
 		if (fill) {
-			if ((x2 < fb_mode->view_x) || (x1 >= fb_mode->view_x + fb_mode->view_w) || (filled[y - fb_mode->view_y]))
+			if ((x2 < ctx->view_x) || (x1 >= ctx->view_x + ctx->view_w) || (filled[y - ctx->view_y]))
 				return;
-			filled[y - fb_mode->view_y] = TRUE;
-			x1 = MAX(x1, fb_mode->view_x);
-			x2 = MIN(x2, fb_mode->view_x + fb_mode->view_w - 1);
-			fb_hPixelSet(fb_mode->line[y] + (x1 * fb_mode->bpp), color, x2 - x1 + 1);
+			filled[y - ctx->view_y] = TRUE;
+			x1 = MAX(x1, ctx->view_x);
+			x2 = MIN(x2, ctx->view_x + ctx->view_w - 1);
+			ctx->pixel_set(ctx->line[y] + (x1 * __fb_gfx->bpp), color, x2 - x1 + 1);
 		}
 		else {
-			if ((x1 >= fb_mode->view_x) && (x1 < fb_mode->view_x + fb_mode->view_w))
-				fb_hPutPixel(x1, y, color);
-			if ((x2 >= fb_mode->view_x) && (x2 < fb_mode->view_x + fb_mode->view_w))
-				fb_hPutPixel(x2, y, color);
+			if ((x1 >= ctx->view_x) && (x1 < ctx->view_x + ctx->view_w))
+				ctx->put_pixel(ctx, x1, y, color);
+			if ((x2 >= ctx->view_x) && (x2 < ctx->view_x + ctx->view_w))
+				ctx->put_pixel(ctx, x2, y, color);
 		}
 	}
 }
 
 
 /*:::::*/
-static void draw_ellipse(int x, int y, float a, float b, unsigned int color, int fill)
+static void draw_ellipse(FB_GFXCTX *ctx, int x, int y, float a, float b, unsigned int color, int fill)
 {
 	int d, x1, y1, x2, y2;
 	long long dx, dy, aq, bq, r, rx, ry;
-	char filled[fb_mode->view_h];
+	char filled[ctx->view_h];
 
 	x1 = x - a;
 	x2 = x + a;
 	y1 = y2 = y;
-	fb_hMemSet(filled, 0, fb_mode->view_h);
+	fb_hMemSet(filled, 0, ctx->view_h);
 	
 	if (!b) {
-		draw_scanline(y, x1, x2, color, TRUE, filled);
+		draw_scanline(ctx, y, x1, x2, color, TRUE, filled);
 		return;
 	}
 	else
-		draw_scanline(y, x1, x2, color, fill, filled);
+		draw_scanline(ctx, y, x1, x2, color, fill, filled);
 	
 	aq = a * a;
 	bq = b * b;
@@ -91,8 +91,8 @@ static void draw_ellipse(int x, int y, float a, float b, unsigned int color, int
 			rx -= dy;
 			r += rx;
 		}
-		draw_scanline(y1, x1, x2, color, fill, filled);
-		draw_scanline(y2, x1, x2, color, fill, filled);
+		draw_scanline(ctx, y1, x1, x2, color, fill, filled);
+		draw_scanline(ctx, y2, x1, x2, color, fill, filled);
 	}
 }
 
@@ -118,27 +118,28 @@ static void get_arc_point(float angle, float a, float b, int *x, int *y)
 /*:::::*/
 FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsigned int color, float aspect, float start, float end, int fill, int coord_type)
 {
+	FB_GFXCTX *context = fb_hGetContext();
 	int x, y, x1, y1, top, bottom;
 	unsigned int orig_color;
 	float a, b, increment;
 	
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return;
 	
 	orig_color = color;
 	if (color == DEFAULT_COLOR)
-		color = fb_mode->fg_color;
+		color = context->fg_color;
 	else
 		color = fb_hFixColor(color);
 	
-	fb_hPrepareTarget(target, color);
+	fb_hPrepareTarget(context, target, color);
 	
-	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
+	fb_hFixRelative(context, coord_type, &fx, &fy, NULL, NULL);
 	
-	fb_hTranslateCoord(fx, fy, &x, &y);
+	fb_hTranslateCoord(context, fx, fy, &x, &y);
 	
 	if (aspect == 0.0)
-		aspect = (4.0 / 3.0) * ((float)fb_mode->h / (float)fb_mode->w);
+		aspect = (4.0 / 3.0) * ((float)__fb_gfx->h / (float)__fb_gfx->w);
 
 	if (aspect > 1.0) {
 		a = (radius / aspect);
@@ -148,9 +149,9 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 		a = radius;
 		b = (radius * aspect);
 	}
-	if (fb_mode->flags & WINDOW_ACTIVE) {
-		a *= (fb_mode->view_w / (fb_mode->win_w - 1));
-		b *= (fb_mode->view_h / (fb_mode->win_h - 1));
+	if (context->flags & CTX_WINDOW_ACTIVE) {
+		a *= (context->view_w / (context->win_w - 1));
+		b *= (context->view_h / (context->win_h - 1));
 	}
 	
 	if ((start != 0.0) || (end != 3.141593f * 2.0)) {
@@ -184,10 +185,10 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 			get_arc_point(start, a, b, &x1, &y1);
 			x1 = x + x1;
 			y1 = y - y1;
-			if ((x1 < fb_mode->view_x) || (x1 >= fb_mode->view_x + fb_mode->view_w) ||
-			    (y1 < fb_mode->view_y) || (y1 >= fb_mode->view_y + fb_mode->view_h))
+			if ((x1 < context->view_x) || (x1 >= context->view_x + context->view_w) ||
+			    (y1 < context->view_y) || (y1 >= context->view_y + context->view_h))
 				continue;
-			fb_hPutPixel(x1, y1, color);
+			context->put_pixel(context, x1, y1, color);
 			if (y1 > bottom)
 				bottom = y1;
 			if (y1 < top)
@@ -197,19 +198,19 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 	else {
 		DRIVER_LOCK();
 		
-		draw_ellipse(x, y, a, b, color, fill);
+		draw_ellipse(context, x, y, a, b, color, fill);
 		top = y - b;
 		bottom = y + b;
 	}
 	
-	top = MID(0, top, fb_mode->view_h - 1);
-	bottom = MID(0, bottom, fb_mode->view_h - 1);
+	top = MID(0, top, context->view_h - 1);
+	bottom = MID(0, bottom, context->view_h - 1);
 	if( top > bottom )
 		SWAP( top, bottom );
-	SET_DIRTY(top, bottom - top + 1);
+	SET_DIRTY(context, top, bottom - top + 1);
 	
 	DRIVER_UNLOCK();
 	
-	fb_mode->last_x = fx;
-	fb_mode->last_y = fy;
+	context->last_x = fx;
+	context->last_y = fy;
 }

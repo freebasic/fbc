@@ -57,6 +57,7 @@ typedef struct FBGFX_CHAR
 /*:::::*/
 FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font, int mode, BLENDER *blender, void *param)
 {
+	FB_GFXCTX *context = fb_hGetContext();
 	FBGFX_CHAR char_data[256], *ch;
 	PUT_HEADER *header;
 	PUTTER *put;
@@ -64,30 +65,24 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 	int offset, bytes_count, res = FB_RTERROR_OK;
 	unsigned char *data, *width;
 	
-	if ((!fb_mode) || (!string))
-	{
-		fb_hStrDelTemp(string);
-		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-	}
-
-	if(!string->data)
-	{
-		fb_hStrDelTemp(string);
-		return res;
+	if ((!__fb_gfx) || (!string) || (!string->data)) {
+		if (!string)
+			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
+		goto exit_error_unlocked;
 	}
 	
 	if (mode != PUT_MODE_ALPHA) {
 		if (color == DEFAULT_COLOR)
-			color = fb_mode->fg_color;
+			color = context->fg_color;
 		else
 			color = fb_hFixColor(color);
 	}
 	
-	fb_hPrepareTarget(target, color);
+	fb_hPrepareTarget(context, target, color);
 	
-	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
+	fb_hFixRelative(context, coord_type, &fx, &fy, NULL, NULL);
 	
-	fb_hTranslateCoord(fx, fy, &x, &y);
+	fb_hTranslateCoord(context, fx, fy, &x, &y);
 	
 	DRIVER_LOCK();
 	
@@ -108,14 +103,14 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 		else {
 			bpp = header->old.bpp;
 			font_height = header->old.height - 1;
-			pitch = header->old.width * fb_mode->bpp;
+			pitch = header->old.width * __fb_gfx->bpp;
 			data = (unsigned char *)font + 4;
 		}
 		
-		if ((y + font_height <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
+		if ((y + font_height <= context->view_y) || (y >= context->view_y + context->view_h))
 			goto exit_error;
 		
-		if (((bpp) && (bpp != fb_mode->bpp)) || (pitch < 4) || (font_height <= 0) || (data[0] != 0)) {
+		if (((bpp) && (bpp != __fb_gfx->bpp)) || (pitch < 4) || (font_height <= 0) || (data[0] != 0)) {
 			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
 			goto exit_error;
 		}
@@ -127,28 +122,28 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 			SWAP(first, last);
 		fb_hMemSet(char_data, 0, sizeof(FBGFX_CHAR) * 256);
 		data += pitch;
-		if (y < fb_mode->view_y) {
-			data += (pitch * (fb_mode->view_y - y));
-			font_height -= (fb_mode->view_y - y);
-			y = fb_mode->view_y;
+		if (y < context->view_y) {
+			data += (pitch * (context->view_y - y));
+			font_height -= (context->view_y - y);
+			y = context->view_y;
 		}
-		if (y + font_height > fb_mode->view_y + fb_mode->view_h)
-			font_height -= ((y + font_height) - (fb_mode->view_y + fb_mode->view_h));
+		if (y + font_height > context->view_y + context->view_h)
+			font_height -= ((y + font_height) - (context->view_y + context->view_h));
 		
 		for (w = 0, i = first; i <= last; i++) {
 			char_data[i].width = (unsigned int)width[i - first];
 			char_data[i].data = data;
-			data += (char_data[i].width * fb_mode->bpp);
+			data += (char_data[i].width * __fb_gfx->bpp);
 			w += char_data[i].width;
 		}
-		if (w > (pitch / fb_mode->bpp)) {
+		if (w > (pitch / __fb_gfx->bpp)) {
 			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
 			goto exit_error;
 		}
 		
 		for (i = 0; i < FB_STRSIZE(string); i++) {
 			
-			if (x >= fb_mode->view_x + fb_mode->view_w)
+			if (x >= context->view_x + context->view_w)
 				break;
 			
 			ch = &char_data[(unsigned char)string->data[i]];
@@ -162,16 +157,16 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 			h = font_height;
 			px = x;
 			
-			if (x + w >= fb_mode->view_x) {
+			if (x + w >= context->view_x) {
 				
-				if (x < fb_mode->view_x) {
-					data += ((fb_mode->view_x - x) * fb_mode->bpp);
-					w -= (fb_mode->view_x - x);
-					px = fb_mode->view_x;
+				if (x < context->view_x) {
+					data += ((context->view_x - x) * __fb_gfx->bpp);
+					w -= (context->view_x - x);
+					px = context->view_x;
 				}
-				if (x + w > fb_mode->view_x + fb_mode->view_w)
-					w -= ((x + w) - (fb_mode->view_x + fb_mode->view_w));
-				put(data, fb_mode->line[y] + (px * fb_mode->bpp), w, h, pitch, color, blender, param);
+				if (x + w > context->view_x + context->view_w)
+					w -= ((x + w) - (context->view_x + context->view_w));
+				put(data, context->line[y] + (px * __fb_gfx->bpp), w, h, pitch, context->target_pitch, color, blender, param);
 				
 			}
 			x += ch->width;
@@ -180,46 +175,46 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 	else {
 		/* use default font */
 		
-		font_height = fb_mode->font->h;
-		w = fb_mode->font->w;
+		font_height = __fb_gfx->font->h;
+		w = __fb_gfx->font->w;
 		bytes_count = BYTES_PER_PIXEL(w);
 		offset = 0;
 		
-		if ((x + (w * FB_STRSIZE(string)) <= fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
-		    (y + font_height <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h)) {
+		if ((x + (w * FB_STRSIZE(string)) <= context->view_x) || (x >= context->view_x + context->view_w) ||
+		    (y + font_height <= context->view_y) || (y >= context->view_y + context->view_h)) {
 			goto exit_error;
 		}
 		
-		if (y < fb_mode->view_y) {
-			offset = (bytes_count * (fb_mode->view_y - y));
-			font_height -= (fb_mode->view_y - y);
-			y = fb_mode->view_y;
+		if (y < context->view_y) {
+			offset = (bytes_count * (context->view_y - y));
+			font_height -= (context->view_y - y);
+			y = context->view_y;
 		}
-		if (y + font_height > fb_mode->view_y + fb_mode->view_h)
-			font_height -= ((y + font_height) - (fb_mode->view_y + fb_mode->view_h));
+		if (y + font_height > context->view_y + context->view_h)
+			font_height -= ((y + font_height) - (context->view_y + context->view_h));
 		
 		first = 0;
-		if (x < fb_mode->view_x) {
-			first = (fb_mode->view_x - x) / w;
+		if (x < context->view_x) {
+			first = (context->view_x - x) / w;
 			x += (first * w);
 		}
 		last = FB_STRSIZE(string);
-		if (x + ((last - first) * w) > fb_mode->view_x + fb_mode->view_w)
-			last -= ((x + ((last - first) * w) - (fb_mode->view_x + fb_mode->view_w)) / w);
+		if (x + ((last - first) * w) > context->view_x + context->view_w)
+			last -= ((x + ((last - first) * w) - (context->view_x + context->view_w)) / w);
 		
 		for (i = first; i < last; i++, x += w) {
 			
-			if (x + w <= fb_mode->view_x)
+			if (x + w <= context->view_x)
 				continue;
 			
-			if (x >= fb_mode->view_x + fb_mode->view_w)
+			if (x >= context->view_x + context->view_w)
 				break;
 			
-			data = (unsigned char *)fb_mode->font->data + ((unsigned char)string->data[i] * bytes_count * fb_mode->font->h) + offset;
+			data = (unsigned char *)__fb_gfx->font->data + ((unsigned char)string->data[i] * bytes_count * __fb_gfx->font->h) + offset;
 			for (py = 0; py < font_height; py++) {
 				for (px = 0; px < w; px++) {
-					if ((*data & (1 << (px & 0x7))) && (x + px >= fb_mode->view_x) && (x + px < fb_mode->view_x + fb_mode->view_w))
-						fb_hPutPixel(x + px, y + py, color);
+					if ((*data & (1 << (px & 0x7))) && (x + px >= context->view_x) && (x + px < context->view_x + context->view_w))
+						context->put_pixel(context, x + px, y + py, color);
 					if ((px & 0x7) == 0x7)
 						data++;
 				}
@@ -227,11 +222,12 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 		}
 	}
 	
-	SET_DIRTY(y, font_height);
+	SET_DIRTY(context, y, font_height);
 	
 exit_error:
 	DRIVER_UNLOCK();
-	
+
+exit_error_unlocked:
 	fb_hStrDelTemp(string);
 	
 	if (res != FB_RTERROR_OK)

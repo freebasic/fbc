@@ -30,12 +30,12 @@
 /*:::::*/
 FBCALL void fb_GfxLock(void)
 {
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return;
 
-	if (!(fb_mode->flags & SCREEN_LOCKED)) {
-		fb_mode->driver->lock();
-		fb_mode->flags |= SCREEN_LOCKED;
+	if (!(__fb_gfx->flags & SCREEN_LOCKED)) {
+		__fb_gfx->driver->lock();
+		__fb_gfx->flags |= SCREEN_LOCKED;
 	}
 }
 
@@ -43,18 +43,20 @@ FBCALL void fb_GfxLock(void)
 /*:::::*/
 FBCALL void fb_GfxUnlock(int start_line, int end_line)
 {
-	if (!fb_mode)
+	FB_GFXCTX *context = fb_hGetContext();
+	
+	if (!__fb_gfx)
 		return;
 	if (start_line < 0)
 		start_line = 0;
 	if (end_line < 0)
-		end_line = fb_mode->view_h - 1;
-	if ((fb_mode->framebuffer == fb_mode->line[0]) && (start_line <= end_line) && (end_line < fb_mode->view_h))
-		fb_hMemSet(fb_mode->dirty + start_line, TRUE, end_line - start_line + 1);
+		end_line = __fb_gfx->h - 1;
+	if ((__fb_gfx->visible_page == context->work_page) && (start_line <= end_line) && (end_line < __fb_gfx->h))
+		fb_hMemSet(__fb_gfx->dirty + start_line, TRUE, end_line - start_line + 1);
 
-	if (fb_mode->flags & SCREEN_LOCKED) {
-		fb_mode->driver->unlock();
-		fb_mode->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED);
+	if (__fb_gfx->flags & SCREEN_LOCKED) {
+		__fb_gfx->driver->unlock();
+		__fb_gfx->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED);
 	}
 }
 
@@ -62,9 +64,11 @@ FBCALL void fb_GfxUnlock(int start_line, int end_line)
 /*:::::*/
 FBCALL void *fb_GfxScreenPtr(void)
 {
-	if (!fb_mode)
-		return NULL;
-	fb_hPrepareTarget(NULL, MASK_A_32);
+	FB_GFXCTX *context = fb_hGetContext();
 	
-	return fb_mode->line[0];
+	if (!__fb_gfx)
+		return NULL;
+	fb_hPrepareTarget(context, NULL, MASK_A_32);
+	
+	return context->line[0];
 }

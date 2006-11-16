@@ -80,12 +80,12 @@ extern "C" {
 
 #define BYTES_PER_PIXEL(d)	(((d) + 7) / 8)
 
-#define DRIVER_LOCK()		{ if (!(fb_mode->flags & (SCREEN_LOCKED | SCREEN_AUTOLOCKED))) { fb_mode->driver->lock(); fb_mode->flags |= SCREEN_LOCKED | SCREEN_AUTOLOCKED; } }
-#define DRIVER_UNLOCK()		{ if (fb_mode->flags & SCREEN_AUTOLOCKED) { fb_mode->driver->unlock(); fb_mode->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED); } }
-#define SET_DIRTY(y,h)		{ if (fb_mode->framebuffer == fb_mode->line[0]) fb_hMemSet(fb_mode->dirty + (y), TRUE, (h)); }
+#define DRIVER_LOCK()		{ if (!(__fb_gfx->flags & (SCREEN_LOCKED | SCREEN_AUTOLOCKED))) { __fb_gfx->driver->lock(); __fb_gfx->flags |= SCREEN_LOCKED | SCREEN_AUTOLOCKED; } }
+#define DRIVER_UNLOCK()		{ if (__fb_gfx->flags & SCREEN_AUTOLOCKED) { __fb_gfx->driver->unlock(); __fb_gfx->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED); } }
+#define SET_DIRTY(c,y,h)	{ if (__fb_gfx->framebuffer == c->line[0]) fb_hMemSet(__fb_gfx->dirty + (y), TRUE, (h)); }
 
-#define EVENT_LOCK()		{ fb_MutexLock(fb_mode->event_mutex); }
-#define EVENT_UNLOCK()		{ fb_MutexUnlock(fb_mode->event_mutex); }
+#define EVENT_LOCK()		{ fb_MutexLock(__fb_gfx->event_mutex); }
+#define EVENT_UNLOCK()		{ fb_MutexUnlock(__fb_gfx->event_mutex); }
 
 #define DRIVER_NULL		-1
 #define DRIVER_FULLSCREEN	0x00000001
@@ -100,19 +100,21 @@ extern "C" {
 #define HAS_ACCUMULATION_BUFFER	0x00020000
 #define HAS_MULTISAMPLE		0x00040000
 
-#define HAS_MMX			0x01000000
-#define SCREEN_EXIT		0x80000000
-#define DEFAULT_COLOR		0xFEFF00FF
-#define WINDOW_ACTIVE		0x00000001
-#define WINDOW_SCREEN		0x00000002
-#define VIEW_SCREEN		0x00000004
-#define BUFFER_SET		0x00000008
-#define SCREEN_LOCKED		0x00000010
-#define SCREEN_AUTOLOCKED	0x00000020
-#define PRINT_SCROLL_WAS_OFF	0x00000040
-#define VIEW_PORT_SET		0x00000080
-#define ALPHA_PRIMITIVES	0x00000100
-#define OPENGL_PRIMITIVES	0x00000200
+#define HAS_MMX					0x01000000
+#define SCREEN_EXIT				0x80000000
+#define DEFAULT_COLOR			0xFEFF00FF
+#define SCREEN_LOCKED			0x00000001
+#define SCREEN_AUTOLOCKED		0x00000002
+#define PRINT_SCROLL_WAS_OFF	0x00000004
+#define ALPHA_PRIMITIVES		0x00000008
+#define OPENGL_PRIMITIVES		0x00000010
+
+#define CTX_BUFFER_INIT			0x00000001
+#define CTX_BUFFER_SET			0x00000002
+#define CTX_WINDOW_ACTIVE		0x00000004
+#define CTX_WINDOW_SCREEN		0x00000008
+#define CTX_VIEWPORT_SET		0x00000010
+#define CTX_VIEW_SCREEN			0x00000020
 
 #define COORD_TYPE_AA		0
 #define COORD_TYPE_AR		1
@@ -229,45 +231,66 @@ struct _EVENT {
 typedef struct _EVENT EVENT;
 
 
-typedef struct MODE
+typedef struct FB_GFXCTX {
+	int id;
+	int work_page;
+	unsigned char **line;
+	int max_h;
+	int target_pitch;
+	void *last_target;
+	float last_x, last_y;
+	union {
+	    struct {
+	    	int view_x, view_y, view_w, view_h;
+	    };
+	    int view[4];
+	};
+	union {
+	    struct {
+	    	int old_view_x, old_view_y, old_view_w, old_view_h;
+	    };
+		int old_view[4];
+	};
+    float win_x, win_y, win_w, win_h;
+	unsigned int fg_color, bg_color;
+	void (*put_pixel)(struct FB_GFXCTX *ctx, int x, int y, unsigned int color);
+	unsigned int (*get_pixel)(struct FB_GFXCTX *ctx, int x, int y);
+	void *(*pixel_set)(void *dest, int color, size_t size);
+    int flags;
+} FB_GFXCTX;
+
+
+typedef struct FBGFX
 {
-    int mode_num;				/* Current mode number */
-    unsigned char **page;			/* Pages memory */
-    int num_pages;				/* Number of requested pages */
-    int work_page;				/* Current work page number */
-    unsigned char *framebuffer;			/* Our current visible framebuffer */
-    unsigned char **line;			/* Line pointers into current active framebuffer */
-    int pitch;					/* Width of a framebuffer line in bytes */
-    int target_pitch;				/* Width of current target buffer line in bytes */
-    void *last_target;				/* Last target buffer set */
-    int max_h;					/* Max registered height of target buffer */
-    int bpp;					/* Bytes per pixel */
-    unsigned int *palette;			/* Current RGB color values for each palette index */
-    unsigned int *device_palette;		/* Current RGB color values of visible device palette */
+	int id;									/* Mode id number for contexts identification */
+    int mode_num;							/* Current mode number */
+    unsigned char **page;					/* Pages memory */
+    int num_pages;							/* Number of requested pages */
+    int visible_page;						/* Current visible page number */
+    unsigned char *framebuffer;				/* Our current visible framebuffer */
+    int w, h;								/* Current mode width and height */
+    int depth;								/* Current mode depth in bits per pixel */
+    int bpp;								/* Bytes per pixel */
+    int pitch;								/* Width of a framebuffer line in bytes */
+    unsigned int *palette;					/* Current RGB color values for each palette index */
+    unsigned int *device_palette;			/* Current RGB color values of visible device palette */
     unsigned char *color_association;		/* Palette color index associations for CGA/EGA emulation */
-    char *dirty;				/* Dirty lines buffer */
-    const struct GFXDRIVER *driver;		/* Gfx driver in use */
-    int w, h;					/* Current mode width and height */
-    int depth;					/* Current mode depth */
-    int color_mask;				/* Color bit mask for colordepth emulation */
+    char *dirty;							/* Dirty lines buffer */
+    const struct GFXDRIVER *driver;			/* Gfx driver in use */
+    int color_mask;							/* Color bit mask for colordepth emulation */
     const struct PALETTE *default_palette;	/* Default palette for current mode */
-    int scanline_size;				/* Vertical size of a single scanline in pixels */
-    unsigned int fg_color, bg_color;		/* Current foreground and background colors */
-    float last_x, last_y;			/* Last pen position */
-    int cursor_x, cursor_y;			/* Current graphical text cursor position (in chars, 0 based) */
-    const struct FONT *font;			/* Current font */
-    int view_x, view_y, view_w, view_h;		/* VIEW coordinates */
-    float win_x, win_y, win_w, win_h;		/* WINDOW coordinates */
-    int text_w, text_h;				/* Graphical text console size in characters */
-    char *key;					/* Keyboard states */
-    int refresh_rate;				/* Driver refresh rate */
-    int flags;					/* Status flags */
-    GFX_CHAR_CELL **con_pages;                  /* Character information for all pages */
-    EVENT *event_queue;				/* The OS events queue array */
-    int event_head, event_tail;			/* Indices for the head and tail event in the array */
-    struct _FBMUTEX *event_mutex;		/* Mutex lock for accessing the events queue */
-    int visible_page;				/* Current visible page number */
-} MODE;
+    int scanline_size;						/* Vertical size of a single scanline in pixels */
+    int cursor_x, cursor_y;					/* Current graphical text cursor position (in chars, 0 based) */
+    const struct FONT *font;				/* Current font */
+    int text_w, text_h;						/* Graphical text console size in characters */
+    char *key;								/* Keyboard states */
+	int refresh_rate;						/* Driver refresh rate */
+	GFX_CHAR_CELL **con_pages;				/* Character information for all pages */
+    EVENT *event_queue;						/* The OS events queue array */
+    int event_head, event_tail;				/* Indices for the head and tail event in the array */
+    struct _FBMUTEX *event_mutex;			/* Mutex lock for accessing the events queue */
+	int flags;								/* Status flags */
+} FBGFX;
 
 
 typedef struct GFXDRIVER
@@ -329,26 +352,25 @@ typedef struct _PUT_HEADER PUT_HEADER;
 
 typedef void (BLITTER)(unsigned char *, int);
 typedef FBCALL unsigned int (BLENDER)(unsigned int, unsigned int, void *);
-typedef void (PUTTER)(unsigned char *, unsigned char *, int, int, int, int, BLENDER *, void *);
+typedef void (PUTTER)(unsigned char *, unsigned char *, int, int, int, int, int, BLENDER *, void *);
 
 /* Global variables */
-extern MODE *fb_mode;
-extern const GFXDRIVER *fb_gfx_driver_list[];
-extern const GFXDRIVER fb_gfxDriverNull;
+extern FBGFX *__fb_gfx;
+extern const GFXDRIVER *__fb_gfx_drivers_list[];
+extern const GFXDRIVER __fb_gfxDriverNull;
 extern void *(*fb_hMemCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hMemSet)(void *dest, int value, size_t size);
-extern void (*fb_hPutPixel)(int x, int y, unsigned int color);
-extern unsigned int (*fb_hGetPixel)(int x, int y);
 extern void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hPixelSet)(void *dest, int color, size_t size);
-extern unsigned int *fb_color_conv_16to32;
+extern unsigned int *__fb_color_conv_16to32;
 extern char *__fb_window_title;
 #if defined(HAVE_GL_GL_H)
-extern FB_GL fb_gl;
+extern FB_GL __fb_gl;
 #endif
 #include "fb_gfx_data.h"
 
 /* Internal functions */
+extern FB_GFXCTX *fb_hGetContext(void);
 extern void fb_hSetupFuncs(void);
 extern void fb_hSetupData(void);
 extern FBCALL int fb_hEncode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
@@ -360,15 +382,15 @@ extern PUTTER *fb_hGetPutter(int mode, int *alpha);
 extern unsigned int fb_hMakeColor(unsigned int index, int r, int g, int b);
 extern unsigned int fb_hFixColor(unsigned int color);
 extern void fb_hRestorePalette(void);
-extern void fb_hPrepareTarget(void *target, unsigned int color);
-extern void fb_hTranslateCoord(float fx, float fy, int *x, int *y);
-extern void fb_hFixRelative(int coord_type, float *x1, float *y1, float *x2, float *y2);
+extern void fb_hPrepareTarget(FB_GFXCTX *ctx, void *target, unsigned int color);
+extern void fb_hTranslateCoord(FB_GFXCTX *ctx, float fx, float fy, int *x, int *y);
+extern void fb_hFixRelative(FB_GFXCTX *ctx, int coord_type, float *x1, float *y1, float *x2, float *y2);
 extern void fb_hFixCoordsOrder(int *x1, int *y1, int *x2, int *y2);
 extern void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, unsigned int style);
 extern void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh);
 extern void *fb_hMemCpyMMX(void *dest, const void *src, size_t size);
 extern void *fb_hMemSetMMX(void *dest, int value, size_t size);
-extern void fb_hResetCharCells(int do_alloc);
+extern void fb_hResetCharCells(FB_GFXCTX *context, int do_alloc);
 extern void fb_hClearCharCells(int x1, int y1, int x2, int y2, int page, FB_WCHAR ch, unsigned fg, unsigned bg);
 extern void fb_hSoftCursorInit(void);
 extern void fb_hSoftCursorExit(void);
@@ -465,7 +487,7 @@ FBCALL void fb_GfxImageConvertRow( const unsigned char *src, int src_bpp, unsign
 /** Returns TRUE if application is in graphics mode.
  */
 #define FB_GFX_ACTIVE() \
-    (fb_mode!=NULL)
+    (__fb_gfx!=NULL)
 
 /** Returns the code page as integral value.
  *

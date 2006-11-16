@@ -49,7 +49,7 @@ typedef struct BMP_HEADER
 
 
 /*:::::*/
-static int save_bmp(FILE *f, void *src)
+static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src)
 {
 	BMP_HEADER header;
 	PUT_HEADER *put_header;
@@ -68,17 +68,17 @@ static int save_bmp(FILE *f, void *src)
 			w = put_header->old.width;
 			h = put_header->old.height;
 			s = (unsigned char *)src + sizeof(PUT_HEADER);
-			pitch = w * (put_header->old.bpp ? put_header->old.bpp : fb_mode->bpp);
+			pitch = w * (put_header->old.bpp ? put_header->old.bpp : __fb_gfx->bpp);
 		}
 	}
 	else {
-		w = fb_mode->w;
-		h = fb_mode->h;
-		s = fb_mode->line[0];
-		pitch = fb_mode->pitch;
+		w = __fb_gfx->w;
+		h = __fb_gfx->h;
+		s = ctx->line[0];
+		pitch = __fb_gfx->pitch;
 	}
-	filler = 3 - (((w * (fb_mode->bpp)) - 1) & 0x3);
-	if (fb_mode->bpp == 1) {
+	filler = 3 - (((w * (__fb_gfx->bpp)) - 1) & 0x3);
+	if (__fb_gfx->bpp == 1) {
 		biSizeImage = (w + filler) * h;
 		bfOffBits = 54 + 1024;
 		bfSize = bfOffBits + biSizeImage;
@@ -99,7 +99,7 @@ static int save_bmp(FILE *f, void *src)
 	header.biWidth = w;
 	header.biHeight = h;
 	header.biPlanes = 1;
-	header.biBitCount = (fb_mode->bpp == 1) ? 8 : 24;
+	header.biBitCount = (__fb_gfx->bpp == 1) ? 8 : 24;
 	header.biSizeImage = biSizeImage;
 	header.biXPelsPerMeter = 0xB12;
 	header.biYPelsPerMeter = 0xB12;
@@ -107,17 +107,17 @@ static int save_bmp(FILE *f, void *src)
 	header.biClrImportant = biClrUsed;
 	if (!fwrite(&header, 54, 1, f))
 		return FB_RTERROR_FILEIO;
-	if (fb_mode->bpp == 1) {
+	if (__fb_gfx->bpp == 1) {
 		for (i = 0; i < 256; i++) {
-			fputc((fb_mode->device_palette[i] >> 16) & 0xFF, f);
-			fputc((fb_mode->device_palette[i] >> 8) & 0xFF, f);
-			fputc(fb_mode->device_palette[i] & 0xFF, f);
+			fputc((__fb_gfx->device_palette[i] >> 16) & 0xFF, f);
+			fputc((__fb_gfx->device_palette[i] >> 8) & 0xFF, f);
+			fputc(__fb_gfx->device_palette[i] & 0xFF, f);
 			fputc(0, f);
 		}
 	}
 	
 	filler = biSizeImage / h;
-	switch (fb_mode->bpp) {
+	switch (__fb_gfx->bpp) {
 		case 1:
 			break;
 		case 2:
@@ -132,7 +132,7 @@ static int save_bmp(FILE *f, void *src)
 	s += (h - 1) * pitch;
 	for (; h; h--) {
 		p = buffer;
-		switch (fb_mode->bpp) {
+		switch (__fb_gfx->bpp) {
 			case 1:
 				fb_hMemCpy(p, s, pitch);
 				break;
@@ -166,6 +166,7 @@ static int save_bmp(FILE *f, void *src)
 FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 {
 	FILE *f;
+	FB_GFXCTX *context = fb_hGetContext();
 	int result = FB_RTERROR_OK;
 	char buffer[MAX_PATH], *p;
 
@@ -179,11 +180,11 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
 	
-	fb_hPrepareTarget(NULL, MASK_A_32);
+	fb_hPrepareTarget(context, NULL, MASK_A_32);
 
 	p = strrchr(filename->data, '.');
 	if ((p) && (!strcasecmp(p + 1, "bmp")))
-		result = save_bmp(f, src);
+		result = save_bmp(context, f, src);
 	else {
 		if ((size < 0) || ((size == 0) && (src))) {
 			fclose(f);
@@ -199,13 +200,13 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 
 		if (!src) {
 			DRIVER_LOCK();
-			size = MIN(size, fb_mode->pitch * fb_mode->h);
-			if (!fwrite(fb_mode->line[0], size, 1, f))
+			size = MIN(size, __fb_gfx->pitch * __fb_gfx->h);
+			if (!fwrite(context->line[0], size, 1, f))
 				result = FB_RTERROR_FILEIO;
 			DRIVER_UNLOCK();
-			if (fb_mode->depth <= 8) {
-				size = (1 << fb_mode->depth) * sizeof(int);
-				if (!fwrite(fb_mode->device_palette, size, 1, f))
+			if (__fb_gfx->depth <= 8) {
+				size = (1 << __fb_gfx->depth) * sizeof(int);
+				if (!fwrite(__fb_gfx->device_palette, size, 1, f))
 					result = FB_RTERROR_FILEIO;
 			}
 		}

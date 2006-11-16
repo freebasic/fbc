@@ -32,43 +32,43 @@
 #include "fb_gfx_mmx.h"
 
 /* MMX functions declarations */
-extern void fb_hPutAdd2MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-extern void fb_hPutAdd4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-extern void fb_hPutAlpha4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-extern void fb_hPutBlend2MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-extern void fb_hPutBlend4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-extern void fb_hPutTrans1MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-extern void fb_hPutTrans2MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-extern void fb_hPutTrans4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-extern void fb_hPutPSetMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-extern void fb_hPutPResetMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-extern void fb_hPutAndMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-extern void fb_hPutOrMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
-extern void fb_hPutXorMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutAdd2MMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutAdd4MMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutAlpha4MMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutBlend2MMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutBlend4MMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutTrans1MMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutTrans2MMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutTrans4MMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutPSetMMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutPResetMMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutAndMMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutOrMMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+extern void fb_hPutXorMMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
 #endif
 
 /* Local vars */
-static void (*fb_hPutAdd)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutAlpha)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutBlend)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutTrans)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutPSet)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutPReset)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutAnd)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutOr)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutXor)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutCustom)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param) = NULL;
+static void (*fb_hPutAdd)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
+static void (*fb_hPutAlpha)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
+static void (*fb_hPutBlend)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
+static void (*fb_hPutTrans)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
+static void (*fb_hPutPSet)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
+static void (*fb_hPutPReset)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
+static void (*fb_hPutAnd)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
+static void (*fb_hPutOr)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
+static void (*fb_hPutXor)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
+static void (*fb_hPutCustom)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
 static int put_initialized_depth = 0;
 
 
 /*:::::*/
-static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned int *s = (unsigned int *)src;
 	unsigned int *d, sc, dc, a, drb, dg, srb, sg;
 	int x;
 	
-	pitch = (pitch >> 2) - w;
+	src_pitch = (src_pitch >> 2) - w;
 	for (; h; h--) {
 		d = (unsigned int *)dest;
 		for (x = w; x; x--) {
@@ -83,21 +83,21 @@ static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h
 			sg = ((sg - dg) * a) >> 8;
 			*d++ = ((drb + srb) & MASK_RB_32) | ((dg + sg) & MASK_G_32);
 		}
-		s += pitch;
-		dest += fb_mode->target_pitch;
+		s += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutAdd2C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutAdd2C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned short *s = (unsigned short *)src, *d;
 	unsigned int sc, dc, overflow;
 	int x;
 	
 	alpha = (alpha + 7) >> 3;
-	pitch = (pitch >> 1) - w;
+	src_pitch = (src_pitch >> 1) - w;
 	for (; h; h--) {
 		d = (unsigned short *)dest;
 		for (x = w; x; x--) {
@@ -118,20 +118,20 @@ static void fb_hPutAdd2C(unsigned char *src, unsigned char *dest, int w, int h, 
 			s++;
 			d++;
 		}
-		s += pitch;
-		dest += fb_mode->target_pitch;
+		s += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutAdd4C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutAdd4C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned int *s = (unsigned int *)src, *d;
 	unsigned int sc, dc, temp1, temp2;
 	int x;
 
-	pitch = (pitch >> 2) - w;
+	src_pitch = (src_pitch >> 2) - w;
 	for (; h; h--) {
 		d = (unsigned int *)dest;
 		for (x = w; x; x--) {
@@ -156,21 +156,21 @@ static void fb_hPutAdd4C(unsigned char *src, unsigned char *dest, int w, int h, 
 			s++;
 			d++;
 		}
-		s += pitch;
-		dest += fb_mode->target_pitch;
+		s += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutBlend2C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutBlend2C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned short *s = (unsigned short *)src, *d;
 	unsigned int sc, dc, drb, dg, srb, sg, dt, st;
 	int x;
 	
 	alpha = (alpha + 7) >> 3;
-	pitch = (pitch >> 1) - w;
+	src_pitch = (src_pitch >> 1) - w;
 	for (; h; h--) {
 		d = (unsigned short *)dest;
 		if (w & 1) {
@@ -210,21 +210,21 @@ static void fb_hPutBlend2C(unsigned char *src, unsigned char *dest, int w, int h
 			s += 2;
 			d += 2;
 		}
-		s += pitch;
-		dest += fb_mode->target_pitch;
+		s += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutBlend4C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutBlend4C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned int *s = (unsigned int *)src;
 	unsigned int *d, sc, dc, drb, dg, srb, sg;
 	int x;
 	
 	alpha++;
-	pitch = (pitch >> 2) - w;
+	src_pitch = (src_pitch >> 2) - w;
 	for (; h; h--) {
 		d = (unsigned int *)dest;
 		for (x = w; x; x--) {
@@ -241,20 +241,20 @@ static void fb_hPutBlend4C(unsigned char *src, unsigned char *dest, int w, int h
 			}
 			d++;
 		}
-		s += pitch;
-		dest += fb_mode->target_pitch;
+		s += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutTrans1C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutTrans1C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned char *s = (unsigned char *)src;
 	unsigned char *d;
 	int x;
 	
-	pitch -= w;
+	src_pitch -= w;
 	for (; h; h--) {
 		d = (unsigned char *)dest;
 		for (x = w; x; x--) {
@@ -263,20 +263,20 @@ static void fb_hPutTrans1C(unsigned char *src, unsigned char *dest, int w, int h
 			s++;
 			d++;
 		}
-		s += pitch;
-		dest += fb_mode->target_pitch;
+		s += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutTrans2C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutTrans2C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned short *s = (unsigned short *)src;
 	unsigned short *d;
 	int x;
 	
-	pitch = (pitch >> 1) - w;
+	src_pitch = (src_pitch >> 1) - w;
 	for (; h; h--) {
 		d = (unsigned short *)dest;
 		for (x = w; x; x--) {
@@ -285,20 +285,20 @@ static void fb_hPutTrans2C(unsigned char *src, unsigned char *dest, int w, int h
 			s++;
 			d++;
 		}
-		s += pitch;
-		dest += fb_mode->target_pitch;
+		s += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutTrans4C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutTrans4C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned int *s = (unsigned int *)src;
 	unsigned int *d, c;
 	int x;
 	
-	pitch = (pitch >> 2) - w;
+	src_pitch = (src_pitch >> 2) - w;
 	for (; h; h--) {
 		d = (unsigned int *)dest;
 		for (x = w; x; x--) {
@@ -308,31 +308,31 @@ static void fb_hPutTrans4C(unsigned char *src, unsigned char *dest, int w, int h
 			s++;
 			d++;
 		}
-		s += pitch;
-		dest += fb_mode->target_pitch;
+		s += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutPSetC(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutPSetC(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	for (; h; h--) {
 		fb_hPixelCpy(dest, src, w);
-		src += pitch;
-		dest += fb_mode->target_pitch;
+		src += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutPResetC(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutPResetC(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
-	int x, dpitch;
+	int x;
 	
-	w <<= (fb_mode->bpp >> 1);
-	pitch -= w;
-	dpitch = fb_mode->target_pitch - w;
+	w <<= (__fb_gfx->bpp >> 1);
+	src_pitch -= w;
+	dest_pitch -= w;
 	for (; h; h--) {
 		if (w & 1)
 			*dest++ = 0xFF ^ *src++;
@@ -346,20 +346,20 @@ static void fb_hPutPResetC(unsigned char *src, unsigned char *dest, int w, int h
 			dest += 4;
 			src += 4;
 		}
-		src += pitch;
-		dest += dpitch;
+		src += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutAndC(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutAndC(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
-	int x, dpitch;
+	int x;
 	
-	w <<= (fb_mode->bpp >> 1);
-	pitch -= w;
-	dpitch = fb_mode->target_pitch - w;
+	w <<= (__fb_gfx->bpp >> 1);
+	src_pitch -= w;
+	dest_pitch -= w;
 	for (; h; h--) {
 		if (w & 1)
 			*dest++ &= *src++;
@@ -373,20 +373,20 @@ static void fb_hPutAndC(unsigned char *src, unsigned char *dest, int w, int h, i
 			dest += 4;
 			src += 4;
 		}
-		src += pitch;
-		dest += dpitch;
+		src += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutOrC(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutOrC(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
-	int x, dpitch;
+	int x;
 	
-	w <<= (fb_mode->bpp >> 1);
-	pitch -= w;
-	dpitch = fb_mode->target_pitch - w;
+	w <<= (__fb_gfx->bpp >> 1);
+	src_pitch -= w;
+	dest_pitch -= w;
 	for (; h; h--) {
 		if (w & 1)
 			*dest++ |= *src++;
@@ -400,20 +400,20 @@ static void fb_hPutOrC(unsigned char *src, unsigned char *dest, int w, int h, in
 			dest += 4;
 			src += 4;
 		}
-		src += pitch;
-		dest += dpitch;
+		src += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutXorC(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutXorC(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
-	int x, dpitch;
+	int x;
 	
-	w <<= (fb_mode->bpp >> 1);
-	pitch -= w;
-	dpitch = fb_mode->target_pitch - w;
+	w <<= (__fb_gfx->bpp >> 1);
+	src_pitch -= w;
+	dest_pitch -= w;
 	for (; h; h--) {
 		if (w & 1)
 			*dest++ ^= *src++;
@@ -427,20 +427,20 @@ static void fb_hPutXorC(unsigned char *src, unsigned char *dest, int w, int h, i
 			dest += 4;
 			src += 4;
 		}
-		src += pitch;
-		dest += dpitch;
+		src += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutCustom1(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutCustom1(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned char *s = (unsigned char *)src;
 	unsigned char *d;
 	int x;
 	
-	pitch -= w;
+	src_pitch -= w;
 	for (; h; h--) {
 		d = (unsigned char *)dest;
 		for (x = w; x; x--) {
@@ -448,21 +448,21 @@ static void fb_hPutCustom1(unsigned char *src, unsigned char *dest, int w, int h
 			s++;
 			d++;
 		}
-		s += pitch;
-		dest += fb_mode->target_pitch;
+		s += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutCustom2(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutCustom2(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned short *s = (unsigned short *)src;
 	unsigned short *d;
 	int x;
 	unsigned int cs, cd;
 	
-	pitch = (pitch >> 1) - w;
+	src_pitch = (src_pitch >> 1) - w;
 	for (; h; h--) {
 		d = (unsigned short *)dest;
 		for (x = w; x; x--) {
@@ -477,20 +477,20 @@ static void fb_hPutCustom2(unsigned char *src, unsigned char *dest, int w, int h
 			cd = blender(cs, cd, param);
 			*d++ = (unsigned short)((cd >> 3) & 0x001F) | ((cd >> 5) & 0x07E0) | ((cd >> 8) & 0xF800);
 		}
-		s += pitch;
-		dest += fb_mode->target_pitch;
+		s += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
 
 /*:::::*/
-static void fb_hPutCustom4(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha, BLENDER *blender, void *param)
+static void fb_hPutCustom4(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned int *s = (unsigned int *)src;
 	unsigned int *d;
 	int x;
 	
-	pitch = (pitch >> 2) - w;
+	src_pitch = (src_pitch >> 2) - w;
 	for (; h; h--) {
 		d = (unsigned int *)dest;
 		for (x = w; x; x--) {
@@ -498,8 +498,8 @@ static void fb_hPutCustom4(unsigned char *src, unsigned char *dest, int w, int h
 			s++;
 			d++;
 		}
-		s += pitch;
-		dest += fb_mode->target_pitch;
+		s += src_pitch;
+		dest += dest_pitch;
 	}
 }
 
@@ -509,13 +509,13 @@ static void init_put(void)
 {
 
 #if defined(TARGET_X86)
-	if (fb_mode->flags & HAS_MMX) {
+	if (__fb_gfx->flags & HAS_MMX) {
 		fb_hPutPSet = fb_hPutPSetMMX;
 		fb_hPutPReset = fb_hPutPResetMMX;
 		fb_hPutAnd = fb_hPutAndMMX;
 		fb_hPutOr = fb_hPutOrMMX;
 		fb_hPutXor = fb_hPutXorMMX;
-		switch (fb_mode->depth) {
+		switch (__fb_gfx->depth) {
 			case 1:
 			case 2:
 			case 4:
@@ -553,7 +553,7 @@ static void init_put(void)
 		fb_hPutAnd = fb_hPutAndC;
 		fb_hPutOr = fb_hPutOrC;
 		fb_hPutXor = fb_hPutXorC;
-		switch (fb_mode->depth) {
+		switch (__fb_gfx->depth) {
 			case 1:
 			case 2:
 			case 4:
@@ -586,7 +586,7 @@ static void init_put(void)
 #if defined(TARGET_X86)
 	}
 #endif
-	put_initialized_depth = fb_mode->depth;
+	put_initialized_depth = __fb_gfx->depth;
 }
 
 
@@ -595,7 +595,7 @@ PUTTER *fb_hGetPutter(int mode, int *alpha)
 {
 	PUTTER *put;
 	
-	if (put_initialized_depth != fb_mode->depth)
+	if (put_initialized_depth != __fb_gfx->depth)
 		init_put();
 	
 	switch (mode) {
@@ -631,18 +631,19 @@ PUTTER *fb_hGetPutter(int mode, int *alpha)
 /*:::::*/
 FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x1, int y1, int x2, int y2, int coord_type, int mode, int alpha, BLENDER *blender, void *param)
 {
+	FB_GFXCTX *context = fb_hGetContext();
 	int x, y, w, h, pitch, bpp;
 	PUTTER *put;
 	PUT_HEADER *header;
 	
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
-	fb_hPrepareTarget(target, MASK_A_32);
+	fb_hPrepareTarget(context, target, MASK_A_32);
 	
-	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
+	fb_hFixRelative(context, coord_type, &fx, &fy, NULL, NULL);
 	
-	fb_hTranslateCoord(fx, fy, &x, &y);
+	fb_hTranslateCoord(context, fx, fy, &x, &y);
 	
 	header = (PUT_HEADER *)src;
 	if (header->type == PUT_HEADER_NEW) {
@@ -656,11 +657,11 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 		bpp = header->old.bpp;
 		w = header->old.width;
 		h = header->old.height;
-		pitch = w * fb_mode->bpp;
+		pitch = w * __fb_gfx->bpp;
 		src += 4;
 	}
 
-	if ((bpp) && (bpp != fb_mode->bpp))
+	if ((bpp) && (bpp != __fb_gfx->bpp))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
 	if (x1 != 0xFFFF0000) {
@@ -673,35 +674,35 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 		
 		w = x2 - x1 + 1;
 		h = y2 - y1 + 1;
-		src += (pitch * y1) + (x1 * fb_mode->bpp);
+		src += (pitch * y1) + (x1 * __fb_gfx->bpp);
 	}
 	
 	if ((w == 0) || (h == 0) ||
-	    (x + w <= fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
-	    (y + h <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
+	    (x + w <= context->view_x) || (x >= context->view_x + context->view_w) ||
+	    (y + h <= context->view_y) || (y >= context->view_y + context->view_h))
 		return FB_RTERROR_OK;
 	
-	if (y < fb_mode->view_y) {
-		src += (pitch * (fb_mode->view_y - y));
-		h -= (fb_mode->view_y - y);
-		y = fb_mode->view_y;
+	if (y < context->view_y) {
+		src += (pitch * (context->view_y - y));
+		h -= (context->view_y - y);
+		y = context->view_y;
 	}
-	if (y + h > fb_mode->view_y + fb_mode->view_h)
-		h -= ((y + h) - (fb_mode->view_y + fb_mode->view_h));
-	if (x < fb_mode->view_x) {
-		src += ((fb_mode->view_x - x) * fb_mode->bpp);
-		w -= (fb_mode->view_x - x);
-		x = fb_mode->view_x;
+	if (y + h > context->view_y + context->view_h)
+		h -= ((y + h) - (context->view_y + context->view_h));
+	if (x < context->view_x) {
+		src += ((context->view_x - x) * __fb_gfx->bpp);
+		w -= (context->view_x - x);
+		x = context->view_x;
 	}
-	if (x + w > fb_mode->view_x + fb_mode->view_w)
-		w -= ((x + w) - (fb_mode->view_x + fb_mode->view_w));
+	if (x + w > context->view_x + context->view_w)
+		w -= ((x + w) - (context->view_x + context->view_w));
 	
 	put = fb_hGetPutter(mode, &alpha);
 	
 	if (put) {
 		DRIVER_LOCK();
-		put(src, fb_mode->line[y] + (x * fb_mode->bpp), w, h, pitch, alpha, blender, param);
-		SET_DIRTY(y, h);
+		put(src, context->line[y] + (x * __fb_gfx->bpp), w, h, pitch, context->target_pitch, alpha, blender, param);
+		SET_DIRTY(context, y, h);
 		DRIVER_UNLOCK();
 	}
 	

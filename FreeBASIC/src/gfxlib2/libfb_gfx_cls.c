@@ -30,27 +30,27 @@
 /*:::::*/
 void fb_GfxClear(int mode)
 {
+	FB_GFXCTX *context = fb_hGetContext();
     int i, dirty, dirty_len;
     int reset_gfx_pos;
     int reset_console_start = 0, reset_console_end = 0;
     int new_x = -1, new_y = -1;
 	
-	fb_hPrepareTarget(NULL, fb_mode->bg_color);
+	fb_hPrepareTarget(context, NULL, context->bg_color);
 	
     DRIVER_LOCK();
 
-    if( mode==0xFFFF0000 ) {
-        if( fb_mode->flags & VIEW_PORT_SET ) {
+    if( mode == 0xFFFF0000 ) {
+        if( context->flags & CTX_VIEWPORT_SET )
             mode = 1;
-        } else {
+        else {
             int con_y_start = fb_ConsoleGetTopRow();
             int con_y_end = fb_ConsoleGetBotRow();
-            if( con_y_start==0 && (con_y_end==fb_mode->text_h-1) ) {
+            if( con_y_start==0 && (con_y_end==__fb_gfx->text_h-1) )
                 /* No VIEW PRINT range set */
                 mode = 0;
-            } else {
+            else
                 mode = 2;
-            }
         }
     }
 	
@@ -61,14 +61,14 @@ void fb_GfxClear(int mode)
             {
                 int cursor_y = fb_ConsoleGetTopRow();
 
-                fb_hPixelSet(fb_mode->line[0], fb_mode->bg_color, fb_mode->w * fb_mode->h);
+                context->pixel_set(context->line[0], context->bg_color, __fb_gfx->w * __fb_gfx->h);
                 dirty = 0;
-                dirty_len = fb_mode->h;
+                dirty_len = __fb_gfx->h;
 
                 new_x = 0;
                 new_y = cursor_y;
 
-                reset_console_end = fb_mode->text_h;
+                reset_console_end = __fb_gfx->text_h;
 
                 reset_gfx_pos = TRUE;
             }
@@ -79,13 +79,11 @@ void fb_GfxClear(int mode)
             {
                 int con_y_start = fb_ConsoleGetTopRow();
                 int con_y_end = fb_ConsoleGetBotRow();
-                int y_start = con_y_start * fb_mode->font->h;
-                int y_end = (con_y_end + 1) * fb_mode->font->h;
+                int y_start = con_y_start * __fb_gfx->font->h;
+                int y_end = (con_y_end + 1) * __fb_gfx->font->h;
                 int view_height = y_end - y_start;
 
-                fb_hPixelSet(fb_mode->line[y_start],
-                             fb_mode->bg_color,
-                             fb_mode->w * view_height);
+                context->pixel_set(context->line[y_start], context->bg_color, __fb_gfx->w * view_height);
                 dirty = y_start;
                 dirty_len = view_height;
 
@@ -103,30 +101,30 @@ void fb_GfxClear(int mode)
 		default:
             /* Clear graphics viewport if set */
             {
-                unsigned char *dest = fb_mode->line[fb_mode->view_y] + (fb_mode->view_x * fb_mode->bpp);
-                for (i = 0; i < fb_mode->view_h; i++) {
-                    fb_hPixelSet(dest, fb_mode->bg_color, fb_mode->view_w);
-                    dest += fb_mode->pitch;
+                unsigned char *dest = context->line[context->view_y] + (context->view_x * __fb_gfx->bpp);
+                for (i = 0; i < context->view_h; i++) {
+                    context->pixel_set(dest, context->bg_color, context->view_w);
+                    dest += __fb_gfx->pitch;
                 }
-                dirty = fb_mode->view_y;
-                dirty_len = fb_mode->view_h;
+                dirty = context->view_y;
+                dirty_len = context->view_h;
 
                 reset_gfx_pos = TRUE;
             }
 			break;
 	}
-	SET_DIRTY(dirty, dirty_len);
+	SET_DIRTY(context, dirty, dirty_len);
 	
     if( reset_gfx_pos ) {
-        fb_mode->last_x = fb_mode->view_x + (fb_mode->view_w >> 1);
-        fb_mode->last_y = fb_mode->view_y + (fb_mode->view_h >> 1);
+        context->last_x = context->view_x + (context->view_w >> 1);
+        context->last_y = context->view_y + (context->view_h >> 1);
     }
 
     fb_hClearCharCells( 0, reset_console_start,
-                        fb_mode->text_w, reset_console_end,
-                        fb_mode->work_page,
+                        __fb_gfx->text_w, reset_console_end,
+                        context->work_page,
                         32,
-                        fb_mode->fg_color, fb_mode->bg_color );
+                        context->fg_color, context->bg_color );
 
     if( new_x!=-1 || new_y!=-1 ) {
         fb_GfxLocate( new_y + 1, new_x + 1, -1 );

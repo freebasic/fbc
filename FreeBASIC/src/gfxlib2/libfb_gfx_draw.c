@@ -71,22 +71,26 @@ static int parse_number(char **str)
 /*:::::*/
 FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 {
+	FB_GFXCTX *context = fb_hGetContext();
 	float x, y, dx, dy, ax, ay, x2, y2, scale = 1.0, angle = 0.0;
 	char *c;
 	int draw = TRUE, move = TRUE, length = 0, value1, value2, flags, rel, ix, iy;
 
-	if ((!fb_mode) || (!command) || (!command->data))
+	if ((!__fb_gfx) || (!command) || (!command->data)) {
+		if (command)
+			fb_hStrDelTemp(command);
 		return;
+	}
 	
-	fb_hPrepareTarget(target, MASK_A_32);
+	fb_hPrepareTarget(context, target, MASK_A_32);
 
-	x = fb_mode->last_x + 0.5;
-	y = fb_mode->last_y + 0.5;
+	x = context->last_x + 0.5;
+	y = context->last_y + 0.5;
 
 	DRIVER_LOCK();
 
-	flags = fb_mode->flags;
-	fb_mode->flags |= VIEW_SCREEN;
+	flags = context->flags;
+	context->flags |= CTX_VIEW_SCREEN;
 
 	for (c = command->data; *c;) {
 		switch (toupper(*c)) {
@@ -105,7 +109,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				c++;
 				if ((value1 = parse_number(&c)) == NAN)
 					goto error;
-				fb_mode->fg_color = fb_hFixColor(value1);
+				context->fg_color = fb_hFixColor(value1);
 				break;
 
 			case 'S':
@@ -138,13 +142,13 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				 * resides at location NAN (0x80000000) */
 				if ((value1 = parse_number(&c)) == NAN)
 					goto error;
-				fb_mode->last_x = x - 0.5;
-				fb_mode->last_y = y - 0.5;
+				context->last_x = x - 0.5;
+				context->last_y = y - 0.5;
 				DRIVER_UNLOCK();
 				fb_GfxDraw(target, (FBSTRING *)value1);
 				DRIVER_LOCK();
-				x = fb_mode->last_x + 0.5;
-				y = fb_mode->last_y + 0.5;
+				x = context->last_x + 0.5;
+				y = context->last_y + 0.5;
 				break;
 
 			case 'P':
@@ -158,7 +162,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 						goto error;
 				}
 				DRIVER_UNLOCK();
-				fb_GfxPaint(target, x, y, value1 & fb_mode->color_mask, value2 & fb_mode->color_mask, NULL, PAINT_TYPE_FILL, COORD_TYPE_A);
+				fb_GfxPaint(target, x, y, value1 & __fb_gfx->color_mask, value2 & __fb_gfx->color_mask, NULL, PAINT_TYPE_FILL, COORD_TYPE_A);
 				DRIVER_LOCK();
 				break;
 
@@ -239,11 +243,11 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				if (draw) {
 					ix = dx;
 					iy = dy;
-					if ((ix >= fb_mode->view_x) && (ix < fb_mode->view_x + fb_mode->view_w) &&
-					    (iy >= fb_mode->view_y) && (iy < fb_mode->view_y + fb_mode->view_h)) {
-					    	fb_hPutPixel(ix, iy, fb_mode->fg_color);
-						if (fb_mode->framebuffer == fb_mode->line[0])
-							fb_mode->dirty[iy] = TRUE;
+					if ((ix >= context->view_x) && (ix < context->view_x + context->view_w) &&
+					    (iy >= context->view_y) && (iy < context->view_y + context->view_h)) {
+					    	context->put_pixel(context, ix, iy, context->fg_color);
+						if (__fb_gfx->framebuffer == context->line[0])
+							__fb_gfx->dirty[iy] = TRUE;
 					}
 				}
 				if (length) {
@@ -262,11 +266,11 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 		}
 	}
 
-	fb_mode->last_x = floor(x);
-	fb_mode->last_y = floor(y);
+	context->last_x = floor(x);
+	context->last_y = floor(y);
 
 error:
-	fb_mode->flags = flags;
+	context->flags = flags;
 
 	DRIVER_UNLOCK();
 

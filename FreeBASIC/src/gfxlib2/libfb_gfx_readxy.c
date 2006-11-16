@@ -30,26 +30,27 @@
 /*:::::*/
 unsigned int fb_GfxReadXY( int col, int row, int colorflag )
 {
+	FB_GFXCTX *context = fb_hGetContext();
     GFX_CHAR_CELL *cell;
 
-    if( fb_mode==NULL )
+    if( __fb_gfx==NULL )
         return 0;
 
-    if( col < 1 || col > fb_mode->text_w
-        || row < 1 || row > fb_mode->text_h )
+    if( col < 1 || col > __fb_gfx->text_w
+        || row < 1 || row > __fb_gfx->text_h )
         return 0;
 
     cell =
-        fb_mode->con_pages[ fb_mode->work_page ]
-        + (row - 1) * fb_mode->text_w
+        __fb_gfx->con_pages[ context->work_page ]
+        + (row - 1) * __fb_gfx->text_w
         + col - 1;
     if( colorflag==0 ) {
         return cell->ch;
     }
 
-    if( fb_mode->depth <= 4 ) {
+    if( __fb_gfx->depth <= 4 ) {
         return cell->fg + (cell->bg << 4);
-    } else if( fb_mode->depth <= 8 ) {
+    } else if( __fb_gfx->depth <= 8 ) {
         return cell->fg + (cell->bg << 8);
     } else {
         if( colorflag==2 )

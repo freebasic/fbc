@@ -28,7 +28,7 @@
 #include <GL/gl.h>
 
 
-FB_GL fb_gl;
+FB_GL __fb_gl;
 
 
 /*:::::*/
@@ -51,14 +51,14 @@ void fb_hGL_SetState(int state)
 {
 	int diffs;
 	
-	diffs = state ^ fb_gl.state;
-	fb_gl.state = state;
+	diffs = state ^ __fb_gl.state;
+	__fb_gl.state = state;
 	
 	if (diffs & FBGL_TEXTURE) {
 		if (state & FBGL_TEXTURE)
-			fb_gl.Enable(GL_TEXTURE_2D);
+			__fb_gl.Enable(GL_TEXTURE_2D);
 		else
-			fb_gl.Disable(GL_TEXTURE_2D);
+			__fb_gl.Disable(GL_TEXTURE_2D);
 	}
 	if (diffs & FBGL_BLEND) {
 		
@@ -76,9 +76,9 @@ GLuint fb_hGL_ImageCreate(PUT_HEADER *image, unsigned int color)
 	h = next_pow2(image->height);
 	data = (unsigned char *)calloc(1, w * h * 4);
 	fb_hPixelSet(data, color, w * h);
-	fb_gl.GenTextures(1, &id);
-	fb_gl.BindTexture(GL_TEXTURE_2D, id);
-	fb_gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+	__fb_gl.GenTextures(1, &id);
+	__fb_gl.BindTexture(GL_TEXTURE_2D, id);
+	__fb_gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
 	free(data);
 	
 	return id;
@@ -87,7 +87,7 @@ GLuint fb_hGL_ImageCreate(PUT_HEADER *image, unsigned int color)
 
 void fb_hGL_ImageDestroy(GLuint id)
 {
-	fb_gl.DeleteTextures(1, &id);
+	__fb_gl.DeleteTextures(1, &id);
 }
 
 
@@ -100,12 +100,12 @@ int fb_hGL_Init(FB_DYLIB lib)
 							   "glTexImage2D" };
 	int res = 0;
 	
-	fb_hMemSet(&fb_gl, 0, sizeof(FB_GL));
+	fb_hMemSet(&__fb_gl, 0, sizeof(FB_GL));
 	
-	if (fb_hDynLoadAlso(lib, gl_funcs, (void **)&fb_gl, sizeof(gl_funcs) / sizeof(const char *)))
+	if (fb_hDynLoadAlso(lib, gl_funcs, (void **)&__fb_gl, sizeof(gl_funcs) / sizeof(const char *)))
 		return -1;
 	
-	fb_gl.extensions = (char *)fb_gl.GetString(GL_EXTENSIONS);
+	__fb_gl.extensions = (char *)__fb_gl.GetString(GL_EXTENSIONS);
 	
 	res |= !fb_hGL_ExtensionSupported("GL_EXT_bgra");
 	
@@ -116,15 +116,15 @@ int fb_hGL_Init(FB_DYLIB lib)
 /*:::::*/
 void fb_hGL_SetupProjection(void)
 {
-	fb_gl.Viewport(0, 0, fb_mode->w, fb_mode->h);
-	fb_gl.MatrixMode(GL_PROJECTION);
-	fb_gl.LoadIdentity();
-	fb_gl.Ortho(-0.325, fb_mode->w - 0.325, fb_mode->h - 0.325, -0.325, -1.0, 1.0);
-	fb_gl.MatrixMode(GL_MODELVIEW);
-	fb_gl.LoadIdentity();
-	fb_gl.ShadeModel(GL_FLAT);
-	fb_gl.Disable(GL_DEPTH_TEST);
-	fb_gl.DepthMask(GL_FALSE);
-	fb_gl.ClearColor(0.0, 0.0, 0.0, 1.0);
-	fb_gl.Clear(GL_COLOR_BUFFER_BIT);
+	__fb_gl.Viewport(0, 0, __fb_gfx->w, __fb_gfx->h);
+	__fb_gl.MatrixMode(GL_PROJECTION);
+	__fb_gl.LoadIdentity();
+	__fb_gl.Ortho(-0.325, __fb_gfx->w - 0.325, __fb_gfx->h - 0.325, -0.325, -1.0, 1.0);
+	__fb_gl.MatrixMode(GL_MODELVIEW);
+	__fb_gl.LoadIdentity();
+	__fb_gl.ShadeModel(GL_FLAT);
+	__fb_gl.Disable(GL_DEPTH_TEST);
+	__fb_gl.DepthMask(GL_FALSE);
+	__fb_gl.ClearColor(0.0, 0.0, 0.0, 1.0);
+	__fb_gl.Clear(GL_COLOR_BUFFER_BIT);
 }

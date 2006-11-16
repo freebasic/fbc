@@ -32,9 +32,9 @@ int fb_GfxMultikey(int scancode)
 {
 	int result = FB_FALSE;
 
-	if ((fb_mode) && (scancode >= 0) && (scancode < 128)) {
+	if ((__fb_gfx) && (scancode >= 0) && (scancode < 128)) {
 		DRIVER_LOCK();
-		result = (fb_mode->key[scancode]? FB_TRUE : FB_FALSE);
+		result = (__fb_gfx->key[scancode]? FB_TRUE : FB_FALSE);
 		DRIVER_UNLOCK();
 	}
 

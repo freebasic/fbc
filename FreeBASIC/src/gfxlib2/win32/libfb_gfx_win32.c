@@ -32,7 +32,7 @@
 
 WIN32DRIVER fb_win32;
 
-const GFXDRIVER *fb_gfx_driver_list[] = {
+const GFXDRIVER *__fb_gfx_drivers_list[] = {
 #ifndef TARGET_CYGWIN
     &fb_gfxDriverDirectDraw,
 #endif
@@ -65,7 +65,7 @@ static void ToggleFullScreen( void )
         fb_win32.init();
     }
     fb_hRestorePalette();
-    fb_hMemSet(fb_mode->dirty, TRUE, fb_win32.h);
+    fb_hMemSet(__fb_gfx->dirty, TRUE, fb_win32.h);
     fb_win32.is_active = TRUE;
     has_focus = FALSE;
 }
@@ -115,9 +115,9 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	{
 		case WM_ACTIVATEAPP:
 			fb_win32.is_active = (int)wParam;
-			fb_hMemSet(fb_mode->key, FALSE, 128);
+			fb_hMemSet(__fb_gfx->key, FALSE, 128);
 			mouse_buttons = 0;
-			fb_hMemSet(fb_mode->dirty, TRUE, fb_win32.h);
+			fb_hMemSet(__fb_gfx->dirty, TRUE, fb_win32.h);
 			if ((has_focus) && (!wParam))
 				PostMessage(fb_win32.wnd, WM_MOUSELEAVE, 0, 0);
 			e.type = wParam ? EVENT_WINDOW_GOT_FOCUS : EVENT_WINDOW_LOST_FOCUS;
@@ -501,7 +501,7 @@ void fb_hWin32SetPalette(int index, int r, int g, int b)
 /*:::::*/
 void fb_hWin32WaitVSync(void)
 {
-	Sleep(1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60));
+	Sleep(1000 / (__fb_gfx->refresh_rate ? __fb_gfx->refresh_rate : 60));
 }
 
 
@@ -549,10 +549,10 @@ void fb_hWin32SetMouse(int x, int y, int cursor)
 /*:::::*/
 void fb_hWin32SetWindowTitle(char *title)
 {
-	if (fb_mode->flags & SCREEN_LOCKED)
+	if (__fb_gfx->flags & SCREEN_LOCKED)
 		LeaveCriticalSection(&update_lock);
 	SetWindowText(fb_win32.wnd, title);
-	if (fb_mode->flags & SCREEN_LOCKED)
+	if (__fb_gfx->flags & SCREEN_LOCKED)
 		EnterCriticalSection(&update_lock);
 }
 

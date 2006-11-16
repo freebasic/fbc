@@ -73,19 +73,19 @@ static void copy_cursor_area(int x, int y, int from_area)
 	unsigned char *s, *d;
 	int w, h, s_pitch, d_pitch;
 	
-	w = (MIN(CURSOR_W, fb_mode->w - x) * fb_mode->bpp);
-	h = MIN(CURSOR_H, fb_mode->h - y);
+	w = (MIN(CURSOR_W, __fb_gfx->w - x) * __fb_gfx->bpp);
+	h = MIN(CURSOR_H, __fb_gfx->h - y);
 	
 	if (from_area) {
 		s = cursor_area;
-		d = fb_mode->framebuffer + (y * fb_mode->pitch) + (x * fb_mode->bpp);
+		d = __fb_gfx->framebuffer + (y * __fb_gfx->pitch) + (x * __fb_gfx->bpp);
 		s_pitch = w;
-		d_pitch = fb_mode->pitch;
+		d_pitch = __fb_gfx->pitch;
 	}
 	else {
-		s = fb_mode->framebuffer + (y * fb_mode->pitch) + (x * fb_mode->bpp);
+		s = __fb_gfx->framebuffer + (y * __fb_gfx->pitch) + (x * __fb_gfx->bpp);
 		d = cursor_area;
-		s_pitch = fb_mode->pitch;
+		s_pitch = __fb_gfx->pitch;
 		d_pitch = w;
 	}
 	
@@ -100,22 +100,22 @@ static void copy_cursor_area(int x, int y, int from_area)
 /*:::::*/
 static int color_distance(int index, int r, int g, int b)
 {
-	return (((fb_mode->device_palette[index] & 0xFF) - r) * ((fb_mode->device_palette[index] & 0xFF) - r)) +
-	       ((((fb_mode->device_palette[index] >> 8) & 0xFF) - g) * (((fb_mode->device_palette[index] >> 8) & 0xFF) - g)) +
-	       ((((fb_mode->device_palette[index] >> 16) & 0xFF) - b) * (((fb_mode->device_palette[index] >> 16) & 0xFF) - b));
+	return (((__fb_gfx->device_palette[index] & 0xFF) - r) * ((__fb_gfx->device_palette[index] & 0xFF) - r)) +
+	       ((((__fb_gfx->device_palette[index] >> 8) & 0xFF) - g) * (((__fb_gfx->device_palette[index] >> 8) & 0xFF) - g)) +
+	       ((((__fb_gfx->device_palette[index] >> 16) & 0xFF) - b) * (((__fb_gfx->device_palette[index] >> 16) & 0xFF) - b));
 }
 
 
 /*:::::*/
 void fb_hSoftCursorInit(void)
 {
-	cursor_area = malloc(CURSOR_W * CURSOR_H * fb_mode->bpp);
+	cursor_area = malloc(CURSOR_W * CURSOR_H * __fb_gfx->bpp);
 
 #if defined(TARGET_DOS)
-	fb_dos_lock_data(cursor_area, CURSOR_W * CURSOR_H * fb_mode->bpp);
+	fb_dos_lock_data(cursor_area, CURSOR_W * CURSOR_H * __fb_gfx->bpp);
 #endif
 
-	if (fb_mode->bpp == 1) {
+	if (__fb_gfx->bpp == 1) {
 		white = 15;
 		black = 0;
 	}
@@ -130,7 +130,7 @@ void fb_hSoftCursorInit(void)
 void fb_hSoftCursorExit(void)
 {
 #if defined(TARGET_DOS)
-	fb_dos_unlock_data(cursor_area, CURSOR_W * CURSOR_H * fb_mode->bpp);
+	fb_dos_unlock_data(cursor_area, CURSOR_W * CURSOR_H * __fb_gfx->bpp);
 #endif
 	free(cursor_area);
 }
@@ -146,9 +146,9 @@ void fb_hSoftCursorPut(int x, int y)
 	
 	copy_cursor_area(x, y, FALSE);
 	
-	w = MIN(CURSOR_W, fb_mode->w - x);
-	h = MIN(CURSOR_H, fb_mode->h - y);
-	dest = fb_mode->framebuffer + (y * fb_mode->pitch) + (x * fb_mode->bpp);
+	w = MIN(CURSOR_W, __fb_gfx->w - x);
+	h = MIN(CURSOR_H, __fb_gfx->h - y);
+	dest = __fb_gfx->framebuffer + (y * __fb_gfx->pitch) + (x * __fb_gfx->bpp);
 	cursor = cursor_data;
 	for (py = 0; py < h; py++) {
 		d = dest;
@@ -158,17 +158,17 @@ void fb_hSoftCursorPut(int x, int y)
 			for (count = 0; (px < w) && ((data & 0x3) == pixel); px++, data >>= 2)
 				count++;
 			if (pixel == 0x3) {
-				if (fb_mode->bpp == 4)
+				if (__fb_gfx->bpp == 4)
 					fb_hPixelSetAlpha4(d, 0x40000000, count);
 			}
 			else {
 				if (pixel)
 					fb_hPixelSet(d, (pixel & 0x1) ? white : black, count);
 			}
-			d += (count * fb_mode->bpp);
+			d += (count * __fb_gfx->bpp);
 		}
-		fb_mode->dirty[y + py] = TRUE;
-		dest += fb_mode->pitch;
+		__fb_gfx->dirty[y + py] = TRUE;
+		dest += __fb_gfx->pitch;
 	}
 }
 
@@ -177,7 +177,7 @@ void fb_hSoftCursorPut(int x, int y)
 void fb_hSoftCursorUnput(int x, int y)
 {
 	copy_cursor_area(x, y, TRUE);
-	fb_hMemSet(fb_mode->dirty + y, TRUE, MIN(CURSOR_H, fb_mode->h - y));
+	fb_hMemSet(__fb_gfx->dirty + y, TRUE, MIN(CURSOR_H, __fb_gfx->h - y));
 }
 
 
@@ -186,7 +186,7 @@ void fb_hSoftCursorPaletteChanged(void)
 {
 	int i, dist, min_wdist = 1000000, min_bdist = 1000000;
 	
-	if (fb_mode->bpp > 1)
+	if (__fb_gfx->bpp > 1)
 		return;
 	for (i = 0; i < 256; i++) {
 		dist = color_distance(i, 255, 255, 255);

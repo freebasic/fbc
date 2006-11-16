@@ -30,33 +30,34 @@
 /*:::::*/
 FBCALL void fb_GfxPset(void *target, float fx, float fy, unsigned int color, int coord_type, int ispreset)
 {
+	FB_GFXCTX *context = fb_hGetContext();
 	int x, y;
 	
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return;
 	
 	if (color == DEFAULT_COLOR) {
 		if (ispreset)
-			color = fb_mode->bg_color;
+			color = context->bg_color;
 		else
-			color = fb_mode->fg_color;
+			color = context->fg_color;
 	}
 	else
 		color = fb_hFixColor(color);
 	
-	fb_hPrepareTarget(target, color);
+	fb_hPrepareTarget(context, target, color);
 	
-	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
+	fb_hFixRelative(context, coord_type, &fx, &fy, NULL, NULL);
 	
-	fb_hTranslateCoord(fx, fy, &x, &y);
+	fb_hTranslateCoord(context, fx, fy, &x, &y);
 	
-	if ((x < fb_mode->view_x) || (y < fb_mode->view_y) ||
-	    (x >= fb_mode->view_x + fb_mode->view_w) || (y >= fb_mode->view_y + fb_mode->view_h))
+	if ((x < context->view_x) || (y < context->view_y) ||
+	    (x >= context->view_x + context->view_w) || (y >= context->view_y + context->view_h))
 		return;
 	
 	DRIVER_LOCK();
-	fb_hPutPixel(x, y, color);
-	if (fb_mode->framebuffer == fb_mode->line[0])
-		fb_mode->dirty[y] = TRUE;
+	context->put_pixel(context, x, y, color);
+	if (__fb_gfx->framebuffer == context->line[0])
+		__fb_gfx->dirty[y] = TRUE;
 	DRIVER_UNLOCK();
 }

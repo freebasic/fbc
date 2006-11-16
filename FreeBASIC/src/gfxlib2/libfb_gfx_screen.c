@@ -66,6 +66,7 @@ static const MODEINFO mode_info[NUM_MODES] = {
  {1280,1024, 8, 1, &fb_palette_256, &fb_font_8x16, 160, 64 },		/* 21: 1280x1024 */
 };
 
+static int  screen_id = 1;
 static char window_title_buff[WINDOW_TITLE_SIZE] = { 0 };
 static int  exit_proc_set = FALSE;
 
@@ -74,46 +75,46 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 
 static void release_gfx_mem(void)
 {
-	if (fb_mode) {
-		if ((fb_mode->driver) && (fb_mode->driver->exit))
-            fb_mode->driver->exit();
-        fb_hResetCharCells(FALSE);
-        if (fb_mode->page) {
+	FB_GFXCTX *context = fb_hGetContext();
+	
+	if (__fb_gfx) {
+		if ((__fb_gfx->driver) && (__fb_gfx->driver->exit))
+            __fb_gfx->driver->exit();
+        fb_hResetCharCells(context, FALSE);
+        if (__fb_gfx->page) {
             int i;
-            for (i = 0; i < fb_mode->num_pages; i++) {
-                free(fb_mode->page[i]);
+            for (i = 0; i < __fb_gfx->num_pages; i++) {
+                free(__fb_gfx->page[i]);
             }
-            free(fb_mode->page);
+            free(__fb_gfx->page);
 		}
-		if (fb_mode->line)
-			free(fb_mode->line);
-		if (fb_mode->device_palette)
-			free(fb_mode->device_palette);
-		if (fb_mode->palette)
-			free(fb_mode->palette);
-		if (fb_mode->color_association)
-			free(fb_mode->color_association);
-		if (fb_mode->dirty)
-			free(fb_mode->dirty);
-		if (fb_mode->key)
-			free(fb_mode->key);
-		if (fb_mode->event_queue) {
-			free(fb_mode->event_queue);
-			fb_MutexDestroy(fb_mode->event_mutex);
+		if (__fb_gfx->device_palette)
+			free(__fb_gfx->device_palette);
+		if (__fb_gfx->palette)
+			free(__fb_gfx->palette);
+		if (__fb_gfx->color_association)
+			free(__fb_gfx->color_association);
+		if (__fb_gfx->dirty)
+			free(__fb_gfx->dirty);
+		if (__fb_gfx->key)
+			free(__fb_gfx->key);
+		if (__fb_gfx->event_queue) {
+			free(__fb_gfx->event_queue);
+			fb_MutexDestroy(__fb_gfx->event_mutex);
 		}
-		free(fb_mode);
-        fb_mode = NULL;
+		free(__fb_gfx);
+        __fb_gfx = NULL;
 	}
-    if (fb_color_conv_16to32) {
-        free(fb_color_conv_16to32);
-        fb_color_conv_16to32 = NULL;
+    if (__fb_color_conv_16to32) {
+        free(__fb_color_conv_16to32);
+        __fb_color_conv_16to32 = NULL;
     }
 }
 
 /*:::::*/
 static void exit_proc(void)
 {
-    if( fb_mode )
+    if( __fb_gfx )
         set_mode(NULL, 0, 0, 0, 0, SCREEN_EXIT);
 }
 
@@ -123,36 +124,36 @@ void fb_GfxViewUpdate( void )
 {
 }
 
-void fb_hResetCharCells(int do_alloc)
+void fb_hResetCharCells(FB_GFXCTX *context, int do_alloc)
 {
     int i;
-    if( fb_mode!=NULL ) {
+    if( __fb_gfx!=NULL ) {
         /* Free the previously allocated character cells */
-        if( fb_mode->con_pages!=NULL ) {
-            for (i = 0; i < fb_mode->num_pages; i++) {
-                free(fb_mode->con_pages[i]);
+        if( __fb_gfx->con_pages!=NULL ) {
+            for (i = 0; i < __fb_gfx->num_pages; i++) {
+                free(__fb_gfx->con_pages[i]);
             }
-            free(fb_mode->con_pages);
+            free(__fb_gfx->con_pages);
         }
 
         if( do_alloc ) {
-            size_t text_size = fb_mode->text_w * fb_mode->text_h;
+            size_t text_size = __fb_gfx->text_w * __fb_gfx->text_h;
 
             /* Allocate memory for all character cells */
-            fb_mode->con_pages = (GFX_CHAR_CELL **)malloc(sizeof(GFX_CHAR_CELL *) * fb_mode->num_pages);
-            for (i = 0; i < fb_mode->num_pages; i++) {
-                fb_mode->con_pages[i] =
+            __fb_gfx->con_pages = (GFX_CHAR_CELL **)malloc(sizeof(GFX_CHAR_CELL *) * __fb_gfx->num_pages);
+            for (i = 0; i < __fb_gfx->num_pages; i++) {
+                __fb_gfx->con_pages[i] =
                     (GFX_CHAR_CELL *)calloc(1, sizeof(GFX_CHAR_CELL) * text_size);
             }
 
             /* Reset all character cells with default values */
             fb_hClearCharCells( 0, 0,
-                                fb_mode->text_w, fb_mode->text_h,
-                                fb_mode->work_page,
+                                __fb_gfx->text_w, __fb_gfx->text_h,
+                                context->work_page,
                                 32,
-                                fb_mode->fg_color, fb_mode->bg_color );
+                                context->fg_color, context->bg_color );
         } else {
-            fb_mode->con_pages = NULL;
+            __fb_gfx->con_pages = NULL;
         }
     }
 }
@@ -163,9 +164,9 @@ void fb_hClearCharCells( int x1, int y1, int x2, int y2,
 {
     GFX_CHAR_CELL fill_cell = { ch, fg, bg };
     int clear_w = x2 - x1;
-    int text_w = fb_mode->text_w;
+    int text_w = __fb_gfx->text_w;
     int move_w = text_w - clear_w;
-    GFX_CHAR_CELL *cell_line = fb_mode->con_pages[page]
+    GFX_CHAR_CELL *cell_line = __fb_gfx->con_pages[page]
         + y1 * text_w + x1;
     int y;
     for( y=y1; y!=y2; ++y ) {
@@ -237,55 +238,54 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         __fb_ctx.hooks.readxyproc = fb_GfxReadXY;
         __fb_ctx.hooks.sleepproc = fb_GfxSleep;
         __fb_ctx.hooks.isredirproc = fb_GfxIsRedir;
-        fb_mode = (MODE *)calloc(1, sizeof(MODE));
+        __fb_gfx = (FBGFX *)calloc(1, sizeof(FBGFX));
         break;
     }
 
-    if (fb_mode) {
-        fb_mode->mode_num = mode;
-        fb_mode->w = info->w;
-        fb_mode->h = info->h;
-        fb_mode->depth = info->depth;
+    if (__fb_gfx) {
+    	__fb_gfx->id = screen_id++;
+        __fb_gfx->mode_num = mode;
+        __fb_gfx->w = info->w;
+        __fb_gfx->h = info->h;
+        __fb_gfx->depth = info->depth;
         if ((mode > 13) && ((depth == 8) || (depth == 15) || (depth == 16) || (depth == 24) || (depth == 32)))
-            fb_mode->depth = depth;
+            __fb_gfx->depth = depth;
         if ((flags >= 0) && (flags & DRIVER_OPENGL))
-            fb_mode->depth = MAX(16, fb_mode->depth);
-        fb_mode->default_palette = info->palette;
-        fb_mode->scanline_size = info->scanline_size;
-        fb_mode->font = (FONT *)info->font;
+            __fb_gfx->depth = MAX(16, __fb_gfx->depth);
+        __fb_gfx->default_palette = info->palette;
+        __fb_gfx->scanline_size = info->scanline_size;
+        __fb_gfx->font = (FONT *)info->font;
 
-        switch (fb_mode->depth) {
+        switch (__fb_gfx->depth) {
         case 15:
-        case 16:	fb_mode->color_mask = 0xFFFF; fb_mode->depth = 16; break;
+        case 16:	__fb_gfx->color_mask = 0xFFFF; __fb_gfx->depth = 16; break;
         case 24:
-        case 32:	fb_mode->color_mask = 0xFFFFFFFF; fb_mode->depth = 32; break;
-        default:	fb_mode->color_mask = (1 << fb_mode->depth) - 1;
+        case 32:	__fb_gfx->color_mask = 0xFFFFFFFF; __fb_gfx->depth = 32; break;
+        default:	__fb_gfx->color_mask = (1 << __fb_gfx->depth) - 1;
         }
 
-        fb_mode->bpp = BYTES_PER_PIXEL(fb_mode->depth);
-        fb_mode->pitch = fb_mode->target_pitch = fb_mode->w * fb_mode->bpp;
-        fb_mode->page = (unsigned char **)malloc(sizeof(unsigned char *) * num_pages);
+        __fb_gfx->bpp = BYTES_PER_PIXEL(__fb_gfx->depth);
+        __fb_gfx->pitch = __fb_gfx->w * __fb_gfx->bpp;
+        __fb_gfx->page = (unsigned char **)malloc(sizeof(unsigned char *) * num_pages);
         for (i = 0; i < num_pages; i++) {
-            fb_mode->page[i] =
-                (unsigned char *)calloc(1, (fb_mode->pitch * fb_mode->h));
+            __fb_gfx->page[i] =
+                (unsigned char *)calloc(1, (__fb_gfx->pitch * __fb_gfx->h));
         }
-        fb_mode->num_pages = num_pages;
-        fb_mode->framebuffer = fb_mode->page[0];
-        fb_mode->line = (unsigned char **)malloc(fb_mode->h * sizeof(unsigned char *));
-        for (i = 0; i < fb_mode->h; i++)
-            fb_mode->line[i] = fb_mode->framebuffer + (i * fb_mode->pitch);
+        __fb_gfx->num_pages = num_pages;
+        __fb_gfx->framebuffer = __fb_gfx->page[0];
+        
         /* dirty lines array may be bigger than needed; this is to please the
          gfx driver which is not aware of the scanline size */
-        fb_mode->dirty = (char *)calloc(1, fb_mode->h * fb_mode->scanline_size);
-        fb_mode->device_palette = (unsigned int *)calloc(1, sizeof(int) * 256);
-        fb_mode->palette = (unsigned int *)calloc(1, sizeof(int) * 256);
-        fb_mode->color_association = (unsigned char *)malloc(16);
-        fb_mode->key = (char *)calloc(1, 128);
-        fb_mode->event_queue = (EVENT *)malloc(sizeof(EVENT) * MAX_EVENTS);
-        fb_mode->event_mutex = fb_MutexCreate();
-        fb_color_conv_16to32 = (unsigned int *)malloc(sizeof(int) * 512);
+        __fb_gfx->dirty = (char *)calloc(1, __fb_gfx->h * __fb_gfx->scanline_size);
+        __fb_gfx->device_palette = (unsigned int *)calloc(1, sizeof(int) * 256);
+        __fb_gfx->palette = (unsigned int *)calloc(1, sizeof(int) * 256);
+        __fb_gfx->color_association = (unsigned char *)malloc(16);
+        __fb_gfx->key = (char *)calloc(1, 128);
+        __fb_gfx->event_queue = (EVENT *)malloc(sizeof(EVENT) * MAX_EVENTS);
+        __fb_gfx->event_mutex = fb_MutexCreate();
+        __fb_color_conv_16to32 = (unsigned int *)malloc(sizeof(int) * 512);
         if ((flags != DRIVER_NULL) && (flags & DRIVER_ALPHA_PRIMITIVES))
-        	fb_mode->flags |= ALPHA_PRIMITIVES;
+        	__fb_gfx->flags |= ALPHA_PRIMITIVES;
 
         fb_hSetupFuncs();
         fb_hSetupData();
@@ -299,14 +299,14 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 
         driver_name = getenv("FBGFX");
         if ((flags == DRIVER_NULL) || ((driver_name) && (!strcasecmp(driver_name, "null"))))
-            driver = &fb_gfxDriverNull;
+            driver = &__fb_gfxDriverNull;
         else {
             for (try_count = (driver_name ? 4 : 2); try_count; try_count--) {
-                for (i = 0; fb_gfx_driver_list[i >> 1]; i++) {
-                    driver = fb_gfx_driver_list[i >> 1];
+                for (i = 0; __fb_gfx_drivers_list[i >> 1]; i++) {
+                    driver = __fb_gfx_drivers_list[i >> 1];
                     if ((driver_name) && !(try_count & 0x1) && (strcasecmp(driver_name, driver->name)))
                         continue;
-                    if (!driver->init(__fb_window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, fb_mode->depth, (i & 0x1) ? 0 : refresh_rate, flags))
+                    if (!driver->init(__fb_window_title, __fb_gfx->w, __fb_gfx->h * __fb_gfx->scanline_size, __fb_gfx->depth, (i & 0x1) ? 0 : refresh_rate, flags))
                         break;
                     driver->exit();
                     driver = NULL;
@@ -326,21 +326,14 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
             exit_proc();
             return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
         }
-        fb_mode->driver = driver;
+        __fb_gfx->driver = driver;
 
         fb_GfxPalette(-1, 0, 0, 0);
 
-        if ( fb_mode->depth <= 8 && fb_mode->depth>4 )
-            fb_mode->fg_color = 15;
-        else
-            fb_mode->fg_color = fb_mode->color_mask;
+        __fb_gfx->text_w = info->text_w;
+        __fb_gfx->text_h = info->text_h;
 
-        fb_mode->view_w = fb_mode->w;
-        fb_mode->view_h = fb_mode->max_h = fb_mode->h;
-        fb_mode->text_w = info->text_w;
-        fb_mode->text_h = info->text_h;
-
-        fb_hResetCharCells(TRUE);
+        fb_hResetCharCells(fb_hGetContext(), TRUE);
 
         if( !exit_proc_set ) {
             exit_proc_set = TRUE;
@@ -357,7 +350,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
          * on DOS, the cursor position will automatically be reset when the screen
          * mode changes and not changing the console cursor position on Win32
          * and Linux seem to be more "natural". */
-        fb_ConsoleViewEx( 0, 0, fb_mode!=NULL );
+        fb_ConsoleViewEx( 0, 0, __fb_gfx!=NULL );
     }
 
     return FB_RTERROR_OK;
@@ -379,8 +372,9 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refre
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
     res = set_mode(info, mode, depth, num_pages, refresh_rate, flags);
-    if( res==FB_RTERROR_OK )
+    if (res == FB_RTERROR_OK)
         FB_HANDLE_SCREEN->line_length = 0;
+    
     return res;
 }
 
@@ -405,8 +399,9 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, in
 	info.text_h = h / info.font->h;
 
     res = set_mode((const MODEINFO *)&info, -1, depth, num_pages, refresh_rate, flags);
-    if( res==FB_RTERROR_OK )
+    if (res==FB_RTERROR_OK)
         FB_HANDLE_SCREEN->line_length = 0;
+    
     return res;
 }
 
@@ -418,8 +413,8 @@ FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 	fb_hMemCpy(window_title_buff, title->data, MIN(WINDOW_TITLE_SIZE - 1, FB_STRSIZE(title)));
 	__fb_window_title = window_title_buff;
 
-	if ((fb_mode) && (fb_mode->driver->set_window_title))
-		fb_mode->driver->set_window_title(__fb_window_title);
+	if ((__fb_gfx) && (__fb_gfx->driver->set_window_title))
+		__fb_gfx->driver->set_window_title(__fb_window_title);
 
 	/* del if temp */
 	fb_hStrDelTemp( title );

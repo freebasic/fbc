@@ -37,9 +37,9 @@ int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons)
 		z = &temp_z;
 	if (!buttons)
 		buttons = &temp_buttons;
-	if ((fb_mode) && (fb_mode->driver->get_mouse)) {
+	if ((__fb_gfx) && (__fb_gfx->driver->get_mouse)) {
 		DRIVER_LOCK();
-		failure = fb_mode->driver->get_mouse(x, y, z, buttons);
+		failure = __fb_gfx->driver->get_mouse(x, y, z, buttons);
 		DRIVER_UNLOCK();
 	}
 	if (failure) {

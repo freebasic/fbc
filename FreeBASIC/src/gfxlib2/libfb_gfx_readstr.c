@@ -30,10 +30,10 @@
 /*:::::*/
 static void move_back(void)
 {
-	fb_mode->cursor_x--;
-	if (fb_mode->cursor_x < 0) {
-		fb_mode->cursor_x = fb_mode->text_w - 1;
-		fb_mode->cursor_y--;
+	__fb_gfx->cursor_x--;
+	if (__fb_gfx->cursor_x < 0) {
+		__fb_gfx->cursor_x = __fb_gfx->text_w - 1;
+		__fb_gfx->cursor_y--;
 	}
 }
 
@@ -48,7 +48,7 @@ char *fb_GfxReadStr(char *buffer, int maxlen)
 	char character[2] = { 0, '\0' };
 	char *cursor = cursor_normal;
 	
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return NULL;
 	
 	do {
@@ -66,8 +66,8 @@ char *fb_GfxReadStr(char *buffer, int maxlen)
 				if (len > 0) {
 					cursor = cursor_backspace;
 					move_back();
-					if (fb_mode->cursor_y < 0) {
-						fb_mode->cursor_y = fb_mode->cursor_x = 0;
+					if (__fb_gfx->cursor_y < 0) {
+						__fb_gfx->cursor_y = __fb_gfx->cursor_x = 0;
 						cursor = cursor_normal;
 					}
 					len--;

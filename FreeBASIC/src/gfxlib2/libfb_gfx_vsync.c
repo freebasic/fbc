@@ -29,10 +29,10 @@
 
 FBCALL int fb_GfxWaitVSync(void)
 {
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	if (fb_mode->driver->wait_vsync)
-		fb_mode->driver->wait_vsync();
+	if (__fb_gfx->driver->wait_vsync)
+		__fb_gfx->driver->wait_vsync();
 	
 	return FB_RTERROR_OK;
 }

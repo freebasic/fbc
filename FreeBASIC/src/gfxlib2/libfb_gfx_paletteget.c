@@ -31,11 +31,11 @@ FBCALL void fb_GfxPaletteGet(int index, int *r, int *g, int *b)
 {
 	unsigned int color;
 	
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return;
 	
-	index &= (fb_mode->default_palette->colors - 1);
-	color = fb_mode->device_palette[index];
+	index &= (__fb_gfx->default_palette->colors - 1);
+	color = __fb_gfx->device_palette[index];
 	if (!g) {
 		*r = (color & 0xFCFCFC) >> 2;
 	}
@@ -51,9 +51,9 @@ FBCALL void fb_GfxPaletteGetUsing(int *data)
 {
 	int i;
 	
-	if (!fb_mode)
+	if (!__fb_gfx)
 		return;
 	
-	for (i = 0; i < fb_mode->default_palette->colors; i++)
-		data[i] = (fb_mode->device_palette[i] & 0xFCFCFC) >> 2;
+	for (i = 0; i < __fb_gfx->default_palette->colors; i++)
+		data[i] = (__fb_gfx->device_palette[i] & 0xFCFCFC) >> 2;
 }

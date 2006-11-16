@@ -123,8 +123,8 @@ static void *driver_thread(void *arg)
 							e.dy = -(unsigned int)buffer[2] + ((int)(buffer[0] & 0x20) << 3);
 							mouse_x += e.dx;
 							mouse_y += e.dy;
-							e.x = mouse_x = MID(0, mouse_x, fb_mode->w - 1);
-							e.y = mouse_y = MID(0, mouse_y, fb_mode->h - 1);
+							e.x = mouse_x = MID(0, mouse_x, __fb_gfx->w - 1);
+							e.y = mouse_y = MID(0, mouse_y, __fb_gfx->h - 1);
 							if (e.dx || e.dy) {
 								e.type = EVENT_MOUSE_MOVE;
 								fb_hPostEvent(&e);
@@ -182,7 +182,7 @@ static void *driver_thread(void *arg)
 			if ((mouse_fd >= 0) && (mouse_shown))
 				fb_hSoftCursorPut(mouse_x, mouse_y);
 			blitter(framebuffer + framebuffer_offset, device_info.line_length);
-			fb_hMemSet(fb_mode->dirty, FALSE, fb_linux.h);
+			fb_hMemSet(__fb_gfx->dirty, FALSE, fb_linux.h);
 			if ((mouse_fd >= 0) && (mouse_shown))
 				fb_hSoftCursorUnput(mouse_x, mouse_y);
 		}
@@ -222,7 +222,7 @@ static void driver_restore_screen(void)
 	is_active = TRUE;
 	is_palette_changed = TRUE;
 	fb_hMemSet(framebuffer, 0, device_info.smem_len);
-	fb_hMemSet(fb_mode->dirty, TRUE, fb_linux.h);
+	fb_hMemSet(__fb_gfx->dirty, TRUE, fb_linux.h);
 	pthread_mutex_unlock(&mutex);
 	e.type = EVENT_WINDOW_GOT_FOCUS;
 	fb_hPostEvent(&e);
@@ -499,9 +499,9 @@ static int driver_get_mouse(int *x, int *y, int *z, int *buttons)
 /*:::::*/
 static void driver_set_mouse(int x, int y, int cursor)
 {
-	if ((x >= 0) && (x < fb_mode->w))
+	if ((x >= 0) && (x < __fb_gfx->w))
 		mouse_x = x;
-	if ((y >= 0) && (y < fb_mode->h))
+	if ((y >= 0) && (y < __fb_gfx->h))
 		mouse_y = y;
 	mouse_shown = (cursor != 0);
 }

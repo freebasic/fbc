@@ -55,18 +55,18 @@ void fb_hBlit_code_start(void) { }
 /*:::::*/
 static void fb_hBlitCopy(unsigned char *dest, int pitch)
 {
-	unsigned char *src = fb_mode->framebuffer;
-	char *dirty = fb_mode->dirty;
+	unsigned char *src = __fb_gfx->framebuffer;
+	char *dirty = __fb_gfx->dirty;
 	int y, z = 0;
 
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty)
-			fb_hMemCpy(dest, src, fb_mode->pitch);
+			fb_hMemCpy(dest, src, __fb_gfx->pitch);
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -76,17 +76,17 @@ static void fb_hBlitCopy(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to15RGB(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->device_palette;
-	unsigned char *s, *src = fb_mode->framebuffer;
+	unsigned int *pal = __fb_gfx->device_palette;
+	unsigned char *s, *src = __fb_gfx->framebuffer;
 	unsigned int c1, c2, *d;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
+			for (x = __fb_gfx->w >> 1; x; x--) {
 				c1 = pal[*s];
 				c2 = pal[*(s + 1)];
 				*d = ((c1 >> 3) & 0x001F) | ((c1 >> 6) & 0x03E0) | ((c1 >> 6) & 0x7C00) |
@@ -94,16 +94,16 @@ static void fb_hBlit8to15RGB(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				c1 = pal[*s];
 				*(unsigned short *)d = ((c1 >> 3) & 0x001F) | ((c1 >> 6) & 0x03E0) | ((c1 >> 6) & 0x7C00);
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -113,17 +113,17 @@ static void fb_hBlit8to15RGB(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to15BGR(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->device_palette;
-	unsigned char *s, *src = fb_mode->framebuffer;
+	unsigned int *pal = __fb_gfx->device_palette;
+	unsigned char *s, *src = __fb_gfx->framebuffer;
 	unsigned int c1, c2, *d;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
+			for (x = __fb_gfx->w >> 1; x; x--) {
 				c1 = pal[*s];
 				c2 = pal[*(s + 1)];
 				*d = ((c1 << 7) & 0x7C00) | ((c1 >> 6) & 0x03E0) | ((c1 >> 19) & 0x001F) |
@@ -131,16 +131,16 @@ static void fb_hBlit8to15BGR(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				c1 = pal[*s];
 				*(unsigned short *)d = ((c1 << 7) & 0x7C00) | ((c1 >> 6) & 0x03E0) | ((c1 >> 19) & 0x001F);
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -150,17 +150,17 @@ static void fb_hBlit8to15BGR(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to16RGB(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->device_palette;
-	unsigned char *s, *src = fb_mode->framebuffer;
+	unsigned int *pal = __fb_gfx->device_palette;
+	unsigned char *s, *src = __fb_gfx->framebuffer;
 	unsigned int c1, c2, *d;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
+			for (x = __fb_gfx->w >> 1; x; x--) {
 				c1 = pal[*s];
 				c2 = pal[*(s + 1)];
 				*d = ((c1 >> 3) & 0x001F) | ((c1 >> 5) & 0x07E0) | ((c1 >> 5) & 0xF800) |
@@ -168,16 +168,16 @@ static void fb_hBlit8to16RGB(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				c1 = pal[*s];
 				*(unsigned short *)d = ((c1 >> 3) & 0x001F) | ((c1 >> 5) & 0x07E0) | ((c1 >> 5) & 0xF800);
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -187,17 +187,17 @@ static void fb_hBlit8to16RGB(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to16BGR(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->device_palette;
-	unsigned char *s, *src = fb_mode->framebuffer;
+	unsigned int *pal = __fb_gfx->device_palette;
+	unsigned char *s, *src = __fb_gfx->framebuffer;
 	unsigned int c1, c2, *d;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
+			for (x = __fb_gfx->w >> 1; x; x--) {
 				c1 = pal[*s];
 				c2 = pal[*(s + 1)];
 				*d = ((c1 << 8) & 0xF800) | ((c1 >> 5) & 0x07E0) | ((c1 >> 19) & 0x001F) |
@@ -205,16 +205,16 @@ static void fb_hBlit8to16BGR(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				c1 = pal[*s];
 				*(unsigned short *)d = ((c1 << 8) & 0xF800) | ((c1 >> 5) & 0x07E0) | ((c1 >> 19) & 0x001F);
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -224,18 +224,18 @@ static void fb_hBlit8to16BGR(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to24RGB(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->device_palette;
-	unsigned char *s, *src = fb_mode->framebuffer;
+	unsigned int *pal = __fb_gfx->device_palette;
+	unsigned char *s, *src = __fb_gfx->framebuffer;
 	unsigned int c;
 	unsigned char *d;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = src;
 			d = (unsigned char *)dest;
-			for (x = fb_mode->w; x; x--) {
+			for (x = __fb_gfx->w; x; x--) {
 				c = pal[*s];
 				d[0] = (c >> 16) & 0xFF;
 				d[1] = (c >> 8) & 0xFF;
@@ -245,10 +245,10 @@ static void fb_hBlit8to24RGB(unsigned char *dest, int pitch)
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -258,18 +258,18 @@ static void fb_hBlit8to24RGB(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to24BGR(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->device_palette;
-	unsigned char *s, *src = fb_mode->framebuffer;
+	unsigned int *pal = __fb_gfx->device_palette;
+	unsigned char *s, *src = __fb_gfx->framebuffer;
 	unsigned int c;
 	unsigned char *d;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = src;
 			d = (unsigned char *)dest;
-			for (x = fb_mode->w; x; x--) {
+			for (x = __fb_gfx->w; x; x--) {
 				c = pal[*s];
 				d[0] = c & 0xFF;
 				d[1] = (c >> 8) & 0xFF;
@@ -279,10 +279,10 @@ static void fb_hBlit8to24BGR(unsigned char *dest, int pitch)
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -292,27 +292,27 @@ static void fb_hBlit8to24BGR(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to32RGB(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->device_palette;
+	unsigned int *pal = __fb_gfx->device_palette;
 	unsigned int *d;
-	unsigned char *s, *src = fb_mode->framebuffer;
-	char *dirty = fb_mode->dirty;
+	unsigned char *s, *src = __fb_gfx->framebuffer;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w; x; x--) {
+			for (x = __fb_gfx->w; x; x--) {
 				*d = pal[*s];
 				s++;
 				d++;
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -322,18 +322,18 @@ static void fb_hBlit8to32RGB(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to32BGR(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->device_palette;
+	unsigned int *pal = __fb_gfx->device_palette;
 	unsigned int *d;
-	unsigned char *s, *src = fb_mode->framebuffer;
+	unsigned char *s, *src = __fb_gfx->framebuffer;
 	unsigned int c;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w; x; x--) {
+			for (x = __fb_gfx->w; x; x--) {
 				c = pal[*s];
 				*d = ((c << 16) & 0xFF0000) | (c & 0xFF00) | (c >> 16);
 				s++;
@@ -341,10 +341,10 @@ static void fb_hBlit8to32BGR(unsigned char *dest, int pitch)
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -356,16 +356,16 @@ static void fb_hBlit16to15RGB(unsigned char *dest, int pitch)
 {
 	unsigned int *d;
 	unsigned short *s;
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int c1, c2;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned short *)src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
+			for (x = __fb_gfx->w >> 1; x; x--) {
 				c1 = *s;
 				c2 = *(s + 1);
 				*d = ((c1 << 10) & 0x7C00) | ((c1 >> 1) & 0x03E0) | (c1 >> 11) |
@@ -373,16 +373,16 @@ static void fb_hBlit16to15RGB(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				c1 = *s;
 				*(unsigned short *)d = ((c1 << 10) & 0x7C00) | ((c1 >> 1) & 0x03E0) | (c1 >> 11);
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -394,16 +394,16 @@ static void fb_hBlit16to15BGR(unsigned char *dest, int pitch)
 {
 	unsigned int *d;
 	unsigned short *s;
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int c1, c2;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned short *)src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
+			for (x = __fb_gfx->w >> 1; x; x--) {
 				c1 = *s;
 				c2 = *(s + 1);
 				*d = (c1 & 0x001F) | ((c1 >> 1) & 0x7FE0) |
@@ -411,16 +411,16 @@ static void fb_hBlit16to15BGR(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				c1 = *s;
 				*(unsigned short *)d = (c1 & 0x001F) | ((c1 >> 1) & 0x7FE0);
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -432,16 +432,16 @@ static void fb_hBlit16to16RGB(unsigned char *dest, int pitch)
 {
 	unsigned int *d;
 	unsigned short *s;
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int c1, c2;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned short *)src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
+			for (x = __fb_gfx->w >> 1; x; x--) {
 				c1 = *s;
 				c2 = *(s + 1);
 				*d = ((c1 << 11) & 0xF800) | (c1 & 0x07E0) | (c1 >> 11) |
@@ -449,16 +449,16 @@ static void fb_hBlit16to16RGB(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				c1 = *s;
 				*(unsigned short *)d = ((c1 << 11) & 0xF800) | (c1 & 0x07E0) | (c1 >> 11);
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -468,33 +468,33 @@ static void fb_hBlit16to16RGB(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit16to24(unsigned char *dest, int pitch)
 {
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int *s, *d, c1, c2, c3, temp;
 	unsigned short *ss;
 	unsigned char *dc;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned int *)src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 2; x; x--) {
-				c1 = fb_color_conv_16to32[*s & 0xFF] | fb_color_conv_16to32[256 + ((*s >> 8) & 0xFF)];
-				temp = fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[256 + ((*s >> 24) & 0xFF)];
+			for (x = __fb_gfx->w >> 2; x; x--) {
+				c1 = __fb_color_conv_16to32[*s & 0xFF] | __fb_color_conv_16to32[256 + ((*s >> 8) & 0xFF)];
+				temp = __fb_color_conv_16to32[(*s >> 16) & 0xFF] | __fb_color_conv_16to32[256 + ((*s >> 24) & 0xFF)];
 				*d++ = c1 | (temp << 24);
 				c2 = temp >> 8;
 				s++;
-				temp = fb_color_conv_16to32[*s & 0xFF] | fb_color_conv_16to32[256 + ((*s >> 8) & 0xFF)];
+				temp = __fb_color_conv_16to32[*s & 0xFF] | __fb_color_conv_16to32[256 + ((*s >> 8) & 0xFF)];
 				*d++ = c2 | (temp << 16);
 				c3 = temp >> 16;
-				*d++ = c3 | ((fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[256 + ((*s >> 24) & 0xFF)]) << 8);
+				*d++ = c3 | ((__fb_color_conv_16to32[(*s >> 16) & 0xFF] | __fb_color_conv_16to32[256 + ((*s >> 24) & 0xFF)]) << 8);
 				s++;
 			}
 			dc = (unsigned char *)d;
-			if (fb_mode->w & 0x2) {
-				c1 = fb_color_conv_16to32[*s & 0xFF] | fb_color_conv_16to32[256 + ((*s >> 8) & 0xFF)];
-				c2 = fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[256 + ((*s >> 24) & 0xFF)];
+			if (__fb_gfx->w & 0x2) {
+				c1 = __fb_color_conv_16to32[*s & 0xFF] | __fb_color_conv_16to32[256 + ((*s >> 8) & 0xFF)];
+				c2 = __fb_color_conv_16to32[(*s >> 16) & 0xFF] | __fb_color_conv_16to32[256 + ((*s >> 24) & 0xFF)];
 				dc[0] = (c1 >> 16) & 0xFF;
 				dc[1] = (c1 >> 8) & 0xFF;
 				dc[2] = c1 & 0xFF;
@@ -504,19 +504,19 @@ static void fb_hBlit16to24(unsigned char *dest, int pitch)
 				dc += 6;
 				s++;
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				ss = (unsigned short *)s;
-				c1 = fb_color_conv_16to32[*ss & 0xFF] | fb_color_conv_16to32[256 + ((*ss >> 8) & 0xFF)];
+				c1 = __fb_color_conv_16to32[*ss & 0xFF] | __fb_color_conv_16to32[256 + ((*ss >> 8) & 0xFF)];
 				dc[0] = (c1 >> 16) & 0xFF;
 				dc[1] = (c1 >> 8) & 0xFF;
 				dc[2] = c1 & 0xFF;
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -527,30 +527,30 @@ static void fb_hBlit16to24(unsigned char *dest, int pitch)
 static void fb_hBlit16to32(unsigned char *dest, int pitch)
 {
 	unsigned int *d, *s;
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int c;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned int *)src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
+			for (x = __fb_gfx->w >> 1; x; x--) {
 				c = *s++;
-				*d++ = fb_color_conv_16to32[c & 0xFF] | fb_color_conv_16to32[256 + ((c >> 8) & 0xFF)];
-				*d++ = fb_color_conv_16to32[(c >> 16) & 0xFF] | fb_color_conv_16to32[256 + ((c >> 24) & 0xFF)];
+				*d++ = __fb_color_conv_16to32[c & 0xFF] | __fb_color_conv_16to32[256 + ((c >> 8) & 0xFF)];
+				*d++ = __fb_color_conv_16to32[(c >> 16) & 0xFF] | __fb_color_conv_16to32[256 + ((c >> 24) & 0xFF)];
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				c = *(unsigned short *)s;
-				*d = fb_color_conv_16to32[c & 0xFF] | fb_color_conv_16to32[256 + ((c >> 8) & 0xFF)];
+				*d = __fb_color_conv_16to32[c & 0xFF] | __fb_color_conv_16to32[256 + ((c >> 8) & 0xFF)];
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -561,16 +561,16 @@ static void fb_hBlit16to32(unsigned char *dest, int pitch)
 static void fb_hBlit32to15RGB(unsigned char *dest, int pitch)
 {
 	unsigned int *d, *s;
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int c1, c2;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned int *)src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
+			for (x = __fb_gfx->w >> 1; x; x--) {
 				c1 = *s;
 				c2 = *(s + 1);
 				*d = (c1 >> 19) | ((c1 >> 6) & 0x03E0) | ((c1 << 7) & 0x7C00) |
@@ -578,16 +578,16 @@ static void fb_hBlit32to15RGB(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				c1 = *s;
 				*(unsigned short *)d = (c1 >> 19) | ((c1 >> 6) & 0x03E0) | ((c1 << 7) & 0x7C00);
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -598,16 +598,16 @@ static void fb_hBlit32to15RGB(unsigned char *dest, int pitch)
 static void fb_hBlit32to15BGR(unsigned char *dest, int pitch)
 {
 	unsigned int *d, *s;
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int c1, c2;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned int *)src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
+			for (x = __fb_gfx->w >> 1; x; x--) {
 				c1 = *s;
 				c2 = *(s + 1);
 				*d = ((c1 >> 3) & 0x001F) | ((c1 >> 6) & 0x03E0) | ((c1 >> 9) & 0x7C00) |
@@ -615,16 +615,16 @@ static void fb_hBlit32to15BGR(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				c1 = *s;
 				*(unsigned short *)d = ((c1 >> 3) & 0x001F) | ((c1 >> 6) & 0x03E0) | ((c1 >> 9) & 0x7C00);
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -635,16 +635,16 @@ static void fb_hBlit32to15BGR(unsigned char *dest, int pitch)
 static void fb_hBlit32to16RGB(unsigned char *dest, int pitch)
 {
 	unsigned int *d, *s;
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int c1, c2;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned int *)src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
+			for (x = __fb_gfx->w >> 1; x; x--) {
 				c1 = *s;
 				c2 = *(s + 1);
 				*d = (c1 >> 19) | ((c1 >> 5) & 0x07E0) | ((c1 << 8) & 0xF800) |
@@ -652,16 +652,16 @@ static void fb_hBlit32to16RGB(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				c1 = *s;
 				*(unsigned short *)d = (c1 >> 19) | ((c1 >> 5) & 0x07E0) | ((c1 << 8) & 0xF800);
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -672,16 +672,16 @@ static void fb_hBlit32to16RGB(unsigned char *dest, int pitch)
 static void fb_hBlit32to16BGR(unsigned char *dest, int pitch)
 {
 	unsigned int *d, *s;
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int c1, c2;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned int *)src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
+			for (x = __fb_gfx->w >> 1; x; x--) {
 				c1 = *s;
 				c2 = *(s + 1);
 				*d = ((c1 >> 3) & 0x001F) | ((c1 >> 5) & 0x07E0) | ((c1 >> 8) & 0xF800) |
@@ -689,16 +689,16 @@ static void fb_hBlit32to16BGR(unsigned char *dest, int pitch)
 				s += 2;
 				d++;
 			}
-			if (fb_mode->w & 0x1) {
+			if (__fb_gfx->w & 0x1) {
 				c1 = *s;
 				*(unsigned short *)d = ((c1 >> 3) & 0x001F) | ((c1 >> 5) & 0x07E0) | ((c1 >> 8) & 0xF800);
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -709,17 +709,17 @@ static void fb_hBlit32to16BGR(unsigned char *dest, int pitch)
 static void fb_hBlit32to24RGB(unsigned char *dest, int pitch)
 {
 	unsigned int *s;
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int c;
 	unsigned char *d;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned int *)src;
 			d = (unsigned char *)dest;
-			for (x = fb_mode->w; x; x--) {
+			for (x = __fb_gfx->w; x; x--) {
 				c = *s;
 				d[0] = (c >> 16) & 0xFF;
 				d[1] = (c >> 8) & 0xFF;
@@ -729,10 +729,10 @@ static void fb_hBlit32to24RGB(unsigned char *dest, int pitch)
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -743,17 +743,17 @@ static void fb_hBlit32to24RGB(unsigned char *dest, int pitch)
 static void fb_hBlit32to24BGR(unsigned char *dest, int pitch)
 {
 	unsigned int *s;
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int c;
 	unsigned char *d;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned int *)src;
 			d = (unsigned char *)dest;
-			for (x = fb_mode->w; x; x--) {
+			for (x = __fb_gfx->w; x; x--) {
 				c = *s;
 				d[0] = c & 0xFF;
 				d[1] = (c >> 8) & 0xFF;
@@ -763,10 +763,10 @@ static void fb_hBlit32to24BGR(unsigned char *dest, int pitch)
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -777,25 +777,25 @@ static void fb_hBlit32to24BGR(unsigned char *dest, int pitch)
 static void fb_hBlit32to32RGB(unsigned char *dest, int pitch)
 {
 	unsigned int *d, *s;
-	unsigned char *src = fb_mode->framebuffer;
+	unsigned char *src = __fb_gfx->framebuffer;
 	unsigned int c;
-	char *dirty = fb_mode->dirty;
+	char *dirty = __fb_gfx->dirty;
 	int x, y, z = 0;
 	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
+	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned int *)src;
 			d = (unsigned int *)dest;
-			for (x = fb_mode->w; x; x--) {
+			for (x = __fb_gfx->w; x; x--) {
 				c = (*s++) & 0xFFFFFF;
 				*d++ = (c >> 16) | (c & 0xFF00) | (c << 16);
 			}
 		}
 		z++;
-		if (z >= fb_mode->scanline_size) {
+		if (z >= __fb_gfx->scanline_size) {
 			z = 0;
 			dirty++;
-			src += fb_mode->pitch;
+			src += __fb_gfx->pitch;
 		}
 		dest += pitch;
 	}
@@ -829,24 +829,24 @@ BLITTER *fb_hGetBlitter(int device_depth, int is_rgb)
 	
 	for (i = 0; i < 256; i++) {
 		if (is_rgb) {
-			fb_color_conv_16to32[i] = ((i & 0x1F) << 19) | ((i & 0xE0) << 5);
-			fb_color_conv_16to32[256+i] = ((i & 0x07) << 13) | (i & 0xF8);
+			__fb_color_conv_16to32[i] = ((i & 0x1F) << 19) | ((i & 0xE0) << 5);
+			__fb_color_conv_16to32[256+i] = ((i & 0x07) << 13) | (i & 0xF8);
 		}
 		else {
-			fb_color_conv_16to32[i] = ((i & 0x1F) << 3) | ((i & 0xE0) << 5);
-			fb_color_conv_16to32[256+i] = ((i & 0x07) << 13) | ((i & 0xF8) << 16);
+			__fb_color_conv_16to32[i] = ((i & 0x1F) << 3) | ((i & 0xE0) << 5);
+			__fb_color_conv_16to32[256+i] = ((i & 0x07) << 13) | ((i & 0xF8) << 16);
 		}
 	}
 	
 #if defined(TARGET_X86)
-	if ((fb_mode->flags & HAS_MMX) && (fb_mode->scanline_size == 1) && !(fb_mode->w & 0x3))
+	if ((__fb_gfx->flags & HAS_MMX) && (__fb_gfx->scanline_size == 1) && !(__fb_gfx->w & 0x3))
 		blitter = &blitter[24];
 #endif
 
 	if (!is_rgb)
 		blitter = &blitter[12];
 	
-	switch (fb_mode->depth) {
+	switch (__fb_gfx->depth) {
 		case 1:
 		case 2:
 		case 4:
