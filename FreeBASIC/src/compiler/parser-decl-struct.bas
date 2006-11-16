@@ -1071,9 +1071,7 @@ function cTypeDecl _
 
 	'' byval results to self?
 	if( symbGetUdtHasRecByvalRes( sym ) ) then
-		if( symbIsTrivial( sym ) = FALSE ) then
-			hPatchByvalResultToSelf( sym )
-		end if
+		hPatchByvalResultToSelf( sym )
 	end if
 
 	function = TRUE
@@ -1138,8 +1136,8 @@ private sub hPatchByvalResultToSelf _
 
 			'' byval result to self? reset..
 			if( symbGetSubtype( sym ) = parent ) then
-				'' follow the GCC 3.x ABI (we know already it's not a trivial struct)
-				symbGetProcRealType( sym ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT
+				'' follow the GCC 3.x ABI
+				symbGetProcRealType( sym ) = symbGetUDTRetType( parent )
 
             	'' recalc params len (we don't know if the hidden param was added or
             	'' not in the time it was parsed, so we can't do any assumption here)
