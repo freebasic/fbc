@@ -59,6 +59,12 @@ function astNewPTR _
 				return n
 			end if
 		end if
+
+		if( l->defined ) then
+			ofs += astGetValueAsInt( l )
+			astDelNode( l )
+			l = NULL
+		end if
 	end if
 
 	'' alloc new node

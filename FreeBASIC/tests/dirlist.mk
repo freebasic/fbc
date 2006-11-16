@@ -9,6 +9,7 @@ pretest \
 comments \
 compound \
 console \
+const \
 crt \
 data \
 datetime \

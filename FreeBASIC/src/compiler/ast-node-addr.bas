@@ -201,12 +201,23 @@ function astNewADDR _
             		removeNullPtrCheck( n )
             	end if
 
-				n = n->l
-				'' abs address?
-				if( n->class = AST_NODECLASS_CONST ) then
-					astDelNode( l->l )
+				dim as ASTNODE ptr nn = n->l
+				if( nn <> NULL ) then
+					'' abs address?
+					if( nn->class = AST_NODECLASS_CONST ) then
+						astDelNode( n )
+						astDelNode( l )
+						return nn
+					end if
+
+				'' just an offset..
+				else
+					'' !!!FIXME!!! should use LONG in 64-bit adressing mode
+					nn = astNewCONSTi( n->ptr.ofs, FB_DATATYPE_INTEGER )
+
+					astDelNode( n )
 					astDelNode( l )
-					return n
+					return nn
 				end if
 			end if
 

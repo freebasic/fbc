@@ -1,3 +1,7 @@
+[ ] ParamArray, but with this syntax: foo(...) as bar
+	- array must be built at compile-time and destroyed after the call
+	- take care with objects..
+
 [ ] remove the internal profiler and use gprof instead, the former won't work with
     destructors
 

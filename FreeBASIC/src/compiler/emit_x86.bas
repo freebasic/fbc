@@ -643,20 +643,26 @@ private function hGetIdxName _
 	sym = vreg->sym
 	vi  = vreg->vidx
 
-	if( sym <> NULL ) then
+	if( sym = NULL ) then
+		'' no var or index?
+		if( vi = NULL ) then
+			return NULL
+		end if
+
+		iname = ""
+
+	else
 		iname = *symbGetMangledName( sym )
 		if( vi <> NULL ) then
 			iname += "+"
 		end if
-	else
-		iname = ""
 	end if
 
-	if( vi <> NULL ) then
-		rname = hGetRegName( vi->dtype, vi->reg )
+	rname = hGetRegName( vi->dtype, vi->reg )
 
-		iname += *rname
+	iname += *rname
 
+    if( vi <> NULL ) then
     	mult = vreg->mult
 		if( mult > 1 ) then
 			addone = FALSE
@@ -674,7 +680,6 @@ private function hGetIdxName _
 				iname += *rname
 			end if
 		end if
-
 	end if
 
 	function = @iname
@@ -704,6 +709,7 @@ private sub hPrepOperand _
 	select case as const vreg->typ
 	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
 
+		'' prefix
 		if( addprefix ) then
 			operand = dtypeTB(dtype).mname
 			operand += " ["
@@ -711,22 +717,37 @@ private sub hPrepOperand _
 			operand = "["
 		end if
 
+		'' variable or index
+		dim as zstring ptr idx_op
 		if( vreg->typ = IR_VREGTYPE_VAR ) then
-			operand += *symbGetMangledName( vreg->sym )
+			idx_op = symbGetMangledName( vreg->sym )
 		else
-        	operand += *hGetIdxName( vreg )
+        	idx_op = hGetIdxName( vreg )
 		end if
 
+        if( idx_op <> NULL ) then
+        	operand += *idx_op
+        end if
+
+		'' offset
 		ofs += vreg->ofs
 		if( isaux ) then
 			ofs += FB_INTEGERSIZE
 		end if
 
 		if( ofs > 0 ) then
-			operand += "+"
+			if( idx_op <> NULL ) then
+				operand += "+"
+			end if
 			operand += str( ofs )
+
 		elseif( ofs < 0 ) then
 			operand += str( ofs )
+
+		else
+			if( idx_op = NULL ) then
+				operand += "0"
+			end if
 		end if
 
 		operand += "]"
