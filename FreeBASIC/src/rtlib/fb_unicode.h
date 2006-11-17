@@ -32,6 +32,7 @@
 #ifndef __FB_UNICODE__
 #define __FB_UNICODE__
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -114,8 +115,12 @@ typedef unsigned char  UTF_8;
 
 #ifndef FB_WSTR_WCHARTOCHAR
 #define FB_WSTR_WCHARTOCHAR fb_wstr_WcharToChar
-static __inline__ void fb_wstr_WcharToChar( char *dst,
-											const FB_WCHAR *src, int chars )
+static __inline__ void fb_wstr_WcharToChar
+	( 
+		char *dst,
+		const FB_WCHAR *src,
+		int chars
+	)
 {
 	UTF_32 c;
 
@@ -140,7 +145,7 @@ static __inline__ int fb_wstr_CalcDiff
 		const FB_WCHAR *end 
 	)
 {
-	return ((int)end - (int)ini) / sizeof( FB_WCHAR );
+	return ((intptr_t)end - (intptr_t)ini) / sizeof( FB_WCHAR );
 }
 
 /*:::::*/
@@ -231,8 +236,8 @@ static __inline__ void fb_wstr_ConvToA
 #else
 	FB_WSTR_WCHARTOCHAR( dst, src, chars );
 
-    /* plus the null-term */
-    dst[chars] = '\0';
+	/* plus the null-term */
+	dst[chars] = '\0';
 #endif
 }
 
@@ -281,11 +286,11 @@ static __inline__ void fb_wstr_Copy
 		int chars 
 	)
 {
-    if( (src != NULL) && (chars > 0) )
-        dst = FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
+	if( (src != NULL) && (chars > 0) )
+		dst = FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
 
-    /* add the null-term */
-    *dst = _LC('\0');
+	/* add the null-term */
+	*dst = _LC('\0');
 }
 
 /** Copy n characters from A to B.
@@ -359,9 +364,9 @@ static __inline__ const FB_WCHAR *fb_wstr_SkipCharRev
 
 	p = &s[chars-1];
 
-    /* fixed-len's are filled with null's as in PB, strip them too */
-    while( chars > 0 )
-    {
+	/* fixed-len's are filled with null's as in PB, strip them too */
+	while( chars > 0 )
+	{
 		if( *p != c )
 			return p;
 		--p;
