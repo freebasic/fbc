@@ -546,7 +546,6 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	fb_dos_lock_data(__fb_gfx->page, sizeof(unsigned char *) * __fb_gfx->num_pages);
 	for (i = 0; i < __fb_gfx->num_pages; i++)
 		fb_dos_lock_data(__fb_gfx->page[i], __fb_gfx->pitch * __fb_gfx->h);
-	fb_dos_lock_data(__fb_gfx->line, __fb_gfx->h * sizeof(unsigned char *));
 	fb_dos_lock_data(__fb_gfx->dirty, __fb_gfx->h * __fb_gfx->scanline_size);
 	fb_dos_lock_data(__fb_gfx->device_palette, sizeof(int) * 256);
 	fb_dos_lock_data(__fb_gfx->palette, sizeof(int) * 256);
@@ -627,7 +626,6 @@ void fb_dos_exit(void)
 	fb_dos_unlock_data(__fb_gfx->page, sizeof(unsigned char *) * __fb_gfx->num_pages);
 	for (i = 0; i < __fb_gfx->num_pages; i++)
 		fb_dos_unlock_data(__fb_gfx->page[i], __fb_gfx->pitch * __fb_gfx->h);
-	fb_dos_unlock_data(__fb_gfx->line, __fb_gfx->h * sizeof(unsigned char *));
 	fb_dos_unlock_data(__fb_gfx->dirty, __fb_gfx->h * __fb_gfx->scanline_size);
 	fb_dos_unlock_data(__fb_gfx->device_palette, sizeof(int) * 256);
 	fb_dos_unlock_data(__fb_gfx->palette, sizeof(int) * 256);
