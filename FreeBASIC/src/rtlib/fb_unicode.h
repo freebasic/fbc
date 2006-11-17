@@ -38,9 +38,9 @@
 
 #define FB_WCHAR wchar_t
 
-typedef unsigned long  UTF_32;
-typedef unsigned short UTF_16;
-typedef unsigned char  UTF_8;
+typedef uint32_t  UTF_32;
+typedef uint16_t UTF_16;
+typedef uint8_t  UTF_8;
 
 #define UTF8_BYTEMASK 		 0xBF
 #define UTF8_BYTEMARK 		 0x80
