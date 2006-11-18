@@ -39,6 +39,8 @@
 #include <X11/extensions/Xrandr.h>
 #include <X11/extensions/shape.h>
 
+#define DOUBLE_CLICK_TIME		250
+
 typedef struct LINUXDRIVER
 {
 	Display *display;

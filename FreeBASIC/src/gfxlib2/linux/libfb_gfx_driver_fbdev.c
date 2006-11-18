@@ -80,6 +80,7 @@ static int framebuffer_offset, is_running = FALSE, is_active = TRUE;
 static int vsync_flags = 0, is_palette_changed = FALSE;
 static int mouse_fd = -1, mouse_packet_size, mouse_shown = TRUE;
 static int mouse_x, mouse_y, mouse_z, mouse_buttons;
+static unsigned int last_click_time = 0;
 static pthread_t thread;
 static pthread_mutex_t mutex;
 static pthread_cond_t cond;
@@ -89,9 +90,9 @@ static pthread_cond_t cond;
 static void *driver_thread(void *arg)
 {
 	struct fb_vblank vblank;
-	unsigned int count;
+	unsigned int count, cur_time;
 	fd_set set;
-	struct timeval tv = { 0, 0 };
+	struct timeval cur_tv, tv = { 0, 0 };
 	unsigned char buffer[1024];
 	int buttons, bytes_read, bytes_left = 0;
 	EVENT e;
@@ -140,8 +141,15 @@ static void *driver_thread(void *arg)
 							buttons = (mouse_buttons ^ buttons) & 0x7;
 							for (e.button = 0x4; e.button; e.button >>= 1) {
 								if (buttons & e.button) {
-									if (mouse_buttons & e.button)
-										e.type = EVENT_MOUSE_BUTTON_PRESS;
+									if (mouse_buttons & e.button) {
+										gettimeofday(&cur_tv, NULL);
+										cur_time = (cur_tv.tv_sec * 1000) + (cur_tv.tv_usec / 1000);
+										if (cur_time - last_click_time < DOUBLE_CLICK_TIME)
+											e.type = EVENT_MOUSE_DOUBLE_CLICK;
+										else
+											e.type = EVENT_MOUSE_BUTTON_PRESS;
+										last_click_time = cur_time;
+									}
 									else
 										e.type = EVENT_MOUSE_BUTTON_RELEASE;
 									fb_hPostEvent(&e);
