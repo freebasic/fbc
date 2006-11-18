@@ -159,9 +159,10 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			return 0;
 		
 		case WM_LBUTTONDOWN:
+		case WM_LBUTTONDBLCLK:
 			SetCapture( hWnd );
 			mouse_buttons |= 0x1;
-			e.type = EVENT_MOUSE_BUTTON_PRESS;
+			e.type = (message == WM_LBUTTONDOWN ? EVENT_MOUSE_BUTTON_PRESS : EVENT_MOUSE_DOUBLE_CLICK);
 			e.button = 0x1;
 			break;
 
@@ -174,9 +175,10 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 
 		case WM_RBUTTONDOWN:
+		case WM_RBUTTONDBLCLK:
 			SetCapture( hWnd );
 			mouse_buttons |= 0x2;
-			e.type = EVENT_MOUSE_BUTTON_PRESS;
+			e.type = (message == WM_RBUTTONDOWN ? EVENT_MOUSE_BUTTON_PRESS : EVENT_MOUSE_DOUBLE_CLICK);
 			e.button = 0x2;
 			break;
 
@@ -189,9 +191,10 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 
 		case WM_MBUTTONDOWN:
+		case WM_MBUTTONDBLCLK:
 			SetCapture( hWnd );
 			mouse_buttons |= 0x4;
-			e.type = EVENT_MOUSE_BUTTON_PRESS;
+			e.type = (message == WM_MBUTTONDOWN ? EVENT_MOUSE_BUTTON_PRESS : EVENT_MOUSE_DOUBLE_CLICK);
 			e.button = 0x4;
 			break;
 
@@ -420,7 +423,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	fb_win32.wndclass.hIcon = LoadIcon(fb_win32.hinstance, "FB_PROGRAM_ICON");
 	if (!fb_win32.wndclass.hIcon)
 		fb_win32.wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	fb_win32.wndclass.style = (flags & DRIVER_OPENGL) ? 0 : CS_VREDRAW | CS_HREDRAW;
+	fb_win32.wndclass.style = CS_DBLCLKS | ((flags & DRIVER_OPENGL) ? 0 : CS_VREDRAW | CS_HREDRAW);
 	RegisterClass(&fb_win32.wndclass);
 
 	mouse_buttons = mouse_wheel = 0;

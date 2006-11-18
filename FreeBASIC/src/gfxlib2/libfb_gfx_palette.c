@@ -62,6 +62,9 @@ void fb_hRestorePalette(void)
 {
 	int i;
 	
+	if (!__fb_gfx->driver->set_palette)
+		return;
+	
 	for (i = 0; i < 256; i++) {
 		__fb_gfx->driver->set_palette(i, (__fb_gfx->device_palette[i] & 0xFF),
 						(__fb_gfx->device_palette[i] >> 8) & 0xFF,
@@ -88,7 +91,8 @@ static void set_color(int index, unsigned int color)
 		__fb_gfx->color_association[index] = color;
 	}
 	__fb_gfx->device_palette[index] = r | (g << 8) | (b << 16);
-	__fb_gfx->driver->set_palette(index, r, g, b);
+	if (__fb_gfx->driver->set_palette)
+		__fb_gfx->driver->set_palette(index, r, g, b);
 }
 
 
@@ -139,7 +143,8 @@ FBCALL void fb_GfxPalette(int index, int red, int green, int blue)
 					b = palette->data[(__fb_gfx->color_association[i] * 3) + 2];
 				}
 				__fb_gfx->device_palette[i] = r | (g << 8) | (b << 16);
-				__fb_gfx->driver->set_palette(i, r, g, b);
+				if (__fb_gfx->driver->set_palette)
+					__fb_gfx->driver->set_palette(i, r, g, b);
 			}
 		}
 	}

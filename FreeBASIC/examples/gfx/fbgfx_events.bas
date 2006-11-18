@@ -43,6 +43,8 @@ end function
 				print get_button(e.button) & " button pressed"
 			case EVENT_MOUSE_BUTTON_RELEASE
 				print get_button(e.button) & " button released"
+			case EVENT_MOUSE_DOUBLE_CLICK
+				print get_button(e.button) & " button double clicked"
 			case EVENT_MOUSE_WHEEL
 				print "mouse wheel moved to position " & e.z
 			case EVENT_MOUSE_ENTER

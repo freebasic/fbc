@@ -31,14 +31,14 @@
 
 typedef struct MODEINFO
 {
-	int w;
-	int h;
-	int depth;
-	int scanline_size;
+	unsigned short w;
+	unsigned short h;
+	unsigned char depth;
+	unsigned char scanline_size;
 	const PALETTE *palette;
 	const FONT *font;
-	int text_w;
-	int text_h;
+	unsigned char text_w;
+	unsigned char text_h;
 } MODEINFO;
 
 
@@ -46,7 +46,7 @@ typedef struct MODEINFO
 static const MODEINFO mode_info[NUM_MODES] = {
  { 320, 200, 2, 1, &fb_palette_16,  &fb_font_8x8,   40, 25 },		/* CGA mode 1 */
  { 640, 200, 1, 2, &fb_palette_16,  &fb_font_8x8,   80, 25 },		/* CGA mode 2 */
- { -1 }, { -1}, { -1 }, { -1 },						/* Unsupported modes (3, 4, 5, 6) */
+ { 0 }, { 0 }, { 0 }, { 0 },						/* Unsupported modes (3, 4, 5, 6) */
  { 320, 200, 4, 1, &fb_palette_16,  &fb_font_8x8,   40, 25 },		/* EGA mode 7 */
  { 640, 200, 4, 2, &fb_palette_16,  &fb_font_8x8,   80, 25 },		/* EGA mode 8 */
  { 640, 350, 4, 1, &fb_palette_64,  &fb_font_8x14,  80, 25 },		/* EGA mode 9 */
@@ -368,7 +368,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refre
 
 	if (mode > 0) {
 		info = &mode_info[mode - 1];
-		if (info->w < 0)
+		if (info->w == 0)
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
     res = set_mode(info, mode, depth, num_pages, refresh_rate, flags);

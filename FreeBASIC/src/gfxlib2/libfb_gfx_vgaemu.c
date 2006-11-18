@@ -95,7 +95,8 @@ int fb_GfxOut(unsigned short port, unsigned char value)
 					for (i = 0; i < (1 << __fb_gfx->depth); i++) {
 						if (__fb_gfx->color_association[i] == idx) {
 							__fb_gfx->device_palette[i] = color;
-							__fb_gfx->driver->set_palette(i, r, g, b);
+							if (__fb_gfx->driver->set_palette)
+								__fb_gfx->driver->set_palette(i, r, g, b);
 						}
 					}
 					fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);

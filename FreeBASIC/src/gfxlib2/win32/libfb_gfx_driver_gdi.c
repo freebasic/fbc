@@ -53,6 +53,7 @@ GFXDRIVER fb_gfxDriverGDI =
 
 
 static BITMAPINFO *bitmap_info;
+static HPALETTE palette;
 static unsigned char *buffer;
 
 typedef BOOL (WINAPI *SETLAYEREDWINDOWATTRIBUTES)(HWND hWnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
@@ -95,6 +96,8 @@ static void gdi_paint(void)
 		source = __fb_gfx->framebuffer;
 	
 	hdc = GetDC(fb_win32.wnd);
+	SelectPalette(hdc, palette, FALSE);
+	RealizePalette(hdc);
 	SetDIBitsToDevice(hdc, 0, 0, fb_win32.w, fb_win32.h, 0, 0, 0, fb_win32.h, source, bitmap_info, DIB_RGB_COLORS);
 	InvalidateRect(fb_win32.wnd, NULL, FALSE);
 	ReleaseDC(fb_win32.wnd, hdc);
@@ -109,10 +112,12 @@ static int gdi_init(void)
 	HDC hdc;
 	RECT rect;
 	HMODULE module;
+	LOGPALETTE *lp;
 	int x, y;
 
 	bitmap_info = NULL;
 	buffer = NULL;
+	palette = NULL;
 	
 	if (fb_win32.flags & DRIVER_FULLSCREEN) {
 		fb_hMemSet(&mode, 0, sizeof(mode));
@@ -191,6 +196,14 @@ static int gdi_init(void)
 
 	hdc = GetDC(fb_win32.wnd);
 	__fb_gfx->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
+	
+	lp = (LOGPALETTE *)malloc(sizeof(LOGPALETTE) + (sizeof(PALETTEENTRY) * 256));
+	lp->palNumEntries = 256;
+	lp->palVersion = 0x300;
+	fb_hMemCpy(lp->palPalEntry, fb_win32.palette, sizeof(PALETTEENTRY) * 256);
+	palette = CreatePalette(lp);
+	free(lp);
+	
 	ReleaseDC(fb_win32.wnd, hdc);
 
 	return 0;
@@ -209,6 +222,8 @@ static void gdi_exit(void)
 			ChangeDisplaySettings(NULL, 0);
 		DestroyWindow(fb_win32.wnd);
 	}
+	if (palette)
+		DeleteObject(palette);
 }
 
 
@@ -233,6 +248,7 @@ static void gdi_thread(HANDLE running_event)
 	{
 		fb_hWin32Lock();
 
+		hdc = GetDC(fb_win32.wnd);
 		if (fb_win32.is_palette_changed) {
 			/* Can't use fb_hMemCpy as structure layout is different :( */
 			for (i = 0; i < 256; i++) {
@@ -240,10 +256,13 @@ static void gdi_thread(HANDLE running_event)
 				bitmap_info->bmiColors[i].rgbGreen = fb_win32.palette[i].peGreen;
 				bitmap_info->bmiColors[i].rgbBlue = fb_win32.palette[i].peBlue;
 			}
+			/* Update logical palette */
+			SetPaletteEntries(palette, 0, 256, fb_win32.palette);
+			SelectPalette(hdc, palette, FALSE);
+			RealizePalette(hdc);
 			fb_win32.is_palette_changed = FALSE;
 		}
 		/* Only do a single SetDIBitsToDevice call per frame */
-		hdc = GetDC(fb_win32.wnd);
 		for (y1 = 0; y1 < fb_win32.h; y1++) {
 			if (__fb_gfx->dirty[y1]) {
 				for (y2 = fb_win32.h - 1; !__fb_gfx->dirty[y2]; y2--)

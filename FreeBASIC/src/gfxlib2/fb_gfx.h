@@ -178,12 +178,13 @@ extern "C" {
 #define EVENT_MOUSE_MOVE			4
 #define EVENT_MOUSE_BUTTON_PRESS	5
 #define EVENT_MOUSE_BUTTON_RELEASE	6
-#define EVENT_MOUSE_WHEEL			7
-#define EVENT_MOUSE_ENTER			8
-#define EVENT_MOUSE_EXIT			9
-#define EVENT_WINDOW_GOT_FOCUS		10
-#define EVENT_WINDOW_LOST_FOCUS		11
-#define EVENT_WINDOW_CLOSE			12
+#define EVENT_MOUSE_DOUBLE_CLICK	7
+#define EVENT_MOUSE_WHEEL			8
+#define EVENT_MOUSE_ENTER			9
+#define EVENT_MOUSE_EXIT			10
+#define EVENT_WINDOW_GOT_FOCUS		11
+#define EVENT_WINDOW_LOST_FOCUS		12
+#define EVENT_WINDOW_CLOSE			13
 
 #define MAX_EVENTS					128
 
@@ -289,7 +290,7 @@ typedef struct FBGFX
     EVENT *event_queue;						/* The OS events queue array */
     int event_head, event_tail;				/* Indices for the head and tail event in the array */
     struct _FBMUTEX *event_mutex;			/* Mutex lock for accessing the events queue */
-	int flags;								/* Status flags */
+	volatile int flags;						/* Status flags */
 } FBGFX;
 
 

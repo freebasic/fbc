@@ -124,6 +124,8 @@ Version 0.17 Beta:
 - Serial driver on windows was not setting DTR high when opening the device (jeffm)
 - Serial driver on windows was ignoring RB/TB buffer size parameters (jeffm)
 - DOS gfxlib always failed when no mouse was detected
+- Win32 GDI driver did not use a custom palette in fullscreen mode, and was giving approximated colors (lillo)
+
 
 Version 0.16 Beta:
 
