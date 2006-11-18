@@ -53,6 +53,7 @@ static pthread_cond_t cond;
 static Drawable root_window;
 static Atom wm_delete_window, wm_intern_hints;
 static Colormap color_map = None;
+static Time last_click_time = 0;
 static int orig_size, target_size, current_size;
 static int orig_rate, target_rate;
 static Rotation orig_rotation;
@@ -180,6 +181,9 @@ static void *window_thread(void *arg)
 						case Button4:	e.z = mouse_wheel++; e.type = EVENT_MOUSE_WHEEL; break;
 						case Button5:	e.z = mouse_wheel--; e.type = EVENT_MOUSE_WHEEL; break;
 					}
+					if (event.xbutton.time - last_click_time < 250)
+						e.type = EVENT_MOUSE_DOUBLE_CLICK;
+					last_click_time = event.xbutton.time;
 					break;
 					
 				case ButtonRelease:
