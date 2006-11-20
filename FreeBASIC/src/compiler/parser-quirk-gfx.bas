@@ -116,10 +116,17 @@ private function hGetTarget _
 	if( lexGetToken( ) = CHAR_LPRNT ) then
 		exit function
 	end if
+    
+    '' flag it as an expression so 
+    '' properties don't get confused
+	dim as integer last_isexpr = fbGetIsExpression( )
+	fbSetIsExpression( TRUE )
 
 	if( cVarOrDeref( expr, FALSE, TRUE ) = FALSE ) then
 		exit function
 	end if
+
+	fbSetIsExpression( last_isexpr )
 
 	'' ugly hack to deal with arrays w/o indexes
 	if( astIsNIDXARRAY( expr ) ) then
