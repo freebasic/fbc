@@ -82,7 +82,7 @@ extern "C" {
 
 #define DRIVER_LOCK()		{ if (!(__fb_gfx->flags & (SCREEN_LOCKED | SCREEN_AUTOLOCKED))) { __fb_gfx->driver->lock(); __fb_gfx->flags |= SCREEN_LOCKED | SCREEN_AUTOLOCKED; } }
 #define DRIVER_UNLOCK()		{ if (__fb_gfx->flags & SCREEN_AUTOLOCKED) { __fb_gfx->driver->unlock(); __fb_gfx->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED); } }
-#define SET_DIRTY(c,y,h)	{ if (__fb_gfx->framebuffer == c->line[0]) fb_hMemSet(__fb_gfx->dirty + (y), TRUE, (h)); }
+#define SET_DIRTY(c,y,h)	{ if (__fb_gfx->framebuffer == (c)->line[0]) fb_hMemSet(__fb_gfx->dirty + (y), TRUE, (h)); }
 
 #define EVENT_LOCK()		{ fb_MutexLock(__fb_gfx->event_mutex); }
 #define EVENT_UNLOCK()		{ fb_MutexUnlock(__fb_gfx->event_mutex); }

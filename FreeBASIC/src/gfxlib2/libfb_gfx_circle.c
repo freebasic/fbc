@@ -210,7 +210,4 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 	SET_DIRTY(context, top, bottom - top + 1);
 	
 	DRIVER_UNLOCK();
-	
-	context->last_x = fx;
-	context->last_y = fy;
 }

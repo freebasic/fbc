@@ -77,9 +77,9 @@ LABEL(memcpy_loop)
 	movq %mm0, -8(%edi)
 	decl %ecx
 	jnz memcpy_loop
-	emms
 	
 LABEL(memcpy_end)
+	emms
 	popl %edi
 	popl %esi
 	popl %ebp
@@ -124,9 +124,9 @@ LABEL(memset_loop)
 	addl $8, %edi
 	decl %ecx
 	jnz memset_loop
-	emms
 	
 LABEL(memset_end)
+	emms
 	popl %edi
 	popl %ebp
 	ret
@@ -171,9 +171,9 @@ LABEL(pixelset2_loop)
 	addl $16, %edi
 	decl %ecx
 	jnz pixelset2_loop
-	emms
 	
 LABEL(pixelset2_end)
+	emms
 	popl %edi
 	popl %ebp
 	ret
@@ -219,9 +219,9 @@ LABEL(pixelset4_loop)
 	addl $32, %edi
 	decl %ecx
 	jnz pixelset4_loop
-	emms
 	
 LABEL(pixelset4_end)
+	emms
 	popl %edi
 	popl %ebp
 	ret

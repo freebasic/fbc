@@ -31,6 +31,7 @@ static void (*fb_hPutPixelSolid)(FB_GFXCTX *ctx, int x, int y, unsigned int colo
 static void *(*fb_hPixelSetSolid)(void *dest, int color, size_t size);
 static void (*fb_hPutPixelAlpha)(FB_GFXCTX *ctx, int x, int y, unsigned int color);
 static void *(*fb_hPixelSetAlpha)(void *dest, int color, size_t size);
+static unsigned int (*fb_hGetPixel)(struct FB_GFXCTX *ctx, int x, int y);
 
 #if defined(TARGET_X86)
 extern void *fb_hPixelSet2MMX(void *dest, int color, size_t size);
@@ -62,7 +63,6 @@ void fb_hPostEvent_code_end(void) { }
 FB_GFXCTX *fb_hGetContext(void)
 {
 	FB_GFXCTX *context;
-	int i;
 	
 	context = (FB_GFXCTX *)fb_TlsGetCtx(FB_TLSKEY_GFX, sizeof(FB_GFXCTX));
 	if ((__fb_gfx) && (context->id != __fb_gfx->id)) {
@@ -137,6 +137,7 @@ void fb_hPrepareTarget(FB_GFXCTX *context, void *target, unsigned int color)
 		context->put_pixel = fb_hPutPixelSolid;
 		context->pixel_set = fb_hPixelSetSolid;
 	}
+	context->get_pixel = fb_hGetPixel;
 }
 
 
@@ -330,8 +331,6 @@ static void *fb_hPixelCpy4(void *dest, const void *src, size_t size)
 /*:::::*/
 void fb_hSetupFuncs(void)
 {
-	FB_GFXCTX *context = fb_hGetContext();
-	
 #if defined(TARGET_X86)
 	if (fb_CpuDetect() & 0x800000) {
 		__fb_gfx->flags |= HAS_MMX;
@@ -350,34 +349,34 @@ void fb_hSetupFuncs(void)
 		case 2:
 		case 4:
 		case 8:
-			context->put_pixel = fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel1;
-			context->get_pixel = fb_hGetPixel1;
-			context->pixel_set = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hMemSet;
+			fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel1;
+			fb_hGetPixel = fb_hGetPixel1;
+			fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hMemSet;
 			fb_hPixelCpy = fb_hMemCpy;
 			break;
 		
 		case 15:
 		case 16:
-			context->put_pixel = fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel2;
-			context->get_pixel = fb_hGetPixel2;
+			fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel2;
+			fb_hGetPixel = fb_hGetPixel2;
 #if defined(TARGET_X86)
 			if (__fb_gfx->flags & HAS_MMX)
-				context->pixel_set = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2MMX;
+				fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2MMX;
 			else
 #endif
-				context->pixel_set = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2;
+				fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2;
 			fb_hPixelCpy = fb_hPixelCpy2;
 			break;
 		
 		default:
-			context->put_pixel = fb_hPutPixelSolid = fb_hPutPixel4;
-			context->get_pixel = fb_hGetPixel4;
+			fb_hPutPixelSolid = fb_hPutPixel4;
+			fb_hGetPixel = fb_hGetPixel4;
 #if defined(TARGET_X86)
 			if (__fb_gfx->flags & HAS_MMX)
-				context->pixel_set = fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet4MMX;
+				fb_hPixelSetSolid = fb_hPixelSet4MMX;
 			else
 #endif
-				context->pixel_set = fb_hPixelSetSolid = fb_hPixelSet4;
+				fb_hPixelSetSolid = fb_hPixelSet4;
 			fb_hPixelCpy = fb_hPixelCpy4;
 			if (__fb_gfx->flags & ALPHA_PRIMITIVES) {
 				fb_hPutPixelAlpha = fb_hPutPixelAlpha4;
@@ -389,8 +388,8 @@ void fb_hSetupFuncs(void)
 					fb_hPixelSetAlpha = fb_hPixelSetAlpha4;
 			}
 			else {
-				fb_hPutPixelAlpha = fb_hPutPixel4;
-				fb_hPixelSetAlpha = fb_hPixelSet4;
+				fb_hPutPixelAlpha = fb_hPutPixelSolid;
+				fb_hPixelSetAlpha = fb_hPixelSetSolid;
 			}
 			break;
 	}
