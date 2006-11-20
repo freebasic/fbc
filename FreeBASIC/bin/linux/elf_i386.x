@@ -87,7 +87,9 @@ SECTIONS
   .data1          : { *(.data1) }
   .tdata	  : { *(.tdata .tdata.* .gnu.linkonce.td.*) }
   .tbss		  : { *(.tbss .tbss.* .gnu.linkonce.tb.*) *(.tcommon) }
+  __EH_FRAME_BEGIN__ = .;
   .eh_frame       : { KEEP (*(.eh_frame)) }
+  __EH_FRAME_END__ = .;
   .gcc_except_table   : { *(.gcc_except_table) }
   .dynamic        : { *(.dynamic) }
   .ctors          :

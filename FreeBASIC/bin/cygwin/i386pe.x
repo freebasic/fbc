@@ -52,7 +52,9 @@ SECTIONS
   {
     *(.rdata)
     *(SORT(.rdata$*))
+    __EH_FRAME_BEGIN__ = .;
     *(.eh_frame)
+    __EH_FRAME_END__ = .;
     ___RUNTIME_PSEUDO_RELOC_LIST__ = .;
     __RUNTIME_PSEUDO_RELOC_LIST__ = .;
     *(.rdata_runtime_pseudo_reloc)
