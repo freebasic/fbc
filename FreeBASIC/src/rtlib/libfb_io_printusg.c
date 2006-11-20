@@ -454,15 +454,23 @@ static int hPrintDouble
 			break;
 
 		case '*':
-			if( nc == '*' || lc == '*' )
+			if( nc == '*' || lc == '*' ) {
+				if( padchar != '*' ) {
+					intdigs += 2; // add extra space for the 2 stars
+				}
 				padchar = '*';
+			}
 			else
 				doexit = 1;
 			break;
 
 		case '$':
-			if( nc == '$' || lc == '$' || lc == '*' )
+			if( nc == '$' || lc == '$' || lc == '*' ) {
+				if( !adddolar ) {
+					intdigs++; // add extra space for the dollar sign
+				}
 				adddolar = 1;
+			}
 			else
 				doexit = 1;
 			break;
