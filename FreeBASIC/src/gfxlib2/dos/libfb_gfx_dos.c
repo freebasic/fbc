@@ -340,9 +340,7 @@ static int fb_dos_timer_handler(unsigned irq)
 {
 	int do_abort;
 	int mouse_x = 0, mouse_y = 0;
-	int i, mask, key;
 	int buttons;
-	int ctrl, shift;
 	EVENT e;
 
 	fb_dos.timer_ticks += fb_dos.timer_step;
