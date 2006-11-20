@@ -74,6 +74,8 @@ Version 0.17 Beta:
 - the GFX_ALWAYS_ON_TOP flag to SCREEN, to let the program window stay always on top (lillo)
 
 [fixed]
+- ctors couldn't be nested when using -exx, due to implicit code generation (cha0s)
+- properties couldn't be used as buffers in gfx stmts (cha0s)
 - premature optimization in bitfields when converting to a signed integer type (v1c)
 - the case of the aliases of extern dynamic arrays was not been preserved (v1c)
 - moving mouse out of program window and back onto it used to reset mouse buttons status as reported by GETMOUSE (lillo)

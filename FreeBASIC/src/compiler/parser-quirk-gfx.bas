@@ -682,17 +682,22 @@ function cGfxDraw as integer
 	function = FALSE
 
 	texpr = NULL
-
 	if( hMatch( FB_TK_STRING ) ) then
 		function = cGfxDrawString
 		exit function
-	elseif( lexGetLookAhead( 1 ) = CHAR_COMMA ) then
-		target = hGetTarget( texpr, tisptr )
-		if( (target = NULL) and (tisptr = FALSE) ) then
-			errReport FB_ERRMSG_EXPECTEDEXPRESSION
-			exit function
-		end if
-		hMatch( CHAR_COMMA )
+	else
+		select case lexGetLookAhead( 1 )
+        
+        '' dot handling needed because of the
+        '' "period in symbol" ambiguity -cha0s
+        case CHAR_COMMA, CHAR_DOT
+			target = hGetTarget( texpr, tisptr )
+			if( (target = NULL) and (tisptr = FALSE) ) then
+				errReport FB_ERRMSG_EXPECTEDEXPRESSION
+				exit function
+			end if
+			hMatch( CHAR_COMMA )
+		end select
 	end if
 
 	hMatchExpression( cexpr )
