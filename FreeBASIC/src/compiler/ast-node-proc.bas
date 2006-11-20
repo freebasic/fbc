@@ -475,6 +475,11 @@ function astProcBegin _
 		if( env.clopt.extraerrchk ) then
 			rtlErrorSetModName( sym, astNewCONSTstr( @env.inf.name ) )
 			rtlErrorSetFuncName( sym, astNewCONSTstr( symbGetName( sym ) ) )
+			
+			'' hack to allow ctor from ctor, otherwise
+			'' the above generated code would flag the 
+			'' ctor as inited (not first stmt.) -cha0s
+			sym->stats and= ( not FB_SYMBSTATS_CTORINITED)
 		else
 			.lastmod = NULL
 			.lastfun = NULL
