@@ -253,7 +253,7 @@ static void driver_key_handler(int key)
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	const char *device_name;
-	int try, res_index;
+	int try, res_index, dummy;
 	struct fb_vblank vblank;
 	const char *mouse_device[] = { "/dev/input/mice", "/dev/usbmouse", "/dev/psaux", NULL };
 	const unsigned char im_init[] = { 243, 200, 243, 100, 243, 80 };
@@ -264,7 +264,6 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_linux.w = w;
 	fb_linux.h = h;
 	fb_linux.flags = flags;
-	fb_linux.refresh_rate = refresh_rate;
 	depth = MAX(depth, 8);
 	
 	device_name = getenv("FBGFX_FRAMEBUFFER");
@@ -353,6 +352,12 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	return -1;
 
 got_mode:
+	if (fb_hConsoleGfxMode(driver_exit, driver_save_screen, driver_restore_screen, driver_key_handler))
+		return -1;
+	
+	fb_hFBDevInfo(&dummy, &dummy, &dummy, &fb_linux.refresh_rate);
+	__fb_gfx->refresh_rate = fb_linux.refresh_rate;
+	
 	if (ioctl(device_fd, FBIOGET_FSCREENINFO, &device_info) < 0)
 		return -1;
 	
@@ -367,9 +372,6 @@ got_mode:
 	
 	blitter = fb_hGetBlitter(mode.bits_per_pixel, (mode.red.offset == 0) ? TRUE : FALSE);
 	if (!blitter)
-		return -1;
-	
-	if (fb_hConsoleGfxMode(driver_exit, driver_save_screen, driver_restore_screen, driver_key_handler))
 		return -1;
 	
 	mouse_packet_size = 3;
@@ -553,4 +555,41 @@ static int *driver_fetch_modes(int depth, int *size)
 	
 	*size = num_sizes;
 	return sizes;
+}
+
+
+/*:::::*/
+int fb_hFBDevInfo(int *width, int *height, int *depth, int *refresh)
+{
+	struct fb_var_screeninfo temp, *info;
+	int fd = -1, htotal, vtotal, flags, res;
+	
+	if (device_fd < 0) {
+		if ((fd = open("/dev/fb0", O_RDWR, 0)) < 0)
+			return -1;
+		res = ioctl(fd, FBIOGET_VSCREENINFO, &temp);
+		close(fd);
+		if (res < 0)
+			return -1;
+		info = &temp;
+	}
+	else
+		info = &mode;
+
+	htotal = info->left_margin + info->xres + info->right_margin + info->hsync_len;
+	vtotal = info->upper_margin + info->yres + info->lower_margin + info->vsync_len;
+	flags = info->vmode & FB_VMODE_MASK;
+	
+	if (!(flags == FB_VMODE_INTERLACED))
+		vtotal <<= 1;
+	if (flags == FB_VMODE_DOUBLE)
+		vtotal <<= 1;
+	
+	*width = info->xres;
+	*height = info->yres;
+	*depth = info->bits_per_pixel;
+	if ((info->pixclock) && (htotal) && (vtotal))
+		*refresh = (((1e12 / info->pixclock) / htotal) / vtotal) * 2;
+	
+	return 0;
 }

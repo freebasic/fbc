@@ -338,6 +338,7 @@ int fb_hX11EnterFullscreen(int h)
 	else {
 		if (XRRSetScreenConfigAndRate(fb_linux.display, fb_linux.config, root_window, target_size, orig_rotation, target_rate, CurrentTime) == BadValue)
 			return -1;
+		__fb_gfx->refresh_rate = fb_linux.refresh_rate = target_rate;
 	}
 	
 	XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, fb_linux.w >> 1, fb_linux.h >> 1);
@@ -370,6 +371,7 @@ void fb_hX11LeaveFullscreen(void)
 		if (XRRSetScreenConfigAndRate(fb_linux.display, fb_linux.config, root_window, orig_size, orig_rotation, orig_rate, CurrentTime) == BadValue)
 			return;
 		current_size = orig_size;
+		__fb_gfx->refresh_rate = fb_linux.refresh_rate = orig_rate;
 	}
 	
 	if (windows_list) {
@@ -566,15 +568,14 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 			rates = XRRConfigRates(fb_linux.config, target_size, &num_rates);
 			for (i = 0; i < num_rates; i++) {
 				if (rates[i] == fb_linux.refresh_rate) {
-					target_rate = i;
+					target_rate = rates[i];
 					break;
 				}
 			}
 		}
-		else {
-			rates = XRRConfigRates(fb_linux.config, orig_size, &num_rates);
-			fb_linux.refresh_rate = rates[orig_rate];
-		}
+		else
+			fb_linux.refresh_rate = orig_rate;
+		__fb_gfx->refresh_rate = fb_linux.refresh_rate;
 	}
 	
 	XDisplayKeycodes(fb_linux.display, &keycode_min, &keycode_max);
@@ -825,16 +826,17 @@ void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 {
 	Display *dpy;
 	
-	*refresh = 0;
 	dpy = XOpenDisplay(NULL);
 	if (!dpy) {
-		*width = *height = *depth = 0;
+		if (fb_hFBDevInfo(width, height, depth, refresh))
+			*width = *height = *depth = *refresh = 0;
 		return;
 	}
 
 	*width = XDisplayWidth(dpy, XDefaultScreen(dpy));
 	*height = XDisplayHeight(dpy, XDefaultScreen(dpy));
 	*depth = XDefaultDepth(dpy, XDefaultScreen(dpy));
+	*refresh = fb_linux.refresh_rate;
 	
 	XCloseDisplay(dpy);
 }
