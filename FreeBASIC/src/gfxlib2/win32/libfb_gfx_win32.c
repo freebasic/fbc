@@ -74,13 +74,13 @@ static void ToggleFullScreen( void )
 /*:::::*/
 static VOID CALLBACK fb_hTrackMouseTimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 {
-	RECT rect;
-	POINT pt;
+	POINT pt, rect_pt[2];
+	RECT *rect = (RECT *)rect_pt;
 
-	GetClientRect(fb_win32.wnd, &rect);
-	MapWindowPoints(fb_win32.wnd, NULL, (LPPOINT)&rect, 2);
+	GetClientRect(fb_win32.wnd, rect);
+	MapWindowPoints(fb_win32.wnd, NULL, rect_pt, 2);
 	GetCursorPos(&pt);
-	if ((!PtInRect(&rect, pt)) || (WindowFromPoint(pt) != fb_win32.wnd)) {
+	if ((!PtInRect(rect, pt)) || (WindowFromPoint(pt) != fb_win32.wnd)) {
 		KillTimer(fb_win32.wnd, idEvent);
 		PostMessage(fb_win32.wnd, WM_MOUSELEAVE, 0, 0);
 	}

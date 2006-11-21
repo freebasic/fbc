@@ -31,9 +31,9 @@
 /*:::::*/
 void fb_GfxPrintBufferWstrEx(const FB_WCHAR *buffer, size_t len, int mask)
 {
-	/* !!!FIXME!!! no unicode output supported */
-
-	char *temp = alloca( len + 1 );
+	/* Unicode gfx font support is out of the scope of gfxlib, convert to ascii */
+	
+	char temp[len + 1];
 
 	if( len > 0 )
 		fb_wstr_ConvToA( temp, buffer, len );

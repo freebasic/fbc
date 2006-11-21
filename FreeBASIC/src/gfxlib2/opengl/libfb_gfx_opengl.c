@@ -98,11 +98,13 @@ int fb_hGL_Init(FB_DYLIB lib)
 							   "glLoadIdentity", "glOrtho", "glShadeModel", "glDepthMask", "glClearColor",
 							   "glClear", "glGenTextures", "glDeleteTextures", "glBindTexture",
 							   "glTexImage2D" };
+	FB_GL *funcs = &__fb_gl;
+	void **funcs_ptr = (void **)funcs;
 	int res = 0;
 	
 	fb_hMemSet(&__fb_gl, 0, sizeof(FB_GL));
 	
-	if (fb_hDynLoadAlso(lib, gl_funcs, (void **)&__fb_gl, sizeof(gl_funcs) / sizeof(const char *)))
+	if (fb_hDynLoadAlso(lib, gl_funcs, funcs_ptr, sizeof(gl_funcs) / sizeof(const char *)))
 		return -1;
 	
 	__fb_gl.extensions = (char *)__fb_gl.GetString(GL_EXTENSIONS);
