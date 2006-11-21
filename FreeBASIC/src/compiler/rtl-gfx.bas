@@ -27,6 +27,9 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
+const FBGFX_QB_COMPATIBILITY = &h00100000
+
+
 declare function hGfxlib_cb _
 	( _
 		byval sym as FBSYMBOL ptr _
@@ -2152,9 +2155,12 @@ function rtlGfxScreenSet _
  		exit function
  	end if
 
- 	'' byval fullscreen s integer
+ 	'' byval flags as integer
  	if( fexpr = NULL ) then
  		fexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+ 	end if
+ 	if( env.clopt.lang <> FB_LANG_FB ) then
+ 		fexpr = astNewBOP( AST_OP_OR, fexpr, astNewCONSTi( FBGFX_QB_COMPATIBILITY, FB_DATATYPE_INTEGER ) )
  	end if
  	if( astNewARG( proc, fexpr ) = NULL ) then
  		exit function
