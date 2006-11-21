@@ -27,13 +27,6 @@
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
 
-declare function hVarDecl _
-	( _
-		byval attrib as integer, _
-		byval dopreserve as integer, _
-        byval token as integer _
-	) as integer
-
 '':::::
 private function hCheckScope( ) as integer
 
@@ -984,11 +977,13 @@ end sub
 ''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (',' SymbolDef)* .
 ''
-private function hVarDecl _
+function hVarDecl _
 	( _
 		byval attrib as integer, _
 		byval dopreserve as integer, _
-        byval token as integer _
+        byval token as integer, _
+        byval isForDecl as integer = FALSE, _
+        byref forVar as FBSYMBOL ptr = 0 _
 	) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 id, idalias
@@ -1082,6 +1077,7 @@ private function hVarDecl _
 		dimensions = 0
 		check_exprtb = FALSE
 		if( lexGetToken( ) = CHAR_LPRNT ) then
+			
 			lexSkipToken( )
 
 			is_dynamic = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
@@ -1304,15 +1300,18 @@ private function hVarDecl _
 				has_dtor = symbGetCompDtor( symbGetSubtype( sym ) ) <> NULL
 			end select
 		end if
-
-		'' check for an initializer
-		initree = hVarInit( sym, is_decl, has_defctor, has_dtor )
-
-		if( initree = NULL ) then
-    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    			exit function
-    		end if
-    	end if
+        
+        '' not "for i as integer..."?
+        if isForDecl = FALSE then
+			'' check for an initializer
+			initree = hVarInit( sym, is_decl, has_defctor, has_dtor )
+	
+			if( initree = NULL ) then
+	    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+	    			exit function
+	    		end if
+	    	end if
+	    end if
 
 		'' add to AST
 		if( sym <> NULL ) then
@@ -1349,7 +1348,11 @@ private function hVarDecl _
 				end if
 
     		end if
-
+            
+            if isForDecl = TRUE then
+            	forVar = sym
+            	return TRUE
+           	end if
 			'' handle arrays (must be done after adding the decl node)
 
 			'' do nothing if it's EXTERN
