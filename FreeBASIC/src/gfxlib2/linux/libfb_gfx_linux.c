@@ -825,6 +825,7 @@ int *fb_hX11FetchModes(int depth, int *size)
 void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 {
 	Display *dpy;
+	int dummy, version;
 	
 	dpy = XOpenDisplay(NULL);
 	if (!dpy) {
@@ -836,7 +837,12 @@ void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 	*width = XDisplayWidth(dpy, XDefaultScreen(dpy));
 	*height = XDisplayHeight(dpy, XDefaultScreen(dpy));
 	*depth = XDefaultDepth(dpy, XDefaultScreen(dpy));
-	*refresh = fb_linux.refresh_rate;
+	if (XRRQueryExtension(dpy, &dummy, &dummy) &&
+	    XRRQueryVersion(dpy, &version, &dummy) && (version >= 1)) {
+		*refresh = XRRConfigCurrentRate(XRRGetScreenInfo(dpy, root_window));
+	}
+	else
+		*refresh = 0;
 	
 	XCloseDisplay(dpy);
 }
