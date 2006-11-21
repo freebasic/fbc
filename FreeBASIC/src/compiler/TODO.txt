@@ -217,6 +217,8 @@
     be automatically dereferenced - but *NOT* deleted, only non-local data can
     be returned by reference in C++
 
+[ ] arrays will fail in quirk gfx funcs if multi-dimensional and have <> 0 lBounds
+
 [ ] add "fix-len|w|z|string * expr" support to array args passed by descriptor
 
 [ ] named field initializers: ( foo => bar, udt => ( 1, { 2, 3 }, 4 ) )

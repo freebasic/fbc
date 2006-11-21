@@ -59,7 +59,7 @@ private function hMakeArrayIndex _
 		byval varexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr idxexpr
+    dim as ASTNODE ptr idxexpr, dataOffset
 
     '' field? (assuming field arrays can't be dynamic)
     if( astIsFIELD( varexpr ) ) then
@@ -69,27 +69,51 @@ private function hMakeArrayIndex _
     ''  argument passed by descriptor?
     if( symbIsParamByDesc( sym ) ) then
         
-        '' !!!FIXME!!!
-        '' this FAILS on static array arguments.
-
-        '' deref descriptor->data
-        idxexpr = astNewPTR( FB_ARRAYDESC_DATAOFFS, _
+		'' deref descriptor->data
+		idxexpr = astNewPTR( FB_ARRAYDESC_DATAOFFS, _
                              astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
                              FB_DATATYPE_INTEGER, _
                              NULL )
-    	idxexpr = astNewLOAD( idxexpr, FB_DATATYPE_INTEGER )
-
-    	'' can't reuse varexpr
-    	astDelTree( varexpr )
-    	varexpr = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
+		
+		'' descriptor->dimTB(0).lBound
+		dataOffset = astNewPTR( FB_ARRAYDESCLEN + FB_ARRAYDESC_LBOUNDOFS, _
+                                astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+                                FB_DATATYPE_INTEGER, _
+                                NULL )
+		
+		'' lBound * elemLen
+		dataOffset = astNewBOP( AST_OP_MUL, dataOffset, astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_UINT ) )
+		
+		'' add above to data ptr
+		idxexpr = astNewBOP( AST_OP_ADD, idxexpr, dataOffset )
+		
+		'' ...
+		astNewLOAD( idxexpr, FB_DATATYPE_INTEGER )
+		
+		'' can't reuse varexpr
+		astDelTree( varexpr )
+		varexpr = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
 
     '' dynamic array? (this will handle common's too)
     elseif( symbGetIsDynamic( sym ) ) then
     	'' deref descriptor.data
-    	idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), _
-    						 FB_ARRAYDESC_DATAOFFS, _
-    						 FB_DATATYPE_INTEGER )
-    	idxexpr = astNewLOAD( idxexpr, FB_DATATYPE_INTEGER )
+		idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), _
+                             FB_ARRAYDESC_DATAOFFS, _
+                             FB_DATATYPE_INTEGER )
+		
+		'' descriptor->dimTB(0).lBound
+		dataOffset = astNewVAR( symbGetArrayDescriptor( sym ), _
+                                FB_ARRAYDESCLEN + FB_ARRAYDESC_LBOUNDOFS, _
+                                FB_DATATYPE_INTEGER )
+		
+		'' lBound * elemLen
+		dataOffset = astNewBOP( AST_OP_MUL, dataOffset, astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_UINT ) )
+		
+		'' add above to data ptr
+		idxexpr = astNewBOP( AST_OP_ADD, idxexpr, dataOffset )
+		
+		'' ...
+		idxexpr = astNewLOAD( idxexpr, FB_DATATYPE_INTEGER )
 
     '' static array..
     else

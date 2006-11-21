@@ -123,12 +123,13 @@ Version 0.17 Beta:
 - Console was still cleared when exiting a gfx mode on certain terminals under Linux (lillo)
 - Serial driver on windows was not setting DTR high when opening the device (jeffm)
 - Serial driver on windows was ignoring RB/TB buffer size parameters (jeffm)
-- DOS gfxlib always failed when no mouse was detected (DrV)
+- DOS gfxlib always failed when no mouse was detected
 - Win32 GDI driver did not use a custom palette in fullscreen mode, and was giving approximated colors (lillo)
 - ctors couldn't be nested when using -exx, due to implicit code generation (cha0s)
 - properties couldn't be used as buffers in gfx stmts (cha0s)
 - static arrays with lower bounds <> 0 would fail when passed as index-less arguments to quirk gfx statements (cha0s)
 - fb_GfxGet was using the array descriptor's 'ptr' field to assert the validity of the data, instead of the 'data' field (cha0s)
+- arrays with lbounds <> 0 passed as args or dynamic would fail in quirk gfx functions (cha0s)
 
 Version 0.16 Beta:
 
