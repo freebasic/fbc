@@ -37,6 +37,7 @@ static unsigned int (*fb_hGetPixel)(struct FB_GFXCTX *ctx, int x, int y);
 extern void *fb_hPixelSet2MMX(void *dest, int color, size_t size);
 extern void *fb_hPixelSet4MMX(void *dest, int color, size_t size);
 extern void *fb_hPixelSetAlpha4MMX(void *dest, int color, size_t size);
+extern void fb_hPutPixelAlpha4MMX(FB_GFXCTX *ctx, int x, int y, unsigned int color);
 #endif
 
 
@@ -379,13 +380,18 @@ void fb_hSetupFuncs(void)
 				fb_hPixelSetSolid = fb_hPixelSet4;
 			fb_hPixelCpy = fb_hPixelCpy4;
 			if (__fb_gfx->flags & ALPHA_PRIMITIVES) {
-				fb_hPutPixelAlpha = fb_hPutPixelAlpha4;
 #if defined(TARGET_X86)
-				if (__fb_gfx->flags & HAS_MMX)
+				if (__fb_gfx->flags & HAS_MMX) {
+					fb_hPutPixelAlpha = fb_hPutPixelAlpha4MMX;
 					fb_hPixelSetAlpha = fb_hPixelSetAlpha4MMX;
-				else
+				}
+				else {
 #endif
+					fb_hPutPixelAlpha = fb_hPutPixelAlpha4;
 					fb_hPixelSetAlpha = fb_hPixelSetAlpha4;
+#if defined(TARGET_X86)
+				}
+#endif
 			}
 			else {
 				fb_hPutPixelAlpha = fb_hPutPixelSolid;

@@ -31,10 +31,11 @@
 
 .balign 16
 
-mask_rb_32:	.long	MASK_RB_32, MASK_RB_32
-mask_g_32:	.long	MASK_G_32, MASK_G_32
-mask_a_32:	.long	MASK_A_32, MASK_A_32
-a_32:		.long	0, 0
+mask_rb_32:		.long	MASK_RB_32, MASK_RB_32
+mask_g_32:		.long	MASK_G_32, MASK_G_32
+mask_a_32:		.long	MASK_A_32, MASK_A_32
+mask_rgb_32:	.long	0xFFFFFF, 0xFFFFFF
+a_32:			.long	0, 0
 
 
 .text
@@ -326,6 +327,44 @@ LABEL(pixelsetalpha4_end)
 	popl %ebp
 	ret
 
+
+/*:::::*/
+FUNC(fb_hPutPixelAlpha4MMX)
+	pushl %ebp
+	movl %esp, %ebp
+	pushl %edi
+	
+	movl ARG1, %edi
+	movl ARG4, %edx
+	movl ARG3, %ecx
+	movl ARG2, %eax
+	movl CTX_LINE(%edi), %ebp
+	movd %edx, %mm1
+	movl (%ebp, %ecx, 4), %edi
+	shrl $24, %edx
+	leal (%edi, %eax, 4), %edi
+	pxor %mm2, %mm2
+	movd (%edi), %mm0
+	movd %edx, %mm3
+	punpcklbw %mm2, %mm1			/* mm1 = | ca | cr | cg | cb | */
+	punpcklbw %mm2, %mm0			/* mm0 = | da | dr | dg | db | */
+	punpcklwd %mm3, %mm3
+	psubw %mm0, %mm1				/* mm1 = | ca-da | cr-dr | cg-dg | cb-db | */
+	punpckldq %mm3, %mm3			/* mm3 = |  a |  a |  a |  a | */
+	shll $24, %edx
+	pmullw %mm3, %mm1
+	movd %edx, %mm2
+	psrlw $8, %mm1
+	paddw %mm1, %mm0
+	packuswb %mm0, %mm0
+	pand (mask_rgb_32), %mm0
+	por %mm2, %mm0
+	movd %mm0, (%edi)
+
+	emms
+	popl %edi
+	popl %ebp
+	ret
 
 
 FUNC(fb_MMX_code_end)
