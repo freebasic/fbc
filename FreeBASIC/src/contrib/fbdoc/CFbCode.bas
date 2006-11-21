@@ -38,6 +38,7 @@ type CFbCode_
 	as integer        n
 	as integer        s
 	as integer        i
+	as integer        inprepro
 end type
 
 '':::::
@@ -206,17 +207,24 @@ private function _AddToken _
 	else
 		token->text = *text
 	end if
+	
+	token->flags = FBTOKEN_FLAGS_NONE
+	if( _this->inprepro ) then
+		token->flags or= FBTOKEN_FLAGS_DEFINE
+	end if
 
-	if( id = FB_TOKEN_NAME ) then
+	select case id
+	case FB_TOKEN_NAME, FB_TOKEN_DEFINE, FB_TOKEN_KEYWORD
 		k = fbdoc_FindKeyword( token->text )
 		if( len(k) > 0 ) then
 			token->id = FB_TOKEN_KEYWORD
 			token->text = k
 		end if
-	end if
+	end select
 
 	if( id = FB_TOKEN_NEWLINE ) then
 		_this->startofline = TRUE
+		_this->inprepro = FALSE
 	
 	elseif( id <> FB_TOKEN_SPACE ) then
 		_this->startofline = FALSE
@@ -490,7 +498,20 @@ private function _ParseToken _
 	'' #
 	c = PeekChar( _this )
 	if( c = asc("#") and _this->startofline = TRUE ) then
-		_ReadToEOL( _this )
+		c = ReadChar( _this )
+		while( c )
+			c = PeekChar( _this )
+			if( ( c = asc("_") ) or _
+				 ( c >= asc("A") and c <= asc("Z") ) or _
+				 ( c >= asc("a") and c <= asc("z") ) _
+			) then
+				c = ReadChar( _this )
+			else
+				exit while
+			end if
+			'' _ReadToEOL( _this )
+		wend 
+		_this->inprepro = TRUE
 		return _AddToken( _this, FB_TOKEN_DEFINE )
 	end if
 

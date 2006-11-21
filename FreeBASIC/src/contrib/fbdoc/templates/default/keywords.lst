@@ -383,6 +383,7 @@ System
 Tab
 Tan
 Then
+This
 ThreadCreate
 ThreadWait
 Time
@@ -464,7 +465,9 @@ __FB_VER_MINOR__
 __FB_VER_PATCH__
 __FB_WIN32__
 __FILE__
+__FILE_NQ__
 __FUNCTION__
+__FUNCTION_NQ__
 __LINE__
 __TIME__
 __PATH__

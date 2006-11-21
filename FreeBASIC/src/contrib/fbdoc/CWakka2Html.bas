@@ -364,13 +364,22 @@ private function _codeToHtml( byval _this as CWakka2Html ptr, byval text as zstr
 			exit while
 		end if
 
-		grpno = cssClassTb( token->id ).grpno
+		if( token->flags and FBTOKEN_FLAGS_DEFINE ) then
+			grpno = cssClassTb( FB_TOKEN_DEFINE ).grpno
+		else
+			grpno = cssClassTb( token->id ).grpno
+		end if
+
 		if( lastgrpno <> grpno ) then
 			if( lastgrpno <> 0 ) then
 				res += "</span>"
 			end if
 			if( grpno <> 0 ) then
-				res += "<span class=""" + *cssClassTb( token->id ).cssClass + """>"
+				if( token->flags and FBTOKEN_FLAGS_DEFINE ) then
+					res += "<span class=""" + *cssClassTb( FB_TOKEN_DEFINE ).cssClass + """>"
+				else
+					res += "<span class=""" + *cssClassTb( token->id ).cssClass + """>"
+				end if
 			end if
 		end if
 
@@ -673,23 +682,27 @@ private function _actionGenImage( byval _this as CWakka2Html ptr, byval paramsTb
 
 	cssclass = *_this->cssClassTb(WIKI_TOKEN_ACTION_IMG)
 
-	res = "<div class=""" + cssclass + """><img"
-
 	strAlt = CWiki_GetActionParamValue( paramsTb, "alt" )
 	strUrl = CWiki_GetActionParamValue( paramsTb, "url" )
 
-	if( len(strAlt) > 0 ) then
-		res += " alt=""" + strAlt + """"
-	end if
+	if left(strUrl, 1) = "/" then
 
-	if( len(strUrl) > 0 ) then
-		if left(strUrl, 1) = "/" then
-			strUrl = mid( strUrl, 2)
+		res = "<div class=""" + cssclass + """><img"
+
+		if( len(strAlt) > 0 ) then
+			res += " alt=""" + strAlt + """"
 		end if
-		res += " src=""" + strUrl + """"
-	end if
 
-	res += " /></div>"
+		if( len(strUrl) > 0 ) then
+			if left(strUrl, 1) = "/" then
+				strUrl = mid( strUrl, 2)
+			end if
+			res += " src=""" + strUrl + """"
+		end if
+
+		res += " /></div>"
+
+	end if
 
 	return res
 

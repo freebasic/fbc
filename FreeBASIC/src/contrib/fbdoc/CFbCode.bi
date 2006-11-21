@@ -41,9 +41,13 @@ type CFbCode as CFbCode_
 type FbToken
 	as any ptr				ll_prev
 	as any ptr				ll_next
-	as integer id     '' FB_TOKEN
-	as string text
+	as integer              id         '' FB_TOKEN
+	as string               text
+	as integer              flags
 end type
+
+const FBTOKEN_FLAGS_NONE = 0
+const FBTOKEN_FLAGS_DEFINE = 1
 
 declare function CFbCode_New _
 	( _

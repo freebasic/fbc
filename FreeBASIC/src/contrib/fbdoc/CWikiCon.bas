@@ -366,7 +366,7 @@ function CWikiCon_StorePage _
 	if( note ) then
 		CHttpForm_Add4( form, "note", *note )
 	else
-		CHttpForm_Add4( form, "note", "new format" )
+		CHttpForm_Add4( form, "note", "updated" )
 	end if
 
 	CHttpForm_Add4( form, "submit", "Store" )

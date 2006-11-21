@@ -102,7 +102,7 @@ const default_CacheDir = "cache/"
 	end if
 
 	if( bShowVersion ) then
-		? "FreeBASIC User's Manual Converter/Generator - Version 0.1"
+		? "FreeBASIC User's Manual Converter/Generator - Version 0.1b"
 		? "Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com)"
 		end 1
 	end if
@@ -203,7 +203,7 @@ const default_CacheDir = "cache/"
 	end if
 
 	if( bMakeIni ) then
-		print "Makeing default connection ini file '" + sConnFile + "'"
+		print "Making default connection ini file '" + sConnFile + "'"
 		h = FreeFile
 		if( open( sConnFile for input as #h ) = 0 ) then
 			close #h
