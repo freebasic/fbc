@@ -128,7 +128,7 @@ Version 0.17 Beta:
 - ctors couldn't be nested when using -exx, due to implicit code generation (cha0s)
 - properties couldn't be used as buffers in gfx stmts (cha0s)
 - static arrays with lower bounds <> 0 would fail when passed as index-less arguments to quirk gfx statements (cha0s)
-
+- fb_GfxGet was using the array descriptor's 'ptr' field to assert the validity of the data, instead of the 'data' field (cha0s)
 
 Version 0.16 Beta:
 
