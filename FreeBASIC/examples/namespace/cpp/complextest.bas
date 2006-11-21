@@ -1,5 +1,5 @@
 '' complextest.bas
-'' compile eith:
+'' compile with:
 ''   fbc complextest.bas
 
 #inclib "complexlib"
@@ -17,10 +17,10 @@ extern "c++"
 
     end type
 
-    declare operator + cdecl ( byref as complex, byref as complex) as complex
-    declare operator - cdecl ( byref as complex, byref as complex) as complex
-    declare operator * cdecl ( byref as complex, byref as complex) as complex
-    declare operator / cdecl ( byref as complex, byref as complex) as complex
+    declare operator + ( byref as complex, byref as complex) as complex
+    declare operator - ( byref as complex, byref as complex) as complex
+    declare operator * ( byref as complex, byref as complex) as complex
+    declare operator / ( byref as complex, byref as complex) as complex
 
   end namespace
 
