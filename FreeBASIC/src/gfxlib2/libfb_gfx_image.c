@@ -31,9 +31,8 @@
 FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color)
 {
 	FB_GFXCTX *context = fb_hGetContext();
-	void *image;
-	PUT_HEADER *header;
-	int size, pitch;
+	PUT_HEADER *image;
+	int size, pitch, header_size = 4;
 	
 	if ((!__fb_gfx) || (width <= 0) || (height <= 0))
 		return NULL;
@@ -46,18 +45,30 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color)
 	}
 	else
 		color = fb_hFixColor(color);
-	pitch = ((width * __fb_gfx->bpp) + 0xF) & ~0xF;
+	
+	pitch = width * __fb_gfx->bpp;
+	if (!(__fb_gfx->flags & QB_COMPATIBILITY)) {
+		header_size = sizeof(PUT_HEADER);
+		pitch = (pitch + 0xF) & ~0xF;
+	}
 	size = pitch * height;
 	
-	image = malloc(size + sizeof(PUT_HEADER));
-	header = (PUT_HEADER *)image;
-	header->type = PUT_HEADER_NEW;
-	header->bpp = __fb_gfx->bpp;
-	header->width = width;
-	header->height = height;
-	header->pitch = pitch;
-	fb_hMemSet(header->_reserved, 0, sizeof(header->_reserved));
-	context->pixel_set(image + sizeof(PUT_HEADER), color, (pitch / header->bpp) * height);
+	image = (PUT_HEADER *)malloc(size + header_size);
+	if (__fb_gfx->flags & QB_COMPATIBILITY) {
+		/* use old-style header for compatibility */
+		image->old.bpp = __fb_gfx->bpp;
+		image->old.width = width;
+		image->old.height = height;
+	}
+	else {
+		image->type = PUT_HEADER_NEW;
+		image->bpp = __fb_gfx->bpp;
+		image->width = width;
+		image->height = height;
+		image->pitch = pitch;
+		fb_hMemSet(image->_reserved, 0, sizeof(image->_reserved));
+	}
+	context->pixel_set(image + header_size, color, (pitch / image->bpp) * height);
 	
 	return image;
 }
