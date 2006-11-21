@@ -58,7 +58,7 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
 	header = (PUT_HEADER *)dest;
-	if (__fb_gfx->bpp == 1) {
+	if (__fb_gfx->flags & QB_COMPATIBILITY) {
 		/* use old-style header for compatibility */
 		header->old.bpp = __fb_gfx->bpp;
 		header->old.width = w;
