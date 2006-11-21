@@ -65,14 +65,18 @@ private function hMakeArrayIndex _
     if( astIsFIELD( varexpr ) ) then
     	return varexpr
     end if
-
+    
     ''  argument passed by descriptor?
     if( symbIsParamByDesc( sym ) ) then
-    	'' deref descriptor->data
-    	idxexpr = astNewPTR( FB_ARRAYDESC_DATAOFFS, _
-    						 astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-    						 FB_DATATYPE_INTEGER, _
-    						 NULL )
+        
+        '' !!!FIXME!!!
+        '' this FAILS on static array arguments.
+
+        '' deref descriptor->data
+        idxexpr = astNewPTR( FB_ARRAYDESC_DATAOFFS, _
+                             astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+                             FB_DATATYPE_INTEGER, _
+                             NULL )
     	idxexpr = astNewLOAD( idxexpr, FB_DATATYPE_INTEGER )
 
     	'' can't reuse varexpr
@@ -89,8 +93,10 @@ private function hMakeArrayIndex _
 
     '' static array..
     else
-    	idxexpr = astNewCONSTi( symbGetArrayFirstDim( sym )->lower, _
-    							FB_DATATYPE_INTEGER )
+
+      idxexpr = astNewBOP( AST_OP_MUL, _
+                           astNewCONSTi( symbGetArrayFirstDim( sym )->lower, FB_DATATYPE_INTEGER ), _
+                           astNewCONSTi( symbCalcLen( astGetDataType( varexpr ), astGetSubType( varexpr ) ), FB_DATATYPE_UINT ) )
 
     end if
 

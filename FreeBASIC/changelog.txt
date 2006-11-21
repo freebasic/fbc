@@ -74,8 +74,6 @@ Version 0.17 Beta:
 - the GFX_ALWAYS_ON_TOP flag to SCREEN, to let the program window stay always on top (lillo)
 
 [fixed]
-- ctors couldn't be nested when using -exx, due to implicit code generation (cha0s)
-- properties couldn't be used as buffers in gfx stmts (cha0s)
 - premature optimization in bitfields when converting to a signed integer type (v1c)
 - the case of the aliases of extern dynamic arrays was not been preserved (v1c)
 - moving mouse out of program window and back onto it used to reset mouse buttons status as reported by GETMOUSE (lillo)
@@ -127,6 +125,9 @@ Version 0.17 Beta:
 - Serial driver on windows was ignoring RB/TB buffer size parameters (jeffm)
 - DOS gfxlib always failed when no mouse was detected
 - Win32 GDI driver did not use a custom palette in fullscreen mode, and was giving approximated colors (lillo)
+- ctors couldn't be nested when using -exx, due to implicit code generation (cha0s)
+- properties couldn't be used as buffers in gfx stmts (cha0s)
+- static arrays with lower bounds <> 0 would fail when passed as index-less arguments to quirk gfx statements (cha0s)
 
 
 Version 0.16 Beta:
