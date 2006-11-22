@@ -75,12 +75,10 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 
 static void release_gfx_mem(void)
 {
-	FB_GFXCTX *context = fb_hGetContext();
-	
 	if (__fb_gfx) {
 		if ((__fb_gfx->driver) && (__fb_gfx->driver->exit))
             __fb_gfx->driver->exit();
-        fb_hResetCharCells(context, FALSE);
+        fb_hResetCharCells(NULL, FALSE);
         if (__fb_gfx->page) {
             int i;
             for (i = 0; i < __fb_gfx->num_pages; i++) {
@@ -127,6 +125,7 @@ void fb_GfxViewUpdate( void )
 void fb_hResetCharCells(FB_GFXCTX *context, int do_alloc)
 {
     int i;
+    
     if( __fb_gfx!=NULL ) {
         /* Free the previously allocated character cells */
         if( __fb_gfx->con_pages!=NULL ) {
@@ -196,10 +195,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 	
     release_gfx_mem();
 
-    switch (mode) {
-    case 0:
-    case 3:
-    case 4:
+	if ((mode == 0) || (info->w == 0)) {
         memset(&__fb_ctx.hooks, 0, sizeof(__fb_ctx.hooks));
 
         if (flags != SCREEN_EXIT) {
@@ -209,10 +205,8 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         }
         /* reset viewport to console dimensions */
         fb_ConsoleSetTopBotRows(-1, -1);
-        
-        break;
-
-    default:
+	}
+	else {
         __fb_ctx.hooks.inkeyproc = fb_GfxInkey;
         __fb_ctx.hooks.getkeyproc = fb_GfxGetkey;
         __fb_ctx.hooks.keyhitproc = fb_GfxKeyHit;
@@ -239,7 +233,6 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         __fb_ctx.hooks.sleepproc = fb_GfxSleep;
         __fb_ctx.hooks.isredirproc = fb_GfxIsRedir;
         __fb_gfx = (FBGFX *)calloc(1, sizeof(FBGFX));
-        break;
     }
 
     if (__fb_gfx) {

@@ -68,7 +68,7 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color)
 		image->pitch = pitch;
 		fb_hMemSet(image->_reserved, 0, sizeof(image->_reserved));
 	}
-	context->pixel_set(image + header_size, color, (pitch * height) / __fb_gfx->bpp);
+	context->pixel_set((unsigned char *)image + header_size, color, (pitch * height) / __fb_gfx->bpp);
 	
 	return image;
 }
