@@ -399,6 +399,7 @@ extern void fb_hSoftCursorExit(void);
 extern void fb_hSoftCursorPut(int x, int y);
 extern void fb_hSoftCursorUnput(int x, int y);
 extern void fb_hSoftCursorPaletteChanged(void);
+extern int fb_hColorDistance(int index, int r, int g, int b);
 extern void *fb_hPixelSetAlpha4(void *dest, int color, size_t size);
 extern int fb_hGetWindowHandle(void);
 extern int fb_hGL_Init(FB_DYLIB lib);

@@ -27,9 +27,18 @@
 #include "fb_gfx.h"
 
 #include "fb_gfx_linux.h"
+#include <time.h>
 #include <linux/fb.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <sys/time.h>
+
+#ifndef FB_AUX_VGA_PLANES_VGA4
+#define FB_AUX_VGA_PLANES_VGA4	0
+#endif
+
+#define OUTB(port,value)	{ __asm__ __volatile__ ("outb %b0, %w1" : : "a"(value), "Nd"(port)); }
+
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_exit(void);
@@ -75,6 +84,7 @@ static struct fb_var_screeninfo mode, orig_mode;
 static struct fb_cmap cmap, orig_cmap;
 static unsigned char *framebuffer = NULL;
 static unsigned short *palette = NULL;
+static unsigned char color_conv[4096];
 static BLITTER *blitter;
 static int framebuffer_offset, is_running = FALSE, is_active = TRUE;
 static int vsync_flags = 0, is_palette_changed = FALSE;
@@ -84,6 +94,62 @@ static unsigned int last_click_time = 0;
 static pthread_t thread;
 static pthread_mutex_t mutex;
 static pthread_cond_t cond;
+
+
+/*:::::*/
+static void vga16_blitter(unsigned char *dest, int pitch)
+{
+	unsigned int color;
+	unsigned char buffer[fb_linux.w], pattern;
+	unsigned char *s, *source = __fb_gfx->framebuffer;
+	int x, y, plane, i, offset;
+	
+	OUTB(0x3CE, 0x03);
+	OUTB(0x3CF, 0x00);
+	
+	OUTB(0x3CE, 0x05);
+	OUTB(0x3CF, 0x00);
+	
+	OUTB(0x3CE, 0x01);
+	OUTB(0x3CF, 0x00);
+	
+	OUTB(0x3CE, 0x08);
+	OUTB(0x3CF, 0xFF);
+	
+	for (y = 0; y < fb_linux.h; y++) {
+		if (__fb_gfx->dirty[y]) {
+			offset = 0;
+			s = source;
+			for (x = 0; x < fb_linux.w; x += 8) {
+				for (plane = 0; plane < 4; plane++) {
+					pattern = 0;
+					for (i = 0; i < 8; i++) {
+						if (__fb_gfx->depth == 8) {
+							color = __fb_gfx->device_palette[s[i]];
+							color = color_conv[((color & 0xF0) >> 4) | ((color & 0xF000) >> 8) | ((color & 0xF00000) >> 12)];
+						}
+						else {
+							color = s[i];
+						}
+						
+						if (color & (1 << plane))
+							pattern |= 1 << (7 - i);
+					}
+					buffer[((fb_linux.w >> 3) * plane) + offset] = pattern;
+				}
+				offset++;
+				s += 8;
+			}
+			for (plane = 0; plane < 4; plane++) {
+				OUTB(0x3C4, 0x02);
+				OUTB(0x3C5, (1 << plane));
+				fb_hMemCpy(dest, buffer + ((fb_linux.w >> 3) * plane), (fb_linux.w >> 3));
+			}
+		}
+		dest += pitch;
+		source += __fb_gfx->pitch;
+	}
+}
 
 
 /*:::::*/
@@ -182,7 +248,10 @@ static void *driver_thread(void *arg)
 		
 		if (is_active) {
 			if (is_palette_changed) {
-				ioctl(device_fd, FBIOPUTCMAP, &cmap);
+				if (device_info.type != FB_TYPE_VGA_PLANES)
+					ioctl(device_fd, FBIOPUTCMAP, &cmap);
+				else
+					fb_hMemSet(__fb_gfx->dirty, TRUE, fb_linux.h);
 				if (mouse_fd >= 0)
 					fb_hSoftCursorPaletteChanged();
 				is_palette_changed = FALSE;
@@ -253,7 +322,8 @@ static void driver_key_handler(int key)
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	const char *device_name;
-	int try, res_index, dummy;
+	int try, res_index, dummy, i, j, r, g, b, dist, best_dist, best_index = 0;
+	int palette_len;
 	struct fb_vblank vblank;
 	const char *mouse_device[] = { "/dev/input/mice", "/dev/usbmouse", "/dev/psaux", NULL };
 	const unsigned char im_init[] = { 243, 200, 243, 100, 243, 80 };
@@ -264,7 +334,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_linux.w = w;
 	fb_linux.h = h;
 	fb_linux.flags = flags;
-	depth = MAX(depth, 8);
+	depth = MAX(depth, 4);
 	
 	device_name = getenv("FBGFX_FRAMEBUFFER");
 	if (!device_name)
@@ -275,7 +345,11 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	
 	if ((ioctl(device_fd, FBIOGET_FSCREENINFO, &device_info) < 0) ||
 	    (ioctl(device_fd, FBIOGET_VSCREENINFO, &orig_mode) < 0) ||
-	    (device_info.type != FB_TYPE_PACKED_PIXELS) ||
+	    ((device_info.type != FB_TYPE_PACKED_PIXELS)
+#if defined(i386) && defined(FB_TYPE_VGA_PLANES)
+	     && (device_info.type != FB_TYPE_VGA_PLANES)
+#endif
+	     ) ||
 	    ((device_info.visual != FB_VISUAL_PSEUDOCOLOR) &&
 	     (device_info.visual != FB_VISUAL_DIRECTCOLOR) &&
 	     (device_info.visual != FB_VISUAL_TRUECOLOR))) {
@@ -283,6 +357,20 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		device_fd = -1;
 		return -1;
 	}
+
+#if defined(i386) && defined(FB_TYPE_VGA_PLANES)
+	if ((device_info.type == FB_TYPE_VGA_PLANES) && (device_info.type_aux == FB_AUX_VGA_PLANES_VGA4)) {
+		mode = orig_mode;
+		if ((orig_mode.xres >= w) && (orig_mode.yres >= h) && (__fb_con.has_perm) && (depth <= 8)) {
+			/* we are in vga16 mode, got to live with it */
+			goto got_mode;
+		}
+		
+		close(device_fd);
+		device_fd = -1;
+		return -1;
+	}
+#endif
     
 	/* tries in order:
 	 *  1) wanted resolution and color depth;
@@ -300,11 +388,6 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 			mode.bits_per_pixel = depth;
 			mode.grayscale = 0;
 			switch (depth) {
-				case 8:
-					mode.red.offset   = mode.red.length   = 0;
-					mode.green.offset = mode.green.length = 0;
-					mode.blue.offset  = mode.blue.length  = 0;
-					break;
 				case 15:
 					mode.red.offset   = 10; mode.red.length   = 5;
 					mode.green.offset = 5;  mode.green.length = 5;
@@ -320,6 +403,11 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 					mode.red.offset   = 16; mode.red.length   = 8;
 					mode.green.offset = 8;  mode.green.length = 8;
 					mode.blue.offset  = 0;  mode.blue.length  = 8;
+					break;
+				default:
+					mode.red.offset   = mode.red.length   = 0;
+					mode.green.offset = mode.green.length = 0;
+					mode.blue.offset  = mode.blue.length  = 0;
 					break;
 			}
 			mode.red.msb_right = mode.green.msb_right = mode.blue.msb_right = 0;
@@ -367,12 +455,19 @@ got_mode:
 	
 	fb_hMemSet(framebuffer, 0, device_info.smem_len);
 	
-	framebuffer_offset = (((mode.yres - h) >> 1) * device_info.line_length) +
-	                     (((mode.xres - w) >> 1) * BYTES_PER_PIXEL(mode.bits_per_pixel));
-	
-	blitter = fb_hGetBlitter(mode.bits_per_pixel, (mode.red.offset == 0) ? TRUE : FALSE);
-	if (!blitter)
-		return -1;
+	if (mode.bits_per_pixel == 4) {
+		palette_len = 16;
+		framebuffer_offset = (((mode.yres - h) >> 1) * (mode.xres >> 3)) + ((mode.xres - w) >> 4);
+		blitter = vga16_blitter;
+	}
+	else {
+		palette_len = 256;
+		framebuffer_offset = (((mode.yres - h) >> 1) * device_info.line_length) +
+		                     (((mode.xres - w) >> 1) * BYTES_PER_PIXEL(mode.bits_per_pixel));
+		blitter = fb_hGetBlitter(mode.bits_per_pixel, (mode.red.offset == 0) ? TRUE : FALSE);
+		if (!blitter)
+			return -1;
+	}
 	
 	mouse_packet_size = 3;
 	for (try = 0; mouse_device[try]; try++) {
@@ -396,18 +491,42 @@ got_mode:
 	
 	palette = (unsigned short *)malloc(sizeof(unsigned short) * 1536);
 	orig_cmap.start = 0;
-	orig_cmap.len = 256;
+	orig_cmap.len = palette_len;
 	orig_cmap.transp = NULL;
 	orig_cmap.red = palette;
 	orig_cmap.green = palette + 256;
 	orig_cmap.blue = palette + 512;
 	ioctl(device_fd, FBIOGETCMAP, &orig_cmap);
 	cmap.start = 0;
-	cmap.len = 256;
+	cmap.len = palette_len;
 	cmap.transp = NULL;
 	cmap.red = palette + 768;
 	cmap.green = palette + 1024;
 	cmap.blue = palette + 1280;
+	if ((mode.bits_per_pixel == 4) && (depth == 8)) {
+		/* set safe palette */
+		for (i = 0; i < 16; i++) {
+			r = cmap.red[i] = fb_palette_16.data[(i * 3) + 2] << 8;
+			g = cmap.green[i] = fb_palette_16.data[(i * 3) + 1] << 8;
+			b = cmap.blue[i] = fb_palette_16.data[(i * 3)] << 8;
+			__fb_gfx->device_palette[i] = (r >> 8) | g | (b << 8);
+		}
+		ioctl(device_fd, FBIOPUTCMAP, &cmap);
+		for (i = 0; i < 4096; i++) {
+			best_dist = 1000000;
+			r = (i & 0xF) << 4;
+			g = (i & 0xF0);
+			b = (i & 0xF00) >> 4;
+			for (j = 0; j < 16; j++) {
+				dist = fb_hColorDistance(j, r, g, b);
+				if (dist < best_dist) {
+					best_dist = dist;
+					best_index = j;
+				}
+			}
+			color_conv[i] = best_index;
+		}
+	}
 	
 	if (ioctl(device_fd, FBIOGET_VBLANK, &vblank) == 0)
 		vsync_flags = vblank.flags;

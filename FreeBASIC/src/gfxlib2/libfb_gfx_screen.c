@@ -380,8 +380,20 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, in
 
 	if ((w <= 0) || (h <= 0))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-	if ((depth != 8) && (depth != 15) && (depth != 16) && (depth != 24) && (depth != 32))
-		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	switch (depth) {
+		case 1:
+		case 2:
+		case 4:
+		case 8:
+		case 15:
+		case 16:
+		case 24:
+		case 32:
+			break;
+		default:
+			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	}
+	
 	info.w = w;
 	info.h = h;
 	info.depth = depth;

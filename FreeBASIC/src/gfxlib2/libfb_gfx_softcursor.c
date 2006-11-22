@@ -98,7 +98,7 @@ static void copy_cursor_area(int x, int y, int from_area)
 
 
 /*:::::*/
-static int color_distance(int index, int r, int g, int b)
+int fb_hColorDistance(int index, int r, int g, int b)
 {
 	return (((__fb_gfx->device_palette[index] & 0xFF) - r) * ((__fb_gfx->device_palette[index] & 0xFF) - r)) +
 	       ((((__fb_gfx->device_palette[index] >> 8) & 0xFF) - g) * (((__fb_gfx->device_palette[index] >> 8) & 0xFF) - g)) +
@@ -189,12 +189,12 @@ void fb_hSoftCursorPaletteChanged(void)
 	if (__fb_gfx->bpp > 1)
 		return;
 	for (i = 0; i < 256; i++) {
-		dist = color_distance(i, 255, 255, 255);
+		dist = fb_hColorDistance(i, 255, 255, 255);
 		if (dist < min_wdist) {
 			min_wdist = dist;
 			white = i;
 		}
-		dist = color_distance(i, 0, 0, 0);
+		dist = fb_hColorDistance(i, 0, 0, 0);
 		if (dist < min_bdist) {
 			min_bdist = dist;
 			black = i;

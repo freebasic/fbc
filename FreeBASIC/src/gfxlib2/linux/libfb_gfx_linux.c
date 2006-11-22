@@ -840,7 +840,7 @@ void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 	*depth = XDefaultDepth(dpy, XDefaultScreen(dpy));
 	if (XRRQueryExtension(dpy, &dummy, &dummy) &&
 	    XRRQueryVersion(dpy, &version, &dummy) && (version >= 1)) {
-	    cfg = XRRGetScreenInfo(dpy, XDefaultRootWindow(dpy))
+	    cfg = XRRGetScreenInfo(dpy, XDefaultRootWindow(dpy));
 		*refresh = XRRConfigCurrentRate(cfg);
 		XRRFreeScreenConfigInfo(cfg);
 	}
