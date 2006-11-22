@@ -163,21 +163,25 @@ function cForStmtBegin as integer
 		exit function
 	end if
     
-    '' open outer scope
-	n = astScopeBegin( )
-	if( n = NULL ) then
-		if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
-			exit function
+    if( env.clopt.lang <> FB_LANG_QB ) then
+    
+	    '' open outer scope
+		n = astScopeBegin( )
+		if( n = NULL ) then
+			if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
+				exit function
+			end if
 		end if
+	
+		outerStk = cCompStmtPush( FB_TK_SCOPE )
+		outerStk->scopenode = n
+	
+		'' deprecated quirk: implicit vars inside implicit scope blocks
+		'' must be allocated in the function scope
+		outerStk->scp.lastis_scope = fbGetIsScope( )
+		fbSetIsScope( TRUE )
+		
 	end if
-
-	outerStk = cCompStmtPush( FB_TK_SCOPE )
-	outerStk->scopenode = n
-
-	'' deprecated quirk: implicit vars inside implicit scope blocks
-	'' must be allocated in the function scope
-	outerStk->scp.lastis_scope = fbGetIsScope( )
-	fbSetIsScope( TRUE )
     
     '' new variable?
 	if( lexGetLookAhead( 1 ) = FB_TK_AS ) then
@@ -519,22 +523,26 @@ function cForStmtEnd as integer
 
 		'' pop from stmt stack
 		cCompStmtPop( stk )
+        
+        if( env.clopt.lang <> FB_LANG_QB ) then
 
-        '' close outer scope
-		stk = cCompStmtGetTOS( FB_TK_SCOPE )
-		if( stk = NULL ) then
-			exit function
+	        '' close outer scope
+			stk = cCompStmtGetTOS( FB_TK_SCOPE )
+			if( stk = NULL ) then
+				exit function
+			end if
+		
+			fbSetIsScope( stk->scp.lastis_scope )
+		
+			''
+			if( stk->scopenode <> NULL ) then
+				astScopeEnd( stk->scopenode )
+			end if
+		
+			'' pop from stmt stack
+			cCompStmtPop( stk )
+			
 		end if
-	
-		fbSetIsScope( stk->scp.lastis_scope )
-	
-		''
-		if( stk->scopenode <> NULL ) then
-			astScopeEnd( stk->scopenode )
-		end if
-	
-		'' pop from stmt stack
-		cCompStmtPop( stk )
 
 		'' ID?
 		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then

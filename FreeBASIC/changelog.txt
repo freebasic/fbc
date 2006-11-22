@@ -131,6 +131,7 @@ Version 0.17 Beta:
 - static arrays with lower bounds <> 0 would fail when passed as index-less arguments to quirk gfx statements (cha0s)
 - fb_GfxGet was using the array descriptor's 'ptr' field to assert the validity of the data, instead of the 'data' field (cha0s)
 - arrays with lbounds <> 0 passed as args or dynamic would fail in quirk gfx functions (cha0s)
+- for i as ... wasn't handling scopes properly in lang-qb (cha0s)
 
 Version 0.16 Beta:
 
