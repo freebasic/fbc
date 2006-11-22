@@ -340,5 +340,9 @@ int main(int argc, char **argv)
     fclose( fpDataOut );
 #endif
     fclose( fpDataIn );
+    
+    printf("mk_dat: %d bytes in, %d bytes out (%f:1 ratio)\n",
+    	data_size_raw, data_size_compressed, (float)data_size_raw / (float)data_size_compressed);
+    
     return 0;
 }
