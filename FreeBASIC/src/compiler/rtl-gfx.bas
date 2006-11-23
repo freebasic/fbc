@@ -27,7 +27,7 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
-const FBGFX_QB_COMPATIBILITY = &h00100000
+const FBGFX_QB_COMPATIBILITY = &h10000000
 
 
 declare function hGfxlib_cb _

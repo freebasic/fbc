@@ -277,8 +277,11 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         __fb_gfx->event_queue = (EVENT *)malloc(sizeof(EVENT) * MAX_EVENTS);
         __fb_gfx->event_mutex = fb_MutexCreate();
         __fb_color_conv_16to32 = (unsigned int *)malloc(sizeof(int) * 512);
-        if ((flags != DRIVER_NULL) && (flags & DRIVER_ALPHA_PRIMITIVES))
-        	__fb_gfx->flags |= ALPHA_PRIMITIVES;
+        if (flags != DRIVER_NULL) {
+			if (flags & DRIVER_ALPHA_PRIMITIVES)
+	        	__fb_gfx->flags |= ALPHA_PRIMITIVES;
+	        __fb_gfx->flags |= (flags & DRIVER_QB_COMPATIBILITY);
+	    }
 
         fb_hSetupFuncs();
         fb_hSetupData();

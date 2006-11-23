@@ -53,10 +53,6 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 	w = x2 - x1 + 1;
 	h = y2 - y1 + 1;
 
-	if( array != NULL )
-		if ((array->size > 0) && ((int)dest + 4 + (w * h) > (int)array->data + array->size))
-			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-
 	header = (PUT_HEADER *)dest;
 	if (__fb_gfx->flags & QB_COMPATIBILITY) {
 		/* use old-style header for compatibility */
@@ -76,6 +72,11 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 		dest += sizeof(PUT_HEADER);
 	}
 
+	if( array != NULL ) {
+		if ((array->size > 0) && ((int)dest + (pitch * h) > (int)array->data + array->size))
+			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	}
+	
 	DRIVER_LOCK();
 
 	for (; y1 <= y2; y1++) {
