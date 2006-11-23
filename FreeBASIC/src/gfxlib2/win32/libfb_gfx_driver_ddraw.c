@@ -70,6 +70,20 @@ typedef struct MODESLIST {
 	int *data;
 } MODESLIST;
 
+typedef struct FLASHWINFO {
+	UINT cbSize;
+	HWND hwnd;
+	DWORD dwFlags;
+	UINT uCount;
+	DWORD dwTimeout;
+} FLASHWINFO, *PFLASHWINFO;
+
+BOOL WINAPI FlashWindowEx(PFLASHWINFO pfwi);
+
+
+static int directx_init(void);
+static void directx_exit(void);
+
 
 /* We don't want to directly link with DDRAW.DLL and DINPUT.DLL,
  * as this way generated exes will not depend on them to run.
@@ -103,6 +117,8 @@ static void directx_paint(void)
 {
 	RECT src, dest;
 	POINT point;
+	HRESULT result;
+	FLASHWINFO fwinfo;
 
 	if (fb_win32.flags & DRIVER_FULLSCREEN)
 		return;
@@ -117,8 +133,24 @@ static void directx_paint(void)
 	dest.top += point.y;
 	dest.right += point.x;
 	dest.bottom += point.y;
-	IDirectDrawSurface_Blt(lpDDS, &dest, lpDDS_back, &src, DDBLT_WAIT, NULL);
+	result = IDirectDrawSurface_Blt(lpDDS, &dest, lpDDS_back, &src, DDBLT_WAIT, NULL);
+	while (result == DDERR_SURFACELOST) {
+		IDirectDrawSurface_Restore(lpDDS_back);
+		result = IDirectDrawSurface_Restore(lpDDS);
+		if (result == DDERR_WRONGMODE) {
+			/* it sucks, we have to recreate all DD objects */
+			directx_exit();
+			directx_init();
+			/* stop our window to flash */
+			fwinfo.cbSize = sizeof(fwinfo);
+			fwinfo.hwnd = fb_win32.wnd;
+			fwinfo.dwFlags = 0;
+			FlashWindowEx(&fwinfo);
+		}
+		result = IDirectDrawSurface_Blt(lpDDS, &dest, lpDDS_back, &src, DDBLT_WAIT, NULL);
+	}
 }
+
 
 /*:::::*/
 static int calc_comp_height( int h )
@@ -254,7 +286,7 @@ static int directx_init(void)
 		desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
 		desc.dwWidth = fb_win32.w;
 		desc.dwHeight = fb_win32.h;
-		desc.ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY;
+		desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_VIDEOMEMORY;
 		if (IDirectDraw2_CreateSurface(lpDD, &desc, &lpDDS_back, 0) != DD_OK)
 			return -1;
 	}
@@ -374,10 +406,6 @@ static void directx_thread(HANDLE running_event)
 		}
 		
 		if ((fb_win32.is_active) || (!(fb_win32.flags & DRIVER_FULLSCREEN))) {
-			IDirectDrawSurface_Restore(lpDDS);
-			if (!(fb_win32.flags & DRIVER_FULLSCREEN))
-				IDirectDrawSurface_Restore(lpDDS_back);
-
 			if (fb_win32.is_palette_changed && lpDDP) {
 				IDirectDrawPalette_SetEntries(lpDDP, 0, 0, 256, fb_win32.palette);
 				fb_win32.is_palette_changed = FALSE;

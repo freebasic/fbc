@@ -342,6 +342,11 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		case WM_PAINT:
 			fb_win32.paint();
 			break;
+		
+		case WM_DISPLAYCHANGE:
+			fb_win32.paint();
+			fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
+			break;
 	}
 	
 	if (e.type)
