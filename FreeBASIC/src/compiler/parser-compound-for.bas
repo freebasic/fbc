@@ -176,11 +176,6 @@ function cForStmtBegin as integer
 		outerStk = cCompStmtPush( FB_TK_SCOPE )
 		outerStk->scopenode = n
 	
-		'' deprecated quirk: implicit vars inside implicit scope blocks
-		'' must be allocated in the function scope
-		outerStk->scp.lastis_scope = fbGetIsScope( )
-		fbSetIsScope( TRUE )
-		
 	end if
     
     '' new variable?
@@ -531,8 +526,6 @@ function cForStmtEnd as integer
 			if( stk = NULL ) then
 				exit function
 			end if
-		
-			fbSetIsScope( stk->scp.lastis_scope )
 		
 			''
 			if( stk->scopenode <> NULL ) then
