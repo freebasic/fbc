@@ -40,6 +40,17 @@
 #include <stdlib.h>
 #include "fb.h"
 
+#define RND_CRT			1
+#define RND_SIMPLE		2
+#define RND_MTWIST		3
+#define RND_QB			4
+
+#define RND_FUNC		RND_CRT
+
+
+#if RND_FUNC == RND_CRT
+
+/* C runtime library rand() based implementation */
 
 /*:::::*/
 FBCALL double fb_Rnd ( int n )
@@ -68,3 +79,136 @@ FBCALL void fb_Randomize ( double seed )
 	rand( );
 
 }
+
+
+
+#elif RND_FUNC == RND_SIMPLE
+
+/* Simple implementation, patch provided by yetifoot. */
+
+static uint32_t idum = 0;
+
+/*:::::*/
+FBCALL double fb_Rnd ( int n )
+{
+	static double last_num;
+	
+	if( n == 0 )
+		return last_num;
+
+	/* return between 0 and 1 (but never 1) */
+	/* Constants from 'Numerical recipes in C' chapter 7.1 */
+	idum = (1664525 * idum + 1013904223);
+	last_num = (double)idum / (double)4294967296ULL;
+	
+	return last_num;
+}
+
+
+/*:::::*/
+FBCALL void fb_Randomize ( double seed )
+{
+	if( seed == -1.0 )
+		seed = fb_Timer( );
+
+	idum = (uint32_t)seed;
+}
+
+
+
+#elif RND_FUNC == RND_MTWIST
+
+/* Marsenne Twister pseudorandom number generator, using */
+/* algorithm MT19937 as described in the Wikipedia. */
+
+#define INITIAL_SEED	0xABADCAFE
+#define MAX_STATE		624
+
+static uint32_t seed, state[MAX_STATE], *p = NULL;
+
+/*:::::*/
+FBCALL double fb_Rnd ( int n )
+{
+	uint32_t i, v, xor_mask[2] = { 0, 0x9908B0DF };
+	static double last_num;
+	
+	if (n == 0)
+		return last_num;
+	
+	if (!p) {
+		/* initialize state starting with an initial seed */
+		fb_Randomize( INITIAL_SEED );
+	}
+	else if (p >= state + MAX_STATE) {
+		/* generate another array of 624 numbers */
+		for (i = 0; i < MAX_STATE - 1; i++) {
+			v = (state[i] & 0x80000000) | (state[i + 1] & 0x7FFFFFFF);
+			state[i] = state[(i + 397) % MAX_STATE] ^ (v >> 1) ^ xor_mask[v & 0x1];
+		}
+		v = (state[MAX_STATE - 1] & 0x80000000) | (state[0] & 0x7FFFFFFF);
+		state[MAX_STATE - 1] = state[396] ^ (v >> 1) ^ xor_mask[v & 0x1];
+		p = state;
+	}
+	
+	v = *p++;
+	v ^= (v >> 11);
+	v ^= ((v << 7) & 0x9D2C5680);
+	v ^= ((v << 15) & 0xEFC60000);
+	v ^= (v >> 18);
+	
+	last_num = (double)v / (double)4294967296ULL;
+	
+	return last_num;
+}
+
+
+/*:::::*/
+FBCALL void fb_Randomize ( double seed )
+{
+	int i;
+	
+	if (seed == -1.0)
+		seed = fb_Timer();
+	
+	state[0] = (uint32_t)seed;
+	for (i = 1; i < MAX_STATE; i++)
+		state[i] = (state[i - 1] * 1664525) + 1013904223;
+	p = state;
+}
+
+
+
+#elif RND_FUNC == RND_QB
+
+/* QB-compatible implementation, by counting_pine. */
+/* Missing manual user input of random seed if RANDOMIZE without params is called */
+
+static uint32_t seed = 327680;
+
+/*:::::*/
+FBCALL double fb_Rnd ( int n )
+{
+	if (n) {
+		if (n < 0)
+			seed = (n & 0xFFFFFF) + ((unsigned int)n >> 24);
+		seed = ((seed * 16598013) + 12820163) & 0xFFFFFF;
+	}
+	return (double)seed / (double)0x1000000;
+}
+
+
+/*:::::*/
+FBCALL void fb_Randomize ( double s )
+{
+	if (seed == -1.0)
+		seed = fb_Timer();
+	seed = ((uint32_t *)&s)[1];
+	seed ^= (seed >> 16);
+	seed = ((seed & 0xFFFF) << 8) | (seed & 0xFF);
+}
+
+
+
+#else
+	#error RND function implementation not defined!
+#endif
