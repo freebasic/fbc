@@ -1322,6 +1322,16 @@ function hVarDecl _
 			'' not declared already?
     		if( is_decl = FALSE ) then
     			dim as ASTNODE ptr var
+    			
+    			'' don't init it if it's a temp FOR var, it
+    			'' will have the start condition put into it...
+    			'' set if not a struct
+    			if isForDecl then 
+    				if symbGetType( sym ) <> FB_DATATYPE_STRUCT then
+    					symbSetDontInit( sym )
+    				end if
+    			end if
+    			
 				var = astNewDECL( FB_SYMBCLASS_VAR, sym, initree )
 
 				'' respect scopes?
