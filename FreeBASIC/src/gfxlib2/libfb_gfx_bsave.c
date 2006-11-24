@@ -61,13 +61,13 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src)
 		if (put_header->type == PUT_HEADER_NEW) {
 			w = put_header->width;
 			h = put_header->height;
-			s = (unsigned char *)src + 4;
+			s = (unsigned char *)src + sizeof(PUT_HEADER);
 			pitch = put_header->pitch;
 		}
 		else {
 			w = put_header->old.width;
 			h = put_header->old.height;
-			s = (unsigned char *)src + sizeof(PUT_HEADER);
+			s = (unsigned char *)src + 4;
 			pitch = w * (put_header->old.bpp ? put_header->old.bpp : __fb_gfx->bpp);
 		}
 	}
