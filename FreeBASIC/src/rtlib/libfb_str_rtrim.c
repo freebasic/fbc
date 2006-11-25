@@ -36,16 +36,17 @@
  *
  */
 
-#include <malloc.h>
 #include "fb.h"
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_RTRIM ( FBSTRING *src )
+FBCALL FBSTRING *fb_RTRIM 
+	( 
+		FBSTRING *src 
+	)
 {
-	FBSTRING 	*dst;
-	int 		len;
-	char		*p;
+	FBSTRING *dst;
+	int len;
 
 	if( src == NULL )
 		return &__fb_ctx.null_desc;
@@ -58,8 +59,8 @@ FBCALL FBSTRING *fb_RTRIM ( FBSTRING *src )
 		len = FB_STRSIZE( src );
 		if( len > 0 )
 		{
-			p = fb_hStrSkipCharRev( src->data, len, 32 );
-			len = (int)(p - src->data) + 1;
+			char *src_ptr = fb_hStrSkipCharRev( src->data, len, 32 );
+			len = (int)(src_ptr - src->data) + 1;
 		}
 	}
 

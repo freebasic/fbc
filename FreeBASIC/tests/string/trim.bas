@@ -12,6 +12,10 @@ dim shared str_ret as string
 
 sub trimDefaultCharTest cdecl ()
 
+	str_ret = trim("asd", "")
+	CU_ASSERT( len(str_ret) = 3 )
+	CU_ASSERT( str_ret = "asd" )
+
 	str_ret = trim("asd")
 	CU_ASSERT( len(str_ret) = 3 )
 	result = str_ret = "asd"
@@ -158,6 +162,10 @@ sub trimStringTest cdecl ()
 end sub
 
 sub trimAnyCharTest cdecl ()
+
+	str_ret = trim("asd", any "")
+	CU_ASSERT( len(str_ret) = 3 )
+	CU_ASSERT( str_ret = "asd" )
 
 	str_ret = trim("asd", any " ")
 	CU_ASSERT( len(str_ret) = 3 )

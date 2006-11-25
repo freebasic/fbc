@@ -36,18 +36,21 @@
  *
  */
 
-#include <malloc.h>
 #include "fb.h"
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_RTrimEx ( FBSTRING *src, FBSTRING *pattern )
+FBCALL FBSTRING *fb_RTrimEx 
+	( 
+		FBSTRING *src, 
+		FBSTRING *pattern 
+	)
 {
-	FBSTRING 	*dst;
-	int 		len;
-	char		*p = NULL;
+	FBSTRING *dst;
+	int len;
 
-    if( src == NULL ) {
+    if( src == NULL ) 
+    {
         fb_hStrDelTemp( pattern );
         return &__fb_ctx.null_desc;
     }
@@ -56,20 +59,24 @@ FBCALL FBSTRING *fb_RTrimEx ( FBSTRING *src, FBSTRING *pattern )
 
 	if( src->data != NULL )
 	{
-        size_t len_pattern = FB_STRSIZE( pattern );
-		len = FB_STRSIZE( src );
+        size_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
+		len = FB_STRSIZE( src );		
 		if( len >= len_pattern )
 		{
-            if( len_pattern==1 ) {
-                p = fb_hStrSkipCharRev( src->data,
-                                        len,
-                                        FB_CHAR_TO_INT(pattern->data[0]) );
-                len = (int)(p - src->data) + 1;
-            } else if( len_pattern != 0 ) {
+            if( len_pattern==1 ) 
+            {
+                char *src_ptr = fb_hStrSkipCharRev( src->data,
+                                        	  		len,
+                                        	  		FB_CHAR_TO_INT(pattern->data[0]) );
+                len = (int)(src_ptr - src->data) + 1;
+            } 
+            else if( len_pattern != 0 ) 
+            {
+                char *src_ptr = src->data;
                 size_t test_index = len - len_pattern;
-                p = src->data;
-                while (len >= len_pattern ) {
-                    if( FB_MEMCMP( p + test_index,
+                while (len >= len_pattern ) 
+                {
+                    if( FB_MEMCMP( src_ptr + test_index,
                                    pattern->data,
                                    len_pattern )!=0 )
                         break;
@@ -78,9 +85,9 @@ FBCALL FBSTRING *fb_RTrimEx ( FBSTRING *src, FBSTRING *pattern )
                 len = test_index + len_pattern;
             }
 		}
-    } else {
+    } 
+    else 
         len = 0;
-    }
 
 	if( len > 0 )
 	{

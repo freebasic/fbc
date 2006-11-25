@@ -36,16 +36,18 @@
  *
  */
 
-#include <malloc.h>
 #include "fb.h"
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_TRIM ( FBSTRING *src )
+FBCALL FBSTRING *fb_TRIM 
+	( 
+		FBSTRING *src 
+	)
 {
-	FBSTRING 	*dst;
-	int 		len;
-	char		*p;
+	FBSTRING *dst;
+	int len;
+	char *src_ptr;
 
 	if( src == NULL )
 		return &__fb_ctx.null_desc;
@@ -58,15 +60,15 @@ FBCALL FBSTRING *fb_TRIM ( FBSTRING *src )
 		len = FB_STRSIZE( src );
 		if( len > 0 )
 		{
-			p = fb_hStrSkipCharRev( src->data, len, 32 );
-			len = (int)(p - src->data) + 1;
+			src_ptr = fb_hStrSkipCharRev( src->data, len, 32 );
+			len = (int)(src_ptr - src->data) + 1;
 		}
 	}
 
 	if( len > 0 )
 	{
-		p = fb_hStrSkipChar( src->data, FB_STRSIZE( src ), 32 );
-		len -= (int)(p - src->data);
+		src_ptr = fb_hStrSkipChar( src->data, FB_STRSIZE( src ), 32 );
+		len -= (int)(src_ptr - src->data);
 		if( len > 0 )
 		{
 			/* alloc temp string */
@@ -74,7 +76,7 @@ FBCALL FBSTRING *fb_TRIM ( FBSTRING *src )
 			if( dst != NULL )
 			{
 				/* simple copy */
-				fb_hStrCopy( dst->data, p, len );
+				fb_hStrCopy( dst->data, src_ptr, len );
 			}
 			else
 				dst = &__fb_ctx.null_desc;

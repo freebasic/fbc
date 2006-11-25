@@ -36,18 +36,22 @@
  *
  */
 
-#include <malloc.h>
 #include "fb.h"
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_LTrimEx ( FBSTRING *src, FBSTRING *pattern )
+FBCALL FBSTRING *fb_LTrimEx 
+	( 
+		FBSTRING *src, 
+		FBSTRING *pattern 
+	)
 {
-	FBSTRING 	*dst;
-	size_t       len;
-	char		*p = NULL;
+	FBSTRING *dst;
+	size_t len;
+	char *src_ptr = NULL;
 
-    if( src == NULL ) {
+    if( src == NULL ) 
+    {
         fb_hStrDelTemp( pattern );
         return &__fb_ctx.null_desc;
     }
@@ -56,23 +60,32 @@ FBCALL FBSTRING *fb_LTrimEx ( FBSTRING *src, FBSTRING *pattern )
 
 	if( src->data != NULL )
     {
-        size_t len_pattern = FB_STRSIZE( pattern );
+        size_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
         len = FB_STRSIZE( src );
-        if( len >= len_pattern ) {
-            if( len_pattern==1 ) {
-                p = fb_hStrSkipChar( src->data,
-                                     len,
-                                     FB_CHAR_TO_INT(pattern->data[0]) );
-                len = len - (int)(p - src->data);
+        src_ptr = src->data;
+        if( len >= len_pattern ) 
+        {
+            if( len_pattern == 1 ) 
+            {
+                src_ptr = fb_hStrSkipChar( src_ptr,
+                                     	   len,
+                                     	   FB_CHAR_TO_INT(pattern->data[0]) );
+                len = len - (int)(src_ptr - src->data);
 
-            } else if( len_pattern != 0 ) {
-                p = src->data;
-                while (len >= len_pattern ) {
-                    if( FB_MEMCMP( p, pattern->data, len_pattern )!=0 )
-                        break;
-                    p += len_pattern;
-                    len -= len_pattern;
-                }
+            } 
+            else
+            {                
+                if( len_pattern != 0 ) 
+                {
+	                while (len >= len_pattern ) 
+	                {
+	                    if( FB_MEMCMP( src_ptr, pattern->data, len_pattern )!=0 )
+	                        break;
+	    
+	                    src_ptr += len_pattern;
+	                    len -= len_pattern;
+	                }
+				}
             }
         }
 	}
@@ -86,7 +99,7 @@ FBCALL FBSTRING *fb_LTrimEx ( FBSTRING *src, FBSTRING *pattern )
 		if( dst != NULL )
 		{
 			/* simple copy */
-			fb_hStrCopy( dst->data, p, len );
+			fb_hStrCopy( dst->data, src_ptr, len );
 		}
 		else
 			dst = &__fb_ctx.null_desc;

@@ -36,18 +36,22 @@
  *
  */
 
-#include <malloc.h>
 #include "fb.h"
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_LTrimAny ( FBSTRING *src, FBSTRING *pattern )
+FBCALL FBSTRING *fb_LTrimAny 
+	( 
+		FBSTRING *src, 
+		FBSTRING *pattern 
+	)
 {
     const char *pachText = NULL;
-	FBSTRING 	*dst;
-	size_t 		len;
+	FBSTRING *dst;
+	size_t len;
 
-    if( src == NULL ) {
+    if( src == NULL ) 
+    {
         fb_hStrDelTemp( pattern );
         return &__fb_ctx.null_desc;
     }
@@ -57,22 +61,26 @@ FBCALL FBSTRING *fb_LTrimAny ( FBSTRING *src, FBSTRING *pattern )
 	len = 0;
 	if( src->data != NULL )
     {
-        size_t len_pattern = FB_STRSIZE( pattern );
+        size_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
         pachText = src->data;
         len = FB_STRSIZE( src );
-		while ( len != 0 )
-        {
-            size_t i;
-            for( i=0; i!=len_pattern; ++i ) {
-                if( FB_MEMCHR( pattern->data, *pachText, len_pattern )!=NULL ) {
-                    break;
-                }
-            }
-            if( i==len_pattern ) {
-                break;
-            }
-            --len;
-            ++pachText;
+		if( len_pattern != 0 )
+		{
+			while ( len != 0 )
+	        {
+	            size_t i;
+	            for( i=0; i!=len_pattern; ++i ) 
+	            {
+	                if( FB_MEMCHR( pattern->data, *pachText, len_pattern )!=NULL )
+	                    break;
+	            }
+	            
+	            if( i==len_pattern )
+	                break;
+
+	            --len;
+	            ++pachText;
+			}
 		}
 	}
 
