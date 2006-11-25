@@ -79,6 +79,7 @@ FB_GFXCTX *fb_hGetContext(void)
             context->fg_color = 15;
         else
             context->fg_color = __fb_gfx->color_mask;
+        context->bg_color = MASK_A_32 & __fb_gfx->color_mask;
 		context->flags = CTX_BUFFER_INIT;
 		fb_hPrepareTarget(context, NULL, MASK_A_32);
 	}
