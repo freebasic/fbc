@@ -71,17 +71,54 @@ static int key_repeated(XEvent *event)
 	 * shamelessly copied it from yet another place :P
 	 */
 	XEvent peek_event;
-	int repeated = FALSE;
 
 	if (XPending(fb_linux.display)) {
 		XPeekEvent(fb_linux.display, &peek_event);
 		if ((peek_event.type == KeyPress) && (peek_event.xkey.keycode == event->xkey.keycode) &&
 		    ((peek_event.xkey.time - event->xkey.time) < 2)) {
-			repeated = TRUE;
 			XNextEvent(fb_linux.display, &peek_event);
+			return TRUE;
 		}
 	}
-	return repeated;
+	return FALSE;
+}
+
+
+/*:::::*/
+static int translate_key(XEvent *event)
+{
+	unsigned char key[8];
+	int k = 0;
+
+	if (XLookupString(&(event->xkey), (char *)key, 8, NULL, NULL) == 1) {
+		return key[0];
+	}
+	else {
+		switch (XKeycodeToKeysym(fb_linux.display, event->xkey.keycode, 0)) {
+			case XK_Up:			k = KEY_UP;			break;
+			case XK_Down:		k = KEY_DOWN; 		break;
+			case XK_Left:		k = KEY_LEFT;		break;
+			case XK_Right:		k = KEY_RIGHT;		break;
+			case XK_Insert:		k = KEY_INS;		break;
+			case XK_Delete:		k = KEY_DEL;		break;
+			case XK_Home:		k = KEY_HOME;		break;
+			case XK_End:		k = KEY_END;		break;
+			case XK_Page_Up:	k = KEY_PAGE_UP;	break;
+			case XK_Page_Down:	k = KEY_PAGE_DOWN;	break;
+			case XK_F1:			k = KEY_F(1);		break;
+			case XK_F2:			k = KEY_F(2);		break;
+			case XK_F3:			k = KEY_F(3);		break;
+			case XK_F4:			k = KEY_F(4);		break;
+			case XK_F5:			k = KEY_F(5);		break;
+			case XK_F6:			k = KEY_F(6);		break;
+			case XK_F7:			k = KEY_F(7);		break;
+			case XK_F8:			k = KEY_F(8);		break;
+			case XK_F9:			k = KEY_F(9);		break;
+			case XK_F10:		k = KEY_F(10);		break;
+		}
+	}
+	
+	return k;
 }
 
 
@@ -90,8 +127,6 @@ static void *window_thread(void *arg)
 {
 	XEvent event;
 	EVENT e;
-	int k;
-	unsigned char key[8];
 	
 	(void)arg;
 	
@@ -224,36 +259,10 @@ static void *window_thread(void *arg)
 							fb_hRestorePalette();
 							fb_hMemSet(__fb_gfx->key, FALSE, 128);
 						}
-						else if (XLookupString(&event.xkey, (char *)key, 8, NULL, NULL) == 1) {
-							fb_hPostKey(key[0]);
-							e.ascii = key[0];
-						}
 						else {
-							switch (XKeycodeToKeysym(fb_linux.display, event.xkey.keycode, 0)) {
-								case XK_Up:		k = KEY_UP;		break;
-								case XK_Down:		k = KEY_DOWN; 		break;
-								case XK_Left:		k = KEY_LEFT;		break;
-								case XK_Right:		k = KEY_RIGHT;		break;
-								case XK_Insert:		k = KEY_INS;		break;
-								case XK_Delete:		k = KEY_DEL;		break;
-								case XK_Home:		k = KEY_HOME;		break;
-								case XK_End:		k = KEY_END;		break;
-								case XK_Page_Up:	k = KEY_PAGE_UP;	break;
-								case XK_Page_Down:	k = KEY_PAGE_DOWN;	break;
-								case XK_F1:		k = KEY_F(1);		break;
-								case XK_F2:		k = KEY_F(2);		break;
-								case XK_F3:		k = KEY_F(3);		break;
-								case XK_F4:		k = KEY_F(4);		break;
-								case XK_F5:		k = KEY_F(5);		break;
-								case XK_F6:		k = KEY_F(6);		break;
-								case XK_F7:		k = KEY_F(7);		break;
-								case XK_F8:		k = KEY_F(8);		break;
-								case XK_F9:		k = KEY_F(9);		break;
-								case XK_F10:		k = KEY_F(10);		break;
-								default:		k = 0;			break;
-							}
-							if (k)
-								fb_hPostKey(k);
+							e.ascii = translate_key(&event);
+							if (e.ascii)
+								fb_hPostKey(e.ascii);
 						}
 						if (event.type == KeyPress)
 							e.type = EVENT_KEY_PRESS;
@@ -263,11 +272,10 @@ static void *window_thread(void *arg)
 				case KeyRelease:
 					if (has_focus) {
 						e.scancode = fb_linux.keymap[event.xkey.keycode];
-						if (XLookupString(&event.xkey, (char *)key, 8, NULL, NULL) == 1)
-							e.ascii = key[0];
-						else
-							e.ascii = 0;
+						e.ascii = translate_key(&event);
 						if (key_repeated(&event)) {
+							if (e.ascii)
+								fb_hPostKey(e.ascii);
 							e.type = EVENT_KEY_REPEAT;
 						}
 						else {
