@@ -123,8 +123,9 @@ FBCALL void fb_Randomize ( double seed )
 
 #define INITIAL_SEED	0xABADCAFE
 #define MAX_STATE		624
+#define PERIOD			397
 
-static uint32_t seed, state[MAX_STATE], *p = NULL;
+static uint32_t state[MAX_STATE], *p = NULL;
 
 /*:::::*/
 FBCALL double fb_Rnd ( int n )
@@ -139,18 +140,24 @@ FBCALL double fb_Rnd ( int n )
 		/* initialize state starting with an initial seed */
 		fb_Randomize( INITIAL_SEED );
 	}
-	else if (p >= state + MAX_STATE) {
+	
+	if (p >= state + MAX_STATE) {
 		/* generate another array of 624 numbers */
-		for (i = 0; i < MAX_STATE - 1; i++) {
+		for (i = 0; i < MAX_STATE - PERIOD; i++) {
 			v = (state[i] & 0x80000000) | (state[i + 1] & 0x7FFFFFFF);
-			state[i] = state[(i + 397) % MAX_STATE] ^ (v >> 1) ^ xor_mask[v & 0x1];
+			state[i] = state[i + PERIOD] ^ (v >> 1) ^ xor_mask[v & 0x1];
+		}
+		for (; i < MAX_STATE - 1; i++) {
+			v = (state[i] & 0x80000000) | (state[i + 1] & 0x7FFFFFFF);
+			state[i] = state[i + PERIOD - MAX_STATE] ^ (v >> 1) ^ xor_mask[v & 0x1];
 		}
 		v = (state[MAX_STATE - 1] & 0x80000000) | (state[0] & 0x7FFFFFFF);
-		state[MAX_STATE - 1] = state[396] ^ (v >> 1) ^ xor_mask[v & 0x1];
+		state[MAX_STATE - 1] = state[PERIOD - 1] ^ (v >> 1) ^ xor_mask[v & 0x1];
 		p = state;
 	}
 	
 	v = *p++;
+
 	v ^= (v >> 11);
 	v ^= ((v << 7) & 0x9D2C5680);
 	v ^= ((v << 15) & 0xEFC60000);
@@ -173,7 +180,7 @@ FBCALL void fb_Randomize ( double seed )
 	state[0] = (uint32_t)seed;
 	for (i = 1; i < MAX_STATE; i++)
 		state[i] = (state[i - 1] * 1664525) + 1013904223;
-	p = state;
+	p = state + MAX_STATE;
 }
 
 
