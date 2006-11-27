@@ -568,7 +568,8 @@ function astUpdComp2Branch _
 			ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID + FB_DATATYPE_POINTER, NULL, n, @err_num )
 			if ovlProc = NULL then
 				'' nope, screwed...
-				if astGetClass( n ) <> FB_DATATYPE_STRING then
+				ovlProc = symbGetUDTOpOvlTb( astGetSymbol( n )->subtype )(AST_OP_CAST - AST_OP_SELFBASE)
+				if ovlProc = NULL then
 					dim as FBSYMBOL ptr errInfo = astGetSymbol( n )->subtype '' UDT
 					dim as string castFunc
 					'' UDT has a non-null reference & name string?
