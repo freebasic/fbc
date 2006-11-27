@@ -528,27 +528,30 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_GfxBload ( filename as string, byval dest as any ptr = NULL ) as integer '/ _
+		/' fb_GfxBload ( filename as string, byval dest as any ptr = NULL, byval pal as any ptr = NULL ) as integer '/ _
 		( _
 			@"bload", @"fb_GfxBload", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
-			2, _
+			3, _
 			{ _
 				( _
 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
 				), _
 				( _
  					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, TRUE, NULL _
+	 			), _
+				( _
+ 					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, TRUE, NULL _
 	 			) _
 	 		} _
 		), _
-		/' fb_GfxBsave ( filename as string, byval src as any ptr, byval length as integer ) as integer '/ _
+		/' fb_GfxBsave ( filename as string, byval src as any ptr, byval length as integer, byval pal as any ptr = NULL ) as integer '/ _
 		( _
 			@"bsave", @"fb_GfxBsave", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
-			3, _
+			4, _
 			{ _
 				( _
 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
@@ -558,6 +561,9 @@ declare function hPorts_cb _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 			), _
+				( _
+ 					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, TRUE, NULL _
 	 			) _
 	 		} _
 		), _

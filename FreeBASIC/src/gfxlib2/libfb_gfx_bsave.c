@@ -49,12 +49,13 @@ typedef struct BMP_HEADER
 
 
 /*:::::*/
-static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src)
+static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 {
 	BMP_HEADER header;
 	PUT_HEADER *put_header;
-	int w, h, i, bfSize, biSizeImage, bfOffBits, biClrUsed, filler, pitch, color;
+	int w, h, i, shift = 2, bfSize, biSizeImage, bfOffBits, biClrUsed, filler, pitch, color;
 	unsigned char *s, *buffer, *p;
+	unsigned int *palette = (unsigned int *)pal;
 	
 	if (src) {
 		put_header = (PUT_HEADER *)src;
@@ -108,10 +109,14 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src)
 	if (!fwrite(&header, 54, 1, f))
 		return FB_RTERROR_FILEIO;
 	if (__fb_gfx->bpp == 1) {
+		if (!pal) {
+			palette = __fb_gfx->device_palette;
+			shift = 0;
+		}
 		for (i = 0; i < 256; i++) {
-			fputc((__fb_gfx->device_palette[i] >> 16) & 0xFF, f);
-			fputc((__fb_gfx->device_palette[i] >> 8) & 0xFF, f);
-			fputc(__fb_gfx->device_palette[i] & 0xFF, f);
+			fputc(((palette[i] >> 16) & 0xFF) << shift, f);
+			fputc(((palette[i] >> 8) & 0xFF) << shift, f);
+			fputc((palette[i] & 0xFF) << shift, f);
 			fputc(0, f);
 		}
 	}
@@ -163,11 +168,12 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src)
 
 
 /*:::::*/
-FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
+FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *pal)
 {
 	FILE *f;
 	FB_GFXCTX *context = fb_hGetContext();
-	int result = FB_RTERROR_OK;
+	int i, result = FB_RTERROR_OK;
+	unsigned int color, *palette = (unsigned int *)pal;
 	char buffer[MAX_PATH], *p;
 
 	snprintf(buffer, MAX_PATH-1, "%s", filename->data);
@@ -184,7 +190,7 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 
 	p = strrchr(filename->data, '.');
 	if ((p) && (!strcasecmp(p + 1, "bmp")))
-		result = save_bmp(context, f, src);
+		result = save_bmp(context, f, src, pal);
 	else {
 		if ((size < 0) || ((size == 0) && (src))) {
 			fclose(f);
@@ -205,9 +211,15 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 				result = FB_RTERROR_FILEIO;
 			DRIVER_UNLOCK();
 			if (__fb_gfx->depth <= 8) {
-				size = (1 << __fb_gfx->depth) * sizeof(int);
-				if (!fwrite(__fb_gfx->device_palette, size, 1, f))
-					result = FB_RTERROR_FILEIO;
+				for (i = 0; i < (1 << __fb_gfx->depth); i++) {
+					if (pal)
+						color = palette[i];
+					else
+						color = (__fb_gfx->device_palette[i] >> 2) & 0x3F3F3F;
+					fputc(color & 0xFF, f);
+					fputc((color >> 8) & 0xFF, f);
+					fputc((color >> 16) & 0xFF, f);
+				}
 			}
 		}
 		else if (!fwrite(src, size, 1, f))

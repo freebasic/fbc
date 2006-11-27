@@ -54,13 +54,14 @@ typedef struct BMP_HEADER
 
 
 /*:::::*/
-static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest)
+static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 {
 	BMP_HEADER header;
 	PUT_HEADER *put_header = NULL;
 	unsigned char *buffer, *d = NULL;
 	int result = FB_RTERROR_OK;
 	int i, j, color, rgb[3], expand, size, padding, palette[256], palette_entries;
+	void *target_pal = pal;
 	FBGFX_IMAGE_CONVERT convert = NULL;
 
 	if (!__fb_gfx)
@@ -75,8 +76,12 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest)
 	palette_entries = (header.bfOffBits - 54) >> 2;
 	for (i = 0; i < palette_entries; i++) {
 		palette[i] = (fgetc(f) << 16) | (fgetc(f) << 8) | fgetc(f);
+		if (pal)
+			palette[i] = (palette[i] >> 2) & 0x3F3F3F;
 		fgetc(f);
 	}
+	if (!pal)
+		target_pal = (void *)__fb_gfx->device_palette;
 
 	if (dest) {
 		put_header = (PUT_HEADER *)dest;
@@ -120,8 +125,9 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest)
 	}
 
 	DRIVER_LOCK();
-	fb_hMemCpy(__fb_gfx->device_palette, palette, palette_entries * sizeof(int));
-	fb_hRestorePalette();
+	fb_hMemCpy(target_pal, palette, palette_entries * sizeof(int));
+	if (!pal)
+		fb_hRestorePalette();
 	size = ((header.biWidth * BYTES_PER_PIXEL(header.biBitCount)) + 3) & ~0x3;
 	buffer = (unsigned char *)malloc(size);
 	switch (expand) {
@@ -167,14 +173,14 @@ exit_error:
 
 
 /*:::::*/
-FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
+FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal)
 {
 	FILE *f;
 	FB_GFXCTX *context = fb_hGetContext();
 	unsigned char id;
-	unsigned int size = 0;
+	unsigned int color, *palette = pal, size = 0;
 	char buffer[MAX_PATH];
-	int result = FB_RTERROR_OK;
+	int i, result = FB_RTERROR_OK;
 
 	if ((!dest) && (!__fb_gfx))
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -209,7 +215,7 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 		case 'B':
 			/* Can be a BMP */
 			rewind(f);
-			result = load_bmp(context, f, dest);
+			result = load_bmp(context, f, dest, pal);
 			fclose(f);
 			fb_hStrDelTemp(filename);
 			return result;
@@ -227,8 +233,16 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 				result = FB_RTERROR_FILEIO;
 			SET_DIRTY(context, 0, __fb_gfx->h);
 			if (!feof(f)) {
-				fread(__fb_gfx->device_palette, 1024, 1, f);
-				fb_hRestorePalette();
+				if (!pal)
+					palette = __fb_gfx->device_palette;
+				for (i = 0; i < (1 << __fb_gfx->depth); i++) {
+					color = fgetc(f) | (fgetc(f) << 8) | (fgetc(f) << 16);
+					if (!pal)
+						color = (color << 2) & 0xFCFCFC;
+					palette[i] = color;
+				}
+				if (!pal)
+					fb_hRestorePalette();
 			}
 			DRIVER_UNLOCK();
 		}

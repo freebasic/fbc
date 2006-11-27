@@ -441,6 +441,8 @@ extern FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, 
 extern FBCALL int fb_GfxEvent(EVENT *event);
 extern FBCALL void fb_GfxControl_s(int what, FBSTRING *param);
 extern FBCALL void fb_GfxControl_i(int what, int *param1, int *param2, int *param3, int *param4);
+extern FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal);
+extern FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *pal);
 
 
 /* Runtime library hooks */
