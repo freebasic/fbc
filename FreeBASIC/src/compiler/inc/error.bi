@@ -190,6 +190,7 @@ enum FB_ERRMSG
 	FB_ERRMSG_PROPERTYHASNOSETMETHOD
 	FB_ERRMSG_PROPERTYHASNOIDXGETMETHOD
 	FB_ERRMSG_PROPERTYHASNOIDXSETMETHOD
+	FB_ERRMSG_UDTINFORNEEDSOPERATORS
 
 	FB_ERRMSGS
 end enum
@@ -269,13 +270,15 @@ declare function errReportEx _
 		byval errnum as integer, _
 		byval msgex as zstring ptr, _
 		byval linenum as integer = 0, _
-		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
+		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT, _
+		byval customText as zstring ptr = 0 _
 	) as integer
 
 declare function errReport _
 	( _
 		byval errnum as integer, _
-		byval isbefore as integer = FALSE _
+		byval isbefore as integer = FALSE, _
+		byval customText as zstring ptr = 0 _
 	) as integer
 
 declare sub errReportWarn _

@@ -73,6 +73,7 @@ Version 0.17 Beta:
 - the GFX_MULTISAMPLE flag to SCREEN, to enable fullscreen antialiasing while in OpenGL mode via the ARB_multisample extension (lillo)
 - the GFX_ALWAYS_ON_TOP flag to SCREEN, to let the program window stay always on top (lillo)
 - FOR [var] AS [type] = 0 to ... variable dimensioning withing FOR statements (cha0s)
+- UDT's can now return a boolean result, if operator cast() was overloaded (cha0s)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)

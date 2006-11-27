@@ -559,7 +559,35 @@ function astUpdComp2Branch _
 
 	'' UDT?
 	case FB_DATATYPE_STRUCT
-		return NULL
+		dim as FB_ERRMSG err_num = any
+		dim as FBSYMBOL ptr ovlProc = ANY
+		'' check for a scalar overload..
+		ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID, NULL, n, @err_num )
+		if ovlProc = NULL then
+			'' no? try pointers...
+			ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID + FB_DATATYPE_POINTER, NULL, n, @err_num )
+			if ovlProc = NULL then
+				'' nope, screwed...
+				if astGetClass( n ) <> FB_DATATYPE_STRING then
+					dim as FBSYMBOL ptr errInfo = astGetSymbol( n )->subtype '' UDT
+					dim as string castFunc
+					'' UDT has a non-null reference & name string?
+					if iif( errInfo, iif( errInfo->id.name, -1, 0 ), 0 ) then 
+						castFunc = " """ & *errInfo->id.name & ".cast()""" 
+					end if
+					errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE, castFunc )
+				end if
+				return NULL
+			else
+				'' build cast call
+				n = astBuildCall( ovlProc, 1, n )
+			end if
+		else
+			'' build cast call
+			n = astBuildCall( ovlProc, 1, n )
+		end if
+		dtype = n->dtype
+		
 	end select
 
 	'' shortcut "exp logop exp" if it's at top of tree (used to optimize IF/ELSEIF/WHILE/UNTIL)

@@ -228,7 +228,8 @@ end type
 		@"PROPERTY has no GET method/accessor", _
 		@"PROPERTY has no SET method/accessor", _
 		@"PROPERTY has no indexed GET method/accessor", _
-		@"PROPERTY has no indexed SET method/accessor" _
+		@"PROPERTY has no indexed SET method/accessor", _
+		@"UDT in FOR needs overloaded operators -> " _
 	}
 
 
@@ -276,7 +277,8 @@ private sub hPrintErrMsg _
 		byval msgex as zstring ptr, _
 		byval options as FB_ERRMSGOPT, _
 		byval linenum as integer, _
-		byval showerror as integer = TRUE _
+		byval showerror as integer = TRUE, _
+		byval customText as zstring ptr = 0 _
 	) static
 
     dim as zstring ptr msg
@@ -300,6 +302,9 @@ private sub hPrintErrMsg _
 
 	if( errnum >= 0 ) then
 		print " " & errnum & ": " & *msg;
+		if customText then
+			print *customText;
+		end if
 
 		if( showerror ) then
 			showerror = (linenum > 0)
@@ -354,7 +359,8 @@ function errReportEx _
 		byval errnum as integer, _
 		byval msgex as zstring ptr, _
 		byval linenum as integer, _
-		byval options as FB_ERRMSGOPT _
+		byval options as FB_ERRMSGOPT, _
+		byval customText as zstring ptr _
 	) as integer
 
     '' too many errors?
@@ -377,7 +383,7 @@ function errReportEx _
     	errctx.laststmt = parser.stmt.cnt
 	end if
 
-    hPrintErrMsg( errnum, msgex, options, linenum, env.clopt.showerror )
+    hPrintErrMsg( errnum, msgex, options, linenum, env.clopt.showerror, customText )
 
 	errctx.cnt += 1
 
@@ -436,10 +442,11 @@ end function
 function errReport _
 	( _
 		byval errnum as integer, _
-		byval isbefore as integer = FALSE _
+		byval isbefore as integer = FALSE, _
+		byval customText as zstring ptr _
 	) as integer
 
-	function = errReportEx( errnum, hAddToken( isbefore, FALSE ) )
+	function = errReportEx( errnum, hAddToken( isbefore, FALSE ), , , customText )
 
 end function
 
