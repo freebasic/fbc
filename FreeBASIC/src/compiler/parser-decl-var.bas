@@ -28,6 +28,10 @@
 #include once "inc\ast.bi"
 
 '':::::
+#define hVarDecl( attrib, dopreserve, token ) _
+	(hVarDeclEx( attrib, dopreserve, token, FALSE ) <> NULL)
+
+'':::::
 private function hCheckScope( ) as integer
 
 	if( parser.scope > FB_MAINSCOPE ) then
@@ -695,10 +699,10 @@ private function hVarInit _
         byval isdecl as integer, _
         byval has_defctor as integer, _
         byval has_dtor as integer, _
-        byval isForDecl as integer _
+        byval is_fordecl as integer _
 	) as ASTNODE ptr
 
-    dim as integer attrib = any
+    dim as integer attrib = any, def_init = any
 	dim as ASTNODE ptr initree = any
 
 	function = NULL
@@ -708,43 +712,44 @@ private function hVarInit _
 	else
 		attrib = 0
 	end if
-	
-	if isForDecl then goto foobarbaz
 
 	'' '=' | '=>' ?
 	select case lexGetToken( )
 	case FB_TK_DBLEQ, FB_TK_EQ
+        def_init = (is_fordecl = TRUE)
 
 	case else
-		foobarbaz:
-    	if( sym = NULL ) then
-    		exit function
-    	end if
-
-    	'' ctor?
-    	if( has_defctor ) then
-			'' not already declared, extern, common or dynamic?
-			if( isdecl = FALSE ) then
-				if( ((attrib and (FB_SYMBATTRIB_EXTERN or _
-								  FB_SYMBATTRIB_COMMON or _
-								  FB_SYMBATTRIB_DYNAMIC)) = 0) ) then
-								  
-					function = astBuildTypeIniCtorList( sym )
-				end if
-			end if
-
-    	else
-    		'' no default ctor but other ctors defined?
-    		select case symbGetType( sym )
-    		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    			if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
-    				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
-    			end if
-    		end select
-    	end if
-
-		exit function
+        def_init = TRUE
 	end select
+
+    '' do default initialization?
+    if( def_init ) then
+    	if( sym <> NULL ) then
+    		'' ctor?
+    		if( has_defctor ) then
+				'' not already declared, extern, common or dynamic?
+				if( isdecl = FALSE ) then
+					if( ((attrib and (FB_SYMBATTRIB_EXTERN or _
+							  	  	  FB_SYMBATTRIB_COMMON or _
+							  	  	  FB_SYMBATTRIB_DYNAMIC)) = 0) ) then
+
+						function = astBuildTypeIniCtorList( sym )
+					end if
+				end if
+
+    		else
+    			'' no default ctor but other ctors defined?
+    			select case symbGetType( sym )
+    			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    				if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
+    					errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+    				end if
+    			end select
+    		end if
+    	end if
+
+    	exit function
+    end if
 
 	'' already declared, extern or common?
 	if( isdecl or _
@@ -982,14 +987,13 @@ end sub
 ''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (',' SymbolDef)* .
 ''
-function hVarDecl _
+function hVarDeclEx _
 	( _
 		byval attrib as integer, _
 		byval dopreserve as integer, _
         byval token as integer, _
-        byval isForDecl as integer = FALSE, _
-        byref forVar as FBSYMBOL ptr = 0 _
-	) as integer static
+        byval is_fordecl as integer _
+	) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXNAMELEN+1 id, idalias
     static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
@@ -1000,7 +1004,7 @@ function hVarDecl _
     dim as integer dtype, lgt, ofs, ptrcnt, dimensions, suffix
     dim as zstring ptr palias
 
-    function = FALSE
+    function = NULL
 
 	'' inside a namespace but outside a proc?
 	if( symbIsGlobalNamespc( ) = FALSE ) then
@@ -1082,7 +1086,7 @@ function hVarDecl _
 		dimensions = 0
 		check_exprtb = FALSE
 		if( lexGetToken( ) = CHAR_LPRNT ) then
-			
+
 			lexSkipToken( )
 
 			is_dynamic = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
@@ -1305,19 +1309,15 @@ function hVarDecl _
 				has_dtor = symbGetCompDtor( symbGetSubtype( sym ) ) <> NULL
 			end select
 		end if
-        
-        '' not "for i as integer..."?
-'        if iif( dtype = FB_DATATYPE_STRUCT, -1, isForDecl = FALSE ) then
-'        if isForDecl = FALSE then
-			'' check for an initializer
-			initree = hVarInit( sym, is_decl, has_defctor, has_dtor, isForDecl )
-	
-			if( initree = NULL ) then
-	    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-	    			exit function
-	    		end if
+
+		'' check for an initializer
+		initree = hVarInit( sym, is_decl, has_defctor, has_dtor, is_fordecl )
+
+		if( initree = NULL ) then
+	    	if( errGetLast( ) <> FB_ERRMSG_OK ) then
+	    		exit function
 	    	end if
-'	    end if
+	    end if
 
 		'' add to AST
 		if( sym <> NULL ) then
@@ -1328,13 +1328,13 @@ function hVarDecl _
 			'' not declared already?
     		if( is_decl = FALSE ) then
     			dim as ASTNODE ptr var
-    			
+
     			'' don't init it if it's a temp FOR var, it
     			'' will have the start condition put into it...
-    			if isForDecl then 
+    			if( is_fordecl ) then
    					symbSetDontInit( sym )
     			end if
-    			
+
 				var = astNewDECL( FB_SYMBCLASS_VAR, sym, initree )
 
 				'' respect scopes?
@@ -1361,7 +1361,7 @@ function hVarDecl _
 				end if
 
     		end if
-            
+
 			'' handle arrays (must be done after adding the decl node)
 
 			'' do nothing if it's EXTERN
@@ -1411,11 +1411,11 @@ function hVarDecl _
 				end if
 			end if
 
-            if isForDecl = TRUE then
-            	forVar = sym
-            	return TRUE
-           	end if
+		end if
 
+		''
+		if( is_fordecl ) then
+			return sym
 		end if
 
 		'' (',' SymbolDef)*
@@ -1426,7 +1426,7 @@ function hVarDecl _
 		lexSkipToken( )
     loop
 
-    function = TRUE
+    function = cast( FBSYMBOL ptr, TRUE )
 
 end function
 

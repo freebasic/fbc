@@ -471,18 +471,16 @@ function astProcBegin _
 	'' local error handler
 	with sym->proc.ext->err
 		.lasthnd = NULL
+		.lastmod = NULL
+		.lastfun = NULL
 
 		if( env.clopt.extraerrchk ) then
-			rtlErrorSetModName( sym, astNewCONSTstr( @env.inf.name ) )
-			rtlErrorSetFuncName( sym, astNewCONSTstr( symbGetName( sym ) ) )
-			
-			'' hack to allow ctor from ctor, otherwise
-			'' the above generated code would flag the 
-			'' ctor as inited (not first stmt.) -cha0s
-			sym->stats and= ( not FB_SYMBSTATS_CTORINITED)
-		else
-			.lastmod = NULL
-			.lastfun = NULL
+			'' can't be used with constructors or the fields will be
+			'' initialized and chaining to other ctors will be broken
+			if( symbIsConstructor( sym ) = FALSE ) then
+				rtlErrorSetModName( sym, astNewCONSTstr( @env.inf.name ) )
+				rtlErrorSetFuncName( sym, astNewCONSTstr( symbGetName( sym ) ) )
+			end if
 		end if
 	end with
 

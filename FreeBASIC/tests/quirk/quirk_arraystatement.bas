@@ -8,7 +8,7 @@ namespace fbc_tests.quirk.bydesc_arrayfield
 
 	End Type
 
-	sub quirk_arraystatement_inWith( )
+	sub quirk_arraystatement_inWith cdecl( )
 
 		Dim test As testing_type
 		With test
@@ -25,7 +25,7 @@ namespace fbc_tests.quirk.bydesc_arrayfield
 
 	end sub
 
-	sub quirk_arrayfunction_inWith( )
+	sub quirk_arrayfunction_inWith cdecl( )
 
 		Dim test As testing_type
 		With test

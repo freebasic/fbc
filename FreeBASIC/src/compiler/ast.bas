@@ -557,41 +557,40 @@ function astUpdComp2Branch _
     		return NULL
     	end if
 
-	'' UDT?
-	case FB_DATATYPE_STRUCT
+	'' UDT or CLASS?
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		dim as FB_ERRMSG err_num = any
-		dim as FBSYMBOL ptr ovlProc = ANY
+		dim as FBSYMBOL ptr ovlProc = any
+
 		'' check for a scalar overload..
 		ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID, NULL, n, @err_num )
-		if ovlProc = NULL then
+		if( ovlProc = NULL ) then
 			'' no? try pointers...
-			ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID + FB_DATATYPE_POINTER, NULL, n, @err_num )
-			if ovlProc = NULL then
-				'' nope, screwed...
-				dim as FBSYMBOL ptr errInfo = astGetSymbol( n )->subtype '' UDT
-				if errInfo->udt.ext then
-					ovlProc = symbGetUDTOpOvlTb( astGetSymbol( n )->subtype )(AST_OP_CAST - AST_OP_SELFBASE)
-				end if
-				if ovlProc = NULL then
-					
-					dim as string castFunc
-					'' UDT has a non-null reference & name string?
-					if iif( errInfo, iif( errInfo->id.name, -1, 0 ), 0 ) then 
-						castFunc = " """ & *errInfo->id.name & ".cast()""" 
+			ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID + FB_DATATYPE_POINTER, NULL, _
+										   n, _
+										   @err_num )
+			if( ovlProc = NULL ) then
+				dim as FBSYMBOL ptr subtype = astGetSubtype( n )
+
+				ovlProc = symbGetCompOpOvlHead( subtype, AST_OP_CAST )
+				if( ovlProc = NULL ) then
+					if( subtype <> NULL ) then
+						errReport( FB_ERRMSG_NOMATCHINGPROC, _
+								   TRUE, _
+								   " """ & *symbGetName( subtype ) & ".cast()""" )
+						return NULL
 					end if
-					errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE, castFunc )
 				end if
+
+				errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE )
 				return NULL
-			else
-				'' build cast call
-				n = astBuildCall( ovlProc, 1, n )
 			end if
-		else
-			'' build cast call
-			n = astBuildCall( ovlProc, 1, n )
 		end if
+
+		'' build cast call
+		n = astBuildCall( ovlProc, 1, n )
 		dtype = n->dtype
-		
+
 	end select
 
 	'' shortcut "exp logop exp" if it's at top of tree (used to optimize IF/ELSEIF/WHILE/UNTIL)

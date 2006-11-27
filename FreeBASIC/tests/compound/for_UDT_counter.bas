@@ -59,35 +59,35 @@ namespace fbc_tests.compound.for_UDT_counter
 			scope
 			    
 			    dim as foo##__TYPE__ bazz
-			    ASSERT( global_tor = 1 )
+			    CU_ASSERT( global_tor = 1 )
 			    
 				dim as double dblStep = .5
 				dim as integer c
 				dim as foo##__TYPE__ bar
-		        ASSERT( global_tor = 2 )
+		        CU_ASSERT( global_tor = 2 )
 		        
 				for bar = 0 to 9 step dblStep + dblStep
-					ASSERT( bar.y = 69 )
-					ASSERT( c = bar.x )
+					CU_ASSERT( bar.y = 69 )
+					CU_ASSERT( c = bar.x )
 					c += 1
 				next
 				
 				c = 0
 				for bars as foo##__TYPE__ = 0 to 9 step dblStep + dblStep
-					ASSERT( bars.y = 69 )
-					ASSERT( c = bars.x )
-					ASSERT( global_tor = 3 )
+					CU_ASSERT( bars.y = 69 )
+					CU_ASSERT( c = bars.x )
+					CU_ASSERT( global_tor = 3 )
 					c += 1
 				next
 				
-				ASSERT( global_tor = 2 )
+				CU_ASSERT( global_tor = 2 )
 				
 				'' top bar's dtor hasn't been called yet?
-				ASSERT( bar.y = 69 )
+				CU_ASSERT( bar.y = 69 )
 				
 			end scope
 			
-			ASSERT( global_tor = 0 )
+			CU_ASSERT( global_tor = 0 )
 			
 		
 		end sub	
@@ -101,23 +101,40 @@ namespace fbc_tests.compound.for_UDT_counter
 	makeTest( double )
 	makeTest( longint )
     
-    sub testCounter( )
-
+    sub test_byte cdecl( )
 		doTest( byte )
-		doTest( short )
-		doTest( integer )
-		doTest( single )
-		doTest( double )
-		doTest( longint )
-		
 	end sub
 
+    sub test_short cdecl( )
+		doTest( short )
+	end sub
+
+    sub test_int cdecl( )
+		doTest( integer )
+	end sub
+
+    sub test_single cdecl( )
+		doTest( single )
+	end sub
+
+    sub test_dbl cdecl( )
+		doTest( double )
+	end sub
+
+    sub test_long cdecl( )
+		doTest( longint )
+	end sub
 
 
 sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.compound.for_UDT_counter")
-	fbcu.add_test("test UDT as counter", @testCounter)
+	fbcu.add_test("byte", @test_byte)
+	fbcu.add_test("short", @test_short)
+	fbcu.add_test("integer", @test_int)
+	fbcu.add_test("single", @test_single)
+	fbcu.add_test("double", @test_dbl)
+	fbcu.add_test("longint", @test_long)
 
 end sub
 

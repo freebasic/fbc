@@ -103,13 +103,11 @@ private sub removeNullPtrCheck _
 	'' when taking the address-of an expression
 
 	n = l->l
-	
-	'' !!!FIXME!!!
-	'' this seems just a last minute diversion, perhaps
-	'' there should be a check before the execution
-	'' reaches here??? -cha0s
-	if n = NULL then exit sub
-	
+
+	if( n = NULL ) then
+		exit sub
+	end if
+
 	select case n->class
 	case AST_NODECLASS_PTRCHK
 		l->l = n->l

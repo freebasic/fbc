@@ -1018,14 +1018,13 @@ declare function hAllocCallArg _
 		byval arg_list as FB_CALL_ARG_LIST ptr _
 	) as FB_CALL_ARG ptr
 
-declare function hVarDecl _
+declare function hVarDeclEx _
 	( _
 		byval attrib as integer, _
 		byval dopreserve as integer, _
         byval token as integer, _
-        byval isForDecl as integer = FALSE, _
-        byref forVar as FBSYMBOL ptr = 0 _
-	) as integer
+        byval is_fordecl as integer _
+	) as FBSYMBOL ptr
 
 
 

@@ -5,7 +5,7 @@
 
 namespace fbc_tests.compound.for_pointer_counter
 
-	sub testPtrIterators( )
+	sub testPtrIterators cdecl( )
 	
 		#macro buildTest( __TYPE__ )
 		    
@@ -20,21 +20,21 @@ namespace fbc_tests.compound.for_pointer_counter
 				next
 				c = 0
 				for i as __TYPE__ ptr = iBuffer to iBuffer + 9
-					ASSERT( *i = c )
-					ASSERT( i = ( c + iBuffer ) )
+					CU_ASSERT( *i = c )
+					CU_ASSERT( i = ( c + iBuffer ) )
 					c += 1
 				next
 				c = 9
 				for i as __TYPE__ ptr = iBuffer + 9 to iBuffer step -1
-					ASSERT( *i = c )
-					ASSERT( i = ( c + iBuffer ) )
+					CU_ASSERT( *i = c )
+					CU_ASSERT( i = ( c + iBuffer ) )
 					c -= 1
 				next
 				c = 0
 				stp = 2
 				for i as __TYPE__ ptr = iBuffer + 9 to iBuffer step stp
-					ASSERT( *i = c )
-					ASSERT( i = ( c + iBuffer ) )
+					CU_ASSERT( *i = c )
+					CU_ASSERT( i = ( c + iBuffer ) )
 					c += 2
 				next
 			end scope
@@ -58,14 +58,14 @@ namespace fbc_tests.compound.for_pointer_counter
 		for i as foo ptr = fBuffer to fBuffer + 9
 			i->x = i
 			i->y = i->x + 4
-			ASSERT( i = ( fBuffer +  c) )
+			CU_ASSERT( i = ( fBuffer +  c) )
 			c += 1
 		next
 		
 		dim as integer stp = 2
 		for i as foo ptr = fBuffer to fBuffer + 9 step stp
-			ASSERT( i->x = @i->x )
-			ASSERT( i->y = @i->y )
+			CU_ASSERT( i->x = @i->x )
+			CU_ASSERT( i->y = @i->y )
 		next
 	
 	end sub
