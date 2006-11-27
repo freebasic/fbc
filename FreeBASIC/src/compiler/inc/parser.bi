@@ -55,6 +55,8 @@ type FB_CMPSTMT_FOR
 	stp				as FBSYMBOL ptr
 	eval			as FBVALUE
 	sval			as FBVALUE
+	etype           as integer
+	stype           as integer
 end type
 
 type FB_CMPSTMT_IF

@@ -72,9 +72,10 @@ Version 0.17 Beta:
 - Module CONSTRUCTOR/DESTRUCTOR support priority attributes 101-65535 (jeffm)
 - the GFX_MULTISAMPLE flag to SCREEN, to enable fullscreen antialiasing while in OpenGL mode via the ARB_multisample extension (lillo)
 - the GFX_ALWAYS_ON_TOP flag to SCREEN, to let the program window stay always on top (lillo)
-- FOR [var] AS [type] = 0 to ... variable dimensioning withing FOR statements (cha0s)
+- FOR [var] AS [type] = 0 to ... variable dimensioning within FOR statements (cha0s)
 - UDT's can now return a boolean result, if operator cast() was overloaded (cha0s)
 - BLOAD and BSAVE can now accept an additional optional final parameter: a pointer to an array of 256 integers to hold the image palette if any (lillo)
+- FOR now supports UDT's as counter variables, if operator let, +=, and global <=, >= are overloaded with operators taking numeric rhs. (cha0s)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)

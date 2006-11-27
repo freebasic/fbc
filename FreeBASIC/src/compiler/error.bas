@@ -229,7 +229,7 @@ end type
 		@"PROPERTY has no SET method/accessor", _
 		@"PROPERTY has no indexed GET method/accessor", _
 		@"PROPERTY has no indexed SET method/accessor", _
-		@"UDT in FOR needs overloaded operators -> " _
+		@"UDT in FOR needs numeric overloaded operators: " _
 	}
 
 

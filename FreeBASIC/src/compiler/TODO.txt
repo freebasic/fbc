@@ -45,8 +45,8 @@
 
 [ ] operator overloading:
       - OPERATOR *|@ ( l ) AS TYPE
-      - add support for UDT's in FOR
-        - check if + or += and < > ops were overloaded
+ X    - add support for UDT's in FOR
+ X      - check if + or += and < > ops were overloaded
 
 [ ] data/function members:
 	- add and check the protected, private and public attributes

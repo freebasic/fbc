@@ -694,7 +694,8 @@ private function hVarInit _
         byval sym as FBSYMBOL ptr, _
         byval isdecl as integer, _
         byval has_defctor as integer, _
-        byval has_dtor as integer _
+        byval has_dtor as integer, _
+        byval isForDecl as integer _
 	) as ASTNODE ptr
 
     dim as integer attrib = any
@@ -707,12 +708,15 @@ private function hVarInit _
 	else
 		attrib = 0
 	end if
+	
+	if isForDecl then goto foobarbaz
 
 	'' '=' | '=>' ?
 	select case lexGetToken( )
 	case FB_TK_DBLEQ, FB_TK_EQ
 
 	case else
+		foobarbaz:
     	if( sym = NULL ) then
     		exit function
     	end if
@@ -724,6 +728,7 @@ private function hVarInit _
 				if( ((attrib and (FB_SYMBATTRIB_EXTERN or _
 								  FB_SYMBATTRIB_COMMON or _
 								  FB_SYMBATTRIB_DYNAMIC)) = 0) ) then
+								  
 					function = astBuildTypeIniCtorList( sym )
 				end if
 			end if
@@ -1302,16 +1307,17 @@ function hVarDecl _
 		end if
         
         '' not "for i as integer..."?
-        if isForDecl = FALSE then
+'        if iif( dtype = FB_DATATYPE_STRUCT, -1, isForDecl = FALSE ) then
+'        if isForDecl = FALSE then
 			'' check for an initializer
-			initree = hVarInit( sym, is_decl, has_defctor, has_dtor )
+			initree = hVarInit( sym, is_decl, has_defctor, has_dtor, isForDecl )
 	
 			if( initree = NULL ) then
 	    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 	    			exit function
 	    		end if
 	    	end if
-	    end if
+'	    end if
 
 		'' add to AST
 		if( sym <> NULL ) then
@@ -1325,11 +1331,8 @@ function hVarDecl _
     			
     			'' don't init it if it's a temp FOR var, it
     			'' will have the start condition put into it...
-    			'' set if not a struct
     			if isForDecl then 
-    				if symbGetType( sym ) <> FB_DATATYPE_STRUCT then
-    					symbSetDontInit( sym )
-    				end if
+   					symbSetDontInit( sym )
     			end if
     			
 				var = astNewDECL( FB_SYMBCLASS_VAR, sym, initree )
@@ -1359,10 +1362,6 @@ function hVarDecl _
 
     		end if
             
-            if isForDecl = TRUE then
-            	forVar = sym
-            	return TRUE
-           	end if
 			'' handle arrays (must be done after adding the decl node)
 
 			'' do nothing if it's EXTERN
@@ -1411,6 +1410,11 @@ function hVarDecl _
 					hFlushInitializer( sym, initree, has_defctor, has_dtor )
 				end if
 			end if
+
+            if isForDecl = TRUE then
+            	forVar = sym
+            	return TRUE
+           	end if
 
 		end if
 
