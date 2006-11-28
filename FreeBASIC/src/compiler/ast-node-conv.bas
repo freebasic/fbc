@@ -53,10 +53,10 @@ private sub hCONVConstEvalInt _
 		case FB_DATATYPE_USHORT
 			v->con.val.int = cushort( culngint( v->con.val.long ) )
 
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_LONG
 			v->con.val.int = cint( v->con.val.long )
 
-		case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
+		case FB_DATATYPE_UINT, FB_DATATYPE_POINTER, FB_DATATYPE_ULONG
 			v->con.val.int = cuint( culngint( v->con.val.long ) )
 
 		end select
@@ -76,10 +76,10 @@ private sub hCONVConstEvalInt _
 		case FB_DATATYPE_USHORT
 			v->con.val.int = cushort( v->con.val.float )
 
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_LONG
 			v->con.val.int = cint( v->con.val.float )
 
-		case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
+		case FB_DATATYPE_UINT, FB_DATATYPE_POINTER, FB_DATATYPE_ULONG
 			v->con.val.int = cuint( v->con.val.float )
 
 		end select
@@ -97,6 +97,7 @@ private sub hCONVConstEvalInt _
 
 		case FB_DATATYPE_USHORT
 			v->con.val.int = cushort( cuint( v->con.val.int ) )
+
 		end select
 
 	end select
@@ -145,6 +146,38 @@ private sub hCONVConstEvalFlt _
 			v->con.val.float = cdbl( cunsg( v->con.val.int ) )
 		end if
 
+	case FB_DATATYPE_LONG
+
+		if( FB_LONGSIZE = len( integer ) ) then
+			if( to_dtype = FB_DATATYPE_SINGLE ) then
+				v->con.val.float = csng( v->con.val.int )
+			else
+				v->con.val.float = cdbl( v->con.val.int )
+			end if
+		else
+			if( to_dtype = FB_DATATYPE_SINGLE ) then
+				v->con.val.float = csng( v->con.val.long )
+			else
+				v->con.val.float = cdbl( v->con.val.long )
+			end if
+		end if
+
+	case FB_DATATYPE_ULONG
+
+		if( FB_LONGSIZE = len( integer ) ) then
+			if( to_dtype = FB_DATATYPE_SINGLE ) then
+				v->con.val.float = csng( cunsg( v->con.val.int ) )
+			else
+				v->con.val.float = cdbl( cunsg( v->con.val.int ) )
+			end if
+		else
+			if( to_dtype = FB_DATATYPE_SINGLE ) then
+				v->con.val.float = csng( cunsg( v->con.val.long ) )
+			else
+				v->con.val.float = cdbl( cunsg( v->con.val.long ) )
+			end if
+		end if
+
 	case else
 
 		if( to_dtype = FB_DATATYPE_SINGLE ) then
@@ -173,6 +206,24 @@ private sub hCONVConstEval64 _
 			v->con.val.long = clngint( v->con.val.float )
 		else
 			v->con.val.long = culngint( v->con.val.float )
+		end if
+
+	case FB_DATATYPE_LONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			if( to_dtype = FB_DATATYPE_LONGINT ) then
+				v->con.val.long = clngint( v->con.val.int )
+			else
+				v->con.val.long = culngint( v->con.val.int )
+			end if
+		end if
+
+	case FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			if( to_dtype = FB_DATATYPE_LONGINT ) then
+				v->con.val.long = clngint( cuint( v->con.val.int ) )
+			else
+				v->con.val.long = culngint( cuint( v->con.val.int ) )
+			end if
 		end if
 
 	case else
@@ -206,7 +257,9 @@ end sub
     '' to pointer? only allow integers..
     if( to_dtype >= FB_DATATYPE_POINTER ) then
 		select case as const ldtype
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
+			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+
 		case else
 			if( ldtype < FB_DATATYPE_POINTER ) then
 				exit function
@@ -216,7 +269,9 @@ end sub
     '' from pointer? only allow integers..
     elseif( ldtype >= FB_DATATYPE_POINTER ) then
 		select case as const to_dtype
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
+			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+
 		case else
 			if( to_dtype < FB_DATATYPE_POINTER ) then
 				exit function
@@ -375,8 +430,17 @@ function astNewCONV _
 		select case as const to_dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			hCONVConstEval64( to_dtype, l )
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			hCONVConstEvalFlt( to_dtype, l )
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				hCONVConstEvalInt( to_dtype, l )
+			else
+				hCONVConstEval64( to_dtype, l )
+			end if
+
 		case else
 			'' byte's, short's, int's and enum's
 			hCONVConstEvalInt( to_dtype, l )

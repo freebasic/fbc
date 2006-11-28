@@ -270,8 +270,10 @@ private sub hBOPConstFoldInt _
 	dim as integer issigned
 
 	select case as const l->dtype
-	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
+	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, _
+		 FB_DATATYPE_ENUM, FB_DATATYPE_LONG
 		issigned = TRUE
+
 	case else
 		issigned = FALSE
 	end select
@@ -438,7 +440,12 @@ private sub hBOPConstFold64 _
 
 	dim as integer issigned
 
-	issigned = (l->dtype = FB_DATATYPE_LONGINT)
+	select case l->dtype
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_LONG
+		issigned = TRUE
+	case else
+		issigned = FALSE
+	end select
 
 	select case as const op
 	case AST_OP_ADD
@@ -1249,8 +1256,17 @@ function astNewBOP _
 		select case as const ldtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    hBOPConstFold64( op, l, r )
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			hBOPConstFoldFlt( op, l, r )
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				hBOPConstFoldInt( op, l, r )
+			else
+				hBOPConstFold64( op, l, r )
+			end if
+
 		case else
 			'' byte's, short's, int's and enum's
 			hBOPConstFoldInt( op, l, r )
@@ -1306,10 +1322,20 @@ function astNewBOP _
 			select case as const rdtype
 			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 				r->con.val.long = -r->con.val.long
+
 			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 				r->con.val.float = -r->con.val.float
+
+			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+				if( FB_LONGSIZE = len( integer ) ) then
+					r->con.val.int = -r->con.val.int
+				else
+					r->con.val.long = -r->con.val.long
+				end if
+
 			case else
 				r->con.val.int = -r->con.val.int
+
 			end select
 			op = AST_OP_ADD
 
@@ -1351,17 +1377,17 @@ function astNewBOP _
 
 	case AST_OP_INTDIV
 		'' longint?
-		if( (dtype = FB_DATATYPE_LONGINT) or _
-			(dtype = FB_DATATYPE_ULONGINT) ) then
+		select case dtype
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			return rtlMathLongintDIV( dtype, l, ldtype, r, rdtype )
-		end if
+		end select
 
 	case AST_OP_MOD
 		'' longint?
-		if( (dtype = FB_DATATYPE_LONGINT) or _
-			(dtype = FB_DATATYPE_ULONGINT) ) then
+		select case dtype
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			return rtlMathLongintMOD( dtype, l, ldtype, r, rdtype )
-		end if
+		end select
 
 	end select
 

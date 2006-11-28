@@ -81,6 +81,8 @@ declare function 	hGetTypeString		( byval typ as integer ) as string
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _   '' uint
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' enum
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' bitfield
+		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, 2, "dword ptr" ), _	'' long
+		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, 2, "dword ptr" ), _   '' ulong
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' longint
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' ulongint
 		( FB_DATACLASS_FPOINT , 4			    , 3, "dword ptr" ), _	'' single
@@ -91,7 +93,7 @@ declare function 	hGetTypeString		( byval typ as integer ) as string
 		( FB_DATACLASS_INTEGER, 0  				, 0, "" 		), _	'' namespace
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' function
 		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' fwd-ref
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ) _	'' pointer
+		( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , 2, "dword ptr" ) _	'' pointer
 	}
 
 const EMIT_MAXKEYWORDS = 600
@@ -6067,7 +6069,8 @@ private function hGetTypeString _
     case FB_DATATYPE_USHORT, FB_DATATYPE_SHORT
     	function = ".short"
 
-    case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
+    case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
+    	 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
     	function = ".int"
 
     case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT

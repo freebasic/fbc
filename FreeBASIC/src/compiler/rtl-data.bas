@@ -287,6 +287,20 @@ function rtlDataRead _
 	case FB_DATATYPE_UINT
 		f = PROCLOOKUP( DATAREADUINT )
 
+	case FB_DATATYPE_LONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			f = PROCLOOKUP( DATAREADINT )
+		else
+			f = PROCLOOKUP( DATAREADLONGINT )
+		end if
+
+	case FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			f = PROCLOOKUP( DATAREADUINT )
+		else
+			f = PROCLOOKUP( DATAREADULONGINT )
+		end if
+
 	case FB_DATATYPE_LONGINT
 		f = PROCLOOKUP( DATAREADLONGINT )
 
@@ -328,13 +342,18 @@ function rtlDataRead _
 
     if( args > 1 ) then
 		'' byval dst_size as integer
-		if( astNewARG( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, _
+					   astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
+					   FB_DATATYPE_INTEGER ) = NULL ) then
  			exit function
  		end if
 
 		if( args > 2 ) then
 			'' byval fillrem as integer
-			if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+			if( astNewARG( proc, _
+						   astNewCONSTi( dtype = FB_DATATYPE_FIXSTR, _
+										 FB_DATATYPE_INTEGER ), _
+						   FB_DATATYPE_INTEGER ) = NULL ) then
     			exit function
     		end if
     	end if

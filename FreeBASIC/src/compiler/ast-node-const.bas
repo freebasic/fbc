@@ -163,6 +163,21 @@ function astNewCONST _
 	    	n->con.val.float = 0.0
 	    end if
 
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			if( v <> NULL ) then
+				n->con.val.int = v->int
+			else
+				n->con.val.int = 0
+			end if
+		else
+			if( v <> NULL ) then
+				n->con.val.long = v->long
+			else
+				n->con.val.long = 0
+			end if
+		end if
+
 	case else
 		if( v <> NULL ) then
 			n->con.val.int = v->int
@@ -216,7 +231,7 @@ function astLoadCONST _
 		dtype = n->dtype
 
 		select case dtype
-		'' longints?
+		'' longint?
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			return irAllocVRIMM64( dtype, n->con.val.long )
 
@@ -224,6 +239,15 @@ function astLoadCONST _
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			s = symbAllocFloatConst( n->con.val.float, dtype )
 			return irAllocVRVAR( dtype, s, symbGetOfs( s ) )
+
+		'' long?
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				return irAllocVRIMM( dtype, n->con.val.int )
+			else
+				'' !!!FIXME!!! cross-compilation 32-bit -> 64-bit
+				errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+			end if
 
 		''
 		case else

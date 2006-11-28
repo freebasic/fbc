@@ -81,39 +81,50 @@ private sub hConvDataType _
 	( _
 		byval v as FBVALUE ptr, _
 		byval vdtype as integer, _
-		byval dtype as integer _
+		byval to_dtype as integer _
 	)
 
-	if( dtype > FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_POINTER
+	if( to_dtype > FB_DATATYPE_POINTER ) then
+		to_dtype = FB_DATATYPE_POINTER
 	end if
 
-	select case as const dtype
-	''
+	select case as const to_dtype
 	case FB_DATATYPE_LONGINT
 
 		select case as const vdtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    '' no conversion
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			v->long = clngint( v->float )
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		    if( FB_LONGSIZE <> len( integer ) ) then
+		    	v->long = clngint( v->int )
+		    end if
+
 		case else
 			v->long = clngint( v->int )
 		end select
 
-	''
 	case FB_DATATYPE_ULONGINT
 
 		select case as const vdtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    '' no conversion
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			v->long = culngint( v->float )
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		    if( FB_LONGSIZE <> len( integer ) ) then
+		    	v->long = culngint( v->int )
+		    end if
+
 		case else
 			v->long = culngint( v->int )
 		end select
 
-	''
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 
 		if( vdtype > FB_DATATYPE_POINTER ) then
@@ -123,34 +134,110 @@ private sub hConvDataType _
 		select case as const vdtype
 		case FB_DATATYPE_LONGINT
 		    v->float = cdbl( v->long )
+
 		case FB_DATATYPE_ULONGINT
 			v->float = cdbl( cunsg( v->long ) )
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			'' do nothing
+
 		case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
 			v->float = cdbl( cuint( v->int ) )
+
+		case FB_DATATYPE_LONG
+		    if( FB_LONGSIZE = len( integer ) ) then
+		    	v->float = cdbl( v->int )
+		   	else
+		    	v->float = cdbl( v->long )
+		    end if
+
+		case FB_DATATYPE_ULONG
+		    if( FB_LONGSIZE = len( integer ) ) then
+		    	v->float = cdbl( cuint( v->int ) )
+		   	else
+				v->float = cdbl( cunsg( v->long ) )
+			end if
+
 		case else
 			v->float = cdbl( v->int )
 		end select
 
-	''
+	case FB_DATATYPE_LONG
+
+		select case as const vdtype
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		    if( FB_LONGSIZE <> len( integer ) ) then
+		    	v->int = cint( v->long )
+		    end if
+
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+			if( FB_LONGSIZE = len( integer ) ) then
+				v->int = cint( v->float )
+			else
+				v->long = clngint( v->float )
+			end if
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		    '' do nothing
+
+		case else
+			if( FB_LONGSIZE <> len( integer ) ) then
+				v->long = clngint( v->int )
+			end if
+		end select
+
+	case FB_DATATYPE_ULONG
+
+		select case as const vdtype
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		    if( FB_LONGSIZE <> len( integer ) ) then
+		    	v->int = cuint( v->long )
+		    end if
+
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+			if( FB_LONGSIZE = len( integer ) ) then
+				v->int = cuint( v->float )
+			else
+				v->long = culngint( v->float )
+			end if
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		    '' do nothing
+
+		case else
+			if( FB_LONGSIZE <> len( integer ) ) then
+				v->long = culngint( v->int )
+			end if
+		end select
+
 	case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
 
 	 	select case as const vdtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    v->int = cuint( v->long )
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			v->int = cuint( v->float )
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		    if( FB_LONGSIZE <> len( integer ) ) then
+		    	v->int = cuint( v->long )
+		    end if
 		end select
 
-	''
 	case else
 
 		select case as const vdtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    v->int = cint( v->long )
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			v->int = cint( v->float )
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		    if( FB_LONGSIZE <> len( integer ) ) then
+		    	v->int = cint( v->long )
+        	end if
 		end select
 
     end select
@@ -169,11 +256,21 @@ private function hPrepConst _
 	'' first node? just copy..
 	if( v->dtype = INVALID ) then
 		v->dtype = r->dtype
+
 		select case as const v->dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			v->val.long = r->con.val.long
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			v->val.float = r->con.val.float
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				v->val.int = r->con.val.int
+			else
+				v->val.long = r->con.val.long
+			end if
+
 		case else
             v->val.int = r->con.val.int
 		end select
@@ -187,7 +284,8 @@ private function hPrepConst _
 	'' same? don't convert..
 	if( dtype = INVALID ) then
 		'' an ENUM or POINTER always has the precedence
-		if( (r->dtype = FB_DATATYPE_ENUM) or (r->dtype >= FB_DATATYPE_POINTER) ) then
+		if( (r->dtype = FB_DATATYPE_ENUM) or _
+			(r->dtype >= FB_DATATYPE_POINTER) ) then
 			return r->dtype
 		else
 			return v->dtype
@@ -253,8 +351,17 @@ private function hConstAccumADDSUB _
 					select case as const dtype
 					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 						v->val.long += r->con.val.long
+
 					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						v->val.float += r->con.val.float
+
+					case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+						if( FB_LONGSIZE = len( integer ) ) then
+							v->val.int += r->con.val.int
+						else
+							v->val.long += r->con.val.long
+						end if
+
 					case else
 				    	v->val.int += r->con.val.int
 					end select
@@ -263,8 +370,17 @@ private function hConstAccumADDSUB _
 					select case as const dtype
 					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 						v->val.long -= r->con.val.long
+
 					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						v->val.float -= r->con.val.float
+
+					case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+						if( FB_LONGSIZE = len( integer ) ) then
+							v->val.int -= r->con.val.int
+						else
+							v->val.long -= r->con.val.long
+						end if
+
 					case else
 						v->val.int -= r->con.val.int
 					end select
@@ -324,8 +440,17 @@ private function hConstAccumMUL _
 				select case as const dtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					v->val.long *= r->con.val.long
+
 				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					v->val.float *= r->con.val.float
+
+				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+					if( FB_LONGSIZE = len( integer ) ) then
+						v->val.int *= r->con.val.int
+					else
+						v->val.long *= r->con.val.long
+					end if
+
 				case else
 					v->val.int *= r->con.val.int
 				end select
@@ -373,45 +498,23 @@ private function hOptConstAccum1 _
 			case AST_OP_ADD
 				v.dtype = INVALID
 				n = hConstAccumADDSUB( n, @v, 1 )
+				nn = astNewCONST( @v.val, v.dtype )
 
-				select case as const v.dtype
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					nn = astNewCONSTl( v.val.long, v.dtype )
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			    	nn = astNewCONSTf( v.val.float, v.dtype )
-				case else
-					nn = astNewCONSTi( v.val.int, v.dtype )
-				end select
-
+				'' can't pass ConstAccumADDSUB() to newBOP, the order of
+				'' the params should't matter
 				n = astNewBOP( AST_OP_ADD, n, nn )
 
 			case AST_OP_MUL
 				v.dtype = INVALID
 				n = hConstAccumMUL( n, @v )
-
-				select case as const v.dtype
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					nn = astNewCONSTl( v.val.long, v.dtype )
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					nn = astNewCONSTf( v.val.float, v.dtype )
-				case else
-					nn = astNewCONSTi( v.val.int, v.dtype )
-				end select
+				nn = astNewCONST( @v.val, v.dtype )
 
 				n = astNewBOP( AST_OP_MUL, n, nn )
 
            	case AST_OP_SUB
 				v.dtype = INVALID
 				n = hConstAccumADDSUB( n, @v, -1 )
-
-				select case as const v.dtype
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					nn = astNewCONSTl( v.val.long, v.dtype )
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					nn = astNewCONSTf( v.val.float, v.dtype )
-				case else
-					nn = astNewCONSTi( v.val.int, v.dtype )
-				end select
+				nn = astNewCONST( @v.val, v.dtype )
 
 				n = astNewBOP( AST_OP_SUB, n, nn )
 			end select
@@ -464,14 +567,7 @@ private sub hOptConstAccum2 _
 
 				if( v.dtype <> INVALID ) then
 					n->l = astNewBOP( AST_OP_ADD, n->l, n->r )
-					select case as const v.dtype
-					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-						n->r = astNewCONSTl( v.val.long, v.dtype )
-					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-						n->r = astNewCONSTf( v.val.float, v.dtype )
-					case else
-						n->r = astNewCONSTi( v.val.int, v.dtype )
-					end select
+					n->r = astNewCONST( @v.val, v.dtype )
 					checktype = TRUE
 				end if
 			end select
@@ -483,14 +579,7 @@ private sub hOptConstAccum2 _
 
 			if( v.dtype <> INVALID ) then
 				n->l = astNewBOP( AST_OP_MUL, n->l, n->r )
-				select case as const v.dtype
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					n->r = astNewCONSTl( v.val.long, v.dtype )
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					n->r = astNewCONSTf( v.val.float, v.dtype )
-				case else
-					n->r = astNewCONSTi( v.val.int, v.dtype )
-				end select
+				n->r = astNewCONST( @v.val, v.dtype )
 				checktype = TRUE
 			end if
        	end select
@@ -508,8 +597,9 @@ private sub hOptConstAccum2 _
 				end if
 				n->dtype = dtype
 			else
-				'' an ENUM or POINTER always has the precedence
-				if( (r->dtype = FB_DATATYPE_ENUM) or (r->dtype >= FB_DATATYPE_POINTER) ) then
+				'' an ENUM or POINTER always have the precedence
+				if( (r->dtype = FB_DATATYPE_ENUM) or _
+					(r->dtype >= FB_DATATYPE_POINTER) ) then
 					n->dtype = r->dtype
 				else
 					n->dtype = l->dtype
@@ -561,8 +651,17 @@ private function hConstDistMUL _
 				select case as const dtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					v->val.long += r->con.val.long
+
 				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					v->val.float += r->con.val.float
+
+				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+					if( FB_LONGSIZE = len( integer ) ) then
+						v->val.int += r->con.val.int
+					else
+						v->val.long += r->con.val.long
+					end if
+
 				case else
 					v->val.int += r->con.val.int
 				end select
@@ -612,56 +711,116 @@ private function hOptConstDistMUL _
 
 				if( v.dtype <> INVALID ) then
 					select case as const v.dtype
-					''
 					case FB_DATATYPE_LONGINT
+
+mul_long:
 						select case as const r->dtype
 						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							v.val.long *= r->con.val.long
+
 						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 							v.val.long *= clngint( r->con.val.float )
+
+						case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+							if( FB_LONGSIZE = len( integer ) ) then
+								v.val.long *= clngint( r->con.val.int )
+							else
+								v.val.long *= r->con.val.long
+							end if
+
 						case else
 							v.val.long *= clngint( r->con.val.int )
 						end select
 
 						r = astNewCONSTl( v.val.long, v.dtype )
 
-					''
 					case FB_DATATYPE_ULONGINT
+
+mul_ulong:
 						select case as const r->dtype
 						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							v.val.long *= cunsg( r->con.val.long )
+
 						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 							v.val.long *= culngint( r->con.val.float )
+
+						case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+							if( FB_LONGSIZE = len( integer ) ) then
+								v.val.long *= culngint( r->con.val.int )
+							else
+								v.val.long *= cunsg( r->con.val.long )
+							end if
+
 						case else
 							v.val.long *= culngint( r->con.val.int )
 						end select
 
 						r = astNewCONSTl( v.val.long, v.dtype )
 
-					''
 					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						select case as const r->dtype
 						case FB_DATATYPE_LONGINT
 							v.val.float *= cdbl( r->con.val.long )
+
 						case FB_DATATYPE_ULONGINT
 							v.val.float *= cdbl( cunsg( r->con.val.long ) )
+
 						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 							v.val.float *= r->con.val.float
+
+						case FB_DATATYPE_LONG
+							if( FB_LONGSIZE = len( integer ) ) then
+								v.val.float *= cdbl( r->con.val.int )
+							else
+								v.val.float *= cdbl( r->con.val.long )
+							end if
+
+						case FB_DATATYPE_ULONG
+							if( FB_LONGSIZE = len( integer ) ) then
+								v.val.float *= cdbl( cunsg( r->con.val.int ) )
+							else
+								v.val.float *= cdbl( cunsg( r->con.val.long ) )
+							end if
+
 						case FB_DATATYPE_UINT
 							v.val.float *= cdbl( cunsg( r->con.val.int ) )
+
 						case else
 							v.val.float *= cdbl( r->con.val.int )
 						end select
 
 						r = astNewCONSTf( v.val.float, v.dtype )
 
-					''
+					case FB_DATATYPE_LONG
+						if( FB_LONGSIZE = len( integer ) ) then
+							goto mul_int
+						else
+							goto mul_long
+						end if
+
+					case FB_DATATYPE_ULONG
+						if( FB_LONGSIZE = len( integer ) ) then
+							goto mul_int
+						else
+							goto mul_ulong
+						end if
+
 					case else
+mul_int:
 						select case as const r->dtype
 						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							v.val.int *= cint( r->con.val.long )
+
 						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 							v.val.int *= cint( r->con.val.float )
+
+						case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+							if( FB_LONGSIZE = len( integer ) ) then
+								v.val.int *= r->con.val.int
+							else
+								v.val.int *= cint( r->con.val.long )
+							end if
+
 						case else
 							v.val.int *= r->con.val.int
 						end select
@@ -718,8 +877,17 @@ private sub hOptConstIDX _
         		select case as const v.dtype
         		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
         			c = cint( v.val.long )
+
         		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
         			c = cint( v.val.float )
+
+        		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+        			if( FB_LONGSIZE = len( integer ) ) then
+        				c = v.val.int
+        			else
+        				c = cint( v.val.long )
+        			end if
+
         		case else
         			c = v.val.int
         		end select
@@ -737,8 +905,17 @@ private sub hOptConstIDX _
 				select case as const l->dtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					c = cint( l->con.val.long )
+
 				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					c = cint( l->con.val.float )
+
+        		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+        			if( FB_LONGSIZE = len( integer ) ) then
+        				c = cint( l->con.val.int )
+        			else
+        				c = cint( l->con.val.long )
+        			end if
+
 				case else
 					c = cint( l->con.val.int )
 				end select
@@ -768,8 +945,17 @@ private sub hOptConstIDX _
 						select case as const lr->dtype
 						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							c = cint( lr->con.val.long )
+
 						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 							c = cint( lr->con.val.float )
+
+        				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+        					if( FB_LONGSIZE = len( integer ) ) then
+        						c = cint( lr->con.val.int )
+        					else
+        						c = cint( lr->con.val.long )
+        					end if
+
 						case else
 							c = cint( lr->con.val.int )
 						end select
@@ -973,8 +1159,7 @@ private sub hDivToShift_Signed _
 
 	l = n->l
 
-	'' !!FIXME!!! while there's no common sub-expr
-	'' 	          elimination, only allow VAR nodes
+	'' !!FIXME!!! while there's no common sub-expr elimination, only allow VAR nodes
 	if( l->class <> AST_NODECLASS_VAR ) then
 		exit sub
 	end if
@@ -1145,7 +1330,9 @@ private function hOptNullOp _
 							return hOptNullOp( l )
 						end if
 
-					case AST_OP_ADD, AST_OP_SUB, AST_OP_SHR, AST_OP_SHL, AST_OP_OR, AST_OP_XOR
+					case AST_OP_ADD, AST_OP_SUB, _
+						 AST_OP_SHR, AST_OP_SHL, _
+						 AST_OP_OR, AST_OP_XOR
 						if( v = 0 ) then
 							astDelNode( r )
 							astDelNode( n )
@@ -1283,18 +1470,26 @@ private function hOptStrMultConcat _
     	    	end if
     	    else
     	    	if( is_wstr = FALSE ) then
-    	    		lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n->l ) )
+    	    		lnk = astNewLINK( lnk, _
+    	    						  rtlStrConcatAssign( astCloneTree( dst ), _
+    	    						  					  n->l ) )
     	    	else
-    	    		lnk = astNewLINK( lnk, rtlWstrConcatAssign( astCloneTree( dst ), n->l ) )
+    	    		lnk = astNewLINK( lnk, _
+    	    						  rtlWstrConcatAssign( astCloneTree( dst ), _
+    	    						  					   n->l ) )
     	    	end if
     	    end if
     	end if
 
     	if( n->r <> NULL ) then
     	    if( is_wstr = FALSE ) then
-    	    	lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n->r ) )
+    	    	lnk = astNewLINK( lnk, _
+    	    					  rtlStrConcatAssign( astCloneTree( dst ), _
+    	    					  					  n->r ) )
     	    else
-    	    	lnk = astNewLINK( lnk, rtlWstrConcatAssign( astCloneTree( dst ), n->r ) )
+    	    	lnk = astNewLINK( lnk, _
+    	    					  rtlWstrConcatAssign( astCloneTree( dst ), _
+    	    					  					   n->r ) )
     	    end if
     	end if
 
@@ -1310,9 +1505,13 @@ private function hOptStrMultConcat _
     		end if
 		else
     		if( is_wstr = FALSE ) then
-    			lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n ) )
+    			lnk = astNewLINK( lnk, _
+    							  rtlStrConcatAssign( astCloneTree( dst ), _
+    							  					  n ) )
     		else
-    			lnk = astNewLINK( lnk, rtlWstrConcatAssign( astCloneTree( dst ), n ) )
+    			lnk = astNewLINK( lnk, _
+    							  rtlWstrConcatAssign( astCloneTree( dst ), _
+    							  					   n ) )
     		end if
 		end if
     end if

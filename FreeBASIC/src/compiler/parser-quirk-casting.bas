@@ -46,24 +46,37 @@ function cTypeConvExpr _
 	select case as const tk
 	case FB_TK_CBYTE
 		dtype = FB_DATATYPE_BYTE
-	case FB_TK_CSHORT
-		dtype = FB_DATATYPE_SHORT
-	case FB_TK_CINT, FB_TK_CLNG
-		dtype = FB_DATATYPE_INTEGER
-	case FB_TK_CLNGINT
-		dtype = FB_DATATYPE_LONGINT
 
 	case FB_TK_CUBYTE
 		dtype = FB_DATATYPE_UBYTE
+
+	case FB_TK_CSHORT
+		dtype = FB_DATATYPE_SHORT
+
 	case FB_TK_CUSHORT
 		dtype = FB_DATATYPE_USHORT
+
+	case FB_TK_CINT
+		dtype = FB_DATATYPE_INTEGER
+
 	case FB_TK_CUINT
 		dtype = FB_DATATYPE_UINT
+
+	case FB_TK_CLNG
+		dtype = FB_DATATYPE_LONG
+
+	case FB_TK_CULNG
+		dtype = FB_DATATYPE_ULONG
+
+	case FB_TK_CLNGINT
+		dtype = FB_DATATYPE_LONGINT
+
 	case FB_TK_CULNGINT
 		dtype = FB_DATATYPE_ULONGINT
 
 	case FB_TK_CSNG
 		dtype = FB_DATATYPE_SINGLE
+
 	case FB_TK_CDBL
 		dtype = FB_DATATYPE_DOUBLE
 

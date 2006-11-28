@@ -39,6 +39,8 @@
 		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, FB_DATATYPE_UINT 	, @"uinteger" 	), _
 		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , FB_DATATYPE_INTEGER, @"enum"		), _
 		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, FB_DATATYPE_UINT   , @"bitfield"	), _
+		(FB_DATACLASS_INTEGER, FB_LONGSIZE		, 8*FB_LONGSIZE		, TRUE , FB_DATATYPE_LONG	, @"long" 		), _
+		(FB_DATACLASS_INTEGER, FB_LONGSIZE		, 8*FB_LONGSIZE		, FALSE, FB_DATATYPE_ULONG 	, @"ulong" 		), _
 		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, TRUE , FB_DATATYPE_LONGINT, @"longint"	), _
 		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, FALSE, FB_DATATYPE_ULONGINT,@"ulongint"	), _
 		(FB_DATACLASS_FPOINT , 4             	, 8*4				, TRUE , FB_DATATYPE_SINGLE	, @"single"		), _
@@ -112,7 +114,7 @@ function symbMaxDataType _
     	exit function
     end if
 
-    '' don't convert byte <-> char
+    '' don't convert byte <-> ubyte
     select case as const dtype1
     case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
     	select case dtype2
@@ -120,25 +122,52 @@ function symbMaxDataType _
     		exit function
     	end select
 
-    '' neither word <-> short
+    '' neither short <-> ushort
     case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
     	select case dtype2
     	case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
     		exit function
     	end select
 
-	'' neither dword <-> integer
+	'' neither int <-> uint
 	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
-    	select case dtype2
+    	select case as const dtype2
     	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
     		exit function
+
+    	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+    		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+    			exit function
+    		end if
+    	end select
+
+	'' neither long <-> ulong
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+    	select case as const dtype2
+    	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+    		exit function
+
+    	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
+    		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+    			exit function
+    		end if
+
+    	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+    		if( FB_LONGSIZE = FB_INTEGERSIZE*2 ) then
+    			exit function
+    		end if
     	end select
 
     '' neither qword <-> longint
     case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-    	select case dtype2
+    	select case as const dtype2
     	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
     		exit function
+
+    	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+    		if( FB_LONGSIZE = FB_INTEGERSIZE*2 ) then
+    			exit function
+    		end if
     	end select
 
     '' neither single <-> double
@@ -264,6 +293,9 @@ function symbGetSignedType _
 			function = FB_DATATYPE_INTEGER
 		end select
 
+	case FB_DATATYPE_ULONG
+		function = FB_DATATYPE_LONG
+
 	case FB_DATATYPE_ULONGINT
 		function = FB_DATATYPE_LONGINT
 
@@ -299,6 +331,9 @@ function symbGetUnsignedType _
 
 	case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_POINTER
 		function = FB_DATATYPE_UINT
+
+	case FB_DATATYPE_LONG
+		function = FB_DATATYPE_ULONG
 
 	case FB_DATATYPE_LONGINT
 		function = FB_DATATYPE_ULONGINT

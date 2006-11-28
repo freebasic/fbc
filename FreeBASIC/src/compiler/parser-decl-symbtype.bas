@@ -210,7 +210,7 @@ function cSymbolType _
 		dtype = FB_DATATYPE_USHORT
 		lgt = 2
 
-	case FB_TK_INTEGER, FB_TK_LONG
+	case FB_TK_INTEGER
 		lexSkipToken( )
 		dtype = FB_DATATYPE_INTEGER
 		lgt = FB_INTEGERSIZE
@@ -219,6 +219,16 @@ function cSymbolType _
 		lexSkipToken( )
 		dtype = FB_DATATYPE_UINT
 		lgt = FB_INTEGERSIZE
+
+	case FB_TK_LONG
+		lexSkipToken( )
+		dtype = FB_DATATYPE_LONG
+		lgt = FB_LONGSIZE
+
+	case FB_TK_ULONG
+		lexSkipToken( )
+		dtype = FB_DATATYPE_ULONG
+		lgt = FB_LONGSIZE
 
 	case FB_TK_LONGINT
 		lexSkipToken( )
@@ -337,6 +347,9 @@ function cSymbolType _
 
 		case FB_DATATYPE_INTEGER
 			dtype = FB_DATATYPE_UINT
+
+		case FB_DATATYPE_LONG
+			dtype = FB_DATATYPE_ULONG
 
 		case FB_DATATYPE_LONGINT
 			dtype = FB_DATATYPE_ULONGINT

@@ -491,8 +491,17 @@ private function hFlushExprStatic _
 				select case as const sdtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					irEmitVARINI64( sdtype, astGetValLong( expr ) )
+
 				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					irEmitVARINIf( sdtype, astGetValFloat( expr ) )
+
+				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+					if( FB_LONGSIZE = len( integer ) ) then
+						irEmitVARINIi( sdtype, astGetValInt( expr ) )
+					else
+						irEmitVARINI64( sdtype, astGetValLong( expr ) )
+					end if
+
 				case else
 					irEmitVARINIi( sdtype, astGetValInt( expr ) )
 				end select

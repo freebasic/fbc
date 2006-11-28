@@ -78,6 +78,8 @@ declare function hGetProcParamsTypeCode _
 		"j", _                  '' uinteger
 		"!", _                  '' enum
 		"!", _                  '' bitfield
+		"m", _                  '' long
+		"n", _                  '' ulong
 		"x", _                  '' longint
 		"y", _                  '' ulongint
 		"f", _                  '' single
@@ -1014,6 +1016,18 @@ private function hGetOperatorName _
 
 	case AST_OP_FLOOR
 		function = @"fl"
+
+	case AST_OP_NEW, AST_OP_NEW_SELF
+		function = @"nw"
+
+	case AST_OP_NEW_VEC, AST_OP_NEW_VEC_SELF
+		function = @"na"
+
+	case AST_OP_DEL, AST_OP_DEL_SELF
+		function = @"dl"
+
+	case AST_OP_DEL_VEC, AST_OP_DEL_VEC_SELF
+		function = @"da"
 
 	case AST_OP_CAST
 		static as string res

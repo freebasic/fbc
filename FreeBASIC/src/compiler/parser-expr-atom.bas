@@ -150,9 +150,17 @@ function cAtom _
 		byref atom as ASTNODE ptr _
 	) as integer
 
+  	dim as integer tk_class = any
+
   	atom = NULL
 
-  	select case as const lexGetClass( )
+ 	if( chain_ = NULL ) then
+  		tk_class = lexGetClass( )
+  	else
+  		tk_class = FB_TKCLASS_IDENTIFIER
+  	end if
+
+  	select case as const tk_class
   	case FB_TKCLASS_KEYWORD
   		return cQuirkFunction( cIdentifier( )->sym->key.id, atom )
 

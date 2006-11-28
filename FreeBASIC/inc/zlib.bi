@@ -16,7 +16,6 @@
 #define MAX_WBITS 15
 
 type uInt as uinteger
-type uLong as uinteger
 type Bytef as Byte
 type charf as byte
 type intf as integer

@@ -251,6 +251,7 @@ function astNewUOP _
 					'' test overflow
 					select case dtype
 					case FB_DATATYPE_UINT
+chk_uint:
 						if( astGetValInt( o ) and &h80000000 ) then
 							if( astGetValInt( o ) <> &h80000000 ) then
 								errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
@@ -258,10 +259,18 @@ function astNewUOP _
 						end if
 
 					case FB_DATATYPE_ULONGINT
+chk_ulong:
 						if( astGetValLong( o ) and &h8000000000000000 ) then
 							if( astGetValLong( o ) <> &h8000000000000000 ) then
 								errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 							end if
+						end if
+
+					case FB_DATATYPE_ULONG
+						if( FB_LONGSIZE = len( integer ) ) then
+							goto chk_uint
+						else
+							goto chk_ulong
 						end if
 
 					case else
@@ -281,6 +290,13 @@ function astNewUOP _
 
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			hUOPConstFoldFlt( op, o )
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				hUOPConstFoldInt( op, o )
+			else
+				hUOPConstFold64( op, o )
+			end if
 
 		case else
 			'' byte's, short's, int's and enum's

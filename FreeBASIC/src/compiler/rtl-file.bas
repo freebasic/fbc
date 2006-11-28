@@ -1348,17 +1348,27 @@ function rtlFileSeek _
 	) as integer static
 
     dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr reslabel
+    dim as FBSYMBOL ptr reslabel, f
 
 	function = FALSE
 
 	''
-	select case astGetDataType( newpos )
+	select case as const astGetDataType( newpos )
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		proc = astNewCALL( PROCLOOKUP( FILESEEKLARGE ) )
+		f = PROCLOOKUP( FILESEEKLARGE )
+
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+			f = PROCLOOKUP( FILESEEK )
+		else
+			f = PROCLOOKUP( FILESEEKLARGE )
+		end if
+
 	case else
-	    proc = astNewCALL( PROCLOOKUP( FILESEEK ) )
+	    f = PROCLOOKUP( FILESEEK )
 	end select
+
+	proc = astNewCALL( f )
 
     '' byval filenum as integer
     if( astNewARG( proc, filenum ) = NULL ) then
@@ -1430,8 +1440,16 @@ function rtlFilePut _
     	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
 
-	islarge = (astGetDataType( offset ) = FB_DATATYPE_LONGINT) or _
-			  (astGetDataType( offset ) = FB_DATATYPE_ULONGINT)
+	select case as const astGetDataType( offset )
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		islarge = TRUE
+
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
+
+	case else
+		islarge = FALSE
+	end select
 
 	if( isstring ) then
 		if( islarge ) then
@@ -1516,7 +1534,7 @@ function rtlFilePutArray _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr reslabel
+    dim as FBSYMBOL ptr reslabel, f
 
     function = NULL
 
@@ -1525,12 +1543,22 @@ function rtlFilePutArray _
     end if
 
 	''
-	select case astGetDataType( offset )
+	select case as const astGetDataType( offset )
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		proc = astNewCALL( PROCLOOKUP( FILEPUTARRAYLARGE ) )
+		f = PROCLOOKUP( FILEPUTARRAYLARGE )
+
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+			f = PROCLOOKUP( FILEPUTARRAY )
+		else
+			f = PROCLOOKUP( FILEPUTARRAYLARGE )
+		end if
+
 	case else
-	    proc = astNewCALL( PROCLOOKUP( FILEPUTARRAY ) )
+	    f = PROCLOOKUP( FILEPUTARRAY )
 	end select
+
+	proc = astNewCALL( f )
 
     '' byval filenum as integer
     if( astNewARG( proc, filenum ) = NULL ) then
@@ -1595,8 +1623,16 @@ function rtlFileGet _
     	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
 
-	islarge = (astGetDataType( offset ) = FB_DATATYPE_LONGINT) or _
-			  (astGetDataType( offset ) = FB_DATATYPE_ULONGINT)
+	select case as const astGetDataType( offset )
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		islarge = TRUE
+
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
+
+	case else
+		islarge = FALSE
+	end select
 
 	if( isstring ) then
 		if( islarge ) then
@@ -1681,7 +1717,7 @@ function rtlFileGetArray _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr reslabel
+    dim as FBSYMBOL ptr reslabel, f
 
 	function = NULL
 
@@ -1690,12 +1726,22 @@ function rtlFileGetArray _
     end if
 
 	''
-	select case astGetDataType( offset )
+	select case as const astGetDataType( offset )
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		proc = astNewCALL( PROCLOOKUP( FILEGETARRAYLARGE ) )
+		f = PROCLOOKUP( FILEGETARRAYLARGE )
+
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+			f = PROCLOOKUP( FILEGETARRAY )
+		else
+			f = PROCLOOKUP( FILEGETARRAYLARGE )
+		end if
+
 	case else
-	    proc = astNewCALL( PROCLOOKUP( FILEGETARRAY ) )
+	    f = PROCLOOKUP( FILEGETARRAY )
 	end select
+
+	proc = astNewCALL( f )
 
     '' byval filenum as integer
     if( astNewARG( proc, filenum ) = NULL ) then
@@ -2002,6 +2048,20 @@ function rtlFileInputGet _
 	case FB_DATATYPE_UINT
 		f = PROCLOOKUP( INPUTUINT )
 
+	case FB_DATATYPE_LONG
+		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+			f = PROCLOOKUP( INPUTINT )
+		else
+			f = PROCLOOKUP( INPUTLONGINT )
+		end if
+
+	case FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+			f = PROCLOOKUP( INPUTUINT )
+		else
+			f = PROCLOOKUP( INPUTULONGINT )
+		end if
+
 	case FB_DATATYPE_LONGINT
 		f = PROCLOOKUP( INPUTLONGINT )
 
@@ -2074,15 +2134,30 @@ function rtlFileLock _
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
-    dim as integer inidtype, enddtype, islarge
+    dim as integer islarge
 
 	function = FALSE
 
 	''
-	inidtype = astGetDataType( iniexpr )
-	enddtype = astGetDataType( endexpr )
-	islarge = ( inidtype = FB_DATATYPE_LONGINT ) or ( inidtype = FB_DATATYPE_ULONGINT ) or _
-	          ( enddtype = FB_DATATYPE_LONGINT ) or ( enddtype = FB_DATATYPE_ULONGINT )
+	select case as const astGetDataType( iniexpr )
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		islarge = TRUE
+
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
+
+	case else
+		select case as const astGetDataType( endexpr )
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+			islarge = TRUE
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
+
+		case else
+			islarge = FALSE
+		end select
+	end select
 
 	if( islock ) then
 		if( islarge ) then

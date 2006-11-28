@@ -17,8 +17,7 @@ type PCCHAR as byte ptr
 type UCHAR as ubyte
 type PUCHAR as ubyte ptr
 type PUSHORT as ushort ptr
-type ULONG as uinteger
-type PULONG as uinteger ptr
+type PULONG as ulong ptr
 type PSZ as byte ptr
 type PVOID as any ptr
 type LPVOID as any ptr

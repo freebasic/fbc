@@ -36,12 +36,15 @@
 	- add SWAP for structs with copy-ctors and/or destructors
 
 	- add NEW and DELETE as operator
-	  - only allow overloading if methods, no global support,
-	    no weird C++ syntax, but nothrow should be allowed somehow
 	  - use the nothrow version only for now
 	    - exception handling is different in all platforms,
 	      the sjlj (setjmp and longjmp) method isn't used in ELF (it seems)
-	  - no support for vectors []'s
+	    - no way to define "byref param2 as std::nothrow_t" in rtl-mem.bas
+	      - namespace mangling will have to check for STD and add just "St"
+	        without the # prefix
+	  - NEW and DELETE must be static methods
+	    - DELETE should check if the pointer is null before using it
+	    - DELETE[]'s counter is at: cast(uinteger ptr, vector)[-1]
 
 [ ] operator overloading:
       - OPERATOR *|@ ( l ) AS TYPE

@@ -988,6 +988,16 @@ declare function cConstExprValue _
 		byref value as integer _
 	) as integer
 
+declare function cOperatorNew _
+	( _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
+declare function cOperatorDelete _
+	( _
+		_
+	) as integer
+
 declare sub hSkipUntil _
 	( _
 		byval token as integer, _

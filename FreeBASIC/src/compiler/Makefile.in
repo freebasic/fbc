@@ -91,7 +91,7 @@ FBC_COMP = $(subst .bas,_new$(EXEEXT),$(FBC_MAIN))
 
 FBC_SRCS := $(FBC_MAIN)
 
-FBC_SRCS += ast.bas ast-node-addr.bas ast-node-assign.bas ast-node-bop.bas
+FBC_SRCS += ast.bas ast-node-addr.bas ast-node-assign.bas ast-node-bop.bas ast-node-mem.bas
 FBC_SRCS += ast-node-branch.bas ast-node-check.bas ast-node-const.bas ast-node-conv.bas
 FBC_SRCS += ast-node-decl.bas ast-node-enum.bas ast-node-call.bas ast-node-arg.bas
 FBC_SRCS += ast-node-idx.bas ast-node-iif.bas ast-node-link.bas ast-node-load.bas
@@ -122,7 +122,7 @@ FBC_SRCS += parser-quirk-casting.bas parser-quirk-console.bas parser-quirk-data.
 FBC_SRCS += parser-quirk-error.bas parser-quirk-file.bas parser-quirk-goto-return.bas
 FBC_SRCS += parser-quirk-iif.bas parser-quirk-math.bas parser-quirk-on.bas
 FBC_SRCS += parser-quirk-peekpoke.bas parser-quirk-string.bas parser-quirk-vafirst.bas
-FBC_SRCS += parser-quirk.bas parser-quirk-gfx.bas parser-expr-atom.bas
+FBC_SRCS += parser-quirk-mem.bas parser-quirk.bas parser-quirk-gfx.bas parser-expr-atom.bas
 FBC_SRCS += parser-expr-binary.bas parser-expr-constant.bas parser-expr-function.bas
 FBC_SRCS += parser-expr-unary.bas parser-expr-variable.bas
 

@@ -328,6 +328,12 @@ function cHighestPrecExpr _
 				exit function
 			end if
 
+		'' OperatorNew
+		case FB_TK_NEW
+			if( cOperatorNew( highexpr ) = FALSE ) then
+				exit function
+			end if
+
 		'' Atom
 		case else
 			return cAtom( chain_, highexpr )
@@ -440,6 +446,7 @@ private function hCast _
 	if( ptronly ) then
 		select case astGetDataType( expr )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
+			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
 			 is >= FB_DATATYPE_POINTER
 
 		case else

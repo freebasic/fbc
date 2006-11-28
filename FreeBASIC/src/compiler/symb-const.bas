@@ -242,6 +242,20 @@ function symbGetConstValueAsStr _
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = str( symbGetConstValFloat( s ) )
 
+  	case FB_DATATYPE_LONG
+  		if( FB_LONGSIZE = len( integer ) ) then
+  			function = str( symbGetConstValInt( s ) )
+  		else
+  			function = str( symbGetConstValLong( s ) )
+  		end if
+
+  	case FB_DATATYPE_ULONG
+  	    if( FB_LONGSIZE = len( integer ) ) then
+  	    	function = str( cunsg( symbGetConstValInt( s ) ) )
+  	    else
+  	    	function = str( cunsg( symbGetConstValLong( s ) ) )
+  	    end if
+
   	case FB_DATATYPE_UBYTE, FB_DATATYPE_USHORT, FB_DATATYPE_UINT
   		function = str( cunsg( symbGetConstValInt( s ) ) )
 

@@ -46,23 +46,29 @@ type PPEXPR
 end type
 
 
-declare function ppSkip 					( ) as integer
+declare function ppSkip _
+	( _
+	) as integer
 
-declare function ppExpression				( _
-												byref istrue as integer _
-											) as integer
+declare function ppExpression _
+	( _
+		byref istrue as integer _
+	) as integer
 
-declare function ppLogExpression			( _
-												byref logexpr as PPEXPR _
-											) as integer
+declare function ppLogExpression _
+	( _
+		byref logexpr as PPEXPR _
+	) as integer
 
-declare function ppRelExpression			( _
-												byref relexpr as PPEXPR _
-											) as integer
+declare function ppRelExpression _
+	( _
+		byref relexpr as PPEXPR _
+	) as integer
 
-declare function ppParentExpr				( _
-												byref parexpr as PPEXPR _
-											) as integer
+declare function ppParentExpr _
+	( _
+		byref parexpr as PPEXPR _
+	) as integer
 
 
 '' globals
@@ -316,8 +322,15 @@ private sub hNumLogBOP _
   		select case as const r.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   			'' do nothing
+
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			r.num.long = r.num.float
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE <> len( integer ) ) then
+				r.num.long = r.num.int
+			end if
+
   		case else
 			r.num.long = r.num.int
   		end select
@@ -325,41 +338,98 @@ private sub hNumLogBOP _
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		select case as const r.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  			l.dtype = FB_DATATYPE_LONGINT
+  			l.dtype = r.dtype
   			l.num.long = l.num.float
+
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			l.dtype = FB_DATATYPE_INTEGER
 			l.num.int = l.num.float
 			r.num.int = r.num.float
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+				l.dtype = r.dtype
+			if( FB_LONGSIZE = len( integer ) ) then
+				l.num.int = l.num.float
+			else
+  				l.num.long = l.num.float
+  			end if
+
   		case else
 			l.dtype = FB_DATATYPE_INTEGER
 			l.num.int = l.num.float
   		end select
 
+  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  		select case as const r.dtype
+  		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+  			if( FB_LONGSIZE = len( integer ) ) then
+  				l.dtype = r.dtype
+  				l.num.long = l.num.int
+  			end if
+
+  		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+			if( FB_LONGSIZE = len( integer ) ) then
+				r.num.int = r.num.float
+			else
+				r.num.long = r.num.float
+			end if
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			'' do nothing
+
+  		case else
+  			if( FB_LONGSIZE <> len( integer ) ) then
+				r.num.long = r.num.int
+			end if
+  		end select
+
   	case else
   		select case as const r.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  			l.dtype = FB_DATATYPE_LONGINT
+  			l.dtype = r.dtype
   			l.num.long = l.num.int
+
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			r.num.int = r.num.float
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE <> len( integer ) ) then
+  				l.dtype = r.dtype
+  				l.num.long = l.num.int
+  			end if
   		end select
   	end select
 
     '' do operation
     select case op
     case FB_TK_AND
-  		select case l.dtype
+  		select case as const l.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			l.num.long and= r.num.long
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				l.num.int and= r.num.int
+			else
+				l.num.long and= r.num.long
+			end if
+
 		case else
 			l.num.int and= r.num.int
   		end select
 
     case FB_TK_OR
-  		select case l.dtype
+  		select case as const l.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			l.num.long or= r.num.long
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				l.num.int or= r.num.int
+			else
+				l.num.long or= r.num.long
+			end if
+
 		case else
 			l.num.int or= r.num.int
   		end select
@@ -381,8 +451,16 @@ private sub hNumRelBOP _
   		select case as const r.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   			'' do nothing
+
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			r.num.long = r.num.float
+			l.dtype = FB_DATATYPE_DOUBLE
+			l.num.float = l.num.long
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( FB_LONGSIZE <> len( integer ) ) then
+  				r.num.long = r.num.int
+  			end if
+
   		case else
 			r.num.long = r.num.int
   		end select
@@ -390,13 +468,45 @@ private sub hNumRelBOP _
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		select case as const r.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  			l.dtype = FB_DATATYPE_LONGINT
-  			l.num.long = l.num.float
+  			r.num.float = r.num.long
+
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   			'' do nothing
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( FB_LONGSIZE = len( integer ) ) then
+				r.num.float = r.num.int
+			else
+				r.num.float = r.num.long
+  			end if
+
   		case else
-			r.dtype = FB_DATATYPE_DOUBLE
 			r.num.float = r.num.int
+  		end select
+
+  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  		select case as const r.dtype
+  		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+  			if( FB_LONGSIZE = len( integer ) ) then
+  				l.dtype = r.dtype
+  				l.num.long = l.num.int
+  			end if
+
+  		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+			l.dtype = FB_DATATYPE_DOUBLE
+			if( FB_LONGSIZE = len( integer ) ) then
+				l.num.float = l.num.int
+			else
+				l.num.float = l.num.long
+			end if
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			'' do nothing
+
+  		case else
+  			if( FB_LONGSIZE <> len( integer ) ) then
+				r.num.long = r.num.int
+			end if
   		end select
 
   	case else
@@ -404,9 +514,16 @@ private sub hNumRelBOP _
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   			l.dtype = FB_DATATYPE_LONGINT
   			l.num.long = l.num.int
+
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			l.dtype = FB_DATATYPE_DOUBLE
 			l.num.float = l.num.int
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( FB_LONGSIZE <> len( integer ) ) then
+  				l.dtype = FB_DATATYPE_LONGINT
+  				l.num.long = l.num.int
+  			end if
   		end select
   	end select
 
@@ -416,8 +533,17 @@ private sub hNumRelBOP _
   		select case as const l.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   			l.num.int = l.num.long = r.num.long
+
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		    l.num.int = l.num.float = r.num.float
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( FB_LONGSIZE = len( integer ) ) then
+  				l.num.int = l.num.int = r.num.int
+  			else
+  				l.num.int = l.num.long = r.num.long
+  			end if
+
   		case else
   			l.num.int = l.num.int = r.num.int
   		end select
@@ -426,8 +552,17 @@ private sub hNumRelBOP _
   		select case as const l.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   			l.num.int = l.num.long > r.num.long
+
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		    l.num.int = l.num.float > r.num.float
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( FB_LONGSIZE = len( integer ) ) then
+  				l.num.int = l.num.int > r.num.int
+  			else
+  				l.num.int = l.num.long > r.num.long
+  			end if
+
   		case else
   			l.num.int = l.num.int > r.num.int
   		end select
@@ -436,8 +571,17 @@ private sub hNumRelBOP _
   		select case as const l.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   			l.num.int = l.num.long < r.num.long
+
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		    l.num.int = l.num.float < r.num.float
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( FB_LONGSIZE = len( integer ) ) then
+  				l.num.int = l.num.int < r.num.int
+  			else
+  				l.num.int = l.num.long < r.num.long
+  			end if
+
   		case else
   			l.num.int = l.num.int < r.num.int
   		end select
@@ -446,8 +590,17 @@ private sub hNumRelBOP _
   		select case as const l.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   			l.num.int = l.num.long <> r.num.long
+
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		    l.num.int = l.num.float <> r.num.float
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( FB_LONGSIZE = len( integer ) ) then
+  				l.num.int = l.num.int <> r.num.int
+  			else
+  				l.num.int = l.num.long <> r.num.long
+  			end if
+
   		case else
   			l.num.int = l.num.int <> r.num.int
   		end select
@@ -456,8 +609,17 @@ private sub hNumRelBOP _
   		select case as const l.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   			l.num.int = l.num.long <= r.num.long
+
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		    l.num.int = l.num.float <= r.num.float
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( FB_LONGSIZE = len( integer ) ) then
+  				l.num.int = l.num.int <= r.num.int
+  			else
+  				l.num.int = l.num.long <= r.num.long
+  			end if
+
   		case else
   			l.num.int = l.num.int <= r.num.int
   		end select
@@ -466,8 +628,17 @@ private sub hNumRelBOP _
   		select case as const l.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   			l.num.int = l.num.long >= r.num.long
+
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		    l.num.int = l.num.float >= r.num.float
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( FB_LONGSIZE = len( integer ) ) then
+  				l.num.int = l.num.int >= r.num.int
+  			else
+  				l.num.int = l.num.long >= r.num.long
+  			end if
+
   		case else
   			l.num.int = l.num.int >= r.num.int
   		end select
@@ -491,9 +662,17 @@ private sub hNumNot _
   		l.dtype = FB_DATATYPE_INTEGER
   	end select
 
-  	select case l.dtype
+  	select case as const l.dtype
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		l.num.long = not l.num.long
+
+  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			l.num.int = not l.num.int
+		else
+			l.num.long = not l.num.long
+		end if
+
 	case else
 		l.num.int = not l.num.int
   	end select
@@ -509,8 +688,17 @@ private sub hNumNeg _
   	select case as const l.dtype
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		l.num.long = -l.num.long
+
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		l.num.float = -l.num.float
+
+  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			l.num.int = -l.num.int
+		else
+			l.num.long = -l.num.long
+		end if
+
 	case else
 		l.num.int = -l.num.int
   	end select
@@ -530,6 +718,13 @@ private function hNumToBool _
 
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		function = v.float <> 0.0
+
+  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			function = v.int <> 0
+		else
+			function = v.long <> 0LL
+		end if
 
 	case else
 		function = v.int <> 0
@@ -692,11 +887,21 @@ private function ppRelExpression _
 
    				else
    					parexpr.class = PPEXPR_CLASS_STR
-   					select case parexpr.dtype
+
+   					select case as const parexpr.dtype
    					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
    						parexpr.str = str( parexpr.num.long )
+
    					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
    					    parexpr.str = str( parexpr.num.float )
+
+   					case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+   						if( FB_LONGSIZE = len( integer ) ) then
+   							parexpr.str = str( parexpr.num.int )
+   						else
+   							parexpr.str = str( parexpr.num.long )
+   						end if
+
    					case else
    						parexpr.str = str( parexpr.num.int )
    					end select
@@ -875,6 +1080,20 @@ private function ppParentExpr _
 
 			case FB_DATATYPE_UINT
 				parexpr.num.int = valuint( *lexGetText( ) )
+
+   			case FB_DATATYPE_LONG
+   				if( FB_LONGSIZE = len( integer ) ) then
+   					parexpr.num.int = valint( *lexGetText( ) )
+   				else
+   					parexpr.num.long = vallng( *lexGetText( ) )
+   				end if
+
+   			case FB_DATATYPE_ULONG
+   				if( FB_LONGSIZE = len( integer ) ) then
+   					parexpr.num.int = valuint( *lexGetText( ) )
+   				else
+   					parexpr.num.long = valulng( *lexGetText( ) )
+   				end if
 
 			case else
 				parexpr.num.int = valint( *lexGetText( ) )

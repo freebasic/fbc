@@ -507,33 +507,71 @@ sub hConvertValue _
 
 	select case as const sdtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+conv_long:
+
 		select case as const ddtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			dst->long = src->long
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			dst->float= src->long
+			dst->float = src->long
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				dst->int = src->long
+			else
+				dst->long = src->long
+			end if
+
 		case else
-			dst->int  = src->long
+			dst->int = src->long
 		end select
 
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		select case as const ddtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			dst->long = src->float
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			dst->float= src->float
+			dst->float = src->float
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				dst->int = src->float
+			else
+				dst->long = src->float
+			end if
+
 		case else
-			dst->int  = src->float
+			dst->int = src->float
 		end select
 
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			goto conv_int
+		else
+			goto conv_long
+		end if
+
 	case else
+conv_int:
+
 		select case as const ddtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			dst->long = src->int
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			dst->float= src->int
+			dst->float = src->int
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				dst->int = src->int
+			else
+				dst->long = src->int
+			end if
+
 		case else
-			dst->int  = src->int
+			dst->int = src->int
 		end select
 	end select
 

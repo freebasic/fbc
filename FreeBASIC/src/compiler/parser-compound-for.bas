@@ -74,27 +74,13 @@ private sub hFlushBOP _
 	if( v1 <> NULL ) then
 		expr1 = astNewVAR( v1, 0, v1type, v1->subtype )
 	else
-		select case as const v1type
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			expr1 = astNewCONSTl( val1->long, v1type )
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			expr1 = astNewCONSTf( val1->float, v1type )
-		case else
-			expr1 = astNewCONSTi( val1->int, v1type )
-		end select
+		expr1 = astNewCONST( val1, v1type )
 	end if
 
 	if( v2 <> NULL ) then
 		expr2 = astNewVAR( v2, 0, v2type )
 	else
-		select case as const v2type
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			expr2 = astNewCONSTl( val2->long, v2type )
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			expr2 = astNewCONSTf( val2->float, v2type )
-		case else
-			expr2 = astNewCONSTi( val2->int, v2type )
-		end select
+		expr2 = astNewCONST( val2, v2type )
 	end if
 
 	expr = astNewBOP( op, expr1, expr2, ex, AST_OPOPT_NONE )
@@ -126,30 +112,28 @@ private sub hFlushSelfBOP _
     '' is step a complex expression?
 	if( v2 <> NULL ) then
 		'' pointer?
-		If ( dtype >= FB_DATATYPE_POINTER ) Then
+		if ( dtype >= FB_DATATYPE_POINTER ) then
 			'' multiply it by type (or if UDT ptr, subtype) width
 			expr2 = astNewBOP( AST_OP_MUL, _
                                astNewVAR( v2, 0, FB_DATATYPE_INTEGER ), _
-                               astNewCONSTi( symbCalcLen( dtype mod FB_DATATYPE_POINTER, v1->subtype, FALSE ), _
+                               astNewCONSTi( symbCalcLen( dtype mod FB_DATATYPE_POINTER, _
+                               							  symbGetSubtype( v1 ), _
+                               							  FALSE ), _
                                              FB_DATATYPE_UINT ) )
-		Else
+		else
 			expr2 = astNewVAR( v2, 0, stype )
 		end if
 	else
-		select case as const stype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			expr2 = astNewCONSTl( val2->long, stype )
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			expr2 = astNewCONSTf( val2->float, stype )
-		case else
-			'' if it's a pointer, we need a regular integer
-			'' to do calculations...
-			If ( dtype >= FB_DATATYPE_POINTER ) Then
-				expr2 = astNewCONSTi( val2->int * symbCalcLen( dtype mod FB_DATATYPE_POINTER, v1->subtype, FALSE ), FB_DATATYPE_INTEGER )
-			Else
-				expr2 = astNewCONSTi( val2->int, stype )
-			End If
-		end select
+		'' if it's a pointer, we need a regular integer
+		'' to do calculations...
+		if ( dtype >= FB_DATATYPE_POINTER ) then
+			expr2 = astNewCONSTi( val2->int * symbCalcLen( dtype mod FB_DATATYPE_POINTER, _
+														   symbGetSubtype( v1 ), _
+														   FALSE ), _
+								  FB_DATATYPE_INTEGER )
+		else
+			expr2 = astNewCONST( val2, stype )
+		end if
 	end if
 
 	''
@@ -191,7 +175,8 @@ private function hCheckOps _
 	dtype = symbGetType( varSym )
 
 	dim as FB_ERRMSG err_num = any
-	dim as ASTNODE ptr lhsTemp = astNewVAR( varSym, 0, dtype, structSym ), rhsTemp = astNewCONSTi( 0, FB_DATATYPE_UINT )
+	dim as ASTNODE ptr lhsTemp = astNewVAR( varSym, 0, dtype, structSym ), _
+					   rhsTemp = astNewCONSTi( 0, FB_DATATYPE_UINT )
 
 	'' foo.+= overloaded?
 	if symbFindSelfBopOvlProc( AST_OP_ADD_SELF, lhsTemp, rhsTemp, @err_num ) = NULL then
@@ -241,7 +226,7 @@ end function
 
 
 '':::::
-''ForStmtBegin    =   FOR ID '=' Expression TO Expression (STEP Expression)? .
+''ForStmtBegin    =   FOR ID (AS DataType)? '=' Expression TO Expression (STEP Expression)? .
 ''
 function cForStmtBegin as integer
     dim as FBSYMBOL ptr il = any, tl = any, el = any, cl = any, varSym = NULL
@@ -265,7 +250,6 @@ function cForStmtBegin as integer
 	end if
 
     if( env.clopt.lang <> FB_LANG_QB ) then
-
 	    '' open outer scope
 		n = astScopeBegin( )
 		if( n = NULL ) then
@@ -276,7 +260,6 @@ function cForStmtBegin as integer
 
 		outerStk = cCompStmtPush( FB_TK_SCOPE )
 		outerStk->scopenode = n
-
 	end if
 
     '' new variable?
@@ -287,7 +270,10 @@ function cForStmtBegin as integer
 			'' error recovery: fake a var
 			idexpr = CREATEFAKEID( )
 		else
-			idexpr = astNewVAR( varSym, 0, symbGetType( varSym ), symbGetSubtype( varSym ) )
+			idexpr = astNewVAR( varSym, _
+								0, _
+								symbGetType( varSym ), _
+								symbGetSubtype( varSym ) )
 			isDeclFor = TRUE
 		end if
 
@@ -455,8 +441,17 @@ function cForStmtBegin as integer
 			select case as const stk->for.stype
 			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 				stk->for.ispositive = (astGetValLong( expr ) >= 0)
+
 			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 				stk->for.ispositive = (astGetValFloat( expr ) >= 0)
+
+			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+				if( FB_LONGSIZE = len( integer ) ) then
+					stk->for.ispositive = (astGetValInt( expr ) >= 0)
+				else
+					stk->for.ispositive = (astGetValLong( expr ) >= 0)
+				end if
+
 			case else
 				stk->for.ispositive = (astGetValInt( expr ) >= 0)
 			end select
@@ -494,12 +489,22 @@ function cForStmtBegin as integer
 		select case as const stk->for.stype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			stk->for.sval.long = 1
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			stk->for.sval.float = 1.0
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				stk->for.sval.int = 1
+			else
+				stk->for.sval.long = 1
+			end if
+
 		case else
 			'' also for UDT, ptr...
 			stk->for.sval.int = 1
 		end select
+
 		stk->for.stp = NULL
 		isconst += 1
 	end if
@@ -603,8 +608,17 @@ private function hForStmtClose _
 		select case as const stk->for.stype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			ival.long = 0
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			ival.float = 0.0
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				ival.int = 0
+			else
+				ival.long = 0
+			end if
+
 		case else
 			ival.int = 0
 		end select

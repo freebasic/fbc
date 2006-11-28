@@ -745,12 +745,22 @@ declare function astNewDBG _
 		byval ex as integer = 0 _
 	) as ASTNODE ptr
 
-declare function astNewMEM _
+declare function astNewMEM overload _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
 		byval bytes as integer _
+	) as ASTNODE ptr
+
+declare function astNewMEM _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
+		byval ex as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function astNewBOUNDCHK _
@@ -936,6 +946,11 @@ declare function astBuildVarAddrof _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
+declare function astBuildVarDeref overload _
+	( _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
 declare function astBuildVarDeref _
 	( _
 		byval sym as FBSYMBOL ptr _
@@ -1006,6 +1021,16 @@ declare sub astBuildForBegin _
 		byval inivalue as integer _
 	)
 
+declare function astBuildForEndEx overload _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval cnt as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval stepvalue as integer, _
+		byval endvalue as ASTNODE ptr _
+	) as ASTNODE ptr
+
+
 declare function astBuildForEndEx _
 	( _
 		byval tree as ASTNODE ptr, _
@@ -1014,6 +1039,14 @@ declare function astBuildForEndEx _
 		byval stepvalue as integer, _
 		byval endvalue as integer _
 	) as ASTNODE ptr
+
+declare sub astBuildForEnd overload _
+	( _
+		byval cnt as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval stepvalue as integer, _
+		byval endvalue as ASTNODE ptr _
+	)
 
 declare sub astBuildForEnd _
 	( _
@@ -1073,7 +1106,7 @@ declare function astPatchCtorCall _
 		byval thisexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astCallCtorToCall _
+declare function astCALLCTORToCALL _
 	( _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr

@@ -38,10 +38,10 @@ enum AST_OP
 	AST_OP_SHR_SELF
 	AST_OP_POW_SELF
 	AST_OP_CONCAT_SELF
-	AST_OP_NEW
-	AST_OP_NEW_VEC
-	AST_OP_DELETE
-	AST_OP_DELETE_VEC
+	AST_OP_NEW_SELF
+	AST_OP_NEW_VEC_SELF
+	AST_OP_DEL_SELF
+	AST_OP_DEL_VEC_SELF
 	AST_OP_CAST
 	'' end self ops
 
@@ -88,6 +88,11 @@ enum AST_OP
 
 	AST_OP_ADDROF
 	AST_OP_DEREF
+
+	AST_OP_NEW									'' global
+	AST_OP_NEW_VEC								'' /
+	AST_OP_DEL                                  '' /
+	AST_OP_DEL_VEC                              '' /
 
 	AST_OP_TOINT
 	AST_OP_TOFLT

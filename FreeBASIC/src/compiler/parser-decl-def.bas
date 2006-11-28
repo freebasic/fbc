@@ -53,24 +53,40 @@ function cDefDecl as integer static
 	select case as const lexGetToken( )
 	case FB_TK_DEFBYTE
 		dtype = FB_DATATYPE_BYTE
+
 	case FB_TK_DEFUBYTE
 		dtype = FB_DATATYPE_UBYTE
+
 	case FB_TK_DEFSHORT
 		dtype = FB_DATATYPE_SHORT
+
 	case FB_TK_DEFUSHORT
 		dtype = FB_DATATYPE_USHORT
-	case FB_TK_DEFINT, FB_TK_DEFLNG
+
+	case FB_TK_DEFINT
 		dtype = FB_DATATYPE_INTEGER
+
 	case FB_TK_DEFUINT
 		dtype = FB_DATATYPE_UINT
+
+	case FB_TK_DEFLNG
+		dtype = FB_DATATYPE_LONG
+
+	case FB_TK_DEFULNG
+		dtype = FB_DATATYPE_ULONG
+
 	case FB_TK_DEFLNGINT
 		dtype = FB_DATATYPE_LONGINT
+
 	case FB_TK_DEFULNGINT
 		dtype = FB_DATATYPE_ULONGINT
+
 	case FB_TK_DEFSNG
 		dtype = FB_DATATYPE_SINGLE
+
 	case FB_TK_DEFDBL
 		dtype = FB_DATATYPE_DOUBLE
+
 	case FB_TK_DEFSTR
 		dtype = FB_DATATYPE_STRING
 	end select

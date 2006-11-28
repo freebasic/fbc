@@ -79,6 +79,8 @@ declare function hGetDataType			( _
 		 8, _                                   '' uint
 		 1, _                                   '' enum
 		 8, _                                   '' bitfield
+		 1, _                                   '' long
+		 8, _                                   '' ulong
 		 9, _                                   '' longint
 		10, _                                   '' ulongint
 		11, _                                   '' single
@@ -115,6 +117,8 @@ sub	edbgInit( )
 
 	'' wchar len depends on the target platform
 	remapTB(FB_DATATYPE_WCHAR) = remapTB(env.target.wchar.type)
+
+	'' !!!FIXME!!! remap [u]long to [u]longint if target = 64-bit
 
 end sub
 

@@ -26,7 +26,7 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 11 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 15 ) = _
 	{ _
 		/' fb_NullPtrChk ( byval p as any ptr, byval linenum as integer, byval fname as zstring ptr ) as any ptr '/ _
 		( _
@@ -187,6 +187,54 @@
 	 			) _
 	 		} _
 	 	), _
+		/' new ( byval bytes as uinteger ) as any ptr '/ _
+		( _
+			cast( zstring ptr, AST_OP_NEW ), NULL, _
+			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' new[] ( byval bytes as uinteger ) as any ptr '/ _
+		( _
+			cast( zstring ptr, AST_OP_NEW_VEC ), NULL, _
+			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' delete ( byval ptr as any ptr ) '/ _
+		( _
+			cast( zstring ptr, AST_OP_DEL ), NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' delete[] ( byval ptr as any ptr ) '/ _
+		( _
+			cast( zstring ptr, AST_OP_DEL_VEC ), NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _
@@ -398,3 +446,86 @@ function rtlMemCopyClear _
 
 end function
 
+'':::::
+function rtlMemNewOp _
+	( _
+		byval is_vector as integer, _
+		byval len_expr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr sym = any
+
+    '' try to find an overloaded new()
+    select case dtype
+    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    	sym = symbGetCompOpOvlHead( subtype, _
+    								iif( is_vector, _
+    									 AST_OP_NEW_VEC_SELF, _
+    									 AST_OP_NEW_SELF ) )
+    case else
+    	sym = NULL
+    end select
+
+    '' if not defined, call the global one
+    if( sym = NULL ) then
+    	sym = symbGetCompOpOvlHead( subtype, _
+    								iif( is_vector, _
+    									 AST_OP_NEW_VEC, _
+    									 AST_OP_NEW ) )
+    end if
+
+    proc = astNewCALL( sym )
+
+    '' byval len as uinteger
+    if( astNewARG( proc, len_expr ) = NULL ) then
+    	exit function
+    end if
+
+    function = proc
+
+end function
+
+'':::::
+function rtlMemDeleteOp _
+	( _
+		byval is_vector as integer, _
+		byval ptr_expr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr sym = any
+
+    '' try to find an overloaded delete()
+    select case dtype
+    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    	sym = symbGetCompOpOvlHead( subtype, _
+    								iif( is_vector, _
+    									 AST_OP_DEL_VEC_SELF, _
+    									 AST_OP_DEL_SELF ) )
+    case else
+    	sym = NULL
+    end select
+
+    '' if not defined, call the global one
+    if( sym = NULL ) then
+    	sym = symbGetCompOpOvlHead( subtype, _
+    								iif( is_vector, _
+    									 AST_OP_DEL_VEC, _
+    									 AST_OP_DEL ) )
+    end if
+
+    proc = astNewCALL( sym )
+
+    '' byval ptr as any ptr
+    if( astNewARG( proc, ptr_expr ) = NULL ) then
+    	exit function
+    end if
+
+    function = proc
+
+end function

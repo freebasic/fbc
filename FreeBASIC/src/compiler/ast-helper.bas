@@ -112,6 +112,19 @@ function astBuildVarDeref _
 end function
 
 '':::::
+function astBuildVarDeref _
+	( _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	function = astNewPTR( 0, _
+            			  expr, _
+            			  astGetDataType( expr ) - FB_DATATYPE_POINTER, _
+            			  astGetSubtype( expr ) )
+
+end function
+
+'':::::
 function astBuildVarAddrof _
 	( _
 		byval sym as FBSYMBOL ptr _
@@ -267,7 +280,7 @@ function astBuildForEndEx _
 		byval cnt as FBSYMBOL ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval stepvalue as integer, _
-		byval endvalue as integer _
+		byval endvalue as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	'' next
@@ -275,17 +288,47 @@ function astBuildForEndEx _
 
     '' next
     tree = astNewLINK( tree, astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
-    									  		astNewVAR( cnt, _
-            										 	   0, _
-            										 	   FB_DATATYPE_INTEGER ), _
-            							  		astNewCONSTi( endvalue, _
-            												  FB_DATATYPE_INTEGER ) ), _
+    									  				   astNewVAR( cnt, _
+            										 	   			  0, _
+            										 	   			  FB_DATATYPE_INTEGER ), _
+            							  				   endvalue ), _
             				   					label, _
             				   					FALSE ) )
 
 	function = tree
 
 end function
+
+'':::::
+function astBuildForEndEx _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval cnt as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval stepvalue as integer, _
+		byval endvalue as integer _
+	) as ASTNODE ptr
+
+	function = astBuildForEndEx( tree, _
+								 cnt, _
+								 label, _
+								 stepvalue, _
+								 astNewCONSTi( endvalue, FB_DATATYPE_INTEGER ) )
+
+end function
+
+'':::::
+sub astBuildForEnd _
+	( _
+		byval cnt as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval stepvalue as integer, _
+		byval endvalue as ASTNODE ptr _
+	)
+
+    astAdd( astBuildForEndEx( NULL, cnt, label, stepvalue, endvalue ) )
+
+end sub
 
 '':::::
 sub astBuildForEnd _
@@ -296,7 +339,10 @@ sub astBuildForEnd _
 		byval endvalue as integer _
 	)
 
-    astAdd( astBuildForEndEx( NULL, cnt, label, stepvalue, endvalue ) )
+    astBuildForEnd( cnt, _
+    				label, _
+    				stepvalue, _
+    				astNewCONSTi( endvalue, FB_DATATYPE_INTEGER ) )
 
 end sub
 
@@ -413,15 +459,17 @@ function astPatchCtorCall _
 		byval thisexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	'' replace the instance pointer
-	astReplaceARG( procexpr, 0, thisexpr )
+	if( procexpr <> NULL ) then
+		'' replace the instance pointer
+		astReplaceARG( procexpr, 0, thisexpr )
+	end if
 
 	function = procexpr
 
 end function
 
 '':::::
-function astCallCtorToCall _
+function astCALLCTORToCALL _
 	( _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
@@ -508,7 +556,7 @@ function astBuildImplicitCtorCallEx _
     	if( symbGetSubtype( expr ) = subtype ) then
     		is_ctorcall = TRUE
     		'' remove the the anon/temp instance
-    		return astCallCtorToCall( expr )
+    		return astCALLCTORToCALL( expr )
     	end if
     end if
 

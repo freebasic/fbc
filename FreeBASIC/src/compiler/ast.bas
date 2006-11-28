@@ -320,10 +320,10 @@ declare sub astReplaceSymbolOnCALL _
 		( AST_NODECLASS_BOP		, AST_OPFLAGS_SELF, @"shr="	, AST_OP_SHR		), _	'' AST_OP_SHR_SELF
 		( AST_NODECLASS_BOP		, AST_OPFLAGS_SELF, @"pow="	, AST_OP_POW		), _	'' AST_OP_POW_SELF
 		( AST_NODECLASS_BOP		, AST_OPFLAGS_SELF, @"&="	, AST_OP_CONCAT		), _	'' AST_OP_CONCAT_SELF
-		( AST_NODECLASS_MEM 	, AST_OPFLAGS_SELF, @"new"						), _	'' AST_OP_NEW
-		( AST_NODECLASS_MEM 	, AST_OPFLAGS_SELF, @"new[]"					), _	'' AST_OP_NEW_VEC
-		( AST_NODECLASS_MEM 	, AST_OPFLAGS_SELF, @"delete"					), _	'' AST_OP_DELETE
-		( AST_NODECLASS_MEM 	, AST_OPFLAGS_SELF, @"delete[]"					), _	'' AST_OP_DELETE_VEC
+		( AST_NODECLASS_MEM 	, AST_OPFLAGS_SELF, @"new"						), _	'' AST_OP_NEW_SELF
+		( AST_NODECLASS_MEM 	, AST_OPFLAGS_SELF, @"new[]"					), _	'' AST_OP_NEW_VEC_SELF
+		( AST_NODECLASS_MEM 	, AST_OPFLAGS_SELF, @"delete"					), _	'' AST_OP_DEL_SELF
+		( AST_NODECLASS_MEM 	, AST_OPFLAGS_SELF, @"delete[]"					), _	'' AST_OP_DEL_VEC_SELF
 		( AST_NODECLASS_CONV 	, AST_OPFLAGS_SELF, @"cast"						), _	'' AST_OP_CAST
 		( AST_NODECLASS_BOP		, AST_OPFLAGS_COMM, @"+"	, AST_OP_ADD_SELF	), _	'' AST_OP_ADD
 		( AST_NODECLASS_BOP		, AST_OPFLAGS_NONE, @"-"	, AST_OP_SUB_SELF	), _	'' AST_OP_SUB
@@ -364,6 +364,10 @@ declare sub astReplaceSymbolOnCALL _
 		( AST_NODECLASS_UOP		, AST_OPFLAGS_NONE, @"fix"						), _	'' AST_OP_FIX
 		( AST_NODECLASS_ADDR	, AST_OPFLAGS_NONE, @"@"						), _	'' AST_OP_ADDROF
 		( AST_NODECLASS_ADDR 	, AST_OPFLAGS_NONE, @"*"						), _	'' AST_OP_DEREF
+		( AST_NODECLASS_MEM		, AST_OPFLAGS_NONE, @"new"						), _	'' AST_OP_NEW
+		( AST_NODECLASS_MEM		, AST_OPFLAGS_NONE, @"new[]"					), _	'' AST_OP_NEW_VEC
+		( AST_NODECLASS_MEM 	, AST_OPFLAGS_NONE, @"delete"					), _	'' AST_OP_DEL
+		( AST_NODECLASS_MEM 	, AST_OPFLAGS_NONE, @"delete[]"					), _	'' AST_OP_DEL_VEC
 		( AST_NODECLASS_CONV	, AST_OPFLAGS_NONE, NULL						), _	'' AST_OP_TOINT
 		( AST_NODECLASS_CONV	, AST_OPFLAGS_NONE, NULL						), _	'' AST_OP_TOFLT
 		( AST_NODECLASS_LOAD	, AST_OPFLAGS_NONE, NULL						), _ 	'' AST_OP_LOAD
@@ -413,6 +417,8 @@ declare sub astReplaceSymbolOnCALL _
 		0LL, _                                  '' uint
 		-2147483648LL, _                        '' enum
 		0LL, _                                  '' bitfield
+		-2147483648LL, _                        '' long
+		0LL, _                                  '' ulong
 		-9223372036854775808LL, _               '' longint
 		0LL _                                   '' ulongint
 	}
@@ -429,6 +435,8 @@ declare sub astReplaceSymbolOnCALL _
 		4294967295ULL, _                        '' uint
 		2147483647ULL, _                        '' enum
 		4294967295ULL, _                        '' bitfield
+		2147483647ULL, _                        '' long
+		4294967295ULL, _                        '' ulong
 		9223372036854775807ULL, _               '' longint
 		18446744073709551615ULL _               '' ulongint
 	}
@@ -449,6 +457,8 @@ sub astInit static
 	'' wchar len depends on the target platform
 	ast_minlimitTB(FB_DATATYPE_WCHAR) = ast_minlimitTB(env.target.wchar.type)
 	ast_maxlimitTB(FB_DATATYPE_WCHAR) = ast_maxlimitTB(env.target.wchar.type)
+
+    '' !!!FIXME!!! remap [u]long to [u]longint if target = 64-bit
 
     ''
     astCallInit( )
@@ -536,7 +546,7 @@ function astUpdComp2Branch _
 
 	dim as integer op = any
 	dim as ASTNODE ptr l = any, expr = any
-	static as integer dtype, istrue
+	dim as integer dtype = any, istrue = any
 
 	if( n = NULL ) then
 		return NULL
@@ -613,8 +623,17 @@ function astUpdComp2Branch _
 				select case as const dtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					istrue = n->con.val.long = 0
+
 				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					istrue = n->con.val.float = 0
+
+  				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  	   				if( FB_LONGSIZE = len( integer ) ) then
+  	   					istrue = n->con.val.int = 0
+  	   				else
+  	   					istrue = n->con.val.long = 0
+  	   				end if
+
 				case else
 					istrue = n->con.val.int = 0
 				end select
@@ -631,8 +650,17 @@ function astUpdComp2Branch _
 				select case as const dtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					istrue = n->con.val.long <> 0
+
 				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					istrue = n->con.val.float <> 0
+
+  				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  	   				if( FB_LONGSIZE = len( integer ) ) then
+  	   					istrue = n->con.val.int <> 0
+  	   				else
+  	   					istrue = n->con.val.long <> 0
+  	   				end if
+
 				case else
 					istrue = n->con.val.int <> 0
 				end select
@@ -665,8 +693,17 @@ function astUpdComp2Branch _
 			select case as const dtype
 			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 				expr = astNewCONSTl( 0, dtype )
+
 			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 				expr = astNewCONSTf( 0.0, dtype )
+
+  			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  	   			if( FB_LONGSIZE = len( integer ) ) then
+  	   				expr = astNewCONSTi( 0, dtype )
+  	   			else
+  	   				expr = astNewCONSTl( 0, dtype )
+  	   			end if
+
 			case else
 				expr = astNewCONSTi( 0, dtype )
 			end select
@@ -732,8 +769,17 @@ function astUpdComp2Branch _
 	select case as const dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		expr = astNewCONSTl( 0, dtype )
+
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		expr = astNewCONSTf( 0.0, dtype )
+
+  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  	   	if( FB_LONGSIZE = len( integer ) ) then
+  	   		expr = astNewCONSTi( 0, dtype )
+  	   	else
+  	   		expr = astNewCONSTl( 0, dtype )
+  	   	end if
+
 	case else
 		expr = astNewCONSTi( 0, dtype )
 	end select
@@ -994,10 +1040,23 @@ function astIsTreeEqual _
 			if( l->con.val.long <> r->con.val.long ) then
 				exit function
 			end if
+
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			if( abs( l->con.val.float - r->con.val.float ) > DBL_EPSILON ) then
 				exit function
 			end if
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  	    	if( FB_LONGSIZE = len( integer ) ) then
+				if( l->con.val.int <> r->con.val.int ) then
+					exit function
+				end if
+  	    	else
+				if( l->con.val.long <> r->con.val.long ) then
+					exit function
+				end if
+  	    	end if
+
 		case else
 			if( l->con.val.int <> r->con.val.int ) then
 				exit function
@@ -1294,6 +1353,13 @@ function astGetValueAsInt _
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = cint( astGetValFloat( n ) )
 
+  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  	    if( FB_LONGSIZE = len( integer ) ) then
+  	    	function = astGetValInt( n )
+  	    else
+  	    	function = cint( astGetValLong( n ) )
+  	    end if
+
   	case else
   		function = astGetValInt( n )
   	end select
@@ -1318,6 +1384,20 @@ function astGetValueAsStr _
 
   	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
   		function = str( astGetValInt( n ) )
+
+  	case FB_DATATYPE_LONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			function = str( cast( uinteger, astGetValInt( n ) ) )
+		else
+			function = str( astGetValLong( n ) )
+		end if
+
+  	case FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			function = str( cast( uinteger, astGetValInt( n ) ) )
+		else
+			function = str( cast( ulongint, astGetValLong( n ) ) )
+		end if
 
   	case else
   		function = str( cast( uinteger, astGetValInt( n ) ) )
@@ -1346,6 +1426,20 @@ function astGetValueAsWstr _
   	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
   		res = wstr( astGetValInt( n ) )
 
+  	case FB_DATATYPE_LONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			res = wstr( cast( uinteger, astGetValInt( n ) ) )
+		else
+			res = wstr( astGetValLong( n ) )
+		end if
+
+	case FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			res = wstr( cast( uinteger, astGetValInt( n ) ) )
+		else
+			res = wstr( cast( ulongint, astGetValLong( n ) ) )
+		end if
+
   	case else
 		res = wstr( cast( uinteger, astGetValInt( n ) ) )
   	end select
@@ -1366,6 +1460,17 @@ function astGetValueAsLongInt _
 
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = clngint( astGetValFloat( n ) )
+
+  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  	    if( FB_LONGSIZE = len( integer ) ) then
+  			if( astGetDataType( n ) = FB_DATATYPE_LONG ) then
+  				function = clngint( astGetValInt( n ) )
+  			else
+  				function = clngint( cuint( astGetValInt( n ) ) )
+  			end if
+  	   	else
+  	    	function = astGetValLong( n )
+  	    end if
 
   	case else
   		if( symbIsSigned( astGetDataType( n ) ) ) then
@@ -1390,6 +1495,13 @@ function astGetValueAsULongInt _
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = culngint( astGetValFloat( n ) )
 
+  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  	    if( FB_LONGSIZE = len( integer ) ) then
+  	    	function = culngint( cuint( astGetValInt( n ) ) )
+  	    else
+  	    	function = astGetValLong( n )
+  	    end if
+
   	case else
   		function = culngint( cuint( astGetValInt( n ) ) )
   	end select
@@ -1408,6 +1520,13 @@ function astGetValueAsDouble _
 
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = astGetValFloat( n )
+
+  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  	    if( FB_LONGSIZE = len( integer ) ) then
+  	    	function = cdbl( astGetValLong( n ) )
+  	    else
+  	    	function = cdbl( astGetValInt( n ) )
+  	    end if
 
   	case else
   		function = cdbl( astGetValInt( n ) )
@@ -1481,6 +1600,7 @@ function astCheckConst _
 
 	case FB_DATATYPE_LONGINT
 
+chk_long:
 		'' unsigned constant?
 		if( symbIsSigned( astGetDataType( n ) ) = FALSE ) then
 			'' too big?
@@ -1492,6 +1612,7 @@ function astCheckConst _
 
 	case FB_DATATYPE_ULONGINT
 
+chk_ulong:
 		'' signed constant?
 		if( symbIsSigned( astGetDataType( n ) ) ) then
 			'' too big?
@@ -1504,6 +1625,7 @@ function astCheckConst _
     case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, _
     	 FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
 
+chk_int:
 		lval = astGetValueAsLongInt( n )
 		if( (lval < ast_minlimitTB( dtype )) or _
 			(lval > clngint( ast_maxlimitTB( dtype ) )) ) then
@@ -1515,11 +1637,26 @@ function astCheckConst _
     	 FB_DATATYPE_USHORT, FB_DATATYPE_WCHAR, _
     	 FB_DATATYPE_UINT
 
+chk_uint:
 		ulval = astGetValueAsULongInt( n )
 		if( (ulval < culngint( ast_minlimitTB( dtype ) )) or _
 			(ulval > ast_maxlimitTB( dtype )) ) then
 			n = astNewCONV( dtype, NULL, n )
 			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+		end if
+
+	case FB_DATATYPE_LONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			goto chk_int
+		else
+			goto chk_long
+		end if
+
+	case FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			goto chk_uint
+		else
+			goto chk_ulong
 		end if
 
 	case FB_DATATYPE_BITFIELD

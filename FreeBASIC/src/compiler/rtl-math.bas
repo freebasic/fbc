@@ -432,7 +432,9 @@ function rtlMathLen _
  				end if
 
     			'' byval strlen as integer
-				if( astNewARG( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+				if( astNewARG( proc, _
+							   astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
+							   FB_DATATYPE_INTEGER ) = NULL ) then
  					exit function
  				end if
 

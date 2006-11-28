@@ -181,14 +181,21 @@ function symbCheckBitField _
 		byval bits as integer _
 	) as integer
 
-	'' <= 0 or > sizeof(type) or not an integer type?
-	if( (bits <= 0) or _
-		(bits > lgt*8) or _
-		(dtype >= FB_DATATYPE_ENUM) ) then
+	'' <= 0 or > sizeof(type)?
+	if( (bits <= 0) or (bits > lgt*8) ) then
 		return FALSE
 	end if
 
-    return TRUE
+	'' not an integer type?
+	select case as const dtype
+	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
+		 FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+
+		return TRUE
+
+	case else
+		return FALSE
+	end select
 
 end function
 

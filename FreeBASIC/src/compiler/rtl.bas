@@ -189,11 +189,28 @@ sub rtlAddIntrinsicProcs _
 		end if
 
 		if( doadd ) then
-			proc = symbAddPrototype( proc, _
-								 	 procdef->name, procdef->alias, "fb", _
-								 	 procdef->dtype, NULL, ptrcnt, _
-								 	 attrib, procdef->callconv, _
-								 	 FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
+
+			'' ordinary proc?
+			if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
+				proc = symbAddPrototype( proc, _
+								 	 	 procdef->name, procdef->alias, "fb", _
+								 	 	 procdef->dtype, NULL, ptrcnt, _
+								 	 	 attrib, procdef->callconv, _
+								 	 	 FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
+
+			'' operator..
+			else
+				proc = symbAddOperator( proc, _
+										cast( AST_OP, procdef->name ), NULL, "fb", _
+    						    		procdef->dtype, NULL, ptrcnt, _
+    					        		attrib or FB_SYMBATTRIB_OPERATOR, _
+    					        		procdef->callconv, _
+    					        		FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
+
+    			if( proc <> NULL ) then
+    				symbGetMangling( proc ) = FB_MANGLING_CPP
+    			end if
+			end if
 
 			if( proc <> NULL ) then
 				symbSetProcCallback( proc, procdef->callback )
@@ -201,7 +218,11 @@ sub rtlAddIntrinsicProcs _
 					symbSetIsThrowable( proc )
 				end if
 			else
-				errReportEx( FB_ERRMSG_DUPDEFINITION, *procdef->name )
+				if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
+					errReportEx( FB_ERRMSG_DUPDEFINITION, *procdef->name )
+				else
+					errReport( FB_ERRMSG_DUPDEFINITION )
+				end if
 			end if
 		end if
 

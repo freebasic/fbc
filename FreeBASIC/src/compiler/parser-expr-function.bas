@@ -255,7 +255,7 @@ function cCtorCall _
 		end if
 	end if
 
-	'' error recovery..
+	'' check if it's a call (because error recovery)..
 	if( astIsCALL( procexpr ) ) then
 		atom = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
 

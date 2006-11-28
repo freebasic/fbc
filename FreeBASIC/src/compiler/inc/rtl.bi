@@ -629,6 +629,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_MT		= &h00000004
 	FB_RTL_OPT_VBSYMB	= &h00000008
 	FB_RTL_OPT_DBGONLY	= &h00000010
+	FB_RTL_OPT_OPERATOR	= &h00000020
 end enum
 
 type FB_RTL_PARAMDEF
@@ -1072,6 +1073,22 @@ declare function rtlMemCopyClear _
 		byval srcexpr as ASTNODE ptr, _
 		byval srclen as integer _
 	) as integer
+
+declare function rtlMemNewOp _
+	( _
+		byval is_vector as integer, _
+		byval len_expr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+declare function rtlMemDeleteOp _
+	( _
+		byval is_vector as integer, _
+		byval ptr_expr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
 declare function rtlPrint _
 	( _

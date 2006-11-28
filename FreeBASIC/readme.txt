@@ -947,12 +947,6 @@ Credits (in alphabetic order):
     - OpenXDK (http://www.openxdk.org/)
 
 
-  Acknowledges:
-  
-  o The long integers (64-bit) division and modulo routines are from the GCC's
-    libgcc2 sources.
-
-
 Greetings:
 
   o Plasma: freebasic.net domain register and since mar/2005 hosts the main site

@@ -31,20 +31,23 @@ function cConstantEx _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byref expr as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-	dim as integer dtype
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
   	'' ID
   	lexSkipToken( )
 
 	dtype = symbGetType( sym )
+	subtype = symbGetSubType( sym )
+
   	select case as const dtype
   	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
   		expr = astNewVAR( symbGetConstValStr( sym ), 0, dtype )
 
   	case FB_DATATYPE_ENUM
-  		expr = astNewENUM( symbGetConstValInt( sym ), symbGetSubType( sym ) )
+  		expr = astNewENUM( symbGetConstValInt( sym ), subtype )
 
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   		expr = astNewCONSTl( symbGetConstValLong( sym ), dtype )
@@ -52,8 +55,15 @@ function cConstantEx _
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		expr = astNewCONSTf( symbGetConstValFloat( sym ), dtype )
 
+  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  		if( FB_LONGSIZE = len( integer ) ) then
+  			expr = astNewCONSTi( symbGetConstValInt( sym ), dtype, subtype )
+  		else
+  			expr = astNewCONSTl( symbGetConstValLong( sym ), dtype )
+  		end if
+
   	case else
-  		expr = astNewCONSTi( symbGetConstValInt( sym ), dtype, symbGetSubType( sym ) )
+  		expr = astNewCONSTi( symbGetConstValInt( sym ), dtype, subtype )
 
   	end select
 
@@ -257,6 +267,20 @@ function cNumLiteral _
 
 	case FB_DATATYPE_UINT
 		expr = astNewCONSTi( valuint( *lexGetText( ) ), dtype )
+
+  	case FB_DATATYPE_LONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			expr = astNewCONSTi( valint( *lexGetText( ) ), dtype )
+		else
+			expr = astNewCONSTl( vallng( *lexGetText( ) ), dtype )
+		end if
+
+	case FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			expr = astNewCONSTi( valuint( *lexGetText( ) ), dtype )
+		else
+			expr = astNewCONSTl( valulng( *lexGetText( ) ), dtype )
+		end if
 
 	case else
 		expr = astNewCONSTi( valint( *lexGetText( ) ), dtype )

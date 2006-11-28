@@ -975,6 +975,36 @@ function rtlPrint _
 				f = PROCLOOKUP( PRINTUINT )
 			end if
 
+		case FB_DATATYPE_LONG
+			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTINT )
+				else
+					f = PROCLOOKUP( PRINTINT )
+				end if
+			else
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTLONGINT )
+				else
+					f = PROCLOOKUP( PRINTLONGINT )
+				end if
+			end if
+
+		case FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTUINT )
+				else
+					f = PROCLOOKUP( PRINTUINT )
+				end if
+			else
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTULONGINT )
+				else
+					f = PROCLOOKUP( PRINTULONGINT )
+				end if
+			end if
+
 		case FB_DATATYPE_LONGINT
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTLONGINT )
@@ -1181,6 +1211,20 @@ function rtlWrite _
 		case FB_DATATYPE_UINT
 			f = PROCLOOKUP( WRITEUINT )
 
+		case FB_DATATYPE_LONG
+			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+				f = PROCLOOKUP( WRITEINT )
+			else
+				f = PROCLOOKUP( WRITELONGINT )
+			end if
+
+		case FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+				f = PROCLOOKUP( WRITEUINT )
+			else
+				f = PROCLOOKUP( WRITEULONGINT )
+			end if
+
 		case FB_DATATYPE_LONGINT
 			f = PROCLOOKUP( WRITELONGINT )
 
@@ -1230,7 +1274,9 @@ function rtlWrite _
 		mask or= FB_PRINTMASK_NEWLINE
 	end if
 
-    if( astNewARG( proc, astNewCONSTi( mask, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+    if( astNewARG( proc, _
+    			   astNewCONSTi( mask, FB_DATATYPE_INTEGER ), _
+    			   FB_DATATYPE_INTEGER ) = NULL ) then
  		exit function
  	end if
 
@@ -1367,7 +1413,9 @@ function rtlPrintUsing _
 		mask = FB_PRINTMASK_NEWLINE or FB_PRINTMASK_ISLAST
 	end if
 
-    if( astNewARG( proc, astNewCONSTi( mask, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+    if( astNewARG( proc, _
+    			   astNewCONSTi( mask, FB_DATATYPE_INTEGER ), _
+    			   FB_DATATYPE_INTEGER ) = NULL ) then
  		exit function
  	end if
 
