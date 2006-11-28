@@ -116,7 +116,7 @@ type _xmlParserCtxt
 	nodeTab as xmlNodePtr ptr
 	record_info as integer
 	node_seq as xmlParserNodeInfoSeq
-	errNo as integer
+	errNo_ as integer
 	hasExternalSubset as integer
 	hasPErefs as integer
 	external as integer
