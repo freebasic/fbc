@@ -369,7 +369,7 @@ Most Important Features:
   o A large number of variable types available:
 
     - Integer: BYTE, UBYTE, SHORT, USHORT, INTEGER, UINTEGER, 
-      LONGINT and ULONGINT (64-bit) 
+      LONG and ULONG (same size as a POINTER), LONGINT and ULONGINT (64-bit) 
 
     - Floating-point: SINGLE and DOUBLE.
 

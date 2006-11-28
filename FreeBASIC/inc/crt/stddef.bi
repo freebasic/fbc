@@ -10,14 +10,16 @@
 #define __crt_stddef_bi__
 
 type ptrdiff_t as integer
-type size_t as uinteger
 
 #if defined(__FB_WIN32__)
-type wchar_t as ushort
+	type size_t as uinteger
+	type wchar_t as ushort
 #elseif defined(__FB_DOS__)
-type wchar_t as ushort
+	type size_t as ulong
+	type wchar_t as ushort
 #elseif defined(__FB_LINUX__)
-type wchar_t as ushort
+	type size_t as ulong
+	type wchar_t as ushort
 #endif
 
 type wint_t as wchar_t
