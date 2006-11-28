@@ -1024,6 +1024,10 @@ function symbPreAddProc _
 	proc->proc.ext = NULL
 	proc->stats = 0
 
+    '' to allow getNamespace() and GetParent() to work
+    proc->symtb = symbGetCompSymbTb( symbGetCurrentNamespc( ) )
+    proc->hash.tb = symbGetCompHashTb( symbGetCurrentNamespc( ) )
+
 	function = proc
 
 end function
