@@ -1,3 +1,4 @@
+#include "fbgfx.bi"
 const TEX_MASKED = &h1
 const TEX_MIPMAP = &h2
 const TEX_NOFILTER = &h4
@@ -11,11 +12,18 @@ private function CreateTexture( byval buffer as any ptr, byval flags as integer 
 	dim as integer w, h, x, y, col
 	dim tex as uinteger
 	dim as GLenum format, minfilter, magfilter
+	dim as PUT_HEADER ptr header = buffer
 
 	function = 0
-
-	w = cast(short ptr, buffer)[0] SHR 3
-	h = cast(short ptr, buffer)[1]
+    
+    if header->type = PUT_HEADER_NEW then
+		w = header->width
+		h = header->height
+    else
+		w = header->old.width
+		h = header->old.height
+    end if
+    
 
 	if( (w < 64) or (h < 64) ) then
 		exit function

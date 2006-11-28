@@ -3,24 +3,19 @@
 'Rel.Betterwebber.com
 'create texture funk courtesy of lillo
 
-#define TEX_MASKED      &h1 
-#define TEX_MIPMAP      &h2
-#DEFINE TEX_NOFILTER    &h4
-#DEFINE TEX_HASALPHA    &h8
-
 const PI = 3.141593                     'PI for rotation
 
                          'Force declaration
 
 #include  "GL/gl.bi"                  'OpenGL funks and consts
 #include  "GL/glu.bi"                 'GL standard utility lib
+#include  "NeHe/createtex.bi"              'Texture Creation
 
 
 'Declarations
 DECLARE SUB Init_GL_SCREEN ()
 Declare Sub draw_scene()
 Declare Sub Draw_Cube()
-Declare function CreateTexture( byval buffer as any ptr, byval flags as integer = 0 ) as GLuint
 Declare function load_texture(byref image_file as string, byval w as integer, byval h as integer) as GLuint
 
 '*******************************************************************************************
@@ -341,91 +336,6 @@ Sub Draw_Cube()
 End Sub
 
 
-'*******************************************************************************************
-' A function that creates an opengl texture from a GET/PUT array
-' nifty funk courtesy of lillo (this function is available on appendix F of gfxlib.txt)
-'
-
-	FUNCTION CreateTexture( BYVAL buffer AS ANY PTR, BYVAL flags AS INTEGER _
-							= 0 ) AS GLuint
-		REDIM dat(0) AS UINTEGER
-		DIM p AS UINTEGER PTR
-		DIM AS INTEGER w, h, x, y, col
-		DIM tex AS GLuint
-		DIM AS GLenum format, minfilter, magfilter
-		
-		CreateTexture = 0
-		
-		w = cast(short ptr, buffer)[0] SHR 3
-		h = cast(short ptr, buffer)[1]
-		
-		IF( (w < 64) OR (h < 64) ) THEN
-			EXIT FUNCTION
-		END IF
-		IF( (w AND (w-1)) OR (h AND (h-1)) ) THEN
-			'' Width/height not powers of 2
-			EXIT FUNCTION
-		END IF
-		
-		REDIM dat(w * h) AS UINTEGER
-		p = @dat(0)
-		
-		glGenTextures 1, @tex
-		glBindTexture GL_TEXTURE_2D, tex
-		
-		FOR y = h-1 TO 0 STEP -1
-			FOR x = 0 TO w-1
-				col = POINT(x, y, buffer)
-				'' Swap R and B so we can use the GL_RGBA texture format
-				col = RGBA(col AND &hFF, _
-						  (col SHR 8) AND &hFF, _
-						  (col SHR 16) AND &hFF, _
-						  col SHR 24)
-				IF( flags AND TEX_HASALPHA ) THEN
-					*p = col
-				ELSE
-					IF( (flags AND TEX_MASKED) AND _
-							(col = &hFF00FF) ) THEN
-						*p = 0
-					ELSE
-						*p = col OR &hFF000000
-					END IF
-				END IF
-				p += 1
-			NEXT x
-		NEXT y
-		
-		IF( flags AND ( TEX_MASKED OR TEX_HASALPHA ) ) THEN
-			format = GL_RGBA
-		ELSE
-			format = GL_RGB
-		END IF
-		
-		IF( flags AND TEX_NOFILTER ) THEN
-			magfilter = GL_NEAREST
-		ELSE
-			magfilter = GL_LINEAR
-		END IF
-		
-		IF( flags AND TEX_MIPMAP ) THEN
-			gluBuild2DMipmaps GL_TEXTURE_2D, format, w, h, GL_RGBA, _
-							  GL_UNSIGNED_BYTE, @dat(0)
-			IF( flags AND TEX_NOFILTER ) THEN
-				minfilter = GL_NEAREST_MIPMAP_NEAREST
-			ELSE
-				minfilter = GL_LINEAR_MIPMAP_LINEAR
-			END IF
-		ELSE
-			glTexImage2D GL_TEXTURE_2D, 0, format, w, h, 0, GL_RGBA, _
-							 GL_UNSIGNED_BYTE, @dat(0)
-			minfilter = magfilter
-		END IF
-		glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minfilter
-		glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magfilter
-		
-		CreateTexture = tex
-	
-	END FUNCTION
 
 							 
 function load_texture(byref image_file as string, byval w as integer, byval h as integer) as GLuint
