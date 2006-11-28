@@ -764,7 +764,7 @@ sub fbAddDefaultLibs( ) static
 
 	symbAddLib( "fb" )
 	symbAddLib( "gcc" )
-	symbAddLib( "supcxx" )
+	''''''symbAddLib( "supcxx" )
 
 	select case as const env.clopt.target
 	case FB_COMPTARGET_WIN32
