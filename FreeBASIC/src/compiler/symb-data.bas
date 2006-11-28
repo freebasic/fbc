@@ -343,3 +343,22 @@ function symbGetUnsignedType _
 	end select
 
 end function
+
+'':::::
+function symbGetCStdType _
+	( _
+		byval ctype as FB_CSTDTYPE _
+	) as integer
+
+	if( ctype = FB_CSTDTYPE_SIZET ) then
+		select case as const env.clopt.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			function = FB_DATATYPE_UINT
+
+		case FB_COMPTARGET_LINUX, FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+			function = FB_DATATYPE_ULONG
+		end select
+	end if
+
+end function
+

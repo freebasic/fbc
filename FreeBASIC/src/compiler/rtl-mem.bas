@@ -246,6 +246,29 @@ sub rtlMemModInit( )
 
 	rtlAddIntrinsicProcs( @funcdata(0) )
 
+	'' remap the new/new[] size param, size_t can be unsigned (int | long),
+	'' making the mangling incompatible..
+    dim as integer dtype = symbGetCStdType( FB_CSTDTYPE_SIZET )
+
+#macro hRemap(op, dtype)
+    scope
+    	dim as FBSYMBOL ptr sym = any
+		sym = symbGetCompOpOvlHead( NULL, op )
+    	if( sym <> NULL ) then
+    		sym = symbGetProcHeadParam( sym )
+    		if( sym <> NULL ) then
+    			symbGetType( sym ) = dtype
+    		end if
+    	end if
+    end scope
+#endmacro
+
+	'' new
+	hRemap( AST_OP_NEW, dtype )
+
+    '' new[]
+    hRemap( AST_OP_NEW_VEC, dtype )
+
 end sub
 
 '':::::

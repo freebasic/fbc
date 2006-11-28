@@ -78,8 +78,8 @@ declare function hGetProcParamsTypeCode _
 		"j", _                  '' uinteger
 		"!", _                  '' enum
 		"!", _                  '' bitfield
-		"m", _                  '' long
-		"n", _                  '' ulong
+		"l", _                  '' long
+		"m", _                  '' ulong
 		"x", _                  '' longint
 		"y", _                  '' ulongint
 		"f", _                  '' single
