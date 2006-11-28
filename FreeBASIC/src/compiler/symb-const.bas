@@ -34,7 +34,8 @@ function symbAddConst _
 		byval symbol as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval value as FBVALUE ptr _
+		byval value as FBVALUE ptr, _
+		byval attrib as integer = FB_SYMBATTRIB_NONE _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr sym
@@ -46,7 +47,7 @@ function symbAddConst _
     					 NULL, NULL, _
     					 FB_SYMBCLASS_CONST, _
     				   	 symbol, NULL, _
-    				   	 dtype, subtype, 0 )
+    				   	 dtype, subtype, 0, attrib )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -277,6 +278,7 @@ function symbCloneConst _
 	function = symbAddConst( NULL, _
 							 symbGetType( sym ), _
 							 symbGetSubType( sym ), _
-							 @sym->con.val )
+							 @sym->con.val, _
+							 symbGetAttrib( sym ) )
 
 end function

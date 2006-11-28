@@ -467,7 +467,9 @@ function cProcHeader _
 
 		else
 			'' ns used in a prototype?
+			
 			if( is_prototype ) then
+
 				if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
 					exit function
 				end if
@@ -476,7 +478,6 @@ function cProcHeader _
         	if( hIsClass( parent ) ) then
         		attrib or= FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_OVERLOADED
         	end if
-
 			is_extern = TRUE
 		end if
 	end if
@@ -735,9 +736,20 @@ function cProcHeader _
     			end if
 
     			proc = head_proc
+
     		end if
     	end if
-
+    	
+    	'' add in the attributes from the declare, since
+    	'' private/public/protected may be specified there only
+    	if head_proc->attrib and FB_SYMBATTRIB_PRIVATE then
+    		attrib and= not( FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PROTECTED )
+    	elseif head_proc->attrib and FB_SYMBATTRIB_PROTECTED then
+    		attrib and= not( FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE )
+    	elseif head_proc->attrib and FB_SYMBATTRIB_PUBLIC then
+    		attrib and= not( FB_SYMBATTRIB_PRIVATE or FB_SYMBATTRIB_PROTECTED )
+    	end if
+    	
     	if( head_proc <> proc ) then
     		'' already parsed?
     		if( symbGetIsDeclared( head_proc ) ) then

@@ -222,6 +222,16 @@ function cTypeField _
     		end if
     		exit function
     	end if
+    	
+    	if sym->attrib and FB_SYMBATTRIB_PRIVATE then
+    		if subtype <> symbGetCurrentNamespc( ) then
+	    		if( errReport( FB_ERRMSG_ILLEGALMEMBERACCESS, FALSE ) <> FALSE ) then
+	    			'' no error recovery: caller will take care
+	    			lexSkipToken( )
+	    		end if
+	    		exit function
+	    	end if
+    	end if
 
 		'' method call?
 		if( symbIsField( sym ) = FALSE ) then

@@ -49,7 +49,7 @@ private function hTypeProtoDecl _
 		byval parent as FBSYMBOL ptr _
 	) as integer
 
-	dim as integer res = any, is_nested = any
+	dim as integer res = any, is_nested = any, attrib = FB_SYMBATTRIB_NONE
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
@@ -67,6 +67,22 @@ private function hTypeProtoDecl _
 
 	'' DECLARE
 	lexSkipToken( )
+	
+	
+	if lexGetToken( ) = FB_TK_PRIVATE then
+	    attrib or= FB_SYMBATTRIB_PRIVATE
+	    
+	    lexSkipToken( )
+	elseif lexGetToken( ) = FB_TK_PUBLIC then
+	    attrib or= FB_SYMBATTRIB_PUBLIC
+	    
+	    lexSkipToken( )
+'	elseif lexGetToken( ) = FB_TK_PROTECTED then
+'	    attrib or= FB_SYMBATTRIB_PROTECTED 
+'	    
+'	    lexSkipToken( )
+    end if
+
 
 	res = TRUE
 
@@ -81,7 +97,7 @@ private function hTypeProtoDecl _
 		lexSkipToken( )
 
 		if( cCtorHeader( TRUE, _
-						 FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR, _
+						 FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR or attrib, _
 						 is_nested ) = NULL ) then
 			res = FALSE
 		end if
@@ -96,7 +112,7 @@ private function hTypeProtoDecl _
 		lexSkipToken( )
 
 		if( cCtorHeader( TRUE, _
-						 FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_DESTRUCTOR, _
+						 FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_DESTRUCTOR or attrib, _
 						 is_nested ) = NULL ) then
 			res = FALSE
 		end if
@@ -111,7 +127,7 @@ private function hTypeProtoDecl _
 		lexSkipToken( )
 
 		if( cOperatorHeader( TRUE, _
-							 FB_SYMBATTRIB_METHOD, _
+							 FB_SYMBATTRIB_METHOD or attrib, _
 							 is_nested ) = NULL ) then
 			res = FALSE
 		end if
@@ -127,7 +143,7 @@ private function hTypeProtoDecl _
 
 		if( cProcHeader( TRUE, _
 						 TRUE, _
-						 FB_SYMBATTRIB_METHOD, _
+						 FB_SYMBATTRIB_METHOD or attrib, _
 						 is_nested ) = NULL ) then
 			res = FALSE
 		end if
@@ -143,7 +159,7 @@ private function hTypeProtoDecl _
 
 		if( cProcHeader( FALSE, _
 						 TRUE, _
-						 FB_SYMBATTRIB_METHOD, _
+						 FB_SYMBATTRIB_METHOD or attrib, _
 						 is_nested ) = NULL ) then
 			res = FALSE
 		end if
@@ -158,7 +174,7 @@ private function hTypeProtoDecl _
 		lexSkipToken( )
 
 		if( cPropertyHeader( TRUE, _
-						 	 FB_SYMBATTRIB_METHOD, _
+						 	 FB_SYMBATTRIB_METHOD or attrib, _
 						 	 is_nested ) = NULL ) then
 			res = FALSE
 		end if
@@ -188,7 +204,8 @@ end function
 private function hTypeEnumDecl _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byval is_const as integer _
+		byval is_const as integer, _
+		byval attrib as integer _
 	) as integer
 
 	dim as integer res = any
@@ -208,9 +225,9 @@ private function hTypeEnumDecl _
 	symbNestBegin( parent )
 
 	if( is_const ) then
-		res = cConstDecl( )
+		res = cConstDecl( attrib )
 	else
-		res = cEnumDecl( )
+		res = cEnumDecl( attrib )
 	end if
 
 	'' must be unique
@@ -332,7 +349,8 @@ end function
 ''
 private function hTypeMultElementDecl _
 	( _
-		byval parent as FBSYMBOL ptr _
+		byval parent as FBSYMBOL ptr, _
+		byval attrib as integer _
 	) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 id
@@ -433,6 +451,8 @@ private function hTypeMultElementDecl _
 			end if
 
 		else
+			symbGetAttrib( sym ) or= attrib
+			
 			initree = hFieldInit( parent, sym )
 			if( initree = NULL ) then
     			if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -460,7 +480,8 @@ end function
 ''
 private function hTypeElementDecl _
 	( _
-		byval parent as FBSYMBOL ptr _
+		byval parent as FBSYMBOL ptr, _
+		byval attrib as integer _
 	) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 id
@@ -468,12 +489,12 @@ private function hTypeElementDecl _
     dim as FBSYMBOL ptr sym, subtype
     dim as integer dims, dtype, lgt, ptrcnt, bits
     dim as ASTNODE ptr initree
-
 	function = FALSE
 
 	'' allow keywords as field names
 	select case as const lexGetClass( )
 	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+	    
 		'' ID
 		id = *lexGetText( )
 
@@ -578,6 +599,7 @@ private function hTypeElementDecl _
 					  	dims, dTB(), _
 					  	dtype, subtype, ptrcnt, _
 					  	lgt, bits )
+					  	
 	if( sym = NULL ) then
 		if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
 			exit function
@@ -586,6 +608,7 @@ private function hTypeElementDecl _
 			return TRUE
 		end if
 	end if
+	sym->attrib or= attrib
 
 	'' initializer
 	initree = hFieldInit( parent, sym )
@@ -690,13 +713,48 @@ private function hTypeBody _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-	dim as integer isunion = any
+	dim as integer isunion = any, attrib = FB_SYMBATTRIB_NONE
 	dim as FBSYMBOL ptr inner = any
 
 	function = FALSE
 
 	do
 		select case as const lexGetToken( )
+        '' private?
+		case FB_TK_PRIVATE
+			if( symbGetUDTIsUnion( s ) ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+					exit function
+				end if
+			else
+			    attrib or= FB_SYMBATTRIB_PRIVATE
+			end if
+		    lexSkipToken( )
+		    continue do
+
+		case FB_TK_PUBLIC
+			if( symbGetUDTIsUnion( s ) ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+					exit function
+				end if
+			else
+			    attrib or= FB_SYMBATTRIB_PUBLIC
+			end if
+		    lexSkipToken( )
+		    continue do
+		    
+
+'		case FB_TK_PROTECTED
+'			if( symbGetUDTIsUnion( s ) ) then
+'				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+'					exit function
+'				end if
+'			else
+'			    attrib or= FB_SYMBATTRIB_PROTECTED
+'			end if
+'		    lexSkipToken( )
+'		    continue do
+
 		'' single-line comment?
 		case FB_TK_COMMENT, FB_TK_REM
 		    cComment( )
@@ -715,7 +773,7 @@ private function hTypeBody _
 			'' isn't it a field called "end"?
 			select case lexGetLookAhead( 1 )
 			case FB_TK_AS, CHAR_LPRNT, FB_TK_STMTSEP
-				if( hTypeElementDecl( s ) = FALSE ) then
+				if( hTypeElementDecl( s, attrib ) = FALSE ) then
 					exit function
 				end if
 
@@ -752,7 +810,17 @@ decl_inner:		'' it's an anonymous inner UDT
 						end if
 					end if
 				end if
-
+                
+'                if attrib and FB_SYMBATTRIB_VISIBILITY then
+'					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+'						exit function
+'					else
+'						'' error recovery: fake type
+'						isunion = TRUE
+'					end if
+'				end if
+	                
+                
 				lexSkipToken( )
 
 				'' create a "temp" one
@@ -760,6 +828,15 @@ decl_inner:		'' it's an anonymous inner UDT
 				if( inner = NULL ) then
 					exit function
 				end if
+				
+				'' walk through all the anon UDT's symbols, and
+				'' promote their attributes from the root
+				dim as FBSYMBOL ptr walkSymbols = symbGetUDTFirstElm( inner )
+				while walkSymbols
+				  symbGetAttrib( walkSymbols ) or= attrib
+				  walkSymbols = symbGetUDTNextElm( walkSymbols )
+
+				wend
 
 				'' insert it into the parent UDT
 				symbInsertInnerUDT( s, inner )
@@ -772,13 +849,13 @@ decl_inner:		'' it's an anonymous inner UDT
 				end if
 
 				'' bitfield..
-				if( hTypeElementDecl( s ) = FALSE ) then
+				if( hTypeElementDecl( s, attrib ) = FALSE ) then
 					exit function
 				end if
 
 			'' it's a field, parse it
 			case else
-				if( hTypeElementDecl( s ) = FALSE ) then
+				if( hTypeElementDecl( s, attrib ) = FALSE ) then
 					exit function
 				end if
 
@@ -786,21 +863,12 @@ decl_inner:		'' it's an anonymous inner UDT
 
 		'' AS?
 		case FB_TK_AS
-			'' isn't it a field called "as"?
-			select case lexGetLookAhead( 1 )
-			case FB_TK_AS, CHAR_LPRNT, FB_TK_STMTSEP
-				if( hTypeElementDecl( s ) = FALSE ) then
-					exit function
-				end if
-
 			'' it's a multi-declaration
-			case else
-				lexSkipToken( )
+			lexSkipToken( )
 
-				if( hTypeMultElementDecl( s ) = FALSE ) then
-					exit function
-				end if
-			end select
+			if( hTypeMultElementDecl( s, attrib ) = FALSE ) then
+				exit function
+			end if
 
 		case FB_TK_DECLARE
 			if( hTypeProtoDecl( s ) = FALSE ) then
@@ -808,12 +876,12 @@ decl_inner:		'' it's an anonymous inner UDT
 			end if
 
 		case FB_TK_ENUM
-			if( hTypeEnumDecl( s, FALSE ) = FALSE ) then
+			if( hTypeEnumDecl( s, FALSE, attrib ) = FALSE ) then
 				exit function
 			end if
 
 		case FB_TK_CONST
-			if( hTypeEnumDecl( s, TRUE ) = FALSE ) then
+			if( hTypeEnumDecl( s, TRUE, attrib ) = FALSE ) then
 				exit function
 			end if
 
@@ -824,19 +892,19 @@ decl_inner:		'' it's an anonymous inner UDT
 			if( lexGetToken( ) = FB_TK_AS ) then
 				lexSkipToken( )
 
-				if( hTypeMultElementDecl( s ) = FALSE ) then
+				if( hTypeMultElementDecl( s, attrib ) = FALSE ) then
 					exit function
 				end if
 
 			else
-				if( hTypeElementDecl( s ) = FALSE ) then
+				if( hTypeElementDecl( s, attrib ) = FALSE ) then
 					exit function
 				end if
 			end if
 
 		'' anything else, must be a field
 		case else
-			if( hTypeElementDecl( s ) = FALSE ) then
+			if( hTypeElementDecl( s, attrib ) = FALSE ) then
 				exit function
 			end if
 
@@ -853,6 +921,8 @@ decl_inner:		'' it's an anonymous inner UDT
     			hSkipUntil( INVALID, TRUE )
     		end if
 		end if
+		
+		attrib = FB_SYMBATTRIB_NONE
 
 	loop
 

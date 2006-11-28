@@ -76,6 +76,7 @@ Version 0.17 Beta:
 - UDT's can now return a boolean result, if operator cast() was overloaded (cha0s)
 - BLOAD and BSAVE can now accept an additional optional final parameter: a pointer to an array of 256 integers to hold the image palette if any (lillo)
 - FOR now supports UDT's as counter variables, if operator let, +=, and global <=, >= are overloaded with operators taking numeric rhs. (cha0s)
+- the PRIVATE and PUBLIC attributes for members/methods of TYPE's
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)

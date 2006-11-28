@@ -247,13 +247,14 @@ declare function cDeclaration _
 
 declare function cConstDecl _
 	( _
-		_
+		byval attrib as integer = FB_SYMBATTRIB_NONE _
 	) as integer
 
 declare function cConstAssign _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval attrib as integer = FB_SYMBATTRIB_NONE _
 	) as integer
 
 declare function cTypeDecl _
@@ -268,7 +269,7 @@ declare function cTypedefDecl _
 
 declare function cEnumDecl _
 	( _
-		_
+		byval attrib as integer = FB_SYMBATTRIB_NONE _
 	) as integer
 
 declare function cVariableDecl _

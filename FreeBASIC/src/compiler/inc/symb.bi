@@ -113,6 +113,7 @@ enum FB_SYMBATTRIB
 
 	FB_SYMBATTRIB_PARAMINSTANCE	= FB_SYMBATTRIB_METHOD
 	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
+	FB_SYMBATTRIB_VISIBILITY    = FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE or FB_SYMBATTRIB_PROTECTED
 end enum
 
 '' C standard types
@@ -911,7 +912,8 @@ declare function symbAddConst _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval value as FBVALUE ptr _
+		byval value as FBVALUE ptr, _
+		byval attrib as integer = FB_SYMBATTRIB_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbStructBegin _
@@ -950,14 +952,16 @@ declare sub symbStructEnd _
 declare function symbAddEnum _
 	( _
 		byval id as zstring ptr, _
-		byval id_alias as zstring ptr _
+		byval id_alias as zstring ptr, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr
 
 declare function symbAddEnumElement _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
-		byval value as integer _
+		byval value as integer, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr
 
 declare function symbAddProcParam _

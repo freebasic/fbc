@@ -83,7 +83,8 @@ end function
 ''
 function cEnumBody _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval attrib as integer _
 	) as integer
 
 	static as zstring * FB_MAXNAMELEN+1 id
@@ -152,7 +153,7 @@ function cEnumBody _
 					exit function
 				end if
 
-				if( symbAddEnumElement( s, @id, value ) = NULL ) then
+				if( symbAddEnumElement( s, @id, value, attrib ) = NULL ) then
 					if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
 						exit function
 					end if
@@ -200,7 +201,7 @@ end function
 ''					  END ENUM .
 function cEnumDecl _
 	( _
-		_
+		byval attrib as integer _
 	) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 id, id_alias
@@ -261,13 +262,13 @@ function cEnumDecl _
 		end if
 	end if
 
-	e = symbAddEnum( @id, palias )
+	e = symbAddEnum( @id, palias, attrib )
 	if( e = NULL ) then
     	if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
     		exit function
     	else
     		'' error recovery: create a fake symbol
-    		e = symbAddEnum( hMakeTmpStr( ), NULL )
+    		e = symbAddEnum( hMakeTmpStr( ), NULL, FB_SYMBATTRIB_NONE )
     	end if
 	end if
 
@@ -284,7 +285,7 @@ function cEnumDecl _
 	end if
 
 	'' EnumBody
-	if( cEnumBody( e ) = FALSE ) then
+	if( cEnumBody( e, attrib ) = FALSE ) then
 		exit function
 	end if
 

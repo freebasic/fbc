@@ -230,7 +230,8 @@ end type
 		@"PROPERTY has no indexed GET method/accessor", _
 		@"PROPERTY has no indexed SET method/accessor", _
 		@"UDT in FOR needs numeric overloaded operators: ", _
-		@"The new[] operator does not allow explicit calls to constructors" _
+		@"The new[] operator does not allow explicit calls to constructors", _
+		@"Illegal member access" _
 	}
 
 

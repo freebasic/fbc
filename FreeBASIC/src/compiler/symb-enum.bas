@@ -32,7 +32,8 @@
 function symbAddEnum _
 	( _
 		byval id as zstring ptr, _
-		byval id_alias as zstring ptr _
+		byval id_alias as zstring ptr, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr e
@@ -52,7 +53,7 @@ function symbAddEnum _
     				   NULL, NULL, _
     				   FB_SYMBCLASS_ENUM, _
     				   id, id_alias, _
-    				   INVALID, NULL, 0 )
+    				   INVALID, NULL, 0, attrib )
 	if( e = NULL ) then
 		exit function
 	end if
@@ -77,7 +78,8 @@ function symbAddEnumElement _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
-		byval intval as integer _
+		byval intval as integer, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr s
@@ -87,7 +89,7 @@ function symbAddEnumElement _
     				   NULL, NULL, _
     				   FB_SYMBCLASS_CONST, _
     				   id, NULL, _
-    				   FB_DATATYPE_ENUM, parent, 0 )
+    				   FB_DATATYPE_ENUM, parent, 0, attrib )
 	if( s = NULL ) then
 		exit function
 	end if
