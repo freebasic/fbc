@@ -149,6 +149,12 @@ private function hFieldAccess _
 		end if
 
 	else
+		'' constant? exit..
+		if( symbIsConst( fld ) ) then
+			astDeltree( expr )
+			return fldexpr
+		end if
+
 		dtype = symbGetType( fld )
 		subtype = symbGetSubType( fld )
 

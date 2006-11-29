@@ -194,6 +194,13 @@ function cPeekFunct _
 
     	fld = cTypeField( dtype, subtype, expr, method_sym, TRUE )
     	if( fld <> NULL ) then
+			'' constant? exit..
+			if( symbIsConst( fld ) ) then
+				astDeltree( funcexpr )
+				funcexpr = expr
+				return TRUE
+			end if
+
     		dtype = symbGetType( fld )
     		subtype = symbGetSubType( fld )
     	end if

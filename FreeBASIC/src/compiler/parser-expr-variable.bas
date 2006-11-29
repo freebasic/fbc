@@ -231,19 +231,27 @@ function cTypeField _
 	    	end if
 	    end if
 
-		'' const? (enum, too)
-		if( (symbIsConst( sym ) = TRUE) ) then
-			expr = astNewCONSTi( sym->con.val.int, FB_DATATYPE_UINT )
-			lexSkipToken( )
+		'' not a data field?
+		if( symbIsField( sym ) = FALSE ) then
+
+			'' const? (enum, too)
+			if( symbIsConst( sym ) ) then
+				lexSkipToken( )
+
+				astDelTree( expr )
+				expr = astNewCONST( @symbGetConstVal( sym ), _
+									symbGetType( sym ), _
+									symbGetSubType( sym ) )
+                fld = sym
+
+			else
+				method_sym = sym
+			end if
+
 			exit do
 		end if
 
-		'' method call?
-		if( (symbIsField( sym ) = FALSE) ) then
-			method_sym = sym
-			exit do
-		end if
-
+		'' data field..
 		lexSkipToken( )
 
 		fld = sym
@@ -559,6 +567,16 @@ function cDerefFields _
 		else
 			fld = NULL
 			method_sym = NULL
+		end if
+
+		'' constant? exit..
+		if( fld <> NULL ) then
+			if( symbIsConst( fld ) ) then
+				astDeltree( idxexpr )
+				astDeltree( varexpr )
+				varexpr = fldexpr
+				exit do
+			end if
 		end if
 
 		'' null pointer checking
@@ -1365,12 +1383,15 @@ function cVariableEx _
 					if( errGetLast( ) <> FB_ERRMSG_OK ) then
 						exit function
 					end if
-					'' const given back?
-					if idxexpr <> NULL then
+
+				else
+					'' constant? exit..
+					if( symbIsConst( fld ) ) then
+						astDeltree( varexpr )
 						varexpr = idxexpr
 						return TRUE
 					end if
-				else
+
     				dtype = symbGetType( fld )
     				subtype = symbGetSubType( fld )
 
@@ -1492,6 +1513,11 @@ function cWithVariable _
 			exit function
 		end if
 	else
+		'' constant? exit..
+		if( symbIsConst( fld ) ) then
+			return TRUE
+		end if
+
     	dtype = symbGetType( fld )
     	subtype = symbGetSubType( fld )
 
@@ -1613,6 +1639,13 @@ function cFieldVariable _
 		exit function
 
 	else
+		'' constant? exit..
+		if( symbIsConst( fld ) ) then
+			astDeltree( varexpr )
+			varexpr = fldexpr
+			return TRUE
+		end if
+
     	dtype = symbGetType( fld )
     	subtype = symbGetSubType( fld )
 

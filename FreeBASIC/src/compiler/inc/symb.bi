@@ -1889,6 +1889,8 @@ declare function symbCheckAccess _
 
 #define symbIsNameSpace(s) (s->class = FB_SYMBCLASS_NAMESPACE)
 
+#define symbGetConstVal(s) s->con.val
+
 #define symbGetConstValStr(s) s->con.val.str
 
 #define symbGetConstValInt(s) s->con.val.int
