@@ -141,7 +141,8 @@ end function
 '':::::
 function astBuildVarDtorCall _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval check_access as integer _
 	) as ASTNODE ptr
 
 	dim as integer do_free = any
@@ -170,9 +171,9 @@ function astBuildVarDtorCall _
 			expr = astNewVAR( s, 0, symbGetType( s ), symbGetSubtype( s ) )
 
 			if( symbIsDynamic( s ) ) then
-				function = rtlArrayErase( expr )
+				function = rtlArrayErase( expr, check_access )
 			else
-				function = rtlArrayClear( expr, FALSE )
+				function = rtlArrayClear( expr, FALSE, check_access )
 			end if
 
 		'' array of dyn strings?
@@ -190,11 +191,20 @@ function astBuildVarDtorCall _
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			'' has dtor?
 			if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
-                function = astBuildDtorCall( symbGetSubtype( s ), _
+                dim as FBSYMBOL ptr subtype = symbGetSubtype( s )
+
+                if( check_access ) then
+					if( symbCheckAccess( subtype, _
+										 symbGetCompDtor( subtype ) ) = FALSE ) then
+						errReport( FB_ERRMSG_NOACCESSTODTOR )
+                	end if
+                end if
+
+                function = astBuildDtorCall( subtype, _
                 							 astNewVAR( s, _
                 							 			0, _
                 							 			symbGetType( s ), _
-                							 			symbGetSubtype( s ) ) )
+                							 			subtype ) )
 
 			end if
 
@@ -517,6 +527,11 @@ function astBuildImplicitCtorCall _
 
 		'' could be a shallow copy..
         return expr
+	end if
+
+    '' check visibility
+	if( symbCheckAccess( subtype, proc ) = FALSE ) then
+		errReport( FB_ERRMSG_NOACCESSTOCTOR )
 	end if
 
     '' build a ctor call

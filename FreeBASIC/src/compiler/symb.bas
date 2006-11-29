@@ -1517,4 +1517,53 @@ function symbCalcLen _
 
 end function
 
+'':::::
+function symbIsChildOf _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr _
+	) as integer
+
+	dim as FBSYMBOL ptr ns = any
+
+    if( sym = parent ) then
+    	return TRUE
+    end if
+
+	do
+		ns = symbGetNamespace( sym )
+		if( ns = @symbGetGlobalNamespc( ) ) then
+			return FALSE
+		end if
+
+		if( ns = parent ) then
+			return TRUE
+		end if
+
+		sym = ns
+	loop
+
+	function = FALSE
+
+end function
+
+'':::::
+function symbCheckAccess _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
+	if( sym <> NULL ) then
+    	if( symbIsVisPrivate( sym ) ) then
+    		return parent = symbGetCurrentNamespc( )
+
+    	elseif( symbIsVisProtected( sym ) ) then
+	   		return symbIsChildOf( parent, symbGetCurrentNamespc( ) )
+    	end if
+    end if
+
+    function = TRUE
+
+end function
 

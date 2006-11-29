@@ -419,7 +419,7 @@ private sub hDestroyBlockLocals _
                     '' has a dtor?
                     if( symbGetVarHasDtor( s ) ) then
                     	'' call it..
-                    	expr = astBuildVarDtorCall( s )
+                    	expr = astBuildVarDtorCall( s, TRUE )
                     	if( expr <> NULL ) then
                     		base_expr = astAddAfter( expr, base_expr )
                     	end if
@@ -652,7 +652,7 @@ private sub hDestroyVars _
     	if( symbGetClass( s ) = FB_SYMBCLASS_VAR ) then
 			'' has a dtor?
 			if( symbGetVarHasDtor( s ) ) then
-    			astAdd( astBuildVarDtorCall( s ) )
+    			astAdd( astBuildVarDtorCall( s, TRUE ) )
     		end if
     	end if
 

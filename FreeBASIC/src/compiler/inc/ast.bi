@@ -1076,7 +1076,8 @@ declare function astBuildMockInstPtr _
 
 declare function astBuildVarDtorCall _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval check_access as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function astBuildTypeIniCtorList _

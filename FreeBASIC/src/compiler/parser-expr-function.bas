@@ -257,6 +257,12 @@ function cCtorCall _
 
 	'' check if it's a call (because error recovery)..
 	if( astIsCALL( procexpr ) ) then
+
+    	'' check visibility
+		if( symbCheckAccess( sym, astGetSymbol( procexpr ) ) = FALSE ) then
+			errReport( FB_ERRMSG_NOACCESSTOCTOR )
+		end if
+
 		atom = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
 
 		if( symbGetHasDtor( sym ) ) then

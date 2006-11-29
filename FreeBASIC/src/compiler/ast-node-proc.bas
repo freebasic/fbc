@@ -1130,7 +1130,7 @@ private sub hDestroyVars _
     	if( symbGetClass( s ) = FB_SYMBCLASS_VAR ) then
 			'' has a dtor?
 			if( symbGetVarHasDtor( s ) ) then
-				astAdd( astBuildVarDtorCall( s ) )
+				astAdd( astBuildVarDtorCall( s, TRUE ) )
 			end if
     	end if
 

@@ -232,7 +232,10 @@ end type
 		@"UDT in FOR needs numeric overloaded operators: ", _
 		@"The new() operator does not allow explicit calls to constructors", _
 		@"Illegal member access", _
-		@"Expected ':'" _
+		@"Expected ':'", _
+		@"The default constructor has no public access", _
+		@"Constructor has no public access", _
+		@"Destructor has no public access" _
 	}
 
 

@@ -733,6 +733,14 @@ private function hVarInit _
 							  	  	  FB_SYMBATTRIB_COMMON or _
 							  	  	  FB_SYMBATTRIB_DYNAMIC)) = 0) ) then
 
+    					'' check visibility
+	    				dim as FBSYMBOL ptr subtype = symbGetSubtype( sym )
+	    				if( symbCheckAccess( subtype, _
+	    									 symbGetCompDefCtor( subtype ) ) = FALSE ) then
+
+							errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
+						end if
+
 						function = astBuildTypeIniCtorList( sym )
 					end if
 				end if

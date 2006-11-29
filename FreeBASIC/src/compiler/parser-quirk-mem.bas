@@ -204,21 +204,37 @@ function cOperatorDelete _
 	end if
 
 	dim as integer dtype = astGetDataType( ptr_expr )
+	dim as FBSYMBOL ptr subtype = astGetSubType( ptr_expr )
 
 	if( dtype < FB_DATATYPE_POINTER ) then
        	if( errReport( FB_ERRMSG_EXPECTEDPOINTER ) = FALSE ) then
        		exit function
+       	else
+       		hSkipStmt( )
+       		return TRUE
        	end if
-	else
-		dtype -= FB_DATATYPE_POINTER
 	end if
+
+	dtype -= FB_DATATYPE_POINTER
+
+	'' check visibility
+	select case dtype
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		dim as FBSYMBOL ptr dtor = symbGetCompDtor( subtype )
+
+		if( dtor <> NULL ) then
+			if( symbCheckAccess( subtype, dtor ) = FALSE ) then
+				errReport( FB_ERRMSG_NOACCESSTODTOR )
+			end if
+		end if
+	end select
 
 	expr = astNewMEM( op, _
 					  ptr_expr, _
 					  NULL, _
 					  NULL, _
 					  dtype, _
-					  astGetSubType( ptr_expr ) )
+					  subtype )
 
 	if( expr = NULL ) then
     	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then

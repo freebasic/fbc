@@ -736,18 +736,7 @@ function cProcHeader _
     			end if
 
     			proc = head_proc
-
     		end if
-    	end if
-
-    	'' add in the attributes from the declare, since
-    	'' private/public/protected may be specified there only
-    	if( symbGetAttrib( head_proc ) and FB_SYMBATTRIB_PRIVATE ) then
-    		attrib and= not ( FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PROTECTED )
-    	elseif( symbGetAttrib( head_proc ) and FB_SYMBATTRIB_PROTECTED ) then
-    		attrib and= not ( FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE )
-    	elseif( symbGetAttrib( head_proc ) and FB_SYMBATTRIB_PUBLIC ) then
-    		attrib and= not ( FB_SYMBATTRIB_PRIVATE or FB_SYMBATTRIB_PROTECTED )
     	end if
 
     	if( head_proc <> proc ) then
@@ -785,7 +774,7 @@ function cProcHeader _
     		''
     		symbSetIsDeclared( proc )
 
-    		symbSetAttrib( proc, attrib )
+    		symbGetAttrib( proc ) or= attrib
     	end if
     end if
 
@@ -1307,7 +1296,7 @@ function cOperatorHeader _
     		''
     		symbSetIsDeclared( proc )
 
-    		symbSetAttrib( proc, attrib )
+    		symbGetAttrib( proc ) or= attrib
     	end if
 	end if
 
@@ -1725,7 +1714,7 @@ function cPropertyHeader _
     		''
     		symbSetIsDeclared( proc )
 
-    		symbSetAttrib( proc, attrib )
+    		symbGetAttrib( proc ) or= attrib
     	end if
     end if
 
@@ -2009,7 +1998,7 @@ function cCtorHeader _
     		''
     		symbSetIsDeclared( proc )
 
-    		symbSetAttrib( proc, attrib )
+    		symbGetAttrib( proc ) or= attrib
     	end if
 	end if
 

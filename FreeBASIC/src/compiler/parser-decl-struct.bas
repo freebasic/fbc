@@ -715,11 +715,11 @@ private function hTypeBody _
 
 			select case lexGetToken( )
 			case FB_TK_PUBLIC
-				attrib = FB_SYMBATTRIB_PUBLIC
+				attrib = FB_SYMBATTRIB_VIS_PUBLIC
 			case FB_TK_PRIVATE
-				attrib = FB_SYMBATTRIB_PRIVATE
+				attrib = FB_SYMBATTRIB_VIS_PRIVATE
 			case FB_TK_PROTECTED
-				attrib = FB_SYMBATTRIB_PROTECTED
+				attrib = FB_SYMBATTRIB_VIS_PROTECTED
 			end select
 
 			lexSkipToken( )
@@ -729,9 +729,9 @@ private function hTypeBody _
 				if( errReport( FB_ERRMSG_EXPECTEDSTMTSEP ) = FALSE ) then
 					exit function
 				end if
-			else
-				lexSkipToken( )
 			end if
+
+			'' ':' will be skipped bellow to allow stmt separators
 
 		'' single-line comment?
 		case FB_TK_COMMENT, FB_TK_REM

@@ -215,6 +215,11 @@ private function hArrayInit _
 			ctor = symbGetCompDefCtor( symbGetSubtype( ctx.sym ) )
 			if( ctor = NULL ) then
 				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+			else
+    			'' check visibility
+	    		if( symbCheckAccess( symbGetSubtype( ctx.sym ), ctor ) = FALSE ) then
+					errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
+				end if
 			end if
 		end if
 

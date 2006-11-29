@@ -474,7 +474,8 @@ end function
 '':::::
 function rtlArrayErase _
 	( _
-		byval arrayexpr as ASTNODE ptr _
+		byval arrayexpr as ASTNODE ptr, _
+		byval check_access as integer _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
@@ -500,10 +501,19 @@ function rtlArrayErase _
 
 	if( dtor = NULL ) then
 		'' byval isvarlen as integer
-		if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_STRING, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, _
+					   astNewCONSTi( dtype = FB_DATATYPE_STRING, _
+					   				 FB_DATATYPE_INTEGER ), _
+					   FB_DATATYPE_INTEGER ) = NULL ) then
     		exit function
     	end if
     else
+		if( check_access ) then
+			if( symbCheckAccess( astGetSubtype( arrayexpr ), dtor ) = FALSE ) then
+				errReport( FB_ERRMSG_NOACCESSTODTOR )
+			end if
+		end if
+
 		if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
 			errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
 		end if
@@ -522,7 +532,8 @@ end function
 function rtlArrayClear _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
-		byval dofill as integer _
+		byval dofill as integer, _
+		byval check_access as integer _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
@@ -548,10 +559,19 @@ function rtlArrayClear _
 
 	if( dtor = NULL ) then
 		'' byval isvarlen as integer
-		if( astNewARG( proc, astNewCONSTi( (dtype = FB_DATATYPE_STRING), FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, _
+					   astNewCONSTi( dtype = FB_DATATYPE_STRING, _
+					   				 FB_DATATYPE_INTEGER ), _
+					   FB_DATATYPE_INTEGER ) = NULL ) then
     		exit function
     	end if
     else
+		if( check_access ) then
+			if( symbCheckAccess( astGetSubtype( arrayexpr ), dtor ) = FALSE ) then
+				errReport( FB_ERRMSG_NOACCESSTODTOR )
+			end if
+		end if
+
 		if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
 			errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
 		end if
