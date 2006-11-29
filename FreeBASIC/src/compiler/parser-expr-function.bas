@@ -236,7 +236,7 @@ function cCtorCall _
 					  		 NULL, _
 					  		 @arg_list, _
 					  		 TRUE, _
-					  		 FALSE )
+					  		 isprnt = FALSE )
 	if( procexpr = NULL ) then
 		return FALSE
 	end if

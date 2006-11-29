@@ -148,12 +148,17 @@ function cSelectStmtBegin as integer
 
 	else
 		'' the wstring must be allocated() but size
-		'' is unknown at compilet-time, do:
+		'' is unknown at compile-time, do:
 
 		''  dim wstring ptr tmp
 		sym = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, NULL )
 		if( sym = NULL ) then
 			exit function
+		end if
+
+		'' side-effect?
+		if( astIsClassOnTree( AST_NODECLASS_CALL, expr ) <> NULL ) then
+			astAdd( astRemSideFx( expr ) )
 		end if
 
 		'' tmp = WstrAlloc( len( expr ) )

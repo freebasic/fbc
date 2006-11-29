@@ -1040,7 +1040,7 @@ function rtlMultinput_cb _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as integer static
-    
+
     static as integer libsAdded = FALSE
 
 	if( libsadded = FALSE ) then
@@ -1542,7 +1542,7 @@ function rtlGfxDrawString _
 		byval funcexpr as ASTNODE ptr, _
 		byval paramexpr as ASTNODE ptr _
 	) as integer
-    
+
     dim as ASTNODE ptr proc
     dim as integer targetmode
     dim as FBSYMBOL ptr reslabel
@@ -2081,10 +2081,17 @@ function rtlGfxGet _
 
 		if( astIsFIELD( arrayexpr ) = FALSE ) then
 			descexpr = astNewVAR( symbol, 0, symbGetType( symbol ) )
+
 		else
+			'' side-effect?
+			if( astIsClassOnTree( AST_NODECLASS_CALL, arrayexpr ) <> NULL ) then
+				astAdd( astRemSideFx( arrayexpr ) )
+			end if
+
 			descexpr = astCloneTree( arrayexpr )
 		end if
 	end if
+
  	if( astNewARG( proc, arrayexpr, INVALID, argmode ) = NULL ) then
  		exit function
  	end if

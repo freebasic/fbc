@@ -924,6 +924,8 @@ function astCloneTree _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
+	'' note: never clone a tree with side-effects (ie: function call nodes)
+
 	dim as ASTNODE ptr c = any, t = any
 
 	''
@@ -952,6 +954,65 @@ function astCloneTree _
 	end if
 
 	function = c
+
+end function
+
+'':::::
+function astRemSideFx _
+	( _
+		byref n as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	'' note: this should only be done with VAR, IDX, PTR and FIELD nodes
+
+	dim as FBSYMBOL ptr tmp = any, subtype = any
+	dim as integer dtype = any
+	dim as ASTNODE ptr t = any
+
+	dtype = astGetDataType( n )
+	subtype = astGetSubType( n )
+
+	select case as const dtype
+	'' complex type? convert to pointer..
+	case FB_DATATYPE_STRUCT, _ ' FB_DATATYPE_CLASS
+		 FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+
+		tmp = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
+
+		'' tmp = @b
+		t = astNewASSIGN( astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _
+				   	  	  astNewADDR( AST_OP_ADDROF, n ) )
+
+		'' return *tmp
+		function = astNewLINK( t, _
+						   	   astNewPTR( 0, _
+			   		   			   	  	  astNewVAR( tmp, _
+			   		   			   			  	 	 0, _
+			   		   			   			  	 	 FB_DATATYPE_POINTER + dtype, _
+			   		   			   			  	 	 subtype ),_
+			   		   			   	  	  dtype, _
+			   		   			   	  	  subtype ) )
+
+		'' repatch node
+		n = astNewPTR( 0, _
+					   astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _
+			   		   dtype, _
+			   		   subtype )
+
+	'' simple type..
+	case else
+		tmp = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+
+		'' tmp = n
+		t = astNewASSIGN( astNewVAR( tmp, 0, dtype, subtype ), n )
+
+		'' return tmp
+		function = astNewLINK( t, astNewVAR( tmp, 0, dtype, subtype ) )
+
+		'' repatch node
+		n = astNewVAR( tmp, 0, dtype, subtype )
+
+	end select
 
 end function
 

@@ -941,6 +941,11 @@ declare function astFindTempVarWithDtor _
 		byval n as ASTNODE ptr _
 	) as FBSYMBOL ptr
 
+declare function astRemSideFx _
+	( _
+		byref n as ASTNODE ptr _
+	) as ASTNODE ptr
+
 declare function astBuildVarAddrof _
 	( _
 		byval sym as FBSYMBOL ptr _

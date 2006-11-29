@@ -90,6 +90,11 @@ function cPrintStmt  _
 		end if
     end if
 
+	'' side-effect?
+	if( astIsClassOnTree( AST_NODECLASS_CALL, filexpr ) <> NULL ) then
+		astAdd( astRemSideFx( filexpr ) )
+	end if
+
     '' (Expression?|SPC(Expression)|TAB(Expression) ';'|"," )*
     expressions = 0
     do
@@ -225,6 +230,11 @@ function cWriteStmt _
 
     else
     	filexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
+
+	'' side-effect?
+	if( astIsClassOnTree( AST_NODECLASS_CALL, filexpr ) <> NULL ) then
+		astAdd( astRemSideFx( filexpr ) )
 	end if
 
     '' (Expression? "," )*

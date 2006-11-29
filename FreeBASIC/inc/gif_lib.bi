@@ -77,7 +77,7 @@ type GifFileType_
 	Image as GifImageDesc
 	SavedImages as SavedImage ptr
 	UserData as any ptr
-	Private as any ptr
+	Private_ as any ptr
 end type
 
 enum GifRecordType

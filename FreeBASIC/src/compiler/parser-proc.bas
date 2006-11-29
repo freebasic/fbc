@@ -467,7 +467,7 @@ function cProcHeader _
 
 		else
 			'' ns used in a prototype?
-			
+
 			if( is_prototype ) then
 
 				if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
@@ -739,17 +739,17 @@ function cProcHeader _
 
     		end if
     	end if
-    	
+
     	'' add in the attributes from the declare, since
     	'' private/public/protected may be specified there only
-    	if head_proc->attrib and FB_SYMBATTRIB_PRIVATE then
-    		attrib and= not( FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PROTECTED )
-    	elseif head_proc->attrib and FB_SYMBATTRIB_PROTECTED then
-    		attrib and= not( FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE )
-    	elseif head_proc->attrib and FB_SYMBATTRIB_PUBLIC then
-    		attrib and= not( FB_SYMBATTRIB_PRIVATE or FB_SYMBATTRIB_PROTECTED )
+    	if( symbGetAttrib( head_proc ) and FB_SYMBATTRIB_PRIVATE ) then
+    		attrib and= not ( FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PROTECTED )
+    	elseif( symbGetAttrib( head_proc ) and FB_SYMBATTRIB_PROTECTED ) then
+    		attrib and= not ( FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE )
+    	elseif( symbGetAttrib( head_proc ) and FB_SYMBATTRIB_PUBLIC ) then
+    		attrib and= not ( FB_SYMBATTRIB_PRIVATE or FB_SYMBATTRIB_PROTECTED )
     	end if
-    	
+
     	if( head_proc <> proc ) then
     		'' already parsed?
     		if( symbGetIsDeclared( head_proc ) ) then
@@ -1918,7 +1918,10 @@ function cCtorHeader _
     			exit function
     		else
     			'' error recovery: create a fake symbol
-    			proc = symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, FB_DATATYPE_VOID, NULL, 0, attrib, mode )
+    			proc = symbAddProc( proc, _
+    							    hMakeTmpStr( ), _
+    							    NULL, NULL, _
+    							    FB_DATATYPE_VOID, NULL, 0, attrib, mode )
     		end if
 
     	else

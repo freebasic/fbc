@@ -44,7 +44,6 @@
 	        without the # prefix
 	  - NEW and DELETE must be static methods
 	    - DELETE should check if the pointer is null before using it
-	    - DELETE[]'s counter is at: cast(uinteger ptr, vector)[-1]
 
 [ ] operator overloading:
       - OPERATOR *|@ ( l ) AS TYPE

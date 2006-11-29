@@ -664,6 +664,13 @@ function cProcCallOrAssign as integer
 
 		end select
 
+  	case FB_TKCLASS_OPERATOR
+
+  		select case lexGetToken( )
+  		case FB_TK_DELETE
+  			return cOperatorDelete( )
+  		end select
+
 	case FB_TKCLASS_DELIMITER
 
 		'' '.'?

@@ -46,10 +46,11 @@ declare sub hPatchByvalResultToSelf _
 ''
 private function hTypeProtoDecl _
 	( _
-		byval parent as FBSYMBOL ptr _
+		byval parent as FBSYMBOL ptr, _
+		byval attrib as integer _
 	) as integer
 
-	dim as integer res = any, is_nested = any, attrib = FB_SYMBATTRIB_NONE
+	dim as integer res = any, is_nested = any
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
@@ -67,22 +68,6 @@ private function hTypeProtoDecl _
 
 	'' DECLARE
 	lexSkipToken( )
-	
-	
-	if lexGetToken( ) = FB_TK_PRIVATE then
-	    attrib or= FB_SYMBATTRIB_PRIVATE
-	    
-	    lexSkipToken( )
-	elseif lexGetToken( ) = FB_TK_PUBLIC then
-	    attrib or= FB_SYMBATTRIB_PUBLIC
-	    
-	    lexSkipToken( )
-'	elseif lexGetToken( ) = FB_TK_PROTECTED then
-'	    attrib or= FB_SYMBATTRIB_PROTECTED 
-'	    
-'	    lexSkipToken( )
-    end if
-
 
 	res = TRUE
 
@@ -452,7 +437,7 @@ private function hTypeMultElementDecl _
 
 		else
 			symbGetAttrib( sym ) or= attrib
-			
+
 			initree = hFieldInit( parent, sym )
 			if( initree = NULL ) then
     			if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -494,7 +479,7 @@ private function hTypeElementDecl _
 	'' allow keywords as field names
 	select case as const lexGetClass( )
 	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-	    
+
 		'' ID
 		id = *lexGetText( )
 
@@ -599,7 +584,7 @@ private function hTypeElementDecl _
 					  	dims, dTB(), _
 					  	dtype, subtype, ptrcnt, _
 					  	lgt, bits )
-					  	
+
 	if( sym = NULL ) then
 		if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
 			exit function
@@ -720,40 +705,33 @@ private function hTypeBody _
 
 	do
 		select case as const lexGetToken( )
-        '' private?
-		case FB_TK_PRIVATE
+        '' visibility?
+		case FB_TK_PRIVATE, FB_TK_PUBLIC, FB_TK_PROTECTED
 			if( symbGetUDTIsUnion( s ) ) then
 				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 					exit function
 				end if
-			else
-			    attrib or= FB_SYMBATTRIB_PRIVATE
 			end if
-		    lexSkipToken( )
-		    continue do
 
-		case FB_TK_PUBLIC
-			if( symbGetUDTIsUnion( s ) ) then
-				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			select case lexGetToken( )
+			case FB_TK_PUBLIC
+				attrib = FB_SYMBATTRIB_PUBLIC
+			case FB_TK_PRIVATE
+				attrib = FB_SYMBATTRIB_PRIVATE
+			case FB_TK_PROTECTED
+				attrib = FB_SYMBATTRIB_PROTECTED
+			end select
+
+			lexSkipToken( )
+
+			'' ':'
+			if( lexGetToken( ) <> FB_TK_STMTSEP ) then
+				if( errReport( FB_ERRMSG_EXPECTEDSTMTSEP ) = FALSE ) then
 					exit function
 				end if
 			else
-			    attrib or= FB_SYMBATTRIB_PUBLIC
+				lexSkipToken( )
 			end if
-		    lexSkipToken( )
-		    continue do
-		    
-
-'		case FB_TK_PROTECTED
-'			if( symbGetUDTIsUnion( s ) ) then
-'				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-'					exit function
-'				end if
-'			else
-'			    attrib or= FB_SYMBATTRIB_PROTECTED
-'			end if
-'		    lexSkipToken( )
-'		    continue do
 
 		'' single-line comment?
 		case FB_TK_COMMENT, FB_TK_REM
@@ -810,17 +788,16 @@ decl_inner:		'' it's an anonymous inner UDT
 						end if
 					end if
 				end if
-                
-'                if attrib and FB_SYMBATTRIB_VISIBILITY then
-'					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-'						exit function
-'					else
-'						'' error recovery: fake type
-'						isunion = TRUE
-'					end if
-'				end if
-	                
-                
+
+				/'if attrib and FB_SYMBATTRIB_VISIBILITY then
+					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: fake type
+						isunion = TRUE
+					end if
+				end if'/
+
 				lexSkipToken( )
 
 				'' create a "temp" one
@@ -828,7 +805,7 @@ decl_inner:		'' it's an anonymous inner UDT
 				if( inner = NULL ) then
 					exit function
 				end if
-				
+
 				'' walk through all the anon UDT's symbols, and
 				'' promote their attributes from the root
 				dim as FBSYMBOL ptr walkSymbols = symbGetUDTFirstElm( inner )
@@ -871,7 +848,7 @@ decl_inner:		'' it's an anonymous inner UDT
 			end if
 
 		case FB_TK_DECLARE
-			if( hTypeProtoDecl( s ) = FALSE ) then
+			if( hTypeProtoDecl( s, attrib ) = FALSE ) then
 				exit function
 			end if
 
@@ -921,9 +898,6 @@ decl_inner:		'' it's an anonymous inner UDT
     			hSkipUntil( INVALID, TRUE )
     		end if
 		end if
-		
-		attrib = FB_SYMBATTRIB_NONE
-
 	loop
 
 	'' nothing added?

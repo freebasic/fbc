@@ -1359,10 +1359,14 @@ function astNewBOP _
 				select case l->class
 				case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 					 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
-					astDelNode( r )
-					r = astCloneTree( l )
-					op = AST_OP_MUL
-					dtype = ldtype
+
+					'' can't clone if there's a side-effect in the tree
+					if( astIsClassOnTree( AST_NODECLASS_CALL, l ) = NULL ) then
+						astDelNode( r )
+						r = astCloneTree( l )
+						op = AST_OP_MUL
+						dtype = ldtype
+					end if
 				end select
 			end if
 		end select
@@ -1452,9 +1456,9 @@ function astNewSelfBOP _
 
 	'' if there's a function call in lvalue, convert to tmp = @lvalue, *tmp = *tmp op rhs:
 	if( astIsClassOnTree( AST_NODECLASS_CALL, l ) ) then
-		dim as FBSYMBOL ptr tmp, subtype
-		dim as integer dtype
-		dim as ASTNODE ptr ll, lr
+		dim as FBSYMBOL ptr tmp = any, subtype = any
+		dim as integer dtype = any
+		dim as ASTNODE ptr ll = any, lr = any
 
 		dtype = astGetDataType( l )
 		subtype = astGetSubType( l )
