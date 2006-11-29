@@ -329,12 +329,7 @@ private function hLoadDefine _
 
 			if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
 				if( lex->deflen = 0 ) then
-					if *(lex->deftext.data) = *symbGetDefineText( s ) then
-						errReport( FB_ERRMSG_RECURSIVEMACRO )
-						return FALSE
-					else
-						DZstrAssign( lex->deftext, symbGetDefineText( s ) )
-					end if
+					DZstrAssign( lex->deftext, symbGetDefineText( s ) )
 				else
 					DZstrAssign( lex->deftext, _
 								 *symbGetDefineText( s ) + *lex->defptr )
@@ -342,12 +337,7 @@ private function hLoadDefine _
 
 			else
 				if( lex->deflen = 0 ) then
-					if *(lex->deftext.data) = *symbGetDefineTextW( s ) then
-						errReport( FB_ERRMSG_RECURSIVEMACRO )
-						return FALSE
-					else
-						DZstrAssignW( lex->deftext, symbGetDefineTextW( s ) )
-					end if
+					DZstrAssignW( lex->deftext, symbGetDefineTextW( s ) )
 				else
 					DZstrAssign( lex->deftext, _
 								 str( *symbGetDefineTextW( s ) ) + *lex->defptr )
@@ -866,6 +856,7 @@ private function hReadMacroText _
 
     		'' look up..
     		param = hashLookup( @symb.def.paramhash, arg )
+
     		'' found?
     		if( param <> NULL ) then
 				if( addquotes = FALSE ) then
@@ -1145,4 +1136,5 @@ function ppDefine _
    	function = TRUE
 
 end function
+
 
