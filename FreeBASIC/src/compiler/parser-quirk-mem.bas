@@ -179,25 +179,15 @@ function cOperatorDelete _
 	'' DELETE
 	lexSkipToken( )
 
-	'' '('?
+	op = AST_OP_DEL
+
+	'' '(' ')'?
     if( lexGetToken( ) = CHAR_LPRNT ) then
-        lexSkipToken( )
-
-        op = AST_OP_DEL_VEC
-
-        '' ')'
-        if( lexGetToken( ) <> CHAR_RPRNT ) then
-        	if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-        		exit function
-        	else
-        		hSkipUntil( CHAR_RPRNT )
-        	end if
-        else
+        if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
         	lexSkipToken( )
+        	lexSkipToken( )
+        	op = AST_OP_DEL_VEC
         end if
-
-	else
-		op = AST_OP_DEL
 	end if
 
 	if( cVarOrDeref( ptr_expr ) = FALSE ) then
