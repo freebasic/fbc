@@ -764,7 +764,6 @@ sub fbAddDefaultLibs( ) static
 
 	symbAddLib( "fb" )
 	symbAddLib( "gcc" )
-	symbAddLib( "supcxx" )
 
 	select case as const env.clopt.target
 	case FB_COMPTARGET_WIN32
@@ -773,10 +772,12 @@ sub fbAddDefaultLibs( ) static
 		symbAddLib( "mingw32" )
 		symbAddLib( "mingwex" )
 		symbAddLib( "moldname" )
+		symbAddLib( "supcxx" )
 
 	case FB_COMPTARGET_CYGWIN
 		symbAddLib( "cygwin" )
 		symbAddLib( "kernel32" )
+		symbAddLib( "supcxx" )
 
 	case FB_COMPTARGET_LINUX
 		symbAddLib( "c" )
@@ -784,10 +785,12 @@ sub fbAddDefaultLibs( ) static
 		symbAddLib( "pthread" )
 		symbAddLib( "dl" )
 		symbAddLib( "ncurses" )
+		symbAddLib( "supc++" )
 
 	case FB_COMPTARGET_DOS
 		symbAddLib( "c" )
 		symbAddLib( "m" )
+		symbAddLib( "supcxx" )
 
 	case FB_COMPTARGET_XBOX
 		symbAddLib( "fbgfx" )
@@ -798,6 +801,7 @@ sub fbAddDefaultLibs( ) static
 		symbAddLib( "usb" )
 		symbAddLib( "xboxkrnl" )
 		symbAddLib( "m" )
+		symbAddLib( "supcxx" )
 
 	end select
 
