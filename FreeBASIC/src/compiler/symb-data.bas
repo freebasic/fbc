@@ -352,10 +352,10 @@ function symbGetCStdType _
 
 	if( ctype = FB_CSTDTYPE_SIZET ) then
 		select case as const env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_LINUX
 			function = FB_DATATYPE_UINT
 
-		case FB_COMPTARGET_LINUX, FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+		case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
 			function = FB_DATATYPE_ULONG
 		end select
 	end if
