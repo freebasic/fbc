@@ -231,8 +231,15 @@ function cTypeField _
 	    	end if
 	    end if
 
+		'' const? (enum, too)
+		if( (symbIsConst( sym ) = TRUE) ) then
+			expr = astNewCONSTi( sym->con.val.int, FB_DATATYPE_UINT )
+			lexSkipToken( )
+			exit do
+		end if
+
 		'' method call?
-		if( symbIsField( sym ) = FALSE ) then
+		if( (symbIsField( sym ) = FALSE) ) then
 			method_sym = sym
 			exit do
 		end if
@@ -1357,6 +1364,11 @@ function cVariableEx _
 				if( fld = NULL ) then
 					if( errGetLast( ) <> FB_ERRMSG_OK ) then
 						exit function
+					end if
+					'' const given back?
+					if idxexpr <> NULL then
+						varexpr = idxexpr
+						return TRUE
 					end if
 				else
     				dtype = symbGetType( fld )
