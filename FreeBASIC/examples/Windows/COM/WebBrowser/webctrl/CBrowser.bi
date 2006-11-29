@@ -3,38 +3,50 @@
 
 #inclib "CBrowser"
 
-type CBrowser as CBrowser_
+type CBrowserCtx_ as CBrowserCtx
 
-declare function 	CBrowser_New 			( byval _this as CBrowser ptr, _
-											  byval hwnd as HWND, _
-											  byval ismozilla as integer = FALSE ) as CBrowser ptr
+type CBrowser
+	declare constructor _
+		( _
+			byval hwnd as HWND, _
+			byval ismozilla as integer = FALSE _
+		)
+	
+	declare destructor 	( )
+	
+	declare function insert ( ) as BOOL
+	
+	declare function remove ( ) as BOOL
+	
+	declare function resize _
+		( _
+			byval width_ as DWORD, _
+			byval height as DWORD _
+		) as BOOL
+	
+	declare function setFocus ( ) as BOOL
+	
+	declare function navigate _
+		( _
+			byval url as wstring ptr, _
+			byval target as wstring ptr = NULL _
+		) as BOOL
+	
+	declare function render _
+		( _
+			byval text as wstring ptr _
+		) as BOOL
+	
+	declare function goBack	( ) as BOOL
+	
+	declare function goForward ( ) as BOOL
+	
+	declare function refresh ( ) as BOOL
+	
+	declare function stop ( ) as BOOL
 
-declare sub 		CBrowser_Delete 		( byval _this as CBrowser ptr, _
-											  byval isstatic as integer )
-
-declare function 	CBrowser_Insert 		( byval _this as CBrowser ptr ) as BOOL
-
-declare function 	CBrowser_Remove 		( byval _this as CBrowser ptr ) as BOOL
-
-declare function 	CBrowser_Resize 		( byval _this as CBrowser ptr, _
-											  byval width_ as DWORD, _
-											  byval height as DWORD ) as BOOL
-
-declare function 	CBrowser_SetFocus		( byval _this as CBrowser ptr ) as BOOL
-
-declare function 	CBrowser_Navigate 		( byval _this as CBrowser ptr, _
-											  byval url as wstring ptr, _
-											  byval target as wstring ptr = NULL ) as BOOL
-
-declare function 	CBrowser_Render 		( byval _this as CBrowser ptr, _
-											  byval text as wstring ptr ) as BOOL
-
-declare function 	CBrowser_GoBack			( byval _this as CBrowser ptr ) as BOOL
-
-declare function 	CBrowser_GoForward		( byval _this as CBrowser ptr ) as BOOL
-
-declare function 	CBrowser_Refresh		( byval _this as CBrowser ptr ) as BOOL
-
-declare function 	CBrowser_Stop 			( byval _this as CBrowser ptr ) as BOOL
+private:
+	ctx as CBrowserCtx_ ptr
+end type
 
 #endif

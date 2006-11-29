@@ -2,12 +2,10 @@
 '' CBrowser - the browser "class"
 ''
 
-
-
 #include once "Common.bi
 #include once "CBrowser.bi"
 
-type CBrowser_
+type CBrowserCtx
 	as CClientSite ptr	client
 	as HWND 			hwnd
 	as integer			ismozilla
@@ -15,65 +13,54 @@ type CBrowser_
 	as IWebBrowser2 ptr browser
 end type
 
-
-'' constructor
-function CBrowser_New _
+''::::
+constructor CBrowser _
 	( _
-		byval _this as CBrowser ptr, _
 		byval hwnd as HWND, _
 		byval ismozilla as integer _
-	) as CBrowser ptr
+	) 
 
-	if( _this = NULL ) then
-		_this = cast( CBrowser ptr, allocate( len( CBrowser ) ) )
-		if( _this = NULL ) then
-			return NULL
-		end if
-	end if
-
-	_this->client = CClientSite_New( NULL, hwnd )
-	_this->hwnd = hwnd
-	_this->ismozilla = ismozilla
-	_this->browserclass = NULL
-	_this->browser = NULL
+	ctx = new CBrowserCtx
 	
-	function = _this
-
-end function
-
-'' destructor
-sub CBrowser_Delete _
-	( _
-		byval _this as CBrowser ptr, _
-		byval isstatic as integer _
-	)
-
-	CBrowser_Remove( _this )
+	ctx->client = CClientSite_New( NULL, hwnd )
+	ctx->hwnd = hwnd
+	ctx->ismozilla = ismozilla
+	ctx->browserclass = NULL
+	ctx->browser = NULL
 	
-	CClientSite_Delete( _this->client, FALSE )
-	
-	if( isstatic = FALSE ) then
-		if( _this <> NULL ) then
-			deallocate( _this )
-		end if
-	end if
-
-end sub
+end constructor
 
 ''::::
-function CBrowser_Insert _
+destructor CBrowser _
 	( _
-		byval _this as CBrowser ptr _
+		_
+	)
+
+	remove( )
+	
+	CClientSite_Delete( ctx->client, FALSE )
+	
+	delete ctx
+
+end destructor
+
+''::::
+function CBrowser.insert _
+	( _
+		_
 	) as BOOL
 
-	static as CLSID CLSID_MozillaBrowser = ( &h1339B54C, &h3453, &h11D2, { &h93, &hB9, &h00, &h00, &h00, &h00, &h00, &h00 } )
+	static as CLSID CLSID_MozillaBrowser = _
+		( _
+			&h1339B54C, &h3453, &h11D2, { &h93, &hB9, &h00, &h00, &h00, &h00, &h00, &h00 } _
+		)
 
 	dim as LPCLASSFACTORY classFactory = NULL
 	dim as RECT rect
 	
 	function = FALSE
 	
-	if( CoGetClassObject( iif( _this->ismozilla, @CLSID_MozillaBrowser, @CLSID_WebBrowser ), _
+	if( CoGetClassObject( iif( ctx->ismozilla, @CLSID_MozillaBrowser, @CLSID_WebBrowser ), _
 						  CLSCTX_INPROC_SERVER or CLSCTX_INPROC_HANDLER, _
 						  NULL, _
 						  @IID_IClassFactory, _
@@ -85,47 +72,47 @@ function CBrowser_Insert _
 	if( classFactory->lpVtbl->CreateInstance( classFactory, _
 											  0, _
 											  @IID_IOleObject, _
-											  cast( PVOID ptr, @_this->browserclass ) ) <> S_OK ) then
+											  cast( PVOID ptr, @ctx->browserclass ) ) <> S_OK ) then
 		
-		_this->browserclass = NULL		
+		ctx->browserclass = NULL		
 	end if
 		
 	classFactory->lpVtbl->Release( classFactory )
 	
-	if( _this->browserclass = NULL ) then
+	if( ctx->browserclass = NULL ) then
 		exit function
 	end if
 	
-	if( CClientSite_SetObject( _this->client, _this->browserclass ) = FALSE ) then
-		CBrowser_Remove( _this )
+	if( CClientSite_SetObject( ctx->client, ctx->browserclass ) = FALSE ) then
+		remove( )
 		exit function
 	end if
 	
-	_this->browserclass->lpVtbl->SetHostNames( _this->browserclass, "fb_webctrl", NULL )
+	ctx->browserclass->lpVtbl->SetHostNames( ctx->browserclass, "fb_webctrl", NULL )
 
-	GetClientRect( _this->hwnd, @rect )
+	GetClientRect( ctx->hwnd, @rect )
 		
-	if( _this->browserclass->lpVtbl->DoVerb( _this->browserclass, _
+	if( ctx->browserclass->lpVtbl->DoVerb( ctx->browserclass, _
 											 OLEIVERB_INPLACEACTIVATE, _
 											 NULL, _
-											 @_this->client->interface, _
+											 @ctx->client->interface, _
 											 0, _
-											 _this->hwnd, _
+											 ctx->hwnd, _
 											 @rect ) <> S_OK ) then
 		exit function
 	end if
 	
-	if( _this->browserclass->lpVtbl->QueryInterface( _this->browserclass, _
+	if( ctx->browserclass->lpVtbl->QueryInterface( ctx->browserclass, _
 												  	 @IID_IWebBrowser2, _
-													 cast( PVOID ptr, @_this->browser ) ) <> S_OK ) then
+													 cast( PVOID ptr, @ctx->browser ) ) <> S_OK ) then
 		exit function
 	end if
 			
-	if( _this->ismozilla = FALSE ) then
-		_this->browser->lpVtbl->put_Left( _this->browser, rect.left )
-		_this->browser->lpVtbl->put_Top( _this->browser, rect.top )
-		_this->browser->lpVtbl->put_Width( _this->browser, rect.right )
-		_this->browser->lpVtbl->put_Height( _this->browser, rect.bottom )
+	if( ctx->ismozilla = FALSE ) then
+		ctx->browser->lpVtbl->put_Left( ctx->browser, rect.left )
+		ctx->browser->lpVtbl->put_Top( ctx->browser, rect.top )
+		ctx->browser->lpVtbl->put_Width( ctx->browser, rect.right )
+		ctx->browser->lpVtbl->put_Height( ctx->browser, rect.bottom )
 	end if
 		
 	function = TRUE
@@ -133,26 +120,26 @@ function CBrowser_Insert _
 end function
 
 ''::::
-function CBrowser_Remove _
+function CBrowser.remove _
 	( _
-		byval _this as CBrowser ptr _
+		_
 	) as BOOL
 
 	function = FALSE
 	
-	if( _this->browserclass = NULL ) then
+	if( ctx->browserclass = NULL ) then
 		return TRUE
 	end if
 
-	if( _this->browser <> NULL ) then
-		_this->browser->lpVtbl->Release( _this->browser )
-		_this->browser = NULL
+	if( ctx->browser <> NULL ) then
+		ctx->browser->lpVtbl->Release( ctx->browser )
+		ctx->browser = NULL
 	end if
 
-	_this->browserclass->lpVtbl->Close( _this->browserclass, OLECLOSE_NOSAVE )
-	_this->browserclass->lpVtbl->Release( _this->browserclass )
+	ctx->browserclass->lpVtbl->Close( ctx->browserclass, OLECLOSE_NOSAVE )
+	ctx->browserclass->lpVtbl->Release( ctx->browserclass )
 	
-	_this->browserclass = NULL
+	ctx->browserclass = NULL
 	
 	function = TRUE
 
@@ -181,33 +168,32 @@ private sub hPixelToMetric _
 end sub
 
 ''::::
-function CBrowser_Resize _
+function CBrowser.resize _
 	( _
-		byval _this as CBrowser ptr, _
 		byval width_ as DWORD, _
 		byval height as DWORD _
 	) as BOOL
 
 	function = FALSE
 
-	if( _this->browserclass = NULL ) then
+	if( ctx->browserclass = NULL ) then
 		exit function
 	end if
 	
 	dim as SIZEL pxSize, hmSize = ( width_, height )
 	hPixelToMetric( @pxSize, @hmSize )
-	_this->browserclass->lpVtbl->SetExtent( _this->browserclass, _
+	ctx->browserclass->lpVtbl->SetExtent( ctx->browserclass, _
 											DVASPECT_CONTENT, _
 											@hmSize )
 	
 	dim as RECT rect = (0, 0, width_, height )
-	_this->client->site.inplaceobj->lpVtbl->SetObjectRects( _this->client->site.inplaceobj, _
+	ctx->client->site.inplaceobj->lpVtbl->SetObjectRects( ctx->client->site.inplaceobj, _
 															@rect, _
 															@rect )
 
-	if( _this->ismozilla = FALSE ) then
-		_this->browser->lpVtbl->put_Width( _this->browser, width_ )
-		_this->browser->lpVtbl->put_Height( _this->browser, height )
+	if( ctx->ismozilla = FALSE ) then
+		ctx->browser->lpVtbl->put_Width( ctx->browser, width_ )
+		ctx->browser->lpVtbl->put_Height( ctx->browser, height )
 	end if
 	
 	function = TRUE
@@ -215,27 +201,27 @@ function CBrowser_Resize _
 end function
 
 ''::::
-function CBrowser_SetFocus _
+function CBrowser.setFocus _
 	( _
-		byval _this as CBrowser ptr _
+		_
 	) as BOOL
 
 	dim as RECT rect
 
 	function = FALSE
 	
-	if( _this->browserclass = NULL ) then
+	if( ctx->browserclass = NULL ) then
 		exit function
 	end if
 
-	GetClientRect( _this->hwnd, @rect )
+	GetClientRect( ctx->hwnd, @rect )
 	
-	_this->browserclass->lpVtbl->DoVerb( _this->browserclass, _
+	ctx->browserclass->lpVtbl->DoVerb( ctx->browserclass, _
 										 OLEIVERB_UIACTIVATE, _
 										 NULL, _
-										 @_this->client->interface, _
+										 @ctx->client->interface, _
 										 0, _
-										 _this->hwnd, _
+										 ctx->hwnd, _
 										 @rect )
 
 	function = TRUE
@@ -243,9 +229,8 @@ function CBrowser_SetFocus _
 end function
 
 ''::::
-function CBrowser_Navigate _
+function CBrowser.navigate _
 	( _
-		byval _this as CBrowser ptr, _
 		byval url as wstring ptr, _
 		byval target as wstring ptr _
 	) as BOOL
@@ -254,7 +239,7 @@ function CBrowser_Navigate _
 
 	function = FALSE
 	
-	if( _this->browserclass = NULL ) then
+	if( ctx->browserclass = NULL ) then
 		exit function
 	end if
 	
@@ -271,7 +256,7 @@ function CBrowser_Navigate _
 	end if
 	
 	if( vURL.bstrVal <> NULL ) then
-		function = (_this->browser->lpVtbl->Navigate2( _this->browser, _
+		function = (ctx->browser->lpVtbl->Navigate2( ctx->browser, _
 												 	   iif( url <> NULL, @vURL, NULL ), _
 												 	   NULL, _
 												 	   iif( target <> NULL, @vTarget, NULL ), _
@@ -289,9 +274,8 @@ function CBrowser_Navigate _
 end function
 
 ''::::
-function CBrowser_Render _
+function CBrowser.render _
 	( _
-		byval _this as CBrowser ptr, _
 		byval text as wstring ptr _
 	) as BOOL
 
@@ -301,20 +285,20 @@ function CBrowser_Render _
 
 	function = FALSE
 	
-	if( _this->browserclass = NULL ) then
+	if( ctx->browserclass = NULL ) then
 		exit function
 	end if
 	
 	res = TRUE
 
-	if( _this->browser->lpVtbl->get_Document( _this->browser, @doc ) <> S_OK ) then
+	if( ctx->browser->lpVtbl->get_Document( ctx->browser, @doc ) <> S_OK ) then
 		return FALSE
 	end if
 		
 	if( doc = NULL ) then
-		CBrowser_Navigate( _this, "about:blank", NULL )
+		navigate( "about:blank", NULL )
 			
-		if( _this->browser->lpVtbl->get_Document( _this->browser, @doc ) <> S_OK ) then
+		if( ctx->browser->lpVtbl->get_Document( ctx->browser, @doc ) <> S_OK ) then
 			return FALSE
 		end if
 	end if
@@ -366,65 +350,65 @@ function CBrowser_Render _
 end function
 
 ''::::
-function CBrowser_GoBack _
+function CBrowser.goBack _
 	( _
-		byval _this as CBrowser ptr _
+		_
 	) as BOOL
 
 	function = FALSE
 	
-	if( _this->browserclass = NULL ) then
+	if( ctx->browserclass = NULL ) then
 		exit function
 	end if
 	
-	function = _this->browser->lpVtbl->GoBack( _this->browser ) = S_OK
+	function = ctx->browser->lpVtbl->GoBack( ctx->browser ) = S_OK
 	
 end function
 
 ''::::
-function CBrowser_GoForward _
+function CBrowser.goForward _
 	( _
-		byval _this as CBrowser ptr _
+		_
 	) as BOOL
 
 	function = FALSE
 	
-	if( _this->browserclass = NULL ) then
+	if( ctx->browserclass = NULL ) then
 		exit function
 	end if
 	
-	function = _this->browser->lpVtbl->GoForward( _this->browser ) = S_OK
+	function = ctx->browser->lpVtbl->GoForward( ctx->browser ) = S_OK
 	
 end function
 
 ''::::
-function CBrowser_Refresh _
+function CBrowser.refresh _
 	( _
-		byval _this as CBrowser ptr _
+		_
 	) as BOOL
 
 	function = FALSE
 	
-	if( _this->browserclass = NULL ) then
+	if( ctx->browserclass = NULL ) then
 		exit function
 	end if
 	
-	function = _this->browser->lpVtbl->Refresh( _this->browser ) = S_OK
+	function = ctx->browser->lpVtbl->Refresh( ctx->browser ) = S_OK
 	
 end function
 
 ''::::
-function CBrowser_Stop _
+function CBrowser.stop _
 	( _
-		byval _this as CBrowser ptr _
+		_
 	) as BOOL
 
 	function = FALSE
 	
-	if( _this->browserclass = NULL ) then
+	if( ctx->browserclass = NULL ) then
 		exit function
 	end if
 	
-	function = _this->browser->lpVtbl->Stop( _this->browser ) = S_OK
+	function = ctx->browser->lpVtbl->Stop( ctx->browser ) = S_OK
 	
 end function

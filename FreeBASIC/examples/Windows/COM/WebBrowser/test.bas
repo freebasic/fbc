@@ -44,11 +44,7 @@ private sub browser_onresize _
 		hgt = 0
 	end if
 		
-	webctrl_Move( browser, _
-				  0, _
-				  WIN_TOOLBAR_HEIGHT, _
-				  wdt, _
-				  hgt )
+	browser->move( 0, WIN_TOOLBAR_HEIGHT, wdt, hgt )
 
 end sub
 
@@ -76,9 +72,9 @@ private sub toolbar_onclick _
 
 	select case as const id
 	case WIN_TOOLBAR_BUTTON_GOBACK
-		webctrl_GoBack( browser )
+		browser->goBack(  )
 	case WIN_TOOLBAR_BUTTON_GOFORWARD
-		webctrl_GoForward( browser )
+		browser->goForward(  )
 	end select
 	
 end sub
@@ -270,26 +266,34 @@ private function browser_oncreate _
 		byval parent as HWND _
 	) as webctrl ptr
 	
-	dim as webctrl ptr ctrl
+	dim as webctrl ptr browser
 	
-	function = FALSE
-
-	ctrl = webctrl_Create( parent, _
+	browser = new webctrl( parent, _
 						   0, _
 						   WIN_TOOLBAR_HEIGHT, _
 						   WIN_WIDTH, _
 						   WIN_HEIGHT-WIN_TOOLBAR_HEIGHT, _
 						   WIN_BROWSER )
 
-	if( ctrl = NULL ) then
-		exit function
+	if( browser <> NULL ) then
+		browser->navigate( "file://" + curdir + "/frameset.html" )
 	end if
 	
-	webctrl_Navigate( ctrl, "file://" + curdir + "/frameset.html" )
-	
-	function = ctrl
+	function = browser
 
 end function
+
+''::::
+private sub browser_ondestroy _
+	( _
+		byval browser as webctrl ptr _
+	) 
+	
+	if( browser <> NULL ) then
+		delete browser
+	end if
+	
+end sub
 
 ''::::
 private function WinMain _
@@ -325,6 +329,9 @@ private function WinMain _
 		DispatchMessage( @msg )
 	loop
 
+	''
+	browser_ondestroy( browser )
+	
 	''
 	OleUninitialize( )
 

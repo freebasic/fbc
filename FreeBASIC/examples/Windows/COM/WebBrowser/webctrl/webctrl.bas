@@ -10,7 +10,7 @@
 
 const webctrl_name = "fb_webctrl_0_1"
 
-type webctrl_
+type webctrl_ctx
 	as HWND 			hwnd
 	as WEBCTRL_FLAGS	flags		
 	as CBrowser ptr 	browser
@@ -30,17 +30,17 @@ private function win_cb _
 	_this = cast( webctrl ptr, GetWindowLong( hwnd, GWL_USERDATA ) )
 	
 	if( _this <> NULL ) then
-		if( _this->browser <> NULL ) then
+		if( _this->ctx->browser <> NULL ) then
 			select case uMsg
 			case WM_SIZE
-				CBrowser_Resize( _this->browser, LOWORD( lParam ), HIWORD( lParam ) )
+				_this->ctx->browser->resize( LOWORD( lParam ), HIWORD( lParam ) )
 				return 0
 		
 			case WM_DESTROY
-				if( _this->browser <> NULL ) then
-					CBrowser_Remove( _this->browser )
-					CBrowser_Delete( _this->browser, FALSE )
-					_this->browser = NULL
+				if( _this->ctx->browser <> NULL ) then
+					_this->ctx->browser->remove( )
+					delete _this->ctx->browser
+					_this->ctx->browser = NULL
 				end if
 				return 0
 			
@@ -79,7 +79,7 @@ private function webctrl_GetRegClass _
 end function
 
 ''::::
-function webctrl_Create _
+constructor webctrl _
 	( _
 		byval parent as HWND, _
 		byval x as integer, _
@@ -87,82 +87,69 @@ function webctrl_Create _
 		byval width_ as integer, _
 		byval height as integer, _
 		byval flags as WEBCTRL_FLAGS _
-	) as webctrl ptr
+	) 
 	
-	dim as webctrl ptr _this
 	dim as WNDCLASSEX ptr wc
 	dim as HINSTANCE hInstance
 	
-	_this = allocate( len( webctrl ) )
-	
-	hInstance = cast( HINSTANCE, GetWindowLong( parent, GWL_HINSTANCE ) )
+	hInstance = cast( .HINSTANCE, GetWindowLong( parent, GWL_HINSTANCE ) )
 	
 	wc = webctrl_GetRegClass( hInstance )
 	
-	_this->hwnd = CreateWindowEx( 0, _
-						   		  @webctrl_name, _
-						   		  "webctrwin_" + hex( _this ), _
-						   		  WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS, _
-						   		  x, _
-						   		  width_, _
-						   		  y, _
-						   		  height, _
-						   		  parent, _
-						   		  NULL, _
-						   		  hInstance, _
-						   		  NULL )
+	ctx = new webctrl_ctx
 	
-	SetWindowLong( _this->hwnd, GWL_USERDATA, cast( LONG, _this ) )
+	ctx->hwnd = CreateWindowEx( 0, _
+						   		@webctrl_name, _
+						   		"webctrwin_" + hex( @this ), _
+						   		WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS, _
+						   		x, _
+						   		width_, _
+						   		y, _
+						   		height, _
+						   		parent, _
+						   		NULL, _
+						   		hInstance, _
+						   		NULL )
+	
+	SetWindowLong( ctx->hwnd, GWL_USERDATA, cast( LONG, @this ) )
 
-	_this->flags = flags
+	ctx->flags = flags
 
 	''
-	_this->browser = CBrowser_New( NULL, _this->hwnd, (flags and WEBCTRL_MOZILLA) <> 0 )
+	ctx->browser = new CBrowser( ctx->hwnd, (flags and WEBCTRL_MOZILLA) <> 0 )
 		
-	if( CBrowser_Insert( _this->browser ) = FALSE ) then
-		CBrowser_Delete( _this->browser, FALSE )
-		_this->browser = NULL
-		return NULL
+	if( ctx->browser->insert( ) = FALSE ) then
+		delete ctx->browser
+		ctx->browser = NULL
 	end if
 	
-	function = _this
-	
-end function
+end constructor
 
 ''::::
-function webctrl_Destroy _
+destructor webctrl _
 	( _
-		byval _this as webctrl ptr _
-	) as BOOL
+		_
+	)
 
-	function = FALSE
-	
-	if( _this = NULL ) then
-		exit function
+	if( ctx->hwnd <> NULL ) then
+		SetWindowLong( ctx->hwnd, GWL_USERDATA, cast( LONG, NULL ) )
+		DestroyWindow( ctx->hwnd )
+		ctx->hwnd = NULL
 	end if
 	
-	if( _this->hwnd <> NULL ) then
-		SetWindowLong( _this->hwnd, GWL_USERDATA, cast( LONG, NULL ) )
-		DestroyWindow( _this->hwnd )
-		_this->hwnd = NULL
+	if( ctx->browser <> NULL ) then
+		ctx->browser->remove( )
+		delete ctx->browser
+		ctx->browser = NULL
 	end if
 	
-	if( _this->browser <> NULL ) then
-		CBrowser_Remove( _this->browser )
-		CBrowser_Delete( _this->browser, FALSE )
-		_this->browser = NULL
-	end if
-	
-	deallocate( _this )
+	delete ctx
 
-	function = TRUE
-	
-end function
+end destructor
 
 ''::::
-function webctrl_Move _
+function webctrl.move _
 	( _
-		byval _this as webctrl ptr, _
 		byval x as integer, _
 		byval y as integer, _
 		byval width_ as integer, _
@@ -171,99 +158,97 @@ function webctrl_Move _
 	
 	function = FALSE
 	
-	if( _this->hwnd = NULL ) then
+	if( ctx->hwnd = NULL ) then
 		exit function
 	end if
 	
-	MoveWindow( _this->hwnd, x, y, width_, height, FALSE )
+	MoveWindow( ctx->hwnd, x, y, width_, height, FALSE )
 	
 	function = TRUE
 	
 end function
 
 ''::::
-function webctrl_Navigate _
+function webctrl.navigate _
 	( _
-		byval _this as webctrl ptr, _
 		byval url as wstring ptr, _
 		byval target as wstring ptr _
 	) as BOOL
 
-	if( _this->hwnd = NULL ) then
+	if( ctx->hwnd = NULL ) then
 		return FALSE
 	end if
 
-	function = CBrowser_Navigate( _this->browser, url, target )
+	function = ctx->browser->navigate( url, target )
 	
 end function 
 
 ''::::
-function webctrl_Render _
+function webctrl.render _
 	( _
-		byval _this as webctrl ptr, _
 		byval text as wstring ptr _
 	) as BOOL
 
-	if( _this->hwnd = NULL ) then
+	if( ctx->hwnd = NULL ) then
 		return FALSE
 	end if
 
-	function = CBrowser_Render( _this->browser, text )
+	function = ctx->browser->render( text )
 	
 end function 
 
 ''::::
-function webctrl_GoBack _
+function webctrl.goBack _
 	( _
-		byval _this as webctrl ptr _
+		 _
 	) as BOOL
 
-	if( _this->hwnd = NULL ) then
+	if( ctx->hwnd = NULL ) then
 		return FALSE
 	end if
 
-	function = CBrowser_GoBack( _this->browser )
+	function = ctx->browser->goBack( )
 	
 end function 
 
 ''::::
-function webctrl_GoForward _
+function webctrl.goForward _
 	( _
-		byval _this as webctrl ptr _
+		 _
 	) as BOOL
 
-	if( _this->hwnd = NULL ) then
+	if( ctx->hwnd = NULL ) then
 		return FALSE
 	end if
 
-	function = CBrowser_GoForward( _this->browser )
+	function = ctx->browser->goForward( )
 	
 end function 
 
 ''::::
-function webctrl_Refresh _
+function webctrl.refresh _
 	( _
-		byval _this as webctrl ptr _
+		 _
 	) as BOOL
 
-	if( _this->hwnd = NULL ) then
+	if( ctx->hwnd = NULL ) then
 		return FALSE
 	end if
 
-	function = CBrowser_Refresh( _this->browser )
+	function = ctx->browser->refresh( )
 	
 end function 
 
 ''::::
-function webctrl_Stop _
+function webctrl.stop _
 	( _
-		byval _this as webctrl ptr _
+		 _
 	) as BOOL
 
-	if( _this->hwnd = NULL ) then
+	if( ctx->hwnd = NULL ) then
 		return FALSE
 	end if
 
-	function = CBrowser_Stop( _this->browser )
+	function = ctx->browser->stop( )
 	
 end function 
