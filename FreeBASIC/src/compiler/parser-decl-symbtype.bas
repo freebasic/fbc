@@ -288,7 +288,7 @@ function cSymbolType _
 		dim as FBSYMBOL ptr sym
 		dim as FBSYMCHAIN ptr chain_
 
-		chain_ = cIdentifier( )
+		chain_ = cIdentifier( FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
 		if( chain_ = NULL ) then
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
