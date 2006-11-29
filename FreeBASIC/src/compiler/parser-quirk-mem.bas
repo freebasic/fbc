@@ -109,8 +109,9 @@ function cOperatorNew _
 				end if
 
 			else
+				dim as FBSYMBOL ptr ctor = symbGetCompDefCtor( subtype )
 				'' no default ctor?
-				if( symbGetCompDefCtor( subtype ) = NULL ) then
+				if( ctor = NULL ) then
 					errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 
 				else
@@ -118,6 +119,11 @@ function cOperatorNew _
 					if( op <> AST_OP_NEW_VEC ) then
 						if( cCtorCall( subtype, ctor_expr ) = FALSE ) then
 							exit function
+						end if
+					else
+						'' check visibility
+						if( symbCheckAccess( subtype, ctor ) = FALSE ) then
+							errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 						end if
 					end if
 				end if
