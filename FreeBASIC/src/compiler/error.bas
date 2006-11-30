@@ -235,7 +235,8 @@ end type
 		@"Expected ':'", _
 		@"The default constructor has no public access", _
 		@"Constructor has no public access", _
-		@"Destructor has no public access" _
+		@"Destructor has no public access", _
+		@"Illegal non-static member access" _
 	}
 
 

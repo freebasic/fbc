@@ -116,10 +116,10 @@ end function
 function cIdentifier _
 	( _
 		byval options as FB_IDOPT _
-	) as FBSYMCHAIN ptr static
+	) as FBSYMCHAIN ptr
 
-    dim as FBSYMCHAIN ptr chain_
-    dim as FBSYMBOL ptr parent, base_parent
+    dim as FBSYMCHAIN ptr chain_ = any
+    dim as FBSYMBOL ptr parent = any, base_parent = any
 
     chain_ = lexGetSymChain( )
 
@@ -158,13 +158,13 @@ function cIdentifier _
     		end if
 
     	case FB_SYMBCLASS_TYPEDEF
-    		if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
-    			exit do
-    		end if
-
             '' typedef of a TYPE/CLASS?
             select case symbGetType( parent )
             case FB_DATATYPE_STRUCT
+    			if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
+    				exit do
+    			end if
+
             	parent = symbGetSubtype( parent )
 
     			'' ordinary struct?
@@ -238,6 +238,7 @@ function cIdentifier _
     		return NULL
     	end select
 
+    	'' look up
     	chain_ = symbLookupAt( parent, lexGetText( ), FALSE )
     	if( chain_ = NULL ) then
           	if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
@@ -247,6 +248,34 @@ function cIdentifier _
            	end if
 
     	    return NULL
+    	end if
+
+    	'' check access to non-static members
+    	if( (options and FB_IDOPT_CHECKSTATIC) <> 0 ) then
+    		'' struct or class?
+    		select case symbGetClass( parent )
+    		case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
+    			'' for each symbol (because dups..)
+    			dim as FBSYMCHAIN ptr iter = chain_
+    			do
+    				select case symbGetClass( iter->sym )
+					'' function?
+					case FB_SYMBCLASS_PROC
+						'' not static?
+						if( symbIsMethod( iter->sym ) ) then
+							errReport( FB_ERRMSG_ACCESSTONONSTATICMEMBER )
+						end if
+						exit do
+
+        			'' field, never static..
+        			case FB_SYMBCLASS_FIELD
+						errReport( FB_ERRMSG_ACCESSTONONSTATICMEMBER )
+        				exit do
+        			end select
+
+    				iter = symbChainGetNext( iter )
+    			loop while( iter <> NULL )
+    		end select
     	end if
     loop
 
@@ -263,10 +292,10 @@ end function
 function cParentId _
 	( _
 		byval options as FB_IDOPT _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMCHAIN ptr chain_
-    dim as FBSYMBOL ptr parent, base_parent
+    dim as FBSYMCHAIN ptr chain_ = any
+    dim as FBSYMBOL ptr parent = any, base_parent = any
 
 	if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
 	    return NULL
@@ -302,15 +331,14 @@ function cParentId _
     		parent = chain_->sym
 
     	case FB_SYMBCLASS_TYPEDEF
-    		if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
-    			exit do
-    		end if
-
-            dim as FBSYMBOL ptr sym
+            dim as FBSYMBOL ptr sym = any
 
             '' typedef of a TYPE/CLASS?
             select case symbGetType( chain_->sym )
             case FB_DATATYPE_STRUCT
+    			if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
+    				exit do
+    			end if
 
     			sym = symbGetSubtype( chain_->sym )
 
