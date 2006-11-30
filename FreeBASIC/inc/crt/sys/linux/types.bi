@@ -89,7 +89,6 @@ type ssize_t as __ssize_t
 #include once "crt/time.bi"
 #include once "crt/stddef.bi"
 
-type ulong as uinteger
 type uint as uinteger
 type int8_t as integer
 type int16_t as integer
