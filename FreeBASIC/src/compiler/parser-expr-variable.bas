@@ -223,19 +223,19 @@ function cTypeField _
     		exit function
     	end if
 
-    	'' check visibility
-	    if( symbCheckAccess( subtype, sym ) = FALSE ) then
-	    	if( errReport( FB_ERRMSG_ILLEGALMEMBERACCESS ) <> FALSE ) then
-	    		'' no error recovery: caller will take care
-	    		lexSkipToken( )
-	    	end if
-	    end if
-
 		'' not a data field?
 		if( symbIsField( sym ) = FALSE ) then
 
 			'' const? (enum, too)
 			if( symbIsConst( sym ) ) then
+
+    			'' check visibility
+				if( symbCheckAccess( subtype, sym ) = FALSE ) then
+					if( errReport( FB_ERRMSG_ILLEGALMEMBERACCESS ) = FALSE ) then
+						exit function
+					end if
+				end if
+
 				lexSkipToken( )
 
 				astDelTree( expr )
@@ -249,6 +249,14 @@ function cTypeField _
 			end if
 
 			exit do
+		end if
+
+    	'' check visibility (note: can't check methods because they can
+    	'' be overloaded and each can have a different access mode)
+		if( symbCheckAccess( subtype, sym ) = FALSE ) then
+			if( errReport( FB_ERRMSG_ILLEGALMEMBERACCESS ) = FALSE ) then
+	    		exit function
+			end if
 		end if
 
 		'' data field..

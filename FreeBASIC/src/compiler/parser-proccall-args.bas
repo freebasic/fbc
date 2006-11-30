@@ -420,12 +420,26 @@ private function hOvlProcArgList _
 			exit function
 		else
 			'' error recovery: fake an expr
-			procexpr = astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
-			return procexpr
+			return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 		end if
 	end if
 
 	proc = ovlproc
+
+    '' method? check visibility
+	if( symbIsMethod( proc ) ) then
+		if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+			if( errReportEx( iif( symbIsConstructor( proc ), _
+								  FB_ERRMSG_NOACCESSTOCTOR, _
+								  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
+							 symbGetFullProcName( proc ) ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+			end if
+		end if
+	end if
 
 	procexpr = astNewCALL( proc, NULL )
 
@@ -441,8 +455,7 @@ private function hOvlProcArgList _
 			else
 				'' error recovery: fake an expr (don't try to fake an arg,
 				'' different modes and param types like "as any" would break AST)
-				procexpr = astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
-				return procexpr
+				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 			end if
 		end if
 
@@ -492,6 +505,21 @@ function cProcArgList _
 	end if
 
 	function = NULL
+
+    '' method? check visibility
+	if( symbIsMethod( proc ) ) then
+		if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+			if( errReportEx( iif( symbIsConstructor( proc ), _
+								  FB_ERRMSG_NOACCESSTOCTOR, _
+								  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
+							 symbGetFullProcName( proc ) ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+			end if
+		end if
+	end if
 
     procexpr = astNewCALL( proc, ptrexpr )
 
@@ -588,9 +616,7 @@ function cProcArgList _
 					'' don't try to fake an arg, different modes and param
 					'' types like "as any" would break AST
 					astDelTree( procexpr )
-					procexpr = astNewCONSTz( symbGetType( proc ), _
-											 symbGetSubType( proc ) )
-					return procexpr
+					return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 				end if
 			end if
 
@@ -618,9 +644,7 @@ function cProcArgList _
 			else
 				'' error recovery: fake an expr
 				astDelTree( procexpr )
-				procexpr = astNewCONSTz( symbGetType( proc ), _
-										 symbGetSubType( proc ) )
-				return procexpr
+				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 			end if
 		end if
 

@@ -1651,6 +1651,11 @@ declare function symbCheckAccess _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
+declare function symbGetFullProcName _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as zstring ptr
+
 '':::::
 #macro symbHashTbInit _
 	( _

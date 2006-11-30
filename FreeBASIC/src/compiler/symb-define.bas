@@ -30,11 +30,6 @@
 #include once "inc\lex.bi"
 #include once "inc\hlp.bi"
 
-declare function symbGetFullProcName _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
-
 type DEFCALLBACK as function() as string
 
 type SYMBDEF
