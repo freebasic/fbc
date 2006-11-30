@@ -49,7 +49,6 @@
       - OPERATOR *|@ ( l ) AS TYPE
 
 [ ] data/function members:
-	- add and check the protected, private and public attributes
 	- add static - data members must be initialized outside the TYPE|CLASS
 	- add virtual (functions only)
 

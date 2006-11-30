@@ -1870,6 +1870,16 @@ function symbFindSelfBopOvlProc _
 		if( *err_num <> FB_ERRMSG_OK ) then
 			errReport( *err_num, TRUE )
 		end if
+
+	else
+    	'' check visibility
+		if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+			*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
+			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
+						 symbGetFullProcName( proc ) )
+
+			proc = NULL
+		end if
 	end if
 
 	function = proc
@@ -1976,14 +1986,14 @@ function symbFindCastOvlProc _
 		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr proc_head = any, subtype = any
+	dim as FBSYMBOL ptr proc_head = any
 
    	*err_num = FB_ERRMSG_OK
 
 	'' arg must be an UDT
    	select case astGetDataType( l )
    	case FB_DATATYPE_STRUCT
-   		subtype = astGetSubType( l )
+   		dim as FBSYMBOL ptr subtype = astGetSubType( l )
    		if( subtype = NULL ) then
    			return NULL
    		end if
@@ -2059,10 +2069,24 @@ function symbFindCastOvlProc _
 	if( amb_cnt > 0 ) then
 		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
 		errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
-		function = NULL
+		closest_proc = NULL
+
 	else
-		function = closest_proc
+    	if( closest_proc <> NULL ) then
+    		'' check visibility
+			if( symbCheckAccess( symbGetNamespace( closest_proc ), _
+								 closest_proc ) = FALSE ) then
+
+				*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
+				errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
+							 symbGetFullProcName( closest_proc ) )
+
+				closest_proc = NULL
+			end if
+		end if
 	end if
+
+	function = closest_proc
 
 end function
 
