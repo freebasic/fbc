@@ -56,6 +56,14 @@ FBCALL void fb_GfxControl_s( int what, FBSTRING *param )
 	case SET_WINDOW_TITLE:
 		fb_GfxSetWindowTitle(param);
 		break;
+	
+	case SET_DRIVER_NAME:
+		if (__fb_gfx_driver_name)
+			free(__fb_gfx_driver_name);
+		__fb_gfx_driver_name = NULL;
+		if (strlen(param->data) > 0)
+			__fb_gfx_driver_name = strdup(param->data);
+		break;
 	}
 }
 

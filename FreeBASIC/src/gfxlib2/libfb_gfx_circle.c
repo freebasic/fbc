@@ -203,8 +203,8 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 		bottom = y + b;
 	}
 	
-	top = MID(0, top, context->view_h - 1);
-	bottom = MID(0, bottom, context->view_h - 1);
+	top = MID(context->view_y, top, context->view_y + context->view_h - 1);
+	bottom = MID(context->view_y, bottom, context->view_y + context->view_h - 1);
 	if( top > bottom )
 		SWAP( top, bottom );
 	SET_DIRTY(context, top, bottom - top + 1);

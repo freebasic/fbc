@@ -208,6 +208,7 @@ extern "C" {
 #define SET_WINDOW_POS				100
 #define SET_WINDOW_TITLE			101
 #define SET_PEN_POS					102
+#define SET_DRIVER_NAME				103
 
 
 typedef struct _GFX_CHAR_CELL {
@@ -359,6 +360,7 @@ typedef void (PUTTER)(unsigned char *, unsigned char *, int, int, int, int, int,
 
 /* Global variables */
 extern FBGFX *__fb_gfx;
+extern char *__fb_gfx_driver_name;
 extern const GFXDRIVER *__fb_gfx_drivers_list[];
 extern const GFXDRIVER __fb_gfxDriverNull;
 extern void *(*fb_hMemCpy)(void *dest, const void *src, size_t size);
@@ -411,7 +413,7 @@ extern int fb_hGL_ExtensionSupported(const char *extension);
 extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL int fb_GfxScreenRes(int width, int height, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, int *refresh_rate, FBSTRING *driver);
-extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color);
+extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth);
 extern FBCALL void fb_GfxImageDestroy(void *image);
 extern FBCALL void fb_GfxPalette(int index, int r, int g, int b);
 extern FBCALL void fb_GfxPaletteUsing(int *data);

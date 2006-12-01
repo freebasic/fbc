@@ -883,12 +883,13 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_GfxImageCreate ( byval width as integer, byval height as integer ) as any ptr '/ _
+		/' fb_GfxImageCreate ( byval width as integer, byval height as integer, _
+							   byval color as uinteger = DEFAULT_COLOR, byval depth as integer = 0 ) as any ptr '/ _
 		( _
 			@"imagecreate", @"fb_GfxImageCreate", _
 			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-			3, _
+			4, _
 			{ _
 				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -898,6 +899,9 @@ declare function hPorts_cb _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, &hFEFF00FF _
+	 			), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			) _
 	 		} _
 		), _

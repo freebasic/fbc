@@ -293,7 +293,9 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
                 *c = '\0';
         }
 
-        driver_name = getenv("FBGFX");
+		driver_name = __fb_gfx_driver_name;
+		if (!driver_name)
+	        driver_name = getenv("FBGFX");
         if ((flags == DRIVER_NULL) || ((driver_name) && (!strcasecmp(driver_name, "null"))))
             driver = &__fb_gfxDriverNull;
         else {
