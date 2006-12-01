@@ -786,6 +786,7 @@ sub fbAddDefaultLibs( ) static
 		symbAddLib( "dl" )
 		symbAddLib( "ncurses" )
 		symbAddLib( "supc++" )
+		symbAddLib( "gcc_eh" )
 
 	case FB_COMPTARGET_DOS
 		symbAddLib( "c" )
