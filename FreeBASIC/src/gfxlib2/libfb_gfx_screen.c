@@ -283,7 +283,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 	        __fb_gfx->flags |= (flags & DRIVER_QB_COMPATIBILITY);
 	    }
 
-        fb_hSetupFuncs();
+        fb_hSetupFuncs(__fb_gfx->bpp);
         fb_hSetupData();
 
         if (!__fb_window_title)

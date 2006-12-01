@@ -106,6 +106,7 @@ void fb_hPrepareTarget(FB_GFXCTX *context, void *target, unsigned int color)
 				context->view_w = header->width;
 				context->view_h = h = header->height;
 				context->target_pitch = header->pitch;
+				fb_hSetupFuncs(header->bpp);
 				data = (unsigned char *)target + sizeof(PUT_HEADER);
 			}
 			else {
@@ -128,6 +129,7 @@ void fb_hPrepareTarget(FB_GFXCTX *context, void *target, unsigned int color)
 		context->target_pitch = __fb_gfx->pitch;
 		for (i = 0; i < __fb_gfx->h; i++)
 			context->line[i] = __fb_gfx->page[context->work_page] + (i * __fb_gfx->pitch);
+		fb_hSetupFuncs(__fb_gfx->bpp);
 		context->flags &= ~(CTX_BUFFER_SET | CTX_BUFFER_INIT);
 	}
 	context->last_target = target;
@@ -331,7 +333,7 @@ static void *fb_hPixelCpy4(void *dest, const void *src, size_t size)
 
 
 /*:::::*/
-void fb_hSetupFuncs(void)
+void fb_hSetupFuncs(int bpp)
 {
 #if defined(TARGET_X86)
 	if (fb_CpuDetect() & 0x800000) {
@@ -346,19 +348,15 @@ void fb_hSetupFuncs(void)
 #if defined(TARGET_X86)
 	}
 #endif
-	switch (__fb_gfx->depth) {
+	switch (bpp) {
 		case 1:
-		case 2:
-		case 4:
-		case 8:
 			fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel1;
 			fb_hGetPixel = fb_hGetPixel1;
 			fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hMemSet;
 			fb_hPixelCpy = fb_hMemCpy;
 			break;
 		
-		case 15:
-		case 16:
+		case 2:
 			fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel2;
 			fb_hGetPixel = fb_hGetPixel2;
 #if defined(TARGET_X86)

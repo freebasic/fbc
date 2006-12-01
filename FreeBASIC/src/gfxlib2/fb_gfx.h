@@ -376,7 +376,7 @@ extern FB_GL __fb_gl;
 
 /* Internal functions */
 extern FB_GFXCTX *fb_hGetContext(void);
-extern void fb_hSetupFuncs(void);
+extern void fb_hSetupFuncs(int bpp);
 extern void fb_hSetupData(void);
 extern FBCALL int fb_hEncode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
 extern FBCALL int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
