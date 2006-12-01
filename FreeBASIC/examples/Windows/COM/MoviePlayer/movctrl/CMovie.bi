@@ -3,29 +3,30 @@
 
 #inclib "cmovie"
 
-type CMovie as CMovie_
+type CMovieCtx_ as CMovieCtx
 
-declare function 	CMovie_New 				( byval _this as CMovie ptr, _
-										  	  byval hwnd as HWND ) as CMovie ptr
+type CMovie
+	declare constructor( byval hwnd as HWND )
+	
+	declare destructor()
+	
+	declare function insert(  ) as BOOL
+	
+	declare function remove(  ) as BOOL
+	
+	declare function resize( byval width_ as DWORD, _
+							 byval height as DWORD ) as BOOL
+	
+	declare function load( byval filename as wstring ptr ) as BOOL
+	
+	declare function play(  ) as BOOL
+	
+	declare function pause(  ) as BOOL
+	
+	declare function stop(  ) as BOOL
 
-declare sub 		CMovie_Delete 			( byval _this as CMovie ptr, _
-										  	  byval isstatic as integer )
-
-declare function 	CMovie_Insert 			( byval _this as CMovie ptr ) as BOOL
-
-declare function 	CMovie_Remove 			( byval _this as CMovie ptr ) as BOOL
-
-declare function 	CMovie_Resize 			( byval _this as CMovie ptr, _
-										  	  byval width_ as DWORD, _
-										  	  byval height as DWORD ) as BOOL
-
-declare function 	CMovie_Load 			( byval _this as CMovie ptr, _
-											  byval filename as wstring ptr ) as BOOL
-
-declare function 	CMovie_Play 			( byval _this as CMovie ptr ) as BOOL
-
-declare function 	CMovie_Pause 			( byval _this as CMovie ptr ) as BOOL
-
-declare function 	CMovie_Stop 			( byval _this as CMovie ptr ) as BOOL
+private:
+	ctx as CMovieCtx_ ptr
+end type
 
 #endif

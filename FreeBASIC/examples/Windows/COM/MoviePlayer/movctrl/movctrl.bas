@@ -9,7 +9,7 @@
 
 const movctrl_name = "fb_movctrl_0_1"
 
-type movctrl_
+type movctrl_ctx
 	as HWND 			hwnd
 	as CMovie ptr 		movie
 end type
@@ -28,17 +28,17 @@ private function win_cb _
 	_this = cast( movctrl ptr, GetWindowLong( hwnd, GWL_USERDATA ) )
 	
 	if( _this <> NULL ) then
-		if( _this->movie <> NULL ) then
+		if( _this->ctx->movie <> NULL ) then
 			select case uMsg
 			case WM_SIZE
-				CMovie_Resize( _this->movie, LOWORD( lParam ), HIWORD( lParam ) )
+				_this->ctx->movie->resize( LOWORD( lParam ), HIWORD( lParam ) )
 				return 0
 		
 			case WM_DESTROY
-				if( _this->movie <> NULL ) then
-					CMovie_Remove( _this->movie )
-					CMovie_Delete( _this->movie, FALSE )
-					_this->movie = NULL
+				if( _this->ctx->movie <> NULL ) then
+					_this->ctx->movie->Remove( )
+					delete _this->ctx->movie
+					_this->ctx->movie = NULL
 				end if
 				return 0
 			
@@ -77,86 +77,75 @@ private function movctrl_GetRegClass _
 end function
 
 ''::::
-function movctrl_Create _
+constructor movctrl _
 	( _
 		byval parent as HWND, _
 		byval x as integer, _
 		byval y as integer, _
 		byval width_ as integer, _
 		byval height as integer _
-	) as movctrl ptr
+	)
 	
 	dim as movctrl ptr _this
 	dim as WNDCLASSEX ptr wc
-	dim as HINSTANCE hInstance
+	dim as .HINSTANCE hInstance
 	
-	_this = allocate( len( movctrl ) )
+	ctx = new movctrl_ctx
 	
-	hInstance = cast( HINSTANCE, GetWindowLong( parent, GWL_HINSTANCE ) )
+	hInstance = cast( .HINSTANCE, GetWindowLong( parent, GWL_HINSTANCE ) )
 	
 	wc = movctrl_GetRegClass( hInstance )
 	
-	_this->hwnd = CreateWindowEx( 0, _
-						   		  @movctrl_name, _
-						   		  "movctrwin_" + hex( _this ), _
-						   		  WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS, _
-						   		  x, _
-						   		  width_, _
-						   		  y, _
-						   		  height, _
-						   		  parent, _
-						   		  NULL, _
-						   		  hInstance, _
-						   		  NULL )
+	ctx->hwnd = CreateWindowEx( 0, _
+						   	    @movctrl_name, _
+						   		"movctrwin_" + hex( _this ), _
+						   		WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS, _
+						   		x, _
+						   		width_, _
+						   		y, _
+						   		height, _
+						   		parent, _
+						   		NULL, _
+						   		hInstance, _
+						   		NULL )
 	
-	SetWindowLong( _this->hwnd, GWL_USERDATA, cast( LONG, _this ) )
+	SetWindowLong( ctx->hwnd, GWL_USERDATA, cast( LONG, @this ) )
 
-	_this->movie = CMovie_New( NULL, _this->hwnd )
+	ctx->movie = new CMovie( ctx->hwnd )
 		
-	if( CMovie_Insert( _this->movie ) = FALSE ) then
-		CMovie_Delete( _this->movie, FALSE )
-		_this->movie = NULL
-		return NULL
+	if( ctx->movie->Insert( ) = FALSE ) then
+		delete ctx->movie
+		ctx->movie = NULL
+		return
 	end if
 	
-	function = _this
-	
-end function
+end constructor
 
 ''::::
-function movctrl_Destroy _
+destructor movctrl _
 	( _
-		byval _this as movctrl ptr _
-	) as BOOL
+		_
+	)
 
-	function = FALSE
-	
-	if( _this = NULL ) then
-		exit function
+	if( ctx->hwnd <> NULL ) then
+		SetWindowLong( ctx->hwnd, GWL_USERDATA, cast( LONG, NULL ) )
+		DestroyWindow( ctx->hwnd )
+		ctx->hwnd = NULL
 	end if
 	
-	if( _this->hwnd <> NULL ) then
-		SetWindowLong( _this->hwnd, GWL_USERDATA, cast( LONG, NULL ) )
-		DestroyWindow( _this->hwnd )
-		_this->hwnd = NULL
+	if( ctx->movie <> NULL ) then
+		ctx->movie->Remove( )
+		delete ctx->movie
+		ctx->movie = NULL
 	end if
 	
-	if( _this->movie <> NULL ) then
-		CMovie_Remove( _this->movie )
-		CMovie_Delete( _this->movie, FALSE )
-		_this->movie = NULL
-	end if
-	
-	deallocate( _this )
+	delete ctx
 
-	function = TRUE
-	
-end function
+end destructor
 
 ''::::
-function movctrl_Move _
+function movctrl.move _
 	( _
-		byval _this as movctrl ptr, _
 		byval x as integer, _
 		byval y as integer, _
 		byval width_ as integer, _
@@ -165,69 +154,68 @@ function movctrl_Move _
 	
 	function = FALSE
 	
-	if( _this->hwnd = NULL ) then
+	if( ctx->hwnd = NULL ) then
 		exit function
 	end if
 	
-	MoveWindow( _this->hwnd, x, y, width_, height, FALSE )
+	MoveWindow( ctx->hwnd, x, y, width_, height, FALSE )
 	
 	function = TRUE
 	
 end function
 
 ''::::
-function movctrl_Load _
+function movctrl.load _
 	( _
-		byval _this as movctrl ptr, _
 		byval filename as wstring ptr _
 	) as BOOL
 
-	if( _this->hwnd = NULL ) then
+	if( ctx->hwnd = NULL ) then
 		return FALSE
 	end if
 
-	function = CMovie_Load( _this->movie, filename )
+	function = ctx->movie->Load( filename )
 	
 end function 
 
 ''::::
-function movctrl_Play _
+function movctrl.play _
 	( _
-		byval _this as movctrl ptr _
+		 _
 	) as BOOL
 
-	if( _this->hwnd = NULL ) then
+	if( ctx->hwnd = NULL ) then
 		return FALSE
 	end if
 
-	function = CMovie_Play( _this->movie )
+	function = ctx->movie->play( )
 	
 end function 
 
 ''::::
-function movctrl_Pause _
+function movctrl.pause _
 	( _
-		byval _this as movctrl ptr _
+		 _
 	) as BOOL
 
-	if( _this->hwnd = NULL ) then
+	if( ctx->hwnd = NULL ) then
 		return FALSE
 	end if
 
-	function = CMovie_Pause( _this->movie )
+	function = ctx->movie->pause( )
 	
 end function 
 
 ''::::
-function movctrl_Stop _
+function movctrl.stop _
 	( _
-		byval _this as movctrl ptr _
+		 _
 	) as BOOL
 
-	if( _this->hwnd = NULL ) then
+	if( ctx->hwnd = NULL ) then
 		return FALSE
 	end if
 
-	function = CMovie_Stop( _this->movie )
+	function = ctx->movie->stop( )
 	
 end function 

@@ -43,11 +43,7 @@ private sub movie_onresize _
 		hgt = 0
 	end if
 		
-	movctrl_Move( movie, _
-				  0, _
-				  WIN_TOOLBAR_HEIGHT, _
-				  wdt, _
-				  hgt )
+	movie->move( 0, WIN_TOOLBAR_HEIGHT, wdt, hgt )
 
 end sub
 
@@ -230,7 +226,7 @@ private function movie_oncreate _
 		byval filename as wstring ptr _
 	) as movctrl ptr
 	
-	dim as movctrl ptr ctrl
+	dim as movctrl ptr movie
 	
 	function = NULL
 		
@@ -238,27 +234,27 @@ private function movie_oncreate _
 		exit function
 	end if
 
-	ctrl = movctrl_Create( parent, _
-						   0, _
-						   WIN_TOOLBAR_HEIGHT, _
-						   WIN_WIDTH, _
-						   WIN_HEIGHT-WIN_TOOLBAR_HEIGHT )
+	movie = new movctrl( parent, _
+						 0, _
+						 WIN_TOOLBAR_HEIGHT, _
+						 WIN_WIDTH, _
+						 WIN_HEIGHT-WIN_TOOLBAR_HEIGHT )
 
-	if( ctrl = NULL ) then
+	if( movie = NULL ) then
 		exit function
 	end if
 	
-	if( movctrl_Load( ctrl, filename ) = FALSE ) then
-		movctrl_Destroy( ctrl )
+	if( movie->load( filename ) = FALSE ) then
+		delete movie
 		exit function
 	end if
 	
-	if( movctrl_Play( ctrl ) = FALSE ) then
-		movctrl_Destroy( ctrl )
+	if( movie->play( ) = FALSE ) then
+		delete movie
 		exit function
 	end if
 	
-	function = ctrl
+	function = movie
 
 end function
 

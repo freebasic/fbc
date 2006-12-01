@@ -2,12 +2,10 @@
 '' CMovie - the movie "class"
 ''
 
-
-
 #include once "win/dshow.bi"
 #include once "CMovie.bi"
 
-type CMovie_
+type CMovieCtx
 	as HWND 				hwnd
     as IGraphBuilder ptr	graph
     as IMediaControl ptr 	medctrl
@@ -17,109 +15,92 @@ type CMovie_
     as IBasicVideo ptr 		basvideo
 end type
 
-
-'' constructor
-function CMovie_New _
+'' 
+constructor CMovie _
 	( _
-		byval _this as CMovie ptr, _
 		byval hwnd as HWND _
-	) as CMovie ptr
+	)
 	
 	dim as integer isstatic
 	dim as HRESULT hr
 
-	isstatic = (_this <> NULL)
-	if( isstatic = FALSE ) then
-		_this = cast( CMovie ptr, callocate( len( CMovie ) ) )
-		if( _this = NULL ) then
-			return NULL
-		end if
-	end if
+	ctx = new CMovieCtx
 
-	_this->hwnd = hwnd
+	ctx->hwnd = hwnd
 	
 	hr = CoCreateInstance( @CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER, _
-                      	   @IID_IGraphBuilder, cast( PVOID ptr, @_this->graph ) )	
+                      	   @IID_IGraphBuilder, cast( PVOID ptr, @ctx->graph ) )	
                       	   
 	if( FAILED( hr ) ) then
-		CMovie_Delete( _this, isstatic )
-		return NULL
+		return
 	end if
 
-    hr = IGraphBuilder_QueryInterface( _this->graph, @IID_IMediaControl, cast( PVOID ptr, @_this->medctrl ) )
+    hr = IGraphBuilder_QueryInterface( ctx->graph, @IID_IMediaControl, cast( PVOID ptr, @ctx->medctrl ) )
     if( SUCCEEDED( hr ) ) then
-    	hr = IGraphBuilder_QueryInterface( _this->graph, @IID_IMediaEvent, cast( PVOID ptr, @_this->medevent ) )
+    	hr = IGraphBuilder_QueryInterface( ctx->graph, @IID_IMediaEvent, cast( PVOID ptr, @ctx->medevent ) )
     	if( SUCCEEDED( hr ) ) then
-    		hr = IGraphBuilder_QueryInterface( _this->graph, @IID_IMediaSeeking, cast( PVOID ptr, @_this->medseek ) )
+    		hr = IGraphBuilder_QueryInterface( ctx->graph, @IID_IMediaSeeking, cast( PVOID ptr, @ctx->medseek ) )
     		if( SUCCEEDED( hr ) ) then
-    			hr = IGraphBuilder_QueryInterface( _this->graph, @IID_IVideoWindow, cast( PVOID ptr, @_this->vidwindow ) )
+    			hr = IGraphBuilder_QueryInterface( ctx->graph, @IID_IVideoWindow, cast( PVOID ptr, @ctx->vidwindow ) )
     			if( SUCCEEDED( hr ) ) then
-    				hr = IGraphBuilder_QueryInterface( _this->graph, @IID_IBasicVideo, cast( PVOID ptr, @_this->basvideo ) )
+    				hr = IGraphBuilder_QueryInterface( ctx->graph, @IID_IBasicVideo, cast( PVOID ptr, @ctx->basvideo ) )
     			end if
     		end if
     	end if
     end if
 	
 	if( FAILED( hr ) ) then
-		CMovie_Delete( _this, isstatic )
-		return NULL
+		return
 	end if
 	
-	function = _this
+end constructor
 
-end function
-
-'' destructor
-sub CMovie_Delete _
+'' 
+destructor CMovie _
 	( _
-		byval _this as CMovie ptr, _
-		byval isstatic as integer _
+		_
 	)
 
-	CMovie_Remove( _this )
+	remove( )
 
-	if( _this->graph <> NULL ) then
-	    if( _this->basvideo <> NULL ) then
-	    	IBasicVideo_Release( _this->basvideo )
-	    	_this->basvideo = NULL
+	if( ctx->graph <> NULL ) then
+	    if( ctx->basvideo <> NULL ) then
+	    	IBasicVideo_Release( ctx->basvideo )
+	    	ctx->basvideo = NULL
 		end if
 	
-		if( _this->vidwindow <> NULL ) then
-			IVideoWindow_Release( _this->vidwindow )
-			_this->vidwindow = NULL
+		if( ctx->vidwindow <> NULL ) then
+			IVideoWindow_Release( ctx->vidwindow )
+			ctx->vidwindow = NULL
 		end if
 		
-		if( _this->medseek <> NULL ) then
-			IMediaSeeking_Release( _this->medseek )
-			_this->medseek = NULL
+		if( ctx->medseek <> NULL ) then
+			IMediaSeeking_Release( ctx->medseek )
+			ctx->medseek = NULL
 		end if
 		
-		if( _this->medevent <> NULL ) then
-			IMediaEvent_Release( _this->medevent )
-			_this->medevent = NULL
+		if( ctx->medevent <> NULL ) then
+			IMediaEvent_Release( ctx->medevent )
+			ctx->medevent = NULL
 		end if
 		
-		if( _this->medctrl <> NULL ) then
-			IMediaControl_Release( _this->medctrl )
-			_this->medctrl = NULL
+		if( ctx->medctrl <> NULL ) then
+			IMediaControl_Release( ctx->medctrl )
+			ctx->medctrl = NULL
 		end if
 	
-    	IGraphBuilder_Release( _this->graph )
-		_this->graph = NULL
+    	IGraphBuilder_Release( ctx->graph )
+		ctx->graph = NULL
 	end if
     
-	if( isstatic = FALSE ) then
-		if( _this <> NULL ) then
-			deallocate( _this )
-		end if
-	end if
+	delete ctx
 
-end sub
+end destructor
 
 ''::::
-function CMovie_Insert _
+function CMovie.insert _
 	( _
-		byval _this as CMovie ptr _
+		_
 	) as BOOL
 
 	function = TRUE
@@ -127,9 +108,9 @@ function CMovie_Insert _
 end function
 
 ''::::
-function CMovie_Remove _
+function CMovie.remove _
 	( _
-		byval _this as CMovie ptr _
+		_
 	) as BOOL
 
 	function = TRUE
@@ -137,9 +118,8 @@ function CMovie_Remove _
 end function
 
 ''::::
-function CMovie_Resize _
+function CMovie.resize _
 	( _
-		byval _this as CMovie ptr, _
 		byval width_ as DWORD, _
 		byval height as DWORD _
 	) as BOOL
@@ -148,13 +128,13 @@ function CMovie_Resize _
 	
 	function = FALSE
 
-	if( _this->graph = NULL ) then
+	if( ctx->graph = NULL ) then
 		exit function
 	end if
 	
-	hr = IVideoWindow_put_Width( _this->vidwindow, width_ )
+	hr = IVideoWindow_put_Width( ctx->vidwindow, width_ )
 	if( SUCCEEDED( hr ) ) then
-		hr = IVideoWindow_put_Height( _this->vidwindow, height )
+		hr = IVideoWindow_put_Height( ctx->vidwindow, height )
 	end if
 	
 	function = SUCCEEDED( hr )
@@ -164,28 +144,28 @@ end function
 ''::::
 private function hSetOwner _
 	( _
-		byval _this as CMovie ptr _
+		byval hwnd as HWND, _
+		byval vidwindow as IVideoWindow ptr _
 	) as BOOL
 
     function = FALSE
     
-    IVideoWindow_put_Owner( _this->vidwindow, cast( OAHWND, _this->hwnd ) )
-    IVideoWindow_put_WindowStyle( _this->vidwindow, WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN )
-    'IVideoWindow_put_MessageDrain( _this->vidwindow, cast( OAHWND, _this->hwnd ) )
-    'IVideoWindow_put_AutoShow( _this->vidwindow, OAFALSE )
+    IVideoWindow_put_Owner( vidwindow, cast( OAHWND, hwnd ) )
+    IVideoWindow_put_WindowStyle( vidwindow, WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN )
+    'IVideoWindow_put_MessageDrain( vidwindow, cast( OAHWND, hwnd ) )
+    'IVideoWindow_put_AutoShow( vidwindow, OAFALSE )
 
     dim as RECT rc
-    GetWindowRect( _this->hwnd, @rc )
-    IVideoWindow_SetWindowPosition( _this->vidwindow, 0, 0, rc.right - rc.left, rc.bottom - rc.top )
+    GetWindowRect( hwnd, @rc )
+    IVideoWindow_SetWindowPosition( vidwindow, 0, 0, rc.right - rc.left, rc.bottom - rc.top )
 		
 	function = TRUE
 
 end function
 
 ''::::
-function CMovie_Load _
+function CMovie.load _
 	( _
-		byval _this as CMovie ptr, _
 		byval filename as wstring ptr _
 	) as BOOL
 
@@ -193,84 +173,84 @@ function CMovie_Load _
 
 	function = FALSE
 	
-	if( _this->graph = NULL ) then
+	if( ctx->graph = NULL ) then
 		exit function
 	end if
 	
-    hr = IGraphBuilder_RenderFile( _this->graph, filename, NULL )
+    hr = IGraphBuilder_RenderFile( ctx->graph, filename, NULL )
     
-    hSetOwner( _this )
-    
-    function = SUCCEEDED( hr )
-
-end function
-
-''::::
-function CMovie_Play _
-	( _
-		byval _this as CMovie ptr _
-	) as BOOL
-
-	dim as HRESULT hr
-
-	function = FALSE
-	
-	if( _this->graph = NULL ) then
-		exit function
-	end if
-	
-    hr = IMediaControl_Run( _this->medctrl )
+    hSetOwner( ctx->hwnd, ctx->vidwindow )
     
     function = SUCCEEDED( hr )
 
 end function
 
 ''::::
-function CMovie_Pause _
+function CMovie.play _
 	( _
-		byval _this as CMovie ptr _
+		_
+	) as BOOL
+
+	dim as HRESULT hr
+
+	function = FALSE
+	
+	if( ctx->graph = NULL ) then
+		exit function
+	end if
+	
+    hr = IMediaControl_Run( ctx->medctrl )
+    
+    function = SUCCEEDED( hr )
+
+end function
+
+''::::
+function CMovie.pause _
+	( _
+		_
 	) as BOOL
 	
 	dim as HRESULT hr
 
 	function = FALSE
 	
-	if( _this->graph = NULL ) then
+	if( ctx->graph = NULL ) then
 		exit function
 	end if
 	
-    hr = IMediaControl_Pause( _this->medctrl )
+    hr = IMediaControl_Pause( ctx->medctrl )
     
     function = SUCCEEDED( hr )
 	
 end function
 
 ''::::
-function CMovie_Stop _
+function CMovie.stop _
 	( _
-		byval _this as CMovie ptr _
+		_
 	) as BOOL
 	
 	dim as HRESULT hr
 
 	function = FALSE
 	
-	if( _this->graph = NULL ) then
+	if( ctx->graph = NULL ) then
 		exit function
 	end if
 	
-    hr = IMediaControl_Stop( _this->medctrl )
+    hr = IMediaControl_Stop( ctx->medctrl )
     if( FAILED( hr ) ) then
     	exit function
     end if
 
 	dim as OAFilterState fs
-    hr = IMediaControl_GetState( _this->medctrl, 100, @fs )
+    hr = IMediaControl_GetState( ctx->medctrl, 100, @fs )
     if( FAILED( hr ) ) then
     	exit function
     end if
 
-    hr = IMediaControl_StopWhenReady( _this->medctrl )
+    hr = IMediaControl_StopWhenReady( ctx->medctrl )
     
     function = SUCCEEDED( hr )
 	
