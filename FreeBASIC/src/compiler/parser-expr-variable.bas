@@ -1124,7 +1124,7 @@ private function hVarAddUndecl _
 
 	function = NULL
 
-	if( symbIsStatic( parser.currproc ) ) then
+	if( symbGetProcStaticLocals( parser.currproc ) ) then
 		attrib = FB_SYMBATTRIB_STATIC
 	else
 		attrib = 0

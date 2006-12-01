@@ -36,40 +36,14 @@ function cOperatorNew _
 
 	dim as integer dtype = any, lgt = any, ptrcnt = any
 	dim as FBSYMBOL ptr subtype = any, tmp = any
-	dim as ASTNODE ptr expr = any, elmts_expr = any, ctor_expr = any
-	dim as AST_OP op = any
 
 	function = FALSE
 
 	'' NEW
 	lexSkipToken( )
 
-	op = AST_OP_NEW
-	elmts_expr = NULL
-
-	'' '('?
-    if( lexGetToken( ) = CHAR_LPRNT ) then
-        lexSkipToken( )
-
-        if( cExpression( elmts_expr ) = FALSE ) then
-        	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-        		exit function
-        	end if
-        else
-        	op = AST_OP_NEW_VEC
-        end if
-
-        '' ')'
-        if( lexGetToken( ) <> CHAR_RPRNT ) then
-        	if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-        		exit function
-        	else
-        		hSkipUntil( CHAR_RPRNT )
-        	end if
-        else
-        	lexSkipToken( )
-        end if
-	end if
+	dim as AST_OP op = AST_OP_NEW
+	dim as ASTNODE ptr elmts_expr = NULL
 
 	'' DataType
 	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
@@ -82,58 +56,124 @@ function cOperatorNew _
     	end if
 	end if
 
+	'' check for invalid types
+	select case as const dtype
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+
+    	if( errReport( FB_ERRMSG_NEWCANTBEUSEDWITHSTRINGS, TRUE ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: fake an expr
+    		funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    		hSkipStmt( )
+    		return TRUE
+    	end if
+
+	end select
+
+	'' '['?
+    if( lexGetToken( ) = CHAR_LBRACKET ) then
+        lexSkipToken( )
+
+        if( cExpression( elmts_expr ) = FALSE ) then
+        	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+        		exit function
+        	end if
+        else
+        	op = AST_OP_NEW_VEC
+        end if
+
+        '' ']'
+        if( lexGetToken( ) <> CHAR_RBRACKET ) then
+        	if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
+        		exit function
+        	else
+        		hSkipUntil( CHAR_RBRACKET )
+        	end if
+        else
+        	lexSkipToken( )
+        end if
+	end if
+
 	'' not a vector?
 	if( elmts_expr = NULL ) then
 		elmts_expr = astNewCONSTi( 1, FB_DATATYPE_UINT )
 	end if
 
+	'' temp pointer
+	tmp = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, , FALSE )
+
 	'' Constructor?
-	ctor_expr = NULL
+	dim as ASTNODE ptr ctor_expr = NULL
+	dim as integer has_ctor = FALSE
 
 	select case dtype
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		has_ctor = symbGetHasCtor( subtype )
+	end select
 
-		if( symbGetHasCtor( subtype ) ) then
-			'' '('?
-			if( lexGetToken( ) = CHAR_LPRNT ) then
-				'' ctor + vector? not allowed..
-				if( op = AST_OP_NEW_VEC ) then
-					if( errReport( FB_ERRMSG_EXPLICITCTORCALLINVECTOR, TRUE ) = FALSE ) then
-						exit function
-					end if
-
-				else
-					if( cCtorCall( subtype, ctor_expr ) = FALSE ) then
-						exit function
-					end if
+	if( has_ctor ) then
+		'' '('?
+		if( lexGetToken( ) = CHAR_LPRNT ) then
+			'' ctor + vector? not allowed..
+			if( op = AST_OP_NEW_VEC ) then
+				if( errReport( FB_ERRMSG_EXPLICITCTORCALLINVECTOR, TRUE ) = FALSE ) then
+					exit function
 				end if
 
 			else
-				dim as FBSYMBOL ptr ctor = symbGetCompDefCtor( subtype )
-				'' no default ctor?
-				if( ctor = NULL ) then
-					errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+				if( cCtorCall( subtype, ctor_expr ) = FALSE ) then
+					exit function
+				end if
+			end if
 
+		else
+			dim as FBSYMBOL ptr ctor = symbGetCompDefCtor( subtype )
+			'' no default ctor?
+			if( ctor = NULL ) then
+				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+
+			else
+				'' only if not a vector
+				if( op <> AST_OP_NEW_VEC ) then
+					if( cCtorCall( subtype, ctor_expr ) = FALSE ) then
+						exit function
+					end if
 				else
-					'' only if not a vector
-					if( op <> AST_OP_NEW_VEC ) then
-						if( cCtorCall( subtype, ctor_expr ) = FALSE ) then
-							exit function
-						end if
-					else
-						'' check visibility
-						if( symbCheckAccess( subtype, ctor ) = FALSE ) then
-							errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
-						end if
+					'' check visibility
+					if( symbCheckAccess( subtype, ctor ) = FALSE ) then
+						errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 					end if
 				end if
 			end if
 		end if
 
-	end select
+	else
+		'' '('?
+		if( lexGetToken( ) = CHAR_LPRNT ) then
+			'' vector? not allowed..
+			if( op = AST_OP_NEW_VEC ) then
+				if( errReport( FB_ERRMSG_VECTORCANTBEINITIALIZED, TRUE ) = FALSE ) then
+					exit function
+				end if
+			end if
 
-	'' temp pointer
-	tmp = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, , FALSE )
+        	ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
+
+        	symbGetStats( tmp ) and= not FB_SYMBSTATS_INITIALIZED
+
+        	if( ctor_expr = NULL ) then
+        		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+        			exit function
+        		end if
+        	end if
+        end if
+
+	end if
+
+	''
+	dim as ASTNODE ptr expr = any
 
 	expr = astNewMEM( op, _
 					  astNewVAR( tmp, _
@@ -181,12 +221,21 @@ function cOperatorDelete _
 
 	op = AST_OP_DEL
 
-	'' '(' ')'?
-    if( lexGetToken( ) = CHAR_LPRNT ) then
-        if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
+	'' '[' ']'?
+    if( lexGetToken( ) = CHAR_LBRACKET ) then
+        lexSkipToken( )
+
+        op = AST_OP_DEL_VEC
+
+        if( lexGetToken( ) <> CHAR_RBRACKET ) then
+       		if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
+       			exit function
+       		else
+       			hSkipUntil( CHAR_RBRACKET )
+       			return TRUE
+       		end if
+        else
         	lexSkipToken( )
-        	lexSkipToken( )
-        	op = AST_OP_DEL_VEC
         end if
 	end if
 

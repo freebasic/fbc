@@ -1,7 +1,3 @@
-[ ] ParamArray, but with this syntax: foo(...) as bar
-	- array must be built at compile-time and destroyed after the call
-	- take care with objects..
-
 [ ] remove the internal profiler and use gprof instead, the former won't work with
     destructors
 
@@ -29,9 +25,6 @@
 	- ArrayClear will be used instead of a dtor call looping to destroy
 	  local non-dynamic arrays
 	  - callVarDtor will have to use astAddAfter then with scope blocks..
-	    - rather: do the clean up on every BRANCH added, and when
-	      the scope is closed, only delay the checks as the forward
-	      declarations are unknown
 
 	- add SWAP for structs with copy-ctors and/or destructors
 
@@ -43,14 +36,20 @@
 	      - namespace mangling will have to check for STD and add just "St"
 	        without the # prefix
 	  - NEW and DELETE must be static methods
-	    - DELETE should check if the pointer is null before using it
 
 [ ] operator overloading:
       - OPERATOR *|@ ( l ) AS TYPE
 
 [ ] data/function members:
-	- add static - data members must be initialized outside the TYPE|CLASS
-	- add virtual (functions only)
+      - add static - data members must be initialized outside the TYPE|CLASS
+	  - cParameters() will add the instance pointer before it's possible
+	    to know if the overloaded function was declared static in the prototype
+	    - "this" will be used in the overload resolution, but a static
+	      and non-static methods shouldn't be different just because the
+	      instance pointer
+      - add virtual (functions only)
+          - the vtable must be compatible with G++ 3.x (ie: compatible with
+            COM interfaces in Windows)
 
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
@@ -85,6 +84,8 @@
       [ ] DEF - convert to a macro? doesn't it make any symbol called Fn... invalid
           because it allows forward refs?
       [ ] arrays with same name as scalars
+      [ ] labels with the same name as procs:
+          declare sub foo \n foo: \n goto foo \n call foo
 
       [x] no SCOPE
       [x] no NAMESPACE
@@ -96,6 +97,10 @@
     - "fb" - the inverse of "qb", but show deprecated messages by now for:
       [ ] without ON ERROR, all stmts returning rt errors should be allowed to
           be used as functions too
+
+[ ] ParamArray, but with this syntax: foo(...) as bar
+	- array must be built at compile-time and destroyed after the call
+	- take care with objects..
 
 [ ] namespace:
     - add support for importing single symbols (mostly because classes, as nested ns'

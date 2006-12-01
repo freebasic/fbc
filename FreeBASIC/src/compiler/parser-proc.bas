@@ -325,7 +325,7 @@ private function hParseAttributes _
     '' STATIC?
     if( lexGetToken( ) = FB_TK_STATIC ) then
     	lexSkipToken( )
-    	attrib or= FB_SYMBATTRIB_STATIC
+    	attrib or= FB_SYMBATTRIB_STATICLOCALS
     end if
 
     '' EXPORT?
@@ -478,6 +478,7 @@ function cProcHeader _
         	if( hIsClass( parent ) ) then
         		attrib or= FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_OVERLOADED
         	end if
+
 			is_extern = TRUE
 		end if
 	end if

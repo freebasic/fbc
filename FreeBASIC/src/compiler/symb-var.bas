@@ -603,7 +603,7 @@ function symbAddTempVar _
 	attrib = FB_SYMBATTRIB_TEMP
 	if( checkstatic ) then
 		if( fbIsModLevel( ) = FALSE ) then
-			if( symbIsStatic( parser.currproc ) ) then
+			if( symbGetProcStaticLocals( parser.currproc ) ) then
 				attrib or= FB_SYMBATTRIB_STATIC
 			end if
 		end if

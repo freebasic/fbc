@@ -33,23 +33,30 @@ type FB_INITCTX
 	dim_ 		as FBVARDIM ptr
 	dimcnt		as integer
 	tree		as ASTNODE ptr
-	isobj		as integer
+	options		as FB_INIOPT
 end type
 
-declare function 	hUDTInit			( _
-											byref ctx as FB_INITCTX _
-					  	   				) as integer
+declare function hUDTInit _
+	( _
+		byref ctx as FB_INITCTX _
+	) as integer
 
 '':::::
 private function hDoAssign _
 	( _
 		byref ctx as FB_INITCTX, _
 		byval expr as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE lside
+    dim as ASTNODE lside = any
+	dim as integer dtype = any
 
-    astBuildVAR( @lside, NULL, 0, symbGetType( ctx.sym ), symbGetSubtype( ctx.sym ) )
+	dtype = symbGetType( ctx.sym )
+	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
+		dtype -= FB_DATATYPE_POINTER
+	end if
+
+    astBuildVAR( @lside, NULL, 0, dtype, symbGetSubtype( ctx.sym ) )
 
     '' don't build a FIELD node if it's an UDTElm symbol,
     '' that doesn't matter with checkASSIGN
@@ -60,7 +67,7 @@ private function hDoAssign _
         else
         	'' error recovery: create a fake expression
         	astDelTree( expr )
-        	expr = astNewCONSTz( symbGetType( ctx.sym ) )
+        	expr = astNewCONSTz( dtype )
         end if
 	end if
 
@@ -93,7 +100,13 @@ private function hElmInit _
 		else
 			'' error recovery: skip until ',' and create a fake expression
 			hSkipUntil( CHAR_COMMA )
-			expr = astNewCONSTz( symbGetType( ctx.sym ) )
+
+			dim as integer dtype = symbGetType( ctx.sym )
+			if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
+				dtype -= FB_DATATYPE_POINTER
+			end if
+
+			expr = astNewCONSTz( dtype )
 		end if
 	end if
 
@@ -110,8 +123,9 @@ private function hArrayInit _
 	) as integer
 
     dim as integer dimensions = any, elements = any, elm_cnt = any
-    dim as integer pad_lgt = any, isarray = any
+    dim as integer pad_lgt = any, isarray = any, dtype = any
     dim as FBVARDIM ptr old_dim = any
+    dim as FBSYMBOL ptr subtype = any
 
 	function = FALSE
 
@@ -171,6 +185,14 @@ private function hArrayInit _
 		elements = 1
 	end if
 
+	''
+	dtype = symbGetType( ctx.sym )
+	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
+		dtype -= FB_DATATYPE_POINTER
+	end if
+
+	subtype = symbGetSubtype( ctx.sym )
+
 	'' for each array element..
 	elm_cnt = 0
 	do
@@ -181,7 +203,7 @@ private function hArrayInit _
 			end if
 
 		else
-			select case symbGetType( ctx.sym )
+			select case dtype
 			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 				if( hUDTInit( ctx ) = FALSE ) then
 					exit function
@@ -211,13 +233,13 @@ private function hArrayInit _
 		end if
 
 		dim as FBSYMBOL ptr ctor = NULL
-		if( ctx.isobj ) then
-			ctor = symbGetCompDefCtor( symbGetSubtype( ctx.sym ) )
+		if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
+			ctor = symbGetCompDefCtor( subtype )
 			if( ctor = NULL ) then
 				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 			else
     			'' check visibility
-	    		if( symbCheckAccess( symbGetSubtype( ctx.sym ), ctor ) = FALSE ) then
+	    		if( symbCheckAccess( subtype, ctor ) = FALSE ) then
 					errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 				end if
 			end if
@@ -226,7 +248,7 @@ private function hArrayInit _
 		if( ctor <> NULL ) then
 			astTypeIniAddCtorList( ctx.tree, ctx.sym, elements )
 		else
-			pad_lgt = elements * symbGetLen( ctx.sym )
+			pad_lgt = elements * symbCalcLen( dtype, subtype )
 			astTypeIniAddPad( ctx.tree, pad_lgt )
 			astTypeIniGetOfs( ctx.tree ) += pad_lgt
 		end if
@@ -262,14 +284,14 @@ private function hUDTInit _
 	) as integer
 
 	dim as integer elements = any, elm_cnt = any, elm_ofs = any
-	dim as integer lgt = any, baseofs = any, pad_lgt = any
-    dim as FBSYMBOL ptr elm = any, udt = any
+	dim as integer lgt = any, baseofs = any, pad_lgt = any, dtype = any
+    dim as FBSYMBOL ptr elm = any, subtype = any
     dim as FB_INITCTX old_ctx = any
 
     function = FALSE
 
     '' ctor?
-    if( ctx.isobj ) then
+    if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
     	dim as ASTNODE ptr expr = any
 
     	'' Expression
@@ -303,10 +325,17 @@ private function hUDTInit _
 		return hElmInit( ctx )
 	end if
 
-	udt = symbGetSubtype( ctx.sym )
-	elm = symbGetUDTFirstElm( udt )
+	''
+	dtype = symbGetType( ctx.sym )
+	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
+		dtype -= FB_DATATYPE_POINTER
+	end if
 
-	elements = symbGetUDTElements( udt )
+	subtype = symbGetSubtype( ctx.sym )
+
+	''
+	elm = symbGetUDTFirstElm( subtype )
+	elements = symbGetUDTElements( subtype )
 	elm_cnt = 0
 
 	lgt = 0
@@ -314,6 +343,11 @@ private function hUDTInit _
 
 	'' save parent
 	old_ctx = ctx
+
+	''
+	ctx.options and= not FB_INIOPT_DODEREF
+	ctx.dim_ = NULL
+	ctx.dimcnt = 0
 
 	'' for each UDT element..
 	do
@@ -340,8 +374,16 @@ private function hUDTInit _
 		astTypeIniGetOfs( ctx.tree ) = baseofs + elm_ofs
 
         ctx.sym = elm
-		ctx.dim_ = NULL
-		ctx.dimcnt = 0
+
+		'' has ctor?
+		ctx.options and= not FB_INIOPT_ISOBJ
+		select case symbGetType( elm )
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			if( symbGetHasCtor( symbGetSubtype( elm ) ) ) then
+				ctx.options or= FB_INIOPT_ISOBJ
+			end if
+		end select
+
         if( hArrayInit( ctx ) = FALSE ) then
           	exit function
         end if
@@ -367,13 +409,16 @@ private function hUDTInit _
 		end if
 	end if
 
+	''
+	dim as integer sym_len = symbCalcLen( dtype, subtype )
+
 	'' pad
-	pad_lgt = symbGetLen( ctx.sym ) - lgt
+	pad_lgt = sym_len - lgt
 	if( pad_lgt > 0 ) then
 		astTypeIniAddPad( ctx.tree, pad_lgt )
 	end if
 
-	astTypeIniGetOfs( ctx.tree ) = baseofs + symbGetLen( ctx.sym )
+	astTypeIniGetOfs( ctx.tree ) = baseofs + sym_len
 
 	function = TRUE
 
@@ -383,12 +428,12 @@ end function
 function cInitializer _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval isinitializer as integer _
+		byval options as FB_INIOPT _
 	) as ASTNODE ptr
 
-    dim as FB_INITCTX ctx = any
+    dim as integer is_local = any, dtype = any
     dim as FBSYMBOL ptr subtype = any
-    dim as integer is_local = any
+    dim as FB_INITCTX ctx = any
 
 	function = NULL
 
@@ -412,24 +457,32 @@ function cInitializer _
 		is_local = FALSE
 	end if
 
+	dtype = symbGetType( sym )
+	if( (options and FB_INIOPT_DODEREF) <> 0 ) then
+		dtype -= FB_DATATYPE_POINTER
+	end if
+
 	subtype = symbGetSubtype( sym )
 
+	''
+	ctx.options = options
 	ctx.sym = sym
 	ctx.dim_ = NULL
 	ctx.dimcnt = 0
-	ctx.tree = astTypeIniBegin( symbGetType( sym ), subtype, is_local )
-	ctx.isobj = FALSE
 
-	if( subtype <> NULL ) then
-		select case symbGetType( sym )
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			ctx.isobj = symbGetHasCtor( subtype )
-		end select
-	end if
+	ctx.tree = astTypeIniBegin( dtype, subtype, is_local )
+
+	'' has ctor?
+	select case dtype
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		if( symbGetHasCtor( subtype ) ) then
+			ctx.options or= FB_INIOPT_ISOBJ
+		end if
+	end select
 
 	dim as integer res = hArrayInit( ctx )
 
-	astTypeIniEnd( ctx.tree, isinitializer )
+	astTypeIniEnd( ctx.tree, (options and FB_INIOPT_ISINI) <> 0 )
 
 	''
 	if( symbIsVar( ctx.sym ) ) then

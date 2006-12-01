@@ -79,8 +79,7 @@ private function hAllocTmpArrayDesc _
 	tree = astNewLINK( tree, _
 					   astTypeIniFlush( symbGetTypeIniTree( desc ), _
 					   					desc, _
-					   					FALSE, _
-					   					TRUE ) )
+					   					AST_INIOPT_ISINI ) )
 
 	symbSetTypeIniTree( desc, NULL )
 

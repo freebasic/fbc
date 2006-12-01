@@ -52,6 +52,24 @@ private function hTypeProtoDecl _
 
 	dim as integer res = any, is_nested = any
 
+#macro hCheckCode( )
+   	if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
+    	if( errReportNotAllowed( FB_LANG_OPT_CLASS ) = FALSE ) then
+       		exit function
+       	end if
+	end if
+#endmacro
+
+#macro hCheckStatic( attrib )
+	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
+		if( errReport( FB_ERRMSG_MEMBERCANTBESTATIC ) = FALSE ) then
+			exit function
+		else
+			attrib and= not FB_SYMBATTRIB_STATIC
+		end if
+	end if
+#endmacro
+
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
 		if( errReport( FB_ERRMSG_METHODINANONUDT ) = FALSE ) then
@@ -73,94 +91,80 @@ private function hTypeProtoDecl _
 
 	select case as const lexGetToken( )
 	case FB_TK_CONSTRUCTOR
-   		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
-       		if( errReportNotAllowed( FB_LANG_OPT_CLASS ) = FALSE ) then
-        		exit function
-        	end if
-        end if
+   		hCheckCode( )
+
+        hCheckStatic( attrib )
 
 		lexSkipToken( )
 
 		if( cCtorHeader( TRUE, _
-						 FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR or attrib, _
+						 attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR, _
 						 is_nested ) = NULL ) then
 			res = FALSE
 		end if
 
 	case FB_TK_DESTRUCTOR
-   		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
-       		if( errReportNotAllowed( FB_LANG_OPT_CLASS ) = FALSE ) then
-        		exit function
-        	end if
-        end if
+   		hCheckCode( )
+
+        hCheckStatic( attrib )
 
 		lexSkipToken( )
 
 		if( cCtorHeader( TRUE, _
-						 FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_DESTRUCTOR or attrib, _
+						 attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_DESTRUCTOR, _
 						 is_nested ) = NULL ) then
 			res = FALSE
 		end if
 
 	case FB_TK_OPERATOR
-   		if( fbLangOptIsSet( FB_LANG_OPT_OPEROVL ) = FALSE ) then
-       		if( errReportNotAllowed( FB_LANG_OPT_OPEROVL ) = FALSE ) then
-        		exit function
-        	end if
-        end if
+   		hCheckCode( )
+
+        hCheckStatic( attrib )
 
 		lexSkipToken( )
 
 		if( cOperatorHeader( TRUE, _
-							 FB_SYMBATTRIB_METHOD or attrib, _
+							 attrib or FB_SYMBATTRIB_METHOD, _
 							 is_nested ) = NULL ) then
 			res = FALSE
 		end if
 
-	case FB_TK_SUB
-   		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
-       		if( errReportNotAllowed( FB_LANG_OPT_CLASS ) = FALSE ) then
-        		exit function
-        	end if
-        end if
-
-		lexSkipToken( )
-
-		if( cProcHeader( TRUE, _
-						 TRUE, _
-						 FB_SYMBATTRIB_METHOD or attrib, _
-						 is_nested ) = NULL ) then
-			res = FALSE
-		end if
-
-	case FB_TK_FUNCTION
-   		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
-       		if( errReportNotAllowed( FB_LANG_OPT_CLASS ) = FALSE ) then
-        		exit function
-        	end if
-        end if
-
-		lexSkipToken( )
-
-		if( cProcHeader( FALSE, _
-						 TRUE, _
-						 FB_SYMBATTRIB_METHOD or attrib, _
-						 is_nested ) = NULL ) then
-			res = FALSE
-		end if
-
 	case FB_TK_PROPERTY
-   		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
-       		if( errReportNotAllowed( FB_LANG_OPT_CLASS ) = FALSE ) then
-        		exit function
-        	end if
-        end if
+   		hCheckCode( )
+
+        hCheckStatic( attrib )
 
 		lexSkipToken( )
 
 		if( cPropertyHeader( TRUE, _
-						 	 FB_SYMBATTRIB_METHOD or attrib, _
+						 	 attrib or FB_SYMBATTRIB_METHOD, _
 						 	 is_nested ) = NULL ) then
+			res = FALSE
+		end if
+
+	case FB_TK_SUB
+   		hCheckCode( )
+
+		lexSkipToken( )
+
+		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
+			attrib or= FB_SYMBATTRIB_METHOD
+		end if
+
+		if( cProcHeader( TRUE, TRUE, attrib, is_nested ) = NULL ) then
+			res = FALSE
+		end if
+
+	case FB_TK_FUNCTION
+   		hCheckCode( )
+
+		lexSkipToken( )
+
+		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
+			attrib or= FB_SYMBATTRIB_METHOD
+		end if
+
+		if( cProcHeader( FALSE, TRUE, attrib, is_nested ) = NULL ) then
 			res = FALSE
 		end if
 
@@ -311,7 +315,7 @@ private function hFieldInit _
 		exit function
 	end if
 
-	initree = cInitializer( sym, TRUE )
+	initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
@@ -789,15 +793,6 @@ decl_inner:		'' it's an anonymous inner UDT
 					end if
 				end if
 
-				/'if attrib and FB_SYMBATTRIB_VISIBILITY then
-					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: fake type
-						isunion = TRUE
-					end if
-				end if'/
-
 				lexSkipToken( )
 
 				'' create a "temp" one
@@ -877,6 +872,20 @@ decl_inner:		'' it's an anonymous inner UDT
 				if( hTypeElementDecl( s, attrib ) = FALSE ) then
 					exit function
 				end if
+			end if
+
+		case FB_TK_STATIC
+			lexSkipToken( )
+
+			'' proto?
+			if( lexGetToken( ) = FB_TK_DECLARE ) then
+				attrib or= FB_SYMBATTRIB_STATIC
+				if( hTypeProtoDecl( s, attrib ) = FALSE ) then
+					exit function
+				end if
+
+			else
+				'' !!!WRITEME!! it's var, but it can't be initialized
 			end if
 
 		'' anything else, must be a field

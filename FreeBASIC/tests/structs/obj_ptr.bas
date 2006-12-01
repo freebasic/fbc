@@ -20,13 +20,13 @@ destructor foo()
 end destructor
 
 sub test_1 cdecl	
-	dim as foo ptr pf = new(10) foo
+	dim as foo ptr pf = new foo[10]
 	
 	for i as integer = 0 to 9
 		CU_ASSERT_EQUAL( pf[i].value, i )
 	next
 	
-	delete() pf
+	delete[] pf
 end sub
 	
 sub test_2 cdecl	

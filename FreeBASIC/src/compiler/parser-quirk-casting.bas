@@ -260,7 +260,7 @@ function cAnonUDT _
     	sym = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE, FALSE )
 
     	'' let the initializer do the rest..
-    	expr = cInitializer( sym, FALSE )
+    	expr = cInitializer( sym, FB_INIOPT_NONE )
 
     	'' del temp var
     	symbDelVar( sym )

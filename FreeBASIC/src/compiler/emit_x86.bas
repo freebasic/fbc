@@ -6362,7 +6362,9 @@ sub emitDeclVariable _
 		end if
 
 		hEmitDataHeader( )
-		astTypeIniFlush( s->var.initree, s, TRUE, TRUE )
+		astTypeIniFlush( s->var.initree, _
+						 s, _
+						 AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
 
 		return
 	end if

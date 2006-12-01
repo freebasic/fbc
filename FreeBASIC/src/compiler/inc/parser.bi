@@ -23,6 +23,7 @@
 #include once "inc\lex.bi"
 #include once "inc\ast.bi"
 
+'' compound statements permissions
 enum FB_CMPSTMT_MASK
 	FB_CMPSTMT_MASK_NOTHING		= &h00000000
 	FB_CMPSTMT_MASK_CODE		= &h00000001
@@ -35,6 +36,7 @@ enum FB_CMPSTMT_MASK
 	FB_CMPSTMT_MASK_DEFAULT		= FB_CMPSTMT_MASK_CODE
 end enum
 
+'' compound statements stats
 type FBCMPSTMT
 	cmplabel		as FBSYMBOL ptr				'' or inilabel
     endlabel		as FBSYMBOL ptr
@@ -123,40 +125,7 @@ type FB_CMPSTMTSTK
 	end union
 end type
 
-enum FB_SYMBTYPEOPT
-	FB_SYMBTYPEOPT_NONE			= &h00000000
-
-	FB_SYMBTYPEOPT_CHECKSTRPTR	= &h00000001
-	FB_SYMBTYPEOPT_ALLOWFORWARD	= &h00000002
-
-	FB_SYMBTYPEOPT_DEFAULT		= FB_SYMBTYPEOPT_CHECKSTRPTR
-end enum
-
-enum FB_OPEROPTS
-	FB_OPEROPTS_NONE			= &h00000000
-
-	FB_OPEROPTS_UNARY			= &h00000001
-	FB_OPEROPTS_SELF			= &h00000002
-	FB_OPEROPTS_ASSIGN			= &h00000004
-	FB_OPEROPTS_RELATIVE		= &h00000008
-
-	FB_OPEROPTS_DEFAULT			= &hffffffff
-end enum
-
-enum FB_IDOPT
-	FB_IDOPT_NONE				= &h00000000
-
-	FB_IDOPT_DONTCHKPERIOD		= &h00000001
-	FB_IDOPT_SHOWERROR			= &h00000002
-	FB_IDOPT_ISDECL				= &h00000004
-	FB_IDOPT_ISOPERATOR			= &h00000008
-	FB_IDOPT_ALLOWSTRUCT		= &h00000010
-	FB_IDOPT_CHECKSTATIC        = &h00000020
-
-	FB_IDOPT_DEFAULT			= FB_IDOPT_SHOWERROR or FB_IDOPT_CHECKSTATIC
-end enum
-
-''
+'' parser context
 type FBPARSER_STMT_WITH
 	sym				as FBSYMBOL ptr
 end type
@@ -204,6 +173,51 @@ type PARSERCTX
 	options			as FB_PARSEROPT
 	ctxsym			as FBSYMBOL ptr				'' used to resolve the address of overloaded procs
 end type
+
+'' cSymbolType flags
+enum FB_SYMBTYPEOPT
+	FB_SYMBTYPEOPT_NONE			= &h00000000
+
+	FB_SYMBTYPEOPT_CHECKSTRPTR	= &h00000001
+	FB_SYMBTYPEOPT_ALLOWFORWARD	= &h00000002
+
+	FB_SYMBTYPEOPT_DEFAULT		= FB_SYMBTYPEOPT_CHECKSTRPTR
+end enum
+
+'' cOperator flags
+enum FB_OPEROPTS
+	FB_OPEROPTS_NONE			= &h00000000
+
+	FB_OPEROPTS_UNARY			= &h00000001
+	FB_OPEROPTS_SELF			= &h00000002
+	FB_OPEROPTS_ASSIGN			= &h00000004
+	FB_OPEROPTS_RELATIVE		= &h00000008
+
+	FB_OPEROPTS_DEFAULT			= &hffffffff
+end enum
+
+'' cIdentifier flags
+enum FB_IDOPT
+	FB_IDOPT_NONE				= &h00000000
+
+	FB_IDOPT_DONTCHKPERIOD		= &h00000001
+	FB_IDOPT_SHOWERROR			= &h00000002
+	FB_IDOPT_ISDECL				= &h00000004
+	FB_IDOPT_ISOPERATOR			= &h00000008
+	FB_IDOPT_ALLOWSTRUCT		= &h00000010
+	FB_IDOPT_CHECKSTATIC        = &h00000020
+
+	FB_IDOPT_DEFAULT			= FB_IDOPT_SHOWERROR or FB_IDOPT_CHECKSTATIC
+end enum
+
+'' cInitializer flags
+enum FB_INIOPT
+	FB_INIOPT_NONE				= &h00000000
+
+	FB_INIOPT_ISINI				= &h00000001
+	FB_INIOPT_DODEREF			= &h00000002
+	FB_INIOPT_ISOBJ				= &h00000004
+end enum
 
 
 declare function cProgram _
@@ -294,7 +308,7 @@ declare function cArrayDecl _
 declare function cInitializer _
 	( _
 		byval s as FBSYMBOL ptr, _
-		byval isinitializer as integer _
+		byval options as FB_INIOPT _
 	) as ASTNODE ptr
 
 declare function cSymbolType _

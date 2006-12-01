@@ -83,7 +83,7 @@ end function
 sub astTypeIniEnd _
 	( _
 		byval tree as ASTNODE ptr, _
-		byval isinitializer as integer _
+		byval is_initializer as integer _
 	)
 
     dim as ASTNODE ptr n = any, p = any, l = any, r = any
@@ -93,7 +93,7 @@ sub astTypeIniEnd _
 	'' tail node is linked already
 	tree->r = NULL
 
-	if( isinitializer = FALSE ) then
+	if( is_initializer = FALSE ) then
 		ast.typeinicnt += 1
 	end if
 
@@ -366,12 +366,13 @@ end function
 private function hFlushTree _
 	( _
 		byval tree as ASTNODE ptr, _
-		byval basesym as FBSYMBOL ptr _
+		byval basesym as FBSYMBOL ptr, _
+		byval do_deref as integer _
 	) as ASTNODE ptr
 
-    static as ASTNODE ptr lside
-    static as FBSYMBOL ptr sym
-    dim as ASTNODE ptr n = any, nxt = any, flush_tree = NULL
+    dim as ASTNODE ptr lside = any, n = any, nxt = any, flush_tree = NULL
+    dim as FBSYMBOL ptr sym = any, subtype = any
+    dim as integer dtype = any
 
 	function = NULL
 
@@ -386,21 +387,37 @@ private function hFlushTree _
         	if( symbIsParamInstance( basesym ) ) then
         		'' offset is always 0
         		lside = astBuildInstPtr( basesym, _
-        								 sym, _
-        								 NULL, _
-        								 0 )
+        							 	 sym, _
+        							 	 NULL, _
+        							 	 0 )
         	else
-        		lside = astNewVAR( basesym, _
-        					   	   n->typeini.ofs, _
-        					   	   symbGetType( sym ), _
-        					   	   symbGetSubtype( sym ) )
+        		dtype = symbGetType( sym )
+        		subtype = symbGetSubtype( sym )
+
+        		'' var?
+        		if( do_deref = FALSE ) then
+        			lside = astNewVAR( basesym, _
+        				   	   	   	   n->typeini.ofs, _
+	       				   	   	   	   dtype, _
+        				   	   	   	   subtype )
+
+        		'' deref..
+        		else
+        			lside = astNewPTR( n->typeini.ofs, _
+        							   astNewVAR( basesym, _
+        				   	   	   	   			  0, _
+	       				   	   	   	   			  symbGetType( basesym ), _
+        				   	   	   	   			  symbGetSubtype( basesym ) ), _
+        							   dtype, _
+        							   subtype )
+        		end if
 
         		'' field?
         		if( symbIsField( sym ) ) then
         			lside = astNewFIELD( lside, _
-        						 	 	 sym, _
-        						 	 	 symbGetType( sym ), _
-        						 	 	 symbGetSubtype( sym ) )
+        					 	 	 	 sym, _
+        					 	 	 	 dtype, _
+        					 	 	 	 subtype )
         		end if
             end if
 
@@ -410,14 +427,28 @@ private function hFlushTree _
     	case AST_NODECLASS_TYPEINI_PAD
         	if( symbIsParamInstance( basesym ) ) then
         		lside = astBuildInstPtr( basesym, _
-        								 NULL, _
-        								 NULL, _
-        								 n->typeini.ofs )
+        							 	 NULL, _
+        							 	 NULL, _
+        							 	 n->typeini.ofs )
             else
-				lside = astNewVAR( basesym, _
-        					  	   n->typeini.ofs, _
-        					  	   symbGetType( basesym ), _
-        					  	   symbGetSubtype( basesym ) )
+				dtype = symbGetType( basesym )
+				subtype = symbGetSubtype( basesym )
+
+				if( do_deref = FALSE ) then
+					lside = astNewVAR( basesym, _
+								   	   n->typeini.ofs, _
+        				  	   	   	   dtype, _
+        				  	   	   	   subtype )
+
+        		else
+        			lside = astNewPTR( n->typeini.ofs, _
+        							   astNewVAR( basesym, _
+        				   	   	   	   			  0, _
+	       				   	   	   	   			  dtype, _
+        				   	   	   	   			  subtype ), _
+        							   dtype - FB_DATATYPE_POINTER, _
+        							   subtype )
+        		end if
     		end if
 
     		flush_tree = astNewLINK( flush_tree, _
@@ -666,29 +697,29 @@ function astTypeIniFlush _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval basesym as FBSYMBOL ptr, _
-		byval is_static as integer, _
-		byval is_initializer as integer, _
-		byval do_relink as integer _
+		byval options as AST_INIOPT _
 	) as ASTNODE ptr
 
 	assert( tree <> NULL )
 
-	if( is_initializer = FALSE ) then
+	if( (options and AST_INIOPT_ISINI) = 0 ) then
 		ast.typeinicnt -= 1
 	end if
 
-	if( do_relink ) then
+	if( (options and AST_INIOPT_RELINK) <> 0 ) then
 		hRelinkTemps( tree, NULL )
 	end if
 
-	if( is_static ) then
+	if( (options and AST_INIOPT_ISSTATIC) <> 0 ) then
 		hFlushTreeStatic( tree, basesym )
 		function = NULL
 	else
-		function = hFlushTree( tree, basesym )
+		function = hFlushTree( tree, _
+							   basesym, _
+							   (options and AST_INIOPT_DODEREF) <> 0 )
 	end if
 
-	if( do_relink ) then
+	if( (options and AST_INIOPT_RELINK) <> 0 ) then
 		hDelTemps( tree )
 	end if
 
@@ -836,7 +867,9 @@ private sub hWalk _
 			parent->r = expr
 		end if
 
-		astAdd( astTypeIniFlush( node, sym, FALSE, FALSE ) )
+		astAdd( astTypeIniFlush( node, _
+								 sym, _
+								 AST_INIOPT_NONE ) )
 
     	exit sub
     end if

@@ -344,6 +344,16 @@ type AST_CLASSINFO
 	iscode			as integer
 end type
 
+'' astTypeIniFlush flags
+enum AST_INIOPT
+	AST_INIOPT_NONE			= &h00000000
+	AST_INIOPT_ISINI		= &h00000001
+	AST_INIOPT_ISSTATIC		= &h00000002
+	AST_INIOPT_RELINK		= &h00000004
+	AST_INIOPT_DODEREF		= &h00000008
+end enum
+
+
 declare sub astInit _
 	( _
 		_
@@ -867,7 +877,7 @@ declare function astTypeIniBegin _
 declare sub astTypeIniEnd _
 	( _
 		byval tree as ASTNODE ptr, _
-		byval isinitializer as integer _
+		byval is_initializer as integer _
 	)
 
 declare function astTypeIniAddPad _
@@ -901,9 +911,7 @@ declare function astTypeIniFlush _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval basesym as FBSYMBOL ptr, _
-		byval isstatic as integer, _
-		byval isinitializer as integer, _
-		byval do_relink as integer = FALSE _
+		byval options as AST_INIOPT _
 	) as ASTNODE ptr
 
 declare function astTypeIniIsConst _
@@ -1190,6 +1198,8 @@ declare sub astReplaceSymbolOnTree _
 #define astIsBITFIELD(n) iif( astIsFIELD(n), (n->l->dtype = FB_DATATYPE_BITFIELD), FALSE )
 
 #define astIsNIDXARRAY(n) (n->class = AST_NODECLASS_NIDXARRAY)
+
+#define astIsTYPEINI(n) (n->class = AST_NODECLASS_TYPEINI)
 
 #define astGetValue(n) n->con.val
 

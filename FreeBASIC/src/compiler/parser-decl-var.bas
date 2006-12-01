@@ -177,7 +177,7 @@ function cVariableDecl( ) as integer
 	end if
 
 	''
-	if( symbIsStatic( parser.currproc ) ) then
+	if( symbGetProcStaticLocals( parser.currproc ) ) then
 		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
 			attrib or= FB_SYMBATTRIB_STATIC
 		end if
@@ -807,7 +807,7 @@ private function hVarInit _
 		exit function
 	end if
 
-	initree = cInitializer( sym, TRUE )
+	initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
@@ -881,7 +881,7 @@ private sub hCallStaticCtor _
 
 	if( initree <> NULL ) then
 		'' initialize it
-		astAdd( astTypeIniFlush( initree, sym, FALSE, TRUE ) )
+		astAdd( astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
 	end if
 
 	'' has a dtor?
@@ -950,7 +950,7 @@ private sub hFlushInitializer _
     							   FB_SYMBATTRIB_SHARED or _
     							   FB_SYMBATTRIB_COMMON)) = 0 ) then
 
-		astAdd( astTypeIniFlush( initree, sym, FALSE, TRUE ) )
+		astAdd( astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
 
 		exit sub
 	end if
@@ -1388,8 +1388,7 @@ function hVarDeclEx _
 							if( desc <> NULL ) then
 								astAdd( astTypeIniFlush( symbGetTypeIniTree( desc ), _
 											 	 		 desc, _
-											 	 		 FALSE, _
-											  	 		 TRUE ) )
+											  	 		 AST_INIOPT_ISINI ) )
 
 								symbSetTypeIniTree( desc, NULL )
 							end if

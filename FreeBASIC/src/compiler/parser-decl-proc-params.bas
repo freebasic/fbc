@@ -52,11 +52,10 @@ function cParameters _
 
     '' method? add the instance pointer (must be done here
     '' to check for dups)
-    param = NULL
-    if( parent <> NULL ) then
-    	if( symbIsNamespace( parent ) = FALSE ) then
-    		param = symAddProcInstancePtr( parent, proc )
-    	end if
+    if( symbIsMethod( proc ) ) then
+    	param = symAddProcInstancePtr( parent, proc )
+    else
+    	param = NULL
     end if
 
 	'' '('?
@@ -162,7 +161,7 @@ private function hOptionalExpr _
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
     	sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
 
-    	expr = cInitializer( sym, TRUE )
+    	expr = cInitializer( sym, FB_INIOPT_ISINI )
 
     	symbDelVar( sym )
 

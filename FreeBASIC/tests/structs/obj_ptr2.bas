@@ -28,13 +28,13 @@ end function
 
 sub test_1 cdecl	
 	'' side-effect
-	dim as foo ptr pf = new(array_len()) foo
+	dim as foo ptr pf = new foo[array_len()]
 	
 	for i as integer = 0 to 9
 		CU_ASSERT_EQUAL( pf[i].value, i )
 	next
 	
-	delete() pf
+	delete[] pf
 end sub
 	
 function array_idx as integer
@@ -54,7 +54,7 @@ end sub
 	
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:obj-ptr")
+	fbcu.add_suite("fb-tests-structs:obj-ptr2")
 	fbcu.add_test( "1", @test_1)
 	fbcu.add_test( "2", @test_2)
 

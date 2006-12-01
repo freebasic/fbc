@@ -930,7 +930,7 @@ private sub hFlushFieldInitTree _
 
 	initree = astTypeIniClone( symbGetTypeIniTree( fld ) )
 
-	astAdd( astTypeIniFlush( initree, this_, FALSE, TRUE ) )
+	astAdd( astTypeIniFlush( initree, this_, AST_INIOPT_ISINI ) )
 
 end sub
 
@@ -1148,7 +1148,9 @@ private sub hCallStaticCtor _
 
 	'' ctor?
 	if( initree <> NULL ) then
-        astAdd( astTypeIniFlush( initree, sym, FALSE, TRUE, TRUE ) )
+        astAdd( astTypeIniFlush( initree, _
+        						 sym, _
+        						 AST_INIOPT_ISINI or AST_INIOPT_RELINK ) )
 		exit sub
 	end if
 

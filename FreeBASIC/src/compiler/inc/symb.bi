@@ -113,9 +113,8 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' /
 
 	FB_SYMBATTRIB_PARAMINSTANCE	= FB_SYMBATTRIB_METHOD
+	FB_SYMBATTRIB_STATICLOCALS	= FB_SYMBATTRIB_OPTIONAL
 	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
-	FB_SYMBATTRIB_VISIBILITY    = FB_SYMBATTRIB_VIS_PUBLIC or FB_SYMBATTRIB_VIS_PRIVATE or _
-								  FB_SYMBATTRIB_VIS_PROTECTED
 end enum
 
 '' C standard types
@@ -2189,9 +2188,11 @@ declare function symbGetFullProcName _
 
 #define symbIsVisProtected(s) ((s->attrib and FB_SYMBATTRIB_VIS_PROTECTED) <> 0)
 
-#define symbIsTrivial(s) ((symbGetStats( s ) and (FB_SYMBSTATS_HASCOPYCTOR or _
-										  		  FB_SYMBSTATS_HASDTOR or _
-										  		  FB_SYMBSTATS_HASVIRTUAL)) = 0)
+#define symbGetProcStaticLocals(s) ((s->attrib and FB_SYMBATTRIB_STATICLOCALS) <> 0)
+
+#define symbIsTrivial(s) ((s->stats and (FB_SYMBSTATS_HASCOPYCTOR or _
+										 FB_SYMBSTATS_HASDTOR or _
+										 FB_SYMBSTATS_HASVIRTUAL)) = 0)
 
 #define symbGetCurrentProcName( ) symbGetName( parser.currproc )
 

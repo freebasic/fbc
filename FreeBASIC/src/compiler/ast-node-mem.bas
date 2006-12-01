@@ -96,28 +96,39 @@ private function hNewOp _
 		byval op as AST_OP, _
 		byval ptr_expr as ASTNODE ptr, _
 		byval elmts_expr as ASTNODE ptr, _
-		byval ctor_expr as ASTNODE ptr, _
+		byval init_expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as integer has_ctor = FALSE, save_elmts = FALSE
+	dim as integer do_init = FALSE, has_ctor = FALSE, save_elmts = FALSE
 
+	'' check ctor or initialization
 	select case dtype
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		has_ctor = symbGetHasCtor( subtype )
+	end select
+
+	if( has_ctor ) then
 		'' no explicit ctor call?
-		if( ctor_expr = NULL ) then
+		if( init_expr = NULL ) then
 			'' default ctor?
-			has_ctor = symbGetCompDefCtor( subtype ) <> NULL
+			do_init = symbGetCompDefCtor( subtype ) <> NULL
 		else
-			has_ctor = TRUE
+			do_init = TRUE
 		end if
 
 		'' save elements count?
 		if( op = AST_OP_NEW_VEC ) then
 			save_elmts = symbGetCompDtor( subtype ) <> NULL
 		end if
-	end select
+
+	else
+		do_init = init_expr <> NULL
+	end if
+
+    '' note: assuming ptr_expr will be an ordinary temp var
+    dim as FBSYMBOL ptr ptr_sym = astGetSymbol( ptr_expr )
 
 	dim as ASTNODE ptr tree = NULL
 
@@ -125,7 +136,7 @@ private function hNewOp _
 	dim as integer clone_elmts = FALSE
 
 	'' elms *= sizeof( typeof( expr ) )
-	if( save_elmts or (has_ctor and (op = AST_OP_NEW_VEC)) ) then
+	if( save_elmts or (do_init and (op = AST_OP_NEW_VEC)) ) then
 		'' side-effect?
 		if( astIsClassOnTree( AST_NODECLASS_CALL, elmts_expr ) <> NULL ) then
 			tree = astRemSideFx( elmts_expr )
@@ -148,30 +159,27 @@ private function hNewOp _
 
 	'' save elements count?
 	if( save_elmts ) then
-    	'' note: assuming ptr_expr will be an ordinary temp var
-    	dim as FBSYMBOL ptr tmp = astGetSymbol( ptr_expr )
-
     	'' ptr = new( len )
 		tree = astNewLINK( tree, _
-						   astBuildVarAssign( tmp, new_expr ) )
+						   astBuildVarAssign( ptr_sym, new_expr ) )
 
 		'' *ptr = elmts
 		tree = astNewLINK( tree, _
 						   astNewASSIGN( astNewPTR( 0, _
-						   							astNewVAR( tmp, _
+						   							astNewVAR( ptr_sym, _
 						   									   0, _
 						   									   FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER, _
 						   									   NULL ), _
                                                     FB_DATATYPE_INTEGER, _
                                                     NULL ), _
-						  	iif( has_ctor and (op = AST_OP_NEW_VEC), _
+						  	iif( do_init and (op = AST_OP_NEW_VEC), _
 						  	   	 astCloneTree( elmts_expr ), _
 						  	   	 elmts_expr ) ) )
 
 		'' ptr += len( integer )
 		tree = astNewLINK( tree, _
 						   astNewSelfBOP( AST_OP_ADD_SELF, _
-						   	  			  astNewVAR( tmp, _
+						   	  			  astNewVAR( ptr_sym, _
 						   	  			 			 0, _
 						   	  			 			 FB_DATATYPE_POINTER+FB_DATATYPE_VOID, _
 						   	  			 			 NULL ), _
@@ -179,47 +187,58 @@ private function hNewOp _
             			   	  			  NULL ) )
 
 		astDelTree( ptr_expr )
-		ptr_expr = astNewVAR( tmp, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL )
+		ptr_expr = astNewVAR( ptr_sym, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL )
 
     else
 		'' ptr = new( len )
 		tree = astNewLINK( tree, _
-					   	   astNewASSIGN( iif( has_ctor, _
+					   	   astNewASSIGN( iif( do_init, _
 					  					  	  astCloneTree( ptr_expr ), _
 					  					  	  ptr_expr ), _
 					  	   new_expr ) )
 	end if
 
+    '' no initialization?
+    if( do_init = FALSE ) then
+    	return tree
+    end if
 
-	'' call ctors?
-	if( has_ctor ) then
-		'' note: ptr_expr is never a complex node, no need to check for side-effects
-
-		if( op = AST_OP_NEW_VEC ) then
-			ctor_expr = hCallCtorList( ptr_expr, _
-									   elmts_expr, _
-									   dtype, _
-									   subtype )
-
-		'' not a vector..
-		else
-			'' call default ctor?
-			if( ctor_expr = NULL ) then
-				ctor_expr = astBuildCtorCall( subtype, _
-									  		  astBuildVarDeref( ptr_expr ) )
-
-			'' explicit ctor call, patch it..
-			else
-                '' check if a ctor call (because error recovery)..
-                if( astIsCALLCTOR( ctor_expr ) ) then
-                	ctor_expr = astPatchCtorCall( astCALLCTORToCALL( ctor_expr ), _
-                						  		  astBuildVarDeref( ptr_expr ) )
-                end if
-			end if
-		end if
-
-		tree = astNewLINK( tree, ctor_expr )
+	'' just a init-tree?
+	if( has_ctor = FALSE ) then
+		return astNewLINK( tree, _
+						   astTypeIniFlush( init_expr, _
+						   					ptr_sym, _
+						   					AST_INIOPT_ISINI or AST_INIOPT_DODEREF ) )
 	end if
+
+	'' ctors..
+
+	'' note: ptr_expr is never a complex node, no need to check for side-effects
+
+	if( op = AST_OP_NEW_VEC ) then
+		init_expr = hCallCtorList( ptr_expr, _
+								   elmts_expr, _
+								   dtype, _
+								   subtype )
+
+	'' not a vector..
+	else
+		'' call default ctor?
+		if( init_expr = NULL ) then
+			init_expr = astBuildCtorCall( subtype, _
+								  		  astBuildVarDeref( ptr_expr ) )
+
+		'' explicit ctor call, patch it..
+		else
+            '' check if a ctor call (because error recovery)..
+			if( astIsCALLCTOR( init_expr ) ) then
+               	init_expr = astPatchCtorCall( astCALLCTORToCALL( init_expr ), _
+               						  		  astBuildVarDeref( ptr_expr ) )
+            end if
+		end if
+	end if
+
+	tree = astNewLINK( tree, init_expr )
 
 	function = tree
 
@@ -304,13 +323,22 @@ private function hDelOp _
 
 	dim as ASTNODE ptr tree = NULL
 
+	'' side-effect?
+	if( astIsClassOnTree( AST_NODECLASS_CALL, ptr_expr ) <> NULL ) then
+		tree = astRemSideFx( ptr_expr )
+	end if
+
+	'' if ptr <> NULL then
+	dim as FBSYMBOL ptr blk_label = symbAddLabel( NULL )
+	tree = astNewLINK( tree, _
+					   astNewBOP( AST_OP_EQ, _
+					   			  astCloneTree( ptr_expr ), _
+					   			  astNewCONSTi( 0, FB_DATATYPE_INTEGER ), _
+					   			  blk_label, _
+					   			  AST_OPOPT_NONE ) )
+
 	'' call dtors?
 	if( has_dtor ) then
-		'' side-effect?
-		if( astIsClassOnTree( AST_NODECLASS_CALL, ptr_expr ) <> NULL ) then
-			tree = astRemSideFx( ptr_expr )
-		end if
-
 		if( op = AST_OP_DEL_VEC ) then
 			tree = astNewLINK( tree, _
 							   hCallDtorList( astCloneTree( ptr_expr ), _
@@ -340,7 +368,12 @@ private function hDelOp _
 		return NULL
 	end if
 
-	function = astNewLINK( tree, del_expr )
+	tree = astNewLINK( tree, del_expr )
+
+	'' end if
+	tree = astNewLINK( tree, astNewLABEL( blk_label ) )
+
+	function = tree
 
 end function
 
