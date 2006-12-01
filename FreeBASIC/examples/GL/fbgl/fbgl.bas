@@ -293,7 +293,26 @@ namespace fbgl
 	        byval flags as FBGL_CIRCLE _
 		) 
 	   
-		ellipse x, y, r, r, col, flags 
+		if (col = FBGL_DEFAULT_COLOR) then 
+			col = ctx.cur_color 
+		end if 
+	
+		color( col )   
+	
+		x += 0.1625 
+		y += 0.1625 
+		
+		glPushMatrix
+		
+		glTranslatef x, y, 0
+	    
+        dim as GLUquadricObj ptr quad = gluNewQuadric( )
+        
+        gluDisk quad, iif( flags and FBGL_FILLED, 0, r-1 ), r, 60, 1
+        
+        gluDeleteQuadric quad
+        
+        glPopMatrix
 	
 	end sub 
 	

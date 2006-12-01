@@ -12,7 +12,7 @@ private function CreateTexture( byval buffer as any ptr, byval flags as integer 
 	dim as integer w, h, x, y, col
 	dim tex as uinteger
 	dim as GLenum format, minfilter, magfilter
-	dim as PUT_HEADER ptr header = buffer
+	dim as FB.PUT_HEADER ptr header = buffer
 
 	function = 0
     
