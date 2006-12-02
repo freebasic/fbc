@@ -209,7 +209,7 @@ private function _linkFiles as integer
     end if
 
 	if( fbc.debug = FALSE ) then
-		if( fbGetOption( FB_COMPOPT_PROFILE ) <> FB_PROFILE_OPT_GMON ) then
+		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
 			ldcline += " -s"
 		end if
 	end if
@@ -266,7 +266,7 @@ private function _linkFiles as integer
 		ldcline += " " + QUOTE + libdir + (RSLASH + "crt2.o" + QUOTE + " ")
 
 		'' additional support for gmon
-		if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
 			ldcline += QUOTE + libdir + (RSLASH + "gcrt2.o" + QUOTE + " ")
 		end if
 
@@ -296,19 +296,15 @@ private function _linkFiles as integer
 	'' 		 will be the first/last called, respectively
 	'' previously was libfb_ctor.o
     if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
-		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE )
+		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
 	else
-		select case fbGetOption( FB_COMPOPT_PROFILE )
-		case FB_PROFILE_OPT_CALLS
-			ldcline += QUOTE + libdir + ("/fbrt0p.o" + QUOTE )
-		case FB_PROFILE_OPT_GMON
-			ldcline += "-lgmon " + QUOTE + libdir + ("/fbrt0.o" + QUOTE )
-		case else
-			ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE )
-		end select
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			ldcline += "-lgmon " 
+		end if
+		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
 	end if
 
-	ldcline += " -) "
+	ldcline += "-) "
 
 	'' crt end stuff
 	ldcline += QUOTE + libdir + (RSLASH + "crtend.o" + QUOTE)

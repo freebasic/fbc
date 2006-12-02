@@ -115,7 +115,7 @@ private function _linkFiles as integer
 
 	''
 	if( fbc.debug = FALSE ) then
-		if( fbGetOption( FB_COMPOPT_PROFILE ) <> FB_PROFILE_OPT_GMON ) then
+		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
 			ldcline += " -s"
 		end if
 	end if
@@ -134,7 +134,7 @@ private function _linkFiles as integer
 
 	'' crt init stuff
 	if( fbc.outtype = FB_OUTTYPE_EXECUTABLE) then
-		if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
 			ldcline += " " + QUOTE + libdir + ("/gcrt1.o" + QUOTE)
 		else
 			ldcline += " " + QUOTE + libdir + ("/crt1.o" + QUOTE)
@@ -176,22 +176,13 @@ private function _linkFiles as integer
 
 	'' rtlib initialization and termination (must be included in the group or
 	'' dlopen() will fail because fb_hRtExit() will be undefined)
-	'' previously was libfb_ctor.o
-
-	select case fbGetOption( FB_COMPOPT_PROFILE )
-	case FB_PROFILE_OPT_CALLS
-		ldcline += QUOTE + libdir + ("/fbrt0p.o" + QUOTE )
-	case FB_PROFILE_OPT_GMON
-		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE )
-	case else
-		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE )
-	end select
+	ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
 
     '' end lib group
-    ldcline += " -) "
+    ldcline += "-) "
 
 	'' crt end stuff
-	ldcline += QUOTE + libdir + ("/crtend.o" + QUOTE + " ")
+	ldcline += QUOTE + libdir + ("/crtend.o" + QUOTE + " " )
 	ldcline += QUOTE + libdir + ("/crtn.o" + QUOTE)
 
    	'' extra options

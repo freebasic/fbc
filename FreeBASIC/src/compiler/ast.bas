@@ -1237,14 +1237,6 @@ function astIsClassOnTree _
 		return m
 	end if
 
-	'' profiled function have sub nodes
-	if( n->class = AST_NODECLASS_CALL ) then
-		m = astIsClassOnTree( class_, n->call.profbegin )
-		if( m <> NULL ) then
-			return m
-		end if
-	end if
-
 	function = NULL
 
 end function

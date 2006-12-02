@@ -78,8 +78,7 @@ end sub
 function astNewCALL _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval ptrexpr as ASTNODE ptr = NULL, _
-		byval isprofiler as integer = FALSE _
+		byval ptrexpr as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -126,18 +125,6 @@ function astNewCALL _
 
 	'' handle functions that return structs
 	hAllocTempStruct( n, sym )
-
-	'' function profiling for proc calls
-	n->call.profbegin = NULL
-	n->call.profend = NULL
-	if( env.clopt.profile = FB_PROFILE_OPT_CALLS ) then
-		if( isprofiler = FALSE ) then
-			n->call.profbegin = rtlProfileBeginCall( sym )
-			if( n->call.profbegin <> NULL ) then
-				n->call.profend = rtlProfileEndCall( )
-			end if
-		end if
-	end if
 
 end function
 
@@ -357,7 +344,7 @@ function astLoadCALL _
     dim as FBSYMBOL ptr sym = any, param = any, last_param = any
     dim as integer mode = any, topop = any, toalign = any
     dim as integer params = any, inc = any, args = any
-    dim as IRVREG ptr vr = any, pcvr = any
+    dim as IRVREG ptr vr = any
 
 	sym = n->sym
 
@@ -437,24 +424,8 @@ function astLoadCALL _
 	'' handle functions returning structs
 	hCheckTempStruct( n, sym )
 
-	'' signal function start for profiling
-	if( n->call.profbegin <> NULL ) then
-		pcvr = astLoad( n->call.profbegin )
-		astDelNode( n->call.profbegin )
-	end if
-
 	'' return proc's result
 	vr = hCallProc( n, sym, mode, topop, toalign )
-
-	'' signal function end for profiling
-	if( n->call.profend <> NULL ) then
-		if( ast.doemit ) then
-			irEmitPUSH( pcvr )
-		end if
-		sym = n->call.profend->sym
-		hCallProc( n->call.profend, sym, sym->proc.mode, 0, 0 )
-		astDelNode( n->call.profend )
-	end if
 
 	''
 	hDtorListFlush( n )
@@ -495,17 +466,6 @@ sub astCloneCALL _
 		byval n as ASTNODE ptr, _
 		byval c as ASTNODE ptr _
 	)
-
-	'' profiled function have sub nodes
-	scope
-		dim as ASTNODE ptr t = any
-
-		t = n->call.profbegin
-		if( t <> NULL ) then
-			c->call.profbegin = astCloneTree( t )
-			c->call.profend = astCloneTree( n->call.profend )
-		end if
-	end scope
 
     '' temp string list
     scope
@@ -552,12 +512,6 @@ sub astDelCALL _
 		byval n as ASTNODE ptr _
 	)
 
-	'' profiled function have sub nodes
-	if( n->call.profbegin <> NULL ) then
-		astDelTree( n->call.profbegin )
-		astDelTree( n->call.profend )
-	end if
-
     '' temp strings list
     scope
 	    dim as AST_TMPSTRLIST_ITEM ptr s = any, p = any
@@ -592,12 +546,6 @@ sub astReplaceSymbolOnCALL _
 		byval old_sym as FBSYMBOL ptr, _
 		byval new_sym as FBSYMBOL ptr _
 	)
-
-	'' profiled function have sub nodes
-	if( n->call.profbegin <> NULL ) then
-		astReplaceSymbolOnTree( n->call.profbegin, old_sym, new_sym )
-		astReplaceSymbolOnTree( n->call.profend, old_sym, new_sym )
-	end if
 
 	'' check temp res
 	if( n->call.tmpres = old_sym ) then

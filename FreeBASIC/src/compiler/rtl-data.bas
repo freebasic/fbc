@@ -370,8 +370,7 @@ end function
 function rtlDataRestore _
 	( _
 		byval label as FBSYMBOL ptr, _
-		byval afternode as ASTNODE ptr, _
-		byval isprofiler as integer = FALSE _
+		byval afternode as ASTNODE ptr _
 	) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 lname
@@ -380,7 +379,7 @@ function rtlDataRestore _
 
     function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( DATARESTORE ), NULL, isprofiler )
+    proc = astNewCALL( PROCLOOKUP( DATARESTORE ), NULL )
 
     '' begin of data or start from label?
     if( label <> NULL ) then

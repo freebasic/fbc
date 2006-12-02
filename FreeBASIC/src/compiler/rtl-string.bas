@@ -2942,7 +2942,7 @@ function rtlStrAllocTmpResult _
 	function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( STRALLOCTMPRES ), NULL, TRUE )
+    proc = astNewCALL( PROCLOOKUP( STRALLOCTMPRES ), NULL )
 
     '' src as string
     if( astNewARG( proc, strg, FB_DATATYPE_STRING ) = NULL ) then

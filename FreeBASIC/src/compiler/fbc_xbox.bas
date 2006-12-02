@@ -136,19 +136,16 @@ private function _linkFiles as integer
     	end if
     next i
 
+	'' add gmon if profiling is enabled
+	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+		ldcline += "-lgmon "
+	end if
+
 	'' rtlib initialization and termination
-	'' previously was libfb_ctor.o
-	select case fbGetOption( FB_COMPOPT_PROFILE )
-	case FB_PROFILE_OPT_CALLS
-		ldcline += QUOTE + libdir + ("/fbrt0p.o" + QUOTE )
-	case FB_PROFILE_OPT_GMON
-		ldcline += "-lgmon " + QUOTE + libdir + ("/fbrt0.o" + QUOTE )
-	case else
-		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE )
-	end select
+	ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
 
     '' end lib group
-    ldcline += " -) "
+    ldcline += "-) "
 
    	'' extra options
    	ldcline += fbc.extopt.ld

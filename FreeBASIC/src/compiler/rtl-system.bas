@@ -59,13 +59,6 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		0 _
 	 	), _
-		/' fb_InitProfile ( ) as void '/ _
-		( _
-			@FB_RTL_INITPROFILE, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		0 _
-	 	), _
 		/' __main CDECL ( ) as void '/ _
 		( _
 			@FB_RTL_INITCRTCTOR, NULL, _
@@ -568,7 +561,7 @@ function rtlCpuCheck( ) as integer static
 	function = FALSE
 
 	''
-	proc = astNewCALL( PROCLOOKUP( CPUDETECT ), NULL, TRUE )
+	proc = astNewCALL( PROCLOOKUP( CPUDETECT ), NULL )
 
 	'' cpu = fb_CpuDetect shr 24
 	cpu = astNewBOP( AST_OP_SHR, proc, astNewCONSTi( 24, FB_DATATYPE_UINT ) )
@@ -589,7 +582,7 @@ function rtlCpuCheck( ) as integer static
 			  astNewVAR( s, 0, FB_DATATYPE_CHAR ) )
 
 	'' end 1
-    proc = astNewCALL( PROCLOOKUP( END ), NULL, TRUE )
+    proc = astNewCALL( PROCLOOKUP( END ), NULL )
     if( astNewARG( proc, astNewCONSTi( 1, FB_DATATYPE_INTEGER ) ) = NULL ) then
     	exit function
     end if
@@ -609,22 +602,7 @@ function rtlInitSignals( ) as integer static
 	function = FALSE
 
 	'' init( )
-    proc = astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL, TRUE )
-
-    astAdd( proc )
-
-    function = TRUE
-
-end function
-
-'':::::
-function rtlInitProfile( ) as integer static
-    dim as ASTNODE ptr proc
-
-	function = FALSE
-
-	'' init( )
-    proc = astNewCALL( PROCLOOKUP( INITPROFILE ), NULL, TRUE )
+    proc = astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL )
 
     astAdd( proc )
 
@@ -644,24 +622,30 @@ function rtlInitApp _
 
 	function = NULL
 
-    '' call default CRT0 constructors (only required for Win32)
-	'' FIXME: __monstartup() needed for cygwin?
-	if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
 
-		if( env.clopt.profile = FB_PROFILE_OPT_GMON ) then
+	'' call __monstartup() on win32/cygwin if profiling
+	if( env.clopt.target = FB_COMPTARGET_WIN32 or _
+		env.clopt.target = FB_COMPTARGET_CYGWIN ) then
+	
+		if( env.clopt.profile ) then
 			'' __monstartup()
-    		proc = astNewCALL( PROCLOOKUP( PROFILEMONSTARTUP ), NULL, TRUE )
+    		proc = astNewCALL( PROCLOOKUP( PROFILEMONSTARTUP ), NULL )
     		astAdd( proc )
 		end if
-		
+	
+	end if
+
+    '' call default CRT0 constructors (only required for Win32)
+	if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+
 		'' __main()
-    	proc = astNewCALL( PROCLOOKUP( INITCRTCTOR ), NULL, TRUE )
+    	proc = astNewCALL( PROCLOOKUP( INITCRTCTOR ), NULL )
     	astAdd( proc )
 
     end if
 
 	'' init( argc, argv )
-    proc = astNewCALL( PROCLOOKUP( INIT ), NULL, TRUE )
+    proc = astNewCALL( PROCLOOKUP( INIT ), NULL )
 
     '' argc
     if( argc = NULL ) then
@@ -714,7 +698,7 @@ function rtlExitApp _
     end if
 
     '' end( level )
-    proc = astNewCALL( PROCLOOKUP( END ), NULL, TRUE )
+    proc = astNewCALL( PROCLOOKUP( END ), NULL )
 
     '' errlevel
     if( astNewARG( proc, errlevel ) = NULL ) then

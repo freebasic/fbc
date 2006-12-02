@@ -133,7 +133,6 @@
 #define FB_RTL_CPUDETECT 				"fb_CpuDetect"
 #define FB_RTL_INIT 					"fb_Init"
 #define FB_RTL_INITSIGNALS 				"fb_InitSignals"
-#define FB_RTL_INITPROFILE 				"fb_InitProfile"
 #define FB_RTL_INITCRTCTOR 				"__main"
 #define FB_RTL_END 						"fb_End"
 #define FB_RTL_ATEXIT					"{atexit}"
@@ -315,9 +314,6 @@
 #define FB_RTL_GFXSCREENRES 			"fb_GfxScreenRes"
 #define FB_RTL_GFXEVENT					"fb_GfxEvent"
 
-#define FB_RTL_PROFILEBEGINCALL 		"fb_ProfileBeginCall"
-#define FB_RTL_PROFILEENDCALL 			"fb_ProfileEndCall"
-#define FB_RTL_PROFILEEND 				"fb_EndProfile"
 #define FB_RTL_PROFILEMCOUNT            "mcount"
 #define FB_RTL_PROFILEMONSTARTUP        "_monstartup"
 
@@ -435,7 +431,6 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_CPUDETECT
 	FB_RTL_IDX_INIT
 	FB_RTL_IDX_INITSIGNALS
-	FB_RTL_IDX_INITPROFILE
 	FB_RTL_IDX_INITCRTCTOR
 	FB_RTL_IDX_END
 	FB_RTL_IDX_ATEXIT
@@ -617,9 +612,6 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GFXSCREENRES
 	FB_RTL_IDX_GFXEVENT
 
-	FB_RTL_IDX_PROFILEBEGINCALL
-	FB_RTL_IDX_PROFILEENDCALL
-	FB_RTL_IDX_PROFILEEND
 	FB_RTL_IDX_PROFILEMCOUNT
 	FB_RTL_IDX_PROFILEMONSTARTUP
 
@@ -923,8 +915,7 @@ declare function rtlNullPtrCheck _
 declare function rtlDataRestore _
 	( _
 		byval label as FBSYMBOL ptr, _
-		byval afternode as ASTNODE ptr = NULL, _
-		byval isprofiler as integer = FALSE _
+		byval afternode as ASTNODE ptr = NULL _
 	) as integer
 
 declare function rtlDataRead _
@@ -1522,16 +1513,6 @@ declare function rtlGfxScreenSet _
 		byval fexpr as ASTNODE ptr, _
 		byval rexpr as ASTNODE ptr _
 	) as integer
-
-declare function rtlProfileBeginCall _
-	( _
-		byval symbol as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare function rtlProfileEndCall _
-	( _
-		_
-	) as ASTNODE ptr
 
 declare function rtlProfileCall_mcount _
 	( _

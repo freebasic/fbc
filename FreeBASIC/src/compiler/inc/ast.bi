@@ -120,8 +120,6 @@ type AST_NODE_CALL
 	strtail 		as AST_TMPSTRLIST_ITEM ptr
 	dtortail		as AST_DTORLIST_ITEM ptr
 	tmpres          as FBSYMBOL ptr					'' temp result structure, if needed
-	profbegin		as ASTNODE_ ptr
-	profend			as ASTNODE_ ptr
 end type
 
 type AST_NODE_ARG
@@ -650,8 +648,7 @@ declare function astNewPTR _
 declare function astNewCALL _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval ptrexpr as ASTNODE ptr = NULL, _
-		byval isprofiler as integer = FALSE _
+		byval ptrexpr as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astNewCALLCTOR _

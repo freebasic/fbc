@@ -8,7 +8,7 @@
     [ ] xbox - does openxdk even support profiling with gmon?
                If not, then it shouldn't be an allowable option.
 
-    [ ] remove libfb_ctor.c - replaced by fbrt0.c and fbrt0p.c
+    [ ] remove libfb_ctor.c - replaced by fbrt0.c
 
 [ ] ctor/dtor
 	- how to handle: if( foo().bar().baz(0,1,3).int = 0 ) then ...

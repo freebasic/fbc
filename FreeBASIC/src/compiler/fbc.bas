@@ -582,7 +582,7 @@ private sub printOptions( )
 	printOption( "-noerrline", "Do not show source line where error occured" )
 	printOption( "-o <name>", "Set output name (in the same number as source files)" )
 	printOption( "-p <name>", "Add a path to search for libraries" )
-	print "-profile <name>"; " Enable function profiling: calls, gmon"
+	printOption( "-profile", "Enable function profiling" )
 	printOption( "-r", "Do not delete the asm file(s)" )
 	if( fbc.target = FB_COMPTARGET_WIN32 or fbc.target = FB_COMPTARGET_CYGWIN ) then
 		printOption( "-s <name>", "Set subsystem (gui, console)" )
@@ -800,22 +800,9 @@ private function processOptions( ) as integer
 				argv(i) = ""
 
 			case FBC_OPT_PROFILE
-				value = FB_PROFILE_OPT_NONE
-
-				select case argv(i+1)
-				case "calls"
-					value = FB_PROFILE_OPT_CALLS
-				case "gmon"
-					value = FB_PROFILE_OPT_GMON
-				case else
-					printInvalidOpt( i )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_PROFILE, value )
+				fbSetOption( FB_COMPOPT_PROFILE, TRUE )
 
 				argv(i) = ""
-				argv(i+1) = ""
 
 			case FBC_OPT_NOERRLINE
 				fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )

@@ -256,7 +256,7 @@ private sub hMainEnd _
     if( symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
     							  FB_DATALABELNAME, _
     							  FB_SYMBCLASS_LABEL ) <> NULL ) then
-    	rtlDataRestore( NULL, env.main.initnode, TRUE )
+    	rtlDataRestore( NULL, env.main.initnode )
     end if
 
 	'' if main(), 0 will be returned to crt
