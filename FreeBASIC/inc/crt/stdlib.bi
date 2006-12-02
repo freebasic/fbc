@@ -51,12 +51,12 @@ declare function labs cdecl alias "labs" (byval as integer) as integer
 
 type div_t
 	quot as integer
-	rem as integer
+	rem_ as integer
 end type
 
 type ldiv_t
 	quot as integer
-	rem as integer
+	rem_ as integer
 end type
 
 declare function div cdecl alias "div" (byval as integer, byval as integer) as div_t
@@ -64,7 +64,7 @@ declare function ldiv cdecl alias "ldiv" (byval as integer, byval as integer) as
 
 type lldiv_t
 	quot as longint
-	rem as longint
+	rem_ as longint
 end type
 
 declare function lldiv cdecl alias "lldiv" (byval as longint, byval as longint) as lldiv_t
