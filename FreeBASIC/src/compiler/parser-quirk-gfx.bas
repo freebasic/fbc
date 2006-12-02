@@ -217,14 +217,6 @@ private function hGetMode _
 
 	select case as const lexGetToken
 
-	case FB_TK_PSET
-		lexSkipToken
-		mode = FBGFX_PUTMODE_PSET
-
-	case FB_TK_PRESET
-		lexSkipToken
-		mode = FBGFX_PUTMODE_PRESET
-
 	case FB_TK_AND
 		lexSkipToken
 		mode = FBGFX_PUTMODE_AND
@@ -239,6 +231,14 @@ private function hGetMode _
 
 	case else
 		select case ucase( *lexGetText( ) )
+		case "PSET"
+			lexSkipToken( )
+			mode = FBGFX_PUTMODE_PSET
+	
+		case "PRESET"
+			lexSkipToken( )
+			mode = FBGFX_PUTMODE_PRESET
+	
 		case "TRANS"
 			lexSkipToken( )
 			mode = FBGFX_PUTMODE_TRANS
