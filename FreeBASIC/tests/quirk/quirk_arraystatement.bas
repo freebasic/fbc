@@ -1,4 +1,4 @@
-#include "fbcu.bi"
+# include "fbcu.bi"
 
 namespace fbc_tests.quirk.bydesc_arrayfield
 
