@@ -103,7 +103,9 @@ declare sub 	 setCompOptions			( )
 		( FBC_OPT_OBJFILE		, @"a"           ), _
 		( FBC_OPT_LIBFILE		, @"l"           ), _
 		( FBC_OPT_INCLUDE		, @"include"     ), _
-		( FBC_OPT_LANG			, @"lang"     	 ) _
+		( FBC_OPT_LANG			, @"lang"     	 ), _
+		( FBC_OPT_WA			, @"Wa"     	 ), _
+		( FBC_OPT_WL			, @"Wl"     	 ) _
 	}
 
 	'on error goto runtime_err
@@ -412,7 +414,10 @@ private function assembleFiles as integer
     		ascline = ""
     	end if
 
-		ascline += QUOTE + fbc.asmlist(i) + (QUOTE + " -o " + QUOTE) + fbc.outlist(i) + (QUOTE + " ")
+		ascline += QUOTE + fbc.asmlist(i) + _
+				   (QUOTE + " -o " + QUOTE) + _
+				   fbc.outlist(i) + (QUOTE) + _
+                   fbc.extopt.gas
 
     	'' invoke as
     	if( fbc.verbose ) then
@@ -616,8 +621,10 @@ private sub printOptions( )
 	end if
 	printOption( "-v", "Be verbose" )
 	printOption( "-version", "Show compiler version" )
-	printOption( "-x <name>", "Set executable/library name" )
 	printOption( "-w <value>", "Set min warning level: all, pedantic or a value" )
+	printOption( "-Wa <opt>", "Pass options to GAS (separated by commas)" )
+	printOption( "-Wl <opt>", "Pass options to LD (separated by commas)" )
+	printOption( "-x <name>", "Set executable/library name" )
 
 end sub
 
@@ -641,6 +648,9 @@ private sub setDefaultOptions( )
 	fbc.mainset 	= FALSE
 	fbc.outname		= ""
 	fbc.outaddext   = FALSE
+
+	fbc.extopt.gas	= ""
+	fbc.extopt.ld	= ""
 
     fbc.libs		= 0
     fbc.objs		= 0
@@ -1075,6 +1085,15 @@ private function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
+			case FBC_OPT_WA
+				fbc.extopt.gas = " " + hReplace( argv(i+1), ",", " " ) + " "
+				argv(i) = ""
+				argv(i+1) = ""
+
+			case FBC_OPT_WL
+				fbc.extopt.ld = " " + hReplace( argv(i+1), ",", " " ) + " "
+				argv(i) = ""
+				argv(i+1) = ""
 			end select
 		end if
 

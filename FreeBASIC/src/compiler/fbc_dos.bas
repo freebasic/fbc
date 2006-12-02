@@ -153,7 +153,10 @@ private function _linkFiles as integer
 	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
 
     '' end lib group
-    ldcline += "-) "
+    ldcline += "-)"
+
+   	'' extra options
+   	ldcline += fbc.extopt.ld
 
     '' invoke ld
     if( fbc.verbose ) then

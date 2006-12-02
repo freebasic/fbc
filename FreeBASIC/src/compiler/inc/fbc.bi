@@ -59,6 +59,8 @@ enum FBC_OPT
 	FBC_OPT_LIBFILE
 	FBC_OPT_INCLUDE
 	FBC_OPT_LANG
+	FBC_OPT_WA
+	FBC_OPT_WL
 
 	FBC_OPTS
 end enum
@@ -66,6 +68,11 @@ end enum
 type FBC_OPTION
 	id			as FBC_OPT
 	name		as zstring ptr
+end type
+
+type FBC_EXTOPT
+	gas			as zstring * 128
+	ld			as zstring * 128
 end type
 
 type FBCCTX
@@ -123,6 +130,7 @@ type FBCCTX
 	mapfile						as zstring * FB_MAXNAMELEN+1
 	mainset						as integer
 	subsystem					as zstring * FB_MAXNAMELEN+1
+	extopt						as FBC_EXTOPT
 
 	opthash						as THASH
 end type

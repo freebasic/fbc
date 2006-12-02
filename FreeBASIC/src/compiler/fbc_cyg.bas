@@ -198,6 +198,9 @@ private function _linkFiles as integer
         ldcline += " --output-def " + QUOTE + hStripFilename( fbc.outname ) + dllname + (".def" + QUOTE)
 	end if
 
+   	'' extra options
+   	ldcline += fbc.extopt.ld
+
     '' invoke ld
     if( fbc.verbose ) then
     	print "linking: ", ldcline

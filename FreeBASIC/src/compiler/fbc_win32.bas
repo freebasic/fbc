@@ -293,8 +293,12 @@ private function _linkFiles as integer
 
     if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
         '' create the def list to use when creating the import library
-        ldcline += " --output-def " + QUOTE + hStripFilename( fbc.outname ) + dllname + (".def" + QUOTE)
+        ldcline += " --output-def " + _
+        		   QUOTE + hStripFilename( fbc.outname ) + dllname + (".def" + QUOTE)
 	end if
+
+   	'' extra options
+   	ldcline += fbc.extopt.ld
 
     '' invoke ld
     if( fbc.verbose ) then

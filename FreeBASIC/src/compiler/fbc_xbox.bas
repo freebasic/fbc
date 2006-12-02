@@ -140,7 +140,10 @@ private function _linkFiles as integer
     ldcline += "-) "
 
 	'' rtlib initialization and termination
-	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
+	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE)
+
+   	'' extra options
+   	ldcline += fbc.extopt.ld
 
     '' invoke ld
     if( fbc.verbose ) then
