@@ -424,9 +424,9 @@ Most Important Features:
     - Bit fields:
 
       TYPE mytype
-          flag_0 : 1 as integer
-          flag_1 : 1 as integer
-          flag_2 : 1 as integer
+          flag_0 : 1 AS INTEGER
+          flag_1 : 1 AS INTEGER
+          flag_2 : 1 AS INTEGER
       END TYPE
 
       DIM t AS mytype
@@ -441,6 +441,15 @@ Most Important Features:
       ELSE
         PRINT "FALSE"
       END IF
+
+    - Private, Protected or Public access modes:
+
+      TYPE mytype
+       PUBLIC:
+          field1 AS INTEGER
+       PRIVATE:
+	  field2 AS INTEGER
+      END TYPE
 
   o Enumerations (ENUM's):
 
@@ -470,6 +479,12 @@ Most Important Features:
     
     - Global and local static instances also allow constructors and/or 
       destructors
+
+    - The NEW and DELETE operator are supported (including the vector versions):
+      
+      DIM f AS foo PTR = NEW foo( 1234 )
+      PRINT f->some_field
+      DELETE f
   
   o Operator Overloading in User Defined Types (TYPE, ENUM or CLASS):
   
@@ -609,7 +624,7 @@ Most Important Features:
 
       DIM localvar AS INTEGER = a + b * d
       
-      - Void initializer to not clear the local symbols and speed up 
+    - Void initializer to not clear the local symbols and speed up 
         allocation:
       
         DIM localvar AS DOUBLE = ANY
@@ -630,7 +645,7 @@ Most Important Features:
 
       et cetera.
       
-      - Optional arguments can be initialized with expressions, not only constants.
+    - Optional arguments can be initialized with expressions, not only constants.
       
   o Function overloading:
   
@@ -671,15 +686,6 @@ Most Important Features:
       
     - MACRO...ENDMACRO construct, to simplify multi-line #DEFINE's
       
-      Instead of: 
-
-      #DEFINE WhileHoldingKey(code)               _
-        DO                                       :_
-          SLEEP 1                              :_
-        LOOP WHILE MULTIKEY(code)
-
-      You may do:
-      
       #MACRO WhileHoldingKey(code)
         DO
           SLEEP 1
@@ -718,8 +724,8 @@ Most Important Features:
 
   o Debugging support:
 
-    - Full debugging support with GDB (the GNU debugger) or Insight (the GDB 
-      GUI frontend)
+    - Full source-level debugging support with GDB (the GNU debugger) or 
+      Insight (the GDB GUI frontend)
 
     - Array bounds checking (only enabled by the -exx command-line option)
 
@@ -734,9 +740,9 @@ Most Important Features:
 
   o Non-fatal error handling:
 
-    - The FreeBASIC parser won't quit unless n# (default:10) syntax and/or semantic errors 
-      happened, making it easier to port sources from different languages and 
-      to work with large projects.
+    - The FreeBASIC parser won't quit unless n# (default:10) syntax and/or semantic 
+      errors happened, making it easier to port sources from different languages 
+      and to work with large projects.
 
   o As a 32-bit application:
 
@@ -776,8 +782,7 @@ What FreeBASIC Isn't:
 
   o FreeBASIC is not a Visual Basic alternative.
 
-    - There are no events, or any GUI wrapper of any kind. (You can create them
-      easily with UDT's and function pointers.)
+    - There are no events, or any GUI wrapper of any kind.
 
   o FreeBASIC is most certainly not bug free.
 
@@ -822,6 +827,12 @@ Credits (in alphabetic order):
     - Added the automated runtime-lib and compiler tests.
     - Wrote the Windows installer scripts.
     - Many runtime library fixes and improvements.
+
+  o Ruben Rodriguez (rubentbstk[at]gmail.com):
+    - Corrected the errors in English in readme.txt and migrating.txt, plus
+      the messages in compiler/error.bas.
+    - Added the __PATH__ intrinsic define, and made OFFSETOF() work inside inline
+      asm blocks.
 
 
   Contributors:
@@ -913,12 +924,6 @@ Credits (in alphabetic order):
   o Randy Keeling (randy[at]keeling.com):
     - Wrote the GSL matrix test at the examples/GSL directory.
     
-  o Ruben Rodriguez (rubentbstk[at]gmail.com):
-    - Corrected the errors in English in readme.txt and migrating.txt, plus
-      the messages in compiler/error.bas.
-    - Added the __PATH__ intrinsic define, and made OFFSETOF() work inside inline
-      asm blocks.
-
   o Sterling Christensen (sterling[at]engineer.com):
     - Ex-project member, developer of the QB-like graphics library (later 
       replaced by GFXLib2 in 0.11b)

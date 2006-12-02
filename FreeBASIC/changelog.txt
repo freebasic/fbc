@@ -34,7 +34,7 @@ Version 0.17 Beta:
 - the Lua headers were replaced by machine-translated ones, some function/macro names were changed by the Lua authors since the last version;
   also, the luauxlib.bi header was renamed to lauxlib.bi to match the original C one (v1c)
 - SetDate and SetTime now return an error when they fail (DrV)
-- old profiler code removed (jeffm)
+- internal profiler removed, profiling is now done externally using GPROF (jeffm)
 
 [added]
 - the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)
@@ -78,7 +78,7 @@ Version 0.17 Beta:
 - BLOAD and BSAVE can now accept an additional optional final parameter: a pointer to an array of 256 integers to hold the image palette if any (lillo)
 - FOR now supports UDT's as counter variables, if operator let, +=, and global <=, >= are overloaded with operators taking numeric rhs. (cha0s)
 - the PRIVATE and PUBLIC attributes for members/methods of TYPE's
-- profiling support for GPROF (jeffm)
+- the JNI (Java Native Interface) header, include library and example (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
