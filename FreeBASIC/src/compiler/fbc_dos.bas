@@ -107,7 +107,9 @@ private function _linkFiles as integer
     end if
 
 	if( fbc.debug = FALSE ) then
-		ldcline += " -s"
+		if( fbGetOption( FB_COMPOPT_PROFILE ) <> FB_PROFILE_OPT_GMON ) then
+			ldcline += " -s"
+		end if
 	end if
 
     '' default lib path
@@ -122,8 +124,13 @@ private function _linkFiles as integer
     	ldcline += " -L " + QUOTE + fbc.pthlist(i) + QUOTE
     next
 
-	'' link with crt0.o (C runtime init)
-	ldcline += " " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + (RSLASH + "crt0.o" + QUOTE + " ")
+	'' link with crt0.o (C runtime init) or gcrt0.o for gmon profiling
+	select case fbGetOption( FB_COMPOPT_PROFILE )
+	case FB_PROFILE_OPT_GMON
+		ldcline += " " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + (RSLASH + "gcrt0.o" + QUOTE + " ")
+	case else
+		ldcline += " " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + (RSLASH + "crt0.o" + QUOTE + " ")
+	end select
 
     '' add objects from output list
     for i = 0 to fbc.inps-1
@@ -150,10 +157,19 @@ private function _linkFiles as integer
 
 	'' rtlib initialization and termination
 	'' must be included in the group
-	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " ")
+	'' previously was libfb_ctor.o
+
+	select case fbGetOption( FB_COMPOPT_PROFILE )
+	case FB_PROFILE_OPT_CALLS
+		ldcline += QUOTE + libdir + ("/fbrt0p.o" + QUOTE )
+	case FB_PROFILE_OPT_GMON
+		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE )
+	case else
+		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE )
+	end select
 
     '' end lib group
-    ldcline += "-)"
+    ldcline += " -) "
 
    	'' extra options
    	ldcline += fbc.extopt.ld

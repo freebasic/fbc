@@ -5533,13 +5533,15 @@ private sub hCreateFrame _
 	) static
 
     dim as integer bytestoalloc, bytestoclear
+	dim as zstring ptr lprof
 
     bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
 
     if( (bytestoalloc <> 0) or _
     	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
         symbGetIsMainProc( proc ) or _
-        env.clopt.debug ) then
+        env.clopt.debug or _
+		env.clopt.profile = FB_PROFILE_OPT_GMON ) then
 
     	hPUSH( "ebp" )
     	outp( "mov ebp, esp" )
@@ -5552,6 +5554,20 @@ private sub hCreateFrame _
     		outp( "sub esp, " + str( bytestoalloc ) )
     	end if
     end if
+
+	if( env.clopt.target = FB_COMPTARGET_DOS ) then
+		if( env.clopt.profile = FB_PROFILE_OPT_GMON ) then
+			lprof = hMakeProfileLabelName()
+
+			outEx(".section .data" + NEWLINE )
+			outEx( ".balign 4" + NEWLINE )
+			outEx( "." + *lprof + ":" + NEWLINE )
+			outp( ".long 0" )
+			outEx( ".section .text" + NEWLINE )
+			outp( "mov edx, offset ." + *lprof )
+			outp( "call _mcount" )
+		end if
+	end if
 
     if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
     	hPUSH( "ebx" )
@@ -5596,7 +5612,8 @@ private sub hDestroyFrame _
     if( (bytestoalloc <> 0) or _
     	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
         symbGetIsMainProc( proc ) or _
-        env.clopt.debug ) then
+        env.clopt.debug or _
+		env.clopt.profile = FB_PROFILE_OPT_GMON ) then
     	outp( "mov esp, ebp" )
     	hPOP( "ebp" )
     end if

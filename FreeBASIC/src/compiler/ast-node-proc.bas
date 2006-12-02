@@ -456,6 +456,13 @@ function astProcBegin _
 	''
 	irProcBegin( sym )
 
+	'' on all except dos mingw _mcount is just a normal call
+	if( env.clopt.profile = FB_PROFILE_OPT_GMON ) then
+		if( env.clopt.target <> FB_COMPTARGET_DOS ) then
+			astAdd( rtlProfileCall_mcount() )
+		end if
+	end if
+
     '' alloc parameters
     if( hDeclProcParams( sym ) = FALSE ) then
     	exit function

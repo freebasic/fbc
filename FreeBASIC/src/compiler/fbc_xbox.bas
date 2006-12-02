@@ -136,11 +136,19 @@ private function _linkFiles as integer
     	end if
     next i
 
-    '' end lib group
-    ldcline += "-) "
-
 	'' rtlib initialization and termination
-	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE)
+	'' previously was libfb_ctor.o
+	select case fbGetOption( FB_COMPOPT_PROFILE )
+	case FB_PROFILE_OPT_CALLS
+		ldcline += QUOTE + libdir + ("/fbrt0p.o" + QUOTE )
+	case FB_PROFILE_OPT_GMON
+		ldcline += "-lgmon " + QUOTE + libdir + ("/fbrt0.o" + QUOTE )
+	case else
+		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE )
+	end select
+
+    '' end lib group
+    ldcline += " -) "
 
    	'' extra options
    	ldcline += fbc.extopt.ld

@@ -209,7 +209,9 @@ private function _linkFiles as integer
     end if
 
 	if( fbc.debug = FALSE ) then
-		ldcline += " -s"
+		if( fbGetOption( FB_COMPOPT_PROFILE ) <> FB_PROFILE_OPT_GMON ) then
+			ldcline += " -s"
+		end if
 	end if
 
 	'' stack size
@@ -262,6 +264,12 @@ private function _linkFiles as integer
 		ldcline += " " + QUOTE + libdir + (RSLASH + "dllcrt2.o" + QUOTE + " ")
 	else
 		ldcline += " " + QUOTE + libdir + (RSLASH + "crt2.o" + QUOTE + " ")
+
+		'' additional support for gmon
+		if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
+			ldcline += QUOTE + libdir + (RSLASH + "gcrt2.o" + QUOTE + " ")
+		end if
+
 	end if
 
 	ldcline += "" + QUOTE + libdir + (RSLASH + "crtbegin.o" + QUOTE + " ")
@@ -286,7 +294,21 @@ private function _linkFiles as integer
 	'' 		 linking a DLL, or LD will fail with an "undefined symbol" msg. at least
 	'' 		 the order the .ctors/.dtors appeared will be preserved, so the rtlib ones
 	'' 		 will be the first/last called, respectively
-	ldcline += QUOTE + libdir + ("/libfb_ctor.o" + QUOTE + " -) ")
+	'' previously was libfb_ctor.o
+    if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE )
+	else
+		select case fbGetOption( FB_COMPOPT_PROFILE )
+		case FB_PROFILE_OPT_CALLS
+			ldcline += QUOTE + libdir + ("/fbrt0p.o" + QUOTE )
+		case FB_PROFILE_OPT_GMON
+			ldcline += "-lgmon " + QUOTE + libdir + ("/fbrt0.o" + QUOTE )
+		case else
+			ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE )
+		end select
+	end if
+
+	ldcline += " -) "
 
 	'' crt end stuff
 	ldcline += QUOTE + libdir + (RSLASH + "crtend.o" + QUOTE)

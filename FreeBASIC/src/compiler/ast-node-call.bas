@@ -127,10 +127,10 @@ function astNewCALL _
 	'' handle functions that return structs
 	hAllocTempStruct( n, sym )
 
-	'' function profiling
+	'' function profiling for proc calls
 	n->call.profbegin = NULL
 	n->call.profend = NULL
-	if( env.clopt.profile ) then
+	if( env.clopt.profile = FB_PROFILE_OPT_CALLS ) then
 		if( isprofiler = FALSE ) then
 			n->call.profbegin = rtlProfileBeginCall( sym )
 			if( n->call.profbegin <> NULL ) then

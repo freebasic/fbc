@@ -401,7 +401,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.nodeflibs		= FALSE
 	env.clopt.showerror		= TRUE
 	env.clopt.multithreaded	= FALSE
-	env.clopt.profile       = FALSE
+	env.clopt.profile       = FB_PROFILE_OPT_NONE
 	env.clopt.target		= FB_DEFAULT_TARGET
 	env.clopt.extraerrchk	= FALSE
 	env.clopt.msbitfields	= FALSE

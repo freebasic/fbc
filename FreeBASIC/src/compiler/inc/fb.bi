@@ -231,6 +231,12 @@ enum FB_LANG
 	FB_LANGS
 end enum
 
+enum FB_PROFILE_OPT
+	FB_PROFILE_OPT_NONE
+	FB_PROFILE_OPT_CALLS
+	FB_PROFILE_OPT_GMON
+end enum
+
 '' features allowed in the selected language
 enum FB_LANG_OPT
 	FB_LANG_OPT_MT			= &h00000001

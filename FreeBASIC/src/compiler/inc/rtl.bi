@@ -318,6 +318,8 @@
 #define FB_RTL_PROFILEBEGINCALL 		"fb_ProfileBeginCall"
 #define FB_RTL_PROFILEENDCALL 			"fb_ProfileEndCall"
 #define FB_RTL_PROFILEEND 				"fb_EndProfile"
+#define FB_RTL_PROFILEMCOUNT            "mcount"
+#define FB_RTL_PROFILEMONSTARTUP        "_monstartup"
 
 '' the order doesn't matter but it makes more sense to follow the same
 '' order as the FB_RTL_* defines above
@@ -618,6 +620,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_PROFILEBEGINCALL
 	FB_RTL_IDX_PROFILEENDCALL
 	FB_RTL_IDX_PROFILEEND
+	FB_RTL_IDX_PROFILEMCOUNT
+	FB_RTL_IDX_PROFILEMONSTARTUP
 
 	FB_RTL_INDEXES
 end enum
@@ -1525,6 +1529,16 @@ declare function rtlProfileBeginCall _
 	) as ASTNODE ptr
 
 declare function rtlProfileEndCall _
+	( _
+		_
+	) as ASTNODE ptr
+
+declare function rtlProfileCall_mcount _
+	( _
+		_
+	) as ASTNODE ptr
+
+declare function rtlProfileCall_monstartup _
 	( _
 		_
 	) as ASTNODE ptr

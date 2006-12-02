@@ -409,7 +409,7 @@ private function assembleFiles as integer
 
     	'' as' options
     	if( fbc.debug = FALSE ) then
-    		ascline = "--strip-local-absolute "
+			ascline = "--strip-local-absolute "
     	else
     		ascline = ""
     	end if
@@ -800,9 +800,22 @@ private function processOptions( ) as integer
 				argv(i) = ""
 
 			case FBC_OPT_PROFILE
-				fbSetOption( FB_COMPOPT_PROFILE, TRUE )
+				value = FB_PROFILE_OPT_NONE
+
+				select case argv(i+1)
+				case "calls"
+					value = FB_PROFILE_OPT_CALLS
+				case "gmon"
+					value = FB_PROFILE_OPT_GMON
+				case else
+					printInvalidOpt( i )
+					exit function
+				end select
+
+				fbSetOption( FB_COMPOPT_PROFILE, value )
 
 				argv(i) = ""
+				argv(i+1) = ""
 
 			case FBC_OPT_NOERRLINE
 				fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )

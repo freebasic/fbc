@@ -65,11 +65,26 @@
 	 			) _
 	 		} _
 	 	), _
+		/' mcount ( void ) as void'/ _
+		( _
+			@FB_RTL_PROFILEMCOUNT, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+	 	), _
+		/' _monstartup CDECL ( ) as void '/ _
+		( _
+			@FB_RTL_PROFILEMONSTARTUP, NULL, _
+	 		FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+	 		0 _
+	 	), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _
 	 	) _
 	 }
+
 
 '':::::
 sub rtlProfileModInit( )
@@ -154,6 +169,30 @@ function rtlProfileEndCall( ) as ASTNODE ptr
 	function = NULL
 
     proc = astNewCALL( PROCLOOKUP( PROFILEENDCALL ), NULL, TRUE )
+
+  	function = proc
+
+end function
+
+'':::::
+function rtlProfileCall_mcount( ) as ASTNODE ptr
+    dim as ASTNODE ptr proc
+
+	function = NULL
+
+    proc = astNewCALL( PROCLOOKUP( PROFILEMCOUNT ), NULL, TRUE )
+
+  	function = proc
+
+end function
+
+'':::::
+function rtlProfileCall_monstartup( ) as ASTNODE ptr
+    dim as ASTNODE ptr proc
+
+	function = NULL
+
+    proc = astNewCALL( PROCLOOKUP( PROFILEMONSTARTUP ), NULL, TRUE )
 
   	function = proc
 

@@ -29,6 +29,7 @@
 
 type FBHLPCTX
 	tmpcnt		as uinteger
+	profilecnt  as uinteger
 end type
 
 
@@ -38,7 +39,8 @@ end type
 '':::::
 sub hlpInit
 
-	ctx.tmpcnt	= 0
+	ctx.tmpcnt  = 0
+	ctx.profilecnt = 0
 
 end sub
 
@@ -119,6 +121,21 @@ function hMakeTmpStr _
 	end if
 
 	ctx.tmpcnt += 1
+
+	function = @res
+
+end function
+
+'':::::
+function hMakeProfileLabelName _
+	( _
+	) as zstring ptr static
+
+	static as zstring * 4 + 8 + 1 res
+
+	res = "LP_" + *hHexUInt( ctx.profilecnt )
+
+	ctx.profilecnt += 1
 
 	function = @res
 

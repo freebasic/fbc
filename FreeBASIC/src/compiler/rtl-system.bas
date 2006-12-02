@@ -644,11 +644,20 @@ function rtlInitApp _
 
 	function = NULL
 
-    '' call default CRT0 constructors (only required for Win32) */
+    '' call default CRT0 constructors (only required for Win32)
+	'' FIXME: __monstartup() needed for cygwin?
 	if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+
+		if( env.clopt.profile = FB_PROFILE_OPT_GMON ) then
+			'' __monstartup()
+    		proc = astNewCALL( PROCLOOKUP( PROFILEMONSTARTUP ), NULL, TRUE )
+    		astAdd( proc )
+		end if
+		
 		'' __main()
     	proc = astNewCALL( PROCLOOKUP( INITCRTCTOR ), NULL, TRUE )
     	astAdd( proc )
+
     end if
 
 	'' init( argc, argv )
@@ -681,13 +690,6 @@ function rtlInitApp _
     	end if
 	end if
 
-    '' start profiling if requested
-    if( env.clopt.profile ) then
-	    if( isdllmain = FALSE ) then
-	    	rtlInitProfile( )
-	    end if
-    end if
-
     '' if error checking is on, check the CPU type
     if( env.clopt.errorcheck ) then
     	if( isdllmain = FALSE ) then
@@ -710,16 +712,6 @@ function rtlExitApp _
     if( errlevel = NULL ) then
     	errlevel = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
-
-	'' exit profiling?
-	if( env.clopt.profile ) then
-		proc = astNewCALL( PROCLOOKUP( PROFILEEND ), NULL, TRUE )
-    	'' errlevel
-    	if( astNewARG( proc, errlevel ) = NULL ) then
-    		exit function
-    	end if
-    	errlevel = proc
-	end if
 
     '' end( level )
     proc = astNewCALL( PROCLOOKUP( END ), NULL, TRUE )

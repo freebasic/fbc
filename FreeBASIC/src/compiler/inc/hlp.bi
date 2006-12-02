@@ -50,6 +50,10 @@ declare function hMakeTmpStr _
 		byval islabel as integer = TRUE _
 	) as zstring ptr
 
+declare function hMakeProfileLabelName _
+	( _
+	) as zstring ptr
+
 declare function hFBrelop2IRrelop _
 	( _
 		byval op as integer _
