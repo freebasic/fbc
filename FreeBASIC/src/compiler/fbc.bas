@@ -582,7 +582,7 @@ private sub printOptions( )
 	printOption( "-noerrline", "Do not show source line where error occured" )
 	printOption( "-o <name>", "Set output name (in the same number as source files)" )
 	printOption( "-p <name>", "Add a path to search for libraries" )
-	printOption( "-profile <name>", "Enable function profiling: calls, gmon" )
+	print "-profile <name>"; " Enable function profiling: calls, gmon"
 	printOption( "-r", "Do not delete the asm file(s)" )
 	if( fbc.target = FB_COMPTARGET_WIN32 or fbc.target = FB_COMPTARGET_CYGWIN ) then
 		printOption( "-s <name>", "Set subsystem (gui, console)" )
