@@ -1322,17 +1322,17 @@ declare sub rtlErrorResume _
 		byval isnext as integer _
 	)
 
-declare sub rtlErrorSetModName _
+declare function rtlErrorSetModName _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval modname as ASTNODE ptr _
-	)
+	) as ASTNODE ptr
 
-declare sub rtlErrorSetFuncName _
+declare function rtlErrorSetFuncName _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval funcname as ASTNODE ptr _
-	)
+	) as ASTNODE ptr
 
 declare function rtlConsoleView _
 	( _

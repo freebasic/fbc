@@ -456,13 +456,6 @@ function astProcBegin _
 	''
 	irProcBegin( sym )
 
-	'' on all ports except dos _mcount() is just a normal call
-	if( env.clopt.profile ) then
-		if( env.clopt.target <> FB_COMPTARGET_DOS ) then
-			astAdd( rtlProfileCall_mcount() )
-		end if
-	end if
-
     '' alloc parameters
     if( hDeclProcParams( sym ) = FALSE ) then
     	exit function
@@ -480,15 +473,6 @@ function astProcBegin _
 		.lasthnd = NULL
 		.lastmod = NULL
 		.lastfun = NULL
-
-		if( env.clopt.extraerrchk ) then
-			'' can't be used with constructors or the fields will be
-			'' initialized and chaining to other ctors will be broken
-			if( symbIsConstructor( sym ) = FALSE ) then
-				rtlErrorSetModName( sym, astNewCONSTstr( @env.inf.name ) )
-				rtlErrorSetFuncName( sym, astNewCONSTstr( symbGetName( sym ) ) )
-			end if
-		end if
 	end with
 
 	sym->proc.ext->stmtnum = parser.stmt.cnt
@@ -498,25 +482,38 @@ function astProcBegin _
 end function
 
 '':::::
-private sub hRestoreErrHnd _
+private function hCheckErrHnd _
 	( _
+		byval head_node as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
-	)
+	) as ASTNODE ptr
+
+	'' error check? add to head (must be done only when closing the proc body
+	'' or constructor's field would be initialized and break ctor chaining)
+	if( env.clopt.extraerrchk ) then
+		head_node = astAddAfter( rtlErrorSetModName( sym, _
+										 			 astNewCONSTstr( @env.inf.name ) ), _
+							head_node )
+
+		head_node = astAddAfter( rtlErrorSetFuncName( sym, _
+												 	  astNewCONSTstr( symbGetName( sym ) ) ), _
+						    head_node )
+	end if
 
 	with sym->proc.ext->err
 		if( .lastfun <> NULL ) then
-           	rtlErrorSetFuncName( NULL, _
-           						 astNewVAR( .lastfun, _
-           								    0, _
-           								    FB_DATATYPE_POINTER+FB_DATATYPE_CHAR ) )
+           	astAdd( rtlErrorSetFuncName( NULL, _
+           								 astNewVAR( .lastfun, _
+           						   		 0, _
+           						   		 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR ) ) )
            	.lastfun = NULL
 		end if
 
 		if( .lastmod <> NULL ) then
-           	rtlErrorSetModName( NULL, _
-           						astNewVAR( .lastmod, _
-           								   0, _
-           								   FB_DATATYPE_POINTER+FB_DATATYPE_CHAR ) )
+           	astAdd( rtlErrorSetModName( NULL, _
+           								astNewVAR( .lastmod, _
+           						   		0, _
+           						   		FB_DATATYPE_POINTER+FB_DATATYPE_CHAR ) ) )
 
 			.lastmod = NULL
 		end if
@@ -530,33 +527,55 @@ private sub hRestoreErrHnd _
 		end if
 	end with
 
-end sub
+	function = head_node
+
+end function
 
 '':::::
-private sub hCallResultCtor _
+private function hCallResultCtor _
 	( _
-		byval n as ASTNODE ptr, _
+		byval head_node as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
-	)
+	) as ASTNODE ptr
 
     dim as FBSYMBOL ptr res = any, subtype = any
 
     subtype = symbGetSubtype( sym )
 
     if( symbGetCompDefCtor( subtype ) = NULL ) then
-    	exit sub
+    	return head_node
     end if
 
     res = symbGetProcResult( sym )
     if( res = NULL ) then
-    	exit sub
+    	return head_node
     end if
 
-    astAddAfter( astBuildCtorCall( subtype, _
-    							   astBuildProcResultVar( sym, res ) ), _
-    			 n->l )
+    head_node = astAddAfter( _
+    				astBuildCtorCall( subtype, _
+    							   	  astBuildProcResultVar( sym, res ) ), _
+    			 	head_node )
 
-end sub
+	function = head_node
+
+end function
+
+'':::::
+private function hCallProfiler _
+	( _
+		byval head_node as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	'' on all ports except dos _mcount() is just a normal call
+	if( env.clopt.profile ) then
+		if( env.clopt.target <> FB_COMPTARGET_DOS ) then
+			head_node = astAddAfter( rtlProfileCall_mcount(), head_node )
+		end if
+	end if
+
+	function = head_node
+
+end function
 
 '':::::
 function astProcEnd _
@@ -599,14 +618,18 @@ function astProcEnd _
 	res = (symbCheckLocalLabels( ) = 0)
 
 	if( res = TRUE ) then
-		'' update proc's breaks list, adding calls to destructors
-		'' when needed
+		'' update proc's breaks list, adding calls to destructors when needed
 		if( n->block.breaklist.head <> NULL ) then
 			res = astScopeUpdBreakList( n )
 		end if
 
-		'' restore the old error handler if any was set
-		hRestoreErrHnd( sym )
+		dim as ASTNODE ptr head_node = n->l
+
+		''
+		head_node = hCallProfiler( head_node )
+
+		''
+		head_node = hCheckErrHnd( head_node, sym )
 
 		'' if main(), END 0 must be called because it's not safe to return to crt if
 		'' an ON ERROR module-level handler was called while inside some proc
@@ -622,7 +645,7 @@ function astProcEnd _
 			select case symbGetType( sym )
 			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 				if( symbGetProcStatAssignUsed( sym ) ) then
-					hCallResultCtor( n, sym )
+					head_node = hCallResultCtor( head_node, sym )
 				end if
 			end select
 

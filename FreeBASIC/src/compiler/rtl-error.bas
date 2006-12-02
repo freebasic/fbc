@@ -532,60 +532,58 @@ sub rtlErrorResume _
 end sub
 
 '':::::
-sub rtlErrorSetModName _
+function rtlErrorSetModName _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval modname as ASTNODE ptr _
-	) static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc, expr
+    dim as ASTNODE ptr proc = any, expr = any
 
 	proc = astNewCALL( PROCLOOKUP( ERRORSETMODNAME ) )
 
     '' byval module as zstring ptr
     if( astNewARG( proc, modname ) = NULL ) then
-    	exit sub
+    	return NULL
     end if
 
     if( sym <> NULL ) then
     	with sym->proc.ext->err
 			.lastmod = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
            	expr = astNewVAR( .lastmod, 0, FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
-          	astAdd( astNewASSIGN( expr, proc ) )
+          	function = astNewASSIGN( expr, proc )
     	end with
-
     else
-    	astAdd( proc )
+    	function = proc
     end if
 
-end sub
+end function
 
 '':::::
-sub rtlErrorSetFuncName _
+function rtlErrorSetFuncName _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval funcname as ASTNODE ptr _
-	) static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc, expr
+    dim as ASTNODE ptr proc = any, expr = any
 
 	proc = astNewCALL( PROCLOOKUP( ERRORSETFUNCNAME ) )
 
     '' byval function as zstring ptr
     if( astNewARG( proc, funcname ) = NULL ) then
-    	exit sub
+    	return NULL
     end if
 
     if( sym <> NULL ) then
     	with sym->proc.ext->err
 			.lastfun = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
             expr = astNewVAR( .lastfun, 0, FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
-            astAdd( astNewASSIGN( expr, proc ) )
+            function = astNewASSIGN( expr, proc )
     	end with
-
     else
-    	astAdd( proc )
+    	function = proc
     end if
 
-end sub
+end function
 
