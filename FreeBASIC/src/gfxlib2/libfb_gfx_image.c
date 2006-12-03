@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth)
+FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth, int flags)
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	PUT_HEADER *image;
@@ -44,7 +44,7 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int de
 			return NULL;
 	}
 	
-	if (color == DEFAULT_COLOR) {
+	if (flags & DEFAULT_COLOR_1) {
 		switch (bpp) {
 			case 1: color = 0; break;
 			case 2: color = MASK_COLOR_16; break;

@@ -886,10 +886,10 @@ declare function hPorts_cb _
 		/' fb_GfxImageCreate ( byval width as integer, byval height as integer, _
 							   byval color as uinteger = DEFAULT_COLOR, byval depth as integer = 0 ) as any ptr '/ _
 		( _
-			@"imagecreate", @"fb_GfxImageCreate", _
+			@FB_RTL_GFXIMAGECREATE, NULL, _
 			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-			4, _
+			5, _
 			{ _
 				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -898,10 +898,13 @@ declare function hPorts_cb _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, &hFEFF00FF _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
 	 			), _
 				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
+	 			), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
 	 			) _
 	 		} _
 		), _
@@ -1698,7 +1701,7 @@ function rtlGfxView _
 
  	'' byval fillcolor as uinteger
  	if( fillexpr = NULL ) then
- 		fillexpr = astNewCONSTi( &hFEFF00FF, FB_DATATYPE_UINT )
+ 		fillexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
  	end if
  	if( astNewARG( proc, fillexpr ) = NULL ) then
  		exit function
@@ -1706,7 +1709,7 @@ function rtlGfxView _
 
  	'' byval bordercolor as uinteger
  	if( bordexpr = NULL ) then
- 		bordexpr = astNewCONSTi( &hFEFF00FF, FB_DATATYPE_UINT )
+ 		bordexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
  	end if
  	if( astNewARG( proc, bordexpr ) = NULL ) then
  		exit function
@@ -2203,4 +2206,54 @@ function rtlGfxScreenSet _
 
 end function
 
+'':::::
+function rtlGfxImageCreate _
+	( _
+		byval wexpr as ASTNODE ptr, _
+		byval hexpr as ASTNODE ptr, _
+		byval cexpr as ASTNODE ptr, _
+		byval dexpr as ASTNODE ptr, _
+		byval flags as integer _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr proc
+	
+	function = NULL
+
+	proc = astNewCALL( PROCLOOKUP( GFXIMAGECREATE ) )
+
+	'' byval w as integer
+	if( astNewARG( proc, wexpr ) = NULL ) then
+ 		exit function
+ 	end if
+
+ 	'' byval h as integer
+ 	if( astNewARG( proc, hexpr ) = NULL ) then
+ 		exit function
+ 	end if
+	
+	'' byval c as uinteger
+	if( cexpr = NULL ) then
+		cexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
+	end if
+ 	if( astNewARG( proc, cexpr ) = NULL ) then
+ 		exit function
+ 	end if
+	
+	'' byval d as integer
+	if( dexpr = NULL ) then
+		dexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
+	end if
+ 	if( astNewARG( proc, dexpr ) = NULL ) then
+ 		exit function
+ 	end if
+ 	
+ 	'' byval flags as integer
+ 	if( astNewARG( proc, astNewCONSTi( flags, FB_DATATYPE_UINT ) ) = NULL ) then
+ 		exit function
+ 	end if
+	
+	function = proc
+
+end function
 

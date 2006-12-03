@@ -64,7 +64,7 @@ static SPAN *add_span(FB_GFXCTX *context, SPAN **span, int *x, int y, unsigned i
 
 
 /*:::::*/
-FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, unsigned int border_color, FBSTRING *pattern, int mode, int coord_type)
+FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, unsigned int border_color, FBSTRING *pattern, int mode, int flags)
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	int size, x, y;
@@ -74,18 +74,18 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	if (!__fb_gfx)
 		return;
 
-	if (color == DEFAULT_COLOR)
+	if (flags & DEFAULT_COLOR_1)
 		color = context->fg_color;
 	else
 		color = fb_hFixColor(color);
-	if (border_color == DEFAULT_COLOR)
+	if (flags & DEFAULT_COLOR_2)
 		border_color = color;
 	else
 		border_color = fb_hFixColor(border_color);
 
 	fb_hPrepareTarget(context, target, color);
 
-	fb_hFixRelative(context, coord_type, &fx, &fy, NULL, NULL);
+	fb_hFixRelative(context, flags, &fx, &fy, NULL, NULL);
 
 	fb_hTranslateCoord(context, fx, fy, &x, &y);
 

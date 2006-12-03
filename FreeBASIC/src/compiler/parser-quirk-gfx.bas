@@ -38,7 +38,9 @@ const FBGFX_COORDTYPE_RR  = 3
 const FBGFX_COORDTYPE_A   = 4
 const FBGFX_COORDTYPE_R   = 5
 
-const FBGFX_DEFAULTCOLOR  = &hFEFF00FF
+const FBGFX_DEFAULT_COLOR_FLAG     = &h80000000
+const FBGFX_DEFAULT_AUX_COLOR_FLAG = &h40000000
+const FBGFX_VIEW_SCREEN_FLAG       = &h00000001
 
 const FBGFX_PUTMODE_TRANS  = 0
 const FBGFX_PUTMODE_PSET   = 1
@@ -342,7 +344,7 @@ end function
 '' GfxPset     =   PSET ( Expr ',' )? STEP? '(' Expr ',' Expr ')' (',' Expr )?
 ''
 function cGfxPset( byval ispreset as integer ) as integer
-    dim as integer coordtype, tisptr
+    dim as integer flags, tisptr
     dim as ASTNODE ptr xexpr, yexpr, cexpr, texpr
     dim as FBSYMBOL ptr target
 
@@ -356,9 +358,9 @@ function cGfxPset( byval ispreset as integer ) as integer
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
-		coordtype = FBGFX_COORDTYPE_R
+		flags = FBGFX_COORDTYPE_R
 	else
-		coordtype = FBGFX_COORDTYPE_A
+		flags = FBGFX_COORDTYPE_A
 	end if
 
 	'' '(' Expr ',' Expr ')'
@@ -376,11 +378,12 @@ function cGfxPset( byval ispreset as integer ) as integer
 	if( hMatch( CHAR_COMMA ) ) then
 		hMatchExpression( cexpr )
 	else
-		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
+		cexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
+		flags or= FBGFX_DEFAULT_COLOR_FLAG
 	end if
 
 	''
-	function = rtlGfxPset( texpr, tisptr, xexpr, yexpr, cexpr, coordtype, ispreset )
+	function = rtlGfxPset( texpr, tisptr, xexpr, yexpr, cexpr, flags, ispreset )
 
 end function
 
@@ -388,7 +391,7 @@ end function
 '' LINE ( Expr ',' )? STEP? ('(' Expr ',' Expr ')')? '-' STEP? '(' Expr ',' Expr ')' (',' Expr? (',' LIT_STRING? (',' Expr )?)?)?
 ''
 function cGfxLine as integer
-    dim as integer coordtype, linetype, tisptr
+    dim as integer flags, linetype, tisptr
     dim as ASTNODE ptr styleexpr, x1expr, y1expr, x2expr, y2expr, cexpr, texpr
     dim as FBSYMBOL ptr target
 
@@ -402,9 +405,9 @@ function cGfxLine as integer
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
-		coordtype = FBGFX_COORDTYPE_R
+		flags = FBGFX_COORDTYPE_R
 	else
-		coordtype = FBGFX_COORDTYPE_A
+		flags = FBGFX_COORDTYPE_A
 	end if
 
 	'' ('(' Expr ',' Expr ')')?
@@ -419,7 +422,7 @@ function cGfxLine as integer
 		hMatchRPRNT( )
 
 	else
-		coordtype = FBGFX_COORDTYPE_R
+		flags = FBGFX_COORDTYPE_R
 		x1expr = astNewCONSTf( 0, FB_DATATYPE_SINGLE )
 		y1expr = astNewCONSTf( 0, FB_DATATYPE_SINGLE )
 	end if
@@ -432,16 +435,16 @@ function cGfxLine as integer
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
-		if( coordtype = FBGFX_COORDTYPE_R ) then
-			coordtype = FBGFX_COORDTYPE_RR
+		if( flags = FBGFX_COORDTYPE_R ) then
+			flags = FBGFX_COORDTYPE_RR
 		else
-			coordtype = FBGFX_COORDTYPE_AR
+			flags = FBGFX_COORDTYPE_AR
 		end if
 	else
-		if( coordtype = FBGFX_COORDTYPE_R ) then
-			coordtype = FBGFX_COORDTYPE_RA
+		if( flags = FBGFX_COORDTYPE_R ) then
+			flags = FBGFX_COORDTYPE_RA
 		else
-			coordtype = FBGFX_COORDTYPE_AA
+			flags = FBGFX_COORDTYPE_AA
 		end if
 	end if
 
@@ -462,7 +465,8 @@ function cGfxLine as integer
 	'' (',' Expr? (',' LIT_STRING? (',' Expr )?)?)?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( cExpression( cexpr ) = FALSE ) then
-			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
+			cexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
+			flags or= FBGFX_DEFAULT_COLOR_FLAG
 		end if
 
 		'' ',' LIT_STRING? - linetype
@@ -482,12 +486,13 @@ function cGfxLine as integer
 			end if
 		end if
 	else
-		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
+		cexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
+		flags or= FBGFX_DEFAULT_COLOR_FLAG
 	end if
 
 	''
 	function = rtlGfxLine( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, _
-						   cexpr, linetype, styleexpr, coordtype )
+						   cexpr, linetype, styleexpr, flags )
 
 end function
 
@@ -495,7 +500,7 @@ end function
 '' GfxCircle     =   CIRCLE ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' Expr ((',' Expr? (',' Expr? (',' Expr? (',' Expr (',' Expr)? )? )?)?)?)?
 ''
 function cGfxCircle as integer
-    dim as integer coordtype, fillflag, tisptr
+    dim as integer flags, fillflag, tisptr
     dim as ASTNODE ptr xexpr, yexpr, cexpr, radexpr, iniexpr, endexpr, aspexpr, texpr
     dim as FBSYMBOL ptr target
 
@@ -509,9 +514,9 @@ function cGfxCircle as integer
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
-		coordtype = FBGFX_COORDTYPE_R
+		flags = FBGFX_COORDTYPE_R
 	else
-		coordtype = FBGFX_COORDTYPE_A
+		flags = FBGFX_COORDTYPE_A
 	end if
 
 	'' '(' Expr ',' Expr ')'
@@ -538,7 +543,8 @@ function cGfxCircle as integer
 	'' (',' Expr? )? - color
 	if( hMatch( CHAR_COMMA ) ) then
 		if( cExpression( cexpr ) = FALSE ) then
-			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
+			cexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
+			flags or= FBGFX_DEFAULT_COLOR_FLAG
 		end if
 
         '' (',' Expr? )? - iniarc
@@ -573,12 +579,13 @@ function cGfxCircle as integer
         end if
 
 	else
-		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
+		cexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
+		flags or= FBGFX_DEFAULT_COLOR_FLAG
 	end if
 
 	''
 	function = rtlGfxCircle( texpr, tisptr, xexpr, yexpr, radexpr, cexpr, _
-			  			     aspexpr, iniexpr, endexpr, fillflag, coordtype )
+			  			     aspexpr, iniexpr, endexpr, fillflag, flags )
 
 end function
 
@@ -587,7 +594,7 @@ end function
 ''
 function cGfxPaint as integer
     dim as ASTNODE ptr xexpr, yexpr, pexpr, bexpr, texpr
-	dim as integer coord_type, tisptr
+	dim as integer flags, tisptr
     dim as FBSYMBOL ptr target
 
 	function = FALSE
@@ -600,9 +607,9 @@ function cGfxPaint as integer
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
-		coord_type = FBGFX_COORDTYPE_R
+		flags = FBGFX_COORDTYPE_R
 	else
-		coord_type = FBGFX_COORDTYPE_A
+		flags = FBGFX_COORDTYPE_A
 	end if
 
 	'' '(' Expr ',' Expr ')' - x and y
@@ -632,14 +639,16 @@ function cGfxPaint as integer
 	end if
 
 	if( pexpr = NULL ) then
-		pexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
+		pexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
+		flags or= FBGFX_DEFAULT_COLOR_FLAG
 	end if
 
 	if( bexpr = NULL ) then
-		bexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
+		bexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
+		flags or= FBGFX_DEFAULT_AUX_COLOR_FLAG
 	end if
 
-	function = rtlGfxPaint( texpr, tisptr, xexpr, yexpr, pexpr, bexpr, coord_type )
+	function = rtlGfxPaint( texpr, tisptr, xexpr, yexpr, pexpr, bexpr, flags )
 
 end function
 
@@ -648,7 +657,7 @@ end function
 ''
 function cGfxDrawString as integer
 	dim as ASTNODE ptr texpr, xexpr, yexpr, sexpr, cexpr, fexpr, alphaexpr, funcexpr, paramexpr
-	dim as integer tisptr, fisptr, coord_type, mode
+	dim as integer tisptr, fisptr, flags, mode
     dim as FBSYMBOL ptr target
 
 	function = FALSE
@@ -663,9 +672,9 @@ function cGfxDrawString as integer
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
-		coord_type = FBGFX_COORDTYPE_R
+		flags = FBGFX_COORDTYPE_R
 	else
-		coord_type = FBGFX_COORDTYPE_A
+		flags = FBGFX_COORDTYPE_A
 	end if
 
 	'' '(' Expr ',' Expr ')' - x and y
@@ -711,10 +720,11 @@ function cGfxDrawString as integer
 	end if
 
 	if( cexpr = NULL ) then
-		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
+		cexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
+		flags or= FBGFX_DEFAULT_COLOR_FLAG
 	end if
 
-	function = rtlGfxDrawString( texpr, tisptr, xexpr, yexpr, sexpr, cexpr, fexpr, fisptr, coord_type, mode, alphaexpr, funcexpr, paramexpr )
+	function = rtlGfxDrawString( texpr, tisptr, xexpr, yexpr, sexpr, cexpr, fexpr, fisptr, flags, mode, alphaexpr, funcexpr, paramexpr )
 
 end function
 
@@ -757,7 +767,7 @@ end function
 '' GfxView    =   VIEW (SCREEN? '(' Expr ',' Expr ')' '-' '(' Expr ',' Expr ')' (',' Expr? (',' Expr)?)? )?
 ''
 function cGfxView( byval isview as integer ) as integer
-    dim as integer screenflag
+    dim as integer flags
     dim as ASTNODE ptr x1expr, y1expr, x2expr, y2expr, fillexpr, bordexpr
 
 	function = FALSE
@@ -765,9 +775,9 @@ function cGfxView( byval isview as integer ) as integer
 	'' SCREEN?
 	if( lexGetToken() = FB_TK_SCREEN ) then
 		lexSkipToken
-		screenflag = TRUE
+		flags = FBGFX_VIEW_SCREEN_FLAG
 	else
-    	screenflag = FALSE
+    	flags = 0
 	end if
 
 	''
@@ -807,14 +817,18 @@ function cGfxView( byval isview as integer ) as integer
 
 		if( isview ) then
 			'' (',' Expr? )? - color
+			flags or= ( FBGFX_DEFAULT_COLOR_FLAG or FBGFX_DEFAULT_AUX_COLOR_FLAG )
 			if( hMatch( CHAR_COMMA ) ) then
 				if( cExpression( fillexpr ) = FALSE ) then
 					fillexpr = NULL
+				else
+					flags and= not FBGFX_DEFAULT_COLOR_FLAG
 				end if
 
         		'' (',' Expr? )? - border
         		if( hMatch( CHAR_COMMA ) ) then
 					hMatchExpression( bordexpr )
+					flags and= not FBGFX_DEFAULT_AUX_COLOR_FLAG
         		end if
         	end if
         end if
@@ -823,9 +837,9 @@ function cGfxView( byval isview as integer ) as integer
 
 	''
 	if( isview ) then
-		function = rtlGfxView( x1expr, y1expr, x2expr, y2expr, fillexpr, bordexpr, screenflag )
+		function = rtlGfxView( x1expr, y1expr, x2expr, y2expr, fillexpr, bordexpr, flags )
 	else
-		function = rtlGfxWindow( x1expr, y1expr, x2expr, y2expr, screenflag )
+		function = rtlGfxWindow( x1expr, y1expr, x2expr, y2expr, flags )
 	end if
 
 end function
@@ -1219,6 +1233,46 @@ function cGfxPoint( byref funcexpr as ASTNODE ptr ) as integer
 
 end function
 
+'':::::
+'' GfxImageCreate    =   IMAGECREATE '(' Expr ',' Expr ( ',' ( Expr )? ( ',' Expr )? )? ')'
+''
+function cGfxImageCreate( byref funcexpr as ASTNODE ptr ) as integer
+	dim as ASTNODE ptr wexpr, hexpr, cexpr, dexpr
+	dim as integer flags
+
+	function = FALSE
+
+	hMatchLPRNT( )
+
+	hMatchExpression( wexpr )
+	
+	hMatchCOMMA( )
+	
+	hMatchExpression( hexpr )
+	
+	cexpr = NULL
+	dexpr = NULL
+	flags = FBGFX_DEFAULT_COLOR_FLAG
+	
+	if( hMatch( CHAR_COMMA ) ) then
+		if( cExpression( cexpr ) = FALSE ) then
+			cexpr = NULL
+		else
+			flags = 0
+		end if
+		if( hMatch( CHAR_COMMA ) ) then
+			hMatchExpression( dexpr )
+		end if
+	end if
+	
+	hMatchRPRNT( )
+
+	funcexpr = rtlGfxImageCreate( wexpr, hexpr, cexpr, dexpr, flags )
+
+	function = funcexpr <> NULL
+
+end function
+
 #define CHECK_CODEMASK( ) 												_
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then		:_
     	exit function													:_
@@ -1315,6 +1369,10 @@ function cGfxFunct _
 	case FB_TK_POINT
 		lexSkipToken( )
 		function = cGfxPoint( funcexpr )
+	
+	case FB_TK_IMAGECREATE
+		lexSkipToken( )
+		function = cGfxImageCreate( funcexpr )
 
 	end select
 

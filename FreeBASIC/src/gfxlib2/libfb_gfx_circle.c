@@ -116,7 +116,7 @@ static void get_arc_point(float angle, float a, float b, int *x, int *y)
 
 
 /*:::::*/
-FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsigned int color, float aspect, float start, float end, int fill, int coord_type)
+FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsigned int color, float aspect, float start, float end, int fill, int flags)
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	int x, y, x1, y1, top, bottom;
@@ -127,14 +127,14 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 		return;
 	
 	orig_color = color;
-	if (color == DEFAULT_COLOR)
+	if (flags & DEFAULT_COLOR_1)
 		color = context->fg_color;
 	else
 		color = fb_hFixColor(color);
 	
 	fb_hPrepareTarget(context, target, color);
 	
-	fb_hFixRelative(context, coord_type, &fx, &fy, NULL, NULL);
+	fb_hFixRelative(context, flags, &fx, &fy, NULL, NULL);
 	
 	fb_hTranslateCoord(context, fx, fy, &x, &y);
 	
@@ -161,14 +161,14 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 			get_arc_point(start, a, b, &x1, &y1);
 			x1 = x + x1;
 			y1 = y - y1;
-			fb_GfxLine(target, x, y, x1, y1, orig_color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
+			fb_GfxLine(target, x, y, x1, y1, orig_color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA | (flags & ~COORD_TYPE_MASK));
 		}
 		if (end < 0) {
 			end = -end;
 			get_arc_point(end, a, b, &x1, &y1);
 			x1 = x + x1;
 			y1 = y - y1;
-			fb_GfxLine(target, x, y, x1, y1, orig_color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
+			fb_GfxLine(target, x, y, x1, y1, orig_color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA | (flags & ~COORD_TYPE_MASK));
 		}
 		
 		while (end < start)

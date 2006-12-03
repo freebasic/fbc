@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL void fb_GfxPset(void *target, float fx, float fy, unsigned int color, int coord_type, int ispreset)
+FBCALL void fb_GfxPset(void *target, float fx, float fy, unsigned int color, int flags, int ispreset)
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	int x, y;
@@ -36,7 +36,7 @@ FBCALL void fb_GfxPset(void *target, float fx, float fy, unsigned int color, int
 	if (!__fb_gfx)
 		return;
 	
-	if (color == DEFAULT_COLOR) {
+	if (flags & DEFAULT_COLOR_1) {
 		if (ispreset)
 			color = context->bg_color;
 		else
@@ -47,7 +47,7 @@ FBCALL void fb_GfxPset(void *target, float fx, float fy, unsigned int color, int
 	
 	fb_hPrepareTarget(context, target, color);
 	
-	fb_hFixRelative(context, coord_type, &fx, &fy, NULL, NULL);
+	fb_hFixRelative(context, flags, &fx, &fy, NULL, NULL);
 	
 	fb_hTranslateCoord(context, fx, fy, &x, &y);
 	

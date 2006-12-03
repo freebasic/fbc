@@ -356,9 +356,15 @@ void fb_hX11InitWindow(int x, int y)
 	XSetWindowAttributes attribs;
 	XEvent event;
 	
-	XMoveResizeWindow(fb_linux.display, fb_linux.window, x, y, fb_linux.w, fb_linux.h);
-	attribs.override_redirect = ((fb_linux.flags & DRIVER_FULLSCREEN) ? True : False);
+	attribs.override_redirect = False;
 	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
+	
+	XMoveResizeWindow(fb_linux.display, fb_linux.window, x, y, fb_linux.w, fb_linux.h);
+	
+	if (fb_linux.flags & DRIVER_FULLSCREEN) {
+		attribs.override_redirect = True;
+		XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
+	}
 	
 	XMapRaised(fb_linux.display, fb_linux.window);
 	
@@ -461,8 +467,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	}
 	
 	size = XAllocSizeHints();
-	size->flags = PPosition | PBaseSize | PMinSize | PMaxSize | PResizeInc;
-	size->x = size->y = 0;
+	size->flags = PBaseSize | PMinSize | PMaxSize | PResizeInc;
 	size->min_width = size->base_width = fb_linux.w;
 	size->min_height = size->base_height = fb_linux.h;
 	if (flags & DRIVER_NO_SWITCH) {
@@ -717,9 +722,10 @@ void fb_hX11SetWindowTitle(char *title)
 int fb_hX11SetWindowPos(int x, int y)
 {
 	Window window, root, parent, *children;
-	XWindowAttributes attribs;
+	XWindowAttributes attribs = { 0 };
 	XEvent event;
 	unsigned int num_children;
+	int dx = 0, dy = 0;
 	
 	if (fb_linux.flags & DRIVER_FULLSCREEN)
 		return 0;
@@ -727,14 +733,20 @@ int fb_hX11SetWindowPos(int x, int y)
 	parent = fb_linux.window;
 	do {
 		window = parent;
+		dx += attribs.x;
+		dy += attribs.y;
+		XGetWindowAttributes(fb_linux.display, window, &attribs);
 		XQueryTree(fb_linux.display, window, &root, &parent, &children, &num_children);
 		if (children) XFree(children);
 	} while (parent != root_window);
-	XGetWindowAttributes(fb_linux.display, window, &attribs);
 	if (x == 0x80000000)
 		x = attribs.x;
+	else
+		x -= dx;
 	if (y == 0x80000000)
 		y = attribs.y;
+	else
+		y -= dy;
 	
 	XMoveWindow(fb_linux.display, fb_linux.window, x, y);
 	/* remove any mouse motion events */
@@ -742,7 +754,7 @@ int fb_hX11SetWindowPos(int x, int y)
 		;
 	fb_hX11Unlock();
 	
-	return (attribs.x & 0xFFFF) | (attribs.y << 16);
+	return ((attribs.x + dx) & 0xFFFF) | ((attribs.y + dy) << 16);
 }
 
 

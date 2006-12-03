@@ -313,6 +313,7 @@
 #define FB_RTL_GFXSCREENSET 			"fb_GfxScreen"
 #define FB_RTL_GFXSCREENRES 			"fb_GfxScreenRes"
 #define FB_RTL_GFXEVENT					"fb_GfxEvent"
+#define FB_RTL_GFXIMAGECREATE			"fb_GfxImageCreate"
 
 #define FB_RTL_PROFILEMCOUNT            "mcount"
 #define FB_RTL_PROFILEMONSTARTUP        "_monstartup"
@@ -611,6 +612,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GFXSCREENSET
 	FB_RTL_IDX_GFXSCREENRES
 	FB_RTL_IDX_GFXEVENT
+	FB_RTL_IDX_GFXIMAGECREATE
 
 	FB_RTL_IDX_PROFILEMCOUNT
 	FB_RTL_IDX_PROFILEMONSTARTUP
@@ -1513,6 +1515,15 @@ declare function rtlGfxScreenSet _
 		byval fexpr as ASTNODE ptr, _
 		byval rexpr as ASTNODE ptr _
 	) as integer
+
+declare function rtlGfxImageCreate _
+	( _
+		byval wexpr as ASTNODE ptr, _
+		byval hexpr as ASTNODE ptr, _
+		byval cexpr as ASTNODE ptr, _
+		byval dexpr as ASTNODE ptr, _
+		byval flags as integer _
+	) as ASTNODE ptr
 
 declare function rtlProfileCall_mcount _
 	( _

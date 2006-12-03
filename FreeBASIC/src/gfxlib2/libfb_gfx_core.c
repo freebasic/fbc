@@ -169,6 +169,8 @@ void fb_hTranslateCoord(FB_GFXCTX *context, float fx, float fy, int *x, int *y)
 /*:::::*/
 void fb_hFixRelative(FB_GFXCTX *context, int coord_type, float *x1, float *y1, float *x2, float *y2)
 {
+	coord_type &= COORD_TYPE_MASK;
+	
 	switch (coord_type) {
 		
 		case COORD_TYPE_R:

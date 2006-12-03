@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, unsigned int border_color, int screen)
+FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, unsigned int border_color, int flags)
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	unsigned int old_bg_color;
@@ -44,12 +44,12 @@ FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, 
 
         context->flags |= CTX_VIEWPORT_SET;
 
-        if (screen)
+        if (flags & VIEW_SCREEN)
             context->flags |= CTX_VIEW_SCREEN;
         else
             context->flags &= ~CTX_VIEW_SCREEN;
 
-        if (border_color != DEFAULT_COLOR) {
+        if (flags & DEFAULT_COLOR_2) {
             border_color = fb_hFixColor(border_color);
             /* Temporarily set full screen area clipping to draw view border */
             context->view_x = 0;
@@ -64,7 +64,7 @@ FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, 
         context->view_w = MIN(x2 - x1 + 1, __fb_gfx->w - x1);
         context->view_h = MIN(y2 - y1 + 1, __fb_gfx->h - y1);
         
-        if (fill_color != DEFAULT_COLOR) {
+        if (flags & DEFAULT_COLOR_1) {
             old_bg_color = context->bg_color;
             context->bg_color = fb_hFixColor(fill_color);
             fb_GfxClear(1);

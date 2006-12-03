@@ -55,7 +55,7 @@ typedef struct FBGFX_CHAR
 
 
 /*:::::*/
-FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font, int mode, BLENDER *blender, void *param)
+FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int flags, FBSTRING *string, unsigned int color, void *font, int mode, BLENDER *blender, void *param)
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	FBGFX_CHAR char_data[256], *ch;
@@ -72,7 +72,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 	}
 	
 	if (mode != PUT_MODE_ALPHA) {
-		if (color == DEFAULT_COLOR)
+		if (flags & DEFAULT_COLOR_1)
 			color = context->fg_color;
 		else
 			color = fb_hFixColor(color);
@@ -80,7 +80,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 	
 	fb_hPrepareTarget(context, target, color);
 	
-	fb_hFixRelative(context, coord_type, &fx, &fy, NULL, NULL);
+	fb_hFixRelative(context, flags, &fx, &fy, NULL, NULL);
 	
 	fb_hTranslateCoord(context, fx, fy, &x, &y);
 	

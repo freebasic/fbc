@@ -459,6 +459,7 @@ enum FB_TOKEN
 	FB_TK_SCREENRES
 	FB_TK_PAINT
 	FB_TK_DRAW
+	FB_TK_IMAGECREATE
 end enum
 
 '' single char tokens

@@ -34,7 +34,7 @@ type SYMBKWD
 end type
 
 	'' keywords: name, id (token), class
-const SYMB_MAXKEYWORDS = 210
+const SYMB_MAXKEYWORDS = 211
 
 	dim shared kwdTb( 0 to SYMB_MAXKEYWORDS-1 ) as SYMBKWD => _
 	{ _
@@ -247,6 +247,7 @@ const SYMB_MAXKEYWORDS = 210
         (@"SCREENRES", FB_TK_SCREENRES		, FB_TKCLASS_QUIRKWD), _
         (@"PAINT"	, FB_TK_PAINT			, FB_TKCLASS_QUIRKWD), _
         (@"DRAW"	, FB_TK_DRAW			, FB_TKCLASS_QUIRKWD), _
+        (@"IMAGECREATE", FB_TK_IMAGECREATE	, FB_TKCLASS_QUIRKWD), _
         (NULL) _
 	}
 

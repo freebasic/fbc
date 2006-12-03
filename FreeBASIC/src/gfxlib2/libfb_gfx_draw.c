@@ -197,7 +197,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				}
 				if (draw) {
 					DRIVER_UNLOCK();
-					fb_GfxLine(target, (int)x, (int)y, (int)x2, (int)y2, DEFAULT_COLOR, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
+					fb_GfxLine(target, (int)x, (int)y, (int)x2, (int)y2, 0, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA | DEFAULT_COLOR_1);
 					DRIVER_LOCK();
 				}
 				if (move) {

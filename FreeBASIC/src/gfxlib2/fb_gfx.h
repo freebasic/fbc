@@ -103,7 +103,6 @@ extern "C" {
 
 #define HAS_MMX					0x01000000
 #define SCREEN_EXIT				0x80000000
-#define DEFAULT_COLOR			0xFEFF00FF
 #define SCREEN_LOCKED			0x00000001
 #define SCREEN_AUTOLOCKED		0x00000002
 #define PRINT_SCROLL_WAS_OFF	0x00000004
@@ -118,12 +117,16 @@ extern "C" {
 #define CTX_VIEWPORT_SET		0x00000010
 #define CTX_VIEW_SCREEN			0x00000020
 
-#define COORD_TYPE_AA		0
-#define COORD_TYPE_AR		1
-#define COORD_TYPE_RA		2
-#define COORD_TYPE_RR		3
-#define COORD_TYPE_A		4
-#define COORD_TYPE_R		5
+#define COORD_TYPE_AA			0
+#define COORD_TYPE_AR			1
+#define COORD_TYPE_RA			2
+#define COORD_TYPE_RR			3
+#define COORD_TYPE_A			4
+#define COORD_TYPE_R			5
+#define COORD_TYPE_MASK			0x00000007
+#define DEFAULT_COLOR_1			0x80000000
+#define DEFAULT_COLOR_2			0x40000000
+#define VIEW_SCREEN				0x00000001
 
 #define LINE_TYPE_LINE		0
 #define LINE_TYPE_B		1
@@ -413,7 +416,7 @@ extern int fb_hGL_ExtensionSupported(const char *extension);
 extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL int fb_GfxScreenRes(int width, int height, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, int *refresh_rate, FBSTRING *driver);
-extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth);
+extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth, int flags);
 extern FBCALL void fb_GfxImageDestroy(void *image);
 extern FBCALL void fb_GfxPalette(int index, int r, int g, int b);
 extern FBCALL void fb_GfxPaletteUsing(int *data);

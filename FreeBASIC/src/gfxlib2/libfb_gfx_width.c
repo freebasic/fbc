@@ -74,8 +74,8 @@ int fb_GfxWidth(int w, int h)
         /* Reset graphics VIEW */
         fb_GfxView( -32768, -32768,
                     -32768, -32768,
-                    DEFAULT_COLOR, DEFAULT_COLOR,
-                    FALSE );
+                    0, 0,
+                    DEFAULT_COLOR_1 | DEFAULT_COLOR_2 );
 
         /* Reset VIEW PRINT */
         fb_ConsoleView( 0, 0 );
