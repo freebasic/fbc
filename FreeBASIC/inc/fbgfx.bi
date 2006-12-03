@@ -29,65 +29,66 @@ namespace FB
 	''	SCREEN 14, 16,, GFX_FULLSCREEN
 	''	SCREEN 18, 32,, GFX_OPENGL OR GFX_STENCIL_BUFFER
 	''
-	#define GFX_NULL					-1
-	#define GFX_WINDOWED				&h00
-	#define GFX_FULLSCREEN				&h01
-	#define GFX_OPENGL					&h02
-	#define GFX_NO_SWITCH				&h04
-	#define GFX_NO_FRAME				&h08
-	#define GFX_SHAPED_WINDOW			&h10
-	#define GFX_ALWAYS_ON_TOP			&h20
-	#define GFX_ALPHA_PRIMITIVES		&h40
+	const as integer GFX_NULL 					= -1		, _
+					 GFX_WINDOWED				= &h00		, _
+					 GFX_FULLSCREEN				= &h01		, _
+					 GFX_OPENGL					= &h02		, _
+					 GFX_NO_SWITCH				= &h04		, _
+					 GFX_NO_FRAME				= &h08		, _
+					 GFX_SHAPED_WINDOW			= &h10		, _
+					 GFX_ALWAYS_ON_TOP			= &h20		, _
+					 GFX_ALPHA_PRIMITIVES		= &h40
 	'' OpenGL options
-	#define GFX_STENCIL_BUFFER			&h10000
-	#define GFX_ACCUMULATION_BUFFER		&h20000
-	#define GFX_MULTISAMPLE				&h40000
+	const as integer GFX_STENCIL_BUFFER			= &h10000	, _
+					 GFX_ACCUMULATION_BUFFER	= &h20000	, _
+					 GFX_MULTISAMPLE			= &h40000
 
 
 	'' Constants accepted by ScreenControl
 	''
-	#define GET_WINDOW_POS				0
-	#define GET_WINDOW_TITLE			1
-	#define GET_WINDOW_HANDLE			2
-	#define GET_DESKTOP_SIZE			3
-	#define GET_SCREEN_SIZE				4
-	#define GET_SCREEN_DEPTH			5
-	#define GET_SCREEN_BPP				6
-	#define GET_SCREEN_PITCH			7
-	#define GET_SCREEN_REFRESH			8
-	#define GET_DRIVER_NAME				9
-	#define GET_TRANSPARENT_COLOR		10
-	#define GET_VIEWPORT				11
-	#define GET_PEN_POS					12
-	#define GET_COLOR					13
-	''
-	#define SET_WINDOW_POS				100
-	#define SET_WINDOW_TITLE			101
-	#define SET_PEN_POS					102
-	#define SET_DRIVER_NAME				103
+	'' Getters:
+	const as integer GET_WINDOW_POS				= 0		, _
+					 GET_WINDOW_TITLE			= 1		, _
+					 GET_WINDOW_HANDLE			= 2		, _
+					 GET_DESKTOP_SIZE			= 3		, _
+					 GET_SCREEN_SIZE			= 4		, _
+					 GET_SCREEN_DEPTH			= 5		, _
+					 GET_SCREEN_BPP				= 6		, _
+					 GET_SCREEN_PITCH			= 7		, _
+					 GET_SCREEN_REFRESH			= 8		, _
+					 GET_DRIVER_NAME			= 9		, _
+					 GET_TRANSPARENT_COLOR		= 10	, _
+					 GET_VIEWPORT				= 11	, _
+					 GET_PEN_POS				= 12	, _
+					 GET_COLOR					= 13
+	'' Setters:
+	const as integer SET_WINDOW_POS				= 100	, _
+					 SET_WINDOW_TITLE			= 101	, _
+					 SET_PEN_POS				= 102	, _
+					 SET_DRIVER_NAME			= 103
 
 
 	'' Color values for transparency
 	''
-	#define MASK_COLOR_INDEX			0
-	#define MASK_COLOR					&hFF00FF
+	const as integer MASK_COLOR_INDEX			= 0, _
+					 MASK_COLOR					= &hFF00FF
 
 
 	'' Event type IDs
 	''
-	#define EVENT_KEY_PRESS				1
-	#define EVENT_KEY_RELEASE			2
-	#define EVENT_KEY_REPEAT			3
-	#define EVENT_MOUSE_MOVE			4
-	#define EVENT_MOUSE_BUTTON_PRESS	5
-	#define EVENT_MOUSE_BUTTON_RELEASE	6
-	#define EVENT_MOUSE_DOUBLE_CLICK	7
-	#define EVENT_MOUSE_WHEEL			8
-	#define EVENT_MOUSE_ENTER			9
-	#define EVENT_MOUSE_EXIT			10
-	#define EVENT_WINDOW_GOT_FOCUS		11
-	#define EVENT_WINDOW_LOST_FOCUS		12
-	#define EVENT_WINDOW_CLOSE			13
+	const as integer EVENT_KEY_PRESS			= 1		, _
+					 EVENT_KEY_RELEASE			= 2		, _
+					 EVENT_KEY_REPEAT			= 3		, _
+					 EVENT_MOUSE_MOVE			= 4		, _
+					 EVENT_MOUSE_BUTTON_PRESS	= 5		, _
+					 EVENT_MOUSE_BUTTON_RELEASE	= 6		, _
+					 EVENT_MOUSE_DOUBLE_CLICK	= 7		, _
+					 EVENT_MOUSE_WHEEL			= 8		, _
+					 EVENT_MOUSE_ENTER			= 9		, _
+					 EVENT_MOUSE_EXIT			= 10	, _
+					 EVENT_WINDOW_GOT_FOCUS		= 11	, _
+					 EVENT_WINDOW_LOST_FOCUS	= 12	, _
+					 EVENT_WINDOW_CLOSE			= 13
 
 
 	'' Event structure, to be used with ScreenEvent
@@ -122,7 +123,7 @@ namespace FB
 
 	'' Image buffer header, new style (incorporates old header)
 	''
-	type PUT_HEADER field = 1
+	type IMAGE field = 1
 		union
 			old as _OLD_HEADER
 			type as uinteger
@@ -132,111 +133,123 @@ namespace FB
 		height as uinteger
 		pitch as uinteger
 		_reserved(1 to 12) as ubyte
+		
+		'' properties
+		declare property pixels() as ubyte ptr
 	end type
-
+	
+	'' This is a trick to obtain a pointer to the pixels data area
+	''
+	property IMAGE.pixels() as ubyte ptr
+		return cast(ubyte ptr, @this) + sizeof(IMAGE)
+	end property
+	
+	type PUT_HEADER as IMAGE
+	
 
 	'' Constant identifying new style headers
 	'' (image.type must be equal to this value in new style headers)
 	''
-	#define PUT_HEADER_NEW				&h7
+	const as integer PUT_HEADER_NEW				= &h7
 
 
 	'' Mouse button constants to be used with GETMOUSE
 	''
-	#define BUTTON_LEFT					&h1
-	#define BUTTON_RIGHT				&h2
-	#define BUTTON_MIDDLE				&h4
+	const as integer BUTTON_LEFT				= &h1	, _
+					 BUTTON_RIGHT				= &h2	, _
+					 BUTTON_MIDDLE				= &h4
 
 
 	'' Keyboard scancodes returned by MULTIKEY
 	''
-	#define SC_ESCAPE					&h01
-	#define SC_1						&h02
-	#define SC_2						&h03
-	#define SC_3						&h04
-	#define SC_4						&h05
-	#define SC_5						&h06
-	#define SC_6						&h07
-	#define SC_7						&h08
-	#define SC_8						&h09
-	#define SC_9						&h0A
-	#define SC_0						&h0B
-	#define SC_MINUS					&h0C
-	#define SC_EQUALS					&h0D
-	#define SC_BACKSPACE				&h0E
-	#define SC_TAB						&h0F
-	#define SC_Q						&h10
-	#define SC_W						&h11
-	#define SC_E						&h12
-	#define SC_R						&h13
-	#define SC_T						&h14
-	#define SC_Y						&h15
-	#define SC_U						&h16
-	#define SC_I						&h17
-	#define SC_O						&h18
-	#define SC_P						&h19
-	#define SC_LEFTBRACKET				&h1A
-	#define SC_RIGHTBRACKET				&h1B
-	#define SC_ENTER					&h1C
-	#define SC_CONTROL					&h1D
-	#define SC_A						&h1E
-	#define SC_S						&h1F
-	#define SC_D						&h20
-	#define SC_F						&h21
-	#define SC_G						&h22
-	#define SC_H						&h23
-	#define SC_J						&h24
-	#define SC_K						&h25
-	#define SC_L						&h26
-	#define SC_SEMICOLON				&h27
-	#define SC_QUOTE					&h28
-	#define SC_TILDE					&h29
-	#define SC_LSHIFT					&h2A
-	#define SC_BACKSLASH				&h2B
-	#define SC_Z						&h2C
-	#define SC_X						&h2D
-	#define SC_C						&h2E
-	#define SC_V						&h2F
-	#define SC_B						&h30
-	#define SC_N						&h31
-	#define SC_M						&h32
-	#define SC_COMMA					&h33
-	#define SC_PERIOD					&h34
-	#define SC_SLASH					&h35
-	#define SC_RSHIFT					&h36
-	#define SC_MULTIPLY					&h37
-	#define SC_ALT						&h38
-	#define SC_SPACE					&h39
-	#define SC_CAPSLOCK					&h3A
-	#define SC_F1						&h3B
-	#define SC_F2						&h3C
-	#define SC_F3						&h3D
-	#define SC_F4						&h3E
-	#define SC_F5						&h3F
-	#define SC_F6						&h40
-	#define SC_F7						&h41
-	#define SC_F8						&h42
-	#define SC_F9						&h43
-	#define SC_F10						&h44
-	#define SC_NUMLOCK					&h45
-	#define SC_SCROLLLOCK				&h46
-	#define SC_HOME						&h47
-	#define SC_UP						&h48
-	#define SC_PAGEUP					&h49
-	#define SC_LEFT						&h4B
-	#define SC_RIGHT					&h4D
-	#define SC_PLUS						&h4E
-	#define SC_END						&h4F
-	#define SC_DOWN						&h50
-	#define SC_PAGEDOWN					&h51
-	#define SC_INSERT					&h52
-	#define SC_DELETE					&h53
-	#define SC_F11						&h57
-	#define SC_F12						&h58
-	#define SC_LWIN						&h7D
-	#define SC_RWIN						&h7E
-	#define SC_MENU						&h7F
-
+	enum
+		SC_ESCAPE								= &h01
+		SC_1
+		SC_2
+		SC_3
+		SC_4
+		SC_5
+		SC_6
+		SC_7
+		SC_8
+		SC_9
+		SC_0
+		SC_MINUS
+		SC_EQUALS
+		SC_BACKSPACE
+		SC_TAB
+		SC_Q
+		SC_W
+		SC_E
+		SC_R
+		SC_T
+		SC_Y
+		SC_U
+		SC_I
+		SC_O
+		SC_P
+		SC_LEFTBRACKET
+		SC_RIGHTBRACKET
+		SC_ENTER
+		SC_CONTROL
+		SC_A
+		SC_S
+		SC_D
+		SC_F
+		SC_G
+		SC_H
+		SC_J
+		SC_K
+		SC_L
+		SC_SEMICOLON
+		SC_QUOTE
+		SC_TILDE
+		SC_LSHIFT
+		SC_BACKSLASH
+		SC_Z
+		SC_X
+		SC_C
+		SC_V
+		SC_B
+		SC_N
+		SC_M
+		SC_COMMA
+		SC_PERIOD
+		SC_SLASH
+		SC_RSHIFT
+		SC_MULTIPLY
+		SC_ALT
+		SC_SPACE
+		SC_CAPSLOCK
+		SC_F1
+		SC_F2
+		SC_F3
+		SC_F4
+		SC_F5
+		SC_F6
+		SC_F7
+		SC_F8
+		SC_F9
+		SC_F10
+		SC_NUMLOCK
+		SC_SCROLLLOCK
+		SC_HOME
+		SC_UP
+		SC_PAGEUP
+		SC_LEFT
+		SC_RIGHT
+		SC_PLUS
+		SC_END
+		SC_DOWN
+		SC_PAGEDOWN
+		SC_INSERT
+		SC_DELETE
+		SC_F11									= &h57
+		SC_F12
+		SC_LWIN									= &h7D
+		SC_RWIN
+		SC_MENU
+	end enum
 
 end namespace
 
