@@ -45,14 +45,14 @@ int fb_last_bc = FB_COLOR_BLACK,
 	fb_last_fc = FB_COLOR_WHITE;
 
 /*:::::*/
-int fb_ConsoleColor( int fc, int bc )
+int fb_ConsoleColor( int fc, int bc, int flags )
 {
 	int cur = fb_last_fc | (fb_last_bc << 16);
 	
-	if( fc >= 0 )
+	if( !( flags & FB_COLOR_FG_DEFAULT ) )
 		fb_last_fc = fc & 15;
 
-	if( bc >= 0 )
+	if( !( flags & FB_COLOR_BG_DEFAULT ) )
 		fb_last_bc = bc & 15;
 
 	ScreenAttrib = fb_last_fc | (fb_last_bc << 4);

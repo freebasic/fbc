@@ -179,6 +179,48 @@ function cWidthStmt _
 end function
 
 '':::::
+function cColorStmt _
+	( _
+		byval isfunc as integer _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr fore_color, back_color
+    dim as integer checkrprnt
+
+	function = NULL
+
+	'' COLOR
+	lexSkipToken( )
+
+	if( isfunc ) then
+		'' '('?
+		if( hMatch( CHAR_LPRNT ) = TRUE ) then
+			if( cExpression( fore_color ) = FALSE ) then
+				fore_color = NULL
+			end if
+			if( hMatch( CHAR_COMMA ) = TRUE ) then
+				hMatchExpression( back_color )
+			end if
+			hMatchRPRNT( )
+		end if
+	else
+		checkrprnt = hMatch( CHAR_LPRNT )
+		if( cExpression( fore_color ) = FALSE ) then
+			fore_color = NULL
+		end if
+		if( hMatch( CHAR_COMMA ) = TRUE ) then
+			hMatchExpression( back_color )
+		end if
+		if( checkrprnt ) then
+			hMatchRPRNT( )
+		end if
+	end if
+
+	function = rtlColor( fore_color, back_color, isfunc )
+
+end function
+
+'':::::
 '' ScreenFunct   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
 ''
 function cScreenFunct _

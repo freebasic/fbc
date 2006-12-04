@@ -27,6 +27,10 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
+#define FB_COLOR_FG_DEFAULT		&h00000001
+#define FB_COLOR_BG_DEFAULT		&h00000002
+
+
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to 15 ) = _
 	{ _
 		/' fb_ConsoleView ( byval toprow as integer = 0, _
@@ -167,18 +171,21 @@
 	 			) _
 	 		} _
 		), _
-		/' color( byval fc as integer = -1, byval bc as integer = -1 ) as integer '/ _
+		/' color( byval fc as integer, byval bc as integer, byval flags as integer ) as integer '/ _
 		( _
-			@"color", @"fb_Color", _
+			@FB_RTL_COLOR, NULL, _
 	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
+	 		3, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -291,6 +298,54 @@ function rtlWidthScreen _
     else
     	function = proc
     end if
+end function
+
+'':::::
+function rtlColor _
+	( _
+		byval fexpr as ASTNODE ptr, _
+		byval bexpr as ASTNODE ptr, _
+		byval isfunc as integer _
+	) as ASTNODE ptr
+	
+	dim as ASTNODE ptr proc
+	dim as integer flags
+	
+	function = NULL
+	flags = 0
+	
+	''
+    proc = astNewCALL( PROCLOOKUP( COLOR ) )
+
+    '' byval fore_color as integer
+    if( fexpr = NULL ) then
+    	fexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    	flags or= FB_COLOR_FG_DEFAULT
+    end if
+    if( astNewARG( proc, fexpr ) = NULL ) then
+    	exit function
+    end if
+
+    '' byval back_color as integer
+    if( bexpr = NULL ) then
+    	bexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    	flags or= FB_COLOR_BG_DEFAULT
+    end if
+    if( astNewARG( proc, bexpr ) = NULL ) then
+    	exit function
+    end if
+    
+    '' byval flags as integer
+    if( astNewARG( proc, astNewCONSTi( flags, FB_DATATYPE_INTEGER ) ) = NULL ) then
+    	exit function
+    end if
+
+	if( isfunc = FALSE ) then
+		astAdd( proc )
+	end if
+	
+	function = proc
+	
 end function
 
 '':::::

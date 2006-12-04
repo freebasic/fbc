@@ -53,7 +53,7 @@ int fb_last_bc, fb_last_fc;/* = FB_COLOR_BLACK,
 	 = FB_COLOR_WHITE;
 */
 /*:::::*/
-int fb_ConsoleColor( int fc, int bc )
+int fb_ConsoleColor( int fc, int bc, int flags )
 {
 
 	return 0;

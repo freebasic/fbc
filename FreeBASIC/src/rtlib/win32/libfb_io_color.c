@@ -74,18 +74,18 @@ void fb_ConsoleColorEx( HANDLE hConsole, int fc, int bc )
 }
 
 /*:::::*/
-int fb_ConsoleColor( int fc, int bc )
+int fb_ConsoleColor( int fc, int bc, int flags )
 {
     int cur = fb_last_fc | (fb_last_bc << 16);
 
-    if( fc >= 0 ) {
+    if( !( flags & FB_COLOR_FG_DEFAULT ) ) {
         fb_last_fc = (fc & 0xF);
         fc = colorlut[fb_last_fc];
     } else {
         fc = fb_last_fc;
     }
 
-    if( bc >= 0 ) {
+    if( !( flags & FB_COLOR_BG_DEFAULT ) ) {
         fb_last_bc = (bc & 0xF);
         bc = colorlut[fb_last_bc];
     } else {

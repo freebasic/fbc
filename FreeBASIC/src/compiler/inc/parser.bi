@@ -945,6 +945,11 @@ declare function cWidthStmt _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
+declare function cColorStmt _
+	( _
+		byval isfunc as integer _
+	) as ASTNODE ptr
+
 declare function cStringFunct _
 	( _
 		byval tk as FB_TOKEN, _

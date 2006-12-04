@@ -64,7 +64,7 @@ void fb_ConsoleClear( int mode )
 		fb_hTermOut(SEQ_LOCATE, 0, i-1);
 		fb_hTermOut(SEQ_CLEOL, 0, 0);
 	}
-	fb_hTermOut(SEQ_HOME, 0, 0);
+	fb_hTermOut(SEQ_LOCATE, 0, start-1);
 	__fb_con.cur_y = start;
 	__fb_con.cur_x = 1;
 }

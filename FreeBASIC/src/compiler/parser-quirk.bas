@@ -125,6 +125,10 @@ function cQuirkStmt _
         CHECK_CODEMASK( )
         res = cWidthStmt( FALSE ) <> NULL
 
+	case FB_TK_COLOR
+		CHECK_CODEMASK( )
+		res = cColorStmt( FALSE ) <> NULL
+		
 	case else
 		res = FALSE
 	end select
@@ -199,6 +203,10 @@ function cQuirkFunction _
     case FB_TK_WIDTH
         funcexpr = cWidthStmt( TRUE )
         res = funcexpr <> NULL
+
+	case FB_TK_COLOR
+		funcexpr = cColorStmt( TRUE )
+		res = funcexpr <> NULL
 
 	case FB_TK_SCREEN
 		res = cScreenFunct( funcexpr )

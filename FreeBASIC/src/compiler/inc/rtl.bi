@@ -216,6 +216,7 @@
 
 #define FB_RTL_CONSOLEVIEW 				"fb_ConsoleView"
 #define FB_RTL_CONSOLEREADXY 			"fb_ReadXY"
+#define FB_RTL_COLOR					"fb_Color"
 
 #define FB_RTL_MEMCOPY 					"fb_MemCopy"
 #define FB_RTL_MEMSWAP 					"fb_MemSwap"
@@ -515,6 +516,7 @@ enum FB_RTL_IDX
 
 	FB_RTL_IDX_CONSOLEVIEW
 	FB_RTL_IDX_CONSOLEREADXY
+	FB_RTL_IDX_COLOR
 
 	FB_RTL_IDX_MEMCOPY
 	FB_RTL_IDX_MEMSWAP
@@ -1189,6 +1191,13 @@ declare function rtlWidthFile _
 	( _
 		byval fnum as ASTNODE ptr, _
 		byval width_arg as ASTNODE ptr, _
+		byval isfunc as integer _
+	) as ASTNODE ptr
+
+declare function rtlColor _
+	( _
+		byval fore_color as ASTNODE ptr, _
+		byval back_color as ASTNODE ptr, _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 

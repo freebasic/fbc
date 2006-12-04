@@ -156,7 +156,7 @@ int fb_hTermOut( int code, int param1, int param2 )
 			case SEQ_SET_COLOR_EX:
 				fprintf(__fb_con.f_out, "\e[%dm", param1);
 				break;
-				
+			
 			default:
 				fputs(extra_seq[code - SEQ_EXTRA], __fb_con.f_out);
 				break;
@@ -318,6 +318,7 @@ void fb_hInit ( void )
 		old_sighandler[sigs[i]] = signal(sigs[i],  signal_handler);
 
 	__fb_con.char_buffer = NULL;
-	__fb_con.fg_color = __fb_con.bg_color = -1;
+	__fb_con.fg_color = 7;
+	__fb_con.bg_color = 0;
 	console_resize(SIGWINCH);
 }
