@@ -58,24 +58,6 @@ static void (*update_mask)(unsigned char *src, unsigned char *mask, int w, int h
 
 
 /*:::::*/
-static int calc_comp_height( int h )
-{
-	if( h < 240 )
-		return 240;
-	else if( h < 480 )
-		return 480;
-	else if( h < 600 )
-		return 600;
-	else if( h < 768 )
-		return 768;
-	else if( h < 1024 )
-		return 1024;
-	else
-		return 0;
-}
-
-
-/*:::::*/
 static void update_mask_8(unsigned char *pixel, unsigned char *mask, int w, int h)
 {
 	int x, b;
@@ -188,17 +170,12 @@ static int x11_init(void)
 	if (((!display_name[0]) || (display_name[0] == ':') || (!strncmp(display_name, "unix:", 5))) &&
 	    (XShmQueryExtension(fb_linux.display))) {
 		if (fb_linux.flags & DRIVER_FULLSCREEN) {
-			if (fb_hX11EnterFullscreen(fb_linux.h)) {
+			if (fb_hX11EnterFullscreen(&h)) {
 				fb_hX11LeaveFullscreen();
-				if (!(h = calc_comp_height(fb_linux.h)))
-					return -1;
-				XResizeWindow(fb_linux.display, fb_linux.window, fb_linux.w, h);
-				fb_linux.display_offset = (h - fb_linux.h) >> 1;
-				if (fb_hX11EnterFullscreen(h)) {
-					fb_hX11LeaveFullscreen();
-					return -1;
-				}
+				return -1;
 			}
+			XResizeWindow(fb_linux.display, fb_linux.window, fb_linux.w, h);
+			fb_linux.display_offset = (h - fb_linux.h) >> 1;
 		}
 		is_shm = TRUE;
 		image = XShmCreateImage(fb_linux.display, fb_linux.visual, XDefaultDepth(fb_linux.display, fb_linux.screen),
@@ -229,8 +206,6 @@ static int x11_init(void)
 	}
 	if (!image)
 		return -1;
-	
-	XSync(fb_linux.display, False);
 	
 	return 0;
 }

@@ -102,6 +102,7 @@ static int opengl_window_init(void)
 {
 	XSetWindowAttributes attribs;
 	int x = 0, y = 0;
+	int h;
 	char *display_name;
 	
 	if (!(fb_linux.flags & DRIVER_FULLSCREEN)) {
@@ -114,7 +115,7 @@ static int opengl_window_init(void)
 	if (fb_linux.flags & DRIVER_FULLSCREEN) {
 		display_name = XDisplayName(NULL);
 		if ((!display_name[0]) || (display_name[0] == ':') || (!strncmp(display_name, "unix:", 5))) {
-			if (fb_hX11EnterFullscreen(fb_linux.h)) {
+			if (fb_hX11EnterFullscreen(&h) || (h != fb_linux.h)) {
 				fb_hX11LeaveFullscreen();
 				return -1;
 			}

@@ -47,13 +47,31 @@ static Drawable root_window;
 static Atom wm_delete_window, wm_intern_hints;
 static Colormap color_map = None;
 static Time last_click_time = 0;
-static int orig_size, target_size, current_size;
+static int orig_size, target_size, current_size, real_h;
 static int orig_rate, target_rate;
 static Rotation orig_rotation;
 static Cursor blank_cursor, arrow_cursor = None;
 static int is_running = FALSE, has_focus, cursor_shown, xlib_inited = FALSE;
 static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
 static int mouse_x_root, mouse_y_root;
+
+
+/*:::::*/
+static int calc_comp_height( int h )
+{
+	if( h < 240 )
+		return 240;
+	else if( h < 480 )
+		return 480;
+	else if( h < 600 )
+		return 600;
+	else if( h < 768 )
+		return 768;
+	else if( h < 1024 )
+		return 1024;
+	else
+		return h;
+}
 
 
 /*:::::*/
@@ -224,7 +242,8 @@ static void *window_thread(void *arg)
 					break;
 				
 				case ConfigureNotify:
-					if ((event.xconfigure.width != fb_linux.w) || (event.xconfigure.height != fb_linux.h)) {
+					if ((event.xconfigure.width != fb_linux.w) || ((event.xconfigure.height != fb_linux.h) &&
+																   (event.xconfigure.height != real_h))) {
 						/* Window has been maximized: simulate ALT-Enter */
 						__fb_gfx->key[0x1C] = __fb_gfx->key[0x38] = TRUE;
 					}
@@ -244,7 +263,6 @@ static void *window_thread(void *arg)
 							fb_linux.flags ^= DRIVER_FULLSCREEN;
 							if (fb_linux.init()) {
 								fb_linux.exit();
-								XSync(fb_linux.display, True);
 								fb_linux.flags ^= DRIVER_FULLSCREEN;
 								fb_linux.init();
 							}
@@ -303,7 +321,7 @@ static void *window_thread(void *arg)
 
 
 /*:::::*/
-int fb_hX11EnterFullscreen(int h)
+int fb_hX11EnterFullscreen(int *h)
 {
 	if ((!fb_linux.config) || (target_size < 0))
 		return -1;
@@ -318,7 +336,7 @@ int fb_hX11EnterFullscreen(int h)
 		__fb_gfx->refresh_rate = fb_linux.refresh_rate = target_rate;
 	}
 	
-	XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, fb_linux.w >> 1, fb_linux.h >> 1);
+	XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, fb_linux.w >> 1, real_h >> 1);
 	XSync(fb_linux.display, False);
 	while (XGrabPointer(fb_linux.display, fb_linux.window, True, 0,
 			    GrabModeAsync, GrabModeAsync, fb_linux.window, None, CurrentTime) != GrabSuccess)
@@ -328,6 +346,7 @@ int fb_hX11EnterFullscreen(int h)
 		return -1;
 
 	current_size = target_size;
+	*h = real_h;
 
 	return 0;
 }
@@ -359,14 +378,16 @@ void fb_hX11InitWindow(int x, int y)
 	attribs.override_redirect = False;
 	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
 	
+	if (!(fb_linux.flags & DRIVER_FULLSCREEN))
+		XMapRaised(fb_linux.display, fb_linux.window);
+	
 	XMoveResizeWindow(fb_linux.display, fb_linux.window, x, y, fb_linux.w, fb_linux.h);
 	
 	if (fb_linux.flags & DRIVER_FULLSCREEN) {
 		attribs.override_redirect = True;
 		XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
+		XMapRaised(fb_linux.display, fb_linux.window);
 	}
-	
-	XMapRaised(fb_linux.display, fb_linux.window);
 	
 	if (fb_linux.flags & DRIVER_ALWAYS_ON_TOP) {
 		fb_hMemSet(&event, 0, sizeof(event));
@@ -406,7 +427,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	XRRScreenSize *sizes;
 	short *rates;
 	int version, dummy;
-	int i, j, num_formats, num_sizes, num_rates;
+	int i, j, num_formats, num_sizes, num_rates, supersized_h;
 	int gc_mask, keycode_min, keycode_max;
 	KeySym keysym;
 	const char *intern_atoms[] = { "_MOTIF_WM_HINTS", "KWM_WIN_DECORATION", "_WIN_HINTS" };
@@ -419,6 +440,8 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	fb_linux.h = h;
 	fb_linux.flags = flags;
 	fb_linux.refresh_rate = refresh_rate;
+	
+	supersized_h = calc_comp_height(fb_linux.h);
 	
 	color_map = None;
 	arrow_cursor = None;
@@ -528,9 +551,17 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		sizes = XRRConfigSizes(fb_linux.config, &num_sizes);
 		target_size = -1;
 		for (i = 0; i < num_sizes; i++) {
-			if ((sizes[i].width == fb_linux.w) && (sizes[i].height == fb_linux.h)) {
-				target_size = i;
-				break;
+			if (sizes[i].width == fb_linux.w) {
+				if (sizes[i].height == fb_linux.h) {
+					target_size = i;
+					real_h = fb_linux.h;
+					break;
+				}
+				else if (sizes[i].height == supersized_h) {
+					target_size = i;
+					real_h = supersized_h;
+					break;
+				}
 			}
 		}
 		target_rate = -1;
