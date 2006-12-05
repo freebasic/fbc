@@ -492,33 +492,34 @@ function cDerefFields _
 					if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
 						exit function
 					else
-						'' error recovery: fake a pointer
-						dtype += FB_DATATYPE_POINTER
+						'' error recovery: fake a expr
+						varexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+						exit do
 					end if
 				end select
 
-			end if
+			else
+				'' times length
+				lgt = symbCalcLen( dtype - FB_DATATYPE_POINTER, subtype )
 
-			'' times length
-			lgt = symbCalcLen( dtype - FB_DATATYPE_POINTER, subtype )
-
-			if( lgt = 0 ) then
-				if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a type
-					dtype = FB_DATATYPE_POINTER + FB_DATATYPE_BYTE
-					subtype = NULL
-					lgt = 1
+				if( lgt = 0 ) then
+					if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: fake a type
+						dtype = FB_DATATYPE_POINTER + FB_DATATYPE_BYTE
+						subtype = NULL
+						lgt = 1
+					end if
 				end if
+
+				idxexpr = astNewBOP( AST_OP_MUL, _
+								 	 idxexpr, _
+								 	 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+
+
+				dtype -= FB_DATATYPE_POINTER
 			end if
-
-			idxexpr = astNewBOP( AST_OP_MUL, _
-								 idxexpr, _
-								 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
-
-
-			dtype -= FB_DATATYPE_POINTER
 
 			'' '.'?
 			is_field = (lexGetToken( ) = CHAR_DOT)
