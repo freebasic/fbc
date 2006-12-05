@@ -33,7 +33,9 @@ LINUXDRIVER fb_linux;
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
 	&fb_gfxDriverX11,
+#ifdef HAVE_GL_GL_H
 	&fb_gfxDriverOpenGL,
+#endif
 	&fb_gfxDriverFBDev,
 	NULL
 };
