@@ -39,7 +39,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include "fb.h"
 
 static FB_FILE_HOOKS hooks_dev_cons = {

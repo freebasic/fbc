@@ -39,7 +39,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include "fb.h"
 
 FBCALL void fb_PrintBufferEx( const void *buffer, size_t len, int mask );

@@ -36,7 +36,7 @@
  *
  */
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include "fb.h"
 

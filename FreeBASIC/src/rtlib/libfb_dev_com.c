@@ -39,7 +39,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include "fb.h"
 
 int fb_DevComTestProtocolEx( struct _FB_FILE *handle,

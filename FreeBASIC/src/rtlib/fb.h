@@ -168,7 +168,7 @@ extern "C" {
 
 #if defined(TARGET_WIN32) || defined(TARGET_CYGWIN)
 #include "win32/fb_win32.h"
-#elif defined(TARGET_LINUX)
+#elif defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
 #include "linux/fb_linux.h"
 #elif defined(TARGET_DOS)
 #include "dos/fb_dos.h"

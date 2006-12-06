@@ -30,6 +30,9 @@ case "$target" in
 	*-*-xbox* )
 		AC_DEFINE([TARGET_XBOX],1,[Xbox build])
 		FBRT_TARGET=xbox;;
+	*-*-freebsd* )
+		AC_DEFINE([TARGET_FREEBSD],1,[FreeBSD build])
+		FBRT_TARGET=linux;;
 	*)
 		AC_MSG_ERROR([Unsupported target])
 		;;

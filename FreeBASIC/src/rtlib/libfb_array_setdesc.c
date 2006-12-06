@@ -38,7 +38,7 @@
  *
  */
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include "fb.h"
 

@@ -40,7 +40,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include "fb.h"
 
 /** Tests for the right file name for LPT access.

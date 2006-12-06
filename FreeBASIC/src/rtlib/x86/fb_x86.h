@@ -35,6 +35,10 @@
 #ifndef __FB_X86_H__
 #define __FB_X86_H__
 
+#ifdef HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
