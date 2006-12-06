@@ -39,7 +39,6 @@
 
 #include "fb.h"
 #include "fb_linux.h"
-#include <linux/kd.h>
 
 /*:::::*/
 void fb_hExitConsole( void )
