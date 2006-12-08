@@ -54,6 +54,9 @@ FBCALL int fb_FileOpenShort( FBSTRING *str_file_mode,
     size_t file_mode_len, access_mode_len, lock_mode_len;
     int error_code = FB_RTERROR_OK;
 
+    if( !FB_FILE_INDEX_VALID( fnum ) )
+    	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+
     file_mode_len = FB_STRSIZE( str_file_mode );
     access_mode_len = FB_STRSIZE( str_access_mode );
     lock_mode_len = FB_STRSIZE( str_lock_mode );

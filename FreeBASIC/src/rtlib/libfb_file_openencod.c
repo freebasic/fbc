@@ -50,6 +50,9 @@ FBCALL int fb_FileOpenEncod
 		const char *encoding
 	)
 {
+    if( !FB_FILE_INDEX_VALID( fnum ) )
+    	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+
 	FB_FILE_ENCOD encod = fb_hFileStrToEncoding( encoding );
 
 	return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum), str, mode,
