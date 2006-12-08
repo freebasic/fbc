@@ -124,6 +124,14 @@ private function hNewOp _
 		end if
 
 	else
+		'' save elements count?
+		if( op = AST_OP_NEW_VEC ) then
+			select case dtype
+			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+				save_elmts = symbGetHasDtor( subtype )
+			end select
+		end if
+
 		do_init = init_expr <> NULL
 	end if
 
@@ -147,9 +155,13 @@ private function hNewOp _
 
 	len_expr = astNewBOP( AST_OP_MUL, _
 						  iif( clone_elmts, astCloneTree( elmts_expr ), elmts_expr ), _
-						  astNewCONSTi( symbCalcLen( dtype, subtype ) + _
-						  				iif( save_elmts, FB_INTEGERSIZE, 0 ), _
-						  				FB_DATATYPE_UINT ) )
+						  astNewCONSTi( symbCalcLen( dtype, subtype ), FB_DATATYPE_UINT ) )
+
+	if( save_elmts ) then
+		len_expr = astNewBOP( AST_OP_ADD, _
+							  len_expr, _
+							  astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
+	end if
 
 	''
 	new_expr = rtlMemNewOp( op = AST_OP_NEW_VEC, len_expr, dtype, subtype )

@@ -238,25 +238,27 @@ sub hUcase _
 		byval dst as zstring ptr _
 	) static
 
-    dim as integer i, c
+    dim as integer c
     dim as zstring ptr s, d
 
 	s = src
 	d = dst
-	for i = 1 to len( *src )
-		c = *s
 
+	do
+		c = *s
 		if( c >= 97 ) then
 			if( c <= 122 ) then
 				c -= (97 - 65)
 			end if
+		elseif( c = 0 ) then
+			exit do
 		end if
 
 		*d = c
 
 		s += 1
 		d += 1
-	next
+	loop
 
 	'' null-term
 	*d = 0
@@ -269,13 +271,15 @@ sub hClearName _
 		byval src as zstring ptr _
 	) static
 
-    dim as integer i
     dim as zstring ptr p
 
 	p = src
 
-	for i = 1 to len( *src )
+	do
 		select case as const *p
+		case 0
+			exit do
+
 		case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_0 to CHAR_9, CHAR_UNDER
 
 		case else
@@ -283,7 +287,7 @@ sub hClearName _
 		end select
 
 		p += 1
-	next
+	loop
 
 end sub
 
