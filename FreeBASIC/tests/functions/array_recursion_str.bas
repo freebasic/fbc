@@ -1,24 +1,24 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.functions.array_recursion
+namespace fbc_tests.functions.array_recursion_str
 
 type mytype
 	i	as integer
-	array(-2 to 2) as integer
+	array(-2 to 2) as string
 end type
 
 '':::::
-private sub sub1( array() as integer )
+private sub sub1( array() as string )
 
 	dim i as integer
 	for i = lbound( array ) to ubound( array )
-		CU_ASSERT( array(i) = i )
+		CU_ASSERT( array(i) = str(i) )
 	next
 
 end sub
 
 '':::::
-private sub sub2( array() as integer )
+private sub sub2( array() as string )
 
 	sub1 array()
 	
@@ -33,11 +33,11 @@ end sub
 
 private sub test_1 cdecl ()
 
-	dim array1(-2 to 2) as integer
+	dim array1(-2 to 2) as string
 	dim i as integer
 	
 	for i = lbound( array1 ) to ubound( array1 )
-		array1(i) = i
+		array1(i) = str(i)
 	next
 
 	sub2 array1()
@@ -46,7 +46,7 @@ private sub test_1 cdecl ()
 	dim array2(0) as mytype
 	
 	for i = lbound( array2(0).array ) to ubound( array2(0).array )
-		array2(0).array(i) = i
+		array2(0).array(i) = str(i)
 	next
 
 	sub3 array2()
@@ -57,7 +57,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.functions.array_recursion")
+	fbcu.add_suite("fbc_tests.functions.array_recursion_str")
 	fbcu.add_test("test_1", @test_1)
 
 end sub

@@ -19,6 +19,7 @@ operator foo.+ ( i as double )
 end operator
 
 operator foo.cast ( ) as double
+	return 0
 end operator
 
 sub test_1 cdecl	
