@@ -26,6 +26,7 @@
 #include once "CWiki.bi"
 #include once "CWakka2fbhelp.bi"
 #include once "CFbCode.bi"
+#include once "fbdoc_keywords.bi"
 
 const chBreak = chr(10)
 const chIndent = chr(9)
@@ -100,6 +101,9 @@ type CWakka2fbhelp_
 	as integer nlcount
 	as integer attrib
 	as integer metamode
+
+	as integer isflat
+
 end type
 
 '':::::
@@ -134,6 +138,7 @@ function CWakka2fbhelp_New _
 	_this->nlcount = 0
 	_this->attrib = 0
 	_this->metamode = 0
+	_this->isflat = FALSE
 
 	function = _this
 
@@ -172,6 +177,11 @@ sub CWakka2fbhelp_setIndentBase( byval _this as CWakka2fbhelp ptr, byval value a
 end sub
 
 '':::::
+sub CWakka2fbhelp_setIsflat( byval _this as CWakka2fbhelp ptr, byval value as integer )
+	_this->isflat = value
+end sub
+
+'':::::
 sub CWakka2fbhelp_setTagDoGen( byval _this as CWakka2fbhelp ptr, byval token_id as integer, byval value as integer )
 	_this->tagGenTb( token_id ) = value
 end sub
@@ -194,9 +204,16 @@ private function _emitIndent( byval _this as CWakka2fbhelp ptr ) as integer
 
 	if( _this->col = 0 ) then
 		if( (_this->indentlevel + _this->indentlevel2) > 0 ) then
+			_this->linewidth = 0
 			_this->col = _this->indentwidth * (_this->indentlevel + _this->indentlevel2 ) + _this->indent2
+			_this->linewidth = _this->maxwidth - _this->col
+
 			'' _this->res += string( _this->col, chSpace )
-			_this->res += string( (_this->indentlevel + _this->indentlevel2), chIndent )
+			if( _this->isflat ) then
+				_this->res += string( _this->indentwidth * (_this->indentlevel + _this->indentlevel2), chSpace)
+			else
+				_this->res += string( (_this->indentlevel + _this->indentlevel2), chIndent )
+			end if
 			_this->res += string( _this->indent2, chSpace )
 		end if
 	end if
@@ -299,7 +316,7 @@ private function _emitText _
 	p = text
 	n = _this->maxwidth - _this->col
 	c = len( *p )
-	while(( c >= n ) and ( n > 0 ))
+	while(( c >= n ) and ( n >= 0 ))
 
 		while( n > 0 )
 			if( p[n - 1] = 32 ) then
@@ -309,7 +326,9 @@ private function _emitText _
 		wend
 
 		if( n = 0 ) then
-			n = _this->maxwidth - _this->col
+			if( len( *p ) >= _this->linewidth ) then
+				n = _this->maxwidth - _this->col
+			end if
 		end if
 
 		if( ignoreStyle = FALSE ) then
@@ -509,10 +528,12 @@ private function _emitLink _
 	end if
 
 	if( bAnchor ) then
-		_emitSpecial( _this, chr(16) )              '' dle
-		_emitSpecial( _this, chr(29) )              '' gs
-		_emitSpecial( _this, url )					''   name of target
-		_emitSpecial( _this, chr(23) )              '' etb
+		if( _this->isflat = false ) then
+			_emitSpecial( _this, chr(16) )              '' dle
+			_emitSpecial( _this, chr(29) )              '' gs
+			_emitSpecial( _this, url )					''   name of target
+			_emitSpecial( _this, chr(23) )              '' etb
+		end if
 		return TRUE
 	end if
 
@@ -531,10 +552,12 @@ private function _emitLink _
 		_emitTestLineLength( _this, len( *text ) )
 	end if
 
-	_emitSpecial( _this, chr(16) )              '' dle
-	_emitSpecial( _this, url )					''   url
-	_emitSpecial( _this, chr(2) )               '' stx
-
+	if( _this->isflat = false ) then
+		_emitSpecial( _this, chr(16) )              '' dle
+		_emitSpecial( _this, url )					''   url
+		_emitSpecial( _this, chr(2) )               '' stx
+	end if
+	
 	if( lcase(left( *url, 5 )) = "keypg" ) then
 		_emitTextNoWrap( _this, FormatPageTitle(*text) )	''   text
 	elseif( len(*text) = 0 ) then
@@ -543,7 +566,9 @@ private function _emitLink _
 		_emitTextNoWrap( _this, *text )					''   text
 	end if
 
-	_emitSpecial( _this, chr(23) )              '' etb
+	if( _this->isflat = false ) then
+		_emitSpecial( _this, chr(23) )              '' etb
+	end if
 
 	return TRUE
 
@@ -556,6 +581,10 @@ private function _emitAttrib _
 		byval _this as CWakka2fbhelp ptr, _
 		byval attrib as integer _
 	) as integer
+
+	if( _this->isflat ) then
+		return TRUE
+	end if
 
 	if( ( attrib and &h7f ) <> _this->attrib ) then
 
@@ -613,7 +642,11 @@ private function _emitRaw _
 					if( c = 0 ) then
 					  x += " "
 					elseif c < 32 then
-						x += chr(27) + chr(c)
+						if( _this->isflat ) then
+							x += " "
+						else
+							x += chr(27) + chr(c)
+						end if
 					else
 						x += chr(c)
 					end if
@@ -1057,16 +1090,38 @@ private function _emitActionTable _
 	dim as zstring ptr cell_space = @chSpace
 	dim as string tmp
 
-	const chtb_topleft = chr(218)
-	const chtb_topmid = chr(194)
-	const chtb_topright = chr(191)
+	dim as string chtb_topleft, chtb_topmid, chtb_topright
+	dim as string chtb_horz, chtb_vert
+	dim as string chtb_botleft, chtb_botmid, chtb_botright
 
-	const chtb_horz = chr(196)
-	const chtb_vert = chr(179)
 
-	const chtb_botleft = chr(192)
-	const chtb_botmid = chr(193)
-	const chtb_botright = chr(217)
+	if( _this->isflat ) then
+
+		chtb_topleft = "+"
+		chtb_topmid = "+"
+		chtb_topright = "+"
+
+		chtb_horz = "-"
+		chtb_vert = "|"
+
+		chtb_botleft = "+"
+		chtb_botmid = "+"
+		chtb_botright = "+"
+
+	else
+
+		chtb_topleft = chr(218)
+		chtb_topmid = chr(194)
+		chtb_topright = chr(191)
+
+		chtb_horz = chr(196)
+		chtb_vert = chr(179)
+
+		chtb_botleft = chr(192)
+		chtb_botmid = chr(193)
+		chtb_botright = chr(217)
+
+	end if
 
 	_closeList( _this )
 	
@@ -1310,7 +1365,11 @@ private function _emitToken(byval _this as CWakka2fbhelp ptr, byval token as Wik
 	case WIKI_TOKEN_TEXT:
 		if( (_this->tagFlags(WIKI_TAG_BOLD) and 1) _
 			and (_this->tagFlags(WIKI_TAG_MONOSPACE) and 1)) then
-			return _emitText( _this, FormatPageTitle( token->text ))
+			dim k as string
+			k = fbdoc_FindKeyword( token->text )
+			if( len(k) > 0 ) then
+				return _emitText( _this, k )
+			end if
 		end if
 		return _emitText( _this, token->text )
 

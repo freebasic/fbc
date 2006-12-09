@@ -26,6 +26,7 @@
 
 #include once "CWiki2Chm.bi"
 #include once "CWiki2fbhelp.bi"
+#include once "CWiki2txt.bi"
 #include once "COptions.bi"
 
 #include once "fbdoc_lang.bi"
@@ -51,13 +52,14 @@ const default_CacheDir = "cache/"
 	dim as string sOutputDir = ""
 	dim as string sConnFile, sLangFile, sTocTitle, sDocToc, sTemplateDir
 	dim as integer i = 1, h
-	dim as integer bMakeKeywords = FALSE
+	dim as integer bMakeTitles = FALSE
 	dim as COptions ptr connopts = NULL
 
 	dim as integer bShowHelp = FALSE, bShowVersion = FALSE
 	dim as integer bUseWeb = FALSE, bUseSql = FALSE, bMakeIni = FALSE
 	dim as integer bEmitChm = FALSE
 	dim as integer bEmitfbhelp = FALSE
+	dim as integer bEmitTxt = FALSE
 	dim as string SinglePage = ""
 	dim as integer bSinglePage = FALSE
 	redim as string webPageList(1 to 10)
@@ -89,14 +91,16 @@ const default_CacheDir = "cache/"
 		? "   -refresh       refresh all pages"
 		? "   -chm           generate html and chm output"
 		? "   -fbhelp        generate output for fbhelp viewer"
+		? "   -txt           generate ascii text output"
 		? "   -version       show version"
 		? "   -getpage page1 [page2 [ ... pageN ]]]"
 		? "                  get specified pages from web and store in the cache"
 		? "   -getpage @listfile"
 		? "                  get specified pages using a list file from web and 
 		? "                  store in the cache"
-		? "   -makepage  pagename"
+		? "   -makepage pagename"
 		? "                  process a single page (and links on page) only"
+		? "   -maketitles    generate titles.txt
 		? ""
 		end 1
 	end if
@@ -166,12 +170,14 @@ const default_CacheDir = "cache/"
 				bUseWeb = TRUE
 			case "-usesql"
 				bUseSql = TRUE
-			case "-makekeypageslist"
-				bMakeKeywords = TRUE
+			case "-maketitles"
+				bMakeTitles = TRUE
 			case "-chm"
 				bEmitChm = TRUE
 			case "-fbhelp"
 				bEmitfbhelp = TRUE
+			case "-txt"
+				bEmitTxt = TRUE
 			case "-getpage"
 				bWebPages = TRUE
 			case "-makepage"
@@ -190,13 +196,6 @@ const default_CacheDir = "cache/"
 	if( (bUseSQL = FALSE) and (bUseWeb = FALSE)) then
 		CacheRefreshMode = CACHE_REFRESH_NONE
 	end if
-	
-	'' Check output format is set
-	if( (bEmitChm = FALSE) and (bEmitfbhelp = FALSE) ) then
-		'' bEmitChm = TRUE
-		'' TODO: warn no format is set when mutliple formats available
-	end if
-
 	
 	if sConnFile = "" then
 		sConnFile = ExePath & "/fbdoc.ini"
@@ -305,44 +304,60 @@ const default_CacheDir = "cache/"
 	'' Load Keywords
 	fbdoc_loadkeywords( "templates/default/keywords.lst" )
 
-	if( bMakeKeywords = TRUE ) then
-		misc_dumpkeypageslist( paglist, "keypages.txt" )
+	if( bMakeTitles = TRUE ) then
+		'misc_dump_keypageslist( paglist, "keypages.txt" )
+		misc_dump_titles( paglist, "titles.txt" )
+	end if
 
-	else
+	'' Check output format is set
+	if( (bEmitChm = FALSE) and (bEmitfbhelp = FALSE) and (bEmitTxt = FALSE) ) then
+		print "Warning: No output format was set."
+	end if
 
-		'' Emit formats
-				
-		if( bEmitChm )then
+	'' Emit formats
+			
+	if( bEmitChm )then
 
-			'' Generate CHM
-			sOutputDir = "html/"
-			sTemplateDir = "templates/default/code/"
+		'' Generate CHM
+		sOutputDir = "html/"
+		sTemplateDir = "templates/default/code/"
 
-			Templates_LoadFile( "chm_idx", sTemplateDir + "chm_idx.tpl.html" )
-			Templates_LoadFile( "chm_prj", sTemplateDir + "chm_prj.tpl.html" )
-			Templates_LoadFile( "chm_toc", sTemplateDir + "chm_toc.tpl.html" )
-			Templates_LoadFile( "chm_def", sTemplateDir + "chm_def.tpl.html" )
-			Templates_LoadFile( "htm_toc", sTemplateDir + "htm_toc.tpl.html" )
+		Templates_LoadFile( "chm_idx", sTemplateDir + "chm_idx.tpl.html" )
+		Templates_LoadFile( "chm_prj", sTemplateDir + "chm_prj.tpl.html" )
+		Templates_LoadFile( "chm_toc", sTemplateDir + "chm_toc.tpl.html" )
+		Templates_LoadFile( "chm_def", sTemplateDir + "chm_def.tpl.html" )
+		Templates_LoadFile( "htm_toc", sTemplateDir + "htm_toc.tpl.html" )
 
-			dim as CWiki2Chm ptr chm
-			chm = CWiki2Chm_New( @"", 1, sOutputDir, paglist, toclist )
-			CWiki2Chm_Emit( chm )
-			CWiki2Chm_Delete( chm )
+		dim as CWiki2Chm ptr chm
+		chm = CWiki2Chm_New( @"", 1, sOutputDir, paglist, toclist )
+		CWiki2Chm_Emit( chm )
+		CWiki2Chm_Delete( chm )
 
-		end if
+	end if
 
-		if( bEmitfbhelp )then
+	if( bEmitfbhelp )then
 
-			'' Generate fbhelp output for fbhelp console viewer
-			sOutputDir = "fbhelp/"
-			sTemplateDir = "templates/default/code/"
+		'' Generate fbhelp output for fbhelp console viewer
+		sOutputDir = "fbhelp/"
+		sTemplateDir = "templates/default/code/"
 
-			dim as CWiki2fbhelp ptr fbhelp
-			fbhelp = CWiki2fbhelp_New( @"", 1, sOutputDir, paglist, toclist )
-			CWiki2fbhelp_Emit( fbhelp )
-			CWiki2fbhelp_Delete( fbhelp )
+		dim as CWiki2fbhelp ptr fbhelp
+		fbhelp = CWiki2fbhelp_New( @"", 1, sOutputDir, paglist, toclist )
+		CWiki2fbhelp_Emit( fbhelp )
+		CWiki2fbhelp_Delete( fbhelp )
 
-		end if
+	end if
+
+	if( bEmitTxt )then
+
+		'' Generate ascii Txt output for single txt file
+		sOutputDir = "txt/"
+		sTemplateDir = "templates/default/code/"
+
+		dim as CWiki2txt ptr txt
+		txt = CWiki2txt_New( @"", 1, sOutputDir, paglist, toclist )
+		CWiki2txt_Emit( txt )
+		CWiki2txt_Delete( txt )
 
 	end if
 

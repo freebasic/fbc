@@ -163,13 +163,13 @@ function CWiki2Chm_EmitPages _
 			if( len(sName) > 0 ) then
 				sBody = LoadPage( sName, TRUE )
 				if( len(sbody) > 0 ) then
-					? "Emitting: " + Space(CPage_GetLevel(page)*3) + Str(CPage_GetLevel(page)) + " - " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
+					? "Emitting: " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
 					if CWiki2Chm_EmitDefPage( _this, page, sBody ) then
 						CPage_SetEmitted( page, TRUE )	
 					end if
 					okCount += 1
 				else
-					? "Error On: " + Space(CPage_GetLevel(page)*3) + Str(CPage_GetLevel(page)) + " - " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
+					? "Error On: " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
 					errCount += 1
 				end if
 			end if
@@ -177,8 +177,10 @@ function CWiki2Chm_EmitPages _
 		page = CPageList_NextEnum( @page_i )
 	wend
 
-	? str(okCount) + " pages emitted OK"  
-	? str(errCount) + " pages had no content and were skipped"
+	print str(okCount) + " pages emitted OK"  
+	if( errCount > 0 ) then
+		print str(errCount) + " pages had no content and were skipped"
+	end if
 
 	return TRUE
 

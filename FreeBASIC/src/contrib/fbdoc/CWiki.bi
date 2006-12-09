@@ -74,6 +74,14 @@ enum WIKI_TAG
 	WIKI_TAGS
 end enum
 
+enum WIKI_PAGELINK_CLASS
+	WIKI_PAGELINK_CLASS_UNKNOWN = 0
+	WIKI_PAGELINK_CLASS_SECTION = 1
+	WIKI_PAGELINK_CLASS_SUBSECT = 2
+	WIKI_PAGELINK_CLASS_KEYWORD = 3
+	WIKI_PAGELINK_CLASS_DEFAULT = 4
+end enum
+
 type Wiki_ActionParam
 	as any ptr				ll_prev
 	as any ptr				ll_next
@@ -117,6 +125,7 @@ type WikiPageLink
 	as string         text
 	as WikiToken_Link link
 	as integer        level
+	as integer        linkclass
 		
 end type
 

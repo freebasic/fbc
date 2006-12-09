@@ -17,9 +17,9 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' CWiki2fbhelp - emitter for console fbhelp file
+'' CWiki2txt - emitter for txt file
 ''
-'' chng: jul/2006 written [coderJeff]
+'' chng: dec/2006 written [coderJeff]
 ''
 
 #include once "common.bi"
@@ -30,11 +30,13 @@
 #include once "fbdoc_loader.bi"
 #include once "fbdoc_templates.bi"
 
-#include once "CWiki2fbhelp.bi"
+#include once "CWiki2txt.bi"
 #include once "CPage.bi"
 #include once "CPageList.bi"
 
-type CWiki2fbhelp_
+#include once "vbcompat.bi"
+
+type CWiki2txt_
 	as zstring ptr urlbase
 	as integer indentbase
 	as zstring ptr outputdir
@@ -45,21 +47,21 @@ type CWiki2fbhelp_
 end type
 
 '':::::
-function CWiki2fbhelp_New _
+function CWiki2txt_New _
 	( _
 		byval urlbase as zstring ptr, _
 		byval indentbase as integer, _
 		byval outputdir as zstring ptr, _
 		byval paglist as CPageList ptr, _
 		byval toclist as CPageList ptr, _
-		byval _this as CWiki2fbhelp ptr _
-	) as CWiki2fbhelp ptr
+		byval _this as CWiki2txt ptr _
+	) as CWiki2txt ptr
 
 	dim as integer isstatic = TRUE
 	
 	if( _this = NULL ) then
 		isstatic = FALSE
-		_this = callocate( len( CWiki2fbhelp ) )
+		_this = callocate( len( CWiki2txt ) )
 		if( _this = NULL ) then
 			return NULL
 		end if
@@ -77,16 +79,16 @@ function CWiki2fbhelp_New _
 	ZSet @_this->outputdir, outputdir
 	_this->paglist = paglist
 	_this->toclist = toclist
-	'' _this->converter = CWakka2fbhelp_New( )
+	'' _this->converter = CWakka2txt_New( )
 
 	function = _this
 
 end function
 
 '':::::
-sub CWiki2fbhelp_Delete _
+sub CWiki2txt_Delete _
 	( _
-		byval _this as CWiki2fbhelp ptr, _
+		byval _this as CWiki2txt ptr, _
 		byval isstatic as integer _
 	)
 	
@@ -96,7 +98,7 @@ sub CWiki2fbhelp_Delete _
 
 	ZFree @_this->urlbase
 	ZFree @_this->outputdir
-	'' CWakka2fbhelp_Delete( _this->converter )
+	'' CWakka2txt_Delete( _this->converter )
 	CWiki_Delete( _this->wiki )
 
 	if( isstatic = FALSE ) then
@@ -107,7 +109,7 @@ end sub
 
 private function _OutputFile _
 	( _
-		byval _this as CWiki2fbhelp ptr, _
+		byval _this as CWiki2txt ptr, _
 		byval sFileName as zstring ptr, _
 		byval sContent as zstring ptr _
 	) as integer
@@ -146,9 +148,9 @@ private function _OutputFile _
 end function
 
 '':::::
-function CWiki2fbhelp_EmitPages _
+function CWiki2txt_EmitPages _
 	( _
-		byval _this as CWiki2fbhelp ptr _
+		byval _this as CWiki2txt ptr _
 	) as integer
 
 	dim as CPage ptr page
@@ -166,7 +168,7 @@ function CWiki2fbhelp_EmitPages _
 				sBody = LoadPage( sName, TRUE )
 				if( len(sbody) > 0 ) then
 					? "Emitting: " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
-					if CWiki2fbhelp_EmitDefPage( _this, page, sBody ) then
+					if CWiki2txt_EmitDefPage( _this, page, sBody ) then
 						CPage_SetEmitted( page, TRUE )	
 					end if
 					okCount += 1
@@ -189,9 +191,9 @@ function CWiki2fbhelp_EmitPages _
 end function
 
 '':::::
-function CWiki2fbhelp_EmitDefPage _
+function CWiki2txt_EmitDefPage _
 	( _
-		byval _this as CWiki2fbhelp ptr, _
+		byval _this as CWiki2txt ptr, _
 		byval page as CPage ptr, _
 		byval sbody as zstring ptr _
 	) as integer
@@ -224,7 +226,7 @@ function CWiki2fbhelp_EmitDefPage _
 
 	sBodyTxt = CWakka2fbhelp_gen( _this->converter, @"", _this->wiki )
 
-	sTxt = chr(27, &h81) + sPageTitle + chr(10)
+	sTxt = sPageTitle + chr(10)
 
 	if( left( sBodyTxt, 1 ) <> chr(10) ) then
 		sTxt += chr(10)
@@ -237,9 +239,159 @@ function CWiki2fbhelp_EmitDefPage _
 end function
 
 '':::::
-function CWiki2fbhelp_Emit( _
-		byval _this as CWiki2fbhelp ptr _
-) as integer
+private function _MakePageHeader _
+	( _
+		byref sText as string, _
+		byval style as integer _
+	) as string
+	
+	dim ret as string
+
+	'' section
+	if( style = 1 ) then
+		ret += chr(10) + chr(10)
+		ret += string( 76, asc("=") ) + chr(10)
+		ret += space(2) + ucase( sText ) + chr(10)
+		ret += space(2) + string( len(sText), "-" ) + chr(10)
+		ret += chr(10) + chr(10)
+
+	'' sub-section
+	elseif( style = 2 ) then
+		ret += chr(10)
+		ret += string( 76, asc("=") ) + chr(10)
+		ret += space(4) + sText + chr(10)
+		ret += chr(10)
+
+	else
+		ret += string( 76 - 6 - len(sText) , asc("-") ) 
+		ret += " " + sText + " "
+		ret += string( 4, asc("-") ) 
+		ret += chr(10)
+
+	end if
+
+	return ret
+
+end function
+
+'':::::
+private function _LoadAndEmitTOC _
+	( _
+		byval _this as CWiki2txt ptr, _
+		byval sPageName as zstring ptr, _
+		byval sOutputFile as zstring ptr _
+	) as integer
+
+	dim as CPage ptr page
+	dim as string sBody, sTitle, f, a
+	dim as TLIST ptr lst
+	dim as integer h
+	dim as WikiPageLink ptr pagelink
+
+	'' Load and Emit PrintToc
+	page = CPage_New( *sPageName )
+
+	if( len(*sPageName) = 0 ) then
+		return FALSE
+	end if
+
+	sBody = LoadPage( *sPageName, TRUE )
+	if( len(sbody) > 0 ) then
+
+		CWiki_Parse( _this->wiki, *sPageName, sBody ) 
+
+		sTitle = CWiki_GetPageTitle( _this->wiki )
+		if( len(sTitle) > 0 ) then
+			CPage_SetPageTitle( page, sTitle )
+		end if
+
+		? "Emitting: " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
+		if CWiki2txt_EmitDefPage( _this, page, sBody ) then
+			CPage_SetEmitted( page, TRUE )	
+		end if
+	else
+		? "Error On: " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
+	end if
+
+	CPage_Delete( page )
+	
+
+	'' Build Output file
+	lst = CWiki_GetDocTocLinks( _this->wiki, false )
+
+	f = *_this->outputdir + *sOutputFile
+
+	h = freefile
+	if( open(  f for output as #h ) <> 0 ) then
+		print "Unable to write '" + f + "'"
+		return FALSE
+	end if
+
+
+	a += "FreeBASIC User's Manual" + chr(10)
+	a += "-----------------------" + chr(10)
+	a += chr(10)
+	a += "From http://www.freebasic.net/wiki" + chr(10)
+	a += chr(10)
+	a += "This file last built : " & format( now(), "yyyy/mm/dd hh:mm:ss" ) & chr(10)
+	a += chr(10)
+	a += chr(10)
+
+	put #h,,a
+
+	f = *_this->outputdir + *sPageName + ".txt"
+
+	sBody = LoadFileAsString( f )
+	if( len(sbody) > 0 ) then
+		a = _MakePageHeader( *sPageName, 0 ) + sBody + chr(10)
+		put #h,,a
+	end if
+
+	pagelink = cast( WikiPageLink ptr, listGetHead( lst ) )
+	do while( pagelink <> NULL )
+		
+		select case pagelink->linkclass
+		case WIKI_PAGELINK_CLASS_SECTION
+			a = _MakePageHeader( pagelink->text, 1 )
+			put #h,,a
+
+		case WIKI_PAGELINK_CLASS_SUBSECT
+			a = _MakePageHeader( pagelink->text, 2 )
+			put #h,,a
+
+		case else
+
+			f = *_this->outputdir + pagelink->link.url + ".txt"
+
+			sBody = LoadFileAsString( f )
+			if( len(sbody) > 0 ) then
+
+				a = _MakePageHeader( pagelink->link.url, 0 )
+				put #h,,a
+
+				put #h,,sBody
+
+				a = chr(10) + chr(10)
+				put #h,,a
+
+			end if
+
+		end select
+
+		pagelink = cast( WikiPageLink ptr, listGetNext( pagelink ) )
+	loop
+
+	close #h
+
+	return TRUE
+
+end function
+
+'':::::
+function CWiki2txt_Emit _
+	( _
+		byval _this as CWiki2txt ptr _
+	) as integer
 
 	_this->converter = CWakka2fbhelp_New( )
 
@@ -250,9 +402,10 @@ function CWiki2fbhelp_Emit( _
 	CWakka2fbhelp_setTagDoGen( _this->converter, WIKI_TOKEN_HORZLINE, false )
 	CWakka2fbhelp_setTagDoGen( _this->converter, WIKI_TOKEN_SECT_ITEM, false )
 
-	CWakka2fbhelp_setIsFlat( _this->converter, false )
+	CWakka2fbhelp_setIsFlat( _this->converter, true )
 
-	CWiki2fbhelp_EmitPages( _this )
+	CWiki2txt_EmitPages( _this )
+	_LoadAndEmitTOC( _this, @"PrintToc", @"fbdoc.txt" )
 
 	CWakka2fbhelp_Delete( _this->converter )
 	_this->converter = NULL

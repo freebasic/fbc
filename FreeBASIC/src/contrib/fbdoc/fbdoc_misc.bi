@@ -20,7 +20,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-declare sub misc_dumpkeypageslist _
+declare sub misc_dump_titles _
 	( _
 		byval paglist as CPageList ptr, _
 		byval sFileName as zstring ptr _

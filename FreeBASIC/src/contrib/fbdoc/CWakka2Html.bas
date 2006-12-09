@@ -28,6 +28,7 @@
 #include once "CRegex.bi"
 
 #include once "CFbCode.bi"
+#include once "fbdoc_keywords.bi"
 
 #undef iif
 
@@ -78,6 +79,8 @@ type CWakka2Html_
 	as zstring ptr page
 	as CRegex ptr trimre
 	as CFbCode ptr fbcode
+	as integer nlcnt
+	as integer skipnl
 end type
 
 private function CWakka2Html_AllocRe _
@@ -713,11 +716,10 @@ private function _actionGenAnchor( byval _this as CWakka2Html ptr, byval paramsT
 
 	dim as string res, sName, sTarget, sLink
 
-	res = _closeList( _this )
-		
 	sName = CWiki_GetActionParamValue( paramsTb, "name" )
 
 	if instr( sName, "|" ) = 0 then
+		res = _closeList( _this )
 		return res + "<a name=""" + sName + """></a>"
 	end if
 
@@ -793,39 +795,41 @@ end function
 
 '':::::
 private function _tokenToHtml(byval _this as CWakka2Html ptr, byval token as WikiToken ptr) as string
-	static nlcnt as integer = 0, skipnl as integer = 0
-
+	
 	dim as string res, cssclass, x
 	dim as integer dogen, i
 
+	res = ""
+
 	if( token->id = WIKI_TOKEN_NEWLINE ) then
-		if( _this->tagFlags(WIKI_TAG_LEVEL) > 0 ) then
-			if( nlcnt > 0 ) then
-				_this->tagFlags(WIKI_TAG_LEVEL) -= 1
-				nlcnt = 0
-				skipnl = true
-				return "</ul>" + nl
-			end if
-		end if
-					
-		res = ""
-		if( skipnl = 0) then
-			nlcnt += 1
-			if( nlcnt < 3 ) then
-				res = "<br />" + nl
-			else
-				nlcnt = 0
-			end if
-		else
-			skipnl = false
-			nlcnt = 0
-		end if
 		
+		_this->nlcnt += 1
+
+		if( _this->tagFlags(WIKI_TAG_LEVEL) > 0 ) then
+			if( _this->nlcnt >= 2 ) then
+				while( _this->tagFlags(WIKI_TAG_LEVEL) > 0 )
+					_this->tagFlags(WIKI_TAG_LEVEL) -= 1
+					res += "</ul>" + nl
+				wend
+				_this->nlcnt = 0
+				_this->skipnl = false
+			end if
+
+		elseif( _this->skipnl = false ) then
+			if( _this->nlcnt < 3 ) then
+				res += "<br />" + nl
+			else
+				_this->skipnl = true
+			end if
+
+		end if
+
 		return res
+
 	end if
 
-	nlcnt = 0
-	skipnl = false
+	_this->nlcnt = 0
+	_this->skipnl = false
 
 	cssclass = *_this->cssClassTb(token->id)
 	if( len( cssclass ) > 0 ) then
@@ -880,13 +884,17 @@ private function _tokenToHtml(byval _this as CWakka2Html ptr, byval token as Wik
 		return _linkToHtml( _this, token->link.url, token->text )
 
 	case WIKI_TOKEN_LIST:
-		skipnl = true
+		_this->skipnl = true
 		return _listToHtml( _this, token->indent.level )
 
 	case WIKI_TOKEN_TEXT, WIKI_TOKEN_RAW:
 		if( (_this->tagFlags(WIKI_TAG_BOLD) and 1) _
 			and (_this->tagFlags(WIKI_TAG_MONOSPACE) and 1)) then
-			return FormatPageTitle( token->text )
+				dim k as string
+				k = fbdoc_FindKeyword( token->text )
+				if( len(k) > 0 ) then
+					return k
+				end if
 		end if
 		return token->text
 
@@ -895,7 +903,7 @@ private function _tokenToHtml(byval _this as CWakka2Html ptr, byval token as Wik
 
 	end select
 	
-	skipnl = TRUE
+	_this->skipnl = TRUE
 	
 	res = _closeList( _this )
 	
@@ -934,7 +942,7 @@ private function _tokenToHtml(byval _this as CWakka2Html ptr, byval token as Wik
 		return res + "<div style=""clear:both"">&nbsp;</div>"
 
 	case WIKI_TOKEN_HEADER:
-		skipnl = false
+		_this->skipnl = false
 		_this->tagFlags(WIKI_TAG_HEADER) += 1
 		if _this->tagFlags(WIKI_TAG_HEADER) and 1 then
 			return res + "<div " + cssclass + ">"
@@ -949,7 +957,7 @@ private function _tokenToHtml(byval _this as CWakka2Html ptr, byval token as Wik
 		return res + _codeToHtml( _this, token->text )
 	
 	case WIKI_TOKEN_INDENT:
-		skipnl = false
+		_this->skipnl = false
 		x = ""
 		for i = 1 to (token->indent.level - _this->indentbase) * 2
 			x += "&nbsp; "
@@ -979,6 +987,9 @@ function CWakka2Html_gen _
 	next i
 	
 	text = ""
+
+	_this->nlcnt = 0
+	_this->skipnl = TRUE
 	
 	tokenlist = CWiki_GetTokenList( wiki )
 	token = cast( WikiToken ptr, listGetHead( tokenlist ) )

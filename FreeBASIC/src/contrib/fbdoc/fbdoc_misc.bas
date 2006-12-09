@@ -26,8 +26,10 @@
 #include once "CPage.bi"
 #include once "CPageList.bi"
 #include once "fbdoc_misc.bi"
+#include once "fbdoc_keywords.bi"
 
-sub misc_dumpkeypageslist _
+'':::::
+sub misc_dump_titles _
 	( _
 		byval paglist as CPageList ptr, _
 		byval sFileName as zstring ptr _
@@ -37,10 +39,11 @@ sub misc_dumpkeypageslist _
 	dim as any ptr page_i
 	dim as string sName, sTitle1, sTitle2
 	dim as integer h
+	dim as string k
 
 	h = freefile
 
-	? "Generating key pages list:"
+	? "Generating pages titles list:"
 
 	if( open(*sFileName for output as #h) = 0 ) then
 
@@ -49,8 +52,21 @@ sub misc_dumpkeypageslist _
 		page = CPageList_NewEnum( paglist, @page_i )
 		while( page )
 			sName = CPage_GetName(page)
-			sTitle1 = CPage_GetPageTitle(page)
-			sTitle2 = CPage_GetLinkTitle(page)
+
+			sTitle1 = FormatPageTitle( CPage_GetPageTitle(page) )
+			'sTitle1 = CPage_GetPageTitle(page)
+			'k = fbdoc_FindKeyword( sTitle1 )
+			'if( len(k) > 0 ) then
+			'	sTitle1 = k
+			'end if	
+			
+			sTitle2 = FormatPageTitle( CPage_GetLinkTitle(page) )
+			'sTitle2 = CPage_GetLinkTitle(page)
+			'k = fbdoc_FindKeyword( sTitle2 )
+			'if( len(k) > 0 ) then
+			'	sTitle2 = k
+			'end if	
+
 			? #h, """"; sName; """,""";  sTitle1; """,""";  sTitle2; """"
 			page = CPageList_NextEnum( @page_i )
 		wend

@@ -1,5 +1,5 @@
-#ifndef __CWakka2fbhelp_BI__
-#define __CWakka2fbhelp_BI__
+#ifndef __CWiki2txt_BI__
+#define __CWiki2txt_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
 ''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
@@ -21,34 +21,41 @@
 
 
 #include once "common.bi"
-#include once "CWiki.bi"
 #include once "CPage.bi"
 #include once "CPageList.bi"
 
-type CWakka2fbhelp as CWakka2fbhelp_
+type CWiki2txt as CWiki2txt_
 
-declare function CWakka2fbhelp_New _
+declare function CWiki2txt_New _
 	( _
-		byval _this as CWakka2fbhelp ptr = NULL _
-	) as CWakka2fbhelp ptr
+		byval urlbase as zstring ptr, _
+		byval indentbase as integer, _
+		byval outputdir as zstring ptr, _
+		byval paglist as CPageList ptr, _
+		byval toclist as CPageList ptr, _
+		byval _this as CWiki2txt ptr = NULL _
+	) as CWiki2txt ptr
 
-declare sub CWakka2fbhelp_Delete _
+declare sub CWiki2txt_Delete _
 	( _
-		byval _this as CWakka2fbhelp ptr, _
+		byval _this as CWiki2txt ptr, _
 		byval isstatic as integer = FALSE _
 	)
 
-declare sub CWakka2fbhelp_setUrlBase( byval _this as CWakka2fbhelp ptr, byval value as zstring ptr )
-declare sub CWakka2fbhelp_setIndentBase( byval _this as CWakka2fbhelp ptr, byval value as integer )
-declare sub CWakka2fbhelp_setTagDoGen( byval _this as CWakka2fbhelp ptr, byval token_id as integer, byval value as integer )
-declare sub CWakka2fbhelp_setIsflat( byval _this as CWakka2fbhelp ptr, byval value as integer )
-
-declare function CWakka2fbhelp_gen _
+declare function CWiki2txt_EmitPages _
 	( _
-		byval _this as CWakka2fbhelp ptr, _
-		byval page as zstring ptr, _
-		byval wiki as CWiki ptr _
-	) as string
+		byval _this as CWiki2txt ptr _
+	) as integer
 
+declare function CWiki2txt_EmitDefPage _
+	( _
+		byval _this as CWiki2txt ptr, _
+		byval page as CPage ptr, _
+		byval sbody as zstring ptr _
+	) as integer
+
+declare function CWiki2txt_Emit( _
+		byval _this as CWiki2txt ptr _
+) as integer
 
 #endif

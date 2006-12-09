@@ -170,10 +170,10 @@ function CPage_GetTitle _
 		return ""
 	end if
 
-	if( len( *_this->linktitle) > 0 ) then
-		function = *_this->linktitle
-	elseif( len( *_this->pagetitle) > 0 ) then
+	if( len( *_this->pagetitle) > 0 ) then
 		function = *_this->pagetitle
+	elseif( len( *_this->linktitle) > 0 ) then
+		function = *_this->linktitle
 	elseif( len( *_this->pagename) > 0 ) then
 		function = *_this->pagename
 	else

@@ -7,6 +7,7 @@ endif
 MAIN := fbdoc
 
 SRCS := $(MAIN).bas 
+SRCS += CWiki2txt.bas
 SRCS += CWiki2fbhelp.bas
 SRCS += CWakka2fbhelp.bas
 SRCS += fbdoc_misc.bas
@@ -33,6 +34,8 @@ SRCS += common.bas
 SRCS += CWikiCache.bas
 SRCS += CPage.bas
 SRCS += CPageList.bas
+
+HDRS := $(wildcard *.bi)
 
 ifndef objpath
 objpath=obj/$(TARGET)
@@ -83,7 +86,7 @@ endif
 
 VPATH = .
 
-$(objpath)/%.o : %.bas
+$(objpath)/%.o : %.bas $(HDRS)
 	$(FBC) $(FBCFLAGS) -m $(MAIN) -c $< -o $@
 
 ##########################

@@ -186,7 +186,7 @@ function CWiki_New _
 	''
 	listNew( @_this->tokenlist, 16, len( WikiToken ), TRUE )
 	listNew( @_this->actparamlist, 16, len( Wiki_ActionParam ), TRUE )
-	listNew( @_this->pagelinklist, 16, len( WikiToken ), TRUE )
+	listNew( @_this->pagelinklist, 16, len( WikiPageLink ), TRUE )
 	
 	''
 	function = _this
@@ -656,7 +656,8 @@ private sub _AddPageLink _
 		byval lst as TLIST ptr, _
 		byref spagetext as string, _
 		byref spagename as string, _
-		byval level as integer _
+		byval level as integer, _
+		byval linkclass as integer _
 	)
 
 	dim as WikiPageLink ptr pagelink
@@ -665,6 +666,7 @@ private sub _AddPageLink _
 	pagelink->text = spagetext
 	pagelink->link.url = spagename
 	pagelink->level = level
+	pagelink->linkclass = linkclass
 
 end sub
 
@@ -744,7 +746,7 @@ function CWiki_GetDocTocLinks _
 
 		select case as const token->id
 		case WIKI_TOKEN_LINK
-			_AddPageLink( @_this->pagelinklist, text, token->link.url, level ) 
+			_AddPageLink( @_this->pagelinklist, text, token->link.url, level, WIKI_PAGELINK_CLASS_DEFAULT ) 
 
 		case WIKI_TOKEN_ACTION
 			
@@ -755,11 +757,11 @@ function CWiki_GetDocTocLinks _
 
 				select case lcase(sItem)
 				case "section"
-					_AddPageLink( @_this->pagelinklist, sValue, "", 0 ) 
+					_AddPageLink( @_this->pagelinklist, sValue, "", 0, WIKI_PAGELINK_CLASS_SECTION ) 
 					level = 1
 
 				case "subsect"
-					_AddPageLink( @_this->pagelinklist, sValue, "", 1 ) 
+					_AddPageLink( @_this->pagelinklist, sValue, "", 1, WIKI_PAGELINK_CLASS_SUBSECT ) 
 					level = 2
 
 				case "keyword"
@@ -773,7 +775,7 @@ function CWiki_GetDocTocLinks _
 						sTitle = ""
 					end if
 
-					_AddPageLink( @_this->pagelinklist, sTitle, sPage, level ) 
+					_AddPageLink( @_this->pagelinklist, sTitle, sPage, level, WIKI_PAGELINK_CLASS_KEYWORD ) 
 
 				end select
 
@@ -786,7 +788,7 @@ function CWiki_GetDocTocLinks _
 				if( token->id = WIKI_TOKEN_BOLD_SECTION ) then
 					token = cast( WikiToken ptr, listGetNext( token ) )
 					''_AddPageLink( @_this->pagelinklist, FormatPageTitle( token->text ), "", 0 ) 
-					_AddPageLink( @_this->pagelinklist, token->text, "", 0 ) 
+					_AddPageLink( @_this->pagelinklist, token->text, "", 0, WIKI_PAGELINK_CLASS_SECTION ) 
 					level = 1
 					token = cast( WikiToken ptr, listGetNext( token ) )
 				end if
