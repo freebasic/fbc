@@ -256,14 +256,11 @@ declare sub irEmitRETURN _
 		byval bytestopop as integer _
 	)
 
-declare function irEmitPUSHARG _
+declare sub irEmitPUSHARG _
 	( _
-		byval proc as FBSYMBOL ptr, _
-		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
-		byval pmode as integer, _
 		byval plen as integer _
-	) as integer
+	)
 
 declare sub irEmitASM _
 	( _

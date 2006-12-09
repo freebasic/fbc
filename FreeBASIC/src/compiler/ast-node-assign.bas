@@ -45,7 +45,7 @@ private function hCheckStringOps _
 		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
 		case else
-			if( r->class <> AST_NODECLASS_PTR ) then
+			if( r->class <> AST_NODECLASS_DEREF ) then
 				exit function
 			elseif( r->dtype <> FB_DATATYPE_BYTE ) then
 				if( r->dtype <> FB_DATATYPE_UBYTE ) then
@@ -60,7 +60,7 @@ private function hCheckStringOps _
 		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
 		case else
-			if( l->class <> AST_NODECLASS_PTR ) then
+			if( l->class <> AST_NODECLASS_DEREF ) then
 				exit function
 			elseif( l->dtype <> FB_DATATYPE_BYTE ) then
 				if( l->dtype <> FB_DATATYPE_UBYTE ) then
@@ -143,7 +143,7 @@ private function hCheckWstringOps _
 	'' numeric type, let emit convert them if needed..
 	if( ldtype = FB_DATATYPE_WCHAR ) then
 		'' don't allow, unless it's a pointer
-		if( l->class <> AST_NODECLASS_PTR ) then
+		if( l->class <> AST_NODECLASS_DEREF ) then
 			exit function
 		end if
 
@@ -153,7 +153,7 @@ private function hCheckWstringOps _
 
 	else
 		'' same as above..
-		if( r->class <> AST_NODECLASS_PTR ) then
+		if( r->class <> AST_NODECLASS_DEREF ) then
 			exit function
 		end if
 
@@ -178,7 +178,7 @@ private function hCheckZstringOps _
 	'' same as for wstring's..
 	if( ldtype = FB_DATATYPE_CHAR ) then
 		'' don't allow, unless it's a pointer
-		if( l->class <> AST_NODECLASS_PTR ) then
+		if( l->class <> AST_NODECLASS_DEREF ) then
 			exit function
 		end if
 
@@ -186,7 +186,7 @@ private function hCheckZstringOps _
 
 	else
 		'' same as above..
-		if( r->class <> AST_NODECLASS_PTR ) then
+		if( r->class <> AST_NODECLASS_DEREF ) then
 			exit function
 		end if
 
@@ -439,7 +439,7 @@ function astNewASSIGN _
 
         '' r is an UDT too?
         dim as integer is_udt = TRUE
-        if( r->class = AST_NODECLASS_CALL ) then
+        if( astIsCALL( r ) ) then
         	is_udt = symbGetUDTRetType( r->subtype ) = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT
         end if
 
@@ -454,6 +454,12 @@ function astNewASSIGN _
 			end if
 
 			'' do a shallow copy..
+
+			'' call? deref the pointer
+			if( astIsCALL( r ) ) then
+				r = astNewDEREF( 0, r, r->dtype, r->subtype )
+			end if
+
 			return astNewLINK( astNewMEM( AST_OP_MEMMOVE, _
 										  l, _
 										  r, _

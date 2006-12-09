@@ -169,7 +169,7 @@ function astNewUOP _
     '' CHAR and WCHAR literals are also from the INTEGER class..
     case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	'' only if it's a deref pointer, to allow "NOT *p" etc
-    	if( astIsPTR( o ) = FALSE ) then
+    	if( astIsDEREF( o ) = FALSE ) then
     		exit function
     	end if
 

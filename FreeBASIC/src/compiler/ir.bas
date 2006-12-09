@@ -235,23 +235,24 @@ private sub hLoadIDX( byval vreg as IRVREG ptr )
 end sub
 
 '':::::
-#define hGetVREG(vreg,dt,dc,t) 						_
-	if( vreg <> NULL ) then 						: _
-		t = vreg->typ 								: _
-                                                	: _
-		dt = vreg->dtype							: _
-		if( dt >= FB_DATATYPE_POINTER ) then		: _
-			dt = FB_DATATYPE_UINT					: _
-			dc = FB_DATACLASS_INTEGER				: _
-		else										: _
-			dc = symb_dtypeTB(dt).class				: _
-		end if										: _
-													: _
-	else											: _
-		t  = INVALID								: _
-		dt = INVALID								: _
-		dc = INVALID								: _
+#macro hGetVREG( vreg, dt, dc, t )
+	if( vreg <> NULL ) then
+		t = vreg->typ
+
+		dt = vreg->dtype
+		if( dt >= FB_DATATYPE_POINTER ) then
+			dt = FB_DATATYPE_UINT
+			dc = FB_DATACLASS_INTEGER
+		else
+			dc = symb_dtypeTB(dt).class
+		end if
+
+	else
+		t  = INVALID
+		dt = INVALID
+		dc = INVALID
 	end if
+#endmacro
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -272,30 +273,31 @@ private sub hRelink _
 
 end sub
 
-#define hRelinkVreg(v,t)										_
-    t->v.reg.pParent = NULL										:_
-    t->v.reg.next = NULL										:_
-																:_
-    if( v <> NULL ) then										:_
-    	hRelink( v, @t->v.reg )                                 :_
-    	v->taclast = t                                          :_
-    															:_
-    	if( v->vidx <> NULL ) then                              :_
-    		t->v.idx.vreg = v->vidx								:_
-    		t->v.idx.pParent = @v->vidx							:_
-    		t->v.idx.next = NULL								:_
-    		hRelink( v->vidx, @t->v.idx )						:_
-    		v->vidx->taclast = t                                :_
-    	end if                                                  :_
-    															:_
-    	if( v->vaux <> NULL ) then                              :_
-    		t->v.aux.vreg = v->vaux								:_
-    		t->v.aux.pParent = @v->vaux							:_
-    		t->v.aux.next = NULL								:_
-    		hRelink( v->vaux, @t->v.aux )						:_
-    		v->vaux->taclast = t                                :_
-    	end if													:_
+#macro hRelinkVreg(v,t)
+    t->v.reg.pParent = NULL
+    t->v.reg.next = NULL
+
+    if( v <> NULL ) then
+    	hRelink( v, @t->v.reg )
+    	v->taclast = t
+
+    	if( v->vidx <> NULL ) then
+    		t->v.idx.vreg = v->vidx
+    		t->v.idx.pParent = @v->vidx
+    		t->v.idx.next = NULL
+    		hRelink( v->vidx, @t->v.idx )
+    		v->vidx->taclast = t
+    	end if
+
+    	if( v->vaux <> NULL ) then
+    		t->v.aux.vreg = v->vaux
+    		t->v.aux.pParent = @v->vaux
+    		t->v.aux.next = NULL
+    		hRelink( v->vaux, @t->v.aux )
+    		v->vaux->taclast = t
+    	end if
     end if
+#endmacro
 
 '':::::
 sub irEmit _
@@ -467,176 +469,19 @@ sub irScopeEnd _
 end sub
 
 '':::::
-function irEmitPUSHARG _
+sub irEmitPUSHARG _
 	( _
-		byval proc as FBSYMBOL ptr, _
-		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
-		byval pmode as integer, _
 		byval plen as integer _
-	) as integer static
+	) static
 
-    dim as IRVREG ptr vt
-    dim as integer isptr
-    dim as integer adtype, adclass, amode
-    dim as integer pdtype, pdclass, pclass
-
-	function = FALSE
-
-	''
-	amode  = symbGetParamMode( param )
-	adtype = symbGetType( param )
-	if( adtype <> INVALID ) then
-		adclass = symbGetDataClass( adtype )
+	if( plen = 0 ) then
+		irEmitPUSH( vr )
+	else
+		irEmitPUSHUDT( vr, plen )
 	end if
 
-	''
-	pdtype  = irGetVRDataType( vr )
-	pdclass = symbGetDataClass( pdtype )
-
-    pclass = irGetVRType( vr )
-
-	'' by descriptor?
-	if( amode = FB_PARAMMODE_BYDESC ) then
-
-		amode = FB_PARAMMODE_BYVAL
-
-    '' var args?
-    elseif( amode = FB_PARAMMODE_VARARG ) then
-
-    	'' string argument?
-    	if( (pdclass = FB_DATACLASS_STRING) or _
-    		(pdtype = FB_DATATYPE_CHAR) or _
-    		(pdtype = FB_DATATYPE_WCHAR) ) then
-			'' not a pointer yet?
-			if( pclass = IR_VREGTYPE_PTR ) then
-				amode = FB_PARAMMODE_BYREF
-			else
-				amode = FB_PARAMMODE_BYVAL
-			end if
-
-    	'' otherwise, pass as-is
-    	else
-    		amode = FB_PARAMMODE_BYVAL
-    	end if
-
-    '' as any?
-    elseif( adtype = FB_DATATYPE_VOID ) then
-
-		if( pmode = FB_PARAMMODE_BYVAL ) then
-
-    		'' another quirk: BYVAL strings passed to BYREF ANY args..
-    		if( pdclass = FB_DATACLASS_STRING ) then
-    			'' not a pointer yet?
-    			if( pclass <> IR_VREGTYPE_PTR ) then
-    				amode = FB_PARAMMODE_BYVAL
-    			else
-    				amode = FB_PARAMMODE_BYREF
-    			end if
-
-    		'' zstring?
-    		elseif( (pdtype = FB_DATATYPE_CHAR) or _
-    			    (pdtype = FB_DATATYPE_WCHAR) ) then
-    			'' not a pointer yet?
-    			if( pclass <> IR_VREGTYPE_PTR ) then
-    				amode = FB_PARAMMODE_BYVAL
-    			else
-    				pmode = INVALID
-    				amode = FB_PARAMMODE_BYREF
-    			end if
-
-    		'' otherwise, pass as-is
-    		else
-    			amode = FB_PARAMMODE_BYVAL
-    		end if
-
-    	'' passing an immediate?
-    	elseif( irIsIMM( vr ) or (vr->typ = IR_VREGTYPE_OFS) ) then
-        	amode = FB_PARAMMODE_BYVAL
-
-    	'' anything else, use the param type to create a temp var if needed
-    	else
-    		adtype = pdtype
-    	end if
-
-    '' byval or byref (but as any)
-    else
-
-    	'' string argument?
-    	if( adclass = FB_DATACLASS_STRING ) then
-
-			if( pmode <> FB_PARAMMODE_BYVAL ) then
-
-				'' not a pointer yet?
-				if( pclass = IR_VREGTYPE_PTR ) then
-					'' BYVAL or not the mode has to be changed to byref, as
-					'' BYVAL AS STRING is actually BYREF AS ZSTRING
-					amode = FB_PARAMMODE_BYREF
-				else
-					amode = FB_PARAMMODE_BYVAL
-				end if
-
-			else
-				amode = FB_PARAMMODE_BYVAL
-			end if
-
-		end if
-
-	end if
-
-	'' push to stack, depending on arg mode
-	select case amode
-	case FB_PARAMMODE_BYVAL
-
-		if( plen = 0 ) then
-			irEmitPUSH( vr )
-		else
-			irEmitPUSHUDT( vr, plen )
-		end if
-
-	case FB_PARAMMODE_BYREF
-		'' BYVAL param? pass as-is
-		if( pmode = FB_PARAMMODE_BYVAL ) then
-			irEmitPUSH( vr )
-
-		else
-
-			isptr = FALSE
-
-			select case pclass
-			'' simple pointer?
-			case IR_VREGTYPE_PTR
-				if( vr->ofs = 0 ) then
-					isptr = TRUE
-				end if
-
-			'' simple index?
-			case IR_VREGTYPE_IDX
-				if( vr->ofs = 0 ) then
-					if( vr->sym = NULL ) then
-						if( vr->mult <= 1 ) then
-							isptr = TRUE
-						end if
-					end if
-				end if
-			end select
-
-			if( isptr ) then
-				irEmitPUSH( vr->vidx )
-
-			else
-				vt = irAllocVREG( FB_DATATYPE_UINT )
-				irEmitADDR( AST_OP_ADDROF, vr, vt )
-				irEmitPUSH( vt )
-			end if
-
-		end if
-	end select
-
-	''
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 sub irEmitASM _
@@ -1248,7 +1093,7 @@ sub irFlush static
 		case AST_NODECLASS_BRANCH
 			hFlushBRANCH( op, t->ex1 )
 
-		case AST_NODECLASS_ADDR
+		case AST_NODECLASS_ADDROF
 			hFlushADDR( op, v1, vr )
 
 		case AST_NODECLASS_MEM

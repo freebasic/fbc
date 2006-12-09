@@ -312,7 +312,7 @@ function astCheckCONV _
 	'' CHAR and WCHAR literals are also from the INTEGER class
     case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	'' don't allow, unless it's a deref pointer
-    	if( astIsPTR( l ) = FALSE ) then
+    	if( astIsDEREF( l ) = FALSE ) then
     		exit function
     	end if
 
@@ -384,7 +384,22 @@ function astNewCONV _
     select case op
     '' pointer typecasting?
     case AST_OP_TOPOINTER
-		'' assuming all type-checking was done already
+		'' check invalid types (op overloaded was resolved already)
+		select case as const ldtype
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
+			'' !!!FIXME!!! this will fail with NULL if it's defined as "0"
+			if( FB_INTEGERSIZE <> FB_POINTERSIZE ) then
+				exit function
+			end if
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+
+		case else
+			if( ldtype < FB_DATATYPE_POINTER ) then
+				exit function
+			end if
+		end select
+
     	astSetType( l, to_dtype, to_subtype )
 
     	return l
@@ -417,7 +432,7 @@ function astNewCONV _
     		select case ldtype
     		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     			'' don't allow, unless it's a deref pointer
-    			if( astIsPTR( l ) = FALSE ) then
+    			if( astIsDEREF( l ) = FALSE ) then
     				exit function
     			end if
     	    end select

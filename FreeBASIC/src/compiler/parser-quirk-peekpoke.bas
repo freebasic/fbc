@@ -92,7 +92,7 @@ function cPokeStmt _
         end if
 	end select
 
-    expr1 = astNewPTR( 0, expr1, poketype, subtype )
+    expr1 = astNewDEREF( 0, expr1, poketype, subtype )
 
     expr1 = astNewASSIGN( expr1, expr2 )
     if( expr1 = NULL ) then
@@ -207,7 +207,7 @@ function cPeekFunct _
     end if
 
 	if( expr <> NULL ) then
-		funcexpr = astNewPTR( 0, expr, dtype, subtype )
+		funcexpr = astNewDEREF( 0, expr, dtype, subtype )
 	end if
 
 	if( fld <> NULL ) then

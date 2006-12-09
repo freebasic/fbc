@@ -867,7 +867,7 @@ private sub hOptConstIDX _
 
 	'' opt must be done in this order: addsub accum and then idx * lgt
 	select case n->class
-	case AST_NODECLASS_IDX, AST_NODECLASS_PTR
+	case AST_NODECLASS_IDX, AST_NODECLASS_DEREF
 		l = n->l
 		if( l <> NULL ) then
 			v.dtype = INVALID
@@ -1397,7 +1397,7 @@ private function hOptRemConv _
 
 							select case as const l->class
 							case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-								 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
+								 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 								'' can't be unsigned either
 								if( symbIsSigned( l->dtype ) ) then
 									dorem = TRUE
@@ -1548,7 +1548,7 @@ private function hIsMultStrConcat _
 			select case l->l->class
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX
 
-				'' byref params would be AST_NODECLASS_PTR
+				'' byref params would be AST_NODECLASS_DEREF
 
 				sym = astGetSymbol( l )
 				if( sym <> NULL ) then
@@ -1579,7 +1579,7 @@ private function hOptStrAssignment _
 		'' is left side a var?
 		select case as const l->class
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX
-			'' !!!FIXME!!! can't include AST_NODECLASS_PTR, unless -noaliasing is added
+			'' !!!FIXME!!! can't include AST_NODECLASS_DEREF, unless -noaliasing is added
 
 			if( astIsTreeEqual( l, r->l ) ) then
 				sym = astGetSymbol( l )
@@ -1726,7 +1726,7 @@ function astOptAssignment _
 
 	'' is left side a var, idx or ptr?
 	select case as const l->class
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF
 
 	case AST_NODECLASS_FIELD
 		'' isn't it a bitfield?

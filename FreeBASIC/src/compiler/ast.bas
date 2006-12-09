@@ -91,7 +91,7 @@ declare function astLoadIDX _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-declare function astLoadPTR _
+declare function astLoadDEREF _
 	( _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
@@ -106,7 +106,7 @@ declare function astLoadCALLCTOR _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-declare function astLoadADDR _
+declare function astLoadADDROF _
 	( _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
@@ -263,7 +263,7 @@ declare sub astReplaceSymbolOnCALL _
 		( @astLoadBOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_BOP
 		( @astLoadUOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_UOP
 		( @astLoadCONV		, @hSetType			, TRUE	), _	'' AST_NODECLASS_CONV
-		( @astLoadADDR		, @hSetType			, TRUE	), _	'' AST_NODECLASS_ADDR
+		( @astLoadADDROF	, @hSetType			, TRUE	), _	'' AST_NODECLASS_ADDROF
 		( @astLoadBRANCH	, @hSetType			, TRUE	), _	'' AST_NODECLASS_BRANCH
 		( @astLoadCALL		, @hSetType			, TRUE	), _	'' AST_NODECLASS_CALL
 		( @astLoadCALLCTOR	, @hSetType			, TRUE	), _	'' AST_NODECLASS_CALLCTOR
@@ -276,7 +276,7 @@ declare sub astReplaceSymbolOnCALL _
 		( @astLoadIDX		, @hSetType			, TRUE	), _	'' AST_NODECLASS_IDX
 		( @astLoadFIELD		, @astSetTypeFIELD	, TRUE	), _	'' AST_NODECLASS_FIELD
 		( @astLoadENUM		, @hSetType			, FALSE	), _	'' AST_NODECLASS_ENUM
-		( @astLoadPTR		, @hSetType			, TRUE	), _	'' AST_NODECLASS_PTR
+		( @astLoadDEREF		, @hSetType			, TRUE	), _	'' AST_NODECLASS_DEREF
 		( @astLoadLABEL		, @hSetType			, FALSE	), _	'' AST_NODECLASS_LABEL
 		( @astLoadNOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_ARG
 		( @astLoadOFFSET	, @hSetType			, FALSE	), _	'' AST_NODECLASS_OFFSET
@@ -362,8 +362,8 @@ declare sub astReplaceSymbolOnCALL _
 		( AST_NODECLASS_UOP		, AST_OPFLAGS_NONE, NULL						), _	'' AST_OP_LOG
 		( AST_NODECLASS_UOP		, AST_OPFLAGS_NONE, @"int"						), _	'' AST_OP_FLOOR
 		( AST_NODECLASS_UOP		, AST_OPFLAGS_NONE, @"fix"						), _	'' AST_OP_FIX
-		( AST_NODECLASS_ADDR	, AST_OPFLAGS_NONE, @"@"						), _	'' AST_OP_ADDROF
-		( AST_NODECLASS_ADDR 	, AST_OPFLAGS_NONE, @"*"						), _	'' AST_OP_DEREF
+		( AST_NODECLASS_ADDROF	, AST_OPFLAGS_NONE, @"@"						), _	'' AST_OP_ADDROF
+		( AST_NODECLASS_ADDROF 	, AST_OPFLAGS_NONE, @"*"						), _	'' AST_OP_DEREF
 		( AST_NODECLASS_MEM		, AST_OPFLAGS_NONE, @"new"						), _	'' AST_OP_NEW
 		( AST_NODECLASS_MEM		, AST_OPFLAGS_NONE, @"new[]"					), _	'' AST_OP_NEW_VEC
 		( AST_NODECLASS_MEM 	, AST_OPFLAGS_NONE, @"delete"					), _	'' AST_OP_DEL
@@ -563,7 +563,7 @@ function astUpdComp2Branch _
     select case dtype
     case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	'' don't allow, unless it's a deref pointer
-    	if( astIsPTR( n ) = FALSE ) then
+    	if( astIsDEREF( n ) = FALSE ) then
     		return NULL
     	end if
 
@@ -576,7 +576,7 @@ function astUpdComp2Branch _
 		ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID, NULL, n, @err_num )
 		if( ovlProc = NULL ) then
 			'' no? try pointers...
-			ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID + FB_DATATYPE_POINTER, NULL, _
+			ovlProc = symbFindCastOvlProc( FB_DATATYPE_POINTER + FB_DATATYPE_VOID, NULL, _
 										   n, _
 										   @err_num )
 			if( ovlProc = NULL ) then
@@ -981,23 +981,23 @@ function astRemSideFx _
 
 		'' tmp = @b
 		t = astNewASSIGN( astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _
-				   	  	  astNewADDR( AST_OP_ADDROF, n ) )
+				   	  	  astNewADDROF( n ) )
 
 		'' return *tmp
 		function = astNewLINK( t, _
-						   	   astNewPTR( 0, _
-			   		   			   	  	  astNewVAR( tmp, _
-			   		   			   			  	 	 0, _
-			   		   			   			  	 	 FB_DATATYPE_POINTER + dtype, _
-			   		   			   			  	 	 subtype ),_
-			   		   			   	  	  dtype, _
-			   		   			   	  	  subtype ) )
+						   	   astNewDEREF( 0, _
+			   		   			   	  	  	astNewVAR( tmp, _
+			   		   			   			  	 	   0, _
+			   		   			   			  	 	   FB_DATATYPE_POINTER + dtype, _
+			   		   			   			  	 	   subtype ),_
+			   		   			   	  	  	dtype, _
+			   		   			   	  	  	subtype ) )
 
 		'' repatch node
-		n = astNewPTR( 0, _
-					   astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _
-			   		   dtype, _
-			   		   subtype )
+		n = astNewDEREF( 0, _
+					   	 astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _
+			   		   	 dtype, _
+			   		   	 subtype )
 
 	'' simple type..
 	case else
@@ -1129,7 +1129,7 @@ function astIsTreeEqual _
 			exit function
 		end if
 
-	case AST_NODECLASS_PTR
+	case AST_NODECLASS_DEREF
 		if( l->ptr.ofs <> r->ptr.ofs ) then
 			exit function
 		end if
@@ -1165,7 +1165,7 @@ function astIsTreeEqual _
 			exit function
 		end if
 
-	case AST_NODECLASS_ADDR
+	case AST_NODECLASS_ADDROF
 		if( l->sym <> r->sym ) then
 			exit function
 		end if
@@ -1256,7 +1256,7 @@ function astIsSymbolOnTree _
 
 	select case as const n->class
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
-		 AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
+		 AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
 
 		s = astGetSymbol( n )
 
@@ -1274,7 +1274,7 @@ function astIsSymbolOnTree _
 		end if
 
 	'' pointer? could be pointing to source symbol too..
-	case AST_NODECLASS_PTR
+	case AST_NODECLASS_DEREF
 		return TRUE
 	end select
 
@@ -1385,7 +1385,7 @@ function astIsADDR _
 	) as integer static
 
 	select case n->class
-	case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
+	case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
 		return TRUE
 	case else
 		return FALSE

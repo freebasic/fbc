@@ -34,7 +34,7 @@ enum AST_NODECLASS
 	AST_NODECLASS_BOP
 	AST_NODECLASS_UOP
 	AST_NODECLASS_CONV
-	AST_NODECLASS_ADDR
+	AST_NODECLASS_ADDROF
 	AST_NODECLASS_BRANCH
 	AST_NODECLASS_CALL
 	AST_NODECLASS_CALLCTOR
@@ -48,7 +48,7 @@ enum AST_NODECLASS
 	AST_NODECLASS_IDX
 	AST_NODECLASS_FIELD
 	AST_NODECLASS_ENUM
-	AST_NODECLASS_PTR
+	AST_NODECLASS_DEREF
 	AST_NODECLASS_LABEL
 	AST_NODECLASS_ARG
 	AST_NODECLASS_OFFSET
@@ -637,7 +637,7 @@ declare function astNewFIELD _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
-declare function astNewPTR _
+declare function astNewDEREF _
 	( _
 		byval ofs as integer, _
 		byval l as ASTNODE ptr, _
@@ -674,10 +674,9 @@ declare function astReplaceARG _
 		byval mode as integer = INVALID _
 	) as ASTNODE ptr
 
-declare function astNewADDR _
+declare function astNewADDROF _
 	( _
-		byval op as integer, _
-		byval p as ASTNODE ptr _
+		byval l as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astNewLOAD _
@@ -1143,6 +1142,11 @@ declare function astBuildArrayDescIniTree _
 		byval array_expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function astBuildStrPtr _
+	( _
+		byval lhs as ASTNODE ptr _
+	) as ASTNODE ptr
+
 declare sub astReplaceSymbolOnTree _
 	( _
 		byval n as ASTNODE ptr, _
@@ -1186,7 +1190,7 @@ declare sub astReplaceSymbolOnTree _
 
 #define astIsCALLCTOR(n) (n->class = AST_NODECLASS_CALLCTOR)
 
-#define astIsPTR(n) (n->class = AST_NODECLASS_PTR)
+#define astIsDEREF(n) (n->class = AST_NODECLASS_DEREF)
 
 #define astIsOFFSET(n) (n->class = AST_NODECLASS_OFFSET)
 

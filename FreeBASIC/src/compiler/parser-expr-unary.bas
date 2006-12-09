@@ -161,7 +161,7 @@ private function hFieldAccess _
 		'' it's a proc call, but was it originally returning an UDT?
 		if( astIsCALL( expr ) ) then
 			if( symbGetUDTRetType( astGetSubtype( expr ) ) <> _
-				FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
+								FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
 
 				'' it's returning the result in registers, move to a temp var
 				'' (note: if it's being returned in regs, there's no DTOR)
@@ -181,7 +181,7 @@ private function hFieldAccess _
         end if
 
  		'' build: cast( udt ptr, (cast( byte ptr, @udt) + fldexpr))->field
- 		expr = astNewADDR( AST_OP_ADDROF, expr )
+ 		expr = astNewADDROF( expr )
 
  		'' can't be 0, or PTR will remove the ADDROF, and we are taking the
  		'' address-of a CALL result that can't be changed, ditto with LINK ..
@@ -189,10 +189,10 @@ private function hFieldAccess _
  			fldexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
  		end if
 
- 		expr = astNewPTR( 0, _
- 			 			  astNewBOP( AST_OP_ADD, expr, fldexpr ), _
- 						  dtype, _
- 						  subtype )
+ 		expr = astNewDEREF( 0, _
+ 			 			    astNewBOP( AST_OP_ADD, expr, fldexpr ), _
+ 						    dtype, _
+ 						    subtype )
 
  		expr = astNewFIELD( expr, fld, dtype, subtype )
 	end if
@@ -413,21 +413,8 @@ private function hCast _
 		end if
 	end select
 
-	if( ptronly ) then
-		'' check if it's a pointer
-		if( dtype < FB_DATATYPE_POINTER ) then
-			if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: create a fake type
-				dtype += FB_DATATYPE_POINTER
-			end if
-		end if
-
-	else
-		if( dtype >= FB_DATATYPE_POINTER ) then
-			ptronly = TRUE
-		end if
+	if( dtype >= FB_DATATYPE_POINTER ) then
+		ptronly = TRUE
 	end if
 
 	'' ','
@@ -449,37 +436,16 @@ private function hCast _
 		end if
 	end if
 
-	if( ptronly ) then
-		select case astGetDataType( expr )
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
-			 is >= FB_DATATYPE_POINTER
-
-		case else
-			dim as FBSYMBOL ptr ovlProc = any
-			dim as FB_ERRMSG err_num = any
-			ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID + FB_DATATYPE_POINTER, NULL, _
-										   expr, _
-										   @err_num )
-			if( ovlProc = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: create a fake type
-					dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID
-					subtype = NULL
-				end if
-			end if
-		end select
-	end if
-
 	expr = astNewCONV( dtype, _
 					   subtype, _
 					   expr, _
 					   iif( ptronly, AST_OP_TOPOINTER, INVALID ), _
 					   TRUE )
+
     if( expr = NULL ) Then
-    	if( errReport( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
+    	if( errReport( iif( ptronly, _
+    						FB_ERRMSG_EXPECTEDPOINTER, _
+    						FB_ERRMSG_TYPEMISMATCH ), TRUE ) = FALSE ) then
     		exit function
     	else
     		'' error recovery: create a fake node
@@ -575,7 +541,7 @@ private function hDoDeref _
 			expr = astNewPTRCHK( expr, lexLineNum( ) )
 		end if
 
-		expr = astNewPTR( 0, expr, dtype, subtype )
+		expr = astNewDEREF( 0, expr, dtype, subtype )
 
 		cnt -= 1
 	loop
@@ -682,7 +648,7 @@ private function hProcPtrBody _
 	end if
 
 	expr = astNewVAR( proc, 0, FB_DATATYPE_FUNCTION, proc )
-	addrofexpr = astNewADDR( AST_OP_ADDROF, expr )
+	addrofexpr = astNewADDROF( expr )
 
 	''
 	symbSetIsCalled( proc )
@@ -711,7 +677,7 @@ private function hVarPtrBody _
 	end if
 
 	select case as const astGetClass( addrofexpr )
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR, AST_NODECLASS_TYPEINI
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, AST_NODECLASS_TYPEINI
 
 	case AST_NODECLASS_FIELD
 		'' can't take address of bitfields..
@@ -737,7 +703,7 @@ private function hVarPtrBody _
 		end if
 	end select
 
-	addrofexpr = astNewADDR( AST_OP_ADDROF, addrofexpr )
+	addrofexpr = astNewADDROF( addrofexpr )
 
     function = (addrofexpr <> NULL)
 
@@ -913,7 +879,7 @@ function cAddrOfExpression _
 		'' check for invalid classes (functions, etc)
 		select case as const astGetClass( expr )
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-			 AST_NODECLASS_PTR, AST_NODECLASS_TYPEINI, _
+			 AST_NODECLASS_DEREF, AST_NODECLASS_TYPEINI, _
 			 AST_NODECLASS_FIELD
 
 		case else
@@ -922,10 +888,16 @@ function cAddrOfExpression _
 			end if
 		end select
 
+		'' varlen? do: *cast( zstring ptr ptr, @expr )
 		if( dtype = FB_DATATYPE_STRING ) then
-			expr = astNewADDR( AST_OP_DEREF, expr )
+			addrofexpr = astBuildStrPtr( expr )
+
+		'' anything else: do cast( zstring ptr, @expr )
 		else
-			expr = astNewADDR( AST_OP_ADDROF, expr )
+			addrofexpr = astNewCONV( FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
+								 	 NULL, _
+								 	 astNewADDROF( expr ), _
+								 	 AST_OP_TOPOINTER )
 		end if
 
 		'' ')'
@@ -937,15 +909,6 @@ function cAddrOfExpression _
 				hSkipUntil( CHAR_RPRNT, TRUE )
 			end if
 		end if
-
-		if( dtype <> FB_DATATYPE_WCHAR ) then
-			dtype = FB_DATATYPE_CHAR
-		end if
-
-		addrofexpr = astNewCONV( FB_DATATYPE_POINTER + dtype, _
-								 NULL, _
-								 expr, _
-								 AST_OP_TOPOINTER )
 
 		return (addrofexpr <> NULL)
 	end select

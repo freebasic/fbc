@@ -979,7 +979,7 @@ function astNewBOP _
 		else
 			if( ldtype = FB_DATATYPE_WCHAR ) then
 				'' don't allow, unless it's a deref pointer
-				if( l->class <> AST_NODECLASS_PTR ) then
+				if( l->class <> AST_NODECLASS_DEREF ) then
 					exit function
 				end if
 				'' remap the type or the optimizer can
@@ -988,7 +988,7 @@ function astNewBOP _
 
 			else
 				'' same as above..
-				if( r->class <> AST_NODECLASS_PTR ) then
+				if( r->class <> AST_NODECLASS_DEREF ) then
 					exit function
 				end if
 				rdtype = env.target.wchar.type
@@ -1072,7 +1072,7 @@ function astNewBOP _
    		'' or the tests above would catch them)
 		if( ldtype = FB_DATATYPE_CHAR ) then
 			'' don't allow, unless it's a deref pointer
-			if( l->class <> AST_NODECLASS_PTR ) then
+			if( l->class <> AST_NODECLASS_DEREF ) then
 				exit function
 			end if
 			'' remap the type or the optimizer can
@@ -1081,7 +1081,7 @@ function astNewBOP _
 
 		else
 			'' same as above..
-			if( r->class <> AST_NODECLASS_PTR ) then
+			if( r->class <> AST_NODECLASS_DEREF ) then
 				exit function
 			end if
 			rdtype = FB_DATATYPE_UBYTE
@@ -1348,7 +1348,7 @@ function astNewBOP _
 				if( l->class = AST_NODECLASS_CONV ) then
 					select case l->l->class
 					case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-						 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
+						 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 						n = l
 						l = l->l
 						astDelNode( n )
@@ -1358,7 +1358,7 @@ function astNewBOP _
 
 				select case l->class
 				case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-					 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
+					 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 
 					'' can't clone if there's a side-effect in the tree
 					if( astIsClassOnTree( AST_NODECLASS_CALL, l ) = NULL ) then
@@ -1466,24 +1466,24 @@ function astNewSelfBOP _
 
 		'' tmp = @lvalue
 		ll = astNewASSIGN( astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _
-					   	   astNewADDR( AST_OP_ADDROF, l ) )
+					   	   astNewADDROF( l ) )
 
 		'' *tmp = *tmp op expr
-		lr = astNewASSIGN( astNewPTR( 0, _
-				   		   			   astNewVAR( tmp, _
-				   		   			   			  0, _
-				   		   			   			  FB_DATATYPE_POINTER + dtype, _
-				   		   			   			  subtype ),_
-				   		   			   dtype, _
-				   		   			   subtype ), _
+		lr = astNewASSIGN( astNewDEREF( 0, _
+				   		   			    astNewVAR( tmp, _
+				   		   			   			   0, _
+				   		   			   			   FB_DATATYPE_POINTER + dtype, _
+				   		   			   			   subtype ),_
+				   		   			    dtype, _
+				   		   			    subtype ), _
 						   astNewBOP( op, _
-				   		   			  astNewPTR( 0, _
-				   		   			   			  astNewVAR( tmp, _
-				   		   			   			  			 0, _
-				   		   			   			  			 FB_DATATYPE_POINTER + dtype, _
-				   		   			   			  			 subtype ), _
-				   		   			   			  dtype, _
-				   		   			   			  subtype ), _
+				   		   			  astNewDEREF( 0, _
+				   		   			   			   astNewVAR( tmp, _
+				   		   			   			  			  0, _
+				   		   			   			  			  FB_DATATYPE_POINTER + dtype, _
+				   		   			   			  			  subtype ), _
+				   		   			   			   dtype, _
+				   		   			   			   subtype ), _
 					   	   			  r, _
 					   	   			  ex, _
 					   	   			  options or AST_OPOPT_ALLOCRES ) )

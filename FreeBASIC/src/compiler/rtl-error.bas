@@ -329,7 +329,7 @@ function rtlErrorCheck _
 
 	'' reslabel
 	if( reslabel <> NULL ) then
-		param = astNewADDR( AST_OP_ADDROF, astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDROF( astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -339,7 +339,7 @@ function rtlErrorCheck _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( AST_OP_ADDROF, astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDROF( astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -401,7 +401,7 @@ sub rtlErrorThrow _
 
 	'' reslabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( AST_OP_ADDROF, astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDROF( astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -411,7 +411,7 @@ sub rtlErrorThrow _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( AST_OP_ADDROF, astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDROF( astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if

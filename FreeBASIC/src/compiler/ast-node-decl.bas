@@ -46,11 +46,10 @@ private function hCtorList _
     '' fld = @sym(0)
     tree = astNewLINK( tree, _
     				   astBuildVarAssign( this_, _
-    						   			  astNewADDR( AST_OP_ADDROF, _
-    						   			   			  astNewVAR( sym, _
-   											 		  		     0, _
-   											 		  			 symbGetType( sym ), _
-   											 		  			 subtype ) ) ) )
+    						   			  astNewADDROF( astNewVAR( sym, _
+   											 		  		       0, _
+   											 		  			   symbGetType( sym ), _
+   											 		  			   subtype ) ) ) )
 
 	'' for cnt = 0 to symbGetArrayElements( sym )-1
 	tree = astBuildForBeginEx( tree, cnt, label, 0 )

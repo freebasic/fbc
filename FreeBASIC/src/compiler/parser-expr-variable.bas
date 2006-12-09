@@ -366,10 +366,10 @@ private function hStrIndexing _
 
 	if( dtype = FB_DATATYPE_STRING ) then
 		'' deref
-		varexpr = astNewADDR( AST_OP_DEREF, varexpr )
+		varexpr = astBuildStrPtr( varexpr )
 	else
 		'' address of
-		varexpr = astNewADDR( AST_OP_ADDROF, varexpr )
+		varexpr = astNewADDROF( varexpr )
 	end if
 
 	'' add index
@@ -396,7 +396,7 @@ private function hStrIndexing _
 	end if
 
 	'' make a pointer
-	function = astNewPTR( 0, varexpr, dtype, NULL )
+	function = astNewDEREF( 0, varexpr, dtype, NULL )
 
 end function
 
@@ -615,7 +615,7 @@ function cDerefFields _
 		end if
 
 		''
-		varexpr = astNewPTR( 0, varexpr, dtype, subtype )
+		varexpr = astNewDEREF( 0, varexpr, dtype, subtype )
 
         ''
 		if( fld <> NULL ) then
@@ -674,7 +674,7 @@ function cDerefFields _
 				varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
 			end if
 
-			varexpr = astNewPTR( 0, varexpr, dtype, subtype )
+			varexpr = astNewDEREF( 0, varexpr, dtype, subtype )
 
 			derefcnt -= 1
 		loop
@@ -891,14 +891,14 @@ private function hArgArrayBoundChk _
 	) as ASTNODE ptr
 
     function = astNewBOUNDCHK( expr, _
-    						   astNewPTR( FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, _
-    								  	  astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
-    								  	  FB_DATATYPE_INTEGER, _
-    								  	  NULL ), _
-    						   astNewPTR( FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, _
-    								  	  astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
-    								  	  FB_DATATYPE_INTEGER, _
-    								  	  NULL ), _
+    						   astNewDEREF( FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, _
+    								  	    astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
+    								  	    FB_DATATYPE_INTEGER, _
+    								  	    NULL ), _
+    						   astNewDEREF( FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, _
+    								  	    astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
+    								  	    FB_DATATYPE_INTEGER, _
+    								  	    NULL ), _
     						   lexLineNum( ) )
 
 
@@ -965,10 +965,10 @@ function cArgArrayIdx _
     	'' it's a descriptor pointer, dereference (only with DAG this will be optimized)
     	t = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
     	'' times desc[i].elements
-    	varexpr = astNewPTR( FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
-    						 t, _
-    						 FB_DATATYPE_INTEGER, _
-    						 NULL )
+    	varexpr = astNewDEREF( FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
+    						   t, _
+    						   FB_DATATYPE_INTEGER, _
+    						   NULL )
     	expr = astNewBOP( AST_OP_MUL, expr, varexpr )
 	loop
 
@@ -978,7 +978,7 @@ function cArgArrayIdx _
 
    	'' plus desc->data (= ptr + diff)
     t = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
-    varexpr = astNewPTR( FB_ARRAYDESC_DATAOFFS, t, FB_DATATYPE_INTEGER, NULL )
+    varexpr = astNewDEREF( FB_ARRAYDESC_DATAOFFS, t, FB_DATATYPE_INTEGER, NULL )
     expr = astNewBOP( AST_OP_ADD, expr, varexpr )
 
     idxexpr = expr
@@ -1200,10 +1200,10 @@ private function hMakeArrayIdx _
     ''  argument passed by descriptor?
     if( symbIsParamByDesc( sym ) ) then
     	'' return descriptor->data
-    	return astNewPTR( FB_ARRAYDESC_DATAOFFS, _
-    					  astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-    					  FB_DATATYPE_INTEGER, _
-    					  NULL )
+    	return astNewDEREF( FB_ARRAYDESC_DATAOFFS, _
+    					  	astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+    					  	FB_DATATYPE_INTEGER, _
+    					  	NULL )
     end if
 
     '' dynamic array? (this will handle common's too)
@@ -1430,7 +1430,7 @@ function cVariableEx _
 	'' AST will handle descriptor pointers
 	if( is_byref ) then
 		'' byref or import? by now it's a pointer var, the real type will be set bellow
-		varexpr = astNewVAR( sym, 0, FB_DATATYPE_POINTER, NULL )
+		varexpr = astNewVAR( sym, 0, FB_DATATYPE_POINTER + dtype, subtype )
 	else
 		varexpr = astNewVAR( sym, 0, dtype, subtype )
 	end if
@@ -1447,7 +1447,7 @@ function cVariableEx _
 
 	'' check arguments passed by reference (implicity pointer's)
 	if( is_byref ) then
-   		varexpr = astNewPTR( 0, varexpr, dtype, subtype )
+   		varexpr = astNewDEREF( 0, varexpr, dtype, subtype )
 	end if
 
     if( fld <> NULL ) then
@@ -1542,7 +1542,7 @@ function cWithVariable _
 	end if
 
 	'' deref the with temp pointer
-	varexpr = astNewPTR( 0, varexpr, dtype, subtype )
+	varexpr = astNewDEREF( 0, varexpr, dtype, subtype )
 
     if( fld <> NULL ) then
     	varexpr = astNewFIELD( varexpr, fld, dtype, subtype )
@@ -1670,14 +1670,14 @@ function cFieldVariable _
 	end if
 
    	'' build this.field
-   	varexpr = astNewVAR( this_, 0, FB_DATATYPE_POINTER, NULL )
+   	varexpr = astNewVAR( this_, 0, FB_DATATYPE_POINTER + FB_DATATYPE_VOID, NULL )
 
 	if( fldexpr <> NULL ) then
 		varexpr = astNewBOP( AST_OP_ADD, varexpr, fldexpr )
 	end if
 
 	'' deref the instance pointer
-	varexpr = astNewPTR( 0, varexpr, dtype, subtype )
+	varexpr = astNewDEREF( 0, varexpr, dtype, subtype )
 
     if( fld <> NULL ) then
     	varexpr = astNewFIELD( varexpr, fld, dtype, subtype )
@@ -1726,8 +1726,15 @@ function cVarOrDeref _
 	( _
 		byref varexpr as ASTNODE ptr, _
 		byval check_array as integer, _
-		byval check_addrof as integer _
+		byval allow_addrof as integer _
 	) as integer
+
+'':::
+#macro hInvalidType( )
+	astDelTree( varexpr )
+	varexpr = NULL
+	errReport( FB_ERRMSG_INVALIDDATATYPES )
+#endmacro
 
 	dim as integer res = any
 	dim as FB_PARSEROPT options = any
@@ -1743,23 +1750,31 @@ function cVarOrDeref _
 		if( varexpr <> NULL ) then
 			select case as const astGetClass( varexpr )
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
-				 AST_NODECLASS_PTR, AST_NODECLASS_CALL, AST_NODECLASS_NIDXARRAY
+				 AST_NODECLASS_DEREF, AST_NODECLASS_CALL, AST_NODECLASS_NIDXARRAY
 
-			case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
-				if( check_addrof = FALSE ) then
-					astDelTree( varexpr )
-					varexpr = NULL
-					errReport( FB_ERRMSG_INVALIDDATATYPES )
+			case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
+				if( allow_addrof = FALSE ) then
+					hInvalidType( )
 					'' no error recovery: caller will take care
-					exit function
+					return FALSE
+				end if
+
+			case AST_NODECLASS_BOP
+				'' allow addresses?
+				if( allow_addrof ) then
+					'' not a pointer? (@foo[bar] will be converted to foo + bar)
+					if( astGetDataType( varexpr ) < FB_DATATYPE_POINTER ) then
+						hInvalidType( )
+						return FALSE
+					end if
+				else
+					hInvalidType( )
+					return FALSE
 				end if
 
 			case else
-				astDelTree( varexpr )
-				varexpr = NULL
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
-				'' no error recovery: ditto
-				exit function
+				hInvalidType( )
+				return FALSE
 			end select
 		end if
 	end if

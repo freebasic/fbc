@@ -177,13 +177,13 @@ private function hNewOp _
 
 		'' *ptr = elmts
 		tree = astNewLINK( tree, _
-						   astNewASSIGN( astNewPTR( 0, _
-						   							astNewVAR( ptr_sym, _
-						   									   0, _
-						   									   FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER, _
-						   									   NULL ), _
-                                                    FB_DATATYPE_INTEGER, _
-                                                    NULL ), _
+						   astNewASSIGN( astNewDEREF( 0, _
+						   							  astNewVAR( ptr_sym, _
+						   									     0, _
+						   									     FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER, _
+						   									     NULL ), _
+                                                      FB_DATATYPE_INTEGER, _
+                                                      NULL ), _
 						  	iif( do_init and (op = AST_OP_NEW_VEC), _
 						  	   	 astCloneTree( elmts_expr ), _
 						  	   	 elmts_expr ) ) )
@@ -275,14 +275,14 @@ private function hCallDtorList _
 	'' DELETE[]'s counter is at: cast(integer ptr, vector)[-1]
 
 	'' elmts = cast(integer ptr, vector)[-1]
-	expr = astNewPTR( 0, _
-					  astNewBOP( AST_OP_ADD, _
-					  			 astNewCONV( FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER, _
-							 			 	 NULL, _
-							 			 	 astCloneTree( ptr_expr ) ), _
-					  			 astNewCONSTi( -FB_INTEGERSIZE, FB_DATATYPE_INTEGER ) ), _
-					  FB_DATATYPE_INTEGER, _
-					  NULL )
+	expr = astNewDEREF( 0, _
+					    astNewBOP( AST_OP_ADD, _
+					  			   astNewCONV( FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER, _
+							 			 	   NULL, _
+							 			 	   astCloneTree( ptr_expr ) ), _
+					  			   astNewCONSTi( -FB_INTEGERSIZE, FB_DATATYPE_INTEGER ) ), _
+					    FB_DATATYPE_INTEGER, _
+					    NULL )
 
 	tree = astBuildVarAssign( elmts, expr )
 

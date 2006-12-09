@@ -47,7 +47,7 @@
 	  - NEW and DELETE must be static methods
 
 [ ] operator overloading:
-      - OPERATOR *|@ ( l ) AS TYPE
+      - OPERATOR *|@|[]|-> ( l ) AS TYPE
 
 [ ] data/function members:
       - add static - data members must be initialized outside the TYPE|CLASS

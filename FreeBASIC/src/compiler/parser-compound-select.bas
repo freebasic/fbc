@@ -168,12 +168,12 @@ function cSelectStmtBegin as integer
 							  rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
 
 		'' *tmp = expr
-		expr = astNewASSIGN( astNewPTR( 0, _
-								  		astNewVAR( sym, _
-								  		 		   0, _
-								  		 		   FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), _
-								  	    FB_DATATYPE_WCHAR, _
-								  	    NULL ), _
+		expr = astNewASSIGN( astNewDEREF( 0, _
+								  		  astNewVAR( sym, _
+								  		 		     0, _
+								  		 		     FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), _
+								  	      FB_DATATYPE_WCHAR, _
+								  	      NULL ), _
 				      		 expr )
 
 		if( expr <> NULL ) then
@@ -267,13 +267,13 @@ end function
 
 '':::::
 '' if it's a wstring, do "if *tmp op expr"
-#define NEWCASEVAR(symbol,dtype) 				_
-	iif( dtype <> FB_DATATYPE_WCHAR, 			_
-		 astNewVAR( symbol, 0, dtype ), 		_
-		 astNewPTR( 0, 							_
-					astNewVAR( symbol, 0, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), _
-					FB_DATATYPE_WCHAR, 			_
-					NULL ) 						_
+#define NEWCASEVAR(symbol,dtype) 					_
+	iif( dtype <> FB_DATATYPE_WCHAR, 				_
+		 astNewVAR( symbol, 0, dtype ), 			_
+		 astNewDEREF( 0, 							_
+					  astNewVAR( symbol, 0, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), _
+					  FB_DATATYPE_WCHAR, 			_
+					  NULL ) 						_
 	   )
 
 

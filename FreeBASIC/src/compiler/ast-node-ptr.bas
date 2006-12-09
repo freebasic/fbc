@@ -15,7 +15,7 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-'' AST pointer nodes
+'' AST deref pointer nodes
 '' l = pointer expression; r = NULL
 ''
 '' chng: sep/2004 written [v1ctor]
@@ -27,7 +27,7 @@
 #include once "inc\ast.bi"
 
 '':::::
-function astNewPTR _
+function astNewDEREF _
 	( _
 		byval ofs as integer, _
 		byval l as ASTNODE ptr, _
@@ -36,19 +36,37 @@ function astNewPTR _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
-    dim as integer delchild = any
 
 	if( l <> NULL ) then
 		if( ofs = 0 ) then
-			delchild = FALSE
+			'' check op overloading
+			if( symb.globOpOvlTb(AST_OP_DEREF).head <> NULL ) then
+    			dim as FBSYMBOL ptr proc = any
+    			dim as FB_ERRMSG err_num = any
+
+				proc = symbFindUopOvlProc( AST_OP_DEREF, l, @err_num )
+				if( proc <> NULL ) then
+					'' build a proc call
+					return astBuildCall( proc, 1, l )
+				else
+					if( err_num <> FB_ERRMSG_OK ) then
+						exit function
+					end if
+				end if
+			end if
+
+    		dim as integer delchild = any
 
 			'' convert *@ to nothing
 			select case l->class
-			case AST_NODECLASS_ADDR
-				delchild = (l->op.op = AST_OP_ADDROF)
+			case AST_NODECLASS_ADDROF
+				delchild = TRUE
 
 			case AST_NODECLASS_OFFSET
 				delchild = (l->ofs.ofs = 0)
+
+			case else
+				delchild = FALSE
 			end select
 
 			''
@@ -68,22 +86,21 @@ function astNewPTR _
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_PTR, _
-					dtype, _
-					subtype )
-	function = n
+	n = astNewNode( AST_NODECLASS_DEREF, dtype, subtype )
 
 	if( n = NULL ) then
-		exit function
+		return NULL
 	end if
 
 	n->l = l
 	n->ptr.ofs = ofs
 
+	function = n
+
 end function
 
 '':::::
-function astLoadPTR _
+function astLoadDEREF _
 	( _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr

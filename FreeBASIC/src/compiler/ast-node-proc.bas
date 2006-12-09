@@ -874,7 +874,7 @@ private sub hCallCtorList _
     	end if
     end if
 
-    astAdd( astBuildVarAssign( iter, astNewADDR( AST_OP_ADDROF, fldexpr ) ) )
+    astAdd( astBuildVarAssign( iter, astNewADDROF( fldexpr ) ) )
 
 	'' for cnt = 0 to symbGetArrayElements( fld )-1
 	astBuildForBegin( cnt, label, 0 )

@@ -336,7 +336,7 @@ private function hCallCtorList _
 
 		flush_tree = astNewLINK( flush_tree, _
 								 astBuildVarAssign( iter, _
-								 					astNewADDR( AST_OP_ADDROF, fldexpr ) ) )
+								 					astNewADDROF( fldexpr ) ) )
 
 		'' for cnt = 0 to elements-1
 		flush_tree = astBuildForBeginEx( flush_tree, cnt, label, 0 )
@@ -403,13 +403,13 @@ private function hFlushTree _
 
         		'' deref..
         		else
-        			lside = astNewPTR( n->typeini.ofs, _
-        							   astNewVAR( basesym, _
-        				   	   	   	   			  0, _
-	       				   	   	   	   			  symbGetType( basesym ), _
-        				   	   	   	   			  symbGetSubtype( basesym ) ), _
-        							   dtype, _
-        							   subtype )
+        			lside = astNewDEREF( n->typeini.ofs, _
+        							     astNewVAR( basesym, _
+        				   	   	   	   			    0, _
+	       				   	   	   	   			  	symbGetType( basesym ), _
+        				   	   	   	   			  	symbGetSubtype( basesym ) ), _
+        							   	 dtype, _
+        							   	 subtype )
         		end if
 
         		'' field?
@@ -441,13 +441,13 @@ private function hFlushTree _
         				  	   	   	   subtype )
 
         		else
-        			lside = astNewPTR( n->typeini.ofs, _
-        							   astNewVAR( basesym, _
-        				   	   	   	   			  0, _
-	       				   	   	   	   			  dtype, _
-        				   	   	   	   			  subtype ), _
-        							   dtype - FB_DATATYPE_POINTER, _
-        							   subtype )
+        			lside = astNewDEREF( n->typeini.ofs, _
+        							   	 astNewVAR( basesym, _
+        				   	   	   	   			  	0, _
+	       				   	   	   	   			  	dtype, _
+        				   	   	   	   			  	subtype ), _
+        							     dtype - FB_DATATYPE_POINTER, _
+        							     subtype )
         		end if
     		end if
 

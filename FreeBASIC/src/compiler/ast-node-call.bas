@@ -222,23 +222,6 @@ private function hCallProc _
 		end if
 	end if
 
-	if( ast.doemit ) then
-		select case n->dtype
-		'' string or wstring? it's actually a pointer to a descriptor
-		case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-			vreg = irAllocVRPTR( n->dtype, 0, vreg )
-
-		'' udt? if not retuned in registers, deref the pointer
-		case FB_DATATYPE_STRUCT
-			if( symbGetUDTRetType( n->subtype ) = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
-				vreg = irAllocVRPTR( FB_DATATYPE_STRUCT, 0, vreg )
-			end if
-
-		'case FB_DATATYPE_CLASS
-			' ...
-		end select
-	end if
-
 	function = vreg
 
 end function
@@ -307,7 +290,6 @@ private sub hCheckTempStruct _
 	)
 
 	dim as IRVREG ptr vr = any
-	dim as FBSYMBOL a = any
 
 	if( ast.doemit = FALSE ) then
 		exit sub
@@ -319,16 +301,13 @@ private sub hCheckTempStruct _
 
         	'' pass the address of the temp struct (it must be cleared if it
         	'' includes string fields)
-        	vr = astLoad( astNewVAR( n->call.tmpres, _
-        							 0, _
-        							 FB_DATATYPE_STRUCT, _
-        							 symbGetSubtype( sym ), _
-        							 TRUE ) )
+        	vr = astLoad( astNewADDROF( astNewVAR( n->call.tmpres, _
+        							 			   0, _
+        							 			   FB_DATATYPE_STRUCT, _
+        							 			   symbGetSubtype( sym ), _
+        							 			   TRUE ) ) )
 
-        	a.typ = FB_DATATYPE_VOID
-        	a.param.mode = FB_PARAMMODE_BYREF
-
-        	irEmitPUSHARG( sym, @a, vr, INVALID, FB_POINTERSIZE )
+        	irEmitPUSHARG( vr, 0 )
 		end if
 	end if
 
@@ -408,7 +387,7 @@ function astLoadCALL _
 		astDelNode( l )
 
 		if( ast.doemit ) then
-			irEmitPUSHARG( sym, param, vr, arg->arg.mode, arg->arg.lgt )
+			irEmitPUSHARG( vr, arg->arg.lgt )
 		end if
 
 		astDelNode( arg )
@@ -424,7 +403,7 @@ function astLoadCALL _
 	'' handle functions returning structs
 	hCheckTempStruct( n, sym )
 
-	'' return proc's result
+	'' invoke
 	vr = hCallProc( n, sym, mode, topop, toalign )
 
 	''

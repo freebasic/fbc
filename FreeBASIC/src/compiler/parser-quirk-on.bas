@@ -116,8 +116,7 @@ function cGOTBStmt _
 
     if( isgoto = FALSE ) then
     	astAdd( astNewSTACK( AST_OP_PUSH, _
-    						 astNewADDR( AST_OP_ADDROF, _
-    						 			 astNewVAR( exitlabel ) ) ) )
+    						 astNewADDROF( astNewVAR( exitlabel ) ) ) )
     end if
 
     astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
@@ -237,8 +236,7 @@ function cOnStmt _
 			end if
 			lexSkipToken( )
 
-			expr = astNewVAR( label, 0, FB_DATATYPE_UINT )
-			expr = astNewADDR( AST_OP_ADDROF, expr )
+			expr = astNewADDROF( astNewVAR( label, 0, FB_DATATYPE_UINT ) )
 			rtlErrorSetHandler( expr, (islocal = TRUE) )
 
 		else

@@ -396,7 +396,7 @@ function rtlDataRestore _
     end if
 
     '' byval labeladdrs as void ptr
-    expr = astNewADDR( AST_OP_ADDROF, astNewVAR( s, 0, FB_DATATYPE_BYTE ) )
+    expr = astNewADDROF( astNewVAR( s, 0, FB_DATATYPE_BYTE ) )
     if( astNewARG( proc, expr ) = NULL ) then
  		exit function
  	end if

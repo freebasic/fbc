@@ -1022,6 +1022,7 @@ function symbPreAddProc _
 	symbSymbTbInit( proc->proc.paramtb, proc )
 	proc->id.name = symbol
 	proc->proc.ext = NULL
+	proc->attrib = 0
 	proc->stats = 0
 
     '' to allow getNamespace() and GetParent() to work

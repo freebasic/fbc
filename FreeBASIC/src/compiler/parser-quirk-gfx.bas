@@ -58,10 +58,10 @@ const FBGFX_PUTMODE_CUSTOM = 8
 '' which would cause FB_TK_ID to be returned from
 '' lexGetToken( ), instead of FB_TK_STEP.
 private function hMatchText _
-	( _ 
-		byval txt as zstring ptr _ 
+	( _
+		byval txt as zstring ptr _
 	) as integer
-    
+
 	if( ucase( *lexGetText( ) ) = ucase( *txt ) ) then
 		lexSkipToken( )
 		function = TRUE
@@ -84,31 +84,33 @@ private function hMakeArrayIndex _
     if( astIsFIELD( varexpr ) ) then
     	return varexpr
     end if
-    
+
     ''  argument passed by descriptor?
     if( symbIsParamByDesc( sym ) ) then
-        
+
 		'' deref descriptor->data
-		idxexpr = astNewPTR( FB_ARRAYDESC_DATAOFFS, _
-                             astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-                             FB_DATATYPE_INTEGER, _
-                             NULL )
-		
+		idxexpr = astNewDEREF( FB_ARRAYDESC_DATAOFFS, _
+                               astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+                               FB_DATATYPE_INTEGER, _
+                               NULL )
+
 		'' descriptor->dimTB(0).lBound
-		dataOffset = astNewPTR( FB_ARRAYDESCLEN + FB_ARRAYDESC_LBOUNDOFS, _
-                                astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-                                FB_DATATYPE_INTEGER, _
-                                NULL )
-		
+		dataOffset = astNewDEREF( FB_ARRAYDESCLEN + FB_ARRAYDESC_LBOUNDOFS, _
+                                  astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+                                  FB_DATATYPE_INTEGER, _
+                                  NULL )
+
 		'' lBound * elemLen
-		dataOffset = astNewBOP( AST_OP_MUL, dataOffset, astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_UINT ) )
-		
+		dataOffset = astNewBOP( AST_OP_MUL, _
+								dataOffset, _
+								astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_UINT ) )
+
 		'' add above to data ptr
 		idxexpr = astNewBOP( AST_OP_ADD, idxexpr, dataOffset )
-		
+
 		'' ...
 		astNewLOAD( idxexpr, FB_DATATYPE_INTEGER )
-		
+
 		'' can't reuse varexpr
 		astDelTree( varexpr )
 		varexpr = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
@@ -119,18 +121,20 @@ private function hMakeArrayIndex _
 		idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), _
                              FB_ARRAYDESC_DATAOFFS, _
                              FB_DATATYPE_INTEGER )
-		
+
 		'' descriptor->dimTB(0).lBound
 		dataOffset = astNewVAR( symbGetArrayDescriptor( sym ), _
                                 FB_ARRAYDESCLEN + FB_ARRAYDESC_LBOUNDOFS, _
                                 FB_DATATYPE_INTEGER )
-		
+
 		'' lBound * elemLen
-		dataOffset = astNewBOP( AST_OP_MUL, dataOffset, astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_UINT ) )
-		
+		dataOffset = astNewBOP( AST_OP_MUL, _
+								dataOffset, _
+								astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_UINT ) )
+
 		'' add above to data ptr
 		idxexpr = astNewBOP( AST_OP_ADD, idxexpr, dataOffset )
-		
+
 		'' ...
 		idxexpr = astNewLOAD( idxexpr, FB_DATATYPE_INTEGER )
 
@@ -138,8 +142,10 @@ private function hMakeArrayIndex _
     else
 
       idxexpr = astNewBOP( AST_OP_MUL, _
-                           astNewCONSTi( symbGetArrayFirstDim( sym )->lower, FB_DATATYPE_INTEGER ), _
-                           astNewCONSTi( symbCalcLen( astGetDataType( varexpr ), astGetSubType( varexpr ) ), FB_DATATYPE_UINT ) )
+                           astNewCONSTi( symbGetArrayFirstDim( sym )->lower, _
+                           				 FB_DATATYPE_INTEGER ), _
+                           astNewCONSTi( symbCalcLen( astGetDataType( varexpr ), _
+                           				 astGetSubType( varexpr ) ), FB_DATATYPE_UINT ) )
 
     end if
 
@@ -165,8 +171,8 @@ private function hGetTarget _
 	if( lexGetToken( ) = CHAR_LPRNT ) then
 		exit function
 	end if
-    
-    '' flag it as an expression so 
+
+    '' flag it as an expression so
     '' properties don't get confused
 	dim as integer last_isexpr = fbGetIsExpression( )
 	fbSetIsExpression( TRUE )
@@ -177,19 +183,23 @@ private function hGetTarget _
 
 	fbSetIsExpression( last_isexpr )
 
+	select case as const astGetClass( expr )
 	'' ugly hack to deal with arrays w/o indexes
-	if( astIsNIDXARRAY( expr ) ) then
+	case AST_NODECLASS_NIDXARRAY
 		dim as ASTNODE ptr arrayexpr = astGetLeft( expr )
 		astDelNode( expr )
 		s = astGetSymbol( arrayexpr )
 		expr = hMakeArrayIndex( s, arrayexpr )
 
-	'' address of?
-	elseif( astIsADDR( expr ) ) then
-		isptr = TRUE
-		return NULL
+	'' address-of or pointer deref?
+	case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET, _
+		 AST_NODECLASS_DEREF, AST_NODECLASS_BOP
 
-	else
+		isptr = TRUE
+		s = NULL
+
+	'' var, idx, ...
+	case else
 		s = astGetSymbol( expr )
 		if( s = NULL ) then
 			'' pointer?
@@ -215,7 +225,8 @@ private function hGetTarget _
 		elseif( isptr = FALSE ) then
 			exit function
 		end if
-	end if
+
+	end select
 
 	function = s
 
@@ -253,11 +264,11 @@ private function hGetMode _
 		case "PSET"
 			lexSkipToken( )
 			mode = FBGFX_PUTMODE_PSET
-	
+
 		case "PRESET"
 			lexSkipToken( )
 			mode = FBGFX_PUTMODE_PRESET
-	
+
 		case "TRANS"
 			lexSkipToken( )
 			mode = FBGFX_PUTMODE_TRANS
@@ -744,7 +755,7 @@ function cGfxDraw as integer
 		exit function
 	else
 		select case lexGetLookAhead( 1 )
-        
+
         '' dot handling needed because of the
         '' "period in symbol" ambiguity -cha0s
         case CHAR_COMMA, CHAR_DOT
@@ -859,7 +870,7 @@ function cGfxPalette as integer
 	else
 		isget = FALSE
 	end if
-    
+
     '' this could fail if using was #undef'ed and made a method...
 	if( hMatch( FB_TK_USING ) ) then
 
@@ -1245,15 +1256,15 @@ function cGfxImageCreate( byref funcexpr as ASTNODE ptr ) as integer
 	hMatchLPRNT( )
 
 	hMatchExpression( wexpr )
-	
+
 	hMatchCOMMA( )
-	
+
 	hMatchExpression( hexpr )
-	
+
 	cexpr = NULL
 	dexpr = NULL
 	flags = FBGFX_DEFAULT_COLOR_FLAG
-	
+
 	if( hMatch( CHAR_COMMA ) ) then
 		if( cExpression( cexpr ) = FALSE ) then
 			cexpr = NULL
@@ -1264,7 +1275,7 @@ function cGfxImageCreate( byref funcexpr as ASTNODE ptr ) as integer
 			hMatchExpression( dexpr )
 		end if
 	end if
-	
+
 	hMatchRPRNT( )
 
 	funcexpr = rtlGfxImageCreate( wexpr, hexpr, cexpr, dexpr, flags )
@@ -1369,7 +1380,7 @@ function cGfxFunct _
 	case FB_TK_POINT
 		lexSkipToken( )
 		function = cGfxPoint( funcexpr )
-	
+
 	case FB_TK_IMAGECREATE
 		lexSkipToken( )
 		function = cGfxImageCreate( funcexpr )

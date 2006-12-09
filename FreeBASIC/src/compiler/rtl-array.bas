@@ -332,7 +332,7 @@ private function hBuildProcPtr _
 		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
-	function = astNewADDR( AST_OP_ADDROF, astNewVAR( proc, 0, FB_DATATYPE_FUNCTION, proc ) )
+	function = astNewADDROF( astNewVAR( proc, 0, FB_DATATYPE_FUNCTION, proc ) )
 
 	symbSetIsCalled( proc )
 

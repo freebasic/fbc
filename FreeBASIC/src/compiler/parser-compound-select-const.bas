@@ -85,7 +85,7 @@ function cSelConstStmtBegin( ) as integer
     	select case astGetDataType( expr )
     	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		'' don't allow, unless it's a deref pointer
-    		if( astIsPTR( expr ) = FALSE ) then
+    		if( astIsDEREF( expr ) = FALSE ) then
 				astDelTree( expr )
 				expr = NULL
     		end if

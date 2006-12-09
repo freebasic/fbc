@@ -101,13 +101,13 @@ function astBuildVarDeref _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	function = astNewPTR( 0, _
-            			  astNewVAR( sym, _
-            						 0, _
-            						 symbGetType( sym ), _
-            						 symbGetSubtype( sym ) ), _
-            			  symbGetType( sym ) - FB_DATATYPE_POINTER, _
-            			  symbGetSubtype( sym ) )
+	function = astNewDEREF( 0, _
+            			  	astNewVAR( sym, _
+            						   0, _
+            						   symbGetType( sym ), _
+            						   symbGetSubtype( sym ) ), _
+            			  	symbGetType( sym ) - FB_DATATYPE_POINTER, _
+            			  	symbGetSubtype( sym ) )
 
 end function
 
@@ -117,10 +117,10 @@ function astBuildVarDeref _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	function = astNewPTR( 0, _
-            			  expr, _
-            			  astGetDataType( expr ) - FB_DATATYPE_POINTER, _
-            			  astGetSubtype( expr ) )
+	function = astNewDEREF( 0, _
+            			    expr, _
+            			    astGetDataType( expr ) - FB_DATATYPE_POINTER, _
+            			    astGetSubtype( expr ) )
 
 end function
 
@@ -130,11 +130,10 @@ function astBuildVarAddrof _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	function = astNewADDR( AST_OP_ADDROF, _
-            			   astNewVAR( sym, _
-            						  0, _
-            						  symbGetType( sym ), _
-            						  symbGetSubtype( sym ) ) )
+	function = astNewADDROF( astNewVAR( sym, _
+            						  	0, _
+            						  	symbGetType( sym ), _
+            						  	symbGetSubtype( sym ) ) )
 
 end function
 
@@ -229,10 +228,13 @@ function astBuildVarField _
 
 	'' byref or import?
 	if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
-		expr = astNewPTR( ofs, _
-						  astNewVAR( sym, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL ), _
-						  symbGetType( sym ), _
-						  symbGetSubtype( sym ) )
+		expr = astNewDEREF( ofs, _
+						    astNewVAR( sym, _
+						    		   0, _
+						    		   FB_DATATYPE_POINTER + symbGetType( sym ), _
+						    		   symbGetSubtype( sym ) ), _
+						    symbGetType( sym ), _
+						    symbGetSubtype( sym ) )
 	else
 		expr = astNewVAR( sym, _
 						  ofs, _
@@ -590,11 +592,10 @@ function astBuildProcAddrof _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	function = astNewADDR( AST_OP_ADDROF, _
-						   astNewVAR( sym, _
-						   			  0, _
-						   			  FB_DATATYPE_FUNCTION, _
-						   			  sym ) )
+	function = astNewADDROF( astNewVAR( sym, _
+						   			  	0, _
+						   			  	FB_DATATYPE_FUNCTION, _
+						   			  	sym ) )
 
 end function
 
@@ -642,7 +643,7 @@ function astBuildProcResultVar _
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		'' pointer? deref
 		if( symbGetProcRealType( proc ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
-			lhs = astNewPTR( 0, lhs, FB_DATATYPE_STRUCT, symbGetSubtype( res ) )
+			lhs = astNewDEREF( 0, lhs, FB_DATATYPE_STRUCT, symbGetSubtype( res ) )
 		end if
 	end select
 
@@ -705,7 +706,7 @@ function astBuildInstPtr _
 		end if
 	end if
 
-	expr = astNewPTR( 0, expr, dtype, subtype )
+	expr = astNewDEREF( 0, expr, dtype, subtype )
 
 	if( fld <> NULL ) then
 	    expr = astNewFIELD( expr, fld, dtype, subtype )
@@ -786,13 +787,13 @@ function astBuildArrayDescIniTree _
 
     if( array_expr = NULL ) then
     	if( symbGetIsDynamic( array ) ) then
-    		array_expr = astNewCONSTi( 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
+    		array_expr = astNewCONSTi( 0, FB_DATATYPE_POINTER + dtype, subtype )
     	else
-    		array_expr = astNewADDR( AST_OP_ADDROF, astNewVAR( array, 0, dtype, subtype ) )
+    		array_expr = astNewADDROF( astNewVAR( array, 0, dtype, subtype ) )
     	end if
 
     else
-    	array_expr = astNewADDR( AST_OP_ADDROF, array_expr )
+    	array_expr = astNewADDROF( array_expr )
     end if
 
     '' .data = @array(0) + diff
@@ -883,6 +884,29 @@ function astBuildArrayDescIniTree _
     symbSetIsInitialized( desc )
 
     function = tree
+
+end function
+
+''
+'' strings
+''
+
+'':::::
+function astBuildStrPtr _
+	( _
+		byval lhs as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	'' note: only var-len strings expressions should be passed
+
+	'' *cast( zstring ptr ptr, @lhs )
+	function = astNewDEREF( 0, _
+						    astNewCONV( FB_DATATYPE_POINTER*2 + FB_DATATYPE_CHAR, _
+								 	    NULL, _
+								 	  	astNewADDROF( lhs ), _
+								 	  	AST_OP_TOPOINTER ), _
+						  	FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
+						  	NULL )
 
 end function
 

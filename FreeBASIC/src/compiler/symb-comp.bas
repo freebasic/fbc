@@ -223,9 +223,9 @@ private sub hAssignList _
     src = symbAddTempVar( FB_DATATYPE_POINTER + symbGetType( fld ), subtype )
 
     '' dst = @this.dst(0)
-    astAdd( astBuildVarAssign( dst, astNewADDR( AST_OP_ADDROF, dstexpr ) ) )
+    astAdd( astBuildVarAssign( dst, astNewADDROF( dstexpr ) ) )
     '' src = @this.src(0)
-    astAdd( astBuildVarAssign( src, astNewADDR( AST_OP_ADDROF, srcexpr ) ) )
+    astAdd( astBuildVarAssign( src, astNewADDROF( srcexpr ) ) )
 
 	'' for cnt = 0 to symbGetArrayElements( dst )-1
 	astBuildForBegin( cnt, label, 0 )
