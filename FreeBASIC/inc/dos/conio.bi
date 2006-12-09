@@ -73,7 +73,7 @@ declare function	cputs			cdecl alias "cputs"		(byval strn as zstring ptr) as int
 declare sub		delline			cdecl alias "delline"		()
 declare function	getch			cdecl alias "getch"		() as integer
 declare function	getche			cdecl alias "getche"		() as integer
-declare function  gettext     cdecl alias "_conio_gettext"   (byval left_ as integer, byval top_ as integer, byval right_ as integer, byval bottom as integer, byval destin as any ptr) as integer
+declare function  gettext     cdecl alias "gettext"   (byval left_ as integer, byval top_ as integer, byval right_ as integer, byval bottom as integer, byval destin as any ptr) as integer
 declare sub		gettextinfo		cdecl alias "gettextinfo"	(byval r as text_info ptr)
 declare sub		gotoxy			cdecl alias "gotoxy"		(byval x as integer, byval y as integer)
 declare sub		gppconio_init		cdecl alias "gppconio_init"	()
