@@ -456,12 +456,19 @@ private function hCast _
 			 is >= FB_DATATYPE_POINTER
 
 		case else
-			if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: create a fake type
-				dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID
-				subtype = NULL
+			dim as FBSYMBOL ptr ovlProc = any
+			dim as FB_ERRMSG err_num = any
+			ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID + FB_DATATYPE_POINTER, NULL, _
+										   expr, _
+										   @err_num )
+			if( ovlProc = NULL ) then
+				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: create a fake type
+					dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID
+					subtype = NULL
+				end if
 			end if
 		end select
 	end if
