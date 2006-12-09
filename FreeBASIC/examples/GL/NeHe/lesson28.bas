@@ -112,35 +112,35 @@ dim shared as BEZIER_PATCH mybezier            '' The bezier patch we're going t
 
 
 		'' Keyboard handlers
-		if multikey(SC_LEFT) then                           '' rotate left
+		if MULTIKEY(FB.SC_LEFT) then                           '' rotate left
 			rotz -= 0.8f
 		end if
-		if multikey(SC_RIGHT) then                          '' rotate right
+		if MULTIKEY(FB.SC_RIGHT) then                          '' rotate right
 			rotz += 0.8f
 		end if
-		if multikey(SC_UP) and not upp then                 '' resolution up
+		if MULTIKEY(FB.SC_UP) and not upp then                 '' resolution up
 			upp = true
 			divs = divs +1
 			mybezier.dlBPatch = genBezier (mybezier, divs)  '' Update the patch
 		end if
-		if not multikey(SC_UP) then upp = false
+		if not MULTIKEY(FB.SC_UP) then upp = false
 
-		if multikey(SC_DOWN) and  divs > 1 and not dnp then
+		if MULTIKEY(FB.SC_DOWN) and  divs > 1 and not dnp then
 			dnp = true
 			divs = divs -1
 			mybezier.dlBPatch = genBezier (mybezier, divs)  '' Update the patch
 		end if
-		if not multikey(SC_DOWN) then dnp = false
+		if not MULTIKEY(FB.SC_DOWN) then dnp = false
 
-		if multikey(SC_SPACE) and not sp then               '' SPACE toggles showCPoints
+		if MULTIKEY(FB.SC_SPACE) and not sp then               '' SPACE toggles showCPoints
 			sp = true
 			showCPoints =  not  showCPoints
 		end if
-		if not multikey(SC_SPACE) then sp = false
+		if not MULTIKEY(FB.SC_SPACE) then sp = false
 
 		flip  '' flip or crash
 		if inkey = chr(255)+"X" then exit do              '' exit if close box is clicked
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while inkey <> "": wend

@@ -98,14 +98,14 @@ dim shared top as uinteger               '' Storage For The Top Display List
 		next
 
 		'' keyboard handler
-		if multikey(SC_LEFT) then yrot = yrot - 0.2   '' If Left Arrow is Being Pressed, Spin Cubes Left
-		if multikey(SC_RIGHT) then yrot = yrot + 0.2  '' If Right Arrow is Being Pressed, Spin Cubes Right
-		if multikey(SC_UP) then xrot = xrot - 0.2     '' If Up Arrow Being Pressed, Tilt Cubes Up
-		if multikey(SC_DOWN) then xrot = xrot + 0.2   '' If Down Arrow Being Pressed, Tilt Cubes Down
+		if MULTIKEY(FB.SC_LEFT) then yrot = yrot - 0.2   '' If Left Arrow is Being Pressed, Spin Cubes Left
+		if MULTIKEY(FB.SC_RIGHT) then yrot = yrot + 0.2  '' If Right Arrow is Being Pressed, Spin Cubes Right
+		if MULTIKEY(FB.SC_UP) then xrot = xrot - 0.2     '' If Up Arrow Being Pressed, Tilt Cubes Up
+		if MULTIKEY(FB.SC_DOWN) then xrot = xrot + 0.2   '' If Down Arrow Being Pressed, Tilt Cubes Down
 
 		flip                                          '' filp or crash
 		if inkey = chr(255)+"X" then exit do        '' exit if close box is clicked
-	loop while MULTIKEY(SC_ESCAPE) = 0                '' exit if EXC is pressed
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0                '' exit if EXC is pressed
 
 	while inkey <> "": wend
 	end

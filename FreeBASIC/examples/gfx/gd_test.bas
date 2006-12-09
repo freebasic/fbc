@@ -31,7 +31,7 @@ declare function saveImgToJPEG( byval img as gdImagePtr, byref filename as strin
 		x2 = rnd * (IMG_WIDTH-1)
 		y2 = rnd * (IMG_HEIGHT-1)
 	
-		gdImageLine img, x1, y1, x2, y2, rgb( rnd * 256, rnd * 256, rnd * 256 )
+		gdImageLine img, x1, y1, x2, y2, rgba( rnd * 256, rnd * 256, rnd * 256, 0 )
 	next i
 
 	'' save to file

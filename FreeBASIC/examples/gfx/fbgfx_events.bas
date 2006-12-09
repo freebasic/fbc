@@ -1,5 +1,7 @@
 #include "fbgfx.bi"
 
+	using FB
+
 
 '':::::
 function get_ascii(a as integer) as string

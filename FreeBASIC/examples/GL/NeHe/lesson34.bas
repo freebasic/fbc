@@ -66,23 +66,23 @@ dim shared as single scaleValue = 0.30f                     '' Scale Value For T
 		RenderHeightMap (@g_HeightMap(0))                             '' Render The Height Map
 
 		'' Is the UP ARROW key Being Pressed?
-		if multikey(SC_UP) then                          '' Increase the scale value to zoom in
+		if MULTIKEY(FB.SC_UP) then                          '' Increase the scale value to zoom in
 			scaleValue + = 0.001f
 		end if
 		'' Is the DOWN ARROW key Being Pressed?
-		if multikey(SC_DOWN) then                        '' Decrease the scale value to zoom out
+		if MULTIKEY(FB.SC_DOWN) then                        '' Decrease the scale value to zoom out
 			scaleValue - = 0.001f
 		end if
 		'' Is the R key Being Pressed?
-		if multikey(SC_R) and not rdown then             '' toggle Render Polygons/lines
+		if MULTIKEY(FB.SC_R) and not rdown then             '' toggle Render Polygons/lines
 			bRender = not bRender
 			rdown = true
 		end if
-		if not multikey(SC_R) then rdown = false
+		if not MULTIKEY(FB.SC_R) then rdown = false
 
 		flip
 		if inkey = chr(255)+"k" then exit do           '' exit if close box is clicked
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while inkey <> "": wend

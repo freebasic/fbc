@@ -126,7 +126,7 @@ declare sub drawscr ()
 		drawscr()
 		flip
 		if inkey = chr(255)+"k" then exit do      '' exit if close box is clicked
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 	Deinitialize()
 	'' Empty keyboard buffer
 	while inkey <> "": wend
@@ -455,7 +455,7 @@ sub Update (byval milliseconds as integer)               '' Perform Motion Updat
 	dim as integer iLoop = 0
 	
 	'' Space Bar Being Pressed After Game Has Ended?
-	if multikey(SC_SPACE)  and  game = TRUE then
+	if MULTIKEY(FB.SC_SPACE)  and  game = TRUE then
 		'' Loop Through 30 Objects		
 		while iLoop<30
 			'' Initialize Each Object

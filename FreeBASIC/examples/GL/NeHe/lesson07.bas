@@ -130,7 +130,7 @@ declare function LoadGLTextures() as integer
 		yrot = yrot + yspeed                    '' Add yspeed To yrot
 	
 		'' Keyboard handlers
-		if MULTIKEY(SC_L) and not lp then       '' L Key down
+		if MULTIKEY(FB.SC_L) and not lp then       '' L Key down
 			lp = true
 			light = not light                     '' toggle light on /off
 			if (not light) then
@@ -139,24 +139,24 @@ declare function LoadGLTextures() as integer
 			  glEnable(GL_LIGHTING)               '' enable lighting
 			end if
 		end if
-		if not MULTIKEY(SC_L) then lp = false   '' L key up
+		if not MULTIKEY(FB.SC_L) then lp = false   '' L key up
 	
-		if MULTIKEY(SC_F) and not fp then       '' F Key down
+		if MULTIKEY(FB.SC_F) and not fp then       '' F Key down
 			fp = true
 			filter += 1                           '' Cycle filter 0 -> 1 -> 2
 			if (filter > 2) then filter = 0       '' 2 -> 0
 		end if
-		if not MULTIKEY(SC_F) then fp = false   '' F Key Up
+		if not MULTIKEY(FB.SC_F) then fp = false   '' F Key Up
 	
-		if MULTIKEY(SC_PAGEUP) then z-=0.02     '' If Page Up is Being Pressed, Move Into The Screen
-		if MULTIKEY(SC_PAGEDOWN) then z+=0.02   '' If Page Down is Being Pressed, Move Towards The Viewer
-		if MULTIKEY(SC_UP) then xspeed-=0.01    '' If Up Arrow is Being Pressed, Decrease xspeed
-		if MULTIKEY(SC_DOWN) then xspeed+=0.01  '' If Down Arrow Being Pressed, Increase xspeed
-		if MULTIKEY(SC_RIGHT) then yspeed+=0.01 '' If Right Arrow Being Pressed, Increase yspeed
-		if MULTIKEY(SC_LEFT) then yspeed-=0.01  '' If Left Arrow Being Pressed, Decrease yspeed
+		if MULTIKEY(FB.SC_PAGEUP) then z-=0.02     '' If Page Up is Being Pressed, Move Into The Screen
+		if MULTIKEY(FB.SC_PAGEDOWN) then z+=0.02   '' If Page Down is Being Pressed, Move Towards The Viewer
+		if MULTIKEY(FB.SC_UP) then xspeed-=0.01    '' If Up Arrow is Being Pressed, Decrease xspeed
+		if MULTIKEY(FB.SC_DOWN) then xspeed+=0.01  '' If Down Arrow Being Pressed, Increase xspeed
+		if MULTIKEY(FB.SC_RIGHT) then yspeed+=0.01 '' If Right Arrow Being Pressed, Increase yspeed
+		if MULTIKEY(FB.SC_LEFT) then yspeed-=0.01  '' If Left Arrow Being Pressed, Decrease yspeed
 	
 		flip  '' flip or crash
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 	
 	'Empty keyboard buffer
 	while inkey <> "": wend

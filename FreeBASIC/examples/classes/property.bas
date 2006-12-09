@@ -22,9 +22,9 @@ namespace tui
 		declare property y as integer
 		declare property y( new_y as integer )
 		
-		'' private
-		declare sub p_redraw
-		declare sub p_drawtitle
+	private:
+		declare sub redraw
+		declare sub drawtitle
 		
 		dim as string p_title
 		dim as integer p_x, p_y, p_w, p_h
@@ -62,7 +62,7 @@ namespace tui
 	''
 	property window.title ( new_title as string )		
 		p_title = new_title
-		p_drawtitle
+		drawtitle
 	end property
 	
 	''
@@ -73,7 +73,7 @@ namespace tui
 	''
 	property window.x ( new_x as integer )
 		p_x = new_x
-		p_redraw
+		redraw
 	end property
 
 	''
@@ -84,16 +84,16 @@ namespace tui
 	''
 	property window.y ( new_y as integer )
 		p_y = new_y
-		p_redraw
+		redraw
 	end property
 	
 	''
 	sub window.show
-		p_redraw
+		redraw
 	end sub
 
 	''	
-	sub window.p_drawtitle
+	sub window.drawtitle
 		locate p_y, p_x
 		color 15, 1
 		print space( p_w );
@@ -104,11 +104,11 @@ namespace tui
 	end sub
 
 	''
-	sub window.p_redraw
+	sub window.redraw
 		color 7, 0
 		cls
 		
-		p_drawtitle
+		drawtitle
 	
 		dim as integer i
 		color 8, 7

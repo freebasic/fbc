@@ -1,13 +1,18 @@
 '' indexed properties example
 
 type foo
-	dim as integer __bar(0 to 9)
+	'' get
 	declare property bar(index as integer) as integer
 	declare property bar(index as string) as integer
+	
+	'' set
 	declare property bar(index as integer, value as integer)
 	declare property bar(index as string, value as integer)
 	declare property bar(index as integer, value as string)
 	declare property bar(index as string, value as string)
+
+private:
+	dim as integer __bar(0 to 9)
 end type
 
 property foo.bar(index as integer) as integer
@@ -53,4 +58,9 @@ end property
 	f.bar(2) = "-1234"
 	f.bar("3") = "-5678"
 	
-	print f.bar(0), f.bar("1"), f.bar(2), f.bar("3")
+	print f.bar(0)
+	print f.bar("1")
+	print f.bar(2)
+	print f.bar("3")
+	
+	sleep

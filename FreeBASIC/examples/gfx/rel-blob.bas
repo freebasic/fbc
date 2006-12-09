@@ -52,7 +52,7 @@ const BLOB_HEI = 128
             end if
             if bcol < 0 then bcol = 0
             if bcol > 255 then bcol = 255
-            light(x + (BLOB_WID \ 2), y + (BLOB_HEI \ 2)) = rgb( bcol, bcol, bcol )
+            light(x + (BLOB_WID \ 2), y + (BLOB_HEI \ 2)) = rgba( bcol, bcol, bcol, 0 )
 
         next y
     next x
@@ -174,7 +174,7 @@ private sub draw_blob(buffer() as integer, light() as integer,_
                 b = (lb + bb)
                 if b > 255 then b = 255
 
-                *offset = rgb( r, g, b )
+                *offset = rgba( r, g, b, 0 )
             end if
 
             offset = offset + 1

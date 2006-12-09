@@ -54,7 +54,7 @@ dim shared q as GLUquadricObj ptr                          '' Quadratic For Draw
 	' Clip Plane Equations
 	dim eqr(0 to 3) as double => {0.0, - 1.0, 0.0, 0.0}        '' Plane Equation To Use For The Reflected Objects
 
-	screen 18, 16, , GFX_OPENGL or GFX_STENCIL_BUFFER
+	screen 18, 16, , FB.GFX_OPENGL or FB.GFX_STENCIL_BUFFER
 	windowtitle "Banu Octavian & NeHe's Stencil & Reflection Tutorial"   '' Set window title
 
 	'' ReSizeGLScene
@@ -146,33 +146,33 @@ dim shared q as GLUquadricObj ptr                          '' Quadratic For Draw
 		glFlush ()                                    '' Flush The GL Pipeline
 
 		'' Keyboard handlers
-		if multikey(SC_RIGHT) then                    '' Right Arrow Pressed (Increase yrotspeed)
+		if MULTIKEY(FB.SC_RIGHT) then                    '' Right Arrow Pressed (Increase yrotspeed)
 			yrotspeed += 0.08
 		end if
-		if multikey(SC_LEFT) then                     '' Left Arrow Pressed (Decrease yrotspeed)
+		if MULTIKEY(FB.SC_LEFT) then                     '' Left Arrow Pressed (Decrease yrotspeed)
 			yrotspeed -= 0.08
 		end if
-		if multikey(SC_DOWN) then                     '' Down Arrow Pressed (Increase xrotspeed)
+		if MULTIKEY(FB.SC_DOWN) then                     '' Down Arrow Pressed (Increase xrotspeed)
 			xrotspeed += 0.08
 		end if
-		if multikey(SC_UP) then                       '' Up Arrow Pressed (Decrease xrotspeed)
+		if MULTIKEY(FB.SC_UP) then                       '' Up Arrow Pressed (Decrease xrotspeed)
 			xrotspeed -= 0.08
 		end if
-		if multikey(SC_A) then                        '' 'A' Key Pressed ... Zoom In
+		if MULTIKEY(FB.SC_A) then                        '' 'A' Key Pressed ... Zoom In
 			zoom += 0.05
 		end if
-		if multikey(SC_Z) then                        '' 'Z' Key Pressed ... Zoom Out
+		if MULTIKEY(FB.SC_Z) then                        '' 'Z' Key Pressed ... Zoom Out
 			zoom -= 0.05
 		end if
-		if multikey(SC_PAGEUP) then                   '' Page Up Key Pressed Move Ball Up
+		if MULTIKEY(FB.SC_PAGEUP) then                   '' Page Up Key Pressed Move Ball Up
 			height += 0.03
 		end if
-		if multikey(SC_PAGEDOWN) then                 '' Page Down Key Pressed Move Ball Down
+		if MULTIKEY(FB.SC_PAGEDOWN) then                 '' Page Down Key Pressed Move Ball Down
 			height -= 0.03
 		end if
 		flip  '' flip or crash
 		if inkey = chr(255)+"X" then exit do        '' exit if close box is clicked
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while INKEY <> "": wend

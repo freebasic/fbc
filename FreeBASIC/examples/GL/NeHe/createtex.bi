@@ -16,7 +16,7 @@ private function CreateTexture( byval buffer as any ptr, byval flags as integer 
 
 	function = 0
     
-    if header->type = PUT_HEADER_NEW then
+    if header->type = FB.PUT_HEADER_NEW then
 		w = header->width
 		h = header->height
     else

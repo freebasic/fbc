@@ -132,20 +132,20 @@ declare function LoadGLTextures() as integer
 		next
 	
 		'' Keyboard handlers
-		if MULTIKEY(SC_T) and not tp then       '' T Key down
+		if MULTIKEY(FB.SC_T) and not tp then       '' T Key down
 			tp = true
 			twinkle = not twinkle                 '' toggle twinkle on /off
 		end if
-		if not MULTIKEY(SC_T) then tp = false   '' T key up
+		if not MULTIKEY(FB.SC_T) then tp = false   '' T key up
 	
-		if MULTIKEY(SC_UP) then tilt = tilt - 0.5          '' If Up Arrow is Being Pressed, Tilt The Screen Up
-		if MULTIKEY(SC_DOWN) then tilt = tilt + 0.5        '' If Down Arrow Being Pressed, Tilt The Screen Down
-		if MULTIKEY(SC_PAGEUP) then zoom = zoom - 0.2f     '' If Page Up is Being Pressed, Zoom Out
-		if MULTIKEY(SC_PAGEDOWN) then zoom = zoom + 0.2    '' If Page Down is Being Pressed, Zoom In
+		if MULTIKEY(FB.SC_UP) then tilt = tilt - 0.5          '' If Up Arrow is Being Pressed, Tilt The Screen Up
+		if MULTIKEY(FB.SC_DOWN) then tilt = tilt + 0.5        '' If Down Arrow Being Pressed, Tilt The Screen Down
+		if MULTIKEY(FB.SC_PAGEUP) then zoom = zoom - 0.2f     '' If Page Up is Being Pressed, Zoom Out
+		if MULTIKEY(FB.SC_PAGEDOWN) then zoom = zoom + 0.2    '' If Page Down is Being Pressed, Zoom In
 	
 	
 		flip  '' flip or crash
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 	
 	'Empty keyboard buffer
 	while inkey <> "": wend

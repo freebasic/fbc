@@ -163,14 +163,14 @@ dim shared bp as integer                       '' B Pressed?
 		next
 
 		'' Keyboard handlers
-		if multikey(SC_F) and not fp then           '' F Key down
+		if MULTIKEY(FB.SC_F) and not fp then           '' F Key down
 			fp = true
 			filter += 1                             '' Cycle filter 0 -> 1 -> 2
 			if (filter > 2) then filter = 0         '' 2 -> 0
 		end if
-		if not multikey(SC_F) then fp = false       '' F Key Up
+		if not MULTIKEY(FB.SC_F) then fp = false       '' F Key Up
 	
-		if multikey(SC_B) and not bp then           '' B Key down
+		if MULTIKEY(FB.SC_B) and not bp then           '' B Key down
 			bp = true
 			blend = not blend                       '' toggle blending On/Off
 			if blend then
@@ -181,9 +181,9 @@ dim shared bp as integer                       '' B Pressed?
 				glEnable(GL_DEPTH_TEST)             '' Turn Depth Testing On
 			end if
 		end if
-		if not multikey(SC_B) then bp = false       '' B Key up
+		if not MULTIKEY(FB.SC_B) then bp = false       '' B Key up
 	
-		if multikey(SC_UP) then
+		if MULTIKEY(FB.SC_UP) then
 			xpos = xpos - sin(heading*piover180) * 0.05    '' Move On The X-Plane Based On Player Direction
 			zpos = zpos - cos(heading*piover180) * 0.05    '' Move On The Z-Plane Based On Player Direction
 			if walkbiasangle >= 359.0 then                 '' Is walkbiasangle>=359?
@@ -194,7 +194,7 @@ dim shared bp as integer                       '' B Pressed?
 			walkbias = sin(walkbiasangle * piover180)/20.0 '' Causes The Player To Bounce
 		end if
 	
-		if multikey(SC_DOWN) then
+		if MULTIKEY(FB.SC_DOWN) then
 			xpos = xpos + sin(heading*piover180) * 0.05    '' Move On The X-Plane Based On Player Direction
 			zpos = zpos + cos(heading*piover180) * 0.05    '' Move On The Z-Plane Based On Player Direction
 			if walkbiasangle <= 1.0 then                   '' Is walkbiasangle<=1?
@@ -205,27 +205,27 @@ dim shared bp as integer                       '' B Pressed?
 			walkbias = sin(walkbiasangle * piover180)/20.0 '' Causes The Player To Bounce
 		end if
 	
-		if multikey(SC_RIGHT) then
+		if MULTIKEY(FB.SC_RIGHT) then
 			heading = heading - 1.0        '' Rotate The Scene To The Left
 			yrot = heading
 		end if
 	
-		if multikey(SC_LEFT) then
+		if MULTIKEY(FB.SC_LEFT) then
 			heading = heading + 1.0        '' Rotate The Scene To The Right
 			yrot = heading
 		end if
 
-		if multikey(SC_PAGEUP) then
+		if MULTIKEY(FB.SC_PAGEUP) then
 			lookupdown = lookupdown - 1.0  '' look up
 		end if
 
-		if multikey(SC_PAGEDOWN) then
+		if MULTIKEY(FB.SC_PAGEDOWN) then
 			lookupdown = lookupdown + 1.0  '' look down
 		end if
 
 		flip  '' flip or crash
 		if inkey = chr(255)+"X" then exit do
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while inkey <> "": wend

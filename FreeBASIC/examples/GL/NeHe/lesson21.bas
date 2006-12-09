@@ -306,19 +306,19 @@ dim shared texture(1) as uinteger                           '' Font Texture Stor
 				end if
 			next
 
-			if (multikey(SC_RIGHT) and (player.x<10)  and  (player.fx=player.x*60)  and  (player.fy=player.y*40)) then
+			if (MULTIKEY(FB.SC_RIGHT) and (player.x<10)  and  (player.fx=player.x*60)  and  (player.fy=player.y*40)) then
 				hline(player.x,player.y)=TRUE                         '' Mark The Current Horizontal Border As Filled
 				player.x = player.x + 1                               '' Move The Player Right
 			end if
-			if (multikey(SC_LEFT) and  (player.x>0)  and  (player.fx=player.x*60)  and  (player.fy=player.y*40)) then
+			if (MULTIKEY(FB.SC_LEFT) and  (player.x>0)  and  (player.fx=player.x*60)  and  (player.fy=player.y*40)) then
 				player.x = player.x -1                                '' Move The Player Left
 				hline(player.x,player.y)=TRUE                         '' Mark The Current Horizontal Border As Filled
 			end if
-			if (multikey(SC_DOWN) and  (player.y<10)  and  (player.fx=player.x*60)  and  (player.fy=player.y*40)) then
+			if (MULTIKEY(FB.SC_DOWN) and  (player.y<10)  and  (player.fx=player.x*60)  and  (player.fy=player.y*40)) then
 				vline(player.x,player.y)=TRUE                         '' Mark The Current Verticle Border As Filled
 				player.y = player.y +1                                '' Move The Player Down
 			end if
-			if (multikey(SC_UP) and  (player.y>0)  and  (player.fx=player.x*60)  and  (player.fy=player.y*40)) then
+			if (MULTIKEY(FB.SC_UP) and  (player.y>0)  and  (player.fx=player.x*60)  and  (player.fy=player.y*40)) then
 				player.y = player.y -1                                '' Move The Player Up
 				vline(player.x,player.y)=TRUE                         '' Mark The Current Vertical Border As Filled
 			end if
@@ -336,7 +336,7 @@ dim shared texture(1) as uinteger                           '' Font Texture Stor
 				player.fy-=steps(adjust)                              '' If So, Decrease The Fine Y Position
 			end if
 		else                                                          '' Otherwise
-			if multikey(SC_SPACE) then                                '' If Spacebar Is Being Pressed
+			if MULTIKEY(FB.SC_SPACE) then                                '' If Spacebar Is Being Pressed
 				gameover=FALSE                                        '' gameover Becomes FALSE
 				filled=TRUE                                           '' filled Becomes TRUE
 				level=1                                               '' Starting Level Is Set Back To One
@@ -416,14 +416,14 @@ dim shared texture(1) as uinteger                           '' Font Texture Stor
 		gdelay = gdelay +1                                '' Increase The Enemy Delay Counter
 
 		'' Keyboard handlers
-		if multikey(SC_A) and not ap then                 '' A Key down
+		if MULTIKEY(FB.SC_A) and not ap then                 '' A Key down
 			ap = true
 			anti = not anti                               ''  Toggle Antialiasing
 		end if
-		if not multikey(SC_A) then ap = false             '' A key up
+		if not MULTIKEY(FB.SC_A) then ap = false             '' A key up
 
 		flip  '' flip or crash
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while INKEY <> "": wend

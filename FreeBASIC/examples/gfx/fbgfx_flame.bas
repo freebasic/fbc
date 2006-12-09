@@ -32,9 +32,9 @@ sub animate_fire(byval buffer as ubyte ptr, byval new_ as integer = 0)
 	dim w as integer, h as integer, pitch as integer
 	dim x as integer, y as integer, i as integer
 	dim c0 as integer, c1 as integer, c2 as integer, c3 as integer
-	dim header as PUT_HEADER ptr
+	dim header as FB.PUT_HEADER ptr
 	
-	header = cast(PUT_HEADER ptr, buffer)
+	header = cast(FB.PUT_HEADER ptr, buffer)
 	w = header->width
 	h = header->height
 	pitch = header->pitch

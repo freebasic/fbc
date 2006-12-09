@@ -137,13 +137,13 @@ declare function LoadGLTextures() as integer
 		flip
 	
 		'' Keyboard handlers
-		if multikey(SC_M) and not sm then masking = not masking : sm = true
-		if not multikey(SC_M) then sm = false
+		if MULTIKEY(FB.SC_M) and not sm then masking = not masking : sm = true
+		if not MULTIKEY(FB.SC_M) then sm = false
 	
-		if multikey(SC_SPACE) and not sp then scene = not scene : sp = true
-		if not multikey(SC_SPACE) then sp = false
+		if MULTIKEY(FB.SC_SPACE) and not sp then scene = not scene : sp = true
+		if not MULTIKEY(FB.SC_SPACE) then sp = false
 	
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 	
 	'' Empty keyboard buffer
 	while inkey <> "": wend

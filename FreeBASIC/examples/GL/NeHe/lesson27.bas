@@ -65,7 +65,7 @@ dim shared as glObject obj              '' Object
 	dim as single wlp(0 to 3), lp(0 to 3)
 
 
-	screen 19, 16, , GFX_OPENGL or GFX_STENCIL_BUFFER
+	screen 19, 16, , FB.GFX_OPENGL or FB.GFX_STENCIL_BUFFER
 	windowtitle "Banu Octavian & NeHe's Shadow Casting Tutorial"   '' Set window title
 
 	'' ReSizeGLScene
@@ -167,44 +167,44 @@ dim shared as glObject obj              '' Object
 		glFlush()                                         '' Flush The OpenGL Pipeline
 		'' Keyboard handlers
 		'' Spin Object
-		if multikey(SC_LEFT) then yspeed -= 0.1           '' 'Arrow Left' Decrease yspeed
-		if multikey(SC_RIGHT) then yspeed += 0.1          '' 'Arrow Right' Increase yspeed
-		if multikey(SC_UP) then xspeed -= 0.1             '' 'Arrow Up' Decrease xspeed
-		if multikey(SC_DOWN) then xspeed += 0.1           '' 'Arrow Down' Increase xspeed
+		if MULTIKEY(FB.SC_LEFT) then yspeed -= 0.1           '' 'Arrow Left' Decrease yspeed
+		if MULTIKEY(FB.SC_RIGHT) then yspeed += 0.1          '' 'Arrow Right' Increase yspeed
+		if MULTIKEY(FB.SC_UP) then xspeed -= 0.1             '' 'Arrow Up' Decrease xspeed
+		if MULTIKEY(FB.SC_DOWN) then xspeed += 0.1           '' 'Arrow Down' Increase xspeed
 
 		'' Adjust Light's Position
-		if multikey(SC_L) then LightPos(0) += 0.05        '' 'L' Moves Light Right
-		if multikey(SC_J) then LightPos(0) -= 0.05        '' 'J' Moves Light Left
+		if MULTIKEY(FB.SC_L) then LightPos(0) += 0.05        '' 'L' Moves Light Right
+		if MULTIKEY(FB.SC_J) then LightPos(0) -= 0.05        '' 'J' Moves Light Left
 
-		if multikey(SC_I) then LightPos(1) += 0.05        '' 'I' Moves Light Up
-		if multikey(SC_K) then LightPos(1) -= 0.05        '' 'K' Moves Light Down
+		if MULTIKEY(FB.SC_I) then LightPos(1) += 0.05        '' 'I' Moves Light Up
+		if MULTIKEY(FB.SC_K) then LightPos(1) -= 0.05        '' 'K' Moves Light Down
 
-		if multikey(SC_O) then LightPos(2) += 0.05        '' 'O' Moves Light Toward Viewer
-		if multikey(SC_U) then LightPos(2) -= 0.05        '' 'U' Moves Light Away From Viewer
+		if MULTIKEY(FB.SC_O) then LightPos(2) += 0.05        '' 'O' Moves Light Toward Viewer
+		if MULTIKEY(FB.SC_U) then LightPos(2) -= 0.05        '' 'U' Moves Light Away From Viewer
 
 		'' Adjust Object's Position
-		if multikey(SC_6) then ObjPos(0) += 0.05          '' '6' Move Object Right
-		if multikey(SC_4) then ObjPos(0) -= 0.05          '' '4' Move Object Left
+		if MULTIKEY(FB.SC_6) then ObjPos(0) += 0.05          '' '6' Move Object Right
+		if MULTIKEY(FB.SC_4) then ObjPos(0) -= 0.05          '' '4' Move Object Left
 
-		if multikey(SC_8) then ObjPos(1) += 0.05          '' '8' Move Object Up
-		if multikey(SC_5) then ObjPos(1) -= 0.05          '' '5' Move Object Down
+		if MULTIKEY(FB.SC_8) then ObjPos(1) += 0.05          '' '8' Move Object Up
+		if MULTIKEY(FB.SC_5) then ObjPos(1) -= 0.05          '' '5' Move Object Down
 
-		if multikey(SC_9) then ObjPos(2) += 0.05          '' '9' Move Object Toward Viewer
-		if multikey(SC_7) then ObjPos(2) -= 0.05          '' '7' Move Object Away From Viewer
+		if MULTIKEY(FB.SC_9) then ObjPos(2) += 0.05          '' '9' Move Object Toward Viewer
+		if MULTIKEY(FB.SC_7) then ObjPos(2) -= 0.05          '' '7' Move Object Away From Viewer
 
 		'' Adjust Ball's Position
-		if multikey(SC_D) then SpherePos(0) += 0.05       '' 'D' Move Ball Right
-		if multikey(SC_A) then SpherePos(0) -= 0.05       '' 'A' Move Ball Left
+		if MULTIKEY(FB.SC_D) then SpherePos(0) += 0.05       '' 'D' Move Ball Right
+		if MULTIKEY(FB.SC_A) then SpherePos(0) -= 0.05       '' 'A' Move Ball Left
 
-		if multikey(SC_W) then SpherePos(1) += 0.05       '' 'W' Move Ball Up
-		if multikey(SC_S) then SpherePos(1) -= 0.05       '' 'S' Move Ball Down
+		if MULTIKEY(FB.SC_W) then SpherePos(1) += 0.05       '' 'W' Move Ball Up
+		if MULTIKEY(FB.SC_S) then SpherePos(1) -= 0.05       '' 'S' Move Ball Down
 
-		if multikey(SC_E) then SpherePos(2) += 0.05       '' 'E' Move Ball Toward Viewer
-		if multikey(SC_Q) then SpherePos(2) -= 0.05       '' 'Q' Move Ball Away From Viewer
+		if MULTIKEY(FB.SC_E) then SpherePos(2) += 0.05       '' 'E' Move Ball Toward Viewer
+		if MULTIKEY(FB.SC_Q) then SpherePos(2) -= 0.05       '' 'Q' Move Ball Away From Viewer
 
 		flip  '' flip or crash
 		if inkey = chr(255)+"X" then exit do            '' exit if close box is clicked
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while INKEY <> "": wend

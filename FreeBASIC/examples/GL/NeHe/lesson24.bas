@@ -141,17 +141,17 @@ dim shared gbase as uinteger                       '' Base Display List For The 
 		glFlush()                                               ''  Flush The Rendering Pipeline
 
 		'' Keyboard handlers
-		if multikey(SC_UP) and (scroll>0) then                  '' Is Up Arrow Being Pressed?
+		if MULTIKEY(FB.SC_UP) and (scroll>0) then                  '' Is Up Arrow Being Pressed?
 			scroll =scroll-2                                    '' If So, Decrease 'scroll' Moving Screen Down
 		end if
 
-		if multikey(SC_DOWN) and scroll < 32*(maxtokens-9) then '' Is Down Arrow Being Pressed?
+		if MULTIKEY(FB.SC_DOWN) and scroll < 32*(maxtokens-9) then '' Is Down Arrow Being Pressed?
 			scroll=scroll+2                                     '' If So, Increase 'scroll' Moving Screen Up
 		end if
 
 		flip  '' flip or crash
 		if inkey = chr(255)+"X" then exit do    '' exit if close box is clicked
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while INKEY <> "": wend

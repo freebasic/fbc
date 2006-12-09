@@ -162,73 +162,73 @@ dim shared as OBJECT ptr sour, dest              '' Source Object, Destination O
 
 		'' Keyboard handlers
 		'' Is Page Up Being Pressed?
-		if multikey(SC_PAGEUP) then                '' Increase zspeed
+		if MULTIKEY(FB.SC_PAGEUP) then                '' Increase zspeed
 			zspeed += 0.01f
 		end if
 		'' Is Page Down Being Pressed?
-		if multikey(SC_PAGEDOWN) then              '' Decrease zspeed
+		if MULTIKEY(FB.SC_PAGEDOWN) then              '' Decrease zspeed
 			zspeed -= 0.01f
 		end if
 		'' Is Down Key Being Pressed?
-		if multikey(SC_DOWN) then                  '' Increase xspeed
+		if MULTIKEY(FB.SC_DOWN) then                  '' Increase xspeed
 			xspeed += 0.01f
 		end if
 		'' Is Up Key Being Pressed?
-		if multikey(SC_UP) then                    '' Decrease xspeed
+		if MULTIKEY(FB.SC_UP) then                    '' Decrease xspeed
 			xspeed -= 0.01f
 		end if
 		'' Is Right Key Being Pressed?
-		if multikey(SC_RIGHT) then                 '' Increase yspeed
+		if MULTIKEY(FB.SC_RIGHT) then                 '' Increase yspeed
 			yspeed += 0.01f
 		end if
 		'' Is Left Key Being Pressed?
-		if multikey(SC_LEFT) then                  '' Decrease yspeed
+		if MULTIKEY(FB.SC_LEFT) then                  '' Decrease yspeed
 			yspeed -= 0.01f
 		end if
 		'' Is Q Key Being Pressed?
-		if multikey(SC_Q) then                     '' Q Move Object Away From Viewer
+		if MULTIKEY(FB.SC_Q) then                     '' Q Move Object Away From Viewer
 			cz -= 0.01f
 		end if
 		'' Is Z Key Being Pressed?
-		if multikey(SC_Z) then                     '' Z Move Object Towards Viewer
+		if MULTIKEY(FB.SC_Z) then                     '' Z Move Object Towards Viewer
 			cz += 0.01f
 		end if
 		'' Is W Key Being Pressed?
-		if multikey(SC_W) then                     '' W Move Object Up
+		if MULTIKEY(FB.SC_W) then                     '' W Move Object Up
 			cy += 0.01f
 		end if
 		'' Is S Key Being Pressed?
-		if multikey(SC_S) then                     '' S Move Object Down
+		if MULTIKEY(FB.SC_S) then                     '' S Move Object Down
 			cy -= 0.01f
 		end if
 		'' Is D Key Being Pressed?
-		if multikey(SC_D) then                     '' D Move Object Right
+		if MULTIKEY(FB.SC_D) then                     '' D Move Object Right
 			cx += 0.01f
 		end if
 		'' Is A Key Being Pressed?
-		if multikey(SC_A) then                     '' A Move Object Left
+		if MULTIKEY(FB.SC_A) then                     '' A Move Object Left
 			cx -= 0.01f
 		end if
 		'' Is 1 Pressed, key Not Equal To 1 And Morph False?
-		if multikey(SC_1) and key <> 1 and not morph then
+		if MULTIKEY(FB.SC_1) and key <> 1 and not morph then
 			key = 1                                     '' Sets key To 1 (To Prevent Pressing 1 2x In A Row)
 			morph = TRUE                                '' Set morph To True (Starts Morphing Process)
 			dest = @morph1                              '' Destination Object To Morph To Becomes morph1
 		end if
 		'' Is 2 Pressed, key Not Equal To 2 And Morph False?
-		if multikey(SC_2) and key <> 2 and not morph then
+		if MULTIKEY(FB.SC_2) and key <> 2 and not morph then
 			key = 2                                     '' Sets key To 2 (To Prevent Pressing 2 2x In A Row)
 			morph = TRUE                                '' Set morph To True (Starts Morphing Process)
 			dest = @morph2                              '' Destination Object To Morph To Becomes morph2
 		end if
 		'' Is 3 Pressed, key Not Equal To 3 And Morph False?
-		if multikey(SC_3) and key <> 3 and not  morph then
+		if MULTIKEY(FB.SC_3) and key <> 3 and not  morph then
 			key = 3                                     '' Sets key To 3 (To Prevent Pressing 3 2x In A Row)
 			morph = TRUE                                '' Set morph To True (Starts Morphing Process)
 			dest = @morph3                              '' Destination Object To Morph To Becomes morph3
 		end if
 		'' Is 4 Pressed, key Not Equal To 4 And Morph False?
-		if multikey(SC_4) and key <> 4 and not morph then
+		if MULTIKEY(FB.SC_4) and key <> 4 and not morph then
 			key = 4                                     '' Sets key To 4 (To Prevent Pressing 4 2x In A Row)
 			morph = TRUE                                '' Set morph To True (Starts Morphing Process)
 			dest = @morph4                              '' Destination Object To Morph To Becomes morph4
@@ -236,7 +236,7 @@ dim shared as OBJECT ptr sour, dest              '' Source Object, Destination O
 
 		flip  '' flip or crash
 		if inkey = chr(255)+"X" then exit do    '' exit if close box is clicked
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while INKEY <> "": wend

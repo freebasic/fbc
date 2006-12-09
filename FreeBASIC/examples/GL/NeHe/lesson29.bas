@@ -132,7 +132,7 @@ dim shared t2 as TEXTURE_IMAGE ptr    '' Pointer To The Texture Image Data Type
 
 		flip  '' flip or crash
 		if inkey = chr(255)+"X" then exit do              '' exit if close box is clicked
-	loop while MULTIKEY(SC_ESCAPE) = 0
+	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while inkey <> "": wend

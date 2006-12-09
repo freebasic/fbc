@@ -21,7 +21,7 @@ sub close_window cdecl (byval userdata as any ptr)
 end sub
 
 sub make_a_window( )
-   
+  
    MkDialogue(CGUI_ADAPTIVE, "Hello world", 0)
    
    AddButton(CGUI_TOPLEFT, "A new_window", @new_window, NULL)
