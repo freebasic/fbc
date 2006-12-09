@@ -18,7 +18,6 @@
 #endif
 
 type clock_t as integer
-type size_t as uinteger
 type time_t as uinteger
 
 type tm

@@ -16,7 +16,6 @@ type nlink_t as integer
 type gid_t as integer
 type off_t as integer
 type pid_t as integer
-type size_t as uinteger
 type ssize_t as integer
 type uid_t as integer
 
