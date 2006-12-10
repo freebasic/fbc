@@ -57,14 +57,14 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int de
 	}
 	
 	pitch = width * bpp;
-	if (!(__fb_gfx->flags & QB_COMPATIBILITY)) {
+	if (__fb_ctx.lang == FB_LANG_FB) {
 		header_size = sizeof(PUT_HEADER);
 		pitch = (pitch + 0xF) & ~0xF;
 	}
 	size = pitch * height;
 	
 	image = (PUT_HEADER *)malloc(size + header_size);
-	if (__fb_gfx->flags & QB_COMPATIBILITY) {
+	if (__fb_ctx.lang != FB_LANG_FB) {
 		/* use old-style header for compatibility */
 		image->old.bpp = bpp;
 		image->old.width = width;

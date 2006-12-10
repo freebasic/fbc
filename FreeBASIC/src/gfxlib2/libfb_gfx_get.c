@@ -54,7 +54,7 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 	h = y2 - y1 + 1;
 
 	header = (PUT_HEADER *)dest;
-	if (__fb_gfx->flags & QB_COMPATIBILITY) {
+	if (__fb_ctx.lang != FB_LANG_FB) {
 		/* use old-style header for compatibility */
 		header->old.bpp = __fb_gfx->bpp;
 		header->old.width = w;
