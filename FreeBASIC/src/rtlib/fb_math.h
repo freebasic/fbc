@@ -33,7 +33,7 @@
 #define __FB_MATH_H__
 
 FBCALL double       fb_Rnd              ( int n );
-FBCALL void         fb_Randomize        ( double seed );
+FBCALL void         fb_Randomize        ( double seed, int algorithm );
 FBCALL int          fb_SGNSingle        ( float x );
 FBCALL int          fb_SGNDouble        ( double x );
 FBCALL float        fb_FIXSingle        ( float x );
