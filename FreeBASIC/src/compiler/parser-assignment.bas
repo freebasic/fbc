@@ -174,6 +174,14 @@ function cOperator _
     	lexSkipToken( )
     	return AST_OP_FLOOR
 
+	case FB_TK_FIELDDEREF
+    	if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+    		exit function
+    	end if
+
+    	lexSkipToken( )
+    	return AST_OP_FLDDEREF
+
 	case else
    		select case as const lexGetToken( )
    		case CHAR_PLUS
@@ -196,6 +204,14 @@ function cOperator _
 
         case CHAR_AMP
         	op = AST_OP_CONCAT
+
+        case FB_TK_ADDROFCHAR
+    		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+    			exit function
+    		end if
+
+    		lexSkipToken( )
+    		return AST_OP_ADDROF
 
         case else
         	exit function

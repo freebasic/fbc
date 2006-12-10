@@ -24,6 +24,7 @@
 #include once "inc\fbint.bi"
 #include once "inc\ir.bi"
 #include once "inc\ast.bi"
+#include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
 ''
@@ -750,6 +751,78 @@ function astBuildTypeIniCtorList _
 
 end function
 
+'':::::
+function astBuildMultiDeref _
+	( _
+		byval cnt as integer, _
+		byval expr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	do while( cnt > 0 )
+		if( dtype < FB_DATATYPE_POINTER ) then
+			if( symb.globOpOvlTb(AST_OP_DEREF).head = NULL ) then
+				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+					return NULL
+				else
+					exit do
+				end if
+			end if
+
+			'' check op overloading
+    		dim as FBSYMBOL ptr proc = any
+    		dim as FB_ERRMSG err_num = any
+
+			proc = symbFindUopOvlProc( AST_OP_DEREF, expr, @err_num )
+			if( proc <> NULL ) then
+    			'' build a proc call
+				expr = astBuildCall( proc, 1, expr )
+				if( expr = NULL ) then
+					return NULL
+				end if
+
+				dtype = astGetDataType( expr )
+				subtype = astGetSubType( expr )
+
+			else
+				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+					return NULL
+				else
+					exit do
+				end if
+			end if
+
+
+		else
+			dtype -= FB_DATATYPE_POINTER
+
+			'' incomplete type?
+			select case dtype
+			case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
+				if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
+					return NULL
+				else
+					'' error recovery: fake a type
+					dtype = FB_DATATYPE_BYTE
+				end if
+			end select
+
+			'' null pointer checking
+			if( env.clopt.extraerrchk ) then
+				expr = astNewPTRCHK( expr, lexLineNum( ) )
+			end if
+
+			expr = astNewDEREF( 0, expr, dtype, subtype )
+		end if
+
+		cnt -= 1
+	loop
+
+	function = expr
+
+end function
+
 ''
 '' arrays
 ''
@@ -783,7 +856,8 @@ function astBuildArrayDescIniTree _
 		dims = FB_MAXARRAYDIMS
 	end if
 
-	elm = symbGetUDTFirstElm( symbGetSubtype( desc ) )
+	'' note: assuming the arrays descriptors won't be objects with methods
+	elm = symbGetUDTSymbTbHead( symbGetSubtype( desc ) )
 
     if( array_expr = NULL ) then
     	if( symbGetIsDynamic( array ) ) then
@@ -804,12 +878,12 @@ function astBuildArrayDescIniTree _
 					   			  				  FB_DATATYPE_INTEGER ) ), _
 					   	 elm )
 
-	elm = symbGetUDTNextElm( elm )
+	elm = symbGetNext( elm )
 
 	'' .ptr	= @array(0)
 	astTypeIniAddAssign( tree, array_expr, elm )
 
-    elm = symbGetUDTNextElm( elm )
+    elm = symbGetNext( elm )
 
     '' .size = len( array ) * elements( array )
     astTypeIniAddAssign( tree, _
@@ -817,7 +891,7 @@ function astBuildArrayDescIniTree _
     				   				   FB_DATATYPE_INTEGER ), _
     				   	 elm )
 
-    elm = symbGetUDTNextElm( elm )
+    elm = symbGetNext( elm )
 
     '' .element_len	= len( array )
     astTypeIniAddAssign( tree, _
@@ -825,7 +899,7 @@ function astBuildArrayDescIniTree _
     				   				   FB_DATATYPE_INTEGER ), _
     				   	 elm )
 
-    elm = symbGetUDTNextElm( elm )
+    elm = symbGetNext( elm )
 
     '' .dimensions = dims( array )
     astTypeIniAddAssign( tree, _
@@ -833,10 +907,10 @@ function astBuildArrayDescIniTree _
     				   				   FB_DATATYPE_INTEGER ), _
     				   	 elm )
 
-    elm = symbGetUDTNextElm( elm )
+    elm = symbGetNext( elm )
 
     '' setup dimTB
-    dimtb = symbGetUDTFirstElm( symbGetSubtype( elm ) )
+    dimtb = symbGetUDTSymbTbHead( symbGetSubtype( elm ) )
 
     '' static array?
     if( symbGetIsDynamic( array ) = FALSE ) then
@@ -852,7 +926,7 @@ function astBuildArrayDescIniTree _
     				   				 		   FB_DATATYPE_INTEGER ), _
     				   		     elm )
 
-			elm = symbGetUDTNextElm( elm )
+			elm = symbGetNext( elm )
 
 			'' .lbound = lbound( array, d )
     		astTypeIniAddAssign( tree, _
@@ -860,7 +934,7 @@ function astBuildArrayDescIniTree _
     				   				 		   FB_DATATYPE_INTEGER ), _
     				   		     elm )
 
-			elm = symbGetUDTNextElm( elm )
+			elm = symbGetNext( elm )
 
 			'' .ubound = ubound( array, d )
     		astTypeIniAddAssign( tree, _

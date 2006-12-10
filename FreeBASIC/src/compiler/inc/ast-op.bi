@@ -42,6 +42,7 @@ enum AST_OP
 	AST_OP_NEW_VEC_SELF
 	AST_OP_DEL_SELF
 	AST_OP_DEL_VEC_SELF
+	AST_OP_ADDROF
 	AST_OP_CAST
 	'' end self ops
 
@@ -86,8 +87,8 @@ enum AST_OP
 	AST_OP_FLOOR
 	AST_OP_FIX
 
-	AST_OP_ADDROF
 	AST_OP_DEREF
+	AST_OP_FLDDEREF
 
 	AST_OP_NEW									'' global
 	AST_OP_NEW_VEC								'' /

@@ -492,8 +492,8 @@ Most Important Features:
     
     - Operators to self (op=) can be handled separated for better performance
     
-    - Most unary operators can be overloaded (casting included), but address-
-      of (@) and pointer dereference (*)
+    - Most unary operators can be overloaded (casting included), plus address-
+      of (@), pointer dereference (*) and UDT member pointer dereference (->)
       
     - The assignment operator can also be overloaded
     

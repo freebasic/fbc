@@ -1093,16 +1093,13 @@ sub irFlush static
 		case AST_NODECLASS_BRANCH
 			hFlushBRANCH( op, t->ex1 )
 
-		case AST_NODECLASS_ADDROF
+		case AST_NODECLASS_ADDR
 			hFlushADDR( op, v1, vr )
 
 		case AST_NODECLASS_MEM
 			hFlushMEM( op, v1, v2, t->ex2, t->ex1 )
 
 		end select
-
-		''
-		'irDump( op, v1, v2, vr )
 
 		t = flistGetNext( t )
 	loop while( t <> NULL )
@@ -2331,30 +2328,34 @@ sub irXchgTOS _
 
 end sub
 
-/'
-'':::::
-sub irDump( byval op as integer, _
-			byval v1 as IRVREG ptr, _
-			byval v2 as IRVREG ptr, _
-			byval vr as IRVREG ptr ) static
-	dim as string vname
+/'':::::
+sub irDump _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	) static
 
-	if( vr <> NULL ) then
-		print "v";str(vr);"(";vname;":";str(irGetVRType( vr ));":";str(irGetVRDataType( vr ));")";chr( 9 );"= ";
+#macro hDumpVr( id, v )
+	if( v <> NULL ) then
+		print " " id ":" & hex( v ) & "(" & irGetVRType( v ) & ";";
+		print using "##"; irGetVRDataType( v );
+		print "," & symbGetDataClass( irGetVRDataType( v ) ) & ")";
 	end if
+#endmacro
 
-	if( v1 <> NULL ) then
-		print "v";str(v1);"(";vname;":";str(irGetVRType( v1 ));":";str(irGetVRDataType( v1 ));")";
-	end if
-
-	if( vr = NULL ) then print chr( 9 ); else print " ";
-	print astGetOpDesc( op );
-
-	if( v2 <> NULL ) then
-		print " v";str(v2);"(";vname;":";str(irGetVRType( v2 ));":";str(irGetVRType( v2 ));")"
+	if( astGetOpId( op ) <> NULL ) then
+		print using "[\  \]"; *astGetOpId( op );
 	else
-		print
+		print using "[####]"; op;
 	end if
+
+	hDumpVr( "d", vr )
+	hDumpVr( "l", v1 )
+	hDumpVr( "r", v2 )
+
+	print
 
 end sub
 '/

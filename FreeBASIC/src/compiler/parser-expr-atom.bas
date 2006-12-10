@@ -109,7 +109,7 @@ private function hFindId _
            	return cVariableEx( chain_, atom, fbGetCheckArray( ) )
 
         case FB_SYMBCLASS_FIELD
-        	return cFieldVariable( NULL, chain_, atom, fbGetCheckArray( ) )
+        	return cDataMember( NULL, chain_, atom, fbGetCheckArray( ) )
 
   		'' quirk-keyword?
   		case FB_SYMBCLASS_KEYWORD

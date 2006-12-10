@@ -10,6 +10,14 @@
 
     [ ] remove libfb_ctor.c - replaced by fbrt0.c
 
+[ ] operator overloading:
+      - add support for functions returning references (reuse "BYREF") or the
+        '->' operator will be useless for UDT's with copy-ctors or dtors
+        as returning byval will make a deep copy
+      - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
+      - allow all global operators to be declared as methods so private members
+        could be accessed
+
 [ ] ctor/dtor
 	- how to handle: if( foo().bar().baz(0,1,3).int = 0 ) then ...
 
@@ -45,9 +53,6 @@
 	      - namespace mangling will have to check for STD and add just "St"
 	        without the # prefix
 	  - NEW and DELETE must be static methods
-
-[ ] operator overloading:
-      - OPERATOR *|@|[]|-> ( l ) AS TYPE
 
 [ ] data/function members:
       - add static - data members must be initialized outside the TYPE|CLASS
@@ -116,8 +121,9 @@
       are already supported)
 
 [ ] proc call:
-    - add named parameters (foo => expr)
+    - add named parameters (foo := expr)
       - can be hard to be added because they don't have to come in order
+      - := must be a new token because the "foo bar : baz" ambiguity
 
 [ ] add #pragma cmdline="-foo bar -baz"
 	- painful to add
@@ -225,10 +231,6 @@
 
 [ ] .stabn can't have args > 65535 (ie: line numbers)
     - only switching to DWARF2 (ie: too complex) would fix that, let GCC do it..
-
-[ ] add support for functions returning references (reuse "BYREF"), so those can
-    be automatically dereferenced - but *NOT* deleted, only non-local data can
-    be returned by reference in C++
 
 [ ] arrays will fail in quirk gfx funcs if multi-dimensional and have <> 0 lBounds
 

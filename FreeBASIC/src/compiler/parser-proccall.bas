@@ -294,9 +294,9 @@ function cProcCall _
 
 	fbSetPrntOptional( FALSE )
 
-	'' StrIdxOrFieldDeref?
+	'' StrIdxOrMemberDeref?
 	if( symbIsProperty( sym ) = FALSE ) then
-		if( cStrIdxOrFieldDeref( procexpr ) = FALSE ) then
+		if( cStrIdxOrMemberDeref( procexpr ) = FALSE ) then
 			exit function
 		end if
 	end if
@@ -308,7 +308,7 @@ function cProcCall _
 
 	dtype = astGetDataType( procexpr )
 
-	'' not a function? (because cStrIdxOrFieldDeref())
+	'' not a function? (because StrIdxOrMemberDeref())
 	if( astIsCALL( procexpr ) = FALSE ) then
 		return procexpr
 	end if
@@ -466,7 +466,7 @@ private function hAssignOrCall _
         			exit function
         		end if
         	else
-        		if( cFieldVariable( NULL, chain_, expr, TRUE ) = FALSE ) then
+        		if( cDataMember( NULL, chain_, expr, TRUE ) = FALSE ) then
         			exit function
         		end if
         	end if

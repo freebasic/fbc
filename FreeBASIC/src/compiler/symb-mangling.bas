@@ -1029,6 +1029,15 @@ private function hGetOperatorName _
 	case AST_OP_DEL_VEC, AST_OP_DEL_VEC_SELF
 		function = @"da"
 
+	case AST_OP_DEREF
+		function = @"de"
+
+	case AST_OP_FLDDEREF
+		function = @"pt"
+
+	case AST_OP_ADDROF
+		function = @"ad"
+
 	case AST_OP_CAST
 		static as string res
 

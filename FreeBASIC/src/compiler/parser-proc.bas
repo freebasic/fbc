@@ -818,8 +818,8 @@ private function hCheckOpOvlParams _
 
 	'' 1st) check the number of params
     dim as integer params = any
-    select case astGetOpClass( op )
-    case AST_NODECLASS_UOP, AST_NODECLASS_CONV
+    select case as const astGetOpClass( op )
+    case AST_NODECLASS_UOP, AST_NODECLASS_CONV, AST_NODECLASS_ADDR
     	params = 1
 
     '' bop or assign..
@@ -833,13 +833,13 @@ private function hCheckOpOvlParams _
     end if
 
     '' 2nd) check method-only ops
-    select case astGetOpClass( op )
+    select case as const astGetOpClass( op )
     case AST_NODECLASS_CONV, AST_NODECLASS_ASSIGN
     	if( is_method = FALSE ) then
     		errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
     	end if
 
-    case AST_NODECLASS_BOP
+    case AST_NODECLASS_BOP, AST_NODECLASS_ADDR
     	if( is_method or astGetOpIsSelf( op ) ) then
     		if( parent = NULL ) then
     			errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
@@ -873,8 +873,8 @@ private function hCheckOpOvlParams _
     end if
 
     select case astGetOpClass( op )
-    '' unary?
-    case AST_NODECLASS_UOP, AST_NODECLASS_CONV
+    '' unary, cast or addressing?
+    case AST_NODECLASS_UOP, AST_NODECLASS_CONV, AST_NODECLASS_ADDR
     	'' is the param an UDT?
     	select case symbGetType( param )
     	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
@@ -949,6 +949,33 @@ private function hCheckOpOvlParams _
     		errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
     		exit function
     	end if
+
+    '' addressing?
+    case AST_NODECLASS_ADDR
+    	'' return type can't be a void
+    	if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
+    		errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
+    		exit function
+    	end if
+
+    	select case op
+    	case AST_OP_ADDROF
+    		'' return type must be a pointer
+    		if( symbGetType( proc ) < FB_DATATYPE_POINTER ) then
+    			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
+    			exit function
+    		end if
+
+    	case AST_OP_FLDDEREF
+    		'' return type must be an UDT
+    		select case symbGetType( proc )
+    		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+
+    		case else
+    			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
+    			exit function
+    		end select
+    	end select
 
     '' binary..
     case else
@@ -1117,8 +1144,26 @@ function cOperatorHeader _
     	end if
     end if
 
+    '' special cases, '-' or '+' with just one param are actually unary ops
+    select case op
+    case AST_OP_SUB
+    	if( symbGetProcParams( proc ) = 1 ) then
+    		op = AST_OP_NEG
+    	end if
+
+    case AST_OP_ADD
+    	if( symbGetProcParams( proc ) = 1 ) then
+    		op = AST_OP_PLUS
+    	end if
+
+    case AST_OP_MUL
+    	if( symbGetProcParams( proc ) = 1 ) then
+    		op = AST_OP_DEREF
+    	end if
+    end select
+
     '' self? (but type casting)
-    if( astGetOpIsSelf( op ) and (op <> AST_OP_CAST) ) then
+    if( astGetOpNoResult( op ) ) then
     	dtype = FB_DATATYPE_VOID
     	subtype = NULL
 
@@ -1154,19 +1199,6 @@ function cOperatorHeader _
     		end if
     	end if
     end if
-
-    '' special cases, '-' or '+' with just one param are actually unary ops
-    select case op
-    case AST_OP_SUB
-    	if( symbGetProcParams( proc ) = 1 ) then
-    		op = AST_OP_NEG
-    	end if
-
-    case AST_OP_ADD
-    	if( symbGetProcParams( proc ) = 1 ) then
-    		op = AST_OP_PLUS
-    	end if
-    end select
 
     '' needed to allow CAST to be checked
     symbGetType( proc ) = dtype

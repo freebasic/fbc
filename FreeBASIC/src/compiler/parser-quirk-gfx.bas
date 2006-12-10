@@ -192,7 +192,7 @@ private function hGetTarget _
 		expr = hMakeArrayIndex( s, arrayexpr )
 
 	'' address-of or pointer deref?
-	case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET, _
+	case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET, _
 		 AST_NODECLASS_DEREF, AST_NODECLASS_BOP
 
 		isptr = TRUE

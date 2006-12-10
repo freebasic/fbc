@@ -137,7 +137,7 @@ function cFunctionCall _
 		end if
 	end if
 
-	if( cStrIdxOrFieldDeref( funcexpr ) = FALSE ) then
+	if( cStrIdxOrMemberDeref( funcexpr ) = FALSE ) then
 		exit function
 	end if
 
@@ -146,7 +146,7 @@ function cFunctionCall _
 end function
 
 '':::::
-''Function        =   ID ('(' ProcParamList ')')? FuncPtrOrDerefFields? .
+''Function        =   ID ('(' ProcParamList ')')? FuncPtrOrMemberDeref? .
 ''
 function cFunctionEx _
 	( _

@@ -130,87 +130,8 @@ function cNegNotExpression _
 
 end function
 
-'':::::
-private function hFieldAccess _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	dim as FBSYMBOL ptr fld = any, method_sym = any
-	dim as ASTNODE ptr fldexpr = NULL
-
-	fld = cTypeField( dtype, subtype, fldexpr, method_sym, TRUE )
-	if( fld = NULL ) then
-		if( method_sym = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			return NULL
-		end if
-
-	else
-		'' constant? exit..
-		if( symbIsConst( fld ) ) then
-			astDeltree( expr )
-			return fldexpr
-		end if
-
-		dtype = symbGetType( fld )
-		subtype = symbGetSubType( fld )
-
-		'' it's a proc call, but was it originally returning an UDT?
-		if( astIsCALL( expr ) ) then
-			if( symbGetUDTRetType( astGetSubtype( expr ) ) <> _
-								FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
-
-				'' it's returning the result in registers, move to a temp var
-				'' (note: if it's being returned in regs, there's no DTOR)
-				dim as FBSYMBOL ptr tmp = any
-
-				tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
-							  	  	  astGetSubtype( expr ), _
-							  	  	  FALSE, _
-							  	  	  FALSE )
-
-				expr = astNewASSIGN( astBuildVarField( tmp ), _
-							  	  	 expr, _
-							  	  	 AST_OPOPT_DONTCHKOPOVL )
-
-        		expr = astNewLINK( astBuildVarField( tmp ), expr )
-        	end if
-        end if
-
- 		'' build: cast( udt ptr, (cast( byte ptr, @udt) + fldexpr))->field
- 		expr = astNewADDROF( expr )
-
- 		'' can't be 0, or PTR will remove the ADDROF, and we are taking the
- 		'' address-of a CALL result that can't be changed, ditto with LINK ..
- 		if( fldexpr = NULL ) then
- 			fldexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
- 		end if
-
- 		expr = astNewDEREF( 0, _
- 			 			    astNewBOP( AST_OP_ADD, expr, fldexpr ), _
- 						    dtype, _
- 						    subtype )
-
- 		expr = astNewFIELD( expr, fld, dtype, subtype )
-	end if
-
-	'' method call?
-	if( method_sym <> NULL ) then
-		expr = cMethodCall( method_sym, expr )
-		if( expr = NULL ) then
-			return NULL
-		end if
-	end if
-
-	function = expr
-
-end function
-
 ''::::
-function cStrIdxOrFieldDeref _
+function cStrIdxOrMemberDeref _
 	( _
 		byref expr as ASTNODE ptr _
 	) as integer
@@ -226,7 +147,7 @@ function cStrIdxOrFieldDeref _
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
 		'' '['?
 		if( lexGetToken( ) = CHAR_LBRACKET ) then
-			expr = cDerefFields( dtype, subtype, expr, TRUE )
+			expr = cMemberDeref( dtype, subtype, expr, TRUE )
 		end if
 
 		return expr <> NULL
@@ -236,7 +157,7 @@ function cStrIdxOrFieldDeref _
 		if( lexGetToken( ) = CHAR_DOT ) then
     		lexSkipToken( LEXCHECK_NOPERIOD )
 
-			expr = hFieldAccess( dtype, subtype, expr )
+			expr = cMemberAccess( dtype, subtype, expr )
 			if( expr = NULL ) then
 				return FALSE
 			end if
@@ -247,7 +168,7 @@ function cStrIdxOrFieldDeref _
 
 	end select
 
-	'' FuncPtrOrDerefFields?
+	'' FuncPtrOrMemberDeref?
 	if( dtype >= FB_DATATYPE_POINTER ) then
 		dim as integer isfuncptr = FALSE, isfield = FALSE
 
@@ -263,7 +184,7 @@ function cStrIdxOrFieldDeref _
 	    end select
 
 		if( isfield ) then
-			expr = cFuncPtrOrDerefFields( dtype, _
+			expr = cFuncPtrOrMemberDeref( dtype, _
 										  subtype, _
 										  expr, _
 										  isfuncptr, _
@@ -281,7 +202,7 @@ end function
 ''				  	  |	CastingExpr
 ''					  | PtrTypeCastingExpr
 ''				  	  | ParentExpression
-''					  ) FuncPtrOrDerefFields?
+''					  ) FuncPtrOrMemberDeref?
 ''				  |	  AnonUDT
 ''				  |   Atom .
 ''
@@ -310,7 +231,7 @@ function cHighestPrecExpr _
 			exit function
 		end if
 
-		'' if parsing a SUB, don't call StrIdxOrFieldDeref() twice
+		'' if parsing a SUB, don't call StrIdxOrMemberDeref() twice
 		if( is_opt ) then
 			return TRUE
 		end if
@@ -349,7 +270,7 @@ function cHighestPrecExpr _
 	end select
 
 	''
-	function = cStrIdxOrFieldDeref( highexpr )
+	function = cStrIdxOrMemberDeref( highexpr )
 
 end function
 
@@ -501,56 +422,6 @@ function cPtrTypeCastingExpr _
 end function
 
 '':::::
-private function hDoDeref _
-	( _
-		byval cnt as integer, _
-		byref expr as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as integer
-
-	function = INVALID
-
-	if( (expr = NULL) or (cnt <= 0) ) then
-		exit function
-	end if
-
-	do while( cnt > 0 )
-		'' not a pointer?
-		if( dtype < FB_DATATYPE_POINTER ) then
-			if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-				exit function
-			else
-				exit do
-			end if
-		end if
-
-		dtype -= FB_DATATYPE_POINTER
-
-		'' incomplete type?
-		if( (dtype = FB_DATATYPE_VOID) or (dtype = FB_DATATYPE_FWDREF) ) then
-			if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
-				exit function
-			else
-				exit do
-			end if
-		end if
-
-		'' null pointer checking
-		if( env.clopt.extraerrchk ) then
-			expr = astNewPTRCHK( expr, lexLineNum( ) )
-		end if
-
-		expr = astNewDEREF( 0, expr, dtype, subtype )
-
-		cnt -= 1
-	loop
-
-    function = dtype
-
-end function
-
-'':::::
 ''DerefExpression	= 	DREF+ HighestPresExpr .
 ''
 function cDerefExpression _
@@ -559,7 +430,7 @@ function cDerefExpression _
 	) as integer
 
     dim as FBSYMBOL ptr subtype = any
-    dim as integer derefcnt, dtype = any
+    dim as integer derefcnt = any, dtype = any
     dim as ASTNODE ptr funcexpr = any
 
 	function = FALSE
@@ -602,12 +473,9 @@ function cDerefExpression _
 	subtype = astGetSubType( derefexpr )
 
 	''
-	dtype = hDoDeref( derefcnt, derefexpr, dtype, subtype )
-	if( dtype = INVALID ) then
-		exit function
-	end if
+	derefexpr = astBuildMultiDeref( derefcnt, derefexpr, dtype, subtype )
 
-	function = TRUE
+	function = (derefexpr <> NULL)
 
 end function
 
@@ -702,6 +570,23 @@ private function hVarPtrBody _
 			return TRUE
 		end if
 	end select
+
+	'' check op overloading
+	scope
+    	dim as FBSYMBOL ptr proc = any
+    	dim as FB_ERRMSG err_num = any
+
+		proc = symbFindSelfUopOvlProc( AST_OP_ADDROF, addrofexpr, @err_num )
+		if( proc <> NULL ) then
+			'' build a proc call
+			addrofexpr = astBuildCall( proc, 1, addrofexpr )
+			return addrofexpr <> NULL
+		else
+			if( err_num <> FB_ERRMSG_OK ) then
+				return NULL
+			end if
+		end if
+	end scope
 
 	addrofexpr = astNewADDROF( addrofexpr )
 

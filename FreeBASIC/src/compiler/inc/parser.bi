@@ -709,7 +709,7 @@ declare function cWithVariable _
 		byval checkarray as integer _
 	) as integer
 
-declare function cFieldVariable _
+declare function cDataMember _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
@@ -816,7 +816,7 @@ declare function cCtorCall _
 		byref atom as ASTNODE ptr _
 	) as integer
 
-declare function cTypeField _
+declare function cUdtMember _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -825,7 +825,14 @@ declare function cTypeField _
 		byval checkarray as integer _
 	) as FBSYMBOL ptr
 
-declare function cDerefFields _
+declare function cMemberAccess _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare function cMemberDeref _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -833,7 +840,7 @@ declare function cDerefFields _
 		byval checkarray as integer _
 	) as ASTNODE ptr
 
-declare function cFuncPtrOrDerefFields _
+declare function cFuncPtrOrMemberDeref _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -842,7 +849,7 @@ declare function cFuncPtrOrDerefFields _
 		byval checkarray as integer _
 	) as ASTNODE ptr
 
-declare function cStrIdxOrFieldDeref _
+declare function cStrIdxOrMemberDeref _
 	( _
 		byref expr as ASTNODE ptr _
 	) as integer

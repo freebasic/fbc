@@ -803,12 +803,11 @@ decl_inner:		'' it's an anonymous inner UDT
 
 				'' walk through all the anon UDT's symbols, and
 				'' promote their attributes from the root
-				dim as FBSYMBOL ptr walkSymbols = symbGetUDTFirstElm( inner )
-				while walkSymbols
-				  symbGetAttrib( walkSymbols ) or= attrib
-				  walkSymbols = symbGetUDTNextElm( walkSymbols )
-
-				wend
+				dim as FBSYMBOL ptr walkSymbols = symbGetUDTSymbTbHead( inner )
+				do while( walkSymbols <> NULL )
+					symbGetAttrib( walkSymbols ) or= attrib
+					walkSymbols = symbGetNext( walkSymbols )
+				loop
 
 				'' insert it into the parent UDT
 				symbInsertInnerUDT( s, inner )

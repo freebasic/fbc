@@ -34,7 +34,7 @@ enum AST_NODECLASS
 	AST_NODECLASS_BOP
 	AST_NODECLASS_UOP
 	AST_NODECLASS_CONV
-	AST_NODECLASS_ADDROF
+	AST_NODECLASS_ADDR
 	AST_NODECLASS_BRANCH
 	AST_NODECLASS_CALL
 	AST_NODECLASS_CALLCTOR
@@ -315,6 +315,7 @@ enum AST_OPFLAGS
 	AST_OPFLAGS_NONE		= &h00000000
 	AST_OPFLAGS_SELF		= &h00000001			'' op=
 	AST_OPFLAGS_COMM		= &h00000002			'' commutative
+	AST_OPFLAGS_NORES		= &h00000004			'' no result (it's a SUB)
 end enum
 
 type AST_OPINFO
@@ -1147,6 +1148,14 @@ declare function astBuildStrPtr _
 		byval lhs as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function astBuildMultiDeref _
+	( _
+		byval cnt as integer, _
+		byval expr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
 declare sub astReplaceSymbolOnTree _
 	( _
 		byval n as ASTNODE ptr, _
@@ -1233,6 +1242,8 @@ declare sub astReplaceSymbolOnTree _
 #define astGetOpIsCommutative( op ) ((ast_opTB(op).flags and AST_OPFLAGS_COMM) <> 0)
 
 #define astGetOpIsSelf( op ) ((ast_opTB(op).flags and AST_OPFLAGS_SELF) <> 0)
+
+#define astGetOpNoResult( op ) ((ast_opTB(op).flags and AST_OPFLAGS_NORES) <> 0)
 
 #define astGetOpSelfVer( op ) ast_opTB(op).selfop
 

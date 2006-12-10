@@ -1926,6 +1926,67 @@ function symbFindUopOvlProc _
 end function
 
 '':::::
+function symbFindSelfUopOvlProc _
+	( _
+		byval op as AST_OP, _
+		byval l as ASTNODE ptr, _
+		byval err_num as FB_ERRMSG ptr _
+	) as FBSYMBOL ptr
+
+	dim as FB_CALL_ARG argTb(0 to 0) = any
+	dim as FBSYMBOL ptr proc = any, head_proc = any
+
+   	*err_num = FB_ERRMSG_OK
+
+	'' lhs must be an UDT
+   	select case astGetDataType( l )
+   	case FB_DATATYPE_STRUCT
+   		dim as FBSYMBOL ptr subtype = astGetSubType( l )
+
+   		if( subtype->udt.ext = NULL ) then
+			return NULL
+		end if
+
+   		head_proc = symbGetUDTOpOvlTb( subtype )(op - AST_OP_SELFBASE)
+
+   	'case FB_DATATYPE_CLASS
+
+   	case else
+   		return NULL
+   	end select
+
+   	if( head_proc = NULL ) then
+   		return NULL
+   	end if
+
+	'' try (l)
+	argTb(0).expr = l
+	argTb(0).mode = INVALID
+	argTb(0).next = NULL
+
+	proc = symbFindClosestOvlProc( head_proc, 1, @argTb(0), err_num )
+
+	if( proc = NULL ) then
+		if( *err_num <> FB_ERRMSG_OK ) then
+			errReport( *err_num, TRUE )
+		end if
+
+	else
+    	'' check visibility
+		if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+			*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
+			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
+						 symbGetFullProcName( proc ) )
+
+			proc = NULL
+		end if
+	end if
+
+	function = proc
+
+end function
+
+'':::::
 private function hCheckCastOvl _
 	( _
 		byval proc as FBSYMBOL ptr, _

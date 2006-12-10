@@ -165,22 +165,6 @@ function astNewADDROF _
 		return NULL
 	end if
 
-	'' check op overloading
-	if( symb.globOpOvlTb(AST_OP_ADDROF).head <> NULL ) then
-    	dim as FBSYMBOL ptr proc = any
-    	dim as FB_ERRMSG err_num = any
-
-		proc = symbFindUopOvlProc( AST_OP_ADDROF, l, @err_num )
-		if( proc <> NULL ) then
-			'' build a proc call
-			return astBuildCall( proc, 1, l )
-		else
-			if( err_num <> FB_ERRMSG_OK ) then
-				exit function
-			end if
-		end if
-	end if
-
 	dtype = l->dtype
 	subtype = l->subtype
 
@@ -266,7 +250,7 @@ function astNewADDROF _
 	end select
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ADDROF, _
+	n = astNewNode( AST_NODECLASS_ADDR, _
 					FB_DATATYPE_POINTER + dtype, _
 					subtype )
 	if( n = NULL ) then

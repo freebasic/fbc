@@ -534,7 +534,7 @@ end sub
 private function hGetReturnType _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
 	'' udt has a dtor, copy-ctor or virtual methods? it's never
 	'' returned in registers
@@ -564,15 +564,16 @@ private function hGetReturnType _
 		'' return in ST(0) if there's only one element and it's a SINGLE
 		if( sym->udt.elements = 1 ) then
 			do
-				if( symbGetUDTFirstElm( sym )->typ = FB_DATATYPE_SINGLE ) then
+				dim as FBSYMBOL ptr s = symbGetUDTFirstElm( sym )
+				if( s->typ = FB_DATATYPE_SINGLE ) then
 					return FB_DATATYPE_SINGLE
 				end if
 
-				if( symbGetUDTFirstElm( sym )->typ <> FB_DATATYPE_STRUCT ) then
+				if( s->typ <> FB_DATATYPE_STRUCT ) then
 					exit do
 				end if
 
-				sym = symbGetUDTFirstElm( sym )->subtype
+				sym = s->subtype
 
 				if( sym->udt.elements <> 1 ) then
 					exit do
@@ -597,15 +598,16 @@ private function hGetReturnType _
 		'' return in ST(0) if there's only one element and it's a DOUBLE
 		if( sym->udt.elements = 1 ) then
 			do
-				if( symbGetUDTFirstElm( sym )->typ = FB_DATATYPE_DOUBLE ) then
+				dim as FBSYMBOL ptr s = symbGetUDTFirstElm( sym )
+				if( s->typ = FB_DATATYPE_DOUBLE ) then
 					return FB_DATATYPE_DOUBLE
 				end if
 
-				if( symbGetUDTFirstElm( sym )->typ <> FB_DATATYPE_STRUCT ) then
+				if( s->typ <> FB_DATATYPE_STRUCT ) then
 					exit do
 				end if
 
-				sym = symbGetUDTFirstElm( sym )->subtype
+				sym = s->subtype
 
 				if( sym->udt.elements <> 1 ) then
 					exit do
@@ -769,3 +771,41 @@ function symbGetUDTLen _
 
 end function
 
+'':::::
+function symbGetUDTFirstElm _
+	( _
+		byval parent as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr sym = symbGetUDTSymbTbHead( parent )
+
+	'' find the first field
+	do while( sym <> NULL )
+		if( symbIsField( sym ) ) then
+			return sym
+		end if
+		sym = sym->next
+	loop
+
+	function = NULL
+
+end function
+
+'':::::
+function symbGetUDTNextElm _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	'' find the next field
+	sym = sym->next
+	do while( sym <> NULL )
+		if( symbIsField( sym ) ) then
+			return sym
+		end if
+		sym = sym->next
+	loop
+
+	function = NULL
+
+end function

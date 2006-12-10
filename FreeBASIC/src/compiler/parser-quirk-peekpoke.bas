@@ -188,11 +188,11 @@ function cPeekFunct _
 
 	dim as FBSYMBOL ptr fld = NULL, method_sym = NULL
 
-   	'' ('.' TypeField)?
+   	'' ('.' UdtMember)?
    	if( lexGetToken( ) = CHAR_DOT ) then
     	lexSkipToken( LEXCHECK_NOPERIOD )
 
-    	fld = cTypeField( dtype, subtype, expr, method_sym, TRUE )
+    	fld = cUdtMember( dtype, subtype, expr, method_sym, TRUE )
     	if( fld <> NULL ) then
 			'' constant? exit..
 			if( symbIsConst( fld ) ) then

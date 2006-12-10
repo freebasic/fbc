@@ -970,13 +970,10 @@ private sub hDeclUDT _
 
 	e = symbGetUDTFirstElm( sym )
 	do while( e <> NULL )
-        '' field?
-        if( symbIsField( e ) ) then
-        	desc += *symbGetName( e ) + ":" + hGetDataType( e )
+        desc += *symbGetName( e ) + ":" + hGetDataType( e )
 
-        	desc += "," + str( symbGetUDTElmBitOfs( e ) ) + "," + _
-        			str( symbGetUDTElmBitLen( e ) ) + ";"
-        end if
+        desc += "," + str( symbGetUDTElmBitOfs( e ) ) + "," + _
+        			  str( symbGetUDTElmBitLen( e ) ) + ";"
 
 		e = symbGetUDTNextElm( e )
 	loop

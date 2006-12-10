@@ -327,7 +327,7 @@ end type
 
 ''
 type FBS_ENUM
-	elmtb			as FBSYMBOLTB				'' elements symbol tb
+	symtb			as FBSYMBOLTB				'' symbol tb
 	elements		as integer
 	dbg				as FB_STRUCT_DBG
 end type
@@ -738,6 +738,13 @@ declare function symbFindSelfBopOvlProc _
 	) as FBSYMBOL ptr
 
 declare function symbFindUopOvlProc _
+	( _
+		byval op as AST_OP, _
+		byval l as ASTNODE ptr, _
+		byval err_num as FB_ERRMSG ptr _
+	) as FBSYMBOL ptr
+
+declare function symbFindSelfUopOvlProc _
 	( _
 		byval op as AST_OP, _
 		byval l as ASTNODE ptr, _
@@ -1655,6 +1662,26 @@ declare function symbGetFullProcName _
 		byval proc as FBSYMBOL ptr _
 	) as zstring ptr
 
+declare function symbGetUDTFirstElm _
+	( _
+		byval parent as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+declare function symbGetUDTNextElm _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+declare function symbGetEnumFirstElm _
+	( _
+		byval parent as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+declare function symbGetEnumNextElm _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
 '':::::
 #macro symbHashTbInit _
 	( _
@@ -1863,6 +1890,10 @@ declare function symbGetFullProcName _
 
 #define symbSetAttrib(s,t) s->attrib = t
 
+#define symbGetPrev(s) s->prev
+
+#define symbGetNext(s) s->next
+
 #define symbChainGetNext(c) c->next
 
 #define symbIsVar(s) (s->class = FB_SYMBCLASS_VAR)
@@ -1965,9 +1996,7 @@ declare function symbGetFullProcName _
 
 #define symbGetArrayElements(s) s->var.array.elms
 
-#define symbGetUDTFirstElm(s) s->udt.symtb.head
-
-#define symbGetUDTNextElm(e) e->next
+#define symbGetUDTSymbTbHead(s) s->udt.symtb.head
 
 #define symbGetUDTElmBitOfs(e) ( e->ofs * 8 + _
 								 iif( e->typ = FB_DATATYPE_BITFIELD, _
@@ -2032,9 +2061,7 @@ declare function symbGetFullProcName _
 
 #define symbGetUDTOpOvlTb(s) s->udt.ext->opovlTb
 
-#define symbGetEnumFirstElm(s) s->enum_.elmtb.head
-
-#define symbGetEnumNextElm(e) e->next
+#define symbGetEnumSymbTbHead(s) s->enum_.symtb.head
 
 #define symbGetEnumElements(s) s->enum_.elements
 

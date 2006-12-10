@@ -59,9 +59,9 @@ function symbAddEnum _
 	end if
 
 	e->enum_.elements = 0
-	e->enum_.elmtb.owner = e
-	e->enum_.elmtb.head = NULL
-	e->enum_.elmtb.tail = NULL
+	e->enum_.symtb.owner = e
+	e->enum_.symtb.head = NULL
+	e->enum_.symtb.tail = NULL
 	e->enum_.dbg.typenum = INVALID
 
 	'' check for forward references
@@ -116,7 +116,7 @@ sub symbDelEnum _
     end if
 
     '' del all enum constants
-	e = s->enum_.elmtb.head
+	e = s->enum_.symtb.head
     do while( e <> NULL )
         nxt = e->next
 		symbFreeSymbol( e )
@@ -128,4 +128,41 @@ sub symbDelEnum _
 
 end sub
 
+'':::::
+function symbGetEnumFirstElm _
+	( _
+		byval parent as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
 
+	dim as FBSYMBOL ptr sym = symbGetEnumSymbTbHead( parent )
+
+	'' find the first const
+	do while( sym <> NULL )
+		if( symbIsConst( sym ) ) then
+			return sym
+		end if
+		sym = sym->next
+	loop
+
+	function = NULL
+
+end function
+
+'':::::
+function symbGetEnumNextElm _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	'' find the next const
+	sym = sym->next
+	do while( sym <> NULL )
+		if( symbIsConst( sym ) ) then
+			return sym
+		end if
+		sym = sym->next
+	loop
+
+	function = NULL
+
+end function

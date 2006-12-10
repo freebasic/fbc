@@ -183,9 +183,9 @@ private function hFieldArray _
 end function
 
 '':::::
-''TypeField       =   (ID ArrayIdx? '.')*
+'' UdtMember       =   (ID ArrayIdx? '.')*
 ''
-function cTypeField _
+function cUdtMember _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -346,6 +346,85 @@ function cTypeField _
 end function
 
 '':::::
+function cMemberAccess _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as FBSYMBOL ptr fld = any, method_sym = any
+	dim as ASTNODE ptr fldexpr = NULL
+
+	fld = cUdtMember( dtype, subtype, fldexpr, method_sym, TRUE )
+	if( fld = NULL ) then
+		if( method_sym = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			return NULL
+		end if
+
+	else
+		'' constant? exit..
+		if( symbIsConst( fld ) ) then
+			astDeltree( expr )
+			return fldexpr
+		end if
+
+		dtype = symbGetType( fld )
+		subtype = symbGetSubType( fld )
+
+		'' it's a proc call, but was it originally returning an UDT?
+		if( astIsCALL( expr ) ) then
+			if( symbGetUDTRetType( astGetSubtype( expr ) ) <> _
+								FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
+
+				'' it's returning the result in registers, move to a temp var
+				'' (note: if it's being returned in regs, there's no DTOR)
+				dim as FBSYMBOL ptr tmp = any
+
+				tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
+							  	  	  astGetSubtype( expr ), _
+							  	  	  FALSE, _
+							  	  	  FALSE )
+
+				expr = astNewASSIGN( astBuildVarField( tmp ), _
+							  	  	 expr, _
+							  	  	 AST_OPOPT_DONTCHKOPOVL )
+
+        		expr = astNewLINK( astBuildVarField( tmp ), expr )
+        	end if
+        end if
+
+ 		'' build: cast( udt ptr, (cast( byte ptr, @udt) + fldexpr))->field
+ 		expr = astNewADDROF( expr )
+
+ 		'' can't be 0, or PTR will remove the ADDROF, and we are taking the
+ 		'' address-of a CALL result that can't be changed, ditto with LINK ..
+ 		if( fldexpr = NULL ) then
+ 			fldexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+ 		end if
+
+ 		expr = astNewDEREF( 0, _
+ 			 			    astNewBOP( AST_OP_ADD, expr, fldexpr ), _
+ 						    dtype, _
+ 						    subtype )
+
+ 		expr = astNewFIELD( expr, fld, dtype, subtype )
+	end if
+
+	'' method call?
+	if( method_sym <> NULL ) then
+		expr = cMethodCall( method_sym, expr )
+		if( expr = NULL ) then
+			return NULL
+		end if
+	end if
+
+	function = expr
+
+end function
+
+'':::::
 private function hStrIndexing _
 	( _
 		byval dtype as integer, _
@@ -401,15 +480,27 @@ private function hStrIndexing _
 end function
 
 '':::::
-''DerefFields	=   (('->' DREF* | '[' Expression ']' '.'?) TypeField)* .
+''MemberDeref	=   (('->' DREF* | '[' Expression ']' '.'?) UdtMember)* .
 ''
-function cDerefFields _
+function cMemberDeref _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval varexpr as ASTNODE ptr, _
 		byval checkarray as integer _
 	) as ASTNODE ptr
+
+#macro hCheckDeref( cnt, expr, dtype, subtype )
+	if( cnt > 0 ) then
+		expr = astBuildMultiDeref( cnt, expr, dtype, subtype )
+		if( expr = NULL ) then
+			exit function
+		end if
+
+    	dtype = astGetDataType( expr )
+    	subtype = astGetSubType( expr )
+	end if
+#endmacro
 
 	dim as integer derefcnt = any, is_field = any, lgt = any
 	dim as ASTNODE ptr fldexpr = any, idxexpr = any
@@ -422,28 +513,68 @@ function cDerefFields _
 		derefcnt = 0
 
         select case lexGetToken( )
-        '' ('->' DREF* TypeField)*
+        '' ('->' DREF* UdtMember)*
         case FB_TK_FIELDDEREF
         	is_field = TRUE
 
+			dim as integer is_ovl = FALSE
 			if( dtype < FB_DATATYPE_POINTER ) then
-				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-					exit function
+				'' check op overloading
+    			if( symb.globOpOvlTb(AST_OP_FLDDEREF).head = NULL ) then
+					if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+						exit function
+					else
+						exit do
+					end if
+				end if
+
+    			dim as FBSYMBOL ptr proc = any
+    			dim as FB_ERRMSG err_num = any
+
+				proc = symbFindUopOvlProc( AST_OP_FLDDEREF, varexpr, @err_num )
+				if( proc <> NULL ) then
+    				'' build a proc call
+					varexpr = astBuildCall( proc, 1, varexpr )
+					if( varexpr = NULL ) then
+						exit function
+					end if
+
+    				lexSkipToken( LEXCHECK_NOPERIOD )
+
+    				varexpr = cMemberAccess( astGetDataType( varexpr ), _
+    										 astGetSubType( varexpr ), _
+    										 varexpr )
+					if( varexpr = NULL ) then
+						exit function
+					end if
+
+    				dtype = astGetDataType( varexpr )
+    				subtype = astGetSubType( varexpr )
+    				is_ovl = TRUE
+
 				else
-					exit do
+					if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+						exit function
+					else
+						exit do
+					end if
 				end if
 
 			else
+       			lexSkipToken( LEXCHECK_NOPERIOD )
 				dtype -= FB_DATATYPE_POINTER
 			end if
-
-       		lexSkipToken( LEXCHECK_NOPERIOD )
 
        		'' DREF*
 			do while( lexGetToken( ) = FB_TK_DEREFCHAR )
 				lexSkipToken( LEXCHECK_NOPERIOD )
 				derefcnt += 1
 			loop
+
+			if( is_ovl ) then
+				hCheckDeref( derefcnt, varexpr, dtype, subtype )
+				continue do
+			end if
 
 		'' '['
 		case CHAR_LBRACKET
@@ -487,16 +618,13 @@ function cDerefFields _
 
 					varexpr = hStrIndexing( dtype, varexpr, idxexpr )
 					exit do
-
-				case else
-					if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: fake a expr
-						varexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-						exit do
-					end if
 				end select
+
+				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+					exit function
+				else
+					exit do
+				end if
 
 			else
 				'' times length
@@ -559,8 +687,8 @@ function cDerefFields _
 
 		fldexpr = NULL
 		if( is_field ) then
-			'' TypeField
-			fld = cTypeField( dtype, subtype, fldexpr, method_sym, checkarray )
+			'' UdtMember
+			fld = cUdtMember( dtype, subtype, fldexpr, method_sym, checkarray )
 			if( fld = NULL ) then
 				if( method_sym = NULL ) then
 					if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
@@ -593,7 +721,7 @@ function cDerefFields _
 			varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
 		end if
 
-		'' fields at ofs 0 aren't returned as expressions by cTypeField()
+		'' fields at ofs 0 aren't returned as expressions by cUdtMember()
 		dim as integer is_nidxarray = FALSE
 		if( fldexpr <> NULL ) then
 			'' ugly hack to deal with arrays w/o indexes
@@ -647,38 +775,7 @@ function cDerefFields _
 		end if
 
 		''
-		do while( derefcnt > 0 )
-			if( dtype < FB_DATATYPE_POINTER ) then
-				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-					exit function
-				else
-					exit do
-				end if
-			end if
-
-			dtype -= FB_DATATYPE_POINTER
-
-			'' incomplete type?
-			select case dtype
-			case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
-				if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a type
-					dtype = FB_DATATYPE_BYTE
-				end if
-			end select
-
-			'' null pointer checking
-			if( env.clopt.extraerrchk ) then
-				varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
-			end if
-
-			varexpr = astNewDEREF( 0, varexpr, dtype, subtype )
-
-			derefcnt -= 1
-		loop
-
+		hCheckDeref( derefcnt, varexpr, dtype, subtype )
 	loop
 
 	function = varexpr
@@ -687,9 +784,9 @@ end function
 
 '':::::
 ''FuncPtrOrDeref	=   FuncPtr '(' Args? ')'
-''					|   DerefFields .
+''					|   MemberDeref .
 ''
-function cFuncPtrOrDerefFields _
+function cFuncPtrOrMemberDeref _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -702,8 +799,8 @@ function cFuncPtrOrDerefFields _
 
 	''
 	if( isfuncptr = FALSE ) then
-		'' DerefFields?
-		expr = cDerefFields( dtype, subtype, expr, checkarray )
+		'' MemberDeref?
+		expr = cMemberDeref( dtype, subtype, expr, checkarray )
 
 		if( expr = NULL ) then
 			exit function
@@ -1221,7 +1318,7 @@ private function hMakeArrayIdx _
 end function
 
 '':::::
-''Variable        =   ID ArrayIdx? TypeField? FuncPtrOrDerefFields? .
+''Variable        =   ID ArrayIdx? UdtMember? FuncPtrOrMemberDeref? .
 ''
 function cVariableEx _
 	( _
@@ -1382,11 +1479,11 @@ function cVariableEx _
    	''
    	if( is_funcptr = FALSE ) then
    		if( checkfields ) then
-   			'' ('.' TypeField)?
+   			'' ('.' UdtMember)?
    			if( lexGetToken( ) = CHAR_DOT ) then
     			lexSkipToken( LEXCHECK_NOPERIOD )
 
-   				fld = cTypeField( dtype, subtype, idxexpr, method_sym, checkarray )
+   				fld = cUdtMember( dtype, subtype, idxexpr, method_sym, checkarray )
 
 				if( fld = NULL ) then
 					if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -1466,27 +1563,25 @@ function cVariableEx _
 	end if
 
     if( checkfields ) then
-    	'' FuncPtrOrDerefFields?
-		varexpr = cFuncPtrOrDerefFields( dtype, _
+    	'' FuncPtrOrMemberDeref?
+		varexpr = cFuncPtrOrMemberDeref( dtype, _
 										 subtype, _
 										 varexpr, _
 										 is_funcptr, _
 										 checkarray )
 
-		return (errGetLast( ) = FB_ERRMSG_OK)
-	end if
-
 	'' non-indexed array?
-	if( is_nidxarray ) then
+	elseif( is_nidxarray ) then
         varexpr = astNewNIDXARRAY( varexpr )
 	end if
 
-	function = varexpr <> NULL
+
+	function = (varexpr <> NULL)
 
 end function
 
 '':::::
-''WithVariable        =   '.' TypeField FuncPtrOrDerefFields? .
+''WithVariable        =   '.' UdtMember FuncPtrOrMemberDeref? .
 ''
 function cWithVariable _
 	( _
@@ -1505,14 +1600,14 @@ function cWithVariable _
 
    	varexpr = astNewVAR( sym, 0, dtype, subtype )
 
-   	'' TypeField
+   	'' UdtMember
    	dtype -= FB_DATATYPE_POINTER
 
     '' '.'
     lexSkipToken( LEXCHECK_NOPERIOD )
 
-   	'' TypeField
-   	fld = cTypeField( dtype, subtype, varexpr, method_sym, checkarray )
+   	'' UdtMember
+   	fld = cUdtMember( dtype, subtype, varexpr, method_sym, checkarray )
 
 	is_nidxarray = FALSE
 	if( fld = NULL ) then
@@ -1567,8 +1662,8 @@ function cWithVariable _
 	end if
 
     if( is_nidxarray = FALSE ) then
-    	'' FuncPtrOrDerefFields?
-		varexpr = cFuncPtrOrDerefFields( dtype, _
+    	'' FuncPtrOrMemberDeref?
+		varexpr = cFuncPtrOrMemberDeref( dtype, _
 									 	 subtype, _
 									 	 varexpr, _
 									 	 isfuncptr, _
@@ -1580,12 +1675,12 @@ function cWithVariable _
         varexpr = astNewNIDXARRAY( varexpr )
 	end if
 
-	function = (errGetLast( ) = FB_ERRMSG_OK)
+	function = (varexpr <> NULL)
 
 end function
 
 '':::::
-''Variable        =   '.'? ID ArrayIdx? TypeField? FuncPtrOrDerefFields? .
+''Variable        =   '.'? ID ArrayIdx? UdtMember? FuncPtrOrMemberDeref? .
 ''
 function cVariable _
 	( _
@@ -1615,9 +1710,9 @@ function cVariable _
 end function
 
 '':::::
-''FieldVariable    =   TypeField? FuncPtrOrDerefFields? .
+''DataMember    =   UdtMember? FuncPtrOrMemberDeref? .
 ''
-function cFieldVariable _
+function cDataMember _
 	( _
 		byval this_ as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
@@ -1638,8 +1733,8 @@ function cFieldVariable _
    	dtype = symbGetType( this_ )
    	subtype = symbGetSubtype( this_ )
 
-   	'' TypeField
-   	fld = cTypeField( dtype, subtype, fldexpr, method_sym, checkarray )
+   	'' UdtMember
+   	fld = cUdtMember( dtype, subtype, fldexpr, method_sym, checkarray )
 
 	is_nidxarray = FALSE
 	if( fld = NULL ) then
@@ -1703,8 +1798,8 @@ function cFieldVariable _
 	end if
 
     if( is_nidxarray = FALSE ) then
-    	'' FuncPtrOrDerefFields?
-		varexpr = cFuncPtrOrDerefFields( dtype, _
+    	'' FuncPtrOrMemberDeref?
+		varexpr = cFuncPtrOrMemberDeref( dtype, _
 									 	 subtype, _
 									 	 varexpr, _
 									 	 isfuncptr, _
@@ -1715,7 +1810,7 @@ function cFieldVariable _
         varexpr = astNewNIDXARRAY( varexpr )
 	end if
 
-	function = (errGetLast( ) = FB_ERRMSG_OK)
+	function = (varexpr <> NULL)
 
 end function
 
@@ -1752,7 +1847,7 @@ function cVarOrDeref _
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
 				 AST_NODECLASS_DEREF, AST_NODECLASS_CALL, AST_NODECLASS_NIDXARRAY
 
-			case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
+			case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
 				if( allow_addrof = FALSE ) then
 					hInvalidType( )
 					'' no error recovery: caller will take care

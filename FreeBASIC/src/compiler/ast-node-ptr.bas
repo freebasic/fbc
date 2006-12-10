@@ -39,27 +39,11 @@ function astNewDEREF _
 
 	if( l <> NULL ) then
 		if( ofs = 0 ) then
-			'' check op overloading
-			if( symb.globOpOvlTb(AST_OP_DEREF).head <> NULL ) then
-    			dim as FBSYMBOL ptr proc = any
-    			dim as FB_ERRMSG err_num = any
-
-				proc = symbFindUopOvlProc( AST_OP_DEREF, l, @err_num )
-				if( proc <> NULL ) then
-					'' build a proc call
-					return astBuildCall( proc, 1, l )
-				else
-					if( err_num <> FB_ERRMSG_OK ) then
-						exit function
-					end if
-				end if
-			end if
-
     		dim as integer delchild = any
 
 			'' convert *@ to nothing
 			select case l->class
-			case AST_NODECLASS_ADDROF
+			case AST_NODECLASS_ADDR
 				delchild = TRUE
 
 			case AST_NODECLASS_OFFSET
