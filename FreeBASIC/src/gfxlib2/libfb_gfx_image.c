@@ -78,6 +78,7 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int de
 		image->pitch = pitch;
 		fb_hMemSet(image->_reserved, 0, sizeof(image->_reserved));
 	}
+	fb_hPrepareTarget(context, (void *)image, MASK_A_32);
 	context->pixel_set((unsigned char *)image + header_size, color, (pitch * height) / bpp);
 	
 	return image;
