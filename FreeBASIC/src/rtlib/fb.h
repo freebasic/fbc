@@ -292,6 +292,15 @@ extern "C" {
 #include "fb_hook.h"
 
 
+enum FB_LANG {
+	FB_LANG_FB,
+	FB_LANG_FB_DEPRECATED,
+	FB_LANG_QB,
+
+	FB_LANGS
+};
+
+
 typedef struct FB_RTLIB_CTX_ {
 	int 			argc;
 	char 			**argv;
@@ -302,6 +311,7 @@ typedef struct FB_RTLIB_CTX_ {
 	FB_TLSENTRY 	tls_ctxtb[FB_TLSKEYS];
 	FB_FILE 		fileTB[FB_MAX_FILES];
 	int				do_file_reset;
+	int				lang;
 } FB_RTLIB_CTX;
 
 extern FB_RTLIB_CTX __fb_ctx;

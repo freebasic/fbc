@@ -37,18 +37,21 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	   	 	NULL, FB_RTL_OPT_NONE, _
 	   	 	0 _
 		), _
-		/' fb_Init ( byval argc as integer, byval argv as zstring ptr ptr ) as void '/ _
+		/' fb_Init ( byval argc as integer, byval argv as zstring ptr ptr, byval lang as integer ) as void '/ _
 		( _
 			@FB_RTL_INIT, NULL, _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
+	 		3, _
 	 		{ _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_POINTER+FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 	 	), _
@@ -644,7 +647,7 @@ function rtlInitApp _
 
     end if
 
-	'' init( argc, argv )
+	'' init( argc, argv, lang )
     proc = astNewCALL( PROCLOOKUP( INIT ), NULL )
 
     '' argc
@@ -663,6 +666,11 @@ function rtlInitApp _
     	exit function
     end if
 
+	'' lang
+	if( astNewARG( proc, astNewCONSTi( env.clopt.lang, FB_DATATYPE_INTEGER ) ) = NULL ) then
+		exit function
+	end if
+	
     astAdd( proc )
 
     function = proc

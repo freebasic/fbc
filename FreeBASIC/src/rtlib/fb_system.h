@@ -32,7 +32,7 @@
 #ifndef __FB_SYS_H__
 #define __FB_SYS_H__
 
-FBCALL void         fb_Init             ( int argc, char **argv );
+FBCALL void         fb_Init             ( int argc, char **argv, int lang );
 FBCALL void         fb_End              ( int errlevel );
 FBCALL void 		fb_RtInit 			( void );
 	   void 		fb_RtExit 			( void );
