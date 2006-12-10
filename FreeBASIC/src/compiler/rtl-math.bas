@@ -211,15 +211,18 @@
 	 			) _
 	 		} _
 		), _
-		/' randomize ( byval seed as double = -1.0 ) as void '/ _
+		/' randomize ( byval seed as double = -1.0, byval algorithm as integer = 0 ) as void '/ _
 		( _
 			@"randomize", @"fb_Randomize", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			1, _
+			2, _
 	 		{ _
 	 			( _
 					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, TRUE, -1.0 _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			) _
 	 		} _
 		), _
