@@ -68,7 +68,6 @@
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
     	- does QB allow that? CONS won't work without INPUT or OUTPUT
-    [ ] ON ERROR GOTO inside functions is accepting mod-level labels
     [ ] GET and PUT shouldn't allow strings when the number of items is passed
     [ ] -exx is giving suspicious ptr assignment when module/name are been restored inside ns'
 

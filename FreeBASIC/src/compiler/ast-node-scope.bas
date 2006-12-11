@@ -538,13 +538,13 @@ private function hCheckBranch _
 
     '' not declared?
     if( symbGetLabelIsDeclared( dst ) = FALSE ) then
-    	hBranchError( FB_ERRMSG_BRANCHTARTGETOUTSIDECURRPROC, n )
+    	hBranchError( FB_ERRMSG_BRANCHTARGETOUTSIDECURRPROC, n )
     	exit function
     end if
 
 	'' branching to other procs or mod-level?
     if( hIsTargetOutside( proc->sym, dst ) ) then
-    	hBranchError( FB_ERRMSG_BRANCHTARTGETOUTSIDECURRPROC, n )
+    	hBranchError( FB_ERRMSG_BRANCHTARGETOUTSIDECURRPROC, n )
         exit function
     end if
 
