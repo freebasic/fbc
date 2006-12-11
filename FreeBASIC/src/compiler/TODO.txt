@@ -194,8 +194,6 @@
 
 [ ] swap of zstring's and var-len string's is not working?? or that's the behaviour..
 
-[ ] @static_array(const) won't become an OFFSET, not allowing initializations..
-
 [ ] passing a temporary string to a zstring ptr should not make yet-another temporary
     assignment in hStrParamToPtrArg(), just a pointer copy that later should be
     strDelete()'d

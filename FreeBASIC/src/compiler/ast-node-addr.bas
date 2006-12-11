@@ -230,6 +230,9 @@ function astNewADDROF _
 		end if
 
     case AST_NODECLASS_IDX
+		'' try to remove the idx node if it's a constant expr
+		l = astOptimize( l )
+
 		'' no index expression? it's a const..
 		if( l->l = NULL ) then
 			dim as FBSYMBOL ptr s = any
@@ -239,7 +242,6 @@ function astNewADDROF _
 				 ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or _
 				 						   FB_SYMBATTRIB_COMMON or _
 				 						   FB_SYMBATTRIB_STATIC)) <> 0) ) then
-
 				'' can't be dynamic either
 				if( symbGetIsDynamic( s ) = FALSE ) then
 					return astNewOFFSET( l )
@@ -254,7 +256,7 @@ function astNewADDROF _
 					FB_DATATYPE_POINTER + dtype, _
 					subtype )
 	if( n = NULL ) then
-		exit function
+		return NULL
 	end if
 
 	n->op.op = AST_OP_ADDROF

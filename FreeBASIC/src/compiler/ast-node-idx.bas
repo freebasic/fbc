@@ -44,10 +44,9 @@ function astNewIDX _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_IDX, dtype, subtype )
-	function = n
 
 	if( n = NULL ) then
-		exit function
+		return NULL
 	end if
 
 	n->l = idx
@@ -55,6 +54,8 @@ function astNewIDX _
 	n->sym = var->sym
 	n->idx.mult	= 1
 	n->idx.ofs = 0
+
+	function = n
 
 end function
 
