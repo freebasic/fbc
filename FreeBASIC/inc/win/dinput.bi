@@ -485,11 +485,11 @@ type LPCDIDATAFORMAT as DIDATAFORMAT ptr
 #define DIDF_ABSAXIS &h00000001
 #define DIDF_RELAXIS &h00000002
 
-extern import c_dfDIMouse alias "c_dfDIMouse" as DIDATAFORMAT
-extern import c_dfDIMouse2 alias "c_dfDIMouse2" as DIDATAFORMAT
-extern import c_dfDIKeyboard alias "c_dfDIKeyboard" as DIDATAFORMAT
-extern import c_dfDIJoystick alias "c_dfDIJoystick" as DIDATAFORMAT
-extern import c_dfDIJoystick2 alias "c_dfDIJoystick2" as DIDATAFORMAT
+extern c_dfDIMouse alias "c_dfDIMouse" as DIDATAFORMAT
+extern c_dfDIMouse2 alias "c_dfDIMouse2" as DIDATAFORMAT
+extern c_dfDIKeyboard alias "c_dfDIKeyboard" as DIDATAFORMAT
+extern c_dfDIJoystick alias "c_dfDIJoystick" as DIDATAFORMAT
+extern c_dfDIJoystick2 alias "c_dfDIJoystick2" as DIDATAFORMAT
 
 #ifndef UNICODE
 type DIACTIONA
