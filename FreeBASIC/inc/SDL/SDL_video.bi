@@ -10,10 +10,10 @@
 #define __SDL_video_bi__
 
 #include once "crt/stdio.bi"
-#include once "SDL/SDL_types.bi"
-#include once "SDL/SDL_mutex.bi"
-#include once "SDL/SDL_rwops.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_types.bi"
+#include once "SDL_mutex.bi"
+#include once "SDL_rwops.bi"
+#include once "begin_code.bi"
 
 #define SDL_ALPHA_OPAQUE 255
 #define SDL_ALPHA_TRANSPARENT 0
@@ -156,62 +156,6 @@ end enum
 #define SDL_LOGPAL &h01
 #define SDL_PHYSPAL &h02
 
-declare function SDL_VideoInit cdecl alias "SDL_VideoInit" (byval driver_name as zstring ptr, byval flags as Uint32) as integer
-declare sub SDL_VideoQuit cdecl alias "SDL_VideoQuit" ()
-declare function SDL_VideoDriverName cdecl alias "SDL_VideoDriverName" (byval namebuf as zstring ptr, byval maxlen as integer) as zstring ptr
-declare function SDL_GetVideoSurface cdecl alias "SDL_GetVideoSurface" () as SDL_Surface ptr
-declare function SDL_GetVideoInfo cdecl alias "SDL_GetVideoInfo" () as SDL_VideoInfo ptr
-declare function SDL_VideoModeOK cdecl alias "SDL_VideoModeOK" (byval width as integer, byval height as integer, byval bpp as integer, byval flags as Uint32) as integer
-declare function SDL_ListModes cdecl alias "SDL_ListModes" (byval format as SDL_PixelFormat ptr, byval flags as Uint32) as SDL_Rect ptr ptr
-declare function SDL_SetVideoMode cdecl alias "SDL_SetVideoMode" (byval width as integer, byval height as integer, byval bpp as integer, byval flags as Uint32) as SDL_Surface ptr
-declare sub SDL_UpdateRects cdecl alias "SDL_UpdateRects" (byval screen as SDL_Surface ptr, byval numrects as integer, byval rects as SDL_Rect ptr)
-declare sub SDL_UpdateRect cdecl alias "SDL_UpdateRect" (byval screen as SDL_Surface ptr, byval x as Sint32, byval y as Sint32, byval w as Uint32, byval h as Uint32)
-declare function SDL_Flip cdecl alias "SDL_Flip" (byval screen as SDL_Surface ptr) as integer
-declare function SDL_SetGamma cdecl alias "SDL_SetGamma" (byval red as single, byval green as single, byval blue as single) as integer
-declare function SDL_SetGammaRamp cdecl alias "SDL_SetGammaRamp" (byval red as Uint16 ptr, byval green as Uint16 ptr, byval blue as Uint16 ptr) as integer
-declare function SDL_GetGammaRamp cdecl alias "SDL_GetGammaRamp" (byval red as Uint16 ptr, byval green as Uint16 ptr, byval blue as Uint16 ptr) as integer
-declare function SDL_SetColors cdecl alias "SDL_SetColors" (byval surface as SDL_Surface ptr, byval colors as SDL_Color ptr, byval firstcolor as integer, byval ncolors as integer) as integer
-declare function SDL_SetPalette cdecl alias "SDL_SetPalette" (byval surface as SDL_Surface ptr, byval flags as integer, byval colors as SDL_Color ptr, byval firstcolor as integer, byval ncolors as integer) as integer
-declare function SDL_MapRGB cdecl alias "SDL_MapRGB" (byval format as SDL_PixelFormat ptr, byval r as Uint8, byval g as Uint8, byval b as Uint8) as Uint32
-declare function SDL_MapRGBA cdecl alias "SDL_MapRGBA" (byval format as SDL_PixelFormat ptr, byval r as Uint8, byval g as Uint8, byval b as Uint8, byval a as Uint8) as Uint32
-declare sub SDL_GetRGB cdecl alias "SDL_GetRGB" (byval pixel as Uint32, byval fmt as SDL_PixelFormat ptr, byval r as Uint8 ptr, byval g as Uint8 ptr, byval b as Uint8 ptr)
-declare sub SDL_GetRGBA cdecl alias "SDL_GetRGBA" (byval pixel as Uint32, byval fmt as SDL_PixelFormat ptr, byval r as Uint8 ptr, byval g as Uint8 ptr, byval b as Uint8 ptr, byval a as Uint8 ptr)
-declare function SDL_CreateRGBSurface cdecl alias "SDL_CreateRGBSurface" (byval flags as Uint32, byval width as integer, byval height as integer, byval depth as integer, byval Rmask as Uint32, byval Gmask as Uint32, byval Bmask as Uint32, byval Amask as Uint32) as SDL_Surface ptr
-declare function SDL_CreateRGBSurfaceFrom cdecl alias "SDL_CreateRGBSurfaceFrom" (byval pixels as any ptr, byval width as integer, byval height as integer, byval depth as integer, byval pitch as integer, byval Rmask as Uint32, byval Gmask as Uint32, byval Bmask as Uint32, byval Amask as Uint32) as SDL_Surface ptr
-declare sub SDL_FreeSurface cdecl alias "SDL_FreeSurface" (byval surface as SDL_Surface ptr)
-declare function SDL_LockSurface cdecl alias "SDL_LockSurface" (byval surface as SDL_Surface ptr) as integer
-declare sub SDL_UnlockSurface cdecl alias "SDL_UnlockSurface" (byval surface as SDL_Surface ptr)
-declare function SDL_LoadBMP_RW cdecl alias "SDL_LoadBMP_RW" (byval src as SDL_RWops ptr, byval freesrc as integer) as SDL_Surface ptr
-declare function SDL_SaveBMP_RW cdecl alias "SDL_SaveBMP_RW" (byval surface as SDL_Surface ptr, byval dst as SDL_RWops ptr, byval freedst as integer) as integer
-declare function SDL_SetColorKey cdecl alias "SDL_SetColorKey" (byval surface as SDL_Surface ptr, byval flag as Uint32, byval key as Uint32) as integer
-declare function SDL_SetAlpha cdecl alias "SDL_SetAlpha" (byval surface as SDL_Surface ptr, byval flag as Uint32, byval alpha as Uint8) as integer
-declare function SDL_SetClipRect cdecl alias "SDL_SetClipRect" (byval surface as SDL_Surface ptr, byval rect as SDL_Rect ptr) as SDL_bool
-declare sub SDL_GetClipRect cdecl alias "SDL_GetClipRect" (byval surface as SDL_Surface ptr, byval rect as SDL_Rect ptr)
-declare function SDL_ConvertSurface cdecl alias "SDL_ConvertSurface" (byval src as SDL_Surface ptr, byval fmt as SDL_PixelFormat ptr, byval flags as Uint32) as SDL_Surface ptr
-declare function SDL_UpperBlit cdecl alias "SDL_UpperBlit" (byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as integer
-declare function SDL_LowerBlit cdecl alias "SDL_LowerBlit" (byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as integer
-declare function SDL_FillRect cdecl alias "SDL_FillRect" (byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr, byval color as Uint32) as integer
-declare function SDL_DisplayFormat cdecl alias "SDL_DisplayFormat" (byval surface as SDL_Surface ptr) as SDL_Surface ptr
-declare function SDL_DisplayFormatAlpha cdecl alias "SDL_DisplayFormatAlpha" (byval surface as SDL_Surface ptr) as SDL_Surface ptr
-declare function SDL_CreateYUVOverlay cdecl alias "SDL_CreateYUVOverlay" (byval width as integer, byval height as integer, byval format as Uint32, byval display as SDL_Surface ptr) as SDL_Overlay ptr
-declare function SDL_LockYUVOverlay cdecl alias "SDL_LockYUVOverlay" (byval overlay as SDL_Overlay ptr) as integer
-declare sub SDL_UnlockYUVOverlay cdecl alias "SDL_UnlockYUVOverlay" (byval overlay as SDL_Overlay ptr)
-declare function SDL_DisplayYUVOverlay cdecl alias "SDL_DisplayYUVOverlay" (byval overlay as SDL_Overlay ptr, byval dstrect as SDL_Rect ptr) as integer
-declare sub SDL_FreeYUVOverlay cdecl alias "SDL_FreeYUVOverlay" (byval overlay as SDL_Overlay ptr)
-declare function SDL_GL_LoadLibrary cdecl alias "SDL_GL_LoadLibrary" (byval path as zstring ptr) as integer
-declare function SDL_GL_GetProcAddress cdecl alias "SDL_GL_GetProcAddress" (byval proc as zstring ptr) as any ptr
-declare function SDL_GL_SetAttribute cdecl alias "SDL_GL_SetAttribute" (byval attr as SDL_GLattr, byval value as integer) as integer
-declare function SDL_GL_GetAttribute cdecl alias "SDL_GL_GetAttribute" (byval attr as SDL_GLattr, byval value as integer ptr) as integer
-declare sub SDL_GL_SwapBuffers cdecl alias "SDL_GL_SwapBuffers" ()
-declare sub SDL_GL_UpdateRects cdecl alias "SDL_GL_UpdateRects" (byval numrects as integer, byval rects as SDL_Rect ptr)
-declare sub SDL_GL_Lock cdecl alias "SDL_GL_Lock" ()
-declare sub SDL_GL_Unlock cdecl alias "SDL_GL_Unlock" ()
-declare sub SDL_WM_SetCaption cdecl alias "SDL_WM_SetCaption" (byval title as zstring ptr, byval icon as zstring ptr)
-declare sub SDL_WM_GetCaption cdecl alias "SDL_WM_GetCaption" (byval title as byte ptr ptr, byval icon as byte ptr ptr)
-declare sub SDL_WM_SetIcon cdecl alias "SDL_WM_SetIcon" (byval icon as SDL_Surface ptr, byval mask as Uint8 ptr)
-declare function SDL_WM_IconifyWindow cdecl alias "SDL_WM_IconifyWindow" () as integer
-declare function SDL_WM_ToggleFullScreen cdecl alias "SDL_WM_ToggleFullScreen" (byval surface as SDL_Surface ptr) as integer
-
 #define SDL_AllocSurface SDL_CreateRGBSurface
 #define SDL_LoadBMP(file) SDL_LoadBMP_RW(SDL_RWFromFile(file, "rb"), 1)
 #define SDL_SaveBMP(surface,file) SDL_SaveBMP_Rw(surface, SDL_RWFromFile(file, "wb"), 1)
@@ -224,10 +168,66 @@ enum SDL_GrabMode
 	SDL_GRAB_FULLSCREEN
 end enum
 
+extern "c"
+declare function SDL_VideoInit (byval driver_name as zstring ptr, byval flags as Uint32) as integer
+declare sub SDL_VideoQuit ()
+declare function SDL_VideoDriverName (byval namebuf as zstring ptr, byval maxlen as integer) as zstring ptr
+declare function SDL_GetVideoSurface () as SDL_Surface ptr
+declare function SDL_GetVideoInfo () as SDL_VideoInfo ptr
+declare function SDL_VideoModeOK (byval width as integer, byval height as integer, byval bpp as integer, byval flags as Uint32) as integer
+declare function SDL_ListModes (byval format as SDL_PixelFormat ptr, byval flags as Uint32) as SDL_Rect ptr ptr
+declare function SDL_SetVideoMode (byval width as integer, byval height as integer, byval bpp as integer, byval flags as Uint32) as SDL_Surface ptr
+declare sub SDL_UpdateRects (byval screen as SDL_Surface ptr, byval numrects as integer, byval rects as SDL_Rect ptr)
+declare sub SDL_UpdateRect (byval screen as SDL_Surface ptr, byval x as Sint32, byval y as Sint32, byval w as Uint32, byval h as Uint32)
+declare function SDL_Flip (byval screen as SDL_Surface ptr) as integer
+declare function SDL_SetGamma (byval red as single, byval green as single, byval blue as single) as integer
+declare function SDL_SetGammaRamp (byval red as Uint16 ptr, byval green as Uint16 ptr, byval blue as Uint16 ptr) as integer
+declare function SDL_GetGammaRamp (byval red as Uint16 ptr, byval green as Uint16 ptr, byval blue as Uint16 ptr) as integer
+declare function SDL_SetColors (byval surface as SDL_Surface ptr, byval colors as SDL_Color ptr, byval firstcolor as integer, byval ncolors as integer) as integer
+declare function SDL_SetPalette (byval surface as SDL_Surface ptr, byval flags as integer, byval colors as SDL_Color ptr, byval firstcolor as integer, byval ncolors as integer) as integer
+declare function SDL_MapRGB (byval format as SDL_PixelFormat ptr, byval r as Uint8, byval g as Uint8, byval b as Uint8) as Uint32
+declare function SDL_MapRGBA (byval format as SDL_PixelFormat ptr, byval r as Uint8, byval g as Uint8, byval b as Uint8, byval a as Uint8) as Uint32
+declare sub SDL_GetRGB (byval pixel as Uint32, byval fmt as SDL_PixelFormat ptr, byval r as Uint8 ptr, byval g as Uint8 ptr, byval b as Uint8 ptr)
+declare sub SDL_GetRGBA (byval pixel as Uint32, byval fmt as SDL_PixelFormat ptr, byval r as Uint8 ptr, byval g as Uint8 ptr, byval b as Uint8 ptr, byval a as Uint8 ptr)
+declare function SDL_CreateRGBSurface (byval flags as Uint32, byval width as integer, byval height as integer, byval depth as integer, byval Rmask as Uint32, byval Gmask as Uint32, byval Bmask as Uint32, byval Amask as Uint32) as SDL_Surface ptr
+declare function SDL_CreateRGBSurfaceFrom (byval pixels as any ptr, byval width as integer, byval height as integer, byval depth as integer, byval pitch as integer, byval Rmask as Uint32, byval Gmask as Uint32, byval Bmask as Uint32, byval Amask as Uint32) as SDL_Surface ptr
+declare sub SDL_FreeSurface (byval surface as SDL_Surface ptr)
+declare function SDL_LockSurface (byval surface as SDL_Surface ptr) as integer
+declare sub SDL_UnlockSurface (byval surface as SDL_Surface ptr)
+declare function SDL_LoadBMP_RW (byval src as SDL_RWops ptr, byval freesrc as integer) as SDL_Surface ptr
+declare function SDL_SaveBMP_RW (byval surface as SDL_Surface ptr, byval dst as SDL_RWops ptr, byval freedst as integer) as integer
+declare function SDL_SetColorKey (byval surface as SDL_Surface ptr, byval flag as Uint32, byval key as Uint32) as integer
+declare function SDL_SetAlpha (byval surface as SDL_Surface ptr, byval flag as Uint32, byval alpha as Uint8) as integer
+declare function SDL_SetClipRect (byval surface as SDL_Surface ptr, byval rect as SDL_Rect ptr) as SDL_bool
+declare sub SDL_GetClipRect (byval surface as SDL_Surface ptr, byval rect as SDL_Rect ptr)
+declare function SDL_ConvertSurface (byval src as SDL_Surface ptr, byval fmt as SDL_PixelFormat ptr, byval flags as Uint32) as SDL_Surface ptr
+declare function SDL_UpperBlit (byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as integer
+declare function SDL_LowerBlit (byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as integer
+declare function SDL_FillRect (byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr, byval color as Uint32) as integer
+declare function SDL_DisplayFormat (byval surface as SDL_Surface ptr) as SDL_Surface ptr
+declare function SDL_DisplayFormatAlpha (byval surface as SDL_Surface ptr) as SDL_Surface ptr
+declare function SDL_CreateYUVOverlay (byval width as integer, byval height as integer, byval format as Uint32, byval display as SDL_Surface ptr) as SDL_Overlay ptr
+declare function SDL_LockYUVOverlay (byval overlay as SDL_Overlay ptr) as integer
+declare sub SDL_UnlockYUVOverlay (byval overlay as SDL_Overlay ptr)
+declare function SDL_DisplayYUVOverlay (byval overlay as SDL_Overlay ptr, byval dstrect as SDL_Rect ptr) as integer
+declare sub SDL_FreeYUVOverlay (byval overlay as SDL_Overlay ptr)
+declare function SDL_GL_LoadLibrary (byval path as zstring ptr) as integer
+declare function SDL_GL_GetProcAddress (byval proc as zstring ptr) as any ptr
+declare function SDL_GL_SetAttribute (byval attr as SDL_GLattr, byval value as integer) as integer
+declare function SDL_GL_GetAttribute (byval attr as SDL_GLattr, byval value as integer ptr) as integer
+declare sub SDL_GL_SwapBuffers ()
+declare sub SDL_GL_UpdateRects (byval numrects as integer, byval rects as SDL_Rect ptr)
+declare sub SDL_GL_Lock ()
+declare sub SDL_GL_Unlock ()
+declare sub SDL_WM_SetCaption (byval title as zstring ptr, byval icon as zstring ptr)
+declare sub SDL_WM_GetCaption (byval title as byte ptr ptr, byval icon as byte ptr ptr)
+declare sub SDL_WM_SetIcon (byval icon as SDL_Surface ptr, byval mask as Uint8 ptr)
+declare function SDL_WM_IconifyWindow () as integer
+declare function SDL_WM_ToggleFullScreen (byval surface as SDL_Surface ptr) as integer
+declare function SDL_WM_GrabInput (byval mode as SDL_GrabMode) as SDL_GrabMode
+declare function SDL_SoftStretch (byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as integer
+end extern
 
-declare function SDL_WM_GrabInput cdecl alias "SDL_WM_GrabInput" (byval mode as SDL_GrabMode) as SDL_GrabMode
-declare function SDL_SoftStretch cdecl alias "SDL_SoftStretch" (byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as integer
-
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

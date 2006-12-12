@@ -9,7 +9,9 @@
 #ifndef __iupgc_bi__
 #define __iupgc_bi__
 
-declare sub IupGetColorOpen cdecl alias "IupGetColorOpen" ()
-declare function IupGetColor cdecl alias "IupGetColor" (byval x as integer, byval y as integer, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr) as integer
+extern "c"
+declare sub IupGetColorOpen ()
+declare function IupGetColor (byval x as integer, byval y as integer, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr) as integer
+end extern
 
 #endif

@@ -9,7 +9,7 @@
 #ifndef __gtkseparatortoolitem_bi__
 #define __gtkseparatortoolitem_bi__
 
-#include once "gtk/gtk/gtktoolitem.bi"
+#include once "gtktoolitem.bi"
 
 #define GTK_TYPE_SEPARATOR_TOOL_ITEM (gtk_separator_tool_item_get_type ())
 #define GTK_SEPARATOR_TOOL_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SEPARATOR_TOOL_ITEM, GtkSeparatorToolItem))

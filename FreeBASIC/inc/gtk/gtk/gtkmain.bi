@@ -10,7 +10,7 @@
 #define __gtkmain_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkwidget.bi"
+#include once "gtkwidget.bi"
 
 #define GTK_PRIORITY_RESIZE (G_PRIORITY_HIGH_IDLE + 10)
 #define GTK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)

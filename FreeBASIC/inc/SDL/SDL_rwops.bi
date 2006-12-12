@@ -10,8 +10,8 @@
 #define __SDL_rwops_bi__
 
 #include once "crt/stdio.bi"
-#include once "SDL/SDL_types.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_types.bi"
+#include once "begin_code.bi"
 
 type SDL_RWops_unknown
 	data1 as any ptr
@@ -58,6 +58,6 @@ declare sub SDL_FreeRW cdecl alias "SDL_FreeRW" (byval area as SDL_RWops ptr)
 #define SDL_RWclose(ctx) (ctx)->close(ctx)
 
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

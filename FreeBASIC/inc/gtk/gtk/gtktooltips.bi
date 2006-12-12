@@ -9,8 +9,8 @@
 #ifndef __gtktooltips_bi__
 #define __gtktooltips_bi__
 
-#include once "gtk/gtk/gtkwidget.bi"
-#include once "gtk/gtk/gtkwindow.bi"
+#include once "gtkwidget.bi"
+#include once "gtkwindow.bi"
 
 #define GTK_TYPE_TOOLTIPS (gtk_tooltips_get_type ())
 #define GTK_TOOLTIPS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TOOLTIPS, GtkTooltips))

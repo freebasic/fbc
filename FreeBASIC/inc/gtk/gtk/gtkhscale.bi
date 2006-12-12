@@ -10,7 +10,7 @@
 #define __gtkhscale_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkscale.bi"
+#include once "gtkscale.bi"
 
 #define GTK_TYPE_HSCALE (gtk_hscale_get_type ())
 #define GTK_HSCALE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_HSCALE, GtkHScale))

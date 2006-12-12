@@ -9,7 +9,7 @@
 #ifndef __art_pixbuf_bi__
 #define __art_pixbuf_bi__
 
-#include once "gtk/libart/art_misc.bi"
+#include once "art_misc.bi"
 
 type ArtDestroyNotify as sub cdecl(byval as any ptr, byval as any ptr)
 type ArtPixBuf as _ArtPixBuf

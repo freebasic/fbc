@@ -127,6 +127,7 @@ type pcre_callout_block
 	next_item_length as integer
 end type
 
+extern "c"
 #ifndef VPCOMPAT
 extern import pcre_malloc alias "pcre_malloc" as function cdecl (byval as integer) as any ptr
 extern import pcre_free alias "pcre_free" as sub cdecl (byval as any ptr)
@@ -134,28 +135,29 @@ extern import pcre_stack_malloc alias "pcre_stack_malloc" as function cdecl (byv
 extern import pcre_stack_free alias "pcre_stack_free" as sub cdecl (byval as any ptr)
 extern import pcre_callout alias "pcre_callout" as function cdecl (byval as pcre_callout_block ptr) as integer
 #else
-declare function pcre_malloc cdecl alias "pcre_malloc" (byval as integer) as any ptr
-declare sub pcre_free cdecl alias "pcre_free" (byval as any ptr)
-declare function pcre_stack_malloc cdecl alias "pcre_stack_malloc" (byval as integer) as any ptr
-declare sub pcre_stack_free cdecl alias "pcre_stack_free" (byval as any ptr)
-declare function pcre_callout cdecl alias "pcre_callout" (byval as pcre_callout_block ptr) as integer
+declare function pcre_malloc (byval as integer) as any ptr
+declare sub pcre_free (byval as any ptr)
+declare function pcre_stack_malloc (byval as integer) as any ptr
+declare sub pcre_stack_free (byval as any ptr)
+declare function pcre_callout (byval as pcre_callout_block ptr) as integer
 #endif
 
-declare function pcre_compile cdecl alias "pcre_compile" (byval as zstring ptr, byval as integer, byval as zstring ptr ptr, byval as integer ptr, byval as ubyte ptr) as pcre ptr
-declare function pcre_config cdecl alias "pcre_config" (byval as integer, byval as any ptr) as integer
-declare function pcre_copy_named_substring cdecl alias "pcre_copy_named_substring" (byval as pcre ptr, byval as zstring ptr, byval as integer ptr, byval as integer, byval as zstring ptr, byval as zstring ptr, byval as integer) as integer
-declare function pcre_copy_substring cdecl alias "pcre_copy_substring" (byval as zstring ptr, byval as integer ptr, byval as integer, byval as integer, byval as zstring ptr, byval as integer) as integer
-declare function pcre_exec cdecl alias "pcre_exec" (byval as pcre ptr, byval as pcre_extra ptr, byval as zstring ptr, byval as integer, byval as integer, byval as integer, byval as integer ptr, byval as integer) as integer
-declare sub pcre_free_substring cdecl alias "pcre_free_substring" (byval as zstring ptr)
-declare sub pcre_free_substring_list cdecl alias "pcre_free_substring_list" (byval as zstring ptr ptr)
-declare function pcre_fullinfo cdecl alias "pcre_fullinfo" (byval as pcre ptr, byval as pcre_extra ptr, byval as integer, byval as any ptr) as integer
-declare function pcre_get_named_substring cdecl alias "pcre_get_named_substring" (byval as pcre ptr, byval as zstring ptr, byval as integer ptr, byval as integer, byval as zstring ptr, byval as zstring ptr ptr) as integer
-declare function pcre_get_stringnumber cdecl alias "pcre_get_stringnumber" (byval as pcre ptr, byval as zstring ptr) as integer
-declare function pcre_get_substring cdecl alias "pcre_get_substring" (byval as zstring ptr, byval as integer ptr, byval as integer, byval as integer, byval as zstring ptr ptr) as integer
-declare function pcre_get_substring_list cdecl alias "pcre_get_substring_list" (byval as zstring ptr, byval as integer ptr, byval as integer, byval as zstring ptr ptr ptr) as integer
-declare function pcre_info cdecl alias "pcre_info" (byval as pcre ptr, byval as integer ptr, byval as integer ptr) as integer
-declare function pcre_maketables cdecl alias "pcre_maketables" () as ubyte ptr
-declare function pcre_study cdecl alias "pcre_study" (byval as pcre ptr, byval as integer, byval as zstring ptr ptr) as pcre_extra ptr
-declare function pcre_version cdecl alias "pcre_version" () as zstring ptr
+declare function pcre_compile (byval as zstring ptr, byval as integer, byval as zstring ptr ptr, byval as integer ptr, byval as ubyte ptr) as pcre ptr
+declare function pcre_config (byval as integer, byval as any ptr) as integer
+declare function pcre_copy_named_substring (byval as pcre ptr, byval as zstring ptr, byval as integer ptr, byval as integer, byval as zstring ptr, byval as zstring ptr, byval as integer) as integer
+declare function pcre_copy_substring (byval as zstring ptr, byval as integer ptr, byval as integer, byval as integer, byval as zstring ptr, byval as integer) as integer
+declare function pcre_exec (byval as pcre ptr, byval as pcre_extra ptr, byval as zstring ptr, byval as integer, byval as integer, byval as integer, byval as integer ptr, byval as integer) as integer
+declare sub pcre_free_substring (byval as zstring ptr)
+declare sub pcre_free_substring_list (byval as zstring ptr ptr)
+declare function pcre_fullinfo (byval as pcre ptr, byval as pcre_extra ptr, byval as integer, byval as any ptr) as integer
+declare function pcre_get_named_substring (byval as pcre ptr, byval as zstring ptr, byval as integer ptr, byval as integer, byval as zstring ptr, byval as zstring ptr ptr) as integer
+declare function pcre_get_stringnumber (byval as pcre ptr, byval as zstring ptr) as integer
+declare function pcre_get_substring (byval as zstring ptr, byval as integer ptr, byval as integer, byval as integer, byval as zstring ptr ptr) as integer
+declare function pcre_get_substring_list (byval as zstring ptr, byval as integer ptr, byval as integer, byval as zstring ptr ptr ptr) as integer
+declare function pcre_info (byval as pcre ptr, byval as integer ptr, byval as integer ptr) as integer
+declare function pcre_maketables () as ubyte ptr
+declare function pcre_study (byval as pcre ptr, byval as integer, byval as zstring ptr ptr) as pcre_extra ptr
+declare function pcre_version () as zstring ptr
+end extern
 
 #endif

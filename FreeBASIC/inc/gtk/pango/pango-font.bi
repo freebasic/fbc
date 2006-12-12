@@ -9,8 +9,8 @@
 #ifndef __pango_font_bi__
 #define __pango_font_bi__
 
-#include once "gtk/pango/pango-coverage.bi"
-#include once "gtk/pango/pango-types.bi"
+#include once "pango-coverage.bi"
+#include once "pango-types.bi"
 #include once "gtk/glib-object.bi"
 
 #define PANGO_TYPE_FONT_FAMILY (pango_font_family_get_type ())

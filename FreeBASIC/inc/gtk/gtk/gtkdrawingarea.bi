@@ -10,7 +10,7 @@
 #define __gtkdrawingarea_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkwidget.bi"
+#include once "gtkwidget.bi"
 
 #define GTK_TYPE_DRAWING_AREA (gtk_drawing_area_get_type ())
 #define GTK_DRAWING_AREA(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_DRAWING_AREA, GtkDrawingArea))

@@ -10,10 +10,10 @@
 #define __SDL_endian_bi__
 
 #include once "crt/stdio.bi"
-#include once "SDL/SDL_types.bi"
-#include once "SDL/SDL_rwops.bi"
-#include once "SDL/SDL_byteorder.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_types.bi"
+#include once "SDL_rwops.bi"
+#include once "SDL_byteorder.bi"
+#include once "begin_code.bi"
 
 #define SDL_Swap16(x) (((x) shl 8) or ((x) shr 8))
 
@@ -44,6 +44,6 @@ declare function SDL_WriteBE32 cdecl alias "SDL_WriteBE32" (byval dst as SDL_RWo
 declare function SDL_WriteLE64 cdecl alias "SDL_WriteLE64" (byval dst as SDL_RWops ptr, byval value as Uint64) as integer
 declare function SDL_WriteBE64 cdecl alias "SDL_WriteBE64" (byval dst as SDL_RWops ptr, byval value as Uint64) as integer
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

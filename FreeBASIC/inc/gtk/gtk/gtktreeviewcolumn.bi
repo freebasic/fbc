@@ -10,10 +10,10 @@
 #define __gtktreeviewcolumn_bi__
 
 #include once "gtk/glib-object.bi"
-#include once "gtk/gtk/gtkcellrenderer.bi"
-#include once "gtk/gtk/gtktreemodel.bi"
-#include once "gtk/gtk/gtktreesortable.bi"
-#include once "gtk/gtk/gtkobject.bi"
+#include once "gtkcellrenderer.bi"
+#include once "gtktreemodel.bi"
+#include once "gtktreesortable.bi"
+#include once "gtkobject.bi"
 
 #define GTK_TYPE_TREE_VIEW_COLUMN (gtk_tree_view_column_get_type ())
 #define GTK_TREE_VIEW_COLUMN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TREE_VIEW_COLUMN, GtkTreeViewColumn))

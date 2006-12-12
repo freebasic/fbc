@@ -9,7 +9,7 @@
 #ifndef __gtkcellrenderertoggle_bi__
 #define __gtkcellrenderertoggle_bi__
 
-#include once "gtk/gtk/gtkcellrenderer.bi"
+#include once "gtkcellrenderer.bi"
 
 #define GTK_TYPE_CELL_RENDERER_TOGGLE (gtk_cell_renderer_toggle_get_type ())
 #define GTK_CELL_RENDERER_TOGGLE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_RENDERER_TOGGLE, GtkCellRendererToggle))

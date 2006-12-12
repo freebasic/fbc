@@ -9,7 +9,7 @@
 #ifndef __gdataset_bi__
 #define __gdataset_bi__
 
-#include once "gtk/glib/gquark.bi"
+#include once "gquark.bi"
 
 type GData as _GData
 type GDataForeachFunc as sub cdecl(byval as GQuark, byval as gpointer, byval as gpointer)

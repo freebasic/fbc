@@ -10,20 +10,20 @@
 #ifndef __SDL_bi__
 #define __SDL_bi__
 
-#include once "SDL/SDL_main.bi"
-#include once "SDL/SDL_types.bi"
-#include once "SDL/SDL_getenv.bi"
-#include once "SDL/SDL_error.bi"
-#include once "SDL/SDL_rwops.bi"
-#include once "SDL/SDL_timer.bi"
-#include once "SDL/SDL_audio.bi"
-#include once "SDL/SDL_cdrom.bi"
-#include once "SDL/SDL_joystick.bi"
-#include once "SDL/SDL_events.bi"
-#include once "SDL/SDL_video.bi"
-#include once "SDL/SDL_byteorder.bi"
-#include once "SDL/SDL_version.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_main.bi"
+#include once "SDL_types.bi"
+#include once "SDL_getenv.bi"
+#include once "SDL_error.bi"
+#include once "SDL_rwops.bi"
+#include once "SDL_timer.bi"
+#include once "SDL_audio.bi"
+#include once "SDL_cdrom.bi"
+#include once "SDL_joystick.bi"
+#include once "SDL_events.bi"
+#include once "SDL_video.bi"
+#include once "SDL_byteorder.bi"
+#include once "SDL_version.bi"
+#include once "begin_code.bi"
 
 #define SDL_INIT_TIMER &h00000001
 #define SDL_INIT_AUDIO &h00000010
@@ -40,6 +40,6 @@ declare sub SDL_QuitSubSystem cdecl alias "SDL_QuitSubSystem" (byval flags as Ui
 declare function SDL_WasInit cdecl alias "SDL_WasInit" (byval flags as Uint32) as Uint32
 declare sub SDL_Quit cdecl alias "SDL_Quit" ()
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

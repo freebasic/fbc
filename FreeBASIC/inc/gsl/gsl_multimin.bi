@@ -9,11 +9,11 @@
 #ifndef __gsl_multimin_bi__
 #define __gsl_multimin_bi__
 
-#include once "gsl/gsl_types.bi"
-#include once "gsl/gsl_math.bi"
-#include once "gsl/gsl_vector.bi"
-#include once "gsl/gsl_matrix.bi"
-#include once "gsl/gsl_min.bi"
+#include once "gsl_types.bi"
+#include once "gsl_math.bi"
+#include once "gsl_vector.bi"
+#include once "gsl_matrix.bi"
+#include once "gsl_min.bi"
 
 type gsl_multimin_function_struct
 	f as function cdecl(byval as gsl_vector ptr, byval as any ptr) as double
@@ -33,7 +33,9 @@ end type
 
 type gsl_multimin_function_fdf as gsl_multimin_function_fdf_struct
 
-declare function gsl_multimin_diff cdecl alias "gsl_multimin_diff" (byval f as gsl_multimin_function ptr, byval x as gsl_vector ptr, byval g as gsl_vector ptr) as integer
+extern "c"
+declare function gsl_multimin_diff (byval f as gsl_multimin_function ptr, byval x as gsl_vector ptr, byval g as gsl_vector ptr) as integer
+end extern
 
 type gsl_multimin_fminimizer_type
 	name as byte ptr
@@ -53,16 +55,18 @@ type gsl_multimin_fminimizer
 	state as any ptr
 end type
 
-declare function gsl_multimin_fminimizer_alloc cdecl alias "gsl_multimin_fminimizer_alloc" (byval T as gsl_multimin_fminimizer_type ptr, byval n as integer) as gsl_multimin_fminimizer ptr
-declare function gsl_multimin_fminimizer_set cdecl alias "gsl_multimin_fminimizer_set" (byval s as gsl_multimin_fminimizer ptr, byval f as gsl_multimin_function ptr, byval x as gsl_vector ptr, byval step_size as gsl_vector ptr) as integer
-declare sub gsl_multimin_fminimizer_free cdecl alias "gsl_multimin_fminimizer_free" (byval s as gsl_multimin_fminimizer ptr)
-declare function gsl_multimin_fminimizer_name cdecl alias "gsl_multimin_fminimizer_name" (byval s as gsl_multimin_fminimizer ptr) as zstring ptr
-declare function gsl_multimin_fminimizer_iterate cdecl alias "gsl_multimin_fminimizer_iterate" (byval s as gsl_multimin_fminimizer ptr) as integer
-declare function gsl_multimin_fminimizer_x cdecl alias "gsl_multimin_fminimizer_x" (byval s as gsl_multimin_fminimizer ptr) as gsl_vector ptr
-declare function gsl_multimin_fminimizer_minimum cdecl alias "gsl_multimin_fminimizer_minimum" (byval s as gsl_multimin_fminimizer ptr) as double
-declare function gsl_multimin_fminimizer_size cdecl alias "gsl_multimin_fminimizer_size" (byval s as gsl_multimin_fminimizer ptr) as double
-declare function gsl_multimin_test_gradient cdecl alias "gsl_multimin_test_gradient" (byval g as gsl_vector ptr, byval epsabs as double) as integer
-declare function gsl_multimin_test_size cdecl alias "gsl_multimin_test_size" (byval size as double, byval epsabs as double) as integer
+extern "c"
+declare function gsl_multimin_fminimizer_alloc (byval T as gsl_multimin_fminimizer_type ptr, byval n as integer) as gsl_multimin_fminimizer ptr
+declare function gsl_multimin_fminimizer_set (byval s as gsl_multimin_fminimizer ptr, byval f as gsl_multimin_function ptr, byval x as gsl_vector ptr, byval step_size as gsl_vector ptr) as integer
+declare sub gsl_multimin_fminimizer_free (byval s as gsl_multimin_fminimizer ptr)
+declare function gsl_multimin_fminimizer_name (byval s as gsl_multimin_fminimizer ptr) as zstring ptr
+declare function gsl_multimin_fminimizer_iterate (byval s as gsl_multimin_fminimizer ptr) as integer
+declare function gsl_multimin_fminimizer_x (byval s as gsl_multimin_fminimizer ptr) as gsl_vector ptr
+declare function gsl_multimin_fminimizer_minimum (byval s as gsl_multimin_fminimizer ptr) as double
+declare function gsl_multimin_fminimizer_size (byval s as gsl_multimin_fminimizer ptr) as double
+declare function gsl_multimin_test_gradient (byval g as gsl_vector ptr, byval epsabs as double) as integer
+declare function gsl_multimin_test_size (byval size as double, byval epsabs as double) as integer
+end extern
 
 type gsl_multimin_fdfminimizer_type
 	name as byte ptr
@@ -84,15 +88,17 @@ type gsl_multimin_fdfminimizer
 	state as any ptr
 end type
 
-declare function gsl_multimin_fdfminimizer_alloc cdecl alias "gsl_multimin_fdfminimizer_alloc" (byval T as gsl_multimin_fdfminimizer_type ptr, byval n as integer) as gsl_multimin_fdfminimizer ptr
-declare function gsl_multimin_fdfminimizer_set cdecl alias "gsl_multimin_fdfminimizer_set" (byval s as gsl_multimin_fdfminimizer ptr, byval fdf as gsl_multimin_function_fdf ptr, byval x as gsl_vector ptr, byval step_size as double, byval tol as double) as integer
-declare sub gsl_multimin_fdfminimizer_free cdecl alias "gsl_multimin_fdfminimizer_free" (byval s as gsl_multimin_fdfminimizer ptr)
-declare function gsl_multimin_fdfminimizer_name cdecl alias "gsl_multimin_fdfminimizer_name" (byval s as gsl_multimin_fdfminimizer ptr) as zstring ptr
-declare function gsl_multimin_fdfminimizer_iterate cdecl alias "gsl_multimin_fdfminimizer_iterate" (byval s as gsl_multimin_fdfminimizer ptr) as integer
-declare function gsl_multimin_fdfminimizer_restart cdecl alias "gsl_multimin_fdfminimizer_restart" (byval s as gsl_multimin_fdfminimizer ptr) as integer
-declare function gsl_multimin_fdfminimizer_x cdecl alias "gsl_multimin_fdfminimizer_x" (byval s as gsl_multimin_fdfminimizer ptr) as gsl_vector ptr
-declare function gsl_multimin_fdfminimizer_dx cdecl alias "gsl_multimin_fdfminimizer_dx" (byval s as gsl_multimin_fdfminimizer ptr) as gsl_vector ptr
-declare function gsl_multimin_fdfminimizer_gradient cdecl alias "gsl_multimin_fdfminimizer_gradient" (byval s as gsl_multimin_fdfminimizer ptr) as gsl_vector ptr
-declare function gsl_multimin_fdfminimizer_minimum cdecl alias "gsl_multimin_fdfminimizer_minimum" (byval s as gsl_multimin_fdfminimizer ptr) as double
+extern "c"
+declare function gsl_multimin_fdfminimizer_alloc (byval T as gsl_multimin_fdfminimizer_type ptr, byval n as integer) as gsl_multimin_fdfminimizer ptr
+declare function gsl_multimin_fdfminimizer_set (byval s as gsl_multimin_fdfminimizer ptr, byval fdf as gsl_multimin_function_fdf ptr, byval x as gsl_vector ptr, byval step_size as double, byval tol as double) as integer
+declare sub gsl_multimin_fdfminimizer_free (byval s as gsl_multimin_fdfminimizer ptr)
+declare function gsl_multimin_fdfminimizer_name (byval s as gsl_multimin_fdfminimizer ptr) as zstring ptr
+declare function gsl_multimin_fdfminimizer_iterate (byval s as gsl_multimin_fdfminimizer ptr) as integer
+declare function gsl_multimin_fdfminimizer_restart (byval s as gsl_multimin_fdfminimizer ptr) as integer
+declare function gsl_multimin_fdfminimizer_x (byval s as gsl_multimin_fdfminimizer ptr) as gsl_vector ptr
+declare function gsl_multimin_fdfminimizer_dx (byval s as gsl_multimin_fdfminimizer ptr) as gsl_vector ptr
+declare function gsl_multimin_fdfminimizer_gradient (byval s as gsl_multimin_fdfminimizer ptr) as gsl_vector ptr
+declare function gsl_multimin_fdfminimizer_minimum (byval s as gsl_multimin_fdfminimizer ptr) as double
+end extern
 
 #endif

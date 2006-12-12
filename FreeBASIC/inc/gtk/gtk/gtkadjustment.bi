@@ -10,7 +10,7 @@
 #define __gtkadjustment_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkobject.bi"
+#include once "gtkobject.bi"
 
 #define GTK_TYPE_ADJUSTMENT (gtk_adjustment_get_type ())
 #define GTK_ADJUSTMENT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ADJUSTMENT, GtkAdjustment))

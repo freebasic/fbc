@@ -9,9 +9,9 @@
 #ifndef __wxc_eraseevent_bi__
 #define __wxc_eraseevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxEraseEvent cdecl alias "wxEraseEvent_ctor" (byval type as wxEventType) as wxEraseEvent ptr
-declare function wxEraseEvent_GetDC cdecl alias "wxEraseEvent_GetDC" (byval self as wxEraseEvent ptr) as wxDC ptr
+declare function wxEraseEvent alias "wxEraseEvent_ctor" (byval type as wxEventType) as wxEraseEvent ptr
+declare function wxEraseEvent_GetDC (byval self as wxEraseEvent ptr) as wxDC ptr
 
 #endif

@@ -9,7 +9,7 @@
 #ifndef __gdkproperty_bi__
 #define __gdkproperty_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
+#include once "gdktypes.bi"
 
 enum GdkPropMode
 	GDK_PROP_MODE_REPLACE

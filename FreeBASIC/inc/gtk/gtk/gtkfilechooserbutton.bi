@@ -9,8 +9,8 @@
 #ifndef __gtkfilechooserbutton_bi__
 #define __gtkfilechooserbutton_bi__
 
-#include once "gtk/gtk/gtkhbox.bi"
-#include once "gtk/gtk/gtkfilechooser.bi"
+#include once "gtkhbox.bi"
+#include once "gtkfilechooser.bi"
 
 #define GTK_TYPE_FILE_CHOOSER_BUTTON (gtk_file_chooser_button_get_type ())
 #define GTK_FILE_CHOOSER_BUTTON(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_FILE_CHOOSER_BUTTON, GtkFileChooserButton))

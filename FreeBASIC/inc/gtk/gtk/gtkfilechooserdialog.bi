@@ -9,8 +9,8 @@
 #ifndef __gtkfilechooserdialog_bi__
 #define __gtkfilechooserdialog_bi__
 
-#include once "gtk/gtk/gtkdialog.bi"
-#include once "gtk/gtk/gtkfilechooser.bi"
+#include once "gtkdialog.bi"
+#include once "gtkfilechooser.bi"
 
 #define GTK_TYPE_FILE_CHOOSER_DIALOG (gtk_file_chooser_dialog_get_type ())
 #define GTK_FILE_CHOOSER_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FILE_CHOOSER_DIALOG, GtkFileChooserDialog))

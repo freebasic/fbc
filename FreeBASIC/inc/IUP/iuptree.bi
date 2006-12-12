@@ -9,21 +9,23 @@
 #ifndef __iuptree_bi__
 #define __iuptree_bi__
 
-#include once "IUP/iup.bi"
-#include once "IUP/iupcpi.bi"
+#include once "iup.bi"
+#include once "iupcpi.bi"
 
-declare sub IupTreeOpen cdecl alias "IupTreeOpen" ()
-declare sub IupTreeClose cdecl alias "IupTreeClose" ()
-declare function IupTree cdecl alias "IupTree" () as Ihandle ptr
-declare function IupTreeSetUserId cdecl alias "IupTreeSetUserId" (byval h as Ihandle ptr, byval id as integer, byval userid as any ptr) as integer
-declare function IupTreeGetUserId cdecl alias "IupTreeGetUserId" (byval h as Ihandle ptr, byval id as integer) as any ptr
-declare function IupTreeGetId cdecl alias "IupTreeGetId" (byval h as Ihandle ptr, byval userid as any ptr) as integer
-declare sub IupTreeSetAttribute cdecl alias "IupTreeSetAttribute" (byval n as Ihandle ptr, byval a as zstring ptr, byval id as integer, byval v as zstring ptr)
-declare sub IupTreeStoreAttribute cdecl alias "IupTreeStoreAttribute" (byval n as Ihandle ptr, byval a as zstring ptr, byval id as integer, byval v as zstring ptr)
-declare function IupTreeGetAttribute cdecl alias "IupTreeGetAttribute" (byval n as Ihandle ptr, byval a as zstring ptr, byval id as integer) as zstring ptr
-declare function IupTreeGetInt cdecl alias "IupTreeGetInt" (byval n as Ihandle ptr, byval a as zstring ptr, byval id as integer) as integer
-declare function IupTreeGetFloat cdecl alias "IupTreeGetFloat" (byval n as Ihandle ptr, byval a as zstring ptr, byval id as integer) as single
-declare sub IupTreeSetfAttribute cdecl alias "IupTreeSetfAttribute" (byval n as Ihandle ptr, byval a as zstring ptr, byval id as integer, byval f as zstring ptr, ...)
+extern "c"
+declare sub IupTreeOpen ()
+declare sub IupTreeClose ()
+declare function IupTree () as Ihandle ptr
+declare function IupTreeSetUserId (byval h as Ihandle ptr, byval id as integer, byval userid as any ptr) as integer
+declare function IupTreeGetUserId (byval h as Ihandle ptr, byval id as integer) as any ptr
+declare function IupTreeGetId (byval h as Ihandle ptr, byval userid as any ptr) as integer
+declare sub IupTreeSetAttribute (byval n as Ihandle ptr, byval a as zstring ptr, byval id as integer, byval v as zstring ptr)
+declare sub IupTreeStoreAttribute (byval n as Ihandle ptr, byval a as zstring ptr, byval id as integer, byval v as zstring ptr)
+declare function IupTreeGetAttribute (byval n as Ihandle ptr, byval a as zstring ptr, byval id as integer) as zstring ptr
+declare function IupTreeGetInt (byval n as Ihandle ptr, byval a as zstring ptr, byval id as integer) as integer
+declare function IupTreeGetFloat (byval n as Ihandle ptr, byval a as zstring ptr, byval id as integer) as single
+declare sub IupTreeSetfAttribute (byval n as Ihandle ptr, byval a as zstring ptr, byval id as integer, byval f as zstring ptr, ...)
+end extern
 
 #define IUP_ADDLEAF "ADDLEAF"
 #define IUP_ADDBRANCH "ADDBRANCH"

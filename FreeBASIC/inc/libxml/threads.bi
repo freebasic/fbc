@@ -9,29 +9,31 @@
 #ifndef __xml_threads_bi__
 #define __xml_threads_bi__
 
-#include once "libxml/xmlversion.bi"
+#include once "xmlversion.bi"
 
 type xmlMutex as _xmlMutex
 type xmlMutexPtr as xmlMutex ptr
 type xmlRMutex as _xmlRMutex
 type xmlRMutexPtr as xmlRMutex ptr
 
-#include once "libxml/globals.bi"
+#include once "globals.bi"
 
-declare function xmlNewMutex cdecl alias "xmlNewMutex" () as xmlMutexPtr
-declare sub xmlMutexLock cdecl alias "xmlMutexLock" (byval tok as xmlMutexPtr)
-declare sub xmlMutexUnlock cdecl alias "xmlMutexUnlock" (byval tok as xmlMutexPtr)
-declare sub xmlFreeMutex cdecl alias "xmlFreeMutex" (byval tok as xmlMutexPtr)
-declare function xmlNewRMutex cdecl alias "xmlNewRMutex" () as xmlRMutexPtr
-declare sub xmlRMutexLock cdecl alias "xmlRMutexLock" (byval tok as xmlRMutexPtr)
-declare sub xmlRMutexUnlock cdecl alias "xmlRMutexUnlock" (byval tok as xmlRMutexPtr)
-declare sub xmlFreeRMutex cdecl alias "xmlFreeRMutex" (byval tok as xmlRMutexPtr)
-declare sub xmlInitThreads cdecl alias "xmlInitThreads" ()
-declare sub xmlLockLibrary cdecl alias "xmlLockLibrary" ()
-declare sub xmlUnlockLibrary cdecl alias "xmlUnlockLibrary" ()
-declare function xmlGetThreadId cdecl alias "xmlGetThreadId" () as integer
-declare function xmlIsMainThread cdecl alias "xmlIsMainThread" () as integer
-declare sub xmlCleanupThreads cdecl alias "xmlCleanupThreads" ()
-declare function xmlGetGlobalState cdecl alias "xmlGetGlobalState" () as xmlGlobalStatePtr
+extern "c"
+declare function xmlNewMutex () as xmlMutexPtr
+declare sub xmlMutexLock (byval tok as xmlMutexPtr)
+declare sub xmlMutexUnlock (byval tok as xmlMutexPtr)
+declare sub xmlFreeMutex (byval tok as xmlMutexPtr)
+declare function xmlNewRMutex () as xmlRMutexPtr
+declare sub xmlRMutexLock (byval tok as xmlRMutexPtr)
+declare sub xmlRMutexUnlock (byval tok as xmlRMutexPtr)
+declare sub xmlFreeRMutex (byval tok as xmlRMutexPtr)
+declare sub xmlInitThreads ()
+declare sub xmlLockLibrary ()
+declare sub xmlUnlockLibrary ()
+declare function xmlGetThreadId () as integer
+declare function xmlIsMainThread () as integer
+declare sub xmlCleanupThreads ()
+declare function xmlGetGlobalState () as xmlGlobalStatePtr
+end extern
 
 #endif

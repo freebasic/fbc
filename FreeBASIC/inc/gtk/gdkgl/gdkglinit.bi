@@ -9,8 +9,8 @@
 #ifndef __gdkglinit_bi__
 #define __gdkglinit_bi__
 
-#include once "gtk/gdkgl/gdkgldefs.bi"
-#include once "gtk/gdkgl/gdkgltypes.bi"
+#include once "gdkgldefs.bi"
+#include once "gdkgltypes.bi"
 
 declare function gdk_gl_parse_args (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean
 declare function gdk_gl_init_check (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean

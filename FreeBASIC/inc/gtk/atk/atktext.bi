@@ -10,8 +10,8 @@
 #define __atktext_bi__
 
 #include once "gtk/glib-object.bi"
-#include once "gtk/atk/atkobject.bi"
-#include once "gtk/atk/atkutil.bi"
+#include once "atkobject.bi"
+#include once "atkutil.bi"
 
 #define ATK_TYPE_TEXT() atk_text_get_type()
 #define ATK_IS_TEXT(obj) G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_TEXT)

@@ -10,8 +10,8 @@
 #define __gtkbindings_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkobject.bi"
-#include once "gtk/gtk/gtkenums.bi"
+#include once "gtkobject.bi"
+#include once "gtkenums.bi"
 
 type GtkBindingSet as _GtkBindingSet
 type GtkBindingEntry as _GtkBindingEntry

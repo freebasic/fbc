@@ -9,7 +9,7 @@
 #ifndef __grand_bi__
 #define __grand_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 type GRand as _GRand
 

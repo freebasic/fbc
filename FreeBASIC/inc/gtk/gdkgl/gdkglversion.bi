@@ -10,7 +10,7 @@
 #define __gdkglversion_bi__
 
 #include once "gtk/glib.bi"
-#include once "gtk/gdkgl/gdkgldefs.bi"
+#include once "gdkgldefs.bi"
 
 #define GDKGLEXT_MAJOR_VERSION (1)
 #define GDKGLEXT_MINOR_VERSION (0)

@@ -9,7 +9,7 @@
 #ifndef __gdkcursor_bi__
 #define __gdkcursor_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
+#include once "gdktypes.bi"
 #include once "gtk/gdk-pixbuf.bi"
 
 #define GDK_TYPE_CURSOR (gdk_cursor_get_type ())

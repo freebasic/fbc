@@ -21,8 +21,10 @@
 #define ICTL_FONT_ACTIVE "FONT_ACTIVE"
 #define ICTL_FONT_INACTIVE "FONT_INACTIVE"
 
-declare sub IupTabsOpen cdecl alias "IupTabsOpen" ()
-declare function IupTabsv cdecl alias "IupTabsv" (byval params as Ihandle ptr ptr) as Ihandle ptr
-declare function IupTabs cdecl alias "IupTabs" (byval first as Ihandle ptr, ...) as Ihandle ptr
+extern "c"
+declare sub IupTabsOpen ()
+declare function IupTabsv (byval params as Ihandle ptr ptr) as Ihandle ptr
+declare function IupTabs (byval first as Ihandle ptr, ...) as Ihandle ptr
+end extern
 
 #endif

@@ -9,7 +9,7 @@
 #ifndef __gtkaccellabel_bi__
 #define __gtkaccellabel_bi__
 
-#include once "gtk/gtk/gtklabel.bi"
+#include once "gtklabel.bi"
 
 #define GTK_TYPE_ACCEL_LABEL (gtk_accel_label_get_type ())
 #define GTK_ACCEL_LABEL(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ACCEL_LABEL, GtkAccelLabel))

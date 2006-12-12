@@ -9,8 +9,8 @@
 #ifndef __gtypemodule_bi__
 #define __gtypemodule_bi__
 
-#include once "gtk/gobject/gobject.bi"
-#include once "gtk/gobject/genums.bi"
+#include once "gobject.bi"
+#include once "genums.bi"
 
 #define G_TYPE_TYPE_MODULE (g_type_module_get_type ())
 #define G_TYPE_MODULE(module) (G_TYPE_CHECK_INSTANCE_CAST ((module), G_TYPE_TYPE_MODULE, GTypeModule))

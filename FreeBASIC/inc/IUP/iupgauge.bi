@@ -14,7 +14,9 @@
 #define ICTL_MARGIN "MARGIN"
 #define ICTL_TEXT "TEXT"
 
-declare function IupGauge cdecl alias "IupGauge" () as Ihandle ptr
-declare sub IupGaugeOpen cdecl alias "IupGaugeOpen" ()
+extern "c"
+declare function IupGauge () as Ihandle ptr
+declare sub IupGaugeOpen ()
+end extern
 
 #endif

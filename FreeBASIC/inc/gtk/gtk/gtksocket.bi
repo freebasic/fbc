@@ -9,7 +9,7 @@
 #ifndef __gtksocket_bi__
 #define __gtksocket_bi__
 
-#include once "gtk/gtk/gtkcontainer.bi"
+#include once "gtkcontainer.bi"
 
 #define GTK_TYPE_SOCKET (gtk_socket_get_type ())
 #define GTK_SOCKET(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SOCKET, GtkSocket))

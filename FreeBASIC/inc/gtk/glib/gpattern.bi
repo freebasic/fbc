@@ -9,7 +9,7 @@
 #ifndef __gpattern_bi__
 #define __gpattern_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 type GPatternSpec as _GPatternSpec
 

@@ -9,7 +9,7 @@
 #ifndef __atkhyperlink_bi__
 #define __atkhyperlink_bi__
 
-#include once "gtk/atk/atkaction.bi"
+#include once "atkaction.bi"
 
 #define ATK_TYPE_HYPERLINK() atk_hyperlink_get_type()
 #define ATK_HYPERLINK(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_HYPERLINK, AtkHyperlink)

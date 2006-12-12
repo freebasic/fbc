@@ -11,8 +11,8 @@
 
 #include once "gtk/glib.bi"
 #include once "gtk/gmodule.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-core.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-animation.bi"
+#include once "gdk-pixbuf-core.bi"
+#include once "gdk-pixbuf-animation.bi"
 
 type GdkPixbufFormat as _GdkPixbufFormat
 

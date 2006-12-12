@@ -9,7 +9,7 @@
 #ifndef __gtkaccelmap_bi__
 #define __gtkaccelmap_bi__
 
-#include once "gtk/gtk/gtkaccelgroup.bi"
+#include once "gtkaccelgroup.bi"
 
 #define GTK_TYPE_ACCEL_MAP (gtk_accel_map_get_type ())
 #define GTK_ACCEL_MAP(accel_map) (G_TYPE_CHECK_INSTANCE_CAST ((accel_map), GTK_TYPE_ACCEL_MAP, GtkAccelMap))

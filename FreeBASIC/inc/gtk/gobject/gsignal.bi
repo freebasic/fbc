@@ -9,10 +9,10 @@
 #ifndef __gsignal_bi__
 #define __gsignal_bi__
 
-#include once "gtk/gobject/gclosure.bi"
-#include once "gtk/gobject/gvalue.bi"
-#include once "gtk/gobject/gparam.bi"
-#include once "gtk/gobject/gmarshal.bi"
+#include once "gclosure.bi"
+#include once "gvalue.bi"
+#include once "gparam.bi"
+#include once "gmarshal.bi"
 
 type GSignalQuery as _GSignalQuery
 type GSignalInvocationHint as _GSignalInvocationHint

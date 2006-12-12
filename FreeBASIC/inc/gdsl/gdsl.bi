@@ -12,21 +12,23 @@
 
 #inclib "gdsl"
 
-#include once "gdsl/gdsl_types.bi"
-#include once "gdsl/gdsl_macros.bi"
-#include once "gdsl/gdsl_list.bi"
-#include once "gdsl/gdsl_stack.bi"
-#include once "gdsl/gdsl_queue.bi"
-#include once "gdsl/gdsl_2darray.bi"
-#include once "gdsl/gdsl_bstree.bi"
-#include once "gdsl/gdsl_perm.bi"
-#include once "gdsl/gdsl_rbtree.bi"
-#include once "gdsl/gdsl_hash.bi"
-#include once "gdsl/gdsl_sort.bi"
-#include once "gdsl/_gdsl_list.bi"
-#include once "gdsl/_gdsl_bintree.bi"
-#include once "gdsl/_gdsl_bstree.bi"
+#include once "gdsl_types.bi"
+#include once "gdsl_macros.bi"
+#include once "gdsl_list.bi"
+#include once "gdsl_stack.bi"
+#include once "gdsl_queue.bi"
+#include once "gdsl_2darray.bi"
+#include once "gdsl_bstree.bi"
+#include once "gdsl_perm.bi"
+#include once "gdsl_rbtree.bi"
+#include once "gdsl_hash.bi"
+#include once "gdsl_sort.bi"
+#include once "_gdsl_list.bi"
+#include once "_gdsl_bintree.bi"
+#include once "_gdsl_bstree.bi"
 
-declare function gdsl_get_version cdecl alias "gdsl_get_version" () as zstring ptr
+extern "c"
+declare function gdsl_get_version () as zstring ptr
+end extern
 
 #endif

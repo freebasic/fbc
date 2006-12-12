@@ -9,7 +9,7 @@
 #ifndef __SDL_error_bi__
 #define __SDL_error_bi__
 
-#include once "SDL/begin_code.bi"
+#include once "begin_code.bi"
 
 declare sub SDL_SetError cdecl alias "SDL_SetError" (byval fmt as zstring ptr, ...)
 declare function SDL_GetError cdecl alias "SDL_GetError" () as zstring ptr
@@ -28,6 +28,6 @@ end enum
 
 declare sub SDL_Error cdecl alias "SDL_Error" (byval code as SDL_errorcode)
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

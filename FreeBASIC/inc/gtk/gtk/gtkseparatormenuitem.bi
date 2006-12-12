@@ -10,7 +10,7 @@
 #define __gtkseparatormenuitem_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkmenuitem.bi"
+#include once "gtkmenuitem.bi"
 
 #define GTK_TYPE_SEPARATOR_MENU_ITEM (gtk_separator_menu_item_get_type ())
 #define GTK_SEPARATOR_MENU_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SEPARATOR_MENU_ITEM, GtkSeparatorMenuItem))

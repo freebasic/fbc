@@ -10,7 +10,7 @@
 #define __gtktree_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkcontainer.bi"
+#include once "gtkcontainer.bi"
 
 #define GTK_TYPE_TREE (gtk_tree_get_type ())
 #define GTK_TREE(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_TREE, GtkTree))

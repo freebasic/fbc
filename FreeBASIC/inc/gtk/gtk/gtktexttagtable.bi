@@ -9,8 +9,8 @@
 #ifndef __gtktexttagtable_bi__
 #define __gtktexttagtable_bi__
 
-#include once "gtk/gtk/gtktexttag.bi"
-#include once "gtk/gtk/gtktexttag.bi"
+#include once "gtktexttag.bi"
+#include once "gtktexttag.bi"
 
 #define GTK_TYPE_TEXT_TAG_TABLE (gtk_text_tag_table_get_type ())
 #define GTK_TEXT_TAG_TABLE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TEXT_TAG_TABLE, GtkTextTagTable))

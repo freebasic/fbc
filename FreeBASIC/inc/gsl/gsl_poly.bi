@@ -9,25 +9,29 @@
 #ifndef __gsl_poly_bi__
 #define __gsl_poly_bi__
 
-#include once "gsl/gsl_complex.bi"
-#include once "gsl/gsl_types.bi"
+#include once "gsl_complex.bi"
+#include once "gsl_types.bi"
 
-declare function gsl_poly_eval cdecl alias "gsl_poly_eval" (byval c as double ptr, byval len as integer, byval x as double) as double
-declare function gsl_poly_dd_init cdecl alias "gsl_poly_dd_init" (byval dd as double ptr, byval x as double ptr, byval y as double ptr, byval size as integer) as integer
-declare function gsl_poly_dd_eval cdecl alias "gsl_poly_dd_eval" (byval dd as double ptr, byval xa as double ptr, byval size as integer, byval x as double) as double
-declare function gsl_poly_dd_taylor cdecl alias "gsl_poly_dd_taylor" (byval c as double ptr, byval xp as double, byval dd as double ptr, byval x as double ptr, byval size as integer, byval w as double ptr) as integer
-declare function gsl_poly_solve_quadratic cdecl alias "gsl_poly_solve_quadratic" (byval a as double, byval b as double, byval c as double, byval x0 as double ptr, byval x1 as double ptr) as integer
-declare function gsl_poly_complex_solve_quadratic cdecl alias "gsl_poly_complex_solve_quadratic" (byval a as double, byval b as double, byval c as double, byval z0 as gsl_complex ptr, byval z1 as gsl_complex ptr) as integer
-declare function gsl_poly_solve_cubic cdecl alias "gsl_poly_solve_cubic" (byval a as double, byval b as double, byval c as double, byval x0 as double ptr, byval x1 as double ptr, byval x2 as double ptr) as integer
-declare function gsl_poly_complex_solve_cubic cdecl alias "gsl_poly_complex_solve_cubic" (byval a as double, byval b as double, byval c as double, byval z0 as gsl_complex ptr, byval z1 as gsl_complex ptr, byval z2 as gsl_complex ptr) as integer
+extern "c"
+declare function gsl_poly_eval (byval c as double ptr, byval len as integer, byval x as double) as double
+declare function gsl_poly_dd_init (byval dd as double ptr, byval x as double ptr, byval y as double ptr, byval size as integer) as integer
+declare function gsl_poly_dd_eval (byval dd as double ptr, byval xa as double ptr, byval size as integer, byval x as double) as double
+declare function gsl_poly_dd_taylor (byval c as double ptr, byval xp as double, byval dd as double ptr, byval x as double ptr, byval size as integer, byval w as double ptr) as integer
+declare function gsl_poly_solve_quadratic (byval a as double, byval b as double, byval c as double, byval x0 as double ptr, byval x1 as double ptr) as integer
+declare function gsl_poly_complex_solve_quadratic (byval a as double, byval b as double, byval c as double, byval z0 as gsl_complex ptr, byval z1 as gsl_complex ptr) as integer
+declare function gsl_poly_solve_cubic (byval a as double, byval b as double, byval c as double, byval x0 as double ptr, byval x1 as double ptr, byval x2 as double ptr) as integer
+declare function gsl_poly_complex_solve_cubic (byval a as double, byval b as double, byval c as double, byval z0 as gsl_complex ptr, byval z1 as gsl_complex ptr, byval z2 as gsl_complex ptr) as integer
+end extern
 
 type gsl_poly_complex_workspace
 	nc as integer
 	matrix as double ptr
 end type
 
-declare function gsl_poly_complex_workspace_alloc cdecl alias "gsl_poly_complex_workspace_alloc" (byval n as integer) as gsl_poly_complex_workspace ptr
-declare sub gsl_poly_complex_workspace_free cdecl alias "gsl_poly_complex_workspace_free" (byval w as gsl_poly_complex_workspace ptr)
-declare function gsl_poly_complex_solve cdecl alias "gsl_poly_complex_solve" (byval a as double ptr, byval n as integer, byval w as gsl_poly_complex_workspace ptr, byval z as gsl_complex_packed_ptr) as integer
+extern "c"
+declare function gsl_poly_complex_workspace_alloc (byval n as integer) as gsl_poly_complex_workspace ptr
+declare sub gsl_poly_complex_workspace_free (byval w as gsl_poly_complex_workspace ptr)
+declare function gsl_poly_complex_solve (byval a as double ptr, byval n as integer, byval w as gsl_poly_complex_workspace ptr, byval z as gsl_complex_packed_ptr) as integer
+end extern
 
 #endif

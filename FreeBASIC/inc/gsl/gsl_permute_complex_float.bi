@@ -9,12 +9,14 @@
 #ifndef __gsl_permute_complex_float_bi__
 #define __gsl_permute_complex_float_bi__
 
-#include once "gsl/gsl_errno.bi"
-#include once "gsl/gsl_complex.bi"
-#include once "gsl/gsl_permutation.bi"
-#include once "gsl/gsl_types.bi"
+#include once "gsl_errno.bi"
+#include once "gsl_complex.bi"
+#include once "gsl_permutation.bi"
+#include once "gsl_types.bi"
 
-declare function gsl_permute_complex_float cdecl alias "gsl_permute_complex_float" (byval p as integer ptr, byval data as single ptr, byval stride as integer, byval n as integer) as integer
-declare function gsl_permute_complex_float_inverse cdecl alias "gsl_permute_complex_float_inverse" (byval p as integer ptr, byval data as single ptr, byval stride as integer, byval n as integer) as integer
+extern "c"
+declare function gsl_permute_complex_float (byval p as integer ptr, byval data as single ptr, byval stride as integer, byval n as integer) as integer
+declare function gsl_permute_complex_float_inverse (byval p as integer ptr, byval data as single ptr, byval stride as integer, byval n as integer) as integer
+end extern
 
 #endif

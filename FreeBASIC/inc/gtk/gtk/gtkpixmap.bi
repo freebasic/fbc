@@ -10,7 +10,7 @@
 #define __gtkpixmap_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkmisc.bi"
+#include once "gtkmisc.bi"
 
 #define GTK_TYPE_PIXMAP (gtk_pixmap_get_type ())
 #define GTK_PIXMAP(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_PIXMAP, GtkPixmap))

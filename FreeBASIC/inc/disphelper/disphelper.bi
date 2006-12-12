@@ -18,30 +18,6 @@
 
 #inclib "disphelper"
 
-declare function dhCreateObject cdecl alias "dhCreateObject" (byval szProgId as LPCOLESTR, byval szMachine as LPCWSTR, byval ppDisp as IDispatch ptr ptr) as HRESULT
-declare function dhGetObject cdecl alias "dhGetObject" (byval szFile as LPCOLESTR, byval szProgId as LPCOLESTR, byval ppDisp as IDispatch ptr ptr) as HRESULT
-declare function dhCreateObjectEx cdecl alias "dhCreateObjectEx" (byval szProgId as LPCOLESTR, byval riid as IID ptr, byval dwClsContext as DWORD, byval pServerInfo as COSERVERINFO ptr, byval ppv as any ptr ptr) as HRESULT
-declare function dhGetObjectEx cdecl alias "dhGetObjectEx" (byval szFile as LPCOLESTR, byval szProgId as LPCOLESTR, byval riid as IID ptr, byval dwClsContext as DWORD, byval lpvReserved as LPVOID, byval ppv as any ptr ptr) as HRESULT
-declare function dhCallMethod cdecl alias "dhCallMethod" (byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, ...) as HRESULT
-declare function dhPutValue cdecl alias "dhPutValue" (byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, ...) as HRESULT
-declare function dhPutRef cdecl alias "dhPutRef" (byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, ...) as HRESULT
-declare function dhGetValue cdecl alias "dhGetValue" (byval szIdentifier as LPCWSTR, byval pResult as any ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, ...) as HRESULT
-declare function dhInvoke cdecl alias "dhInvoke" (byval invokeType as integer, byval returnType as VARTYPE, byval pvResult as VARIANT ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, ...) as HRESULT
-declare function dhInvokeArray cdecl alias "dhInvokeArray" (byval invokeType as integer, byval pvResult as VARIANT ptr, byval cArgs as UINT, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval pArgs as VARIANT ptr) as HRESULT
-''''''' declare function dhCallMethodV cdecl alias "dhCallMethodV" (byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval marker as va_list ptr) as HRESULT
-''''''' declare function dhPutValueV cdecl alias "dhPutValueV" (byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval marker as va_list ptr) as HRESULT
-''''''' declare function dhPutRefV cdecl alias "dhPutRefV" (byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval marker as va_list ptr) as HRESULT
-''''''' declare function dhGetValueV cdecl alias "dhGetValueV" (byval szIdentifier as LPCWSTR, byval pResult as any ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval marker as va_list ptr) as HRESULT
-''''''' declare function dhInvokeV cdecl alias "dhInvokeV" (byval invokeType as integer, byval returnType as VARTYPE, byval pvResult as VARIANT ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval marker as va_list ptr) as HRESULT
-declare function dhAutoWrap cdecl alias "dhAutoWrap" (byval invokeType as integer, byval pvResult as VARIANT ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval cArgs as UINT, ...) as HRESULT
-declare function dhParseProperties cdecl alias "dhParseProperties" (byval pDisp as IDispatch ptr, byval szProperties as LPCWSTR, byval lpcPropsSet as UINT ptr) as HRESULT
-declare function dhEnumBegin cdecl alias "dhEnumBegin" (byval ppEnum as IEnumVARIANT ptr ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, ...) as HRESULT
-''''''' declare function dhEnumBeginV cdecl alias "dhEnumBeginV" (byval ppEnum as IEnumVARIANT ptr ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval marker as va_list ptr) as HRESULT
-declare function dhEnumNextObject cdecl alias "dhEnumNextObject" (byval pEnum as IEnumVARIANT ptr, byval ppDisp as IDispatch ptr ptr) as HRESULT
-declare function dhEnumNextVariant cdecl alias "dhEnumNextVariant" (byval pEnum as IEnumVARIANT ptr, byval pvResult as VARIANT ptr) as HRESULT
-declare function dhInitializeImp cdecl alias "dhInitializeImp" (byval bInitializeCOM as BOOL, byval bUnicode as BOOL) as HRESULT
-declare sub dhUninitialize cdecl alias "dhUninitialize" (byval bUninitializeCOM as BOOL)
-
 #define dhInitializeA(bInitializeCOM) dhInitializeImp(bInitializeCOM, FALSE)
 #define dhInitializeW(bInitializeCOM) dhInitializeImp(bInitializeCOM, TRUE)
 
@@ -174,16 +150,40 @@ end type
 
 type PDH_EXCEPTION_OPTIONS as DH_EXCEPTION_OPTIONS ptr
 
-declare function dhToggleExceptions cdecl alias "dhToggleExceptions" (byval bShow as BOOL) as HRESULT
-declare function dhSetExceptionOptions cdecl alias "dhSetExceptionOptions" (byval pExceptionOptions as PDH_EXCEPTION_OPTIONS) as HRESULT
-declare function dhGetExceptionOptions cdecl alias "dhGetExceptionOptions" (byval pExceptionOptions as PDH_EXCEPTION_OPTIONS) as HRESULT
-declare function dhShowException cdecl alias "dhShowException" (byval pException as PDH_EXCEPTION) as HRESULT
-declare function dhGetLastException cdecl alias "dhGetLastException" (byval pException as PDH_EXCEPTION ptr) as HRESULT
-
+extern "c"
+declare function dhCreateObject (byval szProgId as LPCOLESTR, byval szMachine as LPCWSTR, byval ppDisp as IDispatch ptr ptr) as HRESULT
+declare function dhGetObject (byval szFile as LPCOLESTR, byval szProgId as LPCOLESTR, byval ppDisp as IDispatch ptr ptr) as HRESULT
+declare function dhCreateObjectEx (byval szProgId as LPCOLESTR, byval riid as IID ptr, byval dwClsContext as DWORD, byval pServerInfo as COSERVERINFO ptr, byval ppv as any ptr ptr) as HRESULT
+declare function dhGetObjectEx (byval szFile as LPCOLESTR, byval szProgId as LPCOLESTR, byval riid as IID ptr, byval dwClsContext as DWORD, byval lpvReserved as LPVOID, byval ppv as any ptr ptr) as HRESULT
+declare function dhCallMethod (byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, ...) as HRESULT
+declare function dhPutValue (byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, ...) as HRESULT
+declare function dhPutRef (byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, ...) as HRESULT
+declare function dhGetValue (byval szIdentifier as LPCWSTR, byval pResult as any ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, ...) as HRESULT
+declare function dhInvoke (byval invokeType as integer, byval returnType as VARTYPE, byval pvResult as VARIANT ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, ...) as HRESULT
+declare function dhInvokeArray (byval invokeType as integer, byval pvResult as VARIANT ptr, byval cArgs as UINT, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval pArgs as VARIANT ptr) as HRESULT
+''''''' declare function dhCallMethodV (byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval marker as va_list ptr) as HRESULT
+''''''' declare function dhPutValueV (byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval marker as va_list ptr) as HRESULT
+''''''' declare function dhPutRefV (byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval marker as va_list ptr) as HRESULT
+''''''' declare function dhGetValueV (byval szIdentifier as LPCWSTR, byval pResult as any ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval marker as va_list ptr) as HRESULT
+''''''' declare function dhInvokeV (byval invokeType as integer, byval returnType as VARTYPE, byval pvResult as VARIANT ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval marker as va_list ptr) as HRESULT
+declare function dhAutoWrap (byval invokeType as integer, byval pvResult as VARIANT ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval cArgs as UINT, ...) as HRESULT
+declare function dhParseProperties (byval pDisp as IDispatch ptr, byval szProperties as LPCWSTR, byval lpcPropsSet as UINT ptr) as HRESULT
+declare function dhEnumBegin (byval ppEnum as IEnumVARIANT ptr ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, ...) as HRESULT
+''''''' declare function dhEnumBeginV (byval ppEnum as IEnumVARIANT ptr ptr, byval pDisp as IDispatch ptr, byval szMember as LPCOLESTR, byval marker as va_list ptr) as HRESULT
+declare function dhEnumNextObject (byval pEnum as IEnumVARIANT ptr, byval ppDisp as IDispatch ptr ptr) as HRESULT
+declare function dhEnumNextVariant (byval pEnum as IEnumVARIANT ptr, byval pvResult as VARIANT ptr) as HRESULT
+declare function dhInitializeImp (byval bInitializeCOM as BOOL, byval bUnicode as BOOL) as HRESULT
+declare sub dhUninitialize (byval bUninitializeCOM as BOOL)
+declare function dhToggleExceptions (byval bShow as BOOL) as HRESULT
+declare function dhSetExceptionOptions (byval pExceptionOptions as PDH_EXCEPTION_OPTIONS) as HRESULT
+declare function dhGetExceptionOptions (byval pExceptionOptions as PDH_EXCEPTION_OPTIONS) as HRESULT
+declare function dhShowException (byval pException as PDH_EXCEPTION) as HRESULT
+declare function dhGetLastException (byval pException as PDH_EXCEPTION ptr) as HRESULT
 #ifdef UNICODE
-declare function dhFormatException cdecl alias "dhFormatExceptionW" (byval pException as PDH_EXCEPTION, byval szBuffer as LPWSTR, byval cchBufferSize as UINT, byval bFixedFont as BOOL) as HRESULT
+declare function dhFormatException alias "dhFormatExceptionW" (byval pException as PDH_EXCEPTION, byval szBuffer as LPWSTR, byval cchBufferSize as UINT, byval bFixedFont as BOOL) as HRESULT
 #else
-declare function dhFormatException cdecl alias "dhFormatExceptionA" (byval pException as PDH_EXCEPTION, byval szBuffer as LPSTR, byval cchBufferSize as UINT, byval bFixedFont as BOOL) as HRESULT
+declare function dhFormatException alias "dhFormatExceptionA" (byval pException as PDH_EXCEPTION, byval szBuffer as LPSTR, byval cchBufferSize as UINT, byval bFixedFont as BOOL) as HRESULT
 #endif
+end extern
 
 #endif

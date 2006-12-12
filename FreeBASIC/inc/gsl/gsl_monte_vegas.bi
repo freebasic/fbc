@@ -9,9 +9,9 @@
 #ifndef __gsl_monte_vegas_bi__
 #define __gsl_monte_vegas_bi__
 
-#include once "gsl/gsl_rng.bi"
-#include once "gsl/gsl_monte.bi"
-#include once "gsl/gsl_types.bi"
+#include once "gsl_rng.bi"
+#include once "gsl_monte.bi"
+#include once "gsl_types.bi"
 
 enum 
 	GSL_VEGAS_MODE_IMPORTANCE = 1
@@ -52,9 +52,11 @@ type gsl_monte_vegas_state
 	ostream as FILE ptr
 end type
 
-declare function gsl_monte_vegas_integrate cdecl alias "gsl_monte_vegas_integrate" (byval f as gsl_monte_function ptr, byval xl as double ptr, byval xu as double ptr, byval dim as integer, byval calls as integer, byval r as gsl_rng ptr, byval state as gsl_monte_vegas_state ptr, byval result as double ptr, byval abserr as double ptr) as integer
-declare function gsl_monte_vegas_alloc cdecl alias "gsl_monte_vegas_alloc" (byval dim as integer) as gsl_monte_vegas_state ptr
-declare function gsl_monte_vegas_init cdecl alias "gsl_monte_vegas_init" (byval state as gsl_monte_vegas_state ptr) as integer
-declare sub gsl_monte_vegas_free cdecl alias "gsl_monte_vegas_free" (byval state as gsl_monte_vegas_state ptr)
+extern "c"
+declare function gsl_monte_vegas_integrate (byval f as gsl_monte_function ptr, byval xl as double ptr, byval xu as double ptr, byval dim as integer, byval calls as integer, byval r as gsl_rng ptr, byval state as gsl_monte_vegas_state ptr, byval result as double ptr, byval abserr as double ptr) as integer
+declare function gsl_monte_vegas_alloc (byval dim as integer) as gsl_monte_vegas_state ptr
+declare function gsl_monte_vegas_init (byval state as gsl_monte_vegas_state ptr) as integer
+declare sub gsl_monte_vegas_free (byval state as gsl_monte_vegas_state ptr)
+end extern
 
 #endif

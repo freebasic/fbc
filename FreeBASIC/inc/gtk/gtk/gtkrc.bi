@@ -9,7 +9,7 @@
 #ifndef __gtkrc_bi__
 #define __gtkrc_bi__
 
-#include once "gtk/gtk/gtkstyle.bi"
+#include once "gtkstyle.bi"
 
 #define GTK_TYPE_RC_STYLE (gtk_rc_style_get_type ())
 #define GTK_RC_STYLE(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_RC_STYLE, GtkRcStyle))

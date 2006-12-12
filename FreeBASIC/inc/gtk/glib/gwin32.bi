@@ -9,7 +9,7 @@
 #ifndef __gwin32_bi__
 #define __gwin32_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 #define MAXPATHLEN 1024
 

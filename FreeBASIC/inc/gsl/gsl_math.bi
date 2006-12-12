@@ -9,12 +9,12 @@
 #ifndef __gsl_math_bi__
 #define __gsl_math_bi__
 
-#include once "gsl/gsl_sys.bi"
-#include once "gsl/gsl_machine.bi"
-#include once "gsl/gsl_precision.bi"
-#include once "gsl/gsl_nan.bi"
-#include once "gsl/gsl_pow_int.bi"
-#include once "gsl/gsl_types.bi"
+#include once "gsl_sys.bi"
+#include once "gsl_machine.bi"
+#include once "gsl_precision.bi"
+#include once "gsl_nan.bi"
+#include once "gsl_pow_int.bi"
+#include once "gsl_types.bi"
 
 #define M_E 2.71828182845904523536028747135
 #define M_LOG2E 1.44269504088896340735992468100
@@ -34,8 +34,10 @@
 #define M_LNPI 1.14472988584940017414342735135
 #define M_EULER 0.57721566490153286060651209008
 
-declare function gsl_max cdecl alias "gsl_max" (byval a as double, byval b as double) as double
-declare function gsl_min cdecl alias "gsl_min" (byval a as double, byval b as double) as double
+extern "c"
+declare function gsl_max (byval a as double, byval b as double) as double
+declare function gsl_min (byval a as double, byval b as double) as double
+end extern
 
 type gsl_function_struct
 	function as function cdecl(byval as double, byval as any ptr) as double

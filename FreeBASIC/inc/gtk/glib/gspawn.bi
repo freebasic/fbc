@@ -9,7 +9,7 @@
 #ifndef __gspawn_bi__
 #define __gspawn_bi__
 
-#include once "gtk/glib/gerror.bi"
+#include once "gerror.bi"
 
 enum GSpawnError
 	G_SPAWN_ERROR_FORK

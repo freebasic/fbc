@@ -9,8 +9,8 @@
 #ifndef __gdkscreen_bi__
 #define __gdkscreen_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
-#include once "gtk/gdk/gdkdisplay.bi"
+#include once "gdktypes.bi"
+#include once "gdkdisplay.bi"
 
 #define GDK_TYPE_SCREEN (gdk_screen_get_type ())
 #define GDK_SCREEN(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_SCREEN, GdkScreen))

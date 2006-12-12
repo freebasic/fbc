@@ -9,10 +9,10 @@
 #ifndef __SDL_thread_bi__
 #define __SDL_thread_bi__
 
-#include once "SDL/SDL_main.bi"
-#include once "SDL/SDL_types.bi"
-#include once "SDL/SDL_mutex.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_main.bi"
+#include once "SDL_types.bi"
+#include once "SDL_mutex.bi"
+#include once "begin_code.bi"
 
 type SDL_Thread as _SDL_Thread
 
@@ -22,6 +22,6 @@ declare function SDL_GetThreadID cdecl alias "SDL_GetThreadID" (byval thread as 
 declare sub SDL_WaitThread cdecl alias "SDL_WaitThread" (byval thread as SDL_Thread ptr, byval status as integer ptr)
 declare sub SDL_KillThread cdecl alias "SDL_KillThread" (byval thread as SDL_Thread ptr)
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

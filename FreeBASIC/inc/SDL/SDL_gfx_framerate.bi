@@ -12,7 +12,7 @@
 
 #inclib "SDL_gfx"
 
-#include once "SDL/SDL.bi"
+#include once "SDL.bi"
 
 #define FPS_UPPER_LIMIT		200
 #define FPS_LOWER_LIMIT		1

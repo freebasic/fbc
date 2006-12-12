@@ -10,7 +10,7 @@
 #define __gtkhscrollbar_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkscrollbar.bi"
+#include once "gtkscrollbar.bi"
 
 #define GTK_TYPE_HSCROLLBAR (gtk_hscrollbar_get_type ())
 #define GTK_HSCROLLBAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_HSCROLLBAR, GtkHScrollbar))

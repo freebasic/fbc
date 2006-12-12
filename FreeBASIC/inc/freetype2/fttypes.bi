@@ -9,10 +9,10 @@
 #ifndef __fttypes_bi__
 #define __fttypes_bi__
 
-#include once "freetype2/config/ftconfig.bi"
-#include once "freetype2/ftsystem.bi"
-#include once "freetype2/ftimage.bi"
-''#include once "freetype2/stddef.bi"
+#include once "config/ftconfig.bi"
+#include once "ftsystem.bi"
+#include once "ftimage.bi"
+''#include once "stddef.bi"
 
 type FT_Bool as ubyte
 type FT_FWord as short

@@ -9,10 +9,10 @@
 #ifndef __gsl_multiroots_bi__
 #define __gsl_multiroots_bi__
 
-#include once "gsl/gsl_types.bi"
-#include once "gsl/gsl_math.bi"
-#include once "gsl/gsl_vector.bi"
-#include once "gsl/gsl_matrix.bi"
+#include once "gsl_types.bi"
+#include once "gsl_math.bi"
+#include once "gsl_vector.bi"
+#include once "gsl_matrix.bi"
 
 type gsl_multiroot_function_struct
 	f as function cdecl(byval as gsl_vector ptr, byval as any ptr, byval as gsl_vector ptr) as integer
@@ -22,7 +22,9 @@ end type
 
 type gsl_multiroot_function as gsl_multiroot_function_struct
 
-declare function gsl_multiroot_fdjacobian cdecl alias "gsl_multiroot_fdjacobian" (byval F as gsl_multiroot_function ptr, byval x as gsl_vector ptr, byval f as gsl_vector ptr, byval epsrel as double, byval jacobian as gsl_matrix ptr) as integer
+extern "c"
+declare function gsl_multiroot_fdjacobian (byval F as gsl_multiroot_function ptr, byval x as gsl_vector ptr, byval f as gsl_vector ptr, byval epsrel as double, byval jacobian as gsl_matrix ptr) as integer
+end extern
 
 type gsl_multiroot_fsolver_type
 	name as byte ptr
@@ -42,14 +44,16 @@ type gsl_multiroot_fsolver
 	state as any ptr
 end type
 
-declare function gsl_multiroot_fsolver_alloc cdecl alias "gsl_multiroot_fsolver_alloc" (byval T as gsl_multiroot_fsolver_type ptr, byval n as integer) as gsl_multiroot_fsolver ptr
-declare sub gsl_multiroot_fsolver_free cdecl alias "gsl_multiroot_fsolver_free" (byval s as gsl_multiroot_fsolver ptr)
-declare function gsl_multiroot_fsolver_set cdecl alias "gsl_multiroot_fsolver_set" (byval s as gsl_multiroot_fsolver ptr, byval f as gsl_multiroot_function ptr, byval x as gsl_vector ptr) as integer
-declare function gsl_multiroot_fsolver_iterate cdecl alias "gsl_multiroot_fsolver_iterate" (byval s as gsl_multiroot_fsolver ptr) as integer
-declare function gsl_multiroot_fsolver_name cdecl alias "gsl_multiroot_fsolver_name" (byval s as gsl_multiroot_fsolver ptr) as zstring ptr
-declare function gsl_multiroot_fsolver_root cdecl alias "gsl_multiroot_fsolver_root" (byval s as gsl_multiroot_fsolver ptr) as gsl_vector ptr
-declare function gsl_multiroot_fsolver_dx cdecl alias "gsl_multiroot_fsolver_dx" (byval s as gsl_multiroot_fsolver ptr) as gsl_vector ptr
-declare function gsl_multiroot_fsolver_f cdecl alias "gsl_multiroot_fsolver_f" (byval s as gsl_multiroot_fsolver ptr) as gsl_vector ptr
+extern "c"
+declare function gsl_multiroot_fsolver_alloc (byval T as gsl_multiroot_fsolver_type ptr, byval n as integer) as gsl_multiroot_fsolver ptr
+declare sub gsl_multiroot_fsolver_free (byval s as gsl_multiroot_fsolver ptr)
+declare function gsl_multiroot_fsolver_set (byval s as gsl_multiroot_fsolver ptr, byval f as gsl_multiroot_function ptr, byval x as gsl_vector ptr) as integer
+declare function gsl_multiroot_fsolver_iterate (byval s as gsl_multiroot_fsolver ptr) as integer
+declare function gsl_multiroot_fsolver_name (byval s as gsl_multiroot_fsolver ptr) as zstring ptr
+declare function gsl_multiroot_fsolver_root (byval s as gsl_multiroot_fsolver ptr) as gsl_vector ptr
+declare function gsl_multiroot_fsolver_dx (byval s as gsl_multiroot_fsolver ptr) as gsl_vector ptr
+declare function gsl_multiroot_fsolver_f (byval s as gsl_multiroot_fsolver ptr) as gsl_vector ptr
+end extern
 
 type gsl_multiroot_function_fdf_struct
 	f as function cdecl(byval as gsl_vector ptr, byval as any ptr, byval as gsl_vector ptr) as integer
@@ -80,15 +84,17 @@ type gsl_multiroot_fdfsolver
 	state as any ptr
 end type
 
-declare function gsl_multiroot_fdfsolver_alloc cdecl alias "gsl_multiroot_fdfsolver_alloc" (byval T as gsl_multiroot_fdfsolver_type ptr, byval n as integer) as gsl_multiroot_fdfsolver ptr
-declare function gsl_multiroot_fdfsolver_set cdecl alias "gsl_multiroot_fdfsolver_set" (byval s as gsl_multiroot_fdfsolver ptr, byval fdf as gsl_multiroot_function_fdf ptr, byval x as gsl_vector ptr) as integer
-declare function gsl_multiroot_fdfsolver_iterate cdecl alias "gsl_multiroot_fdfsolver_iterate" (byval s as gsl_multiroot_fdfsolver ptr) as integer
-declare sub gsl_multiroot_fdfsolver_free cdecl alias "gsl_multiroot_fdfsolver_free" (byval s as gsl_multiroot_fdfsolver ptr)
-declare function gsl_multiroot_fdfsolver_name cdecl alias "gsl_multiroot_fdfsolver_name" (byval s as gsl_multiroot_fdfsolver ptr) as zstring ptr
-declare function gsl_multiroot_fdfsolver_root cdecl alias "gsl_multiroot_fdfsolver_root" (byval s as gsl_multiroot_fdfsolver ptr) as gsl_vector ptr
-declare function gsl_multiroot_fdfsolver_dx cdecl alias "gsl_multiroot_fdfsolver_dx" (byval s as gsl_multiroot_fdfsolver ptr) as gsl_vector ptr
-declare function gsl_multiroot_fdfsolver_f cdecl alias "gsl_multiroot_fdfsolver_f" (byval s as gsl_multiroot_fdfsolver ptr) as gsl_vector ptr
-declare function gsl_multiroot_test_delta cdecl alias "gsl_multiroot_test_delta" (byval dx as gsl_vector ptr, byval x as gsl_vector ptr, byval epsabs as double, byval epsrel as double) as integer
-declare function gsl_multiroot_test_residual cdecl alias "gsl_multiroot_test_residual" (byval f as gsl_vector ptr, byval epsabs as double) as integer
+extern "c"
+declare function gsl_multiroot_fdfsolver_alloc (byval T as gsl_multiroot_fdfsolver_type ptr, byval n as integer) as gsl_multiroot_fdfsolver ptr
+declare function gsl_multiroot_fdfsolver_set (byval s as gsl_multiroot_fdfsolver ptr, byval fdf as gsl_multiroot_function_fdf ptr, byval x as gsl_vector ptr) as integer
+declare function gsl_multiroot_fdfsolver_iterate (byval s as gsl_multiroot_fdfsolver ptr) as integer
+declare sub gsl_multiroot_fdfsolver_free (byval s as gsl_multiroot_fdfsolver ptr)
+declare function gsl_multiroot_fdfsolver_name (byval s as gsl_multiroot_fdfsolver ptr) as zstring ptr
+declare function gsl_multiroot_fdfsolver_root (byval s as gsl_multiroot_fdfsolver ptr) as gsl_vector ptr
+declare function gsl_multiroot_fdfsolver_dx (byval s as gsl_multiroot_fdfsolver ptr) as gsl_vector ptr
+declare function gsl_multiroot_fdfsolver_f (byval s as gsl_multiroot_fdfsolver ptr) as gsl_vector ptr
+declare function gsl_multiroot_test_delta (byval dx as gsl_vector ptr, byval x as gsl_vector ptr, byval epsabs as double, byval epsrel as double) as integer
+declare function gsl_multiroot_test_residual (byval f as gsl_vector ptr, byval epsabs as double) as integer
+end extern
 
 #endif

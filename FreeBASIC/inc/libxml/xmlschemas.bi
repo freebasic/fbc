@@ -9,8 +9,8 @@
 #ifndef __xml_xmlschemas_bi__
 #define __xml_xmlschemas_bi__
 
-#include once "libxml/xmlversion.bi"
-#include once "libxml/tree.bi"
+#include once "xmlversion.bi"
+#include once "tree.bi"
 
 enum xmlSchemaValidError
 	XML_SCHEMAS_ERR_OK = 0
@@ -55,23 +55,25 @@ type xmlSchemaParserCtxtPtr as xmlSchemaParserCtxt ptr
 type xmlSchemaValidCtxt as _xmlSchemaValidCtxt
 type xmlSchemaValidCtxtPtr as xmlSchemaValidCtxt ptr
 
-declare function xmlSchemaNewParserCtxt cdecl alias "xmlSchemaNewParserCtxt" (byval URL as zstring ptr) as xmlSchemaParserCtxtPtr
-declare function xmlSchemaNewMemParserCtxt cdecl alias "xmlSchemaNewMemParserCtxt" (byval buffer as zstring ptr, byval size as integer) as xmlSchemaParserCtxtPtr
-declare function xmlSchemaNewDocParserCtxt cdecl alias "xmlSchemaNewDocParserCtxt" (byval doc as xmlDocPtr) as xmlSchemaParserCtxtPtr
-declare sub xmlSchemaFreeParserCtxt cdecl alias "xmlSchemaFreeParserCtxt" (byval ctxt as xmlSchemaParserCtxtPtr)
-declare sub xmlSchemaSetParserErrors cdecl alias "xmlSchemaSetParserErrors" (byval ctxt as xmlSchemaParserCtxtPtr, byval err as xmlSchemaValidityErrorFunc, byval warn as xmlSchemaValidityWarningFunc, byval ctx as any ptr)
-declare function xmlSchemaGetParserErrors cdecl alias "xmlSchemaGetParserErrors" (byval ctxt as xmlSchemaParserCtxtPtr, byval err as xmlSchemaValidityErrorFunc ptr, byval warn as xmlSchemaValidityWarningFunc ptr, byval ctx as any ptr ptr) as integer
-declare function xmlSchemaParse cdecl alias "xmlSchemaParse" (byval ctxt as xmlSchemaParserCtxtPtr) as xmlSchemaPtr
-declare sub xmlSchemaFree cdecl alias "xmlSchemaFree" (byval schema as xmlSchemaPtr)
-declare sub xmlSchemaDump cdecl alias "xmlSchemaDump" (byval output as FILE ptr, byval schema as xmlSchemaPtr)
-declare sub xmlSchemaSetValidErrors cdecl alias "xmlSchemaSetValidErrors" (byval ctxt as xmlSchemaValidCtxtPtr, byval err as xmlSchemaValidityErrorFunc, byval warn as xmlSchemaValidityWarningFunc, byval ctx as any ptr)
-declare function xmlSchemaGetValidErrors cdecl alias "xmlSchemaGetValidErrors" (byval ctxt as xmlSchemaValidCtxtPtr, byval err as xmlSchemaValidityErrorFunc ptr, byval warn as xmlSchemaValidityWarningFunc ptr, byval ctx as any ptr ptr) as integer
-declare function xmlSchemaSetValidOptions cdecl alias "xmlSchemaSetValidOptions" (byval ctxt as xmlSchemaValidCtxtPtr, byval options as integer) as integer
-declare function xmlSchemaValidCtxtGetOptions cdecl alias "xmlSchemaValidCtxtGetOptions" (byval ctxt as xmlSchemaValidCtxtPtr) as integer
-declare function xmlSchemaNewValidCtxt cdecl alias "xmlSchemaNewValidCtxt" (byval schema as xmlSchemaPtr) as xmlSchemaValidCtxtPtr
-declare sub xmlSchemaFreeValidCtxt cdecl alias "xmlSchemaFreeValidCtxt" (byval ctxt as xmlSchemaValidCtxtPtr)
-declare function xmlSchemaValidateDoc cdecl alias "xmlSchemaValidateDoc" (byval ctxt as xmlSchemaValidCtxtPtr, byval instance as xmlDocPtr) as integer
-declare function xmlSchemaValidateOneElement cdecl alias "xmlSchemaValidateOneElement" (byval ctxt as xmlSchemaValidCtxtPtr, byval elem as xmlNodePtr) as integer
-declare function xmlSchemaValidateStream cdecl alias "xmlSchemaValidateStream" (byval ctxt as xmlSchemaValidCtxtPtr, byval input as xmlParserInputBufferPtr, byval enc as xmlCharEncoding, byval sax as xmlSAXHandlerPtr, byval user_data as any ptr) as integer
+extern "c"
+declare function xmlSchemaNewParserCtxt (byval URL as zstring ptr) as xmlSchemaParserCtxtPtr
+declare function xmlSchemaNewMemParserCtxt (byval buffer as zstring ptr, byval size as integer) as xmlSchemaParserCtxtPtr
+declare function xmlSchemaNewDocParserCtxt (byval doc as xmlDocPtr) as xmlSchemaParserCtxtPtr
+declare sub xmlSchemaFreeParserCtxt (byval ctxt as xmlSchemaParserCtxtPtr)
+declare sub xmlSchemaSetParserErrors (byval ctxt as xmlSchemaParserCtxtPtr, byval err as xmlSchemaValidityErrorFunc, byval warn as xmlSchemaValidityWarningFunc, byval ctx as any ptr)
+declare function xmlSchemaGetParserErrors (byval ctxt as xmlSchemaParserCtxtPtr, byval err as xmlSchemaValidityErrorFunc ptr, byval warn as xmlSchemaValidityWarningFunc ptr, byval ctx as any ptr ptr) as integer
+declare function xmlSchemaParse (byval ctxt as xmlSchemaParserCtxtPtr) as xmlSchemaPtr
+declare sub xmlSchemaFree (byval schema as xmlSchemaPtr)
+declare sub xmlSchemaDump (byval output as FILE ptr, byval schema as xmlSchemaPtr)
+declare sub xmlSchemaSetValidErrors (byval ctxt as xmlSchemaValidCtxtPtr, byval err as xmlSchemaValidityErrorFunc, byval warn as xmlSchemaValidityWarningFunc, byval ctx as any ptr)
+declare function xmlSchemaGetValidErrors (byval ctxt as xmlSchemaValidCtxtPtr, byval err as xmlSchemaValidityErrorFunc ptr, byval warn as xmlSchemaValidityWarningFunc ptr, byval ctx as any ptr ptr) as integer
+declare function xmlSchemaSetValidOptions (byval ctxt as xmlSchemaValidCtxtPtr, byval options as integer) as integer
+declare function xmlSchemaValidCtxtGetOptions (byval ctxt as xmlSchemaValidCtxtPtr) as integer
+declare function xmlSchemaNewValidCtxt (byval schema as xmlSchemaPtr) as xmlSchemaValidCtxtPtr
+declare sub xmlSchemaFreeValidCtxt (byval ctxt as xmlSchemaValidCtxtPtr)
+declare function xmlSchemaValidateDoc (byval ctxt as xmlSchemaValidCtxtPtr, byval instance as xmlDocPtr) as integer
+declare function xmlSchemaValidateOneElement (byval ctxt as xmlSchemaValidCtxtPtr, byval elem as xmlNodePtr) as integer
+declare function xmlSchemaValidateStream (byval ctxt as xmlSchemaValidCtxtPtr, byval input as xmlParserInputBufferPtr, byval enc as xmlCharEncoding, byval sax as xmlSAXHandlerPtr, byval user_data as any ptr) as integer
+end extern
 
 #endif

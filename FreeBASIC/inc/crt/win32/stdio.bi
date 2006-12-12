@@ -49,34 +49,36 @@ extern import _iob(0 to 2) alias "_iob" as FILE
 
 type fpos_t as longint
 
-declare function snprintf cdecl alias "_snprintf" (byval as zstring ptr, byval as size_t, byval as zstring ptr, ...) as integer
-declare function vsnprintf cdecl alias "_vsnprintf" (byval as zstring ptr, byval as size_t, byval as zstring ptr, byval as va_list) as integer
-declare function popen cdecl alias "_popen" (byval as zstring ptr, byval as zstring ptr) as FILE ptr
-declare function pclose cdecl alias "_pclose" (byval as FILE ptr) as integer
-declare function _flushall cdecl alias "_flushall" () as integer
-declare function _fgetchar cdecl alias "_fgetchar" () as integer
-declare function _fputchar cdecl alias "_fputchar" (byval as integer) as integer
-declare function _fdopen cdecl alias "_fdopen" (byval as integer, byval as zstring ptr) as FILE ptr
-declare function _fileno cdecl alias "_fileno" (byval as FILE ptr) as integer
-declare function _fcloseall cdecl alias "_fcloseall" () as integer
-declare function _getmaxstdio cdecl alias "_getmaxstdio" () as integer
-declare function _setmaxstdio cdecl alias "_setmaxstdio" (byval as integer) as integer
-declare function _snwprintf cdecl alias "_snwprintf" (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, ...) as integer
-declare function _vsnwprintf cdecl alias "_vsnwprintf" (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, byval as va_list) as integer
-declare function _getws cdecl alias "_getws" (byval as wchar_t ptr) as wchar_t ptr
-declare function _putws cdecl alias "_putws" (byval as wchar_t ptr) as integer
-declare function _wfdopen cdecl alias "_wfdopen" (byval as integer, byval as wchar_t ptr) as FILE ptr
-declare function _wfopen cdecl alias "_wfopen" (byval as wchar_t ptr, byval as wchar_t ptr) as FILE ptr
-declare function _wfreopen cdecl alias "_wfreopen" (byval as wchar_t ptr, byval as wchar_t ptr, byval as FILE ptr) as FILE ptr
-declare function _wfsopen cdecl alias "_wfsopen" (byval as wchar_t ptr, byval as wchar_t ptr, byval as integer) as FILE ptr
-declare function _wtmpnam cdecl alias "_wtmpnam" (byval as wchar_t ptr) as wchar_t ptr
-declare function _wtempnam cdecl alias "_wtempnam" (byval as wchar_t ptr, byval as wchar_t ptr) as wchar_t ptr
-declare function _wrename cdecl alias "_wrename" (byval as wchar_t ptr, byval as wchar_t ptr) as integer
-declare function _wremove cdecl alias "_wremove" (byval as wchar_t ptr) as integer
-declare sub _wperror cdecl alias "_wperror" (byval as wchar_t ptr)
-declare function _wpopen cdecl alias "_wpopen" (byval as wchar_t ptr, byval as wchar_t ptr) as FILE ptr
-declare function _fgetwchar cdecl alias "_fgetwchar" () as wint_t
-declare function _fputwchar cdecl alias "_fputwchar" (byval as wint_t) as wint_t
-declare function _tempnam cdecl alias "_tempnam" (byval as zstring ptr, byval as zstring ptr) as zstring ptr
+extern "c"
+declare function snprintf (byval as zstring ptr, byval as size_t, byval as zstring ptr, ...) as integer
+declare function vsnprintf (byval as zstring ptr, byval as size_t, byval as zstring ptr, byval as va_list) as integer
+declare function popen (byval as zstring ptr, byval as zstring ptr) as FILE ptr
+declare function pclose (byval as FILE ptr) as integer
+declare function _flushall () as integer
+declare function _fgetchar () as integer
+declare function _fputchar (byval as integer) as integer
+declare function _fdopen (byval as integer, byval as zstring ptr) as FILE ptr
+declare function _fileno (byval as FILE ptr) as integer
+declare function _fcloseall () as integer
+declare function _getmaxstdio () as integer
+declare function _setmaxstdio (byval as integer) as integer
+declare function _snwprintf (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, ...) as integer
+declare function _vsnwprintf (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, byval as va_list) as integer
+declare function _getws (byval as wchar_t ptr) as wchar_t ptr
+declare function _putws (byval as wchar_t ptr) as integer
+declare function _wfdopen (byval as integer, byval as wchar_t ptr) as FILE ptr
+declare function _wfopen (byval as wchar_t ptr, byval as wchar_t ptr) as FILE ptr
+declare function _wfreopen (byval as wchar_t ptr, byval as wchar_t ptr, byval as FILE ptr) as FILE ptr
+declare function _wfsopen (byval as wchar_t ptr, byval as wchar_t ptr, byval as integer) as FILE ptr
+declare function _wtmpnam (byval as wchar_t ptr) as wchar_t ptr
+declare function _wtempnam (byval as wchar_t ptr, byval as wchar_t ptr) as wchar_t ptr
+declare function _wrename (byval as wchar_t ptr, byval as wchar_t ptr) as integer
+declare function _wremove (byval as wchar_t ptr) as integer
+declare sub _wperror (byval as wchar_t ptr)
+declare function _wpopen (byval as wchar_t ptr, byval as wchar_t ptr) as FILE ptr
+declare function _fgetwchar () as wint_t
+declare function _fputwchar (byval as wint_t) as wint_t
+declare function _tempnam (byval as zstring ptr, byval as zstring ptr) as zstring ptr
+end extern
 
 #endif

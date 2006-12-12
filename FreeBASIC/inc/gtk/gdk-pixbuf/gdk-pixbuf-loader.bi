@@ -11,9 +11,9 @@
 
 #include once "gtk/glib.bi"
 #include once "gtk/glib-object.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-core.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-animation.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-io.bi"
+#include once "gdk-pixbuf-core.bi"
+#include once "gdk-pixbuf-animation.bi"
+#include once "gdk-pixbuf-io.bi"
 
 #define GDK_TYPE_PIXBUF_LOADER (gdk_pixbuf_loader_get_type ())
 #define GDK_PIXBUF_LOADER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GDK_TYPE_PIXBUF_LOADER, GdkPixbufLoader))

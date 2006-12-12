@@ -10,12 +10,12 @@
 #define __gtktoolbar_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkcontainer.bi"
-#include once "gtk/gtk/gtkenums.bi"
-#include once "gtk/gtk/gtktooltips.bi"
-#include once "gtk/gtk/gtktoolitem.bi"
-#include once "gtk/gtk/gtkpixmap.bi"
-#include once "gtk/gtk/gtksignal.bi"
+#include once "gtkcontainer.bi"
+#include once "gtkenums.bi"
+#include once "gtktooltips.bi"
+#include once "gtktoolitem.bi"
+#include once "gtkpixmap.bi"
+#include once "gtksignal.bi"
 
 #define GTK_TYPE_TOOLBAR (gtk_toolbar_get_type ())
 #define GTK_TOOLBAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TOOLBAR, GtkToolbar))

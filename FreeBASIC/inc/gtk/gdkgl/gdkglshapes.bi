@@ -9,8 +9,8 @@
 #ifndef __gdkglshapes_bi__
 #define __gdkglshapes_bi__
 
-#include once "gtk/gdkgl/gdkgldefs.bi"
-#include once "gtk/gdkgl/gdkgltypes.bi"
+#include once "gdkgldefs.bi"
+#include once "gdkgltypes.bi"
 
 declare sub gdk_gl_draw_cube (byval solid as gboolean, byval size as double)
 declare sub gdk_gl_draw_sphere (byval solid as gboolean, byval radius as double, byval slices as integer, byval stacks as integer)

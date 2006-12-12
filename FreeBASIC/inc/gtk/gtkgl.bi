@@ -20,11 +20,11 @@
 
 extern "c"
 
-#include once "gtk/gdkgl.bi"
-#include once "gtk/gtkgl/gtkgldefs.bi"
-#include once "gtk/gtkgl/gtkglversion.bi"
-#include once "gtk/gtkgl/gtkglinit.bi"
-#include once "gtk/gtkgl/gtkglwidget.bi"
+#include once "gdkgl.bi"
+#include once "gtkgl/gtkgldefs.bi"
+#include once "gtkgl/gtkglversion.bi"
+#include once "gtkgl/gtkglinit.bi"
+#include once "gtkgl/gtkglwidget.bi"
 
 end extern
 

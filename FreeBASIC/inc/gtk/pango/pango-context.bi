@@ -9,9 +9,9 @@
 #ifndef __pango_context_bi__
 #define __pango_context_bi__
 
-#include once "gtk/pango/pango-font.bi"
-#include once "gtk/pango/pango-fontmap.bi"
-#include once "gtk/pango/pango-attributes.bi"
+#include once "pango-font.bi"
+#include once "pango-fontmap.bi"
+#include once "pango-attributes.bi"
 
 #define PANGO_TYPE_CONTEXT (pango_context_get_type ())
 #define PANGO_CONTEXT(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CONTEXT, PangoContext))

@@ -10,7 +10,7 @@
 #define __pango_script_bi__
 
 #include once "gtk/glib.bi"
-#include once "gtk/pango/pango-types.bi"
+#include once "pango-types.bi"
 
 type PangoScriptIter as _PangoScriptIter
 

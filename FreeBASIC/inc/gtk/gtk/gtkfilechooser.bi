@@ -9,8 +9,8 @@
 #ifndef __gtkfilechooser_bi__
 #define __gtkfilechooser_bi__
 
-#include once "gtk/gtk/gtkfilefilter.bi"
-#include once "gtk/gtk/gtkwidget.bi"
+#include once "gtkfilefilter.bi"
+#include once "gtkwidget.bi"
 
 #define GTK_TYPE_FILE_CHOOSER gtk_file_chooser_get_type()
 #define GTK_FILE_CHOOSER(obj) G_TYPE_CHECK_INSTANCE_CAST(obj, GTK_TYPE_FILE_CHOOSER, GtkFileChooser)

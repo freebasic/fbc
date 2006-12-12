@@ -10,7 +10,7 @@
 #define __gtkglinit_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gdkgl.bi"
+#include once "../gtkgl.bi"
 
 declare function gtk_gl_parse_args (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean
 declare function gtk_gl_init_check (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean

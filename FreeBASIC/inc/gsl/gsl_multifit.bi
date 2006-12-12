@@ -9,10 +9,10 @@
 #ifndef __gsl_multifit_bi__
 #define __gsl_multifit_bi__
 
-#include once "gsl/gsl_math.bi"
-#include once "gsl/gsl_vector.bi"
-#include once "gsl/gsl_matrix.bi"
-#include once "gsl/gsl_types.bi"
+#include once "gsl_math.bi"
+#include once "gsl_vector.bi"
+#include once "gsl_matrix.bi"
+#include once "gsl_types.bi"
 
 type gsl_multifit_linear_workspace
 	n as integer
@@ -26,9 +26,11 @@ type gsl_multifit_linear_workspace
 	D as gsl_vector ptr
 end type
 
-declare function gsl_multifit_linear_alloc cdecl alias "gsl_multifit_linear_alloc" (byval n as integer, byval p as integer) as gsl_multifit_linear_workspace ptr
-declare sub gsl_multifit_linear_free cdecl alias "gsl_multifit_linear_free" (byval work as gsl_multifit_linear_workspace ptr)
-declare function gsl_multifit_linear cdecl alias "gsl_multifit_linear" (byval X as gsl_matrix ptr, byval y as gsl_vector ptr, byval c as gsl_vector ptr, byval cov as gsl_matrix ptr, byval chisq as double ptr, byval work as gsl_multifit_linear_workspace ptr) as integer
-declare function gsl_multifit_wlinear cdecl alias "gsl_multifit_wlinear" (byval X as gsl_matrix ptr, byval w as gsl_vector ptr, byval y as gsl_vector ptr, byval c as gsl_vector ptr, byval cov as gsl_matrix ptr, byval chisq as double ptr, byval work as gsl_multifit_linear_workspace ptr) as integer
+extern "c"
+declare function gsl_multifit_linear_alloc (byval n as integer, byval p as integer) as gsl_multifit_linear_workspace ptr
+declare sub gsl_multifit_linear_free (byval work as gsl_multifit_linear_workspace ptr)
+declare function gsl_multifit_linear (byval X as gsl_matrix ptr, byval y as gsl_vector ptr, byval c as gsl_vector ptr, byval cov as gsl_matrix ptr, byval chisq as double ptr, byval work as gsl_multifit_linear_workspace ptr) as integer
+declare function gsl_multifit_wlinear (byval X as gsl_matrix ptr, byval w as gsl_vector ptr, byval y as gsl_vector ptr, byval c as gsl_vector ptr, byval cov as gsl_matrix ptr, byval chisq as double ptr, byval work as gsl_multifit_linear_workspace ptr) as integer
+end extern
 
 #endif

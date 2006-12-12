@@ -9,7 +9,7 @@
 #ifndef __gstrfuncs_bi__
 #define __gstrfuncs_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 enum GAsciiType
 	G_ASCII_ALNUM = 1 shl 0

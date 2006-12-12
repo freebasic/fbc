@@ -9,7 +9,7 @@
 #ifndef __gtkmessagedialog_bi__
 #define __gtkmessagedialog_bi__
 
-#include once "gtk/gtk/gtkdialog.bi"
+#include once "gtkdialog.bi"
 
 #define GTK_TYPE_MESSAGE_DIALOG (gtk_message_dialog_get_type ())
 #define GTK_MESSAGE_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_MESSAGE_DIALOG, GtkMessageDialog))

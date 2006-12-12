@@ -10,7 +10,7 @@
 #define __gtkstyle_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkenums.bi"
+#include once "gtkenums.bi"
 #include once "gtk/pango.bi"
 
 #define GTK_TYPE_STYLE (gtk_style_get_type ())

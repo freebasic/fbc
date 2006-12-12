@@ -15,15 +15,15 @@
 
 extern "c" lib "gdk_pixbuf-2.0"
 
-#include once "gtk/glib.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-features.bi"
-#include once "gtk/glib-object.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-core.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-transform.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-animation.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-io.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-loader.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-enum-types.bi"
+#include once "glib.bi"
+#include once "gdk-pixbuf/gdk-pixbuf-features.bi"
+#include once "glib-object.bi"
+#include once "gdk-pixbuf/gdk-pixbuf-core.bi"
+#include once "gdk-pixbuf/gdk-pixbuf-transform.bi"
+#include once "gdk-pixbuf/gdk-pixbuf-animation.bi"
+#include once "gdk-pixbuf/gdk-pixbuf-io.bi"
+#include once "gdk-pixbuf/gdk-pixbuf-loader.bi"
+#include once "gdk-pixbuf/gdk-pixbuf-enum-types.bi"
 
 end extern
 

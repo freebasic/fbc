@@ -9,8 +9,8 @@
 #ifndef __gtkiconview_bi__
 #define __gtkiconview_bi__
 
-#include once "gtk/gtk/gtkcontainer.bi"
-#include once "gtk/gtk/gtktreemodel.bi"
+#include once "gtkcontainer.bi"
+#include once "gtktreemodel.bi"
 
 #define GTK_TYPE_ICON_VIEW (gtk_icon_view_get_type ())
 #define GTK_ICON_VIEW(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_ICON_VIEW, GtkIconView))

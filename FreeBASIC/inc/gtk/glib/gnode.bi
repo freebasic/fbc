@@ -9,7 +9,7 @@
 #ifndef __gnode_bi__
 #define __gnode_bi__
 
-#include once "gtk/glib/gmem.bi"
+#include once "gmem.bi"
 
 type GNode as _GNode
 

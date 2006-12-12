@@ -9,7 +9,7 @@
 #ifndef __gkeyfile_bi__
 #define __gkeyfile_bi__
 
-#include once "gtk/glib/gerror.bi"
+#include once "gerror.bi"
 
 enum GKeyFileError
 	G_KEY_FILE_ERROR_UNKNOWN_ENCODING

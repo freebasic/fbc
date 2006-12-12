@@ -71,49 +71,51 @@ type ILpointi
 	y as ILint
 end type
 
-declare function iluAlienify cdecl alias "iluAlienify" () as ILboolean
-declare function iluBlurAvg cdecl alias "iluBlurAvg" (byval Iter as ILuint) as ILboolean
-declare function iluBlurGaussian cdecl alias "iluBlurGaussian" (byval Iter as ILuint) as ILboolean
-declare function iluBuildMipmaps cdecl alias "iluBuildMipmaps" () as ILboolean
-declare function iluColoursUsed cdecl alias "iluColoursUsed" () as ILuint
-declare function iluCompareImage cdecl alias "iluCompareImage" (byval Comp as ILuint) as ILboolean
-declare function iluContrast cdecl alias "iluContrast" (byval Contrast as ILfloat) as ILboolean
-declare function iluCrop cdecl alias "iluCrop" (byval XOff as ILuint, byval YOff as ILuint, byval ZOff as ILuint, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint) as ILboolean
-declare sub iluDeleteImage cdecl alias "iluDeleteImage" (byval Id as ILuint)
-declare function iluEdgeDetectE cdecl alias "iluEdgeDetectE" () as ILboolean
-declare function iluEdgeDetectP cdecl alias "iluEdgeDetectP" () as ILboolean
-declare function iluEdgeDetectS cdecl alias "iluEdgeDetectS" () as ILboolean
-declare function iluEmboss cdecl alias "iluEmboss" () as ILboolean
-declare function iluEnlargeCanvas cdecl alias "iluEnlargeCanvas" (byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint) as ILboolean
-declare function iluEnlargeImage cdecl alias "iluEnlargeImage" (byval XDim as ILfloat, byval YDim as ILfloat, byval ZDim as ILfloat) as ILboolean
-declare function iluEqualize cdecl alias "iluEqualize" () as ILboolean
-declare function iluErrorString cdecl alias "iluErrorString" (byval Error as ILenum) as zstring ptr
-declare function iluFlipImage cdecl alias "iluFlipImage" () as ILboolean
-declare function iluGammaCorrect cdecl alias "iluGammaCorrect" (byval Gamma as ILfloat) as ILboolean
-declare function iluGenImage cdecl alias "iluGenImage" () as ILuint
-declare sub iluGetImageInfo cdecl alias "iluGetImageInfo" (byval Info as ILinfo ptr)
-declare function iluGetInteger cdecl alias "iluGetInteger" (byval Mode as ILenum) as ILint
-declare sub iluGetIntegerv cdecl alias "iluGetIntegerv" (byval Mode as ILenum, byval Param as ILint ptr)
-declare function iluGetString cdecl alias "iluGetString" (byval StringName as ILenum) as zstring ptr
-declare sub iluImageParameter cdecl alias "iluImageParameter" (byval PName as ILenum, byval Param as ILenum)
-declare sub iluInit cdecl alias "iluInit" ()
-declare function iluInvertAlpha cdecl alias "iluInvertAlpha" () as ILboolean
-declare function iluLoadImage cdecl alias "iluLoadImage" (byval FileName as ILstring) as ILuint
-declare function iluMirror cdecl alias "iluMirror" () as ILboolean
-declare function iluNegative cdecl alias "iluNegative" () as ILboolean
-declare function iluNoisify cdecl alias "iluNoisify" (byval Tolerance as ILclampf) as ILboolean
-declare function iluPixelize cdecl alias "iluPixelize" (byval PixSize as ILuint) as ILboolean
-declare sub iluRegionfv cdecl alias "iluRegionfv" (byval Points as ILpointf ptr, byval n as ILuint)
-declare sub iluRegioniv cdecl alias "iluRegioniv" (byval Points as ILpointi ptr, byval n as ILuint)
-declare function iluReplaceColour cdecl alias "iluReplaceColour" (byval Red as ILubyte, byval Green as ILubyte, byval Blue as ILubyte, byval Tolerance as ILfloat) as ILboolean
-declare function iluRotate cdecl alias "iluRotate" (byval Angle as ILfloat) as ILboolean
-declare function iluRotate3D cdecl alias "iluRotate3D" (byval x as ILfloat, byval y as ILfloat, byval z as ILfloat, byval Angle as ILfloat) as ILboolean
-declare function iluSaturate1f cdecl alias "iluSaturate1f" (byval Saturation as ILfloat) as ILboolean
-declare function iluSaturate4f cdecl alias "iluSaturate4f" (byval r as ILfloat, byval g as ILfloat, byval b as ILfloat, byval Saturation as ILfloat) as ILboolean
-declare function iluScale cdecl alias "iluScale" (byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint) as ILboolean
-declare function iluScaleColours cdecl alias "iluScaleColours" (byval r as ILfloat, byval g as ILfloat, byval b as ILfloat) as ILboolean
-declare function iluSharpen cdecl alias "iluSharpen" (byval Factor as ILfloat, byval Iter as ILuint) as ILboolean
-declare function iluSwapColours cdecl alias "iluSwapColours" () as ILboolean
-declare function iluWave cdecl alias "iluWave" (byval Angle as ILfloat) as ILboolean
+extern "c"
+declare function iluAlienify () as ILboolean
+declare function iluBlurAvg (byval Iter as ILuint) as ILboolean
+declare function iluBlurGaussian (byval Iter as ILuint) as ILboolean
+declare function iluBuildMipmaps () as ILboolean
+declare function iluColoursUsed () as ILuint
+declare function iluCompareImage (byval Comp as ILuint) as ILboolean
+declare function iluContrast (byval Contrast as ILfloat) as ILboolean
+declare function iluCrop (byval XOff as ILuint, byval YOff as ILuint, byval ZOff as ILuint, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint) as ILboolean
+declare sub iluDeleteImage (byval Id as ILuint)
+declare function iluEdgeDetectE () as ILboolean
+declare function iluEdgeDetectP () as ILboolean
+declare function iluEdgeDetectS () as ILboolean
+declare function iluEmboss () as ILboolean
+declare function iluEnlargeCanvas (byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint) as ILboolean
+declare function iluEnlargeImage (byval XDim as ILfloat, byval YDim as ILfloat, byval ZDim as ILfloat) as ILboolean
+declare function iluEqualize () as ILboolean
+declare function iluErrorString (byval Error as ILenum) as zstring ptr
+declare function iluFlipImage () as ILboolean
+declare function iluGammaCorrect (byval Gamma as ILfloat) as ILboolean
+declare function iluGenImage () as ILuint
+declare sub iluGetImageInfo (byval Info as ILinfo ptr)
+declare function iluGetInteger (byval Mode as ILenum) as ILint
+declare sub iluGetIntegerv (byval Mode as ILenum, byval Param as ILint ptr)
+declare function iluGetString (byval StringName as ILenum) as zstring ptr
+declare sub iluImageParameter (byval PName as ILenum, byval Param as ILenum)
+declare sub iluInit ()
+declare function iluInvertAlpha () as ILboolean
+declare function iluLoadImage (byval FileName as ILstring) as ILuint
+declare function iluMirror () as ILboolean
+declare function iluNegative () as ILboolean
+declare function iluNoisify (byval Tolerance as ILclampf) as ILboolean
+declare function iluPixelize (byval PixSize as ILuint) as ILboolean
+declare sub iluRegionfv (byval Points as ILpointf ptr, byval n as ILuint)
+declare sub iluRegioniv (byval Points as ILpointi ptr, byval n as ILuint)
+declare function iluReplaceColour (byval Red as ILubyte, byval Green as ILubyte, byval Blue as ILubyte, byval Tolerance as ILfloat) as ILboolean
+declare function iluRotate (byval Angle as ILfloat) as ILboolean
+declare function iluRotate3D (byval x as ILfloat, byval y as ILfloat, byval z as ILfloat, byval Angle as ILfloat) as ILboolean
+declare function iluSaturate1f (byval Saturation as ILfloat) as ILboolean
+declare function iluSaturate4f (byval r as ILfloat, byval g as ILfloat, byval b as ILfloat, byval Saturation as ILfloat) as ILboolean
+declare function iluScale (byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint) as ILboolean
+declare function iluScaleColours (byval r as ILfloat, byval g as ILfloat, byval b as ILfloat) as ILboolean
+declare function iluSharpen (byval Factor as ILfloat, byval Iter as ILuint) as ILboolean
+declare function iluSwapColours () as ILboolean
+declare function iluWave (byval Angle as ILfloat) as ILboolean
+end extern
 
 #endif

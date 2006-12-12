@@ -9,11 +9,11 @@
 #ifndef __wxc_tipdialog_bi__
 #define __wxc_tipdialog_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
 
-declare function wxTipProvider_GetCurrentTip cdecl alias "wxTipProvider_GetCurrentTip" () as integer
-declare function wxCreateFileTipProvider_func cdecl alias "wxCreateFileTipProvider_func" (byval filename as zstring ptr, byval currentTip as integer) as wxTipProvider ptr
-declare function wxShowTip_func cdecl alias "wxShowTip_func" (byval parent as wxWindow ptr, byval tipProvider as wxTipProvider ptr, byval showAtStartup as integer) as integer
+declare function wxTipProvider_GetCurrentTip () as integer
+declare function wxCreateFileTipProvider_func (byval filename as zstring ptr, byval currentTip as integer) as wxTipProvider ptr
+declare function wxShowTip_func (byval parent as wxWindow ptr, byval tipProvider as wxTipProvider ptr, byval showAtStartup as integer) as integer
 
 #endif

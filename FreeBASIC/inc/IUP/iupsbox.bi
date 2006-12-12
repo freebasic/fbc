@@ -9,7 +9,9 @@
 #ifndef __iupsbox_bi__
 #define __iupsbox_bi__
 
-declare sub IupSboxOpen cdecl alias "IupSboxOpen" ()
-declare function IupSbox cdecl alias "IupSbox" (byval child as Ihandle ptr) as Ihandle ptr
+extern "c"
+declare sub IupSboxOpen ()
+declare function IupSbox (byval child as Ihandle ptr) as Ihandle ptr
+end extern
 
 #endif

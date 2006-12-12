@@ -10,7 +10,7 @@
 #define __gtkscrollbar_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkrange.bi"
+#include once "gtkrange.bi"
 
 #define GTK_TYPE_SCROLLBAR (gtk_scrollbar_get_type ())
 #define GTK_SCROLLBAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SCROLLBAR, GtkScrollbar))

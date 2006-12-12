@@ -9,7 +9,7 @@
 #ifndef __gtkmodules_bi__
 #define __gtkmodules_bi__
 
-#include once "gtk/gtk/gtksettings.bi"
+#include once "gtksettings.bi"
 
 declare function _gtk_find_module (byval name as zstring ptr, byval type as zstring ptr) as zstring ptr
 declare function _gtk_get_module_path (byval type as zstring ptr) as zstring ptr ptr

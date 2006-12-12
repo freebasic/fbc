@@ -10,8 +10,8 @@
 #define __gtkcelllayout_bi__
 
 #include once "gtk/glib-object.bi"
-#include once "gtk/gtk/gtkcellrenderer.bi"
-#include once "gtk/gtk/gtktreeviewcolumn.bi"
+#include once "gtkcellrenderer.bi"
+#include once "gtktreeviewcolumn.bi"
 
 #define GTK_TYPE_CELL_LAYOUT (gtk_cell_layout_get_type ())
 #define GTK_CELL_LAYOUT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_LAYOUT, GtkCellLayout))

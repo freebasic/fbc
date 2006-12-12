@@ -10,7 +10,7 @@
 #define __gtkiconfactory_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkrc.bi"
+#include once "gtkrc.bi"
 
 #define GTK_TYPE_ICON_FACTORY (gtk_icon_factory_get_type ())
 #define GTK_ICON_FACTORY(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_ICON_FACTORY, GtkIconFactory))

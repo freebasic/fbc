@@ -9,8 +9,8 @@
 #ifndef __wxc_initdialogevent_bi__
 #define __wxc_initdialogevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxInitDialogEvent cdecl alias "wxInitDialogEvent_ctor" (byval Id as integer) as wxInitDialogEvent ptr
+declare function wxInitDialogEvent alias "wxInitDialogEvent_ctor" (byval Id as integer) as wxInitDialogEvent ptr
 
 #endif

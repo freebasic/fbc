@@ -9,7 +9,7 @@
 #ifndef __gtkcelleditable_bi__
 #define __gtkcelleditable_bi__
 
-#include once "gtk/gtk/gtkwidget.bi"
+#include once "gtkwidget.bi"
 
 #define GTK_TYPE_CELL_EDITABLE (gtk_cell_editable_get_type ())
 #define GTK_CELL_EDITABLE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_EDITABLE, GtkCellEditable))

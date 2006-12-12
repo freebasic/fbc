@@ -102,24 +102,6 @@ type OutputFunc as function cdecl(byval as GifFileType ptr, byval as GifByteType
 #define PLAINTEXT_EXT_FUNC_CODE &h01
 #define APPLICATION_EXT_FUNC_CODE &hff
 
-declare function EGifOpenFileName cdecl alias "EGifOpenFileName" (byval GifFileName as zstring ptr, byval GifTestExistance as integer) as GifFileType ptr
-declare function EGifOpenFileHandle cdecl alias "EGifOpenFileHandle" (byval GifFileHandle as integer) as GifFileType ptr
-declare function EGifOpen cdecl alias "EGifOpen" (byval userPtr as any ptr, byval writeFunc as OutputFunc) as GifFileType ptr
-declare function EGifSpew cdecl alias "EGifSpew" (byval GifFile as GifFileType ptr) as integer
-declare sub EGifSetGifVersion cdecl alias "EGifSetGifVersion" (byval Version as zstring ptr)
-declare function EGifPutScreenDesc cdecl alias "EGifPutScreenDesc" (byval GifFile as GifFileType ptr, byval GifWidth as integer, byval GifHeight as integer, byval GifColorRes as integer, byval GifBackGround as integer, byval GifColorMap as ColorMapObject ptr) as integer
-declare function EGifPutImageDesc cdecl alias "EGifPutImageDesc" (byval GifFile as GifFileType ptr, byval GifLeft as integer, byval GifTop as integer, byval Width as integer, byval GifHeight as integer, byval GifInterlace as integer, byval GifColorMap as ColorMapObject ptr) as integer
-declare function EGifPutLine cdecl alias "EGifPutLine" (byval GifFile as GifFileType ptr, byval GifLine as GifPixelType ptr, byval GifLineLen as integer) as integer
-declare function EGifPutPixel cdecl alias "EGifPutPixel" (byval GifFile as GifFileType ptr, byval GifPixel as GifPixelType) as integer
-declare function EGifPutComment cdecl alias "EGifPutComment" (byval GifFile as GifFileType ptr, byval GifComment as zstring ptr) as integer
-declare function EGifPutExtensionFirst cdecl alias "EGifPutExtensionFirst" (byval GifFile as GifFileType ptr, byval GifExtCode as integer, byval GifExtLen as integer, byval GifExtension as any ptr) as integer
-declare function EGifPutExtensionNext cdecl alias "EGifPutExtensionNext" (byval GifFile as GifFileType ptr, byval GifExtCode as integer, byval GifExtLen as integer, byval GifExtension as any ptr) as integer
-declare function EGifPutExtensionLast cdecl alias "EGifPutExtensionLast" (byval GifFile as GifFileType ptr, byval GifExtCode as integer, byval GifExtLen as integer, byval GifExtension as any ptr) as integer
-declare function EGifPutExtension cdecl alias "EGifPutExtension" (byval GifFile as GifFileType ptr, byval GifExtCode as integer, byval GifExtLen as integer, byval GifExtension as any ptr) as integer
-declare function EGifPutCode cdecl alias "EGifPutCode" (byval GifFile as GifFileType ptr, byval GifCodeSize as integer, byval GifCodeBlock as GifByteType ptr) as integer
-declare function EGifPutCodeNext cdecl alias "EGifPutCodeNext" (byval GifFile as GifFileType ptr, byval GifCodeBlock as GifByteType ptr) as integer
-declare function EGifCloseFile cdecl alias "EGifCloseFile" (byval GifFile as GifFileType ptr) as integer
-
 #define E_GIF_ERR_OPEN_FAILED 1
 #define E_GIF_ERR_WRITE_FAILED 2
 #define E_GIF_ERR_HAS_SCRN_DSCR 3
@@ -130,23 +112,6 @@ declare function EGifCloseFile cdecl alias "EGifCloseFile" (byval GifFile as Gif
 #define E_GIF_ERR_DISK_IS_FULL 8
 #define E_GIF_ERR_CLOSE_FAILED 9
 #define E_GIF_ERR_NOT_WRITEABLE 10
-
-declare function DGifOpenFileName cdecl alias "DGifOpenFileName" (byval GifFileName as zstring ptr) as GifFileType ptr
-declare function DGifOpenFileHandle cdecl alias "DGifOpenFileHandle" (byval GifFileHandle as integer) as GifFileType ptr
-declare function DGifSlurp cdecl alias "DGifSlurp" (byval GifFile as GifFileType ptr) as integer
-declare function DGifOpen cdecl alias "DGifOpen" (byval userPtr as any ptr, byval readFunc as InputFunc) as GifFileType ptr
-declare function DGifGetScreenDesc cdecl alias "DGifGetScreenDesc" (byval GifFile as GifFileType ptr) as integer
-declare function DGifGetRecordType cdecl alias "DGifGetRecordType" (byval GifFile as GifFileType ptr, byval GifType as GifRecordType ptr) as integer
-declare function DGifGetImageDesc cdecl alias "DGifGetImageDesc" (byval GifFile as GifFileType ptr) as integer
-declare function DGifGetLine cdecl alias "DGifGetLine" (byval GifFile as GifFileType ptr, byval GifLine as GifPixelType ptr, byval GifLineLen as integer) as integer
-declare function DGifGetPixel cdecl alias "DGifGetPixel" (byval GifFile as GifFileType ptr, byval GifPixel as GifPixelType) as integer
-declare function DGifGetComment cdecl alias "DGifGetComment" (byval GifFile as GifFileType ptr, byval GifComment as zstring ptr) as integer
-declare function DGifGetExtension cdecl alias "DGifGetExtension" (byval GifFile as GifFileType ptr, byval GifExtCode as integer ptr, byval GifExtension as GifByteType ptr ptr) as integer
-declare function DGifGetExtensionNext cdecl alias "DGifGetExtensionNext" (byval GifFile as GifFileType ptr, byval GifExtension as GifByteType ptr ptr) as integer
-declare function DGifGetCode cdecl alias "DGifGetCode" (byval GifFile as GifFileType ptr, byval GifCodeSize as integer ptr, byval GifCodeBlock as GifByteType ptr ptr) as integer
-declare function DGifGetCodeNext cdecl alias "DGifGetCodeNext" (byval GifFile as GifFileType ptr, byval GifCodeBlock as GifByteType ptr ptr) as integer
-declare function DGifGetLZCodes cdecl alias "DGifGetLZCodes" (byval GifFile as GifFileType ptr, byval GifCode as integer ptr) as integer
-declare function DGifCloseFile cdecl alias "DGifCloseFile" (byval GifFile as GifFileType ptr) as integer
 
 #define D_GIF_ERR_OPEN_FAILED 101
 #define D_GIF_ERR_READ_FAILED 102
@@ -162,15 +127,6 @@ declare function DGifCloseFile cdecl alias "DGifCloseFile" (byval GifFile as Gif
 #define D_GIF_ERR_IMAGE_DEFECT 112
 #define D_GIF_ERR_EOF_TOO_SOON 113
 
-declare function QuantizeBuffer cdecl alias "QuantizeBuffer" (byval Width as uinteger, byval Height as uinteger, byval ColorMapSize as integer ptr, byval RedInput as GifByteType ptr, byval GreenInput as GifByteType ptr, byval BlueInput as GifByteType ptr, byval OutputBuffer as GifByteType ptr, byval OutputColorMap as GifColorType ptr) as integer
-declare sub PrintGifError cdecl alias "PrintGifError" ()
-declare function GifLastError cdecl alias "GifLastError" () as integer
-declare function DumpScreen2Gif cdecl alias "DumpScreen2Gif" (byval FileName as zstring ptr, byval ReqGraphDriver as integer, byval ReqGraphMode1 as integer, byval ReqGraphMode2 as integer, byval ReqGraphMode3 as integer) as integer
-declare function MakeMapObject cdecl alias "MakeMapObject" (byval ColorCount as integer, byval ColorMap as GifColorType ptr) as ColorMapObject ptr
-declare sub FreeMapObject cdecl alias "FreeMapObject" (byval Object as ColorMapObject ptr)
-declare function UnionColorMap cdecl alias "UnionColorMap" (byval ColorIn1 as ColorMapObject ptr, byval ColorIn2 as ColorMapObject ptr, byval ColorTransIn2 as GifPixelType ptr) as ColorMapObject ptr
-declare function BitSize cdecl alias "BitSize" (byval n as integer) as integer
-
 type ExtensionBlock_
 	ByteCount as integer
 	Bytes as zstring ptr
@@ -185,20 +141,61 @@ type SavedImage_
 	ExtensionBlocks as ExtensionBlock ptr
 end type
 
-
-declare sub ApplyTranslation cdecl alias "ApplyTranslation" (byval Image as SavedImage ptr, byval Translation as GifPixelType ptr)
-declare sub MakeExtension cdecl alias "MakeExtension" (byval New_ as SavedImage ptr, byval Function as integer)
-declare function AddExtensionBlock cdecl alias "AddExtensionBlock" (byval New_ as SavedImage ptr, byval Len as integer, byval ExtData as ubyte ptr) as integer
-declare sub FreeExtension cdecl alias "FreeExtension" (byval Image as SavedImage ptr)
-declare function MakeSavedImage cdecl alias "MakeSavedImage" (byval GifFile as GifFileType ptr, byval CopyFrom as SavedImage ptr) as SavedImage ptr
-declare sub FreeSavedImages cdecl alias "FreeSavedImages" (byval GifFile as GifFileType ptr)
+extern "c"
+declare function EGifOpenFileName (byval GifFileName as zstring ptr, byval GifTestExistance as integer) as GifFileType ptr
+declare function EGifOpenFileHandle (byval GifFileHandle as integer) as GifFileType ptr
+declare function EGifOpen (byval userPtr as any ptr, byval writeFunc as OutputFunc) as GifFileType ptr
+declare function EGifSpew (byval GifFile as GifFileType ptr) as integer
+declare sub EGifSetGifVersion (byval Version as zstring ptr)
+declare function EGifPutScreenDesc (byval GifFile as GifFileType ptr, byval GifWidth as integer, byval GifHeight as integer, byval GifColorRes as integer, byval GifBackGround as integer, byval GifColorMap as ColorMapObject ptr) as integer
+declare function EGifPutImageDesc (byval GifFile as GifFileType ptr, byval GifLeft as integer, byval GifTop as integer, byval Width as integer, byval GifHeight as integer, byval GifInterlace as integer, byval GifColorMap as ColorMapObject ptr) as integer
+declare function EGifPutLine (byval GifFile as GifFileType ptr, byval GifLine as GifPixelType ptr, byval GifLineLen as integer) as integer
+declare function EGifPutPixel (byval GifFile as GifFileType ptr, byval GifPixel as GifPixelType) as integer
+declare function EGifPutComment (byval GifFile as GifFileType ptr, byval GifComment as zstring ptr) as integer
+declare function EGifPutExtensionFirst (byval GifFile as GifFileType ptr, byval GifExtCode as integer, byval GifExtLen as integer, byval GifExtension as any ptr) as integer
+declare function EGifPutExtensionNext (byval GifFile as GifFileType ptr, byval GifExtCode as integer, byval GifExtLen as integer, byval GifExtension as any ptr) as integer
+declare function EGifPutExtensionLast (byval GifFile as GifFileType ptr, byval GifExtCode as integer, byval GifExtLen as integer, byval GifExtension as any ptr) as integer
+declare function EGifPutExtension (byval GifFile as GifFileType ptr, byval GifExtCode as integer, byval GifExtLen as integer, byval GifExtension as any ptr) as integer
+declare function EGifPutCode (byval GifFile as GifFileType ptr, byval GifCodeSize as integer, byval GifCodeBlock as GifByteType ptr) as integer
+declare function EGifPutCodeNext (byval GifFile as GifFileType ptr, byval GifCodeBlock as GifByteType ptr) as integer
+declare function EGifCloseFile (byval GifFile as GifFileType ptr) as integer
+declare function DGifOpenFileName (byval GifFileName as zstring ptr) as GifFileType ptr
+declare function DGifOpenFileHandle (byval GifFileHandle as integer) as GifFileType ptr
+declare function DGifSlurp (byval GifFile as GifFileType ptr) as integer
+declare function DGifOpen (byval userPtr as any ptr, byval readFunc as InputFunc) as GifFileType ptr
+declare function DGifGetScreenDesc (byval GifFile as GifFileType ptr) as integer
+declare function DGifGetRecordType (byval GifFile as GifFileType ptr, byval GifType as GifRecordType ptr) as integer
+declare function DGifGetImageDesc (byval GifFile as GifFileType ptr) as integer
+declare function DGifGetLine (byval GifFile as GifFileType ptr, byval GifLine as GifPixelType ptr, byval GifLineLen as integer) as integer
+declare function DGifGetPixel (byval GifFile as GifFileType ptr, byval GifPixel as GifPixelType) as integer
+declare function DGifGetComment (byval GifFile as GifFileType ptr, byval GifComment as zstring ptr) as integer
+declare function DGifGetExtension (byval GifFile as GifFileType ptr, byval GifExtCode as integer ptr, byval GifExtension as GifByteType ptr ptr) as integer
+declare function DGifGetExtensionNext (byval GifFile as GifFileType ptr, byval GifExtension as GifByteType ptr ptr) as integer
+declare function DGifGetCode (byval GifFile as GifFileType ptr, byval GifCodeSize as integer ptr, byval GifCodeBlock as GifByteType ptr ptr) as integer
+declare function DGifGetCodeNext (byval GifFile as GifFileType ptr, byval GifCodeBlock as GifByteType ptr ptr) as integer
+declare function DGifGetLZCodes (byval GifFile as GifFileType ptr, byval GifCode as integer ptr) as integer
+declare function DGifCloseFile (byval GifFile as GifFileType ptr) as integer
+declare function QuantizeBuffer (byval Width as uinteger, byval Height as uinteger, byval ColorMapSize as integer ptr, byval RedInput as GifByteType ptr, byval GreenInput as GifByteType ptr, byval BlueInput as GifByteType ptr, byval OutputBuffer as GifByteType ptr, byval OutputColorMap as GifColorType ptr) as integer
+declare sub PrintGifError ()
+declare function GifLastError () as integer
+declare function DumpScreen2Gif (byval FileName as zstring ptr, byval ReqGraphDriver as integer, byval ReqGraphMode1 as integer, byval ReqGraphMode2 as integer, byval ReqGraphMode3 as integer) as integer
+declare function MakeMapObject (byval ColorCount as integer, byval ColorMap as GifColorType ptr) as ColorMapObject ptr
+declare sub FreeMapObject (byval Object as ColorMapObject ptr)
+declare function UnionColorMap (byval ColorIn1 as ColorMapObject ptr, byval ColorIn2 as ColorMapObject ptr, byval ColorTransIn2 as GifPixelType ptr) as ColorMapObject ptr
+declare function BitSize (byval n as integer) as integer
+declare sub ApplyTranslation (byval Image as SavedImage ptr, byval Translation as GifPixelType ptr)
+declare sub MakeExtension (byval New_ as SavedImage ptr, byval Function as integer)
+declare function AddExtensionBlock (byval New_ as SavedImage ptr, byval Len as integer, byval ExtData as ubyte ptr) as integer
+declare sub FreeExtension (byval Image as SavedImage ptr)
+declare function MakeSavedImage (byval GifFile as GifFileType ptr, byval CopyFrom as SavedImage ptr) as SavedImage ptr
+declare sub FreeSavedImages (byval GifFile as GifFileType ptr)
+declare sub DrawText (byval Image as SavedImage ptr, byval x as integer, byval y as integer, byval legend as zstring ptr, byval color as integer)
+declare sub DrawBox (byval Image as SavedImage ptr, byval x as integer, byval y as integer, byval w as integer, byval d as integer, byval color as integer)
+declare sub DrawRectangle (byval Image as SavedImage ptr, byval x as integer, byval y as integer, byval w as integer, byval d as integer, byval color as integer)
+declare sub DrawBoxedText (byval Image as SavedImage ptr, byval x as integer, byval y as integer, byval legend as zstring ptr, byval border as integer, byval bg as integer, byval fg as integer)
+end extern
 
 #define GIF_FONT_WIDTH 8
 #define GIF_FONT_HEIGHT 8
-
-declare sub DrawText cdecl alias "DrawText" (byval Image as SavedImage ptr, byval x as integer, byval y as integer, byval legend as zstring ptr, byval color as integer)
-declare sub DrawBox cdecl alias "DrawBox" (byval Image as SavedImage ptr, byval x as integer, byval y as integer, byval w as integer, byval d as integer, byval color as integer)
-declare sub DrawRectangle cdecl alias "DrawRectangle" (byval Image as SavedImage ptr, byval x as integer, byval y as integer, byval w as integer, byval d as integer, byval color as integer)
-declare sub DrawBoxedText cdecl alias "DrawBoxedText" (byval Image as SavedImage ptr, byval x as integer, byval y as integer, byval legend as zstring ptr, byval border as integer, byval bg as integer, byval fg as integer)
 
 #endif

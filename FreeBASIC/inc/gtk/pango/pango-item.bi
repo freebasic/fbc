@@ -9,7 +9,7 @@
 #ifndef __pango_item_bi__
 #define __pango_item_bi__
 
-#include once "gtk/pango/pango-types.bi"
+#include once "pango-types.bi"
 
 type PangoAnalysis as _PangoAnalysis
 type PangoItem as _PangoItem

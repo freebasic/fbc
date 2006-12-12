@@ -9,7 +9,7 @@
 #ifndef __art_affine_bi__
 #define __art_affine_bi__
 
-#include once "gtk/libart/art_point.bi"
+#include once "art_point.bi"
 
 declare sub art_affine_point (byval dst as ArtPoint ptr, byval src as ArtPoint ptr, byval affine as double ptr)
 declare sub art_affine_invert (byval dst_affine as double ptr, byval src_affine as double ptr)

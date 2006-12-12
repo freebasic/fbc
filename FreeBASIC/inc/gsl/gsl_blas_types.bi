@@ -9,7 +9,7 @@
 #ifndef __gsl_blas_types_bi__
 #define __gsl_blas_types_bi__
 
-#include once "gsl/gsl_cblas.bi"
+#include once "gsl_cblas.bi"
 
 type CBLAS_INDEX_t as integer
 type CBLAS_ORDER_t as CBLAS_ORDER

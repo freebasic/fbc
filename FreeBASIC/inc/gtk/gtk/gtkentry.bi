@@ -10,10 +10,10 @@
 #define __gtkentry_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkeditable.bi"
-#include once "gtk/gtk/gtkimcontext.bi"
-#include once "gtk/gtk/gtkmenu.bi"
-#include once "gtk/gtk/gtkentrycompletion.bi"
+#include once "gtkeditable.bi"
+#include once "gtkimcontext.bi"
+#include once "gtkmenu.bi"
+#include once "gtkentrycompletion.bi"
 #include once "gtk/pango.bi"
 
 #define GTK_TYPE_ENTRY                  gtk_entry_get_type()

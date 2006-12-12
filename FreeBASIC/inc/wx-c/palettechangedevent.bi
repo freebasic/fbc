@@ -9,10 +9,10 @@
 #ifndef __wxc_palettechangedevent_bi__
 #define __wxc_palettechangedevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxPaletteChangedEvent cdecl alias "wxPaletteChangedEvent_ctor" (byval type as wxEventType) as wxPaletteChangedEvent ptr
-declare sub wxPaletteChangedEvent_SetChangedWindow cdecl alias "wxPaletteChangedEvent_SetChangedWindow" (byval self as wxPaletteChangedEvent ptr, byval win as wxWindow ptr)
-declare function wxPaletteChangedEvent_GetChangedWindow cdecl alias "wxPaletteChangedEvent_GetChangedWindow" (byval self as wxPaletteChangedEvent ptr) as wxWindow ptr
+declare function wxPaletteChangedEvent alias "wxPaletteChangedEvent_ctor" (byval type as wxEventType) as wxPaletteChangedEvent ptr
+declare sub wxPaletteChangedEvent_SetChangedWindow (byval self as wxPaletteChangedEvent ptr, byval win as wxWindow ptr)
+declare function wxPaletteChangedEvent_GetChangedWindow (byval self as wxPaletteChangedEvent ptr) as wxWindow ptr
 
 #endif

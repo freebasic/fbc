@@ -9,7 +9,7 @@
 #ifndef __gdkrgb_bi__
 #define __gdkrgb_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
+#include once "gdktypes.bi"
 
 type GdkRgbCmap as _GdkRgbCmap
 

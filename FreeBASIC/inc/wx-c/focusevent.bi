@@ -9,10 +9,10 @@
 #ifndef __wxc_focusevent_bi__
 #define __wxc_focusevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxFocusEvent cdecl alias "wxFocusEvent_ctor" (byval type as wxEventType) as wxFocusEvent ptr
-declare function wxFocusEvent_GetWindow cdecl alias "wxFocusEvent_GetWindow" (byval self as wxFocusEvent ptr) as wxWindow ptr
-declare sub wxFocusEvent_SetWindow cdecl alias "wxFocusEvent_SetWindow" (byval self as wxFocusEvent ptr, byval win as wxWindow ptr)
+declare function wxFocusEvent alias "wxFocusEvent_ctor" (byval type as wxEventType) as wxFocusEvent ptr
+declare function wxFocusEvent_GetWindow (byval self as wxFocusEvent ptr) as wxWindow ptr
+declare sub wxFocusEvent_SetWindow (byval self as wxFocusEvent ptr, byval win as wxWindow ptr)
 
 #endif

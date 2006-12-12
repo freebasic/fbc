@@ -9,7 +9,7 @@
 #ifndef __gtkradiotoolbutton_bi__
 #define __gtkradiotoolbutton_bi__
 
-#include once "gtk/gtk/gtktoggletoolbutton.bi"
+#include once "gtktoggletoolbutton.bi"
 
 #define GTK_TYPE_RADIO_TOOL_BUTTON (gtk_radio_tool_button_get_type ())
 #define GTK_RADIO_TOOL_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_RADIO_TOOL_BUTTON, GtkRadioToolButton))

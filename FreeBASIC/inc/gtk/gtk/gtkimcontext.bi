@@ -10,7 +10,7 @@
 #define __gtkimcontext_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkobject.bi"
+#include once "gtkobject.bi"
 #include once "gtk/pango.bi"
 
 #define GTK_TYPE_IM_CONTEXT (gtk_im_context_get_type ())

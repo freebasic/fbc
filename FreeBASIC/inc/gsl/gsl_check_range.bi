@@ -9,7 +9,7 @@
 #ifndef __gsl_check_range_bi__
 #define __gsl_check_range_bi__
 
-#include once "gsl/gsl_types.bi"
+#include once "gsl_types.bi"
 
 #define GSL_RANGE_CHECK 1
 

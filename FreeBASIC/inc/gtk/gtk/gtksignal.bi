@@ -9,9 +9,9 @@
 #ifndef __gtksignal_bi__
 #define __gtksignal_bi__
 
-#include once "gtk/gtk/gtkenums.bi"
-#include once "gtk/gtk/gtkobject.bi"
-#include once "gtk/gtk/gtkmarshal.bi"
+#include once "gtkenums.bi"
+#include once "gtkobject.bi"
+#include once "gtkmarshal.bi"
 
 #define GTK_SIGNAL_OFFSET GTK_STRUCT_OFFSET
 #define	gtk_signal_lookup(name_,object_type)	g_signal_lookup(name_,object_type)

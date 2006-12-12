@@ -9,8 +9,8 @@
 #ifndef __gdkpixbuf_bi__
 #define __gdkpixbuf_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
-#include once "gtk/gdk/gdkrgb.bi"
+#include once "gdktypes.bi"
+#include once "gdkrgb.bi"
 #include once "gtk/gdk-pixbuf.bi"
 
 declare sub gdk_pixbuf_render_threshold_alpha (byval pixbuf as GdkPixbuf ptr, byval bitmap as GdkBitmap ptr, byval src_x as integer, byval src_y as integer, byval dest_x as integer, byval dest_y as integer, byval width as integer, byval height as integer, byval alpha_threshold as integer)

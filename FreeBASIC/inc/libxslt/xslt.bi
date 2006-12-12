@@ -9,13 +9,15 @@
 #ifndef __xslt_xslt_bi__
 #define __xslt_xslt_bi__
 
-#include once "libxslt/xsltexports.bi"
+#include once "xsltexports.bi"
 #include once "libxml/tree.bi"
 
 #define XSLT_DEFAULT_VERSION "1.0"
 #define XSLT_DEFAULT_VENDOR "libxslt"
 #define XSLT_DEFAULT_URL "http://xmlsoft.org/XSLT/"
 
-declare sub xsltCleanupGlobals cdecl alias "xsltCleanupGlobals" ()
+extern "c"
+declare sub xsltCleanupGlobals ()
+end extern
 
 #endif

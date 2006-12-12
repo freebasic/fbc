@@ -9,11 +9,11 @@
 #ifndef __pango_engine_bi__
 #define __pango_engine_bi__
 
-#include once "gtk/pango/pango-types.bi"
-#include once "gtk/pango/pango-item.bi"
-#include once "gtk/pango/pango-font.bi"
-#include once "gtk/pango/pango-glyph.bi"
-#include once "gtk/pango/pango-script.bi"
+#include once "pango-types.bi"
+#include once "pango-item.bi"
+#include once "pango-font.bi"
+#include once "pango-glyph.bi"
+#include once "pango-script.bi"
 
 #define PANGO_TYPE_ENGINE (pango_engine_get_type ())
 #define PANGO_ENGINE(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_ENGINE, PangoEngine))

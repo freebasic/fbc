@@ -9,10 +9,10 @@
 #ifndef __gsl_const_bi__
 #define __gsl_const_bi__
 
-#include once "gsl/gsl_const_num.bi"
-#include once "gsl/gsl_const_cgs.bi"
-#include once "gsl/gsl_const_mks.bi"
-#include once "gsl/gsl_const_cgsm.bi"
-#include once "gsl/gsl_const_mksa.bi"
+#include once "gsl_const_num.bi"
+#include once "gsl_const_cgs.bi"
+#include once "gsl_const_mks.bi"
+#include once "gsl_const_cgsm.bi"
+#include once "gsl_const_mksa.bi"
 
 #endif

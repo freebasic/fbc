@@ -9,9 +9,9 @@
 #ifndef __xslt_xsltInternals_bi__
 #define __xslt_xsltInternals_bi__
 
-#include once "libxslt/xsltexports.bi"
-#include once "libxslt/numbersInternals.bi"
-#include once "libxslt/xslt.bi"
+#include once "xsltexports.bi"
+#include once "numbersInternals.bi"
+#include once "xslt.bi"
 #include once "libxml/tree.bi"
 #include once "libxml/hash.bi"
 #include once "libxml/xpath.bi"
@@ -308,28 +308,30 @@ type _xsltTransformContext
 	internalized as integer
 end type
 
-declare function xsltNewStylesheet cdecl alias "xsltNewStylesheet" () as xsltStylesheetPtr
-declare function xsltParseStylesheetFile cdecl alias "xsltParseStylesheetFile" (byval filename as zstring ptr) as xsltStylesheetPtr
-declare sub xsltFreeStylesheet cdecl alias "xsltFreeStylesheet" (byval sheet as xsltStylesheetPtr)
-declare function xsltIsBlank cdecl alias "xsltIsBlank" (byval str as zstring ptr) as integer
-declare sub xsltFreeStackElemList cdecl alias "xsltFreeStackElemList" (byval elem as xsltStackElemPtr)
-declare function xsltDecimalFormatGetByName cdecl alias "xsltDecimalFormatGetByName" (byval sheet as xsltStylesheetPtr, byval name as zstring ptr) as xsltDecimalFormatPtr
-declare function xsltParseStylesheetProcess cdecl alias "xsltParseStylesheetProcess" (byval ret as xsltStylesheetPtr, byval doc as xmlDocPtr) as xsltStylesheetPtr
-declare sub xsltParseStylesheetOutput cdecl alias "xsltParseStylesheetOutput" (byval style as xsltStylesheetPtr, byval cur as xmlNodePtr)
-declare function xsltParseStylesheetDoc cdecl alias "xsltParseStylesheetDoc" (byval doc as xmlDocPtr) as xsltStylesheetPtr
-declare function xsltParseStylesheetImportedDoc cdecl alias "xsltParseStylesheetImportedDoc" (byval doc as xmlDocPtr, byval style as xsltStylesheetPtr) as xsltStylesheetPtr
-declare function xsltLoadStylesheetPI cdecl alias "xsltLoadStylesheetPI" (byval doc as xmlDocPtr) as xsltStylesheetPtr
-declare sub xsltNumberFormat cdecl alias "xsltNumberFormat" (byval ctxt as xsltTransformContextPtr, byval data as xsltNumberDataPtr, byval node as xmlNodePtr)
-declare function xsltFormatNumberConversion cdecl alias "xsltFormatNumberConversion" (byval self as xsltDecimalFormatPtr, byval format as zstring ptr, byval number as double, byval result as zstring ptr) as xmlXPathError
-declare sub xsltParseTemplateContent cdecl alias "xsltParseTemplateContent" (byval style as xsltStylesheetPtr, byval templ as xmlNodePtr)
-declare function xsltAllocateExtra cdecl alias "xsltAllocateExtra" (byval style as xsltStylesheetPtr) as integer
-declare function xsltAllocateExtraCtxt cdecl alias "xsltAllocateExtraCtxt" (byval ctxt as xsltTransformContextPtr) as integer
-declare function xsltCreateRVT cdecl alias "xsltCreateRVT" (byval ctxt as xsltTransformContextPtr) as xmlDocPtr
-declare function xsltRegisterTmpRVT cdecl alias "xsltRegisterTmpRVT" (byval ctxt as xsltTransformContextPtr, byval RVT as xmlDocPtr) as integer
-declare function xsltRegisterPersistRVT cdecl alias "xsltRegisterPersistRVT" (byval ctxt as xsltTransformContextPtr, byval RVT as xmlDocPtr) as integer
-declare sub xsltFreeRVTs cdecl alias "xsltFreeRVTs" (byval ctxt as xsltTransformContextPtr)
-declare sub xsltCompileAttr cdecl alias "xsltCompileAttr" (byval style as xsltStylesheetPtr, byval attr as xmlAttrPtr)
-declare function xsltEvalAVT cdecl alias "xsltEvalAVT" (byval ctxt as xsltTransformContextPtr, byval avt as any ptr, byval node as xmlNodePtr) as zstring ptr
-declare sub xsltFreeAVTList cdecl alias "xsltFreeAVTList" (byval avt as any ptr)
+extern "c"
+declare function xsltNewStylesheet () as xsltStylesheetPtr
+declare function xsltParseStylesheetFile (byval filename as zstring ptr) as xsltStylesheetPtr
+declare sub xsltFreeStylesheet (byval sheet as xsltStylesheetPtr)
+declare function xsltIsBlank (byval str as zstring ptr) as integer
+declare sub xsltFreeStackElemList (byval elem as xsltStackElemPtr)
+declare function xsltDecimalFormatGetByName (byval sheet as xsltStylesheetPtr, byval name as zstring ptr) as xsltDecimalFormatPtr
+declare function xsltParseStylesheetProcess (byval ret as xsltStylesheetPtr, byval doc as xmlDocPtr) as xsltStylesheetPtr
+declare sub xsltParseStylesheetOutput (byval style as xsltStylesheetPtr, byval cur as xmlNodePtr)
+declare function xsltParseStylesheetDoc (byval doc as xmlDocPtr) as xsltStylesheetPtr
+declare function xsltParseStylesheetImportedDoc (byval doc as xmlDocPtr, byval style as xsltStylesheetPtr) as xsltStylesheetPtr
+declare function xsltLoadStylesheetPI (byval doc as xmlDocPtr) as xsltStylesheetPtr
+declare sub xsltNumberFormat (byval ctxt as xsltTransformContextPtr, byval data as xsltNumberDataPtr, byval node as xmlNodePtr)
+declare function xsltFormatNumberConversion (byval self as xsltDecimalFormatPtr, byval format as zstring ptr, byval number as double, byval result as zstring ptr) as xmlXPathError
+declare sub xsltParseTemplateContent (byval style as xsltStylesheetPtr, byval templ as xmlNodePtr)
+declare function xsltAllocateExtra (byval style as xsltStylesheetPtr) as integer
+declare function xsltAllocateExtraCtxt (byval ctxt as xsltTransformContextPtr) as integer
+declare function xsltCreateRVT (byval ctxt as xsltTransformContextPtr) as xmlDocPtr
+declare function xsltRegisterTmpRVT (byval ctxt as xsltTransformContextPtr, byval RVT as xmlDocPtr) as integer
+declare function xsltRegisterPersistRVT (byval ctxt as xsltTransformContextPtr, byval RVT as xmlDocPtr) as integer
+declare sub xsltFreeRVTs (byval ctxt as xsltTransformContextPtr)
+declare sub xsltCompileAttr (byval style as xsltStylesheetPtr, byval attr as xmlAttrPtr)
+declare function xsltEvalAVT (byval ctxt as xsltTransformContextPtr, byval avt as any ptr, byval node as xmlNodePtr) as zstring ptr
+declare sub xsltFreeAVTList (byval avt as any ptr)
+end extern
 
 #endif

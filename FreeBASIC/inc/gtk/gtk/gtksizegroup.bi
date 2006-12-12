@@ -9,7 +9,7 @@
 #ifndef __gtksizegroup_bi__
 #define __gtksizegroup_bi__
 
-#include once "gtk/gtk/gtkwidget.bi"
+#include once "gtkwidget.bi"
 
 #define GTK_TYPE_SIZE_GROUP (gtk_size_group_get_type ())
 #define GTK_SIZE_GROUP(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SIZE_GROUP, GtkSizeGroup))

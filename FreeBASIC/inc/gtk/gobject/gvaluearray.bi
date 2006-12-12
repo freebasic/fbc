@@ -9,7 +9,7 @@
 #ifndef __gvaluearray_bi__
 #define __gvaluearray_bi__
 
-#include once "gtk/gobject/gvalue.bi"
+#include once "gvalue.bi"
 
 type GValueArray as _GValueArray
 

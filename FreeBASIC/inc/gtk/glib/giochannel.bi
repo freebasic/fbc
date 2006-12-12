@@ -9,9 +9,9 @@
 #ifndef __giochannel_bi__
 #define __giochannel_bi__
 
-#include once "gtk/glib/gconvert.bi"
-#include once "gtk/glib/gmain.bi"
-#include once "gtk/glib/gstring.bi"
+#include once "gconvert.bi"
+#include once "gmain.bi"
+#include once "gstring.bi"
 
 type GIOChannel as _GIOChannel
 type GIOFuncs as _GIOFuncs

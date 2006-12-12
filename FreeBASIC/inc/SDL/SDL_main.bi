@@ -11,12 +11,12 @@
 
 declare function SDL_main cdecl alias "SDL_main" (byval argc as integer, byval argv as byte ptr ptr) as integer
 
-#include once "SDL/SDL_types.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_types.bi"
+#include once "begin_code.bi"
 
 declare sub SDL_SetModuleHandle cdecl alias "SDL_SetModuleHandle" (byval hInst as any ptr)
 declare function SDL_RegisterApp cdecl alias "SDL_RegisterApp" (byval name as zstring ptr, byval style as Uint32, byval hInst as any ptr) as integer
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

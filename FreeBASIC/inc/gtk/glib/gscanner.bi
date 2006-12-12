@@ -9,7 +9,7 @@
 #ifndef __gscanner_bi__
 #define __gscanner_bi__
 
-#include once "gtk/glib/ghash.bi"
+#include once "ghash.bi"
 
 type GScanner as _GScanner
 type GScannerConfig as _GScannerConfig

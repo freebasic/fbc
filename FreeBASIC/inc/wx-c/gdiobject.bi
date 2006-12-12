@@ -9,8 +9,8 @@
 #ifndef __wxc_gdiobject_bi__
 #define __wxc_gdiobject_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare sub wxGDIObj_dtor cdecl alias "wxGDIObj_dtor" (byval self as wxGDIObject ptr)
+declare sub wxGDIObj_dtor (byval self as wxGDIObject ptr)
 
 #endif

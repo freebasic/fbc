@@ -9,9 +9,9 @@
 #ifndef __art_bpath_bi__
 #define __art_bpath_bi__
 
-#include once "gtk/libart/art_misc.bi"
-#include once "gtk/libart/art_point.bi"
-#include once "gtk/libart/art_pathcode.bi"
+#include once "art_misc.bi"
+#include once "art_point.bi"
+#include once "art_pathcode.bi"
 
 type ArtBpath as _ArtBpath
 

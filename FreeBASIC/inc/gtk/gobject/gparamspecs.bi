@@ -9,10 +9,10 @@
 #ifndef __gparamspecs_bi__
 #define __gparamspecs_bi__
 
-#include once "gtk/gobject/gvalue.bi"
-#include once "gtk/gobject/genums.bi"
-#include once "gtk/gobject/gboxed.bi"
-#include once "gtk/gobject/gobject.bi"
+#include once "gvalue.bi"
+#include once "genums.bi"
+#include once "gboxed.bi"
+#include once "gobject.bi"
 
 #define	G_TYPE_PARAM_CHAR g_param_spec_types[0]
 #define G_IS_PARAM_SPEC_CHAR_(pspec) G_TYPE_CHECK_INSTANCE_TYPE ((pspec), G_TYPE_PARAM_CHAR)

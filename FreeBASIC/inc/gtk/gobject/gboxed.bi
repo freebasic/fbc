@@ -9,7 +9,7 @@
 #ifndef __gboxed_bi__
 #define __gboxed_bi__
 
-#include once "gtk/gobject/gtype.bi"
+#include once "gtype.bi"
 
 #define G_TYPE_IS_BOXED(type_) G_TYPE_FUNDAMENTAL(type_) = G_TYPE_BOXED
 #define G_VALUE_HOLDS_BOXED(value) G_TYPE_CHECK_VALUE_TYPE(value, G_TYPE_BOXED)

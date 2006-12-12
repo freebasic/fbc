@@ -9,7 +9,7 @@
 #ifndef __art_uta_bi__
 #define __art_uta_bi__
 
-#include once "gtk/libart/art_misc.bi"
+#include once "art_misc.bi"
 
 type ArtUtaBbox as art_u32
 type ArtUta as _ArtUta

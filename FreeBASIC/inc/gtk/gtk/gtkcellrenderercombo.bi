@@ -9,8 +9,8 @@
 #ifndef __gtkcellrenderercombo_bi__
 #define __gtkcellrenderercombo_bi__
 
-#include once "gtk/gtk/gtktreemodel.bi"
-#include once "gtk/gtk/gtkcellrenderertext.bi"
+#include once "gtktreemodel.bi"
+#include once "gtkcellrenderertext.bi"
 
 #define GTK_TYPE_CELL_RENDERER_COMBO (gtk_cell_renderer_combo_get_type ())
 #define GTK_CELL_RENDERER_COMBO(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_RENDERER_COMBO, GtkCellRendererCombo))

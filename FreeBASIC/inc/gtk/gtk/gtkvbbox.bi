@@ -9,7 +9,7 @@
 #ifndef __gtkvbbox_bi__
 #define __gtkvbbox_bi__
 
-#include once "gtk/gtk/gtkbbox.bi"
+#include once "gtkbbox.bi"
 
 #define GTK_TYPE_VBUTTON_BOX (gtk_vbutton_box_get_type ())
 #define GTK_VBUTTON_BOX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VBUTTON_BOX, GtkVButtonBox))

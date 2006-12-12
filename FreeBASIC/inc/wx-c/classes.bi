@@ -1,7 +1,7 @@
 #ifndef __wxc_WXCLASSES_bi__
 #define __wxc_WXCLASSES_bi__
 
-type Virtual_Dispose as sub ()
+type Virtual_Dispose as sub WXCALL ()
 
 type _acceleratorentry as any
 type _activateevent as any

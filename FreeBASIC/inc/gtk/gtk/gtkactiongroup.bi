@@ -9,8 +9,8 @@
 #ifndef __gtkactiongroup_bi__
 #define __gtkactiongroup_bi__
 
-#include once "gtk/gtk/gtkaction.bi"
-#include once "gtk/gtk/gtkitemfactory.bi"
+#include once "gtkaction.bi"
+#include once "gtkitemfactory.bi"
 
 #define GTK_TYPE_ACTION_GROUP (gtk_action_group_get_type ())
 #define GTK_ACTION_GROUP(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ACTION_GROUP, GtkActionGroup))

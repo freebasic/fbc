@@ -10,7 +10,7 @@
 #define __gtkarrow_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkmisc.bi"
+#include once "gtkmisc.bi"
 
 #define GTK_TYPE_ARROW (gtk_arrow_get_type ())
 #define GTK_ARROW(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ARROW, GtkArrow))

@@ -10,7 +10,7 @@
 #define __gtkoptionmenu_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkbutton.bi"
+#include once "gtkbutton.bi"
 
 #define GTK_TYPE_OPTION_MENU (gtk_option_menu_get_type ())
 #define GTK_OPTION_MENU(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_OPTION_MENU, GtkOptionMenu))

@@ -9,9 +9,9 @@
 #ifndef __wxc_windowdestroyevent_bi__
 #define __wxc_windowdestroyevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxWindowDestroyEvent cdecl alias "wxWindowDestroyEvent_ctor" (byval win as wxWindow ptr) as wxWindowDestroyEvent ptr
-declare function wxWindowDestroyEvent_GetWindow cdecl alias "wxWindowDestroyEvent_GetWindow" (byval self as wxWindowDestroyEvent ptr) as wxWindow ptr
+declare function wxWindowDestroyEvent alias "wxWindowDestroyEvent_ctor" (byval win as wxWindow ptr) as wxWindowDestroyEvent ptr
+declare function wxWindowDestroyEvent_GetWindow (byval self as wxWindowDestroyEvent ptr) as wxWindow ptr
 
 #endif

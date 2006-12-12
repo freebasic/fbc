@@ -9,8 +9,8 @@
 #ifndef __gtktreemodelsort_bi__
 #define __gtktreemodelsort_bi__
 
-#include once "gtk/gtk/gtktreemodel.bi"
-#include once "gtk/gtk/gtktreesortable.bi"
+#include once "gtktreemodel.bi"
+#include once "gtktreesortable.bi"
 
 #define GTK_TYPE_TREE_MODEL_SORT (gtk_tree_model_sort_get_type ())
 #define GTK_TREE_MODEL_SORT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TREE_MODEL_SORT, GtkTreeModelSort))

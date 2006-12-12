@@ -9,7 +9,7 @@
 #ifndef __fterrors_bi__
 #define __fterrors_bi__
 
-#include once "freetype2/ftmoderr.bi"
+#include once "ftmoderr.bi"
 
 #define FT_ERR_BASE 0
 

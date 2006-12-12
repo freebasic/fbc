@@ -9,10 +9,10 @@
 #ifndef __pango_glyph_item_bi__
 #define __pango_glyph_item_bi__
 
-#include once "gtk/pango/pango-attributes.bi"
-#include once "gtk/pango/pango-break.bi"
-#include once "gtk/pango/pango-item.bi"
-#include once "gtk/pango/pango-glyph.bi"
+#include once "pango-attributes.bi"
+#include once "pango-break.bi"
+#include once "pango-item.bi"
+#include once "pango-glyph.bi"
 
 type PangoGlyphItem as _PangoGlyphItem
 

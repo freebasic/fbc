@@ -9,7 +9,7 @@
 #ifndef __gdkimage_bi__
 #define __gdkimage_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
+#include once "gdktypes.bi"
 
 #define GDK_TYPE_IMAGE (gdk_image_get_type ())
 #define GDK_IMAGE(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_IMAGE, GdkImage))

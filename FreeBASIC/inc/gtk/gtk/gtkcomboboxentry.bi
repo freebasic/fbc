@@ -9,8 +9,8 @@
 #ifndef __gtkcomboboxentry_bi__
 #define __gtkcomboboxentry_bi__
 
-#include once "gtk/gtk/gtkcombobox.bi"
-#include once "gtk/gtk/gtktreemodel.bi"
+#include once "gtkcombobox.bi"
+#include once "gtktreemodel.bi"
 
 #define GTK_TYPE_COMBO_BOX_ENTRY (gtk_combo_box_entry_get_type ())
 #define GTK_COMBO_BOX_ENTRY(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_COMBO_BOX_ENTRY, GtkComboBoxEntry))

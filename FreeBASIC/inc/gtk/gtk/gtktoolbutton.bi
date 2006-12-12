@@ -9,7 +9,7 @@
 #ifndef __gtktoolbutton_bi__
 #define __gtktoolbutton_bi__
 
-#include once "gtk/gtk/gtktoolitem.bi"
+#include once "gtktoolitem.bi"
 
 #define GTK_TYPE_TOOL_BUTTON (gtk_tool_button_get_type ())
 #define GTK_TOOL_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TOOL_BUTTON, GtkToolButton))

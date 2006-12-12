@@ -9,7 +9,7 @@
 #ifndef __gtkexpander_bi__
 #define __gtkexpander_bi__
 
-#include once "gtk/gtk/gtkbin.bi"
+#include once "gtkbin.bi"
 
 #define GTK_TYPE_EXPANDER (gtk_expander_get_type ())
 #define GTK_EXPANDER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_EXPANDER, GtkExpander))

@@ -9,7 +9,7 @@
 #ifndef __gdkvisual_bi__
 #define __gdkvisual_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
+#include once "gdktypes.bi"
 
 #define GDK_TYPE_VISUAL (gdk_visual_get_type ())
 #define GDK_VISUAL(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_VISUAL, GdkVisual))

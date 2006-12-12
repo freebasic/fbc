@@ -9,9 +9,9 @@
 #ifndef __gtkcolorseldialog_bi__
 #define __gtkcolorseldialog_bi__
 
-#include once "gtk/gtk/gtkdialog.bi"
-#include once "gtk/gtk/gtkcolorsel.bi"
-#include once "gtk/gtk/gtkvbox.bi"
+#include once "gtkdialog.bi"
+#include once "gtkcolorsel.bi"
+#include once "gtkvbox.bi"
 
 #define GTK_TYPE_COLOR_SELECTION_DIALOG (gtk_color_selection_dialog_get_type ())
 #define GTK_COLOR_SELECTION_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_COLOR_SELECTION_DIALOG, GtkColorSelectionDialog))

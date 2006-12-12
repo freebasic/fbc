@@ -9,7 +9,7 @@
 #ifndef __gdkregion_bi__
 #define __gdkregion_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
+#include once "gdktypes.bi"
 
 enum GdkFillRule
 	GDK_EVEN_ODD_RULE

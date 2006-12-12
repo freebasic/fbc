@@ -9,7 +9,7 @@
 #ifndef __grel_bi__
 #define __grel_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 type GRelation as _GRelation
 type GTuples as _GTuples

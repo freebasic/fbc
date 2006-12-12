@@ -10,7 +10,7 @@
 #define __gtkaccelgroup_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkenums.bi"
+#include once "gtkenums.bi"
 
 #define GTK_TYPE_ACCEL_GROUP (gtk_accel_group_get_type ())
 #define GTK_ACCEL_GROUP(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_ACCEL_GROUP, GtkAccelGroup))

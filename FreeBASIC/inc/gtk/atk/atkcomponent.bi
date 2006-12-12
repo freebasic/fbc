@@ -9,8 +9,8 @@
 #ifndef __atkcomponent_bi__
 #define __atkcomponent_bi__
 
-#include once "gtk/atk/atkobject.bi"
-#include once "gtk/atk/atkutil.bi"
+#include once "atkobject.bi"
+#include once "atkutil.bi"
 
 #define ATK_TYPE_COMPONENT() atk_component_get_type()
 #define ATK_IS_COMPONENT(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), ATK_TYPE_COMPONENT)

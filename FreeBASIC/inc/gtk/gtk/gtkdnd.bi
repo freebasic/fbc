@@ -10,9 +10,9 @@
 #define __gtkdnd_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkenums.bi"
-#include once "gtk/gtk/gtkwidget.bi"
-#include once "gtk/gtk/gtkselection.bi"
+#include once "gtkenums.bi"
+#include once "gtkwidget.bi"
+#include once "gtkselection.bi"
 
 enum GtkDestDefaults
 	GTK_DEST_DEFAULT_MOTION = 1 shl 0

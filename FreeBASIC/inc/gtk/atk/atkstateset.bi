@@ -10,8 +10,8 @@
 #define __atkstateset_bi__
 
 #include once "gtk/glib-object.bi"
-#include once "gtk/atk/atkobject.bi"
-#include once "gtk/atk/atkstate.bi"
+#include once "atkobject.bi"
+#include once "atkstate.bi"
 
 #define ATK_TYPE_STATE_SET() atk_state_set_get_type ()
 #define ATK_STATE_SET(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_STATE_SET, AtkStateSet)

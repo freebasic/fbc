@@ -10,7 +10,7 @@
 #define __gtkgamma_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkvbox.bi"
+#include once "gtkvbox.bi"
 
 #define GTK_TYPE_GAMMA_CURVE (gtk_gamma_curve_get_type ())
 #define GTK_GAMMA_CURVE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_GAMMA_CURVE, GtkGammaCurve))

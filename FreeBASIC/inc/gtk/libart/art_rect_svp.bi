@@ -9,7 +9,7 @@
 #ifndef __art_rect_svp_bi__
 #define __art_rect_svp_bi__
 
-#include once "gtk/libart/art_svp.bi"
+#include once "art_svp.bi"
 
 declare sub art_drect_svp (byval bbox as ArtDRect ptr, byval svp as ArtSVP ptr)
 declare sub art_drect_svp_union (byval bbox as ArtDRect ptr, byval svp as ArtSVP ptr)

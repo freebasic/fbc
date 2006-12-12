@@ -9,8 +9,8 @@
 #ifndef __gmain_bi__
 #define __gmain_bi__
 
-#include once "gtk/glib/gslist.bi"
-#include once "gtk/glib/gthread.bi"
+#include once "gslist.bi"
+#include once "gthread.bi"
 
 type GMainContext as _GMainContext
 type GMainLoop as _GMainLoop

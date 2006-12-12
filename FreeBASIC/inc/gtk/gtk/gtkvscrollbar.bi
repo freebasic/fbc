@@ -10,7 +10,7 @@
 #define __gtkvscrollbar_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkscrollbar.bi"
+#include once "gtkscrollbar.bi"
 
 #define GTK_TYPE_VSCROLLBAR (gtk_vscrollbar_get_type ())
 #define GTK_VSCROLLBAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VSCROLLBAR, GtkVScrollbar))

@@ -9,12 +9,14 @@
 #ifndef __gsl_permute_vector_double_bi__
 #define __gsl_permute_vector_double_bi__
 
-#include once "gsl/gsl_errno.bi"
-#include once "gsl/gsl_permutation.bi"
-#include once "gsl/gsl_vector_double.bi"
-#include once "gsl/gsl_types.bi"
+#include once "gsl_errno.bi"
+#include once "gsl_permutation.bi"
+#include once "gsl_vector_double.bi"
+#include once "gsl_types.bi"
 
-declare function gsl_permute_vector cdecl alias "gsl_permute_vector" (byval p as gsl_permutation ptr, byval v as gsl_vector ptr) as integer
-declare function gsl_permute_vector_inverse cdecl alias "gsl_permute_vector_inverse" (byval p as gsl_permutation ptr, byval v as gsl_vector ptr) as integer
+extern "c"
+declare function gsl_permute_vector (byval p as gsl_permutation ptr, byval v as gsl_vector ptr) as integer
+declare function gsl_permute_vector_inverse (byval p as gsl_permutation ptr, byval v as gsl_vector ptr) as integer
+end extern
 
 #endif

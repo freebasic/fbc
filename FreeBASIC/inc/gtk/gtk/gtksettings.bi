@@ -9,7 +9,7 @@
 #ifndef __gtksettings_bi__
 #define __gtksettings_bi__
 
-#include once "gtk/gtk/gtkrc.bi"
+#include once "gtkrc.bi"
 
 #define GTK_TYPE_SETTINGS (gtk_settings_get_type ())
 #define GTK_SETTINGS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SETTINGS, GtkSettings))

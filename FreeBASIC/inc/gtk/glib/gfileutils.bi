@@ -9,7 +9,7 @@
 #ifndef __gfileutils_bi__
 #define __gfileutils_bi__
 
-#include once "gtk/glib/gerror.bi"
+#include once "gerror.bi"
 
 enum GFileError
 	G_FILE_ERROR_EXIST

@@ -9,7 +9,7 @@
 #ifndef __gtkinvisible_bi__
 #define __gtkinvisible_bi__
 
-#include once "gtk/gtk/gtkwidget.bi"
+#include once "gtkwidget.bi"
 
 #define GTK_TYPE_INVISIBLE (gtk_invisible_get_type ())
 #define GTK_INVISIBLE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_INVISIBLE, GtkInvisible))

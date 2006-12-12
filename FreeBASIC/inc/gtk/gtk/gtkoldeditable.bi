@@ -10,8 +10,8 @@
 #define __gtkoldeditable_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkeditable.bi"
-#include once "gtk/gtk/gtkwidget.bi"
+#include once "gtkeditable.bi"
+#include once "gtkwidget.bi"
 
 #define GTK_TYPE_OLD_EDITABLE (gtk_old_editable_get_type ())
 #define GTK_OLD_EDITABLE(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_OLD_EDITABLE, GtkOldEditable))

@@ -10,7 +10,7 @@
 #define __gtkhbox_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkbox.bi"
+#include once "gtkbox.bi"
 
 #define GTK_TYPE_HBOX (gtk_hbox_get_type ())
 #define GTK_HBOX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_HBOX, GtkHBox))

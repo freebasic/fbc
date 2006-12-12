@@ -9,9 +9,9 @@
 #ifndef __gtktoolitem_bi__
 #define __gtktoolitem_bi__
 
-#include once "gtk/gtk/gtkbin.bi"
-#include once "gtk/gtk/gtktooltips.bi"
-#include once "gtk/gtk/gtkmenuitem.bi"
+#include once "gtkbin.bi"
+#include once "gtktooltips.bi"
+#include once "gtkmenuitem.bi"
 
 #define GTK_TYPE_TOOL_ITEM (gtk_tool_item_get_type ())
 #define GTK_TOOL_ITEM(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), GTK_TYPE_TOOL_ITEM, GtkToolItem))

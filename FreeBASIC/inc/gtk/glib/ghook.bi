@@ -9,7 +9,7 @@
 #ifndef __ghook_bi__
 #define __ghook_bi__
 
-#include once "gtk/glib/gmem.bi"
+#include once "gmem.bi"
 
 type GHook as _GHook
 type GHookList as _GHookList

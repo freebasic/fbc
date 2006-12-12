@@ -9,7 +9,7 @@
 #ifndef __gtkctree_bi__
 #define __gtkctree_bi__
 
-#include once "gtk/gtk/gtkclist.bi"
+#include once "gtkclist.bi"
 
 #define GTK_TYPE_CTREE (gtk_ctree_get_type ())
 #define GTK_CTREE(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_CTREE, GtkCTree))

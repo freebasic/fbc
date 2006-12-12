@@ -9,7 +9,7 @@
 #ifndef __gsourceclosure_bi__
 #define __gsourceclosure_bi__
 
-#include once "gtk/gobject/gclosure.bi"
+#include once "gclosure.bi"
 
 declare sub g_source_set_closure (byval source as GSource ptr, byval closure as GClosure ptr)
 declare function g_io_channel_get_type () as GType

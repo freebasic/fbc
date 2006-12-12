@@ -9,7 +9,7 @@
 #ifndef __pango_tabs_bi__
 #define __pango_tabs_bi__
 
-#include once "gtk/pango/pango-types.bi"
+#include once "pango-types.bi"
 
 type PangoTabArray as _PangoTabArray
 

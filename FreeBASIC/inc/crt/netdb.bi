@@ -26,7 +26,6 @@
 #define _PATH_SERVICES "/etc/services"
 
 #define h_errno *__h_errno_location()
-declare function __h_errno_location cdecl alias "__h_errno_location" () as integer ptr
 
 #define NETDB_INTERNAL -1
 #define NETDB_SUCCESS 0
@@ -37,9 +36,6 @@ declare function __h_errno_location cdecl alias "__h_errno_location" () as integ
 #define NO_ADDRESS 4
 #define SCOPE_DELIMITER asc( "%" )
 
-declare sub herror cdecl alias "herror" (byval __str as zstring ptr)
-declare function hstrerror cdecl alias "hstrerror" (byval __err_num as integer) as zstring ptr
-
 type hostent
 	h_name as zstring ptr
 	h_aliases as zstring ptr ptr
@@ -48,25 +44,6 @@ type hostent
 	h_addr_list as zstring ptr ptr
 end type
 
-declare sub sethostent cdecl alias "sethostent" (byval __stay_open as integer)
-declare sub endhostent cdecl alias "endhostent" ()
-declare function gethostent cdecl alias "gethostent" () as hostent ptr
-declare function gethostbyaddr cdecl alias "gethostbyaddr" (byval __addr as any ptr, byval __len as __socklen_t, byval __type as integer) as hostent ptr
-declare function gethostbyname cdecl alias "gethostbyname" (byval __name as zstring ptr) as hostent ptr
-declare function gethostbyname2 cdecl alias "gethostbyname2" (byval __name as zstring ptr, byval __af as integer) as hostent ptr
-declare function gethostent_r cdecl alias "gethostent_r" (byval __result_buf as hostent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as hostent ptr ptr, byval __h_errnop as integer ptr) as integer
-declare function gethostbyaddr_r cdecl alias "gethostbyaddr_r" (byval __addr as any ptr, byval __len as __socklen_t, byval __type as integer, byval __result_buf as hostent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as hostent ptr ptr, byval __h_errnop as integer ptr) as integer
-declare function gethostbyname_r cdecl alias "gethostbyname_r" (byval __name as zstring ptr, byval __result_buf as hostent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as hostent ptr ptr, byval __h_errnop as integer ptr) as integer
-declare function gethostbyname2_r cdecl alias "gethostbyname2_r" (byval __name as zstring ptr, byval __af as integer, byval __result_buf as hostent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as hostent ptr ptr, byval __h_errnop as integer ptr) as integer
-declare sub setnetent cdecl alias "setnetent" (byval __stay_open as integer)
-declare sub endnetent cdecl alias "endnetent" ()
-declare function getnetent cdecl alias "getnetent" () as netent ptr
-declare function getnetbyaddr cdecl alias "getnetbyaddr" (byval __net as uint32_t, byval __type as integer) as netent ptr
-declare function getnetbyname cdecl alias "getnetbyname" (byval __name as zstring ptr) as netent ptr
-declare function getnetent_r cdecl alias "getnetent_r" (byval __result_buf as netent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as netent ptr ptr, byval __h_errnop as integer ptr) as integer
-declare function getnetbyaddr_r cdecl alias "getnetbyaddr_r" (byval __net as uint32_t, byval __type as integer, byval __result_buf as netent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as netent ptr ptr, byval __h_errnop as integer ptr) as integer
-declare function getnetbyname_r cdecl alias "getnetbyname_r" (byval __name as zstring ptr, byval __result_buf as netent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as netent ptr ptr, byval __h_errnop as integer ptr) as integer
-
 type servent
 	s_name as zstring ptr
 	s_aliases as zstring ptr ptr
@@ -74,42 +51,11 @@ type servent
 	s_proto as zstring ptr
 end type
 
-declare sub setservent cdecl alias "setservent" (byval __stay_open as integer)
-declare sub endservent cdecl alias "endservent" ()
-declare function getservent cdecl alias "getservent" () as servent ptr
-declare function getservbyname cdecl alias "getservbyname" (byval __name as zstring ptr, byval __proto as zstring ptr) as servent ptr
-declare function getservbyport cdecl alias "getservbyport" (byval __port as integer, byval __proto as zstring ptr) as servent ptr
-declare function getservent_r cdecl alias "getservent_r" (byval __result_buf as servent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as servent ptr ptr) as integer
-declare function getservbyname_r cdecl alias "getservbyname_r" (byval __name as zstring ptr, byval __proto as zstring ptr, byval __result_buf as servent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as servent ptr ptr) as integer
-declare function getservbyport_r cdecl alias "getservbyport_r" (byval __port as integer, byval __proto as zstring ptr, byval __result_buf as servent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as servent ptr ptr) as integer
-
 type protoent
 	p_name as zstring ptr
 	p_aliases as zstring ptr ptr
 	p_proto as integer
 end type
-
-declare sub setprotoent cdecl alias "setprotoent" (byval __stay_open as integer)
-declare sub endprotoent cdecl alias "endprotoent" ()
-declare function getprotoent cdecl alias "getprotoent" () as protoent ptr
-declare function getprotobyname cdecl alias "getprotobyname" (byval __name as zstring ptr) as protoent ptr
-declare function getprotobynumber cdecl alias "getprotobynumber" (byval __proto as integer) as protoent ptr
-declare function getprotoent_r cdecl alias "getprotoent_r" (byval __result_buf as protoent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as protoent ptr ptr) as integer
-declare function getprotobyname_r cdecl alias "getprotobyname_r" (byval __name as zstring ptr, byval __result_buf as protoent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as protoent ptr ptr) as integer
-declare function getprotobynumber_r cdecl alias "getprotobynumber_r" (byval __proto as integer, byval __result_buf as protoent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as protoent ptr ptr) as integer
-declare function setnetgrent cdecl alias "setnetgrent" (byval __netgroup as zstring ptr) as integer
-declare sub endnetgrent cdecl alias "endnetgrent" ()
-declare function getnetgrent cdecl alias "getnetgrent" (byval __hostp as byte ptr ptr, byval __userp as byte ptr ptr, byval __domainp as byte ptr ptr) as integer
-declare function innetgr cdecl alias "innetgr" (byval __netgroup as zstring ptr, byval __host as zstring ptr, byval __user as zstring ptr, byval domain as zstring ptr) as integer
-declare function getnetgrent_r cdecl alias "getnetgrent_r" (byval __hostp as byte ptr ptr, byval __userp as byte ptr ptr, byval __domainp as byte ptr ptr, byval __buffer as zstring ptr, byval __buflen as size_t) as integer
-declare function rcmd cdecl alias "rcmd" (byval __ahost as byte ptr ptr, byval __rport as ushort, byval __locuser as zstring ptr, byval __remuser as zstring ptr, byval __cmd as zstring ptr, byval __fd2p as integer ptr) as integer
-declare function rcmd_af cdecl alias "rcmd_af" (byval __ahost as byte ptr ptr, byval __rport as ushort, byval __locuser as zstring ptr, byval __remuser as zstring ptr, byval __cmd as zstring ptr, byval __fd2p as integer ptr, byval __af as sa_family_t) as integer
-declare function rexec cdecl alias "rexec" (byval __ahost as byte ptr ptr, byval __rport as integer, byval __name as zstring ptr, byval __pass as zstring ptr, byval __cmd as zstring ptr, byval __fd2p as integer ptr) as integer
-declare function rexec_af cdecl alias "rexec_af" (byval __ahost as byte ptr ptr, byval __rport as integer, byval __name as zstring ptr, byval __pass as zstring ptr, byval __cmd as zstring ptr, byval __fd2p as integer ptr, byval __af as sa_family_t) as integer
-declare function ruserok cdecl alias "ruserok" (byval __rhost as zstring ptr, byval __suser as integer, byval __remuser as zstring ptr, byval __locuser as zstring ptr) as integer
-declare function ruserok_af cdecl alias "ruserok_af" (byval __rhost as zstring ptr, byval __suser as integer, byval __remuser as zstring ptr, byval __locuser as zstring ptr, byval __af as sa_family_t) as integer
-declare function rresvport cdecl alias "rresvport" (byval __alport as integer ptr) as integer
-declare function rresvport_af cdecl alias "rresvport_af" (byval __alport as integer ptr, byval __af as sa_family_t) as integer
 
 type addrinfo
 	ai_flags as integer
@@ -149,9 +95,61 @@ end type
 #define NI_NAMEREQD 8
 #define NI_DGRAM 16
 
-declare function getaddrinfo cdecl alias "getaddrinfo" (byval __name as zstring ptr, byval __service as zstring ptr, byval __req as addrinfo ptr, byval __pai as addrinfo ptr ptr) as integer
-declare sub freeaddrinfo cdecl alias "freeaddrinfo" (byval __ai as addrinfo ptr)
-declare function gai_strerror cdecl alias "gai_strerror" (byval __ecode as integer) as zstring ptr
-declare function getnameinfo cdecl alias "getnameinfo" (byval __sa as sockaddr ptr, byval __salen as socklen_t, byval __host as zstring ptr, byval __hostlen as socklen_t, byval __serv as zstring ptr, byval __servlen as socklen_t, byval __flags as uinteger) as integer
+extern "c"
+declare function __h_errno_location () as integer ptr
+declare sub herror (byval __str as zstring ptr)
+declare function hstrerror (byval __err_num as integer) as zstring ptr
+declare sub sethostent (byval __stay_open as integer)
+declare sub endhostent ()
+declare function gethostent () as hostent ptr
+declare function gethostbyaddr (byval __addr as any ptr, byval __len as __socklen_t, byval __type as integer) as hostent ptr
+declare function gethostbyname (byval __name as zstring ptr) as hostent ptr
+declare function gethostbyname2 (byval __name as zstring ptr, byval __af as integer) as hostent ptr
+declare function gethostent_r (byval __result_buf as hostent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as hostent ptr ptr, byval __h_errnop as integer ptr) as integer
+declare function gethostbyaddr_r (byval __addr as any ptr, byval __len as __socklen_t, byval __type as integer, byval __result_buf as hostent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as hostent ptr ptr, byval __h_errnop as integer ptr) as integer
+declare function gethostbyname_r (byval __name as zstring ptr, byval __result_buf as hostent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as hostent ptr ptr, byval __h_errnop as integer ptr) as integer
+declare function gethostbyname2_r (byval __name as zstring ptr, byval __af as integer, byval __result_buf as hostent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as hostent ptr ptr, byval __h_errnop as integer ptr) as integer
+declare sub setnetent (byval __stay_open as integer)
+declare sub endnetent ()
+declare function getnetent () as netent ptr
+declare function getnetbyaddr (byval __net as uint32_t, byval __type as integer) as netent ptr
+declare function getnetbyname (byval __name as zstring ptr) as netent ptr
+declare function getnetent_r (byval __result_buf as netent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as netent ptr ptr, byval __h_errnop as integer ptr) as integer
+declare function getnetbyaddr_r (byval __net as uint32_t, byval __type as integer, byval __result_buf as netent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as netent ptr ptr, byval __h_errnop as integer ptr) as integer
+declare function getnetbyname_r (byval __name as zstring ptr, byval __result_buf as netent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as netent ptr ptr, byval __h_errnop as integer ptr) as integer
+declare sub setservent (byval __stay_open as integer)
+declare sub endservent ()
+declare function getservent () as servent ptr
+declare function getservbyname (byval __name as zstring ptr, byval __proto as zstring ptr) as servent ptr
+declare function getservbyport (byval __port as integer, byval __proto as zstring ptr) as servent ptr
+declare function getservent_r (byval __result_buf as servent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as servent ptr ptr) as integer
+declare function getservbyname_r (byval __name as zstring ptr, byval __proto as zstring ptr, byval __result_buf as servent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as servent ptr ptr) as integer
+declare function getservbyport_r (byval __port as integer, byval __proto as zstring ptr, byval __result_buf as servent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as servent ptr ptr) as integer
+declare sub setprotoent (byval __stay_open as integer)
+declare sub endprotoent ()
+declare function getprotoent () as protoent ptr
+declare function getprotobyname (byval __name as zstring ptr) as protoent ptr
+declare function getprotobynumber (byval __proto as integer) as protoent ptr
+declare function getprotoent_r (byval __result_buf as protoent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as protoent ptr ptr) as integer
+declare function getprotobyname_r (byval __name as zstring ptr, byval __result_buf as protoent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as protoent ptr ptr) as integer
+declare function getprotobynumber_r (byval __proto as integer, byval __result_buf as protoent ptr, byval __buf as zstring ptr, byval __buflen as size_t, byval __result as protoent ptr ptr) as integer
+declare function setnetgrent (byval __netgroup as zstring ptr) as integer
+declare sub endnetgrent ()
+declare function getnetgrent (byval __hostp as byte ptr ptr, byval __userp as byte ptr ptr, byval __domainp as byte ptr ptr) as integer
+declare function innetgr (byval __netgroup as zstring ptr, byval __host as zstring ptr, byval __user as zstring ptr, byval domain as zstring ptr) as integer
+declare function getnetgrent_r (byval __hostp as byte ptr ptr, byval __userp as byte ptr ptr, byval __domainp as byte ptr ptr, byval __buffer as zstring ptr, byval __buflen as size_t) as integer
+declare function rcmd (byval __ahost as byte ptr ptr, byval __rport as ushort, byval __locuser as zstring ptr, byval __remuser as zstring ptr, byval __cmd as zstring ptr, byval __fd2p as integer ptr) as integer
+declare function rcmd_af (byval __ahost as byte ptr ptr, byval __rport as ushort, byval __locuser as zstring ptr, byval __remuser as zstring ptr, byval __cmd as zstring ptr, byval __fd2p as integer ptr, byval __af as sa_family_t) as integer
+declare function rexec (byval __ahost as byte ptr ptr, byval __rport as integer, byval __name as zstring ptr, byval __pass as zstring ptr, byval __cmd as zstring ptr, byval __fd2p as integer ptr) as integer
+declare function rexec_af (byval __ahost as byte ptr ptr, byval __rport as integer, byval __name as zstring ptr, byval __pass as zstring ptr, byval __cmd as zstring ptr, byval __fd2p as integer ptr, byval __af as sa_family_t) as integer
+declare function ruserok (byval __rhost as zstring ptr, byval __suser as integer, byval __remuser as zstring ptr, byval __locuser as zstring ptr) as integer
+declare function ruserok_af (byval __rhost as zstring ptr, byval __suser as integer, byval __remuser as zstring ptr, byval __locuser as zstring ptr, byval __af as sa_family_t) as integer
+declare function rresvport (byval __alport as integer ptr) as integer
+declare function rresvport_af (byval __alport as integer ptr, byval __af as sa_family_t) as integer
+declare function getaddrinfo (byval __name as zstring ptr, byval __service as zstring ptr, byval __req as addrinfo ptr, byval __pai as addrinfo ptr ptr) as integer
+declare sub freeaddrinfo (byval __ai as addrinfo ptr)
+declare function gai_strerror (byval __ecode as integer) as zstring ptr
+declare function getnameinfo (byval __sa as sockaddr ptr, byval __salen as socklen_t, byval __host as zstring ptr, byval __hostlen as socklen_t, byval __serv as zstring ptr, byval __servlen as socklen_t, byval __flags as uinteger) as integer
+end extern
 
 #endif

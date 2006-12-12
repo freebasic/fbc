@@ -9,9 +9,9 @@
 #ifndef __SDL_timer_bi__
 #define __SDL_timer_bi__
 
-#include once "SDL/SDL_main.bi"
-#include once "SDL/SDL_types.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_main.bi"
+#include once "SDL_types.bi"
+#include once "begin_code.bi"
 
 #define SDL_TIMESLICE 10
 #define TIMER_RESOLUTION 10
@@ -29,6 +29,6 @@ type SDL_TimerID as _SDL_TimerID ptr
 declare function SDL_AddTimer cdecl alias "SDL_AddTimer" (byval interval as Uint32, byval callback as SDL_NewTimerCallback, byval param as any ptr) as SDL_TimerID
 declare function SDL_RemoveTimer cdecl alias "SDL_RemoveTimer" (byval t as SDL_TimerID) as SDL_bool
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

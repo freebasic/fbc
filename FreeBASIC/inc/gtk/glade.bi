@@ -15,9 +15,9 @@
 
 extern "c" lib "glade-2.0"
 
-#include once "gtk/glib.bi"
-#include once "gtk/libglade/glade-init.bi"
-#include once "gtk/libglade/glade-xml.bi"
+#include once "glib.bi"
+#include once "libglade/glade-init.bi"
+#include once "libglade/glade-xml.bi"
 
 end extern
 

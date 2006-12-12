@@ -9,7 +9,7 @@
 #ifndef __gdkpango_bi__
 #define __gdkpango_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
+#include once "gdktypes.bi"
 
 #define GDK_TYPE_PANGO_RENDERER (gdk_pango_renderer_get_type())
 #define GDK_PANGO_RENDERER(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_PANGO_RENDERER, GdkPangoRenderer))

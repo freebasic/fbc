@@ -9,7 +9,7 @@
 #ifndef __gthreadpool_bi__
 #define __gthreadpool_bi__
 
-#include once "gtk/glib/gthread.bi"
+#include once "gthread.bi"
 
 type GThreadPool as _GThreadPool
 

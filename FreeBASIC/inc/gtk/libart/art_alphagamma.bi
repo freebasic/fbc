@@ -9,7 +9,7 @@
 #ifndef __art_alphagamma_bi__
 #define __art_alphagamma_bi__
 
-#include once "gtk/libart/art_misc.bi"
+#include once "art_misc.bi"
 
 type ArtAlphaGamma as _ArtAlphaGamma
 

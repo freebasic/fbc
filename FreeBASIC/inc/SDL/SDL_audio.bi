@@ -10,12 +10,12 @@
 #define __SDL_audio_bi__
 
 #include once "crt/stdio.bi"
-#include once "SDL/SDL_main.bi"
-#include once "SDL/SDL_types.bi"
-#include once "SDL/SDL_error.bi"
-#include once "SDL/SDL_rwops.bi"
-#include once "SDL/SDL_byteorder.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_main.bi"
+#include once "SDL_types.bi"
+#include once "SDL_error.bi"
+#include once "SDL_rwops.bi"
+#include once "SDL_byteorder.bi"
+#include once "begin_code.bi"
 
 type SDL_AudioSpec
 	freq as integer
@@ -59,34 +59,32 @@ type SDL_AudioCVT
 	filter_index as integer
 end type
 
-declare function SDL_AudioInit cdecl alias "SDL_AudioInit" (byval driver_name as zstring ptr) as integer
-declare sub SDL_AudioQuit cdecl alias "SDL_AudioQuit" ()
-declare function SDL_AudioDriverName cdecl alias "SDL_AudioDriverName" (byval namebuf as zstring ptr, byval maxlen as integer) as zstring ptr
-declare function SDL_OpenAudio cdecl alias "SDL_OpenAudio" (byval desired as SDL_AudioSpec ptr, byval obtained as SDL_AudioSpec ptr) as integer
-
 enum SDL_audiostatus
 	SDL_AUDIO_STOPPED = 0
 	SDL_AUDIO_PLAYING
 	SDL_AUDIO_PAUSED
 end enum
 
-
-declare function SDL_GetAudioStatus cdecl alias "SDL_GetAudioStatus" () as SDL_audiostatus
-declare sub SDL_PauseAudio cdecl alias "SDL_PauseAudio" (byval pause_on as integer)
-declare function SDL_LoadWAV_RW cdecl alias "SDL_LoadWAV_RW" (byval src as SDL_RWops ptr, byval freesrc as integer, byval spec as SDL_AudioSpec ptr, byval audio_buf as Uint8 ptr ptr, byval audio_len as Uint32 ptr) as SDL_AudioSpec ptr
+extern "c"
+declare function SDL_AudioInit (byval driver_name as zstring ptr) as integer
+declare sub SDL_AudioQuit ()
+declare function SDL_AudioDriverName (byval namebuf as zstring ptr, byval maxlen as integer) as zstring ptr
+declare function SDL_OpenAudio (byval desired as SDL_AudioSpec ptr, byval obtained as SDL_AudioSpec ptr) as integer
+declare function SDL_GetAudioStatus () as SDL_audiostatus
+declare sub SDL_PauseAudio (byval pause_on as integer)
+declare function SDL_LoadWAV_RW (byval src as SDL_RWops ptr, byval freesrc as integer, byval spec as SDL_AudioSpec ptr, byval audio_buf as Uint8 ptr ptr, byval audio_len as Uint32 ptr) as SDL_AudioSpec ptr
 #define SDL_LoadWAV(file,spec,audio_buf,audio_len) SDL_LoadWAV_RW(SDL_RWFromFile(file, "rb"), 1, spec, audio_buf, audio_len)
-
-declare sub SDL_FreeWAV cdecl alias "SDL_FreeWAV" (byval audio_buf as Uint8 ptr)
-declare function SDL_BuildAudioCVT cdecl alias "SDL_BuildAudioCVT" (byval cvt as SDL_AudioCVT ptr, byval src_format as Uint16, byval src_channels as Uint8, byval src_rate as integer, byval dst_format as Uint16, byval dst_channels as Uint8, byval dst_rate as integer) as integer
-declare function SDL_ConvertAudio cdecl alias "SDL_ConvertAudio" (byval cvt as SDL_AudioCVT ptr) as integer
+declare sub SDL_FreeWAV (byval audio_buf as Uint8 ptr)
+declare function SDL_BuildAudioCVT (byval cvt as SDL_AudioCVT ptr, byval src_format as Uint16, byval src_channels as Uint8, byval src_rate as integer, byval dst_format as Uint16, byval dst_channels as Uint8, byval dst_rate as integer) as integer
+declare function SDL_ConvertAudio (byval cvt as SDL_AudioCVT ptr) as integer
+declare sub SDL_MixAudio (byval dst as Uint8 ptr, byval src as Uint8 ptr, byval len as Uint32, byval volume as integer)
+declare sub SDL_LockAudio ()
+declare sub SDL_UnlockAudio ()
+declare sub SDL_CloseAudio ()
+end extern
 
 #define SDL_MIX_MAXVOLUME 128
 
-declare sub SDL_MixAudio cdecl alias "SDL_MixAudio" (byval dst as Uint8 ptr, byval src as Uint8 ptr, byval len as Uint32, byval volume as integer)
-declare sub SDL_LockAudio cdecl alias "SDL_LockAudio" ()
-declare sub SDL_UnlockAudio cdecl alias "SDL_UnlockAudio" ()
-declare sub SDL_CloseAudio cdecl alias "SDL_CloseAudio" ()
-
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

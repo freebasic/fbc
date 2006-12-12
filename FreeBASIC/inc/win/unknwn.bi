@@ -57,23 +57,6 @@ end type
 type LPCLASSFACTORY as IClassFactory ptr
 #endif
 
-#ifdef WIN_INCLUDEPROXY
-declare function IUnknown_QueryInterface_Proxy alias "IUnknown_QueryInterface_Proxy" (byval as IUnknown ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
-declare sub IUnknown_QueryInterface_Stub alias "IUnknown_QueryInterface_Stub" (byval as LPRPCSTUBBUFFER, byval as LPRPCCHANNELBUFFER, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IUnknown_AddRef_Proxy alias "IUnknown_AddRef_Proxy" (byval as IUnknown ptr) as ULONG
-declare sub IUnknown_AddRef_Stub alias "IUnknown_AddRef_Stub" (byval as LPRPCSTUBBUFFER, byval as LPRPCCHANNELBUFFER, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IUnknown_Release_Proxy alias "IUnknown_Release_Proxy" (byval as IUnknown ptr) as ULONG
-declare sub IUnknown_Release_Stub alias "IUnknown_Release_Stub" (byval as LPRPCSTUBBUFFER, byval as LPRPCCHANNELBUFFER, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IClassFactory_RemoteCreateInstance_Proxy alias "IClassFactory_RemoteCreateInstance_Proxy" (byval as IClassFactory ptr, byval as IID ptr, byval as IUnknown ptr ptr) as HRESULT
-declare sub IClassFactory_RemoteCreateInstance_Stub alias "IClassFactory_RemoteCreateInstance_Stub" (byval as LPRPCSTUBBUFFER, byval as LPRPCCHANNELBUFFER, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IClassFactory_RemoteLockServer_Proxy alias "IClassFactory_RemoteLockServer_Proxy" (byval as IClassFactory ptr, byval as BOOL) as HRESULT
-declare sub IClassFactory_RemoteLockServer_Stub alias "IClassFactory_RemoteLockServer_Stub" (byval as LPRPCSTUBBUFFER, byval as LPRPCCHANNELBUFFER, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IClassFactory_CreateInstance_Proxy alias "IClassFactory_CreateInstance_Proxy" (byval as IClassFactory ptr, byval as IUnknown ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
-declare function IClassFactory_CreateInstance_Stub alias "IClassFactory_CreateInstance_Stub" (byval as IClassFactory ptr, byval as IID ptr, byval as IUnknown ptr ptr) as HRESULT
-declare function IClassFactory_LockServer_Proxy alias "IClassFactory_LockServer_Proxy" (byval as IClassFactory ptr, byval as BOOL) as HRESULT
-declare function IClassFactory_LockServer_Stub alias "IClassFactory_LockServer_Stub" (byval as IClassFactory ptr, byval as BOOL) as HRESULT
-#endif
-
 #define IUnknown_QueryInterface(T,r,O) (T)->lpVtbl->QueryInterface(T,r,O)
 #define IUnknown_AddRef(T) (T)->lpVtbl->AddRef(T)
 #define IUnknown_Release(T) (T)->lpVtbl->Release(T)

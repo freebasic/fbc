@@ -10,8 +10,8 @@
 #define __gtkcalendar_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkwidget.bi"
-#include once "gtk/gtk/gtksignal.bi"
+#include once "gtkwidget.bi"
+#include once "gtksignal.bi"
 
 #define GTK_TYPE_CALENDAR (gtk_calendar_get_type ())
 #define GTK_CALENDAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CALENDAR, GtkCalendar))

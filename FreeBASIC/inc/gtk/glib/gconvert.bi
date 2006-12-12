@@ -9,7 +9,7 @@
 #ifndef __gconvert_bi__
 #define __gconvert_bi__
 
-#include once "gtk/glib/gerror.bi"
+#include once "gerror.bi"
 
 enum GConvertError
 	G_CONVERT_ERROR_NO_CONVERSION

@@ -10,13 +10,13 @@
 #define __gtkclist_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtksignal.bi"
-#include once "gtk/gtk/gtkalignment.bi"
-#include once "gtk/gtk/gtklabel.bi"
-#include once "gtk/gtk/gtkbutton.bi"
-#include once "gtk/gtk/gtkhscrollbar.bi"
-#include once "gtk/gtk/gtkvscrollbar.bi"
-#include once "gtk/gtk/gtkenums.bi"
+#include once "gtksignal.bi"
+#include once "gtkalignment.bi"
+#include once "gtklabel.bi"
+#include once "gtkbutton.bi"
+#include once "gtkhscrollbar.bi"
+#include once "gtkvscrollbar.bi"
+#include once "gtkenums.bi"
 
 #define GTK_TYPE_CLIST (gtk_clist_get_type ())
 #define GTK_CLIST(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_CLIST, GtkCList))

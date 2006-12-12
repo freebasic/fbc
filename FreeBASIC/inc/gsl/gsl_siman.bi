@@ -9,8 +9,8 @@
 #ifndef __gsl_siman_bi__
 #define __gsl_siman_bi__
 
-#include once "gsl/gsl_rng.bi"
-#include once "gsl/gsl_types.bi"
+#include once "gsl_rng.bi"
+#include once "gsl_types.bi"
 
 type gsl_siman_Efunc_t as function cdecl(byval as any ptr) as double
 type gsl_siman_step_t as sub cdecl(byval as gsl_rng ptr, byval as any ptr, byval as double)
@@ -30,7 +30,9 @@ type gsl_siman_params_t
 	t_min as double
 end type
 
-declare sub gsl_siman_solve cdecl alias "gsl_siman_solve" (byval r as gsl_rng ptr, byval x0_p as any ptr, byval Ef as gsl_siman_Efunc_t, byval take_step as gsl_siman_step_t, byval distance as gsl_siman_metric_t, byval print_position as gsl_siman_print_t, byval copyfunc as gsl_siman_copy_t, byval copy_constructor as gsl_siman_copy_construct_t, byval destructor as gsl_siman_destroy_t, byval element_size as integer, byval params as gsl_siman_params_t)
-declare sub gsl_siman_solve_many cdecl alias "gsl_siman_solve_many" (byval r as gsl_rng ptr, byval x0_p as any ptr, byval Ef as gsl_siman_Efunc_t, byval take_step as gsl_siman_step_t, byval distance as gsl_siman_metric_t, byval print_position as gsl_siman_print_t, byval element_size as integer, byval params as gsl_siman_params_t)
+extern "c"
+declare sub gsl_siman_solve (byval r as gsl_rng ptr, byval x0_p as any ptr, byval Ef as gsl_siman_Efunc_t, byval take_step as gsl_siman_step_t, byval distance as gsl_siman_metric_t, byval print_position as gsl_siman_print_t, byval copyfunc as gsl_siman_copy_t, byval copy_constructor as gsl_siman_copy_construct_t, byval destructor as gsl_siman_destroy_t, byval element_size as integer, byval params as gsl_siman_params_t)
+declare sub gsl_siman_solve_many (byval r as gsl_rng ptr, byval x0_p as any ptr, byval Ef as gsl_siman_Efunc_t, byval take_step as gsl_siman_step_t, byval distance as gsl_siman_metric_t, byval print_position as gsl_siman_print_t, byval element_size as integer, byval params as gsl_siman_params_t)
+end extern
 
 #endif

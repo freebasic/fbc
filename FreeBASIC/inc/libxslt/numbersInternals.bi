@@ -9,7 +9,7 @@
 #ifndef __xslt_numbersInternals_bi__
 #define __xslt_numbersInternals_bi__
 
-#include once "libxslt/xsltexports.bi"
+#include once "xsltexports.bi"
 #include once "libxml/tree.bi"
 
 type xsltNumberData as _xsltNumberData

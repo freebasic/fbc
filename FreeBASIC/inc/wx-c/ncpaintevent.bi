@@ -9,8 +9,8 @@
 #ifndef __wxc_ncpaintevent_bi__
 #define __wxc_ncpaintevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxNcPaintEvent cdecl alias "wxNcPaintEvent_ctor" (byval Id as integer) as wxNcPaintEvent ptr
+declare function wxNcPaintEvent alias "wxNcPaintEvent_ctor" (byval Id as integer) as wxNcPaintEvent ptr
 
 #endif

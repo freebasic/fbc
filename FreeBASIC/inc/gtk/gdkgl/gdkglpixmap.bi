@@ -9,8 +9,8 @@
 #ifndef __gdkglpixmap_bi__
 #define __gdkglpixmap_bi__
 
-#include once "gtk/gdkgl/gdkgldefs.bi"
-#include once "gtk/gdkgl/gdkgltypes.bi"
+#include once "gdkgldefs.bi"
+#include once "gdkgltypes.bi"
 #include once "gtk/gdk/gdkpixmap.bi"
 
 #define GDK_TYPE_GL_PIXMAP (gdk_gl_pixmap_get_type ())

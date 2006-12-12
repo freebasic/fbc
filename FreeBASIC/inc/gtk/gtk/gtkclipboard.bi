@@ -9,7 +9,7 @@
 #ifndef __gtkclipboard_bi__
 #define __gtkclipboard_bi__
 
-#include once "gtk/gtk/gtkselection.bi"
+#include once "gtkselection.bi"
 
 #define GTK_TYPE_CLIPBOARD (gtk_clipboard_get_type ())
 #define GTK_CLIPBOARD(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CLIPBOARD, GtkClipboard))

@@ -9,8 +9,8 @@
 #ifndef __art_vpath_svp_bi__
 #define __art_vpath_svp_bi__
 
-#include once "gtk/libart/art_svp.bi"
-#include once "gtk/libart/art_vpath.bi"
+#include once "art_svp.bi"
+#include once "art_vpath.bi"
 
 declare function art_vpath_from_svp (byval svp as ArtSVP ptr) as ArtVpath ptr
 

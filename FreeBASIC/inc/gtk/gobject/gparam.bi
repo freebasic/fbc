@@ -9,7 +9,7 @@
 #ifndef __gparam_bi__
 #define __gparam_bi__
 
-#include once "gtk/gobject/gvalue.bi"
+#include once "gvalue.bi"
 
 #define G_TYPE_IS_PARAM(_type) (G_TYPE_FUNDAMENTAL (_type) == G_TYPE_PARAM)
 #define G_PARAM_SPEC(pspec) G_TYPE_CHECK_INSTANCE_CAST ((pspec), G_TYPE_PARAM, GParamSpec)

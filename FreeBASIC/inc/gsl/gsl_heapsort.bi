@@ -9,12 +9,14 @@
 #ifndef __gsl_heapsort_bi__
 #define __gsl_heapsort_bi__
 
-#include once "gsl/gsl_permutation.bi"
-#include once "gsl/gsl_types.bi"
+#include once "gsl_permutation.bi"
+#include once "gsl_types.bi"
 
 type gsl_comparison_fn_t as function cdecl(byval as any ptr, byval as any ptr) as integer
 
-declare sub gsl_heapsort cdecl alias "gsl_heapsort" (byval array as any ptr, byval count as integer, byval size as integer, byval compare as gsl_comparison_fn_t)
-declare function gsl_heapsort_index cdecl alias "gsl_heapsort_index" (byval p as integer ptr, byval array as any ptr, byval count as integer, byval size as integer, byval compare as gsl_comparison_fn_t) as integer
+extern "c"
+declare sub gsl_heapsort (byval array as any ptr, byval count as integer, byval size as integer, byval compare as gsl_comparison_fn_t)
+declare function gsl_heapsort_index (byval p as integer ptr, byval array as any ptr, byval count as integer, byval size as integer, byval compare as gsl_comparison_fn_t) as integer
+end extern
 
 #endif

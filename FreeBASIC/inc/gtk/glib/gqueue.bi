@@ -9,7 +9,7 @@
 #ifndef __gqueue_bi__
 #define __gqueue_bi__
 
-#include once "gtk/glib/glist.bi"
+#include once "glist.bi"
 
 type GQueue as _GQueue
 

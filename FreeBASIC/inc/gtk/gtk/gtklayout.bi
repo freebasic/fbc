@@ -10,8 +10,8 @@
 #define __gtklayout_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkcontainer.bi"
-#include once "gtk/gtk/gtkadjustment.bi"
+#include once "gtkcontainer.bi"
+#include once "gtkadjustment.bi"
 
 #define GTK_TYPE_LAYOUT (gtk_layout_get_type ())
 #define GTK_LAYOUT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_LAYOUT, GtkLayout))

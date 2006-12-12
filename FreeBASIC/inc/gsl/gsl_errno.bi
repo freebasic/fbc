@@ -9,7 +9,7 @@
 #ifndef __gsl_errno_bi__
 #define __gsl_errno_bi__
 
-#include once "gsl/gsl_types.bi"
+#include once "gsl_types.bi"
 
 #ifndef FILE
 type FILE as any ptr
@@ -53,16 +53,20 @@ enum
 	GSL_EOF = 32
 end enum
 
-declare sub gsl_error cdecl alias "gsl_error" (byval reason as zstring ptr, byval file as zstring ptr, byval line as integer, byval gsl_errno as integer)
-declare sub gsl_stream_printf cdecl alias "gsl_stream_printf" (byval label as zstring ptr, byval file as zstring ptr, byval line as integer, byval reason as zstring ptr)
-declare function gsl_strerror cdecl alias "gsl_strerror" (byval gsl_errno as integer) as zstring ptr
+extern "c"
+declare sub gsl_error (byval reason as zstring ptr, byval file as zstring ptr, byval line as integer, byval gsl_errno as integer)
+declare sub gsl_stream_printf (byval label as zstring ptr, byval file as zstring ptr, byval line as integer, byval reason as zstring ptr)
+declare function gsl_strerror (byval gsl_errno as integer) as zstring ptr
+end extern
 
 type gsl_error_handler_t as any
 type gsl_stream_handler_t as any
 
-declare function gsl_set_error_handler cdecl alias "gsl_set_error_handler" (byval new_handler as gsl_error_handler_t ptr) as gsl_error_handler_t ptr
-declare function gsl_set_error_handler_off cdecl alias "gsl_set_error_handler_off" () as gsl_error_handler_t ptr
-declare function gsl_set_stream_handler cdecl alias "gsl_set_stream_handler" (byval new_handler as gsl_stream_handler_t ptr) as gsl_stream_handler_t ptr
-declare function gsl_set_stream cdecl alias "gsl_set_stream" (byval new_stream as FILE ptr) as FILE ptr
+extern "c"
+declare function gsl_set_error_handler (byval new_handler as gsl_error_handler_t ptr) as gsl_error_handler_t ptr
+declare function gsl_set_error_handler_off () as gsl_error_handler_t ptr
+declare function gsl_set_stream_handler (byval new_handler as gsl_stream_handler_t ptr) as gsl_stream_handler_t ptr
+declare function gsl_set_stream (byval new_stream as FILE ptr) as FILE ptr
+end extern
 
 #endif

@@ -12,7 +12,7 @@
 
 #inclib "SDL_gfx"
 
-#include once "SDL/SDL.bi"
+#include once "SDL.bi"
 
 #define SMOOTHING_OFF		0
 #define SMOOTHING_ON		1

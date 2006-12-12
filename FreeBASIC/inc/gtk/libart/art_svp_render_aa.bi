@@ -9,7 +9,7 @@
 #ifndef __art_svp_render_aa_bi__
 #define __art_svp_render_aa_bi__
 
-#include once "gtk/libart/art_svp.bi"
+#include once "art_svp.bi"
 
 type ArtSVPRenderAAStep as _ArtSVPRenderAAStep
 type ArtSVPRenderAAIter as _ArtSVPRenderAAIter

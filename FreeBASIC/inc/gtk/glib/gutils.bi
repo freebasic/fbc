@@ -9,7 +9,7 @@
 #ifndef __gutils_bi__
 #define __gutils_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 #define G_DIR_SEPARATOR asc($"\")
 #define G_DIR_SEPARATOR_S $"\"

@@ -9,8 +9,8 @@
 #ifndef __gdkglfont_bi__
 #define __gdkglfont_bi__
 
-#include once "gtk/gdkgl/gdkgldefs.bi"
-#include once "gtk/gdkgl/gdkgltypes.bi"
+#include once "gdkgldefs.bi"
+#include once "gdkgltypes.bi"
 
 declare function gdk_gl_font_use_pango_font (byval font_desc as PangoFontDescription ptr, byval first as integer, byval count as integer, byval list_base as integer) as PangoFont ptr
 

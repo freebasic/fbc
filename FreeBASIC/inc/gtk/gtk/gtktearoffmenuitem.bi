@@ -10,7 +10,7 @@
 #define __gtktearoffmenuitem_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkmenuitem.bi"
+#include once "gtkmenuitem.bi"
 
 #define GTK_TYPE_TEAROFF_MENU_ITEM (gtk_tearoff_menu_item_get_type ())
 #define GTK_TEAROFF_MENU_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TEAROFF_MENU_ITEM, GtkTearoffMenuItem))

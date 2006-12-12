@@ -9,7 +9,7 @@
 #ifndef __gdir_bi__
 #define __gdir_bi__
 
-#include once "gtk/glib/gerror.bi"
+#include once "gerror.bi"
 
 type GDir as _GDir
 

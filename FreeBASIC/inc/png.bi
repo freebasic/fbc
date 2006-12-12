@@ -507,84 +507,13 @@ end type
 type version_1_2_8 as png_structp
 type png_structpp as png_struct ptr ptr
 
-declare function png_access_version_number cdecl alias "png_access_version_number" () as png_uint_32
-declare sub png_set_sig_bytes cdecl alias "png_set_sig_bytes" (byval png_ptr as png_structp, byval num_bytes as integer)
-declare function png_sig_cmp cdecl alias "png_sig_cmp" (byval sig as png_bytep, byval start as png_size_t, byval num_to_check as png_size_t) as integer
-declare function png_check_sig cdecl alias "png_check_sig" (byval sig as png_bytep, byval num as integer) as integer
-declare function png_create_read_struct cdecl alias "png_create_read_struct" (byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr) as png_structp
-declare function png_create_write_struct cdecl alias "png_create_write_struct" (byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr) as png_structp
-declare function png_get_compression_buffer_size cdecl alias "png_get_compression_buffer_size" (byval png_ptr as png_structp) as png_uint_32
-declare sub png_set_compression_buffer_size cdecl alias "png_set_compression_buffer_size" (byval png_ptr as png_structp, byval size as png_uint_32)
-declare function png_reset_zstream cdecl alias "png_reset_zstream" (byval png_ptr as png_structp) as integer
-declare function png_create_read_struct_2 cdecl alias "png_create_read_struct_2" (byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr, byval mem_ptr as png_voidp, byval malloc_fn as png_malloc_ptr, byval free_fn as png_free_ptr) as png_structp
-declare function png_create_write_struct_2 cdecl alias "png_create_write_struct_2" (byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr, byval mem_ptr as png_voidp, byval malloc_fn as png_malloc_ptr, byval free_fn as png_free_ptr) as png_structp
-declare sub png_write_chunk cdecl alias "png_write_chunk" (byval png_ptr as png_structp, byval chunk_name as png_bytep, byval data as png_bytep, byval length as png_size_t)
-declare sub png_write_chunk_start cdecl alias "png_write_chunk_start" (byval png_ptr as png_structp, byval chunk_name as png_bytep, byval length as png_uint_32)
-declare sub png_write_chunk_data cdecl alias "png_write_chunk_data" (byval png_ptr as png_structp, byval data as png_bytep, byval length as png_size_t)
-declare sub png_write_chunk_end cdecl alias "png_write_chunk_end" (byval png_ptr as png_structp)
-declare function png_create_info_struct cdecl alias "png_create_info_struct" (byval png_ptr as png_structp) as png_infop
-declare sub png_info_init cdecl alias "png_info_init" (byval info_ptr as png_infop)
-declare sub png_info_init_3 cdecl alias "png_info_init_3" (byval info_ptr as png_infopp, byval png_info_struct_size as png_size_t)
-declare sub png_write_info_before_PLTE cdecl alias "png_write_info_before_PLTE" (byval png_ptr as png_structp, byval info_ptr as png_infop)
-declare sub png_write_info cdecl alias "png_write_info" (byval png_ptr as png_structp, byval info_ptr as png_infop)
-declare sub png_read_info cdecl alias "png_read_info" (byval png_ptr as png_structp, byval info_ptr as png_infop)
-declare function png_convert_to_rfc1123 cdecl alias "png_convert_to_rfc1123" (byval png_ptr as png_structp, byval ptime as png_timep) as png_charp
-declare sub png_convert_from_struct_tm cdecl alias "png_convert_from_struct_tm" (byval ptime as png_timep, byval ttime as tm ptr)
-declare sub png_convert_from_time_t cdecl alias "png_convert_from_time_t" (byval ptime as png_timep, byval ttime as time_t)
-declare sub png_set_expand cdecl alias "png_set_expand" (byval png_ptr as png_structp)
-declare sub png_set_gray_1_2_4_to_8 cdecl alias "png_set_gray_1_2_4_to_8" (byval png_ptr as png_structp)
-declare sub png_set_palette_to_rgb cdecl alias "png_set_palette_to_rgb" (byval png_ptr as png_structp)
-declare sub png_set_tRNS_to_alpha cdecl alias "png_set_tRNS_to_alpha" (byval png_ptr as png_structp)
-declare sub png_set_bgr cdecl alias "png_set_bgr" (byval png_ptr as png_structp)
-declare sub png_set_gray_to_rgb cdecl alias "png_set_gray_to_rgb" (byval png_ptr as png_structp)
-declare sub png_set_rgb_to_gray cdecl alias "png_set_rgb_to_gray" (byval png_ptr as png_structp, byval error_action as integer, byval red as double, byval green as double)
-declare sub png_set_rgb_to_gray_fixed cdecl alias "png_set_rgb_to_gray_fixed" (byval png_ptr as png_structp, byval error_action as integer, byval red as png_fixed_point, byval green as png_fixed_point)
-declare function png_get_rgb_to_gray_status cdecl alias "png_get_rgb_to_gray_status" (byval png_ptr as png_structp) as png_byte
-declare sub png_build_grayscale_palette cdecl alias "png_build_grayscale_palette" (byval bit_depth as integer, byval palette as png_colorp)
-declare sub png_set_strip_alpha cdecl alias "png_set_strip_alpha" (byval png_ptr as png_structp)
-declare sub png_set_swap_alpha cdecl alias "png_set_swap_alpha" (byval png_ptr as png_structp)
-declare sub png_set_invert_alpha cdecl alias "png_set_invert_alpha" (byval png_ptr as png_structp)
-declare sub png_set_filler cdecl alias "png_set_filler" (byval png_ptr as png_structp, byval filler as png_uint_32, byval flags as integer)
-
 #define PNG_FILLER_BEFORE 0
 #define PNG_FILLER_AFTER 1
-
-declare sub png_set_add_alpha cdecl alias "png_set_add_alpha" (byval png_ptr as png_structp, byval filler as png_uint_32, byval flags as integer)
-declare sub png_set_swap cdecl alias "png_set_swap" (byval png_ptr as png_structp)
-declare sub png_set_packing cdecl alias "png_set_packing" (byval png_ptr as png_structp)
-declare sub png_set_packswap cdecl alias "png_set_packswap" (byval png_ptr as png_structp)
-declare sub png_set_shift cdecl alias "png_set_shift" (byval png_ptr as png_structp, byval true_bits as png_color_8p)
-declare function png_set_interlace_handling cdecl alias "png_set_interlace_handling" (byval png_ptr as png_structp) as integer
-declare sub png_set_invert_mono cdecl alias "png_set_invert_mono" (byval png_ptr as png_structp)
-declare sub png_set_background cdecl alias "png_set_background" (byval png_ptr as png_structp, byval background_color as png_color_16p, byval background_gamma_code as integer, byval need_expand as integer, byval background_gamma as double)
 
 #define PNG_BACKGROUND_GAMMA_UNKNOWN 0
 #define PNG_BACKGROUND_GAMMA_SCREEN 1
 #define PNG_BACKGROUND_GAMMA_FILE 2
 #define PNG_BACKGROUND_GAMMA_UNIQUE 3
-
-declare sub png_set_strip_16 cdecl alias "png_set_strip_16" (byval png_ptr as png_structp)
-declare sub png_set_dither cdecl alias "png_set_dither" (byval png_ptr as png_structp, byval palette as png_colorp, byval num_palette as integer, byval maximum_colors as integer, byval histogram as png_uint_16p, byval full_dither as integer)
-declare sub png_set_gamma cdecl alias "png_set_gamma" (byval png_ptr as png_structp, byval screen_gamma as double, byval default_file_gamma as double)
-declare sub png_permit_empty_plte cdecl alias "png_permit_empty_plte" (byval png_ptr as png_structp, byval empty_plte_permitted as integer)
-declare sub png_set_flush cdecl alias "png_set_flush" (byval png_ptr as png_structp, byval nrows as integer)
-declare sub png_write_flush cdecl alias "png_write_flush" (byval png_ptr as png_structp)
-declare sub png_start_read_image cdecl alias "png_start_read_image" (byval png_ptr as png_structp)
-declare sub png_read_update_info cdecl alias "png_read_update_info" (byval png_ptr as png_structp, byval info_ptr as png_infop)
-declare sub png_read_rows cdecl alias "png_read_rows" (byval png_ptr as png_structp, byval row as png_bytepp, byval display_row as png_bytepp, byval num_rows as png_uint_32)
-declare sub png_read_row cdecl alias "png_read_row" (byval png_ptr as png_structp, byval row as png_bytep, byval display_row as png_bytep)
-declare sub png_read_image cdecl alias "png_read_image" (byval png_ptr as png_structp, byval image as png_bytepp)
-declare sub png_write_row cdecl alias "png_write_row" (byval png_ptr as png_structp, byval row as png_bytep)
-declare sub png_write_rows cdecl alias "png_write_rows" (byval png_ptr as png_structp, byval row as png_bytepp, byval num_rows as png_uint_32)
-declare sub png_write_image cdecl alias "png_write_image" (byval png_ptr as png_structp, byval image as png_bytepp)
-declare sub png_write_end cdecl alias "png_write_end" (byval png_ptr as png_structp, byval info_ptr as png_infop)
-declare sub png_read_end cdecl alias "png_read_end" (byval png_ptr as png_structp, byval info_ptr as png_infop)
-declare sub png_destroy_info_struct cdecl alias "png_destroy_info_struct" (byval png_ptr as png_structp, byval info_ptr_ptr as png_infopp)
-declare sub png_destroy_read_struct cdecl alias "png_destroy_read_struct" (byval png_ptr_ptr as png_structpp, byval info_ptr_ptr as png_infopp, byval end_info_ptr_ptr as png_infopp)
-declare sub png_read_destroy cdecl alias "png_read_destroy" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval end_info_ptr as png_infop)
-declare sub png_destroy_write_struct cdecl alias "png_destroy_write_struct" (byval png_ptr_ptr as png_structpp, byval info_ptr_ptr as png_infopp)
-declare sub png_write_destroy cdecl alias "png_write_destroy" (byval png_ptr as png_structp)
-declare sub png_set_crc_action cdecl alias "png_set_crc_action" (byval png_ptr as png_structp, byval crit_action as integer, byval ancil_action as integer)
 
 #define PNG_CRC_DEFAULT 0
 #define PNG_CRC_ERROR_QUIT 1
@@ -592,8 +521,6 @@ declare sub png_set_crc_action cdecl alias "png_set_crc_action" (byval png_ptr a
 #define PNG_CRC_WARN_USE 3
 #define PNG_CRC_QUIET_USE 4
 #define PNG_CRC_NO_CHANGE 5
-
-declare sub png_set_filter cdecl alias "png_set_filter" (byval png_ptr as png_structp, byval method as integer, byval filters as integer)
 
 #define PNG_NO_FILTERS &h00
 #define PNG_FILTER_NONE &h08
@@ -609,43 +536,10 @@ declare sub png_set_filter cdecl alias "png_set_filter" (byval png_ptr as png_st
 #define PNG_FILTER_VALUE_PAETH 4
 #define PNG_FILTER_VALUE_LAST 5
 
-declare sub png_set_filter_heuristics cdecl alias "png_set_filter_heuristics" (byval png_ptr as png_structp, byval heuristic_method as integer, byval num_weights as integer, byval filter_weights as png_doublep, byval filter_costs as png_doublep)
-
 #define PNG_FILTER_HEURISTIC_DEFAULT 0
 #define PNG_FILTER_HEURISTIC_UNWEIGHTED 1
 #define PNG_FILTER_HEURISTIC_WEIGHTED 2
 #define PNG_FILTER_HEURISTIC_LAST 3
-
-declare sub png_set_compression_level cdecl alias "png_set_compression_level" (byval png_ptr as png_structp, byval level as integer)
-declare sub png_set_compression_mem_level cdecl alias "png_set_compression_mem_level" (byval png_ptr as png_structp, byval mem_level as integer)
-declare sub png_set_compression_strategy cdecl alias "png_set_compression_strategy" (byval png_ptr as png_structp, byval strategy as integer)
-declare sub png_set_compression_window_bits cdecl alias "png_set_compression_window_bits" (byval png_ptr as png_structp, byval window_bits as integer)
-declare sub png_set_compression_method cdecl alias "png_set_compression_method" (byval png_ptr as png_structp, byval method as integer)
-declare sub png_init_io cdecl alias "png_init_io" (byval png_ptr as png_structp, byval fp as png_FILE_p)
-declare sub png_set_error_fn cdecl alias "png_set_error_fn" (byval png_ptr as png_structp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warning_fn as png_error_ptr)
-declare function png_get_error_ptr cdecl alias "png_get_error_ptr" (byval png_ptr as png_structp) as png_voidp
-declare sub png_set_write_fn cdecl alias "png_set_write_fn" (byval png_ptr as png_structp, byval io_ptr as png_voidp, byval write_data_fn as png_rw_ptr, byval output_flush_fn as png_flush_ptr)
-declare sub png_set_read_fn cdecl alias "png_set_read_fn" (byval png_ptr as png_structp, byval io_ptr as png_voidp, byval read_data_fn as png_rw_ptr)
-declare function png_get_io_ptr cdecl alias "png_get_io_ptr" (byval png_ptr as png_structp) as png_voidp
-declare sub png_set_read_status_fn cdecl alias "png_set_read_status_fn" (byval png_ptr as png_structp, byval read_row_fn as png_read_status_ptr)
-declare sub png_set_write_status_fn cdecl alias "png_set_write_status_fn" (byval png_ptr as png_structp, byval write_row_fn as png_write_status_ptr)
-declare sub png_set_mem_fn cdecl alias "png_set_mem_fn" (byval png_ptr as png_structp, byval mem_ptr as png_voidp, byval malloc_fn as png_malloc_ptr, byval free_fn as png_free_ptr)
-declare function png_get_mem_ptr cdecl alias "png_get_mem_ptr" (byval png_ptr as png_structp) as png_voidp
-declare sub png_set_read_user_transform_fn cdecl alias "png_set_read_user_transform_fn" (byval png_ptr as png_structp, byval read_user_transform_fn as png_user_transform_ptr)
-declare sub png_set_write_user_transform_fn cdecl alias "png_set_write_user_transform_fn" (byval png_ptr as png_structp, byval write_user_transform_fn as png_user_transform_ptr)
-declare sub png_set_user_transform_info cdecl alias "png_set_user_transform_info" (byval png_ptr as png_structp, byval user_transform_ptr as png_voidp, byval user_transform_depth as integer, byval user_transform_channels as integer)
-declare function png_get_user_transform_ptr cdecl alias "png_get_user_transform_ptr" (byval png_ptr as png_structp) as png_voidp
-declare sub png_set_read_user_chunk_fn cdecl alias "png_set_read_user_chunk_fn" (byval png_ptr as png_structp, byval user_chunk_ptr as png_voidp, byval read_user_chunk_fn as png_user_chunk_ptr)
-declare function png_get_user_chunk_ptr cdecl alias "png_get_user_chunk_ptr" (byval png_ptr as png_structp) as png_voidp
-declare sub png_set_progressive_read_fn cdecl alias "png_set_progressive_read_fn" (byval png_ptr as png_structp, byval progressive_ptr as png_voidp, byval info_fn as png_progressive_info_ptr, byval row_fn as png_progressive_row_ptr, byval end_fn as png_progressive_end_ptr)
-declare function png_get_progressive_ptr cdecl alias "png_get_progressive_ptr" (byval png_ptr as png_structp) as png_voidp
-declare sub png_process_data cdecl alias "png_process_data" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval buffer as png_bytep, byval buffer_size as png_size_t)
-declare sub png_progressive_combine_row cdecl alias "png_progressive_combine_row" (byval png_ptr as png_structp, byval old_row as png_bytep, byval new_row as png_bytep)
-declare function png_malloc cdecl alias "png_malloc" (byval png_ptr as png_structp, byval size as png_uint_32) as png_voidp
-declare function png_malloc_warn cdecl alias "png_malloc_warn" (byval png_ptr as png_structp, byval size as png_uint_32) as png_voidp
-declare sub png_free cdecl alias "png_free" (byval png_ptr as png_structp, byval ptr as png_voidp)
-declare sub png_free_data cdecl alias "png_free_data" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval free_me as png_uint_32, byval num as integer)
-declare sub png_data_freer cdecl alias "png_data_freer" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval freer as integer, byval mask as png_uint_32)
 
 #define PNG_DESTROY_WILL_FREE_DATA 1
 #define PNG_SET_WILL_FREE_DATA 1
@@ -663,90 +557,6 @@ declare sub png_data_freer cdecl alias "png_data_freer" (byval png_ptr as png_st
 #define PNG_FREE_TEXT &h4000
 #define PNG_FREE_ALL &h7fff
 #define PNG_FREE_MUL &h4220
-
-declare function png_malloc_default cdecl alias "png_malloc_default" (byval png_ptr as png_structp, byval size as png_uint_32) as png_voidp
-declare sub png_free_default cdecl alias "png_free_default" (byval png_ptr as png_structp, byval ptr as png_voidp)
-declare function png_memcpy_check cdecl alias "png_memcpy_check" (byval png_ptr as png_structp, byval s1 as png_voidp, byval s2 as png_voidp, byval size as png_uint_32) as png_voidp
-declare function png_memset_check cdecl alias "png_memset_check" (byval png_ptr as png_structp, byval s1 as png_voidp, byval value as integer, byval size as png_uint_32) as png_voidp
-declare sub png_error cdecl alias "png_error" (byval png_ptr as png_structp, byval error_message as png_const_charp)
-declare sub png_chunk_error cdecl alias "png_chunk_error" (byval png_ptr as png_structp, byval error_message as png_const_charp)
-declare sub png_warning cdecl alias "png_warning" (byval png_ptr as png_structp, byval warning_message as png_const_charp)
-declare sub png_chunk_warning cdecl alias "png_chunk_warning" (byval png_ptr as png_structp, byval warning_message as png_const_charp)
-declare function png_get_valid cdecl alias "png_get_valid" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval flag as png_uint_32) as png_uint_32
-declare function png_get_rowbytes cdecl alias "png_get_rowbytes" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_uint_32
-declare function png_get_rows cdecl alias "png_get_rows" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_bytepp
-declare sub png_set_rows cdecl alias "png_set_rows" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval row_pointers as png_bytepp)
-declare function png_get_channels cdecl alias "png_get_channels" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_byte
-declare function png_get_image_width cdecl alias "png_get_image_width" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_uint_32
-declare function png_get_image_height cdecl alias "png_get_image_height" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_uint_32
-declare function png_get_bit_depth cdecl alias "png_get_bit_depth" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_byte
-declare function png_get_color_type cdecl alias "png_get_color_type" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_byte
-declare function png_get_filter_type cdecl alias "png_get_filter_type" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_byte
-declare function png_get_interlace_type cdecl alias "png_get_interlace_type" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_byte
-declare function png_get_compression_type cdecl alias "png_get_compression_type" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_byte
-declare function png_get_pixels_per_meter cdecl alias "png_get_pixels_per_meter" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_uint_32
-declare function png_get_x_pixels_per_meter cdecl alias "png_get_x_pixels_per_meter" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_uint_32
-declare function png_get_y_pixels_per_meter cdecl alias "png_get_y_pixels_per_meter" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_uint_32
-declare function png_get_pixel_aspect_ratio cdecl alias "png_get_pixel_aspect_ratio" (byval png_ptr as png_structp, byval info_ptr as png_infop) as single
-declare function png_get_x_offset_pixels cdecl alias "png_get_x_offset_pixels" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_int_32
-declare function png_get_y_offset_pixels cdecl alias "png_get_y_offset_pixels" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_int_32
-declare function png_get_x_offset_microns cdecl alias "png_get_x_offset_microns" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_int_32
-declare function png_get_y_offset_microns cdecl alias "png_get_y_offset_microns" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_int_32
-declare function png_get_signature cdecl alias "png_get_signature" (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_bytep
-declare function png_get_bKGD cdecl alias "png_get_bKGD" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval background as png_color_16p ptr) as png_uint_32
-declare sub png_set_bKGD cdecl alias "png_set_bKGD" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval background as png_color_16p)
-declare function png_get_cHRM cdecl alias "png_get_cHRM" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval white_x as double ptr, byval white_y as double ptr, byval red_x as double ptr, byval red_y as double ptr, byval green_x as double ptr, byval green_y as double ptr, byval blue_x as double ptr, byval blue_y as double ptr) as png_uint_32
-declare function png_get_cHRM_fixed cdecl alias "png_get_cHRM_fixed" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval int_white_x as png_fixed_point ptr, byval int_white_y as png_fixed_point ptr, byval int_red_x as png_fixed_point ptr, byval int_red_y as png_fixed_point ptr, byval int_green_x as png_fixed_point ptr, byval int_green_y as png_fixed_point ptr, byval int_blue_x as png_fixed_point ptr, byval int_blue_y as png_fixed_point ptr) as png_uint_32
-declare sub png_set_cHRM cdecl alias "png_set_cHRM" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval white_x as double, byval white_y as double, byval red_x as double, byval red_y as double, byval green_x as double, byval green_y as double, byval blue_x as double, byval blue_y as double)
-declare sub png_set_cHRM_fixed cdecl alias "png_set_cHRM_fixed" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval int_white_x as png_fixed_point, byval int_white_y as png_fixed_point, byval int_red_x as png_fixed_point, byval int_red_y as png_fixed_point, byval int_green_x as png_fixed_point, byval int_green_y as png_fixed_point, byval int_blue_x as png_fixed_point, byval int_blue_y as png_fixed_point)
-declare function png_get_gAMA cdecl alias "png_get_gAMA" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval file_gamma as double ptr) as png_uint_32
-declare function png_get_gAMA_fixed cdecl alias "png_get_gAMA_fixed" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval int_file_gamma as png_fixed_point ptr) as png_uint_32
-declare sub png_set_gAMA cdecl alias "png_set_gAMA" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval file_gamma as double)
-declare sub png_set_gAMA_fixed cdecl alias "png_set_gAMA_fixed" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval int_file_gamma as png_fixed_point)
-declare function png_get_hIST cdecl alias "png_get_hIST" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval hist as png_uint_16p ptr) as png_uint_32
-declare sub png_set_hIST cdecl alias "png_set_hIST" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval hist as png_uint_16p)
-declare function png_get_IHDR cdecl alias "png_get_IHDR" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval width as png_uint_32 ptr, byval height as png_uint_32 ptr, byval bit_depth as integer ptr, byval color_type as integer ptr, byval interlace_method as integer ptr, byval compression_method as integer ptr, byval filter_method as integer ptr) as png_uint_32
-declare sub png_set_IHDR cdecl alias "png_set_IHDR" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval width as png_uint_32, byval height as png_uint_32, byval bit_depth as integer, byval color_type as integer, byval interlace_method as integer, byval compression_method as integer, byval filter_method as integer)
-declare function png_get_oFFs cdecl alias "png_get_oFFs" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval offset_x as png_int_32 ptr, byval offset_y as png_int_32 ptr, byval unit_type as integer ptr) as png_uint_32
-declare sub png_set_oFFs cdecl alias "png_set_oFFs" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval offset_x as png_int_32, byval offset_y as png_int_32, byval unit_type as integer)
-declare function png_get_pCAL cdecl alias "png_get_pCAL" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval purpose as png_charp ptr, byval X0 as png_int_32 ptr, byval X1 as png_int_32 ptr, byval type as integer ptr, byval nparams as integer ptr, byval units as png_charp ptr, byval params as png_charpp ptr) as png_uint_32
-declare sub png_set_pCAL cdecl alias "png_set_pCAL" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval purpose as png_charp, byval X0 as png_int_32, byval X1 as png_int_32, byval type as integer, byval nparams as integer, byval units as png_charp, byval params as png_charpp)
-declare function png_get_pHYs cdecl alias "png_get_pHYs" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval res_x as png_uint_32 ptr, byval res_y as png_uint_32 ptr, byval unit_type as integer ptr) as png_uint_32
-declare sub png_set_pHYs cdecl alias "png_set_pHYs" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval res_x as png_uint_32, byval res_y as png_uint_32, byval unit_type as integer)
-declare function png_get_PLTE cdecl alias "png_get_PLTE" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval palette as png_colorp ptr, byval num_palette as integer ptr) as png_uint_32
-declare sub png_set_PLTE cdecl alias "png_set_PLTE" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval palette as png_colorp, byval num_palette as integer)
-declare function png_get_sBIT cdecl alias "png_get_sBIT" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval sig_bit as png_color_8p ptr) as png_uint_32
-declare sub png_set_sBIT cdecl alias "png_set_sBIT" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval sig_bit as png_color_8p)
-declare function png_get_sRGB cdecl alias "png_get_sRGB" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval intent as integer ptr) as png_uint_32
-declare sub png_set_sRGB cdecl alias "png_set_sRGB" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval intent as integer)
-declare sub png_set_sRGB_gAMA_and_cHRM cdecl alias "png_set_sRGB_gAMA_and_cHRM" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval intent as integer)
-declare function png_get_iCCP cdecl alias "png_get_iCCP" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval name as png_charpp, byval compression_type as integer ptr, byval profile as png_charpp, byval proflen as png_uint_32 ptr) as png_uint_32
-declare sub png_set_iCCP cdecl alias "png_set_iCCP" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval name as png_charp, byval compression_type as integer, byval profile as png_charp, byval proflen as png_uint_32)
-declare function png_get_sPLT cdecl alias "png_get_sPLT" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval entries as png_sPLT_tpp) as png_uint_32
-declare sub png_set_sPLT cdecl alias "png_set_sPLT" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval entries as png_sPLT_tp, byval nentries as integer)
-declare function png_get_text cdecl alias "png_get_text" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval text_ptr as png_textp ptr, byval num_text as integer ptr) as png_uint_32
-declare sub png_set_text cdecl alias "png_set_text" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval text_ptr as png_textp, byval num_text as integer)
-declare function png_get_tIME cdecl alias "png_get_tIME" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval mod_time as png_timep ptr) as png_uint_32
-declare sub png_set_tIME cdecl alias "png_set_tIME" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval mod_time as png_timep)
-declare function png_get_tRNS cdecl alias "png_get_tRNS" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval trans as png_bytep ptr, byval num_trans as integer ptr, byval trans_values as png_color_16p ptr) as png_uint_32
-declare sub png_set_tRNS cdecl alias "png_set_tRNS" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval trans as png_bytep, byval num_trans as integer, byval trans_values as png_color_16p)
-declare function png_get_sCAL cdecl alias "png_get_sCAL" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval unit as integer ptr, byval width as double ptr, byval height as double ptr) as png_uint_32
-declare sub png_set_sCAL cdecl alias "png_set_sCAL" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval unit as integer, byval width as double, byval height as double)
-declare sub png_set_sCAL_s cdecl alias "png_set_sCAL_s" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval unit as integer, byval swidth as png_charp, byval sheight as png_charp)
-declare sub png_set_keep_unknown_chunks cdecl alias "png_set_keep_unknown_chunks" (byval png_ptr as png_structp, byval keep as integer, byval chunk_list as png_bytep, byval num_chunks as integer)
-declare sub png_set_unknown_chunks cdecl alias "png_set_unknown_chunks" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval unknowns as png_unknown_chunkp, byval num_unknowns as integer)
-declare sub png_set_unknown_chunk_location cdecl alias "png_set_unknown_chunk_location" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval chunk as integer, byval location as integer)
-declare function png_get_unknown_chunks cdecl alias "png_get_unknown_chunks" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval entries as png_unknown_chunkpp) as png_uint_32
-declare function png_handle_as_unknown cdecl alias "png_handle_as_unknown" (byval png_ptr as png_structp, byval chunk_name as png_bytep) as integer
-declare sub png_set_invalid cdecl alias "png_set_invalid" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval mask as integer)
-declare sub png_read_png cdecl alias "png_read_png" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval transforms as integer, byval params as png_voidp)
-declare sub png_write_png cdecl alias "png_write_png" (byval png_ptr as png_structp, byval info_ptr as png_infop, byval transforms as integer, byval params as png_voidp)
-declare function png_sig_bytes cdecl alias "png_sig_bytes" () as png_bytep
-declare function png_get_copyright cdecl alias "png_get_copyright" (byval png_ptr as png_structp) as png_charp
-declare function png_get_header_ver cdecl alias "png_get_header_ver" (byval png_ptr as png_structp) as png_charp
-declare function png_get_header_version cdecl alias "png_get_header_version" (byval png_ptr as png_structp) as png_charp
-declare function png_get_libpng_ver cdecl alias "png_get_libpng_ver" (byval png_ptr as png_structp) as png_charp
-declare function png_permit_mng_features cdecl alias "png_permit_mng_features" (byval png_ptr as png_structp, byval mng_features_permitted as png_uint_32) as png_uint_32
 
 #define PNG_HANDLE_CHUNK_AS_DEFAULT 0
 #define PNG_HANDLE_CHUNK_NEVER 1
@@ -767,18 +577,203 @@ declare function png_permit_mng_features cdecl alias "png_permit_mng_features" (
 #define PNG_SELECT_READ 1
 #define PNG_SELECT_WRITE 2
 
-declare function png_get_mmx_flagmask cdecl alias "png_get_mmx_flagmask" (byval flag_select as integer, byval compilerID as integer ptr) as png_uint_32
-declare function png_get_asm_flagmask cdecl alias "png_get_asm_flagmask" (byval flag_select as integer) as png_uint_32
-declare function png_get_asm_flags cdecl alias "png_get_asm_flags" (byval png_ptr as png_structp) as png_uint_32
-declare function png_get_mmx_bitdepth_threshold cdecl alias "png_get_mmx_bitdepth_threshold" (byval png_ptr as png_structp) as png_byte
-declare function png_get_mmx_rowbytes_threshold cdecl alias "png_get_mmx_rowbytes_threshold" (byval png_ptr as png_structp) as png_uint_32
-declare sub png_set_asm_flags cdecl alias "png_set_asm_flags" (byval png_ptr as png_structp, byval asm_flags as png_uint_32)
-declare sub png_set_mmx_thresholds cdecl alias "png_set_mmx_thresholds" (byval png_ptr as png_structp, byval mmx_bitdepth_threshold as png_byte, byval mmx_rowbytes_threshold as png_uint_32)
-declare function png_mmx_support cdecl alias "png_mmx_support" () as integer
-declare sub png_set_strip_error_numbers cdecl alias "png_set_strip_error_numbers" (byval png_ptr as png_structp, byval strip_mode as png_uint_32)
-declare sub png_set_user_limits cdecl alias "png_set_user_limits" (byval png_ptr as png_structp, byval user_width_max as png_uint_32, byval user_height_max as png_uint_32)
-declare function png_get_user_width_max cdecl alias "png_get_user_width_max" (byval png_ptr as png_structp) as png_uint_32
-declare function png_get_user_height_max cdecl alias "png_get_user_height_max" (byval png_ptr as png_structp) as png_uint_32
+extern "c"
+declare function png_access_version_number () as png_uint_32
+declare sub png_set_sig_bytes (byval png_ptr as png_structp, byval num_bytes as integer)
+declare function png_sig_cmp (byval sig as png_bytep, byval start as png_size_t, byval num_to_check as png_size_t) as integer
+declare function png_check_sig (byval sig as png_bytep, byval num as integer) as integer
+declare function png_create_read_struct (byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr) as png_structp
+declare function png_create_write_struct (byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr) as png_structp
+declare function png_get_compression_buffer_size (byval png_ptr as png_structp) as png_uint_32
+declare sub png_set_compression_buffer_size (byval png_ptr as png_structp, byval size as png_uint_32)
+declare function png_reset_zstream (byval png_ptr as png_structp) as integer
+declare function png_create_read_struct_2 (byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr, byval mem_ptr as png_voidp, byval malloc_fn as png_malloc_ptr, byval free_fn as png_free_ptr) as png_structp
+declare function png_create_write_struct_2 (byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr, byval mem_ptr as png_voidp, byval malloc_fn as png_malloc_ptr, byval free_fn as png_free_ptr) as png_structp
+declare sub png_write_chunk (byval png_ptr as png_structp, byval chunk_name as png_bytep, byval data as png_bytep, byval length as png_size_t)
+declare sub png_write_chunk_start (byval png_ptr as png_structp, byval chunk_name as png_bytep, byval length as png_uint_32)
+declare sub png_write_chunk_data (byval png_ptr as png_structp, byval data as png_bytep, byval length as png_size_t)
+declare sub png_write_chunk_end (byval png_ptr as png_structp)
+declare function png_create_info_struct (byval png_ptr as png_structp) as png_infop
+declare sub png_info_init (byval info_ptr as png_infop)
+declare sub png_info_init_3 (byval info_ptr as png_infopp, byval png_info_struct_size as png_size_t)
+declare sub png_write_info_before_PLTE (byval png_ptr as png_structp, byval info_ptr as png_infop)
+declare sub png_write_info (byval png_ptr as png_structp, byval info_ptr as png_infop)
+declare sub png_read_info (byval png_ptr as png_structp, byval info_ptr as png_infop)
+declare function png_convert_to_rfc1123 (byval png_ptr as png_structp, byval ptime as png_timep) as png_charp
+declare sub png_convert_from_struct_tm (byval ptime as png_timep, byval ttime as tm ptr)
+declare sub png_convert_from_time_t (byval ptime as png_timep, byval ttime as time_t)
+declare sub png_set_expand (byval png_ptr as png_structp)
+declare sub png_set_gray_1_2_4_to_8 (byval png_ptr as png_structp)
+declare sub png_set_palette_to_rgb (byval png_ptr as png_structp)
+declare sub png_set_tRNS_to_alpha (byval png_ptr as png_structp)
+declare sub png_set_bgr (byval png_ptr as png_structp)
+declare sub png_set_gray_to_rgb (byval png_ptr as png_structp)
+declare sub png_set_rgb_to_gray (byval png_ptr as png_structp, byval error_action as integer, byval red as double, byval green as double)
+declare sub png_set_rgb_to_gray_fixed (byval png_ptr as png_structp, byval error_action as integer, byval red as png_fixed_point, byval green as png_fixed_point)
+declare function png_get_rgb_to_gray_status (byval png_ptr as png_structp) as png_byte
+declare sub png_build_grayscale_palette (byval bit_depth as integer, byval palette as png_colorp)
+declare sub png_set_strip_alpha (byval png_ptr as png_structp)
+declare sub png_set_swap_alpha (byval png_ptr as png_structp)
+declare sub png_set_invert_alpha (byval png_ptr as png_structp)
+declare sub png_set_filler (byval png_ptr as png_structp, byval filler as png_uint_32, byval flags as integer)
+declare sub png_set_add_alpha (byval png_ptr as png_structp, byval filler as png_uint_32, byval flags as integer)
+declare sub png_set_swap (byval png_ptr as png_structp)
+declare sub png_set_packing (byval png_ptr as png_structp)
+declare sub png_set_packswap (byval png_ptr as png_structp)
+declare sub png_set_shift (byval png_ptr as png_structp, byval true_bits as png_color_8p)
+declare function png_set_interlace_handling (byval png_ptr as png_structp) as integer
+declare sub png_set_invert_mono (byval png_ptr as png_structp)
+declare sub png_set_background (byval png_ptr as png_structp, byval background_color as png_color_16p, byval background_gamma_code as integer, byval need_expand as integer, byval background_gamma as double)
+declare sub png_set_strip_16 (byval png_ptr as png_structp)
+declare sub png_set_dither (byval png_ptr as png_structp, byval palette as png_colorp, byval num_palette as integer, byval maximum_colors as integer, byval histogram as png_uint_16p, byval full_dither as integer)
+declare sub png_set_gamma (byval png_ptr as png_structp, byval screen_gamma as double, byval default_file_gamma as double)
+declare sub png_permit_empty_plte (byval png_ptr as png_structp, byval empty_plte_permitted as integer)
+declare sub png_set_flush (byval png_ptr as png_structp, byval nrows as integer)
+declare sub png_write_flush (byval png_ptr as png_structp)
+declare sub png_start_read_image (byval png_ptr as png_structp)
+declare sub png_read_update_info (byval png_ptr as png_structp, byval info_ptr as png_infop)
+declare sub png_read_rows (byval png_ptr as png_structp, byval row as png_bytepp, byval display_row as png_bytepp, byval num_rows as png_uint_32)
+declare sub png_read_row (byval png_ptr as png_structp, byval row as png_bytep, byval display_row as png_bytep)
+declare sub png_read_image (byval png_ptr as png_structp, byval image as png_bytepp)
+declare sub png_write_row (byval png_ptr as png_structp, byval row as png_bytep)
+declare sub png_write_rows (byval png_ptr as png_structp, byval row as png_bytepp, byval num_rows as png_uint_32)
+declare sub png_write_image (byval png_ptr as png_structp, byval image as png_bytepp)
+declare sub png_write_end (byval png_ptr as png_structp, byval info_ptr as png_infop)
+declare sub png_read_end (byval png_ptr as png_structp, byval info_ptr as png_infop)
+declare sub png_destroy_info_struct (byval png_ptr as png_structp, byval info_ptr_ptr as png_infopp)
+declare sub png_destroy_read_struct (byval png_ptr_ptr as png_structpp, byval info_ptr_ptr as png_infopp, byval end_info_ptr_ptr as png_infopp)
+declare sub png_read_destroy (byval png_ptr as png_structp, byval info_ptr as png_infop, byval end_info_ptr as png_infop)
+declare sub png_destroy_write_struct (byval png_ptr_ptr as png_structpp, byval info_ptr_ptr as png_infopp)
+declare sub png_write_destroy (byval png_ptr as png_structp)
+declare sub png_set_crc_action (byval png_ptr as png_structp, byval crit_action as integer, byval ancil_action as integer)
+declare sub png_set_filter (byval png_ptr as png_structp, byval method as integer, byval filters as integer)
+declare sub png_set_filter_heuristics (byval png_ptr as png_structp, byval heuristic_method as integer, byval num_weights as integer, byval filter_weights as png_doublep, byval filter_costs as png_doublep)
+declare sub png_set_compression_level (byval png_ptr as png_structp, byval level as integer)
+declare sub png_set_compression_mem_level (byval png_ptr as png_structp, byval mem_level as integer)
+declare sub png_set_compression_strategy (byval png_ptr as png_structp, byval strategy as integer)
+declare sub png_set_compression_window_bits (byval png_ptr as png_structp, byval window_bits as integer)
+declare sub png_set_compression_method (byval png_ptr as png_structp, byval method as integer)
+declare sub png_init_io (byval png_ptr as png_structp, byval fp as png_FILE_p)
+declare sub png_set_error_fn (byval png_ptr as png_structp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warning_fn as png_error_ptr)
+declare function png_get_error_ptr (byval png_ptr as png_structp) as png_voidp
+declare sub png_set_write_fn (byval png_ptr as png_structp, byval io_ptr as png_voidp, byval write_data_fn as png_rw_ptr, byval output_flush_fn as png_flush_ptr)
+declare sub png_set_read_fn (byval png_ptr as png_structp, byval io_ptr as png_voidp, byval read_data_fn as png_rw_ptr)
+declare function png_get_io_ptr (byval png_ptr as png_structp) as png_voidp
+declare sub png_set_read_status_fn (byval png_ptr as png_structp, byval read_row_fn as png_read_status_ptr)
+declare sub png_set_write_status_fn (byval png_ptr as png_structp, byval write_row_fn as png_write_status_ptr)
+declare sub png_set_mem_fn (byval png_ptr as png_structp, byval mem_ptr as png_voidp, byval malloc_fn as png_malloc_ptr, byval free_fn as png_free_ptr)
+declare function png_get_mem_ptr (byval png_ptr as png_structp) as png_voidp
+declare sub png_set_read_user_transform_fn (byval png_ptr as png_structp, byval read_user_transform_fn as png_user_transform_ptr)
+declare sub png_set_write_user_transform_fn (byval png_ptr as png_structp, byval write_user_transform_fn as png_user_transform_ptr)
+declare sub png_set_user_transform_info (byval png_ptr as png_structp, byval user_transform_ptr as png_voidp, byval user_transform_depth as integer, byval user_transform_channels as integer)
+declare function png_get_user_transform_ptr (byval png_ptr as png_structp) as png_voidp
+declare sub png_set_read_user_chunk_fn (byval png_ptr as png_structp, byval user_chunk_ptr as png_voidp, byval read_user_chunk_fn as png_user_chunk_ptr)
+declare function png_get_user_chunk_ptr (byval png_ptr as png_structp) as png_voidp
+declare sub png_set_progressive_read_fn (byval png_ptr as png_structp, byval progressive_ptr as png_voidp, byval info_fn as png_progressive_info_ptr, byval row_fn as png_progressive_row_ptr, byval end_fn as png_progressive_end_ptr)
+declare function png_get_progressive_ptr (byval png_ptr as png_structp) as png_voidp
+declare sub png_process_data (byval png_ptr as png_structp, byval info_ptr as png_infop, byval buffer as png_bytep, byval buffer_size as png_size_t)
+declare sub png_progressive_combine_row (byval png_ptr as png_structp, byval old_row as png_bytep, byval new_row as png_bytep)
+declare function png_malloc (byval png_ptr as png_structp, byval size as png_uint_32) as png_voidp
+declare function png_malloc_warn (byval png_ptr as png_structp, byval size as png_uint_32) as png_voidp
+declare sub png_free (byval png_ptr as png_structp, byval ptr as png_voidp)
+declare sub png_free_data (byval png_ptr as png_structp, byval info_ptr as png_infop, byval free_me as png_uint_32, byval num as integer)
+declare sub png_data_freer (byval png_ptr as png_structp, byval info_ptr as png_infop, byval freer as integer, byval mask as png_uint_32)
+declare function png_malloc_default (byval png_ptr as png_structp, byval size as png_uint_32) as png_voidp
+declare sub png_free_default (byval png_ptr as png_structp, byval ptr as png_voidp)
+declare function png_memcpy_check (byval png_ptr as png_structp, byval s1 as png_voidp, byval s2 as png_voidp, byval size as png_uint_32) as png_voidp
+declare function png_memset_check (byval png_ptr as png_structp, byval s1 as png_voidp, byval value as integer, byval size as png_uint_32) as png_voidp
+declare sub png_error (byval png_ptr as png_structp, byval error_message as png_const_charp)
+declare sub png_chunk_error (byval png_ptr as png_structp, byval error_message as png_const_charp)
+declare sub png_warning (byval png_ptr as png_structp, byval warning_message as png_const_charp)
+declare sub png_chunk_warning (byval png_ptr as png_structp, byval warning_message as png_const_charp)
+declare function png_get_valid (byval png_ptr as png_structp, byval info_ptr as png_infop, byval flag as png_uint_32) as png_uint_32
+declare function png_get_rowbytes (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_uint_32
+declare function png_get_rows (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_bytepp
+declare sub png_set_rows (byval png_ptr as png_structp, byval info_ptr as png_infop, byval row_pointers as png_bytepp)
+declare function png_get_channels (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_byte
+declare function png_get_image_width (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_uint_32
+declare function png_get_image_height (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_uint_32
+declare function png_get_bit_depth (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_byte
+declare function png_get_color_type (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_byte
+declare function png_get_filter_type (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_byte
+declare function png_get_interlace_type (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_byte
+declare function png_get_compression_type (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_byte
+declare function png_get_pixels_per_meter (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_uint_32
+declare function png_get_x_pixels_per_meter (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_uint_32
+declare function png_get_y_pixels_per_meter (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_uint_32
+declare function png_get_pixel_aspect_ratio (byval png_ptr as png_structp, byval info_ptr as png_infop) as single
+declare function png_get_x_offset_pixels (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_int_32
+declare function png_get_y_offset_pixels (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_int_32
+declare function png_get_x_offset_microns (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_int_32
+declare function png_get_y_offset_microns (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_int_32
+declare function png_get_signature (byval png_ptr as png_structp, byval info_ptr as png_infop) as png_bytep
+declare function png_get_bKGD (byval png_ptr as png_structp, byval info_ptr as png_infop, byval background as png_color_16p ptr) as png_uint_32
+declare sub png_set_bKGD (byval png_ptr as png_structp, byval info_ptr as png_infop, byval background as png_color_16p)
+declare function png_get_cHRM (byval png_ptr as png_structp, byval info_ptr as png_infop, byval white_x as double ptr, byval white_y as double ptr, byval red_x as double ptr, byval red_y as double ptr, byval green_x as double ptr, byval green_y as double ptr, byval blue_x as double ptr, byval blue_y as double ptr) as png_uint_32
+declare function png_get_cHRM_fixed (byval png_ptr as png_structp, byval info_ptr as png_infop, byval int_white_x as png_fixed_point ptr, byval int_white_y as png_fixed_point ptr, byval int_red_x as png_fixed_point ptr, byval int_red_y as png_fixed_point ptr, byval int_green_x as png_fixed_point ptr, byval int_green_y as png_fixed_point ptr, byval int_blue_x as png_fixed_point ptr, byval int_blue_y as png_fixed_point ptr) as png_uint_32
+declare sub png_set_cHRM (byval png_ptr as png_structp, byval info_ptr as png_infop, byval white_x as double, byval white_y as double, byval red_x as double, byval red_y as double, byval green_x as double, byval green_y as double, byval blue_x as double, byval blue_y as double)
+declare sub png_set_cHRM_fixed (byval png_ptr as png_structp, byval info_ptr as png_infop, byval int_white_x as png_fixed_point, byval int_white_y as png_fixed_point, byval int_red_x as png_fixed_point, byval int_red_y as png_fixed_point, byval int_green_x as png_fixed_point, byval int_green_y as png_fixed_point, byval int_blue_x as png_fixed_point, byval int_blue_y as png_fixed_point)
+declare function png_get_gAMA (byval png_ptr as png_structp, byval info_ptr as png_infop, byval file_gamma as double ptr) as png_uint_32
+declare function png_get_gAMA_fixed (byval png_ptr as png_structp, byval info_ptr as png_infop, byval int_file_gamma as png_fixed_point ptr) as png_uint_32
+declare sub png_set_gAMA (byval png_ptr as png_structp, byval info_ptr as png_infop, byval file_gamma as double)
+declare sub png_set_gAMA_fixed (byval png_ptr as png_structp, byval info_ptr as png_infop, byval int_file_gamma as png_fixed_point)
+declare function png_get_hIST (byval png_ptr as png_structp, byval info_ptr as png_infop, byval hist as png_uint_16p ptr) as png_uint_32
+declare sub png_set_hIST (byval png_ptr as png_structp, byval info_ptr as png_infop, byval hist as png_uint_16p)
+declare function png_get_IHDR (byval png_ptr as png_structp, byval info_ptr as png_infop, byval width as png_uint_32 ptr, byval height as png_uint_32 ptr, byval bit_depth as integer ptr, byval color_type as integer ptr, byval interlace_method as integer ptr, byval compression_method as integer ptr, byval filter_method as integer ptr) as png_uint_32
+declare sub png_set_IHDR (byval png_ptr as png_structp, byval info_ptr as png_infop, byval width as png_uint_32, byval height as png_uint_32, byval bit_depth as integer, byval color_type as integer, byval interlace_method as integer, byval compression_method as integer, byval filter_method as integer)
+declare function png_get_oFFs (byval png_ptr as png_structp, byval info_ptr as png_infop, byval offset_x as png_int_32 ptr, byval offset_y as png_int_32 ptr, byval unit_type as integer ptr) as png_uint_32
+declare sub png_set_oFFs (byval png_ptr as png_structp, byval info_ptr as png_infop, byval offset_x as png_int_32, byval offset_y as png_int_32, byval unit_type as integer)
+declare function png_get_pCAL (byval png_ptr as png_structp, byval info_ptr as png_infop, byval purpose as png_charp ptr, byval X0 as png_int_32 ptr, byval X1 as png_int_32 ptr, byval type as integer ptr, byval nparams as integer ptr, byval units as png_charp ptr, byval params as png_charpp ptr) as png_uint_32
+declare sub png_set_pCAL (byval png_ptr as png_structp, byval info_ptr as png_infop, byval purpose as png_charp, byval X0 as png_int_32, byval X1 as png_int_32, byval type as integer, byval nparams as integer, byval units as png_charp, byval params as png_charpp)
+declare function png_get_pHYs (byval png_ptr as png_structp, byval info_ptr as png_infop, byval res_x as png_uint_32 ptr, byval res_y as png_uint_32 ptr, byval unit_type as integer ptr) as png_uint_32
+declare sub png_set_pHYs (byval png_ptr as png_structp, byval info_ptr as png_infop, byval res_x as png_uint_32, byval res_y as png_uint_32, byval unit_type as integer)
+declare function png_get_PLTE (byval png_ptr as png_structp, byval info_ptr as png_infop, byval palette as png_colorp ptr, byval num_palette as integer ptr) as png_uint_32
+declare sub png_set_PLTE (byval png_ptr as png_structp, byval info_ptr as png_infop, byval palette as png_colorp, byval num_palette as integer)
+declare function png_get_sBIT (byval png_ptr as png_structp, byval info_ptr as png_infop, byval sig_bit as png_color_8p ptr) as png_uint_32
+declare sub png_set_sBIT (byval png_ptr as png_structp, byval info_ptr as png_infop, byval sig_bit as png_color_8p)
+declare function png_get_sRGB (byval png_ptr as png_structp, byval info_ptr as png_infop, byval intent as integer ptr) as png_uint_32
+declare sub png_set_sRGB (byval png_ptr as png_structp, byval info_ptr as png_infop, byval intent as integer)
+declare sub png_set_sRGB_gAMA_and_cHRM (byval png_ptr as png_structp, byval info_ptr as png_infop, byval intent as integer)
+declare function png_get_iCCP (byval png_ptr as png_structp, byval info_ptr as png_infop, byval name as png_charpp, byval compression_type as integer ptr, byval profile as png_charpp, byval proflen as png_uint_32 ptr) as png_uint_32
+declare sub png_set_iCCP (byval png_ptr as png_structp, byval info_ptr as png_infop, byval name as png_charp, byval compression_type as integer, byval profile as png_charp, byval proflen as png_uint_32)
+declare function png_get_sPLT (byval png_ptr as png_structp, byval info_ptr as png_infop, byval entries as png_sPLT_tpp) as png_uint_32
+declare sub png_set_sPLT (byval png_ptr as png_structp, byval info_ptr as png_infop, byval entries as png_sPLT_tp, byval nentries as integer)
+declare function png_get_text (byval png_ptr as png_structp, byval info_ptr as png_infop, byval text_ptr as png_textp ptr, byval num_text as integer ptr) as png_uint_32
+declare sub png_set_text (byval png_ptr as png_structp, byval info_ptr as png_infop, byval text_ptr as png_textp, byval num_text as integer)
+declare function png_get_tIME (byval png_ptr as png_structp, byval info_ptr as png_infop, byval mod_time as png_timep ptr) as png_uint_32
+declare sub png_set_tIME (byval png_ptr as png_structp, byval info_ptr as png_infop, byval mod_time as png_timep)
+declare function png_get_tRNS (byval png_ptr as png_structp, byval info_ptr as png_infop, byval trans as png_bytep ptr, byval num_trans as integer ptr, byval trans_values as png_color_16p ptr) as png_uint_32
+declare sub png_set_tRNS (byval png_ptr as png_structp, byval info_ptr as png_infop, byval trans as png_bytep, byval num_trans as integer, byval trans_values as png_color_16p)
+declare function png_get_sCAL (byval png_ptr as png_structp, byval info_ptr as png_infop, byval unit as integer ptr, byval width as double ptr, byval height as double ptr) as png_uint_32
+declare sub png_set_sCAL (byval png_ptr as png_structp, byval info_ptr as png_infop, byval unit as integer, byval width as double, byval height as double)
+declare sub png_set_sCAL_s (byval png_ptr as png_structp, byval info_ptr as png_infop, byval unit as integer, byval swidth as png_charp, byval sheight as png_charp)
+declare sub png_set_keep_unknown_chunks (byval png_ptr as png_structp, byval keep as integer, byval chunk_list as png_bytep, byval num_chunks as integer)
+declare sub png_set_unknown_chunks (byval png_ptr as png_structp, byval info_ptr as png_infop, byval unknowns as png_unknown_chunkp, byval num_unknowns as integer)
+declare sub png_set_unknown_chunk_location (byval png_ptr as png_structp, byval info_ptr as png_infop, byval chunk as integer, byval location as integer)
+declare function png_get_unknown_chunks (byval png_ptr as png_structp, byval info_ptr as png_infop, byval entries as png_unknown_chunkpp) as png_uint_32
+declare function png_handle_as_unknown (byval png_ptr as png_structp, byval chunk_name as png_bytep) as integer
+declare sub png_set_invalid (byval png_ptr as png_structp, byval info_ptr as png_infop, byval mask as integer)
+declare sub png_read_png (byval png_ptr as png_structp, byval info_ptr as png_infop, byval transforms as integer, byval params as png_voidp)
+declare sub png_write_png (byval png_ptr as png_structp, byval info_ptr as png_infop, byval transforms as integer, byval params as png_voidp)
+declare function png_sig_bytes () as png_bytep
+declare function png_get_copyright (byval png_ptr as png_structp) as png_charp
+declare function png_get_header_ver (byval png_ptr as png_structp) as png_charp
+declare function png_get_header_version (byval png_ptr as png_structp) as png_charp
+declare function png_get_libpng_ver (byval png_ptr as png_structp) as png_charp
+declare function png_permit_mng_features (byval png_ptr as png_structp, byval mng_features_permitted as png_uint_32) as png_uint_32
+declare function png_get_mmx_flagmask (byval flag_select as integer, byval compilerID as integer ptr) as png_uint_32
+declare function png_get_asm_flagmask (byval flag_select as integer) as png_uint_32
+declare function png_get_asm_flags (byval png_ptr as png_structp) as png_uint_32
+declare function png_get_mmx_bitdepth_threshold (byval png_ptr as png_structp) as png_byte
+declare function png_get_mmx_rowbytes_threshold (byval png_ptr as png_structp) as png_uint_32
+declare sub png_set_asm_flags (byval png_ptr as png_structp, byval asm_flags as png_uint_32)
+declare sub png_set_mmx_thresholds (byval png_ptr as png_structp, byval mmx_bitdepth_threshold as png_byte, byval mmx_rowbytes_threshold as png_uint_32)
+declare function png_mmx_support () as integer
+declare sub png_set_strip_error_numbers (byval png_ptr as png_structp, byval strip_mode as png_uint_32)
+declare sub png_set_user_limits (byval png_ptr as png_structp, byval user_width_max as png_uint_32, byval user_height_max as png_uint_32)
+declare function png_get_user_width_max (byval png_ptr as png_structp) as png_uint_32
+declare function png_get_user_height_max (byval png_ptr as png_structp) as png_uint_32
+end extern
 
 #define PNG_COLOR_DIST(c1, c2) (abs(cint(c1.red) - cint(c2.red)) + abs(cint(c1.green) - cint(c2.green)) + abs(cint(c1.blue) - cint(c2.blue)))
 

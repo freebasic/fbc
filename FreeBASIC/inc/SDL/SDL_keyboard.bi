@@ -9,9 +9,9 @@
 #ifndef __SDL_keyboard_bi__
 #define __SDL_keyboard_bi__
 
-#include once "SDL/SDL_types.bi"
-#include once "SDL/SDL_keysym.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_types.bi"
+#include once "SDL_keysym.bi"
+#include once "begin_code.bi"
 
 type SDL_keysym
 	scancode as Uint8
@@ -33,6 +33,6 @@ declare function SDL_GetModState cdecl alias "SDL_GetModState" () as SDLMod
 declare sub SDL_SetModState cdecl alias "SDL_SetModState" (byval modstate as SDLMod)
 declare function SDL_GetKeyName cdecl alias "SDL_GetKeyName" (byval key as SDLKey) as zstring ptr
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

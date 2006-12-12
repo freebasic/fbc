@@ -9,8 +9,8 @@
 #ifndef __gtktextiter_bi__
 #define __gtktextiter_bi__
 
-#include once "gtk/gtk/gtktexttag.bi"
-#include once "gtk/gtk/gtktextchild.bi"
+#include once "gtktexttag.bi"
+#include once "gtktextchild.bi"
 
 #define GTK_TYPE_TEXT_ITER (gtk_text_iter_get_type ())
 

@@ -15,9 +15,9 @@
 #define FREETYPE_MINOR 1
 #define FREETYPE_PATCH 9
 
-#include once "freetype2/config/ftconfig.bi"
-#include once "freetype2/fterrors.bi"
-#include once "freetype2/fttypes.bi"
+#include once "config/ftconfig.bi"
+#include once "fterrors.bi"
+#include once "fttypes.bi"
 
 type FT_Glyph_Metrics_
 	width as FT_Pos
@@ -197,10 +197,6 @@ end type
 
 type FT_GlyphSlotRec as FT_GlyphSlotRec_
 
-declare function FT_Init_FreeType cdecl alias "FT_Init_FreeType" (byval alibrary as FT_Library ptr) as FT_Error
-declare sub FT_Library_Version cdecl alias "FT_Library_Version" (byval library as FT_Library, byval amajor as FT_Int ptr, byval aminor as FT_Int ptr, byval apatch as FT_Int ptr)
-declare function FT_Done_FreeType cdecl alias "FT_Done_FreeType" (byval library as FT_Library) as FT_Error
-
 #define FT_OPEN_MEMORY &h1
 #define FT_OPEN_STREAM &h2
 #define FT_OPEN_PATHNAME &h4
@@ -232,17 +228,6 @@ end type
 
 type FT_Open_Args as FT_Open_Args_
 
-declare function FT_New_Face cdecl alias "FT_New_Face" (byval library as FT_Library, byval filepathname as zstring ptr, byval face_index as FT_Long, byval aface as FT_Face ptr) as FT_Error
-declare function FT_New_Memory_Face cdecl alias "FT_New_Memory_Face" (byval library as FT_Library, byval file_base as FT_Byte ptr, byval file_size as FT_Long, byval face_index as FT_Long, byval aface as FT_Face ptr) as FT_Error
-declare function FT_Open_Face cdecl alias "FT_Open_Face" (byval library as FT_Library, byval args as FT_Open_Args ptr, byval face_index as FT_Long, byval aface as FT_Face ptr) as FT_Error
-declare function FT_Attach_File cdecl alias "FT_Attach_File" (byval face as FT_Face, byval filepathname as zstring ptr) as FT_Error
-declare function FT_Attach_Stream cdecl alias "FT_Attach_Stream" (byval face as FT_Face, byval parameters as FT_Open_Args ptr) as FT_Error
-declare function FT_Done_Face cdecl alias "FT_Done_Face" (byval face as FT_Face) as FT_Error
-declare function FT_Set_Char_Size cdecl alias "FT_Set_Char_Size" (byval face as FT_Face, byval char_width as FT_F26Dot6, byval char_height as FT_F26Dot6, byval horz_resolution as FT_UInt, byval vert_resolution as FT_UInt) as FT_Error
-declare function FT_Set_Pixel_Sizes cdecl alias "FT_Set_Pixel_Sizes" (byval face as FT_Face, byval pixel_width as FT_UInt, byval pixel_height as FT_UInt) as FT_Error
-declare function FT_Load_Glyph cdecl alias "FT_Load_Glyph" (byval face as FT_Face, byval glyph_index as FT_UInt, byval load_flags as FT_Int32) as FT_Error
-declare function FT_Load_Char cdecl alias "FT_Load_Char" (byval face as FT_Face, byval char_code as FT_ULong, byval load_flags as FT_Int32) as FT_Error
-
 #define FT_LOAD_DEFAULT &h0
 #define FT_LOAD_NO_SCALE &h1
 #define FT_LOAD_NO_HINTING &h2
@@ -260,8 +245,6 @@ declare function FT_Load_Char cdecl alias "FT_Load_Char" (byval face as FT_Face,
 #define FT_LOAD_SBITS_ONLY &h4000
 #define FT_LOAD_NO_AUTOHINT &h8000U
 
-declare sub FT_Set_Transform cdecl alias "FT_Set_Transform" (byval face as FT_Face, byval matrix as FT_Matrix ptr, byval delta as FT_Vector ptr)
-
 enum FT_Render_Mode_
 	FT_RENDER_MODE_NORMAL = 0
 	FT_RENDER_MODE_LIGHT
@@ -273,8 +256,6 @@ end enum
 
 type FT_Render_Mode as FT_Render_Mode_
 
-declare function FT_Render_Glyph cdecl alias "FT_Render_Glyph" (byval slot as FT_GlyphSlot, byval render_mode as FT_Render_Mode) as FT_Error
-
 enum FT_Kerning_Mode_
 	FT_KERNING_DEFAULT = 0
 	FT_KERNING_UNFITTED
@@ -283,22 +264,39 @@ end enum
 
 type FT_Kerning_Mode as FT_Kerning_Mode_
 
-declare function FT_Get_Kerning cdecl alias "FT_Get_Kerning" (byval face as FT_Face, byval left_glyph as FT_UInt, byval right_glyph as FT_UInt, byval kern_mode as FT_UInt, byval akerning as FT_Vector ptr) as FT_Error
-declare function FT_Get_Glyph_Name cdecl alias "FT_Get_Glyph_Name" (byval face as FT_Face, byval glyph_index as FT_UInt, byval buffer as FT_Pointer, byval buffer_max as FT_UInt) as FT_Error
-declare function FT_Get_Postscript_Name cdecl alias "FT_Get_Postscript_Name" (byval face as FT_Face) as zstring ptr
-declare function FT_Select_Charmap cdecl alias "FT_Select_Charmap" (byval face as FT_Face, byval encoding as FT_Encoding) as FT_Error
-declare function FT_Set_Charmap cdecl alias "FT_Set_Charmap" (byval face as FT_Face, byval charmap as FT_CharMap) as FT_Error
-declare function FT_Get_Charmap_Index cdecl alias "FT_Get_Charmap_Index" (byval charmap as FT_CharMap) as FT_Int
-declare function FT_Get_Char_Index cdecl alias "FT_Get_Char_Index" (byval face as FT_Face, byval charcode as FT_ULong) as FT_UInt
-declare function FT_Get_First_Char cdecl alias "FT_Get_First_Char" (byval face as FT_Face, byval agindex as FT_UInt ptr) as FT_ULong
-declare function FT_Get_Next_Char cdecl alias "FT_Get_Next_Char" (byval face as FT_Face, byval char_code as FT_ULong, byval agindex as FT_UInt ptr) as FT_ULong
-declare function FT_Get_Name_Index cdecl alias "FT_Get_Name_Index" (byval face as FT_Face, byval glyph_name as FT_String ptr) as FT_UInt
-declare function FT_MulDiv cdecl alias "FT_MulDiv" (byval a as FT_Long, byval b as FT_Long, byval c as FT_Long) as FT_Long
-declare function FT_MulFix cdecl alias "FT_MulFix" (byval a as FT_Long, byval b as FT_Long) as FT_Long
-declare function FT_DivFix cdecl alias "FT_DivFix" (byval a as FT_Long, byval b as FT_Long) as FT_Long
-declare function FT_RoundFix cdecl alias "FT_RoundFix" (byval a as FT_Fixed) as FT_Fixed
-declare function FT_CeilFix cdecl alias "FT_CeilFix" (byval a as FT_Fixed) as FT_Fixed
-declare function FT_FloorFix cdecl alias "FT_FloorFix" (byval a as FT_Fixed) as FT_Fixed
-declare sub FT_Vector_Transform cdecl alias "FT_Vector_Transform" (byval vec as FT_Vector ptr, byval matrix as FT_Matrix ptr)
+extern "c"
+declare function FT_Init_FreeType (byval alibrary as FT_Library ptr) as FT_Error
+declare sub FT_Library_Version (byval library as FT_Library, byval amajor as FT_Int ptr, byval aminor as FT_Int ptr, byval apatch as FT_Int ptr)
+declare function FT_Done_FreeType (byval library as FT_Library) as FT_Error
+declare function FT_New_Face (byval library as FT_Library, byval filepathname as zstring ptr, byval face_index as FT_Long, byval aface as FT_Face ptr) as FT_Error
+declare function FT_New_Memory_Face (byval library as FT_Library, byval file_base as FT_Byte ptr, byval file_size as FT_Long, byval face_index as FT_Long, byval aface as FT_Face ptr) as FT_Error
+declare function FT_Open_Face (byval library as FT_Library, byval args as FT_Open_Args ptr, byval face_index as FT_Long, byval aface as FT_Face ptr) as FT_Error
+declare function FT_Attach_File (byval face as FT_Face, byval filepathname as zstring ptr) as FT_Error
+declare function FT_Attach_Stream (byval face as FT_Face, byval parameters as FT_Open_Args ptr) as FT_Error
+declare function FT_Done_Face (byval face as FT_Face) as FT_Error
+declare function FT_Set_Char_Size (byval face as FT_Face, byval char_width as FT_F26Dot6, byval char_height as FT_F26Dot6, byval horz_resolution as FT_UInt, byval vert_resolution as FT_UInt) as FT_Error
+declare function FT_Set_Pixel_Sizes (byval face as FT_Face, byval pixel_width as FT_UInt, byval pixel_height as FT_UInt) as FT_Error
+declare function FT_Load_Glyph (byval face as FT_Face, byval glyph_index as FT_UInt, byval load_flags as FT_Int32) as FT_Error
+declare function FT_Load_Char (byval face as FT_Face, byval char_code as FT_ULong, byval load_flags as FT_Int32) as FT_Error
+declare sub FT_Set_Transform (byval face as FT_Face, byval matrix as FT_Matrix ptr, byval delta as FT_Vector ptr)
+declare function FT_Render_Glyph (byval slot as FT_GlyphSlot, byval render_mode as FT_Render_Mode) as FT_Error
+declare function FT_Get_Kerning (byval face as FT_Face, byval left_glyph as FT_UInt, byval right_glyph as FT_UInt, byval kern_mode as FT_UInt, byval akerning as FT_Vector ptr) as FT_Error
+declare function FT_Get_Glyph_Name (byval face as FT_Face, byval glyph_index as FT_UInt, byval buffer as FT_Pointer, byval buffer_max as FT_UInt) as FT_Error
+declare function FT_Get_Postscript_Name (byval face as FT_Face) as zstring ptr
+declare function FT_Select_Charmap (byval face as FT_Face, byval encoding as FT_Encoding) as FT_Error
+declare function FT_Set_Charmap (byval face as FT_Face, byval charmap as FT_CharMap) as FT_Error
+declare function FT_Get_Charmap_Index (byval charmap as FT_CharMap) as FT_Int
+declare function FT_Get_Char_Index (byval face as FT_Face, byval charcode as FT_ULong) as FT_UInt
+declare function FT_Get_First_Char (byval face as FT_Face, byval agindex as FT_UInt ptr) as FT_ULong
+declare function FT_Get_Next_Char (byval face as FT_Face, byval char_code as FT_ULong, byval agindex as FT_UInt ptr) as FT_ULong
+declare function FT_Get_Name_Index (byval face as FT_Face, byval glyph_name as FT_String ptr) as FT_UInt
+declare function FT_MulDiv (byval a as FT_Long, byval b as FT_Long, byval c as FT_Long) as FT_Long
+declare function FT_MulFix (byval a as FT_Long, byval b as FT_Long) as FT_Long
+declare function FT_DivFix (byval a as FT_Long, byval b as FT_Long) as FT_Long
+declare function FT_RoundFix (byval a as FT_Fixed) as FT_Fixed
+declare function FT_CeilFix (byval a as FT_Fixed) as FT_Fixed
+declare function FT_FloorFix (byval a as FT_Fixed) as FT_Fixed
+declare sub FT_Vector_Transform (byval vec as FT_Vector ptr, byval matrix as FT_Matrix ptr)
+end extern
 
 #endif

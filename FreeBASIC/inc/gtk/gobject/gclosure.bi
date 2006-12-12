@@ -9,7 +9,7 @@
 #ifndef __gclosure_bi__
 #define __gclosure_bi__
 
-#include once "gtk/gobject/gtype.bi"
+#include once "gtype.bi"
 
 #define	G_CLOSURE_NEEDS_MARSHAL(closure) (cast(GClosure ptr,closure)->marshal = NULL)
 #define	G_CLOSURE_N_NOTIFIERS(cl) ((cl)->meta_marshal + ((cl)->n_guards shl 1) + (cl)->n_fnotifiers + (cl)->n_inotifiers)

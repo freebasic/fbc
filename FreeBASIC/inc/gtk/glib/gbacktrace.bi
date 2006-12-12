@@ -9,7 +9,7 @@
 #ifndef __gbacktrace_bi__
 #define __gbacktrace_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 declare sub g_on_error_query (byval prg_name as zstring ptr)
 declare sub g_on_error_stack_trace (byval prg_name as zstring ptr)

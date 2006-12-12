@@ -11,19 +11,21 @@
 
 #inclib "iupcontrols"
 
-#include once "IUP/iupdial.bi"
-#include once "IUP/iupgauge.bi"
-#include once "IUP/iuptabs.bi"
-#include once "IUP/iupval.bi"
-#include once "IUP/iupmatrix.bi"
-#include once "IUP/iuptree.bi"
-#include once "IUP/iupsbox.bi"
-#include once "IUP/iupmask.bi"
-#include once "IUP/iupgc.bi"
-#include once "IUP/iupcb.bi"
-#include once "IUP/iupgetparam.bi"
+#include once "iupdial.bi"
+#include once "iupgauge.bi"
+#include once "iuptabs.bi"
+#include once "iupval.bi"
+#include once "iupmatrix.bi"
+#include once "iuptree.bi"
+#include once "iupsbox.bi"
+#include once "iupmask.bi"
+#include once "iupgc.bi"
+#include once "iupcb.bi"
+#include once "iupgetparam.bi"
 
-declare function IupControlsOpen cdecl alias "IupControlsOpen" () as integer
-declare function IupControlsClose cdecl alias "IupControlsClose" () as integer
+extern "c"
+declare function IupControlsOpen () as integer
+declare function IupControlsClose () as integer
+end extern
 
 #endif

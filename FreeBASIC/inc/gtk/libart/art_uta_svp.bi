@@ -9,8 +9,8 @@
 #ifndef __art_uta_svp_bi__
 #define __art_uta_svp_bi__
 
-#include once "gtk/libart/art_svp.bi"
-#include once "gtk/libart/art_uta.bi"
+#include once "art_svp.bi"
+#include once "art_uta.bi"
 
 declare function art_uta_from_svp (byval svp as ArtSVP ptr) as ArtUta ptr
 

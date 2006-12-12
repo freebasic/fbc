@@ -9,7 +9,7 @@
 #ifndef __gtkpaned_bi__
 #define __gtkpaned_bi__
 
-#include once "gtk/gtk/gtkcontainer.bi"
+#include once "gtkcontainer.bi"
 
 #define GTK_TYPE_PANED (gtk_paned_get_type ())
 #define GTK_PANED(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_PANED, GtkPaned))

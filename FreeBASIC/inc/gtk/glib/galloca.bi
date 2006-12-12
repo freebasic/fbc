@@ -9,7 +9,7 @@
 #ifndef __galloca_bi__
 #define __galloca_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 declare function alloca () as zstring ptr
 

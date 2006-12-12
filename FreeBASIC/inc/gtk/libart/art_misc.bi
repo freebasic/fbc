@@ -9,7 +9,7 @@
 #ifndef __art_misc_bi__
 #define __art_misc_bi__
 
-#include once "gtk/libart/art_config.bi"
+#include once "art_config.bi"
 
 type art_boolean as integer
 

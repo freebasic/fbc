@@ -9,7 +9,7 @@
 #ifndef __gtkcolorbutton_bi__
 #define __gtkcolorbutton_bi__
 
-#include once "gtk/gtk/gtkbutton.bi"
+#include once "gtkbutton.bi"
 
 #define GTK_TYPE_COLOR_BUTTON (gtk_color_button_get_type ())
 #define GTK_COLOR_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_COLOR_BUTTON, GtkColorButton))

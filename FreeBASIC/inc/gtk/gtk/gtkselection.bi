@@ -10,8 +10,8 @@
 #define __gtkselection_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkenums.bi"
-#include once "gtk/gtk/gtkwidget.bi"
+#include once "gtkenums.bi"
+#include once "gtkwidget.bi"
 
 #define GTK_TYPE_SELECTION_DATA (gtk_selection_data_get_type ())
 

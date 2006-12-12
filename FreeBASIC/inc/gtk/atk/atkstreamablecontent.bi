@@ -9,7 +9,7 @@
 #ifndef __atkstreamablecontent_bi__
 #define __atkstreamablecontent_bi__
 
-#include once "gtk/atk/atkobject.bi"
+#include once "atkobject.bi"
 
 #define ATK_TYPE_STREAMABLE_CONTENT() atk_streamable_content_get_type ()
 #define ATK_IS_STREAMABLE_CONTENT(obj) G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_STREAMABLE_CONTENT)

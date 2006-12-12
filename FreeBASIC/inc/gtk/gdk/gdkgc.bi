@@ -9,8 +9,8 @@
 #ifndef __gdkgc_bi__
 #define __gdkgc_bi__
 
-#include once "gtk/gdk/gdkcolor.bi"
-#include once "gtk/gdk/gdktypes.bi"
+#include once "gdkcolor.bi"
+#include once "gdktypes.bi"
 
 #define GDK_TYPE_GC (gdk_gc_get_type ())
 #define GDK_GC(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_GC, GdkGC))

@@ -9,7 +9,7 @@
 #ifndef __gqsort_bi__
 #define __gqsort_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 declare sub g_qsort_with_data (byval pbase as gconstpointer, byval total_elems as gint, byval size as gsize, byval compare_func as GCompareDataFunc, byval user_data as gpointer)
 

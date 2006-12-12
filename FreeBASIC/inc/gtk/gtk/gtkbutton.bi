@@ -10,9 +10,9 @@
 #define __gtkbutton_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkbin.bi"
-#include once "gtk/gtk/gtkenums.bi"
-#include once "gtk/gtk/gtkimage.bi"
+#include once "gtkbin.bi"
+#include once "gtkenums.bi"
+#include once "gtkimage.bi"
 
 #define GTK_TYPE_BUTTON (gtk_button_get_type ())
 #define GTK_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_BUTTON, GtkButton))

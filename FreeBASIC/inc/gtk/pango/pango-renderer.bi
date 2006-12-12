@@ -9,7 +9,7 @@
 #ifndef __pango_renderer_bi__
 #define __pango_renderer_bi__
 
-#include once "gtk/pango/pango-layout.bi"
+#include once "pango-layout.bi"
 
 #define PANGO_TYPE_RENDERER (pango_renderer_get_type())
 #define PANGO_RENDERER(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_RENDERER, PangoRenderer))

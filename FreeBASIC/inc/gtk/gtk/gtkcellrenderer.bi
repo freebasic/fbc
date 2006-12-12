@@ -9,9 +9,9 @@
 #ifndef __gtkcellrenderer_bi__
 #define __gtkcellrenderer_bi__
 
-#include once "gtk/gtk/gtkobject.bi"
-#include once "gtk/gtk/gtkwidget.bi"
-#include once "gtk/gtk/gtkcelleditable.bi"
+#include once "gtkobject.bi"
+#include once "gtkwidget.bi"
+#include once "gtkcelleditable.bi"
 
 #define GTK_TYPE_CELL_RENDERER (gtk_cell_renderer_get_type ())
 #define GTK_CELL_RENDERER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_RENDERER, GtkCellRenderer))

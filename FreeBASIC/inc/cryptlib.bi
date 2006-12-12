@@ -866,65 +866,65 @@ end type
 #define CRYPT_ERROR_DUPLICATE -44
 #define CRYPT_ENVELOPE_RESOURCE -50
 
-declare function cryptInit stdcall alias "cryptInit" () as integer
-declare function cryptEnd stdcall alias "cryptEnd" () as integer
-declare function cryptQueryCapability stdcall alias "cryptQueryCapability" (byval cryptAlgo as CRYPT_ALGO_TYPE, byval cryptQueryInfo as CRYPT_QUERY_INFO ptr) as integer
-declare function cryptCreateContext stdcall alias "cryptCreateContext" (byval cryptContext as CRYPT_CONTEXT ptr, byval cryptUser as CRYPT_USER, byval cryptAlgo as CRYPT_ALGO_TYPE) as integer
-declare function cryptDestroyContext stdcall alias "cryptDestroyContext" (byval cryptContext as CRYPT_CONTEXT) as integer
-declare function cryptDestroyObject stdcall alias "cryptDestroyObject" (byval cryptObject as CRYPT_HANDLE) as integer
-declare function cryptGenerateKey stdcall alias "cryptGenerateKey" (byval cryptContext as CRYPT_CONTEXT) as integer
-declare function cryptGenerateKeyAsync stdcall alias "cryptGenerateKeyAsync" (byval cryptContext as CRYPT_CONTEXT) as integer
-declare function cryptAsyncQuery stdcall alias "cryptAsyncQuery" (byval cryptObject as CRYPT_HANDLE) as integer
-declare function cryptAsyncCancel stdcall alias "cryptAsyncCancel" (byval cryptObject as CRYPT_HANDLE) as integer
-declare function cryptEncrypt stdcall alias "cryptEncrypt" (byval cryptContext as CRYPT_CONTEXT, byval buffer as any ptr, byval length as integer) as integer
-declare function cryptDecrypt stdcall alias "cryptDecrypt" (byval cryptContext as CRYPT_CONTEXT, byval buffer as any ptr, byval length as integer) as integer
-declare function cryptSetAttribute stdcall alias "cryptSetAttribute" (byval cryptHandle as CRYPT_HANDLE, byval attributeType as CRYPT_ATTRIBUTE_TYPE, byval value as integer) as integer
-declare function cryptSetAttributeString stdcall alias "cryptSetAttributeString" (byval cryptHandle as CRYPT_HANDLE, byval attributeType as CRYPT_ATTRIBUTE_TYPE, byval value as any ptr, byval valueLength as integer) as integer
-declare function cryptGetAttribute stdcall alias "cryptGetAttribute" (byval cryptHandle as CRYPT_HANDLE, byval attributeType as CRYPT_ATTRIBUTE_TYPE, byval value as integer ptr) as integer
-declare function cryptGetAttributeString stdcall alias "cryptGetAttributeString" (byval cryptHandle as CRYPT_HANDLE, byval attributeType as CRYPT_ATTRIBUTE_TYPE, byval value as any ptr, byval valueLength as integer ptr) as integer
-declare function cryptDeleteAttribute stdcall alias "cryptDeleteAttribute" (byval cryptHandle as CRYPT_HANDLE, byval attributeType as CRYPT_ATTRIBUTE_TYPE) as integer
-declare function cryptAddRandom stdcall alias "cryptAddRandom" (byval randomData as any ptr, byval randomDataLength as integer) as integer
-declare function cryptQueryObject stdcall alias "cryptQueryObject" (byval objectData as any ptr, byval cryptObjectInfo as CRYPT_OBJECT_INFO ptr) as integer
-declare function cryptExportKey stdcall alias "cryptExportKey" (byval encryptedKey as any ptr, byval encryptedKeyLength as integer ptr, byval exportKey as CRYPT_HANDLE, byval sessionKeyContext as CRYPT_CONTEXT) as integer
-declare function cryptExportKeyEx stdcall alias "cryptExportKeyEx" (byval encryptedKey as any ptr, byval encryptedKeyLength as integer ptr, byval formatType as CRYPT_FORMAT_TYPE, byval exportKey as CRYPT_HANDLE, byval sessionKeyContext as CRYPT_CONTEXT) as integer
-declare function cryptImportKey stdcall alias "cryptImportKey" (byval encryptedKey as any ptr, byval importKey as CRYPT_CONTEXT, byval sessionKeyContext as CRYPT_CONTEXT) as integer
-declare function cryptImportKeyEx stdcall alias "cryptImportKeyEx" (byval encryptedKey as any ptr, byval importKey as CRYPT_CONTEXT, byval sessionKeyContext as CRYPT_CONTEXT, byval returnedContext as CRYPT_CONTEXT ptr) as integer
-declare function cryptCreateSignature stdcall alias "cryptCreateSignature" (byval signature as any ptr, byval signatureLength as integer ptr, byval signContext as CRYPT_CONTEXT, byval hashContext as CRYPT_CONTEXT) as integer
-declare function cryptCreateSignatureEx stdcall alias "cryptCreateSignatureEx" (byval signature as any ptr, byval signatureLength as integer ptr, byval formatType as CRYPT_FORMAT_TYPE, byval signContext as CRYPT_CONTEXT, byval hashContext as CRYPT_CONTEXT, byval extraData as CRYPT_CERTIFICATE) as integer
-declare function cryptCheckSignature stdcall alias "cryptCheckSignature" (byval signature as any ptr, byval sigCheckKey as CRYPT_HANDLE, byval hashContext as CRYPT_CONTEXT) as integer
-declare function cryptCheckSignatureEx stdcall alias "cryptCheckSignatureEx" (byval signature as any ptr, byval sigCheckKey as CRYPT_HANDLE, byval hashContext as CRYPT_CONTEXT, byval extraData as CRYPT_HANDLE ptr) as integer
-declare function cryptKeysetOpen stdcall alias "cryptKeysetOpen" (byval keyset as CRYPT_KEYSET ptr, byval cryptUser as CRYPT_USER, byval keysetType as CRYPT_KEYSET_TYPE, byval name as zstring ptr, byval options as CRYPT_KEYOPT_TYPE) as integer
-declare function cryptKeysetClose stdcall alias "cryptKeysetClose" (byval keyset as CRYPT_KEYSET) as integer
-declare function cryptGetPublicKey stdcall alias "cryptGetPublicKey" (byval keyset as CRYPT_KEYSET, byval cryptContext as CRYPT_CONTEXT ptr, byval keyIDtype as CRYPT_KEYID_TYPE, byval keyID as zstring ptr) as integer
-declare function cryptGetPrivateKey stdcall alias "cryptGetPrivateKey" (byval keyset as CRYPT_KEYSET, byval cryptContext as CRYPT_CONTEXT ptr, byval keyIDtype as CRYPT_KEYID_TYPE, byval keyID as zstring ptr, byval password as zstring ptr) as integer
-declare function cryptAddPublicKey stdcall alias "cryptAddPublicKey" (byval keyset as CRYPT_KEYSET, byval certificate as CRYPT_CERTIFICATE) as integer
-declare function cryptAddPrivateKey stdcall alias "cryptAddPrivateKey" (byval keyset as CRYPT_KEYSET, byval cryptKey as CRYPT_HANDLE, byval password as zstring ptr) as integer
-declare function cryptDeleteKey stdcall alias "cryptDeleteKey" (byval keyset as CRYPT_KEYSET, byval keyIDtype as CRYPT_KEYID_TYPE, byval keyID as zstring ptr) as integer
-declare function cryptCreateCert stdcall alias "cryptCreateCert" (byval certificate as CRYPT_CERTIFICATE ptr, byval cryptUser as CRYPT_USER, byval certType as CRYPT_CERTTYPE_TYPE) as integer
-declare function cryptDestroyCert stdcall alias "cryptDestroyCert" (byval certificate as CRYPT_CERTIFICATE) as integer
-declare function cryptGetCertExtension stdcall alias "cryptGetCertExtension" (byval certificate as CRYPT_CERTIFICATE, byval oid as zstring ptr, byval criticalFlag as integer ptr, byval extension as any ptr, byval extensionLength as integer ptr) as integer
-declare function cryptAddCertExtension stdcall alias "cryptAddCertExtension" (byval certificate as CRYPT_CERTIFICATE, byval oid as zstring ptr, byval criticalFlag as integer, byval extension as any ptr, byval extensionLength as integer) as integer
-declare function cryptDeleteCertExtension stdcall alias "cryptDeleteCertExtension" (byval certificate as CRYPT_CERTIFICATE, byval oid as zstring ptr) as integer
-declare function cryptSignCert stdcall alias "cryptSignCert" (byval certificate as CRYPT_CERTIFICATE, byval signContext as CRYPT_CONTEXT) as integer
-declare function cryptCheckCert stdcall alias "cryptCheckCert" (byval certificate as CRYPT_CERTIFICATE, byval sigCheckKey as CRYPT_HANDLE) as integer
-declare function cryptImportCert stdcall alias "cryptImportCert" (byval certObject as any ptr, byval certObjectLength as integer, byval cryptUser as CRYPT_USER, byval certificate as CRYPT_CERTIFICATE ptr) as integer
-declare function cryptExportCert stdcall alias "cryptExportCert" (byval certObject as any ptr, byval certObjectLength as integer ptr, byval certFormatType as CRYPT_CERTFORMAT_TYPE, byval certificate as CRYPT_CERTIFICATE) as integer
-declare function cryptCAAddItem stdcall alias "cryptCAAddItem" (byval keyset as CRYPT_KEYSET, byval certificate as CRYPT_CERTIFICATE) as integer
-declare function cryptCAGetItem stdcall alias "cryptCAGetItem" (byval keyset as CRYPT_KEYSET, byval certificate as CRYPT_CERTIFICATE ptr, byval certType as CRYPT_CERTTYPE_TYPE, byval keyIDtype as CRYPT_KEYID_TYPE, byval keyID as zstring ptr) as integer
-declare function cryptCADeleteItem stdcall alias "cryptCADeleteItem" (byval keyset as CRYPT_KEYSET, byval keyIDtype as CRYPT_KEYID_TYPE, byval keyID as zstring ptr) as integer
-declare function cryptCACertManagement stdcall alias "cryptCACertManagement" (byval certificate as CRYPT_CERTIFICATE ptr, byval action as CRYPT_CERTACTION_TYPE, byval keyset as CRYPT_KEYSET, byval caKey as CRYPT_CONTEXT, byval certRequest as CRYPT_CERTIFICATE) as integer
-declare function cryptCreateEnvelope stdcall alias "cryptCreateEnvelope" (byval envelope as CRYPT_ENVELOPE ptr, byval cryptUser as CRYPT_USER, byval formatType as CRYPT_FORMAT_TYPE) as integer
-declare function cryptDestroyEnvelope stdcall alias "cryptDestroyEnvelope" (byval envelope as CRYPT_ENVELOPE) as integer
-declare function cryptCreateSession stdcall alias "cryptCreateSession" (byval session as CRYPT_SESSION ptr, byval cryptUser as CRYPT_USER, byval formatType as CRYPT_SESSION_TYPE) as integer
-declare function cryptDestroySession stdcall alias "cryptDestroySession" (byval session as CRYPT_SESSION) as integer
-declare function cryptPushData stdcall alias "cryptPushData" (byval envelope as CRYPT_HANDLE, byval buffer as any ptr, byval length as integer, byval bytesCopied as integer ptr) as integer
-declare function cryptFlushData stdcall alias "cryptFlushData" (byval envelope as CRYPT_HANDLE) as integer
-declare function cryptPopData stdcall alias "cryptPopData" (byval envelope as CRYPT_HANDLE, byval buffer as any ptr, byval length as integer, byval bytesCopied as integer ptr) as integer
-declare function cryptDeviceOpen stdcall alias "cryptDeviceOpen" (byval device as CRYPT_DEVICE ptr, byval cryptUser as CRYPT_USER, byval deviceType as CRYPT_DEVICE_TYPE, byval name as zstring ptr) as integer
-declare function cryptDeviceClose stdcall alias "cryptDeviceClose" (byval device as CRYPT_DEVICE) as integer
-declare function cryptDeviceQueryCapability stdcall alias "cryptDeviceQueryCapability" (byval device as CRYPT_DEVICE, byval cryptAlgo as CRYPT_ALGO_TYPE, byval cryptQueryInfo as CRYPT_QUERY_INFO ptr) as integer
-declare function cryptDeviceCreateContext stdcall alias "cryptDeviceCreateContext" (byval device as CRYPT_DEVICE, byval cryptContext as CRYPT_CONTEXT ptr, byval cryptAlgo as CRYPT_ALGO_TYPE) as integer
-declare function cryptLogin stdcall alias "cryptLogin" (byval user as CRYPT_USER ptr, byval name as zstring ptr, byval password as zstring ptr) as integer
-declare function cryptLogout stdcall alias "cryptLogout" (byval user as CRYPT_USER) as integer
+declare function cryptInit alias "cryptInit" () as integer
+declare function cryptEnd alias "cryptEnd" () as integer
+declare function cryptQueryCapability alias "cryptQueryCapability" (byval cryptAlgo as CRYPT_ALGO_TYPE, byval cryptQueryInfo as CRYPT_QUERY_INFO ptr) as integer
+declare function cryptCreateContext alias "cryptCreateContext" (byval cryptContext as CRYPT_CONTEXT ptr, byval cryptUser as CRYPT_USER, byval cryptAlgo as CRYPT_ALGO_TYPE) as integer
+declare function cryptDestroyContext alias "cryptDestroyContext" (byval cryptContext as CRYPT_CONTEXT) as integer
+declare function cryptDestroyObject alias "cryptDestroyObject" (byval cryptObject as CRYPT_HANDLE) as integer
+declare function cryptGenerateKey alias "cryptGenerateKey" (byval cryptContext as CRYPT_CONTEXT) as integer
+declare function cryptGenerateKeyAsync alias "cryptGenerateKeyAsync" (byval cryptContext as CRYPT_CONTEXT) as integer
+declare function cryptAsyncQuery alias "cryptAsyncQuery" (byval cryptObject as CRYPT_HANDLE) as integer
+declare function cryptAsyncCancel alias "cryptAsyncCancel" (byval cryptObject as CRYPT_HANDLE) as integer
+declare function cryptEncrypt alias "cryptEncrypt" (byval cryptContext as CRYPT_CONTEXT, byval buffer as any ptr, byval length as integer) as integer
+declare function cryptDecrypt alias "cryptDecrypt" (byval cryptContext as CRYPT_CONTEXT, byval buffer as any ptr, byval length as integer) as integer
+declare function cryptSetAttribute alias "cryptSetAttribute" (byval cryptHandle as CRYPT_HANDLE, byval attributeType as CRYPT_ATTRIBUTE_TYPE, byval value as integer) as integer
+declare function cryptSetAttributeString alias "cryptSetAttributeString" (byval cryptHandle as CRYPT_HANDLE, byval attributeType as CRYPT_ATTRIBUTE_TYPE, byval value as any ptr, byval valueLength as integer) as integer
+declare function cryptGetAttribute alias "cryptGetAttribute" (byval cryptHandle as CRYPT_HANDLE, byval attributeType as CRYPT_ATTRIBUTE_TYPE, byval value as integer ptr) as integer
+declare function cryptGetAttributeString alias "cryptGetAttributeString" (byval cryptHandle as CRYPT_HANDLE, byval attributeType as CRYPT_ATTRIBUTE_TYPE, byval value as any ptr, byval valueLength as integer ptr) as integer
+declare function cryptDeleteAttribute alias "cryptDeleteAttribute" (byval cryptHandle as CRYPT_HANDLE, byval attributeType as CRYPT_ATTRIBUTE_TYPE) as integer
+declare function cryptAddRandom alias "cryptAddRandom" (byval randomData as any ptr, byval randomDataLength as integer) as integer
+declare function cryptQueryObject alias "cryptQueryObject" (byval objectData as any ptr, byval cryptObjectInfo as CRYPT_OBJECT_INFO ptr) as integer
+declare function cryptExportKey alias "cryptExportKey" (byval encryptedKey as any ptr, byval encryptedKeyLength as integer ptr, byval exportKey as CRYPT_HANDLE, byval sessionKeyContext as CRYPT_CONTEXT) as integer
+declare function cryptExportKeyEx alias "cryptExportKeyEx" (byval encryptedKey as any ptr, byval encryptedKeyLength as integer ptr, byval formatType as CRYPT_FORMAT_TYPE, byval exportKey as CRYPT_HANDLE, byval sessionKeyContext as CRYPT_CONTEXT) as integer
+declare function cryptImportKey alias "cryptImportKey" (byval encryptedKey as any ptr, byval importKey as CRYPT_CONTEXT, byval sessionKeyContext as CRYPT_CONTEXT) as integer
+declare function cryptImportKeyEx alias "cryptImportKeyEx" (byval encryptedKey as any ptr, byval importKey as CRYPT_CONTEXT, byval sessionKeyContext as CRYPT_CONTEXT, byval returnedContext as CRYPT_CONTEXT ptr) as integer
+declare function cryptCreateSignature alias "cryptCreateSignature" (byval signature as any ptr, byval signatureLength as integer ptr, byval signContext as CRYPT_CONTEXT, byval hashContext as CRYPT_CONTEXT) as integer
+declare function cryptCreateSignatureEx alias "cryptCreateSignatureEx" (byval signature as any ptr, byval signatureLength as integer ptr, byval formatType as CRYPT_FORMAT_TYPE, byval signContext as CRYPT_CONTEXT, byval hashContext as CRYPT_CONTEXT, byval extraData as CRYPT_CERTIFICATE) as integer
+declare function cryptCheckSignature alias "cryptCheckSignature" (byval signature as any ptr, byval sigCheckKey as CRYPT_HANDLE, byval hashContext as CRYPT_CONTEXT) as integer
+declare function cryptCheckSignatureEx alias "cryptCheckSignatureEx" (byval signature as any ptr, byval sigCheckKey as CRYPT_HANDLE, byval hashContext as CRYPT_CONTEXT, byval extraData as CRYPT_HANDLE ptr) as integer
+declare function cryptKeysetOpen alias "cryptKeysetOpen" (byval keyset as CRYPT_KEYSET ptr, byval cryptUser as CRYPT_USER, byval keysetType as CRYPT_KEYSET_TYPE, byval name as zstring ptr, byval options as CRYPT_KEYOPT_TYPE) as integer
+declare function cryptKeysetClose alias "cryptKeysetClose" (byval keyset as CRYPT_KEYSET) as integer
+declare function cryptGetPublicKey alias "cryptGetPublicKey" (byval keyset as CRYPT_KEYSET, byval cryptContext as CRYPT_CONTEXT ptr, byval keyIDtype as CRYPT_KEYID_TYPE, byval keyID as zstring ptr) as integer
+declare function cryptGetPrivateKey alias "cryptGetPrivateKey" (byval keyset as CRYPT_KEYSET, byval cryptContext as CRYPT_CONTEXT ptr, byval keyIDtype as CRYPT_KEYID_TYPE, byval keyID as zstring ptr, byval password as zstring ptr) as integer
+declare function cryptAddPublicKey alias "cryptAddPublicKey" (byval keyset as CRYPT_KEYSET, byval certificate as CRYPT_CERTIFICATE) as integer
+declare function cryptAddPrivateKey alias "cryptAddPrivateKey" (byval keyset as CRYPT_KEYSET, byval cryptKey as CRYPT_HANDLE, byval password as zstring ptr) as integer
+declare function cryptDeleteKey alias "cryptDeleteKey" (byval keyset as CRYPT_KEYSET, byval keyIDtype as CRYPT_KEYID_TYPE, byval keyID as zstring ptr) as integer
+declare function cryptCreateCert alias "cryptCreateCert" (byval certificate as CRYPT_CERTIFICATE ptr, byval cryptUser as CRYPT_USER, byval certType as CRYPT_CERTTYPE_TYPE) as integer
+declare function cryptDestroyCert alias "cryptDestroyCert" (byval certificate as CRYPT_CERTIFICATE) as integer
+declare function cryptGetCertExtension alias "cryptGetCertExtension" (byval certificate as CRYPT_CERTIFICATE, byval oid as zstring ptr, byval criticalFlag as integer ptr, byval extension as any ptr, byval extensionLength as integer ptr) as integer
+declare function cryptAddCertExtension alias "cryptAddCertExtension" (byval certificate as CRYPT_CERTIFICATE, byval oid as zstring ptr, byval criticalFlag as integer, byval extension as any ptr, byval extensionLength as integer) as integer
+declare function cryptDeleteCertExtension alias "cryptDeleteCertExtension" (byval certificate as CRYPT_CERTIFICATE, byval oid as zstring ptr) as integer
+declare function cryptSignCert alias "cryptSignCert" (byval certificate as CRYPT_CERTIFICATE, byval signContext as CRYPT_CONTEXT) as integer
+declare function cryptCheckCert alias "cryptCheckCert" (byval certificate as CRYPT_CERTIFICATE, byval sigCheckKey as CRYPT_HANDLE) as integer
+declare function cryptImportCert alias "cryptImportCert" (byval certObject as any ptr, byval certObjectLength as integer, byval cryptUser as CRYPT_USER, byval certificate as CRYPT_CERTIFICATE ptr) as integer
+declare function cryptExportCert alias "cryptExportCert" (byval certObject as any ptr, byval certObjectLength as integer ptr, byval certFormatType as CRYPT_CERTFORMAT_TYPE, byval certificate as CRYPT_CERTIFICATE) as integer
+declare function cryptCAAddItem alias "cryptCAAddItem" (byval keyset as CRYPT_KEYSET, byval certificate as CRYPT_CERTIFICATE) as integer
+declare function cryptCAGetItem alias "cryptCAGetItem" (byval keyset as CRYPT_KEYSET, byval certificate as CRYPT_CERTIFICATE ptr, byval certType as CRYPT_CERTTYPE_TYPE, byval keyIDtype as CRYPT_KEYID_TYPE, byval keyID as zstring ptr) as integer
+declare function cryptCADeleteItem alias "cryptCADeleteItem" (byval keyset as CRYPT_KEYSET, byval keyIDtype as CRYPT_KEYID_TYPE, byval keyID as zstring ptr) as integer
+declare function cryptCACertManagement alias "cryptCACertManagement" (byval certificate as CRYPT_CERTIFICATE ptr, byval action as CRYPT_CERTACTION_TYPE, byval keyset as CRYPT_KEYSET, byval caKey as CRYPT_CONTEXT, byval certRequest as CRYPT_CERTIFICATE) as integer
+declare function cryptCreateEnvelope alias "cryptCreateEnvelope" (byval envelope as CRYPT_ENVELOPE ptr, byval cryptUser as CRYPT_USER, byval formatType as CRYPT_FORMAT_TYPE) as integer
+declare function cryptDestroyEnvelope alias "cryptDestroyEnvelope" (byval envelope as CRYPT_ENVELOPE) as integer
+declare function cryptCreateSession alias "cryptCreateSession" (byval session as CRYPT_SESSION ptr, byval cryptUser as CRYPT_USER, byval formatType as CRYPT_SESSION_TYPE) as integer
+declare function cryptDestroySession alias "cryptDestroySession" (byval session as CRYPT_SESSION) as integer
+declare function cryptPushData alias "cryptPushData" (byval envelope as CRYPT_HANDLE, byval buffer as any ptr, byval length as integer, byval bytesCopied as integer ptr) as integer
+declare function cryptFlushData alias "cryptFlushData" (byval envelope as CRYPT_HANDLE) as integer
+declare function cryptPopData alias "cryptPopData" (byval envelope as CRYPT_HANDLE, byval buffer as any ptr, byval length as integer, byval bytesCopied as integer ptr) as integer
+declare function cryptDeviceOpen alias "cryptDeviceOpen" (byval device as CRYPT_DEVICE ptr, byval cryptUser as CRYPT_USER, byval deviceType as CRYPT_DEVICE_TYPE, byval name as zstring ptr) as integer
+declare function cryptDeviceClose alias "cryptDeviceClose" (byval device as CRYPT_DEVICE) as integer
+declare function cryptDeviceQueryCapability alias "cryptDeviceQueryCapability" (byval device as CRYPT_DEVICE, byval cryptAlgo as CRYPT_ALGO_TYPE, byval cryptQueryInfo as CRYPT_QUERY_INFO ptr) as integer
+declare function cryptDeviceCreateContext alias "cryptDeviceCreateContext" (byval device as CRYPT_DEVICE, byval cryptContext as CRYPT_CONTEXT ptr, byval cryptAlgo as CRYPT_ALGO_TYPE) as integer
+declare function cryptLogin alias "cryptLogin" (byval user as CRYPT_USER ptr, byval name as zstring ptr, byval password as zstring ptr) as integer
+declare function cryptLogout alias "cryptLogout" (byval user as CRYPT_USER) as integer
 
 #endif

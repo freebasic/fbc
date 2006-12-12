@@ -10,7 +10,7 @@
 #define __gtkcheckbutton_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtktogglebutton.bi"
+#include once "gtktogglebutton.bi"
 
 #define GTK_TYPE_CHECK_BUTTON (gtk_check_button_get_type ())
 #define GTK_CHECK_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CHECK_BUTTON, GtkCheckButton))

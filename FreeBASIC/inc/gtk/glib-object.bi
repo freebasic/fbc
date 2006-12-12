@@ -15,19 +15,19 @@
 
 extern "c" lib "gobject-2.0"
 
-#include once "gtk/gobject/gboxed.bi"
-#include once "gtk/gobject/genums.bi"
-#include once "gtk/gobject/gobject.bi"
-#include once "gtk/gobject/gparam.bi"
-#include once "gtk/gobject/gparamspecs.bi"
-#include once "gtk/gobject/gsignal.bi"
-#include once "gtk/gobject/gsourceclosure.bi"
-#include once "gtk/gobject/gtype.bi"
-#include once "gtk/gobject/gtypemodule.bi"
-#include once "gtk/gobject/gtypeplugin.bi"
-#include once "gtk/gobject/gvalue.bi"
-#include once "gtk/gobject/gvaluearray.bi"
-#include once "gtk/gobject/gvaluetypes.bi"
+#include once "gobject/gboxed.bi"
+#include once "gobject/genums.bi"
+#include once "gobject/gobject.bi"
+#include once "gobject/gparam.bi"
+#include once "gobject/gparamspecs.bi"
+#include once "gobject/gsignal.bi"
+#include once "gobject/gsourceclosure.bi"
+#include once "gobject/gtype.bi"
+#include once "gobject/gtypemodule.bi"
+#include once "gobject/gtypeplugin.bi"
+#include once "gobject/gvalue.bi"
+#include once "gobject/gvaluearray.bi"
+#include once "gobject/gvaluetypes.bi"
 
 end extern
 

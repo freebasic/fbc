@@ -9,8 +9,10 @@
 #ifndef __gsl_sf_elljac_bi__
 #define __gsl_sf_elljac_bi__
 
-#include once "gsl/gsl_types.bi"
+#include once "gsl_types.bi"
 
-declare function gsl_sf_elljac_e cdecl alias "gsl_sf_elljac_e" (byval u as double, byval m as double, byval sn as double ptr, byval cn as double ptr, byval dn as double ptr) as integer
+extern "c"
+ declare function gsl_sf_elljac_e (byval u as double, byval m as double, byval sn as double ptr, byval cn as double ptr, byval dn as double ptr) as integer
+end extern
 
 #endif

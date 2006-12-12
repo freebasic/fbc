@@ -9,7 +9,7 @@
 #ifndef __gtkaction_bi__
 #define __gtkaction_bi__
 
-#include once "gtk/gtk/gtkwidget.bi"
+#include once "gtkwidget.bi"
 #include once "gtk/glib-object.bi"
 
 #define GTK_TYPE_ACTION (gtk_action_get_type ())

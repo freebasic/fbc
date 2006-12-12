@@ -9,9 +9,9 @@
 #ifndef __wxc_iconizeevent_bi__
 #define __wxc_iconizeevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxIconizeEvent cdecl alias "wxIconizeEvent_ctor" (byval type as wxEventType) as wxIconizeEvent ptr
-declare function wxIconizeEvent_Iconized cdecl alias "wxIconizeEvent_Iconized" (byval self as wxIconizeEvent ptr) as integer
+declare function wxIconizeEvent alias "wxIconizeEvent_ctor" (byval type as wxEventType) as wxIconizeEvent ptr
+declare function wxIconizeEvent_Iconized (byval self as wxIconizeEvent ptr) as integer
 
 #endif

@@ -9,8 +9,8 @@
 #ifndef __art_vpath_bi__
 #define __art_vpath_bi__
 
-#include once "gtk/libart/art_rect.bi"
-#include once "gtk/libart/art_pathcode.bi"
+#include once "art_rect.bi"
+#include once "art_pathcode.bi"
 
 type ArtVpath as _ArtVpath
 

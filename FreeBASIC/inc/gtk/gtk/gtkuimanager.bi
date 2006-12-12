@@ -11,10 +11,10 @@
 
 #include once "gtk/glib.bi"
 #include once "gtk/glib-object.bi"
-#include once "gtk/gtk/gtkaccelgroup.bi"
-#include once "gtk/gtk/gtkwidget.bi"
-#include once "gtk/gtk/gtkaction.bi"
-#include once "gtk/gtk/gtkactiongroup.bi"
+#include once "gtkaccelgroup.bi"
+#include once "gtkwidget.bi"
+#include once "gtkaction.bi"
+#include once "gtkactiongroup.bi"
 
 #define GTK_TYPE_UI_MANAGER (gtk_ui_manager_get_type ())
 #define GTK_UI_MANAGER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_UI_MANAGER, GtkUIManager))

@@ -9,8 +9,8 @@
 #ifndef __gunicode_bi__
 #define __gunicode_bi__
 
-#include once "gtk/glib/gerror.bi"
-#include once "gtk/glib/gtypes.bi"
+#include once "gerror.bi"
+#include once "gtypes.bi"
 
 type gunichar as guint32
 type gunichar2 as guint16

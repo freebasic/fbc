@@ -9,7 +9,7 @@
 #ifndef __atkutil_bi__
 #define __atkutil_bi__
 
-#include once "gtk/atk/atkobject.bi"
+#include once "atkobject.bi"
 
 #define ATK_TYPE_UTIL() atk_util_get_type ()
 #define ATK_IS_UTIL(obj)G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_UTIL)

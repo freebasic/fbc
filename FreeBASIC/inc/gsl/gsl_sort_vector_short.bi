@@ -9,16 +9,18 @@
 #ifndef __gsl_sort_vector_short_bi__
 #define __gsl_sort_vector_short_bi__
 
-#include once "gsl/gsl_errno.bi"
-#include once "gsl/gsl_permutation.bi"
-#include once "gsl/gsl_vector_short.bi"
-#include once "gsl/gsl_types.bi"
+#include once "gsl_errno.bi"
+#include once "gsl_permutation.bi"
+#include once "gsl_vector_short.bi"
+#include once "gsl_types.bi"
 
-declare sub gsl_sort_vector_short cdecl alias "gsl_sort_vector_short" (byval v as gsl_vector_short ptr)
-declare function gsl_sort_vector_short_index cdecl alias "gsl_sort_vector_short_index" (byval p as gsl_permutation ptr, byval v as gsl_vector_short ptr) as integer
-declare function gsl_sort_vector_short_smallest cdecl alias "gsl_sort_vector_short_smallest" (byval dest as short ptr, byval k as integer, byval v as gsl_vector_short ptr) as integer
-declare function gsl_sort_vector_short_largest cdecl alias "gsl_sort_vector_short_largest" (byval dest as short ptr, byval k as integer, byval v as gsl_vector_short ptr) as integer
-declare function gsl_sort_vector_short_smallest_index cdecl alias "gsl_sort_vector_short_smallest_index" (byval p as integer ptr, byval k as integer, byval v as gsl_vector_short ptr) as integer
-declare function gsl_sort_vector_short_largest_index cdecl alias "gsl_sort_vector_short_largest_index" (byval p as integer ptr, byval k as integer, byval v as gsl_vector_short ptr) as integer
+extern "c"
+declare sub gsl_sort_vector_short (byval v as gsl_vector_short ptr)
+declare function gsl_sort_vector_short_index (byval p as gsl_permutation ptr, byval v as gsl_vector_short ptr) as integer
+declare function gsl_sort_vector_short_smallest (byval dest as short ptr, byval k as integer, byval v as gsl_vector_short ptr) as integer
+declare function gsl_sort_vector_short_largest (byval dest as short ptr, byval k as integer, byval v as gsl_vector_short ptr) as integer
+declare function gsl_sort_vector_short_smallest_index (byval p as integer ptr, byval k as integer, byval v as gsl_vector_short ptr) as integer
+declare function gsl_sort_vector_short_largest_index (byval p as integer ptr, byval k as integer, byval v as gsl_vector_short ptr) as integer
+end extern
 
 #endif

@@ -9,7 +9,7 @@
 #ifndef __gquark_bi__
 #define __gquark_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 type GQuark as guint32
 

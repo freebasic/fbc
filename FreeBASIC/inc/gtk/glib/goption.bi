@@ -9,8 +9,8 @@
 #ifndef __goption_bi__
 #define __goption_bi__
 
-#include once "gtk/glib/gerror.bi"
-#include once "gtk/glib/gquark.bi"
+#include once "gerror.bi"
+#include once "gquark.bi"
 
 type GOptionContext as _GOptionContext
 type GOptionGroup as _GOptionGroup

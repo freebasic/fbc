@@ -9,7 +9,7 @@
 #ifndef __gsl_ieee_utils_bi__
 #define __gsl_ieee_utils_bi__
 
-#include once "gsl/gsl_types.bi"
+#include once "gsl_types.bi"
 
 enum 
 	GSL_IEEE_TYPE_NAN = 1
@@ -33,12 +33,14 @@ type gsl_ieee_double_rep
 	type as integer
 end type
 
-declare sub gsl_ieee_printf_float cdecl alias "gsl_ieee_printf_float" (byval x as single ptr)
-declare sub gsl_ieee_printf_double cdecl alias "gsl_ieee_printf_double" (byval x as double ptr)
-declare sub gsl_ieee_fprintf_float cdecl alias "gsl_ieee_fprintf_float" (byval stream as FILE ptr, byval x as single ptr)
-declare sub gsl_ieee_fprintf_double cdecl alias "gsl_ieee_fprintf_double" (byval stream as FILE ptr, byval x as double ptr)
-declare sub gsl_ieee_float_to_rep cdecl alias "gsl_ieee_float_to_rep" (byval x as single ptr, byval r as gsl_ieee_float_rep ptr)
-declare sub gsl_ieee_double_to_rep cdecl alias "gsl_ieee_double_to_rep" (byval x as double ptr, byval r as gsl_ieee_double_rep ptr)
+extern "c"
+declare sub gsl_ieee_printf_float (byval x as single ptr)
+declare sub gsl_ieee_printf_double (byval x as double ptr)
+declare sub gsl_ieee_fprintf_float (byval stream as FILE ptr, byval x as single ptr)
+declare sub gsl_ieee_fprintf_double (byval stream as FILE ptr, byval x as double ptr)
+declare sub gsl_ieee_float_to_rep (byval x as single ptr, byval r as gsl_ieee_float_rep ptr)
+declare sub gsl_ieee_double_to_rep (byval x as double ptr, byval r as gsl_ieee_double_rep ptr)
+end extern
 
 enum 
 	GSL_IEEE_SINGLE_PRECISION = 1
@@ -63,8 +65,10 @@ enum
 	GSL_IEEE_TRAP_INEXACT = 32
 end enum
 
-declare sub gsl_ieee_env_setup cdecl alias "gsl_ieee_env_setup" ()
-declare function gsl_ieee_read_mode_string cdecl alias "gsl_ieee_read_mode_string" (byval description as zstring ptr, byval precision as integer ptr, byval rounding as integer ptr, byval exception_mask as integer ptr) as integer
-declare function gsl_ieee_set_mode cdecl alias "gsl_ieee_set_mode" (byval precision as integer, byval rounding as integer, byval exception_mask as integer) as integer
+extern "c"
+declare sub gsl_ieee_env_setup ()
+declare function gsl_ieee_read_mode_string (byval description as zstring ptr, byval precision as integer ptr, byval rounding as integer ptr, byval exception_mask as integer ptr) as integer
+declare function gsl_ieee_set_mode (byval precision as integer, byval rounding as integer, byval exception_mask as integer) as integer
+end extern
 
 #endif

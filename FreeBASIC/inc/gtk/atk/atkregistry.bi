@@ -10,7 +10,7 @@
 #define __atkregistry_bi__
 
 #include once "gtk/glib-object.bi"
-#include once "gtk/atk/atkobjectfactory.bi"
+#include once "atkobjectfactory.bi"
 
 #define ATK_TYPE_REGISTRY() atk_registry_get_type ()
 #define ATK_REGISTRY(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_REGISTRY, AtkRegistry)

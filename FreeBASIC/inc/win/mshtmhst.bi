@@ -89,7 +89,6 @@ type IDocHostUIHandlerVtbl
 	FilterDataObject as function(byval as IDocHostUIHandler ptr, byval as IDataObject ptr, byval as IDataObject ptr ptr) as HRESULT
 end type
 
-
 #define IDocHostUIHandler_QueryInterface(this_,riid,ppvObject) (this_)->lpVtbl -> QueryInterface(this_,riid,ppvObject)
 #define IDocHostUIHandler_AddRef(this_) (this_)->lpVtbl -> AddRef(this_)
 #define IDocHostUIHandler_Release(this_) (this_)->lpVtbl -> Release(this_)
@@ -194,52 +193,5 @@ end type
 #define ICSSFilter_Release(this_) (this_)->lpVtbl -> Release(this_)
 #define ICSSFilter_SetSite(this_,pSink) (this_)->lpVtbl -> SetSite(this_,pSink)
 #define ICSSFilter_OnAmbientPropertyChange(this_,dispid) (this_)->lpVtbl -> OnAmbientPropertyChange(this_,dispid)
-
-#ifdef WIN_INCLUDEPROXY
-declare function IDocHostUIHandler_ShowContextMenu_Proxy alias "IDocHostUIHandler_ShowContextMenu_Proxy" (byval This as IDocHostUIHandler ptr, byval dwID as DWORD, byval ppt as POINT ptr, byval pcmdtReserved as IUnknown ptr, byval pdispReserved as IDispatch ptr) as HRESULT
-declare sub IDocHostUIHandler_ShowContextMenu_Stub alias "IDocHostUIHandler_ShowContextMenu_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_GetHostInfo_Proxy alias "IDocHostUIHandler_GetHostInfo_Proxy" (byval This as IDocHostUIHandler ptr, byval pInfo as DOCHOSTUIINFO ptr) as HRESULT
-declare sub IDocHostUIHandler_GetHostInfo_Stub alias "IDocHostUIHandler_GetHostInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_ShowUI_Proxy alias "IDocHostUIHandler_ShowUI_Proxy" (byval This as IDocHostUIHandler ptr, byval dwID as DWORD, byval pActiveObject as IOleInPlaceActiveObject ptr, byval pCommandTarget as IOleCommandTarget ptr, byval pFrame as IOleInPlaceFrame ptr, byval pDoc as IOleInPlaceUIWindow ptr) as HRESULT
-declare sub IDocHostUIHandler_ShowUI_Stub alias "IDocHostUIHandler_ShowUI_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_HideUI_Proxy alias "IDocHostUIHandler_HideUI_Proxy" (byval This as IDocHostUIHandler ptr) as HRESULT
-declare sub IDocHostUIHandler_HideUI_Stub alias "IDocHostUIHandler_HideUI_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_UpdateUI_Proxy alias "IDocHostUIHandler_UpdateUI_Proxy" (byval This as IDocHostUIHandler ptr) as HRESULT
-declare sub IDocHostUIHandler_UpdateUI_Stub alias "IDocHostUIHandler_UpdateUI_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_EnableModeless_Proxy alias "IDocHostUIHandler_EnableModeless_Proxy" (byval This as IDocHostUIHandler ptr, byval fEnable as BOOL) as HRESULT
-declare sub IDocHostUIHandler_EnableModeless_Stub alias "IDocHostUIHandler_EnableModeless_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_OnDocWindowActivate_Proxy alias "IDocHostUIHandler_OnDocWindowActivate_Proxy" (byval This as IDocHostUIHandler ptr, byval fActivate as BOOL) as HRESULT
-declare sub IDocHostUIHandler_OnDocWindowActivate_Stub alias "IDocHostUIHandler_OnDocWindowActivate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_OnFrameWindowActivate_Proxy alias "IDocHostUIHandler_OnFrameWindowActivate_Proxy" (byval This as IDocHostUIHandler ptr, byval fActivate as BOOL) as HRESULT
-declare sub IDocHostUIHandler_OnFrameWindowActivate_Stub alias "IDocHostUIHandler_OnFrameWindowActivate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_ResizeBorder_Proxy alias "IDocHostUIHandler_ResizeBorder_Proxy" (byval This as IDocHostUIHandler ptr, byval prcBorder as LPCRECT, byval pUIWindow as IOleInPlaceUIWindow ptr, byval fRameWindow as BOOL) as HRESULT
-declare sub IDocHostUIHandler_ResizeBorder_Stub alias "IDocHostUIHandler_ResizeBorder_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_TranslateAccelerator_Proxy alias "IDocHostUIHandler_TranslateAccelerator_Proxy" (byval This as IDocHostUIHandler ptr, byval lpMsg as LPMSG, byval pguidCmdGroup as GUID ptr, byval nCmdID as DWORD) as HRESULT
-declare sub IDocHostUIHandler_TranslateAccelerator_Stub alias "IDocHostUIHandler_TranslateAccelerator_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_GetOptionKeyPath_Proxy alias "IDocHostUIHandler_GetOptionKeyPath_Proxy" (byval This as IDocHostUIHandler ptr, byval pchKey as LPOLESTR ptr, byval dw as DWORD) as HRESULT
-declare sub IDocHostUIHandler_GetOptionKeyPath_Stub alias "IDocHostUIHandler_GetOptionKeyPath_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_GetDropTarget_Proxy alias "IDocHostUIHandler_GetDropTarget_Proxy" (byval This as IDocHostUIHandler ptr, byval pDropTarget as IDropTarget ptr, byval ppDropTarget as IDropTarget ptr ptr) as HRESULT
-declare sub IDocHostUIHandler_GetDropTarget_Stub alias "IDocHostUIHandler_GetDropTarget_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_GetExternal_Proxy alias "IDocHostUIHandler_GetExternal_Proxy" (byval This as IDocHostUIHandler ptr, byval ppDispatch as IDispatch ptr ptr) as HRESULT
-declare sub IDocHostUIHandler_GetExternal_Stub alias "IDocHostUIHandler_GetExternal_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_TranslateUrl_Proxy alias "IDocHostUIHandler_TranslateUrl_Proxy" (byval This as IDocHostUIHandler ptr, byval dwTranslate as DWORD, byval pchURLIn as OLECHAR ptr, byval ppchURLOut as OLECHAR ptr ptr) as HRESULT
-declare sub IDocHostUIHandler_TranslateUrl_Stub alias "IDocHostUIHandler_TranslateUrl_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostUIHandler_FilterDataObject_Proxy alias "IDocHostUIHandler_FilterDataObject_Proxy" (byval This as IDocHostUIHandler ptr, byval pDO as IDataObject ptr, byval ppDORet as IDataObject ptr ptr) as HRESULT
-declare sub IDocHostUIHandler_FilterDataObject_Stub alias "IDocHostUIHandler_FilterDataObject_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostShowUI_ShowMessage_Proxy alias "IDocHostShowUI_ShowMessage_Proxy" (byval This as IDocHostShowUI ptr, byval hwnd as HWND, byval lpstrText as LPOLESTR, byval lpstrCaption as LPOLESTR, byval dwType as DWORD, byval lpstrHelpFile as LPOLESTR, byval dwHelpContext as DWORD, byval plResult as LRESULT ptr) as HRESULT
-declare sub IDocHostShowUI_ShowMessage_Stub alias "IDocHostShowUI_ShowMessage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDocHostShowUI_ShowHelp_Proxy alias "IDocHostShowUI_ShowHelp_Proxy" (byval This as IDocHostShowUI ptr, byval hwnd as HWND, byval pszHelpFile as LPOLESTR, byval uCommand as UINT, byval dwData as DWORD, byval ptMouse as POINT, byval pDispatchObjectHit as IDispatch ptr) as HRESULT
-declare sub IDocHostShowUI_ShowHelp_Stub alias "IDocHostShowUI_ShowHelp_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICSSFilterSite_GetElement_Proxy alias "ICSSFilterSite_GetElement_Proxy" (byval This as ICSSFilterSite ptr, byval ppElem as IHTMLElement ptr ptr) as HRESULT
-declare sub ICSSFilterSite_GetElement_Stub alias "ICSSFilterSite_GetElement_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICSSFilterSite_FireOnFilterChangeEvent_Proxy alias "ICSSFilterSite_FireOnFilterChangeEvent_Proxy" (byval This as ICSSFilterSite ptr) as HRESULT
-declare sub ICSSFilterSite_FireOnFilterChangeEvent_Stub alias "ICSSFilterSite_FireOnFilterChangeEvent_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICSSFilter_SetSite_Proxy alias "ICSSFilter_SetSite_Proxy" (byval This as ICSSFilter ptr, byval pSink as ICSSFilterSite ptr) as HRESULT
-declare sub ICSSFilter_SetSite_Stub alias "ICSSFilter_SetSite_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICSSFilter_OnAmbientPropertyChange_Proxy alias "ICSSFilter_OnAmbientPropertyChange_Proxy" (byval This as ICSSFilter ptr, byval dispid as LONG) as HRESULT
-declare sub ICSSFilter_OnAmbientPropertyChange_Stub alias "ICSSFilter_OnAmbientPropertyChange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICustomDoc_SetUIHandler_Proxy alias "ICustomDoc_SetUIHandler_Proxy" (byval This as ICustomDoc ptr, byval pUIHandler as IDocHostUIHandler ptr) as HRESULT
-declare sub ICustomDoc_SetUIHandler_Stub alias "ICustomDoc_SetUIHandler_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 #endif

@@ -9,6 +9,6 @@
 #ifndef __xslt_libxslt_bi__
 #define __xslt_libxslt_bi__
 
-#include once "libxslt/xsltconfig.bi"
+#include once "xsltconfig.bi"
 
 #endif

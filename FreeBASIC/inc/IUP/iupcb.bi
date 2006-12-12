@@ -9,8 +9,10 @@
 #ifndef __iupcb_bi__
 #define __iupcb_bi__
 
-declare sub IupColorBrowserOpen cdecl alias "IupColorBrowserOpen" ()
-declare function IupColorBrowser cdecl alias "IupColorBrowser" () as Ihandle ptr
+extern "c"
+declare sub IupColorBrowserOpen ()
+declare function IupColorBrowser () as Ihandle ptr
+end extern
 
 #define IUP_RGB "RGB"
 #define IUP_CHANGE_CB "CHANGE_CB"

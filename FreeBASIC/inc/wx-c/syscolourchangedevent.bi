@@ -9,8 +9,8 @@
 #ifndef __wxc_syscolourchangedevent_bi__
 #define __wxc_syscolourchangedevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxSysColourChangedEvent cdecl alias "wxSysColourChangedEvent_ctor" () as wxSysColourChangedEvent ptr
+declare function wxSysColourChangedEvent alias "wxSysColourChangedEvent_ctor" () as wxSysColourChangedEvent ptr
 
 #endif

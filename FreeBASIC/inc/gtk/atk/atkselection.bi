@@ -9,7 +9,7 @@
 #ifndef __atkselection_bi__
 #define __atkselection_bi__
 
-#include once "gtk/atk/atkobject.bi"
+#include once "atkobject.bi"
 
 #define ATK_TYPE_SELECTION() atk_selection_get_type ()
 #define ATK_IS_SELECTION(obj) G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_SELECTION)

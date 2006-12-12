@@ -10,8 +10,8 @@
 #define __gtkspinbutton_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkentry.bi"
-#include once "gtk/gtk/gtkadjustment.bi"
+#include once "gtkentry.bi"
+#include once "gtkadjustment.bi"
 
 #define GTK_TYPE_SPIN_BUTTON (gtk_spin_button_get_type ())
 #define GTK_SPIN_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SPIN_BUTTON, GtkSpinButton))

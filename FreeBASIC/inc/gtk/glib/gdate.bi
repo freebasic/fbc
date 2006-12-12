@@ -9,7 +9,7 @@
 #ifndef __gdate_bi__
 #define __gdate_bi__
 
-#include once "gtk/glib/gquark.bi"
+#include once "gquark.bi"
 
 #ifndef tm
 type tm as any

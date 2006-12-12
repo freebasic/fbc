@@ -9,7 +9,7 @@
 #ifndef __SDL_active_bi__
 #define __SDL_active_bi__
 
-#include once "SDL/begin_code.bi"
+#include once "begin_code.bi"
 
 #define SDL_APPMOUSEFOCUS &h01
 #define SDL_APPINPUTFOCUS &h02
@@ -17,6 +17,6 @@
 
 declare function SDL_GetAppState cdecl alias "SDL_GetAppState" () as Uint8
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

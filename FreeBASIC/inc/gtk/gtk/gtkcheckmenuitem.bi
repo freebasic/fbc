@@ -10,7 +10,7 @@
 #define __gtkcheckmenuitem_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkmenuitem.bi"
+#include once "gtkmenuitem.bi"
 
 #define GTK_TYPE_CHECK_MENU_ITEM (gtk_check_menu_item_get_type ())
 #define GTK_CHECK_MENU_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CHECK_MENU_ITEM, GtkCheckMenuItem))

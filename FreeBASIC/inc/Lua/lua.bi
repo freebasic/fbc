@@ -54,70 +54,6 @@ type lua_Alloc as sub cdecl(byval as any ptr, byval as any ptr, byval as size_t,
 type lua_Number as double
 type lua_Integer as ptrdiff_t
 
-declare function lua_newstate cdecl alias "lua_newstate" (byval f as lua_Alloc, byval ud as any ptr) as lua_State ptr
-declare sub lua_close cdecl alias "lua_close" (byval L as lua_State ptr)
-declare function lua_newthread cdecl alias "lua_newthread" (byval L as lua_State ptr) as lua_State ptr
-declare function lua_atpanic cdecl alias "lua_atpanic" (byval L as lua_State ptr, byval panicf as lua_CFunction) as lua_CFunction
-declare function lua_gettop cdecl alias "lua_gettop" (byval L as lua_State ptr) as integer
-declare sub lua_settop cdecl alias "lua_settop" (byval L as lua_State ptr, byval idx as integer)
-declare sub lua_pushvalue cdecl alias "lua_pushvalue" (byval L as lua_State ptr, byval idx as integer)
-declare sub lua_remove cdecl alias "lua_remove" (byval L as lua_State ptr, byval idx as integer)
-declare sub lua_insert cdecl alias "lua_insert" (byval L as lua_State ptr, byval idx as integer)
-declare sub lua_replace cdecl alias "lua_replace" (byval L as lua_State ptr, byval idx as integer)
-declare function lua_checkstack cdecl alias "lua_checkstack" (byval L as lua_State ptr, byval sz as integer) as integer
-declare sub lua_xmove cdecl alias "lua_xmove" (byval from as lua_State ptr, byval to as lua_State ptr, byval n as integer)
-declare function lua_isnumber cdecl alias "lua_isnumber" (byval L as lua_State ptr, byval idx as integer) as integer
-declare function lua_isstring cdecl alias "lua_isstring" (byval L as lua_State ptr, byval idx as integer) as integer
-declare function lua_iscfunction cdecl alias "lua_iscfunction" (byval L as lua_State ptr, byval idx as integer) as integer
-declare function lua_isuserdata cdecl alias "lua_isuserdata" (byval L as lua_State ptr, byval idx as integer) as integer
-declare function lua_type cdecl alias "lua_type" (byval L as lua_State ptr, byval idx as integer) as integer
-declare function lua_typename cdecl alias "lua_typename" (byval L as lua_State ptr, byval tp as integer) as zstring ptr
-declare function lua_equal cdecl alias "lua_equal" (byval L as lua_State ptr, byval idx1 as integer, byval idx2 as integer) as integer
-declare function lua_rawequal cdecl alias "lua_rawequal" (byval L as lua_State ptr, byval idx1 as integer, byval idx2 as integer) as integer
-declare function lua_lessthan cdecl alias "lua_lessthan" (byval L as lua_State ptr, byval idx1 as integer, byval idx2 as integer) as integer
-declare function lua_tonumber cdecl alias "lua_tonumber" (byval L as lua_State ptr, byval idx as integer) as lua_Number
-declare function lua_tointeger cdecl alias "lua_tointeger" (byval L as lua_State ptr, byval idx as integer) as lua_Integer
-declare function lua_toboolean cdecl alias "lua_toboolean" (byval L as lua_State ptr, byval idx as integer) as integer
-declare function lua_tolstring cdecl alias "lua_tolstring" (byval L as lua_State ptr, byval idx as integer, byval len as size_t ptr) as zstring ptr
-declare function lua_objlen cdecl alias "lua_objlen" (byval L as lua_State ptr, byval idx as integer) as size_t
-declare function lua_tocfunction cdecl alias "lua_tocfunction" (byval L as lua_State ptr, byval idx as integer) as lua_CFunction
-declare function lua_touserdata cdecl alias "lua_touserdata" (byval L as lua_State ptr, byval idx as integer) as any ptr
-declare function lua_tothread cdecl alias "lua_tothread" (byval L as lua_State ptr, byval idx as integer) as lua_State ptr
-declare function lua_topointer cdecl alias "lua_topointer" (byval L as lua_State ptr, byval idx as integer) as any ptr
-declare sub lua_pushnil cdecl alias "lua_pushnil" (byval L as lua_State ptr)
-declare sub lua_pushnumber cdecl alias "lua_pushnumber" (byval L as lua_State ptr, byval n as lua_Number)
-declare sub lua_pushinteger cdecl alias "lua_pushinteger" (byval L as lua_State ptr, byval n as lua_Integer)
-declare sub lua_pushlstring cdecl alias "lua_pushlstring" (byval L as lua_State ptr, byval s as zstring ptr, byval l as size_t)
-declare sub lua_pushstring cdecl alias "lua_pushstring" (byval L as lua_State ptr, byval s as zstring ptr)
-declare function lua_pushvfstring cdecl alias "lua_pushvfstring" (byval L as lua_State ptr, byval fmt as zstring ptr, byval argp as va_list) as zstring ptr
-declare function lua_pushfstring cdecl alias "lua_pushfstring" (byval L as lua_State ptr, byval fmt as zstring ptr, ...) as zstring ptr
-declare sub lua_pushcclosure cdecl alias "lua_pushcclosure" (byval L as lua_State ptr, byval fn as lua_CFunction, byval n as integer)
-declare sub lua_pushboolean cdecl alias "lua_pushboolean" (byval L as lua_State ptr, byval b as integer)
-declare sub lua_pushlightuserdata cdecl alias "lua_pushlightuserdata" (byval L as lua_State ptr, byval p as any ptr)
-declare function lua_pushthread cdecl alias "lua_pushthread" (byval L as lua_State ptr) as integer
-declare sub lua_gettable cdecl alias "lua_gettable" (byval L as lua_State ptr, byval idx as integer)
-declare sub lua_getfield cdecl alias "lua_getfield" (byval L as lua_State ptr, byval idx as integer, byval k as zstring ptr)
-declare sub lua_rawget cdecl alias "lua_rawget" (byval L as lua_State ptr, byval idx as integer)
-declare sub lua_rawgeti cdecl alias "lua_rawgeti" (byval L as lua_State ptr, byval idx as integer, byval n as integer)
-declare sub lua_createtable cdecl alias "lua_createtable" (byval L as lua_State ptr, byval narr as integer, byval nrec as integer)
-declare function lua_newuserdata cdecl alias "lua_newuserdata" (byval L as lua_State ptr, byval sz as size_t) as any ptr
-declare function lua_getmetatable cdecl alias "lua_getmetatable" (byval L as lua_State ptr, byval objindex as integer) as integer
-declare sub lua_getfenv cdecl alias "lua_getfenv" (byval L as lua_State ptr, byval idx as integer)
-declare sub lua_settable cdecl alias "lua_settable" (byval L as lua_State ptr, byval idx as integer)
-declare sub lua_setfield cdecl alias "lua_setfield" (byval L as lua_State ptr, byval idx as integer, byval k as zstring ptr)
-declare sub lua_rawset cdecl alias "lua_rawset" (byval L as lua_State ptr, byval idx as integer)
-declare sub lua_rawseti cdecl alias "lua_rawseti" (byval L as lua_State ptr, byval idx as integer, byval n as integer)
-declare function lua_setmetatable cdecl alias "lua_setmetatable" (byval L as lua_State ptr, byval objindex as integer) as integer
-declare function lua_setfenv cdecl alias "lua_setfenv" (byval L as lua_State ptr, byval idx as integer) as integer
-declare sub lua_call cdecl alias "lua_call" (byval L as lua_State ptr, byval nargs as integer, byval nresults as integer)
-declare function lua_pcall cdecl alias "lua_pcall" (byval L as lua_State ptr, byval nargs as integer, byval nresults as integer, byval errfunc as integer) as integer
-declare function lua_cpcall cdecl alias "lua_cpcall" (byval L as lua_State ptr, byval func as lua_CFunction, byval ud as any ptr) as integer
-declare function lua_load cdecl alias "lua_load" (byval L as lua_State ptr, byval reader as lua_Reader, byval dt as any ptr, byval chunkname as zstring ptr) as integer
-declare function lua_dump cdecl alias "lua_dump" (byval L as lua_State ptr, byval writer as lua_Writer, byval data as any ptr) as integer
-declare function lua_yield cdecl alias "lua_yield" (byval L as lua_State ptr, byval nresults as integer) as integer
-declare function lua_resume cdecl alias "lua_resume" (byval L as lua_State ptr, byval narg as integer) as integer
-declare function lua_status cdecl alias "lua_status" (byval L as lua_State ptr) as integer
-
 #define LUA_GCSTOP 0
 #define LUA_GCRESTART 1
 #define LUA_GCCOLLECT 2
@@ -126,13 +62,6 @@ declare function lua_status cdecl alias "lua_status" (byval L as lua_State ptr) 
 #define LUA_GCSTEP 5
 #define LUA_GCSETPAUSE 6
 #define LUA_GCSETSTEPMUL 7
-
-declare function lua_gc cdecl alias "lua_gc" (byval L as lua_State ptr, byval what as integer, byval data as integer) as integer
-declare function lua_error cdecl alias "lua_error" (byval L as lua_State ptr) as integer
-declare function lua_next cdecl alias "lua_next" (byval L as lua_State ptr, byval idx as integer) as integer
-declare sub lua_concat cdecl alias "lua_concat" (byval L as lua_State ptr, byval n as integer)
-declare function lua_getallocf cdecl alias "lua_getallocf" (byval L as lua_State ptr, byval ud as any ptr ptr) as lua_Alloc
-declare sub lua_setallocf cdecl alias "lua_setallocf" (byval L as lua_State ptr, byval f as lua_Alloc, byval ud as any ptr)
 
 #define lua_pop(L,n) lua_settop(L, -(n)-1)
 #define lua_newtable(L)	lua_createtable(L, 0, 0)
@@ -171,17 +100,6 @@ declare sub lua_setallocf cdecl alias "lua_setallocf" (byval L as lua_State ptr,
 type lua_Debug as lua_Debug_
 type lua_Hook as sub cdecl(byval as lua_State ptr, byval as lua_Debug ptr)
 
-declare function lua_getstack cdecl alias "lua_getstack" (byval L as lua_State ptr, byval level as integer, byval ar as lua_Debug ptr) as integer
-declare function lua_getinfo cdecl alias "lua_getinfo" (byval L as lua_State ptr, byval what as zstring ptr, byval ar as lua_Debug ptr) as integer
-declare function lua_getlocal cdecl alias "lua_getlocal" (byval L as lua_State ptr, byval ar as lua_Debug ptr, byval n as integer) as zstring ptr
-declare function lua_setlocal cdecl alias "lua_setlocal" (byval L as lua_State ptr, byval ar as lua_Debug ptr, byval n as integer) as zstring ptr
-declare function lua_getupvalue cdecl alias "lua_getupvalue" (byval L as lua_State ptr, byval funcindex as integer, byval n as integer) as zstring ptr
-declare function lua_setupvalue cdecl alias "lua_setupvalue" (byval L as lua_State ptr, byval funcindex as integer, byval n as integer) as zstring ptr
-declare function lua_sethook cdecl alias "lua_sethook" (byval L as lua_State ptr, byval func as lua_Hook, byval mask as integer, byval count as integer) as integer
-declare function lua_gethook cdecl alias "lua_gethook" (byval L as lua_State ptr) as lua_Hook
-declare function lua_gethookmask cdecl alias "lua_gethookmask" (byval L as lua_State ptr) as integer
-declare function lua_gethookcount cdecl alias "lua_gethookcount" (byval L as lua_State ptr) as integer
-
 #define LUA_IDSIZE 60
 
 type lua_Debug_
@@ -197,5 +115,87 @@ type lua_Debug_
 	short_src as zstring * LUA_IDSIZE
 	i_ci as integer
 end type
+
+extern "c"
+declare function lua_newstate (byval f as lua_Alloc, byval ud as any ptr) as lua_State ptr
+declare sub lua_close (byval L as lua_State ptr)
+declare function lua_newthread (byval L as lua_State ptr) as lua_State ptr
+declare function lua_atpanic (byval L as lua_State ptr, byval panicf as lua_CFunction) as lua_CFunction
+declare function lua_gettop (byval L as lua_State ptr) as integer
+declare sub lua_settop (byval L as lua_State ptr, byval idx as integer)
+declare sub lua_pushvalue (byval L as lua_State ptr, byval idx as integer)
+declare sub lua_remove (byval L as lua_State ptr, byval idx as integer)
+declare sub lua_insert (byval L as lua_State ptr, byval idx as integer)
+declare sub lua_replace (byval L as lua_State ptr, byval idx as integer)
+declare function lua_checkstack (byval L as lua_State ptr, byval sz as integer) as integer
+declare sub lua_xmove (byval from as lua_State ptr, byval to as lua_State ptr, byval n as integer)
+declare function lua_isnumber (byval L as lua_State ptr, byval idx as integer) as integer
+declare function lua_isstring (byval L as lua_State ptr, byval idx as integer) as integer
+declare function lua_iscfunction (byval L as lua_State ptr, byval idx as integer) as integer
+declare function lua_isuserdata (byval L as lua_State ptr, byval idx as integer) as integer
+declare function lua_type (byval L as lua_State ptr, byval idx as integer) as integer
+declare function lua_typename (byval L as lua_State ptr, byval tp as integer) as zstring ptr
+declare function lua_equal (byval L as lua_State ptr, byval idx1 as integer, byval idx2 as integer) as integer
+declare function lua_rawequal (byval L as lua_State ptr, byval idx1 as integer, byval idx2 as integer) as integer
+declare function lua_lessthan (byval L as lua_State ptr, byval idx1 as integer, byval idx2 as integer) as integer
+declare function lua_tonumber (byval L as lua_State ptr, byval idx as integer) as lua_Number
+declare function lua_tointeger (byval L as lua_State ptr, byval idx as integer) as lua_Integer
+declare function lua_toboolean (byval L as lua_State ptr, byval idx as integer) as integer
+declare function lua_tolstring (byval L as lua_State ptr, byval idx as integer, byval len as size_t ptr) as zstring ptr
+declare function lua_objlen (byval L as lua_State ptr, byval idx as integer) as size_t
+declare function lua_tocfunction (byval L as lua_State ptr, byval idx as integer) as lua_CFunction
+declare function lua_touserdata (byval L as lua_State ptr, byval idx as integer) as any ptr
+declare function lua_tothread (byval L as lua_State ptr, byval idx as integer) as lua_State ptr
+declare function lua_topointer (byval L as lua_State ptr, byval idx as integer) as any ptr
+declare sub lua_pushnil (byval L as lua_State ptr)
+declare sub lua_pushnumber (byval L as lua_State ptr, byval n as lua_Number)
+declare sub lua_pushinteger (byval L as lua_State ptr, byval n as lua_Integer)
+declare sub lua_pushlstring (byval L as lua_State ptr, byval s as zstring ptr, byval l as size_t)
+declare sub lua_pushstring (byval L as lua_State ptr, byval s as zstring ptr)
+declare function lua_pushvfstring (byval L as lua_State ptr, byval fmt as zstring ptr, byval argp as va_list) as zstring ptr
+declare function lua_pushfstring (byval L as lua_State ptr, byval fmt as zstring ptr, ...) as zstring ptr
+declare sub lua_pushcclosure (byval L as lua_State ptr, byval fn as lua_CFunction, byval n as integer)
+declare sub lua_pushboolean (byval L as lua_State ptr, byval b as integer)
+declare sub lua_pushlightuserdata (byval L as lua_State ptr, byval p as any ptr)
+declare function lua_pushthread (byval L as lua_State ptr) as integer
+declare sub lua_gettable (byval L as lua_State ptr, byval idx as integer)
+declare sub lua_getfield (byval L as lua_State ptr, byval idx as integer, byval k as zstring ptr)
+declare sub lua_rawget (byval L as lua_State ptr, byval idx as integer)
+declare sub lua_rawgeti (byval L as lua_State ptr, byval idx as integer, byval n as integer)
+declare sub lua_createtable (byval L as lua_State ptr, byval narr as integer, byval nrec as integer)
+declare function lua_newuserdata (byval L as lua_State ptr, byval sz as size_t) as any ptr
+declare function lua_getmetatable (byval L as lua_State ptr, byval objindex as integer) as integer
+declare sub lua_getfenv (byval L as lua_State ptr, byval idx as integer)
+declare sub lua_settable (byval L as lua_State ptr, byval idx as integer)
+declare sub lua_setfield (byval L as lua_State ptr, byval idx as integer, byval k as zstring ptr)
+declare sub lua_rawset (byval L as lua_State ptr, byval idx as integer)
+declare sub lua_rawseti (byval L as lua_State ptr, byval idx as integer, byval n as integer)
+declare function lua_setmetatable (byval L as lua_State ptr, byval objindex as integer) as integer
+declare function lua_setfenv (byval L as lua_State ptr, byval idx as integer) as integer
+declare sub lua_call (byval L as lua_State ptr, byval nargs as integer, byval nresults as integer)
+declare function lua_pcall (byval L as lua_State ptr, byval nargs as integer, byval nresults as integer, byval errfunc as integer) as integer
+declare function lua_cpcall (byval L as lua_State ptr, byval func as lua_CFunction, byval ud as any ptr) as integer
+declare function lua_load (byval L as lua_State ptr, byval reader as lua_Reader, byval dt as any ptr, byval chunkname as zstring ptr) as integer
+declare function lua_dump (byval L as lua_State ptr, byval writer as lua_Writer, byval data as any ptr) as integer
+declare function lua_yield (byval L as lua_State ptr, byval nresults as integer) as integer
+declare function lua_resume (byval L as lua_State ptr, byval narg as integer) as integer
+declare function lua_status (byval L as lua_State ptr) as integer
+declare function lua_gc (byval L as lua_State ptr, byval what as integer, byval data as integer) as integer
+declare function lua_error (byval L as lua_State ptr) as integer
+declare function lua_next (byval L as lua_State ptr, byval idx as integer) as integer
+declare sub lua_concat (byval L as lua_State ptr, byval n as integer)
+declare function lua_getallocf (byval L as lua_State ptr, byval ud as any ptr ptr) as lua_Alloc
+declare sub lua_setallocf (byval L as lua_State ptr, byval f as lua_Alloc, byval ud as any ptr)
+declare function lua_getstack (byval L as lua_State ptr, byval level as integer, byval ar as lua_Debug ptr) as integer
+declare function lua_getinfo (byval L as lua_State ptr, byval what as zstring ptr, byval ar as lua_Debug ptr) as integer
+declare function lua_getlocal (byval L as lua_State ptr, byval ar as lua_Debug ptr, byval n as integer) as zstring ptr
+declare function lua_setlocal (byval L as lua_State ptr, byval ar as lua_Debug ptr, byval n as integer) as zstring ptr
+declare function lua_getupvalue (byval L as lua_State ptr, byval funcindex as integer, byval n as integer) as zstring ptr
+declare function lua_setupvalue (byval L as lua_State ptr, byval funcindex as integer, byval n as integer) as zstring ptr
+declare function lua_sethook (byval L as lua_State ptr, byval func as lua_Hook, byval mask as integer, byval count as integer) as integer
+declare function lua_gethook (byval L as lua_State ptr) as lua_Hook
+declare function lua_gethookmask (byval L as lua_State ptr) as integer
+declare function lua_gethookcount (byval L as lua_State ptr) as integer
+end extern
 
 #endif

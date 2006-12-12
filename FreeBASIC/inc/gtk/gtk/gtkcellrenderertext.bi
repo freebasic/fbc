@@ -10,7 +10,7 @@
 #define __gtkcellrenderertext_bi__
 
 #include once "gtk/pango.bi"
-#include once "gtk/gtk/gtkcellrenderer.bi"
+#include once "gtkcellrenderer.bi"
 
 #define GTK_TYPE_CELL_RENDERER_TEXT (gtk_cell_renderer_text_get_type ())
 #define GTK_CELL_RENDERER_TEXT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_RENDERER_TEXT, GtkCellRendererText))

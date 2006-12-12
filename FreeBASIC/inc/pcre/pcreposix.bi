@@ -82,9 +82,11 @@ type regmatch_t
 	rm_eo as regoff_t
 end type
 
-declare function regcomp cdecl alias "regcomp" (byval as regex_t ptr, byval as zstring ptr, byval as integer) as integer
-declare function regexec cdecl alias "regexec" (byval as regex_t ptr, byval as zstring ptr, byval as integer, byval as regmatch_t ptr, byval as integer) as integer
-declare function regerror cdecl alias "regerror" (byval as integer, byval as regex_t ptr, byval as zstring ptr, byval as integer) as integer
-declare sub regfree cdecl alias "regfree" (byval as regex_t ptr)
+extern "c"
+declare function regcomp (byval as regex_t ptr, byval as zstring ptr, byval as integer) as integer
+declare function regexec (byval as regex_t ptr, byval as zstring ptr, byval as integer, byval as regmatch_t ptr, byval as integer) as integer
+declare function regerror (byval as integer, byval as regex_t ptr, byval as zstring ptr, byval as integer) as integer
+declare sub regfree (byval as regex_t ptr)
+end extern
 
 #endif

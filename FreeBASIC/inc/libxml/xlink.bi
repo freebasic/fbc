@@ -9,8 +9,8 @@
 #ifndef __xml_xlink_bi__
 #define __xml_xlink_bi__
 
-#include once "libxml/xmlversion.bi"
-#include once "libxml/tree.bi"
+#include once "xmlversion.bi"
+#include once "tree.bi"
 
 type xlinkHRef as zstring ptr
 type xlinkRole as zstring ptr
@@ -51,10 +51,12 @@ type _xlinkHandler
 	set as xlinkExtendedLinkSetFunk
 end type
 
-declare function xlinkGetDefaultDetect cdecl alias "xlinkGetDefaultDetect" () as xlinkNodeDetectFunc
-declare sub xlinkSetDefaultDetect cdecl alias "xlinkSetDefaultDetect" (byval func as xlinkNodeDetectFunc)
-declare function xlinkGetDefaultHandler cdecl alias "xlinkGetDefaultHandler" () as xlinkHandlerPtr
-declare sub xlinkSetDefaultHandler cdecl alias "xlinkSetDefaultHandler" (byval handler as xlinkHandlerPtr)
-declare function xlinkIsLink cdecl alias "xlinkIsLink" (byval doc as xmlDocPtr, byval node as xmlNodePtr) as xlinkType
+extern "c"
+declare function xlinkGetDefaultDetect () as xlinkNodeDetectFunc
+declare sub xlinkSetDefaultDetect (byval func as xlinkNodeDetectFunc)
+declare function xlinkGetDefaultHandler () as xlinkHandlerPtr
+declare sub xlinkSetDefaultHandler (byval handler as xlinkHandlerPtr)
+declare function xlinkIsLink (byval doc as xmlDocPtr, byval node as xmlNodePtr) as xlinkType
+end extern
 
 #endif

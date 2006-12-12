@@ -9,9 +9,9 @@
 #ifndef __gtktreesortable_bi__
 #define __gtktreesortable_bi__
 
-#include once "gtk/gtk/gtkenums.bi"
-#include once "gtk/gtk/gtktreemodel.bi"
-#include once "gtk/gtk/gtktypeutils.bi"
+#include once "gtkenums.bi"
+#include once "gtktreemodel.bi"
+#include once "gtktypeutils.bi"
 
 #define GTK_TYPE_TREE_SORTABLE (gtk_tree_sortable_get_type ())
 #define GTK_TREE_SORTABLE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TREE_SORTABLE, GtkTreeSortable))

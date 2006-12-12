@@ -9,8 +9,8 @@
 #ifndef __SDL_syswm_bi__
 #define __SDL_syswm_bi__
 
-#include once "SDL/SDL_version.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_version.bi"
+#include once "begin_code.bi"
 
 #ifdef SDL_PROTOTYPES_ONLY
 type SDL_SysWMmsg as _SDL_SysWMmsg
@@ -52,6 +52,6 @@ end type
 
 declare function SDL_GetWMInfo cdecl alias "SDL_GetWMInfo" (byval info as SDL_SysWMinfo ptr) as integer
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

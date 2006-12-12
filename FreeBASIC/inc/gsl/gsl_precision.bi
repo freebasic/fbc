@@ -9,7 +9,7 @@
 #ifndef __gsl_precision_bi__
 #define __gsl_precision_bi__
 
-#include once "gsl/gsl_types.bi"
+#include once "gsl_types.bi"
 
 type gsl_prec_t as uinteger
 

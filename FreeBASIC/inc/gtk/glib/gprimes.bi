@@ -9,7 +9,7 @@
 #ifndef __gprimes_bi__
 #define __gprimes_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 declare function g_spaced_primes_closest (byval num as guint) as guint
 

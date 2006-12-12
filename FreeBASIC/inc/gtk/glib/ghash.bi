@@ -9,7 +9,7 @@
 #ifndef __ghash_bi__
 #define __ghash_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 type GHashTable as _GHashTable
 type GHRFunc as function cdecl(byval as gpointer, byval as gpointer, byval as gpointer) as gboolean

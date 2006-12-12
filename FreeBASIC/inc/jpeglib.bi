@@ -417,69 +417,69 @@ type jpeg_marker_parser_method as function cdecl(byval as j_decompress_ptr) as U
 #define jpeg_create_compress(cinfo) jpeg_CreateCompress( cinfo, JPEG_LIB_VERSION, len( jpeg_compress_struct ) )
 #define jpeg_create_decompress(cinfo) jpeg_CreateDecompress( cinfo , JPEG_LIB_VERSION, len( jpeg_decompress_struct ) )
 
-declare function jpeg_std_error cdecl alias "jpeg_std_error" (byval err as jpeg_error_mgr ptr) as jpeg_error_mgr ptr
-declare sub jpeg_CreateCompress cdecl alias "jpeg_CreateCompress" (byval cinfo as j_compress_ptr, byval version as integer, byval structsize as integer)
-declare sub jpeg_CreateDecompress cdecl alias "jpeg_CreateDecompress" (byval cinfo as j_decompress_ptr, byval version as integer, byval structsize as integer)
-declare sub jpeg_destroy_compress cdecl alias "jpeg_destroy_compress" (byval cinfo as j_compress_ptr)
-declare sub jpeg_destroy_decompress cdecl alias "jpeg_destroy_decompress" (byval cinfo as j_decompress_ptr)
-declare sub jpeg_stdio_dest cdecl alias "jpeg_stdio_dest" (byval cinfo as j_compress_ptr, byval outfile as FILE ptr)
-declare sub jpeg_stdio_src cdecl alias "jpeg_stdio_src" (byval cinfo as j_decompress_ptr, byval infile as FILE ptr)
-declare sub jpeg_set_defaults cdecl alias "jpeg_set_defaults" (byval cinfo as j_compress_ptr)
-declare sub jpeg_set_colorspace cdecl alias "jpeg_set_colorspace" (byval cinfo as j_compress_ptr, byval colorspace as J_COLOR_SPACE)
-declare sub jpeg_default_colorspace cdecl alias "jpeg_default_colorspace" (byval cinfo as j_compress_ptr)
-declare sub jpeg_set_quality cdecl alias "jpeg_set_quality" (byval cinfo as j_compress_ptr, byval quality as integer, byval force_baseline as UBOOL)
-declare sub jpeg_set_linear_quality cdecl alias "jpeg_set_linear_quality" (byval cinfo as j_compress_ptr, byval scale_factor as integer, byval force_baseline as UBOOL)
-declare sub jpeg_add_quant_table cdecl alias "jpeg_add_quant_table" (byval cinfo as j_compress_ptr, byval which_tbl as integer, byval basic_table as uinteger ptr, byval scale_factor as integer, byval force_baseline as UBOOL)
-declare function jpeg_quality_scaling cdecl alias "jpeg_quality_scaling" (byval quality as integer) as integer
-declare sub jpeg_simple_progression cdecl alias "jpeg_simple_progression" (byval cinfo as j_compress_ptr)
-declare sub jpeg_suppress_tables cdecl alias "jpeg_suppress_tables" (byval cinfo as j_compress_ptr, byval suppress as UBOOL)
-declare function jpeg_alloc_quant_table cdecl alias "jpeg_alloc_quant_table" (byval cinfo as j_common_ptr) as JQUANT_TBL ptr
-declare function jpeg_alloc_huff_table cdecl alias "jpeg_alloc_huff_table" (byval cinfo as j_common_ptr) as JHUFF_TBL ptr
-declare sub jpeg_start_compress cdecl alias "jpeg_start_compress" (byval cinfo as j_compress_ptr, byval write_all_tables as UBOOL)
-declare function jpeg_write_scanlines cdecl alias "jpeg_write_scanlines" (byval cinfo as j_compress_ptr, byval scanlines as JSAMPARRAY, byval num_lines as JDIMENSION) as JDIMENSION
-declare sub jpeg_finish_compress cdecl alias "jpeg_finish_compress" (byval cinfo as j_compress_ptr)
-declare function jpeg_write_raw_data cdecl alias "jpeg_write_raw_data" (byval cinfo as j_compress_ptr, byval data as JSAMPIMAGE, byval num_lines as JDIMENSION) as JDIMENSION
-declare sub jpeg_write_marker cdecl alias "jpeg_write_marker" (byval cinfo as j_compress_ptr, byval marker as integer, byval dataptr as JOCTET ptr, byval datalen as uinteger)
-declare sub jpeg_write_m_header cdecl alias "jpeg_write_m_header" (byval cinfo as j_compress_ptr, byval marker as integer, byval datalen as uinteger)
-declare sub jpeg_write_m_byte cdecl alias "jpeg_write_m_byte" (byval cinfo as j_compress_ptr, byval val as integer)
-declare sub jpeg_write_tables cdecl alias "jpeg_write_tables" (byval cinfo as j_compress_ptr)
-declare function jpeg_read_header cdecl alias "jpeg_read_header" (byval cinfo as j_decompress_ptr, byval require_image as UBOOL) as integer
-
 #define JPEG_SUSPENDED 0
 #define JPEG_HEADER_OK 1
 #define JPEG_HEADER_TABLES_ONLY 2
-
-declare function jpeg_start_decompress cdecl alias "jpeg_start_decompress" (byval cinfo as j_decompress_ptr) as UBOOL
-declare function jpeg_read_scanlines cdecl alias "jpeg_read_scanlines" (byval cinfo as j_decompress_ptr, byval scanlines as JSAMPARRAY, byval max_lines as JDIMENSION) as JDIMENSION
-declare function jpeg_finish_decompress cdecl alias "jpeg_finish_decompress" (byval cinfo as j_decompress_ptr) as UBOOL
-declare function jpeg_read_raw_data cdecl alias "jpeg_read_raw_data" (byval cinfo as j_decompress_ptr, byval data as JSAMPIMAGE, byval max_lines as JDIMENSION) as JDIMENSION
-declare function jpeg_has_multiple_scans cdecl alias "jpeg_has_multiple_scans" (byval cinfo as j_decompress_ptr) as UBOOL
-declare function jpeg_start_output cdecl alias "jpeg_start_output" (byval cinfo as j_decompress_ptr, byval scan_number as integer) as UBOOL
-declare function jpeg_finish_output cdecl alias "jpeg_finish_output" (byval cinfo as j_decompress_ptr) as UBOOL
-declare function jpeg_input_complete cdecl alias "jpeg_input_complete" (byval cinfo as j_decompress_ptr) as UBOOL
-declare sub jpeg_new_colormap cdecl alias "jpeg_new_colormap" (byval cinfo as j_decompress_ptr)
-declare function jpeg_consume_input cdecl alias "jpeg_consume_input" (byval cinfo as j_decompress_ptr) as integer
 
 #define JPEG_REACHED_SOS 1
 #define JPEG_REACHED_EOI 2
 #define JPEG_ROW_COMPLETED 3
 #define JPEG_SCAN_COMPLETED 4
 
-declare sub jpeg_calc_output_dimensions cdecl alias "jpeg_calc_output_dimensions" (byval cinfo as j_decompress_ptr)
-declare sub jpeg_save_markers cdecl alias "jpeg_save_markers" (byval cinfo as j_decompress_ptr, byval marker_code as integer, byval length_limit as uinteger)
-declare sub jpeg_set_marker_processor cdecl alias "jpeg_set_marker_processor" (byval cinfo as j_decompress_ptr, byval marker_code as integer, byval routine as jpeg_marker_parser_method)
-declare function jpeg_read_coefficients cdecl alias "jpeg_read_coefficients" (byval cinfo as j_decompress_ptr) as jvirt_barray_ptr ptr
-declare sub jpeg_write_coefficients cdecl alias "jpeg_write_coefficients" (byval cinfo as j_compress_ptr, byval coef_arrays as jvirt_barray_ptr ptr)
-declare sub jpeg_copy_critical_parameters cdecl alias "jpeg_copy_critical_parameters" (byval srcinfo as j_decompress_ptr, byval dstinfo as j_compress_ptr)
-declare sub jpeg_abort_compress cdecl alias "jpeg_abort_compress" (byval cinfo as j_compress_ptr)
-declare sub jpeg_abort_decompress cdecl alias "jpeg_abort_decompress" (byval cinfo as j_decompress_ptr)
-declare sub jpeg_abort cdecl alias "jpeg_abort" (byval cinfo as j_common_ptr)
-declare sub jpeg_destroy cdecl alias "jpeg_destroy" (byval cinfo as j_common_ptr)
-declare function jpeg_resync_to_restart cdecl alias "jpeg_resync_to_restart" (byval cinfo as j_decompress_ptr, byval desired as integer) as UBOOL
-
 #define JPEG_RST0 &hD0
 #define JPEG_EOI &hD9
 #define JPEG_APP0 &hE0
 #define JPEG_COM &hFE
+
+extern "c"
+declare function jpeg_std_error (byval err as jpeg_error_mgr ptr) as jpeg_error_mgr ptr
+declare sub jpeg_CreateCompress (byval cinfo as j_compress_ptr, byval version as integer, byval structsize as integer)
+declare sub jpeg_CreateDecompress (byval cinfo as j_decompress_ptr, byval version as integer, byval structsize as integer)
+declare sub jpeg_destroy_compress (byval cinfo as j_compress_ptr)
+declare sub jpeg_destroy_decompress (byval cinfo as j_decompress_ptr)
+declare sub jpeg_stdio_dest (byval cinfo as j_compress_ptr, byval outfile as FILE ptr)
+declare sub jpeg_stdio_src (byval cinfo as j_decompress_ptr, byval infile as FILE ptr)
+declare sub jpeg_set_defaults (byval cinfo as j_compress_ptr)
+declare sub jpeg_set_colorspace (byval cinfo as j_compress_ptr, byval colorspace as J_COLOR_SPACE)
+declare sub jpeg_default_colorspace (byval cinfo as j_compress_ptr)
+declare sub jpeg_set_quality (byval cinfo as j_compress_ptr, byval quality as integer, byval force_baseline as UBOOL)
+declare sub jpeg_set_linear_quality (byval cinfo as j_compress_ptr, byval scale_factor as integer, byval force_baseline as UBOOL)
+declare sub jpeg_add_quant_table (byval cinfo as j_compress_ptr, byval which_tbl as integer, byval basic_table as uinteger ptr, byval scale_factor as integer, byval force_baseline as UBOOL)
+declare function jpeg_quality_scaling (byval quality as integer) as integer
+declare sub jpeg_simple_progression (byval cinfo as j_compress_ptr)
+declare sub jpeg_suppress_tables (byval cinfo as j_compress_ptr, byval suppress as UBOOL)
+declare function jpeg_alloc_quant_table (byval cinfo as j_common_ptr) as JQUANT_TBL ptr
+declare function jpeg_alloc_huff_table (byval cinfo as j_common_ptr) as JHUFF_TBL ptr
+declare sub jpeg_start_compress (byval cinfo as j_compress_ptr, byval write_all_tables as UBOOL)
+declare function jpeg_write_scanlines (byval cinfo as j_compress_ptr, byval scanlines as JSAMPARRAY, byval num_lines as JDIMENSION) as JDIMENSION
+declare sub jpeg_finish_compress (byval cinfo as j_compress_ptr)
+declare function jpeg_write_raw_data (byval cinfo as j_compress_ptr, byval data as JSAMPIMAGE, byval num_lines as JDIMENSION) as JDIMENSION
+declare sub jpeg_write_marker (byval cinfo as j_compress_ptr, byval marker as integer, byval dataptr as JOCTET ptr, byval datalen as uinteger)
+declare sub jpeg_write_m_header (byval cinfo as j_compress_ptr, byval marker as integer, byval datalen as uinteger)
+declare sub jpeg_write_m_byte (byval cinfo as j_compress_ptr, byval val as integer)
+declare sub jpeg_write_tables (byval cinfo as j_compress_ptr)
+declare function jpeg_read_header (byval cinfo as j_decompress_ptr, byval require_image as UBOOL) as integer
+declare function jpeg_start_decompress (byval cinfo as j_decompress_ptr) as UBOOL
+declare function jpeg_read_scanlines (byval cinfo as j_decompress_ptr, byval scanlines as JSAMPARRAY, byval max_lines as JDIMENSION) as JDIMENSION
+declare function jpeg_finish_decompress (byval cinfo as j_decompress_ptr) as UBOOL
+declare function jpeg_read_raw_data (byval cinfo as j_decompress_ptr, byval data as JSAMPIMAGE, byval max_lines as JDIMENSION) as JDIMENSION
+declare function jpeg_has_multiple_scans (byval cinfo as j_decompress_ptr) as UBOOL
+declare function jpeg_start_output (byval cinfo as j_decompress_ptr, byval scan_number as integer) as UBOOL
+declare function jpeg_finish_output (byval cinfo as j_decompress_ptr) as UBOOL
+declare function jpeg_input_complete (byval cinfo as j_decompress_ptr) as UBOOL
+declare sub jpeg_new_colormap (byval cinfo as j_decompress_ptr)
+declare function jpeg_consume_input (byval cinfo as j_decompress_ptr) as integer
+declare sub jpeg_calc_output_dimensions (byval cinfo as j_decompress_ptr)
+declare sub jpeg_save_markers (byval cinfo as j_decompress_ptr, byval marker_code as integer, byval length_limit as uinteger)
+declare sub jpeg_set_marker_processor (byval cinfo as j_decompress_ptr, byval marker_code as integer, byval routine as jpeg_marker_parser_method)
+declare function jpeg_read_coefficients (byval cinfo as j_decompress_ptr) as jvirt_barray_ptr ptr
+declare sub jpeg_write_coefficients (byval cinfo as j_compress_ptr, byval coef_arrays as jvirt_barray_ptr ptr)
+declare sub jpeg_copy_critical_parameters (byval srcinfo as j_decompress_ptr, byval dstinfo as j_compress_ptr)
+declare sub jpeg_abort_compress (byval cinfo as j_compress_ptr)
+declare sub jpeg_abort_decompress (byval cinfo as j_decompress_ptr)
+declare sub jpeg_abort (byval cinfo as j_common_ptr)
+declare sub jpeg_destroy (byval cinfo as j_common_ptr)
+declare function jpeg_resync_to_restart (byval cinfo as j_decompress_ptr, byval desired as integer) as UBOOL
+end extern
 
 #endif

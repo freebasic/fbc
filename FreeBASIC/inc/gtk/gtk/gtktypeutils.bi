@@ -89,7 +89,7 @@ type GtkTypeClass as GTypeClass
 type GtkClassInitFunc as GBaseInitFunc
 type GtkObjectInitFunc as GInstanceInitFunc
 
-#include once "gtk/gtk/gtktypebuiltins.bi"
+#include once "gtktypebuiltins.bi"
 
 declare function gtk_identifier_get_type () as GType
 

@@ -9,8 +9,8 @@
 #ifndef __xml_xinclude_bi__
 #define __xml_xinclude_bi__
 
-#include once "libxml/xmlversion.bi"
-#include once "libxml/tree.bi"
+#include once "xmlversion.bi"
+#include once "tree.bi"
 
 #define XINCLUDE_NS "http://www.w3.org/2003/XInclude"
 #define XINCLUDE_OLD_NS "http://www.w3.org/2001/XInclude"
@@ -26,13 +26,15 @@
 type xmlXIncludeCtxt as _xmlXIncludeCtxt
 type xmlXIncludeCtxtPtr as xmlXIncludeCtxt ptr
 
-declare function xmlXIncludeProcess cdecl alias "xmlXIncludeProcess" (byval doc as xmlDocPtr) as integer
-declare function xmlXIncludeProcessFlags cdecl alias "xmlXIncludeProcessFlags" (byval doc as xmlDocPtr, byval flags as integer) as integer
-declare function xmlXIncludeProcessTree cdecl alias "xmlXIncludeProcessTree" (byval tree as xmlNodePtr) as integer
-declare function xmlXIncludeProcessTreeFlags cdecl alias "xmlXIncludeProcessTreeFlags" (byval tree as xmlNodePtr, byval flags as integer) as integer
-declare function xmlXIncludeNewContext cdecl alias "xmlXIncludeNewContext" (byval doc as xmlDocPtr) as xmlXIncludeCtxtPtr
-declare function xmlXIncludeSetFlags cdecl alias "xmlXIncludeSetFlags" (byval ctxt as xmlXIncludeCtxtPtr, byval flags as integer) as integer
-declare sub xmlXIncludeFreeContext cdecl alias "xmlXIncludeFreeContext" (byval ctxt as xmlXIncludeCtxtPtr)
-declare function xmlXIncludeProcessNode cdecl alias "xmlXIncludeProcessNode" (byval ctxt as xmlXIncludeCtxtPtr, byval tree as xmlNodePtr) as integer
+extern "c"
+declare function xmlXIncludeProcess (byval doc as xmlDocPtr) as integer
+declare function xmlXIncludeProcessFlags (byval doc as xmlDocPtr, byval flags as integer) as integer
+declare function xmlXIncludeProcessTree (byval tree as xmlNodePtr) as integer
+declare function xmlXIncludeProcessTreeFlags (byval tree as xmlNodePtr, byval flags as integer) as integer
+declare function xmlXIncludeNewContext (byval doc as xmlDocPtr) as xmlXIncludeCtxtPtr
+declare function xmlXIncludeSetFlags (byval ctxt as xmlXIncludeCtxtPtr, byval flags as integer) as integer
+declare sub xmlXIncludeFreeContext (byval ctxt as xmlXIncludeCtxtPtr)
+declare function xmlXIncludeProcessNode (byval ctxt as xmlXIncludeCtxtPtr, byval tree as xmlNodePtr) as integer
+end extern
 
 #endif

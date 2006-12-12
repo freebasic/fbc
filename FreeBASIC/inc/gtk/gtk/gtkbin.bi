@@ -10,7 +10,7 @@
 #define __gtkbin_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkcontainer.bi"
+#include once "gtkcontainer.bi"
 
 #define GTK_TYPE_BIN (gtk_bin_get_type ())
 #define GTK_BIN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_BIN, GtkBin))

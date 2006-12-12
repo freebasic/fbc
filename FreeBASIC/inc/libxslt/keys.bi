@@ -9,16 +9,18 @@
 #ifndef __xslt_keys_bi__
 #define __xslt_keys_bi__
 
-#include once "libxslt/xsltexports.bi"
-#include once "libxslt/xsltInternals.bi"
+#include once "xsltexports.bi"
+#include once "xsltInternals.bi"
 #include once "libxml/xpath.bi"
 
 #define NODE_IS_KEYED (1 shr 15)
 
-declare function xsltAddKey cdecl alias "xsltAddKey" (byval style as xsltStylesheetPtr, byval name as zstring ptr, byval nameURI as zstring ptr, byval match as zstring ptr, byval use as zstring ptr, byval inst as xmlNodePtr) as integer
-declare function xsltGetKey cdecl alias "xsltGetKey" (byval ctxt as xsltTransformContextPtr, byval name as zstring ptr, byval nameURI as zstring ptr, byval value as zstring ptr) as xmlNodeSetPtr
-declare sub xsltInitCtxtKeys cdecl alias "xsltInitCtxtKeys" (byval ctxt as xsltTransformContextPtr, byval doc as xsltDocumentPtr)
-declare sub xsltFreeKeys cdecl alias "xsltFreeKeys" (byval style as xsltStylesheetPtr)
-declare sub xsltFreeDocumentKeys cdecl alias "xsltFreeDocumentKeys" (byval doc as xsltDocumentPtr)
+extern "c"
+declare function xsltAddKey (byval style as xsltStylesheetPtr, byval name as zstring ptr, byval nameURI as zstring ptr, byval match as zstring ptr, byval use as zstring ptr, byval inst as xmlNodePtr) as integer
+declare function xsltGetKey (byval ctxt as xsltTransformContextPtr, byval name as zstring ptr, byval nameURI as zstring ptr, byval value as zstring ptr) as xmlNodeSetPtr
+declare sub xsltInitCtxtKeys (byval ctxt as xsltTransformContextPtr, byval doc as xsltDocumentPtr)
+declare sub xsltFreeKeys (byval style as xsltStylesheetPtr)
+declare sub xsltFreeDocumentKeys (byval doc as xsltDocumentPtr)
+end extern
 
 #endif

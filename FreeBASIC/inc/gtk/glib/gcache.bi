@@ -9,7 +9,7 @@
 #ifndef __gcache_bi__
 #define __gcache_bi__
 
-#include once "gtk/glib/glist.bi"
+#include once "glist.bi"
 
 type GCache as _GCache
 type GCacheNewFunc as function cdecl(byval as gpointer) as gpointer

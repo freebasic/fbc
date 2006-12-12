@@ -10,8 +10,8 @@
 #define __gtkprogress_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkwidget.bi"
-#include once "gtk/gtk/gtkadjustment.bi"
+#include once "gtkwidget.bi"
+#include once "gtkadjustment.bi"
 
 #define GTK_TYPE_PROGRESS (gtk_progress_get_type ())
 #define GTK_PROGRESS(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_PROGRESS, GtkProgress))

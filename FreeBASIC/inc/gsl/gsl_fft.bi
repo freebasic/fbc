@@ -9,7 +9,7 @@
 #ifndef __gsl_fft_bi__
 #define __gsl_fft_bi__
 
-#include once "gsl/gsl_complex.bi"
+#include once "gsl_complex.bi"
 
 enum gsl_fft_direction
 	forward = -1

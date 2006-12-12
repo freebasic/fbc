@@ -10,8 +10,8 @@
 #define __gtkfontsel_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkdialog.bi"
-#include once "gtk/gtk/gtkvbox.bi"
+#include once "gtkdialog.bi"
+#include once "gtkvbox.bi"
 
 #define GTK_TYPE_FONT_SELECTION (gtk_font_selection_get_type ())
 #define GTK_FONT_SELECTION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FONT_SELECTION, GtkFontSelection))

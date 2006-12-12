@@ -9,9 +9,9 @@
 #ifndef __gdkwindow_bi__
 #define __gdkwindow_bi__
 
-#include once "gtk/gdk/gdkdrawable.bi"
-#include once "gtk/gdk/gdktypes.bi"
-#include once "gtk/gdk/gdkevents.bi"
+#include once "gdkdrawable.bi"
+#include once "gdktypes.bi"
+#include once "gdkevents.bi"
 
 #define GDK_TYPE_WINDOW (gdk_window_object_get_type ())
 #define GDK_WINDOW(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_WINDOW, GdkWindow))

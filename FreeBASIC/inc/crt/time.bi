@@ -20,15 +20,17 @@
 #include once "crt/linux/time.bi"
 #endif
 
-declare function clock cdecl alias "clock" () as clock_t
-declare function time_ cdecl alias "time" (byval as time_t ptr) as time_t
-declare function difftime cdecl alias "difftime" (byval as time_t, byval as time_t) as double
-declare function mktime cdecl alias "mktime" (byval as tm ptr) as time_t
-declare function asctime cdecl alias "asctime" (byval as tm ptr) as zstring ptr
-declare function ctime cdecl alias "ctime" (byval as time_t ptr) as zstring ptr
-declare function gmtime cdecl alias "gmtime" (byval as time_t ptr) as tm ptr
-declare function localtime cdecl alias "localtime" (byval as time_t ptr) as tm ptr
-declare function strftime cdecl alias "strftime" (byval as zstring ptr, byval as size_t, byval as zstring ptr, byval as tm ptr) as size_t
-declare function wcsftime cdecl alias "wcsftime" (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, byval as tm ptr) as size_t
+extern "c"
+declare function clock () as clock_t
+declare function time_ (byval as time_t ptr) as time_t
+declare function difftime (byval as time_t, byval as time_t) as double
+declare function mktime (byval as tm ptr) as time_t
+declare function asctime (byval as tm ptr) as zstring ptr
+declare function ctime (byval as time_t ptr) as zstring ptr
+declare function gmtime (byval as time_t ptr) as tm ptr
+declare function localtime (byval as time_t ptr) as tm ptr
+declare function strftime (byval as zstring ptr, byval as size_t, byval as zstring ptr, byval as tm ptr) as size_t
+declare function wcsftime (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, byval as tm ptr) as size_t
+end extern
 
 #endif

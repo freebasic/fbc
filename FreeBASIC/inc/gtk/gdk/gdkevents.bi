@@ -9,10 +9,10 @@
 #ifndef __gdkevents_bi__
 #define __gdkevents_bi__
 
-#include once "gtk/gdk/gdkcolor.bi"
-#include once "gtk/gdk/gdktypes.bi"
-#include once "gtk/gdk/gdkdnd.bi"
-#include once "gtk/gdk/gdkinput.bi"
+#include once "gdkcolor.bi"
+#include once "gdktypes.bi"
+#include once "gdkdnd.bi"
+#include once "gdkinput.bi"
 
 #define GDK_TYPE_EVENT (gdk_event_get_type ())
 #define GDK_PRIORITY_EVENTS (G_PRIORITY_DEFAULT)

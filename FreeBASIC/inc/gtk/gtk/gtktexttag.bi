@@ -11,8 +11,8 @@
 
 #include once "gtk/glib-object.bi"
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkenums.bi"
-#include once "gtk/gtk/gtkobject.bi"
+#include once "gtkenums.bi"
+#include once "gtkobject.bi"
 
 #define GTK_TYPE_TEXT_TAG (gtk_text_tag_get_type ())
 #define GTK_TEXT_TAG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TEXT_TAG, GtkTextTag))

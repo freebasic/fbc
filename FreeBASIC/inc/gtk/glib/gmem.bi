@@ -9,7 +9,7 @@
 #ifndef __gmem_bi__
 #define __gmem_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 type GAllocator as _GAllocator
 type GMemChunk as _GMemChunk

@@ -9,7 +9,7 @@
 #ifndef __gtimer_bi__
 #define __gtimer_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 type GTimer as _GTimer
 

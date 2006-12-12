@@ -20,12 +20,7 @@ extern import sqlite_encoding alias "sqlite_encoding" as zstring ptr
 
 type sqlite as any
 
-declare function sqlite_open cdecl alias "sqlite_open" (byval filename as zstring ptr, byval mode as integer, byval errmsg as zstring ptr ptr) as sqlite ptr
-declare sub sqlite_close cdecl alias "sqlite_close" (byval as sqlite ptr)
-
 type sqlite_callback as function cdecl(byval as any ptr, byval as integer, byval as zstring ptr ptr, byval as zstring ptr ptr) as integer
-
-declare function sqlite_exec cdecl alias "sqlite_exec" (byval as sqlite ptr, byval sql as zstring ptr, byval as sqlite_callback, byval as any ptr, byval errmsg as zstring ptr ptr) as integer
 
 #define SQLITE_OK 0
 #define SQLITE_ERROR 1
@@ -57,45 +52,12 @@ declare function sqlite_exec cdecl alias "sqlite_exec" (byval as sqlite ptr, byv
 #define SQLITE_ROW 100
 #define SQLITE_DONE 101
 
-declare function sqlite_last_insert_rowid cdecl alias "sqlite_last_insert_rowid" (byval as sqlite ptr) as integer
-declare function sqlite_changes cdecl alias "sqlite_changes" (byval as sqlite ptr) as integer
-declare function sqlite_last_statement_changes cdecl alias "sqlite_last_statement_changes" (byval as sqlite ptr) as integer
-declare function sqlite_error_string cdecl alias "sqlite_error_string" (byval as integer) as zstring ptr
-declare sub sqlite_interrupt_ cdecl alias "sqlite_interrupt" (byval as sqlite ptr)
-declare function sqlite_complete cdecl alias "sqlite_complete" (byval sql as zstring ptr) as integer
-declare sub sqlite_busy_handler cdecl alias "sqlite_busy_handler" (byval as sqlite ptr, byval as function cdecl(byval as any ptr, byval as zstring ptr, byval as integer) as integer, byval as any ptr)
-declare sub sqlite_busy_timeout cdecl alias "sqlite_busy_timeout" (byval as sqlite ptr, byval ms as integer)
-declare function sqlite_get_table cdecl alias "sqlite_get_table" (byval as sqlite ptr, byval sql as zstring ptr, byval resultp as zstring ptr ptr ptr, byval nrow as integer ptr, byval ncolumn as integer ptr, byval errmsg as zstring ptr ptr) as integer
-declare sub sqlite_free_table cdecl alias "sqlite_free_table" (byval result as zstring ptr ptr)
-declare function sqlite_exec_printf cdecl alias "sqlite_exec_printf" (byval as sqlite ptr, byval sqlFormat as zstring ptr, byval as sqlite_callback, byval as any ptr, byval errmsg as zstring ptr ptr, ...) as integer
-declare function sqlite_exec_vprintf cdecl alias "sqlite_exec_vprintf" (byval as sqlite ptr, byval sqlFormat as zstring ptr, byval as sqlite_callback, byval as any ptr, byval errmsg as zstring ptr, byval ap as any ptr) as integer
-declare function sqlite_get_table_printf cdecl alias "sqlite_get_table_printf" (byval as sqlite ptr, byval sqlFormat as zstring ptr, byval resultp as zstring ptr ptr ptr, byval nrow as integer ptr, byval ncolumn as integer ptr, byval errmsg as zstring ptr ptr, ...) as integer
-declare function sqlite_get_table_vprintf cdecl alias "sqlite_get_table_vprintf" (byval as sqlite ptr, byval sqlFormat as zstring ptr, byval resultp as zstring ptr ptr ptr, byval nrow as integer ptr, byval ncolumn as integer ptr, byval errmsg as zstring ptr ptr, byval ap as any ptr) as integer
-declare function sqlite_mprintf cdecl alias "sqlite_mprintf" (byval as zstring ptr, ...) as zstring ptr
-declare function sqlite_vmprintf cdecl alias "sqlite_vmprintf" (byval as zstring ptr, byval as any ptr) as zstring ptr
-declare sub sqlite_freemem cdecl alias "sqlite_freemem" (byval p as any ptr)
-declare function sqlite_libversion cdecl alias "sqlite_libversion" () as zstring ptr
-declare function sqlite_libencoding cdecl alias "sqlite_libencoding" () as zstring ptr
-
 type sqlite_func as any
-
-declare function sqlite_create_function cdecl alias "sqlite_create_function" (byval as sqlite ptr, byval zName as zstring ptr, byval nArg as integer, byval xFunc as sub cdecl(byval as sqlite_func ptr, byval as integer, byval as zstring ptr ptr), byval pUserData as any ptr) as integer
-declare function sqlite_create_aggregate cdecl alias "sqlite_create_aggregate" (byval as sqlite ptr, byval zName as zstring ptr, byval nArg as integer, byval xStep as sub cdecl(byval as sqlite_func ptr, byval as integer, byval as zstring ptr ptr), byval xFinalize as sub cdecl(byval as sqlite_func ptr), byval pUserData as any ptr) as integer
-declare function sqlite_function_type cdecl alias "sqlite_function_type" (byval db as sqlite ptr, byval zName as zstring ptr, byval datatype as integer) as integer
 
 #define SQLITE_NUMERIC (-1)
 #define SQLITE_ARGS (-3)
 #define SQLITE_TEXT (-2)
 #define SQLITE2_TEXT (-2)
-
-declare function sqlite_set_result_string cdecl alias "sqlite_set_result_string" (byval as sqlite_func ptr, byval as zstring ptr, byval as integer) as zstring ptr
-declare sub sqlite_set_result_int cdecl alias "sqlite_set_result_int" (byval as sqlite_func ptr, byval as integer)
-declare sub sqlite_set_result_double cdecl alias "sqlite_set_result_double" (byval as sqlite_func ptr, byval as double)
-declare sub sqlite_set_result_error cdecl alias "sqlite_set_result_error" (byval as sqlite_func ptr, byval as zstring ptr, byval as integer)
-declare function sqlite_user_data cdecl alias "sqlite_user_data" (byval as sqlite_func ptr) as any ptr
-declare function sqlite_aggregate_context cdecl alias "sqlite_aggregate_context" (byval as sqlite_func ptr, byval nBytes as integer) as any ptr
-declare function sqlite_aggregate_count cdecl alias "sqlite_aggregate_count" (byval as sqlite_func ptr) as integer
-declare function sqlite_set_authorizer cdecl alias "sqlite_set_authorizer" (byval as sqlite ptr, byval xAuth as function cdecl(byval as any ptr, byval as integer, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr) as integer, byval pUserData as any ptr) as integer
 
 #define SQLITE_COPY 0
 #define SQLITE_CREATE_INDEX 1
@@ -126,20 +88,54 @@ declare function sqlite_set_authorizer cdecl alias "sqlite_set_authorizer" (byva
 #define SQLITE_DENY 1
 #define SQLITE_IGNORE 2
 
-declare function sqlite_trace cdecl alias "sqlite_trace" (byval as sqlite ptr, byval xTrace as sub cdecl(byval as any ptr, byval as zstring ptr), byval as any ptr) as any ptr
-
 type sqlite_vm as any
 
-declare function sqlite_compile cdecl alias "sqlite_compile" (byval db as sqlite ptr, byval zSql as zstring ptr, byval pzTail as zstring ptr ptr, byval ppVm as sqlite_vm ptr ptr, byval pzErrmsg as zstring ptr ptr) as integer
-declare function sqlite_step cdecl alias "sqlite_step" (byval pVm as sqlite_vm ptr, byval pN as integer ptr, byval pazValue as zstring ptr ptr ptr, byval pazColName as zstring ptr ptr ptr) as integer
-declare function sqlite_finalize cdecl alias "sqlite_finalize" (byval as sqlite_vm ptr, byval pzErrMsg as zstring ptr ptr) as integer
-declare function sqlite_reset cdecl alias "sqlite_reset" (byval as sqlite_vm ptr, byval pzErrMsg as zstring ptr ptr) as integer
-declare function sqlite_bind cdecl alias "sqlite_bind" (byval as sqlite_vm ptr, byval idx as integer, byval value as zstring ptr, byval len as integer, byval copy as integer) as integer
-declare sub sqlite_progress_handler cdecl alias "sqlite_progress_handler" (byval as sqlite ptr, byval as integer, byval as function cdecl(byval as any ptr) as integer, byval as any ptr)
-declare function sqlite_commit_hook cdecl alias "sqlite_commit_hook" (byval as sqlite ptr, byval as function cdecl(byval as any ptr) as integer, byval as any ptr) as any ptr
-declare function sqlite_open_encrypted cdecl alias "sqlite_open_encrypted" (byval zFilename as zstring ptr, byval pKey as any ptr, byval nKey as integer, byval pErrcode as integer ptr, byval pzErrmsg as zstring ptr ptr) as sqlite ptr
-declare function sqlite_rekey cdecl alias "sqlite_rekey" (byval db as sqlite ptr, byval pKey as any ptr, byval nKey as integer) as integer
-declare function sqlite_encode_binary cdecl alias "sqlite_encode_binary" (byval in as ubyte ptr, byval n as integer, byval out as ubyte ptr) as integer
-declare function sqlite_decode_binary cdecl alias "sqlite_decode_binary" (byval in as ubyte ptr, byval out as ubyte ptr) as integer
+extern "c"
+declare function sqlite_open (byval filename as zstring ptr, byval mode as integer, byval errmsg as zstring ptr ptr) as sqlite ptr
+declare sub sqlite_close (byval as sqlite ptr)
+declare function sqlite_exec (byval as sqlite ptr, byval sql as zstring ptr, byval as sqlite_callback, byval as any ptr, byval errmsg as zstring ptr ptr) as integer
+declare function sqlite_last_insert_rowid (byval as sqlite ptr) as integer
+declare function sqlite_changes (byval as sqlite ptr) as integer
+declare function sqlite_last_statement_changes (byval as sqlite ptr) as integer
+declare function sqlite_error_string (byval as integer) as zstring ptr
+declare sub sqlite_interrupt_ (byval as sqlite ptr)
+declare function sqlite_complete (byval sql as zstring ptr) as integer
+declare sub sqlite_busy_handler (byval as sqlite ptr, byval as function cdecl(byval as any ptr, byval as zstring ptr, byval as integer) as integer, byval as any ptr)
+declare sub sqlite_busy_timeout (byval as sqlite ptr, byval ms as integer)
+declare function sqlite_get_table (byval as sqlite ptr, byval sql as zstring ptr, byval resultp as zstring ptr ptr ptr, byval nrow as integer ptr, byval ncolumn as integer ptr, byval errmsg as zstring ptr ptr) as integer
+declare sub sqlite_free_table (byval result as zstring ptr ptr)
+declare function sqlite_exec_printf (byval as sqlite ptr, byval sqlFormat as zstring ptr, byval as sqlite_callback, byval as any ptr, byval errmsg as zstring ptr ptr, ...) as integer
+declare function sqlite_exec_vprintf (byval as sqlite ptr, byval sqlFormat as zstring ptr, byval as sqlite_callback, byval as any ptr, byval errmsg as zstring ptr, byval ap as any ptr) as integer
+declare function sqlite_get_table_printf (byval as sqlite ptr, byval sqlFormat as zstring ptr, byval resultp as zstring ptr ptr ptr, byval nrow as integer ptr, byval ncolumn as integer ptr, byval errmsg as zstring ptr ptr, ...) as integer
+declare function sqlite_get_table_vprintf (byval as sqlite ptr, byval sqlFormat as zstring ptr, byval resultp as zstring ptr ptr ptr, byval nrow as integer ptr, byval ncolumn as integer ptr, byval errmsg as zstring ptr ptr, byval ap as any ptr) as integer
+declare function sqlite_mprintf (byval as zstring ptr, ...) as zstring ptr
+declare function sqlite_vmprintf (byval as zstring ptr, byval as any ptr) as zstring ptr
+declare sub sqlite_freemem (byval p as any ptr)
+declare function sqlite_libversion () as zstring ptr
+declare function sqlite_libencoding () as zstring ptr
+declare function sqlite_create_function (byval as sqlite ptr, byval zName as zstring ptr, byval nArg as integer, byval xFunc as sub cdecl(byval as sqlite_func ptr, byval as integer, byval as zstring ptr ptr), byval pUserData as any ptr) as integer
+declare function sqlite_create_aggregate (byval as sqlite ptr, byval zName as zstring ptr, byval nArg as integer, byval xStep as sub cdecl(byval as sqlite_func ptr, byval as integer, byval as zstring ptr ptr), byval xFinalize as sub cdecl(byval as sqlite_func ptr), byval pUserData as any ptr) as integer
+declare function sqlite_function_type (byval db as sqlite ptr, byval zName as zstring ptr, byval datatype as integer) as integer
+declare function sqlite_set_result_string (byval as sqlite_func ptr, byval as zstring ptr, byval as integer) as zstring ptr
+declare sub sqlite_set_result_int (byval as sqlite_func ptr, byval as integer)
+declare sub sqlite_set_result_double (byval as sqlite_func ptr, byval as double)
+declare sub sqlite_set_result_error (byval as sqlite_func ptr, byval as zstring ptr, byval as integer)
+declare function sqlite_user_data (byval as sqlite_func ptr) as any ptr
+declare function sqlite_aggregate_context (byval as sqlite_func ptr, byval nBytes as integer) as any ptr
+declare function sqlite_aggregate_count (byval as sqlite_func ptr) as integer
+declare function sqlite_set_authorizer (byval as sqlite ptr, byval xAuth as function cdecl(byval as any ptr, byval as integer, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr) as integer, byval pUserData as any ptr) as integer
+declare function sqlite_trace (byval as sqlite ptr, byval xTrace as sub cdecl(byval as any ptr, byval as zstring ptr), byval as any ptr) as any ptr
+declare function sqlite_compile (byval db as sqlite ptr, byval zSql as zstring ptr, byval pzTail as zstring ptr ptr, byval ppVm as sqlite_vm ptr ptr, byval pzErrmsg as zstring ptr ptr) as integer
+declare function sqlite_step (byval pVm as sqlite_vm ptr, byval pN as integer ptr, byval pazValue as zstring ptr ptr ptr, byval pazColName as zstring ptr ptr ptr) as integer
+declare function sqlite_finalize (byval as sqlite_vm ptr, byval pzErrMsg as zstring ptr ptr) as integer
+declare function sqlite_reset (byval as sqlite_vm ptr, byval pzErrMsg as zstring ptr ptr) as integer
+declare function sqlite_bind (byval as sqlite_vm ptr, byval idx as integer, byval value as zstring ptr, byval len as integer, byval copy as integer) as integer
+declare sub sqlite_progress_handler (byval as sqlite ptr, byval as integer, byval as function cdecl(byval as any ptr) as integer, byval as any ptr)
+declare function sqlite_commit_hook (byval as sqlite ptr, byval as function cdecl(byval as any ptr) as integer, byval as any ptr) as any ptr
+declare function sqlite_open_encrypted (byval zFilename as zstring ptr, byval pKey as any ptr, byval nKey as integer, byval pErrcode as integer ptr, byval pzErrmsg as zstring ptr ptr) as sqlite ptr
+declare function sqlite_rekey (byval db as sqlite ptr, byval pKey as any ptr, byval nKey as integer) as integer
+declare function sqlite_encode_binary (byval in as ubyte ptr, byval n as integer, byval out as ubyte ptr) as integer
+declare function sqlite_decode_binary (byval in as ubyte ptr, byval out as ubyte ptr) as integer
+end extern
 
 #endif

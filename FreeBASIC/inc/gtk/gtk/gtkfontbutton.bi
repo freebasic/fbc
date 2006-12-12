@@ -9,7 +9,7 @@
 #ifndef __gtkfontbutton_bi__
 #define __gtkfontbutton_bi__
 
-#include once "gtk/gtk/gtkbutton.bi"
+#include once "gtkbutton.bi"
 
 #define GTK_TYPE_FONT_BUTTON (gtk_font_button_get_type ())
 #define GTK_FONT_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FONT_BUTTON, GtkFontButton))

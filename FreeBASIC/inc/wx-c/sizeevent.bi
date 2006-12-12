@@ -9,9 +9,9 @@
 #ifndef __wxc_sizeevent_bi__
 #define __wxc_sizeevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxSizeEvent cdecl alias "wxSizeEvent_ctor" () as wxSizeEvent ptr
-declare sub wxSizeEvent_GetSize cdecl alias "wxSizeEvent_GetSize" (byval self as wxSizeEvent ptr, byval size as wxSize ptr)
+declare function wxSizeEvent alias "wxSizeEvent_ctor" () as wxSizeEvent ptr
+declare sub wxSizeEvent_GetSize (byval self as wxSizeEvent ptr, byval size as wxSize ptr)
 
 #endif

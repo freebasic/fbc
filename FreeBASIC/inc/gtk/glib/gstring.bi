@@ -9,9 +9,9 @@
 #ifndef __gstring_bi__
 #define __gstring_bi__
 
-#include once "gtk/glib/gtypes.bi"
-#include once "gtk/glib/gunicode.bi"
-#include once "gtk/glib/gutils.bi"
+#include once "gtypes.bi"
+#include once "gunicode.bi"
+#include once "gutils.bi"
 
 type GString as _GString
 type GStringChunk as _GStringChunk

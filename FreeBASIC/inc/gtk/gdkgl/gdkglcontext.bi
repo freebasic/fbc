@@ -9,8 +9,8 @@
 #ifndef __gdkglcontext_bi__
 #define __gdkglcontext_bi__
 
-#include once "gtk/gdkgl/gdkgldefs.bi"
-#include once "gtk/gdkgl/gdkgltypes.bi"
+#include once "gdkgldefs.bi"
+#include once "gdkgltypes.bi"
 
 #define GDK_TYPE_GL_CONTEXT (gdk_gl_context_get_type ())
 #define GDK_GL_CONTEXT(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_GL_CONTEXT, GdkGLContext))

@@ -10,7 +10,7 @@
 #define __gtktreeselection_bi__
 
 #include once "gtk/glib-object.bi"
-#include once "gtk/gtk/gtktreeview.bi"
+#include once "gtktreeview.bi"
 
 #define GTK_TYPE_TREE_SELECTION (gtk_tree_selection_get_type ())
 #define GTK_TREE_SELECTION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TREE_SELECTION, GtkTreeSelection))

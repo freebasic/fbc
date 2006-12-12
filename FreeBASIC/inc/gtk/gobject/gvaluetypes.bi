@@ -9,7 +9,7 @@
 #ifndef __gvaluetypes_bi__
 #define __gvaluetypes_bi__
 
-#include once "gtk/gobject/gvalue.bi"
+#include once "gvalue.bi"
 
 #define G_VALUE_HOLDS_CHAR(value) (G_TYPE_CHECK_VALUE_TYPE ((value), G_TYPE_CHAR))
 #define G_VALUE_HOLDS_UCHAR(value) (G_TYPE_CHECK_VALUE_TYPE ((value), G_TYPE_UCHAR))

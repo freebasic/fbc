@@ -19,13 +19,15 @@
 # error Platform not supported
 #endif
 
-#include once "al/altypes.bi"
+#include once "altypes.bi"
 
-declare sub alutInit cdecl alias "alutInit" (byval argc as integer ptr, byval argv as byte ptr ptr)
-declare sub alutExit cdecl alias "alutExit" ()
-declare function alutLoadWAV cdecl alias "alutLoadWAV" (byval fname as zstring ptr, byval wave as ALvoid ptr ptr, byval format as ALsizei ptr, byval size as ALsizei ptr, byval bits as ALsizei ptr, byval freq as ALsizei ptr) as ALboolean
-declare sub alutLoadWAVFile cdecl alias "alutLoadWAVFile" (byval file as zstring ptr, byval format as ALenum ptr, byval data as ALvoid ptr ptr, byval size as ALsizei ptr, byval freq as ALsizei ptr, byval loop as ALboolean ptr)
-declare sub alutLoadWAVMemory cdecl alias "alutLoadWAVMemory" (byval memory as ALbyte ptr, byval format as ALenum ptr, byval data as ALvoid ptr ptr, byval size as ALsizei ptr, byval freq as ALsizei ptr, byval loop as ALboolean ptr)
-declare sub alutUnloadWAV cdecl alias "alutUnloadWAV" (byval format as ALenum, byval data as ALvoid ptr, byval size as ALsizei, byval freq as ALsizei)
+extern "c"
+declare sub alutInit (byval argc as integer ptr, byval argv as byte ptr ptr)
+declare sub alutExit ()
+declare function alutLoadWAV (byval fname as zstring ptr, byval wave as ALvoid ptr ptr, byval format as ALsizei ptr, byval size as ALsizei ptr, byval bits as ALsizei ptr, byval freq as ALsizei ptr) as ALboolean
+declare sub alutLoadWAVFile (byval file as zstring ptr, byval format as ALenum ptr, byval data as ALvoid ptr ptr, byval size as ALsizei ptr, byval freq as ALsizei ptr, byval loop as ALboolean ptr)
+declare sub alutLoadWAVMemory (byval memory as ALbyte ptr, byval format as ALenum ptr, byval data as ALvoid ptr ptr, byval size as ALsizei ptr, byval freq as ALsizei ptr, byval loop as ALboolean ptr)
+declare sub alutUnloadWAV (byval format as ALenum, byval data as ALvoid ptr, byval size as ALsizei, byval freq as ALsizei)
+end extern
 
 #endif

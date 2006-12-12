@@ -9,7 +9,7 @@
 #ifndef __gvalue_bi__
 #define __gvalue_bi__
 
-#include once "gtk/gobject/gtype.bi"
+#include once "gtype.bi"
 
 #define	G_TYPE_IS_VALUE(type_) (g_type_check_is_value_type (type_))
 #define	G_IS_VALUE(value) (G_TYPE_CHECK_VALUE (value))

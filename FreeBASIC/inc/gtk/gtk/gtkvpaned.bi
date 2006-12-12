@@ -9,7 +9,7 @@
 #ifndef __gtkvpaned_bi__
 #define __gtkvpaned_bi__
 
-#include once "gtk/gtk/gtkpaned.bi"
+#include once "gtkpaned.bi"
 
 #define GTK_TYPE_VPANED (gtk_vpaned_get_type ())
 #define GTK_VPANED(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VPANED, GtkVPaned))

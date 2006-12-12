@@ -9,7 +9,7 @@
 #ifndef __gdkfont_bi__
 #define __gdkfont_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
+#include once "gdktypes.bi"
 #include once "gtk/pango/pango-font.bi"
 
 #define GDK_TYPE_FONT gdk_font_get_type ()

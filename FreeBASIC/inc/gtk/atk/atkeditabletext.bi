@@ -9,8 +9,8 @@
 #ifndef __atkeditabletext_bi__
 #define __atkeditabletext_bi__
 
-#include once "gtk/atk/atkobject.bi"
-#include once "gtk/atk/atktext.bi"
+#include once "atkobject.bi"
+#include once "atktext.bi"
 
 #define ATK_TYPE_EDITABLE_TEXT() atk_editable_text_get_type()
 #define ATK_IS_EDITABLE_TEXT(obj) G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_EDITABLE_TEXT)

@@ -10,8 +10,8 @@
 #define __gtkmenu_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkaccelgroup.bi"
-#include once "gtk/gtk/gtkmenushell.bi"
+#include once "gtkaccelgroup.bi"
+#include once "gtkmenushell.bi"
 
 #define GTK_TYPE_MENU			gtk_menu_get_type()
 #define GTK_MENU(obj)			G_TYPE_CHECK_INSTANCE_CAST(obj, GTK_TYPE_MENU, GtkMenu)

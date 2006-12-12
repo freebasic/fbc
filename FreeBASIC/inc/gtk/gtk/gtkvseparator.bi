@@ -10,7 +10,7 @@
 #define __gtkvseparator_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkseparator.bi"
+#include once "gtkseparator.bi"
 
 #define GTK_TYPE_VSEPARATOR (gtk_vseparator_get_type ())
 #define GTK_VSEPARATOR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VSEPARATOR, GtkVSeparator))

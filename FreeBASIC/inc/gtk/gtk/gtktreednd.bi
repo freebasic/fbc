@@ -9,8 +9,8 @@
 #ifndef __gtktreednd_bi__
 #define __gtktreednd_bi__
 
-#include once "gtk/gtk/gtktreemodel.bi"
-#include once "gtk/gtk/gtkdnd.bi"
+#include once "gtktreemodel.bi"
+#include once "gtkdnd.bi"
 
 #define GTK_TYPE_TREE_DRAG_SOURCE (gtk_tree_drag_source_get_type ())
 #define GTK_TREE_DRAG_SOURCE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TREE_DRAG_SOURCE, GtkTreeDragSource))

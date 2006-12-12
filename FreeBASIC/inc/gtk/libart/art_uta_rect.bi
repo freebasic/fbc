@@ -9,8 +9,8 @@
 #ifndef __art_uta_rect_bi__
 #define __art_uta_rect_bi__
 
-#include once "gtk/libart/art_rect.bi"
-#include once "gtk/libart/art_uta.bi"
+#include once "art_rect.bi"
+#include once "art_uta.bi"
 
 declare function art_uta_from_irect (byval bbox as ArtIRect ptr) as ArtUta ptr
 

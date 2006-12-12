@@ -10,11 +10,11 @@
 #define __gtkwidget_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkaccelgroup.bi"
-#include once "gtk/gtk/gtkobject.bi"
-#include once "gtk/gtk/gtkadjustment.bi"
-#include once "gtk/gtk/gtkstyle.bi"
-#include once "gtk/gtk/gtksettings.bi"
+#include once "gtkaccelgroup.bi"
+#include once "gtkobject.bi"
+#include once "gtkadjustment.bi"
+#include once "gtkstyle.bi"
+#include once "gtksettings.bi"
 #include once "gtk/atk/atkobject.bi"
 
 #define GTK_TYPE_WIDGET gtk_widget_get_type()

@@ -10,8 +10,8 @@
 #define __gtkplug_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtksocket.bi"
-#include once "gtk/gtk/gtkwindow.bi"
+#include once "gtksocket.bi"
+#include once "gtkwindow.bi"
 
 #define GTK_TYPE_PLUG (gtk_plug_get_type ())
 #define GTK_PLUG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_PLUG, GtkPlug))

@@ -9,8 +9,8 @@
 #ifndef __pango_glyph_bi__
 #define __pango_glyph_bi__
 
-#include once "gtk/pango/pango-types.bi"
-#include once "gtk/pango/pango-item.bi"
+#include once "pango-types.bi"
+#include once "pango-item.bi"
 
 type PangoGlyphGeometry as _PangoGlyphGeometry
 type PangoGlyphVisAttr as _PangoGlyphVisAttr

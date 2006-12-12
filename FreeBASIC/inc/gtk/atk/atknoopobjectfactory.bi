@@ -9,7 +9,7 @@
 #ifndef __atknoopobjectfactory_bi__
 #define __atknoopobjectfactory_bi__
 
-#include once "gtk/atk/atkobjectfactory.bi"
+#include once "atkobjectfactory.bi"
 
 #define ATK_TYPE_NO_OP_OBJECT_FACTORY() atk_no_op_object_factory_get_type()
 #define ATK_NO_OP_OBJECT_FACTORY(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_NO_OP_OBJECT_FACTORY, AtkNoOpObjectFactory)

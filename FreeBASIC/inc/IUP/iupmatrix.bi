@@ -9,15 +9,17 @@
 #ifndef __iupmatrix_bi__
 #define __iupmatrix_bi__
 
-declare sub IupMatrixOpen cdecl alias "IupMatrixOpen" ()
-declare sub IupMatrixClose cdecl alias "IupMatrixClose" ()
-declare function IupMatrix cdecl alias "IupMatrix" (byval action as zstring ptr) as Ihandle ptr
-declare sub IupMatSetAttribute cdecl alias "IupMatSetAttribute" (byval n as Ihandle ptr, byval a as zstring ptr, byval l as integer, byval c as integer, byval v as zstring ptr)
-declare sub IupMatStoreAttribute cdecl alias "IupMatStoreAttribute" (byval n as Ihandle ptr, byval a as zstring ptr, byval l as integer, byval c as integer, byval v as zstring ptr)
-declare function IupMatGetAttribute cdecl alias "IupMatGetAttribute" (byval n as Ihandle ptr, byval a as zstring ptr, byval l as integer, byval c as integer) as zstring ptr
-declare function IupMatGetInt cdecl alias "IupMatGetInt" (byval n as Ihandle ptr, byval a as zstring ptr, byval l as integer, byval c as integer) as integer
-declare function IupMatGetFloat cdecl alias "IupMatGetFloat" (byval n as Ihandle ptr, byval a as zstring ptr, byval l as integer, byval c as integer) as single
-declare sub IupMatSetfAttribute cdecl alias "IupMatSetfAttribute" (byval n as Ihandle ptr, byval a as zstring ptr, byval l as integer, byval c as integer, byval f as zstring ptr, ...)
+extern "c"
+declare sub IupMatrixOpen ()
+declare sub IupMatrixClose ()
+declare function IupMatrix (byval action as zstring ptr) as Ihandle ptr
+declare sub IupMatSetAttribute (byval n as Ihandle ptr, byval a as zstring ptr, byval l as integer, byval c as integer, byval v as zstring ptr)
+declare sub IupMatStoreAttribute (byval n as Ihandle ptr, byval a as zstring ptr, byval l as integer, byval c as integer, byval v as zstring ptr)
+declare function IupMatGetAttribute (byval n as Ihandle ptr, byval a as zstring ptr, byval l as integer, byval c as integer) as zstring ptr
+declare function IupMatGetInt (byval n as Ihandle ptr, byval a as zstring ptr, byval l as integer, byval c as integer) as integer
+declare function IupMatGetFloat (byval n as Ihandle ptr, byval a as zstring ptr, byval l as integer, byval c as integer) as single
+declare sub IupMatSetfAttribute (byval n as Ihandle ptr, byval a as zstring ptr, byval l as integer, byval c as integer, byval f as zstring ptr, ...)
+end extern
 
 #define IUP_ENTERITEM_CB "ENTERITEM_CB"
 #define IUP_LEAVEITEM_CB "LEAVEITEM_CB"

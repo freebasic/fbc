@@ -9,9 +9,9 @@
 #ifndef __gtkobject_bi__
 #define __gtkobject_bi__
 
-#include once "gtk/gtk/gtkenums.bi"
-#include once "gtk/gtk/gtktypeutils.bi"
-#include once "gtk/gtk/gtkdebug.bi"
+#include once "gtkenums.bi"
+#include once "gtktypeutils.bi"
+#include once "gtkdebug.bi"
 
 #define	GTK_TYPE_OBJECT			gtk_object_get_type()
 #define GTK_OBJECT(object)		GTK_CHECK_CAST(object, GTK_TYPE_OBJECT, GtkObject)

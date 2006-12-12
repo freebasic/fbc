@@ -9,10 +9,10 @@
 #ifndef __wxc_object_bi__
 #define __wxc_object_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxObject_GetTypeName cdecl alias "wxObject_GetTypeName" (byval obj as wxObject ptr) as wxString ptr
-declare sub wxObject_dtor cdecl alias "wxObject_dtor" (byval self as wxObject ptr)
-declare function wxGetTranslation_func cdecl alias "wxGetTranslation_func" (byval str as zstring ptr) as wxString ptr
+declare function wxObject_GetTypeName (byval obj as wxObject ptr) as wxString ptr
+declare sub wxObject_dtor (byval self as wxObject ptr)
+declare function wxGetTranslation_func (byval str as zstring ptr) as wxString ptr
 
 #endif

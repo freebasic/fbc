@@ -9,9 +9,9 @@
 #ifndef __SDL_mouse_bi__
 #define __SDL_mouse_bi__
 
-#include once "SDL/SDL_types.bi"
-#include once "SDL/SDL_video.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_types.bi"
+#include once "SDL_video.bi"
+#include once "begin_code.bi"
 
 type WMcursor as _WMcursor
 
@@ -42,6 +42,6 @@ declare function SDL_ShowCursor cdecl alias "SDL_ShowCursor" (byval toggle as in
 #define SDL_BUTTON_WHEELUP 4
 #define SDL_BUTTON_WHEELDOWN 5
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

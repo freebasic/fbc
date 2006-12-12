@@ -9,7 +9,7 @@
 #ifndef __SDL_cpuinfo_bi__
 #define __SDL_cpuinfo_bi__
 
-#include once "SDL/begin_code.bi"
+#include once "begin_code.bi"
 
 declare function SDL_HasRDTSC cdecl alias "SDL_HasRDTSC" () as SDL_bool
 declare function SDL_HasMMX cdecl alias "SDL_HasMMX" () as SDL_bool
@@ -20,6 +20,6 @@ declare function SDL_HasSSE cdecl alias "SDL_HasSSE" () as SDL_bool
 declare function SDL_HasSSE2 cdecl alias "SDL_HasSSE2" () as SDL_bool
 declare function SDL_HasAltiVec cdecl alias "SDL_HasAltiVec" () as SDL_bool
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

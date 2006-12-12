@@ -9,7 +9,7 @@
 #ifndef __art_svp_wind_bi__
 #define __art_svp_wind_bi__
 
-#include once "gtk/libart/art_svp.bi"
+#include once "art_svp.bi"
 
 enum ArtWindRule
 	ART_WIND_RULE_NONZERO

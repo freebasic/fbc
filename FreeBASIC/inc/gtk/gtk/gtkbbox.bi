@@ -9,7 +9,7 @@
 #ifndef __gtkbbox_bi__
 #define __gtkbbox_bi__
 
-#include once "gtk/gtk/gtkbox.bi"
+#include once "gtkbox.bi"
 
 #define GTK_BUTTONBOX_DEFAULT -1
 

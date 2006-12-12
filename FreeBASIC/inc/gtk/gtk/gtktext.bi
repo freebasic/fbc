@@ -10,8 +10,8 @@
 #define __gtktext_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkadjustment.bi"
-#include once "gtk/gtk/gtkoldeditable.bi"
+#include once "gtkadjustment.bi"
+#include once "gtkoldeditable.bi"
 
 #define GTK_TYPE_TEXT (gtk_text_get_type ())
 #define GTK_TEXT(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_TEXT, GtkText))

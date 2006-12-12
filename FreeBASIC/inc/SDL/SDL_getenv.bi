@@ -11,7 +11,7 @@
 
 #ifdef NEED_SDL_GETENV
 
-#include once "SDL/begin_code.bi"
+#include once "begin_code.bi"
 
 declare function SDL_putenv cdecl alias "SDL_putenv" (byval variable as zstring ptr) as integer
 declare function SDL_getenv cdecl alias "SDL_getenv" (byval name as zstring ptr) as zstring ptr
@@ -19,7 +19,7 @@ declare function SDL_getenv cdecl alias "SDL_getenv" (byval name as zstring ptr)
 #define putenv(X) SDL_putenv(X)
 #define getenv(X) SDL_getenv(X)
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif
 

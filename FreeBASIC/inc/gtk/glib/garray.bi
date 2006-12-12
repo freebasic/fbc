@@ -9,7 +9,7 @@
 #ifndef __garray_bi__
 #define __garray_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 type GArray as _GArray
 type GByteArray as _GByteArray

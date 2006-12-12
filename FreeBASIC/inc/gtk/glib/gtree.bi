@@ -9,7 +9,7 @@
 #ifndef __gtree_bi__
 #define __gtree_bi__
 
-#include once "gtk/glib/gnode.bi"
+#include once "gnode.bi"
 
 type GTree as _GTree
 type GTraverseFunc as function cdecl(byval as gpointer, byval as gpointer, byval as gpointer) as gboolean

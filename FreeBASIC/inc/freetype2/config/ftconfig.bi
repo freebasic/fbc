@@ -9,8 +9,8 @@
 #ifndef __ftconfig_bi__
 #define __ftconfig_bi__
 
-#include once "freetype2/config/ftoption.bi"
-#include once "freetype2/config/ftstdlib.bi"
+#include once "ftoption.bi"
+#include once "ftstdlib.bi"
 
 #define HAVE_UNISTD_H 1
 #define HAVE_FCNTL_H 1

@@ -10,7 +10,7 @@
 #define __gtkprogressbar_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkprogress.bi"
+#include once "gtkprogress.bi"
 
 #define GTK_TYPE_PROGRESS_BAR (gtk_progress_bar_get_type ())
 #define GTK_PROGRESS_BAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_PROGRESS_BAR, GtkProgressBar))

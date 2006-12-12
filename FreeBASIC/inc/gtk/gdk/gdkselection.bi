@@ -9,7 +9,7 @@
 #ifndef __gdkselection_bi__
 #define __gdkselection_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
+#include once "gdktypes.bi"
 
 type GdkSelection as GdkAtom
 type GdkTarget as GdkAtom

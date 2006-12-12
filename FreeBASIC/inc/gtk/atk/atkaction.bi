@@ -9,7 +9,7 @@
 #ifndef __atkaction_bi__
 #define __atkaction_bi__
 
-#include once "gtk/atk/atkobject.bi"
+#include once "atkobject.bi"
 
 #define ATK_TYPE_ACTION() atk_action_get_type())
 #define ATK_IS_ACTION(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), ATK_TYPE_ACTION)

@@ -9,8 +9,8 @@
 #ifndef __pango_fontmap_bi__
 #define __pango_fontmap_bi__
 
-#include once "gtk/pango/pango-font.bi"
-#include once "gtk/pango/pango-fontset.bi"
+#include once "pango-font.bi"
+#include once "pango-fontset.bi"
 
 #define PANGO_TYPE_FONT_MAP (pango_font_map_get_type ())
 #define PANGO_FONT_MAP(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONT_MAP, PangoFontMap))

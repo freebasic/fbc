@@ -9,6 +9,8 @@
 #ifndef __gdsl_sort_bi__
 #define __gdsl_sort_bi__
 
-declare sub gdsl_sort cdecl alias "gdsl_sort" (byval T as gdsl_element_t ptr, byval N as ulong, byval COMP_F as gdsl_compare_func_t)
+extern "c"
+declare sub gdsl_sort (byval T as gdsl_element_t ptr, byval N as ulong, byval COMP_F as gdsl_compare_func_t)
+end extern
 
 #endif

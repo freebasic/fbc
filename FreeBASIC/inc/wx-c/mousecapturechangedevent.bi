@@ -9,9 +9,9 @@
 #ifndef __wxc_mousecapturechangedevent_bi__
 #define __wxc_mousecapturechangedevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxMouseCaptureChangedEvent cdecl alias "wxMouseCaptureChangedEvent_ctor" (byval type as wxEventType) as wxMouseCaptureChangedEvent ptr
-declare function wxMouseCaptureChangedEvent_GetCapturedWindow cdecl alias "wxMouseCaptureChangedEvent_GetCapturedWindow" (byval self as wxMouseCaptureChangedEvent ptr) as wxWindow ptr
+declare function wxMouseCaptureChangedEvent alias "wxMouseCaptureChangedEvent_ctor" (byval type as wxEventType) as wxMouseCaptureChangedEvent ptr
+declare function wxMouseCaptureChangedEvent_GetCapturedWindow (byval self as wxMouseCaptureChangedEvent ptr) as wxWindow ptr
 
 #endif

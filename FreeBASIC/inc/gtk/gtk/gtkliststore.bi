@@ -9,8 +9,8 @@
 #ifndef __gtkliststore_bi__
 #define __gtkliststore_bi__
 
-#include once "gtk/gtk/gtktreemodel.bi"
-#include once "gtk/gtk/gtktreesortable.bi"
+#include once "gtktreemodel.bi"
+#include once "gtktreesortable.bi"
 
 #define GTK_TYPE_LIST_STORE (gtk_list_store_get_type ())
 #define GTK_LIST_STORE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_LIST_STORE, GtkListStore))

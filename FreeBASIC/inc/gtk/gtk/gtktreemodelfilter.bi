@@ -9,7 +9,7 @@
 #ifndef __gtktreemodelfilter_bi__
 #define __gtktreemodelfilter_bi__
 
-#include once "gtk/gtk/gtktreemodel.bi"
+#include once "gtktreemodel.bi"
 
 #define GTK_TYPE_TREE_MODEL_FILTER (gtk_tree_model_filter_get_type ())
 #define GTK_TREE_MODEL_FILTER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TREE_MODEL_FILTER, GtkTreeModelFilter))

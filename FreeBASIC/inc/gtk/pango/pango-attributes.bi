@@ -9,7 +9,7 @@
 #ifndef __pango_attributes_bi__
 #define __pango_attributes_bi__
 
-#include once "gtk/pango/pango-font.bi"
+#include once "pango-font.bi"
 #include once "gtk/glib-object.bi"
 
 type PangoColor as _PangoColor

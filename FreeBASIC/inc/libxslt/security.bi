@@ -9,8 +9,8 @@
 #ifndef __xslt_security_bi__
 #define __xslt_security_bi__
 
-#include once "libxslt/xsltexports.bi"
-#include once "libxslt/xsltInternals.bi"
+#include once "xsltexports.bi"
+#include once "xsltInternals.bi"
 
 type xsltSecurityPrefs as _xsltSecurityPrefs
 type xsltSecurityPrefsPtr as xsltSecurityPrefs ptr
@@ -25,16 +25,18 @@ end enum
 
 type xsltSecurityCheck as function cdecl(byval as xsltSecurityPrefsPtr, byval as xsltTransformContextPtr, byval as zstring ptr) as integer
 
-declare function xsltNewSecurityPrefs cdecl alias "xsltNewSecurityPrefs" () as xsltSecurityPrefsPtr
-declare sub xsltFreeSecurityPrefs cdecl alias "xsltFreeSecurityPrefs" (byval sec as xsltSecurityPrefsPtr)
-declare function xsltSetSecurityPrefs cdecl alias "xsltSetSecurityPrefs" (byval sec as xsltSecurityPrefsPtr, byval option as xsltSecurityOption, byval func as xsltSecurityCheck) as integer
-declare function xsltGetSecurityPrefs cdecl alias "xsltGetSecurityPrefs" (byval sec as xsltSecurityPrefsPtr, byval option as xsltSecurityOption) as xsltSecurityCheck
-declare sub xsltSetDefaultSecurityPrefs cdecl alias "xsltSetDefaultSecurityPrefs" (byval sec as xsltSecurityPrefsPtr)
-declare function xsltGetDefaultSecurityPrefs cdecl alias "xsltGetDefaultSecurityPrefs" () as xsltSecurityPrefsPtr
-declare function xsltSetCtxtSecurityPrefs cdecl alias "xsltSetCtxtSecurityPrefs" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr) as integer
-declare function xsltSecurityAllow cdecl alias "xsltSecurityAllow" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as zstring ptr) as integer
-declare function xsltSecurityForbid cdecl alias "xsltSecurityForbid" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as zstring ptr) as integer
-declare function xsltCheckWrite cdecl alias "xsltCheckWrite" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval URL as zstring ptr) as integer
-declare function xsltCheckRead cdecl alias "xsltCheckRead" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval URL as zstring ptr) as integer
+extern "c"
+declare function xsltNewSecurityPrefs () as xsltSecurityPrefsPtr
+declare sub xsltFreeSecurityPrefs (byval sec as xsltSecurityPrefsPtr)
+declare function xsltSetSecurityPrefs (byval sec as xsltSecurityPrefsPtr, byval option as xsltSecurityOption, byval func as xsltSecurityCheck) as integer
+declare function xsltGetSecurityPrefs (byval sec as xsltSecurityPrefsPtr, byval option as xsltSecurityOption) as xsltSecurityCheck
+declare sub xsltSetDefaultSecurityPrefs (byval sec as xsltSecurityPrefsPtr)
+declare function xsltGetDefaultSecurityPrefs () as xsltSecurityPrefsPtr
+declare function xsltSetCtxtSecurityPrefs (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr) as integer
+declare function xsltSecurityAllow (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as zstring ptr) as integer
+declare function xsltSecurityForbid (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as zstring ptr) as integer
+declare function xsltCheckWrite (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval URL as zstring ptr) as integer
+declare function xsltCheckRead (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval URL as zstring ptr) as integer
+end extern
 
 #endif

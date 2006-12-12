@@ -9,8 +9,8 @@
 #ifndef __art_svp_vpath_stroke_bi__
 #define __art_svp_vpath_stroke_bi__
 
-#include once "gtk/libart/art_svp.bi"
-#include once "gtk/libart/art_vpath.bi"
+#include once "art_svp.bi"
+#include once "art_vpath.bi"
 
 enum ArtPathStrokeJoinType
 	ART_PATH_STROKE_JOIN_MITER

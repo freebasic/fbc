@@ -9,8 +9,8 @@
 #ifndef __wxc_validator_bi__
 #define __wxc_validator_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxValidator cdecl alias "wxValidator_ctor" () as wxValidator ptr
+declare function wxValidator alias "wxValidator_ctor" () as wxValidator ptr
 
 #endif

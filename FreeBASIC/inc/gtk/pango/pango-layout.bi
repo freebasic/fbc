@@ -9,10 +9,10 @@
 #ifndef __pango_layout_bi__
 #define __pango_layout_bi__
 
-#include once "gtk/pango/pango-attributes.bi"
-#include once "gtk/pango/pango-context.bi"
-#include once "gtk/pango/pango-glyph-item.bi"
-#include once "gtk/pango/pango-tabs.bi"
+#include once "pango-attributes.bi"
+#include once "pango-context.bi"
+#include once "pango-glyph-item.bi"
+#include once "pango-tabs.bi"
 
 #define PANGO_TYPE_LAYOUT (pango_layout_get_type ())
 #define PANGO_LAYOUT(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_LAYOUT, PangoLayout))

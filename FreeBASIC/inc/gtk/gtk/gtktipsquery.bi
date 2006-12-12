@@ -9,7 +9,7 @@
 #ifndef __gtktipsquery_bi__
 #define __gtktipsquery_bi__
 
-#include once "gtk/gtk/gtklabel.bi"
+#include once "gtklabel.bi"
 
 #define	GTK_TYPE_TIPS_QUERY (gtk_tips_query_get_type ())
 #define GTK_TIPS_QUERY(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_TIPS_QUERY, GtkTipsQuery))

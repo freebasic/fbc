@@ -9,8 +9,8 @@
 #ifndef __gmessages_bi__
 #define __gmessages_bi__
 
-#include once "gtk/glib/gtypes.bi"
-#include once "gtk/glib/gmacros.bi"
+#include once "gtypes.bi"
+#include once "gmacros.bi"
 
 '''''''' declare function g_printf_string_upper_bound (byval format as zstring ptr, byval args as va_list) as gsize
 

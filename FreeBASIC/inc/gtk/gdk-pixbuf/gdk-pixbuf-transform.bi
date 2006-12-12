@@ -10,7 +10,7 @@
 #define __gdk_pixbuf_transform_bi__
 
 #include once "gtk/glib.bi"
-#include once "gtk/gdk-pixbuf/gdk-pixbuf-core.bi"
+#include once "gdk-pixbuf-core.bi"
 
 enum GdkInterpType
 	GDK_INTERP_NEAREST

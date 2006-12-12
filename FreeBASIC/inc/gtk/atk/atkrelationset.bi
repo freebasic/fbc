@@ -10,8 +10,8 @@
 #define __atkrelationset_bi__
 
 #include once "gtk/glib-object.bi"
-#include once "gtk/atk/atkobject.bi"
-#include once "gtk/atk/atkrelation.bi"
+#include once "atkobject.bi"
+#include once "atkrelation.bi"
 
 #define ATK_TYPE_RELATION_SET() atk_relation_set_get_type ()
 #define ATK_RELATION_SET(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_RELATION_SET, AtkRelationSet)

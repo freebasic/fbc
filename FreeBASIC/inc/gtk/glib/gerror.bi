@@ -9,7 +9,7 @@
 #ifndef __gerror_bi__
 #define __gerror_bi__
 
-#include once "gtk/glib/gquark.bi"
+#include once "gquark.bi"
 
 type GError as _GError
 

@@ -9,9 +9,9 @@
 #ifndef __wxc_activateevent_bi__
 #define __wxc_activateevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxActivateEvent cdecl alias "wxActivateEvent_ctor" (byval type as wxEventType) as wxActivateEvent ptr
-declare function wxActivateEvent_GetActive cdecl alias "wxActivateEvent_GetActive" (byval self as wxActivateEvent ptr) as integer
+declare function wxActivateEvent alias "wxActivateEvent_ctor" (byval type as wxEventType) as wxActivateEvent ptr
+declare function wxActivateEvent_GetActive (byval self as wxActivateEvent ptr) as integer
 
 #endif

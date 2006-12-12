@@ -9,7 +9,7 @@
 #ifndef __gtkcellrendererpixbuf_bi__
 #define __gtkcellrendererpixbuf_bi__
 
-#include once "gtk/gtk/gtkcellrenderer.bi"
+#include once "gtkcellrenderer.bi"
 
 #define GTK_TYPE_CELL_RENDERER_PIXBUF (gtk_cell_renderer_pixbuf_get_type ())
 #define GTK_CELL_RENDERER_PIXBUF(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_RENDERER_PIXBUF, GtkCellRendererPixbuf))

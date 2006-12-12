@@ -9,7 +9,7 @@
 #ifndef __gtkhbbox_bi__
 #define __gtkhbbox_bi__
 
-#include once "gtk/gtk/gtkbbox.bi"
+#include once "gtkbbox.bi"
 
 #define GTK_TYPE_HBUTTON_BOX (gtk_hbutton_box_get_type ())
 #define GTK_HBUTTON_BOX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_HBUTTON_BOX, GtkHButtonBox))

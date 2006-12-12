@@ -9,7 +9,7 @@
 #ifndef __gdkdnd_bi__
 #define __gdkdnd_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
+#include once "gdktypes.bi"
 
 #define GDK_TYPE_DRAG_CONTEXT (gdk_drag_context_get_type ())
 #define GDK_DRAG_CONTEXT(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_DRAG_CONTEXT, GdkDragContext))

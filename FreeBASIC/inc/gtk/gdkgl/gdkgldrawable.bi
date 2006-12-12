@@ -9,8 +9,8 @@
 #ifndef __gdkgldrawable_bi__
 #define __gdkgldrawable_bi__
 
-#include once "gtk/gdkgl/gdkgldefs.bi"
-#include once "gtk/gdkgl/gdkgltypes.bi"
+#include once "gdkgldefs.bi"
+#include once "gdkgltypes.bi"
 
 #define GDK_TYPE_GL_DRAWABLE gdk_gl_drawable_get_type ()
 #define GDK_GL_DRAWABLE(inst) G_TYPE_CHECK_INSTANCE_CAST (inst, GDK_TYPE_GL_DRAWABLE, GdkGLDrawable)

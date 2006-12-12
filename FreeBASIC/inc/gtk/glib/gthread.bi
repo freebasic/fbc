@@ -9,9 +9,9 @@
 #ifndef __gthread_bi__
 #define __gthread_bi__
 
-#include once "gtk/glib/gerror.bi"
-#include once "gtk/glib/gtypes.bi"
-#include once "gtk/glib/gatomic.bi"
+#include once "gerror.bi"
+#include once "gtypes.bi"
+#include once "gatomic.bi"
 
 declare function g_thread_error_quark () as GQuark
 

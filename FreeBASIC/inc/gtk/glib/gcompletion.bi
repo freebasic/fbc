@@ -9,7 +9,7 @@
 #ifndef __gcompletion_bi__
 #define __gcompletion_bi__
 
-#include once "gtk/glib/glist.bi"
+#include once "glist.bi"
 
 type GCompletion as _GCompletion
 type GCompletionFunc as function cdecl(byval as gpointer) as gchar

@@ -9,7 +9,7 @@
 #ifndef __art_vpath_dash_bi__
 #define __art_vpath_dash_bi__
 
-#include once "gtk/libart/art_vpath.bi"
+#include once "art_vpath.bi"
 
 type ArtVpathDash as _ArtVpathDash
 

@@ -9,7 +9,7 @@
 #ifndef __glibconfig_bi__
 #define __glibconfig_bi__
 
-#include once "gtk/glib/gmacros.bi"
+#include once "gmacros.bi"
 
 type gint8 as byte
 type guint8 as ubyte

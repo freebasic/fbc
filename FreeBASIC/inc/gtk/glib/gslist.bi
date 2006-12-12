@@ -9,7 +9,7 @@
 #ifndef __gslist_bi__
 #define __gslist_bi__
 
-#include once "gtk/glib/gmem.bi"
+#include once "gmem.bi"
 
 type GSList as _GSList
 

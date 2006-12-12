@@ -9,7 +9,7 @@
 #ifndef __xml_encoding_bi__
 #define __xml_encoding_bi__
 
-#include once "libxml/xmlversion.bi"
+#include once "xmlversion.bi"
 
 enum xmlCharEncoding
 	XML_CHAR_ENCODING_ERROR = -1
@@ -51,24 +51,26 @@ type _xmlCharEncodingHandler
 	iconv_out as integer
 end type
 
-declare sub xmlInitCharEncodingHandlers cdecl alias "xmlInitCharEncodingHandlers" ()
-declare sub xmlCleanupCharEncodingHandlers cdecl alias "xmlCleanupCharEncodingHandlers" ()
-declare sub xmlRegisterCharEncodingHandler cdecl alias "xmlRegisterCharEncodingHandler" (byval handler as xmlCharEncodingHandlerPtr)
-declare function xmlGetCharEncodingHandler cdecl alias "xmlGetCharEncodingHandler" (byval enc as xmlCharEncoding) as xmlCharEncodingHandlerPtr
-declare function xmlFindCharEncodingHandler cdecl alias "xmlFindCharEncodingHandler" (byval name as zstring ptr) as xmlCharEncodingHandlerPtr
-declare function xmlNewCharEncodingHandler cdecl alias "xmlNewCharEncodingHandler" (byval name as zstring ptr, byval input as xmlCharEncodingInputFunc, byval output as xmlCharEncodingOutputFunc) as xmlCharEncodingHandlerPtr
-declare function xmlAddEncodingAlias cdecl alias "xmlAddEncodingAlias" (byval name as zstring ptr, byval alias as zstring ptr) as integer
-declare function xmlDelEncodingAlias cdecl alias "xmlDelEncodingAlias" (byval alias as zstring ptr) as integer
-declare function xmlGetEncodingAlias cdecl alias "xmlGetEncodingAlias" (byval alias as zstring ptr) as byte ptr
-declare sub xmlCleanupEncodingAliases cdecl alias "xmlCleanupEncodingAliases" ()
-declare function xmlParseCharEncoding cdecl alias "xmlParseCharEncoding" (byval name as zstring ptr) as xmlCharEncoding
-declare function xmlGetCharEncodingName cdecl alias "xmlGetCharEncodingName" (byval enc as xmlCharEncoding) as byte ptr
-declare function xmlDetectCharEncoding cdecl alias "xmlDetectCharEncoding" (byval in as ubyte ptr, byval len as integer) as xmlCharEncoding
-declare function xmlCharEncOutFunc cdecl alias "xmlCharEncOutFunc" (byval handler as xmlCharEncodingHandler ptr, byval out as xmlBufferPtr, byval in as xmlBufferPtr) as integer
-declare function xmlCharEncInFunc cdecl alias "xmlCharEncInFunc" (byval handler as xmlCharEncodingHandler ptr, byval out as xmlBufferPtr, byval in as xmlBufferPtr) as integer
-declare function xmlCharEncFirstLine cdecl alias "xmlCharEncFirstLine" (byval handler as xmlCharEncodingHandler ptr, byval out as xmlBufferPtr, byval in as xmlBufferPtr) as integer
-declare function xmlCharEncCloseFunc cdecl alias "xmlCharEncCloseFunc" (byval handler as xmlCharEncodingHandler ptr) as integer
-declare function UTF8Toisolat1 cdecl alias "UTF8Toisolat1" (byval out as ubyte ptr, byval outlen as integer ptr, byval in as ubyte ptr, byval inlen as integer ptr) as integer
-declare function isolat1ToUTF8 cdecl alias "isolat1ToUTF8" (byval out as ubyte ptr, byval outlen as integer ptr, byval in as ubyte ptr, byval inlen as integer ptr) as integer
+extern "c"
+declare sub xmlInitCharEncodingHandlers ()
+declare sub xmlCleanupCharEncodingHandlers ()
+declare sub xmlRegisterCharEncodingHandler (byval handler as xmlCharEncodingHandlerPtr)
+declare function xmlGetCharEncodingHandler (byval enc as xmlCharEncoding) as xmlCharEncodingHandlerPtr
+declare function xmlFindCharEncodingHandler (byval name as zstring ptr) as xmlCharEncodingHandlerPtr
+declare function xmlNewCharEncodingHandler (byval name as zstring ptr, byval input as xmlCharEncodingInputFunc, byval output as xmlCharEncodingOutputFunc) as xmlCharEncodingHandlerPtr
+declare function xmlAddEncodingAlias (byval name as zstring ptr, byval alias as zstring ptr) as integer
+declare function xmlDelEncodingAlias (byval alias as zstring ptr) as integer
+declare function xmlGetEncodingAlias (byval alias as zstring ptr) as byte ptr
+declare sub xmlCleanupEncodingAliases ()
+declare function xmlParseCharEncoding (byval name as zstring ptr) as xmlCharEncoding
+declare function xmlGetCharEncodingName (byval enc as xmlCharEncoding) as byte ptr
+declare function xmlDetectCharEncoding (byval in as ubyte ptr, byval len as integer) as xmlCharEncoding
+declare function xmlCharEncOutFunc (byval handler as xmlCharEncodingHandler ptr, byval out as xmlBufferPtr, byval in as xmlBufferPtr) as integer
+declare function xmlCharEncInFunc (byval handler as xmlCharEncodingHandler ptr, byval out as xmlBufferPtr, byval in as xmlBufferPtr) as integer
+declare function xmlCharEncFirstLine (byval handler as xmlCharEncodingHandler ptr, byval out as xmlBufferPtr, byval in as xmlBufferPtr) as integer
+declare function xmlCharEncCloseFunc (byval handler as xmlCharEncodingHandler ptr) as integer
+declare function UTF8Toisolat1 (byval out as ubyte ptr, byval outlen as integer ptr, byval in as ubyte ptr, byval inlen as integer ptr) as integer
+declare function isolat1ToUTF8 (byval out as ubyte ptr, byval outlen as integer ptr, byval in as ubyte ptr, byval inlen as integer ptr) as integer
+end extern
 
 #endif

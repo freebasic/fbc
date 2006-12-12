@@ -9,7 +9,7 @@
 #ifndef __gtkstatusbar_bi__
 #define __gtkstatusbar_bi__
 
-#include once "gtk/gtk/gtkhbox.bi"
+#include once "gtkhbox.bi"
 
 #define GTK_TYPE_STATUSBAR (gtk_statusbar_get_type ())
 #define GTK_STATUSBAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_STATUSBAR, GtkStatusbar))

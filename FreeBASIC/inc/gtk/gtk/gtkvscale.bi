@@ -10,7 +10,7 @@
 #define __gtkvscale_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkscale.bi"
+#include once "gtkscale.bi"
 
 #define GTK_TYPE_VSCALE (gtk_vscale_get_type ())
 #define GTK_VSCALE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VSCALE, GtkVScale))

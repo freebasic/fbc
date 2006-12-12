@@ -9,7 +9,7 @@
 #ifndef __gtkpreview_bi__
 #define __gtkpreview_bi__
 
-#include once "gtk/gtk/gtkwidget.bi"
+#include once "gtkwidget.bi"
 
 #define GTK_TYPE_PREVIEW (gtk_preview_get_type ())
 #define GTK_PREVIEW(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_PREVIEW, GtkPreview))

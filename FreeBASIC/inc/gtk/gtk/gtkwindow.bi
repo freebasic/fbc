@@ -10,10 +10,10 @@
 #define __gtkwindow_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkaccelgroup.bi"
-#include once "gtk/gtk/gtkbin.bi"
-#include once "gtk/gtk/gtkenums.bi"
-#include once "gtk/gtk/gtkwidget.bi"
+#include once "gtkaccelgroup.bi"
+#include once "gtkbin.bi"
+#include once "gtkenums.bi"
+#include once "gtkwidget.bi"
 
 #define GTK_TYPE_WINDOW gtk_window_get_type()
 #define GTK_WINDOW(obj) G_TYPE_CHECK_INSTANCE_CAST(obj, GTK_TYPE_WINDOW, GtkWindow)

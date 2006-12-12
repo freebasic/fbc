@@ -10,7 +10,7 @@
 #define __gtkfilesel_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkdialog.bi"
+#include once "gtkdialog.bi"
 
 #define GTK_TYPE_FILE_SELECTION (gtk_file_selection_get_type ())
 #define GTK_FILE_SELECTION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FILE_SELECTION, GtkFileSelection))

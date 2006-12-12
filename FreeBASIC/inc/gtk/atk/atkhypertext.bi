@@ -9,8 +9,8 @@
 #ifndef __atkhypertext_bi__
 #define __atkhypertext_bi__
 
-#include once "gtk/atk/atkobject.bi"
-#include once "gtk/atk/atkhyperlink.bi"
+#include once "atkobject.bi"
+#include once "atkhyperlink.bi"
 
 #define ATK_TYPE_HYPERTEXT() atk_hypertext_get_type()
 #define ATK_IS_HYPERTEXT(obj) G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_HYPERTEXT)

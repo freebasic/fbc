@@ -10,10 +10,10 @@
 #define __gtkentrycompletion_bi__
 
 #include once "gtk/glib-object.bi"
-#include once "gtk/gtk/gtktreemodel.bi"
-#include once "gtk/gtk/gtkliststore.bi"
-#include once "gtk/gtk/gtktreeviewcolumn.bi"
-#include once "gtk/gtk/gtktreemodelfilter.bi"
+#include once "gtktreemodel.bi"
+#include once "gtkliststore.bi"
+#include once "gtktreeviewcolumn.bi"
+#include once "gtktreemodelfilter.bi"
 
 #define GTK_TYPE_ENTRY_COMPLETION (gtk_entry_completion_get_type ())
 #define GTK_ENTRY_COMPLETION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletion))

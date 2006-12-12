@@ -9,6 +9,6 @@
 #ifndef __gsl_specfunc_bi__
 #define __gsl_specfunc_bi__
 
-#include once "gsl/gsl_sf.bi"
+#include once "gsl_sf.bi"
 
 #endif

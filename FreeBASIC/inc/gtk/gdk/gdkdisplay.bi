@@ -9,8 +9,8 @@
 #ifndef __gdkdisplay_bi__
 #define __gdkdisplay_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
-#include once "gtk/gdk/gdkevents.bi"
+#include once "gdktypes.bi"
+#include once "gdkevents.bi"
 #include once "gtk/glib-object.bi"
 
 #define GDK_TYPE_DISPLAY (gdk_display_get_type ())

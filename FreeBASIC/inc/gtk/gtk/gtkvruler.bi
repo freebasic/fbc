@@ -10,7 +10,7 @@
 #define __gtkvruler_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkruler.bi"
+#include once "gtkruler.bi"
 
 #define GTK_TYPE_VRULER (gtk_vruler_get_type ())
 #define GTK_VRULER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VRULER, GtkVRuler))

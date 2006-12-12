@@ -9,6 +9,12 @@
 #ifndef __wxc_defs_bi__
 #define __wxc_defs_bi__
 
+#ifdef __FB_WIN32__
+ #define WXCALL stdcall
+#else
+ #define WXCALL
+#endif
+
 enum 
 	wxUNKNOWN_PLATFORM
 	wxCURSES

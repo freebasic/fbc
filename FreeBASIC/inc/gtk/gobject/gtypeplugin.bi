@@ -9,7 +9,7 @@
 #ifndef __gtypeplugin_bi__
 #define __gtypeplugin_bi__
 
-#include once "gtk/gobject/gtype.bi"
+#include once "gtype.bi"
 
 #define G_TYPE_TYPE_PLUGIN (g_type_plugin_get_type ())
 #define G_TYPE_PLUGIN(inst) (G_TYPE_CHECK_INSTANCE_CAST ((inst), G_TYPE_TYPE_PLUGIN, GTypePlugin))

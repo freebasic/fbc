@@ -9,7 +9,7 @@
 #ifndef __art_uta_ops_bi__
 #define __art_uta_ops_bi__
 
-#include once "gtk/libart/art_uta.bi"
+#include once "art_uta.bi"
 
 declare function art_uta_union (byval uta1 as ArtUta ptr, byval uta2 as ArtUta ptr) as ArtUta ptr
 

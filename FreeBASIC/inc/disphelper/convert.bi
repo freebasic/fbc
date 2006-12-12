@@ -11,13 +11,15 @@
 
 #include once "win/objbase.bi"
 
-declare function ConvertFileTimeToVariantTime cdecl alias "ConvertFileTimeToVariantTime" (byval pft as FILETIME ptr, byval pDate as DATE_ ptr) as HRESULT
-declare function ConvertVariantTimeToFileTime cdecl alias "ConvertVariantTimeToFileTime" (byval date as DATE_, byval pft as FILETIME ptr) as HRESULT
-declare function ConvertVariantTimeToSystemTime cdecl alias "ConvertVariantTimeToSystemTime" (byval date as DATE_, byval pSystemTime as SYSTEMTIME ptr) as HRESULT
-declare function ConvertSystemTimeToVariantTime cdecl alias "ConvertSystemTimeToVariantTime" (byval pSystemTime as SYSTEMTIME ptr, byval pDate as DATE_ ptr) as HRESULT
-declare function ConvertTimeTToVariantTime cdecl alias "ConvertTimeTToVariantTime" (byval timeT as time_t, byval pDate as DATE_ ptr) as HRESULT
-declare function ConvertVariantTimeToTimeT cdecl alias "ConvertVariantTimeToTimeT" (byval date as DATE_, byval pTimeT as time_t ptr) as HRESULT
-declare function ConvertAnsiStrToBStr cdecl alias "ConvertAnsiStrToBStr" (byval szAnsiIn as LPCSTR, byval lpBstrOut as BSTR ptr) as HRESULT
-declare function ConvertBStrToAnsiStr cdecl alias "ConvertBStrToAnsiStr" (byval bstrIn as BSTR, byval lpszOut as LPSTR ptr) as HRESULT
+extern "c"
+declare function ConvertFileTimeToVariantTime (byval pft as FILETIME ptr, byval pDate as DATE_ ptr) as HRESULT
+declare function ConvertVariantTimeToFileTime (byval date as DATE_, byval pft as FILETIME ptr) as HRESULT
+declare function ConvertVariantTimeToSystemTime (byval date as DATE_, byval pSystemTime as SYSTEMTIME ptr) as HRESULT
+declare function ConvertSystemTimeToVariantTime (byval pSystemTime as SYSTEMTIME ptr, byval pDate as DATE_ ptr) as HRESULT
+declare function ConvertTimeTToVariantTime (byval timeT as time_t, byval pDate as DATE_ ptr) as HRESULT
+declare function ConvertVariantTimeToTimeT (byval date as DATE_, byval pTimeT as time_t ptr) as HRESULT
+declare function ConvertAnsiStrToBStr (byval szAnsiIn as LPCSTR, byval lpBstrOut as BSTR ptr) as HRESULT
+declare function ConvertBStrToAnsiStr (byval bstrIn as BSTR, byval lpszOut as LPSTR ptr) as HRESULT
+end extern
 
 #endif

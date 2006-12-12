@@ -9,12 +9,12 @@
 #ifndef __gtktextbuffer_bi__
 #define __gtktextbuffer_bi__
 
-#include once "gtk/gtk/gtkwidget.bi"
-#include once "gtk/gtk/gtkclipboard.bi"
-#include once "gtk/gtk/gtktexttagtable.bi"
-#include once "gtk/gtk/gtktextiter.bi"
-#include once "gtk/gtk/gtktextmark.bi"
-#include once "gtk/gtk/gtktextchild.bi"
+#include once "gtkwidget.bi"
+#include once "gtkclipboard.bi"
+#include once "gtktexttagtable.bi"
+#include once "gtktextiter.bi"
+#include once "gtktextmark.bi"
+#include once "gtktextchild.bi"
 
 #define GTK_TYPE_TEXT_BUFFER (gtk_text_buffer_get_type ())
 #define GTK_TEXT_BUFFER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TEXT_BUFFER, GtkTextBuffer))

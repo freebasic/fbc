@@ -11,7 +11,9 @@
 
 #define ICTL_SHOWTICKS "SHOWTICKS"
 
-declare function IupVal cdecl alias "IupVal" (byval as zstring ptr) as Ihandle ptr
-declare sub IupValOpen cdecl alias "IupValOpen" ()
+extern "c"
+declare function IupVal (byval as zstring ptr) as Ihandle ptr
+declare sub IupValOpen ()
+end extern
 
 #endif

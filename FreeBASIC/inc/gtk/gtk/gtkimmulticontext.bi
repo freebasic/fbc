@@ -9,8 +9,8 @@
 #ifndef __gtkimmulticontext_bi__
 #define __gtkimmulticontext_bi__
 
-#include once "gtk/gtk/gtkimcontext.bi"
-#include once "gtk/gtk/gtkmenushell.bi"
+#include once "gtkimcontext.bi"
+#include once "gtkmenushell.bi"
 
 #define GTK_TYPE_IM_MULTICONTEXT (gtk_im_multicontext_get_type ())
 #define GTK_IM_MULTICONTEXT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_IM_MULTICONTEXT, GtkIMMulticontext))

@@ -9,9 +9,9 @@
 #ifndef __xml_relaxng_bi__
 #define __xml_relaxng_bi__
 
-#include once "libxml/xmlversion.bi"
-#include once "libxml/hash.bi"
-#include once "libxml/xmlstring.bi"
+#include once "xmlversion.bi"
+#include once "hash.bi"
+#include once "xmlstring.bi"
 
 type xmlRelaxNG as _xmlRelaxNG
 type xmlRelaxNGPtr as xmlRelaxNG ptr
@@ -72,28 +72,29 @@ enum xmlRelaxNGParserFlag
 	XML_RELAXNGP_CRNG = 2
 end enum
 
-
-declare function xmlRelaxNGInitTypes cdecl alias "xmlRelaxNGInitTypes" () as integer
-declare sub xmlRelaxNGCleanupTypes cdecl alias "xmlRelaxNGCleanupTypes" ()
-declare function xmlRelaxNGNewParserCtxt cdecl alias "xmlRelaxNGNewParserCtxt" (byval URL as zstring ptr) as xmlRelaxNGParserCtxtPtr
-declare function xmlRelaxNGNewMemParserCtxt cdecl alias "xmlRelaxNGNewMemParserCtxt" (byval buffer as zstring ptr, byval size as integer) as xmlRelaxNGParserCtxtPtr
-declare function xmlRelaxNGNewDocParserCtxt cdecl alias "xmlRelaxNGNewDocParserCtxt" (byval doc as xmlDocPtr) as xmlRelaxNGParserCtxtPtr
-declare function xmlRelaxParserSetFlag cdecl alias "xmlRelaxParserSetFlag" (byval ctxt as xmlRelaxNGParserCtxtPtr, byval flag as integer) as integer
-declare sub xmlRelaxNGFreeParserCtxt cdecl alias "xmlRelaxNGFreeParserCtxt" (byval ctxt as xmlRelaxNGParserCtxtPtr)
-declare sub xmlRelaxNGSetParserErrors cdecl alias "xmlRelaxNGSetParserErrors" (byval ctxt as xmlRelaxNGParserCtxtPtr, byval err as xmlRelaxNGValidityErrorFunc, byval warn as xmlRelaxNGValidityWarningFunc, byval ctx as any ptr)
-declare function xmlRelaxNGGetParserErrors cdecl alias "xmlRelaxNGGetParserErrors" (byval ctxt as xmlRelaxNGParserCtxtPtr, byval err as xmlRelaxNGValidityErrorFunc ptr, byval warn as xmlRelaxNGValidityWarningFunc ptr, byval ctx as any ptr ptr) as integer
-declare function xmlRelaxNGParse cdecl alias "xmlRelaxNGParse" (byval ctxt as xmlRelaxNGParserCtxtPtr) as xmlRelaxNGPtr
-declare sub xmlRelaxNGFree cdecl alias "xmlRelaxNGFree" (byval schema as xmlRelaxNGPtr)
-declare sub xmlRelaxNGDump cdecl alias "xmlRelaxNGDump" (byval output as FILE ptr, byval schema as xmlRelaxNGPtr)
-declare sub xmlRelaxNGDumpTree cdecl alias "xmlRelaxNGDumpTree" (byval output as FILE ptr, byval schema as xmlRelaxNGPtr)
-declare sub xmlRelaxNGSetValidErrors cdecl alias "xmlRelaxNGSetValidErrors" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval err as xmlRelaxNGValidityErrorFunc, byval warn as xmlRelaxNGValidityWarningFunc, byval ctx as any ptr)
-declare function xmlRelaxNGGetValidErrors cdecl alias "xmlRelaxNGGetValidErrors" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval err as xmlRelaxNGValidityErrorFunc ptr, byval warn as xmlRelaxNGValidityWarningFunc ptr, byval ctx as any ptr ptr) as integer
-declare function xmlRelaxNGNewValidCtxt cdecl alias "xmlRelaxNGNewValidCtxt" (byval schema as xmlRelaxNGPtr) as xmlRelaxNGValidCtxtPtr
-declare sub xmlRelaxNGFreeValidCtxt cdecl alias "xmlRelaxNGFreeValidCtxt" (byval ctxt as xmlRelaxNGValidCtxtPtr)
-declare function xmlRelaxNGValidateDoc cdecl alias "xmlRelaxNGValidateDoc" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval doc as xmlDocPtr) as integer
-declare function xmlRelaxNGValidatePushElement cdecl alias "xmlRelaxNGValidatePushElement" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval doc as xmlDocPtr, byval elem as xmlNodePtr) as integer
-declare function xmlRelaxNGValidatePushCData cdecl alias "xmlRelaxNGValidatePushCData" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval data as zstring ptr, byval len as integer) as integer
-declare function xmlRelaxNGValidatePopElement cdecl alias "xmlRelaxNGValidatePopElement" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval doc as xmlDocPtr, byval elem as xmlNodePtr) as integer
-declare function xmlRelaxNGValidateFullElement cdecl alias "xmlRelaxNGValidateFullElement" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval doc as xmlDocPtr, byval elem as xmlNodePtr) as integer
+extern "c"
+declare function xmlRelaxNGInitTypes () as integer
+declare sub xmlRelaxNGCleanupTypes ()
+declare function xmlRelaxNGNewParserCtxt (byval URL as zstring ptr) as xmlRelaxNGParserCtxtPtr
+declare function xmlRelaxNGNewMemParserCtxt (byval buffer as zstring ptr, byval size as integer) as xmlRelaxNGParserCtxtPtr
+declare function xmlRelaxNGNewDocParserCtxt (byval doc as xmlDocPtr) as xmlRelaxNGParserCtxtPtr
+declare function xmlRelaxParserSetFlag (byval ctxt as xmlRelaxNGParserCtxtPtr, byval flag as integer) as integer
+declare sub xmlRelaxNGFreeParserCtxt (byval ctxt as xmlRelaxNGParserCtxtPtr)
+declare sub xmlRelaxNGSetParserErrors (byval ctxt as xmlRelaxNGParserCtxtPtr, byval err as xmlRelaxNGValidityErrorFunc, byval warn as xmlRelaxNGValidityWarningFunc, byval ctx as any ptr)
+declare function xmlRelaxNGGetParserErrors (byval ctxt as xmlRelaxNGParserCtxtPtr, byval err as xmlRelaxNGValidityErrorFunc ptr, byval warn as xmlRelaxNGValidityWarningFunc ptr, byval ctx as any ptr ptr) as integer
+declare function xmlRelaxNGParse (byval ctxt as xmlRelaxNGParserCtxtPtr) as xmlRelaxNGPtr
+declare sub xmlRelaxNGFree (byval schema as xmlRelaxNGPtr)
+declare sub xmlRelaxNGDump (byval output as FILE ptr, byval schema as xmlRelaxNGPtr)
+declare sub xmlRelaxNGDumpTree (byval output as FILE ptr, byval schema as xmlRelaxNGPtr)
+declare sub xmlRelaxNGSetValidErrors (byval ctxt as xmlRelaxNGValidCtxtPtr, byval err as xmlRelaxNGValidityErrorFunc, byval warn as xmlRelaxNGValidityWarningFunc, byval ctx as any ptr)
+declare function xmlRelaxNGGetValidErrors (byval ctxt as xmlRelaxNGValidCtxtPtr, byval err as xmlRelaxNGValidityErrorFunc ptr, byval warn as xmlRelaxNGValidityWarningFunc ptr, byval ctx as any ptr ptr) as integer
+declare function xmlRelaxNGNewValidCtxt (byval schema as xmlRelaxNGPtr) as xmlRelaxNGValidCtxtPtr
+declare sub xmlRelaxNGFreeValidCtxt (byval ctxt as xmlRelaxNGValidCtxtPtr)
+declare function xmlRelaxNGValidateDoc (byval ctxt as xmlRelaxNGValidCtxtPtr, byval doc as xmlDocPtr) as integer
+declare function xmlRelaxNGValidatePushElement (byval ctxt as xmlRelaxNGValidCtxtPtr, byval doc as xmlDocPtr, byval elem as xmlNodePtr) as integer
+declare function xmlRelaxNGValidatePushCData (byval ctxt as xmlRelaxNGValidCtxtPtr, byval data as zstring ptr, byval len as integer) as integer
+declare function xmlRelaxNGValidatePopElement (byval ctxt as xmlRelaxNGValidCtxtPtr, byval doc as xmlDocPtr, byval elem as xmlNodePtr) as integer
+declare function xmlRelaxNGValidateFullElement (byval ctxt as xmlRelaxNGValidCtxtPtr, byval doc as xmlDocPtr, byval elem as xmlNodePtr) as integer
+end extern
 
 #endif

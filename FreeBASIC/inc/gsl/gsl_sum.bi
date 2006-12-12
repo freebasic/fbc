@@ -9,7 +9,7 @@
 #ifndef __gsl_sum_bi__
 #define __gsl_sum_bi__
 
-#include once "gsl/gsl_types.bi"
+#include once "gsl_types.bi"
 
 type gsl_sum_levin_u_workspace
 	size as integer
@@ -23,11 +23,13 @@ type gsl_sum_levin_u_workspace
 	dsum as double ptr
 end type
 
-declare function gsl_sum_levin_u_alloc cdecl alias "gsl_sum_levin_u_alloc" (byval n as integer) as gsl_sum_levin_u_workspace ptr
-declare sub gsl_sum_levin_u_free cdecl alias "gsl_sum_levin_u_free" (byval w as gsl_sum_levin_u_workspace ptr)
-declare function gsl_sum_levin_u_accel cdecl alias "gsl_sum_levin_u_accel" (byval array as double ptr, byval n as integer, byval w as gsl_sum_levin_u_workspace ptr, byval sum_accel as double ptr, byval abserr as double ptr) as integer
-declare function gsl_sum_levin_u_minmax cdecl alias "gsl_sum_levin_u_minmax" (byval array as double ptr, byval n as integer, byval min_terms as integer, byval max_terms as integer, byval w as gsl_sum_levin_u_workspace ptr, byval sum_accel as double ptr, byval abserr as double ptr) as integer
-declare function gsl_sum_levin_u_step cdecl alias "gsl_sum_levin_u_step" (byval term as double, byval n as integer, byval nmax as integer, byval w as gsl_sum_levin_u_workspace ptr, byval sum_accel as double ptr) as integer
+extern "c"
+declare function gsl_sum_levin_u_alloc (byval n as integer) as gsl_sum_levin_u_workspace ptr
+declare sub gsl_sum_levin_u_free (byval w as gsl_sum_levin_u_workspace ptr)
+declare function gsl_sum_levin_u_accel (byval array as double ptr, byval n as integer, byval w as gsl_sum_levin_u_workspace ptr, byval sum_accel as double ptr, byval abserr as double ptr) as integer
+declare function gsl_sum_levin_u_minmax (byval array as double ptr, byval n as integer, byval min_terms as integer, byval max_terms as integer, byval w as gsl_sum_levin_u_workspace ptr, byval sum_accel as double ptr, byval abserr as double ptr) as integer
+declare function gsl_sum_levin_u_step (byval term as double, byval n as integer, byval nmax as integer, byval w as gsl_sum_levin_u_workspace ptr, byval sum_accel as double ptr) as integer
+end extern
 
 type gsl_sum_levin_utrunc_workspace
 	size as integer
@@ -39,10 +41,12 @@ type gsl_sum_levin_utrunc_workspace
 	dsum as double ptr
 end type
 
-declare function gsl_sum_levin_utrunc_alloc cdecl alias "gsl_sum_levin_utrunc_alloc" (byval n as integer) as gsl_sum_levin_utrunc_workspace ptr
-declare sub gsl_sum_levin_utrunc_free cdecl alias "gsl_sum_levin_utrunc_free" (byval w as gsl_sum_levin_utrunc_workspace ptr)
-declare function gsl_sum_levin_utrunc_accel cdecl alias "gsl_sum_levin_utrunc_accel" (byval array as double ptr, byval n as integer, byval w as gsl_sum_levin_utrunc_workspace ptr, byval sum_accel as double ptr, byval abserr_trunc as double ptr) as integer
-declare function gsl_sum_levin_utrunc_minmax cdecl alias "gsl_sum_levin_utrunc_minmax" (byval array as double ptr, byval n as integer, byval min_terms as integer, byval max_terms as integer, byval w as gsl_sum_levin_utrunc_workspace ptr, byval sum_accel as double ptr, byval abserr_trunc as double ptr) as integer
-declare function gsl_sum_levin_utrunc_step cdecl alias "gsl_sum_levin_utrunc_step" (byval term as double, byval n as integer, byval w as gsl_sum_levin_utrunc_workspace ptr, byval sum_accel as double ptr) as integer
+extern "c"
+declare function gsl_sum_levin_utrunc_alloc (byval n as integer) as gsl_sum_levin_utrunc_workspace ptr
+declare sub gsl_sum_levin_utrunc_free (byval w as gsl_sum_levin_utrunc_workspace ptr)
+declare function gsl_sum_levin_utrunc_accel (byval array as double ptr, byval n as integer, byval w as gsl_sum_levin_utrunc_workspace ptr, byval sum_accel as double ptr, byval abserr_trunc as double ptr) as integer
+declare function gsl_sum_levin_utrunc_minmax (byval array as double ptr, byval n as integer, byval min_terms as integer, byval max_terms as integer, byval w as gsl_sum_levin_utrunc_workspace ptr, byval sum_accel as double ptr, byval abserr_trunc as double ptr) as integer
+declare function gsl_sum_levin_utrunc_step (byval term as double, byval n as integer, byval w as gsl_sum_levin_utrunc_workspace ptr, byval sum_accel as double ptr) as integer
+end extern
 
 #endif

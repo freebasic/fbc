@@ -9,8 +9,8 @@
 #ifndef __SDL_joystick_bi__
 #define __SDL_joystick_bi__
 
-#include once "SDL/SDL_types.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_types.bi"
+#include once "begin_code.bi"
 
 type SDL_Joystick as _SDL_Joystick
 
@@ -42,6 +42,6 @@ declare function SDL_JoystickGetBall cdecl alias "SDL_JoystickGetBall" (byval jo
 declare function SDL_JoystickGetButton cdecl alias "SDL_JoystickGetButton" (byval joystick as SDL_Joystick ptr, byval button as integer) as Uint8
 declare sub SDL_JoystickClose cdecl alias "SDL_JoystickClose" (byval joystick as SDL_Joystick ptr)
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

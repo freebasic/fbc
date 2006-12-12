@@ -10,9 +10,9 @@
 #define __gtklist_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkenums.bi"
-#include once "gtk/gtk/gtkcontainer.bi"
-#include once "gtk/gtk/gtklistitem.bi"
+#include once "gtkenums.bi"
+#include once "gtkcontainer.bi"
+#include once "gtklistitem.bi"
 
 #define GTK_TYPE_LIST (gtk_list_get_type ())
 #define GTK_LIST(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_LIST, GtkList))

@@ -9,7 +9,7 @@
 #ifndef __gtkimcontextsimple_bi__
 #define __gtkimcontextsimple_bi__
 
-#include once "gtk/gtk/gtkimcontext.bi"
+#include once "gtkimcontext.bi"
 
 #define GTK_TYPE_IM_CONTEXT_SIMPLE (gtk_im_context_simple_get_type ())
 #define GTK_IM_CONTEXT_SIMPLE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_IM_CONTEXT_SIMPLE, GtkIMContextSimple))

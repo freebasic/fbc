@@ -251,93 +251,95 @@ type mFree as ILvoid ptr
 type IL_LOADPROC as ILenum ptr
 type IL_SAVEPROC as ILenum ptr
 
-declare function ilActiveImage cdecl alias "ilActiveImage" (byval Number as ILuint) as ILboolean
-declare function ilActiveLayer cdecl alias "ilActiveLayer" (byval Number as ILuint) as ILboolean
-declare function ilActiveMipmap cdecl alias "ilActiveMipmap" (byval Number as ILuint) as ILboolean
-declare function ilApplyPal cdecl alias "ilApplyPal" (byval FileName as ILstring) as ILboolean
-declare function ilApplyProfile cdecl alias "ilApplyProfile" (byval InProfile as ILstring, byval OutProfile as ILstring) as ILboolean
-declare sub ilBindImage cdecl alias "ilBindImage" (byval Image as ILuint)
-declare function ilBlit cdecl alias "ilBlit" (byval Source as ILuint, byval DestX as ILint, byval DestY as ILint, byval DestZ as ILint, byval SrcX as ILuint, byval SrcY as ILuint, byval SrcZ as ILuint, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint) as ILboolean
-declare sub ilClearColour cdecl alias "ilClearColour" (byval Red as ILclampf, byval Green as ILclampf, byval Blue as ILclampf, byval Alpha as ILclampf)
-declare function ilClearImage cdecl alias "ilClearImage" () as ILboolean
-declare function ilCloneCurImage cdecl alias "ilCloneCurImage" () as ILuint
-declare function ilCompressFunc cdecl alias "ilCompressFunc" (byval Mode as ILenum) as ILboolean
-declare function ilConvertImage cdecl alias "ilConvertImage" (byval DestFormat as ILenum, byval DestType as ILenum) as ILboolean
-declare function ilConvertPal cdecl alias "ilConvertPal" (byval DestFormat as ILenum) as ILboolean
-declare function ilCopyImage cdecl alias "ilCopyImage" (byval Src as ILuint) as ILboolean
-declare function ilCopyPixels cdecl alias "ilCopyPixels" (byval XOff as ILuint, byval YOff as ILuint, byval ZOff as ILuint, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Format as ILenum, byval Type as ILenum, byval Data as ILvoid ptr) as ILuint
-declare function ilCreateSubImage cdecl alias "ilCreateSubImage" (byval Type as ILenum, byval Num as ILuint) as ILuint
-declare function ilDefaultImage cdecl alias "ilDefaultImage" () as ILboolean
-declare sub ilDeleteImages cdecl alias "ilDeleteImages" (byval Num as ILsizei, byval Images as ILuint ptr)
-declare function ilDisable cdecl alias "ilDisable" (byval Mode as ILenum) as ILboolean
-declare function ilEnable cdecl alias "ilEnable" (byval Mode as ILenum) as ILboolean
-declare function ilFormatFunc cdecl alias "ilFormatFunc" (byval Mode as ILenum) as ILboolean
-declare sub ilGenImages cdecl alias "ilGenImages" (byval Num as ILsizei, byval Images as ILuint ptr)
-declare function ilGetAlpha cdecl alias "ilGetAlpha" (byval Type as ILenum) as ILubyte ptr
-declare sub ilModAlpha cdecl alias "ilModAlpha" (byval AlphaValue as ILint)
-declare sub ilSetAlpha cdecl alias "ilSetAlpha" (byval AlphaValue as ILuint)
-declare function ilGetBoolean cdecl alias "ilGetBoolean" (byval Mode as ILenum) as ILboolean
-declare sub ilGetBooleanv cdecl alias "ilGetBooleanv" (byval Mode as ILenum, byval Param as ILboolean ptr)
-declare function ilGetData cdecl alias "ilGetData" () as ILubyte ptr
-declare function ilGetDXTCData cdecl alias "ilGetDXTCData" (byval Buffer as ILvoid ptr, byval BufferSize as ILuint, byval DXTCFormat as ILenum) as ILuint
-declare function ilGetError cdecl alias "ilGetError" () as ILenum
-declare function ilGetInteger cdecl alias "ilGetInteger" (byval Mode as ILenum) as ILint
-declare sub ilGetIntegerv cdecl alias "ilGetIntegerv" (byval Mode as ILenum, byval Param as ILint ptr)
-declare function ilGetLumpPos cdecl alias "ilGetLumpPos" () as ILuint
-declare function ilGetPalette cdecl alias "ilGetPalette" () as ILubyte ptr
-declare function ilGetString cdecl alias "ilGetString" (byval StringName as ILenum) as zstring ptr
-declare sub ilHint cdecl alias "ilHint" (byval Target as ILenum, byval Mode as ILenum)
-declare sub ilInit cdecl alias "ilInit" ()
-declare function ilIsDisabled cdecl alias "ilIsDisabled" (byval Mode as ILenum) as ILboolean
-declare function ilIsEnabled cdecl alias "ilIsEnabled" (byval Mode as ILenum) as ILboolean
-declare function ilIsImage cdecl alias "ilIsImage" (byval Image as ILuint) as ILboolean
-declare function ilIsValid cdecl alias "ilIsValid" (byval Type as ILenum, byval FileName as ILstring) as ILboolean
-declare function ilIsValidF cdecl alias "ilIsValidF" (byval Type as ILenum, byval File as ILHANDLE) as ILboolean
-declare function ilIsValidL cdecl alias "ilIsValidL" (byval Type as ILenum, byval Lump as ILvoid ptr, byval Size as ILuint) as ILboolean
-declare sub ilKeyColour cdecl alias "ilKeyColour" (byval Red as ILclampf, byval Green as ILclampf, byval Blue as ILclampf, byval Alpha as ILclampf)
-declare function ilLoad cdecl alias "ilLoad" (byval Type as ILenum, byval FileName as ILstring) as ILboolean
-declare function ilLoadF cdecl alias "ilLoadF" (byval Type as ILenum, byval File as ILHANDLE) as ILboolean
-declare function ilLoadImage cdecl alias "ilLoadImage" (byval FileName as ILstring) as ILboolean
-declare function ilLoadL cdecl alias "ilLoadL" (byval Type as ILenum, byval Lump as ILvoid ptr, byval Size as ILuint) as ILboolean
-declare function ilLoadPal cdecl alias "ilLoadPal" (byval FileName as ILstring) as ILboolean
-declare function ilOriginFunc cdecl alias "ilOriginFunc" (byval Mode as ILenum) as ILboolean
-declare function ilOverlayImage cdecl alias "ilOverlayImage" (byval Source as ILuint, byval XCoord as ILint, byval YCoord as ILint, byval ZCoord as ILint) as ILboolean
-declare sub ilPopAttrib cdecl alias "ilPopAttrib" ()
-declare sub ilPushAttrib cdecl alias "ilPushAttrib" (byval Bits as ILuint)
-declare sub ilRegisterFormat cdecl alias "ilRegisterFormat" (byval Format as ILenum)
-declare function ilRegisterLoad cdecl alias "ilRegisterLoad" (byval Ext as ILstring, byval Load as IL_LOADPROC) as ILboolean
-declare function ilRegisterMipNum cdecl alias "ilRegisterMipNum" (byval Num as ILuint) as ILboolean
-declare function ilRegisterNumImages cdecl alias "ilRegisterNumImages" (byval Num as ILuint) as ILboolean
-declare sub ilRegisterOrigin cdecl alias "ilRegisterOrigin" (byval Origin as ILenum)
-declare sub ilRegisterPal cdecl alias "ilRegisterPal" (byval Pal as ILvoid ptr, byval Size as ILuint, byval Type as ILenum)
-declare function ilRegisterSave cdecl alias "ilRegisterSave" (byval Ext as ILstring, byval Save as IL_SAVEPROC) as ILboolean
-declare sub ilRegisterType cdecl alias "ilRegisterType" (byval Type as ILenum)
-declare function ilRemoveLoad cdecl alias "ilRemoveLoad" (byval Ext as ILstring) as ILboolean
-declare function ilRemoveSave cdecl alias "ilRemoveSave" (byval Ext as ILstring) as ILboolean
-declare sub ilResetMemory cdecl alias "ilResetMemory" ()
-declare sub ilResetRead cdecl alias "ilResetRead" ()
-declare sub ilResetWrite cdecl alias "ilResetWrite" ()
-declare function ilSave cdecl alias "ilSave" (byval Type as ILenum, byval FileName as ILstring) as ILboolean
-declare function ilSaveF cdecl alias "ilSaveF" (byval Type as ILenum, byval File as ILHANDLE) as ILuint
-declare function ilSaveImage cdecl alias "ilSaveImage" (byval FileName as ILstring) as ILboolean
-declare function ilSaveL cdecl alias "ilSaveL" (byval Type as ILenum, byval Lump as ILvoid ptr, byval Size as ILuint) as ILuint
-declare function ilSavePal cdecl alias "ilSavePal" (byval FileName as ILstring) as ILboolean
-declare function ilSetData cdecl alias "ilSetData" (byval Data as ILvoid ptr) as ILboolean
-declare function ilSetDuration cdecl alias "ilSetDuration" (byval Duration as ILuint) as ILboolean
-declare sub ilSetInteger cdecl alias "ilSetInteger" (byval Mode as ILenum, byval Param as ILint)
-declare sub ilSetMemory cdecl alias "ilSetMemory" (byval as mAlloc, byval as mFree)
-declare sub ilSetPixels cdecl alias "ilSetPixels" (byval XOff as ILint, byval YOff as ILint, byval ZOff as ILint, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Format as ILenum, byval Type as ILenum, byval Data as ILvoid ptr)
-declare sub ilSetRead cdecl alias "ilSetRead" (byval as fOpenRProc, byval as fCloseRProc, byval as fEofProc, byval as fGetcProc, byval as fReadProc, byval as fSeekRProc, byval as fTellRProc)
-declare sub ilSetString cdecl alias "ilSetString" (byval Mode as ILenum, byval String as zstring ptr)
-declare sub ilSetWrite cdecl alias "ilSetWrite" (byval as fOpenWProc, byval as fCloseWProc, byval as fPutcProc, byval as fSeekWProc, byval as fTellWProc, byval as fWriteProc)
-declare sub ilShutDown cdecl alias "ilShutDown" ()
-declare function ilTexImage cdecl alias "ilTexImage" (byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Bpp as ILubyte, byval Format as ILenum, byval Type as ILenum, byval Data as ILvoid ptr) as ILboolean
-declare function ilTypeFunc cdecl alias "ilTypeFunc" (byval Mode as ILenum) as ILboolean
-declare function ilLoadData cdecl alias "ilLoadData" (byval FileName as ILstring, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Bpp as ILubyte) as ILboolean
-declare function ilLoadDataF cdecl alias "ilLoadDataF" (byval File as ILHANDLE, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Bpp as ILubyte) as ILboolean
-declare function ilLoadDataL cdecl alias "ilLoadDataL" (byval Lump as ILvoid ptr, byval Size as ILuint, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Bpp as ILubyte) as ILboolean
-declare function ilSaveData cdecl alias "ilSaveData" (byval FileName as ILstring) as ILboolean
-declare function ilLoadFromJpegStruct cdecl alias "ilLoadFromJpegStruct" (byval JpegDecompressorPtr as ILvoid ptr) as ILboolean
-declare function ilSaveFromJpegStruct cdecl alias "ilSaveFromJpegStruct" (byval JpegCompressorPtr as ILvoid ptr) as ILboolean
+extern "c"
+declare function ilActiveImage (byval Number as ILuint) as ILboolean
+declare function ilActiveLayer (byval Number as ILuint) as ILboolean
+declare function ilActiveMipmap (byval Number as ILuint) as ILboolean
+declare function ilApplyPal (byval FileName as ILstring) as ILboolean
+declare function ilApplyProfile (byval InProfile as ILstring, byval OutProfile as ILstring) as ILboolean
+declare sub ilBindImage (byval Image as ILuint)
+declare function ilBlit (byval Source as ILuint, byval DestX as ILint, byval DestY as ILint, byval DestZ as ILint, byval SrcX as ILuint, byval SrcY as ILuint, byval SrcZ as ILuint, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint) as ILboolean
+declare sub ilClearColour (byval Red as ILclampf, byval Green as ILclampf, byval Blue as ILclampf, byval Alpha as ILclampf)
+declare function ilClearImage () as ILboolean
+declare function ilCloneCurImage () as ILuint
+declare function ilCompressFunc (byval Mode as ILenum) as ILboolean
+declare function ilConvertImage (byval DestFormat as ILenum, byval DestType as ILenum) as ILboolean
+declare function ilConvertPal (byval DestFormat as ILenum) as ILboolean
+declare function ilCopyImage (byval Src as ILuint) as ILboolean
+declare function ilCopyPixels (byval XOff as ILuint, byval YOff as ILuint, byval ZOff as ILuint, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Format as ILenum, byval Type as ILenum, byval Data as ILvoid ptr) as ILuint
+declare function ilCreateSubImage (byval Type as ILenum, byval Num as ILuint) as ILuint
+declare function ilDefaultImage () as ILboolean
+declare sub ilDeleteImages (byval Num as ILsizei, byval Images as ILuint ptr)
+declare function ilDisable (byval Mode as ILenum) as ILboolean
+declare function ilEnable (byval Mode as ILenum) as ILboolean
+declare function ilFormatFunc (byval Mode as ILenum) as ILboolean
+declare sub ilGenImages (byval Num as ILsizei, byval Images as ILuint ptr)
+declare function ilGetAlpha (byval Type as ILenum) as ILubyte ptr
+declare sub ilModAlpha (byval AlphaValue as ILint)
+declare sub ilSetAlpha (byval AlphaValue as ILuint)
+declare function ilGetBoolean (byval Mode as ILenum) as ILboolean
+declare sub ilGetBooleanv (byval Mode as ILenum, byval Param as ILboolean ptr)
+declare function ilGetData () as ILubyte ptr
+declare function ilGetDXTCData (byval Buffer as ILvoid ptr, byval BufferSize as ILuint, byval DXTCFormat as ILenum) as ILuint
+declare function ilGetError () as ILenum
+declare function ilGetInteger (byval Mode as ILenum) as ILint
+declare sub ilGetIntegerv (byval Mode as ILenum, byval Param as ILint ptr)
+declare function ilGetLumpPos () as ILuint
+declare function ilGetPalette () as ILubyte ptr
+declare function ilGetString (byval StringName as ILenum) as zstring ptr
+declare sub ilHint (byval Target as ILenum, byval Mode as ILenum)
+declare sub ilInit ()
+declare function ilIsDisabled (byval Mode as ILenum) as ILboolean
+declare function ilIsEnabled (byval Mode as ILenum) as ILboolean
+declare function ilIsImage (byval Image as ILuint) as ILboolean
+declare function ilIsValid (byval Type as ILenum, byval FileName as ILstring) as ILboolean
+declare function ilIsValidF (byval Type as ILenum, byval File as ILHANDLE) as ILboolean
+declare function ilIsValidL (byval Type as ILenum, byval Lump as ILvoid ptr, byval Size as ILuint) as ILboolean
+declare sub ilKeyColour (byval Red as ILclampf, byval Green as ILclampf, byval Blue as ILclampf, byval Alpha as ILclampf)
+declare function ilLoad (byval Type as ILenum, byval FileName as ILstring) as ILboolean
+declare function ilLoadF (byval Type as ILenum, byval File as ILHANDLE) as ILboolean
+declare function ilLoadImage (byval FileName as ILstring) as ILboolean
+declare function ilLoadL (byval Type as ILenum, byval Lump as ILvoid ptr, byval Size as ILuint) as ILboolean
+declare function ilLoadPal (byval FileName as ILstring) as ILboolean
+declare function ilOriginFunc (byval Mode as ILenum) as ILboolean
+declare function ilOverlayImage (byval Source as ILuint, byval XCoord as ILint, byval YCoord as ILint, byval ZCoord as ILint) as ILboolean
+declare sub ilPopAttrib ()
+declare sub ilPushAttrib (byval Bits as ILuint)
+declare sub ilRegisterFormat (byval Format as ILenum)
+declare function ilRegisterLoad (byval Ext as ILstring, byval Load as IL_LOADPROC) as ILboolean
+declare function ilRegisterMipNum (byval Num as ILuint) as ILboolean
+declare function ilRegisterNumImages (byval Num as ILuint) as ILboolean
+declare sub ilRegisterOrigin (byval Origin as ILenum)
+declare sub ilRegisterPal (byval Pal as ILvoid ptr, byval Size as ILuint, byval Type as ILenum)
+declare function ilRegisterSave (byval Ext as ILstring, byval Save as IL_SAVEPROC) as ILboolean
+declare sub ilRegisterType (byval Type as ILenum)
+declare function ilRemoveLoad (byval Ext as ILstring) as ILboolean
+declare function ilRemoveSave (byval Ext as ILstring) as ILboolean
+declare sub ilResetMemory ()
+declare sub ilResetRead ()
+declare sub ilResetWrite ()
+declare function ilSave (byval Type as ILenum, byval FileName as ILstring) as ILboolean
+declare function ilSaveF (byval Type as ILenum, byval File as ILHANDLE) as ILuint
+declare function ilSaveImage (byval FileName as ILstring) as ILboolean
+declare function ilSaveL (byval Type as ILenum, byval Lump as ILvoid ptr, byval Size as ILuint) as ILuint
+declare function ilSavePal (byval FileName as ILstring) as ILboolean
+declare function ilSetData (byval Data as ILvoid ptr) as ILboolean
+declare function ilSetDuration (byval Duration as ILuint) as ILboolean
+declare sub ilSetInteger (byval Mode as ILenum, byval Param as ILint)
+declare sub ilSetMemory (byval as mAlloc, byval as mFree)
+declare sub ilSetPixels (byval XOff as ILint, byval YOff as ILint, byval ZOff as ILint, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Format as ILenum, byval Type as ILenum, byval Data as ILvoid ptr)
+declare sub ilSetRead (byval as fOpenRProc, byval as fCloseRProc, byval as fEofProc, byval as fGetcProc, byval as fReadProc, byval as fSeekRProc, byval as fTellRProc)
+declare sub ilSetString (byval Mode as ILenum, byval String as zstring ptr)
+declare sub ilSetWrite (byval as fOpenWProc, byval as fCloseWProc, byval as fPutcProc, byval as fSeekWProc, byval as fTellWProc, byval as fWriteProc)
+declare sub ilShutDown ()
+declare function ilTexImage (byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Bpp as ILubyte, byval Format as ILenum, byval Type as ILenum, byval Data as ILvoid ptr) as ILboolean
+declare function ilTypeFunc (byval Mode as ILenum) as ILboolean
+declare function ilLoadData (byval FileName as ILstring, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Bpp as ILubyte) as ILboolean
+declare function ilLoadDataF (byval File as ILHANDLE, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Bpp as ILubyte) as ILboolean
+declare function ilLoadDataL (byval Lump as ILvoid ptr, byval Size as ILuint, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Bpp as ILubyte) as ILboolean
+declare function ilSaveData (byval FileName as ILstring) as ILboolean
+declare function ilLoadFromJpegStruct (byval JpegDecompressorPtr as ILvoid ptr) as ILboolean
+declare function ilSaveFromJpegStruct (byval JpegCompressorPtr as ILvoid ptr) as ILboolean
+end extern
 
 #endif

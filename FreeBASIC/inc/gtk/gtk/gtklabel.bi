@@ -10,9 +10,9 @@
 #define __gtklabel_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkmisc.bi"
-#include once "gtk/gtk/gtkwindow.bi"
-#include once "gtk/gtk/gtkmenu.bi"
+#include once "gtkmisc.bi"
+#include once "gtkwindow.bi"
+#include once "gtkmenu.bi"
 
 #define GTK_TYPE_LABEL (gtk_label_get_type ())
 #define GTK_LABEL(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_LABEL, GtkLabel))

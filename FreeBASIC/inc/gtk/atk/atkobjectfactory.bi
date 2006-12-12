@@ -10,7 +10,7 @@
 #define __atkobjectfactory_bi__
 
 #include once "gtk/glib-object.bi"
-#include once "gtk/atk/atkobject.bi"
+#include once "atkobject.bi"
 
 #define ATK_TYPE_OBJECT_FACTORY() atk_object_factory_get_type ()
 #define ATK_OBJECT_FACTORY(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_OBJECT_FACTORY, AtkObjectFactory)

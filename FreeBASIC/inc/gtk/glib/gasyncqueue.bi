@@ -9,7 +9,7 @@
 #ifndef __gasyncqueue_bi__
 #define __gasyncqueue_bi__
 
-#include once "gtk/glib/gthread.bi"
+#include once "gthread.bi"
 
 type GAsyncQueue as _GAsyncQueue
 

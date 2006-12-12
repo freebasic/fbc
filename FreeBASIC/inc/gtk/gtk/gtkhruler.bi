@@ -10,7 +10,7 @@
 #define __gtkhruler_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkruler.bi"
+#include once "gtkruler.bi"
 
 #define GTK_TYPE_HRULER (gtk_hruler_get_type ())
 #define GTK_HRULER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_HRULER, GtkHRuler))

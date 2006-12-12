@@ -9,9 +9,9 @@
 #ifndef __wxc_windowcreateevent_bi__
 #define __wxc_windowcreateevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxWindowCreateEvent cdecl alias "wxWindowCreateEvent_ctor" (byval win as wxWindow ptr) as wxWindowCreateEvent ptr
-declare function wxWindowCreateEvent_GetWindow cdecl alias "wxWindowCreateEvent_GetWindow" (byval self as wxWindowCreateEvent ptr) as wxWindow ptr
+declare function wxWindowCreateEvent alias "wxWindowCreateEvent_ctor" (byval win as wxWindow ptr) as wxWindowCreateEvent ptr
+declare function wxWindowCreateEvent_GetWindow (byval self as wxWindowCreateEvent ptr) as wxWindow ptr
 
 #endif

@@ -9,8 +9,8 @@
 #ifndef __wxc_maximizeevent_bi__
 #define __wxc_maximizeevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxMaximizeEvent cdecl alias "wxMaximizeEvent_ctor" (byval id as integer) as wxMaximizeEvent ptr
+declare function wxMaximizeEvent alias "wxMaximizeEvent_ctor" (byval id as integer) as wxMaximizeEvent ptr
 
 #endif

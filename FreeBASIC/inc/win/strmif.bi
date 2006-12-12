@@ -184,11 +184,6 @@ type ICreateDevEnumVtbl
 	CreateClassEnumerator as function(byval as ICreateDevEnum ptr, byval as CLSID ptr, byval as IEnumMoniker ptr ptr, byval as DWORD) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function ICreateDevEnum_CreateClassEnumerator_Proxy alias "ICreateDevEnum_CreateClassEnumerator_Proxy" (byval This as ICreateDevEnum ptr, byval clsidDeviceClass as CLSID ptr, byval ppEnumMoniker as IEnumMoniker ptr ptr, byval dwFlags as DWORD) as HRESULT
-declare sub ICreateDevEnum_CreateClassEnumerator_Stub alias "ICreateDevEnum_CreateClassEnumerator_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 #define CHARS_IN_GUID 39
 
 type AM_MEDIA_TYPE
@@ -258,39 +253,6 @@ type IPinVtbl
 	NewSegment as function(byval as IPin ptr, byval as REFERENCE_TIME, byval as REFERENCE_TIME, byval as double) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IPin_Connect_Proxy alias "IPin_Connect_Proxy" (byval This as IPin ptr, byval pReceivePin as IPin ptr, byval pmt as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IPin_Connect_Stub alias "IPin_Connect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_ReceiveConnection_Proxy alias "IPin_ReceiveConnection_Proxy" (byval This as IPin ptr, byval pConnector as IPin ptr, byval pmt as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IPin_ReceiveConnection_Stub alias "IPin_ReceiveConnection_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_Disconnect_Proxy alias "IPin_Disconnect_Proxy" (byval This as IPin ptr) as HRESULT
-declare sub IPin_Disconnect_Stub alias "IPin_Disconnect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_ConnectedTo_Proxy alias "IPin_ConnectedTo_Proxy" (byval This as IPin ptr, byval pPin as IPin ptr ptr) as HRESULT
-declare sub IPin_ConnectedTo_Stub alias "IPin_ConnectedTo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_ConnectionMediaType_Proxy alias "IPin_ConnectionMediaType_Proxy" (byval This as IPin ptr, byval pmt as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IPin_ConnectionMediaType_Stub alias "IPin_ConnectionMediaType_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_QueryPinInfo_Proxy alias "IPin_QueryPinInfo_Proxy" (byval This as IPin ptr, byval pInfo as PIN_INFO ptr) as HRESULT
-declare sub IPin_QueryPinInfo_Stub alias "IPin_QueryPinInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_QueryDirection_Proxy alias "IPin_QueryDirection_Proxy" (byval This as IPin ptr, byval pPinDir as PIN_DIRECTION ptr) as HRESULT
-declare sub IPin_QueryDirection_Stub alias "IPin_QueryDirection_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_QueryId_Proxy alias "IPin_QueryId_Proxy" (byval This as IPin ptr, byval Id as LPWSTR ptr) as HRESULT
-declare sub IPin_QueryId_Stub alias "IPin_QueryId_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_QueryAccept_Proxy alias "IPin_QueryAccept_Proxy" (byval This as IPin ptr, byval pmt as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IPin_QueryAccept_Stub alias "IPin_QueryAccept_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_EnumMediaTypes_Proxy alias "IPin_EnumMediaTypes_Proxy" (byval This as IPin ptr, byval ppEnum as IEnumMediaTypes ptr ptr) as HRESULT
-declare sub IPin_EnumMediaTypes_Stub alias "IPin_EnumMediaTypes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_QueryInternalConnections_Proxy alias "IPin_QueryInternalConnections_Proxy" (byval This as IPin ptr, byval apPin as IPin ptr ptr, byval nPin as ULONG ptr) as HRESULT
-declare sub IPin_QueryInternalConnections_Stub alias "IPin_QueryInternalConnections_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_EndOfStream_Proxy alias "IPin_EndOfStream_Proxy" (byval This as IPin ptr) as HRESULT
-declare sub IPin_EndOfStream_Stub alias "IPin_EndOfStream_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_BeginFlush_Proxy alias "IPin_BeginFlush_Proxy" (byval This as IPin ptr) as HRESULT
-declare sub IPin_BeginFlush_Stub alias "IPin_BeginFlush_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_EndFlush_Proxy alias "IPin_EndFlush_Proxy" (byval This as IPin ptr) as HRESULT
-declare sub IPin_EndFlush_Stub alias "IPin_EndFlush_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPin_NewSegment_Proxy alias "IPin_NewSegment_Proxy" (byval This as IPin ptr, byval tStart as REFERENCE_TIME, byval tStop as REFERENCE_TIME, byval dRate as double) as HRESULT
-declare sub IPin_NewSegment_Stub alias "IPin_NewSegment_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PPIN as IPin ptr
 
 extern IID_IEnumPins alias "IID_IEnumPins" as IID
@@ -311,17 +273,6 @@ type IEnumPinsVtbl
 	Clone as function(byval as IEnumPins ptr, byval as IEnumPins ptr ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IEnumPins_Next_Proxy alias "IEnumPins_Next_Proxy" (byval This as IEnumPins ptr, byval cPins as ULONG, byval ppPins as IPin ptr ptr, byval pcFetched as ULONG ptr) as HRESULT
-declare sub IEnumPins_Next_Stub alias "IEnumPins_Next_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumPins_Skip_Proxy alias "IEnumPins_Skip_Proxy" (byval This as IEnumPins ptr, byval cPins as ULONG) as HRESULT
-declare sub IEnumPins_Skip_Stub alias "IEnumPins_Skip_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumPins_Reset_Proxy alias "IEnumPins_Reset_Proxy" (byval This as IEnumPins ptr) as HRESULT
-declare sub IEnumPins_Reset_Stub alias "IEnumPins_Reset_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumPins_Clone_Proxy alias "IEnumPins_Clone_Proxy" (byval This as IEnumPins ptr, byval ppEnum as IEnumPins ptr ptr) as HRESULT
-declare sub IEnumPins_Clone_Stub alias "IEnumPins_Clone_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PENUMPINS as IEnumPins ptr
 
 extern IID_IEnumMediaTypes alias "IID_IEnumMediaTypes" as IID
@@ -341,17 +292,6 @@ type IEnumMediaTypesVtbl
 	Reset as function(byval as IEnumMediaTypes ptr) as HRESULT
 	Clone as function(byval as IEnumMediaTypes ptr, byval as IEnumMediaTypes ptr ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IEnumMediaTypes_Next_Proxy alias "IEnumMediaTypes_Next_Proxy" (byval This as IEnumMediaTypes ptr, byval cMediaTypes as ULONG, byval ppMediaTypes as AM_MEDIA_TYPE ptr ptr, byval pcFetched as ULONG ptr) as HRESULT
-declare sub IEnumMediaTypes_Next_Stub alias "IEnumMediaTypes_Next_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumMediaTypes_Skip_Proxy alias "IEnumMediaTypes_Skip_Proxy" (byval This as IEnumMediaTypes ptr, byval cMediaTypes as ULONG) as HRESULT
-declare sub IEnumMediaTypes_Skip_Stub alias "IEnumMediaTypes_Skip_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumMediaTypes_Reset_Proxy alias "IEnumMediaTypes_Reset_Proxy" (byval This as IEnumMediaTypes ptr) as HRESULT
-declare sub IEnumMediaTypes_Reset_Stub alias "IEnumMediaTypes_Reset_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumMediaTypes_Clone_Proxy alias "IEnumMediaTypes_Clone_Proxy" (byval This as IEnumMediaTypes ptr, byval ppEnum as IEnumMediaTypes ptr ptr) as HRESULT
-declare sub IEnumMediaTypes_Clone_Stub alias "IEnumMediaTypes_Clone_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type PENUMMEDIATYPES as IEnumMediaTypes ptr
 
@@ -377,25 +317,6 @@ type IFilterGraphVtbl
 	SetDefaultSyncSource as function(byval as IFilterGraph ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IFilterGraph_AddFilter_Proxy alias "IFilterGraph_AddFilter_Proxy" (byval This as IFilterGraph ptr, byval pFilter as IBaseFilter ptr, byval pName as LPCWSTR) as HRESULT
-declare sub IFilterGraph_AddFilter_Stub alias "IFilterGraph_AddFilter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterGraph_RemoveFilter_Proxy alias "IFilterGraph_RemoveFilter_Proxy" (byval This as IFilterGraph ptr, byval pFilter as IBaseFilter ptr) as HRESULT
-declare sub IFilterGraph_RemoveFilter_Stub alias "IFilterGraph_RemoveFilter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterGraph_EnumFilters_Proxy alias "IFilterGraph_EnumFilters_Proxy" (byval This as IFilterGraph ptr, byval ppEnum as IEnumFilters ptr ptr) as HRESULT
-declare sub IFilterGraph_EnumFilters_Stub alias "IFilterGraph_EnumFilters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterGraph_FindFilterByName_Proxy alias "IFilterGraph_FindFilterByName_Proxy" (byval This as IFilterGraph ptr, byval pName as LPCWSTR, byval ppFilter as IBaseFilter ptr ptr) as HRESULT
-declare sub IFilterGraph_FindFilterByName_Stub alias "IFilterGraph_FindFilterByName_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterGraph_ConnectDirect_Proxy alias "IFilterGraph_ConnectDirect_Proxy" (byval This as IFilterGraph ptr, byval ppinOut as IPin ptr, byval ppinIn as IPin ptr, byval pmt as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IFilterGraph_ConnectDirect_Stub alias "IFilterGraph_ConnectDirect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterGraph_Reconnect_Proxy alias "IFilterGraph_Reconnect_Proxy" (byval This as IFilterGraph ptr, byval ppin as IPin ptr) as HRESULT
-declare sub IFilterGraph_Reconnect_Stub alias "IFilterGraph_Reconnect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterGraph_Disconnect_Proxy alias "IFilterGraph_Disconnect_Proxy" (byval This as IFilterGraph ptr, byval ppin as IPin ptr) as HRESULT
-declare sub IFilterGraph_Disconnect_Stub alias "IFilterGraph_Disconnect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterGraph_SetDefaultSyncSource_Proxy alias "IFilterGraph_SetDefaultSyncSource_Proxy" (byval This as IFilterGraph ptr) as HRESULT
-declare sub IFilterGraph_SetDefaultSyncSource_Stub alias "IFilterGraph_SetDefaultSyncSource_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PFILTERGRAPH as IFilterGraph ptr
 
 extern IID_IEnumFilters alias "IID_IEnumFilters" as IID
@@ -415,17 +336,6 @@ type IEnumFiltersVtbl
 	Reset as function(byval as IEnumFilters ptr) as HRESULT
 	Clone as function(byval as IEnumFilters ptr, byval as IEnumFilters ptr ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IEnumFilters_Next_Proxy alias "IEnumFilters_Next_Proxy" (byval This as IEnumFilters ptr, byval cFilters as ULONG, byval ppFilter as IBaseFilter ptr ptr, byval pcFetched as ULONG ptr) as HRESULT
-declare sub IEnumFilters_Next_Stub alias "IEnumFilters_Next_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumFilters_Skip_Proxy alias "IEnumFilters_Skip_Proxy" (byval This as IEnumFilters ptr, byval cFilters as ULONG) as HRESULT
-declare sub IEnumFilters_Skip_Stub alias "IEnumFilters_Skip_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumFilters_Reset_Proxy alias "IEnumFilters_Reset_Proxy" (byval This as IEnumFilters ptr) as HRESULT
-declare sub IEnumFilters_Reset_Stub alias "IEnumFilters_Reset_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumFilters_Clone_Proxy alias "IEnumFilters_Clone_Proxy" (byval This as IEnumFilters ptr, byval ppEnum as IEnumFilters ptr ptr) as HRESULT
-declare sub IEnumFilters_Clone_Stub alias "IEnumFilters_Clone_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type PENUMFILTERS as IEnumFilters ptr
 
@@ -455,21 +365,6 @@ type IMediaFilterVtbl
 	SetSyncSource as function(byval as IMediaFilter ptr, byval as IReferenceClock_ ptr) as HRESULT
 	GetSyncSource as function(byval as IMediaFilter ptr, byval as IReferenceClock_ ptr ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IMediaFilter_Stop_Proxy alias "IMediaFilter_Stop_Proxy" (byval This as IMediaFilter ptr) as HRESULT
-declare sub IMediaFilter_Stop_Stub alias "IMediaFilter_Stop_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaFilter_Pause_Proxy alias "IMediaFilter_Pause_Proxy" (byval This as IMediaFilter ptr) as HRESULT
-declare sub IMediaFilter_Pause_Stub alias "IMediaFilter_Pause_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaFilter_Run_Proxy alias "IMediaFilter_Run_Proxy" (byval This as IMediaFilter ptr, byval tStart as REFERENCE_TIME) as HRESULT
-declare sub IMediaFilter_Run_Stub alias "IMediaFilter_Run_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaFilter_GetState_Proxy alias "IMediaFilter_GetState_Proxy" (byval This as IMediaFilter ptr, byval dwMilliSecsTimeout as DWORD, byval State as FILTER_STATE ptr) as HRESULT
-declare sub IMediaFilter_GetState_Stub alias "IMediaFilter_GetState_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaFilter_SetSyncSource_Proxy alias "IMediaFilter_SetSyncSource_Proxy" (byval This as IMediaFilter ptr, byval pClock as IReferenceClock ptr) as HRESULT
-declare sub IMediaFilter_SetSyncSource_Stub alias "IMediaFilter_SetSyncSource_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaFilter_GetSyncSource_Proxy alias "IMediaFilter_GetSyncSource_Proxy" (byval This as IMediaFilter ptr, byval pClock as IReferenceClock ptr ptr) as HRESULT
-declare sub IMediaFilter_GetSyncSource_Stub alias "IMediaFilter_GetSyncSource_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type PMEDIAFILTER as IMediaFilter ptr
 
@@ -504,19 +399,6 @@ type IBaseFilterVtbl
 	QueryVendorInfo as function(byval as IBaseFilter ptr, byval as LPWSTR ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IBaseFilter_EnumPins_Proxy alias "IBaseFilter_EnumPins_Proxy" (byval This as IBaseFilter ptr, byval ppEnum as IEnumPins ptr ptr) as HRESULT
-declare sub IBaseFilter_EnumPins_Stub alias "IBaseFilter_EnumPins_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IBaseFilter_FindPin_Proxy alias "IBaseFilter_FindPin_Proxy" (byval This as IBaseFilter ptr, byval Id as LPCWSTR, byval ppPin as IPin ptr ptr) as HRESULT
-declare sub IBaseFilter_FindPin_Stub alias "IBaseFilter_FindPin_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IBaseFilter_QueryFilterInfo_Proxy alias "IBaseFilter_QueryFilterInfo_Proxy" (byval This as IBaseFilter ptr, byval pInfo as FILTER_INFO ptr) as HRESULT
-declare sub IBaseFilter_QueryFilterInfo_Stub alias "IBaseFilter_QueryFilterInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IBaseFilter_JoinFilterGraph_Proxy alias "IBaseFilter_JoinFilterGraph_Proxy" (byval This as IBaseFilter ptr, byval pGraph as IFilterGraph ptr, byval pName as LPCWSTR) as HRESULT
-declare sub IBaseFilter_JoinFilterGraph_Stub alias "IBaseFilter_JoinFilterGraph_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IBaseFilter_QueryVendorInfo_Proxy alias "IBaseFilter_QueryVendorInfo_Proxy" (byval This as IBaseFilter ptr, byval pVendorInfo as LPWSTR ptr) as HRESULT
-declare sub IBaseFilter_QueryVendorInfo_Stub alias "IBaseFilter_QueryVendorInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PFILTER as IBaseFilter ptr
 
 #ifndef __win_dsound_bi__
@@ -537,17 +419,6 @@ type IReferenceClockVtbl
 	AdvisePeriodic as function(byval as IReferenceClock ptr, byval as REFERENCE_TIME, byval as REFERENCE_TIME, byval as HSEMAPHORE, byval as DWORD_PTR ptr) as HRESULT
 	Unadvise as function(byval as IReferenceClock ptr, byval as DWORD_PTR) as HRESULT
 end type
-#endif
-
-#ifdef WIN_INCLUDEPROXY
-declare function IReferenceClock_GetTime_Proxy alias "IReferenceClock_GetTime_Proxy" (byval This as IReferenceClock ptr, byval pTime as REFERENCE_TIME ptr) as HRESULT
-declare sub IReferenceClock_GetTime_Stub alias "IReferenceClock_GetTime_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IReferenceClock_AdviseTime_Proxy alias "IReferenceClock_AdviseTime_Proxy" (byval This as IReferenceClock ptr, byval baseTime as REFERENCE_TIME, byval streamTime as REFERENCE_TIME, byval hEvent as HEVENT, byval pdwAdviseCookie as DWORD_PTR ptr) as HRESULT
-declare sub IReferenceClock_AdviseTime_Stub alias "IReferenceClock_AdviseTime_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IReferenceClock_AdvisePeriodic_Proxy alias "IReferenceClock_AdvisePeriodic_Proxy" (byval This as IReferenceClock ptr, byval startTime as REFERENCE_TIME, byval periodTime as REFERENCE_TIME, byval hSemaphore as HSEMAPHORE, byval pdwAdviseCookie as DWORD_PTR ptr) as HRESULT
-declare sub IReferenceClock_AdvisePeriodic_Stub alias "IReferenceClock_AdvisePeriodic_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IReferenceClock_Unadvise_Proxy alias "IReferenceClock_Unadvise_Proxy" (byval This as IReferenceClock ptr, byval dwAdviseCookie as DWORD_PTR) as HRESULT
-declare sub IReferenceClock_Unadvise_Stub alias "IReferenceClock_Unadvise_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #endif
 
 type PREFERENCECLOCK as IReferenceClock ptr
@@ -601,41 +472,6 @@ type IMediaSampleVtbl
 	GetMediaTime as function(byval as IMediaSample ptr, byval as LONGLONG ptr, byval as LONGLONG ptr) as HRESULT
 	SetMediaTime as function(byval as IMediaSample ptr, byval as LONGLONG ptr, byval as LONGLONG ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IMediaSample_GetPointer_Proxy alias "IMediaSample_GetPointer_Proxy" (byval This as IMediaSample ptr, byval ppBuffer as BYTE ptr ptr) as HRESULT
-declare sub IMediaSample_GetPointer_Stub alias "IMediaSample_GetPointer_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_GetSize_Proxy alias "IMediaSample_GetSize_Proxy" (byval This as IMediaSample ptr) as integer
-declare sub IMediaSample_GetSize_Stub alias "IMediaSample_GetSize_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_GetTime_Proxy alias "IMediaSample_GetTime_Proxy" (byval This as IMediaSample ptr, byval pTimeStart as REFERENCE_TIME ptr, byval pTimeEnd as REFERENCE_TIME ptr) as HRESULT
-declare sub IMediaSample_GetTime_Stub alias "IMediaSample_GetTime_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_SetTime_Proxy alias "IMediaSample_SetTime_Proxy" (byval This as IMediaSample ptr, byval pTimeStart as REFERENCE_TIME ptr, byval pTimeEnd as REFERENCE_TIME ptr) as HRESULT
-declare sub IMediaSample_SetTime_Stub alias "IMediaSample_SetTime_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_IsSyncPoint_Proxy alias "IMediaSample_IsSyncPoint_Proxy" (byval This as IMediaSample ptr) as HRESULT
-declare sub IMediaSample_IsSyncPoint_Stub alias "IMediaSample_IsSyncPoint_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_SetSyncPoint_Proxy alias "IMediaSample_SetSyncPoint_Proxy" (byval This as IMediaSample ptr, byval bIsSyncPoint as BOOL) as HRESULT
-declare sub IMediaSample_SetSyncPoint_Stub alias "IMediaSample_SetSyncPoint_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_IsPreroll_Proxy alias "IMediaSample_IsPreroll_Proxy" (byval This as IMediaSample ptr) as HRESULT
-declare sub IMediaSample_IsPreroll_Stub alias "IMediaSample_IsPreroll_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_SetPreroll_Proxy alias "IMediaSample_SetPreroll_Proxy" (byval This as IMediaSample ptr, byval bIsPreroll as BOOL) as HRESULT
-declare sub IMediaSample_SetPreroll_Stub alias "IMediaSample_SetPreroll_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_GetActualDataLength_Proxy alias "IMediaSample_GetActualDataLength_Proxy" (byval This as IMediaSample ptr) as integer
-declare sub IMediaSample_GetActualDataLength_Stub alias "IMediaSample_GetActualDataLength_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_SetActualDataLength_Proxy alias "IMediaSample_SetActualDataLength_Proxy" (byval This as IMediaSample ptr, byval __MIDL_0010 as integer) as HRESULT
-declare sub IMediaSample_SetActualDataLength_Stub alias "IMediaSample_SetActualDataLength_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_GetMediaType_Proxy alias "IMediaSample_GetMediaType_Proxy" (byval This as IMediaSample ptr, byval ppMediaType as AM_MEDIA_TYPE ptr ptr) as HRESULT
-declare sub IMediaSample_GetMediaType_Stub alias "IMediaSample_GetMediaType_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_SetMediaType_Proxy alias "IMediaSample_SetMediaType_Proxy" (byval This as IMediaSample ptr, byval pMediaType as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IMediaSample_SetMediaType_Stub alias "IMediaSample_SetMediaType_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_IsDiscontinuity_Proxy alias "IMediaSample_IsDiscontinuity_Proxy" (byval This as IMediaSample ptr) as HRESULT
-declare sub IMediaSample_IsDiscontinuity_Stub alias "IMediaSample_IsDiscontinuity_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_SetDiscontinuity_Proxy alias "IMediaSample_SetDiscontinuity_Proxy" (byval This as IMediaSample ptr, byval bDiscontinuity as BOOL) as HRESULT
-declare sub IMediaSample_SetDiscontinuity_Stub alias "IMediaSample_SetDiscontinuity_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_GetMediaTime_Proxy alias "IMediaSample_GetMediaTime_Proxy" (byval This as IMediaSample ptr, byval pTimeStart as LONGLONG ptr, byval pTimeEnd as LONGLONG ptr) as HRESULT
-declare sub IMediaSample_GetMediaTime_Stub alias "IMediaSample_GetMediaTime_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample_SetMediaTime_Proxy alias "IMediaSample_SetMediaTime_Proxy" (byval This as IMediaSample ptr, byval pTimeStart as LONGLONG ptr, byval pTimeEnd as LONGLONG ptr) as HRESULT
-declare sub IMediaSample_SetMediaTime_Stub alias "IMediaSample_SetMediaTime_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type PMEDIASAMPLE as IMediaSample ptr
 
@@ -698,13 +534,6 @@ type IMediaSample2Vtbl
 	SetProperties as function(byval as IMediaSample2 ptr, byval as DWORD, byval as BYTE ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IMediaSample2_GetProperties_Proxy alias "IMediaSample2_GetProperties_Proxy" (byval This as IMediaSample2 ptr, byval cbProperties as DWORD, byval pbProperties as BYTE ptr) as HRESULT
-declare sub IMediaSample2_GetProperties_Stub alias "IMediaSample2_GetProperties_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSample2_SetProperties_Proxy alias "IMediaSample2_SetProperties_Proxy" (byval This as IMediaSample2 ptr, byval cbProperties as DWORD, byval pbProperties as BYTE ptr) as HRESULT
-declare sub IMediaSample2_SetProperties_Stub alias "IMediaSample2_SetProperties_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PMEDIASAMPLE2 as IMediaSample2 ptr
 
 #define AM_GBF_PREVFRAMESKIPPED 1
@@ -731,21 +560,6 @@ type IMemAllocatorVtbl
 	ReleaseBuffer as function(byval as IMemAllocator ptr, byval as IMediaSample ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IMemAllocator_SetProperties_Proxy alias "IMemAllocator_SetProperties_Proxy" (byval This as IMemAllocator ptr, byval pRequest as ALLOCATOR_PROPERTIES ptr, byval pActual as ALLOCATOR_PROPERTIES ptr) as HRESULT
-declare sub IMemAllocator_SetProperties_Stub alias "IMemAllocator_SetProperties_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMemAllocator_GetProperties_Proxy alias "IMemAllocator_GetProperties_Proxy" (byval This as IMemAllocator ptr, byval pProps as ALLOCATOR_PROPERTIES ptr) as HRESULT
-declare sub IMemAllocator_GetProperties_Stub alias "IMemAllocator_GetProperties_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMemAllocator_Commit_Proxy alias "IMemAllocator_Commit_Proxy" (byval This as IMemAllocator ptr) as HRESULT
-declare sub IMemAllocator_Commit_Stub alias "IMemAllocator_Commit_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMemAllocator_Decommit_Proxy alias "IMemAllocator_Decommit_Proxy" (byval This as IMemAllocator ptr) as HRESULT
-declare sub IMemAllocator_Decommit_Stub alias "IMemAllocator_Decommit_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMemAllocator_GetBuffer_Proxy alias "IMemAllocator_GetBuffer_Proxy" (byval This as IMemAllocator ptr, byval ppBuffer as IMediaSample ptr ptr, byval pStartTime as REFERENCE_TIME ptr, byval pEndTime as REFERENCE_TIME ptr, byval dwFlags as DWORD) as HRESULT
-declare sub IMemAllocator_GetBuffer_Stub alias "IMemAllocator_GetBuffer_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMemAllocator_ReleaseBuffer_Proxy alias "IMemAllocator_ReleaseBuffer_Proxy" (byval This as IMemAllocator ptr, byval pBuffer as IMediaSample ptr) as HRESULT
-declare sub IMemAllocator_ReleaseBuffer_Stub alias "IMemAllocator_ReleaseBuffer_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PMEMALLOCATOR as IMemAllocator ptr
 extern IID_IMemAllocatorCallbackTemp alias "IID_IMemAllocatorCallbackTemp" as IID
 
@@ -769,13 +583,6 @@ type IMemAllocatorCallbackTempVtbl
 	GetFreeCount as function(byval as IMemAllocatorCallbackTemp ptr, byval as LONG ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IMemAllocatorCallbackTemp_SetNotify_Proxy alias "IMemAllocatorCallbackTemp_SetNotify_Proxy" (byval This as IMemAllocatorCallbackTemp ptr, byval pNotify as IMemAllocatorNotifyCallbackTemp ptr) as HRESULT
-declare sub IMemAllocatorCallbackTemp_SetNotify_Stub alias "IMemAllocatorCallbackTemp_SetNotify_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMemAllocatorCallbackTemp_GetFreeCount_Proxy alias "IMemAllocatorCallbackTemp_GetFreeCount_Proxy" (byval This as IMemAllocatorCallbackTemp ptr, byval plBuffersFree as LONG ptr) as HRESULT
-declare sub IMemAllocatorCallbackTemp_GetFreeCount_Stub alias "IMemAllocatorCallbackTemp_GetFreeCount_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 extern IID_IMemAllocatorNotifyCallbackTemp alias "IID_IMemAllocatorNotifyCallbackTemp" as IID
 
 type IMemAllocatorNotifyCallbackTempVtbl_ as IMemAllocatorNotifyCallbackTempVtbl
@@ -790,11 +597,6 @@ type IMemAllocatorNotifyCallbackTempVtbl
 	Release as function(byval as IMemAllocatorNotifyCallbackTemp ptr) as ULONG
 	NotifyRelease as function(byval as IMemAllocatorNotifyCallbackTemp ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IMemAllocatorNotifyCallbackTemp_NotifyRelease_Proxy alias "IMemAllocatorNotifyCallbackTemp_NotifyRelease_Proxy" (byval This as IMemAllocatorNotifyCallbackTemp ptr) as HRESULT
-declare sub IMemAllocatorNotifyCallbackTemp_NotifyRelease_Stub alias "IMemAllocatorNotifyCallbackTemp_NotifyRelease_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 extern IID_IMemInputPin alias "IID_IMemInputPin" as IID
 
@@ -816,21 +618,6 @@ type IMemInputPinVtbl
 	ReceiveCanBlock as function(byval as IMemInputPin ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IMemInputPin_GetAllocator_Proxy alias "IMemInputPin_GetAllocator_Proxy" (byval This as IMemInputPin ptr, byval ppAllocator as IMemAllocator ptr ptr) as HRESULT
-declare sub IMemInputPin_GetAllocator_Stub alias "IMemInputPin_GetAllocator_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMemInputPin_NotifyAllocator_Proxy alias "IMemInputPin_NotifyAllocator_Proxy" (byval This as IMemInputPin ptr, byval pAllocator as IMemAllocator ptr, byval bReadOnly as BOOL) as HRESULT
-declare sub IMemInputPin_NotifyAllocator_Stub alias "IMemInputPin_NotifyAllocator_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMemInputPin_GetAllocatorRequirements_Proxy alias "IMemInputPin_GetAllocatorRequirements_Proxy" (byval This as IMemInputPin ptr, byval pProps as ALLOCATOR_PROPERTIES ptr) as HRESULT
-declare sub IMemInputPin_GetAllocatorRequirements_Stub alias "IMemInputPin_GetAllocatorRequirements_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMemInputPin_Receive_Proxy alias "IMemInputPin_Receive_Proxy" (byval This as IMemInputPin ptr, byval pSample as IMediaSample ptr) as HRESULT
-declare sub IMemInputPin_Receive_Stub alias "IMemInputPin_Receive_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMemInputPin_ReceiveMultiple_Proxy alias "IMemInputPin_ReceiveMultiple_Proxy" (byval This as IMemInputPin ptr, byval pSamples as IMediaSample ptr ptr, byval nSamples as integer, byval nSamplesProcessed as integer ptr) as HRESULT
-declare sub IMemInputPin_ReceiveMultiple_Stub alias "IMemInputPin_ReceiveMultiple_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMemInputPin_ReceiveCanBlock_Proxy alias "IMemInputPin_ReceiveCanBlock_Proxy" (byval This as IMemInputPin ptr) as HRESULT
-declare sub IMemInputPin_ReceiveCanBlock_Stub alias "IMemInputPin_ReceiveCanBlock_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PMEMINPUTPIN as IMemInputPin ptr
 extern IID_IAMovieSetup alias "IID_IAMovieSetup" as IID
 
@@ -847,13 +634,6 @@ type IAMovieSetupVtbl
 	Register as function(byval as IAMovieSetup ptr) as HRESULT
 	Unregister as function(byval as IAMovieSetup ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMovieSetup_Register_Proxy alias "IAMovieSetup_Register_Proxy" (byval This as IAMovieSetup ptr) as HRESULT
-declare sub IAMovieSetup_Register_Stub alias "IAMovieSetup_Register_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMovieSetup_Unregister_Proxy alias "IAMovieSetup_Unregister_Proxy" (byval This as IAMovieSetup ptr) as HRESULT
-declare sub IAMovieSetup_Unregister_Stub alias "IAMovieSetup_Unregister_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type PAMOVIESETUP as IAMovieSetup ptr
 
@@ -933,43 +713,6 @@ end type
 #define IMediaSeeking_GetRate(This,pdRate) (This)->lpVtbl -> GetRate(This,pdRate)
 #define IMediaSeeking_GetPreroll(This,pllPreroll) (This)->lpVtbl -> GetPreroll(This,pllPreroll)
 
-#ifdef WIN_INCLUDEPROXY
-declare function IMediaSeeking_GetCapabilities_Proxy alias "IMediaSeeking_GetCapabilities_Proxy" (byval This as IMediaSeeking ptr, byval pCapabilities as DWORD ptr) as HRESULT
-declare sub IMediaSeeking_GetCapabilities_Stub alias "IMediaSeeking_GetCapabilities_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_CheckCapabilities_Proxy alias "IMediaSeeking_CheckCapabilities_Proxy" (byval This as IMediaSeeking ptr, byval pCapabilities as DWORD ptr) as HRESULT
-declare sub IMediaSeeking_CheckCapabilities_Stub alias "IMediaSeeking_CheckCapabilities_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_IsFormatSupported_Proxy alias "IMediaSeeking_IsFormatSupported_Proxy" (byval This as IMediaSeeking ptr, byval pFormat as GUID ptr) as HRESULT
-declare sub IMediaSeeking_IsFormatSupported_Stub alias "IMediaSeeking_IsFormatSupported_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_QueryPreferredFormat_Proxy alias "IMediaSeeking_QueryPreferredFormat_Proxy" (byval This as IMediaSeeking ptr, byval pFormat as GUID ptr) as HRESULT
-declare sub IMediaSeeking_QueryPreferredFormat_Stub alias "IMediaSeeking_QueryPreferredFormat_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_GetTimeFormat_Proxy alias "IMediaSeeking_GetTimeFormat_Proxy" (byval This as IMediaSeeking ptr, byval pFormat as GUID ptr) as HRESULT
-declare sub IMediaSeeking_GetTimeFormat_Stub alias "IMediaSeeking_GetTimeFormat_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_IsUsingTimeFormat_Proxy alias "IMediaSeeking_IsUsingTimeFormat_Proxy" (byval This as IMediaSeeking ptr, byval pFormat as GUID ptr) as HRESULT
-declare sub IMediaSeeking_IsUsingTimeFormat_Stub alias "IMediaSeeking_IsUsingTimeFormat_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_SetTimeFormat_Proxy alias "IMediaSeeking_SetTimeFormat_Proxy" (byval This as IMediaSeeking ptr, byval pFormat as GUID ptr) as HRESULT
-declare sub IMediaSeeking_SetTimeFormat_Stub alias "IMediaSeeking_SetTimeFormat_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_GetDuration_Proxy alias "IMediaSeeking_GetDuration_Proxy" (byval This as IMediaSeeking ptr, byval pDuration as LONGLONG ptr) as HRESULT
-declare sub IMediaSeeking_GetDuration_Stub alias "IMediaSeeking_GetDuration_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_GetStopPosition_Proxy alias "IMediaSeeking_GetStopPosition_Proxy" (byval This as IMediaSeeking ptr, byval pStop as LONGLONG ptr) as HRESULT
-declare sub IMediaSeeking_GetStopPosition_Stub alias "IMediaSeeking_GetStopPosition_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_GetCurrentPosition_Proxy alias "IMediaSeeking_GetCurrentPosition_Proxy" (byval This as IMediaSeeking ptr, byval pCurrent as LONGLONG ptr) as HRESULT
-declare sub IMediaSeeking_GetCurrentPosition_Stub alias "IMediaSeeking_GetCurrentPosition_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_ConvertTimeFormat_Proxy alias "IMediaSeeking_ConvertTimeFormat_Proxy" (byval This as IMediaSeeking ptr, byval pTarget as LONGLONG ptr, byval pTargetFormat as GUID ptr, byval Source as LONGLONG, byval pSourceFormat as GUID ptr) as HRESULT
-declare sub IMediaSeeking_ConvertTimeFormat_Stub alias "IMediaSeeking_ConvertTimeFormat_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_SetPositions_Proxy alias "IMediaSeeking_SetPositions_Proxy" (byval This as IMediaSeeking ptr, byval pCurrent as LONGLONG ptr, byval dwCurrentFlags as DWORD, byval pStop as LONGLONG ptr, byval dwStopFlags as DWORD) as HRESULT
-declare sub IMediaSeeking_SetPositions_Stub alias "IMediaSeeking_SetPositions_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_GetPositions_Proxy alias "IMediaSeeking_GetPositions_Proxy" (byval This as IMediaSeeking ptr, byval pCurrent as LONGLONG ptr, byval pStop as LONGLONG ptr) as HRESULT
-declare sub IMediaSeeking_GetPositions_Stub alias "IMediaSeeking_GetPositions_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_GetAvailable_Proxy alias "IMediaSeeking_GetAvailable_Proxy" (byval This as IMediaSeeking ptr, byval pEarliest as LONGLONG ptr, byval pLatest as LONGLONG ptr) as HRESULT
-declare sub IMediaSeeking_GetAvailable_Stub alias "IMediaSeeking_GetAvailable_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_SetRate_Proxy alias "IMediaSeeking_SetRate_Proxy" (byval This as IMediaSeeking ptr, byval dRate as double) as HRESULT
-declare sub IMediaSeeking_SetRate_Stub alias "IMediaSeeking_SetRate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_GetRate_Proxy alias "IMediaSeeking_GetRate_Proxy" (byval This as IMediaSeeking ptr, byval pdRate as double ptr) as HRESULT
-declare sub IMediaSeeking_GetRate_Stub alias "IMediaSeeking_GetRate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMediaSeeking_GetPreroll_Proxy alias "IMediaSeeking_GetPreroll_Proxy" (byval This as IMediaSeeking ptr, byval pllPreroll as LONGLONG ptr) as HRESULT
-declare sub IMediaSeeking_GetPreroll_Stub alias "IMediaSeeking_GetPreroll_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PMEDIASEEKING as IMediaSeeking ptr
 
 enum tagAM_MEDIAEVENT_FLAGS
@@ -999,16 +742,6 @@ type IEnumRegFiltersVtbl
 	Clone as function(byval as IEnumRegFilters ptr, byval as IEnumRegFilters ptr ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IEnumRegFilters_Next_Proxy alias "IEnumRegFilters_Next_Proxy" (byval This as IEnumRegFilters ptr, byval cFilters as ULONG, byval apRegFilter as REGFILTER ptr ptr, byval pcFetched as ULONG ptr) as HRESULT
-declare sub IEnumRegFilters_Next_Stub alias "IEnumRegFilters_Next_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumRegFilters_Skip_Proxy alias "IEnumRegFilters_Skip_Proxy" (byval This as IEnumRegFilters ptr, byval cFilters as ULONG) as HRESULT
-declare sub IEnumRegFilters_Skip_Stub alias "IEnumRegFilters_Skip_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumRegFilters_Reset_Proxy alias "IEnumRegFilters_Reset_Proxy" (byval This as IEnumRegFilters ptr) as HRESULT
-declare sub IEnumRegFilters_Reset_Stub alias "IEnumRegFilters_Reset_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumRegFilters_Clone_Proxy alias "IEnumRegFilters_Clone_Proxy" (byval This as IEnumRegFilters ptr, byval ppEnum as IEnumRegFilters ptr ptr) as HRESULT
-declare sub IEnumRegFilters_Clone_Stub alias "IEnumRegFilters_Clone_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 type PENUMREGFILTERS as IEnumRegFilters ptr
 
 enum IFilterMapper_0001
@@ -1041,25 +774,6 @@ type IFilterMapperVtbl
 	UnregisterPin as function(byval as IFilterMapper ptr, byval as CLSID, byval as LPCWSTR) as HRESULT
 	EnumMatchingFilters as function(byval as IFilterMapper ptr, byval as IEnumRegFilters ptr ptr, byval as DWORD, byval as BOOL, byval as CLSID, byval as CLSID, byval as BOOL, byval as BOOL, byval as CLSID, byval as CLSID) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IFilterMapper_RegisterFilter_Proxy alias "IFilterMapper_RegisterFilter_Proxy" (byval This as IFilterMapper ptr, byval clsid as CLSID, byval Name as LPCWSTR, byval dwMerit as DWORD) as HRESULT
-declare sub IFilterMapper_RegisterFilter_Stub alias "IFilterMapper_RegisterFilter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterMapper_RegisterFilterInstance_Proxy alias "IFilterMapper_RegisterFilterInstance_Proxy" (byval This as IFilterMapper ptr, byval clsid as CLSID, byval Name as LPCWSTR, byval MRId as CLSID ptr) as HRESULT
-declare sub IFilterMapper_RegisterFilterInstance_Stub alias "IFilterMapper_RegisterFilterInstance_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterMapper_RegisterPin_Proxy alias "IFilterMapper_RegisterPin_Proxy" (byval This as IFilterMapper ptr, byval Filter as CLSID, byval Name as LPCWSTR, byval bRendered as BOOL, byval bOutput as BOOL, byval bZero as BOOL, byval bMany as BOOL, byval ConnectsToFilter as CLSID, byval ConnectsToPin as LPCWSTR) as HRESULT
-declare sub IFilterMapper_RegisterPin_Stub alias "IFilterMapper_RegisterPin_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterMapper_RegisterPinType_Proxy alias "IFilterMapper_RegisterPinType_Proxy" (byval This as IFilterMapper ptr, byval clsFilter as CLSID, byval strName as LPCWSTR, byval clsMajorType as CLSID, byval clsSubType as CLSID) as HRESULT
-declare sub IFilterMapper_RegisterPinType_Stub alias "IFilterMapper_RegisterPinType_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterMapper_UnregisterFilter_Proxy alias "IFilterMapper_UnregisterFilter_Proxy" (byval This as IFilterMapper ptr, byval Filter as CLSID) as HRESULT
-declare sub IFilterMapper_UnregisterFilter_Stub alias "IFilterMapper_UnregisterFilter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterMapper_UnregisterFilterInstance_Proxy alias "IFilterMapper_UnregisterFilterInstance_Proxy" (byval This as IFilterMapper ptr, byval MRId as CLSID) as HRESULT
-declare sub IFilterMapper_UnregisterFilterInstance_Stub alias "IFilterMapper_UnregisterFilterInstance_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterMapper_UnregisterPin_Proxy alias "IFilterMapper_UnregisterPin_Proxy" (byval This as IFilterMapper ptr, byval Filter as CLSID, byval Name as LPCWSTR) as HRESULT
-declare sub IFilterMapper_UnregisterPin_Stub alias "IFilterMapper_UnregisterPin_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterMapper_EnumMatchingFilters_Proxy alias "IFilterMapper_EnumMatchingFilters_Proxy" (byval This as IFilterMapper ptr, byval ppEnum as IEnumRegFilters ptr ptr, byval dwMerit as DWORD, byval bInputNeeded as BOOL, byval clsInMaj as CLSID, byval clsInSub as CLSID, byval bRender as BOOL, byval bOututNeeded as BOOL, byval clsOutMaj as CLSID, byval clsOutSub as CLSID) as HRESULT
-declare sub IFilterMapper_EnumMatchingFilters_Stub alias "IFilterMapper_EnumMatchingFilters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type REGPINTYPES
 	clsMajorType as CLSID ptr
@@ -1124,16 +838,6 @@ type IFilterMapper2Vtbl
 	EnumMatchingFilters as function(byval as IFilterMapper2 ptr, byval as IEnumMoniker ptr ptr, byval as DWORD, byval as BOOL, byval as DWORD, byval as BOOL, byval as DWORD, byval as GUID ptr, byval as REGPINMEDIUM ptr, byval as CLSID ptr, byval as BOOL, byval as BOOL, byval as DWORD, byval as GUID ptr, byval as REGPINMEDIUM ptr, byval as CLSID ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IFilterMapper2_CreateCategory_Proxy alias "IFilterMapper2_CreateCategory_Proxy" (byval This as IFilterMapper2 ptr, byval clsidCategory as CLSID ptr, byval dwCategoryMerit as DWORD, byval Description as LPCWSTR) as HRESULT
-declare sub IFilterMapper2_CreateCategory_Stub alias "IFilterMapper2_CreateCategory_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterMapper2_UnregisterFilter_Proxy alias "IFilterMapper2_UnregisterFilter_Proxy" (byval This as IFilterMapper2 ptr, byval pclsidCategory as CLSID ptr, byval szInstance as OLECHAR ptr, byval Filter as CLSID ptr) as HRESULT
-declare sub IFilterMapper2_UnregisterFilter_Stub alias "IFilterMapper2_UnregisterFilter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterMapper2_RegisterFilter_Proxy alias "IFilterMapper2_RegisterFilter_Proxy" (byval This as IFilterMapper2 ptr, byval clsidFilter as CLSID ptr, byval Name as LPCWSTR, byval ppMoniker as IMoniker ptr ptr, byval pclsidCategory as CLSID ptr, byval szInstance as OLECHAR ptr, byval prf2 as REGFILTER2 ptr) as HRESULT
-declare sub IFilterMapper2_RegisterFilter_Stub alias "IFilterMapper2_RegisterFilter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterMapper2_EnumMatchingFilters_Proxy alias "IFilterMapper2_EnumMatchingFilters_Proxy" (byval This as IFilterMapper2 ptr, byval ppEnum as IEnumMoniker ptr ptr, byval dwFlags as DWORD, byval bExactMatch as BOOL, byval dwMerit as DWORD, byval bInputNeeded as BOOL, byval cInputTypes as DWORD, byval pInputTypes as GUID ptr, byval pMedIn as REGPINMEDIUM ptr, byval pPinCategoryIn as CLSID ptr, byval bRender as BOOL, byval bOutputNeeded as BOOL, byval cOutputTypes as DWORD, byval pOutputTypes as GUID ptr, byval pMedOut as REGPINMEDIUM ptr, byval pPinCategoryOut as CLSID ptr) as HRESULT
-declare sub IFilterMapper2_EnumMatchingFilters_Stub alias "IFilterMapper2_EnumMatchingFilters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IFilterMapper3 alias "IID_IFilterMapper3" as IID
 
 type IFilterMapper3Vtbl_ as IFilterMapper3Vtbl
@@ -1152,11 +856,6 @@ type IFilterMapper3Vtbl
 	EnumMatchingFilters as function(byval as IFilterMapper3 ptr, byval as IEnumMoniker ptr ptr, byval as DWORD, byval as BOOL, byval as DWORD, byval as BOOL, byval as DWORD, byval as GUID ptr, byval as REGPINMEDIUM ptr, byval as CLSID ptr, byval as BOOL, byval as BOOL, byval as DWORD, byval as GUID ptr, byval as REGPINMEDIUM ptr, byval as CLSID ptr) as HRESULT
 	GetICreateDevEnum as function(byval as IFilterMapper3 ptr, byval as ICreateDevEnum ptr ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IFilterMapper3_GetICreateDevEnum_Proxy alias "IFilterMapper3_GetICreateDevEnum_Proxy" (byval This as IFilterMapper3 ptr, byval ppEnum as ICreateDevEnum ptr ptr) as HRESULT
-declare sub IFilterMapper3_GetICreateDevEnum_Stub alias "IFilterMapper3_GetICreateDevEnum_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum QualityMessageType
 	Famine = 0
@@ -1186,13 +885,6 @@ type IQualityControlVtbl
 	Notify as function(byval as IQualityControl ptr, byval as IBaseFilter ptr, byval as Quality) as HRESULT
 	SetSink as function(byval as IQualityControl ptr, byval as IQualityControl ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IQualityControl_Notify_Proxy alias "IQualityControl_Notify_Proxy" (byval This as IQualityControl ptr, byval pSelf as IBaseFilter ptr, byval q as Quality) as HRESULT
-declare sub IQualityControl_Notify_Stub alias "IQualityControl_Notify_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IQualityControl_SetSink_Proxy alias "IQualityControl_SetSink_Proxy" (byval This as IQualityControl ptr, byval piqc as IQualityControl ptr) as HRESULT
-declare sub IQualityControl_SetSink_Stub alias "IQualityControl_SetSink_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum CK_ENUM
 	CK_NOCOLORKEY = 0
@@ -1234,16 +926,6 @@ type IOverlayNotifyVtbl
 	OnPositionChange as function(byval as IOverlayNotify ptr, byval as RECT ptr, byval as RECT ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IOverlayNotify_OnPaletteChange_Proxy alias "IOverlayNotify_OnPaletteChange_Proxy" (byval This as IOverlayNotify ptr, byval dwColors as DWORD, byval pPalette as PALETTEENTRY ptr) as HRESULT
-declare sub IOverlayNotify_OnPaletteChange_Stub alias "IOverlayNotify_OnPaletteChange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IOverlayNotify_OnClipChange_Proxy alias "IOverlayNotify_OnClipChange_Proxy" (byval This as IOverlayNotify ptr, byval pSourceRect as RECT ptr, byval pDestinationRect as RECT ptr, byval pRgnData as RGNDATA ptr) as HRESULT
-declare sub IOverlayNotify_OnClipChange_Stub alias "IOverlayNotify_OnClipChange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IOverlayNotify_OnColorKeyChange_Proxy alias "IOverlayNotify_OnColorKeyChange_Proxy" (byval This as IOverlayNotify ptr, byval pColorKey as COLORKEY ptr) as HRESULT
-declare sub IOverlayNotify_OnColorKeyChange_Stub alias "IOverlayNotify_OnColorKeyChange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IOverlayNotify_OnPositionChange_Proxy alias "IOverlayNotify_OnPositionChange_Proxy" (byval This as IOverlayNotify ptr, byval pSourceRect as RECT ptr, byval pDestinationRect as RECT ptr) as HRESULT
-declare sub IOverlayNotify_OnPositionChange_Stub alias "IOverlayNotify_OnPositionChange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 type POVERLAYNOTIFY as IOverlayNotify ptr
 extern IID_IOverlayNotify2 alias "IID_IOverlayNotify2" as IID
 
@@ -1264,10 +946,6 @@ type IOverlayNotify2Vtbl
 	OnDisplayChange as function(byval as IOverlayNotify2 ptr, byval as HMONITOR) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IOverlayNotify2_OnDisplayChange_Proxy alias "IOverlayNotify2_OnDisplayChange_Proxy" (byval This as IOverlayNotify2 ptr, byval hMonitor as HMONITOR) as HRESULT
-declare sub IOverlayNotify2_OnDisplayChange_Stub alias "IOverlayNotify2_OnDisplayChange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 type POVERLAYNOTIFY2 as IOverlayNotify2 ptr
 extern IID_IOverlay alias "IID_IOverlay" as IID
 
@@ -1293,28 +971,6 @@ type IOverlayVtbl
 	Unadvise as function(byval as IOverlay ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IOverlay_GetPalette_Proxy alias "IOverlay_GetPalette_Proxy" (byval This as IOverlay ptr, byval pdwColors as DWORD ptr, byval ppPalette as PALETTEENTRY ptr ptr) as HRESULT
-declare sub IOverlay_GetPalette_Stub alias "IOverlay_GetPalette_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IOverlay_SetPalette_Proxy alias "IOverlay_SetPalette_Proxy" (byval This as IOverlay ptr, byval dwColors as DWORD, byval pPalette as PALETTEENTRY ptr) as HRESULT
-declare sub IOverlay_SetPalette_Stub alias "IOverlay_SetPalette_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IOverlay_GetDefaultColorKey_Proxy alias "IOverlay_GetDefaultColorKey_Proxy" (byval This as IOverlay ptr, byval pColorKey as COLORKEY ptr) as HRESULT
-declare sub IOverlay_GetDefaultColorKey_Stub alias "IOverlay_GetDefaultColorKey_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IOverlay_GetColorKey_Proxy alias "IOverlay_GetColorKey_Proxy" (byval This as IOverlay ptr, byval pColorKey as COLORKEY ptr) as HRESULT
-declare sub IOverlay_GetColorKey_Stub alias "IOverlay_GetColorKey_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IOverlay_SetColorKey_Proxy alias "IOverlay_SetColorKey_Proxy" (byval This as IOverlay ptr, byval pColorKey as COLORKEY ptr) as HRESULT
-declare sub IOverlay_SetColorKey_Stub alias "IOverlay_SetColorKey_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IOverlay_GetWindowHandle_Proxy alias "IOverlay_GetWindowHandle_Proxy" (byval This as IOverlay ptr, byval pHwnd as HWND ptr) as HRESULT
-declare sub IOverlay_GetWindowHandle_Stub alias "IOverlay_GetWindowHandle_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IOverlay_GetClipList_Proxy alias "IOverlay_GetClipList_Proxy" (byval This as IOverlay ptr, byval pSourceRect as RECT ptr, byval pDestinationRect as RECT ptr, byval ppRgnData as RGNDATA ptr ptr) as HRESULT
-declare sub IOverlay_GetClipList_Stub alias "IOverlay_GetClipList_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IOverlay_GetVideoPosition_Proxy alias "IOverlay_GetVideoPosition_Proxy" (byval This as IOverlay ptr, byval pSourceRect as RECT ptr, byval pDestinationRect as RECT ptr) as HRESULT
-declare sub IOverlay_GetVideoPosition_Stub alias "IOverlay_GetVideoPosition_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IOverlay_Advise_Proxy alias "IOverlay_Advise_Proxy" (byval This as IOverlay ptr, byval pOverlayNotify as IOverlayNotify ptr, byval dwInterests as DWORD) as HRESULT
-declare sub IOverlay_Advise_Stub alias "IOverlay_Advise_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IOverlay_Unadvise_Proxy alias "IOverlay_Unadvise_Proxy" (byval This as IOverlay ptr) as HRESULT
-declare sub IOverlay_Unadvise_Stub alias "IOverlay_Unadvise_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 type POVERLAY as IOverlay ptr
 extern IID_IMediaEventSink alias "IID_IMediaEventSink" as IID
 
@@ -1331,10 +987,6 @@ type IMediaEventSinkVtbl
 	Notify as function(byval as IMediaEventSink ptr, byval as integer, byval as LONG_PTR, byval as LONG_PTR) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IMediaEventSink_Notify_Proxy alias "IMediaEventSink_Notify_Proxy" (byval This as IMediaEventSink ptr, byval EventCode as integer, byval EventParam1 as LONG_PTR, byval EventParam2 as LONG_PTR) as HRESULT
-declare sub IMediaEventSink_Notify_Stub alias "IMediaEventSink_Notify_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type PMEDIAEVENTSINK as IMediaEventSink ptr
 extern IID_IFileSourceFilter alias "IID_IFileSourceFilter" as IID
@@ -1353,13 +1005,6 @@ type IFileSourceFilterVtbl
 	GetCurFile as function(byval as IFileSourceFilter ptr, byval as LPOLESTR ptr, byval as AM_MEDIA_TYPE ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IFileSourceFilter_Load_Proxy alias "IFileSourceFilter_Load_Proxy" (byval This as IFileSourceFilter ptr, byval pszFileName as LPCOLESTR, byval pmt as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IFileSourceFilter_Load_Stub alias "IFileSourceFilter_Load_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFileSourceFilter_GetCurFile_Proxy alias "IFileSourceFilter_GetCurFile_Proxy" (byval This as IFileSourceFilter ptr, byval ppszFileName as LPOLESTR ptr, byval pmt as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IFileSourceFilter_GetCurFile_Stub alias "IFileSourceFilter_GetCurFile_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PFILTERFILESOURCE as IFileSourceFilter ptr
 extern IID_IFileSinkFilter alias "IID_IFileSinkFilter" as IID
 
@@ -1376,13 +1021,6 @@ type IFileSinkFilterVtbl
 	SetFileName as function(byval as IFileSinkFilter ptr, byval as LPCOLESTR, byval as AM_MEDIA_TYPE ptr) as HRESULT
 	GetCurFile as function(byval as IFileSinkFilter ptr, byval as LPOLESTR ptr, byval as AM_MEDIA_TYPE ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IFileSinkFilter_SetFileName_Proxy alias "IFileSinkFilter_SetFileName_Proxy" (byval This as IFileSinkFilter ptr, byval pszFileName as LPCOLESTR, byval pmt as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IFileSinkFilter_SetFileName_Stub alias "IFileSinkFilter_SetFileName_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFileSinkFilter_GetCurFile_Proxy alias "IFileSinkFilter_GetCurFile_Proxy" (byval This as IFileSinkFilter ptr, byval ppszFileName as LPOLESTR ptr, byval pmt as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IFileSinkFilter_GetCurFile_Stub alias "IFileSinkFilter_GetCurFile_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type PFILTERFILESINK as IFileSinkFilter ptr
 extern IID_IFileSinkFilter2 alias "IID_IFileSinkFilter2" as IID
@@ -1402,13 +1040,6 @@ type IFileSinkFilter2Vtbl
 	SetMode as function(byval as IFileSinkFilter2 ptr, byval as DWORD) as HRESULT
 	GetMode as function(byval as IFileSinkFilter2 ptr, byval as DWORD ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IFileSinkFilter2_SetMode_Proxy alias "IFileSinkFilter2_SetMode_Proxy" (byval This as IFileSinkFilter2 ptr, byval dwFlags as DWORD) as HRESULT
-declare sub IFileSinkFilter2_SetMode_Stub alias "IFileSinkFilter2_SetMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFileSinkFilter2_GetMode_Proxy alias "IFileSinkFilter2_GetMode_Proxy" (byval This as IFileSinkFilter2 ptr, byval pdwFlags as DWORD ptr) as HRESULT
-declare sub IFileSinkFilter2_GetMode_Stub alias "IFileSinkFilter2_GetMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type PFILESINKFILTER2 as IFileSinkFilter2 ptr
 
@@ -1464,22 +1095,6 @@ end type
 #define IGraphBuilder_Abort(This) (This)->lpVtbl -> Abort(This)
 #define IGraphBuilder_ShouldOperationContinue(This) (This)->lpVtbl -> ShouldOperationContinue(This)
 
-#ifdef WIN_INCLUDEPROXY
-declare function IGraphBuilder_Connect_Proxy alias "IGraphBuilder_Connect_Proxy" (byval This as IGraphBuilder ptr, byval ppinOut as IPin ptr, byval ppinIn as IPin ptr) as HRESULT
-declare sub IGraphBuilder_Connect_Stub alias "IGraphBuilder_Connect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphBuilder_Render_Proxy alias "IGraphBuilder_Render_Proxy" (byval This as IGraphBuilder ptr, byval ppinOut as IPin ptr) as HRESULT
-declare sub IGraphBuilder_Render_Stub alias "IGraphBuilder_Render_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphBuilder_RenderFile_Proxy alias "IGraphBuilder_RenderFile_Proxy" (byval This as IGraphBuilder ptr, byval lpcwstrFile as LPCWSTR, byval lpcwstrPlayList as LPCWSTR) as HRESULT
-declare sub IGraphBuilder_RenderFile_Stub alias "IGraphBuilder_RenderFile_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphBuilder_AddSourceFilter_Proxy alias "IGraphBuilder_AddSourceFilter_Proxy" (byval This as IGraphBuilder ptr, byval lpcwstrFileName as LPCWSTR, byval lpcwstrFilterName as LPCWSTR, byval ppFilter as IBaseFilter ptr ptr) as HRESULT
-declare sub IGraphBuilder_AddSourceFilter_Stub alias "IGraphBuilder_AddSourceFilter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphBuilder_SetLogFile_Proxy alias "IGraphBuilder_SetLogFile_Proxy" (byval This as IGraphBuilder ptr, byval hFile as DWORD_PTR) as HRESULT
-declare sub IGraphBuilder_SetLogFile_Stub alias "IGraphBuilder_SetLogFile_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphBuilder_Abort_Proxy alias "IGraphBuilder_Abort_Proxy" (byval This as IGraphBuilder ptr) as HRESULT
-declare sub IGraphBuilder_Abort_Stub alias "IGraphBuilder_Abort_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphBuilder_ShouldOperationContinue_Proxy alias "IGraphBuilder_ShouldOperationContinue_Proxy" (byval This as IGraphBuilder ptr) as HRESULT
-declare sub IGraphBuilder_ShouldOperationContinue_Stub alias "IGraphBuilder_ShouldOperationContinue_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_ICaptureGraphBuilder alias "IID_ICaptureGraphBuilder" as IID
 
 type ICaptureGraphBuilderVtbl_ as ICaptureGraphBuilderVtbl
@@ -1502,24 +1117,6 @@ type ICaptureGraphBuilderVtbl
 	CopyCaptureFile as function(byval as ICaptureGraphBuilder ptr, byval as LPOLESTR, byval as LPOLESTR, byval as integer, byval as IAMCopyCaptureFileProgress_ ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function ICaptureGraphBuilder_SetFiltergraph_Proxy alias "ICaptureGraphBuilder_SetFiltergraph_Proxy" (byval This as ICaptureGraphBuilder ptr, byval pfg as IGraphBuilder ptr) as HRESULT
-declare sub ICaptureGraphBuilder_SetFiltergraph_Stub alias "ICaptureGraphBuilder_SetFiltergraph_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder_GetFiltergraph_Proxy alias "ICaptureGraphBuilder_GetFiltergraph_Proxy" (byval This as ICaptureGraphBuilder ptr, byval ppfg as IGraphBuilder ptr ptr) as HRESULT
-declare sub ICaptureGraphBuilder_GetFiltergraph_Stub alias "ICaptureGraphBuilder_GetFiltergraph_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder_SetOutputFileName_Proxy alias "ICaptureGraphBuilder_SetOutputFileName_Proxy" (byval This as ICaptureGraphBuilder ptr, byval pType as GUID ptr, byval lpstrFile as LPCOLESTR, byval ppf as IBaseFilter ptr ptr, byval ppSink as IFileSinkFilter ptr ptr) as HRESULT
-declare sub ICaptureGraphBuilder_SetOutputFileName_Stub alias "ICaptureGraphBuilder_SetOutputFileName_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder_RemoteFindInterface_Proxy alias "ICaptureGraphBuilder_RemoteFindInterface_Proxy" (byval This as ICaptureGraphBuilder ptr, byval pCategory as GUID ptr, byval pf as IBaseFilter ptr, byval riid as IID ptr, byval ppint as IUnknown ptr ptr) as HRESULT
-declare sub ICaptureGraphBuilder_RemoteFindInterface_Stub alias "ICaptureGraphBuilder_RemoteFindInterface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder_RenderStream_Proxy alias "ICaptureGraphBuilder_RenderStream_Proxy" (byval This as ICaptureGraphBuilder ptr, byval pCategory as GUID ptr, byval pSource as IUnknown ptr, byval pfCompressor as IBaseFilter ptr, byval pfRenderer as IBaseFilter ptr) as HRESULT
-declare sub ICaptureGraphBuilder_RenderStream_Stub alias "ICaptureGraphBuilder_RenderStream_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder_ControlStream_Proxy alias "ICaptureGraphBuilder_ControlStream_Proxy" (byval This as ICaptureGraphBuilder ptr, byval pCategory as GUID ptr, byval pFilter as IBaseFilter ptr, byval pstart as REFERENCE_TIME ptr, byval pstop as REFERENCE_TIME ptr, byval wStartCookie as WORD, byval wStopCookie as WORD) as HRESULT
-declare sub ICaptureGraphBuilder_ControlStream_Stub alias "ICaptureGraphBuilder_ControlStream_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder_AllocCapFile_Proxy alias "ICaptureGraphBuilder_AllocCapFile_Proxy" (byval This as ICaptureGraphBuilder ptr, byval lpstr as LPCOLESTR, byval dwlSize as DWORDLONG) as HRESULT
-declare sub ICaptureGraphBuilder_AllocCapFile_Stub alias "ICaptureGraphBuilder_AllocCapFile_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder_CopyCaptureFile_Proxy alias "ICaptureGraphBuilder_CopyCaptureFile_Proxy" (byval This as ICaptureGraphBuilder ptr, byval lpwstrOld as LPOLESTR, byval lpwstrNew as LPOLESTR, byval fAllowEscAbort as integer, byval pCallback as IAMCopyCaptureFileProgress ptr) as HRESULT
-declare sub ICaptureGraphBuilder_CopyCaptureFile_Stub alias "ICaptureGraphBuilder_CopyCaptureFile_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMCopyCaptureFileProgress alias "IID_IAMCopyCaptureFileProgress" as IID
 
 type IAMCopyCaptureFileProgressVtbl_ as IAMCopyCaptureFileProgressVtbl
@@ -1535,10 +1132,6 @@ type IAMCopyCaptureFileProgressVtbl
 	Progress as function(byval as IAMCopyCaptureFileProgress ptr, byval as integer) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMCopyCaptureFileProgress_Progress_Proxy alias "IAMCopyCaptureFileProgress_Progress_Proxy" (byval This as IAMCopyCaptureFileProgress ptr, byval iProgress as integer) as HRESULT
-declare sub IAMCopyCaptureFileProgress_Progress_Stub alias "IAMCopyCaptureFileProgress_Progress_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_ICaptureGraphBuilder2 alias "IID_ICaptureGraphBuilder2" as IID
 
 type ICaptureGraphBuilder2Vtbl_ as ICaptureGraphBuilder2Vtbl
@@ -1562,26 +1155,6 @@ type ICaptureGraphBuilder2Vtbl
 	FindPin as function(byval as ICaptureGraphBuilder2 ptr, byval as IUnknown ptr, byval as PIN_DIRECTION, byval as GUID ptr, byval as GUID ptr, byval as BOOL, byval as integer, byval as IPin ptr ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function ICaptureGraphBuilder2_SetFiltergraph_Proxy alias "ICaptureGraphBuilder2_SetFiltergraph_Proxy" (byval This as ICaptureGraphBuilder2 ptr, byval pfg as IGraphBuilder ptr) as HRESULT
-declare sub ICaptureGraphBuilder2_SetFiltergraph_Stub alias "ICaptureGraphBuilder2_SetFiltergraph_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder2_GetFiltergraph_Proxy alias "ICaptureGraphBuilder2_GetFiltergraph_Proxy" (byval This as ICaptureGraphBuilder2 ptr, byval ppfg as IGraphBuilder ptr ptr) as HRESULT
-declare sub ICaptureGraphBuilder2_GetFiltergraph_Stub alias "ICaptureGraphBuilder2_GetFiltergraph_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder2_SetOutputFileName_Proxy alias "ICaptureGraphBuilder2_SetOutputFileName_Proxy" (byval This as ICaptureGraphBuilder2 ptr, byval pType as GUID ptr, byval lpstrFile as LPCOLESTR, byval ppf as IBaseFilter ptr ptr, byval ppSink as IFileSinkFilter ptr ptr) as HRESULT
-declare sub ICaptureGraphBuilder2_SetOutputFileName_Stub alias "ICaptureGraphBuilder2_SetOutputFileName_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder2_RemoteFindInterface_Proxy alias "ICaptureGraphBuilder2_RemoteFindInterface_Proxy" (byval This as ICaptureGraphBuilder2 ptr, byval pCategory as GUID ptr, byval pType as GUID ptr, byval pf as IBaseFilter ptr, byval riid as IID ptr, byval ppint as IUnknown ptr ptr) as HRESULT
-declare sub ICaptureGraphBuilder2_RemoteFindInterface_Stub alias "ICaptureGraphBuilder2_RemoteFindInterface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder2_RenderStream_Proxy alias "ICaptureGraphBuilder2_RenderStream_Proxy" (byval This as ICaptureGraphBuilder2 ptr, byval pCategory as GUID ptr, byval pType as GUID ptr, byval pSource as IUnknown ptr, byval pfCompressor as IBaseFilter ptr, byval pfRenderer as IBaseFilter ptr) as HRESULT
-declare sub ICaptureGraphBuilder2_RenderStream_Stub alias "ICaptureGraphBuilder2_RenderStream_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder2_ControlStream_Proxy alias "ICaptureGraphBuilder2_ControlStream_Proxy" (byval This as ICaptureGraphBuilder2 ptr, byval pCategory as GUID ptr, byval pType as GUID ptr, byval pFilter as IBaseFilter ptr, byval pstart as REFERENCE_TIME ptr, byval pstop as REFERENCE_TIME ptr, byval wStartCookie as WORD, byval wStopCookie as WORD) as HRESULT
-declare sub ICaptureGraphBuilder2_ControlStream_Stub alias "ICaptureGraphBuilder2_ControlStream_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder2_AllocCapFile_Proxy alias "ICaptureGraphBuilder2_AllocCapFile_Proxy" (byval This as ICaptureGraphBuilder2 ptr, byval lpstr as LPCOLESTR, byval dwlSize as DWORDLONG) as HRESULT
-declare sub ICaptureGraphBuilder2_AllocCapFile_Stub alias "ICaptureGraphBuilder2_AllocCapFile_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder2_CopyCaptureFile_Proxy alias "ICaptureGraphBuilder2_CopyCaptureFile_Proxy" (byval This as ICaptureGraphBuilder2 ptr, byval lpwstrOld as LPOLESTR, byval lpwstrNew as LPOLESTR, byval fAllowEscAbort as integer, byval pCallback as IAMCopyCaptureFileProgress ptr) as HRESULT
-declare sub ICaptureGraphBuilder2_CopyCaptureFile_Stub alias "ICaptureGraphBuilder2_CopyCaptureFile_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder2_FindPin_Proxy alias "ICaptureGraphBuilder2_FindPin_Proxy" (byval This as ICaptureGraphBuilder2 ptr, byval pSource as IUnknown ptr, byval pindir as PIN_DIRECTION, byval pCategory as GUID ptr, byval pType as GUID ptr, byval fUnconnected as BOOL, byval num as integer, byval ppPin as IPin ptr ptr) as HRESULT
-declare sub ICaptureGraphBuilder2_FindPin_Stub alias "ICaptureGraphBuilder2_FindPin_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum AM_RENSDEREXFLAGS
 	AM_RENDEREX_RENDERTOEXISTINGRENDERERS = &h1
@@ -1619,14 +1192,6 @@ type IFilterGraph2Vtbl
 	RenderEx as function(byval as IFilterGraph2 ptr, byval as IPin ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IFilterGraph2_AddSourceFilterForMoniker_Proxy alias "IFilterGraph2_AddSourceFilterForMoniker_Proxy" (byval This as IFilterGraph2 ptr, byval pMoniker as IMoniker ptr, byval pCtx as IBindCtx ptr, byval lpcwstrFilterName as LPCWSTR, byval ppFilter as IBaseFilter ptr ptr) as HRESULT
-declare sub IFilterGraph2_AddSourceFilterForMoniker_Stub alias "IFilterGraph2_AddSourceFilterForMoniker_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterGraph2_ReconnectEx_Proxy alias "IFilterGraph2_ReconnectEx_Proxy" (byval This as IFilterGraph2 ptr, byval ppin as IPin ptr, byval pmt as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IFilterGraph2_ReconnectEx_Stub alias "IFilterGraph2_ReconnectEx_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterGraph2_RenderEx_Proxy alias "IFilterGraph2_RenderEx_Proxy" (byval This as IFilterGraph2 ptr, byval pPinOut as IPin ptr, byval dwFlags as DWORD, byval pvContext as DWORD ptr) as HRESULT
-declare sub IFilterGraph2_RenderEx_Stub alias "IFilterGraph2_RenderEx_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IStreamBuilder alias "IID_IStreamBuilder" as IID
 
 type IStreamBuilderVtbl_ as IStreamBuilderVtbl
@@ -1643,12 +1208,6 @@ type IStreamBuilderVtbl
 	Backout as function(byval as IStreamBuilder ptr, byval as IPin ptr, byval as IGraphBuilder ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IStreamBuilder_Render_Proxy alias "IStreamBuilder_Render_Proxy" (byval This as IStreamBuilder ptr, byval ppinOut as IPin ptr, byval pGraph as IGraphBuilder ptr) as HRESULT
-declare sub IStreamBuilder_Render_Stub alias "IStreamBuilder_Render_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IStreamBuilder_Backout_Proxy alias "IStreamBuilder_Backout_Proxy" (byval This as IStreamBuilder ptr, byval ppinOut as IPin ptr, byval pGraph as IGraphBuilder ptr) as HRESULT
-declare sub IStreamBuilder_Backout_Stub alias "IStreamBuilder_Backout_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAsyncReader alias "IID_IAsyncReader" as IID
 
 type IAsyncReaderVtbl_ as IAsyncReaderVtbl
@@ -1671,24 +1230,7 @@ type IAsyncReaderVtbl
 	EndFlush as function(byval as IAsyncReader ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAsyncReader_RequestAllocator_Proxy alias "IAsyncReader_RequestAllocator_Proxy" (byval This as IAsyncReader ptr, byval pPreferred as IMemAllocator ptr, byval pProps as ALLOCATOR_PROPERTIES ptr, byval ppActual as IMemAllocator ptr ptr) as HRESULT
-declare sub IAsyncReader_RequestAllocator_Stub alias "IAsyncReader_RequestAllocator_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAsyncReader_Request_Proxy alias "IAsyncReader_Request_Proxy" (byval This as IAsyncReader ptr, byval pSample as IMediaSample ptr, byval dwUser as DWORD_PTR) as HRESULT
-declare sub IAsyncReader_Request_Stub alias "IAsyncReader_Request_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAsyncReader_WaitForNext_Proxy alias "IAsyncReader_WaitForNext_Proxy" (byval This as IAsyncReader ptr, byval dwTimeout as DWORD, byval ppSample as IMediaSample ptr ptr, byval pdwUser as DWORD_PTR ptr) as HRESULT
-declare sub IAsyncReader_WaitForNext_Stub alias "IAsyncReader_WaitForNext_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAsyncReader_SyncReadAligned_Proxy alias "IAsyncReader_SyncReadAligned_Proxy" (byval This as IAsyncReader ptr, byval pSample as IMediaSample ptr) as HRESULT
-declare sub IAsyncReader_SyncReadAligned_Stub alias "IAsyncReader_SyncReadAligned_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAsyncReader_SyncRead_Proxy alias "IAsyncReader_SyncRead_Proxy" (byval This as IAsyncReader ptr, byval llPosition as LONGLONG, byval lLength as LONG, byval pBuffer as BYTE ptr) as HRESULT
-declare sub IAsyncReader_SyncRead_Stub alias "IAsyncReader_SyncRead_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAsyncReader_Length_Proxy alias "IAsyncReader_Length_Proxy" (byval This as IAsyncReader ptr, byval pTotal as LONGLONG ptr, byval pAvailable as LONGLONG ptr) as HRESULT
-declare sub IAsyncReader_Length_Stub alias "IAsyncReader_Length_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAsyncReader_BeginFlush_Proxy alias "IAsyncReader_BeginFlush_Proxy" (byval This as IAsyncReader ptr) as HRESULT
-declare sub IAsyncReader_BeginFlush_Stub alias "IAsyncReader_BeginFlush_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAsyncReader_EndFlush_Proxy alias "IAsyncReader_EndFlush_Proxy" (byval This as IAsyncReader ptr) as HRESULT
-declare sub IAsyncReader_EndFlush_Stub alias "IAsyncReader_EndFlush_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
+
 extern IID_IGraphVersion alias "IID_IGraphVersion" as IID
 
 type IGraphVersionVtbl_ as IGraphVersionVtbl
@@ -1704,10 +1246,7 @@ type IGraphVersionVtbl
 	QueryVersion as function(byval as IGraphVersion ptr, byval as LONG ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IGraphVersion_QueryVersion_Proxy alias "IGraphVersion_QueryVersion_Proxy" (byval This as IGraphVersion ptr, byval pVersion as LONG ptr) as HRESULT
-declare sub IGraphVersion_QueryVersion_Stub alias "IGraphVersion_QueryVersion_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
+
 extern IID_IResourceConsumer alias "IID_IResourceConsumer" as IID
 
 type IResourceConsumerVtbl_ as IResourceConsumerVtbl
@@ -1724,12 +1263,6 @@ type IResourceConsumerVtbl
 	ReleaseResource as function(byval as IResourceConsumer ptr, byval as LONG) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IResourceConsumer_AcquireResource_Proxy alias "IResourceConsumer_AcquireResource_Proxy" (byval This as IResourceConsumer ptr, byval idResource as LONG) as HRESULT
-declare sub IResourceConsumer_AcquireResource_Stub alias "IResourceConsumer_AcquireResource_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IResourceConsumer_ReleaseResource_Proxy alias "IResourceConsumer_ReleaseResource_Proxy" (byval This as IResourceConsumer ptr, byval idResource as LONG) as HRESULT
-declare sub IResourceConsumer_ReleaseResource_Stub alias "IResourceConsumer_ReleaseResource_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IResourceManager alias "IID_IResourceManager" as IID
 
 type IResourceManagerVtbl_ as IResourceManagerVtbl
@@ -1752,24 +1285,6 @@ type IResourceManagerVtbl
 	ReleaseFocus as function(byval as IResourceManager ptr, byval as IUnknown ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IResourceManager_Register_Proxy alias "IResourceManager_Register_Proxy" (byval This as IResourceManager ptr, byval pName as LPCWSTR, byval cResource as LONG, byval plToken as LONG ptr) as HRESULT
-declare sub IResourceManager_Register_Stub alias "IResourceManager_Register_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IResourceManager_RegisterGroup_Proxy alias "IResourceManager_RegisterGroup_Proxy" (byval This as IResourceManager ptr, byval pName as LPCWSTR, byval cResource as LONG, byval palTokens as LONG ptr, byval plToken as LONG ptr) as HRESULT
-declare sub IResourceManager_RegisterGroup_Stub alias "IResourceManager_RegisterGroup_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IResourceManager_RequestResource_Proxy alias "IResourceManager_RequestResource_Proxy" (byval This as IResourceManager ptr, byval idResource as LONG, byval pFocusObject as IUnknown ptr, byval pConsumer as IResourceConsumer ptr) as HRESULT
-declare sub IResourceManager_RequestResource_Stub alias "IResourceManager_RequestResource_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IResourceManager_NotifyAcquire_Proxy alias "IResourceManager_NotifyAcquire_Proxy" (byval This as IResourceManager ptr, byval idResource as LONG, byval pConsumer as IResourceConsumer ptr, byval hr as HRESULT) as HRESULT
-declare sub IResourceManager_NotifyAcquire_Stub alias "IResourceManager_NotifyAcquire_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IResourceManager_NotifyRelease_Proxy alias "IResourceManager_NotifyRelease_Proxy" (byval This as IResourceManager ptr, byval idResource as LONG, byval pConsumer as IResourceConsumer ptr, byval bStillWant as BOOL) as HRESULT
-declare sub IResourceManager_NotifyRelease_Stub alias "IResourceManager_NotifyRelease_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IResourceManager_CancelRequest_Proxy alias "IResourceManager_CancelRequest_Proxy" (byval This as IResourceManager ptr, byval idResource as LONG, byval pConsumer as IResourceConsumer ptr) as HRESULT
-declare sub IResourceManager_CancelRequest_Stub alias "IResourceManager_CancelRequest_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IResourceManager_SetFocus_Proxy alias "IResourceManager_SetFocus_Proxy" (byval This as IResourceManager ptr, byval pFocusObject as IUnknown ptr) as HRESULT
-declare sub IResourceManager_SetFocus_Stub alias "IResourceManager_SetFocus_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IResourceManager_ReleaseFocus_Proxy alias "IResourceManager_ReleaseFocus_Proxy" (byval This as IResourceManager ptr, byval pFocusObject as IUnknown ptr) as HRESULT
-declare sub IResourceManager_ReleaseFocus_Stub alias "IResourceManager_ReleaseFocus_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IDistributorNotify alias "IID_IDistributorNotify" as IID
 
 type IDistributorNotifyVtbl_ as IDistributorNotifyVtbl
@@ -1788,19 +1303,6 @@ type IDistributorNotifyVtbl
 	SetSyncSource as function(byval as IDistributorNotify ptr, byval as IReferenceClock ptr) as HRESULT
 	NotifyGraphChange as function(byval as IDistributorNotify ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IDistributorNotify_Stop_Proxy alias "IDistributorNotify_Stop_Proxy" (byval This as IDistributorNotify ptr) as HRESULT
-declare sub IDistributorNotify_Stop_Stub alias "IDistributorNotify_Stop_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDistributorNotify_Pause_Proxy alias "IDistributorNotify_Pause_Proxy" (byval This as IDistributorNotify ptr) as HRESULT
-declare sub IDistributorNotify_Pause_Stub alias "IDistributorNotify_Pause_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDistributorNotify_Run_Proxy alias "IDistributorNotify_Run_Proxy" (byval This as IDistributorNotify ptr, byval tStart as REFERENCE_TIME) as HRESULT
-declare sub IDistributorNotify_Run_Stub alias "IDistributorNotify_Run_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDistributorNotify_SetSyncSource_Proxy alias "IDistributorNotify_SetSyncSource_Proxy" (byval This as IDistributorNotify ptr, byval pClock as IReferenceClock ptr) as HRESULT
-declare sub IDistributorNotify_SetSyncSource_Stub alias "IDistributorNotify_SetSyncSource_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDistributorNotify_NotifyGraphChange_Proxy alias "IDistributorNotify_NotifyGraphChange_Proxy" (byval This as IDistributorNotify ptr) as HRESULT
-declare sub IDistributorNotify_NotifyGraphChange_Stub alias "IDistributorNotify_NotifyGraphChange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum AM_STREAM_INFO_FLAGS
 	AM_STREAM_INFO_START_DEFINED = &h1
@@ -1834,14 +1336,6 @@ type IAMStreamControlVtbl
 	GetInfo as function(byval as IAMStreamControl ptr, byval as AM_STREAM_INFO ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMStreamControl_StartAt_Proxy alias "IAMStreamControl_StartAt_Proxy" (byval This as IAMStreamControl ptr, byval ptStart as REFERENCE_TIME ptr, byval dwCookie as DWORD) as HRESULT
-declare sub IAMStreamControl_StartAt_Stub alias "IAMStreamControl_StartAt_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMStreamControl_StopAt_Proxy alias "IAMStreamControl_StopAt_Proxy" (byval This as IAMStreamControl ptr, byval ptStop as REFERENCE_TIME ptr, byval bSendExtra as BOOL, byval dwCookie as DWORD) as HRESULT
-declare sub IAMStreamControl_StopAt_Stub alias "IAMStreamControl_StopAt_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMStreamControl_GetInfo_Proxy alias "IAMStreamControl_GetInfo_Proxy" (byval This as IAMStreamControl ptr, byval pInfo as AM_STREAM_INFO ptr) as HRESULT
-declare sub IAMStreamControl_GetInfo_Stub alias "IAMStreamControl_GetInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_ISeekingPassThru alias "IID_ISeekingPassThru" as IID
 
 type ISeekingPassThruVtbl_ as ISeekingPassThruVtbl
@@ -1856,11 +1350,6 @@ type ISeekingPassThruVtbl
 	Release as function(byval as ISeekingPassThru ptr) as ULONG
 	Init as function(byval as ISeekingPassThru ptr, byval as BOOL, byval as IPin ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function ISeekingPassThru_Init_Proxy alias "ISeekingPassThru_Init_Proxy" (byval This as ISeekingPassThru ptr, byval bSupportRendering as BOOL, byval pPin as IPin ptr) as HRESULT
-declare sub ISeekingPassThru_Init_Stub alias "ISeekingPassThru_Init_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type VIDEO_STREAM_CONFIG_CAPS
 	guid as GUID
@@ -1917,17 +1406,6 @@ type IAMStreamConfigVtbl
 	GetStreamCaps as function(byval as IAMStreamConfig ptr, byval as integer, byval as AM_MEDIA_TYPE ptr ptr, byval as BYTE ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMStreamConfig_SetFormat_Proxy alias "IAMStreamConfig_SetFormat_Proxy" (byval This as IAMStreamConfig ptr, byval pmt as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IAMStreamConfig_SetFormat_Stub alias "IAMStreamConfig_SetFormat_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMStreamConfig_GetFormat_Proxy alias "IAMStreamConfig_GetFormat_Proxy" (byval This as IAMStreamConfig ptr, byval ppmt as AM_MEDIA_TYPE ptr ptr) as HRESULT
-declare sub IAMStreamConfig_GetFormat_Stub alias "IAMStreamConfig_GetFormat_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMStreamConfig_GetNumberOfCapabilities_Proxy alias "IAMStreamConfig_GetNumberOfCapabilities_Proxy" (byval This as IAMStreamConfig ptr, byval piCount as integer ptr, byval piSize as integer ptr) as HRESULT
-declare sub IAMStreamConfig_GetNumberOfCapabilities_Stub alias "IAMStreamConfig_GetNumberOfCapabilities_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMStreamConfig_GetStreamCaps_Proxy alias "IAMStreamConfig_GetStreamCaps_Proxy" (byval This as IAMStreamConfig ptr, byval iIndex as integer, byval ppmt as AM_MEDIA_TYPE ptr ptr, byval pSCC as BYTE ptr) as HRESULT
-declare sub IAMStreamConfig_GetStreamCaps_Stub alias "IAMStreamConfig_GetStreamCaps_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 enum InterleavingMode
 	INTERLEAVE_NONE = 0
 	INTERLEAVE_CAPTURE = INTERLEAVE_NONE+1
@@ -1953,16 +1431,6 @@ type IConfigInterleavingVtbl
 	get_Interleaving as function(byval as IConfigInterleaving ptr, byval as REFERENCE_TIME ptr, byval as REFERENCE_TIME ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IConfigInterleaving_put_Mode_Proxy alias "IConfigInterleaving_put_Mode_Proxy" (byval This as IConfigInterleaving ptr, byval mode as InterleavingMode) as HRESULT
-declare sub IConfigInterleaving_put_Mode_Stub alias "IConfigInterleaving_put_Mode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IConfigInterleaving_get_Mode_Proxy alias "IConfigInterleaving_get_Mode_Proxy" (byval This as IConfigInterleaving ptr, byval pMode as InterleavingMode ptr) as HRESULT
-declare sub IConfigInterleaving_get_Mode_Stub alias "IConfigInterleaving_get_Mode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IConfigInterleaving_put_Interleaving_Proxy alias "IConfigInterleaving_put_Interleaving_Proxy" (byval This as IConfigInterleaving ptr, byval prtInterleave as REFERENCE_TIME ptr, byval prtPreroll as REFERENCE_TIME ptr) as HRESULT
-declare sub IConfigInterleaving_put_Interleaving_Stub alias "IConfigInterleaving_put_Interleaving_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IConfigInterleaving_get_Interleaving_Proxy alias "IConfigInterleaving_get_Interleaving_Proxy" (byval This as IConfigInterleaving ptr, byval prtInterleave as REFERENCE_TIME ptr, byval prtPreroll as REFERENCE_TIME ptr) as HRESULT
-declare sub IConfigInterleaving_get_Interleaving_Stub alias "IConfigInterleaving_get_Interleaving_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IConfigAviMux alias "IID_IConfigAviMux" as IID
 
 type IConfigAviMuxVtbl_ as IConfigAviMuxVtbl
@@ -1980,17 +1448,6 @@ type IConfigAviMuxVtbl
 	SetOutputCompatibilityIndex as function(byval as IConfigAviMux ptr, byval as BOOL) as HRESULT
 	GetOutputCompatibilityIndex as function(byval as IConfigAviMux ptr, byval as BOOL ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IConfigAviMux_SetMasterStream_Proxy alias "IConfigAviMux_SetMasterStream_Proxy" (byval This as IConfigAviMux ptr, byval iStream as LONG) as HRESULT
-declare sub IConfigAviMux_SetMasterStream_Stub alias "IConfigAviMux_SetMasterStream_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IConfigAviMux_GetMasterStream_Proxy alias "IConfigAviMux_GetMasterStream_Proxy" (byval This as IConfigAviMux ptr, byval pStream as LONG ptr) as HRESULT
-declare sub IConfigAviMux_GetMasterStream_Stub alias "IConfigAviMux_GetMasterStream_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IConfigAviMux_SetOutputCompatibilityIndex_Proxy alias "IConfigAviMux_SetOutputCompatibilityIndex_Proxy" (byval This as IConfigAviMux ptr, byval fOldIndex as BOOL) as HRESULT
-declare sub IConfigAviMux_SetOutputCompatibilityIndex_Stub alias "IConfigAviMux_SetOutputCompatibilityIndex_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IConfigAviMux_GetOutputCompatibilityIndex_Proxy alias "IConfigAviMux_GetOutputCompatibilityIndex_Proxy" (byval This as IConfigAviMux ptr, byval pfOldIndex as BOOL ptr) as HRESULT
-declare sub IConfigAviMux_GetOutputCompatibilityIndex_Stub alias "IConfigAviMux_GetOutputCompatibilityIndex_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum CompressionCaps
 	CompressionCaps_CanQuality = &h1
@@ -2025,31 +1482,6 @@ type IAMVideoCompressionVtbl
 	OverrideFrameSize as function(byval as IAMVideoCompression ptr, byval as integer, byval as integer) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMVideoCompression_put_KeyFrameRate_Proxy alias "IAMVideoCompression_put_KeyFrameRate_Proxy" (byval This as IAMVideoCompression ptr, byval KeyFrameRate as integer) as HRESULT
-declare sub IAMVideoCompression_put_KeyFrameRate_Stub alias "IAMVideoCompression_put_KeyFrameRate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoCompression_get_KeyFrameRate_Proxy alias "IAMVideoCompression_get_KeyFrameRate_Proxy" (byval This as IAMVideoCompression ptr, byval pKeyFrameRate as integer ptr) as HRESULT
-declare sub IAMVideoCompression_get_KeyFrameRate_Stub alias "IAMVideoCompression_get_KeyFrameRate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoCompression_put_PFramesPerKeyFrame_Proxy alias "IAMVideoCompression_put_PFramesPerKeyFrame_Proxy" (byval This as IAMVideoCompression ptr, byval PFramesPerKeyFrame as integer) as HRESULT
-declare sub IAMVideoCompression_put_PFramesPerKeyFrame_Stub alias "IAMVideoCompression_put_PFramesPerKeyFrame_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoCompression_get_PFramesPerKeyFrame_Proxy alias "IAMVideoCompression_get_PFramesPerKeyFrame_Proxy" (byval This as IAMVideoCompression ptr, byval pPFramesPerKeyFrame as integer ptr) as HRESULT
-declare sub IAMVideoCompression_get_PFramesPerKeyFrame_Stub alias "IAMVideoCompression_get_PFramesPerKeyFrame_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoCompression_put_Quality_Proxy alias "IAMVideoCompression_put_Quality_Proxy" (byval This as IAMVideoCompression ptr, byval Quality as double) as HRESULT
-declare sub IAMVideoCompression_put_Quality_Stub alias "IAMVideoCompression_put_Quality_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoCompression_get_Quality_Proxy alias "IAMVideoCompression_get_Quality_Proxy" (byval This as IAMVideoCompression ptr, byval pQuality as double ptr) as HRESULT
-declare sub IAMVideoCompression_get_Quality_Stub alias "IAMVideoCompression_get_Quality_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoCompression_put_WindowSize_Proxy alias "IAMVideoCompression_put_WindowSize_Proxy" (byval This as IAMVideoCompression ptr, byval WindowSize as DWORDLONG) as HRESULT
-declare sub IAMVideoCompression_put_WindowSize_Stub alias "IAMVideoCompression_put_WindowSize_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoCompression_get_WindowSize_Proxy alias "IAMVideoCompression_get_WindowSize_Proxy" (byval This as IAMVideoCompression ptr, byval pWindowSize as DWORDLONG ptr) as HRESULT
-declare sub IAMVideoCompression_get_WindowSize_Stub alias "IAMVideoCompression_get_WindowSize_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoCompression_GetInfo_Proxy alias "IAMVideoCompression_GetInfo_Proxy" (byval This as IAMVideoCompression ptr, byval pszVersion as WCHAR ptr, byval pcbVersion as integer ptr, byval pszDescription as LPWSTR, byval pcbDescription as integer ptr, byval pDefaultKeyFrameRate as integer ptr, byval pDefaultPFramesPerKey as integer ptr, byval pDefaultQuality as double ptr, byval pCapabilities as integer ptr) as HRESULT
-declare sub IAMVideoCompression_GetInfo_Stub alias "IAMVideoCompression_GetInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoCompression_OverrideKeyFrame_Proxy alias "IAMVideoCompression_OverrideKeyFrame_Proxy" (byval This as IAMVideoCompression ptr, byval FrameNumber as integer) as HRESULT
-declare sub IAMVideoCompression_OverrideKeyFrame_Stub alias "IAMVideoCompression_OverrideKeyFrame_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoCompression_OverrideFrameSize_Proxy alias "IAMVideoCompression_OverrideFrameSize_Proxy" (byval This as IAMVideoCompression ptr, byval FrameNumber as integer, byval Size as integer) as HRESULT
-declare sub IAMVideoCompression_OverrideFrameSize_Stub alias "IAMVideoCompression_OverrideFrameSize_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 enum VfwCaptureDialogs
 	VfwCaptureDialog_Source = &h1
 	VfwCaptureDialog_Format = &h2
@@ -2080,14 +1512,6 @@ type IAMVfwCaptureDialogsVtbl
 	SendDriverMessage as function(byval as IAMVfwCaptureDialogs ptr, byval as integer, byval as integer, byval as integer, byval as integer) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMVfwCaptureDialogs_HasDialog_Proxy alias "IAMVfwCaptureDialogs_HasDialog_Proxy" (byval This as IAMVfwCaptureDialogs ptr, byval iDialog as integer) as HRESULT
-declare sub IAMVfwCaptureDialogs_HasDialog_Stub alias "IAMVfwCaptureDialogs_HasDialog_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVfwCaptureDialogs_ShowDialog_Proxy alias "IAMVfwCaptureDialogs_ShowDialog_Proxy" (byval This as IAMVfwCaptureDialogs ptr, byval iDialog as integer, byval hwnd as HWND) as HRESULT
-declare sub IAMVfwCaptureDialogs_ShowDialog_Stub alias "IAMVfwCaptureDialogs_ShowDialog_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVfwCaptureDialogs_SendDriverMessage_Proxy alias "IAMVfwCaptureDialogs_SendDriverMessage_Proxy" (byval This as IAMVfwCaptureDialogs ptr, byval iDialog as integer, byval uMsg as integer, byval dw1 as integer, byval dw2 as integer) as HRESULT
-declare sub IAMVfwCaptureDialogs_SendDriverMessage_Stub alias "IAMVfwCaptureDialogs_SendDriverMessage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMVfwCompressDialogs alias "IID_IAMVfwCompressDialogs" as IID
 
 type IAMVfwCompressDialogsVtbl_ as IAMVfwCompressDialogsVtbl
@@ -2106,16 +1530,6 @@ type IAMVfwCompressDialogsVtbl
 	SendDriverMessage as function(byval as IAMVfwCompressDialogs ptr, byval as integer, byval as integer, byval as integer) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMVfwCompressDialogs_ShowDialog_Proxy alias "IAMVfwCompressDialogs_ShowDialog_Proxy" (byval This as IAMVfwCompressDialogs ptr, byval iDialog as integer, byval hwnd as HWND) as HRESULT
-declare sub IAMVfwCompressDialogs_ShowDialog_Stub alias "IAMVfwCompressDialogs_ShowDialog_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVfwCompressDialogs_GetState_Proxy alias "IAMVfwCompressDialogs_GetState_Proxy" (byval This as IAMVfwCompressDialogs ptr, byval pState as LPVOID, byval pcbState as integer ptr) as HRESULT
-declare sub IAMVfwCompressDialogs_GetState_Stub alias "IAMVfwCompressDialogs_GetState_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVfwCompressDialogs_SetState_Proxy alias "IAMVfwCompressDialogs_SetState_Proxy" (byval This as IAMVfwCompressDialogs ptr, byval pState as LPVOID, byval cbState as integer) as HRESULT
-declare sub IAMVfwCompressDialogs_SetState_Stub alias "IAMVfwCompressDialogs_SetState_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVfwCompressDialogs_SendDriverMessage_Proxy alias "IAMVfwCompressDialogs_SendDriverMessage_Proxy" (byval This as IAMVfwCompressDialogs ptr, byval uMsg as integer, byval dw1 as integer, byval dw2 as integer) as HRESULT
-declare sub IAMVfwCompressDialogs_SendDriverMessage_Stub alias "IAMVfwCompressDialogs_SendDriverMessage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMDroppedFrames alias "IID_IAMDroppedFrames" as IID
 
 type IAMDroppedFramesVtbl_ as IAMDroppedFramesVtbl
@@ -2133,17 +1547,6 @@ type IAMDroppedFramesVtbl
 	GetDroppedInfo as function(byval as IAMDroppedFrames ptr, byval as integer, byval as integer ptr, byval as integer ptr) as HRESULT
 	GetAverageFrameSize as function(byval as IAMDroppedFrames ptr, byval as integer ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMDroppedFrames_GetNumDropped_Proxy alias "IAMDroppedFrames_GetNumDropped_Proxy" (byval This as IAMDroppedFrames ptr, byval plDropped as integer ptr) as HRESULT
-declare sub IAMDroppedFrames_GetNumDropped_Stub alias "IAMDroppedFrames_GetNumDropped_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMDroppedFrames_GetNumNotDropped_Proxy alias "IAMDroppedFrames_GetNumNotDropped_Proxy" (byval This as IAMDroppedFrames ptr, byval plNotDropped as integer ptr) as HRESULT
-declare sub IAMDroppedFrames_GetNumNotDropped_Stub alias "IAMDroppedFrames_GetNumNotDropped_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMDroppedFrames_GetDroppedInfo_Proxy alias "IAMDroppedFrames_GetDroppedInfo_Proxy" (byval This as IAMDroppedFrames ptr, byval lSize as integer, byval plArray as integer ptr, byval plNumCopied as integer ptr) as HRESULT
-declare sub IAMDroppedFrames_GetDroppedInfo_Stub alias "IAMDroppedFrames_GetDroppedInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMDroppedFrames_GetAverageFrameSize_Proxy alias "IAMDroppedFrames_GetAverageFrameSize_Proxy" (byval This as IAMDroppedFrames ptr, byval plAverageSize as integer ptr) as HRESULT
-declare sub IAMDroppedFrames_GetAverageFrameSize_Stub alias "IAMDroppedFrames_GetAverageFrameSize_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 #define AMF_AUTOMATICGAIN -1.0
 extern IID_IAMAudioInputMixer alias "IID_IAMAudioInputMixer" as IID
@@ -2176,40 +1579,6 @@ type IAMAudioInputMixerVtbl
 	get_BassRange as function(byval as IAMAudioInputMixer ptr, byval as double ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMAudioInputMixer_put_Enable_Proxy alias "IAMAudioInputMixer_put_Enable_Proxy" (byval This as IAMAudioInputMixer ptr, byval fEnable as BOOL) as HRESULT
-declare sub IAMAudioInputMixer_put_Enable_Stub alias "IAMAudioInputMixer_put_Enable_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_get_Enable_Proxy alias "IAMAudioInputMixer_get_Enable_Proxy" (byval This as IAMAudioInputMixer ptr, byval pfEnable as BOOL ptr) as HRESULT
-declare sub IAMAudioInputMixer_get_Enable_Stub alias "IAMAudioInputMixer_get_Enable_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_put_Mono_Proxy alias "IAMAudioInputMixer_put_Mono_Proxy" (byval This as IAMAudioInputMixer ptr, byval fMono as BOOL) as HRESULT
-declare sub IAMAudioInputMixer_put_Mono_Stub alias "IAMAudioInputMixer_put_Mono_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_get_Mono_Proxy alias "IAMAudioInputMixer_get_Mono_Proxy" (byval This as IAMAudioInputMixer ptr, byval pfMono as BOOL ptr) as HRESULT
-declare sub IAMAudioInputMixer_get_Mono_Stub alias "IAMAudioInputMixer_get_Mono_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_put_MixLevel_Proxy alias "IAMAudioInputMixer_put_MixLevel_Proxy" (byval This as IAMAudioInputMixer ptr, byval Level as double) as HRESULT
-declare sub IAMAudioInputMixer_put_MixLevel_Stub alias "IAMAudioInputMixer_put_MixLevel_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_get_MixLevel_Proxy alias "IAMAudioInputMixer_get_MixLevel_Proxy" (byval This as IAMAudioInputMixer ptr, byval pLevel as double ptr) as HRESULT
-declare sub IAMAudioInputMixer_get_MixLevel_Stub alias "IAMAudioInputMixer_get_MixLevel_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_put_Pan_Proxy alias "IAMAudioInputMixer_put_Pan_Proxy" (byval This as IAMAudioInputMixer ptr, byval Pan as double) as HRESULT
-declare sub IAMAudioInputMixer_put_Pan_Stub alias "IAMAudioInputMixer_put_Pan_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_get_Pan_Proxy alias "IAMAudioInputMixer_get_Pan_Proxy" (byval This as IAMAudioInputMixer ptr, byval pPan as double ptr) as HRESULT
-declare sub IAMAudioInputMixer_get_Pan_Stub alias "IAMAudioInputMixer_get_Pan_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_put_Loudness_Proxy alias "IAMAudioInputMixer_put_Loudness_Proxy" (byval This as IAMAudioInputMixer ptr, byval fLoudness as BOOL) as HRESULT
-declare sub IAMAudioInputMixer_put_Loudness_Stub alias "IAMAudioInputMixer_put_Loudness_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_get_Loudness_Proxy alias "IAMAudioInputMixer_get_Loudness_Proxy" (byval This as IAMAudioInputMixer ptr, byval pfLoudness as BOOL ptr) as HRESULT
-declare sub IAMAudioInputMixer_get_Loudness_Stub alias "IAMAudioInputMixer_get_Loudness_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_put_Treble_Proxy alias "IAMAudioInputMixer_put_Treble_Proxy" (byval This as IAMAudioInputMixer ptr, byval Treble as double) as HRESULT
-declare sub IAMAudioInputMixer_put_Treble_Stub alias "IAMAudioInputMixer_put_Treble_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_get_Treble_Proxy alias "IAMAudioInputMixer_get_Treble_Proxy" (byval This as IAMAudioInputMixer ptr, byval pTreble as double ptr) as HRESULT
-declare sub IAMAudioInputMixer_get_Treble_Stub alias "IAMAudioInputMixer_get_Treble_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_get_TrebleRange_Proxy alias "IAMAudioInputMixer_get_TrebleRange_Proxy" (byval This as IAMAudioInputMixer ptr, byval pRange as double ptr) as HRESULT
-declare sub IAMAudioInputMixer_get_TrebleRange_Stub alias "IAMAudioInputMixer_get_TrebleRange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_put_Bass_Proxy alias "IAMAudioInputMixer_put_Bass_Proxy" (byval This as IAMAudioInputMixer ptr, byval Bass as double) as HRESULT
-declare sub IAMAudioInputMixer_put_Bass_Stub alias "IAMAudioInputMixer_put_Bass_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_get_Bass_Proxy alias "IAMAudioInputMixer_get_Bass_Proxy" (byval This as IAMAudioInputMixer ptr, byval pBass as double ptr) as HRESULT
-declare sub IAMAudioInputMixer_get_Bass_Stub alias "IAMAudioInputMixer_get_Bass_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAudioInputMixer_get_BassRange_Proxy alias "IAMAudioInputMixer_get_BassRange_Proxy" (byval This as IAMAudioInputMixer ptr, byval pRange as double ptr) as HRESULT
-declare sub IAMAudioInputMixer_get_BassRange_Stub alias "IAMAudioInputMixer_get_BassRange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMBufferNegotiation alias "IID_IAMBufferNegotiation" as IID
 
 type IAMBufferNegotiationVtbl_ as IAMBufferNegotiationVtbl
@@ -2225,13 +1594,6 @@ type IAMBufferNegotiationVtbl
 	SuggestAllocatorProperties as function(byval as IAMBufferNegotiation ptr, byval as ALLOCATOR_PROPERTIES ptr) as HRESULT
 	GetAllocatorProperties as function(byval as IAMBufferNegotiation ptr, byval as ALLOCATOR_PROPERTIES ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMBufferNegotiation_SuggestAllocatorProperties_Proxy alias "IAMBufferNegotiation_SuggestAllocatorProperties_Proxy" (byval This as IAMBufferNegotiation ptr, byval pprop as ALLOCATOR_PROPERTIES ptr) as HRESULT
-declare sub IAMBufferNegotiation_SuggestAllocatorProperties_Stub alias "IAMBufferNegotiation_SuggestAllocatorProperties_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMBufferNegotiation_GetAllocatorProperties_Proxy alias "IAMBufferNegotiation_GetAllocatorProperties_Proxy" (byval This as IAMBufferNegotiation ptr, byval pprop as ALLOCATOR_PROPERTIES ptr) as HRESULT
-declare sub IAMBufferNegotiation_GetAllocatorProperties_Stub alias "IAMBufferNegotiation_GetAllocatorProperties_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum AnalogVideoStandard
 	AnalogVideo_None = 0
@@ -2322,27 +1684,6 @@ type IAMAnalogVideoDecoderVtbl
 	get_OutputEnable as function(byval as IAMAnalogVideoDecoder ptr, byval as integer ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMAnalogVideoDecoder_get_AvailableTVFormats_Proxy alias "IAMAnalogVideoDecoder_get_AvailableTVFormats_Proxy" (byval This as IAMAnalogVideoDecoder ptr, byval lAnalogVideoStandard as integer ptr) as HRESULT
-declare sub IAMAnalogVideoDecoder_get_AvailableTVFormats_Stub alias "IAMAnalogVideoDecoder_get_AvailableTVFormats_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoDecoder_put_TVFormat_Proxy alias "IAMAnalogVideoDecoder_put_TVFormat_Proxy" (byval This as IAMAnalogVideoDecoder ptr, byval lAnalogVideoStandard as integer) as HRESULT
-declare sub IAMAnalogVideoDecoder_put_TVFormat_Stub alias "IAMAnalogVideoDecoder_put_TVFormat_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoDecoder_get_TVFormat_Proxy alias "IAMAnalogVideoDecoder_get_TVFormat_Proxy" (byval This as IAMAnalogVideoDecoder ptr, byval plAnalogVideoStandard as integer ptr) as HRESULT
-declare sub IAMAnalogVideoDecoder_get_TVFormat_Stub alias "IAMAnalogVideoDecoder_get_TVFormat_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoDecoder_get_HorizontalLocked_Proxy alias "IAMAnalogVideoDecoder_get_HorizontalLocked_Proxy" (byval This as IAMAnalogVideoDecoder ptr, byval plLocked as integer ptr) as HRESULT
-declare sub IAMAnalogVideoDecoder_get_HorizontalLocked_Stub alias "IAMAnalogVideoDecoder_get_HorizontalLocked_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoDecoder_put_VCRHorizontalLocking_Proxy alias "IAMAnalogVideoDecoder_put_VCRHorizontalLocking_Proxy" (byval This as IAMAnalogVideoDecoder ptr, byval lVCRHorizontalLocking as integer) as HRESULT
-declare sub IAMAnalogVideoDecoder_put_VCRHorizontalLocking_Stub alias "IAMAnalogVideoDecoder_put_VCRHorizontalLocking_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoDecoder_get_VCRHorizontalLocking_Proxy alias "IAMAnalogVideoDecoder_get_VCRHorizontalLocking_Proxy" (byval This as IAMAnalogVideoDecoder ptr, byval plVCRHorizontalLocking as integer ptr) as HRESULT
-declare sub IAMAnalogVideoDecoder_get_VCRHorizontalLocking_Stub alias "IAMAnalogVideoDecoder_get_VCRHorizontalLocking_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoDecoder_get_NumberOfLines_Proxy alias "IAMAnalogVideoDecoder_get_NumberOfLines_Proxy" (byval This as IAMAnalogVideoDecoder ptr, byval plNumberOfLines as integer ptr) as HRESULT
-declare sub IAMAnalogVideoDecoder_get_NumberOfLines_Stub alias "IAMAnalogVideoDecoder_get_NumberOfLines_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoDecoder_put_OutputEnable_Proxy alias "IAMAnalogVideoDecoder_put_OutputEnable_Proxy" (byval This as IAMAnalogVideoDecoder ptr, byval lOutputEnable as integer) as HRESULT
-declare sub IAMAnalogVideoDecoder_put_OutputEnable_Stub alias "IAMAnalogVideoDecoder_put_OutputEnable_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoDecoder_get_OutputEnable_Proxy alias "IAMAnalogVideoDecoder_get_OutputEnable_Proxy" (byval This as IAMAnalogVideoDecoder ptr, byval plOutputEnable as integer ptr) as HRESULT
-declare sub IAMAnalogVideoDecoder_get_OutputEnable_Stub alias "IAMAnalogVideoDecoder_get_OutputEnable_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 enum VideoProcAmpProperty
 	VideoProcAmp_Brightness = 0
 	VideoProcAmp_Contrast = VideoProcAmp_Brightness+1
@@ -2378,15 +1719,6 @@ type IAMVideoProcAmpVtbl
 	Get as function(byval as IAMVideoProcAmp ptr, byval as integer, byval as integer ptr, byval as integer ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMVideoProcAmp_GetRange_Proxy alias "IAMVideoProcAmp_GetRange_Proxy" (byval This as IAMVideoProcAmp ptr, byval Property as integer, byval pMin as integer ptr, byval pMax as integer ptr, byval pSteppingDelta as integer ptr, byval pDefault as integer ptr, byval pCapsFlags as integer ptr) as HRESULT
-declare sub IAMVideoProcAmp_GetRange_Stub alias "IAMVideoProcAmp_GetRange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoProcAmp_Set_Proxy alias "IAMVideoProcAmp_Set_Proxy" (byval This as IAMVideoProcAmp ptr, byval Property as integer, byval lValue as integer, byval Flags as integer) as HRESULT
-declare sub IAMVideoProcAmp_Set_Stub alias "IAMVideoProcAmp_Set_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoProcAmp_Get_Proxy alias "IAMVideoProcAmp_Get_Proxy" (byval This as IAMVideoProcAmp ptr, byval Property as integer, byval lValue as integer ptr, byval Flags as integer ptr) as HRESULT
-declare sub IAMVideoProcAmp_Get_Stub alias "IAMVideoProcAmp_Get_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 enum CameraControlProperty
 	CameraControl_Pan = 0
 	CameraControl_Tilt = CameraControl_Pan+1
@@ -2419,15 +1751,6 @@ type IAMCameraControlVtbl
 	Get as function(byval as IAMCameraControl ptr, byval as integer, byval as integer ptr, byval as integer ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMCameraControl_GetRange_Proxy alias "IAMCameraControl_GetRange_Proxy" (byval This as IAMCameraControl ptr, byval Property as integer, byval pMin as integer ptr, byval pMax as integer ptr, byval pSteppingDelta as integer ptr, byval pDefault as integer ptr, byval pCapsFlags as integer ptr) as HRESULT
-declare sub IAMCameraControl_GetRange_Stub alias "IAMCameraControl_GetRange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMCameraControl_Set_Proxy alias "IAMCameraControl_Set_Proxy" (byval This as IAMCameraControl ptr, byval Property as integer, byval lValue as integer, byval Flags as integer) as HRESULT
-declare sub IAMCameraControl_Set_Stub alias "IAMCameraControl_Set_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMCameraControl_Get_Proxy alias "IAMCameraControl_Get_Proxy" (byval This as IAMCameraControl ptr, byval Property as integer, byval lValue as integer ptr, byval Flags as integer ptr) as HRESULT
-declare sub IAMCameraControl_Get_Stub alias "IAMCameraControl_Get_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 enum VideoControlFlags
 	VideoControlFlag_FlipHorizontal = &h1
 	VideoControlFlag_FlipVertical = &h2
@@ -2455,20 +1778,6 @@ type IAMVideoControlVtbl
 	GetFrameRateList as function(byval as IAMVideoControl ptr, byval as IPin ptr, byval as integer, byval as SIZE, byval as integer ptr, byval as LONGLONG ptr ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMVideoControl_GetCaps_Proxy alias "IAMVideoControl_GetCaps_Proxy" (byval This as IAMVideoControl ptr, byval pPin as IPin ptr, byval pCapsFlags as integer ptr) as HRESULT
-declare sub IAMVideoControl_GetCaps_Stub alias "IAMVideoControl_GetCaps_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoControl_SetMode_Proxy alias "IAMVideoControl_SetMode_Proxy" (byval This as IAMVideoControl ptr, byval pPin as IPin ptr, byval Mode as integer) as HRESULT
-declare sub IAMVideoControl_SetMode_Stub alias "IAMVideoControl_SetMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoControl_GetMode_Proxy alias "IAMVideoControl_GetMode_Proxy" (byval This as IAMVideoControl ptr, byval pPin as IPin ptr, byval Mode as integer ptr) as HRESULT
-declare sub IAMVideoControl_GetMode_Stub alias "IAMVideoControl_GetMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoControl_GetCurrentActualFrameRate_Proxy alias "IAMVideoControl_GetCurrentActualFrameRate_Proxy" (byval This as IAMVideoControl ptr, byval pPin as IPin ptr, byval ActualFrameRate as LONGLONG ptr) as HRESULT
-declare sub IAMVideoControl_GetCurrentActualFrameRate_Stub alias "IAMVideoControl_GetCurrentActualFrameRate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoControl_GetMaxAvailableFrameRate_Proxy alias "IAMVideoControl_GetMaxAvailableFrameRate_Proxy" (byval This as IAMVideoControl ptr, byval pPin as IPin ptr, byval iIndex as integer, byval Dimensions as SIZE, byval MaxAvailableFrameRate as LONGLONG ptr) as HRESULT
-declare sub IAMVideoControl_GetMaxAvailableFrameRate_Stub alias "IAMVideoControl_GetMaxAvailableFrameRate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoControl_GetFrameRateList_Proxy alias "IAMVideoControl_GetFrameRateList_Proxy" (byval This as IAMVideoControl ptr, byval pPin as IPin ptr, byval iIndex as integer, byval Dimensions as SIZE, byval ListSize as integer ptr, byval FrameRates as LONGLONG ptr ptr) as HRESULT
-declare sub IAMVideoControl_GetFrameRateList_Stub alias "IAMVideoControl_GetFrameRateList_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMCrossbar alias "IID_IAMCrossbar" as IID
 
 type IAMCrossbarVtbl_ as IAMCrossbarVtbl
@@ -2487,19 +1796,6 @@ type IAMCrossbarVtbl
 	get_IsRoutedTo as function(byval as IAMCrossbar ptr, byval as integer, byval as integer ptr) as HRESULT
 	get_CrossbarPinInfo as function(byval as IAMCrossbar ptr, byval as BOOL, byval as integer, byval as integer ptr, byval as integer ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMCrossbar_get_PinCounts_Proxy alias "IAMCrossbar_get_PinCounts_Proxy" (byval This as IAMCrossbar ptr, byval OutputPinCount as integer ptr, byval InputPinCount as integer ptr) as HRESULT
-declare sub IAMCrossbar_get_PinCounts_Stub alias "IAMCrossbar_get_PinCounts_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMCrossbar_CanRoute_Proxy alias "IAMCrossbar_CanRoute_Proxy" (byval This as IAMCrossbar ptr, byval OutputPinIndex as integer, byval InputPinIndex as integer) as HRESULT
-declare sub IAMCrossbar_CanRoute_Stub alias "IAMCrossbar_CanRoute_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMCrossbar_Route_Proxy alias "IAMCrossbar_Route_Proxy" (byval This as IAMCrossbar ptr, byval OutputPinIndex as integer, byval InputPinIndex as integer) as HRESULT
-declare sub IAMCrossbar_Route_Stub alias "IAMCrossbar_Route_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMCrossbar_get_IsRoutedTo_Proxy alias "IAMCrossbar_get_IsRoutedTo_Proxy" (byval This as IAMCrossbar ptr, byval OutputPinIndex as integer, byval InputPinIndex as integer ptr) as HRESULT
-declare sub IAMCrossbar_get_IsRoutedTo_Stub alias "IAMCrossbar_get_IsRoutedTo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMCrossbar_get_CrossbarPinInfo_Proxy alias "IAMCrossbar_get_CrossbarPinInfo_Proxy" (byval This as IAMCrossbar ptr, byval IsInputPin as BOOL, byval PinIndex as integer, byval PinIndexRelated as integer ptr, byval PhysicalType as integer ptr) as HRESULT
-declare sub IAMCrossbar_get_CrossbarPinInfo_Stub alias "IAMCrossbar_get_CrossbarPinInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum AMTunerSubChannel
 	AMTUNER_SUBCHAN_NO_TUNE = -2
@@ -2553,38 +1849,6 @@ type IAMTunerVtbl
 	UnRegisterNotificationCallBack as function(byval as IAMTuner ptr, byval as IAMTunerNotification_ ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMTuner_put_Channel_Proxy alias "IAMTuner_put_Channel_Proxy" (byval This as IAMTuner ptr, byval lChannel as integer, byval lVideoSubChannel as integer, byval lAudioSubChannel as integer) as HRESULT
-declare sub IAMTuner_put_Channel_Stub alias "IAMTuner_put_Channel_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_get_Channel_Proxy alias "IAMTuner_get_Channel_Proxy" (byval This as IAMTuner ptr, byval plChannel as integer ptr, byval plVideoSubChannel as integer ptr, byval plAudioSubChannel as integer ptr) as HRESULT
-declare sub IAMTuner_get_Channel_Stub alias "IAMTuner_get_Channel_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_ChannelMinMax_Proxy alias "IAMTuner_ChannelMinMax_Proxy" (byval This as IAMTuner ptr, byval lChannelMin as integer ptr, byval lChannelMax as integer ptr) as HRESULT
-declare sub IAMTuner_ChannelMinMax_Stub alias "IAMTuner_ChannelMinMax_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_put_CountryCode_Proxy alias "IAMTuner_put_CountryCode_Proxy" (byval This as IAMTuner ptr, byval lCountryCode as integer) as HRESULT
-declare sub IAMTuner_put_CountryCode_Stub alias "IAMTuner_put_CountryCode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_get_CountryCode_Proxy alias "IAMTuner_get_CountryCode_Proxy" (byval This as IAMTuner ptr, byval plCountryCode as integer ptr) as HRESULT
-declare sub IAMTuner_get_CountryCode_Stub alias "IAMTuner_get_CountryCode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_put_TuningSpace_Proxy alias "IAMTuner_put_TuningSpace_Proxy" (byval This as IAMTuner ptr, byval lTuningSpace as integer) as HRESULT
-declare sub IAMTuner_put_TuningSpace_Stub alias "IAMTuner_put_TuningSpace_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_get_TuningSpace_Proxy alias "IAMTuner_get_TuningSpace_Proxy" (byval This as IAMTuner ptr, byval plTuningSpace as integer ptr) as HRESULT
-declare sub IAMTuner_get_TuningSpace_Stub alias "IAMTuner_get_TuningSpace_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_Logon_Proxy alias "IAMTuner_Logon_Proxy" (byval This as IAMTuner ptr, byval hCurrentUser as HANDLE) as HRESULT
-declare sub IAMTuner_Logon_Stub alias "IAMTuner_Logon_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_Logout_Proxy alias "IAMTuner_Logout_Proxy" (byval This as IAMTuner ptr) as HRESULT
-declare sub IAMTuner_Logout_Stub alias "IAMTuner_Logout_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_SignalPresent_Proxy alias "IAMTuner_SignalPresent_Proxy" (byval This as IAMTuner ptr, byval plSignalStrength as integer ptr) as HRESULT
-declare sub IAMTuner_SignalPresent_Stub alias "IAMTuner_SignalPresent_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_put_Mode_Proxy alias "IAMTuner_put_Mode_Proxy" (byval This as IAMTuner ptr, byval lMode as AMTunerModeType) as HRESULT
-declare sub IAMTuner_put_Mode_Stub alias "IAMTuner_put_Mode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_get_Mode_Proxy alias "IAMTuner_get_Mode_Proxy" (byval This as IAMTuner ptr, byval plMode as AMTunerModeType ptr) as HRESULT
-declare sub IAMTuner_get_Mode_Stub alias "IAMTuner_get_Mode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_GetAvailableModes_Proxy alias "IAMTuner_GetAvailableModes_Proxy" (byval This as IAMTuner ptr, byval plModes as integer ptr) as HRESULT
-declare sub IAMTuner_GetAvailableModes_Stub alias "IAMTuner_GetAvailableModes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_RegisterNotificationCallBack_Proxy alias "IAMTuner_RegisterNotificationCallBack_Proxy" (byval This as IAMTuner ptr, byval pNotify as IAMTunerNotification ptr, byval lEvents as integer) as HRESULT
-declare sub IAMTuner_RegisterNotificationCallBack_Stub alias "IAMTuner_RegisterNotificationCallBack_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTuner_UnRegisterNotificationCallBack_Proxy alias "IAMTuner_UnRegisterNotificationCallBack_Proxy" (byval This as IAMTuner ptr, byval pNotify as IAMTunerNotification ptr) as HRESULT
-declare sub IAMTuner_UnRegisterNotificationCallBack_Stub alias "IAMTuner_UnRegisterNotificationCallBack_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMTunerNotification alias "IID_IAMTunerNotification" as IID
 
 type IAMTunerNotificationVtbl_ as IAMTunerNotificationVtbl
@@ -2600,10 +1864,6 @@ type IAMTunerNotificationVtbl
 	OnEvent as function(byval as IAMTunerNotification ptr, byval as AMTunerEventType) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMTunerNotification_OnEvent_Proxy alias "IAMTunerNotification_OnEvent_Proxy" (byval This as IAMTunerNotification ptr, byval Event as AMTunerEventType) as HRESULT
-declare sub IAMTunerNotification_OnEvent_Stub alias "IAMTunerNotification_OnEvent_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMTVTuner alias "IID_IAMTVTuner" as IID
 
 type IAMTVTunerVtbl_ as IAMTVTunerVtbl
@@ -2644,30 +1904,6 @@ type IAMTVTunerVtbl
 	get_AudioFrequency as function(byval as IAMTVTuner ptr, byval as integer ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMTVTuner_get_AvailableTVFormats_Proxy alias "IAMTVTuner_get_AvailableTVFormats_Proxy" (byval This as IAMTVTuner ptr, byval lAnalogVideoStandard as integer ptr) as HRESULT
-declare sub IAMTVTuner_get_AvailableTVFormats_Stub alias "IAMTVTuner_get_AvailableTVFormats_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVTuner_get_TVFormat_Proxy alias "IAMTVTuner_get_TVFormat_Proxy" (byval This as IAMTVTuner ptr, byval plAnalogVideoStandard as integer ptr) as HRESULT
-declare sub IAMTVTuner_get_TVFormat_Stub alias "IAMTVTuner_get_TVFormat_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVTuner_AutoTune_Proxy alias "IAMTVTuner_AutoTune_Proxy" (byval This as IAMTVTuner ptr, byval lChannel as integer, byval plFoundSignal as integer ptr) as HRESULT
-declare sub IAMTVTuner_AutoTune_Stub alias "IAMTVTuner_AutoTune_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVTuner_StoreAutoTune_Proxy alias "IAMTVTuner_StoreAutoTune_Proxy" (byval This as IAMTVTuner ptr) as HRESULT
-declare sub IAMTVTuner_StoreAutoTune_Stub alias "IAMTVTuner_StoreAutoTune_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVTuner_get_NumInputConnections_Proxy alias "IAMTVTuner_get_NumInputConnections_Proxy" (byval This as IAMTVTuner ptr, byval plNumInputConnections as integer ptr) as HRESULT
-declare sub IAMTVTuner_get_NumInputConnections_Stub alias "IAMTVTuner_get_NumInputConnections_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVTuner_put_InputType_Proxy alias "IAMTVTuner_put_InputType_Proxy" (byval This as IAMTVTuner ptr, byval lIndex as integer, byval InputType as TunerInputType) as HRESULT
-declare sub IAMTVTuner_put_InputType_Stub alias "IAMTVTuner_put_InputType_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVTuner_get_InputType_Proxy alias "IAMTVTuner_get_InputType_Proxy" (byval This as IAMTVTuner ptr, byval lIndex as integer, byval pInputType as TunerInputType ptr) as HRESULT
-declare sub IAMTVTuner_get_InputType_Stub alias "IAMTVTuner_get_InputType_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVTuner_put_ConnectInput_Proxy alias "IAMTVTuner_put_ConnectInput_Proxy" (byval This as IAMTVTuner ptr, byval lIndex as integer) as HRESULT
-declare sub IAMTVTuner_put_ConnectInput_Stub alias "IAMTVTuner_put_ConnectInput_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVTuner_get_ConnectInput_Proxy alias "IAMTVTuner_get_ConnectInput_Proxy" (byval This as IAMTVTuner ptr, byval plIndex as integer ptr) as HRESULT
-declare sub IAMTVTuner_get_ConnectInput_Stub alias "IAMTVTuner_get_ConnectInput_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVTuner_get_VideoFrequency_Proxy alias "IAMTVTuner_get_VideoFrequency_Proxy" (byval This as IAMTVTuner ptr, byval lFreq as integer ptr) as HRESULT
-declare sub IAMTVTuner_get_VideoFrequency_Stub alias "IAMTVTuner_get_VideoFrequency_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVTuner_get_AudioFrequency_Proxy alias "IAMTVTuner_get_AudioFrequency_Proxy" (byval This as IAMTVTuner ptr, byval lFreq as integer ptr) as HRESULT
-declare sub IAMTVTuner_get_AudioFrequency_Stub alias "IAMTVTuner_get_AudioFrequency_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IBPCSatelliteTuner alias "IID_IBPCSatelliteTuner" as IID
 
 type IBPCSatelliteTunerVtbl_ as IBPCSatelliteTunerVtbl
@@ -2699,15 +1935,6 @@ type IBPCSatelliteTunerVtbl
 	put_DefaultSubChannelTypes as function(byval as IBPCSatelliteTuner ptr, byval as integer, byval as integer) as HRESULT
 	IsTapingPermitted as function(byval as IBPCSatelliteTuner ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IBPCSatelliteTuner_get_DefaultSubChannelTypes_Proxy alias "IBPCSatelliteTuner_get_DefaultSubChannelTypes_Proxy" (byval This as IBPCSatelliteTuner ptr, byval plDefaultVideoType as integer ptr, byval plDefaultAudioType as integer ptr) as HRESULT
-declare sub IBPCSatelliteTuner_get_DefaultSubChannelTypes_Stub alias "IBPCSatelliteTuner_get_DefaultSubChannelTypes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IBPCSatelliteTuner_put_DefaultSubChannelTypes_Proxy alias "IBPCSatelliteTuner_put_DefaultSubChannelTypes_Proxy" (byval This as IBPCSatelliteTuner ptr, byval lDefaultVideoType as integer, byval lDefaultAudioType as integer) as HRESULT
-declare sub IBPCSatelliteTuner_put_DefaultSubChannelTypes_Stub alias "IBPCSatelliteTuner_put_DefaultSubChannelTypes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IBPCSatelliteTuner_IsTapingPermitted_Proxy alias "IBPCSatelliteTuner_IsTapingPermitted_Proxy" (byval This as IBPCSatelliteTuner ptr) as HRESULT
-declare sub IBPCSatelliteTuner_IsTapingPermitted_Stub alias "IBPCSatelliteTuner_IsTapingPermitted_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum TVAudioMode
 	AMTVAUDIO_MODE_MONO = &h1
@@ -2741,20 +1968,6 @@ type IAMTVAudioVtbl
 	UnRegisterNotificationCallBack as function(byval as IAMTVAudio ptr, byval as IAMTunerNotification ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMTVAudio_GetHardwareSupportedTVAudioModes_Proxy alias "IAMTVAudio_GetHardwareSupportedTVAudioModes_Proxy" (byval This as IAMTVAudio ptr, byval plModes as integer ptr) as HRESULT
-declare sub IAMTVAudio_GetHardwareSupportedTVAudioModes_Stub alias "IAMTVAudio_GetHardwareSupportedTVAudioModes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVAudio_GetAvailableTVAudioModes_Proxy alias "IAMTVAudio_GetAvailableTVAudioModes_Proxy" (byval This as IAMTVAudio ptr, byval plModes as integer ptr) as HRESULT
-declare sub IAMTVAudio_GetAvailableTVAudioModes_Stub alias "IAMTVAudio_GetAvailableTVAudioModes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVAudio_get_TVAudioMode_Proxy alias "IAMTVAudio_get_TVAudioMode_Proxy" (byval This as IAMTVAudio ptr, byval plMode as integer ptr) as HRESULT
-declare sub IAMTVAudio_get_TVAudioMode_Stub alias "IAMTVAudio_get_TVAudioMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVAudio_put_TVAudioMode_Proxy alias "IAMTVAudio_put_TVAudioMode_Proxy" (byval This as IAMTVAudio ptr, byval lMode as integer) as HRESULT
-declare sub IAMTVAudio_put_TVAudioMode_Stub alias "IAMTVAudio_put_TVAudioMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVAudio_RegisterNotificationCallBack_Proxy alias "IAMTVAudio_RegisterNotificationCallBack_Proxy" (byval This as IAMTVAudio ptr, byval pNotify as IAMTunerNotification ptr, byval lEvents as integer) as HRESULT
-declare sub IAMTVAudio_RegisterNotificationCallBack_Stub alias "IAMTVAudio_RegisterNotificationCallBack_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTVAudio_UnRegisterNotificationCallBack_Proxy alias "IAMTVAudio_UnRegisterNotificationCallBack_Proxy" (byval This as IAMTVAudio ptr, byval pNotify as IAMTunerNotification ptr) as HRESULT
-declare sub IAMTVAudio_UnRegisterNotificationCallBack_Stub alias "IAMTVAudio_UnRegisterNotificationCallBack_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMTVAudioNotification alias "IID_IAMTVAudioNotification" as IID
 
 type IAMTVAudioNotificationVtbl_ as IAMTVAudioNotificationVtbl
@@ -2770,10 +1983,6 @@ type IAMTVAudioNotificationVtbl
 	OnEvent as function(byval as IAMTVAudioNotification ptr, byval as AMTVAudioEventType) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMTVAudioNotification_OnEvent_Proxy alias "IAMTVAudioNotification_OnEvent_Proxy" (byval This as IAMTVAudioNotification ptr, byval Event as AMTVAudioEventType) as HRESULT
-declare sub IAMTVAudioNotification_OnEvent_Stub alias "IAMTVAudioNotification_OnEvent_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMAnalogVideoEncoder alias "IID_IAMAnalogVideoEncoder" as IID
 
 type IAMAnalogVideoEncoderVtbl_ as IAMAnalogVideoEncoderVtbl
@@ -2794,23 +2003,6 @@ type IAMAnalogVideoEncoderVtbl
 	put_CCEnable as function(byval as IAMAnalogVideoEncoder ptr, byval as integer) as HRESULT
 	get_CCEnable as function(byval as IAMAnalogVideoEncoder ptr, byval as integer ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMAnalogVideoEncoder_get_AvailableTVFormats_Proxy alias "IAMAnalogVideoEncoder_get_AvailableTVFormats_Proxy" (byval This as IAMAnalogVideoEncoder ptr, byval lAnalogVideoStandard as integer ptr) as HRESULT
-declare sub IAMAnalogVideoEncoder_get_AvailableTVFormats_Stub alias "IAMAnalogVideoEncoder_get_AvailableTVFormats_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoEncoder_put_TVFormat_Proxy alias "IAMAnalogVideoEncoder_put_TVFormat_Proxy" (byval This as IAMAnalogVideoEncoder ptr, byval lAnalogVideoStandard as integer) as HRESULT
-declare sub IAMAnalogVideoEncoder_put_TVFormat_Stub alias "IAMAnalogVideoEncoder_put_TVFormat_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoEncoder_get_TVFormat_Proxy alias "IAMAnalogVideoEncoder_get_TVFormat_Proxy" (byval This as IAMAnalogVideoEncoder ptr, byval plAnalogVideoStandard as integer ptr) as HRESULT
-declare sub IAMAnalogVideoEncoder_get_TVFormat_Stub alias "IAMAnalogVideoEncoder_get_TVFormat_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoEncoder_put_CopyProtection_Proxy alias "IAMAnalogVideoEncoder_put_CopyProtection_Proxy" (byval This as IAMAnalogVideoEncoder ptr, byval lVideoCopyProtection as integer) as HRESULT
-declare sub IAMAnalogVideoEncoder_put_CopyProtection_Stub alias "IAMAnalogVideoEncoder_put_CopyProtection_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoEncoder_get_CopyProtection_Proxy alias "IAMAnalogVideoEncoder_get_CopyProtection_Proxy" (byval This as IAMAnalogVideoEncoder ptr, byval lVideoCopyProtection as integer ptr) as HRESULT
-declare sub IAMAnalogVideoEncoder_get_CopyProtection_Stub alias "IAMAnalogVideoEncoder_get_CopyProtection_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoEncoder_put_CCEnable_Proxy alias "IAMAnalogVideoEncoder_put_CCEnable_Proxy" (byval This as IAMAnalogVideoEncoder ptr, byval lCCEnable as integer) as HRESULT
-declare sub IAMAnalogVideoEncoder_put_CCEnable_Stub alias "IAMAnalogVideoEncoder_put_CCEnable_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMAnalogVideoEncoder_get_CCEnable_Proxy alias "IAMAnalogVideoEncoder_get_CCEnable_Proxy" (byval This as IAMAnalogVideoEncoder ptr, byval lCCEnable as integer ptr) as HRESULT
-declare sub IAMAnalogVideoEncoder_get_CCEnable_Stub alias "IAMAnalogVideoEncoder_get_CCEnable_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum AMPROPERTY_PIN
 	AMPROPERTY_PIN_CATEGORY = 0
@@ -2836,15 +2028,6 @@ type IKsPropertySetVtbl
 	QuerySupported as function(byval as IKsPropertySet ptr, byval as GUID ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IKsPropertySet_RemoteSet_Proxy alias "IKsPropertySet_RemoteSet_Proxy" (byval This as IKsPropertySet ptr, byval guidPropSet as GUID ptr, byval dwPropID as DWORD, byval pInstanceData as byte ptr, byval cbInstanceData as DWORD, byval pPropData as byte ptr, byval cbPropData as DWORD) as HRESULT
-declare sub IKsPropertySet_RemoteSet_Stub alias "IKsPropertySet_RemoteSet_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IKsPropertySet_RemoteGet_Proxy alias "IKsPropertySet_RemoteGet_Proxy" (byval This as IKsPropertySet ptr, byval guidPropSet as GUID ptr, byval dwPropID as DWORD, byval pInstanceData as byte ptr, byval cbInstanceData as DWORD, byval pPropData as byte ptr, byval cbPropData as DWORD, byval pcbReturned as DWORD ptr) as HRESULT
-declare sub IKsPropertySet_RemoteGet_Stub alias "IKsPropertySet_RemoteGet_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IKsPropertySet_QuerySupported_Proxy alias "IKsPropertySet_QuerySupported_Proxy" (byval This as IKsPropertySet ptr, byval guidPropSet as GUID ptr, byval dwPropID as DWORD, byval pTypeSupport as DWORD ptr) as HRESULT
-declare sub IKsPropertySet_QuerySupported_Stub alias "IKsPropertySet_QuerySupported_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type LPMEDIAPROPERTYBAG as IMediaPropertyBag ptr
 extern IID_IMediaPropertyBag alias "IID_IMediaPropertyBag" as IID
 
@@ -2862,11 +2045,6 @@ type IMediaPropertyBagVtbl
 	Write as function(byval as IMediaPropertyBag ptr, byval as LPCOLESTR, byval as VARIANT ptr) as HRESULT
 	EnumProperty as function(byval as IMediaPropertyBag ptr, byval as ULONG, byval as VARIANT ptr, byval as VARIANT ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IMediaPropertyBag_EnumProperty_Proxy alias "IMediaPropertyBag_EnumProperty_Proxy" (byval This as IMediaPropertyBag ptr, byval iProperty as ULONG, byval pvarPropertyName as VARIANT ptr, byval pvarPropertyValue as VARIANT ptr) as HRESULT
-declare sub IMediaPropertyBag_EnumProperty_Stub alias "IMediaPropertyBag_EnumProperty_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type LPPERSISTMEDIAPROPERTYBAG as IPersistMediaPropertyBag ptr
 extern IID_IPersistMediaPropertyBag alias "IID_IPersistMediaPropertyBag" as IID
@@ -2887,14 +2065,6 @@ type IPersistMediaPropertyBagVtbl
 	Save as function(byval as IPersistMediaPropertyBag ptr, byval as IMediaPropertyBag ptr, byval as BOOL, byval as BOOL) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IPersistMediaPropertyBag_InitNew_Proxy alias "IPersistMediaPropertyBag_InitNew_Proxy" (byval This as IPersistMediaPropertyBag ptr) as HRESULT
-declare sub IPersistMediaPropertyBag_InitNew_Stub alias "IPersistMediaPropertyBag_InitNew_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPersistMediaPropertyBag_Load_Proxy alias "IPersistMediaPropertyBag_Load_Proxy" (byval This as IPersistMediaPropertyBag ptr, byval pPropBag as IMediaPropertyBag ptr, byval pErrorLog as IErrorLog ptr) as HRESULT
-declare sub IPersistMediaPropertyBag_Load_Stub alias "IPersistMediaPropertyBag_Load_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPersistMediaPropertyBag_Save_Proxy alias "IPersistMediaPropertyBag_Save_Proxy" (byval This as IPersistMediaPropertyBag ptr, byval pPropBag as IMediaPropertyBag ptr, byval fClearDirty as BOOL, byval fSaveAllProperties as BOOL) as HRESULT
-declare sub IPersistMediaPropertyBag_Save_Stub alias "IPersistMediaPropertyBag_Save_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMPhysicalPinInfo alias "IID_IAMPhysicalPinInfo" as IID
 
 type IAMPhysicalPinInfoVtbl_ as IAMPhysicalPinInfoVtbl
@@ -2909,11 +2079,6 @@ type IAMPhysicalPinInfoVtbl
 	Release as function(byval as IAMPhysicalPinInfo ptr) as ULONG
 	GetPhysicalType as function(byval as IAMPhysicalPinInfo ptr, byval as integer ptr, byval as LPOLESTR ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMPhysicalPinInfo_GetPhysicalType_Proxy alias "IAMPhysicalPinInfo_GetPhysicalType_Proxy" (byval This as IAMPhysicalPinInfo ptr, byval pType as integer ptr, byval ppszType as LPOLESTR ptr) as HRESULT
-declare sub IAMPhysicalPinInfo_GetPhysicalType_Stub alias "IAMPhysicalPinInfo_GetPhysicalType_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type PAMPHYSICALPININFO as IAMPhysicalPinInfo ptr
 extern IID_IAMExtDevice alias "IID_IAMExtDevice" as IID
@@ -2937,25 +2102,6 @@ type IAMExtDeviceVtbl
 	put_DevicePort as function(byval as IAMExtDevice ptr, byval as integer) as HRESULT
 	get_DevicePort as function(byval as IAMExtDevice ptr, byval as integer ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMExtDevice_GetCapability_Proxy alias "IAMExtDevice_GetCapability_Proxy" (byval This as IAMExtDevice ptr, byval Capability as integer, byval pValue as integer ptr, byval pdblValue as double ptr) as HRESULT
-declare sub IAMExtDevice_GetCapability_Stub alias "IAMExtDevice_GetCapability_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtDevice_get_ExternalDeviceID_Proxy alias "IAMExtDevice_get_ExternalDeviceID_Proxy" (byval This as IAMExtDevice ptr, byval ppszData as LPOLESTR ptr) as HRESULT
-declare sub IAMExtDevice_get_ExternalDeviceID_Stub alias "IAMExtDevice_get_ExternalDeviceID_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtDevice_get_ExternalDeviceVersion_Proxy alias "IAMExtDevice_get_ExternalDeviceVersion_Proxy" (byval This as IAMExtDevice ptr, byval ppszData as LPOLESTR ptr) as HRESULT
-declare sub IAMExtDevice_get_ExternalDeviceVersion_Stub alias "IAMExtDevice_get_ExternalDeviceVersion_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtDevice_put_DevicePower_Proxy alias "IAMExtDevice_put_DevicePower_Proxy" (byval This as IAMExtDevice ptr, byval PowerMode as integer) as HRESULT
-declare sub IAMExtDevice_put_DevicePower_Stub alias "IAMExtDevice_put_DevicePower_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtDevice_get_DevicePower_Proxy alias "IAMExtDevice_get_DevicePower_Proxy" (byval This as IAMExtDevice ptr, byval pPowerMode as integer ptr) as HRESULT
-declare sub IAMExtDevice_get_DevicePower_Stub alias "IAMExtDevice_get_DevicePower_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtDevice_Calibrate_Proxy alias "IAMExtDevice_Calibrate_Proxy" (byval This as IAMExtDevice ptr, byval hEvent as HEVENT, byval Mode as integer, byval pStatus as integer ptr) as HRESULT
-declare sub IAMExtDevice_Calibrate_Stub alias "IAMExtDevice_Calibrate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtDevice_put_DevicePort_Proxy alias "IAMExtDevice_put_DevicePort_Proxy" (byval This as IAMExtDevice ptr, byval DevicePort as integer) as HRESULT
-declare sub IAMExtDevice_put_DevicePort_Stub alias "IAMExtDevice_put_DevicePort_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtDevice_get_DevicePort_Proxy alias "IAMExtDevice_get_DevicePort_Proxy" (byval This as IAMExtDevice ptr, byval pDevicePort as integer ptr) as HRESULT
-declare sub IAMExtDevice_get_DevicePort_Stub alias "IAMExtDevice_get_DevicePort_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type PEXTDEVICE as IAMExtDevice ptr
 extern IID_IAMExtTransport alias "IID_IAMExtTransport" as IID
@@ -3000,65 +2146,6 @@ type IAMExtTransportVtbl
 	put_EditStart as function(byval as IAMExtTransport ptr, byval as integer) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMExtTransport_GetCapability_Proxy alias "IAMExtTransport_GetCapability_Proxy" (byval This as IAMExtTransport ptr, byval Capability as integer, byval pValue as integer ptr, byval pdblValue as double ptr) as HRESULT
-declare sub IAMExtTransport_GetCapability_Stub alias "IAMExtTransport_GetCapability_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_put_MediaState_Proxy alias "IAMExtTransport_put_MediaState_Proxy" (byval This as IAMExtTransport ptr, byval State as integer) as HRESULT
-declare sub IAMExtTransport_put_MediaState_Stub alias "IAMExtTransport_put_MediaState_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_get_MediaState_Proxy alias "IAMExtTransport_get_MediaState_Proxy" (byval This as IAMExtTransport ptr, byval pState as integer ptr) as HRESULT
-declare sub IAMExtTransport_get_MediaState_Stub alias "IAMExtTransport_get_MediaState_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_put_LocalControl_Proxy alias "IAMExtTransport_put_LocalControl_Proxy" (byval This as IAMExtTransport ptr, byval State as integer) as HRESULT
-declare sub IAMExtTransport_put_LocalControl_Stub alias "IAMExtTransport_put_LocalControl_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_get_LocalControl_Proxy alias "IAMExtTransport_get_LocalControl_Proxy" (byval This as IAMExtTransport ptr, byval pState as integer ptr) as HRESULT
-declare sub IAMExtTransport_get_LocalControl_Stub alias "IAMExtTransport_get_LocalControl_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_GetStatus_Proxy alias "IAMExtTransport_GetStatus_Proxy" (byval This as IAMExtTransport ptr, byval StatusItem as integer, byval pValue as integer ptr) as HRESULT
-declare sub IAMExtTransport_GetStatus_Stub alias "IAMExtTransport_GetStatus_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_GetTransportBasicParameters_Proxy alias "IAMExtTransport_GetTransportBasicParameters_Proxy" (byval This as IAMExtTransport ptr, byval Param as integer, byval pValue as integer ptr, byval ppszData as LPOLESTR ptr) as HRESULT
-declare sub IAMExtTransport_GetTransportBasicParameters_Stub alias "IAMExtTransport_GetTransportBasicParameters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_SetTransportBasicParameters_Proxy alias "IAMExtTransport_SetTransportBasicParameters_Proxy" (byval This as IAMExtTransport ptr, byval Param as integer, byval Value as integer, byval pszData as LPCOLESTR) as HRESULT
-declare sub IAMExtTransport_SetTransportBasicParameters_Stub alias "IAMExtTransport_SetTransportBasicParameters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_GetTransportVideoParameters_Proxy alias "IAMExtTransport_GetTransportVideoParameters_Proxy" (byval This as IAMExtTransport ptr, byval Param as integer, byval pValue as integer ptr) as HRESULT
-declare sub IAMExtTransport_GetTransportVideoParameters_Stub alias "IAMExtTransport_GetTransportVideoParameters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_SetTransportVideoParameters_Proxy alias "IAMExtTransport_SetTransportVideoParameters_Proxy" (byval This as IAMExtTransport ptr, byval Param as integer, byval Value as integer) as HRESULT
-declare sub IAMExtTransport_SetTransportVideoParameters_Stub alias "IAMExtTransport_SetTransportVideoParameters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_GetTransportAudioParameters_Proxy alias "IAMExtTransport_GetTransportAudioParameters_Proxy" (byval This as IAMExtTransport ptr, byval Param as integer, byval pValue as integer ptr) as HRESULT
-declare sub IAMExtTransport_GetTransportAudioParameters_Stub alias "IAMExtTransport_GetTransportAudioParameters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_SetTransportAudioParameters_Proxy alias "IAMExtTransport_SetTransportAudioParameters_Proxy" (byval This as IAMExtTransport ptr, byval Param as integer, byval Value as integer) as HRESULT
-declare sub IAMExtTransport_SetTransportAudioParameters_Stub alias "IAMExtTransport_SetTransportAudioParameters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_put_Mode_Proxy alias "IAMExtTransport_put_Mode_Proxy" (byval This as IAMExtTransport ptr, byval Mode as integer) as HRESULT
-declare sub IAMExtTransport_put_Mode_Stub alias "IAMExtTransport_put_Mode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_get_Mode_Proxy alias "IAMExtTransport_get_Mode_Proxy" (byval This as IAMExtTransport ptr, byval pMode as integer ptr) as HRESULT
-declare sub IAMExtTransport_get_Mode_Stub alias "IAMExtTransport_get_Mode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_put_Rate_Proxy alias "IAMExtTransport_put_Rate_Proxy" (byval This as IAMExtTransport ptr, byval dblRate as double) as HRESULT
-declare sub IAMExtTransport_put_Rate_Stub alias "IAMExtTransport_put_Rate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_get_Rate_Proxy alias "IAMExtTransport_get_Rate_Proxy" (byval This as IAMExtTransport ptr, byval pdblRate as double ptr) as HRESULT
-declare sub IAMExtTransport_get_Rate_Stub alias "IAMExtTransport_get_Rate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_GetChase_Proxy alias "IAMExtTransport_GetChase_Proxy" (byval This as IAMExtTransport ptr, byval pEnabled as integer ptr, byval pOffset as integer ptr, byval phEvent as HEVENT ptr) as HRESULT
-declare sub IAMExtTransport_GetChase_Stub alias "IAMExtTransport_GetChase_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_SetChase_Proxy alias "IAMExtTransport_SetChase_Proxy" (byval This as IAMExtTransport ptr, byval Enable as integer, byval Offset as integer, byval hEvent as HEVENT) as HRESULT
-declare sub IAMExtTransport_SetChase_Stub alias "IAMExtTransport_SetChase_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_GetBump_Proxy alias "IAMExtTransport_GetBump_Proxy" (byval This as IAMExtTransport ptr, byval pSpeed as integer ptr, byval pDuration as integer ptr) as HRESULT
-declare sub IAMExtTransport_GetBump_Stub alias "IAMExtTransport_GetBump_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_SetBump_Proxy alias "IAMExtTransport_SetBump_Proxy" (byval This as IAMExtTransport ptr, byval Speed as integer, byval Duration as integer) as HRESULT
-declare sub IAMExtTransport_SetBump_Stub alias "IAMExtTransport_SetBump_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_get_AntiClogControl_Proxy alias "IAMExtTransport_get_AntiClogControl_Proxy" (byval This as IAMExtTransport ptr, byval pEnabled as integer ptr) as HRESULT
-declare sub IAMExtTransport_get_AntiClogControl_Stub alias "IAMExtTransport_get_AntiClogControl_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_put_AntiClogControl_Proxy alias "IAMExtTransport_put_AntiClogControl_Proxy" (byval This as IAMExtTransport ptr, byval Enable as integer) as HRESULT
-declare sub IAMExtTransport_put_AntiClogControl_Stub alias "IAMExtTransport_put_AntiClogControl_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_GetEditPropertySet_Proxy alias "IAMExtTransport_GetEditPropertySet_Proxy" (byval This as IAMExtTransport ptr, byval EditID as integer, byval pState as integer ptr) as HRESULT
-declare sub IAMExtTransport_GetEditPropertySet_Stub alias "IAMExtTransport_GetEditPropertySet_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_SetEditPropertySet_Proxy alias "IAMExtTransport_SetEditPropertySet_Proxy" (byval This as IAMExtTransport ptr, byval pEditID as integer ptr, byval State as integer) as HRESULT
-declare sub IAMExtTransport_SetEditPropertySet_Stub alias "IAMExtTransport_SetEditPropertySet_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_GetEditProperty_Proxy alias "IAMExtTransport_GetEditProperty_Proxy" (byval This as IAMExtTransport ptr, byval EditID as integer, byval Param as integer, byval pValue as integer ptr) as HRESULT
-declare sub IAMExtTransport_GetEditProperty_Stub alias "IAMExtTransport_GetEditProperty_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_SetEditProperty_Proxy alias "IAMExtTransport_SetEditProperty_Proxy" (byval This as IAMExtTransport ptr, byval EditID as integer, byval Param as integer, byval Value as integer) as HRESULT
-declare sub IAMExtTransport_SetEditProperty_Stub alias "IAMExtTransport_SetEditProperty_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_get_EditStart_Proxy alias "IAMExtTransport_get_EditStart_Proxy" (byval This as IAMExtTransport ptr, byval pValue as integer ptr) as HRESULT
-declare sub IAMExtTransport_get_EditStart_Stub alias "IAMExtTransport_get_EditStart_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMExtTransport_put_EditStart_Proxy alias "IAMExtTransport_put_EditStart_Proxy" (byval This as IAMExtTransport ptr, byval Value as integer) as HRESULT
-declare sub IAMExtTransport_put_EditStart_Stub alias "IAMExtTransport_put_EditStart_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PIAMEXTTRANSPORT as IAMExtTransport ptr
 
 union TIMECODE
@@ -3094,19 +2181,6 @@ type IAMTimecodeReaderVtbl
 	GetTimecode as function(byval as IAMTimecodeReader ptr, byval as PTIMECODE_SAMPLE) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMTimecodeReader_GetTCRMode_Proxy alias "IAMTimecodeReader_GetTCRMode_Proxy" (byval This as IAMTimecodeReader ptr, byval Param as integer, byval pValue as integer ptr) as HRESULT
-declare sub IAMTimecodeReader_GetTCRMode_Stub alias "IAMTimecodeReader_GetTCRMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTimecodeReader_SetTCRMode_Proxy alias "IAMTimecodeReader_SetTCRMode_Proxy" (byval This as IAMTimecodeReader ptr, byval Param as integer, byval Value as integer) as HRESULT
-declare sub IAMTimecodeReader_SetTCRMode_Stub alias "IAMTimecodeReader_SetTCRMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTimecodeReader_put_VITCLine_Proxy alias "IAMTimecodeReader_put_VITCLine_Proxy" (byval This as IAMTimecodeReader ptr, byval Line as integer) as HRESULT
-declare sub IAMTimecodeReader_put_VITCLine_Stub alias "IAMTimecodeReader_put_VITCLine_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTimecodeReader_get_VITCLine_Proxy alias "IAMTimecodeReader_get_VITCLine_Proxy" (byval This as IAMTimecodeReader ptr, byval pLine as integer ptr) as HRESULT
-declare sub IAMTimecodeReader_get_VITCLine_Stub alias "IAMTimecodeReader_get_VITCLine_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTimecodeReader_GetTimecode_Proxy alias "IAMTimecodeReader_GetTimecode_Proxy" (byval This as IAMTimecodeReader ptr, byval pTimecodeSample as PTIMECODE_SAMPLE) as HRESULT
-declare sub IAMTimecodeReader_GetTimecode_Stub alias "IAMTimecodeReader_GetTimecode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PIAMTIMECODEREADER as IAMTimecodeReader ptr
 extern IID_IAMTimecodeGenerator alias "IID_IAMTimecodeGenerator" as IID
 
@@ -3128,21 +2202,6 @@ type IAMTimecodeGeneratorVtbl
 	GetTimecode as function(byval as IAMTimecodeGenerator ptr, byval as PTIMECODE_SAMPLE) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMTimecodeGenerator_GetTCGMode_Proxy alias "IAMTimecodeGenerator_GetTCGMode_Proxy" (byval This as IAMTimecodeGenerator ptr, byval Param as integer, byval pValue as integer ptr) as HRESULT
-declare sub IAMTimecodeGenerator_GetTCGMode_Stub alias "IAMTimecodeGenerator_GetTCGMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTimecodeGenerator_SetTCGMode_Proxy alias "IAMTimecodeGenerator_SetTCGMode_Proxy" (byval This as IAMTimecodeGenerator ptr, byval Param as integer, byval Value as integer) as HRESULT
-declare sub IAMTimecodeGenerator_SetTCGMode_Stub alias "IAMTimecodeGenerator_SetTCGMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTimecodeGenerator_put_VITCLine_Proxy alias "IAMTimecodeGenerator_put_VITCLine_Proxy" (byval This as IAMTimecodeGenerator ptr, byval Line as integer) as HRESULT
-declare sub IAMTimecodeGenerator_put_VITCLine_Stub alias "IAMTimecodeGenerator_put_VITCLine_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTimecodeGenerator_get_VITCLine_Proxy alias "IAMTimecodeGenerator_get_VITCLine_Proxy" (byval This as IAMTimecodeGenerator ptr, byval pLine as integer ptr) as HRESULT
-declare sub IAMTimecodeGenerator_get_VITCLine_Stub alias "IAMTimecodeGenerator_get_VITCLine_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTimecodeGenerator_SetTimecode_Proxy alias "IAMTimecodeGenerator_SetTimecode_Proxy" (byval This as IAMTimecodeGenerator ptr, byval pTimecodeSample as PTIMECODE_SAMPLE) as HRESULT
-declare sub IAMTimecodeGenerator_SetTimecode_Stub alias "IAMTimecodeGenerator_SetTimecode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTimecodeGenerator_GetTimecode_Proxy alias "IAMTimecodeGenerator_GetTimecode_Proxy" (byval This as IAMTimecodeGenerator ptr, byval pTimecodeSample as PTIMECODE_SAMPLE) as HRESULT
-declare sub IAMTimecodeGenerator_GetTimecode_Stub alias "IAMTimecodeGenerator_GetTimecode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PIAMTIMECODEGENERATOR as IAMTimecodeGenerator ptr
 extern IID_IAMTimecodeDisplay alias "IID_IAMTimecodeDisplay" as IID
 
@@ -3161,17 +2220,6 @@ type IAMTimecodeDisplayVtbl
 	GetTCDisplay as function(byval as IAMTimecodeDisplay ptr, byval as integer, byval as integer ptr) as HRESULT
 	SetTCDisplay as function(byval as IAMTimecodeDisplay ptr, byval as integer, byval as integer) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMTimecodeDisplay_GetTCDisplayEnable_Proxy alias "IAMTimecodeDisplay_GetTCDisplayEnable_Proxy" (byval This as IAMTimecodeDisplay ptr, byval pState as integer ptr) as HRESULT
-declare sub IAMTimecodeDisplay_GetTCDisplayEnable_Stub alias "IAMTimecodeDisplay_GetTCDisplayEnable_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTimecodeDisplay_SetTCDisplayEnable_Proxy alias "IAMTimecodeDisplay_SetTCDisplayEnable_Proxy" (byval This as IAMTimecodeDisplay ptr, byval State as integer) as HRESULT
-declare sub IAMTimecodeDisplay_SetTCDisplayEnable_Stub alias "IAMTimecodeDisplay_SetTCDisplayEnable_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTimecodeDisplay_GetTCDisplay_Proxy alias "IAMTimecodeDisplay_GetTCDisplay_Proxy" (byval This as IAMTimecodeDisplay ptr, byval Param as integer, byval pValue as integer ptr) as HRESULT
-declare sub IAMTimecodeDisplay_GetTCDisplay_Stub alias "IAMTimecodeDisplay_GetTCDisplay_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMTimecodeDisplay_SetTCDisplay_Proxy alias "IAMTimecodeDisplay_SetTCDisplay_Proxy" (byval This as IAMTimecodeDisplay ptr, byval Param as integer, byval Value as integer) as HRESULT
-declare sub IAMTimecodeDisplay_SetTCDisplay_Stub alias "IAMTimecodeDisplay_SetTCDisplay_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type PIAMTIMECODEDISPLAY as IAMTimecodeDisplay ptr
 extern IID_IAMDevMemoryAllocator alias "IID_IAMDevMemoryAllocator" as IID
@@ -3193,19 +2241,6 @@ type IAMDevMemoryAllocatorVtbl
 	GetDevMemoryObject as function(byval as IAMDevMemoryAllocator ptr, byval as IUnknown ptr ptr, byval as IUnknown ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMDevMemoryAllocator_GetInfo_Proxy alias "IAMDevMemoryAllocator_GetInfo_Proxy" (byval This as IAMDevMemoryAllocator ptr, byval pdwcbTotalFree as DWORD ptr, byval pdwcbLargestFree as DWORD ptr, byval pdwcbTotalMemory as DWORD ptr, byval pdwcbMinimumChunk as DWORD ptr) as HRESULT
-declare sub IAMDevMemoryAllocator_GetInfo_Stub alias "IAMDevMemoryAllocator_GetInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMDevMemoryAllocator_CheckMemory_Proxy alias "IAMDevMemoryAllocator_CheckMemory_Proxy" (byval This as IAMDevMemoryAllocator ptr, byval pBuffer as BYTE ptr) as HRESULT
-declare sub IAMDevMemoryAllocator_CheckMemory_Stub alias "IAMDevMemoryAllocator_CheckMemory_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMDevMemoryAllocator_Alloc_Proxy alias "IAMDevMemoryAllocator_Alloc_Proxy" (byval This as IAMDevMemoryAllocator ptr, byval ppBuffer as BYTE ptr ptr, byval pdwcbBuffer as DWORD ptr) as HRESULT
-declare sub IAMDevMemoryAllocator_Alloc_Stub alias "IAMDevMemoryAllocator_Alloc_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMDevMemoryAllocator_Free_Proxy alias "IAMDevMemoryAllocator_Free_Proxy" (byval This as IAMDevMemoryAllocator ptr, byval pBuffer as BYTE ptr) as HRESULT
-declare sub IAMDevMemoryAllocator_Free_Stub alias "IAMDevMemoryAllocator_Free_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMDevMemoryAllocator_GetDevMemoryObject_Proxy alias "IAMDevMemoryAllocator_GetDevMemoryObject_Proxy" (byval This as IAMDevMemoryAllocator ptr, byval ppUnkInnner as IUnknown ptr ptr, byval pUnkOuter as IUnknown ptr) as HRESULT
-declare sub IAMDevMemoryAllocator_GetDevMemoryObject_Stub alias "IAMDevMemoryAllocator_GetDevMemoryObject_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PAMDEVMEMORYALLOCATOR as IAMDevMemoryAllocator ptr
 extern IID_IAMDevMemoryControl alias "IID_IAMDevMemoryControl" as IID
 
@@ -3223,15 +2258,6 @@ type IAMDevMemoryControlVtbl
 	WriteSync as function(byval as IAMDevMemoryControl ptr) as HRESULT
 	GetDevId as function(byval as IAMDevMemoryControl ptr, byval as DWORD ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMDevMemoryControl_QueryWriteSync_Proxy alias "IAMDevMemoryControl_QueryWriteSync_Proxy" (byval This as IAMDevMemoryControl ptr) as HRESULT
-declare sub IAMDevMemoryControl_QueryWriteSync_Stub alias "IAMDevMemoryControl_QueryWriteSync_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMDevMemoryControl_WriteSync_Proxy alias "IAMDevMemoryControl_WriteSync_Proxy" (byval This as IAMDevMemoryControl ptr) as HRESULT
-declare sub IAMDevMemoryControl_WriteSync_Stub alias "IAMDevMemoryControl_WriteSync_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMDevMemoryControl_GetDevId_Proxy alias "IAMDevMemoryControl_GetDevId_Proxy" (byval This as IAMDevMemoryControl ptr, byval pdwDevId as DWORD ptr) as HRESULT
-declare sub IAMDevMemoryControl_GetDevId_Stub alias "IAMDevMemoryControl_GetDevId_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type PAMDEVMEMORYCONTROL as IAMDevMemoryControl ptr
 
@@ -3261,15 +2287,6 @@ type IAMStreamSelectVtbl
 	Enable as function(byval as IAMStreamSelect ptr, byval as integer, byval as DWORD) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMStreamSelect_Count_Proxy alias "IAMStreamSelect_Count_Proxy" (byval This as IAMStreamSelect ptr, byval pcStreams as DWORD ptr) as HRESULT
-declare sub IAMStreamSelect_Count_Stub alias "IAMStreamSelect_Count_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMStreamSelect_Info_Proxy alias "IAMStreamSelect_Info_Proxy" (byval This as IAMStreamSelect ptr, byval lIndex as integer, byval ppmt as AM_MEDIA_TYPE ptr ptr, byval pdwFlags as DWORD ptr, byval plcid as LCID ptr, byval pdwGroup as DWORD ptr, byval ppszName as WCHAR ptr ptr, byval ppObject as IUnknown ptr ptr, byval ppUnk as IUnknown ptr ptr) as HRESULT
-declare sub IAMStreamSelect_Info_Stub alias "IAMStreamSelect_Info_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMStreamSelect_Enable_Proxy alias "IAMStreamSelect_Enable_Proxy" (byval This as IAMStreamSelect ptr, byval lIndex as integer, byval dwFlags as DWORD) as HRESULT
-declare sub IAMStreamSelect_Enable_Stub alias "IAMStreamSelect_Enable_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type PAMSTREAMSELECT as IAMStreamSelect ptr
 
 enum AMRESCTL_RESERVEFLAGS
@@ -3291,10 +2308,6 @@ type IAMResourceControlVtbl
 	Reserve as function(byval as IAMResourceControl ptr, byval as DWORD, byval as PVOID) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMResourceControl_Reserve_Proxy alias "IAMResourceControl_Reserve_Proxy" (byval This as IAMResourceControl ptr, byval dwFlags as DWORD, byval pvReserved as PVOID) as HRESULT
-declare sub IAMResourceControl_Reserve_Stub alias "IAMResourceControl_Reserve_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMClockAdjust alias "IID_IAMClockAdjust" as IID
 
 type IAMClockAdjustVtbl_ as IAMClockAdjustVtbl
@@ -3309,11 +2322,6 @@ type IAMClockAdjustVtbl
 	Release as function(byval as IAMClockAdjust ptr) as ULONG
 	SetClockDelta as function(byval as IAMClockAdjust ptr, byval as REFERENCE_TIME) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMClockAdjust_SetClockDelta_Proxy alias "IAMClockAdjust_SetClockDelta_Proxy" (byval This as IAMClockAdjust ptr, byval rtDelta as REFERENCE_TIME) as HRESULT
-declare sub IAMClockAdjust_SetClockDelta_Stub alias "IAMClockAdjust_SetClockDelta_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum AM_FILTER_MISC_FLAGS
 	AM_FILTER_MISC_FLAGS_IS_RENDERER = &h1
@@ -3334,10 +2342,6 @@ type IAMFilterMiscFlagsVtbl
 	GetMiscFlags as function(byval as IAMFilterMiscFlags ptr) as ULONG
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMFilterMiscFlags_GetMiscFlags_Proxy alias "IAMFilterMiscFlags_GetMiscFlags_Proxy" (byval This as IAMFilterMiscFlags ptr) as ULONG
-declare sub IAMFilterMiscFlags_GetMiscFlags_Stub alias "IAMFilterMiscFlags_GetMiscFlags_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IDrawVideoImage alias "IID_IDrawVideoImage" as IID
 
 type IDrawVideoImageVtbl_ as IDrawVideoImageVtbl
@@ -3355,14 +2359,6 @@ type IDrawVideoImageVtbl
 	DrawVideoImageDraw as function(byval as IDrawVideoImage ptr, byval as HDC, byval as LPRECT, byval as LPRECT) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IDrawVideoImage_DrawVideoImageBegin_Proxy alias "IDrawVideoImage_DrawVideoImageBegin_Proxy" (byval This as IDrawVideoImage ptr) as HRESULT
-declare sub IDrawVideoImage_DrawVideoImageBegin_Stub alias "IDrawVideoImage_DrawVideoImageBegin_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDrawVideoImage_DrawVideoImageEnd_Proxy alias "IDrawVideoImage_DrawVideoImageEnd_Proxy" (byval This as IDrawVideoImage ptr) as HRESULT
-declare sub IDrawVideoImage_DrawVideoImageEnd_Stub alias "IDrawVideoImage_DrawVideoImageEnd_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDrawVideoImage_DrawVideoImageDraw_Proxy alias "IDrawVideoImage_DrawVideoImageDraw_Proxy" (byval This as IDrawVideoImage ptr, byval hdc as HDC, byval lprcSrc as LPRECT, byval lprcDst as LPRECT) as HRESULT
-declare sub IDrawVideoImage_DrawVideoImageDraw_Stub alias "IDrawVideoImage_DrawVideoImageDraw_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IDecimateVideoImage alias "IID_IDecimateVideoImage" as IID
 
 type IDecimateVideoImageVtbl_ as IDecimateVideoImageVtbl
@@ -3378,13 +2374,6 @@ type IDecimateVideoImageVtbl
 	SetDecimationImageSize as function(byval as IDecimateVideoImage ptr, byval as integer, byval as integer) as HRESULT
 	ResetDecimationImageSize as function(byval as IDecimateVideoImage ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IDecimateVideoImage_SetDecimationImageSize_Proxy alias "IDecimateVideoImage_SetDecimationImageSize_Proxy" (byval This as IDecimateVideoImage ptr, byval lWidth as integer, byval lHeight as integer) as HRESULT
-declare sub IDecimateVideoImage_SetDecimationImageSize_Stub alias "IDecimateVideoImage_SetDecimationImageSize_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDecimateVideoImage_ResetDecimationImageSize_Proxy alias "IDecimateVideoImage_ResetDecimationImageSize_Proxy" (byval This as IDecimateVideoImage ptr) as HRESULT
-declare sub IDecimateVideoImage_ResetDecimationImageSize_Stub alias "IDecimateVideoImage_ResetDecimationImageSize_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum DECIMATION_USAGE
 	DECIMATION_LEGACY = 0
@@ -3410,12 +2399,6 @@ type IAMVideoDecimationPropertiesVtbl
 	SetDecimationUsage as function(byval as IAMVideoDecimationProperties ptr, byval as DECIMATION_USAGE) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMVideoDecimationProperties_QueryDecimationUsage_Proxy alias "IAMVideoDecimationProperties_QueryDecimationUsage_Proxy" (byval This as IAMVideoDecimationProperties ptr, byval lpUsage as DECIMATION_USAGE ptr) as HRESULT
-declare sub IAMVideoDecimationProperties_QueryDecimationUsage_Stub alias "IAMVideoDecimationProperties_QueryDecimationUsage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMVideoDecimationProperties_SetDecimationUsage_Proxy alias "IAMVideoDecimationProperties_SetDecimationUsage_Proxy" (byval This as IAMVideoDecimationProperties ptr, byval Usage as DECIMATION_USAGE) as HRESULT
-declare sub IAMVideoDecimationProperties_SetDecimationUsage_Stub alias "IAMVideoDecimationProperties_SetDecimationUsage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IVideoFrameStep alias "IID_IVideoFrameStep" as IID
 
 type IVideoFrameStepVtbl_ as IVideoFrameStepVtbl
@@ -3432,15 +2415,6 @@ type IVideoFrameStepVtbl
 	CanStep as function(byval as IVideoFrameStep ptr, byval as integer, byval as IUnknown ptr) as HRESULT
 	CancelStep as function(byval as IVideoFrameStep ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IVideoFrameStep_Step_Proxy alias "IVideoFrameStep_Step_Proxy" (byval This as IVideoFrameStep ptr, byval dwFrames as DWORD, byval pStepObject as IUnknown ptr) as HRESULT
-declare sub IVideoFrameStep_Step_Stub alias "IVideoFrameStep_Step_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVideoFrameStep_CanStep_Proxy alias "IVideoFrameStep_CanStep_Proxy" (byval This as IVideoFrameStep ptr, byval bMultiple as integer, byval pStepObject as IUnknown ptr) as HRESULT
-declare sub IVideoFrameStep_CanStep_Stub alias "IVideoFrameStep_CanStep_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVideoFrameStep_CancelStep_Proxy alias "IVideoFrameStep_CancelStep_Proxy" (byval This as IVideoFrameStep ptr) as HRESULT
-declare sub IVideoFrameStep_CancelStep_Stub alias "IVideoFrameStep_CancelStep_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum AM_PUSHSOURCE_FLAGS
 	AM_PUSHSOURCECAPS_INTERNAL_RM = &h1
@@ -3463,10 +2437,6 @@ type IAMLatencyVtbl
 	GetLatency as function(byval as IAMLatency ptr, byval as REFERENCE_TIME ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMLatency_GetLatency_Proxy alias "IAMLatency_GetLatency_Proxy" (byval This as IAMLatency ptr, byval prtLatency as REFERENCE_TIME ptr) as HRESULT
-declare sub IAMLatency_GetLatency_Stub alias "IAMLatency_GetLatency_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMPushSource alias "IID_IAMPushSource" as IID
 
 type IAMPushSourceVtbl_ as IAMPushSourceVtbl
@@ -3488,20 +2458,6 @@ type IAMPushSourceVtbl
 	SetMaxStreamOffset as function(byval as IAMPushSource ptr, byval as REFERENCE_TIME) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMPushSource_GetPushSourceFlags_Proxy alias "IAMPushSource_GetPushSourceFlags_Proxy" (byval This as IAMPushSource ptr, byval pFlags as ULONG ptr) as HRESULT
-declare sub IAMPushSource_GetPushSourceFlags_Stub alias "IAMPushSource_GetPushSourceFlags_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMPushSource_SetPushSourceFlags_Proxy alias "IAMPushSource_SetPushSourceFlags_Proxy" (byval This as IAMPushSource ptr, byval Flags as ULONG) as HRESULT
-declare sub IAMPushSource_SetPushSourceFlags_Stub alias "IAMPushSource_SetPushSourceFlags_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMPushSource_SetStreamOffset_Proxy alias "IAMPushSource_SetStreamOffset_Proxy" (byval This as IAMPushSource ptr, byval rtOffset as REFERENCE_TIME) as HRESULT
-declare sub IAMPushSource_SetStreamOffset_Stub alias "IAMPushSource_SetStreamOffset_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMPushSource_GetStreamOffset_Proxy alias "IAMPushSource_GetStreamOffset_Proxy" (byval This as IAMPushSource ptr, byval prtOffset as REFERENCE_TIME ptr) as HRESULT
-declare sub IAMPushSource_GetStreamOffset_Stub alias "IAMPushSource_GetStreamOffset_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMPushSource_GetMaxStreamOffset_Proxy alias "IAMPushSource_GetMaxStreamOffset_Proxy" (byval This as IAMPushSource ptr, byval prtMaxOffset as REFERENCE_TIME ptr) as HRESULT
-declare sub IAMPushSource_GetMaxStreamOffset_Stub alias "IAMPushSource_GetMaxStreamOffset_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMPushSource_SetMaxStreamOffset_Proxy alias "IAMPushSource_SetMaxStreamOffset_Proxy" (byval This as IAMPushSource ptr, byval rtMaxOffset as REFERENCE_TIME) as HRESULT
-declare sub IAMPushSource_SetMaxStreamOffset_Stub alias "IAMPushSource_SetMaxStreamOffset_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMDeviceRemoval alias "IID_IAMDeviceRemoval" as IID
 
 type IAMDeviceRemovalVtbl_ as IAMDeviceRemovalVtbl
@@ -3518,15 +2474,6 @@ type IAMDeviceRemovalVtbl
 	Reassociate as function(byval as IAMDeviceRemoval ptr) as HRESULT
 	Disassociate as function(byval as IAMDeviceRemoval ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMDeviceRemoval_DeviceInfo_Proxy alias "IAMDeviceRemoval_DeviceInfo_Proxy" (byval This as IAMDeviceRemoval ptr, byval pclsidInterfaceClass as CLSID ptr, byval pwszSymbolicLink as WCHAR ptr ptr) as HRESULT
-declare sub IAMDeviceRemoval_DeviceInfo_Stub alias "IAMDeviceRemoval_DeviceInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMDeviceRemoval_Reassociate_Proxy alias "IAMDeviceRemoval_Reassociate_Proxy" (byval This as IAMDeviceRemoval ptr) as HRESULT
-declare sub IAMDeviceRemoval_Reassociate_Stub alias "IAMDeviceRemoval_Reassociate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMDeviceRemoval_Disassociate_Proxy alias "IAMDeviceRemoval_Disassociate_Proxy" (byval This as IAMDeviceRemoval ptr) as HRESULT
-declare sub IAMDeviceRemoval_Disassociate_Stub alias "IAMDeviceRemoval_Disassociate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type DVINFO
 	dwDVAAuxSrc as DWORD
@@ -3573,13 +2520,6 @@ type IDVEncVtbl
 	put_IFormatResolution as function(byval as IDVEnc ptr, byval as integer, byval as integer, byval as integer, byval as BYTE, byval as DVINFO ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IDVEnc_get_IFormatResolution_Proxy alias "IDVEnc_get_IFormatResolution_Proxy" (byval This as IDVEnc ptr, byval VideoFormat as integer ptr, byval DVFormat as integer ptr, byval Resolution as integer ptr, byval fDVInfo as BYTE, byval sDVInfo as DVINFO ptr) as HRESULT
-declare sub IDVEnc_get_IFormatResolution_Stub alias "IDVEnc_get_IFormatResolution_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDVEnc_put_IFormatResolution_Proxy alias "IDVEnc_put_IFormatResolution_Proxy" (byval This as IDVEnc ptr, byval VideoFormat as integer, byval DVFormat as integer, byval Resolution as integer, byval fDVInfo as BYTE, byval sDVInfo as DVINFO ptr) as HRESULT
-declare sub IDVEnc_put_IFormatResolution_Stub alias "IDVEnc_put_IFormatResolution_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 enum DVDECODERRESOLUTION
 	DVDECODERRESOLUTION_720x480 = 1000
 	DVDECODERRESOLUTION_360x240 = 1001
@@ -3609,12 +2549,6 @@ type IIPDVDecVtbl
 	put_IPDisplay as function(byval as IIPDVDec ptr, byval as integer) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IIPDVDec_get_IPDisplay_Proxy alias "IIPDVDec_get_IPDisplay_Proxy" (byval This as IIPDVDec ptr, byval displayPix as integer ptr) as HRESULT
-declare sub IIPDVDec_get_IPDisplay_Stub alias "IIPDVDec_get_IPDisplay_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IIPDVDec_put_IPDisplay_Proxy alias "IIPDVDec_put_IPDisplay_Proxy" (byval This as IIPDVDec ptr, byval displayPix as integer) as HRESULT
-declare sub IIPDVDec_put_IPDisplay_Stub alias "IIPDVDec_put_IPDisplay_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IDVRGB219 alias "IID_IDVRGB219" as IID
 
 type IDVRGB219Vtbl_ as IDVRGB219Vtbl
@@ -3630,10 +2564,6 @@ type IDVRGB219Vtbl
 	SetRGB219 as function(byval as IDVRGB219 ptr, byval as BOOL) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IDVRGB219_SetRGB219_Proxy alias "IDVRGB219_SetRGB219_Proxy" (byval This as IDVRGB219 ptr, byval bState as BOOL) as HRESULT
-declare sub IDVRGB219_SetRGB219_Stub alias "IDVRGB219_SetRGB219_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IDVSplitter alias "IID_IDVSplitter" as IID
 
 type IDVSplitterVtbl_ as IDVSplitterVtbl
@@ -3648,11 +2578,6 @@ type IDVSplitterVtbl
 	Release as function(byval as IDVSplitter ptr) as ULONG
 	DiscardAlternateVideoFrames as function(byval as IDVSplitter ptr, byval as integer) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IDVSplitter_DiscardAlternateVideoFrames_Proxy alias "IDVSplitter_DiscardAlternateVideoFrames_Proxy" (byval This as IDVSplitter ptr, byval nDiscard as integer) as HRESULT
-declare sub IDVSplitter_DiscardAlternateVideoFrames_Stub alias "IDVSplitter_DiscardAlternateVideoFrames_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum AM_AUDIO_RENDERER_STAT_PARAM
 	AM_AUDREND_STAT_PARAM_BREAK_COUNT = 1
@@ -3683,11 +2608,6 @@ type IAMAudioRendererStatsVtbl
 	GetStatParam as function(byval as IAMAudioRendererStats ptr, byval as DWORD, byval as DWORD ptr, byval as DWORD ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMAudioRendererStats_GetStatParam_Proxy alias "IAMAudioRendererStats_GetStatParam_Proxy" (byval This as IAMAudioRendererStats ptr, byval dwParam as DWORD, byval pdwParam1 as DWORD ptr, byval pdwParam2 as DWORD ptr) as HRESULT
-declare sub IAMAudioRendererStats_GetStatParam_Stub alias "IAMAudioRendererStats_GetStatParam_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 enum AM_INTF_SEARCH_FLAGS
 	AM_INTF_SEARCH_INPUT_PIN = &h1
 	AM_INTF_SEARCH_OUTPUT_PIN = &h2
@@ -3709,15 +2629,6 @@ type IAMGraphStreamsVtbl
 	SyncUsingStreamOffset as function(byval as IAMGraphStreams ptr, byval as BOOL) as HRESULT
 	SetMaxGraphLatency as function(byval as IAMGraphStreams ptr, byval as REFERENCE_TIME) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMGraphStreams_FindUpstreamInterface_Proxy alias "IAMGraphStreams_FindUpstreamInterface_Proxy" (byval This as IAMGraphStreams ptr, byval pPin as IPin ptr, byval riid as IID ptr, byval ppvInterface as any ptr ptr, byval dwFlags as DWORD) as HRESULT
-declare sub IAMGraphStreams_FindUpstreamInterface_Stub alias "IAMGraphStreams_FindUpstreamInterface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMGraphStreams_SyncUsingStreamOffset_Proxy alias "IAMGraphStreams_SyncUsingStreamOffset_Proxy" (byval This as IAMGraphStreams ptr, byval bUseStreamOffset as BOOL) as HRESULT
-declare sub IAMGraphStreams_SyncUsingStreamOffset_Stub alias "IAMGraphStreams_SyncUsingStreamOffset_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMGraphStreams_SetMaxGraphLatency_Proxy alias "IAMGraphStreams_SetMaxGraphLatency_Proxy" (byval This as IAMGraphStreams ptr, byval rtMaxGraphLatency as REFERENCE_TIME) as HRESULT
-declare sub IAMGraphStreams_SetMaxGraphLatency_Stub alias "IAMGraphStreams_SetMaxGraphLatency_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum AMOVERLAYFX
 	AMOVERFX_NOFX = 0
@@ -3742,14 +2653,6 @@ type IAMOverlayFXVtbl
 	GetOverlayFX as function(byval as IAMOverlayFX ptr, byval as DWORD ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMOverlayFX_QueryOverlayFXCaps_Proxy alias "IAMOverlayFX_QueryOverlayFXCaps_Proxy" (byval This as IAMOverlayFX ptr, byval lpdwOverlayFXCaps as DWORD ptr) as HRESULT
-declare sub IAMOverlayFX_QueryOverlayFXCaps_Stub alias "IAMOverlayFX_QueryOverlayFXCaps_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMOverlayFX_SetOverlayFX_Proxy alias "IAMOverlayFX_SetOverlayFX_Proxy" (byval This as IAMOverlayFX ptr, byval dwOverlayFX as DWORD) as HRESULT
-declare sub IAMOverlayFX_SetOverlayFX_Stub alias "IAMOverlayFX_SetOverlayFX_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMOverlayFX_GetOverlayFX_Proxy alias "IAMOverlayFX_GetOverlayFX_Proxy" (byval This as IAMOverlayFX ptr, byval lpdwOverlayFX as DWORD ptr) as HRESULT
-declare sub IAMOverlayFX_GetOverlayFX_Stub alias "IAMOverlayFX_GetOverlayFX_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMOpenProgress alias "IID_IAMOpenProgress" as IID
 
 type IAMOpenProgressVtbl_ as IAMOpenProgressVtbl
@@ -3766,12 +2669,6 @@ type IAMOpenProgressVtbl
 	AbortOperation as function(byval as IAMOpenProgress ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMOpenProgress_QueryProgress_Proxy alias "IAMOpenProgress_QueryProgress_Proxy" (byval This as IAMOpenProgress ptr, byval pllTotal as LONGLONG ptr, byval pllCurrent as LONGLONG ptr) as HRESULT
-declare sub IAMOpenProgress_QueryProgress_Stub alias "IAMOpenProgress_QueryProgress_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMOpenProgress_AbortOperation_Proxy alias "IAMOpenProgress_AbortOperation_Proxy" (byval This as IAMOpenProgress ptr) as HRESULT
-declare sub IAMOpenProgress_AbortOperation_Stub alias "IAMOpenProgress_AbortOperation_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IMpeg2Demultiplexer alias "IID_IMpeg2Demultiplexer" as IID
 
 type IMpeg2DemultiplexerVtbl_ as IMpeg2DemultiplexerVtbl
@@ -3788,15 +2685,6 @@ type IMpeg2DemultiplexerVtbl
 	SetOutputPinMediaType as function(byval as IMpeg2Demultiplexer ptr, byval as LPWSTR, byval as AM_MEDIA_TYPE ptr) as HRESULT
 	DeleteOutputPin as function(byval as IMpeg2Demultiplexer ptr, byval as LPWSTR) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IMpeg2Demultiplexer_CreateOutputPin_Proxy alias "IMpeg2Demultiplexer_CreateOutputPin_Proxy" (byval This as IMpeg2Demultiplexer ptr, byval pMediaType as AM_MEDIA_TYPE ptr, byval pszPinName as LPWSTR, byval ppIPin as IPin ptr ptr) as HRESULT
-declare sub IMpeg2Demultiplexer_CreateOutputPin_Stub alias "IMpeg2Demultiplexer_CreateOutputPin_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMpeg2Demultiplexer_SetOutputPinMediaType_Proxy alias "IMpeg2Demultiplexer_SetOutputPinMediaType_Proxy" (byval This as IMpeg2Demultiplexer ptr, byval pszPinName as LPWSTR, byval pMediaType as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IMpeg2Demultiplexer_SetOutputPinMediaType_Stub alias "IMpeg2Demultiplexer_SetOutputPinMediaType_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMpeg2Demultiplexer_DeleteOutputPin_Proxy alias "IMpeg2Demultiplexer_DeleteOutputPin_Proxy" (byval This as IMpeg2Demultiplexer ptr, byval pszPinName as LPWSTR) as HRESULT
-declare sub IMpeg2Demultiplexer_DeleteOutputPin_Stub alias "IMpeg2Demultiplexer_DeleteOutputPin_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 #define MPEG2_PROGRAM_STREAM_MAP &h00000000
 #define MPEG2_PROGRAM_ELEMENTARY_STREAM &h00000001
@@ -3831,16 +2719,6 @@ type IEnumStreamIdMapVtbl
 	Clone as function(byval as IEnumStreamIdMap ptr, byval as IEnumStreamIdMap ptr ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IEnumStreamIdMap_Next_Proxy alias "IEnumStreamIdMap_Next_Proxy" (byval This as IEnumStreamIdMap ptr, byval cRequest as ULONG, byval pStreamIdMap as STREAM_ID_MAP ptr, byval pcReceived as ULONG ptr) as HRESULT
-declare sub IEnumStreamIdMap_Next_Stub alias "IEnumStreamIdMap_Next_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumStreamIdMap_Skip_Proxy alias "IEnumStreamIdMap_Skip_Proxy" (byval This as IEnumStreamIdMap ptr, byval cRecords as ULONG) as HRESULT
-declare sub IEnumStreamIdMap_Skip_Stub alias "IEnumStreamIdMap_Skip_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumStreamIdMap_Reset_Proxy alias "IEnumStreamIdMap_Reset_Proxy" (byval This as IEnumStreamIdMap ptr) as HRESULT
-declare sub IEnumStreamIdMap_Reset_Stub alias "IEnumStreamIdMap_Reset_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEnumStreamIdMap_Clone_Proxy alias "IEnumStreamIdMap_Clone_Proxy" (byval This as IEnumStreamIdMap ptr, byval ppIEnumStreamIdMap as IEnumStreamIdMap ptr ptr) as HRESULT
-declare sub IEnumStreamIdMap_Clone_Stub alias "IEnumStreamIdMap_Clone_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IMPEG2StreamIdMap alias "IID_IMPEG2StreamIdMap" as IID
 
 type IMPEG2StreamIdMapVtbl_ as IMPEG2StreamIdMapVtbl
@@ -3858,14 +2736,6 @@ type IMPEG2StreamIdMapVtbl
 	EnumStreamIdMap as function(byval as IMPEG2StreamIdMap ptr, byval as IEnumStreamIdMap ptr ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IMPEG2StreamIdMap_MapStreamId_Proxy alias "IMPEG2StreamIdMap_MapStreamId_Proxy" (byval This as IMPEG2StreamIdMap ptr, byval ulStreamId as ULONG, byval MediaSampleContent as DWORD, byval ulSubstreamFilterValue as ULONG, byval iDataOffset as integer) as HRESULT
-declare sub IMPEG2StreamIdMap_MapStreamId_Stub alias "IMPEG2StreamIdMap_MapStreamId_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMPEG2StreamIdMap_UnmapStreamId_Proxy alias "IMPEG2StreamIdMap_UnmapStreamId_Proxy" (byval This as IMPEG2StreamIdMap ptr, byval culStreamId as ULONG, byval pulStreamId as ULONG ptr) as HRESULT
-declare sub IMPEG2StreamIdMap_UnmapStreamId_Stub alias "IMPEG2StreamIdMap_UnmapStreamId_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMPEG2StreamIdMap_EnumStreamIdMap_Proxy alias "IMPEG2StreamIdMap_EnumStreamIdMap_Proxy" (byval This as IMPEG2StreamIdMap ptr, byval ppIEnumStreamIdMap as IEnumStreamIdMap ptr ptr) as HRESULT
-declare sub IMPEG2StreamIdMap_EnumStreamIdMap_Stub alias "IMPEG2StreamIdMap_EnumStreamIdMap_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IRegisterServiceProvider alias "IID_IRegisterServiceProvider" as IID
 
 type IRegisterServiceProviderVtbl_ as IRegisterServiceProviderVtbl
@@ -3881,10 +2751,6 @@ type IRegisterServiceProviderVtbl
 	RegisterService as function(byval as IRegisterServiceProvider ptr, byval as GUID ptr, byval as IUnknown ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IRegisterServiceProvider_RegisterService_Proxy alias "IRegisterServiceProvider_RegisterService_Proxy" (byval This as IRegisterServiceProvider ptr, byval guidService as GUID ptr, byval pUnkObject as IUnknown ptr) as HRESULT
-declare sub IRegisterServiceProvider_RegisterService_Stub alias "IRegisterServiceProvider_RegisterService_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMClockSlave alias "IID_IAMClockSlave" as IID
 
 type IAMClockSlaveVtbl_ as IAMClockSlaveVtbl
@@ -3901,12 +2767,6 @@ type IAMClockSlaveVtbl
 	GetErrorTolerance as function(byval as IAMClockSlave ptr, byval as DWORD ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IAMClockSlave_SetErrorTolerance_Proxy alias "IAMClockSlave_SetErrorTolerance_Proxy" (byval This as IAMClockSlave ptr, byval dwTolerance as DWORD) as HRESULT
-declare sub IAMClockSlave_SetErrorTolerance_Stub alias "IAMClockSlave_SetErrorTolerance_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMClockSlave_GetErrorTolerance_Proxy alias "IAMClockSlave_GetErrorTolerance_Proxy" (byval This as IAMClockSlave ptr, byval pdwTolerance as DWORD ptr) as HRESULT
-declare sub IAMClockSlave_GetErrorTolerance_Stub alias "IAMClockSlave_GetErrorTolerance_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IAMGraphBuilderCallback alias "IID_IAMGraphBuilderCallback" as IID
 
 type IAMGraphBuilderCallbackVtbl_ as IAMGraphBuilderCallbackVtbl
@@ -3922,13 +2782,6 @@ type IAMGraphBuilderCallbackVtbl
 	SelectedFilter as function(byval as IAMGraphBuilderCallback ptr, byval as IMoniker ptr) as HRESULT
 	CreatedFilter as function(byval as IAMGraphBuilderCallback ptr, byval as IBaseFilter ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMGraphBuilderCallback_SelectedFilter_Proxy alias "IAMGraphBuilderCallback_SelectedFilter_Proxy" (byval This as IAMGraphBuilderCallback ptr, byval pMon as IMoniker ptr) as HRESULT
-declare sub IAMGraphBuilderCallback_SelectedFilter_Stub alias "IAMGraphBuilderCallback_SelectedFilter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMGraphBuilderCallback_CreatedFilter_Proxy alias "IAMGraphBuilderCallback_CreatedFilter_Proxy" (byval This as IAMGraphBuilderCallback ptr, byval pFil as IBaseFilter ptr) as HRESULT
-declare sub IAMGraphBuilderCallback_CreatedFilter_Stub alias "IAMGraphBuilderCallback_CreatedFilter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 type CodecAPIEventData
 	guid as GUID
@@ -3964,38 +2817,6 @@ type ICodecAPIVtbl
 	SetAllSettingsWithNotify as function(byval as ICodecAPI ptr, byval as IStream ptr, byval as GUID ptr ptr, byval as ULONG ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function ICodecAPI_IsSupported_Proxy alias "ICodecAPI_IsSupported_Proxy" (byval This as ICodecAPI ptr, byval Api as GUID ptr) as HRESULT
-declare sub ICodecAPI_IsSupported_Stub alias "ICodecAPI_IsSupported_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_IsModifiable_Proxy alias "ICodecAPI_IsModifiable_Proxy" (byval This as ICodecAPI ptr, byval Api as GUID ptr) as HRESULT
-declare sub ICodecAPI_IsModifiable_Stub alias "ICodecAPI_IsModifiable_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_GetParameterRange_Proxy alias "ICodecAPI_GetParameterRange_Proxy" (byval This as ICodecAPI ptr, byval Api as GUID ptr, byval ValueMin as VARIANT ptr, byval ValueMax as VARIANT ptr, byval SteppingDelta as VARIANT ptr) as HRESULT
-declare sub ICodecAPI_GetParameterRange_Stub alias "ICodecAPI_GetParameterRange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_GetParameterValues_Proxy alias "ICodecAPI_GetParameterValues_Proxy" (byval This as ICodecAPI ptr, byval Api as GUID ptr, byval Values as VARIANT ptr ptr, byval ValuesCount as ULONG ptr) as HRESULT
-declare sub ICodecAPI_GetParameterValues_Stub alias "ICodecAPI_GetParameterValues_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_GetDefaultValue_Proxy alias "ICodecAPI_GetDefaultValue_Proxy" (byval This as ICodecAPI ptr, byval Api as GUID ptr, byval Value as VARIANT ptr) as HRESULT
-declare sub ICodecAPI_GetDefaultValue_Stub alias "ICodecAPI_GetDefaultValue_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_GetValue_Proxy alias "ICodecAPI_GetValue_Proxy" (byval This as ICodecAPI ptr, byval Api as GUID ptr, byval Value as VARIANT ptr) as HRESULT
-declare sub ICodecAPI_GetValue_Stub alias "ICodecAPI_GetValue_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_SetValue_Proxy alias "ICodecAPI_SetValue_Proxy" (byval This as ICodecAPI ptr, byval Api as GUID ptr, byval Value as VARIANT ptr) as HRESULT
-declare sub ICodecAPI_SetValue_Stub alias "ICodecAPI_SetValue_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_RegisterForEvent_Proxy alias "ICodecAPI_RegisterForEvent_Proxy" (byval This as ICodecAPI ptr, byval Api as GUID ptr, byval userData as LONG_PTR) as HRESULT
-declare sub ICodecAPI_RegisterForEvent_Stub alias "ICodecAPI_RegisterForEvent_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_UnregisterForEvent_Proxy alias "ICodecAPI_UnregisterForEvent_Proxy" (byval This as ICodecAPI ptr, byval Api as GUID ptr) as HRESULT
-declare sub ICodecAPI_UnregisterForEvent_Stub alias "ICodecAPI_UnregisterForEvent_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_SetAllDefaults_Proxy alias "ICodecAPI_SetAllDefaults_Proxy" (byval This as ICodecAPI ptr) as HRESULT
-declare sub ICodecAPI_SetAllDefaults_Stub alias "ICodecAPI_SetAllDefaults_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_SetValueWithNotify_Proxy alias "ICodecAPI_SetValueWithNotify_Proxy" (byval This as ICodecAPI ptr, byval Api as GUID ptr, byval Value as VARIANT ptr, byval ChangedParam as GUID ptr ptr, byval ChangedParamCount as ULONG ptr) as HRESULT
-declare sub ICodecAPI_SetValueWithNotify_Stub alias "ICodecAPI_SetValueWithNotify_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_SetAllDefaultsWithNotify_Proxy alias "ICodecAPI_SetAllDefaultsWithNotify_Proxy" (byval This as ICodecAPI ptr, byval ChangedParam as GUID ptr ptr, byval ChangedParamCount as ULONG ptr) as HRESULT
-declare sub ICodecAPI_SetAllDefaultsWithNotify_Stub alias "ICodecAPI_SetAllDefaultsWithNotify_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_GetAllSettings_Proxy alias "ICodecAPI_GetAllSettings_Proxy" (byval This as ICodecAPI ptr, byval __MIDL_0016 as IStream ptr) as HRESULT
-declare sub ICodecAPI_GetAllSettings_Stub alias "ICodecAPI_GetAllSettings_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_SetAllSettings_Proxy alias "ICodecAPI_SetAllSettings_Proxy" (byval This as ICodecAPI ptr, byval __MIDL_0017 as IStream ptr) as HRESULT
-declare sub ICodecAPI_SetAllSettings_Stub alias "ICodecAPI_SetAllSettings_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICodecAPI_SetAllSettingsWithNotify_Proxy alias "ICodecAPI_SetAllSettingsWithNotify_Proxy" (byval This as ICodecAPI ptr, byval __MIDL_0018 as IStream ptr, byval ChangedParam as GUID ptr ptr, byval ChangedParamCount as ULONG ptr) as HRESULT
-declare sub ICodecAPI_SetAllSettingsWithNotify_Stub alias "ICodecAPI_SetAllSettingsWithNotify_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IGetCapabilitiesKey alias "IID_IGetCapabilitiesKey" as IID
 
 type IGetCapabilitiesKeyVtbl_ as IGetCapabilitiesKeyVtbl
@@ -4011,10 +2832,6 @@ type IGetCapabilitiesKeyVtbl
 	GetCapabilitiesKey as function(byval as IGetCapabilitiesKey ptr, byval as HKEY ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IGetCapabilitiesKey_GetCapabilitiesKey_Proxy alias "IGetCapabilitiesKey_GetCapabilitiesKey_Proxy" (byval This as IGetCapabilitiesKey ptr, byval pHKey as HKEY ptr) as HRESULT
-declare sub IGetCapabilitiesKey_GetCapabilitiesKey_Stub alias "IGetCapabilitiesKey_GetCapabilitiesKey_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IEncoderAPI alias "IID_IEncoderAPI" as IID
 
 type IEncoderAPIVtbl_ as IEncoderAPIVtbl
@@ -4036,22 +2853,6 @@ type IEncoderAPIVtbl
 	SetValue as function(byval as IEncoderAPI ptr, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IEncoderAPI_IsSupported_Proxy alias "IEncoderAPI_IsSupported_Proxy" (byval This as IEncoderAPI ptr, byval Api as GUID ptr) as HRESULT
-declare sub IEncoderAPI_IsSupported_Stub alias "IEncoderAPI_IsSupported_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEncoderAPI_IsAvailable_Proxy alias "IEncoderAPI_IsAvailable_Proxy" (byval This as IEncoderAPI ptr, byval Api as GUID ptr) as HRESULT
-declare sub IEncoderAPI_IsAvailable_Stub alias "IEncoderAPI_IsAvailable_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEncoderAPI_GetParameterRange_Proxy alias "IEncoderAPI_GetParameterRange_Proxy" (byval This as IEncoderAPI ptr, byval Api as GUID ptr, byval ValueMin as VARIANT ptr, byval ValueMax as VARIANT ptr, byval SteppingDelta as VARIANT ptr) as HRESULT
-declare sub IEncoderAPI_GetParameterRange_Stub alias "IEncoderAPI_GetParameterRange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEncoderAPI_GetParameterValues_Proxy alias "IEncoderAPI_GetParameterValues_Proxy" (byval This as IEncoderAPI ptr, byval Api as GUID ptr, byval Values as VARIANT ptr ptr, byval ValuesCount as ULONG ptr) as HRESULT
-declare sub IEncoderAPI_GetParameterValues_Stub alias "IEncoderAPI_GetParameterValues_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEncoderAPI_GetDefaultValue_Proxy alias "IEncoderAPI_GetDefaultValue_Proxy" (byval This as IEncoderAPI ptr, byval Api as GUID ptr, byval Value as VARIANT ptr) as HRESULT
-declare sub IEncoderAPI_GetDefaultValue_Stub alias "IEncoderAPI_GetDefaultValue_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEncoderAPI_GetValue_Proxy alias "IEncoderAPI_GetValue_Proxy" (byval This as IEncoderAPI ptr, byval Api as GUID ptr, byval Value as VARIANT ptr) as HRESULT
-declare sub IEncoderAPI_GetValue_Stub alias "IEncoderAPI_GetValue_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IEncoderAPI_SetValue_Proxy alias "IEncoderAPI_SetValue_Proxy" (byval This as IEncoderAPI ptr, byval Api as GUID ptr, byval Value as VARIANT ptr) as HRESULT
-declare sub IEncoderAPI_SetValue_Stub alias "IEncoderAPI_SetValue_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IVideoEncoder alias "IID_IVideoEncoder" as IID
 
 type IVideoEncoderVtbl_ as IVideoEncoderVtbl
@@ -4104,11 +2905,6 @@ type IAMDecoderCapsVtbl
 	Release as function(byval as IAMDecoderCaps ptr) as ULONG
 	GetDecoderCaps as function(byval as IAMDecoderCaps ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IAMDecoderCaps_GetDecoderCaps_Proxy alias "IAMDecoderCaps_GetDecoderCaps_Proxy" (byval This as IAMDecoderCaps ptr, byval dwCapIndex as DWORD, byval lpdwCap as DWORD ptr) as HRESULT
-declare sub IAMDecoderCaps_GetDecoderCaps_Stub alias "IAMDecoderCaps_GetDecoderCaps_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 #include once "win/ddraw.bi"
 
@@ -4496,78 +3292,6 @@ type IDvdControlVtbl
 	ChapterPlayAutoStop as function(byval as IDvdControl ptr, byval as ULONG, byval as ULONG, byval as ULONG) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IDvdControl_TitlePlay_Proxy alias "IDvdControl_TitlePlay_Proxy" (byval This as IDvdControl ptr, byval ulTitle as ULONG) as HRESULT
-declare sub IDvdControl_TitlePlay_Stub alias "IDvdControl_TitlePlay_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_ChapterPlay_Proxy alias "IDvdControl_ChapterPlay_Proxy" (byval This as IDvdControl ptr, byval ulTitle as ULONG, byval ulChapter as ULONG) as HRESULT
-declare sub IDvdControl_ChapterPlay_Stub alias "IDvdControl_ChapterPlay_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_TimePlay_Proxy alias "IDvdControl_TimePlay_Proxy" (byval This as IDvdControl ptr, byval ulTitle as ULONG, byval bcdTime as ULONG) as HRESULT
-declare sub IDvdControl_TimePlay_Stub alias "IDvdControl_TimePlay_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_StopForResume_Proxy alias "IDvdControl_StopForResume_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_StopForResume_Stub alias "IDvdControl_StopForResume_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_GoUp_Proxy alias "IDvdControl_GoUp_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_GoUp_Stub alias "IDvdControl_GoUp_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_TimeSearch_Proxy alias "IDvdControl_TimeSearch_Proxy" (byval This as IDvdControl ptr, byval bcdTime as ULONG) as HRESULT
-declare sub IDvdControl_TimeSearch_Stub alias "IDvdControl_TimeSearch_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_ChapterSearch_Proxy alias "IDvdControl_ChapterSearch_Proxy" (byval This as IDvdControl ptr, byval ulChapter as ULONG) as HRESULT
-declare sub IDvdControl_ChapterSearch_Stub alias "IDvdControl_ChapterSearch_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_PrevPGSearch_Proxy alias "IDvdControl_PrevPGSearch_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_PrevPGSearch_Stub alias "IDvdControl_PrevPGSearch_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_TopPGSearch_Proxy alias "IDvdControl_TopPGSearch_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_TopPGSearch_Stub alias "IDvdControl_TopPGSearch_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_NextPGSearch_Proxy alias "IDvdControl_NextPGSearch_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_NextPGSearch_Stub alias "IDvdControl_NextPGSearch_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_ForwardScan_Proxy alias "IDvdControl_ForwardScan_Proxy" (byval This as IDvdControl ptr, byval dwSpeed as double) as HRESULT
-declare sub IDvdControl_ForwardScan_Stub alias "IDvdControl_ForwardScan_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_BackwardScan_Proxy alias "IDvdControl_BackwardScan_Proxy" (byval This as IDvdControl ptr, byval dwSpeed as double) as HRESULT
-declare sub IDvdControl_BackwardScan_Stub alias "IDvdControl_BackwardScan_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_MenuCall_Proxy alias "IDvdControl_MenuCall_Proxy" (byval This as IDvdControl ptr, byval MenuID as DVD_MENU_ID) as HRESULT
-declare sub IDvdControl_MenuCall_Stub alias "IDvdControl_MenuCall_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_Resume_Proxy alias "IDvdControl_Resume_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_Resume_Stub alias "IDvdControl_Resume_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_UpperButtonSelect_Proxy alias "IDvdControl_UpperButtonSelect_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_UpperButtonSelect_Stub alias "IDvdControl_UpperButtonSelect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_LowerButtonSelect_Proxy alias "IDvdControl_LowerButtonSelect_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_LowerButtonSelect_Stub alias "IDvdControl_LowerButtonSelect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_LeftButtonSelect_Proxy alias "IDvdControl_LeftButtonSelect_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_LeftButtonSelect_Stub alias "IDvdControl_LeftButtonSelect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_RightButtonSelect_Proxy alias "IDvdControl_RightButtonSelect_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_RightButtonSelect_Stub alias "IDvdControl_RightButtonSelect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_ButtonActivate_Proxy alias "IDvdControl_ButtonActivate_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_ButtonActivate_Stub alias "IDvdControl_ButtonActivate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_ButtonSelectAndActivate_Proxy alias "IDvdControl_ButtonSelectAndActivate_Proxy" (byval This as IDvdControl ptr, byval ulButton as ULONG) as HRESULT
-declare sub IDvdControl_ButtonSelectAndActivate_Stub alias "IDvdControl_ButtonSelectAndActivate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_StillOff_Proxy alias "IDvdControl_StillOff_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_StillOff_Stub alias "IDvdControl_StillOff_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_PauseOn_Proxy alias "IDvdControl_PauseOn_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_PauseOn_Stub alias "IDvdControl_PauseOn_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_PauseOff_Proxy alias "IDvdControl_PauseOff_Proxy" (byval This as IDvdControl ptr) as HRESULT
-declare sub IDvdControl_PauseOff_Stub alias "IDvdControl_PauseOff_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_MenuLanguageSelect_Proxy alias "IDvdControl_MenuLanguageSelect_Proxy" (byval This as IDvdControl ptr, byval Language as LCID) as HRESULT
-declare sub IDvdControl_MenuLanguageSelect_Stub alias "IDvdControl_MenuLanguageSelect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_AudioStreamChange_Proxy alias "IDvdControl_AudioStreamChange_Proxy" (byval This as IDvdControl ptr, byval ulAudio as ULONG) as HRESULT
-declare sub IDvdControl_AudioStreamChange_Stub alias "IDvdControl_AudioStreamChange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_SubpictureStreamChange_Proxy alias "IDvdControl_SubpictureStreamChange_Proxy" (byval This as IDvdControl ptr, byval ulSubPicture as ULONG, byval bDisplay as BOOL) as HRESULT
-declare sub IDvdControl_SubpictureStreamChange_Stub alias "IDvdControl_SubpictureStreamChange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_AngleChange_Proxy alias "IDvdControl_AngleChange_Proxy" (byval This as IDvdControl ptr, byval ulAngle as ULONG) as HRESULT
-declare sub IDvdControl_AngleChange_Stub alias "IDvdControl_AngleChange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_ParentalLevelSelect_Proxy alias "IDvdControl_ParentalLevelSelect_Proxy" (byval This as IDvdControl ptr, byval ulParentalLevel as ULONG) as HRESULT
-declare sub IDvdControl_ParentalLevelSelect_Stub alias "IDvdControl_ParentalLevelSelect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_ParentalCountrySelect_Proxy alias "IDvdControl_ParentalCountrySelect_Proxy" (byval This as IDvdControl ptr, byval wCountry as WORD) as HRESULT
-declare sub IDvdControl_ParentalCountrySelect_Stub alias "IDvdControl_ParentalCountrySelect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_KaraokeAudioPresentationModeChange_Proxy alias "IDvdControl_KaraokeAudioPresentationModeChange_Proxy" (byval This as IDvdControl ptr, byval ulMode as ULONG) as HRESULT
-declare sub IDvdControl_KaraokeAudioPresentationModeChange_Stub alias "IDvdControl_KaraokeAudioPresentationModeChange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_VideoModePreferrence_Proxy alias "IDvdControl_VideoModePreferrence_Proxy" (byval This as IDvdControl ptr, byval ulPreferredDisplayMode as ULONG) as HRESULT
-declare sub IDvdControl_VideoModePreferrence_Stub alias "IDvdControl_VideoModePreferrence_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_SetRoot_Proxy alias "IDvdControl_SetRoot_Proxy" (byval This as IDvdControl ptr, byval pszPath as LPCWSTR) as HRESULT
-declare sub IDvdControl_SetRoot_Stub alias "IDvdControl_SetRoot_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_MouseActivate_Proxy alias "IDvdControl_MouseActivate_Proxy" (byval This as IDvdControl ptr, byval point as POINT) as HRESULT
-declare sub IDvdControl_MouseActivate_Stub alias "IDvdControl_MouseActivate_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_MouseSelect_Proxy alias "IDvdControl_MouseSelect_Proxy" (byval This as IDvdControl ptr, byval point as POINT) as HRESULT
-declare sub IDvdControl_MouseSelect_Stub alias "IDvdControl_MouseSelect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl_ChapterPlayAutoStop_Proxy alias "IDvdControl_ChapterPlayAutoStop_Proxy" (byval This as IDvdControl ptr, byval ulTitle as ULONG, byval ulChapter as ULONG, byval ulChaptersToPlay as ULONG) as HRESULT
-declare sub IDvdControl_ChapterPlayAutoStop_Stub alias "IDvdControl_ChapterPlayAutoStop_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IDvdInfo alias "IID_IDvdInfo" as IID
 
 type IDvdInfoVtbl_ as IDvdInfoVtbl
@@ -4605,54 +3329,6 @@ type IDvdInfoVtbl
 	GetRoot as function(byval as IDvdInfo ptr, byval as LPSTR, byval as ULONG, byval as ULONG ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IDvdInfo_GetCurrentDomain_Proxy alias "IDvdInfo_GetCurrentDomain_Proxy" (byval This as IDvdInfo ptr, byval pDomain as DVD_DOMAIN ptr) as HRESULT
-declare sub IDvdInfo_GetCurrentDomain_Stub alias "IDvdInfo_GetCurrentDomain_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetCurrentLocation_Proxy alias "IDvdInfo_GetCurrentLocation_Proxy" (byval This as IDvdInfo ptr, byval pLocation as DVD_PLAYBACK_LOCATION ptr) as HRESULT
-declare sub IDvdInfo_GetCurrentLocation_Stub alias "IDvdInfo_GetCurrentLocation_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetTotalTitleTime_Proxy alias "IDvdInfo_GetTotalTitleTime_Proxy" (byval This as IDvdInfo ptr, byval pulTotalTime as ULONG ptr) as HRESULT
-declare sub IDvdInfo_GetTotalTitleTime_Stub alias "IDvdInfo_GetTotalTitleTime_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetCurrentButton_Proxy alias "IDvdInfo_GetCurrentButton_Proxy" (byval This as IDvdInfo ptr, byval pulButtonsAvailable as ULONG ptr, byval pulCurrentButton as ULONG ptr) as HRESULT
-declare sub IDvdInfo_GetCurrentButton_Stub alias "IDvdInfo_GetCurrentButton_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetCurrentAngle_Proxy alias "IDvdInfo_GetCurrentAngle_Proxy" (byval This as IDvdInfo ptr, byval pulAnglesAvailable as ULONG ptr, byval pulCurrentAngle as ULONG ptr) as HRESULT
-declare sub IDvdInfo_GetCurrentAngle_Stub alias "IDvdInfo_GetCurrentAngle_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetCurrentAudio_Proxy alias "IDvdInfo_GetCurrentAudio_Proxy" (byval This as IDvdInfo ptr, byval pulStreamsAvailable as ULONG ptr, byval pulCurrentStream as ULONG ptr) as HRESULT
-declare sub IDvdInfo_GetCurrentAudio_Stub alias "IDvdInfo_GetCurrentAudio_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetCurrentSubpicture_Proxy alias "IDvdInfo_GetCurrentSubpicture_Proxy" (byval This as IDvdInfo ptr, byval pulStreamsAvailable as ULONG ptr, byval pulCurrentStream as ULONG ptr, byval pIsDisabled as BOOL ptr) as HRESULT
-declare sub IDvdInfo_GetCurrentSubpicture_Stub alias "IDvdInfo_GetCurrentSubpicture_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetCurrentUOPS_Proxy alias "IDvdInfo_GetCurrentUOPS_Proxy" (byval This as IDvdInfo ptr, byval pUOP as VALID_UOP_SOMTHING_OR_OTHER ptr) as HRESULT
-declare sub IDvdInfo_GetCurrentUOPS_Stub alias "IDvdInfo_GetCurrentUOPS_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetAllSPRMs_Proxy alias "IDvdInfo_GetAllSPRMs_Proxy" (byval This as IDvdInfo ptr, byval pRegisterArray as SPRMARRAY ptr) as HRESULT
-declare sub IDvdInfo_GetAllSPRMs_Stub alias "IDvdInfo_GetAllSPRMs_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetAllGPRMs_Proxy alias "IDvdInfo_GetAllGPRMs_Proxy" (byval This as IDvdInfo ptr, byval pRegisterArray as GPRMARRAY ptr) as HRESULT
-declare sub IDvdInfo_GetAllGPRMs_Stub alias "IDvdInfo_GetAllGPRMs_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetAudioLanguage_Proxy alias "IDvdInfo_GetAudioLanguage_Proxy" (byval This as IDvdInfo ptr, byval ulStream as ULONG, byval pLanguage as LCID ptr) as HRESULT
-declare sub IDvdInfo_GetAudioLanguage_Stub alias "IDvdInfo_GetAudioLanguage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetSubpictureLanguage_Proxy alias "IDvdInfo_GetSubpictureLanguage_Proxy" (byval This as IDvdInfo ptr, byval ulStream as ULONG, byval pLanguage as LCID ptr) as HRESULT
-declare sub IDvdInfo_GetSubpictureLanguage_Stub alias "IDvdInfo_GetSubpictureLanguage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetTitleAttributes_Proxy alias "IDvdInfo_GetTitleAttributes_Proxy" (byval This as IDvdInfo ptr, byval ulTitle as ULONG, byval pATR as DVD_ATR ptr) as HRESULT
-declare sub IDvdInfo_GetTitleAttributes_Stub alias "IDvdInfo_GetTitleAttributes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetVMGAttributes_Proxy alias "IDvdInfo_GetVMGAttributes_Proxy" (byval This as IDvdInfo ptr, byval pATR as DVD_ATR ptr) as HRESULT
-declare sub IDvdInfo_GetVMGAttributes_Stub alias "IDvdInfo_GetVMGAttributes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetCurrentVideoAttributes_Proxy alias "IDvdInfo_GetCurrentVideoAttributes_Proxy" (byval This as IDvdInfo ptr, byval pATR as DVD_VideoATR ptr) as HRESULT
-declare sub IDvdInfo_GetCurrentVideoAttributes_Stub alias "IDvdInfo_GetCurrentVideoAttributes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetCurrentAudioAttributes_Proxy alias "IDvdInfo_GetCurrentAudioAttributes_Proxy" (byval This as IDvdInfo ptr, byval pATR as DVD_AudioATR ptr) as HRESULT
-declare sub IDvdInfo_GetCurrentAudioAttributes_Stub alias "IDvdInfo_GetCurrentAudioAttributes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetCurrentSubpictureAttributes_Proxy alias "IDvdInfo_GetCurrentSubpictureAttributes_Proxy" (byval This as IDvdInfo ptr, byval pATR as DVD_SubpictureATR ptr) as HRESULT
-declare sub IDvdInfo_GetCurrentSubpictureAttributes_Stub alias "IDvdInfo_GetCurrentSubpictureAttributes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetCurrentVolumeInfo_Proxy alias "IDvdInfo_GetCurrentVolumeInfo_Proxy" (byval This as IDvdInfo ptr, byval pulNumOfVol as ULONG ptr, byval pulThisVolNum as ULONG ptr, byval pSide as DVD_DISC_SIDE ptr, byval pulNumOfTitles as ULONG ptr) as HRESULT
-declare sub IDvdInfo_GetCurrentVolumeInfo_Stub alias "IDvdInfo_GetCurrentVolumeInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetDVDTextInfo_Proxy alias "IDvdInfo_GetDVDTextInfo_Proxy" (byval This as IDvdInfo ptr, byval pTextManager as BYTE ptr, byval ulBufSize as ULONG, byval pulActualSize as ULONG ptr) as HRESULT
-declare sub IDvdInfo_GetDVDTextInfo_Stub alias "IDvdInfo_GetDVDTextInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetPlayerParentalLevel_Proxy alias "IDvdInfo_GetPlayerParentalLevel_Proxy" (byval This as IDvdInfo ptr, byval pulParentalLevel as ULONG ptr, byval pulCountryCode as ULONG ptr) as HRESULT
-declare sub IDvdInfo_GetPlayerParentalLevel_Stub alias "IDvdInfo_GetPlayerParentalLevel_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetNumberOfChapters_Proxy alias "IDvdInfo_GetNumberOfChapters_Proxy" (byval This as IDvdInfo ptr, byval ulTitle as ULONG, byval pulNumberOfChapters as ULONG ptr) as HRESULT
-declare sub IDvdInfo_GetNumberOfChapters_Stub alias "IDvdInfo_GetNumberOfChapters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetTitleParentalLevels_Proxy alias "IDvdInfo_GetTitleParentalLevels_Proxy" (byval This as IDvdInfo ptr, byval ulTitle as ULONG, byval pulParentalLevels as ULONG ptr) as HRESULT
-declare sub IDvdInfo_GetTitleParentalLevels_Stub alias "IDvdInfo_GetTitleParentalLevels_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo_GetRoot_Proxy alias "IDvdInfo_GetRoot_Proxy" (byval This as IDvdInfo ptr, byval pRoot as LPSTR, byval ulBufSize as ULONG, byval pulActualSize as ULONG ptr) as HRESULT
-declare sub IDvdInfo_GetRoot_Stub alias "IDvdInfo_GetRoot_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IDvdCmd alias "IID_IDvdCmd" as IID
 
 type IDvdCmdVtbl_ as IDvdCmdVtbl
@@ -4669,12 +3345,6 @@ type IDvdCmdVtbl
 	WaitForEnd as function(byval as IDvdCmd ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IDvdCmd_WaitForStart_Proxy alias "IDvdCmd_WaitForStart_Proxy" (byval This as IDvdCmd ptr) as HRESULT
-declare sub IDvdCmd_WaitForStart_Stub alias "IDvdCmd_WaitForStart_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdCmd_WaitForEnd_Proxy alias "IDvdCmd_WaitForEnd_Proxy" (byval This as IDvdCmd ptr) as HRESULT
-declare sub IDvdCmd_WaitForEnd_Stub alias "IDvdCmd_WaitForEnd_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IDvdState alias "IID_IDvdState" as IID
 
 type IDvdStateVtbl_ as IDvdStateVtbl
@@ -4691,12 +3361,6 @@ type IDvdStateVtbl
 	GetParentalLevel as function(byval as IDvdState ptr, byval as ULONG ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IDvdState_GetDiscID_Proxy alias "IDvdState_GetDiscID_Proxy" (byval This as IDvdState ptr, byval pullUniqueID as ULONGLONG ptr) as HRESULT
-declare sub IDvdState_GetDiscID_Stub alias "IDvdState_GetDiscID_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdState_GetParentalLevel_Proxy alias "IDvdState_GetParentalLevel_Proxy" (byval This as IDvdState ptr, byval pulParentalLevel as ULONG ptr) as HRESULT
-declare sub IDvdState_GetParentalLevel_Stub alias "IDvdState_GetParentalLevel_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IDvdControl2 alias "IID_IDvdControl2" as IID
 
 type IDvdControl2Vtbl_ as IDvdControl2Vtbl
@@ -4750,89 +3414,6 @@ type IDvdControl2Vtbl
 	SelectDefaultAudioLanguage as function(byval as IDvdControl2 ptr, byval as LCID, byval as DVD_AUDIO_LANG_EXT) as HRESULT
 	SelectDefaultSubpictureLanguage as function(byval as IDvdControl2 ptr, byval as LCID, byval as DVD_SUBPICTURE_LANG_EXT) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IDvdControl2_PlayTitle_Proxy alias "IDvdControl2_PlayTitle_Proxy" (byval This as IDvdControl2 ptr, byval ulTitle as ULONG, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_PlayTitle_Stub alias "IDvdControl2_PlayTitle_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_PlayChapterInTitle_Proxy alias "IDvdControl2_PlayChapterInTitle_Proxy" (byval This as IDvdControl2 ptr, byval ulTitle as ULONG, byval ulChapter as ULONG, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_PlayChapterInTitle_Stub alias "IDvdControl2_PlayChapterInTitle_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_PlayAtTimeInTitle_Proxy alias "IDvdControl2_PlayAtTimeInTitle_Proxy" (byval This as IDvdControl2 ptr, byval ulTitle as ULONG, byval pStartTime as DVD_HMSF_TIMECODE ptr, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_PlayAtTimeInTitle_Stub alias "IDvdControl2_PlayAtTimeInTitle_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_Stop_Proxy alias "IDvdControl2_Stop_Proxy" (byval This as IDvdControl2 ptr) as HRESULT
-declare sub IDvdControl2_Stop_Stub alias "IDvdControl2_Stop_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_ReturnFromSubmenu_Proxy alias "IDvdControl2_ReturnFromSubmenu_Proxy" (byval This as IDvdControl2 ptr, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_ReturnFromSubmenu_Stub alias "IDvdControl2_ReturnFromSubmenu_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_PlayAtTime_Proxy alias "IDvdControl2_PlayAtTime_Proxy" (byval This as IDvdControl2 ptr, byval pTime as DVD_HMSF_TIMECODE ptr, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_PlayAtTime_Stub alias "IDvdControl2_PlayAtTime_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_PlayChapter_Proxy alias "IDvdControl2_PlayChapter_Proxy" (byval This as IDvdControl2 ptr, byval ulChapter as ULONG, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_PlayChapter_Stub alias "IDvdControl2_PlayChapter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_PlayPrevChapter_Proxy alias "IDvdControl2_PlayPrevChapter_Proxy" (byval This as IDvdControl2 ptr, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_PlayPrevChapter_Stub alias "IDvdControl2_PlayPrevChapter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_ReplayChapter_Proxy alias "IDvdControl2_ReplayChapter_Proxy" (byval This as IDvdControl2 ptr, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_ReplayChapter_Stub alias "IDvdControl2_ReplayChapter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_PlayNextChapter_Proxy alias "IDvdControl2_PlayNextChapter_Proxy" (byval This as IDvdControl2 ptr, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_PlayNextChapter_Stub alias "IDvdControl2_PlayNextChapter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_PlayForwards_Proxy alias "IDvdControl2_PlayForwards_Proxy" (byval This as IDvdControl2 ptr, byval dSpeed as double, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_PlayForwards_Stub alias "IDvdControl2_PlayForwards_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_PlayBackwards_Proxy alias "IDvdControl2_PlayBackwards_Proxy" (byval This as IDvdControl2 ptr, byval dSpeed as double, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_PlayBackwards_Stub alias "IDvdControl2_PlayBackwards_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_ShowMenu_Proxy alias "IDvdControl2_ShowMenu_Proxy" (byval This as IDvdControl2 ptr, byval MenuID as DVD_MENU_ID, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_ShowMenu_Stub alias "IDvdControl2_ShowMenu_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_Resume_Proxy alias "IDvdControl2_Resume_Proxy" (byval This as IDvdControl2 ptr, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_Resume_Stub alias "IDvdControl2_Resume_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectRelativeButton_Proxy alias "IDvdControl2_SelectRelativeButton_Proxy" (byval This as IDvdControl2 ptr, byval buttonDir as DVD_RELATIVE_BUTTON) as HRESULT
-declare sub IDvdControl2_SelectRelativeButton_Stub alias "IDvdControl2_SelectRelativeButton_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_ActivateButton_Proxy alias "IDvdControl2_ActivateButton_Proxy" (byval This as IDvdControl2 ptr) as HRESULT
-declare sub IDvdControl2_ActivateButton_Stub alias "IDvdControl2_ActivateButton_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectButton_Proxy alias "IDvdControl2_SelectButton_Proxy" (byval This as IDvdControl2 ptr, byval ulButton as ULONG) as HRESULT
-declare sub IDvdControl2_SelectButton_Stub alias "IDvdControl2_SelectButton_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectAndActivateButton_Proxy alias "IDvdControl2_SelectAndActivateButton_Proxy" (byval This as IDvdControl2 ptr, byval ulButton as ULONG) as HRESULT
-declare sub IDvdControl2_SelectAndActivateButton_Stub alias "IDvdControl2_SelectAndActivateButton_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_StillOff_Proxy alias "IDvdControl2_StillOff_Proxy" (byval This as IDvdControl2 ptr) as HRESULT
-declare sub IDvdControl2_StillOff_Stub alias "IDvdControl2_StillOff_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_Pause_Proxy alias "IDvdControl2_Pause_Proxy" (byval This as IDvdControl2 ptr, byval bState as BOOL) as HRESULT
-declare sub IDvdControl2_Pause_Stub alias "IDvdControl2_Pause_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectAudioStream_Proxy alias "IDvdControl2_SelectAudioStream_Proxy" (byval This as IDvdControl2 ptr, byval ulAudio as ULONG, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_SelectAudioStream_Stub alias "IDvdControl2_SelectAudioStream_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectSubpictureStream_Proxy alias "IDvdControl2_SelectSubpictureStream_Proxy" (byval This as IDvdControl2 ptr, byval ulSubPicture as ULONG, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_SelectSubpictureStream_Stub alias "IDvdControl2_SelectSubpictureStream_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SetSubpictureState_Proxy alias "IDvdControl2_SetSubpictureState_Proxy" (byval This as IDvdControl2 ptr, byval bState as BOOL, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_SetSubpictureState_Stub alias "IDvdControl2_SetSubpictureState_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectAngle_Proxy alias "IDvdControl2_SelectAngle_Proxy" (byval This as IDvdControl2 ptr, byval ulAngle as ULONG, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_SelectAngle_Stub alias "IDvdControl2_SelectAngle_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectParentalLevel_Proxy alias "IDvdControl2_SelectParentalLevel_Proxy" (byval This as IDvdControl2 ptr, byval ulParentalLevel as ULONG) as HRESULT
-declare sub IDvdControl2_SelectParentalLevel_Stub alias "IDvdControl2_SelectParentalLevel_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectParentalCountry_Proxy alias "IDvdControl2_SelectParentalCountry_Proxy" (byval This as IDvdControl2 ptr, byval bCountry as BYTE ptr) as HRESULT
-declare sub IDvdControl2_SelectParentalCountry_Stub alias "IDvdControl2_SelectParentalCountry_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectKaraokeAudioPresentationMode_Proxy alias "IDvdControl2_SelectKaraokeAudioPresentationMode_Proxy" (byval This as IDvdControl2 ptr, byval ulMode as ULONG) as HRESULT
-declare sub IDvdControl2_SelectKaraokeAudioPresentationMode_Stub alias "IDvdControl2_SelectKaraokeAudioPresentationMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectVideoModePreference_Proxy alias "IDvdControl2_SelectVideoModePreference_Proxy" (byval This as IDvdControl2 ptr, byval ulPreferredDisplayMode as ULONG) as HRESULT
-declare sub IDvdControl2_SelectVideoModePreference_Stub alias "IDvdControl2_SelectVideoModePreference_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SetDVDDirectory_Proxy alias "IDvdControl2_SetDVDDirectory_Proxy" (byval This as IDvdControl2 ptr, byval pszwPath as LPCWSTR) as HRESULT
-declare sub IDvdControl2_SetDVDDirectory_Stub alias "IDvdControl2_SetDVDDirectory_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_ActivateAtPosition_Proxy alias "IDvdControl2_ActivateAtPosition_Proxy" (byval This as IDvdControl2 ptr, byval point as POINT) as HRESULT
-declare sub IDvdControl2_ActivateAtPosition_Stub alias "IDvdControl2_ActivateAtPosition_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectAtPosition_Proxy alias "IDvdControl2_SelectAtPosition_Proxy" (byval This as IDvdControl2 ptr, byval point as POINT) as HRESULT
-declare sub IDvdControl2_SelectAtPosition_Stub alias "IDvdControl2_SelectAtPosition_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_PlayChaptersAutoStop_Proxy alias "IDvdControl2_PlayChaptersAutoStop_Proxy" (byval This as IDvdControl2 ptr, byval ulTitle as ULONG, byval ulChapter as ULONG, byval ulChaptersToPlay as ULONG, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_PlayChaptersAutoStop_Stub alias "IDvdControl2_PlayChaptersAutoStop_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_AcceptParentalLevelChange_Proxy alias "IDvdControl2_AcceptParentalLevelChange_Proxy" (byval This as IDvdControl2 ptr, byval bAccept as BOOL) as HRESULT
-declare sub IDvdControl2_AcceptParentalLevelChange_Stub alias "IDvdControl2_AcceptParentalLevelChange_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SetOption_Proxy alias "IDvdControl2_SetOption_Proxy" (byval This as IDvdControl2 ptr, byval flag as DVD_OPTION_FLAG, byval fState as BOOL) as HRESULT
-declare sub IDvdControl2_SetOption_Stub alias "IDvdControl2_SetOption_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SetState_Proxy alias "IDvdControl2_SetState_Proxy" (byval This as IDvdControl2 ptr, byval pState as IDvdState ptr, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_SetState_Stub alias "IDvdControl2_SetState_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_PlayPeriodInTitleAutoStop_Proxy alias "IDvdControl2_PlayPeriodInTitleAutoStop_Proxy" (byval This as IDvdControl2 ptr, byval ulTitle as ULONG, byval pStartTime as DVD_HMSF_TIMECODE ptr, byval pEndTime as DVD_HMSF_TIMECODE ptr, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_PlayPeriodInTitleAutoStop_Stub alias "IDvdControl2_PlayPeriodInTitleAutoStop_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SetGPRM_Proxy alias "IDvdControl2_SetGPRM_Proxy" (byval This as IDvdControl2 ptr, byval ulIndex as ULONG, byval wValue as WORD, byval dwFlags as DWORD, byval ppCmd as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdControl2_SetGPRM_Stub alias "IDvdControl2_SetGPRM_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectDefaultMenuLanguage_Proxy alias "IDvdControl2_SelectDefaultMenuLanguage_Proxy" (byval This as IDvdControl2 ptr, byval Language as LCID) as HRESULT
-declare sub IDvdControl2_SelectDefaultMenuLanguage_Stub alias "IDvdControl2_SelectDefaultMenuLanguage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectDefaultAudioLanguage_Proxy alias "IDvdControl2_SelectDefaultAudioLanguage_Proxy" (byval This as IDvdControl2 ptr, byval Language as LCID, byval audioExtension as DVD_AUDIO_LANG_EXT) as HRESULT
-declare sub IDvdControl2_SelectDefaultAudioLanguage_Stub alias "IDvdControl2_SelectDefaultAudioLanguage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdControl2_SelectDefaultSubpictureLanguage_Proxy alias "IDvdControl2_SelectDefaultSubpictureLanguage_Proxy" (byval This as IDvdControl2 ptr, byval Language as LCID, byval subpictureExtension as DVD_SUBPICTURE_LANG_EXT) as HRESULT
-declare sub IDvdControl2_SelectDefaultSubpictureLanguage_Stub alias "IDvdControl2_SelectDefaultSubpictureLanguage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum DVD_TextStringType
 	DVD_Struct_Volume = &h1
@@ -4956,87 +3537,6 @@ type IDvdInfo2Vtbl
 	IsSubpictureStreamEnabled as function(byval as IDvdInfo2 ptr, byval as ULONG, byval as BOOL ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IDvdInfo2_GetCurrentDomain_Proxy alias "IDvdInfo2_GetCurrentDomain_Proxy" (byval This as IDvdInfo2 ptr, byval pDomain as DVD_DOMAIN ptr) as HRESULT
-declare sub IDvdInfo2_GetCurrentDomain_Stub alias "IDvdInfo2_GetCurrentDomain_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetCurrentLocation_Proxy alias "IDvdInfo2_GetCurrentLocation_Proxy" (byval This as IDvdInfo2 ptr, byval pLocation as DVD_PLAYBACK_LOCATION2 ptr) as HRESULT
-declare sub IDvdInfo2_GetCurrentLocation_Stub alias "IDvdInfo2_GetCurrentLocation_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetTotalTitleTime_Proxy alias "IDvdInfo2_GetTotalTitleTime_Proxy" (byval This as IDvdInfo2 ptr, byval pTotalTime as DVD_HMSF_TIMECODE ptr, byval ulTimeCodeFlags as ULONG ptr) as HRESULT
-declare sub IDvdInfo2_GetTotalTitleTime_Stub alias "IDvdInfo2_GetTotalTitleTime_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetCurrentButton_Proxy alias "IDvdInfo2_GetCurrentButton_Proxy" (byval This as IDvdInfo2 ptr, byval pulButtonsAvailable as ULONG ptr, byval pulCurrentButton as ULONG ptr) as HRESULT
-declare sub IDvdInfo2_GetCurrentButton_Stub alias "IDvdInfo2_GetCurrentButton_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetCurrentAngle_Proxy alias "IDvdInfo2_GetCurrentAngle_Proxy" (byval This as IDvdInfo2 ptr, byval pulAnglesAvailable as ULONG ptr, byval pulCurrentAngle as ULONG ptr) as HRESULT
-declare sub IDvdInfo2_GetCurrentAngle_Stub alias "IDvdInfo2_GetCurrentAngle_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetCurrentAudio_Proxy alias "IDvdInfo2_GetCurrentAudio_Proxy" (byval This as IDvdInfo2 ptr, byval pulStreamsAvailable as ULONG ptr, byval pulCurrentStream as ULONG ptr) as HRESULT
-declare sub IDvdInfo2_GetCurrentAudio_Stub alias "IDvdInfo2_GetCurrentAudio_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetCurrentSubpicture_Proxy alias "IDvdInfo2_GetCurrentSubpicture_Proxy" (byval This as IDvdInfo2 ptr, byval pulStreamsAvailable as ULONG ptr, byval pulCurrentStream as ULONG ptr, byval pbIsDisabled as BOOL ptr) as HRESULT
-declare sub IDvdInfo2_GetCurrentSubpicture_Stub alias "IDvdInfo2_GetCurrentSubpicture_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetCurrentUOPS_Proxy alias "IDvdInfo2_GetCurrentUOPS_Proxy" (byval This as IDvdInfo2 ptr, byval pulUOPs as ULONG ptr) as HRESULT
-declare sub IDvdInfo2_GetCurrentUOPS_Stub alias "IDvdInfo2_GetCurrentUOPS_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetAllSPRMs_Proxy alias "IDvdInfo2_GetAllSPRMs_Proxy" (byval This as IDvdInfo2 ptr, byval pRegisterArray as SPRMARRAY ptr) as HRESULT
-declare sub IDvdInfo2_GetAllSPRMs_Stub alias "IDvdInfo2_GetAllSPRMs_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetAllGPRMs_Proxy alias "IDvdInfo2_GetAllGPRMs_Proxy" (byval This as IDvdInfo2 ptr, byval pRegisterArray as GPRMARRAY ptr) as HRESULT
-declare sub IDvdInfo2_GetAllGPRMs_Stub alias "IDvdInfo2_GetAllGPRMs_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetAudioLanguage_Proxy alias "IDvdInfo2_GetAudioLanguage_Proxy" (byval This as IDvdInfo2 ptr, byval ulStream as ULONG, byval pLanguage as LCID ptr) as HRESULT
-declare sub IDvdInfo2_GetAudioLanguage_Stub alias "IDvdInfo2_GetAudioLanguage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetSubpictureLanguage_Proxy alias "IDvdInfo2_GetSubpictureLanguage_Proxy" (byval This as IDvdInfo2 ptr, byval ulStream as ULONG, byval pLanguage as LCID ptr) as HRESULT
-declare sub IDvdInfo2_GetSubpictureLanguage_Stub alias "IDvdInfo2_GetSubpictureLanguage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetTitleAttributes_Proxy alias "IDvdInfo2_GetTitleAttributes_Proxy" (byval This as IDvdInfo2 ptr, byval ulTitle as ULONG, byval pMenu as DVD_MenuAttributes ptr, byval pTitle as DVD_TitleAttributes ptr) as HRESULT
-declare sub IDvdInfo2_GetTitleAttributes_Stub alias "IDvdInfo2_GetTitleAttributes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetVMGAttributes_Proxy alias "IDvdInfo2_GetVMGAttributes_Proxy" (byval This as IDvdInfo2 ptr, byval pATR as DVD_MenuAttributes ptr) as HRESULT
-declare sub IDvdInfo2_GetVMGAttributes_Stub alias "IDvdInfo2_GetVMGAttributes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetCurrentVideoAttributes_Proxy alias "IDvdInfo2_GetCurrentVideoAttributes_Proxy" (byval This as IDvdInfo2 ptr, byval pATR as DVD_VideoAttributes ptr) as HRESULT
-declare sub IDvdInfo2_GetCurrentVideoAttributes_Stub alias "IDvdInfo2_GetCurrentVideoAttributes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetAudioAttributes_Proxy alias "IDvdInfo2_GetAudioAttributes_Proxy" (byval This as IDvdInfo2 ptr, byval ulStream as ULONG, byval pATR as DVD_AudioAttributes ptr) as HRESULT
-declare sub IDvdInfo2_GetAudioAttributes_Stub alias "IDvdInfo2_GetAudioAttributes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetKaraokeAttributes_Proxy alias "IDvdInfo2_GetKaraokeAttributes_Proxy" (byval This as IDvdInfo2 ptr, byval ulStream as ULONG, byval pAttributes as DVD_KaraokeAttributes ptr) as HRESULT
-declare sub IDvdInfo2_GetKaraokeAttributes_Stub alias "IDvdInfo2_GetKaraokeAttributes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetSubpictureAttributes_Proxy alias "IDvdInfo2_GetSubpictureAttributes_Proxy" (byval This as IDvdInfo2 ptr, byval ulStream as ULONG, byval pATR as DVD_SubpictureAttributes ptr) as HRESULT
-declare sub IDvdInfo2_GetSubpictureAttributes_Stub alias "IDvdInfo2_GetSubpictureAttributes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetDVDVolumeInfo_Proxy alias "IDvdInfo2_GetDVDVolumeInfo_Proxy" (byval This as IDvdInfo2 ptr, byval pulNumOfVolumes as ULONG ptr, byval pulVolume as ULONG ptr, byval pSide as DVD_DISC_SIDE ptr, byval pulNumOfTitles as ULONG ptr) as HRESULT
-declare sub IDvdInfo2_GetDVDVolumeInfo_Stub alias "IDvdInfo2_GetDVDVolumeInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetDVDTextNumberOfLanguages_Proxy alias "IDvdInfo2_GetDVDTextNumberOfLanguages_Proxy" (byval This as IDvdInfo2 ptr, byval pulNumOfLangs as ULONG ptr) as HRESULT
-declare sub IDvdInfo2_GetDVDTextNumberOfLanguages_Stub alias "IDvdInfo2_GetDVDTextNumberOfLanguages_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetDVDTextLanguageInfo_Proxy alias "IDvdInfo2_GetDVDTextLanguageInfo_Proxy" (byval This as IDvdInfo2 ptr, byval ulLangIndex as ULONG, byval pulNumOfStrings as ULONG ptr, byval pLangCode as LCID ptr, byval pbCharacterSet as DVD_TextCharSet ptr) as HRESULT
-declare sub IDvdInfo2_GetDVDTextLanguageInfo_Stub alias "IDvdInfo2_GetDVDTextLanguageInfo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetDVDTextStringAsNative_Proxy alias "IDvdInfo2_GetDVDTextStringAsNative_Proxy" (byval This as IDvdInfo2 ptr, byval ulLangIndex as ULONG, byval ulStringIndex as ULONG, byval pbBuffer as BYTE ptr, byval ulMaxBufferSize as ULONG, byval pulActualSize as ULONG ptr, byval pType as DVD_TextStringType ptr) as HRESULT
-declare sub IDvdInfo2_GetDVDTextStringAsNative_Stub alias "IDvdInfo2_GetDVDTextStringAsNative_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetDVDTextStringAsUnicode_Proxy alias "IDvdInfo2_GetDVDTextStringAsUnicode_Proxy" (byval This as IDvdInfo2 ptr, byval ulLangIndex as ULONG, byval ulStringIndex as ULONG, byval pchwBuffer as WCHAR ptr, byval ulMaxBufferSize as ULONG, byval pulActualSize as ULONG ptr, byval pType as DVD_TextStringType ptr) as HRESULT
-declare sub IDvdInfo2_GetDVDTextStringAsUnicode_Stub alias "IDvdInfo2_GetDVDTextStringAsUnicode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetPlayerParentalLevel_Proxy alias "IDvdInfo2_GetPlayerParentalLevel_Proxy" (byval This as IDvdInfo2 ptr, byval pulParentalLevel as ULONG ptr, byval pbCountryCode as BYTE ptr) as HRESULT
-declare sub IDvdInfo2_GetPlayerParentalLevel_Stub alias "IDvdInfo2_GetPlayerParentalLevel_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetNumberOfChapters_Proxy alias "IDvdInfo2_GetNumberOfChapters_Proxy" (byval This as IDvdInfo2 ptr, byval ulTitle as ULONG, byval pulNumOfChapters as ULONG ptr) as HRESULT
-declare sub IDvdInfo2_GetNumberOfChapters_Stub alias "IDvdInfo2_GetNumberOfChapters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetTitleParentalLevels_Proxy alias "IDvdInfo2_GetTitleParentalLevels_Proxy" (byval This as IDvdInfo2 ptr, byval ulTitle as ULONG, byval pulParentalLevels as ULONG ptr) as HRESULT
-declare sub IDvdInfo2_GetTitleParentalLevels_Stub alias "IDvdInfo2_GetTitleParentalLevels_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetDVDDirectory_Proxy alias "IDvdInfo2_GetDVDDirectory_Proxy" (byval This as IDvdInfo2 ptr, byval pszwPath as LPWSTR, byval ulMaxSize as ULONG, byval pulActualSize as ULONG ptr) as HRESULT
-declare sub IDvdInfo2_GetDVDDirectory_Stub alias "IDvdInfo2_GetDVDDirectory_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_IsAudioStreamEnabled_Proxy alias "IDvdInfo2_IsAudioStreamEnabled_Proxy" (byval This as IDvdInfo2 ptr, byval ulStreamNum as ULONG, byval pbEnabled as BOOL ptr) as HRESULT
-declare sub IDvdInfo2_IsAudioStreamEnabled_Stub alias "IDvdInfo2_IsAudioStreamEnabled_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetDiscID_Proxy alias "IDvdInfo2_GetDiscID_Proxy" (byval This as IDvdInfo2 ptr, byval pszwPath as LPCWSTR, byval pullDiscID as ULONGLONG ptr) as HRESULT
-declare sub IDvdInfo2_GetDiscID_Stub alias "IDvdInfo2_GetDiscID_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetState_Proxy alias "IDvdInfo2_GetState_Proxy" (byval This as IDvdInfo2 ptr, byval pStateData as IDvdState ptr ptr) as HRESULT
-declare sub IDvdInfo2_GetState_Stub alias "IDvdInfo2_GetState_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetMenuLanguages_Proxy alias "IDvdInfo2_GetMenuLanguages_Proxy" (byval This as IDvdInfo2 ptr, byval pLanguages as LCID ptr, byval ulMaxLanguages as ULONG, byval pulActualLanguages as ULONG ptr) as HRESULT
-declare sub IDvdInfo2_GetMenuLanguages_Stub alias "IDvdInfo2_GetMenuLanguages_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetButtonAtPosition_Proxy alias "IDvdInfo2_GetButtonAtPosition_Proxy" (byval This as IDvdInfo2 ptr, byval point as POINT, byval pulButtonIndex as ULONG ptr) as HRESULT
-declare sub IDvdInfo2_GetButtonAtPosition_Stub alias "IDvdInfo2_GetButtonAtPosition_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetCmdFromEvent_Proxy alias "IDvdInfo2_GetCmdFromEvent_Proxy" (byval This as IDvdInfo2 ptr, byval lParam1 as LONG_PTR, byval pCmdObj as IDvdCmd ptr ptr) as HRESULT
-declare sub IDvdInfo2_GetCmdFromEvent_Stub alias "IDvdInfo2_GetCmdFromEvent_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetDefaultMenuLanguage_Proxy alias "IDvdInfo2_GetDefaultMenuLanguage_Proxy" (byval This as IDvdInfo2 ptr, byval pLanguage as LCID ptr) as HRESULT
-declare sub IDvdInfo2_GetDefaultMenuLanguage_Stub alias "IDvdInfo2_GetDefaultMenuLanguage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetDefaultAudioLanguage_Proxy alias "IDvdInfo2_GetDefaultAudioLanguage_Proxy" (byval This as IDvdInfo2 ptr, byval pLanguage as LCID ptr, byval pAudioExtension as DVD_AUDIO_LANG_EXT ptr) as HRESULT
-declare sub IDvdInfo2_GetDefaultAudioLanguage_Stub alias "IDvdInfo2_GetDefaultAudioLanguage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetDefaultSubpictureLanguage_Proxy alias "IDvdInfo2_GetDefaultSubpictureLanguage_Proxy" (byval This as IDvdInfo2 ptr, byval pLanguage as LCID ptr, byval pSubpictureExtension as DVD_SUBPICTURE_LANG_EXT ptr) as HRESULT
-declare sub IDvdInfo2_GetDefaultSubpictureLanguage_Stub alias "IDvdInfo2_GetDefaultSubpictureLanguage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetDecoderCaps_Proxy alias "IDvdInfo2_GetDecoderCaps_Proxy" (byval This as IDvdInfo2 ptr, byval pCaps as DVD_DECODER_CAPS ptr) as HRESULT
-declare sub IDvdInfo2_GetDecoderCaps_Stub alias "IDvdInfo2_GetDecoderCaps_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_GetButtonRect_Proxy alias "IDvdInfo2_GetButtonRect_Proxy" (byval This as IDvdInfo2 ptr, byval ulButton as ULONG, byval pRect as RECT ptr) as HRESULT
-declare sub IDvdInfo2_GetButtonRect_Stub alias "IDvdInfo2_GetButtonRect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdInfo2_IsSubpictureStreamEnabled_Proxy alias "IDvdInfo2_IsSubpictureStreamEnabled_Proxy" (byval This as IDvdInfo2 ptr, byval ulStreamNum as ULONG, byval pbEnabled as BOOL ptr) as HRESULT
-declare sub IDvdInfo2_IsSubpictureStreamEnabled_Stub alias "IDvdInfo2_IsSubpictureStreamEnabled_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 enum AM_DVD_GRAPH_FLAGS
 	AM_DVD_HWDEC_PREFER = &h1
 	AM_DVD_HWDEC_ONLY = &h2
@@ -5080,14 +3580,6 @@ type IDvdGraphBuilderVtbl
 	RenderDvdVideoVolume as function(byval as IDvdGraphBuilder ptr, byval as LPCWSTR, byval as DWORD, byval as AM_DVD_RENDERSTATUS ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IDvdGraphBuilder_GetFiltergraph_Proxy alias "IDvdGraphBuilder_GetFiltergraph_Proxy" (byval This as IDvdGraphBuilder ptr, byval ppGB as IGraphBuilder ptr ptr) as HRESULT
-declare sub IDvdGraphBuilder_GetFiltergraph_Stub alias "IDvdGraphBuilder_GetFiltergraph_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdGraphBuilder_GetDvdInterface_Proxy alias "IDvdGraphBuilder_GetDvdInterface_Proxy" (byval This as IDvdGraphBuilder ptr, byval riid as IID ptr, byval ppvIF as any ptr ptr) as HRESULT
-declare sub IDvdGraphBuilder_GetDvdInterface_Stub alias "IDvdGraphBuilder_GetDvdInterface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDvdGraphBuilder_RenderDvdVideoVolume_Proxy alias "IDvdGraphBuilder_RenderDvdVideoVolume_Proxy" (byval This as IDvdGraphBuilder ptr, byval lpcwszPathName as LPCWSTR, byval dwFlags as DWORD, byval pStatus as AM_DVD_RENDERSTATUS ptr) as HRESULT
-declare sub IDvdGraphBuilder_RenderDvdVideoVolume_Stub alias "IDvdGraphBuilder_RenderDvdVideoVolume_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IDDrawExclModeVideo alias "IID_IDDrawExclModeVideo" as IID
 
 type IDDrawExclModeVideoVtbl_ as IDDrawExclModeVideoVtbl
@@ -5108,23 +3600,6 @@ type IDDrawExclModeVideoVtbl
 	GetNativeVideoProps as function(byval as IDDrawExclModeVideo ptr, byval as DWORD ptr, byval as DWORD ptr, byval as DWORD ptr, byval as DWORD ptr) as HRESULT
 	SetCallbackInterface as function(byval as IDDrawExclModeVideo ptr, byval as IDDrawExclModeVideoCallback_ ptr, byval as DWORD) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IDDrawExclModeVideo_SetDDrawObject_Proxy alias "IDDrawExclModeVideo_SetDDrawObject_Proxy" (byval This as IDDrawExclModeVideo ptr, byval pDDrawObject as IDirectDraw ptr) as HRESULT
-declare sub IDDrawExclModeVideo_SetDDrawObject_Stub alias "IDDrawExclModeVideo_SetDDrawObject_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDDrawExclModeVideo_GetDDrawObject_Proxy alias "IDDrawExclModeVideo_GetDDrawObject_Proxy" (byval This as IDDrawExclModeVideo ptr, byval ppDDrawObject as IDirectDraw ptr ptr, byval pbUsingExternal as BOOL ptr) as HRESULT
-declare sub IDDrawExclModeVideo_GetDDrawObject_Stub alias "IDDrawExclModeVideo_GetDDrawObject_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDDrawExclModeVideo_SetDDrawSurface_Proxy alias "IDDrawExclModeVideo_SetDDrawSurface_Proxy" (byval This as IDDrawExclModeVideo ptr, byval pDDrawSurface as IDirectDrawSurface ptr) as HRESULT
-declare sub IDDrawExclModeVideo_SetDDrawSurface_Stub alias "IDDrawExclModeVideo_SetDDrawSurface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDDrawExclModeVideo_GetDDrawSurface_Proxy alias "IDDrawExclModeVideo_GetDDrawSurface_Proxy" (byval This as IDDrawExclModeVideo ptr, byval ppDDrawSurface as IDirectDrawSurface ptr ptr, byval pbUsingExternal as BOOL ptr) as HRESULT
-declare sub IDDrawExclModeVideo_GetDDrawSurface_Stub alias "IDDrawExclModeVideo_GetDDrawSurface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDDrawExclModeVideo_SetDrawParameters_Proxy alias "IDDrawExclModeVideo_SetDrawParameters_Proxy" (byval This as IDDrawExclModeVideo ptr, byval prcSource as RECT ptr, byval prcTarget as RECT ptr) as HRESULT
-declare sub IDDrawExclModeVideo_SetDrawParameters_Stub alias "IDDrawExclModeVideo_SetDrawParameters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDDrawExclModeVideo_GetNativeVideoProps_Proxy alias "IDDrawExclModeVideo_GetNativeVideoProps_Proxy" (byval This as IDDrawExclModeVideo ptr, byval pdwVideoWidth as DWORD ptr, byval pdwVideoHeight as DWORD ptr, byval pdwPictAspectRatioX as DWORD ptr, byval pdwPictAspectRatioY as DWORD ptr) as HRESULT
-declare sub IDDrawExclModeVideo_GetNativeVideoProps_Stub alias "IDDrawExclModeVideo_GetNativeVideoProps_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDDrawExclModeVideo_SetCallbackInterface_Proxy alias "IDDrawExclModeVideo_SetCallbackInterface_Proxy" (byval This as IDDrawExclModeVideo ptr, byval pCallback as IDDrawExclModeVideoCallback ptr, byval dwFlags as DWORD) as HRESULT
-declare sub IDDrawExclModeVideo_SetCallbackInterface_Stub alias "IDDrawExclModeVideo_SetCallbackInterface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum AM_OVERLAY_NOTIFY_FLAGS
 	AM_OVERLAY_NOTIFY_VISIBLE_CHANGE = &h1
@@ -5148,14 +3623,6 @@ type IDDrawExclModeVideoCallbackVtbl
 	OnUpdateSize as function(byval as IDDrawExclModeVideoCallback ptr, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IDDrawExclModeVideoCallback_OnUpdateOverlay_Proxy alias "IDDrawExclModeVideoCallback_OnUpdateOverlay_Proxy" (byval This as IDDrawExclModeVideoCallback ptr, byval bBefore as BOOL, byval dwFlags as DWORD, byval bOldVisible as BOOL, byval prcOldSrc as RECT ptr, byval prcOldDest as RECT ptr, byval bNewVisible as BOOL, byval prcNewSrc as RECT ptr, byval prcNewDest as RECT ptr) as HRESULT
-declare sub IDDrawExclModeVideoCallback_OnUpdateOverlay_Stub alias "IDDrawExclModeVideoCallback_OnUpdateOverlay_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDDrawExclModeVideoCallback_OnUpdateColorKey_Proxy alias "IDDrawExclModeVideoCallback_OnUpdateColorKey_Proxy" (byval This as IDDrawExclModeVideoCallback ptr, byval pKey as COLORKEY ptr, byval dwColor as DWORD) as HRESULT
-declare sub IDDrawExclModeVideoCallback_OnUpdateColorKey_Stub alias "IDDrawExclModeVideoCallback_OnUpdateColorKey_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IDDrawExclModeVideoCallback_OnUpdateSize_Proxy alias "IDDrawExclModeVideoCallback_OnUpdateSize_Proxy" (byval This as IDDrawExclModeVideoCallback ptr, byval dwWidth as DWORD, byval dwHeight as DWORD, byval dwARWidth as DWORD, byval dwARHeight as DWORD) as HRESULT
-declare sub IDDrawExclModeVideoCallback_OnUpdateSize_Stub alias "IDDrawExclModeVideoCallback_OnUpdateSize_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IPinConnection alias "IID_IPinConnection" as IID
 
 type IPinConnectionVtbl_ as IPinConnectionVtbl
@@ -5174,16 +3641,6 @@ type IPinConnectionVtbl
 	DynamicDisconnect as function(byval as IPinConnection ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IPinConnection_DynamicQueryAccept_Proxy alias "IPinConnection_DynamicQueryAccept_Proxy" (byval This as IPinConnection ptr, byval pmt as AM_MEDIA_TYPE ptr) as HRESULT
-declare sub IPinConnection_DynamicQueryAccept_Stub alias "IPinConnection_DynamicQueryAccept_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPinConnection_NotifyEndOfStream_Proxy alias "IPinConnection_NotifyEndOfStream_Proxy" (byval This as IPinConnection ptr, byval hNotifyEvent as HANDLE) as HRESULT
-declare sub IPinConnection_NotifyEndOfStream_Stub alias "IPinConnection_NotifyEndOfStream_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPinConnection_IsEndPin_Proxy alias "IPinConnection_IsEndPin_Proxy" (byval This as IPinConnection ptr) as HRESULT
-declare sub IPinConnection_IsEndPin_Stub alias "IPinConnection_IsEndPin_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPinConnection_DynamicDisconnect_Proxy alias "IPinConnection_DynamicDisconnect_Proxy" (byval This as IPinConnection ptr) as HRESULT
-declare sub IPinConnection_DynamicDisconnect_Stub alias "IPinConnection_DynamicDisconnect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IPinFlowControl alias "IID_IPinFlowControl" as IID
 
 type IPinFlowControlVtbl_ as IPinFlowControlVtbl
@@ -5198,11 +3655,6 @@ type IPinFlowControlVtbl
 	Release as function(byval as IPinFlowControl ptr) as ULONG
 	Block as function(byval as IPinFlowControl ptr, byval as DWORD, byval as HANDLE) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IPinFlowControl_Block_Proxy alias "IPinFlowControl_Block_Proxy" (byval This as IPinFlowControl ptr, byval dwBlockFlags as DWORD, byval hEvent as HANDLE) as HRESULT
-declare sub IPinFlowControl_Block_Stub alias "IPinFlowControl_Block_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum AM_PIN_FLOW_CONTROL_BLOCK_FLAGS
 	AM_PIN_FLOW_CONTROL_BLOCK = &h1
@@ -5246,28 +3698,6 @@ type IGraphConfigVtbl
 	RemoveFilterEx as function(byval as IGraphConfig ptr, byval as IBaseFilter ptr, byval as DWORD) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IGraphConfig_Reconnect_Proxy alias "IGraphConfig_Reconnect_Proxy" (byval This as IGraphConfig ptr, byval pOutputPin as IPin ptr, byval pInputPin as IPin ptr, byval pmtFirstConnection as AM_MEDIA_TYPE ptr, byval pUsingFilter as IBaseFilter ptr, byval hAbortEvent as HANDLE, byval dwFlags as DWORD) as HRESULT
-declare sub IGraphConfig_Reconnect_Stub alias "IGraphConfig_Reconnect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphConfig_Reconfigure_Proxy alias "IGraphConfig_Reconfigure_Proxy" (byval This as IGraphConfig ptr, byval pCallback as IGraphConfigCallback ptr, byval pvContext as PVOID, byval dwFlags as DWORD, byval hAbortEvent as HANDLE) as HRESULT
-declare sub IGraphConfig_Reconfigure_Stub alias "IGraphConfig_Reconfigure_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphConfig_AddFilterToCache_Proxy alias "IGraphConfig_AddFilterToCache_Proxy" (byval This as IGraphConfig ptr, byval pFilter as IBaseFilter ptr) as HRESULT
-declare sub IGraphConfig_AddFilterToCache_Stub alias "IGraphConfig_AddFilterToCache_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphConfig_EnumCacheFilter_Proxy alias "IGraphConfig_EnumCacheFilter_Proxy" (byval This as IGraphConfig ptr, byval pEnum as IEnumFilters ptr ptr) as HRESULT
-declare sub IGraphConfig_EnumCacheFilter_Stub alias "IGraphConfig_EnumCacheFilter_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphConfig_RemoveFilterFromCache_Proxy alias "IGraphConfig_RemoveFilterFromCache_Proxy" (byval This as IGraphConfig ptr, byval pFilter as IBaseFilter ptr) as HRESULT
-declare sub IGraphConfig_RemoveFilterFromCache_Stub alias "IGraphConfig_RemoveFilterFromCache_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphConfig_GetStartTime_Proxy alias "IGraphConfig_GetStartTime_Proxy" (byval This as IGraphConfig ptr, byval prtStart as REFERENCE_TIME ptr) as HRESULT
-declare sub IGraphConfig_GetStartTime_Stub alias "IGraphConfig_GetStartTime_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphConfig_PushThroughData_Proxy alias "IGraphConfig_PushThroughData_Proxy" (byval This as IGraphConfig ptr, byval pOutputPin as IPin ptr, byval pConnection as IPinConnection ptr, byval hEventAbort as HANDLE) as HRESULT
-declare sub IGraphConfig_PushThroughData_Stub alias "IGraphConfig_PushThroughData_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphConfig_SetFilterFlags_Proxy alias "IGraphConfig_SetFilterFlags_Proxy" (byval This as IGraphConfig ptr, byval pFilter as IBaseFilter ptr, byval dwFlags as DWORD) as HRESULT
-declare sub IGraphConfig_SetFilterFlags_Stub alias "IGraphConfig_SetFilterFlags_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphConfig_GetFilterFlags_Proxy alias "IGraphConfig_GetFilterFlags_Proxy" (byval This as IGraphConfig ptr, byval pFilter as IBaseFilter ptr, byval pdwFlags as DWORD ptr) as HRESULT
-declare sub IGraphConfig_GetFilterFlags_Stub alias "IGraphConfig_GetFilterFlags_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IGraphConfig_RemoveFilterEx_Proxy alias "IGraphConfig_RemoveFilterEx_Proxy" (byval This as IGraphConfig ptr, byval pFilter as IBaseFilter ptr, byval Flags as DWORD) as HRESULT
-declare sub IGraphConfig_RemoveFilterEx_Stub alias "IGraphConfig_RemoveFilterEx_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IGraphConfigCallback alias "IID_IGraphConfigCallback" as IID
 
 type IGraphConfigCallbackVtbl_ as IGraphConfigCallbackVtbl
@@ -5283,10 +3713,6 @@ type IGraphConfigCallbackVtbl
 	Reconfigure as function(byval as IGraphConfigCallback ptr, byval as PVOID, byval as DWORD) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IGraphConfigCallback_Reconfigure_Proxy alias "IGraphConfigCallback_Reconfigure_Proxy" (byval This as IGraphConfigCallback ptr, byval pvContext as PVOID, byval dwFlags as DWORD) as HRESULT
-declare sub IGraphConfigCallback_Reconfigure_Stub alias "IGraphConfigCallback_Reconfigure_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IFilterChain alias "IID_IFilterChain" as IID
 
 type IFilterChainVtbl_ as IFilterChainVtbl
@@ -5304,17 +3730,6 @@ type IFilterChainVtbl
 	StopChain as function(byval as IFilterChain ptr, byval as IBaseFilter ptr, byval as IBaseFilter ptr) as HRESULT
 	RemoveChain as function(byval as IFilterChain ptr, byval as IBaseFilter ptr, byval as IBaseFilter ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IFilterChain_StartChain_Proxy alias "IFilterChain_StartChain_Proxy" (byval This as IFilterChain ptr, byval pStartFilter as IBaseFilter ptr, byval pEndFilter as IBaseFilter ptr) as HRESULT
-declare sub IFilterChain_StartChain_Stub alias "IFilterChain_StartChain_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterChain_PauseChain_Proxy alias "IFilterChain_PauseChain_Proxy" (byval This as IFilterChain ptr, byval pStartFilter as IBaseFilter ptr, byval pEndFilter as IBaseFilter ptr) as HRESULT
-declare sub IFilterChain_PauseChain_Stub alias "IFilterChain_PauseChain_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterChain_StopChain_Proxy alias "IFilterChain_StopChain_Proxy" (byval This as IFilterChain ptr, byval pStartFilter as IBaseFilter ptr, byval pEndFilter as IBaseFilter ptr) as HRESULT
-declare sub IFilterChain_StopChain_Stub alias "IFilterChain_StopChain_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IFilterChain_RemoveChain_Proxy alias "IFilterChain_RemoveChain_Proxy" (byval This as IFilterChain ptr, byval pStartFilter as IBaseFilter ptr, byval pEndFilter as IBaseFilter ptr) as HRESULT
-declare sub IFilterChain_RemoveChain_Stub alias "IFilterChain_RemoveChain_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 #include once "win/ddraw.bi"
 
@@ -5354,15 +3769,6 @@ type IVMRImagePresenterVtbl
 	PresentImage as function(byval as IVMRImagePresenter ptr, byval as DWORD_PTR, byval as VMRPRESENTATIONINFO ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRImagePresenter_StartPresenting_Proxy alias "IVMRImagePresenter_StartPresenting_Proxy" (byval This as IVMRImagePresenter ptr, byval dwUserID as DWORD_PTR) as HRESULT
-declare sub IVMRImagePresenter_StartPresenting_Stub alias "IVMRImagePresenter_StartPresenting_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRImagePresenter_StopPresenting_Proxy alias "IVMRImagePresenter_StopPresenting_Proxy" (byval This as IVMRImagePresenter ptr, byval dwUserID as DWORD_PTR) as HRESULT
-declare sub IVMRImagePresenter_StopPresenting_Stub alias "IVMRImagePresenter_StopPresenting_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRImagePresenter_PresentImage_Proxy alias "IVMRImagePresenter_PresentImage_Proxy" (byval This as IVMRImagePresenter ptr, byval dwUserID as DWORD_PTR, byval lpPresInfo as VMRPRESENTATIONINFO ptr) as HRESULT
-declare sub IVMRImagePresenter_PresentImage_Stub alias "IVMRImagePresenter_PresentImage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 enum VMRSurfaceAllocationFlags
 	AMAP_PIXELFORMAT_VALID = &h1
 	AMAP_3D_TARGET = &h2
@@ -5401,16 +3807,6 @@ type IVMRSurfaceAllocatorVtbl
 	AdviseNotify as function(byval as IVMRSurfaceAllocator ptr, byval as IVMRSurfaceAllocatorNotify_ ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRSurfaceAllocator_AllocateSurface_Proxy alias "IVMRSurfaceAllocator_AllocateSurface_Proxy" (byval This as IVMRSurfaceAllocator ptr, byval dwUserID as DWORD_PTR, byval lpAllocInfo as VMRALLOCATIONINFO ptr, byval lpdwActualBuffers as DWORD ptr, byval lplpSurface as LPDIRECTDRAWSURFACE7 ptr) as HRESULT
-declare sub IVMRSurfaceAllocator_AllocateSurface_Stub alias "IVMRSurfaceAllocator_AllocateSurface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRSurfaceAllocator_FreeSurface_Proxy alias "IVMRSurfaceAllocator_FreeSurface_Proxy" (byval This as IVMRSurfaceAllocator ptr, byval dwID as DWORD_PTR) as HRESULT
-declare sub IVMRSurfaceAllocator_FreeSurface_Stub alias "IVMRSurfaceAllocator_FreeSurface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRSurfaceAllocator_PrepareSurface_Proxy alias "IVMRSurfaceAllocator_PrepareSurface_Proxy" (byval This as IVMRSurfaceAllocator ptr, byval dwUserID as DWORD_PTR, byval lpSurface as LPDIRECTDRAWSURFACE7, byval dwSurfaceFlags as DWORD) as HRESULT
-declare sub IVMRSurfaceAllocator_PrepareSurface_Stub alias "IVMRSurfaceAllocator_PrepareSurface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRSurfaceAllocator_AdviseNotify_Proxy alias "IVMRSurfaceAllocator_AdviseNotify_Proxy" (byval This as IVMRSurfaceAllocator ptr, byval lpIVMRSurfAllocNotify as IVMRSurfaceAllocatorNotify ptr) as HRESULT
-declare sub IVMRSurfaceAllocator_AdviseNotify_Stub alias "IVMRSurfaceAllocator_AdviseNotify_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IVMRSurfaceAllocatorNotify alias "IID_IVMRSurfaceAllocatorNotify" as IID
 
 type IVMRSurfaceAllocatorNotifyVtbl_ as IVMRSurfaceAllocatorNotifyVtbl
@@ -5430,21 +3826,6 @@ type IVMRSurfaceAllocatorNotifyVtbl
 	NotifyEvent as function(byval as IVMRSurfaceAllocatorNotify ptr, byval as LONG, byval as LONG_PTR, byval as LONG_PTR) as HRESULT
 	SetBorderColor as function(byval as IVMRSurfaceAllocatorNotify ptr, byval as COLORREF) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRSurfaceAllocatorNotify_AdviseSurfaceAllocator_Proxy alias "IVMRSurfaceAllocatorNotify_AdviseSurfaceAllocator_Proxy" (byval This as IVMRSurfaceAllocatorNotify ptr, byval dwUserID as DWORD_PTR, byval lpIVRMSurfaceAllocator as IVMRSurfaceAllocator ptr) as HRESULT
-declare sub IVMRSurfaceAllocatorNotify_AdviseSurfaceAllocator_Stub alias "IVMRSurfaceAllocatorNotify_AdviseSurfaceAllocator_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRSurfaceAllocatorNotify_SetDDrawDevice_Proxy alias "IVMRSurfaceAllocatorNotify_SetDDrawDevice_Proxy" (byval This as IVMRSurfaceAllocatorNotify ptr, byval lpDDrawDevice as LPDIRECTDRAW7, byval hMonitor as HMONITOR) as HRESULT
-declare sub IVMRSurfaceAllocatorNotify_SetDDrawDevice_Stub alias "IVMRSurfaceAllocatorNotify_SetDDrawDevice_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRSurfaceAllocatorNotify_ChangeDDrawDevice_Proxy alias "IVMRSurfaceAllocatorNotify_ChangeDDrawDevice_Proxy" (byval This as IVMRSurfaceAllocatorNotify ptr, byval lpDDrawDevice as LPDIRECTDRAW7, byval hMonitor as HMONITOR) as HRESULT
-declare sub IVMRSurfaceAllocatorNotify_ChangeDDrawDevice_Stub alias "IVMRSurfaceAllocatorNotify_ChangeDDrawDevice_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRSurfaceAllocatorNotify_RestoreDDrawSurfaces_Proxy alias "IVMRSurfaceAllocatorNotify_RestoreDDrawSurfaces_Proxy" (byval This as IVMRSurfaceAllocatorNotify ptr) as HRESULT
-declare sub IVMRSurfaceAllocatorNotify_RestoreDDrawSurfaces_Stub alias "IVMRSurfaceAllocatorNotify_RestoreDDrawSurfaces_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRSurfaceAllocatorNotify_NotifyEvent_Proxy alias "IVMRSurfaceAllocatorNotify_NotifyEvent_Proxy" (byval This as IVMRSurfaceAllocatorNotify ptr, byval EventCode as LONG, byval Param1 as LONG_PTR, byval Param2 as LONG_PTR) as HRESULT
-declare sub IVMRSurfaceAllocatorNotify_NotifyEvent_Stub alias "IVMRSurfaceAllocatorNotify_NotifyEvent_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRSurfaceAllocatorNotify_SetBorderColor_Proxy alias "IVMRSurfaceAllocatorNotify_SetBorderColor_Proxy" (byval This as IVMRSurfaceAllocatorNotify ptr, byval clrBorder as COLORREF) as HRESULT
-declare sub IVMRSurfaceAllocatorNotify_SetBorderColor_Stub alias "IVMRSurfaceAllocatorNotify_SetBorderColor_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum VMR_ASPECT_RATIO_MODE
 	VMR_ARMODE_NONE = 0
@@ -5479,39 +3860,6 @@ type IVMRWindowlessControlVtbl
 	SetColorKey as function(byval as IVMRWindowlessControl ptr, byval as COLORREF) as HRESULT
 	GetColorKey as function(byval as IVMRWindowlessControl ptr, byval as COLORREF ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRWindowlessControl_GetNativeVideoSize_Proxy alias "IVMRWindowlessControl_GetNativeVideoSize_Proxy" (byval This as IVMRWindowlessControl ptr, byval lpWidth as LONG ptr, byval lpHeight as LONG ptr, byval lpARWidth as LONG ptr, byval lpARHeight as LONG ptr) as HRESULT
-declare sub IVMRWindowlessControl_GetNativeVideoSize_Stub alias "IVMRWindowlessControl_GetNativeVideoSize_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_GetMinIdealVideoSize_Proxy alias "IVMRWindowlessControl_GetMinIdealVideoSize_Proxy" (byval This as IVMRWindowlessControl ptr, byval lpWidth as LONG ptr, byval lpHeight as LONG ptr) as HRESULT
-declare sub IVMRWindowlessControl_GetMinIdealVideoSize_Stub alias "IVMRWindowlessControl_GetMinIdealVideoSize_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_GetMaxIdealVideoSize_Proxy alias "IVMRWindowlessControl_GetMaxIdealVideoSize_Proxy" (byval This as IVMRWindowlessControl ptr, byval lpWidth as LONG ptr, byval lpHeight as LONG ptr) as HRESULT
-declare sub IVMRWindowlessControl_GetMaxIdealVideoSize_Stub alias "IVMRWindowlessControl_GetMaxIdealVideoSize_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_SetVideoPosition_Proxy alias "IVMRWindowlessControl_SetVideoPosition_Proxy" (byval This as IVMRWindowlessControl ptr, byval lpSRCRect as LPRECT, byval lpDSTRect as LPRECT) as HRESULT
-declare sub IVMRWindowlessControl_SetVideoPosition_Stub alias "IVMRWindowlessControl_SetVideoPosition_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_GetVideoPosition_Proxy alias "IVMRWindowlessControl_GetVideoPosition_Proxy" (byval This as IVMRWindowlessControl ptr, byval lpSRCRect as LPRECT, byval lpDSTRect as LPRECT) as HRESULT
-declare sub IVMRWindowlessControl_GetVideoPosition_Stub alias "IVMRWindowlessControl_GetVideoPosition_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_GetAspectRatioMode_Proxy alias "IVMRWindowlessControl_GetAspectRatioMode_Proxy" (byval This as IVMRWindowlessControl ptr, byval lpAspectRatioMode as DWORD ptr) as HRESULT
-declare sub IVMRWindowlessControl_GetAspectRatioMode_Stub alias "IVMRWindowlessControl_GetAspectRatioMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_SetAspectRatioMode_Proxy alias "IVMRWindowlessControl_SetAspectRatioMode_Proxy" (byval This as IVMRWindowlessControl ptr, byval AspectRatioMode as DWORD) as HRESULT
-declare sub IVMRWindowlessControl_SetAspectRatioMode_Stub alias "IVMRWindowlessControl_SetAspectRatioMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_SetVideoClippingWindow_Proxy alias "IVMRWindowlessControl_SetVideoClippingWindow_Proxy" (byval This as IVMRWindowlessControl ptr, byval hwnd as HWND) as HRESULT
-declare sub IVMRWindowlessControl_SetVideoClippingWindow_Stub alias "IVMRWindowlessControl_SetVideoClippingWindow_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_RepaintVideo_Proxy alias "IVMRWindowlessControl_RepaintVideo_Proxy" (byval This as IVMRWindowlessControl ptr, byval hwnd as HWND, byval hdc as HDC) as HRESULT
-declare sub IVMRWindowlessControl_RepaintVideo_Stub alias "IVMRWindowlessControl_RepaintVideo_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_DisplayModeChanged_Proxy alias "IVMRWindowlessControl_DisplayModeChanged_Proxy" (byval This as IVMRWindowlessControl ptr) as HRESULT
-declare sub IVMRWindowlessControl_DisplayModeChanged_Stub alias "IVMRWindowlessControl_DisplayModeChanged_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_GetCurrentImage_Proxy alias "IVMRWindowlessControl_GetCurrentImage_Proxy" (byval This as IVMRWindowlessControl ptr, byval lpDib as BYTE ptr ptr) as HRESULT
-declare sub IVMRWindowlessControl_GetCurrentImage_Stub alias "IVMRWindowlessControl_GetCurrentImage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_SetBorderColor_Proxy alias "IVMRWindowlessControl_SetBorderColor_Proxy" (byval This as IVMRWindowlessControl ptr, byval Clr as COLORREF) as HRESULT
-declare sub IVMRWindowlessControl_SetBorderColor_Stub alias "IVMRWindowlessControl_SetBorderColor_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_GetBorderColor_Proxy alias "IVMRWindowlessControl_GetBorderColor_Proxy" (byval This as IVMRWindowlessControl ptr, byval lpClr as COLORREF ptr) as HRESULT
-declare sub IVMRWindowlessControl_GetBorderColor_Stub alias "IVMRWindowlessControl_GetBorderColor_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_SetColorKey_Proxy alias "IVMRWindowlessControl_SetColorKey_Proxy" (byval This as IVMRWindowlessControl ptr, byval Clr as COLORREF) as HRESULT
-declare sub IVMRWindowlessControl_SetColorKey_Stub alias "IVMRWindowlessControl_SetColorKey_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRWindowlessControl_GetColorKey_Proxy alias "IVMRWindowlessControl_GetColorKey_Proxy" (byval This as IVMRWindowlessControl ptr, byval lpClr as COLORREF ptr) as HRESULT
-declare sub IVMRWindowlessControl_GetColorKey_Stub alias "IVMRWindowlessControl_GetColorKey_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum VMRMixerPrefs
 	MixerPref_NoDecimation = &h1
@@ -5560,29 +3908,6 @@ type IVMRMixerControlVtbl
 	GetMixingPrefs as function(byval as IVMRMixerControl ptr, byval as DWORD ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRMixerControl_SetAlpha_Proxy alias "IVMRMixerControl_SetAlpha_Proxy" (byval This as IVMRMixerControl ptr, byval dwStreamID as DWORD, byval Alpha as single) as HRESULT
-declare sub IVMRMixerControl_SetAlpha_Stub alias "IVMRMixerControl_SetAlpha_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMixerControl_GetAlpha_Proxy alias "IVMRMixerControl_GetAlpha_Proxy" (byval This as IVMRMixerControl ptr, byval dwStreamID as DWORD, byval pAlpha as single ptr) as HRESULT
-declare sub IVMRMixerControl_GetAlpha_Stub alias "IVMRMixerControl_GetAlpha_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMixerControl_SetZOrder_Proxy alias "IVMRMixerControl_SetZOrder_Proxy" (byval This as IVMRMixerControl ptr, byval dwStreamID as DWORD, byval dwZ as DWORD) as HRESULT
-declare sub IVMRMixerControl_SetZOrder_Stub alias "IVMRMixerControl_SetZOrder_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMixerControl_GetZOrder_Proxy alias "IVMRMixerControl_GetZOrder_Proxy" (byval This as IVMRMixerControl ptr, byval dwStreamID as DWORD, byval pZ as DWORD ptr) as HRESULT
-declare sub IVMRMixerControl_GetZOrder_Stub alias "IVMRMixerControl_GetZOrder_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMixerControl_SetOutputRect_Proxy alias "IVMRMixerControl_SetOutputRect_Proxy" (byval This as IVMRMixerControl ptr, byval dwStreamID as DWORD, byval pRect as NORMALIZEDRECT ptr) as HRESULT
-declare sub IVMRMixerControl_SetOutputRect_Stub alias "IVMRMixerControl_SetOutputRect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMixerControl_GetOutputRect_Proxy alias "IVMRMixerControl_GetOutputRect_Proxy" (byval This as IVMRMixerControl ptr, byval dwStreamID as DWORD, byval pRect as NORMALIZEDRECT ptr) as HRESULT
-declare sub IVMRMixerControl_GetOutputRect_Stub alias "IVMRMixerControl_GetOutputRect_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMixerControl_SetBackgroundClr_Proxy alias "IVMRMixerControl_SetBackgroundClr_Proxy" (byval This as IVMRMixerControl ptr, byval ClrBkg as COLORREF) as HRESULT
-declare sub IVMRMixerControl_SetBackgroundClr_Stub alias "IVMRMixerControl_SetBackgroundClr_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMixerControl_GetBackgroundClr_Proxy alias "IVMRMixerControl_GetBackgroundClr_Proxy" (byval This as IVMRMixerControl ptr, byval lpClrBkg as COLORREF ptr) as HRESULT
-declare sub IVMRMixerControl_GetBackgroundClr_Stub alias "IVMRMixerControl_GetBackgroundClr_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMixerControl_SetMixingPrefs_Proxy alias "IVMRMixerControl_SetMixingPrefs_Proxy" (byval This as IVMRMixerControl ptr, byval dwMixerPrefs as DWORD) as HRESULT
-declare sub IVMRMixerControl_SetMixingPrefs_Stub alias "IVMRMixerControl_SetMixingPrefs_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMixerControl_GetMixingPrefs_Proxy alias "IVMRMixerControl_GetMixingPrefs_Proxy" (byval This as IVMRMixerControl ptr, byval pdwMixerPrefs as DWORD ptr) as HRESULT
-declare sub IVMRMixerControl_GetMixingPrefs_Stub alias "IVMRMixerControl_GetMixingPrefs_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type VMRGUID
 	pGUID as GUID ptr
 	GUID as GUID
@@ -5620,19 +3945,6 @@ type IVMRMonitorConfigVtbl
 	GetDefaultMonitor as function(byval as IVMRMonitorConfig ptr, byval as VMRGUID ptr) as HRESULT
 	GetAvailableMonitors as function(byval as IVMRMonitorConfig ptr, byval as VMRMONITORINFO ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRMonitorConfig_SetMonitor_Proxy alias "IVMRMonitorConfig_SetMonitor_Proxy" (byval This as IVMRMonitorConfig ptr, byval pGUID as VMRGUID ptr) as HRESULT
-declare sub IVMRMonitorConfig_SetMonitor_Stub alias "IVMRMonitorConfig_SetMonitor_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMonitorConfig_GetMonitor_Proxy alias "IVMRMonitorConfig_GetMonitor_Proxy" (byval This as IVMRMonitorConfig ptr, byval pGUID as VMRGUID ptr) as HRESULT
-declare sub IVMRMonitorConfig_GetMonitor_Stub alias "IVMRMonitorConfig_GetMonitor_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMonitorConfig_SetDefaultMonitor_Proxy alias "IVMRMonitorConfig_SetDefaultMonitor_Proxy" (byval This as IVMRMonitorConfig ptr, byval pGUID as VMRGUID ptr) as HRESULT
-declare sub IVMRMonitorConfig_SetDefaultMonitor_Stub alias "IVMRMonitorConfig_SetDefaultMonitor_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMonitorConfig_GetDefaultMonitor_Proxy alias "IVMRMonitorConfig_GetDefaultMonitor_Proxy" (byval This as IVMRMonitorConfig ptr, byval pGUID as VMRGUID ptr) as HRESULT
-declare sub IVMRMonitorConfig_GetDefaultMonitor_Stub alias "IVMRMonitorConfig_GetDefaultMonitor_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMonitorConfig_GetAvailableMonitors_Proxy alias "IVMRMonitorConfig_GetAvailableMonitors_Proxy" (byval This as IVMRMonitorConfig ptr, byval pInfo as VMRMONITORINFO ptr, byval dwMaxInfoArraySize as DWORD, byval pdwNumDevices as DWORD ptr) as HRESULT
-declare sub IVMRMonitorConfig_GetAvailableMonitors_Stub alias "IVMRMonitorConfig_GetAvailableMonitors_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum VMRRenderPrefs
 	RenderPrefs_RestrictToInitialMonitor = 0
@@ -5676,22 +3988,6 @@ type IVMRFilterConfigVtbl
 	GetRenderingMode as function(byval as IVMRFilterConfig ptr, byval as DWORD ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRFilterConfig_SetImageCompositor_Proxy alias "IVMRFilterConfig_SetImageCompositor_Proxy" (byval This as IVMRFilterConfig ptr, byval lpVMRImgCompositor as IVMRImageCompositor ptr) as HRESULT
-declare sub IVMRFilterConfig_SetImageCompositor_Stub alias "IVMRFilterConfig_SetImageCompositor_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRFilterConfig_SetNumberOfStreams_Proxy alias "IVMRFilterConfig_SetNumberOfStreams_Proxy" (byval This as IVMRFilterConfig ptr, byval dwMaxStreams as DWORD) as HRESULT
-declare sub IVMRFilterConfig_SetNumberOfStreams_Stub alias "IVMRFilterConfig_SetNumberOfStreams_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRFilterConfig_GetNumberOfStreams_Proxy alias "IVMRFilterConfig_GetNumberOfStreams_Proxy" (byval This as IVMRFilterConfig ptr, byval pdwMaxStreams as DWORD ptr) as HRESULT
-declare sub IVMRFilterConfig_GetNumberOfStreams_Stub alias "IVMRFilterConfig_GetNumberOfStreams_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRFilterConfig_SetRenderingPrefs_Proxy alias "IVMRFilterConfig_SetRenderingPrefs_Proxy" (byval This as IVMRFilterConfig ptr, byval dwRenderFlags as DWORD) as HRESULT
-declare sub IVMRFilterConfig_SetRenderingPrefs_Stub alias "IVMRFilterConfig_SetRenderingPrefs_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRFilterConfig_GetRenderingPrefs_Proxy alias "IVMRFilterConfig_GetRenderingPrefs_Proxy" (byval This as IVMRFilterConfig ptr, byval pdwRenderFlags as DWORD ptr) as HRESULT
-declare sub IVMRFilterConfig_GetRenderingPrefs_Stub alias "IVMRFilterConfig_GetRenderingPrefs_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRFilterConfig_SetRenderingMode_Proxy alias "IVMRFilterConfig_SetRenderingMode_Proxy" (byval This as IVMRFilterConfig ptr, byval Mode as DWORD) as HRESULT
-declare sub IVMRFilterConfig_SetRenderingMode_Stub alias "IVMRFilterConfig_SetRenderingMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRFilterConfig_GetRenderingMode_Proxy alias "IVMRFilterConfig_GetRenderingMode_Proxy" (byval This as IVMRFilterConfig ptr, byval pMode as DWORD ptr) as HRESULT
-declare sub IVMRFilterConfig_GetRenderingMode_Stub alias "IVMRFilterConfig_GetRenderingMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IVMRAspectRatioControl alias "IID_IVMRAspectRatioControl" as IID
 
 type IVMRAspectRatioControlVtbl_ as IVMRAspectRatioControlVtbl
@@ -5707,13 +4003,6 @@ type IVMRAspectRatioControlVtbl
 	GetAspectRatioMode as function(byval as IVMRAspectRatioControl ptr, byval as LPDWORD) as HRESULT
 	SetAspectRatioMode as function(byval as IVMRAspectRatioControl ptr, byval as DWORD) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRAspectRatioControl_GetAspectRatioMode_Proxy alias "IVMRAspectRatioControl_GetAspectRatioMode_Proxy" (byval This as IVMRAspectRatioControl ptr, byval lpdwARMode as LPDWORD) as HRESULT
-declare sub IVMRAspectRatioControl_GetAspectRatioMode_Stub alias "IVMRAspectRatioControl_GetAspectRatioMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRAspectRatioControl_SetAspectRatioMode_Proxy alias "IVMRAspectRatioControl_SetAspectRatioMode_Proxy" (byval This as IVMRAspectRatioControl ptr, byval dwARMode as DWORD) as HRESULT
-declare sub IVMRAspectRatioControl_SetAspectRatioMode_Stub alias "IVMRAspectRatioControl_SetAspectRatioMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 
 enum VMRDeinterlacePrefs
 	DeinterlacePref_NextBest = &h1
@@ -5777,23 +4066,6 @@ type IVMRDeinterlaceControlVtbl
 	GetActualDeinterlaceMode as function(byval as IVMRDeinterlaceControl ptr, byval as DWORD, byval as LPGUID) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRDeinterlaceControl_GetNumberOfDeinterlaceModes_Proxy alias "IVMRDeinterlaceControl_GetNumberOfDeinterlaceModes_Proxy" (byval This as IVMRDeinterlaceControl ptr, byval lpVideoDescription as VMRVideoDesc ptr, byval lpdwNumDeinterlaceModes as LPDWORD, byval lpDeinterlaceModes as LPGUID) as HRESULT
-declare sub IVMRDeinterlaceControl_GetNumberOfDeinterlaceModes_Stub alias "IVMRDeinterlaceControl_GetNumberOfDeinterlaceModes_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRDeinterlaceControl_GetDeinterlaceModeCaps_Proxy alias "IVMRDeinterlaceControl_GetDeinterlaceModeCaps_Proxy" (byval This as IVMRDeinterlaceControl ptr, byval lpDeinterlaceMode as LPGUID, byval lpVideoDescription as VMRVideoDesc ptr, byval lpDeinterlaceCaps as VMRDeinterlaceCaps ptr) as HRESULT
-declare sub IVMRDeinterlaceControl_GetDeinterlaceModeCaps_Stub alias "IVMRDeinterlaceControl_GetDeinterlaceModeCaps_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRDeinterlaceControl_GetDeinterlaceMode_Proxy alias "IVMRDeinterlaceControl_GetDeinterlaceMode_Proxy" (byval This as IVMRDeinterlaceControl ptr, byval dwStreamID as DWORD, byval lpDeinterlaceMode as LPGUID) as HRESULT
-declare sub IVMRDeinterlaceControl_GetDeinterlaceMode_Stub alias "IVMRDeinterlaceControl_GetDeinterlaceMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRDeinterlaceControl_SetDeinterlaceMode_Proxy alias "IVMRDeinterlaceControl_SetDeinterlaceMode_Proxy" (byval This as IVMRDeinterlaceControl ptr, byval dwStreamID as DWORD, byval lpDeinterlaceMode as LPGUID) as HRESULT
-declare sub IVMRDeinterlaceControl_SetDeinterlaceMode_Stub alias "IVMRDeinterlaceControl_SetDeinterlaceMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRDeinterlaceControl_GetDeinterlacePrefs_Proxy alias "IVMRDeinterlaceControl_GetDeinterlacePrefs_Proxy" (byval This as IVMRDeinterlaceControl ptr, byval lpdwDeinterlacePrefs as LPDWORD) as HRESULT
-declare sub IVMRDeinterlaceControl_GetDeinterlacePrefs_Stub alias "IVMRDeinterlaceControl_GetDeinterlacePrefs_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRDeinterlaceControl_SetDeinterlacePrefs_Proxy alias "IVMRDeinterlaceControl_SetDeinterlacePrefs_Proxy" (byval This as IVMRDeinterlaceControl ptr, byval dwDeinterlacePrefs as DWORD) as HRESULT
-declare sub IVMRDeinterlaceControl_SetDeinterlacePrefs_Stub alias "IVMRDeinterlaceControl_SetDeinterlacePrefs_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRDeinterlaceControl_GetActualDeinterlaceMode_Proxy alias "IVMRDeinterlaceControl_GetActualDeinterlaceMode_Proxy" (byval This as IVMRDeinterlaceControl ptr, byval dwStreamID as DWORD, byval lpDeinterlaceMode as LPGUID) as HRESULT
-declare sub IVMRDeinterlaceControl_GetActualDeinterlaceMode_Stub alias "IVMRDeinterlaceControl_GetActualDeinterlaceMode_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type VMRALPHABITMAP
 	dwFlags as DWORD
 	hdc as HDC
@@ -5828,15 +4100,6 @@ type IVMRMixerBitmapVtbl
 	GetAlphaBitmapParameters as function(byval as IVMRMixerBitmap ptr, byval as PVMRALPHABITMAP) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRMixerBitmap_SetAlphaBitmap_Proxy alias "IVMRMixerBitmap_SetAlphaBitmap_Proxy" (byval This as IVMRMixerBitmap ptr, byval pBmpParms as VMRALPHABITMAP ptr) as HRESULT
-declare sub IVMRMixerBitmap_SetAlphaBitmap_Stub alias "IVMRMixerBitmap_SetAlphaBitmap_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMixerBitmap_UpdateAlphaBitmapParameters_Proxy alias "IVMRMixerBitmap_UpdateAlphaBitmapParameters_Proxy" (byval This as IVMRMixerBitmap ptr, byval pBmpParms as PVMRALPHABITMAP) as HRESULT
-declare sub IVMRMixerBitmap_UpdateAlphaBitmapParameters_Stub alias "IVMRMixerBitmap_UpdateAlphaBitmapParameters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRMixerBitmap_GetAlphaBitmapParameters_Proxy alias "IVMRMixerBitmap_GetAlphaBitmapParameters_Proxy" (byval This as IVMRMixerBitmap ptr, byval pBmpParms as PVMRALPHABITMAP) as HRESULT
-declare sub IVMRMixerBitmap_GetAlphaBitmapParameters_Stub alias "IVMRMixerBitmap_GetAlphaBitmapParameters_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
-
 type VMRVIDEOSTREAMINFO
 	pddsVideoSurface as LPDIRECTDRAWSURFACE7
 	dwWidth as DWORD
@@ -5865,16 +4128,6 @@ type IVMRImageCompositorVtbl
 	CompositeImage as function(byval as IVMRImageCompositor ptr, byval as IUnknown ptr, byval as LPDIRECTDRAWSURFACE7, byval as AM_MEDIA_TYPE ptr, byval as REFERENCE_TIME, byval as REFERENCE_TIME, byval as DWORD, byval as VMRVIDEOSTREAMINFO ptr, byval as UINT) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRImageCompositor_InitCompositionTarget_Proxy alias "IVMRImageCompositor_InitCompositionTarget_Proxy" (byval This as IVMRImageCompositor ptr, byval pD3DDevice as IUnknown ptr, byval pddsRenderTarget as LPDIRECTDRAWSURFACE7) as HRESULT
-declare sub IVMRImageCompositor_InitCompositionTarget_Stub alias "IVMRImageCompositor_InitCompositionTarget_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRImageCompositor_TermCompositionTarget_Proxy alias "IVMRImageCompositor_TermCompositionTarget_Proxy" (byval This as IVMRImageCompositor ptr, byval pD3DDevice as IUnknown ptr, byval pddsRenderTarget as LPDIRECTDRAWSURFACE7) as HRESULT
-declare sub IVMRImageCompositor_TermCompositionTarget_Stub alias "IVMRImageCompositor_TermCompositionTarget_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRImageCompositor_SetStreamMediaType_Proxy alias "IVMRImageCompositor_SetStreamMediaType_Proxy" (byval This as IVMRImageCompositor ptr, byval dwStrmID as DWORD, byval pmt as AM_MEDIA_TYPE ptr, byval fTexture as BOOL) as HRESULT
-declare sub IVMRImageCompositor_SetStreamMediaType_Stub alias "IVMRImageCompositor_SetStreamMediaType_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRImageCompositor_CompositeImage_Proxy alias "IVMRImageCompositor_CompositeImage_Proxy" (byval This as IVMRImageCompositor ptr, byval pD3DDevice as IUnknown ptr, byval pddsRenderTarget as LPDIRECTDRAWSURFACE7, byval pmtRenderTarget as AM_MEDIA_TYPE ptr, byval rtStart as REFERENCE_TIME, byval rtEnd as REFERENCE_TIME, byval dwClrBkGnd as DWORD, byval pVideoStreamInfo as VMRVIDEOSTREAMINFO ptr, byval cStreams as UINT) as HRESULT
-declare sub IVMRImageCompositor_CompositeImage_Stub alias "IVMRImageCompositor_CompositeImage_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IVMRVideoStreamControl alias "IID_IVMRVideoStreamControl" as IID
 
 type IVMRVideoStreamControlVtbl_ as IVMRVideoStreamControlVtbl
@@ -5893,16 +4146,6 @@ type IVMRVideoStreamControlVtbl
 	GetStreamActiveState as function(byval as IVMRVideoStreamControl ptr, byval as BOOL ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRVideoStreamControl_SetColorKey_Proxy alias "IVMRVideoStreamControl_SetColorKey_Proxy" (byval This as IVMRVideoStreamControl ptr, byval lpClrKey as LPDDCOLORKEY) as HRESULT
-declare sub IVMRVideoStreamControl_SetColorKey_Stub alias "IVMRVideoStreamControl_SetColorKey_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRVideoStreamControl_GetColorKey_Proxy alias "IVMRVideoStreamControl_GetColorKey_Proxy" (byval This as IVMRVideoStreamControl ptr, byval lpClrKey as LPDDCOLORKEY) as HRESULT
-declare sub IVMRVideoStreamControl_GetColorKey_Stub alias "IVMRVideoStreamControl_GetColorKey_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRVideoStreamControl_SetStreamActiveState_Proxy alias "IVMRVideoStreamControl_SetStreamActiveState_Proxy" (byval This as IVMRVideoStreamControl ptr, byval fActive as BOOL) as HRESULT
-declare sub IVMRVideoStreamControl_SetStreamActiveState_Stub alias "IVMRVideoStreamControl_SetStreamActiveState_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRVideoStreamControl_GetStreamActiveState_Proxy alias "IVMRVideoStreamControl_GetStreamActiveState_Proxy" (byval This as IVMRVideoStreamControl ptr, byval lpfActive as BOOL ptr) as HRESULT
-declare sub IVMRVideoStreamControl_GetStreamActiveState_Stub alias "IVMRVideoStreamControl_GetStreamActiveState_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IVMRSurface alias "IID_IVMRSurface" as IID
 
 type IVMRSurfaceVtbl_ as IVMRSurfaceVtbl
@@ -5921,16 +4164,6 @@ type IVMRSurfaceVtbl
 	GetSurface as function(byval as IVMRSurface ptr, byval as LPDIRECTDRAWSURFACE7 ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRSurface_IsSurfaceLocked_Proxy alias "IVMRSurface_IsSurfaceLocked_Proxy" (byval This as IVMRSurface ptr) as HRESULT
-declare sub IVMRSurface_IsSurfaceLocked_Stub alias "IVMRSurface_IsSurfaceLocked_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRSurface_LockSurface_Proxy alias "IVMRSurface_LockSurface_Proxy" (byval This as IVMRSurface ptr, byval lpSurface as BYTE ptr ptr) as HRESULT
-declare sub IVMRSurface_LockSurface_Stub alias "IVMRSurface_LockSurface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRSurface_UnlockSurface_Proxy alias "IVMRSurface_UnlockSurface_Proxy" (byval This as IVMRSurface ptr) as HRESULT
-declare sub IVMRSurface_UnlockSurface_Stub alias "IVMRSurface_UnlockSurface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRSurface_GetSurface_Proxy alias "IVMRSurface_GetSurface_Proxy" (byval This as IVMRSurface ptr, byval lplpSurface as LPDIRECTDRAWSURFACE7 ptr) as HRESULT
-declare sub IVMRSurface_GetSurface_Stub alias "IVMRSurface_GetSurface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IVMRImagePresenterConfig alias "IID_IVMRImagePresenterConfig" as IID
 
 type IVMRImagePresenterConfigVtbl_ as IVMRImagePresenterConfigVtbl
@@ -5947,12 +4180,6 @@ type IVMRImagePresenterConfigVtbl
 	GetRenderingPrefs as function(byval as IVMRImagePresenterConfig ptr, byval as DWORD ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRImagePresenterConfig_SetRenderingPrefs_Proxy alias "IVMRImagePresenterConfig_SetRenderingPrefs_Proxy" (byval This as IVMRImagePresenterConfig ptr, byval dwRenderFlags as DWORD) as HRESULT
-declare sub IVMRImagePresenterConfig_SetRenderingPrefs_Stub alias "IVMRImagePresenterConfig_SetRenderingPrefs_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRImagePresenterConfig_GetRenderingPrefs_Proxy alias "IVMRImagePresenterConfig_GetRenderingPrefs_Proxy" (byval This as IVMRImagePresenterConfig ptr, byval dwRenderFlags as DWORD ptr) as HRESULT
-declare sub IVMRImagePresenterConfig_GetRenderingPrefs_Stub alias "IVMRImagePresenterConfig_GetRenderingPrefs_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IVMRImagePresenterExclModeConfig alias "IID_IVMRImagePresenterExclModeConfig" as IID
 
 type IVMRImagePresenterExclModeConfigVtbl_ as IVMRImagePresenterExclModeConfigVtbl
@@ -5971,12 +4198,6 @@ type IVMRImagePresenterExclModeConfigVtbl
 	GetXlcModeDDObjAndPrimarySurface as function(byval as IVMRImagePresenterExclModeConfig ptr, byval as LPDIRECTDRAW7 ptr, byval as LPDIRECTDRAWSURFACE7 ptr) as HRESULT
 end type
 
-#ifdef WIN_INCLUDEPROXY
-declare function IVMRImagePresenterExclModeConfig_SetXlcModeDDObjAndPrimarySurface_Proxy alias "IVMRImagePresenterExclModeConfig_SetXlcModeDDObjAndPrimarySurface_Proxy" (byval This as IVMRImagePresenterExclModeConfig ptr, byval lpDDObj as LPDIRECTDRAW7, byval lpPrimarySurf as LPDIRECTDRAWSURFACE7) as HRESULT
-declare sub IVMRImagePresenterExclModeConfig_SetXlcModeDDObjAndPrimarySurface_Stub alias "IVMRImagePresenterExclModeConfig_SetXlcModeDDObjAndPrimarySurface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVMRImagePresenterExclModeConfig_GetXlcModeDDObjAndPrimarySurface_Proxy alias "IVMRImagePresenterExclModeConfig_GetXlcModeDDObjAndPrimarySurface_Proxy" (byval This as IVMRImagePresenterExclModeConfig ptr, byval lpDDObj as LPDIRECTDRAW7 ptr, byval lpPrimarySurf as LPDIRECTDRAWSURFACE7 ptr) as HRESULT
-declare sub IVMRImagePresenterExclModeConfig_GetXlcModeDDObjAndPrimarySurface_Stub alias "IVMRImagePresenterExclModeConfig_GetXlcModeDDObjAndPrimarySurface_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#endif
 extern IID_IVPManager alias "IID_IVPManager" as IID
 
 type IVPManagerVtbl_ as IVPManagerVtbl
@@ -5992,21 +4213,6 @@ type IVPManagerVtbl
 	SetVideoPortIndex as function(byval as IVPManager ptr, byval as DWORD) as HRESULT
 	GetVideoPortIndex as function(byval as IVPManager ptr, byval as DWORD ptr) as HRESULT
 end type
-
-#ifdef WIN_INCLUDEPROXY
-declare function IVPManager_SetVideoPortIndex_Proxy alias "IVPManager_SetVideoPortIndex_Proxy" (byval This as IVPManager ptr, byval dwVideoPortIndex as DWORD) as HRESULT
-declare sub IVPManager_SetVideoPortIndex_Stub alias "IVPManager_SetVideoPortIndex_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVPManager_GetVideoPortIndex_Proxy alias "IVPManager_GetVideoPortIndex_Proxy" (byval This as IVPManager ptr, byval pdwVideoPortIndex as DWORD ptr) as HRESULT
-declare sub IVPManager_GetVideoPortIndex_Stub alias "IVPManager_GetVideoPortIndex_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ICaptureGraphBuilder_FindInterface_Proxy alias "ICaptureGraphBuilder_FindInterface_Proxy" (byval This as ICaptureGraphBuilder ptr, byval pCategory as GUID ptr, byval pf as IBaseFilter ptr, byval riid as IID ptr, byval ppint as any ptr ptr) as HRESULT
-declare function ICaptureGraphBuilder_FindInterface_Stub alias "ICaptureGraphBuilder_FindInterface_Stub" (byval This as ICaptureGraphBuilder ptr, byval pCategory as GUID ptr, byval pf as IBaseFilter ptr, byval riid as IID ptr, byval ppint as IUnknown ptr ptr) as HRESULT
-declare function ICaptureGraphBuilder2_FindInterface_Proxy alias "ICaptureGraphBuilder2_FindInterface_Proxy" (byval This as ICaptureGraphBuilder2 ptr, byval pCategory as GUID ptr, byval pType as GUID ptr, byval pf as IBaseFilter ptr, byval riid as IID ptr, byval ppint as any ptr ptr) as HRESULT
-declare function ICaptureGraphBuilder2_FindInterface_Stub alias "ICaptureGraphBuilder2_FindInterface_Stub" (byval This as ICaptureGraphBuilder2 ptr, byval pCategory as GUID ptr, byval pType as GUID ptr, byval pf as IBaseFilter ptr, byval riid as IID ptr, byval ppint as IUnknown ptr ptr) as HRESULT
-declare function IKsPropertySet_Set_Proxy alias "IKsPropertySet_Set_Proxy" (byval This as IKsPropertySet ptr, byval guidPropSet as GUID ptr, byval dwPropID as DWORD, byval pInstanceData as LPVOID, byval cbInstanceData as DWORD, byval pPropData as LPVOID, byval cbPropData as DWORD) as HRESULT
-declare function IKsPropertySet_Set_Stub alias "IKsPropertySet_Set_Stub" (byval This as IKsPropertySet ptr, byval guidPropSet as GUID ptr, byval dwPropID as DWORD, byval pInstanceData as byte ptr, byval cbInstanceData as DWORD, byval pPropData as byte ptr, byval cbPropData as DWORD) as HRESULT
-declare function IKsPropertySet_Get_Proxy alias "IKsPropertySet_Get_Proxy" (byval This as IKsPropertySet ptr, byval guidPropSet as GUID ptr, byval dwPropID as DWORD, byval pInstanceData as LPVOID, byval cbInstanceData as DWORD, byval pPropData as LPVOID, byval cbPropData as DWORD, byval pcbReturned as DWORD ptr) as HRESULT
-declare function IKsPropertySet_Get_Stub alias "IKsPropertySet_Get_Stub" (byval This as IKsPropertySet ptr, byval guidPropSet as GUID ptr, byval dwPropID as DWORD, byval pInstanceData as byte ptr, byval cbInstanceData as DWORD, byval pPropData as byte ptr, byval cbPropData as DWORD, byval pcbReturned as DWORD ptr) as HRESULT
-#endif
 
 declare function VARIANT_UserSize alias "VARIANT_UserSize" (byval as uinteger ptr, byval as uinteger, byval as VARIANT ptr) as uinteger
 declare function VARIANT_UserMarshal alias "VARIANT_UserMarshal" (byval as uinteger ptr, byval as ubyte ptr, byval as VARIANT ptr) as ubyte ptr

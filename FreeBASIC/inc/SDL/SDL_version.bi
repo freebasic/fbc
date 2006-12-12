@@ -9,8 +9,8 @@
 #ifndef __SDL_version_bi__
 #define __SDL_version_bi__
 
-#include once "SDL/SDL_types.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_types.bi"
+#include once "begin_code.bi"
 
 #define SDL_MAJOR_VERSION 1
 #define SDL_MINOR_VERSION 2
@@ -35,6 +35,6 @@ end type
 
 declare function SDL_Linked_Version cdecl alias "SDL_Linked_Version" () as SDL_version ptr
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

@@ -9,8 +9,8 @@
 #ifndef __gdkglwindow_bi__
 #define __gdkglwindow_bi__
 
-#include once "gtk/gdkgl/gdkgldefs.bi"
-#include once "gtk/gdkgl/gdkgltypes.bi"
+#include once "gdkgldefs.bi"
+#include once "gdkgltypes.bi"
 #include once "gtk/gdk/gdkwindow.bi"
 
 #define GDK_TYPE_GL_WINDOW (gdk_gl_window_get_type ())

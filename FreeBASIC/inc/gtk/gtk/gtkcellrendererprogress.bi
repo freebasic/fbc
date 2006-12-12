@@ -9,7 +9,7 @@
 #ifndef __gtkcellrendererprogress_bi__
 #define __gtkcellrendererprogress_bi__
 
-#include once "gtk/gtk/gtkcellrenderer.bi"
+#include once "gtkcellrenderer.bi"
 
 #define GTK_TYPE_CELL_RENDERER_PROGRESS (gtk_cell_renderer_progress_get_type ())
 #define GTK_CELL_RENDERER_PROGRESS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_RENDERER_PROGRESS, GtkCellRendererProgress))

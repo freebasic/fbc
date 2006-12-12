@@ -9,7 +9,7 @@
 #ifndef __gtkaboutdialog_bi__
 #define __gtkaboutdialog_bi__
 
-#include once "gtk/gtk/gtkdialog.bi"
+#include once "gtkdialog.bi"
 
 #define GTK_TYPE_ABOUT_DIALOG (gtk_about_dialog_get_type ())
 #define GTK_ABOUT_DIALOG(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_ABOUT_DIALOG, GtkAboutDialog))

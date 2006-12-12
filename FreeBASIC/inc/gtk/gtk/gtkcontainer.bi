@@ -10,9 +10,9 @@
 #define __gtkcontainer_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkenums.bi"
-#include once "gtk/gtk/gtkwidget.bi"
-#include once "gtk/gtk/gtkadjustment.bi"
+#include once "gtkenums.bi"
+#include once "gtkwidget.bi"
+#include once "gtkadjustment.bi"
 
 #define GTK_TYPE_CONTAINER              gtk_container_get_type()
 #define GTK_CONTAINER(obj)              G_TYPE_CHECK_INSTANCE_CAST(obj, GTK_TYPE_CONTAINER, GtkContainer)

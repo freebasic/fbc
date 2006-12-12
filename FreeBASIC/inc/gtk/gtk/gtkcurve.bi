@@ -10,7 +10,7 @@
 #define __gtkcurve_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkdrawingarea.bi"
+#include once "gtkdrawingarea.bi"
 
 #define GTK_TYPE_CURVE (gtk_curve_get_type ())
 #define GTK_CURVE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CURVE, GtkCurve))

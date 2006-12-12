@@ -9,8 +9,8 @@
 #ifndef __art_svp_bi__
 #define __art_svp_bi__
 
-#include once "gtk/libart/art_rect.bi"
-#include once "gtk/libart/art_point.bi"
+#include once "art_rect.bi"
+#include once "art_point.bi"
 
 type ArtSVP as _ArtSVP
 type ArtSVPSeg as _ArtSVPSeg

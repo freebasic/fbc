@@ -10,7 +10,7 @@
 #define __gtkglwidget_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gdkgl.bi"
+#include once "../gtkgl.bi"
 #include once "gtk/gtk/gtkwidget.bi"
 
 declare function gtk_widget_set_gl_capability (byval widget as GtkWidget ptr, byval glconfig as GdkGLConfig ptr, byval share_list as GdkGLContext ptr, byval direct as gboolean, byval render_type as integer) as gboolean

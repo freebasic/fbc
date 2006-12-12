@@ -9,11 +9,13 @@
 #ifndef __gsl_permute_uint_bi__
 #define __gsl_permute_uint_bi__
 
-#include once "gsl/gsl_errno.bi"
-#include once "gsl/gsl_permutation.bi"
-#include once "gsl/gsl_types.bi"
+#include once "gsl_errno.bi"
+#include once "gsl_permutation.bi"
+#include once "gsl_types.bi"
 
-declare function gsl_permute_uint cdecl alias "gsl_permute_uint" (byval p as integer ptr, byval data as uinteger ptr, byval stride as integer, byval n as integer) as integer
-declare function gsl_permute_uint_inverse cdecl alias "gsl_permute_uint_inverse" (byval p as integer ptr, byval data as uinteger ptr, byval stride as integer, byval n as integer) as integer
+extern "c"
+declare function gsl_permute_uint (byval p as integer ptr, byval data as uinteger ptr, byval stride as integer, byval n as integer) as integer
+declare function gsl_permute_uint_inverse (byval p as integer ptr, byval data as uinteger ptr, byval stride as integer, byval n as integer) as integer
+end extern
 
 #endif

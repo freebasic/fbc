@@ -9,9 +9,9 @@
 #ifndef __SDL_mutex_bi__
 #define __SDL_mutex_bi__
 
-#include once "SDL/SDL_main.bi"
-#include once "SDL/SDL_types.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_main.bi"
+#include once "SDL_types.bi"
+#include once "begin_code.bi"
 
 #define SDL_MUTEX_TIMEDOUT 1
 
@@ -44,6 +44,6 @@ declare function SDL_CondBroadcast cdecl alias "SDL_CondBroadcast" (byval cond a
 declare function SDL_CondWait cdecl alias "SDL_CondWait" (byval cond as SDL_cond ptr, byval mut as SDL_mutex ptr) as integer
 declare function SDL_CondWaitTimeout cdecl alias "SDL_CondWaitTimeout" (byval cond as SDL_cond ptr, byval mutex as SDL_mutex ptr, byval ms as Uint32) as integer
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

@@ -9,8 +9,8 @@
 #ifndef __wxc_displaychangedevent_bi__
 #define __wxc_displaychangedevent_bi__
 
-#include once "wx-c/wx.bi"
+#include once "wx.bi"
 
-declare function wxDisplayChangedEvent cdecl alias "wxDisplayChangedEvent_ctor" () as wxDisplayChangedEvent ptr
+declare function wxDisplayChangedEvent alias "wxDisplayChangedEvent_ctor" () as wxDisplayChangedEvent ptr
 
 #endif

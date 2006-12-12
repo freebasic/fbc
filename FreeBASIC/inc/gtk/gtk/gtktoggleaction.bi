@@ -9,7 +9,7 @@
 #ifndef __gtktoggleaction_bi__
 #define __gtktoggleaction_bi__
 
-#include once "gtk/gtk/gtkaction.bi"
+#include once "gtkaction.bi"
 
 #define GTK_TYPE_TOGGLE_ACTION (gtk_toggle_action_get_type ())
 #define GTK_TOGGLE_ACTION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TOGGLE_ACTION, GtkToggleAction))

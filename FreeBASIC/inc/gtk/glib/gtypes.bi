@@ -9,7 +9,7 @@
 #ifndef __gtypes_bi__
 #define __gtypes_bi__
 
-#include once "gtk/glib/config.bi"
+#include once "config.bi"
 
 type gchar as byte
 type gshort as short

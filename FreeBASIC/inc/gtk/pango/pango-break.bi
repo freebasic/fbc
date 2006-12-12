@@ -10,7 +10,7 @@
 #define __pango_break_bi__
 
 #include once "gtk/glib.bi"
-#include once "gtk/pango/pango-item.bi"
+#include once "pango-item.bi"
 
 type _PangoLogAttr
 	is_line_break:1 as guint

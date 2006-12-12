@@ -9,7 +9,7 @@
 #ifndef __gatomic_bi__
 #define __gatomic_bi__
 
-#include once "gtk/glib/gtypes.bi"
+#include once "gtypes.bi"
 
 declare function g_atomic_int_exchange_and_add (byval atomic as gint ptr, byval val as gint) as gint
 declare sub g_atomic_int_add (byval atomic as gint ptr, byval val as gint)

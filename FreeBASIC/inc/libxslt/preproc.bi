@@ -9,11 +9,13 @@
 #ifndef __xslt_preproc_bi__
 #define __xslt_preproc_bi__
 
-#include once "libxslt/xsltexports.bi"
-#include once "libxslt/xsltInternals.bi"
+#include once "xsltexports.bi"
+#include once "xsltInternals.bi"
 
-declare function xsltDocumentComp cdecl alias "xsltDocumentComp" (byval style as xsltStylesheetPtr, byval inst as xmlNodePtr, byval function as xsltTransformFunction) as xsltElemPreCompPtr
-declare sub xsltStylePreCompute cdecl alias "xsltStylePreCompute" (byval style as xsltStylesheetPtr, byval inst as xmlNodePtr)
-declare sub xsltFreeStylePreComps cdecl alias "xsltFreeStylePreComps" (byval style as xsltStylesheetPtr)
+extern "c"
+declare function xsltDocumentComp (byval style as xsltStylesheetPtr, byval inst as xmlNodePtr, byval function as xsltTransformFunction) as xsltElemPreCompPtr
+declare sub xsltStylePreCompute (byval style as xsltStylesheetPtr, byval inst as xmlNodePtr)
+declare sub xsltFreeStylePreComps (byval style as xsltStylesheetPtr)
+end extern
 
 #endif

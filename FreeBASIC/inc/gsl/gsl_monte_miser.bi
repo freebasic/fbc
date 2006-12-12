@@ -9,10 +9,10 @@
 #ifndef __gsl_monte_miser_bi__
 #define __gsl_monte_miser_bi__
 
-#include once "gsl/gsl_rng.bi"
-#include once "gsl/gsl_monte.bi"
-#include once "gsl/gsl_monte_plain.bi"
-#include once "gsl/gsl_types.bi"
+#include once "gsl_rng.bi"
+#include once "gsl_monte.bi"
+#include once "gsl_monte_plain.bi"
+#include once "gsl_types.bi"
 
 type gsl_monte_miser_state
 	min_calls as integer
@@ -40,9 +40,11 @@ type gsl_monte_miser_state
 	hits_r as integer ptr
 end type
 
-declare function gsl_monte_miser_integrate cdecl alias "gsl_monte_miser_integrate" (byval f as gsl_monte_function ptr, byval xl as double ptr, byval xh as double ptr, byval dim as integer, byval calls as integer, byval r as gsl_rng ptr, byval state as gsl_monte_miser_state ptr, byval result as double ptr, byval abserr as double ptr) as integer
-declare function gsl_monte_miser_alloc cdecl alias "gsl_monte_miser_alloc" (byval dim as integer) as gsl_monte_miser_state ptr
-declare function gsl_monte_miser_init cdecl alias "gsl_monte_miser_init" (byval state as gsl_monte_miser_state ptr) as integer
-declare sub gsl_monte_miser_free cdecl alias "gsl_monte_miser_free" (byval state as gsl_monte_miser_state ptr)
+extern "c"
+declare function gsl_monte_miser_integrate (byval f as gsl_monte_function ptr, byval xl as double ptr, byval xh as double ptr, byval dim as integer, byval calls as integer, byval r as gsl_rng ptr, byval state as gsl_monte_miser_state ptr, byval result as double ptr, byval abserr as double ptr) as integer
+declare function gsl_monte_miser_alloc (byval dim as integer) as gsl_monte_miser_state ptr
+declare function gsl_monte_miser_init (byval state as gsl_monte_miser_state ptr) as integer
+declare sub gsl_monte_miser_free (byval state as gsl_monte_miser_state ptr)
+end extern
 
 #endif

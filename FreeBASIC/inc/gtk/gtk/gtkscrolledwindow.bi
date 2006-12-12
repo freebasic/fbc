@@ -10,9 +10,9 @@
 #define __gtkscrolledwindow_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkhscrollbar.bi"
-#include once "gtk/gtk/gtkvscrollbar.bi"
-#include once "gtk/gtk/gtkviewport.bi"
+#include once "gtkhscrollbar.bi"
+#include once "gtkvscrollbar.bi"
+#include once "gtkviewport.bi"
 
 #define GTK_TYPE_SCROLLED_WINDOW (gtk_scrolled_window_get_type ())
 #define GTK_SCROLLED_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SCROLLED_WINDOW, GtkScrolledWindow))

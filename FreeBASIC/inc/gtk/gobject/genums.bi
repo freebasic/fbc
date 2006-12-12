@@ -9,7 +9,7 @@
 #ifndef __genums_bi__
 #define __genums_bi__
 
-#include once "gtk/gobject/gtype.bi"
+#include once "gtype.bi"
 
 #define G_TYPE_IS_ENUM(type_) (G_TYPE_FUNDAMENTAL (type_) == G_TYPE_ENUM)
 #define G_ENUM_CLASS(class_) (G_TYPE_CHECK_CLASS_CAST ((class_), G_TYPE_ENUM, GEnumClass))

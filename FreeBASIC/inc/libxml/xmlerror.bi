@@ -9,7 +9,7 @@
 #ifndef __xml_xmlerror_bi__
 #define __xml_xmlerror_bi__
 
-#include once "libxml/parser.bi"
+#include once "parser.bi"
 
 enum xmlErrorLevel
 	XML_ERR_NONE = 0
@@ -768,20 +768,22 @@ end enum
 type xmlGenericErrorFunc as any ptr
 type xmlStructuredErrorFunc as any ptr
 
-declare sub xmlSetGenericErrorFunc cdecl alias "xmlSetGenericErrorFunc" (byval ctx as any ptr, byval handler as xmlGenericErrorFunc)
-declare sub initGenericErrorDefaultFunc cdecl alias "initGenericErrorDefaultFunc" (byval handler as xmlGenericErrorFunc ptr)
-declare sub xmlSetStructuredErrorFunc cdecl alias "xmlSetStructuredErrorFunc" (byval ctx as any ptr, byval handler as xmlStructuredErrorFunc)
-declare sub xmlParserError cdecl alias "xmlParserError" (byval ctx as any ptr, byval msg as zstring ptr, ...)
-declare sub xmlParserWarning cdecl alias "xmlParserWarning" (byval ctx as any ptr, byval msg as zstring ptr, ...)
-declare sub xmlParserValidityError cdecl alias "xmlParserValidityError" (byval ctx as any ptr, byval msg as zstring ptr, ...)
-declare sub xmlParserValidityWarning cdecl alias "xmlParserValidityWarning" (byval ctx as any ptr, byval msg as zstring ptr, ...)
-declare sub xmlParserPrintFileInfo cdecl alias "xmlParserPrintFileInfo" (byval input as xmlParserInputPtr)
-declare sub xmlParserPrintFileContext cdecl alias "xmlParserPrintFileContext" (byval input as xmlParserInputPtr)
-declare function xmlGetLastError cdecl alias "xmlGetLastError" () as xmlErrorPtr
-declare sub xmlResetLastError cdecl alias "xmlResetLastError" ()
-declare function xmlCtxtGetLastError cdecl alias "xmlCtxtGetLastError" (byval ctx as any ptr) as xmlErrorPtr
-declare sub xmlCtxtResetLastError cdecl alias "xmlCtxtResetLastError" (byval ctx as any ptr)
-declare sub xmlResetError cdecl alias "xmlResetError" (byval err as xmlErrorPtr)
-declare function xmlCopyError cdecl alias "xmlCopyError" (byval from as xmlErrorPtr, byval to as xmlErrorPtr) as integer
+extern "c"
+declare sub xmlSetGenericErrorFunc (byval ctx as any ptr, byval handler as xmlGenericErrorFunc)
+declare sub initGenericErrorDefaultFunc (byval handler as xmlGenericErrorFunc ptr)
+declare sub xmlSetStructuredErrorFunc (byval ctx as any ptr, byval handler as xmlStructuredErrorFunc)
+declare sub xmlParserError (byval ctx as any ptr, byval msg as zstring ptr, ...)
+declare sub xmlParserWarning (byval ctx as any ptr, byval msg as zstring ptr, ...)
+declare sub xmlParserValidityError (byval ctx as any ptr, byval msg as zstring ptr, ...)
+declare sub xmlParserValidityWarning (byval ctx as any ptr, byval msg as zstring ptr, ...)
+declare sub xmlParserPrintFileInfo (byval input as xmlParserInputPtr)
+declare sub xmlParserPrintFileContext (byval input as xmlParserInputPtr)
+declare function xmlGetLastError () as xmlErrorPtr
+declare sub xmlResetLastError ()
+declare function xmlCtxtGetLastError (byval ctx as any ptr) as xmlErrorPtr
+declare sub xmlCtxtResetLastError (byval ctx as any ptr)
+declare sub xmlResetError (byval err as xmlErrorPtr)
+declare function xmlCopyError (byval from as xmlErrorPtr, byval to as xmlErrorPtr) as integer
+end extern
 
 #endif

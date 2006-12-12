@@ -9,8 +9,8 @@
 #ifndef __gtkmenutoolbutton_bi__
 #define __gtkmenutoolbutton_bi__
 
-#include once "gtk/gtk/gtkmenu.bi"
-#include once "gtk/gtk/gtktoolbutton.bi"
+#include once "gtkmenu.bi"
+#include once "gtktoolbutton.bi"
 
 #define GTK_TYPE_MENU_TOOL_BUTTON (gtk_menu_tool_button_get_type ())
 #define GTK_MENU_TOOL_BUTTON(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), GTK_TYPE_MENU_TOOL_BUTTON, GtkMenuToolButton))

@@ -9,7 +9,7 @@
 #ifndef __gdkinput_bi__
 #define __gdkinput_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
+#include once "gdktypes.bi"
 
 #define GDK_TYPE_DEVICE (gdk_device_get_type ())
 #define GDK_DEVICE(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_DEVICE, GdkDevice))

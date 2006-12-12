@@ -9,7 +9,7 @@
 #ifndef __gdkspawn_bi__
 #define __gdkspawn_bi__
 
-#include once "gtk/gdk/gdkscreen.bi"
+#include once "gdkscreen.bi"
 #include once "gtk/glib/gspawn.bi"
 
 declare function gdk_spawn_on_screen (byval screen as GdkScreen ptr, byval working_directory as zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as gint ptr, byval error as GError ptr ptr) as gboolean

@@ -9,7 +9,7 @@
 #ifndef __art_svp_ops_bi__
 #define __art_svp_ops_bi__
 
-#include once "gtk/libart/art_svp.bi"
+#include once "art_svp.bi"
 
 declare function art_svp_union (byval svp1 as ArtSVP ptr, byval svp2 as ArtSVP ptr) as ArtSVP ptr
 declare function art_svp_intersect (byval svp1 as ArtSVP ptr, byval svp2 as ArtSVP ptr) as ArtSVP ptr

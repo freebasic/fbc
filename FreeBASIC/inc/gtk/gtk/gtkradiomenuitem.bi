@@ -10,7 +10,7 @@
 #define __gtkradiomenuitem_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkcheckmenuitem.bi"
+#include once "gtkcheckmenuitem.bi"
 
 #define GTK_TYPE_RADIO_MENU_ITEM (gtk_radio_menu_item_get_type ())
 #define GTK_RADIO_MENU_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_RADIO_MENU_ITEM, GtkRadioMenuItem))

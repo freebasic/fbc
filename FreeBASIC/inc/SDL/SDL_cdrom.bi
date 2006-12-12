@@ -9,8 +9,8 @@
 #ifndef __SDL_cdrom_bi__
 #define __SDL_cdrom_bi__
 
-#include once "SDL/SDL_types.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_types.bi"
+#include once "begin_code.bi"
 
 #define SDL_MAX_TRACKS 99
 #define SDL_AUDIO_TRACK &h00
@@ -70,6 +70,6 @@ declare function SDL_CDStop cdecl alias "SDL_CDStop" (byval cdrom as SDL_CD ptr)
 declare function SDL_CDEject cdecl alias "SDL_CDEject" (byval cdrom as SDL_CD ptr) as integer
 declare sub SDL_CDClose cdecl alias "SDL_CDClose" (byval cdrom as SDL_CD ptr)
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

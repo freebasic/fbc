@@ -9,10 +9,10 @@
 #ifndef __gtktextview_bi__
 #define __gtktextview_bi__
 
-#include once "gtk/gtk/gtkcontainer.bi"
-#include once "gtk/gtk/gtkimcontext.bi"
-#include once "gtk/gtk/gtktextbuffer.bi"
-#include once "gtk/gtk/gtkmenu.bi"
+#include once "gtkcontainer.bi"
+#include once "gtkimcontext.bi"
+#include once "gtktextbuffer.bi"
+#include once "gtkmenu.bi"
 
 #define GTK_TYPE_TEXT_VIEW (gtk_text_view_get_type ())
 #define GTK_TEXT_VIEW(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TEXT_VIEW, GtkTextView))

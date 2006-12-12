@@ -9,7 +9,7 @@
 #ifndef __gshell_bi__
 #define __gshell_bi__
 
-#include once "gtk/glib/gerror.bi"
+#include once "gerror.bi"
 
 enum GShellError
 	G_SHELL_ERROR_BAD_QUOTING

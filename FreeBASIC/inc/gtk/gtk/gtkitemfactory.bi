@@ -9,7 +9,7 @@
 #ifndef __gtkitemfactory_bi__
 #define __gtkitemfactory_bi__
 
-#include once "gtk/gtk/gtkwidget.bi"
+#include once "gtkwidget.bi"
 
 #define GTK_TYPE_ITEM_FACTORY (gtk_item_factory_get_type ())
 #define GTK_ITEM_FACTORY(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_ITEM_FACTORY, GtkItemFactory))

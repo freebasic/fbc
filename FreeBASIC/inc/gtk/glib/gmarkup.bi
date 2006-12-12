@@ -9,7 +9,7 @@
 #ifndef __gmarkup_bi__
 #define __gmarkup_bi__
 
-#include once "gtk/glib/gerror.bi"
+#include once "gerror.bi"
 
 enum GMarkupError
 	G_MARKUP_ERROR_BAD_UTF8

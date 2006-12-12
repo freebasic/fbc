@@ -9,11 +9,11 @@
 #ifndef __gobject_bi__
 #define __gobject_bi__
 
-#include once "gtk/gobject/gtype.bi"
-#include once "gtk/gobject/gvalue.bi"
-#include once "gtk/gobject/gparam.bi"
-#include once "gtk/gobject/gclosure.bi"
-#include once "gtk/gobject/gsignal.bi"
+#include once "gtype.bi"
+#include once "gvalue.bi"
+#include once "gparam.bi"
+#include once "gclosure.bi"
+#include once "gsignal.bi"
 
 #define G_TYPE_IS_OBJECT(_type) (G_TYPE_FUNDAMENTAL(_type) = G_TYPE_OBJECT)
 #define G_OBJECT(object) G_TYPE_CHECK_INSTANCE_CAST ((object), G_TYPE_OBJECT, GObject)

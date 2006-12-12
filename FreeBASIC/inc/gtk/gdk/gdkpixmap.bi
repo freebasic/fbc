@@ -9,8 +9,8 @@
 #ifndef __gdkpixmap_bi__
 #define __gdkpixmap_bi__
 
-#include once "gtk/gdk/gdktypes.bi"
-#include once "gtk/gdk/gdkdrawable.bi"
+#include once "gdktypes.bi"
+#include once "gdkdrawable.bi"
 
 #define GDK_TYPE_PIXMAP (gdk_pixmap_get_type ())
 #define GDK_PIXMAP(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_PIXMAP, GdkPixmap))

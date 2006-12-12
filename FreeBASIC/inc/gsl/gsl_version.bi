@@ -9,7 +9,7 @@
 #ifndef __gsl_version_bi__
 #define __gsl_version_bi__
 
-#include once "gsl/gsl_types.bi"
+#include once "gsl_types.bi"
 
 #define GSL_VERSION "1.6"
 

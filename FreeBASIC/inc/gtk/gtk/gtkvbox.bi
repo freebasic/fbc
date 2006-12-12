@@ -10,7 +10,7 @@
 #define __gtkvbox_bi__
 
 #include once "gtk/gdk.bi"
-#include once "gtk/gtk/gtkbox.bi"
+#include once "gtkbox.bi"
 
 #define GTK_TYPE_VBOX (gtk_vbox_get_type ())
 #define GTK_VBOX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VBOX, GtkVBox))

@@ -9,16 +9,18 @@
 #ifndef __xml_pattern_bi__
 #define __xml_pattern_bi__
 
-#include once "libxml/xmlversion.bi"
-#include once "libxml/tree.bi"
-#include once "libxml/dict.bi"
+#include once "xmlversion.bi"
+#include once "tree.bi"
+#include once "dict.bi"
 
 type xmlPattern as _xmlPattern
 type xmlPatternPtr as xmlPattern ptr
 
-declare sub xmlFreePattern cdecl alias "xmlFreePattern" (byval comp as xmlPatternPtr)
-declare sub xmlFreePatternList cdecl alias "xmlFreePatternList" (byval comp as xmlPatternPtr)
-declare function xmlPatterncompile cdecl alias "xmlPatterncompile" (byval pattern as zstring ptr, byval dict as xmlDict ptr, byval flags as integer, byval namespaces as zstring ptr ptr) as xmlPatternPtr
-declare function xmlPatternMatch cdecl alias "xmlPatternMatch" (byval comp as xmlPatternPtr, byval node as xmlNodePtr) as integer
+extern "c"
+declare sub xmlFreePattern (byval comp as xmlPatternPtr)
+declare sub xmlFreePatternList (byval comp as xmlPatternPtr)
+declare function xmlPatterncompile (byval pattern as zstring ptr, byval dict as xmlDict ptr, byval flags as integer, byval namespaces as zstring ptr ptr) as xmlPatternPtr
+declare function xmlPatternMatch (byval comp as xmlPatternPtr, byval node as xmlNodePtr) as integer
+end extern
 
 #endif

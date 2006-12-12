@@ -15,9 +15,11 @@
 type FILE as any
 #endif
 
-#include once "libxml/xmlexports.bi"
+#include once "xmlexports.bi"
 
-declare sub xmlCheckVersion cdecl alias "xmlCheckVersion" (byval version as integer)
+extern "c"
+declare sub xmlCheckVersion (byval version as integer)
+end extern
 
 #define LIBXML_DOTTED_VERSION "2.6.17"
 #define LIBXML_VERSION 20617

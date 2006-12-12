@@ -9,13 +9,13 @@
 #ifndef __SDL_events_bi__
 #define __SDL_events_bi__
 
-#include once "SDL/SDL_types.bi"
-#include once "SDL/SDL_active.bi"
-#include once "SDL/SDL_keyboard.bi"
-#include once "SDL/SDL_mouse.bi"
-#include once "SDL/SDL_joystick.bi"
-#include once "SDL/SDL_quit.bi"
-#include once "SDL/begin_code.bi"
+#include once "SDL_types.bi"
+#include once "SDL_active.bi"
+#include once "SDL_keyboard.bi"
+#include once "SDL_mouse.bi"
+#include once "SDL_joystick.bi"
+#include once "SDL_quit.bi"
+#include once "begin_code.bi"
 
 enum 
 	SDL_NOEVENT = 0
@@ -203,6 +203,6 @@ declare function SDL_GetEventFilter cdecl alias "SDL_GetEventFilter" () as SDL_E
 
 declare function SDL_EventState cdecl alias "SDL_EventState" (byval type as Uint8, byval state as integer) as Uint8
 
-#include once "SDL/close_code.bi"
+#include once "close_code.bi"
 
 #endif

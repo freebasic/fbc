@@ -10,7 +10,7 @@
 #define __gtktreemodel_bi__
 
 #include once "gtk/glib-object.bi"
-#include once "gtk/gtk/gtkobject.bi"
+#include once "gtkobject.bi"
 
 #define GTK_TYPE_TREE_MODEL (gtk_tree_model_get_type ())
 #define GTK_TREE_MODEL(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TREE_MODEL, GtkTreeModel))
