@@ -6039,7 +6039,17 @@ end sub
 #define hEmitBssHeader( ) emitSECTION( EMIT_SECTYPE_BSS, 0 )
 
 '':::::
+#ifdef __FB_LINUX__
+''
+'' !!!FIXME!!!
+''
+'' Linux appears to support .rodata section, but I'm not sure about other platforms, and that's
+'' probably the reason FB used to output a normal .data section in any case...
+''
+#define hEmitConstHeader( ) emitSECTION( EMIT_SECTYPE_CONST, 0 )
+#else
 #define hEmitConstHeader( ) emitSECTION( EMIT_SECTYPE_DATA, 0 )
+#endif
 
 '':::::
 #define hEmitDataHeader( ) emitSECTION( EMIT_SECTYPE_DATA, 0 )
