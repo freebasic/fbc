@@ -78,7 +78,8 @@ Version 0.17 Beta:
 - BLOAD and BSAVE can now accept an additional optional final parameter: a pointer to an array of 256 integers to hold the image palette if any (lillo)
 - FOR now supports UDT's as counter variables, if operator let, +=, and global <=, >= are overloaded with operators taking numeric rhs. (cha0s)
 - the PRIVATE and PUBLIC attributes for members/methods of TYPE's
-- the JNI (Java Native Interface) header, include library and example (v1c)
+- the JNI (Java Native Interface) header, import library and example (v1c)
+- the cairo (Multi-platform 2D graphics library) headers, import library and example (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
