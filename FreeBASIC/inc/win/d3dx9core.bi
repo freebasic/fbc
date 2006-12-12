@@ -142,11 +142,11 @@ type ID3DXFontVtbl
 end type
 
 #ifdef UNICODE
-declare function D3DXCreateFontW alias "D3DXCreateFontW" (byval pDevice as LPDIRECT3DDEVICE9, byval Height as INT_, byval Width as UINT, byval Weight as UINT, byval MipLevels as UINT, byval Italic as BOOL, byval CharSet as DWORD, byval OutputPrecision as DWORD, byval Quality as DWORD, byval PitchAndFamily as DWORD, byval pFaceName as LPCWSTR, byval ppFont as LPD3DXFONT ptr) as HRESULT
-declare function D3DXCreateFontIndirectW alias "D3DXCreateFontIndirectW" (byval pDevice as LPDIRECT3DDEVICE9, byval pDesc as D3DXFONT_DESCW ptr, byval ppFont as LPD3DXFONT ptr) as HRESULT
+declare function D3DXCreateFont alias "D3DXCreateFontW" (byval pDevice as LPDIRECT3DDEVICE9, byval Height as INT_, byval Width as UINT, byval Weight as UINT, byval MipLevels as UINT, byval Italic as BOOL, byval CharSet as DWORD, byval OutputPrecision as DWORD, byval Quality as DWORD, byval PitchAndFamily as DWORD, byval pFaceName as LPCWSTR, byval ppFont as LPD3DXFONT ptr) as HRESULT
+declare function D3DXCreateFontIndirect alias "D3DXCreateFontIndirectW" (byval pDevice as LPDIRECT3DDEVICE9, byval pDesc as D3DXFONT_DESCW ptr, byval ppFont as LPD3DXFONT ptr) as HRESULT
 #else
-declare function D3DXCreateFontA alias "D3DXCreateFontA" (byval pDevice as LPDIRECT3DDEVICE9, byval Height as INT_, byval Width as UINT, byval Weight as UINT, byval MipLevels as UINT, byval Italic as BOOL, byval CharSet as DWORD, byval OutputPrecision as DWORD, byval Quality as DWORD, byval PitchAndFamily as DWORD, byval pFaceName as LPCSTR, byval ppFont as LPD3DXFONT ptr) as HRESULT
-declare function D3DXCreateFontIndirectA alias "D3DXCreateFontIndirectA" (byval pDevice as LPDIRECT3DDEVICE9, byval pDesc as D3DXFONT_DESCA ptr, byval ppFont as LPD3DXFONT ptr) as HRESULT
+declare function D3DXCreateFont alias "D3DXCreateFontA" (byval pDevice as LPDIRECT3DDEVICE9, byval Height as INT_, byval Width as UINT, byval Weight as UINT, byval MipLevels as UINT, byval Italic as BOOL, byval CharSet as DWORD, byval OutputPrecision as DWORD, byval Quality as DWORD, byval PitchAndFamily as DWORD, byval pFaceName as LPCSTR, byval ppFont as LPD3DXFONT ptr) as HRESULT
+declare function D3DXCreateFontIndirect alias "D3DXCreateFontIndirectA" (byval pDevice as LPDIRECT3DDEVICE9, byval pDesc as D3DXFONT_DESCA ptr, byval ppFont as LPD3DXFONT ptr) as HRESULT
 #endif
 
 type D3DXRTS_DESC
