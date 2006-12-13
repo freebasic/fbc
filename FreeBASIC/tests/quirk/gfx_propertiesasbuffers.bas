@@ -1,4 +1,4 @@
-' TEST_MODE : COMPILE_AND_RUN_OK
+' TEST_MODE : COMPILE_ONLY_OK
 
 type Image
 
@@ -45,3 +45,4 @@ sub propertyAsTarget cdecl( )
 
 end sub
     
+screen 13 

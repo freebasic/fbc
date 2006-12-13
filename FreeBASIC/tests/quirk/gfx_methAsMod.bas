@@ -1,4 +1,4 @@
-' TEST_MODE : COMPILE_AND_RUN_OK
+' TEST_MODE : COMPILE_ONLY_OK
 
 type foo
 
@@ -47,3 +47,4 @@ sub foo.putPreset( )
 	
 end sub
 	
+screen 13 

@@ -145,6 +145,12 @@ private function hCalcALign _
 
 	'' default?
 	if( align = 0 ) then
+
+	    '' qb didn't do any alignment...
+	    if( env.clopt.lang = FB_LANG_QB ) then
+	    	exit function
+	    end if
+	
 		select case as const lgt
 		'' align byte, short, int, float, double and long long to the natural boundary
 		case 1
