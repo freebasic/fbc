@@ -1,8 +1,0 @@
-LIBRARY DXERR9.dll
-EXPORTS
-DXGetErrorDescription9A@4
-DXGetErrorDescription9W@4
-DXGetErrorString9A@4
-DXGetErrorString9W@4
-DXTraceA@20
-DXTraceW@20
