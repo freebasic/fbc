@@ -60,12 +60,14 @@ namespace FB
 					 GET_TRANSPARENT_COLOR		= 10	, _
 					 GET_VIEWPORT				= 11	, _
 					 GET_PEN_POS				= 12	, _
-					 GET_COLOR					= 13
+					 GET_COLOR					= 13	, _
+					 GET_ALPHA_PRIMITIVES		= 14
 	'' Setters:
 	const as integer SET_WINDOW_POS				= 100	, _
 					 SET_WINDOW_TITLE			= 101	, _
 					 SET_PEN_POS				= 102	, _
-					 SET_DRIVER_NAME			= 103
+					 SET_DRIVER_NAME			= 103	, _
+					 SET_ALPHA_PRIMITIVES		= 104
 
 
 	'' Color values for transparency

@@ -206,11 +206,13 @@ extern "C" {
 #define GET_VIEWPORT				11
 #define GET_PEN_POS					12
 #define GET_COLOR					13
+#define GET_ALPHA_PRIMITIVES		14
 
 #define SET_WINDOW_POS				100
 #define SET_WINDOW_TITLE			101
 #define SET_PEN_POS					102
 #define SET_DRIVER_NAME				103
+#define SET_ALPHA_PRIMITIVES		104
 
 
 typedef struct _GFX_CHAR_CELL {

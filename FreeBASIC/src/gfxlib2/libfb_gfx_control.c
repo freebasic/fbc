@@ -183,6 +183,11 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 		}
 		break;
 	
+	case GET_ALPHA_PRIMITIVES:
+		if (__fb_gfx)
+			*param1 = (__fb_gfx->flags & ALPHA_PRIMITIVES) ? FB_TRUE : FB_FALSE;
+		break;
+	
 	case SET_WINDOW_POS:
 		if ((__fb_gfx) && (__fb_gfx->driver->set_window_pos))
 			__fb_gfx->driver->set_window_pos(*param1, *param2);
@@ -194,6 +199,15 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 				context->last_x = *param1;
 			if (*param2 != 0x80000000)
 				context->last_y = *param2;
+		}
+		break;
+	
+	case SET_ALPHA_PRIMITIVES:
+		if (__fb_gfx) {
+			if (*param1)
+				__fb_gfx->flags |= ALPHA_PRIMITIVES;
+			else
+				__fb_gfx->flags &= ~ALPHA_PRIMITIVES;
 		}
 		break;
 	}
