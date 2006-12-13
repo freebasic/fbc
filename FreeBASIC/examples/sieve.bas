@@ -1,41 +1,49 @@
 ''
-'' ordinary sieve test
-''
+'' A somewhat optimized Sieve of Eratosthenes.
+'' Written by Michael Webster
 
-const INTERATIONS = 1000
+dim as integer i,j,k,count
+dim as double s
 
-  Dim Flags(0 to 8190) as integer
-  dim iter as integer
-  dim count as integer
-  dim prime as integer
-  dim k as integer
-  dim i as integer
-  dim x as double
-  
-  x = timer
-  
-  For Iter = 1 To INTERATIONS
-    Count = 0 
-    
-    For I = 0 To 8190 
-      Flags(I) = 1 
-    Next  
-    
-    For I = 0 To 8190 
-      If Flags(I)=1 Then 
-        Prime = (I shl 1) + 3 
-        K = I + Prime 
-        While K <= 8190 
-          Flags(K) = 0 
-          K = K + Prime 
-        Wend 
-        Count = Count + 1 
-      End If 
-    Next  
-  Next
-  
-  x = timer - x
-  
-  print "msecs taken:"; x
-  print "count:"; count
-  sleep
+const as integer n = 7919                      ' 1000th prime
+redim as byte flags(2 to n)   ' byte array to save space
+
+for i = 2 to sqr(n)
+  if flags(i) = 0 then
+    j = i shl 1
+    do while j <= n
+      flags(j) = 1
+      j += i
+    loop
+  end if
+next
+
+for i = 2 to N
+  if flags(i) = 0 then
+    print i,
+    count += 1
+  end if
+next
+print
+print "number of primes ="; count
+print
+print "finding first 1000000 primes..."
+
+const as integer n2 = 15485863 
+redim as byte flags(2 to n2)
+
+s = timer
+
+for i = 2 to sqr(n2)
+  if flags(i) = 0 then
+    j = i shl 1
+    do while j <= n2
+      flags(j) = 1
+      j += i
+    loop
+  end if
+next
+
+print using "#.### seconds"; timer - s
+
+sleep
