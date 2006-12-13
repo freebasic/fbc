@@ -33,7 +33,7 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int de
 	FB_GFXCTX *context = fb_hGetContext();
 	PUT_HEADER *image;
 	int size, pitch, header_size = 4;
-	int bpp = __fb_gfx->bpp;
+	int bpp;
 	
 	if ((!__fb_gfx) || (width <= 0) || (height <= 0))
 		return NULL;
@@ -43,6 +43,7 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int de
 		if ((bpp != 1) && (bpp != 2) && (bpp != 4))
 			return NULL;
 	}
+	else bpp = __fb_gfx->bpp;
 	
 	if (flags & DEFAULT_COLOR_1) {
 		switch (bpp) {
