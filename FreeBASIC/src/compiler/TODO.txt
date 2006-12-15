@@ -112,6 +112,9 @@
           be used as functions too
 
 [ ] add a C backend
+	- shared/module-level vars must be emitted before any proc
+	- type-cast's must be preserved, but astNewCONV() won't create a new node
+	  if converting from pointer types or if data sizes and classes are the same
 	- scopes must be preserved or local vars won't work
 	- if()'s must be translated to
 	  if(vreg op vreg) goto label
@@ -119,10 +122,10 @@
 	  } -- end scope
 	  label:
         - function calls must be passed complete to IR, with params
-	- astLoadConst shouldn't convert floating-point consts to constant variables
         - stdcall names shouldn't be mangled, but anything else should - at least
           the g++ mangling uses no special characters
 	- how to handle VARINI###? pass it as a tree plus a callback?
+	- DATA arrays must be emitted in the inverse order because the forward ref links
 	- structs must be fully translated
         - only accept inline asm in GCC format, pass as-is
 	- use GCC as a high-level assembler, no headers, nothing

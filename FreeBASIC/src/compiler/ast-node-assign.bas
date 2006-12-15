@@ -540,11 +540,16 @@ function astNewASSIGN _
 				end if
 			end if
 
-			'' x86 assumption: let the fpu do the convertion if any operand
-			''				   is a float (unless a special case must be handled)
-			if( ((ldclass <> FB_DATACLASS_FPOINT) and _
-				 (rdclass <> FB_DATACLASS_FPOINT)) or _
-				(ldtype = FB_DATATYPE_ULONGINT) ) then
+			'' let the fpu do the convertion if any operand
+			'' is a float (unless a special case must be handled)
+			dim as integer doconv = TRUE
+			if( (ldclass = FB_DATACLASS_FPOINT) or (rdclass = FB_DATACLASS_FPOINT) ) then
+				if( ldtype <> FB_DATATYPE_ULONGINT ) then
+					doconv = irGetOption( IR_OPT_FPU_CONVERTOPER )
+				end if
+			end if
+
+			if( doconv ) then
 				r = astNewCONV( ldtype, l->subtype, r )
 				if( r = NULL ) then
 					exit function

@@ -225,7 +225,6 @@ function astLoadCONST _
 	) as IRVREG ptr
 
 	dim as integer dtype = any
-	dim as FBSYMBOL ptr s = any
 
 	if( ast.doemit ) then
 		dtype = n->dtype
@@ -233,17 +232,16 @@ function astLoadCONST _
 		select case dtype
 		'' longint?
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			return irAllocVRIMM64( dtype, n->con.val.long )
+			return irAllocVrImm64( dtype, n->con.val.long )
 
-		'' if node is a float, create a temp float var (x86 assumption)
+		'' floating-point?
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			s = symbAllocFloatConst( n->con.val.float, dtype )
-			return irAllocVRVAR( dtype, s, symbGetOfs( s ) )
+			return irAllocVrImmF( dtype, n->con.val.float )
 
 		'' long?
 		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = len( integer ) ) then
-				return irAllocVRIMM( dtype, n->con.val.int )
+				return irAllocVrImm( dtype, n->con.val.int )
 			else
 				'' !!!FIXME!!! cross-compilation 32-bit -> 64-bit
 				errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )

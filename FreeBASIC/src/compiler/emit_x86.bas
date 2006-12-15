@@ -561,9 +561,9 @@ private sub hPrepOperand _
 
 	case IR_VREGTYPE_IMM
 		if( isaux = FALSE ) then
-			operand = str( vreg->value )
+			operand = str( vreg->value.int )
 		else
-			operand = str( vreg->vaux->value )
+			operand = str( vreg->vaux->value.int )
 		end if
 
 	case else
@@ -1527,7 +1527,7 @@ private sub _emitALIGN _
 
     dim ostr as string
 
-    ostr = ".balign " + str( vreg->value )
+    ostr = ".balign " + str( vreg->value.int )
 	outp( ostr )
 
 end sub
@@ -1540,10 +1540,10 @@ private sub _emitSTKALIGN _
 
     dim ostr as string
 
-    if( vreg->value > 0 ) then
-    	ostr = "sub esp, " + str( vreg->value )
+    if( vreg->value.int > 0 ) then
+    	ostr = "sub esp, " + str( vreg->value.int )
     else
-    	ostr = "add esp, " + str( -vreg->value )
+    	ostr = "add esp, " + str( -vreg->value.int )
     end if
 
 	outp( ostr )
@@ -1680,7 +1680,7 @@ private sub _emitRET _
 
     dim ostr as string
 
-    ostr = "ret " + str( vreg->value )
+    ostr = "ret " + str( vreg->value.int )
     outp( ostr )
 
 end sub
@@ -1785,7 +1785,7 @@ private sub _emitSTORI2L _
 		hMOV dst1, src1
 
 		'' negative?
-		if( symbIsSigned( svreg->dtype ) and (svreg->value and &h80000000) ) then
+		if( symbIsSigned( svreg->dtype ) and (svreg->value.int and &h80000000) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -2340,7 +2340,7 @@ private sub _emitLOADI2L _
         hMOV dst1, src1
 
 		'' negative?
-		if( symbIsSigned( svreg->dtype ) and (svreg->value and &h80000000) ) then
+		if( symbIsSigned( svreg->dtype ) and (svreg->value.int and &h80000000) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -2918,7 +2918,7 @@ private sub _emitADDI _
 	doinc = FALSE
 	dodec = FALSE
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		select case svreg->value
+		select case svreg->value.int
 		case 1
 			doinc = TRUE
 		case -1
@@ -3004,7 +3004,7 @@ private sub _emitSUBI _
 	doinc = FALSE
 	dodec = FALSE
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		select case svreg->value
+		select case svreg->value.int
 		case 1
 			dodec = TRUE
 		case -1
@@ -3790,7 +3790,7 @@ private sub hSHIFTL _
 	'' immediate
 	else
 
-		if( svreg->value < 32 ) then
+		if( svreg->value.int < 32 ) then
 			if( op = AST_OP_SHL ) then
 				outp "shld edx, eax, " + src
 				outp mnemonic + " eax, " + src
@@ -3799,8 +3799,8 @@ private sub hSHIFTL _
 				outp mnemonic + " edx, " + src
 			end if
 
-		elseif( svreg->value > 32 ) then
-			src = str( svreg->value - 32 )
+		elseif( svreg->value.int > 32 ) then
+			src = str( svreg->value.int - 32 )
 			if( op = AST_OP_SHL ) then
 				outp "mov edx, eax"
 				outp "xor eax, eax"
@@ -4395,7 +4395,7 @@ private sub hCMPI _
 	'' optimize "cmp" to "test"
 	dotest = FALSE
 	if( (svreg->typ = IR_VREGTYPE_IMM) and (dvreg->typ = IR_VREGTYPE_REG) ) then
-		if( svreg->value = 0 ) then
+		if( svreg->value.int = 0 ) then
 			dotest = TRUE
 		end if
 	end if
@@ -6102,7 +6102,7 @@ end sub
 
 #define EMIT_CBENTRY(op) @_emit##op##
 
-	'' same order as EMIT_NODEOP_ENUM
+	'' same order as EMIT_NODEOP
 	dim shared _opFnTB(0 to EMIT_MAXOPS-1) as any ptr => _
 	{ _
 		EMIT_CBENTRY(LOADI2I), EMIT_CBENTRY(LOADF2I), EMIT_CBENTRY(LOADL2I), _
@@ -6200,9 +6200,16 @@ private function _init _
 	emit.keyinited 	= FALSE
 
 	''
-	emit.dataend = 0
 	emit.lastsection = INVALID
 	emit.lastpriority = INVALID
+
+	''
+	irSetOption( IR_OPT_FPU_STACK or _
+				 IR_OPT_CPU_BOPSELF or _
+				 IR_OPT_CPU_BOPSETFLAGS or _
+				 IR_OPT_ADDRCISC or _
+				 IR_OPT_REUSEOPER or _
+				 IR_OPT_IMMOPER )
 
     ''
 	edbgInit( )

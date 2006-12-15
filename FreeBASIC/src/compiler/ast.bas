@@ -30,7 +30,6 @@
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\list.bi"
-#include once "inc\emit.bi"
 #include once "inc\ir.bi"
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
@@ -1265,25 +1264,37 @@ function astUpdComp2Branch _
 
 		return n
 
-	'' binary op that sets the flags? (x86 opt, may work on some RISC cpu's)
+	'' binary op that sets the flags?
 	case AST_OP_ADD, AST_OP_SUB, AST_OP_SHL, AST_OP_SHR, _
 		 AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_IMP
 		 ', AST_OP_EQV -- NOT doesn't set any flags, so EQV can't be optimized (x86 assumption)
 
-		'' x86-quirk: only if integers, as FPU will set its own flags, that must copied back
+		dim as integer doopt = any
+
 		if( symbGetDataClass( dtype ) = FB_DATACLASS_INTEGER ) then
-            '' can't be done with longints either, as flag is set twice
-            if( (dtype <> FB_DATATYPE_LONGINT) and (dtype <> FB_DATATYPE_ULONGINT) ) then
+			doopt = irGetOption( IR_OPT_CPU_BOPSETFLAGS )
 
-				'' check if zero (ie= FALSE)
-				if( isinverse = FALSE ) then
-					op = AST_OP_JEQ
-				else
-					op = AST_OP_JNE
-				end if
-
-				return astNewBRANCH( op, label, n )
+			if( doopt ) then
+				select case dtype
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+					'' can't be done with longints either, as flag is set twice
+					doopt = irGetOption( IR_OPT_CPU_64BITREGS )
+				end select
 			end if
+
+		else
+			doopt = irGetOption( IR_OPT_FPU_BOPSETFLAGS )
+		end if
+
+		if( doopt ) then
+			'' check if zero (ie= FALSE)
+			if( isinverse = FALSE ) then
+				op = AST_OP_JEQ
+			else
+				op = AST_OP_JNE
+			end if
+
+			return astNewBRANCH( op, label, n )
 		end if
 
 	end select
@@ -2160,7 +2171,7 @@ function astCheckConst _
 	dim as ulongint ulval
 	dim as double dval, dmin, dmax
 
-	'' x86 assumptions
+	'' x86/32-bit assumptions
 
     select case as const dtype
     case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE

@@ -24,14 +24,15 @@
 #include once "inc\ast.bi"
 #include once "inc\ir.bi"
 
-const EMIT_INITNODES	= 1024
-const EMIT_INITVREGNODES= EMIT_INITNODES*4
+const EMIT_INITNODES	= 2048
+const EMIT_INITVREGNODES= EMIT_INITNODES*3
 
 '#ifdef TARGET_X86
 const EMIT_REGCLASSES	= 2						'' assuming FB_DATACLASS_ will start at 0!
 '#endif
 
-enum EMIT_NODEOP_ENUM
+'' if changed, update the _opFnTB() arrays at emit_*.bas
+enum EMIT_NODEOP
 	'' load
 	EMIT_OP_LOADI2I, EMIT_OP_LOADF2I, EMIT_OP_LOADL2I
 	EMIT_OP_LOADI2F, EMIT_OP_LOADF2F, EMIT_OP_LOADL2F
@@ -248,7 +249,7 @@ type EMIT_DBGCB as sub( byval sym as FBSYMBOL ptr, _
 						byval lnum as integer, _
 						byval pos as integer )
 
-
+'' if changed, update the _vtbl symbols at emit_*.bas::*_ctor
 type EMIT_VTBL
 	init as function _
 	( _
@@ -374,8 +375,6 @@ type EMITCTX
 	regUsedTB(EMIT_REGCLASSES-1) 		as REG_FREETB       '' keep track of register usage
 
 	'' platform-dependent
-	dataend								as integer
-
 	lastsection							as integer
 	lastpriority                        as integer
 

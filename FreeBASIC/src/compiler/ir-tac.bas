@@ -18,16 +18,6 @@
 
 '' intermediate representation - three-address-codes module
 ''
-'' obs: 1) the 3-addr-codes are optimized to 2-address, what helps generating better
-''         code for CISC, but that will make porting to other CPUs (r-i-g-h-t) hard to do
-''		2) operand 2 is never loaded if it's an immediate or variable, again
-''         'cause the CISC arch, where every (almost) operation accepts an imm/var src
-''      3) stream is flushed on any LABEL, JUMP or CALL emited, as there's no CFG
-''         (Control-Flow-Graph), so the optimizations are only done inside each block
-''      4) when the 3-addr-code stream is flushed, it's first sent to DAG, where
-''         common sub-expressions inside the basic block are eliminated and virtual regs
-''         are re-assigned; when the DAG returns, the code is converted to machine-code
-''
 '' chng: sep/2004 written [v1ctor]
 
 
@@ -269,7 +259,7 @@ private sub hLoadIDX _
 		exit sub
 	end if
 
-	'' x86 assumption: don't load immediates to registers
+	'' don't load immediates to registers
 	if( vi->typ = IR_VREGTYPE_IMM ) then
 		exit sub
 	end if
@@ -977,9 +967,9 @@ private function hNewVR _
 	( _
 		byval dtype as integer, _
 		byval vtype as integer _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-	dim as IRVREG ptr v
+	dim as IRVREG ptr v = any
 
 	if( dtype > FB_DATATYPE_POINTER ) then
 		dtype = FB_DATATYPE_POINTER
@@ -1007,18 +997,18 @@ end function
 private function _allocVreg _
 	( _
 		byval dtype as integer _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-	dim as IRVREG ptr vr
+	dim as IRVREG ptr vr = any
 
 	vr = hNewVR( dtype, IR_VREGTYPE_REG )
-
-	function = vr
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
 		 vr->vaux = hNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_REG )
 	end if
+
+	function = vr
 
 end function
 
@@ -1027,21 +1017,21 @@ private function _allocVrImm _
 	( _
 		byval dtype as integer, _
 		byval value as integer _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-	dim as IRVREG ptr vr
+	dim as IRVREG ptr vr = any
 
 	vr = hNewVR( dtype, IR_VREGTYPE_IMM )
 
-	function = vr
-
-	vr->value = value
+	vr->value.int = value
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
 		 vr->vaux = hNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_IMM )
-		 vr->vaux->value = 0
+		 vr->vaux->value.int = 0
 	end if
+
+	function = vr
 
 end function
 
@@ -1050,20 +1040,43 @@ private function _allocVrImm64 _
 	( _
 		byval dtype as integer, _
 		byval value as longint _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-	dim as IRVREG ptr vr
+	dim as IRVREG ptr vr = any
 
 	vr = hNewVR( dtype, IR_VREGTYPE_IMM )
 
-	function = vr
-
-	vr->value = cuint( value )
+	vr->value.int = cuint( value )
 
 	'' aux
 	vr->vaux = hNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_IMM )
 
-	vr->vaux->value = cint( value shr 32 )
+	vr->vaux->value.int = cint( value shr 32 )
+
+	function = vr
+
+end function
+
+'':::::
+private function _allocVrImmF _
+	( _
+		byval dtype as integer, _
+		byval value as double _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = any
+
+	'' the FPU doesn't support immediates? create a temp const var..
+	if( irGetOption( IR_OPT_FPU_IMMOPER ) = FALSE ) then
+		dim as FBSYMBOL ptr s = symbAllocFloatConst( value, dtype )
+		return irAllocVRVAR( dtype, s, symbGetOfs( s ) )
+	end if
+
+	vr = hNewVR( dtype, IR_VREGTYPE_IMM )
+
+	vr->value.float = value
+
+	function = vr
 
 end function
 
@@ -1073,13 +1086,11 @@ private function _allocVrVar _
 		byval dtype as integer, _
 		byval symbol as FBSYMBOL ptr, _
 		byval ofs as integer _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-	dim as IRVREG ptr vr, va
+	dim as IRVREG ptr vr = any, va = any
 
 	vr = hNewVR( dtype, IR_VREGTYPE_VAR )
-
-	function = vr
 
 	vr->sym = symbol
 	vr->ofs = ofs
@@ -1091,6 +1102,8 @@ private function _allocVrVar _
 		va->ofs = ofs + FB_INTEGERSIZE
 	end if
 
+	function = vr
+
 end function
 
 '':::::
@@ -1101,13 +1114,11 @@ private function _allocVrIdx _
 		byval ofs as integer, _
 		byval mult as integer, _
 		byval vidx as IRVREG ptr _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-	dim as IRVREG ptr vr, va
+	dim as IRVREG ptr vr = any, va = any
 
 	vr = hNewVR( dtype, IR_VREGTYPE_IDX )
-
-	function = vr
 
 	vr->sym = symbol
 	vr->ofs = ofs
@@ -1121,6 +1132,8 @@ private function _allocVrIdx _
 		va->ofs = ofs + FB_INTEGERSIZE
 	end if
 
+	function = vr
+
 end function
 
 '':::::
@@ -1129,13 +1142,11 @@ private function _allocVrPtr _
 		byval dtype as integer, _
 		byval ofs as integer, _
 		byval vidx as IRVREG ptr _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-	dim as IRVREG ptr vr, va
+	dim as IRVREG ptr vr = any, va = any
 
 	vr = hNewVR( dtype, IR_VREGTYPE_PTR )
-
-	function = vr
 
 	vr->ofs = ofs
 	vr->mult = 1
@@ -1148,6 +1159,8 @@ private function _allocVrPtr _
 		va->ofs = ofs + FB_INTEGERSIZE
 	end if
 
+	function = vr
+
 end function
 
 '':::::
@@ -1156,16 +1169,16 @@ private function _allocVrOfs _
 		byval dtype as integer, _
 		byval symbol as FBSYMBOL ptr, _
 		byval ofs as integer _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-	dim as IRVREG ptr vr
+	dim as IRVREG ptr vr = any
 
 	vr = hNewVR( dtype, IR_VREGTYPE_OFS )
 
-	function = vr
-
 	vr->sym = symbol
 	vr->ofs = ofs
+
+	function = vr
 
 end function
 
@@ -1176,10 +1189,10 @@ private sub hRename _
 	( _
 		byval vold as IRVREG ptr, _
 		byval vnew as IRVREG ptr _
-	) static
+	)
 
-    dim as IRTACVREG ptr t
-    dim as IRVREG ptr v
+    dim as IRTACVREG ptr t = any
+    dim as IRVREG ptr v = any
 
 	'' reassign tac table vregs
 	'' (assuming res, v1 and v2 will never point to the same vreg!)
@@ -1203,19 +1216,18 @@ end sub
 private sub hReuse _
 	( _
 		byval t as IRTAC ptr _
-	) static
+	)
 
-    dim as IRVREG ptr v1, v2, vr
-    dim as integer v1_dtype, v1_dclass, v1_typ
-    dim as integer v2_dtype, v2_dclass, v2_typ
-    dim as integer vr_dtype, vr_dclass, vr_typ
-    dim as integer op, v1rename, v2rename
-    dim as IRTACVREG ptr tmp
+    dim as IRVREG ptr v1 = any, v2 = any, vr = any
+    dim as integer v1_dtype = any, v1_dclass = any, v1_typ = any
+    dim as integer v2_dtype = any, v2_dclass = any, v2_typ = any
+    dim as integer vr_dtype = any, vr_dclass = any, vr_typ = any
+    dim as integer op = any
 
-	op	 = t->op
-	v1   = t->v1.reg.vreg
-	v2   = t->v2.reg.vreg
-	vr   = t->vr.reg.vreg
+	op = t->op
+	v1 = t->v1.reg.vreg
+	v2 = t->v2.reg.vreg
+	vr = t->vr.reg.vreg
 
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
@@ -1232,6 +1244,7 @@ private sub hReuse _
 		end if
 
 	case AST_NODECLASS_BOP, AST_NODECLASS_COMP
+		dim as integer v1rename = any, v2rename = any
 
 		if( vr = NULL ) then
 			exit sub
@@ -2718,6 +2731,7 @@ function irTAC_ctor _
 		@_allocVreg, _
 		@_allocVrImm, _
 		@_allocVrImm64, _
+		@_allocVrImmF, _
 		@_allocVrVar, _
 		@_allocVrIdx, _
 		@_allocVrPtr, _

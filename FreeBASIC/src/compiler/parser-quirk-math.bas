@@ -130,7 +130,6 @@ function cMathFunct _
 
 		hMatchRPRNT( )
 
-		'' hack! implemented as Binary OP for better speed on x86's
 		funcexpr = astNewBOP( AST_OP_ATAN2, expr, expr2 )
 		if( funcexpr = NULL ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then

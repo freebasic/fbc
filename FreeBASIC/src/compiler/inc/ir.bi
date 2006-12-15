@@ -19,9 +19,8 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-const IR_INITVREGNODES		= 1024
-
 const IR_INITADDRNODES		= 2048
+const IR_INITVREGNODES		= IR_INITADDRNODES*3
 
 const IR_MAXDIST			= 2147483647
 
@@ -81,7 +80,7 @@ type IRVREG
 	dtype		as FB_DATATYPE					'' CHAR, INTEGER, ...
 
 	reg			as integer						'' reg
-	value		as integer						'' imm value (hi-word of longint's at vaux->value)
+	value		as FBVALUE						'' imm value (hi-word of longint's at vaux->value)
 
 	sym			as FBSYMBOL ptr					'' symbol
 	ofs			as integer						'' +offset
@@ -95,6 +94,7 @@ type IRVREG
 	taclast		as IRTAC ptr					'' /
 end type
 
+'' if changed, update the _vtbl symbols at ir-*.bas::*_ctor
 type IR_VTBL
 	init as function _
 	( _
@@ -416,6 +416,12 @@ type IR_VTBL
 		byval value as longint _
 	) as IRVREG ptr
 
+	allocVrImmF as function _
+	( _
+		byval dtype as integer, _
+		byval value as double _
+	) as IRVREG ptr
+
 	allocVrVar as function _
 	( _
 		byval dtype as integer, _
@@ -470,10 +476,28 @@ type IR_VTBL
 	)
 end type
 
+enum IR_OPT
+	IR_OPT_FPU_CONVERTOPER	= &h00000001			'' always convert operands
+	IR_OPT_FPU_LOADOPER		= &h00000001			'' always load operands
+	IR_OPT_FPU_IMMOPER		= &h00000002			'' allow floating-point immediates
+	IR_OPT_FPU_STACK		= &h00000004			'' stacked
+	IR_OPT_FPU_BOPSETFLAGS	= &h00000008			'' allow op vr1, vr2 : j## label
+	IR_OPT_FPU_BOPSELF		= &h00000010			'' allow op= vr
+
+	IR_OPT_CPU_LOADOPER		= &h00001000
+	IR_OPT_CPU_BOPSELF		= &h00002000
+	IR_OPT_CPU_BOPSETFLAGS	= &h00004000
+	IR_OPT_CPU_64BITREGS	= &h00008000			'' 64-bit wide registers
+
+	IR_OPT_ADDRCISC			= &h01000000			'' complex addressing modes (base+idx*mul)
+	IR_OPT_REUSEOPER        = &h02000000			'' reuse destine operand
+	IR_OPT_IMMOPER          = &h04000000			'' allow immediate operators
+end enum
+
 type IRCTX
 	inited			as integer
-
 	vtbl			as IR_VTBL
+	options			as IR_OPT
 end type
 
 ''
@@ -501,19 +525,25 @@ declare function irGetVRDataSize _
 ''
 '' macros
 ''
-#define irAllocVREG(dtype) ir.vtbl.allocVreg( dtype )
+#define irGetOption( op ) ((ir.options and op) <> 0)
 
-#define irAllocVRIMM(dtype, value) ir.vtbl.allocVrImm( dtype, value )
+#define irSetOption( op ) ir.options or= op
 
-#define irAllocVRIMM64(dtype, value) ir.vtbl.allocVrImm64( dtype, value )
+#define irAllocVreg(dtype) ir.vtbl.allocVreg( dtype )
 
-#define irAllocVRVAR(dtype, sym, ofs) ir.vtbl.allocVrVar( dtype, sym, ofs )
+#define irAllocVrImm(dtype, value) ir.vtbl.allocVrImm( dtype, value )
 
-#define irAllocVRIDX(dtype, sym, ofs, mult, vidx) ir.vtbl.allocVrIdx( dtype, sym, ofs, mult, vidx )
+#define irAllocVrImm64(dtype, value) ir.vtbl.allocVrImm64( dtype, value )
 
-#define irAllocVRPTR(dtype, ofs, vidx) ir.vtbl.allocVrPtr( dtype, ofs, vidx )
+#define irAllocVrImmF(dtype, value) ir.vtbl.allocVrImmF( dtype, value )
 
-#define irAllocVROFS(dtype, sym, ofs) ir.vtbl.allocVrOfs( dtype, sym, ofs )
+#define irAllocVrVar(dtype, sym, ofs) ir.vtbl.allocVrVar( dtype, sym, ofs )
+
+#define irAllocVrIdx(dtype, sym, ofs, mult, vidx) ir.vtbl.allocVrIdx( dtype, sym, ofs, mult, vidx )
+
+#define irAllocVrPtr(dtype, ofs, vidx) ir.vtbl.allocVrPtr( dtype, ofs, vidx )
+
+#define irAllocVrOfs(dtype, sym, ofs) ir.vtbl.allocVrOfs( dtype, sym, ofs )
 
 #define irProcBegin(proc) ir.vtbl.procBegin( proc )
 

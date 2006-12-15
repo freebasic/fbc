@@ -24,19 +24,9 @@
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\ast.bi"
-#include once "inc\emit.bi"
 #include once "inc\rtl.bi"
 
-
-type RTLDATA_CTX
-	datainited		as integer
-	lastlabel		as FBSYMBOL ptr
-    labelcnt 		as integer
-end type
-
 '' globals
-	dim shared ctx as RTLDATA_CTX
-
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to 15 ) = _
 	{ _
 		/' fb_DataRestore ( byval labeladdrs as void ptr ) as void '/ _
@@ -228,11 +218,6 @@ end type
 sub rtlDataModInit( )
 
 	rtlAddIntrinsicProcs( @funcdata(0) )
-
-	''
-	ctx.datainited	= FALSE
-	ctx.lastlabel	= NULL
-    ctx.labelcnt 	= 0
 
 end sub
 

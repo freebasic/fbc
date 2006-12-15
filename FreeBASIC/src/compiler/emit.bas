@@ -203,8 +203,8 @@ private function hNewVR _
 		byval v as IRVREG ptr _
 	) as IRVREG ptr
 
-    dim as IRVREG ptr n
-    dim as integer dclass
+    dim as IRVREG ptr n = any
+    dim as integer dclass = any
 
 	if( v = NULL ) then
 		return NULL
@@ -227,8 +227,8 @@ private function hNewVR _
 	end if
 
 	'' recursive
-	n->vaux  = hNewVR( v->vaux )
-	n->vidx  = hNewVR( v->vidx )
+	n->vaux = hNewVR( v->vaux )
+	n->vidx = hNewVR( v->vidx )
 
 	function = n
 
@@ -1321,10 +1321,12 @@ function emitALIGN _
 	( _
 		byval bytes as integer _
 	) as EMIT_NODE ptr static
+
     static as IRVREG vr
 
-	vr.typ   = IR_VREGTYPE_IMM
-	vr.value = bytes
+	vr.typ = IR_VREGTYPE_IMM
+	vr.value.int = bytes
+
 	function = hNewUOP( EMIT_OP_ALIGN, @vr )
 
 end function
@@ -1336,8 +1338,9 @@ function emitSTACKALIGN _
 	) as EMIT_NODE ptr static
     static as IRVREG vr
 
-	vr.typ   = IR_VREGTYPE_IMM
-	vr.value = bytes
+	vr.typ = IR_VREGTYPE_IMM
+	vr.value.int = bytes
+
 	function = hNewUOP( EMIT_OP_STKALIGN, @vr )
 
 end function
@@ -1413,8 +1416,9 @@ function emitRET _
 	) as EMIT_NODE ptr static
     static as IRVREG vr
 
-	vr.typ   = IR_VREGTYPE_IMM
-	vr.value = bytestopop
+	vr.typ = IR_VREGTYPE_IMM
+	vr.value.int = bytestopop
+
 	function = hNewUOP( EMIT_OP_RET, @vr )
 
 end function

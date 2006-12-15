@@ -1126,13 +1126,16 @@ function astNewBOP _
 		end if
 
 		if( rdclass <> FB_DATACLASS_FPOINT ) then
-			'' x86 assumption: if it's an int var, let the FPU do it
-			if( (r->class = AST_NODECLASS_VAR) and (rdtype = FB_DATATYPE_INTEGER) ) then
-				rdtype = FB_DATATYPE_DOUBLE
+			if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
+				r = astNewCONV( FB_DATATYPE_DOUBLE, NULL, r )
 			else
-				rdtype = FB_DATATYPE_DOUBLE
-				r = astNewCONV( rdtype, NULL, r )
+				'' if it's an int var, let the FPU do it
+				if( (r->class <> AST_NODECLASS_VAR) or (rdtype <> FB_DATATYPE_INTEGER) ) then
+					r = astNewCONV( FB_DATATYPE_DOUBLE, NULL, r )
+				end if
 			end if
+
+			rdtype = FB_DATATYPE_DOUBLE
 			rdclass = FB_DATACLASS_FPOINT
 		end if
 

@@ -935,61 +935,61 @@ private sub hOptConstIDX _
 	if( n->class = AST_NODECLASS_IDX ) then
 		l = n->l
 		if( l <> NULL ) then
-			'' x86 assumption: if top of tree = idx * lgt, and lgt < 10,
-			''                 save lgt and delete the * node
+			'' if top of tree = idx * lgt, and lgt < 10, save lgt and delete the * node
 			if( l->class = AST_NODECLASS_BOP ) then
 				if( l->op.op = AST_OP_MUL ) then
 					lr = l->r
 					if( lr->defined ) then
+						if( irGetOption( IR_OPT_ADDRCISC ) ) then
+							select case as const lr->dtype
+							case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+								c = cint( lr->con.val.long )
 
-						select case as const lr->dtype
-						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-							c = cint( lr->con.val.long )
+							case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+								c = cint( lr->con.val.float )
 
-						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-							c = cint( lr->con.val.float )
+        					case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+        						if( FB_LONGSIZE = len( integer ) ) then
+        							c = cint( lr->con.val.int )
+        						else
+        							c = cint( lr->con.val.long )
+        						end if
 
-        				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-        					if( FB_LONGSIZE = len( integer ) ) then
-        						c = cint( lr->con.val.int )
-        					else
-        						c = cint( lr->con.val.long )
-        					end if
-
-						case else
-							c = cint( lr->con.val.int )
-						end select
-
-						if( c < 10 ) then
-							select case as const c
-							case 6, 7
-								delnode = FALSE
-							case 3, 5, 9
-								delnode = TRUE
-								'' not possible if there's already an index (EBP)
-								s = astGetSymbol( n->r )
-								if( symbIsParam( s ) ) then
-									delnode = FALSE
-								elseif( symbIsLocal( s ) ) then
-									if( symbIsStatic( s ) = FALSE ) then
-										delnode = FALSE
-									end if
-								end if
 							case else
-								delnode = TRUE
+								c = cint( lr->con.val.int )
 							end select
 
-				    		if( delnode ) then
-				    			n->idx.mult = c
+							if( c < 10 ) then
+								select case as const c
+								case 6, 7
+									delnode = FALSE
+								case 3, 5, 9
+									delnode = TRUE
+									'' not possible if there's already an index (EBP)
+									s = astGetSymbol( n->r )
+									if( symbIsParam( s ) ) then
+										delnode = FALSE
+									elseif( symbIsLocal( s ) ) then
+										if( symbIsStatic( s ) = FALSE ) then
+											delnode = FALSE
+										end if
+									end if
+								case else
+									delnode = TRUE
+								end select
 
-								'' relink
-								n->l = l->l
+				    			if( delnode ) then
+				    				n->idx.mult = c
 
-				    			'' del const node and the BOP itself
-				    			astDelNode( lr )
-								astDelNode( l )
+									'' relink
+									n->l = l->l
 
-								l = n->l
+				    				'' del const node and the BOP itself
+				    				astDelNode( lr )
+									astDelNode( l )
+
+									l = n->l
+								end if
 							end if
 						end if
 				    end if
@@ -1367,7 +1367,7 @@ private function hOptNullOp _
 end function
 
 '':::::
-private function hOptRemConv _
+private function hDoOptRemConv _
 	( _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
@@ -1375,11 +1375,7 @@ private function hOptRemConv _
 	dim as ASTNODE ptr l = any, r = any
 	dim as integer dorem = any
 
-	if( n = NULL ) then
-		return NULL
-	end if
-
-	'' '' x86 assumption: convert l{float} op cast(float, r{var}) to l op r
+	'' convert l{float} op cast(float, r{var}) to l op r
 	if( n->class = AST_NODECLASS_BOP ) then
 		select case n->dtype
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
@@ -1419,15 +1415,33 @@ private function hOptRemConv _
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		n->l = hOptRemConv( l )
+		n->l = hDoOptRemConv( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		n->r = hOptRemConv( r )
+		n->r = hDoOptRemConv( r )
 	end if
 
 	function = n
+
+end function
+
+'':::::
+private function hOptRemConv _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
+		return n
+	end if
+
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	function = hDoOptRemConv( n )
 
 end function
 
@@ -1703,20 +1717,26 @@ function astOptAssignment _
 		return hOptStrAssignment( n, l, r )
 	end select
 
-	'' integer's only, no way to optimize with a FPU stack (x86 assumption)
-	dclass = symbGetDataClass( dtype )
-	if( dclass <> FB_DATACLASS_INTEGER ) then
 
-		'' try to optimize if a constant is being assigned to a float var
-  		if( r->defined ) then
-  			if( dclass = FB_DATACLASS_FPOINT ) then
-				if( symbGetDataClass( r->dtype ) <> FB_DATACLASS_FPOINT ) then
-					n->r = astNewCONV( dtype, NULL, r )
-				end if
-			end if
+	dclass = symbGetDataClass( dtype )
+	if( dclass = FB_DATACLASS_INTEGER ) then
+		if( irGetOption( IR_OPT_CPU_BOPSELF ) = FALSE ) then
+			exit function
 		end if
 
-		exit function
+	else
+		if( irGetOption( IR_OPT_FPU_BOPSELF ) = FALSE ) then
+			'' try to optimize if a constant is being assigned to a float var
+  			if( r->defined ) then
+  				if( dclass = FB_DATACLASS_FPOINT ) then
+					if( symbGetDataClass( r->dtype ) <> FB_DATACLASS_FPOINT ) then
+						n->r = astNewCONV( dtype, NULL, r )
+					end if
+				end if
+			end if
+
+			exit function
+		end if
 	end if
 
 	'' can't be byte either, as BOP will do cint(byte) op cint(byte)
