@@ -78,7 +78,7 @@ private function _linkFiles as integer
 
 	'' add extension
 	if( fbc.outaddext ) then
-		select case fbc.outtype
+		select case fbGetOption( FB_COMPOPT_OUTTYPE )
 		case FB_OUTTYPE_EXECUTABLE
 			fbc.outname += ".exe"
 		end select
@@ -92,7 +92,7 @@ private function _linkFiles as integer
         ldcline += " -Map " + fbc.mapfile
     end if
 
-	if( fbc.debug = FALSE ) then
+	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 		ldcline += " --strip-all"
 	end if
 
@@ -129,12 +129,8 @@ private function _linkFiles as integer
 
     '' add libraries from cmm-line and found when parsing
     for i = 0 to fbc.libs-1
-    	libname = fbc.liblist(i)
-
-    	if( len( libname ) > 0 ) then
-    		ldcline += "-l" + libname + " "
-    	end if
-    next i
+    	ldcline += "-l" + fbc.liblist(i) + " "
+    next
 
 	'' add gmon if profiling is enabled
 	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
@@ -160,10 +156,13 @@ private function _linkFiles as integer
     end if
 
     '' xbe title
-    if len(xbe_title) = 0 then xbe_title = hStripExt(fbc.outname)
+    if( len(xbe_title) = 0 ) then
+    	xbe_title = hStripExt(fbc.outname)
+    end if
+
     cxbecline = "-TITLE:" + QUOTE + xbe_title + (QUOTE + " ")
 
-    if fbc.debug then
+    if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
     	cxbecline += "-DUMPINFO:" + QUOTE + hStripExt(fbc.outname) + (".cxbe" + QUOTE)
     end if
 
@@ -174,12 +173,12 @@ private function _linkFiles as integer
     cxbecline += " " + QUOTE + fbc.outname + QUOTE
 
     '' don't echo cxbe output
-    if fbc.verbose = FALSE then
+    if( fbc.verbose = FALSE ) then
     	cxbecline += " >nul"
     end if
 
     '' invoke cxbe (exe -> xbe)
-    if (fbc.verbose) then
+    if( fbc.verbose ) then
     	print "cxbe: ", cxbecline
     end if
 

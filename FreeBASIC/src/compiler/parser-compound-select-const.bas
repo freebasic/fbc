@@ -106,8 +106,8 @@ function cSelConstStmtBegin( ) as integer
 	end if
 
 	'' add labels
-	el = symbAddLabel( NULL, FALSE )
-	cl = symbAddLabel( NULL, FALSE )
+	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
+	cl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	'' store expression into a temp var
 	sym = symbAddTempVar( FB_DATATYPE_UINT )
@@ -221,7 +221,7 @@ function cSelConstStmtNext _
 	if( lexGetToken( ) = FB_TK_ELSE ) then
 		lexSkipToken( )
 
-		stk->select.const_.deflabel = symbAddLabel( NULL, TRUE )
+		stk->select.const_.deflabel = symbAddLabel( NULL )
 		astAdd( astNewLABEL( stk->select.const_.deflabel ) )
 
 		'' begin scope
@@ -236,7 +236,7 @@ function cSelConstStmtNext _
 	swtbase = stk->select.const_.base
 
 	'' add label
-	label = symbAddLabel( NULL, FALSE )
+	label = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	do
 		if( cExpression( expr1 ) = FALSE ) then

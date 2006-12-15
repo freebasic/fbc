@@ -66,7 +66,7 @@ private function hCallCtorList _
     dim as ASTNODE ptr tree = any
 
     cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
-    label = symbAddLabel( NULL, TRUE )
+    label = symbAddLabel( NULL )
     iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
 
 	'' iter = @vector[0]
@@ -268,7 +268,7 @@ private function hCallDtorList _
     dim as ASTNODE ptr tree = any, expr = any
 
     cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
-    label = symbAddLabel( NULL, TRUE )
+    label = symbAddLabel( NULL )
     iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
     elmts = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
 

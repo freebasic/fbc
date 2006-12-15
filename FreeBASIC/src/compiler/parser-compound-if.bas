@@ -43,7 +43,7 @@ private function hIfSingleLine _
 	if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 		l = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_LABEL )
 		if( l = NULL ) then
-			l = symbAddLabel( lexGetText( ), FALSE, TRUE )
+			l = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 		end if
 		lexSkipToken( )
 
@@ -125,9 +125,9 @@ function cIfStmtBegin as integer
     end if
 
 	'' add end label (at ENDIF)
-	el = symbAddLabel( NULL, FALSE )
+	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	'' and next label (at ELSE/ELSEIF)
-	nl = symbAddLabel( NULL, FALSE )
+	nl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	'' branch
 	expr = astUpdComp2Branch( expr, nl, FALSE )
@@ -226,7 +226,7 @@ function cIfStmtNext(  ) as integer
 		astAdd( astNewLABEL( stk->if.nxtlabel ) )
 
 		'' add next label (at ELSE/ELSEIF)
-		stk->if.nxtlabel = symbAddLabel( NULL, FALSE )
+		stk->if.nxtlabel = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	    '' Expression
     	if( cExpression( expr ) = FALSE ) then

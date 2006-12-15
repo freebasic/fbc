@@ -27,70 +27,34 @@
 #include once "inc\ir.bi"
 #include once "inc\rtl.bi"
 #include once "inc\emit.bi"
-#include once "inc\emitdbg.bi"
 #include once "inc\symb.bi"
 
-declare sub emitSubInit	_
+declare function emitGasX86_ctor	_
 	( _
-	)
-
-declare sub emitSubEnd _
-	( _
-	)
-
-declare sub emitWriteHeader	_
-	( _
-	)
-
-declare sub emitWriteFooter	_
-	( _
-		byval tottime as double _
-	)
-
-declare sub emitWriteBss _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-declare sub emitWriteConst _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-declare sub emitWriteData _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-declare sub emitWriteExport	_
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-declare sub emitWriteCtorSection _
-	( _
-		byval proc_head as FB_GLOBCTORLIST_ITEM ptr, _
-		byval is_ctor as integer _
-	)
-
+	) as integer
 
 '' globals
 	dim shared emit as EMITCTX
 
 '':::::
-sub emitInit static
+function emitInit _
+	( _
+		byval backend as FB_BACKEND _
+	) as integer
 
 	if( emit.inited ) then
-		exit sub
+		return TRUE
 	end if
 
 	''
-	emitSubInit( )
+	select case backend
+	case FB_BACKEND_GAS
+		emitGasX86_ctor( )
+	end select
 
 	''
 	flistNew( @emit.nodeTB, EMIT_INITNODES, len( EMIT_NODE ) )
 
-	''
 	flistNew( @emit.vregTB, EMIT_INITVREGNODES, len( IRVREG ) )
 
 	''
@@ -98,9 +62,9 @@ sub emitInit static
 	emit.pos = 0
 
 	''
-	edbgInit( )
+	function = emit.vtbl.init( )
 
-end sub
+end function
 
 '':::::
 sub emitEnd static
@@ -109,75 +73,14 @@ sub emitEnd static
 		exit sub
 	end if
 
-	''
-	edbgEnd( )
+	emit.vtbl.end( )
 
-	''
-	emitSubEnd( )
-
-	''
 	emit.inited = FALSE
 
 end sub
 
 '':::::
-function emitOpen( ) as integer
-
-	if( hFileExists( env.outf.name ) ) then
-		kill env.outf.name
-	end if
-
-	env.outf.num = freefile
-	if( open( env.outf.name, for binary, access read write, as #env.outf.num ) <> 0 ) then
-		return FALSE
-	end if
-
-	'' header
-	emitWriteHeader( )
-
-	function = TRUE
-
-end function
-
-'':::::
-sub emitClose _
-	( _
-		byval tottime as double _
-	)
-
-    ''
-    emitWriteFooter( tottime )
-
-	'' const
-	emitWriteConst( symbGetGlobalTbHead( ) )
-
-	'' data
-	emitWriteData( symbGetGlobalTbHead( ) )
-
-	'' bss
-	emitWriteBss( symbGetGlobalTbHead( ) )
-
-	''
-	if( env.clopt.export ) then
-		emitWriteExport( symbGetGlobalTbHead( ) )
-	end if
-
-	''
-	emitWriteCtorSection( symbGetGlobCtorListHead( ), TRUE )
-	emitWriteCtorSection( symbGetGlobDtorListHead( ), FALSE )
-
-	''
-	edbgEmitFooter( )
-
-	''
-	if( close( #env.outf.num ) <> 0 ) then
-		'' ...
-	end if
-
-end sub
-
-'':::::
-sub hWriteStr _
+sub emitWriteStr _
 	( _
 		byval addtab as integer, _
 		byval s as zstring ptr _
@@ -217,8 +120,8 @@ sub emitReset( ) static
 end sub
 
 '':::::
-sub emitFlush( ) static
-    dim as EMIT_NODE ptr n
+sub emitFlush( )
+    dim as EMIT_NODE ptr n = any
 
 	n = flistGetHead( @emit.nodeTB )
 	do while( n <> NULL )
@@ -226,48 +129,52 @@ sub emitFlush( ) static
 		emit.curnode = n
 
 		select case as const n->class
-
 		case EMIT_NODECLASS_BOP
-			cast( EMIT_BOPCB, emit_opfTB(n->bop.op) )( n->bop.dvreg, _
-													   n->bop.svreg )
+			cast( EMIT_BOPCB, emit.opFnTb[n->bop.op] )( n->bop.dvreg, _
+												   		n->bop.svreg )
 
 		case EMIT_NODECLASS_UOP
-			cast( EMIT_UOPCB, emit_opfTB(n->uop.op ) )( n->uop.dvreg )
+			cast( EMIT_UOPCB, emit.opFnTb[n->uop.op ] )( n->uop.dvreg )
 
 		case EMIT_NODECLASS_REL
-			cast( EMIT_RELCB, emit_opfTB(n->rel.op) )( n->rel.rvreg, _
-													   n->rel.label, _
-													   n->rel.dvreg, _
-													   n->rel.svreg )
+			cast( EMIT_RELCB, emit.opFnTb[n->rel.op] )( n->rel.rvreg, _
+												   		n->rel.label, _
+												   		n->rel.dvreg, _
+												   		n->rel.svreg )
 
 		case EMIT_NODECLASS_STK
-			cast( EMIT_STKCB, emit_opfTB(n->stk.op) )( n->stk.vreg, _
-													   n->stk.extra )
+			cast( EMIT_STKCB, emit.opFnTb[n->stk.op] )( n->stk.vreg, _
+												   n->stk.extra )
 
 		case EMIT_NODECLASS_BRC
-			cast( EMIT_BRCCB, emit_opfTB(n->brc.op) )( n->brc.vreg, _
-													   n->brc.sym, _
-													   n->brc.extra )
+			cast( EMIT_BRCCB, emit.opFnTb[n->brc.op] )( n->brc.vreg, _
+												   		n->brc.sym, _
+												   		n->brc.extra )
 
 		case EMIT_NODECLASS_SOP
-			cast( EMIT_SOPCB, emit_opfTB(n->sop.op) )( n->sop.sym )
+			cast( EMIT_SOPCB, emit.opFnTb[n->sop.op] )( n->sop.sym )
 
 		case EMIT_NODECLASS_LIT
-			cast( EMIT_LITCB, emit_opfTB(EMIT_OP_LIT) )( n->lit.text )
+			cast( EMIT_LITCB, emit.opFnTb[EMIT_OP_LIT] )( n->lit.text )
 
 			ZstrFree( n->lit.text )
 
 		case EMIT_NODECLASS_JTB
-			cast( EMIT_JTBCB, emit_opfTB(EMIT_OP_JMPTB) )( n->jtb.dtype, _
-														   n->jtb.text )
+			cast( EMIT_JTBCB, emit.opFnTb[EMIT_OP_JMPTB] )( n->jtb.dtype, _
+													   		n->jtb.text )
 
 			ZstrFree( n->jtb.text )
 
 		case EMIT_NODECLASS_MEM
-			cast( EMIT_MEMCB, emit_opfTB(n->mem.op) )( n->mem.dvreg, _
-													   n->mem.svreg, _
-													   n->mem.bytes, _
-													   n->mem.extra )
+			cast( EMIT_MEMCB, emit.opFnTb[n->mem.op] )( n->mem.dvreg, _
+												   		n->mem.svreg, _
+												   		n->mem.bytes, _
+												   		n->mem.extra )
+
+		case EMIT_NODECLASS_DBG
+			cast( EMIT_DBGCB, emit.opFnTb[n->dbg.op] )( n->dbg.sym, _
+												   		n->dbg.lnum, _
+												   		n->dbg.pos )
 
 		end select
 
@@ -283,69 +190,6 @@ function emitGetRegClass _
 	) as REGCLASS ptr
 
 	function = emit.regTB(dclass)
-
-end function
-
-'':::::
-function emitGetPos as integer static
-
-	function = emit.pos
-
-end function
-
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' procs
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-sub emitProcBegin _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-    proc->proc.ext->stk.localofs = EMIT_LOCSTART
-    proc->proc.ext->stk.localmax = EMIT_LOCSTART
-	proc->proc.ext->stk.argofs = EMIT_ARGSTART
-
-end sub
-
-'':::::
-sub emitProcEnd _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-	'' do nothing
-
-end sub
-
-'':::::
-function emitProcAllocStaticVars _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer static
-
-    function = FALSE
-
-    do while( s <> NULL )
-
-    	select case s->class
-    	'' scope block? recursion..
-    	case FB_SYMBCLASS_SCOPE
-    		emitProcAllocStaticVars( symbGetScopeSymbTbHead( s ) )
-
-    	'' variable?
-    	case FB_SYMBCLASS_VAR
-    		'' static?
-    		if( symbIsStatic( s ) ) then
-				emitDeclVariable( s )
-			end if
-		end select
-
-    	s = s->next
-    loop
-
-    function = TRUE
 
 end function
 
@@ -595,6 +439,28 @@ private function hNewMEM _
 	n->mem.svreg = hNewVR( svreg )
 	n->mem.bytes = bytes
 	n->mem.extra = extra
+
+	function = n
+
+end function
+
+'':::::
+private function hNewDBG _
+	( _
+		byval op as integer, _
+		byval sym as FBSYMBOL ptr, _
+		byval lnum as integer = 0, _
+		byval pos_ as integer = 0 _
+	) as EMIT_NODE ptr static
+
+	dim as EMIT_NODE ptr n
+
+	n = hNewNode( EMIT_NODECLASS_DBG, FALSE )
+
+	n->dbg.op	= op
+	n->dbg.sym	= sym
+	n->dbg.lnum = lnum
+	n->dbg.pos  = pos_
 
 	function = n
 
@@ -1623,4 +1489,51 @@ function emitSTKCLEAR _
 	function = hNewMEM( EMIT_OP_STKCLEAR, NULL, NULL, bytes, baseofs )
 
 end function
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' DBG
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function emitDBGLineBegin _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lnum as integer _
+	) as EMIT_NODE ptr
+
+	function = hNewDBG( EMIT_OP_LINEINI, proc, lnum, emit.pos )
+
+end function
+
+'':::::
+function emitDBGLineEnd _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lnum as integer _
+	) as EMIT_NODE ptr
+
+	function = hNewDBG( EMIT_OP_LINEEND, proc, lnum, emit.pos )
+
+end function
+
+'':::::
+function emitDBGScopeBegin _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as EMIT_NODE ptr
+
+	function = hNewDBG( EMIT_OP_SCOPEINI, sym )
+
+end function
+
+'':::::
+function emitDBGScopeEnd _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as EMIT_NODE ptr
+
+	function = hNewDBG( EMIT_OP_SCOPEEND, sym )
+
+end function
+
 

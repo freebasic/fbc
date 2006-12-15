@@ -88,16 +88,17 @@ private function _linkFiles as integer
 
 	'' add extension
 	if( fbc.outaddext ) then
-		select case fbc.outtype
+		select case fbGetOption( FB_COMPOPT_OUTTYPE )
 		case FB_OUTTYPE_EXECUTABLE
 			fbc.outname += ".exe"
 		end select
 	end if
 
     '' set script file
-    select case fbc.outtype
+    select case fbGetOption( FB_COMPOPT_OUTTYPE )
 	case FB_OUTTYPE_EXECUTABLE
-		ldcline = " -T " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_BIN ) + ("i386go32.x" + QUOTE)
+		ldcline = " -T " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_BIN ) + _
+				  ("i386go32.x" + QUOTE)
 	case else
 		ldcline = ""
 	end select
@@ -106,7 +107,7 @@ private function _linkFiles as integer
         ldcline += " -Map " + fbc.mapfile
     end if
 
-	if( fbc.debug = FALSE ) then
+	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
 			ldcline += " -s"
 		end if
@@ -126,9 +127,11 @@ private function _linkFiles as integer
 
 	'' link with crt0.o (C runtime init) or gcrt0.o for gmon profiling
 	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-		ldcline += " " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + (RSLASH + "gcrt0.o" + QUOTE + " ")
+		ldcline += " " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + _
+				   (RSLASH + "gcrt0.o" + QUOTE + " ")
 	else
-		ldcline += " " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + (RSLASH + "crt0.o" + QUOTE + " ")
+		ldcline += " " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + _
+				   (RSLASH + "crt0.o" + QUOTE + " ")
 	end if
 
     '' add objects from output list
@@ -149,9 +152,7 @@ private function _linkFiles as integer
 
     '' add libraries from cmm-line and found when parsing
     for i = 0 to fbc.libs-1
-		if fbc.outtype = FB_OUTTYPE_EXECUTABLE then
-			ldcline += "-l" + fbc.liblist(i) + " "
-		end if
+		ldcline += "-l" + fbc.liblist(i) + " "
     next
 
 	'' rtlib initialization and termination

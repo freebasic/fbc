@@ -23,9 +23,9 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
-#include once "inc\list.bi"
+#include once "inc\flist.bi"
 #include once "inc\hash.bi"
-#include once "inc\emit.bi"
+#include once "inc\ir.bi"
 
 type FB_MANGLEABBR
 	idx				as integer
@@ -711,7 +711,8 @@ private function hMangleVariable  _
 
 		'' local..
 		else
-			id_str = emitGetFramePtrName( )
+			'' needed because inline-asm..
+			id_str = irProcGetFrameRegName( )
 		end if
 	end if
 

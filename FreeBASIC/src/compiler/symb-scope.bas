@@ -26,7 +26,6 @@
 #include once "inc\parser.bi"
 #include once "inc\list.bi"
 #include once "inc\ast.bi"
-#include once "inc\emit.bi"
 #include once "inc\rtl.bi"
 
 '':::::
@@ -123,7 +122,7 @@ function symbScopeAllocLocals _
     			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
 
 				lgt = s->lgt * symbGetArrayElements( s )
-				s->ofs = emitAllocLocal( parser.currproc, lgt )
+				s->ofs = irProcAllocLocal( parser.currproc, lgt )
 
 				symbSetVarIsAllocated( s )
 

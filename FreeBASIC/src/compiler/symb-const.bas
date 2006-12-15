@@ -92,7 +92,7 @@ function symbAllocFloatConst _
 	'' will be ever allocated over the module
 	s = symbAddVarEx( @id, @id_alias, dtype, NULL, 0, 0, 0, dTB(), _
 					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
-					  FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
+					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
 
 	''
 	s->var.littext = ZstrAllocate( len( svalue ) )
@@ -145,7 +145,7 @@ function symbAllocStrConst _
 	s = symbAddVarEx( @id, @id_alias, FB_DATATYPE_CHAR, NULL, _
 					  0, lgt + 1, 0, dTB(), _
 					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
-					  FB_SYMBOPT_PRESERVECASE )
+					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
 
 	''
 	s->var.littext = ZstrAllocate( strlen )
@@ -198,7 +198,7 @@ function symbAllocWStrConst _
 	s = symbAddVarEx( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, _
 					  0, (lgt+1) * len( wstring ), 0, dTB(), _
 					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
-					  FB_SYMBOPT_PRESERVECASE )
+					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
 
 	''
 	s->var.littextw = WstrAllocate( strlen )

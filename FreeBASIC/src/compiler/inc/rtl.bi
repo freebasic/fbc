@@ -927,33 +927,6 @@ declare function rtlDataRead _
 		byval varexpr as ASTNODE ptr _
 	) as integer
 
-declare sub rtlDataStoreBegin _
-	( _
-	)
-
-declare function rtlDataStore _
-	( _
-		byval littext as zstring ptr, _
-		byval litlen as integer, _
-		byval typ as integer _
-	) as integer
-
-declare function rtlDataStoreW _
-	( _
-		byval littext as wstring ptr, _
-		byval litlen as integer, _
-		byval typ as integer _
-	) as integer
-
-declare function rtlDataStoreOFS _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
-declare sub rtlDataStoreEnd _
-	( _
-	)
-
 declare function rtlMathPow _
 	( _
 		byval xexpr as ASTNODE ptr, _

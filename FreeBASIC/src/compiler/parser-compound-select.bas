@@ -122,7 +122,7 @@ function cSelectStmtBegin as integer
 	end if
 
 	'' add exit label
-	el = symbAddLabel( NULL, FALSE )
+	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	'' store expression into a temp var
 	dtype = astGetDataType( expr )
@@ -189,7 +189,7 @@ function cSelectStmtBegin as integer
 	stk->select.dtype = dtype
 	stk->select.casecnt = 0
 
-	parser.stmt.select.cmplabel = symbAddLabel( NULL, FALSE )
+	parser.stmt.select.cmplabel = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	parser.stmt.select.endlabel = el
 
 	function = TRUE
@@ -383,7 +383,7 @@ function cSelectStmtNext( ) as integer
 		astAdd( astNewBRANCH( AST_OP_JMP, parser.stmt.select.endlabel ) )
 
 		astAdd( astNewLABEL( parser.stmt.select.cmplabel ) )
-		parser.stmt.select.cmplabel = symbAddLabel( NULL, TRUE )
+		parser.stmt.select.cmplabel = symbAddLabel( NULL )
 	end if
 
 	'' ELSE?
@@ -424,13 +424,13 @@ function cSelectStmtNext( ) as integer
 	ctx.base += cnt
 
 	'' add block ini label
-	il = symbAddLabel( NULL, TRUE )
+	il = symbAddLabel( NULL )
 
 	for i = 0 to cnt-1
 
 		if( i < cnt-1 ) then
 			'' add next label
-			nl = symbAddLabel( NULL, FALSE )
+			nl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 		else
 			nl = parser.stmt.select.cmplabel
 		end if

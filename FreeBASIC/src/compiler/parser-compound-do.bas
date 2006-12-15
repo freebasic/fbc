@@ -41,8 +41,8 @@ function cDoStmtBegin as integer
 	lexSkipToken( )
 
 	'' add ini and end labels (will be used by any EXIT DO)
-	il = symbAddLabel( NULL, TRUE )
-	el = symbAddLabel( NULL, FALSE )
+	il = symbAddLabel( NULL )
+	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	'' emit ini label
 	astAdd( astNewLABEL( il ) )
@@ -93,7 +93,7 @@ function cDoStmtBegin as integer
 
 	else
 		expr = NULL
-		cl = symbAddLabel( NULL, FALSE )
+		cl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	end if
 
 	'' push to stmt stack

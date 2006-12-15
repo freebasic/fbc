@@ -32,13 +32,15 @@ declare sub edbgEmitHeader _
 declare sub edbgLineBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval lnum as integer _
+		byval lnum as integer, _
+		byval pos as integer _
 	)
 
 declare sub edbgLineEnd _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval unused as integer _
+		byval lnum as integer, _
+		byval pos as integer _
 	)
 
 declare sub edbgEmitLine _

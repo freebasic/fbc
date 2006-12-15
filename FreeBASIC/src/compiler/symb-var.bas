@@ -28,7 +28,6 @@
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
 #include once "inc\ast.bi"
-#include once "inc\emit.bi"
 
 type FB_SYMVAR_CTX
 	array_dimtype		as FBSYMBOL ptr
@@ -352,8 +351,8 @@ sub symbSetArrayDimTb _
 		dTB() as FBARRAYDIM _
 	)
 
-    dim as integer i
-    dim as FBVARDIM ptr d
+    dim as integer i = any
+    dim as FBVARDIM ptr d = any
 
 	if( dimensions > 0 ) then
 		s->var.array.dif = symbCalcArrayDiff( dimensions, dTB(), s->lgt )
@@ -519,17 +518,16 @@ function symbAddVarEx _
 
 	'' global..
 	else
-		'' inside a namespace and not a literal-constant?
-		if( (symbIsGlobalNamespc( ) = FALSE) and _
-			((attrib and FB_SYMBATTRIB_LITCONST) = 0) ) then
+		symtb = @symbGetGlobalTb( )
+		hashtb = @symbGetGlobalHashTb( )
 
-			symtb = symbGetCompSymbTb( symbGetCurrentNamespc( ) )
-			hashtb = symbGetCompHashTb( symbGetCurrentNamespc( ) )
-
-		'' module-level..
-		else
-			symtb = @symbGetGlobalTb( )
-			hashtb = @symbGetGlobalHashTb( )
+		'' inside a namespace?
+		if( symbIsGlobalNamespc( ) = FALSE ) then
+			'' respect namespaces?
+			if( (options and FB_SYMBOPT_MOVETOGLOB) = 0 ) then
+				symtb = symbGetCompSymbTb( symbGetCurrentNamespc( ) )
+				hashtb = symbGetCompHashTb( symbGetCurrentNamespc( ) )
+			end if
 		end if
 	end if
 
@@ -559,6 +557,10 @@ function symbAddVarEx _
 		end if
 
 		s->var.stmtnum = parser.currproc->proc.ext->stmtnum + 1
+
+	'' move to global?
+	elseif( (options and FB_SYMBOPT_MOVETOGLOB) <> 0 ) then
+		s->scope = FB_MAINSCOPE
 	end if
 
 	function = s
@@ -621,7 +623,7 @@ function symbAddTempVar _
     	'' not static?
     	if( (s->attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
 
-			s->ofs = emitAllocLocal( parser.currproc, s->lgt )
+			s->ofs = irProcAllocLocal( parser.currproc, s->lgt )
 
 		end if
 	end if

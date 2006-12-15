@@ -195,6 +195,35 @@ sub WstrConcatAssignW _
 
 end sub
 
+'':::::
+function ZstrDup _
+	( _
+		byval s as zstring ptr _
+	) as zstring ptr
+
+	dim as zstring ptr dst
+
+	dst = allocate( len( *s ) + 1 )
+	*dst = *s
+
+	function = dst
+
+end function
+
+'':::::
+function WstrDup _
+	( _
+		byval s as wstring ptr _
+	) as wstring ptr
+
+	dim as wstring ptr dst
+
+	dst = allocate( len( *s ) * len( wstring ) + len( wstring ) )
+	*dst = *s
+
+	function = dst
+
+end function
 
 '':::::
 function hReplace _

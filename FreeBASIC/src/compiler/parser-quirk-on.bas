@@ -71,7 +71,7 @@ function cGOTBStmt _
 
 			labelTB(l) = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 			if( labelTB(l) = NULL ) then
-				labelTB(l) = symbAddLabel( lexGetText( ), FALSE, TRUE )
+				labelTB(l) = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 			end if
 
 			lexSkipToken( )
@@ -81,7 +81,7 @@ function cGOTBStmt _
 				exit function
 			else
 			    '' error recovery: fake an label
-				labelTB(l) = symbAddLabel( hMakeTmpStr( ), FALSE, FALSE )
+				labelTB(l) = symbAddLabel( hMakeTmpStr( ), FB_SYMBOPT_NONE )
 			end if
 		end select
 
@@ -232,11 +232,11 @@ function cOnStmt _
 
 			label = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 			if( label = NULL ) then
-				label = symbAddLabel( lexGetText( ), FALSE, TRUE )
+				label = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 			end if
-			
+
 			astScopeBreak( label )
-			
+
 			lexSkipToken( )
 
 			expr = astNewADDROF( astNewVAR( label, 0, FB_DATATYPE_UINT ) )

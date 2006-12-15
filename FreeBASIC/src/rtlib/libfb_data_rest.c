@@ -39,11 +39,11 @@
 #include "fb.h"
 
 
-char *__fb_data_ptr = NULL;
+FB_DATADESC *__fb_data_ptr = NULL;
 
 
 /*:::::*/
-FBCALL void fb_DataRestore( char *labeladdr )
+FBCALL void fb_DataRestore( FB_DATADESC *labeladdr )
 {
 	FB_LOCK();
 

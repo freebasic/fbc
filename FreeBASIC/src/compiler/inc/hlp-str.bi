@@ -43,6 +43,11 @@ declare sub ZstrConcatAssignW _
 		byval src as wstring ptr _
 	)
 
+declare function ZstrDup _
+	( _
+		byval s as zstring ptr _
+	) as zstring ptr
+
 declare sub WstrAssign _
 	( _
 		byval dst as wstring ptr ptr, _
@@ -66,6 +71,12 @@ declare sub WstrConcatAssignW _
 		byval dst as wstring ptr ptr, _
 		byval src as zstring ptr _
 	)
+
+declare function WstrDup _
+	( _
+		byval s as wstring ptr _
+	) as wstring ptr
+
 
 declare function hReEscape _
 	( _

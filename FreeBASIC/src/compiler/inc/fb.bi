@@ -140,6 +140,7 @@ enum FBCOMPOPT_ENUM
 	FB_COMPOPT_SHOWSUSPERRORS
 	FB_COMPOPT_LANG
 	FB_COMPOPT_PEDANTICCHK
+	FB_COMPOPT_BACKEND
 
 	FB_COMPOPTIONS
 end enum
@@ -155,32 +156,8 @@ enum FB_PDCHECK
 	FB_PDCHECK_ALL			= &hffffffff
 end enum
 
-type FBCMMLINEOPT
-	debug			as integer					'' true=add debug info (def= false)
-	cputype			as integer
-	errorcheck		as integer					'' runtime error check (def= false)
-	nostdcall		as integer
-	nounderprefix	as integer					'' don't add underscore's the function names
-	outtype			as integer					'' EXECUTABLE, STATICLIB, DYNAMICLIB, etc
-	resumeerr 		as integer					'' add support for RESUME (def= false)
-	warninglevel	as integer					'' (def = 0)
-	export			as integer					'' export all symbols declared as EXPORT (def= true)
-	nodeflibs		as integer					'' don't include default libs (def= false)
-	showerror		as integer					'' show line giving error (def= true)
-	multithreaded	as integer					'' link against thread-safe runtime library (def= false)
-	profile			as integer					'' build profiling code (def= false)
-	target			as integer					'' target platform
-	extraerrchk		as integer					'' add bounds plus null pointer checking
-	msbitfields		as integer					'' use M$'s bitfields packing
-	maxerrors		as integer					'' max number errors until the parser quit
-	showsusperrors	as integer					'' show suspicious errors (def= false)
-	lang			as integer					'' lang compatibility
-	pdcheckopt		as FB_PDCHECK				'' pedantic checks
-end type
-
-
 '' cpu types
-enum FBCPUTYPE_ENUM
+enum FB_CPUTYPE
 	FB_CPUTYPE_386 = 3
 	FB_CPUTYPE_486
 	FB_CPUTYPE_586
@@ -190,7 +167,7 @@ end enum
 const FB_DEFAULT_CPUTYPE	= FB_CPUTYPE_486
 
 '' output file type
-enum FBOUTTYPE_ENUM
+enum FB_OUTTYPE
 	FB_OUTTYPE_EXECUTABLE
 	FB_OUTTYPE_STATICLIB
 	FB_OUTTYPE_DYNAMICLIB
@@ -200,7 +177,7 @@ end enum
 const FB_DEFAULT_OUTTYPE 	= FB_OUTTYPE_EXECUTABLE
 
 '' target platform
-enum FB_COMPTARGET_ENUM
+enum FB_COMPTARGET
 	FB_COMPTARGET_WIN32
 	FB_COMPTARGET_CYGWIN
 	FB_COMPTARGET_LINUX
@@ -230,6 +207,44 @@ enum FB_LANG
 
 	FB_LANGS
 end enum
+
+const FB_DEFAULT_LANG = FB_LANG_FB
+
+''
+enum FB_BACKEND
+	FB_BACKEND_GAS
+	FB_BACKEND_GCC
+
+	FB_BACKENDS
+end enum
+
+const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
+
+''
+type FBCMMLINEOPT
+	debug			as integer					'' true=add debug info (def= false)
+	cputype			as FB_CPUTYPE
+	errorcheck		as integer					'' runtime error check (def= false)
+	nostdcall		as integer
+	nounderprefix	as integer					'' don't add underscore's the function names
+	outtype			as FB_OUTTYPE
+	resumeerr 		as integer					'' add support for RESUME (def= false)
+	warninglevel	as integer					'' (def = 0)
+	export			as integer					'' export all symbols declared as EXPORT (def= true)
+	nodeflibs		as integer					'' don't include default libs (def= false)
+	showerror		as integer					'' show line giving error (def= true)
+	multithreaded	as integer					'' link against thread-safe runtime library (def= false)
+	profile			as integer					'' build profiling code (def= false)
+	target			as FB_COMPTARGET            '' target platform
+	extraerrchk		as integer					'' add bounds plus null pointer checking
+	msbitfields		as integer					'' use M$'s bitfields packing
+	maxerrors		as integer					'' max number errors until the parser quit
+	showsusperrors	as integer					'' show suspicious errors (def= false)
+	lang			as FB_LANG					'' lang compatibility
+	pdcheckopt		as FB_PDCHECK				'' pedantic checks
+	backend			as FB_BACKEND				'' backend
+end type
+
 
 '' features allowed in the selected language
 enum FB_LANG_OPT

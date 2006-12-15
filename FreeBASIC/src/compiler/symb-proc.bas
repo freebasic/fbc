@@ -28,7 +28,6 @@
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
 #include once "inc\ast.bi"
-#include once "inc\emit.bi"
 
 declare function hMangleFunctionPtr	_
 	( _
@@ -2317,14 +2316,14 @@ function symbProcAllocLocalVars _
     			  				   	FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
 
 					lgt = s->lgt * symbGetArrayElements( s )
-					s->ofs = emitAllocLocal( parser.currproc, lgt )
+					s->ofs = irProcAllocLocal( parser.currproc, lgt )
 
 				'' parameter..
 				else
 					lgt = iif( (s->attrib and FB_SYMBATTRIB_PARAMBYVAL), _
 						   	   s->lgt, _
 						   	   FB_POINTERSIZE )
-					s->ofs = emitAllocArg( parser.currproc, lgt )
+					s->ofs = irProcAllocArg( parser.currproc, lgt )
 
 				end if
 

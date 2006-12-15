@@ -46,7 +46,7 @@ const FB_INTEGERSIZE		= 4
 const FB_POINTERSIZE		= 4
 const FB_LONGSIZE			= FB_POINTERSIZE
 
-''
+'' array descriptor
 type FB_ARRAYDESC
     data			as any ptr
 	ptr				as any ptr
@@ -69,7 +69,7 @@ const FB_ARRAYDESC_DIMLEN	= len( FB_ARRAYDESCDIM )
 const FB_ARRAYDESC_LBOUNDOFS= offsetof( FB_ARRAYDESCDIM, lbound )
 const FB_ARRAYDESC_UBOUNDOFS= offsetof( FB_ARRAYDESCDIM, ubound )
 
-''
+'' string descriptor
 type FB_STRDESC
 	data			as zstring ptr
 	len				as integer
@@ -78,9 +78,28 @@ end type
 
 const FB_STRDESCLEN			= len( FB_STRDESC )
 
-''
-const FB_DATALABELNAME 		= "_{fbdata}_begin"
-const FB_DATALABELPREFIX	= "_{fbdata}_"
+'' DATA stmt internal format
+enum FB_DATASTMT_ID
+	FB_DATASTMT_ID_NULL		= &h0000
+	FB_DATASTMT_ID_WSTR		= &h8000                '' start point
+	FB_DATASTMT_ID_LINK		= &hffff
+	FB_DATASTMT_ID_OFFSET	= &hfffe
+
+	FB_DATASTMT_ID_ZSTR		= &h0001				'' used by AST only
+	FB_DATASTMT_ID_CONST	= &h0002				'' /
+end enum
+
+type FB_DATADESC
+	id				as short
+	union
+		zstr 		as zstring ptr
+		wstr 		as wstring ptr
+		sym			as any ptr
+		next 		as FB_DATADESC ptr
+	end union
+end type
+
+const FB_DATASTMT_PREFIX	= "_{fbdata}_"
 
 
 '' print modes (same as in rtlib/fb.h)

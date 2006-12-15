@@ -61,6 +61,7 @@ enum FBC_OPT
 	FBC_OPT_LANG
 	FBC_OPT_WA
 	FBC_OPT_WL
+	FBC_OPT_GEN
 
 	FBC_OPTS
 end enum
@@ -77,62 +78,71 @@ end type
 
 type FBCCTX
 	'' methods
-	processOptions				as function ( _
-												byval opt as zstring ptr, _
-												byval argv as zstring ptr _
-											) as integer
-	listFiles					as function ( _
-												byval argv as zstring ptr _
-											) as integer
-	compileResFiles				as function ( _
-											) as integer
-	linkFiles                   as function ( _
-											) as integer
-	archiveFiles                as function ( _
-												byval cmdline as zstring ptr _
-											) as integer
-	delFiles                    as function ( _
-											) as integer
+	processOptions		as function _
+	( _
+		byval opt as zstring ptr, _
+		byval argv as zstring ptr _
+	) as integer
+
+	listFiles			as function _
+	( _
+		byval argv as zstring ptr _
+	) as integer
+
+	compileResFiles		as function _
+	( _
+	) as integer
+
+	linkFiles           as function _
+	( _
+	) as integer
+
+	archiveFiles        as function _
+	( _
+		byval cmdline as zstring ptr _
+	) as integer
+
+	delFiles            as function _
+	( _
+	) as integer
 
 	''
-	compileonly					as integer
-	preserveasm					as integer
-	verbose						as integer
-	debug 						as integer
-	stacksize					as integer
-	outtype						as integer
-	showversion					as integer
-	target						as integer
+	compileonly			as integer
+	preserveasm			as integer
+	verbose				as integer
+	stacksize			as integer
+	showversion			as integer
+	target				as integer
 
-    libs						as integer
-    objs						as integer
-    inps						as integer
-    outs						as integer
-    defs						as integer
-    incs						as integer
-    pths						as integer
-    preincs						as integer
+    libs				as integer
+    objs				as integer
+    inps				as integer
+    outs				as integer
+    defs				as integer
+    incs				as integer
+    pths				as integer
+    preincs				as integer
 
-	inplist(0 to FB_MAXARGS-1) 	as string
-	asmlist(0 to FB_MAXARGS-1) 	as string
-	outlist(0 to FB_MAXARGS-1) 	as string
-	liblist(0 to FB_MAXARGS-1) 	as string
-	objlist(0 to FB_MAXARGS-1) 	as string
-	deflist(0 to FB_MAXARGS-1) 	as string
-	inclist(0 to FB_MAXARGS-1) 	as string
-	pthlist(0 to FB_MAXARGS-1) 	as string
+	inplist(0 to FB_MAXARGS-1) as string
+	asmlist(0 to FB_MAXARGS-1) as string
+	outlist(0 to FB_MAXARGS-1) as string
+	liblist(0 to FB_MAXARGS-1) as string
+	objlist(0 to FB_MAXARGS-1) as string
+	deflist(0 to FB_MAXARGS-1) as string
+	inclist(0 to FB_MAXARGS-1) as string
+	pthlist(0 to FB_MAXARGS-1) as string
 	preinclist(0 to FB_MAXARGS-1) as string
 
-	outname 					as zstring * FB_MAXPATHLEN+1
-	outaddext					as integer
-	mainpath					as zstring * FB_MAXPATHLEN+1
-	mainfile					as zstring * FB_MAXNAMELEN+1
-	mapfile						as zstring * FB_MAXNAMELEN+1
-	mainset						as integer
-	subsystem					as zstring * FB_MAXNAMELEN+1
-	extopt						as FBC_EXTOPT
+	outname 			as zstring * FB_MAXPATHLEN+1
+	outaddext			as integer
+	mainpath			as zstring * FB_MAXPATHLEN+1
+	mainfile			as zstring * FB_MAXNAMELEN+1
+	mapfile				as zstring * FB_MAXNAMELEN+1
+	mainset				as integer
+	subsystem			as zstring * FB_MAXNAMELEN+1
+	extopt				as FBC_EXTOPT
 
-	opthash						as THASH
+	opthash				as THASH
 end type
 
 

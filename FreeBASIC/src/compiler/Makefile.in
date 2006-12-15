@@ -93,14 +93,17 @@ FBC_SRCS := $(FBC_MAIN)
 
 FBC_SRCS += ast.bas ast-node-addr.bas ast-node-assign.bas ast-node-bop.bas ast-node-mem.bas
 FBC_SRCS += ast-node-branch.bas ast-node-check.bas ast-node-const.bas ast-node-conv.bas
-FBC_SRCS += ast-node-decl.bas ast-node-enum.bas ast-node-call.bas ast-node-arg.bas
-FBC_SRCS += ast-node-idx.bas ast-node-iif.bas ast-node-link.bas ast-node-load.bas
-FBC_SRCS += ast-node-misc.bas ast-node-ptr.bas ast-node-scope.bas ast-node-stack.bas
-FBC_SRCS += ast-node-uop.bas ast-node-var.bas ast-node-field.bas ast-node-typeini.bas
-FBC_SRCS += ast-optimize.bas ast-node-proc.bas ast-node-namespace.bas ast-helper.bas
+FBC_SRCS += ast-node-data.bas ast-node-decl.bas ast-node-enum.bas ast-node-call.bas
+FBC_SRCS += ast-node-arg.bas ast-node-idx.bas ast-node-iif.bas ast-node-link.bas
+FBC_SRCS += ast-node-load.bas ast-node-misc.bas ast-node-ptr.bas ast-node-scope.bas
+FBC_SRCS += ast-node-stack.bas ast-node-uop.bas ast-node-var.bas ast-node-field.bas
+FBC_SRCS += ast-node-typeini.bas ast-optimize.bas ast-node-proc.bas ast-node-namespace.bas
+FBC_SRCS += ast-helper.bas
 
 FBC_SRCS += dstr.bas edbg_stab.bas emit.bas emit_x86.bas fb.bas fb-main.bas
-FBC_SRCS += error.bas hlp.bas hlp-str.bas ir.bas
+FBC_SRCS += error.bas hlp.bas hlp-str.bas
+
+FBC_SRCS += ir.bas ir-tac.bas ir-hlc.bas
 
 FBC_SRCS += hash.bas flist.bas list.bas stack.bas pool.bas
 

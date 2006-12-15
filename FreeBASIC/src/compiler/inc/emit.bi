@@ -29,40 +29,7 @@ const EMIT_INITVREGNODES= EMIT_INITNODES*4
 
 '#ifdef TARGET_X86
 const EMIT_REGCLASSES	= 2						'' assuming FB_DATACLASS_ will start at 0!
-const EMIT_LOCSTART 	= 0
-const EMIT_ARGSTART 	= FB_POINTERSIZE + FB_INTEGERSIZE '' skip return address + saved ebp
-
-enum EMITREG_ENUM
-	EMIT_REG_FP0	= 0
-	EMIT_REG_FP1
-	EMIT_REG_FP2
-	EMIT_REG_FP3
-	EMIT_REG_FP4
-	EMIT_REG_FP5
-	EMIT_REG_FP6
-	EMIT_REG_FP7
-
-	EMIT_REG_EDX	= EMIT_REG_FP0				'' aliased
-	EMIT_REG_EDI
-	EMIT_REG_ESI
-	EMIT_REG_ECX
-	EMIT_REG_EBX
-	EMIT_REG_EAX
-	EMIT_REG_EBP
-	EMIT_REG_ESP
-end enum
 '#endif
-
-'' section types
-enum EMITSECTYPE_ENUM
-	EMIT_SECTYPE_CONST
-	EMIT_SECTYPE_DATA
-	EMIT_SECTYPE_BSS
-	EMIT_SECTYPE_CODE
-	EMIT_SECTYPE_DIRECTIVE
-    EMIT_SECTYPE_CONSTRUCTOR
-    EMIT_SECTYPE_DESTRUCTOR
-end enum
 
 enum EMIT_NODEOP_ENUM
 	'' load
@@ -145,6 +112,12 @@ enum EMIT_NODEOP_ENUM
 	EMIT_OP_MEMCLEAR
 	EMIT_OP_STKCLEAR
 
+	'' dgb
+	EMIT_OP_LINEINI
+	EMIT_OP_LINEEND
+	EMIT_OP_SCOPEINI
+	EMIT_OP_SCOPEEND
+
 	EMIT_MAXOPS
 end enum
 
@@ -158,6 +131,7 @@ enum EMIT_NODECLASS_ENUM
 	EMIT_NODECLASS_JTB
 	EMIT_NODECLASS_SOP
 	EMIT_NODECLASS_MEM
+	EMIT_NODECLASS_DBG
 end enum
 
 type EMIT_BOPNODE
@@ -214,6 +188,13 @@ type EMIT_MEMNODE
 	extra		as integer
 end type
 
+type EMIT_DBGNODE
+	op			as integer
+	sym			as FBSYMBOL ptr
+	lnum		as integer
+	pos			as integer
+end type
+
 type EMIT_NODE
 	class							as EMIT_NODECLASS_ENUM
 
@@ -227,6 +208,7 @@ type EMIT_NODE
 		lit							as EMIT_LITNODE
 		jtb							as EMIT_JTBNODE
 		mem							as EMIT_MEMNODE
+		dbg							as EMIT_DBGNODE
 	end union
 
 	regFreeTB(EMIT_REGCLASSES-1) 	as REG_FREETB
@@ -262,6 +244,120 @@ type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
 						byval bytes as integer, _
 						byval extra as integer )
 
+type EMIT_DBGCB as sub( byval sym as FBSYMBOL ptr, _
+						byval lnum as integer, _
+						byval pos as integer )
+
+
+type EMIT_VTBL
+	init as function _
+	( _
+	) as integer
+
+	end as sub _
+	( _
+	)
+
+	open as function _
+	( _
+	) as integer
+
+	close as sub _
+	( _
+		byval tottime as double _
+	)
+
+	isKeyword as function _
+	( _
+		byval text as zstring ptr _
+	) as integer
+
+	isRegPreserved as function _
+	( _
+		byval dclass as integer, _
+		byval reg as integer _
+	) as integer
+
+	getFreePreservedReg as function  _
+	( _
+		byval dclass as integer, _
+		byval dtype as integer _
+	) as integer
+
+	getResultReg as sub _
+	( _
+		byval dtype as integer, _
+		byval dclass as integer, _
+		byref r1 as integer, _
+		byref r2 as integer _
+	)
+
+	getVarName as function _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as string
+
+	procGetFrameRegName as function _
+	( _
+	) as zstring ptr
+
+	procBegin as sub _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+	procEnd as sub _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+	procHeader as sub _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval initlabel as FBSYMBOL ptr _
+	)
+
+	procFooter as sub _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval bytestopop as integer, _
+		byval initlabel as FBSYMBOL ptr, _
+		byval exitlabel as FBSYMBOL ptr _
+	)
+
+	procAllocArg as function _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lgt as integer _
+	) as integer
+
+	procAllocLocal as function _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lgt as integer _
+	) as integer
+
+	procAllocStaticVars as function _
+	( _
+		byval head_sym as FBSYMBOL ptr _
+	) as integer
+
+	scopeBegin as sub _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+	scopeEnd as sub _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+	setSection as sub _
+	( _
+		byval section as integer, _
+		byval priority as integer _
+	)
+end type
 
 type EMITCTX
 	inited								as integer
@@ -285,121 +381,29 @@ type EMITCTX
 
 	keyinited							as integer
 	keyhash								as THASH
+
+	''
+	vtbl								as EMIT_VTBL
+	opFnTb								as any ptr ptr
 end type
 
 ''
 ''
 ''
-declare sub emitInit _
+declare function emitInit _
 	( _
-		_
-	)
+		byval backend as FB_BACKEND _
+	) as integer
 
 declare sub emitEnd _
 	( _
 		_
 	)
 
-declare function emitOpen _
-	( _
-		_
-	) as integer
-
-declare sub emitClose _
-	( _
-		byval tottime as double _
-	)
-
 declare function emitGetRegClass _
 	( _
 		byval dclass as integer _
 	) as REGCLASS ptr
-
-declare	function emitGetPos _
-	( _
-		_
-	) as integer
-
-declare function emitIsKeyword _
-	( _
-		byval text as zstring ptr _
-	) as integer
-
-declare sub emitProcBegin _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
-declare sub emitProcEnd _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
-declare function emitProcAllocStaticVars _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer
-
-declare function emitGetVarName _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as string
-
-declare function emitIsRegPreserved _
-	( _
-		byval dclass as integer, _
-		byval reg as integer _
-	) as integer
-
-declare sub emitGetResultReg _
-	( _
-		byval dtype as integer, _
-		byval dclass as integer, _
-		byref r1 as integer, _
-		byref r2 as integer _
-	)
-
-declare function emitGetFreePreservedReg _
-	( _
-		byval dclass as integer, _
-		byval dtype as integer _
-	) as integer
-
-declare function emitAllocLocal _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
-
-declare function emitAllocArg _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
-
-declare sub emitDeclVariable _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-declare function emitGetFramePtrName _
-	( _
-		_
-	) as zstring ptr
-
-declare sub emitPROCHEADER _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval initlabel as FBSYMBOL ptr _
-	)
-
-declare sub emitPROCFOOTER _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval bytestopop as integer, _
-		byval initlabel as FBSYMBOL ptr, _
-		byval exitlabel as FBSYMBOL ptr _
-	)
 
 declare function emitASM _
 	( _
@@ -755,45 +759,27 @@ declare function emitSTKCLEAR _
 		byval baseofs as integer _
 	) as EMIT_NODE ptr
 
-declare sub emitSECTION _
+declare function emitDBGLineBegin _
 	( _
-		byval section as integer, _
-		byval ctor_ext as integer _
-	)
+		byval proc as FBSYMBOL ptr, _
+		byval ex as integer _
+	) as EMIT_NODE ptr
 
-declare sub emitDATALABEL _
+declare function emitDBGLineEnd _
 	( _
-		byval label as zstring ptr _
-	)
+		byval proc as FBSYMBOL ptr, _
+		byval ex as integer _
+	) as EMIT_NODE ptr
 
-declare sub emitDATABEGIN _
+declare function emitDBGScopeBegin _
 	( _
-		byval lname as zstring ptr _
-	)
+		byval sym as FBSYMBOL ptr _
+	) as EMIT_NODE ptr
 
-declare sub emitDATA _
+declare function emitDBGScopeEnd _
 	( _
-		byval litext as zstring ptr, _
-		byval litlen as integer, _
-		byval dtype as integer _
-	)
-
-declare sub emitDATAW _
-	( _
-		byval litext as wstring ptr, _
-		byval litlen as integer, _
-		byval dtype as integer _
-	)
-
-declare sub emitDATAOFS _
-	( _
-		byval sname as zstring ptr _
-	)
-
-declare sub emitDATAEND _
-	( _
-		_
-	)
+		byval sym as FBSYMBOL ptr _
+	) as EMIT_NODE ptr
 
 declare sub emitVARINIBEGIN _
 	( _
@@ -844,7 +830,7 @@ declare sub emitVARINIPAD _
 		byval bytes as integer _
 	)
 
-declare sub hWriteStr _
+declare sub emitWriteStr _
 	( _
 		byval addtab as integer, _
 		byval s as zstring ptr _
@@ -860,9 +846,41 @@ declare sub emitFlush _
 		_
 	)
 
-#define emitGetLocalOfs(p) p->proc.ext->stk.localofs
+#define emitGetVarName( s ) emit.vtbl.getVarName( s )
 
-#define emitSetLocalOfs(p,ofs) p->proc.ext->stk.localofs = ofs
+#define emitIsKeyword( text ) emit.vtbl.isKeyword( text )
+
+#define emitOpen( ) emit.vtbl.open( )
+
+#define emitClose( tottime ) emit.vtbl.close( tottime )
+
+#define emitProcBegin( proc ) emit.vtbl.procBegin( proc )
+
+#define emitProcEnd( proc ) emit.vtbl.procEnd( proc )
+
+#define emitProcHeader( proc, initlabel ) emit.vtbl.procHeader( proc, initlabel )
+
+#define emitProcFooter( proc, bytestopop, initlabel, exitlabel ) emit.vtbl.procFooter( proc, bytestopop, initlabel, exitlabel )
+
+#define emitProcAllocArg( proc, lgt ) emit.vtbl.procAllocArg( proc, lgt )
+
+#define emitProcAllocLocal( proc, lgt ) emit.vtbl.procAllocLocal( proc, lgt )
+
+#define emitProcGetFrameRegName( ) emit.vtbl.procGetFrameRegName( )
+
+#define emitScopeBegin( s ) emit.vtbl.scopeBegin( s )
+
+#define emitScopeEnd( s ) emit.vtbl.scopeEnd( s )
+
+#define emitProcAllocStaticVars( head_sym ) emit.vtbl.procAllocStaticVars( head_sym )
+
+#define emitIsRegPreserved( dclass, reg ) emit.vtbl.isRegPreserved( dclass, reg )
+
+#define emitGetFreePreservedReg( dclass, dtype ) emit.vtbl.getFreePreservedReg( dclass, dtype )
+
+#define emitGetResultReg( dtype, dclass, reg, reg2 ) emit.vtbl.getResultReg( dtype, dclass, reg, reg2 )
+
+#define emitSection( sec, priority ) emit.vtbl.setSection( sec, priority )
 
 ''::::
 #define EMIT_REGSETUSED(c,r) emit.regUsedTB(c) or= (1 shl r)

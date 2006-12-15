@@ -133,6 +133,7 @@ enum FB_SYMBOPT
 	FB_SYMBOPT_MOVETOGLOB		= &h00000010
 	FB_SYMBOPT_RTL				= &h00000020
 	FB_SYMBOPT_DOHASH			= &h00000040
+	FB_SYMBOPT_CREATEALIAS		= &h00000080
 end enum
 
 type FBSYMBOL_ as FBSYMBOL
@@ -872,8 +873,7 @@ declare function symbAddTypedef _
 declare function symbAddLabel _
 	( _
 		byval symbol as zstring ptr, _
-		byval declaring as integer = TRUE, _
-		byval createalias as integer = FALSE _
+		byval options as FB_SYMBOPT = FB_SYMBOPT_DECLARING _
 	) as FBSYMBOL ptr
 
 declare function symbAddVar _
@@ -1118,16 +1118,6 @@ declare sub symbAddToFwdRef _
 declare sub symbRecalcUDTSize _
 	( _
 		byval t as FBSYMBOL ptr _
-	)
-
-declare function symbGetLastLabel _
-	( _
-		_
-	) as FBSYMBOL ptr
-
-declare sub symbSetLastLabel _
-	( _
-		byval l as FBSYMBOL ptr _
 	)
 
 declare sub symbSetArrayDimTb _
@@ -2143,6 +2133,10 @@ declare function symbGetEnumNextElm _
 
 #define symbSetProcPriority(f,p) f->proc.ext->priority = p
 
+#define symbGetProcLocalOfs(p) p->proc.ext->stk.localofs
+
+#define symbSetProcLocalOfs(p,ofs) p->proc.ext->stk.localofs = ofs
+
 #define symbGetParamMode(a) a->param.mode
 
 #define symbGetParamVar(a) a->param.var
@@ -2222,6 +2216,10 @@ declare function symbGetEnumNextElm _
 										 FB_SYMBSTATS_HASVIRTUAL)) = 0)
 
 #define symbGetCurrentProcName( ) symbGetName( parser.currproc )
+
+#define symbGetLastLabel( ) symb.lastlbl
+
+#define symbSetLastLabel( l ) symb.lastlbl = l
 
 ''
 '' inter-module globals

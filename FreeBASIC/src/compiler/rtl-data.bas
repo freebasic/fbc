@@ -371,32 +371,23 @@ function rtlDataRestore _
 	( _
 		byval label as FBSYMBOL ptr, _
 		byval afternode as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    static as zstring * FB_MAXNAMELEN+1 lname
-    dim as ASTNODE ptr proc, expr
-    dim as FBSYMBOL ptr s
+    dim as ASTNODE ptr proc = any, expr = any
+    dim as FBSYMBOL ptr sym = any
 
     function = FALSE
 
     proc = astNewCALL( PROCLOOKUP( DATARESTORE ), NULL )
 
-    '' begin of data or start from label?
-    if( label <> NULL ) then
-    	lname = FB_DATALABELPREFIX + *symbGetMangledName( label )
-    else
-    	lname = FB_DATALABELNAME
-    end if
-
-    '' label already declared?
-    s = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
-    							  @lname, FB_SYMBCLASS_LABEL )
-    if( s = NULL ) then
-       	s = symbAddLabel( @lname, TRUE, TRUE )
-    end if
-
     '' byval labeladdrs as void ptr
-    expr = astNewADDROF( astNewVAR( s, 0, FB_DATATYPE_BYTE ) )
+    if( label = NULL ) then
+    	sym = astGetFirstDataStmtSymbol( )
+    else
+    	sym = astDataStmtAdd( label, 0 )
+    end if
+
+    expr = astNewADDROF( astNewVAR( sym, 0, FB_DATATYPE_BYTE ) )
     if( astNewARG( proc, expr ) = NULL ) then
  		exit function
  	end if
@@ -411,116 +402,4 @@ function rtlDataRestore _
 	function = TRUE
 
 end function
-
-'':::::
-sub rtlDataStoreBegin static
-    static as zstring * FB_MAXNAMELEN+1 lname
-    dim as FBSYMBOL ptr l, label
-
-	'' switch section, can't be code coz it will screw up debugging
-	emitSECTION( EMIT_SECTYPE_CONST, 0 )
-
-	'' emit default label if not yet emited (also if DATA's are
-	'' been used inside procs, the label will get removed)
-	l = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
-								  @FB_DATALABELNAME, FB_SYMBCLASS_LABEL )
-
-	if( (l = NULL) or (ctx.datainited = FALSE) ) then
-		ctx.datainited = TRUE
-
-		l = symbAddLabel( strptr( FB_DATALABELNAME ), TRUE, TRUE )
-		if( l = NULL ) then
-			l = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
-										  @FB_DATALABELNAME, FB_SYMBCLASS_LABEL )
-		end if
-
-		lname = *symbGetMangledName( l )
-		emitDATALABEL( lname )
-	end if
-
-	'' emit last label as a label in const section
-	'' if any defined already, otherwise it will be the default
-	label = symbGetLastLabel( )
-	if( label <> NULL ) then
-    	''
-    	lname = FB_DATALABELPREFIX + *symbGetMangledName( label )
-    	l = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
-    								  @lname, FB_SYMBCLASS_LABEL )
-    	if( l = NULL ) then
-       		l = symbAddLabel( @lname, TRUE, TRUE )
-    	end if
-
-    	lname = *symbGetMangledName( l )
-
-    	'' stills the same label as before? incrase counter to link DATA's
-    	if( ctx.lastlabel = label ) then
-    		ctx.labelcnt = ctx.labelcnt + 1
-    		lname += "_" + str( ctx.labelcnt )
-    	else
-    		ctx.lastlabel = label
-    		ctx.labelcnt = 0
-    	end if
-
-    	emitDATALABEL( lname )
-
-    else
-    	symbSetLastLabel( symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
-    												@FB_DATALABELNAME, _
-    											  	FB_SYMBCLASS_LABEL ) )
-    end if
-
-	'' emit will link the last DATA with this one if any exists
-	emitDATABEGIN( lname )
-
-end sub
-
-'':::::
-function rtlDataStore _
-	( _
-		byval littext as zstring ptr, _
-		byval litlen as integer, _
-		byval typ as integer _
-	) as integer static
-
-	'' emit will take care of all dirty details
-	emitDATA( littext, litlen, typ )
-
-	function = TRUE
-
-end function
-
-'':::::
-function rtlDataStoreW _
-	( _
-		byval littext as wstring ptr, _
-		byval litlen as integer, _
-		byval typ as integer _
-	) as integer static
-
-	'' emit will take care of all dirty details
-	emitDATAW( littext, litlen, typ )
-
-	function = TRUE
-
-end function
-
-'':::::
-function rtlDataStoreOFS _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer static
-
-	emitDATAOFS( symbGetMangledName( sym ) )
-
-	function = TRUE
-
-end function
-
-'':::::
-sub rtlDataStoreEnd static
-
-	'' emit end of data (will be repatched by emit if more DATA stmts follow)
-	emitDATAEND( )
-
-end sub
 

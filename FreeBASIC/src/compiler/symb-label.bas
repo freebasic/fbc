@@ -30,33 +30,17 @@
 #include once "inc\lex.bi"
 
 '':::::
-function symbGetLastLabel( ) as FBSYMBOL ptr static
-
-	function = symb.lastlbl
-
-end function
-
-'':::::
-sub symbSetLastLabel _
-	( _
-		byval l as FBSYMBOL ptr _
-	) static
-
-	symb.lastlbl = l
-
-end sub
-
-'':::::
 function symbAddLabel _
 	( _
 		byval symbol as zstring ptr, _
-		byval declaring as integer = TRUE, _
-		byval createalias as integer = FALSE _
-	) as FBSYMBOL ptr static
+		byval options as FB_SYMBOPT _
+	) as FBSYMBOL ptr
 
-    dim as zstring ptr id, id_alias
-    dim as FBSYMBOL ptr l
-    dim as FBSYMBOLTB ptr symtb
+    dim as zstring ptr id = any, id_alias = any
+    dim as FBSYMBOL ptr l = any
+    dim as FBSYMBOLTB ptr symtb = any
+    dim as FBHASHTB ptr hashtb = any
+    dim as integer isglobal = any
 
     function = NULL
 
@@ -66,7 +50,7 @@ function symbAddLabel _
     								  symbol, _
     								  FB_SYMBCLASS_LABEL )
     	if( l <> NULL ) then
-    		if( declaring ) then
+    		if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
     			'' dup definition?
     			if( l->lbl.declared ) then
 	    			exit function
@@ -85,7 +69,7 @@ function symbAddLabel _
     	end if
 
 		'' add the new label
-		if( createalias = FALSE ) then
+		if( (options and FB_SYMBOPT_CREATEALIAS) = 0 ) then
     		id_alias = symbol
 		else
 			id_alias = hMakeTmpStr( TRUE )
@@ -98,40 +82,57 @@ function symbAddLabel _
 		id_alias = hMakeTmpStr( TRUE )
 	end if
 
-    '' parsing main? add to global tb
-    if( fbIsModLevel( ) ) then
-    	'' unless inside a namespace..
-    	if( symbIsGlobalNamespc() = FALSE ) then
-    		symtb = symb.symtb
-    	else
-    		symtb = @symbGetGlobalTb( )
-    	end if
+    if( (options and FB_SYMBOPT_MOVETOGLOB) <> 0 ) then
+    	isglobal = TRUE
 
-    '' otherside the current proc sym table must be used, not the
-    '' current scope because labels inside scopes are unique,
-    '' and branching to them from other scopes must be allowed
+    	symtb = @symbGetGlobalTb( )
+    	hashtb = @symbGetGlobalHashTb( )
+
     else
-    	symtb = @parser.currproc->proc.symtb
+    	'' parsing main? add to global tb
+    	if( fbIsModLevel( ) ) then
+    		isglobal = TRUE
+
+    		'' unless inside a namespace..
+    		if( symbIsGlobalNamespc() = FALSE ) then
+    			symtb = symb.symtb
+    			hashtb = symb.hashtb
+    		else
+    			symtb = @symbGetGlobalTb( )
+    			hashtb = @symbGetGlobalHashTb( )
+    		end if
+
+    	'' otherside the current proc sym table must be used, not the
+    	'' current scope because labels inside scopes are unique,
+    	'' and branching to them from other scopes must be allowed
+    	else
+    		isglobal = FALSE
+
+    		symtb = @parser.currproc->proc.symtb
+    		hashtb = symb.hashtb
+    	end if
     end if
 
     l = symbNewSymbol( iif( symbol = NULL, FB_SYMBOPT_NONE, FB_SYMBOPT_DOHASH ), _
     				   NULL, _
-    				   symtb, NULL, _
+    				   symtb, hashtb, _
     				   FB_SYMBCLASS_LABEL, _
     				   id, id_alias, _
     				   INVALID, NULL, 0, _
-    				   iif( fbIsModLevel( ), FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_LOCAL ) )
+    				   iif( isglobal, FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_LOCAL ) )
     if( l = NULL ) then
     	exit function
     end if
 
-	l->lbl.declared = declaring
-
-	if( declaring ) then
-		'' label parent won't be the current proc block is
+	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
+		'' label parent won't be the current proc block as
 		'' it's been defined inside a scope block
 		l->lbl.parent = parser.currblock
 		l->lbl.stmtnum = parser.stmt.cnt
+
+		l->lbl.declared = TRUE
+	else
+		l->lbl.declared = FALSE
 	end if
 
 	function = l
@@ -152,7 +153,7 @@ end function
 sub symbDelLabel _
 	( _
 		byval s as FBSYMBOL ptr _
-	) static
+	)
 
     if( s = NULL ) then
     	exit sub
@@ -163,9 +164,12 @@ sub symbDelLabel _
 end sub
 
 '':::::
-function symbCheckLabels( ) as integer
-    dim as FBSYMBOL ptr s
-    dim as integer cnt
+function symbCheckLabels _
+	( _
+	) as integer
+
+    dim as FBSYMBOL ptr s = any
+    dim as integer cnt = any
 
 	cnt = 0
 
@@ -188,9 +192,12 @@ function symbCheckLabels( ) as integer
 end function
 
 '':::::
-function symbCheckLocalLabels( ) as integer
-    dim as FBSYMBOL ptr s
-    dim as integer cnt
+function symbCheckLocalLabels _
+	( _
+	) as integer
+
+    dim as FBSYMBOL ptr s = any
+    dim as integer cnt = any
 
     cnt = 0
 

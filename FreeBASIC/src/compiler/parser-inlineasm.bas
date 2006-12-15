@@ -135,7 +135,7 @@ function cAsmCode as integer static
     			end if
 
 			case FB_TK_CINT
-                
+
                 '' CINT( valid expression )?
 				if( cTypeConvExpr( thisTok, expr, TRUE ) = TRUE ) then
 
@@ -151,11 +151,11 @@ function cAsmCode as integer static
 							'' skip emission
 							doskip = TRUE
 						end if
-					
+
 					end if
-					
+
 					astDelNode( expr )
- 
+
 				else
 
 					'' error limit?
@@ -167,9 +167,9 @@ function cAsmCode as integer static
 					end if
 
 				end if
-				
+
 			end select
-			
+
 		end select
 
 		''

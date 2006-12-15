@@ -33,7 +33,6 @@
 #include once "inc\ir.bi"
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
-#include once "inc\emit.bi"
 
 type FB_GLOBINSTANCE
 	sym				as FBSYMBOL_ ptr			'' for symbol
@@ -225,7 +224,7 @@ private sub hProcFlush _
     end if
 
     '' emit static local variables
-    emitProcAllocStaticVars( symbGetProcSymbTbHead( sym ) )
+    irProcAllocStaticVars( symbGetProcSymbTbHead( sym ) )
 
     '' del symbols from hash and symbol tb's
     symbDelSymbolTb( @sym->proc.symtb, FALSE )
@@ -436,8 +435,8 @@ function astProcBegin _
 
 	'' add init and exit labels (see the note in the top,
 	'' procs don't create an implicit scope block)
-	n->block.initlabel = symbAddLabel( NULL, TRUE )
-	n->block.exitlabel = symbAddLabel( NULL, FALSE )
+	n->block.initlabel = symbAddLabel( NULL )
+	n->block.exitlabel = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	''
 	n->sym = sym
@@ -846,7 +845,7 @@ private sub hCallCtorList _
 	end if
 
     cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
-    label = symbAddLabel( NULL, TRUE )
+    label = symbAddLabel( NULL )
     iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
 
 	if( fld <> NULL ) then

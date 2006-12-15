@@ -111,6 +111,23 @@
       [ ] without ON ERROR, all stmts returning rt errors should be allowed to
           be used as functions too
 
+[ ] add a C backend
+	- scopes must be preserved or local vars won't work
+	- if()'s must be translated to
+	  if(vreg op vreg) goto label
+	  { -- scope
+	  } -- end scope
+	  label:
+        - function calls must be passed complete to IR, with params
+	- astLoadConst shouldn't convert floating-point consts to constant variables
+        - stdcall names shouldn't be mangled, but anything else should - at least
+          the g++ mangling uses no special characters
+	- how to handle VARINI###? pass it as a tree plus a callback?
+	- structs must be fully translated
+        - only accept inline asm in GCC format, pass as-is
+	- use GCC as a high-level assembler, no headers, nothing
+	- linking should still be done by us
+
 [ ] ParamArray, but with this syntax: foo(...) as bar
 	- array must be built at compile-time and destroyed after the call
 	- take care with objects..

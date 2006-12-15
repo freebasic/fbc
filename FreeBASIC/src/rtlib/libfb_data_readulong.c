@@ -46,29 +46,20 @@ FBCALL void fb_DataReadULongint( unsigned long long *dst )
 
 	FB_LOCK();
 
-	len = fb_DataRead();
+	len = fb_DataGetLen();
 
 	if( len == 0 )
-	{
 		*dst = 0;
-	}
 	else if( len == FB_DATATYPE_OFS )
-	{
-		*dst = *(unsigned int *)__fb_data_ptr;
-		__fb_data_ptr += sizeof( unsigned int );
-	}
+		*dst = (unsigned long long)(unsigned long)__fb_data_ptr->ofs;
 	/* wstring? */
-	else if( len & 0x8000 )
-	{
-        len &= 0x7FFF;
-        *dst = fb_WstrToULongint( (FB_WCHAR *)__fb_data_ptr, len );
-		__fb_data_ptr += (len + 1) * sizeof( FB_WCHAR );
-	}
+	else if( len & FB_DATATYPE_WSTR )
+        *dst = (unsigned long long)fb_WstrToULongint( __fb_data_ptr->wstr, len & 0x7FFF );
 	else
-	{
-		*dst = fb_hStr2ULongint( (char *)__fb_data_ptr, len );
-		__fb_data_ptr += len + 1;
-	}
+        *dst = (unsigned long long)fb_hStr2ULongint( __fb_data_ptr->zstr, len );
+
+	if( __fb_data_ptr != NULL )
+		++__fb_data_ptr;
 
 	FB_UNLOCK();
 }

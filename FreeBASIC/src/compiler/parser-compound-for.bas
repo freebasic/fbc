@@ -510,10 +510,10 @@ function cForStmtBegin as integer
 	end if
 
 	'' labels
-    tl = symbAddLabel( NULL, FALSE )
+    tl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	'' add comp and end label (will be used by any CONTINUE/EXIT FOR)
-	cl = symbAddLabel( NULL, FALSE )
-	el = symbAddLabel( NULL, FALSE )
+	cl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
+	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
     '' if inic, endc and stepc are all constants,
     '' check if this branch is needed
@@ -540,7 +540,7 @@ function cForStmtBegin as integer
     end if
 
 	'' add start label
-	il = symbAddLabel( NULL, TRUE )
+	il = symbAddLabel( NULL )
 	astAdd( astNewLABEL( il ) )
 
 	'' push to stmt stack
@@ -602,7 +602,7 @@ private function hForStmtClose _
 				   stk->for.inilabel )
 
     else
-		cl = symbAddLabel( NULL, TRUE )
+		cl = symbAddLabel( NULL )
 
     	'' test step sign and branch
 		select case as const stk->for.stype

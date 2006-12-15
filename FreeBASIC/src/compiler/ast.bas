@@ -51,6 +51,10 @@ declare sub astCallEnd _
 	( _
 	)
 
+declare sub astDataStmtInit _
+	( _
+	)
+
 declare function astLoadNOP _
 	( _
 		byval n as ASTNODE ptr _
@@ -286,6 +290,7 @@ declare sub astReplaceSymbolOnCALL _
 		( @astLoadLIT		, @hSetType			, FALSE	), _	'' AST_NODECLASS_LIT
 		( @astLoadASM		, @hSetType			, TRUE	), _	'' AST_NODECLASS_ASM
 		( @astLoadJMPTB		, @hSetType			, TRUE	), _	'' AST_NODECLASS_JMPTB
+		( @astLoadNOP		, @hSetType			, FALSE	), _	'' AST_NODECLASS_DATASTMT
 		( @astLoadDBG		, @hSetType			, FALSE	), _	'' AST_NODECLASS_DBG
 		( @astLoadBOUNDCHK	, @hSetType			, TRUE	), _	'' AST_NODECLASS_BOUNDCHK
 		( @astLoadPTRCHK	, @hSetType			, TRUE	), _	'' AST_NODECLASS_PTRCHK
@@ -879,6 +884,42 @@ declare sub astReplaceSymbolOnCALL _
 			AST_NODECLASS_MEM, _
 			AST_OPFLAGS_NONE, _
 			@"stkc" _
+		), _
+		/' AST_OP_DBG_LINEINI '/ _
+		( _
+			AST_NODECLASS_DBG, _
+			AST_OPFLAGS_NONE, _
+			@"lini" _
+		), _
+		/' AST_OP_DBG_LINEEND '/ _
+		( _
+			AST_NODECLASS_DBG, _
+			AST_OPFLAGS_NONE, _
+			@"lend" _
+		), _
+		/' AST_OP_DBG_SCOPEINI '/ _
+		( _
+			AST_NODECLASS_DBG, _
+			AST_OPFLAGS_NONE, _
+			@"sini" _
+		), _
+		/' AST_OP_DBG_SCOPEEND '/ _
+		( _
+			AST_NODECLASS_DBG, _
+			AST_OPFLAGS_NONE, _
+			@"send" _
+		), _
+		/' AST_OP_LIT_COMMENT '/ _
+		( _
+			AST_NODECLASS_LIT, _
+			AST_OPFLAGS_NONE, _
+			@"rem" _
+		), _
+		/' AST_OP_LIT_ASM '/ _
+		( _
+			AST_NODECLASS_LIT, _
+			AST_OPFLAGS_NONE, _
+			@"asm" _
 		) _
 	}
 
@@ -950,6 +991,8 @@ sub astInit static
     astCallInit( )
 
     astProcListInit( )
+
+    astDataStmtInit( )
 
 end sub
 

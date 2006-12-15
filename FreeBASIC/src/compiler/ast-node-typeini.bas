@@ -331,7 +331,7 @@ private function hCallCtorList _
     	dim as FBSYMBOL ptr cnt, label, iter
 
     	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
-    	label = symbAddLabel( NULL, TRUE )
+    	label = symbAddLabel( NULL )
     	iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
 
 		flush_tree = astNewLINK( flush_tree, _

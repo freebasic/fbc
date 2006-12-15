@@ -253,9 +253,7 @@ private sub hMainEnd _
 
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out where to start)
-    if( symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
-    							  FB_DATALABELNAME, _
-    							  FB_SYMBCLASS_LABEL ) <> NULL ) then
+    if( astGetFirstDataStmtSymbol( ) <> NULL ) then
     	rtlDataRestore( NULL, env.main.initnode )
     end if
 

@@ -312,7 +312,7 @@ private sub hPrintErrMsg _
 
 	if( errnum >= 0 ) then
 		print " " & errnum & ": " & *msg;
-		if customText then
+		if( customText ) then
 			print *customText;
 		end if
 
@@ -386,7 +386,9 @@ function errReportEx _
 			end if
 		end if
 
-		linenum = lexLineNum( )
+		if( lex <> NULL ) then
+			linenum = lexLineNum( )
+		end if
 
 		errctx.lastmsg = errnum
 		errctx.lastline = linenum

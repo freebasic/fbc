@@ -106,7 +106,7 @@ function cGotoStmt _
 		end if
 
 		if( l = NULL ) then
-			l = symbAddLabel( lexGetText( ), FALSE, TRUE )
+			l = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 		end if
 
 		lexSkipToken( )
@@ -142,7 +142,7 @@ function cGotoStmt _
 		end if
 
 		if( l = NULL ) then
-			l = symbAddLabel( lexGetText( ), FALSE, TRUE )
+			l = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 		end if
 
 		lexSkipToken( )

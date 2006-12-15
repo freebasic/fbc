@@ -28,7 +28,6 @@
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 #include once "inc\ir.bi"
-#include once "inc\emit.bi"
 
 declare function hCheckBranch _
 	( _
@@ -671,7 +670,7 @@ function astLoadSCOPEBEGIN _
 
 	s = n->sym
 
-	s->scp.emit.baseofs = emitGetLocalOfs( parser.currproc )
+	s->scp.emit.baseofs = symbGetProcLocalOfs( parser.currproc )
 
 	symbScopeAllocLocals( s )
 
@@ -697,7 +696,7 @@ function astLoadSCOPEEND _
 		irEmitSCOPEEND( s )
 	end if
 
-    emitSetLocalOfs( parser.currproc, s->scp.emit.baseofs )
+    symbSetProcLocalOfs( parser.currproc, s->scp.emit.baseofs )
 
     function = NULL
 

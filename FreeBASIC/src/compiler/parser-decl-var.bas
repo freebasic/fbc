@@ -865,7 +865,7 @@ private sub hCallStaticCtor _
 	astAdd( astNewDECL( FB_SYMBCLASS_VAR, flag, NULL ) )
 
 	'' if flag = 0 then
-	label = symbAddLabel( NULL, TRUE )
+	label = symbAddLabel( NULL )
 
     astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
     									  astNewVAR( flag, _

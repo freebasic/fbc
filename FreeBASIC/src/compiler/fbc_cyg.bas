@@ -78,7 +78,7 @@ private function _linkFiles as integer
 
 	'' add extension
 	if( fbc.outaddext ) then
-		select case fbc.outtype
+		select case fbGetOption( FB_COMPOPT_OUTTYPE )
 		case FB_OUTTYPE_EXECUTABLE
 			fbc.outname += ".exe"
 		case FB_OUTTYPE_DYNAMICLIB
@@ -98,7 +98,7 @@ private function _linkFiles as integer
 	'' set script file and subsystem
 	ldcline = "-T " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_BIN ) + ("i386pe.x" + QUOTE + " -subsystem ") + fbc.subsystem
 
-    if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		''
 		dllname = hStripPath( hStripExt( fbc.outname ) )
 
@@ -128,7 +128,7 @@ private function _linkFiles as integer
         ldcline += " -Map " + fbc.mapfile
     end if
 
-	if( fbc.debug = FALSE ) then
+	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
 			ldcline += " -s"
 		end if
@@ -150,7 +150,7 @@ private function _linkFiles as integer
     next i
 
 	'' crt entry
-	if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		ldcline += " " + QUOTE + libdir + (RSLASH + "crt0.o" + QUOTE + " ")
 	else
         '' FIXME
@@ -180,23 +180,24 @@ private function _linkFiles as integer
     ldcline += " -( "
 
     '' add libraries from cmm-line and found when parsing
-    for i = 0 to fbc.libs-1
-    	libname = fbc.liblist(i)
-    	if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
-    		'' check if the lib isn't the dll's import library itself
-            if( libname = dllname ) then
-            	libname = ""
-            end if
-    	end if
-
-    	if( len( libname ) > 0 ) then
-    		ldcline += "-l" + libname + " "
-    	end if
-    next i
+    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+   		for i = 0 to fbc.libs-1
+			libname = fbc.liblist(i)
+   			'' check if the lib isn't the dll's import library itself
+   	        if( libname = dllname ) then
+   	        	continue for
+   	        end if
+			ldcline += "-l" + libname + " "
+		next
+    else
+   		for i = 0 to fbc.libs-1
+			ldcline += "-l" + fbc.liblist(i) + " "
+		next
+	end if
 
 	'' rtlib initialization and termination
 	''       previously was: libfb_ctor.o
-    if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
 	else
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
@@ -210,7 +211,7 @@ private function _linkFiles as integer
     ldcline += "-) "
 
 	'' crt end
-    if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
         '' create the def list to use when creating the import library
         ldcline += " --output-def " + QUOTE + hStripFilename( fbc.outname ) + dllname + (".def" + QUOTE)
 	end if
@@ -227,7 +228,7 @@ private function _linkFiles as integer
 		exit function
     end if
 
-    if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		'' create the import library for the dll built
 		if( makeImpLib( hStripFilename( fbc.outname ), dllname ) = FALSE ) then
 			exit function

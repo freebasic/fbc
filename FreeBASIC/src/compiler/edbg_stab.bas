@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' debug emiter (stabs format) for GNU assembler (GAS)
+'' debug emitter (stabs format) for GNU assembler (GAS)
 ''
 '' chng: nov/2004 written [v1ctor]
 
@@ -24,6 +24,7 @@
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\lex.bi"
+#include once "inc\ir.bi"
 #include once "inc\emit.bi"
 #include once "inc\emitdbg.bi"
 #include once "inc\stabs.bi"
@@ -89,24 +90,25 @@ declare function hGetDataType			( _
 		14  _                                   '' fix-len string
 	}
 
-
-stabstdef:
-data "integer:t1=-1"
-data "void:t7=-11"
-data "byte:t2=-6"
-data "ubyte:t3=-5"
-data "char:t4=-2"
-data "short:t5=-3"
-data "ushort:t6=-7"
-data "uinteger:t8=-8"
-data "longint:t9=-31"
-data "ulongint:t10=-32"
-data "single:t11=-12"
-data "double:t12=-13"
-data "string:t13=s12data:15,0,32;len:1,32,32;size:1,64,32;;"
-data "fixstr:t14=-2"
-data "pchar:t15=*4;"
-data ""
+	dim shared stabsTB(0 to 15) as zstring ptr = _
+	{ _
+		@"integer:t1=-1", _
+		@"void:t7=-11", _
+		@"byte:t2=-6", _
+		@"ubyte:t3=-5", _
+		@"char:t4=-2", _
+		@"short:t5=-3", _
+		@"ushort:t6=-7", _
+		@"uinteger:t8=-8", _
+		@"longint:t9=-31", _
+		@"ulongint:t10=-32", _
+		@"single:t11=-12", _
+		@"double:t12=-13", _
+		@"string:t13=s12data:15,0,32;len:1,32,32;size:1,64,32;;", _
+		@"fixstr:t14=-2", _
+		@"pchar:t15=*4;", _
+		NULL _
+	}
 
 '':::::
 sub	edbgInit( )
@@ -154,7 +156,7 @@ private sub hEmitSTABS _
 	ostr += ","
 	ostr += _value
 
-	hWriteStr( TRUE, ostr )
+	emitWriteStr( TRUE, ostr )
 
 end sub
 
@@ -192,7 +194,7 @@ private sub hEmitSTABN _
 	) static
 
 
-	hWriteStr( TRUE, hMakeSTABN( _type, _other, _desc, _value ) )
+	emitWriteStr( TRUE, hMakeSTABN( _type, _other, _desc, _value ) )
 
 end sub
 
@@ -213,7 +215,7 @@ private sub hEmitSTABD _
 	ostr += ","
 	ostr += str( _desc )
 
-	hWriteStr( TRUE, ostr )
+	emitWriteStr( TRUE, ostr )
 
 end sub
 
@@ -227,7 +229,7 @@ private sub hLABEL _
 
 	ostr = *label
 	ostr += ":"
-	hWriteStr( FALSE, ostr )
+	emitWriteStr( FALSE, ostr )
 
 end sub
 
@@ -249,14 +251,12 @@ sub edbgEmitHeader _
 	ctx.typecnt 	= 1
 
 	ctx.label 		= NULL
-	ctx.lnum 		= 0
-	ctx.isnewline 	= TRUE
 
 	ctx.incfile 	= NULL
 
 	'' emit source file
     lname = *hMakeTmpStr( )
-    hWriteStr( TRUE, ".file " + QUOTE + *filename + QUOTE )
+    emitWriteStr( TRUE, ".file " + QUOTE + *filename + QUOTE )
     if( instr( *filename, "/" ) = 0 ) then
     	dim as zstring ptr dirpath
     	dirpath = hRevertSlash( curdir() + "/", TRUE )
@@ -267,21 +267,22 @@ sub edbgEmitHeader _
     hEmitSTABS( STAB_TYPE_SO, filename, 0, 0, lname )
 
 	''
-	emitSECTION( EMIT_SECTYPE_CODE, 0 )
+	emitSECTION( IR_SECTION_CODE, 0 )
 	hLABEL( lname )
 
 	'' (known) type definitions
-	restore stabstdef
+	i = 0
 	do
-		read stab
-		if( len( stab ) = 0 ) then
+		if( stabsTb(i) = 0 ) then
 			exit do
 		end if
-		hEmitSTABS( STAB_TYPE_LSYM, stab, 0, 0, "0" )
+		hEmitSTABS( STAB_TYPE_LSYM, stabsTb(i), 0, 0, "0" )
+
 		ctx.typecnt += 1
+		i += 1
 	loop
 
-	hWriteStr( FALSE, "" )
+	emitWriteStr( FALSE, "" )
 
 	hEmitSTABS( STAB_TYPE_BINCL, filename, 0, 0 )
 
@@ -295,7 +296,7 @@ sub edbgEmitFooter( ) static
 		exit sub
 	end if
 
-	emitSECTION( EMIT_SECTYPE_CODE, 0 )
+	emitSECTION( IR_SECTION_CODE, 0 )
 
 	'' no checkings after this
 	lname = *hMakeTmpStr( )
@@ -309,7 +310,8 @@ end sub
 sub edbgLineBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval lnum as integer _
+		byval lnum as integer, _
+		byval pos_ as integer _
 	)
 
     if( env.clopt.debug = FALSE ) then
@@ -317,18 +319,18 @@ sub edbgLineBegin _
     end if
 
     if( ctx.lnum > 0 ) then
-    	ctx.pos = emitGetPos( ) - ctx.pos
+    	ctx.pos = pos_ - ctx.pos
     	if( ctx.pos > 0 ) then
     		edbgEmitLine( proc, ctx.lnum, ctx.label )
     		ctx.isnewline = TRUE
     	end if
     end if
 
-    ctx.pos	 = emitGetPos( )
+    ctx.pos = pos_
     ctx.lnum = lnum
     if( ctx.isnewline ) then
     	ctx.label = symbAddLabel( NULL )
-    	emitLABEL( ctx.label )
+    	hLABEL( symbGetMangledName( ctx.label ) )
     	ctx.isnewline = FALSE
     end if
 
@@ -338,7 +340,8 @@ end sub
 sub edbgLineEnd _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval unused as integer _
+		byval lnum as integer, _
+		byval pos_ as integer _
 	)
 
     if( env.clopt.debug = FALSE ) then
@@ -346,7 +349,7 @@ sub edbgLineEnd _
     end if
 
     if( ctx.lnum > 0 ) then
-    	ctx.pos = emitGetPos( ) - ctx.pos
+    	ctx.pos = pos_ - ctx.pos
     	if( ctx.pos > 0 ) then
    			edbgEmitLine( proc, ctx.lnum, ctx.label )
    			ctx.isnewline = TRUE
@@ -382,7 +385,7 @@ sub edbgEmitLine _
 					lnum, _
 					*symbGetMangledName( label ) + "-" + *symbGetMangledName( proc ) )
 
-	emitLIT( byval s )
+	emitWriteStr( FALSE, s )
 
 end sub
 
@@ -449,7 +452,7 @@ sub edbgEmitScopeINI _
     	exit sub
     end if
 
-    emitLABEL( s->scp.dbg.inilabel )
+    hLABEL( symbGetMangledName( s->scp.dbg.inilabel ) )
 
 end sub
 
@@ -463,7 +466,7 @@ sub edbgEmitScopeEND _
     	exit sub
     end if
 
-    emitLABEL( s->scp.dbg.endlabel )
+    hLABEL( symbGetMangledName( s->scp.dbg.endlabel ) )
 
 end sub
 
@@ -596,6 +599,7 @@ sub edbgEmitProcHeader _
 	''
 	ctx.isnewline = TRUE
 	ctx.lnum	  = 0
+	ctx.pos	  	  = 0
 	ctx.label	  = NULL
 
 end sub
@@ -705,6 +709,7 @@ sub edbgEmitProcFooter _
 	''
 	ctx.isnewline = TRUE
 	ctx.lnum	  = 0
+	ctx.pos	  	  = 0
 	ctx.label	  = NULL
 
 end sub
@@ -1040,11 +1045,11 @@ sub edbgEmitGlobalVar _
 
 	'' depends on section
 	select case section
-	case EMIT_SECTYPE_CONST
+	case IR_SECTION_CONST
 		t = STAB_TYPE_FUN
-	case EMIT_SECTYPE_DATA
+	case IR_SECTION_DATA
 		t = STAB_TYPE_STSYM
-	case EMIT_SECTYPE_BSS
+	case IR_SECTION_BSS
 		t = STAB_TYPE_LCSYM
 	end select
 
@@ -1181,7 +1186,7 @@ sub edbgIncludeBegin _
 
 	hEmitSTABS( STAB_TYPE_BINCL, filename, 0, 0 )
 
-	emitSECTION( EMIT_SECTYPE_CODE, 0 )
+	emitSECTION( IR_SECTION_CODE, 0 )
 
 	lname = *hMakeTmpStr( )
 

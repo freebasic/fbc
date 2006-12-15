@@ -60,6 +60,7 @@ enum AST_NODECLASS
 	AST_NODECLASS_LIT
 	AST_NODECLASS_ASM
 	AST_NODECLASS_JMPTB
+	AST_NODECLASS_DATASTMT
 	AST_NODECLASS_DBG
 
 	AST_NODECLASS_BOUNDCHK
@@ -231,6 +232,13 @@ type AST_NODE_BLOCK
 	proc			as AST_NODE_PROC
 end type
 
+type AST_NODE_DATASTMT
+	union
+		id			as integer
+		elmts		as integer
+	end union
+end type
+
 ''
 type ASTNODE
 	class			as integer						'' CONST, VAR, BOP, UOP, IDX, FUNCT, etc
@@ -263,6 +271,7 @@ type ASTNODE
 		typeini		as AST_NODE_TYPEINI
 		block		as AST_NODE_BLOCK				'' shared by PROC and SCOPE nodes
 		break		as AST_NODE_BREAK
+		data		as AST_NODE_DATASTMT
 	end union
 
 	prev			as ASTNODE ptr					'' used by Add
@@ -272,21 +281,28 @@ type ASTNODE
 	r				as ASTNODE ptr					'' right /     /
 end type
 
-type AST_PROCCTX
+type AST_PROC_CTX
 	head			as ASTNODE ptr					'' procs list
 	tail			as ASTNODE ptr					'' /     /
 	curr			as ASTNODE ptr					'' current proc
 end type
 
-type AST_CALLCTX
+type AST_CALL_CTX
 	dtorlist		as TLIST						'' list of temp vars' dtors
 	tmpstrlist		as TLIST						'' list of temp strings
 end type
 
-type AST_GLOBINSTCTX
+type AST_GLOBINST_CTX
 	list			as TLIST						'' global symbols with ctors/dtors
 	ctorcnt			as integer						'' number of ctors in the list above
 	dtorcnt			as integer						''      /    dtors       /
+end type
+
+type AST_DATASTMT_CTX
+	desc			as FBSYMBOL ptr
+	lastsym			as FBSYMBOL ptr
+	firstsym		as FBSYMBOL ptr
+	lastlbl			as FBSYMBOL ptr
 end type
 
 type ASTVALUE
@@ -297,9 +313,10 @@ end type
 type ASTCTX
 	astTB			as TLIST
 
-	proc			as AST_PROCCTX
-	call			as AST_CALLCTX
-	globinst		as AST_GLOBINSTCTX				'' global instances
+	proc			as AST_PROC_CTX
+	call			as AST_CALL_CTX
+	globinst		as AST_GLOBINST_CTX				'' global instances
+	data			as AST_DATASTMT_CTX				'' DATA stmt garbage
 
 	currblock		as ASTNODE ptr					'' current scope block (PROC or SCOPE)
 
@@ -936,6 +953,27 @@ declare function astTypeIniClone _
 		byval tree as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function astDataStmtBegin _
+	( _
+	) as ASTNODE ptr
+
+declare function astDataStmtStore _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare sub astDataStmtEnd _
+	( _
+		byval tree as ASTNODE ptr _
+	)
+
+declare function astDataStmtAdd _
+	( _
+		byval label as FBSYMBOL ptr, _
+		byval elements as integer _
+	) as FBSYMBOL ptr
+
 declare function astGetInverseLogOp _
 	( _
 		byval op as integer _
@@ -1253,6 +1291,7 @@ declare sub astReplaceSymbolOnTree _
 
 #define astGetClassIsCode( cl ) ast_classTB(cl).iscode
 
+#define astGetFirstDataStmtSymbol( ) ast.data.firstsym
 
 ''
 '' inter-module globals

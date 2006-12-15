@@ -32,6 +32,7 @@
 #include once "inc\hash.bi"
 #include once "inc\symb.bi"
 
+''
 type EMITDATATYPE
 	class			as integer
 	size			as integer
@@ -39,23 +40,49 @@ type EMITDATATYPE
 	mname			as zstring * 11+1
 end type
 
-''
-const COMMA   = ", "
-
-
 const EMIT_MAXRNAMES  = REG_MAXREGS
 const EMIT_MAXRTABLES = 4				'' 8-bit, 16-bit, 32-bit, fpoint
 
+''
+const EMIT_LOCSTART 	= 0
+const EMIT_ARGSTART 	= FB_POINTERSIZE + FB_INTEGERSIZE '' skip return address + saved ebp
 
 ''
-declare sub 		outp				( byval s as zstring ptr )
+enum EMITREG_ENUM
+	EMIT_REG_FP0	= 0
+	EMIT_REG_FP1
+	EMIT_REG_FP2
+	EMIT_REG_FP3
+	EMIT_REG_FP4
+	EMIT_REG_FP5
+	EMIT_REG_FP6
+	EMIT_REG_FP7
 
-declare sub 		hSaveAsmHeader		( )
+	EMIT_REG_EDX	= EMIT_REG_FP0				'' aliased
+	EMIT_REG_EDI
+	EMIT_REG_ESI
+	EMIT_REG_ECX
+	EMIT_REG_EBX
+	EMIT_REG_EAX
+	EMIT_REG_EBP
+	EMIT_REG_ESP
+end enum
 
-declare function 	hGetTypeString		( byval typ as integer ) as string
+
+const COMMA   = ", "
 
 
-''
+declare sub hDeclVariable _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+declare sub _setSection _
+	( _
+		byval section as integer, _
+		byval priority as integer _
+	)
+
 ''globals
 
 	'' same order as EMITREG_ENUM
@@ -160,268 +187,31 @@ const EMIT_MAXKEYWORDS = 600
 		NULL _
 	}
 
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' helper functions
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hInitKeywordsTB
-    dim as integer t, i
-
-	hashInit( )
-
-	hashNew( @emit.keyhash, EMIT_MAXKEYWORDS )
-
-	'' add reg names
-	for t = 0 to EMIT_MAXRTABLES-1
-		for i = 0 to EMIT_MAXRNAMES-1
-			if( len( rnameTB(t,i) ) > 0 ) then
-				hashAdd( @emit.keyhash, @rnameTB(t,i), cast( any ptr, INVALID ), INVALID )
-			end if
-		next
-	next
-
-	'' add asm keywords
-	for i = 0 to EMIT_MAXKEYWORDS-1
-		if( keywordTb(i) = NULL ) then
-			exit for
-		end if
-
-		hashAdd( @emit.keyhash, keywordTb(i), cast( any ptr, INVALID ), INVALID )
-	next
-
-	emit.keyinited = TRUE
-
-end sub
+#define hEmitBssHeader( ) _setSection( IR_SECTION_BSS, 0 )
 
 '':::::
-private sub hEndKeywordsTB
-
-	if( emit.keyinited ) then
-		hashFree( @emit.keyhash )
-
-		hashEnd( )
-	end if
-
-	emit.keyinited = FALSE
-
-end sub
-
-'':::::
-private sub hInitRegTB
-	dim as integer lastclass, regs, i
-
-	'' ebp and esp are reserved
-	const int_regs = 6
-
-	static as REG_SIZEMASK int_bitsmask(0 to int_regs-1) = _
-	{ _
-		REG_SIZEMASK_8 or REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' edx
-						  REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' edi
-						  REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' esi
-		REG_SIZEMASK_8 or REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' ecx
-		REG_SIZEMASK_8 or REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' ebx
-		REG_SIZEMASK_8 or REG_SIZEMASK_16 or REG_SIZEMASK_32 _		'' eax
-	}
-
-	emit.regTB(FB_DATACLASS_INTEGER) = _
-		regNewClass( FB_DATACLASS_INTEGER, _
-					 int_regs, _
-					 int_bitsmask( ), _
-					 FALSE )
-
-	'' no st(7) as STORE/LOAD/POW/.. need a free reg to work
-	const flt_regs = 7
-
-	static as REG_SIZEMASK flt_bitsmask(0 to flt_regs-1) = _
-	{ _
-		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(0)
-		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(1)
-		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(2)
-		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(3)
-		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(4)
-		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(5)
-		REG_SIZEMASK_32 or REG_SIZEMASK_64 _						'' st(6)
-	}
-
-	emit.regTB(FB_DATACLASS_FPOINT) = _
-		regNewClass( FB_DATACLASS_FPOINT, _
-					 flt_regs, _
-					 flt_bitsmask( ), _
-					 TRUE )
-
-end sub
+#ifdef __FB_LINUX__
+''
+'' !!!FIXME!!!
+''
+'' Linux appears to support .rodata section, but I'm not sure about other platforms, and that's
+'' probably the reason FB used to output a normal .data section in any case...
+''
+#define hEmitConstHeader( ) _setSection( IR_SECTION_CONST, 0 )
+#else
+#define hEmitConstHeader( ) _setSection( IR_SECTION_DATA, 0 )
+#endif
 
 '':::::
-private sub hEndRegTB
-    dim i as integer
-
-	for i = 0 to EMIT_REGCLASSES-1
-		regDelClass( emit.regTB(i) )
-	next i
-
-end sub
+#define hEmitDataHeader( ) _setSection( IR_SECTION_DATA, 0 )
 
 '':::::
-sub emitSubInit
-
-	''
-	hInitRegTB( )
-
-	'' wchar len depends on the target platform
-	dtypeTB(FB_DATATYPE_WCHAR) = dtypeTB(env.target.wchar.type)
-
-	''
-	emit.keyinited 	= FALSE
-
-	''
-	emit.dataend = 0
-	emit.lastsection = INVALID
-	emit.lastpriority = INVALID
-
-end sub
-
-'':::::
-sub emitSubEnd
-
-	''
-	hEndRegTB( )
-
-    hEndKeywordsTB( )
-
-end sub
-
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-function emitGetVarName _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as string static
-
-	dim as string sname
-
-	if( s <> NULL ) then
-		sname = *symbGetMangledName( s )
-
-		if( symbGetOfs( s ) > 0 ) then
-			sname += "+" + str( symbGetOfs( s ) )
-
-		elseif( symbGetOfs( s ) < 0 ) then
-			sname += str( symbGetOfs( s ) )
-		end if
-
-		function = sname
-
-	else
-		function = ""
-	end if
-
-end function
-
-'':::::
-function emitGetFramePtrName as zstring ptr
-	static as zstring * 3+1 sname = "ebp"
-
-	function = @sname
-
-end function
-
-'':::::
-function emitIsRegPreserved _
-	( _
-		byval dclass as integer, _
-		byval reg as integer _
-	) as integer static
-
-    '' fp? fpu stack *must* be cleared before calling any function
-    if( dclass = FB_DATACLASS_FPOINT ) then
-    	return FALSE
-    end if
-
-    select case as const reg
-    case EMIT_REG_EAX, EMIT_REG_ECX, EMIT_REG_EDX
-    	return FALSE
-    case else
-    	return TRUE
-	end select
-
-end function
-
-'':::::
-sub emitGetResultReg _
-	( _
-		byval dtype as integer, _
-		byval dclass as integer, _
-		byref r1 as integer, _
-		byref r2 as integer _
-	) static
-
-	if( dtype >= FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_UINT
-	end if
-
-	if( dclass = FB_DATACLASS_INTEGER ) then
-		r1 = EMIT_REG_EAX
-		if( ISLONGINT( dtype ) ) then
-			r2 = EMIT_REG_EDX
-		else
-			r2 = INVALID
-		end if
-	else
-		r1 = 0							'' st(0)
-		r2 = INVALID
-	end if
-
-end sub
-
-'':::::
-function emitGetFreePreservedReg _
-	( _
-		byval dclass as integer, _
-		byval dtype as integer _
-	) as integer static
-
-	function = INVALID
-
-	'' fp? no other regs can be used
-	if( dclass = FB_DATACLASS_FPOINT ) then
-		exit function
-	end if
-
-	'' try to reuse regs that are preserved between calls
-	if( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_EBX ) ) then
-		function = EMIT_REG_EBX
-
-	elseif( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_ESI ) ) then
-		if( symbGetDataSize( dtype ) <> 1 ) then
-			function = EMIT_REG_ESI
-		end if
-
-	elseif( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_EDI ) ) then
-		if( symbGetDataSize( dtype ) <> 1 ) then
-			function = EMIT_REG_EDI
-		end if
-	end if
-
-end function
-
-'':::::
-function emitIsKeyword _
-	( _
-		byval text as zstring ptr _
-	) as integer static
-
-	if( emit.keyinited = FALSE ) then
-		hInitKeywordsTB( )
-	end if
-
-	if( hashLookup( @emit.keyhash, text ) <> NULL ) then
-		function = TRUE
-	else
-		function = FALSE
-	end if
-
-end function
-
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+#define hEmitExportHeader( ) _setSection( IR_SECTION_DIRECTIVE, 0 )
 
 '':::::
 private function hIsRegFree _
@@ -995,6 +785,725 @@ private sub hALIGN _
 
 end sub
 
+'':::::
+private function hGetTypeString _
+	( _
+		byval typ as integer _
+	) as string static
+
+	select case as const typ
+    case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
+    	function = ".byte"
+
+    case FB_DATATYPE_USHORT, FB_DATATYPE_SHORT
+    	function = ".short"
+
+    case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
+    	 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+    	function = ".int"
+
+    case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+    	function = ".quad"
+
+    case FB_DATATYPE_SINGLE
+		function = ".float"
+
+	case FB_DATATYPE_DOUBLE
+    	function = ".double"
+
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		'' wchar stills the same as it is emitted as escape sequences
+    	function = ".ascii"
+
+    case FB_DATATYPE_STRING
+    	function = ".int"
+
+	case FB_DATATYPE_STRUCT
+		function = "INVALID"
+
+    case else
+    	if( typ >= FB_DATATYPE_POINTER ) then
+    		function = ".int"
+    	end if
+	end select
+
+end function
+
+'':::::
+private sub hInitRegTB
+	dim as integer lastclass, regs, i
+
+	'' ebp and esp are reserved
+	const int_regs = 6
+
+	static as REG_SIZEMASK int_bitsmask(0 to int_regs-1) = _
+	{ _
+		REG_SIZEMASK_8 or REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' edx
+						  REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' edi
+						  REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' esi
+		REG_SIZEMASK_8 or REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' ecx
+		REG_SIZEMASK_8 or REG_SIZEMASK_16 or REG_SIZEMASK_32, _		'' ebx
+		REG_SIZEMASK_8 or REG_SIZEMASK_16 or REG_SIZEMASK_32 _		'' eax
+	}
+
+	emit.regTB(FB_DATACLASS_INTEGER) = _
+		regNewClass( FB_DATACLASS_INTEGER, _
+					 int_regs, _
+					 int_bitsmask( ), _
+					 FALSE )
+
+	'' no st(7) as STORE/LOAD/POW/.. need a free reg to work
+	const flt_regs = 7
+
+	static as REG_SIZEMASK flt_bitsmask(0 to flt_regs-1) = _
+	{ _
+		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(0)
+		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(1)
+		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(2)
+		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(3)
+		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(4)
+		REG_SIZEMASK_32 or REG_SIZEMASK_64, _						'' st(5)
+		REG_SIZEMASK_32 or REG_SIZEMASK_64 _						'' st(6)
+	}
+
+	emit.regTB(FB_DATACLASS_FPOINT) = _
+		regNewClass( FB_DATACLASS_FPOINT, _
+					 flt_regs, _
+					 flt_bitsmask( ), _
+					 TRUE )
+
+end sub
+
+'':::::
+private sub hEndRegTB
+    dim i as integer
+
+	for i = 0 to EMIT_REGCLASSES-1
+		regDelClass( emit.regTB(i) )
+	next
+
+end sub
+
+'':::::
+private sub hInitKeywordsTB
+    dim as integer t, i
+
+	hashInit( )
+
+	hashNew( @emit.keyhash, EMIT_MAXKEYWORDS )
+
+	'' add reg names
+	for t = 0 to EMIT_MAXRTABLES-1
+		for i = 0 to EMIT_MAXRNAMES-1
+			if( len( rnameTB(t,i) ) > 0 ) then
+				hashAdd( @emit.keyhash, @rnameTB(t,i), cast( any ptr, INVALID ), INVALID )
+			end if
+		next
+	next
+
+	'' add asm keywords
+	for i = 0 to EMIT_MAXKEYWORDS-1
+		if( keywordTb(i) = NULL ) then
+			exit for
+		end if
+
+		hashAdd( @emit.keyhash, keywordTb(i), cast( any ptr, INVALID ), INVALID )
+	next
+
+	emit.keyinited = TRUE
+
+end sub
+
+'':::::
+private sub hEndKeywordsTB
+
+	if( emit.keyinited ) then
+		hashFree( @emit.keyhash )
+
+		hashEnd( )
+	end if
+
+	emit.keyinited = FALSE
+
+end sub
+
+'':::::
+private sub hEmitVarBss _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
+
+    dim as string alloc, ostr
+    dim as integer attrib, elements
+
+	attrib = symbGetAttrib( s )
+
+	elements = 1
+    if( symbGetArrayDimensions( s ) > 0 ) then
+    	elements = symbGetArrayElements( s )
+	end if
+
+    hEmitBssHeader( )
+
+    '' allocation modifier
+    if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
+      	if( (attrib and FB_SYMBATTRIB_PUBLIC) > 0 ) then
+       		hPUBLIC( *symbGetMangledName( s ), TRUE )
+		end if
+       	alloc = ".lcomm"
+	else
+       	hPUBLIC( *symbGetMangledName( s ), FALSE )
+       	alloc = ".comm"
+    end if
+
+    '' align
+    if( symbGetType( s ) = FB_DATATYPE_DOUBLE ) then
+    	hALIGN( 8 )
+    	emitWriteStr( TRUE, ".balign 8" )
+	else
+    	hALIGN( 4 )
+    end if
+
+	'' emit
+    ostr = alloc + TABCHAR
+    ostr += *symbGetMangledName( s )
+    ostr += "," + str( symbGetLen( s ) * elements )
+    emitWriteStr( TRUE, ostr )
+
+    '' add dbg info, if public or shared
+    if( (attrib and (FB_SYMBATTRIB_SHARED or _
+    				 FB_SYMBATTRIB_COMMON or _
+    				 FB_SYMBATTRIB_PUBLIC)) > 0 ) then
+    	edbgEmitGlobalVar( s, IR_SECTION_BSS )
+	end if
+
+end sub
+
+'':::::
+private sub hWriteHeader( ) static
+
+	''
+	edbgEmitHeader( env.inf.name )
+
+	''
+	emitWriteStr( TRUE,  ".intel_syntax noprefix" )
+    emitWriteStr( FALSE, "" )
+    hCOMMENT( env.inf.name + "' compilation started at " + time + " (" + FB_SIGN + ")" )
+
+end sub
+
+'':::::
+private sub hWriteFooter _
+	( _
+		byval tottime as double _
+	) static
+
+	hCOMMENT( env.inf.name + "' compilation took " + str( tottime ) + " secs" )
+
+	''
+	edbgIncludeEnd( )
+
+end sub
+
+'':::::
+private sub hWriteBss _
+	( _
+		byval s as FBSYMBOL ptr )
+
+    do while( s <> NULL )
+
+    	select case symbGetClass( s )
+		'' name space?
+		case FB_SYMBCLASS_NAMESPACE
+			hWriteBss( symbGetNamespaceTbHead( s ) )
+
+		'' scope block?
+		case FB_SYMBCLASS_SCOPE
+			hWriteBss( symbGetScopeSymbTbHead( s ) )
+
+    	'' variable?
+    	case FB_SYMBCLASS_VAR
+    		hDeclVariable( s )
+
+    	end select
+
+    	s = s->next
+    loop
+
+end sub
+
+'':::::
+private sub hEmitVarConst _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
+
+    dim as string stext, stype, ostr
+    dim as integer dtype
+
+    dtype = symbGetType( s )
+
+    select case dtype
+   	case FB_DATATYPE_CHAR
+    	stext = QUOTE
+    	stext += *hEscape( symbGetVarLitText( s ) )
+    	stext += RSLASH + "0" + QUOTE
+
+	case FB_DATATYPE_WCHAR
+		stext = QUOTE
+		stext += *hEscapeW( symbGetVarLitTextW( s ) )
+		stext += *hGetWstrNull( )
+		stext += QUOTE
+
+	case else
+    	stext = *symbGetVarLitText( s )
+    end select
+
+    hEmitConstHeader( )
+
+    if( dtype = FB_DATATYPE_DOUBLE ) then
+       	hALIGN( 8 )
+    else
+      	hALIGN( 4 )
+    end if
+
+    stype = hGetTypeString( dtype )
+    ostr = *symbGetMangledName( s )
+    ostr += (":" + TABCHAR) + stype + TABCHAR + stext
+    emitWriteStr( FALSE, ostr )
+
+end sub
+
+'':::::
+private sub hWriteConst _
+	( _
+		byval s as FBSYMBOL ptr )
+
+    do while( s <> NULL )
+
+    	select case symbGetClass( s )
+		'' name space?
+		case FB_SYMBCLASS_NAMESPACE
+			hWriteConst( symbGetNamespaceTbHead( s ) )
+
+		'' scope block?
+		case FB_SYMBCLASS_SCOPE
+			hWriteConst( symbGetScopeSymbTbHead( s ) )
+
+    	'' variable?
+    	case FB_SYMBCLASS_VAR
+    		hDeclVariable( s )
+		end select
+
+    	s = s->next
+    loop
+
+end sub
+
+'':::::
+private sub hWriteData _
+	( _
+		byval s as FBSYMBOL ptr )
+
+    do while( s <> NULL )
+
+    	select case symbGetClass( s )
+		'' name space?
+		case FB_SYMBCLASS_NAMESPACE
+			hWriteData( symbGetNamespaceTbHead( s ) )
+
+		'' scope block?
+		case FB_SYMBCLASS_SCOPE
+			hWriteData( symbGetScopeSymbTbHead( s ) )
+
+    	'' variable?
+    	case FB_SYMBCLASS_VAR
+    		hDeclVariable( s )
+
+    	end select
+
+    	s = s->next
+    loop
+
+end sub
+
+'':::::
+private sub hWriteCtor _
+	( _
+		byval proc_head as FB_GLOBCTORLIST_ITEM ptr, _
+		byval is_ctor as integer _
+	)
+
+    if( proc_head = NULL ) then
+    	exit sub
+    end if
+
+    do
+    	'' was it emitted?
+    	if( symbGetProcIsEmitted( proc_head->sym ) ) then
+    		_setSection( iif( is_ctor, _
+    						  IR_SECTION_CONSTRUCTOR, _
+    						  IR_SECTION_DESTRUCTOR ), _
+    					 symbGetProcPriority( proc_head->sym ) )
+    		emitVARINIOFS( symbGetMangledName( proc_head->sym ), 0 )
+    	end if
+
+    	proc_head = proc_head->next
+    loop while( proc_head <> NULL )
+
+end sub
+
+'':::::
+private sub hWriteExport _
+	(  _
+		byval s as FBSYMBOL ptr _
+	) static
+
+    dim as string sname
+
+    '' for each proc exported..
+    do while( s <> NULL )
+    	select case symbGetClass( s )
+		'' name space?
+		case FB_SYMBCLASS_NAMESPACE
+			hWriteExport( symbGetNamespaceTbHead( s ) )
+
+    	case FB_SYMBCLASS_PROC
+    		if( symbGetIsDeclared( s ) ) then
+    			if( symbIsExport( s ) ) then
+    				hEmitExportHeader( )
+    				sname = hStripUnderscore( symbGetMangledName( s ) )
+    				emitWriteStr( TRUE, ".ascii " + QUOTE + " -export:" + _
+    							  sname + (QUOTE + NEWLINE) )
+    			end if
+    		end if
+    	end select
+
+    	s = s->next
+    loop
+
+end sub
+
+'':::::
+private sub hDeclVariable _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
+
+    '' already allocated?
+	if( symbGetVarIsAllocated( s ) ) then
+		return
+	end if
+
+	symbSetVarIsAllocated( s )
+
+	'' literal?
+    if( symbGetIsLiteral( s ) ) then
+
+    	select case symbGetType( s )
+    	'' udt? don't emit
+    	case FB_DATATYPE_STRUCT
+    		return
+
+    	'' string? check if ever referenced
+    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+    	  	if( symbGetIsAccessed( s ) = FALSE ) then
+    	  		return
+    	  	end if
+
+		'' anything else, only if len > 0
+		case else
+			if( symbGetLen( s ) <= 0 ) then
+				return
+			end if
+    	end select
+
+    	hEmitVarConst( s )
+
+    	return
+	end if
+
+	'' initialized?
+	if( symbGetIsInitialized( s ) ) then
+
+		'' extern or jump-tb?
+    	if( symbIsExtern( s ) ) then
+			return
+		elseif( symbGetIsJumpTb( s ) ) then
+			return
+		end if
+
+    	'' never referenced?
+    	if( symbGetIsAccessed( s ) = FALSE ) then
+			'' not public?
+    	    if( symbIsPublic( s ) = FALSE ) then
+    	    	return
+    	    end if
+		end if
+
+		hEmitDataHeader( )
+		astTypeIniFlush( s->var.initree, _
+						 s, _
+						 AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
+
+		return
+	end if
+
+    '' extern or dynamic (for the latter, only the array descriptor is emitted)?
+	if( (s->attrib and (FB_SYMBATTRIB_EXTERN or _
+			   			FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
+		return
+	end if
+
+    '' a string or array descriptor?
+	if( symbGetLen( s ) <= 0 ) then
+		return
+	end if
+
+	hEmitVarBss( s )
+
+end sub
+
+'':::::
+private sub hClearLocals _
+	( _
+		byval bytestoclear as integer, _
+		byval baseoffset as integer _
+	) static
+
+	dim as integer i
+    dim as string lname
+
+	if( bytestoclear = 0 ) then
+		exit sub
+	end if
+
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		if( cunsg(bytestoclear) \ 8 > 7 ) then
+
+	    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
+    			hPUSH( "edi" )
+    		end if
+
+			outp( "lea edi, [ebp-" & baseoffset + bytestoclear & "]" )
+			outp( "mov ecx," & cunsg(bytestoclear) \ 8 )
+			outp( "pxor mm0, mm0" )
+		    lname = *hMakeTmpStr( )
+		    hLABEL( lname )
+			outp( "movq [edi], mm0" )
+			outp( "add edi, 8" )
+			outp( "dec ecx" )
+			outp( "jnz " + lname )
+			outp( "emms" )
+
+    		if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
+    			hPOP( "edi" )
+    		end if
+
+		elseif( cunsg(bytestoclear) \ 8 > 0 ) then
+			outp( "pxor mm0, mm0" )
+			for i = cunsg(bytestoclear) \ 8 to 1 step -1
+				outp( "movq [ebp-" & ( i*8 ) & "], mm0" )
+			next
+			outp( "emms" )
+
+		end if
+
+		if( bytestoclear and 4 ) then
+			outp( "mov dword ptr [ebp-" & baseoffset + bytestoclear & "], 0" )
+		end if
+
+		exit sub
+	end if
+
+	if( cunsg(bytestoclear) \ 4 > 6 ) then
+
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
+   			hPUSH( "edi" )
+   		end if
+
+		outp( "lea edi, [ebp-" & baseoffset + bytestoclear & "]" )
+		outp( "mov ecx," & cunsg(bytestoclear) \ 4 )
+		outp( "xor eax, eax" )
+		outp( "rep stosd" )
+
+   		if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
+   			hPOP( "edi" )
+   		end if
+
+	else
+		for i = cunsg(bytestoclear) \ 4 to 1 step -1
+			 outp( "mov dword ptr [ebp-" & baseoffset + ( i*4 ) & "], 0" )
+		next
+	end if
+
+end sub
+
+'':::::
+private sub hCreateFrame _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
+
+    dim as integer bytestoalloc, bytestoclear
+	dim as zstring ptr lprof
+
+    bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
+
+    if( (bytestoalloc <> 0) or _
+    	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
+        symbGetIsMainProc( proc ) or _
+        env.clopt.debug or _
+		env.clopt.profile ) then
+
+    	hPUSH( "ebp" )
+    	outp( "mov ebp, esp" )
+
+        if( symbGetIsMainProc( proc ) ) then
+			outp( "and esp, 0xFFFFFFF0" )
+	    end if
+
+    	if( bytestoalloc > 0 ) then
+    		outp( "sub esp, " + str( bytestoalloc ) )
+    	end if
+    end if
+
+	if( env.clopt.target = FB_COMPTARGET_DOS ) then
+		if( env.clopt.profile ) then
+			lprof = hMakeProfileLabelName()
+
+			outEx(".section .data" + NEWLINE )
+			outEx( ".balign 4" + NEWLINE )
+			outEx( "." + *lprof + ":" + NEWLINE )
+			outp( ".long 0" )
+			outEx( ".section .text" + NEWLINE )
+			outp( "mov edx, offset ." + *lprof )
+			outp( "call _mcount" )
+		end if
+	end if
+
+    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
+    	hPUSH( "ebx" )
+    end if
+    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
+    	hPUSH( "esi" )
+    end if
+    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    	hPUSH( "edi" )
+    end if
+
+	''
+#if 0
+	bytestoclear = ((proc->proc.ext->stk.localofs - EMIT_LOCSTART) + 3) and (not 3)
+
+	hClearLocals( bytestoclear, 0 )
+#endif
+
+end sub
+
+''::::
+private sub hDestroyFrame _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval bytestopop as integer _
+	) static
+
+    dim as integer bytestoalloc
+
+    bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
+
+    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    	hPOP( "edi" )
+    end if
+    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
+    	hPOP( "esi" )
+    end if
+    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
+    	hPOP( "ebx" )
+    end if
+
+    if( (bytestoalloc <> 0) or _
+    	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
+        symbGetIsMainProc( proc ) or _
+        env.clopt.debug or _
+		env.clopt.profile ) then
+    	outp( "mov esp, ebp" )
+    	hPOP( "ebp" )
+    end if
+
+    if( bytestopop > 0 ) then
+    	outp( "ret " + str( bytestopop ) )
+    else
+    	outp( "ret" )
+    end if
+
+	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+    	outEx( ".size " + *symbGetMangledName( proc ) + ", .-" + *symbGetMangledName( proc ) + NEWLINE )
+	end if
+
+end sub
+
+'':::::
+private sub _setSection _
+	( _
+		byval section as integer, _
+		byval priority as integer _
+	) static
+
+    dim as string ostr
+
+    if( ( section = emit.lastsection ) and ( priority = emit.lastpriority ) ) then
+    	exit sub
+    end if
+
+	ostr = NEWLINE + ".section ."
+
+	select case as const section
+	case IR_SECTION_CONST
+		ostr += "rodata"
+
+	case IR_SECTION_DATA
+		ostr += "data"
+
+	case IR_SECTION_BSS
+		ostr += "bss"
+
+	case IR_SECTION_CODE
+		ostr += "text"
+
+	case IR_SECTION_DIRECTIVE
+		ostr += "drectve"
+
+	case IR_SECTION_CONSTRUCTOR
+		ostr += "ctors"
+		if( priority > 0 ) then
+			ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
+		end if
+		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+			ostr += ", " + QUOTE + "aw" + QUOTE + ", @progbits"
+		end if
+
+	case IR_SECTION_DESTRUCTOR
+		ostr += "dtors"
+		if( priority > 0 ) then
+			ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
+		end if
+		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+			ostr += ", " + QUOTE +  "aw" + QUOTE + ", @progbits"
+		end if
+
+	end select
+
+	ostr += NEWLINE
+
+	outEx( ostr )
+
+	emit.lastsection = section
+	emit.lastpriority = priority
+
+end sub
+
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' implementation
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1202,66 +1711,6 @@ private sub _emitLABEL _
 	ostr = *symbGetMangledName( label )
 	ostr += ":" + NEWLINE
 	outEx( ostr )
-
-end sub
-
-'':::::
-sub emitSECTION _
-	( _
-		byval section as integer, _
-		byval priority as integer _
-	) static
-
-    dim as string ostr
-
-    if( ( section = emit.lastsection ) and ( priority = emit.lastpriority ) ) then
-    	exit sub
-    end if
-
-	ostr = NEWLINE + ".section ."
-
-	select case as const section
-	case EMIT_SECTYPE_CONST
-		ostr += "rodata"
-
-	case EMIT_SECTYPE_DATA
-		ostr += "data"
-
-	case EMIT_SECTYPE_BSS
-		ostr += "bss"
-
-	case EMIT_SECTYPE_CODE
-		ostr += "text"
-
-	case EMIT_SECTYPE_DIRECTIVE
-		ostr += "drectve"
-
-	case EMIT_SECTYPE_CONSTRUCTOR
-		ostr += "ctors"
-		if( priority > 0 ) then
-			ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
-		end if
-		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-			ostr += ", " + QUOTE + "aw" + QUOTE + ", @progbits"
-		end if
-
-	case EMIT_SECTYPE_DESTRUCTOR
-		ostr += "dtors"
-		if( priority > 0 ) then
-			ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
-		end if
-		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-			ostr += ", " + QUOTE +  "aw" + QUOTE + ", @progbits"
-		end if
-
-	end select
-
-	ostr += NEWLINE
-
-	outEx( ostr )
-
-	emit.lastsection = section
-	emit.lastpriority = priority
 
 end sub
 
@@ -5433,8 +5882,6 @@ private sub _emitMEMCLEAR _
 
 end sub
 
-declare sub hClearLocals( byval bytestoclear as integer, byval baseoffset as integer )
-
 '':::::
 private sub _emitSTKCLEAR _
 	( _
@@ -5449,436 +5896,54 @@ private sub _emitSTKCLEAR _
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' procs
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-private sub hClearLocals _
-	( _
-		byval bytestoclear as integer, _
-		byval baseoffset as integer _
-	) static
-
-	dim as integer i
-    dim as string lname
-
-	if( bytestoclear = 0 ) then
-		exit sub
-	end if
-
-	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
-		if( cunsg(bytestoclear) \ 8 > 7 ) then
-
-	    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
-    			hPUSH( "edi" )
-    		end if
-
-			outp( "lea edi, [ebp-" & baseoffset + bytestoclear & "]" )
-			outp( "mov ecx," & cunsg(bytestoclear) \ 8 )
-			outp( "pxor mm0, mm0" )
-		    lname = *hMakeTmpStr( )
-		    hLABEL( lname )
-			outp( "movq [edi], mm0" )
-			outp( "add edi, 8" )
-			outp( "dec ecx" )
-			outp( "jnz " + lname )
-			outp( "emms" )
-
-    		if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
-    			hPOP( "edi" )
-    		end if
-
-		elseif( cunsg(bytestoclear) \ 8 > 0 ) then
-			outp( "pxor mm0, mm0" )
-			for i = cunsg(bytestoclear) \ 8 to 1 step -1
-				outp( "movq [ebp-" & ( i*8 ) & "], mm0" )
-			next
-			outp( "emms" )
-
-		end if
-
-		if( bytestoclear and 4 ) then
-			outp( "mov dword ptr [ebp-" & baseoffset + bytestoclear & "], 0" )
-		end if
-
-		exit sub
-	end if
-
-	if( cunsg(bytestoclear) \ 4 > 6 ) then
-
-    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
-   			hPUSH( "edi" )
-   		end if
-
-		outp( "lea edi, [ebp-" & baseoffset + bytestoclear & "]" )
-		outp( "mov ecx," & cunsg(bytestoclear) \ 4 )
-		outp( "xor eax, eax" )
-		outp( "rep stosd" )
-
-   		if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
-   			hPOP( "edi" )
-   		end if
-
-	else
-		for i = cunsg(bytestoclear) \ 4 to 1 step -1
-			 outp( "mov dword ptr [ebp-" & baseoffset + ( i*4 ) & "], 0" )
-		next
-	end if
-
-end sub
-
-'':::::
-private sub hCreateFrame _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-    dim as integer bytestoalloc, bytestoclear
-	dim as zstring ptr lprof
-
-    bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
-
-    if( (bytestoalloc <> 0) or _
-    	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
-        symbGetIsMainProc( proc ) or _
-        env.clopt.debug or _
-		env.clopt.profile ) then
-
-    	hPUSH( "ebp" )
-    	outp( "mov ebp, esp" )
-
-        if( symbGetIsMainProc( proc ) ) then
-			outp( "and esp, 0xFFFFFFF0" )
-	    end if
-
-    	if( bytestoalloc > 0 ) then
-    		outp( "sub esp, " + str( bytestoalloc ) )
-    	end if
-    end if
-
-	if( env.clopt.target = FB_COMPTARGET_DOS ) then
-		if( env.clopt.profile ) then
-			lprof = hMakeProfileLabelName()
-
-			outEx(".section .data" + NEWLINE )
-			outEx( ".balign 4" + NEWLINE )
-			outEx( "." + *lprof + ":" + NEWLINE )
-			outp( ".long 0" )
-			outEx( ".section .text" + NEWLINE )
-			outp( "mov edx, offset ." + *lprof )
-			outp( "call _mcount" )
-		end if
-	end if
-
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
-    	hPUSH( "ebx" )
-    end if
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
-    	hPUSH( "esi" )
-    end if
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
-    	hPUSH( "edi" )
-    end if
-
-	''
-#if 0
-	bytestoclear = ((proc->proc.ext->stk.localofs - EMIT_LOCSTART) + 3) and (not 3)
-
-	hClearLocals( bytestoclear, 0 )
-#endif
-
-end sub
-
-''::::
-private sub hDestroyFrame _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval bytestopop as integer _
-	) static
-
-    dim as integer bytestoalloc
-
-    bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
-
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
-    	hPOP( "edi" )
-    end if
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
-    	hPOP( "esi" )
-    end if
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
-    	hPOP( "ebx" )
-    end if
-
-    if( (bytestoalloc <> 0) or _
-    	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
-        symbGetIsMainProc( proc ) or _
-        env.clopt.debug or _
-		env.clopt.profile ) then
-    	outp( "mov esp, ebp" )
-    	hPOP( "ebp" )
-    end if
-
-    if( bytestopop > 0 ) then
-    	outp( "ret " + str( bytestopop ) )
-    else
-    	outp( "ret" )
-    end if
-
-	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-    	outEx( ".size " + *symbGetMangledName( proc ) + ", .-" + *symbGetMangledName( proc ) + NEWLINE )
-	end if
-
-end sub
-
-'':::::
-sub emitPROCHEADER _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval initlabel as FBSYMBOL ptr _
-	) static
-
-	'' do nothing, proc will be only emitted at PROCFOOTER
-
-	emitReset( )
-
-	edbgProcEmitBegin( proc )
-
-end sub
-
-'':::::
-sub emitPROCFOOTER _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval bytestopop as integer, _
-		byval initlabel as FBSYMBOL ptr, _
-		byval exitlabel as FBSYMBOL ptr _
-	) static
-
-    dim as integer oldpos, ispublic
-
-    ispublic = symbIsPublic( proc )
-
-	emitSECTION( EMIT_SECTYPE_CODE, 0 )
-
-	''
-	edbgEmitProcHeader( proc )
-
-	''
-	hALIGN( 16 )
-
-	if( ispublic ) then
-		hPUBLIC( symbGetMangledName( proc ), symbIsExport( proc ) )
-	end if
-
-	hLABEL( symbGetMangledName( proc ) )
-
-	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-		outEx( ".type " + *symbGetMangledName( proc ) + ", @function" + NEWLINE )
-	end if
-
-	'' frame
-	hCreateFrame( proc )
-
-    edbgEmitLineFlush( proc, proc->proc.ext->dbg.iniline, proc )
-
-    ''
-    emitFlush( )
-
-	''
-	hDestroyFrame( proc, bytestopop )
-
-    edbgEmitLineFlush( proc, proc->proc.ext->dbg.endline, exitlabel )
-
-    edbgEmitProcFooter( proc, initlabel, exitlabel )
-
-end sub
-
-'':::::
-function emitAllocLocal _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer static
-
-    dim as integer ofs
-
-    proc->proc.ext->stk.localofs += ((lgt + 3) and not 3)
-
-	ofs = -proc->proc.ext->stk.localofs
-
-    if( -ofs > proc->proc.ext->stk.localmax ) then
-    	proc->proc.ext->stk.localmax = -ofs
-    end if
-
-	function = ofs
-
-end function
-
-'':::::
-function emitAllocArg _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer static
-
-	function = proc->proc.ext->stk.argofs
-
-    proc->proc.ext->stk.argofs += ((lgt + 3) and not 3)
-
-end function
-
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' global ctors
+'' debugging
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitWriteCtorSection _
+private sub _emitLINEINI _
 	( _
-		byval proc_head as FB_GLOBCTORLIST_ITEM ptr, _
-		byval is_ctor as integer _
+		byval proc as FBSYMBOL ptr, _
+		byval lnum as integer, _
+		byval pos_ as integer _
 	)
 
-    if( proc_head = NULL ) then
-    	exit sub
-    end if
-
-    do
-    	'' was it emitted?
-    	if( symbGetProcIsEmitted( proc_head->sym ) ) then
-    		emitSECTION( iif( is_ctor, EMIT_SECTYPE_CONSTRUCTOR, EMIT_SECTYPE_DESTRUCTOR ), symbGetProcPriority( proc_head->sym ) )
-    		emitVARINIOFS( symbGetMangledName( proc_head->sym ), 0 )
-    	end if
-
-    	proc_head = proc_head->next
-    loop while( proc_head <> NULL )
+	edbgLineBegin( proc, lnum, pos_ )
 
 end sub
 
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' data
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
 '':::::
-sub emitDATALABEL _
+private sub _emitLINEEND _
 	( _
-		byval label as zstring ptr _
-	) static
+		byval proc as FBSYMBOL ptr, _
+		byval lnum as integer, _
+		byval pos_ as integer _
+	)
 
-    dim ostr as string
-
-	ostr = *label
-	ostr += ":" + NEWLINE
-	outEx( ostr )
+	edbgLineEnd( proc, lnum, pos_ )
 
 end sub
 
 '':::::
-sub emitDATABEGIN _
+private sub _emitSCOPEINI _
 	( _
-		byval lname as zstring ptr _
-	) static
+		byval sym as FBSYMBOL ptr, _
+		byval lnum as integer, _
+		byval pos_ as integer _
+	)
 
-    dim as string ostr
-    dim as integer currpos
-
-	if( emit.dataend <> 0 ) then
-		currpos = seek( env.outf.num )
-
-		seek #env.outf.num, emit.dataend
-
-		ostr = ".int "
-		ostr += *lname
-		ostr += NEWLINE
-		outEx( ostr )
-
-		seek #env.outf.num, currpos
-
-    end if
+	edbgEmitScopeINI( sym )
 
 end sub
 
 '':::::
-sub emitDATAEND static
-    dim as string ostr
-
-    '' link + NULL
-    outEx( ".short 0xffff" + NEWLINE )
-
-    emit.dataend = seek( env.outf.num )
-
-    ostr = ".int 0" + space( FB_MAXNAMELEN ) + NEWLINE
-    outEx( ostr )
-
-end sub
-
-'':::::
-sub emitDATA _
+private sub _emitSCOPEEND _
 	( _
-		byval litext as zstring ptr, _
-		byval litlen as integer, _
-		byval typ as integer _
-	) static
+		byval sym as FBSYMBOL ptr, _
+		byval lnum as integer, _
+		byval pos_ as integer _
+	)
 
-    static as zstring ptr esctext
-    dim as string ostr
-
-    esctext = hEscape( litext )
-
-	'' len + asciiz
-	if( typ <> INVALID ) then
-		ostr = ".short 0x" + hex( litlen ) + NEWLINE
-		outEx( ostr )
-
-		ostr = ".ascii " + QUOTE
-		ostr += *esctext
-		ostr += RSLASH + "0" + QUOTE + NEWLINE
-		outEx( ostr )
-	else
-		outEx( ".short 0x0000" + NEWLINE )
-	end if
-
-end sub
-
-'':::::
-sub emitDATAW _
-	( _
-		byval litext as wstring ptr, _
-		byval litlen as integer, _
-		byval typ as integer _
-	) static
-
-    static as zstring ptr esctext
-    dim as string ostr
-
-    esctext = hEscapeW( litext )
-
-	'' (0x8000 or len) + unicode
-	if( typ <> INVALID ) then
-		ostr = ".short 0x" + hex( &h8000 or litlen ) + NEWLINE
-		outEx( ostr )
-
-		ostr = ".ascii " + QUOTE + *esctext + *hGetWstrNull( ) + (QUOTE + NEWLINE)
-		outEx( ostr )
-	else
-		outEx( ".short 0x0000" + NEWLINE )
-	end if
-
-end sub
-
-'':::::
-sub emitDATAOFS _
-	( _
-		byval sname as zstring ptr _
-	) static
-
-    dim ostr as string
-
-	outEx( ".short 0xfffe" + NEWLINE )
-
-	ostr = ".int "
-	ostr += *sname
-	ostr += NEWLINE
-	outEx( ostr )
+	edbgEmitScopeEND( sym )
 
 end sub
 
@@ -5892,11 +5957,11 @@ sub emitVARINIBEGIN _
 		byval sym as FBSYMBOL ptr _
 	) static
 
-	emitSECTION( EMIT_SECTYPE_DATA, 0 )
+	_setSection( IR_SECTION_DATA, 0 )
 
 	'' add dbg info, if public or shared
     'if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_PUBLIC)) > 0 ) then
-   		edbgEmitGlobalVar( sym, EMIT_SECTYPE_DATA )
+   		edbgEmitGlobalVar( sym, IR_SECTION_DATA )
    	'end if
 
    	if( symbGetType( sym ) = FB_DATATYPE_DOUBLE ) then
@@ -6032,393 +6097,13 @@ sub emitVARINIPAD _
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' high-level
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-#define hEmitBssHeader( ) emitSECTION( EMIT_SECTYPE_BSS, 0 )
-
-'':::::
-#ifdef __FB_LINUX__
-''
-'' !!!FIXME!!!
-''
-'' Linux appears to support .rodata section, but I'm not sure about other platforms, and that's
-'' probably the reason FB used to output a normal .data section in any case...
-''
-#define hEmitConstHeader( ) emitSECTION( EMIT_SECTYPE_CONST, 0 )
-#else
-#define hEmitConstHeader( ) emitSECTION( EMIT_SECTYPE_DATA, 0 )
-#endif
-
-'':::::
-#define hEmitDataHeader( ) emitSECTION( EMIT_SECTYPE_DATA, 0 )
-
-'':::::
-#define hEmitExportHeader( ) emitSECTION( EMIT_SECTYPE_DIRECTIVE, 0 )
-
-'':::::
-sub emitWriteHeader( ) static
-
-	''
-	edbgEmitHeader( env.inf.name )
-
-	''
-	hWriteStr( TRUE,  ".intel_syntax noprefix" )
-    hWriteStr( FALSE, "" )
-    hCOMMENT( env.inf.name + "' compilation started at " + time + " (" + FB_SIGN + ")" )
-
-end sub
-
-'':::::
-sub emitWriteFooter _
-	( _
-		byval tottime as double _
-	) static
-
-	hCOMMENT( env.inf.name + "' compilation took " + str( tottime ) + " secs" )
-
-	''
-	edbgIncludeEnd( )
-
-end sub
-
-'':::::
-private function hGetTypeString _
-	( _
-		byval typ as integer _
-	) as string static
-
-	select case as const typ
-    case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
-    	function = ".byte"
-
-    case FB_DATATYPE_USHORT, FB_DATATYPE_SHORT
-    	function = ".short"
-
-    case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-    	 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    	function = ".int"
-
-    case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-    	function = ".quad"
-
-    case FB_DATATYPE_SINGLE
-		function = ".float"
-
-	case FB_DATATYPE_DOUBLE
-    	function = ".double"
-
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		'' wchar stills the same as it is emitted as escape sequences
-    	function = ".ascii"
-
-    case FB_DATATYPE_STRING
-    	function = ".int"
-
-	case FB_DATATYPE_STRUCT
-		function = "INVALID"
-
-    case else
-    	if( typ >= FB_DATATYPE_POINTER ) then
-    		function = ".int"
-    	end if
-	end select
-
-end function
-
-'':::::
-private sub hEmitVarBss _
-	( _
-		byval s as FBSYMBOL ptr _
-	) static
-
-    dim as string alloc, ostr
-    dim as integer attrib, elements
-
-	attrib = symbGetAttrib( s )
-
-	elements = 1
-    if( symbGetArrayDimensions( s ) > 0 ) then
-    	elements = symbGetArrayElements( s )
-	end if
-
-    hEmitBssHeader( )
-
-    '' allocation modifier
-    if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
-      	if( (attrib and FB_SYMBATTRIB_PUBLIC) > 0 ) then
-       		hPUBLIC( *symbGetMangledName( s ), TRUE )
-		end if
-       	alloc = ".lcomm"
-	else
-       	hPUBLIC( *symbGetMangledName( s ), FALSE )
-       	alloc = ".comm"
-    end if
-
-    '' align
-    if( symbGetType( s ) = FB_DATATYPE_DOUBLE ) then
-    	hALIGN( 8 )
-    	hWriteStr( TRUE, ".balign 8" )
-	else
-    	hALIGN( 4 )
-    end if
-
-	'' emit
-    ostr = alloc + TABCHAR
-    ostr += *symbGetMangledName( s )
-    ostr += "," + str( symbGetLen( s ) * elements )
-    hWriteStr( TRUE, ostr )
-
-    '' add dbg info, if public or shared
-    if( (attrib and (FB_SYMBATTRIB_SHARED or _
-    				 FB_SYMBATTRIB_COMMON or _
-    				 FB_SYMBATTRIB_PUBLIC)) > 0 ) then
-    	edbgEmitGlobalVar( s, EMIT_SECTYPE_BSS )
-	end if
-
-end sub
-
-'':::::
-sub emitWriteBss _
-	( _
-		byval s as FBSYMBOL ptr )
-
-    do while( s <> NULL )
-
-    	select case symbGetClass( s )
-		'' name space?
-		case FB_SYMBCLASS_NAMESPACE
-			emitWriteBss( symbGetNamespaceTbHead( s ) )
-
-		'' scope block?
-		case FB_SYMBCLASS_SCOPE
-			emitWriteBss( symbGetScopeSymbTbHead( s ) )
-
-    	'' variable?
-    	case FB_SYMBCLASS_VAR
-    		emitDeclVariable( s )
-
-    	end select
-
-    	s = s->next
-    loop
-
-end sub
-
-'':::::
-private sub hEmitVarConst _
-	( _
-		byval s as FBSYMBOL ptr _
-	) static
-
-    dim as string stext, stype, ostr
-    dim as integer dtype
-
-    dtype = symbGetType( s )
-
-    select case dtype
-   	case FB_DATATYPE_CHAR
-    	stext = QUOTE
-    	stext += *hEscape( symbGetVarLitText( s ) )
-    	stext += RSLASH + "0" + QUOTE
-
-	case FB_DATATYPE_WCHAR
-		stext = QUOTE
-		stext += *hEscapeW( symbGetVarLitTextW( s ) )
-		stext += *hGetWstrNull( )
-		stext += QUOTE
-
-	case else
-    	stext = *symbGetVarLitText( s )
-    end select
-
-    hEmitConstHeader( )
-
-    if( dtype = FB_DATATYPE_DOUBLE ) then
-       	hALIGN( 8 )
-    else
-      	hALIGN( 4 )
-    end if
-
-    stype = hGetTypeString( dtype )
-    ostr = *symbGetMangledName( s )
-    ostr += (":" + TABCHAR) + stype + TABCHAR + stext
-    hWriteStr( FALSE, ostr )
-
-end sub
-
-'':::::
-sub emitWriteConst _
-	( _
-		byval s as FBSYMBOL ptr )
-
-    do while( s <> NULL )
-
-    	select case symbGetClass( s )
-		'' name space?
-		case FB_SYMBCLASS_NAMESPACE
-			emitWriteConst( symbGetNamespaceTbHead( s ) )
-
-		'' scope block?
-		case FB_SYMBCLASS_SCOPE
-			emitWriteConst( symbGetScopeSymbTbHead( s ) )
-
-    	'' variable?
-    	case FB_SYMBCLASS_VAR
-    		emitDeclVariable( s )
-		end select
-
-    	s = s->next
-    loop
-
-end sub
-
-'':::::
-sub emitWriteData _
-	( _
-		byval s as FBSYMBOL ptr )
-
-    do while( s <> NULL )
-
-    	select case symbGetClass( s )
-		'' name space?
-		case FB_SYMBCLASS_NAMESPACE
-			emitWriteData( symbGetNamespaceTbHead( s ) )
-
-		'' scope block?
-		case FB_SYMBCLASS_SCOPE
-			emitWriteData( symbGetScopeSymbTbHead( s ) )
-
-    	'' variable?
-    	case FB_SYMBCLASS_VAR
-    		emitDeclVariable( s )
-
-    	end select
-
-    	s = s->next
-    loop
-
-end sub
-
-'':::::
-sub emitWriteExport _
-	(  _
-		byval s as FBSYMBOL ptr _
-	) static
-
-    dim as string sname
-
-    '' for each proc exported..
-    do while( s <> NULL )
-    	select case symbGetClass( s )
-		'' name space?
-		case FB_SYMBCLASS_NAMESPACE
-			emitWriteExport( symbGetNamespaceTbHead( s ) )
-
-    	case FB_SYMBCLASS_PROC
-    		if( symbGetIsDeclared( s ) ) then
-    			if( symbIsExport( s ) ) then
-    				hEmitExportHeader( )
-    				sname = hStripUnderscore( symbGetMangledName( s ) )
-    				hWriteStr( TRUE, ".ascii " + QUOTE + " -export:" + sname + (QUOTE + NEWLINE) )
-    			end if
-    		end if
-    	end select
-
-    	s = s->next
-    loop
-
-end sub
-
-'':::::
-sub emitDeclVariable _
-	( _
-		byval s as FBSYMBOL ptr _
-	) static
-
-    '' already allocated?
-	if( symbGetVarIsAllocated( s ) ) then
-		return
-	end if
-
-	symbSetVarIsAllocated( s )
-
-	'' literal?
-    if( symbGetIsLiteral( s ) ) then
-
-    	select case symbGetType( s )
-    	'' udt? don't emit
-    	case FB_DATATYPE_STRUCT
-    		return
-
-    	'' string? check if ever referenced
-    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	  	if( symbGetIsAccessed( s ) = FALSE ) then
-    	  		return
-    	  	end if
-
-		'' anything else, only if len > 0
-		case else
-			if( symbGetLen( s ) <= 0 ) then
-				return
-			end if
-    	end select
-
-    	hEmitVarConst( s )
-
-    	return
-	end if
-
-	'' initialized?
-	if( symbGetIsInitialized( s ) ) then
-
-		'' extern or jump-tb?
-    	if( symbIsExtern( s ) ) then
-			return
-		elseif( symbGetIsJumpTb( s ) ) then
-			return
-		end if
-
-    	'' never referenced?
-    	if( symbGetIsAccessed( s ) = FALSE ) then
-			'' not public?
-    	    if( symbIsPublic( s ) = FALSE ) then
-    	    	return
-    	    end if
-		end if
-
-		hEmitDataHeader( )
-		astTypeIniFlush( s->var.initree, _
-						 s, _
-						 AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
-
-		return
-	end if
-
-    '' extern or dynamic (for the latter, only the array descriptor is emitted)?
-	if( (s->attrib and (FB_SYMBATTRIB_EXTERN or _
-			   			FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
-		return
-	end if
-
-    '' a string or array descriptor?
-	if( symbGetLen( s ) <= 0 ) then
-		return
-	end if
-
-	hEmitVarBss( s )
-
-end sub
-
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' functions table
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 #define EMIT_CBENTRY(op) @_emit##op##
 
 	'' same order as EMIT_NODEOP_ENUM
-	dim shared emit_opfTB(0 to EMIT_MAXOPS-1) as any ptr => _
+	dim shared _opFnTB(0 to EMIT_MAXOPS-1) as any ptr => _
 	{ _
 		EMIT_CBENTRY(LOADI2I), EMIT_CBENTRY(LOADF2I), EMIT_CBENTRY(LOADL2I), _
 		EMIT_CBENTRY(LOADI2F), EMIT_CBENTRY(LOADF2F), EMIT_CBENTRY(LOADL2F), _
@@ -6488,6 +6173,457 @@ end sub
 		EMIT_CBENTRY(MEMMOVE), _
 		EMIT_CBENTRY(MEMSWAP), _
 		EMIT_CBENTRY(MEMCLEAR), _
-		EMIT_CBENTRY(STKCLEAR) _
+		EMIT_CBENTRY(STKCLEAR), _
+        _
+		EMIT_CBENTRY(LINEINI), _
+		EMIT_CBENTRY(LINEEND), _
+		EMIT_CBENTRY(SCOPEINI), _
+		EMIT_CBENTRY(SCOPEEND) _
 	}
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' emit.vtbl implementation
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+private function _init _
+	( _
+	) as integer
+
+	''
+	hInitRegTB( )
+
+	'' wchar len depends on the target platform
+	dtypeTB(FB_DATATYPE_WCHAR) = dtypeTB(env.target.wchar.type)
+
+	''
+	emit.keyinited 	= FALSE
+
+	''
+	emit.dataend = 0
+	emit.lastsection = INVALID
+	emit.lastpriority = INVALID
+
+    ''
+	edbgInit( )
+
+	function = TRUE
+
+end function
+
+'':::::
+private sub _end
+
+	edbgEnd( )
+
+	''
+	hEndRegTB( )
+
+    hEndKeywordsTB( )
+
+end sub
+
+'':::::
+private function _open _
+	( _
+	) as integer
+
+	if( hFileExists( env.outf.name ) ) then
+		kill env.outf.name
+	end if
+
+	env.outf.num = freefile
+	if( open( env.outf.name, for binary, access read write, as #env.outf.num ) <> 0 ) then
+		return FALSE
+	end if
+
+	'' header
+	hWriteHeader( )
+
+	function = TRUE
+
+end function
+
+'':::::
+private sub _close _
+	( _
+		byval tottime as double _
+	)
+
+    ''
+    hWriteFooter( tottime )
+
+	'' const
+	hWriteConst( symbGetGlobalTbHead( ) )
+
+	'' data
+	hWriteData( symbGetGlobalTbHead( ) )
+
+	'' bss
+	hWriteBss( symbGetGlobalTbHead( ) )
+
+	''
+	if( env.clopt.export ) then
+		hWriteExport( symbGetGlobalTbHead( ) )
+	end if
+
+	''
+	hWriteCtor( symbGetGlobCtorListHead( ), TRUE )
+	hWriteCtor( symbGetGlobDtorListHead( ), FALSE )
+
+	''
+	edbgEmitFooter( )
+
+	''
+	if( close( #env.outf.num ) <> 0 ) then
+		'' ...
+	end if
+
+end sub
+
+'':::::
+private function _getVarName _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as string static
+
+	dim as string sname
+
+	if( s <> NULL ) then
+		sname = *symbGetMangledName( s )
+
+		if( symbGetOfs( s ) > 0 ) then
+			sname += "+" + str( symbGetOfs( s ) )
+
+		elseif( symbGetOfs( s ) < 0 ) then
+			sname += str( symbGetOfs( s ) )
+		end if
+
+		function = sname
+
+	else
+		function = ""
+	end if
+
+end function
+
+'':::::
+private function _procGetFrameRegName _
+	( _
+	) as zstring ptr
+
+	static as zstring * 3+1 sname = "ebp"
+
+	function = @sname
+
+end function
+
+'':::::
+private function _isRegPreserved _
+	( _
+		byval dclass as integer, _
+		byval reg as integer _
+	) as integer static
+
+    '' fp? fpu stack *must* be cleared before calling any function
+    if( dclass = FB_DATACLASS_FPOINT ) then
+    	return FALSE
+    end if
+
+    select case as const reg
+    case EMIT_REG_EAX, EMIT_REG_ECX, EMIT_REG_EDX
+    	return FALSE
+    case else
+    	return TRUE
+	end select
+
+end function
+
+'':::::
+private sub _getResultReg _
+	( _
+		byval dtype as integer, _
+		byval dclass as integer, _
+		byref r1 as integer, _
+		byref r2 as integer _
+	) static
+
+	if( dtype >= FB_DATATYPE_POINTER ) then
+		dtype = FB_DATATYPE_UINT
+	end if
+
+	if( dclass = FB_DATACLASS_INTEGER ) then
+		r1 = EMIT_REG_EAX
+		if( ISLONGINT( dtype ) ) then
+			r2 = EMIT_REG_EDX
+		else
+			r2 = INVALID
+		end if
+	else
+		r1 = 0							'' st(0)
+		r2 = INVALID
+	end if
+
+end sub
+
+'':::::
+private function _getFreePreservedReg _
+	( _
+		byval dclass as integer, _
+		byval dtype as integer _
+	) as integer static
+
+	function = INVALID
+
+	'' fp? no other regs can be used
+	if( dclass = FB_DATACLASS_FPOINT ) then
+		exit function
+	end if
+
+	'' try to reuse regs that are preserved between calls
+	if( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_EBX ) ) then
+		function = EMIT_REG_EBX
+
+	elseif( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_ESI ) ) then
+		if( symbGetDataSize( dtype ) <> 1 ) then
+			function = EMIT_REG_ESI
+		end if
+
+	elseif( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_EDI ) ) then
+		if( symbGetDataSize( dtype ) <> 1 ) then
+			function = EMIT_REG_EDI
+		end if
+	end if
+
+end function
+
+'':::::
+private function _isKeyword _
+	( _
+		byval text as zstring ptr _
+	) as integer static
+
+	if( emit.keyinited = FALSE ) then
+		hInitKeywordsTB( )
+	end if
+
+	if( hashLookup( @emit.keyhash, text ) <> NULL ) then
+		function = TRUE
+	else
+		function = FALSE
+	end if
+
+end function
+
+'':::::
+private sub _procBegin _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+    proc->proc.ext->stk.localofs = EMIT_LOCSTART
+    proc->proc.ext->stk.localmax = EMIT_LOCSTART
+	proc->proc.ext->stk.argofs = EMIT_ARGSTART
+
+	edbgProcBegin( proc )
+
+end sub
+
+'':::::
+private sub _procEnd _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+	edbgProcEnd( proc )
+
+end sub
+
+'':::::
+private function _procAllocStaticVars _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer static
+
+    function = FALSE
+
+    do while( s <> NULL )
+
+    	select case s->class
+    	'' scope block? recursion..
+    	case FB_SYMBCLASS_SCOPE
+    		_procAllocStaticVars( symbGetScopeSymbTbHead( s ) )
+
+    	'' variable?
+    	case FB_SYMBCLASS_VAR
+    		'' static?
+    		if( symbIsStatic( s ) ) then
+				hDeclVariable( s )
+			end if
+		end select
+
+    	s = s->next
+    loop
+
+    function = TRUE
+
+end function
+
+'':::::
+private function _procAllocLocal _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lgt as integer _
+	) as integer static
+
+    dim as integer ofs
+
+    proc->proc.ext->stk.localofs += ((lgt + 3) and not 3)
+
+	ofs = -proc->proc.ext->stk.localofs
+
+    if( -ofs > proc->proc.ext->stk.localmax ) then
+    	proc->proc.ext->stk.localmax = -ofs
+    end if
+
+	function = ofs
+
+end function
+
+'':::::
+private function _procAllocArg _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lgt as integer _
+	) as integer static
+
+	function = proc->proc.ext->stk.argofs
+
+    proc->proc.ext->stk.argofs += ((lgt + 3) and not 3)
+
+end function
+
+'':::::
+private sub _procHeader _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval initlabel as FBSYMBOL ptr _
+	)
+
+	'' do nothing, proc will be only emitted at PROCFOOTER
+
+	emitReset( )
+
+	edbgProcEmitBegin( proc )
+
+end sub
+
+'':::::
+private sub _procFooter _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval bytestopop as integer, _
+		byval initlabel as FBSYMBOL ptr, _
+		byval exitlabel as FBSYMBOL ptr _
+	)
+
+    dim as integer oldpos = any, ispublic = any
+
+    ispublic = symbIsPublic( proc )
+
+	_setSection( IR_SECTION_CODE, 0 )
+
+	''
+	edbgEmitProcHeader( proc )
+
+	''
+	hALIGN( 16 )
+
+	if( ispublic ) then
+		hPUBLIC( symbGetMangledName( proc ), symbIsExport( proc ) )
+	end if
+
+	hLABEL( symbGetMangledName( proc ) )
+
+	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+		outEx( ".type " + *symbGetMangledName( proc ) + ", @function" + NEWLINE )
+	end if
+
+	'' frame
+	hCreateFrame( proc )
+
+    edbgEmitLineFlush( proc, proc->proc.ext->dbg.iniline, proc )
+
+    ''
+    emitFlush( )
+
+	''
+	hDestroyFrame( proc, bytestopop )
+
+    edbgEmitLineFlush( proc, proc->proc.ext->dbg.endline, exitlabel )
+
+    edbgEmitProcFooter( proc, initlabel, exitlabel )
+
+end sub
+
+'':::::
+private sub _scopeBegin _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+	edbgScopeBegin( s )
+
+end sub
+
+'':::::
+private sub _scopeEnd _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+	edbgScopeEnd( s )
+
+end sub
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' initialization/finalization
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function emitGasX86_ctor _
+	( _
+	) as integer
+
+	static as EMIT_VTBL _vtbl = _
+	( _
+		@_init, _
+		@_end, _
+		@_open, _
+		@_close, _
+		@_isKeyword, _
+		@_isRegPreserved, _
+		@_getFreePreservedReg, _
+		@_getResultReg, _
+		@_getVarName, _
+		@_procGetFrameRegName, _
+		@_procBegin, _
+		@_procEnd, _
+		@_procHeader, _
+		@_procFooter, _
+		@_procAllocArg, _
+		@_procAllocLocal, _
+		@_procAllocStaticVars, _
+		@_scopeBegin, _
+		@_scopeEnd, _
+		@_setSection _
+	)
+
+	emit.vtbl = _vtbl
+	emit.opFnTb = @_opFnTB(0)
+
+	function = TRUE
+
+end function
+
 

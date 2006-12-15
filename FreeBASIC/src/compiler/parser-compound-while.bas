@@ -40,8 +40,8 @@ function cWhileStmtBegin as integer
 	lexSkipToken( )
 
 	'' add ini and end labels
-	il = symbAddLabel( NULL, TRUE )
-	el = symbAddLabel( NULL, FALSE )
+	il = symbAddLabel( NULL )
+	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	'' emit ini label
 	astAdd( astNewLABEL( il ) )

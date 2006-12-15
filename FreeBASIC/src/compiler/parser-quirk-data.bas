@@ -35,12 +35,7 @@
 function cDataStmt  _
 	( _
 		byval tk as FB_TOKEN _
-	) as integer static
-
-	dim as ASTNODE ptr expr
-	dim as FBSYMBOL ptr litsym, sym
-	dim as string littext
-	dim as FBSYMCHAIN ptr chain_
+	) as integer
 
 	function = FALSE
 
@@ -50,17 +45,18 @@ function cDataStmt  _
 		lexSkipToken( )
 
 		'' LABEL?
-		sym = NULL
+		dim as FBSYMBOL ptr sym = NULL
 		select case lexGetClass( )
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_NUMLITERAL
-			chain_ = cIdentifier( )
+			dim as FBSYMCHAIN ptr chain_ = cIdentifier( )
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 
 			sym = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 			if( sym = NULL ) then
-				sym = symbAddLabel( lexGetText( ), FALSE, TRUE )
+				sym = symbAddLabel( lexGetText( ), _
+									FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_CREATEALIAS )
 				if( sym = NULL ) then
 					if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
 						exit function
@@ -79,6 +75,7 @@ function cDataStmt  _
 	case FB_TK_READ
 		lexSkipToken( )
 
+		dim as ASTNODE ptr expr = NULL
 		do
 		    if( cVarOrDeref( expr ) = FALSE ) then
 		    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
@@ -105,72 +102,54 @@ function cDataStmt  _
 			exit function
 		end if
 
+		'' not in module-level?
+		if( parser.scope > FB_MAINSCOPE ) then
+			if( fbIsModLevel( ) = FALSE ) then
+				errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
+			else
+				errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
+			end if
+
+			return FALSE
+		end if
+
 		lexSkipToken( )
 
-		rtlDataStoreBegin( )
+		dim as ASTNODE ptr tree = astDataStmtBegin( )
 
+		dim as ASTNODE ptr expr = NULL
 		do
 			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
-			'' check if it's an string
-			litsym = NULL
-			select case astGetDataType( expr )
-			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-				litsym = astGetStrLitSymbol( expr )
-			end select
+			'' not a constant?
+			dim as integer isconst = astIsCONST( expr )
+			if( isconst = FALSE ) then
+				'' not a literal string?
+				select case astGetDataType( expr )
+				case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+					isconst = astGetStrLitSymbol( expr ) <> NULL
+				end select
+			end if
 
-			'' string?
-			if( litsym <> NULL ) then
-                '' not a wstring?
-                if( astGetDataType( expr ) <> FB_DATATYPE_WCHAR ) then
-            		if( rtlDataStore( symbGetVarLitText( litsym ), _
-            						  symbGetStrLen( litsym ) - 1, _ '' less the null-char
-            						  FB_DATATYPE_CHAR ) = FALSE ) then
-	            		exit function
-    	        	end if
-
-    	        '' wstring..
-    	        else
-            		if( rtlDataStoreW( symbGetVarLitTextW( litsym ), _
-            						   symbGetWstrLen( litsym ) - 1, _ '' ditto
-            						   FB_DATATYPE_WCHAR ) = FALSE ) then
-	            		exit function
-    	        	end if
-
-    	        end if
-
-			'' scalar..
-			else
-				'' address of?
-				if( astIsOFFSET( expr ) ) then
-            		if( rtlDataStoreOFS( astGetSymbol( expr ) ) = FALSE ) then
-	            		exit function
-    	        	end if
-
+            if( isconst = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+					exit function
 				else
-					'' not a constant?
-					if( astIsCONST( expr ) = FALSE ) then
-						if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-							exit function
-						end if
+					astDelTree( expr )
+				end if
 
-					else
-            			littext = astGetValueAsStr( expr )
-            			if( rtlDataStore( littext, _
-            						  	  len( littext ), _
-            						  	  FB_DATATYPE_CHAR ) = FALSE ) then
-	            			exit function
-    	        		end if
-					end if
-  				end if
-
-		    end if
-
-			astDelNode( expr )
+			else
+            	if( astDataStmtStore( tree, expr ) = NULL ) then
+	          		exit function
+    	      	end if
+			end if
 
 		loop while( hMatch( CHAR_COMMA ) )
 
-		rtlDataStoreEnd( )
+		astDataStmtEnd( tree )
+
+    	'' node is unused, the tree will become an initialized static array
+    	astDelNode( tree )
 
 		function = TRUE
 

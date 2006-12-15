@@ -76,27 +76,27 @@ private function _linkFiles as integer
 		exit function
     end if
 
-	if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		dllname = hStripPath( hStripExt( fbc.outname ) )
 	end if
 
 	'' add extension
 	if( fbc.outaddext ) then
-		select case fbc.outtype
+		select case fbGetOption( FB_COMPOPT_OUTTYPE )
 		case FB_OUTTYPE_DYNAMICLIB
 			fbc.outname = hStripFilename( fbc.outname ) + "lib" + hStripPath( fbc.outname ) + ".so"
 		end select
 	end if
 
 	''
-	if( fbc.outtype = FB_OUTTYPE_EXECUTABLE) then
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
 #ifdef TARGET_LINUX
 		ldcline = "-dynamic-linker /lib/ld-linux.so.2"
 #endif
 	end if
 
     ''
-    if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		ldcline = "-shared --export-dynamic -h" + hStripPath( fbc.outname )
 
     else
@@ -114,7 +114,7 @@ private function _linkFiles as integer
     end if
 
 	''
-	if( fbc.debug = FALSE ) then
+	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
 			ldcline += " -s"
 		end if
@@ -133,7 +133,7 @@ private function _linkFiles as integer
     next i
 
 	'' crt init stuff
-	if( fbc.outtype = FB_OUTTYPE_EXECUTABLE) then
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
 			ldcline += " " + QUOTE + libdir + ("/gcrt1.o" + QUOTE)
 		else
@@ -161,18 +161,20 @@ private function _linkFiles as integer
     ldcline += " -( "
 
     '' add libraries from cmm-line and found when parsing
-   	for i = 0 to fbc.libs-1
-		libname = fbc.liblist(i)
-
-    	if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+   		for i = 0 to fbc.libs-1
+			libname = fbc.liblist(i)
    			'' check if the lib isn't the dll's import library itself
    	        if( libname = dllname ) then
    	        	continue for
    	        end if
-   		end if
-
-		ldcline += "-l" + libname + " "
-	next
+			ldcline += "-l" + libname + " "
+		next
+    else
+   		for i = 0 to fbc.libs-1
+			ldcline += "-l" + fbc.liblist(i) + " "
+		next
+	end if
 
 	'' rtlib initialization and termination (must be included in the group or
 	'' dlopen() will fail because fb_hRtExit() will be undefined)
@@ -236,7 +238,7 @@ private function _compileResFiles as integer
 
 	function = FALSE
 
-	if( fbc.outtype <> FB_OUTTYPE_EXECUTABLE ) then
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) <> FB_OUTTYPE_EXECUTABLE ) then
 		return TRUE
 	end if
 

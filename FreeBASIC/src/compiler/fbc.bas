@@ -105,7 +105,8 @@ declare sub 	 setCompOptions			( )
 		( FBC_OPT_INCLUDE		, @"include"     ), _
 		( FBC_OPT_LANG			, @"lang"     	 ), _
 		( FBC_OPT_WA			, @"Wa"     	 ), _
-		( FBC_OPT_WL			, @"Wl"     	 ) _
+		( FBC_OPT_WL			, @"Wl"     	 ), _
+		( FBC_OPT_GEN			, @"gen"		 ) _
 	}
 
 	'on error goto runtime_err
@@ -165,7 +166,7 @@ declare sub 	 setCompOptions			( )
     end if
 
     ''
-    fbSetPaths( fbc.target )
+    fbSetPaths( fbGetOption( FB_COMPOPT_TARGET ) )
 
     ''
     setMainModule( )
@@ -186,7 +187,7 @@ declare sub 	 setCompOptions			( )
 
 	else
     	'' link
-    	if( fbc.outtype = FB_OUTTYPE_STATICLIB ) then
+    	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_STATICLIB ) then
     		if( archiveFiles( ) = FALSE ) then
     			delFiles( )
     			fbcEnd( 1 )
@@ -227,7 +228,7 @@ private sub fbcInit( )
 
 	hashInit( )
 
-	'' create teh cmd-line options hash
+	'' create the cmd-line options hash
 	hashNew( @fbc.opthash, 32, FALSE )
 
 	for i = 0 to FBC_OPTS-1
@@ -258,7 +259,7 @@ end sub
 '':::::
 private sub initTarget( )
 
-	select case as const fbc.target
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
 #if defined(TARGET_WIN32) or defined(CROSSCOMP_WIN32)
 	case FB_COMPTARGET_WIN32
 		fbcInit_win32( )
@@ -290,12 +291,7 @@ end sub
 '':::::
 private sub setCompOptions( )
 
-	fbSetOption( FB_COMPOPT_TARGET, fbc.target )
-
-	fbSetOption( FB_COMPOPT_DEBUG, fbc.debug )
-	fbSetOption( FB_COMPOPT_OUTTYPE, fbc.outtype )
-
-	select case fbc.target
+	select case fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_LINUX
 		fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
 		fbSetOption( FB_COMPOPT_NOUNDERPREFIX, TRUE )
@@ -313,7 +309,7 @@ private function compileFiles as integer
 	function = FALSE
 
 	''
-	select case fbc.outtype
+	select case fbGetOption( FB_COMPOPT_OUTTYPE )
 	case FB_OUTTYPE_EXECUTABLE, FB_OUTTYPE_DYNAMICLIB
     	checkmain = TRUE
     case else
@@ -408,7 +404,7 @@ private function assembleFiles as integer
     for i = 0 to fbc.inps-1
 
     	'' as' options
-    	if( fbc.debug = FALSE ) then
+    	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 			ascline = "--strip-local-absolute "
     	else
     		ascline = ""
@@ -540,11 +536,12 @@ private sub printOptions( )
 	print
 
 	printOption( "inputlist:", "*.a = library, *.o = object, *.bas = source" )
-	if( fbc.target = FB_COMPTARGET_WIN32 or fbc.target = FB_COMPTARGET_CYGWIN ) then
+	select case fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 		printOption( "", "*.rc = resource script, *.res = compiled resource" )
-	elseif( fbc.target = FB_COMPTARGET_LINUX ) then
+	case FB_COMPTARGET_LINUX
 		printOption( "", "*.xpm = icon resource" )
-	end if
+	end select
 
 	print
 	print "options:"
@@ -554,14 +551,15 @@ private sub printOptions( )
 	printOption( "-b <name>", "Add a source file to compilation" )
 	printOption( "-c", "Compile only, do not link" )
 	printOption( "-d <name=val>", "Add a preprocessor's define" )
-	if( (fbc.target = FB_COMPTARGET_WIN32) or (fbc.target = FB_COMPTARGET_LINUX) ) then
+	select case fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX
 		printOption( "-dll", "Same as -dylib" )
-		if( fbc.target = FB_COMPTARGET_WIN32 ) then
+		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) then
 			printOption( "-dylib", "Create a DLL, including the import library" )
-		elseif( fbc.target = FB_COMPTARGET_LINUX ) then
+		else
 			printOption( "-dylib", "Create a shared library" )
 		end if
-	end if
+	end select
 	printOption( "-e", "Add error checking" )
 	printOption( "-ex", "Add error checking with RESUME support" )
 	printOption( "-exx", "Same as above plus array bounds and null-pointer checking" )
@@ -575,7 +573,7 @@ private sub printOptions( )
 	printOption( "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)" )
 	printOption( "-map <name>", "Save the linking map to file name" )
 	printOption( "-maxerr <val>", "Only stop parsing if <val> errors occurred" )
-	if( fbc.target <> FB_COMPTARGET_DOS ) then
+	if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DOS ) then
 		printOption( "-mt", "Link with thread-safe runtime library" )
 	end if
 	printOption( "-nodeflibs", "Do not include the default libraries" )
@@ -584,12 +582,14 @@ private sub printOptions( )
 	printOption( "-p <name>", "Add a path to search for libraries" )
 	printOption( "-profile", "Enable function profiling" )
 	printOption( "-r", "Do not delete the asm file(s)" )
-	if( fbc.target = FB_COMPTARGET_WIN32 or fbc.target = FB_COMPTARGET_CYGWIN ) then
+	select case fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 		printOption( "-s <name>", "Set subsystem (gui, console)" )
-	end if
-	if( fbc.target = FB_COMPTARGET_WIN32 or fbc.target = FB_COMPTARGET_CYGWIN or fbc.target = FB_COMPTARGET_DOS) then
+	end select
+	select case fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_DOS
 		printOption( "-t <value>", "Set stack size in kbytes (default: 1M)" )
-	end if
+	end select
 
 #if defined(CROSSCOMP_WIN32) or _
 	defined(CROSSCOMP_CYGWIN) or _
@@ -616,7 +616,7 @@ private sub printOptions( )
 	print "-target <name>"; desc
 #endif
 
-	if( fbc.target = FB_COMPTARGET_XBOX ) then
+	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_XBOX ) then
 		printOption( "-title <name>", "Set XBE display title" )
 	end if
 	printOption( "-v", "Be verbose" )
@@ -637,10 +637,7 @@ private sub setDefaultOptions( )
 	fbc.compileonly = FALSE
 	fbc.preserveasm	= FALSE
 	fbc.verbose		= FALSE
-	fbc.debug 		= FALSE
 	fbc.stacksize	= FB_DEFSTACKSIZE
-	fbc.outtype 	= FB_OUTTYPE_EXECUTABLE
-	fbc.target		= fbGetOption( FB_COMPOPT_TARGET )
 
 	fbc.mainfile	= ""
 	fbc.mainpath	= ""
@@ -697,27 +694,27 @@ private function processTargetOptions( ) as integer
 				select case argv(i+1)
 #if defined(TARGET_DOS) or defined(CROSSCOMP_DOS)
 				case "dos"
-					fbc.target = FB_COMPTARGET_DOS
+					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_DOS )
 #endif
 
 #if defined(TARGET_CYGWIN) or defined(CROSSCOMP_CYGWIN)
 				case "cygwin"
-					fbc.target = FB_COMPTARGET_CYGWIN
+					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_CYGWIN )
 #endif
 
 #if defined(TARGET_LINUX) or defined(CROSSCOMP_LINUX)
 				case "linux"
-					fbc.target = FB_COMPTARGET_LINUX
+					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_LINUX )
 #endif
 
 #if defined(TARGET_WIN32) or defined(CROSSCOMP_WIN32)
 				case "win32"
-					fbc.target = FB_COMPTARGET_WIN32
+					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_WIN32 )
 #endif
 
 #if defined(TARGET_XBOX) or defined(CROSSCOMP_XBOX)
 				case "xbox"
-					fbc.target = FB_COMPTARGET_XBOX
+					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_XBOX )
 #endif
 
 				case else
@@ -865,23 +862,23 @@ private function processOptions( ) as integer
 				argv(i+1) = ""
 
 			case FBC_OPT_DEBUG
-				fbc.debug = TRUE
+				fbSetOption( FB_COMPOPT_DEBUG, TRUE )
 
 				argv(i) = ""
 
 			case FBC_OPT_COMPILEONLY
-				fbc.outtype = FB_OUTTYPE_OBJECT
+				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
 				fbc.compileonly = TRUE
 
 				argv(i) = ""
 
 			case FBC_OPT_SHAREDLIB
-				fbc.outtype = FB_OUTTYPE_DYNAMICLIB
+				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_DYNAMICLIB )
 
 				argv(i) = ""
 
 			case FBC_OPT_STATICLIB
-				fbc.outtype = FB_OUTTYPE_STATICLIB
+				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_STATICLIB )
 
 				argv(i) = ""
 
@@ -1081,6 +1078,22 @@ private function processOptions( ) as integer
 				end select
 
 				fbSetOption( FB_COMPOPT_LANG, value )
+
+				argv(i) = ""
+				argv(i+1) = ""
+
+			case FBC_OPT_GEN
+				select case lcase( argv(i+1) )
+				case "gas"
+					value = FB_BACKEND_GAS
+				case "gcc"
+					value = FB_BACKEND_GCC
+				case else
+					printInvalidOpt( i )
+					exit function
+				end select
+
+				fbSetOption( FB_COMPOPT_BACKEND, value )
 
 				argv(i) = ""
 				argv(i+1) = ""

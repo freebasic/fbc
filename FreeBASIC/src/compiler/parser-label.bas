@@ -50,7 +50,8 @@ function cLabel as integer
 
 		else
 			if( lexGetType( ) = FB_DATATYPE_INTEGER ) then
-				l = symbAddLabel( lexGetText( ), TRUE, TRUE )
+				l = symbAddLabel( lexGetText( ), _
+								  FB_SYMBOPT_DECLARING or FB_SYMBOPT_CREATEALIAS )
 				if( l = NULL ) then
 					if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
 						exit function
@@ -84,7 +85,8 @@ function cLabel as integer
 				exit function
 			end if
 
-			l = symbAddLabel( lexGetText( ), TRUE, TRUE )
+			l = symbAddLabel( lexGetText( ), _
+							  FB_SYMBOPT_DECLARING or FB_SYMBOPT_CREATEALIAS )
 			if( l = NULL ) then
 				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
 					exit function

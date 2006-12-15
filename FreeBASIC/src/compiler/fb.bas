@@ -28,8 +28,6 @@
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
 #include once "inc\ir.bi"
-#include once "inc\emit.bi"
-#include once "inc\emitdbg.bi"
 
 type FB_LANG_INFO
 	name		as zstring ptr
@@ -330,9 +328,9 @@ function fbInit _
 
 	astInit( )
 
-	irInit( )
-
-	emitInit( )
+	if( irInit( env.clopt.backend ) = FALSE ) then
+		return FALSE
+	end if
 
 	inctbInit( )
 
@@ -363,8 +361,6 @@ sub fbEnd
 
 	incTbEnd( )
 
-	emitEnd( )
-
 	irEnd( )
 
 	astEnd( )
@@ -385,8 +381,12 @@ end sub
 '':::::
 sub fbSetDefaultOptions( )
 
-	env.clopt.debug			= FALSE
 	env.clopt.cputype 		= FB_DEFAULT_CPUTYPE
+	env.clopt.outtype		= FB_DEFAULT_OUTTYPE
+	env.clopt.target		= FB_DEFAULT_TARGET
+	env.clopt.lang			= FB_DEFAULT_LANG
+	env.clopt.backend		= FB_DEFAULT_BACKEND
+	env.clopt.debug			= FALSE
 	env.clopt.errorcheck	= FALSE
 	env.clopt.resumeerr 	= FALSE
 #if defined(TARGET_WIN32) or defined(TARGET_CYGWIN)
@@ -395,19 +395,16 @@ sub fbSetDefaultOptions( )
 	env.clopt.nostdcall 	= TRUE
 #endif
 	env.clopt.nounderprefix	= FALSE
-	env.clopt.outtype		= FB_DEFAULT_OUTTYPE
 	env.clopt.warninglevel 	= 0
 	env.clopt.export		= FALSE
 	env.clopt.nodeflibs		= FALSE
 	env.clopt.showerror		= TRUE
 	env.clopt.multithreaded	= FALSE
 	env.clopt.profile       = FALSE
-	env.clopt.target		= FB_DEFAULT_TARGET
 	env.clopt.extraerrchk	= FALSE
 	env.clopt.msbitfields	= FALSE
 	env.clopt.maxerrors		= FB_DEFAULT_MAXERRORS
 	env.clopt.showsusperrors= FALSE
-	env.clopt.lang			= FB_LANG_FB
 	env.clopt.pdcheckopt	= FB_PDCHECK_NONE
 
 	hSetLangOptions( env.clopt.lang )
@@ -482,6 +479,9 @@ sub fbSetOption _
 
 	case FB_COMPOPT_PEDANTICCHK
 		env.clopt.pdcheckopt = value
+
+	case FB_COMPOPT_BACKEND
+		env.clopt.backend = value
 	end select
 
 end sub
@@ -552,6 +552,9 @@ function fbGetOption _
 
 	case FB_COMPOPT_PEDANTICCHK
 		function = env.clopt.pdcheckopt
+
+	case FB_COMPOPT_BACKEND
+		function = env.clopt.backend
 
 	case else
 		function = FALSE
@@ -671,11 +674,11 @@ function fbCompile _
 	function = FALSE
 
 	''
-	env.inf.name	= *hRevertSlash( infname, FALSE )
+	env.inf.name = *hRevertSlash( infname, FALSE )
 	env.inf.incfile	= NULL
-	env.inf.ismain	= ismain
+	env.inf.ismain = ismain
 
-	env.outf.name	= *outfname
+	env.outf.name = *outfname
 	env.outf.ismain = ismain
 
 	'' open source file
@@ -693,7 +696,7 @@ function fbCompile _
 	env.inf.format = hCheckFileFormat( env.inf.num )
 
 	''
-	if( emitOpen( ) = FALSE ) then
+	if( irEmitBegin( ) = FALSE ) then
 		errReportEx( FB_ERRMSG_FILEACCESSERROR, infname, -1 )
 		exit function
 	end if
@@ -714,7 +717,7 @@ function fbCompile _
 	fbMainEnd( )
 
 	'' save
-	emitClose( tmr )
+	irEmitEnd( tmr )
 
 	'' close src
 	if( close( #env.inf.num ) <> 0 ) then

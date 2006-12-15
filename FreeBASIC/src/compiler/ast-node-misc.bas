@@ -37,9 +37,9 @@ function astNewLABEL _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval doflush as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_LABEL, INVALID )
@@ -88,9 +88,9 @@ end function
 function astNewLIT _
 	( _
 		byval text as zstring ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_LIT, INVALID )
@@ -129,9 +129,9 @@ end function
 function astNewASM _
 	( _
 		byval listhead as FB_ASMTOK_ ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ASM, INVALID )
@@ -196,9 +196,9 @@ function astNewDBG _
 	( _
 		byval op as integer, _
 		byval ex as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	if( env.clopt.debug = FALSE ) then
 		return NULL
@@ -224,7 +224,7 @@ function astLoadDBG _
 	) as IRVREG ptr
 
 	if( ast.doemit ) then
-		irEmitDBG( ast.proc.curr->sym, n->dbg.op, n->dbg.ex )
+		irEmitDBG( n->dbg.op, ast.proc.curr->sym, n->dbg.ex )
 	end if
 
 	function = NULL
@@ -239,9 +239,9 @@ end function
 function astNewNOP _
 	( _
 		_
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_NOP, INVALID )
@@ -273,9 +273,9 @@ end function
 function astNewNIDXARRAY _
 	( _
 		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_NIDXARRAY, INVALID )
@@ -300,4 +300,6 @@ function astLoadNIDXARRAY	_
 	function = NULL
 
 end function
+
+
 
