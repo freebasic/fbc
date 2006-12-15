@@ -8,56 +8,56 @@
 
 #define NULL 0
 
-namespace fb.file.search
+namespace fb.file
 
-	type entry
+	type CSearchEntry
 		path	as zstring ptr
 		name	as zstring ptr
 		serial	as double
 	end type
 
-	type CSearch as CSearch_
-
-	enum searchBy
-		searchBy_SerialNewer
-		searchBy_SerialOlder
-		searchBy_SerialSame
-	end enum
-	
-	type dirCallback as function _
+	type CSearchDirCallback as function _
 		( _
 			byval path as zstring ptr, _
 			byval fname as zstring ptr _
 		) as integer
-	
-	declare function new_ _
-		( _
-			byval root as zstring ptr, _
-			byval dirCb as dirCallback = NULL _
-		) as CSearch ptr
-
-	declare function delete_ _
-		( _
-			byval _this as CSearch ptr _
-		) as integer
-
-	declare function byDate _
-		( _
-			byval _this as CSearch ptr, _
-			byval mask as zstring ptr, _
-			byval serial as double, _
-			byval mode as searchBy = searchBy_SerialNewer _
-		) as integer
-
-	declare function getFirst _
-		( _
-			byval _this as CSearch ptr _
-		) as entry ptr
 		
-	declare function getNext _
-		( _
-			byval _this as CSearch ptr _
-		) as entry ptr
+	type CSearchCtx as CSearchCtx_
+
+	type CSearch
+		enum searchBy
+			searchBy_SerialNewer
+			searchBy_SerialOlder
+			searchBy_SerialSame
+		end enum
+		
+		declare constructor _
+			( _
+				byval root as zstring ptr, _
+				byval dirCb as CSearchDirCallback = NULL _
+			) 
+	
+		declare destructor _
+			( _
+			) 
+	
+		declare function byDate _
+			( _
+				byval mask as zstring ptr, _
+				byval serial as double, _
+				byval mode as searchBy = searchBy_SerialNewer _
+			) as integer
+	
+		declare function getFirst _
+			( _
+			) as CSearchEntry ptr
+			
+		declare function getNext _
+			( _
+			) as CSearchEntry ptr
+	
+		ctx as CSearchCtx ptr
+	end type
 
 end namespace
 

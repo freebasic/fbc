@@ -48,8 +48,8 @@ type ctx
 	mask	as zstring * 16
 	output	as zstring * 128
 	serial	as double
-	exclist	as list.CList ptr
-	s		as search.CSearch ptr
+	exclist	as CList ptr
+	search	as CSearch ptr
 end type
 
 declare function main _
@@ -135,10 +135,10 @@ private function processOptions _
 			dim as string d = ucase( mid( arg, 7 ) )
 			
 			if( ctx.exclist = NULL ) then
-				ctx.exclist = list.new_( 4, len( excListNode ) )
+				ctx.exclist = new CList( 4, len( excListNode ) )
 			end if
 			
-			dim as excListNode ptr n = list.insert( ctx.exclist )
+			dim as excListNode ptr n = ctx.exclist->insert( )
 			
 			n->name = zStr.dup( d )
 		
@@ -164,10 +164,9 @@ private function collectFiles _
 		_
 	) as integer
 	
-	function = search.byDate( ctx.s, _
-							  ctx.mask, _
-							  ctx.serial, _
-							  search.searchBy_SerialNewer )
+	function = ctx.search->byDate( ctx.mask, _
+							       ctx.serial, _
+							       CSearch.searchBy_SerialNewer )
 
 end function	
 
@@ -177,13 +176,13 @@ private sub dumpFiles _
 		_
 	) 
 	
-	dim as search.entry ptr e
+	dim as CSearchEntry ptr e
 	
-	e = search.getFirst( ctx.s )
+	e = ctx.search->getFirst( )
 	do while( e <> NULL )
 		print *e->path; "/"; *e->name; 
 		print " ("; str( year(e->serial) ); "-"; str( month(e->serial) ); "-"; str( day(e->serial) ); ")"
-		e = search.getNext( ctx.s )
+		e = ctx.search->getNext( )
 	loop
 	
 end sub
@@ -198,7 +197,7 @@ end sub
 '':::::
 private sub archiveFiles
 
-	dim as search.entry ptr e
+	dim as CSearchEntry ptr e
 	dim as integer o
 	dim as string options, cdir, listfile
 	
@@ -228,14 +227,14 @@ private sub archiveFiles
 	
 	print "archiving:", TRAM_ARCH_TOOL + " " + options
 	
-	e = search.getFirst( ctx.s )
+	e = ctx.search->getFirst( )
 	do while( e <> NULL )
 		if( e->path <> NULL ) then
 			print #o, *e->path + "/";
 		end if
 		print #o, *e->name + TRAM_NEWLINE;
 		
-		e = search.getNext( ctx.s )
+		e = ctx.search->getNext( )
 	loop
 	
 	close #o
@@ -299,7 +298,7 @@ private function excList_cb _
 	
 	dim as string uc_fname = ucase( *fname )
 	
-	dim as excListNode ptr n = list.getHead( ctx.exclist )
+	dim as excListNode ptr n = ctx.exclist->getHead( )
 	
 	do until( n = NULL )
 		
@@ -307,7 +306,7 @@ private function excList_cb _
 			return FALSE
 		end if
 		
-		n = list.getNext( n )
+		n = ctx.exclist->getNext( n )
 	loop
 	
 	function = TRUE
@@ -326,9 +325,9 @@ private function main _
 		return 1
 	end if
 
-	dim as search.dirCallback cb = iif( ctx.exclist <> NULL, @excList_cb, @topDir_cb )
+	dim as CSearchDirCallback cb = iif( ctx.exclist <> NULL, @excList_cb, @topDir_cb )
 	
-	ctx.s = search.new_( ctx.root, cb )
+	ctx.search = new CSearch( ctx.root, cb )
 	
 	if( collectFiles( ) = vbFalse ) then
 		return 1
@@ -338,7 +337,7 @@ private function main _
 	
 	archiveFiles( )
 	
-	search.delete_( ctx.s )
+	delete ctx.search
 	
 	return 0
 	

@@ -3,10 +3,10 @@
 #include once "list.bi"
 #include once "file.bi"
 
-namespace fb.file.search
+namespace fb.file
 
 	type findCtx
-		mode 		as searchBy
+		mode 		as CSearch.searchBy
 		union
 			serial 	as double
 		end union
@@ -14,135 +14,125 @@ namespace fb.file.search
 	end type
 
 	type intrCtx
-		node		as entry ptr
+		node		as CSearchEntry ptr
 	end type
 	
-	type CSearch_
+	type CSearchCtx_
 		root 	as zstring ptr
-		list	as list.CList ptr
-		dirCb 	as dirCallback
+		list	as CList ptr
+		dirCb 	as CSearchDirCallback
 		intrCtx	as intrCtx
 		findCtx as findCtx
 	end type
 
 	declare sub _resetList _
 		( _
-			byval l as list.CList ptr _
+			byval l as CList ptr _
 		)
 
 	declare function _findFiles _
 		( _
-			byval _this as CSearch ptr, _
+			byval ctx as CSearchCtx ptr, _
 			byval path as zstring ptr _
 		) as integer
 
 	'':::::
-	function new_ _
+	constructor CSearch _
 		( _
 			byval root as zstring ptr, _
-			byval dirCb as dirCallback = NULL _
-		) as CSearch ptr
+			byval dirCb as CSearchDirCallback = NULL _
+		) 
 	
-		dim as CSearch ptr _this
+		ctx = new CSearchCtx
 		
-		_this = allocate( len( CSearch ) )
+		ctx->root = zStr.Dup( root )
+		ctx->dirCb = dirCb
 		
-		_this->root = zStr.Dup( root )
-		_this->dirCb = dirCb
+		ctx->list = new CList( 30, len( CSearchEntry ), CList.flags_NOCLEAR )
+		ctx->intrCtx.node = NULL
 		
-		_this->list = list.new_( 30, len( entry ), list.flags_NOCLEAR )
-		_this->intrCtx.node = NULL
-		
-		function = _this
-	
-	end function
+	end constructor
 
 	'':::::
-	function delete_ _
+	destructor CSearch _
 		( _
-			byval _this as CSearch ptr _
-		) as integer
+		) 
 		
-		if( _this = NULL ) then
-			return 0
+		if( ctx = NULL ) then
+			return
 		end if
 		
-		_resetList( _this->list )
-		list.delete_( _this->list )
+		_resetList( ctx->list )
+		delete ctx->list
 		
-		zStr.del( _this->root )
+		zStr.del( ctx->root )
 		
-		deallocate( _this )
+		delete ctx
 		
-		return -1
+	end destructor
+
+	'':::::
+	function CSearch.getFirst _
+		( _
+		) as CSearchEntry ptr
+		
+		ctx->intrCtx.node = ctx->list->getHead( )
+		
+		function = ctx->intrCtx.node
 		
 	end function
 
 	'':::::
-	function getFirst _
+	function CSearch.getNext _
 		( _
-			byval _this as CSearch ptr _
-		) as entry ptr
+		) as CSearchEntry ptr
 		
-		_this->intrCtx.node = list.getHead( _this->list )
-		
-		function = _this->intrCtx.node
-		
-	end function
-
-	'':::::
-	function getNext _
-		( _
-			byval _this as CSearch ptr _
-		) as entry ptr
-		
-		if( _this->intrCtx.node = NULL ) then
+		if( ctx->intrCtx.node = NULL ) then
 			return NULL
 		end if
 		
-		_this->intrCtx.node = list.getNext( _this->intrCtx.node )
+		ctx->intrCtx.node = ctx->list->getNext( ctx->intrCtx.node )
 		
-		function = _this->intrCtx.node
+		function = ctx->intrCtx.node
 		
 	end function
 
 	'':::::
-	function byDate _
+	function CSearch.byDate _
 		( _
-			byval _this as CSearch ptr, _
 			byval mask as zstring ptr, _
 			byval serial as double, _
 			byval mode as searchBy _
 		) as integer
 		
-		with _this->findCtx
+		with ctx->findCtx
 			.mode = mode
 			.serial = serial
 			.mask = mask
 		end with
 		
-		_resetList( _this->list )
+		_resetList( ctx->list )
 		
-		function = _findFiles( _this, NULL ) > 0
+		function = _findFiles( ctx, NULL ) > 0
 		
 	end function
 	
 	'':::::
 	private sub _resetList _
 		( _
-			byval l as list.CList ptr _
+			byval l as CList ptr _
 		)
 		
-		dim as entry ptr n = any, nxt = any
+		dim as CSearchEntry ptr n = any, nxt = any
 		
-		n = list.getHead( l )
+		n = l->getHead( )
 		do while( n <> NULL )
 			
 			zstr.del( n->path )
 			zstr.del( n->name )
 			
-			nxt = fb.list.getNext( n )
-			list.remove( l, n )
+			nxt = l->getNext( n )
+			l->remove( n )
 			n = nxt
 		loop
 		
@@ -151,15 +141,15 @@ namespace fb.file.search
 	'':::::
 	private function _addFile _
 		( _
-			byval l as list.CList ptr, _
+			byval l as CList ptr, _
 			byval path as zstring ptr, _
 			byval fname as zstring ptr, _
 			byval serial as double _
-		) as entry ptr
+		) as CSearchEntry ptr
 		
-		dim as entry ptr n = any
+		dim as CSearchEntry ptr n = any
 		
-		n = list.insert( l )
+		n = l->insert( )
 		
 		if( path <> NULL ) then
 			n->path = zstr.dup( path )
@@ -176,7 +166,7 @@ namespace fb.file.search
 	'':::::
 	private function _findFiles _
 		( _
-			byval _this as CSearch ptr, _
+			byval ctx as CSearchCtx ptr, _
 			byval path as zstring ptr _
 		) as integer
 		
@@ -184,24 +174,24 @@ namespace fb.file.search
 		dim as integer files = 0
 		
 		'' add files
-		if( _this->root <> NULL ) then
-			fpath = *_this->root + "/"
+		if( ctx->root <> NULL ) then
+			fpath = *ctx->root + "/"
 		end if	
 		
 		if( path <> NULL ) then
 			fpath += *path + "/" 
 		end if
 			
-		fname = *_this->findCtx.mask
+		fname = *ctx->findCtx.mask
 		
 		fname = dir( fpath + fname, vbNormal )
 		do while len( fname ) > 0
 			dim as double serial = filedatetime( fpath + fname )
 				
-			select case _this->findCtx.mode
-			case searchBy_SerialNewer
-				if( serial > _this->findCtx.serial ) then
-					_addFile( _this->list, path, fname, serial )
+			select case ctx->findCtx.mode
+			case CSearch.searchBy_SerialNewer
+				if( serial > ctx->findCtx.serial ) then
+					_addFile( ctx->list, path, fname, serial )
 					files += 1
 				end if
 			end select
@@ -214,7 +204,7 @@ namespace fb.file.search
 			name	as zstring ptr
 		end type
 		
-		dim as list.CList ptr l = list.new_( 16, len( DIRENTRY ), list.flags_NOCLEAR )
+		dim as CList ptr l = new CList( 16, len( DIRENTRY ), CList.flags_NOCLEAR )
 		dim as DIRENTRY ptr node = any, nxt = any
 		
 		fname = dir( fpath + "*.*", vbDirectory )
@@ -223,10 +213,10 @@ namespace fb.file.search
 			case ".", ".."
 			
 			case else
-				dim as integer doAdd = iif( _this->dirCb <> NULL, _this->dirCb( path, fname ), TRUE )
+				dim as integer doAdd = iif( ctx->dirCb <> NULL, ctx->dirCb( path, fname ), TRUE )
 				
 				if( doAdd ) then
-					node = list.insert( l )
+					node = l->insert( )
 					node->name = zStr.dup( fname )
 				end if
 			end select
@@ -235,9 +225,9 @@ namespace fb.file.search
 		loop
 		
 		'' recurse
-		node = list.getHead( l )
+		node = l->getHead( )
 		do while( node <> NULL )
-			nxt = list.getNext( node )
+			nxt = l->getNext( node )
 			
 			if( path <> NULL ) then
 				fname = *path + "/"
@@ -246,15 +236,15 @@ namespace fb.file.search
 			end if
 			fname += *node->name
 			
-			files += _findFiles( _this, fname )
+			files += _findFiles( ctx, fname )
 			
 			zStr.del( node->name )
-			list.remove( l, node )
+			l->remove( node )
 			
 			node = nxt
 		loop
 
-		list.delete_( l )
+		delete l
 		
 		function = files
 	

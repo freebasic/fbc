@@ -7,7 +7,7 @@
 
 #define NULL 0
 	
-namespace fb.list
+namespace fb
 	
 	type TNODE
 		prev	as TNODE ptr
@@ -20,7 +20,7 @@ namespace fb.list
 		nodes	as integer
 	end type
 	
-	type CList_
+	type CListCtx_
 		tbhead	as TLISTTB ptr
 		tbtail	as TLISTTB ptr
 		nodes 	as integer
@@ -28,53 +28,48 @@ namespace fb.list
 		fhead	as TNODE ptr						'' free list
 		head	as any ptr							'' used list
 		tail	as any ptr							'' /
-		flags	as flags
+		flags	as CList.flags
 	end type
 
 	declare function _allocTB _
 		( _
-			byval l as CList ptr, _
+			byval ctx as CListCtx ptr, _
 			byval nodes as integer _
 		) as integer
 
 	'':::::
-	function new_ _
+	constructor Clist _
 		( _
 			byval nodes as integer, _
 			byval nodelen as integer, _
 			byval flags as flags _
-		) as CList ptr
+		) 
 	
-		dim as CList ptr l
-		
-		l = allocate( len( CList ) )
+		ctx = new CListCtx
 		
 		'' fill ctrl struct
-		l->tbhead = NULL
-		l->tbtail = NULL
-		l->nodes = 0
-		l->nodelen = nodelen + len( TNODE )
-		l->head = NULL
-		l->tail = NULL
-		l->flags = flags
+		ctx->tbhead = NULL
+		ctx->tbtail = NULL
+		ctx->nodes = 0
+		ctx->nodelen = nodelen + len( TNODE )
+		ctx->head = NULL
+		ctx->tail = NULL
+		ctx->flags = flags
 	
 		'' allocate the initial pool
-		_allocTB( l, nodes )
+		_allocTB( ctx, nodes )
 		
-		function = l
-	
-	end function
+	end constructor
 	
 	'':::::
-	function delete_ _
+	destructor Clist _
 		( _
-			byval _this as CList ptr _
-		) as integer
+		) 
 	
 	    dim as TLISTTB ptr tb, nxt
 	
 		'' for each pool, free the mem block and the pool ctrl struct
-		tb = _this->tbhead
+		tb = ctx->tbhead
 		do while( tb <> NULL )
 			nxt = tb->next
 			deallocate( tb->nodetb )
@@ -82,20 +77,18 @@ namespace fb.list
 			tb = nxt
 		loop
 	
-		_this->tbhead = NULL
-		_this->tbtail = NULL
-		_this->nodes = 0
+		ctx->tbhead = NULL
+		ctx->tbtail = NULL
+		ctx->nodes = 0
 		
-		deallocate( _this )
+		deallocate( ctx )
 	
-		function = TRUE
-	
-	end function
+	end destructor
 	
 	'':::::
 	private function _allocTB _
 		( _
-			byval _this as CList ptr, _
+			byval ctx as CListCtx ptr, _
 			byval nodes as integer _
 		) as integer static
 	
@@ -110,10 +103,10 @@ namespace fb.list
 		end if
 	
 		'' allocate the pool
-		if( (_this->flags and flags_CLEARNODES) <> 0 ) then
-			nodetb = callocate( nodes * _this->nodelen )
+		if( (ctx->flags and CList.flags_CLEARNODES) <> 0 ) then
+			nodetb = callocate( nodes * ctx->nodelen )
 		else
-			nodetb = allocate( nodes * _this->nodelen )
+			nodetb = allocate( nodes * ctx->nodelen )
 		end if
 		
 		if( nodetb = NULL ) then
@@ -128,30 +121,30 @@ namespace fb.list
 		end if
 	
 		'' add the ctrl struct to pool list
-		if( _this->tbhead = NULL ) then
-			_this->tbhead = tb
+		if( ctx->tbhead = NULL ) then
+			ctx->tbhead = tb
 		end if
-		if( _this->tbtail <> NULL ) then
-			_this->tbtail->next = tb
+		if( ctx->tbtail <> NULL ) then
+			ctx->tbtail->next = tb
 		end if
-		_this->tbtail = tb
+		ctx->tbtail = tb
 	
 		tb->next = NULL
 		tb->nodetb = nodetb
 		tb->nodes = nodes
 	
 		'' add new nodes to the free list
-		_this->fhead = nodetb
-		_this->nodes += nodes
+		ctx->fhead = nodetb
+		ctx->nodes += nodes
 	
 		''
-		if( (_this->flags and flags_LINKFREENODES) <> 0 ) then
+		if( (ctx->flags and CList.flags_LINKFREENODES) <> 0 ) then
 			prv = NULL
-			node = _this->fhead
+			node = ctx->fhead
 	
 			for i = 1 to nodes-1
 				node->prev	= prv
-				node->next	= cast( TNODE ptr, cast( byte ptr, node ) + _this->nodelen )
+				node->next	= cast( TNODE ptr, cast( byte ptr, node ) + ctx->nodelen )
 	
 				prv = node
 				node = node->next
@@ -167,30 +160,29 @@ namespace fb.list
 	end function
 	
 	'':::::
-	function insert _
+	function CList.insert _
 		( _
-			byval _this as CList ptr _
 		) as any ptr static
 	
 		dim as TNODE ptr node, tail
 	
 		'' alloc new node list if there are no free nodes
-		if( _this->fhead = NULL ) Then
-			_allocTB( _this, cunsg(_this->nodes) \ 4 )
+		if( ctx->fhead = NULL ) Then
+			_allocTB( ctx, cunsg(ctx->nodes) \ 4 )
 		end if
 	
 		'' take from free list
-		node = _this->fhead
-		_this->fhead = node->next
+		node = ctx->fhead
+		ctx->fhead = node->next
 	
-		if( (_this->flags and flags_LINKUSEDNODES) <> 0 ) then
+		if( (ctx->flags and flags_LINKUSEDNODES) <> 0 ) then
 			'' add to used list
-			tail = _this->tail
-			_this->tail = node
+			tail = ctx->tail
+			ctx->tail = node
 			if( tail <> NULL ) then
 				tail->next = node
 			else
-				_this->head = node
+				ctx->head = node
 			end If
 	
 			node->prev = tail
@@ -205,9 +197,8 @@ namespace fb.list
 	end function
 	
 	'':::::
-	sub remove _
+	sub CList.remove _
 		( _
-			byval _this as CList ptr, _
 			byval node_ as any ptr _
 		) static
 	
@@ -217,7 +208,7 @@ namespace fb.list
 			exit sub
 		end if
 	
-		if( (_this->flags and flags_LINKUSEDNODES) <> 0 ) then
+		if( (ctx->flags and flags_LINKUSEDNODES) <> 0 ) then
 			node = cast( TNODE ptr, cast( byte ptr, node_ ) - len( TNODE ) )
 	
 			'' remove from used list
@@ -226,13 +217,13 @@ namespace fb.list
 			if( prv <> NULL ) then
 				prv->next = nxt
 			else
-				_this->head = nxt
+				ctx->head = nxt
 			end If
 	
 			if( nxt <> NULL ) then
 				nxt->prev = prv
 			else
-				_this->tail = prv
+				ctx->tail = prv
 			end If
 	
 		else
@@ -240,50 +231,48 @@ namespace fb.list
 		end if
 	
 		'' add to free list
-		node->next = _this->fhead
-		_this->fhead = node
+		node->next = ctx->fhead
+		ctx->fhead = node
 	
 		'' node can contain strings descriptors, so, erase it..
-		if( (_this->flags and flags_CLEARNODES) <> 0 ) then
-			clear( byval node_, 0, _this->nodelen - len( TNODE ) )
+		if( (ctx->flags and flags_CLEARNODES) <> 0 ) then
+			clear( byval node_, 0, ctx->nodelen - len( TNODE ) )
 		end if
 	
 	end sub
 	
 	'':::::
-	function getHead _
+	function CList.getHead _
 		( _
-			byval _this as CList ptr _
 		) as any ptr
 	
-		assert( (_this->flags and flags_LINKUSEDNODES) <> 0 )
+		assert( (ctx->flags and flags_LINKUSEDNODES) <> 0 )
 	
-		if( _this->head = NULL ) then
+		if( ctx->head = NULL ) then
 			function = NULL
 		else
-			function = cast( byte ptr, _this->head ) + len( TNODE )
+			function = cast( byte ptr, ctx->head ) + len( TNODE )
 		end if
 	
 	end function
 	
 	'':::::
-	function getTail _
+	function CList.getTail _
 		( _
-			byval _this as CList ptr _
 		) as any ptr
 	
-		assert( (_this->flags and flags_LINKUSEDNODES) <> 0 )
+		assert( (ctx->flags and flags_LINKUSEDNODES) <> 0 )
 	
-		if( _this->tail = NULL ) then
+		if( ctx->tail = NULL ) then
 			function = NULL
 		else
-			function = cast( byte ptr, _this->tail ) + len( TNODE )
+			function = cast( byte ptr, ctx->tail ) + len( TNODE )
 		end if
 	
 	end function
 	
 	'':::::
-	function getPrev _
+	function CList.getPrev _
 		( _
 			byval node as any ptr _
 		) as any ptr
@@ -304,7 +293,7 @@ namespace fb.list
 	end function
 	
 	'':::::
-	function getNext _
+	function CList.getNext _
 		( _
 			byval node as any ptr _
 		) as any ptr
