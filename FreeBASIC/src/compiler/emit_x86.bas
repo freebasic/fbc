@@ -605,34 +605,20 @@ end sub
 private sub outp _
 	( _
 		byval s as zstring ptr _
-	) static
+	)
 
-    dim as integer p, char
-    dim as string ostr
+    static as string ostr
 
 	if( env.clopt.debug ) then
-		p = instr( *s, " " )
-		if( p > 0 ) then
-			char = s[0][p-1]
-			s[0][p-1] = CHAR_TAB		'' unsafe with constants..
-		end if
-
 		ostr = TABCHAR
 		ostr += *s
-		ostr += NEWLINE
-		outEX( ostr, len( ostr ) )
-
-		if( p > 0 ) then
-			s[0][p-1] = char
-		end if
-
 	else
-
 		ostr = *s
-		ostr += NEWLINE
-		outEX( ostr, len( ostr ) )
-
 	end if
+
+	ostr += NEWLINE
+
+	outEX( ostr, len( ostr ) )
 
 end sub
 
