@@ -2,8 +2,8 @@
 #define __CHTTP_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,30 +20,45 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "common.bi"
+#ifndef NULL
+#define NULL 0
+#endif
+
+#ifndef TRUE
+#define TRUE 1
+#define FALSE 0
+#endif
 
 #include once "CHttpForm.bi"
 
-type CHttp as CHttp_
+namespace fb
 
+	type CHttpCtx as CHttpCtx_
 
-declare function 	CHttp_New					( _
-												  byval _this as CHttp ptr = NULL _
-												) as CHttp ptr
+	type CHttp
 
-declare sub 		CHttp_Delete				( _
-												  byval _this as CHttp ptr, _
-											  	  byval isstatic as integer = FALSE _
-												)
-										  
-declare function 	CHttp_Post					( _
-												  byval _this as CHttp ptr, _
-												  byval url as zstring ptr, _
-												  byval form as CHttpForm ptr _
-												) as string
+		declare constructor _
+			( _
+			)
 
-declare function 	CHttp_GetHandle 			( _
-												  byval _this as CHttp ptr _
-												) as any ptr
+		declare destructor _
+			( _
+			)
+												  
+		declare function Post _
+			( _
+				byval url as zstring ptr, _
+				byval form as CHttpForm ptr _
+			) as string
+
+		declare function GetHandle _
+			( _
+			) as any ptr
+
+		ctx as CHttpCtx ptr
+
+	end type
+
+end namespace
 
 #endif

@@ -2,8 +2,8 @@
 #define __FBDOC_CACHE_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -19,16 +19,21 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
+
 #include once "CWikiCache.bi"
 
-declare function LocalCache_Create _
-	( _
-		byval sLocalDir as zstring ptr, _
-		byval bRefresh as integer _
-	) as integer
+namespace fb.fbdoc
 
-declare sub LocalCache_Destroy( )
+	declare function LocalCache_Create _
+		( _
+			byval sLocalDir as zstring ptr, _
+			byval bRefresh as integer _
+		) as integer
 
-declare function LocalCache_Get( ) as CWikiCache ptr
+	declare sub LocalCache_Destroy( )
+
+	declare function LocalCache_Get( ) as CWikiCache ptr
+
+end namespace
 
 #endif

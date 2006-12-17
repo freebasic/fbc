@@ -1,5 +1,5 @@
-#ifndef __FBDOC_BUILDTOC_BI__
-#define __FBDOC_BUILDTOC_BI__
+#ifndef __FBDOC_STRING_BI__
+#define __FBDOC_STRING_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
 ''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
@@ -20,25 +20,36 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "CPageList.bi"
+#include once "fbdoc_defs.bi"
 
 namespace fb.fbdoc
 
-	declare function FBDoc_BuildTOC _
-		( _
-			byval tocpagename as zstring ptr, _
-			byval tocpagetitle as zstring ptr, _
-			byval paglist as CPageList ptr ptr, _
-			byval toclist as CPageList ptr ptr _
-		) as integer
+	declare sub ZFree( byval s as zstring ptr ptr )
+	declare sub ZSet( byval s as zstring ptr ptr, byval t as zstring ptr )
 
-	declare function FBDoc_BuildSinglePage _
+	declare function ReplaceSubStr _
 		( _
-			byval toc_pagename as zstring ptr, _
-			byval toc_pagetitle as zstring ptr, _
-			byval paglist as CPageList ptr ptr, _
-			byval toclist as CPageList ptr ptr _
-		) as integer
+			byval src as zstring ptr, _
+			byval old as zstring ptr, _
+			byval rep as zstring ptr _
+		) as string 
+
+	Declare Function ReplaceQuotes(byref a as string, byref q as string) As String
+	Declare Function StripQuotes (byref a as string) As String
+
+	declare function LoadFileAsString _
+		( _
+			byval sFileName as zstring ptr _
+		) as string
+
+	declare function CapFirstLetter( byref a as string ) as string
+
+	declare function Text2Html _
+		( _
+			byref text as string, _
+			byval br as integer = FALSE, _
+			byval sp as integer = FALSE _
+		) as string
 
 end namespace
 

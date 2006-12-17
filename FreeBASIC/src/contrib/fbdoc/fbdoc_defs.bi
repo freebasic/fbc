@@ -1,5 +1,5 @@
-#ifndef __FBDOC_BUILDTOC_BI__
-#define __FBDOC_BUILDTOC_BI__
+#ifndef __FBDOC_DEFS_BI__
+#define __FBDOC_DEFS_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
 ''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
@@ -20,25 +20,20 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "CPageList.bi"
+#ifndef NULL
+#define NULL 0
+#endif
+
+#ifndef TRUE
+#define TRUE 1
+#define FALSE 0
+#endif
 
 namespace fb.fbdoc
 
-	declare function FBDoc_BuildTOC _
-		( _
-			byval tocpagename as zstring ptr, _
-			byval tocpagetitle as zstring ptr, _
-			byval paglist as CPageList ptr ptr, _
-			byval toclist as CPageList ptr ptr _
-		) as integer
-
-	declare function FBDoc_BuildSinglePage _
-		( _
-			byval toc_pagename as zstring ptr, _
-			byval toc_pagetitle as zstring ptr, _
-			byval paglist as CPageList ptr ptr, _
-			byval toclist as CPageList ptr ptr _
-		) as integer
+	const nl as string = chr(10)
+	const crlf as string = chr(13) + chr(10)
+	const cTab as string = chr(9)
 
 end namespace
 

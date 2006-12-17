@@ -1,6 +1,6 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -23,40 +23,44 @@
 '' chng: jun/2006 written [coderJeff]
 ''
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 #include once "CWikiCon.bi"
 
-dim shared as CWikiCon ptr wikicon
-dim shared as string wiki_url
+namespace fb.fbdoc
 
-'' --------------------------------------------------------------------------
-'' Wiki Connection and Page Loader
-'' --------------------------------------------------------------------------
+	dim shared as CWikiCon ptr wikicon
+	dim shared as string wiki_url
 
-'':::::
-sub Connection_SetUrl( byval url as zstring ptr )
-	wiki_url = *url
-end sub
+	'' --------------------------------------------------------------------------
+	'' Wiki Connection and Page Loader
+	'' --------------------------------------------------------------------------
 
-'':::::
-function Connection_Create( ) as CWikiCon Ptr
-	if( wikicon <> NULL ) then
+	'':::::
+	sub Connection_SetUrl( byval url as zstring ptr )
+		wiki_url = *url
+	end sub
+
+	'':::::
+	function Connection_Create( ) as CWikiCon Ptr
+		if( wikicon <> NULL ) then
+			return wikicon
+		end if
+		
+		wikicon = new CWikiCon( wiki_url )
+
 		return wikicon
-	end if
-	
-	wikicon = CWikiCon_New( wiki_url )
+		
+	end function
 
-	return wikicon
-	
-end function
+	'':::::
+	sub Connection_Destroy( )
+		if( wikicon = NULL ) then
+			exit sub
+		end if
+		
+		delete wikicon
+		wikicon = NULL
+		
+	end sub
 
-'':::::
-sub Connection_Destroy( )
-	if( wikicon = NULL ) then
-		exit sub
-	end if
-	
-	CWikiCon_Delete( wikicon )
-	wikicon = NULL
-	
-end sub
+end namespace

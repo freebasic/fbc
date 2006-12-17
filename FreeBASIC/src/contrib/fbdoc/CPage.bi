@@ -2,8 +2,8 @@
 #define __CPAGE_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,115 +20,104 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 #include once "list.bi"
 
-type CPage as CPage_
+namespace fb.fbdoc
 
-type PageLinkItem
-	as any ptr				ll_prev
-	as any ptr				ll_next
+	type CPageCtx as CPageCtx_
 
-	text as string
-	url as string
-	level as integer
-end type
+	type PageLinkItem
+		text as string
+		url as string
+		level as integer
+	end type
 
-declare function CPage_New _
-	( _
-		byval pagename as zstring ptr, _
-		byval pagetitle as zstring ptr = NULL, _
-		byval linktitle as zstring ptr = NULL, _
-		byval level as integer = 0, _
-		byval _this as CPage ptr = NULL _
-	) as CPage ptr
+	type CPage
 
-declare sub CPage_Delete _
-	( _
-		byval _this as CPage ptr, _
-		byval isstatic as integer = FALSE _
-	)
+		declare constructor _
+			( _
+				byval pagename as zstring ptr, _
+				byval pagetitle as zstring ptr = NULL, _
+				byval linktitle as zstring ptr = NULL, _
+				byval level as integer = 0 _
+			)
 
-declare function CPage_GetName _
-	( _
-		byval _this as CPage ptr _
-	) as string
+		declare destructor _
+			( _
+			)
 
-declare function CPage_GetPageTitle _
-	( _
-		byval _this as CPage ptr _
-	) as string
+		declare function GetName _
+			( _
+			) as string
 
-declare sub CPage_SetPageTitle _
-	( _
-		byval _this as CPage ptr, _
-		byval title as zstring ptr _
-	)
+		declare function GetPageTitle _
+			( _
+			) as string
 
-declare function CPage_GetLinkTitle _
-	( _
-		byval _this as CPage ptr _
-	) as string
+		declare sub SetPageTitle _
+			( _
+				byval title as zstring ptr _
+			)
 
-declare sub CPage_SetLinkTitle _
-	( _
-		byval _this as CPage ptr, _
-		byval title as zstring ptr _
-	)
+		declare function GetLinkTitle _
+			( _
+			) as string
 
-declare function CPage_GetTitle _
-	( _
-		byval _this as CPage ptr _
-	) as string
+		declare sub SetLinkTitle _
+			( _
+				byval title as zstring ptr _
+			)
 
-declare function CPage_GetFormattedTitle _
-	( _
-		byval _this as CPage ptr _
-	) as string
+		declare function GetTitle _
+			( _
+			) as string
 
-declare function CPage_GetLevel _
-	( _
-		byval _this as CPage ptr _
-	) as integer
+		declare function GetFormattedTitle _
+			( _
+			) as string
 
-declare function CPage_GetEmitted _
-	( _
-		byval _this as CPage ptr _
-	) as integer
+		declare function GetLevel _
+			( _
+			) as integer
 
-declare sub CPage_SetEmitted _
-	( _
-		byval _this as CPage ptr, _
-		byval emitted as integer _
-	)
+		declare function GetEmitted _
+			( _
+			) as integer
 
-declare function CPage_GetScanned _
-	( _
-		byval _this as CPage ptr _
-	) as integer
+		declare sub SetEmitted _
+			( _
+				byval emitted as integer _
+			)
 
-declare sub CPage_SetScanned _
-	( _
-		byval _this as CPage ptr, _
-		byval scanned as integer _
-	)
+		declare function GetScanned _
+			( _
+			) as integer
 
-declare sub CPage_AddPageLink _
-	( _
-		byval _this as CPage ptr, _
-		byval spagetext as zstring ptr, _
-		byval spagename as zstring ptr = NULL, _
-		byval level as integer = 0 _
-	)
+		declare sub SetScanned _
+			( _
+				byval scanned as integer _
+			)
 
-declare sub CPage_FreePageLinks _
-	( _
-		byval _this as CPage ptr _
-	)
+		declare sub AddPageLink _
+			( _
+				byval spagetext as zstring ptr, _
+				byval spagename as zstring ptr = NULL, _
+				byval level as integer = 0 _
+			)
 
-declare function CPage_GetPageLinks _
- 	( _
-		byval _this as CPage ptr _
-	) as TLIST ptr
+		declare sub FreePageLinks _
+			( _
+			)
+
+		declare function GetPageLinks _
+ 			( _
+			) as CList ptr
+
+		ctx as CPageCtx ptr
+
+	end type
+
+end namespace
 
 #endif

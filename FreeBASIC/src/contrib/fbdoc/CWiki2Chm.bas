@@ -1,6 +1,6 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -17,431 +17,412 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' CWiki2Chm - somewhat based on the PHP wikiconv source
+'' CWiki2Chm - emmitter for HTML pages and HTML help project
 ''
 '' chng: jun/2006 written [coderJeff]
+''       dec/2006 updated [coderJeff] - using classes
 ''
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
+#include once "fbdoc_string.bi"
 #include once "fbdoc_lang.bi"
 
 #include once "CWiki.bi"
 #include once "CWakka2Html.bi"
 #include once "fbdoc_loader.bi"
 #include once "fbdoc_templates.bi"
+#include once "fbdoc_keywords.bi"
 
 #include once "CWiki2Chm.bi"
 #include once "CPage.bi"
 #include once "CPageList.bi"
 
-type CWiki2Chm_
-	as zstring ptr urlbase
-	as integer indentbase
-	as zstring ptr outputdir
-	as CPageList ptr paglist
-	as CPageList ptr toclist
-	as CWakka2Html ptr converter
-	as CWiki ptr wiki
-end type
+namespace fb.fbdoc
 
-'':::::
-function CWiki2Chm_New _
-	( _
-		byval urlbase as zstring ptr, _
-		byval indentbase as integer, _
-		byval outputdir as zstring ptr, _
-		byval paglist as CPageList ptr, _
-		byval toclist as CPageList ptr, _
-		byval _this as CWiki2Chm ptr _
-	) as CWiki2Chm ptr
+	type CWiki2ChmCtx_
+		as zstring ptr urlbase
+		as integer indentbase
+		as zstring ptr outputdir
+		as CPageList ptr paglist
+		as CPageList ptr toclist
+		as CWakka2Html ptr converter
+		as CWiki ptr wiki
+	end type
 
-	dim as integer isstatic = TRUE
-	
-	if( _this = NULL ) then
-		isstatic = FALSE
-		_this = callocate( len( CWiki2Chm ) )
-		if( _this = NULL ) then
-			return NULL
+	'':::::
+	constructor CWiki2Chm _
+		( _
+			byval urlbase as zstring ptr, _
+			byval indentbase as integer, _
+			byval outputdir as zstring ptr, _
+			byval paglist as CPageList ptr, _
+			byval toclist as CPageList ptr _
+		)
+
+		ctx = new CWiki2ChmCtx
+
+		ctx->wiki = new CWiki
+
+		ZSet @ctx->urlbase, urlbase
+		ctx->indentbase = indentbase
+		ZSet @ctx->outputdir, outputdir
+		ctx->paglist = paglist
+		ctx->toclist = toclist
+		'' ctx->converter = new CWakka2Html
+
+	end constructor
+
+	'':::::
+	destructor CWiki2Chm _
+		( _
+		)
+		
+		if( ctx = NULL ) then
+			exit sub
 		end if
-	end if
 
-	_this->wiki = CWiki_New( )
-	if( _this->wiki = NULL ) then
-		deallocate( _this )
-		return NULL
-	end if
+		ZFree @ctx->urlbase
+		ZFree @ctx->outputdir
+		'' delete ctx->converter
+		delete ctx->wiki
 
+		delete ctx
 
-	ZSet @_this->urlbase, urlbase
-	_this->indentbase = indentbase
-	ZSet @_this->outputdir, outputdir
-	_this->paglist = paglist
-	_this->toclist = toclist
-	'' _this->converter = CWakka2Html_New( )
+	end destructor
 
-	function = _this
+	private function _OutputFile _
+		( _
+			byval ctx as CWiki2ChmCtx ptr, _
+			byval sFileName as zstring ptr, _
+			byval sContent as zstring ptr _
+		) as integer
 
-end function
+		if( ctx = NULL) then
+			return FALSE
+		end if
 
-'':::::
-sub CWiki2Chm_Delete _
-	( _
-		byval _this as CWiki2Chm ptr, _
-		byval isstatic as integer _
-	)
-	
-	if( _this = NULL ) then
-		exit sub
-	end if
+		if( ( sFileName = NULL ) or ( sContent = NULL ) ) then
+			return FALSE
+		end if
 
-	ZFree @_this->urlbase
-	ZFree @_this->outputdir
-	'' CWakka2Html_Delete( _this->converter )
-	CWiki_Delete( _this->wiki )
+		if( (len(*sFileName) = 0) or (len(*sContent) = 0) ) then
+			return FALSE
+		end if
 
-	if( isstatic = FALSE ) then
-		deallocate( _this )
-	end if
+		dim as integer h
+		dim as string sOutputFile, ret
 
-end sub
+		ret = Lang_ExpandString( sContent )
 
-private function _OutputFile _
-	( _
-		byval _this as CWiki2Chm ptr, _
-		byval sFileName as zstring ptr, _
-		byval sContent as zstring ptr _
-	) as integer
+		sOutputFile = *ctx->outputdir + *sFileName
 
-	if( _this = NULL) then
+		h = freefile
+		if( open(  sOutputFile for output as #h ) = 0 ) then
+			'' ? #h, ret;
+			put #h,,ret
+			close #h
+			return TRUE
+		end if
+
 		return FALSE
-	end if
 
-	if( ( sFileName = NULL ) or ( sContent = NULL ) ) then
-		return FALSE
-	end if
+	end function
 
-	if( (len(*sFileName) = 0) or (len(*sContent) = 0) ) then
-		return FALSE
-	end if
+	'':::::
+	function CWiki2Chm.EmitPages _
+		( _
+		) as integer
 
-	dim as integer h
-	dim as string sOutputFile, ret
+		dim as CPage ptr page
+		dim as any ptr page_i
+		dim as string sName, sBody
+		dim as integer errCount = 0, okCount = 0
 
-	ret = Lang_ExpandString( sContent )
+		ctx->paglist->ResetEmitted()
 
-	sOutputFile = *_this->outputdir + *sFileName
-
-	h = freefile
-	if( open(  sOutputFile for output as #h ) = 0 ) then
-		'' ? #h, ret;
-		put #h,,ret
-		close #h
-		return TRUE
-	end if
-
-	return FALSE
-
-end function
-
-'':::::
-function CWiki2Chm_EmitPages _
-	( _
-		byval _this as CWiki2Chm ptr _
-	) as integer
-
-	dim as CPage ptr page
-	dim as any ptr page_i
-	dim as string sName, sBody
-	dim as integer errCount = 0, okCount = 0
-
-	CPageList_ResetEmitted( _this->paglist )
-
-	page = CPageList_NewEnum( _this->paglist, @page_i )
-	while( page )
-		if( CPage_GetEmitted( page ) = FALSE ) then
-			sName = CPage_GetName(page)
-			if( len(sName) > 0 ) then
-				sBody = LoadPage( sName, TRUE )
-				if( len(sbody) > 0 ) then
-					? "Emitting: " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
-					if CWiki2Chm_EmitDefPage( _this, page, sBody ) then
-						CPage_SetEmitted( page, TRUE )	
+		page = ctx->paglist->NewEnum( @page_i )
+		while( page )
+			if( page->GetEmitted() = FALSE ) then
+				sName = page->GetName()
+				if( len(sName) > 0 ) then
+					sBody = LoadPage( sName, TRUE )
+					if( len(sbody) > 0 ) then
+						? "Emitting: " + page->GetName() + " = '" + page->GetTitle() + "'"
+						if this.EmitDefPage( page, sBody ) then
+							page->SetEmitted( TRUE )	
+						end if
+						okCount += 1
+					else
+						? "Error On: " + page->GetName() + " = '" + page->GetTitle() + "'"
+						errCount += 1
 					end if
-					okCount += 1
-				else
-					? "Error On: " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
-					errCount += 1
 				end if
 			end if
+			page = ctx->paglist->NextEnum( @page_i )
+		wend
+
+		print str(okCount) + " pages emitted OK"  
+		if( errCount > 0 ) then
+			print str(errCount) + " pages had no content and were skipped"
 		end if
-		page = CPageList_NextEnum( @page_i )
-	wend
 
-	print str(okCount) + " pages emitted OK"  
-	if( errCount > 0 ) then
-		print str(errCount) + " pages had no content and were skipped"
-	end if
+		return TRUE
 
-	return TRUE
+	end function
 
-end function
+	'':::::
+	function CWiki2Chm.EmitDefPage _
+		( _
+			byval page as CPage ptr, _
+			byval sbody as zstring ptr _
+		) as integer
 
-'':::::
-function CWiki2Chm_EmitDefPage _
-	( _
-		byval _this as CWiki2Chm ptr, _
-		byval page as CPage ptr, _
-		byval sbody as zstring ptr _
-	) as integer
+		dim as string sBodyHtml, sHtml, sTemplate, sPageName, sPageTitle
 
-	dim as string sBodyHtml, sHtml, sTemplate, sPageName, sPageTitle
-
-	if( page = NULL ) then
-		return FALSE
-	end if
-
-	if( _this->converter = NULL ) then
-		return FALSE
-	end if
-
-	if( len(*sbody) = 0 ) then
-		return FALSE
-	end if
-
-	sPageName = CPage_GetName(page)
-
-	if( lcase(left(sPageName, 5)) = "keypg" ) then
-		CWakka2Html_setIndentBase( _this->converter, 1 )
-		sPageTitle = FormatPageTitle( CPage_GetTitle(page) )
-	else
-		CWakka2Html_setIndentBase( _this->converter, 0 )
-		sPageTitle = CPage_GetTitle(page)
-	end if
-
-	CWiki_Parse( _this->wiki, sPageName, sBody ) 
-	'if( lcase(sPageName) = "??pagename??" ) then
-	'	CWiki_Dump( _this->wiki )
-	'end if
-
-	sBodyHtml = CWakka2Html_gen( _this->converter, @"", _this->wiki )
-
-	sHtml = Templates_Get("chm_def")
-	sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
-	sHtml = ReplaceSubStr( sHtml, "{$pg_title}", Text2Html( sPageTitle ) )
-
-	sHtml = Lang_ExpandString( sHtml )
-
-	function = _OutputFile( _this, CPage_GetName( page ) + ".html", sHtml )
-
-end function
-
-'':::::
-function CWiki2Chm_EmitToc _
-	( _
-		byval _this as CWiki2Chm ptr, _
-		byval sTocName as zstring ptr _
-	) as integer
-	
-	dim as integer level = 0
-	dim as CPage ptr page
-	dim as any ptr page_i
-	dim as string sBodyHtml, sHtml
-
-	function = FALSE
-
-	page = CPageList_NewEnum( _this->toclist, @page_i )
-	while( page )
-
-		while( level < CPage_GetLevel( page ) )
-			sBodyHtml +=  "<ul>" + crlf
-			level += 1
-		wend
-
-		while( level > CPage_GetLevel( page ) )
-			level -= 1
-			sBodyHtml +=  "</ul>"  + crlf
-		wend
-
-		sBodyHtml +=  "<li><object type=""text/sitemap"">"
-		sBodyHtml +=  "<param name=""Name"" value=""" + CPage_GetFormattedTitle( page ) + """>"
-		if( len( CPage_GetName( page )) > 0 ) then
-			sBodyHtml +=  "<param name=""Local"" value=""" + CPage_GetName( page ) + ".html"">"
+		if( page = NULL ) then
+			return FALSE
 		end if
-		sBodyHtml +=  "</object>" + crlf
 
-		page = CPageList_NextEnum( @page_i )
-	wend
+		if( ctx->converter = NULL ) then
+			return FALSE
+		end if
 
-	while( level > CPage_GetLevel( page ) )
-		level -= 1
-		sBodyHtml +=  "</ul>" + crlf
-	wend
+		if( len(*sbody) = 0 ) then
+			return FALSE
+		end if
 
-	sHtml = Templates_Get("chm_toc")
+		sPageName = page->GetName()
 
-	sHtml = Lang_ExpandString( sHtml )
+		if( lcase(left(sPageName, 5)) = "keypg" ) then
+			ctx->converter->setIndentBase( 1 )
+			sPageTitle = FormatPageTitle( page->GetTitle() )
+		else
+			ctx->converter->setIndentBase( 0 )
+			sPageTitle = page->GetTitle()
+		end if
 
-	sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
+		ctx->wiki->Parse( sPageName, sBody ) 
+		'if( lcase(sPageName) = "??pagename??" ) then
+		'	ctx->wiki->Dump()
+		'end if
 
-	function = _OutputFile( _this, *sTocName, sHtml )
+		sBodyHtml = ctx->converter->gen( @"", ctx->wiki )
 
-end function
+		sHtml = Templates_Get("chm_def")
+		sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
+		sHtml = ReplaceSubStr( sHtml, "{$pg_title}", Text2Html( sPageTitle ) )
 
-'':::::
-function CWiki2Chm_EmitHtmlIndex _
-	( _
-		byval _this as CWiki2Chm ptr, _
-		byval sFileName as zstring ptr _
-	) as integer
-	
-	dim as integer level = 0
-	dim as CPage ptr page
-	dim as any ptr page_i
-	dim as string sBodyHtml, sHtml
+		sHtml = Lang_ExpandString( sHtml )
 
-	function = FALSE
+		function = _OutputFile( ctx, page->GetName() + ".html", sHtml )
 
-	page = CPageList_NewEnum( _this->toclist, @page_i )
-	while( page )
+	end function
 
-		while( level < CPage_GetLevel( page ) )
-			sBodyHtml +=  "<ul>" + crlf
-			level += 1
-		wend
+	'':::::
+	function CWiki2Chm.EmitToc _
+		( _
+			byval sTocName as zstring ptr _
+		) as integer
+		
+		dim as integer level = 0
+		dim as CPage ptr page
+		dim as any ptr page_i
+		dim as string sBodyHtml, sHtml
 
-		while( level > CPage_GetLevel( page ) )
-			level -= 1
-			sBodyHtml +=  "</ul>"  + crlf
-		wend
+		function = FALSE
 
-		sBodyHtml +=  "<li><object type=""text/sitemap"">"
+		page = ctx->toclist->NewEnum( @page_i )
+		while( page )
 
-		sBodyHtml +=  "<a href=""" + CPage_GetName( page ) + ".html"">" + Text2Html( CPage_GetFormattedTitle( page ) ) + "</a><br />" + nl
+			while( level < page->GetLevel() )
+				sBodyHtml +=  "<ul>" + crlf
+				level += 1
+			wend
 
-		page = CPageList_NextEnum( @page_i )
-	wend
+			while( level > page->GetLevel() )
+				level -= 1
+				sBodyHtml +=  "</ul>"  + crlf
+			wend
 
-	while( level > CPage_GetLevel( page ) )
-		level -= 1
-		sBodyHtml +=  "</ul>" + crlf
-	wend
-
-	sHtml = Templates_Get("htm_toc")
-
-	sHtml = Lang_ExpandString( sHtml )
-
-	sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
-
-	function = _OutputFile( _this, *sFileName, sHtml )
-
-end function
-
-'':::::
-function CWiki2Chm_EmitIndex _
-	( _
-		byval _this as CWiki2Chm ptr, _
-		byval sIndexName as zstring ptr _
-	) as integer
-	
-	dim as integer level = 0
-	dim as CPage ptr page
-	dim as any ptr page_i
-	dim as string sBodyHtml, sHtml
-
-	function = FALSE
-
-	page = CPageList_NewEnum( _this->paglist, @page_i )
-	while( page )
-
-		If( CPage_GetEmitted(page) ) then
 			sBodyHtml +=  "<li><object type=""text/sitemap"">"
-			sBodyHtml +=  "<param name=""Name"" value=""" + CPage_GetFormattedTitle( page ) + """>"
-			sBodyHtml +=  "<param name=""Local"" value=""" + CPage_GetName( page ) + ".html"">"
-			sBodyHtml +=  "</object>" + nl
+			sBodyHtml +=  "<param name=""Name"" value=""" + page->GetFormattedTitle() + """>"
+			if( len( page->GetName()) > 0 ) then
+				sBodyHtml +=  "<param name=""Local"" value=""" + page->GetName() + ".html"">"
+			end if
+			sBodyHtml +=  "</object>" + crlf
+
+			page = ctx->toclist->NextEnum( @page_i )
+		wend
+
+		while( level > 0 )
+			level -= 1
+			sBodyHtml +=  "</ul>" + crlf
+		wend
+
+		sHtml = Templates_Get("chm_toc")
+
+		sHtml = Lang_ExpandString( sHtml )
+
+		sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
+
+		function = _OutputFile( ctx, *sTocName, sHtml )
+
+	end function
+
+	'':::::
+	function CWiki2Chm.EmitHtmlIndex _
+		( _
+			byval sFileName as zstring ptr _
+		) as integer
+		
+		dim as integer level = 0
+		dim as CPage ptr page
+		dim as any ptr page_i
+		dim as string sBodyHtml, sHtml
+
+		function = FALSE
+
+		page = ctx->toclist->NewEnum( @page_i )
+		while( page )
+
+			while( level < page->GetLevel() )
+				sBodyHtml +=  "<ul>" + crlf
+				level += 1
+			wend
+
+			while( level > page->GetLevel() )
+				level -= 1
+				sBodyHtml +=  "</ul>"  + crlf
+			wend
+
+			sBodyHtml +=  "<li><object type=""text/sitemap"">"
+
+			sBodyHtml +=  "<a href=""" + page->GetName() + ".html"">" + Text2Html( page->GetFormattedTitle() ) + "</a><br />" + nl
+
+			page = ctx->toclist->NextEnum( @page_i )
+		wend
+
+		while( level > 0 )
+			level -= 1
+			sBodyHtml +=  "</ul>" + crlf
+		wend
+
+		sHtml = Templates_Get("htm_toc")
+
+		sHtml = Lang_ExpandString( sHtml )
+
+		sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
+
+		function = _OutputFile( ctx, *sFileName, sHtml )
+
+	end function
+
+	'':::::
+	function CWiki2Chm.EmitIndex _
+		( _
+			byval sIndexName as zstring ptr _
+		) as integer
+		
+		dim as integer level = 0
+		dim as CPage ptr page
+		dim as any ptr page_i
+		dim as string sBodyHtml, sHtml
+
+		function = FALSE
+
+		page = ctx->paglist->NewEnum( @page_i )
+		while( page )
+
+			If( page->GetEmitted() ) then
+				sBodyHtml +=  "<li><object type=""text/sitemap"">"
+				sBodyHtml +=  "<param name=""Name"" value=""" + page->GetFormattedTitle() + """>"
+				sBodyHtml +=  "<param name=""Local"" value=""" + page->GetName() + ".html"">"
+				sBodyHtml +=  "</object>" + nl
+			end if
+
+			page = ctx->paglist->NextEnum( @page_i )
+		wend
+
+		sHtml = Templates_Get("chm_idx")
+
+		sHtml = Lang_ExpandString( sHtml )
+		sHtml = ReplaceSubStr( sHtml, "{$pg_title}", "Index" )
+		sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
+
+		function = _OutputFile( ctx, *sIndexName, sHtml )
+
+	end function
+
+	'':::::
+	function CWiki2Chm.EmitProject _
+		( _
+			byval sProjectName as zstring ptr, _
+			byval sChmName as zstring ptr _
+		) as integer
+
+		dim as integer h, level = 0
+		dim as CPage ptr page
+		dim as any ptr page_i
+		dim as string sBodyHtml, sHtml
+
+		function = FALSE
+
+		page = ctx->paglist->NewEnum( @page_i )
+		while( page )
+			if( page->GetEmitted() ) then
+				sBodyHtml += page->GetName() + ".html" + crlf
+			end if
+			page = ctx->paglist->NextEnum( @page_i )
+		wend
+
+		sHtml = Templates_Get("chm_prj")
+
+		sHtml = Lang_ExpandString( sHtml )
+
+		sHtml = ReplaceSubStr( sHtml, "{$pg_chm_file}", sChmName )
+		sHtml = ReplaceSubStr( sHtml, "{$pg_toc_file}", sChmName )
+		sHtml = ReplaceSubStr( sHtml, "{$pg_idx_file}", sChmName )
+		sHtml = ReplaceSubStr( sHtml, "{$pg_def_file}", "DocToc" )
+
+		sHtml = ReplaceSubStr( sHtml, "{$pg_files}", sBodyHtml )
+
+		function = _OutputFile( ctx, *sProjectName, sHtml )
+
+	end function
+
+	'':::::
+	function CWiki2Chm.Emit _
+		( _
+		) as integer
+
+		ctx->converter = new CWakka2Html
+
+		if( ctx->converter = NULL) then
+			return FALSE
 		end if
 
-		page = CPageList_NextEnum( @page_i )
-	wend
+		ctx->converter->setCssClass( WIKI_TOKEN_PRE, "fb_pre" )
+		ctx->converter->setCssClass( WIKI_TOKEN_HEADER, "fb_header" )
+		ctx->converter->setCssClass( WIKI_TOKEN_BOXLEFT, "fb_box" )
+		ctx->converter->setCssClass( WIKI_TOKEN_BOXRIGHT, "fb_box" )
+		ctx->converter->setCssClass( WIKI_TOKEN_ACTION_TB, "fb_table" )
+		ctx->converter->setCssClass( WIKI_TOKEN_ACTION_IMG, "fb_img" )
+		ctx->converter->setCssClass( WIKI_TOKEN_HORZLINE, false )
+		ctx->converter->setCssClass( WIKI_TOKEN_SECT_ITEM, false )
+		
+		this.EmitPages()
 
-	sHtml = Templates_Get("chm_idx")
-
-	sHtml = Lang_ExpandString( sHtml )
-	sHtml = ReplaceSubStr( sHtml, "{$pg_title}", "Index" )
-	sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
-
-	function = _OutputFile( _this, *sIndexName, sHtml )
-
-end function
-
-'':::::
-function CWiki2Chm_EmitProject _
-	( _
-		byval _this as CWiki2Chm ptr, _
-		byval sProjectName as zstring ptr, _
-		byval sChmName as zstring ptr _
-	) as integer
-
-	dim as integer h, level = 0
-	dim as CPage ptr page
-	dim as any ptr page_i
-	dim as string sBodyHtml, sHtml
-
-	function = FALSE
-
-	page = CPageList_NewEnum( _this->paglist, @page_i )
-	while( page )
-		if( CPage_GetEmitted( page ) ) then
-			sBodyHtml += CPage_GetName( page ) + ".html" + crlf
+		if( ctx->toclist->Count() > 0 ) then
+			this.EmitTOC( "fbdoc.hhc" )
+			this.EmitIndex( "fbdoc.hhk" )
+			this.EmitProject( "fbdoc.hhp", "fbdoc" )
+			this.EmitHtmlIndex( "00index.html" )
 		end if
-		page = CPageList_NextEnum( @page_i )
-	wend
 
-	sHtml = Templates_Get("chm_prj")
+		delete ctx->converter
+		ctx->converter = NULL
 
-	sHtml = Lang_ExpandString( sHtml )
+		return TRUE
+	end function
 
-	sHtml = ReplaceSubStr( sHtml, "{$pg_chm_file}", sChmName )
-	sHtml = ReplaceSubStr( sHtml, "{$pg_toc_file}", sChmName )
-	sHtml = ReplaceSubStr( sHtml, "{$pg_idx_file}", sChmName )
-	sHtml = ReplaceSubStr( sHtml, "{$pg_def_file}", "DocToc" )
-
-	sHtml = ReplaceSubStr( sHtml, "{$pg_files}", sBodyHtml )
-
-	function = _OutputFile( _this, *sProjectName, sHtml )
-
-end function
-
-'':::::
-function CWiki2Chm_Emit( _
-		byval _this as CWiki2Chm ptr _
-) as integer
-
-	_this->converter = CWakka2Html_New( )
-
-	if( _this->converter = NULL) then
-		return FALSE
-	end if
-
-	CWakka2Html_setCssClass( _this->converter, WIKI_TOKEN_PRE, "fb_pre" )
-	CWakka2Html_setCssClass( _this->converter, WIKI_TOKEN_HEADER, "fb_header" )
-	CWakka2Html_setCssClass( _this->converter, WIKI_TOKEN_BOXLEFT, "fb_box" )
-	CWakka2Html_setCssClass( _this->converter, WIKI_TOKEN_BOXRIGHT, "fb_box" )
-	CWakka2Html_setCssClass( _this->converter, WIKI_TOKEN_ACTION_TB, "fb_table" )
-	CWakka2Html_setCssClass( _this->converter, WIKI_TOKEN_ACTION_IMG, "fb_img" )
-	CWakka2Html_setTagDoGen( _this->converter, WIKI_TOKEN_HORZLINE, false )
-	CWakka2Html_setTagDoGen( _this->converter, WIKI_TOKEN_SECT_ITEM, false )
-	
-	CWiki2Chm_EmitPages( _this )
-
-	if( CPageList_Count( _this->toclist ) > 0 ) then
-		CWiki2Chm_EmitTOC( _this, "fbdoc.hhc" )
-		CWiki2Chm_EmitIndex( _this, "fbdoc.hhk" )
-		CWiki2Chm_EmitProject( _this, "fbdoc.hhp", "fbdoc" )
-		CWiki2Chm_EmitHtmlIndex( _this, "00index.html" )
-	end if
-
-	CWakka2Html_Delete( _this->converter )
-	_this->converter = NULL
-
-	return TRUE
-end function
+end namespace

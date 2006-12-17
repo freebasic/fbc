@@ -2,8 +2,8 @@
 #define __CWIKI2CHM_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,42 +20,68 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 #include once "CPage.bi"
 #include once "CPageList.bi"
 
-type CWiki2Chm as CWiki2Chm_
+namespace fb.fbdoc
 
-declare function CWiki2Chm_New _
-	( _
-		byval urlbase as zstring ptr, _
-		byval indentbase as integer, _
-		byval outputdir as zstring ptr, _
-		byval paglist as CPageList ptr, _
-		byval toclist as CPageList ptr, _
-		byval _this as CWiki2Chm ptr = NULL _
-	) as CWiki2Chm ptr
+	type CWiki2ChmCtx as CWiki2ChmCtx_
 
-declare sub CWiki2Chm_Delete _
-	( _
-		byval _this as CWiki2Chm ptr, _
-		byval isstatic as integer = FALSE _
-	)
+	type CWiki2Chm
 
-declare function CWiki2Chm_EmitPages _
-	( _
-		byval _this as CWiki2Chm ptr _
-	) as integer
+		declare constructor _
+			( _
+				byval urlbase as zstring ptr, _
+				byval indentbase as integer, _
+				byval outputdir as zstring ptr, _
+				byval paglist as CPageList ptr, _
+				byval toclist as CPageList ptr _
+			)
 
-declare function CWiki2Chm_EmitDefPage _
-	( _
-		byval _this as CWiki2Chm ptr, _
-		byval page as CPage ptr, _
-		byval sbody as zstring ptr _
-	) as integer
+		declare destructor _
+			( _
+			)
 
-declare function CWiki2Chm_Emit( _
-		byval _this as CWiki2Chm ptr _
-) as integer
+		declare function EmitPages _
+			( _
+			) as integer
+
+		declare function EmitDefPage _
+			( _
+				byval page as CPage ptr, _
+				byval sbody as zstring ptr _
+			) as integer
+
+		declare function Emit _
+			( _
+			) as integer
+
+		declare function EmitToc _
+			( _
+				byval sTocName as zstring ptr _
+			) as integer
+
+		declare function EmitHtmlIndex _
+			( _
+				byval sFileName as zstring ptr _
+			) as integer
+
+		declare function EmitIndex _
+			( _
+				byval sIndexName as zstring ptr _
+			) as integer
+
+		declare function EmitProject _
+			( _
+				byval sProjectName as zstring ptr, _
+				byval sChmName as zstring ptr _
+			) as integer
+
+		ctx as CWiki2ChmCtx ptr
+
+	end type
+
+end namespace
 
 #endif

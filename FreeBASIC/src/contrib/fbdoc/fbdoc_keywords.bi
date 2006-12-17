@@ -2,8 +2,8 @@
 #define __FBDOC_FIND_KEYWORDS_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,14 +20,23 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-declare function fbdoc_FindKeyword _
-	( _
-		byval text as zstring ptr _
-	) as string
+namespace fb.fbdoc
 
-declare function fbdoc_loadkeywords _
-	( _
-		byval sFilename as zstring ptr _
-	) as integer
+	declare function fbdoc_FindKeyword _
+		( _
+			byval text as zstring ptr _
+		) as string
+
+	declare function fbdoc_loadkeywords _
+		( _
+			byval sFilename as zstring ptr _
+		) as integer
+
+	declare function FormatPageTitle _
+		( _
+			byref a as string _
+		) as string
+
+end namespace
 
 #endif

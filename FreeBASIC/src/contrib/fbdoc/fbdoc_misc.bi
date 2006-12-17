@@ -2,8 +2,8 @@
 #define __FBDOC_MISC_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,10 +20,16 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-declare sub misc_dump_titles _
-	( _
-		byval paglist as CPageList ptr, _
-		byval sFileName as zstring ptr _
-	)
+#include once "CPageList.bi"
+
+namespace fb.fbdoc
+
+	declare sub misc_dump_titles _
+		( _
+			byval paglist as CPageList ptr, _
+			byval sFileName as zstring ptr _
+		)
+
+end namespace
 
 #endif

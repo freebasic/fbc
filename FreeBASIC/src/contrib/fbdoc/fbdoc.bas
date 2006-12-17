@@ -1,6 +1,6 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 '' chng: jun/2006 written [coderJeff]
 ''
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 
 #include once "CWiki2Chm.bi"
 #include once "CWiki2fbhelp.bi"
@@ -37,7 +37,11 @@
 #include once "fbdoc_buildtoc.bi"
 #include once "fbdoc_templates.bi"
 #include once "fbdoc_keywords.bi"
+#include once "fbdoc_string.bi"
 #include once "fbdoc_misc.bi"
+
+using fb
+using fbdoc
 
 const default_wiki_url = "http://www.freebasic.net/wiki/wikka.php"
 const default_CacheDir = "cache/"
@@ -47,7 +51,7 @@ const default_CacheDir = "cache/"
 '' main
 '' --------------------------------------------------------------------------
 
-	dim as integer CacheRefreshMode = CACHE_REFRESH_IFMISSING
+	dim as integer CacheRefreshMode = CWikiCache.CACHE_REFRESH_IFMISSING
 	dim as string sCacheDir = default_CacheDir
 	dim as string sOutputDir = ""
 	dim as string sConnFile, sLangFile, sTocTitle, sDocToc, sTemplateDir
@@ -107,7 +111,7 @@ const default_CacheDir = "cache/"
 
 	if( bShowVersion ) then
 		? "FreeBASIC User's Manual Converter/Generator - Version 0.1b"
-		? "Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com)"
+		? "Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink[dot]com)"
 		end 1
 	end if
 
@@ -163,9 +167,9 @@ const default_CacheDir = "cache/"
 			case "-makeini"
 				bMakeIni = TRUE
 			case "-r", "-refresh"
-				CacheRefreshMode = CACHE_REFRESH_ALL
+				CacheRefreshMode = CWikiCache.CACHE_REFRESH_ALL
 			case "-n", "-usecache"
-				CacheRefreshMode = CACHE_REFRESH_NONE
+				CacheRefreshMode = CWikiCache.CACHE_REFRESH_NONE
 			case "-useweb"
 				bUseWeb = TRUE
 			case "-usesql"
@@ -194,7 +198,7 @@ const default_CacheDir = "cache/"
 
 	'' If no connection is set, use cache only
 	if( (bUseSQL = FALSE) and (bUseWeb = FALSE)) then
-		CacheRefreshMode = CACHE_REFRESH_NONE
+		CacheRefreshMode = CWikiCache.CACHE_REFRESH_NONE
 	end if
 	
 	if sConnFile = "" then
@@ -231,7 +235,7 @@ const default_CacheDir = "cache/"
 	end if
 
 	'' Load connection options from the ini file
-	connopts = COptions_New( sConnFile )
+	connopts = new COptions( sConnFile )
 	if( connopts = NULL ) then
 		? "Unable to load connection options file '" + sConnFile + "'"
 		end 1
@@ -245,26 +249,26 @@ const default_CacheDir = "cache/"
 	end if
 
 	'' Initialize the cache
-	sCacheDir = COptions_Get( connopts, "cache_dir", default_CacheDir)
+	sCacheDir = connopts->Get( "cache_dir", default_CacheDir )
 	if LocalCache_Create( sCacheDir, CacheRefreshMode ) = FALSE then
 		? "Unable to use local cache dir " + sCacheDir
 		end 1
 	end if
 
 	'' Initialize the wiki connection - in case its needed
-	Connection_SetUrl( COptions_Get( connopts, "wiki_url", default_wiki_url) )
+	Connection_SetUrl( connopts->Get( "wiki_url", default_wiki_url) )
 
 	'' If using SQL, get all the pages in to the cache now.
 	if( bUseSql ) then
 		
-		dim as string  db_host = COptions_Get( connopts, "db_host")
-		dim as string  db_user = COptions_Get( connopts, "db_user")
-		dim as string  db_pass = COptions_Get( connopts, "db_pass")
-		dim as string  db_name = COptions_Get( connopts, "db_name")
-		dim as integer db_port = CInt(Val(COptions_Get( connopts, "db_port")))
+		dim as string  db_host = connopts->Get( "db_host")
+		dim as string  db_user = connopts->Get( "db_user")
+		dim as string  db_pass = connopts->Get( "db_pass")
+		dim as string  db_name = connopts->Get( "db_name")
+		dim as integer db_port = CInt(Val(connopts->Get( "db_port")))
 		
 		bUseWeb = FALSE
-		CacheRefreshMode = CACHE_REFRESH_NONE
+		CacheRefreshMode = CWikiCache.CACHE_REFRESH_NONE
 
 		if( Fetch_Pages_From_Database( db_host, db_user, db_pass, db_name, db_port ) = FALSE ) then
 			print "Aborting."
@@ -329,9 +333,9 @@ const default_CacheDir = "cache/"
 		Templates_LoadFile( "htm_toc", sTemplateDir + "htm_toc.tpl.html" )
 
 		dim as CWiki2Chm ptr chm
-		chm = CWiki2Chm_New( @"", 1, sOutputDir, paglist, toclist )
-		CWiki2Chm_Emit( chm )
-		CWiki2Chm_Delete( chm )
+		chm = new CWiki2Chm( @"", 1, sOutputDir, paglist, toclist )
+		chm->Emit()
+		delete chm
 
 	end if
 
@@ -342,9 +346,9 @@ const default_CacheDir = "cache/"
 		sTemplateDir = "templates/default/code/"
 
 		dim as CWiki2fbhelp ptr fbhelp
-		fbhelp = CWiki2fbhelp_New( @"", 1, sOutputDir, paglist, toclist )
-		CWiki2fbhelp_Emit( fbhelp )
-		CWiki2fbhelp_Delete( fbhelp )
+		fbhelp = new CWiki2fbhelp( @"", 1, sOutputDir, paglist, toclist )
+		fbhelp->Emit()
+		delete fbhelp
 
 	end if
 
@@ -355,17 +359,18 @@ const default_CacheDir = "cache/"
 		sTemplateDir = "templates/default/code/"
 
 		dim as CWiki2txt ptr txt
-		txt = CWiki2txt_New( @"", 1, sOutputDir, paglist, toclist )
-		CWiki2txt_Emit( txt )
-		CWiki2txt_Delete( txt )
+		txt = new CWiki2txt( @"", 1, sOutputDir, paglist, toclist )
+		txt->Emit()
+		delete txt
 
 	end if
 
-	CPageList_Delete( toclist )
-	CPageList_Delete( paglist )
+	delete toclist
+	delete paglist
 
 	Connection_Destroy()
 	LocalCache_Destroy()
-	COptions_Delete( connopts )
+
+	delete connopts
 
 	end

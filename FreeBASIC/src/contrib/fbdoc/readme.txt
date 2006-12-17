@@ -1,7 +1,7 @@
 
   fbdoc - FreeBASIC User's Manual Converter/Generator
-  Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com)
-
+  Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+    and the FreeBASIC development team.
 
 License:
 
@@ -23,7 +23,7 @@ Installing:
 
   o Requirements:
 
-    - FreeBASIC Compiler version 0.16 or greater and compatible build 
+    - FreeBASIC Compiler version 0.17 or greater and compatible build 
 	  environment.
 
 	- libcurl
@@ -62,20 +62,20 @@ Running:
 	- In the directory where fbdoc executable was made, 
 	  type "fbdoc -useweb -chm"
 
-	- When the process is complete, use html help compilter to make the CHM 
+	- When the process is complete, use html help compiler to make the CHM 
 	  using ./html/fbdoc.hhp as the project file.
 
 
   o Building the CHM using an MySQL Database source:
 
 	- Edit "fbdoc.ini" to set the host name or ip address, user name, 
-	  password, database name , and port number to use for the MySQL 
+	  password, database name, and port number to use for the MySQL 
 	  database connection. 
 
-	- In the directory where fbdoc executable was made, 
+	- In the directory where the fbdoc executable was made, 
 	  type "fbdoc -usesql -chm"
 
-	- When the process is complete, use html help compilter to make the CHM
+	- When the process is complete, use html help compiler to make the CHM
 	  using ./html/fbdoc.hhp as the project file.
 
 
@@ -93,14 +93,19 @@ Running:
 
   o Forcing a refresh of the cache and building multiple formats:
 
-	- type "fbdoc -refresh -useweb -chm -fbhelp
+	- type "fbdoc -refresh -useweb -chm -fbhelp -txt"
 
 
 Credits:
 
+  o Jeffery R. Marshall (coder[at]execulink.com)
+    - main developer of fbdoc application
+
   o Andre Victor T. Vicentini (av1ctor[at]yahoo.com.br):
     - Created backend code for using PCRE and libCURL.
-	- Ported the Wikka parser code from PHP version to FreeBASIC.
+    - Ported the first version of the Wikka parser code from PHP 
+      sources to FreeBASIC.
+    - created list.bas and list.bi - a generic linked list
 
 
 Links:
@@ -108,6 +113,15 @@ Links:
   o Official site: http://www.freebasic.net/ or
                    http://fbc.sourceforge.net/ or
                    http://www.sourceforge.net/projects/fbc
+
+  o External libraries:
+
+    - Curl: http://curl.haxx.se/
+
+    - MySQL: http://dev.mysql.com/
+
+    - PCRE: http://www.pcre.org/
+    
 
 
 EOF

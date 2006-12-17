@@ -1,6 +1,6 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -19,77 +19,82 @@
 
 '' fbdoc_lang
 ''
+''
 '' chng: jun/2006 written [coderJeff]
 ''
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 #include once "COptions.bi"
 
-dim shared as COptions ptr lang = NULL
+namespace fb.fbdoc
 
-'':::::
-sub Lang_Create( )
+	dim shared as COptions ptr lang = NULL
 
-	if( lang <> NULL ) then
-		exit sub
-	end if
+	'':::::
+	sub Lang_Create( )
 
-	lang = COptions_New( )
+		if( lang <> NULL ) then
+			exit sub
+		end if
 
-end sub
+		lang = new COptions
 
-'':::::
-sub Lang_Destroy( )
-	if( lang = NULL ) then
-		exit sub
-	end if
-	
-	COptions_Delete( lang )
-	lang = NULL
-	
-end sub
+	end sub
 
-'':::::
-function Lang_LoadOptions _
-	( _
-		byval sFileName as zstring ptr, _
-		byval bNoReset as integer _
-	) as integer
-
-	Lang_Create
-	Lang_Create
-
-	if( lang = NULL ) then
-		return FALSE
-	end if
+	'':::::
+	sub Lang_Destroy( )
+		if( lang = NULL ) then
+			exit sub
+		end if
 		
-	if( bNoReset = FALSE ) then
-		COptions_Clear( lang )
-	end if
+		delete lang
+		lang = NULL
+		
+	end sub
 
-	function = COptions_ReadFromFile( lang, sFileName )
+	'':::::
+	function Lang_LoadOptions _
+		( _
+			byval sFileName as zstring ptr, _
+			byval bNoReset as integer _
+		) as integer
 
-end function
+		Lang_Create
+		Lang_Create
 
-function Lang_GetOption _
-	( _
-		byval sKey as zstring ptr, _
-		byval sDefault as zstring ptr _
-	) as string
+		if( lang = NULL ) then
+			return FALSE
+		end if
+			
+		if( bNoReset = FALSE ) then
+			lang->Clear()
+		end if
 
-	if( lang = NULL ) then
-		return ""
-	end if
-	
-	function = COptions_Get( lang, sKey, sDefault )
+		function = lang->ReadFromFile( sFileName )
 
-end function
+	end function
 
-function Lang_ExpandString _
-	( _
-		byval sText as zstring  ptr _
-	) as string
+	function Lang_GetOption _
+		( _
+			byval sKey as zstring ptr, _
+			byval sDefault as zstring ptr _
+		) as string
 
-	return COptions_ExpandString( lang, sText )
+		if( lang = NULL ) then
+			return ""
+		end if
+		
+		function = lang->Get( sKey, sDefault )
 
-end function
+	end function
+
+	function Lang_ExpandString _
+		( _
+			byval sText as zstring  ptr _
+		) as string
+
+		return lang->ExpandString( sText )
+
+	end function
+
+end namespace

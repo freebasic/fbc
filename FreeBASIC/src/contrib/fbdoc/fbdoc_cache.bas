@@ -1,6 +1,6 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -23,48 +23,51 @@
 '' chng: sep/2006 written [coderJeff]
 ''
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 #include once "CWikiCache.bi"
 #include once "fbdoc_cache.bi"
 
-dim shared as CWikiCache ptr wikicache
+namespace fb.fbdoc
 
-'':::::
-function LocalCache_Create _
-	( _
-		byval sLocalDir as zstring ptr, _
-		byval bRefresh as integer _
-	) as integer
+	dim shared as CWikiCache ptr wikicache
 
-	if( wikicache <> NULL ) then
-		return TRUE
-	end if
+	'':::::
+	function LocalCache_Create _
+		( _
+			byval sLocalDir as zstring ptr, _
+			byval bRefresh as integer _
+		) as integer
 
-	wikicache = CWikiCache_New( sLocalDir, bRefresh )
-	
-	if( wikicache = NULL ) then
-		return FALSE
-	end if
+		if( wikicache <> NULL ) then
+			return TRUE
+		end if
 
-	function = TRUE
-end function
+		wikicache = new CWikiCache( sLocalDir, bRefresh )
+		
+		if( wikicache = NULL ) then
+			return FALSE
+		end if
 
-'':::::
-sub LocalCache_Destroy( )
+		function = TRUE
+	end function
 
-	if( wikicache = NULL ) then
-		exit sub
-	end if
-	
-	CWikiCache_Delete( wikicache )
-	wikicache = NULL
+	'':::::
+	sub LocalCache_Destroy( )
 
-end sub
+		if( wikicache = NULL ) then
+			exit sub
+		end if
+		
+		delete wikicache
+		wikicache = NULL
 
-'':::::
-function LocalCache_Get( ) as CWikiCache ptr
-	return wikicache
-end function
+	end sub
 
+	'':::::
+	function LocalCache_Get( ) as CWikiCache ptr
+		return wikicache
+	end function
+
+end namespace
 
 

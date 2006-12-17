@@ -2,8 +2,8 @@
 #define __CWAKKA2HTML_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,35 +20,57 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 #include once "CWiki.bi"
 #include once "CPage.bi"
 #include once "CPageList.bi"
 
-type CWakka2Html as CWakka2Html_
+namespace fb.fbdoc
 
-declare function CWakka2Html_New _
-	( _
-		byval _this as CWakka2Html ptr = NULL _
-	) as CWakka2Html ptr
+	type CWakka2HtmlCtx as CWakka2HtmlCtx_
 
-declare sub CWakka2Html_Delete _
-	( _
-		byval _this as CWakka2Html ptr, _
-		byval isstatic as integer = FALSE _
-	)
+	type CWakka2Html
 
-declare sub CWakka2Html_setUrlBase( byval _this as CWakka2Html ptr, byval value as zstring ptr )
-declare sub CWakka2Html_setIndentBase( byval _this as CWakka2Html ptr, byval value as integer )
-declare sub CWakka2Html_setCssClass( byval _this as CWakka2Html ptr, byval token_id as integer, byval value as zstring ptr )
-declare sub CWakka2Html_setTagDoGen( byval _this as CWakka2Html ptr, byval token_id as integer, byval value as integer )
+		declare constructor _
+			( _
+			)
 
-declare function CWakka2Html_gen _
-	( _
-		byval _this as CWakka2Html ptr, _
-		byval page as zstring ptr, _
-		byval wiki as CWiki ptr _
-	) as string
+		declare destructor _
+			( _
+			)
 
+		declare sub setUrlBase _
+			( _
+				byval value as zstring ptr _
+			)
+
+		declare sub setIndentBase _
+			( _
+				byval value as integer _
+			)
+
+		declare sub setCssClass _
+			( _
+				byval token_id as integer, _
+				byval value as zstring ptr _
+			)
+
+		declare sub setTagDoGen _
+			( _
+				byval token_id as integer, _
+				byval value as integer _
+			)
+
+		declare function gen _
+			( _
+				byval page as zstring ptr, _
+				byval wiki as CWiki ptr _
+			) as string
+
+		ctx as CWakka2HtmlCtx ptr
+
+	end type
+
+end namespace
 
 #endif

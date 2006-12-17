@@ -2,8 +2,8 @@
 #define __CFBCODE_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,67 +20,69 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 
-enum FB_TOKEN
-	FB_TOKEN_NULL
-	FB_TOKEN_SPACE
-	FB_TOKEN_NEWLINE
-	FB_TOKEN_COMMENT
-	FB_TOKEN_QUOTED
-	FB_TOKEN_NUMBER
-	FB_TOKEN_KEYWORD
-	FB_TOKEN_DEFINE
-	FB_TOKEN_NAME
-	FB_TOKEN_OTHER
-	FB_TOKENS
-end enum
+namespace fb.fbdoc
 
-type CFbCode as CFbCode_
+	enum FB_TOKEN
+		FB_TOKEN_NULL
+		FB_TOKEN_SPACE
+		FB_TOKEN_NEWLINE
+		FB_TOKEN_COMMENT
+		FB_TOKEN_QUOTED
+		FB_TOKEN_NUMBER
+		FB_TOKEN_KEYWORD
+		FB_TOKEN_DEFINE
+		FB_TOKEN_NAME
+		FB_TOKEN_OTHER
+		FB_TOKENS
+	end enum
 
-type FbToken
-	as any ptr				ll_prev
-	as any ptr				ll_next
-	as integer              id         '' FB_TOKEN
-	as string               text
-	as integer              flags
-end type
+	type CFbCodeCtx as CFbCodeCtx_
 
-const FBTOKEN_FLAGS_NONE = 0
-const FBTOKEN_FLAGS_DEFINE = 1
+	type FbToken
+		as integer              id         '' FB_TOKEN
+		as string               text
+		as integer              flags
+	end type
 
-declare function CFbCode_New _
-	( _
-		byval _this as CFbCode ptr = NULL _
-	) as CFbCode ptr
+	const FBTOKEN_FLAGS_NONE = 0
+	const FBTOKEN_FLAGS_DEFINE = 1
 
-declare sub CFbCode_Delete _
-	( _
-		byval _this as CFbCode ptr, _
-		byval isstatic as integer = FALSE _
-	)
+	type CFbCode
 
-declare function CFbCode_Parse _
-	( _
-		byval _this as CFbCode ptr, _
-		byval text as zstring ptr _
-	) as integer
+		declare constructor _
+			( _
+			)
 
-declare function CFbCode_ParseLines _
-	( _
-		byval _this as CFbCode ptr, _
-		byval text as zstring ptr _
-	) as integer
+		declare destructor _
+			( _
+			)
 
-declare function CFbCode_NewEnum _
-	( _
-		byval _this as CFbCode ptr, _
-		byval _iter as any ptr ptr _
-	) as FbToken ptr
+		declare function Parse _
+			( _
+				byval text as zstring ptr _
+			) as integer
 
-declare function CFbCode_NextEnum _
-	( _
-		byval _iter as any ptr ptr _
-	) as FbToken ptr
+		declare function ParseLines _
+			( _
+				byval text as zstring ptr _
+			) as integer
+
+		declare function NewEnum _
+			( _
+				byval _iter as any ptr ptr _
+			) as FbToken ptr
+
+		declare function NextEnum _
+			( _
+				byval _iter as any ptr ptr _
+			) as FbToken ptr
+
+		ctx as CFbCodeCtx ptr
+
+	end type
+
+end namespace
 
 #endif

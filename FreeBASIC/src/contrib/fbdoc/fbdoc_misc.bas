@@ -1,6 +1,6 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -22,60 +22,65 @@
 '' chng: jun/2006 written [coderJeff]
 ''
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 #include once "CPage.bi"
 #include once "CPageList.bi"
+#include once "fbdoc_string.bi"
 #include once "fbdoc_misc.bi"
 #include once "fbdoc_keywords.bi"
 
-'':::::
-sub misc_dump_titles _
-	( _
-		byval paglist as CPageList ptr, _
-		byval sFileName as zstring ptr _
-	)
+namespace fb.fbdoc
 
-	dim as CPage ptr page
-	dim as any ptr page_i
-	dim as string sName, sTitle1, sTitle2
-	dim as integer h
-	dim as string k
+	'':::::
+	sub misc_dump_titles _
+		( _
+			byval paglist as CPageList ptr, _
+			byval sFileName as zstring ptr _
+		)
 
-	h = freefile
+		dim as CPage ptr page
+		dim as any ptr page_i
+		dim as string sName, sTitle1, sTitle2
+		dim as integer h
+		dim as string k
 
-	? "Generating pages titles list:"
+		h = freefile
 
-	if( open(*sFileName for output as #h) = 0 ) then
+		? "Generating pages titles list:"
 
-		? "Writing '" + *sFileName + "'"
+		if( open(*sFileName for output as #h) = 0 ) then
 
-		page = CPageList_NewEnum( paglist, @page_i )
-		while( page )
-			sName = CPage_GetName(page)
+			? "Writing '" + *sFileName + "'"
 
-			sTitle1 = FormatPageTitle( CPage_GetPageTitle(page) )
-			'sTitle1 = CPage_GetPageTitle(page)
-			'k = fbdoc_FindKeyword( sTitle1 )
-			'if( len(k) > 0 ) then
-			'	sTitle1 = k
-			'end if	
-			
-			sTitle2 = FormatPageTitle( CPage_GetLinkTitle(page) )
-			'sTitle2 = CPage_GetLinkTitle(page)
-			'k = fbdoc_FindKeyword( sTitle2 )
-			'if( len(k) > 0 ) then
-			'	sTitle2 = k
-			'end if	
+			page = paglist->NewEnum( @page_i )
+			while( page )
+				sName = page->GetName()
 
-			? #h, """"; sName; """,""";  sTitle1; """,""";  sTitle2; """"
-			page = CPageList_NextEnum( @page_i )
-		wend
+				sTitle1 = FormatPageTitle( page->GetPageTitle() )
+				'sTitle1 = page->GetPageTitle()
+				'k = fbdoc_FindKeyword( sTitle1 )
+				'if( len(k) > 0 ) then
+				'	sTitle1 = k
+				'end if	
+				
+				sTitle2 = FormatPageTitle( page->GetLinkTitle() )
+				'sTitle2 = page->GetLinkTitle()
+				'k = fbdoc_FindKeyword( sTitle2 )
+				'if( len(k) > 0 ) then
+				'	sTitle2 = k
+				'end if	
 
-		close #h
-	else
+				? #h, """"; sName; """,""";  sTitle1; """,""";  sTitle2; """"
+				page = paglist->NextEnum( @page_i )
+			wend
 
-		? "Unable to write '" + *sFileName + "'"
+			close #h
+		else
 
-	end if
+			? "Unable to write '" + *sFileName + "'"
 
-end sub
+		end if
+
+	end sub
+
+end namespace

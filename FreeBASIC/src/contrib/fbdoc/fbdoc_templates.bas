@@ -1,6 +1,6 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -22,73 +22,77 @@
 '' chng: jun/2006 written [coderJeff]
 ''
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
+#include once "fbdoc_string.bi"
 #include once "COptions.bi"
 
-dim shared as COptions ptr temp
+namespace fb.fbdoc
 
-'':::::
-sub Templates_Create( )
-	if( temp <> NULL ) then
-		exit sub
-	end if
-	
-	temp = COptions_New( )
-	
-end sub
+	dim shared as COptions ptr temp
 
-'':::::
-sub Templates_Destroy( )
-	if( temp = NULL ) then
-		exit sub
-	end if
-	
-	COptions_Delete( temp )
-	temp = NULL
-	
-end sub
-
-'':::::
-function Templates_Set _
-	( _
-		byval sKey as zstring ptr, _
-		byval sValue as zstring ptr _
-	) as integer
-
-	Templates_Create()
-	if( COptions_Set( temp, sKey, sValue ) ) then
-		return TRUE
-	end if
-	return FALSE
-
-end function
-
-function Templates_LoadFile _
-	( _
-		byval sKey as zstring ptr, _
-		byval sFileName as zstring ptr _
-	) as integer
-
-	dim x as string
-
-	x = LoadFileAsString( sFileName )
-	
-	Templates_Create()
-	
-	if( COptions_Set( temp, sKey, x ) ) then
-		return TRUE
-	end if
-	
-	return FALSE
+	'':::::
+	sub Templates_Create( )
+		if( temp <> NULL ) then
+			exit sub
+		end if
 		
-end function
+		temp = new COptions
+		
+	end sub
 
-function Templates_Get _
-	( _
-		byval sKey as zstring ptr _
-	) as string
+	'':::::
+	sub Templates_Destroy( )
+		if( temp = NULL ) then
+			exit sub
+		end if
+		
+		delete temp
+		temp = NULL
+		
+	end sub
 
-	return COptions_Get( temp, sKey )
+	'':::::
+	function Templates_Set _
+		( _
+			byval sKey as zstring ptr, _
+			byval sValue as zstring ptr _
+		) as integer
 
-end function
+		Templates_Create()
+		if( temp->Set( sKey, sValue ) ) then
+			return TRUE
+		end if
+		return FALSE
 
+	end function
+
+	function Templates_LoadFile _
+		( _
+			byval sKey as zstring ptr, _
+			byval sFileName as zstring ptr _
+		) as integer
+
+		dim x as string
+
+		x = LoadFileAsString( sFileName )
+		
+		Templates_Create()
+		
+		if( temp->Set( sKey, x ) ) then
+			return TRUE
+		end if
+		
+		return FALSE
+			
+	end function
+
+	function Templates_Get _
+		( _
+			byval sKey as zstring ptr _
+		) as string
+
+		return temp->Get( sKey )
+
+	end function
+
+end namespace

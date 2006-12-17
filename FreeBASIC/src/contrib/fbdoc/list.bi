@@ -2,8 +2,8 @@
 #define __LIST_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,54 +20,63 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-type TLISTNODE
-	prev	as TLISTNODE ptr
-	next	as TLISTNODE ptr
-	'' ...
-end type
+namespace fb
 
-type TLISTTB
-	next	as TLISTTB ptr
-	nodetb	as any ptr
-	nodes	as integer
-end type
+	type CListCtx as CListCtx_
 
-type TLIST
-	tbhead	as TLISTTB ptr
-	tbtail	as TLISTTB ptr
-	nodes 	as integer
-	nodelen	as integer
-	fhead	as TLISTNODE ptr					'' free list
-	head	as any ptr							'' used list
-	tail	as any ptr							'' /
-	clear	as integer							'' clear nodes?
-end type
+	type CList
 
-declare function listNew		( byval list as TLIST ptr, _
-								  byval nodes as integer, _
-								  byval nodelen as integer, _
-								  byval doclear as integer = TRUE, _
-								  byval relink as integer = TRUE ) as integer
+		enum flags
+			flags_NONE				= &h00000000
+			flags_CLEARNODES		= &h00000001
+			flags_LINKFREENODES		= &h00000002
+			flags_LINKUSEDNODES		= &h00000004
+			flags_NOCLEAR			= flags_LINKFREENODES or flags_LINKUSEDNODES
+			flags_ALL 				= &hFFFFFFFF
+		end enum
+		
+		declare constructor _
+			( _
+				byval nodes as integer, _
+				byval nodelen as integer, _
+				byval flags as flags = flags_ALL _
+			)
+		
+		declare destructor _
+			( _
+			) 
+		
+		declare function insert _
+			( _
+			) as any ptr
+		
+		declare sub remove	_
+			( _
+				byval node as any ptr _
+			)
+		
+		declare function getHead _
+			( _
+			) as any ptr
+		
+		declare function getTail _
+			( _
+			) as any ptr
+		
+		declare function getPrev _	
+			( _
+				byval node as any ptr _
+			) as any ptr
+		
+		declare function getNext _
+			( _
+				byval node as any ptr _
+			) as any ptr
+	
+		
+		dim ctx as CListCtx ptr
+	end type
 
-declare function listFree		( byval list as TLIST ptr ) as integer
-
-declare function listNewNode	( byval list as TLIST ptr ) as any ptr
-
-declare function listDelNode	( byval list as TLIST ptr, _
-								  byval node as TLISTNODE ptr ) as integer
-
-declare function listAllocTB	( byval list as TLIST ptr, _
-					  			  byval nodes as integer, _
-					  			  byval relink as integer = TRUE ) as integer
-
-'':::::
-#define listGetHead(l) cast(TLIST ptr, l)->head
-
-#define listGetTail(l) cast(TLIST ptr, l)->tail
-
-#define listGetPrev(n) cast(any ptr, cast(TLISTNODE ptr, n)->prev)
-
-#define listGetNext(n) cast(any ptr, cast(TLISTNODE ptr, n)->next)
-
+end namespace
 
 #endif '' __LIST_BI__

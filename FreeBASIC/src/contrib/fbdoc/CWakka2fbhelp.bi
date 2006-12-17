@@ -1,9 +1,9 @@
-#ifndef __CWakka2fbhelp_BI__
-#define __CWakka2fbhelp_BI__
+#ifndef __CWAKKA2FBHELP_BI__
+#define __CWAKKA2FBHELP_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,35 +20,51 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 #include once "CWiki.bi"
 #include once "CPage.bi"
 #include once "CPageList.bi"
 
-type CWakka2fbhelp as CWakka2fbhelp_
+namespace fb.fbdoc
 
-declare function CWakka2fbhelp_New _
-	( _
-		byval _this as CWakka2fbhelp ptr = NULL _
-	) as CWakka2fbhelp ptr
+	type CWakka2fbhelpCtx as CWakka2fbhelpCtx_
 
-declare sub CWakka2fbhelp_Delete _
-	( _
-		byval _this as CWakka2fbhelp ptr, _
-		byval isstatic as integer = FALSE _
-	)
+	type CWakka2fbhelp
 
-declare sub CWakka2fbhelp_setUrlBase( byval _this as CWakka2fbhelp ptr, byval value as zstring ptr )
-declare sub CWakka2fbhelp_setIndentBase( byval _this as CWakka2fbhelp ptr, byval value as integer )
-declare sub CWakka2fbhelp_setTagDoGen( byval _this as CWakka2fbhelp ptr, byval token_id as integer, byval value as integer )
-declare sub CWakka2fbhelp_setIsflat( byval _this as CWakka2fbhelp ptr, byval value as integer )
+		declare constructor _
+			( _
+			)
 
-declare function CWakka2fbhelp_gen _
-	( _
-		byval _this as CWakka2fbhelp ptr, _
-		byval page as zstring ptr, _
-		byval wiki as CWiki ptr _
-	) as string
+		declare destructor _
+			( _
+			)
 
+		declare sub setIndentBase _
+			( _
+				byval value as integer _
+			)
+
+		declare sub setTagDoGen _
+			( _
+				byval token_id as integer, _
+				byval value as integer _
+			)
+
+		declare sub setIsflat _
+			( _
+				byval value as integer _
+			)
+
+		declare function gen _
+			( _
+				byval page as zstring ptr, _
+				byval wiki as CWiki ptr _
+			) as string
+
+		ctx as CWakka2fbhelpCtx ptr
+
+	end type
+
+end namespace
 
 #endif

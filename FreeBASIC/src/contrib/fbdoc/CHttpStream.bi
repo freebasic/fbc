@@ -2,8 +2,8 @@
 #define __CHTTPSTREAM_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,38 +20,53 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "common.bi"
+#ifndef NULL
+#define NULL 0
+#endif
 
-type CHttpStream as CHttpStream_
+#ifndef TRUE
+#define TRUE 1
+#define FALSE 0
+#endif
+
+namespace fb
+
+	type CHttpStreamCtx as CHttpStreamCtx_
+
+	type CHttpStream
+
+		declare constructor  _
+			( _
+				byval http as CHttp ptr _
+			)
+
+		declare destructor _
+			( _
+			)
+												  
+		declare function Receive _
+	 		( _
+				byval url as zstring ptr, _
+				byval doreset as integer = FALSE _
+			) as integer
 
 
-declare function 	CHttpStream_New				( _
-												  byval http as CHttp ptr = NULL, _
-												  byval _this as CHttpStream ptr = NULL _
-												) as CHttpStream ptr
+		declare function Read _
+			( _
+			) as string
 
-declare sub 		CHttpStream_Delete			( _
-												  byval _this as CHttpStream ptr, _
-											  	  byval isstatic as integer = FALSE _
-												)
-										  
-declare function 	CHttpStream_Receive 		( _
-												  byval _this as CHttpStream ptr, _
-												  byval url as zstring ptr, _
-												  byval doreset as integer = FALSE _
-											    ) as integer
+		declare function Send _
+		( _
+			byval url as zstring ptr, _
+			byval data_ as any ptr, _
+			byval bytes as integer, _
+			byval doreset as integer = FALSE _
+		) as integer
 
+		ctx as CHttpStreamCtx ptr
+	
+	end type
 
-declare function 	CHttpStream_Read 			( _
-												  byval _this as CHttpStream ptr _
-												) as string
-
-declare function 	CHttpStream_Send 			( _
-												  byval _this as CHttpStream ptr, _
-												  byval url as zstring ptr, _
-												  byval data_ as any ptr, _
-												  byval bytes as integer, _
-												  byval doreset as integer = FALSE _
-											    ) as integer
+end namespace
 
 #endif

@@ -2,8 +2,8 @@
 #define __FBDOC_LANG_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,23 +20,27 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 
-declare function Lang_LoadOptions _
-	( _
-		byval sFileName as zstring ptr, _
-		byval bNoReset as integer = FALSE _
-	) as integer
+namespace fb.fbdoc
 
-declare function Lang_GetOption _
-	( _
-		byval sKey as zstring ptr, _
-		byval sDefault as zstring ptr = NULL _
-	) as string
+	declare function Lang_LoadOptions _
+		( _
+			byval sFileName as zstring ptr, _
+			byval bNoReset as integer = FALSE _
+		) as integer
 
-declare function Lang_ExpandString _
-	( _
-		byval sText as zstring  ptr _
-	) as string
+	declare function Lang_GetOption _
+		( _
+			byval sKey as zstring ptr, _
+			byval sDefault as zstring ptr = NULL _
+		) as string
+
+	declare function Lang_ExpandString _
+		( _
+			byval sText as zstring  ptr _
+		) as string
+
+end namespace
 
 #endif

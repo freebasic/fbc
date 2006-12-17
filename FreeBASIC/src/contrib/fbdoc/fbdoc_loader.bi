@@ -2,8 +2,8 @@
 #define __FBDOC_LOADER_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -19,13 +19,18 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-#include once "common.bi"
 
-declare function LoadPage _
-	( _
-		byval sPage as zstring ptr, _
-		byval bNoReload as integer = FALSE, _
-		byval bCacheFromWeb as integer = FALSE _
-	) as string
+#include once "fbdoc_defs.bi"
+
+namespace fb.fbdoc
+
+	declare function LoadPage _
+		( _
+			byval sPage as zstring ptr, _
+			byval bNoReload as integer = FALSE, _
+			byval bCacheFromWeb as integer = FALSE _
+		) as string
+
+end namespace
 
 #endif

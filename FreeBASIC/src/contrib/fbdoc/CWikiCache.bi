@@ -2,8 +2,8 @@
 #define __CWIKICACHE_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,53 +20,55 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 
-type CWikiCache as CWikiCache_
+namespace fb.fbdoc
 
-enum CACHE_REFRESH_MODE
-	CACHE_REFRESH_NONE
-	CACHE_REFRESH_IFMISSING
-	CACHE_REFRESH_ALL
-end enum
+	type CWikiCacheCtx as CWikiCacheCtx_
 
-declare function CWikiCache_New _
-	( _
-		byval localdir as zstring ptr, _
-		byval bRefresh as integer = FALSE, _
-		byval _this as CWikiCache ptr = NULL _
-	) as CWikiCache ptr
+	type CWikiCache
 
-declare sub CWikiCache_Delete _
-	( _
-		byval _this as CWikiCache ptr, _
-		byval isstatic as integer = FALSE _
-	)
+		enum CACHE_REFRESH_MODE
+			CACHE_REFRESH_NONE
+			CACHE_REFRESH_IFMISSING
+			CACHE_REFRESH_ALL
+		end enum
 
+		declare constructor _
+			( _
+				byval localdir as zstring ptr, _
+				byval bRefresh as integer = FALSE _
+			)
 
-declare function CWikiCache_LoadPage _
-	( _
-		byval _this as CWikiCache ptr, _
-		byval sPage as zstring ptr, _
-		byref sBody as string _
-	) as integer
+		declare destructor _
+			( _
+			)
 
-declare function CWikiCache_SavePage _
-	( _
-		byval _this as CWikiCache ptr, _
-		byval sPage as zstring ptr, _
-		byval sBody as zstring ptr _
-	) as integer
+		declare function LoadPage _
+			( _
+				byval sPage as zstring ptr, _
+				byref sBody as string _
+			) as integer
 
-declare function CWikiCache_GetRefreshMode _
-	( _
-		byval _this as CWikiCache ptr _
-	) as integer
+		declare function SavePage _
+			( _
+				byval sPage as zstring ptr, _
+				byval sBody as zstring ptr _
+			) as integer
 
-declare function CWikiCache_SetRefreshMode _
-	( _
-		byval _this as CWikiCache ptr, _
-		byval RefreshMode as integer _
-	) as integer
+		declare function GetRefreshMode _
+			( _
+			) as integer
+
+		declare function SetRefreshMode _
+			( _
+				byval RefreshMode as integer _
+			) as integer
+
+		ctx as CWikiCacheCtx ptr
+
+	end type
+
+end namespace
 
 #endif

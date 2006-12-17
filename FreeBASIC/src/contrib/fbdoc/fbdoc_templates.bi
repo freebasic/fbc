@@ -2,8 +2,8 @@
 #define __FBDOC_TEMPLATES_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,17 +20,21 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 
-declare function Templates_LoadFile _
-	( _
-		byval sFileKey as zstring ptr, _
-		byval sFileName as zstring ptr _
-	) as integer
+namespace fb.fbdoc
 
-declare function Templates_Get _
-	( _
-		byval sKey as zstring ptr _
-	) as string
+		declare function Templates_LoadFile _
+			( _
+				byval sFileKey as zstring ptr, _
+				byval sFileName as zstring ptr _
+			) as integer
+
+		declare function Templates_Get _
+			( _
+				byval sKey as zstring ptr _
+			) as string
+
+end namespace
 
 #endif

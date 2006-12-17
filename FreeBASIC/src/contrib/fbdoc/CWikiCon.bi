@@ -2,8 +2,8 @@
 #define __CWIKICON_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,52 +20,58 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 
-type CWikiCon as CWikiCon_
+namespace fb.fbdoc
+
+	type CWikiConCtx as CWikiConCtx_
+		
+	type CWikiCon
+
+		declare constructor _
+			( _
+				byval url as zstring ptr = NULL _
+			)
+
+		declare destructor _
+			( _
+			)
+
+		declare function Login _
+			( _
+				byval username as zstring ptr, _
+				byval password as zstring ptr _
+			) as integer
 
 
-declare function 	CWikiCon_New				( _
-												  byval url as zstring ptr, _
-												  byval _this as CWikiCon ptr = NULL _
-												) as CWikiCon ptr
+		declare function LoadPage _
+			( _
+				byval page as zstring ptr, _
+				byval israw as integer, _
+				byval getid as integer = TRUE, _
+				byref body as string _
+			) as integer
 
-declare sub 		CWikiCon_Delete				( _
-												  byval _this as CWikiCon ptr, _
-											  	  byval isstatic as integer = FALSE _
-											  	)
+		declare function StorePage _
+			( _
+				byval body as zstring ptr, _
+				byval note as zstring ptr _
+			) as integer
 
-declare function 	CWikiCon_Login 				( _
-												  byval _this as CWikiCon ptr, _
-												  byval username as zstring ptr, _
-												  byval password as zstring ptr _
-												) as integer
+		declare function StoreNewPage _
+			( _
+				byval body as zstring ptr, _
+				byval pagename as zstring ptr _
+			) as integer
 
-declare function 	CWikiCon_LoadPage			( _
-												  byval _this as CWikiCon ptr, _
-												  byval page as zstring ptr, _
-												  byval israw as integer, _
-												  byval getid as integer = TRUE, _
-												  byref body as string _
-												) as integer
+		declare function GetPageID _
+			( _
+			) as integer
 
-declare function CWikiCon_StorePage _
-	( _
-		byval _this as CWikiCon ptr, _
-		byval body as zstring ptr, _
-		byval note as zstring ptr _
-	) as integer
+		ctx as CWikiConCtx ptr
 
-declare function CWikiCon_StoreNewPage _
-	( _
-		byval _this as CWikiCon ptr, _
-		byval body as zstring ptr, _
-		byval pagename as zstring ptr _
-	) as integer
+	end type
 
-declare function CWikiCon_GetPageID _
-	( _
-		byval _this as CWikiCon ptr _
-	) as integer
+end namespace
 
 #endif

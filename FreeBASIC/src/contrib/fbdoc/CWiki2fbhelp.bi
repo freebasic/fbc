@@ -1,9 +1,9 @@
-#ifndef __CWiki2fbhelp_BI__
-#define __CWiki2fbhelp_BI__
+#ifndef __CWIKI2FBHELP_BI__
+#define __CWIKI2FBHELP_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,42 +20,47 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 #include once "CPage.bi"
 #include once "CPageList.bi"
 
-type CWiki2fbhelp as CWiki2fbhelp_
+namespace fb.fbdoc
 
-declare function CWiki2fbhelp_New _
-	( _
-		byval urlbase as zstring ptr, _
-		byval indentbase as integer, _
-		byval outputdir as zstring ptr, _
-		byval paglist as CPageList ptr, _
-		byval toclist as CPageList ptr, _
-		byval _this as CWiki2fbhelp ptr = NULL _
-	) as CWiki2fbhelp ptr
+	type CWiki2fbhelpCtx as CWiki2fbhelpCtx_
 
-declare sub CWiki2fbhelp_Delete _
-	( _
-		byval _this as CWiki2fbhelp ptr, _
-		byval isstatic as integer = FALSE _
-	)
+	type CWiki2fbhelp
 
-declare function CWiki2fbhelp_EmitPages _
-	( _
-		byval _this as CWiki2fbhelp ptr _
-	) as integer
+		declare constructor _
+			( _
+				byval urlbase as zstring ptr, _
+				byval indentbase as integer, _
+				byval outputdir as zstring ptr, _
+				byval paglist as CPageList ptr, _
+				byval toclist as CPageList ptr _
+			)
 
-declare function CWiki2fbhelp_EmitDefPage _
-	( _
-		byval _this as CWiki2fbhelp ptr, _
-		byval page as CPage ptr, _
-		byval sbody as zstring ptr _
-	) as integer
+		declare destructor _
+			( _
+			)
 
-declare function CWiki2fbhelp_Emit( _
-		byval _this as CWiki2fbhelp ptr _
-) as integer
+		declare function EmitPages _
+			( _
+			) as integer
+
+		declare function EmitDefPage _
+			( _
+				byval page as CPage ptr, _
+				byval sbody as zstring ptr _
+			) as integer
+
+		declare function Emit _
+			( _
+			) as integer
+
+		ctx as CWiki2fbhelpCtx ptr
+
+	end type
+
+end namespace
 
 #endif

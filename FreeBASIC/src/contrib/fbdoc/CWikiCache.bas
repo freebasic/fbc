@@ -1,6 +1,6 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,167 +20,150 @@
 '' CWikiCache - Save/Load raw wiki pages to/from a local dir
 ''
 '' chng: may/2006 written [coderJeff]
+''       dec/2006 updated [coderJeff] - using classes
 ''
 
+#include once "fbdoc_defs.bi"
+#include once "fbdoc_string.bi"
 #include once "CWikiCache.bi"
 
-type CWikiCache_
-	as zstring ptr localdir
-	as integer RefreshMode
-end type
+namespace fb.fbdoc
 
-const cache_ext = ".wakka"
+	type CWikiCacheCtx_
+		as zstring ptr localdir = 0
+		as integer RefreshMode = 0
+	end type
 
-'':::::
-function CWikiCache_New _
-	( _
-		byval localdir as zstring ptr, _
-		byval RefreshMode as integer, _
-		byval _this as CWikiCache ptr _
-	) as CWikiCache ptr
+	const cache_ext = ".wakka"
 
-	dim as integer isstatic = TRUE
-	
-	if( _this = NULL ) then
-		isstatic = FALSE
-		_this = callocate( len( CWikiCache ) )
-		if( _this = NULL ) then
-			return NULL
+	'':::::
+	constructor CWikiCache _
+		( _
+			byval localdir as zstring ptr, _
+			byval RefreshMode as integer _
+		)
+
+		ctx = new CWikiCacheCtx
+		ZSet @ctx->localdir, localdir
+		ctx->RefreshMode = RefreshMode
+
+	end constructor
+
+	'':::::
+	destructor CWikiCache _
+		( _
+		)
+		
+		ZFree @ctx->localdir
+		delete ctx
+		
+	end destructor
+
+	'':::::
+	function CWikiCache.LoadPage _
+		( _
+			byval sPage as zstring ptr, _
+			byref sBody as string _
+		) as integer
+
+		if( ctx = NULL ) then
+			return FALSE
 		end if
-	end if
 
-  ZSet @_this->localdir, localdir
-	_this->RefreshMode = RefreshMode
+		if( sPage = NULL ) then
+			return FALSE
+		end if
 
-	function = _this
+		if( len(*sPage) = 0) then
+			return FALSE
+		endif
 
-end function
+		dim as integer h
+		dim as string sLocalFile
 
-'':::::
-sub CWikiCache_Delete _
-	( _
-		byval _this as CWikiCache ptr, _
-		byval isstatic as integer _
-	)
-	
-	if( _this = NULL ) then
-		exit sub
-	end if
+		function = FALSE
+		sBody = ""
 
-	ZFree @_this->localdir
-	
-	if( isstatic = FALSE ) then
-		deallocate( _this )
-	end if
+		sLocalFile = *ctx->localdir + *sPage + cache_ext
 
-end sub
-
-
-'':::::
-function CWikiCache_LoadPage _
-	( _
-		byval _this as CWikiCache ptr, _
-		byval sPage as zstring ptr, _
-		byref sBody as string _
-	) as integer
-
-	if( _this = NULL ) then
-		return FALSE
-	end if
-
-	if( sPage = NULL ) then
-		return FALSE
-	end if
-
-	if( len(*sPage) = 0) then
-		return FALSE
-	endif
-
-	dim as integer h
-	dim as string sLocalFile
-
-	function = FALSE
-	sBody = ""
-
-	sLocalFile = *_this->localdir + *sPage + cache_ext
-
-	if( dir( sLocalFile ) > "" ) then
-		h = freefile
-		if( open( sLocalFile for binary as #h) = 0 ) then
-			if( lof(h) > 0 ) then
-				sBody = space( lof(	h ) )
-				get #h,,sBody
+		if( dir( sLocalFile ) > "" ) then
+			h = freefile
+			if( open( sLocalFile for binary as #h) = 0 ) then
+				if( lof(h) > 0 ) then
+					sBody = space( lof(	h ) )
+					get #h,,sBody
+				end if
+				close #h
+				function = TRUE
 			end if
+		end if
+
+	end function
+
+	'':::::
+	function CWikiCache.SavePage _
+		( _
+			byval sPage as zstring ptr, _
+			byval sBody as zstring ptr _
+		) as integer
+
+		if( ctx = NULL ) then
+			return FALSE
+		end if
+
+		if( sPage = NULL ) then
+			return FALSE
+		end if
+
+		if( len(*sPage) = 0) then
+			return FALSE
+		endif
+
+		dim as integer h
+		dim as string sLocalFile
+
+		function = FALSE
+
+		sLocalFile = *ctx->localdir + *sPage + cache_ext
+
+		if dir( sLocalFile ) > "" then
+			kill sLocalFile
+		end if
+
+		h = freefile
+		if( open(sLocalFile for binary as #h) = 0 ) then
+			put #h,,*sBody, len(*sBody)
 			close #h
 			function = TRUE
 		end if
-	end if
 
-end function
+	end function
 
-'':::::
-function CWikiCache_SavePage _
-	( _
-		byval _this as CWikiCache ptr, _
-		byval sPage as zstring ptr, _
-		byval sBody as zstring ptr _
-	) as integer
+	'':::::
+	function CWikiCache.GetRefreshMode _
+		( _
+		) as integer
 
-	if( _this = NULL ) then
-		return FALSE
-	end if
+		if( ctx = NULL ) then
+			return FALSE
+		end if
 
-	if( sPage = NULL ) then
-		return FALSE
-	end if
+		function = ctx->RefreshMode
 
-	if( len(*sPage) = 0) then
-		return FALSE
-	endif
+	end function
 
-	dim as integer h
-	dim as string sLocalFile
+	'':::::
+	function CWikiCache.SetRefreshMode _
+		( _
+			byval RefreshMode as integer _
+		) as integer
 
-	function = FALSE
+		if( ctx = NULL ) then
+			return FALSE
+		end if
 
-	sLocalFile = *_this->localdir + *sPage + cache_ext
+		ctx->RefreshMode = RefreshMode
+		
+	end function
 
-	if dir( sLocalFile ) > "" then
-		kill sLocalFile
-	end if
-
-	h = freefile
-	if( open(sLocalFile for binary as #h) = 0 ) then
-		put #h,,*sBody, len(*sBody)
-		close #h
-		function = TRUE
-	end if
-
-end function
-
-function CWikiCache_GetRefreshMode _
-	( _
-		byval _this as CWikiCache ptr _
-	) as integer
-
-	if( _this = NULL ) then
-		return FALSE
-	end if
-
-	function = _this->RefreshMode
-
-end function
-
-function CWikiCache_SetRefreshMode _
-	( _
-		byval _this as CWikiCache ptr, _
-		byval RefreshMode as integer _
-	) as integer
-
-	if( _this = NULL ) then
-		return FALSE
-	end if
-
-	_this->RefreshMode = RefreshMode
-	
-end function
+end namespace

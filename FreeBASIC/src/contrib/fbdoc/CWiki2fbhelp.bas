@@ -1,6 +1,6 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
-''  the FreeBASIC development team.
+''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
+''  and the FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -20,242 +20,226 @@
 '' CWiki2fbhelp - emitter for console fbhelp file
 ''
 '' chng: jul/2006 written [coderJeff]
+''       dec/2006 updated [coderJeff] - using classes
 ''
 
-#include once "common.bi"
+#include once "fbdoc_defs.bi"
 #include once "fbdoc_lang.bi"
 
 #include once "CWiki.bi"
 #include once "CWakka2fbhelp.bi"
 #include once "fbdoc_loader.bi"
 #include once "fbdoc_templates.bi"
+#include once "fbdoc_keywords.bi"
+#include once "fbdoc_string.bi"
 
 #include once "CWiki2fbhelp.bi"
 #include once "CPage.bi"
 #include once "CPageList.bi"
 
-type CWiki2fbhelp_
-	as zstring ptr urlbase
-	as integer indentbase
-	as zstring ptr outputdir
-	as CPageList ptr paglist
-	as CPageList ptr toclist
-	as CWakka2fbhelp ptr converter
-	as CWiki ptr wiki
-end type
+namespace fb.fbdoc
 
-'':::::
-function CWiki2fbhelp_New _
-	( _
-		byval urlbase as zstring ptr, _
-		byval indentbase as integer, _
-		byval outputdir as zstring ptr, _
-		byval paglist as CPageList ptr, _
-		byval toclist as CPageList ptr, _
-		byval _this as CWiki2fbhelp ptr _
-	) as CWiki2fbhelp ptr
+	type CWiki2fbhelpCtx_
+		as zstring ptr urlbase
+		as integer indentbase
+		as zstring ptr outputdir
+		as CPageList ptr paglist
+		as CPageList ptr toclist
+		as CWakka2fbhelp ptr converter
+		as CWiki ptr wiki
+	end type
 
-	dim as integer isstatic = TRUE
-	
-	if( _this = NULL ) then
-		isstatic = FALSE
-		_this = callocate( len( CWiki2fbhelp ) )
-		if( _this = NULL ) then
-			return NULL
+	'':::::
+	constructor CWiki2fbhelp _
+		( _
+			byval urlbase as zstring ptr, _
+			byval indentbase as integer, _
+			byval outputdir as zstring ptr, _
+			byval paglist as CPageList ptr, _
+			byval toclist as CPageList ptr _
+		)
+
+		ctx = new CWiki2fbhelpCtx
+
+		ctx->wiki = new CWiki
+		ZSet @ctx->urlbase, urlbase
+		ctx->indentbase = indentbase
+		ZSet @ctx->outputdir, outputdir
+		ctx->paglist = paglist
+		ctx->toclist = toclist
+		'' ctx->converter = new CWakka2fbhelp
+
+	end constructor
+
+	'':::::
+	destructor CWiki2fbhelp _
+		( _
+		)
+		
+		if( ctx = NULL ) then
+			exit sub
 		end if
-	end if
 
-	_this->wiki = CWiki_New( )
-	if( _this->wiki = NULL ) then
-		deallocate( _this )
-		return NULL
-	end if
+		ZFree @ctx->urlbase
+		ZFree @ctx->outputdir
+		'' delete ctx->converter
+		delete ctx->wiki
 
+		delete ctx
 
-	ZSet @_this->urlbase, urlbase
-	_this->indentbase = indentbase
-	ZSet @_this->outputdir, outputdir
-	_this->paglist = paglist
-	_this->toclist = toclist
-	'' _this->converter = CWakka2fbhelp_New( )
+	end destructor
 
-	function = _this
+	private function _OutputFile _
+		( _
+			byval ctx as CWiki2fbhelpCtx ptr, _
+			byval sFileName as zstring ptr, _
+			byval sContent as zstring ptr _
+		) as integer
 
-end function
+		if( ctx = NULL) then
+			return FALSE
+		end if
 
-'':::::
-sub CWiki2fbhelp_Delete _
-	( _
-		byval _this as CWiki2fbhelp ptr, _
-		byval isstatic as integer _
-	)
-	
-	if( _this = NULL ) then
-		exit sub
-	end if
+		if( ( sFileName = NULL ) or ( sContent = NULL ) ) then
+			return FALSE
+		end if
 
-	ZFree @_this->urlbase
-	ZFree @_this->outputdir
-	'' CWakka2fbhelp_Delete( _this->converter )
-	CWiki_Delete( _this->wiki )
+		if( (len(*sFileName) = 0) or (len(*sContent) = 0) ) then
+			return FALSE
+		end if
 
-	if( isstatic = FALSE ) then
-		deallocate( _this )
-	end if
+		dim as integer h
+		dim as string sOutputFile, ret
 
-end sub
+		ret = Lang_ExpandString( sContent )
 
-private function _OutputFile _
-	( _
-		byval _this as CWiki2fbhelp ptr, _
-		byval sFileName as zstring ptr, _
-		byval sContent as zstring ptr _
-	) as integer
+		ret = ReplaceSubStr( ret, "&middot;", "-" )
 
-	if( _this = NULL) then
+		sOutputFile = *ctx->outputdir + *sFileName
+
+		h = freefile
+		if( open(  sOutputFile for output as #h ) = 0 ) then
+			'' ? #h, ret;
+			put #h,,ret
+			close #h
+			return TRUE
+		end if
+
 		return FALSE
-	end if
 
-	if( ( sFileName = NULL ) or ( sContent = NULL ) ) then
-		return FALSE
-	end if
+	end function
 
-	if( (len(*sFileName) = 0) or (len(*sContent) = 0) ) then
-		return FALSE
-	end if
+	'':::::
+	function CWiki2fbhelp.EmitPages _
+		( _
+		) as integer
 
-	dim as integer h
-	dim as string sOutputFile, ret
+		dim as CPage ptr page
+		dim as any ptr page_i
+		dim as string sName, sBody
+		dim as integer errCount = 0, okCount = 0
 
-	ret = Lang_ExpandString( sContent )
+		ctx->paglist->ResetEmitted()
 
-	ret = ReplaceSubStr( ret, "&middot;", "-" )
-
-	sOutputFile = *_this->outputdir + *sFileName
-
-	h = freefile
-	if( open(  sOutputFile for output as #h ) = 0 ) then
-		'' ? #h, ret;
-		put #h,,ret
-		close #h
-		return TRUE
-	end if
-
-	return FALSE
-
-end function
-
-'':::::
-function CWiki2fbhelp_EmitPages _
-	( _
-		byval _this as CWiki2fbhelp ptr _
-	) as integer
-
-	dim as CPage ptr page
-	dim as any ptr page_i
-	dim as string sName, sBody
-	dim as integer errCount = 0, okCount = 0
-
-	CPageList_ResetEmitted( _this->paglist )
-
-	page = CPageList_NewEnum( _this->paglist, @page_i )
-	while( page )
-		if( CPage_GetEmitted( page ) = FALSE ) then
-			sName = CPage_GetName(page)
-			if( len(sName) > 0 ) then
-				sBody = LoadPage( sName, TRUE )
-				if( len(sbody) > 0 ) then
-					? "Emitting: " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
-					if CWiki2fbhelp_EmitDefPage( _this, page, sBody ) then
-						CPage_SetEmitted( page, TRUE )	
+		page = ctx->paglist->NewEnum( @page_i )
+		while( page )
+			if( page->GetEmitted() = FALSE ) then
+				sName = page->GetName()
+				if( len(sName) > 0 ) then
+					sBody = LoadPage( sName, TRUE )
+					if( len(sbody) > 0 ) then
+						? "Emitting: " + page->GetName() + " = '" + page->GetTitle() + "'"
+						if this.EmitDefPage( page, sBody ) then
+							page->SetEmitted( TRUE )	
+						end if
+						okCount += 1
+					else
+						? "Error On: " + page->GetName() + " = '" + page->GetTitle() + "'"
+						errCount += 1
 					end if
-					okCount += 1
-				else
-					? "Error On: " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
-					errCount += 1
 				end if
 			end if
+			page = ctx->paglist->NextEnum( @page_i )
+		wend
+
+		print str(okCount) + " pages emitted OK"  
+		if( errCount > 0 ) then
+			print str(errCount) + " pages had no content and were skipped"
 		end if
-		page = CPageList_NextEnum( @page_i )
-	wend
 
-	print str(okCount) + " pages emitted OK"  
-	if( errCount > 0 ) then
-		print str(errCount) + " pages had no content and were skipped"
-	end if
+		return TRUE
 
-	return TRUE
+	end function
 
-end function
+	'':::::
+	function CWiki2fbhelp.EmitDefPage _
+		( _
+			byval page as CPage ptr, _
+			byval sbody as zstring ptr _
+		) as integer
 
-'':::::
-function CWiki2fbhelp_EmitDefPage _
-	( _
-		byval _this as CWiki2fbhelp ptr, _
-		byval page as CPage ptr, _
-		byval sbody as zstring ptr _
-	) as integer
+		dim as string sBodyTxt, sTxt, sTemplate, sPageName, sPageTitle
 
-	dim as string sBodyTxt, sTxt, sTemplate, sPageName, sPageTitle
+		if( page = NULL ) then
+			return FALSE
+		end if
 
-	if( page = NULL ) then
-		return FALSE
-	end if
+		if( ctx->converter = NULL ) then
+			return FALSE
+		end if
 
-	if( _this->converter = NULL ) then
-		return FALSE
-	end if
+		if( len(*sbody) = 0 ) then
+			return FALSE
+		end if
 
-	if( len(*sbody) = 0 ) then
-		return FALSE
-	end if
+		sPageName = page->GetName()
 
-	sPageName = CPage_GetName(page)
+		if( lcase(left(sPageName, 5)) = "keypg" ) then
+			ctx->converter->setIndentBase( 0 )
+			sPageTitle = FormatPageTitle( page->GetTitle() )
+		else
+			ctx->converter->setIndentBase( 0 )
+			sPageTitle = page->GetTitle()
+		end if
 
-	if( lcase(left(sPageName, 5)) = "keypg" ) then
-		CWakka2fbhelp_setIndentBase( _this->converter, 0 ) '' 1
-		sPageTitle = FormatPageTitle( CPage_GetTitle(page) )
-	else
-		CWakka2fbhelp_setIndentBase( _this->converter, 0 )
-		sPageTitle = CPage_GetTitle(page)
-	end if
+		ctx->wiki->Parse( sPageName, sBody ) 
 
-	CWiki_Parse( _this->wiki, sPageName, sBody ) 
+		sBodyTxt = ctx->converter->gen( @"", ctx->wiki )
 
-	sBodyTxt = CWakka2fbhelp_gen( _this->converter, @"", _this->wiki )
+		sTxt = chr(27, &h81) + sPageTitle + chr(10)
 
-	sTxt = chr(27, &h81) + sPageTitle + chr(10)
+		if( left( sBodyTxt, 1 ) <> chr(10) ) then
+			sTxt += chr(10)
+		end if
+		
+		sTxt += Lang_ExpandString( sBodyTxt )
 
-	if( left( sBodyTxt, 1 ) <> chr(10) ) then
-		sTxt += chr(10)
-	end if
-	
-	sTxt += Lang_ExpandString( sBodyTxt )
+		function = _OutputFile( ctx, page->GetName() + ".txt", sTxt )
 
-	function = _OutputFile( _this, CPage_GetName( page ) + ".txt", sTxt )
+	end function
 
-end function
+	'':::::
+	function CWiki2fbhelp.Emit _
+		( _
+		) as integer
 
-'':::::
-function CWiki2fbhelp_Emit( _
-		byval _this as CWiki2fbhelp ptr _
-) as integer
+		ctx->converter = new CWakka2fbhelp
 
-	_this->converter = CWakka2fbhelp_New( )
+		if( ctx->converter = NULL) then
+			return FALSE
+		end if
 
-	if( _this->converter = NULL) then
-		return FALSE
-	end if
+		ctx->converter->setTagDoGen( WIKI_TOKEN_HORZLINE, false )
+		ctx->converter->setTagDoGen( WIKI_TOKEN_SECT_ITEM, false )
 
-	CWakka2fbhelp_setTagDoGen( _this->converter, WIKI_TOKEN_HORZLINE, false )
-	CWakka2fbhelp_setTagDoGen( _this->converter, WIKI_TOKEN_SECT_ITEM, false )
+		ctx->converter->setIsFlat( false )
 
-	CWakka2fbhelp_setIsFlat( _this->converter, false )
+		this.EmitPages()
 
-	CWiki2fbhelp_EmitPages( _this )
+		delete ctx->converter
+		ctx->converter = NULL
 
-	CWakka2fbhelp_Delete( _this->converter )
-	_this->converter = NULL
+		return TRUE
+	end function
 
-	return TRUE
-end function
+end namespace
