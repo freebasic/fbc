@@ -235,8 +235,6 @@ function cOnStmt _
 				label = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 			end if
 
-			astScopeBreak( label )
-
 			lexSkipToken( )
 
 			expr = astNewADDROF( astNewVAR( label, 0, FB_DATATYPE_UINT ) )
