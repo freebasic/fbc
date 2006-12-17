@@ -642,17 +642,19 @@ end function
 '':::::
 function fbPreInclude _
 	( _
-		preincTb() as string, _
-		byval preincfiles as integer _
+		byval preinclist as TLIST ptr _
 	) as integer
 
-	dim as integer i
+	if( preinclist <> NULL ) then
+		dim as string ptr incf = listGetHead( preinclist )
+		do while( incf <> NULL )
+			if( fbIncludeFile( *incf, TRUE ) = FALSE ) then
+				return FALSE
+			end if
 
-	for i = 0 to preincfiles-1
-		if( fbIncludeFile( preincTb(i), TRUE ) = FALSE ) then
-			return FALSE
-		end if
-	next
+			incf = listGetNext( incf )
+		loop
+	end if
 
 	function = TRUE
 
@@ -664,8 +666,7 @@ function fbCompile _
 		byval infname as zstring ptr, _
 		byval outfname as zstring ptr, _
 		byval ismain as integer, _
-		preincTb() as string, _
-		byval preincfiles as integer _
+		byval preinclist as TLIST ptr _
 	) as integer
 
     dim as integer res
@@ -705,7 +706,7 @@ function fbCompile _
 
 	tmr = timer( )
 
-	res = fbPreInclude( preincTb(), preincfiles )
+	res = fbPreInclude( preinclist )
 
 	if( res = TRUE ) then
 		'' parse
@@ -735,28 +736,14 @@ function fbCompile _
 end function
 
 '':::::
-function fbListLibs _
+sub fbListLibs _
 	( _
-		namelist() as string, _
-		byval index as integer _
-	) as integer
+		byval liblist as TLIST ptr _
+	)
 
-	dim as integer i
+	symbListLibs( liblist )
 
-	index += symbListLibs( namelist(), index )
-
-	if( env.clopt.multithreaded ) then
-		for i = 0 to index-1
-			if( namelist(i) = "fb" ) then
-				namelist(i) = "fbmt"
-				exit for
-			end if
-		next
-	end if
-
-	function = index
-
-end function
+end sub
 
 '':::::
 sub fbAddDefaultLibs( ) static
@@ -765,7 +752,12 @@ sub fbAddDefaultLibs( ) static
 		exit sub
     end if
 
-	symbAddLib( "fb" )
+	if( env.clopt.multithreaded ) then
+		symbAddLib( "fbmt" )
+	else
+		symbAddLib( "fb" )
+	end if
+
 	symbAddLib( "gcc" )
 
 	select case as const env.clopt.target

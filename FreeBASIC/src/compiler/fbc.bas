@@ -26,44 +26,86 @@
 
 #include once "inc\fb.bi"
 #include once "inc\hash.bi"
+#include once "inc\list.bi"
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
-declare sub 	 fbcInit( )
+declare sub fbcInit _
+	( _
+	)
 
-declare sub 	 fbcEnd 				(  _
-											byval errnum as integer _
-										)
+declare sub fbcEnd _
+	(  _
+		byval errnum as integer _
+	)
 
-declare sub 	 parseCmd 				( _
-											byref argc as integer, _
-											argv() as string _
-										)
+declare sub parseCmd _
+	( _
+	)
 
-declare sub 	 setDefaultOptions		( )
-declare function processOptions			( ) as integer
-declare function processCompLists 		( ) as integer
-declare function processTargetOptions  	( ) as integer
-declare sub 	 printOptions			( )
-declare sub 	 getLibList 			( )
-declare sub 	 initTarget				( )
+declare sub setDefaultOptions _
+	( _
+	)
 
-declare function listFiles 				( ) as integer
-declare function compileFiles 			( ) as integer
-declare function assembleFiles 			( ) as integer
-declare function linkFiles 				( ) as integer
-declare function archiveFiles 			( ) as integer
-declare function compileResFiles 		( ) as integer
-declare function delFiles 				( ) as integer
-declare sub 	 setMainModule			( )
-declare sub 	 setCompOptions			( )
+declare function processOptions _
+	( _
+	) as integer
+
+declare function processCompLists _
+	( _
+	) as integer
+
+declare function processTargetOptions _
+	( _
+	) as integer
+
+declare sub printOptions _
+	( _
+	)
+
+declare sub getLibList _
+	( _
+	)
+
+declare sub initTarget _
+	( _
+	)
+
+declare function compileFiles _
+	( _
+	) as integer
+
+declare function assembleFiles _
+	( _
+	) as integer
+
+declare function linkFiles _
+	( _
+	) as integer
+
+declare function archiveFiles _
+	( _
+	) as integer
+
+declare function compileResFiles _
+	( _
+	) as integer
+
+declare function delFiles _
+	( _
+	) as integer
+
+declare sub setMainModule _
+	( _
+	)
+
+declare sub setCompOptions _
+	( _
+	)
 
 
 ''globals
 	dim shared as FBCCTX fbc
-
-	dim shared as integer argc
-	dim shared as string argv(0 to FB_MAXARGS-1)
 
 	'' command-line options
 	dim shared as FBC_OPTION optionTb(0 to FBC_OPTS-1) = _
@@ -118,9 +160,9 @@ declare sub 	 setCompOptions			( )
     setDefaultOptions( )
 
     ''
-    parseCmd( argc, argv() )
+    parseCmd( )
 
-    if( argc = 0 ) then
+    if( listGetHead( @fbc.arglist ) = NULL ) then
     	printOptions( )
     	fbcEnd( 1 )
     end if
@@ -141,15 +183,11 @@ declare sub 	 setCompOptions			( )
     ''
     setCompOptions( )
 
-    '' list
-    if( listFiles( ) = FALSE ) then
-    	printOptions( )
-    	fbcEnd( 1 )
-    end if
-
     ''
     if( fbc.showversion = FALSE ) then
-    	if( (fbc.inps = 0) and (fbc.objs = 0) and (fbc.libs = 0) ) then
+    	if( (listGetHead( @fbc.inoutlist ) = NULL) and _
+    		(listGetHead( @fbc.objlist ) = NULL) and _
+    		(listGetHead( @fbc.liblist ) = NULL) ) then
     		printOptions( )
     		fbcEnd( 1 )
     	end if
@@ -157,7 +195,8 @@ declare sub 	 setCompOptions			( )
 
     ''
     if( fbc.verbose or fbc.showversion ) then
-    	print "FreeBASIC Compiler - Version "; FB_VERSION; " for "; FB_HOST; " (target:"; FB_TARGET; ")"
+    	print "FreeBASIC Compiler - Version " + FB_VERSION + _
+    		  " for " + FB_HOST + " (target:" + FB_TARGET + ")"
     	print "Copyright (C) 2004-2006 The FreeBASIC development team."
     	print
     	if( fbc.showversion ) then
@@ -238,6 +277,20 @@ private sub fbcInit( )
 				 INVALID )
 	next
 
+	'' lists
+	listNew( @fbc.arglist, FBC_INITARGS, len( string ) )
+
+	listNew( @fbc.inoutlist, FBC_INITFILES, len( FBC_IOFILE ) )
+	listNew( @fbc.objlist, FBC_INITFILES, len( string ) )
+	listNew( @fbc.liblist, FBC_INITFILES, len( string ) )
+	listNew( @fbc.deflist, FBC_INITFILES\4, len( string ) )
+	listNew( @fbc.preinclist, FBC_INITFILES\4, len( string ) )
+
+	listNew( @fbc.incpathlist, FBC_INITFILES\4, len( string ) )
+	listNew( @fbc.libpathlist, FBC_INITFILES\4, len( string ) )
+
+	fbc.iof_head = NULL
+
 end sub
 
 ''':::::
@@ -303,8 +356,12 @@ private sub setCompOptions( )
 end sub
 
 '':::::
-private function compileFiles as integer
+private function compileFiles _
+	( _
+	) as integer
+
 	dim as integer i, checkmain, ismain
+	dim as FBC_IOFILE ptr iof = any
 
 	function = FALSE
 
@@ -319,10 +376,11 @@ private function compileFiles as integer
     ismain = FALSE
 
     '' for each input file..
-    for i = 0 to fbc.inps-1
+    iof = listGetHead( @fbc.inoutlist )
+    do while( iof <> NULL )
 
     	if( checkmain ) then
-    		ismain = fbc.mainfile = hStripPath( hStripExt( fbc.inplist(i) ) )
+    		ismain = fbc.mainfile = hStripPath( hStripExt( iof->inf ) )
     	end if
 
     	'' init the parser
@@ -335,22 +393,21 @@ private function compileFiles as integer
 
     	'' if no output file given, assume it's the
     	'' same name as input, with the .o extension
-    	if( len( fbc.outlist(i) ) = 0 ) then
-    		fbc.outlist(i) = hStripExt( fbc.inplist(i) ) + ".o"
+    	if( len( iof->outf ) = 0 ) then
+    		iof->outf = hStripExt( iof->inf ) + ".o"
     	end if
 
     	'' create output asm name
-    	fbc.asmlist(i) = hStripExt( fbc.outlist(i) ) + ".asm"
+    	iof->asmf = hStripExt( iof->outf ) + ".asm"
 
     	if( fbc.verbose ) then
-    		print "compiling: ", fbc.inplist(i); " -o "; fbc.asmlist(i)
+    		print "compiling: ", iof->inf; " -o "; iof->asmf
     	end if
 
-    	if( fbCompile( fbc.inplist(i), _
-    				   fbc.asmlist(i), _
+    	if( fbCompile( iof->inf, _
+    				   iof->asmf, _
     				   ismain, _
-    				   fbc.preinclist(), _
-    				   fbc.preincs ) = FALSE ) then
+    				   @fbc.preinclist ) = FALSE ) then
     		exit function
     	end if
 
@@ -360,10 +417,11 @@ private function compileFiles as integer
 		'' shutdown the parser
 		fbEnd( )
 
-	next
+		iof = listGetNext( iof )
+	loop
 
     '' no default libs would be added if no inp files were given
-    if( fbc.inps = 0 ) then
+    if( listGetHead( @fbc.inoutlist ) = NULL ) then
    		fbInit( FALSE )
    		fbAddDefaultLibs( )
    		getLibList( )
@@ -375,8 +433,10 @@ private function compileFiles as integer
 end function
 
 '':::::
-private function assembleFiles as integer
-	dim i as integer, f as integer
+private function assembleFiles _
+	( _
+	) as integer
+
 	dim as string aspath, ascline, binpath
 
 	function = FALSE
@@ -400,19 +460,19 @@ private function assembleFiles as integer
 		exit function
     end if
 
-    '' set input files (.asm's) and output files (.o's)
-    for i = 0 to fbc.inps-1
+	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
+	do while( iof <> NULL )
 
-    	'' as' options
+    	'' gas' options
     	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 			ascline = "--strip-local-absolute "
     	else
     		ascline = ""
     	end if
 
-		ascline += QUOTE + fbc.asmlist(i) + _
+		ascline += QUOTE + iof->asmf + _
 				   (QUOTE + " -o " + QUOTE) + _
-				   fbc.outlist(i) + (QUOTE) + _
+				   iof->outf + (QUOTE) + _
                    fbc.extopt.gas
 
     	'' invoke as
@@ -423,7 +483,9 @@ private function assembleFiles as integer
     	if( exec( aspath, ascline ) <> 0 ) then
     		exit function
     	end if
-    next
+
+    	iof = listGetNext( iof )
+    loop
 
     function = TRUE
 
@@ -446,14 +508,20 @@ private function archiveFiles as integer
     arcline += QUOTE + fbc.outname + (QUOTE + " ")
 
     '' add objects from output list
-    for i = 0 to fbc.inps-1
-    	arcline += QUOTE + fbc.outlist(i) + (QUOTE + " ")
-    next
+	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
+	do while( iof <> NULL )
+    	arcline += QUOTE + iof->outf + (QUOTE + " ")
+
+    	iof = listGetNext( iof )
+    loop
 
     '' add objects from cmm-line
-    for i = 0 to fbc.objs-1
-    	arcline += QUOTE + fbc.objlist(i) + (QUOTE + " ")
-    next
+	dim as string ptr objf = listGetHead( @fbc.objlist )
+	do while( objf <> NULL )
+    	arcline += QUOTE + *objf + (QUOTE + " ")
+
+    	objf = listGetNext( objf )
+    loop
 
     '' invoke ar
     if( fbc.verbose ) then
@@ -482,18 +550,22 @@ end function
 
 '':::::
 private function delFiles as integer
-	dim as integer i
 
     function = FALSE
 
-    for i = 0 to fbc.inps-1
+	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
+
+	do while( iof <> NULL )
 		if( fbc.preserveasm = FALSE ) then
-			safeKill( fbc.asmlist(i) )
+			safeKill( iof->asmf )
 		end if
+
 		if( fbc.compileonly = FALSE ) then
-			safeKill( fbc.outlist(i) )
+			safeKill( iof->outf )
 		end if
-    next
+
+    	iof = listGetNext( iof )
+    loop
 
     function = fbc.delFiles( )
 
@@ -503,13 +575,21 @@ end function
 private sub setMainModule( )
 
 	if( len( fbc.mainfile ) = 0 ) then
-		if( fbc.inps > 0 ) then
-			fbc.mainfile = hStripPath( hStripExt( fbc.inplist(0) ) )
-			fbc.mainpath = hStripFilename( fbc.inplist(0) )
+		dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
+		dim as string ptr inf = NULL
+		if( iof <> NULL ) then
+			inf = @iof->inf
+		end if
+
+		if( inf <> NULL ) then
+			fbc.mainfile = hStripPath( hStripExt( *inf ) )
+			fbc.mainpath = hStripFilename( *inf )
+
 		else
-			if( fbc.objs > 0 ) then
-				fbc.mainfile = hStripPath( hStripExt( fbc.objlist(0) ) )
-				fbc.mainpath = hStripFilename( fbc.inplist(0) )
+			dim as string ptr objf = listGetHead( @fbc.objlist )
+			if( objf <> NULL ) then
+				fbc.mainfile = hStripPath( hStripExt( *objf ) )
+				fbc.mainpath = hStripFilename( *objf )
 			else
 				fbc.mainfile = "undefined"
 				fbc.mainpath = ""
@@ -578,7 +658,7 @@ private sub printOptions( )
 	end if
 	printOption( "-nodeflibs", "Do not include the default libraries" )
 	printOption( "-noerrline", "Do not show source line where error occured" )
-	printOption( "-o <name>", "Set output name (in the same number as source files)" )
+	printOption( "-o <name>", "Set object file path/name (must be passed after the .bas file)" )
 	printOption( "-p <name>", "Add a path to search for libraries" )
 	printOption( "-profile", "Enable function profiling" )
 	printOption( "-r", "Do not delete the asm file(s)" )
@@ -624,7 +704,7 @@ private sub printOptions( )
 	printOption( "-w <value>", "Set min warning level: all, pedantic or a value" )
 	printOption( "-Wa <opt>", "Pass options to GAS (separated by commas)" )
 	printOption( "-Wl <opt>", "Pass options to LD (separated by commas)" )
-	printOption( "-x <name>", "Set executable/library name" )
+	printOption( "-x <name>", "Set executable/library path/name" )
 
 end sub
 
@@ -637,7 +717,7 @@ private sub setDefaultOptions( )
 	fbc.compileonly = FALSE
 	fbc.preserveasm	= FALSE
 	fbc.verbose		= FALSE
-	fbc.stacksize	= FB_DEFSTACKSIZE
+	fbc.stacksize	= FBC_DEFSTACKSIZE
 
 	fbc.mainfile	= ""
 	fbc.mainpath	= ""
@@ -649,49 +729,68 @@ private sub setDefaultOptions( )
 	fbc.extopt.gas	= ""
 	fbc.extopt.ld	= ""
 
-    fbc.libs		= 0
-    fbc.objs		= 0
-    fbc.inps		= 0
-    fbc.outs		= 0
-    fbc.defs		= 0
-    fbc.incs		= 0
-    fbc.pths		= 0
-    fbc.preincs		= 0
-
 end sub
 
 '':::::
-private sub printInvalidOpt( byval argn as integer )
+private sub printInvalidOpt( byval arg as string ptr )
 
-	if( len( argv(argn+1) ) > 0 ) then
-		errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + argv(argn+1) + QUOTE, -1 )
+	if( len( *arg ) > 0 ) then
+		arg = listGetNext( arg )
+		errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + *arg + QUOTE, -1 )
 	else
-		errReportEx( FB_ERRMSG_MISSINGCMDOPTION, QUOTE + argv(argn) + QUOTE, -1 )
+		errReportEx( FB_ERRMSG_MISSINGCMDOPTION, QUOTE + *arg + QUOTE, -1 )
 	end if
 
 end sub
 
 '':::::
-private function processTargetOptions( ) as integer
-    dim as integer i
+#macro hDelArgNode( arg )
+	*arg = ""
+	listDelNode( @fbc.arglist, arg )
+#endmacro
+
+'':::::
+#macro hDelArgNodes( arg, nxt )
+	hDelArgNode( arg )
+	arg = listGetNext( nxt )
+	hDelArgNode( nxt )
+	nxt = arg
+#endmacro
+
+'':::::
+private function processTargetOptions _
+	( _
+	) as integer
+
+    dim as string ptr arg = any, nxt = any
 
 	function = FALSE
 
-	''
-	for i = 0 to argc-1
+	'' for each arg..
+	nxt = listGetHead( @fbc.arglist )
+	do while( nxt <> NULL )
 
-		if( len( argv(i) ) = 0 ) then
-			continue for
+		arg = nxt
+		nxt = listGetNext( nxt )
+
+		if( len( *arg ) = 0 ) then
+			continue do
 		end if
 
-		if( argv(i)[0] = asc( "-" ) ) then
+		if( (*arg)[0] = asc( "-" ) ) then
 
-			if( len( argv(i) ) = 1 ) then
-				continue for
+			if( len( *arg ) = 1 ) then
+				continue do
 			end if
 
-			if( mid( argv(i), 2 ) = "target" ) then
-				select case argv(i+1)
+			if( *(strptr( *arg ) + 1) = "target" ) then
+
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					return FALSE
+				end if
+
+				select case *nxt
 #if defined(TARGET_DOS) or defined(CROSSCOMP_DOS)
 				case "dos"
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_DOS )
@@ -718,131 +817,165 @@ private function processTargetOptions( ) as integer
 #endif
 
 				case else
-					printInvalidOpt( i )
+					printInvalidOpt( arg )
 					return FALSE
 				end select
 
-				argv(i) = ""
-				argv(i+1) = ""
-
+				hDelArgNodes( arg, nxt )
 			end if
 
 		end if
 
-	next
+	loop
 
 	function = TRUE
 
 end function
 
 '':::::
-private function processOptions( ) as integer
-    dim as integer i, value
+private function checkFiles _
+	( _
+		byval arg as string ptr _
+	) as integer
+
+	function = FALSE
+
+	select case hGetFileExt( *arg )
+	case "bas"
+		dim as FBC_IOFILE ptr iof = listNewNode( @fbc.inoutlist )
+		iof->inf = *arg
+
+		if( fbc.iof_head = NULL ) then
+			fbc.iof_head = iof
+		end if
+
+		hDelArgNode( arg )
+
+	case "a"
+		dim as string ptr libf = listNewNode( @fbc.liblist )
+		*libf = *arg
+
+		hDelArgNode( arg )
+
+	case "o"
+		dim as string ptr objf = listNewNode( @fbc.objlist )
+		*objf = *arg
+
+		hDelArgNode( arg )
+
+	case else
+		if( fbc.listFiles( *arg ) ) then
+			hDelArgNode( arg )
+		end if
+	end select
+
+	function = TRUE
+
+end function
+
+'':::::
+private function processOptions _
+	( _
+	) as integer
+
+    dim as string ptr arg = any, nxt = any
+    dim as integer value
     dim as FBC_OPT id
 
 	function = FALSE
 
-	''
-	for i = 0 to argc-1
+	'' for each arg..
+	nxt = listGetHead( @fbc.arglist )
+	do while( nxt <> NULL )
 
-		if( len( argv(i) ) = 0 ) then
-			continue for
+		arg = nxt
+		nxt = listGetNext( nxt )
+
+		if( len( *arg ) = 0 ) then
+			continue do
 		end if
 
-		if( argv(i)[0] = asc( "-" ) ) then
+		'' not an option?
+		if( (*arg)[0] <> asc( "-" ) ) then
+			'' file name?
+			if( checkFiles( arg ) = FALSE ) then
+				printInvalidOpt( arg )
+				exit function
+			end if
 
-			if( len( argv(i) ) = 1 ) then
-				continue for
+		'' option..
+		else
+			dim as integer del_cnt = 1
+
+			if( len( *arg ) = 1 ) then
+				continue do
 			end if
 
 			id = cast( FBC_OPT, hashLookUp( @fbc.opthash, _
-											strptr( argv(i) ) + 1 ) )
+											strptr( *arg ) + 1 ) )
 
 			'' not found?
 			if( id = 0 ) then
 				'' target-dependent options?
-				if( fbc.processOptions( argv(i), argv(i+1) ) = FALSE ) then
-					printInvalidOpt( i )
+				if( fbc.processOptions( *arg, *nxt ) = FALSE ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
 
-				argv(i) = ""
-				argv(i+1) = ""
-
-				continue for
+				hDelArgNodes( arg, nxt )
+				continue do
 			end if
 
 			select case as const id
 			case FBC_OPT_E
 				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
 
-				argv(i) = ""
-
 			case FBC_OPT_EX
 				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
 				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
-
-				argv(i) = ""
 
 			case FBC_OPT_EXX
 				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
 				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
 				fbSetOption( FB_COMPOPT_EXTRAERRCHECK, TRUE )
 
-				argv(i) = ""
-
 			case FBC_OPT_MT
 				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
-
-				argv(i) = ""
 
 			case FBC_OPT_PROFILE
 				fbSetOption( FB_COMPOPT_PROFILE, TRUE )
 
-				argv(i) = ""
-
 			case FBC_OPT_NOERRLINE
 				fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
-
-				argv(i) = ""
 
 			case FBC_OPT_NODEFLIBS
 				fbSetOption( FB_COMPOPT_NODEFLIBS, TRUE )
 
-				argv(i) = ""
-
 			case FBC_OPT_EXPORT
 				fbSetOption( FB_COMPOPT_EXPORT, TRUE )
-
-				argv(i) = ""
 
 			case FBC_OPT_NOSTDCALL
 				fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
 
-				argv(i) = ""
-
 			case FBC_OPT_STDCALL
 				fbSetOption( FB_COMPOPT_NOSTDCALL, FALSE )
-
-				argv(i) = ""
 
 			case FBC_OPT_NOUNDERSCORE
 				fbSetOption( FB_COMPOPT_NOUNDERPREFIX, TRUE )
 
-				argv(i) = ""
-
 			case FBC_OPT_UNDERSCORE
 				fbSetOption( FB_COMPOPT_NOUNDERPREFIX, FALSE )
-
-				argv(i) = ""
 
 			case FBC_OPT_SHOWSUSPERR
 				fbSetOption( FB_COMPOPT_SHOWSUSPERRORS, FALSE )
 
-				argv(i) = ""
-
 			case FBC_OPT_ARCH
-				select case argv(i+1)
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				select case *nxt
 				case "386"
 					value = FB_CPUTYPE_386
 				case "486"
@@ -852,104 +985,109 @@ private function processOptions( ) as integer
 				case "686"
 					value = FB_CPUTYPE_686
 				case else
-					printInvalidOpt( i )
+					printInvalidOpt( arg )
 					exit function
 				end select
 
 				fbSetOption( FB_COMPOPT_CPUTYPE, value )
 
-				argv(i) = ""
-				argv(i+1) = ""
+				del_cnt += 1
 
 			case FBC_OPT_DEBUG
 				fbSetOption( FB_COMPOPT_DEBUG, TRUE )
-
-				argv(i) = ""
 
 			case FBC_OPT_COMPILEONLY
 				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
 				fbc.compileonly = TRUE
 
-				argv(i) = ""
-
 			case FBC_OPT_SHAREDLIB
 				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_DYNAMICLIB )
-
-				argv(i) = ""
 
 			case FBC_OPT_STATICLIB
 				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_STATICLIB )
 
-				argv(i) = ""
-
 			case FBC_OPT_PRESERVEFILES
 				fbc.preserveasm = TRUE
-
-				argv(i) = ""
 
 			case FBC_OPT_VERBOSE
 				fbc.verbose = TRUE
 
-				argv(i) = ""
-
 			case FBC_OPT_VERSION
 				fbc.showversion = TRUE
 
-				argv(i) = ""
-
 			case FBC_OPT_OUTPUTNAME
-				fbc.outname = argv(i+1)
-				if( len( fbc.outname ) = 0 ) then
-					printInvalidOpt( i )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
 
-				argv(i) = ""
-				argv(i+1) = ""
+				fbc.outname = *nxt
+				if( len( fbc.outname ) = 0 ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				del_cnt += 1
 
 			case FBC_OPT_MAINMODULE
-				fbc.mainfile = hStripPath( argv(i+1) )
-				if( len( fbc.mainfile ) = 0 ) then
-					printInvalidOpt( i )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
-				fbc.mainpath = hStripFilename( argv(i+1) )
+
+				fbc.mainfile = hStripPath( *nxt )
+				if( len( fbc.mainfile ) = 0 ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+				fbc.mainpath = hStripFilename( *nxt )
 				fbc.mainset = TRUE
 
-				argv(i) = ""
-				argv(i+1) = ""
+				del_cnt += 1
 
 			case FBC_OPT_MAPFILE
-				fbc.mapfile = argv(i+1)
-				if( len( fbc.mapfile ) = 0 ) then
-					printInvalidOpt( i )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
 
-				argv(i) = ""
-				argv(i+1) = ""
+				fbc.mapfile = *nxt
+				if( len( fbc.mapfile ) = 0 ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				del_cnt += 1
 
 			case FBC_OPT_MAXERRORS
-				if( argv(i+1) = "inf" ) then
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				if( *nxt = "inf" ) then
 					value = FB_ERR_INFINITE
 				else
-					value = valint( argv(i+1) )
+					value = valint( *nxt )
 					if( value <= 0 ) then
 						value = 1
-						printInvalidOpt( i )
+						printInvalidOpt( arg )
 					end if
 				end if
 
 				fbSetOption( FB_COMPOPT_MAXERRORS, value )
 
-				argv(i) = ""
-				argv(i+1) = ""
+				del_cnt += 1
 
 			case FBC_OPT_WARNLEVEL
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
 
 				value = -2
 
-				select case argv(i+1)
+				select case *nxt
 				case "all"
 					value = -1
 
@@ -966,106 +1104,157 @@ private function processOptions( ) as integer
 					value = -1
 
 				case else
-					value = valint( argv(i+1) )
+					value = valint( *nxt )
 				end select
 
 				if( value >= -1 ) then
 					fbSetOption( FB_COMPOPT_WARNINGLEVEL, value )
 				end if
 
-				argv(i) = ""
-				argv(i+1) = ""
+				del_cnt += 1
 
 			case FBC_OPT_LIBPATH
-				if( fbAddLibPath( argv(i+1) ) = FALSE ) then
-					printInvalidOpt( i )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
 
-				argv(i) = ""
-				argv(i+1) = ""
+				if( fbAddLibPath( *nxt ) = FALSE ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				del_cnt += 1
 
 			case FBC_OPT_INCPATH
-				fbc.inclist(fbc.incs) = argv(i+1)
-				if( len( fbc.inclist(fbc.incs) ) = 0 ) then
-					printInvalidOpt( i )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
-				fbc.incs += 1
 
-				argv(i) = ""
-				argv(i+1) = ""
+				if( len( *nxt ) = 0 ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				dim as string ptr incp = listNewNode( @fbc.incpathlist )
+				*incp = *nxt
+
+				del_cnt += 1
 
 			case FBC_OPT_DEFINE
-				fbc.deflist(fbc.defs) = argv(i+1)
-				if( len( fbc.deflist(fbc.defs) ) = 0 ) then
-					printInvalidOpt( i )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
-				fbc.defs += 1
 
-				argv(i) = ""
-				argv(i+1) = ""
+				if( len( *nxt ) = 0 ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				dim as string ptr def = listNewNode( @fbc.deflist )
+				*def = *nxt
+
+				del_cnt += 1
 
 			'' source files
 			case FBC_OPT_INPFILE
-				fbc.inplist(fbc.inps) = argv(i+1)
-				if( len( fbc.inplist(fbc.inps) ) = 0 ) then
-					printInvalidOpt( i )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
-				fbc.inps += 1
 
-				argv(i) = ""
-				argv(i+1) = ""
+				if( len( *nxt ) = 0 ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				dim as FBC_IOFILE ptr iof = listNewNode( @fbc.inoutlist )
+				iof->inf = *nxt
+				if( fbc.iof_head = NULL ) then
+					fbc.iof_head = iof
+				end if
+
+				del_cnt += 1
 
 			case FBC_OPT_OUTFILE
-				fbc.outlist(fbc.outs) = argv(i+1)
-				if( len( fbc.outlist(fbc.outs) ) = 0 ) then
-					printInvalidOpt( i )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
-				fbc.outs += 1
 
-				argv(i) = ""
-				argv(i+1) = ""
+				if( len( *nxt ) = 0 ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				if( fbc.iof_head = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				fbc.iof_head->outf = *nxt
+				fbc.iof_head = listGetNext( fbc.iof_head )
+
+				del_cnt += 1
 
 			case FBC_OPT_OBJFILE
-				fbc.objlist(fbc.objs) = argv(i+1)
-				if( len( fbc.objlist(fbc.objs) ) = 0 ) then
-					printInvalidOpt( i )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
-				fbc.objs += 1
 
-				argv(i) = ""
-				argv(i+1) = ""
+				if( len( *nxt ) = 0 ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				dim as string ptr objf = listNewNode( @fbc.objlist )
+				*objf = *nxt
+
+				del_cnt += 1
 
 			case FBC_OPT_LIBFILE
-				fbc.liblist(fbc.libs) = argv(i+1)
-				if( len( fbc.liblist(fbc.libs) ) = 0 ) then
-					printInvalidOpt( i )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
-				fbc.libs += 1
 
-				argv(i) = ""
-				argv(i+1) = ""
+				if( len( *nxt ) = 0 ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				dim as string ptr libf = listNewNode( @fbc.liblist )
+				*libf = *nxt
+
+				del_cnt += 1
 
 			'' pre-include files
 			case FBC_OPT_INCLUDE
-				fbc.preinclist(fbc.preincs) = argv(i+1)
-				if( len( fbc.preinclist(fbc.preincs) ) = 0 ) then
-					printInvalidOpt( i )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
-				fbc.preincs += 1
 
-				argv(i) = ""
-				argv(i+1) = ""
+				if( len( *nxt ) = 0 ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				dim as string ptr incf = listNewNode( @fbc.preinclist )
+				*incf = *nxt
+
+				del_cnt += 1
 
 			case FBC_OPT_LANG
-				select case lcase( argv(i+1) )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				select case lcase( *nxt )
 				case "fb"
 					value = FB_LANG_FB
 				case "deprecated"
@@ -1073,163 +1262,167 @@ private function processOptions( ) as integer
 				case "qb"
 					value = FB_LANG_QB
 				case else
-					printInvalidOpt( i )
+					printInvalidOpt( arg )
 					exit function
 				end select
 
 				fbSetOption( FB_COMPOPT_LANG, value )
 
-				argv(i) = ""
-				argv(i+1) = ""
+				del_cnt += 1
 
 			case FBC_OPT_GEN
-				select case lcase( argv(i+1) )
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				select case lcase( *nxt )
 				case "gas"
 					value = FB_BACKEND_GAS
 				case "gcc"
 					value = FB_BACKEND_GCC
 				case else
-					printInvalidOpt( i )
+					printInvalidOpt( arg )
 					exit function
 				end select
 
 				fbSetOption( FB_COMPOPT_BACKEND, value )
 
-				argv(i) = ""
-				argv(i+1) = ""
+				del_cnt += 1
 
 			case FBC_OPT_WA
-				fbc.extopt.gas = " " + hReplace( argv(i+1), ",", " " ) + " "
-				argv(i) = ""
-				argv(i+1) = ""
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				fbc.extopt.gas = " " + hReplace( *nxt, ",", " " ) + " "
+
+				del_cnt += 1
 
 			case FBC_OPT_WL
-				fbc.extopt.ld = " " + hReplace( argv(i+1), ",", " " ) + " "
-				argv(i) = ""
-				argv(i+1) = ""
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				fbc.extopt.ld = " " + hReplace( *nxt, ",", " " ) + " "
+
+				del_cnt += 1
 			end select
+
+			hDelArgNode( arg )
+			if( del_cnt > 1 ) then
+				arg = listGetNext( nxt )
+				hDelArgNode( nxt )
+				nxt = arg
+			end if
 		end if
 
-	next
+	loop
 
 	function = TRUE
 
 end function
 
 '':::::
-private function processCompLists( ) as integer
-    dim as integer i, p
+private function processCompLists _
+	( _
+	) as integer
+
+    dim as integer p
     dim as string dname, dtext
 
 	function = FALSE
 
     '' add inc files
-    for i = 0 to fbc.incs-1
-    	fbAddIncPath( fbc.inclist(i) )
-    next i
+	dim as string ptr incp = listGetHead( @fbc.incpathlist )
+	do while( incp <> NULL )
+    	fbAddIncPath( *incp )
+    	incp = listGetNext( incp )
+    loop
 
     '' add defines
-    for i = 0 to fbc.defs-1
-    	p = instr( fbc.deflist(i), "=" )
+	dim as string ptr def = listGetHead( @fbc.deflist )
+	do while( def <> NULL )
+
+    	p = instr( *def, "=" )
     	if( p = 0 ) then
-    		p = len( fbc.deflist(i) ) + 1
+    		p = len( *def ) + 1
     	end if
 
-    	dname = left( fbc.deflist(i), p-1 )
+    	dname = left( *def, p-1 )
 
-		if( p < len( fbc.deflist(i) ) ) then
-			dtext = mid( fbc.deflist(i), p+1 )
+		if( p < len( *def ) ) then
+			dtext = mid( *def, p+1 )
 		else
 			dtext = "1"
     	end if
 
     	fbAddDefine( dname, dtext )
-    next
+
+    	def = listGetNext( def )
+    loop
 
     function = FALSE
 
 end function
 
 '':::::
-private function listFiles( ) as integer
-    dim as integer i
-
-	function = FALSE
-
-	''
-	for i = 0 to argc-1
-		if( len( argv(i) ) = 0 ) then
-			continue for
-		end if
-
-		select case hGetFileExt( argv(i) )
-		case "bas"
-			fbc.inplist(fbc.inps) = argv(i)
-			fbc.inps += 1
-			argv(i) = ""
-		case "a"
-			fbc.liblist(fbc.libs) = argv(i)
-			fbc.libs += 1
-			argv(i) = ""
-		case "o"
-			fbc.objlist(fbc.objs) = argv(i)
-			fbc.objs += 1
-			argv(i) = ""
-
-		case else
-			if( fbc.listFiles( argv(i) ) ) then
-				argv(i) = ""
-			end if
-		end select
-	next
-
-	function = TRUE
-
-end function
-
-'':::::
 private sub parseCmd _
 	( _
-		byref argc as integer, _
-		argv() as string _
 	)
 
-	argc = 0
+	dim as string ptr arg = any
+	dim as integer argc = any
+
+	argc = 1
 	do
-		argv(argc) = command( 1 + argc )
-		if( len( argv(argc) ) = 0 ) then
+		arg = listNewNode( @fbc.arglist )
+		assert( arg <> NULL )
+
+		*arg = command( argc )
+		if( len( *arg ) = 0 ) then
+			listDelNode( @fbc.arglist, arg )
 			exit do
 		end if
+
 		argc += 1
-	loop while( argc < FB_MAXARGS )
+	loop
 
 end sub
 
 '':::::
 private sub getLibList( )
 
-	fbc.libs = fbListLibs( fbc.liblist(), fbc.libs )
+	fbListLibs( @fbc.liblist )
 
 end sub
 
 '':::::
-function fbAddLibPath ( byval path as zstring ptr ) as integer
+function fbAddLibPath _
+	( _
+		byval path as zstring ptr _
+	) as integer
+
 	dim as integer i
 
 	function = FALSE
 
-	if( ( len( *path ) = 0 ) or ( fbc.pths = FB_MAXARGS-1 ) ) then
+	if( len( *path ) = 0 ) then
 		exit function
 	end if
 
-	for i = 0 to fbc.pths-1
-		if( fbc.pthlist(i) = *path ) then
+	dim as string ptr libp = listGetHead( @fbc.libpathlist )
+	do while( libp <> NULL )
+		if( *libp = *path ) then
 			return TRUE
 		end if
-	next
+		libp = listGetNext( libp )
+	loop
 
-	fbc.pthlist(fbc.pths) = *path
-	fbc.pths += 1
+	libp = listNewNode( @fbc.libpathlist )
+	*libp = *path
 
 	function = TRUE
 

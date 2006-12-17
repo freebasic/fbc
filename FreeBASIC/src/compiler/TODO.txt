@@ -112,6 +112,14 @@
           be used as functions too
 
 [ ] add a C backend
+	- the va_* macros/quirk-func must be passed to AST, each ABI has different way to
+	  access varargs
+	- how to acccess fields?
+	  	foo.bar.baz would become:
+	  	*((typeof(bar.baz) *)((char *)&foo + offsetof(foo, bar) + offsetof(bar, baz))
+	  	but offsetof() is resolved at FBC compile-time, making the access ABI-dependent
+	  	even if structs are fully emitted
+	  	- (not so simple) solution: let the AST do it
 	- shared/module-level vars must be emitted before any proc
 	- type-cast's must be preserved, but astNewCONV() won't create a new node
 	  if converting from pointer types or if data sizes and classes are the same
@@ -130,6 +138,8 @@
         - only accept inline asm in GCC format, pass as-is
 	- use GCC as a high-level assembler, no headers, nothing
 	- linking should still be done by us
+	- if everything is solved, it would become much simpler to add a LLVM back-end as
+	  it's essentially a high-level ASM with virtual-regs
 
 [ ] ParamArray, but with this syntax: foo(...) as bar
 	- array must be built at compile-time and destroyed after the call

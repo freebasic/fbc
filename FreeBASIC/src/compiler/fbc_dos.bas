@@ -70,7 +70,6 @@ end function
 
 '':::::
 private function _linkFiles as integer
-	dim as integer i, f
 	dim as string ldcline, ldpath, libdir
 #ifndef TARGET_DOS
 	dim as string resfile
@@ -121,9 +120,11 @@ private function _linkFiles as integer
     ldcline += " -L " + QUOTE + "./" + QUOTE
 
     '' add additional user-specified library search paths
-    for i = 0 to fbc.pths-1
-    	ldcline += " -L " + QUOTE + fbc.pthlist(i) + QUOTE
-    next
+	dim as string ptr libp = listGetHead( @fbc.libpathlist )
+	do while( libp <> NULL )
+    	ldcline += " -L " + QUOTE + *libp + QUOTE
+    	libp = listGetNext( libp )
+    loop
 
 	'' link with crt0.o (C runtime init) or gcrt0.o for gmon profiling
 	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
@@ -135,14 +136,18 @@ private function _linkFiles as integer
 	end if
 
     '' add objects from output list
-    for i = 0 to fbc.inps-1
-    	ldcline += QUOTE + fbc.outlist(i) + (QUOTE + " ")
-    next
+	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
+	do while( iof <> NULL )
+    	ldcline += QUOTE + iof->outf + (QUOTE + " ")
+    	iof = listGetNext( iof )
+    loop
 
     '' add objects from cmm-line
-    for i = 0 to fbc.objs-1
-    	ldcline += QUOTE + fbc.objlist(i) + (QUOTE + " ")
-    next
+	dim as string ptr objf = listGetHead( @fbc.objlist )
+	do while( objf <> NULL )
+    	ldcline += QUOTE + *objf + (QUOTE + " ")
+    	objf = listGetNext( objf )
+    loop
 
     '' set executable name
     ldcline += "-o " + QUOTE + fbc.outname + QUOTE
@@ -151,9 +156,11 @@ private function _linkFiles as integer
     ldcline += " -( "
 
     '' add libraries from cmm-line and found when parsing
-    for i = 0 to fbc.libs-1
-		ldcline += "-l" + fbc.liblist(i) + " "
-    next
+	dim as string ptr libf = listGetHead( @fbc.liblist )
+	do while( libf <> NULL )
+		ldcline += "-l" + *libf + " "
+		libf = listGetNext( libf )
+	loop
 
 	'' rtlib initialization and termination
 	'' must be included in the group
@@ -184,11 +191,12 @@ private function _linkFiles as integer
 	kill( resfile )
 #endif
 
-	if fbc.stacksize < FB_MINSTACKSIZE then
-		fbc.stacksize = FB_MINSTACKSIZE
+	'' patch the exe to change the stack size
+	if fbc.stacksize < FBC_MINSTACKSIZE then
+		fbc.stacksize = FBC_MINSTACKSIZE
 	end if
 
-	f = freefile()
+	dim as integer f = freefile()
 
 	if (open(fbc.outname, for binary, access read write, as #f) <> 0) then
 		exit function
@@ -247,8 +255,8 @@ private function _processOptions _
 	select case mid( *opt, 2 )
 	case "t"
 		fbc.stacksize = valint( *argv ) * 1024
-		if( fbc.stacksize < FB_MINSTACKSIZE ) then
-			fbc.stacksize = FB_MINSTACKSIZE
+		if( fbc.stacksize < FBC_MINSTACKSIZE ) then
+			fbc.stacksize = FBC_MINSTACKSIZE
 		end if
 		return TRUE
 

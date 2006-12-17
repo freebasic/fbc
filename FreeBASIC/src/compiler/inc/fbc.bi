@@ -18,9 +18,11 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-const FB_MAXARGS	  = 250
-const FB_MINSTACKSIZE = 32 * 1024
-const FB_DEFSTACKSIZE = 1024 * 1024
+const FBC_INITARGS	  = 64
+const FBC_INITFILES	  = 64
+
+const FBC_MINSTACKSIZE = 32 * 1024
+const FBC_DEFSTACKSIZE = 1024 * 1024
 
 '' command-line options (linked to the fbc::optionTb() array)
 enum FBC_OPT
@@ -76,6 +78,12 @@ type FBC_EXTOPT
 	ld			as zstring * 128
 end type
 
+type FBC_IOFILE
+	inf			as string 							'' input file (*.bas)
+	asmf		as string 							'' intermediate file (*.asm)
+	outf		as string 							'' output file (*.o)
+end type
+
 type FBCCTX
 	'' methods
 	processOptions		as function _
@@ -107,6 +115,8 @@ type FBCCTX
 	) as integer
 
 	''
+	arglist				as TLIST					'' of string ptr
+
 	compileonly			as integer
 	preserveasm			as integer
 	verbose				as integer
@@ -114,24 +124,15 @@ type FBCCTX
 	showversion			as integer
 	target				as integer
 
-    libs				as integer
-    objs				as integer
-    inps				as integer
-    outs				as integer
-    defs				as integer
-    incs				as integer
-    pths				as integer
-    preincs				as integer
+	inoutlist			as TLIST					'' of FBC_IOFILE
+	objlist				as TLIST					'' of string otr
+	liblist				as TLIST					'' of string otr
+	deflist				as TLIST					'' of string otr
+	preinclist			as TLIST					'' of string otr
+	incpathlist			as TLIST					'' of string otr
+	libpathlist			as TLIST					'' of string otr
 
-	inplist(0 to FB_MAXARGS-1) as string
-	asmlist(0 to FB_MAXARGS-1) as string
-	outlist(0 to FB_MAXARGS-1) as string
-	liblist(0 to FB_MAXARGS-1) as string
-	objlist(0 to FB_MAXARGS-1) as string
-	deflist(0 to FB_MAXARGS-1) as string
-	inclist(0 to FB_MAXARGS-1) as string
-	pthlist(0 to FB_MAXARGS-1) as string
-	preinclist(0 to FB_MAXARGS-1) as string
+	iof_head			as FBC_IOFILE ptr			'' to keep track of the .bas' and -o's
 
 	outname 			as zstring * FB_MAXPATHLEN+1
 	outaddext			as integer

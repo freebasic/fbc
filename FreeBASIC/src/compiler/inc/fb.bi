@@ -287,6 +287,8 @@ end enum
 
 #include once "inc\error.bi"
 
+#include once "inc\list.bi"
+
 
 ''
 ''
@@ -305,8 +307,7 @@ declare function fbCompile _
 		byval infname as zstring ptr, _
 		byval outfname as zstring ptr, _
 		byval ismain as integer, _
-	  	preincTb() as string, _
-		byval preincfiles as integer _
+	  	byval preinclist as TLIST ptr _
 	) as integer
 
 declare sub fbSetPaths _
@@ -334,11 +335,11 @@ declare function fbGetOption _
 		byval opt as integer _
 	) as integer
 
-declare function fbListLibs _
+declare sub fbListLibs _
 	( _
-		namelist() as string, _
-		byval index as integer _
-	) as integer
+		byval liblist as TLIST ptr _
+	)
+
 declare sub fbAddIncPath _
 	( _
 		byval path as zstring ptr _

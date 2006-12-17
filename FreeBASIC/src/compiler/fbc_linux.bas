@@ -58,8 +58,7 @@ end function
 
 '':::::
 private function _linkFiles as integer
-	dim as integer i
-	dim as string ldpath, ldcline, libdir, bindir, libname, dllname
+	dim as string ldpath, ldcline, libdir, bindir, dllname
 
 	function = FALSE
 
@@ -128,9 +127,11 @@ private function _linkFiles as integer
     ldcline += " -L " + QUOTE + "./" + QUOTE
 
     '' add additional user-specified library search paths
-    for i = 0 to fbc.pths-1
-    	ldcline += " -L " + QUOTE + fbc.pthlist(i) + QUOTE
-    next i
+	dim as string ptr libp = listGetHead( @fbc.libpathlist )
+	do while( libp <> NULL )
+    	ldcline += " -L " + QUOTE + *libp + QUOTE
+    	libp = listGetNext( libp )
+    loop
 
 	'' crt init stuff
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
@@ -145,14 +146,18 @@ private function _linkFiles as integer
 	ldcline += " " + QUOTE + libdir + ("/crtbegin.o" + QUOTE + " ")
 
     '' add objects from output list
-    for i = 0 to fbc.inps-1
-    	ldcline += QUOTE + fbc.outlist(i) + (QUOTE + " ")
-    next i
+	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
+	do while( iof <> NULL )
+    	ldcline += QUOTE + iof->outf + (QUOTE + " ")
+    	iof = listGetNext( iof )
+    loop
 
     '' add objects from cmm-line
-    for i = 0 to fbc.objs-1
-    	ldcline += QUOTE + fbc.objlist(i) + (QUOTE + " ")
-    next i
+	dim as string ptr objf = listGetHead( @fbc.objlist )
+	do while( objf <> NULL )
+    	ldcline += QUOTE + *objf + (QUOTE + " ")
+    	objf = listGetNext( objf )
+    loop
 
     '' set executable name
     ldcline += "-o " + QUOTE + fbc.outname + QUOTE
@@ -162,18 +167,22 @@ private function _linkFiles as integer
 
     '' add libraries from cmm-line and found when parsing
     if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-   		for i = 0 to fbc.libs-1
-			libname = fbc.liblist(i)
+		dim as string ptr libf = listGetHead( @fbc.liblist )
+		do while( libf <> NULL )
    			'' check if the lib isn't the dll's import library itself
-   	        if( libname = dllname ) then
-   	        	continue for
+   	        if( *libf = dllname ) then
+   	        	continue do
    	        end if
-			ldcline += "-l" + libname + " "
-		next
+			ldcline += "-l" + *libf + " "
+
+			libf = listGetNext( libf )
+		loop
     else
-   		for i = 0 to fbc.libs-1
-			ldcline += "-l" + fbc.liblist(i) + " "
-		next
+		dim as string ptr libf = listGetHead( @fbc.liblist )
+		do while( libf <> NULL )
+			ldcline += "-l" + *libf + " "
+			libf = listGetNext( libf )
+		loop
 	end if
 
 	'' rtlib initialization and termination (must be included in the group or
@@ -227,14 +236,15 @@ end function
 #define CHAR_QUOTE			34
 
 '':::::
-private function _compileResFiles as integer
-	dim fi as integer, fo as integer
-	dim iconsrc as string
-	dim buffer as string, chunk as string * 4096
-	dim outstr_count as integer
-	dim buffer_len as integer, p as ubyte ptr
-	dim state as integer, label as integer
-	redim outstr(0) as string
+private function _compileResFiles _
+	( _
+	) as integer
+
+	dim as integer fi, fo
+	dim as integer outstr_count, buffer_len, state, label
+	dim as ubyte ptr p
+	dim as string * 4096 chunk
+	dim as string iconsrc, buffer, outstr()
 
 	function = FALSE
 
@@ -349,8 +359,8 @@ private function _compileResFiles as integer
 	kill( iconsrc )
 
 	'' add to obj list
-	fbc.objlist(fbc.objs) = hStripExt( iconsrc ) + ".o"
-	fbc.objs += 1
+	dim as string ptr objf = listNewNode( @fbc.objlist )
+	*objf = hStripExt( iconsrc ) + ".o"
 
 	function = TRUE
 

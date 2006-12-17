@@ -796,11 +796,10 @@ declare function symbCalcParamLen _
 		byval mode as integer _
 	) as integer
 
-declare function symbListLibs _
+declare sub symbListLibs _
 	( _
-		namelist() as string, _
-		byval index as integer _
-	) as integer
+		byval liblist as TLIST ptr _
+	)
 
 declare function symbAddKeyword _
 	( _

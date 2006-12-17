@@ -46,7 +46,11 @@ sub symbLibEnd( ) static
 end sub
 
 '':::::
-function symbAddLib( byval libname as zstring ptr ) as FBLIBRARY ptr static
+function symbAddLib _
+	( _
+		byval libname as zstring ptr _
+	) as FBLIBRARY ptr static
+
     dim as FBLIBRARY ptr l
 
     function = NULL
@@ -74,7 +78,10 @@ function symbAddLib( byval libname as zstring ptr ) as FBLIBRARY ptr static
 end function
 
 '':::::
-sub symbDelLib( byval l as FBLIBRARY ptr ) static
+sub symbDelLib _
+	( _
+		byval l as FBLIBRARY ptr _
+	) static
 
 	if( l = NULL ) then
 		exit sub
@@ -89,48 +96,44 @@ sub symbDelLib( byval l as FBLIBRARY ptr ) static
 end sub
 
 '':::::
-function hFindLib( byval libname as zstring ptr, _
-				   namelist() as string ) as integer
-    dim i as integer
+private function hFindLib _
+	( _
+		byval libname as zstring ptr, _
+		byval liblist as TLIST ptr _
+	) as string ptr
 
-	function = INVALID
-
-	for i = 0 to ubound( namelist ) - 1
-
-		if( len( namelist(i) ) = 0 ) then
-			exit function
+	dim as string ptr libf = listGetHead( liblist )
+	do while( libf <> NULL )
+		if( *libf = *libname ) then
+			return libf
 		end if
 
-		if( namelist(i) = *libname ) then
-			return i
-		end if
-	next i
+		libf = listGetNext( libf )
+	loop
+
+	function = NULL
 
 end function
 
 '':::::
-function symbListLibs( namelist() as string, _
-					   byval index as integer _
-					 ) as integer static
+sub symbListLibs _
+	( _
+		byval liblist as TLIST ptr _
+	)
 
-    dim cnt as integer
-    dim node as FBLIBRARY ptr
-
-	cnt  = index
+    dim as FBLIBRARY ptr node = any
 
 	node = listGetHead( @symb.liblist )
 	do while( node <> NULL )
 
-		if( hFindLib( node->name, namelist() ) = INVALID ) then
-			namelist(cnt) = *node->name
-			cnt += 1
+		if( hFindLib( node->name, liblist ) = NULL ) then
+			dim as string ptr libf = listNewNode( liblist )
+			*libf = *node->name
 		end if
 
 		node = listGetNext( node )
 	loop
 
-	function = cnt - index
-
-end function
+end sub
 
 

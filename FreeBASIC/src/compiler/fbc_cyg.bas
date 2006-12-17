@@ -39,8 +39,7 @@ declare function makeImpLib 			( byval dllpath as zstring ptr, _
 ''
 '' globals
 ''
-	dim shared rclist (0 to FB_MAXARGS-1) as string
-	dim shared rcs as integer
+	dim shared rclist as TLIST
 
 
 '':::::
@@ -55,7 +54,7 @@ function fbcInit_cygwin( ) as integer
 	fbc.delFiles 		= @_delFiles
 
 	''
-	rcs = 0
+	listNew( @rclist, FBC_INITARGS\4, len( string ) )
 
 	return TRUE
 
@@ -63,8 +62,7 @@ end function
 
 '':::::
 private function _linkFiles as integer
-	dim as integer i
-	dim as string ldpath, libdir, ldcline, libname, dllname
+	dim as string ldpath, libdir, ldcline, dllname
 
 	function = FALSE
 
@@ -145,9 +143,11 @@ private function _linkFiles as integer
     ldcline += " -L " + QUOTE + "./" + QUOTE
 
     '' add additional user-specified library search paths
-    for i = 0 to fbc.pths-1
-    	ldcline += " -L " + QUOTE + fbc.pthlist(i) + QUOTE
-    next i
+	dim as string ptr libp = listGetHead( @fbc.libpathlist )
+	do while( libp <> NULL )
+    	ldcline += " -L " + QUOTE + *libp + QUOTE
+    	libp = listGetNext( libp )
+    loop
 
 	'' crt entry
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
@@ -164,14 +164,18 @@ private function _linkFiles as integer
 	end if
 
     '' add objects from output list
-    for i = 0 to fbc.inps-1
-    	ldcline += QUOTE + fbc.outlist(i) + (QUOTE + " ")
-    next i
+	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
+	do while( iof <> NULL )
+    	ldcline += QUOTE + iof->outf + (QUOTE + " ")
+    	iof = listGetNext( iof )
+    loop
 
     '' add objects from cmm-line
-    for i = 0 to fbc.objs-1
-    	ldcline += QUOTE + fbc.objlist(i) + (QUOTE + " ")
-    next i
+	dim as string ptr objf = listGetHead( @fbc.objlist )
+	do while( objf <> NULL )
+    	ldcline += QUOTE + *objf + (QUOTE + " ")
+    	objf = listGetNext( objf )
+    loop
 
     '' set executable name
     ldcline += "-o " + QUOTE + fbc.outname + QUOTE
@@ -181,18 +185,23 @@ private function _linkFiles as integer
 
     '' add libraries from cmm-line and found when parsing
     if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-   		for i = 0 to fbc.libs-1
-			libname = fbc.liblist(i)
+		dim as string ptr libf = listGetHead( @fbc.liblist )
+		do while( libf <> NULL )
    			'' check if the lib isn't the dll's import library itself
-   	        if( libname = dllname ) then
-   	        	continue for
+   	        if( *libf = dllname ) then
+   	        	continue do
    	        end if
-			ldcline += "-l" + libname + " "
-		next
+
+			ldcline += "-l" + *libf + " "
+
+			libf = listGetNext( libf )
+		loop
     else
-   		for i = 0 to fbc.libs-1
-			ldcline += "-l" + fbc.liblist(i) + " "
-		next
+		dim as string ptr libf = listGetHead( @fbc.liblist )
+		do while( libf <> NULL )
+			ldcline += "-l" + *libf + " "
+			libf = listGetNext( libf )
+		loop
 	end if
 
 	'' rtlib initialization and termination
@@ -254,14 +263,15 @@ private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 end function
 
 '':::::
-private function _compileResFiles as integer
-	dim i as integer, f as integer
-	dim rescmppath as string, rescmpcline as string
-	dim oldinclude as string
+private function _compileResFiles _
+	( _
+	) as integer
+
+	dim as string rescmppath, rescmpcline, oldinclude
 
 	function = FALSE
 
-	'' change the include env var
+	'' replace the include env var
 	oldinclude = trim( environ( "INCLUDE" ) )
 	setenviron "INCLUDE=" + exepath( ) + *fbGetPath( FB_PATH_INC ) + "win" + RSLASH + "rc"
 
@@ -269,10 +279,12 @@ private function _compileResFiles as integer
 	rescmppath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "GoRC.exe"
 
 	'' set input files (.rc's and .res') and output files (.obj's)
-	for i = 0 to rcs-1
+	dim as string ptr rcf = listGetHead( @rclist )
+	do while( rcf <> NULL )
 
 		'' windres options
-		rescmpcline = "/ni /nw /o /fo " + QUOTE + hStripExt(rclist(i)) + (".obj" + QUOTE + " ") + rclist(i)
+		rescmpcline = "/ni /nw /o /fo " + QUOTE + hStripExt( *rcf ) + _
+					  (".obj" + QUOTE + " " + QUOTE) + *rcf + QUOTE
 
 		'' invoke
 		if( fbc.verbose ) then
@@ -284,9 +296,11 @@ private function _compileResFiles as integer
 		end if
 
 		'' add to obj list
-		fbc.objlist(fbc.objs) = hStripExt(rclist(i)) + ".obj"
-		fbc.objs += 1
-	next i
+		dim as string ptr objf = listNewNode( @fbc.objlist )
+		*objf = hStripExt( *rcf ) + ".obj"
+
+		rcf = listGetNext( rcf )
+	loop
 
 	'' restore the include env var
 	if( len( oldinclude ) > 0 ) then
@@ -312,8 +326,9 @@ private function _listFiles _
 
 	select case hGetFileExt( argv )
 	case "rc", "res"
-		rclist(rcs) = *argv
-		rcs += 1
+		dim as string ptr rcf = listNewNode( @rclist )
+		*rcf = *argv
+
 		return TRUE
 
 	case else
@@ -339,8 +354,8 @@ private function _processOptions _
 
 	case "t"
 		fbc.stacksize = valint( *argv ) * 1024
-		if( fbc.stacksize < FB_MINSTACKSIZE ) then
-			fbc.stacksize = FB_MINSTACKSIZE
+		if( fbc.stacksize < FBC_MINSTACKSIZE ) then
+			fbc.stacksize = FBC_MINSTACKSIZE
 		end if
 		return TRUE
 
