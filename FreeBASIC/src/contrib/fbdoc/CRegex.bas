@@ -56,6 +56,8 @@ namespace fb
 		ctx->substrcnt += 1
 		ctx->vectb = allocate( len( integer ) * (3 * ctx->substrcnt) )
 		ctx->substrlist = NULL
+		ctx->subject = NULL
+		ctx->sublen = 0
     
 	end constructor
 

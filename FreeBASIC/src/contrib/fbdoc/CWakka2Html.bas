@@ -131,18 +131,23 @@ namespace fb.fbdoc
 		dim i as integer = any
 
 		ctx = new CWakka2HtmlCtx
+
 		ctx->urlbase = NULL
 		ctx->indentbase = 0
+
 		for i = 0 to WIKI_TAGS - 1
 			ctx->tagflags(i) = 0
 		next
+
 		for i = 0 to WIKI_TOKENS - 1
 			ctx->cssClassTb(i) = NULL
-			ctx->tagGenTb(i) = 0
+			ZSet @ctx->cssClassTb(i), @""
+			ctx->tagGenTb(i) = TRUE
 		next
+
 		ctx->page = NULL
 		ctx->trimre = NULL
-		ctx->fbcode = NULL
+		ctx->fbcode = new CFbCode
 		ctx->nlcnt = 0
 		ctx->skipnl = 0
 
@@ -151,12 +156,7 @@ namespace fb.fbdoc
 		end if
 
 		ZSet @ctx->urlbase, @""
-		for i = 0 to WIKI_TOKENS - 1
-			ZSet @ctx->cssClassTb(i), @""
-			ctx->tagGenTb( i ) = TRUE
-		next i
 		ZSet @ctx->page, @""
-		ctx->fbcode = new CFbCode
 
 	end constructor
 

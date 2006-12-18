@@ -73,6 +73,10 @@ ifdef DEBUG
 FBCFLAGS += -exx -g
 endif
 
+ifdef PROFILE
+FBCFLAGS += -profile
+endif
+
 ifeq ($(TARGET),win32)
 APP := $(MAIN).exe
 APP2 := mkfbhelpfile.exe

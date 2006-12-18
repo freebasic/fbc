@@ -61,15 +61,15 @@ namespace fb.fbdoc
 
 		ctx = new CWiki2ChmCtx
 		ctx->urlbase = NULL
-		ctx->outputdir = NULL
-		ctx->wiki = new CWiki
 		ZSet @ctx->urlbase, urlbase
 		ctx->indentbase = indentbase
+		ctx->outputdir = NULL
 		ZSet @ctx->outputdir, outputdir
 		ctx->paglist = paglist
 		ctx->toclist = toclist
 		ctx->converter = NULL
 		'' ctx->converter = new CWakka2Html
+		ctx->wiki = new CWiki
 
 	end constructor
 
@@ -408,8 +408,8 @@ namespace fb.fbdoc
 		ctx->converter->setCssClass( WIKI_TOKEN_BOXRIGHT, "fb_box" )
 		ctx->converter->setCssClass( WIKI_TOKEN_ACTION_TB, "fb_table" )
 		ctx->converter->setCssClass( WIKI_TOKEN_ACTION_IMG, "fb_img" )
-		ctx->converter->setCssClass( WIKI_TOKEN_HORZLINE, false )
-		ctx->converter->setCssClass( WIKI_TOKEN_SECT_ITEM, false )
+		ctx->converter->setTagDoGen( WIKI_TOKEN_HORZLINE, false )
+		ctx->converter->setTagDoGen( WIKI_TOKEN_SECT_ITEM, false )
 		
 		this.EmitPages()
 
