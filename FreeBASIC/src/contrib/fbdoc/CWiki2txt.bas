@@ -63,12 +63,15 @@ namespace fb.fbdoc
 		)
 
 		ctx = new CWiki2txtCtx
+		ctx->urlbase = NULL
+		ctx->outputdir = NULL
 		ctx->wiki = new CWiki
 		ZSet @ctx->urlbase, urlbase
 		ctx->indentbase = indentbase
 		ZSet @ctx->outputdir, outputdir
 		ctx->paglist = paglist
 		ctx->toclist = toclist
+		ctx->converter = NULL
 		'' ctx->converter = new CWakka2txt
 
 	end constructor

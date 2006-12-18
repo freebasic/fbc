@@ -131,6 +131,20 @@ namespace fb.fbdoc
 		dim i as integer = any
 
 		ctx = new CWakka2HtmlCtx
+		ctx->urlbase = NULL
+		ctx->indentbase = 0
+		for i = 0 to WIKI_TAGS - 1
+			ctx->tagflags(i) = 0
+		next
+		for i = 0 to WIKI_TOKENS - 1
+			ctx->cssClassTb(i) = NULL
+			ctx->tagGenTb(i) = 0
+		next
+		ctx->page = NULL
+		ctx->trimre = NULL
+		ctx->fbcode = NULL
+		ctx->nlcnt = 0
+		ctx->skipnl = 0
 
 		if( _AllocRe( ctx ) = FALSE ) then
 			_FreeRe( ctx )

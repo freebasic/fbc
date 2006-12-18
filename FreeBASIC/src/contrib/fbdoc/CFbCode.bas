@@ -51,6 +51,14 @@ namespace fb.fbdoc
 
 		ctx = new CFbCodeCtx
 		ctx->tokenlist = new CList( 16, len( FbToken ) )
+		ctx->incomment = 0
+		ctx->escaped = 0
+		ctx->startofline = 0
+		ctx->text = NULL
+		ctx->n = 0
+		ctx->s = 0
+		ctx->i = 0
+		ctx->inprepro = 0
 
 	end constructor
 

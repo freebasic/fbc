@@ -44,6 +44,7 @@ namespace fb.fbdoc
 		)
 
 		ctx = new CWikiCacheCtx
+		ctx->localdir = NULL
 		ZSet @ctx->localdir, localdir
 		ctx->RefreshMode = RefreshMode
 

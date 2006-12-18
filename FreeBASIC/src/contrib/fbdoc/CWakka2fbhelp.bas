@@ -120,16 +120,26 @@ namespace fb.fbdoc
 		( _
 		)
 
-		ctx = new CWakka2fbhelpCtx
+		dim i as integer = any
 
+		ctx = new CWakka2fbhelpCtx
+		ctx->indentbase = 0
+		ctx->tagDepth = 0
+		for i = 0 to WIKI_TAGS - 1
+			ctx->tagflags(i) = 0
+		next
+		for i = 0 to WIKI_TOKENS - 1
+			ctx->tagGenTb(i) = NULL
+		next
+		ctx->page = NULL
 		ZSet @ctx->page, @""
 		ctx->fbcode = new CFbCode
-
 		ctx->maxwidth = 76
 		ctx->indentlevel = 0
 		ctx->indentlevel2 = 0
 		ctx->indentwidth = 3
 		ctx->linewidth = 0
+		ctx->indent2 = 0
 		ctx->col = 0
 		ctx->row = 0
 		ctx->length = 0
