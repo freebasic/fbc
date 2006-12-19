@@ -38,6 +38,7 @@ Version 0.17 Beta:
 - -lang qb now skips UDT alignment by default (cha0s)
 - DATA can't be declared inside procs anymore (as in QB) (v1c)
 - there are no more limits in the number of arguments and files that can be passed in the command-line (v1c)
+- EXEC in dos and linux now parses arguments like in windows and with no hardcoded limits on the allowable number of arguments (jeffm)
 
 [added]
 - the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)

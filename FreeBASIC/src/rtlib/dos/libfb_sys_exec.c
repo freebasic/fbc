@@ -33,6 +33,7 @@
  * sys_exec.c -- exec function for DOS
  *
  * chng: jan/2005 written [DrV]
+ *       dec/2006 updated [jeffmarshall] using fb_hParseArgs
  *
  */
 
@@ -44,80 +45,76 @@
 /*:::::*/
 FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
 {
-	char buffer[MAX_PATH+1];
-	char *argv[256], c, *startpos;
-	int	res = 0;
-	int	i;
-	int	in_quotes = FALSE;
+	char buffer[MAX_PATH+1], *application, *arguments, **argv, *p;
+	int i, argc = 0, res = 0, status, len_program, len_arguments;
 
-	if( (program != NULL) && (program->data != NULL) )
+	if( (program == NULL) || (program->data == NULL) ) 
 	{
-		char *argsdata;
-
-		if( (args == NULL) || (args->data == NULL) )
-			argsdata = "\0";
-		else
-			argsdata = args->data;
-
-		argv[0] = &buffer[0];
-
-		for (i = 1, startpos = argsdata; (c = *argsdata) != '\0'; argsdata++) {
-			if (in_quotes) {
-				if (c == '"') {
-					in_quotes = FALSE;
-					argv[i] = (char*)malloc(argsdata - startpos + 1);
-					memcpy(argv[i], startpos, argsdata - startpos);
-					argv[i][argsdata - startpos] = '\0';
-					i++;
-					startpos = argsdata + 1;
-					if (*startpos == ' ') startpos++;
-				}
-			} else { /* in_quotes */
-				if (c == '"') {
-					in_quotes = TRUE;
-					startpos = argsdata + 1;
-				} else if (c == ' ') {
-					if (argsdata - startpos > 0) {
-						argv[i] = (char*)malloc(argsdata - startpos + 1);
-						memcpy(argv[i], startpos, argsdata - startpos);
-						argv[i][argsdata - startpos] = '\0';
-						i++;
-					}
-					startpos = argsdata + 1;
-				}
-			} /* in_quotes */
-		}
-
-		/* get last arg */
-		if (startpos < argsdata) {
-			argv[i] = (char*)malloc(argsdata - startpos + 1);
-			memcpy(argv[i], startpos, argsdata - startpos);
-			argv[i][argsdata - startpos] = '\0';
-			i++;
-		}
-
-		argv[i] = NULL;
-
-
-		/* NOTE: DJGPP info on 3rd arg of spawnv* functions is inconsistent;
-		   in docs, defined as const char **;
-		   in process.h, defined as char *const _argv[]
-		*/
-
-		fb_hGetShortPath( program->data, buffer, MAX_PATH );
-		if( do_fork )
-			res = spawnv( P_WAIT, (const char*)buffer, (char * const *)argv );
-		else
-			res = execv( (const char*)buffer, (char * const *)argv );
-
-		for (i = 1; argv[i] != NULL; i++) {
-			free(argv[i]);
-		}
+		fb_hStrDelTemp( args );
+		fb_hStrDelTemp( program );
+		return -1;
 	}
 
-	/* del if temp */
-	fb_hStrDelTemp( args );
-	fb_hStrDelTemp( program );
+	application = fb_hGetShortPath( program->data, buffer, MAX_PATH );
+	DBG_ASSERT( application!=NULL );
+	if( application==program->data ) 
+	{
+		len_program = FB_STRSIZE( program );
+		application = buffer;
+		FB_MEMCPY(application, program->data, len_program );
+		application[len_program] = 0;
+	}
+
+	if( args==NULL ) 
+	{
+		arguments = "";
+	} 
+	else 
+	{
+		len_arguments = FB_STRSIZE( args );
+		arguments = alloca( len_arguments + 1 );
+		DBG_ASSERT( arguments!=NULL );
+		arguments[len_arguments] = 0;
+		if( len_arguments )
+			argc = fb_hParseArgs( arguments, args->data, len_arguments );
+
+	}
+
+	FB_STRLOCK();
+
+	fb_hStrDelTemp_NoLock( args );
+	fb_hStrDelTemp_NoLock( program );
+
+	FB_STRUNLOCK();
+
+	if( argc == -1 )
+		return -1;
+
+	argc++; 			/* add 1 for program name */
+
+	argv = alloca( sizeof(char*) * (argc + 1 ));
+	DBG_ASSERT( argv!=NULL );
+
+	argv[0] = buffer;
+
+	/* scan the processed args and set pointers */
+	p = arguments;
+	for( i=1 ; i<argc; i++)
+	{
+		argv[i] = p;	/* set pointer to current argument */
+		while( *p++ );	/* skip to 1 char past next null char */
+	}
+	argv[argc] = NULL;
+
+	/* NOTE: DJGPP info on 3rd arg of spawnv* functions is inconsistent;
+	   in docs, defined as const char **;
+	   in process.h, defined as char *const _argv[]
+	*/
+
+	if( do_fork )
+		res = spawnv( P_WAIT, (const char*)application, (char * const *)argv );
+	else
+		res = execv( (const char*)application, (char * const *)argv );
 
 	return res;
 }
