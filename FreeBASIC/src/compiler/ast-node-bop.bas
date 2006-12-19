@@ -1472,16 +1472,14 @@ function astNewSelfBOP _
 					   	   astNewADDROF( l ) )
 
 		'' *tmp = *tmp op expr
-		lr = astNewASSIGN( astNewDEREF( 0, _
-				   		   			    astNewVAR( tmp, _
+		lr = astNewASSIGN( astNewDEREF( astNewVAR( tmp, _
 				   		   			   			   0, _
 				   		   			   			   FB_DATATYPE_POINTER + dtype, _
 				   		   			   			   subtype ),_
 				   		   			    dtype, _
 				   		   			    subtype ), _
 						   astNewBOP( op, _
-				   		   			  astNewDEREF( 0, _
-				   		   			   			   astNewVAR( tmp, _
+				   		   			  astNewDEREF( astNewVAR( tmp, _
 				   		   			   			  			  0, _
 				   		   			   			  			  FB_DATATYPE_POINTER + dtype, _
 				   		   			   			  			  subtype ), _

@@ -942,8 +942,7 @@ private sub hCallFieldCtor _
 	else
 		astAdd( astNewMEM( AST_OP_MEMCLEAR, _
     	  	  		   	   astBuildInstPtr( this_, fld ), _
-    	  	  		   	   NULL, _
-    	  	  		   	   symbGetLen( fld ) * symbGetArrayElements( fld ) ) )
+    	  	  		   	   astNewCONSTi( symbGetLen( fld ) * symbGetArrayElements( fld ) ) ) )
 	end if
 
 end sub
@@ -994,8 +993,7 @@ private function hClearUnionFields _
     '' clear all them at once
 	astAdd( astNewMEM( AST_OP_MEMCLEAR, _
     	  	  		   astBuildInstPtr( this_, base_fld ), _
-    	  	  		   NULL, _
-    	  	  		   bytes ) )
+    	  	  		   astNewCONSTi( bytes ) ) )
 
 	function = fld
 

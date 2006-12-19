@@ -5569,8 +5569,8 @@ private sub hMemMoveRep _
 	dim as integer ecxfree, edifree, esifree
 	dim as integer ediinsrc, ecxinsrc
 
-	hPrepOperand( dvreg, dst, , , , FALSE )
-	hPrepOperand( svreg, src, , , , FALSE )
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
 
 	ecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
 	edifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ESI )
@@ -5590,21 +5590,35 @@ private sub hMemMoveRep _
 	end if
 
 	if( ediinsrc = FALSE ) then
-		ostr = "lea edi, " + dst
-		outp ostr
+		if( dvreg->typ <> IR_VREGTYPE_REG ) then
+			hMOV( "edi", dst )
+		else
+			'' not esi already?
+			if( dvreg->reg <> EMIT_REG_EDI ) then
+           		hMOV( "edi", dst )
+			end if
+		end if
+
 	else
 		if( ecxinsrc ) then
 			hPUSH( "ecx" )
 		end if
-		ostr = "lea ecx, " + dst
-		outp ostr
+
+		hMOV( "ecx", dst )
+
 		if( ecxinsrc ) then
 			outp "xchg ecx, [esp]"
 		end if
 	end if
 
-	ostr = "lea esi, " + src
-	outp ostr
+	if( svreg->typ <> IR_VREGTYPE_REG ) then
+		hMOV( "esi", src )
+	else
+		'' not esi already?
+		if( svreg->reg <> EMIT_REG_ESI ) then
+           	hMOV( "esi", src )
+		end if
+	end if
 
 	if( ediinsrc ) then
 		if( ecxinsrc = FALSE ) then
@@ -5727,7 +5741,8 @@ private sub _emitMEMMOVE _
 		byval extra as integer _
 	) static
 
-	if( bytes > 16 ) then
+	'' handle the assumption done at ast-node-mem::newMEM()
+	if( bytes > IR_MEMBLOCK_MAXLEN ) then
 		hMemMoveRep( dvreg, svreg, bytes )
 	else
 		hMemMoveBlk( dvreg, svreg, bytes )
@@ -5749,7 +5764,7 @@ private sub _emitMEMSWAP _
 end sub
 
 '':::::
-private sub hMemClearRep _
+private sub hMemClearRepIMM _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval bytes as integer _
@@ -5759,7 +5774,7 @@ private sub hMemClearRep _
 	dim as string ostr
 	dim as integer eaxfree, ecxfree, edifree
 
-	hPrepOperand( dvreg, dst, , , , FALSE )
+	hPrepOperand( dvreg, dst )
 
 	eaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
 	ecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
@@ -5775,8 +5790,14 @@ private sub hMemClearRep _
 		hPUSH( "edi" )
 	end if
 
-	ostr = "lea edi, " + dst
-	outp ostr
+	if( dvreg->typ <> IR_VREGTYPE_REG ) then
+		hMOV( "edi", dst )
+	else
+		'' not edi already?
+		if( dvreg->reg <> EMIT_REG_EDI ) then
+           	hMOV( "edi", dst )
+        end if
+	end if
 
 	outp "xor eax, eax"
 
@@ -5819,7 +5840,7 @@ private sub hMemClearRep _
 end sub
 
 '':::::
-private sub hMemClearBlk _
+private sub hMemClearBlkIMM _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval bytes as integer _
@@ -5852,18 +5873,101 @@ private sub hMemClearBlk _
 end sub
 
 '':::::
+private sub hMemClear _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval bytes_vreg as IRVREG ptr _
+	) static
+
+	dim as string dst, bytes
+	dim as string ostr
+	dim as integer eaxfree, ecxfree, edifree
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( bytes_vreg, bytes )
+
+	eaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+	ecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
+	edifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ESI )
+
+	if( eaxfree = FALSE ) then
+		hPUSH( "eax" )
+	end if
+	if( ecxfree = FALSE ) then
+		hPUSH( "ecx" )
+	end if
+	if( edifree = FALSE ) then
+		hPUSH( "edi" )
+	end if
+
+	if( hIsRegInVreg( bytes_vreg, EMIT_REG_EDI ) = FALSE ) then
+		if( dvreg->typ <> IR_VREGTYPE_REG ) then
+			hMOV( "edi", dst )
+		else
+			'' not edi already?
+			if( dvreg->reg <> EMIT_REG_EDI ) then
+            	hMOV( "edi", dst )
+            end if
+		end if
+
+		if( bytes_vreg->typ <> IR_VREGTYPE_REG ) then
+			hMOV( "ecx", bytes )
+		else
+			'' not ecx already?
+			if( bytes_vreg->reg <> EMIT_REG_ECX ) then
+            	hMOV( "ecx", bytes )
+            end if
+		end if
+
+	else
+		hPUSH( bytes )
+
+		ostr = "lea edi, " + dst
+		outp ostr
+
+		hPOP( "ecx" )
+	end if
+
+	outp "xor eax, eax"
+
+	outp "push ecx"
+	outp "rep stosd"
+	outp "pop ecx"
+	outp "and ecx, 3"
+	outp "rep stosb"
+
+	if( edifree = FALSE ) then
+		hPOP( "edi" )
+	end if
+	if( ecxfree = FALSE ) then
+		hPOP( "ecx" )
+	end if
+	if( eaxfree = FALSE ) then
+		hPOP( "eax" )
+	end if
+
+end sub
+
+'':::::
 private sub _emitMEMCLEAR _
 	( _
 		byval dvreg as IRVREG ptr, _
-		byval unused as IRVREG ptr, _
-		byval bytes as integer, _
+		byval svreg as IRVREG ptr, _
+		byval unused as integer, _
 		byval extra as integer _
-	) static
+	)
 
-	if( bytes > 16 ) then
-		hMemClearRep( dvreg, bytes )
+	'' handle the assumption done at ast-node-mem::newMEM()
+	if( irIsIMM( svreg ) ) then
+		dim as integer bytes = svreg->value.int
+		if( bytes > IR_MEMBLOCK_MAXLEN ) then
+			hMemClearRepIMM( dvreg, bytes )
+		else
+			hMemClearBlkIMM( dvreg, bytes )
+		end if
+
 	else
-		hMemClearBlk( dvreg, bytes )
+    	hMemClear( dvreg, svreg )
 	end if
 
 end sub

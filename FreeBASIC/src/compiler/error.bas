@@ -231,7 +231,7 @@ end type
 		@"PROPERTY has no indexed SET method/accessor", _
 		@"UDT in FOR needs numeric overloaded operators: ", _
 		@"The new[] operator does not allow explicit calls to constructors", _
-		@"The new[] operator cannot be initialized", _
+		@"The new[] operator only supports the { ANY } initialization", _
 		@"The new operator cannot be used with strings", _
 		@"Illegal member access", _
 		@"Expected ':'", _

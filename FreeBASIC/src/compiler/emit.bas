@@ -1476,10 +1476,10 @@ end function
 function emitMEMCLEAR _
 	( _
 		byval dvreg as IRVREG ptr, _
-		byval bytes as integer _
+		byval bytes_vreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	function = hNewMEM( EMIT_OP_MEMCLEAR, dvreg, NULL, bytes )
+	function = hNewMEM( EMIT_OP_MEMCLEAR, dvreg, bytes_vreg, 0 )
 
 end function
 

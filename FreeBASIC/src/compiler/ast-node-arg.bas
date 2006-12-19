@@ -710,9 +710,9 @@ private sub hUDTPassByval _
 		if( is_udt ) then
 			n->arg.lgt = FB_ROUNDLEN( symbGetLen( symbGetSubtype( param ) ) )
 
-			'' call? deref the pointer
+			'' call? use the hidden call arg
 			if( astIsCALL( arg ) ) then
-				n->l = astNewDEREF( 0, arg, arg->dtype, arg->subtype )
+				n->l = astBuildCallHiddenResVar( arg )
 			end if
 
 		else

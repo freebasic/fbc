@@ -1120,8 +1120,8 @@ function symbAddProcResultParam _
 	end if
 
     s = symbAddVarEx( NULL, NULL, _
-    				  FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT, proc->subtype, 0, 0, _
-    				  0, dTB(), FB_SYMBATTRIB_PARAMBYVAL, _
+    				  FB_DATATYPE_STRUCT, proc->subtype, 0, FB_POINTERSIZE, _
+    				  0, dTB(), FB_SYMBATTRIB_PARAMBYREF, _
     				  FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
 
 

@@ -24,6 +24,8 @@ const IR_INITVREGNODES		= IR_INITADDRNODES*3
 
 const IR_MAXDIST			= 2147483647
 
+const IR_MEMBLOCK_MAXLEN	= 16				'' when to use memblk clear/move (needed by AST)
+
 ''
 enum IRVREGTYPE_ENUM
 	IR_VREGTYPE_OPER							'' used by DAG only

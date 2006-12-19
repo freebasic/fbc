@@ -819,7 +819,7 @@ private function hCheckOpOvlParams _
 	'' 1st) check the number of params
     dim as integer params = any
     select case as const astGetOpClass( op )
-    case AST_NODECLASS_UOP, AST_NODECLASS_CONV, AST_NODECLASS_ADDR
+    case AST_NODECLASS_UOP, AST_NODECLASS_CONV, AST_NODECLASS_ADDROF
     	params = 1
 
     '' bop or assign..
@@ -839,7 +839,7 @@ private function hCheckOpOvlParams _
     		errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
     	end if
 
-    case AST_NODECLASS_BOP, AST_NODECLASS_ADDR
+    case AST_NODECLASS_BOP, AST_NODECLASS_ADDROF
     	if( is_method or astGetOpIsSelf( op ) ) then
     		if( parent = NULL ) then
     			errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
@@ -874,7 +874,7 @@ private function hCheckOpOvlParams _
 
     select case astGetOpClass( op )
     '' unary, cast or addressing?
-    case AST_NODECLASS_UOP, AST_NODECLASS_CONV, AST_NODECLASS_ADDR
+    case AST_NODECLASS_UOP, AST_NODECLASS_CONV, AST_NODECLASS_ADDROF
     	'' is the param an UDT?
     	select case symbGetType( param )
     	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
@@ -951,7 +951,7 @@ private function hCheckOpOvlParams _
     	end if
 
     '' addressing?
-    case AST_NODECLASS_ADDR
+    case AST_NODECLASS_ADDROF
     	'' return type can't be a void
     	if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
     		errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )

@@ -123,7 +123,7 @@ private function hArrayInit _
 	) as integer
 
     dim as integer dimensions = any, elements = any, elm_cnt = any
-    dim as integer pad_lgt = any, isarray = any, dtype = any
+    dim as integer isarray = any, dtype = any
     dim as FBVARDIM ptr old_dim = any
     dim as FBSYMBOL ptr subtype = any
 
@@ -248,7 +248,17 @@ private function hArrayInit _
 		if( ctor <> NULL ) then
 			astTypeIniAddCtorList( ctx.tree, ctx.sym, elements )
 		else
-			pad_lgt = elements * symbCalcLen( dtype, subtype )
+			dim as integer pad_lgt = any
+			'' calc len.. handle fixed-len strings
+			select case as const dtype
+			case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				pad_lgt = symbGetLen( ctx.sym )
+			case else
+				pad_lgt = symbCalcLen( dtype, subtype )
+			end select
+
+			pad_lgt *= elements
+
 			astTypeIniAddPad( ctx.tree, pad_lgt )
 			astTypeIniGetOfs( ctx.tree ) += pad_lgt
 		end if

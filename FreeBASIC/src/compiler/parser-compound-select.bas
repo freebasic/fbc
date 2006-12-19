@@ -168,8 +168,7 @@ function cSelectStmtBegin as integer
 							  rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
 
 		'' *tmp = expr
-		expr = astNewASSIGN( astNewDEREF( 0, _
-								  		  astNewVAR( sym, _
+		expr = astNewASSIGN( astNewDEREF( astNewVAR( sym, _
 								  		 		     0, _
 								  		 		     FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), _
 								  	      FB_DATATYPE_WCHAR, _
@@ -270,8 +269,7 @@ end function
 #define NEWCASEVAR(symbol,dtype) 					_
 	iif( dtype <> FB_DATATYPE_WCHAR, 				_
 		 astNewVAR( symbol, 0, dtype ), 			_
-		 astNewDEREF( 0, 							_
-					  astNewVAR( symbol, 0, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), _
+		 astNewDEREF( astNewVAR( symbol, 0, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), _
 					  FB_DATATYPE_WCHAR, 			_
 					  NULL ) 						_
 	   )

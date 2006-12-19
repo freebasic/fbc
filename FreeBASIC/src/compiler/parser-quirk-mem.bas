@@ -27,7 +27,8 @@
 #include once "inc\ast.bi"
 
 '':::::
-''cOperatorNew =     NEW DataType Constructor?
+''cOperatorNew =     NEW DataType|Constructor()
+''			   |	 NEW DataType[Expr] .
 ''
 function cOperatorNew _
 	( _
@@ -36,6 +37,8 @@ function cOperatorNew _
 
 	dim as integer dtype = any, lgt = any, ptrcnt = any
 	dim as FBSYMBOL ptr subtype = any, tmp = any
+	dim as integer has_ctor = FALSE, do_clear = TRUE
+
 
 	function = FALSE
 
@@ -94,6 +97,34 @@ function cOperatorNew _
         else
         	lexSkipToken( )
         end if
+
+		'' '{'?
+		if( lexGetToken( ) = CHAR_LBRACE ) then
+			lexSkipToken( )
+
+			'' ANY?
+			if( lexGetToken( ) = FB_TK_ANY ) then
+				lexSkipToken( )
+				do_clear = FALSE
+			else
+				if( errReport( FB_ERRMSG_VECTORCANTBEINITIALIZED ) = FALSE ) then
+					exit function
+				end if
+			end if
+
+			'' '}'
+			if( lexGetToken( ) <> CHAR_RBRACE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip until next '}'
+					hSkipUntil( CHAR_RBRACE, TRUE )
+				end if
+			else
+				lexSkipToken( )
+			end if
+		end if
+
 	end if
 
 	'' not a vector?
@@ -106,7 +137,6 @@ function cOperatorNew _
 
 	'' Constructor?
 	dim as ASTNODE ptr ctor_expr = NULL
-	dim as integer has_ctor = FALSE
 
 	select case dtype
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
@@ -159,13 +189,34 @@ function cOperatorNew _
 				end if
 			end if
 
-        	ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
+			'' ANY?
+			if( lexGetLookAhead( 1 ) = FB_TK_ANY ) then
+				lexSkipToken( )
+				lexSkipToken( )
 
-        	symbGetStats( tmp ) and= not FB_SYMBSTATS_INITIALIZED
+				do_clear = FALSE
 
-        	if( ctor_expr = NULL ) then
-        		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-        			exit function
+				'' ')'
+				if( lexGetToken( ) <> CHAR_RPRNT ) then
+					if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip until next ')'
+						hSkipUntil( CHAR_RPRNT, TRUE )
+					end if
+				else
+					lexSkipToken( )
+				end if
+
+        	else
+        		ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
+
+        		symbGetStats( tmp ) and= not FB_SYMBSTATS_INITIALIZED
+
+        		if( ctor_expr = NULL ) then
+        			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+        				exit function
+        			end if
         		end if
         	end if
         end if
@@ -183,7 +234,8 @@ function cOperatorNew _
 					  elmts_expr, _
 					  ctor_expr, _
 					  dtype, _
-					  subtype )
+					  subtype, _
+					  do_clear )
 
 	if( expr = NULL ) then
     	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
@@ -205,6 +257,7 @@ end function
 
 '':::::
 ''cOperatorDelete =     DELETE expr
+''				  |		DELETE[] expr .
 ''
 function cOperatorDelete _
 	( _
@@ -279,7 +332,8 @@ function cOperatorDelete _
 					  NULL, _
 					  NULL, _
 					  dtype, _
-					  subtype )
+					  subtype, _
+					  FALSE )
 
 	if( expr = NULL ) then
     	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then

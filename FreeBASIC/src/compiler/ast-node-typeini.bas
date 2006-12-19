@@ -403,13 +403,13 @@ private function hFlushTree _
 
         		'' deref..
         		else
-        			lside = astNewDEREF( n->typeini.ofs, _
-        							     astNewVAR( basesym, _
+        			lside = astNewDEREF( astNewVAR( basesym, _
         				   	   	   	   			    0, _
 	       				   	   	   	   			  	symbGetType( basesym ), _
         				   	   	   	   			  	symbGetSubtype( basesym ) ), _
         							   	 dtype, _
-        							   	 subtype )
+        							   	 subtype, _
+        							   	 n->typeini.ofs )
         		end if
 
         		'' field?
@@ -441,21 +441,20 @@ private function hFlushTree _
         				  	   	   	   subtype )
 
         		else
-        			lside = astNewDEREF( n->typeini.ofs, _
-        							   	 astNewVAR( basesym, _
+        			lside = astNewDEREF( astNewVAR( basesym, _
         				   	   	   	   			  	0, _
 	       				   	   	   	   			  	dtype, _
         				   	   	   	   			  	subtype ), _
         							     dtype - FB_DATATYPE_POINTER, _
-        							     subtype )
+        							     subtype, _
+        							     n->typeini.ofs )
         		end if
     		end if
 
     		flush_tree = astNewLINK( flush_tree, _
     								 astNewMEM( AST_OP_MEMCLEAR, _
     						   		 			lside, _
-    						   		 			NULL, _
-    						   		 			n->typeini.bytes ) )
+    						   		 			astNewCONSTi( n->typeini.bytes ) ) )
 
     	case AST_NODECLASS_TYPEINI_CTORCALL
     		flush_tree = hCallCtor( flush_tree, n, basesym )

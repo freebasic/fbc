@@ -102,8 +102,7 @@ function astBuildVarDeref _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	function = astNewDEREF( 0, _
-            			  	astNewVAR( sym, _
+	function = astNewDEREF( astNewVAR( sym, _
             						   0, _
             						   symbGetType( sym ), _
             						   symbGetSubtype( sym ) ), _
@@ -118,10 +117,7 @@ function astBuildVarDeref _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	function = astNewDEREF( 0, _
-            			    expr, _
-            			    astGetDataType( expr ) - FB_DATATYPE_POINTER, _
-            			    astGetSubtype( expr ) )
+	function = astNewDEREF( expr )
 
 end function
 
@@ -229,13 +225,13 @@ function astBuildVarField _
 
 	'' byref or import?
 	if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
-		expr = astNewDEREF( ofs, _
-						    astNewVAR( sym, _
+		expr = astNewDEREF( astNewVAR( sym, _
 						    		   0, _
 						    		   FB_DATATYPE_POINTER + symbGetType( sym ), _
 						    		   symbGetSubtype( sym ) ), _
 						    symbGetType( sym ), _
-						    symbGetSubtype( sym ) )
+						    symbGetSubtype( sym ), _
+						    ofs )
 	else
 		expr = astNewVAR( sym, _
 						  ofs, _
@@ -641,14 +637,31 @@ function astBuildProcResultVar _
 
 	'' proc returns an UDT?
     select case symbGetType( proc )
-    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    case FB_DATATYPE_STRUCT
 		'' pointer? deref
 		if( symbGetProcRealType( proc ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
-			lhs = astNewDEREF( 0, lhs, FB_DATATYPE_STRUCT, symbGetSubtype( res ) )
+			lhs = astNewDEREF( lhs, FB_DATATYPE_STRUCT, symbGetSubtype( res ) )
 		end if
+	'case FB_DATATYPE_CLASS
+		' ...
 	end select
 
 	function = lhs
+
+end function
+
+'':::::
+function astBuildCallHiddenResVar _
+	( _
+		byval callexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+    function = astNewLINK( callexpr, _
+						   astNewVAR( callexpr->call.tmpres, _
+        							  0, _
+        							  astGetDataType( callexpr ), _
+        							  astGetSubtype( callexpr ) ), _
+        				   FALSE )
 
 end function
 
@@ -707,7 +720,7 @@ function astBuildInstPtr _
 		end if
 	end if
 
-	expr = astNewDEREF( 0, expr, dtype, subtype )
+	expr = astNewDEREF( expr, dtype, subtype )
 
 	if( fld <> NULL ) then
 	    expr = astNewFIELD( expr, fld, dtype, subtype )
@@ -813,7 +826,7 @@ function astBuildMultiDeref _
 				expr = astNewPTRCHK( expr, lexLineNum( ) )
 			end if
 
-			expr = astNewDEREF( 0, expr, dtype, subtype )
+			expr = astNewDEREF( expr, dtype, subtype )
 		end if
 
 		cnt -= 1
@@ -974,8 +987,7 @@ function astBuildStrPtr _
 	'' note: only var-len strings expressions should be passed
 
 	'' *cast( zstring ptr ptr, @lhs )
-	function = astNewDEREF( 0, _
-						    astNewCONV( FB_DATATYPE_POINTER*2 + FB_DATATYPE_CHAR, _
+	function = astNewDEREF( astNewCONV( FB_DATATYPE_POINTER*2 + FB_DATATYPE_CHAR, _
 								 	    NULL, _
 								 	  	astNewADDROF( lhs ), _
 								 	  	AST_OP_TOPOINTER ), _

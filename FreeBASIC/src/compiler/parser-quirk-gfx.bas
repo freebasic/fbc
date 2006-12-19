@@ -89,16 +89,16 @@ private function hMakeArrayIndex _
     if( symbIsParamByDesc( sym ) ) then
 
 		'' deref descriptor->data
-		idxexpr = astNewDEREF( FB_ARRAYDESC_DATAOFFS, _
-                               astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+		idxexpr = astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
                                FB_DATATYPE_INTEGER, _
-                               NULL )
+                               NULL, _
+                               FB_ARRAYDESC_DATAOFFS )
 
 		'' descriptor->dimTB(0).lBound
-		dataOffset = astNewDEREF( FB_ARRAYDESCLEN + FB_ARRAYDESC_LBOUNDOFS, _
-                                  astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+		dataOffset = astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
                                   FB_DATATYPE_INTEGER, _
-                                  NULL )
+                                  NULL, _
+                                  FB_ARRAYDESCLEN + FB_ARRAYDESC_LBOUNDOFS )
 
 		'' lBound * elemLen
 		dataOffset = astNewBOP( AST_OP_MUL, _
@@ -192,7 +192,7 @@ private function hGetTarget _
 		expr = hMakeArrayIndex( s, arrayexpr )
 
 	'' address-of or pointer deref?
-	case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET, _
+	case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET, _
 		 AST_NODECLASS_DEREF, AST_NODECLASS_BOP
 
 		isptr = TRUE

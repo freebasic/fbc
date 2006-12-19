@@ -29,21 +29,26 @@
 '':::::
 function astNewDEREF _
 	( _
-		byval ofs as integer, _
 		byval l as ASTNODE ptr, _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval ofs as integer _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
 
 	if( l <> NULL ) then
+    	if( dtype = INVALID ) then
+    		dtype = astGetDataType( l ) - FB_DATATYPE_POINTER
+    		subtype = astGetSubType( l )
+    	end if
+
 		if( ofs = 0 ) then
     		dim as integer delchild = any
 
 			'' convert *@ to nothing
 			select case l->class
-			case AST_NODECLASS_ADDR
+			case AST_NODECLASS_ADDROF
 				delchild = TRUE
 
 			case AST_NODECLASS_OFFSET

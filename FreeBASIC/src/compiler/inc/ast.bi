@@ -34,7 +34,7 @@ enum AST_NODECLASS
 	AST_NODECLASS_BOP
 	AST_NODECLASS_UOP
 	AST_NODECLASS_CONV
-	AST_NODECLASS_ADDR
+	AST_NODECLASS_ADDROF
 	AST_NODECLASS_BRANCH
 	AST_NODECLASS_CALL
 	AST_NODECLASS_CALLCTOR
@@ -239,6 +239,10 @@ type AST_NODE_DATASTMT
 	end union
 end type
 
+type AST_NODE_LINK
+	ret_left		as integer
+end type
+
 ''
 type ASTNODE
 	class			as integer						'' CONST, VAR, BOP, UOP, IDX, FUNCT, etc
@@ -272,6 +276,7 @@ type ASTNODE
 		block		as AST_NODE_BLOCK				'' shared by PROC and SCOPE nodes
 		break		as AST_NODE_BREAK
 		data		as AST_NODE_DATASTMT
+		link		as AST_NODE_LINK
 	end union
 
 	prev			as ASTNODE ptr					'' used by Add
@@ -599,25 +604,25 @@ declare function astNewCONSTwstr _
 declare function astNewCONSTi _
 	( _
 		byval value as integer, _
-		byval dtype as integer, _
+		byval dtype as integer = FB_DATATYPE_INTEGER, _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astNewCONSTf _
 	( _
 		byval value as double, _
-		byval dtype as integer _
+		byval dtype as integer = FB_DATATYPE_DOUBLE _
 	) as ASTNODE ptr
 
 declare function astNewCONSTl _
 	( _
 		byval value as longint, _
-		byval dtype as integer _
+		byval dtype as integer = FB_DATATYPE_LONGINT _
 	) as ASTNODE ptr
 
 declare function astNewCONSTz _
 	( _
-		byval dtype as integer, _
+		byval dtype as integer = FB_DATATYPE_CHAR, _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
@@ -651,16 +656,16 @@ declare function astNewFIELD _
 	( _
 		byval p as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval dtype as integer = FB_DATATYPE_INTEGER, _
-		byval subtype as FBSYMBOL ptr = NULL _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function astNewDEREF _
 	( _
-		byval ofs as integer, _
 		byval l as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval dtype as integer = INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL, _
+		byval ofs as integer = 0 _
 	) as ASTNODE ptr
 
 declare function astNewCALL _
@@ -726,7 +731,8 @@ declare function astNewOFFSET _
 declare function astNewLINK _
 	( _
 		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
+		byval r as ASTNODE ptr, _
+		byval ret_left as integer = TRUE _
 	) as ASTNODE ptr
 
 declare function astNewSTACK _
@@ -774,7 +780,7 @@ declare function astNewMEM overload _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval bytes as integer _
+		byval bytes as integer = 0 _
 	) as ASTNODE ptr
 
 declare function astNewMEM _
@@ -784,7 +790,8 @@ declare function astNewMEM _
 		byval r as ASTNODE ptr, _
 		byval ex as ASTNODE ptr, _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval do_clear as integer _
 	) as ASTNODE ptr
 
 declare function astNewBOUNDCHK _
@@ -1192,6 +1199,11 @@ declare function astBuildMultiDeref _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+declare function astBuildCallHiddenResVar _
+	( _
+		byval callexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare sub astReplaceSymbolOnTree _

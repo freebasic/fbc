@@ -140,8 +140,7 @@ private function hCallCtor _
     			  		  	 	 	 0, _
     			   			 	 	 symbGetType( sym ), _
     			   			 	 	 subtype ), _
-    			  	  	  NULL, _
-    			  	  	  lgt )
+    			  	  	  astNewCONSTi( lgt ) )
 
 end function
 

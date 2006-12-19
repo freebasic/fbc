@@ -266,7 +266,7 @@ declare sub astReplaceSymbolOnCALL _
 		( @astLoadBOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_BOP
 		( @astLoadUOP		, @hSetType			, TRUE	), _	'' AST_NODECLASS_UOP
 		( @astLoadCONV		, @hSetType			, TRUE	), _	'' AST_NODECLASS_CONV
-		( @astLoadADDROF	, @hSetType			, TRUE	), _	'' AST_NODECLASS_ADDR
+		( @astLoadADDROF	, @hSetType			, TRUE	), _	'' AST_NODECLASS_ADDROF
 		( @astLoadBRANCH	, @hSetType			, TRUE	), _	'' AST_NODECLASS_BRANCH
 		( @astLoadCALL		, @hSetType			, TRUE	), _	'' AST_NODECLASS_CALL
 		( @astLoadCALLCTOR	, @hSetType			, TRUE	), _	'' AST_NODECLASS_CALLCTOR
@@ -445,7 +445,7 @@ declare sub astReplaceSymbolOnCALL _
 		), _
 		/' AST_OP_ADDROF '/ _
 		( _
-			AST_NODECLASS_ADDR, _
+			AST_NODECLASS_ADDROF, _
 			AST_OPFLAGS_SELF, _
 			@"@" _
 		), _
@@ -694,13 +694,13 @@ declare sub astReplaceSymbolOnCALL _
 		), _
 		/' AST_OP_DEREF '/ _
 		( _
-			AST_NODECLASS_ADDR, _
+			AST_NODECLASS_ADDROF, _
 			AST_OPFLAGS_NONE, _
 			@"*" _
 		), _
 		/' AST_OP_FLDDEREF '/ _
 		( _
-			AST_NODECLASS_ADDR, _
+			AST_NODECLASS_ADDROF, _
 			AST_OPFLAGS_NONE, _
 			@"->" _
 		), _
@@ -1525,8 +1525,7 @@ function astRemSideFx _
 
 		'' return *tmp
 		function = astNewLINK( t, _
-						   	   astNewDEREF( 0, _
-			   		   			   	  	  	astNewVAR( tmp, _
+						   	   astNewDEREF( astNewVAR( tmp, _
 			   		   			   			  	 	   0, _
 			   		   			   			  	 	   FB_DATATYPE_POINTER + dtype, _
 			   		   			   			  	 	   subtype ),_
@@ -1534,8 +1533,7 @@ function astRemSideFx _
 			   		   			   	  	  	subtype ) )
 
 		'' repatch node
-		n = astNewDEREF( 0, _
-					   	 astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _
+		n = astNewDEREF( astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _
 			   		   	 dtype, _
 			   		   	 subtype )
 
@@ -1705,7 +1703,7 @@ function astIsTreeEqual _
 			exit function
 		end if
 
-	case AST_NODECLASS_ADDR
+	case AST_NODECLASS_ADDROF
 		if( l->sym <> r->sym ) then
 			exit function
 		end if
@@ -1796,7 +1794,7 @@ function astIsSymbolOnTree _
 
 	select case as const n->class
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
-		 AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
+		 AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
 
 		s = astGetSymbol( n )
 
@@ -1925,7 +1923,7 @@ function astIsADDR _
 	) as integer static
 
 	select case n->class
-	case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
+	case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
 		return TRUE
 	case else
 		return FALSE

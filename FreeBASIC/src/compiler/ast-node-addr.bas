@@ -252,7 +252,7 @@ function astNewADDROF _
 	end select
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ADDR, _
+	n = astNewNode( AST_NODECLASS_ADDROF, _
 					FB_DATATYPE_POINTER + dtype, _
 					subtype )
 	if( n = NULL ) then

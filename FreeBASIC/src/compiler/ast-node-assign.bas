@@ -437,7 +437,7 @@ function astNewASSIGN _
 			dtorcall = astBuildVarDtorCall( tmp )
 		end if
 
-        '' r is an UDT too?
+        '' is r an UDT too?
         dim as integer is_udt = TRUE
         if( astIsCALL( r ) ) then
         	is_udt = symbGetUDTRetType( r->subtype ) = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT
@@ -457,7 +457,7 @@ function astNewASSIGN _
 
 			'' call? deref the pointer
 			if( astIsCALL( r ) ) then
-				r = astNewDEREF( 0, r, r->dtype, r->subtype )
+				r = astBuildCallHiddenResVar( r )
 			end if
 
 			return astNewLINK( astNewMEM( AST_OP_MEMMOVE, _

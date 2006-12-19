@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 '' AST nodes related to memory operations
-'' bop (l = destine; r = source)
+'' bop (l = destine; r = source or bytes to clear)
 ''
 '' chng: sep/2004 written [v1ctor]
 
@@ -37,6 +37,25 @@ function astNewMEM _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
+
+	dim as integer lgt = bytes
+    if( op = AST_OP_MEMCLEAR ) then
+    	if( astIsCONST( r ) ) then
+    		lgt = r->con.val.int
+    	else
+    		lgt = IR_MEMBLOCK_MAXLEN+1
+    	end if
+    end if
+
+	'' when clearing/moving more than IR_MEMBLOCK_MAXLEN bytes, take
+	'' the adress-of and let emit() do the rest
+	if( lgt > IR_MEMBLOCK_MAXLEN ) then
+		l = astNewADDROF( l )
+
+		if( op = AST_OP_MEMMOVE ) then
+			r = astNewADDROF( r )
+		end if
+	end if
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_MEM, INVALID )
@@ -98,7 +117,8 @@ private function hNewOp _
 		byval elmts_expr as ASTNODE ptr, _
 		byval init_expr as ASTNODE ptr, _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval do_clear as integer _
 	) as ASTNODE ptr
 
 	dim as integer do_init = FALSE, has_ctor = FALSE, save_elmts = FALSE
@@ -157,6 +177,12 @@ private function hNewOp _
 						  iif( clone_elmts, astCloneTree( elmts_expr ), elmts_expr ), _
 						  astNewCONSTi( symbCalcLen( dtype, subtype ), FB_DATATYPE_UINT ) )
 
+	dim as ASTNODE ptr bytes_expr = NULL
+
+	if( (do_init = FALSE) and (do_clear = TRUE) ) then
+		bytes_expr = astCloneTree( len_expr )
+	end if
+
 	if( save_elmts ) then
 		len_expr = astNewBOP( AST_OP_ADD, _
 							  len_expr, _
@@ -177,8 +203,7 @@ private function hNewOp _
 
 		'' *ptr = elmts
 		tree = astNewLINK( tree, _
-						   astNewASSIGN( astNewDEREF( 0, _
-						   							  astNewVAR( ptr_sym, _
+						   astNewASSIGN( astNewDEREF( astNewVAR( ptr_sym, _
 						   									     0, _
 						   									     FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER, _
 						   									     NULL ), _
@@ -203,20 +228,29 @@ private function hNewOp _
 
     else
 		'' ptr = new( len )
-		tree = astNewLINK( tree, _
-					   	   astNewASSIGN( iif( do_init, _
-					  					  	  astCloneTree( ptr_expr ), _
-					  					  	  ptr_expr ), _
-					  	   new_expr ) )
+		tree = astNewLINK( tree, astNewASSIGN( astCloneTree( ptr_expr ), new_expr ) )
 	end if
 
     '' no initialization?
     if( do_init = FALSE ) then
-    	return tree
+    	'' initialize buffer to 0's?
+    	if( do_clear = FALSE ) then
+    		astDelTree( ptr_expr )
+    		return tree
+    	else
+    		return astNewLINK( tree, _
+    					   	   astNewMEM( AST_OP_MEMCLEAR, _
+    								  	  astNewDEREF( ptr_expr ), _
+    								  	  astNewCONV( FB_DATATYPE_UINT, _
+    								  			  	  NULL, _
+    								  			  	  bytes_expr ) ) )
+		end if
     end if
 
 	'' just a init-tree?
 	if( has_ctor = FALSE ) then
+		astDelTree( ptr_expr )
+
 		return astNewLINK( tree, _
 						   astTypeIniFlush( init_expr, _
 						   					ptr_sym, _
@@ -275,8 +309,7 @@ private function hCallDtorList _
 	'' DELETE[]'s counter is at: cast(integer ptr, vector)[-1]
 
 	'' elmts = cast(integer ptr, vector)[-1]
-	expr = astNewDEREF( 0, _
-					    astNewBOP( AST_OP_ADD, _
+	expr = astNewDEREF( astNewBOP( AST_OP_ADD, _
 					  			   astNewCONV( FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER, _
 							 			 	   NULL, _
 							 			 	   astCloneTree( ptr_expr ) ), _
@@ -397,14 +430,15 @@ function astNewMEM _
 		byval r as ASTNODE ptr, _
 		byval ex as ASTNODE ptr, _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval do_clear as integer _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
 
 	select case as const op
 	case AST_OP_NEW, AST_OP_NEW_VEC
-		n = hNewOp( op, l, r, ex, dtype, subtype )
+		n = hNewOp( op, l, r, ex, dtype, subtype, do_clear )
 
 	case AST_OP_DEL, AST_OP_DEL_VEC
 		n = hDelOp( op, l, dtype, subtype )

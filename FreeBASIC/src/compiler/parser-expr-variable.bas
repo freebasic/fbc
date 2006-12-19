@@ -392,6 +392,10 @@ function cMemberAccess _
 							  	  	 AST_OPOPT_DONTCHKOPOVL )
 
         		expr = astNewLINK( astBuildVarField( tmp ), expr )
+
+        	'' returning result in a hidden arg..
+        	else
+        		expr = astBuildCallHiddenResVar( expr )
         	end if
         end if
 
@@ -399,13 +403,12 @@ function cMemberAccess _
  		expr = astNewADDROF( expr )
 
  		'' can't be 0, or PTR will remove the ADDROF, and we are taking the
- 		'' address-of a CALL result that can't be changed, ditto with LINK ..
+ 		'' address-of a LINK node that can't be changed
  		if( fldexpr = NULL ) then
  			fldexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
  		end if
 
- 		expr = astNewDEREF( 0, _
- 			 			    astNewBOP( AST_OP_ADD, expr, fldexpr ), _
+ 		expr = astNewDEREF( astNewBOP( AST_OP_ADD, expr, fldexpr ), _
  						    dtype, _
  						    subtype )
 
@@ -475,7 +478,7 @@ private function hStrIndexing _
 	end if
 
 	'' make a pointer
-	function = astNewDEREF( 0, varexpr, dtype, NULL )
+	function = astNewDEREF( varexpr, dtype, NULL )
 
 end function
 
@@ -743,7 +746,7 @@ function cMemberDeref _
 		end if
 
 		''
-		varexpr = astNewDEREF( 0, varexpr, dtype, subtype )
+		varexpr = astNewDEREF( varexpr, dtype, subtype )
 
         ''
 		if( fld <> NULL ) then
@@ -988,14 +991,14 @@ private function hArgArrayBoundChk _
 	) as ASTNODE ptr
 
     function = astNewBOUNDCHK( expr, _
-    						   astNewDEREF( FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, _
-    								  	    astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
+    						   astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
     								  	    FB_DATATYPE_INTEGER, _
-    								  	    NULL ), _
-    						   astNewDEREF( FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, _
-    								  	    astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
+    								  	    NULL, _
+    								  	    FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS ), _
+    						   astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
     								  	    FB_DATATYPE_INTEGER, _
-    								  	    NULL ), _
+    								  	    NULL, _
+    								  	    FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS ), _
     						   lexLineNum( ) )
 
 
@@ -1062,10 +1065,10 @@ function cArgArrayIdx _
     	'' it's a descriptor pointer, dereference (only with DAG this will be optimized)
     	t = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
     	'' times desc[i].elements
-    	varexpr = astNewDEREF( FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
-    						   t, _
+    	varexpr = astNewDEREF( t, _
     						   FB_DATATYPE_INTEGER, _
-    						   NULL )
+    						   NULL, _
+    						   FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN )
     	expr = astNewBOP( AST_OP_MUL, expr, varexpr )
 	loop
 
@@ -1075,7 +1078,7 @@ function cArgArrayIdx _
 
    	'' plus desc->data (= ptr + diff)
     t = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
-    varexpr = astNewDEREF( FB_ARRAYDESC_DATAOFFS, t, FB_DATATYPE_INTEGER, NULL )
+    varexpr = astNewDEREF( t, FB_DATATYPE_INTEGER, NULL, FB_ARRAYDESC_DATAOFFS )
     expr = astNewBOP( AST_OP_ADD, expr, varexpr )
 
     idxexpr = expr
@@ -1297,10 +1300,10 @@ private function hMakeArrayIdx _
     ''  argument passed by descriptor?
     if( symbIsParamByDesc( sym ) ) then
     	'' return descriptor->data
-    	return astNewDEREF( FB_ARRAYDESC_DATAOFFS, _
-    					  	astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+    	return astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
     					  	FB_DATATYPE_INTEGER, _
-    					  	NULL )
+    					  	NULL, _
+    					  	FB_ARRAYDESC_DATAOFFS )
     end if
 
     '' dynamic array? (this will handle common's too)
@@ -1544,7 +1547,7 @@ function cVariableEx _
 
 	'' check arguments passed by reference (implicity pointer's)
 	if( is_byref ) then
-   		varexpr = astNewDEREF( 0, varexpr, dtype, subtype )
+   		varexpr = astNewDEREF( varexpr, dtype, subtype )
 	end if
 
     if( fld <> NULL ) then
@@ -1637,7 +1640,7 @@ function cWithVariable _
 	end if
 
 	'' deref the with temp pointer
-	varexpr = astNewDEREF( 0, varexpr, dtype, subtype )
+	varexpr = astNewDEREF( varexpr, dtype, subtype )
 
     if( fld <> NULL ) then
     	varexpr = astNewFIELD( varexpr, fld, dtype, subtype )
@@ -1772,7 +1775,7 @@ function cDataMember _
 	end if
 
 	'' deref the instance pointer
-	varexpr = astNewDEREF( 0, varexpr, dtype, subtype )
+	varexpr = astNewDEREF( varexpr, dtype, subtype )
 
     if( fld <> NULL ) then
     	varexpr = astNewFIELD( varexpr, fld, dtype, subtype )
@@ -1847,7 +1850,7 @@ function cVarOrDeref _
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
 				 AST_NODECLASS_DEREF, AST_NODECLASS_CALL, AST_NODECLASS_NIDXARRAY
 
-			case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
+			case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
 				if( allow_addrof = FALSE ) then
 					hInvalidType( )
 					'' no error recovery: caller will take care

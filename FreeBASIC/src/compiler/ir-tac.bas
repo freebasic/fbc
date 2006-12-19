@@ -1349,7 +1349,7 @@ private sub _flush static
 		case AST_NODECLASS_BRANCH
 			hFlushBRANCH( op, t->ex1 )
 
-		case AST_NODECLASS_ADDR
+		case AST_NODECLASS_ADDROF
 			hFlushADDR( op, v1, vr )
 
 		case AST_NODECLASS_MEM
@@ -2372,7 +2372,7 @@ private sub hFlushMEM _
 		emitMEMSWAP( v1, v2, bytes )
 
 	case AST_OP_MEMCLEAR
-		emitMEMCLEAR( v1, bytes )
+		emitMEMCLEAR( v1, v2 )
 
 	case AST_OP_STKCLEAR
 		emitSTKCLEAR( bytes, cint( extra ) )

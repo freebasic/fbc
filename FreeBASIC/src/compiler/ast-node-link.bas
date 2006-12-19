@@ -30,7 +30,8 @@
 function astNewLINK _
 	( _
 		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
+		byval r as ASTNODE ptr, _
+		byval ret_left as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -42,12 +43,18 @@ function astNewLINK _
 	end if
 
 	''
-	n = astNewNode( AST_NODECLASS_LINK, l->dtype, l->subtype )
+	if( ret_left ) then
+		n = astNewNode( AST_NODECLASS_LINK, l->dtype, l->subtype )
+	else
+		n = astNewNode( AST_NODECLASS_LINK, r->dtype, r->subtype )
+	end if
+
 	if( n = NULL ) then
 		return NULL
 	end if
 
 	''
+	n->link.ret_left = ret_left
 	n->l = l
 	n->r = r
 
@@ -66,8 +73,13 @@ sub astSetTypeLINK _
     n->dtype = dtype
     n->subtype = subtype
 
-	n->l->dtype = dtype
-	n->l->subtype = subtype
+	if( n->link.ret_left ) then
+		n->l->dtype = dtype
+		n->l->subtype = subtype
+	else
+		n->r->dtype = dtype
+		n->r->subtype = subtype
+	end if
 
 end sub
 
@@ -77,15 +89,19 @@ function astLoadLINK _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-	dim as IRVREG ptr vr = any
+	dim as IRVREG ptr vrl = any, vrr = any
 
-	vr = astLoad( n->l )
+	vrl = astLoad( n->l )
 	astDelNode( n->l )
 
-	astLoad( n->r )
+	vrr = astLoad( n->r )
 	astDelNode( n->r )
 
-	function = vr
+	if( n->link.ret_left ) then
+		function = vrl
+	else
+		function = vrr
+	end if
 
 end function
 
