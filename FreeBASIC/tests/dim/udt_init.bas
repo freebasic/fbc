@@ -22,7 +22,7 @@ function add( lhs as rational, rhs as rational ) as rational
 end function 
 
 '':::::
-sub test cdecl
+sub test_1 cdecl
 	dim as rational rt(0 to 1) = _
 	{ _
 		add( type(1,2)   , type(3,4)   ), _
@@ -43,10 +43,38 @@ sub test cdecl
 	
 end sub
 
+type mytype
+	as integer a, b
+	as short c(0 to 2)
+	as byte d
+end type
+
+sub test_2 cdecl
+	static arraytype(10) as mytype => { ( 1, 2, { 3, 4, 5 }, 6 ), ( 1*2, 2*2, { 3*2, 4*2, 5*2 }, 6*2 ) }
+	
+	CU_ASSERT_EQUAL( arraytype(0).c(1), 4 )
+	CU_ASSERT_EQUAL( arraytype(0).d, 6 )
+	CU_ASSERT_EQUAL( arraytype(1).c(1), 4*2 )
+	CU_ASSERT_EQUAL( arraytype(1).d, 6*2 )
+	
+end sub
+
+sub test_3 cdecl
+	dim arraytype(10) as mytype => { ( 1, 2, { 3, 4, 5 }, 6 ), ( 1*2, 2*2, { 3*2, 4*2, 5*2 }, 6*2 ) }
+	
+	CU_ASSERT_EQUAL( arraytype(0).c(1), 4 )
+	CU_ASSERT_EQUAL( arraytype(0).d, 6 )
+	CU_ASSERT_EQUAL( arraytype(1).c(1), 4*2 )
+	CU_ASSERT_EQUAL( arraytype(1).d, 6*2 )
+	
+end sub
+
 private sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.dim.udt_init")
-	fbcu.add_test("test", @test)
+	fbcu.add_test("1", @test_1)
+	fbcu.add_test("2", @test_2)
+	fbcu.add_test("3", @test_3)
 
 end sub
 
