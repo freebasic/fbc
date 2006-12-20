@@ -76,6 +76,7 @@
       [ ] OPEN should be compatible with QB (ie: OPEN "DEVICE:"), the bloat doesn't
           matter in -lang qb mode, just implement a fb_OpenDev or so in the rtlib doing 
           the parsing that will call any supported fb_hFileOpen###'s (COM, LPT, CONS, etc)
+      [ ] add the FIELD #expr statement - threads are not allowed in -lang qb anywywas
       [ ] CALL: support undefined functions as in QB, all params BYREF as ANY
       [ ] SHARED at subs (non-shared vars at mod-level will have to be allocated
           statically, as before)
@@ -84,6 +85,7 @@
       [ ] arrays with same name as scalars
       [ ] labels with the same name as procs:
           declare sub foo \n foo: \n goto foo \n call foo
+      [ ] symbols with same name but different sufixes than keywords
       [x] move all variables to function-level, implicit or explict (see no SCOPE)
           [ ] check if its done correctly, if they are being cleared right after the
               stack frame setup

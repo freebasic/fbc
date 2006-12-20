@@ -166,10 +166,14 @@ function cDataStmt  _
 				dim as integer tokens = 0
 				text = ""
 				do
-					select case lexGetToken( LEX_FLAGS )
+					select case as const lexGetToken( LEX_FLAGS )
 					case CHAR_COMMA
 						lexSkipToken( LEX_FLAGS )
 						exit do
+
+					case CHAR_SPACE, CHAR_TAB
+						'' don't count white-spaces
+						tokens -= 1
 
 					case FB_TK_EOF, FB_TK_EOL, FB_TK_COMMENT, FB_TK_REM, FB_TK_STMTSEP
 						do_exit = TRUE
