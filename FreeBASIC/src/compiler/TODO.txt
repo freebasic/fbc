@@ -73,6 +73,17 @@
 
 [ ] add the -lang (qb|fb) cmd-line option:
     - "qb":
+      [ ] OPEN should be compatible with QB (ie: OPEN "DEVICE:"), the bloat doesn't
+          matter in -lang qb mode, just implement a fb_OpenDev or so in the rtlib doing 
+          the parsing that will call any supported fb_hFileOpen###'s (COM, LPT, CONS, etc)
+      [ ] CALL: support undefined functions as in QB, all params BYREF as ANY
+      [ ] SHARED at subs (non-shared vars at mod-level will have to be allocated
+          statically, as before)
+      [ ] DEF - convert to a macro? doesn't it make any symbol called Fn... invalid
+          because it allows forward refs?
+      [ ] arrays with same name as scalars
+      [ ] labels with the same name as procs:
+          declare sub foo \n foo: \n goto foo \n call foo
       [x] move all variables to function-level, implicit or explict (see no SCOPE)
           [ ] check if its done correctly, if they are being cleared right after the
               stack frame setup
@@ -80,25 +91,16 @@
       	  [ ] implement it using setjmp/longjmp later in the rtlib
       [x] periods in symbol names
       [x] numeric labels
-      [ ] SHARED at subs (non-shared vars at mod-level will have to be allocated
-          statically, as before)
       [x] params passed by reference by default
       [x] DEF### (ie: explicit types required)
       [x] implicit variables
       [x] suffixes % & ! # $
       [x] '$dynamic, '$static, '$include
-      [x] CALL
-      	  [ ] support undefined functions as in QB, all params BYREF as ANY
       [x] LET
       [x] ON .. GOTO|GOSUB
       [ ] ON ERROR, RESUME
       [x] OPTION's
       [x] DEFSNG
-      [ ] DEF - convert to a macro? doesn't it make any symbol called Fn... invalid
-          because it allows forward refs?
-      [ ] arrays with same name as scalars
-      [ ] labels with the same name as procs:
-          declare sub foo \n foo: \n goto foo \n call foo
 
       [x] no SCOPE
       [x] no NAMESPACE

@@ -106,7 +106,8 @@ use "-lang qb" (without quotes) option on the command-line when running FBC.
       3) All variables, implicit or explicit, are always allocated in
          the function scope, as in QB.
         
-      4) ...
+      4) the DATA statement won't look up symbols, every token is assumed
+         to be a literal string even without quotes (as in QB)
      
       Not supported:
      
