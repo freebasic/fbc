@@ -113,38 +113,93 @@ function cDataStmt  _
 			return FALSE
 		end if
 
-		lexSkipToken( )
-
 		dim as ASTNODE ptr tree = astDataStmtBegin( )
 
 		dim as ASTNODE ptr expr = NULL
-		do
-			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
-			'' not a constant?
-			dim as integer isconst = astIsCONST( expr )
-			if( isconst = FALSE ) then
-				'' not a literal string?
-				select case astGetDataType( expr )
-				case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-					isconst = astGetStrLitSymbol( expr ) <> NULL
-				end select
-			end if
+		if( env.clopt.lang <> FB_LANG_QB ) then
+			lexSkipToken( )
 
-            if( isconst = FALSE ) then
-				if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-					exit function
-				else
-					astDelTree( expr )
+			do
+				hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
+
+				'' not a constant?
+				dim as integer isconst = astIsCONST( expr )
+				if( isconst = FALSE ) then
+					'' not a literal string?
+					select case astGetDataType( expr )
+					case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+						isconst = astGetStrLitSymbol( expr ) <> NULL
+					end select
 				end if
 
-			else
-            	if( astDataStmtStore( tree, expr ) = NULL ) then
-	          		exit function
-    	      	end if
-			end if
+            	if( isconst = FALSE ) then
+					if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+						exit function
+					else
+						astDelTree( expr )
+					end if
 
-		loop while( hMatch( CHAR_COMMA ) )
+				else
+            		if( astDataStmtStore( tree, expr ) = NULL ) then
+	          			exit function
+    	      		end if
+				end if
+
+			loop while( hMatch( CHAR_COMMA ) )
+
+		'' qb mode, read tokens as-is, no lookup, no expressions..
+		else
+			const LEX_FLAGS = LEXCHECK_NOWHITESPC or _
+				   		  	  LEXCHECK_NOSUFFIX or _
+				   		  	  LEXCHECK_NODEFINE or _
+				   		  	  LEXCHECK_NOQUOTES or _
+				   		   	  LEXCHECK_NOSYMBOL
+
+			lexSkipToken( LEX_FLAGS )
+
+			dim as integer do_exit = FALSE
+			dim as string text
+
+			do
+				'' read until a ',' or EOL is found
+				dim as integer tokens = 0
+				text = ""
+				do
+					select case lexGetToken( LEX_FLAGS )
+					case CHAR_COMMA
+						lexSkipToken( LEX_FLAGS )
+						exit do
+
+					case FB_TK_EOF, FB_TK_EOL, FB_TK_COMMENT, FB_TK_REM, FB_TK_STMTSEP
+						do_exit = TRUE
+						exit do
+					end select
+
+					text += *lexGetText( )
+					lexSkipToken( LEX_FLAGS )
+					tokens += 1
+				loop
+
+				'' trim it (as it could be a literal number)
+				text = trim( text )
+
+				'' another quirk: remove the quotes if it's a single token
+				if( tokens = 1 ) then
+					if( len( text ) > 1 ) then
+						if( text[0] = asc( """" ) ) then
+							if( text[len( text )-1] = asc( """" ) ) then
+								text = mid( text, 1, len( text ) - 2 )
+							end if
+						end if
+					end if
+				end if
+
+				if( astDataStmtStore( tree, astNewCONSTstr( text ) ) = NULL ) then
+					exit function
+				end if
+			loop until( do_exit )
+		end if
 
 		astDataStmtEnd( tree )
 
