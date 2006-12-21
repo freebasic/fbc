@@ -256,8 +256,8 @@
 #define GMEM_FIXED 0
 #define GMEM_MOVEABLE 2
 #define GMEM_MODIFY 128
-#define GPTR 64
-#define GHND 66
+#define GPTR_ 64
+#define GHND_ 66
 #define GMEM_DDESHARE 8192
 #define GMEM_DISCARDABLE 256
 #define GMEM_LOWER 4096
@@ -344,8 +344,8 @@
 #define LMEM_MODIFY 128
 #define LMEM_INVALID_HANDLE 32768
 #define LMEM_LOCKCOUNT 255
-#define LPTR 64
-#define LHND 66
+#define LPTR_ 64
+#define LHND_ 66
 #define NONZEROLHND 2
 #define NONZEROLPTR 0
 #define LOCKFILE_FAIL_IMMEDIATELY 1
