@@ -30,8 +30,8 @@ declare function _archiveFiles			( byval cmdline as zstring ptr ) as integer
 declare function _compileResFiles 		( ) as integer
 declare function _delFiles 				( ) as integer
 declare function _listFiles				( byval argv as zstring ptr ) as integer
-declare function _processOptions		( byval opt as zstring ptr, _
-						 				  byval argv as zstring ptr ) as integer
+declare function _processOptions		( byval opt as string ptr, _
+						 				  byval argv as string ptr ) as integer
 
 ''
 '' globals
@@ -296,12 +296,16 @@ end function
 '':::::
 private function _processOptions _
 	( _
-		byval opt as zstring ptr, _
-		byval argv as zstring ptr _
+		byval opt as string ptr, _
+		byval argv as string ptr _
 	) as integer
 
     select case mid( *opt, 2 )
 	case "s"
+		if( argv = NULL ) then
+			return FALSE
+		end if
+
 		fbc.subsystem = *argv
 		if( len( fbc.subsystem ) = 0 ) then
 			return FALSE
@@ -309,6 +313,10 @@ private function _processOptions _
 		return TRUE
 
 	case "t"
+		if( argv = NULL ) then
+			return FALSE
+		end if
+
 		fbc.stacksize = valint( *argv ) * 1024
 		if( fbc.stacksize < FBC_MINSTACKSIZE ) then
 			fbc.stacksize = FBC_MINSTACKSIZE

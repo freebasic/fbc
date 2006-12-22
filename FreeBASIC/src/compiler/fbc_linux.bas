@@ -30,8 +30,8 @@ declare function _archiveFiles			( byval cmdline as zstring ptr ) as integer
 declare function _compileResFiles 		( ) as integer
 declare function _delFiles 				( ) as integer
 declare function _listFiles				( byval argv as zstring ptr ) as integer
-declare function _processOptions		( byval opt as zstring ptr, _
-						 				  byval argv as zstring ptr ) as integer
+declare function _processOptions		( byval opt as string ptr, _
+						 				  byval argv as string ptr ) as integer
 
 ''
 '' globals
@@ -348,9 +348,11 @@ private function _compileResFiles _
 
 	'' compile icon source file
 #ifdef TARGET_LINUX
-	if( exec( exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as", iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
+	if( exec( exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as", _
+			  iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
 #else
-	if( exec( exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as.exe", iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
+	if( exec( exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as.exe", _
+			  iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
 #endif
 		kill( iconsrc )
 		exit function
@@ -400,10 +402,9 @@ end function
 '':::::
 private function _processOptions _
 	( _
-		byval opt as zstring ptr, _
-		byval argv as zstring ptr _
+		byval opt as string ptr, _
+		byval argv as string ptr _
 	) as integer
-
 
 	function = FALSE
 

@@ -88,8 +88,8 @@ type FBCCTX
 	'' methods
 	processOptions		as function _
 	( _
-		byval opt as zstring ptr, _
-		byval argv as zstring ptr _
+		byval opt as string ptr, _
+		byval argv as string ptr _
 	) as integer
 
 	listFiles			as function _

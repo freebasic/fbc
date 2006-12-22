@@ -734,12 +734,7 @@ end sub
 '':::::
 private sub printInvalidOpt( byval arg as string ptr )
 
-	if( len( *arg ) > 0 ) then
-		arg = listGetNext( arg )
-		errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + *arg + QUOTE, -1 )
-	else
-		errReportEx( FB_ERRMSG_MISSINGCMDOPTION, QUOTE + *arg + QUOTE, -1 )
-	end if
+	errReportEx( FB_ERRMSG_MISSINGCMDOPTION, QUOTE + *arg + QUOTE, -1 )
 
 end sub
 
@@ -752,8 +747,10 @@ end sub
 '':::::
 #macro hDelArgNodes( arg, nxt )
 	hDelArgNode( arg )
-	arg = listGetNext( nxt )
-	hDelArgNode( nxt )
+	if( nxt <> NULL ) then
+		arg = listGetNext( nxt )
+		hDelArgNode( nxt )
+	end if
 	nxt = arg
 #endmacro
 
@@ -917,7 +914,7 @@ private function processOptions _
 			'' not found?
 			if( id = 0 ) then
 				'' target-dependent options?
-				if( fbc.processOptions( *arg, *nxt ) = FALSE ) then
+				if( fbc.processOptions( arg, nxt ) = FALSE ) then
 					printInvalidOpt( arg )
 					exit function
 				end if
