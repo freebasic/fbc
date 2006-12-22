@@ -1,3 +1,9 @@
+[ ] STATIC
+    - NEW and DELETE must be static methods (an explict STATIC shouldn't be needed),
+      but added to parent's NEW_|DEL_SELF
+    - allow all global operators to be declared as static methods?
+    - add static data members, they must be initialized outside the TYPE|CLASS
+
 [ ] remove the internal profiler and use gprof instead, the former won't work with
     destructors
 
@@ -15,29 +21,12 @@
         '->' operator will be useless for UDT's with copy-ctors or dtors
         as returning byval will make a deep copy
       - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
-      - allow all global operators to be declared as methods so private members
-        could be accessed
 
 [ ] ctor/dtor
-	- how to handle: if( foo().bar().baz(0,1,3).int = 0 ) then ...
-
-	  temp instances created in a function call, must be destroyed right after
-	  the function return because exception handling - if baz() throws an
-	  exception, the bar() and foo() temp results MUST be destroyed
-
-	  GOTO will also screw them if dtors are only called when closing the
-	  current scope
-
-	  		goto xxx
-	  		print foo().bar().int
-	  	xxx:
-
-	  - easiest way?? add a flag (byte) at function scope, setting it to 1
-	    after the ctor is called if:
-	    1) the temp has a dtor
-	    2) a GOTO is targetting the current scope
-	       - GOSUB can't be used with objects, remove var-len string fields
-	         from -lang qb
+	- foo().bar().baz(0,1,3).int where baz is returned byval and has dtor
+	  must be handled right after the .int is used, not only when the current
+	  scope if finished
+	  - how to handle: if( foo().bar().baz(0,1,3).int = 0 ) then ...
 
 	- ArrayClear will be used instead of a dtor call looping to destroy
 	  local non-dynamic arrays
@@ -52,15 +41,8 @@
 	    - no way to define "byref param2 as std::nothrow_t" in rtl-mem.bas
 	      - namespace mangling will have to check for STD and add just "St"
 	        without the # prefix
-	  - NEW and DELETE must be static methods
 
 [ ] data/function members:
-      - add static - data members must be initialized outside the TYPE|CLASS
-	  - cParameters() will add the instance pointer before it's possible
-	    to know if the overloaded function was declared static in the prototype
-	    - "this" will be used in the overload resolution, but a static
-	      and non-static methods shouldn't be different just because the
-	      instance pointer
       - add virtual (functions only)
           - the vtable must be compatible with G++ 3.x (ie: compatible with
             COM interfaces in Windows)
@@ -74,7 +56,7 @@
 [ ] add the -lang (qb|fb) cmd-line option:
     - "qb":
       [ ] OPEN should be compatible with QB (ie: OPEN "DEVICE:"), the bloat doesn't
-          matter in -lang qb mode, just implement a fb_OpenDev or so in the rtlib doing 
+          matter in -lang qb mode, just implement a fb_OpenDev or so in the rtlib doing
           the parsing that will call any supported fb_hFileOpen###'s (COM, LPT, CONS, etc)
       [ ] add the FIELD #expr statement - threads are not allowed in -lang qb anywywas
       [ ] CALL: support undefined functions as in QB, all params BYREF as ANY

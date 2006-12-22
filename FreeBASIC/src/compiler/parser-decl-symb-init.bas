@@ -94,7 +94,8 @@ private function hElmInit _
     oldsym = parser.ctxsym
     parser.ctxsym = symbGetSubType( ctx.sym )
 
-	if( cExpression( expr ) = FALSE ) then
+	expr = cExpression( )
+	if( expr = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
@@ -305,7 +306,8 @@ private function hUDTInit _
     	dim as ASTNODE ptr expr = any
 
     	'' Expression
-    	if( cExpression( expr ) = FALSE ) then
+    	expr = cExpression( )
+    	if( expr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 				exit function
 			else

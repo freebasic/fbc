@@ -27,27 +27,29 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-declare function cLogOrExpression			( _
-												byref logexpr as ASTNODE ptr _
-											) as integer
+declare function cLogOrExpression _
+	( _
+		_
+	) as ASTNODE ptr
 
-declare function cLogAndExpression			( _
-												byref logexpr as ASTNODE ptr _
-											) as integer
+declare function cLogAndExpression _
+	( _
+		_
+	) as ASTNODE ptr
 
 '':::::
 ''Expression      =   LogExpression .
 ''
 function cExpression _
 	( _
-		byref expr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 	dim as integer last_isexpr = fbGetIsExpression( )
 	fbSetIsExpression( TRUE )
 
 	'' LogExpression
-	function = cLogExpression( expr )
+	function = cLogExpression( )
 
 	fbSetIsExpression( last_isexpr )
 
@@ -58,17 +60,16 @@ end function
 ''
 function cLogExpression _
 	( _
-		byref logexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
     dim as integer op = any
-    dim as ASTNODE ptr expr = any
-
-	function = FALSE
+    dim as ASTNODE ptr expr = any, logexpr = any
 
     '' LogOrExpression
-    if( cLogOrExpression( logexpr ) = FALSE ) then
-	   	exit function
+    logexpr = cLogOrExpression( )
+    if( logexpr = NULL ) then
+	   	return NULL
     end if
 
     '' ( ... )*
@@ -88,9 +89,10 @@ function cLogExpression _
     	lexSkipToken( )
 
     	'' LogOrExpression
-    	if( cLogOrExpression( expr ) = FALSE ) then
+    	expr = cLogOrExpression( )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
             	exit do
     		end if
@@ -101,7 +103,7 @@ function cLogExpression _
 
         if( logexpr = NULL ) then
     		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
     			'' error recovery: fake a node
     			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -110,7 +112,7 @@ function cLogExpression _
 
     loop
 
-	function = TRUE
+	function = logexpr
 
 end function
 
@@ -119,16 +121,15 @@ end function
 ''
 function cLogOrExpression _
 	( _
-		byref logexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr expr = any
-
-	function = FALSE
+    dim as ASTNODE ptr expr = any, logexpr = any
 
     '' LogAndExpression
-    if( cLogAndExpression( logexpr ) = FALSE ) then
-	   	exit function
+    logexpr = cLogAndExpression( )
+    if( logexpr = NULL ) then
+	   	return NULL
     end if
 
     '' ( ... )*
@@ -141,9 +142,10 @@ function cLogOrExpression _
     	lexSkipToken( )
 
     	'' LogAndExpression
-    	if( cLogAndExpression( expr ) = FALSE ) then
+    	expr = cLogAndExpression(  )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
             	exit do
     		end if
@@ -154,7 +156,7 @@ function cLogOrExpression _
 
         if( logexpr = NULL ) then
     		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
     			'' error recovery: fake a node
     			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -163,7 +165,7 @@ function cLogOrExpression _
 
     loop
 
-	function = TRUE
+	function = logexpr
 
 end function
 
@@ -172,16 +174,15 @@ end function
 ''
 function cLogAndExpression _
 	( _
-		byref logexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr expr = any
-
-	function = FALSE
+    dim as ASTNODE ptr expr = any, logexpr = any
 
     '' RelExpression
-    if( cRelExpression( logexpr ) = FALSE ) then
-	   	exit function
+    logexpr = cRelExpression( )
+    if( logexpr = NULL ) then
+	   	return NULL
     end if
 
     '' ( ... )*
@@ -194,9 +195,10 @@ function cLogAndExpression _
     	lexSkipToken( )
 
     	'' RelExpression
-    	if( cRelExpression( expr ) = FALSE ) then
+    	expr = cRelExpression( )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
             	exit do
     		end if
@@ -207,7 +209,7 @@ function cLogAndExpression _
 
         if( logexpr = NULL ) then
     		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
     			'' error recovery: fake a node
     			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -216,7 +218,7 @@ function cLogAndExpression _
 
     loop
 
-	function = TRUE
+	function = logexpr
 
 end function
 
@@ -225,17 +227,16 @@ end function
 ''
 function cRelExpression _
 	( _
-		byref relexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
     dim as integer op = any
-    dim as ASTNODE ptr expr = any
-
-    function = FALSE
+    dim as ASTNODE ptr expr = any, relexpr = any
 
    	'' CatExpression
-   	if( cCatExpression( relexpr ) = FALSE ) then
-   		exit function
+   	relexpr = cCatExpression(  )
+   	if( relexpr = NULL ) then
+   		return NULL
    	end if
 
     '' ( ... )*
@@ -261,9 +262,10 @@ function cRelExpression _
     	lexSkipToken( )
 
     	'' CatExpression
-    	if( cCatExpression( expr ) = FALSE ) then
+    	expr = cCatExpression(  )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
             	exit do
     		end if
@@ -274,7 +276,7 @@ function cRelExpression _
 
     	if( relexpr = NULL ) Then
     		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
     			'' error recovery: fake a node
     			relexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -282,7 +284,7 @@ function cRelExpression _
     	end if
     loop
 
-    function = TRUE
+    function = relexpr
 
 end function
 
@@ -291,16 +293,15 @@ end function
 ''
 function cCatExpression _
 	( _
-		byref catexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr = any
-
-	function = FALSE
+	dim as ASTNODE ptr expr = any, catexpr = any
 
 	'' AddExpression
-	if( cAddExpression( catexpr ) = FALSE ) then
-		exit function
+	catexpr = cAddExpression(  )
+	if( catexpr = NULL ) then
+		return NULL
 	end if
 
 	'' ( ... )*
@@ -313,9 +314,10 @@ function cCatExpression _
 		lexSkipToken( )
 
 		'' AddExpression
-    	if( cAddExpression( expr ) = FALSE ) then
+    	expr = cAddExpression(  )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
             	exit do
     		end if
@@ -326,7 +328,7 @@ function cCatExpression _
 
         if( catexpr = NULL ) then
 			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-            	exit function
+            	return NULL
    			else
    				'' error recovery: fake a new node
    				catexpr = astNewCONSTstr( NULL )
@@ -335,7 +337,7 @@ function cCatExpression _
 
 	loop
 
-	function = TRUE
+	function = catexpr
 
 end function
 
@@ -344,17 +346,16 @@ end function
 ''
 function cAddExpression _
 	( _
-		byref addexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
     dim as integer op = any
-    dim as ASTNODE ptr expr = any
-
-    function = FALSE
+    dim as ASTNODE ptr expr = any, addexpr = any
 
  	'' ShiftExpression
-   	if( cShiftExpression( addexpr ) = FALSE ) then
-   		exit function
+   	addexpr = cShiftExpression(  )
+   	if( addexpr = NULL ) then
+   		return NULL
    	end if
 
     '' ( ... )*
@@ -372,9 +373,10 @@ function cAddExpression _
     	lexSkipToken( )
 
     	'' ShiftExpression
-    	if( cShiftExpression( expr ) = FALSE ) then
+    	expr = cShiftExpression( )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
             	exit do
     		end if
@@ -388,7 +390,7 @@ function cAddExpression _
 
     	if( addexpr = NULL ) Then
     		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
     			'' error recovery: fake a node
     			addexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -396,7 +398,7 @@ function cAddExpression _
     	end if
     loop
 
-    function = TRUE
+    function = addexpr
 
 end function
 
@@ -405,17 +407,16 @@ end function
 ''
 function cShiftExpression _
 	( _
-		byref shiftexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
     dim as integer op = any
-    dim as ASTNODE ptr expr = any
-
-    function = FALSE
+    dim as ASTNODE ptr expr = any, shiftexpr = any
 
    	'' ModExpression
-   	if( cModExpression( shiftexpr ) = FALSE ) then
-   		exit function
+   	shiftexpr = cModExpression(  )
+   	if( shiftexpr = NULL ) then
+   		return NULL
    	end if
 
     '' ( ... )*
@@ -433,9 +434,10 @@ function cShiftExpression _
     	lexSkipToken( )
 
     	'' ModExpression
-    	if( cModExpression( expr ) = FALSE ) then
+    	expr = cModExpression(  )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
             	exit do
     		end if
@@ -446,7 +448,7 @@ function cShiftExpression _
 
     	if( shiftexpr = NULL ) Then
     		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
     			'' error recovery: fake a node
     			shiftexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -454,7 +456,7 @@ function cShiftExpression _
     	end if
     loop
 
-    function = TRUE
+    function = shiftexpr
 
 end function
 
@@ -463,16 +465,15 @@ end function
 ''
 function cModExpression _
 	( _
-		byref modexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr expr = any
-
-    function = FALSE
+    dim as ASTNODE ptr expr = any, modexpr = any
 
    	'' IntDivExpression
-   	if( cIntDivExpression( modexpr ) = FALSE ) then
-   		exit function
+   	modexpr = cIntDivExpression( )
+   	if( modexpr = NULL ) then
+   		return NULL
    	end if
 
     '' ( ... )*
@@ -485,9 +486,10 @@ function cModExpression _
     	end if
 
     	'' IntDivExpression
-    	if( cIntDivExpression( expr ) = FALSE ) then
+    	expr = cIntDivExpression( )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
             	exit do
     		end if
@@ -498,7 +500,7 @@ function cModExpression _
 
     	if( modexpr = NULL ) Then
     		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
     			'' error recovery: fake a node
     			modexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -506,7 +508,7 @@ function cModExpression _
     	end if
     loop
 
-    function = TRUE
+    function = modexpr
 
 end function
 
@@ -515,16 +517,15 @@ end function
 ''
 function cIntDivExpression _
 	( _
-		byref idivexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr = any
-
-    function = FALSE
+	dim as ASTNODE ptr expr = any, idivexpr = any
 
    	'' MultExpression
-   	if( cMultExpression( idivexpr ) = FALSE ) then
-   		exit function
+   	idivexpr = cMultExpression( )
+   	if( idivexpr = NULL ) then
+   		return NULL
    	end if
 
     '' ( ... )*
@@ -537,9 +538,10 @@ function cIntDivExpression _
     	end if
 
     	'' MultExpression
-    	if( cMultExpression( expr ) = FALSE ) then
+    	expr = cMultExpression( )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
             	exit do
     		end if
@@ -550,7 +552,7 @@ function cIntDivExpression _
 
     	if( idivexpr = NULL ) Then
     		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
     			'' error recovery: fake a node
     			idivexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -558,7 +560,7 @@ function cIntDivExpression _
     	end if
     loop
 
-    function = TRUE
+    function = idivexpr
 
 end function
 
@@ -567,17 +569,16 @@ end function
 ''
 function cMultExpression _
 	( _
-		byref mulexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
     dim as integer op = any
-    dim as ASTNODE ptr expr = any
-
-    function = FALSE
+    dim as ASTNODE ptr expr = any, mulexpr = any
 
    	'' ExpExpression
-   	if( cExpExpression( mulexpr ) = FALSE ) then
-   		exit function
+   	mulexpr = cExpExpression( )
+   	if( mulexpr = NULL ) then
+   		return NULL
    	end if
 
     '' ( ... )*
@@ -595,9 +596,10 @@ function cMultExpression _
     	lexSkipToken( )
 
     	'' ExpExpression
-    	if( cExpExpression( expr ) = FALSE ) then
+    	expr = cExpExpression(  )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
             	exit do
     		end if
@@ -608,7 +610,7 @@ function cMultExpression _
 
     	if( mulexpr = NULL ) Then
     		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
     			'' error recovery: fake a node
     			mulexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -616,7 +618,7 @@ function cMultExpression _
     	end if
     loop
 
-    function = TRUE
+    function = mulexpr
 
 end function
 
@@ -625,16 +627,15 @@ end function
 ''
 function cExpExpression _
 	( _
-		byref expexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr = any
-
-    function = FALSE
+	dim as ASTNODE ptr expr = any, expexpr = any
 
    	'' NegNotExpression
-   	if( cNegNotExpression( expexpr ) = FALSE ) then
-   		exit function
+   	expexpr = cNegNotExpression( )
+   	if( expexpr = NULL ) then
+   		return NULL
    	end if
 
     '' ( '^' NegNotExpression )*
@@ -646,9 +647,10 @@ function cExpExpression _
     	end if
 
     	'' NegNotExpression
-    	if( cNegNotExpression( expr ) = FALSE ) then
+    	expr = cNegNotExpression(  )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
             	exit do
     		end if
@@ -659,7 +661,7 @@ function cExpExpression _
 
     	if( expexpr = NULL ) Then
     		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			exit function
+    			return NULL
     		else
     			'' error recovery: fake a node
     			expexpr = astNewCONSTf( 0, FB_DATATYPE_DOUBLE )
@@ -667,7 +669,7 @@ function cExpExpression _
     	end if
     loop
 
-    function = TRUE
+    function = expexpr
 
 end function
 

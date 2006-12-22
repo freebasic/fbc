@@ -94,7 +94,8 @@ function cAssignFunctResult _
     parser.ctxsym = subtype
 
 	'' Expression
-	if( cExpression( rhs ) = FALSE ) then
+	rhs = cExpression( )
+	if( rhs = NULL ) then
 		parser.ctxsym = NULL
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
@@ -148,6 +149,7 @@ end function
 '':::::
 function cProcCall _
 	( _
+		byval base_parent as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr, _
@@ -163,7 +165,7 @@ function cProcCall _
 
 	'' method call?
 	if( thisexpr <> NULL ) then
-		dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list )
+		dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list, FALSE )
 		arg->expr = thisexpr
 		arg->mode = hGetInstPtrMode( thisexpr )
 	end if
@@ -187,7 +189,8 @@ function cProcCall _
 
 			'' index expr
 			dim as ASTNODE ptr expr = 0
-			if( cExpression( expr ) = FALSE ) then
+			expr = cExpression( )
+			if( expr = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else
@@ -196,7 +199,7 @@ function cProcCall _
 				end if
 			end if
 
-			dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list )
+			dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list, FALSE )
 			arg->expr = expr
 			arg->mode = INVALID
 
@@ -263,7 +266,13 @@ function cProcCall _
 	fbSetPrntOptional( not checkprnts )
 
 	'' ProcArgList
-	procexpr = cProcArgList( sym, ptrexpr, @arg_list, FALSE, FALSE )
+	procexpr = cProcArgList( base_parent, _
+							 sym, _
+							 ptrexpr, _
+							 @arg_list, _
+							 iif( thisexpr <> NULL, _
+							 	  FB_PARSEROPT_HASINSTPTR, _
+							 	  FB_PARSEROPT_NONE ) )
 	if( procexpr = NULL ) then
 		exit function
 	end if
@@ -296,14 +305,16 @@ function cProcCall _
 
 	'' StrIdxOrMemberDeref?
 	if( symbIsProperty( sym ) = FALSE ) then
-		if( cStrIdxOrMemberDeref( procexpr ) = FALSE ) then
+		procexpr = cStrIdxOrMemberDeref( procexpr )
+		if( procexpr = NULL ) then
 			exit function
 		end if
-	end if
 
-	'' if it's a SUB, the expr will be NULL
-	if( procexpr = NULL ) then
-		exit function
+	else
+		'' if it's a SUB, the expr will be NULL
+		if( procexpr = NULL ) then
+			exit function
+		end if
 	end if
 
 	dtype = astGetDataType( procexpr )
@@ -364,6 +375,7 @@ end function
 ''::::
 private function hAssignOrCall _
 	( _
+		byval base_parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
 		byval iscall as integer _
 	) as integer
@@ -406,14 +418,7 @@ private function hAssignOrCall _
 
 			'' ID ProcParamList?
 			if( do_call ) then
-				dim as ASTNODE ptr this_ = NULL
-				if( symbIsMethod( sym ) ) then
-					this_ = astBuildInstPtr( _
-								symbGetParamVar( _
-									symbGetProcHeadParam( parser.currproc ) ) )
-				end if
-
-				expr = cProcCall( sym, NULL, this_ )
+				expr = cProcCall( base_parent, sym, NULL, NULL )
 				if( errGetLast( ) <> FB_ERRMSG_OK ) then
 					exit function
 				end if
@@ -462,11 +467,13 @@ private function hAssignOrCall _
         		'' must process variables here, multiple calls to
         		'' Identifier() will fail if a namespace was explicitly
     	    	'' given, because the next call will return an inner symbol
-        		if( cVariableEx( chain_, expr, TRUE ) = FALSE ) then
+        		expr = cVariableEx( chain_, TRUE )
+        		if( expr = NULL ) then
         			exit function
         		end if
         	else
-        		if( cDataMember( NULL, chain_, expr, TRUE ) = FALSE ) then
+        		expr = cDataMember( NULL, chain_, TRUE )
+        		if( expr = NULL ) then
         			exit function
         		end if
         	end if
@@ -508,21 +515,25 @@ end function
 ''                |   ID ProcParamList?
 ''				  |	  (ID | FUNCTION | OPERATOR | PROPERTY) '=' Expression .
 ''
-function cProcCallOrAssign as integer
+function cProcCallOrAssign _
+	( _
+	) as integer
+
 	dim as FBSYMCHAIN ptr chain_ = any
-	dim as ASTNODE ptr expr
+	dim as FBSYMBOL ptr base_parent = any
+	dim as ASTNODE ptr expr = any
 
 	function = FALSE
 
   	select case as const lexGetClass( )
     case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
-		chain_ = cIdentifier( )
+		chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
-		return hAssignOrCall( chain_, FALSE )
+		return hAssignOrCall( base_parent, chain_, FALSE )
 
   	case FB_TKCLASS_KEYWORD
 
@@ -530,107 +541,96 @@ function cProcCallOrAssign as integer
 		'' FUNCTION?
 		case FB_TK_FUNCTION
 
-			'' '='?
-			if( lexGetLookAhead( 1 ) = FB_TK_ASSIGN ) then
-				if( fbIsModLevel( ) ) then
-					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip stmt, return
-						hSkipStmt( )
-						return TRUE
-					end if
+			'' no need to check for '=', that was done already by Declaration()
+
+			if( fbIsModLevel( ) ) then
+				if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip stmt, return
+					hSkipStmt( )
+					return TRUE
 				end if
-
-				'' useless check.. don't allow FUNCTION inside OPERATOR or PROPERTY
-				if( symbIsOperator( parser.currproc ) ) then
-					if( errReport( FB_ERRMSG_EXPECTEDOPERATOR ) = FALSE ) then
-						exit function
-					end if
-
-				elseif( symbIsProperty( parser.currproc ) ) then
-					if( errReport( FB_ERRMSG_EXPECTEDPROPERTY ) = FALSE ) then
-						exit function
-					end if
-				end if
-
-				lexSkipToken( )
-				lexSkipToken( )
-
-    	    	return cAssignFunctResult( parser.currproc, FALSE )
 			end if
+
+			'' useless check.. don't allow FUNCTION inside OPERATOR or PROPERTY
+			if( symbIsOperator( parser.currproc ) ) then
+				if( errReport( FB_ERRMSG_EXPECTEDOPERATOR ) = FALSE ) then
+					exit function
+				end if
+
+			elseif( symbIsProperty( parser.currproc ) ) then
+				if( errReport( FB_ERRMSG_EXPECTEDPROPERTY ) = FALSE ) then
+					exit function
+				end if
+			end if
+
+			lexSkipToken( )
+			lexSkipToken( )
+
+    	    return cAssignFunctResult( parser.currproc, FALSE )
 
 		'' OPERATOR?
 		case FB_TK_OPERATOR
 
-			'' ambiguity: it could be just the operator '=' body
-			if( fbIsModLevel( ) = FALSE ) then
-				'' '='?
-				if( lexGetLookAhead( 1 ) = FB_TK_ASSIGN ) then
-					'' not inside an OPERATOR function?
-					if( symbIsOperator( parser.currproc ) = FALSE ) then
-						if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANOPERATOR ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: skip stmt, return
-							hSkipStmt( )
-							return TRUE
-						end if
-					end if
-
-					lexSkipToken( )
-					lexSkipToken( )
-
-	        		return cAssignFunctResult( parser.currproc, FALSE )
-    	    	end if
+			'' not inside an OPERATOR function?
+			if( symbIsOperator( parser.currproc ) = FALSE ) then
+				if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANOPERATOR ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip stmt, return
+					hSkipStmt( )
+					return TRUE
+				end if
 			end if
+
+			lexSkipToken( )
+			lexSkipToken( )
+
+	        return cAssignFunctResult( parser.currproc, FALSE )
 
 		'' PROPERTY?
 		case FB_TK_PROPERTY
 
-			'' '='?
-			if( lexGetLookAhead( 1 ) = FB_TK_ASSIGN ) then
-				if( fbIsModLevel( ) ) then
-					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip stmt, return
-						hSkipStmt( )
-						return TRUE
-					end if
+			'' no need to check for '=', that was done already by Declaration()
 
+			if( fbIsModLevel( ) ) then
+				if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY ) = FALSE ) then
+					exit function
 				else
-					if( symbIsProperty( parser.currproc ) = FALSE ) then
-						if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY ) = FALSE ) then
-							exit function
-						end if
-					end if
+					'' error recovery: skip stmt, return
+					hSkipStmt( )
+					return TRUE
 				end if
 
-				lexSkipToken( )
-				lexSkipToken( )
-
-    	    	return cAssignFunctResult( parser.currproc, FALSE )
+			else
+				if( symbIsProperty( parser.currproc ) = FALSE ) then
+					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY ) = FALSE ) then
+						exit function
+					end if
+				end if
 			end if
+
+			lexSkipToken( )
+			lexSkipToken( )
+
+    	    return cAssignFunctResult( parser.currproc, FALSE )
 
 		'' CONSTRUCTOR?
 		case FB_TK_CONSTRUCTOR
 
-			'' ambiguity: it could be an external ctor definition
-			if( fbIsModLevel( ) = FALSE ) then
-				'' not inside a ctor?
-				if( symbIsConstructor( parser.currproc ) = FALSE ) then
-					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEACTOR ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip stmt, return
-						hSkipStmt( )
-						return TRUE
-					end if
+			'' not inside a ctor?
+			if( symbIsConstructor( parser.currproc ) = FALSE ) then
+				if( errReport( FB_ERRMSG_ILLEGALOUTSIDEACTOR ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip stmt, return
+					hSkipStmt( )
+					return TRUE
 				end if
-
-				return hCtorChain( )
 			end if
+
+			return hCtorChain( )
 
 		'' CALL?
 		case FB_TK_CALL
@@ -651,9 +651,9 @@ function cProcCallOrAssign as integer
 
 			lexSkipToken( )
 
- 			chain_ = cIdentifier( )
+ 			chain_ = cIdentifier( base_parent )
   			if( chain_ <> NULL ) then
-				if( hAssignOrCall( chain_, TRUE ) ) then
+				if( hAssignOrCall( base_parent, chain_, TRUE ) ) then
 					return TRUE
 				end if
 			end if
@@ -676,9 +676,9 @@ function cProcCallOrAssign as integer
 		'' '.'?
 		if( lexGetToken( ) = CHAR_DOT ) then
   			'' can be a global ns symbol access, or a WITH variable..
- 			chain_ = cIdentifier( )
+ 			chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
   			if( chain_ <> NULL ) then
-  				return hAssignOrCall( chain_, FALSE )
+  				return hAssignOrCall( base_parent, chain_, FALSE )
 
   			else
 				if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -686,9 +686,8 @@ function cProcCallOrAssign as integer
 				end if
 
   				if( parser.stmt.with.sym <> NULL ) then
-  					if( cWithVariable( parser.stmt.with.sym, _
-  									   expr, _
-  									   fbGetCheckArray( ) ) = FALSE ) then
+					expr = cWithVariable( parser.stmt.with.sym, fbGetCheckArray( ) )
+  					if( expr = NULL ) then
   						exit function
   					end if
 
@@ -740,7 +739,7 @@ private function hCtorChain _
 
 	this_expr = astBuildInstPtr( symbGetParamVar( this_ ) )
 
-	cProcCall( ctor_head, NULL, this_expr )
+	cProcCall( NULL, ctor_head, NULL, this_expr )
 
 	function = (errGetLast( ) = FB_ERRMSG_OK)
 

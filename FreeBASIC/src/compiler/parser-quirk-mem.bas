@@ -32,15 +32,12 @@
 ''
 function cOperatorNew _
 	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 	dim as integer dtype = any, lgt = any, ptrcnt = any
 	dim as FBSYMBOL ptr subtype = any, tmp = any
-	dim as integer has_ctor = FALSE, do_clear = TRUE
-
-
-	function = FALSE
+	dim as integer do_clear = TRUE
 
 	'' NEW
 	lexSkipToken( )
@@ -51,11 +48,10 @@ function cOperatorNew _
 	'' DataType
 	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
     	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    		exit function
+    		return NULL
     	else
     		'' error recovery: fake an expr
-    		funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		return TRUE
+    		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	end if
 	end if
 
@@ -65,23 +61,31 @@ function cOperatorNew _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
     	if( errReport( FB_ERRMSG_NEWCANTBEUSEDWITHSTRINGS, TRUE ) = FALSE ) then
-    		exit function
+    		return NULL
     	else
     		'' error recovery: fake an expr
-    		funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     		hSkipStmt( )
-    		return TRUE
+    		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	end if
 
+	end select
+
+	dim as integer has_ctor = FALSE, has_defctor = FALSE
+
+	select case dtype
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		has_ctor = symbGetHasCtor( subtype )
+		has_defctor = (symbGetCompDefCtor( subtype ) <> NULL)
 	end select
 
 	'' '['?
     if( lexGetToken( ) = CHAR_LBRACKET ) then
         lexSkipToken( )
 
-        if( cExpression( elmts_expr ) = FALSE ) then
+        elmts_expr = cExpression(  )
+        if( elmts_expr = NULL ) then
         	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-        		exit function
+        		return NULL
         	end if
         else
         	op = AST_OP_NEW_VEC
@@ -90,7 +94,7 @@ function cOperatorNew _
         '' ']'
         if( lexGetToken( ) <> CHAR_RBRACKET ) then
         	if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
-        		exit function
+        		return NULL
         	else
         		hSkipUntil( CHAR_RBRACKET )
         	end if
@@ -104,18 +108,23 @@ function cOperatorNew _
 
 			'' ANY?
 			if( lexGetToken( ) = FB_TK_ANY ) then
+
+				if( has_defctor ) then
+					errReportWarn( FB_WARNINGMSG_ANYINITHASNOEFFECT )
+				end if
+
 				lexSkipToken( )
 				do_clear = FALSE
 			else
 				if( errReport( FB_ERRMSG_VECTORCANTBEINITIALIZED ) = FALSE ) then
-					exit function
+					return NULL
 				end if
 			end if
 
 			'' '}'
 			if( lexGetToken( ) <> CHAR_RBRACE ) then
 				if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
-					exit function
+					return NULL
 				else
 					'' error recovery: skip until next '}'
 					hSkipUntil( CHAR_RBRACE, TRUE )
@@ -138,23 +147,19 @@ function cOperatorNew _
 	'' Constructor?
 	dim as ASTNODE ptr ctor_expr = NULL
 
-	select case dtype
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		has_ctor = symbGetHasCtor( subtype )
-	end select
-
 	if( has_ctor ) then
 		'' '('?
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 			'' ctor + vector? not allowed..
 			if( op = AST_OP_NEW_VEC ) then
 				if( errReport( FB_ERRMSG_EXPLICITCTORCALLINVECTOR, TRUE ) = FALSE ) then
-					exit function
+					return NULL
 				end if
 
 			else
-				if( cCtorCall( subtype, ctor_expr ) = FALSE ) then
-					exit function
+				ctor_expr = cCtorCall( subtype )
+				if( ctor_expr = NULL ) then
+					return NULL
 				end if
 			end if
 
@@ -167,8 +172,9 @@ function cOperatorNew _
 			else
 				'' only if not a vector
 				if( op <> AST_OP_NEW_VEC ) then
-					if( cCtorCall( subtype, ctor_expr ) = FALSE ) then
-						exit function
+					ctor_expr = cCtorCall( subtype )
+					if( ctor_expr = NULL ) then
+						return NULL
 					end if
 				else
 					'' check visibility
@@ -215,7 +221,7 @@ function cOperatorNew _
 
         		if( ctor_expr = NULL ) then
         			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-        				exit function
+        				return NULL
         			end if
         		end if
         	end if
@@ -239,19 +245,17 @@ function cOperatorNew _
 
 	if( expr = NULL ) then
     	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-    		exit function
+    		return NULL
     	end if
 	end if
 
 	astAdd( expr )
 
 	'' return the pointer
-	funcexpr = astNewVAR( tmp, _
+	function = astNewVAR( tmp, _
 						  0, _
 						  FB_DATATYPE_POINTER + dtype, _
 						  subtype )
-
-	function = TRUE
 
 end function
 
@@ -292,7 +296,8 @@ function cOperatorDelete _
         end if
 	end if
 
-	if( cVarOrDeref( ptr_expr ) = FALSE ) then
+	ptr_expr = cVarOrDeref( )
+	if( ptr_expr = NULL ) then
        	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
        		exit function
        	else

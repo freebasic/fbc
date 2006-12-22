@@ -154,7 +154,8 @@ function cMathFunct _
 		expr = NULL
 		if( cSymbolType( dtype, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
 			fbSetCheckArray( FALSE )
-			if( cExpression( expr ) = FALSE ) then
+			expr = cExpression( )
+			if( expr = NULL ) then
 				fbSetCheckArray( TRUE )
 				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function

@@ -104,7 +104,8 @@ function cLSetStmt _
 	lexSkipToken( )
 
 	'' Expression
-	if( cVarOrDeref( dstexpr ) = FALSE ) then
+	dstexpr = cVarOrDeref( )
+	if( dstexpr = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			exit function
 		else

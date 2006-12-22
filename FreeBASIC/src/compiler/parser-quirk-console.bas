@@ -54,7 +54,8 @@ function cViewStmt _
 
 	'' (Expression TO Expression)?
 	if( is_func = FALSE ) then
-    	if( cExpression( expr1 ) ) then
+    	expr1 = cExpression( )
+    	if( expr1 <> NULL ) then
             if( hMatch( FB_TK_TO ) = FALSE ) then
                 if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
                 	exit function
@@ -195,9 +196,7 @@ function cColorStmt _
 	if( isfunc ) then
 		'' '('?
 		if( hMatch( CHAR_LPRNT ) = TRUE ) then
-			if( cExpression( fore_color ) = FALSE ) then
-				fore_color = NULL
-			end if
+			fore_color = cExpression( )
 			if( hMatch( CHAR_COMMA ) = TRUE ) then
 				hMatchExpression( back_color )
 			end if
@@ -205,9 +204,7 @@ function cColorStmt _
 		end if
 	else
 		checkrprnt = hMatch( CHAR_LPRNT )
-		if( cExpression( fore_color ) = FALSE ) then
-			fore_color = NULL
-		end if
+		fore_color = cExpression(  )
 		if( hMatch( CHAR_COMMA ) = TRUE ) then
 			hMatchExpression( back_color )
 		end if

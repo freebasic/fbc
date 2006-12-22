@@ -34,10 +34,12 @@ function cGOTBStmt _
 		byval isgoto as integer _
 	) as integer
 
-    dim as ASTNODE ptr idxexpr
-	dim as integer l, i
-	dim as FBSYMBOL ptr sym, exitlabel, tbsym, labelTB(0 to FB_MAXGOTBITEMS-1)
-	dim as FBSYMCHAIN ptr chain_
+    dim as ASTNODE ptr idxexpr = any
+	dim as integer l = any
+	dim as FBSYMBOL ptr sym = any, exitlabel = any, tbsym = any
+	dim as FBSYMBOL ptr labelTB(0 to FB_MAXGOTBITEMS-1) = any
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr base_parent = any
 
 	function = FALSE
 
@@ -64,7 +66,7 @@ function cGOTBStmt _
 		'' Label
 		select case lexGetClass( )
 		case FB_TKCLASS_NUMLITERAL, FB_TKCLASS_IDENTIFIER
-			chain_ = cIdentifier( )
+			chain_ = cIdentifier( base_parent )
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
@@ -125,6 +127,7 @@ function cGOTBStmt _
     astAdd( astNewLABEL( tbsym ) )
 
     ''
+    dim as integer i = any
     for i = 0 to l-1
     	astAdd( astNewJMPTB( FB_DATATYPE_UINT, labelTB(i) ) )
     next
@@ -144,10 +147,11 @@ function cOnStmt _
 		_
 	) as integer
 
-	dim as ASTNODE ptr expr
-	dim as integer isgoto, islocal, isrestore
-	dim as FBSYMBOL ptr label
-	dim as FBSYMCHAIN ptr chain_
+	dim as ASTNODE ptr expr = any
+	dim as integer isgoto = any, islocal = any, isrestore = any
+	dim as FBSYMBOL ptr label = any
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr base_parent = any
 
 	function = FALSE
 
@@ -225,7 +229,7 @@ function cOnStmt _
 
 		if( isrestore = FALSE ) then
 			'' Label
-			chain_ = cIdentifier( )
+			chain_ = cIdentifier( base_parent )
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if

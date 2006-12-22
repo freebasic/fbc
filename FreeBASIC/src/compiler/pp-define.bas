@@ -982,6 +982,7 @@ function ppDefine _
 	dim as FB_DEFPARAM ptr paramhead = any, lastparam = any
 	dim as FBSYMBOL ptr sym = any
 	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr base_parent = any
 	dim as FB_DEFTOK ptr tokhead = any
 
 	'' note: using the PP hashtb here, so any non-PP keyword won't be found
@@ -989,7 +990,7 @@ function ppDefine _
 	function = FALSE
 
 	'' don't allow explicit namespaces
-	chain_ = cIdentifier( FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
+	chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 	if( errGetLast( ) <> FB_ERRMSG_OK ) then
 		exit function
 	end if

@@ -32,13 +32,11 @@
 function cTypeConvExpr _
 	( _
 		byval tk as FB_TOKEN, _
-		byref expr as ASTNODE ptr, _
 		byval isASM as integer = FALSE _
-	) as integer
+	) as ASTNODE ptr
 
-    dim as integer dtype, op
-
-	function = FALSE
+    dim as integer dtype = any, op = any
+    dim as ASTNODE ptr expr = any
 
 	dtype = INVALID
 	op = INVALID
@@ -90,7 +88,7 @@ function cTypeConvExpr _
 
 	if( dtype = INVALID ) then
 		if( op = INVALID ) then
-			exit function
+			return NULL
 		end if
 	end if
 
@@ -99,13 +97,14 @@ function cTypeConvExpr _
 	'' '('
 	if( hMatch( CHAR_LPRNT ) = FALSE ) then
 		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
-			exit function
+			return NULL
 		end if
 	end if
 
-	if( cExpression( expr ) = FALSE ) then
+	expr = cExpression( )
+	if( expr = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-			exit function
+			return NULL
 		else
 			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
@@ -121,7 +120,7 @@ function cTypeConvExpr _
 	expr = astNewCONV( dtype, NULL, expr, INVALID, TRUE )
     if( expr = NULL ) Then
     	if( errReport( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
-    		exit function
+    		return NULL
 		else
 			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	end if
@@ -130,7 +129,7 @@ function cTypeConvExpr _
 	'' ')'
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
 		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-			exit function
+			return NULL
 		else
 			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
@@ -140,7 +139,7 @@ function cTypeConvExpr _
 		end if
 	end if
 
-	function = TRUE
+	function = expr
 
 end function
 
@@ -148,13 +147,12 @@ end function
 '' AnonUDT			=	TYPE ('<' Symbol '>')? '(' ... ')'
 function cAnonUDT _
 	( _
-		byref expr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
     dim as FBSYMBOL ptr sym = any, subtype = any
     dim as FBSYMCHAIN ptr chain_ = any
-
-	function = FALSE
+    dim as FBSYMBOL ptr base_parent = any
 
 	'' TYPE
 	lexSkipToken( )
@@ -162,15 +160,14 @@ function cAnonUDT _
     '' ('<' Symbol '>')?
     if( lexGetToken( ) = FB_TK_LT ) then
     	lexSkipToken( )
-    	chain_ = cIdentifier( )
+    	chain_ = cIdentifier( base_parent )
     	if( chain_ = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
+				return NULL
 			else
 				'' error recovery: skip until next '>', fake a node
 				hSkipUntil( FB_TK_GT, TRUE )
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				return TRUE
+				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
     	end if
 
@@ -182,24 +179,22 @@ function cAnonUDT _
 
     		if( subtype = NULL ) then
 				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
+					return NULL
 				else
 					'' error recovery: skip until next '>', fake a node
 					hSkipUntil( FB_TK_GT, TRUE )
-					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-					return TRUE
+					return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				end if
 			end if
 		end if
 
     	if( symbIsStruct( subtype ) = FALSE ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
+				return NULL
 			else
 				'' error recovery: skip until next '>', fake a node
 				hSkipUntil( FB_TK_GT, TRUE )
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				return TRUE
+				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
     	end if
 
@@ -208,7 +203,7 @@ function cAnonUDT _
     	'' '>'
     	if( lexGetToken( ) <> FB_TK_GT ) then
 			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
+				return NULL
 			else
 				'' error recovery: skip until next '>'
 				hSkipUntil( FB_TK_GT, TRUE )
@@ -230,43 +225,36 @@ function cAnonUDT _
 
     	if( subtype = NULL ) then
 			if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-				exit function
+				return NULL
 			else
 				'' error recovery: fake a node
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				return TRUE
+				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
     	end if
 
     	if( symbIsStruct( subtype ) = FALSE ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-				exit function
+				return NULL
 			else
 				'' error recovery: fake a node
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				return TRUE
+				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 		end if
     end if
 
     '' has a ctor?
     if( symbGetHasCtor( subtype ) ) then
-    	if( cCtorCall( subtype, expr ) = FALSE ) then
-    		exit function
-    	end if
-
-    else
-    	'' alloc temp var
-    	sym = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE, FALSE )
-
-    	'' let the initializer do the rest..
-    	expr = cInitializer( sym, FB_INIOPT_NONE )
-
-    	'' del temp var
-    	symbDelVar( sym )
+    	return cCtorCall( subtype )
     end if
 
-    function = (expr <> NULL)
+    '' alloc temp var
+    sym = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE, FALSE )
+
+    '' let the initializer do the rest..
+    function = cInitializer( sym, FB_INIOPT_NONE )
+
+    '' del temp var
+    symbDelVar( sym )
 
 end function
 

@@ -322,7 +322,8 @@ function hMatchExpr _
 
 	dim as ASTNODE ptr expr
 
-	if( cExpression( expr ) = FALSE ) then
+	expr = cExpression( )
+	if( expr = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			return NULL
 		else

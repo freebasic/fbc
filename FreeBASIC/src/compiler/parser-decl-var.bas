@@ -32,7 +32,9 @@
 	(hVarDeclEx( attrib, dopreserve, token, FALSE ) <> NULL)
 
 '':::::
-private function hCheckScope( ) as integer
+private function hCheckScope _
+	( _
+	) as integer
 
 	if( parser.scope > FB_MAINSCOPE ) then
 		if( fbIsModLevel( ) = FALSE ) then
@@ -53,12 +55,25 @@ end function
 ''				  |   EXTERN IMPORT? SymbolDef ALIAS STR_LIT
 ''                |   STATIC SymbolDef .
 ''
-function cVariableDecl( ) as integer
-	dim as integer attrib = any, dopreserve = any, tk = any
+function cVariableDecl _
+	( _
+		byval attrib as FB_SYMBATTRIB _
+	) as integer
+
+	dim as integer dopreserve = any, tk = any
 
 	function = FALSE
 
-	attrib = 0
+#macro hCheckPrivPubAttrib( attrib )
+    if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE)) <> 0 ) then
+    	if( errReport( FB_ERRMSG_PRIVORPUBTTRIBNOTALLOWED ) = FALSE ) then
+    		exit function
+    	else
+    		attrib and= not FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE
+    	end if
+    end if
+#endmacro
+
 	dopreserve = FALSE
 
 	tk = lexGetToken( )
@@ -69,6 +84,8 @@ function cVariableDecl( ) as integer
     	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
     		exit function
     	end if
+
+		hCheckPrivPubAttrib( attrib )
 
 		lexSkipToken( )
 		attrib or= FB_SYMBATTRIB_DYNAMIC
@@ -91,19 +108,22 @@ function cVariableDecl( ) as integer
 			end if
 
 		else
-			attrib = FB_SYMBATTRIB_COMMON or _
-					 FB_SYMBATTRIB_STATIC or _
-					 FB_SYMBATTRIB_DYNAMIC	'' this will be removed, if it's not a array
+			attrib or= FB_SYMBATTRIB_COMMON or _
+					   FB_SYMBATTRIB_STATIC or _
+					   FB_SYMBATTRIB_DYNAMIC	'' this will be removed, if it's not a array
 		end if
+
+		hCheckPrivPubAttrib( attrib )
 
 		lexSkipToken( )
 
-
 	'' EXTERN
 	case FB_TK_EXTERN
-		'' ambiguity with EXTERN "mangling spec"
-		if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_STRLITERAL ) then
-			return FALSE
+		if( attrib = FB_SYMBATTRIB_NONE ) then
+			'' ambiguity with EXTERN "mangling spec"
+			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_STRLITERAL ) then
+				return FALSE
+			end if
 		end if
 
 		'' can't use EXTERN inside a proc
@@ -116,10 +136,12 @@ function cVariableDecl( ) as integer
 			end if
 
 		else
-			attrib = FB_SYMBATTRIB_EXTERN or _
-					 FB_SYMBATTRIB_SHARED or _
-					 FB_SYMBATTRIB_STATIC
+			attrib or= FB_SYMBATTRIB_EXTERN or _
+					   FB_SYMBATTRIB_SHARED or _
+					   FB_SYMBATTRIB_STATIC
 		end if
+
+		hCheckPrivPubAttrib( attrib )
 
 		lexSkipToken( )
 
@@ -127,7 +149,7 @@ function cVariableDecl( ) as integer
 	case FB_TK_STATIC
 		lexSkipToken( )
 
-		attrib = FB_SYMBATTRIB_STATIC
+		attrib or= FB_SYMBATTRIB_STATIC
 
 	case else
 		lexSkipToken( )
@@ -1468,7 +1490,8 @@ function cStaticArrayDecl _
     i = 0
     do
     	'' Expression
-		if( cExpression( expr ) = FALSE ) then
+		expr = cExpression( )
+		if( expr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
 				exit function
 			else
@@ -1498,7 +1521,8 @@ function cStaticArrayDecl _
     		lexSkipToken( )
 
     		'' Expression
-			if( cExpression( expr ) = FALSE ) then
+			expr = cExpression( )
+			if( expr = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
 					exit function
 				else
@@ -1589,7 +1613,8 @@ function cArrayDecl _
     i = 0
     do
     	'' Expression
-		if( cExpression( expr ) = FALSE ) then
+		expr = cExpression( )
+		if( expr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 				exit function
 			else
@@ -1621,7 +1646,8 @@ function cArrayDecl _
     		lexSkipToken( )
 
     		'' Expression
-			if( cExpression( expr ) = FALSE ) then
+			expr = cExpression( )
+			if( expr = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else

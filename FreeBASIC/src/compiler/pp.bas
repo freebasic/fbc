@@ -182,7 +182,6 @@ end sub
 ''				 |	 '#'ERROR LIT_STR .
 ''
 function ppParse( ) as integer
-    dim as FBSYMCHAIN ptr chain_ = any
 
 	function = FALSE
 
@@ -203,9 +202,12 @@ function ppParse( ) as integer
 
 	'' UNDEF ID
     case FB_TK_PP_UNDEF
+    	dim as FBSYMCHAIN ptr chain_ = any
+    	dim as FBSYMBOL ptr base_parent = any
+
     	lexSkipToken( LEXCHECK_NODEFINE )
 
-    	chain_ = cIdentifier( FB_IDOPT_NONE )
+    	chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )
     	if( chain_ <> NULL ) then
     		dim as FBSYMBOL ptr sym = chain_->sym
     		'' don't remove if it was defined inside any namespace (any

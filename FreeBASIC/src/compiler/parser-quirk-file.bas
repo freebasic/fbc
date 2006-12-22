@@ -117,8 +117,8 @@ function cPrintStmt  _
 
 			hMatchRPRNT( )
 
-        elseif( cExpression( expr ) = FALSE ) then
-        	expr = NULL
+        else
+        	expr = cExpression( )
         end if
 
 		iscomma = FALSE
@@ -240,7 +240,8 @@ function cWriteStmt _
     '' (Expression? "," )*
     expressions = 0
     do
-		if( cExpression( expr ) = FALSE ) then
+		expr = cExpression( )
+		if( expr = NULL ) then
         	expr = NULL
         end if
 
@@ -311,7 +312,8 @@ function cLineInputStmt _
 	end if
 
 	'' Expression?
-	if( cExpression( expr ) = FALSE ) then
+	expr = cExpression( )
+	if( expr = NULL ) then
 		if( isfile ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 				exit function
@@ -341,7 +343,8 @@ function cLineInputStmt _
 	end if
 
     '' Variable?
-	if( cVarOrDeref( dstexpr ) = FALSE ) then
+	dstexpr = cVarOrDeref( )
+	if( dstexpr = NULL ) then
        	if( (expr = NULL) or (isfile) ) then
        		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
        			exit function
@@ -443,7 +446,8 @@ function cInputStmt _
 
     '' Variable (',' Variable)*
     do
-		if( cVarOrDeref( dstexpr ) = FALSE ) then
+		dstexpr = cVarOrDeref( )
+		if( dstexpr = NULL ) then
        		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
        			exit function
        		else
@@ -493,7 +497,8 @@ private function hFileClose _
 	do
 		hMatch( CHAR_SHARP )
 
-    	if( cExpression( filenum ) = FALSE ) then
+    	filenum = cExpression( )
+    	if( filenum = NULL ) then
 			if( cnt = 0 ) then
 				filenum = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			else
@@ -551,7 +556,8 @@ private function hFilePut _
 	'' ',' offset
 	hMatchCOMMA( )
 
-	if( cExpression( posexpr ) = FALSE ) then
+	posexpr = cExpression( )
+	if( posexpr = NULL ) then
 		posexpr = NULL
 	end if
 
@@ -614,13 +620,14 @@ private function hFilePut _
 				exit function
 			end if
 
-			cExpression( elmexpr )
+			elmexpr = cExpression( )
 			if( elmexpr <> NULL ) then
 				astDelTree( elmexpr )
 			end if
 
 		else
-			if( cExpression( elmexpr ) = FALSE ) then
+			elmexpr = cExpression( )
+			if( elmexpr = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else
@@ -664,14 +671,16 @@ private function hFileGet _
 	'' ',' offset
 	hMatchCOMMA( )
 
-	if( cExpression( posexpr ) = FALSE ) then
+	posexpr = cExpression( )
+	if( posexpr = NULL ) then
 		posexpr = NULL
 	end if
 
 	'' ',' destine
 	hMatchCOMMA( )
 
-	if( cVarOrDeref( dstexpr ) = FALSE ) then
+	dstexpr = cVarOrDeref( )
+	if( dstexpr = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			exit function
 		else
@@ -718,13 +727,14 @@ private function hFileGet _
 				exit function
 			end if
 
-			cExpression( elmexpr )
+			elmexpr = cExpression( )
 			if( elmexpr <> NULL ) then
 				astDelTree( elmexpr )
 			end if
 
 		else
-			if( cExpression( elmexpr ) = FALSE ) then
+			elmexpr = cExpression( )
+			if( elmexpr = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else

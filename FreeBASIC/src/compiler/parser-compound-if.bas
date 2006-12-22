@@ -115,7 +115,8 @@ function cIfStmtBegin as integer
 	lexSkipToken( )
 
     '' Expression
-    if( cExpression( expr ) = FALSE ) then
+    expr = cExpression( )
+    if( expr = NULL ) then
     	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     		exit function
 		else
@@ -229,7 +230,8 @@ function cIfStmtNext(  ) as integer
 		stk->if.nxtlabel = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	    '' Expression
-    	if( cExpression( expr ) = FALSE ) then
+    	expr = cExpression( )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
 			else

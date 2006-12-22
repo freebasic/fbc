@@ -128,7 +128,7 @@ function cQuirkStmt _
 	case FB_TK_COLOR
 		CHECK_CODEMASK( )
 		res = cColorStmt( FALSE ) <> NULL
-		
+
 	case else
 		res = FALSE
 	end select
@@ -148,15 +148,11 @@ end function
 ''
 function cQuirkFunction _
 	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
+		byval tk as FB_TOKEN _
+	) as ASTNODE ptr
 
-	dim as integer res = any
-
-	function = FALSE
-
-	res = FALSE
+	dim as integer res = FALSE
+	dim as ASTNODE ptr funcexpr = NULL
 
 	select case as const tk
 	case FB_TK_STR, FB_TK_WSTR, FB_TK_MID, FB_TK_STRING, FB_TK_WSTRING, _
@@ -192,10 +188,10 @@ function cQuirkFunction _
 		 FB_TK_CUBYTE, FB_TK_CUSHORT, FB_TK_CUINT, FB_TK_CULNG, FB_TK_CULNGINT, _
 		 FB_TK_CSNG, FB_TK_CDBL, _
          FB_TK_CSIGN, FB_TK_CUNSG
-		res = cTypeConvExpr( tk, funcexpr )
+		return cTypeConvExpr( tk )
 
 	case FB_TK_TYPE
-		return cAnonUDT( funcexpr )
+		return cAnonUDT( )
 
 	case FB_TK_VIEW
 		res = cViewStmt( TRUE, funcexpr )
@@ -215,10 +211,10 @@ function cQuirkFunction _
 
 	if( res = FALSE ) then
 		if( errGetLast( ) = FB_ERRMSG_OK ) then
-			res = cGfxFunct( tk, funcexpr )
+			funcexpr = cGfxFunct( tk )
 		end if
 	end if
 
-	function = res
+	function = funcexpr
 
 end function

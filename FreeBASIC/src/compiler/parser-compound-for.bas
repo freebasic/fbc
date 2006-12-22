@@ -35,10 +35,10 @@ private function hStoreTemp _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr s
-    dim as ASTNODE ptr vexpr
+    dim as FBSYMBOL ptr s = any
+    dim as ASTNODE ptr vexpr = any
 
 	function = NULL
 
@@ -66,9 +66,9 @@ private sub hFlushBOP _
 		byval val2 as FBVALUE ptr, _
 	 	byval v2type as integer, _
 		byval ex as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as ASTNODE ptr expr1, expr2, expr
+	dim as ASTNODE ptr expr1 = any, expr2 = any, expr = any
 
 	'' bop
 	if( v1 <> NULL ) then
@@ -101,9 +101,9 @@ private sub hFlushSelfBOP _
 		byval v2 as FBSYMBOL PTR, _
 		byval val2 as FBVALUE ptr, _
 		byval stype as integer _
-	) static
+	)
 
-	dim as ASTNODE ptr expr1, expr2, expr, ptrScale = ANY
+	dim as ASTNODE ptr expr1 = any, expr2 = any, expr = any, ptrScale = any
 
     '' cnt OP= step
 	'' cnt = expr1, step = expr2
@@ -163,8 +163,8 @@ private function hCheckOps _
 
     #define addMessageComma(__msg) if len( __msg ) > 0 then __msg += ", "
 
-	dim as FBSYMBOL ptr structSym = ANY
-	dim as integer satisfied = 0, dtype = ANY
+	dim as FBSYMBOL ptr structSym = any
+	dim as integer satisfied = 0, dtype = any
 
 	if isDeclFor = FALSE then
 		'' from expression (existing var)
@@ -228,13 +228,9 @@ end function
 '':::::
 ''ForStmtBegin    =   FOR ID (AS DataType)? '=' Expression TO Expression (STEP Expression)? .
 ''
-function cForStmtBegin as integer
-    dim as FBSYMBOL ptr il = any, tl = any, el = any, cl = any, varSym = NULL
-    dim as FBVALUE ival = any
-    dim as ASTNODE ptr idexpr = any, expr = any, n = aNY
-    dim as integer op = any, dtype = any, isconst = any, isDeclFor = FALSE, isStruct = FALSE
-    dim as FBSYMCHAIN ptr chain_ = any
-    dim as FB_CMPSTMTSTK ptr stk = any, outerStk = any
+function cForStmtBegin _
+	( _
+	) as integer
 
     #define hGetDType(__expr) iif( isStruct <> 0, astGetDataType( __expr ), dtype )
 
@@ -244,14 +240,20 @@ function cForStmtBegin as integer
 	lexSkipToken( )
 
 	'' ID
-	chain_ = cIdentifier( FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr base_parent = any
+
+	chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 	if( errGetLast( ) <> FB_ERRMSG_OK ) then
 		exit function
 	end if
 
+    '' open outer scope
+    dim as FB_CMPSTMTSTK ptr stk = any, outerStk = any
+
     if( env.clopt.lang <> FB_LANG_QB ) then
-	    '' open outer scope
-		n = astScopeBegin( )
+
+		dim as ASTNODE ptr n = astScopeBegin( )
 		if( n = NULL ) then
 			if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
 				exit function
@@ -262,7 +264,11 @@ function cForStmtBegin as integer
 		outerStk->scopenode = n
 	end if
 
+    dim as ASTNODE ptr idexpr = any, expr = any
+
     '' new variable?
+	dim as FBSYMBOL ptr varSym = NULL
+	dim as integer isDeclFor = FALSE
 	if( lexGetLookAhead( 1 ) = FB_TK_AS ) then
 
 		varSym = hVarDeclEx( FB_SYMBATTRIB_NONE, FALSE, lexGetToken( ), TRUE )
@@ -288,7 +294,8 @@ function cForStmtBegin as integer
 		end if
 
 	else
-		if( cVariable( chain_, idexpr ) = FALSE ) then
+		idexpr = cVariable( chain_ )
+		if( idexpr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDVAR ) = FALSE ) then
 				exit function
 			else
@@ -309,9 +316,10 @@ function cForStmtBegin as integer
 
 	end if
 
-	dtype = astGetDataType( idexpr )
+	dim as integer dtype = astGetDataType( idexpr )
 
 	'' not scalar?
+	dim as integer isStruct = FALSE
 	select case as const dtype
 	case FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE
 
@@ -360,10 +368,11 @@ function cForStmtBegin as integer
 	end if
 
 	'' get counter type (endc and step must be the same type)
-	isconst = 0
+	dim as integer isconst = 0
 
     '' Expression
-    if( cExpression( expr ) = FALSE ) then
+    expr = cExpression( )
+    if( expr = NULL ) then
     	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     		cCompStmtPop( stk )
     		exit function
@@ -374,6 +383,7 @@ function cForStmtBegin as integer
     end if
 
 	''
+	dim as FBVALUE ival = any
 	if( astIsCONST( expr ) ) then
 		astConvertValue( expr, @ival, hGetDType( expr ) )
 		isconst += 1
@@ -394,7 +404,8 @@ function cForStmtBegin as integer
 	end if
 
 	'' end condition (Expression)
-	if( cExpression( expr ) = FALSE ) then
+	expr = cExpression( )
+	if( expr = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			cCompStmtPop( stk )
 			exit function
@@ -424,7 +435,8 @@ function cForStmtBegin as integer
 	if( lexGetToken( ) = FB_TK_STEP ) then
 		lexSkipToken( )
 
-		if( cExpression( expr ) = FALSE ) then
+		expr = cExpression( )
+		if( expr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 				cCompStmtPop( stk )
 				exit function
@@ -510,6 +522,7 @@ function cForStmtBegin as integer
 	end if
 
 	'' labels
+    dim as FBSYMBOL ptr il = any, tl = any, el = any, cl = any
     tl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	'' add comp and end label (will be used by any CONTINUE/EXIT FOR)
 	cl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
@@ -519,6 +532,7 @@ function cForStmtBegin as integer
     '' check if this branch is needed
 
     if( isconst = 3 ) then
+		dim as integer op = any
 		if( stk->for.ispositive ) then
 			op = AST_OP_LE
     	else
@@ -559,11 +573,11 @@ end function
 private function hForStmtClose _
 	( _
 		byval stk as FB_CMPSTMTSTK ptr _
-	) as integer static
+	) as integer
 
-	dim as FBSYMBOL ptr cl
-	dim as integer op, dtype
-	dim as FBVALUE ival
+	dim as FBSYMBOL ptr cl = any
+	dim as integer op = any, dtype = any
+	dim as FBVALUE ival = any
 
 	dtype = symbGetType( stk->for.cnt )
 
@@ -654,7 +668,10 @@ end function
 '':::::
 ''ForStmtEnd      =   NEXT (ID (',' ID?))? .
 ''
-function cForStmtEnd as integer
+function cForStmtEnd _
+	( _
+	) as integer
+
 	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE

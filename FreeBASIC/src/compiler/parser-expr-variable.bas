@@ -70,9 +70,9 @@ private function hFieldArray _
 		byval idxexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as FBVARDIM ptr d = any
     dim as integer maxdims = any, dims = any, diff = any
-    dim as ASTNODE ptr expr = any, dimexpr = any, constexpr = any
+    dim as ASTNODE ptr expr = any, dimexpr = any
+    dim as FBVARDIM ptr d = any
 
     function = NULL
 
@@ -93,7 +93,8 @@ private function hFieldArray _
     	end if
 
     	'' Expression
-		if( cExpression( dimexpr ) = FALSE ) then
+		dimexpr = cExpression( )
+		if( dimexpr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 				exit function
 			else
@@ -149,8 +150,7 @@ private function hFieldArray _
 			end if
     	end if
 
-    	constexpr = astNewCONSTi( (d->upper - d->lower)+1, FB_DATATYPE_INTEGER )
-    	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
+    	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( (d->upper - d->lower)+1 ) )
 	loop
 
     ''
@@ -161,24 +161,20 @@ private function hFieldArray _
     end if
 
 	'' times length
-	constexpr = astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER )
-	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
+	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
 
     '' plus difference
     diff = symbGetArrayDiff( sym )
     if( diff <> 0 ) then
-    	constexpr = astNewCONSTi( diff, FB_DATATYPE_INTEGER )
-    	expr = astNewBOP( AST_OP_ADD, expr, constexpr )
+    	expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( diff ) )
     end if
 
     '' plus initial expression
-    if( idxexpr = NULL ) then
-    	idxexpr = expr
+    if( idxexpr <> NULL ) then
+    	function = astNewBOP( AST_OP_ADD, idxexpr, expr )
     else
-    	idxexpr = astNewBOP( AST_OP_ADD, idxexpr, expr )
+    	function = expr
     end if
-
-    function = idxexpr
 
 end function
 
@@ -584,7 +580,8 @@ function cMemberDeref _
 			lexSkipToken( )
 
 			'' Expression
-			if( cExpression( idxexpr ) = FALSE ) then
+			idxexpr = cExpression( )
+			if( idxexpr = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else
@@ -827,7 +824,7 @@ function cFuncPtrOrMemberDeref _
 
 	'' function?
 	if( symbGetType( subtype ) <> FB_DATATYPE_VOID ) then
-		expr = cFunctionCall( subtype, expr )
+		expr = cFunctionCall( NULL, subtype, expr )
 		if( expr = NULL ) then
 			exit function
 		end if
@@ -835,7 +832,7 @@ function cFuncPtrOrMemberDeref _
 	'' sub..
 	else
 		if( fbGetIsExpression( ) = FALSE ) then
-			expr = cProcCall( subtype, expr )
+			expr = cProcCall( NULL, subtype, expr )
 		else
 			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 				exit function
@@ -874,15 +871,12 @@ end function
 ''
 function cDynArrayIdx _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byref idxexpr as ASTNODE ptr _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr desc = any
     dim as integer i = any, dims = any, maxdims = any
-    dim as ASTNODE ptr expr = any, dimexpr = any, constexpr = any, varexpr = any
-
-    function = FALSE
+    dim as ASTNODE ptr expr = any, dimexpr = any
+    dim as FBSYMBOL ptr desc = any
 
     desc = symbGetArrayDescriptor( sym )
     dims = 0
@@ -902,20 +896,16 @@ function cDynArrayIdx _
     	'' check dimensions, if not common
     	if( maxdims <> -1 ) then
     		if( dims > maxdims ) then
-				if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					idxexpr = NULL
-					exit function
-				end if
+				errReport( FB_ERRMSG_WRONGDIMENSIONS )
+    			return NULL
     		end if
     	end if
 
     	'' Expression
-		if( cExpression( dimexpr ) = FALSE ) then
+		dimexpr = cExpression( )
+		if( dimexpr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
+				return NULL
 			else
 				'' error recovery: fake an expr
 				dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -925,14 +915,14 @@ function cDynArrayIdx _
 		'' convert index if needed
 		dimexpr = hCheckIndex( dimexpr )
 		if( dimexpr = NULL ) then
-			exit function
+			return NULL
 		end if
 
     	'' bounds checking
     	if( env.clopt.extraerrchk ) then
             dimexpr = hDynArrayBoundChk( dimexpr, desc, i )
 			if( dimexpr = NULL ) then
-				exit function
+				return NULL
 			end if
     	end if
 
@@ -952,33 +942,31 @@ function cDynArrayIdx _
     	i += 1
 
     	'' times desc(i).elements
-    	varexpr = astNewVAR( desc, _
-    						 FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
-    						 FB_DATATYPE_INTEGER )
-    	expr = astNewBOP( AST_OP_MUL, expr, varexpr )
+    	expr = astNewBOP( AST_OP_MUL, _
+    					  expr, _
+    					  astNewVAR( desc, _
+    						 		 FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
+    						 		 FB_DATATYPE_INTEGER ) )
 	loop
 
 	'' times length
-	constexpr = astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER )
-	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
+	expr = astNewBOP( AST_OP_MUL, _
+					  expr, _
+					  astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER ) )
 
     '' check dimensions, if not common
     if( maxdims <> -1 ) then
     	if( dims < maxdims ) then
 			if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
-				exit function
+				return NULL
 			end if
     	end if
     end if
 
    	'' plus desc.data (= ptr + diff)
-    varexpr = astNewVAR( desc, FB_ARRAYDESC_DATAOFFS, FB_DATATYPE_INTEGER )
-    expr = astNewBOP( AST_OP_ADD, expr, varexpr )
-
-    idxexpr = expr
-
-    ''
-    function = TRUE
+    function = astNewBOP( AST_OP_ADD, _
+    				  	  expr, _
+    				  	  astNewVAR( desc, FB_ARRAYDESC_DATAOFFS, FB_DATATYPE_INTEGER ) )
 
 end function
 
@@ -1009,24 +997,21 @@ end function
 ''
 function cArgArrayIdx _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byref idxexpr as ASTNODE ptr _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
+    dim as ASTNODE ptr expr = any, dimexpr = any
     dim as integer i = any
-    dim as ASTNODE ptr expr = any, dimexpr = any, constexpr = any, varexpr = any
-    dim as ASTNODE ptr t = any
-
-    function = FALSE
 
     ''
     i = 0
     expr = NULL
     do
     	'' Expression
-		if( cExpression( dimexpr ) = FALSE ) then
+		dimexpr = cExpression( )
+		if( dimexpr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
+				return NULL
 			else
 				'' error recovery: fake an expr
 				dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -1036,14 +1021,14 @@ function cArgArrayIdx _
 		'' convert index if needed
 		dimexpr = hCheckIndex( dimexpr )
 		if( dimexpr = NULL ) then
-			exit function
+			return NULL
 		end if
 
     	'' bounds checking
     	if( env.clopt.extraerrchk ) then
             dimexpr = hArgArrayBoundChk( dimexpr, sym, i )
 			if( dimexpr = NULL ) then
-				exit function
+				return NULL
 			end if
     	end if
 
@@ -1063,28 +1048,26 @@ function cArgArrayIdx _
     	i += 1
 
     	'' it's a descriptor pointer, dereference (only with DAG this will be optimized)
-    	t = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
+
     	'' times desc[i].elements
-    	varexpr = astNewDEREF( t, _
-    						   FB_DATATYPE_INTEGER, _
-    						   NULL, _
-    						   FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN )
-    	expr = astNewBOP( AST_OP_MUL, expr, varexpr )
+    	expr = astNewBOP( AST_OP_MUL, _
+    					  expr, _
+    					  astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+    						   		   FB_DATATYPE_INTEGER, _
+    						   		   NULL, _
+    						   		   FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN ) )
 	loop
 
 	'' times length
-	constexpr = astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER )
-	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
+	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
 
    	'' plus desc->data (= ptr + diff)
-    t = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
-    varexpr = astNewDEREF( t, FB_DATATYPE_INTEGER, NULL, FB_ARRAYDESC_DATAOFFS )
-    expr = astNewBOP( AST_OP_ADD, expr, varexpr )
-
-    idxexpr = expr
-
-	''
-	function = TRUE
+    function = astNewBOP( AST_OP_ADD, _
+    					  expr, _
+    					  astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+    					   			   FB_DATATYPE_INTEGER, _
+    					   			   NULL, _
+    					   			   FB_ARRAYDESC_DATAOFFS ) )
 
 end function
 
@@ -1093,24 +1076,20 @@ end function
 ''
 function cArrayIdx _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byref idxexpr as ASTNODE ptr _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
     dim as FBVARDIM ptr d = any
     dim as integer dtype = any, dims = any, maxdims = any
-    dim as ASTNODE ptr expr = any, dimexpr = any, constexpr = any, varexpr = any
-
-    function = FALSE
+    dim as ASTNODE ptr expr = any, dimexpr = any, varexpr = any
 
     ''  argument passed by descriptor?
     if( symbIsParamByDesc( sym ) ) then
-    	return cArgArrayIdx( sym, idxexpr )
+    	return cArgArrayIdx( sym )
 
     '' dynamic array? (will handle common's too)
     elseif( symbGetIsDynamic( sym ) ) then
-    	return cDynArrayIdx( sym, idxexpr )
-
+    	return cDynArrayIdx( sym )
     end if
 
     ''
@@ -1123,18 +1102,15 @@ function cArrayIdx _
     do
     	dims += 1
     	if( dims > maxdims ) then
-			if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
-				exit function
-			else
-				idxexpr = NULL
-				exit function
-			end if
+			errReport( FB_ERRMSG_WRONGDIMENSIONS )
+			return NULL
     	end if
 
     	'' Expression
-		if( cExpression( dimexpr ) = FALSE ) then
+		dimexpr = cExpression( )
+		if( dimexpr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
+				return NULL
 			else
 				'' error recovery: fake an expr
 				dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
@@ -1144,7 +1120,7 @@ function cArrayIdx _
 		'' convert index if needed
 		dimexpr = hCheckIndex( dimexpr )
 		if( dimexpr = NULL ) then
-			exit function
+			return NULL
 		end if
 
     	'' bounds checking
@@ -1156,7 +1132,7 @@ function cArrayIdx _
 
 			if( dimexpr = NULL ) then
 				if( errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS ) = FALSE ) then
-					exit function
+					return NULL
 				else
 					'' error recovery: fake an expr
 					dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
@@ -1182,32 +1158,29 @@ function cArrayIdx _
         d = d->next
     	if( d = NULL ) then
 			if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
-				exit function
+				return NULL
 			else
 				exit do
 			end if
     	end if
 
-    	constexpr = astNewCONSTi( (d->upper - d->lower) + 1, FB_DATATYPE_INTEGER )
-    	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
+    	expr = astNewBOP( AST_OP_MUL, _
+    					  expr, _
+    					  astNewCONSTi( (d->upper - d->lower) + 1 ) )
 	loop
 
     ''
     if( dims < maxdims ) then
 		if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
-			exit function
+			return NULL
 		end if
     end if
 
 	'' times length (this will be optimized if len < 10 and there's
 	'' no arrays on following fields)
-	constexpr = astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER )
-	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
-
-	idxexpr = expr
-
-	''
-	function = TRUE
+	function = astNewBOP( AST_OP_MUL, _
+					  	  expr, _
+					  	  astNewCONSTi( symbGetLen( sym ) ) )
 
 end function
 
@@ -1326,14 +1299,13 @@ end function
 function cVariableEx _
 	( _
 		byval chain_ as FBSYMCHAIN ptr, _
-		byref varexpr as ASTNODE ptr, _
 		byval checkarray as integer _
-	) as integer
+	) as ASTNODE ptr
 
 	dim as zstring ptr id = any
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr sym = any, subtype = any
-	dim as ASTNODE ptr idxexpr = any
+	dim as ASTNODE ptr varexpr = any, idxexpr = any
 
 	''
 	id = lexGetText( )
@@ -1358,7 +1330,7 @@ function cVariableEx _
 	else
 		if( env.opt.explicit ) then
 			if( errReportUndef( FB_ERRMSG_VARIABLENOTDECLARED, id ) = FALSE ) then
-				exit function
+				return NULL
 			end if
 		end if
 
@@ -1370,7 +1342,7 @@ function cVariableEx _
     			'' from a different namespace?
     			if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
     				if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-    					exit function
+    					return NULL
     				end if
     			end if
     		end if
@@ -1383,7 +1355,7 @@ function cVariableEx _
 
 		sym = hVarAddUndecl( id, dtype )
 		if( sym = NULL ) then
-			exit function
+			return NULL
 		end if
 
 		'' show warning if inside an expression (ie: var was never set)
@@ -1415,6 +1387,7 @@ function cVariableEx _
 	is_funcptr = FALSE
 	is_nidxarray = FALSE
 
+    varexpr = NULL
     idxexpr = NULL
 	checkfields = TRUE
 
@@ -1427,12 +1400,12 @@ function cVariableEx _
     			'' '('
     			lexSkipToken( )
 
-    			cArrayIdx( sym, idxexpr )
+    			idxexpr = cArrayIdx( sym )
 
 				'' ')'
     			if( hMatch( CHAR_RPRNT ) = FALSE ) then
     				if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-    					exit function
+    					return NULL
     				else
     					'' error recovery: skip until next ')'
     					hSkipUntil( CHAR_RPRNT, TRUE )
@@ -1446,7 +1419,7 @@ function cVariableEx _
     			'' using (...) with scalars?
     			if( (is_array = FALSE) and (is_funcptr = FALSE) ) then
     				if( errReport( FB_ERRMSG_ARRAYNOTALLOCATED, TRUE ) = FALSE ) then
-    					exit function
+    					return NULL
     				else
     					'' error recovery: skip the index
     					lexSkipToken( )
@@ -1497,8 +1470,7 @@ function cVariableEx _
 					'' constant? exit..
 					if( symbIsConst( fld ) ) then
 						astDeltree( varexpr )
-						varexpr = idxexpr
-						return TRUE
+						return idxexpr
 					end if
 
     				dtype = symbGetType( fld )
@@ -1567,19 +1539,19 @@ function cVariableEx _
 
     if( checkfields ) then
     	'' FuncPtrOrMemberDeref?
-		varexpr = cFuncPtrOrMemberDeref( dtype, _
-										 subtype, _
-										 varexpr, _
-										 is_funcptr, _
-										 checkarray )
+		function = cFuncPtrOrMemberDeref( dtype, _
+										  subtype, _
+										  varexpr, _
+										  is_funcptr, _
+										  checkarray )
 
 	'' non-indexed array?
 	elseif( is_nidxarray ) then
-        varexpr = astNewNIDXARRAY( varexpr )
+        function = astNewNIDXARRAY( varexpr )
+
+	else
+		function = varexpr
 	end if
-
-
-	function = (varexpr <> NULL)
 
 end function
 
@@ -1589,14 +1561,12 @@ end function
 function cWithVariable _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byref varexpr as ASTNODE ptr, _
 		byval checkarray as integer _
-	) as integer
+	) as ASTNODE ptr
 
 	dim as integer dtype = any, isfuncptr = any, is_nidxarray = any
 	dim as FBSYMBOL ptr fld = any, subtype = any, method_sym = any
-
-	function = FALSE
+	dim as ASTNODE ptr varexpr = any
 
    	dtype = symbGetType( sym )
    	subtype = symbGetSubtype( sym )
@@ -1617,12 +1587,12 @@ function cWithVariable _
 		if( method_sym = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			'' no error recovery: caller will take care
-			exit function
+			return NULL
 		end if
 	else
 		'' constant? exit..
 		if( symbIsConst( fld ) ) then
-			return TRUE
+			return varexpr
 		end if
 
     	dtype = symbGetType( fld )
@@ -1652,7 +1622,7 @@ function cWithVariable _
 	if( method_sym <> NULL ) then
 		varexpr = cMethodCall( method_sym, varexpr )
 		if( varexpr = NULL ) then
-			exit function
+			return NULL
 		else
     		dtype = astGetDataType( varexpr )
     		subtype = astGetSubType( varexpr )
@@ -1666,19 +1636,17 @@ function cWithVariable _
 
     if( is_nidxarray = FALSE ) then
     	'' FuncPtrOrMemberDeref?
-		varexpr = cFuncPtrOrMemberDeref( dtype, _
-									 	 subtype, _
-									 	 varexpr, _
-									 	 isfuncptr, _
-									 	 checkarray )
+		function = cFuncPtrOrMemberDeref( dtype, _
+									 	  subtype, _
+									 	  varexpr, _
+									 	  isfuncptr, _
+									 	  checkarray )
 
 
 	'' non-indexed array?
 	else
-        varexpr = astNewNIDXARRAY( varexpr )
+        function = astNewNIDXARRAY( varexpr )
 	end if
-
-	function = (varexpr <> NULL)
 
 end function
 
@@ -1688,14 +1656,13 @@ end function
 function cVariable _
 	( _
 		byval chain_ as FBSYMCHAIN ptr, _
-		byref varexpr as ASTNODE ptr, _
 		byval checkarray as integer = TRUE _
-	) as integer
+	) as ASTNODE ptr
 
 	'' ID
     select case lexGetClass( )
     case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
-	    function = cVariableEx( chain_, varexpr, checkarray )
+	    return cVariableEx( chain_, checkarray )
 
 	case else
 		if( parser.stmt.with.sym = NULL ) then
@@ -1707,7 +1674,7 @@ function cVariable _
 			return FALSE
 		end if
 
-		function = cWithVariable( parser.stmt.with.sym, varexpr, checkarray )
+		return cWithVariable( parser.stmt.with.sym, checkarray )
 	end select
 
 end function
@@ -1719,18 +1686,23 @@ function cDataMember _
 	( _
 		byval this_ as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
-		byref varexpr as ASTNODE ptr, _
 		byval checkarray as integer _
-	) as integer
+	) as ASTNODE ptr
 
 	dim as integer dtype = any, isfuncptr = any, is_nidxarray = any
 	dim as FBSYMBOL ptr fld = any, subtype = any, method_sym = any
-	dim as ASTNODE ptr fldexpr = NULL
-
-	function = FALSE
+	dim as ASTNODE ptr varexpr = NULL, fldexpr = NULL
 
 	if( this_ = NULL ) then
-		this_ = symbGetParamVar( symbGetProcHeadParam( parser.currproc ) )
+		dim as FBSYMBOL ptr param = symbGetProcHeadParam( parser.currproc )
+		if( symbIsMethod( parser.currproc ) and (param <> NULL) ) then
+			this_ = symbGetParamVar( param )
+		end if
+
+		if( this_ = NULL ) then
+			errReport( FB_ERRMSG_STATICMEMBERHASNOINSTANCEPTR )
+			return NULL
+		end if
 	end if
 
    	dtype = symbGetType( this_ )
@@ -1743,14 +1715,12 @@ function cDataMember _
 	if( fld = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' no error recovery: caller will take care
-		exit function
+		return NULL
 
 	else
 		'' constant? exit..
 		if( symbIsConst( fld ) ) then
-			astDeltree( varexpr )
-			varexpr = fldexpr
-			return TRUE
+			return fldexpr
 		end if
 
     	dtype = symbGetType( fld )
@@ -1787,7 +1757,7 @@ function cDataMember _
 	if( method_sym <> NULL ) then
 		varexpr = cMethodCall( method_sym, varexpr )
 		if( varexpr = NULL ) then
-			exit function
+			return NULL
 		else
     		dtype = astGetDataType( varexpr )
     		subtype = astGetSubType( varexpr )
@@ -1802,18 +1772,16 @@ function cDataMember _
 
     if( is_nidxarray = FALSE ) then
     	'' FuncPtrOrMemberDeref?
-		varexpr = cFuncPtrOrMemberDeref( dtype, _
-									 	 subtype, _
-									 	 varexpr, _
-									 	 isfuncptr, _
-									 	 TRUE )
+		function = cFuncPtrOrMemberDeref( dtype, _
+									 	  subtype, _
+									 	  varexpr, _
+									 	  isfuncptr, _
+									 	  TRUE )
 
 	'' non-indexed array?
 	else
-        varexpr = astNewNIDXARRAY( varexpr )
+        function = astNewNIDXARRAY( varexpr )
 	end if
-
-	function = (varexpr <> NULL)
 
 end function
 
@@ -1822,61 +1790,58 @@ end function
 ''
 function cVarOrDeref _
 	( _
-		byref varexpr as ASTNODE ptr, _
 		byval check_array as integer, _
 		byval allow_addrof as integer _
-	) as integer
+	) as ASTNODE ptr
 
 '':::
 #macro hInvalidType( )
-	astDelTree( varexpr )
-	varexpr = NULL
+	astDelTree( expr )
 	errReport( FB_ERRMSG_INVALIDDATATYPES )
 #endmacro
 
 	dim as integer res = any
 	dim as FB_PARSEROPT options = any
+	dim as ASTNODE ptr expr = any
 
 	options = parser.options
 	fbSetCheckArray( check_array )
 
-	res = cHighestPrecExpr( NULL, varexpr )
+	expr = cHighestPrecExpr( NULL, NULL )
 
 	parser.options = options
 
-	if( res ) then
-		if( varexpr <> NULL ) then
-			select case as const astGetClass( varexpr )
-			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
-				 AST_NODECLASS_DEREF, AST_NODECLASS_CALL, AST_NODECLASS_NIDXARRAY
+	if( expr <> NULL ) then
+		select case as const astGetClass( expr )
+		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
+			 AST_NODECLASS_DEREF, AST_NODECLASS_CALL, AST_NODECLASS_NIDXARRAY
 
-			case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
-				if( allow_addrof = FALSE ) then
-					hInvalidType( )
-					'' no error recovery: caller will take care
-					return FALSE
-				end if
-
-			case AST_NODECLASS_BOP
-				'' allow addresses?
-				if( allow_addrof ) then
-					'' not a pointer? (@foo[bar] will be converted to foo + bar)
-					if( astGetDataType( varexpr ) < FB_DATATYPE_POINTER ) then
-						hInvalidType( )
-						return FALSE
-					end if
-				else
-					hInvalidType( )
-					return FALSE
-				end if
-
-			case else
+		case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
+			if( allow_addrof = FALSE ) then
 				hInvalidType( )
-				return FALSE
-			end select
-		end if
+				'' no error recovery: caller will take care
+				return NULL
+			end if
+
+		case AST_NODECLASS_BOP
+			'' allow addresses?
+			if( allow_addrof ) then
+				'' not a pointer? (@foo[bar] will be converted to foo + bar)
+				if( astGetDataType( expr ) < FB_DATATYPE_POINTER ) then
+					hInvalidType( )
+					return NULL
+				end if
+			else
+				hInvalidType( )
+				return NULL
+			end if
+
+		case else
+			hInvalidType( )
+			return NULL
+		end select
 	end if
 
-	function = res
+	function = expr
 
 end function

@@ -44,7 +44,8 @@ private function hEnumConstDecl _
 		lexSkipToken( )
 
 		'' ConstExpression
-		if( cExpression( expr ) = FALSE ) then
+		expr = cExpression( )
+		if( expr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
 				exit function
 			else
@@ -201,7 +202,7 @@ end function
 ''					  END ENUM .
 function cEnumDecl _
 	( _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 id, id_alias

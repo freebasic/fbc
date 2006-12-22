@@ -62,7 +62,8 @@ function cDoStmtBegin as integer
 		lexSkipToken( )
 
 		'' Expression
-		if( cExpression( expr ) = FALSE ) then
+		expr = cExpression( )
+		if( expr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 				exit function
 			else
@@ -159,7 +160,8 @@ function cDoStmtEnd as integer
 		lexSkipToken( )
 
 		'' Expression
-		if( cExpression( expr ) = FALSE ) then
+		expr = cExpression( )
+		if( expr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 				exit function
 			else

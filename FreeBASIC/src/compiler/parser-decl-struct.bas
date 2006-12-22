@@ -42,23 +42,19 @@ declare sub hPatchByvalResultToSelf _
 	)
 
 '':::::
-''TypeProtoDecl 	=	DECLARE (CONSTRUCTOR Params | DESTRUCTOR | OPERATOR Op Params) .
+''TypeProtoDecl 	=	DECLARE ( CONSTRUCTOR Params
+''								| DESTRUCTOR
+''								| OPERATOR Op Params
+''								| PROPERTY Params
+''								| STATIC? SUB|FUNCTION Params ) .
 ''
 private function hTypeProtoDecl _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as integer
 
 	dim as integer res = any, is_nested = any
-
-#macro hCheckCode( )
-   	if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
-    	if( errReportNotAllowed( FB_LANG_OPT_CLASS ) = FALSE ) then
-       		exit function
-       	end if
-	end if
-#endmacro
 
 #macro hCheckStatic( attrib )
 	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
@@ -81,90 +77,98 @@ private function hTypeProtoDecl _
 		end if
 	end if
 
+   	'' methods not allowed?
+   	if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
+    	if( errReportNotAllowed( FB_LANG_OPT_CLASS ) = FALSE ) then
+       		exit function
+       	end if
+	end if
+
 	''
 	symbNestBegin( parent )
 
 	'' DECLARE
 	lexSkipToken( )
 
+	'' STATIC?
+	if( lexGetToken( ) = FB_TK_STATIC ) then
+		lexSkipToken( )
+		attrib or= FB_SYMBATTRIB_STATIC
+	end if
+
 	res = TRUE
 
 	select case as const lexGetToken( )
 	case FB_TK_CONSTRUCTOR
-   		hCheckCode( )
-
         hCheckStatic( attrib )
 
 		lexSkipToken( )
 
-		if( cCtorHeader( TRUE, _
-						 attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR, _
-						 is_nested ) = NULL ) then
+		if( cCtorHeader( attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR, _
+						 is_nested, _
+						 TRUE ) = NULL ) then
 			res = FALSE
 		end if
 
 	case FB_TK_DESTRUCTOR
-   		hCheckCode( )
-
         hCheckStatic( attrib )
 
 		lexSkipToken( )
 
-		if( cCtorHeader( TRUE, _
-						 attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_DESTRUCTOR, _
-						 is_nested ) = NULL ) then
+		if( cCtorHeader( attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_DESTRUCTOR, _
+						 is_nested, _
+						 TRUE ) = NULL ) then
 			res = FALSE
 		end if
 
 	case FB_TK_OPERATOR
-   		hCheckCode( )
-
         hCheckStatic( attrib )
 
 		lexSkipToken( )
 
-		if( cOperatorHeader( TRUE, _
-							 attrib or FB_SYMBATTRIB_METHOD, _
-							 is_nested ) = NULL ) then
+		if( cOperatorHeader( attrib or FB_SYMBATTRIB_METHOD, _
+							 is_nested, _
+							 FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT ) = NULL ) then
 			res = FALSE
 		end if
 
 	case FB_TK_PROPERTY
-   		hCheckCode( )
-
         hCheckStatic( attrib )
 
 		lexSkipToken( )
 
-		if( cPropertyHeader( TRUE, _
-						 	 attrib or FB_SYMBATTRIB_METHOD, _
-						 	 is_nested ) = NULL ) then
+		if( cPropertyHeader( attrib or FB_SYMBATTRIB_METHOD, _
+						 	 is_nested, _
+						 	 TRUE ) = NULL ) then
 			res = FALSE
 		end if
 
 	case FB_TK_SUB
-   		hCheckCode( )
-
 		lexSkipToken( )
 
 		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
 			attrib or= FB_SYMBATTRIB_METHOD
 		end if
 
-		if( cProcHeader( TRUE, TRUE, attrib, is_nested ) = NULL ) then
+		if( cProcHeader( attrib, _
+						 is_nested, _
+						 FB_PROCOPT_ISPROTO or _
+						 FB_PROCOPT_HASPARENT or _
+						 FB_PROCOPT_ISSUB ) = NULL ) then
 			res = FALSE
 		end if
 
 	case FB_TK_FUNCTION
-   		hCheckCode( )
-
 		lexSkipToken( )
 
 		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
 			attrib or= FB_SYMBATTRIB_METHOD
 		end if
 
-		if( cProcHeader( FALSE, TRUE, attrib, is_nested ) = NULL ) then
+		if( cProcHeader( attrib, _
+						 is_nested, _
+						 FB_PROCOPT_ISPROTO or _
+						 FB_PROCOPT_HASPARENT ) = NULL ) then
 			res = FALSE
 		end if
 
@@ -702,7 +706,8 @@ private function hTypeBody _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-	dim as integer isunion = any, attrib = FB_SYMBATTRIB_NONE
+	dim as integer isunion = any
+	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
 	dim as FBSYMBOL ptr inner = any
 
 	function = FALSE
@@ -876,16 +881,7 @@ decl_inner:		'' it's an anonymous inner UDT
 		case FB_TK_STATIC
 			lexSkipToken( )
 
-			'' proto?
-			if( lexGetToken( ) = FB_TK_DECLARE ) then
-				attrib or= FB_SYMBATTRIB_STATIC
-				if( hTypeProtoDecl( s, attrib ) = FALSE ) then
-					exit function
-				end if
-
-			else
-				'' !!!WRITEME!! it's var, but it can't be initialized
-			end if
+			'' !!!WRITEME!! it's var, but it can't be initialized
 
 		'' anything else, must be a field
 		case else
@@ -925,6 +921,7 @@ end function
 ''					  END (TYPE|UNION) .
 function cTypeDecl _
 	( _
+		byval attrib as FB_SYMBATTRIB _
 	) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 id, id_alias
@@ -1046,7 +1043,8 @@ function cTypeDecl _
 			end if
 		end if
 
-    	if( cExpression( expr ) = FALSE ) then
+    	expr = cExpression( )
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else

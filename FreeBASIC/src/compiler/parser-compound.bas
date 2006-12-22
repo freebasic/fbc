@@ -186,9 +186,7 @@ function cEndStatement as integer
   		errlevel = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 
   	case else
-  		if( cExpression( errlevel ) = FALSE ) then
-  			errlevel = NULL
-  		end if
+  		errlevel = cExpression( )
   	end select
 
     ''

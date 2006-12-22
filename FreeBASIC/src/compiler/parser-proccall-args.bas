@@ -50,18 +50,30 @@ end sub
 '':::::
 function hAllocCallArg _
 	( _
-		byval arg_list as FB_CALL_ARG_LIST ptr _
+		byval arg_list as FB_CALL_ARG_LIST ptr, _
+		byval to_head as integer _
 	) as FB_CALL_ARG ptr
 
 	dim as FB_CALL_ARG ptr arg = listNewNode( @ctx.arglist )
-	if( arg_list->head = NULL ) then
-		arg_list->head = arg
-	else
-		arg_list->tail->next = arg
-	end if
 
-	arg_list->tail = arg
-	arg->next = NULL
+	if( to_head = FALSE ) then
+		if( arg_list->head = NULL ) then
+			arg_list->head = arg
+		else
+			arg_list->tail->next = arg
+		end if
+
+		arg->next = NULL
+		arg_list->tail = arg
+
+	else
+		if( arg_list->tail = NULL ) then
+			arg_list->tail = arg
+		end if
+
+		arg->next = arg_list->head
+		arg_list->head = arg
+	end if
 
 	arg_list->args += 1
 
@@ -96,7 +108,7 @@ private function hProcArg _
 		byval argnum as integer, _
 		byref expr as ASTNODE ptr, _
 		byref amode as integer, _
-		byval isfunc as integer _
+		byval options as FB_PARSEROPT _
 	) as integer
 
 	dim as integer pmode = any
@@ -118,7 +130,8 @@ private function hProcArg _
 	parser.ctxsym = symbGetSubType( param )
 
 	'' Expression
-	if( cExpression( expr ) = FALSE ) then
+	expr = cExpression( )
+	if( expr = NULL ) then
 
 		'' error?
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -126,7 +139,7 @@ private function hProcArg _
 			exit function
 		end if
 
-		if( isfunc ) then
+		if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 			expr = NULL
 
 		else
@@ -141,9 +154,7 @@ private function hProcArg _
 				'' BYVAL?
 				if( hMatch( FB_TK_BYVAL ) ) then
 					amode = FB_PARAMMODE_BYVAL
-					if( cExpression( expr ) = FALSE ) then
-						expr = NULL
-					end if
+					expr = cExpression( )
 				end if
 			end if
 		end if
@@ -153,7 +164,6 @@ private function hProcArg _
 	parser.ctxsym = oldsym
 
 	if( expr = NULL ) then
-
 		'' check if argument is optional
 		if( symbGetIsOptional( param ) = FALSE ) then
 			if( pmode <> FB_PARAMMODE_VARARG ) then
@@ -170,11 +180,10 @@ private function hProcArg _
 		end if
 
 	else
-
 		'' '('')'?
 		if( pmode = FB_PARAMMODE_BYDESC ) then
 			if( lexGetToken( ) = CHAR_LPRNT ) then
-				if( lexGetLookAhead(1) = CHAR_RPRNT ) then
+				if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
 					if( amode <> INVALID ) then
 						if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
 							exit function
@@ -220,7 +229,7 @@ private function hOvlProcArg _
 	( _
 		byval argnum as integer, _
 		byval arg as FB_CALL_ARG ptr, _
-		byval isfunc as integer _
+		byval options as FB_PARSEROPT _
 	) as integer
 
 	dim as FBSYMBOL ptr oldsym = any
@@ -239,7 +248,8 @@ private function hOvlProcArg _
 	parser.ctxsym = NULL
 
 	'' Expression
-	if( cExpression( arg->expr ) = FALSE ) then
+	arg->expr = cExpression( )
+	if( arg->expr = NULL ) then
 
 		'' error?
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -248,7 +258,7 @@ private function hOvlProcArg _
 		end if
 
 		'' function? assume as optional..
-		if( isfunc ) then
+		if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 			arg->expr = NULL
 
 		else
@@ -263,9 +273,7 @@ private function hOvlProcArg _
 				'' BYVAL?
 				if( hMatch( FB_TK_BYVAL ) ) then
 					arg->mode = FB_PARAMMODE_BYVAL
-					if( cExpression( arg->expr ) = FALSE ) then
-						arg->expr = NULL
-					end if
+					arg->expr = cExpression( )
 				end if
 			end if
 		end if
@@ -278,7 +286,7 @@ private function hOvlProcArg _
 	if( arg->expr <> NULL ) then
 		'' '('')'?
 		if( lexGetToken( ) = CHAR_LPRNT ) then
-			if( lexGetLookAhead(1) = CHAR_RPRNT ) then
+			if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
 				if( arg->mode <> INVALID ) then
 					if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE )then
 						exit function
@@ -301,10 +309,10 @@ end function
 ''
 private function hOvlProcArgList _
 	( _
+		byval base_parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
 		byval arg_list as FB_CALL_ARG_LIST ptr, _
-		byval isfunc as integer, _
-		byval optonly as integer _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
     dim as integer i = any, params = any, args = any
@@ -316,49 +324,15 @@ private function hOvlProcArgList _
 	function = NULL
 
 	params = symGetProcOvlMaxParams( proc )
+
 	args = arg_list->args
-
-	'' no parms? (could happen by mistake..)
-	if( params = iif( symbIsMethod( proc ), 1, 0 ) ) then
-		'' sub? check the optional parentheses
-		if( isfunc = FALSE ) then
-			'' '('
-			if( hMatch( CHAR_LPRNT ) ) then
-				'' ')'
-				if( hMatch( CHAR_RPRNT ) = FALSE ) then
-					if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip until next ')'
-						hSkipUntil( CHAR_RPRNT, TRUE )
-					end if
-				end if
-			end if
-		end if
-
-		procexpr = astNewCALL( proc, NULL )
-
-		'' any pre-defined arg?
-		arg = arg_list->head
-		do while( arg <> NULL )
-			dim as FB_CALL_ARG ptr nxt = arg->next
-
-			if( astNewARG( procexpr, _
-					   	   arg->expr, _
-					   	   INVALID, _
-				   	   	   arg->mode ) = NULL ) then
-				exit function
-			end if
-
-			listDelNode( @ctx.arglist, arg )
-
-			arg = nxt
-		loop
-
-		return procexpr
+	if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then
+		args -= 1
 	end if
 
-	if( optonly = FALSE ) then
+	if( (options and FB_PARSEROPT_OPTONLY) = 0 ) then
+		dim as integer init_args = args
+
 		do
 			'' count mismatch?
 			if( args >= params ) then
@@ -366,7 +340,7 @@ private function hOvlProcArgList _
 					exit function
 				else
 					'' error recovery: skip until next stmt or ')'
-					if( isfunc ) then
+					if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 						hSkipUntil( CHAR_RPRNT )
 					else
 						hSkipStmt( )
@@ -378,9 +352,9 @@ private function hOvlProcArgList _
 			end if
 
 			'' alloc a new arg
-			arg = hAllocCallArg( arg_list )
+			arg = hAllocCallArg( arg_list, FALSE )
 
-			if( hOvlProcArg( args, arg, isfunc ) = FALSE ) then
+			if( hOvlProcArg( args - init_args, arg, options ) = FALSE ) then
 				'' not an error? (could be an optional)
 				if( errGetLast( ) <> FB_ERRMSG_OK ) then
 					hDelCallArgs( arg_list )
@@ -405,8 +379,13 @@ private function hOvlProcArgList _
 		loop
 	end if
 
-	'' try finding the closest overloaded proc
-	ovlproc = symbFindClosestOvlProc( proc, args, arg_list->head, @err_num )
+	'' try finding the closest overloaded proc (don't pass the instance ptr, if any)
+	ovlproc = symbFindClosestOvlProc( proc, args, _
+									  iif( (options and FB_PARSEROPT_HASINSTPTR) <> 0, _
+									  	   arg_list->head->next, _
+									  	   arg_list->head ), _
+									  @err_num )
+
 	if( ovlproc = NULL ) then
 		hDelCallArgs( arg_list )
 
@@ -438,6 +417,39 @@ private function hOvlProcArgList _
 				'' error recovery: fake an expr
 				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 			end if
+		end if
+
+		'' calling a method without the instance ptr?
+		if( (options and FB_PARSEROPT_HASINSTPTR) = 0 ) then
+			'' is this really a static access or just a method call from
+			'' another method in the same class?
+			if( (base_parent <> NULL) or (symbIsMethod( parser.currproc ) = FALSE) ) then
+				if( errReport( FB_ERRMSG_MEMBERISNTSTATIC, TRUE ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+				end if
+			end if
+
+			'' pass the instance ptr of the current method
+			arg = hAllocCallArg( arg_list, TRUE )
+			arg->expr = astBuildInstPtr( _
+							symbGetParamVar( _
+								symbGetProcHeadParam( parser.currproc ) ) )
+			arg->mode = INVALID
+		end if
+
+		'' re-add the instance ptr
+		args += 1
+
+	else
+		'' remove the instance ptr
+		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then
+			arg = arg_list->head
+			arg_list->head = arg->next
+			astDelTree( arg->expr )
+			listDelNode( @ctx.arglist, arg )
 		end if
 	end if
 
@@ -485,22 +497,23 @@ end function
 ''
 function cProcArgList _
 	( _
+		byval base_parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval arg_list as FB_CALL_ARG_LIST ptr, _
-		byval isfunc as integer, _
-		byval optonly as integer _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
     dim as integer args = any, params = any, mode = any
     dim as FBSYMBOL ptr param = any
     dim as ASTNODE ptr procexpr = any, expr = any
+    dim as FB_CALL_ARG ptr arg = any
 
 	'' overloaded?
 	if( symbGetProcIsOverloaded( proc ) ) then
 		'' only if there's more than one overloaded function
 		if( symbGetProcOvlNext( proc ) <> NULL ) then
-			return hOvlProcArgList( proc, arg_list, isfunc, optonly )
+			return hOvlProcArgList( base_parent, proc, arg_list, options )
 		end if
 	end if
 
@@ -519,17 +532,50 @@ function cProcArgList _
 				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 			end if
 		end if
+
+		'' calling a method without the instance ptr?
+		if( (options and FB_PARSEROPT_HASINSTPTR) = 0 ) then
+
+			'' is this really a static access or just a method call from
+			'' another method in the same class?
+			if( (base_parent <> NULL) or (symbIsMethod( parser.currproc ) = FALSE) ) then
+				if( errReport( FB_ERRMSG_MEMBERISNTSTATIC, TRUE ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+				end if
+			end if
+
+			'' pass the instance ptr of the current method
+			arg = hAllocCallArg( arg_list, TRUE )
+			arg->expr = astBuildInstPtr( _
+							symbGetParamVar( _
+								symbGetProcHeadParam( parser.currproc ) ) )
+			arg->mode = INVALID
+		end if
+
+	else
+		'' remove the instance ptr
+		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then
+			arg = arg_list->head
+			arg_list->head = arg->next
+			astDelTree( arg->expr )
+			listDelNode( @ctx.arglist, arg )
+		end if
 	end if
 
     procexpr = astNewCALL( proc, ptrexpr )
 
 	params = symbGetProcParams( proc )
-	args = arg_list->args
+	if( symbIsMethod( proc ) ) then
+		params -= 1
+	end if
 
 	param = symbGetProcLastParam( proc )
 
 	'' any pre-defined args?
-	dim as FB_CALL_ARG ptr arg = arg_list->head
+	arg = arg_list->head
 	do while( arg <> NULL )
 		dim as FB_CALL_ARG ptr nxt = arg->next
 
@@ -547,10 +593,12 @@ function cProcArgList _
 		arg = nxt
 	loop
 
+	args = 0
+
 	'' proc has no args?
-	if( params = iif( symbIsMethod( proc ), 1, 0 ) ) then
+	if( params = 0 ) then
 		'' sub? check the optional parentheses
-		if( isfunc = FALSE ) then
+		if( (options and FB_PARSEROPT_ISFUNC) = 0 ) then
 			'' '('
 			if( lexGetToken( ) = CHAR_LPRNT ) then
 				lexSkipToken( )
@@ -571,7 +619,7 @@ function cProcArgList _
 		return procexpr
 	end if
 
-	if( optonly = FALSE ) then
+	if( (options and FB_PARSEROPT_OPTONLY) = 0 ) then
 		do
 			'' count mismatch?
 			if( args >= params ) then
@@ -580,7 +628,7 @@ function cProcArgList _
 						exit function
 					else
 						'' error recovery: skip until next stmt or ')'
-						if( isfunc ) then
+						if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 							hSkipUntil( CHAR_RPRNT )
 						else
 							hSkipStmt( )
@@ -592,7 +640,7 @@ function cProcArgList _
 				end if
 			end if
 
-			if( hProcArg( proc, param, args, expr, mode, isfunc ) = FALSE ) then
+			if( hProcArg( proc, param, args, expr, mode, options ) = FALSE ) then
 				'' not an error? (could be an optional)
 				if( errGetLast( ) <> FB_ERRMSG_OK ) then
 					exit function
@@ -607,7 +655,7 @@ function cProcArgList _
 					exit function
 				else
 					'' error recovery: skip until next stmt or ')'
-					if( isfunc ) then
+					if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 						hSkipUntil( CHAR_RPRNT )
 					else
 						hSkipStmt( )

@@ -46,7 +46,8 @@ function cArrayStmt _
 		lexSkipToken( )
 
 		do
-			if( cVarOrDeref( expr1, FALSE ) = FALSE ) then
+			expr1 = cVarOrDeref( FALSE )
+			if( expr1 = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 					exit function
 				else
@@ -100,7 +101,8 @@ function cArrayStmt _
 	case FB_TK_SWAP
 		lexSkipToken( )
 
-		if( cVarOrDeref( expr1 ) = FALSE ) then
+		expr1 = cVarOrDeref(  )
+		if( expr1 = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else
@@ -121,7 +123,8 @@ function cArrayStmt _
 
 		hMatchCOMMA( )
 
-		if( cVarOrDeref( expr2 ) = FALSE ) then
+		expr2 = cVarOrDeref(  )
+		if( expr2 = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else
@@ -207,7 +210,8 @@ function cArrayFunct _
 		hMatchLPRNT( )
 
 		'' ID
-		if( cVarOrDeref( arrayexpr, FALSE ) = FALSE ) then
+		arrayexpr = cVarOrDeref( FALSE )
+		if( arrayexpr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else

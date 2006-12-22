@@ -67,7 +67,8 @@ function cSelConstStmtBegin( ) as integer
 	function = FALSE
 
 	'' Expression
-	if( cExpression( expr ) = FALSE ) then
+	expr = cExpression( )
+	if( expr = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
@@ -239,7 +240,8 @@ function cSelConstStmtNext _
 	label = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	do
-		if( cExpression( expr1 ) = FALSE ) then
+		expr1 = cExpression( )
+		if( expr1 = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 				exit function
 			else
@@ -271,7 +273,8 @@ function cSelConstStmtNext _
 		if( lexGetToken( ) = FB_TK_TO ) then
 			lexSkipToken( )
 
-			if( cExpression( expr2 ) = FALSE ) then
+			expr2 = cExpression( )
+			if( expr2 = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else

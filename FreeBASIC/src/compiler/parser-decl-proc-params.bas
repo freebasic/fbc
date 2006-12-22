@@ -167,7 +167,8 @@ private function hOptionalExpr _
 
     '' anything else..
 	case else
-    	if( cExpression( expr ) = FALSE ) then
+    	expr = cExpression( )
+    	if( expr = NULL ) then
     		exit function
     	end if
 

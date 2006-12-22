@@ -302,7 +302,7 @@ end function
 private function hAddOvlProc _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval head_proc as FBSYMBOL ptr, _
+		byval ovl_head_proc as FBSYMBOL ptr, _
 		byval symtb as FBSYMBOLTB ptr, _
 		byval hashtb as FBHASHTB ptr, _
 		byval id as zstring ptr, _
@@ -312,20 +312,20 @@ private function hAddOvlProc _
 		byval ptrcnt as integer, _
 		byval attrib as FB_SYMBATTRIB, _
 		byval preservecase as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr f, fparam, pparam
-	dim as integer params
+	dim as FBSYMBOL ptr ovl = any, ovl_param = any, param = any
+	dim as integer ovl_params = any, params = any, i = any
 
 	function = NULL
 
 	'' only one them is a property?
 	if( (attrib and FB_SYMBATTRIB_PROPERTY) <> 0 ) then
-    	if( symbIsProperty( head_proc ) = FALSE ) then
+    	if( symbIsProperty( ovl_head_proc ) = FALSE ) then
 			exit function
     	end if
 
-	elseif( symbIsProperty( head_proc ) ) then
+	elseif( symbIsProperty( ovl_head_proc ) ) then
 		if( (attrib and FB_SYMBATTRIB_PROPERTY) = 0 ) then
 			exit function
 		end if
@@ -333,62 +333,70 @@ private function hAddOvlProc _
 
 	'' not arg-less?
 	params = symbGetProcParams( proc )
+	if( (attrib and FB_SYMBATTRIB_METHOD) <> 0 ) then
+		params -= 1
+	end if
+
 	if( params > 0 ) then
 		'' can't be vararg..
-		pparam = symbGetProcTailParam( proc )
-		if( pparam->param.mode = FB_PARAMMODE_VARARG ) then
+		param = symbGetProcTailParam( proc )
+		if( param->param.mode = FB_PARAMMODE_VARARG ) then
 			exit function
 		end if
 
 		'' any AS ANY param?
-		do while( pparam <> NULL )
-			if( pparam->typ = FB_DATATYPE_VOID ) then
+		do while( param <> NULL )
+			if( param->typ = FB_DATATYPE_VOID ) then
 				exit function
 			end if
 
-			pparam = pparam->prev
+			param = param->prev
 		loop
 	end if
 
 	'' for each overloaded proc..
-	f = head_proc
-	do while( f <> NULL )
+	ovl = ovl_head_proc
+	do while( ovl <> NULL )
+
+		ovl_params = ovl->proc.params
+		if( symbIsMethod( ovl ) ) then
+			ovl_params -= 1
+		end if
 
 		'' same number of params?
-		if( f->proc.params = params ) then
-
+		if( ovl_params = params ) then
 			'' both arg-less?
 			if( params = 0 ) then
 				exit function
 			end if
 
 			'' for each arg..
-			pparam = symbGetProcTailParam( proc )
-			fparam = symbGetProcTailParam( f )
+			param = symbGetProcTailParam( proc )
+			ovl_param = symbGetProcTailParam( ovl )
 
-			do while( pparam <> NULL )
+			do
 				'' different modes?
-				if( pparam->param.mode <> fparam->param.mode ) then
+				if( param->param.mode <> ovl_param->param.mode ) then
 					'' one is by desc? allow byref and byval args
 					'' with the same type or subtype
-					if( pparam->param.mode = FB_PARAMMODE_BYDESC ) then
+					if( param->param.mode = FB_PARAMMODE_BYDESC ) then
 						exit do
-					elseif( fparam->param.mode = FB_PARAMMODE_BYDESC ) then
+					elseif( ovl_param->param.mode = FB_PARAMMODE_BYDESC ) then
 						exit do
 					end if
 				end if
 
 				'' not the same type? check next proc..
-				if( pparam->typ <> fparam->typ ) then
+				if( param->typ <> ovl_param->typ ) then
 					'' handle special cases: zstring ptr and string args
-					select case pparam->typ
+					select case param->typ
 					case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
-						if( fparam->typ <> FB_DATATYPE_STRING ) then
+						if( ovl_param->typ <> FB_DATATYPE_STRING ) then
 							exit do
 						end if
 
 					case FB_DATATYPE_STRING
-						if( fparam->typ <> FB_DATATYPE_POINTER + FB_DATATYPE_CHAR ) then
+						if( ovl_param->typ <> FB_DATATYPE_POINTER + FB_DATATYPE_CHAR ) then
 							exit do
 						end if
 
@@ -397,25 +405,27 @@ private function hAddOvlProc _
 					end select
 				end if
 
-				if( pparam->subtype <> fparam->subtype ) then
+				if( param->subtype <> ovl_param->subtype ) then
 					exit do
 				end if
 
-				pparam = pparam->prev
-				fparam = fparam->prev
-			loop
+				param = param->prev
+				ovl_param = ovl_param->prev
+
+				ovl_params -= 1
+			loop while( ovl_params > 0 )
 
 			'' all params equal? can't overload..
-			if( pparam = NULL ) then
+			if( ovl_params = 0 ) then
 				exit function
 			end if
 
 		end if
 
-		f = symbGetProcOvlNext( f )
+		ovl = symbGetProcOvlNext( ovl )
 	loop
 
-    if( symbIsLocal( head_proc ) ) then
+    if( symbIsLocal( ovl_head_proc ) ) then
     	attrib or= FB_SYMBATTRIB_LOCAL
     end if
 
@@ -437,13 +447,13 @@ private function hAddOvlProc _
 		dim as FBSYMCHAIN ptr chain_, nxt
 		chain_ = listNewNode( @symb.chainlist )
 
-		chain_->index = head_proc->hash.chain->index
-		chain_->item = head_proc->hash.chain->item
+		chain_->index = ovl_head_proc->hash.chain->index
+		chain_->item = ovl_head_proc->hash.chain->item
 
-    	nxt = head_proc->hash.chain->next
-		head_proc->hash.chain->next = chain_
+    	nxt = ovl_head_proc->hash.chain->next
+		ovl_head_proc->hash.chain->next = chain_
 
-		chain_->prev = head_proc->hash.chain
+		chain_->prev = ovl_head_proc->hash.chain
 		chain_->next = nxt
 		if( nxt <> NULL ) then
 			nxt->prev = chain_
@@ -461,7 +471,7 @@ end function
 private function hAddOpOvlProc _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval head_proc as FBSYMBOL ptr, _
+		byval ovl_head_proc as FBSYMBOL ptr, _
 		byval symtb as FBSYMBOLTB ptr, _
 		byval hashtb as FBHASHTB ptr, _
 		byval op as AST_OP, _
@@ -470,13 +480,13 @@ private function hAddOpOvlProc _
 		byval subtype as FBSYMBOL ptr, _
 		byval ptrcnt as integer, _
 		byval attrib as FB_SYMBATTRIB _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr p
+	dim as FBSYMBOL ptr ovl = any
 
 	'' if it's not the type casting op, overloaded as an ordinary proc
 	if( op <> AST_OP_CAST ) then
-		return hAddOvlProc( proc, head_proc, _
+		return hAddOvlProc( proc, ovl_head_proc, _
 							symtb, hashtb, _
 							NULL, id_alias, _
 							dtype, subtype, ptrcnt, attrib, _
@@ -486,23 +496,23 @@ private function hAddOpOvlProc _
 	'' type casting, must check the return type, not the parameter..
 
 	'' for each overloaded proc..
-	p = head_proc
-	do while( p <> NULL )
+	ovl = ovl_head_proc
+	do while( ovl <> NULL )
 
 		'' same type?
-		if( proc->typ = p->typ ) then
+		if( proc->typ = ovl->typ ) then
 			'' and sub-type?
-			if( proc->subtype = p->subtype ) then
+			if( proc->subtype = ovl->subtype ) then
 				'' dup definition..
 				return NULL
 			end if
 		end if
 
 		'' next
-		p = symbGetProcOvlNext( p )
+		ovl = symbGetProcOvlNext( ovl )
 	loop
 
-	if( symbIsLocal( head_proc ) ) then
+	if( symbIsLocal( ovl_head_proc ) ) then
 		attrib or= FB_SYMBATTRIB_LOCAL
 	end if
 
@@ -534,12 +544,12 @@ private function hSetupProc _
 		byval attrib as integer, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as integer stats, preserve_case
-    dim as FBSYMBOL ptr proc, head_proc, parent
-	dim as FBSYMBOLTB ptr symbtb
-	dim as FBHASHTB ptr hashtb
+    dim as integer stats = any, preserve_case = any
+    dim as FBSYMBOL ptr proc = any, head_proc = any, parent = any
+	dim as FBSYMBOLTB ptr symbtb = any
+	dim as FBHASHTB ptr hashtb = any
 
     function = NULL
 
@@ -792,22 +802,29 @@ add_proc:
 
 	'' if overloading, update the linked-list
 	if( symbIsOverloaded( proc ) ) then
+		dim as integer params = symbGetProcParams( proc )
+
+		'' note: min and max params don't count the instance ptr
+		if( symbIsMethod( proc ) ) then
+			params -= 1
+		end if
+
 		if( head_proc <> NULL ) then
 			proc->proc.ovl.next = head_proc->proc.ovl.next
 			head_proc->proc.ovl.next = proc
 
-			if( symbGetProcParams( proc ) < symGetProcOvlMinParams( head_proc ) ) then
-				symGetProcOvlMinParams( head_proc ) = symbGetProcParams( proc )
+			if( params < symGetProcOvlMinParams( head_proc ) ) then
+				symGetProcOvlMinParams( head_proc ) = params
 			end if
 
-			if( symbGetProcParams( proc ) > symGetProcOvlMaxParams( head_proc ) ) then
-				symGetProcOvlMaxParams( head_proc ) = symbGetProcParams( proc )
+			if( params > symGetProcOvlMaxParams( head_proc ) ) then
+				symGetProcOvlMaxParams( head_proc ) = params
 			end if
 
 		else
 			proc->proc.ovl.next = NULL
-			symGetProcOvlMinParams( proc ) = symbGetProcParams( proc )
-			symGetProcOvlMaxParams( proc ) = symbGetProcParams( proc )
+			symGetProcOvlMinParams( proc ) = params
+			symGetProcOvlMaxParams( proc ) = params
 		end if
 	end if
 
@@ -1207,73 +1224,83 @@ end function
 '':::::
 function symbFindOverloadProc _
 	( _
-		byval head_proc as FBSYMBOL ptr, _
+		byval ovl_head_proc as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr f, fparam, pparam, fsubtype, psubtype
-	dim as integer params
+	dim as FBSYMBOL ptr ovl = any, ovl_param = any, param = any
+	dim as FBSYMBOL ptr ovl_subtype = any, subtype = any
+	dim as integer ovl_params = any, params = any, i = any
 
 	''
-	if( (head_proc = NULL) or (proc = NULL) ) then
+	if( (ovl_head_proc = NULL) or (proc = NULL) ) then
 		return NULL
 	end if
 
 	'' procs?
-	if( (symbGetClass( head_proc ) <> FB_SYMBCLASS_PROC) or _
+	if( (symbGetClass( ovl_head_proc ) <> FB_SYMBCLASS_PROC) or _
 		(symbGetClass( proc ) <> FB_SYMBCLASS_PROC) ) then
 		return NULL
 	end if
 
 	params = symbGetProcParams( proc )
+	if( symbIsMethod( proc ) ) then
+		params -= 1
+	end if
 
 	'' for each proc starting from parent..
-	f = head_proc
-	do while( f <> NULL )
+	ovl = ovl_head_proc
+	do while( ovl <> NULL )
 
-		if( params = f->proc.params ) then
+		ovl_params = ovl->proc.params
+		if( symbIsMethod( ovl ) ) then
+			ovl_params -= 1
+		end if
+
+		if( params = ovl_params ) then
 
 			'' arg-less?
 			if( params = 0 ) then
-				return f
+				return ovl
 			end if
 
 			'' for each arg..
-			fparam = symbGetProcTailParam( f )
-			pparam = symbGetProcTailParam( proc )
-			do while( pparam <> NULL )
-
+			ovl_param = symbGetProcTailParam( ovl )
+			param = symbGetProcTailParam( proc )
+			do
 				'' different modes?
-				if( pparam->param.mode <> fparam->param.mode ) then
+				if( param->param.mode <> ovl_param->param.mode ) then
 					'' one is by desc? can't be the same..
-					if( pparam->param.mode = FB_PARAMMODE_BYDESC ) then
+					if( param->param.mode = FB_PARAMMODE_BYDESC ) then
 						exit do
-					elseif( fparam->param.mode = FB_PARAMMODE_BYDESC ) then
+					elseif( ovl_param->param.mode = FB_PARAMMODE_BYDESC ) then
 						exit do
 					end if
 				end if
 
 				'' not the same type? check next proc..
-				if( pparam->typ <> fparam->typ ) then
+				if( param->typ <> ovl_param->typ ) then
 					exit do
 				end if
 
-				if( pparam->subtype <> fparam->subtype ) then
+				if( param->subtype <> ovl_param->subtype ) then
 					exit do
 				end if
 
-				pparam = pparam->prev
-				fparam = fparam->prev
-			loop
+				param = param->prev
+				ovl_param = ovl_param->prev
+
+				ovl_params -= 1
+			loop while( ovl_params > 0 )
 
 			'' all args equal?
-			if( pparam = NULL ) then
-				return f
+			if( ovl_params = 0 ) then
+				return ovl
 			end if
 
 		end if
 
-		f = symbGetProcOvlNext( f )
+		ovl = symbGetProcOvlNext( ovl )
 	loop
 
 	function = NULL
@@ -1284,29 +1311,29 @@ end function
 function symbFindOpOvlProc _
 	( _
 		byval op as AST_OP, _
-		byval head_proc as FBSYMBOL ptr, _
+		byval ovl_head_proc as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr p
+	dim as FBSYMBOL ptr ovl = any
 
 	'' if it's not type casting op, handle is as an ordinary proc
 	if( op <> AST_OP_CAST ) then
-		return symbFindOverloadProc( head_proc, proc )
+		return symbFindOverloadProc( ovl_head_proc, proc )
 	end if
 
 	'' for each proc starting from parent..
-	p = head_proc
-	do while( p <> NULL )
+	ovl = ovl_head_proc
+	do while( ovl <> NULL )
 
 		'' same return type?
-		if( proc->typ = p->typ ) then
-			if( proc->subtype = p->subtype ) then
-				return p
+		if( proc->typ = ovl->typ ) then
+			if( proc->subtype = ovl->subtype ) then
+				return ovl
 			end if
 		end if
 
-		p = symbGetProcOvlNext( p )
+		ovl = symbGetProcOvlNext( ovl )
 	loop
 
 	function = NULL
@@ -1316,17 +1343,15 @@ end function
 '':::::
 function symbFindCtorProc _
 	( _
-		byval head_proc as FBSYMBOL ptr, _
+		byval ovl_head_proc as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
-
-	dim as FBSYMBOL ptr p
+	) as FBSYMBOL ptr
 
 	'' dtor? can't overload..
-	if( symbIsDestructor( head_proc ) ) then
-		return head_proc
+	if( symbIsDestructor( ovl_head_proc ) ) then
+		return ovl_head_proc
 	else
-		return symbFindOverloadProc( head_proc, proc )
+		return symbFindOverloadProc( ovl_head_proc, proc )
 	end if
 
 end function
@@ -1677,13 +1702,13 @@ end function
 '':::::
 function symbFindClosestOvlProc _
 	( _
-		byval proc_head as FBSYMBOL ptr, _
+		byval ovl_proc_head as FBSYMBOL ptr, _
 		byval args as integer, _
 		byval arg_head as FB_CALL_ARG ptr, _
 		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr proc = any, closest_proc = any, param = any
+	dim as FBSYMBOL ptr ovl = any, closest_proc = any, param = any
 	dim as integer i = any, arg_matches = any, matches = any
 	dim as integer max_matches = any, amb_cnt = any
 	dim as FB_CALL_ARG ptr arg = any
@@ -1695,17 +1720,25 @@ function symbFindClosestOvlProc _
 	amb_cnt = 0
 
 	'' for each proc..
-	proc = proc_head
-	do while( proc <> NULL )
+	ovl = ovl_proc_head
+	do while( ovl <> NULL )
 
-		if( args <= symbGetProcParams( proc ) ) then
+		dim as integer params = symbGetProcParams( ovl )
+		if( symbIsMethod( ovl ) ) then
+			params -= 1
+		end if
 
+		if( args <= params ) then
 			'' arg-less? exit..
-			if( symbGetProcParams( proc ) = 0 ) then
-				return proc
+			if( params = 0 ) then
+				return ovl
 			end if
 
-			param = symbGetProcLastParam( proc )
+			param = symbGetProcLastParam( ovl )
+			if( symbIsMethod( ovl ) ) then
+				param = symbGetProcPrevParam( ovl, param )
+			end if
+
 			matches = 0
 
 			'' for each arg..
@@ -1720,12 +1753,12 @@ function symbFindClosestOvlProc _
 				matches += arg_matches
 
                	'' next param
-				param = symbGetProcPrevParam( proc, param )
+				param = symbGetProcPrevParam( ovl, param )
 				arg = arg->next
 			next
 
 			'' fewer params? check if the ones missing are optional
-			if( args < symbGetProcParams( proc ) ) then
+			if( args < params ) then
 				if( (matches > 0) or (args = 0) ) then
 					do while( param <> NULL )
 			    		'' not optional? exit
@@ -1737,14 +1770,14 @@ function symbFindClosestOvlProc _
 			    		end if
 
 						'' next param
-						param = symbGetProcPrevParam( proc, param )
+						param = symbGetProcPrevParam( ovl, param )
 					loop
 				end if
 			end if
 
 		    '' closer?
 		    if( matches > max_matches ) then
-			   	closest_proc = proc
+			   	closest_proc = ovl
 			   	max_matches = matches
 			   	amb_cnt = 0
 
@@ -1758,7 +1791,7 @@ function symbFindClosestOvlProc _
 		end if
 
 		'' next overloaded proc
-		proc = symbGetProcOvlNext( proc )
+		ovl = symbGetProcOvlNext( ovl )
 	loop
 
 	'' more than one possibility?
@@ -1780,7 +1813,7 @@ function symbFindBopOvlProc _
 		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr
 
-	dim as FB_CALL_ARG argTb(0 to 1) = any
+	dim as FB_CALL_ARG arg1 = any, arg2 = any
 	dim as FBSYMBOL ptr proc = any
 
    	*err_num = FB_ERRMSG_OK
@@ -1800,15 +1833,15 @@ function symbFindBopOvlProc _
    	end select
 
 	'' try (l, r)
-	argTb(0).expr = l
-	argTb(0).mode = INVALID
-	argTb(0).next = @argTb(1)
+	arg1.expr = l
+	arg1.mode = INVALID
+	arg1.next = @arg2
 
-	argTb(1).expr = r
-	argTb(1).mode = INVALID
-	argTb(1).next = NULL
+	arg2.expr = r
+	arg2.mode = INVALID
+	arg2.next = NULL
 
-	proc = symbFindClosestOvlProc( symb.globOpOvlTb(op).head, 2, @argTb(0), err_num )
+	proc = symbFindClosestOvlProc( symb.globOpOvlTb(op).head, 2, @arg1, err_num )
 
 	if( proc = NULL ) then
 		if( *err_num <> FB_ERRMSG_OK ) then
@@ -1829,7 +1862,7 @@ function symbFindSelfBopOvlProc _
 		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr
 
-	dim as FB_CALL_ARG argTb(0 to 1) = any
+	dim as FB_CALL_ARG arg1 = any
 	dim as FBSYMBOL ptr proc = any, head_proc = any
 
    	*err_num = FB_ERRMSG_OK
@@ -1855,16 +1888,12 @@ function symbFindSelfBopOvlProc _
    		return NULL
    	end if
 
-	'' try (l, r)
-	argTb(0).expr = l
-	argTb(0).mode = INVALID
-	argTb(0).next = @argTb(1)
+	'' try (l, r) -- don't pass the instance ptr
+	arg1.expr = r
+	arg1.mode = INVALID
+	arg1.next = NULL
 
-	argTb(1).expr = r
-	argTb(1).mode = INVALID
-	argTb(1).next = NULL
-
-	proc = symbFindClosestOvlProc( head_proc, 2, @argTb(0), err_num )
+	proc = symbFindClosestOvlProc( head_proc, 1, @arg1, err_num )
 
 	if( proc = NULL ) then
 		if( *err_num <> FB_ERRMSG_OK ) then
@@ -1894,7 +1923,7 @@ function symbFindUopOvlProc _
 		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr
 
-	dim as FB_CALL_ARG argTb(0) = any
+	dim as FB_CALL_ARG arg1 = any
 	dim as FBSYMBOL ptr proc = any
 
    	*err_num = FB_ERRMSG_OK
@@ -1908,11 +1937,11 @@ function symbFindUopOvlProc _
    		return NULL
    	end select
 
-	argTb(0).expr = l
-	argTb(0).mode = INVALID
-	argTb(0).next = NULL
+	arg1.expr = l
+	arg1.mode = INVALID
+	arg1.next = NULL
 
-	proc = symbFindClosestOvlProc( symb.globOpOvlTb(op).head, 1, @argTb(0), err_num )
+	proc = symbFindClosestOvlProc( symb.globOpOvlTb(op).head, 1, @arg1, err_num )
 
 	if( proc = NULL ) then
 		if( *err_num <> FB_ERRMSG_OK ) then
@@ -1932,7 +1961,6 @@ function symbFindSelfUopOvlProc _
 		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr
 
-	dim as FB_CALL_ARG argTb(0 to 0) = any
 	dim as FBSYMBOL ptr proc = any, head_proc = any
 
    	*err_num = FB_ERRMSG_OK
@@ -1958,12 +1986,9 @@ function symbFindSelfUopOvlProc _
    		return NULL
    	end if
 
-	'' try (l)
-	argTb(0).expr = l
-	argTb(0).mode = INVALID
-	argTb(0).next = NULL
+	'' try (l) -- don't pass the instance ptr
 
-	proc = symbFindClosestOvlProc( head_proc, 1, @argTb(0), err_num )
+	proc = symbFindClosestOvlProc( head_proc, 0, NULL, err_num )
 
 	if( proc = NULL ) then
 		if( *err_num <> FB_ERRMSG_OK ) then
@@ -2159,25 +2184,19 @@ function symbFindCtorOvlProc _
 		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr
 
- 	dim as FB_CALL_ARG argTb(0 to 1) = any
+ 	dim as FB_CALL_ARG arg1 = any
 
- 	argTb(0).expr = astBuildMockInstPtr( sym )
- 	argTb(0).mode = FB_PARAMMODE_BYVAL
- 	argTb(0).next = @argtb(1)
-
- 	argTb(1).expr = expr
- 	argTb(1).mode = INVALID
- 	argTb(1).next = NULL
+ 	'' don't pass the instance ptr
+ 	arg1.expr = expr
+ 	arg1.mode = INVALID
+ 	arg1.next = NULL
 
     dim as FBSYMBOL ptr proc = any
 
  	function = symbFindClosestOvlProc( symbGetCompCtorHead( sym ), _
- 								   	   2, _
- 								   	   @argTb(0), _
+ 								   	   1, _
+ 								   	   @arg1, _
  								   	   err_num )
-
-	'' delete the mock node
-	astDelTree( argTb(0).expr )
 
 end function
 

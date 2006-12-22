@@ -46,13 +46,17 @@ end sub
 '':::::
 ''AsmCode         =   (Text !(END|Comment|NEWLINE))*
 ''
-function cAsmCode as integer static
+function cAsmCode _
+	( _
+	) as integer
+
 	static as zstring * FB_MAXLITLEN+1 text
-	dim as FBSYMCHAIN ptr chain_
-	dim as FBSYMBOL ptr sym
-	dim as ASTNODE ptr expr
-	dim as FB_ASMTOK ptr head, tail, node
-	dim as integer doskip, thisTok
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr base_parent = any
+	dim as FBSYMBOL ptr sym = any
+	dim as ASTNODE ptr expr = any
+	dim as FB_ASMTOK ptr head, tail = any, node = any
+	dim as integer doskip = any, thisTok = any
 
 	function = FALSE
 
@@ -76,7 +80,7 @@ function cAsmCode as integer static
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
 			if( emitIsKeyword( text ) = FALSE ) then
-				chain_ = cIdentifier( )
+				chain_ = cIdentifier( base_parent )
 				do while( chain_ <> NULL )
 
 					select case symbGetClass( chain_->sym )
@@ -112,7 +116,8 @@ function cAsmCode as integer static
 
 		'' lit number?
 		case FB_TKCLASS_NUMLITERAL
-			 if( cNumLiteral( expr, FALSE ) ) then
+			 expr = cNumLiteral( FALSE )
+			 if( expr <> NULL ) then
              	text = astGetValueAsStr( expr )
 			 	astDelNode( expr )
 			 end if
@@ -137,7 +142,8 @@ function cAsmCode as integer static
 			case FB_TK_CINT
 
                 '' CINT( valid expression )?
-				if( cTypeConvExpr( thisTok, expr, TRUE ) = TRUE ) then
+				expr = cTypeConvExpr( thisTok, TRUE )
+				if( expr <> NULL ) then
 
                     '' constant expression?
 					if( astIsCONST( expr ) = TRUE ) then

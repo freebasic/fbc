@@ -29,9 +29,8 @@
 '':::::
 function cConstantEx _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byref expr as ASTNODE ptr _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
@@ -44,30 +43,28 @@ function cConstantEx _
 
   	select case as const dtype
   	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-  		expr = astNewVAR( symbGetConstValStr( sym ), 0, dtype )
+  		return astNewVAR( symbGetConstValStr( sym ), 0, dtype )
 
   	case FB_DATATYPE_ENUM
-  		expr = astNewENUM( symbGetConstValInt( sym ), subtype )
+  		return astNewENUM( symbGetConstValInt( sym ), subtype )
 
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  		expr = astNewCONSTl( symbGetConstValLong( sym ), dtype )
+  		return astNewCONSTl( symbGetConstValLong( sym ), dtype )
 
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		expr = astNewCONSTf( symbGetConstValFloat( sym ), dtype )
+  		return astNewCONSTf( symbGetConstValFloat( sym ), dtype )
 
   	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
   		if( FB_LONGSIZE = len( integer ) ) then
-  			expr = astNewCONSTi( symbGetConstValInt( sym ), dtype, subtype )
+  			return astNewCONSTi( symbGetConstValInt( sym ), dtype, subtype )
   		else
-  			expr = astNewCONSTl( symbGetConstValLong( sym ), dtype )
+  			return astNewCONSTl( symbGetConstValLong( sym ), dtype )
   		end if
 
   	case else
-  		expr = astNewCONSTi( symbGetConstValInt( sym ), dtype, subtype )
+  		return astNewCONSTi( symbGetConstValInt( sym ), dtype, subtype )
 
   	end select
-
-  	function = TRUE
 
 end function
 
@@ -76,14 +73,11 @@ end function
 ''
 function cEnumConstant _
 	( _
-		byval parent as FBSYMBOL ptr, _
-		byref expr as ASTNODE ptr _
-	) as integer static
+		byval parent as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr elm
-	dim as FBSYMCHAIN ptr chain_
-
-	function = FALSE
+	dim as FBSYMBOL ptr elm = any
+	dim as FBSYMCHAIN ptr chain_ = any
 
 	'' ID
 	lexSkipToken( )
@@ -97,11 +91,10 @@ function cEnumConstant _
 
     case else
 		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-			exit function
+			return NULL
 		else
 			'' error recovery: fake a node
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			return TRUE
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 	end select
 
@@ -110,27 +103,25 @@ function cEnumConstant _
 	elm = symbFindByClass( chain_, FB_SYMBCLASS_CONST )
     if( elm = NULL ) then
     	if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) = FALSE ) then
-    		exit function
+    		return NULL
 		else
 			'' error recovery: fake a node
 			lexSkipToken( )
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			return TRUE
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
     end if
 
     if( symbGetParent( elm ) <> parent ) then
     	if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) = FALSE ) then
-    		exit function
+    		return NULL
 		else
 			'' error recovery: fake a node
 			lexSkipToken( )
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			return TRUE
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
     end if
 
-    function = cConstantEx( elm, expr )
+    function = cConstantEx( elm )
 
 end function
 
@@ -139,17 +130,16 @@ end function
 ''
 function cConstant _
 	( _
-		byval chain_ as FBSYMCHAIN ptr, _
-		byref expr as ASTNODE ptr _
-	) as integer static
+		byval chain_ as FBSYMCHAIN ptr _
+	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr sym
+	dim as FBSYMBOL ptr sym = any
 
 	sym = symbFindByClass( chain_, FB_SYMBCLASS_CONST )
 	if( sym <> NULL ) then
-  		function = cConstantEx( sym, expr )
+  		return cConstantEx( sym )
   	else
-		function = FALSE
+		return NULL
   	end if
 
 end function
@@ -159,16 +149,16 @@ end function
 ''
 function cStrLiteral _
 	( _
-		byref expr as ASTNODE ptr _
-	) as integer static
+		_
+	) as ASTNODE ptr
 
-    dim as integer dtype
-	dim as FBSYMBOL ptr sym
-    dim as integer lgt, isunicode
-    dim as zstring ptr zs
-	dim as wstring ptr ws
+    dim as integer dtype = any
+	dim as FBSYMBOL ptr sym = any
+    dim as integer lgt = any, isunicode = any
+    dim as zstring ptr zs = any
+	dim as wstring ptr ws = any
 
-    expr = NULL
+    dim as ASTNODE ptr expr = NULL
 
 	do
   		dtype = lexGetType( )
@@ -241,56 +231,53 @@ function cStrLiteral _
 		end if
 	loop
 
-	function = TRUE
+	function = expr
 
 end function
 
 '':::::
 function cNumLiteral _
 	( _
-		byref expr as ASTNODE ptr, _
 		byval skiptoken as integer _
-	) as integer
+	) as ASTNODE ptr
 
 	dim as integer dtype = any
 
   	dtype = lexGetType( )
   	select case as const dtype
   	case FB_DATATYPE_LONGINT
-		expr = astNewCONSTl( vallng( *lexGetText( ) ), dtype )
+		function = astNewCONSTl( vallng( *lexGetText( ) ), dtype )
 
 	case FB_DATATYPE_ULONGINT
-		expr = astNewCONSTl( valulng( *lexGetText( ) ), dtype )
+		function = astNewCONSTl( valulng( *lexGetText( ) ), dtype )
 
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		expr = astNewCONSTf( val( *lexGetText( ) ), dtype )
+		function = astNewCONSTf( val( *lexGetText( ) ), dtype )
 
 	case FB_DATATYPE_UINT
-		expr = astNewCONSTi( valuint( *lexGetText( ) ), dtype )
+		function = astNewCONSTi( valuint( *lexGetText( ) ), dtype )
 
   	case FB_DATATYPE_LONG
 		if( FB_LONGSIZE = len( integer ) ) then
-			expr = astNewCONSTi( valint( *lexGetText( ) ), dtype )
+			function = astNewCONSTi( valint( *lexGetText( ) ), dtype )
 		else
-			expr = astNewCONSTl( vallng( *lexGetText( ) ), dtype )
+			function = astNewCONSTl( vallng( *lexGetText( ) ), dtype )
 		end if
 
 	case FB_DATATYPE_ULONG
 		if( FB_LONGSIZE = len( integer ) ) then
-			expr = astNewCONSTi( valuint( *lexGetText( ) ), dtype )
+			function = astNewCONSTi( valuint( *lexGetText( ) ), dtype )
 		else
-			expr = astNewCONSTl( valulng( *lexGetText( ) ), dtype )
+			function = astNewCONSTl( valulng( *lexGetText( ) ), dtype )
 		end if
 
 	case else
-		expr = astNewCONSTi( valint( *lexGetText( ) ), dtype )
+		function = astNewCONSTi( valint( *lexGetText( ) ), dtype )
   	end select
 
   	if( skiptoken ) then
   		lexSkipToken( )
   	end if
-
-  	function = TRUE
 
 end function
 
@@ -300,20 +287,20 @@ end function
 ''
 function cLiteral _
 	( _
-		byref litexpr as ASTNODE ptr _
-	) as integer
-
-	function = FALSE
+		_
+	) as ASTNODE ptr
 
 	select case lexGetClass( )
 	'' NUM_LITERAL?
 	case FB_TKCLASS_NUMLITERAL
-		return cNumLiteral( litexpr )
+		return cNumLiteral( )
 
   	'' (STR_LITERAL STR_LITERAL*)?
   	case FB_TKCLASS_STRLITERAL
-        return cStrLiteral( litexpr )
+        return cStrLiteral( )
 
+  	case else
+  		return NULL
   	end select
 
 end function

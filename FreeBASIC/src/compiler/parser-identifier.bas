@@ -115,11 +115,14 @@ end function
 ''
 function cIdentifier _
 	( _
+		byref base_parent as FBSYMBOL ptr, _
 		byval options as FB_IDOPT _
 	) as FBSYMCHAIN ptr
 
     dim as FBSYMCHAIN ptr chain_ = any
-    dim as FBSYMBOL ptr parent = any, base_parent = any
+    dim as FBSYMBOL ptr parent = any
+
+    base_parent = NULL
 
     chain_ = lexGetSymChain( )
 
@@ -138,8 +141,6 @@ function cIdentifier _
     		return NULL
     	end if
     end if
-
-    base_parent = NULL
 
     do
     	parent = chain_->sym
@@ -258,20 +259,11 @@ function cIdentifier _
     			'' for each symbol (because dups..)
     			dim as FBSYMCHAIN ptr iter = chain_
     			do
-    				select case symbGetClass( iter->sym )
-					'' function?
-					case FB_SYMBCLASS_PROC
-						'' not static?
-						if( symbIsMethod( iter->sym ) ) then
-							errReport( FB_ERRMSG_ACCESSTONONSTATICMEMBER )
-						end if
-						exit do
-
         			'' field, never static..
-        			case FB_SYMBCLASS_FIELD
+        			if( symbGetClass( iter->sym ) = FB_SYMBCLASS_FIELD ) then
 						errReport( FB_ERRMSG_ACCESSTONONSTATICMEMBER )
         				exit do
-        			end select
+        			end if
 
     				iter = symbChainGetNext( iter )
     			loop while( iter <> NULL )

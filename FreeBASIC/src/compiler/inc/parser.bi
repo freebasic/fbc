@@ -146,10 +146,14 @@ type FBPARSER_STMT
 end type
 
 enum FB_PARSEROPT
-	FB_PARSEROPT_PRNTOPT		= &h0001
-	FB_PARSEROPT_CHKARRAY		= &h0002		'' used by LEN() to handle expr's and ()-less arrays
-	FB_PARSEROPT_ISEXPR			= &h0004		'' parsing an expression?
-	FB_PARSEROPT_ISSCOPE		= &h0008
+	FB_PARSEROPT_NONE			= &h00000000
+	FB_PARSEROPT_PRNTOPT		= &h00000001
+	FB_PARSEROPT_CHKARRAY		= &h00000002	'' used by LEN() to handle expr's and ()-less arrays
+	FB_PARSEROPT_ISEXPR			= &h00000004	'' parsing an expression?
+	FB_PARSEROPT_ISSCOPE		= &h00000008
+	FB_PARSEROPT_ISFUNC			= &h00000010
+	FB_PARSEROPT_OPTONLY		= &h00000020
+	FB_PARSEROPT_HASINSTPTR		= &h00000040
 end enum
 
 type PARSERCTX
@@ -219,6 +223,15 @@ enum FB_INIOPT
 	FB_INIOPT_ISOBJ				= &h00000004
 end enum
 
+'' cProcHead flags
+enum FB_PROCOPT
+	FB_PROCOPT_NONE				= &h00000000
+
+	FB_PROCOPT_ISSUB			= &h00000001
+	FB_PROCOPT_ISPROTO			= &h00000002
+	FB_PROCOPT_HASPARENT		= &h00000004
+end enum
+
 
 declare function cProgram _
 	( _
@@ -262,19 +275,19 @@ declare function cDeclaration _
 
 declare function cConstDecl _
 	( _
-		byval attrib as integer = FB_SYMBATTRIB_NONE _
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
 declare function cConstAssign _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer = FB_SYMBATTRIB_NONE _
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
 declare function cTypeDecl _
 	( _
-		_
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
 declare function cTypedefDecl _
@@ -284,12 +297,12 @@ declare function cTypedefDecl _
 
 declare function cEnumDecl _
 	( _
-		byval attrib as integer = FB_SYMBATTRIB_NONE _
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
 declare function cVariableDecl _
 	( _
-		_
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
 declare function cStaticArrayDecl _
@@ -322,6 +335,7 @@ declare function cSymbolType _
 
 declare function cIdentifier _
 	( _
+		byref base_parent as FBSYMBOL ptr, _
 		byval options as FB_IDOPT = FB_IDOPT_DEFAULT _
 	) as FBSYMCHAIN ptr
 
@@ -337,36 +351,35 @@ declare function cProcDecl _
 
 declare function cProcHeader _
 	( _
-		byval is_sub as integer, _
-		byval is_prototype as integer, _
-		byval attrib as integer, _
-		byref is_nested as integer _
+		byval attrib as FB_SYMBATTRIB, _
+		byref is_nested as integer, _
+		byval options as FB_PROCOPT _
 	) as FBSYMBOL ptr
 
 declare function cOperatorHeader _
 	( _
-		byval is_prototype as integer, _
-		byval attrib as integer, _
-		byref is_nested as integer _
+		byval attrib as FB_SYMBATTRIB, _
+		byref is_nested as integer, _
+		byval options as FB_PROCOPT _
 	) as FBSYMBOL ptr
 
 declare function cCtorHeader _
 	( _
-		byval is_prototype as integer, _
-		byval attrib as integer, _
-		byref is_nested as integer _
+		byval attrib as FB_SYMBATTRIB, _
+		byref is_nested as integer, _
+		byval is_prototype as integer _
 	) as FBSYMBOL ptr
 
 declare function cPropertyHeader _
 	( _
-		byval is_prototype as integer, _
-		byval attrib as integer, _
-		byref is_nested as integer _
+		byval attrib as FB_SYMBATTRIB, _
+		byref is_nested as integer, _
+		byval is_prototype as integer _
 	) as FBSYMBOL ptr
 
 declare function cParameters _
 	( _
-		byval proc as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
 		byval procmode as integer, _
 		byval isproto as integer _
@@ -439,16 +452,6 @@ declare function cIfStmtEnd _
 		_
 	) as integer
 
-declare function cSingleIfStatement _
-	( _
-		byval expr as ASTNODE ptr _
-	) as integer
-
-declare function cBlockIfStatement _
-	( _
-		byval expr as ASTNODE ptr _
-	) as integer
-
 declare function cForStmtBegin _
 	( _
 		_
@@ -511,7 +514,7 @@ declare function cSelConstStmtEnd _
 
 declare function cProcStmtBegin _
 	( _
-		_
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
 declare function cProcStmtEnd _
@@ -596,187 +599,176 @@ declare function cOperator _
 
 declare function cExpression _
 	( _
-		byref expr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cCatExpression _
 	( _
-		byref catexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cLogExpression _
 	( _
-		byref logexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cRelExpression _
 	( _
-		byref relexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cAddExpression _
 	( _
-		byref addexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cShiftExpression _
 	( _
-		byref shiftexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cModExpression _
 	( _
-		byref modexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cIntDivExpression _
 	( _
-		byref idivexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cMultExpression _
 	( _
-		byref mulexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cExpExpression _
 	( _
-		byref expexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cNegNotExpression _
 	( _
-		byref negexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cHighestPrecExpr _
 	( _
-		byval chain_ as FBSYMCHAIN ptr, _
-		byref highexpr as ASTNODE ptr _
-	) as integer
+		byval base_parent as FBSYMBOL ptr, _
+		byval chain_ as FBSYMCHAIN ptr _
+	) as ASTNODE ptr
 
 declare function cPtrTypeCastingExpr _
 	( _
-		byref castexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cDerefExpression _
 	( _
-		byref derefexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cAddrOfExpression _
 	( _
-		byref addrofexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cTypeConvExpr _
 	( _
 		byval tk as FB_TOKEN, _
-		byref tconvexpr as ASTNODE ptr, _
 		byval isASM as integer = FALSE _
-	) as integer
+	) as ASTNODE ptr
 
 declare function cParentExpression _
 	( _
-		byref parexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cAtom _
 	( _
-		byval chain_ as FBSYMCHAIN ptr, _
-		byref atom as ASTNODE ptr _
-	) as integer
+		byval base_parent as FBSYMBOL ptr, _
+		byval chain_ as FBSYMCHAIN ptr _
+	) as ASTNODE ptr
 
 declare function cVariable _
 	( _
 		byval chain as FBSYMCHAIN ptr, _
-		byref varexpr as ASTNODE ptr, _
 		byval checkarray as integer = TRUE _
-	) as integer
+	) as ASTNODE ptr
 
 declare function cVariableEx _
 	( _
 		byval chain as FBSYMCHAIN ptr, _
-		byref varexpr as ASTNODE ptr, _
 		byval checkarray as integer _
-	) as integer
+	) as ASTNODE ptr
 
 declare function cWithVariable _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byref varexpr as ASTNODE ptr, _
 		byval checkarray as integer _
-	) as integer
+	) as ASTNODE ptr
 
 declare function cDataMember _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
-		byref varexpr as ASTNODE ptr, _
 		byval checkarray as integer _
-	) as integer
+	) as ASTNODE ptr
 
 declare function cVarOrDeref _
 	( _
-		byref varexpr as ASTNODE ptr, _
 		byval checkarray as integer = TRUE, _
 		byval checkaddrof as integer = FALSE _
-	) as integer
+	) as ASTNODE ptr
 
 declare function cFunctionEx _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
+		byval base_parent as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
 declare function cQuirkFunction _
 	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
+		byval tk as FB_TOKEN _
+	) as ASTNODE ptr
 
 declare function cConstant _
 	( _
-		byval chain as FBSYMCHAIN ptr, _
-		byref constexpr as ASTNODE ptr _
-	) as integer
+		byval chain as FBSYMCHAIN ptr _
+	) as ASTNODE ptr
 
 declare function cConstantEx _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byref expr as ASTNODE ptr _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
 declare function cEnumConstant _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byref expr as ASTNODE ptr _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
 declare function cLiteral _
 	( _
-		byref litexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cNumLiteral _
 	( _
-		byref expr as ASTNODE ptr, _
 		byval skiptoken as integer = TRUE _
-	) as integer
+	) as ASTNODE ptr
 
 declare function cStrLiteral _
 	( _
-		byref expr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cProcArgList _
 	( _
+		byval base_parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval arg_list as FB_CALL_ARG_LIST ptr, _
-		byval isfunc as integer, _
-		byval optonly as integer _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 declare function cAsmBlock _
@@ -791,6 +783,7 @@ declare function cProcCallingConv _
 
 declare function cFunctionCall _
 	( _
+		byval base_parent as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr = NULL _
@@ -798,10 +791,11 @@ declare function cFunctionCall _
 
 declare function cProcCall _
 	( _
+		byval base_parent as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr = NULL, _
-		byval checkparents as integer = FALSE _
+		byval checkprnts as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function cMethodCall _
@@ -812,9 +806,8 @@ declare function cMethodCall _
 
 declare function cCtorCall _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byref atom as ASTNODE ptr _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
 declare function cUdtMember _
 	( _
@@ -851,8 +844,8 @@ declare function cFuncPtrOrMemberDeref _
 
 declare function cStrIdxOrMemberDeref _
 	( _
-		byref expr as ASTNODE ptr _
-	) as integer
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
 
 declare function cAssignment _
 	( _
@@ -872,9 +865,8 @@ declare function cGfxStmt _
 
 declare function cGfxFunct _
 	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
+		byval tk as FB_TOKEN _
+	) as ASTNODE ptr
 
 declare function cGotoStmt _
 	( _
@@ -1008,8 +1000,8 @@ declare function cScreenFunct _
 
 declare function cAnonUDT _
 	( _
-		byref expr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cConstExprValue _
 	( _
@@ -1018,8 +1010,8 @@ declare function cConstExprValue _
 
 declare function cOperatorNew _
 	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
+		_
+	) as ASTNODE ptr
 
 declare function cOperatorDelete _
 	( _
@@ -1053,7 +1045,8 @@ declare function hDeclCheckParent _
 
 declare function hAllocCallArg _
 	( _
-		byval arg_list as FB_CALL_ARG_LIST ptr _
+		byval arg_list as FB_CALL_ARG_LIST ptr, _
+		byval to_head as integer _
 	) as FB_CALL_ARG ptr
 
 declare function hVarDeclEx _

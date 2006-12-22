@@ -101,7 +101,8 @@ function cSelectStmtBegin as integer
 	end if
 
 	'' Expression
-	if( cExpression( expr ) = FALSE ) then
+	expr = cExpression( )
+	if( expr = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
@@ -222,7 +223,8 @@ private function hCaseExpression _
 	end if
 
 	'' Expression
-	if( cExpression( casectx.expr1 ) = FALSE ) then
+	casectx.expr1 = cExpression( )
+	if( casectx.expr1 = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
@@ -247,7 +249,8 @@ private function hCaseExpression _
 		else
 			casectx.typ = FB_CASETYPE_RANGE
 
-			if( cExpression( casectx.expr2 ) = FALSE ) then
+			casectx.expr2 = cExpression( )
+			if( casectx.expr2 = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else

@@ -36,7 +36,8 @@ function cConstExprValue _
 
     function = FALSE
 
-    if( cExpression( expr ) = FALSE ) then
+    expr = cExpression( )
+    if( expr = NULL ) then
     	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     		exit function
     	else
@@ -285,10 +286,11 @@ function cSymbolType _
 		end if
 
 	case else
-		dim as FBSYMBOL ptr sym
-		dim as FBSYMCHAIN ptr chain_
+		dim as FBSYMBOL ptr sym = any
+		dim as FBSYMCHAIN ptr chain_ = any
+		dim as FBSYMBOL ptr base_parent = any
 
-		chain_ = cIdentifier( FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
+		chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
 		if( chain_ = NULL ) then
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function

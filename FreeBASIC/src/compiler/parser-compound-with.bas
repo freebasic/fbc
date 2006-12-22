@@ -34,7 +34,8 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
     dim as integer dtype
 
     '' Variable
-    if( cVarOrDeref( expr ) = FALSE ) then
+    expr = cVarOrDeref( )
+    if( expr = NULL ) then
     	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     		return NULL
     	else

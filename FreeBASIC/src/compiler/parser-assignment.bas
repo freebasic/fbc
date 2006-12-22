@@ -286,7 +286,8 @@ function cAssignment _
     parser.ctxsym = astGetSubType( assgexpr )
 
     '' Expression
-    if( cExpression( expr ) = FALSE ) then
+    expr = cExpression( )
+    if( expr = NULL ) then
        	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
        		parser.ctxsym = NULL
        		exit function
@@ -422,7 +423,8 @@ function cAssignmentOrPtrCall _
 	end if
 
 	'' Variable
-	if( cVarOrDeref( expr ) ) then
+	expr = cVarOrDeref( )
+	if( expr <> NULL ) then
     	function = cAssignmentOrPtrCallEx( expr )
 
 	else

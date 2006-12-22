@@ -89,7 +89,7 @@ function cConstAssign _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer = FB_SYMBATTRIB_NONE _
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 id
@@ -189,7 +189,8 @@ function cConstAssign _
 	end if
 
 	'' ConstExpression
-	if( cExpression( expr ) = FALSE ) then
+	expr = cExpression( )
+	if( expr = NULL ) then
 		if( errReportEx( FB_ERRMSG_EXPECTEDCONST, id ) = FALSE ) then
 			exit function
 		else
@@ -311,10 +312,10 @@ end function
 ''ConstDecl       =   CONST (AS SymbolType)? ConstAssign (DECL_SEPARATOR ConstAssign)* .
 ''
 function cConstDecl _
-	( _ 
-		byval attrib as integer = FB_SYMBATTRIB_NONE _
+	( _
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
-	
+
     dim as integer dtype = any
     dim as FBSYMBOL ptr subtype = any
 

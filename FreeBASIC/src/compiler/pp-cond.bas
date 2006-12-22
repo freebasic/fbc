@@ -89,6 +89,7 @@ end sub
 '':::::
 function ppCondIf( ) as integer
     dim as integer istrue = any
+    dim as FBSYMBOL ptr base_parent = any
 
     function = FALSE
 
@@ -99,7 +100,7 @@ function ppCondIf( ) as integer
 	case FB_TK_PP_IFDEF
         lexSkipToken( LEXCHECK_NODEFINE )
 
-		if( cIdentifier( FB_IDOPT_NONE ) <> NULL ) then
+		if( cIdentifier( base_parent, FB_IDOPT_NONE ) <> NULL ) then
 			'' any symbol is okay or type's wouldn't be found
 			istrue = TRUE
 		end if
@@ -109,7 +110,7 @@ function ppCondIf( ) as integer
 	case FB_TK_PP_IFNDEF
         lexSkipToken( LEXCHECK_NODEFINE )
 
-		if( cIdentifier( FB_IDOPT_NONE ) = NULL ) then
+		if( cIdentifier( base_parent, FB_IDOPT_NONE ) = NULL ) then
 			'' ditto
 			istrue = TRUE
 		end if
@@ -994,10 +995,9 @@ private function ppParentExpr _
 		parexpr.class = PPEXPR_CLASS_NUM
 		parexpr.dtype = FB_DATATYPE_INTEGER
 
-		parexpr.num.int = FALSE
-		if( cIdentifier( FB_IDOPT_NONE ) <> NULL ) then
-			parexpr.num.int = TRUE
-		end if
+		dim as FBSYMBOL ptr base_parent = any
+
+		parexpr.num.int = (cIdentifier( base_parent, FB_IDOPT_NONE ) <> NULL)
 
 		lexSkipToken( )
 

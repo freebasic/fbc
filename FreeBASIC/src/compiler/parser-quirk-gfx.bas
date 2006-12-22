@@ -177,7 +177,8 @@ private function hGetTarget _
 	dim as integer last_isexpr = fbGetIsExpression( )
 	fbSetIsExpression( TRUE )
 
-	if( cVarOrDeref( expr, FALSE, TRUE ) = FALSE ) then
+	expr = cVarOrDeref( FALSE, TRUE )
+	if( expr = NULL ) then
 		exit function
 	end if
 
@@ -440,7 +441,7 @@ function cGfxLine as integer
 
 	'' '-'
 	if( hMatch( CHAR_MINUS ) = FALSE ) then
-		errReport FB_ERRMSG_EXPECTEDMINUS
+		errReport( FB_ERRMSG_EXPECTEDMINUS )
 		exit function
 	end if
 
@@ -475,7 +476,8 @@ function cGfxLine as integer
 
 	'' (',' Expr? (',' LIT_STRING? (',' Expr )?)?)?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( cexpr ) = FALSE ) then
+		cexpr = cExpression( )
+		if( cexpr = NULL ) then
 			cexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
 			flags or= FBGFX_DEFAULT_COLOR_FLAG
 		end if
@@ -553,33 +555,28 @@ function cGfxCircle as integer
 
 	'' (',' Expr? )? - color
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( cexpr ) = FALSE ) then
+		cexpr = cExpression( )
+		if( cexpr = NULL ) then
 			cexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
 			flags or= FBGFX_DEFAULT_COLOR_FLAG
 		end if
 
         '' (',' Expr? )? - iniarc
         if( hMatch( CHAR_COMMA ) ) then
-        	if( cExpression( iniexpr ) = FALSE ) then
-        		iniexpr = NULL
-        	end if
+        	iniexpr = cExpression( )
 
         	'' (',' Expr? )? - endarc
         	if( hMatch( CHAR_COMMA ) ) then
-        		if( cExpression( endexpr ) = FALSE ) then
-        			endexpr = NULL
-        		end if
+        		endexpr = cExpression( )
 
             	'' (',' Expr )? - aspect
             	if( hMatch( CHAR_COMMA ) ) then
-            		if( cExpression( aspexpr ) = FALSE ) then
-            			aspexpr = NULL
-            		end if
+            		aspexpr = cExpression( )
 
             		'' (',' Expr )? - fillflag
             		if( hMatch( CHAR_COMMA ) ) then
             			if( ucase( *lexGetText( ) ) <> "F" ) then
-							errReport FB_ERRMSG_EXPECTEDEXPRESSION
+							errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 							exit function
 						end if
 						lexSkipToken( )
@@ -639,9 +636,7 @@ function cGfxPaint as integer
 
 	'' color/pattern
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( pexpr ) = FALSE ) then
-			pexpr = NULL
-		end if
+		pexpr = cExpression( )
 
 		'' background color
 		if( hMatch( CHAR_COMMA ) ) then
@@ -713,9 +708,7 @@ function cGfxDrawString as integer
 
 	'' color/font/mode
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( cexpr ) = FALSE ) then
-			cexpr = NULL
-		end if
+		cexpr = cExpression( )
 
 		'' custom user font
 		if( hMatch( CHAR_COMMA ) ) then
@@ -761,7 +754,7 @@ function cGfxDraw as integer
         case CHAR_COMMA, CHAR_DOT
 			target = hGetTarget( texpr, tisptr )
 			if( (target = NULL) and (tisptr = FALSE) ) then
-				errReport FB_ERRMSG_EXPECTEDEXPRESSION
+				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				exit function
 			end if
 			hMatch( CHAR_COMMA )
@@ -811,7 +804,7 @@ function cGfxView( byval isview as integer ) as integer
 
 		'' '-'
 		if( hMatch( CHAR_MINUS ) = FALSE ) then
-			errReport FB_ERRMSG_EXPECTEDMINUS
+			errReport( FB_ERRMSG_EXPECTEDMINUS )
 			exit function
 		end if
 
@@ -830,9 +823,8 @@ function cGfxView( byval isview as integer ) as integer
 			'' (',' Expr? )? - color
 			flags or= ( FBGFX_DEFAULT_COLOR_FLAG or FBGFX_DEFAULT_AUX_COLOR_FLAG )
 			if( hMatch( CHAR_COMMA ) ) then
-				if( cExpression( fillexpr ) = FALSE ) then
-					fillexpr = NULL
-				else
+				fillexpr = cExpression( )
+				if( fillexpr <> NULL ) then
 					flags and= not FBGFX_DEFAULT_COLOR_FLAG
 				end if
 
@@ -889,11 +881,13 @@ function cGfxPalette as integer
 		gexpr = NULL
 		bexpr = NULL
 
-		if( cExpression( attexpr ) ) then
+		attexpr = cExpression( )
+		if( attexpr <> NULL ) then
 			hMatchCOMMA( )
 
 			if( isget ) then
-				if( cVarOrDeref( rexpr ) = FALSE ) then
+				rexpr = cVarOrDeref( )
+				if( rexpr = NULL ) then
 		            errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		            exit function
 		        end if
@@ -903,7 +897,8 @@ function cGfxPalette as integer
 
 			if( hMatch( CHAR_COMMA ) ) then
 				if( isget ) then
-					if( cVarOrDeref( gexpr ) = FALSE ) then
+					gexpr = cVarOrDeref( )
+					if( gexpr = NULL ) then
 			            errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			            exit function
 			        end if
@@ -914,7 +909,8 @@ function cGfxPalette as integer
 				hMatchCOMMA( )
 
 				if( isget ) then
-					if( cVarOrDeref( bexpr ) = FALSE ) then
+					bexpr = cVarOrDeref( )
+					if( bexpr = NULL ) then
 			            errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			            exit function
 			        end if
@@ -924,7 +920,7 @@ function cGfxPalette as integer
 			end if
 		else
 			if( isget ) then
-				errReport FB_ERRMSG_EXPECTEDEXPRESSION
+				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				exit function
 			end if
 		end if
@@ -940,7 +936,8 @@ end function
 ''
 function cGfxPut as integer
     dim as integer coordtype, mode, isptr, tisptr, expectmode
-    dim as ASTNODE ptr xexpr, yexpr, arrayexpr, texpr, alphaexpr, funcexpr, paramexpr, x1expr, y1expr, x2expr, y2expr
+    dim as ASTNODE ptr xexpr, yexpr, arrayexpr, texpr, alphaexpr, _
+    				   funcexpr, paramexpr, x1expr, y1expr, x2expr, y2expr
     dim as FBSYMBOL ptr s, target, arg1, arg2
 
 	function = FALSE
@@ -1062,7 +1059,7 @@ function cGfxGet as integer
 
 	'' '-'
 	if( hMatch( CHAR_MINUS ) = FALSE ) then
-		errReport FB_ERRMSG_EXPECTEDMINUS
+		errReport( FB_ERRMSG_EXPECTEDMINUS )
 		exit function
 	end if
 
@@ -1124,30 +1121,22 @@ function cGfxScreen as integer
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( dexpr ) = FALSE ) then
-			dexpr = NULL
-		end if
+		dexpr = cExpression( )
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( pexpr ) = FALSE ) then
-			pexpr = NULL
-		end if
+		pexpr = cExpression( )
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( fexpr ) = FALSE ) then
-			fexpr = NULL
-		end if
+		fexpr = cExpression( )
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( rexpr ) = FALSE ) then
-			rexpr = NULL
-		end if
+		rexpr = cExpression( )
 	end if
 
 	''
@@ -1176,30 +1165,22 @@ function cGfxScreenRes as integer
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( dexpr ) = FALSE ) then
-			dexpr = NULL
-		end if
+		dexpr = cExpression( )
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( pexpr ) = FALSE ) then
-			pexpr = NULL
-		end if
+		pexpr = cExpression( )
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( fexpr ) = FALSE ) then
-			fexpr = NULL
-		end if
+		fexpr = cExpression( )
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( rexpr ) = FALSE ) then
-			rexpr = NULL
-		end if
+		rexpr = cExpression( )
 	end if
 
 	''
@@ -1230,7 +1211,7 @@ function cGfxPoint( byref funcexpr as ASTNODE ptr ) as integer
 		if( hMatch( CHAR_COMMA ) ) then
 			target = hGetTarget( texpr, tisptr )
 			if( (target = NULL) and (tisptr = FALSE) ) then
-				errReport FB_ERRMSG_EXPECTEDEXPRESSION
+				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				exit function
 			end if
 		end if
@@ -1266,9 +1247,8 @@ function cGfxImageCreate( byref funcexpr as ASTNODE ptr ) as integer
 	flags = FBGFX_DEFAULT_COLOR_FLAG
 
 	if( hMatch( CHAR_COMMA ) ) then
-		if( cExpression( cexpr ) = FALSE ) then
-			cexpr = NULL
-		else
+		cexpr = cExpression( )
+		if( cexpr <> NULL ) then
 			flags = 0
 		end if
 		if( hMatch( CHAR_COMMA ) ) then
@@ -1370,22 +1350,23 @@ end function
 '':::::
 function cGfxFunct _
 	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
+		byval tk as FB_TOKEN _
+	) as ASTNODE ptr
 
-	function = FALSE
+	dim as ASTNODE ptr expr = NULL
 
 	select case tk
 	case FB_TK_POINT
 		lexSkipToken( )
-		function = cGfxPoint( funcexpr )
+		cGfxPoint( expr )
 
 	case FB_TK_IMAGECREATE
 		lexSkipToken( )
-		function = cGfxImageCreate( funcexpr )
+		cGfxImageCreate( expr )
 
 	end select
+
+	function = expr
 
 end function
 

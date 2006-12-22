@@ -47,7 +47,8 @@ function cWhileStmtBegin as integer
 	astAdd( astNewLABEL( il ) )
 
 	'' Expression
-	if( cExpression( expr ) = FALSE ) then
+	expr = cExpression( )
+	if( expr = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else

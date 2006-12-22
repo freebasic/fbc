@@ -28,8 +28,11 @@
 #include once "inc\ast.bi"
 
 '':::::
-private function hFuncReturn( ) as integer
-    dim as integer checkexpr
+private function hFuncReturn _
+	( _
+	) as integer
+
+    dim as integer checkexpr = any
 
     function = FALSE
 
@@ -81,8 +84,9 @@ function cGotoStmt _
 		byval tk as FB_TOKEN _
 	) as integer
 
-	dim as FBSYMBOL ptr l
-	dim as FBSYMCHAIN ptr chain_
+	dim as FBSYMBOL ptr l = any
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr base_parent = any
 
 	function = FALSE
 
@@ -97,7 +101,7 @@ function cGotoStmt _
 										  FB_SYMBCLASS_LABEL )
 
 		else
-			chain_ = cIdentifier( FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
+			chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
@@ -133,7 +137,7 @@ function cGotoStmt _
 										  FB_SYMBCLASS_LABEL )
 
 		else
-			chain_ = cIdentifier( FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
+			chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
@@ -178,7 +182,7 @@ function cGotoStmt _
 											  FB_SYMBCLASS_LABEL )
 
 			else
-				chain_ = cIdentifier( FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
+				chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 				if( errGetLast( ) <> FB_ERRMSG_OK ) then
 					exit function
 				end if

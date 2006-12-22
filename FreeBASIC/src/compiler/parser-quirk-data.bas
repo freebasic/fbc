@@ -48,7 +48,10 @@ function cDataStmt  _
 		dim as FBSYMBOL ptr sym = NULL
 		select case lexGetClass( )
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_NUMLITERAL
-			dim as FBSYMCHAIN ptr chain_ = cIdentifier( )
+			dim as FBSYMCHAIN ptr chain_ = any
+			dim as FBSYMBOL ptr base_parent = any
+
+			chain_ = cIdentifier( base_parent )
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
@@ -77,7 +80,8 @@ function cDataStmt  _
 
 		dim as ASTNODE ptr expr = NULL
 		do
-		    if( cVarOrDeref( expr ) = FALSE ) then
+		    expr = cVarOrDeref(  )
+		    if( expr = NULL ) then
 		    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 		    		exit function
 		    	else

@@ -43,6 +43,7 @@
 '':::::
 function cFunctionCall _
 	( _
+		byval base_parent as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr _
@@ -57,11 +58,14 @@ function cFunctionCall _
     	exit function
     end if
 
+	dim as FB_PARSEROPT options = FB_PARSEROPT_ISFUNC
+
 	'' method call?
 	if( thisexpr <> NULL ) then
-		dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list )
+		dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list, FALSE )
 		arg->expr = thisexpr
 		arg->mode = hGetInstPtrMode( thisexpr )
+		options or= FB_PARSEROPT_HASINSTPTR
 	end if
 
 	'' property?
@@ -78,7 +82,7 @@ function cFunctionCall _
 
 			lexSkipToken( )
 
-			funcexpr = cProcArgList( sym, ptrexpr, @arg_list, TRUE, FALSE )
+			funcexpr = cProcArgList( base_parent, sym, ptrexpr, @arg_list, options )
 			if( funcexpr = NULL ) then
 				exit function
 			end if
@@ -95,7 +99,11 @@ function cFunctionCall _
 			end if
 
 			'' no args
-			funcexpr = cProcArgList( sym, ptrexpr, @arg_list, TRUE, TRUE )
+			funcexpr = cProcArgList( base_parent, _
+									 sym, _
+									 ptrexpr, _
+									 @arg_list, _
+									 options or FB_PARSEROPT_OPTONLY )
 			if( funcexpr = NULL ) then
 				exit function
 			end if
@@ -107,7 +115,7 @@ function cFunctionCall _
 			lexSkipToken( )
 
 			'' ProcArgList
-			funcexpr = cProcArgList( sym, ptrexpr, @arg_list, TRUE, FALSE )
+			funcexpr = cProcArgList( base_parent, sym, ptrexpr, @arg_list, options )
 			if( funcexpr = NULL ) then
 				exit function
 			end if
@@ -116,8 +124,12 @@ function cFunctionCall _
 			hParseRPNT( )
 
 		else
-			'' ProcArgList (function can have optional params)
-			funcexpr = cProcArgList( sym, ptrexpr, @arg_list, TRUE, TRUE )
+			'' ProcArgList (function could have optional params)
+			funcexpr = cProcArgList( base_parent, _
+									 sym, _
+									 ptrexpr, _
+									 @arg_list, _
+									 options or FB_PARSEROPT_OPTONLY )
 			if( funcexpr = NULL ) then
 				exit function
 			end if
@@ -132,16 +144,12 @@ function cFunctionCall _
 		else
 			'' error recovery: remove the SUB call, return a fake node
 			astDelTree( funcexpr )
-			funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			exit function
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 	end if
 
-	if( cStrIdxOrMemberDeref( funcexpr ) = FALSE ) then
-		exit function
-	end if
-
-	function = funcexpr
+	''
+	function = cStrIdxOrMemberDeref( funcexpr )
 
 end function
 
@@ -150,24 +158,14 @@ end function
 ''
 function cFunctionEx _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
-	dim as ASTNODE ptr this_ = NULL
+		byval base_parent as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
 	'' ID
 	lexSkipToken( )
 
-	if( symbIsMethod( sym ) ) then
-		this_ = astBuildInstPtr( _
-					symbGetParamVar( _
-						symbGetProcHeadParam( parser.currproc ) ) )
-	end if
-
-	funcexpr = cFunctionCall( sym, NULL, this_ )
-
-	function = funcexpr <> NULL
+	function = cFunctionCall( base_parent, sym, NULL, NULL )
 
 end function
 
@@ -185,13 +183,13 @@ function cMethodCall _
 
 	'' inside an expression? (can't check sym type, it could be an overloaded proc)
 	if( fbGetIsExpression( ) ) then
-		expr = cFunctionCall( sym, NULL, thisexpr )
+		expr = cFunctionCall( NULL, sym, NULL, thisexpr )
 
 		'' no need to check expr, cFunctionCall() will handle VOID calls
 
 	'' assignment..
 	else
-		expr = cProcCall( sym, NULL, thisexpr )
+		expr = cProcCall( NULL, sym, NULL, thisexpr )
 
 		'' ditto
 	end if
@@ -203,9 +201,8 @@ end function
 '':::::
 function cCtorCall _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byref atom as ASTNODE ptr _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr tmp = any
 	dim as integer isprnt = any
@@ -228,17 +225,21 @@ function cCtorCall _
 	end if
 
     '' pass the instance ptr
-	dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list )
+	dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list, FALSE )
 	arg->expr = astBuildVarField( tmp )
 	arg->mode = INVALID
 
-	procexpr = cProcArgList( symbGetCompCtorHead( sym ), _
+	procexpr = cProcArgList( NULL, _
+							 symbGetCompCtorHead( sym ), _
 					  		 NULL, _
 					  		 @arg_list, _
-					  		 TRUE, _
-					  		 isprnt = FALSE )
+					  		 FB_PARSEROPT_ISFUNC or _
+					  		 FB_PARSEROPT_HASINSTPTR or _
+					  		 iif( isprnt = FALSE, _
+					  		 	  FB_PARSEROPT_OPTONLY, _
+					  		 	  FB_PARSEROPT_NONE ) )
 	if( procexpr = NULL ) then
-		return FALSE
+		return NULL
 	end if
 
 	if( isprnt ) then
@@ -258,17 +259,15 @@ function cCtorCall _
 	'' check if it's a call (because error recovery)..
 	if( astIsCALL( procexpr ) ) then
 
-		atom = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
-
 		if( symbGetHasDtor( sym ) ) then
 			symbSetIsTempWithDtor( tmp, TRUE )
 		end if
 
-	else
-		atom = procexpr
-	end if
+		function = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
 
-	function = ( atom <> NULL )
+	else
+		function = procexpr
+	end if
 
 end function
 

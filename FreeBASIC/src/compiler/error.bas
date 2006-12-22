@@ -106,12 +106,12 @@ end type
 		@"Variable required", _
 		@"Illegal outside a compound statement", _
 		@"Expected 'END ASM'", _
-		@"SUB or FUNCTION not declared", _
+		@"Function not declared", _
 		@"Expected ';'", _
 		@"Undefined label", _
 		@"Too many array dimensions", _
 		@"Expected scalar counter", _
-		@"Illegal outside a SUB or FUNCTION block", _
+		@"Illegal outside a function block", _
 		@"Expected dynamic array", _
 		@"Fixed-len strings cannot be returned from functions", _
 		@"Array already dimensioned", _
@@ -119,7 +119,7 @@ end type
 		@"Type mismatch", _
 		@"Illegal specification", _
 		@"Expected 'END WITH'", _
-		@"Illegal inside a SUB or FUNCTION", _
+		@"Illegal inside functions", _
 		@"Expected array", _
 		@"Expected '{'", _
 		@"Expected '}'", _
@@ -147,7 +147,7 @@ end type
 		@"Math overflow", _
 		@"Expected 'ANY'", _
 		@"Expected 'END SCOPE'", _
-		@"Illegal inside a SCOPE block", _
+		@"Illegal inside a compound statement or scoped block", _
 		@"UDT function results cannot be passed by reference", _
 		@"Ambiguous call to overloaded function", _
 		@"No matching overloaded function", _
@@ -155,7 +155,7 @@ end type
 		@"Cannot pop stack, underflow", _
 		@"UDT's containing dynamic string fields cannot be initialized", _
 		@"Branching to scope block containing local variables", _
-		@"Branching to other SUB's/FUNCTION's or to module-level", _
+		@"Branching to other functions or to module-level", _
 		@"Branch crossing local array, var-len string or object definition", _
 		@"LOOP without DO", _
 		@"NEXT without FOR", _
@@ -230,16 +230,20 @@ end type
 		@"PROPERTY has no indexed GET method/accessor", _
 		@"PROPERTY has no indexed SET method/accessor", _
 		@"UDT in FOR needs numeric overloaded operators: ", _
-		@"The new[] operator does not allow explicit calls to constructors", _
-		@"The new[] operator only supports the { ANY } initialization", _
-		@"The new operator cannot be used with strings", _
+		@"The NEW[] operator does not allow explicit calls to constructors", _
+		@"The NEW[] operator only supports the { ANY } initialization", _
+		@"The NEW operator cannot be used with strings", _
 		@"Illegal member access", _
 		@"Expected ':'", _
 		@"The default constructor has no public access", _
 		@"Constructor has no public access", _
 		@"Destructor has no public access", _
 		@"Illegal non-static member access", _
-		@"Member cannot be static" _
+		@"Member cannot be static", _
+		@"Member isn't static", _
+		@"Only static members can be accessed from static functions", _
+		@"The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN", _
+		@"The function prototype wasn't declared as STATIC" _
 	}
 
 
