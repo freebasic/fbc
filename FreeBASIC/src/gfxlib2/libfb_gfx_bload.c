@@ -85,11 +85,17 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 
 	if (dest) {
 		put_header = (PUT_HEADER *)dest;
-		put_header->type = PUT_HEADER_NEW;
-		put_header->bpp = __fb_gfx->bpp;
-		put_header->width = header.biWidth;
-		put_header->height = header.biHeight;
-		put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
+		/* check header magic number to see if image buffer was already allocated */
+		if (put_header->type == PUT_HEADER_NEW) {
+		
+		}
+		else {
+			put_header->type = PUT_HEADER_NEW;
+			put_header->bpp = __fb_gfx->bpp;
+			put_header->width = header.biWidth;
+			put_header->height = header.biHeight;
+			put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
+		}
 		d = (unsigned char *)dest + sizeof(PUT_HEADER);
 	}
 
@@ -100,7 +106,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 		header.biBitCount = 24;
 	}
 	if (header.biBitCount <= 8) {
-		switch (BYTES_PER_PIXEL(__fb_gfx->depth)) {
+		switch (put_header->bpp) {
 			case 1: convert = fb_image_convert_8to8;  break;
 			case 2: convert = fb_image_convert_8to16; break;
 			case 3:
@@ -108,7 +114,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 		}
 	}
 	else if (header.biBitCount == 24) {
-		switch (BYTES_PER_PIXEL(__fb_gfx->depth)) {
+		switch (put_header->bpp) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
 			case 2: convert = fb_image_convert_24bgrto16; break;
 			case 3:
@@ -116,7 +122,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 		}
 	}
 	else {
-		switch (BYTES_PER_PIXEL(__fb_gfx->depth)) {
+		switch (put_header->bpp) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
 			case 2: convert = fb_image_convert_32bgrto16; break;
 			case 3:
@@ -196,7 +202,7 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal)
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
 
-	fb_hPrepareTarget(context, NULL, MASK_A_32);
+	fb_hPrepareTarget(context, dest, MASK_A_32);
 
 	id = fgetc(f);
 	switch (id) {
