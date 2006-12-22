@@ -341,14 +341,6 @@ Most Important Features:
         DIM foo = 1
       END NAMESPACE
 
-      IF TRUE THEN
-        USING ns1.ns2.ns3
-        PRINT "ns1.ns2.ns3.foo ="; foo
-      END IF
-
-      DIM foo = 2
-      PRINT "ns1.ns2.ns3.foo ="; ns1.ns2.ns3.foo, "foo ="; foo
-
     - Symbols are mangled following the GCC 3.x ABI, allowing C++ global 
       functions and variables defined inside name spaces to be accessed directly:
 
@@ -415,7 +407,7 @@ Most Important Features:
       
       (Note: Dynamic arrays are currently not allowed in TYPE's.)
       
-    - Function field types:
+    - Function pointer field types:
 
       TYPE MyType
          MyFunction AS FUNCTION (ArgumentA AS INTEGER) AS INTEGER
@@ -428,19 +420,6 @@ Most Important Features:
           flag_1 : 1 AS INTEGER
           flag_2 : 1 AS INTEGER
       END TYPE
-
-      DIM t AS mytype
-
-      t.flag_0 = 1
-      t.flag_1 = 0
-      t.flag_2 = 1
-
-      PRINT "All flags ON? ";
-      IF ( t.flag_0 AND t.flag_1 AND t.flag_2 ) THEN
-        PRINT "TRUE"
-      ELSE
-        PRINT "FALSE"
-      END IF
 
     - Private, Protected or Public access modes:
 
@@ -458,10 +437,6 @@ Most Important Features:
          B = 3
          C
       END ENUM
-
-      DIM E AS MyEnum
-
-      E = C
 
   o Constructors and Destructors in User Defined Types (TYPE or CLASS):
   
@@ -485,6 +460,22 @@ Most Important Features:
       DIM f AS foo PTR = NEW foo( 1234 )
       PRINT f->some_field
       DELETE f
+
+  o Methods in User Defined Types (TYPE or CLASS):
+
+      TYPE foo
+      	bar AS INTEGER
+      	DECLARE SUB printMe ( ) 
+      	DECLARE STATIC SUB printThis ( BYREF f AS foo )
+      END TYPE
+      
+      SUB foo.printMe ( ) 
+        PRINT bar
+      END SUB
+
+      SUB foo.printThis ( BYREF f AS foo )
+        PRINT f.bar
+      END SUB
   
   o Operator Overloading in User Defined Types (TYPE, ENUM or CLASS):
   
@@ -585,9 +576,7 @@ Most Important Features:
 
     - Indexing:
 
-      DIM foo AS INTEGER PTR
-
-      foo = CALLOCATE( 10 * len( integer ) )
+      DIM foo AS INTEGER PTR = CALLOCATE( 10 * len( integer ) )
 
       FOR i = 0 to 9
         foo[i] = bar            '' same as *(foo + i) = bar
@@ -595,9 +584,7 @@ Most Important Features:
 
     - String Indexing:
 
-      DIM text AS STRING
-
-      text = "BAR"
+      DIM text AS STRING = "BAR"
       print text[0]             '' output will be 66 = ASC("B")
 
     - Function dereferencing:
@@ -706,13 +693,6 @@ Most Important Features:
            st  AS sometype
            a   AS INTEGER
       END TYPE
-
-      DIM s AS sometype, b AS bar
-
-      b.st.f = @b
-      s.f = @b
-
-      s.f->st.f->a = 1234
 
   o Escape characters inside literal strings:
 
