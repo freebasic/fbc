@@ -732,9 +732,13 @@ private sub setDefaultOptions( )
 end sub
 
 '':::::
-private sub printInvalidOpt( byval arg as string ptr )
+private sub printInvalidOpt _
+	( _
+		byval arg as string ptr, _
+		byval errnum as FB_ERRMSG = FB_ERRMSG_MISSINGCMDOPTION _
+	)
 
-	errReportEx( FB_ERRMSG_MISSINGCMDOPTION, QUOTE + *arg + QUOTE, -1 )
+	errReportEx( errnum, QUOTE + *arg + QUOTE, -1 )
 
 end sub
 
@@ -814,7 +818,7 @@ private function processTargetOptions _
 #endif
 
 				case else
-					printInvalidOpt( arg )
+					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					return FALSE
 				end select
 
@@ -896,7 +900,7 @@ private function processOptions _
 		if( (*arg)[0] <> asc( "-" ) ) then
 			'' file name?
 			if( checkFiles( arg ) = FALSE ) then
-				printInvalidOpt( arg )
+				printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 				exit function
 			end if
 
@@ -915,7 +919,7 @@ private function processOptions _
 			if( id = 0 ) then
 				'' target-dependent options?
 				if( fbc.processOptions( arg, nxt ) = FALSE ) then
-					printInvalidOpt( arg )
+					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					exit function
 				end if
 
@@ -982,7 +986,7 @@ private function processOptions _
 				case "686"
 					value = FB_CPUTYPE_686
 				case else
-					printInvalidOpt( arg )
+					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					exit function
 				end select
 
@@ -1068,7 +1072,7 @@ private function processOptions _
 					value = valint( *nxt )
 					if( value <= 0 ) then
 						value = 1
-						printInvalidOpt( arg )
+						printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					end if
 				end if
 
@@ -1117,7 +1121,7 @@ private function processOptions _
 				end if
 
 				if( fbAddLibPath( *nxt ) = FALSE ) then
-					printInvalidOpt( arg )
+					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					exit function
 				end if
 
@@ -1259,7 +1263,7 @@ private function processOptions _
 				case "qb"
 					value = FB_LANG_QB
 				case else
-					printInvalidOpt( arg )
+					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					exit function
 				end select
 
