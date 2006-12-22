@@ -41,7 +41,6 @@ Version 0.17 Beta:
 - EXEC in dos and linux now parses arguments like in windows and with no hardcoded limits on the allowable number of arguments (jeffm)
 - LOCATE will now accept a full 5 args to be compatible with QB, however the final 2 args have no effect (cha0s)
 - STR will now pad positive numbers with a single space, as in QB, but ONLY if -lang qb is used (cha0s)
-- SLEEP now sleeps in seconds, if -lang qb is used (cha0s)
 
 [added]
 - the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)

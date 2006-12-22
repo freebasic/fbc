@@ -41,7 +41,6 @@
 /*:::::*/
 FBCALL int fb_SleepEx ( int msecs, int kind )
 {
-    msecs *= (__fb_ctx.lang == FB_LANG_QB)?1000:1;
     switch( kind ) {
     case 0:
         fb_Sleep( msecs );
