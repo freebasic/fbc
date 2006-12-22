@@ -49,28 +49,6 @@ extern void fb_hPutXorMMX(unsigned char *src, unsigned char *dest, int w, int h,
 
 
 /*:::::*/
-static void fb_hPutAlphaMask(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
-{
-	unsigned char *s = src;
-	unsigned int *d, dc, sc;
-	int x;
-	
-	src_pitch -= w;
-	dest_pitch = (dest_pitch >> 2) - w;
-	for (; h; h--) {
-		d = (unsigned int *)dest;
-		for (x = w; x; x--) {
-			sc = *s++;
-			dc = *d;
-			*d++ = (dc & ~MASK_A_32) | (sc << 24);
-		}
-		s += src_pitch;
-		d += dest_pitch;
-	}
-}
-
-
-/*:::::*/
 static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned int *s = (unsigned int *)src;
@@ -514,6 +492,28 @@ static void fb_hPutCustom4(unsigned char *src, unsigned char *dest, int w, int h
 
 
 /*:::::*/
+static void fb_hPutAlphaMask(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
+{
+	unsigned char *s = src;
+	unsigned int *d = (unsigned int *)dest;
+	unsigned int dc, sc;
+	int x;
+	
+	src_pitch -= w;
+	dest_pitch = (dest_pitch >> 2) - w;
+	for (; h; h--) {
+		for (x = w; x; x--) {
+			dc = *d;
+			sc = *s++;
+			*d++ = (dc & ~MASK_A_32) | (sc << 24);
+		}
+		s += src_pitch;
+		d += dest_pitch;
+	}
+}
+
+
+/*:::::*/
 static void init_put(FB_GFXCTX *context)
 {
 	static PUTTER *all_putters[] = {
@@ -618,8 +618,17 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 		src += 4;
 	}
 
-	if (bpp != context->target_bpp)
-		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	if (bpp != context->target_bpp) {
+		if ((mode == PUT_MODE_ALPHA) && (bpp == 1) && (context->target_bpp == 4))
+			put = fb_hPutAlphaMask;
+		else
+			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	}
+	else {
+		put = fb_hGetPutter(mode, &alpha);
+		if (!put)
+			return FB_RTERROR_OK;
+	}
 	
 	if (x1 != 0xFFFF0000) {
 		fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
@@ -654,14 +663,10 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	if (x + w > context->view_x + context->view_w)
 		w -= ((x + w) - (context->view_x + context->view_w));
 	
-	put = fb_hGetPutter(mode, &alpha);
-	
-	if (put) {
-		DRIVER_LOCK();
-		put(src, context->line[y] + (x * context->target_bpp), w, h, pitch, context->target_pitch, alpha, blender, param);
-		SET_DIRTY(context, y, h);
-		DRIVER_UNLOCK();
-	}
+	DRIVER_LOCK();
+	put(src, context->line[y] + (x * context->target_bpp), w, h, pitch, context->target_pitch, alpha, blender, param);
+	SET_DIRTY(context, y, h);
+	DRIVER_UNLOCK();
 	
 	return FB_RTERROR_OK;
 }
