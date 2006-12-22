@@ -33,3 +33,15 @@ assert( str(s)  = "-1" )
 assert( str(d)  = "-1" )
 assert( str(l)  = "-1" )
 
+assert( str(1)    = " 1" )
+assert( str(1ul)  = " 1" )
+assert( str(1!)   = " 1" )
+assert( str(1#)   = " 1" )
+assert( str(1ll)  = " 1" )
+assert( str(1ull) = " 1" )
+
+assert( str(-1)    = "-1" )
+assert( str(-1!)   = "-1" )
+assert( str(-1#)   = "-1" )
+assert( str(-1ll)  = "-1" )
+

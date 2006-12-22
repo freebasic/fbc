@@ -3106,7 +3106,13 @@ function rtlToStr _
 
     '' constant? evaluate
     if( astIsCONST( expr ) ) then
-    	return astNewCONSTstr( astGetValueAsStr( expr ) )
+    	dim as string qb_padding
+    	if env.clopt.lang = FB_LANG_QB then
+    		if astGetValueAsDouble( expr ) >= 0 then
+    			qb_padding = " "
+    		end if
+    	end if
+    	return astNewCONSTstr( qb_padding + astGetValueAsStr( expr ) )
     end if
 
     '' wstring literal? convert from unicode at compile-time

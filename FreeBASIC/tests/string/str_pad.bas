@@ -7,10 +7,13 @@ namespace fbc_tests.string_.str_pad
 		assert( str(i) = "1" )
 		i = -1
 		assert( str(i) = "-1" )
+		assert( str(1) = "1" )
+		assert( str(-1) = "-1" )
 	end sub
 	sub test_ui cdecl
 		dim as uinteger ui = 1
 		assert( str(ui) = "1" )
+		assert( str(1ul) = "1" )
 	end sub
 	
 	sub test_s cdecl
@@ -18,12 +21,16 @@ namespace fbc_tests.string_.str_pad
 		assert( str(s) = "1" )
 		s = -1
 		assert( str(s) = "-1" )
+		assert( str(1!) = "1" )
+		assert( str(-1!) = "-1" )
 	end sub
 	sub test_d cdecl
 		dim as double d = 1
 		assert( str(d) = "1" )
 		d = -1
 		assert( str(d) = "-1" )
+		assert( str(1#) = "1" )
+		assert( str(-1#) = "-1" )
 	end sub
 	
 	sub test_l cdecl
@@ -31,10 +38,13 @@ namespace fbc_tests.string_.str_pad
 		assert( str(l) = "1" )
 		l = -1
 		assert( str(l) = "-1" )
+		assert( str(1ll) = "1" )
+		assert( str(-1ll) = "-1" )
 	end sub
 	sub test_ul cdecl
 		dim as ulongint ul = 1
 		assert( str(ul) = "1" )
+		assert( str(1ull) = "1" )
 	end sub
 
 	sub ctor () constructor
