@@ -243,17 +243,16 @@ static void x11_update(void)
 		if (__fb_gfx->dirty[i]) {
 			for (y = i, h = 0; (__fb_gfx->dirty[i]) && (i < fb_linux.h); h++, i++)
 				;
-			if (is_shm)
-				XShmPutImage(fb_linux.display, fb_linux.window, fb_linux.gc, image, 0, y, 0, y + fb_linux.display_offset, fb_linux.w, h, False);
-			else
-				XPutImage(fb_linux.display, fb_linux.window, fb_linux.gc, image, 0, y, 0, y + fb_linux.display_offset, fb_linux.w, h);
-			
 			if (shape_image) {
 				update_mask((unsigned char *)__fb_gfx->framebuffer + (y * __fb_gfx->pitch),
 							(unsigned char *)shape_image->data + (y * shape_image->bytes_per_line), fb_linux.w, h);
 				XPutImage(fb_linux.display, shape_pixmap, shape_gc, shape_image, 0, y, 0, y, fb_linux.w, h);
 				XShapeCombineMask(fb_linux.display, fb_linux.window, ShapeBounding, 0, 0, shape_pixmap, ShapeSet);
 			}
+			if (is_shm)
+				XShmPutImage(fb_linux.display, fb_linux.window, fb_linux.gc, image, 0, y, 0, y + fb_linux.display_offset, fb_linux.w, h, False);
+			else
+				XPutImage(fb_linux.display, fb_linux.window, fb_linux.gc, image, 0, y, 0, y + fb_linux.display_offset, fb_linux.w, h);
 		}
 	}
 	fb_hMemSet(__fb_gfx->dirty, FALSE, fb_linux.h);

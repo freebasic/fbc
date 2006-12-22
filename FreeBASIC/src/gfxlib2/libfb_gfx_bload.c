@@ -85,13 +85,10 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 
 	if (dest) {
 		put_header = (PUT_HEADER *)dest;
-		/* check header magic number to see if image buffer was already allocated */
-		if (put_header->type == PUT_HEADER_NEW) {
-		
-		}
-		else {
+		/* do not overwrite pre-allocated image buffer header */
+		if (put_header->type != PUT_HEADER_NEW) {
 			put_header->type = PUT_HEADER_NEW;
-			put_header->bpp = __fb_gfx->bpp;
+			put_header->bpp = ctx->target_bpp;
 			put_header->width = header.biWidth;
 			put_header->height = header.biHeight;
 			put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
