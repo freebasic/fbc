@@ -1,9 +1,9 @@
 LIBRARY "jvm.dll"
 EXPORTS
 AsyncGetCallTrace
-JNI_CreateJavaVM@12
-JNI_GetCreatedJavaVMs@12
-JNI_GetDefaultJavaVMInitArgs@4
+JNI_CreateJavaVM@12 = JNI_CreateJavaVM
+JNI_GetCreatedJavaVMs@12 = JNI_GetCreatedJavaVMs
+JNI_GetDefaultJavaVMInitArgs@4 = JNI_GetDefaultJavaVMInitArgs
 _JVM_Accept@12
 _JVM_ActiveProcessorCount@0
 _JVM_AllocateNewArray@16
@@ -132,8 +132,8 @@ _JVM_GetStackTraceElement@12
 _JVM_GetSystemPackage@8
 _JVM_GetSystemPackages@4
 _JVM_GetThreadInterruptEvent@0
-JVM_GetThreadStateNames@12
-JVM_GetThreadStateValues@8
+JVM_GetThreadStateNames@12 = JVM_GetThreadStateNames
+JVM_GetThreadStateValues@8 = JVM_GetThreadStateValues
 _JVM_Halt@4
 _JVM_HoldsLock@12
 _JVM_IHashCode@8
