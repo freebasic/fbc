@@ -68,13 +68,13 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
 
         if( col > newcol ) {
             fb_PrintVoidEx ( handle, FB_PRINT_NEWLINE );
-			fb_Locate( 0, newcol, -1 );
+			fb_Locate( 0, newcol, -1, 0, 0 );
 
         } else if( newcol < 1 )
-    		fb_Locate( 0, 1, -1 );
+    		fb_Locate( 0, 1, -1, 0, 0 );
 
     	else
-            fb_Locate( 0, newcol, -1 );
+            fb_Locate( 0, newcol, -1, 0, 0 );
 
     } else {
 
@@ -153,7 +153,7 @@ FBCALL void fb_PrintSPC( int fnum, int n )
             newcol %= cols;
         }
 
-        fb_Locate( 0, newcol, -1 );
+        fb_Locate( 0, newcol, -1, 0, 0 );
 
     } else {
 

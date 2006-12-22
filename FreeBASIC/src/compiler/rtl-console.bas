@@ -115,12 +115,13 @@
 	 		} _
 		), _
 		/' locate( byval row as integer = 0, byval col as integer = 0, _
-				   byval cursor as integer = -1 ) as integer '/ _
+				   byval cursor as integer = -1, byval start as integer = 0, _
+				   byval stop as integer = 0 ) as integer '/ _
 		( _
 			@"locate", @"fb_Locate", _
 	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
-	 		3, _
+	 		5, _
 	 		{ _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
@@ -130,6 +131,12 @@
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			) _
 	 		} _
 		), _

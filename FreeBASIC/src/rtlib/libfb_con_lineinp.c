@@ -153,7 +153,7 @@ int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
             old_x += 1;
             old_y -= 1;
 
-            fb_Locate( old_y, old_x, -1 );
+            fb_Locate( old_y, old_x, -1, 0, 0 );
         }
 
 

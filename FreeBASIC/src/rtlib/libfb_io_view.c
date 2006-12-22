@@ -84,7 +84,7 @@ int fb_ConsoleViewEx( int toprow, int botrow, int set_cursor )
         fb_ViewUpdate( );
         if( set_cursor ) {
             /* set cursor to top row */
-            fb_Locate( toprow, 1, -1 );
+            fb_Locate( toprow, 1, -1, 0, 0 );
         }
     }
 

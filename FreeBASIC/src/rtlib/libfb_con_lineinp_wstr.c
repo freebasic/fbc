@@ -127,7 +127,7 @@ int fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
             old_x += 1;
             old_y -= 1;
 
-            fb_Locate( old_y, old_x, -1 );
+            fb_Locate( old_y, old_x, -1, 0, 0 );
         }
 
         fb_WstrAssignFromA( dst, max_chars, (void *)&str_result, -1 );

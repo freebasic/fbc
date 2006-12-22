@@ -51,7 +51,7 @@ FBCALL int          fb_Color            ( int fc, int bc, int flags );
 typedef int         (*FB_LOCATEPROC)    ( int row, int col, int cursor );
 
 FBCALL int          fb_LocateEx         ( int row, int col, int cursor, int *current_pos );
-FBCALL int          fb_Locate           ( int row, int col, int cursor );
+FBCALL int          fb_Locate           ( int row, int col, int cursor, int start, int stop );
 FBCALL int          fb_LocateSub        ( int row, int col, int cursor );
 
 typedef void        (*FB_VIEWUPDATEPROC)( void );
