@@ -26,7 +26,7 @@ type bar
 	as string strdata
 	declare constructor( byval s as zstring ptr )
 	declare operator cast() as string
-	declare operator & ( byref r as bar )
+	declare operator &= ( byref r as bar )
 end type
 
 constructor bar( byval s as zstring ptr )
@@ -37,7 +37,7 @@ operator bar.cast( ) as string
 	return strdata
 end operator
 
-operator bar.& ( byref r as bar )
+operator bar.&= ( byref r as bar )
 	strdata &= "|" & r.strdata
 end operator
 

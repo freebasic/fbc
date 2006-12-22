@@ -7,15 +7,15 @@ type foo
 	
 private:
 	declare operator cast ( ) as integer
-	declare operator + ( i as integer )
+	declare operator += ( i as integer )
 	
 public:
-	declare operator + ( i as double )
+	declare operator += ( i as double )
 	declare operator cast ( ) as double
 	
 end type
 
-operator foo.+ ( i as double )
+operator foo.+= ( i as double )
 end operator
 
 operator foo.cast ( ) as double

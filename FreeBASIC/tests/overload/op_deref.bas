@@ -3,7 +3,6 @@
 namespace fbc_tests.overload_.op_deref
 
 type foo
-	declare operator -> () as foo
 	data as integer
 end type
 
@@ -11,8 +10,8 @@ operator * ( byref lhs as foo ) as integer
 	return lhs.data
 end operator
 
-operator foo.-> ( ) as foo
-	return this
+operator -> ( byref lhs as foo ) as foo
+	return lhs
 end operator
 
 sub test_1 cdecl

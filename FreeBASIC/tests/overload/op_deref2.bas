@@ -7,12 +7,11 @@ type bar
 end type
 
 type foo
-	declare operator -> () as bar
 	b as bar
 end type
 
-operator foo.-> ( ) as bar
-	return b
+operator -> ( byref lhs as foo ) as bar
+	return lhs.b
 end operator
 
 sub test_1 cdecl
