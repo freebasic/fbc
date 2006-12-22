@@ -783,10 +783,10 @@ int fb_hX11SetWindowPos(int x, int y)
 		y -= dy;
 	
 	set_attribs.override_redirect = True;
-	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &set_attribs);
-	XMoveWindow(fb_linux.display, fb_linux.window, x, y);
+	XChangeWindowAttributes(fb_linux.display, window, CWOverrideRedirect, &set_attribs);
+	XMoveWindow(fb_linux.display, window, x, y);
 	set_attribs.override_redirect = False;
-	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &set_attribs);
+	XChangeWindowAttributes(fb_linux.display, window, CWOverrideRedirect, &set_attribs);
 	
 	/* remove any mouse motion events */
 	while (XCheckWindowEvent(fb_linux.display, fb_linux.window, PointerMotionMask, &event))
