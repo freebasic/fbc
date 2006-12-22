@@ -43,7 +43,7 @@ FBCALL void fb_GfxPset(void *target, float fx, float fy, unsigned int color, int
 			color = context->fg_color;
 	}
 	else
-		color = fb_hFixColor(color);
+		color = fb_hFixColor(context->target_bpp, color);
 	
 	fb_hPrepareTarget(context, target, color);
 	

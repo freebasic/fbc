@@ -105,6 +105,7 @@ void fb_hPrepareTarget(FB_GFXCTX *context, void *target, unsigned int color)
 			if (header->type == PUT_HEADER_NEW) {
 				context->view_w = header->width;
 				context->view_h = h = header->height;
+				context->target_bpp = header->bpp;
 				context->target_pitch = header->pitch;
 				fb_hSetupFuncs(header->bpp);
 				data = (unsigned char *)target + sizeof(PUT_HEADER);
@@ -112,6 +113,7 @@ void fb_hPrepareTarget(FB_GFXCTX *context, void *target, unsigned int color)
 			else {
 				context->view_w = header->old.width;
 				context->view_h = h = header->old.height;
+				context->target_bpp = __fb_gfx->bpp;
 				context->target_pitch = context->view_w * __fb_gfx->bpp;
 				data = (unsigned char *)target + 4;
 			}
@@ -126,6 +128,7 @@ void fb_hPrepareTarget(FB_GFXCTX *context, void *target, unsigned int color)
 	}
 	else if (context->flags & (CTX_BUFFER_SET | CTX_BUFFER_INIT)) {
 		fb_hMemCpy(context->view, context->old_view, sizeof(int) * 4);
+		context->target_bpp = __fb_gfx->bpp;
 		context->target_pitch = __fb_gfx->pitch;
 		for (i = 0; i < __fb_gfx->h; i++)
 			context->line[i] = __fb_gfx->page[context->work_page] + (i * __fb_gfx->pitch);
@@ -133,7 +136,7 @@ void fb_hPrepareTarget(FB_GFXCTX *context, void *target, unsigned int color)
 		context->flags &= ~(CTX_BUFFER_SET | CTX_BUFFER_INIT);
 	}
 	context->last_target = target;
-	if ((__fb_gfx->flags & ALPHA_PRIMITIVES) && ((color & MASK_A_32) != MASK_A_32)) {
+	if ((__fb_gfx->flags & ALPHA_PRIMITIVES) && (context->target_bpp == 4) && ((color & MASK_A_32) != MASK_A_32)) {
 		context->put_pixel = fb_hPutPixelAlpha;
 		context->pixel_set = fb_hPixelSetAlpha;
 	}

@@ -120,8 +120,8 @@ void fb_hSoftCursorInit(void)
 		black = 0;
 	}
 	else {
-		white = fb_hFixColor(0xFFFFFF);
-		black = fb_hFixColor(0x000000);
+		white = fb_hFixColor(__fb_gfx->bpp, 0xFFFFFF);
+		black = fb_hFixColor(__fb_gfx->bpp, 0x000000);
 	}
 }
 

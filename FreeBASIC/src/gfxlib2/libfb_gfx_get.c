@@ -56,10 +56,10 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 	header = (PUT_HEADER *)dest;
 	if (__fb_ctx.lang != FB_LANG_FB) {
 		/* use old-style header for compatibility */
-		header->old.bpp = __fb_gfx->bpp;
+		header->old.bpp = context->target_bpp;
 		header->old.width = w;
 		header->old.height = h;
-		pitch = w * __fb_gfx->bpp;
+		pitch = w * context->target_bpp;
 		dest += 4;
 	}
 	else {
@@ -67,8 +67,8 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 		header->type = PUT_HEADER_NEW;
 		header->width = w;
 		header->height = h;
-		header->bpp = __fb_gfx->bpp;
-		pitch = header->pitch = ((w * __fb_gfx->bpp) + 0xF) & ~0xF;
+		header->bpp = context->target_bpp;
+		pitch = header->pitch = ((w * context->target_bpp) + 0xF) & ~0xF;
 		dest += sizeof(PUT_HEADER);
 	}
 
@@ -80,7 +80,7 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 	DRIVER_LOCK();
 
 	for (; y1 <= y2; y1++) {
-		fb_hPixelCpy(dest, context->line[y1] + (x1 * __fb_gfx->bpp), w);
+		fb_hPixelCpy(dest, context->line[y1] + (x1 * context->target_bpp), w);
 		dest += pitch;
 	}
 

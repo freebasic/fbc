@@ -109,7 +109,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				c++;
 				if ((value1 = parse_number(&c)) == NAN)
 					goto error;
-				context->fg_color = fb_hFixColor(value1);
+				context->fg_color = fb_hFixColor(context->target_bpp, value1);
 				break;
 
 			case 'S':

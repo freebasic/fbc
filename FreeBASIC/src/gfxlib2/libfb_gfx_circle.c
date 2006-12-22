@@ -37,7 +37,7 @@ static void draw_scanline(FB_GFXCTX *ctx, int y, int x1, int x2, unsigned int co
 			filled[y - ctx->view_y] = TRUE;
 			x1 = MAX(x1, ctx->view_x);
 			x2 = MIN(x2, ctx->view_x + ctx->view_w - 1);
-			ctx->pixel_set(ctx->line[y] + (x1 * __fb_gfx->bpp), color, x2 - x1 + 1);
+			ctx->pixel_set(ctx->line[y] + (x1 * ctx->target_bpp), color, x2 - x1 + 1);
 		}
 		else {
 			if ((x1 >= ctx->view_x) && (x1 < ctx->view_x + ctx->view_w))
@@ -130,7 +130,7 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 	if (flags & DEFAULT_COLOR_1)
 		color = context->fg_color;
 	else
-		color = fb_hFixColor(color);
+		color = fb_hFixColor(context->target_bpp, color);
 	
 	fb_hPrepareTarget(context, target, color);
 	

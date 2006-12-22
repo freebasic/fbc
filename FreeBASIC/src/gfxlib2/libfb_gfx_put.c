@@ -47,18 +47,27 @@ extern void fb_hPutOrMMX(unsigned char *src, unsigned char *dest, int w, int h, 
 extern void fb_hPutXorMMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
 #endif
 
-/* Local vars */
-static void (*fb_hPutAdd)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutAlpha)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutBlend)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutTrans)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutPSet)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutPReset)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutAnd)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutOr)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutXor)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static void (*fb_hPutCustom)(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param) = NULL;
-static int put_initialized_depth = 0;
+
+/*:::::*/
+static void fb_hPutAlphaMask(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
+{
+	unsigned char *s = src;
+	unsigned int *d, dc, sc;
+	int x;
+	
+	src_pitch -= w;
+	dest_pitch = (dest_pitch >> 2) - w;
+	for (; h; h--) {
+		d = (unsigned int *)dest;
+		for (x = w; x; x--) {
+			sc = *s++;
+			dc = *d;
+			*d++ = (dc & ~MASK_A_32) | (sc << 24);
+		}
+		s += src_pitch;
+		d += dest_pitch;
+	}
+}
 
 
 /*:::::*/
@@ -505,88 +514,36 @@ static void fb_hPutCustom4(unsigned char *src, unsigned char *dest, int w, int h
 
 
 /*:::::*/
-static void init_put(void)
+static void init_put(FB_GFXCTX *context)
 {
-
+	static PUTTER *all_putters[] = {
+		/* C putters */
+		fb_hPutTrans1C, fb_hPutPSetC, fb_hPutPResetC, fb_hPutAndC, fb_hPutOrC, fb_hPutXorC, fb_hPutPSetC, fb_hPutOrC, fb_hPutCustom1, fb_hPutTrans1C,
+		fb_hPutTrans2C, fb_hPutPSetC, fb_hPutPResetC, fb_hPutAndC, fb_hPutOrC, fb_hPutXorC, fb_hPutPSetC, fb_hPutAdd2C, fb_hPutCustom2, fb_hPutBlend2C,
+		fb_hPutTrans4C, fb_hPutPSetC, fb_hPutPResetC, fb_hPutAndC, fb_hPutOrC, fb_hPutXorC, fb_hPutAlpha4C, fb_hPutAdd4C, fb_hPutCustom4, fb_hPutBlend4C,
 #if defined(TARGET_X86)
-	if (__fb_gfx->flags & HAS_MMX) {
-		fb_hPutPSet = fb_hPutPSetMMX;
-		fb_hPutPReset = fb_hPutPResetMMX;
-		fb_hPutAnd = fb_hPutAndMMX;
-		fb_hPutOr = fb_hPutOrMMX;
-		fb_hPutXor = fb_hPutXorMMX;
-		switch (__fb_gfx->depth) {
-			case 1:
-			case 2:
-			case 4:
-			case 8:
-				fb_hPutTrans = fb_hPutTrans1MMX;
-				fb_hPutAlpha = fb_hPutPSetMMX;		/* No alpha channel: default to all solid PUT */
-				fb_hPutBlend = fb_hPutTrans1MMX;	/* Cannot blend in paletted mode */
-				fb_hPutAdd = fb_hPutOrMMX;		/* No color channels, cannot add: default to OR */
-				fb_hPutCustom = fb_hPutCustom1;
-				break;
-			
-			case 15:
-			case 16:
-				fb_hPutTrans = fb_hPutTrans2MMX;
-				fb_hPutAlpha = fb_hPutPSetMMX;		/* No alpha channel: default to all solid PUT */
-				fb_hPutBlend = fb_hPutBlend2MMX;
-				fb_hPutAdd = fb_hPutAdd2MMX;
-				fb_hPutCustom = fb_hPutCustom2;
-				break;
-			
-			case 24:
-			case 32:
-				fb_hPutTrans = fb_hPutTrans4MMX;
-				fb_hPutAlpha = fb_hPutAlpha4MMX;
-				fb_hPutBlend = fb_hPutBlend4MMX;
-				fb_hPutAdd = fb_hPutAdd4MMX;
-				fb_hPutCustom = fb_hPutCustom4;
-				break;
-		}
-	}
-	else {
+		/* MMX putters */
+		fb_hPutTrans1MMX, fb_hPutPSetMMX, fb_hPutPResetMMX, fb_hPutAndMMX, fb_hPutOrMMX, fb_hPutXorMMX, fb_hPutPSetMMX, fb_hPutOrMMX, fb_hPutCustom1, fb_hPutTrans1MMX,
+		fb_hPutTrans2MMX, fb_hPutPSetMMX, fb_hPutPResetMMX, fb_hPutAndMMX, fb_hPutOrMMX, fb_hPutXorMMX, fb_hPutPSetMMX, fb_hPutAdd2MMX, fb_hPutCustom2, fb_hPutBlend2MMX,
+		fb_hPutTrans4MMX, fb_hPutPSetMMX, fb_hPutPResetMMX, fb_hPutAndMMX, fb_hPutOrMMX, fb_hPutXorMMX, fb_hPutAlpha4MMX, fb_hPutAdd4MMX, fb_hPutCustom4, fb_hPutBlend4MMX,
 #endif
-		fb_hPutPSet = fb_hPutPSetC;
-		fb_hPutPReset = fb_hPutPResetC;
-		fb_hPutAnd = fb_hPutAndC;
-		fb_hPutOr = fb_hPutOrC;
-		fb_hPutXor = fb_hPutXorC;
-		switch (__fb_gfx->depth) {
-			case 1:
-			case 2:
-			case 4:
-			case 8:
-				fb_hPutTrans = fb_hPutTrans1C;
-				fb_hPutAlpha = fb_hPutPSetC;		/* No alpha channel: default to all solid PUT */
-				fb_hPutBlend = fb_hPutTrans1C;		/* Cannot blend in paletted mode */
-				fb_hPutAdd = fb_hPutOrC;		/* No color channels, cannot add: default to OR */
-				fb_hPutCustom = fb_hPutCustom1;
-				break;
-			
-			case 15:
-			case 16:
-				fb_hPutTrans = fb_hPutTrans2C;
-				fb_hPutAlpha = fb_hPutPSetC;		/* No alpha channel: default to all solid PUT */
-				fb_hPutBlend = fb_hPutBlend2C;
-				fb_hPutAdd = fb_hPutAdd2C;
-				fb_hPutCustom = fb_hPutCustom2;
-				break;
-			
-			case 24:
-			case 32:
-				fb_hPutTrans = fb_hPutTrans4C;
-				fb_hPutAlpha = fb_hPutAlpha4C;
-				fb_hPutBlend = fb_hPutBlend4C;
-				fb_hPutAdd = fb_hPutAdd4C;
-				fb_hPutCustom = fb_hPutCustom4;
-				break;
-		}
+	};
+	PUTTER **putter;
+	int bpp = context->target_bpp >> 1;
+	
 #if defined(TARGET_X86)
-	}
+	if (__fb_gfx->flags & HAS_MMX)
+		putter = &all_putters[PUT_MODES * 3];
+	else
 #endif
-	put_initialized_depth = __fb_gfx->depth;
+		putter = &all_putters[0];
+	
+	while (bpp) {
+		putter += PUT_MODES;
+		bpp >>= 1;
+	}
+	context->putter = putter;
+	context->put_bpp = context->target_bpp;
 }
 
 
@@ -594,35 +551,33 @@ static void init_put(void)
 PUTTER *fb_hGetPutter(int mode, int *alpha)
 {
 	PUTTER *put;
+	FB_GFXCTX *context = fb_hGetContext();
 	
-	if (put_initialized_depth != __fb_gfx->depth)
-		init_put();
+	if (context->put_bpp != context->target_bpp)
+		init_put(context);
 	
-	switch (mode) {
-		case PUT_MODE_TRANS:	put = fb_hPutTrans;	break;
-		case PUT_MODE_PRESET:	put = fb_hPutPReset;	break;
-		case PUT_MODE_AND:	put = fb_hPutAnd;	break;
-		case PUT_MODE_OR:	put = fb_hPutOr;	break;
-		case PUT_MODE_XOR:	put = fb_hPutXor;	break;
-		case PUT_MODE_ALPHA:	if (*alpha < 0)
-						put = fb_hPutAlpha;
-					else if (*alpha == 0)
-						return NULL;
-					else {
-						*alpha &= 0xFF;
-						if (*alpha == 0xFF)
-							put = fb_hPutTrans;
-						else
-							put = fb_hPutBlend;
-					}
-					break;
-		case PUT_MODE_ADD:	put = fb_hPutAdd;
-					*alpha &= 0xFF;
-					break;
-		case PUT_MODE_CUSTOM:	put = fb_hPutCustom;	break;
-		case PUT_MODE_PSET:
-		default:		put = fb_hPutPSet;	break;
+	if ((mode < 0) || (mode >= PUT_MODES))
+		return context->putter[PUT_MODE_PSET];
+	
+	if (mode == PUT_MODE_ALPHA) {
+		if (*alpha < 0)
+			put = context->putter[PUT_MODE_ALPHA];
+		else if (*alpha == 0)
+			return NULL;
+		else {
+			*alpha &= 0xFF;
+			if (*alpha == 0xFF)
+				put = context->putter[PUT_MODE_TRANS];
+			else
+				put = context->putter[PUT_MODE_BLEND];
+		}
 	}
+	else if (mode == PUT_MODE_ADD) {
+		put = context->putter[PUT_MODE_ADD];
+		*alpha &= 0xFF;
+	}
+	else
+		put = context->putter[mode];
 	
 	return put;
 }
@@ -655,13 +610,15 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	}
 	else {
 		bpp = header->old.bpp;
+		if (!bpp)
+			bpp = context->target_bpp;
 		w = header->old.width;
 		h = header->old.height;
-		pitch = w * __fb_gfx->bpp;
+		pitch = w * bpp;
 		src += 4;
 	}
 
-	if ((bpp) && (bpp != __fb_gfx->bpp))
+	if (bpp != context->target_bpp)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
 	if (x1 != 0xFFFF0000) {
@@ -674,7 +631,7 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 		
 		w = x2 - x1 + 1;
 		h = y2 - y1 + 1;
-		src += (pitch * y1) + (x1 * __fb_gfx->bpp);
+		src += (y1 * pitch) + (x1 * bpp);
 	}
 	
 	if ((w == 0) || (h == 0) ||
@@ -683,14 +640,14 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 		return FB_RTERROR_OK;
 	
 	if (y < context->view_y) {
-		src += (pitch * (context->view_y - y));
+		src += ((context->view_y - y) * pitch);
 		h -= (context->view_y - y);
 		y = context->view_y;
 	}
 	if (y + h > context->view_y + context->view_h)
 		h -= ((y + h) - (context->view_y + context->view_h));
 	if (x < context->view_x) {
-		src += ((context->view_x - x) * __fb_gfx->bpp);
+		src += ((context->view_x - x) * bpp);
 		w -= (context->view_x - x);
 		x = context->view_x;
 	}
@@ -701,7 +658,7 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	
 	if (put) {
 		DRIVER_LOCK();
-		put(src, context->line[y] + (x * __fb_gfx->bpp), w, h, pitch, context->target_pitch, alpha, blender, param);
+		put(src, context->line[y] + (x * context->target_bpp), w, h, pitch, context->target_pitch, alpha, blender, param);
 		SET_DIRTY(context, y, h);
 		DRIVER_UNLOCK();
 	}

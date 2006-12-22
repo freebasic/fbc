@@ -126,7 +126,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 	if (flags & DEFAULT_COLOR_1)
 		color = context->fg_color;
 	else
-		color = fb_hFixColor(color);
+		color = fb_hFixColor(context->target_bpp, color);
 	style &= 0xFFFF;
 
 	fb_hPrepareTarget(context, target, color);

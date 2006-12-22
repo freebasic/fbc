@@ -37,11 +37,11 @@ static const unsigned char ega_association[2][16] = {
 
 
 /*:::::*/
-unsigned int fb_hMakeColor(unsigned int index, int r, int g, int b)
+unsigned int fb_hMakeColor(int bpp, unsigned int index, int r, int g, int b)
 {
 	unsigned int color;
 
-	if (__fb_gfx->bpp == 2)
+	if (bpp == 2)
 		color = (b >> 3) | ((g << 3) & 0x07E0) | ((r << 8) & 0xF800);
 	else
 		color = index;
@@ -51,9 +51,9 @@ unsigned int fb_hMakeColor(unsigned int index, int r, int g, int b)
 
 
 /*:::::*/
-unsigned int fb_hFixColor(unsigned int color)
+unsigned int fb_hFixColor(int bpp, unsigned int color)
 {
-	return fb_hMakeColor(color, (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF) & __fb_gfx->color_mask;
+	return fb_hMakeColor(bpp, color, (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF) & BPP_MASK(bpp);
 }
 
 

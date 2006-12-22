@@ -78,7 +78,8 @@ extern "C" {
  #define RORW1(num)      RORW(num, 1)
 #endif
 
-#define BYTES_PER_PIXEL(d)	(((d) + 7) / 8)
+#define BYTES_PER_PIXEL(d)		(((d) + 7) / 8)
+#define BPP_MASK(b)				((int)((1LL << ((b) << 3)) - 1))
 
 #define DRIVER_LOCK()		{ if (!(__fb_gfx->flags & (SCREEN_LOCKED | SCREEN_AUTOLOCKED))) { __fb_gfx->driver->lock(); __fb_gfx->flags |= SCREEN_LOCKED | SCREEN_AUTOLOCKED; } }
 #define DRIVER_UNLOCK()		{ if (__fb_gfx->flags & SCREEN_AUTOLOCKED) { __fb_gfx->driver->unlock(); __fb_gfx->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED); } }
@@ -152,11 +153,13 @@ extern "C" {
 #define PUT_MODE_PSET		1
 #define PUT_MODE_PRESET		2
 #define PUT_MODE_AND		3
-#define PUT_MODE_OR		4
+#define PUT_MODE_OR			4
 #define PUT_MODE_XOR		5
 #define PUT_MODE_ALPHA		6
 #define PUT_MODE_ADD		7
 #define PUT_MODE_CUSTOM		8
+#define PUT_MODE_BLEND		9
+#define PUT_MODES			10
 
 #define KEY_BUFFER_LEN		16
 
@@ -208,11 +211,17 @@ extern "C" {
 #define GET_COLOR					13
 #define GET_ALPHA_PRIMITIVES		14
 
+#define SET_FIRST_SETTER			100
 #define SET_WINDOW_POS				100
 #define SET_WINDOW_TITLE			101
 #define SET_PEN_POS					102
 #define SET_DRIVER_NAME				103
 #define SET_ALPHA_PRIMITIVES		104
+
+
+typedef void (BLITTER)(unsigned char *, int);
+typedef FBCALL unsigned int (BLENDER)(unsigned int, unsigned int, void *);
+typedef void (PUTTER)(unsigned char *, unsigned char *, int, int, int, int, int, BLENDER *, void *);
 
 
 typedef struct _GFX_CHAR_CELL {
@@ -244,6 +253,7 @@ typedef struct FB_GFXCTX {
 	int work_page;
 	unsigned char **line;
 	int max_h;
+	int target_bpp;
 	int target_pitch;
 	void *last_target;
 	float last_x, last_y;
@@ -264,6 +274,8 @@ typedef struct FB_GFXCTX {
 	void (*put_pixel)(struct FB_GFXCTX *ctx, int x, int y, unsigned int color);
 	unsigned int (*get_pixel)(struct FB_GFXCTX *ctx, int x, int y);
 	void *(*pixel_set)(void *dest, int color, size_t size);
+	PUTTER **putter;
+	int put_bpp;
     int flags;
 } FB_GFXCTX;
 
@@ -358,10 +370,6 @@ struct _PUT_HEADER {
 typedef struct _PUT_HEADER PUT_HEADER;
 
 
-typedef void (BLITTER)(unsigned char *, int);
-typedef FBCALL unsigned int (BLENDER)(unsigned int, unsigned int, void *);
-typedef void (PUTTER)(unsigned char *, unsigned char *, int, int, int, int, int, BLENDER *, void *);
-
 /* Global variables */
 extern FBGFX *__fb_gfx;
 extern char *__fb_gfx_driver_name;
@@ -388,8 +396,8 @@ extern void fb_hPostEvent(EVENT *e);
 extern void fb_hPostKey(int key);
 extern BLITTER *fb_hGetBlitter(int device_depth, int is_rgb);
 extern PUTTER *fb_hGetPutter(int mode, int *alpha);
-extern unsigned int fb_hMakeColor(unsigned int index, int r, int g, int b);
-extern unsigned int fb_hFixColor(unsigned int color);
+extern unsigned int fb_hMakeColor(int bpp, unsigned int index, int r, int g, int b);
+extern unsigned int fb_hFixColor(int bpp, unsigned int color);
 extern void fb_hRestorePalette(void);
 extern void fb_hPrepareTarget(FB_GFXCTX *ctx, void *target, unsigned int color);
 extern void fb_hTranslateCoord(FB_GFXCTX *ctx, float fx, float fy, int *x, int *y);

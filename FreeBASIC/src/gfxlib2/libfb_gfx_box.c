@@ -51,7 +51,7 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, un
 	if (full) {
 		w = clipped_x2 - clipped_x1 + 1;
 		h = clipped_y2 - clipped_y1 + 1;
-		dest = context->line[clipped_y1] + (clipped_x1 * __fb_gfx->bpp);
+		dest = context->line[clipped_y1] + (clipped_x1 * context->target_bpp);
 		for (; h; h--) {
 			context->pixel_set(dest, color, w);
 			dest += context->target_pitch;
@@ -65,7 +65,7 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, un
 		}
 		if (y2 < context->view_y + context->view_h) {
 			if (style == 0xFFFF)
-				context->pixel_set(context->line[y2] + (clipped_x1 * __fb_gfx->bpp), color, clipped_x2 - clipped_x1 + 1);
+				context->pixel_set(context->line[y2] + (clipped_x1 * context->target_bpp), color, clipped_x2 - clipped_x1 + 1);
 			else {
 				for (w = clipped_x1; w <= clipped_x2; w++) {
 					if (style & bit)
@@ -85,7 +85,7 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, un
 		
 		if (y1 >= context->view_y) {
 			if (style == 0xFFFF)
-				context->pixel_set(context->line[y1] + (clipped_x1 * __fb_gfx->bpp), color, clipped_x2 - clipped_x1 + 1);
+				context->pixel_set(context->line[y1] + (clipped_x1 * context->target_bpp), color, clipped_x2 - clipped_x1 + 1);
 			else {
 				for (w = clipped_x1; w <= clipped_x2; w++) {
 					if (style & bit)

@@ -75,7 +75,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int flags, FBSTRIN
 		if (flags & DEFAULT_COLOR_1)
 			color = context->fg_color;
 		else
-			color = fb_hFixColor(color);
+			color = fb_hFixColor(context->target_bpp, color);
 	}
 	
 	fb_hPrepareTarget(context, target, color);
@@ -102,15 +102,17 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int flags, FBSTRIN
 		}
 		else {
 			bpp = header->old.bpp;
+			if (!bpp)
+				bpp = context->target_bpp;
 			font_height = header->old.height - 1;
-			pitch = header->old.width * __fb_gfx->bpp;
+			pitch = header->old.width * bpp;
 			data = (unsigned char *)font + 4;
 		}
 		
 		if ((y + font_height <= context->view_y) || (y >= context->view_y + context->view_h))
 			goto exit_error;
 		
-		if (((bpp) && (bpp != __fb_gfx->bpp)) || (pitch < 4) || (font_height <= 0) || (data[0] != 0)) {
+		if ((bpp != context->target_bpp) || (pitch < 4) || (font_height <= 0) || (data[0] != 0)) {
 			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
 			goto exit_error;
 		}
@@ -133,7 +135,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int flags, FBSTRIN
 		for (w = 0, i = first; i <= last; i++) {
 			char_data[i].width = (unsigned int)width[i - first];
 			char_data[i].data = data;
-			data += (char_data[i].width * __fb_gfx->bpp);
+			data += (char_data[i].width * bpp);
 			w += char_data[i].width;
 		}
 		if (w > (pitch / __fb_gfx->bpp)) {
@@ -160,13 +162,13 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int flags, FBSTRIN
 			if (x + w >= context->view_x) {
 				
 				if (x < context->view_x) {
-					data += ((context->view_x - x) * __fb_gfx->bpp);
+					data += ((context->view_x - x) * bpp);
 					w -= (context->view_x - x);
 					px = context->view_x;
 				}
 				if (x + w > context->view_x + context->view_w)
 					w -= ((x + w) - (context->view_x + context->view_w));
-				put(data, context->line[y] + (px * __fb_gfx->bpp), w, h, pitch, context->target_pitch, color, blender, param);
+				put(data, context->line[y] + (px * bpp), w, h, pitch, context->target_pitch, color, blender, param);
 				
 			}
 			x += ch->width;

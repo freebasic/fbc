@@ -73,6 +73,7 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	int res = 0;
+	int res1 = 0, res2 = 0, res3 = 0, res4 = 0;
 	int temp1, temp2, temp3, temp4;
 	
 	if (!param1) param1 = &temp1;
@@ -85,107 +86,77 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 	case GET_WINDOW_POS:
 		if ((__fb_gfx) && (__fb_gfx->driver->set_window_pos))
 			res = __fb_gfx->driver->set_window_pos(0x80000000, 0x80000000);
-		*param1 = (int)((short)(res & 0xFFFF));
-		*param2 = res >> 16;
+		res1 = (int)((short)(res & 0xFFFF));
+		res2 = res >> 16;
 		break;
 	
 	case GET_WINDOW_HANDLE:
 		if (__fb_gfx)
-			*param1 = fb_hGetWindowHandle();
-		else
-			*param1 = 0;
+			res1 = fb_hGetWindowHandle();
 		break;
 	
 	case GET_DESKTOP_SIZE:
-		fb_hScreenInfo(param1, param2, &temp3, &temp4);
+		fb_hScreenInfo(&res1, &res2, &temp3, &temp4);
 		break;
 	
 	case GET_SCREEN_SIZE:
 		if (__fb_gfx) {
-			*param1 = __fb_gfx->w;
-			*param2 = __fb_gfx->h;
-		}
-		else {
-			*param1 = 0;
-			*param2 = 0;
+			res1 = __fb_gfx->w;
+			res2 = __fb_gfx->h;
 		}
 		break;
 	
 	case GET_SCREEN_DEPTH:
 		if (__fb_gfx)
-			*param1 = __fb_gfx->depth;
-		else
-			*param1 = 0;
+			res1 = __fb_gfx->depth;
 		break;
 	
 	case GET_SCREEN_BPP:
 		if (__fb_gfx)
-			*param1 = __fb_gfx->bpp;
-		else
-			*param1 = 0;
+			res1 = __fb_gfx->bpp;
 		break;
 	
 	case GET_SCREEN_PITCH:
 		if (__fb_gfx)
-			*param1 = __fb_gfx->pitch;
-		else
-			*param1 = 0;
+			res1 = __fb_gfx->pitch;
 		break;
 	
 	case GET_SCREEN_REFRESH:
 		if (__fb_gfx)
-			*param1 = __fb_gfx->refresh_rate;
-		else
-			*param1 = 0;
+			res1 = __fb_gfx->refresh_rate;
 		break;
 	
 	case GET_TRANSPARENT_COLOR:
 		if ((__fb_gfx) && (__fb_gfx->bpp > 1))
-			*param1 = MASK_COLOR_32;
-		else
-			*param1 = 0;
+			res1 = MASK_COLOR_32;
 		break;
 	
 	case GET_VIEWPORT:
 		if (__fb_gfx) {
-			*param1 = context->view_x;
-			*param2 = context->view_y;
-			*param3 = context->view_x + context->view_w - 1;
-			*param4 = context->view_y + context->view_h - 1;
-		}
-		else {
-			*param1 = 0;
-			*param2 = 0;
-			*param3 = 0;
-			*param4 = 0;
+			res1 = context->view_x;
+			res2 = context->view_y;
+			res3 = context->view_x + context->view_w - 1;
+			res4 = context->view_y + context->view_h - 1;
 		}
 		break;
 	
 	case GET_PEN_POS:
 		if (__fb_gfx) {
-			*param1 = context->last_x;
-			*param2 = context->last_y;
-		}
-		else {
-			*param1 = 0;
-			*param2 = 0;
+			res1 = context->last_x;
+			res2 = context->last_y;
 		}
 		break;
 	
 	case GET_COLOR:
 		if (__fb_gfx) {
-			*param1 = context->fg_color;
-			*param2 = context->bg_color;
-		}
-		else {
-			*param1 = 0;
-			*param2 = 0;
+			res1 = context->fg_color;
+			res2 = context->bg_color;
 		}
 		break;
 	
 	case GET_ALPHA_PRIMITIVES:
 		if (__fb_gfx)
-			*param1 = (__fb_gfx->flags & ALPHA_PRIMITIVES) ? FB_TRUE : FB_FALSE;
+			res1 = (__fb_gfx->flags & ALPHA_PRIMITIVES) ? FB_TRUE : FB_FALSE;
 		break;
 	
 	case SET_WINDOW_POS:
@@ -203,12 +174,19 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 		break;
 	
 	case SET_ALPHA_PRIMITIVES:
-		if (__fb_gfx) {
+		if ((__fb_gfx) && (*param1 != 0x80000000)) {
 			if (*param1)
 				__fb_gfx->flags |= ALPHA_PRIMITIVES;
 			else
 				__fb_gfx->flags &= ~ALPHA_PRIMITIVES;
 		}
 		break;
+	}
+	
+	if (what < SET_FIRST_SETTER) {
+		*param1 = res1;
+		*param2 = res2;
+		*param3 = res3;
+		*param4 = res4;
 	}
 }

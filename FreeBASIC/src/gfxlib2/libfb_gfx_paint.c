@@ -77,11 +77,11 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	if (flags & DEFAULT_COLOR_1)
 		color = context->fg_color;
 	else
-		color = fb_hFixColor(color);
+		color = fb_hFixColor(context->target_bpp, color);
 	if (flags & DEFAULT_COLOR_2)
 		border_color = color;
 	else
-		border_color = fb_hFixColor(border_color);
+		border_color = fb_hFixColor(context->target_bpp, border_color);
 
 	fb_hPrepareTarget(context, target, color);
 
@@ -144,24 +144,24 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	for (y = context->view_y; y < context->view_y + context->view_h; y++) {
 		for (s = tail = span[y]; s; s = s->row_next, free(tail), tail = s) {
 
-			dest = context->line[s->y] + (s->x1 * __fb_gfx->bpp);
+			dest = context->line[s->y] + (s->x1 * context->target_bpp);
 
 			if (mode == PAINT_TYPE_FILL)
 				context->pixel_set(dest, color, s->x2 - s->x1 + 1);
 			else {
-				src = data + (((s->y & 0x7) << 3) * __fb_gfx->bpp);
+				src = data + (((s->y & 0x7) << 3) * context->target_bpp);
 				if (s->x1 & 0x7) {
 					if ((s->x1 & ~0x7) == (s->x2 & ~0x7))
 						size = s->x2 - s->x1 + 1;
 					else
 						size = 8 - (s->x1 & 0x7);
-					fb_hPixelCpy(dest, src + ((s->x1 & 0x7) * __fb_gfx->bpp), size);
-					dest += size * __fb_gfx->bpp;
+					fb_hPixelCpy(dest, src + ((s->x1 & 0x7) * context->target_bpp), size);
+					dest += size * context->target_bpp;
 				}
 				s->x2++;
 				for (x = (s->x1 + 7) >> 3; x < (s->x2 & ~0x7) >> 3; x++) {
 					fb_hPixelCpy(dest, src, 8);
-					dest += 8 * __fb_gfx->bpp;
+					dest += 8 * context->target_bpp;
 				}
 				if ((s->x2 & 0x7) && ((s->x1 & ~0x7) != (s->x2 & ~0x7)))
 					fb_hPixelCpy(dest, src, s->x2 & 0x7);
