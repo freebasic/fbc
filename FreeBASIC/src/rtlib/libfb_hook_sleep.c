@@ -45,6 +45,7 @@ FBCALL void fb_Sleep ( int msecs )
     FB_LOCK();
     sleepproc = __fb_ctx.hooks.sleepproc;
     FB_UNLOCK();
+    msecs *= (__fb_ctx.lang == FB_LANG_QB)?1000:1;
     if( sleepproc ) {
         sleepproc( msecs );
     } else {
