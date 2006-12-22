@@ -48,17 +48,25 @@
 FBCALL FBSTRING *fb_LongintToStr ( long long num )
 {
 	FBSTRING 	*dst;
+	int str_offset = 0;
 
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, sizeof( long long ) * 3 );
 	if( dst != NULL )
 	{
-
+        if( __fb_ctx.lang == FB_LANG_QB ) {
+        	
+        	if( num >= 0 ) {
+        		dst->data[0] = ' ';
+        		str_offset = 1;
+        	}
+        	
+        }
 		/* convert */
 #ifdef TARGET_WIN32
-		_i64toa( num, dst->data, 10 );
+		_i64toa( num, dst->data + str_offset, 10 );
 #else
-		sprintf( dst->data, "%lld", num );
+		sprintf( dst->data + str_offset, "%lld", num );
 #endif
 
         fb_hStrSetLength( dst, strlen( dst->data ) );
@@ -73,16 +81,23 @@ FBCALL FBSTRING *fb_LongintToStr ( long long num )
 FBCALL FBSTRING *fb_ULongintToStr ( unsigned long long num )
 {
 	FBSTRING 	*dst;
+	int str_offset = 0;
 
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, sizeof( long long ) * 3 );
 	if( dst != NULL )
 	{
+        if( __fb_ctx.lang == FB_LANG_QB ) {
+        	
+    		dst->data[0] = ' ';
+    		str_offset = 1;
+        	
+        }
 		/* convert */
 #ifdef TARGET_WIN32
-		_ui64toa( num, dst->data, 10 );
+		_ui64toa( num, dst->data + str_offset, 10 );
 #else
-		sprintf( dst->data, "%llu", num );
+		sprintf( dst->data + str_offset, "%llu", num );
 #endif
 
         fb_hStrSetLength( dst, strlen( dst->data ) );

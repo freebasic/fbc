@@ -48,18 +48,27 @@
 FBCALL FBSTRING *fb_FloatToStr ( float num )
 {
 	FBSTRING 	*dst;
+	int str_offset = 0;
 
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, 7+8 );
 	if( dst != NULL )
     {
+        if( __fb_ctx.lang == FB_LANG_QB ) {
+        	
+        	if( num >= 0 ) {
+        		dst->data[0] = ' ';
+        		str_offset = 1;
+        	}
+        	
+        }
         size_t tmp_len;
 
 		/* convert */
 #ifdef TARGET_WIN32
-		_gcvt( (double)num, 7, dst->data );
+		_gcvt( (double)num, 7, dst->data + str_offset );
 #else
-		sprintf( dst->data, "%.7g", num );
+		sprintf( dst->data + str_offset, "%.7g", num );
 #endif
 
 		tmp_len = strlen( dst->data );				/* fake len */
@@ -85,18 +94,27 @@ FBCALL FBSTRING *fb_FloatToStr ( float num )
 FBCALL FBSTRING *fb_DoubleToStr ( double num )
 {
 	FBSTRING 	*dst;
+	int str_offset = 0;
 
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, 16+8 );
 	if( dst != NULL )
 	{
+        if( __fb_ctx.lang == FB_LANG_QB ) {
+        	
+        	if( num >= 0 ) {
+        		dst->data[0] = ' ';
+        		str_offset = 1;
+        	}
+        	
+        }
         size_t tmp_len;
 
 		/* convert */
 #ifdef TARGET_WIN32
-		_gcvt( num, 16, dst->data );
+		_gcvt( num, 16, dst->data + str_offset );
 #else
-		sprintf( dst->data, "%.16g", num );
+		sprintf( dst->data + str_offset, "%.16g", num );
 #endif
 
 		tmp_len = strlen( dst->data );				/* fake len */
