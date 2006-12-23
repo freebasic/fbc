@@ -140,6 +140,7 @@ enum FBOPENKIND
     FB_FILE_TYPE_SCRN
     FB_FILE_TYPE_LPT
     FB_FILE_TYPE_COM
+    FB_FILE_TYPE_QB
 end enum
 
 ''

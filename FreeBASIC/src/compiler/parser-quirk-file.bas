@@ -779,52 +779,64 @@ private function hFileOpen _
     open_kind = FB_FILE_TYPE_FILE
 
     short_form = FALSE
-
-	'' special devices
-	select case ucase( *lexGetText( ) )
-    case "CONS"
-		'' not a symbol?
-		if( lexGetSymChain( ) = NULL ) then
+    
+    '' if it's a qb-style open, we only get an identifier, or a literal
+    if( fbLangIsSet( FB_LANG_QB ) ) then
+	    if( (lexGetClass( ) <> FB_TKCLASS_IDENTIFIER) and (lexGetClass( ) <> FB_TKCLASS_STRLITERAL) ) then
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			exit function
+	    end if
+	    
+	'' less quirky? erm...
+	else
+	
+		'' special devices
+		select case ucase( *lexGetText( ) )
+	    case "CONS"
+			'' not a symbol?
+			if( lexGetSymChain( ) = NULL ) then
+				lexSkipToken( )
+	    		open_kind = FB_FILE_TYPE_CONS
+	    	end if
+	
+	    case "ERR"
 			lexSkipToken( )
-    		open_kind = FB_FILE_TYPE_CONS
-    	end if
-
-    case "ERR"
-		lexSkipToken( )
-        open_kind = FB_FILE_TYPE_ERR
-
-    case "PIPE"
-		'' not a symbol?
-		if( lexGetSymChain( ) = NULL ) then
-			lexSkipToken( )
-        	open_kind = FB_FILE_TYPE_PIPE
-        end if
-
-    case "SCRN"
-		'' not a symbol?
-		if( lexGetSymChain( ) = NULL ) then
-			lexSkipToken( )
-        	open_kind = FB_FILE_TYPE_SCRN
-        end if
-
-    case "LPT"
-		'' not a symbol?
-		if( lexGetSymChain( ) = NULL ) then
-			lexSkipToken( )
-    		open_kind = FB_FILE_TYPE_LPT
-    	end if
-
-    case "COM"
-		'' not a symbol?
-		if( lexGetSymChain( ) = NULL ) then
-			lexSkipToken( )
-    		open_kind = FB_FILE_TYPE_COM
-    	end if
-    end select
-
-	if( isfunc ) then
-		'' '('
-		hMatchLPRNT( )
+	        open_kind = FB_FILE_TYPE_ERR
+	
+	    case "PIPE"
+			'' not a symbol?
+			if( lexGetSymChain( ) = NULL ) then
+				lexSkipToken( )
+	        	open_kind = FB_FILE_TYPE_PIPE
+	        end if
+	
+	    case "SCRN"
+			'' not a symbol?
+			if( lexGetSymChain( ) = NULL ) then
+				lexSkipToken( )
+	        	open_kind = FB_FILE_TYPE_SCRN
+	        end if
+	
+	    case "LPT"
+			'' not a symbol?
+			if( lexGetSymChain( ) = NULL ) then
+				lexSkipToken( )
+	    		open_kind = FB_FILE_TYPE_LPT
+	    	end if
+	
+	    case "COM"
+			'' not a symbol?
+			if( lexGetSymChain( ) = NULL ) then
+				lexSkipToken( )
+	    		open_kind = FB_FILE_TYPE_COM
+	    	end if
+	    end select
+	
+		if( isfunc ) then
+			'' '('
+			hMatchLPRNT( )
+		end if
+	
 	end if
 
     select case open_kind
@@ -945,19 +957,22 @@ private function hFileOpen _
 	end if
 
 	fencoding = NULL
-	'' ENCODING is only allowed in text-mode
-	select case file_mode
-	case FB_FILE_MODE_INPUT, FB_FILE_MODE_OUTPUT, FB_FILE_MODE_APPEND
-		'' (ENCODING Expression)?
-		if( hMatch( FB_TK_ENCODING ) ) then
-			hMatchExpressionEx( fencoding, FB_DATATYPE_STRING )
-
-			if( isfunc ) then
-				'' ','?
-				hMatch( CHAR_COMMA )
+	
+	if( fbLangIsSet( FB_LANG_QB ) ) = FALSE then
+		'' ENCODING is only allowed in text-mode
+		select case file_mode
+		case FB_FILE_MODE_INPUT, FB_FILE_MODE_OUTPUT, FB_FILE_MODE_APPEND
+			'' (ENCODING Expression)?
+			if( hMatch( FB_TK_ENCODING ) ) then
+				hMatchExpressionEx( fencoding, FB_DATATYPE_STRING )
+	
+				if( isfunc ) then
+					'' ','?
+					hMatch( CHAR_COMMA )
+				end if
 			end if
-		end if
-	end select
+		end select
+	end if
 
 	'' (ACCESS (READ|WRITE|READ WRITE))?
 	if( hMatch( FB_TK_ACCESS ) ) then
@@ -1051,7 +1066,12 @@ private function hFileOpen _
         '' ')'
         hMatchRPRNT( )
     end if
-
+    
+    if( fbLangIsSet( FB_LANG_QB ) ) then
+    	'' rtlFileOpen needs to know we want the QB version
+    	open_kind = FB_FILE_TYPE_QB
+    end if
+    
 	''
 	function = rtlFileOpen( filename, fmode, faccess, flock, _
 							filenum, flen, fencoding, isfunc, open_kind )

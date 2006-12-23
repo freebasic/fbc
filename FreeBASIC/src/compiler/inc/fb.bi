@@ -405,6 +405,7 @@ declare function fbGetLangName _
 ''
 
 #define fbLangOptIsSet( opt ) ((env.langopt and (opt)) <> 0)
+#define fbLangIsSet( opt ) (env.clopt.lang = opt)
 
 #define fbPdCheckIsSet( opt ) ((env.clopt.pdcheckopt and (opt)) <> 0)
 

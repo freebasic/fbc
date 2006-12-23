@@ -27,7 +27,7 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 60 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 63 ) = _
 	{ _
 		/' fb_FileOpen( byref s as string, byval mode as integer, byval access as integer,
 				        byval lock as integer, byval filenum as integer, _
@@ -187,8 +187,7 @@
 		), _
 		/' fb_FileOpenPipe( byref s as string, byval mode as integer, byval access as integer,
 				            byval lock as integer, byval filenum as integer,
-							byval len as integer, _
-							byval encoding as zstring ptr ) as integer '/ _
+							byval len as integer, byval encoding as zstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_FILEOPEN_PIPE, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
@@ -220,8 +219,7 @@
 		), _
 		/' fb_FileOpenScrn( byref s as string, byval mode as integer, byval access as integer,
 				            byval lock as integer, byval filenum as integer,
-							byval len as integer, _
-							byval encoding as zstring ptr ) as integer '/ _
+							byval len as integer, byval encoding as zstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_FILEOPEN_SCRN, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
@@ -312,6 +310,35 @@
 	 			), _
 	 			( _
 					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FileOpenQB( byref s as string, byval mode as integer, byval access as integer,
+				          byval lock as integer, byval filenum as integer,
+						  byval len as integer ) as integer '/ _
+		( _
+			@FB_RTL_FILEOPEN_QB, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			6, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -1175,6 +1202,16 @@ function rtlFileOpen _
 
     case FB_FILE_TYPE_COM
 		f = PROCLOOKUP( FILEOPEN_COM )
+
+    case FB_FILE_TYPE_QB
+		f = PROCLOOKUP( FILEOPEN_QB )
+		doencoding = FALSE
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			symbAddLib( "winspool" )
+			symbAddLib( "gdi32" )
+			symbAddLib( "user32" )
+		end select
 	end select
 
 	proc = astNewCALL( f )

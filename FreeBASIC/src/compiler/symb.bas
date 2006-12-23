@@ -116,7 +116,7 @@ end sub
 private sub hInitDefTypeTb
     dim as integer dtype, i
 
-	if( env.clopt.lang = FB_LANG_QB ) then
+	if( fbLangIsSet( FB_LANG_QB ) ) then
 		dtype = FB_DATATYPE_SINGLE
 	else
 		dtype = FB_DATATYPE_INTEGER

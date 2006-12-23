@@ -147,7 +147,7 @@ private function hCalcALign _
 	if( align = 0 ) then
 
 	    '' qb didn't do any alignment...
-	    if( env.clopt.lang = FB_LANG_QB ) then
+	    if( fbLangIsSet( FB_LANG_QB ) ) then
 	    	exit function
 	    end if
 	
