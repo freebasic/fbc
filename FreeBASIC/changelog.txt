@@ -41,6 +41,7 @@ Version 0.17 Beta:
 - EXEC in dos and linux now parses arguments like in windows and with no hardcoded limits on the allowable number of arguments (jeffm)
 - LOCATE will now accept a full 5 args to be compatible with QB, however the final 2 args have no effect (cha0s)
 - STR will now pad positive numbers with a single space, as in QB, but ONLY if -lang qb is used (cha0s)
+- ACOS(), ASIN(), LOG(), EXP(), SGN() and FIX() are now inlined (v1c)
 
 [added]
 - the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)
@@ -88,6 +89,7 @@ Version 0.17 Beta:
 - the cairo (Multi-platform 2D graphics library) headers, import library and example (v1c)
 - all Gfxlib drawing functions can now successfully work on buffers using a depth different than the current one (lillo)
 - using PUT to draw an 8bpp sprite on top of a 32bpp one with ALPHA drawing mode will cause the source to be set as the dest alpha channel (lillo)
+- the FRAC() inline function, that returns the fractional part of a floating-point number (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
