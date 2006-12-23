@@ -108,7 +108,7 @@ static LPDIRECTDRAWPALETTE lpDDP;
 static LPDIRECTINPUT lpDI;
 static LPDIRECTINPUTDEVICE lpDID;
 static RECT rect;
-static int display_offset, wait_vsync = FALSE;
+static int win_x, win_y, display_offset, wait_vsync = FALSE;
 static HANDLE vsync_event = NULL;
 
 
@@ -140,7 +140,10 @@ static void directx_paint(void)
 		if (result == DDERR_WRONGMODE) {
 			/* it sucks, we have to recreate all DD objects */
 			directx_exit();
-			directx_init();
+			while (directx_init()) {
+				directx_exit();
+				Sleep(300);
+			}
 			/* stop our window to flash */
 			fwinfo.cbSize = sizeof(fwinfo);
 			fwinfo.hwnd = fb_win32.wnd;
@@ -258,9 +261,7 @@ static int directx_init(void)
 		AdjustWindowRect(&rect, style, 0);
 		rect.right -= rect.left;
 		rect.bottom -= rect.top;
-		if (fb_hInitWindow(style, 0, (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
-									 (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1,
-									 rect.right, rect.bottom))
+		if (fb_hInitWindow(style, 0, win_x, win_y, rect.right, rect.bottom))
 			return -1;
 		if (IDirectDraw2_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_NORMAL) != DD_OK)
 			return -1;
@@ -343,6 +344,13 @@ static int directx_init(void)
 static void directx_exit(void)
 {
 	DDBLTFX bltfx;
+	RECT rect;
+
+	if (!(fb_win32.flags & DRIVER_FULLSCREEN)) {
+		GetWindowRect(fb_win32.wnd, &rect);
+		win_x = rect.left;
+		win_y = rect.top;
+	}
 
 	if (lpDI) {
 		if (lpDID) {
@@ -453,6 +461,9 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_win32.paint = directx_paint;
 	fb_win32.thread = directx_thread;
 
+	win_x = (GetSystemMetrics(SM_CXSCREEN) - w) >> 1;
+	win_y = (GetSystemMetrics(SM_CYSCREEN) - h) >> 1;
+	
 	return fb_hWin32Init(title, w, h, MAX(8, depth), refresh_rate, flags);
 }
 
