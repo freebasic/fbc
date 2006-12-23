@@ -1,3 +1,5 @@
+/*!!!REMOVEME!!!*/
+
 /*
  *  libfb - FreeBASIC's runtime library
  *	Copyright (C) 2004-2007 The FreeBASIC development team.

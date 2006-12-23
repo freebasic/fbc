@@ -153,13 +153,6 @@
 #define FB_RTL_DATAREADDOUBLE 			"fb_DataReadDouble"
 
 #define FB_RTL_POW 						"fb_Pow"
-#define FB_RTL_SGNSINGLE 				"fb_SGNSingle"
-#define FB_RTL_SGNDOUBLE 				"fb_SGNDouble"
-#define FB_RTL_FIXSINGLE 				"fb_FIXSingle"
-#define FB_RTL_FIXDOUBLE 				"fb_FIXDouble"
-#define FB_RTL_ASIN 					"{asin}"
-#define FB_RTL_ACOS 					"{acos}"
-#define FB_RTL_LOG 						"{log}"
 
 #define FB_RTL_PRINTVOID 				"fb_PrintVoid"
 #define FB_RTL_PRINTBYTE 				"fb_PrintByte"
@@ -453,13 +446,6 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_DATAREADDOUBLE
 
 	FB_RTL_IDX_POW
-	FB_RTL_IDX_SGNSINGLE
-	FB_RTL_IDX_SGNDOUBLE
-	FB_RTL_IDX_FIXSINGLE
-	FB_RTL_IDX_FIXDOUBLE
-	FB_RTL_IDX_ASIN
-	FB_RTL_IDX_ACOS
-	FB_RTL_IDX_LOG
 
 	FB_RTL_IDX_PRINTVOID
 	FB_RTL_IDX_PRINTBYTE
@@ -931,22 +917,6 @@ declare function rtlMathPow _
 	( _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function rtlMathFSGN _
-	( _
-		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function rtlMathFIX _
-	( _
-		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function rtlMathTRANS _
-	( _
-		byval op as integer, _
-		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function rtlMathLen _

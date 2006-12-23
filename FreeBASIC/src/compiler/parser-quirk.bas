@@ -160,9 +160,9 @@ function cQuirkFunction _
 		 FB_TK_INSTR, FB_TK_TRIM, FB_TK_RTRIM, FB_TK_LTRIM
 		res = cStringFunct( tk, funcexpr )
 
-	case FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_LEN, FB_TK_SIZEOF, _
+	case FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_FRAC, FB_TK_LEN, FB_TK_SIZEOF, _
 		 FB_TK_SIN, FB_TK_ASIN, FB_TK_COS, FB_TK_ACOS, FB_TK_TAN, FB_TK_ATN, _
-		 FB_TK_SQR, FB_TK_LOG, FB_TK_ATAN2, FB_TK_INT
+		 FB_TK_SQR, FB_TK_LOG, FB_TK_EXP, FB_TK_ATAN2, FB_TK_INT
 		res = cMathFunct( tk, funcexpr )
 
 	case FB_TK_PEEK

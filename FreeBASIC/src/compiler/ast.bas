@@ -680,6 +680,12 @@ declare sub astReplaceSymbolOnCALL _
 			AST_OPFLAGS_NONE, _
 			@"log" _
 		), _
+		/' AST_OP_EXP '/ _
+		( _
+			AST_NODECLASS_UOP, _
+			AST_OPFLAGS_NONE, _
+			@"exp" _
+		), _
 		/' AST_OP_FLOOR '/ _
 		( _
 			AST_NODECLASS_UOP, _
@@ -691,6 +697,12 @@ declare sub astReplaceSymbolOnCALL _
 			AST_NODECLASS_UOP, _
 			AST_OPFLAGS_NONE, _
 			@"fix" _
+		), _
+		/' AST_OP_FRAC '/ _
+		( _
+			AST_NODECLASS_UOP, _
+			AST_OPFLAGS_NONE, _
+			@"frac" _
 		), _
 		/' AST_OP_DEREF '/ _
 		( _

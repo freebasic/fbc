@@ -1723,6 +1723,10 @@ private sub hFlushUOP _
 		emitABS( v1 )
 	case AST_OP_SGN
 		emitSGN( v1 )
+	case AST_OP_FIX
+		emitFIX( v1 )
+	case AST_OP_FRAC
+		emitFRAC( v1 )
 
 	case AST_OP_SIN
 		emitSIN( v1 )
@@ -1740,6 +1744,8 @@ private sub hFlushUOP _
 		emitSQRT( v1 )
 	case AST_OP_LOG
 		emitLOG( v1 )
+	case AST_OP_EXP
+		emitEXP( v1 )
 	case AST_OP_FLOOR
 		emitFLOOR( v1 )
 	end select

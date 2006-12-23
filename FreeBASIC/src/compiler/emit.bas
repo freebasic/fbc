@@ -1120,6 +1120,26 @@ function emitSGN _
 end function
 
 '':::::
+function emitFIX _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
+
+	function = hNewUOP( EMIT_OP_FIX, dvreg )
+
+end function
+
+'':::::
+function emitFRAC _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
+
+	function = hNewUOP( EMIT_OP_FRAC, dvreg )
+
+end function
+
+'':::::
 function emitSIN _
 	( _
 		byval dvreg as IRVREG ptr _
@@ -1196,6 +1216,16 @@ function emitLOG _
 	) as EMIT_NODE ptr static
 
 	function = hNewUOP( EMIT_OP_LOG, dvreg )
+
+end function
+
+'':::::
+function emitEXP _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
+
+	function = hNewUOP( EMIT_OP_EXP, dvreg )
 
 end function
 

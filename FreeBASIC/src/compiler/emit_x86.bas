@@ -4493,15 +4493,14 @@ private sub hCMPF _
 		end if
 	end if
 
-    iseaxfree = TRUE
+    iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
     if( rvreg <> NULL ) then
-    	if( rvreg->reg <> EMIT_REG_EAX ) then
-    		iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
-    		if( iseaxfree = FALSE ) then
-    			hPUSH( "eax" )
-    		end if
-    	end if
+    	iseaxfree = (rvreg->reg = EMIT_REG_EAX)
 	end if
+
+    if( iseaxfree = FALSE ) then
+    	hPUSH( "eax" )
+    end if
 
     '' load fpu flags
     outp "fnstsw ax"
@@ -5105,9 +5104,7 @@ private sub _emitSGNI _
 		byval dvreg as IRVREG ptr _
 	) static
 
-    dim dst as string
-    dim label as string
-    dim ostr as string
+    dim as string dst, label, ostr
 
 	hPrepOperand( dvreg, dst )
 
@@ -5131,7 +5128,37 @@ private sub _emitSGNF _
 		byval dvreg as IRVREG ptr _
 	) static
 
-	'' hack! floating-point SGN is done by a rtlib function, called by AST
+	dim as string dst, label, ostr
+	dim as integer iseaxfree
+
+	hPrepOperand( dvreg, dst )
+
+	label = *hMakeTmpStr( )
+
+    iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+
+    if( iseaxfree = FALSE ) then
+    	hPUSH( "eax" )
+    end if
+
+	outp "ftst"
+	outp "fnstsw ax"
+	outp "sahf"
+
+	if( iseaxfree = FALSE ) then
+		hPOP( "eax" )
+	end if
+
+	'' if dst = 0
+	hBRANCH( "jz", label )
+	'' elseif dst > 0
+	outp "fstp st(0)"
+	outp "fld1"
+	hBRANCH( "ja", label )
+	'' else
+	outp "fchs"
+
+	hLABEL( label )
 
 end sub
 
@@ -5153,14 +5180,11 @@ private sub _emitASIN _
 
 	'' asin( x ) = atn( sqr( (x*x) / (1-x*x) ) )
 	outp "fld st(0)"
-	outp "fmulp"
-	outp "fld st(0)"
-	outp "fld1"
-	outp "fsubrp"
-    outp "fdivp"
-    outp "fsqrt"
+    outp "fmul st(0), st(0)"
     outp "fld1"
-    outp "fpatan"
+	outp "fsubrp"
+	outp "fsqrt"
+	outp "fpatan"
 
 end sub
 
@@ -5182,13 +5206,11 @@ private sub _emitACOS _
 
 	'' acos( x ) = atn( sqr( (1-x*x) / (x*x) ) )
 	outp "fld st(0)"
-    outp "fmulp"
-	outp "fld st(0)"
+    outp "fmul st(0), st(0)"
     outp "fld1"
 	outp "fsubrp"
-	outp "fdivrp"
 	outp "fsqrt"
-	outp "fld1"
+	outp "fxch"
 	outp "fpatan"
 
 end sub
@@ -5233,13 +5255,58 @@ private sub _emitLOG _
 
 	'' log( x ) = log2( x ) / log2( e ).
 
-	outp "fld1"
-	outp "fxch"
-	outp "fyl2x"
-	outp "fldl2e"
-	outp "fdivp"
+    outp "fldln2"
+    outp "fxch"
+    outp "fyl2x"
 
 end sub
+
+'':::::
+private sub _emitEXP _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
+
+	outp "fldl2e"
+	outp "fmulp st(1), st"
+	outp "fst st(1)"
+    outp "frndint"
+	outp "fsub st(1),st"
+	outp "fxch"
+	outp "f2xm1"
+	'' can't use fld1 because max 2 fp regs can be used
+	hPUSH( "0x3f800000" )
+	outp "fadd dword ptr [esp]"
+	outp "add esp, 4"
+	outp "fscale"
+	outp "fstp st(1)"
+
+end sub
+
+''::::
+#macro hFpuChangeRC( cw_reg, mode )
+	scope
+		static as string ostr
+		outp "sub esp, 4"
+		outp "fnstcw [esp]"
+		hMOV cw_reg, "[esp]"
+		if( mode <> "11" ) then
+			ostr = "and " + cw_reg + ", 0b1111001111111111"
+			outp ostr
+		end if
+		ostr = "or " + cw_reg +  (", 0b0000" + mode + "0000000000")
+		outp ostr
+		hPUSH cw_reg
+		outp "fldcw [esp]"
+		outp "add esp, 4"
+	end scope
+#endmacro
+
+''::::
+#macro hFpuRoundRestore( )
+	outp "fldcw [esp]"
+	outp "add esp, 4"
+#endmacro
 
 '':::::
 private sub _emitFLOOR _
@@ -5247,34 +5314,95 @@ private sub _emitFLOOR _
 		byval dvreg as IRVREG ptr _
 	) static
 
-	dim as integer reg, isfree
-	dim as string rname, ostr
+	dim as integer cw_reg, isfree
+	dim as string cw_regname
 
-	reg = hFindFreeReg( FB_DATACLASS_INTEGER )
-	rname = *hGetRegName( FB_DATATYPE_INTEGER, reg )
+	cw_reg = hFindFreeReg( FB_DATACLASS_INTEGER )
+	cw_regname = *hGetRegName( FB_DATATYPE_INTEGER, cw_reg )
 
-	isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
+	isfree = hIsRegFree( FB_DATACLASS_INTEGER, cw_reg )
 
 	if( isfree = FALSE ) then
-		hPUSH( rname )
+		hPUSH( cw_regname )
 	end if
 
-	outp "sub esp, 4"
-	outp "fnstcw [esp]"
-	hMOV rname, "[esp]"
-	ostr = "and " + rname + ", 0b1111001111111111"
-	outp ostr
-	ostr = "or " + rname +  ", 0b0000010000000000"
-	outp ostr
-	hPUSH rname
-	outp "fldcw [esp]"
-	outp "add esp, 4"
+	'' round down toward -infinity
+	hFpuChangeRC( cw_regname, "01" )
+
 	outp "frndint"
-	outp "fldcw [esp]"
-	outp "add esp, 4"
+
+	hFpuRoundRestore( )
 
 	if( isfree = FALSE ) then
-		hPOP( rname )
+		hPOP( cw_regname )
+	end if
+
+end sub
+
+'':::::
+private sub _emitFIX _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
+
+	dim as integer cw_reg, isfree
+	dim as string cw_regname
+
+	'' dst = floor( abs( dst ) ) * sng( dst )
+
+	cw_reg = hFindFreeReg( FB_DATACLASS_INTEGER )
+	cw_regname = *hGetRegName( FB_DATATYPE_INTEGER, cw_reg )
+
+	isfree = hIsRegFree( FB_DATACLASS_INTEGER, cw_reg )
+
+	if( isfree = FALSE ) then
+		hPUSH( cw_regname )
+	end if
+
+	'' chop truncating toward 0
+	hFpuChangeRC( cw_regname, "11" )
+
+	outp "frndint"
+
+	hFpuRoundRestore( )
+
+	if( isfree = FALSE ) then
+		hPOP( cw_regname )
+	end if
+
+end sub
+
+'':::::
+private sub _emitFRAC _
+	( _
+		byval dvreg as IRVREG ptr _
+	) static
+
+	dim as integer cw_reg, isfree
+	dim as string cw_regname
+
+	'' dst = dst - floor( dst )
+
+	cw_reg = hFindFreeReg( FB_DATACLASS_INTEGER )
+	cw_regname = *hGetRegName( FB_DATATYPE_INTEGER, cw_reg )
+
+	isfree = hIsRegFree( FB_DATACLASS_INTEGER, cw_reg )
+
+	if( isfree = FALSE ) then
+		hPUSH( cw_regname )
+	end if
+
+	'' chop truncating toward 0
+	hFpuChangeRC( cw_regname, "11" )
+
+	outp "fld st(0)"
+	outp "frndint"
+	outp "fsubp"
+
+	hFpuRoundRestore( )
+
+	if( isfree = FALSE ) then
+		hPOP( cw_regname )
 	end if
 
 end sub
@@ -6233,11 +6361,15 @@ end sub
 		EMIT_CBENTRY(ABSI), EMIT_CBENTRY(ABSF), EMIT_CBENTRY(ABSL), _
 		EMIT_CBENTRY(SGNI), EMIT_CBENTRY(SGNF), EMIT_CBENTRY(SGNL), _
         _
+		EMIT_CBENTRY(FIX), _
+		EMIT_CBENTRY(FRAC), _
+		_
 		EMIT_CBENTRY(SIN), EMIT_CBENTRY(ASIN), _
 		EMIT_CBENTRY(COS), EMIT_CBENTRY(ACOS), _
 		EMIT_CBENTRY(TAN), EMIT_CBENTRY(ATAN), _
 		EMIT_CBENTRY(SQRT), _
 		EMIT_CBENTRY(LOG), _
+		EMIT_CBENTRY(EXP), _
 		EMIT_CBENTRY(FLOOR), _
 		EMIT_CBENTRY(XCHGTOS), _
         _

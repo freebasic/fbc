@@ -68,7 +68,7 @@ private sub hUOPConstFoldFlt _
 		v->con.val.float = abs( v->con.val.float )
 
 	case AST_OP_SGN
-		v->con.val.int = sgn( v->con.val.float )
+		v->con.val.float = sgn( v->con.val.float )
 
 	case AST_OP_SIN
 		v->con.val.float = sin( v->con.val.float )
@@ -94,11 +94,19 @@ private sub hUOPConstFoldFlt _
 	case AST_OP_LOG
 		v->con.val.float = log( v->con.val.float )
 
+	case AST_OP_EXP
+		v->con.val.float = exp( v->con.val.float )
+
 	case AST_OP_FLOOR
 		v->con.val.float = int( v->con.val.float )
 
 	case AST_OP_FIX
 		v->con.val.float = fix( v->con.val.float )
+
+	case AST_OP_FRAC
+#ifdef frac
+		v->con.val.float = frac( v->con.val.float )
+#endif
 	end select
 
 end sub
@@ -207,30 +215,28 @@ function astNewUOP _
 	'' NOT can only operate on integers
 	case AST_OP_NOT
 		if( dclass <> FB_DATACLASS_INTEGER ) then
+			o = astNewCONV( FB_DATATYPE_INTEGER, NULL, o )
 			dtype = FB_DATATYPE_INTEGER
-			o = astNewCONV( dtype, NULL, o )
 		end if
 
-	'' with SGN the result is always signed integer
+	'' with SGN(int) the result is always a signed integer
 	case AST_OP_SGN
-		if( dclass <> FB_DATACLASS_INTEGER ) then
-			dtype = FB_DATATYPE_INTEGER
-		else
+		if( dclass = FB_DATACLASS_INTEGER ) then
 			dtype = symbGetSignedType( dtype )
 		end if
 
 	'' transcendental can only operate on floats
 	case AST_OP_SIN, AST_OP_ASIN, AST_OP_COS, AST_OP_ACOS, _
 		 AST_OP_TAN, AST_OP_ATAN, AST_OP_SQRT, AST_OP_LOG, _
-		 AST_OP_FLOOR
+		 AST_OP_EXP, AST_OP_FLOOR
 
 		if( dclass <> FB_DATACLASS_FPOINT ) then
+			o = astNewCONV( FB_DATATYPE_DOUBLE, NULL, o )
 			dtype = FB_DATATYPE_DOUBLE
-			o = astNewCONV( dtype, NULL, o )
 		end if
 
-	'' fix only takes floats
-	case AST_OP_FIX
+	'' fix and frac only take floats
+	case AST_OP_FIX, AST_OP_FRAC
 		'' integer? do nothing..
 		if( dclass = FB_DATACLASS_INTEGER ) then
 			return o
@@ -307,20 +313,6 @@ chk_ulong:
 
 		return o
 	end if
-
-	select case as const op
-	case AST_OP_SGN
-		'' hack! SGN with floats is handled by a function
-		if( dclass = FB_DATACLASS_FPOINT ) then
-			return rtlMathFSGN( o )
-		end if
-
-	case AST_OP_ASIN, AST_OP_ACOS, AST_OP_LOG
-		return rtlMathTRANS( op, o )
-
-	case AST_OP_FIX
-		return rtlMathFIX( o )
-	end select
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_UOP, dtype, o->subtype )

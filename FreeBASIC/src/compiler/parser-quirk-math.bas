@@ -87,6 +87,10 @@ function cMathFunct _
 	case FB_TK_FIX
 		function = hMathOp( AST_OP_FIX, funcexpr )
 
+	'' FRAC( Expression )
+	case FB_TK_FRAC
+		function = hMathOp( AST_OP_FRAC, funcexpr )
+
 	'' INT( Expression )
 	case FB_TK_INT
 		function = hMathOp( AST_OP_FLOOR, funcexpr )
@@ -115,6 +119,9 @@ function cMathFunct _
 
 	case FB_TK_LOG
 		function = hMathOp( AST_OP_LOG, funcexpr )
+
+	case FB_TK_EXP
+		function = hMathOp( AST_OP_EXP, funcexpr )
 
 	'' ATAN2( Expression ',' Expression )
 	case FB_TK_ATAN2

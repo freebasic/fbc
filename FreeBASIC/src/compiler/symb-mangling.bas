@@ -1012,6 +1012,9 @@ private function hGetOperatorName _
 	case AST_OP_FIX
 		function = @"fx"
 
+	case AST_OP_FRAC
+		function = @"fc"
+
 	case AST_OP_SGN
 		function = @"sg"
 

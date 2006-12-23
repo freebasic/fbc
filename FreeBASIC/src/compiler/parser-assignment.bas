@@ -166,6 +166,14 @@ function cOperator _
     	lexSkipToken( )
     	return AST_OP_FIX
 
+	case FB_TK_FRAC
+    	if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+    		exit function
+    	end if
+
+    	lexSkipToken( )
+    	return AST_OP_FRAC
+
 	case FB_TK_INT
     	if( (options and FB_OPEROPTS_UNARY) = 0 ) then
     		exit function

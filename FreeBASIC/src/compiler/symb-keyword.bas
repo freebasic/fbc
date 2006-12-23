@@ -34,9 +34,7 @@ type SYMBKWD
 end type
 
 	'' keywords: name, id (token), class
-const SYMB_MAXKEYWORDS = 212
-
-	dim shared kwdTb( 0 to SYMB_MAXKEYWORDS-1 ) as SYMBKWD => _
+	dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	{ _
 		(@"AND"		, FB_TK_AND				, FB_TKCLASS_OPERATOR), _
         (@"OR"		, FB_TK_OR				, FB_TKCLASS_OPERATOR), _
@@ -54,6 +52,7 @@ const SYMB_MAXKEYWORDS = 212
         (@"ABS"		, FB_TK_ABS				, FB_TKCLASS_KEYWORD), _
         (@"SGN"		, FB_TK_SGN				, FB_TKCLASS_KEYWORD), _
         (@"FIX"		, FB_TK_FIX				, FB_TKCLASS_KEYWORD), _
+        (@"FRAC"	, FB_TK_FRAC			, FB_TKCLASS_KEYWORD), _
         (@"INT"		, FB_TK_INT				, FB_TKCLASS_KEYWORD), _
         (@"STATIC"	, FB_TK_STATIC			, FB_TKCLASS_KEYWORD), _
         (@"SHARED"	, FB_TK_SHARED			, FB_TKCLASS_KEYWORD), _
@@ -193,6 +192,7 @@ const SYMB_MAXKEYWORDS = 212
         (@"ATN"		, FB_TK_ATN				, FB_TKCLASS_QUIRKWD), _
         (@"SQR"		, FB_TK_SQR				, FB_TKCLASS_QUIRKWD), _
         (@"LOG"		, FB_TK_LOG				, FB_TKCLASS_QUIRKWD), _
+        (@"EXP"		, FB_TK_EXP				, FB_TKCLASS_QUIRKWD), _
         (@"ATAN2"	, FB_TK_ATAN2			, FB_TKCLASS_QUIRKWD), _
         (@"RESUME"	, FB_TK_RESUME			, FB_TKCLASS_QUIRKWD), _
         (@"ERR"		, FB_TK_ERR				, FB_TKCLASS_QUIRKWD), _
@@ -257,17 +257,17 @@ const SYMB_MAXKEYWORDS = 212
 sub symbKeywordInit( ) static
     dim as integer i
 
-	for i = 0 to SYMB_MAXKEYWORDS-1
-    	if( kwdTb(i).name = NULL ) then
-    		exit for
-    	end if
+	i = 0
+	do until( kwdTb(i).name = NULL )
 
     	if( symbAddKeyword( kwdTb(i).name, _
     						kwdTb(i).id, _
     						kwdTb(i).class ) = NULL ) then
     		exit sub
     	end if
-    next
+
+    	i += 1
+    loop
 
 end sub
 
