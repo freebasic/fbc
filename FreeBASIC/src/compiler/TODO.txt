@@ -55,7 +55,7 @@
 
 [ ] add the -lang (qb|fb) cmd-line option:
     - "qb":
-      [ ] OPEN should be compatible with QB (ie: OPEN "DEVICE:"), the bloat doesn't
+      [x] OPEN should be compatible with QB (ie: OPEN "DEVICE:"), the bloat doesn't
           matter in -lang qb mode, just implement a fb_OpenDev or so in the rtlib doing
           the parsing that will call any supported fb_hFileOpen###'s (COM, LPT, CONS, etc)
       [ ] add the FIELD #expr statement - threads are not allowed in -lang qb anywywas
