@@ -319,10 +319,12 @@ type LPWSADATA as WSADATA ptr
 #define AF_NETDES 28
 #define AF_MAX 29
 
-type sockaddr
-	sa_family as u_short
-	sa_data(0 to 13) as byte
-end type
+#ifndef sockaddr
+	type sockaddr
+		sa_family as u_short
+		sa_data(0 to 13) as byte
+	end type
+#endif
 
 type sockaddr_storage
 	ss_family as short

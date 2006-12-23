@@ -305,10 +305,12 @@ end type
 #define AF_INET6 23
 #define AF_MAX 24
 
-type sockaddr
-	sa_family as u_short
-	sa_data(0 to 13) as byte
-end type
+#ifndef sockaddr
+	type sockaddr
+		sa_family as u_short
+		sa_data(0 to 13) as byte
+	end type
+#endif
 
 type sockproto
 	sp_family as u_short

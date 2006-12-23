@@ -99,10 +99,12 @@ end enum
 type sa_family_t as ushort
 '' end include: bits/sockaddr.bi
 
-type sockaddr
-	sa_family as sa_family_t
-	sa_data(0 to 14-1) as byte
-end type
+#ifndef sockaddr
+	type sockaddr
+		sa_family as sa_family_t
+		sa_data(0 to 14-1) as byte
+	end type
+#endif
 
 #define _SS_SIZE 128
 
