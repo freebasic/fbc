@@ -60,7 +60,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 	PUT_HEADER *put_header = NULL;
 	unsigned char *buffer, *d = NULL;
 	int result = FB_RTERROR_OK;
-	int i, j, color, rgb[3], expand, size, padding, palette[256], palette_entries;
+	int i, j, width, height, bpp, color, rgb[3], expand, size, padding, palette[256], palette_entries;
 	void *target_pal = pal;
 	FBGFX_IMAGE_CONVERT convert = NULL;
 
@@ -93,8 +93,17 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 			put_header->height = header.biHeight;
 			put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
 		}
+		width = MIN(put_header->width, header.biWidth);
+		height = MIN(put_header->height, header.biHeight);
+		bpp = put_header->bpp;
 		d = (unsigned char *)dest + sizeof(PUT_HEADER);
 	}
+	else {
+		width = MIN(__fb_gfx->w, header.biWidth);
+		height = MIN(__fb_gfx->h, header.biHeight);
+		bpp = __fb_gfx->bpp;
+	}
+	fb_hPrepareTarget(ctx, dest, MASK_A_32);
 
 	expand = (header.biBitCount < 8) ? header.biBitCount : 0;
 	if (header.biCompression == BI_BITFIELDS) {
@@ -103,7 +112,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 		header.biBitCount = 24;
 	}
 	if (header.biBitCount <= 8) {
-		switch (put_header->bpp) {
+		switch (bpp) {
 			case 1: convert = fb_image_convert_8to8;  break;
 			case 2: convert = fb_image_convert_8to16; break;
 			case 3:
@@ -111,7 +120,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 		}
 	}
 	else if (header.biBitCount == 24) {
-		switch (put_header->bpp) {
+		switch (bpp) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
 			case 2: convert = fb_image_convert_24bgrto16; break;
 			case 3:
@@ -119,7 +128,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 		}
 	}
 	else {
-		switch (put_header->bpp) {
+		switch (bpp) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
 			case 2: convert = fb_image_convert_32bgrto16; break;
 			case 3:
@@ -159,10 +168,8 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 			result = FB_RTERROR_FILEIO;
 			break;
 		}
-		if (dest)
-			convert(buffer, d + (i * put_header->pitch), header.biWidth);
-		else if (i < __fb_gfx->h)
-			convert(buffer, ctx->line[i], MIN(__fb_gfx->w, header.biWidth));
+		if (i < height)
+			convert(buffer, ctx->line[i], width);
 	}
 
 exit_error:
@@ -198,8 +205,8 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal)
 		fb_hStrDelTemp(filename);
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
-
-	fb_hPrepareTarget(context, dest, MASK_A_32);
+	
+	fb_hPrepareTarget(context, NULL, MASK_A_32);
 
 	id = fgetc(f);
 	switch (id) {
