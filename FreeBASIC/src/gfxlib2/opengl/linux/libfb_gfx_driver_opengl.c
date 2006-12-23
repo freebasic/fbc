@@ -81,7 +81,7 @@ static GLXContext context;
 /*:::::*/
 int fb_hGL_ExtensionSupported(const char *extension)
 {
-	int len, i;
+	int len;
 	char *string = __fb_gl.extensions;
 	
 	if (string) {
@@ -100,7 +100,6 @@ int fb_hGL_ExtensionSupported(const char *extension)
 /*:::::*/
 static int opengl_window_init(void)
 {
-	XSetWindowAttributes attribs;
 	int x = 0, y = 0;
 	int h;
 	char *display_name;
@@ -149,10 +148,12 @@ static void opengl_window_update(void)
 /*:::::*/
 static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
-	const char *funcs[] = {
+	const char *glx_funcs[] = {
 		"glXChooseVisual", "glXCreateContext", "glXDestroyContext",
 		"glXMakeCurrent", "glXSwapBuffers", NULL
 	};
+	GLXFUNCS *funcs = &__fb_glX;
+	void **funcs_ptr = (void **)funcs;
 	int depth = MAX(8, depth_arg);
 	XVisualInfo *info;
 	int gl_attrs[32] = { GLX_RGBA, GLX_DOUBLEBUFFER,
@@ -204,7 +205,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		return -1;
 	fb_linux.screen = XDefaultScreen(fb_linux.display);
 	
-	gl_lib = fb_hDynLoad("libGL.so.1", funcs, (void **)&__fb_glX);
+	gl_lib = fb_hDynLoad("libGL.so.1", glx_funcs, funcs_ptr);
 	if (!gl_lib)
 		return -1;
 	

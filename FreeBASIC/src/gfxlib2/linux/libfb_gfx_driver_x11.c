@@ -127,7 +127,6 @@ static void update_mask_32(unsigned char *pixel, unsigned char *mask, int w, int
 static int x11_init(void)
 {
 	XGCValues values;
-	XEvent event;
 	int x = 0, y = 0, h, is_rgb = FALSE;
 	char *display_name;
 	
