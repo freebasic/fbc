@@ -83,9 +83,11 @@ Version 0.17 Beta:
 - UDT's can now return a boolean result, if operator cast() was overloaded (cha0s)
 - BLOAD and BSAVE can now accept an additional optional final parameter: a pointer to an array of 256 integers to hold the image palette if any (lillo)
 - FOR now supports UDT's as counter variables, if operator let, +=, and global <=, >= are overloaded with operators taking numeric rhs. (cha0s)
-- the PRIVATE and PUBLIC attributes for members/methods of TYPE's
+- the PRIVATE and PUBLIC attributes for members/methods of TYPE's (cha0s)
 - the JNI (Java Native Interface) header, import library and example (v1c)
 - the cairo (Multi-platform 2D graphics library) headers, import library and example (v1c)
+- all Gfxlib drawing functions can now successfully work on buffers using a depth different than the current one (lillo)
+- using PUT to draw an 8bpp sprite on top of a 32bpp one with ALPHA drawing mode will cause the source to be set as the dest alpha channel (lillo)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
@@ -143,6 +145,8 @@ Version 0.17 Beta:
 - fb_GfxGet was using the array descriptor's 'ptr' field to assert the validity of the data, instead of the 'data' field (cha0s)
 - arrays with lbounds <> 0 passed as args or dynamic would fail in quirk gfx functions (cha0s)
 - there is no more special color value to flag default color in COLOR and gfx primitives, resulting in no more "hole" in supported colors range (lillo)
+- DirectDraw surface restoring was bugged, resulting in crashes if another DirectX-based program entered fullscreen (lillo)
+
 
 Version 0.16 Beta:
 
