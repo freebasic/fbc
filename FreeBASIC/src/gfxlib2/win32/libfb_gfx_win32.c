@@ -45,8 +45,7 @@ const GFXDRIVER *__fb_gfx_drivers_list[] = {
 static CRITICAL_SECTION update_lock;
 static HANDLE handle;
 static BOOL screensaver_active, cursor_shown, has_focus = FALSE;
-static UINT msg_cursor;
-static int mouse_buttons, mouse_wheel, mouse_x, mouse_y;
+static int mouse_buttons, mouse_wheel, mouse_x, mouse_y, mouse_on;
 static BOOL (WINAPI *_TrackMouseEvent)(TRACKMOUSEEVENT *) = NULL;
 static POINT last_mouse_pos;
 
@@ -101,15 +100,16 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 {
 	BYTE key_state[256];
 	TRACKMOUSEEVENT track_e;
-	POINT mouse_pos;
+	POINT mouse_pos, rect_pt[2];
+	RECT *rect = (RECT *)rect_pt;
 	EVENT e;
 	
 	e.type = 0;
-	
-	if (message == msg_cursor) {
-		ShowCursor(wParam);
-		return FALSE;
-	}
+
+	GetClientRect(fb_win32.wnd, rect);
+	MapWindowPoints(fb_win32.wnd, NULL, rect_pt, 2);
+	GetCursorPos(&mouse_pos);
+	mouse_on = PtInRect(rect, mouse_pos);
 
 	switch (message)
 	{
@@ -123,8 +123,14 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			e.type = wParam ? EVENT_WINDOW_GOT_FOCUS : EVENT_WINDOW_LOST_FOCUS;
 			break;
 		
+		case WM_SETCURSOR:
+			if ((mouse_on) && (!cursor_shown))
+				SetCursor(NULL);
+			else
+				SetCursor(LoadCursor(NULL, IDC_ARROW));
+			return TRUE;
+		
 		case WM_MOUSEMOVE:
-			GetCursorPos(&mouse_pos);
 			e.type = EVENT_MOUSE_MOVE;
 			mouse_x = e.x = lParam & 0xFFFF;
 			mouse_y = e.y = (lParam >> 16) & 0xFFFF;
@@ -397,7 +403,6 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	GetVersionEx(&info);
 	fb_win32.version = (info.dwMajorVersion << 8) | info.dwMinorVersion;
 
-	msg_cursor = RegisterWindowMessage("FB mouse cursor");
 	cursor_shown = TRUE;
 	last_mouse_pos.x = 0xFFFF;
 	
@@ -516,7 +521,7 @@ void fb_hWin32WaitVSync(void)
 /*:::::*/
 int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons)
 {
-	if (!fb_win32.is_active)
+	if ((!fb_win32.is_active) || (!mouse_on))
 		return -1;
 	
 	*x = mouse_x;
@@ -544,12 +549,12 @@ void fb_hWin32SetMouse(int x, int y, int cursor)
 	}
 
 	if ((cursor == 0) && (cursor_shown)) {
-		PostMessage(fb_win32.wnd, msg_cursor, FALSE, 0);
 		cursor_shown = FALSE;
+		PostMessage(fb_win32.wnd, WM_SETCURSOR, 0, 0);
 	}
 	else if ((cursor > 0) && (!cursor_shown)) {
-		PostMessage(fb_win32.wnd, msg_cursor, TRUE, 0);
 		cursor_shown = TRUE;
+		PostMessage(fb_win32.wnd, WM_SETCURSOR, 0, 0);
 	}
 }
 
