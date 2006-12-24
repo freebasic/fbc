@@ -59,85 +59,82 @@ FBCALL int fb_FileOpenQB
 	if( !str_len || (str->data == NULL) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );		
 		
-	if( str_len > 4 ) 
+	/* serial? */
+	if( (str_len > 3) && (strcasecmp( str->data, "COM" ) == 0) )
 	{
-		/* serial? */
-		if( strcasecmp( str->data, "COM" ) == 0)
-		{
-		    if( (str_len >= 5) && (str->data[4] == ':') )
-		    	return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-		                             	 str,
-		                             	 mode,
-		                             	 access,
-		                             	 lock,
-		                             	 len,
-		                             	 FB_FILE_ENCOD_ASCII,
-		                             	 fb_DevComOpen );
-		}
-		/* parallel? */
-		else if( strcasecmp( str->data, "LPT" ) == 0)
-		{
-		    if( (str_len >= 5) && (str->data[4] == ':') )
-		    	return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-		                             	 str,
-		                             	 mode,
-		                             	 access,
-		                             	 lock,
-		                             	 len,
-		                             	 FB_FILE_ENCOD_ASCII,
-		                             	 fb_DevLptOpen );
-		}
-		/* default printer? */
-		else if( strcasecmp( str->data, "PRN:" ) == 0)
-		{
-		    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-		                           	 str,
-		                           	 mode,
-		                           	 access,
-		                           	 lock,
-		                           	 len,
-		                           	 FB_FILE_ENCOD_ASCII,
-		                           	 fb_DevLptOpen );
-		}
-		/* console? */
-		else if( strcasecmp( str->data, "CONS:" ) == 0)
-		{
-		    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-		                             str,
-		                             mode,
-		                             access,
-		                             lock,
-		                             len,
-		                             FB_FILE_ENCOD_ASCII,
-		                             fb_DevConsOpen );
+	    if( (str_len = 5) && (str->data[4] == ':') )
+	    	return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
+	                             	 str,
+	                             	 mode,
+	                             	 access,
+	                             	 lock,
+	                             	 len,
+	                             	 FB_FILE_ENCOD_ASCII,
+	                             	 fb_DevComOpen );
+	}
+	/* parallel? */
+	else if( (str_len > 3) && (strcasecmp( str->data, "LPT" ) == 0) )
+	{
+	    if( (str_len >= 5) && (str->data[4] == ':') )
+	    	return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
+	                             	 str,
+	                             	 mode,
+	                             	 access,
+	                             	 lock,
+	                             	 len,
+	                             	 FB_FILE_ENCOD_ASCII,
+	                             	 fb_DevLptOpen );
+	}
+	/* default printer? */
+	else if( (str_len == 4) && (strcasecmp( str->data, "PRN:" ) == 0) )
+	{
+	    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
+	                           	 str,
+	                           	 mode,
+	                           	 access,
+	                           	 lock,
+	                           	 len,
+	                           	 FB_FILE_ENCOD_ASCII,
+	                           	 fb_DevLptOpen );
+	}
+	/* console? */
+	else if( (str_len == 5) && (strcasecmp( str->data, "CONS:" ) == 0) )
+	{
+	    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
+	                             str,
+	                             mode,
+	                             access,
+	                             lock,
+	                             len,
+	                             FB_FILE_ENCOD_ASCII,
+	                             fb_DevConsOpen );
 
-		}
-		/* screen? */
-		else if( strcasecmp( str->data, "SCRN:" ) == 0)
-		{
-		    fb_DevScrnInit( );
-		
-		    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-		                             str,
-		                             mode,
-		                             access,
-		                             lock,
-		                             len,
-		                             FB_FILE_ENCOD_ASCII,
-		                             fb_DevScrnOpen );
-		}
-		/* pipe? */
-		else if( strcasecmp( str->data, "PIPE:" ) == 0)
-		{
-		    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-		                             str,
-		                             mode,
-		                             access,
-		                             lock,
-		                             len,
-		                             FB_FILE_ENCOD_ASCII,
-		                             fb_DevPipeOpen );
-		}
+	}
+	/* screen? */
+	else if( (str_len == 5) && (strcasecmp( str->data, "SCRN:" ) == 0) )
+	{
+	    fb_DevScrnInit( );
+	
+	    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
+	                             str,
+	                             mode,
+	                             access,
+	                             lock,
+	                             len,
+	                             FB_FILE_ENCOD_ASCII,
+	                             fb_DevScrnOpen );
+	}
+	/* pipe? */
+	else if( (str_len == 5) && (strcasecmp( str->data, "PIPE:" ) == 0) )
+	{
+	    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
+	                             str,
+	                             mode,
+	                             access,
+	                             lock,
+	                             len,
+	                             FB_FILE_ENCOD_ASCII,
+	                             fb_DevPipeOpen );
 	}
 	
 	/* ordinary file */
