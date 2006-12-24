@@ -113,29 +113,15 @@ static HANDLE vsync_event = NULL;
 
 
 /*:::::*/
-static void directx_paint(void)
+static void restore_surfaces(void)
 {
-	RECT src, dest;
-	POINT point;
 	HRESULT result;
 	FLASHWINFO fwinfo;
-
-	if (fb_win32.flags & DRIVER_FULLSCREEN)
-		return;
-
-	src.left = src.top = 0;
-	src.right = fb_win32.w;
-	src.bottom = fb_win32.h;
-	point.x = point.y = 0;
-	ClientToScreen(fb_win32.wnd, &point);
-	GetClientRect(fb_win32.wnd, &dest);
-	dest.left += point.x;
-	dest.top += point.y;
-	dest.right += point.x;
-	dest.bottom += point.y;
-	result = IDirectDrawSurface_Blt(lpDDS, &dest, lpDDS_back, &src, DDBLT_WAIT, NULL);
+	
+	result = IDirectDrawSurface_IsLost(lpDDS);
 	while (result == DDERR_SURFACELOST) {
-		IDirectDrawSurface_Restore(lpDDS_back);
+		if (lpDDS_back != lpDDS)
+			IDirectDrawSurface_Restore(lpDDS_back);
 		result = IDirectDrawSurface_Restore(lpDDS);
 		if (result == DDERR_WRONGMODE) {
 			/* it sucks, we have to recreate all DD objects */
@@ -150,8 +136,35 @@ static void directx_paint(void)
 			fwinfo.dwFlags = 0;
 			FlashWindowEx(&fwinfo);
 		}
-		result = IDirectDrawSurface_Blt(lpDDS, &dest, lpDDS_back, &src, DDBLT_WAIT, NULL);
+		result = IDirectDrawSurface_IsLost(lpDDS);
 	}
+}
+
+
+/*:::::*/
+static void directx_paint(void)
+{
+	RECT src, dest;
+	POINT point;
+	HRESULT result;
+
+	if (fb_win32.flags & DRIVER_FULLSCREEN)
+		return;
+
+	src.left = src.top = 0;
+	src.right = fb_win32.w;
+	src.bottom = fb_win32.h;
+	point.x = point.y = 0;
+	ClientToScreen(fb_win32.wnd, &point);
+	GetClientRect(fb_win32.wnd, &dest);
+	dest.left += point.x;
+	dest.top += point.y;
+	dest.right += point.x;
+	dest.bottom += point.y;
+	do {
+		restore_surfaces();
+		result = IDirectDrawSurface_Blt(lpDDS, &dest, lpDDS_back, &src, DDBLT_WAIT, NULL);
+	} while (result == DDERR_SURFACELOST);
 }
 
 
@@ -419,7 +432,11 @@ static void directx_thread(HANDLE running_event)
 				fb_win32.is_palette_changed = FALSE;
 			}
 			desc.dwSize = sizeof(desc);
-			if (IDirectDrawSurface_Lock(lpDDS_back, NULL, &desc, DDLOCK_WAIT | DDLOCK_SURFACEMEMORYPTR, NULL) == DD_OK) {
+			do {
+				restore_surfaces();
+				result = IDirectDrawSurface_Lock(lpDDS_back, NULL, &desc, DDLOCK_WAIT | DDLOCK_SURFACEMEMORYPTR, NULL);
+			} while (result == DDERR_SURFACELOST);
+			if (result == DD_OK) {
 				fb_win32.blitter((unsigned char *)desc.lpSurface + display_offset * desc.lPitch, desc.lPitch);
 				IDirectDrawSurface_Unlock(lpDDS_back, desc.lpSurface);
 				fb_hMemSet(__fb_gfx->dirty, FALSE, fb_win32.h);

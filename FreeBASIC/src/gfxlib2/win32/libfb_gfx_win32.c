@@ -102,6 +102,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	TRACKMOUSEEVENT track_e;
 	POINT mouse_pos, rect_pt[2];
 	RECT *rect = (RECT *)rect_pt;
+	PAINTSTRUCT ps;
 	EVENT e;
 	
 	e.type = 0;
@@ -113,14 +114,14 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 	switch (message)
 	{
-		case WM_ACTIVATEAPP:
-			fb_win32.is_active = (int)wParam;
+		case WM_ACTIVATE:
+			fb_win32.is_active = ((!HIWORD(wParam)) && (LOWORD(wParam) != WA_INACTIVE));
 			fb_hMemSet(__fb_gfx->key, FALSE, 128);
 			mouse_buttons = 0;
 			fb_hMemSet(__fb_gfx->dirty, TRUE, fb_win32.h);
-			if ((has_focus) && (!wParam))
+			if ((has_focus) && (!fb_win32.is_active))
 				PostMessage(fb_win32.wnd, WM_MOUSELEAVE, 0, 0);
-			e.type = wParam ? EVENT_WINDOW_GOT_FOCUS : EVENT_WINDOW_LOST_FOCUS;
+			e.type = fb_win32.is_active ? EVENT_WINDOW_GOT_FOCUS : EVENT_WINDOW_LOST_FOCUS;
 			break;
 		
 		case WM_SETCURSOR:
@@ -346,8 +347,10 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			return FALSE;
 
 		case WM_PAINT:
+			BeginPaint(fb_win32.wnd, &ps);
 			fb_win32.paint();
-			break;
+			EndPaint(fb_win32.wnd, &ps);
+			return 0;
 		
 		case WM_DISPLAYCHANGE:
 			fb_win32.paint();
@@ -461,8 +464,6 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 		handle = events[1];
 		if (result != WAIT_OBJECT_0)
 			return -1;
-
-		SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL);
 	}
 	else
 		handle = NULL;
