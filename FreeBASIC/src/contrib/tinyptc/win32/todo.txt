@@ -1,7 +1,0 @@
-stuff to do:
-
-- add a smart mode detection routine that first tries fullscreen then windowed output
-- add nearest mode matching, ie. ask for 512x384, it will center the display in the
-  nearest graphics mode that is available, ie. it will fallback to 640x480 if required.
-- something that would be really cool, ALT-ENTER switching between fullscreen and windowed(!)
-- merge the vfw.c and the gdi.c into one target because they are so similar...?
