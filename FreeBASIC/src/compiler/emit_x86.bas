@@ -6059,6 +6059,7 @@ private sub hMemClear _
 	outp "xor eax, eax"
 
 	outp "push ecx"
+	outp "shr ecx, 2"
 	outp "rep stosd"
 	outp "pop ecx"
 	outp "and ecx, 3"
