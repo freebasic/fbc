@@ -36,6 +36,7 @@
  *
  */
 
+#include <string.h>
 #include "fb.h"
 
 /*:::::*/
@@ -55,56 +56,52 @@ FBCALL int fb_FileOpenQB
 
 	int str_len = FB_STRSIZE( str );
 	
-	if( !str_len || !str->data )
+	if( !str_len || (str->data == NULL) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );		
 		
-	// qb borks if first char is a space
-	if( str->data[0] == ' ' )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	
-	int device = 0;
-	/* 0 = filename
-	   1 = cons
-	   2 = com
-	   3 = lpt
-	   4 = scrn */
-	
-	// handy, all devices are 4 chars + colon...	
-	if( str_len > 4 ) {
-
-		if( (str->data[0] == 'c') || (str->data[0] == 'C') )
-			if( (str->data[1] == 'o') || (str->data[1] == 'O') )
-				if( (str->data[2] == 'n') || (str->data[2] == 'N') )
-					if( (str->data[3] == 's') || (str->data[3] == 'S') )
-						if( (str->data[4] == ':') )
-							device = 1;
-
-		if( (str->data[0] == 'c') || (str->data[0] == 'C') )
-			if( (str->data[1] == 'o') || (str->data[1] == 'O') )
-				if( (str->data[2] == 'm') || (str->data[2] == 'M') )
-					if( (str->data[4] == ':') )
-						device = 2;
-
-		if( (str->data[0] == 'l') || (str->data[0] == 'L') )
-			if( (str->data[1] == 'p') || (str->data[1] == 'P') )
-				if( (str->data[2] == 't') || (str->data[2] == 'T') )
-					if( (str->data[4] == ':') )
-						device = 3;
-
-		if( (str->data[0] == 's') || (str->data[0] == 'S') )
-			if( (str->data[1] == 'c') || (str->data[1] == 'C') )
-				if( (str->data[2] == 'r') || (str->data[2] == 'R') )
-					if( (str->data[3] == 'n') || (str->data[3] == 'N') )
-						if( (str->data[4] == ':') )
-							device = 4;
-
-	}
-	
-	switch(device) {
-	
-		case 0:
-			return fb_FileOpenEx( FB_FILE_TO_HANDLE(fnum), str, mode, access, lock, len );
-		case 1:
+	if( str_len > 4 ) 
+	{
+		/* serial? */
+		if( strcasecmp( str->data, "COM" ) == 0)
+		{
+		    if( (str_len >= 5) && (str->data[4] == ':') )
+		    	return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
+		                             	 str,
+		                             	 mode,
+		                             	 access,
+		                             	 lock,
+		                             	 len,
+		                             	 FB_FILE_ENCOD_ASCII,
+		                             	 fb_DevComOpen );
+		}
+		/* parallel? */
+		else if( strcasecmp( str->data, "LPT" ) == 0)
+		{
+		    if( (str_len >= 5) && (str->data[4] == ':') )
+		    	return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
+		                             	 str,
+		                             	 mode,
+		                             	 access,
+		                             	 lock,
+		                             	 len,
+		                             	 FB_FILE_ENCOD_ASCII,
+		                             	 fb_DevLptOpen );
+		}
+		/* default printer? */
+		else if( strcasecmp( str->data, "PRN:" ) == 0)
+		{
+		    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
+		                           	 str,
+		                           	 mode,
+		                           	 access,
+		                           	 lock,
+		                           	 len,
+		                           	 FB_FILE_ENCOD_ASCII,
+		                           	 fb_DevLptOpen );
+		}
+		/* console? */
+		else if( strcasecmp( str->data, "CONS:" ) == 0)
+		{
 		    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
 		                             str,
 		                             mode,
@@ -113,26 +110,11 @@ FBCALL int fb_FileOpenQB
 		                             len,
 		                             FB_FILE_ENCOD_ASCII,
 		                             fb_DevConsOpen );
-		case 2:
-		    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-		                             str,
-		                             mode,
-		                             access,
-		                             lock,
-		                             len,
-		                             FB_FILE_ENCOD_ASCII,
-		                             fb_DevComOpen );
-		case 3:
-		    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-		                             str,
-		                             mode,
-		                             access,
-		                             lock,
-		                             len,
-		                             FB_FILE_ENCOD_ASCII,
-		                             fb_DevLptOpen );
-		case 4:
-		
+
+		}
+		/* screen? */
+		else if( strcasecmp( str->data, "SCRN:" ) == 0)
+		{
 		    fb_DevScrnInit( );
 		
 		    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
@@ -143,7 +125,22 @@ FBCALL int fb_FileOpenQB
 		                             len,
 		                             FB_FILE_ENCOD_ASCII,
 		                             fb_DevScrnOpen );
+		}
+		/* pipe? */
+		else if( strcasecmp( str->data, "PIPE:" ) == 0)
+		{
+		    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
+		                             str,
+		                             mode,
+		                             access,
+		                             lock,
+		                             len,
+		                             FB_FILE_ENCOD_ASCII,
+		                             fb_DevPipeOpen );
+		}
 	}
-			
+	
+	/* ordinary file */
+	return fb_FileOpenEx( FB_FILE_TO_HANDLE(fnum), str, mode, access, lock, len );
 }
 

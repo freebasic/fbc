@@ -779,17 +779,9 @@ private function hFileOpen _
     open_kind = FB_FILE_TYPE_FILE
 
     short_form = FALSE
-    
+
     '' if it's a qb-style open, we only get an identifier, or a literal
-    if( fbLangIsSet( FB_LANG_QB ) ) then
-	    if( (lexGetClass( ) <> FB_TKCLASS_IDENTIFIER) and (lexGetClass( ) <> FB_TKCLASS_STRLITERAL) ) then
-			errReport( FB_ERRMSG_TYPEMISMATCH )
-			exit function
-	    end if
-	    
-	'' less quirky? erm...
-	else
-	
+    if( fbLangIsSet( FB_LANG_QB ) = FALSE ) then
 		'' special devices
 		select case ucase( *lexGetText( ) )
 	    case "CONS"
@@ -798,32 +790,32 @@ private function hFileOpen _
 				lexSkipToken( )
 	    		open_kind = FB_FILE_TYPE_CONS
 	    	end if
-	
+
 	    case "ERR"
 			lexSkipToken( )
 	        open_kind = FB_FILE_TYPE_ERR
-	
+
 	    case "PIPE"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
 				lexSkipToken( )
 	        	open_kind = FB_FILE_TYPE_PIPE
 	        end if
-	
+
 	    case "SCRN"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
 				lexSkipToken( )
 	        	open_kind = FB_FILE_TYPE_SCRN
 	        end if
-	
+
 	    case "LPT"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
 				lexSkipToken( )
 	    		open_kind = FB_FILE_TYPE_LPT
 	    	end if
-	
+
 	    case "COM"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
@@ -831,16 +823,23 @@ private function hFileOpen _
 	    		open_kind = FB_FILE_TYPE_COM
 	    	end if
 	    end select
-	
-		if( isfunc ) then
-			'' '('
-			hMatchLPRNT( )
-		end if
-	
+
 	end if
 
-    select case open_kind
-    case FB_FILE_TYPE_FILE, FB_FILE_TYPE_PIPE, FB_FILE_TYPE_LPT, FB_FILE_TYPE_COM
+	if( isfunc ) then
+		'' '('
+		hMatchLPRNT( )
+	end if
+
+    '' if it's a qb-style open, we only get an identifier, or a literal
+    if( fbLangIsSet( FB_LANG_QB ) ) then
+    	open_kind = FB_FILE_TYPE_QB
+	end if
+
+    select case as const open_kind
+    case FB_FILE_TYPE_FILE, FB_FILE_TYPE_PIPE, FB_FILE_TYPE_LPT, _
+    	 FB_FILE_TYPE_COM, FB_FILE_TYPE_QB
+
         '' a filename is only valid for some file types
 
 		hMatchExpressionEx( filename, FB_DATATYPE_STRING )
@@ -851,9 +850,10 @@ private function hFileOpen _
         end if
 
         ' only test for short OPEN form when using the "normal" OPEN
-        if open_kind = FB_FILE_TYPE_FILE then
+        select case open_kind
+        case FB_FILE_TYPE_FILE, FB_FILE_TYPE_QB
 	        if( isfunc ) then
-                select case lexGetToken
+                select case lexGetToken( )
                 case FB_TK_FOR, FB_TK_ACCESS, FB_TK_AS
                 case else
                     short_form = TRUE
@@ -864,7 +864,7 @@ private function hFileOpen _
 	                short_form = TRUE
 	            end if
             end if
-        end if
+        end select
 
     case else
 
@@ -957,7 +957,7 @@ private function hFileOpen _
 	end if
 
 	fencoding = NULL
-	
+
 	if( fbLangIsSet( FB_LANG_QB ) ) = FALSE then
 		'' ENCODING is only allowed in text-mode
 		select case file_mode
@@ -965,7 +965,7 @@ private function hFileOpen _
 			'' (ENCODING Expression)?
 			if( hMatch( FB_TK_ENCODING ) ) then
 				hMatchExpressionEx( fencoding, FB_DATATYPE_STRING )
-	
+
 				if( isfunc ) then
 					'' ','?
 					hMatch( CHAR_COMMA )
@@ -1066,12 +1066,7 @@ private function hFileOpen _
         '' ')'
         hMatchRPRNT( )
     end if
-    
-    if( fbLangIsSet( FB_LANG_QB ) ) then
-    	'' rtlFileOpen needs to know we want the QB version
-    	open_kind = FB_FILE_TYPE_QB
-    end if
-    
+
 	''
 	function = rtlFileOpen( filename, fmode, faccess, flock, _
 							filenum, flen, fencoding, isfunc, open_kind )
