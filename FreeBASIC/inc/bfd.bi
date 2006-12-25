@@ -187,7 +187,7 @@ type stab_info
 	stabstr as bfd_section ptr
 end type
 
-#define bfd_get_filename(abfd) cast(char ptr, (abfd)->filename)
+#define bfd_get_filename(abfd) cast(zstring ptr, (abfd)->filename)
 #define bfd_get_cacheable(abfd) (abfd)->cacheable
 #define bfd_get_format(abfd) (abfd)->format
 #define bfd_get_target(abfd) (abfd)->xvec->name
@@ -663,21 +663,6 @@ type bfd_arch_info
 end type
 
 type bfd_arch_info_type as bfd_arch_info
-
-declare function bfd_printable_name cdecl alias "bfd_printable_name" (byval abfd as bfd ptr) as zstring ptr
-declare function bfd_scan_arch cdecl alias "bfd_scan_arch" (byval string as zstring ptr) as bfd_arch_info_type ptr
-declare function bfd_arch_list cdecl alias "bfd_arch_list" () as byte ptr ptr
-declare function bfd_arch_get_compatible cdecl alias "bfd_arch_get_compatible" (byval abfd as bfd ptr, byval bbfd as bfd ptr, byval accept_unknowns as bfd_boolean) as bfd_arch_info_type ptr
-declare sub bfd_set_arch_info cdecl alias "bfd_set_arch_info" (byval abfd as bfd ptr, byval arg as bfd_arch_info_type ptr)
-declare function bfd_get_arch cdecl alias "bfd_get_arch" (byval abfd as bfd ptr) as bfd_architecture
-declare function bfd_get_mach cdecl alias "bfd_get_mach" (byval abfd as bfd ptr) as uinteger
-declare function bfd_arch_bits_per_byte cdecl alias "bfd_arch_bits_per_byte" (byval abfd as bfd ptr) as uinteger
-declare function bfd_arch_bits_per_address cdecl alias "bfd_arch_bits_per_address" (byval abfd as bfd ptr) as uinteger
-declare function bfd_get_arch_info cdecl alias "bfd_get_arch_info" (byval abfd as bfd ptr) as bfd_arch_info_type ptr
-declare function bfd_lookup_arch cdecl alias "bfd_lookup_arch" (byval arch as bfd_architecture, byval machine as uinteger) as bfd_arch_info_type ptr
-declare function bfd_printable_arch_mach cdecl alias "bfd_printable_arch_mach" (byval arch as bfd_architecture, byval machine as uinteger) as zstring ptr
-declare function bfd_octets_per_byte cdecl alias "bfd_octets_per_byte" (byval abfd as bfd ptr) as uinteger
-declare function bfd_arch_mach_octets_per_byte cdecl alias "bfd_arch_mach_octets_per_byte" (byval arch as bfd_architecture, byval machine as uinteger) as uinteger
 
 enum bfd_reloc_status
 	bfd_reloc_ok
@@ -2211,6 +2196,20 @@ end type
 
 extern "c"
 
+declare function bfd_printable_name (byval abfd as bfd ptr) as zstring ptr
+declare function bfd_scan_arch (byval string as zstring ptr) as bfd_arch_info_type ptr
+declare function bfd_arch_list () as byte ptr ptr
+declare function bfd_arch_get_compatible (byval abfd as bfd ptr, byval bbfd as bfd ptr, byval accept_unknowns as bfd_boolean) as bfd_arch_info_type ptr
+declare sub bfd_set_arch_info (byval abfd as bfd ptr, byval arg as bfd_arch_info_type ptr)
+declare function bfd_get_arch (byval abfd as bfd ptr) as bfd_architecture
+declare function bfd_get_mach (byval abfd as bfd ptr) as uinteger
+declare function bfd_arch_bits_per_byte (byval abfd as bfd ptr) as uinteger
+declare function bfd_arch_bits_per_address (byval abfd as bfd ptr) as uinteger
+declare function bfd_get_arch_info (byval abfd as bfd ptr) as bfd_arch_info_type ptr
+declare function bfd_lookup_arch (byval arch as bfd_architecture, byval machine as uinteger) as bfd_arch_info_type ptr
+declare function bfd_printable_arch_mach (byval arch as bfd_architecture, byval machine as uinteger) as zstring ptr
+declare function bfd_octets_per_byte (byval abfd as bfd ptr) as uinteger
+declare function bfd_arch_mach_octets_per_byte (byval arch as bfd_architecture, byval machine as uinteger) as uinteger
 declare function bfd_get_stab_name (byval as integer) as zstring ptr
 declare sub bfd_sprintf_vma (byval as bfd ptr, byval as zstring ptr, byval as bfd_vma)
 declare sub bfd_fprintf_vma (byval as bfd ptr, byval as any ptr, byval as bfd_vma)
