@@ -15,8 +15,6 @@
 
 #define BFD_ARCH_SIZE 32
 #define BFD_DEFAULT_TARGET_SIZE 32
-#define BFD_HOST_64BIT_LONG 0
-#define BFD_HOST_LONG_LONG 1
 
 type bfd_int64_t as longint
 type bfd_uint64_t as ulongint
@@ -32,14 +30,20 @@ type bfd_boolean as integer
 type stat as _stat
 #endif
 
-type bfd_vma as uinteger
+type bfd_vma as ulong
 type bfd_signed_vma as integer
-type symvalue as uinteger
-type bfd_size_type as uinteger
-type file_ptr as longint
-type ufile_ptr as ulongint
+type symvalue as ulong
+type bfd_size_type as ulong
 type flagword as uinteger
 type bfd_byte as ubyte
+
+#ifndef __BFD_216__
+type file_ptr as longint
+type ufile_ptr as ulongint
+#else
+type file_ptr as long
+type ufile_ptr as ulong
+#endif
 
 type ecoff_debug_info as ecoff_debug_info_
 type ecoff_debug_swap as ecoff_debug_swap_
@@ -157,7 +161,9 @@ end type
 type bfd_hash_table
 	table as bfd_hash_entry ptr ptr
 	size as uinteger
+#ifndef __BFD_216__	
 	entsize as uinteger
+#endif
 	newfunc as function cdecl(byval as bfd_hash_entry ptr, byval as bfd_hash_table ptr, byval as zstring ptr) as bfd_hash_entry ptr
 	memory as any ptr
 end type
@@ -248,13 +254,17 @@ type bfd_section_
 	id as integer
 	index as integer
 	next as bfd_section ptr
+#ifndef __BFD_216__	
 	prev as bfd_section ptr
+#endif
 	flags as flagword
 	user_set_vma:1 as uinteger
 	linker_mark:1 as uinteger
 	linker_has_input:1 as uinteger
 	gc_mark:1 as uinteger
+#ifndef __BFD_216__	
 	gc_mark_from_eh:1 as uinteger
+#endif
 	segment_mark:1 as uinteger
 	sec_info_type:3 as uinteger
 	use_rela_p:1 as uinteger
@@ -288,8 +298,13 @@ type bfd_section_
 	owner as bfd ptr
 	symbol as bfd_symbol ptr
 	symbol_ptr_ptr as bfd_symbol ptr ptr
+#ifndef __BFD_216__	
 	map_head as asection_map
 	map_tail as asection_map
+#else
+	link_order_head as bfd_link_order ptr
+	link_order_tail as bfd_link_order ptr
+#endif
 end type
 
 #define SEC_NO_FLAGS &h000
@@ -1911,7 +1926,11 @@ type bfd_
 	output_has_begun as bfd_boolean
 	section_htab as bfd_hash_table
 	sections as bfd_section ptr
+#ifndef __BFD_216__	
 	section_last as bfd_section ptr
+#else
+	section_tail as bfd_section ptr ptr
+#endif
 	section_count as uinteger
 	start_address as bfd_vma
 	symcount as uinteger
@@ -1964,7 +1983,11 @@ type bfd_preserve
 	flags as flagword
 	arch_info as bfd_arch_info ptr
 	sections as bfd_section ptr
+#ifndef __BFD_216__	
 	section_last as bfd_section ptr
+#else
+	section_tail as bfd_section ptr ptr
+#endif
 	section_count as uinteger
 	section_htab as bfd_hash_table
 end type
@@ -2213,7 +2236,11 @@ declare function bfd_arch_mach_octets_per_byte (byval arch as bfd_architecture, 
 declare function bfd_get_stab_name (byval as integer) as zstring ptr
 declare sub bfd_sprintf_vma (byval as bfd ptr, byval as zstring ptr, byval as bfd_vma)
 declare sub bfd_fprintf_vma (byval as bfd ptr, byval as any ptr, byval as bfd_vma)
+#ifndef __BFD_216__
 declare function bfd_hash_table_init (byval as bfd_hash_table ptr, byval as function cdecl(byval as bfd_hash_entry ptr, byval as bfd_hash_table ptr, byval as zstring ptr) as bfd_hash_entry ptr, byval as uinteger) as bfd_boolean
+#else
+declare function bfd_hash_table_init (byval as bfd_hash_table ptr, byval as function cdecl(byval as bfd_hash_entry ptr, byval as bfd_hash_table ptr, byval as zstring ptr) as bfd_hash_entry ptr) as bfd_boolean
+#endif
 declare function bfd_hash_table_init_n (byval as bfd_hash_table ptr, byval as function cdecl(byval as bfd_hash_entry ptr, byval as bfd_hash_table ptr, byval as zstring ptr) as bfd_hash_entry ptr, byval as uinteger, byval as uinteger) as bfd_boolean
 declare sub bfd_hash_table_free (byval as bfd_hash_table ptr)
 declare function bfd_hash_lookup (byval as bfd_hash_table ptr, byval as zstring ptr, byval create as bfd_boolean, byval copy as bfd_boolean) as bfd_hash_entry ptr
@@ -2366,7 +2393,11 @@ declare function bfd_ecoff_debug_one_external (byval abfd as bfd ptr, byval debu
 declare function bfd_ecoff_debug_size (byval abfd as bfd ptr, byval debug as ecoff_debug_info ptr, byval swap as ecoff_debug_swap ptr) as bfd_size_type
 declare function bfd_ecoff_write_debug (byval abfd as bfd ptr, byval debug as ecoff_debug_info ptr, byval swap as ecoff_debug_swap ptr, byval where as file_ptr) as bfd_boolean
 declare function bfd_ecoff_write_accumulated_debug (byval handle as any ptr, byval abfd as bfd ptr, byval debug as ecoff_debug_info ptr, byval swap as ecoff_debug_swap ptr, byval info as bfd_link_info ptr, byval where as file_ptr) as bfd_boolean
+#ifndef __BFD_216__
 declare function bfd_elf_record_link_assignment (byval as bfd ptr, byval as bfd_link_info ptr, byval as zstring ptr, byval as bfd_boolean, byval as bfd_boolean) as bfd_boolean
+#else
+declare function bfd_elf_record_link_assignment (byval as bfd ptr, byval as bfd_link_info ptr, byval as zstring ptr, byval as bfd_boolean) as bfd_boolean
+#endif
 declare function bfd_elf_get_needed_list (byval as bfd ptr, byval as bfd_link_info ptr) as bfd_link_needed_list ptr
 declare function bfd_elf_get_bfd_needed_list (byval as bfd ptr, byval as bfd_link_needed_list ptr ptr) as bfd_boolean
 declare function bfd_elf_size_dynamic_sections (byval as bfd ptr, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr, byval as byte ptr ptr, byval as bfd_link_info ptr, byval as bfd_section ptr ptr, byval as bfd_elf_version_tree ptr) as bfd_boolean
@@ -2413,7 +2444,11 @@ declare function bfd_arm_pe_process_before_allocation (byval as bfd ptr, byval a
 declare function bfd_arm_pe_get_bfd_for_interworking (byval as bfd ptr, byval as bfd_link_info ptr) as bfd_boolean
 declare function bfd_elf32_arm_allocate_interworking_sections (byval as bfd_link_info ptr) as bfd_boolean
 declare function bfd_elf32_arm_process_before_allocation (byval as bfd ptr, byval as bfd_link_info ptr, byval as integer) as bfd_boolean
+#ifndef __BFD_216__
 declare sub bfd_elf32_arm_set_target_relocs (byval as bfd_link_info ptr, byval as integer, byval as zstring ptr, byval as integer, byval as integer)
+#else
+declare sub bfd_elf32_arm_set_target_relocs (byval as bfd_link_info ptr, byval as integer, byval as zstring ptr, byval as integer)
+#endif
 declare function bfd_elf32_arm_get_bfd_for_interworking (byval as bfd ptr, byval as bfd_link_info ptr) as bfd_boolean
 declare function bfd_elf32_arm_add_glue_sections_to_bfd (byval as bfd ptr, byval as bfd_link_info ptr) as bfd_boolean
 declare function bfd_is_arm_mapping_symbol_name (byval name as zstring ptr) as bfd_boolean
