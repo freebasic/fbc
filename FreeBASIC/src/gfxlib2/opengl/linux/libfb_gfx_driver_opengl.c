@@ -79,21 +79,14 @@ static GLXContext context;
 
 
 /*:::::*/
-int fb_hGL_ExtensionSupported(const char *extension)
+void *fb_hGL_GetProcAddress(const char *proc)
 {
-	int len;
-	char *string = __fb_gl.extensions;
+	void *addr;
 	
-	if (string) {
-		len = strlen(extension);
-		while ((string = strstr(string, extension)) != NULL) {
-			string += len;
-			if ((*string == ' ') || (*string == '\0'))
-				return TRUE;
-		}
-	}
+	if (fb_hDynLoadAlso(gl_lib, &proc, &addr, 1))
+		return NULL;
 	
-	return FALSE;
+	return addr;
 }
 
 
@@ -247,7 +240,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	
 	__fb_glX.MakeCurrent(fb_linux.display, fb_linux.window, context);
 	
-	if (fb_hGL_Init(gl_lib))
+	if (fb_hGL_Init(gl_lib, NULL))
 		return -1;
 	
 	if (gl_options & HAS_MULTISAMPLE)

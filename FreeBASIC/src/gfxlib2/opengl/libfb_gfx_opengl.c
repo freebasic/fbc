@@ -47,6 +47,32 @@ static int next_pow2(int n)
 
 
 /*:::::*/
+FBCALL void *fb_GfxGetGLProcAddress(const char *proc)
+{
+	if ((!__fb_gfx) || (!(__fb_gfx->flags & OPENGL_SUPPORT)))
+		return NULL;
+	return fb_hGL_GetProcAddress(proc);
+}
+
+
+/*:::::*/
+int fb_hGL_ExtensionSupported(const char *extension)
+{
+	int len;
+	char *string = __fb_gl.extensions;
+	
+	len = strlen(extension);
+	while ((string = strstr(string, extension)) != NULL) {
+		string += len;
+		if ((*string == ' ') || (*string == '\0'))
+			return TRUE;
+	}
+	
+	return FALSE;
+}
+
+
+/*:::::*/
 void fb_hGL_SetState(int state)
 {
 	int diffs;
@@ -92,7 +118,7 @@ void fb_hGL_ImageDestroy(GLuint id)
 
 
 /*:::::*/
-int fb_hGL_Init(FB_DYLIB lib)
+int fb_hGL_Init(FB_DYLIB lib, char *os_extensions)
 {
 	const char *gl_funcs[] = { "glEnable", "glDisable", "glGetString", "glViewport", "glMatrixMode",
 							   "glLoadIdentity", "glOrtho", "glShadeModel", "glDepthMask", "glClearColor",
@@ -100,14 +126,18 @@ int fb_hGL_Init(FB_DYLIB lib)
 							   "glTexImage2D" };
 	FB_GL *funcs = &__fb_gl;
 	void **funcs_ptr = (void **)funcs;
-	int res = 0;
+	int res = 0, size = FBGL_EXTENSIONS_STRING_SIZE - 1;
 	
 	fb_hMemSet(&__fb_gl, 0, sizeof(FB_GL));
 	
 	if (fb_hDynLoadAlso(lib, gl_funcs, funcs_ptr, sizeof(gl_funcs) / sizeof(const char *)))
 		return -1;
 	
-	__fb_gl.extensions = (char *)__fb_gl.GetString(GL_EXTENSIONS);
+	strncpy(__fb_gl.extensions, (char *)__fb_gl.GetString(GL_EXTENSIONS), size);
+	size -= strlen(__fb_gl.extensions);
+	if (os_extensions)
+		strncat(__fb_gl.extensions, os_extensions, size);
+	__fb_gl.extensions[FBGL_EXTENSIONS_STRING_SIZE - 1] = '\0';
 	
 	res |= !fb_hGL_ExtensionSupported("GL_EXT_bgra");
 	

@@ -132,30 +132,14 @@ typedef struct FB_WGL {
 
 static FB_DYLIB library;
 static FB_WGL fb_wgl;
-static char *wgl_extensions;
 static HGLRC hglrc;
 static HDC hdc;
 
 
 /*:::::*/
-int fb_hGL_ExtensionSupported(const char *extension)
+void *fb_hGL_GetProcAddress(const char *proc)
 {
-	int len, i;
-	char *string, *what[2] = { wgl_extensions, __fb_gl.extensions };
-	
-	for (i = 0; i < 2; i++) {
-		string = what[i];
-		if (string) {
-			len = strlen(extension);
-			while ((string = strstr(string, extension)) != NULL) {
-				string += len;
-				if ((*string == ' ') || (*string == '\0'))
-					return TRUE;
-			}
-		}
-	}
-	
-	return FALSE;
+	return (void *)fb_wgl.GetProcAddress(proc);
 }
 
 
@@ -166,8 +150,7 @@ static int GL_init(PIXELFORMATDESCRIPTOR *pfd)
 	HDC hdc;
 	HGLRC hglrc;
 	int pf, res = 0;
-	
-	wgl_extensions = NULL;
+	char *wgl_extensions = NULL;
 	
 	wnd = CreateWindow(fb_win32.window_class, "OpenGL setup", WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 					   0, 0, 8, 8, HWND_DESKTOP, NULL, fb_win32.hinstance, NULL);
@@ -188,7 +171,7 @@ static int GL_init(PIXELFORMATDESCRIPTOR *pfd)
 	if (fb_wgl.GetExtensionStringARB)
 		wgl_extensions = fb_wgl.GetExtensionStringARB(hdc);
 	
-	res = fb_hGL_Init(library);
+	res = fb_hGL_Init(library, wgl_extensions);
 	if (res == 0) {
 		if (fb_hGL_ExtensionSupported("WGL_ARB_pixel_format"))
 			fb_wgl.ChoosePixelFormatARB = (WGLCHOOSEPIXELFORMATARB)fb_wgl.GetProcAddress("wglChoosePixelFormatARB");

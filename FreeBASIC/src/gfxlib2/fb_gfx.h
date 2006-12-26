@@ -109,6 +109,7 @@ extern "C" {
 #define ALPHA_PRIMITIVES		0x00000008
 #define OPENGL_PRIMITIVES		0x00000010
 #define QB_COMPATIBILITY		0x10000000
+#define OPENGL_SUPPORT			0x20000000
 
 #define CTX_BUFFER_INIT			0x00000001
 #define CTX_BUFFER_SET			0x00000002
@@ -210,6 +211,7 @@ extern "C" {
 #define GET_PEN_POS					12
 #define GET_COLOR					13
 #define GET_ALPHA_PRIMITIVES		14
+#define GET_GL_EXTENSIONS			15
 
 #define SET_FIRST_SETTER			100
 #define SET_WINDOW_POS				100
@@ -417,8 +419,9 @@ extern void fb_hSoftCursorPaletteChanged(void);
 extern int fb_hColorDistance(int index, int r, int g, int b);
 extern void *fb_hPixelSetAlpha4(void *dest, int color, size_t size);
 extern int fb_hGetWindowHandle(void);
-extern int fb_hGL_Init(FB_DYLIB lib);
+extern int fb_hGL_Init(FB_DYLIB lib, char *os_extensions);
 extern int fb_hGL_ExtensionSupported(const char *extension);
+extern void *fb_hGL_GetProcAddress(const char *proc);
 
 
 /* Public API */
@@ -457,6 +460,7 @@ extern FBCALL void fb_GfxControl_s(int what, FBSTRING *param);
 extern FBCALL void fb_GfxControl_i(int what, int *param1, int *param2, int *param3, int *param4);
 extern FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal);
 extern FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *pal);
+extern FBCALL void *fb_GfxGetGLProcAddress(const char *proc);
 
 
 /* Runtime library hooks */

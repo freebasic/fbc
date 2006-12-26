@@ -53,6 +53,14 @@ FBCALL void fb_GfxControl_s( int what, FBSTRING *param )
 		fb_StrAssign( param, -1, src, -1, FB_FALSE );
 		break;
 	
+	case GET_GL_EXTENSIONS:
+		if ((!__fb_gfx) || (!(__fb_gfx->flags & OPENGL_SUPPORT)))
+			src = &__fb_ctx.null_desc;
+		else
+			src = fb_StrAllocTempDescF( __fb_gl.extensions, strlen(__fb_gl.extensions) + 1 );
+		fb_StrAssign( param, -1, src, -1, FB_FALSE );
+		break;
+	
 	case SET_WINDOW_TITLE:
 		fb_GfxSetWindowTitle(param);
 		break;

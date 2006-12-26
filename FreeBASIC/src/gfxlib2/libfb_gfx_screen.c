@@ -280,6 +280,8 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         if (flags != DRIVER_NULL) {
 			if (flags & DRIVER_ALPHA_PRIMITIVES)
 	        	__fb_gfx->flags |= ALPHA_PRIMITIVES;
+	        if (flags & DRIVER_OPENGL)
+	        	__fb_gfx->flags |= OPENGL_SUPPORT;
 	    }
 
         fb_hSetupFuncs(__fb_gfx->bpp);

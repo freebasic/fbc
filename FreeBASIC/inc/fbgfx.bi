@@ -61,7 +61,8 @@ namespace FB
 					 GET_VIEWPORT				= 11	, _
 					 GET_PEN_POS				= 12	, _
 					 GET_COLOR					= 13	, _
-					 GET_ALPHA_PRIMITIVES		= 14
+					 GET_ALPHA_PRIMITIVES		= 14	, _
+					 GET_GL_EXTENSIONS			= 15
 	'' Setters:
 	const as integer SET_WINDOW_POS				= 100	, _
 					 SET_WINDOW_TITLE			= 101	, _
