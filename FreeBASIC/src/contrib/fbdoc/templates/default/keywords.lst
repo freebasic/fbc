@@ -310,10 +310,13 @@ Print
 Print #
 Print Using
 Private
+Private:
 ProcPtr
+Protected:
 PSet
 Ptr
 Public
+Public:
 Put
 RGB
 RGBA
@@ -340,6 +343,7 @@ Screen
 ScreenControl
 ScreenCopy
 ScreenEvent
+ScreenGLProc
 ScreenInfo
 ScreenList
 ScreenLock
