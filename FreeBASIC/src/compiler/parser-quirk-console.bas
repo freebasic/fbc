@@ -185,7 +185,7 @@ function cColorStmt _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr fore_color, back_color
+	dim as ASTNODE ptr fore_color, back_color = NULL
     dim as integer checkrprnt
 
 	function = NULL
@@ -203,14 +203,40 @@ function cColorStmt _
 			hMatchRPRNT( )
 		end if
 	else
-		checkrprnt = hMatch( CHAR_LPRNT )
-		fore_color = cExpression(  )
-		if( hMatch( CHAR_COMMA ) = TRUE ) then
-			hMatchExpression( back_color )
+		
+		'' '('?
+		if( hMatch( CHAR_LPRNT ) = TRUE ) then
+
+			'' expr?
+			fore_color = cExpression(  )
+			if( hMatch( CHAR_COMMA ) = TRUE ) then
+			
+				'' ',' expr ')'	
+				hMatchExpression( back_color )
+				hMatchRPRNT( )
+			
+			else
+				
+				'' ')' (',' expr)?
+				back_color = cExpression(  )
+				hMatchRPRNT( )
+				if( hMatch( CHAR_COMMA ) = TRUE ) then
+					hMatchExpression( back_color )
+				end if
+	
+			end if
+
+		else
+			
+			'' expr? (',' expr)?
+
+			fore_color = cExpression(  )
+			if( hMatch( CHAR_COMMA ) = TRUE ) then
+				hMatchExpression( back_color )
+			end if
+
 		end if
-		if( checkrprnt ) then
-			hMatchRPRNT( )
-		end if
+		
 	end if
 
 	function = rtlColor( fore_color, back_color, isfunc )
