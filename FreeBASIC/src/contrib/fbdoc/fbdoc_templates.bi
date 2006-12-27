@@ -30,6 +30,16 @@ namespace fb.fbdoc
 				byval sFileName as zstring ptr _
 			) as integer
 
+		declare sub Templates_Clear _
+			( _
+			)
+
+		declare function Templates_Set _
+			( _
+				byval sKey as zstring ptr, _
+				byval sValue as zstring ptr _
+			) as integer
+
 		declare function Templates_Get _
 			( _
 				byval sKey as zstring ptr _

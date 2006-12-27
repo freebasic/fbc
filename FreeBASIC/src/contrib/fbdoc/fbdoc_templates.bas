@@ -52,6 +52,16 @@ namespace fb.fbdoc
 	end sub
 
 	'':::::
+	sub Templates_Clear _
+		( _
+		)
+		
+		Templates_Create()
+		temp->Clear()
+
+	end sub
+
+	'':::::
 	function Templates_Set _
 		( _
 			byval sKey as zstring ptr, _

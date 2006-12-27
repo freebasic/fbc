@@ -178,7 +178,7 @@ namespace fb.fbdoc
 			byval sbody as zstring ptr _
 		) as integer
 
-		dim as string sBodyHtml, sHtml, sTemplate, sPageName, sPageTitle
+		dim as string sBodyHtml, sHtml, sPageName, sPageTitle
 
 		if( page = NULL ) then
 			return FALSE
@@ -209,7 +209,12 @@ namespace fb.fbdoc
 
 		sBodyHtml = ctx->converter->gen( @"", ctx->wiki )
 
-		sHtml = Templates_Get("chm_def")
+		if( ucase( sPageName ) = "DOCTOC" ) then
+			sHtml = Templates_Get("chm_doctoc")
+		else
+			sHtml = Templates_Get("chm_def")
+		end if
+
 		sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
 		sHtml = ReplaceSubStr( sHtml, "{$pg_title}", Text2Html( sPageTitle ) )
 
@@ -417,7 +422,7 @@ namespace fb.fbdoc
 			this.EmitTOC( "fbdoc.hhc" )
 			this.EmitIndex( "fbdoc.hhk" )
 			this.EmitProject( "fbdoc.hhp", "fbdoc" )
-			this.EmitHtmlIndex( "00index.html" )
+			''this.EmitHtmlIndex( "00index.html" )
 		end if
 
 		delete ctx->converter

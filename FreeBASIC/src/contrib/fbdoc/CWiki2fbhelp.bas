@@ -180,7 +180,7 @@ namespace fb.fbdoc
 			byval sbody as zstring ptr _
 		) as integer
 
-		dim as string sBodyTxt, sTxt, sTemplate, sPageName, sPageTitle
+		dim as string sBodyTxt, sTxt, sPageName, sPageTitle, s
 
 		if( page = NULL ) then
 			return FALSE
@@ -216,6 +216,12 @@ namespace fb.fbdoc
 		
 		sTxt += Lang_ExpandString( sBodyTxt )
 
+		if( ucase( sPageName ) = "DOCTOC" ) then
+			s = Templates_Get("fbhelp_doctoc")
+			s = Lang_ExpandString( s )
+			sTxt = ReplaceSubStr( s, "{$pg_body}", sTxt )
+		end if
+	
 		function = _OutputFile( ctx, page->GetName() + ".txt", sTxt )
 
 	end function

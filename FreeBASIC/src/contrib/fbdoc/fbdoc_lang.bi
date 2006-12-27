@@ -36,6 +36,12 @@ namespace fb.fbdoc
 			byval sDefault as zstring ptr = NULL _
 		) as string
 
+	declare sub Lang_SetOption _
+		( _
+			byval sKey as zstring ptr, _
+			byval sValue as zstring ptr _
+		)
+
 	declare function Lang_ExpandString _
 		( _
 			byval sText as zstring  ptr _

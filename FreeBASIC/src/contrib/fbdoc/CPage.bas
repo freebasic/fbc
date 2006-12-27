@@ -156,10 +156,10 @@ namespace fb.fbdoc
 			return ""
 		end if
 
-		if( len( *ctx->pagetitle) > 0 ) then
-			function = *ctx->pagetitle
-		elseif( len( *ctx->linktitle) > 0 ) then
+		if( len( *ctx->linktitle) > 0 ) then
 			function = *ctx->linktitle
+		elseif( len( *ctx->pagetitle) > 0 ) then
+			function = *ctx->pagetitle
 		elseif( len( *ctx->pagename) > 0 ) then
 			function = *ctx->pagename
 		else

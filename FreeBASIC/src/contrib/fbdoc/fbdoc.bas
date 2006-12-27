@@ -40,6 +40,8 @@
 #include once "fbdoc_string.bi"
 #include once "fbdoc_misc.bi"
 
+#include once "vbcompat.bi"
+
 using fb
 using fbdoc
 
@@ -248,6 +250,9 @@ const default_CacheDir = "cache/"
 		end 1
 	end if
 
+	Lang_SetOption("fb_docinfo_date", Format( Now(), Lang_GetOption("fb_docinfo_dateformat")))
+	Lang_SetOption("fb_docinfo_time", Format( Now(), Lang_GetOption("fb_docinfo_timeformat")))
+
 	'' Initialize the cache
 	sCacheDir = connopts->Get( "cache_dir", default_CacheDir )
 	if LocalCache_Create( sCacheDir, CacheRefreshMode ) = FALSE then
@@ -326,11 +331,13 @@ const default_CacheDir = "cache/"
 		sOutputDir = "html/"
 		sTemplateDir = "templates/default/code/"
 
+		Templates_Clear()
 		Templates_LoadFile( "chm_idx", sTemplateDir + "chm_idx.tpl.html" )
 		Templates_LoadFile( "chm_prj", sTemplateDir + "chm_prj.tpl.html" )
 		Templates_LoadFile( "chm_toc", sTemplateDir + "chm_toc.tpl.html" )
 		Templates_LoadFile( "chm_def", sTemplateDir + "chm_def.tpl.html" )
 		Templates_LoadFile( "htm_toc", sTemplateDir + "htm_toc.tpl.html" )
+		Templates_LoadFile( "chm_doctoc", sTemplateDir + "chm_doctoc.tpl.html" )
 
 		dim as CWiki2Chm ptr chm
 		chm = new CWiki2Chm( @"", 1, sOutputDir, paglist, toclist )
@@ -345,6 +352,9 @@ const default_CacheDir = "cache/"
 		sOutputDir = "fbhelp/"
 		sTemplateDir = "templates/default/code/"
 
+		Templates_Clear()
+		Templates_LoadFile( "fbhelp_doctoc", sTemplateDir + "fbhelp_doctoc.tpl.txt" )
+
 		dim as CWiki2fbhelp ptr fbhelp
 		fbhelp = new CWiki2fbhelp( @"", 1, sOutputDir, paglist, toclist )
 		fbhelp->Emit()
@@ -357,6 +367,9 @@ const default_CacheDir = "cache/"
 		'' Generate ascii Txt output for single txt file
 		sOutputDir = "txt/"
 		sTemplateDir = "templates/default/code/"
+
+		Templates_Clear()
+		Templates_LoadFile( "txt_doctoc", sTemplateDir + "txt_doctoc.tpl.txt" )
 
 		dim as CWiki2txt ptr txt
 		txt = new CWiki2txt( @"", 1, sOutputDir, paglist, toclist )

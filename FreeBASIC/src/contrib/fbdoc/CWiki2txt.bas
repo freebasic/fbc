@@ -38,8 +38,6 @@
 #include once "CPage.bi"
 #include once "CPageList.bi"
 
-#include once "vbcompat.bi"
-
 namespace fb.fbdoc
 
 	type CWiki2txtCtx_
@@ -183,7 +181,7 @@ namespace fb.fbdoc
 			byval sbody as zstring ptr _
 		) as integer
 
-		dim as string sBodyTxt, sTxt, sTemplate, sPageName, sPageTitle
+		dim as string sBodyTxt, sTxt, sPageName, sPageTitle
 
 		if( page = NULL ) then
 			return FALSE
@@ -311,15 +309,9 @@ namespace fb.fbdoc
 			return FALSE
 		end if
 
+		a = Templates_Get("txt_doctoc")
 
-		a += "FreeBASIC User's Manual" + chr(10)
-		a += "-----------------------" + chr(10)
-		a += chr(10)
-		a += "From http://www.freebasic.net/wiki" + chr(10)
-		a += chr(10)
-		a += "This file last built : " & format( now(), "yyyy/mm/dd hh:mm:ss" ) & chr(10)
-		a += chr(10)
-		a += chr(10)
+		a = Lang_ExpandString( a )
 
 		put #h,,a
 

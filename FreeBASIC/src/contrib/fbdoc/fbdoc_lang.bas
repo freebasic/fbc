@@ -88,6 +88,20 @@ namespace fb.fbdoc
 
 	end function
 
+	sub Lang_SetOption _
+		( _
+			byval sKey as zstring ptr, _
+			byval sValue as zstring ptr _
+		)
+
+		if( lang = NULL ) then
+			exit sub
+		end if
+		
+		lang->Set( sKey, sValue )
+
+	end sub
+
 	function Lang_ExpandString _
 		( _
 			byval sText as zstring  ptr _
