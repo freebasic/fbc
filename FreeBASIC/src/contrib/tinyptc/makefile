@@ -7,6 +7,7 @@
 # be the same as HOST, if the later could be guessed
 #
 
+NASM = nasm
 ##################################################################
 
 HOST :=
@@ -70,6 +71,10 @@ endif
 ifeq ($(TARGET),win32)
     OSDEPPATH := win32
     CFLAGS += -DTARGET_WIN32 -DTARGET_X86 -I ../../rtlib/obj/win32
+
+    # !!! ASSUMES WIN32 RTLIB WAS ./configure'D AND DIRECTX HEADERS ARE IN MinGW's INCLUDE DIRECTORY
+    CFLAGS += -I ../../rtlib -I
+    
     AFLAGS += -DTARGET_WIN32
     NASMFLAGS += -f win32
 endif
@@ -152,7 +157,7 @@ $(objpath)/%.o : %.s $(headers)
 	$(CC) -c $(AFLAGS) $< -o $@
 
 $(objpath)/%.o : %.asm $(headers)
-	nasm $(NASMFLAGS) -o $@ $<
+	$(NASM) $(NASMFLAGS) -o $@ $<
 
 $(objpath)/%.o : $(OSDEPPATH)/%.c $(headers)
 	$(CC) -c $(CFLAGS) $< -o $@
@@ -161,7 +166,7 @@ $(objpath)/%.o : $(OSDEPPATH)/%.s $(headers)
 	$(CC) -c $(AFLAGS) $< -o $@
 
 $(objpath)/%.o : $(OSDEPPATH)/%.asm $(headers)
-	nasm $(NASMFLAGS) -o $@ $<
+	$(NASM) $(NASMFLAGS) -o $@ $<
 
 $(lib) : $(objects) $(osdepobjs)
 	$(AR) cr $(lib) $(objects) $(osdepobjs)
