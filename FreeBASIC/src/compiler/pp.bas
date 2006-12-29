@@ -377,7 +377,7 @@ private function ppLibPath( ) as integer
 
 	lexEatToken( path )
 
-	if( fbAddLibPath( path ) = FALSE ) then
+	if( symbAddLibPath( path ) = FALSE ) then
 		if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
 			return FALSE
 		end if

@@ -1093,7 +1093,7 @@ private function hGfxlib_cb _
 
 		case FB_COMPTARGET_LINUX
 #ifdef TARGET_LINUX
-			fbAddLibPath( "/usr/X11R6/lib" )
+			symbAddLibPath( "/usr/X11R6/lib" )
 #endif
 
 			symbAddLib( "X11" )
@@ -2224,7 +2224,7 @@ function rtlGfxImageCreate _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr proc
-	
+
 	function = NULL
 
 	proc = astNewCALL( PROCLOOKUP( GFXIMAGECREATE ) )
@@ -2238,7 +2238,7 @@ function rtlGfxImageCreate _
  	if( astNewARG( proc, hexpr ) = NULL ) then
  		exit function
  	end if
-	
+
 	'' byval c as uinteger
 	if( cexpr = NULL ) then
 		cexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
@@ -2246,7 +2246,7 @@ function rtlGfxImageCreate _
  	if( astNewARG( proc, cexpr ) = NULL ) then
  		exit function
  	end if
-	
+
 	'' byval d as integer
 	if( dexpr = NULL ) then
 		dexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
@@ -2254,12 +2254,12 @@ function rtlGfxImageCreate _
  	if( astNewARG( proc, dexpr ) = NULL ) then
  		exit function
  	end if
- 	
+
  	'' byval flags as integer
  	if( astNewARG( proc, astNewCONSTi( flags, FB_DATATYPE_UINT ) ) = NULL ) then
  		exit function
  	end if
-	
+
 	function = proc
 
 end function

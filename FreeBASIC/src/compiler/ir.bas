@@ -33,9 +33,27 @@ declare function irHLC_ctor _
 	( _
 	) as integer
 
-
 '' globals
 	dim shared ir as IRCTX
+
+'':::::
+private function hCallCtor _
+	( _
+		byval backend as FB_BACKEND _
+	) as integer
+
+	select case backend
+	case FB_BACKEND_GAS
+		function = irTAC_ctor( )
+
+	case FB_BACKEND_GCC
+		function = irHLC_ctor( )
+
+	case else
+		function = FALSE
+	end select
+
+end function
 
 '':::::
 function irInit _
@@ -47,17 +65,10 @@ function irInit _
 		return TRUE
 	end if
 
-	select case backend
-	case FB_BACKEND_GAS
-		if( irTAC_ctor( ) = FALSE ) then
-			return FALSE
-		end if
-
-	case FB_BACKEND_GCC
-		if( irHLC_ctor( ) = FALSE ) then
-			return FALSE
-		end if
-	end select
+	''
+	if( hCallCtor( backend ) = FALSE ) then
+		return FALSE
+	end if
 
 	if( ir.vtbl.init( backend ) ) then
 		ir.inited = TRUE
@@ -117,4 +128,5 @@ function irGetVRDataSize _
 	function = symb_dtypeTB(dtype).size
 
 end function
+
 

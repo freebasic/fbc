@@ -56,7 +56,9 @@ end type
 		( 0, @"Possible escape sequence found in" ), _
 		( 0, @"The type length is too large, consider passing BYREF" ), _
 		( 1, @"The length of the parameters list is too large, consider passing UDT's BYREF" ), _
-		( 1, @"The ANY initializer has no effect on UDT's with default constructors" ) _
+		( 1, @"The ANY initializer has no effect on UDT's with default constructors" ), _
+		( 2, @"Object files or libraries with mixed multithreading (-mt) options" ), _
+		( 2, @"Object files or libraries with mixed language (-lang) options" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
@@ -483,10 +485,19 @@ sub errReportWarnEx _
 		exit sub
 	end if
 
-	print env.inf.name;
+	if( len( env.inf.name ) > 0 ) then
+		print env.inf.name;
+	else
+		if( msgex <> NULL ) then
+			print *msgex;
+			msgex = NULL
+		end if
+	end if
 
 	if( linenum > 0 ) then
 		print "(" & linenum & ")";
+	else
+		print "()";
 	end if
 
 	print " warning " & msgnum & "(" & warningMsgs(msgnum).level & "): ";

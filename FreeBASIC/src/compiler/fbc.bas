@@ -22,11 +22,7 @@
 ''		 dec/2004 linux support added [lillo]
 ''		 jan/2005 dos support added [DrV]
 
-
-
 #include once "inc\fb.bi"
-#include once "inc\hash.bi"
-#include once "inc\list.bi"
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
@@ -67,6 +63,14 @@ declare sub getLibList _
 	( _
 	)
 
+declare sub setLibListFromCmd _
+	( _
+	)
+
+declare sub setLibList _
+	( _
+	)
+
 declare sub initTarget _
 	( _
 	)
@@ -100,6 +104,18 @@ declare sub setMainModule _
 	)
 
 declare sub setCompOptions _
+	( _
+	)
+
+declare function collectObjInfo _
+	( _
+	) as integer
+
+declare sub setDefaultLibPaths _
+	( _
+	)
+
+declare sub getDefaultLibs _
 	( _
 	)
 
@@ -155,9 +171,6 @@ declare sub setCompOptions _
 
 	''
     fbcInit( )
-
-    ''
-    setDefaultOptions( )
 
     ''
     parseCmd( )
@@ -225,6 +238,12 @@ declare sub setCompOptions _
 	if( fbc.compileonly ) then
 
 	else
+		'' set the default lib paths before scanning for other libs
+		setDefaultLibPaths( )
+
+    	'' scan objects and libraries for more libraries and paths
+    	collectObjInfo( )
+
     	'' link
     	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_STATICLIB ) then
     		if( archiveFiles( ) = FALSE ) then
@@ -233,6 +252,10 @@ declare sub setCompOptions _
     		end if
 
     	else
+			'' only add the default libraries to the LD cmd-line, and not to the
+			'' objects and static libraries, for speed/size reasons
+			getDefaultLibs( )
+
 			'' resource files..
 			if( compileResFiles( ) = FALSE ) then
 				delFiles( )
@@ -277,19 +300,28 @@ private sub fbcInit( )
 				 INVALID )
 	next
 
-	'' lists
+	'' arg list
 	listNew( @fbc.arglist, FBC_INITARGS, len( string ) )
 
+	'' file and path lists
 	listNew( @fbc.inoutlist, FBC_INITFILES, len( FBC_IOFILE ) )
 	listNew( @fbc.objlist, FBC_INITFILES, len( string ) )
-	listNew( @fbc.liblist, FBC_INITFILES, len( string ) )
 	listNew( @fbc.deflist, FBC_INITFILES\4, len( string ) )
 	listNew( @fbc.preinclist, FBC_INITFILES\4, len( string ) )
-
-	listNew( @fbc.incpathlist, FBC_INITFILES\4, len( string ) )
+	listNew( @fbc.liblist, FBC_INITFILES\4, len( string ) )
 	listNew( @fbc.libpathlist, FBC_INITFILES\4, len( string ) )
+	listNew( @fbc.incpathlist, FBC_INITFILES\4, len( string ) )
+
+	'' the final lib and search path lists passed to LD
+	listNew( @fbc.ld_liblist, FBC_INITFILES\2, len( FBS_LIB ) )
+	hashNew( @fbc.ld_libhash, FBC_INITFILES\2, FALSE )
+	listNew( @fbc.ld_libpathlist, FBC_INITFILES\2, len( FBS_LIB ) )
+	hashNew( @fbc.ld_libpathhash, FBC_INITFILES\2, FALSE )
 
 	fbc.iof_head = NULL
+
+	''
+	setDefaultOptions( )
 
 end sub
 
@@ -400,6 +432,9 @@ private function compileFiles _
     	'' create output asm name
     	iof->asmf = hStripExt( iof->outf ) + ".asm"
 
+		'' add the libs and paths passed in the cmd-line
+    	setLibList( )
+
     	if( fbc.verbose ) then
     		print "compiling: ", iof->inf; " -o "; iof->asmf
     	end if
@@ -411,7 +446,7 @@ private function compileFiles _
     		exit function
     	end if
 
-		'' get list with all referenced libraries
+		'' update the list of libs and paths, with the ones found when parsing
 		getLibList( )
 
 		'' shutdown the parser
@@ -422,13 +457,49 @@ private function compileFiles _
 
     '' no default libs would be added if no inp files were given
     if( listGetHead( @fbc.inoutlist ) = NULL ) then
-   		fbInit( FALSE )
-   		fbAddDefaultLibs( )
-   		getLibList( )
-   		fbEnd( )
+   		setLibListFromCmd( )
     end if
 
 	function = TRUE
+
+end function
+
+'':::::
+private function assembleFile _
+	( _
+		byref cmdline as string _
+	) as integer
+
+	static as string path
+	static as integer has_path = FALSE
+
+    if( has_path = FALSE ) then
+    	has_path = TRUE
+
+    	'' check the environment variable first
+    	path = environ( "AS" )
+    	if( len( path ) = 0 ) then
+        	'' when not set, then simply use some default value
+        	path = exepath( ) + *fbGetPath( FB_PATH_BIN )
+
+#ifdef TARGET_LINUX
+			path += "as"
+#else
+			path += "as.exe"
+#endif
+    	end if
+
+    	if( hFileExists( path ) = FALSE ) then
+			errReportEx( FB_ERRMSG_EXEMISSING, path, -1 )
+			return FALSE
+    	end if
+    end if
+
+    if( fbc.verbose ) then
+    	print "assembling: ", path + " " + cmdline
+    end if
+
+    function = (exec( path, cmdline ) = 0)
 
 end function
 
@@ -437,28 +508,9 @@ private function assembleFiles _
 	( _
 	) as integer
 
-	dim as string aspath, ascline, binpath
+	dim as string ascline
 
 	function = FALSE
-
-    '' get path to assembler
-    aspath = environ( "AS" ) '' check the environment variable first
-    if( len( aspath ) = 0 ) then
-        '' when not set, then simply use some default value
-        binpath = exepath( ) + *fbGetPath( FB_PATH_BIN )
-
-#ifdef TARGET_LINUX
-		aspath = binpath + "as"
-#else
-		aspath = binpath + "as.exe"
-#endif
-    end if
-
-    ''
-    if( hFileExists( aspath ) = FALSE ) then
-		errReportEx( FB_ERRMSG_EXEMISSING, aspath, -1 )
-		exit function
-    end if
 
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
 	do while( iof <> NULL )
@@ -476,13 +528,9 @@ private function assembleFiles _
                    fbc.extopt.gas
 
     	'' invoke as
-    	if( fbc.verbose ) then
-    		print "assembling: ", aspath + " " + ascline
-    	end if
-
-    	if( exec( aspath, ascline ) <> 0 ) then
-    		exit function
-    	end if
+		if( assembleFile( ascline ) = FALSE ) then
+			exit function
+		end if
 
     	iof = listGetNext( iof )
     loop
@@ -492,9 +540,33 @@ private function assembleFiles _
 end function
 
 '':::::
-private function archiveFiles as integer
-    dim as integer i
+private function hAddInfoObject as integer
+
+    if( hFileExists( FB_INFOSEC_OBJNAME ) ) then
+    	safeKill( FB_INFOSEC_OBJNAME )
+    end if
+
+    if( fbObjInfoWriteObj( @fbc.ld_liblist, @fbc.ld_libpathlist ) ) then
+    	function = TRUE
+
+    '' and error occured or there's no need for an info object, delete it
+    else
+		if( hFileExists( FB_INFOSEC_OBJNAME ) ) then
+    		safeKill( FB_INFOSEC_OBJNAME )
+    	end if
+
+    	function = FALSE
+    end if
+
+end function
+
+'':::::
+private function archiveFiles _
+	( _
+	) as integer
+
     dim as string arcline
+    dim as integer has_infobj = FALSE
 
 	function = FALSE
 
@@ -506,6 +578,14 @@ private function archiveFiles as integer
 
     '' output library file name
     arcline += QUOTE + fbc.outname + (QUOTE + " ")
+
+    '' the first object must be the info one
+    if( fbIsCrossComp( ) = FALSE ) then
+    	if( hAddInfoObject( ) ) then
+    		arcline += QUOTE + FB_INFOSEC_OBJNAME + QUOTE + " "
+    		has_infobj = TRUE
+    	end if
+    end if
 
     '' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
@@ -528,7 +608,16 @@ private function archiveFiles as integer
        print "archiving: ", arcline
     end if
 
-    fbc.archiveFiles( arcline )
+    if( hFileExists( fbc.outname ) ) then
+    	safeKill( fbc.outname )
+    end if
+
+    fbc.vtbl.archiveFiles( arcline )
+
+    ''
+    if( has_infobj ) then
+    	safeKill( FB_INFOSEC_OBJNAME )
+    end if
 
     function = TRUE
 
@@ -537,14 +626,14 @@ end function
 '':::::
 private function linkFiles as integer
 
-	function = fbc.linkFiles( )
+	function = fbc.vtbl.linkFiles( )
 
 end function
 
 '':::::
 private function compileResFiles as integer
 
-	function = fbc.compileResFiles( )
+	function = fbc.vtbl.compileResFiles( )
 
 end function
 
@@ -567,7 +656,117 @@ private function delFiles as integer
     	iof = listGetNext( iof )
     loop
 
-    function = fbc.delFiles( )
+    function = fbc.vtbl.delFiles( )
+
+end function
+
+'':::::
+private sub objinf_addLibCb _
+	( _
+		byval libName as zstring ptr, _
+		byval objName as zstring ptr _
+	)
+
+	'' let the symbol module do the hard work for us
+	fbAddLibEx( @fbc.ld_liblist, @fbc.ld_libhash, libName, FALSE )
+
+end sub
+
+'':::::
+private sub objinf_addPathCb _
+	( _
+		byval pathName as zstring ptr, _
+		byval objName as zstring ptr _
+	)
+
+	fbAddLibPathEx( @fbc.ld_libpathlist, @fbc.ld_libpathhash, pathName, FALSE )
+
+end sub
+
+'':::::
+private sub objinf_addOption _
+	( _
+		byval opt as FB_COMPOPT, _
+		byval value as zstring ptr, _
+		byval objName as zstring ptr _
+	)
+
+#macro hReportErr( num )
+	errReportWarnEx( num, objName, -1 )
+#endmacro
+
+	select case opt
+	case FB_COMPOPT_MULTITHREADED
+		if( fbc.objinf.mt = FALSE ) then
+			hReportErr( FB_WARNINGMSG_MIXINGMTMODES )
+
+			fbc.objinf.mt = TRUE
+			fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
+		end if
+
+	case FB_COMPOPT_LANG
+		dim as FB_LANG id = any
+
+		select case *value
+		case "fb"
+			id = FB_LANG_FB
+		case "deprecated"
+			id = FB_LANG_FB_DEPRECATED
+		case "qb"
+			id = FB_LANG_QB
+		end select
+
+		if( id <> fbc.objinf.lang ) then
+			hReportErr( FB_WARNINGMSG_MIXINGLANGMODES )
+
+			fbc.objinf.lang = id
+			fbSetOption( FB_COMPOPT_LANG, id )
+		end if
+	end select
+
+end sub
+
+'':::::
+private function collectObjInfo _
+	( _
+	) as integer
+
+	'' cross-compiling? BFD can't be used..
+	if( fbIsCrossComp( ) ) then
+		return FALSE
+    end if
+
+	scope
+		'' for each object passed in the cmd-line
+		dim as string ptr obj = listGetHead( @fbc.objlist )
+		do while( obj <> NULL )
+			fbObjInfoReadObj( *obj, _
+							  @objinf_addLibCb, _
+							  @objinf_addPathCb, _
+							  @objinf_addOption )
+			obj = listGetNext( obj )
+		loop
+	end scope
+
+	scope
+		dim as TLIST ptr libpathlist = @fbc.ld_libpathlist
+
+		'' for each library found (must be done after processing all objects)
+		dim as FBS_LIB ptr lib_ = listGetHead( @fbc.ld_liblist )
+		do while( lib_ <> NULL )
+	    	if( lib_->isdefault = FALSE ) then
+	    		fbObjInfoReadLib( *lib_->name, _
+	    					 	  @objinf_addLibCb, _
+	    					 	  @objinf_addPathCb, _
+	    					 	  @objinf_addOption, _
+	    					 	  libpathlist )
+			end if
+
+			lib_ = listGetNext( lib_ )
+		loop
+	end scope
+
+	function = TRUE
 
 end function
 
@@ -606,110 +805,6 @@ private sub setMainModule( )
 end sub
 
 '':::::
-#define printOption(_opt,_desc) print _opt, " "; _desc
-
-'':::::
-private sub printOptions( )
-	dim as string desc
-
-	print "Usage: fbc [options] inputlist"
-	print
-
-	printOption( "inputlist:", "*.a = library, *.o = object, *.bas = source" )
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-		printOption( "", "*.rc = resource script, *.res = compiled resource" )
-	case FB_COMPTARGET_LINUX
-		printOption( "", "*.xpm = icon resource" )
-	end select
-
-	print
-	print "options:"
-
-	printOption( "-a <name>", "Add an object file to linker's list" )
-	printOption( "-arch <type>", "Set target architecture (default: 486)" )
-	printOption( "-b <name>", "Add a source file to compilation" )
-	printOption( "-c", "Compile only, do not link" )
-	printOption( "-d <name=val>", "Add a preprocessor's define" )
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX
-		printOption( "-dll", "Same as -dylib" )
-		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) then
-			printOption( "-dylib", "Create a DLL, including the import library" )
-		else
-			printOption( "-dylib", "Create a shared library" )
-		end if
-	end select
-	printOption( "-e", "Add error checking" )
-	printOption( "-ex", "Add error checking with RESUME support" )
-	printOption( "-exx", "Same as above plus array bounds and null-pointer checking" )
-	printOption( "-export", "Export symbols for dynamic linkage" )
-	printOption( "-g", "Add debug info" )
-	printOption( "-i <name>", "Add a path to search for include files" )
-	print "-include <name>"; " Include a header file on each source compiled"
-	printOption( "-l <name>", "Add a library file to linker's list" )
-	printOption( "-lang <name>", "Select language compatibility: deprecated, qb" )
-	printOption( "-lib", "Create a static library" )
-	printOption( "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)" )
-	printOption( "-map <name>", "Save the linking map to file name" )
-	printOption( "-maxerr <val>", "Only stop parsing if <val> errors occurred" )
-	if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DOS ) then
-		printOption( "-mt", "Link with thread-safe runtime library" )
-	end if
-	printOption( "-nodeflibs", "Do not include the default libraries" )
-	printOption( "-noerrline", "Do not show source line where error occured" )
-	printOption( "-o <name>", "Set object file path/name (must be passed after the .bas file)" )
-	printOption( "-p <name>", "Add a path to search for libraries" )
-	printOption( "-profile", "Enable function profiling" )
-	printOption( "-r", "Do not delete the asm file(s)" )
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-		printOption( "-s <name>", "Set subsystem (gui, console)" )
-	end select
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_DOS
-		printOption( "-t <value>", "Set stack size in kbytes (default: 1M)" )
-	end select
-
-#if defined(CROSSCOMP_WIN32) or _
-	defined(CROSSCOMP_CYGWIN) or _
-	defined(CROSSCOMP_DOS) or _
-	defined(CROSSCOMP_LINUX) or _
-	defined(CROSSCOMP_XBOX)
-	desc = " Cross-compile to:"
- #ifdef CROSSCOMP_CYGWIN
-	desc += " cygwin"
- #endif
- #ifdef CROSSCOMP_DOS
-	desc += " dos"
- #endif
- #ifdef CROSSCOMP_LINUX
-	desc += " linux"
- #endif
- #ifdef CROSSCOMP_WIN32
-	desc += " win32"
- #endif
- #ifdef CROSSCOMP_XBOX
-	desc += " xbox"
- #endif
-
-	print "-target <name>"; desc
-#endif
-
-	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_XBOX ) then
-		printOption( "-title <name>", "Set XBE display title" )
-	end if
-	printOption( "-v", "Be verbose" )
-	printOption( "-version", "Show compiler version" )
-	printOption( "-w <value>", "Set min warning level: all, pedantic or a value" )
-	printOption( "-Wa <opt>", "Pass options to GAS (separated by commas)" )
-	printOption( "-Wl <opt>", "Pass options to LD (separated by commas)" )
-	printOption( "-x <name>", "Set executable/library path/name" )
-
-end sub
-
-
-'':::::
 private sub setDefaultOptions( )
 
 	fbSetDefaultOptions( )
@@ -728,6 +823,9 @@ private sub setDefaultOptions( )
 
 	fbc.extopt.gas	= ""
 	fbc.extopt.ld	= ""
+
+	fbc.objinf.lang = fbGetOption( FB_COMPOPT_LANG )
+	fbc.objinf.mt   = FALSE
 
 end sub
 
@@ -865,7 +963,7 @@ private function checkFiles _
 		hDelArgNode( arg )
 
 	case else
-		if( fbc.listFiles( *arg ) ) then
+		if( fbc.vtbl.listFiles( *arg ) ) then
 			hDelArgNode( arg )
 		end if
 	end select
@@ -918,7 +1016,7 @@ private function processOptions _
 			'' not found?
 			if( id = 0 ) then
 				'' target-dependent options?
-				if( fbc.processOptions( arg, nxt ) = FALSE ) then
+				if( fbc.vtbl.processOptions( arg, nxt ) = FALSE ) then
 					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					exit function
 				end if
@@ -942,6 +1040,7 @@ private function processOptions _
 
 			case FBC_OPT_MT
 				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
+				fbc.objinf.mt = TRUE
 
 			case FBC_OPT_PROFILE
 				fbSetOption( FB_COMPOPT_PROFILE, TRUE )
@@ -1120,10 +1219,13 @@ private function processOptions _
 					exit function
 				end if
 
-				if( fbAddLibPath( *nxt ) = FALSE ) then
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
+				if( len( *nxt ) = 0 ) then
+					printInvalidOpt( arg )
 					exit function
 				end if
+
+				dim as string ptr incp = listNewNode( @fbc.libpathlist )
+				*incp = *nxt
 
 				del_cnt += 1
 
@@ -1268,6 +1370,7 @@ private function processOptions _
 				end select
 
 				fbSetOption( FB_COMPOPT_LANG, value )
+				fbc.objinf.lang = value
 
 				del_cnt += 1
 
@@ -1394,39 +1497,249 @@ private sub parseCmd _
 end sub
 
 '':::::
-private sub getLibList( )
+private sub getLibList _
+	( _
+	)
 
-	fbListLibs( @fbc.liblist )
+	'' update libs
+	fbListLibs( @fbc.ld_liblist, _
+				@fbc.ld_libhash, _
+				TRUE )
+
+	'' update paths
+	fbListLibPaths( @fbc.ld_libpathlist, _
+					@fbc.ld_libpathhash, _
+					TRUE )
 
 end sub
 
 '':::::
-function fbAddLibPath _
+private sub setLibList _
 	( _
-		byval path as zstring ptr _
-	) as integer
+	)
 
-	dim as integer i
+	dim as string ptr n = any
 
-	function = FALSE
-
-	if( len( *path ) = 0 ) then
-		exit function
-	end if
-
-	dim as string ptr libp = listGetHead( @fbc.libpathlist )
-	do while( libp <> NULL )
-		if( *libp = *path ) then
-			return TRUE
-		end if
-		libp = listGetNext( libp )
+	'' add libs
+	n = listGetHead( @fbc.liblist )
+	do while( n <> NULL )
+		fbAddLib( *n )
+		n = listGetNext( n )
 	loop
 
-	libp = listNewNode( @fbc.libpathlist )
-	*libp = *path
+	'' add lib paths
+	n = listGetHead( @fbc.libpathlist )
+	do while( n <> NULL )
+		fbAddLibPath( *n )
+		n = listGetNext( n )
+	loop
 
-	function = TRUE
+end sub
+
+'':::::
+private sub setLibListFromCmd _
+	( _
+	)
+
+	dim as string ptr n = any
+
+	'' add libs
+	n = listGetHead( @fbc.liblist )
+	do while( n <> NULL )
+		fbAddLibEx( @fbc.ld_liblist, _
+					@fbc.ld_libhash, _
+					*n, _
+					FALSE )
+		n = listGetNext( n )
+	loop
+
+	'' add lib paths
+	n = listGetHead( @fbc.libpathlist )
+	do while( n <> NULL )
+		fbAddLibPathEx( @fbc.ld_libpathlist, _
+						@fbc.ld_libpathhash, _
+						*n, _
+						FALSE )
+		n = listGetNext( n )
+	loop
+
+end sub
+
+'':::::
+private sub setDefaultLibPaths
+
+	'' compiler's /lib
+	fbcAddDefLibPath( exepath( ) + *fbGetPath( FB_PATH_LIB ) )
+
+    '' and the current path
+	fbcAddDefLibPath( "./" )
+
+	'' platform dependent paths
+	fbc.vtbl.setDefaultLibPaths( )
+
+end sub
+
+'':::::
+private sub getDefaultLibs
+
+    fbGetDefaultLibs( @fbc.ld_liblist, @fbc.ld_libhash )
+
+end sub
+
+'':::::
+#define printOption(_opt,_desc) print _opt, " "; _desc
+
+'':::::
+private sub printOptions( )
+	dim as string desc
+
+	print "Usage: fbc [options] inputlist"
+	print
+
+	printOption( "inputlist:", "*.a = library, *.o = object, *.bas = source" )
+	select case fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+		printOption( "", "*.rc = resource script, *.res = compiled resource" )
+	case FB_COMPTARGET_LINUX
+		printOption( "", "*.xpm = icon resource" )
+	end select
+
+	print
+	print "options:"
+
+	printOption( "-a <name>", "Add an object file to linker's list" )
+	printOption( "-arch <type>", "Set target architecture (default: 486)" )
+	printOption( "-b <name>", "Add a source file to compilation" )
+	printOption( "-c", "Compile only, do not link" )
+	printOption( "-d <name=val>", "Add a preprocessor's define" )
+	select case fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX
+		printOption( "-dll", "Same as -dylib" )
+		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) then
+			printOption( "-dylib", "Create a DLL, including the import library" )
+		else
+			printOption( "-dylib", "Create a shared library" )
+		end if
+	end select
+	printOption( "-e", "Add error checking" )
+	printOption( "-ex", "Add error checking with RESUME support" )
+	printOption( "-exx", "Same as above plus array bounds and null-pointer checking" )
+	printOption( "-export", "Export symbols for dynamic linkage" )
+	printOption( "-g", "Add debug info" )
+	printOption( "-i <name>", "Add a path to search for include files" )
+	print "-include <name>"; " Include a header file on each source compiled"
+	printOption( "-l <name>", "Add a library file to linker's list" )
+	printOption( "-lang <name>", "Select language compatibility: deprecated, qb" )
+	printOption( "-lib", "Create a static library" )
+	printOption( "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)" )
+	printOption( "-map <name>", "Save the linking map to file name" )
+	printOption( "-maxerr <val>", "Only stop parsing if <val> errors occurred" )
+	if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DOS ) then
+		printOption( "-mt", "Link with thread-safe runtime library" )
+	end if
+	printOption( "-nodeflibs", "Do not include the default libraries" )
+	printOption( "-noerrline", "Do not show source line where error occured" )
+	printOption( "-o <name>", "Set object file path/name (must be passed after the .bas file)" )
+	printOption( "-p <name>", "Add a path to search for libraries" )
+	printOption( "-profile", "Enable function profiling" )
+	printOption( "-r", "Do not delete the asm file(s)" )
+	select case fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+		printOption( "-s <name>", "Set subsystem (gui, console)" )
+	end select
+	select case fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_DOS
+		printOption( "-t <value>", "Set stack size in kbytes (default: 1M)" )
+	end select
+
+#if defined(CROSSCOMP_WIN32) or _
+	defined(CROSSCOMP_CYGWIN) or _
+	defined(CROSSCOMP_DOS) or _
+	defined(CROSSCOMP_LINUX) or _
+	defined(CROSSCOMP_XBOX)
+	desc = " Cross-compile to:"
+ #ifdef CROSSCOMP_CYGWIN
+	desc += " cygwin"
+ #endif
+ #ifdef CROSSCOMP_DOS
+	desc += " dos"
+ #endif
+ #ifdef CROSSCOMP_LINUX
+	desc += " linux"
+ #endif
+ #ifdef CROSSCOMP_WIN32
+	desc += " win32"
+ #endif
+ #ifdef CROSSCOMP_XBOX
+	desc += " xbox"
+ #endif
+
+	print "-target <name>"; desc
+#endif
+
+	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_XBOX ) then
+		printOption( "-title <name>", "Set XBE display title" )
+	end if
+	printOption( "-v", "Be verbose" )
+	printOption( "-version", "Show compiler version" )
+	printOption( "-w <value>", "Set min warning level: all, pedantic or a value" )
+	printOption( "-Wa <opt>", "Pass options to GAS (separated by commas)" )
+	printOption( "-Wl <opt>", "Pass options to LD (separated by commas)" )
+	printOption( "-x <name>", "Set executable/library path/name" )
+
+end sub
+
+'':::::
+function fbcGetLibList _
+	( _
+		byval dllname as zstring ptr _
+	) as zstring ptr
+
+	static as string list
+
+    list = ""
+
+	dim as FBS_LIB ptr libf = listGetHead( @fbc.ld_liblist )
+
+    '' add libraries from cmm-line and found when parsing
+    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+		do while( libf <> NULL )
+   			'' check if the lib isn't the dll's import library itself
+   	        if( *libf->name = *dllname ) then
+   	        	continue do
+   	        end if
+
+			list += "-l" + *libf->name + " "
+
+			libf = listGetNext( libf )
+		loop
+    else
+		do while( libf <> NULL )
+			list += "-l" + *libf->name + " "
+			libf = listGetNext( libf )
+		loop
+	end if
+
+    function = strptr( list )
 
 end function
 
+'':::::
+function fbcGetLibPathList _
+	( _
+	) as zstring ptr
+
+	static as string list
+
+    list = ""
+
+	dim as FBS_LIB ptr libp = listGetHead( @fbc.ld_libpathlist )
+	do while( libp <> NULL )
+    	list += " -L " + QUOTE + *libp->name + QUOTE
+    	libp = listGetNext( libp )
+    loop
+
+    function = strptr( list )
+
+end function
 

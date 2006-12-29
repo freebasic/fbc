@@ -156,7 +156,7 @@ private sub hEmitSTABS _
 	ostr += ","
 	ostr += _value
 
-	emitWriteStr( TRUE, ostr )
+	emitWriteStr( ostr, TRUE )
 
 end sub
 
@@ -194,7 +194,7 @@ private sub hEmitSTABN _
 	) static
 
 
-	emitWriteStr( TRUE, hMakeSTABN( _type, _other, _desc, _value ) )
+	emitWriteStr( hMakeSTABN( _type, _other, _desc, _value ), TRUE )
 
 end sub
 
@@ -215,7 +215,7 @@ private sub hEmitSTABD _
 	ostr += ","
 	ostr += str( _desc )
 
-	emitWriteStr( TRUE, ostr )
+	emitWriteStr( ostr, TRUE )
 
 end sub
 
@@ -229,7 +229,7 @@ private sub hLABEL _
 
 	ostr = *label
 	ostr += ":"
-	emitWriteStr( FALSE, ostr )
+	emitWriteStr( ostr )
 
 end sub
 
@@ -256,7 +256,7 @@ sub edbgEmitHeader _
 
 	'' emit source file
     lname = *hMakeTmpStr( )
-    emitWriteStr( TRUE, ".file " + QUOTE + *filename + QUOTE )
+    emitWriteStr( ".file " + QUOTE + *filename + QUOTE, TRUE )
     if( instr( *filename, "/" ) = 0 ) then
     	dim as zstring ptr dirpath
     	dirpath = hRevertSlash( curdir() + "/", TRUE )
@@ -282,7 +282,7 @@ sub edbgEmitHeader _
 		i += 1
 	loop
 
-	emitWriteStr( FALSE, "" )
+	emitWriteStr( "" )
 
 	hEmitSTABS( STAB_TYPE_BINCL, filename, 0, 0 )
 
@@ -385,7 +385,7 @@ sub edbgEmitLine _
 					lnum, _
 					*symbGetMangledName( label ) + "-" + *symbGetMangledName( proc ) )
 
-	emitWriteStr( FALSE, s )
+	emitWriteStr( s )
 
 end sub
 

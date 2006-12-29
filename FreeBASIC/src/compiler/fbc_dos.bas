@@ -25,28 +25,10 @@
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
-declare function _linkFiles 			( ) as integer
-declare function _archiveFiles			( byval cmdline as zstring ptr ) as integer
-declare function _compileResFiles 		( ) as integer
-declare function _delFiles 				( ) as integer
-declare function _listFiles				( byval argv as zstring ptr ) as integer
-declare function _processOptions		( byval opt as string ptr, _
-						 				  byval argv as string ptr ) as integer
-
 '':::::
-function fbcInit_dos( ) as integer
+private sub _setDefaultLibPaths
 
-	''
-	fbc.processOptions 	= @_processOptions
-	fbc.listFiles 		= @_listFiles
-	fbc.compileResFiles = @_compileResFiles
-	fbc.linkFiles 		= @_linkFiles
-	fbc.archiveFiles 	= @_archiveFiles
-	fbc.delFiles 		= @_delFiles
-
-	return TRUE
-
-end function
+end sub
 
 '':::::
 private function hCreateResFile( byval cline as zstring ptr ) as string
@@ -69,8 +51,11 @@ private function hCreateResFile( byval cline as zstring ptr ) as string
 end function
 
 '':::::
-private function _linkFiles as integer
-	dim as string ldcline, ldpath, libdir
+private function _linkFiles _
+	( _
+	) as integer
+
+	dim as string ldcline, ldpath
 #ifndef TARGET_DOS
 	dim as string resfile
 #endif
@@ -112,19 +97,8 @@ private function _linkFiles as integer
 		end if
 	end if
 
-    '' default lib path
-	libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
-
-    ldcline += " -L " + QUOTE + libdir + QUOTE
-    '' and the current path to libs search list
-    ldcline += " -L " + QUOTE + "./" + QUOTE
-
-    '' add additional user-specified library search paths
-	dim as string ptr libp = listGetHead( @fbc.libpathlist )
-	do while( libp <> NULL )
-    	ldcline += " -L " + QUOTE + *libp + QUOTE
-    	libp = listGetNext( libp )
-    loop
+	'' add library search paths
+	ldcline += *fbcGetLibPathList( )
 
 	'' link with crt0.o (C runtime init) or gcrt0.o for gmon profiling
 	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
@@ -156,15 +130,10 @@ private function _linkFiles as integer
     ldcline += " -( "
 
     '' add libraries from cmm-line and found when parsing
-	dim as string ptr libf = listGetHead( @fbc.liblist )
-	do while( libf <> NULL )
-		ldcline += "-l" + *libf + " "
-		libf = listGetNext( libf )
-	loop
+    ldcline += *fbcGetLibList( NULL )
 
-	'' rtlib initialization and termination
-	'' must be included in the group
-	'' previously was libfb_ctor.o
+	'' rtlib initialization and termination, must be included in the group
+	dim as string libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
 	ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
 
     '' end lib group
@@ -268,6 +237,26 @@ private function _processOptions _
 		return FALSE
 
 	end select
+
+end function
+
+'':::::
+function fbcInit_dos( ) as integer
+
+    static as FBC_VTBL vtbl = _
+    ( _
+		@_processOptions, _
+		@_listFiles, _
+		@_compileResFiles, _
+		@_linkFiles, _
+		@_archiveFiles, _
+		@_delFiles, _
+		@_setDefaultLibPaths _
+	)
+
+	fbc.vtbl = vtbl
+
+	return TRUE
 
 end function
 

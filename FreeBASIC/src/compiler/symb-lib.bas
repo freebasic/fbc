@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' symbol table module for libraries
+'' symbol table module for libraries and library paths - reset on every compilation
 ''
 '' chng: sep/2004 written [v1ctor]
 ''		 jan/2005 updated to use real linked-lists [v1ctor]
@@ -30,108 +30,100 @@
 '':::::
 sub symbLibInit( ) static
 
-	listNew( @symb.liblist, FB_INITLIBNODES, len( FBLIBRARY ), LIST_FLAGS_NOCLEAR )
-
+	listNew( @symb.liblist, FB_INITLIBNODES, len( FBS_LIB ), LIST_FLAGS_NOCLEAR )
     hashNew( @symb.libhash, FB_INITLIBNODES )
+
+	listNew( @symb.libpathlist, FB_INITLIBNODES\4, len( FBS_LIB ), LIST_FLAGS_NOCLEAR )
+	hashNew( @symb.libpathhash, FB_INITLIBNODES\4 )
 
 end sub
 
 '':::::
 sub symbLibEnd( ) static
 
-	hashFree( @symb.libhash )
+	hashFree( @symb.libpathhash )
+	listFree( @symb.libpathlist )
 
+	hashFree( @symb.libhash )
 	listFree( @symb.liblist )
 
 end sub
 
 '':::::
-function symbAddLib _
+function symbAddLibEx _
 	( _
-		byval libname as zstring ptr _
-	) as FBLIBRARY ptr static
-
-    dim as FBLIBRARY ptr l
-
-    function = NULL
+		byval liblist as TLIST ptr, _
+		byval libhash as THASH ptr, _
+		byval libname as zstring ptr, _
+		byval isdefault as integer _
+	) as FBS_LIB ptr
 
     '' check if not already declared
-    l = hashLookup( @symb.libhash, libname )
+    dim as FBS_LIB ptr l = hashLookup( libhash, libname )
     if( l <> NULL ) then
     	return l
     end if
 
-    l = listNewNode( @symb.liblist )
+    l = listNewNode( liblist )
 	if( l = NULL ) then
-		exit function
+		return NULL
 	end if
 
 	''
 	l->name	= ZstrAllocate( len( *libname ) )
 	*l->name = *libname
+	l->isdefault = isdefault
 
 	l->hashindex = hashHash( l->name )
-	l->hashitem = hashAdd( @symb.libhash, l->name, l, l->hashindex )
+	l->hashitem = hashAdd( libhash, l->name, l, l->hashindex )
 
 	function = l
 
 end function
 
 '':::::
-sub symbDelLib _
+sub symbDelLibEx _
 	( _
-		byval l as FBLIBRARY ptr _
+		byval liblist as TLIST ptr, _
+		byval libhash as THASH ptr, _
+		byval l as FBS_LIB ptr _
 	) static
 
 	if( l = NULL ) then
 		exit sub
 	end if
 
-	hashDel( @symb.libhash, l->hashitem, l->hashindex )
+	hashDel( libhash, l->hashitem, l->hashindex )
 
 	ZstrFree( l->name )
 
-    listDelNode( @symb.liblist, l )
+    listDelNode( liblist, l )
 
 end sub
 
 '':::::
-private function hFindLib _
+sub symbListLibsEx _
 	( _
-		byval libname as zstring ptr, _
-		byval liblist as TLIST ptr _
-	) as string ptr
-
-	dim as string ptr libf = listGetHead( liblist )
-	do while( libf <> NULL )
-		if( *libf = *libname ) then
-			return libf
-		end if
-
-		libf = listGetNext( libf )
-	loop
-
-	function = NULL
-
-end function
-
-'':::::
-sub symbListLibs _
-	( _
-		byval liblist as TLIST ptr _
+		byval srclist as TLIST ptr, _
+		byval srchash as THASH ptr, _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr, _
+		byval delnodes as integer _
 	)
 
-    dim as FBLIBRARY ptr node = any
+    dim as FBS_LIB ptr node = any, nxt = any
 
-	node = listGetHead( @symb.liblist )
+	node = listGetHead( srclist )
 	do while( node <> NULL )
+        nxt = listGetNext( node )
 
-		if( hFindLib( node->name, liblist ) = NULL ) then
-			dim as string ptr libf = listNewNode( liblist )
-			*libf = *node->name
+		symbAddLibEx( dstlist, dsthash, node->name, node->isdefault )
+
+		if( delnodes ) then
+			symbDelLibEx( srclist, srchash, node )
 		end if
 
-		node = listGetNext( node )
+		node = nxt
 	loop
 
 end sub

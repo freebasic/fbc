@@ -37,6 +37,9 @@ option escape
 # define LFCHAR !"\n"
 #endif
 
+#include once "inc\list.bi"
+#include once "inc\hash.bi"
+
 '' \'s are reversed in Linux
 const FB_BINPATH = RSLASH + "bin" + RSLASH
 const FB_INCPATH = RSLASH + "inc" + RSLASH
@@ -68,9 +71,15 @@ const FB_DEFAULT_MAXERRORS	= 10
 const FB_ERR_INFINITE 		= &h7fffffff
 
 ''
+#ifndef TRUE
 const TRUE					= -1
 const FALSE					= 0
+#endif
+
+#ifndef NULL
 const NULL					= 0
+#endif
+
 const INVALID				= -1
 
 ''
@@ -119,7 +128,7 @@ const FB_HOST				= "xbox"
 
 
 '' compiler options
-enum FBCOMPOPT_ENUM
+enum FB_COMPOPT
 	FB_COMPOPT_DEBUG
 	FB_COMPOPT_CPUTYPE
 	FB_COMPOPT_NOSTDCALL
@@ -277,18 +286,55 @@ enum FB_LANG_OPT
 end enum
 
 '' paths
-enum FB_PATH_ENUM
+enum FB_PATH
 	FB_PATH_BIN
 	FB_PATH_INC
 	FB_PATH_LIB
 	FB_MAXPATHS
 end enum
 
+'' info section
+const FB_INFOSEC_VERSION = &h10
+const FB_INFOSEC_NAME = "fbctinf"
+const FB_INFOSEC_OBJNAME = "__fb_ct.inf"
+
+enum IR_INFOSEC
+	FB_INFOSEC_EOL = 0
+	FB_INFOSEC_LIB
+	FB_INFOSEC_PTH
+	FB_INFOSEC_CMD
+end enum
+
+'' lib symbol, declared here to be usable by the fbc module
+type FBS_LIB
+	name			as zstring ptr
+	isdefault		as integer
+	hashitem		as HASHITEM ptr
+	hashindex		as uinteger
+end type
+
+'' callbcks used when scanning object files for libraries
+type FB_CALLBACK_ADDLIB as sub _
+	( _
+		byval libName as zstring ptr, _
+		byval objName as zstring ptr _
+	)
+
+type FB_CALLBACK_ADDLIBPATH as sub _
+	( _
+		byval pathName as zstring ptr, _
+		byval objName as zstring ptr _
+	)
+
+type FB_CALLBACK_ADDOPTION as sub _
+	( _
+		byval opt as FB_COMPOPT, _
+		byval value as zstring ptr, _
+		byval objName as zstring ptr _
+	)
+
 
 #include once "inc\error.bi"
-
-#include once "inc\list.bi"
-
 
 ''
 ''
@@ -337,7 +383,34 @@ declare function fbGetOption _
 
 declare sub fbListLibs _
 	( _
-		byval liblist as TLIST ptr _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr, _
+		byval delnodes as integer _
+	)
+
+declare sub fbListLibsEx _
+	( _
+		byval srclist as TLIST ptr, _
+		byval srchash as THASH ptr, _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr, _
+		byval delnodes as integer _
+	)
+
+declare sub fbListLibPaths _
+	( _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr, _
+		byval delnodes as integer _
+	)
+
+declare sub fbListLibPathsEx _
+	( _
+		byval srclist as TLIST ptr, _
+		byval srchash as THASH ptr, _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr, _
+		byval delnodes as integer _
 	)
 
 declare sub fbAddIncPath _
@@ -345,10 +418,31 @@ declare sub fbAddIncPath _
 		byval path as zstring ptr _
 	)
 
+declare function fbAddLib _
+	( _
+		byval libname as zstring ptr _
+	) as FBS_LIB ptr
+
+declare function fbaddLibEx _
+	( _
+		byval liblist as TLIST ptr, _
+		byval libhash as THASH ptr, _
+		byval libname as zstring ptr, _
+		byval isdefault as integer _
+	) as FBS_LIB ptr
+
 declare function fbAddLibPath _
 	( _
 		byval path as zstring ptr _
-	) as integer
+	) as FBS_LIB ptr
+
+declare function fbaddLibPathEx _
+	( _
+		byval pathlist as TLIST ptr, _
+		byval pathhash as THASH ptr, _
+		byval pathname as zstring ptr, _
+		byval isdefault as integer _
+	) as FBS_LIB ptr
 
 declare sub fbAddDefine _
 	( _
@@ -370,8 +464,14 @@ declare function fbGetModuleEntry _
 	( _
 	) as string
 
-declare sub fbAddDefaultLibs _
+declare function fbIsCrossComp _
 	( _
+	) as integer
+
+declare sub fbGetDefaultLibs _
+	( _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr _
 	)
 
 declare sub fbMainBegin _
@@ -399,12 +499,35 @@ declare function fbGetLangName _
 		byval lang as FB_LANG _
 	) as string
 
+declare function fbObjInfoWriteObj _
+	( _
+		byval liblist as TLIST ptr, _
+		byval libpathlist as TLIST ptr _
+	) as integer
+
+declare function fbObjInfoReadObj _
+	( _
+		byval objName as zstring ptr, _
+		byval addLib as FB_CALLBACK_ADDLIB, _
+		byval addLibPath as FB_CALLBACK_ADDLIBPATH, _
+		byval addOption as FB_CALLBACK_ADDOPTION _
+	) as integer
+
+declare function fbObjInfoReadLib _
+	( _
+		byval libName as zstring ptr, _
+		byval addLib as FB_CALLBACK_ADDLIB, _
+		byval addLibPath as FB_CALLBACK_ADDLIBPATH, _
+		byval addOption as FB_CALLBACK_ADDOPTION, _
+		byval libpathlist as TLIST ptr _
+	) as integer
 
 ''
 '' macros
 ''
 
 #define fbLangOptIsSet( opt ) ((env.langopt and (opt)) <> 0)
+
 #define fbLangIsSet( opt ) (env.clopt.lang = opt)
 
 #define fbPdCheckIsSet( opt ) ((env.clopt.pdcheckopt and (opt)) <> 0)

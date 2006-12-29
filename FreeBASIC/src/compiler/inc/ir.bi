@@ -46,6 +46,7 @@ enum IR_SECTION
 	IR_SECTION_DIRECTIVE
     IR_SECTION_CONSTRUCTOR
     IR_SECTION_DESTRUCTOR
+    IR_SECTION_INFO
 end enum
 
 ''
@@ -227,6 +228,12 @@ type IR_VTBL
 	( _
 		byval dtype as integer, _
 		byval label as FBSYMBOL ptr _
+	)
+
+	emitInfoSection as sub _
+	( _
+		byval liblist as TLIST ptr, _
+		byval libpathlist as TLIST ptr _
 	)
 
 	emitBop as sub _
@@ -604,6 +611,8 @@ declare function irGetVRDataSize _
 #define irEmitCOMMENT(text) ir.vtbl.emitComment( text )
 
 #define irEmitJMPTB(dtype, label) ir.vtbl.emitJmpTb( dtype, label )
+
+#define irEmitInfoSection( liblist, libpathlist ) ir.vtbl.emitInfoSection( liblist, libpathlist )
 
 #define irFlush() ir.vtbl.flush( )
 

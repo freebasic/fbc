@@ -41,6 +41,7 @@ end type
 
 declare sub hashInit _
 	( _
+		byval initnodes as integer = HASH_INITITEMNODES _
 	)
 
 declare sub hashEnd	 _

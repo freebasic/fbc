@@ -148,6 +148,52 @@ sub fbAddDefine _
 end sub
 
 '':::::
+function fbAddLib _
+	( _
+		byval libname as zstring ptr _
+	) as FBS_LIB ptr
+
+	function = symbAddLib( libname )
+
+end function
+
+'':::::
+function fbaddLibEx _
+	( _
+		byval liblist as TLIST ptr, _
+		byval libhash as THASH ptr, _
+		byval libname as zstring ptr, _
+		byval isdefault as integer _
+	) as FBS_LIB ptr
+
+	function = symbAddLibEx( liblist, libhash, libname, isdefault )
+
+end function
+
+'':::::
+function fbAddLibPath _
+	( _
+		byval path as zstring ptr _
+	) as FBS_LIB ptr
+
+	function = symbAddLibPath( path )
+
+end function
+
+'':::::
+function fbaddLibPathEx _
+	( _
+		byval pathlist as TLIST ptr, _
+		byval pathhash as THASH ptr, _
+		byval pathname as zstring ptr, _
+		byval isdefault as integer _
+	) as FBS_LIB ptr
+
+	function = symbAddLibEx( pathlist, pathhash, pathname, isdefault )
+
+end function
+
+'':::::
 private function hFindIncFile _
 	( _
 		byval filename as zstring ptr _
@@ -276,7 +322,7 @@ private sub incTbInit( )
 
 	hashInit( )
 
-	hashNew( @env.incfilehash, FB_INITINCFILES, TRUE )
+	hashNew( @env.incfilehash, FB_INITINCFILES )
 
 end sub
 
@@ -332,7 +378,7 @@ function fbInit _
 		return FALSE
 	end if
 
-	inctbInit( )
+	incTbInit( )
 
 	stmtStackInit( )
 
@@ -563,6 +609,15 @@ function fbGetOption _
 end function
 
 '':::::
+function fbIsCrossComp _
+	( _
+	) as integer
+
+	function = (env.clopt.target <> FB_DEFAULT_TARGET)
+
+end function
+
+'':::::
 sub fbSetPaths _
 	( _
 		byval target as integer _
@@ -738,68 +793,134 @@ end function
 '':::::
 sub fbListLibs _
 	( _
-		byval liblist as TLIST ptr _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr, _
+		byval delnodes as integer _
 	)
 
-	symbListLibs( liblist )
+	'' note: list of FBS_LIB
+
+	symbListLibs( dstlist, dsthash, delnodes )
 
 end sub
 
 '':::::
-sub fbAddDefaultLibs( ) static
+sub fbListLibsEx _
+	( _
+		byval srclist as TLIST ptr, _
+		byval srchash as THASH ptr, _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr, _
+		byval delnodes as integer _
+	)
 
+	'' note: both lists of FBS_LIB
+
+	symbListLibsEx( srclist, srchash, dstlist, dsthash, delnodes )
+
+end sub
+
+'':::::
+sub fbListLibPaths _
+	( _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr, _
+		byval delnodes as integer _
+	)
+
+	'' note: list of FBS_LIB
+
+	symbListLibPaths( dstlist, dsthash, delnodes )
+
+end sub
+
+'':::::
+sub fbListLibPathsEx _
+	( _
+		byval srclist as TLIST ptr, _
+		byval srchash as THASH ptr, _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr, _
+		byval delnodes as integer _
+	)
+
+	'' note: both lists of FBS_LIB
+
+	symbListLibsEx( srclist, srchash, dstlist, dsthash, delnodes )
+
+end sub
+
+'':::::
+sub fbGetDefaultLibs _
+	( _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr _
+	)
+
+	'' note: list of FBS_LIB
+
+#define hAddLib( libname ) _
+	symbAddLibEx( dstlist, dsthash, libname, TRUE )
+
+	'' don't add default libs?
 	if( env.clopt.nodeflibs ) then
 		exit sub
     end if
 
+	'' select the right FB rtlib
 	if( env.clopt.multithreaded ) then
-		symbAddLib( "fbmt" )
+		hAddLib( "fbmt" )
 	else
-		symbAddLib( "fb" )
+		hAddLib( "fb" )
 	end if
 
-	symbAddLib( "gcc" )
+	hAddLib( "gcc" )
 
 	select case as const env.clopt.target
 	case FB_COMPTARGET_WIN32
-		symbAddLib( "msvcrt" )
-		symbAddLib( "kernel32" )
-		symbAddLib( "mingw32" )
-		symbAddLib( "mingwex" )
-		symbAddLib( "moldname" )
-		symbAddLib( "supc++" )
+		hAddLib( "msvcrt" )
+		hAddLib( "kernel32" )
+		hAddLib( "mingw32" )
+		hAddLib( "mingwex" )
+		hAddLib( "moldname" )
+		hAddLib( "supc++" )
 
 	case FB_COMPTARGET_CYGWIN
-		symbAddLib( "cygwin" )
-		symbAddLib( "kernel32" )
-		symbAddLib( "supc++" )
+		hAddLib( "cygwin" )
+		hAddLib( "kernel32" )
+		hAddLib( "supc++" )
 
 	case FB_COMPTARGET_LINUX
-		symbAddLib( "c" )
-		symbAddLib( "m" )
-		symbAddLib( "pthread" )
-		symbAddLib( "dl" )
-		symbAddLib( "ncurses" )
-		symbAddLib( "supc++" )
-		symbAddLib( "gcc_eh" )
+		hAddLib( "c" )
+		hAddLib( "m" )
+		hAddLib( "pthread" )
+		hAddLib( "dl" )
+		hAddLib( "ncurses" )
+		hAddLib( "supc++" )
+		hAddLib( "gcc_eh" )
 
 	case FB_COMPTARGET_DOS
-		symbAddLib( "c" )
-		symbAddLib( "m" )
-		symbAddLib( "supcxx" )
+		hAddLib( "c" )
+		hAddLib( "m" )
+		hAddLib( "supcxx" )
 
 	case FB_COMPTARGET_XBOX
-		symbAddLib( "fbgfx" )
-		symbAddLib( "SDL" )
-		symbAddLib( "openxdk" )
-		symbAddLib( "hal" )
-		symbAddLib( "c" )
-		symbAddLib( "usb" )
-		symbAddLib( "xboxkrnl" )
-		symbAddLib( "m" )
-		symbAddLib( "supc++" )
+		hAddLib( "fbgfx" )
+		hAddLib( "SDL" )
+		hAddLib( "openxdk" )
+		hAddLib( "hal" )
+		hAddLib( "c" )
+		hAddLib( "usb" )
+		hAddLib( "xboxkrnl" )
+		hAddLib( "m" )
+		hAddLib( "supc++" )
 
 	end select
+
+	'' profiling?
+	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+		hAddLib( "gmon" )
+	end if
 
 end sub
 

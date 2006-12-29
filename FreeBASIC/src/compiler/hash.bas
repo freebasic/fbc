@@ -45,7 +45,10 @@ declare sub 		hashDelItem	( byval list as HASHLIST ptr, _
 
 
 '':::::
-sub hashInit static
+sub hashInit _
+	( _
+		byval initnodes as integer _
+	)static
 
 	ctx.refcnt += 1
 	if( ctx.refcnt > 1 ) then
@@ -53,7 +56,7 @@ sub hashInit static
 	end if
 
 	'' allocate the initial item list pool
-	listNew( @ctx.itemlist, HASH_INITITEMNODES, len( HASHITEM ), LIST_FLAGS_NOCLEAR )
+	listNew( @ctx.itemlist, initnodes, len( HASHITEM ), LIST_FLAGS_NOCLEAR )
 
 end sub
 

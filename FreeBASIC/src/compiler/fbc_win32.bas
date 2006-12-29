@@ -26,40 +26,21 @@
 #include once "inc\hlp.bi"
 #include once "inc\list.bi"
 
-declare function _linkFiles 			( ) as integer
-declare function _archiveFiles			( byval cmdline as zstring ptr ) as integer
-declare function _compileResFiles 		( ) as integer
-declare function _delFiles 				( ) as integer
-declare function _listFiles				( byval argv as zstring ptr ) as integer
-declare function _processOptions		( byval opt as string ptr, _
-						 				  byval argv as string ptr ) as integer
-
-declare function makeImpLib 			( byval dllpath as zstring ptr, _
-										  byval dllname as zstring ptr ) as integer
+declare function makeImpLib _
+	( _
+		byval dllpath as zstring ptr, _
+		byval dllname as zstring ptr _
+	) as integer
 
 ''
 '' globals
 ''
 	dim shared rclist as TLIST
 
-
 '':::::
-function fbcInit_win32( ) as integer
+private sub _setDefaultLibPaths
 
-	''
-	fbc.processOptions 	= @_processOptions
-	fbc.listFiles 		= @_listFiles
-	fbc.compileResFiles = @_compileResFiles
-	fbc.linkFiles 		= @_linkFiles
-	fbc.archiveFiles 	= @_archiveFiles
-	fbc.delFiles 		= @_delFiles
-
-	''
-	listNew( @rclist, FBC_INITARGS\4, len( string ) )
-
-	return TRUE
-
-end function
+end sub
 
 /'
 '':::::
@@ -142,9 +123,11 @@ end function
 '/
 
 '':::::
-private function _linkFiles as integer
-	dim as integer hotlinking
-	dim as string ldpath, libdir, ldcline, liblist, dllname
+private function _linkFiles _
+	( _
+	) as integer
+
+	dim as string ldpath, ldcline, dllname
 
 	function = FALSE
 
@@ -217,50 +200,10 @@ private function _linkFiles as integer
 	'' stack size
 	ldcline += " --stack " + str( fbc.stacksize ) + "," + str( fbc.stacksize )
 
-    '' add libraries from cmm-line and found when parsing
-    hotlinking = FALSE
-	dim as string ptr libf = listGetHead( @fbc.liblist )
-	do while( libf <> NULL )
-		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-    		'' check if the lib isn't the dll's import library itself
-            if( *libf = dllname ) then
-            	continue do
-            end if
-    	end if
+	'' add the library search paths
+	ldcline += *fbcGetLibPathList( )
 
-/'
-    	'' try hot-linking
-    	if( lcase( right( *libf, 4 ) ) = ".dll" ) then
-    		hotlinking = TRUE
-    		liblist += *hFindDllPath( *libf )
-    	else
-'/
-    		liblist += "-l"
-/'
-    	end if
-'/
-    	liblist += *libf + " "
-
-		libf = listGetNext( libf )
-	loop
-
-	if( hotlinking ) then
-		ldcline += " --enable-stdcall-fixup"
-	end if
-
-    '' default lib path
-    libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
-
-    ldcline += " -L " + QUOTE + libdir + QUOTE
-    '' and the current path to libs search list
-    ldcline += " -L " + QUOTE + "./" + QUOTE
-
-    '' add additional user-specified library search paths
-	dim as string ptr libp = listGetHead( @fbc.libpathlist )
-	do while( libp <> NULL )
-    	ldcline += " -L " + QUOTE + *libp + QUOTE
-    	libp = listGetNext( libp )
-    loop
+	dim as string libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
 
 	'' crt entry
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
@@ -295,20 +238,13 @@ private function _linkFiles as integer
     ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
     '' group
-    ldcline += " -( " + liblist
+    ldcline += " -( " + *fbcGetLibList( dllname )
 
 	'' note: for some odd reason, this object must be included in the group when
 	'' 		 linking a DLL, or LD will fail with an "undefined symbol" msg. at least
 	'' 		 the order the .ctors/.dtors appeared will be preserved, so the rtlib ones
 	'' 		 will be the first/last called, respectively
-    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
-	else
-		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += "-lgmon "
-		end if
-		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
-	end if
+	ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
 
 	ldcline += "-) "
 
@@ -581,6 +517,29 @@ private function makeImpLib _
 	kill( dllfile + ".def" )
 
     function = TRUE
+
+end function
+
+'':::::
+function fbcInit_win32( ) as integer
+
+    static as FBC_VTBL vtbl = _
+    ( _
+		@_processOptions, _
+		@_listFiles, _
+		@_compileResFiles, _
+		@_linkFiles, _
+		@_archiveFiles, _
+		@_delFiles, _
+		@_setDefaultLibPaths _
+	)
+
+	fbc.vtbl = vtbl
+
+	''
+	listNew( @rclist, FBC_INITARGS\4, len( string ) )
+
+	return TRUE
 
 end function
 

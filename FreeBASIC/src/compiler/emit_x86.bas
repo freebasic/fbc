@@ -77,11 +77,23 @@ declare sub hDeclVariable _
 		byval s as FBSYMBOL ptr _
 	)
 
+declare function _getSectionString _
+	( _
+		byval section as integer, _
+		byval priority as integer _
+	) as zstring ptr
+
 declare sub _setSection _
 	( _
 		byval section as integer, _
 		byval priority as integer _
 	)
+
+declare function _getTypeString _
+	( _
+		byval dtype as integer _
+	) as zstring ptr
+
 
 ''globals
 
@@ -772,50 +784,6 @@ private sub hALIGN _
 end sub
 
 '':::::
-private function hGetTypeString _
-	( _
-		byval typ as integer _
-	) as string static
-
-	select case as const typ
-    case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
-    	function = ".byte"
-
-    case FB_DATATYPE_USHORT, FB_DATATYPE_SHORT
-    	function = ".short"
-
-    case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-    	 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    	function = ".int"
-
-    case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-    	function = ".quad"
-
-    case FB_DATATYPE_SINGLE
-		function = ".float"
-
-	case FB_DATATYPE_DOUBLE
-    	function = ".double"
-
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		'' wchar stills the same as it is emitted as escape sequences
-    	function = ".ascii"
-
-    case FB_DATATYPE_STRING
-    	function = ".int"
-
-	case FB_DATATYPE_STRUCT
-		function = "INVALID"
-
-    case else
-    	if( typ >= FB_DATATYPE_POINTER ) then
-    		function = ".int"
-    	end if
-	end select
-
-end function
-
-'':::::
 private sub hInitRegTB
 	dim as integer lastclass, regs, i
 
@@ -945,7 +913,7 @@ private sub hEmitVarBss _
     '' align
     if( symbGetType( s ) = FB_DATATYPE_DOUBLE ) then
     	hALIGN( 8 )
-    	emitWriteStr( TRUE, ".balign 8" )
+    	emitWriteStr( ".balign 8", TRUE )
 	else
     	hALIGN( 4 )
     end if
@@ -954,7 +922,7 @@ private sub hEmitVarBss _
     ostr = alloc + TABCHAR
     ostr += *symbGetMangledName( s )
     ostr += "," + str( symbGetLen( s ) * elements )
-    emitWriteStr( TRUE, ostr )
+    emitWriteStr( ostr, TRUE )
 
     '' add dbg info, if public or shared
     if( (attrib and (FB_SYMBATTRIB_SHARED or _
@@ -972,8 +940,8 @@ private sub hWriteHeader( ) static
 	edbgEmitHeader( env.inf.name )
 
 	''
-	emitWriteStr( TRUE,  ".intel_syntax noprefix" )
-    emitWriteStr( FALSE, "" )
+	emitWriteStr( ".intel_syntax noprefix", TRUE )
+    emitWriteStr( "" )
     hCOMMENT( env.inf.name + "' compilation started at " + time + " (" + FB_SIGN + ")" )
 
 end sub
@@ -1053,10 +1021,10 @@ private sub hEmitVarConst _
       	hALIGN( 4 )
     end if
 
-    stype = hGetTypeString( dtype )
+    stype = *_getTypeString( dtype )
     ostr = *symbGetMangledName( s )
     ostr += (":" + TABCHAR) + stype + TABCHAR + stext
-    emitWriteStr( FALSE, ostr )
+    emitWriteStr( ostr )
 
 end sub
 
@@ -1159,8 +1127,9 @@ private sub hWriteExport _
     			if( symbIsExport( s ) ) then
     				hEmitExportHeader( )
     				sname = hStripUnderscore( symbGetMangledName( s ) )
-    				emitWriteStr( TRUE, ".ascii " + QUOTE + " -export:" + _
-    							  sname + (QUOTE + NEWLINE) )
+    				emitWriteStr( ".ascii " + QUOTE + " -export:" + _
+    							  sname + (QUOTE + NEWLINE), _
+    							  TRUE )
     			end if
     		end if
     	end select
@@ -1429,67 +1398,6 @@ private sub hDestroyFrame _
 
 end sub
 
-'':::::
-private sub _setSection _
-	( _
-		byval section as integer, _
-		byval priority as integer _
-	) static
-
-    dim as string ostr
-
-    if( ( section = emit.lastsection ) and ( priority = emit.lastpriority ) ) then
-    	exit sub
-    end if
-
-	ostr = NEWLINE + ".section ."
-
-	select case as const section
-	case IR_SECTION_CONST
-		ostr += "rodata"
-
-	case IR_SECTION_DATA
-		ostr += "data"
-
-	case IR_SECTION_BSS
-		ostr += "bss"
-
-	case IR_SECTION_CODE
-		ostr += "text"
-
-	case IR_SECTION_DIRECTIVE
-		ostr += "drectve"
-
-	case IR_SECTION_CONSTRUCTOR
-		ostr += "ctors"
-		if( priority > 0 ) then
-			ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
-		end if
-		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-			ostr += ", " + QUOTE + "aw" + QUOTE + ", @progbits"
-		end if
-
-	case IR_SECTION_DESTRUCTOR
-		ostr += "dtors"
-		if( priority > 0 ) then
-			ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
-		end if
-		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-			ostr += ", " + QUOTE +  "aw" + QUOTE + ", @progbits"
-		end if
-
-	end select
-
-	ostr += NEWLINE
-
-	outEx( ostr )
-
-	emit.lastsection = section
-	emit.lastpriority = priority
-
-end sub
-
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' implementation
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1545,7 +1453,7 @@ private sub _emitJMPTB _
 
     dim ostr as string
 
-	ostr = hGetTypeString( dtype ) + " " + *symbol
+	ostr = *_getTypeString( dtype ) + " " + *symbol
 	outp( ostr )
 
 end sub
@@ -6215,7 +6123,7 @@ sub emitVARINIi _
 
 	dim ostr as string
 
-	ostr = hGetTypeString( dtype ) + " " + str( value ) + NEWLINE
+	ostr = *_getTypeString( dtype ) + " " + str( value ) + NEWLINE
 	outEx( ostr )
 
 end sub
@@ -6232,7 +6140,7 @@ sub emitVARINIf _
 	'' can't use STR() because GAS doesn't support the 1.#INF notation
 	svalue = hFloatToStr( value, dtype )
 
-	ostr = hGetTypeString( dtype ) + " " + svalue + NEWLINE
+	ostr = *_getTypeString( dtype ) + " " + svalue + NEWLINE
 	outEx( ostr )
 
 end sub
@@ -6246,7 +6154,7 @@ sub emitVARINI64 _
 
 	dim ostr as string
 
-	ostr = hGetTypeString( dtype ) + " 0x" + hex( value ) + NEWLINE
+	ostr = *_getTypeString( dtype ) + " 0x" + hex( value ) + NEWLINE
 	outEx( ostr )
 
 end sub
@@ -6447,6 +6355,10 @@ private sub _end
 	edbgEnd( )
 
 	''
+	emit.lastsection = INVALID
+	emit.lastpriority = INVALID
+
+	''
 	hEndRegTB( )
 
     hEndKeywordsTB( )
@@ -6501,6 +6413,15 @@ private sub _close _
 	hWriteCtor( symbGetGlobCtorListHead( ), TRUE )
 	hWriteCtor( symbGetGlobDtorListHead( ), FALSE )
 
+	'' not cross-compiling?
+	if( fbIsCrossComp( ) = FALSE ) then
+		'' compiling only?
+		if( env.clopt.outtype = FB_OUTTYPE_OBJECT ) then
+			'' store libs, paths and cmd-line options in the obj
+			emitWriteInfoSection( @symb.liblist, @symb.libpathlist )
+		end if
+	end if
+
 	''
 	edbgEmitFooter( )
 
@@ -6508,6 +6429,8 @@ private sub _close _
 	if( close( #env.outf.num ) <> 0 ) then
 		'' ...
 	end if
+
+	env.outf.num = 0
 
 end sub
 
@@ -6816,6 +6739,138 @@ private sub _scopeEnd _
 
 end sub
 
+'':::::
+private sub _setSection _
+	( _
+		byval section as integer, _
+		byval priority as integer _
+	)
+
+	dim as zstring ptr sec = _getSectionString( section, priority )
+	if( sec = NULL ) then
+		exit sub
+	end if
+
+    static as string ostr
+
+	ostr = *sec
+	ostr += NEWLINE
+
+	outEx( ostr )
+
+end sub
+
+'':::::
+private function _getTypeString _
+	( _
+		byval dtype as integer _
+	) as zstring ptr
+
+	select case as const dtype
+    case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
+    	function = @".byte"
+
+    case FB_DATATYPE_USHORT, FB_DATATYPE_SHORT
+    	function = @".short"
+
+    case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
+    	function = @".int"
+
+    case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+    	function = @".long"
+
+    case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+    	function = @".quad"
+
+    case FB_DATATYPE_SINGLE
+		function = @".float"
+
+	case FB_DATATYPE_DOUBLE
+    	function = @".double"
+
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		'' wchar stills the same as it is emitted as escape sequences
+    	function = @".ascii"
+
+	case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
+		function = @".INVALID"
+
+    case else
+    	if( dtype >= FB_DATATYPE_POINTER ) then
+    		function = @".long"
+    	else
+    		function = @".INVALID"
+    	end if
+	end select
+
+end function
+
+'':::::
+private function _getSectionString _
+	( _
+		byval section as integer, _
+		byval priority as integer _
+	) as zstring ptr
+
+    static as string ostr
+
+    if( (section = emit.lastsection) and (priority = emit.lastpriority) ) then
+    	return NULL
+    end if
+
+	ostr = NEWLINE + ".section ."
+
+	select case as const section
+	case IR_SECTION_CONST
+		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+			ostr += "rodata"
+		else
+			ostr += "rdata"
+		end if
+
+	case IR_SECTION_DATA
+		ostr += "data"
+
+	case IR_SECTION_BSS
+		ostr += "bss"
+
+	case IR_SECTION_CODE
+		ostr += "text"
+
+	case IR_SECTION_DIRECTIVE
+		ostr += "drectve"
+
+	case IR_SECTION_INFO
+		ostr += FB_INFOSEC_NAME
+
+	case IR_SECTION_CONSTRUCTOR
+		ostr += "ctors"
+		if( priority > 0 ) then
+			ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
+		end if
+		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+			ostr += ", " + QUOTE + "aw" + QUOTE + ", @progbits"
+		end if
+
+	case IR_SECTION_DESTRUCTOR
+		ostr += "dtors"
+		if( priority > 0 ) then
+			ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
+		end if
+		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+			ostr += ", " + QUOTE +  "aw" + QUOTE + ", @progbits"
+		end if
+
+	end select
+
+	function = strptr( ostr )
+
+	emit.lastsection = section
+	emit.lastpriority = priority
+
+end function
+
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' initialization/finalization
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -6846,7 +6901,9 @@ function emitGasX86_ctor _
 		@_procAllocStaticVars, _
 		@_scopeBegin, _
 		@_scopeEnd, _
-		@_setSection _
+		@_setSection, _
+		@_getTypeString, _
+		@_getSectionString _
 	)
 
 	emit.vtbl = _vtbl

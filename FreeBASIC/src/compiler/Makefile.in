@@ -100,7 +100,7 @@ FBC_SRCS += ast-node-stack.bas ast-node-uop.bas ast-node-var.bas ast-node-field.
 FBC_SRCS += ast-node-typeini.bas ast-optimize.bas ast-node-proc.bas ast-node-namespace.bas
 FBC_SRCS += ast-helper.bas
 
-FBC_SRCS += dstr.bas edbg_stab.bas emit.bas emit_x86.bas fb.bas fb-main.bas
+FBC_SRCS += dstr.bas edbg_stab.bas emit.bas emit_x86.bas fb.bas fb-main.bas fb-objinfo.bas
 FBC_SRCS += error.bas hlp.bas hlp-str.bas
 
 FBC_SRCS += ir.bas ir-tac.bas ir-hlc.bas
@@ -145,6 +145,8 @@ FBC_SRCS += $(FBC_OSDEPSRCS)
 FBC_OBJS := $(patsubst %.bas,%.o,$(FBC_SRCS))
 FBC_HEADERS := $(wildcard @srcdir@/inc/*.bi)
 
+FBC_LIBS = -l bfd -l intl -l iberty
+
 FBC_CFLAGS += -m $(subst .bas,,$(FBC_MAIN))
 
 ##################################################################
@@ -158,7 +160,7 @@ all: $(FBC_COMP)
 	$(FBC) $(FBC_CFLAGS) $(DEFS) $< -o $@
 
 $(FBC_COMP) : $(FBC_OBJS)
-	$(FBC) $(FBC_LFLAGS) $(DEFS) $(FBC_OBJS) -x $@
+	$(FBC) $(FBC_LFLAGS) $(DEFS) $(FBC_OBJS) $(FBC_LIBS) -x $@
 
 
 ##################################################################

@@ -25,44 +25,33 @@
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
-declare function _linkFiles 			( ) as integer
-declare function _archiveFiles			( byval cmdline as zstring ptr ) as integer
-declare function _compileResFiles 		( ) as integer
-declare function _delFiles 				( ) as integer
-declare function _listFiles				( byval argv as zstring ptr ) as integer
-declare function _processOptions		( byval opt as string ptr, _
-						 				  byval argv as string ptr ) as integer
-
-declare function makeImpLib 			( byval dllpath as zstring ptr, _
-										  byval dllname as zstring ptr ) as integer
+declare function makeImpLib _
+	( _
+		byval dllpath as zstring ptr, _
+		byval dllname as zstring ptr _
+	) as integer
 
 ''
 '' globals
 ''
 	dim shared rclist as TLIST
 
+'':::::
+private sub _setDefaultLibPaths
+
+	fbcAddDefLibPath( "/usr/local/i686-pc-cygwin/lib" )
+	fbcAddDefLibPath( "/usr/local/lib" )
+	fbcAddDefLibPath( "/usr/lib" )
+	fbcAddDefLibPath( "/usr/lib/w32api" )
+
+end sub
 
 '':::::
-function fbcInit_cygwin( ) as integer
+private function _linkFiles _
+	( _
+	) as integer
 
-	''
-	fbc.processOptions 	= @_processOptions
-	fbc.listFiles 		= @_listFiles
-	fbc.compileResFiles = @_compileResFiles
-	fbc.linkFiles 		= @_linkFiles
-	fbc.archiveFiles 	= @_archiveFiles
-	fbc.delFiles 		= @_delFiles
-
-	''
-	listNew( @rclist, FBC_INITARGS\4, len( string ) )
-
-	return TRUE
-
-end function
-
-'':::::
-private function _linkFiles as integer
-	dim as string ldpath, libdir, ldcline, dllname
+	dim as string ldpath, ldcline, dllname
 
 	function = FALSE
 
@@ -135,21 +124,11 @@ private function _linkFiles as integer
 	'' stack size
 	ldcline += " --stack " + str( fbc.stacksize ) + "," + str( fbc.stacksize )
 
-    '' default lib path
-    libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
-
-    ldcline += " -L " + QUOTE + libdir + QUOTE
-    '' and the current path to libs search list
-    ldcline += " -L " + QUOTE + "./" + QUOTE
-
-    '' add additional user-specified library search paths
-	dim as string ptr libp = listGetHead( @fbc.libpathlist )
-	do while( libp <> NULL )
-    	ldcline += " -L " + QUOTE + *libp + QUOTE
-    	libp = listGetNext( libp )
-    loop
+	'' add library paths
+	ldcline += *fbcGetLibPathList( )
 
 	'' crt entry
+	dim as string libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		ldcline += " " + QUOTE + libdir + (RSLASH + "crt0.o" + QUOTE + " ")
 	else
@@ -184,37 +163,10 @@ private function _linkFiles as integer
     ldcline += " -( "
 
     '' add libraries from cmm-line and found when parsing
-    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-		dim as string ptr libf = listGetHead( @fbc.liblist )
-		do while( libf <> NULL )
-   			'' check if the lib isn't the dll's import library itself
-   	        if( *libf = dllname ) then
-   	        	continue do
-   	        end if
-
-			ldcline += "-l" + *libf + " "
-
-			libf = listGetNext( libf )
-		loop
-    else
-		dim as string ptr libf = listGetHead( @fbc.liblist )
-		do while( libf <> NULL )
-			ldcline += "-l" + *libf + " "
-			libf = listGetNext( libf )
-		loop
-	end if
+    ldcline += *fbcGetLibList( dllname )
 
 	'' rtlib initialization and termination
-	''       previously was: libfb_ctor.o
-    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
-	else
-		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += "-lgmon "
-		end if
-
-		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
-	end if
+	ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
 
     '' end lib group
     ldcline += "-) "
@@ -465,4 +417,26 @@ private function makeImpLib _
 
 end function
 
+'':::::
+function fbcInit_cygwin( ) as integer
+
+    static as FBC_VTBL vtbl = _
+    ( _
+		@_processOptions, _
+		@_listFiles, _
+		@_compileResFiles, _
+		@_linkFiles, _
+		@_archiveFiles, _
+		@_delFiles, _
+		@_setDefaultLibPaths _
+	)
+
+	fbc.vtbl = vtbl
+
+	''
+	listNew( @rclist, FBC_INITARGS\4, len( string ) )
+
+	return TRUE
+
+end function
 

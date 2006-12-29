@@ -37,6 +37,14 @@ declare function emitGasX86_ctor	_
 	dim shared emit as EMITCTX
 
 '':::::
+#macro hCallCtor( backend )
+	select case backend
+	case FB_BACKEND_GAS
+		emitGasX86_ctor( )
+	end select
+#endmacro
+
+'':::::
 function emitInit _
 	( _
 		byval backend as FB_BACKEND _
@@ -47,10 +55,7 @@ function emitInit _
 	end if
 
 	''
-	select case backend
-	case FB_BACKEND_GAS
-		emitGasX86_ctor( )
-	end select
+	hCallCtor( backend )
 
 	''
 	flistNew( @emit.nodeTB, EMIT_INITNODES, len( EMIT_NODE ) )
@@ -82,11 +87,11 @@ end sub
 '':::::
 sub emitWriteStr _
 	( _
-		byval addtab as integer, _
-		byval s as zstring ptr _
-	) static
+		byval s as zstring ptr, _
+		byval addtab as integer _
+	)
 
-    dim as string ostr
+    static as string ostr
 
 	if( addtab ) then
 		ostr = TABCHAR
@@ -105,7 +110,7 @@ end sub
 
 '':::::
 sub emitReset( ) static
-	dim as integer c, r
+	dim as integer c
 
 	flistReset( @emit.nodeTB )
 	flistReset( @emit.vregTB )
@@ -192,6 +197,113 @@ function emitGetRegClass _
 	function = emit.regTB(dclass)
 
 end function
+
+'':::::
+sub emitWriteInfoSection _
+	( _
+		byval liblist as TLIST ptr, _
+		byval libpathlist as TLIST ptr _
+	)
+
+	static as string byte_fld
+	static as string zstr_fld
+	dim as integer header_emitted = FALSE
+
+	'' this must follow the fbObjInfoWriteObj() format
+
+#macro hWriteStr( value )
+	emitWriteStr( zstr_fld & QUOTE & value & $"\0" & QUOTE )
+#endmacro
+
+#macro hWriteByte( value )
+	emitWriteStr( byte_fld & value )
+#endmacro
+
+#macro hEmitInfoHeader( )
+	scope
+		dim as zstring ptr sec = emit.vtbl.getSectionString( IR_SECTION_INFO, 0 )
+		if( sec <> NULL ) then
+			emitWriteStr( *sec )
+		end if
+
+		if( header_emitted = FALSE ) then
+			header_emitted = TRUE
+			hWriteByte( FB_INFOSEC_VERSION )
+		end if
+	end scope
+#endmacro
+
+	if( len( byte_fld ) = 0 ) then
+		byte_fld = *emit.vtbl.getTypeString( FB_DATATYPE_BYTE ) + " "
+		zstr_fld = *emit.vtbl.getTypeString( FB_DATATYPE_CHAR ) + " "
+	end if
+
+	'' libraries
+	dim as FBS_LIB ptr nlib = listGetHead( liblist )
+	if( nlib <> NULL ) then
+		hEmitInfoHeader( )
+
+        hWriteByte( FB_INFOSEC_LIB )
+		do
+            '' never add a default one
+            if( nlib->isdefault = FALSE ) then
+            	hWriteByte( len( *nlib->name ) )
+            	hWriteStr( *nlib->name )
+            end if
+
+			nlib = listGetNext( nlib )
+		loop while( nlib <> NULL )
+
+		hWriteByte( 0 )
+	end if
+
+	'' paths
+	dim as FBS_LIB ptr npath = listGetHead( libpathlist )
+	if( npath <> NULL ) then
+		hEmitInfoHeader( )
+
+        hWriteByte( FB_INFOSEC_PTH )
+		do
+            '' never add a default one
+            if( npath->isdefault = FALSE ) then
+            	dim as zstring ptr txt = hEscape( *npath->name )
+            	hWriteByte( len( *npath->name ) )
+            	hWriteStr( *txt )
+            end if
+
+			npath = listGetNext( npath )
+		loop while( npath <> NULL )
+
+		hWriteByte( 0 )
+	end if
+
+	'' any important cmd-line option? (like -lang, -mt)
+	if( env.clopt.multithreaded or (env.clopt.lang <> FB_LANG_FB) ) then
+		hEmitInfoHeader( )
+
+        hWriteByte( FB_INFOSEC_CMD )
+
+    	'' not the default lang?
+    	if( env.clopt.lang <> FB_LANG_FB ) then
+            hWriteByte( len( "-lang" ) )
+            hWriteStr( "-lang" )
+            hWriteStr( fbGetLangName( env.clopt.lang ) )
+    	end if
+
+    	'' MT?
+    	if( env.clopt.multithreaded ) then
+            hWriteByte( len( "-mt" ) )
+            hWriteStr( "-mt" )
+		end if
+
+		hWriteByte( 0 )
+	end if
+
+	if( header_emitted ) then
+		hWriteByte( FB_INFOSEC_EOL )
+	end if
+
+end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' node creation

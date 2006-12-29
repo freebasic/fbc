@@ -25,13 +25,6 @@
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
-declare function _linkFiles 			( ) as integer
-declare function _archiveFiles			( byval cmdline as zstring ptr ) as integer
-declare function _compileResFiles 		( ) as integer
-declare function _delFiles 				( ) as integer
-declare function _listFiles				( byval argv as zstring ptr ) as integer
-declare function _processOptions		( byval opt as string ptr, _
-						 				  byval argv as string ptr ) as integer
 
 ''
 '' globals
@@ -39,26 +32,23 @@ declare function _processOptions		( byval opt as string ptr, _
 	dim shared xpmfile as string
 
 '':::::
-function fbcInit_linux( ) as integer
+private sub _setDefaultLibPaths
 
-	''
-	fbc.processOptions 	= @_processOptions
-	fbc.listFiles 		= @_listFiles
-	fbc.compileResFiles = @_compileResFiles
-	fbc.linkFiles 		= @_linkFiles
-	fbc.archiveFiles 	= @_archiveFiles
-	fbc.delFiles 		= @_delFiles
+	fbcAddDefLibPath( "/usr/i386-linux/lib" )
+	fbcAddDefLibPath( "/usr/local/lib" )
+	fbcAddDefLibPath( "/lib" )
+	fbcAddDefLibPath( "/usr/lib" )
+	fbcAddDefLibPath( "/lib32" )
+	fbcAddDefLibPath( "/usr/lib32" )
 
-	''
-	xpmfile = ""
-
-	return TRUE
-
-end function
+end sub
 
 '':::::
-private function _linkFiles as integer
-	dim as string ldpath, ldcline, libdir, bindir, dllname
+private function _linkFiles _
+	( _
+	) as integer
+
+	dim as string ldpath, ldcline, bindir, dllname
 
 	function = FALSE
 
@@ -119,19 +109,10 @@ private function _linkFiles as integer
 		end if
 	end if
 
-    '' default lib path
-	libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
-	ldcline += " -L " + QUOTE + libdir + QUOTE
+	'' add library search paths
+	ldcline += *fbcGetLibPathList( )
 
-    '' and the current path to libs search list
-    ldcline += " -L " + QUOTE + "./" + QUOTE
-
-    '' add additional user-specified library search paths
-	dim as string ptr libp = listGetHead( @fbc.libpathlist )
-	do while( libp <> NULL )
-    	ldcline += " -L " + QUOTE + *libp + QUOTE
-    	libp = listGetNext( libp )
-    loop
+	dim as string libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
 
 	'' crt init stuff
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
@@ -166,24 +147,7 @@ private function _linkFiles as integer
     ldcline += " -( "
 
     '' add libraries from cmm-line and found when parsing
-    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-		dim as string ptr libf = listGetHead( @fbc.liblist )
-		do while( libf <> NULL )
-   			'' check if the lib isn't the dll's import library itself
-   	        if( *libf = dllname ) then
-   	        	continue do
-   	        end if
-			ldcline += "-l" + *libf + " "
-
-			libf = listGetNext( libf )
-		loop
-    else
-		dim as string ptr libf = listGetHead( @fbc.liblist )
-		do while( libf <> NULL )
-			ldcline += "-l" + *libf + " "
-			libf = listGetNext( libf )
-		loop
-	end if
+    ldcline += *fbcGetLibList( dllname )
 
 	'' rtlib initialization and termination (must be included in the group or
 	'' dlopen() will fail because fb_hRtExit() will be undefined)
@@ -410,4 +374,26 @@ private function _processOptions _
 
 end function
 
+'':::::
+function fbcInit_linux( ) as integer
+
+    static as FBC_VTBL vtbl = _
+    ( _
+		@_processOptions, _
+		@_listFiles, _
+		@_compileResFiles, _
+		@_linkFiles, _
+		@_archiveFiles, _
+		@_delFiles, _
+		@_setDefaultLibPaths _
+	)
+
+	fbc.vtbl = vtbl
+
+	''
+	xpmfile = ""
+
+	return TRUE
+
+end function
 

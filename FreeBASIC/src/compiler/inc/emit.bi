@@ -362,6 +362,17 @@ type EMIT_VTBL
 		byval section as integer, _
 		byval priority as integer _
 	)
+
+	getTypeString as function _
+	( _
+		byval dtype as integer _
+	) as zstring ptr
+
+	getSectionString as function _
+	( _
+		byval section as integer, _
+		byval priority as integer _
+	) as zstring ptr
 end type
 
 type EMITCTX
@@ -850,8 +861,14 @@ declare sub emitVARINIPAD _
 
 declare sub emitWriteStr _
 	( _
-		byval addtab as integer, _
-		byval s as zstring ptr _
+		byval s as zstring ptr, _
+		byval addtab as integer = FALSE _
+	)
+
+declare sub emitWriteInfoSection _
+	( _
+		byval liblist as TLIST ptr, _
+		byval libpathlist as TLIST ptr _
 	)
 
 declare sub emitReset _

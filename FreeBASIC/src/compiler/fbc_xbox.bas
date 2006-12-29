@@ -25,13 +25,6 @@
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
-declare function _linkFiles 			( ) as integer
-declare function _archiveFiles			( byval cmdline as zstring ptr ) as integer
-declare function _compileResFiles 		( ) as integer
-declare function _delFiles 				( ) as integer
-declare function _listFiles				( byval argv as zstring ptr ) as integer
-declare function _processOptions		( byval opt as string ptr, _
-						 				  byval argv as string ptr ) as integer
 
 ''
 '' globals
@@ -40,28 +33,14 @@ declare function _processOptions		( byval opt as string ptr, _
 
 	dim shared xbe_title as string
 
-
 '':::::
-function fbcInit_xbox( ) as integer
+private sub _setDefaultLibPaths
 
-	''
-	fbc.processOptions 	= @_processOptions
-	fbc.listFiles 		= @_listFiles
-	fbc.compileResFiles = @_compileResFiles
-	fbc.linkFiles 		= @_linkFiles
-	fbc.archiveFiles 	= @_archiveFiles
-	fbc.delFiles 		= @_delFiles
-
-	''
-	listNew( @rclist, FBC_INITARGS\4, len( string ) )
-
-	return TRUE
-
-end function
+end sub
 
 '':::::
 private function _linkFiles as integer
-	dim as string ldcline, ldpath, libdir
+	dim as string ldcline, ldpath
 	dim as string cxbepath, cxbecline
 
 	function = FALSE
@@ -114,36 +93,17 @@ private function _linkFiles as integer
     '' set executable name
     ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
-    '' default lib path
-	libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
-
-	ldcline += " -L " + QUOTE + libdir + QUOTE
-    '' and the current path to libs search list
-    ldcline += " -L " + QUOTE + "./" + QUOTE
-
-    '' add additional user-specified library search paths
-	dim as string ptr libp = listGetHead( @fbc.libpathlist )
-	do while( libp <> NULL )
-    	ldcline += " -L " + QUOTE + *libp + QUOTE
-    	libp = listGetNext( libp )
-    loop
+	'' add library search paths
+	ldcline += *fbcGetLibPathList( )
 
     '' init lib group
     ldcline += " -( "
 
     '' add libraries from cmm-line and found when parsing
-	dim as string ptr libf = listGetHead( @fbc.liblist )
-	do while( libf <> NULL )
-    	ldcline += "-l" + *libf + " "
-		libf = listGetNext( libf )
-	loop
-
-	'' add gmon if profiling is enabled
-	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-		ldcline += "-lgmon "
-	end if
+    ldcline += *fbcGetLibList( NULL )
 
 	'' rtlib initialization and termination
+	dim as string libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
 	ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
 
     '' end lib group
@@ -332,6 +292,29 @@ private function _processOptions _
 		return FALSE
 
 	end select
+
+end function
+
+'':::::
+function fbcInit_xbox( ) as integer
+
+    static as FBC_VTBL vtbl = _
+    ( _
+		@_processOptions, _
+		@_listFiles, _
+		@_compileResFiles, _
+		@_linkFiles, _
+		@_archiveFiles, _
+		@_delFiles, _
+		@_setDefaultLibPaths _
+	)
+
+	fbc.vtbl = vtbl
+
+	''
+	listNew( @rclist, FBC_INITARGS\4, len( string ) )
+
+	return TRUE
 
 end function
 

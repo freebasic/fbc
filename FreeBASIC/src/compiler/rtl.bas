@@ -62,9 +62,6 @@ declare sub			rtlSystemModEnd		( )
 '':::::
 sub rtlInit static
 
-	''
-	fbAddDefaultLibs( )
-
 	rtlArrayModInit( )
 	rtlConsoleModInit( )
 	rtlDataModInit( )
@@ -193,7 +190,7 @@ sub rtlAddIntrinsicProcs _
 			'' ordinary proc?
 			if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
 				proc = symbAddPrototype( proc, _
-								 	 	 procdef->name, procdef->alias, "fb", _
+								 	 	 procdef->name, procdef->alias, NULL, _
 								 	 	 procdef->dtype, NULL, ptrcnt, _
 								 	 	 attrib, procdef->callconv, _
 								 	 	 FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
@@ -201,7 +198,7 @@ sub rtlAddIntrinsicProcs _
 			'' operator..
 			else
 				proc = symbAddOperator( proc, _
-										cast( AST_OP, procdef->name ), NULL, "fb", _
+										cast( AST_OP, procdef->name ), NULL, NULL, _
     						    		procdef->dtype, NULL, ptrcnt, _
     					        		attrib or FB_SYMBATTRIB_OPERATOR, _
     					        		procdef->callconv, _

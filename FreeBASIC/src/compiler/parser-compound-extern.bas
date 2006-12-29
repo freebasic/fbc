@@ -34,7 +34,7 @@ function cExternStmtBegin _
 
     dim as FB_CMPSTMTSTK ptr stk = any
     dim as integer mangling = any
-    dim as FBLIBRARY ptr library = any
+    dim as FBS_LIB ptr library = any
     dim as zstring ptr litstr = any
 
 	function = FALSE

@@ -18,6 +18,9 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
+#include once "inc\hash.bi"
+#include once "inc\list.bi"
+
 const FBC_INITARGS	  = 64
 const FBC_INITFILES	  = 64
 
@@ -84,37 +87,48 @@ type FBC_IOFILE
 	outf		as string 							'' output file (*.o)
 end type
 
-type FBCCTX
-	'' methods
-	processOptions		as function _
+type FBC_OBJINF
+	lang		as FB_LANG
+	mt			as integer
+end type
+
+'' if changed, update the fbcInit_* functions at each fbc_*.bas file
+type FBC_VTBL
+	processOptions as function _
 	( _
 		byval opt as string ptr, _
 		byval argv as string ptr _
 	) as integer
 
-	listFiles			as function _
+	listFiles as function _
 	( _
 		byval argv as zstring ptr _
 	) as integer
 
-	compileResFiles		as function _
+	compileResFiles as function _
 	( _
 	) as integer
 
-	linkFiles           as function _
+	linkFiles as function _
 	( _
 	) as integer
 
-	archiveFiles        as function _
+	archiveFiles as function _
 	( _
 		byval cmdline as zstring ptr _
 	) as integer
 
-	delFiles            as function _
+	delFiles as function _
 	( _
 	) as integer
 
-	''
+	setDefaultLibPaths as sub _
+	( _
+	)
+end type
+
+'' global context
+type FBCCTX
 	arglist				as TLIST					'' of string ptr
 
 	compileonly			as integer
@@ -124,13 +138,20 @@ type FBCCTX
 	showversion			as integer
 	target				as integer
 
+	'' file and path passed on cmd-line
 	inoutlist			as TLIST					'' of FBC_IOFILE
-	objlist				as TLIST					'' of string otr
-	liblist				as TLIST					'' of string otr
-	deflist				as TLIST					'' of string otr
-	preinclist			as TLIST					'' of string otr
-	incpathlist			as TLIST					'' of string otr
-	libpathlist			as TLIST					'' of string otr
+	objlist				as TLIST					'' of string ptr
+	deflist				as TLIST					'' of string ptr
+	preinclist			as TLIST					'' of string ptr
+	incpathlist			as TLIST					'' of string ptr
+	liblist				as TLIST					'' of string ptr
+	libpathlist			as TLIST					'' of string ptr
+
+	'' libs and paths passed to LD
+	ld_liblist			as TLIST					'' of FBS_LIB
+	ld_libhash			as THASH
+	ld_libpathlist		as TLIST					'' of FBS_LIB
+	ld_libpathhash		as THASH
 
 	iof_head			as FBC_IOFILE ptr			'' to keep track of the .bas' and -o's
 
@@ -144,15 +165,12 @@ type FBCCTX
 	extopt				as FBC_EXTOPT
 
 	opthash				as THASH
+
+	objinf				as FBC_OBJINF
+
+	vtbl				as FBC_VTBL
 end type
 
-
-''
-'' macros
-''
-#define safeKill(f)														_
-	if( kill( f ) <> 0 ) then                                           :_
-	end if
 
 ''
 '' prototypes
@@ -176,6 +194,32 @@ declare function fbcInit_cygwin _
 declare function fbcInit_xbox _
 	( _
 	) as integer
+
+declare function fbcGetLibList _
+	( _
+		byval dllname as zstring ptr _
+	) as zstring ptr
+
+declare function fbcGetLibPathList _
+	( _
+	) as zstring ptr
+
+
+''
+'' macros
+''
+
+#macro safeKill(f)
+	if( kill( f ) <> 0 ) then
+	end if
+#endmacro
+
+#define fbcAddDefLibPath( path ) _
+	fbAddLibPathEx( @fbc.ld_libpathlist, _
+					@fbc.ld_libpathhash, _
+					path, _
+					TRUE )
+
 
 ''
 '' globals
