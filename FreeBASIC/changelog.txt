@@ -52,6 +52,7 @@ Version 0.17 Beta:
 - properties in UDT's (TYPE's) (v1c)
 - #macro .. #endmacro, to better support multi-line pre-processor defines (v1c)
 - TYPE's, UNION's, ENUM's and typedefs can now be declared inside functions and scope blocks (v1c)
+- auto-scanning for libraries and object files when linking, the #inclib's and #libpath's are now stored in the object files ala in VC++ (v1c)
 - FileCopy, FileAttr, and FileLen VB-compatability functions (DrV)
 - the __FB_DEBUG__ define, that is set to TRUE (-1) if in debug mode (if the -g option was used), FALSE (0) otherwise (v1c)
 - field access can now be used with PEEK, like in: PEEK( some_type, some_int ).some_field (v1c)
