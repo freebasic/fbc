@@ -1,9 +1,8 @@
 /* Default linker script, for normal executables */
-OUTPUT_FORMAT("elf32-i386", "elf32-i386",
-	      "elf32-i386")
+OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
 OUTPUT_ARCH(i386)
 ENTRY(_start)
-SEARCH_DIR("/usr/i386-linux/lib"); SEARCH_DIR("/usr/local/lib"); SEARCH_DIR("/lib"); SEARCH_DIR("/usr/lib"); SEARCH_DIR("/lib32"); SEARCH_DIR("/usr/lib32");
+
 /* Do we need any of these for elf?
    __DYNAMIC = 0;    */
 SECTIONS
@@ -185,5 +184,9 @@ SECTIONS
   .debug_funcnames 0 : { *(.debug_funcnames) }
   .debug_typenames 0 : { *(.debug_typenames) }
   .debug_varnames  0 : { *(.debug_varnames) }
-  /DISCARD/ : { *(.note.GNU-stack) }
+  /DISCARD/ : 
+  { 
+  	*(.note.GNU-stack) 
+  	*(.fbctinf)
+  }
 }

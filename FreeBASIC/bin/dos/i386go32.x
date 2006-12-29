@@ -66,4 +66,8 @@ SECTIONS
   .debug_str      0 : { *(.debug_str) }
   .debug_loc      0 : { *(.debug_loc) }
   .debug_macinfo  0 : { *(.debug_macinfo) }
+  /DISCARD/ :
+  {
+    *(.fbctinf)
+  }
 }

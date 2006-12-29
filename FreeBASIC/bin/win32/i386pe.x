@@ -88,6 +88,7 @@ SECTIONS
     *(.debug$T)
     *(.debug$F)
     *(.drectve)
+    *(.fbctinf)
   }
   .idata BLOCK(__section_alignment__) :
   {

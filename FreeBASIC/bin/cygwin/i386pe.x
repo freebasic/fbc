@@ -1,6 +1,5 @@
 /* Default linker script, for normal executables */
 OUTPUT_FORMAT(pei-i386)
-SEARCH_DIR("/usr/local/i686-pc-cygwin/lib"); SEARCH_DIR("/usr/local/lib"); SEARCH_DIR("/usr/lib"); SEARCH_DIR("/usr/lib/w32api");
 ENTRY(_mainCRTStartup)
 SECTIONS
 {
@@ -82,6 +81,7 @@ SECTIONS
     *(.debug$T)
     *(.debug$F)
     *(.drectve)
+    *(.fbctinf)
   }
   .idata BLOCK(__section_alignment__) :
   {
