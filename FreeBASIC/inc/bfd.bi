@@ -370,6 +370,9 @@ enum bfd_architecture
 	bfd_arch_vax
 	bfd_arch_i960
 	bfd_arch_or32
+#ifdef __BFD_216__	
+	bfd_arch_a29k
+#endif
 	bfd_arch_sparc
 	bfd_arch_mips
 	bfd_arch_i386
@@ -378,6 +381,9 @@ enum bfd_architecture
 	bfd_arch_i860
 	bfd_arch_i370
 	bfd_arch_romp
+#ifdef __BFD_216__	
+	bfd_arch_alliant
+#endif
 	bfd_arch_convex
 	bfd_arch_m88k
 	bfd_arch_m98k
@@ -405,7 +411,9 @@ enum bfd_architecture
 	bfd_arch_tic80
 	bfd_arch_v850
 	bfd_arch_arc
+#ifndef __BFD_216__
 	bfd_arch_m32c
+#endif
 	bfd_arch_m32r
 	bfd_arch_mn10200
 	bfd_arch_mn10300
@@ -415,10 +423,14 @@ enum bfd_architecture
 	bfd_arch_ia64
 	bfd_arch_ip2k
 	bfd_arch_iq2000
+#ifndef __BFD_216__
 	bfd_arch_mt
+#endif
 	bfd_arch_pj
 	bfd_arch_avr
+#ifndef __BFD_216__
 	bfd_arch_bfin
+#endif
 	bfd_arch_cr16c
 	bfd_arch_crx
 	bfd_arch_cris
@@ -427,10 +439,14 @@ enum bfd_architecture
 	bfd_arch_mmix
 	bfd_arch_xstormy16
 	bfd_arch_msp430
+#ifndef __BFD_216__
 	bfd_arch_xc16x
+#endif
 	bfd_arch_xtensa
 	bfd_arch_maxq
+#ifndef __BFD_216__
 	bfd_arch_z80
+#endif
 	bfd_arch_last
 end enum
 
@@ -2154,7 +2170,9 @@ type bfd_target_
 	_bfd_get_section_contents_in_window as function cdecl(byval as bfd ptr, byval as sec_ptr, byval as bfd_window ptr, byval as file_ptr, byval as bfd_size_type) as bfd_boolean
 	_bfd_copy_private_bfd_data as function cdecl(byval as bfd ptr, byval as bfd ptr) as bfd_boolean
 	_bfd_merge_private_bfd_data as function cdecl(byval as bfd ptr, byval as bfd ptr) as bfd_boolean
+#ifndef __BFD_216__	
 	_bfd_init_private_section_data as function cdecl(byval as bfd ptr, byval as sec_ptr, byval as bfd ptr, byval as sec_ptr, byval as bfd_link_info ptr) as bfd_boolean
+#endif
 	_bfd_copy_private_section_data as function cdecl(byval as bfd ptr, byval as sec_ptr, byval as bfd ptr, byval as sec_ptr) as bfd_boolean
 	_bfd_copy_private_symbol_data as function cdecl(byval as bfd ptr, byval as asymbol ptr, byval as bfd ptr, byval as asymbol ptr) as bfd_boolean
 	_bfd_copy_private_header_data as function cdecl(byval as bfd ptr, byval as bfd ptr) as bfd_boolean
@@ -2182,8 +2200,10 @@ type bfd_target_
 	_bfd_is_target_special_symbol as function cdecl(byval as bfd ptr, byval as asymbol ptr) as bfd_boolean
 	_get_lineno as function cdecl(byval as bfd ptr, byval as bfd_symbol ptr) as alent ptr
 	_bfd_find_nearest_line as function cdecl(byval as bfd ptr, byval as bfd_section ptr, byval as bfd_symbol ptr ptr, byval as bfd_vma, byval as byte ptr ptr, byval as byte ptr ptr, byval as uinteger ptr) as bfd_boolean
+#ifndef __BFD_216__	
 	_bfd_find_line as function cdecl(byval as bfd ptr, byval as bfd_symbol ptr ptr, byval as bfd_symbol ptr, byval as byte ptr ptr, byval as uinteger ptr) as bfd_boolean
 	_bfd_find_inliner_info as function cdecl(byval as bfd ptr, byval as byte ptr ptr, byval as byte ptr ptr, byval as uinteger ptr) as bfd_boolean
+#endif
 	_bfd_make_debug_symbol as function cdecl(byval as bfd ptr, byval as any ptr, byval as uinteger) as asymbol ptr
 	_read_minisymbols as function cdecl(byval as bfd ptr, byval as bfd_boolean, byval as any ptr ptr, byval as uinteger ptr) as integer
 	_minisymbol_to_symbol as function cdecl(byval as bfd ptr, byval as bfd_boolean, byval as any ptr, byval as asymbol ptr) as asymbol ptr
@@ -2221,7 +2241,7 @@ extern "c"
 
 declare function bfd_printable_name (byval abfd as bfd ptr) as zstring ptr
 declare function bfd_scan_arch (byval string as zstring ptr) as bfd_arch_info_type ptr
-declare function bfd_arch_list () as byte ptr ptr
+declare function bfd_arch_list () as zstring ptr ptr
 declare function bfd_arch_get_compatible (byval abfd as bfd ptr, byval bbfd as bfd ptr, byval accept_unknowns as bfd_boolean) as bfd_arch_info_type ptr
 declare sub bfd_set_arch_info (byval abfd as bfd ptr, byval arg as bfd_arch_info_type ptr)
 declare function bfd_get_arch (byval abfd as bfd ptr) as bfd_architecture
