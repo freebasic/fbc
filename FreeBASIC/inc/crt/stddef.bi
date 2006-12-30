@@ -16,10 +16,10 @@ type ptrdiff_t as integer
 	type wchar_t as ushort
 #elseif defined(__FB_DOS__)
 	type size_t as ulong
-	type wchar_t as ushort
+	type wchar_t as ubyte
 #elseif defined(__FB_LINUX__)
-	type size_t as ulong
-	type wchar_t as ushort
+	type size_t as uinteger
+	type wchar_t as uinteger
 #endif
 
 type wint_t as wchar_t
