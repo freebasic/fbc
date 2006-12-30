@@ -269,7 +269,6 @@ function astDataStmtAdd _
 		dTB(0).upper = 0
 	end if
 
-    '' already declared?
     sym = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
     						    	id, _
     						    	FB_SYMBCLASS_VAR, _

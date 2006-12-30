@@ -368,6 +368,17 @@ function rtlDataRestore _
     '' byval labeladdrs as void ptr
     if( label = NULL ) then
     	sym = astGetFirstDataStmtSymbol( )
+
+    	'' blank RESTORE used before any DATA was found? damn..
+    	if( sym = NULL ) then
+			'' create an empty stmt, it should just contain a link to the next DATA
+			expr = astDataStmtBegin( )
+			astDataStmtEnd( expr )
+    		astDelNode( expr )
+
+    		sym = astGetFirstDataStmtSymbol( )
+    	end if
+
     else
     	sym = astDataStmtAdd( label, 0 )
     end if
