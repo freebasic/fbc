@@ -156,7 +156,7 @@ function cProcCall _
 		byval checkprnts as integer = FALSE _
 	) as ASTNODE ptr
 
-	dim as integer dtype = any
+	dim as integer dtype = any, is_propset = FALSE
 	dim as FBSYMBOL ptr reslabel = any
 	dim as ASTNODE ptr procexpr = any
 	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
@@ -175,21 +175,14 @@ function cProcCall _
 
 		dim as integer is_indexed = FALSE
 
-		'' '('?
+		'' '('? indexed..
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 			is_indexed = TRUE
-
-			if( symbGetUDTHasIdxSetProp( symbGetParent( sym ) ) = FALSE ) then
-				if( errReport( FB_ERRMSG_PROPERTYHASNOIDXSETMETHOD, TRUE ) = FALSE ) then
-					exit function
-				end if
-			end if
 
 			lexSkipToken( )
 
 			'' index expr
-			dim as ASTNODE ptr expr = 0
-			expr = cExpression( )
+			dim as ASTNODE ptr expr = cExpression( )
 			if( expr = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
@@ -216,24 +209,40 @@ function cProcCall _
 			end if
 		end if
 
-		'' the value arg is the lhs expression
+		'' '='?
+		if( lexGetToken( ) = FB_TK_ASSIGN ) then
 
-		'' '='
-		if( lexGetToken( ) <> FB_TK_ASSIGN ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
-    			exit function
-    		end if
+			if( is_indexed ) then
+				if( symbGetUDTHasIdxSetProp( symbGetParent( sym ) ) = FALSE ) then
+					errReport( FB_ERRMSG_PROPERTYHASNOIDXSETMETHOD, TRUE )
+					exit function
+				end if
+			else
+				if( symbGetUDTHasSetProp( symbGetParent( sym ) ) = FALSE ) then
+    				errReport( FB_ERRMSG_PROPERTYHASNOSETMETHOD )
+    				exit function
+				end if
+			end if
+
+			lexSkipToken( )
+			is_propset = TRUE
+
+			'' the value arg is the lhs expression
 
 		else
-			lexSkipToken( )
-		end if
-
-		if( is_indexed = FALSE ) then
-			if( symbGetUDTHasSetProp( symbGetParent( sym ) ) = FALSE ) then
-    			if( errReport( FB_ERRMSG_PROPERTYHASNOSETMETHOD ) = FALSE ) then
+			if( is_indexed ) then
+				if( symbGetUDTHasIdxGetProp( symbGetParent( sym ) ) = FALSE ) then
+					errReport( FB_ERRMSG_PROPERTYHASNOIDXGETMETHOD, TRUE )
+					exit function
+				end if
+            else
+				if( symbGetUDTHasGetProp( symbGetParent( sym ) ) = FALSE ) then
+    				errReport( FB_ERRMSG_PROPERTYHASNOGETMETHOD )
     				exit function
-    			end if
+				end if
 			end if
+
+			'' it's a property get call being deref'd or discarded
 		end if
 
 		checkprnts = FALSE
@@ -304,17 +313,13 @@ function cProcCall _
 	fbSetPrntOptional( FALSE )
 
 	'' StrIdxOrMemberDeref?
-	if( symbIsProperty( sym ) = FALSE ) then
+	if( is_propset = FALSE ) then
 		procexpr = cStrIdxOrMemberDeref( procexpr )
-		if( procexpr = NULL ) then
-			exit function
-		end if
+	end if
 
-	else
-		'' if it's a SUB, the expr will be NULL
-		if( procexpr = NULL ) then
-			exit function
-		end if
+	'' if it's a SUB, the expr will be NULL
+	if( procexpr = NULL ) then
+		exit function
 	end if
 
 	dtype = astGetDataType( procexpr )

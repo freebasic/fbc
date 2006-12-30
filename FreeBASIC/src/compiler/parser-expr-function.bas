@@ -71,7 +71,7 @@ function cFunctionCall _
 	'' property?
 	if( symbIsProperty( sym ) ) then
 
-		'' '('?
+		'' '('? indexed..
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 
 			if( symbGetUDTHasIdxGetProp( symbGetParent( sym ) ) = FALSE ) then
