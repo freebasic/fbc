@@ -125,7 +125,7 @@ int fb_hParseArgs( char * dst, const char *src, int length )
 		while( i < length && ( *s == ' ' || *s == '\0' ) )
 		{
 			i++;
-			*s++;
+			s++;
 		}
 	}
 
