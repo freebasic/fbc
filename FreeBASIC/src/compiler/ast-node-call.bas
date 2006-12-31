@@ -34,14 +34,12 @@
 sub astCallInit
 
 	listNew( @ast.call.tmpstrlist, 32, len( AST_TMPSTRLIST_ITEM ), LIST_FLAGS_NOCLEAR )
-	listNew( @ast.call.dtorlist, 32, len( AST_DTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
 '':::::
 sub astCallEnd
 
-	listFree( @ast.call.dtorlist )
 	listFree( @ast.call.tmpstrlist )
 
 end sub
@@ -67,7 +65,7 @@ private sub hAllocTempStruct _
 										     FALSE )
 
 			if( symbGetHasDtor( symbGetSubtype( sym ) ) ) then
-				symbSetIsTempWithDtor( n->call.tmpres, TRUE )
+				astDtorListAdd( n->call.tmpres )
 			end if
 		end if
 	end if
@@ -121,7 +119,6 @@ function astNewCALL _
 	end if
 
 	n->call.strtail = NULL
-	n->call.dtortail = NULL
 
 	'' handle functions that return structs
 	hAllocTempStruct( n, sym )
@@ -260,27 +257,6 @@ private sub hCheckTmpStrings _
 
 end sub
 
-'':::::
-private sub hDtorListFlush _
-	( _
-		byval f as ASTNODE ptr _
-	)
-
-    dim as ASTNODE ptr t = any
-    dim as AST_DTORLIST_ITEM ptr n = any, p = any
-
-	n = f->call.dtortail
-	do while( n <> NULL )
-        t = astBuildVarDtorCall( n->sym )
-        astLoad( t )
-        astDelNode( t )
-
-		p = n->prev
-		listDelNode( @ast.call.dtorlist, n )
-		n = p
-    loop
-
-end sub
 
 '':::::
 private sub hCheckTempStruct _
@@ -406,9 +382,6 @@ function astLoadCALL _
 	'' invoke
 	vr = hCallProc( n, sym, mode, topop, toalign )
 
-	''
-	hDtorListFlush( n )
-
 	'' del temp strings and copy back if needed
 	hCheckTmpStrings( n )
 
@@ -465,24 +438,6 @@ sub astCloneCALL _
 		loop
 	end scope
 
-    '' temp dtor list
-    scope
-    	dim as AST_DTORLIST_ITEM ptr dn = any, dc = any
-
-		c->call.dtortail = NULL
-		dn = n->call.dtortail
-		do while( dn <> NULL )
-        	dc = listNewNode( @ast.call.dtorlist )
-
-        	dc->sym = dn->sym
-        	dc->prev = c->call.dtortail
-
-        	c->call.dtortail = dc
-
-			dn = dn->prev
-		loop
-	end scope
-
 end sub
 
 '':::::
@@ -505,17 +460,6 @@ sub astDelCALL _
     	loop
     end scope
 
-    '' temp dtor list
-    scope
-	    dim as AST_DTORLIST_ITEM ptr d = any, p = any
-		d = n->call.dtortail
-		do while( d <> NULL )
-			p = d->prev
-			listDelNode( @ast.call.dtorlist, d )
-			d = p
-    	loop
-    end scope
-
 end sub
 
 '':::::
@@ -529,6 +473,11 @@ sub astReplaceSymbolOnCALL _
 	'' check temp res
 	if( n->call.tmpres = old_sym ) then
 		n->call.tmpres = new_sym
+
+		'' add to temp dtor list?
+		if( symbGetHasDtor( symbGetSubtype( new_sym ) ) ) then
+			astDtorListAdd( new_sym )
+		end if
 	end if
 
     '' temp strings list
@@ -543,19 +492,6 @@ sub astReplaceSymbolOnCALL _
 			astReplaceSymbolOnTree( s->srctree, old_sym, new_sym )
 
 			s = s->prev
-    	loop
-    end scope
-
-    '' temp dtor list
-    scope
-	    dim as AST_DTORLIST_ITEM ptr d = any
-		d = n->call.dtortail
-		do while( d <> NULL )
-			if( d->sym = old_sym ) then
-				d->sym = new_sym
-			end if
-
-			d = d->prev
     	loop
     end scope
 

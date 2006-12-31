@@ -88,46 +88,6 @@ private function hAllocTmpArrayDesc _
 end function
 
 '':::::
-private function hDtorListAdd _
-	( _
-		byval parent as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
-	) as AST_DTORLIST_ITEM ptr
-
-	dim as AST_DTORLIST_ITEM ptr n = any
-
-	'' alloc a node
-	n = listNewNode( @ast.call.dtorlist )
-
-	n->prev = parent->call.dtortail
-	parent->call.dtortail = n
-
-	n->sym = sym
-
-	'' already destroyed (needed while foo().bar().int isn't handled at AST)
-	symbSetIsDestroyed( sym )
-
-	function = n
-
-end function
-
-'':::::
-private sub hDtorListCheckArg _
-	( _
-		byval parent as ASTNODE ptr, _
-		byval arg as ASTNODE ptr _
-	)
-
-	dim as FBSYMBOL ptr sym = astFindTempVarWithDtor( arg )
-	if( sym <> NULL ) then
-		'' only once
-		symbSetIsTempWithDtor( sym, FALSE )
-		hDtorListAdd( parent, sym )
-	end if
-
-end sub
-
-'':::::
 private function hTmpStrListAdd _
 	( _
 		byval parent as ASTNODE ptr, _
@@ -617,9 +577,6 @@ private function hCheckVoidParam _
 		return TRUE
 	end if
 
-	''
-	hDtorListCheckArg( parent, arg )
-
 	'' pass BYREF, check if a temp param isn't needed
 	'' use the arg type, not the param one (as it's VOID)
 	function = hCheckByRefArg( arg->dtype, arg->subtype, n ) <> NULL
@@ -735,8 +692,8 @@ private sub hUDTPassByval _
 
 	hBuildByrefArg( n, arg )
 
-	if( symbGetHasDtor( symbGetSubtype( tmp ) ) ) then
-		hDtorListAdd( parent, tmp )
+	if( symbGetHasDtor( symbGetSubtype( param ) ) ) then
+		astDtorListAdd( tmp )
 	end if
 
 end sub
@@ -789,7 +746,7 @@ private function hImplicitCtor _
 	end if
 
 	if( symbGetHasDtor( subtype ) ) then
-		hDtorListAdd( parent, tmp )
+		astDtorListAdd( tmp )
 	end if
 
 	function = TRUE
@@ -805,9 +762,6 @@ private function hCheckUDTParam _
 	) as integer
 
 	dim as ASTNODE ptr arg = n->l
-
-	''
-	hDtorListCheckArg( parent, arg )
 
 	'' not another UDT?
 	if( arg->dtype <> FB_DATATYPE_STRUCT ) then

@@ -111,6 +111,8 @@ type LEX_CTX
 
 	filepos			as integer
 	lastfilepos 	as integer
+
+	currline		as DZSTRING					'' current line in text form
 end type
 
 declare sub lexInit _
@@ -226,6 +228,10 @@ declare function lexPeekCurrentLine _
 #define lexGetHasSlash( ) lex->head->hasesc
 
 #define lexGetHead( ) lex->head
+
+#define lexCurrLineGet( ) lex->currline.data
+
+#define lexCurrLineReset( ) DZstrReset( lex->currline )
 
 ''
 '' inter-module globals

@@ -25,44 +25,46 @@
 #include once "inc\fbint.bi"
 #include once "inc\dstr.bi"
 
-declare sub 	hRealloc			( _
-										byval s as DSTRING ptr, _
-					  			  	  	byval chars as integer, _
-										byval charsize as integer, _
-					  				  	byval dopreserve as integer _
-					  				)
+declare sub hRealloc _
+	( _
+		byval s as DSTRING ptr, _
+		byval chars as integer, _
+		byval charsize as integer, _
+		byval dopreserve as integer _
+	)
 
 
 '':::::
-#define ALLOC_SETUP(dst, chars, _type)							_
-	if( chars = 0 ) then                                      	:_
-		if( dst.data <> NULL ) then                             :_
-			deallocate( dst.data )                              :_
-			dst.data = NULL                                     :_
-			dst.len  = 0										:_
-			dst.size = 0										:_
-			exit sub                                            :_
-		end if                                                  :_
-	end if                                                      :_
-                                                                :_
-	if( dst.len <> chars ) then                               	:_
-		hRealloc( cast( DSTRING ptr, @dst ), 					_
-				  chars, 										_
-				  len( _type ), 								_
-				  FALSE )    									:_
+#macro ALLOC_SETUP(dst, chars, _type)
+	if( chars = 0 ) then
+		if( dst.data <> NULL ) then
+			deallocate( dst.data )
+			dst.data = NULL
+			dst.len  = 0
+			dst.size = 0
+		end if
+		exit sub
 	end if
 
-'':::::
-#define REALLOC_SETUP(dst, chars, _type)						_
-	if( chars = 0 ) then                                      	:_
-		exit sub                                                :_
-	end if                                                      :_
-                                                                :_
-	hRealloc( cast( DSTRING ptr, @dst ), 						_
-			  dst.len + chars, 									_
-			  len( _type ), 									_
-			  TRUE )
+	if( dst.len <> chars ) then
+		hRealloc( cast( DSTRING ptr, @dst ), _
+				  chars, _
+				  len( _type ), _
+				  FALSE )
+	end if
+#endmacro
 
+'':::::
+#macro REALLOC_SETUP(dst, chars, _type)
+	if( chars = 0 ) then
+		exit sub
+	end if
+
+	hRealloc( cast( DSTRING ptr, @dst ),  _
+			  dst.len + chars, _
+			  len( _type ), _
+			  TRUE )
+#endmacro
 
 '':::::
 #define CALC_LEN( p ) iif( p <> NULL, len( *src ), 0 )
@@ -91,6 +93,20 @@ sub DZstrAllocate _
 	)
 
 	ALLOC_SETUP( dst, chars, zstring )
+
+end sub
+
+'':::::
+sub DZstrReset _
+	( _
+		byref dst as DZSTRING _
+	)
+
+	if( dst.data <> NULL ) then
+		*dst.data = 0
+	end if
+
+	dst.len = 0
 
 end sub
 
@@ -124,6 +140,24 @@ sub DZstrAssignW _
 
 	if( dst.data <> NULL ) then
 		*dst.data = *src
+	end if
+
+end sub
+
+'':::::
+sub DZstrAssignC _
+	( _
+		byref dst as DZSTRING, _
+		byval src as uinteger _
+	)
+
+	dim as integer src_len = len( zstring )
+
+	ALLOC_SETUP( dst, src_len, zstring )
+
+	if( dst.data <> NULL ) then
+		dst.data[0] = src
+		dst.data[1] = 0
 	end if
 
 end sub
@@ -164,6 +198,25 @@ sub DZstrConcatAssignW _
 
 end sub
 
+'':::::
+sub DZstrConcatAssignC _
+	( _
+		byref dst as DZSTRING, _
+		byval src as uinteger _
+	)
+
+	dim as integer src_len = len( zstring )
+	dim as integer dst_len = dst.len
+
+	REALLOC_SETUP( dst, src_len, zstring )
+
+	if( dst.data <> NULL ) then
+		*(dst.data + dst_len+0) = src
+		*(dst.data + dst_len+1) = 0
+	end if
+
+end sub
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' dynamic wstrings
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -188,6 +241,20 @@ sub DWstrAllocate _
 	)
 
 	ALLOC_SETUP( dst, chars, wstring )
+
+end sub
+
+'':::::
+sub DWstrReset _
+	( _
+		byref dst as DWSTRING _
+	)
+
+	if( dst.data <> NULL ) then
+		*dst.data = 0
+	end if
+
+	dst.len = 0
 
 end sub
 
@@ -226,6 +293,24 @@ sub DWstrAssignA _
 end sub
 
 '':::::
+sub DWstrAssignC _
+	( _
+		byref dst as DWSTRING, _
+		byval src as uinteger _
+	)
+
+	dim as integer src_len = len( wstring )
+
+	ALLOC_SETUP( dst, src_len, wstring )
+
+	if( dst.data <> NULL ) then
+		dst.data[0] = src
+		dst.data[1] = 0
+	end if
+
+end sub
+
+'':::::
 sub DWstrConcatAssign _
 	( _
 		byref dst as DWSTRING, _
@@ -257,6 +342,25 @@ sub DWstrConcatAssignA _
 
 	if( dst.data <> NULL ) then
 		*(dst.data + dst_len) = *src
+	end if
+
+end sub
+
+'':::::
+sub DWstrConcatAssignC _
+	( _
+		byref dst as DWSTRING, _
+		byval src as uinteger _
+	)
+
+	dim as integer src_len = len( wstring )
+	dim as integer dst_len = dst.len
+
+	REALLOC_SETUP( dst, src_len, wstring )
+
+	if( dst.data <> NULL ) then
+		*(dst.data + dst_len+0) = src
+		*(dst.data + dst_len+1) = 0
 	end if
 
 end sub

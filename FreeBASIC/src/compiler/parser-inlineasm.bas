@@ -236,6 +236,9 @@ function cAsmBlock as integer
 	'' (Comment SttSeparator)?
 	issingleline = FALSE
 	if( cComment( ) ) then
+		'' emit the current line in text form
+		hEmitCurrLine( )
+
 		if( cStmtSeparator( ) = FALSE ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
     			exit function
@@ -260,6 +263,9 @@ function cAsmBlock as integer
 
 		'' Comment?
 		cComment( LEXCHECK_NOWHITESPC )
+
+		'' emit the current line in text form
+		hEmitCurrLine( )
 
 		'' NewLine
 		select case lexGetToken( )

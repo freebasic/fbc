@@ -260,7 +260,7 @@ function cCtorCall _
 	if( astIsCALL( procexpr ) ) then
 
 		if( symbGetHasDtor( sym ) ) then
-			symbSetIsTempWithDtor( tmp, TRUE )
+			astDtorListAdd( tmp )
 		end if
 
 		function = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )

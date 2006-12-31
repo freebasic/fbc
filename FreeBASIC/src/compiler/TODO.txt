@@ -23,11 +23,6 @@
       - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
 
 [ ] ctor/dtor
-	- foo().bar().baz(0,1,3).int where baz is returned byval and has dtor
-	  must be handled right after the .int is used, not only when the current
-	  scope if finished
-	  - how to handle: if( foo().bar().baz(0,1,3).int = 0 ) then ...
-
 	- ArrayClear will be used instead of a dtor call looping to destroy
 	  local non-dynamic arrays
 	  - callVarDtor will have to use astAddAfter then with scope blocks..

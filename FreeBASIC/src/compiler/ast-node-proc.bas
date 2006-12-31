@@ -325,6 +325,9 @@ function astAdd _
 	n = astOptAssignment( n )
 	n = astUpdStrConcat( n )
 
+	'' del temp instances
+	n = astDTorListFlush( n, TRUE )
+
 	''
 	if( ast.proc.curr->r <> NULL ) then
 		ast.proc.curr->r->next = n
@@ -344,28 +347,32 @@ end function
 function astAddAfter _
 	( _
 		byval n as ASTNODE ptr, _
-		byval p as ASTNODE ptr _
+		byval after_node as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr _tail = any, _next = any
+	dim as ASTNODE ptr tail_ = any, next_ = any
 
-	if( (p = NULL) or (n = NULL) ) then
+	if( (after_node = NULL) or (n = NULL) ) then
 		return NULL
 	end if
 
-	_tail = ast.proc.curr->r
-	ast.proc.curr->r = p
+	tail_ = ast.proc.curr->r
 
-	_next = p->next
-	p->next = NULL
+	'' tail? no relink needed..
+	if( tail_ = after_node ) then
+		return astAdd( n )
+	end if
+
+	ast.proc.curr->r = after_node
+
+	next_ = after_node->next
+	after_node->next = NULL
 
 	n = astAdd( n )
 
-	if( _next <> NULL ) then
-		_next->prev = n
-		n->next = _next
-		ast.proc.curr->r = _tail
-	end if
+	next_->prev = n
+	n->next = next_
+	ast.proc.curr->r = tail_
 
 	function = n
 

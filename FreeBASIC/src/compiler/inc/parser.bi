@@ -1127,6 +1127,16 @@ declare function hVarDeclEx _
 	end if
 #endmacro
 
+'':::::
+#macro hEmitCurrLine( )
+	if( env.clopt.debug ) then
+		if( env.includerec = 0 ) then
+			astAdd( astNewLIT( lexCurrLineGet( ) ) )
+			lexCurrLineReset( )
+		end if
+	end if
+#endmacro
+
 #define hGetInstPtrMode(ip) iif( astIsCONST( ip ), FB_PARAMMODE_BYVAL, INVALID )
 
 #define fbIsModLevel( ) (parser.currproc = env.main.proc)

@@ -26,16 +26,18 @@
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
-declare function 	hParamDecl			( _
-											byval proc as FBSYMBOL ptr, _
-				   			 			  	byval procmode as integer, _
-				   			 			  	byval isproto as integer _
-				   			 			) as FBSYMBOL ptr
+declare function hParamDecl	_
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval procmode as integer, _
+		byval isproto as integer _
+	) as FBSYMBOL ptr
 
-declare function 	hParamDeclInstPtr 	( _
-											byval parent as FBSYMBOL ptr, _
-											byval proc as FBSYMBOL ptr _
-										) as FBSYMBOL ptr
+declare function hParamDeclInstPtr _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
 
 '':::::
 ''Parameters=   '(' ParamDecl (',' ParamDecl)* ')' .
@@ -182,6 +184,9 @@ private function hOptionalExpr _
 		end if
 
     end select
+
+	'' remove the temps from the dtors list if any was added
+	astDtorListClear( )
 
 	function = expr
 

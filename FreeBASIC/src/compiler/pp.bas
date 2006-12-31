@@ -289,6 +289,9 @@ function ppParse( ) as integer
 	'' Comment?
 	cComment( )
 
+	'' emit the current line in text form
+	hEmitCurrLine( )
+
 	'' EOL
 	if( lexGetToken( ) <> FB_TK_EOL ) then
 		if( lexGetToken( ) <> FB_TK_EOF ) then
@@ -460,7 +463,7 @@ function ppReadLiteral _
 	static as DZSTRING text
 	dim as integer nestedcnt = 0
 
-    DZstrAllocate( text, 0 )
+    DZstrReset( text )
 
     do
     	select case as const lexGetToken( LEX_FLAGS )

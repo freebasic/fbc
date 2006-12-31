@@ -864,15 +864,29 @@ private function hVarInit _
 end function
 
 '':::::
+#macro hFlushDecl( var_decl )
+	'' respect scopes?
+	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
+		astAdd( var_decl )
+	'' move to function scope..
+	else
+		astAddUnscoped( var_decl )
+	end if
+#endmacro
+
+'':::::
 private sub hCallStaticCtor _
 	( _
 		byval sym as FBSYMBOL ptr, _
+		byval var_decl as ASTNODE ptr, _
 		byval initree as ASTNODE ptr, _
 		byval has_dtor as integer _
-	) static
+	)
 
-	dim as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr flag, label
+	dim as FBARRAYDIM dTB(0) = any
+	dim as FBSYMBOL ptr flag = any, label = any
+
+	hFlushDecl( var_decl )
 
 	if( (initree = NULL) and (has_dtor = FALSE) ) then
 		exit sub
@@ -924,15 +938,24 @@ end sub
 private sub hCallGlobalCtor _
 	( _
 		byval sym as FBSYMBOL ptr, _
+		byval var_decl as ASTNODE ptr, _
 		byval initree as ASTNODE ptr, _
 		byval has_dtor as integer _
-	) static
+	)
 
 	if( (initree = NULL) and (has_dtor = FALSE) ) then
+		hFlushDecl( var_decl )
 		exit sub
 	end if
 
 	astProcAddGlobalInstance( sym, initree, has_dtor )
+
+	'' remove the temps from the dtors list if any was added
+	astDtorListClear( )
+
+	'' cannot call astAdd() before deleting the dtor list or it
+	'' would be flushed
+	hFlushDecl( var_decl )
 
 end sub
 
@@ -940,10 +963,11 @@ end sub
 private sub hFlushInitializer _
 	( _
 		byval sym as FBSYMBOL ptr, _
+		byval var_decl as ASTNODE ptr, _
 		byval initree as ASTNODE ptr, _
 		byval has_defctor as integer, _
 		byval has_dtor as integer _
-	) static
+	)
 
 	'' no initializer?
 	if( initree = NULL ) then
@@ -955,13 +979,19 @@ private sub hFlushInitializer _
         	if( has_dtor ) then
         		'' local?
            		if( symbIsLocal( sym ) ) then
-           			hCallStaticCtor( sym, NULL, TRUE )
+           			hCallStaticCtor( sym, var_decl, NULL, TRUE )
 
            		'' global..
           		else
-        			hCallGlobalCtor( sym, NULL, TRUE )
+        			hCallGlobalCtor( sym, var_decl, NULL, TRUE )
            		end if
+
+			else
+				hFlushDecl( var_decl )
 			end if
+
+		else
+			hFlushDecl( var_decl )
 		end if
 
 		exit sub
@@ -971,6 +1001,8 @@ private sub hFlushInitializer _
     if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
     							   FB_SYMBATTRIB_SHARED or _
     							   FB_SYMBATTRIB_COMMON)) = 0 ) then
+
+		hFlushDecl( var_decl )
 
 		astAdd( astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
 
@@ -990,6 +1022,7 @@ private sub hFlushInitializer _
 
     	'' no dtor?
     	if( has_dtor = FALSE ) then
+    		hFlushDecl( var_decl )
     		exit sub
     	end if
 
@@ -1004,11 +1037,11 @@ private sub hFlushInitializer _
     if( symbIsLocal( sym ) ) then
        	'' the only possibility is static, SHARED can't be
         '' used in -lang fb..
-        hCallStaticCtor( sym, initree, has_dtor )
+        hCallStaticCtor( sym, var_decl, initree, has_dtor )
 
 	'' global.. add to the list, to be emitted later
     else
-    	hCallGlobalCtor( sym, initree, has_dtor )
+    	hCallGlobalCtor( sym, var_decl, initree, has_dtor )
 	end if
 
 end sub
@@ -1023,16 +1056,18 @@ function hVarDeclEx _
 		byval dopreserve as integer, _
         byval token as integer, _
         byval is_fordecl as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
     static as zstring * FB_MAXNAMELEN+1 id, idalias
     static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
-    dim as FBSYMBOL ptr sym, subtype
-    dim as ASTNODE ptr initree
-    dim as integer addsuffix, is_dynamic, is_multdecl, is_typeless, is_decl, check_exprtb
-    dim as integer dtype, lgt, ofs, ptrcnt, dimensions, suffix
-    dim as zstring ptr palias
+    dim as FBSYMBOL ptr sym, subtype = any
+    dim as ASTNODE ptr initree = any
+    dim as integer addsuffix = any, is_dynamic = any, is_multdecl = any
+    dim as integer is_typeless = any, is_decl = any, check_exprtb = any
+    dim as integer dtype = any, lgt = any, ofs = any, ptrcnt = any
+    dim as integer dimensions = any, suffix = any
+    dim as zstring ptr palias = any
 
     function = NULL
 
@@ -1079,19 +1114,16 @@ function hVarDeclEx _
     	is_multdecl = TRUE
     end if
 
-    dim as FB_IDOPT options
-    options = FB_IDOPT_DEFAULT
+    dim as FB_IDOPT options = FB_IDOPT_DEFAULT
 
     if( (token <> FB_TK_REDIM) or (options and FB_SYMBATTRIB_SHARED) ) then
     	options or= FB_IDOPT_ISDECL
     end if
 
     do
-    	dim as FBSYMBOL ptr parent
-		parent = cParentId( options )
+    	dim as FBSYMBOL ptr parent = cParentId( options )
 
-		dim as FBSYMCHAIN ptr chain_
-		chain_ = hGetId( parent, @id, suffix )
+		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix )
 
     	is_typeless = FALSE
 
@@ -1327,9 +1359,8 @@ function hVarDeclEx _
     	end if
 
    		''
-   		dim as integer has_defctor, has_dtor
-   		has_defctor = FALSE
-   		has_dtor = FALSE
+   		dim as integer has_defctor = FALSE, has_dtor = FALSE
+
    		if( sym <> NULL ) then
    			select case symbGetType( sym )
    			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
@@ -1352,12 +1383,11 @@ function hVarDeclEx _
 		'' add to AST
 		if( sym <> NULL ) then
 
-			dim as FBSYMBOL ptr desc
-			desc = NULL
+			dim as FBSYMBOL ptr desc = NULL
+    		dim as ASTNODE ptr var_decl = NULL
 
 			'' not declared already?
     		if( is_decl = FALSE ) then
-    			dim as ASTNODE ptr var
 
     			'' don't init it if it's a temp FOR var, it
     			'' will have the start condition put into it...
@@ -1365,29 +1395,15 @@ function hVarDeclEx _
    					symbSetDontInit( sym )
     			end if
 
-				var = astNewDECL( FB_SYMBCLASS_VAR, sym, initree )
-
-				'' respect scopes?
-				if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-					astAdd( var )
-				'' move to function scope..
-				else
-					astAddUnscoped( var )
-				end if
+				var_decl = astNewDECL( FB_SYMBCLASS_VAR, sym, initree )
 
 				'' add the descriptor too, if any
 				desc = symbGetArrayDescriptor( sym )
 				if( desc <> NULL ) then
-					var = astNewDECL( FB_SYMBCLASS_VAR, _
-									  desc, _
-									  symbGetTypeIniTree( desc ) )
-
-					'' see above
-					if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-						astAdd( var )
-					else
-						astAddUnscoped( var )
-					end if
+					var_decl = astNewLINK( var_decl, _
+										   astNewDECL( FB_SYMBCLASS_VAR, _
+									  	   			   desc, _
+									  	   			   symbGetTypeIniTree( desc ) ) )
 				end if
 
     		end if
@@ -1405,6 +1421,11 @@ function hVarDeclEx _
 						if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
 												   	   FB_SYMBATTRIB_SHARED or _
 												   	   FB_SYMBATTRIB_COMMON)) = 0 ) then
+
+							'' flush the decl node, safe to do here as it's a non-static
+							'' local var (and because the decl must be flushed first)
+							hFlushDecl( var_decl )
+							var_decl = NULL
 
 							'' bydesc array params have no descriptor
 							if( desc <> NULL ) then
@@ -1436,7 +1457,11 @@ function hVarDeclEx _
 				'' not declared already?
     			if( is_decl = FALSE ) then
             		'' flush the init tree (must be done after adding the decl node)
-					hFlushInitializer( sym, initree, has_defctor, has_dtor )
+					hFlushInitializer( sym, _
+									   var_decl, _
+									   initree, _
+									   has_defctor, _
+									   has_dtor )
 				end if
 			end if
 

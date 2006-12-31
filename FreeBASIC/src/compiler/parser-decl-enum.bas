@@ -173,6 +173,9 @@ function cEnumBody _
 			'' Comment? SttSeparator
 			cComment( )
 
+			'' emit the current line in text form
+			hEmitCurrLine( )
+
 			if( cStmtSeparator( ) = FALSE ) then
     			if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
     				exit function
@@ -275,6 +278,9 @@ function cEnumDecl _
 
 	'' Comment? SttSeparator
 	cComment( )
+
+	'' emit the current line in text form
+	hEmitCurrLine( )
 
 	if( cStmtSeparator( ) = FALSE ) then
     	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then

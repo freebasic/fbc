@@ -28,7 +28,6 @@
 #include once "inc\lex.bi"
 #include once "inc\parser.bi"
 #include once "inc\pp.bi"
-#include once "inc\ast.bi"
 
 declare sub 		lexReadUTF8				( )
 
@@ -47,7 +46,6 @@ const UINVALID as uinteger = cuint( INVALID )
 '' globals
 	dim shared as LEX_CTX ctxTB( 0 TO FB_MAXINCRECLEVEL-0 )
 	dim shared as LEX_CTX ptr lex
-	dim shared as string curline
 	dim shared as integer insidemacro
 
 '':::::
@@ -66,6 +64,10 @@ end sub
 
 '':::::
 sub lexPopCtx( )
+
+	if( env.includerec = 0 ) then
+		DZstrAllocate( lex->currline, 0 )
+	end if
 
 	'' free dynamic strings used in macro expansions
 	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
@@ -139,7 +141,7 @@ sub lexInit _
 
 	'' only if it's not on an inc file
 	if( env.includerec = 0 ) then
-		curline = ""
+		DZstrAllocate( lex->currline, 0 )
 		insidemacro = FALSE
 	end if
 
@@ -151,10 +153,6 @@ end sub
 
 '':::::
 sub lexEnd( )
-
-	if( env.includerec = 0 ) then
-		curline = ""
-	end if
 
 	ppEnd( )
 
@@ -173,18 +171,19 @@ private function hReadChar as uinteger static
 			char = *lex->defptrw
 		end if
 
+		'' update current line text (if not parsing an inc file)
 		if( env.clopt.debug ) then
 			if( env.includerec = 0 ) then
 				if( insidemacro = FALSE ) then
 					insidemacro = TRUE
-					curline += " [Macro Expansion: "
+					DZstrConcatAssign( lex->currline, " [Macro Expansion: " )
 				end if
 
 				select case as const char
 				case 0, CHAR_CR, CHAR_LF
 
 				case else
-					curline += chr( char )
+					DZstrConcatAssignC( lex->currline, char )
 				end select
 			end if
 		end if
@@ -235,19 +234,19 @@ private function hReadChar as uinteger static
 			char = 0
 		end if
 
-		'' only save current src line if it's not on an inc file
+		'' update current line text (if not parsing an inc file)
 		if( env.clopt.debug ) then
 			if( env.includerec = 0 ) then
 				if( insidemacro ) then
 					insidemacro = FALSE
-					curline += " ] "
+					DZstrConcatAssign( lex->currline, " ] " )
 				end if
 
 				select case as const char
 				case 0, CHAR_CR, CHAR_LF
 
 				case else
-					curline += chr( char )
+					DZstrConcatAssignC( lex->currline, char )
 				end select
 			end if
 		end if
@@ -1400,17 +1399,6 @@ re_read:
 	do
 		char = lexCurrentChar( )
 
-		'' !!!FIXME!!! this shouldn't be here
-		'' only emit current src line if it's not on an inc file
-		if( env.clopt.debug ) then
-			if( env.includerec = 0 ) then
-				if( (char = CHAR_CR) or (char = CHAR_LF) or (char = 0) ) then
-					astAdd( astNewLIT( curline ) )
-					curline = ""
-				end if
-			end if
-		end if
-
 		select case as const char
 		'' EOF?
 		case 0
@@ -2047,17 +2035,6 @@ sub lexReadLine _
     ''
 	do
 		char = lexCurrentChar( )
-
-		'' !!!FIXME!!! this shouldn't be here
-		'' only emit current src line if it's not on an inc file
-		if( env.clopt.debug ) then
-			if( env.includerec = 0 ) then
-				if( (char = CHAR_CR) or (char = CHAR_LF) or (char = 0) ) then
-					astAdd( astNewLIT( curline ) )
-					curline = ""
-				end if
-			end if
-		end if
 
 		'' EOF?
 		select case as const char

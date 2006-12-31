@@ -128,10 +128,10 @@ end function
 ''
 function cLine as integer
 
-	function = FALSE
-
-	''
+	'' line begin
 	astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
+
+	dim as ASTNODE ptr proc = astGetProc( ), expr = astGetProcTailNode( )
 
     '' Label?
     cLabel( )
@@ -146,13 +146,25 @@ function cLine as integer
 		exit function
 	end if
 
+	'' emit the current line in text form
+	if( env.clopt.debug ) then
+		if( env.includerec = 0 ) then
+			'' don't add if proc changed (from main() to proc block or the inverse)
+			if( proc = astGetProc( ) ) then
+				astAddAfter( astNewLIT( lexCurrLineGet( ) ), expr )
+			end if
+			lexCurrLineReset( )
+		end if
+	end if
+
+	''
 	select case lexGetToken( )
 	case FB_TK_EOL
 		lexSkipToken( )
 		function = TRUE
 
 	case FB_TK_EOF
-		exit function
+		function = FALSE
 
 	case else
 		if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
@@ -165,7 +177,7 @@ function cLine as integer
 		function = TRUE
     end select
 
-	''
+	'' line end
 	astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
 
 end function

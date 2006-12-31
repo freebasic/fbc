@@ -65,18 +65,19 @@ function astScopeBegin _
 		return NULL
 	end if
 
-	s = symbAddScope( n )
+    n = astAdd( n )
 
-	'' must update the stmt count or any internal label
-	'' allocated/emitted previously will lie in the same stmt
-	parser.stmt.cnt += 1
+	''
+	s = symbAddScope( n )
 
     '' change to scope's symbol tb
     n->sym = s
     n->block.parent = ast.currblock
 	n->block.inistmt = parser.stmt.cnt
 
-    n = astAdd( n )
+	'' must update the stmt count or any internal label
+	'' allocated/emitted previously will lie in the same stmt
+	parser.stmt.cnt += 1
 
 	''
 	parser.scope += 1
@@ -180,9 +181,10 @@ sub astScopeEnd _
 	astAdd( astNewDBG( AST_OP_DBG_SCOPEEND, cint( s ) ) )
 
 	n = astNewNode( AST_NODECLASS_SCOPEEND, INVALID )
-    n->sym = s
 
-    astAdd( n )
+    n = astAdd( n )
+
+    n->sym = s
 
 end sub
 

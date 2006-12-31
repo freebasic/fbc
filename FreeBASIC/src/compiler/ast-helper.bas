@@ -495,6 +495,12 @@ function astCALLCTORToCALL _
 	astDelTree( n->r )
 
 	'' remove anon symbol
+	if( symbGetHasDtor( symbGetSubtype( sym ) ) ) then
+		'' if the temp has a dtor it was added to the dtor list,
+		'' remove it too
+		astDtorListDel( sym )
+	end if
+
 	symbDelSymbol( sym )
 
 	'' remove the node

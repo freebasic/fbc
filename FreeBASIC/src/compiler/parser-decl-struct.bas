@@ -326,6 +326,9 @@ private function hFieldInit _
 		end if
 	end if
 
+	'' remove the temps from the dtors list if any was added
+	astDtorListClear( )
+
 	'' make sure a default ctor is added
 	symbSetUDTHasCtorField( parent )
 
@@ -644,6 +647,9 @@ private function hTypeAdd _
 	'' Comment? SttSeparator
 	cComment( )
 
+	'' emit the current line in text form
+	hEmitCurrLine( )
+
 	if( cStmtSeparator( ) = FALSE ) then
     	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     		exit function
@@ -894,6 +900,9 @@ decl_inner:		'' it's an anonymous inner UDT
 		'' Comment?
 		cComment( )
 
+		'' emit the current line in text form
+		hEmitCurrLine( )
+
 	    if( cStmtSeparator( ) = FALSE ) then
 	    	if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
 	    		exit function
@@ -902,6 +911,7 @@ decl_inner:		'' it's an anonymous inner UDT
     			hSkipUntil( INVALID, TRUE )
     		end if
 		end if
+
 	loop
 
 	'' nothing added?

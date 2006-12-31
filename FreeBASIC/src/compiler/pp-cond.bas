@@ -233,6 +233,9 @@ private function ppSkip( ) as integer
 	'' Comment?
 	cComment( )
 
+	'' emit the current line in text form
+	hEmitCurrLine( )
+
 	'' EOL
 	if( lexGetToken( ) <> FB_TK_EOL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then

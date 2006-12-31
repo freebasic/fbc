@@ -108,18 +108,12 @@ type AST_TMPSTRLIST_ITEM
 	prev			as AST_TMPSTRLIST_ITEM ptr
 end type
 
-type AST_DTORLIST_ITEM
-	sym 			as FBSYMBOL ptr
-	prev		    as AST_DTORLIST_ITEM ptr
-end type
-
 type AST_NODE_CALL
 	isrtl			as integer
 	args			as integer
 	currarg			as FBSYMBOL ptr
 	lastarg			as ASTNODE_ ptr					'' used to speed up PASCAL conv. only
 	strtail 		as AST_TMPSTRLIST_ITEM ptr
-	dtortail		as AST_DTORLIST_ITEM ptr
 	tmpres          as FBSYMBOL ptr					'' temp result structure, if needed
 end type
 
@@ -293,7 +287,6 @@ type AST_PROC_CTX
 end type
 
 type AST_CALL_CTX
-	dtorlist		as TLIST						'' list of temp vars' dtors
 	tmpstrlist		as TLIST						'' list of temp strings
 end type
 
@@ -308,6 +301,10 @@ type AST_DATASTMT_CTX
 	lastsym			as FBSYMBOL ptr
 	firstsym		as FBSYMBOL ptr
 	lastlbl			as FBSYMBOL ptr
+end type
+
+type AST_DTORLIST_ITEM
+	sym 			as FBSYMBOL ptr
 end type
 
 type ASTVALUE
@@ -329,6 +326,8 @@ type ASTCTX
 	isopt			as integer
 
 	typeinicnt		as integer
+
+	dtorlist		as TLIST						'' temp dtors list
 end Type
 
 #include once "inc\ir.bi"
@@ -510,7 +509,7 @@ declare function astAdd _
 declare function astAddAfter _
 	( _
 		byval n as ASTNODE ptr, _
-		byval p as ASTNODE ptr _
+		byval after_node as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare sub astAddUnscoped _
@@ -842,11 +841,6 @@ declare function astOptAssignment _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astDtorListAdd _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as AST_DTORLIST_ITEM ptr
-
 declare function astCheckConst _
 	( _
 		byval dtype as integer, _
@@ -985,11 +979,6 @@ declare function astGetInverseLogOp _
 	( _
 		byval op as integer _
 	) as integer
-
-declare function astFindTempVarWithDtor _
-	( _
-		byval n as ASTNODE ptr _
-	) as FBSYMBOL ptr
 
 declare function astRemSideFx _
 	( _
@@ -1213,6 +1202,26 @@ declare sub astReplaceSymbolOnTree _
 		byval new_sym as FBSYMBOL ptr _
 	)
 
+declare function astDtorListAdd _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as AST_DTORLIST_ITEM ptr
+
+declare sub astDtorListDel _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)
+
+declare function astDtorListFlush _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval del_nodes as integer _
+	) as ASTNODE ptr
+
+declare sub astDtorListClear _
+	( _
+	)
+
 ''
 '' macros
 ''
@@ -1283,6 +1292,10 @@ declare sub astReplaceSymbolOnTree _
 
 #define astGetProcExitlabel(n) n->block.exitlabel
 
+#define astGetProc() ast.proc.curr
+
+#define astGetProcTailNode() ast.proc.curr->r
+
 #define astSetType(n, dtype, subtype) ast_classTB(n->class).settypecb( n, dtype, subtype )
 
 #define astTypeIniGetOfs( n ) n->typeini.ofs
@@ -1304,6 +1317,8 @@ declare sub astReplaceSymbolOnTree _
 #define astGetClassIsCode( cl ) ast_classTB(cl).iscode
 
 #define astGetFirstDataStmtSymbol( ) ast.data.firstsym
+
+#define astDTorListIsEmpty( ) (listGetHead( @ast.dtorlist ) = NULL)
 
 ''
 '' inter-module globals

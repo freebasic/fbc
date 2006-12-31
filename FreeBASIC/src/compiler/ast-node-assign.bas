@@ -424,19 +424,6 @@ function astNewASSIGN _
 			exit function
 		end if
 
-        '' handle temporary instances with dtors..
-		dim as ASTNODE ptr dtorcall = NULL
-        dim as FBSYMBOL ptr tmp = astFindTempVarWithDtor( r )
-		if( tmp <> NULL ) then
-			'' only once
-			symbSetIsTempWithDtor( tmp, FALSE )
-
-			'' already destroyed (needed while foo().bar().int isn't handled at AST)
-			symbSetIsDestroyed( tmp )
-
-			dtorcall = astBuildVarDtorCall( tmp )
-		end if
-
         '' is r an UDT too?
         dim as integer is_udt = TRUE
         if( astIsCALL( r ) ) then
@@ -460,11 +447,10 @@ function astNewASSIGN _
 				r = astBuildCallHiddenResVar( r )
 			end if
 
-			return astNewLINK( astNewMEM( AST_OP_MEMMOVE, _
-										  l, _
-										  r, _
-										  symbGetUDTUnpadLen( l->subtype ) ), _
-							   dtorcall )
+			return astNewMEM( AST_OP_MEMMOVE, _
+							  l, _
+							  r, _
+							  symbGetUDTUnpadLen( l->subtype ) )
 
 		'' r is function returning an UDT on registers
 		else

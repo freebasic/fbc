@@ -783,12 +783,8 @@ function symbGetVarHasDtor _
    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
    		if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
 
-   			if( symbIsTemp( s ) ) then
-   				'' needed while foo().bar().int isn't handled at AST
-   				return (symbGetIsDestroyed( s ) = FALSE)
-   			else
-   				return TRUE
-   			end if
+   			'' don't destroy temp instances, that's done already at AST
+   			return symbIsTemp( s ) = FALSE
    		end if
 
    	end select
