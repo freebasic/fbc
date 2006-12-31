@@ -59,16 +59,16 @@ sub test cdecl()
 	
 	dtor_cnt = 0
 	CU_ASSERT_EQUAL( myudt.foo( 1, 2 ).bar( 3 ).baz( ).value, TEST_VALUE )
-	'' next assert will fail until foo().bar().int isn't destroyed right after the call
-	CU_ASSERT_EQUAL( dtor_cnt, 3 )
+	
+	CU_ASSERT_EQUAL( dtor_cnt, 1 + 2 + 3 )
 	
 	dim res as integer = any
 	
 	dtor_cnt = 0
 	res = myudt.foo( 1, 2 ).bar( 3 ).baz( ).value
 	CU_ASSERT_EQUAL( res, TEST_VALUE )
-	'' ditto
-	CU_ASSERT_EQUAL( dtor_cnt, 3 )
+	
+	CU_ASSERT_EQUAL( dtor_cnt, 1 + 2 + 3 )
 	
 end sub
 
