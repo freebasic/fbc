@@ -328,6 +328,7 @@ type ASTCTX
 	typeinicnt		as integer
 
 	dtorlist		as TLIST						'' temp dtors list
+	flushdtorlist	as integer
 end Type
 
 #include once "inc\ir.bi"

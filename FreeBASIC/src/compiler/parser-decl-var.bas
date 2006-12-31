@@ -864,32 +864,40 @@ private function hVarInit _
 end function
 
 '':::::
-#macro hFlushDecl( var_decl )
+function hFlushDecl _
+	( _
+		byval var_decl as ASTNODE ptr _
+	) as ASTNODE ptr
+
 	'' respect scopes?
 	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-		astAdd( var_decl )
+		function = var_decl
+
 	'' move to function scope..
 	else
+		'' note: addUnscoped() won't flush the dtor list
 		astAddUnscoped( var_decl )
+		function = NULL
 	end if
-#endmacro
+
+end function
 
 '':::::
-private sub hCallStaticCtor _
+private function hCallStaticCtor _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval var_decl as ASTNODE ptr, _
 		byval initree as ASTNODE ptr, _
 		byval has_dtor as integer _
-	)
+	) as ASTNODE ptr
 
 	dim as FBARRAYDIM dTB(0) = any
 	dim as FBSYMBOL ptr flag = any, label = any
 
-	hFlushDecl( var_decl )
+	dim as ASTNODE ptr tree = hFlushDecl( var_decl )
 
 	if( (initree = NULL) and (has_dtor = FALSE) ) then
-		exit sub
+		return tree
 	end if
 
 	'' create a static flag
@@ -898,26 +906,30 @@ private sub hCallStaticCtor _
 					  	 0, 0, dTB(), _
 					     FB_SYMBATTRIB_STATIC )
 
-	astAdd( astNewDECL( FB_SYMBCLASS_VAR, flag, NULL ) )
+	tree = astNewLINK( tree, _
+					   astNewDECL( FB_SYMBCLASS_VAR, flag, NULL ) )
 
 	'' if flag = 0 then
 	label = symbAddLabel( NULL )
 
-    astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
-    									  astNewVAR( flag, _
-            										 0, _
-            										 FB_DATATYPE_INTEGER ), _
-            							  astNewCONSTi( 0, _
-            											FB_DATATYPE_INTEGER ) ), _
-            				   label, _
-            				   FALSE ) )
+    tree = astNewLINK( tree, _
+    				   astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
+    									  			 astNewVAR( flag, _
+            										 			0, _
+            										 			FB_DATATYPE_INTEGER ), _
+            							  			 astNewCONSTi( 0, _
+            													   FB_DATATYPE_INTEGER ) ), _
+            				   			  label, _
+            				   			  FALSE ) )
 
 	'' flag = 1
-	astAdd( astBuildVarAssign( flag, 1 ) )
+	tree = astNewLINK( tree, _
+					   astBuildVarAssign( flag, 1 ) )
 
 	if( initree <> NULL ) then
 		'' initialize it
-		astAdd( astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
+		tree = astNewLINK( tree, _
+						   astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
 	end if
 
 	'' has a dtor?
@@ -926,26 +938,28 @@ private sub hCallStaticCtor _
 	    proc = astProcAddStaticInstance( sym )
 
 	    '' atexit( @static_proc )
-	    astAdd( rtlAtExit( astBuildProcAddrof( proc ) ) )
+	    tree = astNewLINK( tree, _
+	    				   rtlAtExit( astBuildProcAddrof( proc ) ) )
 	end if
 
 	'' end if
-	astAdd( astNewLABEL( label ) )
+	function = astNewLINK( tree, astNewLABEL( label ) )
 
-end sub
+end function
 
 '':::::
-private sub hCallGlobalCtor _
+private function hCallGlobalCtor _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval var_decl as ASTNODE ptr, _
 		byval initree as ASTNODE ptr, _
 		byval has_dtor as integer _
-	)
+	) as ASTNODE ptr
+
+	var_decl = hFlushDecl( var_decl )
 
 	if( (initree = NULL) and (has_dtor = FALSE) ) then
-		hFlushDecl( var_decl )
-		exit sub
+		return var_decl
 	end if
 
 	astProcAddGlobalInstance( sym, initree, has_dtor )
@@ -955,19 +969,19 @@ private sub hCallGlobalCtor _
 
 	'' cannot call astAdd() before deleting the dtor list or it
 	'' would be flushed
-	hFlushDecl( var_decl )
+	function = var_decl
 
-end sub
+end function
 
 '':::::
-private sub hFlushInitializer _
+private function hFlushInitializer _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval var_decl as ASTNODE ptr, _
 		byval initree as ASTNODE ptr, _
 		byval has_defctor as integer, _
 		byval has_dtor as integer _
-	)
+	) as ASTNODE ptr
 
 	'' no initializer?
 	if( initree = NULL ) then
@@ -979,22 +993,16 @@ private sub hFlushInitializer _
         	if( has_dtor ) then
         		'' local?
            		if( symbIsLocal( sym ) ) then
-           			hCallStaticCtor( sym, var_decl, NULL, TRUE )
+           			var_decl = hCallStaticCtor( sym, var_decl, NULL, TRUE )
 
            		'' global..
           		else
-        			hCallGlobalCtor( sym, var_decl, NULL, TRUE )
+        			var_decl = hCallGlobalCtor( sym, var_decl, NULL, TRUE )
            		end if
-
-			else
-				hFlushDecl( var_decl )
 			end if
-
-		else
-			hFlushDecl( var_decl )
 		end if
 
-		exit sub
+		return var_decl
 	end if
 
 	'' not static or shared?
@@ -1002,11 +1010,10 @@ private sub hFlushInitializer _
     							   FB_SYMBATTRIB_SHARED or _
     							   FB_SYMBATTRIB_COMMON)) = 0 ) then
 
-		hFlushDecl( var_decl )
+		var_decl = hFlushDecl( var_decl )
 
-		astAdd( astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
-
-		exit sub
+		return astNewLINK( var_decl, _
+						   astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
 	end if
 
     dim as integer has_ctor = FALSE
@@ -1022,8 +1029,7 @@ private sub hFlushInitializer _
 
     	'' no dtor?
     	if( has_dtor = FALSE ) then
-    		hFlushDecl( var_decl )
-    		exit sub
+    		return hFlushDecl( var_decl )
     	end if
 
     	'' must be added to the dtor list..
@@ -1037,14 +1043,14 @@ private sub hFlushInitializer _
     if( symbIsLocal( sym ) ) then
        	'' the only possibility is static, SHARED can't be
         '' used in -lang fb..
-        hCallStaticCtor( sym, var_decl, initree, has_dtor )
+        function = hCallStaticCtor( sym, var_decl, initree, has_dtor )
 
 	'' global.. add to the list, to be emitted later
     else
-    	hCallGlobalCtor( sym, var_decl, initree, has_dtor )
+    	function = hCallGlobalCtor( sym, var_decl, initree, has_dtor )
 	end if
 
-end sub
+end function
 
 '':::::
 ''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
@@ -1424,17 +1430,22 @@ function hVarDeclEx _
 
 							'' flush the decl node, safe to do here as it's a non-static
 							'' local var (and because the decl must be flushed first)
-							hFlushDecl( var_decl )
-							var_decl = NULL
+							var_decl = hFlushDecl( var_decl )
 
 							'' bydesc array params have no descriptor
 							if( desc <> NULL ) then
-								astAdd( astTypeIniFlush( symbGetTypeIniTree( desc ), _
-											 	 		 desc, _
-											  	 		 AST_INIOPT_ISINI ) )
+								astAdd( astNewLINK( var_decl, _
+													astTypeIniFlush( symbGetTypeIniTree( desc ), _
+											 	 		 			 desc, _
+											  	 		 			 AST_INIOPT_ISINI ) ) )
 
 								symbSetTypeIniTree( desc, NULL )
+
+							else
+								astAdd( var_decl )
 							end if
+
+							var_decl = NULL
 						end if
 					end if
 				end if
@@ -1457,11 +1468,11 @@ function hVarDeclEx _
 				'' not declared already?
     			if( is_decl = FALSE ) then
             		'' flush the init tree (must be done after adding the decl node)
-					hFlushInitializer( sym, _
-									   var_decl, _
-									   initree, _
-									   has_defctor, _
-									   has_dtor )
+					astAdd( hFlushInitializer( sym, _
+									   		   var_decl, _
+									   		   initree, _
+									   		   has_defctor, _
+									   		   has_dtor ) )
 				end if
 			end if
 

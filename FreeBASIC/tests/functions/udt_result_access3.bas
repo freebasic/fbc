@@ -1,7 +1,5 @@
 # include "fbcu.bi"
 
-extern "c++"
-
 namespace fbc_tests.functions.udt_result_access3
 
 static shared as integer dtor_cnt = 0
@@ -81,5 +79,3 @@ sub ctor () constructor
 end sub
 
 end namespace
-
-end extern

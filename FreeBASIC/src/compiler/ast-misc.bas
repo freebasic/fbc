@@ -78,6 +78,8 @@ sub astMiscInit
 	''
 	listNew( @ast.dtorlist, 64, len( AST_DTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
 
+	ast.flushdtorlist = TRUE
+
 	'' wchar len depends on the target platform
 	ast_minlimitTB(FB_DATATYPE_WCHAR) = ast_minlimitTB(env.target.wchar.type)
 	ast_maxlimitTB(FB_DATATYPE_WCHAR) = ast_maxlimitTB(env.target.wchar.type)

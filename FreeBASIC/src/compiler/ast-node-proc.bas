@@ -326,7 +326,9 @@ function astAdd _
 	n = astUpdStrConcat( n )
 
 	'' del temp instances
-	n = astDTorListFlush( n, TRUE )
+	if( ast.flushdtorlist ) then
+		n = astDTorListFlush( n, TRUE )
+	end if
 
 	''
 	if( ast.proc.curr->r <> NULL ) then
@@ -395,11 +397,15 @@ sub astAddUnscoped _
 		last = ast.proc.curr->l
 	end if
 
+	ast.flushdtorlist = FALSE
+
 	if( last = NULL ) then
 		n = astAdd( n )
 	else
 		n = astAddAfter( n, last )
 	end if
+
+	ast.flushdtorlist = TRUE
 
 	ast.proc.curr->block.proc.decl_last = n
 
