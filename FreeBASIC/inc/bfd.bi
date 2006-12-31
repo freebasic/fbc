@@ -37,12 +37,12 @@ type bfd_size_type as ulong
 type flagword as uinteger
 type bfd_byte as ubyte
 
-#ifndef __BFD_216__
-type file_ptr as longint
-type ufile_ptr as ulongint
-#else
+#if defined(__BFD_216__) or defined(__FB_DOS__)
 type file_ptr as long
 type ufile_ptr as ulong
+#else
+type file_ptr as longint
+type ufile_ptr as ulongint
 #endif
 
 type ecoff_debug_info as ecoff_debug_info_
@@ -1913,6 +1913,13 @@ union bfd__tdata
 	any as any ptr
 end union
 
+enum bfd_direction
+  no_direction = 0
+  read_direction = 1
+  write_direction = 2
+  both_direction = 3
+end enum
+
 type bfd_
 	id as uinteger
 	filename as zstring ptr
@@ -1929,14 +1936,7 @@ type bfd_
 	mtime as integer
 	ifd as integer
 	format as bfd_format
-
-	enum bfd_direction
-		no_direction = 0
-		read_direction = 1
-		write_direction = 2
-		both_direction = 3
-	end enum
-
+  direction as bfd_direction
 	flags as flagword
 	origin as ufile_ptr
 	output_has_begun as bfd_boolean
