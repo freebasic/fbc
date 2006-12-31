@@ -58,8 +58,8 @@ type SizeF
     declare constructor ()
     declare constructor (byref sz as SizeF)
     declare constructor (byval width as REAL, byval height as REAL)
-	declare operator + (byref sz as SizeF)
-	declare operator - (byref sz as SizeF)
+	declare operator += (byref sz as SizeF)
+	declare operator -= (byref sz as SizeF)
 	declare function Equals (byref sz as SizeF) as BOOL
 	declare function Empty () as BOOL
 
@@ -89,8 +89,8 @@ type Size
     declare constructor ()
     declare constructor (byref sz as Size)
     declare constructor (byval width as INT_, byval height as INT_)
-	declare operator + (byref sz as Size)
-	declare operator - (byref sz as Size)
+	declare operator += (byref sz as Size)
+	declare operator -= (byref sz as Size)
 	declare function Equals (byref sz as Size) as BOOL
 	declare function Empty () as BOOL
 
@@ -121,8 +121,8 @@ type PointF
     declare constructor (byref pt as PointF)
     declare constructor (byref sz as SizeF)
     declare constructor (byval x as REAL, byval y as REAL)
-	declare operator + (byref pt as PointF)
-	declare operator - (byref pt as PointF)
+	declare operator += (byref pt as PointF)
+	declare operator -= (byref pt as PointF)
 	declare function Equals (byref pt as PointF) as BOOL
 	
 	X as REAL
@@ -157,8 +157,8 @@ type Point
     declare constructor (byref pt as Point)
     declare constructor (byref sz as Size)
     declare constructor (byval x as INT_, byval y as INT_)
-	declare operator + (byref pt as Point)
-	declare operator - (byref pt as Point)
+	declare operator += (byref pt as Point)
+	declare operator -= (byref pt as Point)
 	declare function Equals (byref pt as Point) as BOOL
 	
 	X as INT_

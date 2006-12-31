@@ -1,8 +1,6 @@
 #ifndef _CMovie_bi_
 #define _CMovie_bi_ 1
 
-#inclib "cmovie"
-
 type CMovieCtx_ as CMovieCtx
 
 type CMovie

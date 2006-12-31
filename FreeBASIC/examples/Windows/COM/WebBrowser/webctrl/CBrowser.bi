@@ -1,8 +1,6 @@
 #ifndef _CBrowser_bi_
 #define _CBrowser_bi_ 1
 
-#inclib "CBrowser"
-
 type CBrowserCtx_ as CBrowserCtx
 
 type CBrowser
