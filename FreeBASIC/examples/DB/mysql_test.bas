@@ -17,7 +17,7 @@
 		end 1
 	end if
 	
-    if( mysql_select_db( db, dbname ) < 0 ) then
+    if( mysql_select_db( db, dbname ) ) then
 		print "Can't select the "; dbname; " database !"
 		mysql_close( db )
 		end 1
