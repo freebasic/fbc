@@ -53,6 +53,8 @@ ifdef EXTRAERR
     FBC_CFLAGS += -exx
 endif
 
+FBC_LIBS = -l bfd -l iberty
+
 ##################################################################
 
 # !!!FIXME!!! can't use $(DEFS) directly because FB doesn't accept cmd-line options in GCC's format
@@ -60,6 +62,7 @@ endif
 ifeq (@FBC_TARGET@,dos)
 	FBC_OSDEPSRCS := fbc_dos.bas
     DEFS := -d TARGET_DOS -d TARGET_X86
+	FBC_LIBS += -l intl
 endif
 
 ifeq (@FBC_TARGET@,linux)
@@ -70,17 +73,20 @@ endif
 ifeq (@FBC_TARGET@,cygwin)
 	FBC_OSDEPSRCS := fbc_cyg.bas
     DEFS := -d TARGET_CYGWIN -d TARGET_X86
+	FBC_LIBS += -l intl
 endif
 
 ifeq (@FBC_TARGET@,win32)
 	FBC_OSDEPSRCS := fbc_win32.bas fbc_dos.bas fbc_linux.bas fbc_xbox.bas fbc_cyg.bas
     DEFS := -d TARGET_WIN32 -d TARGET_X86 -d CROSSCOMP_DOS -d CROSSCOMP_XBOX -d CROSSCOMP_LINUX -d CROSSCOMP_CYGWIN
     FBC_LFLAGS += -t 2048
+	FBC_LIBS += -l intl
 endif
 
 ifeq (@FBC_TARGET@,xbox)
 	FBC_OSDEPSRCS := fbc_xbox.bas
 	DEFS := -d TARGET_XBOX -d TARGET_X86
+	FBC_LIBS += -l intl
 endif
 
 ##################################################################
@@ -144,8 +150,6 @@ FBC_SRCS += $(FBC_OSDEPSRCS)
 
 FBC_OBJS := $(patsubst %.bas,%.o,$(FBC_SRCS))
 FBC_HEADERS := $(wildcard @srcdir@/inc/*.bi)
-
-FBC_LIBS = -l bfd -l intl -l iberty
 
 FBC_CFLAGS += -m $(subst .bas,,$(FBC_MAIN))
 

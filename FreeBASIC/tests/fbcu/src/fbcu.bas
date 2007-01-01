@@ -52,7 +52,6 @@ namespace fbcu
 end namespace
 
 		':: main entry point
-		
 # if not defined (FBCU_CONFIG_COMPILEONLY)
 		fbcu.run_tests()
 # endif

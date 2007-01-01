@@ -11,7 +11,10 @@
 
 #inclib "bfd"
 #inclib "iberty"
+
+#ifndef __FB_LINUX__
 #inclib "intl"
+#endif
 
 #define BFD_ARCH_SIZE 32
 #define BFD_DEFAULT_TARGET_SIZE 32

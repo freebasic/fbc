@@ -34,12 +34,9 @@
 '':::::
 private sub _setDefaultLibPaths
 
-	fbcAddDefLibPath( "/usr/i386-linux/lib" )
 	fbcAddDefLibPath( "/usr/local/lib" )
 	fbcAddDefLibPath( "/lib" )
 	fbcAddDefLibPath( "/usr/lib" )
-	fbcAddDefLibPath( "/lib32" )
-	fbcAddDefLibPath( "/usr/lib32" )
 
 end sub
 

@@ -25,7 +25,6 @@
 #include once "inc\fbint.bi"
 #include once "inc\list.bi"
 #include once "inc\ast.bi"
-#include once "inc\ir.bi"
 
 '' there's no DJGPP version of BFD above 2.16.x
 #ifdef __FB_DOS__
@@ -284,6 +283,10 @@ function fbObjInfoWriteObj _
 
 	'' note: both lists of FBS_LIB
 
+''!!FIXME!! this is getting an internal error in BFD 2.17 when writing the section contents 
+#ifdef __FB_LINUX__
+	return FALSE
+#else	
 	dim as bfd ptr objf = bfd_openw( FB_INFOSEC_OBJNAME, NULL )
 	if( objf = NULL ) then
 		return FALSE
@@ -327,6 +330,7 @@ function fbObjInfoWriteObj _
 
 	'' close the output obj
 	bfd_close( objf )
+#endif
 
 end function
 
