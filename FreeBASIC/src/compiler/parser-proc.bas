@@ -846,7 +846,7 @@ private function hCheckOpOvlParams _
     case AST_NODECLASS_CONV
     	params = 0
 
-	case AST_NODECLASS_ASSIGN
+	case AST_NODECLASS_ASSIGN, AST_NODECLASS_MEM
 		params = 1
 
     '' bop..
@@ -855,7 +855,6 @@ private function hCheckOpOvlParams _
     end select
 
     if( symbGetProcParams( proc ) - iif( is_method, 1, 0 ) <> params ) then
-    	print params, symbGetProcParams( proc )
     	errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
     	exit function
     end if
@@ -878,6 +877,11 @@ private function hCheckOpOvlParams _
     		if( parent <> NULL ) then
     			errReport( FB_ERRMSG_OPCANNOTBEAMETHOD, TRUE )
     		end if
+    	end if
+
+    case AST_NODECLASS_MEM
+    	if( parent = NULL ) then
+    		errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
     	end if
 
     case else
@@ -949,6 +953,37 @@ private function hCheckOpOvlParams _
     			end select
     		end if
 
+    	'' new or delete?
+    	case AST_NODECLASS_MEM
+
+    		select case op
+    		case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF
+    			'' must be an integer
+    			if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
+    			    select case symbGetType( param )
+    			    case is >= FB_DATATYPE_POINTER, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+    					errReport( FB_ERRMSG_PARAMMUSTBEANINTEGER, TRUE )
+    					exit function
+    			    end select
+    			else
+    				errReport( FB_ERRMSG_PARAMMUSTBEANINTEGER, TRUE )
+    				exit function
+    			end if
+
+    		case else
+    			'' must be a pointer
+    			if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
+    			    if( symbGetType( param ) < FB_DATATYPE_POINTER ) then
+    					errReport( FB_ERRMSG_PARAMMUSTBEAPOINTER, TRUE )
+    					exit function
+    			    end if
+    			else
+    				errReport( FB_ERRMSG_PARAMMUSTBEAPOINTER, TRUE )
+    				exit function
+    			end if
+
+    		end select
+
     	end select
     end if
 
@@ -1011,8 +1046,26 @@ private function hCheckOpOvlParams _
     		end select
     	end select
 
-    '' binary..
-    case else
+    '' mem?
+    case AST_NODECLASS_MEM
+    	select case op
+    	case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF
+    		'' should return a pointer
+    		if( symbGetType( proc ) < FB_DATATYPE_POINTER ) then
+    			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
+    			exit function
+    		end if
+
+    	case else
+    		'' should not return anything
+    		if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
+    			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
+    			exit function
+    		end if
+    	end select
+
+    '' binary?
+    case AST_NODECLASS_BOP
 
    		select case as const op
    		'' relational? it must return an integer
@@ -1103,6 +1156,26 @@ function cOperatorHeader _
 			op = AST_OP_ADD
 		end if
     end if
+
+    '' check if method should be static or not
+    select case as const op
+    case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF, _
+    	 AST_OP_DEL_SELF, AST_OP_DEL_VEC_SELF
+
+    	 attrib or= FB_SYMBATTRIB_STATIC
+    	 attrib and= not FB_SYMBATTRIB_METHOD
+
+    case else
+    	if( (options and FB_PROCOPT_HASPARENT) <> 0 ) then
+    		if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
+				if( errReport( FB_ERRMSG_OPERATORCANTBESTATIC, TRUE ) = FALSE ) then
+					exit function
+				else
+					attrib and= not FB_SYMBATTRIB_STATIC
+				end if
+			end if
+		end if
+	end select
 
 	dim as integer dtype = any, lgt = any, ptrcnt = any
     dim as FBSYMBOL ptr subtype = any

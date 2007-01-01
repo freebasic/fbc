@@ -122,8 +122,6 @@ private function hTypeProtoDecl _
 		end if
 
 	case FB_TK_OPERATOR
-        hCheckStatic( attrib )
-
 		lexSkipToken( )
 
 		if( cOperatorHeader( attrib or FB_SYMBATTRIB_METHOD, _
@@ -854,7 +852,7 @@ decl_inner:		'' it's an anonymous inner UDT
 
 		case FB_TK_DECLARE
 			if( hTypeProtoDecl( s, attrib ) = FALSE ) then
-				exit function
+				hSkipStmt( )
 			end if
 
 		case FB_TK_ENUM

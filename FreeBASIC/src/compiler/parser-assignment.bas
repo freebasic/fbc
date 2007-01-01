@@ -32,7 +32,7 @@ function cOperator _
 		byval options as FB_OPEROPTS _
 	) as integer
 
-	dim as integer op
+	dim as integer op = any
 
     function = INVALID
 
@@ -189,6 +189,34 @@ function cOperator _
 
     	lexSkipToken( )
     	return AST_OP_FLDDEREF
+
+	case FB_TK_NEW, FB_TK_DELETE
+		if( (options and FB_OPEROPTS_SELF) = 0 ) then
+    		exit function
+    	end if
+
+    	dim as integer is_new = (lexGetToken( ) = FB_TK_NEW)
+
+    	lexSkipToken( )
+
+    	'' '['?
+    	if( lexGetToken( ) = CHAR_LBRACKET ) then
+        	lexSkipToken( )
+
+			'' ']'
+        	if( lexGetToken( ) <> CHAR_RBRACKET ) then
+        		if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
+        			exit function
+        		end if
+        	else
+        		lexSkipToken( )
+        	end if
+
+        	return iif( is_new, AST_OP_NEW_VEC_SELF, AST_OP_DEL_VEC_SELF )
+
+        else
+    		return iif( is_new, AST_OP_NEW_SELF, AST_OP_DEL_SELF )
+    	end if
 
 	case else
    		select case as const lexGetToken( )

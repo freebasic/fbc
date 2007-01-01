@@ -1,8 +1,19 @@
 [ ] STATIC
-    - NEW and DELETE must be static methods (an explict STATIC shouldn't be needed),
-      but added to parent's NEW_|DEL_SELF
-    - allow all global operators to be declared as static methods?
     - add static data members, they must be initialized outside the TYPE|CLASS
+    - allow all global operators to be declared as static methods?
+
+[ ] ctor/dtor
+	- ArrayClear will be used instead of a loop calling the dtors to destroy
+	  local non-dynamic arrays
+	  - callVarDtor will have to use astAddAfter then with scope blocks..
+
+	- add SWAP for structs with copy-ctors and/or destructors
+
+[ ] operator overloading:
+      - add support for functions returning references (reuse "BYREF") or the
+        '->' operator will be useless for UDT's with copy-ctors or dtors
+        as returning byval will make a deep copy
+      - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
 
 [ ] remove the internal profiler and use gprof instead, the former won't work with
     destructors
@@ -15,32 +26,6 @@
                If not, then it shouldn't be an allowable option.
 
     [ ] remove libfb_ctor.c - replaced by fbrt0.c
-
-[ ] operator overloading:
-      - add support for functions returning references (reuse "BYREF") or the
-        '->' operator will be useless for UDT's with copy-ctors or dtors
-        as returning byval will make a deep copy
-      - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
-
-[ ] ctor/dtor
-	- ArrayClear will be used instead of a dtor call looping to destroy
-	  local non-dynamic arrays
-	  - callVarDtor will have to use astAddAfter then with scope blocks..
-
-	- add SWAP for structs with copy-ctors and/or destructors
-
-	- add NEW and DELETE as operator
-	  - use the nothrow version only for now
-	    - exception handling is different in all platforms,
-	      the sjlj (setjmp and longjmp) method isn't used in ELF (it seems)
-	    - no way to define "byref param2 as std::nothrow_t" in rtl-mem.bas
-	      - namespace mangling will have to check for STD and add just "St"
-	        without the # prefix
-
-[ ] data/function members:
-      - add virtual (functions only)
-          - the vtable must be compatible with G++ 3.x (ie: compatible with
-            COM interfaces in Windows)
 
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
@@ -91,6 +76,11 @@
     - "fb" - the inverse of "qb", but show deprecated messages by now for:
       [ ] without ON ERROR, all stmts returning rt errors should be allowed to
           be used as functions too
+
+[ ] data/function members:
+      - add virtual (functions only)
+          - the vtable must be compatible with G++ 3.x (ie: compatible with
+            COM interfaces in Windows)
 
 [ ] add a C backend
 	- the va_* macros/quirk-func must be passed to AST, each ABI has different way to
