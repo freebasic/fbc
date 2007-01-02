@@ -136,6 +136,10 @@ extern void fb_dos_vga_set_palette(void);
 extern void fb_dos_vesa_detect(void);
 extern int fb_dos_vesa_set_mode(int w, int h, int depth, int linear);
 extern int *fb_dos_vesa_fetch_modes(int depth, int *size);
+extern void vesa_get_pm_functions(void);
+
+extern VesaPMInfo *fb_dos_vesa_pm_info;
+extern void *fb_dos_vesa_pm_bank_switcher;
 
 /* shared */
 
