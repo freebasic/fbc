@@ -155,7 +155,6 @@ declare function ftruncate (byval __fd as integer, byval __length as __off_t) as
 declare function brk (byval __addr as any ptr) as integer
 declare function sbrk (byval __delta as intptr_t) as any ptr
 declare function syscall (byval __sysno as integer, ...) as integer
-declare function lockf (byval __fd as integer, byval __cmd as integer, byval __len as __off_t) as integer
 declare function fdatasync (byval __fildes as integer) as integer
 end extern
 
