@@ -26,10 +26,6 @@
 #include once "inc\list.bi"
 #include once "inc\ast.bi"
 
-'' there's no DJGPP version of BFD above 2.16.x
-#ifdef __FB_DOS__
-#define __BFD_216__
-#endif
 #include once "bfd.bi"
 
 declare function hProcessObject _
@@ -283,10 +279,6 @@ function fbObjInfoWriteObj _
 
 	'' note: both lists of FBS_LIB
 
-''!!FIXME!! this is getting an internal error in BFD 2.17 when writing the section contents 
-#ifdef __FB_LINUX__
-	return FALSE
-#else	
 	dim as bfd ptr objf = bfd_openw( FB_INFOSEC_OBJNAME, NULL )
 	if( objf = NULL ) then
 		return FALSE
@@ -304,7 +296,7 @@ function fbObjInfoWriteObj _
   	end if
 
 	'' create a new section
-	dim as asection ptr sec = bfd_make_section_old_way( objf, "." + FB_INFOSEC_NAME )
+	dim as asection ptr sec = bfd_make_section( objf, "." + FB_INFOSEC_NAME )
 	if( sec = NULL ) then
 		bfd_close( objf )
 		return FALSE
@@ -312,9 +304,7 @@ function fbObjInfoWriteObj _
 
 	bfd_set_section_flags( objf, _
 						   sec, _
-						   SEC_DATA or _
-						   bfd_applicable_section_flags( objf ) )
-
+						   SEC_HAS_CONTENTS )
 	'' fill it
     dim as integer size = 0
     dim as byte ptr buf = hFillSection( liblist, libpathlist, size )
@@ -330,7 +320,6 @@ function fbObjInfoWriteObj _
 
 	'' close the output obj
 	bfd_close( objf )
-#endif
 
 end function
 
@@ -513,5 +502,3 @@ private function hProcessObject _
 	function = TRUE
 
 end function
-
-
