@@ -38,7 +38,7 @@ sub test_cos cdecl
 end sub
 
 sub test_acos cdecl
-	for v as double = -1 to 1 step .01
+	for v as single = -1 to 1 step .01
 		CU_ASSERT( abs( acos( v ) - acosf( v ) ) < EPSILON_SNG )
 	next
 	
@@ -58,7 +58,7 @@ sub test_tan cdecl
 end sub
 
 sub test_atan cdecl
-	for v as double = -1 to 1 step .01
+	for v as single = -1 to 1 step .01
 		CU_ASSERT( abs( atn( v ) - atanf( v ) ) < EPSILON_SNG )
 	next
 	
