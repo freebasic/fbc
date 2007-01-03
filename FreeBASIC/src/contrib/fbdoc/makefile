@@ -43,18 +43,6 @@ endif
 
 OBJS := $(patsubst %.bas,$(objpath)/%.o,$(SRCS))
 
-ifneq ($(LIBDIR),)
-LIBS := -p $(LIBDIR)
-else
-LIBS :=
-endif
-
-ifeq ($(TARGET),win32)
-LIBS += -l curl-3 -l pcre -l mysql
-else
-LIBS += -l curl -l pcre	-l mysqlclient
-endif
-
 RCS  := 
 
 ##########################
