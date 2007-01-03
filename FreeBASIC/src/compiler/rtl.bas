@@ -144,12 +144,17 @@ sub rtlAddIntrinsicProcs _
 				if( .isopt ) then
 					attrib = FB_SYMBATTRIB_OPTIONAL
 
-					if( .dtype = FB_DATATYPE_STRING ) then
+					select case as const .dtype
+					case FB_DATATYPE_STRING
 						'' only NULL can be used
 						param_optval = astNewCONSTstr( "" )
-					else
+
+					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+						param_optval = astNewCONSTf( .optval, .dtype )
+
+					case else
 						param_optval = astNewCONSTi( .optval, .dtype )
-					end if
+					end select
 				else
 					attrib = 0
 					param_optval = NULL
