@@ -209,6 +209,7 @@ function cColorStmt _
 
 			'' expr?
 			fore_color = cExpression(  )
+
 			if( hMatch( CHAR_COMMA ) = TRUE ) then
 			
 				'' ',' expr ')'	
@@ -218,7 +219,6 @@ function cColorStmt _
 			else
 				
 				'' ')' (',' expr)?
-				back_color = cExpression(  )
 				hMatchRPRNT( )
 				if( hMatch( CHAR_COMMA ) = TRUE ) then
 					hMatchExpression( back_color )
