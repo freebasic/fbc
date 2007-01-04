@@ -136,61 +136,60 @@ sub rtlAddIntrinsicProcs _
 			doadd = fbLangOptIsSet( FB_LANG_OPT_MT or FB_RTL_OPT_VBSYMB )
 		end if
 
-		proc = symbPreAddProc( NULL )
-
-		'' for each parameter..
-		for i = 0 to procdef->params-1
-			with procdef->paramTb(i)
-				if( .isopt ) then
-					attrib = FB_SYMBATTRIB_OPTIONAL
-
-					select case as const .dtype
-					case FB_DATATYPE_STRING
-						'' only NULL can be used
-						param_optval = astNewCONSTstr( "" )
-
-					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-						param_optval = astNewCONSTf( .optval, .dtype )
-
-					case else
-						param_optval = astNewCONSTi( .optval, .dtype )
-					end select
-				else
-					attrib = 0
-					param_optval = NULL
-				end if
-
-				if( .dtype <> INVALID ) then
-					param_len = symbCalcParamLen( .dtype, NULL, .mode )
-				else
-					param_len = FB_POINTERSIZE
-				end if
-
-				CNTPTR( .dtype, ptrcnt )
-
-				symbAddProcParam( proc, NULL, _
-							  	  .dtype, NULL, ptrcnt, _
-							  	  param_len, .mode, INVALID, _
-							  	  attrib, param_optval )
-
-			end with
-		next
-
-		''
-		if( (procdef->options and FB_RTL_OPT_OVER) <> 0 ) then
-			attrib = FB_SYMBATTRIB_OVERLOADED
-		else
-			attrib = 0
-		end if
-
-		''
-		CNTPTR( procdef->dtype, ptrcnt )
-
-		if( procdef->alias = NULL ) then
-			procdef->alias = procdef->name
-		end if
-
 		if( doadd ) then
+			proc = symbPreAddProc( NULL )
+
+			'' for each parameter..
+			for i = 0 to procdef->params-1
+				with procdef->paramTb(i)
+					if( .isopt ) then
+						attrib = FB_SYMBATTRIB_OPTIONAL
+
+						select case as const .dtype
+						case FB_DATATYPE_STRING
+							'' only NULL can be used
+							param_optval = astNewCONSTstr( "" )
+
+						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+							param_optval = astNewCONSTf( .optval, .dtype )
+
+						case else
+							param_optval = astNewCONSTi( .optval, .dtype )
+						end select
+					else
+						attrib = 0
+						param_optval = NULL
+					end if
+
+					if( .dtype <> INVALID ) then
+						param_len = symbCalcParamLen( .dtype, NULL, .mode )
+					else
+						param_len = FB_POINTERSIZE
+					end if
+
+					CNTPTR( .dtype, ptrcnt )
+
+					symbAddProcParam( proc, NULL, _
+							  	  	 .dtype, NULL, ptrcnt, _
+							  	  	 param_len, .mode, INVALID, _
+							  	  	 attrib, param_optval )
+
+				end with
+			next
+
+			''
+			if( (procdef->options and FB_RTL_OPT_OVER) <> 0 ) then
+				attrib = FB_SYMBATTRIB_OVERLOADED
+			else
+				attrib = 0
+			end if
+
+			''
+			CNTPTR( procdef->dtype, ptrcnt )
+
+			if( procdef->alias = NULL ) then
+				procdef->alias = procdef->name
+			end if
 
 			'' ordinary proc?
 			if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
