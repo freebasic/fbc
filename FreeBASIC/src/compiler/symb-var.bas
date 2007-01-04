@@ -757,34 +757,27 @@ function symbGetVarHasDtor _
 		byval s as FBSYMBOL ptr _
 	) as integer static
 
-    '' shared, static, param?
+    '' shared, static, param or temporary?
     if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
     					FB_SYMBATTRIB_STATIC or _
     					FB_SYMBATTRIB_COMMON or _
     					FB_SYMBATTRIB_PARAMBYDESC or _
     		  			FB_SYMBATTRIB_PARAMBYVAL or _
-    		  			FB_SYMBATTRIB_PARAMBYREF)) <> 0 ) then
+    		  			FB_SYMBATTRIB_PARAMBYREF or _
+    		  			FB_SYMBATTRIB_TEMP or _
+    		  			FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
 		return FALSE
 	end if
 
    	select case symbGetType( s )
 	'' var-len string?
 	case FB_DATATYPE_STRING
-    	'' temp strings are destroyed right-after then function
-    	'' call, or the temp str descriptors could be exhausted
-    	if( (s->attrib and (FB_SYMBATTRIB_TEMP or _
-    		  				FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
-			return FALSE
-		else
-			return TRUE
-		end if
+    	return TRUE
 
    	'' has dtor?
    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
    		if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
-
-   			'' don't destroy temp instances, that's done already at AST
-   			return symbIsTemp( s ) = FALSE
+   			return TRUE
    		end if
 
    	end select

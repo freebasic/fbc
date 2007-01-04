@@ -140,7 +140,7 @@ private sub hFlushSelfBOP _
 	else
 		'' if it's a pointer, we need a regular integer
 		'' to do calculations...
-		if ( v1->dtype >= FB_DATATYPE_POINTER ) then
+		if( v1->dtype >= FB_DATATYPE_POINTER ) then
 			v2_expr = astNewCONSTi( v2->value.int * _
 										symbCalcLen( v1->dtype mod FB_DATATYPE_POINTER, _
 													 v1_subtype, _
@@ -514,7 +514,16 @@ function cForStmtBegin _
 		end if
 
 		if( stk->for.iscomplex ) then
-			stk->for.stpc.sym = hStoreTemp( dtype, subtype, expr )
+			dim as integer tmp_dtype = dtype
+			dim as FBSYMBOL ptr tmp_subtype = subtype
+
+			'' step can't be a pointer if counter is
+			if( dtype >= FB_DATATYPE_POINTER ) then
+				tmp_dtype = FB_DATATYPE_LONG
+				tmp_subtype = NULL
+			end if
+
+			stk->for.stpc.sym = hStoreTemp( tmp_dtype, tmp_subtype, expr )
 			if( stk->for.stpc.sym = NULL ) then
 				exit function
 			end if
@@ -523,7 +532,11 @@ function cForStmtBegin _
 		else
             '' get constant step
 			stk->for.stpc.sym = NULL
-			stk->for.stpc.dtype = dtype
+			if( dtype >= FB_DATATYPE_POINTER ) then
+				stk->for.stpc.dtype = FB_DATATYPE_LONG
+			else
+				stk->for.stpc.dtype = dtype
+			end if
 
 			astToFbValue( @stk->for.stpc.value, expr )
 			astDelNode( expr )
@@ -533,7 +546,11 @@ function cForStmtBegin _
 
 	else
 		stk->for.stpc.sym = NULL
-		stk->for.stpc.dtype = dtype
+		if( dtype >= FB_DATATYPE_POINTER ) then
+			stk->for.stpc.dtype = FB_DATATYPE_LONG
+		else
+			stk->for.stpc.dtype = dtype
+		end if
 
 		select case as const dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -551,7 +568,11 @@ function cForStmtBegin _
 
 		case else
 			'' ptr...
-			stk->for.stpc.value.int = 1
+			if( FB_LONGSIZE = len( integer ) ) then
+				stk->for.stpc.value.int = 1
+			else
+				stk->for.stpc.value.long = 1
+			end if
 		end select
 
 		isconst += 1
@@ -605,9 +626,18 @@ private function hForStmtClose _
 		byval stk as FB_CMPSTMTSTK ptr _
 	) as integer
 
-	dim as FBSYMBOL ptr cl = any
+#macro hDestroyTemp( s )
+	if( s <> NULL ) then
+		select case symbGetType( s )
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
+				astAdd( astBuildVarDtorCall( s, TRUE ) )
+			end if
+		end select
+	end if
+#endmacro
 
-	'' close the scope blocks
+	'' close the scope block
 	if( stk->scopenode <> NULL ) then
 		astScopeEnd( stk->scopenode )
 	end if
@@ -629,7 +659,7 @@ private function hForStmtClose _
 				   stk->for.inilabel )
 
     else
-		cl = symbAddLabel( NULL )
+		dim as FBSYMBOL ptr cl = symbAddLabel( NULL )
 
     	dim as FB_CMPSTMT_FORCNT cmpc = any
 
@@ -679,6 +709,11 @@ private function hForStmtClose _
     '' end label (loop exit)
     astAdd( astNewLABEL( parser.stmt.for.endlabel ) )
 
+	'' call the destructors of the temp vars created (in inverse order)
+	hDestroyTemp( stk->for.stpc.sym )
+	hDestroyTemp( stk->for.endc.sym )
+
+	'' close the outer scope block
 	if( stk->for.outerscopenode <> NULL ) then
 		astScopeEnd( stk->for.outerscopenode )
 	end if

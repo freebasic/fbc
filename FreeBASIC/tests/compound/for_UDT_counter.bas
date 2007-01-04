@@ -56,9 +56,6 @@ namespace fbc_tests.compound.for_UDT_counter
 	
 		    
 			scope
-			    
-			    dim as foo##__TYPE__ bazz
-			    
 				dim as __TYPE__ stp = 1
 				dim as integer c
 				dim as foo##__TYPE__ bar
