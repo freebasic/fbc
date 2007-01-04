@@ -62,7 +62,7 @@ detect:
 	pop eax
 	xor eax, edx
 	jnz cpuid_ok
-	
+
 	# no CPUID; assume 386 and check if 486 (try toggling bit 18 (AC) of EFLAGS)
 	mov ebx, 0x03000000
 	mov ecx, esp
@@ -88,12 +88,18 @@ cpu486_not_found:
 	jmp cpudetect_exit
 	
 cpuid_ok:
-	
 	mov eax, 1
 	cpuid
+	mov ebx, eax
 	shl eax, 16
 	and eax, 0x0F000000 # family in high byte
-	
+	cmp eax, 0x0F000000
+	jne no_extended_family
+	shl ebx, 12
+	and ebx, 0xF0000000 # add extended family if available
+	add eax, ebx
+
+no_extended_family:
 	and edx, 0x00FFFFFF # low 24 bits of feature flags
 	or eax, edx
 	
