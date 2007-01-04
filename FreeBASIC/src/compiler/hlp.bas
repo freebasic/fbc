@@ -530,23 +530,6 @@ sub hConvertValue _
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 conv_long:
 
-		select case as const ddtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			dst->long = src->long
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			dst->float = src->long
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				dst->int = src->long
-			else
-				dst->long = src->long
-			end if
-
-		case else
-			dst->int = src->long
-		end select
 
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		select case as const ddtype

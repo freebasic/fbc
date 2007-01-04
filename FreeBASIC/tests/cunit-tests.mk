@@ -66,7 +66,7 @@ ifdef DEBUG
 	FBC_CFLAGS += -g
 endif
 
-FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_DIR) -x $(MAINEXE) -map link.txt -v
+FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_DIR) -x $(MAINEXE)
 ifdef DEBUG
 	FBC_LFLAGS += -g
 endif

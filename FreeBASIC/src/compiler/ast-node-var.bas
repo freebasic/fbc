@@ -80,10 +80,9 @@ function astNewVAR _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_VAR, dtype, subtype )
-	function = n
 
 	if( n = NULL ) then
-		exit function
+		return NULL
 	end if
 
 	n->sym = sym
@@ -93,6 +92,8 @@ function astNewVAR _
 	if( clean_up ) then
 		n->l = hDoCleanup( sym )
 	end if
+
+	function = n
 
 end function
 

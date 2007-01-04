@@ -5,8 +5,6 @@
 
 namespace fbc_tests.compound.for_UDT_counter
 
-	dim shared as integer global_tor = 0
-	
 	#macro makeTest( __TYPE__ )
 		defineTest( __TYPE__ )
 		buildTest( __TYPE__ )
@@ -19,34 +17,35 @@ namespace fbc_tests.compound.for_UDT_counter
 	#macro defineTest( __TYPE__ )
 	
 		type foo##__TYPE__
-			as double x, y
+			as __TYPE__ x, y
 			declare operator let( byval rhs as __TYPE__ )
-			declare operator +=( byval rhs as __TYPE__ )
+			declare operator +=( byref rhs as foo##__TYPE__ )
 			declare constructor( )
 			declare destructor( )
 		end type
 		
-		operator >=( byref lhs as foo##__TYPE__, byval rhs as __TYPE__ ) as integer
-			return lhs.x >= rhs
+		operator >=( byref lhs as foo##__TYPE__, byref rhs as foo##__TYPE__ ) as integer
+			return lhs.x >= rhs.x
 		end operator
-		operator <=( byref lhs as foo##__TYPE__, byval rhs as __TYPE__ ) as integer
-			return lhs.x <= rhs
+
+		operator <=( byref lhs as foo##__TYPE__, byref rhs as foo##__TYPE__ ) as integer
+			return lhs.x <= rhs.x
 		end operator
+
 		operator foo##__TYPE__.let( byval rhs as __TYPE__ )
 			this.x = rhs
 		end operator
-		operator foo##__TYPE__.+=( byval rhs as __TYPE__ )
-			this.x += rhs
+
+		operator foo##__TYPE__.+=( byref rhs as foo##__TYPE__ )
+			this.x += rhs.x
 		end operator
 		
 		constructor foo##__TYPE__( )
 			this.y = 69
-			global_tor += 1
 		end constructor
 		
 		destructor foo##__TYPE__( )
 			this.y = 0
-			global_tor -= 1
 		end destructor
 	
 	#endmacro
@@ -59,35 +58,27 @@ namespace fbc_tests.compound.for_UDT_counter
 			scope
 			    
 			    dim as foo##__TYPE__ bazz
-			    CU_ASSERT( global_tor = 1 )
 			    
-				dim as double dblStep = .5
+				dim as __TYPE__ stp = 1
 				dim as integer c
 				dim as foo##__TYPE__ bar
-		        CU_ASSERT( global_tor = 2 )
 		        
-				for bar = 0 to 9 step dblStep + dblStep
-					CU_ASSERT( bar.y = 69 )
-					CU_ASSERT( c = bar.x )
+			    for bar = 0 to 9 step stp
+					CU_ASSERT_EQUAL( c, bar.x )
 					c += 1
 				next
 				
 				c = 0
-				for bars as foo##__TYPE__ = 0 to 9 step dblStep + dblStep
-					CU_ASSERT( bars.y = 69 )
-					CU_ASSERT( c = bars.x )
-					CU_ASSERT( global_tor = 3 )
+				for bars as foo##__TYPE__ = 0 to 9 step stp
+					CU_ASSERT_EQUAL( bars.y, 69 )
+					CU_ASSERT_EQUAL( c, bars.x )
 					c += 1
 				next
 				
-				CU_ASSERT( global_tor = 2 )
-				
 				'' top bar's dtor hasn't been called yet?
-				CU_ASSERT( bar.y = 69 )
+				CU_ASSERT_EQUAL( bar.y, 69 )
 				
 			end scope
-			
-			CU_ASSERT( global_tor = 0 )
 			
 		
 		end sub	

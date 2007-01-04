@@ -32,23 +32,34 @@
 '':::::
 private function hStoreTemp _
 	( _
-		byval expr as ASTNODE ptr, _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr s = any
-    dim as ASTNODE ptr vexpr = any
-
-	function = NULL
-
-	s = symbAddTempVar( dtype, subtype )
+	dim as FBSYMBOL ptr s = symbAddTempVar( dtype, subtype )
 	if( s = NULL ) then
-		exit function
+		return NULL
 	end if
 
-	vexpr = astNewVAR( s, 0, dtype, subtype )
-	astAdd( astNewASSIGN( vexpr, expr ) )
+	expr = astNewASSIGN( astNewVAR( s, 0, dtype, subtype ), expr )
+	if( expr = NULL ) then
+		select case dtype
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				return NULL
+			end if
+		case else
+			if( errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, _
+						   TRUE, _
+						   astGetOpId( AST_OP_ASSIGN ) ) = FALSE ) then
+				return NULL
+			end if
+		end select
+
+	else
+		astAdd( expr )
+	end if
 
 	function = s
 
@@ -58,36 +69,40 @@ end function
 private sub hFlushBOP _
 	( _
 		byval op as integer, _
-		byval dtype as integer, _
-	 	byval v1 as FBSYMBOL ptr, _
-	 	byval val1 as FBVALUE ptr, _
-	 	byval v1type as integer, _
-		byval v2 as FBSYMBOL ptr, _
-		byval val2 as FBVALUE ptr, _
-	 	byval v2type as integer, _
+	 	byval v1 as FB_CMPSTMT_FORCNT ptr, _
+		byval v2 as FB_CMPSTMT_FORCNT ptr, _
 		byval ex as FBSYMBOL ptr _
 	)
 
-	dim as ASTNODE ptr expr1 = any, expr2 = any, expr = any
+	dim as ASTNODE ptr v1_expr = any, v2_expr = any, expr = any
 
 	'' bop
-	if( v1 <> NULL ) then
-		expr1 = astNewVAR( v1, 0, v1type, v1->subtype )
+	if( v1->sym <> NULL ) then
+		v1_expr = astNewVAR( v1->sym, 0, v1->dtype, symbGetSubType( v1->sym ) )
 	else
-		expr1 = astNewCONST( val1, v1type )
+		v1_expr = astNewCONST( @v1->value, v1->dtype )
 	end if
 
-	if( v2 <> NULL ) then
-		expr2 = astNewVAR( v2, 0, v2type )
+	if( v2->sym <> NULL ) then
+		v2_expr = astNewVAR( v2->sym, 0, v2->dtype, symbGetSubType( v2->sym ) )
 	else
-		expr2 = astNewCONST( val2, v2type )
+		v2_expr = astNewCONST( @v2->value, v2->dtype )
 	end if
 
-	expr = astNewBOP( op, expr1, expr2, ex, AST_OPOPT_NONE )
-	if dtype = FB_DATATYPE_STRUCT then
+	expr = astNewBOP( op, v1_expr, v2_expr, ex, AST_OPOPT_NONE )
+	if( expr = NULL ) then
+		errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, TRUE, astGetOpId( op ) )
+		exit sub
+	end if
+
+	if( v1->dtype = FB_DATATYPE_STRUCT ) then
 		expr = astUpdComp2Branch( expr, ex, TRUE )
+		if( expr = NULL ) then
+			errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, TRUE, astGetOpId( op ) )
+			exit sub
+		end if
 	end if
-	''
+
 	astAdd( expr )
 
 end sub
@@ -96,56 +111,52 @@ end sub
 private sub hFlushSelfBOP _
 	( _
 		byval op as integer, _
-		byval dtype as integer, _
-	 	byval v1 as FBSYMBOL PTR, _
-		byval v2 as FBSYMBOL PTR, _
-		byval val2 as FBVALUE ptr, _
-		byval stype as integer _
+	 	byval v1 as FB_CMPSTMT_FORCNT ptr, _
+		byval v2 as FB_CMPSTMT_FORCNT ptr _
 	)
 
-	dim as ASTNODE ptr expr1 = any, expr2 = any, expr = any, ptrScale = any
+	dim as ASTNODE ptr v1_expr = any, v2_expr = any, expr = any
 
-    '' cnt OP= step
-	'' cnt = expr1, step = expr2
-	expr1 = astNewVAR( v1, 0, dtype, v1->subtype )
+	dim as FBSYMBOL ptr v1_subtype = symbGetSubtype( v1->sym )
+
+	v1_expr = astNewVAR( v1->sym, 0, v1->dtype, v1_subtype )
 
     '' is step a complex expression?
-	if( v2 <> NULL ) then
+	if( v2->sym <> NULL ) then
 		'' pointer?
-		if ( dtype >= FB_DATATYPE_POINTER ) then
+		if ( v1->dtype >= FB_DATATYPE_POINTER ) then
 			'' multiply it by type (or if UDT ptr, subtype) width
-			expr2 = astNewBOP( AST_OP_MUL, _
-                               astNewVAR( v2, 0, FB_DATATYPE_INTEGER ), _
-                               astNewCONSTi( symbCalcLen( dtype mod FB_DATATYPE_POINTER, _
-                               							  symbGetSubtype( v1 ), _
-                               							  FALSE ), _
-                                             FB_DATATYPE_UINT ) )
+			v2_expr = astNewBOP( AST_OP_MUL, _
+                               	 astNewVAR( v2->sym, 0, FB_DATATYPE_INTEGER ), _
+                               	 astNewCONSTi( symbCalcLen( v1->dtype mod FB_DATATYPE_POINTER, _
+                               							  	v1_subtype, _
+                               							  	FALSE ), _
+                                               FB_DATATYPE_UINT ) )
 		else
-			expr2 = astNewVAR( v2, 0, stype )
+			v2_expr = astNewVAR( v2->sym, 0, v2->dtype, symbGetSubtype( v2->sym ) )
 		end if
+
+	'' constant..
 	else
 		'' if it's a pointer, we need a regular integer
 		'' to do calculations...
-		if ( dtype >= FB_DATATYPE_POINTER ) then
-			expr2 = astNewCONSTi( val2->int * symbCalcLen( dtype mod FB_DATATYPE_POINTER, _
-														   symbGetSubtype( v1 ), _
-														   FALSE ), _
-								  FB_DATATYPE_INTEGER )
+		if ( v1->dtype >= FB_DATATYPE_POINTER ) then
+			v2_expr = astNewCONSTi( v2->value.int * _
+										symbCalcLen( v1->dtype mod FB_DATATYPE_POINTER, _
+													 v1_subtype, _
+													 FALSE ), _
+								  	  FB_DATATYPE_INTEGER )
 		else
-			expr2 = astNewCONST( val2, stype )
+			v2_expr = astNewCONST( @v2->value, v2->dtype )
 		end if
 	end if
 
 	''
-	if dtype = FB_DATATYPE_STRUCT then
-		expr = astNewSelfBOP( op, expr1, expr2 )
-
-	else
-		expr = astNewBOP( op, expr1, expr2 )
-
-		'' assign
-		expr1 = astNewVAR( v1, 0, dtype, v1->subtype )
-		expr = astNewASSIGN( expr1, expr )
+	expr = astNewSelfBOP( op, v1_expr, v2_expr )
+	if( expr = NULL ) then
+		'' this can only happen with UDT's
+		errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, TRUE, astGetOpId( op ) )
+		exit sub
 	end if
 
 	''
@@ -153,6 +164,7 @@ private sub hFlushSelfBOP _
 
 end sub
 
+/'
 private function hCheckOps _
 	( _
 		byval isDeclFor as integer, _
@@ -166,7 +178,7 @@ private function hCheckOps _
 	dim as FBSYMBOL ptr structSym = any
 	dim as integer satisfied = 0, dtype = any
 
-	if isDeclFor = FALSE then
+	if( isDeclFor = FALSE ) then
 		'' from expression (existing var)
 		varSym = astGetSymbol( idexpr )
 	end if
@@ -176,17 +188,17 @@ private function hCheckOps _
 
 	dim as FB_ERRMSG err_num = any
 	dim as ASTNODE ptr lhsTemp = astNewVAR( varSym, 0, dtype, structSym ), _
-					   rhsTemp = astNewCONSTi( 0, FB_DATATYPE_UINT )
+					   rhsTemp = astNewVAR( varSym, 0, dtype, structSym )
 
 	'' foo.+= overloaded?
-	if symbFindSelfBopOvlProc( AST_OP_ADD_SELF, lhsTemp, rhsTemp, @err_num ) = NULL then
+	if( symbFindSelfBopOvlProc( AST_OP_ADD_SELF, lhsTemp, rhsTemp, @err_num ) = NULL ) then
 		neededOps += "+="
 	else
 		satisfied += 1
 	end if
 
 	'' foo.let overloaded?
-	if symbFindSelfBopOvlProc( AST_OP_ASSIGN, lhsTemp, rhsTemp, @err_num ) = NULL then
+	if( symbFindSelfBopOvlProc( AST_OP_ASSIGN, lhsTemp, rhsTemp, @err_num ) = NULL ) then
 		addMessageComma( neededOps )
 		neededOps += "let"
 	else
@@ -194,7 +206,7 @@ private function hCheckOps _
 	end if
 
 	'' operator >= ( foo, numeric ) overloaded?
-	if symbFindBopOvlProc( AST_OP_GE, lhsTemp, rhsTemp, @err_num ) = NULL then
+	if( symbFindBopOvlProc( AST_OP_GE, lhsTemp, rhsTemp, @err_num ) = NULL ) then
 		'' nope...
 		addMessageComma( neededOps )
 		neededOps += ">="
@@ -203,7 +215,7 @@ private function hCheckOps _
 	end if
 
 	'' operator <= ( foo, numeric ) overloaded?
-	if symbFindBopOvlProc( AST_OP_LE, lhsTemp, rhsTemp, @err_num ) = NULL then
+	if( symbFindBopOvlProc( AST_OP_LE, lhsTemp, rhsTemp, @err_num ) = NULL ) then
 		'' nope...
 		addMessageComma( neededOps )
 		neededOps += "<="
@@ -212,24 +224,21 @@ private function hCheckOps _
 	end if
 
 	'' kill temps
-	astDelNodE( lhsTemp )
+	astDelNode( lhsTemp )
 	astDelNode( rhsTemp )
 
 	'' if all operators are in place, satisfied = 4
-	if satisfied < 4 then
-		return FALSE
-	end if
-
-	return TRUE
+	function = satisfied >= 4
 
 end function
-
+'/
 
 '':::::
 ''ForStmtBegin    =   FOR ID (AS DataType)? '=' Expression TO Expression (STEP Expression)? .
 ''
 function cForStmtBegin _
 	( _
+		_
 	) as integer
 
     #define hGetDType(__expr) iif( isStruct <> 0, astGetDataType( __expr ), dtype )
@@ -249,29 +258,26 @@ function cForStmtBegin _
 	end if
 
     '' open outer scope
-    dim as FB_CMPSTMTSTK ptr stk = any, outerStk = any
-
+    dim as ASTNODE ptr outerscopenode = NULL
     if( env.clopt.lang <> FB_LANG_QB ) then
-
-		dim as ASTNODE ptr n = astScopeBegin( )
-		if( n = NULL ) then
+		outerscopenode = astScopeBegin( )
+		if( outerscopenode = NULL ) then
 			if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
 				exit function
 			end if
 		end if
-
-		outerStk = cCompStmtPush( FB_TK_SCOPE )
-		outerStk->scopenode = n
 	end if
 
     dim as ASTNODE ptr idexpr = any, expr = any
 
     '' new variable?
-	dim as FBSYMBOL ptr varSym = NULL
+
 	dim as integer isDeclFor = FALSE
 	if( lexGetLookAhead( 1 ) = FB_TK_AS ) then
-
-		varSym = hVarDeclEx( FB_SYMBATTRIB_NONE, FALSE, lexGetToken( ), TRUE )
+		dim as FBSYMBOL ptr varSym = hVarDeclEx( FB_SYMBATTRIB_NONE, _
+												 FALSE, _
+												 lexGetToken( ), _
+												 TRUE )
 		if( varSym = NULL ) then
 			'' error recovery: fake a var
 			idexpr = CREATEFAKEID( )
@@ -317,28 +323,16 @@ function cForStmtBegin _
 	end if
 
 	dim as integer dtype = astGetDataType( idexpr )
+	dim as FBSYMBOL ptr subtype = astGetSubType( idexpr )
 
 	'' not scalar?
 	dim as integer isStruct = FALSE
+
 	select case as const dtype
 	case FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE
 
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		dim as string neededOps
-		if( hCheckOps( isDeclFor, idexpr, varSym, neededOps ) = FALSE ) then
-			if( errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, _
-						   TRUE, _
-						   neededOps ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a var
-				astDelTree( idexpr )
-				idexpr = CREATEFAKEID( )
-				dtype = astGetDataType( idexpr )
-			end if
-		else
-			isStruct = TRUE
-		end if
+		isStruct = TRUE
 
 	case else
 		'' not a ptr?
@@ -354,8 +348,9 @@ function cForStmtBegin _
 		end if
 	end select
 
-	stk = cCompStmtPush( FB_TK_FOR )
-	stk->for.cnt = astGetSymbol( idexpr )
+	dim as FB_CMPSTMTSTK ptr stk = cCompStmtPush( FB_TK_FOR )
+	stk->for.inic.sym = astGetSymbol( idexpr )
+	stk->for.inic.dtype = dtype
 
 	'' =
 	if( lexGetToken( ) <> FB_TK_ASSIGN) then
@@ -383,15 +378,37 @@ function cForStmtBegin _
     end if
 
 	''
-	dim as FBVALUE ival = any
-	if( astIsCONST( expr ) ) then
-		astConvertValue( expr, @ival, hGetDType( expr ) )
+	if( astIsCONST( expr ) and (isstruct = FALSE) ) then
+		expr = astNewCONV( dtype, NULL, expr )
+		if( expr = NULL ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+
+		astToFbValue( @stk->for.inic.value, expr )
+
 		isconst += 1
 	end if
 
 	'' save initial condition into counter
 	expr = astNewASSIGN( idexpr, expr )
-	astAdd( expr )
+	if( expr = NULL ) then
+		if( isstruct ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			end if
+		else
+			if( errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, TRUE, @"let" ) = FALSE ) then
+				exit function
+			end if
+		end if
+	else
+		astAdd( expr )
+	end if
 
 	'' TO
 	if( lexGetToken( ) <> FB_TK_TO ) then
@@ -415,17 +432,34 @@ function cForStmtBegin _
 		end if
 	end if
 
-    stk->for.etype = hGetDType( expr )
 	''
-	if( astIsCONST( expr ) ) then
-		astConvertValue( expr, @stk->for.eval, stk->for.etype )
+	if( astIsCONST( expr ) and (isstruct = FALSE) ) then
+		expr = astNewCONV( dtype, NULL, expr )
+		if( expr = NULL ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+
+		stk->for.endc.sym = NULL
+		stk->for.endc.dtype = dtype
+
+		astToFbValue( @stk->for.endc.value, expr )
 		astDelNode( expr )
-		stk->for.endc = NULL
+
 		isconst += 1
 
 	'' store end condition into a temp var
 	else
-		stk->for.endc = hStoreTemp( expr, stk->for.etype, astGetSubtype( expr ) )
+		stk->for.endc.sym = hStoreTemp( dtype, subtype, expr )
+		if( stk->for.endc.sym = NULL ) then
+			exit function
+		end if
+
+		stk->for.endc.dtype = symbGetType( stk->for.endc.sym )
 	end if
 
 	'' STEP
@@ -446,11 +480,19 @@ function cForStmtBegin _
 			end if
 		end if
 
-        stk->for.stype = hGetDType( expr )
-
 		'' store step into a temp var
-		if( astIsCONST( expr ) ) then
-			select case as const stk->for.stype
+		if( astIsCONST( expr ) and (isstruct = FALSE) ) then
+			expr = astNewCONV( dtype, NULL, expr )
+			if( expr = NULL ) then
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				end if
+			end if
+
+			select case as const dtype
 			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 				stk->for.ispositive = (astGetValLong( expr ) >= 0)
 
@@ -472,52 +514,46 @@ function cForStmtBegin _
 		end if
 
 		if( stk->for.iscomplex ) then
-			dim as integer s_dtype = stk->for.stype
-			if dtype >= FB_DATATYPE_POINTER then
-				s_dtype = FB_DATATYPE_INTEGER
+			stk->for.stpc.sym = hStoreTemp( dtype, subtype, expr )
+			if( stk->for.stpc.sym = NULL ) then
+				exit function
 			end if
-
-			stk->for.stp = symbAddTempVar( s_dtype )
-			astAdd( astNewASSIGN( astNewVAR( stk->for.stp, 0, s_dtype ), expr ) )
+			stk->for.stpc.dtype = symbGetType( stk->for.stpc.sym )
 
 		else
             '' get constant step
-            astConvertValue( expr, @stk->for.sval, stk->for.stype )
+			stk->for.stpc.sym = NULL
+			stk->for.stpc.dtype = dtype
 
+			astToFbValue( @stk->for.stpc.value, expr )
 			astDelNode( expr )
-			stk->for.stp = NULL
+
 			isconst += 1
 		end if
 
 	else
-		if dtype = FB_DATATYPE_STRUCT then
-			'' default to end condition's type for UDT...
-			stk->for.stype = stk->for.etype
-		else
-			'' mimic the count var
-			stk->for.stype = dtype
-		end if
+		stk->for.stpc.sym = NULL
+		stk->for.stpc.dtype = dtype
 
-		select case as const stk->for.stype
+		select case as const dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			stk->for.sval.long = 1
+			stk->for.stpc.value.long = 1
 
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			stk->for.sval.float = 1.0
+			stk->for.stpc.value.float = 1.0
 
 		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = len( integer ) ) then
-				stk->for.sval.int = 1
+				stk->for.stpc.value.int = 1
 			else
-				stk->for.sval.long = 1
+				stk->for.stpc.value.long = 1
 			end if
 
 		case else
-			'' also for UDT, ptr...
-			stk->for.sval.int = 1
+			'' ptr...
+			stk->for.stpc.value.int = 1
 		end select
 
-		stk->for.stp = NULL
 		isconst += 1
 	end if
 
@@ -532,16 +568,9 @@ function cForStmtBegin _
     '' check if this branch is needed
 
     if( isconst = 3 ) then
-		dim as integer op = any
-		if( stk->for.ispositive ) then
-			op = AST_OP_LE
-    	else
-			op = AST_OP_GE
-    	end if
-
-    	expr = astNewBOP( op, _
-    					  astNewCONST( @ival, hGetDType( expr ) ), _
-    					  astNewCONST( @stk->for.eval, stk->for.etype ) )
+    	expr = astNewBOP( iif( stk->for.ispositive, AST_OP_LE, AST_OP_GE ), _
+    					  astNewCONST( @stk->for.inic.value, stk->for.inic.dtype ), _
+    					  astNewCONST( @stk->for.endc.value, stk->for.endc.dtype ) )
 
     	if( astGetValInt( expr ) = FALSE ) then
     		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
@@ -559,6 +588,7 @@ function cForStmtBegin _
 
 	'' push to stmt stack
 	stk->scopenode = astScopeBegin( )
+	stk->for.outerscopenode = outerscopenode
 	stk->for.testlabel = tl
 	stk->for.inilabel = il
 
@@ -576,11 +606,8 @@ private function hForStmtClose _
 	) as integer
 
 	dim as FBSYMBOL ptr cl = any
-	dim as integer op = any, dtype = any
-	dim as FBVALUE ival = any
 
-	dtype = symbGetType( stk->for.cnt )
-
+	'' close the scope blocks
 	if( stk->scopenode <> NULL ) then
 		astScopeEnd( stk->scopenode )
 	end if
@@ -588,78 +615,73 @@ private function hForStmtClose _
 	'' cmp label
 	astAdd( astNewLABEL( parser.stmt.for.cmplabel ) )
 
-    op = AST_OP_ADD
-    if dtype = FB_DATATYPE_STRUCT then
-    	op = AST_OP_ADD_SELF
-	end if
-
 	'' counter += step
-	hFlushSelfBOP( op, dtype, _
-				   stk->for.cnt, _
-				   stk->for.stp, @stk->for.sval, stk->for.stype )
+	hFlushSelfBOP( AST_OP_ADD_SELF, @stk->for.inic, @stk->for.stpc )
 
 	'' test label
 	astAdd( astNewLABEL( stk->for.testlabel ) )
 
     if( stk->for.iscomplex = FALSE ) then
-
-		if( stk->for.ispositive ) then
-			op = AST_OP_LE
-    	else
-			op = AST_OP_GE
-    	end if
-
     	'' counter <= or >= end cond?
-		hFlushBOP( op, dtype, _
-				   stk->for.cnt, NULL, symbGetType( stk->for.cnt ), _
-				   stk->for.endc, @stk->for.eval, stk->for.etype, _
+		hFlushBOP( iif( stk->for.ispositive, AST_OP_LE, AST_OP_GE ), _
+				   @stk->for.inic, _
+				   @stk->for.endc, _
 				   stk->for.inilabel )
 
     else
 		cl = symbAddLabel( NULL )
 
-    	'' test step sign and branch
-		select case as const stk->for.stype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			ival.long = 0
+    	dim as FB_CMPSTMT_FORCNT cmpc = any
 
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			ival.float = 0.0
+        cmpc.dtype = stk->for.stpc.dtype
 
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				ival.int = 0
-			else
-				ival.long = 0
-			end if
+    	select case stk->for.stpc.dtype
+    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    		cmpc.sym = hStoreTemp( cmpc.dtype, _
+    							   symbGetSubtype( stk->for.stpc.sym ), _
+    							   astNewCONSTi( 0 ) )
 
-		case else
-			ival.int = 0
+    	case else
+    		cmpc.sym = NULL
+
+    		'' test step sign and branch
+			select case as const cmpc.dtype
+			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+				cmpc.value.long = 0
+
+			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+				cmpc.value.float = 0.0
+
+			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+				if( FB_LONGSIZE = len( integer ) ) then
+					cmpc.value.int = 0
+				else
+					cmpc.value.long = 0
+				end if
+
+			case else
+				cmpc.value.int = 0
+			end select
 		end select
 
-		hFlushBOP( AST_OP_GE, dtype, _
-				   stk->for.stp, @stk->for.sval, stk->for.stype, _
-				   NULL, @ival, stk->for.stype, _
-				   cl )
+		hFlushBOP( AST_OP_GE, @stk->for.stpc, @cmpc, cl )
 
     	'' negative, loop if >=
-		hFlushBOP( AST_OP_GE, dtype, _
-				   stk->for.cnt, NULL, symbGetType( stk->for.cnt ), _
-				   stk->for.endc, @stk->for.eval, stk->for.etype, _
-				   stk->for.inilabel )
+		hFlushBOP( AST_OP_GE, @stk->for.inic, @stk->for.endc, stk->for.inilabel )
 		'' exit loop
 		astAdd( astNewBRANCH( AST_OP_JMP, parser.stmt.for.endlabel ) )
     	'' control label
     	astAdd( astNewLABEL( cl, FALSE ) )
     	'' positive, loop if <=
-		hFlushBOP( AST_OP_LE, dtype, _
-				   stk->for.cnt, NULL, symbGetType( stk->for.cnt ), _
-				   stk->for.endc, @stk->for.eval, stk->for.etype, _
-				   stk->for.inilabel )
+		hFlushBOP( AST_OP_LE,  @stk->for.inic, @stk->for.endc, stk->for.inilabel )
     end if
 
     '' end label (loop exit)
     astAdd( astNewLABEL( parser.stmt.for.endlabel ) )
+
+	if( stk->for.outerscopenode <> NULL ) then
+		astScopeEnd( stk->for.outerscopenode )
+	end if
 
 	function = TRUE
 
@@ -690,34 +712,18 @@ function cForStmtEnd _
 		'' pop from stmt stack
 		cCompStmtPop( stk )
 
-        if( env.clopt.lang <> FB_LANG_QB ) then
-
-	        '' close outer scope
-			stk = cCompStmtGetTOS( FB_TK_SCOPE )
-			if( stk = NULL ) then
-				exit function
-			end if
-
-			''
-			if( stk->scopenode <> NULL ) then
-				astScopeEnd( stk->scopenode )
-			end if
-
-			'' pop from stmt stack
-			cCompStmtPop( stk )
-
-		end if
-
 		'' ID?
 		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
 			exit do
 		end if
+
 		lexSkipToken( )
 
 		'' ','?
 		if( lexGetToken( ) <> CHAR_COMMA ) then
 			exit do
 		end if
+
 		lexSkipToken( )
 	loop
 

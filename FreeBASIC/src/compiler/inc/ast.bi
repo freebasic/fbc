@@ -411,11 +411,10 @@ declare function astIsADDR _
 		byval n as ASTNODE ptr _
 	) as integer
 
-declare sub astConvertValue _
+declare sub astToFbValue _
 	( _
-		byval n as ASTNODE ptr, _
-		byval v as FBVALUE ptr, _
-		byval todtype as integer _
+		byval dst as FBVALUE ptr, _
+		byval expr as ASTNODE ptr _
 	)
 
 declare function astGetValueAsInt _

@@ -231,7 +231,7 @@ end type
 		@"PROPERTY has no SET method/accessor", _
 		@"PROPERTY has no indexed GET method/accessor", _
 		@"PROPERTY has no indexed SET method/accessor", _
-		@"UDT in FOR needs numeric overloaded operators: ", _
+		@"Missing overloaded operator: ", _
 		@"The NEW[] operator does not allow explicit calls to constructors", _
 		@"The NEW[] operator only supports the { ANY } initialization", _
 		@"The NEW operator cannot be used with strings", _

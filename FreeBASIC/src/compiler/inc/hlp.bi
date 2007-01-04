@@ -111,16 +111,6 @@ declare function hToPow2 _
 		byval value as uinteger _
 	) as uinteger
 
-#ifdef FBVALUE
-declare sub hConvertValue _
-	( _
-		byval src as FBVALUE ptr, _
-		byval sdtype as integer, _
-		byval dst as FBVALUE ptr, _
-		byval ddtype as integer _
-	)
-#endif
-
 declare function hJumpTbAllocSym _
 	( _
 	) as any ptr

@@ -96,7 +96,7 @@
 	  if converting from pointer types or if data sizes and classes are the same
 	- scopes must be preserved or local vars won't work
 	- if()'s must be translated to
-	  if(vreg op vreg) goto label
+	  if(vreg reverse(op) vreg) goto label
 	  { -- scope
 	  } -- end scope
 	  label:
