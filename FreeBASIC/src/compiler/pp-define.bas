@@ -48,7 +48,7 @@ end type
 ''::::
 sub ppDefineInit( )
 
-	listNew( @pp.argtblist, 5, len( LEXPP_ARGTB ), LIST_FLAGS_NOCLEAR )
+	listNew( @pp.argtblist, 8, len( LEXPP_ARGTB ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
