@@ -411,7 +411,7 @@ declare function astIsADDR _
 		byval n as ASTNODE ptr _
 	) as integer
 
-declare sub astToFbValue _
+declare sub astCONST2FBValue _
 	( _
 		byval dst as FBVALUE ptr, _
 		byval expr as ASTNODE ptr _

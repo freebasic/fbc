@@ -47,7 +47,7 @@ type FB_CMPSTMT_DO
 	inilabel		as FBSYMBOL ptr
 end type
 
-type FB_CMPSTMT_FORCNT
+type FB_CMPSTMT_FORELM
 	sym				as FBSYMBOL ptr				'' if sym = null, value will be used
 	value			as FBVALUE
 	dtype			as integer
@@ -57,11 +57,10 @@ type FB_CMPSTMT_FOR
 	outerscopenode	as ASTNODE ptr
 	inilabel		as FBSYMBOL ptr
 	testlabel		as FBSYMBOL ptr
-	iscomplex		as integer
-	ispositive		as integer
-	inic			as FB_CMPSTMT_FORCNT
-	endc            as FB_CMPSTMT_FORCNT
-	stpc			as FB_CMPSTMT_FORCNT
+	cnt				as FB_CMPSTMT_FORELM
+	end            	as FB_CMPSTMT_FORELM
+	stp				as FB_CMPSTMT_FORELM
+	ispos			as FB_CMPSTMT_FORELM
 end type
 
 type FB_CMPSTMT_IF

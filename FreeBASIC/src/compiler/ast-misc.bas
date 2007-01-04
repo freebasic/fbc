@@ -611,7 +611,7 @@ function astGetStrLitSymbol _
 end function
 
 '':::::
-sub astToFBValue _
+sub astCONST2FBValue _
 	( _
 		byval dst as FBVALUE ptr, _
 		byval expr as ASTNODE ptr _

@@ -720,11 +720,10 @@ private function hVarInit _
         byval sym as FBSYMBOL ptr, _
         byval isdecl as integer, _
         byval has_defctor as integer, _
-        byval has_dtor as integer, _
-        byval is_fordecl as integer _
+        byval has_dtor as integer _
 	) as ASTNODE ptr
 
-    dim as integer attrib = any, def_init = any
+    dim as integer attrib = any
 	dim as ASTNODE ptr initree = any
 
 	function = NULL
@@ -738,14 +737,9 @@ private function hVarInit _
 	'' '=' | '=>' ?
 	select case lexGetToken( )
 	case FB_TK_DBLEQ, FB_TK_EQ
-        def_init = (is_fordecl = TRUE)
 
+	'' default initialization
 	case else
-        def_init = TRUE
-	end select
-
-    '' do default initialization?
-    if( def_init ) then
     	if( sym <> NULL ) then
     		'' ctor?
     		if( has_defctor ) then
@@ -779,7 +773,7 @@ private function hVarInit _
     	end if
 
     	exit function
-    end if
+    end select
 
 	'' already declared, extern or common?
 	if( isdecl or _
@@ -1153,8 +1147,7 @@ function hVarDeclEx _
     	'' ('(' ArrayDecl? ')')?
 		dimensions = 0
 		check_exprtb = FALSE
-		if( lexGetToken( ) = CHAR_LPRNT ) then
-
+		if( (lexGetToken( ) = CHAR_LPRNT) and (is_fordecl = FALSE) ) then
 			lexSkipToken( )
 
 			is_dynamic = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
@@ -1219,7 +1212,7 @@ function hVarDeclEx _
 
 		'' ALIAS LIT_STR?
 		palias = NULL
-		if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) > 0 ) then
+		if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0 ) then
 			if( lexGetToken( ) = FB_TK_ALIAS ) then
 				lexSkipToken( )
 
@@ -1378,12 +1371,17 @@ function hVarDeclEx _
 		end if
 
 		'' check for an initializer
-		initree = hVarInit( sym, is_decl, has_defctor, has_dtor, is_fordecl )
+		if( is_fordecl = FALSE ) then
+			initree = hVarInit( sym, is_decl, has_defctor, has_dtor )
 
-		if( initree = NULL ) then
-	    	if( errGetLast( ) <> FB_ERRMSG_OK ) then
-	    		exit function
+			if( initree = NULL ) then
+	    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+	    			exit function
+	    		end if
 	    	end if
+
+	    else
+	    	initree = NULL
 	    end if
 
 		'' add to AST

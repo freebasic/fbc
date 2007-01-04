@@ -18,9 +18,11 @@ namespace fbc_tests.compound.for_UDT_counter
 	
 		type foo##__TYPE__
 			as __TYPE__ x, y
-			declare operator let( byval rhs as __TYPE__ )
 			declare operator +=( byref rhs as foo##__TYPE__ )
 			declare constructor( )
+			declare constructor( byval rhs as __TYPE__ )
+			declare constructor( byref rhs as foo##__TYPE__ )
+			declare operator let( byval rhs as __TYPE__ )
 			declare destructor( )
 		end type
 		
@@ -32,6 +34,20 @@ namespace fbc_tests.compound.for_UDT_counter
 			return lhs.x <= rhs.x
 		end operator
 
+		constructor foo##__TYPE__( )
+			this.y = 69
+		end constructor
+		
+		constructor foo##__TYPE__( byval rhs as __TYPE__ )
+			this.x = rhs
+			this.y = 69
+		end constructor
+
+		constructor foo##__TYPE__( byref rhs as foo##__TYPE__ )
+			this.x = rhs.x
+			this.y = rhs.y
+		end constructor
+
 		operator foo##__TYPE__.let( byval rhs as __TYPE__ )
 			this.x = rhs
 		end operator
@@ -39,10 +55,6 @@ namespace fbc_tests.compound.for_UDT_counter
 		operator foo##__TYPE__.+=( byref rhs as foo##__TYPE__ )
 			this.x += rhs.x
 		end operator
-		
-		constructor foo##__TYPE__( )
-			this.y = 69
-		end constructor
 		
 		destructor foo##__TYPE__( )
 			this.y = 0
