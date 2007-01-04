@@ -87,8 +87,8 @@ function listAllocTB _
 	dim as integer i
 
 	function = FALSE
-
-	if( nodes <= 1 ) then
+    
+	if( nodes < 1 ) then
 		exit function
 	end if
 
@@ -98,6 +98,7 @@ function listAllocTB _
 	else
 		nodetb = allocate( nodes * list->nodelen )
 	end if
+
 	if( nodetb = NULL ) then
 		exit function
 	end if
