@@ -350,7 +350,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			BeginPaint(fb_win32.wnd, &ps);
 			fb_win32.paint();
 			EndPaint(fb_win32.wnd, &ps);
-			return 0;
+			break;
 		
 		case WM_DISPLAYCHANGE:
 			fb_win32.paint();
