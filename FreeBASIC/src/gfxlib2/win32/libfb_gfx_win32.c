@@ -48,6 +48,7 @@ static BOOL screensaver_active, cursor_shown, has_focus = FALSE;
 static int mouse_buttons, mouse_wheel, mouse_x, mouse_y, mouse_on;
 static BOOL (WINAPI *_TrackMouseEvent)(TRACKMOUSEEVENT *) = NULL;
 static POINT last_mouse_pos;
+static UINT WM_MOUSEENTER;
 
 
 /*:::::*/
@@ -104,6 +105,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	RECT *rect = (RECT *)rect_pt;
 	PAINTSTRUCT ps;
 	EVENT e;
+	BOOL is_minimized;
 	
 	e.type = 0;
 
@@ -115,14 +117,26 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	switch (message)
 	{
 		case WM_ACTIVATE:
-			fb_win32.is_active = ((!HIWORD(wParam)) && (LOWORD(wParam) != WA_INACTIVE));
+			is_minimized = HIWORD(wParam);
+			fb_win32.is_active = ((!is_minimized) && (LOWORD(wParam) != WA_INACTIVE));
 			fb_hMemSet(__fb_gfx->key, FALSE, 128);
 			mouse_buttons = 0;
 			fb_hMemSet(__fb_gfx->dirty, TRUE, fb_win32.h);
-			if ((has_focus) && (!fb_win32.is_active))
-				PostMessage(fb_win32.wnd, WM_MOUSELEAVE, 0, 0);
-			e.type = fb_win32.is_active ? EVENT_WINDOW_GOT_FOCUS : EVENT_WINDOW_LOST_FOCUS;
-			break;
+			if ((!fb_win32.is_active) && (has_focus)) {
+				e.type = EVENT_MOUSE_EXIT;
+				fb_hPostEvent(&e);
+				has_focus = FALSE;
+				KillTimer(fb_win32.wnd, TME_LEAVE);
+			}
+			if (!((LOWORD(wParam)) && (is_minimized))) {
+				e.type = fb_win32.is_active ? EVENT_WINDOW_GOT_FOCUS : EVENT_WINDOW_LOST_FOCUS;
+				fb_hPostEvent(&e);
+			}
+			if ((fb_win32.is_active) && (mouse_on)) {
+				message = WM_MOUSEENTER;
+				break;
+			}
+			return 0;
 		
 		case WM_SETCURSOR:
 			if ((mouse_on) && (!cursor_shown))
@@ -143,20 +157,10 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				e.dy = mouse_pos.y - last_mouse_pos.y;
 			}
 			last_mouse_pos = mouse_pos;
-			if ((!e.dx) && (!e.dy))
-				e.type = 0;
-			if (!has_focus) {
-				track_e.cbSize = sizeof(TRACKMOUSEEVENT);
-				track_e.dwFlags = TME_LEAVE;
-				track_e.hwndTrack = hWnd;
-				_TrackMouseEvent(&track_e);
-				has_focus = TRUE;
-				e.type = EVENT_MOUSE_ENTER;
-			}
-			if (!fb_win32.is_active)
+			if (((!e.dx) && (!e.dy)) || (!fb_win32.is_active))
 				e.type = 0;
 			break;
-
+		
 		case WM_MOUSELEAVE:
 			if (!fb_win32.is_active)
 				break;
@@ -358,10 +362,24 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 	}
 	
+	if ((message == WM_MOUSEMOVE) || (message == WM_MOUSEENTER)) {
+		if ((!has_focus) && (fb_win32.is_active)) {
+			track_e.cbSize = sizeof(TRACKMOUSEEVENT);
+			track_e.dwFlags = TME_LEAVE;
+			track_e.hwndTrack = hWnd;
+			_TrackMouseEvent(&track_e);
+			has_focus = TRUE;
+			e.type = EVENT_MOUSE_ENTER;
+		}
+	}
+
 	if (e.type)
 		fb_hPostEvent(&e);
 
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	if (message == WM_MOUSEENTER)
+		return 0;
+	else
+		return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 
@@ -409,6 +427,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	cursor_shown = TRUE;
 	last_mouse_pos.x = 0xFFFF;
 	
+	WM_MOUSEENTER = RegisterWindowMessage("FB WM_MOUSEENTER emulation");
 	if (!_TrackMouseEvent) {
 		module = GetModuleHandle("user32.dll");
 		if (module)
