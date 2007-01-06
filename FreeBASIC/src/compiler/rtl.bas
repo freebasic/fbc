@@ -135,7 +135,7 @@ sub rtlAddIntrinsicProcs _
 		if( (procdef->options and (FB_RTL_OPT_MT or FB_RTL_OPT_VBSYMB)) <> 0 ) then
 			doadd = fbLangOptIsSet( FB_LANG_OPT_MT or FB_RTL_OPT_VBSYMB )
 		end if
-
+        
 		if( doadd ) then
 			proc = symbPreAddProc( NULL )
 

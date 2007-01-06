@@ -218,11 +218,12 @@ end enum
 
 '' cInitializer flags
 enum FB_INIOPT
-	FB_INIOPT_NONE				= &h00000000
-
-	FB_INIOPT_ISINI				= &h00000001
-	FB_INIOPT_DODEREF			= &h00000002
-	FB_INIOPT_ISOBJ				= &h00000004
+	FB_INIOPT_NONE              = &h00000000
+	
+	FB_INIOPT_ISINI             = &h00000001
+	FB_INIOPT_DODEREF           = &h00000002
+	FB_INIOPT_ISOBJ             = &h00000004
+	FB_INIOPT_AUTO              = &h00000004
 end enum
 
 '' cProcHead flags
@@ -305,6 +306,11 @@ declare function cEnumDecl _
 declare function cVariableDecl _
 	( _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
+	) as integer
+
+declare function cAutoVariableDecl _
+	( _
+		byval attrib as FB_SYMBATTRIB _
 	) as integer
 
 declare function cStaticArrayDecl _

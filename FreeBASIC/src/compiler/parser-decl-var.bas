@@ -720,7 +720,8 @@ private function hVarInit _
         byval sym as FBSYMBOL ptr, _
         byval isdecl as integer, _
         byval has_defctor as integer, _
-        byval has_dtor as integer _
+        byval has_dtor as integer,  _
+        byval opt as integer = FB_INIOPT_NONE _
 	) as ASTNODE ptr
 
     dim as integer attrib = any
@@ -823,7 +824,7 @@ private function hVarInit _
 		exit function
 	end if
 
-	initree = cInitializer( sym, FB_INIOPT_ISINI )
+	initree = cInitializer( sym, FB_INIOPT_ISINI or opt )
 	if( initree = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
@@ -1733,5 +1734,144 @@ function cArrayDecl _
 
 	function = TRUE
 
+end function
+
+
+'':::::
+''AutoVariableDecl    =   AUTO SymbolDef '=' VarInitializer
+function cAutoVariableDecl _
+	( _
+		byval attrib as FB_SYMBATTRIB _
+	) as integer
+	
+	function = FALSE
+	
+	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1) '' needed for hDeclStaticVar()
+	dim as integer subtype = NULL, suffix = any
+	static as zstring * FB_MAXNAMELEN+1 id
+	
+	dim as FBSYMBOL ptr sym
+	dim as ASTNODE ptr initree
+	
+	'' AUTO
+	lexSkipToken( )
+	
+	'' this proc static?
+	if( symbGetProcStaticLocals( parser.currproc ) ) then
+		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
+			attrib or= FB_SYMBATTRIB_STATIC
+		end if
+	end if
+	
+	'' inside a namespace but outside a proc?
+	if( symbIsGlobalNamespc( ) = FALSE ) then
+		if( fbIsModLevel( ) ) then
+			'' variables will be always shared..
+			attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+		end if
+	end if
+	
+	'' auto always makes new vars
+	dim as FB_IDOPT options = FB_IDOPT_ISDECL
+
+
+	do
+		'' id.id? if not, NULL
+		dim as FBSYMBOL ptr parent = cParentId( options )
+		
+		'' get id
+		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix )
+		
+		'' array? rejected.
+		if( (lexGetToken( ) = CHAR_LPRNT) ) then
+		
+			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+				exit function
+			end if
+			
+			'' '('
+			lexSkipToken( )
+		
+		end if
+		
+		''
+		sym = hLookupVar( parent, chain_, TRUE, INVALID, suffix, options )
+
+		if( sym = NULL ) then
+			'' no symbol was found, check if an explicit namespace was given
+			if( parent <> NULL ) then
+				if( parent <> symbGetCurrentNamespc( ) ) then
+					if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE ) = FALSE ) then
+						exit function
+					end if
+				end if
+			end if
+		end if
+
+		sym = hDeclStaticVar( sym, id, NULL, _
+		                      INVALID, NULL, 0, _
+		                      0, FALSE, attrib, _
+		                      0, dTB() )
+
+		''
+		dim as integer has_defctor = FALSE, has_dtor = FALSE
+	
+		if( sym <> NULL ) then
+			select case symbGetType( sym )
+			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+				'' has a default ctor?
+				has_defctor = symbGetCompDefCtor( symbGetSubtype( sym ) ) <> NULL
+				'' dtor?
+				has_dtor = symbGetCompDtor( symbGetSubtype( sym ) ) <> NULL
+			end select
+		end if
+
+		'' check for an initializer
+		initree = hVarInit( sym, FALSE, has_defctor, has_dtor, FB_INIOPT_AUTO )
+		
+		'' auto needs an initializer
+		if( initree = NULL ) then
+			if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
+				exit function
+			else
+				if( sym <> NULL ) then
+					'' error recovery: fake a type
+					symbGetSubType( sym ) = NULL
+					symbGetType( sym )    = FB_DATATYPE_INTEGER
+				end if
+			end if
+		end if
+
+		'' add to AST
+		if( sym <> NULL ) then
+
+			dim as FBSYMBOL ptr desc = NULL
+			dim as ASTNODE ptr var_decl = NULL
+
+			var_decl = astNewDECL( FB_SYMBCLASS_VAR, sym, initree )
+
+			'' set as declared
+			symbSetIsDeclared( sym )
+
+			'' not declared already?
+			'' flush the init tree (must be done after adding the decl node)
+			astAdd( hFlushInitializer( sym, _
+			        var_decl, _
+			        initree, _
+			        has_defctor, _
+			        has_dtor ) )
+
+		end if
+
+		'' (',' SymbolDef)*
+		if( lexGetToken( ) <> CHAR_COMMA ) then
+			exit do
+		end if
+
+		lexSkipToken( )
+	loop
+	
+	function = TRUE
+	
 end function
 

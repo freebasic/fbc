@@ -530,7 +530,6 @@ function symbAddVarEx _
 			end if
 		end if
 	end if
-
 	s = symbNewSymbol( options or FB_SYMBOPT_DOHASH, _
 					   NULL, _
 					   symtb, hashtb, _

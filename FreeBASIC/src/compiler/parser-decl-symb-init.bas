@@ -38,7 +38,8 @@ end type
 
 declare function hUDTInit _
 	( _
-		byref ctx as FB_INITCTX _
+		byref ctx as FB_INITCTX, _
+		byval expr_in as ASTNODE ptr = NULL _
 	) as integer
 
 '':::::
@@ -51,7 +52,46 @@ private function hDoAssign _
     dim as ASTNODE lside = any
 	dim as integer dtype = any
 
-	dtype = symbGetType( ctx.sym )
+    if ctx.options and FB_INIOPT_AUTO then
+    	'' infer type
+		dtype = astGetDataType( expr )
+		
+		'' wstrings not allowed...
+		if dtype = FB_DATATYPE_WCHAR then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+	        	return FALSE
+	        else
+	        	'' error recovery: create a fake expression
+	        	astDelTree( expr )
+	        	expr = astNewCONSTz( dtype )
+	        end if
+	    end if
+
+        '' backpatching...
+		symbGetSubType( ctx.sym )  = astGetSubtype( expr )
+    	symbGetType( ctx.sym )     = dtype
+    	astGetDataType( ctx.tree ) = dtype
+    	astGetSubtype( ctx.tree )  = astGetSubtype( expr )
+		
+		'' zstring... convert to string
+		if dtype = FB_DATATYPE_CHAR then
+			dtype = FB_DATATYPE_STRING
+		end if
+		
+    	ctx.sym->lgt = symbCalcLen( dtype, symbGetSubtype( ctx.sym ) )
+    	
+    	'' init UDT
+		if dtype = FB_DATATYPE_STRUCT then
+			ctx.options or= FB_INIOPT_ISOBJ
+			
+			return hUDTInit( ctx, expr )
+			
+		end if
+        
+    else
+		dtype = symbGetType( ctx.sym )
+	end if
+	
 	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
 		dtype -= FB_DATATYPE_POINTER
 	end if
@@ -291,7 +331,8 @@ end function
 '':::::
 private function hUDTInit _
 	( _
-		byref ctx as FB_INITCTX _
+		byref ctx as FB_INITCTX, _
+		byval expr_in as ASTNODE ptr = NULL _
 	) as integer
 
 	dim as integer elements = any, elm_cnt = any, elm_ofs = any
@@ -304,17 +345,21 @@ private function hUDTInit _
     '' ctor?
     if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
     	dim as ASTNODE ptr expr = any
-
-    	'' Expression
-    	expr = cExpression( )
-    	if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
-    	end if
+        
+        if expr_in then
+        	expr = expr_in
+        else
+	    	'' Expression
+	    	expr = cExpression( )
+	    	if( expr = NULL ) then
+				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				end if
+	    	end if
+	    end if
 
     	dim as integer is_ctorcall = any
     	expr = astBuildImplicitCtorCallEx( ctx.sym, expr, is_ctorcall )

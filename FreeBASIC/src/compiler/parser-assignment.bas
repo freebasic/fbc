@@ -191,6 +191,7 @@ function cOperator _
     	return AST_OP_FLDDEREF
 
 	case FB_TK_NEW, FB_TK_DELETE
+	
 		if( (options and FB_OPEROPTS_SELF) = 0 ) then
     		exit function
     	end if

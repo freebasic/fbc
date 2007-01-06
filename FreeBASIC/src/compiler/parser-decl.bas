@@ -140,6 +140,9 @@ function cDeclaration _
 	case FB_TK_DIM, FB_TK_REDIM, FB_TK_COMMON, FB_TK_EXTERN
 		function = cVariableDecl( attrib )
 
+	case FB_TK_AUTO
+		function = cAutoVariableDecl( attrib )
+
 	case else
 		if( attrib <> FB_SYMBATTRIB_NONE ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )

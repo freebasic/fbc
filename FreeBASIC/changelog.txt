@@ -92,6 +92,7 @@ Version 0.17 Beta:
 - all Gfxlib drawing functions can now successfully work on buffers using a depth different than the current one (lillo)
 - using PUT to draw an 8bpp sprite on top of a 32bpp one with ALPHA drawing mode will cause the source to be set as the dest alpha channel (lillo)
 - the FRAC() inline function, that returns the fractional part of a floating-point number (v1c)
+- the AUTO keyword, which allows type inferrence from initializers (think DIM without AS) ex: auto foo = "hello", bar = 2.4
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)

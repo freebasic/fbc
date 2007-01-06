@@ -248,7 +248,8 @@ end type
 		@"The function prototype wasn't declared as STATIC", _
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _
-		@"Parameter must be a pointer" _
+		@"Parameter must be a pointer", _
+		@"AUTO requires an initializer" _
 	}
 
 
