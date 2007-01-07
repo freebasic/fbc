@@ -35,6 +35,17 @@ end enum
 #define CREATEFAKEID( ) _
 	astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ), 0, FB_DATATYPE_INTEGER )
 
+#macro hDestroyTemp( s )
+	if( s <> NULL ) then
+		select case symbGetType( s )
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
+				astAdd( astBuildVarDtorCall( s, TRUE ) )
+			end if
+		end select
+	end if
+#endmacro
+
 '':::::
 private function hStoreTemp _
 	( _
@@ -261,6 +272,7 @@ private function hForAssign _
 		''
 		if( astIsCONST( expr ) and ((flags and FOR_ISUDT) = 0) ) then
 			expr = astNewCONV( dtype, NULL, expr )
+			
 			if( expr = NULL ) then
 				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 					exit function
@@ -403,6 +415,7 @@ private function hForStep _
 	end if
 
 	dim as integer iscomplex = FALSE
+	dim as ASTNODE ptr orig_expr = any
 
 	if( (flags and FOR_HASCTOR) = 0 ) then
 		dim as ASTNODE ptr expr = any
@@ -422,6 +435,9 @@ private function hForStep _
 			'' the step's type will be coverted bellow
 			expr = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
 		end if
+		
+		'' keep the original expression
+		orig_expr = expr
 
 		'' store step into a temp var
 		if( astIsCONST( expr ) and ((flags and FOR_ISUDT) = 0) ) then
@@ -515,13 +531,13 @@ private function hForStep _
     		if( (flags and FOR_HASCTOR) = 0 ) then
     			cmp.sym = hStoreTemp( cmp.dtype, _
     								  symbGetSubtype( stk->for.stp.sym ), _
-    								  astNewCONSTi( 0 ) )
+    								  orig_expr )
 
 			'' the UDT has a constructor..
 			else
        			cmp.sym = symbAddTempVar( cmp.dtype, _
        									  symbGetSubtype( stk->for.stp.sym ) )
-    			if( hCallCtor( cmp.sym, astNewCONSTi( 0 ) ) = FALSE ) then
+    			if( hCallCtor( cmp.sym, orig_expr ) = FALSE ) then
            			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
            				exit function
            			end if
@@ -552,20 +568,27 @@ private function hForStep _
 
 		stk->for.ispos.sym = symbAddTempVar( FB_DATATYPE_INTEGER )
 		stk->for.ispos.dtype = FB_DATATYPE_INTEGER
+        
+        
+		dim as ASTNODE ptr rhs = astNewBOP( AST_OP_GE, _
+		                                    hElmToExpr( @stk->for.stp ), _
+		                                    hElmToExpr( @cmp ) )
 
-		'' is_positive = stp >= 0
-		astAdd( astNewASSIGN( astNewVAR( stk->for.ispos.sym, 0, FB_DATATYPE_INTEGER ), _
-					  		  astNewBOP( AST_OP_GE, _
-					  		  			 hElmToExpr( @stk->for.stp ), _
-					  		  			 hElmToExpr( @cmp ) ) ) )
-
-
-		'' destroy the cmp symbol, it's not needed anymore
-		if( cmp.sym <> NULL ) then
-			if( symbGetHasDtor( symbGetSubtype( cmp.sym ) ) ) then
-				astAdd( astBuildVarDtorCall( cmp.sym, TRUE ) )
+		'' GE failed?
+		if( rhs = NULL ) then 
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			else
+				'' fake it
+				rhs = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
 			end if
 		end if
+
+		'' is_positive = stp >= 0
+		astAdd( astNewASSIGN( astNewVAR( stk->for.ispos.sym, 0, FB_DATATYPE_INTEGER ), rhs ) )
+
+		'' destroy the cmp symbol, it's not needed anymore
+		hDestroyTemp( cmp.sym )
 
 	else
 		stk->for.ispos.sym = NULL
@@ -760,17 +783,6 @@ private function hForStmtClose _
 	( _
 		byval stk as FB_CMPSTMTSTK ptr _
 	) as integer
-
-#macro hDestroyTemp( s )
-	if( s <> NULL ) then
-		select case symbGetType( s )
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
-				astAdd( astBuildVarDtorCall( s, TRUE ) )
-			end if
-		end select
-	end if
-#endmacro
 
 	'' close the scope block
 	if( stk->scopenode <> NULL ) then
