@@ -1771,13 +1771,9 @@ function cAutoVariableDecl _
 		end if
 	end if
 	
-	'' auto always makes new vars
-	dim as FB_IDOPT options = FB_IDOPT_ISDECL
-
-
 	do
 		'' id.id? if not, NULL
-		dim as FBSYMBOL ptr parent = cParentId( options )
+		dim as FBSYMBOL ptr parent = cParentId( FB_IDOPT_ISDECL )
 		
 		'' get id
 		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix )
@@ -1795,7 +1791,7 @@ function cAutoVariableDecl _
 		end if
 		
 		''
-		sym = hLookupVar( parent, chain_, TRUE, INVALID, suffix, options )
+		sym = hLookupVar( parent, chain_, TRUE, INVALID, suffix, FB_IDOPT_ISDECL )
 
 		if( sym = NULL ) then
 			'' no symbol was found, check if an explicit namespace was given
@@ -1829,7 +1825,7 @@ function cAutoVariableDecl _
 		'' check for an initializer
 		initree = hVarInit( sym, FALSE, has_defctor, has_dtor, FB_INIOPT_AUTO )
 		
-		'' auto needs an initializer
+		'' no? auto needs an initializer
 		if( initree = NULL ) then
 			if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
 				exit function
