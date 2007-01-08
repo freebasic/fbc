@@ -223,7 +223,7 @@ enum FB_INIOPT
 	FB_INIOPT_ISINI             = &h00000001
 	FB_INIOPT_DODEREF           = &h00000002
 	FB_INIOPT_ISOBJ             = &h00000004
-	FB_INIOPT_AUTO              = &h00000004
+	FB_INIOPT_AUTO              = &h00000008
 end enum
 
 '' cProcHead flags
