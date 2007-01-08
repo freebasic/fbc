@@ -1738,7 +1738,7 @@ end function
 
 
 '':::::
-''AutoVariableDecl    =   AUTO SymbolDef '=' VarInitializer
+''AutoVariableDecl    =   AUTO SHARED? SymbolDef '=' VarInitializer
 function cAutoVariableDecl _
 	( _
 		byval attrib as FB_SYMBATTRIB _
@@ -1756,6 +1756,26 @@ function cAutoVariableDecl _
 	'' AUTO
 	lexSkipToken( )
 	
+	'' SHARED?
+	if( lexGetToken( ) = FB_TK_SHARED ) then
+		'' can't use SHARED inside a proc
+		if( hCheckScope( ) = FALSE ) then
+			if( errGetCount( ) >= env.clopt.maxerrors ) then
+				exit function
+			else
+				'' error recovery: don't make it shared
+				attrib or= FB_SYMBATTRIB_STATIC
+			end if
+
+		else
+			attrib or= FB_SYMBATTRIB_SHARED or _
+					   FB_SYMBATTRIB_STATIC
+		end if
+
+		lexSkipToken( )
+
+	end if
+
 	'' this proc static?
 	if( symbGetProcStaticLocals( parser.currproc ) ) then
 		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
