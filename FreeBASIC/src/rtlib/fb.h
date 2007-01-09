@@ -312,7 +312,6 @@ typedef struct FB_RTLIB_CTX_ {
 	FB_FILE 		fileTB[FB_MAX_FILES];
 	int				do_file_reset;
 	int				lang;
-	char 			start_dir[MAX_PATH];
 } FB_RTLIB_CTX;
 
 extern FB_RTLIB_CTX __fb_ctx;

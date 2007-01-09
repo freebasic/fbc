@@ -74,14 +74,9 @@ void fb_hRtInit ( void )
 /*:::::*/
 FBCALL void fb_Init ( int argc, char **argv, int lang )
 {
-	int len;
 	/* note: fb_RtInit() will be called from static/libfb_ctor.c */
 
 	__fb_ctx.argc = argc;
 	__fb_ctx.argv = argv;
 	__fb_ctx.lang = lang;
-
-	len = fb_hGetCurrentDir( __fb_ctx.start_dir, sizeof( __fb_ctx.start_dir ) );
-	if ( len <= 0 )
-		__fb_ctx.start_dir[0] = '\0';
 }
