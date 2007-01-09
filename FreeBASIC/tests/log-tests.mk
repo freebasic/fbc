@@ -14,7 +14,7 @@ else
 SHELL := $(SHELL)
 endif
 
-FIND := find
+FIND := c:/msys/1.0/bin/find
 XARGS := xargs
 GREP := grep
 SED := sed

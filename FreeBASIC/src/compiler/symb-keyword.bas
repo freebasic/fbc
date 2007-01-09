@@ -56,7 +56,7 @@ end type
         (    @"NEW"             , FB_TK_NEW             , FB_TKCLASS_OPERATOR, KWD_OPTION_NO_QB     ), _
         (    @"DELETE"          , FB_TK_DELETE          , FB_TKCLASS_OPERATOR, KWD_OPTION_NO_QB     ), _
         (    @"REM"             , FB_TK_REM             , FB_TKCLASS_KEYWORD , KWD_OPTION_DEFAULT   ), _
-        (    @"AUTO"            , FB_TK_AUTO            , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB     ), _
+        (    @"VAR"             , FB_TK_VAR             , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB     ), _
         (    @"DIM"             , FB_TK_DIM             , FB_TKCLASS_KEYWORD , KWD_OPTION_DEFAULT   ), _
         (    @"ABS"             , FB_TK_ABS             , FB_TKCLASS_KEYWORD , KWD_OPTION_DEFAULT   ), _
         (    @"SGN"             , FB_TK_SGN             , FB_TKCLASS_KEYWORD , KWD_OPTION_DEFAULT   ), _

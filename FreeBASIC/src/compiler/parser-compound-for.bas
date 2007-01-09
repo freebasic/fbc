@@ -764,7 +764,8 @@ function cForStmtBegin _
 			'' error recovery: skip until next ')'
 			hSkipUntil( CHAR_RPRNT )
 		end if
-
+    
+    '' look up the variable
 	else
 		idexpr = cVariable( chain_ )
 		if( idexpr = NULL ) then
@@ -791,10 +792,10 @@ function cForStmtBegin _
 	dim as integer dtype = astGetDataType( idexpr )
 	dim as FBSYMBOL ptr subtype = astGetSubType( idexpr )
 
-	'' not scalar?
+	
 	select case as const dtype
 	case FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE
-
+    
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		flags or= FOR_ISUDT
 		if( symbGetHasCtor( symbGetSubtype( astGetSymbol( idexpr ) ) ) ) then
@@ -814,8 +815,11 @@ function cForStmtBegin _
 			end if
 		end if
 	end select
-
+    
+    '' push a FOR context
 	dim as FB_CMPSTMTSTK ptr stk = cCompStmtPush( FB_TK_FOR )
+	
+	'' extract counter variable from the expression
 	stk->for.cnt.sym = astGetSymbol( idexpr )
 	stk->for.cnt.dtype = dtype
 
@@ -848,7 +852,6 @@ function cForStmtBegin _
 
     '' if inic, endc and stepc are all constants,
     '' check if this branch is needed
-
     if( isconst = 3 ) then
     	expr = astNewBOP( iif( stk->for.ispos.value.int, AST_OP_LE, AST_OP_GE ), _
     					  astNewCONST( @stk->for.cnt.value, stk->for.cnt.dtype ), _
@@ -873,7 +876,8 @@ function cForStmtBegin _
 	stk->for.outerscopenode = outerscopenode
 	stk->for.testlabel = tl
 	stk->for.inilabel = il
-
+    
+    '' labels
 	parser.stmt.for.cmplabel = cl
 	parser.stmt.for.endlabel = el
 
@@ -920,9 +924,10 @@ private function hForStmtClose _
 						   cl, _
 						   AST_OPOPT_NONE ) )
 
-    		'' if cnt >= end then goto for_ini else exit for
+    		'' if cnt >= end then goto for_ini 
 			hFlushBOP( AST_OP_GE, @stk->for.cnt, @stk->for.end, stk->for.inilabel )
 
+			'' else exit for
 			astAdd( astNewBRANCH( AST_OP_JMP, parser.stmt.for.endlabel ) )
 
     	'' else
@@ -965,6 +970,7 @@ function cForStmtEnd _
 	lexSkipToken( )
 
 	do
+		'' TOS = top of stack
 		stk = cCompStmtGetTOS( FB_TK_FOR )
 		if( stk = NULL ) then
 			exit function

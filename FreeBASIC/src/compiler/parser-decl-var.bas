@@ -1738,8 +1738,9 @@ end function
 
 
 '':::::
-''AutoVariableDecl    =   AUTO SHARED? SymbolDef '=' VarInitializer
-function cAutoVariableDecl _
+''AutoVarDecl    =   AUTO SHARED? SymbolDef '=' VarInitializer
+''                   (',' SymbolDef)* .
+function cAutoVarDecl _
 	( _
 		byval attrib as FB_SYMBATTRIB _
 	) as integer
@@ -1871,11 +1872,8 @@ function cAutoVariableDecl _
 
 			'' not declared already?
 			'' flush the init tree (must be done after adding the decl node)
-			astAdd( hFlushInitializer( sym, _
-			        var_decl, _
-			        initree, _
-			        has_defctor, _
-			        has_dtor ) )
+			astAdd( hFlushInitializer( sym, var_decl, initree, _
+			                           has_defctor, has_dtor ) )
 
 		end if
 

@@ -140,9 +140,24 @@ private function hElmInit _
 
     function = FALSE
 
-    '' AUTO?
+    '' auto?
     if( is_auto ) then
     	expr = expr_in
+    	
+    	'' auto var was found in the initializer?
+    	if astIsSymbolOnTree( ctx.sym, expr ) then
+			if( errReport( FB_ERRMSG_UNDEFINEDSYMBOL, TRUE, " '" + *symbGetName( ctx.sym ) + "'" ) = FALSE ) then
+				exit function
+			else
+	            '' generate an expression matching the symbol's type
+				dim as integer dtype = symbGetType( ctx.sym )
+				if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
+					dtype -= FB_DATATYPE_POINTER
+				end if
+				expr = astNewCONSTz( dtype )
+
+			end if
+    	end if
 
     '' to be parsed...
     else

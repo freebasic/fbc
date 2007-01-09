@@ -308,7 +308,7 @@ declare function cVariableDecl _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
-declare function cAutoVariableDecl _
+declare function cAutoVarDecl _
 	( _
 		byval attrib as FB_SYMBATTRIB _
 	) as integer
