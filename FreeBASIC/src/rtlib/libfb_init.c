@@ -58,10 +58,10 @@ void fb_hRtInit ( void )
 		return;
 
 	/* initialize context */
-    memset( &__fb_ctx, 0, sizeof( FB_RTLIB_CTX ) );
+	memset( &__fb_ctx, 0, sizeof( FB_RTLIB_CTX ) );
     
 	/* os-dep initialization */
-    fb_hInit( );
+	fb_hInit( );
 
 #ifdef MULTITHREADED
 	/* allocate thread local storage keys */
@@ -74,10 +74,14 @@ void fb_hRtInit ( void )
 /*:::::*/
 FBCALL void fb_Init ( int argc, char **argv, int lang )
 {
+	int len;
 	/* note: fb_RtInit() will be called from static/libfb_ctor.c */
 
 	__fb_ctx.argc = argc;
 	__fb_ctx.argv = argv;
 	__fb_ctx.lang = lang;
-}
 
+	len = fb_hGetCurrentDir( __fb_ctx.start_dir, sizeof( __fb_ctx.start_dir ) );
+	if ( len <= 0 )
+		__fb_ctx.start_dir[0] = '\0';
+}
