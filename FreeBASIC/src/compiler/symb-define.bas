@@ -66,32 +66,32 @@ const SYMB_MAXDEFINES = 32
 
 	dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
 	{ _
-		(@"__FB_VERSION__",			@FB_VERSION,	   0, NULL				 ), _
-		(@"__FB_VER_MAJOR__",		@FB_VER_STR_MAJOR, 1, NULL               ), _
-		(@"__FB_VER_MINOR__",		@FB_VER_STR_MINOR, 1, NULL               ), _
-		(@"__FB_VER_PATCH__",		@FB_VER_STR_PATCH, 1, NULL               ), _
-		(@"__FB_SIGNATURE__",		@FB_SIGN,		   0, NULL               ), _
-		(@"__FB_MT__",				NULL,			   1, @hDefMultithread_cb), _
-		(@"__FILE__",				NULL,			   0, @hDefFile_cb       ), _
-		(@"__FILE_NQ__",			NULL,			   1, @hDefFile_cb       ), _
-		(@"__FUNCTION__",			NULL,			   0, @hDefFunction_cb   ), _
-		(@"__FUNCTION_NQ__",		NULL,			   1, @hDefFunction_cb   ), _
-		(@"__LINE__",				NULL,			   1, @hDefLine_cb       ), _
-		(@"__DATE__",				NULL,			   0, @hDefDate_cb       ), _
-		(@"__TIME__",				NULL,			   0, @hDefTime_cb       ), _
-		(@"__PATH__",     		    NULL,       	   0, @hDefPath_cb    	 ), _
-		(@"__FB_OPTION_BYVAL__",	NULL,		  	   1, @hDefOptByval_cb   ), _
-		(@"__FB_OPTION_DYNAMIC__",	NULL,		  	   1, @hDefOptDynamic_cb ), _
-		(@"__FB_OPTION_ESCAPE__",	NULL,		  	   1, @hDefOptEscape_cb  ), _
-		(@"__FB_OPTION_EXPLICIT__",	NULL,		  	   1, @hDefOptExplicit_cb), _
-		(@"__FB_OPTION_PRIVATE__",	NULL,		  	   1, @hDefOptPrivate_cb ), _
-		(@"__FB_OUT_EXE__",			NULL,		   	   1, @hDefOutExe_cb 	 ), _
-		(@"__FB_OUT_LIB__",			NULL,		   	   1, @hDefOutLib_cb 	 ), _
-		(@"__FB_OUT_DLL__",			NULL,		   	   1, @hDefOutDll_cb 	 ), _
-		(@"__FB_OUT_OBJ__",			NULL,		   	   1, @hDefOutObj_cb 	 ), _
-		(@"__FB_DEBUG__",			NULL,		   	   1, @hDefDebug_cb 	 ), _
-		(@"__FB_ERR__",     		NULL,       	   1, @hDefErr_cb    	 ), _
-		(@"__FB_LANG__",     		NULL,       	   0, @hDefLang_cb    	 ), _
+        (@"__FB_VERSION__"            ,   @FB_VERSION         ,  0,   NULL                   ), _
+        (@"__FB_VER_MAJOR__"          ,   @FB_VER_STR_MAJOR   ,  1,   NULL                   ), _
+        (@"__FB_VER_MINOR__"          ,   @FB_VER_STR_MINOR   ,  1,   NULL                   ), _
+        (@"__FB_VER_PATCH__"          ,   @FB_VER_STR_PATCH   ,  1,   NULL                   ), _
+        (@"__FB_SIGNATURE__"          ,   @FB_SIGN,           ,  0,   NULL                   ), _
+        (@"__FB_MT__"                 ,   NULL                ,  1,   @hDefMultithread_cb    ), _
+        (@"__FILE__"                  ,   NULL                ,  0,   @hDefFile_cb           ), _
+        (@"__FILE_NQ__"               ,   NULL                ,  1,   @hDefFile_cb           ), _
+        (@"__FUNCTION__"              ,   NULL                ,  0,   @hDefFunction_cb       ), _
+        (@"__FUNCTION_NQ__"           ,   NULL                ,  1,   @hDefFunction_cb       ), _
+        (@"__LINE__"                  ,   NULL                ,  1,   @hDefLine_cb           ), _
+        (@"__DATE__"                  ,   NULL                ,  0,   @hDefDate_cb           ), _
+        (@"__TIME__"                  ,   NULL                ,  0,   @hDefTime_cb           ), _
+        (@"__PATH__"                  ,   NULL                ,  0,   @hDefPath_cb           ), _
+        (@"__FB_OPTION_BYVAL__"       ,   NULL                ,  1,   @hDefOptByval_cb       ), _
+        (@"__FB_OPTION_DYNAMIC__"     ,   NULL                ,  1,   @hDefOptDynamic_cb     ), _
+        (@"__FB_OPTION_ESCAPE__"      ,   NULL                ,  1,   @hDefOptEscape_cb      ), _
+        (@"__FB_OPTION_EXPLICIT__"    ,   NULL                ,  1,   @hDefOptExplicit_cb    ), _
+        (@"__FB_OPTION_PRIVATE__"     ,   NULL                ,  1,   @hDefOptPrivate_cb     ), _
+        (@"__FB_OUT_EXE__"            ,   NULL                ,  1,   @hDefOutExe_cb         ), _
+        (@"__FB_OUT_LIB__"            ,   NULL                ,  1,   @hDefOutLib_cb         ), _
+        (@"__FB_OUT_DLL__"            ,   NULL                ,  1,   @hDefOutDll_cb         ), _
+        (@"__FB_OUT_OBJ__"            ,   NULL                ,  1,   @hDefOutObj_cb         ), _
+        (@"__FB_DEBUG__"              ,   NULL                ,  1,   @hDefDebug_cb          ), _
+        (@"__FB_ERR__"                ,   NULL                ,  1,   @hDefErr_cb            ), _
+        (@"__FB_LANG__"               ,   NULL                ,  0,   @hDefLang_cb           ), _
 		(NULL) _
 	}
 
