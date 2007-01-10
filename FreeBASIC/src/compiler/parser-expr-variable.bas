@@ -1194,7 +1194,7 @@ private function hVarAddUndecl _
 	dim as FBSYMBOL ptr s = any
 	dim as FBARRAYDIM dTB(0) = any
 	dim as integer attrib = any, options = any
-	dim as ASTNODE ptr var = any
+	dim as ASTNODE ptr var_ = any
 
 	function = NULL
 
@@ -1247,15 +1247,15 @@ private function hVarAddUndecl _
 		end if
 
 	else
-		var = astNewDECL( FB_SYMBCLASS_VAR, s, NULL )
+		var_ = astNewDECL( FB_SYMBCLASS_VAR, s, NULL )
 
 		'' move to function scope?
 		if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
-			astAddUnscoped( var )
+			astAddUnscoped( var_ )
 
 		'' respect the scope..
 		else
-			astAdd( var )
+			astAdd( var_ )
 		end if
 
 	end if

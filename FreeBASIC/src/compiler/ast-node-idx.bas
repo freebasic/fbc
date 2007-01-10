@@ -29,7 +29,7 @@
 '':::::
 function astNewIDX _
 	( _
-		byval var as ASTNODE ptr, _
+		byval var_ as ASTNODE ptr, _
 		byval idx as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -38,8 +38,8 @@ function astNewIDX _
     dim as ASTNODE ptr n
 
 	if( dtype = INVALID ) then
-		dtype = astGetDataType( var )
-		subtype = astGetSubType( var )
+		dtype = astGetDataType( var_ )
+		subtype = astGetSubType( var_ )
 	end if
 
 	'' alloc new node
@@ -50,8 +50,8 @@ function astNewIDX _
 	end if
 
 	n->l = idx
-	n->r = var
-	n->sym = var->sym
+	n->r = var_
+	n->sym = var_->sym
 	n->idx.mult	= 1
 	n->idx.ofs = 0
 
@@ -63,7 +63,7 @@ end function
 private function hEmitIDX _
 	( _
 		byval n as ASTNODE ptr, _
-		byval var as ASTNODE ptr, _
+		byval var_ as ASTNODE ptr, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr static
 
@@ -72,13 +72,13 @@ private function hEmitIDX _
     dim as integer ofs
 
 	'' ofs * length + difference (non-base 0 indexes) + offset (UDT's offset)
-    s = var->sym
+    s = var_->sym
 
     symbSetIsAccessed( s )
 
     ofs = n->idx.ofs
 	if( symbGetIsDynamic( s ) = FALSE ) then
-		ofs += symbGetArrayDiff( s ) + symbGetOfs( s ) + var->var.ofs
+		ofs += symbGetArrayDiff( s ) + symbGetOfs( s ) + var_->var.ofs
 	else
 		s = NULL
 	end if
@@ -108,11 +108,11 @@ function astLoadIDX _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr var = any, idx = any
+    dim as ASTNODE ptr var_ = any, idx = any
     dim as IRVREG ptr vidx = any, vr = any
 
-	var = n->r
-	if( var = NULL ) then
+	var_ = n->r
+	if( var_ = NULL ) then
 		return NULL
 	end if
 
@@ -124,11 +124,11 @@ function astLoadIDX _
 	end if
 
 	if( ast.doemit ) then
-    	vr = hEmitIDX( n, var, vidx )
+    	vr = hEmitIDX( n, var_, vidx )
     end if
 
 	astDelNode( idx )
-	astDelNode( var )
+	astDelNode( var_ )
 
 	function = vr
 
