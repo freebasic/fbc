@@ -802,16 +802,10 @@ function cProcHeader _
 	'' ctor or dtor?
 	if( (stats and FB_SYMBSTATS_GLOBALCTOR) <> 0 ) then
     	symbAddGlobalCtor( proc )
-		if( proc->proc.ext = NULL ) then
-			proc->proc.ext = callocate( len( FB_PROCEXT ) )
-		end if
 		symbSetProcPriority( proc, priority )
 
     elseif( (stats and FB_SYMBSTATS_GLOBALDTOR) <> 0 ) then
     	symbAddGlobalDtor( proc )
-		if( proc->proc.ext = NULL ) then
-			proc->proc.ext = callocate( len( FB_PROCEXT ) )
-		end if
 		symbSetProcPriority( proc, priority )
 
     end if
@@ -829,11 +823,24 @@ private function hCheckOpOvlParams _
 		byval parent as FBSYMBOL ptr, _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval attrib as FB_SYMBATTRIB, _
 		byval options as FB_PROCOPT _
 	) as integer
 
-    dim as integer is_method = (attrib and FB_SYMBATTRIB_METHOD) <> 0
+    dim as integer is_method = symbIsMethod( proc )
+
+#macro hCheckParam( proc, param, num )
+	'' vararg?
+    if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
+    	hParamError( proc, num, FB_ERRMSG_VARARGPARAMNOTALLOWED )
+    	exit function
+    end if
+
+    '' optional?
+    if( symbGetIsOptional( param ) ) then
+		hParamError( proc, num, FB_ERRMSG_PARAMCANTBEOPTIONAL )
+    	exit function
+    end if
+#endmacro
 
 	function = FALSE
 
@@ -848,6 +855,10 @@ private function hCheckOpOvlParams _
 
 	case AST_NODECLASS_ASSIGN, AST_NODECLASS_MEM
 		params = 1
+
+    '' used by FOR, STEP and NEXT only
+    case AST_NODECLASS_COMP
+    	params = 1
 
     '' bop..
     case else
@@ -879,7 +890,7 @@ private function hCheckOpOvlParams _
     		end if
     	end if
 
-    case AST_NODECLASS_MEM
+    case AST_NODECLASS_MEM, AST_NODECLASS_COMP
     	if( parent = NULL ) then
     		errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
     	end if
@@ -895,17 +906,7 @@ private function hCheckOpOvlParams _
     	''      user-defined type (struct, enum or class)
     	dim as FBSYMBOL ptr param = symbGetProcHeadParam( proc )
 
-    	'' vararg?
-    	if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
-    		hParamError( proc, 1, FB_ERRMSG_VARARGPARAMNOTALLOWED )
-    		exit function
-    	end if
-
-    	'' optional?
-    	if( symbGetIsOptional( param ) ) then
-    		hParamError( proc, 1, FB_ERRMSG_PARAMCANTBEOPTIONAL )
-    		exit function
-    	end if
+    	hCheckParam( proc, param, 1 )
 
     	select case as const astGetOpClass( op )
     	'' unary, cast or addressing?
@@ -915,7 +916,7 @@ private function hCheckOpOvlParams _
     		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
 
     		case else
-    			errReport( FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT, TRUE )
+    			hParamError( proc, 1, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
     			exit function
     		end select
 
@@ -925,17 +926,7 @@ private function hCheckOpOvlParams _
     		if( params > 1 ) then
     			dim as FBSYMBOL ptr nxtparam = param->next
 
-    			'' vararg?
-    			if( symbGetParamMode( nxtparam ) = FB_PARAMMODE_VARARG ) then
-    				hParamError( proc, 2, FB_ERRMSG_VARARGPARAMNOTALLOWED )
-    				exit function
-    			end if
-
-    			'' optional?
-    			if( symbGetIsOptional( nxtparam ) ) then
-	    				hParamError( proc, 2, FB_ERRMSG_PARAMCANTBEOPTIONAL )
-    				exit function
-    			end if
+                hCheckParam( proc, nxtparam, 2 )
 
     			'' is the 1st param an UDT?
     			select case symbGetType( param )
@@ -947,13 +938,13 @@ private function hCheckOpOvlParams _
     				case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
 
     				case else
-    					errReport( FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT, TRUE )
+    					hParamError( proc, 2, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
     					exit function
     				end select
     			end select
     		end if
 
-    	'' new or delete?
+    	'' NEW or DELETE?
     	case AST_NODECLASS_MEM
 
     		select case op
@@ -962,11 +953,11 @@ private function hCheckOpOvlParams _
     			if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
     			    select case symbGetType( param )
     			    case is >= FB_DATATYPE_POINTER, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    					errReport( FB_ERRMSG_PARAMMUSTBEANINTEGER, TRUE )
+    					hParamError( proc, 1, FB_ERRMSG_PARAMMUSTBEANINTEGER )
     					exit function
     			    end select
     			else
-    				errReport( FB_ERRMSG_PARAMMUSTBEANINTEGER, TRUE )
+    				hParamError( proc, 1, FB_ERRMSG_PARAMMUSTBEANINTEGER )
     				exit function
     			end if
 
@@ -974,15 +965,38 @@ private function hCheckOpOvlParams _
     			'' must be a pointer
     			if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
     			    if( symbGetType( param ) < FB_DATATYPE_POINTER ) then
-    					errReport( FB_ERRMSG_PARAMMUSTBEAPOINTER, TRUE )
+    					hParamError( proc, 1, FB_ERRMSG_PARAMMUSTBEAPOINTER )
     					exit function
     			    end if
     			else
-    				errReport( FB_ERRMSG_PARAMMUSTBEAPOINTER, TRUE )
+    				hParamError( proc, 1, FB_ERRMSG_PARAMMUSTBEAPOINTER )
     				exit function
     			end if
 
     		end select
+
+    	'' FOR, STEP or NEXT?
+    	case AST_NODECLASS_COMP
+
+    		'' skip the instance ptr
+    		if( is_method ) then
+    			param = param->next
+    		end if
+
+    		'' must be of the same type as parent
+    		if( (param = NULL) or (parent = NULL) ) then
+    			hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
+    			exit function
+    		end if
+
+    		hCheckParam( proc, param, 1 )
+
+    		'' same type?
+    		if( (symbGetType( param ) <> symbGetType( parent )) or _
+    			(symbGetSubtype( param ) <> parent) ) then
+    			hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
+    			exit function
+    		end if
 
     	end select
     end if
@@ -1092,6 +1106,17 @@ private function hCheckOpOvlParams _
 
    			end if
    		end select
+
+    '' FOR, STEP or NEXT?
+    case AST_NODECLASS_COMP
+
+   		'' it must return an integer (if NEXT) or void
+   		if( symbGetType( proc ) <> iif( op = AST_OP_NEXT, _
+   										FB_DATATYPE_INTEGER, _
+   										FB_DATATYPE_VOID ) ) then
+   			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
+   			exit function
+   		end if
 
     end select
 
@@ -1297,30 +1322,22 @@ function cOperatorHeader _
     	end if
     end if
 
-    '' needed to allow CAST to be checked
+    ''
     symbGetType( proc ) = dtype
     symbGetSubtype( proc ) = subtype
 
-	''
-	if( hCheckOpOvlParams( parent, op, proc, attrib, options ) = FALSE ) then
-		if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
-			hSkipStmt( )
-		else
-			'' error recovery: skip the whole compound stmt
-    		hSkipCompound( FB_TK_OPERATOR )
-    	end if
-
-		exit function
-	end if
+    symbSetProcOpOvl( proc, op )
 
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
+		'' check params
+		hCheckOpOvlParams( parent, op, proc, options )
+
     	proc = symbAddOperator( proc, op, palias, plib, _
     						    dtype, subtype, ptrcnt, _
     					        attrib, mode )
     	if( proc = NULL ) then
-    		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-    			exit function
-    		end if
+    		errReport( FB_ERRMSG_DUPDEFINITION )
+    		return NULL
     	end if
 
     	return proc
@@ -1331,7 +1348,7 @@ function cOperatorHeader _
 		exit function
 	end if
 
-    dim as FBSYMBOL ptr head_proc
+    dim as FBSYMBOL ptr head_proc = any
 
     '' no preview proc or proto for this operator?
     head_proc = symbGetCompOpOvlHead( parent, op )
@@ -1341,6 +1358,13 @@ function cOperatorHeader _
 			if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
 				exit function
 			end if
+    	end if
+
+		'' check params
+		if( hCheckOpOvlParams( parent, op, proc, options ) = FALSE ) then
+			'' error recovery: skip the whole compound stmt
+    		hSkipCompound( FB_TK_OPERATOR )
+    		exit function
     	end if
 
     	head_proc = symbAddOperator( proc, op, palias, NULL, _
@@ -1374,6 +1398,13 @@ function cOperatorHeader _
 				end if
     		end if
 
+			'' check params
+			if( hCheckOpOvlParams( parent, op, proc, options ) = FALSE ) then
+				'' error recovery: skip the whole compound stmt
+    			hSkipCompound( FB_TK_OPERATOR )
+    			exit function
+    		end if
+
     		head_proc = symbAddOperator( proc, op, palias, NULL, _
     						   		  	 dtype, subtype, ptrcnt, _
     						   		  	 attrib, mode, _
@@ -1400,6 +1431,13 @@ function cOperatorHeader _
     				'' error recovery: create a fake symbol
     				return CREATEFAKEID( proc )
     			end if
+    		end if
+
+			'' check params
+			if( hCheckOpOvlParams( parent, op, proc, options ) = FALSE ) then
+				'' error recovery: skip the whole compound stmt
+    			hSkipCompound( FB_TK_OPERATOR )
+    			exit function
     		end if
 
     		'' there's already a prototype for this operator, check for

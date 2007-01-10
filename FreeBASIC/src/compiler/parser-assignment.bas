@@ -191,7 +191,7 @@ function cOperator _
     	return AST_OP_FLDDEREF
 
 	case FB_TK_NEW, FB_TK_DELETE
-	
+
 		if( (options and FB_OPEROPTS_SELF) = 0 ) then
     		exit function
     	end if
@@ -218,6 +218,30 @@ function cOperator _
         else
     		return iif( is_new, AST_OP_NEW_SELF, AST_OP_DEL_SELF )
     	end if
+
+	case FB_TK_FOR
+		if( (options and FB_OPEROPTS_SELF) = 0 ) then
+    		exit function
+    	end if
+
+    	lexSkipToken( )
+    	return AST_OP_FOR
+
+	case FB_TK_STEP
+		if( (options and FB_OPEROPTS_SELF) = 0 ) then
+    		exit function
+    	end if
+
+    	lexSkipToken( )
+    	return AST_OP_STEP
+
+	case FB_TK_NEXT
+		if( (options and FB_OPEROPTS_SELF) = 0 ) then
+    		exit function
+    	end if
+
+    	lexSkipToken( )
+    	return AST_OP_NEXT
 
 	case else
    		select case as const lexGetToken( )

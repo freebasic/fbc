@@ -2111,6 +2111,10 @@ declare function symbGetEnumNextElm _
 
 #define symbGetProcOvlNext(f) f->proc.ovl.next
 
+#define symbAllocProcExt() callocate( len( FB_PROCEXT ) )
+
+#define symbFreeProcExt(f) deallocate( f->proc.ext )
+
 #define symbGetProcStatReturnUsed(f) ((f->proc.ext->stats and FB_PROCSTATS_RETURNUSED) <> 0)
 
 #define symbSetProcStatReturnUsed(f) f->proc.ext->stats or= FB_PROCSTATS_RETURNUSED
@@ -2121,11 +2125,25 @@ declare function symbGetEnumNextElm _
 
 #define symbGetProcPriority(f) f->proc.ext->priority
 
-#define symbSetProcPriority(f,p) f->proc.ext->priority = p
+#macro symbSetProcPriority(f,p)
+	if( f->proc.ext = NULL ) then
+		f->proc.ext = symbAllocProcExt( )
+	end if
+	f->proc.ext->priority = p
+#endmacro
 
 #define symbGetProcLocalOfs(p) p->proc.ext->stk.localofs
 
 #define symbSetProcLocalOfs(p,ofs) p->proc.ext->stk.localofs = ofs
+
+#define symbGetProcOpOvl(f) f->proc.ext->opovl.op
+
+#macro symbSetProcOpOvl(f, op_)
+	if( f->proc.ext = NULL ) then
+		f->proc.ext = symbAllocProcExt( )
+	end if
+	f->proc.ext->opovl.op = op_
+#endmacro
 
 #define symbGetParamMode(a) a->param.mode
 

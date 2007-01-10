@@ -651,7 +651,7 @@ private function hSetupProc _
 
         dim as AST_OP op
 
-        op = sym->proc.ext->opovl.op
+        op = symbGetProcOpOvl( sym )
 
         head_proc = symbGetCompOpOvlHead( parent, op )
 
@@ -911,7 +911,9 @@ function symbAddOperator _
     function = NULL
 
 	''
-	proc->proc.ext = callocate( len( FB_PROCEXT ) )
+	if( proc->proc.ext = NULL ) then
+		proc->proc.ext = symbAllocProcExt( )
+	end if
 	proc->proc.ext->opovl.op = op
 
 	''
@@ -921,7 +923,7 @@ function symbAddOperator _
 					  options )
 
 	if( sym = NULL ) then
-		deallocate( proc->proc.ext )
+		symbFreeProcExt( proc )
 		exit function
 	end if
 
@@ -1143,7 +1145,7 @@ function symbAddProcResultParam _
 
 
 	if( proc->proc.ext = NULL ) then
-		proc->proc.ext = callocate( len( FB_PROCEXT ) )
+		proc->proc.ext = symbAllocProcExt( )
 	end if
 
 	proc->proc.ext->res = s
@@ -1177,7 +1179,7 @@ function symbAddProcResult _
 					  FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
 
 	if( proc->proc.ext = NULL ) then
-		proc->proc.ext = callocate( len( FB_PROCEXT ) )
+		proc->proc.ext = symbAllocProcExt( )
 	end if
 
 	proc->proc.ext->res = s
@@ -2238,7 +2240,7 @@ sub symbDelPrototype _
 
     ''
     if( s->proc.ext <> NULL ) then
-    	deallocate( s->proc.ext )
+    	symbFreeProcExt( s )
     	s->proc.ext = NULL
     end if
 
@@ -2410,7 +2412,7 @@ sub symbSetProcIncFile _
 	)
 
 	if( p->proc.ext = NULL ) then
-		p->proc.ext = callocate( len( FB_PROCEXT ) )
+		p->proc.ext = symbAllocProcExt( )
 	end if
 
 	p->proc.ext->dbg.incfile = incf
@@ -2496,6 +2498,14 @@ private function hDemangleParams _
 
     '' for each param..
     param = symbGetProcHeadParam( proc )
+
+    '' method? skip the instance pointer
+    if( param <> NULL ) then
+    	if( symbIsMethod( proc ) ) then
+    		param = symbGetParamNext( param )
+    	end if
+    end if
+
     do while( param <> NULL )
     	select case as const param->param.mode
     	case FB_PARAMMODE_BYVAL, FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
@@ -2573,7 +2583,7 @@ function symbGetFullProcName _
 	elseif( symbIsOperator( proc ) ) then
 		res += "operator."
 		if( proc->proc.ext <> NULL ) then
-			res += *astGetOpId( proc->proc.ext->opovl.op )
+			res += *astGetOpId( symbGetProcOpOvl( proc ) )
 		end if
 
 	elseif( symbIsProperty( proc ) ) then

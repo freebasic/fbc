@@ -4,54 +4,54 @@ namespace fbc_tests.compound.for_UDT_counter2
 
 type foo
 	declare constructor( byval r as zstring ptr )
-	declare constructor( byval r as integer )
-	declare operator +=( byref r as foo )
+	
+	declare operator for( byref stp as foo )
+	declare operator step( byref stp as foo )
+	declare operator next( byref end_cond as foo ) as integer
+	
 	declare operator cast( ) as string
 	
+private:	
 	value as string
+	is_up as integer
 end type
 
 constructor foo( byval r as zstring ptr )
 	value = *r
 end constructor
 
-constructor foo( byval r as integer )
-	value = chr( r )
-end constructor
+operator foo.for( byref stp as foo )
 
-operator foo.+=( byref r as foo )
-	select case r.value
-	case "up"
+	if( @stp = NULL ) then
+		is_up = -1
+	else
+		is_up = (stp.value = "up")
+	end if
+	
+end operator
+
+operator foo.step( byref stp as foo )
+	
+	if( is_up ) then
 		value[0] += 1
-	case "down"
+	else
 		value[0] -= 1
-	end select
+	end if
+	
+end operator
+
+operator foo.next( byref end_cond as foo ) as integer
+	
+	if( is_up ) then
+		operator = value <= end_cond.value
+	else
+		operator = value >= end_cond.value
+	end if
+	
 end operator
 
 operator foo.cast( ) as string
 	operator = value
-end operator
-
-operator <= ( byref l as foo, byref r as foo ) as integer
-	select case l.value
-	case "up"
-		operator = 0
-	case "down"
-		operator = -1
-	case else
-		operator = l.value <= r.value
-	end select
-end operator
-
-operator >= ( byref l as foo, byref r as foo ) as integer
-	select case l.value
-	case "up"
-		operator = -1
-	case "down"
-		operator = 0
-	case else
-		operator = l.value >= r.value
-	end select
 end operator
 
 sub test_a2z cdecl

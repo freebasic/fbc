@@ -17,47 +17,70 @@ namespace fbc_tests.compound.for_UDT_counter
 	#macro defineTest( __TYPE__ )
 	
 		type foo##__TYPE__
-			as __TYPE__ x, y
-			declare operator +=( byref rhs as foo##__TYPE__ )
+			as __TYPE__ x
 			declare constructor( )
 			declare constructor( byval rhs as __TYPE__ )
 			declare constructor( byref rhs as foo##__TYPE__ )
+			
 			declare operator let( byval rhs as __TYPE__ )
+			declare operator let( byref rhs as foo##__TYPE__ )
+			
+			declare operator for( byref stp as foo##__TYPE__ )
+			declare operator step( byref stp as foo##__TYPE__ )
+			declare operator next( byref end_cond as foo##__TYPE__ ) as integer
+			
 			declare destructor( )
+			
+		private:
+			as integer is_up
 		end type
 		
-		operator >=( byref lhs as foo##__TYPE__, byref rhs as foo##__TYPE__ ) as integer
-			return lhs.x >= rhs.x
-		end operator
-
-		operator <=( byref lhs as foo##__TYPE__, byref rhs as foo##__TYPE__ ) as integer
-			return lhs.x <= rhs.x
-		end operator
-
 		constructor foo##__TYPE__( )
-			this.y = 69
+			this.x = 0
 		end constructor
-		
+
 		constructor foo##__TYPE__( byval rhs as __TYPE__ )
 			this.x = rhs
-			this.y = 69
 		end constructor
 
 		constructor foo##__TYPE__( byref rhs as foo##__TYPE__ )
 			this.x = rhs.x
-			this.y = rhs.y
 		end constructor
 
 		operator foo##__TYPE__.let( byval rhs as __TYPE__ )
 			this.x = rhs
 		end operator
-
-		operator foo##__TYPE__.+=( byref rhs as foo##__TYPE__ )
-			this.x += rhs.x
+		
+		operator foo##__TYPE__.let( byref rhs as foo##__TYPE__ )
+			this.x = rhs.x
 		end operator
 		
+		operator foo##__TYPE__.for( byref stp as foo##__TYPE__ )
+			'' check sign
+			if( @stp = NULL ) then
+				is_up = -1
+			else
+				is_up = (stp.x >= 0)
+			end if
+			
+		end operator
+
+		operator foo##__TYPE__.step( byref stp as foo##__TYPE__ )
+			x += stp.x
+		end operator
+
+		operator foo##__TYPE__.next( byref end_cond as foo##__TYPE__ ) as integer
+		
+			'' return FALSE if there's nothing else to iterate
+			if( is_up ) then
+				operator = x <= end_cond.x
+			else
+				operator = x >= end_cond.x
+			end if
+			
+		end operator
+
 		destructor foo##__TYPE__( )
-			this.y = 0
 		end destructor
 	
 	#endmacro
@@ -66,26 +89,27 @@ namespace fbc_tests.compound.for_UDT_counter
 	
 		sub testUDTCounter##__TYPE__( )
 	
-		    
 			scope
 				dim as __TYPE__ stp = 1
-				dim as integer c
+				dim as __TYPE__ c
 				dim as foo##__TYPE__ bar
 		        
-			    for bar = 0 to 9 step stp
+			    for bar = 0 to 9
 					CU_ASSERT_EQUAL( c, bar.x )
 					c += 1
 				next
 				
 				c = 0
-				for bars as foo##__TYPE__ = 0 to 9 step stp
-					CU_ASSERT_EQUAL( bars.y, 69 )
-					CU_ASSERT_EQUAL( c, bars.x )
-					c += 1
+				for cnt as foo##__TYPE__ = 0 to 9 step stp
+					CU_ASSERT_EQUAL( c, cnt.x )
+					c += stp
 				next
-				
-				'' top bar's dtor hasn't been called yet?
-				CU_ASSERT_EQUAL( bar.y, 69 )
+
+				c = 9
+				for cnt as foo##__TYPE__ = 9 to 0 step -stp
+					CU_ASSERT_EQUAL( c, cnt.x )
+					c -= stp
+				next
 				
 			end scope
 			

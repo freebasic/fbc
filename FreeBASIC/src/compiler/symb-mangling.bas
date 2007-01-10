@@ -885,7 +885,7 @@ private function hGetOperatorName _
 		byval proc as FBSYMBOL ptr _
 	) as zstring ptr static
 
-	select case as const proc->proc.ext->opovl.op
+	select case as const symbGetProcOpOvl( proc )
 	case AST_OP_ASSIGN
 		function = @"aS"
 
@@ -1041,6 +1041,15 @@ private function hGetOperatorName _
 
 	case AST_OP_ADDROF
 		function = @"ad"
+
+	case AST_OP_FOR
+		function = @"fR"
+
+	case AST_OP_STEP
+		function = @"sT"
+
+	case AST_OP_NEXT
+		function = @"nX"
 
 	case AST_OP_CAST
 		static as string res

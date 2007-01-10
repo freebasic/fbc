@@ -1,19 +1,19 @@
+[ ] EXIT FOR isn't calling the dtors of the temps (temporaries are never destroyed by SCOPE END)
+
 [ ] STATIC
     - add static data members, they must be initialized outside the TYPE|CLASS
     - allow all global operators to be declared as static methods?
 
 [ ] ctor/dtor
-	- ArrayClear will be used instead of a loop calling the dtors to destroy
-	  local non-dynamic arrays
-	  - callVarDtor will have to use astAddAfter then with scope blocks..
-
-	- add SWAP for structs with copy-ctors and/or destructors
+    - ArrayClear will be used instead of a loop calling the dtors to destroy
+      local non-dynamic arrays
+      - callVarDtor will have to use astAddAfter then with scope blocks..
 
 [ ] operator overloading:
-      - add support for functions returning references (reuse "BYREF") or the
-        '->' operator will be useless for UDT's with copy-ctors or dtors
-        as returning byval will make a deep copy
-      - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
+    - add support for functions returning references (reuse "BYREF") or the
+      '->' operator will be useless for UDT's with copy-ctors or dtors
+      as returning byval will make a deep copy
+    - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
 
 [ ] remove the internal profiler and use gprof instead, the former won't work with
     destructors
@@ -78,9 +78,9 @@
           be used as functions too
 
 [ ] data/function members:
-      - add virtual (functions only)
-          - the vtable must be compatible with G++ 3.x (ie: compatible with
-            COM interfaces in Windows)
+    - add virtual (functions only)
+      - the vtable must be compatible with G++ 3.x (ie: compatible with
+        COM interfaces in Windows)
 
 [ ] add a C backend
 	- the va_* macros/quirk-func must be passed to AST, each ABI has different way to
@@ -117,6 +117,11 @@
 	- take care with objects..
 
 [ ] namespace:
+    - when importing a ns (with USING), a flag should be set to dup definitions, making
+      the ns obligatory when doing scope resolution
+      - when closing the current scope block and thus removing the ns, the original symbol's
+        flags must be restored again, the only way to do that fast enough is keeping
+        yet-another-list
     - add support for importing single symbols (mostly because classes, as nested ns'
       are already supported)
 

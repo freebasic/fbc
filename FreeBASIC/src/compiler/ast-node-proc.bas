@@ -433,7 +433,7 @@ function astProcBegin _
 
 	''
 	if( sym->proc.ext = NULL ) then
-		sym->proc.ext = callocate( len( FB_PROCEXT ) )
+		sym->proc.ext = symbAllocProcExt( )
 	end if
 
 	''

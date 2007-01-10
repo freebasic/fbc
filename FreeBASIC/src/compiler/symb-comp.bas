@@ -808,7 +808,7 @@ sub symbSetCompOpOvlHead _
 		byval proc as FBSYMBOL ptr _
 	)
 
-	dim as AST_OP op = proc->proc.ext->opovl.op
+	dim as AST_OP op = symbGetProcOpOvl( proc )
 
    	'' self?
    	if( astGetOpIsSelf( op ) ) then

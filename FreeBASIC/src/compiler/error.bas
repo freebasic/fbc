@@ -194,6 +194,7 @@ end type
 		@"Both parameters can't be of the same type", _
 		@"Parameter and result can't be of the same type", _
 		@"Invalid result type for this operator", _
+		@"Invalid parameter type, it must be the same as the parent TYPE/CLASS", _
 		@"Vararg parameters are not allowed in overloaded functions", _
 		@"Illegal outside an OPERATOR block", _
 		@"Parameter cannot be optional", _
