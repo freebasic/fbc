@@ -350,12 +350,13 @@ FUNC(fb_hPutPixelAlpha4MMX)
 	punpcklbw %mm2, %mm0			/* mm0 = | da | dr | dg | db | */
 	punpcklwd %mm3, %mm3
 	psubw %mm0, %mm1				/* mm1 = | ca-da | cr-dr | cg-dg | cb-db | */
-	punpckldq %mm3, %mm3			/* mm3 = |  a |  a |  a |  a | */
+	punpcklwd %mm3, %mm3			/* mm3 = |  a |  a |  a |  a | */
+	psllw $8, %mm0
 	shll $24, %edx
 	pmullw %mm3, %mm1
 	movd %edx, %mm2
-	psrlw $8, %mm1
 	paddw %mm1, %mm0
+	psrlw $8, %mm0
 	packuswb %mm0, %mm0
 	pand (mask_rgb_32), %mm0
 	por %mm2, %mm0

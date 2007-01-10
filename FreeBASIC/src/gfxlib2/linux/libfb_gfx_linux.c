@@ -361,7 +361,7 @@ void fb_hX11LeaveFullscreen(void)
 		return;
 	
 	if (current_size != orig_size) {
-		if (XRRSetScreenConfigAndRate(fb_linux.display, fb_linux.config, root_window, orig_size, orig_rotation, orig_rate, CurrentTime) == BadValue)
+		if ((target_rate >= 0) && (XRRSetScreenConfigAndRate(fb_linux.display, fb_linux.config, root_window, orig_size, orig_rotation, orig_rate, CurrentTime) == BadValue))
 			XRRSetScreenConfig(fb_linux.display, fb_linux.config, root_window, orig_size, orig_rotation, CurrentTime);
 		XUngrabPointer(fb_linux.display, CurrentTime);
 		XUngrabKeyboard(fb_linux.display, CurrentTime);
@@ -443,6 +443,9 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	fb_linux.flags = flags;
 	fb_linux.refresh_rate = refresh_rate;
 	
+	target_size = -1;
+	target_rate = -1;
+	current_size = -1;
 	supersized_h = calc_comp_height(fb_linux.h);
 	
 	color_map = None;
@@ -551,7 +554,6 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		orig_size = current_size = XRRConfigCurrentConfiguration(fb_linux.config, &orig_rotation);
 		orig_rate = XRRConfigCurrentRate(fb_linux.config);
 		sizes = XRRConfigSizes(fb_linux.config, &num_sizes);
-		target_size = -1;
 		for (i = 0; i < num_sizes; i++) {
 			if (sizes[i].width == fb_linux.w) {
 				if (sizes[i].height == fb_linux.h) {
@@ -566,7 +568,6 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 				}
 			}
 		}
-		target_rate = -1;
 		if ((fb_linux.refresh_rate > 0) && (target_size >= 0)) {
 			rates = XRRConfigRates(fb_linux.config, target_size, &num_rates);
 			for (i = 0; i < num_rates; i++) {
@@ -628,6 +629,7 @@ void fb_hX11Exit(void)
 		pthread_cond_destroy(&cond);
 	}
 	if (fb_linux.display) {
+		fb_hX11LeaveFullscreen();
 		XSync(fb_linux.display, False);
 		if (arrow_cursor != None) {
 			XUndefineCursor(fb_linux.display, fb_linux.window);
@@ -641,9 +643,6 @@ void fb_hX11Exit(void)
 		if (fb_linux.window != None)
 			XDestroyWindow(fb_linux.display, fb_linux.window);
 		if (fb_linux.config) {
-			if ((target_size >= 0) && (current_size != orig_size))
-				XRRSetScreenConfig(fb_linux.display, fb_linux.config, root_window, orig_size, orig_rotation, CurrentTime);
-			XSync(fb_linux.display, False);
 			XRRFreeScreenConfigInfo(fb_linux.config);
 			fb_linux.config = NULL;
 		}
