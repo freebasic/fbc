@@ -70,7 +70,7 @@ const SYMB_MAXDEFINES = 32
         (@"__FB_VER_MAJOR__"          ,   @FB_VER_STR_MAJOR   ,  1,   NULL                   ), _
         (@"__FB_VER_MINOR__"          ,   @FB_VER_STR_MINOR   ,  1,   NULL                   ), _
         (@"__FB_VER_PATCH__"          ,   @FB_VER_STR_PATCH   ,  1,   NULL                   ), _
-        (@"__FB_SIGNATURE__"          ,   @FB_SIGN,           ,  0,   NULL                   ), _
+        (@"__FB_SIGNATURE__"          ,   @FB_SIGN            ,  0,   NULL                   ), _
         (@"__FB_MT__"                 ,   NULL                ,  1,   @hDefMultithread_cb    ), _
         (@"__FILE__"                  ,   NULL                ,  0,   @hDefFile_cb           ), _
         (@"__FILE_NQ__"               ,   NULL                ,  1,   @hDefFile_cb           ), _
