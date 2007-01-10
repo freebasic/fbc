@@ -511,8 +511,8 @@ function cProcArgList _
 
 	'' overloaded?
 	if( symbGetProcIsOverloaded( proc ) ) then
-		'' only if there's more than one overloaded function, or if it's a property
-		if( (symbGetProcOvlNext( proc ) <> NULL) or symbIsProperty( proc ) ) then
+		'' only if there's more than one overloaded function
+		if( symbGetProcOvlNext( proc ) <> NULL ) then
 			return hOvlProcArgList( base_parent, proc, arg_list, options )
 		end if
 	end if
@@ -568,9 +568,6 @@ function cProcArgList _
     procexpr = astNewCALL( proc, ptrexpr )
 
 	params = symbGetProcParams( proc )
-	if( symbIsMethod( proc ) ) then
-		params -= 1
-	end if
 
 	param = symbGetProcLastParam( proc )
 
@@ -591,6 +588,7 @@ function cProcArgList _
 		'' next
 		param = symbGetProcPrevParam( proc, param )
 		arg = nxt
+		params -= 1
 	loop
 
 	args = 0
