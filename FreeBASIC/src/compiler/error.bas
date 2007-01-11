@@ -250,7 +250,7 @@ end type
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
-		@"AUTO requires an initializer" _
+		@"VAR requires an initializer" _
 	}
 
 
