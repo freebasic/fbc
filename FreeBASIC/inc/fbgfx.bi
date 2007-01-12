@@ -68,7 +68,20 @@ namespace FB
 					 SET_WINDOW_TITLE			= 101	, _
 					 SET_PEN_POS				= 102	, _
 					 SET_DRIVER_NAME			= 103	, _
-					 SET_ALPHA_PRIMITIVES		= 104
+					 SET_ALPHA_PRIMITIVES		= 104	, _
+					 SET_GL_COLOR_BITS			= 105	, _
+					 SET_GL_COLOR_RED_BITS		= 106	, _
+					 SET_GL_COLOR_GREEN_BITS	= 107	, _
+					 SET_GL_COLOR_BLUE_BITS		= 108	, _
+					 SET_GL_COLOR_ALPHA_BITS	= 109	, _
+					 SET_GL_DEPTH_BITS			= 110	, _
+					 SET_GL_STENCIL_BITS		= 111	, _
+					 SET_GL_ACCUM_BITS			= 112	, _
+					 SET_GL_ACCUM_RED_BITS		= 113	, _
+					 SET_GL_ACCUM_GREEN_BITS	= 114	, _
+					 SET_GL_ACCUM_BLUE_BITS		= 115	, _
+					 SET_GL_ACCUM_ALPHA_BITS	= 116	, _
+					 SET_GL_NUM_SAMPLES			= 117
 
 
 	'' Color values for transparency
