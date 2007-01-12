@@ -192,6 +192,58 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 				__fb_gfx->flags &= ~ALPHA_PRIMITIVES;
 		}
 		break;
+	
+	case SET_GL_COLOR_BITS:
+		__fb_gl_params.color_bits = *param1;
+		break;
+	
+	case SET_GL_COLOR_RED_BITS:
+		__fb_gl_params.color_red_bits = *param1;
+		break;
+	
+	case SET_GL_COLOR_GREEN_BITS:
+		__fb_gl_params.color_green_bits = *param1;
+		break;
+	
+	case SET_GL_COLOR_BLUE_BITS:
+		__fb_gl_params.color_blue_bits = *param1;
+		break;
+	
+	case SET_GL_COLOR_ALPHA_BITS:
+		__fb_gl_params.color_alpha_bits = *param1;
+		break;
+	
+	case SET_GL_DEPTH_BITS:
+		__fb_gl_params.depth_bits = *param1;
+		break;
+	
+	case SET_GL_STENCIL_BITS:
+		__fb_gl_params.stencil_bits = *param1;
+		break;
+	
+	case SET_GL_ACCUM_BITS:
+		__fb_gl_params.accum_bits = *param1;
+		break;
+	
+	case SET_GL_ACCUM_RED_BITS:
+		__fb_gl_params.accum_red_bits = *param1;
+		break;
+	
+	case SET_GL_ACCUM_GREEN_BITS:
+		__fb_gl_params.accum_green_bits = *param1;
+		break;
+	
+	case SET_GL_ACCUM_BLUE_BITS:
+		__fb_gl_params.accum_blue_bits = *param1;
+		break;
+	
+	case SET_GL_ACCUM_ALPHA_BITS:
+		__fb_gl_params.accum_alpha_bits = *param1;
+		break;
+	
+	case SET_GL_NUM_SAMPLES:
+		__fb_gl_params.num_samples = *param1;
+		break;
 	}
 	
 	if (what < SET_FIRST_SETTER) {

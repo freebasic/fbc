@@ -139,7 +139,7 @@ static void opengl_window_update(void)
 
 
 /*:::::*/
-static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
+static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	const char *glx_funcs[] = {
 		"glXChooseVisual", "glXCreateContext", "glXDestroyContext",
@@ -147,46 +147,51 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	};
 	GLXFUNCS *funcs = &__fb_glX;
 	void **funcs_ptr = (void **)funcs;
-	int depth = MAX(8, depth_arg);
 	XVisualInfo *info;
-	int gl_attrs[32] = { GLX_RGBA, GLX_DOUBLEBUFFER,
-			     GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
-			     GLX_DEPTH_SIZE, 16 };
-	int *gl_attr, result, try_count, gl_options;
+	int attribs[64] = { GLX_RGBA, GLX_DOUBLEBUFFER, 0 }, *attrib = &attribs[2], *samples_attrib = NULL;
+	int result;
+	
+	fb_hMemSet(&fb_linux, 0, sizeof(fb_linux));
 	
 	context = NULL;
-	gl_options = flags & DRIVER_OPENGL_OPTIONS;
-
-	if (depth > 16)
-		gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 8;
-	
-	gl_attr = &gl_attrs[10];
-	if (gl_options & HAS_MULTISAMPLE) {
-		*gl_attr++ = GLX_SAMPLE_BUFFERS_ARB;
-		*gl_attr++ = GL_TRUE;
-		*gl_attr++ = GLX_SAMPLES_ARB;
-		*gl_attr++ = 4;
-	}
-	if (gl_options & HAS_STENCIL_BUFFER) {
-		*gl_attr++ = GLX_STENCIL_SIZE;
-		*gl_attr++ = 8;
-	}
-	if (gl_options & HAS_ACCUMULATION_BUFFER) {
-		*gl_attr++ = GLX_ACCUM_RED_SIZE;
-		*gl_attr++ = 8;
-		*gl_attr++ = GLX_ACCUM_GREEN_SIZE;
-		*gl_attr++ = 8;
-		*gl_attr++ = GLX_ACCUM_BLUE_SIZE;
-		*gl_attr++ = 8;
-		*gl_attr++ = GLX_ACCUM_ALPHA_SIZE;
-		*gl_attr++ = 8;
-	}
-	*gl_attr = None;
 	
 	if ((!(flags & DRIVER_OPENGL)) || (flags & DRIVER_NO_FRAME))
 		return -1;
 
-	fb_hMemSet(&fb_linux, 0, sizeof(fb_linux));
+	fb_hGL_NormalizeParameters(flags);
+	*attrib++ = GLX_RED_SIZE;
+	*attrib++ = __fb_gl_params.color_red_bits;
+	*attrib++ = GLX_GREEN_SIZE;
+	*attrib++ = __fb_gl_params.color_green_bits;
+	*attrib++ = GLX_BLUE_SIZE;
+	*attrib++ = __fb_gl_params.color_blue_bits;
+	*attrib++ = GLX_ALPHA_SIZE;
+	*attrib++ = __fb_gl_params.color_alpha_bits;
+	*attrib++ = GLX_DEPTH_SIZE;
+	*attrib++ = __fb_gl_params.color_depth_bits;
+	if (__fb_gl_params.stencil_bits > 0) {
+		*attrib++ = GLX_STENCIL_SIZE;
+		*attrib++ = __fb_gl_params.stencil_bits;
+	}
+	if (__fb_gl_params.accum_bits > 0) {
+		*attrib++ = GLX_ACCUM_RED_SIZE;
+		*attrib++ = __fb_gl_params.accum_red_bits;
+		*attrib++ = GLX_ACCUM_GREEN_SIZE;
+		*attrib++ = __fb_gl_params.accum_green_bits;
+		*attrib++ = GLX_ACCUM_BLUE_SIZE;
+		*attrib++ = __fb_gl_params.accum_blue_bits;
+		*attrib++ = GLX_ACCUM_ALPHA_SIZE;
+		*attrib++ = __fb_gl_params.accum_alpha_bits;
+	}
+	if (__fb_gl_params.num_samples > 0) {
+		*attrib++ = GLX_SAMPLE_BUFFERS_ARB;
+		*attrib++ = GL_TRUE;
+		*attrib++ = GLX_SAMPLES_ARB;
+		samples_attrib = attrib;
+		*attrib++ = 4;
+	}
+	*gl_attr = None;
+	
 	fb_linux.init = opengl_window_init;
 	fb_linux.exit = opengl_window_exit;
 	fb_linux.update = opengl_window_update;
@@ -202,8 +207,8 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (!gl_lib)
 		return -1;
 	
-	for (try_count = 0; try_count < 3; ++try_count) {
-		if ((info = __fb_glX.ChooseVisual(fb_linux.display, fb_linux.screen, gl_attrs))) {
+	do {
+		if ((info = __fb_glX.ChooseVisual(fb_linux.display, fb_linux.screen, attribs))) {
 			fb_linux.visual = info->visual;
 			context = __fb_glX.CreateContext(fb_linux.display, info, NULL, True);
 			XFree(info);
@@ -212,27 +217,9 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 			else
 				__fb_glX.DestroyContext(fb_linux.display, context);
 		}
-		switch (try_count) {
-			case 0:
-				if (depth > 16)
-					gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 4;
-				else
-					gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 1;
-				break;
-			case 1:
-				if (depth == 16)
-					return -1;
-				gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 1;
-			case 2:
-				if ((gl_options & HAS_MULTISAMPLE) && (gl_attrs[13] > 2)) {
-					gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 8;
-					gl_attrs[13] -= 2;
-					try_count -= 3;
-				}
-				else
-					return -1;
-		}
-	}
+	} while ((samples_attrib) && ((*samples_attrib -= 2) >= 0));
+	if (!info)
+		return -1;
 	
 	result = fb_hX11Init(title, w, h, info->depth, refresh_rate, flags);
 	if (result)
@@ -243,7 +230,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (fb_hGL_Init(gl_lib, NULL))
 		return -1;
 	
-	if (gl_options & HAS_MULTISAMPLE)
+	if ((samples_attrib) && (*samples_attrib > 0))
 		__fb_gl.Enable(GL_MULTISAMPLE_ARB);
 	
 	return 0;

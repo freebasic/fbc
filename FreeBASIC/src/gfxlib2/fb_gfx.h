@@ -219,6 +219,19 @@ extern "C" {
 #define SET_PEN_POS					102
 #define SET_DRIVER_NAME				103
 #define SET_ALPHA_PRIMITIVES		104
+#define SET_GL_COLOR_BITS			105
+#define SET_GL_COLOR_RED_BITS		106
+#define SET_GL_COLOR_GREEN_BITS		107
+#define SET_GL_COLOR_BLUE_BITS		108
+#define SET_GL_COLOR_ALPHA_BITS		109
+#define SET_GL_DEPTH_BITS			110
+#define SET_GL_STENCIL_BITS			111
+#define SET_GL_ACCUM_BITS			112
+#define SET_GL_ACCUM_RED_BITS		113
+#define SET_GL_ACCUM_GREEN_BITS		114
+#define SET_GL_ACCUM_BLUE_BITS		115
+#define SET_GL_ACCUM_ALPHA_BITS		116
+#define SET_GL_NUM_SAMPLES			117
 
 
 typedef void (BLITTER)(unsigned char *, int);
@@ -385,6 +398,7 @@ extern unsigned int *__fb_color_conv_16to32;
 extern char *__fb_window_title;
 #if defined(HAVE_GL_GL_H)
 extern FB_GL __fb_gl;
+extern FB_GL_PARAMS __fb_gl_params;
 #endif
 #include "fb_gfx_data.h"
 
@@ -419,6 +433,7 @@ extern void fb_hSoftCursorPaletteChanged(void);
 extern int fb_hColorDistance(int index, int r, int g, int b);
 extern void *fb_hPixelSetAlpha4(void *dest, int color, size_t size);
 extern int fb_hGetWindowHandle(void);
+extern void fb_hGL_NormalizeParameters(int gl_options);
 extern int fb_hGL_Init(FB_DYLIB lib, char *os_extensions);
 extern int fb_hGL_ExtensionSupported(const char *extension);
 extern void *fb_hGL_GetProcAddress(const char *proc);

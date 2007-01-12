@@ -85,6 +85,23 @@ typedef struct FB_GL {
 } FB_GL;
 
 
+typedef struct FB_GL_PARAMS {
+	int color_bits;
+	int color_red_bits;
+	int color_green_bits;
+	int color_blue_bits;
+	int color_alpha_bits;
+	int depth_bits;
+	int stencil_bits;
+	int accum_bits;
+	int accum_red_bits;
+	int accum_green_bits;
+	int accum_blue_bits;
+	int accum_alpha_bits;
+	int num_samples;
+} FB_GL_PARAMS;
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -29,6 +29,7 @@
 
 
 FB_GL __fb_gl;
+FB_GL_PARAMS __fb_gl_params = { 0 };
 
 
 /*:::::*/
@@ -114,6 +115,66 @@ GLuint fb_hGL_ImageCreate(PUT_HEADER *image, unsigned int color)
 void fb_hGL_ImageDestroy(GLuint id)
 {
 	__fb_gl.DeleteTextures(1, &id);
+}
+
+
+/*:::::*/
+void fb_hGL_NormalizeParameters(int gl_options)
+{
+	int default_color_bits[4] = { 0, 5, 8, 8 };
+	int default_alpha_bits[4] = { 0, 0, 0, 8 };
+	int bpp;
+	
+	if (!__fb_gl_params.color_bits) {
+		__fb_gl_params.color_bits = __fb_gl_params.color_red_bits +
+									__fb_gl_params.color_green_bits +
+									__fb_gl_params.color_blue_bits +
+									__fb_gl_params.color_alpha_bits;
+		if (!__fb_gl_params.color_bits)
+			__fb_gl_params.color_bits = __fb_gfx->depth;
+	}
+	bpp = BYTES_PER_PIXEL(__fb_gl_params.color_bits) - 1;
+	if (bpp > 3) bpp = 3;
+	if (!__fb_gl_params.color_red_bits)
+		__fb_gl_params.color_red_bits = default_color_bits[bpp];
+	if (!__fb_gl_params.color_green_bits)
+		__fb_gl_params.color_green_bits = default_color_bits[bpp];
+	if (!__fb_gl_params.color_blue_bits)
+		__fb_gl_params.color_blue_bits = default_color_bits[bpp];
+	if (!__fb_gl_params.color_alpha_bits)
+		__fb_gl_params.color_alpha_bits = default_alpha_bits[bpp];
+	
+	if (!__fb_gl_params.accum_bits) {
+		__fb_gl_params.accum_bits = __fb_gl_params.accum_red_bits +
+									__fb_gl_params.accum_green_bits +
+									__fb_gl_params.accum_blue_bits +
+									__fb_gl_params.accum_alpha_bits;
+	}
+	bpp = BYTES_PER_PIXEL(__fb_gl_params.accum_bits) - 1;
+	if (bpp > 3) bpp = 3;
+	if ((bpp < 0) && (gl_options & HAS_ACCUMULATION_BUFFER)) {
+		__fb_gl_params.accum_bits = 32;
+		bpp = 3;
+	}
+	if (bpp >= 0) {
+		if (!__fb_gl_params.accum_red_bits)
+			__fb_gl_params.accum_red_bits = default_color_bits[bpp];
+		if (!__fb_gl_params.accum_green_bits)
+			__fb_gl_params.accum_green_bits = default_color_bits[bpp];
+		if (!__fb_gl_params.accum_blue_bits)
+			__fb_gl_params.accum_blue_bits = default_color_bits[bpp];
+		if (!__fb_gl_params.accum_alpha_bits)
+			__fb_gl_params.accum_alpha_bits = default_alpha_bits[bpp];
+	}
+	
+	if (!__fb_gl_params.depth_bits)
+		__fb_gl_params.depth_bits = 16;
+	
+	if ((!__fb_gl_params.stencil_bits) && (gl_options & HAS_STENCIL_BUFFER))
+		__fb_gl_params.stencil_bits = 8;
+	
+	if ((!__fb_gl_params.num_samples) && (gl_options & HAS_MULTISAMPLE))
+		__fb_gl_params.num_samples = 4;
 }
 
 

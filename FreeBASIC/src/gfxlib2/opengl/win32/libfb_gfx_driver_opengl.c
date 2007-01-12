@@ -103,7 +103,7 @@ GFXDRIVER fb_gfxDriverOpenGL =
 	driver_exit,		/* void (*exit)(void); */
 	driver_lock,		/* void (*lock)(void); */
 	driver_unlock,		/* void (*unlock)(void); */
-	driver_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
+	NULL,			/* void (*set_palette)(int index, int r, int g, int b); */
 	fb_hWin32WaitVSync,	/* void (*wait_vsync)(void); */
 	fb_hWin32GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	fb_hWin32SetMouse,	/* void (*set_mouse)(int x, int y, int cursor); */
@@ -268,23 +268,15 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	PIXELFORMATDESCRIPTOR pfd = {
         sizeof(PIXELFORMATDESCRIPTOR), 1,
 		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
-		PFD_TYPE_RGBA, fb_win32.depth,
-		0, 0, 0, 0, 0, 0, 0, 0, (flags & HAS_ACCUMULATION_BUFFER) ? 32 : 0, 0, 0, 0, 0,
-		32, (flags & HAS_STENCIL_BUFFER) ? 8 : 0,
-		0, PFD_MAIN_PLANE, 0, 0, 0, 0
+		PFD_TYPE_RGBA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0,
+		PFD_MAIN_PLANE, 0, 0, 0, 0
     };
-	int attribs[] = {
+	int attribs[64] = {
 		WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
 		WGL_ACCELERATION_ARB,   WGL_FULL_ACCELERATION_ARB,
 		WGL_DOUBLE_BUFFER_ARB,  GL_TRUE,
-		WGL_COLOR_BITS_ARB,     fb_win32.depth,
-		WGL_DEPTH_BITS_ARB,     24,
-		WGL_STENCIL_BITS_ARB,   (flags & HAS_STENCIL_BUFFER) ? 8 : 0,
-		WGL_ACCUM_BITS_ARB,     (flags & HAS_ACCUMULATION_BUFFER) ? 32 : 0,
-		WGL_SAMPLE_BUFFERS_ARB, GL_TRUE,
-		WGL_SAMPLES_ARB,		4,
 		0
-	};
+	}, *attrib = &attribs[6], *samples_attrib = NULL;
     int depth = MAX(8, depth_arg);
 	int pf = 0, num_formats, format;
 
@@ -317,14 +309,63 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (opengl_init())
 		return -1;
 
+	/* setup pixel format */
+	fb_hGL_NormalizeParameters(flags);
+	*attrib++ = WGL_COLOR_BITS_ARB;
+	pfd.cColorBits = *attrib++ = __fb_gl_params.color_bits;
+	*attrib++ = WGL_RED_BITS_ARB;
+	pfd.cRedBits = *attrib++ = __fb_gl_params.color_red_bits;
+	*attrib++ = WGL_GREEN_BITS_ARB;
+	pfd.cGreenBits = *attrib++ = __fb_gl_params.color_green_bits;
+	*attrib++ = WGL_BLUE_BITS_ARB;
+	pfd.cBlueBits = *attrib++ = __fb_gl_params.color_blue_bits;
+	*attrib++ = WGL_ALPHA_BITS_ARB;
+	pfd.cAlphaBits = *attrib++ = __fb_gl_params.color_alpha_bits;
+	*attrib++ = WGL_DEPTH_BITS_ARB;
+	pfd.cDepthBits = *attrib++ = __fb_gl_params.depth_bits;
+	if (__fb_gl_params.accum_bits) {
+		*attrib++ = WGL_ACCUM_BITS_ARB;
+		pfd.cAccumBits = *attrib++ = __fb_gl_params.accum_bits;
+	}
+	if (__fb_gl_params.accum_red_bits) {
+		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
+		pfd.cAccumRedBits = *attrib++ = __fb_gl_params.accum_red_bits;
+	}
+	if (__fb_gl_params.accum_green_bits) {
+		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
+		pfd.cAccumGreenBits = *attrib++ = __fb_gl_params.accum_green_bits;
+	}
+	if (__fb_gl_params.accum_blue_bits) {
+		*attrib++ = WGL_ACCUM_BLUE_BITS_ARB;
+		pfd.cAccumBlueBits = *attrib++ = __fb_gl_params.accum_blue_bits;
+	}
+	if (__fb_gl_params.accum_alpha_bits) {
+		*attrib++ = WGL_ACCUM_ALPHA_BITS_ARB;
+		pfd.cAccumAlphaBits = *attrib++ = __fb_gl_params.accum_alpha_bits;
+	}
+	if (__fb_gl_params.stencil_bits) {
+		*attrib++ = WGL_STENCIL_BITS_ARB;
+		pfd.cStencilBits = *attrib++ = __fb_gl_params.stencil_bits;
+	}
+	if (__fb_gl_params.num_samples) {
+		WGL_SAMPLE_BUFFERS_ARB, GL_TRUE,
+		WGL_SAMPLES_ARB,		4,
+		*attrib++ = WGL_SAMPLE_BUFFERS_ARB;
+		*attrib++ = GL_TRUE;
+		*attrib++ = WGL_SAMPLES_ARB;
+		samples_attrib = attrib;
+		*attrib++ = __fb_gl_params.num_samples;
+	}
+	*attrib = 0;
+	
 	hdc = GetDC(fb_win32.wnd);
-	if ((flags & HAS_MULTISAMPLE) && (fb_wgl.ChoosePixelFormatARB)) {
-		for (attribs[17] = 4; attribs[17]; attribs[17] -= 2) {
+	if (fb_wgl.ChoosePixelFormatARB) {
+		do {
 			if ((fb_wgl.ChoosePixelFormatARB(hdc, attribs, NULL, 1, &format, &num_formats)) && (num_formats > 0)) {
 				pf = format;
 				break;
 			}
-		}
+		} while ((samples_attrib) && ((*samples_attrib -= 2) >= 0));
 	}
 	if (!pf) {
 		flags &= ~HAS_MULTISAMPLE;
@@ -338,7 +379,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		return -1;
 	fb_wgl.MakeCurrent(hdc, hglrc);
 
-	if (flags & HAS_MULTISAMPLE)
+	if ((samples_attrib) && (*samples_attrib > 0))
 		__fb_gl.Enable(GL_MULTISAMPLE_ARB);
 	
 	return 0;
@@ -374,12 +415,6 @@ static void driver_lock(void)
 
 /*:::::*/
 static void driver_unlock(void)
-{
-}
-
-
-/*:::::*/
-static void driver_set_palette(int index, int r, int g, int b)
 {
 }
 
