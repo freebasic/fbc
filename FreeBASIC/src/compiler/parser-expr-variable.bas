@@ -1812,7 +1812,15 @@ function cVarOrDeref _
 	parser.options = options
 
 	if( expr <> NULL ) then
-		select case as const astGetClass( expr )
+		'' skip any casting if they won't do any conversion
+		dim as ASTNODE ptr t = expr
+		if( astIsCAST( expr ) ) then
+			if( astGetCASTDoConv( expr ) = FALSE ) then
+				t = astGetLeft( expr )
+			end if
+		end if
+
+		select case as const astGetClass( t )
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
 			 AST_NODECLASS_DEREF, AST_NODECLASS_CALL, AST_NODECLASS_NIDXARRAY
 

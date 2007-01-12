@@ -1,3 +1,7 @@
+[ ] this will fail because symb-proc has no clue about get and set accessors:
+    declare property IntegerValue ( v as integer )
+    declare property IntegerValue ( index as integer ) as integer
+
 [ ] EXIT FOR isn't calling the dtors of the temps (temporaries are never destroyed by SCOPE END)
 
 [ ] STATIC
@@ -92,8 +96,6 @@
 	  	even if structs are fully emitted
 	  	- (not so simple) solution: let the AST do it
 	- shared/module-level vars must be emitted before any proc
-	- type-cast's must be preserved, but astNewCONV() won't create a new node
-	  if converting from pointer types or if data sizes and classes are the same
 	- scopes must be preserved or local vars won't work
 	- if()'s must be translated to
 	  if(vreg reverse(op) vreg) goto label

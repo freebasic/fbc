@@ -378,6 +378,17 @@ private function hTypeMultElementDecl _
     			end if
     		end if
 
+    		'' but don't allow keywords if it's an object (because the implicit inst. ptr)
+    		if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
+    			if( symbGetIsUnique( parent ) ) then
+    				if( errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES ) = FALSE ) then
+    					exit function
+    				end if
+    			else
+    				symbSetUDTHasKwdField( parent )
+    			end if
+    		end if
+
 			id = *lexGetText( )
 			lexSkipToken( )
 
@@ -502,6 +513,17 @@ private function hTypeElementDecl _
     	if( lexGetPeriodPos( ) > 0 ) then
     		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
     			exit function
+    		end if
+    	end if
+
+    	'' but don't allow keywords if it's an object (because the implicit inst. ptr)
+    	if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
+    		if( symbGetIsUnique( parent ) ) then
+    			if( errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES ) = FALSE ) then
+    				exit function
+    			end if
+    		else
+    			symbSetUDTHasKwdField( parent )
     		end if
     	end if
 
@@ -1118,6 +1140,13 @@ function cTypeDecl _
     			end if
     		end if
 		end if
+
+    	'' don't allow field named as keywords
+    	if( symbGetUDTHasKwdField( sym ) ) then
+    		if( errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES ) = FALSE ) then
+    			exit function
+    		end if
+    	end if
 	end if
 
 	'' byval params to self?

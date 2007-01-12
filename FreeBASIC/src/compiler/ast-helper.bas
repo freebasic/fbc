@@ -995,8 +995,7 @@ function astBuildStrPtr _
 	'' *cast( zstring ptr ptr, @lhs )
 	function = astNewDEREF( astNewCONV( FB_DATATYPE_POINTER*2 + FB_DATATYPE_CHAR, _
 								 	    NULL, _
-								 	  	astNewADDROF( lhs ), _
-								 	  	AST_OP_TOPOINTER ), _
+								 	  	astNewADDROF( lhs ) ), _
 						  	FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
 						  	NULL )
 

@@ -133,7 +133,7 @@ function astIsTreeEqual _
 			exit function
 		end if
 
-		if( l->var.ofs <> r->var.ofs ) then
+		if( l->var_.ofs <> r->var_.ofs ) then
 			exit function
 		end if
 

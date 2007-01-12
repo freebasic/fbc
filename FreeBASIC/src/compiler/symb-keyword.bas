@@ -135,7 +135,6 @@ end type
         ( @"SELECT"     , FB_TK_SELECT      , FB_TKCLASS_KEYWORD ), _
         ( @"CASE"       , FB_TK_CASE        , FB_TKCLASS_KEYWORD ), _
         ( @"IS"         , FB_TK_IS          , FB_TKCLASS_KEYWORD ), _
-        ( @"DATA"       , FB_TK_DATA        , FB_TKCLASS_KEYWORD ), _
         ( @"USING"      , FB_TK_USING       , FB_TKCLASS_KEYWORD ), _
         ( @"LEN"        , FB_TK_LEN         , FB_TKCLASS_KEYWORD ), _
         ( @"PEEK"       , FB_TK_PEEK        , FB_TKCLASS_KEYWORD ), _
@@ -163,6 +162,7 @@ end type
         ( @"VAR"        , FB_TK_VAR         , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"IIF"        , FB_TK_IIF         , FB_TKCLASS_KEYWORD ), _
         ( @"VA_FIRST"   , FB_TK_VA_FIRST    , FB_TKCLASS_KEYWORD ), _
+        ( @"DATA"       , FB_TK_DATA        , FB_TKCLASS_QUIRKWD ), _
         ( @"FIELD"      , FB_TK_FIELD       , FB_TKCLASS_QUIRKWD ), _
         ( @"LOCAL"      , FB_TK_LOCAL       , FB_TKCLASS_QUIRKWD ), _
         ( @"DEFINED"    , FB_TK_DEFINED     , FB_TKCLASS_QUIRKWD ), _

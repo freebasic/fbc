@@ -412,15 +412,23 @@ function cAssignmentOrPtrCallEx _
     	return TRUE
     end if
 
+	'' skip any casting if they won't do any conversion
+	dim as ASTNODE ptr t = expr
+	if( astIsCAST( expr ) ) then
+		if( astGetCASTDoConv( expr ) = FALSE ) then
+			t = astGetLeft( expr )
+		end if
+	end if
+
     '' ordinary assignment?
-    if( astIsCALL( expr ) = FALSE ) then
+    if( astIsCALL( t ) = FALSE ) then
     	return cAssignment( expr )
     end if
 
 	'' calling a function ptr..
 
 	'' can the result be skipped?
-	if( symbGetDataClass( astGetDataType( expr ) ) <> FB_DATACLASS_INTEGER ) then
+	if( symbGetDataClass( astGetDataType( t ) ) <> FB_DATACLASS_INTEGER ) then
 		if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
 			exit function
 		else
@@ -431,7 +439,7 @@ function cAssignmentOrPtrCallEx _
 
     '' CHAR and WCHAR literals are also from the INTEGER class
     else
-    	select case astGetDataType( expr )
+    	select case astGetDataType( t )
     	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
 				exit function

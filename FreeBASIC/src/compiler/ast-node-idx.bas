@@ -78,7 +78,7 @@ private function hEmitIDX _
 
     ofs = n->idx.ofs
 	if( symbGetIsDynamic( s ) = FALSE ) then
-		ofs += symbGetArrayDiff( s ) + symbGetOfs( s ) + var_->var.ofs
+		ofs += symbGetArrayDiff( s ) + symbGetOfs( s ) + var_->var_.ofs
 	else
 		s = NULL
 	end if

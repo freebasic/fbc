@@ -354,15 +354,15 @@ function symbAddField _
 	end if
 
 	''
-	sym->var.initree = NULL
+	sym->var_.initree = NULL
 
 	'' array fields
-	sym->var.array.desc = NULL
-	sym->var.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
-	sym->var.array.dimhead = NULL
-	sym->var.array.dimtail = NULL
+	sym->var_.array.desc = NULL
+	sym->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
+	sym->var_.array.dimhead = NULL
+	sym->var_.array.dimtail = NULL
 
-	sym->var.array.dims = dimensions
+	sym->var_.array.dims = dimensions
 	if( dimensions > 0 ) then
 		dim as integer i
 		for i = 0 to dimensions-1
@@ -371,10 +371,10 @@ function symbAddField _
 		next
 	end if
 
-	sym->var.array.elms = symbCalcArrayElements( sym )
+	sym->var_.array.elms = symbCalcArrayElements( sym )
 
 	'' multiple len by all array elements (if any)
-	lgt *= sym->var.array.elms
+	lgt *= sym->var_.array.elms
 
 	select case dtype
 	'' var-len string fields? must add a ctor, copyctor and dtor
@@ -731,7 +731,7 @@ sub symbDelStruct _
     	'' an ordinary field?
     	if( symbGetClass( fld ) = FB_SYMBCLASS_FIELD ) then
     		'' del array dims if not a scalar type
-    		dim_ = fld->var.array.dimhead
+    		dim_ = fld->var_.array.dimhead
     		do while( dim_ <> NULL )
     			dim_nxt = dim_->next
 

@@ -237,12 +237,16 @@ type AST_NODE_LINK
 	ret_left		as integer
 end type
 
+type AST_NODE_CAST
+	doconv 			as integer						'' do conversion (TRUE or FALSE)
+end type
+
 ''
 type ASTNODE
-	class			as integer						'' CONST, VAR, BOP, UOP, IDX, FUNCT, etc
+	class			as AST_NODECLASS
 
 	dtype			as integer
-	subtype			as FBSYMBOL ptr					'' if dtype is an USERDEF or ENUM
+	subtype			as FBSYMBOL ptr
 
 	defined 		as integer						'' only true for constants
 
@@ -250,7 +254,7 @@ type ASTNODE
 
 	union
 		con			as AST_NODE_CONST
-		var			as AST_NODE_VAR
+		var_		as AST_NODE_VAR
 		idx			as AST_NODE_IDX
 		ptr			as AST_NODE_PTR
 		call		as AST_NODE_CALL
@@ -271,13 +275,14 @@ type ASTNODE
 		break		as AST_NODE_BREAK
 		data		as AST_NODE_DATASTMT
 		link		as AST_NODE_LINK
+		cast		as AST_NODE_CAST
 	end union
 
-	prev			as ASTNODE ptr					'' used by Add
-	next			as ASTNODE ptr					'' /
+	l				as ASTNODE ptr					'' left node
+	r				as ASTNODE ptr					'' right /
 
-	l				as ASTNODE ptr					'' left node, index of ast tb
-	r				as ASTNODE ptr					'' right /     /
+	prev			as ASTNODE ptr					'' used by astAdd()
+	next			as ASTNODE ptr					'' /
 end type
 
 type AST_PROC_CTX
@@ -1270,6 +1275,8 @@ declare sub astDtorListClear _
 
 #define astIsTYPEINI(n) (n->class = AST_NODECLASS_TYPEINI)
 
+#define astIsCAST(n) (n->class = AST_NODECLASS_CONV)
+
 #define astGetValue(n) n->con.val
 
 #define astGetValInt(n) n->con.val.int
@@ -1319,6 +1326,8 @@ declare sub astDtorListClear _
 #define astGetFirstDataStmtSymbol( ) ast.data.firstsym
 
 #define astDTorListIsEmpty( ) (listGetHead( @ast.dtorlist ) = NULL)
+
+#define astGetCastDoConv( n ) n->cast.doconv
 
 ''
 '' inter-module globals

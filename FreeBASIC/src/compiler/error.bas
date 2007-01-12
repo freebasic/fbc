@@ -250,7 +250,8 @@ end type
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
-		@"VAR requires an initializer" _
+		@"VAR requires an initializer", _
+		@"Fields cannot be named as keywords in TYPE's that contain member functions or in CLASS'es" _
 	}
 
 

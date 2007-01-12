@@ -95,8 +95,8 @@ function symbAllocFloatConst _
 					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
 
 	''
-	s->var.littext = ZstrAllocate( len( svalue ) )
-	*s->var.littext = svalue
+	s->var_.littext = ZstrAllocate( len( svalue ) )
+	*s->var_.littext = svalue
 
 	function = s
 
@@ -148,8 +148,8 @@ function symbAllocStrConst _
 					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
 
 	''
-	s->var.littext = ZstrAllocate( strlen )
-	*s->var.littext = *sname
+	s->var_.littext = ZstrAllocate( strlen )
+	*s->var_.littext = *sname
 
 	function = s
 
@@ -201,8 +201,8 @@ function symbAllocWStrConst _
 					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
 
 	''
-	s->var.littextw = WstrAllocate( strlen )
-	*s->var.littextw = *sname
+	s->var_.littextw = WstrAllocate( strlen )
+	*s->var_.littextw = *sname
 
 	function = s
 
@@ -232,7 +232,7 @@ function symbGetConstValueAsStr _
 
   	select case as const symbGetType( s )
   	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-  		function = *symbGetConstValStr( s )->var.littext
+  		function = *symbGetConstValStr( s )->var_.littext
 
   	case FB_DATATYPE_LONGINT
   		function = str( symbGetConstValLong( s ) )

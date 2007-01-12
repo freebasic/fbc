@@ -211,7 +211,7 @@ function symbAddArrayDesc _
 		'' can't be ever static, the address has to be always
 		'' calculated at runtime
 
-	'' var..
+	'' var_..
 	else
 		isdynamic = symbIsDynamic( array )
 		ispubext = (array->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0
@@ -288,21 +288,21 @@ function symbAddArrayDesc _
 									FB_SYMBSTATS_ACCESSED or _
 									FB_SYMBSTATS_HASALIAS)
 
-    desc->var.suffix = INVALID
+    desc->var_.suffix = INVALID
 
 	'' as desc is also a var, clear the var fields
-	desc->var.array.desc = NULL
-	desc->var.array.dif = 0
-	desc->var.array.dims = 0
-	desc->var.array.dimhead = NULL
-	desc->var.array.dimtail = NULL
-	desc->var.array.elms = 1
+	desc->var_.array.desc = NULL
+	desc->var_.array.dif = 0
+	desc->var_.array.dims = 0
+	desc->var_.array.dimhead = NULL
+	desc->var_.array.dimtail = NULL
+	desc->var_.array.elms = 1
 
     '' should be set elsewhere
-    desc->var.initree = NULL
+    desc->var_.initree = NULL
 
     '' back link
-    desc->var.desc.array = array
+    desc->var_.desc.array = array
 
 	''
 	function = desc
@@ -329,15 +329,15 @@ function symbNewArrayDim _
     d->lower = lower
     d->upper = upper
 
-	n = s->var.array.dimtail
+	n = s->var_.array.dimtail
 	if( n <> NULL ) then
 		n->next = d
 	else
-		s->var.array.dimhead = d
+		s->var_.array.dimhead = d
 	end if
 
 	d->next = NULL
-	s->var.array.dimtail = d
+	s->var_.array.dimtail = d
 
     function = d
 
@@ -355,10 +355,10 @@ sub symbSetArrayDimTb _
     dim as FBVARDIM ptr d = any
 
 	if( dimensions > 0 ) then
-		s->var.array.dif = symbCalcArrayDiff( dimensions, dTB(), s->lgt )
+		s->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), s->lgt )
 
-		if( (s->var.array.dimhead = NULL) or _
-			(s->var.array.dims <> dimensions) ) then
+		if( (s->var_.array.dimhead = NULL) or _
+			(s->var_.array.dims <> dimensions) ) then
 
             hDelVarDims( s )
 
@@ -368,7 +368,7 @@ sub symbSetArrayDimTb _
 			next
 
 		else
-			d = s->var.array.dimhead
+			d = s->var_.array.dimhead
 			for i = 0 to dimensions-1
 				d->lower = dTB(i).lower
 				d->upper = dTB(i).upper
@@ -376,26 +376,26 @@ sub symbSetArrayDimTb _
 			next
 		end if
 
-		s->var.array.elms = symbCalcArrayElements( s )
+		s->var_.array.elms = symbCalcArrayElements( s )
 
 	else
-		s->var.array.dif = 0
-		s->var.array.elms = 1
+		s->var_.array.dif = 0
+		s->var_.array.elms = 1
 	end if
 
-	s->var.array.dims = dimensions
+	s->var_.array.dims = dimensions
 
 	'' dims can be -1 with COMMON arrays..
 	if( dimensions <> 0 ) then
-		if( s->var.array.desc = NULL ) then
-			s->var.array.desc = symbAddArrayDesc( s, dimensions )
+		if( s->var_.array.desc = NULL ) then
+			s->var_.array.desc = symbAddArrayDesc( s, dimensions )
 
-			s->var.array.desc->var.initree = _
-				astBuildArrayDescIniTree( s->var.array.desc, s, NULL )
+			s->var_.array.desc->var_.initree = _
+				astBuildArrayDescIniTree( s->var_.array.desc, s, NULL )
 
 		end if
 	else
-		s->var.array.desc = NULL
+		s->var_.array.desc = NULL
 	end if
 
 end sub
@@ -424,21 +424,21 @@ private sub hSetupVar _
 	s->ofs = 0
 
 	'' array fields
-	s->var.array.dimhead = NULL
-	s->var.array.dimtail = NULL
-	s->var.array.desc = NULL
+	s->var_.array.dimhead = NULL
+	s->var_.array.dimtail = NULL
+	s->var_.array.desc = NULL
 
 	if( dimensions <> 0 ) then
 		symbSetArrayDimTb( s, dimensions, dTB() )
 	else
-		s->var.array.dims = 0
-		s->var.array.dif = 0
-		s->var.array.elms = 1
+		s->var_.array.dims = 0
+		s->var_.array.dif = 0
+		s->var_.array.elms = 1
 	end if
 
-	s->var.initree = NULL
+	s->var_.initree = NULL
 
-	s->var.stmtnum = parser.stmt.cnt
+	s->var_.stmtnum = parser.stmt.cnt
 
 end sub
 
@@ -555,7 +555,7 @@ function symbAddVarEx _
 			s->scope = parser.currproc->scope + 1
 		end if
 
-		s->var.stmtnum = parser.currproc->proc.ext->stmtnum + 1
+		s->var_.stmtnum = parser.currproc->proc.ext->stmtnum + 1
 
 	'' move to global?
 	elseif( (options and FB_SYMBOPT_MOVETOGLOB) <> 0 ) then
@@ -673,7 +673,7 @@ function symbCalcArrayElements _
     dim as integer e, d
 
 	if( n = NULL ) then
-		n = s->var.array.dimhead
+		n = s->var_.array.dimhead
 	end if
 
 	e = 1
@@ -802,8 +802,8 @@ function symbCloneVar _
 	'' assuming only temp vars or temp array descs will be cloned
 
 	if( symbIsDescriptor( sym ) ) then
-    	function = symbAddArrayDesc( sym->var.desc.array, _
-    								 symbGetArrayDimensions( sym->var.desc.array ) )
+    	function = symbAddArrayDesc( sym->var_.desc.array, _
+    								 symbGetArrayDimensions( sym->var_.desc.array ) )
 
 		'' no need to dup desc.initree, it was flushed in newARG() and
 		'' should be fixed up with the new symbol in TypeIniFlush()
@@ -829,7 +829,7 @@ private sub hDelVarDims _
 
     dim as FBVARDIM ptr n, nxt
 
-    n = s->var.array.dimhead
+    n = s->var_.array.dimhead
     do while( n <> NULL )
     	nxt = n->next
 
@@ -838,9 +838,9 @@ private sub hDelVarDims _
     	n = nxt
     loop
 
-    s->var.array.dimhead = NULL
-    s->var.array.dimtail = NULL
-    s->var.array.dims	  = 0
+    s->var_.array.dimhead = NULL
+    s->var_.array.dimtail = NULL
+    s->var_.array.dims	  = 0
 
 end sub
 
@@ -854,10 +854,10 @@ sub symbDelVar _
     	exit sub
     end if
 
-    if( s->var.array.dims > 0 ) then
+    if( s->var_.array.dims > 0 ) then
     	hDelVarDims( s )
     	'' del the array descriptor, recursively
-    	symbDelVar( s->var.array.desc )
+    	symbDelVar( s->var_.array.desc )
     end if
 
     if( symbGetIsLiteral( s ) ) then
@@ -865,12 +865,12 @@ sub symbDelVar _
 
     	'' not a wchar literal?
     	if( s->typ <> FB_DATATYPE_WCHAR ) then
-    		if( s->var.littext <> NULL ) then
-    			ZstrFree( s->var.littext )
+    		if( s->var_.littext <> NULL ) then
+    			ZstrFree( s->var_.littext )
     		end if
     	else
-    		if( s->var.littextw <> NULL ) then
-    			WstrFree( s->var.littextw )
+    		if( s->var_.littextw <> NULL ) then
+    			WstrFree( s->var_.littextw )
     		end if
     	end if
 

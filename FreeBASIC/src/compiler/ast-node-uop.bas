@@ -141,11 +141,6 @@ function astNewUOP _
 		byval o as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
-    dim as integer dclass = any, dtype = any
-    dim as FBSYMBOL ptr proc = any
-    dim as FB_ERRMSG err_num = any
-
 	function = NULL
 
 	if( o = NULL ) then
@@ -154,6 +149,8 @@ function astNewUOP _
 
 	'' check op overloading
 	if( symb.globOpOvlTb(op).head <> NULL ) then
+		dim as FBSYMBOL ptr proc = any
+		dim as FB_ERRMSG err_num = any
 		proc = symbFindUopOvlProc( op, o, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
@@ -165,6 +162,7 @@ function astNewUOP _
 		end if
 	end if
 
+    dim as integer dclass = any, dtype = any
 	dtype = o->dtype
     dclass = symbGetDataClass( dtype )
 
@@ -201,6 +199,8 @@ function astNewUOP _
     	end if
     end select
 
+	dim as FBSYMBOL ptr subtype = o->subtype
+
 	'' convert byte to integer
 	if( symbGetDataSize( dtype ) = 1 ) then
 		if( symbIsSigned( dtype ) ) then
@@ -208,7 +208,10 @@ function astNewUOP _
 		else
 			dtype = FB_DATATYPE_UINT
 		end if
+
+		'' !!!FIXME!!! if ENUM's could be BYTE's in future, this will fail
 		o = astNewCONV( dtype, NULL, o )
+		subtype = NULL
 	end if
 
 	select case as const op
@@ -217,12 +220,14 @@ function astNewUOP _
 		if( dclass <> FB_DATACLASS_INTEGER ) then
 			o = astNewCONV( FB_DATATYPE_INTEGER, NULL, o )
 			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
 		end if
 
 	'' with SGN(int) the result is always a signed integer
 	case AST_OP_SGN
 		if( dclass = FB_DATACLASS_INTEGER ) then
 			dtype = symbGetSignedType( dtype )
+			subtype = NULL
 		end if
 
 	'' transcendental can only operate on floats
@@ -233,6 +238,7 @@ function astNewUOP _
 		if( dclass <> FB_DATACLASS_FPOINT ) then
 			o = astNewCONV( FB_DATATYPE_DOUBLE, NULL, o )
 			dtype = FB_DATATYPE_DOUBLE
+			subtype = NULL
 		end if
 
 	'' fix and frac only take floats
@@ -309,13 +315,15 @@ chk_ulong:
 			hUOPConstFoldInt( op, o )
 		end select
 
-		astSetType( o, dtype, NULL )
+		o->dtype = dtype
+		o->subtype = subtype
 
 		return o
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_UOP, dtype, o->subtype )
+    dim as ASTNODE ptr n = any
+	n = astNewNode( AST_NODECLASS_UOP, dtype, subtype )
 	if( n = NULL ) then
 		exit function
 	end if

@@ -1387,15 +1387,23 @@ private function hDoOptRemConv _
 					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						l = r->l
 
+						'' skip any casting if they won't do any conversion
+						dim as ASTNODE ptr t = l
+						if( l->class = AST_NODECLASS_CONV ) then
+							if( l->cast.doconv = FALSE ) then
+								t = l->l
+							end if
+						end if
+
 						'' can't be a longint
-						if( symbGetDataSize( l->dtype ) < FB_INTEGERSIZE*2 ) then
+						if( symbGetDataSize( t->dtype ) < FB_INTEGERSIZE*2 ) then
 							dorem = FALSE
 
-							select case as const l->class
+							select case as const t->class
 							case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 								 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 								'' can't be unsigned either
-								if( symbIsSigned( l->dtype ) ) then
+								if( symbIsSigned( t->dtype ) ) then
 									dorem = TRUE
 								end if
 							end select
@@ -1717,7 +1725,6 @@ function astOptAssignment _
 		return hOptStrAssignment( n, l, r )
 	end select
 
-
 	dclass = symbGetDataClass( dtype )
 	if( dclass = FB_DATACLASS_INTEGER ) then
 		if( irGetOption( IR_OPT_CPU_BOPSELF ) = FALSE ) then
@@ -1745,12 +1752,21 @@ function astOptAssignment _
 	end if
 
 	'' is left side a var, idx or ptr?
-	select case as const l->class
+
+	'' skip any casting if they won't do any conversion
+	dim as ASTNODE ptr t = l
+	if( l->class = AST_NODECLASS_CONV ) then
+		if( l->cast.doconv = FALSE ) then
+			t = l->l
+		end if
+	end if
+
+	select case as const t->class
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF
 
 	case AST_NODECLASS_FIELD
 		'' isn't it a bitfield?
-		if( l->l->dtype = FB_DATATYPE_BITFIELD ) then
+		if( t->l->dtype = FB_DATATYPE_BITFIELD ) then
 			exit function
 		end if
 

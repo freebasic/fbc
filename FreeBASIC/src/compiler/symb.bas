@@ -344,13 +344,13 @@ function symbCanDuplicate _
 			case FB_SYMBCLASS_VAR
 				'' same scope?
 				if( s->scope = sym->scope ) then
-					if( (s->var.suffix = INVALID) or _
-						(sym->var.suffix = INVALID) ) then
+					if( (s->var_.suffix = INVALID) or _
+						(sym->var_.suffix = INVALID) ) then
 	    				exit function
 					end if
 
     				'' same suffix?
-    				if( sym->var.suffix = s->var.suffix ) then
+    				if( sym->var_.suffix = s->var_.suffix ) then
     					exit function
     				end if
     			end if
@@ -491,7 +491,7 @@ function symbNewSymbol _
 
     if( class_ = FB_SYMBCLASS_VAR ) then
     	'' needed by symbCanDup()
-    	s->var.suffix = suffix
+    	s->var_.suffix = suffix
     end if
 
 	'' add to hash table
@@ -877,7 +877,7 @@ function symbFindVarByDefType _
     if( def_dtype = FB_DATATYPE_STRING ) then
     	do while( chain_ <> NULL )
     		if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
-    			if( chain_->sym->var.suffix = INVALID ) then
+    			if( chain_->sym->var_.suffix = INVALID ) then
     				exit do
     			end if
 
@@ -895,7 +895,7 @@ function symbFindVarByDefType _
     else
     	do while( chain_ <> NULL )
     		if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
-    			if( chain_->sym->var.suffix = INVALID ) then
+    			if( chain_->sym->var_.suffix = INVALID ) then
     				exit do
     			elseif( chain_->sym->typ = def_dtype ) then
     				exit do
@@ -1245,7 +1245,7 @@ function symbIsArray _
 		if( (sym->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) <> 0 ) then
 			return TRUE
 		else
-			return sym->var.array.dims <> 0
+			return sym->var_.array.dims <> 0
 		end if
 	end select
 

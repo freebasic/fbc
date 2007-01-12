@@ -44,15 +44,22 @@ function astNewDEREF _
     	end if
 
 		if( ofs = 0 ) then
-    		dim as integer delchild = any
+			'' skip any casting if they won't do any conversion
+			dim as ASTNODE ptr t = l
+			if( l->class = AST_NODECLASS_CONV ) then
+				if( l->cast.doconv = FALSE ) then
+					t = l->l
+				end if
+			end if
 
 			'' convert *@ to nothing
-			select case l->class
+    		dim as integer delchild = any
+			select case t->class
 			case AST_NODECLASS_ADDROF
 				delchild = TRUE
 
 			case AST_NODECLASS_OFFSET
-				delchild = (l->ofs.ofs = 0)
+				delchild = (t->ofs.ofs = 0)
 
 			case else
 				delchild = FALSE
@@ -60,9 +67,13 @@ function astNewDEREF _
 
 			''
 			if( delchild ) then
-				n = l->l
+				n = t->l
+				astDelNode( t )
+				if( t <> l ) then
+					astDelNode( l )
+				end if
+
 				astSetType( n, dtype, subtype )
-				astDelNode( l )
 				return n
 			end if
 		end if

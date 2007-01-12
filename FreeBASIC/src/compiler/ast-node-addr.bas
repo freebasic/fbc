@@ -53,11 +53,11 @@ function astNewOFFSET _
 
 	'' var?
 	if( astIsVAR( l ) ) then
-		n->ofs.ofs = l->var.ofs
+		n->ofs.ofs = l->var_.ofs
 
 	'' array..
 	else
-		n->ofs.ofs = l->idx.ofs + l->r->var.ofs + _
+		n->ofs.ofs = l->idx.ofs + l->r->var_.ofs + _
 					 symbGetArrayDiff( l->sym ) + symbGetOfs( l->sym )
 	end if
 
@@ -168,28 +168,42 @@ function astNewADDROF _
 	dtype = l->dtype
 	subtype = l->subtype
 
-	select case as const l->class
+	'' skip any casting if they won't do any conversion
+	dim as ASTNODE ptr t = l
+	if( l->class = AST_NODECLASS_CONV ) then
+		if( l->cast.doconv = FALSE ) then
+			t = l->l
+		end if
+	end if
+
+	select case as const t->class
 	case AST_NODECLASS_DEREF
 		if( env.clopt.extraerrchk ) then
-           	removeNullPtrCheck( l )
+           	removeNullPtrCheck( t )
 		end if
 
-		n = l->l
+		n = t->l
 		'' @*const to const
 		if( n->class = AST_NODECLASS_CONST ) then
-			astDelNode( l )
+			astDelNode( t )
+			if( t <> l ) then
+				astDelNode( l )
+			end if
 			return n
 		end if
 
 		'' @[var] to nothing (can't be local or field)
-		if( l->ptr.ofs = 0 ) then
-			astDelNode( l )
+		if( t->ptr.ofs = 0 ) then
+			astDelNode( t )
+			if( t <> l ) then
+				astDelNode( l )
+			end if
 			return n
 		end if
 
 	case AST_NODECLASS_FIELD
 		'' @0->field to const
-		n = l->l
+		n = t->l
 		if( n->class = AST_NODECLASS_DEREF ) then
 			if( env.clopt.extraerrchk ) then
            		removeNullPtrCheck( n )
@@ -200,7 +214,10 @@ function astNewADDROF _
 				'' abs address?
 				if( nn->class = AST_NODECLASS_CONST ) then
 					astDelNode( n )
-					astDelNode( l )
+					astDelNode( t )
+					if( t <> l ) then
+						astDelNode( l )
+					end if
 					return nn
 				end if
 
@@ -210,7 +227,10 @@ function astNewADDROF _
 				nn = astNewCONSTi( n->ptr.ofs, FB_DATATYPE_INTEGER )
 
 				astDelNode( n )
-				astDelNode( l )
+				astDelNode( t )
+				if( t <> l ) then
+					astDelNode( l )
+				end if
 				return nn
 			end if
 		end if
@@ -219,24 +239,33 @@ function astNewADDROF _
 		dim as FBSYMBOL ptr s = any
 
 		'' module-level or local static scalar? use offset instead
-		s = l->sym
+		s = t->sym
 		if( s <> NULL ) then
 			if( (symbIsLocal( s ) = FALSE) or _
 				 ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or _
 				 						   FB_SYMBATTRIB_COMMON or _
 				 						   FB_SYMBATTRIB_STATIC)) <> 0) ) then
-				return astNewOFFSET( l )
+				if( t <> l ) then
+					astDelNode( l )
+				end if
+
+				return astNewOFFSET( t )
 			end if
 		end if
 
     case AST_NODECLASS_IDX
 		'' try to remove the idx node if it's a constant expr
-		l = astOptimize( l )
+		t = astOptimize( t )
+		if( t <> l ) then
+			l->l = t
+		else
+			l = t
+		end if
 
 		'' no index expression? it's a const..
-		if( l->l = NULL ) then
+		if( t->l = NULL ) then
 			dim as FBSYMBOL ptr s = any
-			s = l->sym
+			s = t->sym
 			'' module-level or local static scalar? use offset instead
 			if( (symbIsLocal( s ) = FALSE) or _
 				 ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or _
@@ -244,7 +273,10 @@ function astNewADDROF _
 				 						   FB_SYMBATTRIB_STATIC)) <> 0) ) then
 				'' can't be dynamic either
 				if( symbGetIsDynamic( s ) = FALSE ) then
-					return astNewOFFSET( l )
+					if( t <> l ) then
+						astDelNode( l )
+					end if
+					return astNewOFFSET( t )
 				end if
 			end if
 		end if

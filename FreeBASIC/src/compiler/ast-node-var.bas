@@ -86,7 +86,7 @@ function astNewVAR _
 	end if
 
 	n->sym = sym
-	n->var.ofs = ofs
+	n->var_.ofs = ofs
 
 	'' clean up?
 	if( clean_up ) then
@@ -110,7 +110,7 @@ sub astBuildVAR _
 	astInitNode( n, AST_NODECLASS_VAR, dtype, subtype )
 
 	n->sym = sym
-	n->var.ofs = ofs
+	n->var_.ofs = ofs
 
 end sub
 
@@ -130,7 +130,7 @@ function astLoadVAR _
 	end if
 
 	s = n->sym
-	ofs = n->var.ofs
+	ofs = n->var_.ofs
 	if( s <> NULL ) then
 		symbSetIsAccessed( s )
 		ofs += symbGetOfs( s )

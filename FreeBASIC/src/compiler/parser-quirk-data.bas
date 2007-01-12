@@ -130,11 +130,15 @@ function cDataStmt  _
 				'' not a constant?
 				dim as integer isconst = astIsCONST( expr )
 				if( isconst = FALSE ) then
-					'' not a literal string?
-					select case astGetDataType( expr )
-					case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-						isconst = astGetStrLitSymbol( expr ) <> NULL
-					end select
+					if( astIsOFFSET( expr ) ) then
+						isconst = TRUE
+					else
+						'' not a literal string?
+						select case astGetDataType( expr )
+						case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+							isconst = astGetStrLitSymbol( expr ) <> NULL
+						end select
+					end if
 				end if
 
             	if( isconst = FALSE ) then

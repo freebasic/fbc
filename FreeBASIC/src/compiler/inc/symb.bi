@@ -274,6 +274,7 @@ enum FB_UDTOPT
 	FB_UDTOPT_HASSETPROPERTY	= &h0100
 	FB_UDTOPT_HASIDXGETPROPERTY	= &h0200
 	FB_UDTOPT_HASIDXSETPROPERTY	= &h0400
+	FB_UDTOPT_HASKWDFIELD		= &h0800
 end enum
 
 type FB_STRUCT_DBG
@@ -509,7 +510,7 @@ type FBSYMBOL
 	ofs				as integer					'' for local vars, args, UDT's and fields
 
 	union
-		var			as FBS_VAR
+		var_		as FBS_VAR
 		con			as FBS_CONST
 		udt			as FBS_STRUCT
 		bitfld		as FBS_BITFLD
@@ -1952,29 +1953,29 @@ declare function symbGetEnumNextElm _
 
 #define symbGetDefineFlags(d) d->def.flags
 
-#define symbGetVarLitText(s) s->var.littext
+#define symbGetVarLitText(s) s->var_.littext
 
-#define symbGetVarLitTextW(s) s->var.littextw
+#define symbGetVarLitTextW(s) s->var_.littextw
 
-#define symbGetVarStmt(s) s->var.stmtnum
+#define symbGetVarStmt(s) s->var_.stmtnum
 
-#define symbSetTypeIniTree(s, t) s->var.initree = t
+#define symbSetTypeIniTree(s, t) s->var_.initree = t
 
-#define symbGetTypeIniTree(s) s->var.initree
+#define symbGetTypeIniTree(s) s->var_.initree
 
-#define symbGetArrayDiff(s) s->var.array.dif
+#define symbGetArrayDiff(s) s->var_.array.dif
 
-#define symbGetArrayDimensions(s) s->var.array.dims
+#define symbGetArrayDimensions(s) s->var_.array.dims
 
-#define symbSetArrayDimensions(s,d) s->var.array.dims = d
+#define symbSetArrayDimensions(s,d) s->var_.array.dims = d
 
-#define symbGetArrayDescriptor(s) s->var.array.desc
+#define symbGetArrayDescriptor(s) s->var_.array.desc
 
-#define symbGetArrayOffset(s) s->var.array.dif
+#define symbGetArrayOffset(s) s->var_.array.dif
 
-#define symbGetArrayFirstDim(s) s->var.array.dimhead
+#define symbGetArrayFirstDim(s) s->var_.array.dimhead
 
-#define symbGetArrayElements(s) s->var.array.elms
+#define symbGetArrayElements(s) s->var_.array.elms
 
 #define symbGetUDTSymbTbHead(s) s->udt.symtb.head
 
@@ -1985,7 +1986,7 @@ declare function symbGetEnumNextElm _
 
 #define symbGetUDTElmBitLen(e) iif( e->typ = FB_DATATYPE_BITFIELD, _
 									e->subtype->bitfld.bits, _
-									e->lgt * e->var.array.elms * 8 )
+									e->lgt * e->var_.array.elms * 8 )
 
 #define symbGetUDTIsUnion(s) ((s->udt.options and FB_UDTOPT_ISUNION) <> 0)
 
@@ -2024,6 +2025,10 @@ declare function symbGetEnumNextElm _
 #define symbGetUDTHasIdxSetProp(s) ((s->udt.options and FB_UDTOPT_HASIDXSETPROPERTY) <> 0)
 
 #define symbSetUDTHasIdxSetProp(s) s->udt.options or= FB_UDTOPT_HASIDXSETPROPERTY
+
+#define symbGetUDTHasKwdField(s) ((s->udt.options and FB_UDTOPT_HASKWDFIELD) <> 0)
+
+#define symbSetUDTHasKwdField(s) s->udt.options or= FB_UDTOPT_HASKWDFIELD
 
 #define symbGetUDTAlign(s) s->udt.align
 

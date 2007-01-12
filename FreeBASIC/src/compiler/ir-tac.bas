@@ -277,7 +277,7 @@ end sub
 
 		dt = vreg->dtype
 		if( dt >= FB_DATATYPE_POINTER ) then
-			dt = FB_DATATYPE_UINT
+			dt = FB_DATATYPE_ULONG
 			dc = FB_DATACLASS_INTEGER
 		else
 			dc = symb_dtypeTB(dt).class
@@ -1077,7 +1077,7 @@ private function _allocVrImmF _
 
 	dim as IRVREG ptr vr = any
 
-	'' the FPU doesn't support immediates? create a temp const var..
+	'' the FPU doesn't support immediates? create a temp const var_..
 	if( irGetOption( IR_OPT_FPU_IMMOPER ) = FALSE ) then
 		dim as FBSYMBOL ptr s = symbAllocFloatConst( value, dtype )
 		return irAllocVRVAR( dtype, s, symbGetOfs( s ) )
@@ -1192,6 +1192,23 @@ private function _allocVrOfs _
 	function = vr
 
 end function
+
+'':::::
+private sub _setVregDataType _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval dtype as integer _
+	)
+
+	if( dtype > FB_DATATYPE_POINTER ) then
+		dtype = FB_DATATYPE_POINTER
+	end if
+
+	if( vreg <> NULL ) then
+		vreg->dtype = dtype
+	end if
+
+end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -2754,6 +2771,7 @@ function irTAC_ctor _
 		@_allocVrIdx, _
 		@_allocVrPtr, _
 		@_allocVrOfs, _
+		@_setVregDataType, _
 		@_getDistance, _
 		@_loadVr, _
 		@_storeVr, _

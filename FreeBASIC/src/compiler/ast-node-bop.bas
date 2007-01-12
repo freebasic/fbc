@@ -1275,7 +1275,8 @@ function astNewBOP _
 			hBOPConstFoldInt( op, l, r )
 		end select
 
-		astSetType( l, dtype, subtype )
+		l->dtype = dtype
+		l->subtype = subtype
 
 		astDelNode( r )
 

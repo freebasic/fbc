@@ -433,8 +433,16 @@ function astNewASSIGN _
 		if( is_udt ) then
 			'' type ini tree?
 			if( r->class = AST_NODECLASS_TYPEINI ) then
+				'' skip any casting if they won't do any conversion
+				dim as ASTNODE ptr t = l
+				if( l->class = AST_NODECLASS_CONV ) then
+					if( l->cast.doconv = FALSE ) then
+						t = l->l
+					end if
+				end if
+
 				'' !!FIXME!! can't be used with complex l-hand side expressions
-				if( l->class = AST_NODECLASS_VAR ) then
+				if( t->class = AST_NODECLASS_VAR ) then
 					'' no double assign, just flush the tree
 					return astTypeIniFlush( r, l->sym, AST_INIOPT_NONE )
 				end if

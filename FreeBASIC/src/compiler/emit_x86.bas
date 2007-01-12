@@ -1197,7 +1197,7 @@ private sub hDeclVariable _
 		end if
 
 		hEmitDataHeader( )
-		astTypeIniFlush( s->var.initree, _
+		astTypeIniFlush( s->var_.initree, _
 						 s, _
 						 AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
 

@@ -367,11 +367,7 @@ private function hCast _
 		end if
 	end if
 
-	expr = astNewCONV( dtype, _
-					   subtype, _
-					   expr, _
-					   iif( ptronly, AST_OP_TOPOINTER, INVALID ), _
-					   TRUE )
+	expr = astNewCONV( dtype, subtype, expr, INVALID, TRUE )
 
     if( expr = NULL ) Then
     	if( errReport( iif( ptronly, _
@@ -527,12 +523,20 @@ private function hVarPtrBody _
 		end if
 	end if
 
-	select case as const astGetClass( expr )
+	'' skip any casting if they won't do any conversion
+	dim as ASTNODE ptr t = expr
+	if( astIsCAST( expr ) ) then
+		if( astGetCASTDoConv( expr ) = FALSE ) then
+			t = astGetLeft( expr )
+		end if
+	end if
+
+	select case as const astGetClass( t )
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, AST_NODECLASS_TYPEINI
 
 	case AST_NODECLASS_FIELD
 		'' can't take address of bitfields..
-		if( astGetDataType( astGetLeft( expr ) ) = FB_DATATYPE_BITFIELD ) then
+		if( astGetDataType( astGetLeft( t ) ) = FB_DATATYPE_BITFIELD ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				return NULL
 			else
@@ -732,7 +736,16 @@ function cAddrOfExpression _
 		end if
 
 		'' check for invalid classes (functions, etc)
-		select case as const astGetClass( expr )
+
+		'' skip any casting if they won't do any conversion
+		dim as ASTNODE ptr t = expr
+		if( astIsCAST( expr ) ) then
+			if( astGetCASTDoConv( expr ) = FALSE ) then
+				t = astGetLeft( expr )
+			end if
+		end if
+
+		select case as const astGetClass( t )
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 			 AST_NODECLASS_DEREF, AST_NODECLASS_TYPEINI, _
 			 AST_NODECLASS_FIELD
@@ -751,8 +764,7 @@ function cAddrOfExpression _
 		else
 			expr = astNewCONV( FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
 							   NULL, _
-							   astNewADDROF( expr ), _
-							   AST_OP_TOPOINTER )
+							   astNewADDROF( expr ) )
 		end if
 
 		'' ')'

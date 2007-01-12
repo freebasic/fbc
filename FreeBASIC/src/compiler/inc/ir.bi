@@ -461,6 +461,12 @@ type IR_VTBL
 		byval ofs as integer _
 	) as IRVREG ptr
 
+	setVregDataType as sub _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval dtype as integer _
+	)
+
 	getDistance as function _
 	( _
 		byval vreg as IRVREG ptr _
@@ -498,9 +504,9 @@ enum IR_OPT
 	IR_OPT_CPU_BOPSETFLAGS	= &h00004000
 	IR_OPT_CPU_64BITREGS	= &h00008000			'' 64-bit wide registers
 
-	IR_OPT_ADDRCISC			= &h01000000			'' complex addressing modes (base+idx*mul)
+	IR_OPT_ADDRCISC			= &h01000000			'' complex addressing modes (base+idx*disp)
 	IR_OPT_REUSEOPER        = &h02000000			'' reuse destine operand
-	IR_OPT_IMMOPER          = &h04000000			'' allow immediate operators
+	IR_OPT_IMMOPER          = &h04000000			'' allow immediate operands
 end enum
 
 type IRCTX
@@ -539,6 +545,8 @@ declare function irGetVRDataSize _
 #define irSetOption( op ) ir.options or= op
 
 #define irAllocVreg(dtype) ir.vtbl.allocVreg( dtype )
+
+#define irSetVregDataType(v,dtype) ir.vtbl.setVregDataType( v, dtype )
 
 #define irAllocVrImm(dtype, value) ir.vtbl.allocVrImm( dtype, value )
 

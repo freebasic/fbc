@@ -346,8 +346,7 @@ private function hStrArgToStrPtrParam _
             '' get the address of
 			n->l = astNewCONV( FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
     					   	   NULL, _
-						   	   astNewADDROF( n->l ), _
-						   	   AST_OP_TOPOINTER )
+						   	   astNewADDROF( n->l ) )
 		end if
 
 		n->dtype = n->l->dtype
@@ -402,7 +401,15 @@ private function hCheckByRefArg _
 
     dim as ASTNODE ptr arg = n->l
 
-	select case as const arg->class
+	'' skip any casting if they won't do any conversion
+	dim as ASTNODE ptr t = arg
+	if( arg->class = AST_NODECLASS_CONV ) then
+		if( arg->cast.doconv = FALSE ) then
+			t = arg->l
+		end if
+	end if
+
+	select case as const t->class
 	'' var, array index or pointer? pass as-is (assuming the type was already checked)
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 		 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
@@ -955,8 +962,16 @@ private function hCheckParam _
 		end if
 
 		if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
+			'' skip any casting if they won't do any conversion
+			dim as ASTNODE ptr t = arg
+			if( arg->class = AST_NODECLASS_CONV ) then
+				if( arg->cast.doconv = FALSE ) then
+					t = arg->l
+				end if
+			end if
+
 			'' param diff than arg can't passed by ref if it's a var/array/ptr
-			select case as const arg->class
+			select case as const t->class
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 			     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 				hParamError( parent )

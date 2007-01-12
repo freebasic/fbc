@@ -358,10 +358,17 @@ function astNewCONV _
 
 	function = NULL
 
+    ldtype = l->dtype
+
+    '' same type?
+    if( ldtype = to_dtype ) then
+    	if( l->subtype = to_subtype ) then
+    		return l
+    	end if
+    end if
+
 	'' try casting op overloading
 	hDoGlobOpOverload( to_dtype, to_subtype, l )
-
-    ldtype = l->dtype
 
 	select case as const to_dtype
 	'' to UDT? as op overloading failed, refuse.. ditto with void (used by uop/bop
@@ -382,28 +389,6 @@ function astNewCONV _
     ldclass = symbGetDataClass( ldtype )
 
     select case op
-    '' pointer typecasting?
-    case AST_OP_TOPOINTER
-		'' check invalid types (op overloaded was resolved already)
-		select case as const ldtype
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
-			'' !!!FIXME!!! this will fail with NULL if it's defined as "0"
-			if( FB_INTEGERSIZE <> FB_POINTERSIZE ) then
-				exit function
-			end if
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-
-		case else
-			if( ldtype < FB_DATATYPE_POINTER ) then
-				exit function
-			end if
-		end select
-
-    	astSetType( l, to_dtype, to_subtype )
-
-    	return l
-
 	'' sign conversion?
 	case AST_OP_TOSIGNED, AST_OP_TOUNSIGNED
 		'' float? invalid
@@ -467,26 +452,31 @@ function astNewCONV _
 			l->class = AST_NODECLASS_ENUM
 		end if
 
-		astSetType( l, to_dtype, to_subtype )
+		l->dtype = to_dtype
+		l->subtype = to_subtype
 
 		return l
 	end if
 
 	'' only convert if the classes are different (ie, floating<->integer) or
 	'' if sizes are different (ie, byte<->int)
+	dim as integer doconv = TRUE
 	if( ldclass = symbGetDataClass( to_dtype ) ) then
 		if( symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype ) ) then
-			'' check bitfields..
-			if( l->class = AST_NODECLASS_FIELD ) then
-				if( l->l->dtype = FB_DATATYPE_BITFIELD ) then
-					'' only change the top node type
-					l->dtype = to_dtype
-					return l
-				end if
-			end if
+			doconv = FALSE
+		end if
+	end if
 
-			astSetType( l, to_dtype, to_subtype )
-			return l
+	'' casting another cast?
+	if( l->class = AST_NODECLASS_CONV ) then
+		'' no conversion in both?
+		if( l->cast.doconv = FALSE ) then
+			if( doconv = FALSE ) then
+				'' just replace the bottom cast()'s type
+				l->dtype = to_dtype
+				l->subtype = to_subtype
+				return l
+			end if
 		end if
 	end if
 
@@ -497,6 +487,7 @@ function astNewCONV _
 	end if
 
 	n->l = l
+	n->cast.doconv = doconv
 
 	function = n
 
@@ -536,8 +527,13 @@ function astLoadCONV _
 	vs = astLoad( l )
 
 	if( ast.doemit ) then
-		vr = irAllocVREG( n->dtype )
-		irEmitCONVERT( vr, n->dtype, vs, INVALID )
+		if( n->cast.doconv ) then
+			vr = irAllocVreg( n->dtype )
+			irEmitConvert( vr, n->dtype, vs, INVALID )
+		else
+			vr = vs
+			irSetVregDataType( vr, n->dtype )
+		end if
 	end if
 
 	astDelNode( l )

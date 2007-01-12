@@ -184,6 +184,15 @@ private function hGetTarget _
 
 	fbSetIsExpression( last_isexpr )
 
+	'' remove any casting if they won't do any conversion
+	if( astIsCAST( expr ) ) then
+		if( astGetCASTDoConv( expr ) = FALSE ) then
+			dim as ASTNODE ptr l = astGetLeft( expr )
+			astDelNode( expr )
+			expr = l
+		end if
+	end if
+
 	select case as const astGetClass( expr )
 	'' ugly hack to deal with arrays w/o indexes
 	case AST_NODECLASS_NIDXARRAY

@@ -285,25 +285,25 @@ function rtlNullPtrCheck _
 		byval p as ASTNODE ptr, _
 		byval linenum as integer, _
 		byval module as zstring ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
    	function = NULL
 
    	proc = astNewCALL( PROCLOOKUP( NULLPTRCHK ) )
 
 	'' ptr
-	p = astNewCONV( FB_DATATYPE_POINTER+FB_DATATYPE_VOID, _
-					NULL, _
-					p, _
-					AST_OP_TOPOINTER )
-	if( astNewARG( proc, p, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) = NULL ) then
+	if( astNewARG( proc, _
+				   astNewCONV( FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, p ), _
+				   FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) = NULL ) then
 		exit function
 	end if
 
 	'' linenum
-	if( astNewARG( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, _
+				   astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), _
+				   FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -322,9 +322,9 @@ function rtlMemCopy _
 		byval dst as ASTNODE ptr, _
 		byval src as ASTNODE ptr, _
 		byval bytes as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = NULL
 
@@ -356,11 +356,10 @@ function rtlMemSwap _
 	( _
 		byval dst as ASTNODE ptr, _
 		byval src as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as integer bytes, src_dtype, dst_dtype
-    dim as FBSYMBOL ptr subtype
+    dim as ASTNODE ptr proc = any
+    dim as integer bytes = any, src_dtype = any, dst_dtype = any
 
     function = FALSE
 
@@ -371,7 +370,7 @@ function rtlMemSwap _
 	case FB_DATATYPE_STRUCT
 		'' returned in registers?
 		if( astIsCALL( src ) ) then
-			subtype = src->subtype
+			dim as FBSYMBOL ptr subtype = src->subtype
 			if( symbGetUDTRetType( subtype ) <> FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
 				'' patch type
 				astSetType( src, symbGetUDTRetType( subtype ), NULL )
@@ -433,9 +432,9 @@ function rtlMemCopyClear _
 		byval dstlen as integer, _
 		byval srcexpr as ASTNODE ptr, _
 		byval srclen as integer _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = FALSE
 

@@ -142,7 +142,6 @@ enum AST_OP
 	AST_OP_LIT_ASM
 
 	'' used internally, not passed to IR
-	AST_OP_TOPOINTER
 	AST_OP_TOSIGNED
 	AST_OP_TOUNSIGNED
 
