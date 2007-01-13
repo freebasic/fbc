@@ -37,14 +37,20 @@ enum FB_CMPSTMT_MASK
 end enum
 
 '' compound statements stats
-type FBCMPSTMT
-	cmplabel		as FBSYMBOL ptr				'' or inilabel
-    endlabel		as FBSYMBOL ptr
-end type
+type FB_CMPSTMTSTK_ as FB_CMPSTMTSTK
 
 type FB_CMPSTMT_DO
 	attop			as integer
 	inilabel		as FBSYMBOL ptr
+	cmplabel		as FBSYMBOL ptr
+	endlabel		as FBSYMBOL ptr
+	last			as FB_CMPSTMTSTK_ ptr
+end type
+
+type FB_CMPSTMT_WHILE
+	cmplabel		as FBSYMBOL ptr
+	endlabel		as FBSYMBOL ptr
+	last			as FB_CMPSTMTSTK_ ptr
 end type
 
 type FB_CMPSTMT_FORELM
@@ -55,12 +61,15 @@ end type
 
 type FB_CMPSTMT_FOR
 	outerscopenode	as ASTNODE ptr
-	inilabel		as FBSYMBOL ptr
-	testlabel		as FBSYMBOL ptr
 	cnt				as FB_CMPSTMT_FORELM
 	end            	as FB_CMPSTMT_FORELM
 	stp				as FB_CMPSTMT_FORELM
 	ispos			as FB_CMPSTMT_FORELM
+	testlabel		as FBSYMBOL ptr
+	inilabel		as FBSYMBOL ptr
+	cmplabel		as FBSYMBOL ptr
+	endlabel		as FBSYMBOL ptr
+	last			as FB_CMPSTMTSTK_ ptr
 end type
 
 type FB_CMPSTMT_IF
@@ -74,6 +83,9 @@ type FB_CMPSTMT_PROC
 	tkn				as FB_TOKEN
 	node			as ASTNODE ptr
 	is_nested		as integer
+	cmplabel		as FBSYMBOL ptr
+	endlabel		as FBSYMBOL ptr
+	last			as FB_CMPSTMTSTK_ ptr
 end type
 
 type FB_CMPSTMT_SELCONST
@@ -89,6 +101,9 @@ type FB_CMPSTMT_SELECT
 	dtype			as FB_DATATYPE
 	casecnt			as integer
 	const_			as FB_CMPSTMT_SELCONST
+	cmplabel		as FBSYMBOL ptr
+	endlabel		as FBSYMBOL ptr
+	last			as FB_CMPSTMTSTK_ ptr
 end type
 
 type FB_CMPSTMT_WITH
@@ -112,11 +127,11 @@ end type
 type FB_CMPSTMTSTK
 	id			as integer
 	allowmask	as FB_CMPSTMT_MASK
-	last		as FBCMPSTMT
 	scopenode	as ASTNODE ptr
 	union
-		do		as FB_CMPSTMT_DO
 		for		as FB_CMPSTMT_FOR
+		do		as FB_CMPSTMT_DO
+		while	as FB_CMPSTMT_WHILE
 		if		as FB_CMPSTMT_IF
 		proc	as FB_CMPSTMT_PROC
 		select	as FB_CMPSTMT_SELECT
@@ -139,11 +154,11 @@ type FBPARSER_STMT
 
 	cnt				as integer		            '' keep track of :'s to help scope break's
 
-	for				as FBCMPSTMT
-	do				as FBCMPSTMT
-	while			as FBCMPSTMT
-	select			as FBCMPSTMT
-	proc			as FBCMPSTMT
+	for				as FB_CMPSTMTSTK ptr
+	do				as FB_CMPSTMTSTK ptr
+	while			as FB_CMPSTMTSTK ptr
+	select			as FB_CMPSTMTSTK ptr
+	proc			as FB_CMPSTMTSTK ptr
 	with			as FBPARSER_STMT_WITH
 end type
 

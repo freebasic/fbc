@@ -134,9 +134,8 @@ function cSelConstStmtBegin( ) as integer
 	stk->select.const_.deflabel = NULL
 	stk->select.const_.minval = &hFFFFFFFFu
 	stk->select.const_.maxval = 0
-
-	parser.stmt.select.cmplabel = cl
-	parser.stmt.select.endlabel = el
+	stk->select.cmplabel = cl
+	stk->select.endlabel = el
 
 	function = TRUE
 
@@ -215,7 +214,7 @@ function cSelConstStmtNext _
 
 	if( stk->select.casecnt > 0 ) then
 		'' break from block
-		astAdd( astNewBRANCH( AST_OP_JMP, parser.stmt.select.endlabel ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, stk->select.endlabel ) )
     end if
 
 	'' ELSE?
@@ -397,7 +396,7 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
 
     deflabel = stk->select.const_.deflabel
     if( deflabel = NULL ) then
-    	deflabel = parser.stmt.select.endlabel
+    	deflabel = stk->select.endlabel
     end if
 
 	'' end scope
@@ -406,10 +405,10 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
 	end if
 
 	'' break from block
-	astAdd( astNewBRANCH( AST_OP_JMP, parser.stmt.select.endlabel ) )
+	astAdd( astNewBRANCH( AST_OP_JMP, stk->select.endlabel ) )
 
     '' emit comp label
-    astAdd( astNewLABEL( parser.stmt.select.cmplabel ) )
+    astAdd( astNewLABEL( stk->select.cmplabel ) )
 
 	'' check min val
 	if( minval > 0 ) then
@@ -458,7 +457,7 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
     ctx.base = stk->select.const_.base
 
     '' emit exit label
-    astAdd( astNewLABEL( parser.stmt.select.endlabel ) )
+    astAdd( astNewLABEL( stk->select.endlabel ) )
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )

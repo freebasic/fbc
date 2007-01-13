@@ -102,9 +102,8 @@ function cDoStmtBegin as integer
     stk->scopenode = astScopeBegin( )
 	stk->do.attop = (expr <> NULL)
 	stk->do.inilabel = il
-
-	parser.stmt.do.cmplabel = cl
-	parser.stmt.do.endlabel = el
+    stk->do.cmplabel = cl
+    stk->do.endlabel = el
 
 	function = TRUE
 
@@ -151,8 +150,8 @@ function cDoStmtEnd as integer
 	end if
 
 	'' emit comp label, if needed
-	if( parser.stmt.do.cmplabel <> stk->do.inilabel ) then
-		astAdd( astNewLABEL( parser.stmt.do.cmplabel ) )
+	if( stk->do.cmplabel <> stk->do.inilabel ) then
+		astAdd( astNewLABEL( stk->do.cmplabel ) )
 	end if
 
 	'' bottom check?
@@ -196,7 +195,7 @@ function cDoStmtEnd as integer
 	end if
 
     '' end label (loop exit)
-    astAdd( astNewLABEL( parser.stmt.do.endlabel ) )
+    astAdd( astNewLABEL( stk->do.endlabel ) )
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )

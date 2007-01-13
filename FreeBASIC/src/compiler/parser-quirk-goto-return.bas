@@ -36,8 +36,13 @@ private function hFuncReturn _
 
     function = FALSE
 
-	if( parser.stmt.proc.endlabel = NULL ) then
-		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
+	dim as FBSYMBOL ptr label = NULL
+	if( parser.stmt.proc <> NULL ) then
+		label = parser.stmt.proc->proc.endlabel
+	end if
+
+	if( label = NULL ) then
+		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC ) = FALSE ) then
 			exit function
 		else
 			hSkipStmt( )
@@ -69,7 +74,7 @@ private function hFuncReturn _
 	end if
 
 	'' do an implicit exit function
-	function = astScopeBreak( parser.stmt.proc.endlabel )
+	function = astScopeBreak( label )
 
 end function
 

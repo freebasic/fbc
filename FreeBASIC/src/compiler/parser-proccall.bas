@@ -449,7 +449,7 @@ private function hAssignOrCall _
 
             	'' check if name is valid (or if overloaded)
 				if( symbIsProcOverloadOf( parser.currproc, sym ) = FALSE ) then
-					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
+					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC ) = FALSE ) then
 						exit function
 					else
 						'' error recovery: skip stmt, return
@@ -548,7 +548,7 @@ function cProcCallOrAssign _
 			'' no need to check for '=', that was done already by Declaration()
 
 			if( fbIsModLevel( ) ) then
-				if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
+				if( errReport( FB_ERRMSG_ILLEGALOUTSIDEAFUNCTION ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip stmt, return

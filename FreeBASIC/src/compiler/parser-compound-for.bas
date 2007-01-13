@@ -35,18 +35,6 @@ end enum
 #define CREATEFAKEID( ) _
 	astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ), 0, FB_DATATYPE_INTEGER )
 
-'' if the symbol 's' has a dtor, then call it
-#macro hDestroyTemp( s )
-	if( s <> NULL ) then
-		select case symbGetType( s )
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
-				astAdd( astBuildVarDtorCall( s, TRUE ) )
-			end if
-		end select
-	end if
-#endmacro
-
 declare function hUdtCallOpOvl _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -54,6 +42,27 @@ declare function hUdtCallOpOvl _
 		byval inst_expr as ASTNODE ptr, _
 		byval arg_expr as ASTNODE ptr _
 	) as ASTNODE ptr
+
+'':::::
+private function hAllocTemp _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+    '' make a temp symbol
+	dim as FBSYMBOL ptr s = symbAddTempVar( dtype, subtype )
+	if( s = NULL ) then
+		return NULL
+	end if
+
+    '' remove the temp flag or breakScope() won't call the dtors (and in
+    '' this specific case, the temp vars are live for more than one stmt)
+    symbGetAttrib( s ) and= not FB_SYMBATTRIB_TEMP
+
+    function = s
+
+end function
 
 '':::::
 private function hStoreTemp _
@@ -66,12 +75,7 @@ private function hStoreTemp _
 	'' This function creates a temporary symbol,
 	'' which then has the expression 'expr' stored
 	'' into it. The symbol is returned.
-
-    '' make a temp symbol
-	dim as FBSYMBOL ptr s = symbAddTempVar( dtype, subtype )
-	if( s = NULL ) then
-		return NULL
-	end if
+	dim as FBSYMBOL ptr s = hAllocTemp( dtype, subtype )
 
     '' expr is assigned into the symbol
 	expr = astNewASSIGN( astNewVAR( s, 0, dtype, subtype ), expr )
@@ -467,7 +471,7 @@ private function hForTo _
 	else
 
     	'' generate a symbol using the expression's type
-    	stk->for.end.sym = symbAddTempVar( dtype, subtype )
+    	stk->for.end.sym = hAllocTemp( dtype, subtype )
     	stk->for.end.dtype = symbGetType( stk->for.end.sym )
 
         '' build constructor call
@@ -612,7 +616,7 @@ private function hForStep _
     	iscomplex = TRUE
 
         '' generate a symbol using the expression's type
-    	stk->for.stp.sym = symbAddTempVar( dtype, subtype )
+    	stk->for.stp.sym = hAllocTemp( dtype, subtype )
     	stk->for.stp.dtype = symbGetType( stk->for.end.sym )
 
 		dim as ASTNODE ptr expr = NULL
@@ -871,10 +875,8 @@ function cForStmtBegin _
 	stk->for.outerscopenode = outerscopenode
 	stk->for.testlabel = tl
 	stk->for.inilabel = il
-
-    '' labels
-	parser.stmt.for.cmplabel = cl
-	parser.stmt.for.endlabel = el
+	stk->for.cmplabel = cl
+	stk->for.endlabel = el
 
 	function = TRUE
 
@@ -1002,7 +1004,7 @@ private sub hScalarNext _
 			hFlushBOP( AST_OP_GE, @stk->for.cnt, @stk->for.end, stk->for.inilabel )
 
 			'' else exit for
-			astAdd( astNewBRANCH( AST_OP_JMP, parser.stmt.for.endlabel ) )
+			astAdd( astNewBRANCH( AST_OP_JMP, stk->for.endlabel ) )
 
     	'' else
     	astAdd( astNewLABEL( cl, FALSE ) )
@@ -1027,7 +1029,7 @@ private function hForStmtClose _
 	end if
 
 	'' cmp label
-	astAdd( astNewLABEL( parser.stmt.for.cmplabel ) )
+	astAdd( astNewLABEL( stk->for.cmplabel ) )
 
 	'' UDT?
 	select case symbGetType( stk->for.cnt.sym )
@@ -1053,11 +1055,7 @@ private function hForStmtClose _
     end select
 
     '' end label (loop exit)
-    astAdd( astNewLABEL( parser.stmt.for.endlabel ) )
-
-	'' call the destructors of the temp vars created (in inverse order)
-	hDestroyTemp( stk->for.stp.sym )
-	hDestroyTemp( stk->for.end.sym )
+    astAdd( astNewLABEL( stk->for.endlabel ) )
 
 	'' close the outer scope block
 	if( stk->for.outerscopenode <> NULL ) then
@@ -1112,6 +1110,5 @@ function cForStmtEnd _
 	function = TRUE
 
 end function
-
 
 

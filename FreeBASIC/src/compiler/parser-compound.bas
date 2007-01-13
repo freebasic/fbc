@@ -40,16 +40,11 @@ declare function cCompoundEnd ( ) as integer
 '':::::
 sub parserCompoundStmtSetCtx( )
 
-	parser.stmt.for.cmplabel = NULL
-	parser.stmt.for.endlabel = NULL
-	parser.stmt.do.cmplabel	= NULL
-	parser.stmt.do.endlabel	= NULL
-	parser.stmt.while.cmplabel = NULL
-	parser.stmt.while.endlabel = NULL
-	parser.stmt.select.cmplabel = NULL
-	parser.stmt.select.endlabel = NULL
-	parser.stmt.proc.cmplabel = NULL
-	parser.stmt.proc.endlabel = NULL
+	parser.stmt.for = NULL
+	parser.stmt.do	= NULL
+	parser.stmt.while = NULL
+	parser.stmt.select = NULL
+	parser.stmt.proc = NULL
 	parser.stmt.with.sym = NULL
 
 end sub
@@ -195,79 +190,199 @@ function cEndStatement as integer
 end function
 
 '':::::
+#macro hExitError( errnum )
+	if( errReport( errnum ) = FALSE ) then
+		return FALSE
+	else
+		'' error recovery: skip stmt
+		hSkipStmt( )
+		return TRUE
+	end if
+#endmacro
+
+'':::::
 ''ExitStatement	  =	  EXIT (FOR | DO | WHILE | SELECT | SUB | FUNCTION)
 ''
-function cExitStatement as integer
-    dim as FBSYMBOL ptr label
+function cExitStatement _
+	( _
+	) as integer
+
+    dim as FBSYMBOL ptr label = NULL
 
 	function = FALSE
 
 	'' EXIT
 	lexSkipToken( )
 
-	'' (FOR | DO | WHILE | SELECT | SUB | FUNCTION)
+	'' (FOR | DO | WHILE | SELECT | SUB | FUNCTION) (',')*
 	select case as const lexGetToken( )
 	case FB_TK_FOR
-		label = parser.stmt.for.endlabel
+		if( parser.stmt.for = NULL ) then
+			hExitError( FB_ERRMSG_ILLEGALOUTSIDEFORSTMT )
+		end if
+
+		lexSkipToken( )
+
+		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.for
+		do while( lexGetToken( ) = CHAR_COMMA )
+			lexSkipToken( )
+
+			if( lexGetToken( ) <> FB_TK_FOR ) then
+				hExitError( FB_ERRMSG_EXPECTEDFOR )
+			end if
+
+			stk = stk->for.last
+			if( stk = NULL ) then
+				hExitError( FB_ERRMSG_NOENCLOSEDFORSTMT )
+			end if
+
+			lexSkipToken( )
+		loop
+
+		label = stk->for.endlabel
 
 	case FB_TK_DO
-		label = parser.stmt.do.endlabel
+		if( parser.stmt.do = NULL ) then
+			hExitError( FB_ERRMSG_ILLEGALOUTSIDEDOSTMT )
+		end if
+
+		lexSkipToken( )
+
+		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.do
+		do while( lexGetToken( ) = CHAR_COMMA )
+			lexSkipToken( )
+
+			if( lexGetToken( ) <> FB_TK_DO ) then
+				hExitError( FB_ERRMSG_EXPECTEDDO )
+			end if
+
+			stk = stk->do.last
+			if( stk = NULL ) then
+				hExitError( FB_ERRMSG_NOENCLOSEDDOSTMT )
+			end if
+
+			lexSkipToken( )
+		loop
+
+		label = stk->do.endlabel
 
 	case FB_TK_WHILE
-		label = parser.stmt.while.endlabel
+		if( parser.stmt.while = NULL ) then
+			hExitError( FB_ERRMSG_ILLEGALOUTSIDEWHILESTMT )
+		end if
+
+		lexSkipToken( )
+
+		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.while
+		do while( lexGetToken( ) = CHAR_COMMA )
+			lexSkipToken( )
+
+			if( lexGetToken( ) <> FB_TK_WHILE ) then
+				hExitError( FB_ERRMSG_EXPECTEDWHILE )
+			end if
+
+			stk = stk->while.last
+			if( stk = NULL ) then
+				hExitError( FB_ERRMSG_NOENCLOSEDWHILESTMT )
+			end if
+
+			lexSkipToken( )
+		loop
+
+		label = stk->while.endlabel
 
 	case FB_TK_SELECT
-		label = parser.stmt.select.endlabel
+		if( parser.stmt.select = NULL ) then
+			hExitError( FB_ERRMSG_ILLEGALOUTSIDESELSTMT )
+		end if
 
-	case FB_TK_SUB, FB_TK_FUNCTION
-		label = parser.stmt.proc.endlabel
+		lexSkipToken( )
+
+		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.select
+		do while( lexGetToken( ) = CHAR_COMMA )
+			lexSkipToken( )
+
+			if( lexGetToken( ) <> FB_TK_SELECT ) then
+				hExitError( FB_ERRMSG_EXPECTEDSELECT )
+			end if
+
+			stk = stk->select.last
+			if( stk = NULL ) then
+				hExitError( FB_ERRMSG_NOENCLOSEDSELSTMT )
+			end if
+
+			lexSkipToken( )
+		loop
+
+		label = stk->select.endlabel
+
+	case FB_TK_SUB, FB_TK_FUNCTION, FB_TK_PROPERTY, FB_TK_OPERATOR, _
+		 FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
+
+		if( parser.stmt.proc <> NULL ) then
+			label = parser.stmt.proc->proc.endlabel
+		end if
 
 		if( label = NULL ) then
-			if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip stmt
-				lexSkipToken( )
-				return TRUE
-			end if
+			hExitError( FB_ERRMSG_ILLEGALOUTSIDEAPROC )
 		end if
 
-		'' useless check
-		if( lexGetToken( ) <> iif( symbGetType( parser.currproc ) = FB_DATATYPE_VOID, _
-								   FB_TK_SUB, _
-								   FB_TK_FUNCTION ) ) then
+		dim as FB_ERRMSG errnum = FB_ERRMSG_OK
 
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
+		select case as const lexGetToken( )
+		case FB_TK_SUB
+			if( symbGetType( parser.currproc ) = FB_DATATYPE_VOID ) then
+				if( (symbGetAttrib( parser.currproc ) and _
+					 (FB_SYMBATTRIB_PROPERTY or FB_SYMBATTRIB_OPERATOR or _
+					  FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
+					errnum = FB_ERRMSG_ILLEGALOUTSIDEASUB
+				end if
 			else
-				'' error recovery: skip stmt
-				lexSkipToken( )
-				return TRUE
+				errnum = FB_ERRMSG_ILLEGALOUTSIDEASUB
 			end if
+
+		case FB_TK_FUNCTION
+			if( symbGetType( parser.currproc ) <> FB_DATATYPE_VOID ) then
+				if( (symbGetAttrib( parser.currproc ) and _
+					 (FB_SYMBATTRIB_PROPERTY or FB_SYMBATTRIB_OPERATOR or _
+					  FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
+					errnum = FB_ERRMSG_ILLEGALOUTSIDEAFUNCTION
+				end if
+			else
+				errnum = FB_ERRMSG_ILLEGALOUTSIDEAFUNCTION
+			end if
+
+		case FB_TK_PROPERTY
+			if( symbIsProperty( parser.currproc ) = FALSE ) then
+				errnum = FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY
+			end if
+
+		case FB_TK_OPERATOR
+			if( symbIsOperator( parser.currproc ) = FALSE ) then
+				errnum = FB_ERRMSG_ILLEGALOUTSIDEANOPERATOR
+			end if
+
+		case FB_TK_CONSTRUCTOR
+			if( symbIsConstructor( parser.currproc ) = FALSE ) then
+				errnum = FB_ERRMSG_ILLEGALOUTSIDEACTOR
+			end if
+
+		case FB_TK_DESTRUCTOR
+			if( symbIsDestructor( parser.currproc ) = FALSE ) then
+				errnum = FB_ERRMSG_ILLEGALOUTSIDEADTOR
+			end if
+
+		end select
+
+		if( errnum <> FB_ERRMSG_OK ) then
+			hExitError( errnum )
 		end if
+
+		lexSkipToken( )
 
 	case else
-		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASTMT ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip stmt
-			lexSkipToken( )
-			return TRUE
-		end if
+		hExitError( FB_ERRMSG_INVALIDEXITSTMT )
 	end select
-
-	''
-	if( label = NULL ) then
-		if( errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip stmt
-			lexSkipToken( )
-			return TRUE
-		end if
-	end if
-
-	lexSkipToken( )
 
 	''
 	function = astScopeBreak( label )
@@ -277,46 +392,97 @@ end function
 '':::::
 ''ContinueStatement	  =	  CONTINUE (FOR | DO | WHILE)
 ''
-function cContinueStatement as integer
-    dim as FBSYMBOL ptr label
+function cContinueStatement _
+	( _
+	) as integer
+
+    dim as FBSYMBOL ptr label = NULL
 
 	function = FALSE
 
 	'' CONTINUE
 	lexSkipToken( )
 
-	'' (FOR | DO | WHILE)
+	'' (FOR | DO | WHILE) (',')*
 	select case as const lexGetToken( )
 	case FB_TK_FOR
-		label = parser.stmt.for.cmplabel
+		if( parser.stmt.for = NULL ) then
+			hExitError( FB_ERRMSG_ILLEGALOUTSIDEFORSTMT )
+		end if
+
+		lexSkipToken( )
+
+		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.for
+		do while( lexGetToken( ) = CHAR_COMMA )
+			lexSkipToken( )
+
+			if( lexGetToken( ) <> FB_TK_FOR ) then
+				hExitError( FB_ERRMSG_EXPECTEDFOR )
+			end if
+
+			stk = stk->for.last
+			if( stk = NULL ) then
+				hExitError( FB_ERRMSG_NOENCLOSEDFORSTMT )
+			end if
+
+			lexSkipToken( )
+		loop
+
+		label = stk->for.cmplabel
 
 	case FB_TK_DO
-		label = parser.stmt.do.cmplabel
+		if( parser.stmt.do = NULL ) then
+			hExitError( FB_ERRMSG_ILLEGALOUTSIDEDOSTMT )
+		end if
+
+		lexSkipToken( )
+
+		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.do
+		do while( lexGetToken( ) = CHAR_COMMA )
+			lexSkipToken( )
+
+			if( lexGetToken( ) <> FB_TK_DO ) then
+				hExitError( FB_ERRMSG_EXPECTEDDO )
+			end if
+
+			stk = stk->do.last
+			if( stk = NULL ) then
+				hExitError( FB_ERRMSG_NOENCLOSEDDOSTMT )
+			end if
+
+			lexSkipToken( )
+		loop
+
+		label = stk->do.cmplabel
 
 	case FB_TK_WHILE
-		label = parser.stmt.while.cmplabel
+		if( parser.stmt.while = NULL ) then
+			hExitError( FB_ERRMSG_ILLEGALOUTSIDEWHILESTMT )
+		end if
+
+		lexSkipToken( )
+
+		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.while
+		do while( lexGetToken( ) = CHAR_COMMA )
+			lexSkipToken( )
+
+			if( lexGetToken( ) <> FB_TK_WHILE ) then
+				hExitError( FB_ERRMSG_EXPECTEDWHILE )
+			end if
+
+			stk = stk->while.last
+			if( stk = NULL ) then
+				hExitError( FB_ERRMSG_NOENCLOSEDWHILESTMT )
+			end if
+
+			lexSkipToken( )
+		loop
+
+		label = stk->while.cmplabel
 
 	case else
-		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASTMT ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip stmt
-			lexSkipToken( )
-			return TRUE
-		end if
+		hExitError( FB_ERRMSG_INVALIDCONTINUESTMT )
 	end select
-
-	if( label = NULL ) then
-		if( errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip stmt
-			lexSkipToken( )
-			return TRUE
-		end if
-	end if
-
-	lexSkipToken( )
 
 	''
 	function = astScopeBreak( label )
@@ -442,19 +608,24 @@ function cCompStmtPush _
 	'' same current values, if any
 	select case as const id
 	case FB_TK_DO
-		stk->last = parser.stmt.do
+		stk->do.last = parser.stmt.do
+		parser.stmt.do = stk
 
 	case FB_TK_FOR
-		stk->last = parser.stmt.for
+		stk->for.last = parser.stmt.for
+		parser.stmt.for = stk
 
 	case FB_TK_SELECT
-		stk->last = parser.stmt.select
+		stk->select.last = parser.stmt.select
+		parser.stmt.select = stk
 
 	case FB_TK_WHILE
-		stk->last = parser.stmt.while
+		stk->while.last = parser.stmt.while
+		parser.stmt.while = stk
 
 	case FB_TK_FUNCTION
-		stk->last = parser.stmt.proc
+		stk->proc.last = parser.stmt.proc
+		parser.stmt.proc = stk
 	end select
 
 	parser.stmt.lastid = parser.stmt.id
@@ -542,19 +713,19 @@ sub cCompStmtPop _
 	'' restore old values if any
 	select case as const stk->id
 	case FB_TK_DO
-		parser.stmt.do = stk->last
+		parser.stmt.do = stk->do.last
 
 	case FB_TK_FOR
-		parser.stmt.for = stk->last
+		parser.stmt.for = stk->for.last
 
 	case FB_TK_SELECT
-		parser.stmt.select = stk->last
+		parser.stmt.select = stk->select.last
 
 	case FB_TK_WHILE
-		parser.stmt.while = stk->last
+		parser.stmt.while = stk->while.last
 
 	case FB_TK_FUNCTION
-		parser.stmt.proc = stk->last
+		parser.stmt.proc = stk->proc.last
 	end select
 
 	stackPop( @parser.stmt.stk )

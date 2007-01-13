@@ -2349,8 +2349,8 @@ function cProcStmtBegin _
 	stk->proc.node = procnode
 	stk->proc.is_nested = is_nested
 
-	parser.stmt.proc.cmplabel = NULL
-	parser.stmt.proc.endlabel = astGetProcExitlabel( procnode )
+	stk->proc.cmplabel = NULL
+	stk->proc.endlabel = astGetProcExitlabel( procnode )
 
 	'' init
 	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )

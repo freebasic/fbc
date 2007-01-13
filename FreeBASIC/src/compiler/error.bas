@@ -87,7 +87,6 @@ end type
 		@"Internal!", _
 		@"Parameter type mismatch", _
 		@"File not found", _
-		@"Illegal outside of FOR, DO, SUB or FUNCTION", _
 		@"Invalid data types", _
 		@"Invalid character", _
 		@"File access error", _
@@ -113,7 +112,7 @@ end type
 		@"Undefined label", _
 		@"Too many array dimensions", _
 		@"Expected scalar counter", _
-		@"Illegal outside a function block", _
+		@"Illegal outside a CONSTRUCTOR, DESTRUCTOR, FUNCTION, OPERATOR, PROPERTY or SUB block", _
 		@"Expected dynamic array", _
 		@"Fixed-len strings cannot be returned from functions", _
 		@"Array already dimensioned", _
@@ -213,7 +212,8 @@ end type
 		@"Dynamic strings cannot be part of UNION's or nested TYPE's", _
 		@"Fields with constructors cannot be part of UNION's or nested TYPE's", _
 		@"Fields with destructors cannot be part of UNION's or nested TYPE's", _
-		@"Illegal outside a constructor", _
+		@"Illegal outside a CONSTRUCTOR block", _
+		@"Illegal outside a DESTRUCTOR block", _
 		@"UDT's with methods must have unique names", _
 		@"Parent is not a class or UDT", _
 		@"Call to another constructor must be the first statement", _
@@ -251,7 +251,23 @@ end type
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
 		@"VAR requires an initializer", _
-		@"Fields cannot be named as keywords in TYPE's that contain member functions or in CLASS'es" _
+		@"Fields cannot be named as keywords in TYPE's that contain member functions or in CLASS'es", _
+		@"Illegal outside a FOR compound statement", _
+		@"Illegal outside a DO compound statement", _
+		@"Illegal outside a WHILE compound statement", _
+		@"Illegal outside a SELECT compound statement", _
+		@"Expected 'FOR'", _
+		@"Expected 'DO'", _
+		@"Expected 'WHILE'", _
+		@"Expected 'SELECT'", _
+		@"No outer FOR compound statement found", _
+		@"No outer DO compound statement found", _
+		@"No outer WHILE compound statement found", _
+		@"No outer SELECT compound statement found", _
+		@"Expected 'CONSTRUCTOR', 'DESTRUCTOR', 'DO', 'FOR', 'FUNCTION', 'OPERATOR', 'PROPERTY', 'SELECT', 'SUB' or 'WHILE'", _
+		@"Expected 'DO', 'FOR' or 'WHILE'", _
+		@"Illegal outside a SUB block", _
+		@"Illegal outside a FUNCTION block" _
 	}
 
 

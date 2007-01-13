@@ -1,5 +1,3 @@
-[ ] EXIT FOR isn't calling the dtors of the temps (temporaries are never destroyed by SCOPE END)
-
 [ ] STATIC
     - add static data members, they must be initialized outside the TYPE|CLASS
     - allow all global operators to be declared as static methods?
