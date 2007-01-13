@@ -93,6 +93,7 @@ Version 0.17 Beta:
 - using PUT to draw an 8bpp sprite on top of a 32bpp one with ALPHA drawing mode will cause the source to be set as the dest alpha channel (lillo)
 - the FRAC() inline function, that returns the fractional part of a floating-point number (v1c)
 - the VAR keyword, which allows type inferrence from initializers (think DIM without AS) ex: var foo = "hello", bar = 2.4 (cha0s)
+- multiple EXIT and CONTINUE levels support (EXIT FOR, FOR or CONTINUE DO, DO, DO, etc) (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
