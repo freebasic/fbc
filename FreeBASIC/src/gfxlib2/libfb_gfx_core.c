@@ -43,6 +43,7 @@ extern void fb_hPutPixelAlpha4MMX(FB_GFXCTX *ctx, int x, int y, unsigned int col
 
 void fb_hPostEvent_code_start(void) { }
 
+
 /*:::::*/
 void fb_hPostEvent(EVENT *e)
 {
