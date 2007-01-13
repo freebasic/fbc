@@ -380,11 +380,20 @@ private function hOvlProcArgList _
 	end if
 
 	'' try finding the closest overloaded proc (don't pass the instance ptr, if any)
-	ovlproc = symbFindClosestOvlProc( proc, args, _
+	dim as FB_SYMBLOOKUPOPT lkup_options = FB_SYMBLOOKUPOPT_NONE
+	if( symbIsProperty( proc ) ) then
+		if( (options and FB_PARSEROPT_ISPROPGET) <> 0 ) then
+			lkup_options = FB_SYMBLOOKUPOPT_PROPGET
+		end if
+	end if
+
+	ovlproc = symbFindClosestOvlProc( proc, _
+									  args, _
 									  iif( (options and FB_PARSEROPT_HASINSTPTR) <> 0, _
 									  	   arg_list->head->next, _
 									  	   arg_list->head ), _
-									  @err_num )
+									  @err_num, _
+									  lkup_options )
 
 	if( ovlproc = NULL ) then
 		hDelCallArgs( arg_list )

@@ -71,9 +71,10 @@ function cFunctionCall _
 	'' property?
 	if( symbIsProperty( sym ) ) then
 
+		options or= FB_PARSEROPT_ISPROPGET
+
 		'' '('? indexed..
 		if( lexGetToken( ) = CHAR_LPRNT ) then
-
 			if( symbGetUDTHasIdxGetProp( symbGetParent( sym ) ) = FALSE ) then
 				if( errReport( FB_ERRMSG_PROPERTYHASNOIDXGETMETHOD, TRUE ) = FALSE ) then
 					exit function

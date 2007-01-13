@@ -1,7 +1,3 @@
-[ ] this will fail because symb-proc has no clue about get and set accessors:
-    declare property IntegerValue ( v as integer )
-    declare property IntegerValue ( index as integer ) as integer
-
 [ ] EXIT FOR isn't calling the dtors of the temps (temporaries are never destroyed by SCOPE END)
 
 [ ] STATIC

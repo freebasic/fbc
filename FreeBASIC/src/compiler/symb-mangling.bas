@@ -766,6 +766,21 @@ private function hGetProcIdentifier _
 
     static as string res
 
+    '' property?
+    if( symbIsProperty( sym ) ) then
+    	static as string tmp
+    	tmp = *id
+
+    	'' GET?
+    	if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
+    		tmp += "__get__"
+    	else
+    		tmp += "__set__"
+    	end if
+
+    	id = strptr( tmp )
+    end if
+
     res = str( len( *id ) )
     res += *id
 

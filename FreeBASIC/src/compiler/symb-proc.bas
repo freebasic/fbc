@@ -319,6 +319,10 @@ private function hAddOvlProc _
 
 	function = NULL
 
+	if( ovl_head_proc = NULL ) then
+		exit function
+	end if
+
 	'' only one them is a property?
 	if( (attrib and FB_SYMBATTRIB_PROPERTY) <> 0 ) then
     	if( symbIsProperty( ovl_head_proc ) = FALSE ) then
@@ -356,11 +360,27 @@ private function hAddOvlProc _
 
 	'' for each overloaded proc..
 	ovl = ovl_head_proc
-	do while( ovl <> NULL )
-
+	do
 		ovl_params = ovl->proc.params
 		if( symbIsMethod( ovl ) ) then
 			ovl_params -= 1
+		end if
+
+		'' property? handle get/set accessors dups
+		if( (attrib and FB_SYMBATTRIB_PROPERTY) <> 0 ) then
+			'' get?
+			if( dtype <> FB_DATATYPE_VOID ) then
+				'' don't check if it's set
+				if( symbGetType( ovl ) = FB_DATATYPE_VOID ) then
+					ovl_params = -1
+				end if
+			'' set..
+			else
+				'' don't check if it's get
+				if( symbGetType( ovl ) <> FB_DATATYPE_VOID ) then
+					ovl_params = -1
+				end if
+			end if
 		end if
 
 		'' same number of params?
@@ -423,7 +443,7 @@ private function hAddOvlProc _
 		end if
 
 		ovl = symbGetProcOvlNext( ovl )
-	loop
+	loop while( ovl <> NULL )
 
     if( symbIsLocal( ovl_head_proc ) ) then
     	attrib or= FB_SYMBATTRIB_LOCAL
@@ -1227,7 +1247,8 @@ end function
 function symbFindOverloadProc _
 	( _
 		byval ovl_head_proc as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
+		byval proc as FBSYMBOL ptr, _
+		byval options as FB_SYMBLOOKUPOPT _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr ovl = any, ovl_param = any, param = any
@@ -1250,13 +1271,32 @@ function symbFindOverloadProc _
 		params -= 1
 	end if
 
+	dim as integer is_property = symbIsProperty( ovl_head_proc )
+
 	'' for each proc starting from parent..
 	ovl = ovl_head_proc
-	do while( ovl <> NULL )
+	do
 
 		ovl_params = ovl->proc.params
 		if( symbIsMethod( ovl ) ) then
 			ovl_params -= 1
+		end if
+
+		'' property? handle get/set accessors dups
+		if( is_property ) then
+			'' get?
+			if( (options and FB_SYMBLOOKUPOPT_PROPGET) <> 0 ) then
+				'' don't check if it's set
+				if( symbGetType( ovl ) = FB_DATATYPE_VOID ) then
+					ovl_params = -1
+				end if
+			'' set..
+			else
+				'' don't check if it's get
+				if( symbGetType( ovl ) <> FB_DATATYPE_VOID ) then
+					ovl_params = -1
+				end if
+			end if
 		end if
 
 		if( params = ovl_params ) then
@@ -1303,7 +1343,7 @@ function symbFindOverloadProc _
 		end if
 
 		ovl = symbGetProcOvlNext( ovl )
-	loop
+	loop while( ovl <> NULL )
 
 	function = NULL
 
@@ -1704,10 +1744,11 @@ end function
 '':::::
 function symbFindClosestOvlProc _
 	( _
-		byval ovl_proc_head as FBSYMBOL ptr, _
+		byval ovl_head_proc as FBSYMBOL ptr, _
 		byval args as integer, _
 		byval arg_head as FB_CALL_ARG ptr, _
-		byval err_num as FB_ERRMSG ptr _
+		byval err_num as FB_ERRMSG ptr, _
+		byval options as FB_SYMBLOOKUPOPT _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr ovl = any, closest_proc = any, param = any
@@ -1717,17 +1758,39 @@ function symbFindClosestOvlProc _
 
 	*err_num = FB_ERRMSG_OK
 
+	if( ovl_head_proc = NULL ) then
+		return NULL
+	end if
+
 	closest_proc = NULL
 	max_matches = 0
 	amb_cnt = 0
 
-	'' for each proc..
-	ovl = ovl_proc_head
-	do while( ovl <> NULL )
+	dim as integer is_property = symbIsProperty( ovl_head_proc )
 
+	'' for each proc..
+	ovl = ovl_head_proc
+	do
 		dim as integer params = symbGetProcParams( ovl )
 		if( symbIsMethod( ovl ) ) then
 			params -= 1
+		end if
+
+		'' property? handle get/set accessors dups
+		if( is_property ) then
+			'' get?
+			if( (options and FB_SYMBLOOKUPOPT_PROPGET) <> 0 ) then
+				'' don't check if it's set
+				if( symbGetType( ovl ) = FB_DATATYPE_VOID ) then
+					params = -1
+				end if
+			'' set..
+			else
+				'' don't check if it's get
+				if( symbGetType( ovl ) <> FB_DATATYPE_VOID ) then
+					params = -1
+				end if
+			end if
 		end if
 
 		if( args <= params ) then
@@ -1794,7 +1857,7 @@ function symbFindClosestOvlProc _
 
 		'' next overloaded proc
 		ovl = symbGetProcOvlNext( ovl )
-	loop
+	loop while( ovl <> NULL )
 
 	'' more than one possibility?
 	if( amb_cnt > 0 ) then

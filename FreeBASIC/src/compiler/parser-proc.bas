@@ -1549,33 +1549,33 @@ end function
 private function hCheckPropParams _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval is_propset as integer _
+		byval is_get as integer _
 	) as integer
 
 	dim as integer min_params = any, max_params = any
 
 	function = FALSE
 
-	if( is_propset ) then
-		min_params = 1
-		max_params = 2
-	else
+	if( is_get ) then
 		min_params = 0
 		max_params = 1
+	else
+		min_params = 1
+		max_params = 2
 	end if
 
 	''
 	if( symbGetProcParams( proc ) < 1 + min_params ) then
-		if( errReport( iif( is_propset, _
-							FB_ERRMSG_PARAMCNTFORPROPSET, _
-							FB_ERRMSG_PARAMCNTFORPROPGET ), TRUE ) = FALSE ) then
+		if( errReport( iif( is_get, _
+							FB_ERRMSG_PARAMCNTFORPROPGET, _
+							FB_ERRMSG_PARAMCNTFORPROPSET ), TRUE ) = FALSE ) then
 			exit function
 		end if
 
 	elseif( symbGetProcParams( proc ) > 1 + max_params ) then
-		if( errReport( iif( is_propset, _
-							FB_ERRMSG_PARAMCNTFORPROPSET, _
-							FB_ERRMSG_PARAMCNTFORPROPGET ), TRUE ) = FALSE ) then
+		if( errReport( iif( is_get, _
+							FB_ERRMSG_PARAMCNTFORPROPGET, _
+							FB_ERRMSG_PARAMCNTFORPROPSET ), TRUE ) = FALSE ) then
 			exit function
 		end if
 	end if
@@ -1713,7 +1713,7 @@ function cPropertyHeader _
 	end if
 
     '' (AS SymbolType)?
-    dim as integer is_propset = any
+    dim as integer is_get = any
     if( lexGetToken( ) = FB_TK_AS ) then
 
     	lexSkipToken( )
@@ -1734,18 +1734,15 @@ function cPropertyHeader _
     		end if
     	end if
 
-    	is_propset = FALSE
+    	is_get = TRUE
 
 	else
-		is_propset = TRUE
+		is_get = FALSE
     end if
 
-	if( hCheckPropParams( proc, is_propset ) = FALSE ) then
-		exit function
-	end if
-
+    ''
     dim as integer is_indexed = any
-    if( is_propset ) then
+    if( is_get = FALSE ) then
     	dtype = FB_DATATYPE_VOID
     	subtype = NULL
 
@@ -1759,6 +1756,15 @@ function cPropertyHeader _
 		is_indexed = symbGetProcParams( proc ) = 1+1
     end if
 
+    ''
+    symbGetType( proc ) = dtype
+    symbGetSubType( proc ) = subtype
+
+	''
+	if( hCheckPropParams( proc, is_get ) = FALSE ) then
+		exit function
+	end if
+
 	'' prototype?
 	if( is_prototype ) then
     	proc = symbAddPrototype( proc, @id, palias, plib, _
@@ -1771,13 +1777,13 @@ function cPropertyHeader _
     	end if
 
     	if( is_indexed ) then
-    		if( is_propset ) then
+    		if( is_get = FALSE ) then
     			symbSetUDTHasIdxSetProp( parent )
     		else
     			symbSetUDTHasIdxGetProp( parent )
     		end if
     	else
-    		if( is_propset ) then
+    		if( is_get = FALSE ) then
     			symbSetUDTHasSetProp( parent )
     		else
     			symbSetUDTHasGetProp( parent )
@@ -1831,7 +1837,11 @@ function cPropertyHeader _
 		end if
 
 		'' try to find a prototype with the same signature
-    	head_proc = symbFindOverloadProc( head_proc, proc )
+    	head_proc = symbFindOverloadProc( head_proc, _
+    									  proc, _
+    									  iif( is_get, _
+    									  	   FB_SYMBLOOKUPOPT_PROPGET, _
+    									  	   FB_SYMBLOOKUPOPT_NONE ) )
 
     	'' none found? then try to overload..
     	if( head_proc = NULL ) then
@@ -1908,13 +1918,13 @@ function cPropertyHeader _
     symbSetProcIncFile( proc, env.inf.incfile )
 
     if( is_indexed ) then
-    	if( is_propset ) then
+    	if( is_get = FALSE ) then
     		symbSetUDTHasIdxSetProp( parent )
     	else
     		symbSetUDTHasIdxGetProp( parent )
     	end if
     else
-    	if( is_propset ) then
+    	if( is_get = FALSE ) then
     		symbSetUDTHasSetProp( parent )
     	else
     		symbSetUDTHasGetProp( parent )

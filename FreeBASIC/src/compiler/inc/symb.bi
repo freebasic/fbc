@@ -134,6 +134,14 @@ enum FB_SYMBOPT
 	FB_SYMBOPT_CREATEALIAS		= &h00000080
 end enum
 
+'' options when looking up symbols
+enum FB_SYMBLOOKUPOPT
+	FB_SYMBLOOKUPOPT_NONE		= &h00000000
+
+	FB_SYMBLOOKUPOPT_PROPGET	= &h00000001
+end enum
+
+
 type FBSYMBOL_ as FBSYMBOL
 
 #ifndef ASTNODE_
@@ -698,7 +706,8 @@ declare function symbLookupByNameAndSuffix _
 declare function symbFindOverloadProc _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
+		byval proc as FBSYMBOL ptr, _
+		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbFindOpOvlProc _
@@ -713,7 +722,8 @@ declare function symbFindClosestOvlProc _
 		byval proc as FBSYMBOL ptr, _
 		byval params as integer, _
 		byval arg_head as FB_CALL_ARG ptr, _
-		byval err_num as FB_ERRMSG ptr _
+		byval err_num as FB_ERRMSG ptr, _
+		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbFindBopOvlProc _

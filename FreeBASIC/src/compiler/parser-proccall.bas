@@ -163,11 +163,14 @@ function cProcCall _
 
 	function = NULL
 
+	dim as FB_PARSEROPT options = FB_PARSEROPT_NONE
+
 	'' method call?
 	if( thisexpr <> NULL ) then
 		dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list, FALSE )
 		arg->expr = thisexpr
 		arg->mode = hGetInstPtrMode( thisexpr )
+		options or= FB_PARSEROPT_HASINSTPTR
 	end if
 
 	'' property?
@@ -211,7 +214,6 @@ function cProcCall _
 
 		'' '='?
 		if( lexGetToken( ) = FB_TK_ASSIGN ) then
-
 			if( is_indexed ) then
 				if( symbGetUDTHasIdxSetProp( symbGetParent( sym ) ) = FALSE ) then
 					errReport( FB_ERRMSG_PROPERTYHASNOIDXSETMETHOD, TRUE )
@@ -230,6 +232,8 @@ function cProcCall _
 			'' the value arg is the lhs expression
 
 		else
+			options or= FB_PARSEROPT_ISPROPGET
+
 			if( is_indexed ) then
 				if( symbGetUDTHasIdxGetProp( symbGetParent( sym ) ) = FALSE ) then
 					errReport( FB_ERRMSG_PROPERTYHASNOIDXGETMETHOD, TRUE )
@@ -275,13 +279,7 @@ function cProcCall _
 	fbSetPrntOptional( not checkprnts )
 
 	'' ProcArgList
-	procexpr = cProcArgList( base_parent, _
-							 sym, _
-							 ptrexpr, _
-							 @arg_list, _
-							 iif( thisexpr <> NULL, _
-							 	  FB_PARSEROPT_HASINSTPTR, _
-							 	  FB_PARSEROPT_NONE ) )
+	procexpr = cProcArgList( base_parent, sym, ptrexpr, @arg_list, options )
 	if( procexpr = NULL ) then
 		exit function
 	end if
