@@ -882,12 +882,6 @@ declare function astIsSymbolOnTree _
 		byval n as ASTNODE ptr _
 	) as integer
 
-declare function astSymbolInInitializer _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval n as ASTNODE ptr _
-	) as integer
-
 declare function astGetStrLitSymbol _
 	( _
 		byval n as ASTNODE ptr _

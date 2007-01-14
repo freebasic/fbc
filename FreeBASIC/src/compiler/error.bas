@@ -201,6 +201,7 @@ end type
 		@"Default types or suffixes are only valid in -lang", _
 		@"Suffixes are only valid in -lang", _
 		@"Implicit variables are only valid in -lang", _
+		@"Auto variables are only valid in -lang", _
 		@"Invalid array index", _
 		@"Operator must be a member function", _
 		@"Operator cannot be a member function", _

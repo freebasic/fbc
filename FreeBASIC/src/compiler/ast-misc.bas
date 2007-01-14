@@ -343,48 +343,6 @@ function astIsSymbolOnTree _
 
 end function
 
-''::::
-function astSymbolInInitializer _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval n as ASTNODE ptr _
-	) as integer
-
-	dim as FBSYMBOL ptr s = any
-
-	if( n = NULL ) then
-		return FALSE
-	end if
-    
-	select case as const n->class
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
-		 AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
-
-		s = astGetSymbol( n )
-		'' same symbol?
-		if( s = sym ) then
-			return TRUE
-		end if
-
-	end select
-
-	'' walk
-	if( n->l <> NULL ) then
-		if( astSymbolInInitializer( sym, n->l ) ) then
-			return TRUE
-		end if
-	end if
-
-	if( n->r <> NULL ) then
-		if( astSymbolInInitializer( sym, n->r ) ) then
-			return TRUE
-		end if
-	end if
-
-	function = FALSE
-
-end function
-
 '':::::
 sub astReplaceSymbolOnTree _
 	( _

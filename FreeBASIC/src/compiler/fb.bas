@@ -58,6 +58,7 @@ declare sub	parserSetCtx ( )
 			FB_LANG_OPT_OPEROVL or _
 			FB_LANG_OPT_CLASS or _
 			FB_LANG_OPT_INITIALIZER or _
+			FB_LANG_OPT_AUTOVAR or _
 			FB_LANG_OPT_SINGERRLINE or _
 			FB_LANG_OPT_QUIRKFUNC _
 		) _

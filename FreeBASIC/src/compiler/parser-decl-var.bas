@@ -1744,19 +1744,27 @@ function cAutoVarDecl _
 	( _
 		byval attrib as FB_SYMBATTRIB _
 	) as integer
-	
+
 	function = FALSE
-	
+
 	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1) '' needed for hDeclStaticVar()
-	dim as integer subtype = NULL, suffix = any
 	static as zstring * FB_MAXNAMELEN+1 id
-	
-	dim as FBSYMBOL ptr sym
-	dim as ASTNODE ptr initree
-	
+
+	'' allowed?
+	if( fbLangOptIsSet( FB_LANG_OPT_AUTOVAR ) = FALSE ) then
+        if( errReportNotAllowed( FB_LANG_OPT_AUTOVAR, _
+        						 FB_ERRMSG_AUTOVARONLYVALIDINLANG ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip stmt
+			hSkipStmt( )
+			return TRUE
+    	end if
+    end if
+
 	'' AUTO
 	lexSkipToken( )
-	
+
 	'' SHARED?
 	if( lexGetToken( ) = FB_TK_SHARED ) then
 		'' can't use SHARED inside a proc
@@ -1783,7 +1791,7 @@ function cAutoVarDecl _
 			attrib or= FB_SYMBATTRIB_STATIC
 		end if
 	end if
-	
+
 	'' inside a namespace but outside a proc?
 	if( symbIsGlobalNamespc( ) = FALSE ) then
 		if( fbIsModLevel( ) ) then
@@ -1791,27 +1799,37 @@ function cAutoVarDecl _
 			attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
 		end if
 	end if
-	
+
 	do
 		'' id.id? if not, NULL
 		dim as FBSYMBOL ptr parent = cParentId( FB_IDOPT_ISDECL )
-		
+
 		'' get id
+		dim as integer suffix = any
 		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix )
-		
+
+    	if( suffix <> INVALID ) then
+    		if( errReportEx( FB_ERRMSG_SYNTAXERROR, @id ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery
+    			suffix = INVALID
+    		end if
+    	end if
+
 		'' array? rejected.
-		if( (lexGetToken( ) = CHAR_LPRNT) ) then
-		
+		if( lexGetToken( ) = CHAR_LPRNT ) then
 			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
 				exit function
+			else
+				'' error recovery: skip until next ')'
+				hSkipUntil( CHAR_RPRNT, TRUE )
 			end if
-			
-			'' '('
-			lexSkipToken( )
-		
 		end if
-		
+
 		''
+		dim as FBSYMBOL ptr sym = any
+
 		sym = hLookupVar( parent, chain_, TRUE, INVALID, suffix, FB_IDOPT_ISDECL )
 
 		if( sym = NULL ) then
@@ -1825,43 +1843,107 @@ function cAutoVarDecl _
 			end if
 		end if
 
-		sym = hDeclStaticVar( sym, id, NULL, _
-		                      INVALID, NULL, 0, _
-		                      0, FALSE, attrib, _
-		                      0, dTB() )
+		'' '=' | '=>' ?
+		select case lexGetToken( )
+		case FB_TK_DBLEQ, FB_TK_EQ
+			lexSkipToken( )
 
-		''
-		dim as integer has_defctor = FALSE, has_dtor = FALSE
-	
-		if( sym <> NULL ) then
-			select case symbGetType( sym )
-			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				'' has a default ctor?
-				has_defctor = symbGetCompDefCtor( symbGetSubtype( sym ) ) <> NULL
-				'' dtor?
-				has_dtor = symbGetCompDtor( symbGetSubtype( sym ) ) <> NULL
-			end select
-		end if
+		case else
+			if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+				exit function
+			end if
+		end select
 
-		'' check for an initializer
-		initree = hVarInit( sym, FALSE, has_defctor, has_dtor, FB_INIOPT_AUTO )
-		
-		'' no? auto needs an initializer
-		if( initree = NULL ) then
+    	'' parse expression
+		dim as ASTNODE ptr expr = cExpression( )
+		if( expr = NULL ) then
 			if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
 				exit function
 			else
-				if( sym <> NULL ) then
-					'' error recovery: fake a type
-					symbGetSubType( sym ) = NULL
-					symbGetType( sym )    = FB_DATATYPE_INTEGER
-				end if
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0 )
 			end if
 		end if
 
-		'' add to AST
-		if( sym <> NULL ) then
+		dim as integer dtype = astGetDataType( expr )
+		dim as FBSYMBOL ptr subtype = astGetSubType( expr )
 
+		'' check for special types
+   		dim as integer has_defctor = FALSE, has_ctor = FALSE, has_dtor = FALSE
+
+		select case dtype
+		'' wstrings not allowed...
+		case FB_DATATYPE_WCHAR
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+    	    	exit function
+    	    else
+    	    	'' error recovery: create a fake expression
+    	    	astDelTree( expr )
+    	    	expr = astNewCONSTi( 0 )
+    	    	dtype = FB_DATATYPE_INTEGER
+    	    	subtype = NULL
+    	    end if
+
+		'' zstring... convert to string
+    	case FB_DATATYPE_CHAR
+    		dtype = FB_DATATYPE_STRING
+
+    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			'' has a default ctor?
+			has_defctor = symbGetCompDefCtor( subtype ) <> NULL
+			'' any ctor?
+			has_ctor = symbGetHasCtor( subtype )
+			'' dtor?
+			has_dtor = symbGetCompDtor( subtype ) <> NULL
+    	end select
+
+		'' only if it's not an object, static or global instances are allowed
+		if( has_ctor = FALSE ) then
+			if( astTypeIniIsConst( expr ) = FALSE ) then
+				'' error recovery: discard the tree
+				astDelTree( expr )
+				expr = astNewCONSTi( 0 )
+    	    	dtype = FB_DATATYPE_INTEGER
+    	    	subtype = NULL
+				has_defctor = FALSE
+				has_dtor = FALSE
+			end if
+		end if
+
+		'' add var after parsing the expression, or the the var itself could be used
+		sym = hDeclStaticVar( sym, id, NULL, _
+		                      dtype, subtype, dtype \ FB_DATATYPE_POINTER, _
+		                      symbCalcLen( dtype, subtype ), FALSE, attrib, _
+		                      0, dTB() )
+
+        if( sym <> NULL ) then
+
+        	'' build a ini-tree
+			dim as ASTNODE ptr initree = any
+
+        	initree = astTypeIniBegin( dtype, subtype, symbIsLocal( sym ) )
+
+        	'' not an object?
+        	if( has_ctor = FALSE ) then
+        		astTypeIniAddAssign( initree, expr, sym )
+
+        	'' handle constructors..
+        	else
+    			dim as integer is_ctorcall = any
+    			expr = astBuildImplicitCtorCallEx( sym, expr, is_ctorcall )
+        		if( expr <> NULL ) then
+    				if( is_ctorcall ) then
+    					astTypeIniAddCtorCall( initree, sym, expr )
+        			end if
+        		end if
+        	end if
+
+        	astTypeIniEnd( initree, TRUE )
+
+        	''
+        	symbSetIsInitialized( sym )
+
+			'' add to AST
 			dim as FBSYMBOL ptr desc = NULL
 			dim as ASTNODE ptr var_decl = NULL
 
@@ -1870,7 +1952,6 @@ function cAutoVarDecl _
 			'' set as declared
 			symbSetIsDeclared( sym )
 
-			'' not declared already?
 			'' flush the init tree (must be done after adding the decl node)
 			astAdd( hFlushInitializer( sym, var_decl, initree, _
 			                           has_defctor, has_dtor ) )
@@ -1884,8 +1965,8 @@ function cAutoVarDecl _
 
 		lexSkipToken( )
 	loop
-	
+
 	function = TRUE
-	
+
 end function
 

@@ -38,49 +38,8 @@ end type
 
 declare function hUDTInit _
 	( _
-		byref ctx as FB_INITCTX, _
-		byval expr_in as ASTNODE ptr = NULL, _
-		byval is_auto as integer = FALSE _
+		byref ctx as FB_INITCTX _
 	) as integer
-
-private function hBackpatchAutoSymbol _ 
-	( _
-		byref ctx as FB_INITCTX, _
-		byref expr as ASTNODE ptr, _
-		byref dtype as integer _
-	) as integer
-    
-    function = TRUE
-    
-    '' take type from initializer
-	dtype = astGetDataType( expr )
-	
-	'' wstrings not allowed...
-	if dtype = FB_DATATYPE_WCHAR then
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-	    	return FALSE
-	    else
-	    	'' error recovery: create a fake expression
-	    	astDelTree( expr )
-	    	expr = astNewCONSTz( dtype )
-	    end if
-	end if
-	
-	'' backpatching...
-	symbGetSubType( ctx.sym )  = astGetSubtype( expr )
-	symbGetType( ctx.sym )     = dtype
-	astGetDataType( ctx.tree ) = dtype
-	astGetSubtype( ctx.tree )  = astGetSubtype( expr )
-	
-	'' zstring... convert to string
-	if dtype = FB_DATATYPE_CHAR then
-		dtype = FB_DATATYPE_STRING
-	end if
-	
-	'' len( symbol )...
-	ctx.sym->lgt = symbCalcLen( dtype, symbGetSubtype( ctx.sym ) )
-
-end function
 
 '':::::
 private function hDoAssign _
@@ -92,15 +51,8 @@ private function hDoAssign _
     dim as ASTNODE lside = any
 	dim as integer dtype = any
 
-    if ctx.options and FB_INIOPT_AUTO then
-    	if hBackpatchAutoSymbol( ctx, expr, dtype ) = FALSE then
-    		return FALSE
-    	end if
-    	ctx.options and= (not FB_INIOPT_AUTO)
-    else
-		dtype = symbGetType( ctx.sym )
-	end if
-	
+	dtype = symbGetType( ctx.sym )
+
 	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
 		dtype -= FB_DATATYPE_POINTER
 	end if
@@ -128,37 +80,9 @@ private function hDoAssign _
 end function
 
 '':::::
-private function hCheckDuplicateAutoSymbol _ 
-	( _
-		byref ctx as FB_INITCTX, _
-		byref expr as ASTNODE ptr _
-	) as integer
-	
-	function = TRUE
-	
-	'' auto var was found in the initializer?
-	if astSymbolInInitializer( ctx.sym, expr ) then
-		if( errReport( FB_ERRMSG_UNDEFINEDSYMBOL, TRUE, " '" + *symbGetName( ctx.sym ) + "'" ) = FALSE ) then
-			return FALSE
-		else
-	        '' generate an expression matching the symbol's type
-			dim as integer dtype = symbGetType( ctx.sym )
-			if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-				dtype -= FB_DATATYPE_POINTER
-			end if
-			expr = astNewCONSTz( dtype )
-	
-		end if
-	end if
-	
-end function
-
-'':::::
 private function hElmInit _
 	( _
-		byref ctx as FB_INITCTX, _
-		byval expr_in as ASTNODE ptr = NULL, _
-		byval is_auto as integer = FALSE _
+		byref ctx as FB_INITCTX _
 	) as integer
 
     dim as ASTNODE ptr expr = any
@@ -166,25 +90,14 @@ private function hElmInit _
 
     function = FALSE
 
-    '' auto?
-    if( is_auto ) then
-    	expr = expr_in
-    	if hCheckDuplicateAutoSymbol( ctx, expr ) = FALSE then
-    		exit function
-    	end if
+	'' set the context symbol to allow taking the address of overloaded
+	'' procs and also to allow anonymous UDT's
+	oldsym = parser.ctxsym
+	parser.ctxsym = symbGetSubType( ctx.sym )
 
-    '' to be parsed...
-    else
-	    '' set the context symbol to allow taking the address of overloaded
-	    '' procs and also to allow anonymous UDT's
-	    oldsym = parser.ctxsym
-	    parser.ctxsym = symbGetSubType( ctx.sym )
-        
-        '' parse expression
-		expr = cExpression( )
-		
-	end if
-	
+    '' parse expression
+	expr = cExpression( )
+
 	'' invalid expression
 	if( expr = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
@@ -192,7 +105,7 @@ private function hElmInit _
 		else
 			'' error recovery: skip until ',' and create a fake expression
 			hSkipUntil( CHAR_COMMA )
-            
+
             '' generate an expression matching the symbol's type
 			dim as integer dtype = symbGetType( ctx.sym )
 			if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
@@ -202,11 +115,9 @@ private function hElmInit _
 
 		end if
 	end if
-    
+
     '' restore context if needed
-    if( is_auto = FALSE ) then
-		parser.ctxsym = oldsym
-	end if
+	parser.ctxsym = oldsym
 
 	function = hDoAssign( ctx, expr )
 
@@ -299,38 +210,14 @@ private function hArrayInit _
 			end if
 
 		else
-			dim as integer is_auto
-			dim as ASTNODE ptr expr
-            
-            '' auto var?
-			if( ctx.options and FB_INIOPT_AUTO ) then
-                
-                '' parse rhs
-				expr = cExpression( )
-
-				is_auto = TRUE
-				
-				if( expr <> NULL ) then
-					dtype = astGetDataType( expr )
-
-					if dtype = FB_DATATYPE_STRUCT then
-						if( symbGetHasCtor( astGetSubType( expr ) ) ) then
-							ctx.options or= FB_INIOPT_ISOBJ
-						end if
-					end if
-					
-				end if
-				
-			end if
-
 			select case dtype
 			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				if( hUDTInit( ctx, expr, is_auto ) = FALSE ) then
+				if( hUDTInit( ctx ) = FALSE ) then
 					exit function
 				end if
 
 			case else
-				if( hElmInit( ctx, expr, is_auto ) = FALSE ) then
+				if( hElmInit( ctx ) = FALSE ) then
 					exit function
 				end if
 			end select
@@ -410,9 +297,7 @@ end function
 '':::::
 private function hUDTInit _
 	( _
-		byref ctx as FB_INITCTX, _
-		byval expr_in as ASTNODE ptr = NULL, _
-		byval is_auto as integer = FALSE _
+		byref ctx as FB_INITCTX _
 	) as integer
 
 	dim as integer elements = any, elm_cnt = any, elm_ofs = any
@@ -425,30 +310,16 @@ private function hUDTInit _
     '' ctor?
     if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
     	dim as ASTNODE ptr expr = any
-        
-        if is_auto then
-        	expr = expr_in
-	    	if hCheckDuplicateAutoSymbol( ctx, expr ) = FALSE then
-	    		exit function
-	    	end if
-        else
-	    	'' Expression
-	    	expr = cExpression( )
-	    	if( expr = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
-	    	end if
-	    end if
-        
-        if (ctx.options and FB_INIOPT_AUTO) then
-	    	if hBackpatchAutoSymbol( ctx, expr, dtype ) = FALSE then
-	    		return FALSE
-	    	end if
-	    	ctx.options and= (not FB_INIOPT_AUTO)
+
+	    '' Expression
+	    expr = cExpression( )
+	    if( expr = NULL ) then
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
 	    end if
 
     	dim as integer is_ctorcall = any
@@ -456,7 +327,7 @@ private function hUDTInit _
         if( expr = NULL ) then
         	exit function
         end if
-        
+
     	if( is_ctorcall ) then
     		return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr ) <> NULL
     	else
@@ -469,7 +340,7 @@ private function hUDTInit _
 	if( hMatch( CHAR_LPRNT ) = FALSE ) then
 		'' it can be a function returning an UDT or another UDT
 		'' variable for non-static symbols..
-		return hElmInit( ctx, expr_in, is_auto )
+		return hElmInit( ctx )
 	end if
 
 	''
