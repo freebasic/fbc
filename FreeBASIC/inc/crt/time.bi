@@ -22,7 +22,7 @@
 
 extern "c"
 declare function clock () as clock_t
-declare function time_ (byval as time_t ptr) as time_t
+declare function time_ alias "time" (byval as time_t ptr) as time_t
 declare function difftime (byval as time_t, byval as time_t) as double
 declare function mktime (byval as tm ptr) as time_t
 declare function asctime (byval as tm ptr) as zstring ptr

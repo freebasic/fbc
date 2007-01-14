@@ -125,7 +125,7 @@ declare function link (byval __from as zstring ptr, byval __to as zstring ptr) a
 declare function symlink (byval __from as zstring ptr, byval __to as zstring ptr) as integer
 declare function readlink (byval __path as zstring ptr, byval __buf as zstring ptr, byval __len as size_t) as integer
 declare function unlink (byval __name as zstring ptr) as integer
-declare function rmdir_ (byval __path as zstring ptr) as integer
+declare function rmdir_ alias "rmdir" (byval __path as zstring ptr) as integer
 declare function tcgetpgrp (byval __fd as integer) as __pid_t
 declare function tcsetpgrp (byval __fd as integer, byval __pgrp_id as __pid_t) as integer
 declare function getlogin () as zstring ptr
