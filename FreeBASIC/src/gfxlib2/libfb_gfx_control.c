@@ -193,6 +193,8 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 		}
 		break;
 	
+#ifdef HAVE_GL_GL_H
+
 	case SET_GL_COLOR_BITS:
 		__fb_gl_params.color_bits = *param1;
 		break;
@@ -244,6 +246,9 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 	case SET_GL_NUM_SAMPLES:
 		__fb_gl_params.num_samples = *param1;
 		break;
+
+#endif /* HAVE_GL_GL_H */
+
 	}
 	
 	if (what < SET_FIRST_SETTER) {
