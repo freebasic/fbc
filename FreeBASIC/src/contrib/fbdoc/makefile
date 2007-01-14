@@ -6,8 +6,7 @@ endif
 
 MAIN := fbdoc
 
-SRCS := $(MAIN).bas 
-SRCS += CWiki2txt.bas
+SRCS := CWiki2txt.bas
 SRCS += CWiki2fbhelp.bas
 SRCS += CWakka2fbhelp.bas
 SRCS += CFbCode.bas
@@ -41,11 +40,16 @@ ifndef objpath
 objpath=obj/$(TARGET)
 endif
 
-OBJS := $(patsubst %.bas,$(objpath)/%.o,$(SRCS))
+OBJS := $(patsubst %.bas,$(objpath)/%.o,$(MAIN).bas)
+LIB_OBJS := $(patsubst %.bas,$(objpath)/%.o,$(SRCS))
 
 RCS  := 
 
 ##########################
+
+AR := ar
+RANLIB := ranlib
+HHC := hhc.exe
 
 ifndef FBC
 	ifeq ($(TARGET),win32)
@@ -73,6 +77,8 @@ APP := $(MAIN)
 APP2 := mkfbhelpfile
 endif
 
+LIBNAME := lib$(MAIN).a
+
 .SUFFIXES:
 .SUFFIXES: .bas
 
@@ -83,18 +89,23 @@ $(objpath)/%.o : %.bas $(HDRS)
 
 ##########################
 
-all: $(APP) $(APP2)
+all: $(APP) $(APP2) $(LIBNAME)
 
-$(APP): $(OBJS)
-	$(FBC) $(FBCFLAGS) $(OBJS) $(LIBS) $(RCS) -x $(APP)
+$(APP): $(OBJS) $(LIB_OBJS)
+	$(FBC) $(FBCFLAGS) $(OBJS) $(LIB_OBJS) $(LIBS) $(RCS) -x $(APP)
 
 $(APP2): mkfbhelpfile.bas
 	$(FBC) $(FBCFLAGS) mkfbhelpfile.bas -x $(APP2)
 
-fbdoc.chm:
-	hhc.exe html/fbdoc.hhp
+$(LIBNAME): $(LIB_OBJS)
+	$(AR) cr $(LIBNAME) $(LIB_OBJS)
+	$(RANLIB) $(LIBNAME)
+
+html/fbdoc.chm: $(APP)
+	-$(HHC) html\\fbdoc.hhp
 
 .PHONY : clean
 clean:
-	-rm -f $(OBJS) $(APP)
+	-rm -f $(LIB_OBJS) $(OBJS) $(APP)
 	-rm -f $(objpath)/mkfbhelpfile.o $(APP2)
+	-rm -f $(LIBNAME)
