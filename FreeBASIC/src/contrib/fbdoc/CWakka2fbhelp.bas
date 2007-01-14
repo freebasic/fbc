@@ -161,7 +161,7 @@ namespace fb.fbdoc
 		dim as integer i
 
 		if( ctx = NULL ) then
-			exit sub
+			exit destructor
 		end if
 
 		ZFree @ctx->page

@@ -80,7 +80,7 @@ namespace fb
 		)
 		
 		if( ctx = NULL ) then
-			exit sub
+			exit destructor
 		end if
 		
 		_ClearSubstrlist( ctx )

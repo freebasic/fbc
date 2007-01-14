@@ -95,7 +95,7 @@ namespace fb.fbdoc
 		)
 		
 		if( ctx = NULL ) then
-			exit sub
+			exit destructor
 		end if
 		
 		if( ctx->pagename <> NULL ) then
@@ -126,7 +126,7 @@ namespace fb.fbdoc
 		if( len( *body ) = 0 ) then
 			return TRUE
 		end if
-		
+
 		function = ( instr( 1, *body, "<" + wakka_error + ">" ) > 0 )
 		
 	end function

@@ -84,7 +84,7 @@ namespace fb.fbdoc
 		)
 		
 		if( ctx = NULL ) then
-			exit sub
+			exit destructor
 		end if
 
 		_ClearList( ctx )

@@ -65,7 +65,7 @@ namespace fb
 		)
 		
 		if( ctx = NULL ) then
-			exit sub
+			exit destructor
 		end if
 		
 		if( ctx->headerlist <> NULL ) then
