@@ -858,13 +858,13 @@ private function hCheckOpOvlParams _
 
     '' used by FOR, STEP and NEXT only
     case AST_NODECLASS_COMP
-    	params = 1
+    	params = iif( astGetOpIsSelf( op ), 1, 2 )
 
     '' bop..
     case else
     	params = iif( astGetOpIsSelf( op ), 1, 2 )
     end select
-
+    
     if( symbGetProcParams( proc ) - iif( is_method, 1, 0 ) <> params ) then
     	errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
     	exit function
@@ -891,9 +891,11 @@ private function hCheckOpOvlParams _
     	end if
 
     case AST_NODECLASS_MEM, AST_NODECLASS_COMP
-    	if( parent = NULL ) then
-    		errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
-    	end if
+		if astGetOpIsSelf( op ) then
+	    	if( parent = NULL ) then
+	    		errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
+	    	end if
+	    end if
 
     case else
     	if( is_method ) then
@@ -977,26 +979,30 @@ private function hCheckOpOvlParams _
 
     	'' FOR, STEP or NEXT?
     	case AST_NODECLASS_COMP
-
-    		'' skip the instance ptr
-    		if( is_method ) then
-    			param = param->next
-    		end if
-
-    		'' must be of the same type as parent
-    		if( (param = NULL) or (parent = NULL) ) then
-    			hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
-    			exit function
-    		end if
-
-    		hCheckParam( proc, param, 1 )
-
-    		'' same type?
-    		if( (symbGetType( param ) <> symbGetType( parent )) or _
-    			(symbGetSubtype( param ) <> parent) ) then
-    			hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
-    			exit function
-    		end if
+        
+			if astGetOpIsSelf( op ) then
+        
+	    		'' skip the instance ptr
+	    		if( is_method ) then
+	    			param = param->next
+	    		end if
+	
+	    		'' must be of the same type as parent
+	    		if( (param = NULL) or (parent = NULL) ) then
+	    			hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
+	    			exit function
+	    		end if
+	
+	    		hCheckParam( proc, param, 1 )
+	
+	    		'' same type?
+	    		if( (symbGetType( param ) <> symbGetType( parent )) or _
+	    			(symbGetSubtype( param ) <> parent) ) then
+	    			hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
+	    			exit function
+	    		end if
+	    		
+			end if
 
     	end select
     end if
@@ -1110,13 +1116,23 @@ private function hCheckOpOvlParams _
     '' FOR, STEP or NEXT?
     case AST_NODECLASS_COMP
 
+		if( astGetOpIsSelf( op ) ) then
    		'' it must return an integer (if NEXT) or void
-   		if( symbGetType( proc ) <> iif( op = AST_OP_NEXT, _
-   										FB_DATATYPE_INTEGER, _
-   										FB_DATATYPE_VOID ) ) then
-   			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-   			exit function
-   		end if
+	   		if( symbGetType( proc ) <> iif( op = AST_OP_NEXT, _
+	   										FB_DATATYPE_INTEGER, _
+	   										FB_DATATYPE_VOID ) ) then
+	   			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
+	   			exit function
+	   		end if
+
+		'' anything else, it can't be a void
+		else
+			if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
+				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
+				exit function
+			end if
+
+		end if
 
     end select
 
@@ -1146,6 +1162,7 @@ function cOperatorHeader _
 
 	attrib or= FB_SYMBATTRIB_OPERATOR or FB_SYMBATTRIB_OVERLOADED
 
+	'' parent
 	if( (options and FB_PROCOPT_HASPARENT) <> 0 ) then
 		parent = symbGetCurrentNamespc( )
 
@@ -1154,6 +1171,7 @@ function cOperatorHeader _
 							FB_IDOPT_ISDECL or _
 							FB_IDOPT_SHOWERROR or _
 							FB_IDOPT_ALLOWSTRUCT )
+
 		if( parent = NULL ) then
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
@@ -1168,6 +1186,7 @@ function cOperatorHeader _
         	end if
 
 			is_extern = TRUE
+			
 		end if
 	end if
 
@@ -1181,6 +1200,18 @@ function cOperatorHeader _
 			op = AST_OP_ADD
 		end if
     end if
+    
+    '' check if methods have needed parents
+    select case as const op
+        
+        '' self ops?
+		case AST_OP_ASSIGN to AST_OP_CAST
+			if( parent = NULL ) then
+				'' error recovery: fake an op
+				op = AST_OP_ADD
+			end if
+			
+	end select
 
     '' check if method should be static or not
     select case as const op
@@ -1609,7 +1640,7 @@ function cPropertyHeader _
 		byref is_nested as integer, _
 		byval is_prototype as integer _
 	) as FBSYMBOL ptr
-
+    
     static as zstring * FB_MAXNAMELEN+1 id, aliasid, libname
     dim as FBSYMBOL ptr proc = any, parent = any
     dim as integer is_extern = any
