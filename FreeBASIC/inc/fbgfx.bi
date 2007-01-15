@@ -20,8 +20,10 @@
 #endif
 
 
+# if __FB_LANG__ = "fb"
 namespace FB
-
+extern "C"
+# endif
 
 	'' Flags accepted by Screen and ScreenRes
 	''
@@ -267,6 +269,8 @@ namespace FB
         SC_MENU
     end enum
 
+# if __FB_LANG__ = "fb"
 end namespace
+# endif
 
 #endif
