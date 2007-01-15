@@ -212,6 +212,8 @@ declare sub getDefaultLibs _
     		  " for " + FB_HOST + " (target:" + FB_TARGET + ")"
     	print "Copyright (C) 2004-2006 The FreeBASIC development team."
     	print
+    	print "Build date: " & __DATE__
+    	print
     	if( fbc.showversion ) then
     		fbcEnd( 0 )
     	end if
