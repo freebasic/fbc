@@ -125,8 +125,69 @@ sub emitReset( ) static
 end sub
 
 '':::::
+private function hOptSYMOP _
+	( _
+		byval p as EMIT_NODE ptr, _
+		byval n as EMIT_NODE ptr _
+	) as EMIT_NODE ptr
+
+	select case n->sop.op
+	case EMIT_OP_LABEL
+		if( p <> NULL ) then
+			'' convert "jxx foo \n foo:" to "foo:"
+			if( p->class = EMIT_NODECLASS_BRC ) then
+				select case p->brc.op
+				case EMIT_OP_BRANCH, EMIT_OP_JUMP
+					if( p->brc.sym = n->sop.sym ) then
+						p->class = EMIT_NODECLASS_NOP
+					end if
+				end select
+			end if
+		end if
+
+		'' don't count the label so "jmp foo \n bar: \n foo:" could be handled
+		return p
+	end select
+
+	function = n
+
+end function
+
+'':::::
+private sub hPeepHoleOpt( )
+    dim as EMIT_NODE ptr n = any, p = any
+
+	p = NULL
+	n = flistGetHead( @emit.nodeTB )
+	do while( n <> NULL )
+
+		select case as const n->class
+		case EMIT_NODECLASS_SOP
+			p = hOptSYMOP( p, n )
+
+		case EMIT_NODECLASS_DBG
+			'' don't count debugging nodes, they won't gen any code
+
+		case EMIT_NODECLASS_LIT
+			'' don't count literal text, unless it's inline asm
+			if( n->lit.isasm ) then
+				p = n
+			end if
+
+		case else
+			p = n
+		end select
+
+		n = flistGetNext( n )
+	loop
+
+end sub
+
+'':::::
 sub emitFlush( )
     dim as EMIT_NODE ptr n = any
+
+    hPeepHoleOpt( )
 
 	n = flistGetHead( @emit.nodeTB )
 	do while( n <> NULL )
@@ -134,6 +195,8 @@ sub emitFlush( )
 		emit.curnode = n
 
 		select case as const n->class
+		case EMIT_NODECLASS_NOP
+
 		case EMIT_NODECLASS_BOP
 			cast( EMIT_BOPCB, emit.opFnTb[n->bop.op] )( n->bop.dvreg, _
 												   		n->bop.svreg )
@@ -324,11 +387,11 @@ private function hNewVR _
 
 	n = flistNewItem( @emit.vregTB )
 
-	n->typ   = v->typ
+	n->typ = v->typ
 	n->dtype = v->dtype
-	n->sym	 = v->sym
-	n->ofs	 = v->ofs
-	n->mult  = v->mult
+	n->sym = v->sym
+	n->ofs = v->ofs
+	n->mult = v->mult
 	n->value = v->value
 
 	if( v->typ = IR_VREGTYPE_REG ) then
@@ -385,7 +448,7 @@ private function hNewBOP _
 
 	n = hNewNode( EMIT_NODECLASS_BOP )
 
-	n->bop.op	 = op
+	n->bop.op = op
 	n->bop.dvreg = hNewVR( dvreg )
 	n->bop.svreg = hNewVR( svreg )
 
@@ -404,7 +467,7 @@ private function hNewUOP _
 
 	n = hNewNode( EMIT_NODECLASS_UOP )
 
-	n->uop.op	 = op
+	n->uop.op = op
 	n->uop.dvreg = hNewVR( dvreg )
 
 	function = n
@@ -425,7 +488,7 @@ private function hNewREL _
 
 	n = hNewNode( EMIT_NODECLASS_REL )
 
-	n->rel.op	 = op
+	n->rel.op = op
 	n->rel.rvreg = hNewVR( rvreg )
 	n->rel.label = label
 	n->rel.dvreg = hNewVR( dvreg )
@@ -447,8 +510,8 @@ private function hNewSTK _
 
 	n = hNewNode( EMIT_NODECLASS_STK )
 
-	n->stk.op	 = op
-	n->stk.vreg  = hNewVR( vreg )
+	n->stk.op = op
+	n->stk.vreg = hNewVR( vreg )
 	n->stk.extra = extra
 
 	function = n
@@ -468,9 +531,9 @@ private function hNewBRANCH _
 
 	n = hNewNode( EMIT_NODECLASS_BRC )
 
-	n->brc.op	 = op
-	n->brc.sym	 = sym
-	n->brc.vreg  = hNewVR( vreg )
+	n->brc.op = op
+	n->brc.sym = sym
+	n->brc.vreg = hNewVR( vreg )
 	n->brc.extra = extra
 
 	function = n
@@ -488,8 +551,8 @@ private function hNewSYMOP _
 
 	n = hNewNode( EMIT_NODECLASS_SOP, FALSE )
 
-	n->sop.op	= op
-	n->sop.sym	= sym
+	n->sop.op = op
+	n->sop.sym = sym
 
 	function = n
 
@@ -499,15 +562,16 @@ end function
 private function hNewLIT _
 	( _
 		byval text as zstring ptr, _
-		byval doupdate as integer _
+		byval isasm as integer _
 	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
-	n = hNewNode( EMIT_NODECLASS_LIT, doupdate )
+	n = hNewNode( EMIT_NODECLASS_LIT, isasm )
 
-	n->lit.text   = ZstrAllocate( len( *text ) )
-	*n->lit.text  = *text
+	n->lit.isasm = isasm
+	n->lit.text = ZstrAllocate( len( *text ) )
+	*n->lit.text = *text
 
 	function = n
 
@@ -546,7 +610,7 @@ private function hNewMEM _
 
 	n = hNewNode( EMIT_NODECLASS_MEM )
 
-	n->mem.op	 = op
+	n->mem.op = op
 	n->mem.dvreg = hNewVR( dvreg )
 	n->mem.svreg = hNewVR( svreg )
 	n->mem.bytes = bytes
@@ -569,10 +633,10 @@ private function hNewDBG _
 
 	n = hNewNode( EMIT_NODECLASS_DBG, FALSE )
 
-	n->dbg.op	= op
-	n->dbg.sym	= sym
+	n->dbg.op = op
+	n->dbg.sym = sym
 	n->dbg.lnum = lnum
-	n->dbg.pos  = pos_
+	n->dbg.pos = pos_
 
 	function = n
 

@@ -120,6 +120,8 @@
         yet-another-list
     - add support for importing single symbols (mostly because classes, as nested ns'
       are already supported)
+      - do an implicit USING with ENUM's, so duplicated entries would be automatically
+        handled - if the first item of this list is implemented first
 
 [ ] proc call:
     - add named parameters (foo := expr)

@@ -109,7 +109,7 @@ private function hTmpStrListAdd _
 
 	t->sym = s
 	if( copyback ) then
-		t->srctree = astOptimize( astCloneTree( n ) )
+		t->srctree = astOptimizeTree( astCloneTree( n ) )
 	else
 		t->srctree = NULL
 	end if

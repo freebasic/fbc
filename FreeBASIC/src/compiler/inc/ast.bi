@@ -836,7 +836,7 @@ declare function astLoad _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-declare function astOptimize _
+declare function astOptimizeTree _
 	( _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr

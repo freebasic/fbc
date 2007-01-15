@@ -1608,6 +1608,14 @@ private sub _emitLABEL _
 
 end sub
 
+'':::::
+private sub _emitNOP _
+	( _
+		_
+	) static
+
+end sub
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' store
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -6232,6 +6240,8 @@ end sub
 	'' same order as EMIT_NODEOP
 	dim shared _opFnTB(0 to EMIT_MAXOPS-1) as any ptr => _
 	{ _
+		EMIT_CBENTRY(NOP), _
+		_
 		EMIT_CBENTRY(LOADI2I), EMIT_CBENTRY(LOADF2I), EMIT_CBENTRY(LOADL2I), _
 		EMIT_CBENTRY(LOADI2F), EMIT_CBENTRY(LOADF2F), EMIT_CBENTRY(LOADL2F), _
 		EMIT_CBENTRY(LOADI2L), EMIT_CBENTRY(LOADF2L), EMIT_CBENTRY(LOADL2L), _

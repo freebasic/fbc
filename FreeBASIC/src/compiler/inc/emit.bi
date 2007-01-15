@@ -33,6 +33,8 @@ const EMIT_REGCLASSES	= 2						'' assuming FB_DATACLASS_ will start at 0!
 
 '' if changed, update the _opFnTB() arrays at emit_*.bas
 enum EMIT_NODEOP
+	EMIT_OP_NOP
+
 	'' load
 	EMIT_OP_LOADI2I, EMIT_OP_LOADF2I, EMIT_OP_LOADL2I
 	EMIT_OP_LOADI2F, EMIT_OP_LOADF2F, EMIT_OP_LOADL2F
@@ -127,6 +129,7 @@ enum EMIT_NODEOP
 end enum
 
 enum EMIT_NODECLASS_ENUM
+	EMIT_NODECLASS_NOP
 	EMIT_NODECLASS_BOP
 	EMIT_NODECLASS_UOP
 	EMIT_NODECLASS_REL
@@ -177,6 +180,7 @@ type EMIT_SOPNODE
 end type
 
 type EMIT_LITNODE
+	isasm		as integer
 	text		as zstring ptr
 end type
 

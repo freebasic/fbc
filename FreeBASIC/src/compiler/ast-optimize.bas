@@ -1817,7 +1817,7 @@ function astOptAssignment _
 end function
 
 ''::::
-function astOptimize _
+function astOptimizeTree _
 	( _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
@@ -1850,4 +1850,5 @@ function astOptimize _
 	function = n
 
 end function
+
 

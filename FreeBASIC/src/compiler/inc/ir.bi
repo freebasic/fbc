@@ -681,9 +681,19 @@ declare function irGetVRDataSize _
 
 #define irIsIMM(v) (v->typ = IR_VREGTYPE_IMM)
 
+#define irIsVAR(v) (v->typ = IR_VREGTYPE_VAR)
+
+#define irIsIDX(v) (v->typ = IR_VREGTYPE_IDX)
+
+#define irIsPTR(v) (v->typ = IR_VREGTYPE_PTR)
+
 #define irGetVRType(v) v->typ
 
 #define irGetVRDataType(v) v->dtype
+
+#define irGetVROfs(v) v->ofs
+
+#define irGetVRValueI(v) v->value.int
 
 #define ISLONGINT(t) ((t = FB_DATATYPE_LONGINT) or (t = FB_DATATYPE_ULONGINT))
 
