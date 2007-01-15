@@ -361,7 +361,7 @@ void fb_hX11LeaveFullscreen(void)
 		return;
 	
 	if (current_size != orig_size) {
-		if ((target_rate >= 0) && (XRRSetScreenConfigAndRate(fb_linux.display, fb_linux.config, root_window, orig_size, orig_rotation, orig_rate, CurrentTime) == BadValue))
+		if ((target_rate <= 0) || (XRRSetScreenConfigAndRate(fb_linux.display, fb_linux.config, root_window, orig_size, orig_rotation, orig_rate, CurrentTime) == BadValue))
 			XRRSetScreenConfig(fb_linux.display, fb_linux.config, root_window, orig_size, orig_rotation, CurrentTime);
 		XUngrabPointer(fb_linux.display, CurrentTime);
 		XUngrabKeyboard(fb_linux.display, CurrentTime);
