@@ -168,7 +168,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	*attrib++ = GLX_ALPHA_SIZE;
 	*attrib++ = __fb_gl_params.color_alpha_bits;
 	*attrib++ = GLX_DEPTH_SIZE;
-	*attrib++ = __fb_gl_params.color_depth_bits;
+	*attrib++ = __fb_gl_params.depth_bits;
 	if (__fb_gl_params.stencil_bits > 0) {
 		*attrib++ = GLX_STENCIL_SIZE;
 		*attrib++ = __fb_gl_params.stencil_bits;
@@ -190,7 +190,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		samples_attrib = attrib;
 		*attrib++ = 4;
 	}
-	*gl_attr = None;
+	*attrib = None;
 	
 	fb_linux.init = opengl_window_init;
 	fb_linux.exit = opengl_window_exit;

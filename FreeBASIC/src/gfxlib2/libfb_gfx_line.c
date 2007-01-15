@@ -56,13 +56,12 @@ static int encode(FB_GFXCTX *context, int x, int y)
 /*:::::*/
 static int reverse_mask(int mask)
 {
-	int new_mask = 0, i;
+	mask = ((mask >> 1) & 0x5555) | ((mask & 0x5555) << 1);
+	mask = ((mask >> 2) & 0x3333) | ((mask & 0x3333) << 2);
+	mask = ((mask >> 4) & 0x0F0F) | ((mask & 0x0F0F) << 4);
+	mask = ((mask >> 8) & 0x00FF) | ((mask & 0x00FF) << 8);
 	
-	for (i = 0; i < 8; i++) {
-		new_mask |= (mask & (1 << i)) ? (1 << (15 - i)) : 0;
-		new_mask |= (mask & (1 << (15 - i))) ? (1 << i) : 0;
-	}
-	return new_mask;
+	return mask;
 }
 
 
