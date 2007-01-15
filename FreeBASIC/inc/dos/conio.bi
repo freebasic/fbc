@@ -73,7 +73,7 @@ declare function	cputs			cdecl alias "cputs"		(byval strn as zstring ptr) as int
 declare sub		delline			cdecl alias "delline"		()
 declare function	getch			cdecl alias "getch"		() as integer
 declare function	getche			cdecl alias "getche"		() as integer
-declare function  gettext     cdecl alias "gettext"   (byval left_ as integer, byval top_ as integer, byval right_ as integer, byval bottom as integer, byval destin as any ptr) as integer
+declare function	_conio_gettext		cdecl alias "_conio_gettext"	(byval left_ as integer, byval top_ as integer, byval right_ as integer, byval bottom as integer, byval destin as any ptr) as integer
 declare sub		gettextinfo		cdecl alias "gettextinfo"	(byval r as text_info ptr)
 declare sub		gotoxy			cdecl alias "gotoxy"		(byval x as integer, byval y as integer)
 declare sub		gppconio_init		cdecl alias "gppconio_init"	()
@@ -99,5 +99,10 @@ declare sub		conio_window		cdecl alias "window"		(byval left_ as integer, byval 
 '#define kbhit conio_kbhit ' Who ever includes gppconio.h probably
 '                          '    also wants _conio_kbhit and not kbhit
 '                          '    from libc
+
+#ifndef __USE_GNU_GETTEXT
+# undef  gettext
+# define gettext _conio_gettext
+#endif
 
 #endif ' !__dj_include_conio_h_
