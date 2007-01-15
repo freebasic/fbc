@@ -22,7 +22,6 @@
 
 # if __FB_LANG__ = "fb"
 namespace FB
-extern "C"
 # endif
 
 	'' Flags accepted by Screen and ScreenRes
