@@ -978,6 +978,16 @@ private function hFlushInitializer _
 		byval has_dtor as integer _
 	) as ASTNODE ptr
 
+	'' object?
+    if( has_dtor ) then
+    	'' check visibility
+		dim as FBSYMBOL ptr subtype = symbGetSubtype( sym )
+		if( symbCheckAccess( subtype, _
+							 symbGetCompDtor( subtype ) ) = FALSE ) then
+       		errReport( FB_ERRMSG_NOACCESSTODTOR )
+		end if
+	end if
+
 	'' no initializer?
 	if( initree = NULL ) then
 		'' static or shared?
