@@ -1707,11 +1707,9 @@ function fbcGetLibList _
     if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		do while( libf <> NULL )
    			'' check if the lib isn't the dll's import library itself
-   	        if( *libf->name = *dllname ) then
-   	        	continue do
-   	        end if
-
-			list += "-l" + *libf->name + " "
+   	        if( *libf->name <> *dllname ) then
+				list += "-l" + *libf->name + " "
+			end if
 
 			libf = listGetNext( libf )
 		loop
