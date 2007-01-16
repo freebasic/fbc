@@ -471,6 +471,7 @@ end function
 '':::::
 private function hProcPtrBody _
 	( _
+		byval base_parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
@@ -498,6 +499,19 @@ private function hProcPtrBody _
         		end if
         	end if
         end if
+	end if
+
+	'' taking the address of an method? pointer to methods not supported yet..
+	if( symbIsMethod( proc ) ) then
+		errReportEx( FB_ERRMSG_ACCESSTONONSTATICMEMBER, symbGetFullProcName( proc ) )
+		return NULL
+	end if
+
+	if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+		if( errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
+						 symbGetFullProcName( proc ) ) = FALSE ) then
+	   		exit function
+		end if
 	end if
 
 	symbSetIsCalled( proc )
@@ -597,7 +611,8 @@ function cAddrOfExpression _
 	if( lexGetToken( ) = FB_TK_ADDROFCHAR ) then
 		lexSkipToken( )
 
-		chain_ = cIdentifier( base_parent )
+		chain_ = cIdentifier( base_parent, _
+							  FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			return NULL
 		end if
@@ -606,7 +621,7 @@ function cAddrOfExpression _
 		sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		if( sym <> NULL ) then
 			lexSkipToken( )
-			return hProcPtrBody( sym )
+			return hProcPtrBody( base_parent, sym )
 
 		'' anything else..
 		else
@@ -663,7 +678,8 @@ function cAddrOfExpression _
 		end if
 
 		'' proc?
-		chain_ = cIdentifier( base_parent )
+		chain_ = cIdentifier( base_parent, _
+							  FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			return NULL
 		end if
@@ -681,7 +697,7 @@ function cAddrOfExpression _
 			lexSkipToken( )
 		end if
 
-		expr = hProcPtrBody( sym )
+		expr = hProcPtrBody( base_parent, sym )
 		if( expr = NULL ) then
 			return NULL
 		end if

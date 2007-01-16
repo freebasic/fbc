@@ -414,20 +414,21 @@ private function hOvlProcArgList _
 
 	proc = ovlproc
 
-    '' method? check visibility
-	if( symbIsMethod( proc ) ) then
-		if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
-			if( errReportEx( iif( symbIsConstructor( proc ), _
-								  FB_ERRMSG_NOACCESSTOCTOR, _
-								  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
-							 symbGetFullProcName( proc ) ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
-			end if
+	'' check visibility
+	if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+		if( errReportEx( iif( symbIsConstructor( proc ), _
+							  FB_ERRMSG_NOACCESSTOCTOR, _
+							  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
+						 symbGetFullProcName( proc ) ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake an expr
+			return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 		end if
+	end if
 
+    '' method?
+	if( symbIsMethod( proc ) ) then
 		'' calling a method without the instance ptr?
 		if( (options and FB_PARSEROPT_HASINSTPTR) = 0 ) then
 			'' is this really a static access or just a method call from
@@ -528,20 +529,21 @@ function cProcArgList _
 
 	function = NULL
 
-    '' method? check visibility
-	if( symbIsMethod( proc ) ) then
-		if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
-			if( errReportEx( iif( symbIsConstructor( proc ), _
-								  FB_ERRMSG_NOACCESSTOCTOR, _
-								  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
-							 symbGetFullProcName( proc ) ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
-			end if
+	'' check visibility
+	if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+		if( errReportEx( iif( symbIsConstructor( proc ), _
+							  FB_ERRMSG_NOACCESSTOCTOR, _
+							  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
+						 symbGetFullProcName( proc ) ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake an expr
+			return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 		end if
+	end if
 
+    '' method?
+	if( symbIsMethod( proc ) ) then
 		'' calling a method without the instance ptr?
 		if( (options and FB_PARSEROPT_HASINSTPTR) = 0 ) then
 
