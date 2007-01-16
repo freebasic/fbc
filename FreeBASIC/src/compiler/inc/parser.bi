@@ -782,7 +782,7 @@ declare function cNumLiteral _
 
 declare function cStrLiteral _
 	( _
-		_
+		byval skiptoken as integer = TRUE _
 	) as ASTNODE ptr
 
 declare function cProcArgList _

@@ -122,6 +122,24 @@ function cAsmCode _
 			 	astDelNode( expr )
 			 end if
 
+		'' lit string?
+		case FB_TKCLASS_STRLITERAL
+			 expr = cStrLiteral( FALSE )
+			 if( expr <> NULL ) then
+             	dim as FBSYMBOL ptr litsym = astGetStrLitSymbol( expr )
+             	if( litsym <> NULL ) then
+                    text = """"
+                    if( symbGetType( litsym ) <> FB_DATATYPE_WCHAR ) then
+             			text += *symbGetVarLitText( litsym )
+             		else
+             			text += *symbGetVarLitTextW( litsym )
+             		end if
+             		text += """"
+			 	end if
+
+			 	astDelTree( expr )
+			 end if
+
 		''
 		case FB_TKCLASS_KEYWORD
 			select case thisTok

@@ -149,7 +149,7 @@ end function
 ''
 function cStrLiteral _
 	( _
-		_
+		byval skiptoken as integer _
 	) as ASTNODE ptr
 
     dim as integer dtype = any
@@ -223,10 +223,15 @@ function cStrLiteral _
 			expr = astNewBOP( AST_OP_ADD, expr, astNewVAR( sym, 0, dtype ) )
 		end if
 
-		lexSkipToken( )
+		if( skiptoken ) then
+			lexSkipToken( )
 
-  		'' not another literal string?
-  		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+  			'' not another literal string?
+  			if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+				exit do
+			end if
+
+		else
 			exit do
 		end if
 	loop
