@@ -58,9 +58,10 @@ private function hFuncReturn _
 		checkexpr = TRUE
 
 	else
-		'' Comment|StmtSep|EOF? just exit
+		'' Comment|StmtSep|EOF|ELSE|END IF|END IF? just exit
 		select case as const lexGetToken( )
-		case FB_TK_EOL, FB_TK_STMTSEP, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM
+		case FB_TK_EOL, FB_TK_STMTSEP, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM, _
+			 FB_TK_ELSE, FB_TK_END, FB_TK_ENDIF
 			checkexpr = FALSE
 		case else
 			checkexpr = TRUE
@@ -171,10 +172,10 @@ function cGotoStmt _
 		'' it's a GOSUB's RETURN..
 		lexSkipToken( )
 
-		'' Comment|StmtSep|EOF|ELSE? just return
+		'' Comment|StmtSep|EOF|ELSE|END IF|ENDIF? just return
 		select case as const lexGetToken( )
 		case FB_TK_EOL, FB_TK_STMTSEP, FB_TK_EOF, FB_TK_COMMENT, _
-			 FB_TK_REM, FB_TK_ELSE
+			 FB_TK_REM, FB_TK_ELSE, FB_TK_END, FB_TK_ENDIF
 
 			'' return 0
 			astAdd( astNewBRANCH( AST_OP_RET, NULL ) )

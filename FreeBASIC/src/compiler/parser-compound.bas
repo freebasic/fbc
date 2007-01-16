@@ -177,7 +177,8 @@ function cEndStatement as integer
 
   	'' Expression?
   	select case as const lexGetToken( )
-  	case FB_TK_STMTSEP, FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM
+  	case FB_TK_STMTSEP, FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM, _
+  		 FB_TK_ELSE, FB_TK_END, FB_TK_ENDIF
   		errlevel = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 
   	case else
@@ -516,6 +517,10 @@ function cCompoundEnd( ) as integer
 
 	case FB_TK_EXTERN
 		function = cExternStmtEnd( )
+
+	'' QB quirk: IF expr THEN END ELSE ...|ENDIF|END IF
+	case FB_TK_ELSE, FB_TK_END, FB_TK_ENDIF
+		function = cEndStatement( )
 
 	case else
 		if( errReport( FB_ERRMSG_ILLEGALEND ) = FALSE ) then
