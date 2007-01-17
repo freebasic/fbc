@@ -886,10 +886,20 @@ sub fbGetDefaultLibs _
 		hAddLib( "moldname" )
 		hAddLib( "supc++" )
 
+		'' profiling?
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			hAddLib( "gmon" )
+		end if
+
 	case FB_COMPTARGET_CYGWIN
 		hAddLib( "cygwin" )
 		hAddLib( "kernel32" )
 		hAddLib( "supc++" )
+
+		'' profiling?
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			hAddLib( "gmon" )
+		end if
 
 	case FB_COMPTARGET_LINUX
 		hAddLib( "c" )
@@ -916,12 +926,14 @@ sub fbGetDefaultLibs _
 		hAddLib( "m" )
 		hAddLib( "supc++" )
 
+		'' profiling?
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			hAddLib( "gmon" )
+		end if
+
 	end select
 
-	'' profiling?
-	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-		hAddLib( "gmon" )
-	end if
+
 
 end sub
 
