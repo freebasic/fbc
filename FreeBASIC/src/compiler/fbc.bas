@@ -335,7 +335,24 @@ private sub fbcEnd _
 
     '' free the cmd-line options hash
 	hashFree( @fbc.opthash )
-
+	
+	listFree( @fbc.arglist )
+	
+	'' file and path lists
+	listFree( @fbc.inoutlist )
+	listFree( @fbc.objlist )
+	listFree( @fbc.deflist )
+	listFree( @fbc.preinclist )
+	listFree( @fbc.liblist )
+	listFree( @fbc.libpathlist )
+	listFree( @fbc.incpathlist )
+	
+	'' the final lib and search path lists passed to LD
+	listFree( @fbc.ld_liblist )
+	hashFree( @fbc.ld_libhash )
+	listFree( @fbc.ld_libpathlist )
+	hashFree( @fbc.ld_libpathhash )
+	
 	hashEnd( )
 
 	''
