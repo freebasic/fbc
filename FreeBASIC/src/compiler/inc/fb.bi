@@ -46,50 +46,54 @@ const FB_INCPATH = RSLASH + "inc" + RSLASH
 const FB_LIBPATH = RSLASH + "lib" + RSLASH
 
 ''
-const FB_MAXPATHLEN			= 260
+const FB_MAXPATHLEN         = 260
 
-const FB_MAXINCRECLEVEL		= 16
-const FB_MAXARGRECLEVEL		= 8
-const FB_MAXPRAGMARECLEVEL	= 8
-const FB_MAXNAMESPCRECLEVEL	= 64
+const FB_MAXINCRECLEVEL     = 16
+const FB_MAXARGRECLEVEL     = 8
+const FB_MAXPRAGMARECLEVEL  = 8
+const FB_MAXNAMESPCRECLEVEL = 64
 
-const FB_MAXINCPATHS		= 16
+const FB_MAXINCPATHS        = 16
 
-const FB_MAXARRAYDIMS		= 8
-const FB_MAXDEFINEARGS		= 32
+const FB_MAXARRAYDIMS       = 8
+const FB_MAXDEFINEARGS      = 32
 
-const FB_MAXNAMELEN			= 64
-const FB_MAXLITLEN			= 1024				'' literal strings max length
-const FB_MAXNUMLEN			= 64
-const FB_MAXOPERANDLEN		= FB_MAXNAMELEN + 2 + 16 + 2 + 1
-const FB_MAXDEFINELEN		= FB_MAXLITLEN*4
+const FB_MAXNAMELEN         = 64
+const FB_MAXLITLEN          = 1024              '' literal strings max length
+const FB_MAXNUMLEN          = 64
+const FB_MAXOPERANDLEN      = FB_MAXNAMELEN + 2 + 16 + 2 + 1
+const FB_MAXDEFINELEN       = FB_MAXLITLEN*4
 
-const FB_MAXSCOPEDEPTH		= 128
+const FB_MAXSCOPEDEPTH      = 128
 
-const FB_DEFAULT_MAXERRORS	= 10
+const FB_DEFAULT_MAXERRORS  = 10
 
-const FB_ERR_INFINITE 		= &h7fffffff
+const FB_ERR_INFINITE       = &h7fffffff
 
 ''
 #ifndef TRUE
-const TRUE					= -1
-const FALSE					= 0
+const TRUE                  = -1
+const FALSE                 = 0
 #endif
 
 #ifndef NULL
-const NULL					= 0
+const NULL                  = 0
 #endif
 
-const INVALID				= -1
+const INVALID               = -1
 
 ''
-const FB_VER_MAJOR			= 0
-const FB_VER_MINOR			= 17
-const FB_VER_PATCH			= 0
-const FB_VERSION			= str( FB_VER_MAJOR ) + "." + str( FB_VER_MINOR )
-const FB_SIGN				= "FreeBASIC v" +  FB_VERSION + "b"
+const FB_VER_MAJOR          = 0
+const FB_VER_MINOR          = 17
+const FB_VER_PATCH          = 0
+const FB_VERSION            = str( FB_VER_MAJOR ) + "." + str( FB_VER_MINOR )
+const FB_BUILD_DATE         = __DATE__
+const FB_BUILD_TIME         = __TIME__
+const FB_BUILD_SIGNATURE    = "Compiled at " + FB_BUILD_TIME + " on " + FB_BUILD_DATE
+const FB_SIGN               = "FreeBASIC v" +  FB_VERSION + "b"
 
-#define FB_TO_STRING(v)		#v
+
+#define FB_TO_STRING(v)     #v
 
 #define FB_VER_STR_MAJOR    str(FB_VER_MAJOR)
 #define FB_VER_STR_MINOR    str(FB_VER_MINOR)
@@ -97,33 +101,33 @@ const FB_SIGN				= "FreeBASIC v" +  FB_VERSION + "b"
 
 #ifndef __FB_MIN_VERSION__
 #define __FB_MIN_VERSION__(major,minor,patch_level) _
-	((__FB_VER_MAJOR__ > major) or _
-     ((__FB_VER_MAJOR__ = major) and ((__FB_VER_MINOR__ > minor) or _
-                                      (__FB_VER_MINOR__ = minor and __FB_VER_PATCH__ >= patch_level))))
+    ((__FB_VER_MAJOR__ > major) or _
+    ((__FB_VER_MAJOR__ = major) and ((__FB_VER_MINOR__ > minor) or _
+                                     (__FB_VER_MINOR__ = minor and __FB_VER_PATCH__ >= patch_level))))
 #endif
 
 #if defined(TARGET_WIN32)
-const FB_TARGET				= "win32"
+const FB_TARGET             = "win32"
 #elseif defined(TARGET_CYGWIN)
-const FB_TARGET				= "cygwin"
+const FB_TARGET             = "cygwin"
 #elseif defined(TARGET_LINUX)
-const FB_TARGET				= "linux"
+const FB_TARGET             = "linux"
 #elseif defined(TARGET_DOS)
-const FB_TARGET				= "dos"
+const FB_TARGET             = "dos"
 #elseif defined(TARGET_XBOX)
-const FB_TARGET				= "xbox"
+const FB_TARGET             = "xbox"
 #endif
 
 #if defined(__FB_WIN32__)
-const FB_HOST				= "win32"
+const FB_HOST               = "win32"
 #elseif defined(__FB_CYGWIN__)
-const FB_HOST				= "cygwin"
+const FB_HOST               = "cygwin"
 #elseif defined(__FB_LINUX__)
-const FB_HOST				= "linux"
+const FB_HOST               = "linux"
 #elseif defined(__FB_DOS__)
-const FB_HOST				= "dos"
+const FB_HOST               = "dos"
 #elseif defined(__FB_XBOX__)
-const FB_HOST				= "xbox"
+const FB_HOST               = "xbox"
 #endif
 
 
@@ -156,13 +160,13 @@ end enum
 
 '' pedantic checks
 enum FB_PDCHECK
-	FB_PDCHECK_NONE			= &h00000000
+    FB_PDCHECK_NONE         = &h00000000
 
-	FB_PDCHECK_ESCSEQ		= &h00000001
-	FB_PDCHECK_PARAMMODE	= &h00000002
-	FB_PDCHECK_PARAMSIZE	= &h00000004
+    FB_PDCHECK_ESCSEQ       = &h00000001
+    FB_PDCHECK_PARAMMODE    = &h00000002
+    FB_PDCHECK_PARAMSIZE    = &h00000004
 
-	FB_PDCHECK_ALL			= &hffffffff
+    FB_PDCHECK_ALL          = &hffffffff
 end enum
 
 '' cpu types
@@ -173,25 +177,25 @@ enum FB_CPUTYPE
 	FB_CPUTYPE_686
 end enum
 
-const FB_DEFAULT_CPUTYPE	= FB_CPUTYPE_486
+const FB_DEFAULT_CPUTYPE    = FB_CPUTYPE_486
 
 '' output file type
 enum FB_OUTTYPE
-	FB_OUTTYPE_EXECUTABLE
-	FB_OUTTYPE_STATICLIB
-	FB_OUTTYPE_DYNAMICLIB
-	FB_OUTTYPE_OBJECT
+    FB_OUTTYPE_EXECUTABLE
+    FB_OUTTYPE_STATICLIB
+    FB_OUTTYPE_DYNAMICLIB
+    FB_OUTTYPE_OBJECT
 end enum
 
-const FB_DEFAULT_OUTTYPE 	= FB_OUTTYPE_EXECUTABLE
+const FB_DEFAULT_OUTTYPE    = FB_OUTTYPE_EXECUTABLE
 
 '' target platform
 enum FB_COMPTARGET
-	FB_COMPTARGET_WIN32
-	FB_COMPTARGET_CYGWIN
-	FB_COMPTARGET_LINUX
-	FB_COMPTARGET_DOS
-	FB_COMPTARGET_XBOX
+    FB_COMPTARGET_WIN32
+    FB_COMPTARGET_CYGWIN
+    FB_COMPTARGET_LINUX
+    FB_COMPTARGET_DOS
+    FB_COMPTARGET_XBOX
 end enum
 
 #if defined(TARGET_WIN32)
@@ -257,33 +261,33 @@ end type
 
 '' features allowed in the selected language
 enum FB_LANG_OPT
-	FB_LANG_OPT_MT			= &h00000001
-	FB_LANG_OPT_SCOPE		= &h00000002
-	FB_LANG_OPT_NAMESPC		= &h00000004
-	FB_LANG_OPT_EXTERN		= &h00000008
-	FB_LANG_OPT_FUNCOVL		= &h00000010
-	FB_LANG_OPT_OPEROVL		= &h00000020
-	FB_LANG_OPT_CLASS		= &h00000040
-	FB_LANG_OPT_INITIALIZER = &h00000080
-	FB_LANG_OPT_SINGERRLINE = &h00000100
-	FB_LANG_OPT_VBSYMB 		= &h00000200
-	FB_LANG_OPT_ALWAYSOVL	= &h00000400
-	FB_LANG_OPT_AUTOVAR		= &h00000800
+	FB_LANG_OPT_MT          = &h00000001
+    FB_LANG_OPT_SCOPE       = &h00000002
+    FB_LANG_OPT_NAMESPC     = &h00000004
+    FB_LANG_OPT_EXTERN      = &h00000008
+    FB_LANG_OPT_FUNCOVL     = &h00000010
+    FB_LANG_OPT_OPEROVL     = &h00000020
+    FB_LANG_OPT_CLASS       = &h00000040
+    FB_LANG_OPT_INITIALIZER = &h00000080
+    FB_LANG_OPT_SINGERRLINE = &h00000100
+    FB_LANG_OPT_VBSYMB      = &h00000200
+    FB_LANG_OPT_ALWAYSOVL   = &h00000400
+    FB_LANG_OPT_AUTOVAR     = &h00000800
 
-	FB_LANG_OPT_GOSUB		= &h00010000
-	FB_LANG_OPT_CALL		= &h00020000
-	FB_LANG_OPT_LET			= &h00040000
-	FB_LANG_OPT_PERIODS		= &h00080000
-	FB_LANG_OPT_NUMLABEL	= &h00100000
-    FB_LANG_OPT_IMPLICIT	= &h00200000
-    FB_LANG_OPT_DEFTYPE		= &h00400000
-    FB_LANG_OPT_SUFFIX		= &h00800000
-    FB_LANG_OPT_METACMD		= &h01000000
-    FB_LANG_OPT_QBOPT		= &h02000000
-    FB_LANG_OPT_DEPRECTOPT	= &h04000000
-    FB_LANG_OPT_ONERROR		= &h08000000
-    FB_LANG_OPT_SHAREDLOCAL	= &h10000000
-    FB_LANG_OPT_QUIRKFUNC	= &h20000000
+    FB_LANG_OPT_GOSUB       = &h00010000
+    FB_LANG_OPT_CALL        = &h00020000
+    FB_LANG_OPT_LET         = &h00040000
+    FB_LANG_OPT_PERIODS     = &h00080000
+    FB_LANG_OPT_NUMLABEL    = &h00100000
+    FB_LANG_OPT_IMPLICIT    = &h00200000
+    FB_LANG_OPT_DEFTYPE     = &h00400000
+    FB_LANG_OPT_SUFFIX      = &h00800000
+    FB_LANG_OPT_METACMD     = &h01000000
+    FB_LANG_OPT_QBOPT       = &h02000000
+    FB_LANG_OPT_DEPRECTOPT  = &h04000000
+    FB_LANG_OPT_ONERROR     = &h08000000
+    FB_LANG_OPT_SHAREDLOCAL = &h10000000
+    FB_LANG_OPT_QUIRKFUNC   = &h20000000
 end enum
 
 '' paths

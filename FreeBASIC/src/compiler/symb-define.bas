@@ -62,11 +62,14 @@ declare function	hDefLang_cb			( ) as string
 declare function    hDefPath_cb         ( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
-const SYMB_MAXDEFINES = 32
+const SYMB_MAXDEFINES = 32 '' 27 
 
 	dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
 	{ _
         (@"__FB_VERSION__"            ,   @FB_VERSION         ,  0,   NULL                   ), _
+        (@"__FB_BUILD_DATE__"         ,   @FB_BUILD_DATE      ,  0,   NULL                   ), _
+        (@"__FB_BUILD_TIME__"         ,   @FB_BUILD_TIME      ,  0,   NULL                   ), _
+        (@"__FB_BUILD_SIGNATURE__"    ,   @FB_BUILD_SIGNATURE ,  0,   NULL                   ), _
         (@"__FB_VER_MAJOR__"          ,   @FB_VER_STR_MAJOR   ,  1,   NULL                   ), _
         (@"__FB_VER_MINOR__"          ,   @FB_VER_STR_MINOR   ,  1,   NULL                   ), _
         (@"__FB_VER_PATCH__"          ,   @FB_VER_STR_PATCH   ,  1,   NULL                   ), _
