@@ -33,7 +33,7 @@
  * sys_dylib.c -- Dynamic library loading and symbols retrieving
  *
  * chng: feb/2005 written [lillo]
- *
+ *		 jan/2007 fb_DylibSymbolByOrd [voodooattack]
  */
 
 #include <stdio.h>
@@ -83,6 +83,18 @@ FBCALL void *fb_DylibSymbol( void *library, FBSTRING *symbol )
 	return proc;
 }
 
+/*:::::*/
+FBCALL void *fb_DylibSymbolByOrd ( void *library, short int symbol )
+{
+	void *proc = NULL;
+
+	if( library == NULL )
+		library = GetModuleHandle( NULL );
+
+	proc = (void*) GetProcAddress( (HINSTANCE) library, MAKEINTRESOURCE(symbol) );
+
+	return proc;
+}
 
 /*:::::*/
 FBCALL void fb_DylibFree( void *library )

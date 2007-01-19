@@ -19,7 +19,7 @@
 '' intrinsic runtime lib system functions (END, COMMAND, BEEP, SLEEP, TIMER, ...)
 ''
 '' chng: oct/2004 written [v1ctor]
-
+''       jan/2007 fb_DylibSymbolByOrd [voodooattack] 
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -463,11 +463,11 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 	 	), _
-		/' dylibsymbol ( byval library as any ptr, symbol as string) as any ptr '/ _
+		/' dylibsymbol overload ( byval library as any ptr, symbol as string) as any ptr '/ _
 		( _
 			@"dylibsymbol", @"fb_DylibSymbol", _
 	 		FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_OVER, _
 	 		2, _
 	 		{ _
 	 			( _
@@ -478,6 +478,21 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 	 	), _
+		/' dylibsymbol overload ( byval library as any ptr, symbol as short) as any ptr '/ _
+		( _
+			@"dylibsymbol", @"fb_DylibSymbolByOrd", _
+	 		FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_OVER, _
+	 		2, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+	 	), _        
 		/' dylibfree ( byval library as any ptr ) as void '/ _
 		( _
 			@"dylibfree", @"fb_DylibFree", _

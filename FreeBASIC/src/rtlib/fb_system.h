@@ -61,6 +61,7 @@ FBCALL int 			fb_ExecEx 			( FBSTRING *program, FBSTRING *args, int do_wait );
 
 FBCALL void        *fb_DylibLoad        ( FBSTRING *library );
 FBCALL void        *fb_DylibSymbol      ( void *library, FBSTRING *symbol );
+FBCALL void 	   *fb_DylibSymbolByOrd ( void *library, short int symbol );
 FBCALL void         fb_DylibFree        ( void *library );
 
        FB_DYLIB     fb_hDynLoad         (const char *libname, const char **funcname, void **funcptr);
