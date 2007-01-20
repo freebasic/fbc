@@ -208,11 +208,9 @@ declare sub getDefaultLibs _
 
     ''
     if( fbc.verbose or fbc.showversion ) then
-    	print "FreeBASIC Compiler - Version " + FB_VERSION + _
+    	print "FreeBASIC Compiler - Version " + FB_VERSION + " (" + FB_BUILD_DATE + ")" + _
     		  " for " + FB_HOST + " (target:" + FB_TARGET + ")"
     	print "Copyright (C) 2004-2006 The FreeBASIC development team."
-    	print
-    	print "Compiled at " + FB_BUILD_TIME + " on " + FB_BUILD_DATE
     	print
     	if( fbc.showversion ) then
     		fbcEnd( 0 )
@@ -335,9 +333,9 @@ private sub fbcEnd _
 
     '' free the cmd-line options hash
 	hashFree( @fbc.opthash )
-	
+
 	listFree( @fbc.arglist )
-	
+
 	'' file and path lists
 	listFree( @fbc.inoutlist )
 	listFree( @fbc.objlist )
@@ -346,13 +344,13 @@ private sub fbcEnd _
 	listFree( @fbc.liblist )
 	listFree( @fbc.libpathlist )
 	listFree( @fbc.incpathlist )
-	
+
 	'' the final lib and search path lists passed to LD
 	listFree( @fbc.ld_liblist )
 	hashFree( @fbc.ld_libhash )
 	listFree( @fbc.ld_libpathlist )
 	hashFree( @fbc.ld_libpathhash )
-	
+
 	hashEnd( )
 
 	''

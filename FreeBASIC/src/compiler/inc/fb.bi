@@ -88,8 +88,6 @@ const FB_VER_MINOR          = 17
 const FB_VER_PATCH          = 0
 const FB_VERSION            = str( FB_VER_MAJOR ) + "." + str( FB_VER_MINOR )
 const FB_BUILD_DATE         = __DATE__
-const FB_BUILD_TIME         = __TIME__
-const FB_BUILD_SIGNATURE    = "Compiled at " + FB_BUILD_TIME + " on " + FB_BUILD_DATE
 const FB_SIGN               = "FreeBASIC v" +  FB_VERSION + "b"
 
 
