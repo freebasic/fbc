@@ -384,130 +384,129 @@ private function hAssignOrCall _
 		byval iscall as integer _
 	) as integer
 
-	dim as FBSYMBOL ptr sym = any
-	dim as ASTNODE ptr expr = any
-
 	function = FALSE
 
     do while( chain_ <> NULL )
 
-    	sym = chain_->sym
-    	select case as const symbGetClass( sym )
-    	'' proc?
-    	case FB_SYMBCLASS_PROC
-    		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-				exit function
-    		end if
-
-			lexSkipToken( )
-
-            ''
-            dim as integer do_call = lexGetToken( ) <> FB_TK_ASSIGN
-
-            if( do_call = FALSE ) then
-            	'' special case: property
-            	if( symbIsProperty( sym ) ) then
-                	do_call = TRUE
-
-                	'' unless it's inside a PROPERTY GET block
-                	if( symbIsProperty( parser.currproc ) ) then
-                		if( symbGetProcParams( parser.currproc ) = 1 ) then
-                			if( symbIsProcOverloadOf( parser.currproc, sym ) ) then
-                				do_call = FALSE
-                			end if
-                		end if
-                	end if
-            	end if
-            end if
-
-			'' ID ProcParamList?
-			if( do_call ) then
-				expr = cProcCall( base_parent, sym, NULL, NULL )
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
+    	dim as FBSYMBOL ptr sym = chain_->sym
+    	do
+	    	select case as const symbGetClass( sym )
+	    	'' proc?
+	    	case FB_SYMBCLASS_PROC
+	    		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
 					exit function
+	    		end if
+
+				lexSkipToken( )
+
+	            ''
+	            dim as integer do_call = lexGetToken( ) <> FB_TK_ASSIGN
+
+	            if( do_call = FALSE ) then
+	            	'' special case: property
+	            	if( symbIsProperty( sym ) ) then
+	                	do_call = TRUE
+
+	                	'' unless it's inside a PROPERTY GET block
+	                	if( symbIsProperty( parser.currproc ) ) then
+	                		if( symbGetProcParams( parser.currproc ) = 1 ) then
+	                			if( symbIsProcOverloadOf( parser.currproc, sym ) ) then
+	                				do_call = FALSE
+	                			end if
+	                		end if
+	                	end if
+	            	end if
+	            end if
+
+				'' ID ProcParamList?
+				if( do_call ) then
+					dim as ASTNODE ptr expr = any
+					expr = cProcCall( base_parent, sym, NULL, NULL )
+					if( errGetLast( ) <> FB_ERRMSG_OK ) then
+						exit function
+					end if
+
+					'' assignment of a function deref?
+					if( expr <> NULL ) then
+						return cAssignment( expr )
+	       			end if
+
+	       			return TRUE
+
+				'' ID '=' Expression
+				else
+	            	'' CALL?
+	            	if( iscall ) then
+						if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: skip stmt, return
+							hSkipStmt( )
+							return TRUE
+						end if
+	            	end if
+
+	            	'' check if name is valid (or if overloaded)
+					if( symbIsProcOverloadOf( parser.currproc, sym ) = FALSE ) then
+						if( errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: skip stmt, return
+							hSkipStmt( )
+							return TRUE
+						end if
+					end if
+
+	       			'' skip the '='
+	       			lexSkipToken( )
+
+	       			return cAssignFunctResult( parser.currproc, FALSE )
 				end if
 
-				'' assignment of a function deref?
-				if( expr <> NULL ) then
-					return cAssignment( expr )
-       			end if
+	    	'' variable or field?
+	    	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
 
-       			return TRUE
+	        	dim as ASTNODE ptr expr = any
+	        	if( symbIsVar( sym ) ) then
+	        		'' must process variables here, multiple calls to
+	        		'' Identifier() will fail if a namespace was explicitly
+	    	    	'' given, because the next call will return an inner symbol
+	        		expr = cVariableEx( chain_, TRUE )
+	        		if( expr = NULL ) then
+	        			exit function
+	        		end if
+	        	else
+	        		expr = cDataMember( NULL, chain_, TRUE )
+	        		if( expr = NULL ) then
+	        			exit function
+	        		end if
+	        	end if
 
-			'' ID '=' Expression
-			else
-            	'' CALL?
-            	if( iscall ) then
-					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip stmt, return
-						hSkipStmt( )
-						return TRUE
-					end if
-            	end if
+	    		'' CALL?
+	    		if( iscall ) then
+	    			'' not a ptr call?
+	    			if( astIsCALL( expr ) = FALSE ) then
+	    				astDelTree( expr )
+						if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: skip stmt, return
+							hSkipStmt( )
+							return TRUE
+						end if
+	    			end if
+	    		end if
 
-            	'' check if name is valid (or if overloaded)
-				if( symbIsProcOverloadOf( parser.currproc, sym ) = FALSE ) then
-					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip stmt, return
-						hSkipStmt( )
-						return TRUE
-					end if
-				end if
+	        	return cAssignmentOrPtrCallEx( expr )
 
-       			'' skip the '='
-       			lexSkipToken( )
+	  		'' quirk-keyword?
+	  		case FB_SYMBCLASS_KEYWORD
+	  			return cQuirkStmt( sym->key.id )
 
-       			return cAssignFunctResult( parser.currproc, FALSE )
-			end if
+			end select
 
-    	'' variable or field?
-    	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
-
-        	if( symbIsVar( sym ) ) then
-        		'' must process variables here, multiple calls to
-        		'' Identifier() will fail if a namespace was explicitly
-    	    	'' given, because the next call will return an inner symbol
-        		expr = cVariableEx( chain_, TRUE )
-        		if( expr = NULL ) then
-        			exit function
-        		end if
-        	else
-        		expr = cDataMember( NULL, chain_, TRUE )
-        		if( expr = NULL ) then
-        			exit function
-        		end if
-        	end if
-
-    		'' CALL?
-    		if( iscall ) then
-    			'' calling a SUB ptr?
-    			if( expr = NULL ) then
-    				return TRUE
-    			end if
-
-    			'' not a ptr call?
-    			if( astIsCALL( expr ) = FALSE ) then
-    				astDelTree( expr )
-					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip stmt, return
-						hSkipStmt( )
-						return TRUE
-					end if
-    			end if
-    		end if
-
-        	return cAssignmentOrPtrCallEx( expr )
-
-  		'' quirk-keyword?
-  		case FB_SYMBCLASS_KEYWORD
-  			return cQuirkStmt( sym->key.id )
-		end select
+			sym = sym->hash.next
+		loop while( sym <> NULL )
 
     	chain_ = symbChainGetNext( chain_ )
     loop
@@ -679,24 +678,23 @@ function cProcCallOrAssign _
 
 		'' '.'?
 		if( lexGetToken( ) = CHAR_DOT ) then
-  			'' can be a global ns symbol access, or a WITH variable..
- 			chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
-  			if( chain_ <> NULL ) then
-  				return hAssignOrCall( base_parent, chain_, FALSE )
-
-  			else
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-				end if
-
-  				if( parser.stmt.with.sym <> NULL ) then
+  			'' inside a WITH block?
+  			if( parser.stmt.with.sym <> NULL ) then
+				'' not '..'?
+				if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
 					expr = cWithVariable( parser.stmt.with.sym, fbGetCheckArray( ) )
   					if( expr = NULL ) then
   						exit function
   					end if
 
-  					cAssignmentOrPtrCallEx( expr )
+  					return cAssignmentOrPtrCallEx( expr )
   				end if
+  			end if
+
+  			'' global namespace access..
+ 			chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
+  			if( chain_ <> NULL ) then
+  				return hAssignOrCall( base_parent, chain_, FALSE )
   			end if
   		end if
 

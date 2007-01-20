@@ -80,7 +80,10 @@ function symbAllocFloatConst _
 
 	'' preserve case, 'D', 'd', 'E', 'e' will become 'e' in lexer
 	s = symbLookupByNameAndSuffix( @symbGetGlobalNamespc( ), _
-								   @id, dtype, TRUE )
+								   @id, _
+								   dtype, _
+								   TRUE, _
+								   FALSE )
 	if( s <> NULL ) then
 		return s
 	end if
@@ -132,7 +135,10 @@ function symbAllocStrConst _
 
 	''
 	s = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
-								  @id, FB_SYMBCLASS_VAR, TRUE )
+								  @id, _
+								  FB_SYMBCLASS_VAR, _
+								  TRUE, _
+								  FALSE )
 	if( s <> NULL ) then
 		return s
 	end if
@@ -186,7 +192,10 @@ function symbAllocWStrConst _
 
 	''
 	s = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
-								  @id, FB_SYMBCLASS_VAR, TRUE )
+								  @id, _
+								  FB_SYMBCLASS_VAR, _
+								  TRUE, _
+								  FALSE )
 	if( s <> NULL ) then
 		return s
 	end if

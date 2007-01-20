@@ -56,7 +56,7 @@ function listFree _
 		byval list as TLIST ptr _
 	) as integer
 
-    dim as TLISTTB ptr tb, nxt
+    dim as TLISTTB ptr tb = any, nxt = any
 
 	'' for each pool, free the mem block and the pool ctrl struct
 	tb = list->tbhead
@@ -80,14 +80,14 @@ function listAllocTB _
 	( _
 		byval list as TLIST ptr, _
 		byval nodes as integer _
-	) as integer static
+	) as integer
 
-	dim as TLISTNODE ptr nodetb, node, prv
-	dim as TLISTTB ptr tb
-	dim as integer i
+	dim as TLISTNODE ptr nodetb = any, node = any, prv = any
+	dim as TLISTTB ptr tb = any
+	dim as integer i = any
 
 	function = FALSE
-    
+
 	if( nodes < 1 ) then
 		exit function
 	end if
@@ -153,9 +153,9 @@ end function
 function listNewNode _
 	( _
 		byval list as TLIST ptr _
-	) as any ptr static
+	) as any ptr
 
-	dim as TLISTNODE ptr node, tail
+	dim as TLISTNODE ptr node = any, tail = any
 
 	'' alloc new node list if there are no free nodes
 	if( list->fhead = NULL ) Then
@@ -192,9 +192,9 @@ sub listDelNode _
 	( _
 		byval list as TLIST ptr, _
 		byval node_ as any ptr _
-	) static
+	)
 
-	dim as TLISTNODE ptr node, prv, nxt
+	dim as TLISTNODE ptr node = any, prv = any, nxt = any
 
 	if( node_ = NULL ) then
 		exit sub
@@ -271,7 +271,7 @@ function listGetPrev _
 		byval node as any ptr _
 	) as any ptr
 
-    dim as TLISTNODE ptr prev
+    dim as TLISTNODE ptr prev = any
 
 	assert( node <> NULL )
 
@@ -292,7 +292,7 @@ function listGetNext _
 		byval node as any ptr _
 	) as any ptr
 
-    dim as TLISTNODE ptr nxt
+    dim as TLISTNODE ptr nxt = any
 
 	assert( node <> NULL )
 

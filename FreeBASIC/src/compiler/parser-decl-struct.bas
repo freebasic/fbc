@@ -85,7 +85,7 @@ private function hTypeProtoDecl _
 	end if
 
 	''
-	symbNestBegin( parent )
+	symbNestBegin( parent, FALSE )
 
 	'' DECLARE
 	lexSkipToken( )
@@ -183,7 +183,7 @@ private function hTypeProtoDecl _
 	symbSetIsUnique( parent )
 
 	''
-	symbNestEnd( )
+	symbNestEnd( FALSE )
 
 	function = res
 
@@ -213,7 +213,7 @@ private function hTypeEnumDecl _
 	end if
 
 	''
-	symbNestBegin( parent )
+	symbNestBegin( parent, FALSE )
 
 	if( is_const ) then
 		res = cConstDecl( attrib )
@@ -225,7 +225,7 @@ private function hTypeEnumDecl _
 	symbSetIsUnique( parent )
 
 	''
-	symbNestEnd( )
+	symbNestEnd( FALSE )
 
 	function = res
 
@@ -952,14 +952,14 @@ end function
 function cTypeDecl _
 	( _
 		byval attrib as FB_SYMBATTRIB _
-	) as integer static
+	) as integer
 
     static as zstring * FB_MAXNAMELEN+1 id, id_alias
-    dim as zstring ptr palias
-    dim as ASTNODE ptr expr
-    dim as integer align, isunion, checkid
-    dim as FBSYMBOL ptr sym
-   	dim as FB_CMPSTMTSTK ptr stk
+    dim as zstring ptr palias = any
+    dim as ASTNODE ptr expr = any
+    dim as integer align, isunion, checkid = any
+    dim as FBSYMBOL ptr sym = any
+   	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -1001,10 +1001,8 @@ function cTypeDecl _
     end select
 
 	if( checkid ) then
-		dim as FBSYMBOL ptr parent
-
 		'' don't allow explicit namespaces
-		parent = cParentId( )
+		dim as FBSYMBOL ptr parent = cParentId( )
     	if( parent <> NULL ) then
 			if( hDeclCheckParent( parent ) = FALSE ) then
 				exit function
@@ -1128,10 +1126,11 @@ function cTypeDecl _
 
 	'' has methods? must be unique..
 	if( symbGetIsUnique( sym ) ) then
-		dim as FBSYMCHAIN ptr chain_
-
 		'' any preview declaration than itself?
-		chain_ = symbLookupAt( symbGetCurrentNamespc( ), id, FALSE )
+		dim as FBSYMCHAIN ptr chain_ = symbLookupAt( symbGetCurrentNamespc( ), _
+													 id, _
+													 FALSE, _
+													 FALSE )
 		'' could be NULL, because error recovery
 		if( chain_ <> NULL ) then
 			if( chain_->sym <> sym ) then

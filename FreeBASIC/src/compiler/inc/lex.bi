@@ -23,16 +23,16 @@
 #include once "inc\dstr.bi"
 
 enum LEXCHECK
-	LEXCHECK_EVERYTHING	= 0
-	LEXCHECK_NOLINECONT	= 1
-	LEXCHECK_NODEFINE	= 2
-	LEXCHECK_NOWHITESPC	= 4
-	LEXCHECK_NOSUFFIX	= 8
-	LEXCHECK_NOQUOTES	= 16
-	LEXCHECK_NOSYMBOL	= 32
-	LEXCHECK_NOPERIOD	= 64
-	LEXCHECK_EATPERIOD	= 128
-	LEXCHECK_KEYHASHTB	= 256
+	LEXCHECK_EVERYTHING		= &h0000
+	LEXCHECK_NOLINECONT		= &h0001
+	LEXCHECK_NODEFINE		= &h0002
+	LEXCHECK_NOWHITESPC		= &h0004
+	LEXCHECK_NOSUFFIX		= &h0008
+	LEXCHECK_NOQUOTES		= &h0010
+	LEXCHECK_NOSYMBOL		= &h0020
+	LEXCHECK_NOPERIOD		= &h0040
+	LEXCHECK_EATPERIOD		= &h0080
+	LEXCHECK_KWDNAMESPC		= &h0100
 end enum
 
 type FBTOKEN
@@ -77,7 +77,7 @@ type LEX_CTX
 	reclevel 		as integer					'' PP recursion
 	currmacro		as FBSYMBOL ptr				'' used to check macro recursion
 
-	kwhashtb		as FBHASHTB ptr				'' used by the PP
+	kwdns			as FBSYMBOL ptr				'' used by the PP
 
 	'' last #define's text
 	deflen 			as integer

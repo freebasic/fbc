@@ -58,10 +58,14 @@ function symbAddEnum _
 		exit function
 	end if
 
+	'' init tables
+	symbSymbTbInit( e->enum_.ns.symtb, e )
+	symbHashTbInit( e->enum_.ns.hashtb, e, 0 )
+
+    '' unused (while mixins aren't supported)
+    e->enum_.ns.ext = NULL
+
 	e->enum_.elements = 0
-	e->enum_.symtb.owner = e
-	e->enum_.symtb.head = NULL
-	e->enum_.symtb.tail = NULL
 	e->enum_.dbg.typenum = INVALID
 
 	'' check for forward references
@@ -109,19 +113,29 @@ sub symbDelEnum _
 		byval s as FBSYMBOL ptr _
 	)
 
-	dim as FBSYMBOL ptr e, nxt
-
     if( s = NULL ) then
     	exit sub
     end if
 
+	'' del the imports (USING's) first, or NamespaceRemove() would
+	'' remove try to remove the namespace from the hash tb list
+    symbCompDelImportList( s )
+
     '' del all enum constants
-	e = s->enum_.symtb.head
+	dim as FBSYMBOL ptr e = any, nxt = any
+
+	e = s->enum_.ns.symtb.head
     do while( e <> NULL )
         nxt = e->next
 		symbFreeSymbol( e )
 		e = nxt
 	loop
+
+	''
+	if( s->enum_.ns.ext <> NULL ) then
+		symbCompFreeExt( s->enum_.ns.ext )
+		s->enum_.ns.ext = NULL
+	end if
 
 	'' del the enum node
 	symbFreeSymbol( s )

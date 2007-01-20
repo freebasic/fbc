@@ -20,6 +20,7 @@
 ''
 
 #include once "inc\list.bi"
+#include once "inc\clist.bi"
 #include once "inc\pool.bi"
 #include once "inc\ast-op.bi"
 
@@ -39,9 +40,9 @@ enum FB_SYMBCLASS
 	FB_SYMBCLASS_FIELD
 	FB_SYMBCLASS_BITFIELD
 	FB_SYMBCLASS_TYPEDEF
-	FB_SYMBCLASS_FWDREF
+	FB_SYMBCLASS_FWDREF								'' forward definition
 	FB_SYMBCLASS_SCOPE
-	FB_SYMBCLASS_NSIMPORT
+	FB_SYMBCLASS_NSIMPORT							'' namespace import (an USING)
 end enum
 
 '' symbol state mask
@@ -91,7 +92,7 @@ enum FB_SYMBATTRIB
     FB_SYMBATTRIB_LOCAL			= &h00000080
 	FB_SYMBATTRIB_EXPORT		= &h00000100
 	FB_SYMBATTRIB_IMPORT		= &h00000200
-	FB_SYMBATTRIB_OVERLOADED	= &h00000400	'' functions only
+	FB_SYMBATTRIB_OVERLOADED	= &h00000400
 	FB_SYMBATTRIB_METHOD		= &h00000800
     FB_SYMBATTRIB_CONSTRUCTOR   = &h00001000	'' methods only
     FB_SYMBATTRIB_DESTRUCTOR    = &h00002000	'' /
@@ -165,25 +166,25 @@ type FBVARDIM
 end type
 
 ''
+type FBSYMCHAIN
+	sym				as FBSYMBOL_ ptr			'' first symbol
+	next			as FBSYMCHAIN ptr
+end type
+
+''
 type FBHASHTB
 	owner			as FBSYMBOL_ ptr            '' back link
 	tb				as THASH
-	prev			as FBHASHTB ptr
-	next			as FBHASHTB ptr
-end type
-
-type FBSYMCHAIN
-	sym				as FBSYMBOL_ ptr
-	index			as uinteger
-	item			as HASHITEM ptr
-	prev			as FBSYMCHAIN ptr			'' chain (hash) list
-	next			as FBSYMCHAIN ptr			'' /
-	imp_next		as FBSYMCHAIN ptr			'' import (USING) list
+	prev			as FBHASHTB ptr				'' prev node in the current hash tbs lookup list
+	next			as FBHASHTB ptr				'' next  //
 end type
 
 type FBSYMHASH
-	tb				as FBHASHTB ptr
-	chain			as FBSYMCHAIN ptr
+	tb				as FBHASHTB ptr             '' parent's hash tb
+	item			as HASHITEM ptr				'' hash item, for fast deletion
+	index			as uinteger					'' ditto
+	prev			as FBSYMBOL_ ptr			'' prev duplicated symbol
+	next			as FBSYMBOL_ ptr			'' next //
 end type
 
 ''
@@ -193,6 +194,19 @@ type FBSYMBOLTB
     tail			as FBSYMBOL_ ptr			'' last node
 end type
 
+''
+type FBNAMESPC_EXT
+	head			as FBSYMBOL_ ptr            '' all USING's found inside this ns
+	tail			as FBSYMBOL_ ptr			'' /
+    cnt				as integer					'' times this ns was imported/nested
+end type
+
+type FBNAMESPC
+    symtb			as FBSYMBOLTB
+    hashtb			as FBHASHTB
+    ext				as FBNAMESPC_EXT ptr
+end type
+
 union FBVALUE
 	str				as FBSYMBOL_ ptr
 	int				as integer
@@ -200,13 +214,13 @@ union FBVALUE
 	long			as longint
 end union
 
-''
+'' keyword
 type FBS_KEYWORD
 	id				as integer
 	tkclass			as FB_TKCLASS
 end type
 
-''
+'' define or macro
 type FB_DEFPARAM
 	name			as zstring ptr
 	num				as integer
@@ -250,7 +264,7 @@ type FBS_DEFINE
 	proc			as function( ) as string
 end type
 
-''
+'' forward definition
 type FBFWDREF
 	ref				as FBSYMBOL_ ptr
 	prev			as FBFWDREF ptr
@@ -261,15 +275,14 @@ type FBS_FWDREF
 	reftail			as FBFWDREF ptr
 end type
 
-''
+'' label
 type FBS_LABEL
 	parent			as FBSYMBOL_ ptr			'' parent block, not always a proc
 	declared		as integer
 	stmtnum			as integer					'' can't use colnum as it's unreliable
 end type
 
-''
-''
+'' structure
 enum FB_UDTOPT
 	FB_UDTOPT_ISUNION			= &h0001
 	FB_UDTOPT_ISANON			= &h0002
@@ -305,11 +318,10 @@ type FB_STRUCTEXT
 end type
 
 type FBS_STRUCT
-	symtb			as FBSYMBOLTB
-	union
-		hashtb		as FBHASHTB
-		anonparent	as FBSYMBOL_ ptr
-	end union
+	'' extends FBNAMESCP
+	ns 				as FBNAMESPC
+
+	anonparent		as FBSYMBOL_ ptr
 	elements		as integer
 	lfldlen			as integer					'' largest field len
 	unpadlgt		as integer					'' unpadded len
@@ -326,14 +338,16 @@ type FBS_BITFLD
 	bits			as integer
 end type
 
-''
+'' enumeration
 type FBS_ENUM
-	symtb			as FBSYMBOLTB				'' symbol tb
+	'' extends FBNAMESPC
+	ns				as FBNAMESPC
+
 	elements		as integer
 	dbg				as FB_STRUCT_DBG
 end type
 
-''
+'' constant
 type FBS_CONST
 	val				as FBVALUE
 end type
@@ -351,6 +365,7 @@ type FB_CALL_ARG_LIST
 	tail			as FB_CALL_ARG ptr
 end type
 
+'' function param
 type FBS_PARAM
 	mode			as FB_PARAMMODE
 	suffix			as integer					'' QB quirk..
@@ -358,6 +373,7 @@ type FBS_PARAM
 	optexpr			as ASTNODE_ ptr				'' default value
 end type
 
+'' function
 type FBRTLCALLBACK as function( byval sym as FBSYMBOL_ ptr ) as integer
 
 type FB_PROCOVL
@@ -428,6 +444,7 @@ type FBS_PROC
 	ext				as FB_PROCEXT ptr           '' extra fields, not used with prototypes
 end type
 
+'' scope
 type FB_SCOPEDBG
 	iniline			as integer					'' scope
 	endline			as integer					'' end scope
@@ -446,6 +463,7 @@ type FBS_SCOPE
 	emit			as FB_SCOPEEMIT
 end type
 
+'' variable
 type FBS_ARRAY
 	dims			as integer
 	dimhead 		as FBVARDIM ptr
@@ -471,28 +489,20 @@ type FBS_VAR
 	stmtnum			as integer					'' can't use colnum as it's unreliable
 end type
 
-type FBNAMESPC_IMPLIST
-	head			as FBSYMBOL_ ptr
-	tail			as FBSYMBOL_ ptr
-end type
-
+'' namespace
 type FBS_NAMESPACE
-    symtb			as FBSYMBOLTB
-    hashtb			as FBHASHTB
-    cnt				as integer					'' # of times this ns was re-opened
-    implist			as FBNAMESPC_IMPLIST		'' all USING's used inside this ns
-    explist			as FBNAMESPC_IMPLIST		'' all USING's that imported this ns
-    symtail			as FBSYMBOL_ ptr			'' last symtb.tail since it was implemented
+	'' extends FBNAMESPC
+	ns				as FBNAMESPC
 end type
 
+'' namespace import (USING)
 type FBS_NSIMPORT
 	ns				as FBSYMBOL_ ptr
-	head			as FBSYMCHAIN ptr
-	tail			as FBSYMCHAIN ptr
-	imp_next		as FBSYMBOL_ ptr			'' next in the ns import list
-	exp_next		as FBSYMBOL_ ptr			'' next in the ns export list
+	prev			as FBSYMBOL_ ptr			'' prev in the ns import list
+	next			as FBSYMBOL_ ptr			'' next //
 end type
 
+''
 type FB_SYMBID
 	name			as zstring ptr				'' upper-cased name, shared by hash tb
 	alias			as zstring ptr              '' alias/preserved (if EXTERN was used) name
@@ -580,9 +590,9 @@ end type
 type SYMBCTX
 	inited			as integer
 
-	symlist			as TLIST
+	symlist			as TLIST					'' (of FBSYMBOL)
 	hashlist		as FBHASHTBLIST
-	chainlist		as TLIST
+	chainlist		as TCLIST					'' (of FBSYMHASH)
 
 	globnspc		as FBSYMBOL					'' global namespace
 
@@ -602,6 +612,9 @@ type SYMBCTX
 	dimlist			as TLIST					'' array dimensions
 
 	fwdlist			as TLIST					'' forward typedef refs
+
+	nsextlist		as TLIST					'' of FBNAMESPC_EXT
+
 	fwdrefcnt 		as integer
 
 	def				as SYMB_DEF_CTX				'' #define context
@@ -650,17 +663,18 @@ declare sub symbDataEnd _
 
 declare function symbLookup _
 	( _
-		byval symbol as zstring ptr, _
-		byref id as integer, _
-		byref class as integer, _
-		byval preservecase as integer = FALSE _
+		byval id as zstring ptr, _
+		byref tk as FB_TOKEN, _
+		byref tk_class as FB_TKCLASS, _
+		byval preserve_case as integer = FALSE _
 	) as FBSYMCHAIN ptr
 
-declare function symbLookupAtTb _
+declare function symbLookupAt _
 	( _
-		byval hastb as FBHASHTB ptr, _
-		byval symbol as zstring ptr, _
-		byval preservecase as integer = FALSE _
+		byval ns as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byval preserve_case as integer = FALSE, _
+		byval search_imports as integer = TRUE _
 	) as FBSYMCHAIN ptr
 
 declare function symbFindByClass _
@@ -692,7 +706,8 @@ declare function symbLookupByNameAndClass _
 		byval ns as FBSYMBOL ptr, _
 		byval symbol as zstring ptr, _
 		byval class as integer, _
-		byval preservecase as integer = FALSE _
+		byval preservecase as integer = FALSE, _
+		byval search_imports as integer = TRUE _
 	) as FBSYMBOL ptr
 
 declare function symbLookupByNameAndSuffix _
@@ -700,7 +715,8 @@ declare function symbLookupByNameAndSuffix _
 		byval ns as FBSYMBOL ptr, _
 		byval symbol as zstring ptr, _
 		byval suffix as integer, _
-		byval preservecase as integer = FALSE _
+		byval preservecase as integer = FALSE, _
+		byval search_imports as integer = TRUE _
 	) as FBSYMBOL ptr
 
 declare function symbFindOverloadProc _
@@ -1254,8 +1270,7 @@ declare sub symbDelFromHash _
 
 declare sub symbDelFromChainList _
 	( _
-		byval hashtb as THASH ptr, _
-		byval chain as FBSYMCHAIN ptr _
+		byval s as FBSYMBOL ptr _
 	)
 
 declare function symbNewArrayDim _
@@ -1413,8 +1428,7 @@ declare function symbScopeAllocLocals _
 
 declare sub symbHashListAdd _
 	( _
-		byval hashtb as FBHASHTB ptr, _
-		byval checkdup as integer = FALSE _
+		byval hashtb as FBHASHTB ptr _
 	)
 
 declare sub symbHashListAddBefore _
@@ -1439,11 +1453,6 @@ declare sub symbNamespaceRemove _
 		byval hashonly as integer _
 	)
 
-declare function symbNamespaceReImport _
-	( _
-		byval ns as FBSYMBOL ptr _
-	) as integer
-
 declare sub symbNestBegin _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -1457,7 +1466,7 @@ declare sub symbNestEnd _
 
 declare function symbCanDuplicate _
 	( _
-		byval n as FBSYMCHAIN ptr, _
+		byval head_sym as FBSYMBOL ptr, _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
@@ -1542,16 +1551,6 @@ declare sub symbCheckCompClone _
 		byval sym as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
 	)
-
-declare function symbGetCompSymbTb _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOLTB ptr
-
-declare function symbGetCompHashTb _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBHASHTB ptr
 
 declare function symbGetCompCtorHead _
 	( _
@@ -1684,6 +1683,15 @@ declare function symbGetEnumNextElm _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
+declare sub symbCompDelImportList _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)
+
+''
+'' macros
+''
+
 '':::::
 #macro symbHashTbInit _
 	( _
@@ -1696,7 +1704,9 @@ declare function symbGetEnumNextElm _
 	_hashtb.prev = NULL
 	_hashtb.next = NULL
 
-	hashNew( @_hashtb.tb, _nodes )
+	if( _nodes <> 0 ) then
+		hashNew( @_hashtb.tb, _nodes )
+	end if
 
 #endmacro
 
@@ -1713,20 +1723,38 @@ declare function symbGetEnumNextElm _
 
 #endmacro
 
-''
-'' getters and setters as macros
-''
+'':::::
+#macro symbHashListMove _
+	( _
+		hashtb _
+	)
 
+	symbHashListDel( hashtb )
+	symbHashListAdd( hashtb )
+
+#endmacro
+
+'':::::
+#macro symbHashListMoveBefore _
+	( _
+		lasttb, _
+		hashtb _
+	)
+
+	symbHashListDel( hashtb )
+	symbHashListAddBefore( lasttb, hashtb )
+
+#endmacro
 
 #define symbGetGlobalNamespc( ) symb.globnspc
 
 #define symbIsGlobalNamespc( ) (symb.namespc = @symbGetGlobalNamespc( ))
 
-#define symbGetGlobalTb( ) symbGetGlobalNamespc( ).nspc.symtb
+#define symbGetGlobalTb( ) symbGetGlobalNamespc( ).nspc.ns.symtb
 
 #define symbGetGlobalTbHead( ) symbGetGlobalTb( ).head
 
-#define symbGetGlobalHashTb( ) symbGetGlobalNamespc( ).nspc.hashtb
+#define symbGetGlobalHashTb( ) symbGetGlobalNamespc( ).nspc.ns.hashtb
 
 #define symbGetCurrentNamespc( ) symb.namespc
 
@@ -1739,9 +1767,6 @@ declare function symbGetEnumNextElm _
 #define symbGetCurrentHashTb( ) symb.hashtb
 
 #define symbSetCurrentHashTb(tb) symb.hashtb = tb
-
-#define symbLookupAt(sym, id, preservecase) _
-	symbLookupAtTb( symbGetCompHashTb( sym ), id, preservecase )
 
 #define symbGetGlobCtorListHead( ) symb.globctorlist.head
 
@@ -1987,7 +2012,7 @@ declare function symbGetEnumNextElm _
 
 #define symbGetArrayElements(s) s->var_.array.elms
 
-#define symbGetUDTSymbTbHead(s) s->udt.symtb.head
+#define symbGetUDTSymbTbHead(s) s->udt.ns.symtb.head
 
 #define symbGetUDTElmBitOfs(e) ( e->ofs * 8 + _
 								 iif( e->typ = FB_DATATYPE_BITFIELD, _
@@ -2046,9 +2071,9 @@ declare function symbGetEnumNextElm _
 
 #define symbGetUDTUnpadLen(s) s->udt.unpadlgt
 
-#define symbGetUdtSymbTb(s) s->udt.symtb
+#define symbGetUdtSymbTb(s) s->udt.ns.symtb
 
-#define symbGetUDTHashTb(s) s->udt.hashtb
+#define symbGetUDTHashTb(s) s->udt.ns.hashtb
 
 #define symbGetUDTAnonParent(s) s->udt.anonparent
 
@@ -2056,7 +2081,7 @@ declare function symbGetEnumNextElm _
 
 #define symbGetUDTOpOvlTb(s) s->udt.ext->opovlTb
 
-#define symbGetEnumSymbTbHead(s) s->enum_.symtb.head
+#define symbGetEnumSymbTbHead(s) s->enum_.ns.symtb.head
 
 #define symbGetEnumElements(s) s->enum_.elements
 
@@ -2066,17 +2091,13 @@ declare function symbGetEnumNextElm _
 
 #define symbGetScopeSymbTbHead(s) s->scp.symtb.head
 
-#define symbGetNamespaceSymbTb(s) s->nspc.symtb
+#define symbGetNamespaceSymbTb(s) s->nspc.ns.symtb
 
-#define symbGetNamespaceTbHead(s) s->nspc.symtb.head
+#define symbGetNamespaceTbHead(s) s->nspc.ns.symtb.head
 
-#define symbGetNamespaceTbTail(s) s->nspc.symtb.tail
+#define symbGetNamespaceTbTail(s) s->nspc.ns.symtb.tail
 
-#define symbGetNamespaceHashTb(s) s->nspc.hashtb
-
-#define symbGetNamespaceCnt(s) s->nspc.cnt
-
-#define symbGetNamespaceLastTbTail(s) s->nspc.symtail
+#define symbGetNamespaceHashTb(s) s->nspc.ns.hashtb
 
 #define symbGetLabelIsDeclared(l) l->lbl.declared
 
@@ -2170,6 +2191,10 @@ declare function symbGetEnumNextElm _
 
 #define symbGetParamNext(a) a->next
 
+#define symbGetImportNamespc(s) s->nsimp.ns
+
+#define symbGetImportNext(s) s->nsimp.next
+
 #define symbGetIsDynamic(s) ((s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) <> 0 )
 
 #define symbIsShared(s) ((s->attrib and FB_SYMBATTRIB_SHARED) <> 0)
@@ -2255,6 +2280,19 @@ declare function symbGetEnumNextElm _
 #define symbListLibs(dstlist, dsthash, delnodes) symbListLibsEx( @symb.liblist, @symb.libhash, dstlist, dsthash, delnodes )
 
 #define symbListLibPaths(dstlist, dsthash, delnodes) symbListLibsEx( @symb.libpathlist, @symb.libpathhash, dstlist, dsthash, delnodes )
+
+'' assuming all UDT's extend FBS_NAMESPACE
+#define symbCompAllocExt( ) listNewNode( @symb.nsextlist )
+
+#define symbCompFreeExt( n ) listDelNode( @symb.nsextlist, n )
+
+#define symbGetCompSymbTb( s ) symbGetNamespaceSymbTb( s )
+
+#define symbGetCompHashTb( s ) symbGetNamespaceHashTb( s )
+
+#define symbGetCompExt( s ) s->nspc.ns.ext
+
+#define symbGetCompImportHead( s ) s->nspc.ns.ext->head
 
 ''
 '' inter-module globals

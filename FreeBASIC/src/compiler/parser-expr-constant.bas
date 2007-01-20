@@ -98,7 +98,10 @@ function cEnumConstant _
 		end if
 	end select
 
-	chain_ = symbLookupAt( symbGetNamespace( parent ), lexGetText( ), FALSE )
+	chain_ = symbLookupAt( symbGetNamespace( parent ), _
+						   lexGetText( ), _
+						   FALSE, _
+						   FALSE )
 
 	elm = symbFindByClass( chain_, FB_SYMBCLASS_CONST )
     if( elm = NULL ) then

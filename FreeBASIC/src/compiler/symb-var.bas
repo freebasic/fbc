@@ -525,8 +525,8 @@ function symbAddVarEx _
 		if( symbIsGlobalNamespc( ) = FALSE ) then
 			'' respect namespaces?
 			if( (options and FB_SYMBOPT_MOVETOGLOB) = 0 ) then
-				symtb = symbGetCompSymbTb( symbGetCurrentNamespc( ) )
-				hashtb = symbGetCompHashTb( symbGetCurrentNamespc( ) )
+				symtb = @symbGetCompSymbTb( symbGetCurrentNamespc( ) )
+				hashtb = @symbGetCompHashTb( symbGetCurrentNamespc( ) )
 			end if
 		end if
 	end if

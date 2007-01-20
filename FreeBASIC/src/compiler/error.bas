@@ -268,7 +268,8 @@ end type
 		@"Expected 'CONSTRUCTOR', 'DESTRUCTOR', 'DO', 'FOR', 'FUNCTION', 'OPERATOR', 'PROPERTY', 'SELECT', 'SUB' or 'WHILE'", _
 		@"Expected 'DO', 'FOR' or 'WHILE'", _
 		@"Illegal outside a SUB block", _
-		@"Illegal outside a FUNCTION block" _
+		@"Illegal outside a FUNCTION block", _
+		@"Ambigous symbol access, explicit scope resolution required" _
 	}
 
 

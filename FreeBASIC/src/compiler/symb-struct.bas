@@ -68,11 +68,11 @@ function symbStructBegin _
 	s->udt.options = iif( isunion, FB_UDTOPT_ISUNION, 0 )
 	s->udt.elements = 0
 
-	symbSymbTbInit( s->udt.symtb, s )
+	symbSymbTbInit( s->udt.ns.symtb, s )
 
     '' not anon? create a new hash tb
     if( parent = NULL ) then
-    	symbHashTbInit( s->udt.hashtb, s, FB_INITFIELDNODES )
+    	symbHashTbInit( s->udt.ns.hashtb, s, FB_INITFIELDNODES )
 
     '' anonymous, use the parent's hash tb..
     else
@@ -80,6 +80,10 @@ function symbStructBegin _
     	s->udt.options or= FB_UDTOPT_ISANON
     end if
 
+    '' unused (while mixins aren't supported)
+    s->udt.ns.ext = NULL
+
+	''
 	s->ofs = 0
 	s->udt.align = align
 	s->udt.lfldlen = 0
@@ -150,7 +154,7 @@ private function hCalcALign _
 	    if( fbLangIsSet( FB_LANG_QB ) ) then
 	    	exit function
 	    end if
-	
+
 		select case as const lgt
 		'' align byte, short, int, float, double and long long to the natural boundary
 		case 1
@@ -242,7 +246,7 @@ function symbAddField _
     if( bits > 0 ) then
     	'' last field was a bitfield too? try to merge..
     	if( parent->udt.bitpos > 0 ) then
-    		tail = parent->udt.symtb.tail
+    		tail = parent->udt.ns.symtb.tail
     		'' does it fit? if not, start at a new pos..
     		if( parent->udt.bitpos + bits > tail->lgt*8 ) then
     			parent->udt.bitpos = 0
@@ -468,16 +472,16 @@ sub symbInsertInnerUDT _
 	end if
 
     '' move the nodes from inner to parent
-    fld = inner->udt.symtb.head
+    fld = inner->udt.ns.symtb.head
 
-    fld->prev = parent->udt.symtb.tail
-    if( parent->udt.symtb.tail = NULL ) then
-    	parent->udt.symtb.head = fld
+    fld->prev = parent->udt.ns.symtb.tail
+    if( parent->udt.ns.symtb.tail = NULL ) then
+    	parent->udt.ns.symtb.head = fld
     else
-    	parent->udt.symtb.tail->next = fld
+    	parent->udt.ns.symtb.tail->next = fld
     end if
 
-    symtb = @parent->udt.symtb
+    symtb = @parent->udt.ns.symtb
 
     if( (parent->udt.options and FB_UDTOPT_ISUNION) <> 0 ) then
     	'' link to parent
@@ -504,7 +508,7 @@ sub symbInsertInnerUDT _
     	loop
     end if
 
-    parent->udt.symtb.tail = inner->udt.symtb.tail
+    parent->udt.ns.symtb.tail = inner->udt.ns.symtb.tail
 
     '' update elements
     parent->udt.elements += inner->udt.elements
@@ -531,8 +535,8 @@ sub symbInsertInnerUDT _
     parent->udt.bitpos = 0
 
     '' remove from inner udt list
-    inner->udt.symtb.head = NULL
-    inner->udt.symtb.tail = NULL
+    inner->udt.ns.symtb.head = NULL
+    inner->udt.ns.symtb.tail = NULL
 
 end sub
 
@@ -682,7 +686,7 @@ function symbCloneStruct _
 							 sym->udt.align )
 
 
-    fld = sym->udt.symtb.head
+    fld = sym->udt.ns.symtb.head
     do while( fld <> NULL )
     	symbAddField( clone, _
     				  NULL, _
@@ -714,16 +718,17 @@ sub symbDelStruct _
 		byval s as FBSYMBOL ptr _
 	)
 
-    dim as FBSYMBOL ptr fld
-    dim as FBVARDIM ptr dim_, dim_nxt
-
     if( s = NULL ) then
     	exit sub
     end if
 
+	'' del the imports (USING's) first, or NamespaceRemove() would
+	'' remove try to remove the namespace from the hash tb list
+    symbCompDelImportList( s )
+
     '' del all udt elements
     do
-		fld = s->udt.symtb.head
+		dim as FBSYMBOL ptr fld = s->udt.ns.symtb.head
 		if( fld = NULL ) then
 			exit do
 		end if
@@ -731,6 +736,7 @@ sub symbDelStruct _
     	'' an ordinary field?
     	if( symbGetClass( fld ) = FB_SYMBCLASS_FIELD ) then
     		'' del array dims if not a scalar type
+    		dim as FBVARDIM ptr dim_ = any, dim_nxt = any
     		dim_ = fld->var_.array.dimhead
     		do while( dim_ <> NULL )
     			dim_nxt = dim_->next
@@ -752,6 +758,12 @@ sub symbDelStruct _
     	deallocate( s->udt.ext )
     	s->udt.ext = NULL
     end if
+
+	''
+	if( s->udt.ns.ext <> NULL ) then
+		symbCompFreeExt( s->udt.ns.ext )
+		s->udt.ns.ext = NULL
+	end if
 
 	'' del the udt node
 	symbFreeSymbol( s )

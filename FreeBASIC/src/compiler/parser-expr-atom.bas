@@ -99,41 +99,46 @@ private function hFindId _
 
     do
     	sym = chain_->sym
-    	select case as const symbGetClass( sym )
-		case FB_SYMBCLASS_CONST
-			return cConstantEx( sym )
+    	do
+    		select case as const symbGetClass( sym )
+			case FB_SYMBCLASS_CONST
+				return cConstantEx( sym )
 
-		case FB_SYMBCLASS_PROC
-			return cFunctionEx( base_parent, sym )
+			case FB_SYMBCLASS_PROC
+				return cFunctionEx( base_parent, sym )
 
-		case FB_SYMBCLASS_VAR
-           	return cVariableEx( chain_, fbGetCheckArray( ) )
+			case FB_SYMBCLASS_VAR
+           		return cVariableEx( chain_, fbGetCheckArray( ) )
 
-        case FB_SYMBCLASS_FIELD
-        	return cDataMember( NULL, chain_, fbGetCheckArray( ) )
+        	case FB_SYMBCLASS_FIELD
+        		return cDataMember( NULL, chain_, fbGetCheckArray( ) )
 
-  		'' quirk-keyword?
-  		case FB_SYMBCLASS_KEYWORD
-  			return cQuirkFunction( sym->key.id )
+  			'' quirk-keyword?
+  			case FB_SYMBCLASS_KEYWORD
+  				return cQuirkFunction( sym->key.id )
 
-		case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
-call_ctor:
-			if( symbGetHasCtor( sym ) ) then
-				'' skip ID, ctorCall() is also used by type<>(...)
-				lexSkipToken( )
+			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
+				if( symbGetHasCtor( sym ) ) then
+					'' skip ID, ctorCall() is also used by type<>(...)
+					lexSkipToken( )
+					return cCtorCall( sym )
+				end if
 
-				return cCtorCall( sym )
-			end if
+			case FB_SYMBCLASS_TYPEDEF
+            	'' typedef of a TYPE/CLASS?
+            	select case symbGetType( sym )
+            	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+					if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
+						'' skip ID, ctorCall() is also used by type<>(...)
+						lexSkipToken( )
+						return cCtorCall( symbGetSubtype( sym ) )
+					end if
+            	end select
 
-		case FB_SYMBCLASS_TYPEDEF
-            '' typedef of a TYPE/CLASS?
-            select case symbGetType( sym )
-            case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-            	sym = symbGetSubtype( sym )
-            	goto call_ctor
-            end select
+			end select
 
-		end select
+			sym = sym->hash.next
+		loop while( sym <> NULL )
 
     	chain_ = symbChainGetNext( chain_ )
     loop while( chain_ <> NULL )
@@ -206,22 +211,18 @@ function cAtom _
 			return FALSE
 		end if
 
-  		'' can be a global ns symbol access, or a WITH variable..
-  		if( chain_ = NULL ) then
-  			chain_ = cIdentifier( base_parent )
-  		end if
-
-  		if( chain_ <> NULL ) then
-  			return hFindId( base_parent, chain_ )
-
-  		else
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-			end if
-
-  			if( parser.stmt.with.sym <> NULL ) then
+  		'' inside a WITH block?
+  		if( parser.stmt.with.sym <> NULL ) then
+			'' not '..'?
+			if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
   				return cWithVariable( parser.stmt.with.sym, fbGetCheckArray( ) )
   			end if
+  		end if
+
+  		'' global namespace access..
+  		chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
+  		if( chain_ <> NULL ) then
+  			return hFindId( base_parent, chain_ )
   		end if
 
   	end select

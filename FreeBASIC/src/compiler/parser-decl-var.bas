@@ -557,16 +557,20 @@ private function hGetId _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
-		byref suffix as integer _
-	) as FBSYMCHAIN ptr static
+		byref suffix as integer, _
+		byval options as FB_IDOPT _
+	) as FBSYMCHAIN ptr
 
-	dim as FBSYMCHAIN ptr chain_
+	dim as FBSYMCHAIN ptr chain_ = any
 
 	'' no parent? read as-is
 	if( parent = NULL ) then
 		chain_ = lexGetSymChain( )
     else
-		chain_ = symbLookupAt( parent, lexGetText( ), FALSE )
+		chain_ = symbLookupAt( parent, _
+							   lexGetText( ), _
+							   FALSE, _
+							   (options and FB_IDOPT_ISDECL) = 0 )
 	end if
 
     '' ID
@@ -664,11 +668,18 @@ private function hLookupVar _
 
     	'' currently in the global ns?
     	if( symbIsGlobalNamespc( ) ) then
-    		'' not extern?
-    		if( symbIsExtern( sym ) = FALSE ) then
-    			if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-    				exit function
+    		'' parent explicitly passed?
+    		if( parent <> NULL ) then
+    			'' not extern?
+    			if( symbIsExtern( sym ) = FALSE ) then
+    				if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+    					exit function
+    				end if
     			end if
+
+    		'' allow dups..
+    		else
+    			return NULL
     		end if
 
     	'' inside another ns, allow dups..
@@ -1134,7 +1145,7 @@ function hVarDeclEx _
     do
     	dim as FBSYMBOL ptr parent = cParentId( options )
 
-		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix )
+		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, options )
 
     	is_typeless = FALSE
 
@@ -1816,7 +1827,7 @@ function cAutoVarDecl _
 
 		'' get id
 		dim as integer suffix = any
-		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix )
+		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, 0 )
 
     	if( suffix <> INVALID ) then
     		if( errReportEx( FB_ERRMSG_SYNTAXERROR, @id ) = FALSE ) then

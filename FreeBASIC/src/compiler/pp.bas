@@ -80,8 +80,16 @@ sub ppInit( )
 
 	''
 	hashInit( )
-	symbHashTbInit( pp.keyhash, NULL, SYMB_MAXKEYWORDS )
 
+	'' create a fake namespace
+    pp.kwdns.class = FB_SYMBCLASS_NAMESPACE
+    pp.kwdns.scope = FB_MAINSCOPE
+
+	symbSymbTbInit( pp.kwdns.nspc.ns.symtb, @pp.kwdns )
+	symbHashTbInit( pp.kwdns.nspc.ns.hashtb, @pp.kwdns, SYMB_MAXKEYWORDS )
+    pp.kwdns.nspc.ns.ext = symbCompAllocExt(  )
+
+	''
 	for i = 0 to SYMB_MAXKEYWORDS-1
     	if( kwdTb(i).name = NULL ) then
     		exit for
@@ -90,7 +98,7 @@ sub ppInit( )
     	kwdTb(i).sym = symbAddKeyword( kwdTb(i).name, _
     								   kwdTb(i).id, _
     								   FB_TKCLASS_KEYWORD, _
-    								   @pp.keyhash )
+    								   @pp.kwdns.nspc.ns.hashtb )
     	if( kwdTb(i).sym = NULL ) then
     		exit sub
     	end if
@@ -125,7 +133,8 @@ sub ppEnd( )
     	kwdTb(i).sym = NULL
     next
 
-	hashFree( @pp.keyhash.tb )
+	symbCompFreeExt( pp.kwdns.nspc.ns.ext )
+	hashFree( @pp.kwdns.nspc.ns.hashtb.tb )
 	hashEnd( )
 
 end sub
@@ -153,11 +162,11 @@ sub ppCheck( )
 
 	lex->reclevel += 1
 
-    '' !!!FIXME!!! if LEXCHECK_KEYHASHTB is used in future, it
+    '' !!!FIXME!!! if LEXCHECK_KWDNAMESPC is used in future, it
     '' must be restored
-    lex->kwhashtb = @pp.keyhash
+    lex->kwdns = @pp.kwdns
 
-    lexSkipToken( LEXCHECK_KEYHASHTB )
+    lexSkipToken( LEXCHECK_KWDNAMESPC )
 
     '' let the parser do the rest..
     ppParse( )
@@ -186,7 +195,7 @@ function ppParse( ) as integer
 	function = FALSE
 
     '' note: when adding any new PP symbol, update ppSkip() too
-    select case as const lexGetToken( LEXCHECK_KEYHASHTB )
+    select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
 
     '' DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
     case FB_TK_PP_DEFINE
@@ -508,7 +517,7 @@ function ppReadLiteral _
 
     	'' '#'?
     	case CHAR_SHARP
-    		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KEYHASHTB) and _
+    		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
     								 		(not LEXCHECK_NOWHITESPC) )
     		'' '#' macro?
     		case FB_TK_PP_MACRO
@@ -647,7 +656,7 @@ function ppReadLiteralW _
 
     	'' '#'?
     	case CHAR_SHARP
-    		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KEYHASHTB) and _
+    		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
     								 		(not LEXCHECK_NOWHITESPC) )
     		'' '#' macro?
     		case FB_TK_PP_MACRO

@@ -1309,19 +1309,25 @@ function cVariableEx _
 
 	''
 	id = lexGetText( )
-
 	dtype = lexGetType( )
-	hCheckSuffix( dtype )
-
 	subtype = NULL
 
-    '' no suffix? lookup the default type (last DEF###) in the
-    '' case symbol could not be found..
-    if( dtype = INVALID ) then
-    	sym = symbFindVarByDefType( chain_, symbGetDefType( id ) )
-    else
-    	sym = symbFindVarBySuffix( chain_, dtype )
-    end if
+	if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+    	'' no suffix? lookup the default type (last DEF###) in the
+    	'' case symbol could not be found..
+    	if( dtype = INVALID ) then
+    		sym = symbFindVarByDefType( chain_, symbGetDefType( id ) )
+    	else
+    		sym = symbFindVarBySuffix( chain_, dtype )
+    	end if
+
+	else
+		if( dtype <> INVALID ) then
+			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+		end if
+
+		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+	end if
 
 	if( sym <> NULL ) then
 		dtype = sym->typ
@@ -1336,13 +1342,15 @@ function cVariableEx _
 
 		'' don't allow explicit namespaces
     	if( chain_ <> NULL ) then
-    		'' variable?
-    		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
-    		if( sym <> NULL ) then
-    			'' from a different namespace?
-    			if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
-    				if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-    					return NULL
+    		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+    			'' variable?
+    			sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+    			if( sym <> NULL ) then
+    				'' from a different namespace?
+    				if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
+    					if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+    						return NULL
+    					end if
     				end if
     			end if
     		end if

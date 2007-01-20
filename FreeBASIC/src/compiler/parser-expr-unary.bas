@@ -601,24 +601,36 @@ function cAddrOfExpression _
 		_
 	) as ASTNODE ptr
 
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr sym = any
-    dim as FBSYMCHAIN ptr chain_ = any
-    dim as FBSYMBOL ptr base_parent = any
-    dim as ASTNODE ptr expr = NULL
+	dim as ASTNODE ptr expr = NULL
 
 	'' '@' (Proc ('('')')? | Variable)
 	if( lexGetToken( ) = FB_TK_ADDROFCHAR ) then
 		lexSkipToken( )
 
-		chain_ = cIdentifier( base_parent, _
-							  FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			return NULL
+  		'' not inside a WITH block?
+  		dim as integer check_id = TRUE
+  		if( parser.stmt.with.sym <> NULL ) then
+  			if( lexGetToken( ) = CHAR_DOT ) then
+  				'' not a '..'?
+  				check_id = (lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) = CHAR_DOT)
+  			end if
+		end if
+
+  		'' check if the address of function is being taken
+  		dim as FBSYMCHAIN ptr chain_ = NULL
+  		dim as FBSYMBOL ptr sym = NULL, base_parent = NULL
+
+		if( check_id ) then
+			chain_ = cIdentifier( base_parent, _
+							  	  FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+				return NULL
+			end if
+
+			sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		end if
 
 		'' proc?
-		sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		if( sym <> NULL ) then
 			lexSkipToken( )
 			return hProcPtrBody( base_parent, sym )
@@ -647,7 +659,7 @@ function cAddrOfExpression _
 
 		end if
 
-		expr = hVarPtrBody( NULL, NULL )
+    	expr = hVarPtrBody( NULL, NULL )
 		if( expr = FALSE ) then
 			return NULL
 		end if
@@ -678,6 +690,9 @@ function cAddrOfExpression _
 		end if
 
 		'' proc?
+		dim as FBSYMCHAIN ptr chain_ = any
+		dim as FBSYMBOL ptr sym = any, base_parent = any
+
 		chain_ = cIdentifier( base_parent, _
 							  FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -738,7 +753,7 @@ function cAddrOfExpression _
 			end if
 		end if
 
-		dtype = astGetDataType( expr )
+		dim as integer dtype = astGetDataType( expr )
 
 		if( symbIsString( dtype ) = FALSE ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then

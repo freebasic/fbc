@@ -464,23 +464,19 @@ private function hAddOvlProc _
 
 	'' add to hash chain list, as they share the same name
 	if( id <> NULL ) then
-		dim as FBSYMCHAIN ptr chain_, nxt
-		chain_ = listNewNode( @symb.chainlist )
+		dim as FBSYMBOL ptr nxt = any
 
-		chain_->index = ovl_head_proc->hash.chain->index
-		chain_->item = ovl_head_proc->hash.chain->item
+		proc->hash.index = ovl_head_proc->hash.index
+		proc->hash.item = ovl_head_proc->hash.item
 
-    	nxt = ovl_head_proc->hash.chain->next
-		ovl_head_proc->hash.chain->next = chain_
+    	nxt = ovl_head_proc->hash.next
+    	ovl_head_proc->hash.next = proc
 
-		chain_->prev = ovl_head_proc->hash.chain
-		chain_->next = nxt
+		proc->hash.prev = ovl_head_proc
+		proc->hash.next = nxt
 		if( nxt <> NULL ) then
-			nxt->prev = chain_
+			nxt->hash.prev = proc
 		end if
-
-		chain_->sym = proc
-		proc->hash.chain = chain_
 	end if
 
 	function = proc
@@ -599,8 +595,8 @@ private function hSetupProc _
 		hashtb = @symbGetGlobalHashTb( )
 	else
 		parent = symbGetCurrentNamespc( )
-    	symbtb = symbGetCompSymbTb( parent )
-    	hashtb = symbGetCompHashTb( parent )
+    	symbtb = @symbGetCompSymbTb( parent )
+    	hashtb = @symbGetCompHashTb( parent )
 	end if
 
 	head_proc = NULL
@@ -734,7 +730,8 @@ add_proc:
 			head_proc = symbLookupByNameAndClass( parent, _
 										   	   	  id, _
 										   	   	  FB_SYMBCLASS_PROC, _
-										   	   	  preserve_case )
+										   	   	  preserve_case, _
+										   	   	  FALSE )
 			if( head_proc = NULL ) then
 				exit function
 			end if
@@ -1003,10 +1000,10 @@ function symbAddProcPtr _
 		byval mode as integer _
 	) as FBSYMBOL ptr static
 
-	dim as zstring ptr id
-	dim as FBSYMCHAIN ptr chain_
-	dim as FBSYMBOL ptr sym, parent
-	dim as FB_SYMBOPT options
+	dim as zstring ptr id = any
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr sym = any, parent = any
+	dim as FB_SYMBOPT options = any
 
 	id = hMangleFunctionPtr( proc, dtype, subtype, mode )
 
@@ -1020,8 +1017,8 @@ function symbAddProcPtr _
 	end if
 
 	'' already exists? (it's ok to use LookupAt, literal str's are always
-	'' prefixed with {fbsc}, there will be clashes with func ptr mangled names )
-    chain_ = symbLookupAt( parent, id, TRUE )
+	'' prefixed with {fbsc}, there will be no clashes with func ptr mangled names)
+    chain_ = symbLookupAt( parent, id, TRUE, FALSE )
 	if( chain_ <> NULL ) then
 		return chain_->sym
 	end if
@@ -1064,8 +1061,8 @@ function symbPreAddProc _
 	proc->stats = 0
 
     '' to allow getNamespace() and GetParent() to work
-    proc->symtb = symbGetCompSymbTb( symbGetCurrentNamespc( ) )
-    proc->hash.tb = symbGetCompHashTb( symbGetCurrentNamespc( ) )
+    proc->symtb = @symbGetCompSymbTb( symbGetCurrentNamespc( ) )
+    proc->hash.tb = @symbGetCompHashTb( symbGetCurrentNamespc( ) )
 
 	function = proc
 

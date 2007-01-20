@@ -38,8 +38,8 @@ top_builddir = .
 
 FBC = @FBC@
 
-# !!!FIXME!!! -arch can't be assumed, using target_cpu will give "686" for example,
-#			  making fbc to fail in non mmx-cpu's
+# !!!FIXME!!! -arch can't be assumed, using target_cpu will give
+#             "686" for example, making fbc to fail in non mmx-cpu's
 FBC_CFLAGS = -e -c -i $(srcdir) -target @FBC_TARGET@ -arch 486
 
 FBC_LFLAGS := -v -target @FBC_TARGET@
@@ -57,7 +57,8 @@ FBC_LIBS = -l bfd -l iberty
 
 ##################################################################
 
-# !!!FIXME!!! can't use $(DEFS) directly because FB doesn't accept cmd-line options in GCC's format
+# !!!FIXME!!! can't use $(DEFS) directly because FB doesn't accept
+#             cmd-line options in GCC's format
 
 ifeq (@FBC_TARGET@,dos)
 	FBC_OSDEPSRCS := fbc_dos.bas
@@ -111,7 +112,7 @@ FBC_SRCS += error.bas hlp.bas hlp-str.bas
 
 FBC_SRCS += ir.bas ir-tac.bas ir-hlc.bas
 
-FBC_SRCS += hash.bas flist.bas list.bas stack.bas pool.bas
+FBC_SRCS += hash.bas clist.bas flist.bas list.bas stack.bas pool.bas
 
 FBC_SRCS += lex.bas lex-utf.bas pp.bas pp-cond.bas pp-define.bas pp-pragma.bas
 

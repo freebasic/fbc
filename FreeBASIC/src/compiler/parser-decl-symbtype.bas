@@ -286,7 +286,6 @@ function cSymbolType _
 		end if
 
 	case else
-		dim as FBSYMBOL ptr sym = any
 		dim as FBSYMCHAIN ptr chain_ = any
 		dim as FBSYMBOL ptr base_parent = any
 
@@ -298,33 +297,39 @@ function cSymbolType _
 
 		else
 			do
-				sym = chain_->sym
-				select case symbGetClass( sym )
-				case FB_SYMBCLASS_STRUCT
-					lexSkipToken( )
-					dtype = FB_DATATYPE_STRUCT
-					subtype = sym
-					lgt = symbGetLen( sym )
-					exit do
+				dim as FBSYMBOL ptr sym = chain_->sym
+				do
+					select case symbGetClass( sym )
+					case FB_SYMBCLASS_STRUCT
+						lexSkipToken( )
+						dtype = FB_DATATYPE_STRUCT
+						subtype = sym
+						lgt = symbGetLen( sym )
+						goto exit_search
 
-	    		case FB_SYMBCLASS_ENUM
-					lexSkipToken( )
-					dtype = FB_DATATYPE_ENUM
-					subtype = sym
-					lgt = FB_INTEGERSIZE
-					exit do
+	    			case FB_SYMBCLASS_ENUM
+						lexSkipToken( )
+						dtype = FB_DATATYPE_ENUM
+						subtype = sym
+						lgt = FB_INTEGERSIZE
+						goto exit_search
 
-				case FB_SYMBCLASS_TYPEDEF
-					lexSkipToken( )
-					dtype = symbGetType( sym )
-					subtype = symbGetSubtype( sym )
-					lgt = symbGetLen( sym )
-					ptrcnt = symbGetPtrCnt( sym )
-					exit do
-				end select
+					case FB_SYMBCLASS_TYPEDEF
+						lexSkipToken( )
+						dtype = symbGetType( sym )
+						subtype = symbGetSubtype( sym )
+						lgt = symbGetLen( sym )
+						ptrcnt = symbGetPtrCnt( sym )
+						goto exit_search
+					end select
+
+					sym = sym->hash.next
+				loop while( sym <> NULL )
 
 				chain_ = symbChainGetNext( chain_ )
 			loop while( chain_ <> NULL )
+
+exit_search:
 		end if
 	end select
 

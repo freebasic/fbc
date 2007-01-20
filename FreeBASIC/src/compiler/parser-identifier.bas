@@ -60,7 +60,7 @@ private function hGlobalId _
     	lexSkipToken( LEXCHECK_NOPERIOD )
 
     else
-    	'' with inside a WITH block, a single '.' is ambiguous..
+    	'' inside a WITH block, a single '.' is ambiguous..
     	if( parser.stmt.with.sym <> NULL ) then
     		exit function
     	end if
@@ -89,24 +89,57 @@ private function hGlobalId _
     	exit function
     end select
 
-	function = symbLookupAt( @symbGetGlobalNamespc( ), lexGetText( ), FALSE )
+	function = symbLookupAt( @symbGetGlobalNamespc( ), _
+							 lexGetText( ), _
+							 FALSE, _
+							 TRUE )
 
 end function
 
 '':::::
-#macro hCheckDecl( base_parent, options )
-    '' declaration?
-    if( (options and FB_IDOPT_ISDECL) <> 0 ) then
-    	if( base_parent <> NULL ) then
-    		'' different parents?
-    		if( symbGetParent( base_parent ) <> symbGetCurrentNamespc( ) ) then
-				if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+#macro hCheckDecl _
+	( _
+		base_parent, _
+		parent, _
+		chain_, _
+		options _
+	)
+
+    if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+    	'' declaration?
+    	if( (options and FB_IDOPT_ISDECL) <> 0 ) then
+    		if( base_parent <> NULL ) then
+    			'' different parents?
+    			if( symbGetParent( base_parent ) <> symbGetCurrentNamespc( ) ) then
     				errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
     				return NULL
     			end if
 			end if
-		end if
+
+		'' not a decl..
+		else
+			'' check for ambiguous access (dup symbols in different imported namespaces)
+			if( chain_ <> NULL ) then
+				'' same symbol found in more than on hash tb?
+				if( chain_->next <> NULL ) then
+					dim as FBSYMBOL ptr ns = symbGetNamespace( chain_->sym )
+					'' first symbol declared in other namespace?
+					if( ns <> parent ) then
+						'' not a parent namespace?
+						if( symbIsChildOf( iif( parent <> NULL, _
+									   	    	parent, _
+									   	    	symbGetCurrentNamespc( ) ), _
+											ns ) = FALSE ) then
+							'' more than one imported symbol
+							errReport( FB_ERRMSG_AMBIGUOUSSYMBOLACCESS )
+							'' (don't return NULL or a new variable would be implicitly created)
+						end if
+					end if
+				end if
+    		end if
+    	end if
     end if
+
 #endmacro
 
 '':::::
@@ -138,14 +171,22 @@ function cIdentifier _
 
     	chain_ = hGlobalId( options )
     	if( chain_ = NULL ) then
+          	if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+          		errReportUndef( FB_ERRMSG_UNDEFINEDSYMBOL, lexGetText( ) )
+    		else
+    			hSkipSymbol( )
+           	end if
+
     		return NULL
     	end if
     end if
 
-    do
-    	parent = chain_->sym
+    parent = NULL
 
-    	select case as const symbGetClass( parent )
+    do
+    	dim as FBSYMBOL ptr sym = chain_->sym
+
+    	select case as const symbGetClass( sym )
     	case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS
 
     	case FB_SYMBCLASS_STRUCT
@@ -154,22 +195,22 @@ function cIdentifier _
     		end if
 
     		'' ordinary struct?
-    		if( symbGetIsUnique( parent ) = FALSE ) then
+    		if( symbGetIsUnique( sym ) = FALSE ) then
     			exit do
     		end if
 
     	case FB_SYMBCLASS_TYPEDEF
             '' typedef of a TYPE/CLASS?
-            select case symbGetType( parent )
+            select case symbGetType( sym )
             case FB_DATATYPE_STRUCT
     			if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
     				exit do
     			end if
 
-            	parent = symbGetSubtype( parent )
+            	sym = symbGetSubtype( sym )
 
     			'' ordinary struct?
-    			if( symbGetIsUnique( parent ) = FALSE ) then
+    			if( symbGetIsUnique( sym ) = FALSE ) then
     				exit do
     			end if
 
@@ -188,7 +229,7 @@ function cIdentifier _
     	if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
     		'' if it's a namespace, the '.' is obligatory, the
     		'' namespace itself isn't a composite type
-    		if( symbGetClass( parent ) = FB_SYMBCLASS_NAMESPACE ) then
+    		if( symbGetClass( sym ) = FB_SYMBCLASS_NAMESPACE ) then
     			'' skip id
     			lexSkipToken( LEXCHECK_NOPERIOD )
 
@@ -211,6 +252,8 @@ function cIdentifier _
 
     	'' skip '.'
     	lexSkipToken( LEXCHECK_NOPERIOD )
+
+    	parent = sym
 
     	if( base_parent = NULL ) then
     		base_parent = parent
@@ -259,20 +302,26 @@ function cIdentifier _
     			'' for each symbol (because dups..)
     			dim as FBSYMCHAIN ptr iter = chain_
     			do
-        			'' field, never static..
-        			if( symbGetClass( iter->sym ) = FB_SYMBCLASS_FIELD ) then
-						errReport( FB_ERRMSG_ACCESSTONONSTATICMEMBER )
-        				exit do
-        			end if
+        			dim as FBSYMBOL ptr sym = iter->sym
+        			do
+        				'' field, never static..
+        				if( symbGetClass( sym ) = FB_SYMBCLASS_FIELD ) then
+							errReport( FB_ERRMSG_ACCESSTONONSTATICMEMBER )
+        					goto exit_check
+        				end if
+
+        				sym = sym->hash.next
+        			loop while( sym <> NULL )
 
     				iter = symbChainGetNext( iter )
     			loop while( iter <> NULL )
+exit_check:
     		end select
     	end if
     loop
 
 	''
-	hCheckDecl( base_parent, options )
+	hCheckDecl( base_parent, parent, chain_, options )
 
 	function = chain_
 
@@ -289,6 +338,8 @@ function cParentId _
     dim as FBSYMCHAIN ptr chain_ = any
     dim as FBSYMBOL ptr parent = any, base_parent = any
 
+    base_parent = NULL
+
 	if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
 	    return NULL
 	end if
@@ -302,7 +353,6 @@ function cParentId _
     end if
 
     parent = NULL
-    base_parent = NULL
 
     do while( chain_ <> NULL )
 
@@ -405,7 +455,7 @@ function cParentId _
     loop
 
 	''
-	hCheckDecl( base_parent, options )
+	hCheckDecl( base_parent, parent, chain_, options )
 
 	function = parent
 

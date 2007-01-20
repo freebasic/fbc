@@ -48,7 +48,8 @@ function symbAddLabel _
     	'' check if label already exists
     	l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
     								  symbol, _
-    								  FB_SYMBCLASS_LABEL )
+    								  FB_SYMBCLASS_LABEL, _
+    								  FALSE )
     	if( l <> NULL ) then
     		if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
     			'' dup definition?

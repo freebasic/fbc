@@ -17,6 +17,7 @@
 
 
 '' symbol table module for namespaces
+'' (note: all functions but Add() and Del() can be used with any UDT)
 ''
 '' chng: may/2006 written [v1ctor]
 
@@ -25,14 +26,19 @@
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
 
+declare sub hDelFromImportList _
+	( _
+		byval imp_ as FBSYMBOL ptr _
+	)
+
 '':::::
 function symbAddNamespace _
 	( _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr s = any
 
     '' no explict alias given?
     if( id_alias = NULL ) then
@@ -52,16 +58,10 @@ function symbAddNamespace _
     	return NULL
     end if
 
-	symbSymbTbInit( s->nspc.symtb, s )
+	symbSymbTbInit( s->nspc.ns.symtb, s )
+    symbHashTbInit( s->nspc.ns.hashtb, s, FB_INITSYMBOLNODES \ 10 )
 
-    symbHashTbInit( s->nspc.hashtb, s, FB_INITSYMBOLNODES \ 10 )
-
-    s->nspc.cnt = 0
-    s->nspc.implist.head = NULL
-    s->nspc.implist.tail = NULL
-    s->nspc.explist.head = NULL
-    s->nspc.explist.tail = NULL
-    s->nspc.symtail = NULL
+    s->nspc.ns.ext = NULL
 
 	function = s
 
@@ -73,15 +73,17 @@ sub symbDelNamespace _
 		byval ns as FBSYMBOL ptr _
 	)
 
-	dim as FBSYMBOL ptr s, nxt
-
     if( ns = NULL ) then
     	exit sub
     end if
 
+	'' del the imports (USING's) first, or NamespaceRemove() would
+	'' remove try to remove the namespace from the hash tb list
+	symbCompDelImportList( ns )
+
     '' del all symbols inside the namespace
     do
-		s = ns->nspc.symtb.head
+		dim as FBSYMBOL ptr s = ns->nspc.ns.symtb.head
 		if( s = NULL ) then
 			exit do
 		end if
@@ -90,83 +92,16 @@ sub symbDelNamespace _
 	loop
 
 	''
-	hashFree( @ns->nspc.hashtb.tb )
+	if( ns->nspc.ns.ext <> NULL ) then
+		symbCompFreeExt( ns->nspc.ns.ext )
+		ns->nspc.ns.ext = NULL
+	end if
+
+	''
+	hashFree( @ns->nspc.ns.hashtb.tb )
 
 	'' del node
 	symbFreeSymbol( ns )
-
-end sub
-
-''::::
-private sub hInsertIntoHashTb _
-	( _
-		byval imp_ as FBSYMBOL ptr, _
-		byval src_head as FBSYMBOL ptr, _
-		byval dst_hash as FBHASHTB ptr = NULL _
-	) static
-
-	dim as THASH ptr hashtb
-	dim as FBSYMCHAIN ptr chain_, chain_head
-	dim as FBSYMBOL ptr s
-
-	if( dst_hash = NULL ) then
-		hashtb = @symb.hashtb->tb
-	else
-		hashtb = @dst_hash->tb
-	end if
-
-	'' for each symbol in the ns been imported..
-	s = src_head
-    do until( s = NULL )
-
-		'' if symbol has a name..
-		if( s->hash.chain <> NULL ) then
-			chain_ = listNewNode( @symb.chainlist )
-			chain_->index = s->hash.chain->index
-
-			chain_head = hashLookupEx( hashtb, s->id.name, chain_->index )
-			'' not defined yet? create a new hash node
-			if( chain_head = NULL ) then
-            	chain_->sym = s
-            	chain_->item = hashAdd( hashtb, s->id.name, chain_, chain_->index )
-            	chain_->prev = NULL
-            	chain_->next = NULL
-
-			'' already defined but can be duplicated?
-			elseif( symbCanDuplicate( chain_head, s ) ) then
-				chain_->sym = s
-				chain_->item = chain_head->item
-
-				'' add to tail
-				do while( chain_head->next <> NULL )
-					chain_head = chain_head->next
-				loop
-
-				chain_head->next = chain_
-				chain_->prev = chain_head
-				chain_->next = NULL
-
-            '' dup definition, show a warning?
-            else
-            	listDelNode( @symb.chainlist, chain_ )
-            	chain_ = NULL
-			end if
-
-            '' add chain node to USING's list for deallocation later
-            if( chain_ <> NULL ) then
-            	if( imp_->nsimp.tail <> NULL ) then
-            		imp_->nsimp.tail->imp_next = chain_
-            	else
-            		imp_->nsimp.head = chain_
-            	end if
-            	chain_->imp_next = NULL
-            	imp_->nsimp.tail = chain_
-            end if
-
-		end if
-
-		s = s->next
-	loop
 
 end sub
 
@@ -174,9 +109,9 @@ end sub
 private function hAddImport _
 	( _
 		byval ns as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr s = any
 
     '' easier to be added as a symbol because it will be removed
     '' respecting the scope blocks (or procs)
@@ -194,32 +129,121 @@ private function hAddImport _
     end if
 
 	s->nsimp.ns = ns
-	s->nsimp.head = NULL
-	s->nsimp.tail = NULL
-    s->nsimp.imp_next = NULL
-    s->nsimp.exp_next = NULL
 
 	function = s
 
 end function
 
 '':::::
-private function hIsOnHashList _
+private sub hAddToImportList _
+	( _
+		byval imp_ as FBSYMBOL ptr _
+	)
+
+	dim as FBSYMBOL ptr curr_ns = symbGetNamespace( imp_ )
+
+	if( symbGetCompExt( curr_ns ) = NULL ) then
+		symbGetCompExt( curr_ns ) = symbCompAllocExt( )
+	end if
+
+	if( symbGetCompExt( curr_ns )->tail <> NULL ) then
+		symbGetCompExt( curr_ns )->tail->nsimp.next = imp_
+	else
+		symbGetCompExt( curr_ns )->head = imp_
+	end if
+
+	imp_->nsimp.prev = symbGetCompExt( curr_ns )->tail
+	imp_->nsimp.next = NULL
+
+	symbGetCompExt( curr_ns )->tail = imp_
+
+end sub
+
+'':::::
+private sub hDelFromImportList _
+	( _
+		byval imp_ as FBSYMBOL ptr _
+	)
+
+	dim as FBSYMBOL ptr curr_ns = symbGetNameSpace( imp_ )
+
+	if( imp_->nsimp.prev = NULL ) then
+		symbGetCompExt( curr_ns )->head = imp_->nsimp.next
+	else
+		imp_->nsimp.prev->nsimp.next = imp_->nsimp.next
+	end if
+
+	if( imp_->nsimp.next = NULL ) then
+		symbGetCompExt( curr_ns )->tail = imp_->nsimp.prev
+	else
+		imp_->nsimp.next->nsimp.prev = imp_->nsimp.prev
+	end if
+
+end sub
+
+'':::::
+private sub hAddToHashTbList _
+	( _
+		byval ns as FBSYMBOL ptr _
+	)
+
+	symbGetCompExt( ns )->cnt += 1
+
+	'' same for any namespace included by it
+	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( ns )
+	do while( imp_ <> NULL )
+		if( symbGetCompExt( imp_->nsimp.ns )->cnt = 0 ) then
+			hAddToHashTbList( imp_->nsimp.ns )
+		end if
+	    imp_ = imp_->nsimp.next
+	loop
+
+	'' add it to hash tb list
+	if( symbGetCompExt( ns )->cnt = 1 ) then
+		symbHashListAddBefore( @symbGetGlobalHashTb( ), _
+						   	   @symbGetCompHashTb( ns ) )
+	end if
+
+end sub
+
+'':::::
+private sub hDelFromHashTbList _
+	( _
+		byval ns as FBSYMBOL ptr _
+	)
+
+	'' del the ns from hash tb list
+	symbGetCompExt( ns )->cnt -= 1
+	if( symbGetCompExt( ns )->cnt = 0 ) then
+		symbHashListDel( @symbGetCompHashTb( ns ) )
+	end if
+
+	'' same for any namespace included by it
+	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( ns )
+	do while( imp_ <> NULL )
+		if( symbGetCompExt( imp_->nsimp.ns )->cnt > 0 ) then
+			hDelFromHashTbList( imp_->nsimp.ns )
+		end if
+	    imp_ = imp_->nsimp.next
+	loop
+
+end sub
+
+'':::::
+private function hIsOnParentList _
 	( _
 		byval ns as FBSYMBOL ptr _
 	) as integer
 
-    dim as FBHASHTB ptr hashtb
+	dim as FBSYMBOL ptr parent = symbGetCurrentNamespc( )
+	do until( parent = @symbGetGlobalNamespc( ) )
+		if( ns = parent ) then
+			return TRUE
+		end if
+		parent = symbGetNamespace( parent )
+	loop
 
-    hashtb = symb.hashlist.head
-    do
-    	if( hashtb = @ns->nspc.hashtb ) then
-    		return TRUE
-    	end if
-    	hashtb = hashtb->next
-    loop while( hashtb <> NULL )
-
-    function = FALSE
+	function = FALSE
 
 end function
 
@@ -229,252 +253,49 @@ private function hIsOnImportList _
 		byval ns as FBSYMBOL ptr _
 	) as integer
 
-	dim as FBSYMBOL ptr s
-
-	'' find the real namespace (the current one could be an TYPE or CLASS)
-	s = symbGetCurrentNamespc( )
-	do until( symbIsNamespace( s ) )
-		s = symbGetNamespace( s )
-	loop
-
-	s = s->nspc.implist.head
-	do while( s <> NULL )
-	    if( s->nsimp.ns = ns ) then
+	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( ns )
+	do while( imp_ <> NULL )
+	    if( imp_->nsimp.ns = ns ) then
 	    	return TRUE
 	    end if
-		s = s->nsimp.imp_next
+		imp_ = imp_->nsimp.next
 	loop
 
 	function = FALSE
 
 end function
-
-'':::::
-private sub hAddToImportList _
-	( _
-		byval imp_ as FBSYMBOL ptr _
-	) static
-
-	dim as FBSYMBOL ptr ns
-
-	'' find the real namespace (the current one could be an TYPE or CLASS)
-	ns = symbGetCurrentNamespc( )
-	do until( symbIsNamespace( ns ) )
-		ns = symbGetNamespace( ns )
-	loop
-
-	if( ns->nspc.implist.tail <> NULL ) then
-		ns->nspc.implist.tail->nsimp.imp_next = imp_
-	else
-		ns->nspc.implist.head = imp_
-	end if
-	ns->nspc.implist.tail = imp_
-
-	imp_->nsimp.imp_next = NULL
-
-end sub
-
-'':::::
-private sub hDelFromImportList _
-	( _
-		byval imp_ as FBSYMBOL ptr _
-	) static
-
-	dim as FBSYMBOL ptr currns, ns, s, prev
-
-	'' find the real namespace (the current one could be an TYPE or CLASS)
-	currns = symbGetNameSpace( imp_ )
-	do until( symbIsNamespace( currns ) )
-		currns = symbGetNamespace( currns )
-	loop
-
-	ns = imp_->nsimp.ns
-
-	prev = NULL
-	s = currns->nspc.implist.head
-
-	do while( s <> NULL )
-	    if( s = imp_ ) then
-	    	if( prev = NULL ) then
-	        	currns->nspc.implist.head = imp_->nsimp.imp_next
-	        else
-	        	prev->nsimp.imp_next = imp_->nsimp.imp_next
-	        end if
-
-	    	if( imp_->nsimp.imp_next = NULL ) then
-	        	currns->nspc.implist.tail = prev
-	        else
-	        	imp_->nsimp.imp_next = NULL
-	        end if
-
-	        exit sub
-	    end if
-
-		prev = s
-		s = s->nsimp.imp_next
-	loop
-
-end sub
-
-'':::::
-private sub hAddToExportList _
-	( _
-		byval imp_ as FBSYMBOL ptr _
-	) static
-
-	dim as FBSYMBOL ptr ns
-
-	ns = imp_->nsimp.ns
-
-	if( ns->nspc.explist.tail <> NULL ) then
-		ns->nspc.explist.tail->nsimp.exp_next = imp_
-	else
-		ns->nspc.explist.head = imp_
-	end if
-	ns->nspc.explist.tail = imp_
-
-	imp_->nsimp.exp_next = NULL
-
-end sub
-
-'':::::
-private sub hDelFromExportList _
-	( _
-		byval imp_ as FBSYMBOL ptr _
-	) static
-
-	dim as FBSYMBOL ptr ns, s, prev
-
-	ns = imp_->nsimp.ns
-
-	prev = NULL
-	s = ns->nspc.explist.head
-
-	do while( s <> NULL )
-	    if( s = imp_ ) then
-	    	if( prev = NULL ) then
-	        	ns->nspc.explist.head = imp_->nsimp.exp_next
-	        else
-	        	prev->nsimp.exp_next = imp_->nsimp.exp_next
-	        end if
-
-	    	if( imp_->nsimp.exp_next = NULL ) then
-	        	ns->nspc.explist.tail = prev
-	        else
-	        	imp_->nsimp.exp_next = NULL
-	        end if
-
-	        exit sub
-	    end if
-
-		prev = s
-		s = s->nsimp.exp_next
-	loop
-
-end sub
 
 '':::::
 function symbNamespaceImport _
 	( _
 		byval ns as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-	dim as FBSYMBOL ptr imp_, s
-
-	function = FALSE
-
-	'' already imported?
-    if( hIsOnImportList( ns ) ) then
-    	'' not an error, show a warning?
-    	return TRUE
-    end if
-
-	'' importing a parent namespace?
-	if( hIsOnHashList( ns ) ) then
-    	'' not an error, show a warning?
-    	return TRUE
+	'' importing itself or a parent?
+	if( hIsOnParentList( ns ) ) then
+		return FALSE
 	end if
 
-	''
-	imp_ = hAddImport( ns )
-	if( imp_ = NULL ) then
-		exit function
+	if( symbGetCompExt( ns ) = NULL ) then
+		symbGetCompExt( ns ) = symbCompAllocExt( )
 	end if
 
-	'' for each named symbol in the name space, add it to
-	'' the current symbol table
-	hInsertIntoHashTb( imp_, symbGetNamespaceTbHead( ns ) )
+	'' add to import list of the current ns, if not yet
+	if( hIsOnImportList( ns ) = FALSE ) then
+		dim as FBSYMBOL ptr imp_ = hAddImport( ns )
+		if( imp_ = NULL ) then
+			return FALSE
+		end if
 
-	'' same for any namespace included by this ns
-	s = ns->nspc.implist.head
-	do while( s <> NULL )
+		hAddToImportList( imp_ )
+	end if
 
-	    hInsertIntoHashTb( imp_, symbGetNamespaceTbHead( s->nsimp.ns ) )
-
-		s = s->nsimp.imp_next
-	loop
-
-	'' add to import list of the current ns
-	hAddToImportList( imp_ )
-
-	hAddToExportList( imp_ )
+	'' add to hash tb list
+	hAddToHashTbList( ns )
 
 	function = TRUE
 
 end function
-
-'':::::
-function symbNamespaceReImport _
-	( _
-		byval ns as FBSYMBOL ptr _
-	) as integer static
-
-	dim as FBSYMBOL ptr imp_, head
-
-	function = FALSE
-
-	'' for each USING that is pointing to this namespace
-	imp_ = ns->nspc.explist.head
-	do while( imp_ <> NULL )
-
-	    head = symbGetNamespaceLastTbTail( imp_->nsimp.ns )
-	    if( head = NULL ) then
-	    	head = symbGetNamespaceTbHead( imp_->nsimp.ns )
-	    end if
-
-	    hInsertIntoHashTb( imp_, _
-	    				   head, _
-	    				   @symbGetNamespaceHashTb( symbGetNamespace( imp_ ) ) )
-
-		imp_ = imp_->nsimp.exp_next
-	loop
-
-	function = TRUE
-
-end function
-
-'':::::
-private sub hRemoveFromHashTb _
-	( _
-		byval imp_ as FBSYMBOL ptr _
-	) static
-
-	dim as FBSYMCHAIN ptr chain_, nxt
-	dim as THASH ptr hashtb
-
-	hashtb = @symbGetHashTb( imp_ )->tb
-
-	chain_ = imp_->nsimp.head
-	do until( chain_ = NULL )
-       	nxt = chain_->imp_next
-       	symbDelFromChainList( hashtb, chain_ )
-       	chain_ = nxt
-	loop
-
-	imp_->nsimp.head = NULL
-	imp_->nsimp.tail = NULL
-
-end sub
 
 '':::::
 sub symbNamespaceRemove _
@@ -483,14 +304,11 @@ sub symbNamespaceRemove _
 		byval hashonly as integer _
 	)
 
-	hRemoveFromHashTb( imp_ )
-
-	if( imp_->scope > FB_MAINSCOPE ) then
-		if( imp_->nsimp.ns <> NULL ) then
-			hDelFromImportList( imp_ )
-			hDelFromExportList( imp_ )
-			imp_->nsimp.ns = NULL
-		end if
+	if( imp_->nsimp.ns <> NULL ) then
+		'' remove all USING's
+		hDelFromHashTbList( imp_->nsimp.ns )
+		hDelFromImportList( imp_ )
+		imp_->nsimp.ns = NULL
 	end if
 
 	if( hashonly = FALSE ) then

@@ -766,7 +766,7 @@ private function hReadMacroText _
 			continue do
 
 		case CHAR_SHARP
-    		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KEYHASHTB) and _
+    		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
     								 		(not LEXCHECK_NOWHITESPC) )
     		'' '##'?
     		case CHAR_SHARP
@@ -1012,6 +1012,7 @@ function ppDefine _
     if( chain_ <> NULL ) then
     	sym = chain_->sym
     	if( symbIsDefine( sym ) = FALSE ) then
+    		'' defines have no dups or respect namespaces
     		if( errReportEx( FB_ERRMSG_DUPDEFINITION, @defname ) = FALSE ) then
     			exit function
     		else

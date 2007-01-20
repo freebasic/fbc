@@ -52,7 +52,6 @@ function cAsmCode _
 
 	static as zstring * FB_MAXLITLEN+1 text
 	dim as FBSYMCHAIN ptr chain_ = any
-	dim as FBSYMBOL ptr base_parent = any
 	dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr expr = any
 	dim as FB_ASMTOK ptr head, tail = any, node = any
@@ -80,38 +79,45 @@ function cAsmCode _
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
 			if( emitIsKeyword( text ) = FALSE ) then
+				dim as FBSYMBOL ptr base_parent = any
+
 				chain_ = cIdentifier( base_parent )
 				do while( chain_ <> NULL )
+					dim as FBSYMBOL ptr s = chain_->sym
+					do
+						select case symbGetClass( s )
+						'' function?
+						case FB_SYMBCLASS_PROC
+							text = *symbGetMangledName( s )
+							goto exit_search
 
-					select case symbGetClass( chain_->sym )
-					'' function?
-					case FB_SYMBCLASS_PROC
-						text = *symbGetMangledName( chain_->sym )
-						exit do
+						'' const?
+						case FB_SYMBCLASS_CONST
+							text = symbGetConstValueAsStr( s )
+							goto exit_search
 
-					'' const?
-					case FB_SYMBCLASS_CONST
-						text = symbGetConstValueAsStr( chain_->sym )
-						exit do
+						'' label?
+						case FB_SYMBCLASS_LABEL
+							text = *symbGetMangledName( s )
+							goto exit_search
 
-					'' label?
-					case FB_SYMBCLASS_LABEL
-						text = *symbGetMangledName( chain_->sym )
-						exit do
+						case FB_SYMBCLASS_VAR
+							'' var?
+							sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
 
-					case FB_SYMBCLASS_VAR
-						'' var?
-						sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+							if( sym <> NULL ) then
+								symbSetIsAccessed( sym )
+							end if
+							goto exit_search
 
-						if( sym <> NULL ) then
-							symbSetIsAccessed( sym )
-						end if
-						exit do
+						end select
 
-					end select
+						s = s->hash.next
+					loop while( s <> NULL )
 
 					chain_ = symbChainGetNext( chain_ )
 				loop
+exit_search:
             end if
 
 		'' lit number?

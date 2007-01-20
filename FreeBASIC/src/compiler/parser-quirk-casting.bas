@@ -150,7 +150,7 @@ function cAnonUDT _
 		_
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr sym = any, subtype = any
+    dim as FBSYMBOL ptr subtype = any
     dim as FBSYMCHAIN ptr chain_ = any
     dim as FBSYMBOL ptr base_parent = any
 
@@ -171,33 +171,48 @@ function cAnonUDT _
 			end if
     	end if
 
-    	subtype = chain_->sym
+    	'' find the struct
+    	do
+    		dim as FBSYMBOL ptr sym = chain_->sym
+    		do
+				'' typedef? resolve..
+				if( symbIsTypedef( sym ) ) then
+					subtype = symbGetSubtype( sym )
 
-		'' typedef? resolve..
-		if( symbIsTypedef( subtype ) ) then
-			subtype = symbGetSubtype( subtype )
+    				if( subtype = NULL ) then
+						if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+							return NULL
+						else
+							'' error recovery: skip until next '>', fake a node
+							hSkipUntil( FB_TK_GT, TRUE )
+							return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+						end if
+					end if
 
-    		if( subtype = NULL ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					return NULL
 				else
-					'' error recovery: skip until next '>', fake a node
-					hSkipUntil( FB_TK_GT, TRUE )
-					return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+					subtype = sym
 				end if
-			end if
+
+    			if( symbIsStruct( subtype ) ) then
+    				goto exit_search
+    			end if
+
+    			sym = subtype->hash.next
+    		loop while( sym <> NULL )
+
+    		chain_ = symbChainGetNext( chain_ )
+    	loop while( chain_ <> NULL )
+
+		'' nothing found..
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			return NULL
+		else
+			'' error recovery: skip until next '>', fake a node
+			hSkipUntil( FB_TK_GT, TRUE )
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
-    	if( symbIsStruct( subtype ) = FALSE ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				return NULL
-			else
-				'' error recovery: skip until next '>', fake a node
-				hSkipUntil( FB_TK_GT, TRUE )
-				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
-    	end if
-
+exit_search:
     	lexSkipToken( )
 
     	'' '>'
@@ -248,7 +263,7 @@ function cAnonUDT _
     end if
 
     '' alloc temp var
-    sym = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE, FALSE )
+    dim as FBSYMBOL ptr sym = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE, FALSE )
 
     '' let the initializer do the rest..
     function = cInitializer( sym, FB_INIOPT_NONE )

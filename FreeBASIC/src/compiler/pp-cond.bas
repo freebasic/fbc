@@ -95,7 +95,7 @@ function ppCondIf( ) as integer
 
 	istrue = FALSE
 
-	select case as const lexGetToken( LEXCHECK_KEYHASHTB )
+	select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
 	'' IFDEF ID
 	case FB_TK_PP_IFDEF
         lexSkipToken( LEXCHECK_NODEFINE )
@@ -173,7 +173,7 @@ function ppCondElse( ) as integer
     end if
 
 	'' ELSEIF?
-	if( lexGetToken( LEXCHECK_KEYHASHTB ) = FB_TK_PP_ELSEIF ) then
+	if( lexGetToken( LEXCHECK_KWDNAMESPC ) = FB_TK_PP_ELSEIF ) then
         lexSkipToken( )
 
 		if( ppExpression( istrue ) = FALSE ) then
@@ -256,9 +256,9 @@ private function ppSkip( ) as integer
 
 		select case lexGetToken( )
         case CHAR_SHARP
-        	lexSkipToken( LEXCHECK_KEYHASHTB )
+        	lexSkipToken( LEXCHECK_KWDNAMESPC )
 
-        	select case as const lexGetToken( LEXCHECK_KEYHASHTB )
+        	select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
         	case FB_TK_PP_IF, FB_TK_PP_IFDEF, FB_TK_PP_IFNDEF
         		iflevel += 1
 

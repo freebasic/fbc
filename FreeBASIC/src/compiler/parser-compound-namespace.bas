@@ -298,9 +298,7 @@ function cUsingStmt as integer
 				end if
 
 			else
-    			if( symbNamespaceImport( sym ) = FALSE ) then
-	   				exit function
-    			end if
+    			symbNamespaceImport( sym )
 			end if
 		end if
 

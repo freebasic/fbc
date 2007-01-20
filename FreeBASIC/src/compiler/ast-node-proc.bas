@@ -197,7 +197,7 @@ private sub hProcFlush _
 	parser.currblock = sym
 
 	''
-	symbNestBegin( sym )
+	symbNestBegin( sym, FALSE )
 
 	'' allocate the non-static local variables on stack
 	symbProcAllocLocalVars( sym )
@@ -230,7 +230,7 @@ private sub hProcFlush _
     symbDelSymbolTb( @sym->proc.symtb, FALSE )
 
     ''
-    symbNestEnd( )
+    symbNestEnd( FALSE )
 
 	''
 	hDelProcNode( p )
@@ -444,7 +444,7 @@ function astProcBegin _
 	parser.currproc = sym
 	parser.currblock = sym
 
-	symbNestBegin( sym )
+	symbNestBegin( sym, FALSE )
 
 	'' add init and exit labels (see the note in the top,
 	'' procs don't create an implicit scope block)
@@ -696,7 +696,7 @@ function astProcEnd _
 	end if
 
 	''
-	symbNestEnd( )
+	symbNestEnd( FALSE )
 
 	''
 	if( do_flush ) then
@@ -1024,7 +1024,7 @@ private sub hCallFieldCtors _
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
     '' for each field..
-    fld = symbGetCompSymbTb( parent )->head
+    fld = symbGetCompSymbTb( parent ).head
     do while( fld <> NULL )
 
 		if( symbIsField( fld ) ) then
@@ -1082,7 +1082,7 @@ private sub hCallFieldDtors _
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
     '' for each field (in inverse order)..
-    fld = symbGetCompSymbTb( parent )->tail
+    fld = symbGetCompSymbTb( parent ).tail
     do while( fld <> NULL )
 
 		'' !!!FIXME!!! assuming only static arrays will be allowed in fields

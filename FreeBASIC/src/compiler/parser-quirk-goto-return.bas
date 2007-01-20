@@ -104,7 +104,8 @@ function cGotoStmt _
 		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 			l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
 										  lexGetText( ), _
-										  FB_SYMBCLASS_LABEL )
+										  FB_SYMBCLASS_LABEL, _
+										  FALSE )
 
 		else
 			chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
@@ -140,7 +141,8 @@ function cGotoStmt _
 		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 			l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
 										  lexGetText( ), _
-										  FB_SYMBCLASS_LABEL )
+										  FB_SYMBCLASS_LABEL, _
+										  FALSE )
 
 		else
 			chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
@@ -185,7 +187,8 @@ function cGotoStmt _
 			if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 				l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
 											  lexGetText( ), _
-											  FB_SYMBCLASS_LABEL )
+											  FB_SYMBCLASS_LABEL, _
+											  FALSE )
 
 			else
 				chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )

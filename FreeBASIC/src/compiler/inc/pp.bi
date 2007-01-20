@@ -41,7 +41,7 @@ enum FB_TOKEN_PP
 end enum
 
 type PP_CTX
-	keyhash		as FBHASHTB
+	kwdns		as FBSYMBOL
 	argtblist	as TLIST
 	level 		as integer
 end type

@@ -296,7 +296,7 @@ private sub hCloneBody _
 	rhs = symbGetParamVar( symbGetProcTailParam( proc ) )
 
     '' for each field
-    fld = symbGetCompSymbTb( parent )->head
+    fld = symbGetCompSymbTb( parent ).head
     do while( fld <> NULL )
 
 		if( symbIsField( fld ) ) then
@@ -398,12 +398,11 @@ function symbLookupCompField _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
 	static as zstring * FB_MAXNAMELEN+1 fname
-	dim as FBHASHTB ptr hashtb
-	dim as FBSYMCHAIN ptr chain_
-	dim as FBSYMBOL ptr sym
+	dim as FBHASHTB ptr hashtb = any
+	dim as FBSYMBOL ptr sym = any
 
 	if( parent = NULL ) then
 		return NULL
@@ -411,19 +410,18 @@ function symbLookupCompField _
 
     hUcase( id, fname )
 
-    hashtb = symbGetCompHashTb( parent )
+    hashtb = @symbGetCompHashTb( parent )
 
-    chain_ = hashLookup( @hashtb->tb, fname )
+    sym = hashLookup( @hashtb->tb, fname )
 
     '' since methods don't start a new hash, params and local
     '' symbol dups will also be found
-    do while( chain_ <> NULL )
-    	sym = chain_->sym
+    do while( sym <> NULL )
     	if( symbGetParent( sym ) = parent ) then
     		return sym
     	end if
 
-    	chain_ = chain_->next
+    	sym = sym->hash.next
     loop
 
     function = NULL
@@ -458,7 +456,7 @@ private function hIsLhsEqRhs _
 			'' not a pointer?
 			if( symbGetType( param ) = FB_DATATYPE_FWDREF ) then
 				'' same name?
-				if( subtype->hash.chain->index = parent->hash.chain->index ) then
+				if( subtype->hash.index = parent->hash.index ) then
 					return TRUE
 				end if
 			end if
@@ -476,58 +474,6 @@ private function hIsLhsEqRhs _
 			end select
 		end if
 	end if
-
-end function
-
-'':::::
-function symbGetCompSymbTb _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOLTB ptr static
-
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-	select case as const symbGetClass( sym )
-	case FB_SYMBCLASS_NAMESPACE
-		return @symbGetNamespaceSymbTb( sym )
-
-	case FB_SYMBCLASS_STRUCT
-		return @symbGetUdtSymbTb( sym )
-
-	case FB_SYMBCLASS_CLASS
-		'return @symbGetClassSymbTb( sym )
-
-    case else
-    	return NULL
-	end select
-
-end function
-
-'':::::
-function symbGetCompHashTb _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBHASHTB ptr static
-
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-	select case as const symbGetClass( sym )
-	case FB_SYMBCLASS_NAMESPACE
-		return @symbGetNamespaceHashTb( sym )
-
-	case FB_SYMBCLASS_STRUCT
-		return @symbGetUdtHashTb( sym )
-
-	case FB_SYMBCLASS_CLASS
-		'return @symbGetClassHashTb( sym )
-
-    case else
-    	return NULL
-	end select
 
 end function
 
@@ -843,60 +789,174 @@ end sub
 '' nesting
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+/'private sub hDumpHashTb
+    dim as FBHASHTB ptr hashtb = symb.hashlist.tail
+    do
+        dim as zstring ptr id = symbGetName( hashtb->owner )
+        hashtb = hashtb->prev
+
+        print *iif( id, id, @"main" );
+        if( hashtb = NULL ) then
+        	exit do
+        end if
+    	print ,
+    loop
+
+    print
+end sub'/
+
 '':::::
-private sub hInsertHashTbChain _
+private sub hInsertNested _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval lasttb as FBHASHTB ptr, _
 		byval base_ns as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as FBHASHTB ptr hashtb
+	dim as FBHASHTB ptr hashtb = any
 
 	'' add all parents to hash list, but the base one
 
-	sym = symbGetNamespace( sym )
-	do until( sym = base_ns )
+	dim as FBSYMBOL ptr ns = symbGetNamespace( sym )
+	do until( ns = base_ns )
+		hashtb = @symbGetCompHashTb( ns )
 
-		hashtb = symbGetCompHashTb( sym )
+		if( symbGetCompExt( ns ) = NULL ) then
+			symbGetCompExt( ns ) = symbCompAllocExt( )
+		end if
 
 		'' in reverse other, child ns must be the tail, parents follow
-		symbHashListAddBefore( lasttb, hashtb )
+		symbGetCompExt( ns )->cnt += 1
+		if( symbGetCompExt( ns )->cnt = 1 ) then
+			symbHashListAddBefore( lasttb, hashtb )
+		else
+			symbHashListMoveBefore( lasttb, hashtb )
+		end if
 
 		lasttb = hashtb
-		sym = symbGetNamespace( sym )
+
+		ns = symbGetNamespace( ns )
 	loop
 
 end sub
 
 '':::::
-private sub hRemoveHashTbChain _
+private sub hRemoveNested _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval base_ns as FBSYMBOL ptr _
-	) static
+	)
 
 	'' remove all parents from the hash list, but the base one
 
-	sym = symbGetNamespace( sym )
+	dim as FBSYMBOL ptr ns = symbGetNamespace( sym )
+	do until( ns = base_ns )
+		symbGetCompExt( ns )->cnt -= 1
+		if( symbGetCompExt( ns )->cnt = 0 ) then
+			symbHashListDel( @symbGetCompHashTb( ns ) )
+		else
+			symbHashListMoveBefore( @symbGetGlobalHashTb( ), _
+									@symbGetCompHashTb( ns ) )
+		end if
 
-	do until( sym = base_ns )
-		symbHashListDel( symbGetCompHashTb( sym ) )
-
-		sym = symbGetNamespace( sym )
+		ns = symbGetNamespace( ns )
 	loop
 
 end sub
+
+'':::::
+private sub hInsertImported _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)
+
+	if( symbGetCompExt( sym ) = NULL ) then
+		exit sub
+	end if
+
+	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( sym )
+	do while( imp_ <> NULL )
+		dim as FBSYMBOL ptr ns = symbGetImportNamespc( imp_ )
+
+		if( ns <> NULL ) then
+			dim as FBHASHTB ptr hashtb = @symbGetCompHashTb( ns )
+
+			symbGetCompExt( ns )->cnt += 1
+			if( symbGetCompExt( ns )->cnt = 1 ) then
+	  			symbHashListAddBefore( @symbGetGlobalHashTb( ), hashtb )
+	  		end if
+	  	end if
+
+		imp_ = symbGetImportNext( imp_ )
+	loop
+
+end sub
+
+'':::::
+private sub hRemoveImported _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)
+
+	if( symbGetCompExt( sym ) = NULL ) then
+		exit sub
+	end if
+
+	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( sym )
+	do while( imp_ <> NULL )
+		dim as FBSYMBOL ptr ns = symbGetImportNamespc( imp_ )
+
+        if( ns <> NULL ) then
+        	symbGetCompExt( ns )->cnt -= 1
+			if( symbGetCompExt( ns )->cnt = 0 ) then
+	    		symbHashListDel( @symbGetCompHashTb( ns ) )
+	    	end if
+	    end if
+
+		imp_ = symbGetImportNext( imp_ )
+	loop
+
+end sub
+
+'':::::
+private sub hReAddImported _
+	( _
+		byval ns as FBSYMBOL ptr _
+	)
+
+	dim as integer do_add = FALSE
+
+	if( symbGetCompExt( ns )->cnt = 0 ) then
+		symbGetCompExt( ns )->cnt = 1
+		do_add = TRUE
+	end if
+
+	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( ns )
+	do while( imp_ <> NULL )
+		if( symbGetCompExt( imp_->nsimp.ns )->cnt = 0 ) then
+			hReAddImported( imp_->nsimp.ns )
+		end if
+	    imp_ = imp_->nsimp.next
+	loop
+
+	'' add it to hash tb list
+	if( do_add ) then
+		symbHashListAddBefore( @symbGetGlobalHashTb( ), _
+						   	   @symbGetCompHashTb( ns ) )
+	end if
+
+end sub
+
 '':::::
 sub symbNestBegin _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval insert_chain as integer _
-	) static
+	)
 
-	dim as FB_SYMBNEST ptr n
-	dim as FBHASHTB ptr hashtb
-	dim as FBSYMBOLTB ptr symbtb
+	dim as FB_SYMBNEST ptr n = any
+	dim as FBHASHTB ptr hashtb = any
+	dim as FBSYMBOLTB ptr symbtb = any
 
 	n = stackPush( @symb.neststk )
 
@@ -930,11 +990,25 @@ sub symbNestBegin _
 		symbSetCurrentNamespc( sym )
 
 		symbSetCurrentHashTb( hashtb )
-		symbHashListAdd( hashtb )
+
+		if( symbGetCompExt( sym ) = NULL ) then
+			symbGetCompExt( sym ) = symbCompAllocExt( )
+		end if
+
+		symbGetCompExt( sym )->cnt += 1
+		if( symbGetCompExt( sym )->cnt = 1 ) then
+			symbHashListAdd( hashtb )
+		else
+			'' must be to first
+			symbHashListMove( hashtb )
+		end if
 
 		if( insert_chain ) then
-			hInsertHashTbChain( sym, hashtb, n->ns )
+			hInsertNested( sym, hashtb, n->ns )
 		end if
+
+		'' add all USING's
+		hInsertImported( sym )
 	end if
 
 end sub
@@ -943,11 +1017,11 @@ end sub
 sub symbNestEnd _
 	( _
 		byval remove_chain as integer _
-	) static
+	)
 
-	dim as FB_SYMBNEST ptr n
-	dim as FBHASHTB ptr hashtb
-	dim as FBSYMBOL ptr sym
+	dim as FB_SYMBNEST ptr n = any
+	dim as FBHASHTB ptr hashtb = any
+	dim as FBSYMBOL ptr sym = any
 
 	n = stackGetTOS( @symb.neststk )
 
@@ -970,18 +1044,57 @@ sub symbNestEnd _
 
 	symbSetCurrentSymTb( n->symtb )
 
+	dim as FBSYMBOL ptr readd_ns = NULL
 	if( hashtb <> NULL ) then
+		'' removed all USING's
+		hRemoveImported( sym )
+
 		if( remove_chain ) then
-			hRemoveHashTbChain( sym, n->ns )
+			hRemoveNested( sym, n->ns )
 		end if
 
-		symbHashListDel( hashtb )
+		symbGetCompExt( sym )->cnt -= 1
+		if( symbGetCompExt( sym )->cnt = 0 ) then
+			symbHashListDel( hashtb )
+		else
+			symbHashListMoveBefore( @symbGetGlobalHashTb( ), hashtb )
+			readd_ns = n->sym
+		end if
+
 		symbSetCurrentHashTb( n->hashtb )
 
 		symbSetCurrentNamespc( n->ns )
 	end if
 
     stackPop( @symb.neststk )
+
+    if( readd_ns <> NULL ) then
+    	hReAddImported( readd_ns )
+    end if
+
+end sub
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' del
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+sub symbCompDelImportList _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)
+
+	if( symbGetCompExt( sym ) = NULL ) then
+		exit sub
+	end if
+
+	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( sym )
+	do while( imp_ <> NULL )
+
+	    '' the node will be deleted by symbNamespaceRemove()
+	    imp_->nsimp.ns = NULL
+
+	    imp_ = imp_->nsimp.next
+	loop
 
 end sub
 

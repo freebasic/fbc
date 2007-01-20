@@ -135,7 +135,7 @@ sub rtlAddIntrinsicProcs _
 		if( (procdef->options and (FB_RTL_OPT_MT or FB_RTL_OPT_VBSYMB)) <> 0 ) then
 			doadd = fbLangOptIsSet( FB_LANG_OPT_MT or FB_RTL_OPT_VBSYMB )
 		end if
-        
+
 		if( doadd ) then
 			proc = symbPreAddProc( NULL )
 
@@ -238,15 +238,14 @@ function rtlProcLookup _
 	( _
 		byval pname as zstring ptr, _
 		byval pidx as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as integer id, class_
-    dim as FBSYMCHAIN ptr chain_
+    dim as FBSYMCHAIN ptr chain_ = any
 
     '' not cached yet? -- this won't work if #undef is used
     '' what is pretty unlikely with internal fb_* procs
 	if( rtlLookupTB( pidx ) = NULL ) then
-		chain_ = symbLookup( pname, id, class_ )
+		chain_ = symbLookupAt( @symbGetGlobalNamespc( ), pname, FALSE, FALSE )
 		if( chain_ = NULL ) then
 			errReportEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
 			rtlLookupTB( pidx ) = NULL

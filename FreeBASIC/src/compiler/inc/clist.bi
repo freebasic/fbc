@@ -1,3 +1,6 @@
+#ifndef __CLIST_BI__
+#define __CLIST_BI__
+
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2007 The FreeBASIC development team.
 ''
@@ -15,46 +18,31 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-'' AST namespace nodes
-'' l = NULL; r = NULL
-''
-'' chng: jun/2006 written [v1ctor]
+#include once "inc\list.bi"
 
+type TCLIST
+	list	as TLIST
+	head	as TLISTNODE ptr
+	tail	as TLISTNODE ptr
+end type
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\ast.bi"
-
-
-'':::::
-function astNamespaceBegin _
+declare function clistNew _
 	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
+		byval clist as TCLIST ptr, _
+		byval nodes as integer, _
+		byval nodelen as integer, _
+		byval flags as LIST_FLAGS = LIST_FLAGS_ALL _
+	) as integer
 
-    dim as ASTNODE ptr n = any
-
-	n = astNewNode( AST_NODECLASS_NAMESPC, INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
-
-	n->sym = sym
-
-	symbNestBegin( sym, FALSE )
-
-	function = n
-
-end function
-
-'':::::
-sub astNamespaceEnd _
+declare function clistFree _
 	( _
-		byval n as ASTNODE ptr _
-	)
+		byval clist as TCLIST ptr _
+	) as integer
 
-	symbNestEnd( FALSE )
+declare function clistNextNode _
+	( _
+		byval clist as TCLIST ptr, _
+		byval do_circ as integer = TRUE _
+	) as any ptr
 
-end sub
-
-
+#endif '' __LIST_BI__

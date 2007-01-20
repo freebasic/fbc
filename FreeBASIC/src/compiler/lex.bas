@@ -1332,9 +1332,9 @@ private sub hCheckPeriods _
 		byval t as FBTOKEN ptr, _
 		byval flags as LEXCHECK, _
 		byval chain_ as FBSYMCHAIN ptr _
-	) static
+	)
 
-	dim as integer readfullid
+	dim as integer readfullid = any
 
 	'' handle the stupid '.'s in symbols
 	if( chain_ <> NULL ) then
@@ -1348,16 +1348,21 @@ private sub hCheckPeriods _
 
     			'' search UDT variables
     			do while( chain_ <> NULL )
-       				if( symbIsVar( chain_->sym ) ) then
-	    				if( symbGetType( chain_->sym ) = FB_DATATYPE_STRUCT ) then
-        					readfullid = FALSE
-       						exit do
-       					end if
-					end if
-       					chain_ = symbChainGetNext( chain_ )
-       				loop
-       			end if
+       				dim as FBSYMBOL ptr sym = chain_->sym
+       				do
+       					if( symbIsVar( sym ) ) then
+	    					if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
+       							exit sub
+       						end if
+						end if
+
+						sym = sym->hash.next
+					loop while( sym <> NULL )
+
+       				chain_ = symbChainGetNext( chain_ )
+       			loop
        		end if
+       	end if
 
 	'' no symbol..
     else
@@ -1383,11 +1388,11 @@ sub lexNextToken _
 	( _
 		byval t as FBTOKEN ptr, _
 		byval flags as LEXCHECK _
-	) static
+	)
 
-	dim as uinteger char
-	dim as integer islinecont, lgt
-	dim as FBSYMCHAIN ptr chain_
+	dim as uinteger char = any
+	dim as integer islinecont = any, lgt = any
+	dim as FBSYMCHAIN ptr chain_ = any
 
 re_read:
 	t->text[0] = 0									'' t.text = ""
@@ -1533,8 +1538,8 @@ read_id:
 		hReadIdentifier( @t->text, t->len, t->dtype, flags )
 
 		'' use the special hash tb?
-		if( (flags and LEXCHECK_KEYHASHTB) <> 0 ) then
-			t->sym_chain = symbLookupAtTb( lex->kwhashtb, @t->text )
+		if( (flags and LEXCHECK_KWDNAMESPC) <> 0 ) then
+			t->sym_chain = symbLookupAt( lex->kwdns, @t->text, FALSE, FALSE )
 			'' not found?
 			if( t->sym_chain = NULL ) then
 				t->id = FB_TK_ID
@@ -1564,7 +1569,7 @@ read_id:
 		chain_ = t->sym_chain
 
 		if( chain_ <> NULL ) then
-			'' define?
+			'' define? (defines can't have dups nor be part of namespaces)
 			if( symbGetClass( chain_->sym ) = FB_SYMBCLASS_DEFINE ) then
 				'' restart..
 				if( ppDefineLoad( chain_->sym ) ) then

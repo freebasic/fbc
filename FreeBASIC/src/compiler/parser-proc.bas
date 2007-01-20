@@ -164,10 +164,10 @@ private function hGetId _
 		byval id as zstring ptr, _
 		byval dtype as integer ptr, _
 		byval is_sub as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FBSYMCHAIN ptr chain_
-	dim as FBSYMBOL ptr sym
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr sym = any
 
 	function = NULL
 
@@ -175,7 +175,7 @@ private function hGetId _
 	if( parent = NULL ) then
 		chain_ = lexGetSymChain( )
     else
-		chain_ = symbLookupAt( parent, lexGetText( ), FALSE )
+		chain_ = symbLookupAt( parent, lexGetText( ), FALSE, FALSE )
 	end if
 
     '' any symbol found?

@@ -434,7 +434,7 @@ function cAssignmentOrPtrCallEx _
 		else
 			'' error recovery: skip call
 			astDelTree( expr )
-			expr = NULL
+			return TRUE
 		end if
 
     '' CHAR and WCHAR literals are also from the INTEGER class
@@ -446,7 +446,7 @@ function cAssignmentOrPtrCallEx _
 			else
 				'' error recovery: skip call
 				astDelTree( expr )
-				expr = NULL
+				return TRUE
 			end if
 		end select
 	end if

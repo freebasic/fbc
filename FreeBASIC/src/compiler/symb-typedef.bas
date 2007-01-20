@@ -117,22 +117,18 @@ sub symbCheckFwdRef _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval class_ as integer _
-	) static
+	)
 
-	dim as FBSYMBOL ptr fwd
-	dim as FBSYMCHAIN ptr chain_
+	dim as FBSYMBOL ptr fwd = any, s = any
 
 	'' go to head
-	chain_ = sym->hash.chain
-	if( chain_ = NULL ) then
-		exit sub
-	end if
-
-	do while( chain_->prev <> NULL )
-		chain_ = chain_->prev
+	s = sym
+	do while( s->hash.prev <> NULL )
+		s = s->hash.prev
 	loop
 
-	fwd = symbFindByClass( chain_, FB_SYMBCLASS_FWDREF )
+	dim as FBSYMCHAIN chain_ = ( s, NULL )
+	fwd = symbFindByClass( @chain_, FB_SYMBCLASS_FWDREF )
 	if( fwd <> NULL ) then
 		hFixForwardRef( fwd, sym, class_ )
 	end if
