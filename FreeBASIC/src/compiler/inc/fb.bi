@@ -453,6 +453,10 @@ declare sub fbAddDefine _
 		byval dtext as zstring ptr _
 	)
 
+declare function fbPragmaOnce _
+	( _
+	) as integer
+
 declare function fbIncludeFile _
 	( _
 		byval filename as zstring ptr, _

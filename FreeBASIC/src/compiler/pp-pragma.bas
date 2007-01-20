@@ -18,7 +18,7 @@
 '' pre-processor #pragma parsing
 ''
 '' chng: oct/2005 written [v1ctor]
-
+''       jan/2006 updated [jeffm] added 'once'
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -26,13 +26,24 @@
 #include once "inc\parser.bi"
 #include once "inc\pp.bi"
 
+enum LEXPP_PRAGMAFLAG_ENUM
+	LEXPP_PRAGMAFLAG_NONE = 0
+	LEXPP_PRAGMAFLAG_CAN_PUSHPOP = 1
+	LEXPP_PRAGMAFLAG_CAN_ASSIGN = 2
+	LEXPP_PRAGMAFLAG_HAS_CALLBACK = 4
+
+	LEXPP_PRAGMAFLAG_DEFAULT = LEXPP_PRAGMAFLAG_CAN_PUSHPOP or LEXPP_PRAGMAFLAG_CAN_ASSIGN
+end enum
+
 type LEXPP_PRAGMAOPT
 	tk		as zstring * 16
 	opt		as integer
+	flags	as integer
 end type
 
 enum LEXPP_PRAGMAOPT_ENUM
 	LEXPP_PRAGMAOPT_BITFIELD
+	LEXPP_PRAGMAOPT_ONCE
 
 	LEXPP_PRAGMAS
 end enum
@@ -42,15 +53,16 @@ type LEXPP_PRAGMASTK
 	stk(0 to FB_MAXPRAGMARECLEVEL-1) as integer
 end type
 
-
 '' globals
 	dim shared pragmaStk(0 to FB_COMPOPTIONS-1) as LEXPP_PRAGMASTK
 
 	'' same order as LEXPP_PRAGMAOPT_ENUM
 	dim shared pragmaOpt(0 to LEXPP_PRAGMAS-1) as LEXPP_PRAGMAOPT => _
 	{ _
-		("msbitfields", FB_COMPOPT_MSBITFIELDS ) _
+		("msbitfields", FB_COMPOPT_MSBITFIELDS, LEXPP_PRAGMAFLAG_DEFAULT         ), _
+		("once"       , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK    ) _
 	}
+
 
 ''::::
 sub ppPragmaInit( )
@@ -179,10 +191,26 @@ function ppPragma( ) as integer
 		end if
 	end if
 
+    if( ispush or ispop ) then
+		if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_CAN_PUSHPOP) = 0 ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip line
+				if( ispop or ispush ) then
+					hSkipUntil( CHAR_RPRNT, TRUE )
+				else
+					hSkipUntil( FB_TK_EOL )
+				end if
+				return TRUE
+			end if
+		end if
+	end if
+
 	lexSkipToken( )
 
     if( ispop ) then
-    	if( pragmaPop( pragmaOpt(i).opt, value ) = FALSE ) then
+    	if( pragmaPop( pragmaOpt(p).opt, value ) = FALSE ) then
     		exit function
     	end if
 
@@ -190,8 +218,8 @@ function ppPragma( ) as integer
 		value = FALSE
 
 		if( ispush ) then
-        	if( pragmaPush( pragmaOpt(i).opt, _
-        					fbGetOption( pragmaOpt(i).opt ) ) = FALSE ) then
+        	if( pragmaPush( pragmaOpt(p).opt, _
+        					fbGetOption( pragmaOpt(p).opt ) ) = FALSE ) then
         		exit function
         	end if
 
@@ -206,6 +234,17 @@ function ppPragma( ) as integer
 		else
 			'' '='?
 			if( lexGetToken() = FB_TK_EQ ) then
+
+				if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_CAN_ASSIGN) = 0 ) then
+					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip line
+						hSkipUntil( FB_TK_EOL )
+						return TRUE
+					end if
+				end if
+
 				lexSkipToken( )
 			else
 				value = TRUE
@@ -221,8 +260,17 @@ function ppPragma( ) as integer
         end if
     end if
 
-    ''
-    fbSetOption( pragmaOpt(i).opt, value )
+	''
+	select case p
+	case LEXPP_PRAGMAOPT_ONCE
+		fbPragmaOnce()
+
+	case else
+		if( (pragmaOpt(p).flags and (LEXPP_PRAGMAFLAG_CAN_PUSHPOP or LEXPP_PRAGMAFLAG_CAN_ASSIGN)) <> 0 ) then
+			fbSetOption( pragmaOpt(p).opt, value )
+		end if
+
+	end select
 
 	if( ispop or ispush ) then
 		'' ')'

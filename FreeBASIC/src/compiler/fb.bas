@@ -114,6 +114,9 @@ declare sub	parserSetCtx ( )
 '' interface
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+#define hFind
+#define 
+
 '':::::
 sub fbAddIncPath _
 	( _
@@ -197,6 +200,7 @@ end function
 '':::::
 private function hFindIncFile _
 	( _
+		byval incfilehash as THASH ptr, _
 		byval filename as zstring ptr _
 	) as zstring ptr static
 
@@ -204,13 +208,14 @@ private function hFindIncFile _
 
 	fname = ucase( *filename )
 
-	function = hashLookup( @env.incfilehash, fname )
+	function = hashLookup( incfilehash, fname )
 
 end function
 
 '':::::
 private function hAddIncFile _
 	( _
+		byval incfilehash as THASH ptr, _
 		byval filename as zstring ptr _
 	) as zstring ptr static
 
@@ -222,9 +227,9 @@ private function hAddIncFile _
 
 	index = hashHash( fname )
 
-	res = hashLookupEx( @env.incfilehash, fname, index )
+	res = hashLookupEx( incfilehash, fname, index )
 	if( res = NULL ) then
-		hashAdd( @env.incfilehash, fname, fname, index )
+		hashAdd( incfilehash, fname, fname, index )
 	else
 		deallocate( fname )
 		fname = res
@@ -322,14 +327,15 @@ end sub
 private sub incTbInit( )
 
 	hashInit( )
-
 	hashNew( @env.incfilehash, FB_INITINCFILES )
+	hashNew( @env.inconcehash, FB_INITINCFILES )
 
 end sub
 
 '':::::
 private sub incTbEnd( )
 
+	hashFree( @env.inconcehash )
 	hashFree( @env.incfilehash )
 
 	hashEnd( )
@@ -937,6 +943,24 @@ sub fbGetDefaultLibs _
 
 end sub
 
+'':::: 
+function fbPragmaOnce _
+	( _
+	) as integer
+
+    dim as zstring ptr fileidx
+
+	function = FALSE
+
+	if( env.inf.name > "" ) then
+       	if( hFindIncFile( @env.inconcehash, env.inf.name ) = NULL ) then
+			fileidx = hAddIncFile( @env.inconcehash, env.inf.name )
+		end if
+ 		function = TRUE
+	end if
+
+end function
+
 ''::::
 function fbIncludeFile _
 	( _
@@ -987,16 +1011,21 @@ function fbIncludeFile _
 	''
 	hRevertSlash( incfile, FALSE )
 
-	''
+	'' #include ONCE 
 	if( isonce ) then
         '' we should respect the path
-       	if( hFindIncFile( incfile ) <> NULL ) then
+       	if( hFindIncFile( @env.incfilehash, incfile ) <> NULL ) then
        		return TRUE
        	end if
 	end if
 
+	'' #pragma ONCE
+    if( hFindIncFile( @env.inconcehash, incfile ) <> NULL ) then
+       	return TRUE
+    end if
+
     '' we should respect the path here too
-	fileidx = hAddIncFile( incfile )
+	fileidx = hAddIncFile( @env.incfilehash, incfile )
 
 	'' push context
 	infileTb(env.includerec) = env.inf

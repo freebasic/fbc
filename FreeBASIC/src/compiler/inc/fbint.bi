@@ -654,6 +654,7 @@ type FBENV
 	'' include files
 	incpaths		as integer
 	incfilehash		as THASH
+	inconcehash		as THASH
 	includerec		as integer					'' >0 if parsing an include file
 
 	main			as FBMAIN
