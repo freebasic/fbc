@@ -980,9 +980,12 @@ private function checkFiles _
 		hDelArgNode( arg )
 
 	case else
-		if( fbc.vtbl.listFiles( *arg ) ) then
-			hDelArgNode( arg )
+		if( fbc.vtbl.listFiles( *arg ) = FALSE ) then
+			return FALSE
 		end if
+
+		hDelArgNode( arg )
+
 	end select
 
 	function = TRUE
