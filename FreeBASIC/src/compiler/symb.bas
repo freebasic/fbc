@@ -679,8 +679,10 @@ function symbLookup _
 			if( sym->class = FB_SYMBCLASS_KEYWORD ) then
 				tk = sym->key.id
 				tk_class = sym->key.tkclass
-				'' keywords are unique, they can't never be redefined
-				exit do
+				'' keywords and operators are unique, they can't never be redefined
+				if( tk_class <> FB_TKCLASS_QUIRKWD ) then
+					exit do
+				end if
 			end if
 
         end if
