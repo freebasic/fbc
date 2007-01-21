@@ -150,8 +150,8 @@ install-info:
 install-man:
 
 install:
-	cp libfb*.a ../../../../lib/@FBRT_TARGET@ -v
-	cp $(FBRT_STATICOBJS) ../../../../lib/@FBRT_TARGET@ -v
+	cp libfb*.a ../../../../lib/@FBRT_TARGET@/ -v
+	cp $(FBRT_STATICOBJS) ../../../../lib/@FBRT_TARGET@/ -v
 
 .PHONY: installdirs install install-strip mostlyclean clean distclean \
   maintainer-clean check installcheck dvi html info install-info \
