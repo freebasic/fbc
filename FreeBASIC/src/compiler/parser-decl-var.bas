@@ -156,8 +156,9 @@ function cVariableDecl _
 
 	end select
 
-	''
+	'' OPTION DYNAMIC enabled?
 	if( env.opt.dynamic ) then
+		'' not forced STATIC?
 		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
 			attrib or= FB_SYMBATTRIB_DYNAMIC
 		end if
@@ -1069,6 +1070,44 @@ private function hFlushInitializer _
 end function
 
 '':::::
+private function hSymbolType _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as integer, _
+		byref ptrcnt as integer _
+	) as integer
+    
+    function = TRUE
+    
+	'' parse the symbol type (INTEGER, STRING, etc...)
+	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: fake a type
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
+			lgt = FB_INTEGERSIZE
+			ptrcnt = 0
+		end if
+	end if
+	
+	'' ANY?
+	if( dtype = FB_DATATYPE_VOID ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: fake a type
+			dtype += FB_DATATYPE_POINTER
+			subtype = NULL
+			lgt = FB_POINTERSIZE
+			ptrcnt = 1
+		end if
+	end if
+
+end function
+'':::::
 ''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (',' SymbolDef)* .
 ''
@@ -1105,47 +1144,27 @@ function hVarDeclEx _
     is_multdecl = FALSE
     if( lexGetToken( ) = FB_TK_AS ) then
     	lexSkipToken( )
-
-    	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: fake a type
-    			dtype = FB_DATATYPE_INTEGER
-    			subtype = NULL
-    			lgt = FB_INTEGERSIZE
-    			ptrcnt = 0
-    		end if
-    	end if
-
-    	'' ANY?
-    	if( dtype = FB_DATATYPE_VOID ) then
-    		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: fake a type
-    			dtype += FB_DATATYPE_POINTER
-    			subtype = NULL
-    			lgt = FB_POINTERSIZE
-    			ptrcnt = 1
-    		end if
-    	end if
-
+        
+        '' parse the symbol type (INTEGER, STRING, etc...)
+        if( hSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+        	exit function
+        end if
+        
     	addsuffix = FALSE
-
     	is_multdecl = TRUE
     end if
 
     dim as FB_IDOPT options = FB_IDOPT_DEFAULT
-
+    
+    '' it's a declaration if it's not a REDIM, 
+    '' or if it is, then it's a REDIM SHARED.
     if( (token <> FB_TK_REDIM) or (options and FB_SYMBATTRIB_SHARED) ) then
     	options or= FB_IDOPT_ISDECL
     end if
 
     do
-    	dim as FBSYMBOL ptr parent = cParentId( options )
-
-		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, options )
+	dim as FBSYMBOL ptr parent = cParentId( options )
+	dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, options )
 
     	is_typeless = FALSE
 
@@ -1156,11 +1175,16 @@ function hVarDeclEx _
     		lgt	= 0
     		addsuffix = TRUE
     	else
+    		'' the user did 'DIM AS _____', and then
+    		'' specified a suffix on a symbol, e.g.
+    		''
+    		'' DIM AS INTEGER x, y$
     		if( suffix <> INVALID ) then
     			if( errReportEx( FB_ERRMSG_SYNTAXERROR, @id ) = FALSE ) then
     				exit function
     			else
-    				'' error recovery
+    				'' error recovery: the symbol gets the 
+    				'' type specified 'AS'
     				suffix = INVALID
     			end if
     		end if
@@ -1173,11 +1197,14 @@ function hVarDeclEx _
 			lexSkipToken( )
 
 			is_dynamic = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
-
+            
+            '' ID()
 			if( lexGetToken( ) = CHAR_RPRNT ) then
-				dimensions = -1 				'' fake it
+				'' fake it
+				dimensions = -1
 				is_dynamic = TRUE
-
+            
+            '' , ID( expr, (TO expr)? )
     		else
     			'' only allow subscripts if not COMMON
     			if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
@@ -1263,30 +1290,10 @@ function hVarDeclEx _
 
     			lexSkipToken( )
 
-    			if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
-    				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    					exit function
-    				else
-    					'' error recovery: fake a type
-    					dtype = FB_DATATYPE_INTEGER
-    					subtype = NULL
-    					lgt = FB_INTEGERSIZE
-    					ptrcnt = 0
-    				end if
-    			end if
-
-    			'' ANY?
-    			if( dtype = FB_DATATYPE_VOID ) then
-    				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-    					exit function
-    				else
-    					'' error recovery: fake a type
-    					dtype += FB_DATATYPE_POINTER
-    					subtype = NULL
-    					lgt = FB_POINTERSIZE
-    					ptrcnt = 1
-    				end if
-    			end if
+		        '' parse the symbol type (INTEGER, STRING, etc...)
+		        if( hSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+		        	exit function
+		        end if
 
     			addsuffix = FALSE
 

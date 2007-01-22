@@ -165,6 +165,7 @@ function cIdentifier _
 
     if( chain_ = NULL ) then
     	'' '.'?
+    	
     	if( lexGetToken( ) <> CHAR_DOT ) then
     		return NULL
     	end if

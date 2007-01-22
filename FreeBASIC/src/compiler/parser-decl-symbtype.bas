@@ -286,10 +286,22 @@ function cSymbolType _
 		end if
 
 	case else
-		dim as FBSYMCHAIN ptr chain_ = any
+		dim as FBSYMCHAIN ptr chain_ = NULL
 		dim as FBSYMBOL ptr base_parent = any
+        dim as integer id_options = FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT
+  		dim as integer check_id = TRUE
 
-		chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
+  		if( parser.stmt.with.sym <> NULL ) then
+  			if( lexGetToken( ) = CHAR_DOT ) then
+  				'' not a '..'?
+  				check_id = (lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) = CHAR_DOT)
+  			end if
+		end if
+        
+        if( check_id = TRUE ) then
+			chain_ = cIdentifier( base_parent, id_options )
+		end if
+		
 		if( chain_ = NULL ) then
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function

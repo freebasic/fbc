@@ -95,6 +95,7 @@ Version 0.17 Beta:
 - the VAR keyword, which allows type inferrence from initializers (think DIM without AS) ex: var foo = "hello", bar = 2.4 (cha0s)
 - multiple EXIT and CONTINUE levels support (EXIT FOR, FOR or CONTINUE DO, DO, DO, etc) (v1c)
 - the __FB_BUILD_DATE__, __FB_BUILD_TIME__, and __FB_BUILD_SIGNATURE__ intrinsic defines, see wiki for details. (cha0s)
+- DyLibSymbol is now overloaded; it can take a short as the second arg, to specify the proc's ordinal. Patch by voodooattack
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
