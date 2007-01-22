@@ -2,8 +2,6 @@ Version 0.17 Beta:
 
 [changed]
 - see the migrating.txt file for the list of changes because the new -lang command-line option (v1c)
-- enumid.elementid was removed, because the ambiguity with other symbols like UDT variables that can have the same name
-  and because with namespaces the elements would have to be added twice to work as both "elementid" and "enumid.elementid" (v1c)
 - #undef can't remove symbols defined inside namespaces anymore, to allow namespace redefinition to work (v1c)
 - calling "SCREEN 0" now causes an 80x25 text mode to be set and cleared by default (lillo)
 - the pre-processor keywords aren't reserved words anymore (v1c)

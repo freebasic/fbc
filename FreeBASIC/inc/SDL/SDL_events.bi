@@ -17,6 +17,8 @@
 #include once "SDL_quit.bi"
 #include once "begin_code.bi"
 
+extern "c" 
+
 enum 
 	SDL_NOEVENT = 0
 	SDL_ACTIVEEVENT
@@ -177,7 +179,7 @@ union SDL_Event
 	syswm as SDL_SysWMEvent
 end union
 
-declare sub SDL_PumpEvents cdecl alias "SDL_PumpEvents" ()
+declare sub SDL_PumpEvents ()
 
 enum SDL_eventaction
 	SDL_ADDEVENT
@@ -186,22 +188,24 @@ enum SDL_eventaction
 end enum
 
 
-declare function SDL_PeepEvents cdecl alias "SDL_PeepEvents" (byval events as SDL_Event ptr, byval numevents as integer, byval action as SDL_eventaction, byval mask as Uint32) as integer
-declare function SDL_PollEvent cdecl alias "SDL_PollEvent" (byval event as SDL_Event ptr) as integer
-declare function SDL_WaitEvent cdecl alias "SDL_WaitEvent" (byval event as SDL_Event ptr) as integer
-declare function SDL_PushEvent cdecl alias "SDL_PushEvent" (byval event as SDL_Event ptr) as integer
+declare function SDL_PeepEvents (byval events as SDL_Event ptr, byval numevents as integer, byval action as SDL_eventaction, byval mask as Uint32) as integer
+declare function SDL_PollEvent (byval event as SDL_Event ptr) as integer
+declare function SDL_WaitEvent (byval event as SDL_Event ptr) as integer
+declare function SDL_PushEvent (byval event as SDL_Event ptr) as integer
 
-type SDL_EventFilter as function cdecl(byval as SDL_Event ptr) as integer
+type SDL_EventFilter as function(byval as SDL_Event ptr) as integer
 
-declare sub SDL_SetEventFilter cdecl alias "SDL_SetEventFilter" (byval filter as SDL_EventFilter)
-declare function SDL_GetEventFilter cdecl alias "SDL_GetEventFilter" () as SDL_EventFilter
+declare sub SDL_SetEventFilter (byval filter as SDL_EventFilter)
+declare function SDL_GetEventFilter () as SDL_EventFilter
 
 #define SDL_QUERY -1
 #define SDL_IGNORE 0
 #define SDL_DISABLE 0
 #define SDL_ENABLE 1
 
-declare function SDL_EventState cdecl alias "SDL_EventState" (byval type as Uint8, byval state as integer) as Uint8
+declare function SDL_EventState (byval type as Uint8, byval state as integer) as Uint8
+
+end extern
 
 #include once "close_code.bi"
 

@@ -34,11 +34,13 @@
 #define SDL_INIT_EVENTTHREAD &h01000000
 #define SDL_INIT_EVERYTHING &h0000FFFF
 
-declare function SDL_Init cdecl alias "SDL_Init" (byval flags as Uint32) as integer
-declare function SDL_InitSubSystem cdecl alias "SDL_InitSubSystem" (byval flags as Uint32) as integer
-declare sub SDL_QuitSubSystem cdecl alias "SDL_QuitSubSystem" (byval flags as Uint32)
-declare function SDL_WasInit cdecl alias "SDL_WasInit" (byval flags as Uint32) as Uint32
-declare sub SDL_Quit cdecl alias "SDL_Quit" ()
+extern "c"
+declare function SDL_Init (byval flags as Uint32) as integer
+declare function SDL_InitSubSystem (byval flags as Uint32) as integer
+declare sub SDL_QuitSubSystem (byval flags as Uint32)
+declare function SDL_WasInit (byval flags as Uint32) as Uint32
+declare sub SDL_Quit ()
+end extern
 
 #include once "close_code.bi"
 
