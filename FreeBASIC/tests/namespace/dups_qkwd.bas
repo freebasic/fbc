@@ -6,19 +6,17 @@ namespace fbc_tests.ns.dups_qkwd
 			x as integer
 		end type
 	
-		namespace ns_b
-			const line = 1234
+		const line = 1234
 			
-			sub do_test( byref l as line )
-				CU_ASSERT_EQUAL( l.x, 5678 )
-			end sub
-		end namespace
+		sub do_test( byref l as line )
+			CU_ASSERT_EQUAL( l.x, 5678 )
+		end sub
 	
 	end namespace
 	
 	sub test_1 cdecl
 		dim as ns_a.line l = ( 5678 )
-		ns_a.ns_b.do_test( l )
+		ns_a.do_test( l )
 	end sub
 	
 	namespace ns_1
@@ -30,8 +28,6 @@ namespace fbc_tests.ns.dups_qkwd
 	
 	namespace ns_2
 		using ns_1
-		
-		const line = -1234
 		
 		sub do_test( byref l as line )
 			CU_ASSERT_EQUAL( l.y, -5678 )
