@@ -5185,9 +5185,9 @@ private sub _emitEXP _
 
 	outp "fldl2e"
 	outp "fmulp st(1), st"
-	outp "fst st(1)"
+	outp "fld st"
     outp "frndint"
-	outp "fsub st(1),st"
+	outp "fsub st(1), st"
 	outp "fxch"
 	outp "f2xm1"
 	'' can't use fld1 because max 2 fp regs can be used
@@ -5196,6 +5196,7 @@ private sub _emitEXP _
 	outp "add esp, 4"
 	outp "fscale"
 	outp "fstp st(1)"
+
 
 end sub
 
