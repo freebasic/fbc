@@ -48,7 +48,7 @@ declare sub 		hashDelItem	( byval list as HASHLIST ptr, _
 sub hashInit _
 	( _
 		byval initnodes as integer _
-	)static
+	)
 
 	ctx.refcnt += 1
 	if( ctx.refcnt > 1 ) then
@@ -61,7 +61,7 @@ sub hashInit _
 end sub
 
 '':::::
-sub hashEnd static
+sub hashEnd
 
 	ctx.refcnt -= 1
 	if( ctx.refcnt > 0 ) then
@@ -78,23 +78,12 @@ sub hashNew _
 		byval hash as THASH ptr, _
 		byval nodes as integer, _
 		byval delstr as integer _
-	) static
-
-    dim as integer i
-    dim as HASHLIST ptr list
+	)
 
 	'' allocate a fixed list of internal linked-lists
 	hash->list = callocate( nodes * len( HASHLIST ) )
 	hash->nodes = nodes
 	hash->delstr = delstr
-
-	'' initialize the list
-	list = hash->list
-	for i = 0 to nodes-1
-		list->head = NULL
-		list->tail = NULL
-		list += 1
-	next
 
 end sub
 
@@ -102,11 +91,11 @@ end sub
 sub hashFree _
 	( _
 		byval hash as THASH ptr _
-	) static
+	)
 
-    dim as integer i
-    dim as HASHITEM ptr item, nxt
-    dim as HASHLIST ptr list
+    dim as integer i = any
+    dim as HASHITEM ptr item = any, nxt = any
+    dim as HASHLIST ptr list = any
 
     '' for each item on each list, deallocate it and the name string
     list = hash->list
@@ -153,10 +142,10 @@ end sub
 function hashHash _
 	( _
 		byval symbol as zstring ptr _
-	) as uinteger static
+	) as uinteger
 
-	dim as uinteger index
-	dim as integer i
+	dim as uinteger index = any
+	dim as integer i = any
 
 	index = 0
 
@@ -174,10 +163,10 @@ function hashLookupEx _
 		byval hash as THASH ptr, _
 		byval symbol as zstring ptr, _
 		byval index as uinteger _
-	) as any ptr static
+	) as any ptr
 
-    dim as HASHITEM ptr item
-    dim as HASHLIST ptr list
+    dim as HASHITEM ptr item = any
+    dim as HASHLIST ptr list = any
 
     function = NULL
 
@@ -205,7 +194,7 @@ function hashLookup _
 	( _
 		byval hash as THASH ptr, _
 		byval symbol as zstring ptr _
-	) as any ptr static
+	) as any ptr
 
     function = hashLookupEx( hash, symbol, hashHash( symbol ) )
 
@@ -215,9 +204,9 @@ end function
 private function hashNewItem _
 	( _
 		byval list as HASHLIST ptr _
-	) as HASHITEM ptr static
+	) as HASHITEM ptr
 
-	dim as HASHITEM ptr item
+	dim as HASHITEM ptr item = any
 
 	'' add a new node
 	item = listNewNode( @ctx.itemlist )
@@ -243,9 +232,9 @@ private sub hashDelItem _
 	( _
 		byval list as HASHLIST ptr, _
 		byval item as HASHITEM ptr _
-	) static
+	)
 
-	dim as HASHITEM ptr prv, nxt
+	dim as HASHITEM ptr prv = any, nxt = any
 
 	''
 	if( item = NULL ) Then
@@ -279,9 +268,9 @@ function hashAdd _
 		byval symbol as zstring ptr, _
 		byval userdata as any ptr, _
 		byval index as uinteger _
-	) as HASHITEM ptr static
+	) as HASHITEM ptr
 
-    dim as HASHITEM ptr item
+    dim as HASHITEM ptr item = any
 
     '' calc hash?
     if( index = INVALID ) then
@@ -310,9 +299,9 @@ sub hashDel _
 		byval hash as THASH ptr, _
 		byval item as HASHITEM ptr, _
 		byval index as uinteger _
-	) static
+	)
 
-    dim as HASHLIST ptr list
+    dim as HASHLIST ptr list = any
 
 	if( item = NULL ) then
 		exit sub

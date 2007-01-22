@@ -53,7 +53,17 @@ sub astNamespaceEnd _
 		byval n as ASTNODE ptr _
 	)
 
+	dim as FBSYMBOL ptr ns = n->sym
+
 	symbNestEnd( FALSE )
+
+	'' reimplementation?
+	symbGetNamespaceCnt( ns ) += 1
+	if( symbGetNamespaceCnt( ns ) > 1 ) then
+		symbNamespaceReImport( ns )
+	end if
+
+	symbGetNamespaceLastTail( ns ) = symbGetCompSymbTb( ns ).tail
 
 end sub
 

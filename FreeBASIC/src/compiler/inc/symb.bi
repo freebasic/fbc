@@ -154,6 +154,11 @@ type EMIT_NODE_ as EMIT_NODE
 #endif
 
 ''
+type FBSYMLIST
+	head			as FBSYMBOL_ ptr
+	tail			as FBSYMBOL_ ptr
+end type
+
 type FBARRAYDIM
 	lower			as integer
 	upper			as integer
@@ -169,6 +174,12 @@ end type
 type FBSYMCHAIN
 	sym				as FBSYMBOL_ ptr			'' first symbol
 	next			as FBSYMCHAIN ptr
+	isimport		as integer
+
+	'' all fields below are only set when importing (with USING) a ns
+	prev			as FBSYMCHAIN ptr
+	item			as HASHITEM ptr
+	imp_next		as FBSYMCHAIN ptr
 end type
 
 ''
@@ -196,9 +207,11 @@ end type
 
 ''
 type FBNAMESPC_EXT
-	head			as FBSYMBOL_ ptr            '' all USING's found inside this ns
-	tail			as FBSYMBOL_ ptr			'' /
+    implist			as FBSYMLIST  				'' all namespaces imported by this ns
+    explist			as FBSYMLIST  				'' all namespaces importing this ns
     cnt				as integer					'' times this ns was imported/nested
+    impsym_head		as FBSYMCHAIN ptr			'' imported symbols by the last USING
+    impsym_tail		as FBSYMCHAIN ptr			'' /
 end type
 
 type FBNAMESPC
@@ -493,13 +506,21 @@ end type
 type FBS_NAMESPACE
 	'' extends FBNAMESPC
 	ns				as FBNAMESPC
+
+	cnt				as integer					'' times this ns was re-opened
+    last_tail		as FBSYMBOL_ ptr			'' point to last tail
 end type
 
 '' namespace import (USING)
 type FBS_NSIMPORT
-	ns				as FBSYMBOL_ ptr
-	prev			as FBSYMBOL_ ptr			'' prev in the ns import list
-	next			as FBSYMBOL_ ptr			'' next //
+	'' imported ns (src)
+	imp_ns			as FBSYMBOL_ ptr
+	imp_prev		as FBSYMBOL_ ptr
+	imp_next		as FBSYMBOL_ ptr
+	'' exported ns (dst)
+	exp_ns			as FBSYMBOL_ ptr
+	exp_prev		as FBSYMBOL_ ptr
+	exp_next		as FBSYMBOL_ ptr
 end type
 
 ''
@@ -601,6 +622,8 @@ type SYMBCTX
 	symtb			as FBSYMBOLTB ptr			'' current symbol tb
 
 	neststk			as TSTACK					'' nest stack (namespace/class nesting)
+	imphashtb		as THASH					'' imported symbol (USING) tb
+	imphashlist		as TLIST					'' (of FBSYMHASH)
 
 	namepool		as TPOOL
 
@@ -880,8 +903,7 @@ declare function symbDelDefineTok _
 
 declare function symbAddFwdRef _
 	( _
-		byval id as zstring ptr, _
-		byval id_alias as zstring ptr = NULL _
+		byval id as zstring ptr _
 	) as FBSYMBOL ptr
 
 declare function symbAddTypedef _
@@ -1172,47 +1194,56 @@ declare sub symbDelScopeTb _
 
 declare sub symbDelSymbol _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer = FALSE _
 	)
 
 declare function symbDelKeyword _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer = FALSE _
 	) as integer
 
 declare function symbDelDefine _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer = FALSE _
 	) as integer
 
 declare sub symbDelLabel _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer = FALSE _
 	)
 
 declare sub symbDelVar _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer = FALSE _
 	)
 
 declare sub symbDelPrototype _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer = FALSE _
 	)
 
 declare sub symbDelEnum _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer = FALSE _
 	)
 
 declare sub symbDelStruct _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer = FALSE _
 	)
 
 declare sub symbDelConst _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer = FALSE _
 	)
 
 declare sub symbDelLibEx _
@@ -1224,12 +1255,14 @@ declare sub symbDelLibEx _
 
 declare sub symbDelScope _
 	( _
-		byval scp as FBSYMBOL ptr _
+		byval scp as FBSYMBOL ptr, _
+		byval is_tbdel as integer = FALSE _
 	)
 
 declare sub symbDelNamespace _
 	( _
-		byval ns as FBSYMBOL ptr _
+		byval ns as FBSYMBOL ptr, _
+		byval is_tbdel as integer = FALSE _
 	)
 
 declare function symbNewSymbol _
@@ -1450,7 +1483,13 @@ declare function symbNamespaceImport _
 declare sub symbNamespaceRemove _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval hashonly as integer _
+		byval hashonly as integer, _
+		byval is_tbdel as integer = FALSE _
+	)
+
+declare sub symbNamespaceReImport _
+	( _
+		byval ns as FBSYMBOL ptr _
 	)
 
 declare sub symbNestBegin _
@@ -1600,12 +1639,6 @@ declare sub symbCompAddDefMembers _
 		byval sym as FBSYMBOL ptr _
 	)
 
-declare function symbLookupCompField _
-	( _
-		byval parent as FBSYMBOL ptr, _
-		byval id as zstring ptr _
-	) as FBSYMBOL ptr
-
 declare function symbAddGlobalCtor _
 	( _
 		byval proc as FBSYMBOL ptr _
@@ -1688,6 +1721,17 @@ declare sub symbCompDelImportList _
 		byval sym as FBSYMBOL ptr _
 	)
 
+declare sub symbHashListInsertNamespace _
+	( _
+		byval ns as FBSYMBOL ptr, _
+		byval src_head as FBSYMBOL ptr _
+	)
+
+declare sub symbHashListRemoveNamespace _
+	( _
+		byval ns as FBSYMBOL ptr _
+	)
+
 ''
 '' macros
 ''
@@ -1704,7 +1748,7 @@ declare sub symbCompDelImportList _
 	_hashtb.prev = NULL
 	_hashtb.next = NULL
 
-	if( _nodes <> 0 ) then
+	if( (_nodes) <> 0 ) then
 		hashNew( @_hashtb.tb, _nodes )
 	end if
 
@@ -2099,6 +2143,10 @@ declare sub symbCompDelImportList _
 
 #define symbGetNamespaceHashTb(s) s->nspc.ns.hashtb
 
+#define symbGetNamespaceCnt(s) s->nspc.cnt
+
+#define symbGetNamespaceLastTail(s) s->nspc.last_tail
+
 #define symbGetLabelIsDeclared(l) l->lbl.declared
 
 #define symbSetLabelIsDeclared(l) l->lbl.declared = TRUE
@@ -2191,9 +2239,13 @@ declare sub symbCompDelImportList _
 
 #define symbGetParamNext(a) a->next
 
-#define symbGetImportNamespc(s) s->nsimp.ns
+#define symbGetImportNamespc(s) s->nsimp.imp_ns
 
-#define symbGetImportNext(s) s->nsimp.next
+#define symbGetImportNext(s) s->nsimp.imp_next
+
+#define symbGetExportNamespc(s) s->nsimp.exp_ns
+
+#define symbGetExportNext(s) s->nsimp.exp_next
 
 #define symbGetIsDynamic(s) ((s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) <> 0 )
 
@@ -2292,7 +2344,12 @@ declare sub symbCompDelImportList _
 
 #define symbGetCompExt( s ) s->nspc.ns.ext
 
-#define symbGetCompImportHead( s ) s->nspc.ns.ext->head
+#define symbGetCompImportHead( s ) s->nspc.ns.ext->implist.head
+
+#define symbGetCompExportHead( s ) s->nspc.ns.ext->explist.head
+
+#define symbLookupCompField( parent, id ) symbLookupAt( parent, id, FALSE, TRUE )
+
 
 ''
 '' inter-module globals

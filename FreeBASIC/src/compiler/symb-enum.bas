@@ -34,11 +34,9 @@ function symbAddEnum _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr, _
 		byval attrib as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr e
-
-    function = NULL
+    dim as FBSYMBOL ptr e = any
 
 	'' no explict alias given?
     if( id_alias = NULL ) then
@@ -53,14 +51,20 @@ function symbAddEnum _
     				   NULL, NULL, _
     				   FB_SYMBCLASS_ENUM, _
     				   id, id_alias, _
-    				   INVALID, NULL, 0, attrib )
+    				   FB_DATATYPE_ENUM, NULL, 0, attrib )
 	if( e = NULL ) then
-		exit function
+		return NULL
 	end if
 
 	'' init tables
 	symbSymbTbInit( e->enum_.ns.symtb, e )
-	symbHashTbInit( e->enum_.ns.hashtb, e, 0 )
+
+	'' create a new hash if in BASIC mangling mode
+	if( parser.mangling = FB_MANGLING_BASIC ) then
+		symbHashTbInit( e->enum_.ns.hashtb, e, FB_INITFIELDNODES )
+	else
+		symbHashTbInit( e->enum_.ns.hashtb, e, 0 )
+	end if
 
     '' unused (while mixins aren't supported)
     e->enum_.ns.ext = NULL
@@ -84,25 +88,25 @@ function symbAddEnumElement _
 		byval id as zstring ptr, _
 		byval intval as integer, _
 		byval attrib as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr s = any
 
     s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
     				   NULL, _
     				   NULL, NULL, _
     				   FB_SYMBCLASS_CONST, _
     				   id, NULL, _
-    				   FB_DATATYPE_ENUM, parent, 0, attrib )
+    				   FB_DATATYPE_ENUM, parent, 0, _
+    				   attrib )
 	if( s = NULL ) then
-		exit function
+		return NULL
 	end if
 
 	s->con.val.int = intval
 
 	parent->enum_.elements += 1
 
-	''
 	function = s
 
 end function
@@ -110,31 +114,35 @@ end function
 '':::::
 sub symbDelEnum _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer _
 	)
 
     if( s = NULL ) then
     	exit sub
     end if
 
-	'' del the imports (USING's) first, or NamespaceRemove() would
-	'' remove try to remove the namespace from the hash tb list
+    ''
     symbCompDelImportList( s )
 
-    '' del all enum constants
-	dim as FBSYMBOL ptr e = any, nxt = any
-
-	e = s->enum_.ns.symtb.head
-    do while( e <> NULL )
-        nxt = e->next
-		symbFreeSymbol( e )
-		e = nxt
+	'' starting from last because of the USING's that could be
+	'' referencing a namespace in the same scope block
+	dim as FBSYMBOL ptr fld = symbGetCompSymbTb( s ).tail
+    do while( fld <> NULL )
+        dim as FBSYMBOL ptr prv = fld->prev
+		symbFreeSymbol( fld )
+		fld = prv
 	loop
 
 	''
 	if( s->enum_.ns.ext <> NULL ) then
 		symbCompFreeExt( s->enum_.ns.ext )
 		s->enum_.ns.ext = NULL
+	end if
+
+	''
+	if( symbGetMangling( s ) = FB_MANGLING_BASIC ) then
+		hashFree( @s->enum_.ns.hashtb.tb )
 	end if
 
 	'' del the enum node

@@ -2286,7 +2286,8 @@ end sub
 '':::::
 sub symbDelPrototype _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer _
 	)
 
     if( s = NULL ) then

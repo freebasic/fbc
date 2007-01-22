@@ -936,7 +936,7 @@ decl_inner:		'' it's an anonymous inner UDT
 
 	'' nothing added?
 	if( symbGetUDTElements( s ) = 0 ) then
-		if( errReport( FB_ERRMSG_ELEMENTNOTDEFINED ) = FALSE ) then
+		if( errReport( FB_ERRMSG_NOELEMENTSDEFINED ) = FALSE ) then
 			exit function
 		end if
 	end if

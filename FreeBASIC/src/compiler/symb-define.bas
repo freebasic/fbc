@@ -655,8 +655,9 @@ end sub
 '':::::
 function symbDelDefine _
 	( _
-		byval s as FBSYMBOL ptr _
-	) as integer static
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer _
+	) as integer
 
     function = FALSE
 

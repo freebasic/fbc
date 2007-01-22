@@ -847,7 +847,8 @@ end sub
 '':::::
 sub symbDelVar _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer _
 	)
 
     if( s = NULL ) then
@@ -856,8 +857,10 @@ sub symbDelVar _
 
     if( s->var_.array.dims > 0 ) then
     	hDelVarDims( s )
-    	'' del the array descriptor, recursively
-    	symbDelVar( s->var_.array.desc )
+    	if( is_tbdel = FALSE ) then
+    		'' del the array descriptor, recursively
+    		symbDelVar( s->var_.array.desc, FALSE )
+    	end if
     end if
 
     if( symbGetIsLiteral( s ) ) then

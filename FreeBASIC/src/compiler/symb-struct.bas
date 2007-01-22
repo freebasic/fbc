@@ -715,20 +715,22 @@ end function
 '':::::
 sub symbDelStruct _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval is_tbdel as integer _
 	)
 
     if( s = NULL ) then
     	exit sub
     end if
 
-	'' del the imports (USING's) first, or NamespaceRemove() would
-	'' remove try to remove the namespace from the hash tb list
+    ''
     symbCompDelImportList( s )
 
     '' del all udt elements
     do
-		dim as FBSYMBOL ptr fld = s->udt.ns.symtb.head
+		'' starting from last because of the USING's that could be
+		'' referencing a namespace in the same scope block
+		dim as FBSYMBOL ptr fld = symbGetCompSymbTb( s ).tail
 		if( fld = NULL ) then
 			exit do
 		end if
@@ -750,10 +752,11 @@ sub symbDelStruct _
 
     	'' ctor, dtor, operator or method's local symbol
     	else
-    		symbDelSymbol( fld )
+    		symbDelSymbol( fld, TRUE )
     	end if
     loop
 
+    ''
     if( s->udt.ext <> NULL ) then
     	deallocate( s->udt.ext )
     	s->udt.ext = NULL
@@ -763,6 +766,11 @@ sub symbDelStruct _
 	if( s->udt.ns.ext <> NULL ) then
 		symbCompFreeExt( s->udt.ns.ext )
 		s->udt.ns.ext = NULL
+	end if
+
+	''
+	if( (s->udt.options and FB_UDTOPT_ISANON) = 0 ) then
+		hashFree( @s->udt.ns.hashtb.tb )
 	end if
 
 	'' del the udt node

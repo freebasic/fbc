@@ -120,16 +120,13 @@ end function
 		else
 			'' check for ambiguous access (dup symbols in different imported namespaces)
 			if( chain_ <> NULL ) then
-				'' same symbol found in more than on hash tb?
+				'' same symbol found in more than one hash tb?
 				if( chain_->next <> NULL ) then
-					dim as FBSYMBOL ptr ns = symbGetNamespace( chain_->sym )
-					'' first symbol declared in other namespace?
-					if( ns <> parent ) then
-						'' not a parent namespace?
-						if( symbIsChildOf( iif( parent <> NULL, _
-									   	    	parent, _
-									   	    	symbGetCurrentNamespc( ) ), _
-											ns ) = FALSE ) then
+					'' imported namespace?
+					if( chain_->isimport ) then
+						dim as FBSYMBOL ptr ns = symbGetNamespace( chain_->sym )
+						'' first symbol declared in other namespace?
+						if( ns <> parent ) then
 							'' more than one imported symbol
 							errReport( FB_ERRMSG_AMBIGUOUSSYMBOLACCESS )
 							'' (don't return NULL or a new variable would be implicitly created)
@@ -165,7 +162,7 @@ function cIdentifier _
 
     if( chain_ = NULL ) then
     	'' '.'?
-    	
+
     	if( lexGetToken( ) <> CHAR_DOT ) then
     		return NULL
     	end if
@@ -188,7 +185,7 @@ function cIdentifier _
     	dim as FBSYMBOL ptr sym = chain_->sym
 
     	select case as const symbGetClass( sym )
-    	case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS
+    	case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS, FB_SYMBCLASS_ENUM
 
     	case FB_SYMBCLASS_STRUCT
     		if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
@@ -202,7 +199,7 @@ function cIdentifier _
 
     	case FB_SYMBCLASS_TYPEDEF
             '' typedef of a TYPE/CLASS?
-            select case symbGetType( sym )
+            select case as const symbGetType( sym )
             case FB_DATATYPE_STRUCT
     			if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
     				exit do
@@ -215,8 +212,8 @@ function cIdentifier _
     				exit do
     			end if
 
-            'case FB_DATATYPE_CLASS
-            	'' ...
+			case FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
+				sym = symbGetSubtype( sym )
 
             case else
             	exit do
@@ -246,6 +243,18 @@ function cIdentifier _
     		end if
 
     		exit do
+    	end if
+
+    	if( symbGetClass( sym ) = FB_SYMBCLASS_ENUM ) then
+    		'' not in BASIC mangling mode?
+    		if( symbGetMangling( sym ) <> FB_MANGLING_BASIC ) then
+    			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+    				if( errReport( FB_ERRMSG_NONSCOPEDENUM ) = FALSE ) then
+    					return NULL
+    				end if
+    			end if
+    			exit do
+    		end if
     	end if
 
     	'' skip id
@@ -358,7 +367,7 @@ function cParentId _
     do while( chain_ <> NULL )
 
     	select case as const symbGetClass( chain_->sym )
-    	case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS
+    	case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS, FB_SYMBCLASS_ENUM
     		parent = chain_->sym
 
     	case FB_SYMBCLASS_STRUCT
@@ -377,7 +386,7 @@ function cParentId _
             dim as FBSYMBOL ptr sym = any
 
             '' typedef of a TYPE/CLASS?
-            select case symbGetType( chain_->sym )
+            select case as const symbGetType( chain_->sym )
             case FB_DATATYPE_STRUCT
     			if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
     				exit do
@@ -390,8 +399,8 @@ function cParentId _
     				exit do
     			end if
 
-			'case FB_DATATYPE_CLASS
-				'' ...
+			case FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
+    			sym = symbGetSubtype( chain_->sym )
 
     		case else
     			exit do
@@ -418,6 +427,17 @@ function cParentId _
     			exit do
     		end if
     	end if
+
+    	if( symbGetClass( parent ) = FB_SYMBCLASS_ENUM ) then
+    		'' not in BASIC mangling mode?
+    		if( symbGetMangling( parent ) <> FB_MANGLING_BASIC ) then
+    			if( errReport( FB_ERRMSG_NONSCOPEDENUM ) = FALSE ) then
+    				return NULL
+    			else
+    				exit do
+    			end if
+    		end if
+		end if
 
     	'' skip id
     	lexSkipToken( LEXCHECK_NOPERIOD )

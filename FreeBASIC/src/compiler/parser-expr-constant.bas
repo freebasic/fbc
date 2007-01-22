@@ -69,66 +69,6 @@ function cConstantEx _
 end function
 
 '':::::
-'' EnumConstant	=		ID '.' ID .
-''
-function cEnumConstant _
-	( _
-		byval parent as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	dim as FBSYMBOL ptr elm = any
-	dim as FBSYMCHAIN ptr chain_ = any
-
-	'' ID
-	lexSkipToken( )
-
-	'' '.'
-	lexSkipToken( LEXCHECK_NOPERIOD )
-
-	'' ID
-    select case lexGetClass( )
-    case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
-
-    case else
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-			return NULL
-		else
-			'' error recovery: fake a node
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
-	end select
-
-	chain_ = symbLookupAt( symbGetNamespace( parent ), _
-						   lexGetText( ), _
-						   FALSE, _
-						   FALSE )
-
-	elm = symbFindByClass( chain_, FB_SYMBCLASS_CONST )
-    if( elm = NULL ) then
-    	if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) = FALSE ) then
-    		return NULL
-		else
-			'' error recovery: fake a node
-			lexSkipToken( )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
-    end if
-
-    if( symbGetParent( elm ) <> parent ) then
-    	if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) = FALSE ) then
-    		return NULL
-		else
-			'' error recovery: fake a node
-			lexSkipToken( )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
-    end if
-
-    function = cConstantEx( elm )
-
-end function
-
-'':::::
 '' Constant       = ID .
 ''
 function cConstant _

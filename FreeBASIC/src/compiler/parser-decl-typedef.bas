@@ -31,13 +31,13 @@
 ''
 function cTypedefDecl _
 	( _
-		byval pid as zstring ptr _				'' can be changed if not a NULL
-	) as integer static
+		byval pid as zstring ptr _				'' note: it can be Ucase()'d if not NULL
+	) as integer
 
-    static as zstring * FB_MAXNAMELEN+1 id, tname, tname_uc
-    dim as zstring ptr ptname
-    dim as integer dtype, lgt, ptrcnt, isfwd, ismult
-    dim as FBSYMBOL ptr parent, subtype
+    static as zstring * FB_MAXNAMELEN+1 id, tname
+    dim as zstring ptr ptname = any
+    dim as integer dtype = any, lgt = any, ptrcnt = any, isfwd = any, ismult = any
+    dim as FBSYMBOL ptr parent = any, subtype = any
 
     function = FALSE
 
@@ -125,9 +125,9 @@ function cTypedefDecl _
 
     	if( isfwd ) then
     		'' pointing to itself? then it's a void..
-   			hUcase( ptname, @tname_uc )
+   			hUcase( ptname, ptname )
 			hUcase( pid, pid )
-    		if( tname_uc = *pid ) then
+    		if( *ptname = *pid ) then
     			dtype = FB_DATATYPE_VOID
     			subtype = NULL
     			lgt = 0
@@ -140,7 +140,9 @@ function cTypedefDecl _
 				if( subtype = NULL ) then
 					subtype = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
 														ptname, _
-														FB_SYMBCLASS_FWDREF )
+														FB_SYMBCLASS_FWDREF, _
+														TRUE, _
+														FALSE )
 					if( subtype = NULL ) then
 						if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
 							exit function
@@ -178,12 +180,15 @@ function cTypedefDecl _
     	if( symbAddTypedef( pid, dtype, subtype, ptrcnt, lgt ) = NULL ) then
 
 			'' check if the dup definition is different
-			dim as integer isdup
-			isdup = TRUE
+			dim as integer isdup = TRUE
 
-			dim as FBSYMBOL ptr sym
+			dim as FBSYMBOL ptr sym = any
+
 			sym = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
-											pid, FB_SYMBCLASS_TYPEDEF )
+											pid, _
+											FB_SYMBCLASS_TYPEDEF, _
+											FALSE, _
+											FALSE )
 
 			if( sym <> NULL ) then
 				if( symbGetType( sym ) = dtype ) then

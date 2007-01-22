@@ -29,7 +29,7 @@
 #include once "inc\list.bi"
 
 '':::::
-sub symbFwdRefInit( ) static
+sub symbFwdRefInit( )
 
 	listNew( @symb.fwdlist, FB_INITFWDREFNODES, len( FBFWDREF ), LIST_FLAGS_NOCLEAR )
 
@@ -38,7 +38,7 @@ sub symbFwdRefInit( ) static
 end sub
 
 '':::::
-sub symbFwdRefEnd( ) static
+sub symbFwdRefEnd( )
 
 	listFree( @symb.fwdlist )
 
@@ -49,11 +49,9 @@ sub symbAddToFwdRef _
 	( _
 		byval f as FBSYMBOL ptr, _
 		byval ref as FBSYMBOL ptr _
-	) static
+	)
 
-	dim n as FBFWDREF ptr
-
-	n = listNewNode( @symb.fwdlist )
+	dim as FBFWDREF ptr n = listNewNode( @symb.fwdlist )
 
 	n->ref = ref
 	n->prev	= f->fwd.reftail
@@ -71,9 +69,9 @@ private sub hFixForwardRef _
 		byval class_ as integer _
 	)
 
-    dim as FBFWDREF ptr n, p
-    dim as FBSYMBOL ptr ref
-    dim as integer dtype, ptrcnt
+    dim as FBFWDREF ptr n = any, p = any
+    dim as FBSYMBOL ptr ref = any
+    dim as integer dtype = any, ptrcnt = any
 
 	select case as const class_
 	case FB_SYMBCLASS_STRUCT
@@ -119,19 +117,30 @@ sub symbCheckFwdRef _
 		byval class_ as integer _
 	)
 
-	dim as FBSYMBOL ptr fwd = any, s = any
+	dim as FBSYMBOL ptr fwd = any
 
-	'' go to head
-	s = sym
-	do while( s->hash.prev <> NULL )
-		s = s->hash.prev
+    '' to tail
+    fwd = sym
+    do
+    	if( fwd->class = FB_SYMBCLASS_FWDREF ) then
+			hFixForwardRef( fwd, sym, class_ )
+			exit sub
+		end if
+
+		fwd = fwd->hash.next
+	loop while( fwd <> NULL )
+
+	'' to head
+	fwd = sym->hash.prev
+	do while( fwd <> NULL )
+
+    	if( fwd->class = FB_SYMBCLASS_FWDREF ) then
+			hFixForwardRef( fwd, sym, class_ )
+			exit sub
+		end if
+
+		fwd = fwd->hash.prev
 	loop
-
-	dim as FBSYMCHAIN chain_ = ( s, NULL )
-	fwd = symbFindByClass( @chain_, FB_SYMBCLASS_FWDREF )
-	if( fwd <> NULL ) then
-		hFixForwardRef( fwd, sym, class_ )
-	end if
 
 end sub
 
@@ -143,11 +152,9 @@ function symbAddTypedef _
 		byval subtype as FBSYMBOL ptr, _
 		byval ptrcnt as integer, _
 		byval lgt as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr t
-
-    function = NULL
+    dim as FBSYMBOL ptr t = any
 
     '' allocate new node
     t = symbNewSymbol( FB_SYMBOPT_DOHASH, _
@@ -157,7 +164,7 @@ function symbAddTypedef _
     				   id, NULL, _
     				   dtype, subtype, ptrcnt )
     if( t = NULL ) then
-    	exit function
+    	return NULL
     end if
 
 	''
@@ -176,31 +183,22 @@ end function
 '':::::
 function symbAddFwdRef _
 	( _
-		byval id as zstring ptr, _
-		byval id_alias as zstring ptr _
-	) as FBSYMBOL ptr static
+		byval id as zstring ptr _
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr f
+    dim as FBSYMBOL ptr f = any
 
-    function = NULL
+    '' note: assuming id is already upper-cased
 
-    '' no explict alias given?
-    if( id_alias = NULL ) then
-    	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( parser.mangling <> FB_MANGLING_BASIC ) then
-    		id_alias = id
-    	end if
-    end if
-
-    '' allocate new node
-    f = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    '' allocate a new node
+    f = symbNewSymbol( FB_SYMBOPT_DOHASH or FB_SYMBOPT_PRESERVECASE, _
     				   NULL, _
     				   NULL, NULL, _
     				   FB_SYMBCLASS_FWDREF, _
-    				   id, id_alias, _
+    				   id, NULL, _
     				   INVALID, NULL, 0 )
     if( f = NULL ) then
-    	exit function
+    	return NULL
     end if
 
    	f->fwd.refs = 0

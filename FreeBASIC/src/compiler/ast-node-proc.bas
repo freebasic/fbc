@@ -690,9 +690,9 @@ function astProcEnd _
 			end if
 		end if
 
-	'' errors.. just remove from hash so no false dups will appear
+	'' errors.. remove everything from hash and symbol tb
 	else
-		symbDelSymbolTb( @sym->proc.symtb, TRUE )
+		symbDelSymbolTb( @sym->proc.symtb, FALSE )
 	end if
 
 	''

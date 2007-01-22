@@ -1,7 +1,7 @@
-[ ] namespace:
-    - add support for importing TYPE and CLASS symbols
-      - do an implicit USING with ENUM's, so duplicated entries would be automatically
-        handled - if the first item of this list is implemented first
+[ ] make cUdtMember process symbols as cIdentifier does or ambiguous access
+    tests won't be done
+    - also do handle dups, CLASSes will allow anything to be defined (including
+      TYPE's), and a "TYPE FOO" plus a "CONST FOO=" could exist
 
 [ ] STATIC
     - add static data members, they must be initialized outside the TYPE|CLASS

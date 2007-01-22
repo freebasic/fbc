@@ -35,7 +35,7 @@ private function hEnumConstDecl _
 		byref value as integer _
 	) as integer
 
-    static as ASTNODE ptr expr
+    dim as ASTNODE ptr expr = any
 
 	function = FALSE
 
@@ -190,7 +190,7 @@ function cEnumBody _
 
 	'' nothing added?
 	if( symbGetEnumElements( s ) = 0 ) then
-		if( errReport( FB_ERRMSG_ELEMENTNOTDEFINED ) = FALSE ) then
+		if( errReport( FB_ERRMSG_NOELEMENTSDEFINED ) = FALSE ) then
 			exit function
 		end if
 	end if
@@ -206,11 +206,11 @@ end function
 function cEnumDecl _
 	( _
 		byval attrib as FB_SYMBATTRIB _
-	) as integer static
+	) as integer
 
     static as zstring * FB_MAXNAMELEN+1 id, id_alias
-    dim as zstring ptr palias
-    dim as FBSYMBOL ptr parent, e
+    dim as zstring ptr palias = any
+    dim as FBSYMBOL ptr parent = any, e = any
 
 	function = FALSE
 
@@ -291,8 +291,20 @@ function cEnumDecl _
     	end if
 	end if
 
+	'' if in BASIC mangling mode, start a new scope
+	if( symbGetMangling( e ) = FB_MANGLING_BASIC ) then
+		symbNestBegin( e, FALSE )
+	end if
+
 	'' EnumBody
-	if( cEnumBody( e, attrib ) = FALSE ) then
+	dim as integer res = cEnumBody( e, attrib )
+
+	'' close scope
+	if( symbGetMangling( e ) = FB_MANGLING_BASIC ) then
+		symbNestEnd( FALSE )
+	end if
+
+	if( res = FALSE ) then
 		exit function
 	end if
 
@@ -318,6 +330,11 @@ function cEnumDecl _
 
 		else
 			lexSkipToken( )
+
+			'' if in BASIC mangling mode, do an implicit 'USING enum'
+			if( symbGetMangling( e ) = FB_MANGLING_BASIC ) then
+				symbNamespaceImport( e )
+			end if
 		end if
 	end if
 

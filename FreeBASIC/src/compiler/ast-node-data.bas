@@ -272,7 +272,8 @@ function astDataStmtAdd _
     sym = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
     						    	id, _
     						    	FB_SYMBCLASS_VAR, _
-    						    	TRUE )
+    						    	TRUE, _
+    						    	FALSE )
     '' already declared?
 	if( sym <> NULL ) then
     	if( label = NULL ) then

@@ -53,10 +53,9 @@ end function
 '':::::
 sub symbDelScope _
 	( _
-		byval scp as FBSYMBOL ptr _
+		byval scp as FBSYMBOL ptr, _
+		byval is_tbdel as integer _
 	)
-
-	dim as FBSYMBOL ptr s, nxt
 
     if( scp = NULL ) then
     	exit sub
@@ -64,12 +63,14 @@ sub symbDelScope _
 
     '' del all symbols inside the scope block
     do
-		s = scp->scp.symtb.head
+		'' starting from last because of the USING's that could be
+		'' referencing a namespace in the same scope block
+		dim as FBSYMBOL ptr s = scp->scp.symtb.tail
 		if( s = NULL ) then
 			exit do
 		end if
 
-		symbDelSymbol( s )
+		symbDelSymbol( s, TRUE )
 	loop
 
 	'' del the scope node
@@ -81,12 +82,10 @@ end sub
 sub symbDelScopeTb _
 	( _
 		byval scp as FBSYMBOL ptr _
-	) static
-
-    dim as FBSYMBOL ptr s
+	)
 
 	'' for each symbol declared inside the SCOPE block..
-	s = scp->scp.symtb.head
+	dim as FBSYMBOL ptr s = scp->scp.symtb.tail
     do while( s <> NULL )
     	'' remove from hash only
 
@@ -94,10 +93,10 @@ sub symbDelScopeTb _
     	if( s->class <> FB_SYMBCLASS_NSIMPORT ) then
     		symbDelFromHash( s )
     	else
-    		symbNamespaceRemove( s, TRUE )
+    		symbNamespaceRemove( s, TRUE, FALSE )
     	end if
 
-    	s = s->next
+    	s = s->prev
     loop
 
 end sub

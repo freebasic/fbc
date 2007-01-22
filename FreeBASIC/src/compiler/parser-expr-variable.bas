@@ -191,7 +191,7 @@ function cUdtMember _
 	) as FBSYMBOL ptr
 
     dim as ASTNODE ptr constexpr = any
-    dim as FBSYMBOL ptr fld = any, sym = any
+    dim as FBSYMBOL ptr fld = any
 
 	function = NULL
 
@@ -210,15 +210,42 @@ function cUdtMember _
 			exit function
 		end select
 
-    	sym = symbLookupCompField( subtype, lexGetText( ) )
-    	if( sym = NULL ) then
-    		if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) <> FALSE ) then
+    	dim as FBSYMCHAIN ptr chain_ = symbLookupCompField( subtype, lexGetText( ) )
+    	if( chain_ = NULL ) then
+    		if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, _
+    							lexGetText( ) ) <> FALSE ) then
     			'' no error recovery: caller will take care
     			lexSkipToken( )
     		end if
     		exit function
     	end if
 
+		''
+		dim as FBSYMBOL ptr sym = any
+		do
+			sym = chain_->sym
+			do
+    			'' since methods don't start a new hash, params and local
+    			'' symbol dups will also be found
+    			if( symbGetScope( sym ) = symbGetScope( subtype ) ) then
+    				goto exit_search
+    			end if
+
+				sym = sym->hash.next
+			loop while( sym <> NULL )
+
+			chain_ = chain_->next
+    	loop while( chain_ <> NULL )
+
+    	'' nothing found..
+    	if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, _
+    						lexGetText( ) ) <> FALSE ) then
+    		'' no error recovery: caller will take care
+    		lexSkipToken( )
+    	end if
+    	exit function
+
+exit_search:
 		'' not a data field?
 		if( symbIsField( sym ) = FALSE ) then
 

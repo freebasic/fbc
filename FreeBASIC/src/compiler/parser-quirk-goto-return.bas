@@ -105,6 +105,7 @@ function cGotoStmt _
 			l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
 										  lexGetText( ), _
 										  FB_SYMBCLASS_LABEL, _
+										  FALSE, _
 										  FALSE )
 
 		else
@@ -142,6 +143,7 @@ function cGotoStmt _
 			l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
 										  lexGetText( ), _
 										  FB_SYMBCLASS_LABEL, _
+										  FALSE, _
 										  FALSE )
 
 		else
@@ -188,6 +190,7 @@ function cGotoStmt _
 				l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
 											  lexGetText( ), _
 											  FB_SYMBCLASS_LABEL, _
+											  FALSE, _
 											  FALSE )
 
 			else
