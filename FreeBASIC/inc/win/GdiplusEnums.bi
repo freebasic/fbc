@@ -14,6 +14,8 @@ const FlatnessDefault = 1.0 / 4.0
 type GraphicsState as UINT
 type GraphicsContainer as UINT
 
+extern "c"
+
 enum FillMode
 	FillModeAlternate
 	FillModeWinding
@@ -694,5 +696,7 @@ enum GpTestControlEnum
 	TestControlNoICM = 1
 	TestControlGetBuildNumber = 2
 end enum
+
+end extern
 
 #endif

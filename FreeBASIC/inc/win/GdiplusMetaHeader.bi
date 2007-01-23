@@ -46,7 +46,7 @@ end type
 #define GDIP_EMFPLUSFLAGS_DISPLAY &h00000001
 
 type MetafileHeader
-	Type as MetafileType
+	Type_ as MetafileType
 	Size as UINT
 	Version as UINT
 	EmfPlusFlags as UINT
