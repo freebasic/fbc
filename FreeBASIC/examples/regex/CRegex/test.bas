@@ -5,66 +5,11 @@
 '' 			 (note: build the CRegex static library first)
 ''
 
- 
-
 #include once "CRegex.bi"
 
 const TEST_PATTERN = "[a-zA-Z_][a-zA-Z0-9_]*|" + _
 					 "[0-9]+([\.][0-9]*)?([Ee][-+][0-9]+)?|" + _
 					 "\=|\+|\-|\*|\\|\/|\^|\@|\(|\)|\{|\}"
-
-declare function 	load_textfile			( filename as string ) as string
-
-
-'' main
-
-	'' create a regex object
-	dim as CRegex ptr reg 
-	
-	reg = CRegex_New( TEST_PATTERN, REGEX_OPT_MULTILINE or REGEX_OPT_DOTALL )
-	if( reg = NULL ) then
-		print "Error: CRegex_New failed"
-		end 1
-	end if
-
-	'' load the test file
-	dim as string text
-	
-	text = load_textfile( "test.txt" )
-	
-	if( len( text ) = 0 ) then
-		print "Error: load_textfile failed"
-		end 1
-	end if
-	
-	'' parse it
-	if( CRegex_Search( reg, text ) ) then
-		'' match found..
-		dim as string match
-		do 
-			match = *CRegex_GetStr( reg, 0 )
-			
-			'' naive check..
-			select case match[0]
-			case asc( "0" ) to asc( "9" )
-				print "Number";
-			
-			case asc( "a" ) to asc( "z" ), asc( "A" ) to asc( "Z" ), asc( "_" )
-				print "Symbol";
-			
-			case else
-				print "Operator";
-			end select
-			
-			print " found: """; match; """"
-		
-		'' find next match..
-		loop while( CRegex_SearchNext( reg ) )	
-	end if	
-	
-	'' free the object
-	CRegex_Delete( reg )
-
 
 '':::::
 function load_textfile( filename as string ) as string
@@ -86,3 +31,52 @@ function load_textfile( filename as string ) as string
 	
 end function
 
+'':::::
+sub main	
+	'' create a regex object
+	var reg = new CRegex( TEST_PATTERN, CRegex.MULTILINE or CRegex.DOTALL )
+	if( reg = NULL ) then
+		print "Error: CRegex_New failed"
+		end 1
+	end if
+
+	'' load the test file
+	dim as string text
+	
+	text = load_textfile( "test.txt" )
+	
+	if( len( text ) = 0 ) then
+		print "Error: load_textfile failed"
+		end 1
+	end if
+	
+	'' parse it
+	if( reg->search( text ) ) then
+		'' match found..
+		dim as string match
+		do 
+			match = *reg->getStr( 0 )
+			
+			'' naive check..
+			select case match[0]
+			case asc( "0" ) to asc( "9" )
+				print "Number";
+			
+			case asc( "a" ) to asc( "z" ), asc( "A" ) to asc( "Z" ), asc( "_" )
+				print "Symbol";
+			
+			case else
+				print "Operator";
+			end select
+			
+			print " found: """; match; """"
+		
+		'' find next match..
+		loop while( reg->searchNext( ) )	
+	end if	
+	
+	'' free the object
+	delete reg
+end sub
+
+	main()

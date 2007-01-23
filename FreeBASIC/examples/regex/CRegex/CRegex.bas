@@ -1,195 +1,150 @@
 ''
-'' CRegex - a pseudo-class wrapper for PCRE (based on the PCRE C++ wrapper)
+'' CRegex - a class wrapper for PCRE (based on the PCRE C++ wrapper)
 ''
 '' to build: fbc -lib CRegex.bas
 ''
 
-
-
 #include once "CRegex.bi"
-#include once "pcre/pcre.bi" 
-
-type CRegex_
-	as pcre ptr 		reg
-	as pcre_extra ptr 	extra
-    as integer ptr 		vectb
-    as zstring ptr 		subject
-	as integer 			sublen
-	as integer 			substrcnt
-	as zstring ptr ptr	substrlist
-end type
 
 '':::::
-function CRegex_New _
+constructor CRegex _
 	( _
 		byval pattern as zstring ptr, _
-		byval options as REGEX_OPT, _
-		byval _this as CRegex ptr _
-	) as CRegex ptr
+		byval opt as options _
+	) 
 	
-	dim as zstring ptr err_msg
-	dim as integer err_ofs
-	dim as integer isstatic = TRUE	
+	dim as zstring ptr err_msg = any
+	dim as integer err_ofs = any
 	
-	if( _this = NULL ) then
-		isstatic = FALSE
-		_this = allocate( len( CRegex ) )
-		if( _this = NULL ) then
-			return NULL
-		end if
-	end if
-	
-	_this->reg = pcre_compile( pattern, options, @err_msg, @err_ofs, NULL ) 
-	if( _this->reg = NULL ) then
-  		if( isstatic = FALSE ) then
-  			deallocate( _this )
-  		end if
-		return NULL
+	reg = pcre_compile( pattern, opt, @err_msg, @err_ofs, NULL ) 
+	if( reg = NULL ) then
+		return
 	end if
 
-	_this->extra = pcre_study( _this->reg, 0, @err_msg )
-	pcre_fullinfo( _this->reg, _this->extra, PCRE_INFO_CAPTURECOUNT, @_this->substrcnt )
-	_this->substrcnt += 1
-	_this->vectb = allocate( len( integer ) * (3 * _this->substrcnt) )
-    _this->substrlist = NULL
+	extra = pcre_study( reg, 0, @err_msg )
+	pcre_fullinfo( reg, extra, PCRE_INFO_CAPTURECOUNT, @substrcnt )
+	substrcnt += 1
+	vectb = allocate( len( integer ) * (3 * substrcnt) )
+    substrlist = NULL
     
-    function = _this
-    
-end function
+end constructor
 
 '':::::
-private sub CRegex_ClearSubstrlist _
+sub CRegex.clearSubstrlist _
 	( _
-		byval _this as CRegex ptr _
+		_
 	)
 	
-	if( _this->substrlist <> NULL ) then
-		pcre_free_substring_list( _this->substrlist )
-		_this->substrlist = NULL
+	if( substrlist <> NULL ) then
+		pcre_free_substring_list( substrlist )
+		substrlist = NULL
 	end if
 
 end sub
 
 '':::::
-sub CRegex_Delete _
+destructor CRegex _
 	( _
-		byval _this as CRegex ptr, _
-		byval isstatic as integer _
+		_
 	)
 	
-	if( _this = NULL ) then
-		exit sub
+	clearSubstrlist( )
+	
+	if( vectb <> NULL ) then
+		deallocate( vectb )
+		vectb = NULL
 	end if
 	
-	CRegex_ClearSubstrlist( _this )
-	
-	if( _this->vectb <> NULL ) then
-		deallocate( _this->vectb )
-		_this->vectb = NULL
-	end if
-	
-	if( _this->extra <> NULL ) then
-		pcre_free( _this->extra )
-		_this->extra = NULL
+	if( extra <> NULL ) then
+		pcre_free( extra )
+		extra = NULL
 	end if		
 	
-	if( _this->reg <> NULL ) then
-		pcre_free( _this->reg )
-		_this->reg = NULL
+	if( reg <> NULL ) then
+		pcre_free( reg )
+		reg = NULL
 	end if		
 	
-	if( isstatic = FALSE ) then
-		deallocate( _this )
-	end if
-
-end sub
+end destructor
 
 '':::::
-function CRegex_GetMaxMatches _
+function CRegex.getMaxMatches _
 	( _
-		byval _this as CRegex ptr _
+		_
 	) as integer
 
-	if( _this = NULL ) then
-		return 0
-	end if
-	
-	function = _this->substrcnt - 1
+	function = substrcnt - 1
 	
 end function
 
 '':::::
-function CRegex_Search _
+function CRegex.search _
 	( _
-		byval _this as CRegex ptr, _
 		byval subject as zstring ptr, _
 		byval lgt as integer, _
-		byval options as REGEX_OPT _
+		byval opt as options _
 	) as integer
 	
-	if( _this = NULL ) then
-		return FALSE
-	end if
-
-	CRegex_Clearsubstrlist( _this )
+	clearsubstrlist( )
 	
-	_this->subject = subject
-	_this->sublen = iif( lgt >= 0, lgt, len( *subject ) )
+	this.subject = subject
+	sublen = iif( lgt >= 0, lgt, len( *subject ) )
 	
-	function = ( pcre_exec( _this->reg, _this->extra, _
-							subject, _this->sublen, _
-							0, options, _
-							_this->vectb, 3 * _this->substrcnt ) > 0 )
+	function = ( pcre_exec( reg, _
+							extra, _
+							subject, _
+							sublen, _
+							0, _
+							opt, _
+							vectb, _
+							3 * substrcnt ) > 0 )
 	
 end function
 
 '':::::
-function CRegex_SearchNext _
+function CRegex.searchNext _
 	( _
-		byval _this as CRegex ptr, _
-		byval options as REGEX_OPT _
+		byval opt as options _
 	) as integer
 
-	if( _this = NULL ) then
-		return FALSE
-	end if
-
-	CRegex_Clearsubstrlist( _this )
+	clearsubstrlist( )
          
-	function = ( pcre_exec( _this->reg, _this->extra, _
-							_this->subject, _this->sublen, _
-							_this->vectb[1], options, _
-							_this->vectb, 3 * _this->substrcnt ) > 0 )
+	function = ( pcre_exec( reg, _
+							extra, _
+							subject, _
+							sublen, _
+							vectb[1], _
+							opt, _
+							vectb, _
+							3 * substrcnt ) > 0 )
 
 end function
 
 '':::::
-function CRegex_GetStr _
+function CRegex.getStr _
 	( _
-		byval _this as CRegex ptr, _
 		byval i as integer _
 	) as zstring ptr
          
 	if( i < 0 ) then
-		return _this->subject
+		return subject
 	end if
 
-	if( i >= _this->substrcnt ) then
+	if( i >= substrcnt ) then
 		return NULL
 	end if
          
-	if( _this->substrlist = NULL ) then
-		pcre_get_substring_list( _this->subject, _this->vectb, _this->substrcnt, @_this->substrlist )
+	if( substrlist = NULL ) then
+		pcre_get_substring_list( subject, vectb, substrcnt, @substrlist )
 	end if
     
-    function = _this->substrlist[i]
+    function = substrlist[i]
     
 end function
 
 '':::::
-function CRegex_GetOfs _
+function CRegex.getOfs _
 	( _
-		byval _this as CRegex ptr, _
 		byval i as integer _
 	) as integer
          
@@ -197,18 +152,17 @@ function CRegex_GetOfs _
 		return 0
 	end if
 
-	if( i >= _this->substrcnt ) then
+	if( i >= substrcnt ) then
 		return -1
 	end if
 	
-	function = _this->vectb[i * 2 + 0]
+	function = vectb[i * 2 + 0]
 	
 end function
 
 '':::::
-function CRegex_GetLen _
+function CRegex.getLen _
 	( _
-		byval _this as CRegex ptr, _
 		byval i as integer _
 	) as integer
          
@@ -216,10 +170,10 @@ function CRegex_GetLen _
 		return 0
 	end if
 
-	if( i >= _this->substrcnt ) then
+	if( i >= substrcnt ) then
 		return -1
 	end if
 	
-	function = _this->vectb[i * 2 + 1] - _this->vectb[i * 2 + 0]
+	function = vectb[i * 2 + 1] - vectb[i * 2 + 0]
 	
 end function
