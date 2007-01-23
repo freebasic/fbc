@@ -18,25 +18,29 @@ type CHttp as CHttp_
 #include once "CHttpStream.bi"
 #include once "CHttpForm.bi"
 
+type CHttpCtx as CHttpCtx_
 
-declare function 	CHttp_New					( _
-												  byval _this as CHttp ptr = NULL _
-												) as CHttp ptr
+type CHttp_
+	declare constructor	_
+		( _
+		) 
+	
+	declare destructor _
+		( _
+		)
+	
+	declare function post _
+		( _
+			byval url as zstring ptr, _
+			byval form as CHttpForm ptr _
+		) as string
+	
+	declare function getHandle _
+		( _
+		) as any ptr
 
-declare sub 		CHttp_Delete				( _
-												  byval _this as CHttp ptr, _
-											  	  byval isstatic as integer = FALSE _
-												)
-										  
-declare function 	CHttp_Post					( _
-												  byval _this as CHttp ptr, _
-												  byval url as zstring ptr, _
-												  byval form as CHttpForm ptr _
-												) as string
-
-declare function 	CHttp_GetHandle 			( _
-												  byval _this as CHttp ptr _
-												) as any ptr
-
+private:
+	dim as CHttpCtx ptr ctx = any
+end type
 
 #endif

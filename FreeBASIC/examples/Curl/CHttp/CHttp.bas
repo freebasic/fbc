@@ -1,129 +1,95 @@
 ''
-'' CHttp - a pseudo-class wrapper for the CURL library
+'' CHttp - a class wrapper for the CURL library
 ''
 '' to build: fbc -lib CHtpp.bas CHttpStream.bas CHttpForm.bas
 ''
 
-
-
 #include once "CHttp.bi"
 #include once "curl.bi"
 
-type CHttp_
-	as CURL ptr 			curl
-	as curl_slist ptr 		headerlist
+type CHttpCtx_
+	dim as CURL ptr curl
+	dim as curl_slist ptr headerlist
 end type
 
 '':::::
-function CHttp_New _
+constructor CHttp _
 	( _
-		byval _this as CHttp ptr _
-	) as CHttp ptr
+		_
+	) 
 	
-	dim as integer isstatic = TRUE
-	
-	if( _this = NULL ) then
-		isstatic = FALSE
-		_this = allocate( len( CHttp ) )
-		if( _this = NULL ) then
-			return NULL
-		end if
-	end if
+	ctx = new CHttpCtx_
   
   	curl_global_init( CURL_GLOBAL_ALL )
 
-  	_this->curl = curl_easy_init()
-  	if( _this->curl = NULL ) then
-  		if( isstatic = FALSE ) then
-  			deallocate( _this )
-  		end if
-  		return NULL
+  	ctx->curl = curl_easy_init()
+  	if( ctx->curl = NULL ) then
+  		delete ctx
+  		return
   	end if
 
-  	curl_easy_setopt( _this->curl, CURLOPT_VERBOSE, TRUE )
-	curl_easy_setopt( _this->curl, CURLOPT_COOKIEFILE, "" )
+  	curl_easy_setopt( ctx->curl, CURLOPT_VERBOSE, TRUE )
+	curl_easy_setopt( ctx->curl, CURLOPT_COOKIEFILE, "" )
 	
-	_this->headerlist = curl_slist_append( NULL, "Expect:" )
-  	if( _this->headerlist = NULL ) then
-  		if( isstatic = FALSE ) then
-  			deallocate( _this )
-  		end if
-  		return NULL
+	ctx->headerlist = curl_slist_append( NULL, "Expect:" )
+  	if( ctx->headerlist = NULL ) then
+  		delete ctx
+  		return
   	end if
   	
-  	function = _this
-  	
-end function
+end constructor
 
 '':::::
-sub CHttp_Delete _
+destructor CHttp _
 	( _
-		byval _this as CHttp ptr, _
-		byval isstatic as integer _
+		_
 	)
 	
-	if( _this = NULL ) then
-		exit sub
-	end if
-	
-    if( _this->headerlist <> NULL ) then
-    	curl_slist_free_all( _this->headerlist )
-    	_this->headerlist = NULL
+    if( ctx->headerlist <> NULL ) then
+    	curl_slist_free_all( ctx->headerlist )
+    	ctx->headerlist = NULL
     end if
 	
-	if( _this->curl <> NULL ) then
-		curl_easy_cleanup( _this->curl )
-		_this->curl = NULL
+	if( ctx->curl <> NULL ) then
+		curl_easy_cleanup( ctx->curl )
+		ctx->curl = NULL
 	end if		
 	
-	if( isstatic = FALSE ) then
-		deallocate( _this )
-	end if
+	delete ctx
 
-end sub
+end destructor
 
 '':::::
-function CHttp_Post _
+function CHttp.post _
 	( _
-		byval _this as CHttp ptr, _
 		byval url as zstring ptr, _
 		byval form as CHTtpForm ptr _
 	) as string
 
-	function = ""
-	
-	if( _this = NULL ) then
-		exit function
-	end if
-
-	if( _this->curl = NULL ) then
-		exit function
+	if( ctx->curl = NULL ) then
+		return ""
 	end if
 	
-	dim as CHttpStream ptr stream = CHttpStream_New( _this )
+	dim as CHttpStream ptr stream = new CHttpStream( @this )
 
-    curl_easy_reset( _this->curl )
-    curl_easy_setopt( _this->curl, CURLOPT_HTTPHEADER, _this->headerlist )
-    curl_easy_setopt( _this->curl, CURLOPT_HTTPPOST, CHttpForm_GetHandle( form ) )
+    curl_easy_reset( ctx->curl )
+    curl_easy_setopt( ctx->curl, CURLOPT_HTTPHEADER, ctx->headerlist )
+    curl_easy_setopt( ctx->curl, CURLOPT_HTTPPOST, form->getHandle( ) )
 
-    if( CHttpStream_Receive( stream, url, FALSE ) ) then
-    	function = CHttpStream_Read( stream )
+    if( stream->receive( url, FALSE ) ) then
+    	function = stream->read( )
     end if
     
-    CHttpStream_Delete( stream )
+    delete stream
     
 end function
 
 '':::::
-function CHttp_GetHandle _
+function CHttp.getHandle _
 	( _
-		byval _this as CHttp ptr _
+		_
 	) as any ptr
 	
-	if( _this = NULL ) then
-		return NULL
-	end if
-
-	function = _this->curl
+	function = ctx->curl
 	
 end function

@@ -5,20 +5,17 @@
 ''			 (build the CHttp static library first)
 ''
 
-
-
 #include once "CHttp.bi"
 
-	'' create object
-	dim as CHttpStream ptr stream
-
-	stream = CHttpStream_New( )
+	scope
+		'' create object
+		dim as CHttpStream stream
 	
-	'' get page
-	if( CHttpStream_Receive( stream, "http://freebasic.net/" ) ) then
-		print CHttpStream_Read( stream )
-	end if
+		'' get the page
+		if( stream.receive( "http://freebasic.net/" ) ) then
+			print stream.read( )
+		end if
 	
-	'' delete object
-	CHttpStream_Delete( stream )
-
+		'' the stream will be closed when the object is destroyed
+	end scope
+	
