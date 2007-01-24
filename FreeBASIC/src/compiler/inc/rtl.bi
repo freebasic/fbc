@@ -47,6 +47,20 @@
 #define FB_RTL_STR2ULNG					"valulng"
 #define FB_RTL_STR2DBL					"val"
 
+#define FB_RTL_MKD                      "fb_MKD"
+#define FB_RTL_MKS                      "fb_MKS"
+#define FB_RTL_MKI                      "fb_MKI"
+#define FB_RTL_MKL                      "fb_MKL"
+#define FB_RTL_MKSHORT                  "fb_MKSHORT"
+#define FB_RTL_MKLONGINT                "fb_MKLONGINT"
+
+#define FB_RTL_CVD                      "fb_CVD"
+#define FB_RTL_CVS                      "fb_CVS"
+#define FB_RTL_CVI                      "fb_CVI"
+#define FB_RTL_CVL                      "fb_CVL"
+#define FB_RTL_CVSHORT                  "fb_CVSHORT"
+#define FB_RTL_CVLONGINT                "fb_CVLONGINT"
+
 #define FB_RTL_STRMID					"fb_StrMid"
 #define FB_RTL_STRASSIGNMID				"fb_StrAssignMid"
 #define FB_RTL_STRFILL1					"fb_StrFill1"
@@ -340,6 +354,20 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_STR2LNG
 	FB_RTL_IDX_STR2ULNG
 	FB_RTL_IDX_STR2DBL
+
+	FB_RTL_IDX_MKD      
+	FB_RTL_IDX_MKS      
+	FB_RTL_IDX_MKI      
+	FB_RTL_IDX_MKL      
+	FB_RTL_IDX_MKSHORT  
+	FB_RTL_IDX_MKLONGINT
+
+	FB_RTL_IDX_CVD      
+	FB_RTL_IDX_CVS      
+	FB_RTL_IDX_CVI      
+	FB_RTL_IDX_CVL      
+	FB_RTL_IDX_CVSHORT  
+	FB_RTL_IDX_CVLONGINT
 
 	FB_RTL_IDX_STRMID
 	FB_RTL_IDX_STRASSIGNMID

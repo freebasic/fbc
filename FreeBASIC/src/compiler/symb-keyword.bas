@@ -208,6 +208,18 @@ end type
         ( @"LBOUND"     , FB_TK_LBOUND      , FB_TKCLASS_QUIRKWD ), _
         ( @"UBOUND"     , FB_TK_UBOUND      , FB_TKCLASS_QUIRKWD ), _
         ( @"STR"        , FB_TK_STR         , FB_TKCLASS_QUIRKWD ), _
+        ( @"CVD"        , FB_TK_CVD         , FB_TKCLASS_QUIRKWD ), _
+        ( @"CVS"        , FB_TK_CVS         , FB_TKCLASS_QUIRKWD ), _
+        ( @"CVI"        , FB_TK_CVI         , FB_TKCLASS_QUIRKWD ), _
+        ( @"CVL"        , FB_TK_CVL         , FB_TKCLASS_QUIRKWD ), _
+        ( @"CVSHORT"    , FB_TK_CVSHORT     , FB_TKCLASS_QUIRKWD ), _
+        ( @"CVLONGINT"  , FB_TK_CVLONGINT   , FB_TKCLASS_QUIRKWD ), _
+        ( @"MKD"        , FB_TK_MKD         , FB_TKCLASS_QUIRKWD ), _
+        ( @"MKS"        , FB_TK_MKS         , FB_TKCLASS_QUIRKWD ), _
+        ( @"MKI"        , FB_TK_MKI         , FB_TKCLASS_QUIRKWD ), _
+        ( @"MKL"        , FB_TK_MKL         , FB_TKCLASS_QUIRKWD ), _
+        ( @"MKSHORT"    , FB_TK_MKSHORT     , FB_TKCLASS_QUIRKWD ), _
+        ( @"MKLONGINT"  , FB_TK_MKLONGINT   , FB_TKCLASS_QUIRKWD ), _
         ( @"WSTR"       , FB_TK_WSTR        , FB_TKCLASS_QUIRKWD ), _
         ( @"MID"        , FB_TK_MID         , FB_TKCLASS_QUIRKWD ), _
         ( @"INSTR"      , FB_TK_INSTR       , FB_TKCLASS_QUIRKWD ), _

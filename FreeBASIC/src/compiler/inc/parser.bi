@@ -978,6 +978,18 @@ declare function cStringFunct _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
+declare function cCVXFunct _
+	( _
+		byval tk as FB_TOKEN, _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
+declare function cMKXFunct _
+	( _
+		byval tk as FB_TOKEN, _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
 declare function cMathFunct _
 	( _
 		byval tk as FB_TOKEN, _

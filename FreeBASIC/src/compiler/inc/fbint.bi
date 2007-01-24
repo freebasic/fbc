@@ -407,6 +407,18 @@ enum FB_TOKEN
 	FB_TK_CHR
 	FB_TK_WCHR
 	FB_TK_STR
+    FB_TK_CVD      
+    FB_TK_CVS      
+    FB_TK_CVI      
+    FB_TK_CVL      
+    FB_TK_CVSHORT  
+	FB_TK_CVLONGINT
+    FB_TK_MKD      
+    FB_TK_MKS      
+    FB_TK_MKI      
+    FB_TK_MKL      
+    FB_TK_MKSHORT  
+	FB_TK_MKLONGINT
 	FB_TK_WSTR
 	FB_TK_MID
 	FB_TK_INSTR

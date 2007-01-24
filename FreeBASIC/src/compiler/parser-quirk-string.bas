@@ -402,6 +402,196 @@ private function cStrASC _
 end function
 
 '':::::
+'' cCVXFunct	=	CVD       '(' Expression{str} ')'
+'' 				|   CVS       '(' Expression{str} ')'
+'' 				|   CVI       '(' Expression{str} ')'
+'' 				|   CVL       '(' Expression{str} ')'
+'' 				|   CVSHORT   '(' Expression{str} ')'
+'' 				|   CVLONGINT '(' Expression{str} ')'
+''
+function cCVXFunct _
+	( _
+		byval tk as FB_TOKEN, _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
+	function = FALSE
+	
+	dim as ASTNODE ptr expr1 = any
+	
+	select case as const tk
+
+	case FB_TK_CVD, FB_TK_CVS, FB_TK_CVI, FB_TK_CVL, _ 
+	     FB_TK_CVSHORT, FB_TK_CVLONGINT
+	     
+		lexSkipToken( )
+
+		hMatchLPRNT( )
+
+		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
+
+		hMatchRPRNT( )
+		
+	    dim as FBSYMBOL ptr litsym = any
+		
+		'' constant? evaluate at compile-time
+		litsym = NULL
+		select case astGetDataType( expr1 )
+		case FB_DATATYPE_CHAR
+			litsym = astGetStrLitSymbol( expr1 )
+		end select
+	
+		if( litsym <> NULL ) then
+			'' remove internal escape format
+			dim as zstring ptr zs = hUnescape( symbGetVarLitText( litsym ) )
+			
+			select case as const tk
+			
+			case FB_TK_CVD
+				funcexpr = astNewCONSTi( cvd( *zs ), FB_DATATYPE_DOUBLE )
+			case FB_TK_CVS
+				funcexpr = astNewCONSTi( cvs( *zs ), FB_DATATYPE_SINGLE )
+			case FB_TK_CVI, FB_TK_CVL
+				funcexpr = astNewCONSTi( cvi( *zs ), FB_DATATYPE_INTEGER )
+			case FB_TK_CVSHORT
+				funcexpr = astNewCONSTi( cvshort( *zs ), FB_DATATYPE_SHORT )
+			case FB_TK_CVLONGINT
+				funcexpr = astNewCONSTi( cvlongint( *zs ), FB_DATATYPE_LONGINT )
+				
+			end select
+	
+	    	astDelNode( expr1 )
+	    	expr1 = NULL
+	
+		end if
+        
+        if( expr1 <> NULL ) then
+			select case as const tk
+			case FB_TK_CVD
+				funcexpr = astNewCALL( PROCLOOKUP( CVD ) )
+			case FB_TK_CVS
+				funcexpr = astNewCALL( PROCLOOKUP( CVS ) )
+			case FB_TK_CVI, FB_TK_CVL
+				funcexpr = astNewCALL( PROCLOOKUP( CVI ) )
+			case FB_TK_CVSHORT
+				funcexpr = astNewCALL( PROCLOOKUP( CVSHORT ) )
+			case FB_TK_CVLONGINT
+				funcexpr = astNewCALL( PROCLOOKUP( CVLONGINT ) )
+			end select
+		    
+		    '' byref expr as string
+		    if( astNewARG( funcexpr, expr1 ) = NULL ) then
+		    	funcexpr = NULL
+		    end if
+		end if
+
+		function = (funcexpr <> NULL)
+
+	end select
+end function
+
+
+'':::::
+'' cMKXFunct	=	MKD       '(' Expression{double}  ')'
+'' 				|   MKS       '(' Expression{float}   ')'
+'' 				|   MKI       '(' Expression{int}     ')'
+'' 				|   MKL       '(' Expression{long}    ')'
+'' 				|   MKSHORT   '(' Expression{short}   ')'
+'' 				|   MKLONGINT '(' Expression{longint} ')'
+''
+function cMKXFunct _
+	( _
+		byval tk as FB_TOKEN, _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
+	function = FALSE
+	
+	dim as ASTNODE ptr expr1 = any
+	
+	select case as const tk
+
+	case FB_TK_MKD, FB_TK_MKS, FB_TK_MKI, FB_TK_MKL, _ 
+	     FB_TK_MKSHORT, FB_TK_MKLONGINT
+	     
+		#macro doMKX( token )
+			select case as const astGetDataType( expr1 )
+			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+				funcexpr = astNewCONSTstr( str( token( astGetValueAsLongint( expr1 ) ) ) )
+		
+			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+				funcexpr = astNewCONSTstr( str( token( astGetValueAsDouble( expr1 ) ) ) )
+		
+			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+				if( FB_LONGSIZE = len( integer ) ) then
+					funcexpr = astNewCONSTstr( str( token( astGetValueAsInt( expr1 ) ) ) )
+				else
+					funcexpr = astNewCONSTstr( str( token( astGetValueAsLongint( expr1 ) ) ) )
+				end if
+		
+			case else
+				funcexpr = astNewCONSTstr( str( token( astGetValueAsInt( expr1 ) ) ) )
+			end select
+		#endmacro
+		
+		lexSkipToken( )
+
+		hMatchLPRNT( )
+
+		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
+
+		hMatchRPRNT( )
+		
+	    dim as FBSYMBOL ptr litsym = any
+		
+		'' constant? eval at compile-time
+		if( astIsCONST( expr1 ) = TRUE ) then
+		
+			select case as const tk
+			case FB_TK_MKD
+				doMKX( mkd )
+			case FB_TK_MKS
+				doMKX( mks )
+			case FB_TK_MKI, FB_TK_MKL
+				doMKX( mki )
+			case FB_TK_MKSHORT
+				doMKX( mkshort )
+			case FB_TK_MKLONGINT
+				doMKX( mklongint )
+			end select
+
+	    	astDelNode( expr1 )
+	    	expr1 = NULL
+		
+		end if
+		
+        if( expr1 <> NULL ) then
+			select case as const tk
+			case FB_TK_MKD
+				funcexpr = astNewCALL( PROCLOOKUP( MKD ) )
+			case FB_TK_MKS
+				funcexpr = astNewCALL( PROCLOOKUP( MKS ) )
+			case FB_TK_MKI, FB_TK_MKL
+				funcexpr = astNewCALL( PROCLOOKUP( MKI ) )
+			case FB_TK_MKSHORT
+				funcexpr = astNewCALL( PROCLOOKUP( MKSHORT ) )
+			case FB_TK_MKLONGINT
+				funcexpr = astNewCALL( PROCLOOKUP( MKLONGINT ) )
+			end select
+		    
+		    '' byval expr as {type}
+		    if( astNewARG( funcexpr, expr1 ) = NULL ) then
+		    	funcexpr = NULL
+		    end if
+		end if
+
+		function = (funcexpr <> NULL)
+
+	end select
+end function
+
+
+'':::::
 '' cStringFunct	=	W|STR$ '(' Expression{int|float|double} ')'
 '' 				|   MID$ '(' Expression ',' Expression (',' Expression)? ')'
 '' 				|   W|STRING$ '(' Expression ',' Expression{int|str} ')' .

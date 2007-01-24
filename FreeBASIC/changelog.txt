@@ -41,6 +41,7 @@ Version 0.17 Beta:
 - STR will now pad positive numbers with a single space, as in QB, but ONLY if -lang qb is used (cha0s)
 - ACOS(), ASIN(), LOG(), EXP(), SGN() and FIX() are now inlined (v1c)
 - OPEN now is more compatible with QB, the file/device is parsed at runtime (cha0s)
+- MK* and CV* will now evaluate constant expressions at compile-time (cha0s)
 
 [added]
 - the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)

@@ -155,6 +155,14 @@ function cQuirkFunction _
 	dim as ASTNODE ptr funcexpr = NULL
 
 	select case as const tk
+	case FB_TK_MKD, FB_TK_MKS, FB_TK_MKI, FB_TK_MKL, _ 
+	     FB_TK_MKSHORT, FB_TK_MKLONGINT
+		res = cMKXFunct( tk, funcexpr )
+
+	case FB_TK_CVD, FB_TK_CVS, FB_TK_CVI, FB_TK_CVL, _ 
+	     FB_TK_CVSHORT, FB_TK_CVLONGINT
+		res = cCVXFunct( tk, funcexpr )
+
 	case FB_TK_STR, FB_TK_WSTR, FB_TK_MID, FB_TK_STRING, FB_TK_WSTRING, _
 		 FB_TK_CHR, FB_TK_WCHR, FB_TK_ASC, _
 		 FB_TK_INSTR, FB_TK_TRIM, FB_TK_RTRIM, FB_TK_LTRIM

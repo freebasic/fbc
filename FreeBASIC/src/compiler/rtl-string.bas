@@ -2001,7 +2001,7 @@
  		), _
 		/' fb_MKD ( byval number as double ) as string '/ _
 		( _
-			@"mkd", @"fb_MKD", _
+			@FB_RTL_MKD, @"fb_MKD", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -2013,7 +2013,7 @@
  		), _
 		/' fb_MKS ( byval number as single ) as string '/ _
 		( _
-			@"mks", @"fb_MKS", _
+			@FB_RTL_MKS, @"fb_MKS", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -2025,7 +2025,7 @@
  		), _
 		/' fb_MKI ( byval number as integer ) as string '/ _
 		( _
-			@"mki", @"fb_MKI", _
+			@FB_RTL_MKI, @"fb_MKI", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -2036,7 +2036,7 @@
 			} _
  		), _
 		( _
-			@"mkl", @"fb_MKI", _
+			@FB_RTL_MKL, @"fb_MKI", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -2048,7 +2048,7 @@
  		), _
 		/' fb_MKSHORT ( byval number as short ) as string '/ _
 		( _
-			@"mkshort", @"fb_MKSHORT", _
+			@FB_RTL_MKSHORT, @"fb_MKSHORT", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -2060,7 +2060,7 @@
  		), _
 		/' fb_MKLONGINT ( byval number as longint ) as string '/ _
 		( _
-			@"mklongint", @"fb_MKLONGINT", _
+			@FB_RTL_MKLONGINT, @"fb_MKLONGINT", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -2234,7 +2234,7 @@
  		), _
 		/' fb_CVD ( byref str as string ) as double '/ _
 		( _
-			@"cvd", @"fb_CVD", _
+			@FB_RTL_CVD, @"fb_CVD", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -2246,7 +2246,7 @@
  		), _
 		/' fb_CVS ( byref str as string ) as single '/ _
 		( _
-			@"cvs", @"fb_CVS", _
+			@FB_RTL_CVS, @"fb_CVS", _
 			FB_DATATYPE_SINGLE, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -2258,7 +2258,7 @@
  		), _
 		/' fb_CVI ( byref str as string ) as integer '/ _
 		( _
-			@"cvi", @"fb_CVI", _
+			@FB_RTL_CVI, @"fb_CVI", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -2269,7 +2269,7 @@
 			} _
  		), _
 		( _
-			@"cvl", @"fb_CVI", _
+			@FB_RTL_CVL, @"fb_CVI", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -2281,7 +2281,7 @@
  		), _
 		/' fb_CVSHORT ( byref str as string ) as short '/ _
 		( _
-			@"cvshort", @"fb_CVSHORT", _
+			@FB_RTL_CVSHORT, @"fb_CVSHORT", _
 			FB_DATATYPE_SHORT, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -2293,7 +2293,7 @@
  		), _
 		/' fb_CVLONGINT ( byref str as string ) as longint '/ _
 		( _
-			@"cvlongint", @"fb_CVLONGINT", _
+			@FB_RTL_CVLONGINT, @"fb_CVLONGINT", _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
