@@ -18,7 +18,7 @@ operator eqv _
 	
 	dim as VARIANT res = any
 	
-	VarEqv( @lhs, @rhs.var, @res )
+	VarEqv( @lhs, @rhs.var_, @res )
 	
 	return CVariant( res, FALSE )
 	

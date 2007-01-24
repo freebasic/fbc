@@ -19,7 +19,7 @@ operator CVariant.cast _
 	dim as VARIANT tmp = any
 		
 	VariantInit( @tmp )
-	VariantChangeTypeEx( @tmp, @this.var, NULL, VARIANT_NOVALUEPROP, VT_BSTR )
+	VariantChangeTypeEx( @tmp, @this.var_, NULL, VARIANT_NOVALUEPROP, VT_BSTR )
 
 	operator = *cast( wstring ptr, V_BSTR(@tmp) )
 	
@@ -36,7 +36,7 @@ operator CVariant.cast _
 	dim as VARIANT tmp = any
 		
 	VariantInit( @tmp )
-	VariantChangeTypeEx( @tmp, @this.var, NULL, VARIANT_NOVALUEPROP, VT_BSTR )
+	VariantChangeTypeEx( @tmp, @this.var_, NULL, VARIANT_NOVALUEPROP, VT_BSTR )
 
 	'' !!!FIXME!!! the pointer returned will leak
 

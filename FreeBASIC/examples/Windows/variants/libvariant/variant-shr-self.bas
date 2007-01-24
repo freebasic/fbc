@@ -14,10 +14,10 @@ operator CVariant.shr= _
 	V_VT(@tmp) = VT_I4
 	V_I4(@tmp) = 1 shl cint( rhs )
 
-	VarIdiv( @this.var, @tmp, @res )
+	VarIdiv( @this.var_, @tmp, @res )
 		
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 	
 	VariantClear( @tmp )
 		
@@ -34,10 +34,10 @@ operator CVariant.shr= _
 	V_VT(@tmp) = VT_I4
 	V_I4(@tmp) = 1 shl rhs
 	
-	VarIdiv( @this.var, @tmp, @res )
+	VarIdiv( @this.var_, @tmp, @res )
 		
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 	
 	VariantClear( @tmp )
 		

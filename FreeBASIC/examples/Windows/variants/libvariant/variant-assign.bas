@@ -16,7 +16,7 @@ operator CVariant.let _
 		byval rhs as VARIANT_NOTHING _
 	)
 	
-	VariantClear( @this.var )
+	VariantClear( @this.var_ )
 
 end operator
 
@@ -26,8 +26,8 @@ operator CVariant.let _
 		byref rhs as Cvariant _
 	)
 	
-	VariantClear( @this.var )
-	VariantCopy( @this.var, @rhs.var )
+	VariantClear( @this.var_ )
+	VariantCopy( @this.var_, @rhs.var_ )
 	
 end operator
 
@@ -37,8 +37,8 @@ operator CVariant.let _
 		byref rhs as VARIANT _
 	)
 	
-	VariantClear( @this.var )
-	VariantCopy( @this.var, @rhs )
+	VariantClear( @this.var_ )
+	VariantCopy( @this.var_, @rhs )
 	
 end operator
 
@@ -48,10 +48,10 @@ operator CVariant.let _
 		byval rhs as zstring ptr _
 	)
 	
-	VariantClear( @this.var )
+	VariantClear( @this.var_ )
 
-	V_VT(@this.var) = VT_BSTR
-	V_BSTR(@this.var) = SysAllocStringByteLen( rhs, len( *rhs ) )
+	V_VT(@this.var_) = VT_BSTR
+	V_BSTR(@this.var_) = SysAllocStringByteLen( rhs, len( *rhs ) )
 	
 end operator
 
@@ -61,10 +61,10 @@ operator CVariant.let _
 		byval rhs as wstring ptr _
 	)
 	
-	VariantClear( @this.var )
+	VariantClear( @this.var_ )
 
-	V_VT(@this.var) = VT_BSTR
-	V_BSTR(@this.var) = SysAllocStringLen( rhs, len( *rhs ) )
+	V_VT(@this.var_) = VT_BSTR
+	V_BSTR(@this.var_) = SysAllocStringLen( rhs, len( *rhs ) )
 	
 end operator
 

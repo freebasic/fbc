@@ -16,10 +16,10 @@ operator CVariant.eqv= _
 	
 	dim as VARIANT res = any
 	
-	VarEqv( @this.var, @rhs.var, @res )
+	VarEqv( @this.var_, @rhs.var_, @res )
 	
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 	
 end operator
 
@@ -31,10 +31,10 @@ operator CVariant.eqv= _
 	
 	dim as VARIANT res = any
 	
-	VarEqv( @this.var, @rhs, @res )
+	VarEqv( @this.var_, @rhs, @res )
 	
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 	
 end operator
 

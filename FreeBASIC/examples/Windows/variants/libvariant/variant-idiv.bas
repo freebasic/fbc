@@ -20,7 +20,7 @@ operator \ _
 	
 	dim as VARIANT res = any
 	
-	VarIdiv( @lhs.var, @rhs.var, @res )
+	VarIdiv( @lhs.var_, @rhs.var_, @res )
 	
 	return CVariant( res, FALSE )
 	
@@ -35,7 +35,7 @@ operator \ _
 	
 	dim as VARIANT res = any
 	
-	VarIdiv( @lhs.var, @rhs, @res )
+	VarIdiv( @lhs.var_, @rhs, @res )
 	
 	return CVariant( res, FALSE )
 	

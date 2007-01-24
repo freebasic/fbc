@@ -16,10 +16,10 @@ operator CVariant.xor= _
 	
 	dim as VARIANT res = any
 	
-	VarXor( @this.var, @rhs.var, @res )
+	VarXor( @this.var_, @rhs.var_, @res )
 	
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 	
 end operator
 
@@ -31,10 +31,10 @@ operator CVariant.xor= _
 	
 	dim as VARIANT res = any
 	
-	VarXor( @this.var, @rhs, @res )
+	VarXor( @this.var_, @rhs, @res )
 	
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 	
 end operator
 

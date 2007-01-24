@@ -18,7 +18,7 @@ operator imp _
 	
 	dim as VARIANT res = any
 	
-	VarImp( @lhs.var, @rhs.var, @res )
+	VarImp( @lhs.var_, @rhs.var_, @res )
 	
 	return CVariant( res, FALSE )
 	
@@ -33,7 +33,7 @@ operator imp _
 	
 	dim as VARIANT res = any
 	
-	VarImp( @lhs.var, @rhs, @res )
+	VarImp( @lhs.var_, @rhs, @res )
 	
 	return CVariant( res, FALSE )
 	

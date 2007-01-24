@@ -16,7 +16,7 @@ constructor CVariant _
 		_
 	) 
 	
-	VariantInit( @this.var )
+	VariantInit( @this.var_ )
 		
 end constructor
 
@@ -26,8 +26,8 @@ constructor CVariant _
 		byref rhs as CVariant _
 	) 
 	
-	VariantInit( @this.var )
-	VariantCopy( @this.var, @rhs.var )
+	VariantInit( @this.var_ )
+	VariantCopy( @this.var_, @rhs.var_ )
 		
 end constructor
 
@@ -38,12 +38,12 @@ constructor CVariant _
 		byval deep_copy as integer _
 	) 
 	
-	VariantInit( @this.var )
+	VariantInit( @this.var_ )
 	
 	if( deep_copy ) then
-		VariantCopy( @this.var, @rhs.var )
+		VariantCopy( @this.var_, @rhs.var_ )
 	else
-		this.var = rhs.var
+		this.var_ = rhs.var_
 	end if
 		
 end constructor
@@ -54,8 +54,8 @@ constructor CVariant _
 		byref rhs as VARIANT _
 	) 
 	
-	VariantInit( @this.var )
-	VariantCopy( @this.var, @rhs )
+	VariantInit( @this.var_ )
+	VariantCopy( @this.var_, @rhs )
 		
 end constructor
 
@@ -66,12 +66,12 @@ constructor CVariant _
 		byval deep_copy as integer _
 	) 
 	
-	VariantInit( @this.var )
+	VariantInit( @this.var_ )
 	
 	if( deep_copy ) then
-		VariantCopy( @this.var, @rhs )
+		VariantCopy( @this.var_, @rhs )
 	else
-		this.var = rhs
+		this.var_ = rhs
 	end if
 		
 end constructor
@@ -82,10 +82,10 @@ constructor CVariant _
 		byval rhs as zstring ptr _
 	)
 	
-	VariantInit( @this.var )
+	VariantInit( @this.var_ )
 
-	V_VT(@this.var) = VT_BSTR
-	V_BSTR(@this.var) = SysAllocStringByteLen( rhs, len( *rhs ) )
+	V_VT(@this.var_) = VT_BSTR
+	V_BSTR(@this.var_) = SysAllocStringByteLen( rhs, len( *rhs ) )
 	
 end constructor
 
@@ -95,10 +95,10 @@ constructor CVariant _
 		byval rhs as wstring ptr _
 	)
 	
-	VariantInit( @this.var )
+	VariantInit( @this.var_ )
 
-	V_VT(@this.var) = VT_BSTR
-	V_BSTR(@this.var) = SysAllocStringLen( rhs, len( *rhs ) )
+	V_VT(@this.var_) = VT_BSTR
+	V_BSTR(@this.var_) = SysAllocStringLen( rhs, len( *rhs ) )
 	
 end constructor
 

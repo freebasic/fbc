@@ -16,10 +16,10 @@ operator CVariant.and= _
 	
 	dim as VARIANT res = any
 	
-	VarAnd( @this.var, @rhs.var, @res )
+	VarAnd( @this.var_, @rhs.var_, @res )
 	
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 	
 end operator
 
@@ -32,10 +32,10 @@ operator CVariant.and= _
 	
 	dim as VARIANT res = any
 	
-	VarAnd( @this.var, @rhs, @res )
+	VarAnd( @this.var_, @rhs, @res )
 	
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 	
 end operator
 

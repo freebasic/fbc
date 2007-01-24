@@ -5,10 +5,10 @@
 			byval rhs as r_type _
 		)
 		
-		VariantInit( @this.var )
+		VariantInit( @this.var_ )
 	
-		V_VT(@this.var) = VT_##vt_type
-		V_##vt_type(@this.var) = rhs
+		V_VT(@this.var_) = VT_##vt_type
+		V_##vt_type(@this.var_) = rhs
 		
 	end constructor
 #endmacro
@@ -20,10 +20,10 @@
 			byval rhs as r_type _
 		)
 		
-		VariantClear( @this.var )
+		VariantClear( @this.var_ )
 	
-		V_VT(@this.var) = VT_##vt_type
-		V_##vt_type(@this.var) = rhs
+		V_VT(@this.var_) = VT_##vt_type
+		V_##vt_type(@this.var_) = rhs
 		
 	end operator
 #endmacro
@@ -38,7 +38,7 @@
 		dim as VARIANT tmp = any
 		
 		VariantInit( @tmp )
-		VariantChangeTypeEx( @tmp, @this.var, NULL, VARIANT_NOVALUEPROP, VT_##vt_type )
+		VariantChangeTypeEx( @tmp, @this.var_, NULL, VARIANT_NOVALUEPROP, VT_##vt_type )
 		
 		operator = V_##vt_type(@tmp)
 		
@@ -61,7 +61,7 @@
 		V_VT(@tmp) = VT_##vt_type
 		V_##vt_type(@tmp) = rhs
 		
-		proc( @lhs.var, @tmp, @res )
+		proc( @lhs.var_, @tmp, @res )
 		
 		return CVariant( res, FALSE )
 		
@@ -82,7 +82,7 @@
 		V_VT(@tmp) = VT_##vt_type
 		V_##vt_type(@tmp) = lhs
 		
-		proc( @tmp, @rhs.var, @res )
+		proc( @tmp, @rhs.var_, @res )
 		
 		return CVariant( res, FALSE )
 		
@@ -102,10 +102,10 @@
 		V_VT(@tmp) = VT_##vt_type
 		V_##vt_type(@tmp) = rhs
 		
-		proc( @this.var, @tmp, @res )
+		proc( @this.var_, @tmp, @res )
 		
-		VariantClear( @this.var )
-		this.var = res
+		VariantClear( @this.var_ )
+		this.var_ = res
 		
 	end operator
 #endmacro
@@ -124,7 +124,7 @@
 		V_VT(@tmp) = VT_##vt_type
 		V_##vt_type(@tmp) = rhs
 		
-		operator = VarCmp( @lhs.var, @tmp, NULL, 0 ) op VARCMP_EQ
+		operator = VarCmp( @lhs.var_, @tmp, NULL, 0 ) op VARCMP_EQ
 		
 	end operator
 #endmacro
@@ -143,7 +143,7 @@
 		V_VT(@tmp) = VT_##vt_type
 		V_##vt_type(@tmp) = lhs
 		
-		operator = VarCmp( @tmp, @rhs.var, NULL, 0 ) op VARCMP_EQ
+		operator = VarCmp( @tmp, @rhs.var_, NULL, 0 ) op VARCMP_EQ
 		
 	end operator
 #endmacro

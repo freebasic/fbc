@@ -18,7 +18,7 @@ operator or _
 	
 	dim as VARIANT res = any
 	
-	VarOr( @lhs, @rhs.var, @res )
+	VarOr( @lhs, @rhs.var_, @res )
 	
 	return CVariant( res, FALSE )
 	

@@ -16,7 +16,7 @@ operator shl _
 	V_VT(@tmp) = VT_I4
 	V_I4(@tmp) = 1 shl cint( rhs )
 	
-	VarMul( @lhs.var, @tmp, @res )
+	VarMul( @lhs.var_, @tmp, @res )
 	
 	VariantClear( @tmp )
 	
@@ -36,7 +36,7 @@ operator shl _
 	V_VT(@tmp) = VT_I4
 	V_I4(@tmp) = 1 shl rhs
 	
-	VarMul( @lhs.var, @tmp, @res )
+	VarMul( @lhs.var_, @tmp, @res )
 	
 	VariantClear( @tmp )
 	

@@ -20,7 +20,7 @@ operator - _
 	
 	dim as VARIANT res = any
 	
-	VarSub( @lhs.var, @rhs.var, @res )
+	VarSub( @lhs.var_, @rhs.var_, @res )
 	
 	return CVariant( res, FALSE )
 	
@@ -35,7 +35,7 @@ operator - _
 	
 	dim as VARIANT res = any
 	
-	VarSub( @lhs.var, @rhs, @res )
+	VarSub( @lhs.var_, @rhs, @res )
 	
 	return CVariant( res, FALSE )
 	

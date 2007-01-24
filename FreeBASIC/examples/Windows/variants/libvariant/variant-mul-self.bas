@@ -18,10 +18,10 @@ operator CVariant.*= _
 		
 	dim as VARIANT res = any
 	
-	VarMul( @this.var, @rhs.var, @res )
+	VarMul( @this.var_, @rhs.var_, @res )
 		
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 		
 end operator
 
@@ -33,9 +33,9 @@ operator CVariant.*= _
 		
 	dim as VARIANT res = any
 	
-	VarMul( @this.var, @rhs, @res )
+	VarMul( @this.var_, @rhs, @res )
 		
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 		
 end operator

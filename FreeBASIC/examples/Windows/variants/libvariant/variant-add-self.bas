@@ -18,10 +18,10 @@ operator CVariant.+= _
 	
 	dim as VARIANT res = any
 	
-	VarAdd( @this.var, @rhs.var, @res )
+	VarAdd( @this.var_, @rhs.var_, @res )
 	
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 	
 end operator
 
@@ -33,10 +33,10 @@ operator CVariant.+= _
 	
 	dim as VARIANT res = any
 	
-	VarAdd( @this.var, @rhs, @res )
+	VarAdd( @this.var_, @rhs, @res )
 	
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 	
 end operator
 
@@ -52,10 +52,10 @@ operator CVariant.+= _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringByteLen( rhs, len( *rhs ) )
 	
-	VarAdd( @this.var, @tmp, @res )
+	VarAdd( @this.var_, @tmp, @res )
 	
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 	
 	VariantClear( @tmp )
 	
@@ -73,10 +73,10 @@ operator CVariant.+= _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringLen( rhs, len( *rhs ) )
 	
-	VarAdd( @this.var, @tmp, @res )
+	VarAdd( @this.var_, @tmp, @res )
 	
-	VariantClear( @this.var )
-	this.var = res
+	VariantClear( @this.var_ )
+	this.var_ = res
 	
 	VariantClear( @tmp )
 	

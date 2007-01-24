@@ -12,7 +12,7 @@ operator not _
 	
 	dim as VARIANT res = any
 	
-	VarNot( @rhs.var, @res )
+	VarNot( @rhs.var_, @res )
 	
 	return CVariant( res, FALSE )
 	

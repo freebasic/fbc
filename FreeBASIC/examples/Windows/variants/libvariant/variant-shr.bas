@@ -16,7 +16,7 @@ operator shr _
 	V_VT(@tmp) = VT_I4
 	V_I4(@tmp) = 1 shl cint( rhs )
 	
-	VarIdiv( @lhs.var, @tmp, @res )
+	VarIdiv( @lhs.var_, @tmp, @res )
 	
 	VariantClear( @tmp )
 	
@@ -36,7 +36,7 @@ operator shr _
 	V_VT(@tmp) = VT_I4
 	V_I4(@tmp) = 1 shl rhs
 	
-	VarIdiv( @lhs.var, @tmp, @res )
+	VarIdiv( @lhs.var_, @tmp, @res )
 	
 	VariantClear( @tmp )
 	

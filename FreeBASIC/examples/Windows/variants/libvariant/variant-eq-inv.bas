@@ -18,7 +18,7 @@ operator = _
 		byref rhs as CVariant _
 	) as integer
 	
-	operator = VarCmp( @lhs, @rhs.var, NULL, 0 ) = VARCMP_EQ
+	operator = VarCmp( @lhs, @rhs.var_, NULL, 0 ) = VARCMP_EQ
 	
 end operator
 
@@ -35,7 +35,7 @@ operator = _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringByteLen( lhs, len( *lhs ) )
 	
-	operator = VarCmp( @tmp, @rhs.var, NULL, 0 ) = VARCMP_EQ
+	operator = VarCmp( @tmp, @rhs.var_, NULL, 0 ) = VARCMP_EQ
 	
 	VariantClear( @tmp )
 	
@@ -54,7 +54,7 @@ operator = _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringLen( lhs, len( *lhs ) )
 	
-	operator = VarCmp( @tmp, @rhs.var, NULL, 0 ) = VARCMP_EQ
+	operator = VarCmp( @tmp, @rhs.var_, NULL, 0 ) = VARCMP_EQ
 	
 	VariantClear( @tmp )
 	

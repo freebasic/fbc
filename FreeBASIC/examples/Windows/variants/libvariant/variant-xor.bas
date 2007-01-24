@@ -18,7 +18,7 @@ operator xor _
 	
 	dim as VARIANT res = any
 	
-	VarXor( @lhs.var, @rhs.var, @res )
+	VarXor( @lhs.var_, @rhs.var_, @res )
 	
 	return CVariant( res, FALSE )
 	
@@ -34,7 +34,7 @@ operator xor _
 	
 	dim as VARIANT res = any
 	
-	VarXor( @lhs.var, @rhs, @res )
+	VarXor( @lhs.var_, @rhs, @res )
 	
 	return CVariant( res, FALSE )
 	

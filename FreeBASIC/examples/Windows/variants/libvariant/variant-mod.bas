@@ -20,7 +20,7 @@ operator mod _
 	
 	dim as VARIANT res = any
 	
-	VarMod( @lhs.var, @rhs.var, @res )
+	VarMod( @lhs.var_, @rhs.var_, @res )
 	
 	return CVariant( res, FALSE )
 	
@@ -35,7 +35,7 @@ operator mod _
 	
 	dim as VARIANT res = any
 	
-	VarMod( @lhs.var, @rhs, @res )
+	VarMod( @lhs.var_, @rhs, @res )
 	
 	return CVariant( res, FALSE )
 	

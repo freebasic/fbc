@@ -18,7 +18,7 @@ operator and _
 	
 	dim as VARIANT res = any
 	
-	VarAnd( @lhs.var, @rhs.var, @res )
+	VarAnd( @lhs.var_, @rhs.var_, @res )
 	
 	return CVariant( res, FALSE )
 	
@@ -33,7 +33,7 @@ operator and _
 	
 	dim as VARIANT res = any
 	
-	VarAnd( @lhs.var, @rhs, @res )
+	VarAnd( @lhs.var_, @rhs, @res )
 	
 	return CVariant( res, FALSE )
 	

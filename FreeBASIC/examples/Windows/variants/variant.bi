@@ -5,13 +5,14 @@
 #include once "win/ole2.bi"
 
 #inclib "variant"
+#libpath "libvariant"
 
 enum VARIANT_NOTHING
 	NOTHING = -1
 end enum
 
 type CVariant
-	as VARIANT var
+	as VARIANT var_
  	
  	declare constructor ( )
  	declare constructor ( byref rhs as CVariant )

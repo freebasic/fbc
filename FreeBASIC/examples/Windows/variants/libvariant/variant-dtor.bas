@@ -9,7 +9,7 @@ destructor CVariant _
 		_
 	) 
 	
-	VariantClear( @this.var )
+	VariantClear( @this.var_ )
 		
 end destructor
 

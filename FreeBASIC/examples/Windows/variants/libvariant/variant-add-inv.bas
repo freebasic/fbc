@@ -20,7 +20,7 @@ operator + _
 	
 	dim as VARIANT res = any
 	
-	VarAdd( @lhs, @rhs.var, @res )
+	VarAdd( @lhs, @rhs.var_, @res )
 	
 	return CVariant( res, FALSE )
 	
@@ -39,7 +39,7 @@ operator + _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringByteLen( lhs, len( *lhs ) )
 	
-	VarAdd( @tmp, @rhs.var, @res )
+	VarAdd( @tmp, @rhs.var_, @res )
 	
 	VariantClear( @tmp )
 	
@@ -60,7 +60,7 @@ operator + _
 	V_VT(@tmp) = VT_BSTR
 	V_BSTR(@tmp) = SysAllocStringLen( lhs, len( *lhs ) )
 	
-	VarAdd( @tmp, @rhs.var, @res )
+	VarAdd( @tmp, @rhs.var_, @res )
 	
 	VariantClear( @tmp )
 	
