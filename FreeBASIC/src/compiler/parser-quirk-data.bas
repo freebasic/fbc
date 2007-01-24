@@ -201,7 +201,7 @@ function cDataStmt  _
 					if( len( text ) > 1 ) then
 						if( text[0] = asc( """" ) ) then
 							if( text[len( text )-1] = asc( """" ) ) then
-								text = mid( text, 1, len( text ) - 2 )
+								text = mid( text, 2, len( text ) - 2 )
 							end if
 						end if
 					end if
