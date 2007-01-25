@@ -100,8 +100,8 @@ int fb_FilePutDataEx
         /* if in random mode, writes must be of reclen.
          * The device must also support the SEEK method and the length
          * must be non-null */
-        size_t skip_size = handle->len -
-        				   ((!is_unicode? length: length*sizeof( FB_WCHAR )) % handle->len);
+        size_t skip_size = (handle->len -
+        				   ((!is_unicode? length: length*sizeof( FB_WCHAR )) % handle->len)) % handle->len;
         if (skip_size != 0)
         {
             /* devices that don't support seek should simulate it

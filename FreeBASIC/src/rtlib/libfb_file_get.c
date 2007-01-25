@@ -163,7 +163,9 @@ int fb_FileGetDataEx( FB_FILE *handle, fb_off_t pos, void *dst, size_t *pchars,
 				if( *pchars != handle->len )
 					res = fb_ErrorSetNum( FB_RTERROR_FILEIO );
 
-        size_t skip_size = handle->len - (read_chars % handle->len);
+        size_t skip_size = (handle->len -
+        				   ((!is_unicode? read_chars: read_chars*sizeof( FB_WCHAR )) % handle->len)) % handle->len;
+
         if( skip_size != 0 )
         {
             /* don't forget the put back buffer */
