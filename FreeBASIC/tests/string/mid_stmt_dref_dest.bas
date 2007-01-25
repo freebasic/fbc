@@ -2,12 +2,13 @@
 namespace fbc_tests.string_.mid_stmt_deref_destination
     
     
-    sub deref_as_mid_destination cdecl ( byref s as string )
-    	'' byref is an implicit deref
-		if mid(s, 1, 1) = " " then
-			mid(s, 1, 1) = "\"
+    sub deref_as_mid_destination cdecl ( )
+    	dim as string f = " "
+    	dim as string ptr g = @f
+		if mid(*g, 1, 1) = " " then
+			mid(*g, 1, 1) = "\"
 		end if
-		CU_ASSERT( s = "\" )
+		CU_ASSERT( *g = "\" )
 	end sub
 	
 	sub ctor () constructor
