@@ -169,6 +169,7 @@ end function
 '' places and to also make it easy to move the pressing of numpad keys
 '' 2, 4, 6, and 8 into handleKeyPress function.
 sub ResetParticle( byval num as integer, byval clr as integer, byval xDir as single, byval yDir as single, byval zDir as single )
+    if clr > 11 then clr = 11
     '' Make the particels active
     particles(num).active = TRUE
     '' Give the particles life

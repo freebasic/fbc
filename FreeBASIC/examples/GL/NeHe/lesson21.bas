@@ -140,34 +140,33 @@ dim shared texture(1) as uinteger                           '' Font Texture Stor
 		for loop1 = 0 to 10                                   '' Loop From Left To Right
 			for loop2 = 0 to 10                               '' Loop From Top To Bottom
 				glColor3f 0.0, 0.5, 1.0                       '' Set Line Color To Blue
-				if hline(loop1,loop2) then                    '' Has The Horizontal Line Been Traced
-					glColor3f 1.0, 1.0, 1.0                   '' If So, Set Line Color To White
-				end if
+				If loop1 < 10 Then
+					If hline(loop1,loop2) Then                    '' Has The Horizontal Line Been Traced
+						glColor3f 1.0, 1.0, 1.0                   '' If So, Set Line Color To White
+					End If
 
-				if loop1<10 then                              '' Dont Draw To Far Right
-					if not hline(loop1,loop2) then            '' If A Horizontal Line Isn''t Filled
+					If Not hline(loop1,loop2) Then            '' If A Horizontal Line Isn''t Filled
 						filled = FALSE                        '' filled Becomes False
-					end if
+					End If
 					glBegin GL_LINES                          '' Start Drawing Horizontal Cell Borders
 						glVertex2d 20+(loop1*60), 70+(loop2*40)     '' Left Side Of Horizontal Line
 						glVertex2d 80+(loop1*60), 70+(loop2*40)     '' Right Side Of Horizontal Line
 					glEnd                                     '' Done Drawing Horizontal Cell Borders
-				end if
+				End If
 
 				glColor3f 0.0, 0.5, 1.0                       '' Set Line Color To Blue
-				if vline(loop1,loop2) then                    '' Has The Horizontal Line Been Traced
-					glColor3f 1.0, 1.0, 1.0                   '' If So, Set Line Color To White
-				end if
-				if loop2<10 then                              '' Dont Draw To Far Down
-					if not vline(loop1,loop2) then            '' If A Vertical Line isn''t Filled
-						filled = FALSE                        '' filled Becomes False
-					end if
-					glBegin GL_LINES                          '' Start Drawing Vertical Cell Borders
-						glVertex2d 20+(loop1*60), 70+(loop2*40)     '' Left Side Of Horizontal Line
-						glVertex2d 20+(loop1*60), 110+(loop2*40)    '' Right Side Of Horizontal Line
-					glEnd                                     '' Done Drawing Vertical Cell Borders
-				end if
-
+				If loop2<10 Then
+					If vline(loop1,loop2) Then                    '' Has The Horizontal Line Been Traced
+						glColor3f 1.0, 1.0, 1.0                   '' If So, Set Line Color To White
+					End If
+                                        If Not vline(loop1,loop2) Then            '' If A Vertical Line isn''t Filled
+                                                filled = FALSE                        '' filled Becomes False
+                                        End If
+                                        glBegin GL_LINES                          '' Start Drawing Vertical Cell Borders
+                                                glVertex2d 20+(loop1*60), 70+(loop2*40)     '' Left Side Of Horizontal Line
+                                                glVertex2d 20+(loop1*60), 110+(loop2*40)    '' Right Side Of Horizontal Line
+                                        glEnd                                     '' Done Drawing Vertical Cell Borders
+                                End If
 				glEnable GL_TEXTURE_2D                        '' Enable Texture Mapping
 				glColor3f 1.0, 1.0, 1.0                       '' Bright White Color
 				glBindTexture GL_TEXTURE_2D, texture(1)       '' Select The Tile Image

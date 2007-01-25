@@ -116,7 +116,11 @@ const TRUE  = not FALSE
 			for y = 0 to 44                           '' Loop Through The Y Plane
 				hold=points(0,y,2)                    '' Store Current Value One Left Side Of Wave
 				for x = 0 to 44                       '' Loop Through The X Plane
-					points(x,y,2) = points(x+1,y,2)   '' Current Wave Value Equals Value To The Right
+					if x < 44 then
+						points(x,y,2) = points(x+1,y,2)   '' Current Wave Value Equals Value To The Right
+					else
+						points(x,y,2) = points(x-1,y,2)   '' Current Wave Value Equals Value To The Left
+					end if
 				next
 				points(44,y,2)=hold                   '' Last Value Becomes The Far Left Stored Value
 			next
