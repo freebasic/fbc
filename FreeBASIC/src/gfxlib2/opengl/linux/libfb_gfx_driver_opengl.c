@@ -55,7 +55,8 @@ GFXDRIVER fb_gfxDriverOpenGL =
 	fb_hX11SetWindowTitle,	/* void (*set_window_title)(char *title); */
 	fb_hX11SetWindowPos,	/* int (*set_window_pos)(int x, int y); */
 	fb_hX11FetchModes,	/* int *(*fetch_modes)(void); */
-	driver_flip		/* void (*flip)(void); */
+	driver_flip,		/* void (*flip)(void); */
+	NULL			/* void (*poll_events)(void); */
 };
 
 

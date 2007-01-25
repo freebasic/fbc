@@ -48,7 +48,8 @@ GFXDRIVER fb_gfxDriverGDI =
 	fb_hWin32SetWindowTitle,/* void (*set_window_title)(char *title); */
 	fb_hWin32SetWindowPos,	/* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,	/* int *(*fetch_modes)(int depth, int *size); */
-	NULL			/* void (*flip)(void); */
+	NULL,			/* void (*flip)(void); */
+	NULL			/* void (*poll_events)(void); */
 };
 
 

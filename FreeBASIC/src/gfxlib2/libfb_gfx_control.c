@@ -249,6 +249,11 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 
 #endif /* HAVE_GL_GL_H */
 
+	case POLL_EVENTS:
+		if ((__fb_gfx) && (__fb_gfx->driver->poll_events))
+			__fb_gfx->driver->poll_events();
+		break;
+		
 	}
 	
 	if (what < SET_FIRST_SETTER) {

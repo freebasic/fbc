@@ -83,7 +83,9 @@ namespace FB
 					 SET_GL_ACCUM_BLUE_BITS		= 115	, _
 					 SET_GL_ACCUM_ALPHA_BITS	= 116	, _
 					 SET_GL_NUM_SAMPLES			= 117
-
+	'' Commands:
+	const as integer POLL_EVENTS				= 200
+	
 
 	'' Color values for transparency
 	''

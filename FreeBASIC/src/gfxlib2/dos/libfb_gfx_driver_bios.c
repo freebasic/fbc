@@ -41,7 +41,7 @@ static int *driver_fetch_modes(int depth, int *size);
 
 GFXDRIVER fb_gfxDriverBIOS =
 {
-	"BIOS",                   /* char *name; */
+	"BIOS",                  /* char *name; */
 	driver_init,             /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
 	fb_dos_exit,             /* void (*exit)(void); */
 	fb_dos_lock,             /* void (*lock)(void); */
@@ -53,7 +53,8 @@ GFXDRIVER fb_gfxDriverBIOS =
 	fb_dos_set_window_title, /* void (*set_window_title)(char *title); */
 	NULL,                    /* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,      /* int *(*fetch_modes)(int depth, int *size); */
-	NULL                     /* void (*flip)(void); */
+	NULL,                    /* void (*flip)(void); */
+	NULL                     /* void (*poll_events)(void); */
 };
 
 static const int res_bpp1[] = {

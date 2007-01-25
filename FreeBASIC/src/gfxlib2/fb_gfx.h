@@ -233,6 +233,8 @@ extern "C" {
 #define SET_GL_ACCUM_ALPHA_BITS		116
 #define SET_GL_NUM_SAMPLES			117
 
+#define POLL_EVENTS					200
+
 
 typedef void (BLITTER)(unsigned char *, int);
 typedef FBCALL unsigned int (BLENDER)(unsigned int, unsigned int, void *);
@@ -343,6 +345,7 @@ typedef struct GFXDRIVER
 	int (*set_window_pos)(int x, int y);
 	int *(*fetch_modes)(int depth, int *size);
 	void (*flip)(void);
+	void (*poll_events)(void);
 } GFXDRIVER;
 
 

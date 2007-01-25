@@ -64,7 +64,8 @@ GFXDRIVER fb_gfxDriverFBDev =
 	NULL,			/* void (*set_window_title)(char *title); */
 	NULL,			/* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,	/* int *(*fetch_modes)(void); */
-	NULL			/* void (*flip)(void); */
+	NULL,			/* void (*flip)(void); */
+	NULL			/* void (*poll_events)(void); */
 };
 
 

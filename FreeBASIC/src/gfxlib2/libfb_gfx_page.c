@@ -40,6 +40,8 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 	
 	if (__fb_gfx->driver->flip) {
 		__fb_gfx->driver->flip();
+		if (__fb_gfx->driver->poll_events)
+			__fb_gfx->driver->poll_events();
 		return;
 	}
 	

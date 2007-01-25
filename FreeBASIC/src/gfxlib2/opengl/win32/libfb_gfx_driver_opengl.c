@@ -93,6 +93,7 @@ static void driver_unlock(void);
 static void driver_set_palette(int index, int r, int g, int b);
 static void driver_flip(void);
 static int *driver_fetch_modes(int depth, int *size);
+static void driver_poll_events(void);
 static int opengl_init(void);
 static void opengl_exit(void);
 
@@ -110,7 +111,8 @@ GFXDRIVER fb_gfxDriverOpenGL =
 	fb_hWin32SetWindowTitle,/* void (*set_window_title)(char *title); */
 	fb_hWin32SetWindowPos,	/* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,	/* int *(*fetch_modes)(int depth, int *size); */
-	driver_flip		/* void (*flip)(void); */
+	driver_flip,		/* void (*flip)(void); */
+	driver_poll_events	/* void (*poll_events)(void); */
 };
 
 
@@ -422,6 +424,13 @@ static void driver_unlock(void)
 /*:::::*/
 static void driver_flip(void)
 {
+	SwapBuffers(hdc);
+}
+
+
+/*:::::*/
+static void driver_poll_events(void)
+{
     if( fb_win32.is_active ) {
         int i;
         unsigned char keystate[256];
@@ -437,8 +446,6 @@ static void driver_flip(void)
     }
 
 	fb_hHandleMessages();
-
-	SwapBuffers(hdc);
 }
 
 
