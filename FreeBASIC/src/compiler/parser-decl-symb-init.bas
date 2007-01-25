@@ -395,6 +395,11 @@ private function hUDTInit _
 
 		astTypeIniGetOfs( ctx.tree ) = baseofs + elm_ofs
 
+		if( symbCheckAccess( symbGetSubtype( elm ), _
+							 elm ) = FALSE ) then
+
+			errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+		end if
         ctx.sym = elm
 
 		'' has ctor?

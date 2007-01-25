@@ -4,8 +4,7 @@ namespace fbc_tests.dim_.decl_var_cast
 
 	type Rational
 		declare operator cast () as double
-		private:
-			as integer num, den
+		as integer num, den
 	end type
 	
 	operator Rational.cast () as double
