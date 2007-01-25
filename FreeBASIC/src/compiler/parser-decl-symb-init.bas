@@ -61,15 +61,19 @@ private function hDoAssign _
 
     '' don't build a FIELD node if it's an UDTElm symbol,
     '' that doesn't matter with checkASSIGN
-
     if( astCheckASSIGN( @lside, expr ) = FALSE ) then
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-        	return FALSE
-        else
-        	'' error recovery: create a fake expression
-        	astDelTree( expr )
-        	expr = astNewCONSTz( dtype )
-        end if
+    	
+    	'' check if it's a cast
+    	expr = astNewCONV( dtype, symbGetSubtype( ctx.sym ), expr )
+    	if( expr = NULL ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+	        	return FALSE
+	        else
+	        	'' error recovery: create a fake expression
+	        	astDelTree( expr )
+	        	expr = astNewCONSTz( dtype )
+	        end if
+		end if	      
 	end if
 
 	''
