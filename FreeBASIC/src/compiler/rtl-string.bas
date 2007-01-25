@@ -2906,8 +2906,17 @@ function rtlStrDelete _
 
     dim as ASTNODE ptr proc = any
     dim as integer dtype = any
+	dim as FBSYMBOL ptr s = any
 
 	function = NULL
+
+	'' 
+	s = astGetSymbol( strg )
+	if( s ) then
+		if( symbGetVarIsFileField( s ) ) then
+			return rtlFileFieldStrDelete( strg )
+		end if
+	end if
 
 	''
     dtype = astGetDataType( strg )

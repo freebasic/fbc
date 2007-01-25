@@ -97,6 +97,10 @@ function cQuirkStmt _
 		CHECK_CODEMASK( )
 		res = cFileStmt( tk )
 
+	case FB_TK_FIELD
+		CHECK_CODEMASK( )
+		res = cFileStmt( tk )
+
 	case FB_TK_ON
 		CHECK_CODEMASK( )
 		res = cOnStmt( )
@@ -180,7 +184,7 @@ function cQuirkFunction _
 		res = cArrayFunct( tk, funcexpr )
 
 	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_OPEN, FB_TK_CLOSE, _
-		 FB_TK_GET, FB_TK_PUT, FB_TK_NAME
+		 FB_TK_GET, FB_TK_PUT, FB_TK_NAME, FB_TK_FIELD
 		res = cFileFunct( tk, funcexpr )
 
 	case FB_TK_ERR

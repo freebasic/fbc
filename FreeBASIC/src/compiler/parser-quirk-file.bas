@@ -19,7 +19,7 @@
 '' quirk file statements and functions (PRINT, WRITE, OPEN, ...) parsing
 ''
 '' chng: sep/2004 written [v1ctor]
-
+''       jan/2007 added FIELD/GET/PUT parsing [jeffmarshall]
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -541,7 +541,7 @@ private function hFilePut _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr fileexpr, posexpr, srcexpr, elmexpr
-	dim as integer isarray
+	dim as integer isarray, isfield
 	dim as FBSYMBOL ptr s
 
 	function = NULL
@@ -553,96 +553,120 @@ private function hFilePut _
 
 	hMatchExpressionEx( fileexpr, FB_DATATYPE_INTEGER )
 
-	'' ',' offset
-	hMatchCOMMA( )
+	isfield = FALSE
+    if( fbLangOptIsSet( FB_LANG_OPT_QBOPT ) = FALSE ) then
 
-	posexpr = cExpression( )
-	if( posexpr = NULL ) then
-		posexpr = NULL
-	end if
+		'' ',' offset
+		hMatchCOMMA( )
 
-	'' ',' source
-	hMatchCOMMA( )
+		posexpr = cExpression( )
 
-	hMatchExpressionEx( srcexpr, FB_DATATYPE_INTEGER )
+		'' ',' source
+		hMatchCOMMA( )
 
-	'' don't allow literal values, due the way "byref as
-	'' any" args work (ie, the VB-way: literals are passed by value)
-	if( astIsCONST( srcexpr ) or astIsOFFSET( srcexpr ) ) then
-		astDelTree( srcexpr )
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
-			exit function
-		else
-			if( isfunc ) then
-				hSkipUntil( CHAR_RPRNT )
-			else
-				hSkipStmt( )
+	else
+		if( hMatch( CHAR_COMMA ) ) then
+			posexpr = cExpression( )
+
+			if( hMatch( CHAR_COMMA ) = FALSE ) then
+				isfield = TRUE
 			end if
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+
+		else
+			isfield = TRUE
+			posexpr = NULL
+
 		end if
+
 	end if
 
-    isarray = FALSE
-    if( lexGetToken( ) = CHAR_LPRNT ) then
-    	if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
+	if( isfield = FALSE ) then
 
-    		s = astGetSymbol( srcexpr )
-    		if( s <> NULL ) then
-    			isarray = symbIsArray( s )
-    			if( isarray ) then
+		'' source
+		hMatchExpressionEx( srcexpr, FB_DATATYPE_INTEGER )
 
-    				'' don't allow var-len strings
-    				if( symbGetType( s ) = FB_DATATYPE_STRING ) then
-						astDelTree( srcexpr )
-						if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-							exit function
-						else
-							if( isfunc ) then
-								hSkipUntil( CHAR_RPRNT )
+		'' don't allow literal values, due the way "byref as
+		'' any" args work (ie, the VB-way: literals are passed by value)
+		if( astIsCONST( srcexpr ) or astIsOFFSET( srcexpr ) ) then
+			astDelTree( srcexpr )
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
+				exit function
+			else
+				if( isfunc ) then
+					hSkipUntil( CHAR_RPRNT )
+				else
+					hSkipStmt( )
+				end if
+				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+
+		isarray = FALSE
+		if( lexGetToken( ) = CHAR_LPRNT ) then
+    		if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
+
+    			s = astGetSymbol( srcexpr )
+    			if( s <> NULL ) then
+    				isarray = symbIsArray( s )
+    				if( isarray ) then
+
+    					'' don't allow var-len strings
+    					if( symbGetType( s ) = FB_DATATYPE_STRING ) then
+							astDelTree( srcexpr )
+							if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+								exit function
 							else
-								hSkipStmt( )
+								if( isfunc ) then
+									hSkipUntil( CHAR_RPRNT )
+								else
+									hSkipStmt( )
+								end if
+								return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 							end if
-							return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-						end if
-    				end if
+    					end if
 
-    				lexSkipToken( )
-    				lexSkipToken( )
+    					lexSkipToken( )
+    					lexSkipToken( )
+    				end if
     			end if
     		end if
-    	end if
-    end if
+		end if
 
-	'' (',' elements)?
-	if( hMatch( CHAR_COMMA ) ) then
-		if( isarray ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			end if
-
-			elmexpr = cExpression( )
-			if( elmexpr <> NULL ) then
-				astDelTree( elmexpr )
-			end if
-
-		else
-			elmexpr = cExpression( )
-			if( elmexpr = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+		'' (',' elements)?
+		if( hMatch( CHAR_COMMA ) ) then
+			if( isarray ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 					exit function
-				else
-					elmexpr = NULL
+				end if
+
+				elmexpr = cExpression( )
+				if( elmexpr <> NULL ) then
+					astDelTree( elmexpr )
+				end if
+
+			else
+				elmexpr = cExpression( )
+				if( elmexpr = NULL ) then
+					if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+						exit function
+					else
+						elmexpr = NULL
+					end if
 				end if
 			end if
+		else
+			elmexpr = NULL
 		end if
-	else
-		elmexpr = NULL
-	end if
 
-	if( isarray = FALSE ) then
-		function = rtlFilePut( fileexpr, posexpr, srcexpr, elmexpr, isfunc )
+		if( isarray = FALSE ) then
+			function = rtlFilePut( fileexpr, posexpr, srcexpr, elmexpr, isfunc )
+		else
+			function = rtlFilePutArray( fileexpr, posexpr, srcexpr, isfunc )
+		end if
+	
 	else
-		function = rtlFilePutArray( fileexpr, posexpr, srcexpr, isfunc )
+		function = rtlFileFieldPut( fileexpr, posexpr, isfunc )
+		
 	end if
 
 end function
@@ -656,7 +680,7 @@ private function hFileGet _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr fileexpr, posexpr, dstexpr, elmexpr
-	dim as integer isarray
+	dim as integer isarray, isfield
 	dim as FBSYMBOL ptr s
 
 	function = NULL
@@ -668,88 +692,112 @@ private function hFileGet _
 
 	hMatchExpressionEx( fileexpr, FB_DATATYPE_INTEGER )
 
-	'' ',' offset
-	hMatchCOMMA( )
+	isfield = FALSE
+    if( fbLangOptIsSet( FB_LANG_OPT_QBOPT ) = FALSE ) then
 
-	posexpr = cExpression( )
-	if( posexpr = NULL ) then
-		posexpr = NULL
-	end if
+		'' ',' offset
+		hMatchCOMMA( )
 
-	'' ',' destine
-	hMatchCOMMA( )
+		posexpr = cExpression( )
 
-	dstexpr = cVarOrDeref( )
-	if( dstexpr = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-			exit function
-		else
-			if( isfunc ) then
-				hSkipUntil( CHAR_RPRNT )
-			else
-				hSkipStmt( )
+		'' ',' destine
+		hMatchCOMMA( )
+
+	else
+		'' (',' offset)?
+		if( hMatch( CHAR_COMMA ) ) then
+			posexpr = cExpression( )
+
+			if( hMatch( CHAR_COMMA ) = FALSE ) then
+				isfield = TRUE
 			end if
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+
+		else
+			isfield = TRUE
+			posexpr = NULL
+
 		end if
+
 	end if
 
-    isarray = FALSE
-    if( lexGetToken( ) = CHAR_LPRNT ) then
-    	if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-    		s = astGetSymbol( dstexpr )
-    		if( s <> NULL ) then
-    			isarray = symbIsArray( s )
-    			if( isarray ) then
-    				'' don't allow var-len strings
-    				if( symbGetType( s ) = FB_DATATYPE_STRING ) then
-						if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-							exit function
-						else
-							if( isfunc ) then
-								hSkipUntil( CHAR_RPRNT )
+	if( isfield = FALSE ) then
+
+		dstexpr = cVarOrDeref( )
+		if( dstexpr = NULL ) then
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+				exit function
+			else
+				if( isfunc ) then
+					hSkipUntil( CHAR_RPRNT )
+				else
+					hSkipStmt( )
+				end if
+				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+
+		isarray = FALSE
+		if( lexGetToken( ) = CHAR_LPRNT ) then
+    		if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
+    			s = astGetSymbol( dstexpr )
+    			if( s <> NULL ) then
+    				isarray = symbIsArray( s )
+    				if( isarray ) then
+    					'' don't allow var-len strings
+    					if( symbGetType( s ) = FB_DATATYPE_STRING ) then
+							if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+								exit function
 							else
-								hSkipStmt( )
+								if( isfunc ) then
+									hSkipUntil( CHAR_RPRNT )
+								else
+									hSkipStmt( )
+								end if
+								return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 							end if
-							return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-						end if
+    					end if
+    					lexSkipToken( )
+    					lexSkipToken( )
     				end if
-    				lexSkipToken( )
-    				lexSkipToken( )
     			end if
     		end if
-    	end if
-    end if
+		end if
 
-	'' (',' elements)?
-	if( hMatch( CHAR_COMMA ) ) then
-		if( isarray ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			end if
-
-			elmexpr = cExpression( )
-			if( elmexpr <> NULL ) then
-				astDelTree( elmexpr )
-			end if
-
-		else
-			elmexpr = cExpression( )
-			if( elmexpr = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+		'' (',' elements)?
+		if( hMatch( CHAR_COMMA ) ) then
+			if( isarray ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 					exit function
-				else
-					elmexpr = NULL
+				end if
+
+				elmexpr = cExpression( )
+				if( elmexpr <> NULL ) then
+					astDelTree( elmexpr )
+				end if
+
+			else
+				elmexpr = cExpression( )
+				if( elmexpr = NULL ) then
+					if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+						exit function
+					else
+						elmexpr = NULL
+					end if
 				end if
 			end if
+		else
+			elmexpr = NULL
 		end if
-	else
-		elmexpr = NULL
-	end if
+	
+		if( isarray = FALSE ) then
+			function = rtlFileGet( fileexpr, posexpr, dstexpr, elmexpr, isfunc )
+		else
+			function = rtlFileGetArray( fileexpr, posexpr, dstexpr, isfunc )
+		end if
 
-	if( isarray = FALSE ) then
-		function = rtlFileGet( fileexpr, posexpr, dstexpr, elmexpr, isfunc )
 	else
-		function = rtlFileGetArray( fileexpr, posexpr, dstexpr, isfunc )
+		function = rtlFileFieldGet( fileexpr, posexpr, isfunc )
+
 	end if
 
 end function
@@ -1120,6 +1168,146 @@ private function hFileRename _
 end function
 
 '':::::
+private function hFileFieldParams _
+	( _
+		byval isfunc as integer, _
+		byref params as TLIST _
+	) as integer
+
+	dim as ASTNODE ptr exprsiz = any, exprvar = any
+	dim as FBSYMBOL ptr sym = any
+	dim as integer numparams = 0
+	dim as FB_RTL_FILE_FIELD_PARAM ptr param = any
+
+	function = FALSE
+
+	'' (Expression AS Variable{str} ','? )*
+    numparams = 0
+    do
+		exprsiz = cExpression( )
+
+		if( exprsiz = NULL ) then
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				exit function
+			else
+				exprsiz = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+			exit function
+		end if
+
+		'' AS
+        if( hMatch( FB_TK_AS ) = FALSE ) then
+            if( errReport( FB_ERRMSG_EXPECTINGAS ) = FALSE ) then
+				exit function
+			else
+				if( isfunc ) then
+					hSkipUntil( CHAR_RPRNT )
+				else
+					hSkipStmt( )
+				end if
+				exit function
+            end if
+        end if
+
+		'' Variable(str)
+
+		hMatchExpressionEx( exprvar, FB_DATATYPE_STRING )
+
+		sym = astGetSymbol( exprvar )
+
+		if( sym = NULL ) then
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
+				exit function
+			end if
+
+		elseif( symbIsVar( sym ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDVAR, TRUE ) = FALSE ) then
+				exit function
+			end if
+
+		elseif( symbGetType( sym ) <> FB_DATATYPE_STRING ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+				exit function
+			end if
+
+		elseif( symbIsConstant( sym ) ) then
+			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
+				exit function
+			end if
+
+	 	end if
+
+		symbSetVarIsFileField( sym )
+
+    	numparams += 1
+
+		param = listNewNode( @params )
+		
+		param->exprsiz = exprsiz	'' file size
+		param->exprvar = exprvar    '' string variable
+
+		'' ','?
+		if( hMatch( CHAR_COMMA ) = FALSE ) then
+			exit do
+		end if
+
+	loop
+	
+	if( numparams = 0 ) then
+		function = -1
+	else
+		function = numparams
+	end if
+
+end function
+ 
+'':::::
+private function hFileField _
+	( _
+		byval isfunc as integer _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr fileexpr, res
+	dim as TLIST params
+	dim as integer numparams
+	dim as FB_RTL_FILE_FIELD_PARAM ptr param, nxt
+
+	function = NULL
+
+	'' '#'?
+	if( lexGetToken( ) = CHAR_SHARP ) then
+		lexSkipToken( )
+	end if
+
+	hMatchExpressionEx( fileexpr, FB_DATATYPE_INTEGER )
+
+	'' ',' 
+	hMatchCOMMA( )
+
+	listnew( @params, 16, len( FB_RTL_FILE_FIELD_PARAM ), LIST_FLAGS_NOCLEAR )
+
+	'' (Expression AS Variable{str} ','? )*
+	numparams = hFileFieldParams( isfunc, params )
+	if( numparams > 0 ) then
+		res = rtlFileField( fileexpr, numparams, params, isfunc )
+	elseif ( numparams < 0 ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			res = NULL
+		else
+			res = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
+	else
+		res = NULL
+	end if
+
+	listfree( @params )
+
+	function = res
+
+end function
+
+
+'':::::
 '' FileStmt		  =	   OPEN ...
 ''				  |	   CLOSE ...
 ''				  |	   SEEK ...
@@ -1211,6 +1399,18 @@ function cFileStmt _
 		lexSkipToken( )
 
 		function = (hFileRename( FALSE ) <> NULL)
+
+	'' FIELD '#' ',' (Expression AS Variable{str})*
+	case FB_TK_FIELD
+    	if( fbLangOptIsSet( FB_LANG_OPT_QBOPT ) = FALSE ) then
+    		if( errReportNotAllowed( FB_LANG_OPT_QBOPT ) = FALSE ) then
+    			exit function
+			end if
+		end if
+
+		lexSkipToken( )
+
+		function = (hFileField( FALSE ) <> NULL)
 
 	end select
 
@@ -1307,6 +1507,24 @@ function cFileFunct _
 
 		funcexpr = hFileRename( TRUE )
 		function = funcexpr <> NULL
+
+	'' FIELD '#' ',' (Expression AS Variable{str})*
+	case FB_TK_FIELD
+		'!!!!j3ffm
+    	'if( fbLangOptIsSet( FB_LANG_OPT_QBOPT ) = FALSE ) then
+    	'	if( errReportNotAllowed( FB_LANG_OPT_QBOPT ) = FALSE ) then
+    	'		exit function
+		'	end if
+		'end if
+
+		lexSkipToken( )
+
+		hMatchLPRNT( )
+
+		funcexpr = hFileField( TRUE )
+		function = funcexpr <> NULL
+
+		hMatchRPRNT( )
 
 	end select
 
