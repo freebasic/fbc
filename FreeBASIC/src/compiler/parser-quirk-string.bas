@@ -47,7 +47,16 @@ function cMidStmt _
 	hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 
 	dim as FBSYMBOL ptr sym = astGetSymbol( expr1 )
-
+	
+	if( sym = NULL ) then
+		'' deref... 
+		select case as const astGetClass( expr1 )
+		case AST_NODECLASS_DEREF
+			sym = iif( astGetLeft( expr1 ), astGetSymbol( astGetLeft( expr1 ) ), NULL )
+			
+		end select
+	end if
+		
 	if( sym = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
 			exit function
