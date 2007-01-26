@@ -490,10 +490,6 @@ type FBVAR_DESC
 	array			as FBSYMBOL_ ptr			'' back-link
 end type
 
-enum FB_VAR_FLAGS 
-	FB_VAR_FLAGS_FILEFIELD = 1
-end enum
-
 type FBS_VAR
 	suffix			as integer					'' QB quirk..
 	union
@@ -504,9 +500,6 @@ type FBS_VAR
 	array			as FBS_ARRAY
 	desc			as FBVAR_DESC
 	stmtnum			as integer					'' can't use colnum as it's unreliable
-    flags           as FB_VAR_FLAGS       		'' flags:
-                                        		'' bit    meaning
-                                        		'' 0      1=is used with FIELD #, 0=not
 end type
 
 '' namespace
@@ -2044,10 +2037,6 @@ declare sub symbHashListRemoveNamespace _
 #define symbGetVarLitTextW(s) s->var_.littextw
 
 #define symbGetVarStmt(s) s->var_.stmtnum
-
-#define symbGetVarIsFileField(s) ((s->var_.flags and FB_VAR_FLAGS_FILEFIELD) <> 0)
-
-#define symbSetVarIsFileField(s) s->var_.flags or= FB_VAR_FLAGS_FILEFIELD
 
 #define symbSetTypeIniTree(s, t) s->var_.initree = t
 

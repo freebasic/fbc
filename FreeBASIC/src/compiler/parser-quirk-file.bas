@@ -1237,8 +1237,6 @@ private function hFileFieldParams _
 
 	 	end if
 
-		symbSetVarIsFileField( sym )
-
     	numparams += 1
 
 		param = listNewNode( @params )

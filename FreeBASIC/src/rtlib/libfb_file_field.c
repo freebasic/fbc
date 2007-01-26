@@ -40,11 +40,15 @@
 #include <stdlib.h>
 #include "fb.h"
 
+FBCALL void fb_FileFieldStrDelete ( FBSTRING *str );
+
+extern FBCALL void (*__FileFieldStrDeleteHook)( FBSTRING *str );
 
 typedef struct ffp_t
 {
 	int fnum;                       /* file number associated with the desc */
 	FBSTRING *desc;                 /* pointer to the var-len descriptor */
+	char * org_data;                /* original data location */
 	int offset;                     /* offset into the file buffer */
 	int size;                       /* size of the field */
 	struct ffp_t *next;             /* next field in the list */
@@ -123,7 +127,10 @@ static FB_FILEFIELDPARAM_CTX *addDesc
 		ffp = malloc( sizeof( FB_FILEFIELDPARAM_CTX ));
 		if( !ffp )
 			return( NULL );
-	}
+
+		ffp->next = ffp_ctx;
+		ffp_ctx = ffp;
+	} 
 
 	ffp->fnum = fnum;
 	ffp->desc = desc;
@@ -135,8 +142,14 @@ static FB_FILEFIELDPARAM_CTX *addDesc
 
 	desc->data = buffer + offset;
 	desc->len = size;
-	desc->size = 0;
-	
+	desc->size = -1;
+
+	/* Save a copy so we can know later if the data has been realloc'd */
+	ffp->org_data = desc->data;
+
+	/* be sure to hook in our dtor handler */
+	__FileFieldStrDeleteHook = fb_FileFieldStrDelete;
+
 	return( ffp );
 
 }
@@ -165,12 +178,10 @@ static void removeDesc
 		    || ( ffp->desc == desc ) )
 		{
 			/* 
-			   we could also check that the descriptor points to somewhere
-			   between ffp->buffer and ffp->buffer + ffp->reclen, but we
-			   don't: assuming size == 0 is a good enough check.
+			   check that the descriptor points to the same place as it did before
 			 */
 
-			if(( ffp->desc->data ) && ( ffp->desc->len > 0 ) && ( ffp->desc->size == 0 ))
+			if( ffp->desc->data == ffp->org_data )
 			{
 				ffp->desc->data = NULL;
 				ffp->desc->len = 0;
@@ -192,6 +203,12 @@ static void removeDesc
 		ffp = nxt;
 
 	}
+
+	/* no descriptors? - then unhook the field dtor handler */
+    if( ffp_ctx == NULL )
+		__FileFieldStrDeleteHook = NULL;
+    	
+
 }
 
 /*:::::*/
@@ -249,7 +266,7 @@ static FB_FILEFIELDINFO_CTX *alloc_FieldInfo( int fnum, int reclen )
 		return( NULL );
 
 	ffi->reclen = reclen;
-	ffi->buffer = malloc( reclen );
+	ffi->buffer = malloc( reclen + 1 );
 
 	/* bail if we have no place to load data */
 	if( ffi->buffer == NULL )
@@ -258,7 +275,10 @@ static FB_FILEFIELDINFO_CTX *alloc_FieldInfo( int fnum, int reclen )
 		return( NULL );
 	}
 
-	memset( ffi->buffer, 0, reclen );
+	
+	/* fill with spaces and put a null-term on the end just in case */
+	memset( ffi->buffer, 32, reclen );
+	ffi->buffer[reclen] = 0;
 
 	/* 
 	   We need to do clean-up when the device is closed, so insert
@@ -347,6 +367,7 @@ int fb_FileField( int fnum, int args, ... )
 	int i, offset, size;
 	FB_FILEFIELDINFO_CTX *ffi;
 	FB_FILE *handle;
+	FB_FILEFIELDPARAM_CTX * ffp;
 
 	init_FileFieldInfoCtx();
 
@@ -401,17 +422,17 @@ int fb_FileField( int fnum, int args, ... )
 	{
 		size = va_arg( ap, int );
 		fld = va_arg( ap, FBSTRING* );
-		addDesc( fnum, fld, offset, size, ffi->buffer );
+		ffp = addDesc( fnum, fld, offset, size, ffi->buffer );
+		if( ffp == NULL )
+			break;
 		offset += size;
 	}
 	va_end( ap );
 
-	/* 
-	   TODO: check that all desciptors were allocated correctly 
-	         addDesc will return null if there is a problem.
-	 */
-
 	FB_UNLOCK();
+
+	if( ffp = NULL )
+		return( fb_ErrorSetNum( FB_RTERROR_OUTOFMEM ) );
 
 	return( fb_ErrorSetNum( FB_RTERROR_OK ) );
 }
@@ -420,17 +441,10 @@ int fb_FileField( int fnum, int args, ... )
 /*:::::*/
 FBCALL void fb_FileFieldStrDelete ( FBSTRING *str )
 {
-
-	if( !str )
-		return;
+    if( (str == NULL) || (str->data == NULL) )
+    	return;
 
 	FB_LOCK();
-
 	removeDesc( -1, str );
-
 	FB_UNLOCK();
-
-	if( str->size != 0 )
-		fb_StrDelete( str );
 }
-
