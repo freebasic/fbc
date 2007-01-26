@@ -50,6 +50,21 @@ sub hlpEnd
 end sub
 
 '':::::
+function hMatchText _
+	( _
+		byval txt as zstring ptr _
+	) as integer
+
+	if( ucase( *lexGetText( ) ) = *txt ) then
+		lexSkipToken( )
+		function = TRUE
+	else
+		function = FALSE
+	end if
+
+end function
+
+'':::::
 function hMatch _
 	( _
 		byval token as integer _

@@ -976,16 +976,16 @@ private function hFileOpen _
 
 	'' (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))?
 	if( hMatch( FB_TK_FOR ) ) then
-		select case lexGetToken( )
-		case FB_TK_INPUT
+		select case ucase( *lexGetText( ) )
+		case "INPUT"
 			file_mode = FB_FILE_MODE_INPUT
-		case FB_TK_OUTPUT
+		case "OUTPUT"
 			file_mode = FB_FILE_MODE_OUTPUT
-		case FB_TK_BINARY
+		case "BINARY"
 			file_mode = FB_FILE_MODE_BINARY
-		case FB_TK_RANDOM
+		case "RANDOM"
 			file_mode = FB_FILE_MODE_RANDOM
-		case FB_TK_APPEND
+		case "APPEND"
 			file_mode = FB_FILE_MODE_APPEND
 		case else
 			exit function
@@ -1023,13 +1023,13 @@ private function hFileOpen _
 	end if
 
 	'' (ACCESS (READ|WRITE|READ WRITE))?
-	if( hMatch( FB_TK_ACCESS ) ) then
-		select case lexGetToken( )
-		case FB_TK_WRITE
+	if( hMatchText( "ACCESS" ) ) then
+		select case ucase( *lexGetText( ) )
+		case "WRITE"
 			lexSkipToken( )
 			access_mode = FB_FILE_ACCESS_WRITE
 
-		case FB_TK_READ
+		case "READ"
 			lexSkipToken( )
 			if( hMatch( FB_TK_WRITE ) ) then
 				access_mode = FB_FILE_ACCESS_READWRITE
@@ -1052,13 +1052,13 @@ private function hFileOpen _
 	if( hMatch( FB_TK_SHARED ) ) then
 		lock_mode = FB_FILE_LOCK_SHARED
 
-	elseif( hMatch( FB_TK_LOCK ) ) then
-		select case lexGetToken( )
-		case FB_TK_WRITE
+	elseif( hMatchText( "LOCK" ) ) then
+		select case ucase( *lexGetText( ) )
+		case "WRITE"
 			lexSkipToken( )
 			lock_mode = FB_FILE_LOCK_WRITE
 
-		case FB_TK_READ
+		case "READ"
 			lexSkipToken( )
 			if( hMatch( FB_TK_WRITE ) ) then
 				lock_mode = FB_FILE_LOCK_READWRITE
@@ -1094,8 +1094,8 @@ private function hFileOpen _
 	end if
 
 	'' (LEN '=' Expression)?
-	if( hMatch( FB_TK_LEN ) ) then
-		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+	if( hMatchText( "LEN" ) ) then
+		if( hMatchText( "ASSIGN" ) = FALSE ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
 				exit function
 			else

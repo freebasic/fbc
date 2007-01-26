@@ -40,6 +40,11 @@ declare sub hlpEnd _
 	( _
 	)
 
+declare function hMatchText _
+	( _
+		byval txt as zstring ptr _
+	) as integer
+
 declare function hMatch _
 	( _
 		byval token as integer _

@@ -53,24 +53,6 @@ const FBGFX_PUTMODE_ADD    = 7
 const FBGFX_PUTMODE_CUSTOM = 8
 
 '' match, not using a token, but a raw text value
-
-'' this is needed for (palette) GET as it could be a method,
-'' which would cause FB_TK_ID to be returned from
-'' lexGetToken( ), instead of FB_TK_STEP.
-private function hMatchText _
-	( _
-		byval txt as zstring ptr _
-	) as integer
-
-	if( ucase( *lexGetText( ) ) = ucase( *txt ) ) then
-		lexSkipToken( )
-		function = TRUE
-	else
-		function = FALSE
-	end if
-
-end function
-
 '':::::
 private function hMakeArrayIndex _
 	( _
