@@ -37,7 +37,8 @@ namespace fb.fbdoc
 			byval toc_pagename as zstring ptr, _
 			byval toc_pagetitle as zstring ptr, _
 			byval paglist as CPageList ptr ptr, _
-			byval toclist as CPageList ptr ptr _
+			byval toclist as CPageList ptr ptr, _
+			byval followlinks as integer _
 		) as integer
 
 end namespace

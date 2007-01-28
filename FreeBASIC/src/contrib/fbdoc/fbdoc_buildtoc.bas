@@ -258,12 +258,13 @@ namespace fb.fbdoc
 			byval toc_pagename as zstring ptr, _
 			byval toc_pagetitle as zstring ptr, _
 			byval paglist as CPageList ptr ptr, _
-			byval toclist as CPageList ptr ptr _
+			byval toclist as CPageList ptr ptr, _
+			byval followlinks as integer _
 		) as integer
 
 		dim as CPage ptr page
 		dim as any ptr page_i
-		dim as integer bFirstTime = TRUE
+		dim as integer bFirstTime
 
 		if( paglist = NULL ) then
 			return FALSE
@@ -291,6 +292,9 @@ namespace fb.fbdoc
 
 		page = (*paglist)->AddNewPage( toc_pagename, toc_pagetitle, NULL, 0, TRUE )
 		page = (*paglist)->NewEnum( @page_i )
+
+		bFirstTime = followlinks
+
 		while( page )
 			if( len(page->GetName()) > 0 ) then
 				_LoadAndScanPageLinks( page, *paglist, bFirstTime )

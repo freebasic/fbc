@@ -31,6 +31,12 @@ namespace fb.fbdoc
 			byval bCacheFromWeb as integer = FALSE _
 		) as string
 
+	declare function SavePage _
+		( _
+			byval sPage as zstring ptr, _
+			byval sBody as zstring ptr _
+		) as integer
+
 end namespace
 
 #endif

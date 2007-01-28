@@ -114,7 +114,7 @@ namespace fb.fbdoc
 		dim as integer h
 		dim as string sOutputFile, ret
 
-		ret = Lang_ExpandString( sContent )
+		ret = Lang.ExpandString( sContent )
 
 		ret = ReplaceSubStr( ret, "&middot;", "-" )
 
@@ -215,7 +215,7 @@ namespace fb.fbdoc
 			sTxt += chr(10)
 		end if
 		
-		sTxt += Lang_ExpandString( sBodyTxt )
+		sTxt += Lang.ExpandString( sBodyTxt )
 
 		function = _OutputFile( ctx, page->GetName() + ".txt", sTxt )
 
@@ -309,9 +309,9 @@ namespace fb.fbdoc
 			return FALSE
 		end if
 
-		a = Templates_Get("txt_doctoc")
+		a = Templates.Get("txt_doctoc")
 
-		a = Lang_ExpandString( a )
+		a = Lang.ExpandString( a )
 
 		put #h,,a
 

@@ -24,26 +24,32 @@
 
 namespace fb.fbdoc
 
-		declare function Templates_LoadFile _
+	type Templates
+
+		dummy as byte
+
+		declare static function LoadFile _
 			( _
 				byval sFileKey as zstring ptr, _
 				byval sFileName as zstring ptr _
 			) as integer
 
-		declare sub Templates_Clear _
+		declare static sub Clear _
 			( _
 			)
 
-		declare function Templates_Set _
+		declare static function Set _
 			( _
 				byval sKey as zstring ptr, _
 				byval sValue as zstring ptr _
 			) as integer
 
-		declare function Templates_Get _
+		declare static function Get _
 			( _
 				byval sKey as zstring ptr _
 			) as string
+
+	end type
 
 end namespace
 

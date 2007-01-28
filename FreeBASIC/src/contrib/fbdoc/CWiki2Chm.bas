@@ -113,7 +113,7 @@ namespace fb.fbdoc
 		dim as integer h
 		dim as string sOutputFile, ret
 
-		ret = Lang_ExpandString( sContent )
+		ret = Lang.ExpandString( sContent )
 
 		sOutputFile = *ctx->outputdir + *sFileName
 
@@ -210,15 +210,15 @@ namespace fb.fbdoc
 		sBodyHtml = ctx->converter->gen( @"", ctx->wiki )
 
 		if( ucase( sPageName ) = "DOCTOC" ) then
-			sHtml = Templates_Get("chm_doctoc")
+			sHtml = Templates.Get("chm_doctoc")
 		else
-			sHtml = Templates_Get("chm_def")
+			sHtml = Templates.Get("chm_def")
 		end if
 
 		sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
 		sHtml = ReplaceSubStr( sHtml, "{$pg_title}", Text2Html( sPageTitle ) )
 
-		sHtml = Lang_ExpandString( sHtml )
+		sHtml = Lang.ExpandString( sHtml )
 
 		function = _OutputFile( ctx, page->GetName() + ".html", sHtml )
 
@@ -265,9 +265,9 @@ namespace fb.fbdoc
 			sBodyHtml +=  "</ul>" + crlf
 		wend
 
-		sHtml = Templates_Get("chm_toc")
+		sHtml = Templates.Get("chm_toc")
 
-		sHtml = Lang_ExpandString( sHtml )
+		sHtml = Lang.ExpandString( sHtml )
 
 		sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
 
@@ -313,9 +313,9 @@ namespace fb.fbdoc
 			sBodyHtml +=  "</ul>" + crlf
 		wend
 
-		sHtml = Templates_Get("htm_toc")
+		sHtml = Templates.Get("htm_toc")
 
-		sHtml = Lang_ExpandString( sHtml )
+		sHtml = Lang.ExpandString( sHtml )
 
 		sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
 
@@ -343,15 +343,15 @@ namespace fb.fbdoc
 				sBodyHtml +=  "<li><object type=""text/sitemap"">"
 				sBodyHtml +=  "<param name=""Name"" value=""" + page->GetFormattedTitle() + """>"
 				sBodyHtml +=  "<param name=""Local"" value=""" + page->GetName() + ".html"">"
-				sBodyHtml +=  "</object>" + nl
+				sBodyHtml +=  "</object>" + crlf
 			end if
 
 			page = ctx->paglist->NextEnum( @page_i )
 		wend
 
-		sHtml = Templates_Get("chm_idx")
+		sHtml = Templates.Get("chm_idx")
 
-		sHtml = Lang_ExpandString( sHtml )
+		sHtml = Lang.ExpandString( sHtml )
 		sHtml = ReplaceSubStr( sHtml, "{$pg_title}", "Index" )
 		sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
 
@@ -381,9 +381,9 @@ namespace fb.fbdoc
 			page = ctx->paglist->NextEnum( @page_i )
 		wend
 
-		sHtml = Templates_Get("chm_prj")
+		sHtml = Templates.Get("chm_prj")
 
-		sHtml = Lang_ExpandString( sHtml )
+		sHtml = Lang.ExpandString( sHtml )
 
 		sHtml = ReplaceSubStr( sHtml, "{$pg_chm_file}", sChmName )
 		sHtml = ReplaceSubStr( sHtml, "{$pg_toc_file}", sChmName )

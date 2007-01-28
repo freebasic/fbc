@@ -312,6 +312,7 @@ Print Using
 Private
 Private:
 ProcPtr
+Protected
 Protected:
 PSet
 Ptr
@@ -413,6 +414,7 @@ va_arg
 va_first
 va_next
 Val
+Var
 ValInt
 ValLng
 ValUInt
@@ -445,6 +447,7 @@ __DATE__
 __FB_ARGC__
 __FB_ARGV__
 __FB_BIGENDIAN__
+__FB_BUILD_DATE__
 __FB_DEBUG__
 __FB_DOS__
 __FB_ERR__

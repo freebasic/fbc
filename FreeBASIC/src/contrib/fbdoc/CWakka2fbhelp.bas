@@ -1326,6 +1326,21 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
+	private function _emitActionColor _
+		( _
+			byval ctx as CWakka2fbhelpCtx ptr, _
+			byval paramsTb as WikiToken_Action ptr _
+		) as integer
+
+		dim as string sText
+
+		sText = paramsTb->GetParam( "text" )
+
+		return _emitText( ctx, sText )
+
+	end function
+
+	'':::::
 	private function _emitAction _
 		( _
 			byval ctx as CWakka2fbhelpCtx ptr, _
@@ -1345,6 +1360,8 @@ namespace fb.fbdoc
 			return FALSE
 		case "anchor"
 			return _emitActionAnchor( ctx, paramsTb )
+		case "color"
+			return _emitActionColor( ctx, paramsTb )
 		end select
 
 		return FALSE

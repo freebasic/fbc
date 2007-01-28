@@ -78,7 +78,7 @@ const default_CacheDir = "cache/"
 			select case lcase(command(i))
 			case "-version"
 				bShowVersion = TRUE
-			case "-h", "-help", "/?", "/h", "/help"
+			case "-h", "-help"
 				bShowHelp = TRUE
 			end select
 			i += 1
@@ -94,6 +94,7 @@ const default_CacheDir = "cache/"
 		? "   -useweb        load pages from wiki web"
 		? "   -usesql        load pages from sql database"
 		? "   -usecache      use cache as only source"
+		? "   -cachedir      set the location of the cache directory"
 		? "   -refresh       refresh all pages"
 		? "   -chm           generate html and chm output"
 		? "   -fbhelp        generate output for fbhelp viewer"
@@ -188,6 +189,16 @@ const default_CacheDir = "cache/"
 				bWebPages = TRUE
 			case "-makepage"
 				bSinglePage = TRUE
+			case "-cachedir"
+				i += 1
+				sCacheDir = command(i)
+				if sCacheDir = "" then
+					? "Cache directory not specified"
+					end 1
+				end if
+				if right(sCacheDir, 1) <> "/" then
+					sCacheDir += "/"
+				end if
 			case else
 				? "Unrecognized option '" + command(i) + "'"
 				end 1
@@ -245,19 +256,21 @@ const default_CacheDir = "cache/"
 
 	'' Load language options
 	sLangFile = "templates/default/lang/en/common.ini"
-	if( Lang_LoadOptions( sLangFile ) = FALSE ) then
+	if( Lang.LoadOptions( sLangFile ) = FALSE ) then
 		? "Unable to load language file '" + sLangFile + "'"
 		end 1
 	end if
 
-	Lang_SetOption("fb_docinfo_date", Format( Now(), Lang_GetOption("fb_docinfo_dateformat")))
-	Lang_SetOption("fb_docinfo_time", Format( Now(), Lang_GetOption("fb_docinfo_timeformat")))
+	Lang.SetOption("fb_docinfo_date", Format( Now(), Lang.GetOption("fb_docinfo_dateformat")))
+	Lang.SetOption("fb_docinfo_time", Format( Now(), Lang.GetOption("fb_docinfo_timeformat")))
 
 	'' Initialize the cache
 	sCacheDir = connopts->Get( "cache_dir", default_CacheDir )
 	if LocalCache_Create( sCacheDir, CacheRefreshMode ) = FALSE then
 		? "Unable to use local cache dir " + sCacheDir
 		end 1
+	else
+		? "Using local cache dir " + sCacheDir
 	end if
 
 	'' Initialize the wiki connection - in case its needed
@@ -299,12 +312,12 @@ const default_CacheDir = "cache/"
 	end if
 
 	if( len(SinglePage) > 0 ) then
-		FBDoc_BuildSinglePage( SinglePage, SinglePage, @paglist, @toclist )
+		FBDoc_BuildSinglePage( SinglePage, SinglePage, @paglist, @toclist, FALSE )
 
 	else
 
 		sDocToc = "DocToc"
-		sTocTitle = Lang_GetOption( "fb_toc_title", "Table of Contents" )
+		sTocTitle = Lang.GetOption( "fb_toc_title", "Table of Contents" )
 
 		FBDoc_BuildTOC( sDocToc, sTocTitle, @paglist, @toclist )
 
@@ -331,13 +344,13 @@ const default_CacheDir = "cache/"
 		sOutputDir = "html/"
 		sTemplateDir = "templates/default/code/"
 
-		Templates_Clear()
-		Templates_LoadFile( "chm_idx", sTemplateDir + "chm_idx.tpl.html" )
-		Templates_LoadFile( "chm_prj", sTemplateDir + "chm_prj.tpl.html" )
-		Templates_LoadFile( "chm_toc", sTemplateDir + "chm_toc.tpl.html" )
-		Templates_LoadFile( "chm_def", sTemplateDir + "chm_def.tpl.html" )
-		Templates_LoadFile( "htm_toc", sTemplateDir + "htm_toc.tpl.html" )
-		Templates_LoadFile( "chm_doctoc", sTemplateDir + "chm_doctoc.tpl.html" )
+		Templates.Clear()
+		Templates.LoadFile( "chm_idx", sTemplateDir + "chm_idx.tpl.html" )
+		Templates.LoadFile( "chm_prj", sTemplateDir + "chm_prj.tpl.html" )
+		Templates.LoadFile( "chm_toc", sTemplateDir + "chm_toc.tpl.html" )
+		Templates.LoadFile( "chm_def", sTemplateDir + "chm_def.tpl.html" )
+		Templates.LoadFile( "htm_toc", sTemplateDir + "htm_toc.tpl.html" )
+		Templates.LoadFile( "chm_doctoc", sTemplateDir + "chm_doctoc.tpl.html" )
 
 		dim as CWiki2Chm ptr chm
 		chm = new CWiki2Chm( @"", 1, sOutputDir, paglist, toclist )
@@ -352,8 +365,8 @@ const default_CacheDir = "cache/"
 		sOutputDir = "fbhelp/"
 		sTemplateDir = "templates/default/code/"
 
-		Templates_Clear()
-		Templates_LoadFile( "fbhelp_doctoc", sTemplateDir + "fbhelp_doctoc.tpl.txt" )
+		Templates.Clear()
+		Templates.LoadFile( "fbhelp_doctoc", sTemplateDir + "fbhelp_doctoc.tpl.txt" )
 
 		dim as CWiki2fbhelp ptr fbhelp
 		fbhelp = new CWiki2fbhelp( @"", 1, sOutputDir, paglist, toclist )
@@ -368,8 +381,8 @@ const default_CacheDir = "cache/"
 		sOutputDir = "txt/"
 		sTemplateDir = "templates/default/code/"
 
-		Templates_Clear()
-		Templates_LoadFile( "txt_doctoc", sTemplateDir + "txt_doctoc.tpl.txt" )
+		Templates.Clear()
+		Templates.LoadFile( "txt_doctoc", sTemplateDir + "txt_doctoc.tpl.txt" )
 
 		dim as CWiki2txt ptr txt
 		txt = new CWiki2txt( @"", 1, sOutputDir, paglist, toclist )

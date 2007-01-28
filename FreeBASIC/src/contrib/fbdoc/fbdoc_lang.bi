@@ -23,29 +23,39 @@
 #include once "fbdoc_defs.bi"
 
 namespace fb.fbdoc
+	
+	type Lang
 
-	declare function Lang_LoadOptions _
-		( _
-			byval sFileName as zstring ptr, _
-			byval bNoReset as integer = FALSE _
-		) as integer
+		dummy as byte
 
-	declare function Lang_GetOption _
-		( _
-			byval sKey as zstring ptr, _
-			byval sDefault as zstring ptr = NULL _
-		) as string
+		declare static function Initialized _
+			( _
+			) as integer
 
-	declare sub Lang_SetOption _
-		( _
-			byval sKey as zstring ptr, _
-			byval sValue as zstring ptr _
-		)
+		declare static function LoadOptions _
+			( _
+				byval sFileName as zstring ptr, _
+				byval bNoReset as integer = FALSE _
+			) as integer
 
-	declare function Lang_ExpandString _
-		( _
-			byval sText as zstring  ptr _
-		) as string
+		declare static function GetOption _
+			( _
+				byval sKey as zstring ptr, _
+				byval sDefault as zstring ptr = NULL _
+			) as string
+
+		declare static sub SetOption _
+			( _
+				byval sKey as zstring ptr, _
+				byval sValue as zstring ptr _
+			)
+
+		declare static function ExpandString _
+			( _
+				byval sText as zstring  ptr _
+			) as string
+
+	end type
 
 end namespace
 

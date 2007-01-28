@@ -92,5 +92,30 @@ namespace fb.fbdoc
 
 	end function
 
+	function SavePage _
+		( _
+			byval sPage as zstring ptr, _
+			byval sBody as zstring ptr _
+		) as integer
+
+		function = FALSE
+
+		if sPage = NULL then
+			exit function
+		end if
+
+		if sBody = NULL then
+			exit function
+		end if
+
+		dim as CWikiCache ptr wikicache = LocalCache_Get()
+
+		if( wikicache ) then
+			wikicache->SavePage( sPage, sBody )
+			function = TRUE
+		end if
+
+	end function
+
 end namespace
 

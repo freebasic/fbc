@@ -24,91 +24,102 @@
 ''
 
 #include once "fbdoc_defs.bi"
+#include once "fbdoc_lang.bi"
 #include once "COptions.bi"
+
 
 namespace fb.fbdoc
 
-	dim shared as COptions ptr lang = NULL
+	dim shared as COptions ptr _lang = NULL
 
 	'':::::
-	sub Lang_Create( )
+	private sub _Create( ) constructor
 
-		if( lang <> NULL ) then
+		if( _lang <> NULL ) then
 			exit sub
 		end if
 
-		lang = new COptions
+		_lang = new COptions
 
 	end sub
 
 	'':::::
-	sub Lang_Destroy( )
-		if( lang = NULL ) then
+	private sub _Destroy( ) destructor
+		if( _lang = NULL ) then
 			exit sub
 		end if
 		
-		delete lang
-		lang = NULL
+		delete _lang
+		_lang = NULL
 		
 	end sub
 
 	'':::::
-	function Lang_LoadOptions _
+	function Lang.Initialized _
+		( _
+		) as integer
+
+		function = ( _lang <> NULL )
+
+	end function
+
+	'':::::
+	static function Lang.LoadOptions _
 		( _
 			byval sFileName as zstring ptr, _
 			byval bNoReset as integer _
 		) as integer
 
-		Lang_Create
-		Lang_Create
+		_Create
 
-		if( lang = NULL ) then
+		if( _lang = NULL ) then
 			return FALSE
 		end if
 			
 		if( bNoReset = FALSE ) then
-			lang->Clear()
+			_lang->Clear()
 		end if
 
-		function = lang->ReadFromFile( sFileName )
+		function = _lang->ReadFromFile( sFileName )
 
 	end function
 
-	function Lang_GetOption _
+	function Lang.GetOption _
 		( _
 			byval sKey as zstring ptr, _
 			byval sDefault as zstring ptr _
 		) as string
 
-		if( lang = NULL ) then
+		if( _lang = NULL ) then
 			return ""
 		end if
 		
-		function = lang->Get( sKey, sDefault )
+		function = _lang->Get( sKey, sDefault )
 
 	end function
 
-	sub Lang_SetOption _
+	sub Lang.SetOption _
 		( _
 			byval sKey as zstring ptr, _
 			byval sValue as zstring ptr _
 		)
 
-		if( lang = NULL ) then
+		if( _lang = NULL ) then
 			exit sub
 		end if
 		
-		lang->Set( sKey, sValue )
+		_lang->Set( sKey, sValue )
 
 	end sub
 
-	function Lang_ExpandString _
+	function Lang.ExpandString _
 		( _
 			byval sText as zstring  ptr _
 		) as string
 
-		return lang->ExpandString( sText )
+		return _lang->ExpandString( sText )
 
 	end function
 
 end namespace
+

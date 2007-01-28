@@ -113,7 +113,7 @@ namespace fb.fbdoc
 		dim as integer h
 		dim as string sOutputFile, ret
 
-		ret = Lang_ExpandString( sContent )
+		ret = Lang.ExpandString( sContent )
 
 		ret = ReplaceSubStr( ret, "&middot;", "-" )
 
@@ -214,11 +214,11 @@ namespace fb.fbdoc
 			sTxt += chr(10)
 		end if
 		
-		sTxt += Lang_ExpandString( sBodyTxt )
+		sTxt += Lang.ExpandString( sBodyTxt )
 
 		if( ucase( sPageName ) = "DOCTOC" ) then
-			s = Templates_Get("fbhelp_doctoc")
-			s = Lang_ExpandString( s )
+			s = Templates.Get("fbhelp_doctoc")
+			s = Lang.ExpandString( s )
 			sTxt = ReplaceSubStr( s, "{$pg_body}", sTxt )
 		end if
 	

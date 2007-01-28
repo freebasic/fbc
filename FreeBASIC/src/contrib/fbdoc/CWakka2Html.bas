@@ -784,6 +784,28 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
+	private function _actionGenColor _
+		( _
+			byval ctx as CWakka2HtmlCtx ptr, _
+			byval paramsTb as WikiToken_Action ptr _
+		) as string
+
+		dim as string res, sColor, sText
+
+		sColor = paramsTb->GetParam( "c" )
+		sText = paramsTb->GetParam( "text" )
+
+		if( sColor > "" ) then
+			res = "<span style=""color: " & sColor & """>" & Text2Html(sText) & "</span>"
+		else
+			res = Text2Html(sText)
+		end if
+
+		return res
+
+	end function
+
+	'':::::
 	private function _actionGenAnchor _
 		( _
 			byval ctx as CWakka2HtmlCtx ptr, _
@@ -822,6 +844,8 @@ namespace fb.fbdoc
 			return _actionGenImage( ctx, paramsTb )
 		case "anchor"
 			return _actionGenAnchor( ctx, paramsTb )
+		case "color"
+			return _actionGenColor( ctx, paramsTb )
 		case else
 			return ""
 		end select

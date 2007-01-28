@@ -24,6 +24,7 @@
 
 #include once "fbdoc_defs.bi"
 #include once "fbdoc_string.bi"
+#include once "fbdoc_templates.bi"
 #include once "COptions.bi"
 
 namespace fb.fbdoc
@@ -31,7 +32,7 @@ namespace fb.fbdoc
 	dim shared as COptions ptr temp
 
 	'':::::
-	sub Templates_Create( )
+	private sub _Create( ) constructor
 		if( temp <> NULL ) then
 			exit sub
 		end if
@@ -41,7 +42,7 @@ namespace fb.fbdoc
 	end sub
 
 	'':::::
-	sub Templates_Destroy( )
+	private sub _Destroy( ) destructor
 		if( temp = NULL ) then
 			exit sub
 		end if
@@ -52,23 +53,23 @@ namespace fb.fbdoc
 	end sub
 
 	'':::::
-	sub Templates_Clear _
+	sub Templates.Clear _
 		( _
 		)
 		
-		Templates_Create()
+		_Create()
 		temp->Clear()
 
 	end sub
 
 	'':::::
-	function Templates_Set _
+	function Templates.Set _
 		( _
 			byval sKey as zstring ptr, _
 			byval sValue as zstring ptr _
 		) as integer
 
-		Templates_Create()
+		_Create()
 		if( temp->Set( sKey, sValue ) ) then
 			return TRUE
 		end if
@@ -76,7 +77,7 @@ namespace fb.fbdoc
 
 	end function
 
-	function Templates_LoadFile _
+	function Templates.LoadFile _
 		( _
 			byval sKey as zstring ptr, _
 			byval sFileName as zstring ptr _
@@ -86,7 +87,7 @@ namespace fb.fbdoc
 
 		x = LoadFileAsString( sFileName )
 		
-		Templates_Create()
+		_Create()
 		
 		if( temp->Set( sKey, x ) ) then
 			return TRUE
@@ -96,7 +97,7 @@ namespace fb.fbdoc
 			
 	end function
 
-	function Templates_Get _
+	function Templates.Get _
 		( _
 			byval sKey as zstring ptr _
 		) as string
