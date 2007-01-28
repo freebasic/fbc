@@ -327,14 +327,6 @@
 #define FB_RTL_PROFILEMCOUNT            "mcount"
 #define FB_RTL_PROFILEMONSTARTUP        "_monstartup"
 
-#define FB_RTL_FILEFIELD                "fb_FileField"
-#define FB_RTL_FILEFIELDPUT             "fb_FileFieldPut"
-#define FB_RTL_FILEFIELDPUTLARGE        "fb_FileFieldPutLarge"
-#define FB_RTL_FILEFIELDGET             "fb_FileFieldGet"
-#define FB_RTL_FILEFIELDGETLARGE        "fb_FileFieldGetLarge"
-#define FB_RTL_FILEFIELDSTRDELETE       "fb_FileFieldStrDelete"
-
-
 '' the order doesn't matter but it makes more sense to follow the same
 '' order as the FB_RTL_* defines above
 enum FB_RTL_IDX
@@ -643,13 +635,6 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_PROFILEMCOUNT
 	FB_RTL_IDX_PROFILEMONSTARTUP
 
-	FB_RTL_IDX_FILEFIELD
-	FB_RTL_IDX_FILEFIELDGET
-	FB_RTL_IDX_FILEFIELDGETLARGE
-	FB_RTL_IDX_FILEFIELDPUT
-	FB_RTL_IDX_FILEFIELDPUTLARGE
-	FB_RTL_IDX_FILEFIELDSTRDELETE
-
 	FB_RTL_INDEXES
 end enum
 
@@ -693,12 +678,6 @@ type FB_RTL_MACRODEF
 	paramTb(0 to 3) as zstring ptr
 	tokenTb(0 to 11) as FB_RTL_MACROTOKEN
 end type
-
-type FB_RTL_FILE_FIELD_PARAM
-	exprsiz as ASTNODE ptr
-	exprvar as ASTNODE ptr
-end type
-
 
 declare sub rtlInit _
 	( _
@@ -1546,33 +1525,6 @@ declare function rtlPrinter_cb _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as integer
-
-declare function rtlFileField _
-	( _
-		byval filenum as ASTNODE ptr, _
-		byval numfields as integer, _
-		byref params as TLIST, _
-        byval isfunc as integer _
-	) as ASTNODE ptr
-
-declare function rtlFileFieldGet _
-	( _
-		byval filenum as ASTNODE ptr, _
-		byval offset as ASTNODE ptr, _
-        byval isfunc as integer _
-	) as ASTNODE ptr
-
-declare function rtlFileFieldPut _
-	( _
-		byval filenum as ASTNODE ptr, _
-		byval offset as ASTNODE ptr, _
-        byval isfunc as integer _
-	) as ASTNODE ptr
-
-declare function rtlFileFieldStrDelete _
-	( _
-		byval strg as ASTNODE ptr _
-	) as ASTNODE ptr
 
 ''
 '' macros

@@ -39,7 +39,6 @@ declare sub			rtlPrintModInit		( )
 declare sub			rtlProfileModInit	( )
 declare sub			rtlStringModInit	( )
 declare sub			rtlSystemModInit	( )
-declare sub			rtlFileFieldModInit	( )
 
 declare sub			rtlArrayModEnd		( )
 declare sub			rtlConsoleModEnd	( )
@@ -54,7 +53,6 @@ declare sub			rtlPrintModEnd		( )
 declare sub			rtlProfileModEnd	( )
 declare sub			rtlStringModEnd		( )
 declare sub			rtlSystemModEnd		( )
-declare sub			rtlFileFieldModEnd	( )
 
 
 ''globals
@@ -77,14 +75,12 @@ sub rtlInit static
 	rtlProfileModInit( )
 	rtlStringModInit( )
 	rtlSystemModInit( )
-	rtlFileFieldModInit( )
 
 end sub
 
 '':::::
 sub rtlEnd
 
-	rtlFileFieldModEnd( )
 	rtlSystemModEnd( )
 	rtlStringModEnd( )
 	rtlProfileModEnd( )

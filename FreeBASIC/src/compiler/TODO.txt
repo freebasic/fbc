@@ -50,9 +50,7 @@
       [ ] labels with the same name as procs:
           declare sub foo \n foo: \n goto foo \n call foo
       [ ] symbols with same name but different sufixes than keywords
-      [x] add the FIELD #expr statement - threads are not allowed in -lang qb anyways
-	      [ ] LSET/RSET shouldn't set the null-terminator, that will be done later
-		      when fixed-len strings are compatible with QB
+      [ ] add the FIELD #expr statement - threads are not allowed in -lang qb anyways
       [x] move all variables to function-level, implicit or explict (see no SCOPE)
           [ ] check if its done correctly, if they are being cleared right after the
               stack frame setup

@@ -139,7 +139,7 @@ FBC_SRCS += parser-expr-unary.bas parser-expr-variable.bas
 FBC_SRCS += reg.bas
 
 FBC_SRCS += rtl.bas rtl-array.bas rtl-console.bas rtl-data.bas rtl-error.bas
-FBC_SRCS += rtl-file.bas rtl-filefield.bas rtl-gfx.bas rtl-macro.bas rtl-math.bas rtl-mem.bas
+FBC_SRCS += rtl-file.bas rtl-gfx.bas rtl-macro.bas rtl-math.bas rtl-mem.bas
 FBC_SRCS += rtl-print.bas rtl-profile.bas rtl-string.bas rtl-system.bas
 
 FBC_SRCS += symb.bas symb-const.bas symb-data.bas symb-define.bas symb-enum.bas

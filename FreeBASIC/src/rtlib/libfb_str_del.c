@@ -40,21 +40,13 @@
 #include <string.h>
 #include "fb.h"
 
-/* !!! move this pointer to __fb_ctx */
-extern FBCALL void (*__FileFieldStrDeleteHook)( FBSTRING *str );
-FBCALL void (*__FileFieldStrDeleteHook)( FBSTRING *str ) = NULL;
-
 /*:::::*/
 FBCALL void fb_StrDelete ( FBSTRING *str )
 {
-	if( (str == NULL) || (str->data == NULL) )
-		return;
+    if( (str == NULL) || (str->data == NULL) )
+    	return;
 
-	if( __FileFieldStrDeleteHook )
-		(*__FileFieldStrDeleteHook)(str);
-
-	if( str->data )
-		free( (void *)str->data );
+    free( (void *)str->data );
 
 	str->data = NULL;
 	str->len  = 0;

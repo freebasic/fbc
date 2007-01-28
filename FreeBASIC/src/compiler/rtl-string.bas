@@ -2906,7 +2906,6 @@ function rtlStrDelete _
 
     dim as ASTNODE ptr proc = any
     dim as integer dtype = any
-	dim as FBSYMBOL ptr s = any
 
 	function = NULL
 
