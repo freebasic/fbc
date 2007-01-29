@@ -91,7 +91,7 @@ enum SHREGENUM_FLAGS
 end enum
 
 
-enum URLIS
+enum URLIS_
 	URLIS_URL
 	URLIS_OPAQUE
 	URLIS_NOHISTORY
@@ -241,7 +241,7 @@ declare function UrlEscape alias "UrlEscapeW" (byval as LPCWSTR, byval as LPWSTR
 declare function UrlGetLocation alias "UrlGetLocationW" (byval as LPCWSTR) as LPCWSTR
 declare function UrlGetPart alias "UrlGetPartW" (byval as LPCWSTR, byval as LPWSTR, byval as LPDWORD, byval as DWORD, byval as DWORD) as HRESULT
 declare function UrlHash alias "UrlHashW" (byval as LPCWSTR, byval as LPBYTE, byval as DWORD) as HRESULT
-declare function UrlIs alias "UrlIsW" (byval as LPCWSTR, byval as URLIS) as BOOL
+declare function UrlIs alias "UrlIsW" (byval as LPCWSTR, byval as URLIS_) as BOOL
 declare function UrlIsNoHistory alias "UrlIsNoHistoryW" (byval as LPCWSTR) as BOOL
 declare function UrlIsOpaque alias "UrlIsOpaqueW" (byval as LPCWSTR) as BOOL
 declare function UrlUnescape alias "UrlUnescapeW" (byval as LPWSTR, byval as LPWSTR, byval as LPDWORD, byval as DWORD) as HRESULT
@@ -374,7 +374,7 @@ declare function UrlEscape alias "UrlEscapeA" (byval as LPCSTR, byval as LPSTR, 
 declare function UrlGetLocation alias "UrlGetLocationA" (byval as LPCSTR) as LPCSTR
 declare function UrlGetPart alias "UrlGetPartA" (byval as LPCSTR, byval as LPSTR, byval as LPDWORD, byval as DWORD, byval as DWORD) as HRESULT
 declare function UrlHash alias "UrlHashA" (byval as LPCSTR, byval as LPBYTE, byval as DWORD) as HRESULT
-declare function UrlIs alias "UrlIsA" (byval as LPCSTR, byval as URLIS) as BOOL
+declare function UrlIs alias "UrlIsA" (byval as LPCSTR, byval as URLIS_) as BOOL
 declare function UrlIsNoHistory alias "UrlIsNoHistoryA" (byval as LPCSTR) as BOOL
 declare function UrlIsOpaque alias "UrlIsOpaqueA" (byval as LPCSTR) as BOOL
 declare function UrlUnescape alias "UrlUnescapeA" (byval as LPSTR, byval as LPSTR, byval as LPDWORD, byval as DWORD) as HRESULT
