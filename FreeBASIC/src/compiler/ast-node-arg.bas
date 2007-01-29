@@ -490,7 +490,10 @@ private function hCheckByDescParam _
 	else
 		'' an argument passed by descriptor?
 		if( symbIsParamByDesc( s ) ) then
-        	'' do nothing..
+			'' it's a pointer, but it will be seen as anything else
+			'' (ie: "array() as string"), so, remap the type
+  			astDelTree( arg )
+			n->l = astNewVAR( s, 0, FB_DATATYPE_POINTER + FB_DATATYPE_VOID )
         	return TRUE
         end if
 

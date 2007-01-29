@@ -5,7 +5,8 @@
 
 [ ] STATIC
     - add static data members, they must be initialized outside the TYPE|CLASS
-    - allow all global operators to be declared as static methods?
+    - allow all global operators to be declared as static methods so the private
+      members could be accessed
 
 [ ] ctor/dtor
     - ArrayClear will be used instead of a loop calling the dtors to destroy
@@ -29,6 +30,10 @@
                If not, then it shouldn't be an allowable option.
 
     [ ] remove libfb_ctor.c - replaced by fbrt0.c
+
+[ ] add TYPEOF()
+    - BIT, BITSET and BITRESET won't work with longint's if the macros aren't rewritten
+      using TYPEOF
 
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
@@ -117,16 +122,10 @@
 	- array must be built at compile-time and destroyed after the call
 	- take care with objects..
 
-[ ] proc call:
-    - add named parameters (foo := expr)
-      - can be hard to be added because they don't have to come in order
-      - := must be a new token because the "foo bar : baz" ambiguity
-
-[ ] add #pragma cmdline="-foo bar -baz"
+[ ] PP:
+    - add #pragma cmdline="-foo bar -baz"
 	- painful to add
 	- don't allow it if any line was parsed already
-
-[ ] PP:
     - [macro expansion: won't work for inner macros
     - add varargs support, like foo(arg1, ...) ...
     - support default arguments?
@@ -140,6 +139,7 @@
     - C++ mangling needs CONST's to be handled in param attributes:
       - refs and ptrs to constants can't be added unless _POINTER is added
         as a new symbol like with BITFIELD? that will need *a lot* of changes..
+
 
 [ ] disallow (in -lang qb mode):
 	dim foo as foo
@@ -175,6 +175,12 @@
 [ ] passing a temporary string to a zstring ptr should not make yet-another temporary
     assignment in hStrParamToPtrArg(), just a pointer copy that later should be
     strDelete()'d
+
+[ ] proc call:
+    - add named parameters (foo := expr)
+      - can be hard to be added because they don't have to come in order, params in
+        prototypes don't require a name and because overloading
+      - := must be a new token because the "foo bar : baz" ambiguity
 
 *** *** *** *** ***
 [ ] all functions returning STRING should actually return the FBSTRING
