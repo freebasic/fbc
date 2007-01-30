@@ -28,23 +28,26 @@
 
 '':::::
 ''SingleIfStatement=  !(COMMENT|NEWLINE|STATSEP) NUM_LIT | Statement*)
-''                    (ELSE Statement*)?
+''                    (ELSE NUM_LIT | Statement*)?
 ''
 private function hIfSingleLine _
 	( _
 		byval stk as FB_CMPSTMTSTK ptr _
 	) as integer
 
-	dim as FBSYMBOL ptr l = any
-
 	function = FALSE
 
 	'' NUM_LIT | Statement*
 	if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-		l = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_LABEL )
+		dim as FBSYMBOL ptr l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+										  				  lexGetText( ), _
+										  				  FB_SYMBCLASS_LABEL, _
+										  				  FALSE, _
+										  				  FALSE )
 		if( l = NULL ) then
 			l = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 		end if
+
 		lexSkipToken( )
 
 		astAdd( astNewBRANCH( AST_OP_JMP, l ) )
@@ -65,8 +68,23 @@ private function hIfSingleLine _
 		'' emit next label
 		astAdd( astNewLABEL( stk->if.nxtlabel ) )
 
-		'' Statement|IF*
-		if( cStatement( ) = FALSE ) then
+		'' NUM_LIT | Statement*
+		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
+			dim as FBSYMBOL ptr l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+										  				  	  lexGetText( ), _
+										  				  	  FB_SYMBCLASS_LABEL, _
+										  				  	  FALSE, _
+										  				  	  FALSE )
+			if( l = NULL ) then
+				l = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
+			end if
+
+			lexSkipToken( )
+
+			astAdd( astNewBRANCH( AST_OP_JMP, l ) )
+
+		'' Statement
+		elseif( cStatement( ) = FALSE ) then
 			exit function
 		end if
 
