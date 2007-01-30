@@ -153,6 +153,7 @@ Version 0.17 Beta:
 - arrays with lbounds <> 0 passed as args or dynamic would fail in quirk gfx functions (cha0s)
 - there is no more special color value to flag default color in COLOR and gfx primitives, resulting in no more "hole" in supported colors range (lillo)
 - DirectDraw surface restoring was bugged, resulting in crashes if another DirectX-based program entered fullscreen (lillo)
+- KILL was always returning 0
 
 
 Version 0.16 Beta:
