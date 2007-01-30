@@ -1046,7 +1046,7 @@ private function hFileOpen _
 
 	'' (LEN '=' Expression)?
 	if( hMatchText( "LEN" ) ) then
-		if( hMatchText( "ASSIGN" ) = FALSE ) then
+		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
 				exit function
 			else
