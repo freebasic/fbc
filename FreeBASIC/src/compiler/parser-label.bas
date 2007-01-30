@@ -49,19 +49,17 @@ function cLabel as integer
 		    end if
 
 		else
-			if( lexGetType( ) = FB_DATATYPE_INTEGER ) then
-				l = symbAddLabel( lexGetText( ), _
-								  FB_SYMBOPT_DECLARING or FB_SYMBOPT_CREATEALIAS )
-				if( l = NULL ) then
-					if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip stmt
-						hSkipStmt( )
-					end if
+			l = symbAddLabel( lexGetText( ), _
+							  FB_SYMBOPT_DECLARING or FB_SYMBOPT_CREATEALIAS )
+			if( l = NULL ) then
+				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+					exit function
 				else
-					lexSkipToken( )
+					'' error recovery: skip stmt
+					hSkipStmt( )
 				end if
+			else
+				lexSkipToken( )
 			end if
 
 			'' fake a ':'
