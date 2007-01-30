@@ -85,7 +85,13 @@ private function hTypeProtoDecl _
 	end if
 
 	''
-	symbNestBegin( parent, FALSE )
+	if( symbGetIsUnique( parent ) = FALSE ) then
+		'' must be unique
+		symbSetIsUnique( parent )
+
+		'' start nesting
+		symbNestBegin( parent, FALSE )
+	end if
 
 	'' DECLARE
 	lexSkipToken( )
@@ -179,12 +185,6 @@ private function hTypeProtoDecl _
 		end if
 	end select
 
-	'' must be unique
-	symbSetIsUnique( parent )
-
-	''
-	symbNestEnd( FALSE )
-
 	function = res
 
 end function
@@ -213,19 +213,19 @@ private function hTypeEnumDecl _
 	end if
 
 	''
-	symbNestBegin( parent, FALSE )
+	if( symbGetIsUnique( parent ) = FALSE ) then
+		'' must be unique
+		symbSetIsUnique( parent )
+
+		'' start nesting
+		symbNestBegin( parent, FALSE )
+	end if
 
 	if( is_const ) then
 		res = cConstDecl( attrib )
 	else
 		res = cEnumDecl( attrib )
 	end if
-
-	'' must be unique
-	symbSetIsUnique( parent )
-
-	''
-	symbNestEnd( FALSE )
 
 	function = res
 
@@ -317,6 +317,15 @@ private function hFieldInit _
 		exit function
 	end if
 
+	''
+	if( symbGetIsUnique( parent ) = FALSE ) then
+		'' must be unique
+		symbSetIsUnique( parent )
+
+		'' start nesting
+		symbNestBegin( parent, FALSE )
+	end if
+
 	initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -329,9 +338,6 @@ private function hFieldInit _
 
 	'' make sure a default ctor is added
 	symbSetUDTHasCtorField( parent )
-
-	'' UDT now must be unique
-	symbSetIsUnique( parent )
 
 	function = initree
 
@@ -680,12 +686,19 @@ private function hTypeAdd _
 	end if
 
 	'' TypeBody
-	if( hTypeBody( s ) = FALSE ) then
-		exit function
+	dim as integer res = hTypeBody( s )
+
+	'' end nesting
+	if( symbGetIsUnique( s ) ) then
+		symbNestEnd( FALSE )
 	end if
 
-	if( errGetLast() <> FB_ERRMSG_OK ) then
+	if( res = FALSE ) then
 		exit function
+	else
+		if( errGetLast() <> FB_ERRMSG_OK ) then
+			exit function
+		end if
 	end if
 
 	'' finalize
