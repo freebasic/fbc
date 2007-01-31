@@ -60,6 +60,13 @@ type _GtkRcStyleClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
+#ifdef __FB_Win32__
+/' Reserve old names for DLL ABI backward compatibility '/
+#define gtk_rc_add_default_file gtk_rc_add_default_file_utf8
+#define gtk_rc_set_default_files gtk_rc_set_default_files_utf8
+#define gtk_rc_parse gtk_rc_parse_utf8
+#endif
+
 declare sub _gtk_rc_init ()
 declare sub gtk_rc_add_default_file (byval filename as zstring ptr)
 declare sub gtk_rc_set_default_files (byval filenames as zstring ptr ptr)

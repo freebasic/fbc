@@ -51,6 +51,16 @@ end enum
 
 
 declare function gtk_icon_theme_error_quark () as GQuark
+
+#ifdef __FB_Win32__
+/' Reserve old name for DLL ABI backward compatibility '/
+#define gtk_icon_theme_set_search_path gtk_icon_theme_set_search_path_utf8
+#define gtk_icon_theme_get_search_path gtk_icon_theme_get_search_path_utf8
+#define gtk_icon_theme_append_search_path gtk_icon_theme_append_search_path_utf8
+#define gtk_icon_theme_prepend_search_path gtk_icon_theme_prepend_search_path_utf8
+#define gtk_icon_info_get_filename gtk_icon_info_get_filename_utf8
+#endif
+
 declare function gtk_icon_theme_get_type () as GType
 declare function gtk_icon_theme_new () as GtkIconTheme ptr
 declare function gtk_icon_theme_get_default () as GtkIconTheme ptr

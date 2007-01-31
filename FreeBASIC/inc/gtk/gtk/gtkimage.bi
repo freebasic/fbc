@@ -99,6 +99,12 @@ type _GtkImageClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
+#ifdef __FB_Win32__
+/' Reserve old names for DLL ABI backward compatibility '/
+#define gtk_image_new_from_file gtk_image_new_from_file_utf8
+#define gtk_image_set_from_file gtk_image_set_from_file_utf8
+#endif
+
 declare function gtk_image_get_type () as GType
 declare function gtk_image_new () as GtkWidget ptr
 declare function gtk_image_new_from_pixmap (byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr) as GtkWidget ptr

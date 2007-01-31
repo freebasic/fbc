@@ -59,6 +59,10 @@ enum GtkUIManagerItemType
 	GTK_UI_MANAGER_ACCELERATOR = 1 shl 8
 end enum
 
+#ifdef __FB_Win32__
+/' Reserve old name for DLL ABI backward compatibility '/
+#define gtk_ui_manager_add_ui_from_file gtk_ui_manager_add_ui_from_file_utf8
+#endif
 
 declare function gtk_ui_manager_get_type () as GType
 declare function gtk_ui_manager_new () as GtkUIManager ptr

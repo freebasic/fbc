@@ -45,6 +45,22 @@ declare function gtk_file_chooser_get_select_multiple (byval chooser as GtkFileC
 declare sub gtk_file_chooser_set_show_hidden (byval chooser as GtkFileChooser ptr, byval show_hidden as gboolean)
 declare function gtk_file_chooser_get_show_hidden (byval chooser as GtkFileChooser ptr) as gboolean
 declare sub gtk_file_chooser_set_current_name (byval chooser as GtkFileChooser ptr, byval name as zstring ptr)
+
+#ifdef __FB_Win32__
+/' Reserve old names for DLL ABI backward compatibility '/
+#define gtk_file_chooser_get_filename gtk_file_chooser_get_filename_utf8
+#define gtk_file_chooser_set_filename gtk_file_chooser_set_filename_utf8
+#define gtk_file_chooser_select_filename gtk_file_chooser_select_filename_utf8
+#define gtk_file_chooser_unselect_filename gtk_file_chooser_unselect_filename_utf8
+#define gtk_file_chooser_get_filenames gtk_file_chooser_get_filenames_utf8
+#define gtk_file_chooser_set_current_folder gtk_file_chooser_set_current_folder_utf8
+#define gtk_file_chooser_get_current_folder gtk_file_chooser_get_current_folder_utf8
+#define gtk_file_chooser_get_preview_filename gtk_file_chooser_get_preview_filename_utf8
+#define gtk_file_chooser_add_shortcut_folder gtk_file_chooser_add_shortcut_folder_utf8
+#define gtk_file_chooser_remove_shortcut_folder gtk_file_chooser_remove_shortcut_folder_utf8
+#define gtk_file_chooser_list_shortcut_folders gtk_file_chooser_list_shortcut_folders_utf8
+#endif
+
 declare function gtk_file_chooser_get_filename (byval chooser as GtkFileChooser ptr) as zstring ptr
 declare function gtk_file_chooser_set_filename (byval chooser as GtkFileChooser ptr, byval filename as zstring ptr) as gboolean
 declare function gtk_file_chooser_select_filename (byval chooser as GtkFileChooser ptr, byval filename as zstring ptr) as gboolean

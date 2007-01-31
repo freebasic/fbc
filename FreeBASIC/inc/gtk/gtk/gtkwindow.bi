@@ -104,6 +104,12 @@ type _GtkWindowGroupClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
+#ifdef __FB_Win32__
+/' Reserve old names for DLL ABI backward compatibility '/
+#define gtk_window_set_icon_from_file gtk_window_set_icon_from_file_utf8
+#define gtk_window_set_default_icon_from_file gtk_window_set_default_icon_from_file_utf8
+#endif
+
 declare function gtk_window_get_type () as GType
 declare function gtk_window_new (byval type as GtkWindowType) as GtkWidget ptr
 declare sub gtk_window_set_title (byval window as GtkWindow ptr, byval title as zstring ptr)

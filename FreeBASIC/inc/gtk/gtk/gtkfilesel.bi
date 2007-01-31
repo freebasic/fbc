@@ -56,6 +56,13 @@ type _GtkFileSelectionClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
+#ifdef __FB_Win32__
+/' Reserve old names for DLL ABI backward compatibility '/
+#define gtk_file_selection_get_filename gtk_file_selection_get_filename_utf8
+#define gtk_file_selection_set_filename gtk_file_selection_set_filename_utf8
+#define gtk_file_selection_get_selections gtk_file_selection_get_selections_utf8
+#endif
+
 declare function gtk_file_selection_get_type () as GType
 declare function gtk_file_selection_new (byval title as zstring ptr) as GtkWidget ptr
 declare sub gtk_file_selection_set_filename (byval filesel as GtkFileSelection ptr, byval filename as zstring ptr)

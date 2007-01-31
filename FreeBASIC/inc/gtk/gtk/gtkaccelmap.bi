@@ -20,7 +20,14 @@
 
 type GtkAccelMap as _GtkAccelMap
 type GtkAccelMapClass as _GtkAccelMapClass
+
 type GtkAccelMapForeach as sub cdecl(byval as gpointer, byval as zstring ptr, byval as guint, byval as GdkModifierType, byval as gboolean)
+
+#ifdef __FB_Win32__
+/' Reserve old names for DLL ABI backward compatibility '/
+#define gtk_accel_map_load gtk_accel_map_load_utf8
+#define gtk_accel_map_save gtk_accel_map_save_utf8
+#endif
 
 declare sub gtk_accel_map_add_entry (byval accel_path as zstring ptr, byval accel_key as guint, byval accel_mods as GdkModifierType)
 declare function gtk_accel_map_lookup_entry (byval accel_path as zstring ptr, byval key as GtkAccelKey ptr) as gboolean

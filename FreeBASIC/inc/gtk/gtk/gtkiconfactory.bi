@@ -36,6 +36,12 @@ type _GtkIconFactoryClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
+#ifdef __FB_Win32__
+/' Reserve old names for DLL ABI backward compatibility '/
+#define gtk_icon_source_set_filename gtk_icon_source_set_filename_utf8
+#define gtk_icon_source_get_filename gtk_icon_source_get_filename_utf8
+#endif
+
 declare function gtk_icon_factory_get_type () as GType
 declare function gtk_icon_factory_new () as GtkIconFactory ptr
 declare sub gtk_icon_factory_add (byval factory as GtkIconFactory ptr, byval stock_id as zstring ptr, byval icon_set as GtkIconSet ptr)
