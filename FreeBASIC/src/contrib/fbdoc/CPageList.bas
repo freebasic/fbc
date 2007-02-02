@@ -112,7 +112,6 @@ namespace fb.fbdoc
 		( _
 			byval pagename as zstring ptr, _
 			byval pagetitle as zstring ptr, _
-			byval linktitle as zstring ptr, _
 			byval level as integer, _
 			byval bForceAdd as integer _
 		) as CPage ptr
@@ -130,7 +129,7 @@ namespace fb.fbdoc
 			end if
 		end if
 
-		dim tmp as CPage ptr = new CPage( pagename, pagetitle, linktitle, level )
+		dim tmp as CPage ptr = new CPage( pagename, pagetitle, level )
 		return Append( tmp )
 		
 	end function

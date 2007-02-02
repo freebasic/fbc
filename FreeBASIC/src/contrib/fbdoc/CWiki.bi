@@ -103,6 +103,7 @@ namespace fb.fbdoc
 
 	type WikiToken_Link
 		as string 				url
+		as integer        linkclass
 	end type
 
 	type WikiToken_Indent
@@ -127,7 +128,6 @@ namespace fb.fbdoc
 		as string         text
 		as WikiToken_Link link
 		as integer        level
-		as integer        linkclass
 	end type
 
 		

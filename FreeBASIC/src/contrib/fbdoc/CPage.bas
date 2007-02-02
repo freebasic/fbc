@@ -33,7 +33,6 @@ namespace fb.fbdoc
 
 	type CPageCtx_
 		as zstring ptr pagename
-		as zstring ptr linktitle
 		as zstring ptr pagetitle
 		as integer level
 		as integer emitted
@@ -46,7 +45,6 @@ namespace fb.fbdoc
 		( _
 			byval pagename as zstring ptr, _
 			byval pagetitle as zstring ptr, _
-			byval linktitle as zstring ptr, _
 			byval level as integer _
 		)
 
@@ -54,10 +52,8 @@ namespace fb.fbdoc
 
 		ctx->pagename = NULL
 		ctx->pagetitle = NULL
-		ctx->linktitle = NULL
 		ZSet @ctx->pagename, pagename
 		ZSet @ctx->pagetitle, pagetitle
-		ZSet @ctx->linktitle, linktitle
 		ctx->level = level
 		ctx->emitted = FALSE
 		ctx->scanned = FALSE
@@ -97,7 +93,6 @@ namespace fb.fbdoc
 
 		ZFree @ctx->pagename
 		ZFree @ctx->pagetitle
-		ZFree @ctx->linktitle
 		ctx->level = 0
 		ctx->emitted = FALSE
 		ctx->scanned = FALSE
@@ -135,19 +130,6 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
-	function CPage.GetLinkTitle _
-		( _
-		) as string
-
-		if( ctx = NULL ) then
-			function = ""
-		else
-			function = *ctx->linktitle
-		end if
-
-	end function
-
-	'':::::
 	function CPage.GetTitle _
 		( _
 		) as string
@@ -156,9 +138,7 @@ namespace fb.fbdoc
 			return ""
 		end if
 
-		if( len( *ctx->linktitle) > 0 ) then
-			function = *ctx->linktitle
-		elseif( len( *ctx->pagetitle) > 0 ) then
+		if( len( *ctx->pagetitle) > 0 ) then
 			function = *ctx->pagetitle
 		elseif( len( *ctx->pagename) > 0 ) then
 			function = *ctx->pagename
@@ -200,24 +180,6 @@ namespace fb.fbdoc
 		end if
 
 		ZSet @ctx->pagetitle, title
-
-	end sub
-
-	'':::::
-	sub CPage.SetLinkTitle _
-		( _
-			byval title as zstring ptr _
-		)
-
-		if( ctx = NULL ) then
-			exit sub
-		end if
-
-		if( len(*title) = 0 ) then
-			exit sub
-		end if
-
-		ZSet @ctx->linktitle, title
 
 	end sub
 
@@ -294,7 +256,8 @@ namespace fb.fbdoc
 		( _
 			byval spagetext as zstring ptr, _
 			byval spagename as zstring ptr, _
-			byval level as integer _
+			byval level as integer, _
+			byval linkclass as integer _
 		)
 
 		if( ctx = NULL ) then
@@ -307,6 +270,7 @@ namespace fb.fbdoc
 		pagelink->text = *spagetext
 		pagelink->url = *spagename
 		pagelink->level = level
+		pagelink->linkclass = linkclass
 		
 	end sub
 

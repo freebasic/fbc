@@ -35,6 +35,7 @@ namespace fb.fbdoc
 	'' Content Scanning
 	'' --------------------------------------------------------------------------
 
+
 	'':::::
 	function _LoadAndScanPageLinks _
 		( _	
@@ -88,8 +89,7 @@ namespace fb.fbdoc
 
 		do while( pagelink <> NULL )
 
-			''? "   " + space(pagelink->level * 3) + pagelink->text + " - " + pagelink->link.url
-			page->AddPageLink( pagelink->text, pagelink->link.url, pagelink->level )
+			page->AddPageLink( pagelink->text, pagelink->link.url, pagelink->level, pagelink->link.linkclass )
 		
 			if( len(pagelink->link.url) > 0 ) then
 				if( instr(pagelink->link.url, ":") = 0 ) then
@@ -97,7 +97,7 @@ namespace fb.fbdoc
 						prevpage = paglist->Find( pagelink->link.url )
 						if( prevpage = NULL ) then
 							if( bFollowLinks ) then
-								newpage = paglist->AddNewPage( pagelink->link.url, pagelink->text, NULL, 0, FALSE )
+								newpage = paglist->AddNewPage( pagelink->link.url, pagelink->text, 0, FALSE )
 							end if
 						end if
 					end if
@@ -108,6 +108,48 @@ namespace fb.fbdoc
 			
 		loop
 		
+	end function
+
+
+	'':::::
+	private function IsTOCPage( byval sPage as zstring ptr ) as integer
+
+		function = FALSE
+
+		if( sPage = NULL ) then
+			exit function
+		end if
+
+		if( len(*sPage) = 0 ) then
+			exit function
+		end if
+
+		'' TODO: use a datafile to specify a list, matched on patterns of pages names
+		'' to include in auto-generated TOC.  e.g. DocTOc, CatPg*, CVS*
+
+		if( _
+			( lcase(*sPage) = "doctoc" ) _
+			or ( lcase(left(*sPage, 5)) = "catpg") _
+			or ( lcase(left(*sPage, 3)) = "cvs") _
+		) then
+			function = TRUE
+		end if
+
+	end function
+
+	'':::::
+	private function IsInternalURL( byref sUrl as string ) as integer
+		
+		function = FALSE
+
+		if( len(sUrl) > 0 ) then
+			if( instr(sUrl, ":") = 0 ) then
+				if( instr(sUrl, "/") = 0 ) then
+					function = TRUE
+				end if
+			end if
+		end if
+
 	end function
 
 	'':::::
@@ -123,6 +165,7 @@ namespace fb.fbdoc
 		dim as string sBody, sPageName, sTitle
 		dim as CList ptr lst
 		dim as PageLinkItem ptr pagelink
+		dim as integer bAddPage, bFollowPage
 
 		if( page = NULL ) then
 			exit sub
@@ -132,6 +175,10 @@ namespace fb.fbdoc
 		if( len(sPageName) = 0 ) then
 			exit sub
 		end if
+		
+		if( IsTOCPage(strptr(sPageName)) = FALSE ) then
+			exit sub
+		endif 
 
 		prevpage = paglist->Find( sPageName )
 		if( prevpage = NULL ) then
@@ -150,44 +197,65 @@ namespace fb.fbdoc
 		'' Loop through each link.  Record the page and search for more sections
 		pagelink = lst->GetHead()
 		do while( pagelink <> NULL )
+				
+			bAddPage = FALSE
+			bFollowPage = FALSE
 
-			if( ( lcase(sPageName) = "doctoc" ) or ( lcase(Left(sPageName, 5)) = "catpg") ) then
+			'' Only {{fbdoc item="sect|subsect"}} links are used as branches in TOC
+			select case pagelink->linkclass
+			case WIKI_PAGELINK_CLASS_SECTION, WIKI_PAGELINK_CLASS_SUBSECT
+				bAddPage = TRUE
 
-				newpage = toclist->AddNewPage( _
-					pagelink->url, _
-					pagelink->text, _
-					NULL, startlevel + pagelink->level, TRUE )
+			case WIKI_PAGELINK_CLASS_KEYWORD
 
-				if( len(pagelink->url) > 0 ) then
-					if( instr(pagelink->url, ":") = 0 ) then
-						if( instr(pagelink->url, "/") = 0 ) then
-							if (left(pagelink->url, 5) = "CatPg") _
-								or (left(pagelink->url, 3) = "CVS") then
+				'' Only internal pages can be TOC nodes
+				if( IsInternalURL( pagelink->url ) ) then
 
-									prevpage = paglist->Find( pagelink->url )
-									if( prevpage ) then
-										if( len(pagelink->text) > 0 ) then
-											prevpage->SetLinkTitle( pagelink->text )
-										end if
+					bAddPage = TRUE
 
-										_BuildTOCFromPage( prevpage, startlevel + pagelink->level + 1, toclist, paglist )
+					'' Only special named TOC pages are followed
+					if( IsTOCPage(pagelink->url) ) then
+						bFollowPage = TRUE
+					end if
+				end if
 
-									end if
+			case else
+				'' Special case - remove after DocToc and CatPg* links use {{fbdoc item="keyword" ...}}
 
-							else
+				if( (lcase(sPageName) = "doctoc") _
+					or (lcase(sPageName) = "catpgprogrammer") ) then
 
-								prevpage = paglist->Find( pagelink->url )
-								if( prevpage ) then
-									if( len(pagelink->text) > 0 ) then
-										prevpage->SetLinkTitle( pagelink->text )
-									end if
-								end if
+					bAddPage = TRUE
+					bFollowPage = TRUE
 
-							end if
+				else
+
+					'' Only internal pages can be TOC nodes
+					if( IsInternalURL( pagelink->url ) ) then
+
+						'' Only special named TOC pages are followed
+						if( IsTOCPage(pagelink->url) ) then
+							bAddPage = TRUE
+							bFollowPage = TRUE
 						end if
 					end if
 				end if
 
+			end select
+
+			if( bAddPage ) then
+				newpage = toclist->AddNewPage( _
+					pagelink->url, _
+					pagelink->text, _
+					startlevel + pagelink->level, TRUE )
+
+				if( bFollowPage ) then
+					' Only follow links that will be later emitted
+					prevpage = paglist->Find( pagelink->url )
+					if( prevpage ) then
+						_BuildTOCFromPage( prevpage, startlevel + pagelink->level + 1, toclist, paglist )
+					end if
+				end if
 			end if
 
 			pagelink = lst->GetNext( pagelink )
@@ -232,7 +300,9 @@ namespace fb.fbdoc
 
 		wiki = new CWiki
 
-		page = (*paglist)->AddNewPage( toc_pagename, toc_pagetitle, NULL, 0, TRUE )
+		page = (*paglist)->AddNewPage( toc_pagename, toc_pagetitle, 0, TRUE )
+
+		'' Build a list of all pages to include in the documentation
 		page = (*paglist)->NewEnum( @page_i )
 		while( page )
 			if( len(page->GetName()) > 0 ) then
@@ -241,7 +311,8 @@ namespace fb.fbdoc
 			page = (*paglist)->NextEnum( @page_i )
 		wend
 
-		page = (*toclist)->AddNewPage( toc_pagename, toc_pagetitle, NULL, 0, TRUE )
+		'' Build a list of pages as they will appear in the TOC
+		page = (*toclist)->AddNewPage( toc_pagename, toc_pagetitle, 0, TRUE )
 		_BuildTOCFromPage( page, 1, *toclist, *paglist )
 
 		delete wiki
@@ -290,7 +361,7 @@ namespace fb.fbdoc
 
 		wiki = new CWiki
 
-		page = (*paglist)->AddNewPage( toc_pagename, toc_pagetitle, NULL, 0, TRUE )
+		page = (*paglist)->AddNewPage( toc_pagename, toc_pagetitle, 0, TRUE )
 		page = (*paglist)->NewEnum( @page_i )
 
 		bFirstTime = followlinks
@@ -303,7 +374,7 @@ namespace fb.fbdoc
 			page = (*paglist)->NextEnum( @page_i )
 		wend
 
-		''page = *toclist->AddNewPage( toc_pagename, toc_pagetitle, NULL, 0, TRUE )
+		''page = *toclist->AddNewPage( toc_pagename, toc_pagetitle, 0, TRUE )
 		''_BuildTOCFromPage( page, 1, *toclist, *paglist )
 
 		delete wiki

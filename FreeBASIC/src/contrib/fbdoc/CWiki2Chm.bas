@@ -209,7 +209,7 @@ namespace fb.fbdoc
 
 		sBodyHtml = ctx->converter->gen( @"", ctx->wiki )
 
-		if( ucase( sPageName ) = "DOCTOC" ) then
+		if( lcase( sPageName ) = "doctoc" ) then
 			sHtml = Templates.Get("chm_doctoc")
 		else
 			sHtml = Templates.Get("chm_def")
@@ -240,17 +240,19 @@ namespace fb.fbdoc
 		page = ctx->toclist->NewEnum( @page_i )
 		while( page )
 
+			'' !!! FIXME !!!, indent spaces are only needed for debugging
+
 			while( level < page->GetLevel() )
-				sBodyHtml +=  "<ul>" + crlf
+				sBodyHtml +=  space(level * 4) + "<ul>" + crlf
 				level += 1
 			wend
 
 			while( level > page->GetLevel() )
 				level -= 1
-				sBodyHtml +=  "</ul>"  + crlf
+				sBodyHtml +=  space(level * 4) + "</ul>"  + crlf
 			wend
 
-			sBodyHtml +=  "<li><object type=""text/sitemap"">"
+			sBodyHtml +=  space(level * 4) + "<li><object type=""text/sitemap"">"
 			sBodyHtml +=  "<param name=""Name"" value=""" + page->GetFormattedTitle() + """>"
 			if( len( page->GetName()) > 0 ) then
 				sBodyHtml +=  "<param name=""Local"" value=""" + page->GetName() + ".html"">"
@@ -262,7 +264,7 @@ namespace fb.fbdoc
 
 		while( level > 0 )
 			level -= 1
-			sBodyHtml +=  "</ul>" + crlf
+			sBodyHtml += space(level * 4) + "</ul>" + crlf
 		wend
 
 		sHtml = Templates.Get("chm_toc")
@@ -369,9 +371,16 @@ namespace fb.fbdoc
 		dim as integer h, level = 0
 		dim as CPage ptr page
 		dim as any ptr page_i
-		dim as string sBodyHtml, sHtml
+		dim as string sBodyHtml, sHtml, sDefName
 
 		function = FALSE
+
+		'' Get the first page of TOC
+		page = ctx->toclist->NewEnum( @page_i )
+		sDefName = page->GetName()
+		if( sDefName = "" ) then
+			sDefName = "doctoc"
+		end if
 
 		page = ctx->paglist->NewEnum( @page_i )
 		while( page )
@@ -388,7 +397,7 @@ namespace fb.fbdoc
 		sHtml = ReplaceSubStr( sHtml, "{$pg_chm_file}", sChmName )
 		sHtml = ReplaceSubStr( sHtml, "{$pg_toc_file}", sChmName )
 		sHtml = ReplaceSubStr( sHtml, "{$pg_idx_file}", sChmName )
-		sHtml = ReplaceSubStr( sHtml, "{$pg_def_file}", "DocToc" )
+		sHtml = ReplaceSubStr( sHtml, "{$pg_def_file}", sDefName )
 
 		sHtml = ReplaceSubStr( sHtml, "{$pg_files}", sBodyHtml )
 

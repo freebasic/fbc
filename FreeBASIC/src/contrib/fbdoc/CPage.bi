@@ -31,6 +31,7 @@ namespace fb.fbdoc
 		text as string
 		url as string
 		level as integer
+		linkclass as integer
 	end type
 
 	type CPage
@@ -39,7 +40,6 @@ namespace fb.fbdoc
 			( _
 				byval pagename as zstring ptr, _
 				byval pagetitle as zstring ptr = NULL, _
-				byval linktitle as zstring ptr = NULL, _
 				byval level as integer = 0 _
 			)
 
@@ -56,15 +56,6 @@ namespace fb.fbdoc
 			) as string
 
 		declare sub SetPageTitle _
-			( _
-				byval title as zstring ptr _
-			)
-
-		declare function GetLinkTitle _
-			( _
-			) as string
-
-		declare sub SetLinkTitle _
 			( _
 				byval title as zstring ptr _
 			)
@@ -103,7 +94,8 @@ namespace fb.fbdoc
 			( _
 				byval spagetext as zstring ptr, _
 				byval spagename as zstring ptr = NULL, _
-				byval level as integer = 0 _
+				byval level as integer = 0, _
+				byval linkclass as integer = 0 _
 			)
 
 		declare sub FreePageLinks _

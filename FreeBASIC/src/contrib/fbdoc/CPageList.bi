@@ -50,8 +50,7 @@ namespace fb.fbdoc
 		declare function AddNewPage _
 			( _
 				byval pagename as zstring ptr, _
-				byval pagetitle as zstring ptr, _
-				byval linktitle as zstring ptr, _
+				byval title as zstring ptr, _
 				byval level as integer = 0, _
 				byval bForceAdd as integer = FALSE _
 			) as CPage ptr

@@ -47,6 +47,7 @@ using fbdoc
 
 const default_wiki_url = "http://www.freebasic.net/wiki/wikka.php"
 const default_CacheDir = "cache/"
+const default_TocPage = "DocToc"
 
 
 '' --------------------------------------------------------------------------
@@ -70,6 +71,8 @@ const default_CacheDir = "cache/"
 	dim as integer bSinglePage = FALSE
 	redim as string webPageList(1 to 10)
 	dim as integer webPageCount = 0, bWebPages = FALSE
+
+	dim as string sTocPage = default_TocPage
 
 	if( len(command(1)) = 0 ) then
 		bShowHelp = TRUE
@@ -199,6 +202,11 @@ const default_CacheDir = "cache/"
 				if right(sCacheDir, 1) <> "/" then
 					sCacheDir += "/"
 				end if
+			case "-doctoc"
+				i += 1
+				if( command(i) > "" ) then
+					sTocPage = command(i)
+				end if
 			case else
 				? "Unrecognized option '" + command(i) + "'"
 				end 1
@@ -295,12 +303,7 @@ const default_CacheDir = "cache/"
 	end if
 
 	
-	'' Build up an index to all pages
 	dim as CPageList ptr paglist, toclist
-
-	'' TODO: make this an option
-	'' SinglePage = "KeyPgScreenGraphics"
-	'' SinglePage = "CptAscii"
 
 	if( webPageCount > 0 ) then
 		dim as integer i
@@ -311,12 +314,13 @@ const default_CacheDir = "cache/"
 		end 0
 	end if
 
+	'' Build up an index to all pages
 	if( len(SinglePage) > 0 ) then
 		FBDoc_BuildSinglePage( SinglePage, SinglePage, @paglist, @toclist, FALSE )
 
 	else
 
-		sDocToc = "DocToc"
+		sDocToc = sTocPage
 		sTocTitle = Lang.GetOption( "fb_toc_title", "Table of Contents" )
 
 		FBDoc_BuildTOC( sDocToc, sTocTitle, @paglist, @toclist )

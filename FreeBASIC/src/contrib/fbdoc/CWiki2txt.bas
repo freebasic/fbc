@@ -326,7 +326,7 @@ namespace fb.fbdoc
 		pagelink = lst->GetHead()
 		do while( pagelink <> NULL )
 			
-			select case pagelink->linkclass
+			select case pagelink->link.linkclass
 			case WIKI_PAGELINK_CLASS_SECTION
 				a = _MakePageHeader( pagelink->text, 1 )
 				put #h,,a

@@ -640,8 +640,8 @@ namespace fb.fbdoc
 		pagelink = lst->Insert()
 		pagelink->text = spagetext
 		pagelink->link.url = spagename
+		pagelink->link.linkclass = linkclass
 		pagelink->level = level
-		pagelink->linkclass = linkclass
 
 	end sub
 
@@ -716,12 +716,9 @@ namespace fb.fbdoc
 				end if
 			case else
 
-				''if( lcase( ctx->pagename ) = "catpgfunctindex" ) then
-
 				if( useboldlinks ) then
 					if( token->id = WIKI_TOKEN_BOLD_SECTION ) then
 						token = ctx->tokenlist->GetNext( token )
-						''_AddPageLink( ctx->pagelinklist, FormatPageTitle( token->text ), "", 0 ) 
 						_AddPageLink( ctx->pagelinklist, token->text, "", 0, WIKI_PAGELINK_CLASS_SECTION ) 
 						level = 1
 						token = ctx->tokenlist->GetNext( token )

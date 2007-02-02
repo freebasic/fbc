@@ -40,7 +40,7 @@ namespace fb.fbdoc
 
 		dim as CPage ptr page
 		dim as any ptr page_i
-		dim as string sName, sTitle1, sTitle2
+		dim as string sName, sTitle
 		dim as integer h
 		dim as string k
 
@@ -56,21 +56,9 @@ namespace fb.fbdoc
 			while( page )
 				sName = page->GetName()
 
-				sTitle1 = FormatPageTitle( page->GetPageTitle() )
-				'sTitle1 = page->GetPageTitle()
-				'k = fbdoc_FindKeyword( sTitle1 )
-				'if( len(k) > 0 ) then
-				'	sTitle1 = k
-				'end if	
-				
-				sTitle2 = FormatPageTitle( page->GetLinkTitle() )
-				'sTitle2 = page->GetLinkTitle()
-				'k = fbdoc_FindKeyword( sTitle2 )
-				'if( len(k) > 0 ) then
-				'	sTitle2 = k
-				'end if	
+				sTitle = FormatPageTitle( page->GetPageTitle() )
 
-				? #h, """"; sName; """,""";  sTitle1; """,""";  sTitle2; """"
+				? #h, """"; sName; """,""";  sTitle; """"
 				page = paglist->NextEnum( @page_i )
 			wend
 

@@ -216,7 +216,7 @@ namespace fb.fbdoc
 		
 		sTxt += Lang.ExpandString( sBodyTxt )
 
-		if( ucase( sPageName ) = "DOCTOC" ) then
+		if( lcase( sPageName ) = "doctoc" ) then
 			s = Templates.Get("fbhelp_doctoc")
 			s = Lang.ExpandString( s )
 			sTxt = ReplaceSubStr( s, "{$pg_body}", sTxt )
