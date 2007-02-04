@@ -112,7 +112,7 @@ enum
 {
 	VMI_WA_RELOC = 1 << 0, /* Relocatable window(s) supported */
 	VMI_WA_READ  = 1 << 1, /* Window is readable              */
-	WMI_WA_WRITE = 1 << 2  /* Window is writeable             */
+	VMI_WA_WRITE = 1 << 2  /* Window is writeable             */
 };
 
 
