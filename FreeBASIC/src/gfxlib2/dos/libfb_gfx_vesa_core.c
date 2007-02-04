@@ -138,7 +138,11 @@ void fb_dos_vesa_detect(void)
 			if ( (vesa_get_mode_info(mode_list[c]) == 0) &&
 			     ((fb_dos.vesa_mode_info.ModeAttributes & attribs) == attribs) && /* color graphics mode and supported */
 			     (fb_dos.vesa_mode_info.NumberOfPlanes == 1) &&
-			     ((fb_dos.vesa_mode_info.MemoryModel == VMI_MM_PACK) || (fb_dos.vesa_mode_info.MemoryModel == VMI_MM_DIR)) )
+			     ((fb_dos.vesa_mode_info.MemoryModel == VMI_MM_PACK) ||
+			      (fb_dos.vesa_mode_info.MemoryModel == VMI_MM_DIR)) &&
+				 ((fb_dos.vesa_info.vbe_version < 0x200) ||
+				  ((unsigned int)fb_dos.vesa_info.total_memory << 16 >=
+				   fb_dos.vesa_mode_info.BytesPerScanLine * fb_dos.vesa_mode_info.YResolution)) )
 			{
 				/* clobber WinFuncPtr to hold mode number */
 				fb_dos.vesa_mode_info.WinFuncPtr = mode_list[c];
@@ -156,40 +160,59 @@ int fb_dos_vesa_set_mode(int w, int h, int depth, int linear)
 {
 	int i, mode = 0;
 	int bpp;
-
-	for ( i = 0; i < fb_dos.num_vesa_modes; i++ )
+	int tries;
+	int good_bpp;
+	int success = 0;
+	
+	if (depth == 15) depth = 16;
+	if (depth == 24) depth = 32;
+	
+	for (tries = 0; tries <= 2; tries++)
 	{
-		if ( (fb_dos.vesa_modes[i].XResolution == w) && (fb_dos.vesa_modes[i].YResolution == h) )
+		for ( i = 0; i < fb_dos.num_vesa_modes; i++ )
 		{
-			bpp = fb_dos.vesa_modes[i].BitsPerPixel;
-			if ( (bpp == depth) ||
-			     (bpp == 15 && depth == 16) ||
-			     (bpp == 16 && depth == 15) ||
-			     (bpp == 24 && depth == 32) ||
-			     (bpp == 32 && depth == 24) )
+			if ( (fb_dos.vesa_modes[i].XResolution == w) && (fb_dos.vesa_modes[i].YResolution == h) )
 			{
-				if ( !linear || (fb_dos.vesa_modes[i].ModeAttributes & VMI_MA_LFB) )
+				bpp = fb_dos.vesa_modes[i].BitsPerPixel;
+				if (tries == 0)
 				{
-					memcpy(&fb_dos.vesa_mode_info, &fb_dos.vesa_modes[i], sizeof(VesaModeInfo));
-					mode = fb_dos.vesa_modes[i].WinFuncPtr;
-					break;
+					good_bpp = (bpp == depth);
+				}
+				else if (tries == 1)
+				{
+					good_bpp = (bpp == 24 && depth == 32) ||
+					           (bpp == 15 && depth == 16);
+				}
+				else if (tries == 2)
+				{
+					good_bpp = ((bpp == 24 || bpp == 32) && depth < 24) ||
+					           ((bpp == 15 || bpp == 16) && depth < 15);
+				}
+				
+				if (good_bpp)
+				{
+					if ( !linear || (fb_dos.vesa_modes[i].ModeAttributes & VMI_MA_LFB) )
+					{
+						memcpy(&fb_dos.vesa_mode_info, &fb_dos.vesa_modes[i], sizeof(VesaModeInfo));
+						mode = fb_dos.vesa_modes[i].WinFuncPtr;
+						break;
+					}
 				}
 			}
 		}
+		
+		if (!mode)
+			continue;
+		
+		fb_dos.regs.x.ax = 0x4F02;
+		fb_dos.regs.x.bx = mode;
+		if (linear) fb_dos.regs.x.bx |= 0x4000;
+		__dpmi_int(0x10, &fb_dos.regs);
+		success = (fb_dos.regs.h.ah == 0);
+		if (success) break;
 	}
 	
-	if (!mode)
-		return -1;
-	
-	fb_dos.regs.x.ax = 0x13;
-	__dpmi_int(0x10, &fb_dos.regs);
-	
-	fb_dos.regs.x.ax = 0x4F02;
-	fb_dos.regs.x.bx = mode;
-	if (linear) fb_dos.regs.x.bx |= 0x4000;
-	__dpmi_int(0x10, &fb_dos.regs);
-	
-	return (fb_dos.regs.h.ah ? -1 : 0);
+	return (success ? 0 : -1);
 }
 
 

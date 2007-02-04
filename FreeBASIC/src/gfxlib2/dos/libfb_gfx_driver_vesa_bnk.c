@@ -65,7 +65,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 {
 	int depth = MAX(8, depth_arg);
 	int is_rgb = FALSE;
-	int need_blitter = FALSE;
+	int bpp;
 	
 	fb_dos_detect();
 	fb_dos_vesa_detect();
@@ -87,31 +87,23 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		fb_dos_vesa_set_bank = fb_dos_vesa_set_bank_int;
 	
 	refresh_rate = 60; /* FIXME */
-
-	if( fb_dos.vesa_mode_info.BitsPerPixel != depth )
-	{
-		need_blitter = TRUE;
-	}
 	
-	if( (depth - 15 <= 1) && (fb_dos.vesa_mode_info.RedMaskPos == 0) )
-	{
-		is_rgb = TRUE;
-	}
+	is_rgb = (depth > 8) && (fb_dos.vesa_mode_info.RedFieldPosition == 0);
 	
-	/*
-	if( (depth >= 24) && (fb_dos.vesa_mode_info.RedMaskPos == 0) )
-	{
-		is_rgb = TRUE;
-	}
-	*/
+	if (fb_dos.vesa_mode_info.BlueFieldPosition == 10 || fb_dos.vesa_mode_info.RedFieldPosition == 10)
+		bpp = 15;
+	else if (fb_dos.vesa_mode_info.BlueFieldPosition == 11 || fb_dos.vesa_mode_info.RedFieldPosition == 11)
+		bpp = 16;
+	else
+		bpp = fb_dos.vesa_mode_info.BitsPerPixel;
 	
-	if( need_blitter || is_rgb )
+	if( depth != bpp || is_rgb )
 	{
-		blitter = fb_hGetBlitter(fb_dos.vesa_mode_info.BitsPerPixel, is_rgb);
+		blitter = fb_hGetBlitter(bpp, is_rgb);
 		if( !blitter )
 			return -1;
 		
-		buffer = malloc( h * __fb_gfx->pitch );
+		buffer = malloc( fb_dos.vesa_mode_info.YResolution * fb_dos.vesa_mode_info.BytesPerScanLine );
 		if( !buffer )
 			return -1;
 	}
@@ -156,7 +148,7 @@ static void driver_exit(void)
 	if( buffer )
 	{
 		fb_dos_unlock_data( &buffer, sizeof(buffer) );
-		fb_dos_unlock_data( buffer, __fb_gfx->h * __fb_gfx->pitch );
+		fb_dos_unlock_data( buffer, fb_dos.vesa_mode_info.YResolution * fb_dos.vesa_mode_info.BytesPerScanLine );
 		free( buffer );
 		buffer = NULL;
 	}
@@ -179,24 +171,22 @@ static void fb_dos_vesa_set_bank_int_end(void) { }
 /*:::::*/
 static void driver_update(void)
 {
-	static int curr_bank;
-	static unsigned char *memory_buffer;
-	static unsigned char *framebuffer;
-	static int framebuffer_start;
-	static int bank_size;
-	static int bank_granularity;
-	static int todo;
-	static int copy_size;
-	static int y1, y2;
+	int curr_bank = -1;
+	unsigned char *memory_buffer;
+	unsigned char *framebuffer;
+	int framebuffer_start;
+	int bank_size;
+	int bank_granularity;
+	int todo;
+	int copy_size;
+	int y1, y2;
 
-#if 0	
 	if( blitter )
 	{
-		blitter(buffer, __fb_gfx->pitch);
+		blitter(buffer, fb_dos.vesa_mode_info.BytesPerScanLine);
 		framebuffer = buffer;
 	}
 	else
-#endif
 	{
 		framebuffer = __fb_gfx->framebuffer;
 	}

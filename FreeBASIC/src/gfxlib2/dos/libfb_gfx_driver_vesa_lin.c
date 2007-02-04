@@ -51,7 +51,7 @@ GFXDRIVER fb_gfxDriverVESAlinear =
 
 
 static __dpmi_meminfo mapping = {0};
-static char *video;
+static unsigned char *video;
 static BLITTER *blitter;
 static int nearptr_enabled = FALSE;
 static int data_locked = FALSE;
@@ -61,6 +61,7 @@ static int data_locked = FALSE;
 static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
 	int depth = MAX(8, depth_arg);
+	int is_rgb, bpp;
 	
 	fb_dos_detect();
 	fb_dos_vesa_detect();
@@ -82,8 +83,17 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	fb_dos_lock_data(&video, sizeof(video));
 	fb_dos_lock_data(&blitter, sizeof(blitter));
 	data_locked = TRUE;
+
+	is_rgb = (depth > 8) && (fb_dos.vesa_mode_info.LinRedFieldPosition != 0);
 	
-	blitter = fb_hGetBlitter(fb_dos.vesa_mode_info.BitsPerPixel, FALSE); /* FIXME */
+	if (fb_dos.vesa_mode_info.LinBlueFieldPosition == 10 || fb_dos.vesa_mode_info.LinRedFieldPosition == 10)
+		bpp = 15;
+	else if (fb_dos.vesa_mode_info.LinBlueFieldPosition == 11 || fb_dos.vesa_mode_info.LinRedFieldPosition == 11)
+		bpp = 16;
+	else
+		bpp = fb_dos.vesa_mode_info.BitsPerPixel;
+	
+	blitter = fb_hGetBlitter(fb_dos.vesa_mode_info.BitsPerPixel, is_rgb); /* FIXME */
 	if (!blitter)
 		return -1;
 	
@@ -99,7 +109,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (__dpmi_physical_address_mapping(&mapping) != 0)
 		return -1;
 	
-	video = (char *)(mapping.address + __djgpp_conventional_base);
+	video = (unsigned char *)(mapping.address - __djgpp_base_address);
 	
 	return fb_dos_init(title, w, h, depth, refresh_rate, flags);
 }
@@ -134,7 +144,8 @@ static void driver_exit(void)
 /*:::::*/
 static void driver_update(void)
 {
-	blitter((unsigned char*)video, fb_dos.vesa_mode_info.BytesPerScanLine);
+	blitter(video, fb_dos.vesa_mode_info.BytesPerScanLine);
+
 }
 
 static void end_of_driver_update(void) { /* do not remove */ }

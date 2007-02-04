@@ -58,6 +58,7 @@ enum
 /* Info block for a VESA video mode */
 typedef struct VesaModeInfo
 {
+	/* mandatory for all VBE versions */
 	unsigned short ModeAttributes;
 	unsigned char  WinAAttributes;
 	unsigned char  WinBAttributes;
@@ -67,6 +68,8 @@ typedef struct VesaModeInfo
 	unsigned short WinBSegment;
 	unsigned long  WinFuncPtr;
 	unsigned short BytesPerScanLine;
+	
+	/* mandatory for VBE 1.2 and above */
 	unsigned short XResolution;
 	unsigned short YResolution;
 	unsigned char  XCharSize;
@@ -75,22 +78,42 @@ typedef struct VesaModeInfo
 	unsigned char  BitsPerPixel;
 	unsigned char  NumberOfBanks;
 	unsigned char  MemoryModel;
-	unsigned char  BankSize;
+	unsigned char  BankSize;              /* bank size in KB */
 	unsigned char  NumberOfImagePages;
 	unsigned char  Reserved_page;
+	
+	/* direct color fields (required for direct and YUV memory models) */
 	unsigned char  RedMaskSize;
-	unsigned char  RedMaskPos;
+	unsigned char  RedFieldPosition;
 	unsigned char  GreenMaskSize;
-	unsigned char  GreenMaskPos;
+	unsigned char  GreenFieldPosition;
 	unsigned char  BlueMaskSize;
-	unsigned char  BlueMaskPos;
-	unsigned char  ReservedMaskSize;
-	unsigned char  ReservedMaskPos;
+	unsigned char  BlueFieldPosition;
+	unsigned char  RsvdMaskSize;
+	unsigned char  RsvdFieldPosition;
 	unsigned char  DirectColorModeInfo;
+	
+	/* mandatory for VBE 2.0 and above */
 	unsigned long  PhysBasePtr;
-	unsigned long  OffScreenMemOffset;
-	unsigned short OffScreenMemSize;
-	unsigned char  Reserved[206];
+	unsigned long  OffScreenMemOffset;    /* reserved in VBE 3.0 */
+	unsigned short OffScreenMemSize;      /* reserved in VBE 3.0 */
+	
+	/* mandatory for VBE 3.0 and above */
+	unsigned short LinBytesPerScanLine;
+	unsigned char  BnkNumberOfImagePages;
+	unsigned char  LinNumberOfImagePages;
+	unsigned char  LinRedMaskSize;
+	unsigned char  LinRedFieldPosition;
+	unsigned char  LinGreenMaskSize;
+	unsigned char  LinGreenFieldPosition;
+	unsigned char  LinBlueMaskSize;
+	unsigned char  LinBlueFieldPosition;
+	unsigned char  LinRsvdMaskSize;
+	unsigned char  LinRsvdFieldPosition;
+	unsigned long  MaxPixelClock;
+	
+	unsigned char  Reserved[189];
+	
 } __attribute__ ((packed)) VesaModeInfo;
 
 
