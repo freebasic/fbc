@@ -154,7 +154,7 @@ Version 0.17 Beta:
 - there is no more special color value to flag default color in COLOR and gfx primitives, resulting in no more "hole" in supported colors range (lillo)
 - DirectDraw surface restoring was bugged, resulting in crashes if another DirectX-based program entered fullscreen (lillo)
 - KILL was always returning 0
-
+- DIR on DOS now only returns files/directories with the attributes specified
 
 Version 0.16 Beta:
 
