@@ -33,16 +33,16 @@ type bfd_boolean as integer
 type stat as _stat
 #endif
 
-type bfd_vma as ulong
+type bfd_vma as unsigned long
 type bfd_signed_vma as integer
-type symvalue as ulong
-type bfd_size_type as ulong
+type symvalue as unsigned long
+type bfd_size_type as unsigned long
 type flagword as uinteger
 type bfd_byte as ubyte
 
 #if defined(__BFD_216__) or defined(__FB_DOS__)
 type file_ptr as long
-type ufile_ptr as ulong
+type ufile_ptr as unsigned long
 #else
 type file_ptr as longint
 type ufile_ptr as ulongint
