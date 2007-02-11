@@ -889,17 +889,17 @@ private function processTargetOptions _
 		arg = nxt
 		nxt = listGetNext( nxt )
 
-		if( len( *arg ) = 0 ) then
+		if( len( arg[0] ) = 0 ) then
 			continue do
 		end if
 
 		if( (*arg)[0] = asc( "-" ) ) then
 
-			if( len( *arg ) = 1 ) then
+			if( len( arg[0] ) = 1 ) then
 				continue do
 			end if
 
-			if( *(strptr( *arg ) + 1) = "target" ) then
+			if( *(strptr( arg[0] ) + 1) = "target" ) then
 
 				if( nxt = NULL ) then
 					printInvalidOpt( arg )
@@ -956,7 +956,7 @@ private function checkFiles _
 
 	function = FALSE
 
-	select case hGetFileExt( *arg )
+	select case hGetFileExt( arg[0] )
 	case "bas"
 		dim as FBC_IOFILE ptr iof = listNewNode( @fbc.inoutlist )
 		iof->inf = *arg
@@ -980,7 +980,7 @@ private function checkFiles _
 		hDelArgNode( arg )
 
 	case else
-		if( fbc.vtbl.listFiles( *arg ) = FALSE ) then
+		if( fbc.vtbl.listFiles( arg[0] ) = FALSE ) then
 			return FALSE
 		end if
 
@@ -1010,7 +1010,7 @@ private function processOptions _
 		arg = nxt
 		nxt = listGetNext( nxt )
 
-		if( len( *arg ) = 0 ) then
+		if( len( arg[0] ) = 0 ) then
 			continue do
 		end if
 
@@ -1026,12 +1026,12 @@ private function processOptions _
 		else
 			dim as integer del_cnt = 1
 
-			if( len( *arg ) = 1 ) then
+			if( len( arg[0] ) = 1 ) then
 				continue do
 			end if
 
 			id = cast( FBC_OPT, hashLookUp( @fbc.opthash, _
-											strptr( *arg ) + 1 ) )
+											strptr( arg[0] ) + 1 ) )
 
 			'' not found?
 			if( id = 0 ) then
@@ -1506,7 +1506,7 @@ private sub parseCmd _
 		assert( arg <> NULL )
 
 		*arg = command( argc )
-		if( len( *arg ) = 0 ) then
+		if( len( arg[0] ) = 0 ) then
 			listDelNode( @fbc.arglist, arg )
 			exit do
 		end if
