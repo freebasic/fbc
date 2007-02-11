@@ -46,6 +46,7 @@
 #include <go32.h>
 #include <pc.h>
 #include <sys/farptr.h>
+#include <dir.h>
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -59,7 +60,12 @@
 
 #define FB_DYLIB void* /* define FB_DYLIB to keep the headers happy. */
 
-typedef int FB_DIRCTX; /* dummy to make fb.h happy */
+typedef struct _FB_DIRCTX
+{
+	int in_use;
+	int attrib;
+	struct ffblk f;
+} FB_DIRCTX;
 
 typedef long fb_off_t;
 

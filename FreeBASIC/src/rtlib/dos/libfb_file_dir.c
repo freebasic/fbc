@@ -33,99 +33,111 @@
  * libfb_file_dir.c -- dos dir$ implementation
  *
  * chng: jan/2005 written [DrV]
+ *       feb/2007 fixed to return only files with the proper attributes and use thread context
  *
  */
 
-#include <dir.h>
 #include "fb.h"
 
-
-typedef struct DIR_DATA
-{
-	int in_use;
-	int attrib;
-	struct ffblk f;
-} DIR_DATA;
-
-
-static DIR_DATA dir_data = { 0 };
-
+#define FB_ATTRIB_MASK ~0xFFFFFF00
 
 /*:::::*/
-static void close_dir ( void )
+static char *find_next ( int *out_attrib )
 {
-	dir_data.in_use = FALSE;
-}
-
-
-/*:::::*/
-static char *find_next ( int *attrib )
-{
-
-	if (findnext(&dir_data.f) == 0)
-	{
-		*attrib = dir_data.f.ff_attrib;
-		return dir_data.f.ff_name;
-	}
-		
-	close_dir();
+	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
+	char *name = NULL;
 	
-	return NULL;
+	do
+	{
+		if( findnext( &ctx->f ) == 0 )
+		{
+			name = ctx->f.ff_name;
+		}
+		else
+		{
+			name = NULL;
+			break;
+		}
+	}
+	while( ctx->f.ff_attrib & ~ctx->attrib );
+	
+	*out_attrib = ctx->f.ff_attrib & FB_ATTRIB_MASK;
+	
+	return name;
 }
 
 
 /*:::::*/
 FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 {
-	FBSTRING *res;
-	int	len, tmp_attrib;
-	char *name;
-
-	if( out_attrib == NULL ) 
-		out_attrib = &tmp_attrib;
-
+	FBSTRING  *res;
+	int       len, out_attrib_fake;
+	char      *name = NULL;
+	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
+	
+	if ( !out_attrib )
+		out_attrib = &out_attrib_fake;
+	
 	len = FB_STRSIZE( filespec );
-	name = NULL;
-
-	if( len > 0 )
+	
+	if( len > 0 ) /* filespec specified (return first result) */
 	{
-		/* findfirst */
-
-		if( dir_data.in_use )
-			close_dir( );
+		ctx->attrib = attrib | 0xFFFFFF00;
 		
-		if (findfirst(filespec->data, &dir_data.f, attrib) == 0) {
-			name = dir_data.f.ff_name;
-			*out_attrib = dir_data.f.ff_attrib;
-			dir_data.in_use = TRUE;
+		/* archive bit not set? set the dir bit at least.. */
+		if( (attrib & 0x10) == 0 )
+			ctx->attrib |= 0x20;
+		
+		if( findfirst( filespec->data, &ctx->f, ctx->attrib ) == 0 )
+		{	
+			if( ctx->f.ff_attrib & ~ctx->attrib )
+			{
+				name = find_next( out_attrib );
+			}
+			else
+			{
+				*out_attrib = ctx->f.ff_attrib & FB_ATTRIB_MASK;
+				name = ctx->f.ff_name;
+			}
+		}
+		
+		if( name )
+		{
+			ctx->in_use = TRUE;
+			ctx->attrib = attrib;
 		}
 	}
-	else {
-
-		/* findnext */
-		if( dir_data.in_use )
+	else /* filespec not specified (return next result) */
+	{
+		if( ctx->in_use )
+		{
 			name = find_next( out_attrib );
+		}
 	}
-
+	
 	/* store filename if found */
 	if( name )
 	{
-        len = strlen( name );
+		ctx->in_use = TRUE;
+		
+		len = strlen( name );
 		res = fb_hStrAllocTemp( NULL, len );
 		if( res )
 		{
 			fb_hStrCopy( res->data, name, len );
-
 		}
 		else
+		{
 			res = &__fb_ctx.null_desc;
+		}
 	}
 	else
 	{
+		ctx->in_use = FALSE;
 		res = &__fb_ctx.null_desc;
 		*out_attrib = 0;
 	}
-
+	
 	fb_hStrDelTemp( filespec );
 
 	return res;
