@@ -240,7 +240,7 @@ int fb_ConsoleGetkey( void )
 		return fgetc(stdin);
 	
 	while ((k = fb_hGetCh(TRUE)) < 0)
-        ;
+        fb_Sleep( -1 );
 
     if( k & 0x100 )
         return FB_MAKE_EXT_KEY( k & 0xFF );
