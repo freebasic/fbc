@@ -32,6 +32,45 @@
 	(hVarDeclEx( attrib, dopreserve, token, FALSE ) <> NULL)
 
 '':::::
+function hSymbolType _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as integer, _
+		byref ptrcnt as integer _
+	) as integer
+    
+    function = TRUE
+    
+	'' parse the symbol type (INTEGER, STRING, etc...)
+	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: fake a type
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
+			lgt = FB_INTEGERSIZE
+			ptrcnt = 0
+		end if
+	end if
+	
+	'' ANY?
+	if( dtype = FB_DATATYPE_VOID ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: fake a type
+			dtype += FB_DATATYPE_POINTER
+			subtype = NULL
+			lgt = FB_POINTERSIZE
+			ptrcnt = 1
+		end if
+	end if
+
+end function
+
+'':::::
 private function hCheckScope _
 	( _
 	) as integer
@@ -1069,44 +1108,6 @@ private function hFlushInitializer _
 
 end function
 
-'':::::
-private function hSymbolType _
-	( _
-		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer, _
-		byref ptrcnt as integer _
-	) as integer
-    
-    function = TRUE
-    
-	'' parse the symbol type (INTEGER, STRING, etc...)
-	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-			return FALSE
-		else
-			'' error recovery: fake a type
-			dtype = FB_DATATYPE_INTEGER
-			subtype = NULL
-			lgt = FB_INTEGERSIZE
-			ptrcnt = 0
-		end if
-	end if
-	
-	'' ANY?
-	if( dtype = FB_DATATYPE_VOID ) then
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			return FALSE
-		else
-			'' error recovery: fake a type
-			dtype += FB_DATATYPE_POINTER
-			subtype = NULL
-			lgt = FB_POINTERSIZE
-			ptrcnt = 1
-		end if
-	end if
-
-end function
 '':::::
 ''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (',' SymbolDef)* .

@@ -46,13 +46,13 @@ function cOperatorNew _
 	dim as ASTNODE ptr elmts_expr = NULL
 
 	'' DataType
-	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    		return NULL
-    	else
-    		'' error recovery: fake an expr
-    		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    	end if
+	if( hSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+		'' fake expr
+   		return NULL
+   	else
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
 	end if
 
 	'' check for invalid types

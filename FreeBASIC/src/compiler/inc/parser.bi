@@ -1092,6 +1092,14 @@ declare function hVarDeclEx _
         byval is_fordecl as integer _
 	) as FBSYMBOL ptr
 
+declare function hSymbolType _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as integer, _
+		byref ptrcnt as integer _
+	) as integer
+    
 
 
 ''
