@@ -93,6 +93,7 @@ static void directx_exit(void);
  */
 typedef HRESULT (WINAPI *DIRECTDRAWCREATE)(GUID FAR *lpGUID,LPDIRECTDRAW FAR *lplpDD,IUnknown FAR *pUnkOuter);
 typedef HRESULT (WINAPI *DIRECTINPUTCREATE)(HINSTANCE hinst,DWORD dwVersion,LPDIRECTINPUT *lplpDI,LPUNKNOWN pUnkOuter);
+typedef HRESULT (WINAPI *DIRECTDRAWENUMERATEEX)(LPDDENUMCALLBACKEX lpCallback,LPVOID lpContext,DWORD dwFlags);
 
 /* Unfortunately c_dfDIKeyboard is a required global variable
  * defined in import library LIBDINPUT.A, and as we're not
@@ -125,6 +126,9 @@ static void restore_surfaces(void)
 			IDirectDrawSurface_Restore(lpDDS_back);
 		result = IDirectDrawSurface_Restore(lpDDS);
 		if (result == DDERR_WRONGMODE) {
+	
+			printf("Wrongmode!");
+
 			/* it sucks, we have to recreate all DD objects */
 			directx_exit();
 			while (directx_init()) {
@@ -187,11 +191,24 @@ static int calc_comp_height( int h )
 }
 
 /*:::::*/
+static BOOL WINAPI ddenum_callback(GUID FAR *lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext, HMONITOR hm)
+{
+	if (hm == fb_win32.monitor) {
+		*((GUID *)lpContext) = *lpGUID;
+		return 1;
+	} else
+		return 0;
+}
+
+/*:::::*/
 static int directx_init(void)
 {
 	LPDIRECTDRAW lpDD1 = NULL;
 	LPDIRECTDRAWCLIPPER lpDDC = NULL;
+	GUID *ddGUID = NULL;
+	GUID monitor_guid;
 	DIRECTDRAWCREATE DirectDrawCreate;
+	DIRECTDRAWENUMERATEEX DirectDrawEnumerateEx;
 	DIRECTINPUTCREATE DirectInputCreate;
 	DDSURFACEDESC desc;
 	DDPIXELFORMAT format;
@@ -214,9 +231,15 @@ static int directx_init(void)
 		return -1;
 
 	DirectDrawCreate = (DIRECTDRAWCREATE)GetProcAddress(dd_library, "DirectDrawCreate");
+	DirectDrawEnumerateEx = (DIRECTDRAWENUMERATEEX)GetProcAddress(dd_library, "DirectDrawEnumerateExA");
 	DirectInputCreate = (DIRECTINPUTCREATE)GetProcAddress(di_library, "DirectInputCreateA");
+	
+	if (!(fb_win32.flags & DRIVER_FULLSCREEN) || !DirectDrawEnumerateEx || (DirectDrawEnumerateEx(ddenum_callback, &monitor_guid, DDENUM_ATTACHEDSECONDARYDEVICES) != DD_OK))
+		ddGUID = NULL;
+	else
+		ddGUID = &monitor_guid;
 
-	if ((!DirectDrawCreate) || (DirectDrawCreate(NULL, &lpDD1, NULL) != DD_OK))
+	if ((!DirectDrawCreate) || (DirectDrawCreate(ddGUID, &lpDD1, NULL) != DD_OK))
 		return -1;
 	res = IDirectDraw_QueryInterface(lpDD1, &IID_IDirectDraw2, (LPVOID)&lpDD);
 	IDirectDraw_Release(lpDD1);

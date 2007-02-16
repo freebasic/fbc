@@ -34,13 +34,18 @@ WIN32DRIVER fb_win32;
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
 #ifndef TARGET_CYGWIN
-    &fb_gfxDriverDirectDraw,
+	&fb_gfxDriverDirectDraw,
 #endif
 	&fb_gfxDriverGDI,
 	&fb_gfxDriverOpenGL,
 	NULL
 };
 
+#define MONITOR_DEFAULTTONEAREST 0x00000002
+
+typedef HMONITOR (WINAPI *MONITORFROMWINDOW)(HWND hwnd, DWORD dwFlags);
+
+static MONITORFROMWINDOW pMonitorFromWindow = NULL;
 
 static CRITICAL_SECTION update_lock;
 static HANDLE handle;
@@ -54,20 +59,26 @@ static UINT WM_MOUSEENTER;
 /*:::::*/
 static void ToggleFullScreen( void )
 {
-    if (fb_win32.flags & DRIVER_NO_SWITCH)
-        return;
-    
-    fb_win32.exit();
-    fb_win32.flags ^= DRIVER_FULLSCREEN;
-    if (fb_win32.init()) {
-        fb_win32.exit();
-        fb_win32.flags ^= DRIVER_FULLSCREEN;
-        fb_win32.init();
-    }
-    fb_hRestorePalette();
-    fb_hMemSet(__fb_gfx->dirty, TRUE, fb_win32.h);
-    fb_win32.is_active = TRUE;
-    has_focus = FALSE;
+	if (fb_win32.flags & DRIVER_NO_SWITCH)
+		return;
+	if (!pMonitorFromWindow) {
+		HMODULE user32_library = GetModuleHandle("USER32");
+		pMonitorFromWindow = (MONITORFROMWINDOW)GetProcAddress(user32_library, "MonitorFromWindow");
+	}
+	
+	fb_win32.monitor = pMonitorFromWindow ? pMonitorFromWindow(fb_win32.wnd, MONITOR_DEFAULTTONEAREST) : NULL;
+	
+	fb_win32.exit();
+	fb_win32.flags ^= DRIVER_FULLSCREEN;
+	if (fb_win32.init()) {
+		fb_win32.exit();
+		fb_win32.flags ^= DRIVER_FULLSCREEN;
+		fb_win32.init();
+	}
+	fb_hRestorePalette();
+	fb_hMemSet(__fb_gfx->dirty, TRUE, fb_win32.h);
+	fb_win32.is_active = TRUE;
+	has_focus = FALSE;
 }
 
 

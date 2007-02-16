@@ -45,6 +45,7 @@ typedef struct WIN32DRIVER
 	HWND wnd;
 	PALETTEENTRY palette[256];
 	BLITTER *blitter;
+	HMONITOR monitor;
 	int is_running, is_palette_changed, is_active;
 	int w, h, depth, flags, refresh_rate;
 	char *window_title;
