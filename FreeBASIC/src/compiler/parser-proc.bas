@@ -826,7 +826,7 @@ private function hCheckOpOvlParams _
 		byval options as FB_PROCOPT _
 	) as integer
 
-    dim as integer is_method = symbIsMethod( proc )
+    dim as integer is_method = symbIsMethod( proc ), is_for = ( op = AST_OP_FOR )
 
 #macro hCheckParam( proc, param, num )
 	'' vararg?
@@ -856,19 +856,27 @@ private function hCheckOpOvlParams _
 	case AST_NODECLASS_ASSIGN, AST_NODECLASS_MEM
 		params = 1
 
-    '' used by FOR, STEP and NEXT only
+    '' self only if FOR, NEXT
     case AST_NODECLASS_COMP
-    	params = iif( astGetOpIsSelf( op ), 1, 2 )
+   		params = iif( astGetOpIsSelf( op ), 1, 2 )
 
     '' bop..
     case else
     	params = iif( astGetOpIsSelf( op ), 1, 2 )
     end select
     
-    if( symbGetProcParams( proc ) - iif( is_method, 1, 0 ) <> params ) then
-    	errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
-    	exit function
-    end if
+    if( is_for ) then
+    	dim as integer real_params = symbGetProcParams( proc ) - iif( is_method, 1, 0 )
+    	if( (real_params < 1) or (real_params > 2) ) then
+	    	errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
+	    	exit function
+    	end if
+    else
+	    if( symbGetProcParams( proc ) - iif( is_method, 1, 0 ) <> params ) then
+	    	errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
+	    	exit function
+	    end if
+	end if
 
     '' 2nd) check method-only ops
     select case as const astGetOpClass( op )
@@ -1117,10 +1125,17 @@ private function hCheckOpOvlParams _
     case AST_NODECLASS_COMP
 
 		if( astGetOpIsSelf( op ) ) then
-   		'' it must return an integer (if NEXT) or void
-	   		if( symbGetType( proc ) <> iif( op = AST_OP_NEXT, _
-	   										FB_DATATYPE_INTEGER, _
-	   										FB_DATATYPE_VOID ) ) then
+   		'' it must return an integer (if FOR or NEXT) or void  
+   			dim as integer valid_op = TRUE
+   			select case as const op
+			case AST_OP_FOR, AST_OP_NEXT
+				valid_op = ( symbGetType( proc ) = FB_DATATYPE_INTEGER )
+
+			case else
+				valid_op = ( symbGetType( proc ) = FB_DATATYPE_VOID )
+   			end select
+   					
+	   		if( valid_op = FALSE ) then
 	   			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 	   			exit function
 	   		end if
@@ -1152,33 +1167,42 @@ function cOperatorHeader _
 	) as FBSYMBOL ptr
 
     static as zstring * FB_MAXNAMELEN+1 aliasid, libname
-    dim as integer is_extern = any
+    dim as integer is_extern = any, first_def = FALSE
     dim as FBSYMBOL ptr proc = any, parent = any
 
 	function = NULL
 
 	is_nested = FALSE
 	is_extern = FALSE
-
+    
+    '' operators are always overloaded
 	attrib or= FB_SYMBATTRIB_OPERATOR or FB_SYMBATTRIB_OVERLOADED
 
-	'' parent
+	'' parent? This happens with declares that occur
+	'' in a type body, the 'type' is the namespace
 	if( (options and FB_PROCOPT_HASPARENT) <> 0 ) then
 		parent = symbGetCurrentNamespc( )
 
+	'' not inside of an explicit block, this is like:
+	'' operator foo.+, 'foo' is parsed, and returned
 	else
 		parent = cParentId( FB_IDOPT_ISOPERATOR or _
 							FB_IDOPT_ISDECL or _
 							FB_IDOPT_SHOWERROR or _
 							FB_IDOPT_ALLOWSTRUCT )
 
+		'' no explicit parent?
 		if( parent = NULL ) then
+			
+			'' this is okay, as in globals; 'operator +', but
+			'' if there was a parsing error, we return
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
-
+        
+        '' explicit parent
 		else
-			'' ns used in a prototype?
+			'' namespace used in a prototype?
 			if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
 				if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
 					exit function
@@ -1201,14 +1225,30 @@ function cOperatorHeader _
 		end if
     end if
     
-    '' check if methods have needed parents
     select case as const op
         
         '' self ops?
 		case AST_OP_ASSIGN to AST_OP_CAST
+		
+			'' no parent?
 			if( parent = NULL ) then
-				'' error recovery: fake an op
+				'' fake it...
 				op = AST_OP_ADD
+				
+			else
+				'' check if operator FOR or NEXT have been already defined
+			    select case as const op
+				case AST_OP_FOR
+
+				    '' check if op was overloaded already
+				    dim as FBSYMBOL ptr sym = any
+				    sym = symbGetCompOpOvlHead( parent, op )
+					if( sym = NULL ) then
+						first_def = TRUE
+					end if
+					
+				end select
+
 			end if
 			
 	end select
@@ -1308,11 +1348,25 @@ function cOperatorHeader _
     	if( symbGetProcParams( proc ) = 1 ) then
     		op = AST_OP_PLUS
     	end if
-
+    
+    '' '*' with one param is actually a deref
     case AST_OP_MUL
     	if( symbGetProcParams( proc ) = 1 ) then
     		op = AST_OP_DEREF
     	end if
+
+    '' explicit step?
+	case AST_OP_FOR
+	    if( symbGetProcParams( proc ) = 3 ) then
+	    	symbGetProcHasStep( proc ) = TRUE
+	    else
+	    	if( first_def = FALSE ) then
+			    if( symbGetProcParams( proc ) = 2 ) then
+			    	symbGetProcHasStep( proc ) = TRUE
+			    end if
+	    	end if
+		end if
+    	
     end select
 
     '' self? (but type casting)

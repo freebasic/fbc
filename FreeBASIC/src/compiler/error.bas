@@ -340,7 +340,7 @@ private sub hPrintErrMsg _
 		print ") ";
 	end if
 
-	print "error";
+	print "error"; '*cast(byte ptr,0)
 
 	if( errnum >= 0 ) then
 		print " " & errnum & ": " & *msg;

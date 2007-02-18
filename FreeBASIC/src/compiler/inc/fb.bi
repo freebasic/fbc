@@ -539,4 +539,8 @@ declare function fbObjInfoReadLib _
 
 #define fbPdCheckIsSet( opt ) ((env.clopt.pdcheckopt and (opt)) <> 0)
 
+''
+'' new implementation
+''
+
 #endif '' __FB_BI__

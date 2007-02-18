@@ -70,6 +70,7 @@ type FB_CMPSTMT_FOR
 	cmplabel		as FBSYMBOL ptr
 	endlabel		as FBSYMBOL ptr
 	last			as FB_CMPSTMTSTK_ ptr
+	explicit_step   as integer
 end type
 
 type FB_CMPSTMT_IF

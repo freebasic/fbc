@@ -455,6 +455,7 @@ type FBS_PROC
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
 	ext				as FB_PROCEXT ptr           '' extra fields, not used with prototypes
+	has_step        as integer                  '' used for operator FOR, NEXT
 end type
 
 '' scope
@@ -2156,6 +2157,8 @@ declare sub symbHashListRemoveNamespace _
 #define symbGetLabelStmt(s) s->lbl.stmtnum
 
 #define symbGetProcParams(f) f->proc.params
+
+#define symbGetProcHasStep(f) f->proc.has_step
 
 #define symbGetProcParamsLen(f) f->proc.lgt
 
