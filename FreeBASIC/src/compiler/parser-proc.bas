@@ -1121,11 +1121,10 @@ private function hCheckOpOvlParams _
    			end if
    		end select
 
-    '' FOR, STEP or NEXT?
     case AST_NODECLASS_COMP
 
 		if( astGetOpIsSelf( op ) ) then
-   		'' it must return an integer (if FOR or NEXT) or void  
+	   		'' it must return an integer (if FOR or NEXT) or void  
    			dim as integer valid_op = TRUE
    			select case as const op
 			case AST_OP_FOR, AST_OP_NEXT
