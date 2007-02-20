@@ -1,5 +1,5 @@
 body {
-  margin: 0pt;
+	margin: 0pt;
 	font-color: #000000;
 	font-family: Arial, sans-serif, verdana;	
 	font-size: 10pt;
@@ -7,13 +7,13 @@ body {
 }
 
 table { 
-  font-family: Arial, sans-serif, verdana; 
-  font-size: 10pt;
+	font-family: Arial, sans-serif, verdana; 
+	font-size: 10pt;
 }
 
 div { 
-  font-family: Arial, sans-serif, verdana; 
-  font-size: 10pt;
+	font-family: Arial, sans-serif, verdana; 
+	font-size: 10pt;
 }
 
 a {
@@ -29,7 +29,8 @@ a:hover {
 
 ul { 
 	list-style: square; 
-	margin-top: 4pt;
+	margin-top: 0;
+	margin-bottom: 0;
 }
 	
 li {
@@ -38,49 +39,49 @@ li {
 
 hr { 
 	border: 0;
-  height: 1px;
+	height: 1px;
 }
 
 #fb_tab { 
-  padding: 8pt 12pt 8pt 12pt;
-  background: #efefdf; 
-  color: #aa0000; 
-  border-bottom: 1px solid #8f8f8f; 
-  width: auto;
-  height: 20pt;
+	padding: 8pt 12pt 8pt 12pt;
+	background: #efefdf; 
+	color: #aa0000; 
+	border-bottom: 1px solid #8f8f8f; 
+	width: auto;
+	height: 20pt;
 } 
 
 #fb_tab_l, #fb_tab_r { 
-  font-weight: bold; 
-  font-size: 12pt; 
-  vertical-align: middle; 
+	font-weight: bold; 
+	font-size: 12pt; 
+	vertical-align: middle; 
 } 
 
 #fb_tab_l { 
-  text-align: left; 
-  float: left; 
+	text-align: left; 
+	float: left; 
 } 
 
 #fb_tab_r { 
-  text-align: right; 
-  float: right; 
+	text-align: right; 
+	float: right; 
 } 
 
 #fb_body_wrapper {
-  margin: 0;
-  padding: 0;
-  width: auto;
+	margin: 0;
+	padding: 0;
+	width: auto;
 }
 
 #fb_pg_body {
-  padding: 8pt 12pt 8pt 12pt; 
-  width: 100%;
-  float: left;
+	padding: 8pt 12pt 8pt 12pt; 
+	width: 100%;
+	float: left;
 }
 
 .fb_sect_title, .fb_header {
 	padding-top: 4pt;
-  margin-bottom: -10pt;
+	margin-bottom: -10pt;
 	font-weight: bold;	
 	text-decoration: underline;
 }
@@ -89,24 +90,35 @@ hr {
 	padding-bottom: 4pt;
 	margin-left: 16pt;
 	text-align: left;
-  width: auto;
+	width: auto;
 }
 
 .fb_sect_cont ul {
 	margin-top: 0;
+	margin-bottom: 0;
 	margin-left: 10pt;
 }
 
+.fb_indent {
+	padding-top: 0pt;
+	padding-bottom: 0pt;
+	padding-left: 0pt;
+	margin-top: 0pt;
+	margin-bottom: 0pt;
+	margin-left: 10pt;
+	width: auto;
+}
+
 #fb_pg_wrapper {
-  margin: 0;
-  padding: 0;
-  width: auto;
-  float: left;
+	margin: 0;
+	padding: 0;
+	width: auto;
+	float: left;
 }
 
 .fb_box {
-  width: 100%;
-	padding: 0px;
+	width: 100%;
+	padding: 0pt;
 	border: 1px solid #8f8f8f;
 	background: #efefdf;	
 }
@@ -119,16 +131,16 @@ hr {
 }
 
 .fb_table {
-  margin: 8pt 14pt 8pt -1px;
+	margin: 8pt 14pt 8pt -1px;
 }
 
 .fb_table td {
-  width: auto;
+	width: auto;
 	font-size: 9pt;
 	border: solid 1px #8f8f8f;
 	background: #efefdf;
-  padding: 2pt 2pt 2pt 2pt;
-  margin: 0pt 0pt 0pt 0pt;
+	padding: 2pt 2pt 2pt 2pt;
+	margin: 0pt 0pt 0pt 0pt;
 }
 
 
@@ -161,7 +173,7 @@ hr {
 }
 
 tt .qbasic {
-  font-family: "Couier New", courier, monospace; 
+	font-family: "Couier New", courier, monospace; 
 }  
 
 .qbasic .com {color: #606060;}
