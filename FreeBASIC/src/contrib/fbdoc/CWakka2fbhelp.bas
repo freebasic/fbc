@@ -300,11 +300,9 @@ namespace fb.fbdoc
 		if( ctx->tagFlags(WIKI_TAG_STRIKE) and 1 ) then
 			s or = 16
 		end if
-		if( ctx->tagFlags(WIKI_TAG_STRIKE) and 1 ) then
-			s or = 32
-		end if
 
 		if( s <> 0 ) then 
+			'' TODO: maybe add some other colors?
 			return 1
 		end if
 

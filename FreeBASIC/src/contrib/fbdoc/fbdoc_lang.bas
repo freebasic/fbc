@@ -64,7 +64,7 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
-	static function Lang.LoadOptions _
+	function Lang.LoadOptions _
 		( _
 			byval sFileName as zstring ptr, _
 			byval bNoReset as integer _

@@ -94,6 +94,8 @@ namespace fb.fbdoc
 		as CFbCode ptr fbcode
 		as integer nlcnt
 		as integer skipnl
+		as integer newindent
+		as integer indent
 
 	end type
 
@@ -152,6 +154,8 @@ namespace fb.fbdoc
 		ctx->fbcode = new CFbCode
 		ctx->nlcnt = 0
 		ctx->skipnl = 0
+		ctx->newindent = 0
+		ctx->indent = 0
 
 		if( _AllocRe( ctx ) = FALSE ) then
 			_FreeRe( ctx )
@@ -327,6 +331,11 @@ namespace fb.fbdoc
 		while( ctx->tagFlags(WIKI_TAG_LEVEL) > 0 )
 			ctx->tagFlags(WIKI_TAG_LEVEL) -= 1
 			text += "</ul>"
+		wend
+
+		while( ctx->indent > 0 )
+			ctx->indent -= 1
+			text += "</div>"
 		wend
 
 		if( ctx->tagFlags(WIKI_TAG_BOXLEFT) and 1 ) then
@@ -554,10 +563,26 @@ namespace fb.fbdoc
 				return res
 			end if
 
-		case "section":			
+		case "section":
+			''if( lcase(left( *ctx->page, 5 )) = "propg" ) then
+			if( ctx->indentbase = 1 ) then
+				res += _closeTags( ctx, res )
+				ctx->tagFlags(WIKI_TAG_SECTION) = 1
+				return res + "<div class=""fb_sect_title"">" + strValue +  _
+							"</div><div class=""fb_sect_cont"">"
+			end if
+
 			return res + "<b><u>" + strValue + "</u></b>"
 
 		case "subsect":			
+			''if( lcase(left( *ctx->page, 5 )) = "propg" ) then
+			if( ctx->indentbase = 1 ) then
+				res += _closeTags( ctx, res )
+				ctx->tagFlags(WIKI_TAG_SECTION) = 1
+				return res + "<div class=""fb_sect_title"">" + strValue +  _
+							"</div><div class=""fb_sect_cont"">"
+			end if
+
 			return res + "<b>" + strValue + "</b>"
 
 		case "category":
@@ -680,6 +705,7 @@ namespace fb.fbdoc
 		return text
 
 	end function
+
 
 	'':::::
 	private function _actionGenTable _
@@ -920,32 +946,66 @@ namespace fb.fbdoc
 
 		res = ""
 
-		if( token->id = WIKI_TOKEN_NEWLINE ) then
-			
+		select case as const token->id
+		case WIKI_TOKEN_NEWLINE
 			ctx->nlcnt += 1
 
 			if( ctx->tagFlags(WIKI_TAG_LEVEL) > 0 ) then
-				if( ctx->nlcnt >= 2 ) then
+				'' We are in a list item
+
+				'' !!! Change to "1" to ignore NL after list
+				if( ctx->nlcnt > 0 ) then
 					while( ctx->tagFlags(WIKI_TAG_LEVEL) > 0 )
 						ctx->tagFlags(WIKI_TAG_LEVEL) -= 1
 						res += "</ul>" + nl
 					wend
-					ctx->nlcnt = 0
-					ctx->skipnl = false
 				end if
 
-			elseif( ctx->skipnl = false ) then
-				if( ctx->nlcnt < 3 ) then
-					res += "<br />" + nl
-				else
-					ctx->skipnl = true
+			else
+				if( ctx->skipnl = false ) then
+					if( ctx->nlcnt < 3 ) then
+						res += "<br />" + nl
+					end if
 				end if
-
+	
 			end if
 
+			ctx->newindent = 0
+	
 			return res
 
-		end if
+		case WIKI_TOKEN_INDENT
+			if( ctx->nlcnt > 0 ) then
+				ctx->newindent = (token->indent.level - ctx->indentbase)
+				if( ctx->newindent < 0 ) then
+					ctx->newindent = 0
+				end if
+				return res
+			end if
+
+		case WIKI_TOKEN_LIST
+			ctx->newindent = 0
+
+		case else
+			if( ctx->nlcnt > 0 ) then
+				if( ctx->tagFlags(WIKI_TAG_LEVEL) > 0 ) then
+					while( ctx->tagFlags(WIKI_TAG_LEVEL) > 0 )
+						ctx->tagFlags(WIKI_TAG_LEVEL) -= 1
+						res += "</ul>" + nl
+					wend
+				end if
+			end if
+
+		end select
+
+		while( ctx->indent < ctx->newindent )
+			ctx->indent += 1
+			res += "<div class=""fb_indent"">"
+		wend
+		while( ctx->indent > ctx->newindent )
+			ctx->indent -= 1
+			res += "</div>"
+		wend
 
 		ctx->nlcnt = 0
 		ctx->skipnl = false
@@ -962,49 +1022,65 @@ namespace fb.fbdoc
 			return ""
 		
 		case WIKI_TOKEN_LT
-			return "&lt;"
+			res += "&lt;"
+			return res
 		
 		case WIKI_TOKEN_GT
-			return "&gt;"
+			res += "&gt;"
+			return res
 		
 		case WIKI_TOKEN_KBD
 			ctx->tagFlags(WIKI_TAG_KEYS) += 1
-			return( iif(ctx->tagFlags(WIKI_TAG_KEYS) and 1, "<kbd " + cssclass + ">", "</kbd>"))
+			res += iif(ctx->tagFlags(WIKI_TAG_KEYS) and 1, "<kbd " + cssclass + ">", "</kbd>")
+			return res
 		
-		case WIKI_TOKEN_BOLD, WIKI_TOKEN_BOLD_SECTION
+		case WIKI_TOKEN_BOLD
 			ctx->tagFlags(WIKI_TAG_BOLD) += 1
-			return( iif(ctx->tagFlags(WIKI_TAG_BOLD) and 1, "<b>", "</b>"))
+			res += iif(ctx->tagFlags(WIKI_TAG_BOLD) and 1, "<b>", "</b>")
+			return res
+
+		case WIKI_TOKEN_BOLD_SECTION
+			ctx->tagFlags(WIKI_TAG_BOLD) += 1
+			res += iif(ctx->tagFlags(WIKI_TAG_BOLD) and 1, "<b>", "</b>")
+			return res
 		
 		case WIKI_TOKEN_ITALIC
 			ctx->tagFlags(WIKI_TAG_ITALIC) += 1
-			return( iif(ctx->tagFlags(WIKI_TAG_ITALIC) and 1, "<i>", "</i>"))
+			res += iif(ctx->tagFlags(WIKI_TAG_ITALIC) and 1, "<i>", "</i>")
+			return res
 		
 		case WIKI_TOKEN_UNDERLINE
 			ctx->tagFlags(WIKI_TAG_UNDERLINE) += 1
-			return( iif(ctx->tagFlags(WIKI_TAG_UNDERLINE) and 1, "<u>", "</u>"))
+			res += iif(ctx->tagFlags(WIKI_TAG_UNDERLINE) and 1, "<u>", "</u>")
+			return res
 
 		case WIKI_TOKEN_MONOSPACE:
 			ctx->tagFlags(WIKI_TAG_MONOSPACE) += 1
-			return( iif(ctx->tagFlags(WIKI_TAG_MONOSPACE) and 1, "<tt>", "</tt>"))
+			res += iif(ctx->tagFlags(WIKI_TAG_MONOSPACE) and 1, "<tt>", "</tt>")
+			return res
 
 		case WIKI_TOKEN_NOTES
 			ctx->tagFlags(WIKI_TAG_NOTES) += 1
-			return( iif(ctx->tagFlags(WIKI_TAG_NOTES) and 1, "<span " + cssclass + ">", "</span>"))
+			res += iif(ctx->tagFlags(WIKI_TAG_NOTES) and 1, "<span " + cssclass + ">", "</span>")
+			return res
 
 		case WIKI_TOKEN_STRIKE:
 			ctx->tagFlags(WIKI_TAG_STRIKE) += 1
-			return( iif(ctx->tagFlags(WIKI_TAG_STRIKE) and 1, "<strike>", "</strike>"))
+			res += iif(ctx->tagFlags(WIKI_TAG_STRIKE) and 1, "<strike>", "</strike>")
+			return res
 
 		case WIKI_TOKEN_CENTER:
 			ctx->tagFlags(WIKI_TAG_CENTER) += 1
-			return( iif(ctx->tagFlags(WIKI_TAG_CENTER) and 1, "<div style=""text-align: center;"">", "</div>"))
+			res += iif(ctx->tagFlags(WIKI_TAG_CENTER) and 1, "<div style=""text-align: center;"">", "</div>")
+			return res
 
 		case WIKI_TOKEN_LINK:
-			return _linkToHtml( ctx, token->link.url, token->text )
+			res += _linkToHtml( ctx, token->link.url, token->text )
+			return res
 
 		case WIKI_TOKEN_LIST:
-			ctx->skipnl = true
-			return _listToHtml( ctx, token->indent.level )
+			res += _listToHtml( ctx, token->indent.level )
+			return res
 
 		case WIKI_TOKEN_TEXT, WIKI_TOKEN_RAW:
 			if( (ctx->tagFlags(WIKI_TAG_BOLD) and 1) _
@@ -1012,77 +1088,88 @@ namespace fb.fbdoc
 					dim k as string
 					k = fbdoc_FindKeyword( token->text )
 					if( len(k) > 0 ) then
-						return k
+						res += k
+						return res
 					end if
 			end if
-			return token->text
+			res += token->text
+			return res
 
 		case WIKI_TOKEN_ACTION:
-			return _actionToHtml( ctx, token->action.name, @token->action )
+			res += _actionToHtml( ctx, token->action.name, @token->action )
+			return res
 
 		end select
 		
+		res += _closeList( ctx )
 		ctx->skipnl = TRUE
 		
-		res = _closeList( ctx )
-		
-		select case ( token->id)
+		select case ( token->id )
 		case WIKI_TOKEN_FORCENL:
-			return res + "<br />"
+			res += "<br />"
+			return res
 			
 		case WIKI_TOKEN_HORZLINE:
 			if( dogen ) then
-				return res + "<hr " + cssclass + " />"
-			else
-				return res
+				res += "<hr " + cssclass + " />"
 			end if
+			return res
 
 		case WIKI_TOKEN_BOXLEFT:
 			ctx->tagFlags(WIKI_TAG_BOXLEFT) += 1
 			if ctx->tagFlags(WIKI_TAG_BOXLEFT) and 1 then
-				return res + "<table " + cssclass + "><tr><td>"
+				res += "<table " + cssclass + "><tr><td>"
 			else
-				return res + "</td>"
+				res += "</td>"
 			end if
+			return res
 
 		case WIKI_TOKEN_BOXRIGHT:
 			if ctx->tagFlags(WIKI_TAG_BOXLEFT) and 1 then
-				return res + "</td></tr></table>"
+				res += "</td></tr></table>"
+				return res
 			end if
 
 			ctx->tagFlags(WIKI_TAG_BOXRIGHT) += 1
 			if ctx->tagFlags(WIKI_TAG_BOXRIGHT) and 1 then
-				return res + "<td>"
+				res += "<td>"
 			else
-				return res + "</td></tr></table>"
+				res += "</td></tr></table>"
 			end if
+			return res
 			
 		case WIKI_TOKEN_CLEAR:
-			return res + "<div style=""clear:both"">&nbsp;</div>"
+			res += "<div style=""clear:both"">&nbsp;</div>"
+			return res
 
 		case WIKI_TOKEN_HEADER:
-			ctx->skipnl = false
+			ctx->skipnl = FALSE
 			ctx->tagFlags(WIKI_TAG_HEADER) += 1
 			if ctx->tagFlags(WIKI_TAG_HEADER) and 1 then
-				return res + "<div " + cssclass + ">"
+				res += "<div " + cssclass + ">"
 			else
-				return res + "</div>"
+				res += "</div>"
 			end if
+			return res
 		
 		case WIKI_TOKEN_PRE:
-			return res + "<pre " + cssclass + ">" + token->text + "</pre>"
+			res += "<pre " + cssclass + ">" + token->text + "</pre>"
+			return res
 		
 		case WIKI_TOKEN_CODE:
-			return res + _codeToHtml( ctx, token->text )
-		
+			res += _codeToHtml( ctx, token->text )
+			return res
+
 		case WIKI_TOKEN_INDENT:
-			ctx->skipnl = false
 			x = ""
-			for i = 1 to (token->indent.level - ctx->indentbase) * 2
+			for i = 1 to token->indent.level * 2
 				x += "&nbsp; "
 			next i
-			return res + x
+			res += x
+		
 		end select
+
+		return res
 
 	end function
 
@@ -1108,6 +1195,7 @@ namespace fb.fbdoc
 
 		ctx->nlcnt = 0
 		ctx->skipnl = TRUE
+		ctx->indent = 0
 		
 		tokenlist = wiki->GetTokenList()
 		token = tokenlist->GetHead()

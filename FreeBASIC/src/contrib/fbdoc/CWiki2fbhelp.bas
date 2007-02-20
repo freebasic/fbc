@@ -206,7 +206,7 @@ namespace fb.fbdoc
 
 		ctx->wiki->Parse( sPageName, sBody ) 
 
-		sBodyTxt = ctx->converter->gen( @"", ctx->wiki )
+		sBodyTxt = ctx->converter->gen( sPageName, ctx->wiki )
 
 		sTxt = chr(27, &h81) + sPageTitle + chr(10)
 

@@ -220,6 +220,8 @@ namespace fb.fbdoc
 				end if
 
 			case else
+
+/'
 				'' Special case - remove after DocToc and CatPg* links use {{fbdoc item="keyword" ...}}
 
 				if( (lcase(sPageName) = "doctoc") _
@@ -233,13 +235,15 @@ namespace fb.fbdoc
 					'' Only internal pages can be TOC nodes
 					if( IsInternalURL( pagelink->url ) ) then
 
+						bAddPage = TRUE
+
 						'' Only special named TOC pages are followed
 						if( IsTOCPage(pagelink->url) ) then
-							bAddPage = TRUE
 							bFollowPage = TRUE
 						end if
 					end if
 				end if
+'/
 
 			end select
 

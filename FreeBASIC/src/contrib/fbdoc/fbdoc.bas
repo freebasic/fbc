@@ -273,7 +273,7 @@ const default_TocPage = "DocToc"
 	Lang.SetOption("fb_docinfo_time", Format( Now(), Lang.GetOption("fb_docinfo_timeformat")))
 
 	'' Initialize the cache
-	sCacheDir = connopts->Get( "cache_dir", default_CacheDir )
+	sCacheDir = connopts->Get( "cache_dir", sCacheDir )
 	if LocalCache_Create( sCacheDir, CacheRefreshMode ) = FALSE then
 		? "Unable to use local cache dir " + sCacheDir
 		end 1

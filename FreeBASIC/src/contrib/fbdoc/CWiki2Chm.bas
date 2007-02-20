@@ -197,6 +197,9 @@ namespace fb.fbdoc
 		if( lcase(left(sPageName, 5)) = "keypg" ) then
 			ctx->converter->setIndentBase( 1 )
 			sPageTitle = FormatPageTitle( page->GetTitle() )
+		elseif( lcase(left(sPageName, 5)) = "propg" ) then
+			ctx->converter->setIndentBase( 1 )
+			sPageTitle = page->GetTitle()
 		else
 			ctx->converter->setIndentBase( 0 )
 			sPageTitle = page->GetTitle()
@@ -207,7 +210,7 @@ namespace fb.fbdoc
 		'	ctx->wiki->Dump()
 		'end if
 
-		sBodyHtml = ctx->converter->gen( @"", ctx->wiki )
+		sBodyHtml = ctx->converter->gen( sPageName, ctx->wiki )
 
 		if( lcase( sPageName ) = "doctoc" ) then
 			sHtml = Templates.Get("chm_doctoc")
