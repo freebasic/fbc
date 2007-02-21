@@ -7,12 +7,10 @@ body {
 }
 
 table { 
-	font-family: Arial, sans-serif, verdana; 
 	font-size: 10pt;
 }
 
 div { 
-	font-family: Arial, sans-serif, verdana; 
 	font-size: 10pt;
 }
 
@@ -31,10 +29,12 @@ ul {
 	list-style: square; 
 	margin-top: 0;
 	margin-bottom: 0;
+	margin-left: 16pt;
 }
 	
 li {
-	padding-bottom: 4pt;
+	padding-top: 2pt;
+	padding-bottom: 2pt;
 }
 
 hr { 
@@ -96,17 +96,7 @@ hr {
 .fb_sect_cont ul {
 	margin-top: 0;
 	margin-bottom: 0;
-	margin-left: 10pt;
-}
-
-.fb_indent {
-	padding-top: 0pt;
-	padding-bottom: 0pt;
-	padding-left: 0pt;
-	margin-top: 0pt;
-	margin-bottom: 0pt;
-	margin-left: 10pt;
-	width: auto;
+	margin-left: 16pt;
 }
 
 #fb_pg_wrapper {
@@ -155,6 +145,15 @@ hr {
 	background: #efefdf;
 	margin: 8pt 14pt 8pt 0pt;
 	padding: 12pt;
+}
+
+.fb_indent {
+	padding-top: 0pt;
+	padding-bottom: 0pt;
+	padding-left: 0pt;
+	margin-top: 0pt;
+	margin-bottom: 0pt;
+	margin-left: 10pt;
 }
 
 #fb_back {

@@ -96,6 +96,8 @@ namespace fb.fbdoc
 		as integer skipnl
 		as integer newindent
 		as integer indent
+		as integer newlevel
+		as integer level
 
 	end type
 
@@ -156,6 +158,8 @@ namespace fb.fbdoc
 		ctx->skipnl = 0
 		ctx->newindent = 0
 		ctx->indent = 0
+		ctx->newlevel = 0
+		ctx->level = 0
 
 		if( _AllocRe( ctx ) = FALSE ) then
 			_FreeRe( ctx )
@@ -328,8 +332,8 @@ namespace fb.fbdoc
 			text += "</div>"
 		end if
 
-		while( ctx->tagFlags(WIKI_TAG_LEVEL) > 0 )
-			ctx->tagFlags(WIKI_TAG_LEVEL) -= 1
+		while( ctx->level > 0 )
+			ctx->level -= 1
 			text += "</ul>"
 		wend
 
@@ -697,9 +701,9 @@ namespace fb.fbdoc
 		dim text as string
 		text = ""
 
-		while( ctx->tagFlags(WIKI_TAG_LEVEL) > 0 )
+		while( ctx->level > 0 )
+			ctx->level -= 1
 			text += "</ul>"
-			ctx->tagFlags(WIKI_TAG_LEVEL) -= 1
 		wend
 
 		return text
@@ -918,16 +922,6 @@ namespace fb.fbdoc
 		
 		dim res as string
 
-		while( level > ctx->tagFlags(WIKI_TAG_LEVEL) )
-			res += "<ul>"
-			ctx->tagFlags(WIKI_TAG_LEVEL) += 1
-		wend
-
-		while( level < ctx->tagFlags(WIKI_TAG_LEVEL) )
-			res += "</ul>"
-			ctx->tagFlags(WIKI_TAG_LEVEL) -= 1
-		wend
-
 		res += "<li>"
 
 		return res
@@ -950,61 +944,71 @@ namespace fb.fbdoc
 		case WIKI_TOKEN_NEWLINE
 			ctx->nlcnt += 1
 
-			if( ctx->tagFlags(WIKI_TAG_LEVEL) > 0 ) then
-				'' We are in a list item
-
-				'' !!! Change to "1" to ignore NL after list
-				if( ctx->nlcnt > 0 ) then
-					while( ctx->tagFlags(WIKI_TAG_LEVEL) > 0 )
-						ctx->tagFlags(WIKI_TAG_LEVEL) -= 1
-						res += "</ul>" + nl
-					wend
-				end if
-
-			else
-				if( ctx->skipnl = false ) then
-					if( ctx->nlcnt < 3 ) then
-						res += "<br />" + nl
+			'if( ctx->newlevel = 0 ) then
+			'	if( ctx->nlcnt < 3 ) then
+					if( ctx->skipnl = false ) then
+						res += "<br \>" + nl
 					end if
-				end if
-	
-			end if
+			'	end if
+			'end if
 
+			'if( ctx->level = 0 ) then
+			'	if( ctx->indent = 0 ) then
+			'		if( ctx->skipnl = false ) then
+			'			if( ctx->nlcnt < 3 ) then
+			'				
+			'			end if
+			'		endif
+			'	end if
+			'end if
+
+			ctx->skipnl = false
+			ctx->newlevel = 0
 			ctx->newindent = 0
-	
 			return res
 
 		case WIKI_TOKEN_INDENT
-			if( ctx->nlcnt > 0 ) then
-				ctx->newindent = (token->indent.level - ctx->indentbase)
-				if( ctx->newindent < 0 ) then
-					ctx->newindent = 0
-				end if
-				return res
+			ctx->newindent = (token->indent.level - ctx->indentbase)
+			if( ctx->newindent < 0 ) then
+				ctx->newindent = 0
 			end if
+			ctx->newlevel = 0
+			if( ctx->newindent <> ctx->indent ) then
+				ctx->skipnl = true
+			else
+				ctx->skipnl = false
+			end if
+			return res
 
 		case WIKI_TOKEN_LIST
 			ctx->newindent = 0
-
-		case else
-			if( ctx->nlcnt > 0 ) then
-				if( ctx->tagFlags(WIKI_TAG_LEVEL) > 0 ) then
-					while( ctx->tagFlags(WIKI_TAG_LEVEL) > 0 )
-						ctx->tagFlags(WIKI_TAG_LEVEL) -= 1
-						res += "</ul>" + nl
-					wend
-				end if
+			ctx->newlevel = token->indent.level
+			if( ctx->newlevel < 0 ) then
+				ctx->newlevel = 0
 			end if
 
 		end select
 
-		while( ctx->indent < ctx->newindent )
-			ctx->indent += 1
-			res += "<div class=""fb_indent"">"
+		while( ctx->level > ctx->newlevel )
+			ctx->level -= 1
+			res += "</ul>"
 		wend
 		while( ctx->indent > ctx->newindent )
 			ctx->indent -= 1
 			res += "</div>"
+		wend
+
+		if( token->id = WIKI_TOKEN_NEWLINE ) then
+			return res
+		end if
+
+		while( ctx->level < ctx->newlevel )
+			ctx->level += 1
+			res += "<ul>"
+		wend
+		while( ctx->indent < ctx->newindent )
+			ctx->indent += 1
+			res += "<div class=""fb_indent"">"
 		wend
 
 		ctx->nlcnt = 0
