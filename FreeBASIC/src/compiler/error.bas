@@ -271,7 +271,8 @@ end type
 		@"Illegal outside a FUNCTION block", _
 		@"Ambigous symbol access, explicit scope resolution required", _
 		@"An ENUM, TYPE or UNION cannot be empty", _
-		@"ENUM's declared inside EXTERN .. END EXTERN blocks don't open new scopes" _
+		@"ENUM's declared inside EXTERN .. END EXTERN blocks don't open new scopes", _
+		@"Only member functions can be static" _
 	}
 
 

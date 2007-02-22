@@ -2424,6 +2424,17 @@ function cProcStmtBegin _
 		exit function
 	end if
 
+	'' STATIC can only be used with member functions
+	if( symbIsStatic( proc ) ) then
+		if( symbGetClass( symbGetNamespace( proc ) ) = FB_SYMBCLASS_NAMESPACE ) then
+			if( errReport( FB_ERRMSG_ONLYMEMBERFUNCTIONSCANBESTATIC, TRUE ) = FALSE ) then
+				exit function
+			else
+				symbGetAttrib( proc ) and= not FB_SYMBATTRIB_STATIC
+			end if
+		end if
+	end if
+
 	'' emit proc setup
 	procnode = astProcBegin( proc, FALSE )
 	if( procnode = NULL ) then
