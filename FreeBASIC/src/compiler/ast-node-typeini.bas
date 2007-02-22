@@ -422,7 +422,9 @@ private function hFlushTree _
             end if
 
 			flush_tree = astNewLINK( flush_tree, _
-									 astNewASSIGN( lside, n->l, AST_OPOPT_DONTCHKPTR ) )
+									 astNewASSIGN( lside, _
+									 			   n->l, _
+									 			   AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR ) )
 
     	case AST_NODECLASS_TYPEINI_PAD
         	if( symbIsParamInstance( basesym ) ) then

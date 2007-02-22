@@ -411,7 +411,7 @@ function astNewASSIGN _
 				exit function
 			end if
 
-			return rtlStrAssign( l, r )
+			return rtlStrAssign( l, r, (options and AST_OPOPT_ISINI) <> 0 )
 		end if
 
 		'' otherwise, don't do any assignment by now to allow optimizations..
@@ -488,7 +488,7 @@ function astNewASSIGN _
 
 			'' one of them is an ascii string, just assign
 			if( is_zstr ) then
-				return rtlWstrAssign( l, r )
+				return rtlWstrAssign( l, r, (options and AST_OPOPT_ISINI) <> 0 )
 			end if
 		end if
 

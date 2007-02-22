@@ -28,6 +28,167 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to 163 ) = _
 	{ _
+		/' fb_StrInit ( byref dst as any, byval dst_len as integer, _
+		 				byref src as any, byval src_len as integer, _
+		                byval fillrem as integer = 1 ) as string '/ _
+		( _
+			@FB_RTL_STRINIT, NULL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 1 _
+	 			) _
+	 		} _
+		), _
+		/' fb_WstrAssignToA_Init ( byref dst as any, byval dst_len as integer, _
+		 				           byval src as wstring ptr, byval fillrem as integer ) as string '/ _
+		( _
+			@FB_RTL_WSTRASSIGNAW_INIT, NULL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_StrAssign ( byref dst as any, byval dst_len as integer, _
+		 				  byref src as any, byval src_len as integer, _
+		                  byval fillrem as integer = 1 ) as string '/ _
+		( _
+			@FB_RTL_STRASSIGN, NULL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 1 _
+	 			) _
+	 		} _
+		), _
+		/' fb_WstrAssign ( byval dst as wstring ptr, byval dst_len as integer, _
+		 				   byval src as wstring ptr) as wstring ptr '/ _
+		( _
+			@FB_RTL_WSTRASSIGN, NULL, _
+			FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_WstrAssignFromA ( byval dst as wstring ptr, byval dst_len as integer, _
+		 				        byref src as any, byval src_len as integer ) as wstring ptr '/ _
+		( _
+			@FB_RTL_WSTRASSIGNWA, NULL, _
+			FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+			{ _
+				( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_WstrAssignToA ( byref dst as any, byval dst_len as integer, _
+		 				      byval src as wstring ptr, byval fillrem as integer ) as string '/ _
+		( _
+			@FB_RTL_WSTRASSIGNAW, NULL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_StrDelete ( byref str as string ) as void '/ _
+		( _
+			@FB_RTL_STRDELETE, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_WstrDelete ( byval str as wstring ptr ) as void '/ _
+		( _
+			@FB_RTL_WSTRDELETE, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
 		/' fb_StrConcat ( byref dst as string, _
 						  byref str1 as any, byval str1len as integer, _
 						  byref str2 as any, byval str2len as integer ) as string '/ _
@@ -150,95 +311,6 @@
 				) _
 			} _
  		), _
-		/' fb_StrAssign ( byref dst as any, byval dst_len as integer, _
-		 				  byref src as any, byval src_len as integer, _
-		                  byval fillrem as integer = 1 ) as string '/ _
-		( _
-			@FB_RTL_STRASSIGN, NULL, _
-			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NONE, _
-			5, _
-			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 1 _
-	 			) _
-	 		} _
-		), _
-		/' fb_WstrAssign ( byval dst as wstring ptr, byval dst_len as integer, _
-		 				   byval src as wstring ptr) as wstring ptr '/ _
-		( _
-			@FB_RTL_WSTRASSIGN, NULL, _
-			FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NONE, _
-			3, _
-			{ _
-				( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
-				) _
-			} _
- 		), _
-		/' fb_WstrAssignFromA ( byval dst as wstring ptr, byval dst_len as integer, _
-		 				        byref src as any, byval src_len as integer ) as wstring ptr '/ _
-		( _
-			@FB_RTL_WSTRASSIGNWA, NULL, _
-			FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NONE, _
-			4, _
-			{ _
-				( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				) _
-			} _
- 		), _
-		/' fb_WstrAssignToA ( byref dst as any, byval dst_len as integer, _
-		 				      byval src as wstring ptr, byval fillrem as integer ) as string '/ _
-		( _
-			@FB_RTL_WSTRASSIGNAW, NULL, _
-			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NONE, _
-			4, _
-			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				) _
-			} _
- 		), _
 		/' fb_StrConcatAssign ( byref dst as any, byval dst_len as integer, _
 		 				        byref src as any, byval src_len as integer, _
 							    byval fillrem as integer = 1 ) as string '/ _
@@ -281,30 +353,6 @@
 				), _
 				( _
  					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
-				) _
-			} _
- 		), _
-		/' fb_StrDelete ( byref str as string ) as void '/ _
-		( _
-			@FB_RTL_STRDELETE, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NONE, _
-			1, _
-			{ _
-				( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-				) _
-			} _
- 		), _
-		/' fb_WstrDelete ( byval str as wstring ptr ) as void '/ _
-		( _
-			@FB_RTL_WSTRDELETE, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NONE, _
-			1, _
-			{ _
-				( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -2687,10 +2735,10 @@ function rtlWstrAssignWA _
 		byval dst as ASTNODE ptr, _
 		byval src as ASTNODE ptr, _
 		byval sdtype as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer dstlen, srclen
+    dim as ASTNODE ptr proc = any
+    dim as integer dstlen = any, srclen = any
 
 	function = NULL
 
@@ -2733,15 +2781,18 @@ function rtlWstrAssignAW _
 	( _
 		byval dst as ASTNODE ptr, _
 		byval ddtype as integer, _
-		byval src as ASTNODE ptr _
-	) as ASTNODE ptr static
+		byval src as ASTNODE ptr, _
+		byval is_ini as integer _
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer lgt
+    dim as ASTNODE ptr proc = any
+    dim as integer lgt = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( WSTRASSIGNAW ) )
+    proc = astNewCALL( iif( is_ini, _
+    						PROCLOOKUP( WSTRASSIGNAW_INIT ), _
+    						PROCLOOKUP(  WSTRASSIGNAW ) ) )
 
    	'' always calc len before pushing the param
 	lgt = rtlCalcStrLen( dst, ddtype )
@@ -2778,11 +2829,12 @@ end function
 function rtlStrAssign _
 	( _
 		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr _
-	) as ASTNODE ptr static
+		byval src as ASTNODE ptr, _
+		byval is_ini as integer _
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer lgt, ddtype, sdtype
+    dim as ASTNODE ptr proc = any
+    dim as integer lgt = any, ddtype = any, sdtype = any
 
 	function = NULL
 
@@ -2791,7 +2843,7 @@ function rtlStrAssign _
 
 	'' wstring source?
     if( sdtype = FB_DATATYPE_WCHAR ) then
-    	return rtlWstrAssignAW( dst, ddtype, src )
+    	return rtlWstrAssignAW( dst, ddtype, src, is_ini )
 
     '' destine?
     elseif( ddtype = FB_DATATYPE_WCHAR ) then
@@ -2799,7 +2851,9 @@ function rtlStrAssign _
     end if
 
     '' both strings
-    proc = astNewCALL( PROCLOOKUP( STRASSIGN ) )
+    proc = astNewCALL( iif( is_ini, _
+    						PROCLOOKUP( STRINIT ), _
+    						PROCLOOKUP( STRASSIGN ) ) )
 
 	'' always calc len before pushing the param
 
@@ -2848,7 +2902,8 @@ end function
 function rtlWstrAssign _
 	( _
 		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr _
+		byval src as ASTNODE ptr, _
+		byval is_ini as integer _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
@@ -2867,7 +2922,7 @@ function rtlWstrAssign _
 
     	'' right..
     	else
-    		return rtlWstrAssignAW( dst, ddtype, src )
+    		return rtlWstrAssignAW( dst, ddtype, src, is_ini )
     	end if
     end if
 

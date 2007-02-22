@@ -77,7 +77,7 @@ function symbCalcProcParamLen _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE _
-	) as integer static
+	) as integer
 
     select case as const mode
     case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
@@ -108,10 +108,10 @@ end function
 function symbCalcProcParamsLen _
 	( _
 		byval proc as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-	dim as integer i, lgt
-	dim as FBSYMBOL ptr param
+	dim as integer lgt = any
+	dim as FBSYMBOL ptr param = any
 
 	param = symbGetProcTailParam( proc )
 
@@ -153,9 +153,9 @@ function symbAddProcParam _
 		byval suffix as integer, _
 		byval attrib as FB_SYMBATTRIB, _
 		byval optexpr as ASTNODE ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr param
+    dim as FBSYMBOL ptr param = any
 
     function = NULL
 
@@ -199,9 +199,9 @@ function symbIsProcOverloadOf _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval head_proc as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-	dim as FBSYMBOL ptr f
+	dim as FBSYMBOL ptr f = any
 
 	'' no parent?
 	if( head_proc = NULL ) then
@@ -240,7 +240,7 @@ private function hGetProcRealType _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
     select case dtype
     '' string? it's actually a pointer to a string descriptor
@@ -270,9 +270,9 @@ end function
 private function hCanOverload _
 	( _
 		byval proc as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-	dim as FBSYMBOL ptr pparam
+	dim as FBSYMBOL ptr pparam = any
 
 	'' arg-less?
 	if( symbGetProcParams( proc ) = 0 ) then
@@ -864,7 +864,7 @@ function symbAddPrototype _
 		byval attrib as integer, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
     function = NULL
 
@@ -892,7 +892,7 @@ function symbAddProc _
 		byval ptrcnt as integer, _
 		byval attrib as integer, _
 		byval mode as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
     function = NULL
 
@@ -921,9 +921,9 @@ function symbAddOperator _
 		byval attrib as integer, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym
+    dim as FBSYMBOL ptr sym = any
 
     function = NULL
 
@@ -957,9 +957,9 @@ function symbAddCtor _
 		byval attrib as integer, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym, parent
+    dim as FBSYMBOL ptr sym = any, parent = any
 
     function = NULL
 
@@ -998,7 +998,7 @@ function symbAddProcPtr _
 		byval subtype as FBSYMBOL ptr, _
 		byval ptrcnt as integer, _
 		byval mode as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
 	dim as zstring ptr id = any
 	dim as FBSYMCHAIN ptr chain_ = any
@@ -1042,9 +1042,9 @@ end function
 function symbPreAddProc _
 	( _
 		byval symbol as zstring ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr proc
+    dim as FBSYMBOL ptr proc = any
 
 	proc = listNewNode( @symb.symlist )
 	if( proc = NULL ) then
@@ -1073,11 +1073,11 @@ function symbAddParam _
 	( _
 		byval symbol as zstring ptr, _
 		byval param as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBARRAYDIM dTB(0)
-    dim as FBSYMBOL ptr s
-    dim as integer attrib, dtype
+    dim as FBARRAYDIM dTB(0) = any
+    dim as FBSYMBOL ptr s = any
+    dim as integer attrib = any, dtype = any
 
 	function = NULL
 
@@ -1140,10 +1140,10 @@ end function
 function symbAddProcResultParam _
 	( _
 		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBARRAYDIM dTB(0)
-    dim as FBSYMBOL ptr s
+    dim as FBARRAYDIM dTB(0) = any
+    dim as FBSYMBOL ptr s = any
 
 	'' UDT?
 	if( proc->typ <> FB_DATATYPE_STRUCT ) then
@@ -1177,11 +1177,10 @@ end function
 function symbAddProcResult _
 	( _
 		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr s, subtype
-	dim as integer dtype
+	dim as FBARRAYDIM dTB(0) = any
+	dim as FBSYMBOL ptr res = any
 
 	'' UDT?
 	if( proc->typ = FB_DATATYPE_STRUCT ) then
@@ -1191,22 +1190,22 @@ function symbAddProcResult _
 		end if
 	end if
 
-	s = symbAddVarEx( NULL, NULL, proc->typ, proc->subtype, 0, 0, 0, _
-					  dTB(), FB_SYMBATTRIB_FUNCRESULT, _
-					  FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
+	res = symbAddVarEx( NULL, NULL, proc->typ, proc->subtype, 0, 0, 0, _
+					  	dTB(), FB_SYMBATTRIB_FUNCRESULT, _
+					  	FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
 
 	if( proc->proc.ext = NULL ) then
 		proc->proc.ext = symbAllocProcExt( )
 	end if
 
-	proc->proc.ext->res = s
+	proc->proc.ext->res = res
 
 	'' clear up the result
-	astAdd( astNewDECL( FB_SYMBCLASS_VAR, s, NULL ) )
+	astAdd( astNewDECL( FB_SYMBCLASS_VAR, res, NULL ) )
 
-	symbSetIsDeclared( s )
+	symbSetIsDeclared( res )
 
-	function = s
+	function = res
 
 end function
 
@@ -1215,10 +1214,9 @@ function symAddProcInstancePtr _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr sym
-	dim as integer dtype
+	dim as integer dtype = any
 
 	select case symbGetClass( parent )
 	case FB_SYMBCLASS_STRUCT
@@ -1227,12 +1225,10 @@ function symAddProcInstancePtr _
 		'dtype = FB_DATATYPE_CLASS
 	end select
 
-    sym = symbAddProcParam( proc, FB_INSTANCEPTR, _
-    					  	dtype, parent, 0, _
-    					  	FB_POINTERSIZE, FB_PARAMMODE_BYREF, INVALID, _
-    					  	FB_SYMBATTRIB_PARAMINSTANCE, NULL )
-
-	function = sym
+    function = symbAddProcParam( proc, FB_INSTANCEPTR, _
+    					  		 dtype, parent, 0, _
+    					  		 FB_POINTERSIZE, FB_PARAMMODE_BYREF, INVALID, _
+    					  		 FB_SYMBATTRIB_PARAMINSTANCE, NULL )
 
 end function
 
@@ -2377,10 +2373,10 @@ end function
 function symbProcAllocLocalVars _
 	( _
 		byval proc as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-    dim as FBSYMBOL ptr s
-    dim as integer lgt
+    dim as FBSYMBOL ptr s = any
+    dim as integer lgt = any
 
     function = FALSE
 
@@ -2426,7 +2422,7 @@ end function
 function symbGetProcResult _
 	( _
 		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
 	if( proc = NULL ) then
 		return NULL
@@ -2446,9 +2442,9 @@ function symbCalcParamLen _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as integer _
-	) as integer static
+	) as integer
 
-    dim as integer lgt
+    dim as integer lgt = any
 
 	select case mode
 	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
@@ -2487,11 +2483,11 @@ private function hMangleFunctionPtr _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as integer _
-	) as zstring ptr static
+	) as zstring ptr
 
-    dim as string id
-    dim as integer i
-    dim as FBSYMBOL ptr param
+    static as string id
+    dim as integer i = any
+    dim as FBSYMBOL ptr param = any
 
     '' cheapo and fast internal mangling..
     id = "{fbfp}("
@@ -2545,7 +2541,7 @@ private function hDemangleParams _
 	) as zstring ptr
 
 	static as string res
-	dim as FBSYMBOL ptr param
+	dim as FBSYMBOL ptr param = any
 
 	static as zstring ptr parammodeTb( FB_PARAMMODE_BYVAL to FB_PARAMMODE_VARARG ) = _
 	{ _

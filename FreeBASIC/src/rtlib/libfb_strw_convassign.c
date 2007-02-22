@@ -39,7 +39,13 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_WstrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, int src_size )
+FBCALL FB_WCHAR *fb_WstrAssignFromA 
+	( 
+		FB_WCHAR *dst, 
+		int dst_chars, 
+		void *src, 
+		int src_size 
+	)
 {
 	char *src_ptr;
 	int src_chars;
@@ -70,7 +76,14 @@ FBCALL FB_WCHAR *fb_WstrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, i
 }
 
 /*:::::*/
-FBCALL void *fb_WstrAssignToA ( void *dst, int dst_chars, FB_WCHAR *src, int fillrem )
+FBCALL void *fb_WstrAssignToAEx
+	( 
+		void *dst, 
+		int dst_chars, 
+		FB_WCHAR *src, 
+		int fill_rem,
+		int is_init
+	)
 {
 	int src_chars;
 
@@ -88,13 +101,29 @@ FBCALL void *fb_WstrAssignToA ( void *dst, int dst_chars, FB_WCHAR *src, int fil
 		/* src NULL? */
 		if( src_chars == 0 )
 		{
-			fb_StrDelete( (FBSTRING *)dst );
+			if( is_init == FB_FALSE )
+			{
+				fb_StrDelete( (FBSTRING *)dst );
+			}
+			else
+			{
+				((FBSTRING *)dst)->data = NULL;
+				((FBSTRING *)dst)->len = 0;
+				((FBSTRING *)dst)->size = 0;
+			}
 		}
 		else
 		{
         	/* realloc dst if needed and copy src */
-			if( FB_STRSIZE( dst ) != src_chars )
-				fb_hStrRealloc( (FBSTRING *)dst, src_chars, FB_FALSE );
+			if( is_init == FB_FALSE )
+			{
+				if( FB_STRSIZE( dst ) != src_chars )
+					fb_hStrRealloc( (FBSTRING *)dst, src_chars, FB_FALSE );
+			}
+			else
+			{
+				fb_hStrAlloc( (FBSTRING *)dst, src_chars );
+			}
 
 			fb_wstr_ConvToA( ((FBSTRING *)dst)->data, src, src_chars );
 		}
@@ -119,7 +148,7 @@ FBCALL void *fb_WstrAssignToA ( void *dst, int dst_chars, FB_WCHAR *src, int fil
 		}
 
 		/* fill reminder with null's */
-		if( fillrem != 0 )
+		if( fill_rem != 0 )
 		{
 			dst_chars -= src_chars;
 			if( dst_chars > 0 )
@@ -130,3 +159,26 @@ FBCALL void *fb_WstrAssignToA ( void *dst, int dst_chars, FB_WCHAR *src, int fil
 	return dst;
 }
 
+/*:::::*/
+FBCALL void *fb_WstrAssignToA 
+	( 
+		void *dst, 
+		int dst_chars, 
+		FB_WCHAR *src, 
+		int fill_rem
+	)
+{
+	return fb_WstrAssignToAEx( dst, dst_chars, src, fill_rem, FB_FALSE );
+}
+
+/*:::::*/
+FBCALL void *fb_WstrAssignToA_Init 
+	( 
+		void *dst, 
+		int dst_chars, 
+		FB_WCHAR *src, 
+		int fill_rem
+	)
+{
+	return fb_WstrAssignToAEx( dst, dst_chars, src, fill_rem, FB_TRUE );
+}

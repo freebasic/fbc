@@ -59,7 +59,10 @@ static FB_LIST tmpdsList = { 0 };
 static FB_STR_TMPDESC fb_tmpdsTB[FB_STR_TMPDESCRIPTORS];
 
 /*:::::*/
-FBCALL FBSTRING *fb_hStrAllocTmpDesc( void )
+FBCALL FBSTRING *fb_hStrAllocTmpDesc
+	( 
+		void 
+	)
 {
 	FB_STR_TMPDESC *dsc;
 
@@ -91,7 +94,10 @@ FBCALL void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
 }
 
 /*:::::*/
-FBCALL int fb_hStrDelTempDesc( FBSTRING *str )
+FBCALL int fb_hStrDelTempDesc
+	( 
+		FBSTRING *str 
+	)
 {
     FB_STR_TMPDESC *item =
         (FB_STR_TMPDESC*) ( (char*)str - offsetof( FB_STR_TMPDESC, desc ) );
@@ -109,13 +115,50 @@ FBCALL int fb_hStrDelTempDesc( FBSTRING *str )
  * internal helper routines
  **********/
 
-/*:::::*/
-FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
-{
-	int newsize;
+/* alloc every 32-bytes */
+#define hStrRoundSize( size ) (((size) + 31) & ~31)
 
-	newsize = (size + 31) & ~31;			/* alloc every 32-bytes */
-    newsize += (newsize >> 3);				/* plus 12.5% more */
+/*:::::*/
+FBCALL FBSTRING *fb_hStrAlloc
+	( 
+		FBSTRING *str, 
+		int size 
+	)
+{
+	int newsize = hStrRoundSize( size );
+	
+	str->data = (char *)malloc( newsize + 1 );
+	/* failed? try the original request */
+	if( str->data == NULL )
+	{
+		str->data = (char *)malloc( size + 1 );
+		if( str->data == NULL )
+    	{
+            str->len = str->size = 0;
+			return NULL;
+		}
+
+		newsize = size;
+	}
+
+	str->size = newsize;
+
+	fb_hStrSetLength( str, size );
+
+    return str;
+}
+
+/*:::::*/
+FBCALL FBSTRING *fb_hStrRealloc
+	( 
+		FBSTRING *str, 
+		int size, 
+		int preserve 
+	)
+{
+	int newsize = hStrRoundSize( size );
+	/* plus 12.5% more */
+	newsize += (newsize >> 3);
 
 	if( (str->data == NULL) ||
 	    (size > str->size) ||
@@ -166,7 +209,11 @@ FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 }
 
 /*:::::*/
-FBCALL FBSTRING *fb_hStrAllocTemp_NoLock( FBSTRING *str, int size )
+FBCALL FBSTRING *fb_hStrAllocTemp_NoLock
+	( 
+		FBSTRING *str, 
+		int size 
+	)
 {
     int try_alloc = str==NULL;
 
@@ -190,7 +237,11 @@ FBCALL FBSTRING *fb_hStrAllocTemp_NoLock( FBSTRING *str, int size )
 }
 
 /*:::::*/
-FBCALL FBSTRING *fb_hStrAllocTemp( FBSTRING *str, int size )
+FBCALL FBSTRING *fb_hStrAllocTemp
+	( 
+		FBSTRING *str, 
+		int size 
+	)
 {
     FBSTRING *res;
 
@@ -204,7 +255,10 @@ FBCALL FBSTRING *fb_hStrAllocTemp( FBSTRING *str, int size )
 }
 
 /*:::::*/
-FBCALL int fb_hStrDelTemp_NoLock( FBSTRING *str )
+FBCALL int fb_hStrDelTemp_NoLock
+	( 
+		FBSTRING *str 
+	)
 {
 	if( str == NULL )
 		return -1;
@@ -218,7 +272,10 @@ FBCALL int fb_hStrDelTemp_NoLock( FBSTRING *str )
 }
 
 /*:::::*/
-FBCALL int fb_hStrDelTemp( FBSTRING *str )
+FBCALL int fb_hStrDelTemp
+	( 
+		FBSTRING *str 
+	)
 {
 	int res;
 
@@ -232,7 +289,12 @@ FBCALL int fb_hStrDelTemp( FBSTRING *str )
 }
 
 /*:::::*/
-FBCALL void fb_hStrCopy( char *dst, const char *src, int bytes )
+FBCALL void fb_hStrCopy
+	( 
+		char *dst, 
+		const char *src, 
+		int bytes 
+	)
 {
     if( (src != NULL) && (bytes > 0) )
     {
@@ -245,7 +307,12 @@ FBCALL void fb_hStrCopy( char *dst, const char *src, int bytes )
 
 
 /*:::::*/
-FBCALL char *fb_hStrSkipChar( char *s, int len, int c )
+FBCALL char *fb_hStrSkipChar
+	( 
+		char *s, 
+		int len, 
+		int c 
+	)
 {
 	char *p = s;
 
@@ -257,7 +324,12 @@ FBCALL char *fb_hStrSkipChar( char *s, int len, int c )
 }
 
 /*:::::*/
-FBCALL char *fb_hStrSkipCharRev( char *s, int len, int c )
+FBCALL char *fb_hStrSkipCharRev
+	( 
+		char *s, 
+		int len, 
+		int c 
+	)
 {
 	char *p;
 

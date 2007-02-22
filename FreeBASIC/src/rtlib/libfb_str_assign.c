@@ -41,18 +41,19 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void *fb_StrAssign
+FBCALL void *fb_StrAssignEx
 	(
 		void *dst,
 		int dst_size,
 		void *src,
 		int src_size,
-		int fillrem
+		int fill_rem,
+		int is_init
 	)
 {
 	FBSTRING *dstr;
 	const char *src_ptr;
-	int src_len, dst_len;
+	int src_len;
 
 	FB_STRLOCK();
 
@@ -77,14 +78,24 @@ FBCALL void *fb_StrAssign
 		/* src NULL? */
 		if( src_len == 0 )
 		{
-			fb_StrDelete( dstr );
+			if( is_init == FB_FALSE ) 
+			{
+				fb_StrDelete( dstr );
+			}
+			else
+			{
+				dstr->data = NULL;
+				dstr->len = 0;
+				dstr->size = 0;
+			}
 		}
 		else
 		{
 			/* if src is a temp, just copy the descriptor */
 			if( (src_size == -1) && FB_ISTEMP(src) )
 			{
-				fb_StrDelete( dstr );
+				if( is_init == FB_FALSE ) 
+					fb_StrDelete( dstr );
 
 				dstr->data = (char *)src_ptr;
 				dstr->len = src_len;
@@ -102,10 +113,15 @@ FBCALL void *fb_StrAssign
 			}
 
         	/* else, realloc dst if needed and copy src */
-        	dst_len = FB_STRSIZE( dst );
-
-			if( dst_len != src_len )
-				fb_hStrRealloc( dstr, src_len, FB_FALSE );
+        	if( is_init == FB_FALSE ) 
+        	{
+				if( FB_STRSIZE( dst ) != src_len )
+					fb_hStrRealloc( dstr, src_len, FB_FALSE );
+        	}
+        	else
+        	{
+				fb_hStrAlloc( dstr, src_len );
+        	}
 
 			fb_hStrCopy( dstr->data, src_ptr, src_len );
 		}
@@ -134,7 +150,7 @@ FBCALL void *fb_StrAssign
 		}
 
 		/* fill reminder with null's */
-		if( fillrem != 0 )
+		if( fill_rem != 0 )
 		{
 			dst_size -= src_len;
 			if( dst_size > 0 )
@@ -150,6 +166,32 @@ FBCALL void *fb_StrAssign
 	FB_STRUNLOCK();
 
 	return dst;
+}
+
+/*:::::*/
+FBCALL void *fb_StrAssign
+	(
+		void *dst,
+		int dst_size,
+		void *src,
+		int src_size,
+		int fill_rem
+	)
+{
+	return fb_StrAssignEx( dst, dst_size, src, src_size, fill_rem, FB_FALSE );
+}
+
+/*:::::*/
+FBCALL void *fb_StrInit
+	(
+		void *dst,
+		int dst_size,
+		void *src,
+		int src_size,
+		int fill_rem
+	)
+{
+	return fb_StrAssignEx( dst, dst_size, src, src_size, fill_rem, FB_TRUE );
 }
 
 

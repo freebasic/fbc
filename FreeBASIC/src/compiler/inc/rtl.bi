@@ -22,11 +22,12 @@
 '' NOTE: when adding any RTL proc that will be called from rtl*.bas,
 '' always update the FB_RTL_IDX enum below
 
+#define FB_RTL_STRINIT					"fb_StrInit"
+#define FB_RTL_STRDELETE				"fb_StrDelete"
+#define FB_RTL_STRASSIGN				"fb_StrAssign"
 #define FB_RTL_STRCONCAT 				"fb_StrConcat"
 #define FB_RTL_STRCOMPARE				"fb_StrCompare"
-#define FB_RTL_STRASSIGN				"fb_StrAssign"
 #define FB_RTL_STRCONCATASSIGN			"fb_StrConcatAssign"
-#define FB_RTL_STRDELETE				"fb_StrDelete"
 #define FB_RTL_STRALLOCTMPRES			"fb_StrAllocTempResult"
 #define FB_RTL_STRALLOCTMPDESCV			"fb_StrAllocTempDescV"
 #define FB_RTL_STRALLOCTMPDESCF			"fb_StrAllocTempDescF"
@@ -82,16 +83,17 @@
 #define FB_RTL_STRLTRIMEX 				"fb_LTrimEx"
 #define FB_RTL_STRSWAP 					"fb_StrSwap"
 
+#define FB_RTL_WSTRALLOC				"fb_WstrAlloc"
+#define FB_RTL_WSTRDELETE				"fb_WstrDelete"
+#define FB_RTL_WSTRASSIGN				"fb_WstrAssign"
+#define FB_RTL_WSTRASSIGNWA				"fb_WstrAssignFromA"
+#define FB_RTL_WSTRASSIGNAW				"fb_WstrAssignToA"
+#define FB_RTL_WSTRASSIGNAW_INIT		"fb_WstrAssignToA_Init"
 #define FB_RTL_WSTRCONCAT 				"fb_WstrConcat"
 #define FB_RTL_WSTRCONCATWA				"fb_WstrConcatWA"
 #define FB_RTL_WSTRCONCATAW				"fb_WstrConcatAW"
 #define FB_RTL_WSTRCOMPARE				"fb_WstrCompare"
-#define FB_RTL_WSTRASSIGN				"fb_WstrAssign"
-#define FB_RTL_WSTRASSIGNWA				"fb_WstrAssignFromA"
-#define FB_RTL_WSTRASSIGNAW				"fb_WstrAssignToA"
 #define FB_RTL_WSTRCONCATASSIGN			"fb_WstrConcatAssign"
-#define FB_RTL_WSTRDELETE				"fb_WstrDelete"
-#define FB_RTL_WSTRALLOC				"fb_WstrAlloc"
 
 #define FB_RTL_INT2WSTR					"fb_IntToWstr"
 #define FB_RTL_UINT2WSTR				"fb_UIntToWstr"
@@ -330,11 +332,12 @@
 '' the order doesn't matter but it makes more sense to follow the same
 '' order as the FB_RTL_* defines above
 enum FB_RTL_IDX
+	FB_RTL_IDX_STRINIT
+	FB_RTL_IDX_STRDELETE
+	FB_RTL_IDX_STRASSIGN
 	FB_RTL_IDX_STRCONCAT
 	FB_RTL_IDX_STRCOMPARE
-	FB_RTL_IDX_STRASSIGN
 	FB_RTL_IDX_STRCONCATASSIGN
-	FB_RTL_IDX_STRDELETE
 	FB_RTL_IDX_STRALLOCTMPRES
 	FB_RTL_IDX_STRALLOCTMPDESCV
 	FB_RTL_IDX_STRALLOCTMPDESCF
@@ -355,18 +358,18 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_STR2ULNG
 	FB_RTL_IDX_STR2DBL
 
-	FB_RTL_IDX_MKD      
-	FB_RTL_IDX_MKS      
-	FB_RTL_IDX_MKI      
-	FB_RTL_IDX_MKL      
-	FB_RTL_IDX_MKSHORT  
+	FB_RTL_IDX_MKD
+	FB_RTL_IDX_MKS
+	FB_RTL_IDX_MKI
+	FB_RTL_IDX_MKL
+	FB_RTL_IDX_MKSHORT
 	FB_RTL_IDX_MKLONGINT
 
-	FB_RTL_IDX_CVD      
-	FB_RTL_IDX_CVS      
-	FB_RTL_IDX_CVI      
-	FB_RTL_IDX_CVL      
-	FB_RTL_IDX_CVSHORT  
+	FB_RTL_IDX_CVD
+	FB_RTL_IDX_CVS
+	FB_RTL_IDX_CVI
+	FB_RTL_IDX_CVL
+	FB_RTL_IDX_CVSHORT
 	FB_RTL_IDX_CVLONGINT
 
 	FB_RTL_IDX_STRMID
@@ -390,16 +393,17 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_STRLTRIMEX
 	FB_RTL_IDX_STRSWAP
 
+	FB_RTL_IDX_WSTRALLOC
+	FB_RTL_IDX_WSTRDELETE
+	FB_RTL_IDX_WSTRASSIGN
+	FB_RTL_IDX_WSTRASSIGNWA
+	FB_RTL_IDX_WSTRASSIGNAW
+	FB_RTL_IDX_WSTRASSIGNAW_INIT
 	FB_RTL_IDX_WSTRCONCAT
 	FB_RTL_IDX_WSTRCONCATWA
 	FB_RTL_IDX_WSTRCONCATAW
 	FB_RTL_IDX_WSTRCOMPARE
-	FB_RTL_IDX_WSTRASSIGN
-	FB_RTL_IDX_WSTRASSIGNWA
-	FB_RTL_IDX_WSTRASSIGNAW
 	FB_RTL_IDX_WSTRCONCATASSIGN
-	FB_RTL_IDX_WSTRDELETE
-	FB_RTL_IDX_WSTRALLOC
 
 	FB_RTL_IDX_INT2WSTR
 	FB_RTL_IDX_UINT2WSTR
@@ -748,13 +752,15 @@ declare function rtlWstrConcat _
 declare function rtlStrAssign _
 	( _
 		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr _
+		byval src as ASTNODE ptr, _
+		byval is_ini as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function rtlWstrAssign _
 	( _
 		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr _
+		byval src as ASTNODE ptr, _
+		byval is_ini as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function rtlStrConcatAssign _

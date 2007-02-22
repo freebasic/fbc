@@ -1062,10 +1062,10 @@ private sub hCallCtors _
 
 	parent = symbGetNamespace( proc )
 
-	'' 1st) base dtors
+	'' 1st) base ctors
     '' ...
 
-	'' 2nd) base dtors
+	'' 2nd) field ctors
     hCallFieldCtors( parent, proc )
 
 end sub

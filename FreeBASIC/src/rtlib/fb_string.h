@@ -150,6 +150,7 @@ static __inline__ void fb_hStrSetLength( FBSTRING *str, size_t size ) {
 
 FBCALL FBSTRING    *fb_hStrAllocTmpDesc 	( void );
 FBCALL int          fb_hStrDelTempDesc  	( FBSTRING *str );
+FBCALL FBSTRING    *fb_hStrAlloc			( FBSTRING *str, int size );
 FBCALL FBSTRING    *fb_hStrRealloc      	( FBSTRING *str, int size, int preserve );
 FBCALL FBSTRING    *fb_hStrAllocTemp    	( FBSTRING *str, int size );
 FBCALL FBSTRING    *fb_hStrAllocTemp_NoLock	( FBSTRING *str, int size );
@@ -162,9 +163,13 @@ FBCALL char        *fb_hStrSkipCharRev  	( char *s, int len, int c );
 
 /* public */
 
-FBCALL void         fb_StrDelete        ( FBSTRING *str );
+FBCALL void 	   *fb_StrInit			( void *dst, int dst_size, void *src, int src_size, 
+										  int fill_rem );
 FBCALL void        *fb_StrAssign        ( void *dst, int dst_size, void *src, int src_size,
-										  int fillrem );
+										  int fill_rem );
+FBCALL void 	   *fb_StrAssignEx		( void *dst, int dst_size, void *src, int src_size,
+										  int fill_rem, int is_init );
+FBCALL void         fb_StrDelete        ( FBSTRING *str );
 FBCALL FBSTRING    *fb_StrConcat        ( FBSTRING *dst, void *str1, int str1_size,
 										  void *str2, int str2_size );
 FBCALL void        *fb_StrConcatAssign  ( void *dst, int dst_size, void *src, int src_size,
@@ -231,8 +236,11 @@ FBCALL void         fb_StrAssignMid     ( FBSTRING *dst, int start, int len, FBS
 
 FBCALL void         fb_WstrDelete       ( FB_WCHAR *str );
 FBCALL FB_WCHAR    *fb_WstrAssign       ( FB_WCHAR *dst, int dst_chars, FB_WCHAR *src );
-FBCALL FB_WCHAR    *fb_WstrAssignFromA 	( FB_WCHAR *dst, int dst_chars, void *src,
+FBCALL FB_WCHAR    *fb_WstrAssignFromA 	( FB_WCHAR *dst, int dst_chars, void *src, 
 										  int src_chars );
+FBCALL void 	   *fb_WstrAssignToA	( void *dst, int dst_chars, FB_WCHAR *src, int fill_rem );
+FBCALL void 	   *fb_WstrAssignToAEx	( void *dst, int dst_chars, FB_WCHAR *src, 
+										  int fill_rem, int is_init );
 FBCALL FB_WCHAR    *fb_WstrConcat 		( const FB_WCHAR *str1, const FB_WCHAR *str2 );
 FBCALL FB_WCHAR    *fb_WstrConcatWA 	( const FB_WCHAR *str1, const void *str2,
 										  int str2_size );

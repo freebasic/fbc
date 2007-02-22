@@ -93,10 +93,7 @@ private function hCallCtor _
 
    	'' initialized? do nothing..
    	if( initree <> NULL ) then
-   		'' unless it's a var-len string..
-   		if( symbGetType( sym ) <> FB_DATATYPE_STRING ) then
-   			exit function
-   		end if
+   		exit function
    	end if
 
    	'' not initialized..
