@@ -932,6 +932,11 @@ private function processTargetOptions _
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_XBOX )
 #endif
 
+#if defined(TARGET_FREEBSD) or defined(CROSSCOMP_FREEBSD)
+				case "freebsd"
+					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_FREEBSD )
+#endif
+
 				case else
 					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					return FALSE
@@ -1633,7 +1638,7 @@ private sub printOptions( )
 	printOption( "-c", "Compile only, do not link" )
 	printOption( "-d <name=val>", "Add a preprocessor's define" )
 	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD
 		printOption( "-dll", "Same as -dylib" )
 		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) then
 			printOption( "-dylib", "Create a DLL, including the import library" )
@@ -1676,7 +1681,8 @@ private sub printOptions( )
 	defined(CROSSCOMP_CYGWIN) or _
 	defined(CROSSCOMP_DOS) or _
 	defined(CROSSCOMP_LINUX) or _
-	defined(CROSSCOMP_XBOX)
+	defined(CROSSCOMP_XBOX) or _
+	defined(CROSSCOMP_FREEBSD)
 	desc = " Cross-compile to:"
  #ifdef CROSSCOMP_CYGWIN
 	desc += " cygwin"
@@ -1692,6 +1698,9 @@ private sub printOptions( )
  #endif
  #ifdef CROSSCOMP_XBOX
 	desc += " xbox"
+ #endif
+ #ifdef CROSSCOMP_FREEBSD
+	desc += " freebsd"
  #endif
 
 	print "-target <name>"; desc

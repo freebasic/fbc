@@ -195,6 +195,10 @@ declare function fbcInit_xbox _
 	( _
 	) as integer
 
+declare function fbcInit_freebsd _
+	( _
+	) as integer
+
 declare function fbcGetLibList _
 	( _
 		byval dllname as zstring ptr _

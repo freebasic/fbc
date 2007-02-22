@@ -114,6 +114,8 @@ const FB_TARGET             = "linux"
 const FB_TARGET             = "dos"
 #elseif defined(TARGET_XBOX)
 const FB_TARGET             = "xbox"
+#elseif defined(TARGET_FREEBSD)
+const FB_TARGET             = "freebsd"
 #endif
 
 #if defined(__FB_WIN32__)
@@ -126,6 +128,8 @@ const FB_HOST               = "linux"
 const FB_HOST               = "dos"
 #elseif defined(__FB_XBOX__)
 const FB_HOST               = "xbox"
+#elseif defined(__FB_FREEBSD__)
+const FB_HOST               = "freebsd"
 #endif
 
 
@@ -189,11 +193,12 @@ const FB_DEFAULT_OUTTYPE    = FB_OUTTYPE_EXECUTABLE
 
 '' target platform
 enum FB_COMPTARGET
-    FB_COMPTARGET_WIN32
-    FB_COMPTARGET_CYGWIN
-    FB_COMPTARGET_LINUX
-    FB_COMPTARGET_DOS
-    FB_COMPTARGET_XBOX
+	FB_COMPTARGET_WIN32
+	FB_COMPTARGET_CYGWIN
+	FB_COMPTARGET_LINUX
+	FB_COMPTARGET_DOS
+	FB_COMPTARGET_XBOX
+	FB_COMPTARGET_FREEBSD
 end enum
 
 #if defined(TARGET_WIN32)
@@ -206,6 +211,8 @@ const FB_DEFAULT_TARGET = FB_COMPTARGET_LINUX
 const FB_DEFAULT_TARGET = FB_COMPTARGET_DOS
 #elseif defined(TARGET_XBOX)
 const FB_DEFAULT_TARGET = FB_COMPTARGET_XBOX
+#elseif defined(TARGET_FREEBSD)
+const FB_DEFAULT_TARGET = FB_COMPTARGET_FREEBSD
 #else
 #error Unsupported target
 #endif
