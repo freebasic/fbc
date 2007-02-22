@@ -1068,7 +1068,8 @@ private function ppParentExpr _
   	case else
   		parexpr.dtype = lexGetType( )
 
-  		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
+  		select case lexGetClass( )
+  		case FB_TKCLASS_NUMLITERAL
   			parexpr.class = PPEXPR_CLASS_NUM
 
   			select case as const parexpr.dtype
@@ -1102,11 +1103,16 @@ private function ppParentExpr _
 				parexpr.num.int = valint( *lexGetText( ) )
   			end select
 
-  		else
+		case FB_TKCLASS_STRLITERAL
   			parexpr.class = PPEXPR_CLASS_STR
-  			parexpr.str = *lexGetText( )
+  			parexpr.str = QUOTE
+  			parexpr.str += *lexGetText( )
+  			parexpr.str += QUOTE
 
-  		end if
+  		case else
+  			parexpr.class = PPEXPR_CLASS_STR
+  			parexpr.str = ucase( *lexGetText( ) )
+  		end select
 
   		lexSkipToken( )
 
