@@ -39,9 +39,9 @@ function hSymbolType _
 		byref lgt as integer, _
 		byref ptrcnt as integer _
 	) as integer
-    
+
     function = TRUE
-    
+
 	'' parse the symbol type (INTEGER, STRING, etc...)
 	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
 		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
@@ -54,7 +54,7 @@ function hSymbolType _
 			ptrcnt = 0
 		end if
 	end if
-	
+
 	'' ANY?
 	if( dtype = FB_DATATYPE_VOID ) then
 		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
@@ -1145,19 +1145,19 @@ function hVarDeclEx _
     is_multdecl = FALSE
     if( lexGetToken( ) = FB_TK_AS ) then
     	lexSkipToken( )
-        
+
         '' parse the symbol type (INTEGER, STRING, etc...)
         if( hSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
         	exit function
         end if
-        
+
     	addsuffix = FALSE
     	is_multdecl = TRUE
     end if
 
     dim as FB_IDOPT options = FB_IDOPT_DEFAULT
-    
-    '' it's a declaration if it's not a REDIM, 
+
+    '' it's a declaration if it's not a REDIM,
     '' or if it is, then it's a REDIM SHARED.
     if( (token <> FB_TK_REDIM) or (options and FB_SYMBATTRIB_SHARED) ) then
     	options or= FB_IDOPT_ISDECL
@@ -1184,7 +1184,7 @@ function hVarDeclEx _
     			if( errReportEx( FB_ERRMSG_SYNTAXERROR, @id ) = FALSE ) then
     				exit function
     			else
-    				'' error recovery: the symbol gets the 
+    				'' error recovery: the symbol gets the
     				'' type specified 'AS'
     				suffix = INVALID
     			end if
@@ -1198,13 +1198,13 @@ function hVarDeclEx _
 			lexSkipToken( )
 
 			is_dynamic = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
-            
+
             '' ID()
 			if( lexGetToken( ) = CHAR_RPRNT ) then
 				'' fake it
 				dimensions = -1
 				is_dynamic = TRUE
-            
+
             '' , ID( expr, (TO expr)? )
     		else
     			'' only allow subscripts if not COMMON
@@ -1958,8 +1958,22 @@ function cAutoVarDecl _
 
         	'' handle constructors..
         	else
+				'' array passed by descriptor?
+				dim as FB_PARAMMODE arg_mode = INVALID
+				if( lexGetToken( ) = CHAR_LPRNT ) then
+					if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
+						if( astGetSymbol( expr ) <> NULL ) then
+							if( symbIsArray( astGetSymbol( expr ) ) ) then
+								lexSkipToken( )
+								lexSkipToken( )
+								arg_mode = FB_PARAMMODE_BYDESC
+							end if
+						end if
+					end if
+    			end if
+
     			dim as integer is_ctorcall = any
-    			expr = astBuildImplicitCtorCallEx( sym, expr, is_ctorcall )
+    			expr = astBuildImplicitCtorCallEx( sym, expr, arg_mode, is_ctorcall )
         		if( expr <> NULL ) then
     				if( is_ctorcall ) then
     					astTypeIniAddCtorCall( initree, sym, expr )

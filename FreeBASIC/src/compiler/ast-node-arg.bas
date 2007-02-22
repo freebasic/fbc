@@ -733,7 +733,10 @@ private function hImplicitCtor _
 
     '' try calling any ctor with the expression
     rec_cnt += 1
-    dim as ASTNODE ptr arg = astBuildImplicitCtorCall( subtype, n->l, is_ctorcall )
+    dim as ASTNODE ptr arg = astBuildImplicitCtorCall( subtype, _
+    												   n->l, _
+    												   n->arg.mode, _
+    												   is_ctorcall )
     rec_cnt -= 1
 
     if( is_ctorcall = FALSE ) then

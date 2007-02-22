@@ -25,7 +25,9 @@ namespace fbc_tests.compound.for_UDT_counter
 			declare operator let( byval rhs as __TYPE__ )
 			declare operator let( byref rhs as foo##__TYPE__ )
 			
+			declare operator for( )
 			declare operator for( byref stp as foo##__TYPE__ )
+			declare operator step( )
 			declare operator step( byref stp as foo##__TYPE__ )
 			declare operator next( byref end_cond as foo##__TYPE__ ) as integer
 			
@@ -33,6 +35,8 @@ namespace fbc_tests.compound.for_UDT_counter
 			
 		private:
 			as integer is_up
+			
+			declare function test( byref end_cond as foo##__TYPE__ ) as integer
 		end type
 		
 		constructor foo##__TYPE__( )
@@ -55,14 +59,16 @@ namespace fbc_tests.compound.for_UDT_counter
 			this.x = rhs.x
 		end operator
 		
+		operator foo##__TYPE__.for( )
+			is_up = -1
+		end operator
+
 		operator foo##__TYPE__.for( byref stp as foo##__TYPE__ )
-			'' check sign
-			if( @stp = NULL ) then
-				is_up = -1
-			else
-				is_up = (stp.x >= 0)
-			end if
-			
+			is_up = (stp.x >= 0)
+		end operator
+
+		operator foo##__TYPE__.step( )
+			x += 1
 		end operator
 
 		operator foo##__TYPE__.step( byref stp as foo##__TYPE__ )
@@ -70,14 +76,11 @@ namespace fbc_tests.compound.for_UDT_counter
 		end operator
 
 		operator foo##__TYPE__.next( byref end_cond as foo##__TYPE__ ) as integer
-		
-			'' return FALSE if there's nothing else to iterate
 			if( is_up ) then
-				operator = x <= end_cond.x
+				return x <= end_cond.x
 			else
-				operator = x >= end_cond.x
+				return x >= end_cond.x
 			end if
-			
 		end operator
 
 		destructor foo##__TYPE__( )

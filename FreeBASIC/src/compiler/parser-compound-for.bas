@@ -40,8 +40,7 @@ declare function hUdtCallOpOvl _
 		byval parent as FBSYMBOL ptr, _
 		byval op as AST_OP, _
 		byval inst_expr as ASTNODE ptr, _
-		byval end_expr as ASTNODE ptr, _
-		byval step_expr as ASTNODE ptr = NULL _
+		byval end_expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare sub hFlushBOP _
@@ -90,26 +89,44 @@ private sub hUdtFor _
 	)
 
 	dim as ASTNODE ptr proc = any, step_expr = NULL
-	
+
 	'' only pass the step arg if it's an explicit step
 	if( stk->for.explicit_step ) then
 		step_expr = hElmToExpr( @stk->for.stp )
 	end if
+
 	proc = hUdtCallOpOvl( symbGetSubtype( stk->for.cnt.sym ), _
 						  AST_OP_FOR, _
 					  	  hElmToExpr( @stk->for.cnt ), _
-					  	  hElmToExpr( @stk->for.end ), _
 					  	  step_expr )
 
 	if( proc <> NULL ) then
-		'' test the FOR condition, if it's FALSE, 
-		'' then jump to the end label
-    	astAdd( astNewBOP( AST_OP_EQ, _
-    				   	   proc, _
-    				   	   astNewCONSTi( 0 ), _
-    				   	   stk->for.endlabel, _
-    				   	   AST_OPOPT_NONE ) )
+    	astAdd( proc )
 	end if
+
+end sub
+
+'':::::
+private sub hUdtStep _
+	( _
+		byval stk as FB_CMPSTMTSTK ptr _
+	)
+
+	dim as ASTNODE ptr proc = any, step_expr = NULL
+
+	'' only pass the step arg if it's an explicit step
+	if( stk->for.explicit_step ) then
+		step_expr = hElmToExpr( @stk->for.stp )
+	end if
+
+	proc = hUdtCallOpOvl( symbGetSubtype( stk->for.cnt.sym ), _
+						  AST_OP_STEP, _
+						  hElmToExpr( @stk->for.cnt ), _
+						  step_expr )
+
+    if( proc <> NULL ) then
+    	astAdd( proc )
+    end if
 
 end sub
 
@@ -138,6 +155,17 @@ private sub hUdtNext _
 end sub
 
 '':::::
+private sub hScalarStep _
+	( _
+		byval stk as FB_CMPSTMTSTK ptr _
+	)
+
+	'' counter += step
+	hFlushSelfBOP( AST_OP_ADD_SELF, @stk->for.cnt, @stk->for.stp )
+
+end sub
+
+'':::::
 private sub hScalarNext _
 	( _
 		byval stk as FB_CMPSTMTSTK ptr _
@@ -162,11 +190,11 @@ private sub hScalarNext _
 					   	   cl, _
 					   	   AST_OPOPT_NONE ) )
 
-    		'' if counter >= end_condition then 
+    		'' if counter >= end_condition then
 	    		'' goto top_of_FOR
 				hFlushBOP( AST_OP_GE, @stk->for.cnt, @stk->for.end, stk->for.inilabel )
 
-			'' else 
+			'' else
 				'' goto skip_positive_check
 				astAdd( astNewBRANCH( AST_OP_JMP, stk->for.endlabel ) )
 
@@ -179,20 +207,9 @@ private sub hScalarNext _
 			hFlushBOP( AST_OP_LE,  @stk->for.cnt, @stk->for.end, stk->for.inilabel )
 
 		'' end if
-		
+
 		'' skip_positive_check:
     end if
-
-end sub
-
-'':::::
-private sub hScalarStep _
-	( _
-		byval stk as FB_CMPSTMTSTK ptr _
-	)
-
-	'' counter += step
-	hFlushSelfBOP( AST_OP_ADD_SELF, @stk->for.cnt, @stk->for.stp )
 
 end sub
 
@@ -396,39 +413,15 @@ end sub
 '':::::
 private function hCallCtor _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr = NULL _
+		byval sym as FBSYMBOL ptr _
 	) as integer
 
-	'' explicit expression?
-	if( expr = NULL ) then
-		expr = cInitializer( sym, FB_INIOPT_ISINI )
-    	if( expr = NULL ) then
-    		return FALSE
-    	end if
+	dim as ASTNODE ptr expr = cInitializer( sym, FB_INIOPT_ISINI )
+    if( expr = NULL ) then
+    	return FALSE
+    end if
 
-		expr = astTypeIniFlush( expr, sym, AST_INIOPT_ISINI )
-
-	'' implicit..
-	else
-        dim as integer is_ctorcall = any
-        expr = astBuildImplicitCtorCall( symbGetSubtype( sym ), _
-        								 expr, _
-        								 is_ctorcall )
-    	if( expr = NULL ) then
-    		return FALSE
-    	end if
-
-		'' back-patch the instance pointer
-		if( is_ctorcall ) then
-			expr = astPatchCtorCall( expr, _
-								 	 astNewVAR( sym, _
-								 				0, _
-								 				symbGettype( sym ), _
-								 				symbGetSubtype( sym ) ) )
-		end if
-	end if
-
+    expr = astTypeIniFlush( expr, sym, AST_INIOPT_ISINI )
     if( expr = NULL ) then
     	return FALSE
     end if
@@ -743,8 +736,7 @@ private function hForStep _
 	'' UDT has a constructor..
 	else
     	iscomplex = TRUE
-		dim as ASTNODE ptr expr = NULL
-		
+
 		dim as FBSYMBOL ptr ovl_list = any
 		dim as integer operator_args = any, step_ok = FALSE
 
@@ -753,10 +745,10 @@ private function hForStep _
 	    	stk->for.stp.sym = hAllocTemp( dtype, subtype )
 	    	stk->for.stp.dtype = symbGetType( stk->for.end.sym )
 		end if
-        
+
         if( stk->for.explicit_step ) then
 	    	'' build constructor call
-	    	if( hCallCtor( stk->for.stp.sym, expr ) = FALSE ) then
+	    	if( hCallCtor( stk->for.stp.sym ) = FALSE ) then
 	    		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 	    			exit function
 				end if
@@ -959,10 +951,10 @@ function cForStmtBegin _
 		cCompStmtPop( stk )
 		exit function
 	end if
-    
+
 	'' labels
     dim as FBSYMBOL ptr il = any, tl = any, el = any, cl = any
-    
+
     '' test label: jump to the bottom of the for,
     '' before any code within the block is executed
     tl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
@@ -970,7 +962,7 @@ function cForStmtBegin _
 	'' comp and end label (will be used by any CONTINUE/EXIT FOR)
 	cl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
-    
+
     '' we need to "peek" at the end label,
     '' to allow an overloaded FOR operator to jump to it,
     '' if the operator returns FALSE
@@ -995,14 +987,7 @@ function cForStmtBegin _
     	astDelNode( expr )
 
     else
-		'' we only jump if it's a scalar, 
-		'' there's no way to 'label' between
-		'' the step and the ending comparison
-		'' in a user-defined operator
-		if( (flags and FOR_ISUDT) = 0 ) then
-	   		astAdd( astNewBRANCH( AST_OP_JMP, tl ) )
-		end if
-
+	   	astAdd( astNewBRANCH( AST_OP_JMP, tl ) )
     end if
 
 	'' add start label
@@ -1026,12 +1011,10 @@ private function hUdtCallOpOvl _
 		byval parent as FBSYMBOL ptr, _
 		byval op as AST_OP, _
 		byval inst_expr as ASTNODE ptr, _
-		byval end_expr as ASTNODE ptr, _
-		byval step_expr as ASTNODE ptr _
+		byval end_expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr sym = any, correct_operator = any
-    dim as integer operator_args = any
+    dim as FBSYMBOL ptr sym = any
 
     '' check if op was overloaded
     sym = symbGetCompOpOvlHead( parent, op )
@@ -1043,59 +1026,36 @@ private function hUdtCallOpOvl _
 		return NULL
 	end if
 
-	'' no need to check for overloaded versions
-	if( op = AST_OP_FOR ) then
-		'' if STEP is specified, we check if operator FOR has 3 args
-		if( step_expr <> NULL ) then
-			operator_args = 3
+	'' check for overloaded versions (note: don't pass the instance ptr)
+	dim as FB_ERRMSG err_num = any
+	if( end_expr = NULL ) then
+		sym = symbFindClosestOvlProc( sym, 0, NULL, @err_num )
+	else
+		dim as FB_CALL_ARG arg1 = any
+		arg1.expr = end_expr
+		arg1.mode = INVALID
+		arg1.next = NULL
+		sym = symbFindClosestOvlProc( sym, 1, @arg1, @err_num )
+	end if
 
-		'' no STEP, we check if operator FOR has 2 args
-		else
-			operator_args = 2
-		end if
-	    
-	    '' walk the overloaded procs
-		while( sym )
-			if( symbGetProcParams( sym ) = operator_args ) then
-				exit while
-			end if
-			sym = symbGetProcOvlNext( sym )
-		wend
-		
-		'' report needing the correct operator FOR
-		if( sym = NULL ) then
-			dim as string operator_id = *astGetOpId( op )
-			operator_id += *iif( step_expr <> NULL, @" (with step)", @" (without step)" )
-			errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, _
-					   TRUE, _
-	                   strptr(operator_id) )
-			return NULL
-		end if
-
+	if( sym = NULL ) then
+		errReport( err_num, TRUE )
+		return NULL
 	end if
 
 	dim as ASTNODE ptr proc = astNewCALL( sym )
-	
+
 	'' push the instance pointer
 	if( astNewARG( proc, inst_expr ) = NULL ) then
 		return NULL
 	end if
-	
-	'' and the 2nd arg
-	if( astNewARG( proc, end_expr ) = NULL ) then
-		return NULL
-	end if
 
-	'' if it's operator FOR, we check for a step arg
-	select case as const op
-	case AST_OP_FOR
-		if( step_expr <> NULL ) then
-			'' add the STEP arg
-			if( astNewARG( proc, step_expr ) = NULL ) then
-				return NULL
-			end if
-    	end if
-	end select
+	'' and the 2nd arg
+	if( end_expr <> NULL ) then
+		if( astNewARG( proc, end_expr ) = NULL ) then
+			return NULL
+		end if
+	end if
 
 	function = proc
 
@@ -1118,6 +1078,8 @@ private function hForStmtClose _
 	'' UDT?
 	select case symbGetType( stk->for.cnt.sym )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		'' update
+		hUdtStep( stk )
 
 		'' emit test label
 		astAdd( astNewLABEL( stk->for.testlabel ) )

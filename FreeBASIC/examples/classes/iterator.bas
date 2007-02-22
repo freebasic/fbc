@@ -3,9 +3,10 @@
 type foo
 	declare constructor( byval r as zstring ptr )
 	
-	declare operator for ( byref end_cond as foo, byref stp as foo ) as integer 
-	declare operator for ( byref end_cond as foo ) as integer 
-
+	declare operator for ( )
+	declare operator for ( byref stp as foo )
+	declare operator step( )
+	declare operator step( byref stp as foo )
 	declare operator next( byref end_cond as foo ) as integer
 
 	declare function test( byref end_cond as foo ) as integer
@@ -22,52 +23,49 @@ constructor foo( byval r as zstring ptr )
 	value = *r
 end constructor
 
-function foo.test( byref end_cond as foo ) as integer
-
-	if( this.is_up ) then
-		function = this.value <= end_cond.value
-	else
-		function = this.value >= end_cond.value
-	end if
-
-end function
-
+operator foo.for( )
     
-operator foo.for( byref end_cond as foo, byref stp as foo ) as integer
+    print "implicit step"
+    
+    is_up = -1
+
+end operator
+
+operator foo.for( byref stp as foo )
     
     print "explicit step"
     
     '' initialization
 	is_up = (stp.value = "up")
 	
-	'' initial test
-	return this.test( end_cond )
-
 end operator
 
-operator foo.for( byref end_cond as foo ) as integer
-    
-    print "implicit step"
+operator foo.step( )
 
-    '' initialization
-	is_up = -1
-	
-	'' initial test
-	return this.test( end_cond )
+	'' increment
+	value[0] += 1
 
-end operator
+end operator 
 
-operator foo.next( byref end_cond as foo ) as integer
-	
+operator foo.step( byref end_cond as foo )
+
 	'' increment
 	if( is_up ) then
 		value[0] += 1
 	else
 		value[0] -= 1
 	end if
+
+end operator 
+
+operator foo.next( byref end_cond as foo ) as integer
 	
 	'' test
-	return this.test( end_cond )
+	if( this.is_up ) then
+		return this.value <= end_cond.value
+	else
+		return this.value >= end_cond.value
+	end if
 	
 end operator
 

@@ -1,3 +1,7 @@
+[ ] output member functions and static member data to the STABS TYPE/UDT info
+    - operators must be handled as well
+    - properties may need a __get/__set suffix
+
 [ ] make cUdtMember process symbols as cIdentifier does or ambiguous access
     tests won't be done
     - also do handle dups, CLASSes will allow anything to be defined (including

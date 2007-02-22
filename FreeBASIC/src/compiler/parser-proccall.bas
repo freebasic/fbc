@@ -34,11 +34,11 @@ function cAssignFunctResult _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval is_return as integer _
-	) as integer static
+	) as integer
 
-    dim as FBSYMBOL ptr res, subtype
-    dim as ASTNODE ptr rhs
-    dim as integer has_ctor, has_defctor
+    dim as FBSYMBOL ptr res = any, subtype = any
+    dim as ASTNODE ptr rhs = any
+    dim as integer has_ctor = any, has_defctor = any
 
     function = FALSE
 
@@ -113,8 +113,22 @@ function cAssignFunctResult _
 
     '' RETURN and has ctor? try to initialize..
     if( is_return and has_ctor ) then
-    	dim as integer is_ctorcall
-    	rhs = astBuildImplicitCtorCallEx( res, rhs, is_ctorcall )
+		'' array passed by descriptor?
+		dim as FB_PARAMMODE arg_mode = INVALID
+		if( lexGetToken( ) = CHAR_LPRNT ) then
+			if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
+				if( astGetSymbol( rhs ) <> NULL ) then
+					if( symbIsArray( astGetSymbol( rhs ) ) ) then
+						lexSkipToken( )
+						lexSkipToken( )
+						arg_mode = FB_PARAMMODE_BYDESC
+					end if
+				end if
+			end if
+    	end if
+
+    	dim as integer is_ctorcall = any
+    	rhs = astBuildImplicitCtorCallEx( res, rhs, arg_mode, is_ctorcall )
     	if( rhs = NULL ) then
     		exit function
     	end if
@@ -127,7 +141,7 @@ function cAssignFunctResult _
     	end if
     end if
 
-    dim as ASTNODE ptr expr
+    dim as ASTNODE ptr expr = any
 
     '' do the assignment
     expr = astNewASSIGN( astBuildProcResultVar( proc, res ), rhs )

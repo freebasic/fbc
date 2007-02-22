@@ -227,6 +227,14 @@ function cOperator _
     	lexSkipToken( )
     	return AST_OP_FOR
 
+	case FB_TK_STEP
+    	if( (options and FB_OPEROPTS_SELF) = 0 ) then
+        	exit function
+        end if
+
+		lexSkipToken( )
+		return AST_OP_STEP
+
 	case FB_TK_NEXT
 		if( (options and FB_OPEROPTS_SELF) = 0 ) then
     		exit function

@@ -515,13 +515,14 @@ function astBuildImplicitCtorCall _
 	( _
 		byval subtype as FBSYMBOL ptr, _
 		byval expr as ASTNODE ptr, _
+		byval arg_mode as FB_PARAMMODE, _
 		byref is_ctorcall as integer _
 	) as ASTNODE ptr
 
  	dim as integer err_num = any
     dim as FBSYMBOL ptr proc = any
 
-	proc = symbFindCtorOvlProc( subtype, expr, @err_num )
+	proc = symbFindCtorOvlProc( subtype, expr, arg_mode, @err_num )
 	if( proc = NULL ) then
 		is_ctorcall = FALSE
 
@@ -545,7 +546,7 @@ function astBuildImplicitCtorCall _
     '' push the mock instance ptr
     astNewARG( procexpr, astBuildMockInstPtr( subtype ), INVALID, FB_PARAMMODE_BYVAL )
 
-    astNewARG( procexpr, expr )
+    astNewARG( procexpr, expr, INVALID, arg_mode )
 
     '' add the optional params, if any
     dim as integer params = symbGetProcParams( proc ) - 2
@@ -564,6 +565,7 @@ function astBuildImplicitCtorCallEx _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval expr as ASTNODE ptr, _
+		byval arg_mode as FB_PARAMMODE, _
 		byref is_ctorcall as integer _
 	) as ASTNODE ptr
 
@@ -581,7 +583,7 @@ function astBuildImplicitCtorCallEx _
     end if
 
     '' try calling any ctor with the expression
-    function = astBuildImplicitCtorCall( subtype, expr, is_ctorcall )
+    function = astBuildImplicitCtorCall( subtype, expr, arg_mode, is_ctorcall )
 
 end function
 

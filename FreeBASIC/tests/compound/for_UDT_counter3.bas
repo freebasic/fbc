@@ -7,7 +7,9 @@ namespace fbc_tests.compound.for_UDT_counter3
 type foo
 	declare constructor( v as integer )
 	declare destructor( )
+	declare operator for( )
 	declare operator for( byref stp as foo )
+	declare operator step( )
 	declare operator step( byref stp as foo )
 	declare operator next( byref end_cond as foo ) as integer
 private:	
@@ -19,17 +21,21 @@ constructor foo( v as integer )
 	value = v
 end constructor
 
+operator foo.for( )
+	is_up = -1
+end operator
+
 operator foo.for( byref stp as foo )
-	if( @stp = 0 ) then
-		is_up = -1
-	else
-		is_up = (stp.value >= 0)
-	end if
+	is_up = (stp.value >= 0)
 end operator
 
 destructor foo( )
 	dtor_cnt += 1
 end destructor
+
+operator foo.step( )
+	value += 1
+end operator
 
 operator foo.step( byref stp as foo )
 	value += stp.value

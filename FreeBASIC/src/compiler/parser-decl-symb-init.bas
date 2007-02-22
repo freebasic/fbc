@@ -62,7 +62,7 @@ private function hDoAssign _
     '' don't build a FIELD node if it's an UDTElm symbol,
     '' that doesn't matter with checkASSIGN
     if( astCheckASSIGN( @lside, expr ) = FALSE ) then
-    	
+
     	'' check if it's a cast
     	expr = astNewCONV( dtype, symbGetSubtype( ctx.sym ), expr )
     	if( expr = NULL ) then
@@ -73,7 +73,7 @@ private function hDoAssign _
 	        	astDelTree( expr )
 	        	expr = astNewCONSTz( dtype )
 	        end if
-		end if	      
+		end if
 	end if
 
 	''
@@ -326,8 +326,22 @@ private function hUDTInit _
 			end if
 	    end if
 
+		'' array passed by descriptor?
+		dim as FB_PARAMMODE arg_mode = INVALID
+		if( lexGetToken( ) = CHAR_LPRNT ) then
+			if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
+				if( astGetSymbol( expr ) <> NULL ) then
+					if( symbIsArray( astGetSymbol( expr ) ) ) then
+						lexSkipToken( )
+						lexSkipToken( )
+						arg_mode = FB_PARAMMODE_BYDESC
+					end if
+				end if
+			end if
+    	end if
+
     	dim as integer is_ctorcall = any
-    	expr = astBuildImplicitCtorCallEx( ctx.sym, expr, is_ctorcall )
+    	expr = astBuildImplicitCtorCallEx( ctx.sym, expr, arg_mode, is_ctorcall )
         if( expr = NULL ) then
         	exit function
         end if

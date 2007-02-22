@@ -220,13 +220,12 @@ function cUdtMember _
     		exit function
     	end if
 
-		''
+    	'' since methods don't start a new hash, params and local
+    	'' symbol dups will also be found
 		dim as FBSYMBOL ptr sym = any
 		do
 			sym = chain_->sym
 			do
-    			'' since methods don't start a new hash, params and local
-    			'' symbol dups will also be found
     			if( symbGetScope( sym ) = symbGetScope( subtype ) ) then
     				goto exit_search
     			end if

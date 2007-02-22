@@ -1404,7 +1404,8 @@ const FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
 	( _
 		rec_cnt, _
 		param_subtype, _
-		arg_expr _
+		arg_expr, _
+		arg_mode _
 	)
 
 	if( rec_cnt = 0 ) then
@@ -1412,7 +1413,7 @@ const FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
 		dim as FBSYMBOL ptr proc = any
 
 		rec_cnt += 1
-		proc = symbFindCtorOvlProc( param_subtype, arg_expr, @err_num )
+		proc = symbFindCtorOvlProc( param_subtype, arg_expr, arg_mode, @err_num )
 		rec_cnt -= 1
 
 		if( proc <> NULL ) then
@@ -1697,7 +1698,7 @@ private function hCheckOvlParam _
 	select case param_dtype
 	'' UDT? try to find a ctor
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-        hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr )
+        hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr, arg_mode )
 		return 0
 
 	'' enum param? refuse any other argument type, even integers,
@@ -2243,6 +2244,7 @@ function symbFindCtorOvlProc _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval expr as ASTNODE ptr, _
+		byval arg_mode as FB_PARAMMODE, _
 		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr
 
@@ -2250,10 +2252,8 @@ function symbFindCtorOvlProc _
 
  	'' don't pass the instance ptr
  	arg1.expr = expr
- 	arg1.mode = INVALID
+ 	arg1.mode = arg_mode
  	arg1.next = NULL
-
-    dim as FBSYMBOL ptr proc = any
 
  	function = symbFindClosestOvlProc( symbGetCompCtorHead( sym ), _
  								   	   1, _

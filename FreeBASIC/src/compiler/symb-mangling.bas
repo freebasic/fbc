@@ -1060,6 +1060,9 @@ private function hGetOperatorName _
 	case AST_OP_FOR
 		function = @"fR"
 
+	case AST_OP_STEP
+    	function = @"sT"
+
 	case AST_OP_NEXT
 		function = @"nX"
 

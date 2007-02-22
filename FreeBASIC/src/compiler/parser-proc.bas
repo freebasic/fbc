@@ -826,7 +826,7 @@ private function hCheckOpOvlParams _
 		byval options as FB_PROCOPT _
 	) as integer
 
-    dim as integer is_method = symbIsMethod( proc ), is_for = ( op = AST_OP_FOR )
+    dim as integer is_method = symbIsMethod( proc )
 
 #macro hCheckParam( proc, param, num )
 	'' vararg?
@@ -845,37 +845,41 @@ private function hCheckOpOvlParams _
 	function = FALSE
 
 	'' 1st) check the number of params
-    dim as integer params = any
+    dim as integer min_params = any, max_params = any
     select case as const astGetOpClass( op )
     case AST_NODECLASS_UOP, AST_NODECLASS_ADDROF
-    	params = iif( astGetOpIsSelf( op ), 0, 1 )
+    	min_params = iif( astGetOpIsSelf( op ), 0, 1 )
+    	max_params = min_params
 
     case AST_NODECLASS_CONV
-    	params = 0
+    	min_params = 0
+    	max_params = min_params
 
 	case AST_NODECLASS_ASSIGN, AST_NODECLASS_MEM
-		params = 1
+		min_params = 1
+		max_params = min_params
 
-    '' self only if FOR, NEXT
     case AST_NODECLASS_COMP
-   		params = iif( astGetOpIsSelf( op ), 1, 2 )
+   		'' self only if FOR, STEP and NEXT
+   		if( astGetOpIsSelf( op ) ) then
+   			min_params = iif( op = AST_OP_NEXT, 1, 0 )
+   			max_params = 1
+   		else
+   			min_params = 2
+   			max_params = min_params
+   		end if
 
     '' bop..
     case else
-    	params = iif( astGetOpIsSelf( op ), 1, 2 )
+    	min_params = iif( astGetOpIsSelf( op ), 1, 2 )
+    	max_params = min_params
     end select
-    
-    if( is_for ) then
-    	dim as integer real_params = symbGetProcParams( proc ) - iif( is_method, 1, 0 )
-    	if( (real_params < 1) or (real_params > 2) ) then
-	    	errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
-	    	exit function
-    	end if
-    else
-	    if( symbGetProcParams( proc ) - iif( is_method, 1, 0 ) <> params ) then
-	    	errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
-	    	exit function
-	    end if
+
+	dim as integer params = symbGetProcParams( proc )
+	dim as integer real_params = params - iif( is_method, 1, 0 )
+	if( (real_params < min_params) or (real_params > max_params) ) then
+		errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
+	   	exit function
 	end if
 
     '' 2nd) check method-only ops
@@ -987,29 +991,31 @@ private function hCheckOpOvlParams _
 
     	'' FOR, STEP or NEXT?
     	case AST_NODECLASS_COMP
-        
-			if astGetOpIsSelf( op ) then
-        
-	    		'' skip the instance ptr
-	    		if( is_method ) then
-	    			param = param->next
-	    		end if
-	
-	    		'' must be of the same type as parent
-	    		if( (param = NULL) or (parent = NULL) ) then
-	    			hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
-	    			exit function
-	    		end if
-	
-	    		hCheckParam( proc, param, 1 )
-	
-	    		'' same type?
-	    		if( (symbGetType( param ) <> symbGetType( parent )) or _
-	    			(symbGetSubtype( param ) <> parent) ) then
-	    			hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
-	    			exit function
-	    		end if
-	    		
+
+			if( astGetOpIsSelf( op ) ) then
+				if( params > 1 ) then
+
+	    			'' skip the instance ptr
+	    			if( is_method ) then
+	    				param = param->next
+	    			end if
+
+	    			'' must be of the same type as parent
+	    			if( (param = NULL) or (parent = NULL) ) then
+	    				hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
+	    				exit function
+	    			end if
+
+	    			hCheckParam( proc, param, 1 )
+
+	    			'' same type?
+	    			if( (symbGetType( param ) <> symbGetType( parent )) or _
+	    				(symbGetSubtype( param ) <> parent) ) then
+	    				hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
+	    				exit function
+	    			end if
+
+				end if
 			end if
 
     	end select
@@ -1123,17 +1129,16 @@ private function hCheckOpOvlParams _
 
     case AST_NODECLASS_COMP
 
+		'' FOR, STEP or NEXT?
 		if( astGetOpIsSelf( op ) ) then
-	   		'' it must return an integer (if FOR or NEXT) or void  
+	   		'' it must return an integer (if NEXT) or void otherwise
    			dim as integer valid_op = TRUE
-   			select case as const op
-			case AST_OP_FOR, AST_OP_NEXT
+   			if( op = AST_OP_NEXT ) then
 				valid_op = ( symbGetType( proc ) = FB_DATATYPE_INTEGER )
-
-			case else
+			else
 				valid_op = ( symbGetType( proc ) = FB_DATATYPE_VOID )
-   			end select
-   					
+   			end if
+
 	   		if( valid_op = FALSE ) then
 	   			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 	   			exit function
@@ -1173,7 +1178,7 @@ function cOperatorHeader _
 
 	is_nested = FALSE
 	is_extern = FALSE
-    
+
     '' operators are always overloaded
 	attrib or= FB_SYMBATTRIB_OPERATOR or FB_SYMBATTRIB_OVERLOADED
 
@@ -1192,13 +1197,13 @@ function cOperatorHeader _
 
 		'' no explicit parent?
 		if( parent = NULL ) then
-			
+
 			'' this is okay, as in globals; 'operator +', but
 			'' if there was a parsing error, we return
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
-        
+
         '' explicit parent
 		else
 			'' namespace used in a prototype?
@@ -1209,7 +1214,7 @@ function cOperatorHeader _
         	end if
 
 			is_extern = TRUE
-			
+
 		end if
 	end if
 
@@ -1223,17 +1228,17 @@ function cOperatorHeader _
 			op = AST_OP_ADD
 		end if
     end if
-    
+
     select case as const op
-        
+
         '' self ops?
 		case AST_OP_ASSIGN to AST_OP_CAST
-		
+
 			'' no parent?
 			if( parent = NULL ) then
 				'' fake it...
 				op = AST_OP_ADD
-				
+
 			else
 				'' check if operator FOR or NEXT have been already defined
 			    select case as const op
@@ -1245,11 +1250,11 @@ function cOperatorHeader _
 					if( sym = NULL ) then
 						first_def = TRUE
 					end if
-					
+
 				end select
 
 			end if
-			
+
 	end select
 
     '' check if method should be static or not
@@ -1347,7 +1352,7 @@ function cOperatorHeader _
     	if( symbGetProcParams( proc ) = 1 ) then
     		op = AST_OP_PLUS
     	end if
-    
+
     '' '*' with one param is actually a deref
     case AST_OP_MUL
     	if( symbGetProcParams( proc ) = 1 ) then
@@ -1365,7 +1370,7 @@ function cOperatorHeader _
 			    end if
 	    	end if
 		end if
-    	
+
     end select
 
     '' self? (but type casting)
@@ -1693,7 +1698,7 @@ function cPropertyHeader _
 		byref is_nested as integer, _
 		byval is_prototype as integer _
 	) as FBSYMBOL ptr
-    
+
     static as zstring * FB_MAXNAMELEN+1 id, aliasid, libname
     dim as FBSYMBOL ptr proc = any, parent = any
     dim as integer is_extern = any

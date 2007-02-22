@@ -453,8 +453,14 @@ declare sub astDelCALL _
 		/' AST_OP_FOR '/ _
 		( _
 			AST_NODECLASS_COMP, _
-			AST_OPFLAGS_SELF, _ 
+			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
 			@"for" _
+		), _
+		/' AST_OP_STEP '/ _
+        ( _
+        	AST_NODECLASS_COMP, _
+            AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
+            @"step" _
 		), _
 		/' AST_OP_NEXT '/ _
 		( _

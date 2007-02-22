@@ -5,7 +5,9 @@ namespace fbc_tests.compound.for_UDT_counter2
 type foo
 	declare constructor( byval r as zstring ptr )
 	
+	declare operator for( )
 	declare operator for( byref stp as foo )
+	declare operator step( )
 	declare operator step( byref stp as foo )
 	declare operator next( byref end_cond as foo ) as integer
 	
@@ -20,14 +22,22 @@ constructor foo( byval r as zstring ptr )
 	value = *r
 end constructor
 
+operator foo.for( )
+
+	is_up = -1
+	
+end operator
+
 operator foo.for( byref stp as foo )
 
-	if( @stp = NULL ) then
-		is_up = -1
-	else
-		is_up = (stp.value = "up")
-	end if
+	is_up = (stp.value = "up")
 	
+end operator
+
+operator foo.step( )
+	
+	value[0] += 1
+
 end operator
 
 operator foo.step( byref stp as foo )
