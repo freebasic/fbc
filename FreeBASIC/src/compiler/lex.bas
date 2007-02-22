@@ -159,8 +159,12 @@ sub lexEnd( )
 end sub
 
 '':::::
-private function hReadChar as uinteger static
-    dim as uinteger char
+private function hReadChar _
+	( _
+		_
+	) as uinteger
+
+	dim as uinteger char = any
 
 	'' any #define'd text?
 	if( lex->deflen > 0 ) then
@@ -258,7 +262,10 @@ private function hReadChar as uinteger static
 end function
 
 '':::::
-function lexEatChar as uinteger static
+function lexEatChar _
+	( _
+		_
+	) as uinteger
 
     ''
     function = lex->currchar
@@ -299,7 +306,7 @@ function lexEatChar as uinteger static
 end function
 
 '':::::
-private sub hSkipChar static
+private sub hSkipChar
 
 	'' #define'd text?
 	if( lex->deflen > 0 ) then
@@ -329,7 +336,7 @@ end sub
 function lexCurrentChar _
 	( _
 		byval skipwhitespc as integer = FALSE _
-	) as uinteger static
+	) as uinteger
 
     if( lex->currchar = UINVALID ) then
     	lex->currchar = hReadChar( )
@@ -396,10 +403,10 @@ private sub hReadIdentifier _
 		byref tlen as integer, _
 		byref dtype as integer, _
 		byval flags as LEXCHECK _
-	) static
+	)
 
-	dim as uinteger c
-	dim as integer skipchar
+	dim as uinteger c = any
+	dim as integer skipchar = any
 
 	'' (ALPHA | '_' )
 	*pid = lexEatChar( )
@@ -495,12 +502,12 @@ private function hReadNonDecNumber _
 		byref tlen as integer, _
 		byref islong as integer, _
 		byval flags as LEXCHECK _
-	) as ulongint static
+	) as ulongint
 
-	dim as uinteger value, c, first_c
-	dim as ulongint value64
-	dim as integer lgt
-	dim as integer skipchar
+	dim as uinteger value = any, c = any, first_c = any
+	dim as ulongint value64 = any
+	dim as integer lgt = any
+	dim as integer skipchar = any
 
 	islong = FALSE
 	value = 0
@@ -516,13 +523,15 @@ private function hReadNonDecNumber _
 		tlen += 2
 		lexEatChar( )
 
-		'' skip trailing zeroes
-		while( lexCurrentChar( ) = CHAR_0 )
-			*pnum = CHAR_0
-			pnum += 1
-			tlen += 1
-			lexEatChar( )
-		wend
+	    '' skip trailing zeroes if not inside a comment or parsing an $include
+	    if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
+			while( lexCurrentChar( ) = CHAR_0 )
+				*pnum = CHAR_0
+				pnum += 1
+				tlen += 1
+				lexEatChar( )
+			wend
+		end if
 
 		do
 			select case lexCurrentChar( )
@@ -575,13 +584,15 @@ private function hReadNonDecNumber _
 		tlen += 2
 		lexEatChar( )
 
-		'' skip trailing zeroes
-		while( lexCurrentChar( ) = CHAR_0 )
-			*pnum = CHAR_0
-			pnum += 1
-			tlen += 1
-			lexEatChar( )
-		wend
+		'' skip trailing zeroes if not inside a comment or parsing an $include
+		if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
+			while( lexCurrentChar( ) = CHAR_0 )
+				*pnum = CHAR_0
+				pnum += 1
+				tlen += 1
+				lexEatChar( )
+			wend
+		end if
 
 		first_c = lexCurrentChar( )
 		do
@@ -652,13 +663,15 @@ private function hReadNonDecNumber _
 		tlen += 2
 		lexEatChar( )
 
-		'' skip trailing zeroes
-		while( lexCurrentChar( ) = CHAR_0 )
-			*pnum = CHAR_0
-			pnum += 1
-			tlen += 1
-			lexEatChar( )
-		wend
+		'' skip trailing zeroes if not inside a comment or parsing an $include
+		if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
+			while( lexCurrentChar( ) = CHAR_0 )
+				*pnum = CHAR_0
+				pnum += 1
+				tlen += 1
+				lexEatChar( )
+			wend
+		end if
 
 		do
 			select case lexCurrentChar( )
@@ -724,11 +737,11 @@ private sub hReadFloatNumber _
 		byref tlen as integer, _
 		byref dtype as integer, _
 		byval flags as LEXCHECK _
-	) static
+	)
 
-    dim as uinteger c
-    dim as integer llen
-    dim as integer skipchar
+    dim as uinteger c = any
+    dim as integer llen = any
+    dim as integer skipchar = any
 
 	dtype = FB_DATATYPE_DOUBLE
 	llen = tlen
@@ -865,12 +878,12 @@ private sub hReadNumber _
 		byref dtype as integer, _
 		byref tlen as integer, _
 		byval flags as LEXCHECK _
-	) static
+	)
 
-	dim as uinteger c
-	dim as integer isfloat, issigned, islong, forcedsign
-	dim as ulongint value
-	dim as integer skipchar
+	dim as uinteger c = any
+	dim as integer isfloat = any, issigned = any, islong = any, forcedsign = any
+	dim as ulongint value = any
+	dim as integer skipchar = any
 
 	isfloat    = FALSE
 	issigned   = TRUE
@@ -886,15 +899,24 @@ private sub hReadNumber _
 
 	select case as const c
 	'' integer part
-	case CHAR_0 to CHAR_9
-
-		if( c <> CHAR_0 ) then
-			*pnum = c
+	case CHAR_0
+	    '' skip the '0' if not inside a comment or parsing an $include
+	    if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) <> 0 ) then
+			*pnum = CHAR_0
 			pnum += 1
 			tlen += 1
-			value = c - CHAR_0
-		end if
+			value = 0
+	    end if
 
+	    goto read_char
+
+	case CHAR_1 to CHAR_9
+		*pnum = c
+		pnum += 1
+		tlen += 1
+		value = c - CHAR_0
+
+read_char:
 		do
 			c = lexCurrentChar( )
 			select case as const c
@@ -1125,10 +1147,10 @@ private sub hReadString _
 		byval tk as FBTOKEN ptr, _
 		byval ps as zstring ptr, _
 		byval flags as LEXCHECK _
-	) static
+	)
 
-	dim as integer lgt, hasesc, escaped, skipchar
-	dim as uinteger char
+	dim as integer lgt = any, hasesc = any, escaped = any, skipchar = any
+	dim as uinteger char = any
 
 	*ps = 0
 	lgt = 0
@@ -1229,10 +1251,10 @@ private sub hReadWStr _
 		byval tk as FBTOKEN ptr, _
 		byval ps as wstring ptr, _
 		byval flags as LEXCHECK _
-	) static
+	)
 
-	dim as integer lgt, hasesc, escaped, skipchar
-	dim as uinteger char
+	dim as integer lgt = any, hasesc = any, escaped = any, skipchar = any
+	dim as uinteger char = any
 
 	*ps = 0
 	lgt = 0
@@ -1497,8 +1519,7 @@ re_read:
 	    '' only check for fpoint literals if not inside a comment or parsing an $include
 	    if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
 
-	    	dim as uinteger lachar
-	    	lachar = lexGetLookAheadChar( TRUE )
+	    	dim as uinteger lachar = lexGetLookAheadChar( TRUE )
 
 	    	'' '0' .. '9'?
 	    	if( (lachar >= CHAR_0) and (lachar <= CHAR_9) ) then
@@ -1613,7 +1634,7 @@ read_id:
 		t->id = iif( char = CHAR_EXCL, FB_TK_STRLIT_ESC, FB_TK_STRLIT_NOESC )
 
 		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-			dim as zstring ptr ps
+			dim as zstring ptr ps = any
 
 			'' do not preserve the string modifier?
 			if( (flags and LEXCHECK_NOQUOTES) = 0 ) then
@@ -1626,7 +1647,7 @@ read_id:
 			hReadString( t, ps, flags )
 
 		else
-			dim as wstring ptr ps
+			dim as wstring ptr ps = any
 
 			'' do not preserve the string modifier?
 			if( (flags and LEXCHECK_NOQUOTES) = 0 ) then
