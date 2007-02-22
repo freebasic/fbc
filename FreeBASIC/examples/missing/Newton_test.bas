@@ -1,4 +1,0 @@
-
-
-#include once "Newton.bi"
-
