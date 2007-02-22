@@ -47,19 +47,14 @@
 
 [ ] add the -lang (qb|fb) cmd-line option:
     - "qb":
-      [x] OPEN should be compatible with QB (ie: OPEN "DEVICE:"), the bloat doesn't
-          matter in -lang qb mode, just implement a fb_OpenDev or so in the rtlib doing
-          the parsing that will call any supported fb_hFileOpen###'s (COM, LPT, CONS, etc)
-      [ ] CALL: support undefined functions as in QB, all params BYREF as ANY
       [ ] SHARED at subs (non-shared vars at mod-level will have to be allocated
           statically, as before)
-      [ ] DEF - convert to a macro? doesn't it make any symbol called Fn... invalid
-          because it allows forward refs?
+      [ ] STATIC shouldn't create/allocate arrays, just declare them as static
+      [ ] suffixes not optional in keywords (ie: it's always STR$, not STR)
+      [ ] symbols with same name but different sufixes than keywords
       [ ] arrays with same name as scalars
       [ ] labels with the same name as procs:
           declare sub foo \n foo: \n goto foo \n call foo
-      [ ] symbols with same name but different sufixes than keywords
-      [ ] add the FIELD #expr statement - threads are not allowed in -lang qb anyways
       [x] move all variables to function-level, implicit or explict (see no SCOPE)
           [ ] check if its done correctly, if they are being cleared right after the
               stack frame setup
@@ -74,9 +69,15 @@
       [x] '$dynamic, '$static, '$include
       [x] LET
       [x] ON .. GOTO|GOSUB
-      [ ] ON ERROR, RESUME
+      [x] ON ERROR, RESUME
       [x] OPTION's
-      [x] DEFSNG
+      [x] DEFSNG by default
+      [x] OPEN should be compatible with QB (ie: OPEN "DEVICE:"), the bloat doesn't
+          matter in -lang qb mode, just implement a fb_OpenDev or so in the rtlib doing
+          the parsing that will call any supported fb_hFileOpen###'s (COM, LPT, CONS, etc)
+      [x] CALL: support undefined functions as in QB, all params BYREF as ANY
+      [ ] DEF - convert to a macro? doesn't it make any symbol called Fn... invalid
+          because it allows forward refs?
 
       [x] no SCOPE
       [x] no NAMESPACE

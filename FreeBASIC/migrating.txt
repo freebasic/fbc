@@ -99,7 +99,7 @@ use "-lang qb" (without quotes) option on the command-line when running FBC.
      
       Supported: Everything not supported/allowed in the fb mode, plus:
       
-      1) CALL can be used with forward-referenced functions. (W.I.P.)
+      1) CALL can be used with forward-referenced functions.
      
       2) SHARED can be used inside functions. (W.I.P.)
      

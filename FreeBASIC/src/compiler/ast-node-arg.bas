@@ -583,8 +583,10 @@ private function hCheckVoidParam _
 	end if
 
 	'' another quirk: constants, pass byval even if BYVAL wasn't given
-	if( astIsCONST( arg ) or astIsOFFSET( arg ) ) then
-		return TRUE
+	if( env.clopt.lang <> FB_LANG_QB ) then
+		if( astIsCONST( arg ) or astIsOFFSET( arg ) ) then
+			return TRUE
+		end if
 	end if
 
 	'' pass BYREF, check if a temp param isn't needed

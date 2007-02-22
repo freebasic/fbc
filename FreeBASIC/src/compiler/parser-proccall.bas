@@ -27,7 +27,15 @@
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
 
-declare function hCtorChain	( ) as integer
+declare function hCtorChain	_
+	( _
+		_
+	) as integer
+
+declare function hForwardCall _
+	( _
+		_
+	) as integer
 
 '':::::
 function cAssignFunctResult _
@@ -670,14 +678,14 @@ function cProcCallOrAssign _
 
  			chain_ = cIdentifier( base_parent )
   			if( chain_ <> NULL ) then
-				if( hAssignOrCall( base_parent, chain_, TRUE ) ) then
-					return TRUE
-				end if
+				return hAssignOrCall( base_parent, chain_, TRUE )
 			end if
 
-			'' !!!FIXME!!! add forward function call support like in QB: ie: all
-			''             params are byref as any, show a warning too
-			return errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			if( env.clopt.lang <> FB_LANG_QB ) then
+				return errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			else
+				return hForwardCall( )
+			end if
 
 		end select
 
@@ -761,3 +769,144 @@ private function hCtorChain _
 
 end function
 
+'':::::
+function hForwardCall _
+	( _
+		_
+	) as integer
+
+	function = FALSE
+
+	select case lexGetClass( )
+	case FB_TKCLASS_IDENTIFIER
+		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
+			'' if inside a namespace, symbols can't contain periods (.)'s
+			if( symbIsGlobalNamespc( ) = FALSE ) then
+  				if( lexGetPeriodPos( ) > 0 ) then
+  					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+		  				exit function
+					end if
+				end if
+			end if
+		end if
+
+	case else
+		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) <> FALSE ) then
+			'' error recovery: skip until next '('
+			hSkipUntil( CHAR_LPRNT )
+		end if
+
+		exit function
+	end select
+
+	dim as string id = *lexGetText( )
+
+	if( lexGetType( ) <> INVALID ) then
+    	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    		exit function
+    	end if
+    end if
+
+    lexSkipToken( )
+
+    dim as FBSYMBOL ptr proc = symbPreAddProc( id )
+
+	'' '('?
+	dim as integer check_prnt = FALSE
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		lexSkipToken( )
+		check_prnt = TRUE
+	end if
+
+	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
+
+	do
+		dim as ASTNODE ptr expr = cExpression( )
+		if( expr = NULL ) then
+			exit do
+		end if
+
+		dim as FB_PARAMMODE mode = FB_PARAMMODE_BYREF
+
+		'' ('('')')?
+		if( lexGetToken( ) = CHAR_LPRNT ) then
+			if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
+				lexSkipToken( )
+				lexSkipToken( )
+				mode = FB_PARAMMODE_BYDESC
+			end if
+		end if
+
+		''
+		dim as integer dtype = FB_DATATYPE_VOID
+		select case astGetDataType( expr )
+		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			 dtype = FB_DATATYPE_STRING
+		end select
+
+        ''
+		if( symbAddProcParam( proc, _
+							  NULL, _
+						  	  dtype, _
+						  	  NULL, _
+						  	  0, _
+						  	  symbCalcProcParamLen( dtype, _
+						  	  						NULL, _
+						  	  						mode ), _
+						  	  mode, _
+						  	  INVALID, _
+						  	  0, _
+						  	  NULL ) = NULL ) then
+			exit do
+		end if
+
+		dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list, FALSE )
+		arg->expr = expr
+		arg->mode = INVALID
+
+		'' ','
+	   	if( lexGetToken( ) <> CHAR_COMMA ) then
+	   		exit do
+	   	end if
+
+		lexSkipToken( )
+	loop
+
+	'' ')'?
+	if( check_prnt ) then
+		if( lexGetToken( ) <> CHAR_RPRNT ) then
+			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until ')'
+				hSkipUntil( CHAR_RPRNT, TRUE )
+			end if
+		else
+			lexSkipToken( )
+		end if
+	end if
+
+    ''
+    proc = symbAddPrototype( proc, id, NULL, NULL, _
+    						 FB_DATATYPE_VOID, NULL, 0, _
+    					     0, FB_FUNCMODE_DEFAULT )
+    if( proc = NULL ) then
+    	if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+    		exit function
+    	end if
+    end if
+
+    ''
+    dim as ASTNODE ptr procexpr = cProcArgList( NULL, _
+    											proc, _
+    											NULL, _
+    											@arg_list, _
+    											FB_PARSEROPT_OPTONLY )
+    if( procexpr <> NULL ) then
+    	astAdd( procexpr )
+    end if
+
+	function = TRUE
+
+end function
