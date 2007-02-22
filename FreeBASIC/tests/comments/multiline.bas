@@ -21,6 +21,22 @@ sub test_2 cdecl ()
 '/
 end sub
 
+Sub test_3 Cdecl ()
+' /'
+#error this shouldn't be parsed
+'/
+End Sub
+
+Sub test_4 Cdecl ()
+'' /'
+#define pass
+''/
+#ifndef pass
+#error #define should have been parsed
+#endif
+
+End Sub
+
 sub proc /' no alias '/ ( byval bar as zstring ptr /' const '/ = 0, _
 						 byref baz as integer /' in-out '/ = 0 ) /' void '/
 
