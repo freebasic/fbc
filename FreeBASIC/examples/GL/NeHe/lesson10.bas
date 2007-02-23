@@ -59,9 +59,9 @@ dim shared sector1 as SECTOR                   '' Our Model Goes Here
 dim shared filter as uinteger                  '' Which Filter To Use
 dim shared texture(0 to 2) as uinteger         '' Storage For 3 Textures
 	
-dim shared blend as integer                    '' Blending OFF/ON?
-dim shared fp as integer                       '' F Pressed?
-dim shared bp as integer                       '' B Pressed?
+	dim blend as integer                    '' Blending OFF/ON?
+	dim fp as integer                       '' F Pressed?
+	dim bp as integer                       '' B Pressed?
 
 	dim heading as single              '' direction of movement
 	dim xpos as single                 '' X position
