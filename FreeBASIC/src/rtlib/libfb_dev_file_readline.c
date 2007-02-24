@@ -41,19 +41,29 @@
 #include <string.h>
 #include "fb.h"
 
-static char *hWrapper( char *buffer, size_t count, FILE *fp )
+static char *hWrapper
+	( 
+		char *buffer, 
+		size_t count, 
+		FILE *fp 
+	)
 {
     return fgets( buffer, count, fp );
 }
 
 /*:::::*/
-int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst, fb_FnDevReadString pfnReadString )
+int fb_DevFileReadLineDumb
+	( 
+		FILE *fp, 
+		FBSTRING *dst, 
+		fb_FnDevReadString pfnReadString 
+	)
 {
     int res = fb_ErrorSetNum( FB_RTERROR_OK );
     size_t buffer_len;
     int found, first_run;
-    FBSTRING *src;
     char buffer[512];
+    FBSTRING src = { &buffer[0], 0, 0 };
 
     DBG_ASSERT( dst!=NULL );
 
@@ -64,12 +74,10 @@ int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst, fb_FnDevReadString pfnReadS
 
 	if( pfnReadString == NULL )
 		pfnReadString = hWrapper;
-
+    
     found = FALSE;
     while (!found)
     {
-        int tmp_buf_len;
-
         memset( buffer, 0, buffer_len );
 
         if( pfnReadString( buffer, sizeof( buffer ), fp ) == NULL )
@@ -103,13 +111,14 @@ int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst, fb_FnDevReadString pfnReadS
             }
         }
 
+        int tmp_buf_len;
+        
         if( !found )
         {
             /* remember the real length */
             tmp_buf_len = buffer_len += 1;
 
             /* not found ... so simply add this to the result string */
-
         }
         else
         {
@@ -129,19 +138,15 @@ int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst, fb_FnDevReadString pfnReadS
             buffer[buffer_len] = 0;
         }
 
-        /* create temporary string to ensure that NUL's are preserved ...
-         * this function wants the length WITH the NUL character!!! */
-        src = fb_StrAllocTempDescF( buffer, buffer_len + 1 );
+        src.size = src.len = buffer_len;
 
         /* assign or concatenate */
         if( first_run )
-        	fb_StrAssign( dst, -1, src, -1, FALSE );
+        	fb_StrAssign( dst, -1, &src, -1, FALSE );
         else
-        	fb_StrConcatAssign( dst, -1, src, -1, FALSE );
+        	fb_StrConcatAssign( dst, -1, &src, -1, FALSE );
 
         first_run = FALSE;
-
-        /* the temporary string is already deleted by fb_StrConcatAssign */
 
         buffer_len = tmp_buf_len;
     }
@@ -153,7 +158,11 @@ int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst, fb_FnDevReadString pfnReadS
 }
 
 /*:::::*/
-int fb_DevFileReadLine( struct _FB_FILE *handle, FBSTRING *dst )
+int fb_DevFileReadLine
+	( 
+		struct _FB_FILE *handle, 
+		FBSTRING *dst 
+	)
 {
     int res;
     FILE *fp;
