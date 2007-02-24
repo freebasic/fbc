@@ -415,6 +415,10 @@ function astNewASSIGN _
 		end if
 
 		'' otherwise, don't do any assignment by now to allow optimizations..
+		if( (options and AST_OPOPT_ISINI) <> 0 ) then
+			'' unless it's an initialization
+			return rtlStrAssign( l, r, TRUE )
+		end if
 
 	'' UDT's?
 	elseif( (ldtype = FB_DATATYPE_STRUCT) or _
@@ -490,6 +494,11 @@ function astNewASSIGN _
 			if( is_zstr ) then
 				return rtlWstrAssign( l, r, (options and AST_OPOPT_ISINI) <> 0 )
 			end if
+		end if
+
+		'' unless it's an initialization
+		if( (options and AST_OPOPT_ISINI) <> 0 ) then
+			return rtlWstrAssign( l, r, TRUE )
 		end if
 
     '' zstrings?
