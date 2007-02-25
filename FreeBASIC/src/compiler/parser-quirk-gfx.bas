@@ -156,15 +156,10 @@ private function hGetTarget _
 
     '' flag it as an expression so
     '' properties don't get confused
-	dim as integer last_isexpr = fbGetIsExpression( )
-	fbSetIsExpression( TRUE )
-
-	expr = cVarOrDeref( FALSE, TRUE )
+	expr = cVarOrDeref( FALSE, TRUE, TRUE )
 	if( expr = NULL ) then
 		exit function
 	end if
-
-	fbSetIsExpression( last_isexpr )
 
 	'' remove any casting if they won't do any conversion
 	if( astIsCAST( expr ) ) then

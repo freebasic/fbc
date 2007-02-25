@@ -739,10 +739,17 @@ declare function cDataMember _
 		byval checkarray as integer _
 	) as ASTNODE ptr
 
-declare function cVarOrDeref _
+declare function cVarOrDerefEx _
 	( _
 		byval checkarray as integer = TRUE, _
 		byval checkaddrof as integer = FALSE _
+	) as ASTNODE ptr
+
+declare function cVarOrDeref _
+	( _
+		byval checkarray as integer = TRUE, _
+		byval checkaddrof as integer = FALSE, _
+		byval force_expr as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function cFunctionEx _

@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.pointers.addr_deref
+namespace fbc_tests.pointers.prop_new_del
 
 	type foo
 	

@@ -1819,10 +1819,7 @@ function cDataMember _
 
 end function
 
-'':::::
-''cVarOrDeref		= 	Deref | PtrTypeCasting | AddrOf | Variable
-''
-function cVarOrDeref _
+function cVarOrDerefEx _
 	( _
 		byval check_array as integer, _
 		byval allow_addrof as integer _
@@ -1886,4 +1883,28 @@ function cVarOrDeref _
 
 	function = expr
 
+end function 
+
+'':::::
+''cVarOrDeref		= 	Deref | PtrTypeCasting | AddrOf | Variable
+''
+function cVarOrDeref _
+	( _
+		byval check_array as integer, _
+		byval allow_addrof as integer, _
+		byval force_expr as integer _
+	) as ASTNODE ptr
+	
+	dim as integer last_isexpr = any
+	if( force_expr ) then
+		last_isexpr = fbGetIsExpression( )
+		fbSetIsExpression( TRUE )
+	end if
+
+	function = cVarOrDerefEx( check_array, allow_addrof )
+
+	if( force_expr ) then
+		fbSetIsExpression( last_isexpr )
+	end if
+	
 end function
