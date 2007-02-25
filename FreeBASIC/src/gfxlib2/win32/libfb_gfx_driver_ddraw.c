@@ -126,9 +126,6 @@ static void restore_surfaces(void)
 			IDirectDrawSurface_Restore(lpDDS_back);
 		result = IDirectDrawSurface_Restore(lpDDS);
 		if (result == DDERR_WRONGMODE) {
-	
-			printf("Wrongmode!");
-
 			/* it sucks, we have to recreate all DD objects */
 			directx_exit();
 			while (directx_init()) {
@@ -195,9 +192,9 @@ static BOOL WINAPI ddenum_callback(GUID FAR *lpGUID, LPSTR lpDriverDescription, 
 {
 	if (hm == fb_win32.monitor) {
 		*((GUID *)lpContext) = *lpGUID;
-		return 1;
-	} else
 		return 0;
+	} else
+		return 1;
 }
 
 /*:::::*/
@@ -238,7 +235,7 @@ static int directx_init(void)
 		ddGUID = NULL;
 	else
 		ddGUID = &monitor_guid;
-
+	
 	if ((!DirectDrawCreate) || (DirectDrawCreate(ddGUID, &lpDD1, NULL) != DD_OK))
 		return -1;
 	res = IDirectDraw_QueryInterface(lpDD1, &IID_IDirectDraw2, (LPVOID)&lpDD);
