@@ -45,12 +45,17 @@ FBCALL int fb_DateTimeParse( FBSTRING *s,
                              int *pHour, int *pMinute, int *pSecond,
                              int want_date, int want_time)
 {
+	
     const char *text;
     int result = FALSE;
     size_t length, text_len;
 
     text = s->data;
     text_len = FB_STRSIZE( s );
+
+	if( text == NULL ) {
+		return result;
+	}
 
     if( fb_hDateParse( text, text_len, pDay, pMonth, pYear, &length ) ) {
         text += length;
