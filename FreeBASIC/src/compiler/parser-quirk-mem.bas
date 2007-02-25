@@ -296,7 +296,13 @@ function cOperatorDelete _
         end if
 	end if
 
+	dim as integer last_isexpr = fbGetIsExpression( )
+	fbSetIsExpression( TRUE )
+
 	ptr_expr = cVarOrDeref( )
+	
+	fbSetIsExpression( last_isexpr )
+	
 	if( ptr_expr = NULL ) then
        	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
        		exit function
