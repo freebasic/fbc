@@ -348,6 +348,14 @@ declare function cInitializer _
 		byval options as FB_INIOPT _
 	) as ASTNODE ptr
 
+declare function cTypeOf _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as integer = NULL, _
+		byref ptrcnt as integer = NULL _
+	) as integer
+
 declare function cSymbolType _
 	( _
 		byref dtype as integer, _

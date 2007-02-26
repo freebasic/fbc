@@ -236,8 +236,8 @@
 	 			( -1 ) _
 	 		} _
 	 	), _
-		/' #define BIT(x,y) (((x) and (1 shl (y))) <> 0) '/ _
-		( _
+		/' #define BIT(x,y) (((x) and (cast(typeof(x), 1) shl (y))) <> 0) '/ _
+		( _                           
 			@"BIT", _
 	 		FB_RTL_OPT_NONE, _
 	 		2, _
@@ -247,13 +247,15 @@
 	 		{ _
 	 			( FB_DEFTOK_TYPE_TEX, @"(((" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @") and (1 shl (" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @") and (cast(typeof(" ), _
+	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
+	 			( FB_DEFTOK_TYPE_TEX, @"), 1) shl (" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
 	 			( FB_DEFTOK_TYPE_TEX, @"))) <> 0)" ), _
 	 			( -1 ) _
 	 		} _
 	 	), _
-		/' #define BITSET(x,y) ((x) or (1 shl (y))) '/ _
+		/' #define BITSET(x,y) ((x) or (cast(typeof(x), 1) shl (y))) '/ _
 		( _
 			@"BITSET", _
 	 		FB_RTL_OPT_NONE, _
@@ -264,13 +266,15 @@
 	 		{ _
 	 			( FB_DEFTOK_TYPE_TEX, @"((" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @") or (1 shl (" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @") or (cast(typeof(" ), _
+	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
+	 			( FB_DEFTOK_TYPE_TEX, @"), 1) shl (" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
 	 			( FB_DEFTOK_TYPE_TEX, @")))" ), _
 	 			( -1 ) _
 	 		} _
 	 	), _
-		/' #define BITRESET(x,y) ((x) and not (1 shl (y))) '/ _
+		/' #define BITRESET(x,y) ((x) and not (cast(typeof(x), 1) shl (y))) '/ _
 		( _
 			@"BITRESET", _
 	 		FB_RTL_OPT_NONE, _
@@ -281,7 +285,9 @@
 	 		{ _
 	 			( FB_DEFTOK_TYPE_TEX, @"((" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @") and not (1 shl (" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @") and not (cast(typeof(" ), _
+	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
+	 			( FB_DEFTOK_TYPE_TEX, @"), 1) shl (" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
 	 			( FB_DEFTOK_TYPE_TEX, @")))" ), _
 	 			( -1 ) _

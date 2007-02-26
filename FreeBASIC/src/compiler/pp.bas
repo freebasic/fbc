@@ -557,6 +557,14 @@ function ppReadLiteral _
 
     		continue do
 
+	  	case FB_TK_TYPEOF
+	  		lexSkipToken( )
+	        dim as string res
+			ppTypeOf( res )
+			DZstrConcatAssign( text, res )
+
+			exit do
+
     	end select
 
     	'' anything else..
@@ -696,6 +704,15 @@ function ppReadLiteralW _
 
     		continue do
 
+	  	case FB_TK_TYPEOF
+	  		lexSkipToken( )
+	        
+	        dim as string res
+			ppTypeOf( res )
+			DWstrConcatAssign( text, wstr( res ) )
+
+			exit do
+
     	end select
 
         '' anything else..
@@ -713,3 +730,123 @@ function ppReadLiteralW _
 
 end function
 
+private function dtypeToString( byref res as string, byval dtype as integer, byval subtype as FBSYMBOL ptr, byval lgt as integer ) as integer
+    
+    function = TRUE
+    
+    dim as string ptr_string
+    do while( dtype > FB_DATATYPE_POINTER )
+    	ptr_string += " ptr"
+    	dtype -= FB_DATATYPE_POINTER
+    loop
+    
+	select case as const dtype
+		
+		case FB_DATATYPE_VOID
+			res = "any" 
+		case FB_DATATYPE_BYTE
+			res = "byte"
+		case FB_DATATYPE_UBYTE
+			res = "ubyte"
+		case FB_DATATYPE_CHAR
+			res = "zstring"
+		case FB_DATATYPE_SHORT
+			res = "short"
+		case FB_DATATYPE_USHORT
+			res = "ushort"
+		case FB_DATATYPE_WCHAR
+			res = "wstring"
+		case FB_DATATYPE_INTEGER
+			res = "integer"
+		case FB_DATATYPE_UINT
+			res = "uinteger"
+		case FB_DATATYPE_ENUM
+			return FALSE
+		case FB_DATATYPE_BITFIELD
+			res = *symbGetName( subtype )
+		case FB_DATATYPE_LONG
+			res = "long"
+		case FB_DATATYPE_ULONG
+			res = "ulong"
+		case FB_DATATYPE_LONGINT
+			res = "longint"
+		case FB_DATATYPE_ULONGINT
+			res = "ulongint"
+		case FB_DATATYPE_SINGLE
+			res = "single"
+		case FB_DATATYPE_DOUBLE
+			res = "double"
+		case FB_DATATYPE_STRING
+			res = "string"
+		case FB_DATATYPE_FIXSTR
+			res = "string * " & lgt-1
+		case FB_DATATYPE_STRUCT
+			res = *symbGetName( subtype )
+		case FB_DATATYPE_NAMESPC
+			return FALSE
+		case FB_DATATYPE_FUNCTION
+			res = "function"
+		case FB_DATATYPE_FWDREF
+			res = "any"
+	
+	end select
+	
+	res += ptr_string
+
+end function
+
+function ppTypeOf _
+	( _
+		byref res as string _
+	) as integer
+    
+    function = FALSE
+    
+	'' get type's name
+	dim as string type_string
+	dim as integer dtype, lgt
+	dim as FBSYMBOL ptr subtype
+	
+    '' '('
+	if( lexGetToken( ) <> CHAR_LPRNT ) then
+		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+			exit function
+		end if
+	else
+		lexSkipToken( LEXCHECK_NODEFINE )
+	end if
+
+	if( cTypeOf( dtype, subtype, lgt ) = TRUE ) then
+		if( dtypeToString( type_string, dtype, subtype, lgt ) ) = TRUE then
+  			'' assign typename
+  			res = type_string
+  		else
+  			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+  				exit function
+  			else
+	  			res = "integer"
+  			end if
+		end if
+	else
+		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+			exit function
+		else
+			'' fake a type
+  			res = "integer"
+		end if
+	end if
+	
+	res = ucase( res )
+
+    '' ')'
+	if( lexGetToken( ) <> CHAR_RPRNT ) then
+		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+			exit function
+		end if
+	else
+		lexSkipToken( LEXCHECK_NODEFINE )
+	end if
+	
+	function = TRUE
+
+end function

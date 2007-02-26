@@ -95,6 +95,8 @@ Version 0.17 Beta:
 - multiple EXIT and CONTINUE levels support (EXIT FOR, FOR or CONTINUE DO, DO, DO, etc) (v1c)
 - the __FB_BUILD_DATE__, __FB_BUILD_TIME__, and __FB_BUILD_SIGNATURE__ intrinsic defines, see wiki for details. (cha0s)
 - DyLibSymbol is now overloaded; it can take a short as the second arg, to specify the proc's ordinal. Patch by voodooattack
+- the TYPEOF() compiler intrinsic, which substitues the type of the variable given in it's place, "dim as typeof(foo) bar"... see 
+  http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgTypeof for details (cha0s)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
@@ -155,9 +157,9 @@ Version 0.17 Beta:
 - DirectDraw surface restoring was bugged, resulting in crashes if another DirectX-based program entered fullscreen (lillo)
 - KILL was always returning 0
 - DIR on DOS now only returns files/directories with the attributes specified
+- the BIT, BITSET, BITRESET macros now use TYPEOF() to determine the variable type when accessing. (cha0s)
 - the quotes of literal strings were not being preserved when used inside #IF expressions (v1c)
 - symbols were case-sensitive when compared inside #IF expressions (v1c)
-
 
 Version 0.16 Beta:
 

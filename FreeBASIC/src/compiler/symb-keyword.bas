@@ -81,6 +81,7 @@ end type
         ( @"ANY"        , FB_TK_ANY         , FB_TKCLASS_KEYWORD ), _
         ( @"PTR"        , FB_TK_PTR         , FB_TKCLASS_KEYWORD ), _
         ( @"POINTER"    , FB_TK_POINTER     , FB_TKCLASS_KEYWORD ), _
+        ( @"TYPEOF"     , FB_TK_TYPEOF      , FB_TKCLASS_KEYWORD ), _
         ( @"WHILE"      , FB_TK_WHILE       , FB_TKCLASS_KEYWORD ), _
         ( @"UNTIL"      , FB_TK_UNTIL       , FB_TKCLASS_KEYWORD ), _
         ( @"WEND"       , FB_TK_WEND        , FB_TKCLASS_KEYWORD ), _

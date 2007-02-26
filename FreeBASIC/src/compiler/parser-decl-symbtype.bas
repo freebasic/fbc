@@ -152,6 +152,85 @@ end function
 
 
 '':::::
+function cTypeOf _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as integer = NULL, _
+		byref ptrcnt as integer = NULL _
+	) as integer
+    
+    function = FALSE
+    
+    '' allow arrays without indexes (?)
+	dim as ASTNODE ptr expr = cVarOrDeref( FALSE, , TRUE )
+	if( expr = NULL ) then
+	    if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+	   		exit function
+	   	else
+			'' error recovery: fake an type
+			lgt     = len(integer)
+			dtype   = FB_DATATYPE_INTEGER
+			subtype = NULL
+			ptrcnt  = 0
+			return TRUE
+		end if
+	end if
+	
+	'' ugly hack to deal with arrays w/o indexes
+	if( astIsNIDXARRAY( expr ) ) then
+		dim as ASTNODE ptr temp_node = expr
+		expr = astGetLeft( expr )
+		astDelNode( temp_node )
+	end if
+
+	'' ??? is this right?
+	dim as integer derefs = 0
+	dim as ASTNODE ptr walk = expr
+	dim as FBSYMBOL ptr sym = any
+	while walk
+		'' if it's a field, get this node's type, 
+		'' don't "solve" the tree
+		if( astGetClass( walk ) = AST_NODECLASS_FIELD ) then
+			sym = astGetSymbol( walk )
+			exit while
+		end if
+
+		'' count derefs
+		if( astGetClass( walk ) = AST_NODECLASS_DEREF ) then
+			derefs += 1
+		end if
+
+		'' update/walk
+		sym = astGetSymbol( walk )
+		walk = astGetLeft( walk )
+	wend
+	if( sym = NULL ) then
+		exit function
+	end if
+	
+	lgt     = symbGetLen( sym )
+	dtype   = symbGetType( sym )
+	subtype = symbGetSubtype( sym )
+	ptrcnt  = symbGetPtrCnt( sym )
+	
+	'' byref args have a deref, 
+	'' but they maintain their type
+	if( dtype >= FB_DATATYPE_POINTER ) then
+		if( derefs > 0 ) then
+			'' balance it
+			dtype  -= (FB_DATATYPE_POINTER * derefs)
+			ptrcnt -= (derefs)
+		end if
+	end if
+	
+	astDelTree( expr )
+	
+	function = TRUE
+
+end function
+
+'':::::
 ''SymbolType      =   UNSIGNED? (
 ''				      ANY
 ''				  |   CHAR|BYTE
@@ -181,203 +260,231 @@ function cSymbolType _
 	dtype = INVALID
 	subtype = NULL
 	ptrcnt = 0
-
-	'' UNSIGNED?
-	isunsigned = hMatch( FB_TK_UNSIGNED )
-
-	''
-	select case as const lexGetToken( )
-	case FB_TK_ANY
-		lexSkipToken( )
-		dtype = FB_DATATYPE_VOID
-		lgt = 0
-
-	case FB_TK_BYTE
-		lexSkipToken( )
-		dtype = FB_DATATYPE_BYTE
-		lgt = 1
-	case FB_TK_UBYTE
-		lexSkipToken( )
-		dtype = FB_DATATYPE_UBYTE
-		lgt = 1
-
-	case FB_TK_SHORT
-		lexSkipToken( )
-		dtype = FB_DATATYPE_SHORT
-		lgt = 2
-
-	case FB_TK_USHORT
-		lexSkipToken( )
-		dtype = FB_DATATYPE_USHORT
-		lgt = 2
-
-	case FB_TK_INTEGER
-		lexSkipToken( )
-		dtype = FB_DATATYPE_INTEGER
-		lgt = FB_INTEGERSIZE
-
-	case FB_TK_UINT
-		lexSkipToken( )
-		dtype = FB_DATATYPE_UINT
-		lgt = FB_INTEGERSIZE
-
-	case FB_TK_LONG
-		lexSkipToken( )
-		dtype = FB_DATATYPE_LONG
-		lgt = FB_LONGSIZE
-
-	case FB_TK_ULONG
-		lexSkipToken( )
-		dtype = FB_DATATYPE_ULONG
-		lgt = FB_LONGSIZE
-
-	case FB_TK_LONGINT
-		lexSkipToken( )
-		dtype = FB_DATATYPE_LONGINT
-		lgt = FB_INTEGERSIZE*2
-
-	case FB_TK_ULONGINT
-		lexSkipToken( )
-		dtype = FB_DATATYPE_ULONGINT
-		lgt = FB_INTEGERSIZE*2
-
-	case FB_TK_SINGLE
-		lexSkipToken( )
-		dtype = FB_DATATYPE_SINGLE
-		lgt = 4
-
-	case FB_TK_DOUBLE
-		lexSkipToken( )
-		dtype = FB_DATATYPE_DOUBLE
-		lgt = 8
-
-	case FB_TK_STRING
-		lexSkipToken( )
-
-		'' assume it's a var-len string, see below for fixed-len
-		dtype = FB_DATATYPE_STRING
-		lgt = FB_STRDESCLEN
-
-	case FB_TK_ZSTRING
-		lexSkipToken( )
-
-		'' assume it's a pointer, see below for fixed-len
-		dtype = FB_DATATYPE_CHAR
-		lgt = 0
-
-	case FB_TK_WSTRING
-		lexSkipToken( )
-
-    	'' ditto
-		dtype = FB_DATATYPE_WCHAR
-    	lgt = 0
-
-	case FB_TK_FUNCTION, FB_TK_SUB
-	    isfunction = (lexGetToken( ) = FB_TK_FUNCTION)
-	    lexSkipToken( )
-
-		dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION
-		lgt = FB_POINTERSIZE
-		ptrcnt = 1
-
-		subtype = cSymbolTypeFuncPtr( isfunction )
-		if( subtype = NULL ) then
-			exit function
-		end if
-
-	case else
-		dim as FBSYMCHAIN ptr chain_ = NULL
-		dim as FBSYMBOL ptr base_parent = any
-        dim as integer id_options = FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT
-  		dim as integer check_id = TRUE
-
-  		if( parser.stmt.with.sym <> NULL ) then
-  			if( lexGetToken( ) = CHAR_DOT ) then
-  				'' not a '..'?
-  				check_id = (lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) = CHAR_DOT)
+	
+	'' TYPEOF?
+	if( hMatch( FB_TK_TYPEOF ) ) then
+	    '' '('
+  		if( hMatch( CHAR_LPRNT ) = FALSE ) then
+  			if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+  				exit function
+  			else
+  				'' error recovery: skip until ')'
+  				hSkipUntil( CHAR_RPRNT, TRUE )
   			end if
+  		end if
+  		'' datatype
+        if( cTypeOf( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+        	return FALSE 
+        end if
+	    '' ')'
+		if( hMatch( CHAR_RPRNT ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until ')'
+				hSkipUntil( CHAR_RPRNT, TRUE )
+			end if
 		end if
-        
-        if( check_id = TRUE ) then
-			chain_ = cIdentifier( base_parent, id_options )
-		end if
-		
-		if( chain_ = NULL ) then
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+	
+	else
+	
+		'' UNSIGNED?
+		isunsigned = hMatch( FB_TK_UNSIGNED )
+	
+		''
+		select case as const lexGetToken( )
+		case FB_TK_ANY
+			lexSkipToken( )
+			dtype = FB_DATATYPE_VOID
+			lgt = 0
+	
+		case FB_TK_BYTE
+			lexSkipToken( )
+			dtype = FB_DATATYPE_BYTE
+			lgt = 1
+		case FB_TK_UBYTE
+			lexSkipToken( )
+			dtype = FB_DATATYPE_UBYTE
+			lgt = 1
+	
+		case FB_TK_SHORT
+			lexSkipToken( )
+			dtype = FB_DATATYPE_SHORT
+			lgt = 2
+	
+		case FB_TK_USHORT
+			lexSkipToken( )
+			dtype = FB_DATATYPE_USHORT
+			lgt = 2
+	
+		case FB_TK_INTEGER
+			lexSkipToken( )
+			dtype = FB_DATATYPE_INTEGER
+			lgt = FB_INTEGERSIZE
+	
+		case FB_TK_UINT
+			lexSkipToken( )
+			dtype = FB_DATATYPE_UINT
+			lgt = FB_INTEGERSIZE
+	
+		case FB_TK_LONG
+			lexSkipToken( )
+			dtype = FB_DATATYPE_LONG
+			lgt = FB_LONGSIZE
+	
+		case FB_TK_ULONG
+			lexSkipToken( )
+			dtype = FB_DATATYPE_ULONG
+			lgt = FB_LONGSIZE
+	
+		case FB_TK_LONGINT
+			lexSkipToken( )
+			dtype = FB_DATATYPE_LONGINT
+			lgt = FB_INTEGERSIZE*2
+	
+		case FB_TK_ULONGINT
+			lexSkipToken( )
+			dtype = FB_DATATYPE_ULONGINT
+			lgt = FB_INTEGERSIZE*2
+	
+		case FB_TK_SINGLE
+			lexSkipToken( )
+			dtype = FB_DATATYPE_SINGLE
+			lgt = 4
+	
+		case FB_TK_DOUBLE
+			lexSkipToken( )
+			dtype = FB_DATATYPE_DOUBLE
+			lgt = 8
+	
+		case FB_TK_STRING
+			lexSkipToken( )
+	
+			'' assume it's a var-len string, see below for fixed-len
+			dtype = FB_DATATYPE_STRING
+			lgt = FB_STRDESCLEN
+	
+		case FB_TK_ZSTRING
+			lexSkipToken( )
+	
+			'' assume it's a pointer, see below for fixed-len
+			dtype = FB_DATATYPE_CHAR
+			lgt = 0
+	
+		case FB_TK_WSTRING
+			lexSkipToken( )
+	
+	    	'' ditto
+			dtype = FB_DATATYPE_WCHAR
+	    	lgt = 0
+	
+		case FB_TK_FUNCTION, FB_TK_SUB
+		    isfunction = (lexGetToken( ) = FB_TK_FUNCTION)
+		    lexSkipToken( )
+	
+			dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION
+			lgt = FB_POINTERSIZE
+			ptrcnt = 1
+	
+			subtype = cSymbolTypeFuncPtr( isfunction )
+			if( subtype = NULL ) then
 				exit function
 			end if
-
-		else
-			do
-				dim as FBSYMBOL ptr sym = chain_->sym
-				do
-					select case symbGetClass( sym )
-					case FB_SYMBCLASS_STRUCT
-						lexSkipToken( )
-						dtype = FB_DATATYPE_STRUCT
-						subtype = sym
-						lgt = symbGetLen( sym )
-						goto exit_search
-
-	    			case FB_SYMBCLASS_ENUM
-						lexSkipToken( )
-						dtype = FB_DATATYPE_ENUM
-						subtype = sym
-						lgt = FB_INTEGERSIZE
-						goto exit_search
-
-					case FB_SYMBCLASS_TYPEDEF
-						lexSkipToken( )
-						dtype = symbGetType( sym )
-						subtype = symbGetSubtype( sym )
-						lgt = symbGetLen( sym )
-						ptrcnt = symbGetPtrCnt( sym )
-						goto exit_search
-					end select
-
-					sym = sym->hash.next
-				loop while( sym <> NULL )
-
-				chain_ = symbChainGetNext( chain_ )
-			loop while( chain_ <> NULL )
-
-exit_search:
-		end if
-	end select
-
-	'' no type?
-	if( dtype = INVALID ) then
-		if( isunsigned ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-		end if
-
-		return FALSE
-	end if
-
-	'' unsigned?
-	if( isunsigned ) then
-		'' remap type, if valid
-		select case as const dtype
-		case FB_DATATYPE_BYTE
-			dtype = FB_DATATYPE_UBYTE
-
-		case FB_DATATYPE_SHORT
-			dtype = FB_DATATYPE_USHORT
-
-		case FB_DATATYPE_INTEGER
-			dtype = FB_DATATYPE_UINT
-
-		case FB_DATATYPE_LONG
-			dtype = FB_DATATYPE_ULONG
-
-		case FB_DATATYPE_LONGINT
-			dtype = FB_DATATYPE_ULONGINT
-
+	
 		case else
-			if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-				exit function
+			dim as FBSYMCHAIN ptr chain_ = NULL
+			dim as FBSYMBOL ptr base_parent = any
+	        dim as integer id_options = FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT
+	  		dim as integer check_id = TRUE
+	
+	  		if( parser.stmt.with.sym <> NULL ) then
+	  			if( lexGetToken( ) = CHAR_DOT ) then
+	  				'' not a '..'?
+	  				check_id = (lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) = CHAR_DOT)
+	  			end if
+			end if
+	        
+	        if( check_id = TRUE ) then
+				chain_ = cIdentifier( base_parent, id_options )
+			end if
+			
+			if( chain_ = NULL ) then
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
+					exit function
+				end if
+	
+			else
+				do
+					dim as FBSYMBOL ptr sym = chain_->sym
+					do
+						select case symbGetClass( sym )
+						case FB_SYMBCLASS_STRUCT
+							lexSkipToken( )
+							dtype = FB_DATATYPE_STRUCT
+							subtype = sym
+							lgt = symbGetLen( sym )
+							goto exit_search
+	
+		    			case FB_SYMBCLASS_ENUM
+							lexSkipToken( )
+							dtype = FB_DATATYPE_ENUM
+							subtype = sym
+							lgt = FB_INTEGERSIZE
+							goto exit_search
+	
+						case FB_SYMBCLASS_TYPEDEF
+							lexSkipToken( )
+							dtype = symbGetType( sym )
+							subtype = symbGetSubtype( sym )
+							lgt = symbGetLen( sym )
+							ptrcnt = symbGetPtrCnt( sym )
+							goto exit_search
+						end select
+	
+						sym = sym->hash.next
+					loop while( sym <> NULL )
+	
+					chain_ = symbChainGetNext( chain_ )
+				loop while( chain_ <> NULL )
+	
+exit_search:
 			end if
 		end select
+	
+		'' no type?
+		if( dtype = INVALID ) then
+			if( isunsigned ) then
+				errReport( FB_ERRMSG_SYNTAXERROR )
+			end if
+	
+			return FALSE
+		end if
+	
+		'' unsigned?
+		if( isunsigned ) then
+			'' remap type, if valid
+			select case as const dtype
+			case FB_DATATYPE_BYTE
+				dtype = FB_DATATYPE_UBYTE
+	
+			case FB_DATATYPE_SHORT
+				dtype = FB_DATATYPE_USHORT
+	
+			case FB_DATATYPE_INTEGER
+				dtype = FB_DATATYPE_UINT
+	
+			case FB_DATATYPE_LONG
+				dtype = FB_DATATYPE_ULONG
+	
+			case FB_DATATYPE_LONGINT
+				dtype = FB_DATATYPE_ULONGINT
+	
+			case else
+				if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+					exit function
+				end if
+			end select
+		end if
 	end if
 
 	'' fixed-len z|w|string? (must be handled here because the typedefs)

@@ -92,6 +92,11 @@ declare function ppPragma _
 	( _
 	) as integer
 
+declare function ppTypeOf _
+	( _
+		byref type_string as string _
+	) as integer
+
 declare sub ppCondInit _
 	( _
 	)

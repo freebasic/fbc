@@ -958,8 +958,17 @@ private function ppParentExpr _
 
   	function = FALSE
 
-  	'' '(' Expression ')'
   	select case lexGetToken( )
+  	'' TYPEOF '(' Expression ')'
+  	case FB_TK_TYPEOF
+  		lexSkipToken( )
+        
+		parexpr.class = PPEXPR_CLASS_STR
+		if( ppTypeOf( parexpr.str ) = FALSE ) then
+			exit function
+		end if
+	    
+  	'' '(' Expression ')'
   	case CHAR_LPRNT
   		lexSkipToken( )
 
