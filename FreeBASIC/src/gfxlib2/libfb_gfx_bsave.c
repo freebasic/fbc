@@ -53,7 +53,7 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 {
 	BMP_HEADER header;
 	PUT_HEADER *put_header;
-	int w, h, i, shift = 2, bfSize, biSizeImage, bfOffBits, biClrUsed, filler, pitch, color;
+	int w, h, i, shift = 2, bfSize, biSizeImage, bfOffBits, biClrUsed, filler, bpp, pitch, color;
 	unsigned char *s, *buffer, *p;
 	unsigned int *palette = (unsigned int *)pal;
 	
@@ -63,23 +63,26 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 			w = put_header->width;
 			h = put_header->height;
 			s = (unsigned char *)src + sizeof(PUT_HEADER);
+			bpp = put_header->bpp;
 			pitch = put_header->pitch;
 		}
 		else {
 			w = put_header->old.width;
 			h = put_header->old.height;
 			s = (unsigned char *)src + 4;
-			pitch = w * (put_header->old.bpp ? put_header->old.bpp : __fb_gfx->bpp);
+			bpp = (put_header->old.bpp ? put_header->old.bpp : __fb_gfx->bpp);
+			pitch = w * bpp;
 		}
 	}
 	else {
 		w = __fb_gfx->w;
 		h = __fb_gfx->h;
 		s = ctx->line[0];
+		bpp = __fb_gfx->bpp;
 		pitch = __fb_gfx->pitch;
 	}
-	filler = 3 - (((w * (__fb_gfx->bpp)) - 1) & 0x3);
-	if (__fb_gfx->bpp == 1) {
+	filler = 3 - ((pitch - 1) & 0x3);
+	if (bpp == 1) {
 		biSizeImage = (w + filler) * h;
 		bfOffBits = 54 + 1024;
 		bfSize = bfOffBits + biSizeImage;
@@ -100,7 +103,7 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 	header.biWidth = w;
 	header.biHeight = h;
 	header.biPlanes = 1;
-	header.biBitCount = (__fb_gfx->bpp == 1) ? 8 : 24;
+	header.biBitCount = (bpp == 1) ? 8 : 24;
 	header.biSizeImage = biSizeImage;
 	header.biXPelsPerMeter = 0xB12;
 	header.biYPelsPerMeter = 0xB12;
@@ -108,7 +111,7 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 	header.biClrImportant = biClrUsed;
 	if (!fwrite(&header, 54, 1, f))
 		return FB_RTERROR_FILEIO;
-	if (__fb_gfx->bpp == 1) {
+	if (bpp == 1) {
 		if (!pal) {
 			palette = __fb_gfx->device_palette;
 			shift = 0;
@@ -122,7 +125,7 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 	}
 	
 	filler = biSizeImage / h;
-	switch (__fb_gfx->bpp) {
+	switch (bpp) {
 		case 1:
 			break;
 		case 2:
@@ -137,7 +140,7 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 	s += (h - 1) * pitch;
 	for (; h; h--) {
 		p = buffer;
-		switch (__fb_gfx->bpp) {
+		switch (bpp) {
 			case 1:
 				fb_hMemCpy(p, s, pitch);
 				break;
