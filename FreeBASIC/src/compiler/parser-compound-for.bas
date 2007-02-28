@@ -40,7 +40,8 @@ declare function hUdtCallOpOvl _
 		byval parent as FBSYMBOL ptr, _
 		byval op as AST_OP, _
 		byval inst_expr as ASTNODE ptr, _
-		byval end_expr as ASTNODE ptr _
+		byval second_arg as ASTNODE ptr, _
+		byval third_arg as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
 declare sub hFlushBOP _
@@ -136,12 +137,18 @@ private sub hUdtNext _
 		byval stk as FB_CMPSTMTSTK ptr _
 	)
 
-	dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any, step_expr = NULL
 
+	'' only pass the step arg if it's an explicit step
+	if( stk->for.explicit_step ) then
+		step_expr = hElmToExpr( @stk->for.stp )
+	end if
+	
 	proc = hUdtCallOpOvl( symbGetSubtype( stk->for.cnt.sym ), _
 						  AST_OP_NEXT, _
 						  hElmToExpr( @stk->for.cnt ), _
-						  hElmToExpr( @stk->for.end ) )
+						  hElmToExpr( @stk->for.end ), _
+						  step_expr )
 
     if( proc <> NULL ) then
     	'' if proc(...) <> 0 then goto init
@@ -1011,7 +1018,8 @@ private function hUdtCallOpOvl _
 		byval parent as FBSYMBOL ptr, _
 		byval op as AST_OP, _
 		byval inst_expr as ASTNODE ptr, _
-		byval end_expr as ASTNODE ptr _
+		byval second_arg as ASTNODE ptr, _
+		byval third_arg as ASTNODE ptr _
 	) as ASTNODE ptr
 
     dim as FBSYMBOL ptr sym = any
@@ -1028,18 +1036,56 @@ private function hUdtCallOpOvl _
 
 	'' check for overloaded versions (note: don't pass the instance ptr)
 	dim as FB_ERRMSG err_num = any
-	if( end_expr = NULL ) then
+	if( second_arg = NULL ) then
 		sym = symbFindClosestOvlProc( sym, 0, NULL, @err_num )
 	else
-		dim as FB_CALL_ARG arg1 = any
-		arg1.expr = end_expr
-		arg1.mode = INVALID
-		arg1.next = NULL
-		sym = symbFindClosestOvlProc( sym, 1, @arg1, @err_num )
+		dim as FB_CALL_ARG args(0 to 1) = any
+		dim as integer params = 1
+		with args(0)
+			.expr = second_arg
+			.mode = INVALID
+			.next = NULL
+		end with
+		
+		'' link in that pesky 3rd arg.
+		if( op = AST_OP_NEXT ) then
+			if( third_arg <> NULL ) then
+				args(0).next = @args(1)
+				params += 1
+				with args(1)
+					.expr = third_arg
+					.mode = INVALID
+					.next = NULL
+				end with
+			end if
+		end if
+
+		sym = symbFindClosestOvlProc( sym, params, @args(0), @err_num )
 	end if
 
 	if( sym = NULL ) then
-		errReport( err_num, TRUE )
+		'' some other error?
+		if( err_num <> FB_ERRMSG_OK ) then
+			errReport( err_num, TRUE )
+		
+		'' build a message for the user
+		else
+			dim as string op_version = *astGetOpId( op ) + " (with"
+			select case as const op
+			case AST_OP_FOR, AST_OP_STEP
+				'' supposed to be 1 arg
+				if( second_arg = NULL ) then 
+					op_version += "out"
+				end if
+			case AST_OP_NEXT
+				'' supposed to be 2 args
+				if( third_arg = NULL ) then 
+					op_version += "out"
+				end if
+			end select
+			op_version += " step)"
+			errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, TRUE, strptr(op_version) )
+		end if
 		return NULL
 	end if
 
@@ -1051,8 +1097,15 @@ private function hUdtCallOpOvl _
 	end if
 
 	'' and the 2nd arg
-	if( end_expr <> NULL ) then
-		if( astNewARG( proc, end_expr ) = NULL ) then
+	if( second_arg <> NULL ) then
+		if( astNewARG( proc, second_arg ) = NULL ) then
+			return NULL
+		end if
+	end if
+
+	'' and the 3rd arg
+	if( third_arg <> NULL ) then
+		if( astNewARG( proc, third_arg ) = NULL ) then
 			return NULL
 		end if
 	end if
