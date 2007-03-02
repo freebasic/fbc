@@ -190,7 +190,7 @@ static int calc_comp_height( int h )
 /*:::::*/
 static BOOL WINAPI ddenum_callback(GUID FAR *lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext, HMONITOR hm)
 {
-	if (hm == fb_win32.monitor) {
+	if (hm == fb_win32.monitor && lpGUID) {
 		*((GUID *)lpContext) = *lpGUID;
 		return 0;
 	} else
