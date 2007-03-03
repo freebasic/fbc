@@ -10,6 +10,7 @@ type foo
 	declare operator step( )
 	declare operator step( byref stp as foo )
 	declare operator next( byref end_cond as foo ) as integer
+	declare operator next( byref end_cond as foo, byref stp as foo ) as integer
 	
 	declare operator cast( ) as string
 	
@@ -23,21 +24,15 @@ constructor foo( byval r as zstring ptr )
 end constructor
 
 operator foo.for( )
-
 	is_up = -1
-	
 end operator
 
 operator foo.for( byref stp as foo )
-
 	is_up = (stp.value = "up")
-	
 end operator
 
 operator foo.step( )
-	
 	value[0] += 1
-
 end operator
 
 operator foo.step( byref stp as foo )
@@ -51,6 +46,10 @@ operator foo.step( byref stp as foo )
 end operator
 
 operator foo.next( byref end_cond as foo ) as integer
+	operator = value <= end_cond.value
+end operator
+
+operator foo.next( byref end_cond as foo, byref stp as foo ) as integer
 	
 	if( is_up ) then
 		operator = value <= end_cond.value

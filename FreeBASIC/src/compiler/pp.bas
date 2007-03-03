@@ -761,7 +761,7 @@ private function dtypeToString( byref res as string, byval dtype as integer, byv
 		case FB_DATATYPE_UINT
 			res = "uinteger"
 		case FB_DATATYPE_ENUM
-			return FALSE
+			res = *symbGetName( subtype )
 		case FB_DATATYPE_BITFIELD
 			res = *symbGetName( subtype )
 		case FB_DATATYPE_LONG

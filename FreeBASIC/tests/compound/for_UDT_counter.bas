@@ -30,6 +30,7 @@ namespace fbc_tests.compound.for_UDT_counter
 			declare operator step( )
 			declare operator step( byref stp as foo##__TYPE__ )
 			declare operator next( byref end_cond as foo##__TYPE__ ) as integer
+			declare operator next( byref end_cond as foo##__TYPE__, byref stp as foo##__TYPE__ ) as integer
 			
 			declare destructor( )
 			
@@ -76,6 +77,10 @@ namespace fbc_tests.compound.for_UDT_counter
 		end operator
 
 		operator foo##__TYPE__.next( byref end_cond as foo##__TYPE__ ) as integer
+			return x <= end_cond.x
+		end operator
+
+		operator foo##__TYPE__.next( byref end_cond as foo##__TYPE__, byref stp as foo##__TYPE__ ) as integer
 			if( is_up ) then
 				return x <= end_cond.x
 			else

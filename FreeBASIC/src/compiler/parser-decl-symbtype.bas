@@ -25,6 +25,7 @@
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
+#include once "inc\rtl.bi"
 
 ''::::
 function cConstExprValue _
@@ -162,66 +163,84 @@ function cTypeOf _
     
     function = FALSE
     
-    '' allow arrays without indexes (?)
-	dim as ASTNODE ptr expr = cVarOrDeref( FALSE, , TRUE )
-	if( expr = NULL ) then
-	    if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-	   		exit function
-	   	else
-			'' error recovery: fake an type
-			lgt     = len(integer)
-			dtype   = FB_DATATYPE_INTEGER
-			subtype = NULL
-			ptrcnt  = 0
-			return TRUE
-		end if
-	end if
-	
-	'' ugly hack to deal with arrays w/o indexes
-	if( astIsNIDXARRAY( expr ) ) then
-		dim as ASTNODE ptr temp_node = expr
-		expr = astGetLeft( expr )
-		astDelNode( temp_node )
-	end if
+	dim as ASTNODE ptr expr = NULL
 
-	'' ??? is this right?
-	dim as integer derefs = 0
-	dim as ASTNODE ptr walk = expr
-	dim as FBSYMBOL ptr sym = any
-	while walk
-		'' if it's a field, get this node's type, 
-		'' don't "solve" the tree
-		if( astGetClass( walk ) = AST_NODECLASS_FIELD ) then
-			sym = astGetSymbol( walk )
-			exit while
+	'' is it a normal type?
+	if( cSymbolType( dtype, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
+		fbSetCheckArray( FALSE )
+        
+		expr = cExpression( )
+		if( expr = NULL ) then
+			fbSetCheckArray( TRUE )
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+
 		end if
 
-		'' count derefs
-		if( astGetClass( walk ) = AST_NODECLASS_DEREF ) then
-			derefs += 1
+		fbSetCheckArray( TRUE )
+	else
+		'' everything okay
+		return TRUE
+	end if
+
+    if( astIsCONST( expr ) ) then
+		lgt     = rtlCalcExprLen( expr, FALSE )
+		dtype   = astGetDataType( expr ) 
+		subtype = astGetSubType( expr )
+		ptrcnt  = 0 '' <-- pointer constants?
+
+	else
+		'' ugly hack to deal with arrays w/o indexes
+		if( astIsNIDXARRAY( expr ) ) then
+			dim as ASTNODE ptr temp_node = expr
+			expr = astGetLeft( expr )
+			astDelNode( temp_node )
+		end if
+	    
+		dim as integer derefs = 0
+		dim as ASTNODE ptr walk = expr
+		dim as FBSYMBOL ptr sym = astGetSymbol( expr )
+		if( sym = NULL ) then
+			dtype   = astGetDataType( expr )
+			subtype = astGetSubtype( expr )
+		else
+			while walk
+				'' if it's a field, get this node's type, 
+				'' don't "solve" the tree
+				if( astGetClass( walk ) = AST_NODECLASS_FIELD ) then
+					sym = astGetSymbol( walk )
+					exit while
+				end if 
+		
+				'' count derefs
+				if( astGetClass( walk ) = AST_NODECLASS_DEREF ) then
+					derefs += 1
+				end if
+		
+				'' update/walk
+				sym = astGetSymbol( walk )
+				walk = astGetLeft( walk )
+			wend
+			lgt     = symbGetLen( sym )
+			dtype   = symbGetType( sym )
+			subtype = symbGetSubtype( sym )
+			ptrcnt  = symbGetPtrCnt( sym )
 		end if
 
-		'' update/walk
-		sym = astGetSymbol( walk )
-		walk = astGetLeft( walk )
-	wend
-	if( sym = NULL ) then
-		exit function
-	end if
-	
-	lgt     = symbGetLen( sym )
-	dtype   = symbGetType( sym )
-	subtype = symbGetSubtype( sym )
-	ptrcnt  = symbGetPtrCnt( sym )
-	
-	'' byref args have a deref, 
-	'' but they maintain their type
-	if( dtype >= FB_DATATYPE_POINTER ) then
-		if( derefs > 0 ) then
-			'' balance it
-			dtype  -= (FB_DATATYPE_POINTER * derefs)
-			ptrcnt -= (derefs)
+		'' byref args have a deref, 
+		'' but they maintain their type
+		if( dtype >= FB_DATATYPE_POINTER ) then
+			if( derefs > 0 ) then
+				'' balance it
+				dtype  -= (FB_DATATYPE_POINTER * derefs)
+				ptrcnt -= (derefs)
+			end if
 		end if
+	
 	end if
 	
 	astDelTree( expr )

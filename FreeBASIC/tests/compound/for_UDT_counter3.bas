@@ -12,6 +12,7 @@ type foo
 	declare operator step( )
 	declare operator step( byref stp as foo )
 	declare operator next( byref end_cond as foo ) as integer
+	declare operator next( byref end_cond as foo, byref stp as foo ) as integer
 private:	
 	value as integer
 	is_up as integer
@@ -42,6 +43,10 @@ operator foo.step( byref stp as foo )
 end operator
 
 operator foo.next( byref end_cond as foo ) as integer
+	operator = value <= end_cond.value
+end operator
+
+operator foo.next( byref end_cond as foo, byref stp as foo ) as integer
 	if( is_up ) then
 		operator = value <= end_cond.value
 	else
