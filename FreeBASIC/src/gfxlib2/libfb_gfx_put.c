@@ -316,8 +316,9 @@ static void fb_hPutPSetC(unsigned char *src, unsigned char *dest, int w, int h, 
 static void fb_hPutPResetC(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	int x;
+	FB_GFXCTX *context = fb_hGetContext();
 	
-	w <<= (__fb_gfx->bpp >> 1);
+	w <<= (context->target_bpp >> 1);
 	src_pitch -= w;
 	dest_pitch -= w;
 	for (; h; h--) {
@@ -343,8 +344,9 @@ static void fb_hPutPResetC(unsigned char *src, unsigned char *dest, int w, int h
 static void fb_hPutAndC(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	int x;
+	FB_GFXCTX *context = fb_hGetContext();
 	
-	w <<= (__fb_gfx->bpp >> 1);
+	w <<= (context->target_bpp >> 1);
 	src_pitch -= w;
 	dest_pitch -= w;
 	for (; h; h--) {
@@ -370,8 +372,9 @@ static void fb_hPutAndC(unsigned char *src, unsigned char *dest, int w, int h, i
 static void fb_hPutOrC(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	int x;
+	FB_GFXCTX *context = fb_hGetContext();
 	
-	w <<= (__fb_gfx->bpp >> 1);
+	w <<= (context->target_bpp >> 1);
 	src_pitch -= w;
 	dest_pitch -= w;
 	for (; h; h--) {
@@ -397,8 +400,9 @@ static void fb_hPutOrC(unsigned char *src, unsigned char *dest, int w, int h, in
 static void fb_hPutXorC(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	int x;
+	FB_GFXCTX *context = fb_hGetContext();
 	
-	w <<= (__fb_gfx->bpp >> 1);
+	w <<= (context->target_bpp >> 1);
 	src_pitch -= w;
 	dest_pitch -= w;
 	for (; h; h--) {
@@ -667,6 +671,9 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	put(src, context->line[y] + (x * context->target_bpp), w, h, pitch, context->target_pitch, alpha, blender, param);
 	SET_DIRTY(context, y, h);
 	DRIVER_UNLOCK();
+	
+	fprintf(stderr, "context->target_bpp = %d\npitch = %d\ncontext->target_pitch = %d\nw = %d\n",
+		context->target_bpp, pitch, context->target_pitch, w);
 	
 	return FB_RTERROR_OK;
 }

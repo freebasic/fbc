@@ -53,9 +53,9 @@ FUNC(fb_hPutPSetMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(__fb_gfx), %eax
+	call GLOBL(fb_hGetContext)
 	movl ARG3, %ebx
-	movl GFX_BPP(%eax), %ecx
+	movl CTX_TARGET_BPP(%eax), %ecx
 	shrl $1, %ecx
 	shll %cl, %ebx
 	movl ARG4, %edx
@@ -128,9 +128,9 @@ FUNC(fb_hPutPResetMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(__fb_gfx), %eax
+	call GLOBL(fb_hGetContext)
 	movl ARG3, %ebx
-	movl GFX_BPP(%eax), %ecx
+	movl CTX_TARGET_BPP(%eax), %ecx
 	shrl $1, %ecx
 	shll %cl, %ebx
 	movl ARG4, %edx
@@ -215,9 +215,9 @@ FUNC(fb_hPutAndMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(__fb_gfx), %eax
+	call GLOBL(fb_hGetContext)
 	movl ARG3, %ebx
-	movl GFX_BPP(%eax), %ecx
+	movl CTX_TARGET_BPP(%eax), %ecx
 	shrl $1, %ecx
 	shll %cl, %ebx
 	movl ARG4, %edx
@@ -299,9 +299,9 @@ FUNC(fb_hPutOrMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(__fb_gfx), %eax
+	call GLOBL(fb_hGetContext)
 	movl ARG3, %ebx
-	movl GFX_BPP(%eax), %ecx
+	movl CTX_TARGET_BPP(%eax), %ecx
 	shrl $1, %ecx
 	shll %cl, %ebx
 	movl ARG4, %edx
@@ -383,9 +383,9 @@ FUNC(fb_hPutXorMMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl GLOBL(__fb_gfx), %eax
+	call GLOBL(fb_hGetContext)
 	movl ARG3, %ebx
-	movl GFX_BPP(%eax), %ecx
+	movl CTX_TARGET_BPP(%eax), %ecx
 	shrl $1, %ecx
 	shll %cl, %ebx
 	movl ARG4, %edx
