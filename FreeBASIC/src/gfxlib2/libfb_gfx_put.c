@@ -672,8 +672,5 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	SET_DIRTY(context, y, h);
 	DRIVER_UNLOCK();
 	
-	fprintf(stderr, "context->target_bpp = %d\npitch = %d\ncontext->target_pitch = %d\nw = %d\n",
-		context->target_bpp, pitch, context->target_pitch, w);
-	
 	return FB_RTERROR_OK;
 }
