@@ -58,6 +58,37 @@ namespace fb.fbdoc
 				  		  $"\{\{.*?\}\}|" + _
 				  		  $"\n|\r\n"
 
+	public property WikiToken.id () as WIKI_TOKEN
+		property = _id
+	end property
+
+	public property WikiToken.id ( byval new_value as WIKI_TOKEN )
+
+		select case _id
+		case WIKI_TOKEN_ACTION
+			delete action
+			action = NULL
+		case WIKI_TOKEN_INDENT, WIKI_TOKEN_LIST, WIKI_TOKEN_HEADER
+			delete indent
+			indent = NULL
+		case WIKI_TOKEN_LINK
+			delete link
+			link = NULL
+		end select
+
+		_id = new_value
+
+		select case _id
+		case WIKI_TOKEN_ACTION
+			action = new WikiToken_Action
+		case WIKI_TOKEN_INDENT, WIKI_TOKEN_LIST, WIKI_TOKEN_HEADER
+			indent = new WikiToken_Indent
+		case WIKI_TOKEN_LINK
+			link = new WikiToken_Link
+		end select
+		
+	end property
+
 	'':::::
 	private function _AllocRe _
  		( _
@@ -71,27 +102,27 @@ namespace fb.fbdoc
 			exit function
 		end if
 
-		ctx->codere = new CRegex( "^%%(.*?)%%$", REGEX_OPT_MULTILINE or REGEX_OPT_DOTALL )
+		ctx->codere = new CRegex( $"^%%(.*?)%%$", REGEX_OPT_MULTILINE or REGEX_OPT_DOTALL )
 		if( ctx->codere = NULL ) then
 			exit function
 		end if
 
-		ctx->rawre = new CRegex( """""(.*?)""""", REGEX_OPT_MULTILINE or REGEX_OPT_DOTALL )
+		ctx->rawre = new CRegex( $"""""(.*?)""""", REGEX_OPT_MULTILINE or REGEX_OPT_DOTALL )
 		if( ctx->rawre = NULL ) then
 			exit function
 		end if
 
-		ctx->linkre = new CRegex( "^\[\[(\S*)(\s+(.+))?\]\]$", REGEX_OPT_DOTALL )
+		ctx->linkre = new CRegex( $"^\[\[(\S*)(\s+(.+))?\]\]$", REGEX_OPT_DOTALL )
 		if( ctx->linkre = NULL ) then
 			exit function
 		end if
 
-		ctx->actionre = new CRegex( "^\{\{(.*?)\}\}$", REGEX_OPT_DOTALL )
+		ctx->actionre = new CRegex( $"^\{\{(.*?)\}\}$", REGEX_OPT_DOTALL )
 		if( ctx->actionre = NULL ) then
 			exit function
 		end if
 
-		ctx->action2re = new CRegex( $"([a-zA-Z0-9_]+)[\t ]+(.*?$)" )
+		ctx->action2re = new CRegex( $"([a-zA-Z0-9_]+)([\t ]+(.*?$))?" )
 		if( ctx->action2re = NULL ) then
 			exit function
 		end if
@@ -188,12 +219,7 @@ namespace fb.fbdoc
 			nxt = ctx->tokenlist->GetNext( token )
 			
 			token->text = ""
-			select case as const token->id
-			case WIKI_TOKEN_LINK
-				token->link.url = ""
-			case WIKI_TOKEN_ACTION
-				token->action.name = ""
-			end select
+			token->id = WIKI_TOKEN_NULL
 			
 			ctx->tokenlist->Remove( token )
 			
@@ -283,14 +309,14 @@ namespace fb.fbdoc
 		
 		dim as WikiAction_Param ptr param, last
 		
-		token->action.paramhead = NULL
+		token->action->paramhead = NULL
 			
 		if( ctx->actionparamre->Search( text ) ) then
 			last = NULL
 			do
 				param = ctx->actparamlist->Insert()
 				if( last = NULL ) then
-					token->action.paramhead = param
+					token->action->paramhead = param
 				else
 					last->next = param
 				end if
@@ -379,6 +405,7 @@ namespace fb.fbdoc
 
 		case "===", "====", "=====", "======"
 			token->id = WIKI_TOKEN_HEADER
+			token->header->level = len(*text)
 			exit sub
 		
 		case "---"
@@ -419,8 +446,13 @@ namespace fb.fbdoc
 		'' link?
 		if( ctx->linkre->Search( text ) ) then
 			token->id = WIKI_TOKEN_LINK
-			token->link.url = *ctx->linkre->GetStr( 1 )
+			token->link->url = *ctx->linkre->GetStr( 1 )
 			token->text = trim( *ctx->linkre->GetStr( 2 ) )
+
+			' !!! FIXME
+			' if( token->text = "" ) then
+			' 	token->text = token->link->url
+			' end if
 
 			exit sub
 		end if
@@ -429,10 +461,13 @@ namespace fb.fbdoc
 		if( ctx->actionre->Search( text ) ) then
 			match = ctx->actionre->GetStr( 0 )
 			if( match <> NULL ) then
-				ctx->action2re->Search( match )
 				token->id = WIKI_TOKEN_ACTION
-				token->action.name = *ctx->action2re->GetStr( 1 )
-				_GetActionParams( ctx, token, ctx->action2re->GetStr( 2 ) )
+				if( ctx->action2re->Search( match ) ) then
+					token->action->name = *ctx->action2re->GetStr( 1 )
+					_GetActionParams( ctx, token, ctx->action2re->GetStr( 2 ) )
+				else
+					token->action->name = *ctx->actionre->GetStr( 0 )
+				end if
 			
 			else
 				token->id = WIKI_TOKEN_TEXT
@@ -449,11 +484,13 @@ namespace fb.fbdoc
 			if( (match[0] = asc( "~" )) or _
 				(len( *ctx->indentre->GetStr( 2 ) ) = 0) ) then
 				token->id = WIKI_TOKEN_INDENT
-				token->indent.level = level
 			else
 				token->id = WIKI_TOKEN_LIST
-				token->indent.level = level
 			end if
+
+			token->indent->level = level
+			token->indent->indent = *ctx->indentre->GetStr( 1 )
+			token->indent->bullet = *ctx->indentre->GetStr( 2 )
 				
 			exit sub
 		end if
@@ -583,12 +620,12 @@ namespace fb.fbdoc
 			case WIKI_TOKEN_PRE
 				t = "pre"
 			case WIKI_TOKEN_LINK
-				t = "link:" + token->link.url
+				t = "link:" + token->link->url
 			case WIKI_TOKEN_ACTION
-				t = "action:" + token->action.name
+				t = "action:" + token->action->name
 				
 				dim as WikiAction_Param ptr param, nxt
-				param = token->action.paramhead
+				param = token->action->paramhead
 				dim as integer p = 1
 				text = ""
 				do while( param <> NULL )
@@ -598,9 +635,9 @@ namespace fb.fbdoc
 				loop
 				
 			case WIKI_TOKEN_INDENT
-				t = "indent:" & token->indent.level
+				t = "indent:" & token->indent->level
 			case WIKI_TOKEN_LIST
-				t = "list:" & token->indent.level
+				t = "list:" & token->indent->level
 			case WIKI_TOKEN_TEXT
 				t = "text"
 			case WIKI_TOKEN_RAW
@@ -680,14 +717,14 @@ namespace fb.fbdoc
 
 			select case as const token->id
 			case WIKI_TOKEN_LINK
-				_AddPageLink( ctx->pagelinklist, text, token->link.url, level, WIKI_PAGELINK_CLASS_DEFAULT ) 
+				_AddPageLink( ctx->pagelinklist, text, token->link->url, level, WIKI_PAGELINK_CLASS_DEFAULT ) 
 
 			case WIKI_TOKEN_ACTION
 				
-				if lcase(token->action.name) = "fbdoc" then
+				if lcase(token->action->name) = "fbdoc" then
 
-					sItem = token->action.GetParam( "item")
-					sValue = token->action.GetParam( "value")
+					sItem = token->action->GetParam( "item")
+					sValue = token->action->GetParam( "value")
 
 					select case lcase(sItem)
 					case "section"
@@ -751,10 +788,10 @@ namespace fb.fbdoc
 
 			if( token->id = WIKI_TOKEN_ACTION) then
 				
-				if lcase(token->action.name) = "fbdoc" then
+				if lcase(token->action->name) = "fbdoc" then
 
-					sItem = token->action.GetParam( "item")
-					sValue = token->action.GetParam( "value")
+					sItem = token->action->GetParam( "item")
+					sValue = token->action->GetParam( "value")
 
 					if( lcase(sItem) = "title" ) then
 						sTitle = sValue
@@ -793,6 +830,107 @@ namespace fb.fbdoc
 
 		loop
 
+	end function
+
+	'':::::
+	function CWiki.Build _
+		( _
+		) as string
+
+		dim ret as string, i as integer
+
+		dim as WikiToken ptr token
+		dim as string t
+		
+		token = ctx->tokenlist->GetHead()
+		do while( token <> NULL )
+			
+			select case as const token->id
+			case WIKI_TOKEN_LT
+				t = "<"
+			case WIKI_TOKEN_GT
+				t = ">"
+			case WIKI_TOKEN_BOXLEFT
+				t = "<<"
+			case WIKI_TOKEN_BOXRIGHT
+				t = ">>"
+			case WIKI_TOKEN_CLEAR
+				t = "::c::"
+			case WIKI_TOKEN_KBD
+				t = "#%"
+			case WIKI_TOKEN_BOLD
+				t = "**"
+			case WIKI_TOKEN_BOLD_SECTION
+				t = "=="
+			case WIKI_TOKEN_ITALIC
+				t = "//"
+			case WIKI_TOKEN_UNDERLINE
+				t = "__"
+			case WIKI_TOKEN_MONOSPACE
+				t = "##"
+			case WIKI_TOKEN_NOTES
+				t = "''"
+			case WIKI_TOKEN_STRIKE
+				t = "++"
+			case WIKI_TOKEN_CENTER
+				t = "@@"
+			case WIKI_TOKEN_HEADER
+				t = string( token->header->level, "=" )
+			case WIKI_TOKEN_NEWLINE
+				t = chr(10)
+			case WIKI_TOKEN_CODE
+				t = "%%(qbasic)"
+				t += token->text
+				t += "%%"
+			case WIKI_TOKEN_PRE
+				t = "%%"
+				t += token->text
+				t += "%%"
+			case WIKI_TOKEN_LINK
+				if( token->text > "" ) then
+					t = "[[" + token->link->url + " " + token->text + "]]"
+				else
+					t = "[[" + token->link->url + "]]"
+				end if
+
+			case WIKI_TOKEN_ACTION
+
+				dim as WikiAction_Param ptr param, nxt
+
+				t = "{{" + token->action->name
+
+				param = token->action->paramhead
+				dim as integer p = 1
+				do while( param <> NULL )
+					t += " " + param->name + "=""" + param->value + """"
+					param = param->next
+					p += 1
+				loop
+
+				t += "}}
+				
+			case WIKI_TOKEN_INDENT
+				'' t = string( token->indent->level, 9 ) + token->indent->bullet
+				t = token->indent->indent + token->indent->bullet
+			case WIKI_TOKEN_LIST
+				'' t = string( token->indent->level, 9 ) + token->indent->bullet
+				t = token->indent->indent + token->indent->bullet
+			case WIKI_TOKEN_TEXT
+				t = token->text
+			case WIKI_TOKEN_RAW
+				t = """""" + token->text + """"""
+			case WIKI_TOKEN_FORCENL
+				t = "---"
+			case WIKI_TOKEN_HORZLINE
+				t = "----"
+			end select
+
+			ret += t
+			
+			token = ctx->tokenlist->GetNext( token )
+		loop
+		
+		function = ret	
 	end function
 
 

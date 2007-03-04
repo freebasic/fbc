@@ -1424,10 +1424,10 @@ namespace fb.fbdoc
 			return _emitCenterText( ctx, "", WIKI_TAG_CENTER and 1 )
 
 		case WIKI_TOKEN_LINK:
-			return _emitLink( ctx, token->link.url, token->text, FALSE )
+			return _emitLink( ctx, token->link->url, token->text, FALSE )
 
 		case WIKI_TOKEN_LIST:
-			return _emitList( ctx, token->indent.level )
+			return _emitList( ctx, token->indent->level )
 
 		case WIKI_TOKEN_TEXT:
 			if( (ctx->tagFlags(WIKI_TAG_BOLD) and 1) _
@@ -1444,7 +1444,7 @@ namespace fb.fbdoc
 			return _emitRaw( ctx, token->text )
 
 		case WIKI_TOKEN_ACTION:
-			return _emitAction( ctx, token->action.name, @token->action )
+			return _emitAction( ctx, token->action->name, token->action )
 
 		end select
 		
@@ -1487,7 +1487,7 @@ namespace fb.fbdoc
 			return TRUE
 		
 		case WIKI_TOKEN_INDENT:
-			for i = 1 to (token->indent.level - ctx->indentbase)
+			for i = 1 to (token->indent->level - ctx->indentbase)
 				_emitSpecial( ctx, chIndent )
 			next i
 			return TRUE

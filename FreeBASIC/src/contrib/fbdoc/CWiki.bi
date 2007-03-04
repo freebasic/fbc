@@ -108,19 +108,30 @@ namespace fb.fbdoc
 
 	type WikiToken_Indent
 		as integer				level
+		as string               indent
+		as string               bullet
 	end type
 
 	type WikiToken
-		as WIKI_TOKEN			id
+		private:
+			as WIKI_TOKEN			_id
+		
+		public:
+
 		as string 				text
 		as integer              start
 		as integer              length
 
-	''	union
-			as WikiToken_Action action
-			as WikiToken_Link 	link
-			as WikiToken_Indent	indent
-	''	end union
+		union
+			as WikiToken_Action ptr action
+			as WikiToken_Link 	ptr link
+			as WikiToken_Indent	ptr indent
+			as WikiToken_Indent	ptr list
+			as WikiToken_Indent	ptr header
+		end union
+
+		declare property id () as WIKI_TOKEN
+		declare property id ( byval new_value as WIKI_TOKEN )
 
 	end type
 
@@ -148,6 +159,10 @@ namespace fb.fbdoc
 				byval pagename as zstring ptr, _
 				byval body as zstring ptr _
 			) as integer
+
+		declare function Build _
+			( _
+			) as string
 
 		declare sub Dump _
 			( _

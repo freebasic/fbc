@@ -93,14 +93,16 @@ namespace fb.fbdoc
 		
 			if( len(pagelink->link.url) > 0 ) then
 				if( instr(pagelink->link.url, ":") = 0 ) then
-					if( instr(pagelink->link.url, "/") = 0 ) then
+				if( instr(pagelink->link.url, "/") = 0 ) then
+				if( instr(pagelink->link.url, ".") = 0 ) then
 						prevpage = paglist->Find( pagelink->link.url )
 						if( prevpage = NULL ) then
 							if( bFollowLinks ) then
 								newpage = paglist->AddNewPage( pagelink->link.url, pagelink->text, 0, FALSE )
 							end if
 						end if
-					end if
+				end if
+				end if
 				end if
 			end if
 

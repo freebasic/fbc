@@ -19,6 +19,37 @@ License:
   Place, Suite 330, Boston, MA 02111-1307 USA.
 
 
+Purpose of fbdoc:
+
+  The main purpose of fbdoc is for the conversion and generation of the 
+  FreeBASIC manual from http://www.freebasic.net/wiki to other formats.
+  Secondary to this purpose is the creation of tools that will help
+  maintain or format the wakka script located online.
+
+  fbdoc is built both as an executable application and as a library.  The
+  executable application is used for the actual document conversion and
+  generation.  The library and headers are used for other tools that
+  might help in the development and maintenance of the online manual.
+
+  No real concern is made at the moment for backwards compatibility where
+  fbdoc is used as a library since there are relatively few users of fbdoc
+  as an application, and even fewer that use it as a library. This might
+  change in future, but for now, the focus is on supporting the maintenance
+  conversion and generation of the FreeBASIC manuaul.
+
+  There will likely never be a binary distribution of fbdoc until FreeBASIC
+  is very mature. Currently not only do the fbdoc sources change often, but 
+  also the on-line wakka source script.  So there's no guarantee that older 
+  versions of the doc converter will work correctly with newer versions of 
+  the on-line docs.
+
+  Finally, aside from the FreeBASIC compiler itself, fbdoc serves as a test
+  application written in FreeBASIC that helps to test making practical use 
+  of the language itself.  While fbdoc does not test every feature available 
+  in the FreeBASIC language, fbdoc is a non-trivial application that must 
+  continue to work for years to come.
+
+
 Installing:
 
   o Requirements:

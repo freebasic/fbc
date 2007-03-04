@@ -968,7 +968,7 @@ namespace fb.fbdoc
 			return res
 
 		case WIKI_TOKEN_INDENT
-			ctx->newindent = (token->indent.level - ctx->indentbase)
+			ctx->newindent = (token->indent->level - ctx->indentbase)
 			if( ctx->newindent < 0 ) then
 				ctx->newindent = 0
 			end if
@@ -982,7 +982,7 @@ namespace fb.fbdoc
 
 		case WIKI_TOKEN_LIST
 			ctx->newindent = 0
-			ctx->newlevel = token->indent.level
+			ctx->newlevel = token->indent->level
 			if( ctx->newlevel < 0 ) then
 				ctx->newlevel = 0
 			end if
@@ -1079,11 +1079,11 @@ namespace fb.fbdoc
 			return res
 
 		case WIKI_TOKEN_LINK:
-			res += _linkToHtml( ctx, token->link.url, token->text )
+			res += _linkToHtml( ctx, token->link->url, token->text )
 			return res
 
 		case WIKI_TOKEN_LIST:
-			res += _listToHtml( ctx, token->indent.level )
+			res += _listToHtml( ctx, token->indent->level )
 			return res
 
 		case WIKI_TOKEN_TEXT, WIKI_TOKEN_RAW:
@@ -1100,7 +1100,7 @@ namespace fb.fbdoc
 			return res
 
 		case WIKI_TOKEN_ACTION:
-			res += _actionToHtml( ctx, token->action.name, @token->action )
+			res += _actionToHtml( ctx, token->action->name, token->action )
 			return res
 
 		end select
@@ -1166,7 +1166,7 @@ namespace fb.fbdoc
 
 		case WIKI_TOKEN_INDENT:
 			x = ""
-			for i = 1 to token->indent.level * 2
+			for i = 1 to token->indent->level * 2
 				x += "&nbsp; "
 			next i
 			res += x
