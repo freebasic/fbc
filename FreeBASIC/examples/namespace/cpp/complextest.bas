@@ -13,6 +13,9 @@ extern "c++"
       as double re
       as double im
 
+      declare constructor ()
+      declare constructor ( byval re as double, byval im as double = 0.0 )
+	
       declare function abs2() as double
 
     end type
@@ -28,8 +31,8 @@ end extern
 
 using cpp
 
-dim a as complex = (1,2)
-dim b as complex = (3,4)
+dim a as complex = complex(1,2)
+dim b as complex = complex(3,4)
 
 dim c as complex
 

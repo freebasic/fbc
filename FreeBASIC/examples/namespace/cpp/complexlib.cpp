@@ -11,8 +11,8 @@ struct complex {
   double re;
   double im;
 
-  complex(){re = 0; im = 0;}
-  complex(double r, double i = 0){re = r; im = i;}
+  complex();
+  complex( double r, double i = 0.0 );
 
   double abs2();
 
@@ -22,6 +22,16 @@ complex operator+( complex &, complex &);
 complex operator-( complex &, complex &);
 complex operator*( complex &, complex &);
 complex operator/( complex &, complex &);
+
+complex::complex()
+{
+  re = 0; im = 0;
+}
+
+complex::complex( double r, double i )
+{
+  re = r; im = i;
+}
 
 double complex::abs2()
 {
