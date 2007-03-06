@@ -68,7 +68,7 @@ static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h
 			dg = dc & MASK_G_32;
 			srb = ((srb - drb) * a) >> 8;
 			sg = ((sg - dg) * a) >> 8;
-			*d++ = ((drb + srb) & MASK_RB_32) | ((dg + sg) & MASK_G_32);
+			*d++ = ((drb + srb) & MASK_RB_32) | ((dg + sg) & MASK_G_32) | (a << 24);
 		}
 		s += src_pitch;
 		dest += dest_pitch;
@@ -224,7 +224,7 @@ static void fb_hPutBlend4C(unsigned char *src, unsigned char *dest, int w, int h
 				dg = dc & MASK_G_32;
 				srb = ((srb - drb) * alpha) >> 8;
 				sg = ((sg - dg) * alpha) >> 8;
-				*d = ((drb + srb) & MASK_RB_32) | ((dg + sg) & MASK_G_32);
+				*d = ((drb + srb) & MASK_RB_32) | ((dg + sg) & MASK_G_32) | (sc & MASK_A_32);
 			}
 			d++;
 		}
