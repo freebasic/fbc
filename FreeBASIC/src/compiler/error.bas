@@ -59,7 +59,8 @@ end type
 		( 1, @"The ANY initializer has no effect on UDT's with default constructors" ), _
 		( 2, @"Object files or libraries with mixed multithreading (-mt) options" ), _
 		( 2, @"Object files or libraries with mixed language (-lang) options" ), _
-		( 0, @"Deleting ANY pointers is undefined" ) _
+		( 0, @"Deleting ANY pointers is undefined" ), _
+		( 2, @"Array too large for stack, consider making it dynamic or SHARED" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _

@@ -22,6 +22,7 @@
 
 
 #include once "inc\fb.bi"
+#include once "inc\fbc.bi"
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
 #include once "inc\rtl.bi"
@@ -1164,11 +1165,11 @@ function hVarDeclEx _
     end if
 
     do
-	dim as FBSYMBOL ptr parent = cParentId( options )
-	dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, options )
-
-    	is_typeless = FALSE
-
+		dim as FBSYMBOL ptr parent = cParentId( options )
+		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, options )
+		
+		is_typeless = FALSE
+		
     	if( is_multdecl = FALSE ) then
     		dtype = suffix
     		subtype	= NULL
@@ -1359,6 +1360,20 @@ function hVarDeclEx _
 		    		end if
 				else
 					is_dynamic = TRUE
+				end if
+			end if
+			
+			'' crude "array too big for stack" check
+			if( ((attrib and FB_SYMBATTRIB_DYNAMIC) or (attrib and FB_SYMBATTRIB_SHARED)) = 0 ) then
+				dim as uinteger i = any, accum = 1
+				for i = 0 to dimensions - 1
+					accum *= ((dTB(i).upper - dTB(i).lower) + 1) 
+				next
+				accum *= lgt
+				if( accum > fbc.stacksize ) then
+					if( is_dynamic = FALSE ) then
+						errReportWarn( FB_WARNINGMSG_HUGEARRAYONSTACK )
+					end if
 				end if
 			end if
 		end if
