@@ -317,9 +317,14 @@ function cOperatorDelete _
        		return TRUE
        	end if
 	end if
-
+	
 	dtype -= FB_DATATYPE_POINTER
-
+	
+	'' check for ANY ptr
+	if( dtype = FB_DATATYPE_VOID ) then
+		errReportWarn( FB_WARNINGMSG_DELETEANYPTR )
+	end if
+	
 	'' check visibility
 	select case dtype
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS

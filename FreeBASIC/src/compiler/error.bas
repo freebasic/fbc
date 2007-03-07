@@ -58,7 +58,8 @@ end type
 		( 1, @"The length of the parameters list is too large, consider passing UDT's BYREF" ), _
 		( 1, @"The ANY initializer has no effect on UDT's with default constructors" ), _
 		( 2, @"Object files or libraries with mixed multithreading (-mt) options" ), _
-		( 2, @"Object files or libraries with mixed language (-lang) options" ) _
+		( 2, @"Object files or libraries with mixed language (-lang) options" ), _
+		( 0, @"Deleting ANY pointers is undefined" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
@@ -341,7 +342,7 @@ private sub hPrintErrMsg _
 		print ") ";
 	end if
 
-	print "error"; '*cast(byte ptr,0)
+	print "error"; 
 
 	if( errnum >= 0 ) then
 		print " " & errnum & ": " & *msg;
