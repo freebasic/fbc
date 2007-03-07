@@ -870,6 +870,11 @@ private sub hOptConstIDX _
 	case AST_NODECLASS_IDX, AST_NODECLASS_DEREF
 		l = n->l
 		if( l <> NULL ) then
+			'' all constants?
+			if( astIsCONST( l ) = FALSE ) then
+				exit sub
+			end if
+			
 			v.dtype = INVALID
 			n->l = hConstAccumADDSUB( l, @v, 1 )
 
@@ -891,7 +896,6 @@ private sub hOptConstIDX _
         		case else
         			c = v.val.int
         		end select
-
         		if( n->class = AST_NODECLASS_IDX ) then
         			n->idx.ofs += c
         		else
