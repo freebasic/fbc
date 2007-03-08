@@ -1,6 +1,8 @@
 fbdoc TODO list
 ---------------
 
+[ ]	add proxy support to CHttp.
+
 [ ]	add the insert delete methods to CWiki to allow programmatic editing 
 	of wakka script.
 

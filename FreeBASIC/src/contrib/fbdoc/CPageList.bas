@@ -25,6 +25,7 @@
 
 #include once "CPageList.bi"
 #include once "list.bi"
+#include once "hash.bi"
 
 namespace fb.fbdoc
 
@@ -35,6 +36,7 @@ namespace fb.fbdoc
 
 	type CPageListCtx_
 		as CList ptr pagelist
+		as HASH pagehash
 	end type
 
 	'':::::
@@ -44,6 +46,7 @@ namespace fb.fbdoc
 
 		ctx = new CPageListCtx
 		ctx->pagelist = new CList( 16, len( PageListItem ))
+		ctx->pagehash.alloc( 16 )
 
 	end constructor
 
@@ -66,6 +69,8 @@ namespace fb.fbdoc
 			
 			itm = nxt
 		loop
+
+		ctx->pagehash.clear()
 		
 	end sub
 
@@ -102,6 +107,8 @@ namespace fb.fbdoc
 
 		itm->page = page
 		itm->isref = isref
+
+		ctx->pagehash.add( lcase( page->GetName() ), page )
 
 		return itm->page
 
@@ -208,18 +215,7 @@ namespace fb.fbdoc
 			return NULL
 		end if
 
-		dim as CPage ptr page
-		dim as any ptr page_i
-		function = FALSE
-
-		page = NewEnum( @page_i )
-		while( page )
-			if lcase( *strFind ) = lcase( page->GetName() ) then
-				function = page
-				exit while
-			end if
-			page = NextEnum( @page_i )
-		wend
+		function = ctx->pagehash.getinfo( lcase( *strFind ) )
 
 	end function
 

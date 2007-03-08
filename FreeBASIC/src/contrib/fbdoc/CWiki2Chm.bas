@@ -238,24 +238,28 @@ namespace fb.fbdoc
 		dim as any ptr page_i
 		dim as string sBodyHtml, sHtml
 
+		#if __FB_DEBUG__
+			#define DBG_INDENT space(level * 4)
+		#else
+			#define DBG_INDENT ""
+		#endif
+
 		function = FALSE
 
 		page = ctx->toclist->NewEnum( @page_i )
 		while( page )
 
-			'' !!! FIXME !!!, indent spaces are only needed for debugging
-
 			while( level < page->GetLevel() )
-				sBodyHtml +=  space(level * 4) + "<ul>" + crlf
+				sBodyHtml +=  DBG_INDENT + "<ul>" + crlf
 				level += 1
 			wend
 
 			while( level > page->GetLevel() )
 				level -= 1
-				sBodyHtml +=  space(level * 4) + "</ul>"  + crlf
+				sBodyHtml +=  DBG_INDENT + "</ul>"  + crlf
 			wend
 
-			sBodyHtml +=  space(level * 4) + "<li><object type=""text/sitemap"">"
+			sBodyHtml +=  DBG_INDENT + "<li><object type=""text/sitemap"">"
 			sBodyHtml +=  "<param name=""Name"" value=""" + page->GetFormattedTitle() + """>"
 			if( len( page->GetName()) > 0 ) then
 				sBodyHtml +=  "<param name=""Local"" value=""" + page->GetName() + ".html"">"
@@ -267,7 +271,7 @@ namespace fb.fbdoc
 
 		while( level > 0 )
 			level -= 1
-			sBodyHtml += space(level * 4) + "</ul>" + crlf
+			sBodyHtml += DBG_INDENT + "</ul>" + crlf
 		wend
 
 		sHtml = Templates.Get("chm_toc")
@@ -277,6 +281,8 @@ namespace fb.fbdoc
 		sHtml = ReplaceSubStr( sHtml, "{$pg_body}", sBodyHtml )
 
 		function = _OutputFile( ctx, *sTocName, sHtml )
+
+		#undef DBG_INDENT
 
 	end function
 

@@ -24,11 +24,12 @@
 
 #include once "fbdoc_defs.bi"
 #include once "fbdoc_string.bi"
+#include once "hash.bi"
 
 namespace fb.fbdoc
 
 	dim shared keyworddata as string
-	dim shared keywords(0 to 1000) as zstring ptr
+	dim shared keywordhash as HASH
 
 	function fbdoc_FindKeyword _
 		( _
@@ -62,17 +63,11 @@ namespace fb.fbdoc
 
 		c = lcase(c)
 		
-		k = keywords( i )
-		while( k )
+		k = keywordhash.getinfo( c ) 
 
-			if( c = lcase( *k ) ) then
-				return *k + suffix
-			end if
-		
-			i += 1
-			k = keywords( i )
-
-		wend
+		if( k ) then
+			return *k + suffix
+		end if
 
 		return ""
 		
@@ -85,8 +80,11 @@ namespace fb.fbdoc
 
 		keyworddata = LoadFileAsString( sFileName )
 
+		keywordhash.alloc( 1000 )
+
 		dim as integer n, b
 		dim as ubyte ptr p
+		dim as zstring ptr lastp
 
 		n = 0
 		b = FALSE
@@ -100,10 +98,17 @@ namespace fb.fbdoc
 				b = FALSE
 				*p = 0
 
+				if( lastp ) then
+					if( len(*lastp) > 0 ) then
+						keywordhash.add( lcase( *lastp ), lastp )
+						lastp = NULL
+					end if
+				end if
+
 			else
 
 				if( b = FALSE ) then
-					keywords( n ) = p
+					lastp = p
 					n += 1
 					b = TRUE		
 				end if
@@ -113,7 +118,12 @@ namespace fb.fbdoc
 			p += 1
 		wend
 
-		keywords( n ) = NULL
+		if( lastp ) then
+			if( len(*lastp) > 0 ) then
+				keywordhash.add( lcase( *lastp ), lastp )
+				lastp = NULL
+			end if
+		end if
 
 		return n
 
