@@ -79,7 +79,9 @@ typedef struct FLASHWINFO {
 	DWORD dwTimeout;
 } FLASHWINFO, *PFLASHWINFO;
 
-BOOL WINAPI FlashWindowEx(PFLASHWINFO pfwi);
+typedef BOOL (WINAPI *FLASHWINDOWEX)(PFLASHWINFO pwfi);
+
+static FLASHWINDOWEX FlashWindowEx = NULL;
 
 
 static int directx_init(void);
@@ -132,11 +134,18 @@ static void restore_surfaces(void)
 				directx_exit();
 				Sleep(300);
 			}
-			/* stop our window to flash */
-			fwinfo.cbSize = sizeof(fwinfo);
-			fwinfo.hwnd = fb_win32.wnd;
-			fwinfo.dwFlags = 0;
-			FlashWindowEx(&fwinfo);
+			
+			if (!FlashWindowEx) {
+				FlashWindowEx = GetProcAddress(GetModuleHandle("USER32"), "FlashWindowEx");
+			}
+			
+			if (FlashWindowEx) {
+				/* stop our window to flash */
+				fwinfo.cbSize = sizeof(fwinfo);
+				fwinfo.hwnd = fb_win32.wnd;
+				fwinfo.dwFlags = 0;
+				FlashWindowEx(&fwinfo);
+			}
 		}
 		result = IDirectDrawSurface_IsLost(lpDDS);
 	}
