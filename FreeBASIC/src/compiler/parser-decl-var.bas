@@ -1989,9 +1989,13 @@ function cAutoVarDecl _
 
     			dim as integer is_ctorcall = any
     			expr = astBuildImplicitCtorCallEx( sym, expr, arg_mode, is_ctorcall )
+
         		if( expr <> NULL ) then
     				if( is_ctorcall ) then
     					astTypeIniAddCtorCall( initree, sym, expr )
+	        		else
+	        			'' no proper ctor, try an assign
+	        			astTypeIniAddAssign( initree, expr, sym )
         			end if
         		end if
         	end if
