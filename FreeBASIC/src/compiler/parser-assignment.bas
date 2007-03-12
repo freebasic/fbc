@@ -344,13 +344,15 @@ function cAssignment _
 
     '' set the context symbol to allow taking the address of overloaded
     '' procs and also to allow anonymous UDT's
-    parser.ctxsym = astGetSubType( assgexpr )
+    parser.ctxsym    = astGetSubType( assgexpr )
+    parser.ctx_dtype = astGetDataType( assgexpr )
 
     '' Expression
     expr = cExpression( )
     if( expr = NULL ) then
        	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
        		parser.ctxsym = NULL
+       		parser.ctx_dtype = INVALID
        		exit function
        	else
     		'' error recovery: skip until next stmt
@@ -359,7 +361,8 @@ function cAssignment _
        	end if
     end if
 
-    parser.ctxsym = NULL
+    parser.ctxsym    = NULL
+    parser.ctx_dtype = INVALID
 
     '' BOP?
     if( op <> INVALID ) then
