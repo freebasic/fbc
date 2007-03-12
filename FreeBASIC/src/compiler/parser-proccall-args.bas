@@ -111,7 +111,7 @@ private function hProcArg _
 		byval options as FB_PARSEROPT _
 	) as integer
 
-	dim as integer pmode = any
+	dim as integer pmode = any, old_dtype = any
 	dim as FBSYMBOL ptr oldsym = any
 
 	function = FALSE
@@ -126,8 +126,10 @@ private function hProcArg _
 		amode = FB_PARAMMODE_BYVAL
 	end if
 
-	oldsym = parser.ctxsym
-	parser.ctxsym = symbGetSubType( param )
+	oldsym    = parser.ctxsym
+	old_dtype = parser.ctx_dtype
+	parser.ctxsym    = symbGetSubType( param )
+	parser.ctx_dtype = symbGetType( param )
 
 	'' Expression
 	expr = cExpression( )
@@ -135,7 +137,8 @@ private function hProcArg _
 
 		'' error?
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			parser.ctxsym = oldsym
+			parser.ctxsym    = oldsym
+			parser.ctx_dtype = old_dtype
 			exit function
 		end if
 
@@ -145,7 +148,8 @@ private function hProcArg _
 		else
 			'' failed and expr not null?
 			if( expr <> NULL ) then
-				parser.ctxsym = oldsym
+				parser.ctxsym    = oldsym
+				parser.ctx_dtype = old_dtype
 				exit function
 			end if
 
@@ -161,7 +165,8 @@ private function hProcArg _
 
 	end if
 
-	parser.ctxsym = oldsym
+	parser.ctxsym    = oldsym
+	parser.ctx_dtype = old_dtype
 
 	if( expr = NULL ) then
 		'' check if argument is optional
@@ -233,6 +238,7 @@ private function hOvlProcArg _
 	) as integer
 
 	dim as FBSYMBOL ptr oldsym = any
+	dim as integer old_dtype = any
 
 	function = FALSE
 
@@ -244,8 +250,10 @@ private function hOvlProcArg _
 		arg->mode = FB_PARAMMODE_BYVAL
 	end if
 
-	oldsym = parser.ctxsym
-	parser.ctxsym = NULL
+	oldsym    = parser.ctxsym
+	old_dtype = parser.ctx_dtype
+	parser.ctxsym    = NULL
+	parser.ctx_dtype = INVALID
 
 	'' Expression
 	arg->expr = cExpression( )
@@ -253,7 +261,8 @@ private function hOvlProcArg _
 
 		'' error?
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			parser.ctxsym = oldsym
+			parser.ctxsym    = oldsym
+			parser.ctx_dtype = old_dtype
 			exit function
 		end if
 
@@ -264,7 +273,8 @@ private function hOvlProcArg _
 		else
 			'' failed and expr not null?
 			if( arg->expr <> NULL ) then
-				parser.ctxsym = oldsym
+				parser.ctxsym    = oldsym
+				parser.ctx_dtype = old_dtype
 				exit function
 			end if
 
@@ -280,7 +290,8 @@ private function hOvlProcArg _
 
 	end if
 
-	parser.ctxsym = oldsym
+	parser.ctxsym    = oldsym
+	parser.ctx_dtype = old_dtype
 
 	'' not optional?
 	if( arg->expr <> NULL ) then

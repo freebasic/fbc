@@ -64,7 +64,8 @@ sub parserSetCtx( )
 
 	parser.prntcnt = 0
 	parser.options = FB_PARSEROPT_CHKARRAY
-	parser.ctxsym = NULL
+	parser.ctxsym    = NULL
+	parser.ctx_dtype = INVALID
 
 	parserCompoundStmtSetCtx( )
 

@@ -99,12 +99,14 @@ function cAssignFunctResult _
 
     '' set the context symbol to allow taking the address of overloaded
     '' procs and also to allow anonymous UDT's
-    parser.ctxsym = subtype
+    parser.ctxsym    = subtype
+    parser.ctx_dtype = symbGetType( proc )
 
 	'' Expression
 	rhs = cExpression( )
 	if( rhs = NULL ) then
-		parser.ctxsym = NULL
+		parser.ctxsym    = NULL
+		parser.ctx_dtype = INVALID
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
@@ -114,7 +116,8 @@ function cAssignFunctResult _
     	end if
 	end if
 
-	parser.ctxsym = NULL
+	parser.ctxsym    = NULL
+	parser.ctx_dtype = INVALID
 
     '' set accessed flag here, as proc will be ended before AST is flushed
     symbSetIsAccessed( res )

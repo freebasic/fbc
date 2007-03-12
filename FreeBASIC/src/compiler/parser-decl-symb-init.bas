@@ -91,13 +91,16 @@ private function hElmInit _
 
     dim as ASTNODE ptr expr = any
     dim as FBSYMBOL ptr oldsym = any
+    dim as integer old_dtype = any
 
     function = FALSE
 
 	'' set the context symbol to allow taking the address of overloaded
 	'' procs and also to allow anonymous UDT's
-	oldsym = parser.ctxsym
-	parser.ctxsym = symbGetSubType( ctx.sym )
+	oldsym    = parser.ctxsym
+	old_dtype = parser.ctx_dtype
+	parser.ctxsym    = symbGetSubType( ctx.sym )
+	parser.ctx_dtype = symbGetType( ctx.sym )
 
     '' parse expression
 	expr = cExpression( )
@@ -121,7 +124,8 @@ private function hElmInit _
 	end if
 
     '' restore context if needed
-	parser.ctxsym = oldsym
+	parser.ctxsym    = oldsym
+	parser.ctx_dtype = old_dtype
 
 	function = hDoAssign( ctx, expr )
 

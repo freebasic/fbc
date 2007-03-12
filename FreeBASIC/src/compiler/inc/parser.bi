@@ -194,7 +194,8 @@ type PARSERCTX
 	'' hacks
 	prntcnt			as integer					'' ()'s count, to allow optional ()'s on SUB's
 	options			as FB_PARSEROPT
-	ctxsym			as FBSYMBOL ptr				'' used to resolve the address of overloaded procs
+	ctx_dtype       as integer                  '' used to resolve the address of overloaded procs
+	ctxsym			as FBSYMBOL ptr				'' /
 end type
 
 '' cSymbolType flags
