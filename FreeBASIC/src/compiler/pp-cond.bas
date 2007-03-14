@@ -65,6 +65,16 @@ declare function ppRelExpression _
 		byref relexpr as PPEXPR _
 	) as integer
 
+declare function ppAddExpression _
+	( _
+		byref addexpr as PPEXPR _
+	) as integer
+
+declare function ppMultExpression _
+	( _
+		byref mult_expr as PPEXPR _
+	) as integer
+
 declare function ppParentExpr _
 	( _
 		byref parexpr as PPEXPR _
@@ -312,15 +322,14 @@ private function ppSkip( ) as integer
 
 end function
 
-'':::::
-private sub hNumLogBOP _
+private sub hHighestPrecision _
 	( _
-		byval op as integer, _
 		byref l as PPEXPR, _
-		byref r as PPEXPR _
+		byref r as PPEXPR, _
+		byval only_integer as integer _
 	)
 
-    '' convert to highest precison (must be integer class)..
+    '' convert to highest precison..
   	select case as const l.dtype
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   		select case as const r.dtype
@@ -328,12 +337,17 @@ private sub hNumLogBOP _
   			'' do nothing
 
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			r.num.long = r.num.float
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE <> len( integer ) ) then
-				r.num.long = r.num.int
+  			if( only_integer ) then
+				r.num.long = r.num.float
+  			else
+				l.dtype = FB_DATATYPE_DOUBLE
+				l.num.float = l.num.long
 			end if
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( FB_LONGSIZE <> len( integer ) ) then
+  				r.num.long = r.num.int
+  			end if
 
   		case else
 			r.num.long = r.num.int
@@ -342,25 +356,44 @@ private sub hNumLogBOP _
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		select case as const r.dtype
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  			l.dtype = r.dtype
-  			l.num.long = l.num.float
+  			if( only_integer ) then
+	  			l.dtype = r.dtype
+	  			l.num.long = l.num.float
+	  		else
+	  			r.num.float = r.num.long
+	  		end if
 
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			l.dtype = FB_DATATYPE_INTEGER
-			l.num.int = l.num.float
-			r.num.int = r.num.float
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-				l.dtype = r.dtype
-			if( FB_LONGSIZE = len( integer ) ) then
+  			if( only_integer ) then
+				l.dtype = FB_DATATYPE_INTEGER
 				l.num.int = l.num.float
-			else
-  				l.num.long = l.num.float
-  			end if
+				r.num.int = r.num.float
+			end if
+  				
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( only_integer ) then
+				l.dtype = r.dtype
+				if( FB_LONGSIZE = len( integer ) ) then
+					l.num.int = l.num.float
+				else
+	  				l.num.long = l.num.float
+	  			end if
+	  		else
+	  			if( FB_LONGSIZE = len( integer ) ) then
+					r.num.float = r.num.int
+				else
+					r.num.float = r.num.long
+	  			end if
+	  		end if
 
   		case else
-			l.dtype = FB_DATATYPE_INTEGER
-			l.num.int = l.num.float
+  			if( only_integer ) then
+				l.dtype = FB_DATATYPE_INTEGER
+				l.num.int = l.num.float
+			else
+				r.num.float = r.num.int
+			end if
   		end select
 
   	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
@@ -372,10 +405,19 @@ private sub hNumLogBOP _
   			end if
 
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			if( FB_LONGSIZE = len( integer ) ) then
-				r.num.int = r.num.float
+  			if( only_integer ) then
+				if( FB_LONGSIZE = len( integer ) ) then
+					r.num.int = r.num.float
+				else
+					r.num.long = r.num.float
+				end if
 			else
-				r.num.long = r.num.float
+				l.dtype = FB_DATATYPE_DOUBLE
+				if( FB_LONGSIZE = len( integer ) ) then
+					l.num.float = l.num.int
+				else
+					l.num.float = l.num.long
+				end if
 			end if
 
   		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
@@ -394,15 +436,33 @@ private sub hNumLogBOP _
   			l.num.long = l.num.int
 
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			r.num.int = r.num.float
+  			if( only_integer ) then
+  				r.num.int = r.num.float
+  			else
+				l.dtype = FB_DATATYPE_DOUBLE
+				l.num.float = l.num.int
+			end if
 
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE <> len( integer ) ) then
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( FB_LONGSIZE <> len( integer ) ) then
   				l.dtype = r.dtype
   				l.num.long = l.num.int
   			end if
   		end select
   	end select
+
+end sub
+
+'':::::
+private sub hNumLogBOP _
+	( _
+		byval op as integer, _
+		byref l as PPEXPR, _
+		byref r as PPEXPR _
+	)
+	
+	'' integers
+	hHighestPrecision( l, r, TRUE )
 
     '' do operation
     select case op
@@ -448,89 +508,10 @@ private sub hNumRelBOP _
 		byref l as PPEXPR, _
 		byref r as PPEXPR _
 	)
-
-    '' convert to highest precison..
-  	select case as const l.dtype
-  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  		select case as const r.dtype
-  		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  			'' do nothing
-
-  		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			l.dtype = FB_DATATYPE_DOUBLE
-			l.num.float = l.num.long
-
-  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  			if( FB_LONGSIZE <> len( integer ) ) then
-  				r.num.long = r.num.int
-  			end if
-
-  		case else
-			r.num.long = r.num.int
-  		end select
-
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		select case as const r.dtype
-  		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  			r.num.float = r.num.long
-
-  		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  			'' do nothing
-
-  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  			if( FB_LONGSIZE = len( integer ) ) then
-				r.num.float = r.num.int
-			else
-				r.num.float = r.num.long
-  			end if
-
-  		case else
-			r.num.float = r.num.int
-  		end select
-
-  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  		select case as const r.dtype
-  		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  			if( FB_LONGSIZE = len( integer ) ) then
-  				l.dtype = r.dtype
-  				l.num.long = l.num.int
-  			end if
-
-  		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			l.dtype = FB_DATATYPE_DOUBLE
-			if( FB_LONGSIZE = len( integer ) ) then
-				l.num.float = l.num.int
-			else
-				l.num.float = l.num.long
-			end if
-
-  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  			'' do nothing
-
-  		case else
-  			if( FB_LONGSIZE <> len( integer ) ) then
-				r.num.long = r.num.int
-			end if
-  		end select
-
-  	case else
-  		select case as const r.dtype
-  		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  			l.dtype = FB_DATATYPE_LONGINT
-  			l.num.long = l.num.int
-
-  		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			l.dtype = FB_DATATYPE_DOUBLE
-			l.num.float = l.num.int
-
-  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  			if( FB_LONGSIZE <> len( integer ) ) then
-  				l.dtype = FB_DATATYPE_LONGINT
-  				l.num.long = l.num.int
-  			end if
-  		end select
-  	end select
-
+    
+    '' type is flexible
+    hHighestPrecision( l, r, FALSE )
+    
     '' do operation
    	select case as const op
    	case FB_TK_EQ
@@ -650,6 +631,51 @@ private sub hNumRelBOP _
    	end select
 
    	l.dtype = FB_DATATYPE_INTEGER
+
+end sub
+
+'':::::
+private sub hNumAddMulBOP _
+	( _
+		byval op as integer, _
+		byref l as PPEXPR, _
+		byref r as PPEXPR _
+	)
+    
+    '' type is flexible
+    hHighestPrecision( l, r, FALSE )
+
+#macro do_op(tk,op)
+   	case tk
+  		select case as const l.dtype
+  		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+  			l.num.long = l.num.long op r.num.long
+
+  		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+  		    l.num.float = l.num.float op r.num.float
+
+  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+  			if( FB_LONGSIZE = len( integer ) ) then
+  				l.num.int = l.num.int op r.num.int
+  			else
+  				l.num.long = l.num.long op r.num.long
+  			end if
+
+  		case else
+  			l.num.int = l.num.int op r.num.int
+  		end select
+#endmacro
+    
+    '' do operation
+   	select case as const op
+
+	   	do_op( CHAR_PLUS  , + )
+	   	do_op( CHAR_MINUS , - )
+	   	do_op( CHAR_CARET , * )
+	   	do_op( CHAR_SLASH , / )
+	   	do_op( CHAR_RSLASH, \ )
+	
+   	end select
 
 end sub
 
@@ -837,7 +863,7 @@ private function ppLogExpression _
 end function
 
 '':::::
-''RelExpression   =   ParentExpr ( (EQ | GT | LT | NE | LE | GE) ParentExpr )* .
+''RelExpression   =   AddExpression ( (EQ | GT | LT | NE | LE | GE) AddExpression )* .
 ''
 private function ppRelExpression _
 	( _
@@ -845,12 +871,12 @@ private function ppRelExpression _
 	) as integer
 
     dim as integer op = any
-    dim as PPEXPR parexpr
+    dim as PPEXPR add_expr
 
    	function = FALSE
 
-    '' Atom
-    if( ppParentExpr( relexpr ) = FALSE ) then
+    '' AddExpression
+    if( ppAddExpression( relexpr ) = FALSE ) then
     	exit function
     end if
 
@@ -860,6 +886,215 @@ private function ppRelExpression _
     	op = lexGetToken( )
     	select case as const op
     	case FB_TK_EQ, FB_TK_GT, FB_TK_LT, FB_TK_NE, FB_TK_LE, FB_TK_GE
+ 			lexSkipToken( )
+    	case else
+      		exit do
+    	end select
+
+    	'' AddExpression
+    	if( ppAddExpression( add_expr ) = FALSE ) then
+            if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+           		exit function
+           	else
+  				'' error recovery: fake an expr
+  				add_expr.class = PPEXPR_CLASS_NUM
+  				add_expr.dtype = FB_DATATYPE_INTEGER
+  				add_expr.num.int = 0
+    		end if
+    	end if
+
+   		'' same type?
+   		if( relexpr.class <> add_expr.class ) then
+   			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+   				exit function
+   			else
+   				'' error recovery: fake a type
+   				if( relexpr.class = PPEXPR_CLASS_NUM ) then
+   					add_expr.class = PPEXPR_CLASS_NUM
+   					add_expr.dtype = FB_DATATYPE_INTEGER
+   					add_expr.num.int = valint( add_expr.str )
+   					add_expr.str = ""
+
+   				else
+   					add_expr.class = PPEXPR_CLASS_STR
+
+   					select case as const add_expr.dtype
+   					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+   						add_expr.str = str( add_expr.num.long )
+
+   					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+   					    add_expr.str = str( add_expr.num.float )
+
+   					case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+   						if( FB_LONGSIZE = len( integer ) ) then
+   							add_expr.str = str( add_expr.num.int )
+   						else
+   							add_expr.str = str( add_expr.num.long )
+   						end if
+
+   					case else
+   						add_expr.str = str( add_expr.num.int )
+   					end select
+   				end if
+   			end if
+   		end if
+
+   		'' can't compare as strings if both are numbers, '"10" > "2"' is FALSE for QB/FB
+   		if( relexpr.class = PPEXPR_CLASS_NUM ) then
+   			hNumRelBOP( op, relexpr, add_expr )
+
+   		else
+   			select case as const op
+   			case FB_TK_EQ
+   				relexpr.num.int = relexpr.str = add_expr.str
+   			case FB_TK_GT
+   				relexpr.num.int = relexpr.str > add_expr.str
+   			case FB_TK_LT
+   				relexpr.num.int = relexpr.str < add_expr.str
+   			case FB_TK_NE
+   				relexpr.num.int = relexpr.str <> add_expr.str
+   			case FB_TK_LE
+   				relexpr.num.int = relexpr.str <= add_expr.str
+   			case FB_TK_GE
+   				relexpr.num.int = relexpr.str >= add_expr.str
+   			end select
+
+   			relexpr.class = PPEXPR_CLASS_NUM
+   			relexpr.dtype = FB_DATATYPE_INTEGER
+
+   			relexpr.str = ""
+   			add_expr.str = ""
+   		end if
+
+    loop
+
+    function = TRUE
+
+end function
+
+'':::::
+''AddExpression   =   MultExpression ( ('+' | '-') MultExpression )* .
+''
+private function ppAddExpression _
+	( _
+		byref add_expr as PPEXPR _
+	) as integer
+	
+    dim as integer op = any
+    dim as PPEXPR mult_expr
+
+   	function = FALSE
+
+    '' MultExpression
+    if( ppMultExpression( add_expr ) = FALSE ) then
+    	exit function
+    end if
+
+    '' ( ... )*
+    do
+    	'' Add/Sub operator
+    	op = lexGetToken( )
+    	select case as const op
+    	case CHAR_PLUS, CHAR_MINUS
+ 			lexSkipToken( )
+    	case else
+      		exit do
+    	end select
+
+    	'' ParentExpr
+    	if( ppMultExpression( mult_expr ) = FALSE ) then
+            if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+           		exit function
+           	else
+  				'' error recovery: fake an expr
+  				mult_expr.class = PPEXPR_CLASS_NUM
+  				mult_expr.dtype = FB_DATATYPE_INTEGER
+  				mult_expr.num.int = 0
+    		end if
+    	end if
+
+   		'' same type?
+   		if( add_expr.class <> mult_expr.class ) then
+   			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+   				exit function
+   			else
+   				'' error recovery: fake a type
+   				if( add_expr.class = PPEXPR_CLASS_NUM ) then
+   					mult_expr.class = PPEXPR_CLASS_NUM
+   					mult_expr.dtype = FB_DATATYPE_INTEGER
+   					mult_expr.num.int = valint( mult_expr.str )
+   					mult_expr.str = ""
+
+   				else
+   					mult_expr.class = PPEXPR_CLASS_STR
+
+   					select case as const mult_expr.dtype
+   					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+   						mult_expr.str = str( mult_expr.num.long )
+
+   					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+   					    mult_expr.str = str( mult_expr.num.float )
+
+   					case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+   						if( FB_LONGSIZE = len( integer ) ) then
+   							mult_expr.str = str( mult_expr.num.int )
+   						else
+   							mult_expr.str = str( mult_expr.num.long )
+   						end if
+
+   					case else
+   						mult_expr.str = str( mult_expr.num.int )
+   					end select
+   				end if
+   			end if
+   		end if
+
+   		if( add_expr.class = PPEXPR_CLASS_NUM ) then
+   			hNumAddMulBOP( op, add_expr, mult_expr )
+   		else
+   			select case as const op
+   			case CHAR_PLUS
+   				add_expr.str = add_expr.str + mult_expr.str
+   			case CHAR_MINUS
+	   			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+	   				exit function
+	   			end if
+   			end select
+
+   			mult_expr.str = ""
+   		end if
+
+    loop
+
+    function = TRUE
+
+end function
+
+
+'':::::
+''MultExpression   =   ParentExpr ( ('*' | '/' | '\') ParentExpr )* .
+''
+private function ppMultExpression _
+	( _
+		byref mul_expr as PPEXPR _
+	) as integer
+	
+    dim as integer op = any
+    dim as PPEXPR parexpr
+
+   	function = FALSE
+
+    '' ParentExpr
+    if( ppParentExpr( mul_expr ) = FALSE ) then
+    	exit function
+    end if
+    
+    '' ( ... )*
+    do
+    	'' Mul/Div operator
+    	op = lexGetToken( )
+    	select case as const op
+    	case CHAR_CARET, CHAR_SLASH, CHAR_RSLASH
  			lexSkipToken( )
     	case else
       		exit do
@@ -878,12 +1113,12 @@ private function ppRelExpression _
     	end if
 
    		'' same type?
-   		if( relexpr.class <> parexpr.class ) then
+   		if( mul_expr.class <> parexpr.class ) then
    			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
    				exit function
    			else
    				'' error recovery: fake a type
-   				if( relexpr.class = PPEXPR_CLASS_NUM ) then
+   				if( mul_expr.class = PPEXPR_CLASS_NUM ) then
    					parexpr.class = PPEXPR_CLASS_NUM
    					parexpr.dtype = FB_DATATYPE_INTEGER
    					parexpr.num.int = valint( parexpr.str )
@@ -913,31 +1148,12 @@ private function ppRelExpression _
    			end if
    		end if
 
-   		'' can't compare as strings if both are numbers, '"10" > "2"' is FALSE for QB/FB
-   		if( relexpr.class = PPEXPR_CLASS_NUM ) then
-   			hNumRelBOP( op, relexpr, parexpr )
-
+   		if( mul_expr.class = PPEXPR_CLASS_NUM ) then
+   			hNumAddMulBOP( op, mul_expr, parexpr )
    		else
-   			select case as const op
-   			case FB_TK_EQ
-   				relexpr.num.int = relexpr.str = parexpr.str
-   			case FB_TK_GT
-   				relexpr.num.int = relexpr.str > parexpr.str
-   			case FB_TK_LT
-   				relexpr.num.int = relexpr.str < parexpr.str
-   			case FB_TK_NE
-   				relexpr.num.int = relexpr.str <> parexpr.str
-   			case FB_TK_LE
-   				relexpr.num.int = relexpr.str <= parexpr.str
-   			case FB_TK_GE
-   				relexpr.num.int = relexpr.str >= parexpr.str
-   			end select
-
-   			relexpr.class = PPEXPR_CLASS_NUM
-   			relexpr.dtype = FB_DATATYPE_INTEGER
-
-   			relexpr.str = ""
-   			parexpr.str = ""
+   			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+   				exit function
+   			end if
    		end if
 
     loop
@@ -945,6 +1161,7 @@ private function ppRelExpression _
     function = TRUE
 
 end function
+
 
 '':::::
 '' ParentExpr  =   '(' Expression ')'
