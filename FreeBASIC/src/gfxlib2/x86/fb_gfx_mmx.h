@@ -62,6 +62,7 @@
 
 #define MASK_RB_32			0x00FF00FF
 #define MASK_G_32			0x0000FF00
+#define MASK_GA_32			0xFF00FF00
 #define MASK_A_32			0xFF000000
 
 #define MASK_RB_16			0xF81F

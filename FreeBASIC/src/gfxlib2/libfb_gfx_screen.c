@@ -183,8 +183,10 @@ void fb_hClearCharCells( int x1, int y1, int x2, int y2,
 static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int refresh_rate, int flags)
 {
     const GFXDRIVER *driver = NULL;
-    int i, try_count;
+    FB_GFXCTX *context;
+    int i, j, try_count;
     char *c, *driver_name;
+    unsigned char *dest;
 
     if (num_pages <= 0)
         num_pages = 1;
@@ -260,10 +262,8 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         __fb_gfx->bpp = BYTES_PER_PIXEL(__fb_gfx->depth);
         __fb_gfx->pitch = __fb_gfx->w * __fb_gfx->bpp;
         __fb_gfx->page = (unsigned char **)malloc(sizeof(unsigned char *) * num_pages);
-        for (i = 0; i < num_pages; i++) {
-            __fb_gfx->page[i] =
-                (unsigned char *)calloc(1, (__fb_gfx->pitch * __fb_gfx->h));
-        }
+        for (i = 0; i < num_pages; i++)
+            __fb_gfx->page[i] = (unsigned char *)malloc(__fb_gfx->pitch * __fb_gfx->h);
         __fb_gfx->num_pages = num_pages;
         __fb_gfx->framebuffer = __fb_gfx->page[0];
         
@@ -331,8 +331,17 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 
         __fb_gfx->text_w = info->text_w;
         __fb_gfx->text_h = info->text_h;
+        
+        context = fb_hGetContext();
 
-        fb_hResetCharCells(fb_hGetContext(), TRUE);
+        fb_hResetCharCells(context, TRUE);
+        for (i = 0; i < num_pages; i++) {
+        	dest = __fb_gfx->page[i];
+        	for (j = 0; j < __fb_gfx->h; j++) {
+	        	context->pixel_set(dest, context->bg_color, context->view_w);
+	        	dest += __fb_gfx->pitch;
+	        }
+		}
 
         if( !exit_proc_set ) {
             exit_proc_set = TRUE;

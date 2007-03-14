@@ -52,7 +52,7 @@ extern void fb_hPutXorMMX(unsigned char *src, unsigned char *dest, int w, int h,
 static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned int *s = (unsigned int *)src;
-	unsigned int *d, sc, dc, a, drb, dg, srb, sg;
+	unsigned int *d, sc, dc, a, drb, dga, srb, sga;
 	int x;
 	
 	src_pitch = (src_pitch >> 2) - w;
@@ -63,12 +63,12 @@ static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h
 			dc = *d;
 			a = (sc >> 24);
 			srb = sc & MASK_RB_32;
-			sg = sc & MASK_G_32;
+			sga = sc & MASK_GA_32;
 			drb = dc & MASK_RB_32;
-			dg = dc & MASK_G_32;
+			dga = dc & MASK_GA_32;
 			srb = ((srb - drb) * a) >> 8;
-			sg = ((sg - dg) * a) >> 8;
-			*d++ = ((drb + srb) & MASK_RB_32) | ((dg + sg) & MASK_G_32) | (a << 24);
+			sga = ((sga - dga) >> 8) * a;
+			*d++ = ((drb + srb) & MASK_RB_32) | ((dga + sga) & MASK_GA_32);
 		}
 		s += src_pitch;
 		dest += dest_pitch;
@@ -207,7 +207,7 @@ static void fb_hPutBlend2C(unsigned char *src, unsigned char *dest, int w, int h
 static void fb_hPutBlend4C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned int *s = (unsigned int *)src;
-	unsigned int *d, sc, dc, drb, dg, srb, sg;
+	unsigned int *d, sc, dc, drb, dga, srb, sga;
 	int x;
 	
 	alpha++;
@@ -219,12 +219,12 @@ static void fb_hPutBlend4C(unsigned char *src, unsigned char *dest, int w, int h
 			if ((sc & 0xFFFFFF) != 0xFF00FF) {
 				dc = *d;
 				srb = sc & MASK_RB_32;
-				sg = sc & MASK_G_32;
+				sga = sc & MASK_GA_32;
 				drb = dc & MASK_RB_32;
-				dg = dc & MASK_G_32;
+				dga = dc & MASK_GA_32;
 				srb = ((srb - drb) * alpha) >> 8;
-				sg = ((sg - dg) * alpha) >> 8;
-				*d = ((drb + srb) & MASK_RB_32) | ((dg + sg) & MASK_G_32) | (sc & MASK_A_32);
+				sga = ((sga - dga) >> 8) * alpha;
+				*d = ((drb + srb) & MASK_RB_32) | ((dga + sga) & MASK_GA_32);
 			}
 			d++;
 		}

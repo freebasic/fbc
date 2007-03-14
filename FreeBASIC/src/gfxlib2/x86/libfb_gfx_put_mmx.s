@@ -35,8 +35,7 @@ mask_16:	.short	MASK_COLOR_16, MASK_COLOR_16, MASK_COLOR_16, MASK_COLOR_16
 mask_32:	.long	MASK_COLOR_32, MASK_COLOR_32
 rgb_32:		.long	0x00FFFFFF, 0x00FFFFFF
 rb_32:		.long	MASK_RB_32, MASK_RB_32
-g_32:		.long	MASK_G_32, MASK_G_32
-a_32:		.long	MASK_A_32, MASK_A_32
+ga_32:		.long	MASK_GA_32, MASK_GA_32
 r_16:		.short	MASK_R_16, MASK_R_16, MASK_R_16, MASK_R_16
 g_16:		.short	MASK_G_16, MASK_G_16, MASK_G_16, MASK_G_16
 b_16:		.short	MASK_B_16, MASK_B_16, MASK_B_16, MASK_B_16
@@ -792,7 +791,6 @@ FUNC(fb_hPutAlpha4MMX)
 	subl %ebx, %edx
 	movl %edx, LOCAL2
 	movq (rb_32), %mm5
-	movq (g_32), %mm6
 
 LABEL(alpha4_y_loop)
 	movl ARG3, %ecx
@@ -811,22 +809,20 @@ LABEL(alpha4_y_loop)
 	imull LOCAL3
 	xchg %eax, %ecx
 	movl %ebx, %edx
-	andl $MASK_G_32, %eax
-	andl $MASK_G_32, %edx
+	andl $MASK_GA_32, %eax
+	andl $MASK_GA_32, %edx
 	subl %edx, %eax
+	shrl $8, %eax
 	imull LOCAL3
 	shrl $8, %ecx
-	shrl $8, %eax
 	movl %ebx, %edx
 	andl $MASK_RB_32, %ebx
-	andl $MASK_G_32, %edx
+	andl $MASK_GA_32, %edx
 	addl %ecx, %ebx
 	addl %edx, %eax
 	andl $MASK_RB_32, %ebx
-	andl $MASK_G_32, %eax
-	shll $24, LOCAL3
+	andl $MASK_GA_32, %eax
 	orl %ebx, %eax
-	orl LOCAL3, %eax
 	movl %eax, -4(%edi)
 
 LABEL(alpha4_skip_1)
@@ -839,32 +835,27 @@ LABEL(alpha4_x_loop)
 	movq (%edi), %mm1
 	movq %mm0, %mm2
 	movq %mm0, %mm3
-	movq %mm0, %mm7
-	psrld $24, %mm2
 	movq %mm1, %mm4
+	psrld $24, %mm2
+	psrlw $8, %mm3
+	psrlw $8, %mm4
 	packssdw %mm2, %mm2
 	pand %mm5, %mm0
-	punpcklwd %mm2, %mm2
 	pand %mm5, %mm1
-	psrlw $8, %mm3
+	punpcklwd %mm2, %mm2
 	psubw %mm1, %mm0
-	psrlw $8, %mm4
-	pmullw %mm2, %mm0
 	psubw %mm4, %mm3
-	psllw $8, %mm4
+	pmullw %mm2, %mm0
 	pmullw %mm2, %mm3
-	por %mm4, %mm1
-	addl $8, %edi
-	psrlw $8, %mm0
-	pand %mm6, %mm3
-	paddb %mm1, %mm0
-	paddb %mm1, %mm3
+	psraw $8, %mm0
+	psraw $8, %mm3
+	paddw %mm1, %mm0
+	paddw %mm4, %mm3
 	pand %mm5, %mm0
-	pand %mm6, %mm3
-	pand (a_32), %mm7
+	psllw $8, %mm3
+	addl $8, %edi
 	por %mm3, %mm0
 	addl $8, %esi
-	por %mm7, %mm0
 	movq %mm0, -8(%edi)
 	decl %ecx
 	jnz alpha4_x_loop
@@ -1056,7 +1047,7 @@ LABEL(blend2_next_line)
 FUNC(fb_hPutBlend4MMX)
 	pushl %ebp
 	movl %esp, %ebp
-	RESERVE_LOCALS(4)
+	RESERVE_LOCALS(3)
 	pushl %esi
 	pushl %edi
 	pushl %ebx
@@ -1072,7 +1063,7 @@ FUNC(fb_hPutBlend4MMX)
 	subl %ebx, %edx
 	movl %edx, LOCAL2
 	movq (rb_32), %mm5
-	movq (g_32), %mm6
+	movq (ga_32), %mm6
 	movl ARG7, %ebx
 	incl %ebx
 	movd %ebx, %mm2
@@ -1086,12 +1077,12 @@ LABEL(blend4_y_loop)
 	jnc blend4_skip_1
 	addl $4, %edi
 	lodsl
-	movl %eax, LOCAL4
+	movl %eax, %ecx
 	andl $0xFFFFFF, %eax
 	movl -4(%edi), %ebx
 	cmpl $MASK_COLOR_32, %eax
 	je blend4_skip_1
-	movl %eax, %ecx
+	movl %ecx, %eax
 	movl %ebx, %edx
 	andl $MASK_RB_32, %eax
 	andl $MASK_RB_32, %edx
@@ -1099,22 +1090,20 @@ LABEL(blend4_y_loop)
 	mull LOCAL3
 	xchg %eax, %ecx
 	movl %ebx, %edx
-	andl $MASK_G_32, %eax
-	andl $MASK_G_32, %edx
+	andl $MASK_GA_32, %eax
+	andl $MASK_GA_32, %edx
 	subl %edx, %eax
-	mull LOCAL3
 	shrl $8, %ecx
 	shrl $8, %eax
+	mull LOCAL3
 	movl %ebx, %edx
 	andl $MASK_RB_32, %ebx
-	andl $MASK_G_32, %edx
+	andl $MASK_GA_32, %edx
 	addl %ecx, %ebx
 	addl %edx, %eax
 	andl $MASK_RB_32, %ebx
-	andl $MASK_G_32, %eax
-	andl $0xFF000000, LOCAL4
+	andl $MASK_GA_32, %eax
 	orl %ebx, %eax
-	orl LOCAL4, %eax
 	movl %eax, -4(%edi)
 
 LABEL(blend4_skip_1)
@@ -1125,10 +1114,8 @@ LABEL(blend4_skip_1)
 LABEL(blend4_x_loop)
 	movq (%esi), %mm0
 	movq (%edi), %mm1
-	movq %mm0, %mm7
-	pand (rgb_32), %mm0
-	pand (a_32), %mm7
 	movq %mm0, %mm3
+	pand (rgb_32), %mm0
 	movq %mm1, %mm4
 	pcmpeqd (mask_32), %mm0
 	pand %mm0, %mm4
@@ -1147,15 +1134,13 @@ LABEL(blend4_x_loop)
 	pmullw %mm2, %mm3
 	por %mm4, %mm1
 	addl $8, %edi
-	movq %mm6, %mm4
 	psrlw $8, %mm0
-	pand %mm4, %mm3
+	pand %mm6, %mm3
 	paddb %mm1, %mm0
 	paddb %mm1, %mm3
 	pand %mm5, %mm0
-	pand %mm4, %mm3
+	pand %mm6, %mm3
 	por %mm3, %mm0
-	por %mm7, %mm0
 
 	addl $8, %esi
 	movq %mm0, -8(%edi)
@@ -1172,7 +1157,7 @@ LABEL(blend4_next_line)
 	popl %ebx
 	popl %edi
 	popl %esi
-	FREE_LOCALS(4)
+	FREE_LOCALS(3)
 	popl %ebp
 	ret
 
