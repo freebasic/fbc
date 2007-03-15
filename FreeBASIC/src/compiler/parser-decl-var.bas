@@ -190,6 +190,11 @@ function cVariableDecl _
 		lexSkipToken( )
 
 		attrib or= FB_SYMBATTRIB_STATIC
+		
+		'' VAR?
+		if( lexGetToken( ) = FB_TK_VAR ) then
+			return cAutoVarDecl( attrib )
+		end if
 
 	case else
 		lexSkipToken( )
@@ -1941,19 +1946,6 @@ function cAutoVarDecl _
 			has_dtor = symbGetCompDtor( subtype ) <> NULL
     	end select
 
-		'' only if it's not an object, static or global instances are allowed
-		if( has_ctor = FALSE ) then
-			if( astTypeIniIsConst( expr ) = FALSE ) then
-				'' error recovery: discard the tree
-				astDelTree( expr )
-				expr = astNewCONSTi( 0 )
-    	    	dtype = FB_DATATYPE_INTEGER
-    	    	subtype = NULL
-				has_defctor = FALSE
-				has_dtor = FALSE
-			end if
-		end if
-
 		'' add var after parsing the expression, or the the var itself could be used
 		sym = hDeclStaticVar( sym, id, NULL, _
 		                      dtype, subtype, dtype \ FB_DATATYPE_POINTER, _
@@ -2000,6 +1992,22 @@ function cAutoVarDecl _
         		end if
         	end if
 
+			if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+		  						   	   	   FB_SYMBATTRIB_SHARED)) <> 0 ) then
+				'' only if it's not an object, static or global instances are allowed
+				if( has_ctor = FALSE ) then
+					if( astTypeIniIsConst( initree ) = FALSE ) then
+						'' error recovery: discard the tree
+						astDelTree( expr )
+						expr = astNewCONSTi( 0 )
+		    	    	dtype = FB_DATATYPE_INTEGER
+		    	    	subtype = NULL
+						has_defctor = FALSE
+						has_dtor = FALSE
+					end if
+				end if
+			end if
+	
         	astTypeIniEnd( initree, TRUE )
 
         	''
