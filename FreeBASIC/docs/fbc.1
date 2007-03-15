@@ -1,120 +1,128 @@
-.TH fbc 1 "Dec 13, 2006" "Compiler Version .17 BETA" "FreeBASIC Compiler"
+.TH FBC 1 "Mar 15, 2007" "Compiler Version 0.17b" "FreeBASIC Compiler"
 .SH NAME
-fbc \- The FreeBASIC Compiler
+fbc \- the FreeBASIC compiler
 .SH DESCRIPTION
 Compiles BASIC source code files to native code.
 .SH SYNOPSIS
-.B fbc [options] inputlist
+.B fbc \fR[\fIoptions\fR] \fIinputlist\fR
 
 .SH OPTIONS
 .F
-inputlist:     *.a = library, *.o = object, *.bas = source
-               *.xpm = icon resource
 .TP
-\fB\-a <name> \fR
+.I inputlist\fR
+\fB*.a\fR = library, \fB*.o\fR = object, \fB*.bas\fR = source, \fB*.xpm\fR = icon resource
+.TP
+\fB\-a \fIname\fR
 Add an object file to linker's list
 .TP
-\fB\-arch <type>\fR
-Set target architecture (default: 486)
+\fB\-arch \fItype\fR
+Set target architecture (default: \fB486\fR)
 .TP
-\fB\-b <name>\fR
+\fB\-b \fIname\fR
 Add a source file to compilation
 .TP
 \fB\-c\fR
 Compile only, do not link
 .TP
-\fB\-d <name=val>\fR
-Add a preprocessor's define
+\fB\-d \fIname\fR[\fB=\fIval\fR]
+Add a preprocessor define
 .TP
 \fB\-dll\fR
-Same as \fB\-dylib
+Same as \fB\-dylib\fR
 .TP
 \fB\-dylib\fR
 Create a shared library
 .TP
-\fB\-e \fR
+\fB\-e\fR
 Add error checking
 .TP
-\fB\-ex      \fR
+\fB\-ex\fR
 Add error checking with RESUME support
 .TP
-\fB\-exx     \fR
-Same as above plus array bounds and null\fB\-pointer checking
+\fB\-exx\fR
+Same as above plus array bounds and null\-pointer checking
 .TP
-\fB\-export  \fR
+\fB\-export\fR
 Export symbols for dynamic linkage
 .TP
-\fB\-g     \fR
+\fB\-g\fR
 Add debug info
 .TP
-\fB\-i <name> \fR
+\fB\-i \fIname\fR
 Add a path to search for include files
 .TP
-\fB\-include <name> \fR
+\fB\-include \fIname\fR
 Include a header file on each source compiled
 .TP
-\fB\-l <name>  \fR
- Add a library file to linker's list
+\fB\-l \fIname\fR
+Add a library file to linker's list
 .TP
-\fB\-lang <name>  \fR
-Select language compatibility: deprecated, qb
+\fB\-lang \fIname\fR
+Select language compatibility: \fBfb\fR (default), \fBdeprecated\fR, \fBqb\fR
 .TP
-\fB\-lib   \fR
+\fB\-lib\fR
 Create a static library
 .TP
-\fB\-m <name> \fR
-Main file w/o ext, the entry point (def: 1st .bas on list)
+\fB\-m \fIname\fR
+Main file without extension, the entry point (default: 1st .bas on list)
 .TP
-\fB\-map <name> \fR
+\fB\-map \fIname\fR
 Save the linking map to file name
 .TP
-\fB\-maxerr <val>\fR
-Only stop parsing if <val> errors occurred
+\fB\-maxerr \fIval\fR
+Only stop parsing if \fIval\fR errors occurred
 .TP
-\fB\-mt    \fR
-Link with thread\fB\-safe runtime library
+\fB\-mt\fR
+Link with thread\-safe runtime library
 .TP
-\fB\-nodeflibs \fR
+\fB\-nodeflibs\fR
 Do not include the default libraries
 .TP
-\fB\-noerrline  \fR
+\fB\-noerrline\fR
 Do not show source line where error occured
 .TP
-\fB\-o <name>  \fR
+\fB\-o \fIname\fR
 Set output name (in the same number as source files)
 .TP
-\fB\-p <name> \fR
+\fB\-p \fIname\fR
 Add a path to search for libraries
 .TP
-\fB\-profile  \fR
+\fB\-profile\fR
 Enable function profiling
 .TP
-\fB\-r     \fR
+\fB\-r\fR
 Do not delete the asm file(s)
 .TP
-\fB\-v      \fR
+\fB\-v\fR
 Be verbose
 .TP
-\fB\-version  \fR
+\fB\-version\fR
 Show compiler version
 .TP
-\fB\-w <value> \fR
-Set min warning level: all, pedantic or a value
+\fB\-w \fIvalue\fR
+Set min warning level: \fBall\fR, \fBpedantic\fR, or an integer
 .TP
-\fB\-Wa <opt>  \fR
+\fB\-Wa \fIopt\fR
 Pass options to GAS (separated by commas)
 .TP
-\fB\-Wl <opt> \fR
+\fB\-Wl \fIopt\fR
 Pass options to LD (separated by commas)
 .TP
-\fB\-x <name>  \fR
+\fB\-x \fIname\fR
 Set executable/library name
+
+.SH ENVIRONMENT
+.IP AS
+Overrides location of GNU AS (assembler)
+.IP LD
+Overrides location of GNU LD (linker)
+
 .SH "SEE ALSO"
 The full language specification and help is available in wiki format at
 .B 
 http://www.freebasic.net/wiki/
 .SH COPYRIGHT
-Copyright \(co 2004\-2006 The FreeBASIC development Team
+Copyright \(co 2004\-2007 The FreeBASIC development Team
 .br
 This is free software.  You may redistribute copies of it under the terms of
 the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
