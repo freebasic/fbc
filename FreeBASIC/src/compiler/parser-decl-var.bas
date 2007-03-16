@@ -886,6 +886,9 @@ private function hVarInit _
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
+		
+		'' fake an expression
+		initree = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	'' static or shared?
