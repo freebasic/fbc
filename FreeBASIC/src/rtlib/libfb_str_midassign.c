@@ -75,7 +75,7 @@ FBCALL void fb_StrAssignMid ( FBSTRING *dst, int start, int len, FBSTRING *src )
 			len = src_len;
 
         if( start + len > dst_len )
-        	len = (dst_len - start) - 1;
+        	len = (dst_len - start);
 
 		memcpy( dst->data + start, src->data, len );
     }
