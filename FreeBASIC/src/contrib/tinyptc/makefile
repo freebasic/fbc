@@ -73,7 +73,7 @@ ifeq ($(TARGET),win32)
     CFLAGS += -DTARGET_WIN32 -DTARGET_X86 -I ../../rtlib/obj/win32
 
     # !!! ASSUMES WIN32 RTLIB WAS ./configure'D AND DIRECTX HEADERS ARE IN MinGW's INCLUDE DIRECTORY
-    CFLAGS += -I ../../rtlib -I
+    CFLAGS += -I ../../rtlib
     
     AFLAGS += -DTARGET_WIN32
     NASMFLAGS += -f win32
