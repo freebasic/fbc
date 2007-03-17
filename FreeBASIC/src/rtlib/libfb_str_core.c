@@ -142,8 +142,7 @@ FBCALL FBSTRING *fb_hStrAlloc
 	}
 
 	str->size = newsize;
-
-	fb_hStrSetLength( str, size );
+	str->len = size;
 
     return str;
 }
