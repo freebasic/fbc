@@ -1999,7 +1999,7 @@ function rtlGfxDrawString _
 		byval paramexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc, putter
     dim as integer targetmode
     dim as FBSYMBOL ptr reslabel
 
@@ -2054,12 +2054,14 @@ function rtlGfxDrawString _
  	if( fexpr = NULL ) then
  		fexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
  		targetmode = FB_PARAMMODE_BYVAL
+ 		putter = astNewCONSTi( 0, FB_DATATYPE_INTEGER)
  	else
 		if( fisptr ) then
 			targetmode = FB_PARAMMODE_BYVAL
 		else
 			targetmode = INVALID
 		end if
+		putter = hGetPutter( mode )
 	end if
 	if( astNewARG( proc, fexpr, INVALID, targetmode ) = NULL ) then
  		exit function
@@ -2071,7 +2073,7 @@ function rtlGfxDrawString _
  	end if
  	
  	'' byval putter as integer
- 	if( astNewARG( proc, hGetPutter( mode ) ) = NULL ) then
+ 	if( astNewARG( proc, putter ) = NULL ) then
  		exit function
  	end if
 
