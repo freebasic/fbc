@@ -28,7 +28,6 @@ constructor CHttp _
   		return
   	end if
 
-  	curl_easy_setopt( ctx->curl, CURLOPT_VERBOSE, TRUE )
 	curl_easy_setopt( ctx->curl, CURLOPT_COOKIEFILE, "" )
 	
 	ctx->headerlist = curl_slist_append( NULL, "Expect:" )

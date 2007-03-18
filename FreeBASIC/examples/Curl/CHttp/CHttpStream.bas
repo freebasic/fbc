@@ -90,6 +90,7 @@ end function
 function CHttpStream.receive _
 	( _
 		byval url as zstring ptr, _
+		byval referer as zstring ptr, _
 		byval doreset as integer _
 	) as integer
 
@@ -117,10 +118,19 @@ function CHttpStream.receive _
  	if( doreset ) then
  		curl_easy_reset( curl )
  	end if
+
 	curl_easy_setopt( curl, CURLOPT_URL, url )
+	
+	curl_easy_setopt( curl, CURLOPT_FOLLOWLOCATION, 1 )
+	curl_easy_setopt( curl, CURLOPT_MAXREDIRS, 16 )
+	
+	if( referer <> NULL ) then
+		curl_easy_setopt( curl, CURLOPT_REFERER, referer )
+	end if
+	
 	curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, @recv_cb )
 	curl_easy_setopt( curl, CURLOPT_WRITEDATA, @ctx->stream )
- 	
+
  	if( curl_easy_perform( curl ) <> 0 ) then
  		if( ctx->stream.buffer <> NULL ) then
  			deallocate( ctx->stream.buffer )
@@ -140,11 +150,18 @@ end function
 '':::::
 function CHttpStream.read _
 	( _
-		_
+		byval is_binary as integer _
 	) as string
 	
 	if( ctx->stream.buffer <> NULL ) then
-		function = *ctx->stream.buffer
+		if( is_binary = FALSE ) then
+			function = *ctx->stream.buffer
+		else
+			dim as string res = space( ctx->stream.pos + 1 )
+			memcpy( strptr( res ), ctx->stream.buffer, ctx->stream.pos + 1 )
+			function = res
+		end if
+	
 	else
 		function = ""
 	end if
@@ -183,6 +200,7 @@ function CHttpStream.send _
 		byval url as zstring ptr, _
 		byval data_ as any ptr, _
 		byval bytes as integer, _
+		byval referer as zstring ptr, _
 		byval doreset as integer _
 	) as integer
 
@@ -215,7 +233,16 @@ function CHttpStream.send _
  	if( doreset ) then
  		curl_easy_reset( curl )
  	end if
+
 	curl_easy_setopt( curl, CURLOPT_URL, url )
+
+	curl_easy_setopt( curl, CURLOPT_FOLLOWLOCATION, 1 )
+	curl_easy_setopt( curl, CURLOPT_MAXREDIRS, 16 )
+	
+	if( referer <> NULL ) then
+		curl_easy_setopt( curl, CURLOPT_REFERER, referer )
+	end if
+
 	curl_easy_setopt( curl, CURLOPT_READFUNCTION, @send_cb )
 	curl_easy_setopt( curl, CURLOPT_READDATA, @ctx->stream )
  	

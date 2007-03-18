@@ -17,13 +17,14 @@ type CHttpStream
 	declare function receive _
 		( _
 			byval url as zstring ptr, _
+			byval referer as zstring ptr = NULL, _
 			byval doreset as integer = TRUE _
 		) as integer
 	
 	
 	declare function read _
 		( _
-			_
+			byval is_binary as integer = FALSE _
 		) as string
 	
 	declare function send _
@@ -31,6 +32,7 @@ type CHttpStream
 			byval url as zstring ptr, _
 			byval data_ as any ptr, _
 			byval bytes as integer, _
+			byval referer as zstring ptr = NULL, _
 			byval doreset as integer = TRUE _
 		) as integer
 
