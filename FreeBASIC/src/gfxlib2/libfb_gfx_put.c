@@ -27,14 +27,32 @@
 #include "fb_gfx.h"
 
 
+#if defined(TARGET_X86)
+
+#include "fb_gfx_mmx.h"
+
+extern void fb_hPutAlphaMaskMMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+
+#endif
+
+
 /*:::::*/
 static void fb_hPutAlphaMask(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
-	unsigned char *s = src;
-	unsigned int *d = (unsigned int *)dest;
+	unsigned char *s;
+	unsigned int *d;
 	unsigned int dc, sc;
 	int x;
 	
+#if defined(TARGET_X86)
+	if (__fb_gfx->flags & HAS_MMX) {
+		fb_hPutAlphaMaskMMX(src, dest, w, h, src_pitch, dest_pitch, alpha, blender, param);
+		return;
+	}
+#endif
+	
+	s = src;
+	d = (unsigned int *)dest;
 	src_pitch -= w;
 	dest_pitch = (dest_pitch >> 2) - w;
 	for (; h; h--) {

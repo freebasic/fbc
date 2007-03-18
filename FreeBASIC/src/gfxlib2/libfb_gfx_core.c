@@ -343,7 +343,7 @@ void fb_hSetupFuncs(int bpp)
 {
 #if defined(TARGET_X86)
 	if (fb_CpuDetect() & 0x800000) {
-//		__fb_gfx->flags |= HAS_MMX;
+		__fb_gfx->flags |= HAS_MMX;
 		fb_hMemCpy = fb_hMemCpyMMX;
 		fb_hMemSet = fb_hMemSetMMX;
 	}

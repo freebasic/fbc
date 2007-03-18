@@ -33,7 +33,7 @@
 
 VAR(__fb_gfx_mask_16)		.short	MASK_COLOR_16, MASK_COLOR_16, MASK_COLOR_16, MASK_COLOR_16
 VAR(__fb_gfx_mask_32)		.long	MASK_COLOR_32, MASK_COLOR_32
-VAR(__fb_gfx_rgb_32)		.long	0x00FFFFFF, 0x00FFFFFF
+VAR(__fb_gfx_rgb_32)		.long	MASK_RGB_32, MASK_RGB_32
 VAR(__fb_gfx_rb_32)			.long	MASK_RB_32, MASK_RB_32
 VAR(__fb_gfx_ga_32)			.long	MASK_GA_32, MASK_GA_32
 VAR(__fb_gfx_r_16)			.short	MASK_R_16, MASK_R_16, MASK_R_16, MASK_R_16
@@ -353,6 +353,128 @@ FUNC(fb_hPutPixelAlpha4MMX)
 
 	emms
 	popl %edi
+	popl %ebp
+	ret
+
+
+/*:::::*/
+FUNC(fb_hPutAlphaMaskMMX)
+	pushl %ebp
+	movl %esp, %ebp
+	pushl %esi
+	pushl %edi
+	pushl %ebx
+
+	movl ARG3, %ebx
+	movl ARG6, %edx
+	subl %ebx, ARG5
+	pxor %mm7, %mm7
+	shll $2, %ebx
+	movl ARG2, %edi
+	subl %ebx, %edx
+	movl ARG1, %esi
+	movl ARG4, %ebx
+	movq GLOBL(__fb_gfx_rgb_32), %mm6
+
+LABEL(alpha_mask_y_loop)
+	movl ARG3, %ecx
+	pxor %mm7, %mm7
+	shrl $1, %ecx
+	jnc alpha_mask_skip_1
+	
+	lodsb
+	shll $24, %eax
+	andl $MASK_RGB_32, (%edi)
+	orl %eax, (%edi)
+	addl $4, %edi
+
+LABEL(alpha_mask_skip_1)
+	shrl $1, %ecx
+	jnc alpha_mask_skip_2
+	
+	lodsw
+	movq (%edi), %mm1
+	movd %eax, %mm0
+	punpcklbw %mm7, %mm0
+	punpcklwd %mm7, %mm0
+	pslld $24, %mm0
+	pand GLOBL(__fb_gfx_rgb_32), %mm1
+	addl $8, %edi
+	por %mm0, %mm1
+	movq %mm1, -8(%edi)
+
+LABEL(alpha_mask_skip_2)
+	shrl $1, %ecx
+	jnc alpha_mask_skip_4
+	
+	lodsl
+	movq (%edi), %mm2
+	movd %eax, %mm0
+	movq 8(%edi), %mm3
+	punpcklbw %mm7, %mm0
+	addl $16, %edi
+	movq %mm0, %mm1
+	punpcklwd %mm7, %mm0
+	punpckhwd %mm7, %mm1
+	pslld $24, %mm0
+	pslld $24, %mm1
+	pand GLOBL(__fb_gfx_rgb_32), %mm2
+	pand GLOBL(__fb_gfx_rgb_32), %mm3
+	por %mm0, %mm2
+	por %mm1, %mm3
+	movq %mm2, -16(%edi)
+	movq %mm3, -8(%edi)
+
+LABEL(alpha_mask_skip_4)
+	orl %ecx, %ecx
+	jz alpha_mask_next_line
+
+LABEL(alpha_mask_x_loop)
+	movq (%esi), %mm0
+	movq (%esi), %mm2
+	punpcklbw %mm7, %mm0
+	punpckhbw %mm7, %mm2
+	movq %mm0, %mm1
+	movq %mm2, %mm3
+	punpcklwd %mm7, %mm0
+	punpckhwd %mm7, %mm1
+	punpcklwd %mm7, %mm2
+	punpckhwd %mm7, %mm3
+	movq (%edi), %mm4
+	movq 8(%edi), %mm5
+	movq 16(%edi), %mm6
+	movq 24(%edi), %mm7
+	pslld $24, %mm0
+	pslld $24, %mm1
+	pslld $24, %mm2
+	pslld $24, %mm3
+	addl $32, %edi
+	addl $8, %esi
+	pand GLOBL(__fb_gfx_rgb_32), %mm4
+	pand GLOBL(__fb_gfx_rgb_32), %mm5
+	pand GLOBL(__fb_gfx_rgb_32), %mm6
+	pand GLOBL(__fb_gfx_rgb_32), %mm7
+	por %mm0, %mm4
+	por %mm1, %mm5
+	por %mm2, %mm6
+	por %mm3, %mm7
+	movq %mm4, -32(%edi)
+	movq %mm5, -24(%edi)
+	movq %mm6, -16(%edi)
+	movq %mm7, -8(%edi)
+	decl %ecx
+	jnz alpha_mask_x_loop
+	
+LABEL(alpha_mask_next_line)
+	addl ARG5, %esi
+	addl %edx, %edi
+	decl %ebx
+	jnz alpha_mask_y_loop
+	
+	emms
+	popl %ebx
+	popl %edi
+	popl %esi
 	popl %ebp
 	ret
 
