@@ -39,7 +39,7 @@ declare function hPorts_cb _
 	) as integer
 
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 46 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 56 ) = _
 	{ _
 		/' fb_GfxPset ( byref target as any, byval x as single, byval y as single, byval color as uinteger, _
 						byval coordType as integer, byval ispreset as integer ) as void '/ _
@@ -220,13 +220,14 @@ declare function hPorts_cb _
 		/' fb_GfxDrawString ( byval target as any, byval x as single, byval y as single, _
 		                    byval byval coord_type as integer = COORD_TYPE_A, text as string, _
 		                    byval col as uinteger = DEFAULT_COLOR, byval font as any = NULL, byval mode as integer, _
+		                    byval putter as any ptr, _
 		                    byval func as function( src as uinteger, dest as uinteger ) as uinteger = 0, _
 		                    byval param as any ptr = NULL ) '/ _
 		( _
 			@FB_RTL_GFXDRAWSTRING, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
-			10, _
+			11, _
 			{ _
 				( _
 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
@@ -252,6 +253,9 @@ declare function hPorts_cb _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
+				( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+				),_
 				( _
  					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
 				), _
@@ -389,14 +393,15 @@ declare function hPorts_cb _
 		/' fb_GfxPut ( byref target as any, byval x as single, byval y as single, byref array as any, _
 					   byval x1 as integer = &hFFFF0000, byval y1 as integer = &hFFFF0000, _
 					   byval x2 as integer = &hFFFF0000, byval y2 as integer = &hFFFF0000, _
-					   byval coordType as integer, byval mode as integer, byval alpha as integer = -1, _
+					   byval coordType as integer, byval mode as integer, byval putter as any ptr, _
+					   byval alpha as integer = -1, _
 					   byval func as function( src as uinteger, dest as uinteger ) as uinteger = 0,
 					   byval param as any ptr = NULL ) as integer '/ _
 		( _
 			@FB_RTL_GFXPUT, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
-			13, _
+			14, _
 			{ _
 				( _
 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
@@ -428,6 +433,9 @@ declare function hPorts_cb _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
+				( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+				),_
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
@@ -1011,6 +1019,386 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
+		/' fb_hPutTrans ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+		( _
+			@FB_RTL_GFXPUTTRANS, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		9, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_hPutPSet ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+		( _
+			@FB_RTL_GFXPUTPSET, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		9, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_hPutPReset ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+		( _
+			@FB_RTL_GFXPUTPRESET, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		9, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_hPutAnd ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+		( _
+			@FB_RTL_GFXPUTAND, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		9, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_hPutOr ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+		( _
+			@FB_RTL_GFXPUTOR, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		9, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_hPutXor ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+		( _
+			@FB_RTL_GFXPUTXOR, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		9, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_hPutAlpha ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+		( _
+			@FB_RTL_GFXPUTALPHA, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		9, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_hPutBlend ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+		( _
+			@FB_RTL_GFXPUTBLEND, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		9, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_hPutAdd ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+		( _
+			@FB_RTL_GFXPUTADD, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		9, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_hPutCustom ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+		( _
+			@FB_RTL_GFXPUTCUSTOM, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		9, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _
@@ -1106,6 +1494,57 @@ private function hGfxlib_cb _
 	end if
 
 	return TRUE
+end function
+
+'':::::
+private function hGetPutter _
+	( _
+		byval mode as integer _
+	) as ASTNODE ptr
+	
+	dim as ASTNODE ptr n = any, l = any
+    dim as integer dtype = any
+    dim as FBSYMBOL ptr proc = any, subtype = any
+	
+	select case as const mode
+	
+	case FBGFX_PUTMODE_TRANS
+		proc = PROCLOOKUP( GFXPUTTRANS )
+		
+	case FBGFX_PUTMODE_PSET
+		proc = PROCLOOKUP( GFXPUTPSET )
+	
+	case FBGFX_PUTMODE_PRESET
+		proc = PROCLOOKUP( GFXPUTPRESET )
+	
+	case FBGFX_PUTMODE_AND
+		proc = PROCLOOKUP( GFXPUTAND )
+	
+	case FBGFX_PUTMODE_OR
+		proc = PROCLOOKUP( GFXPUTOR )
+	
+	case FBGFX_PUTMODE_XOR
+		proc = PROCLOOKUP( GFXPUTXOR )
+	
+	case FBGFX_PUTMODE_ALPHA
+		proc = PROCLOOKUP( GFXPUTALPHA )
+	
+	case FBGFX_PUTMODE_BLEND
+		proc = PROCLOOKUP( GFXPUTBLEND )
+	
+	case FBGFX_PUTMODE_ADD
+		proc = PROCLOOKUP( GFXPUTADD )
+	
+	case FBGFX_PUTMODE_CUSTOM
+		proc = PROCLOOKUP( GFXPUTCUSTOM )
+	
+	end select
+	
+	''
+	n = astNewOFFSET( astNewVAR( proc, 0, FB_DATATYPE_FUNCTION ) )
+	
+	function = n
+	
 end function
 
 '':::::
@@ -1630,6 +2069,11 @@ function rtlGfxDrawString _
  	if( astNewARG( proc, astNewCONSTi( mode, FB_DATATYPE_INTEGER ) ) = NULL ) then
  		exit function
  	end if
+ 	
+ 	'' byval putter as integer
+ 	if( astNewARG( proc, hGetPutter( mode ) ) = NULL ) then
+ 		exit function
+ 	end if
 
  	'' byval func as function( src as uinteger, dest as uinteger ) as uinteger
  	if( funcexpr = NULL ) then
@@ -1992,6 +2436,11 @@ function rtlGfxPut _
 
  	'' byval mode as integer
  	if( astNewARG( proc, astNewCONSTi( mode, FB_DATATYPE_INTEGER ) ) = NULL ) then
+ 		exit function
+ 	end if
+ 	
+ 	'' byval putter as integer
+ 	if( astNewARG( proc, hGetPutter( mode ) ) = NULL ) then
  		exit function
  	end if
 

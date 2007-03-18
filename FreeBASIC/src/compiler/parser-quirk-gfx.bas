@@ -42,16 +42,6 @@ const FBGFX_DEFAULT_COLOR_FLAG     = &h80000000
 const FBGFX_DEFAULT_AUX_COLOR_FLAG = &h40000000
 const FBGFX_VIEW_SCREEN_FLAG       = &h00000001
 
-const FBGFX_PUTMODE_TRANS  = 0
-const FBGFX_PUTMODE_PSET   = 1
-const FBGFX_PUTMODE_PRESET = 2
-const FBGFX_PUTMODE_AND    = 3
-const FBGFX_PUTMODE_OR     = 4
-const FBGFX_PUTMODE_XOR    = 5
-const FBGFX_PUTMODE_ALPHA  = 6
-const FBGFX_PUTMODE_ADD    = 7
-const FBGFX_PUTMODE_CUSTOM = 8
-
 '' match, not using a token, but a raw text value
 '':::::
 private function hMakeArrayIndex _
@@ -276,6 +266,7 @@ private function hGetMode _
 
 			if( hMatch( CHAR_COMMA ) ) then
 				hMatchExpression( alphaexpr )
+				mode = FBGFX_PUTMODE_BLEND
 			end if
 
 		case "CUSTOM"

@@ -326,6 +326,17 @@
 #define FB_RTL_GFXEVENT					"fb_GfxEvent"
 #define FB_RTL_GFXIMAGECREATE			"fb_GfxImageCreate"
 
+#define FB_RTL_GFXPUTTRANS				"fb_hPutTrans"
+#define FB_RTL_GFXPUTPSET				"fb_hPutPSet"
+#define FB_RTL_GFXPUTPRESET				"fb_hPutPReset"
+#define FB_RTL_GFXPUTAND				"fb_hPutAnd"
+#define FB_RTL_GFXPUTOR					"fb_hPutOr"
+#define FB_RTL_GFXPUTXOR				"fb_hPutXor"
+#define FB_RTL_GFXPUTALPHA				"fb_hPutAlpha"
+#define FB_RTL_GFXPUTBLEND				"fb_hPutBlend"
+#define FB_RTL_GFXPUTADD				"fb_hPutAdd"
+#define FB_RTL_GFXPUTCUSTOM				"fb_hPutCustom"
+
 #define FB_RTL_PROFILEMCOUNT            "mcount"
 #define FB_RTL_PROFILEMONSTARTUP        "_monstartup"
 
@@ -630,6 +641,16 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GFXPALETTEGET
 	FB_RTL_IDX_GFXPALETTEGETUSING
 	FB_RTL_IDX_GFXPUT
+	FB_RTL_IDX_GFXPUTTRANS
+	FB_RTL_IDX_GFXPUTPSET
+	FB_RTL_IDX_GFXPUTPRESET
+	FB_RTL_IDX_GFXPUTAND
+	FB_RTL_IDX_GFXPUTOR
+	FB_RTL_IDX_GFXPUTXOR
+	FB_RTL_IDX_GFXPUTALPHA
+	FB_RTL_IDX_GFXPUTBLEND
+	FB_RTL_IDX_GFXPUTADD
+	FB_RTL_IDX_GFXPUTCUSTOM
 	FB_RTL_IDX_GFXGET
 	FB_RTL_IDX_GFXSCREENSET
 	FB_RTL_IDX_GFXSCREENRES
@@ -1531,6 +1552,18 @@ declare function rtlPrinter_cb _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as integer
+
+
+const FBGFX_PUTMODE_TRANS  = 0
+const FBGFX_PUTMODE_PSET   = 1
+const FBGFX_PUTMODE_PRESET = 2
+const FBGFX_PUTMODE_AND    = 3
+const FBGFX_PUTMODE_OR     = 4
+const FBGFX_PUTMODE_XOR    = 5
+const FBGFX_PUTMODE_ALPHA  = 6
+const FBGFX_PUTMODE_ADD    = 7
+const FBGFX_PUTMODE_CUSTOM = 8
+const FBGFX_PUTMODE_BLEND  = 9
 
 ''
 '' macros

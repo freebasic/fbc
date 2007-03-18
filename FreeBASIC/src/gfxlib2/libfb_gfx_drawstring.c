@@ -55,12 +55,11 @@ typedef struct FBGFX_CHAR
 
 
 /*:::::*/
-FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int flags, FBSTRING *string, unsigned int color, void *font, int mode, BLENDER *blender, void *param)
+FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int flags, FBSTRING *string, unsigned int color, void *font, int mode, PUTTER *putter, BLENDER *blender, void *param)
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	FBGFX_CHAR char_data[256], *ch;
 	PUT_HEADER *header;
-	PUTTER *put;
 	int font_height, x, y, px, py, i, w, h, pitch, bpp, first, last;
 	int offset, bytes_count, res = FB_RTERROR_OK;
 	unsigned char *data, *width;
@@ -88,11 +87,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int flags, FBSTRIN
 	
 	if (font) {
 		/* user passed a custom font */
-
-		put = fb_hGetPutter(mode, (int *)&color);
-		if (!put)
-			goto exit_error;
-
+		
 		header = (PUT_HEADER *)font;
 		if (header->type == PUT_HEADER_NEW) {
 			bpp = header->bpp;
@@ -168,7 +163,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int flags, FBSTRIN
 				}
 				if (x + w > context->view_x + context->view_w)
 					w -= ((x + w) - (context->view_x + context->view_w));
-				put(data, context->line[y] + (px * bpp), w, h, pitch, context->target_pitch, color, blender, param);
+				putter(data, context->line[y] + (px * bpp), w, h, pitch, context->target_pitch, color, blender, param);
 				
 			}
 			x += ch->width;

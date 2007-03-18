@@ -32,10 +32,12 @@
 #endif
 
 #if defined TARGET_WIN32 || defined TARGET_DOS || defined TARGET_XBOX || defined TARGET_CYGWIN
-#define FUNC(name)		.globl _##name ; .balign 8, 0x90 ; _##name:
+#define FUNC(name)		.globl _##name ; .balign 8, 0x90 ; _##name :
+#define VAR(name)		.globl _##name ; _##name :
 #define GLOBL(name)		_##name
 #else
-#define FUNC(name)		.globl name ; .balign 8, 0x90 ; name:
+#define FUNC(name)		.globl name ; .balign 8, 0x90 ; name :
+#define VAR(name)		.globl name ; name :
 #define GLOBL(name)		name
 #endif
 #define LABEL(name)		.balign 4, 0x90 ; name :

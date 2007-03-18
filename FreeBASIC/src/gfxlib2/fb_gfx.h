@@ -292,8 +292,7 @@ typedef struct FB_GFXCTX {
 	void (*put_pixel)(struct FB_GFXCTX *ctx, int x, int y, unsigned int color);
 	unsigned int (*get_pixel)(struct FB_GFXCTX *ctx, int x, int y);
 	void *(*pixel_set)(void *dest, int color, size_t size);
-	PUTTER **putter;
-	int put_bpp;
+	PUTTER **putter[PUT_MODES];
     int flags;
 } FB_GFXCTX;
 
@@ -415,7 +414,6 @@ extern FBCALL int fb_hDecode(const unsigned char *in_buffer, int in_size, unsign
 extern void fb_hPostEvent(EVENT *e);
 extern void fb_hPostKey(int key);
 extern BLITTER *fb_hGetBlitter(int device_depth, int is_rgb);
-extern PUTTER *fb_hGetPutter(int mode, int *alpha);
 extern unsigned int fb_hMakeColor(int bpp, unsigned int index, int r, int g, int b);
 extern unsigned int fb_hFixColor(int bpp, unsigned int color);
 extern void fb_hRestorePalette(void);
@@ -462,11 +460,11 @@ extern FBCALL void fb_GfxWindow(float x1, float y1, float x2, float y2, int scre
 extern FBCALL void fb_GfxLine(void *target, float x1, float y1, float x2, float y2, unsigned int color, int type, unsigned int style, int coord_type);
 extern FBCALL void fb_GfxEllipse(void *target, float x, float y, float radius, unsigned int color, float aspect, float start, float end, int fill, int coord_type);
 extern FBCALL int fb_GfxGet(void *target, float x1, float y1, float x2, float y2, unsigned char *dest, int coord_type, FBARRAY *array);
-extern FBCALL int fb_GfxPut(void *target, float x, float y, unsigned char *src, int x1, int y1, int x2, int y2, int coord_type, int mode, int alpha, BLENDER *blender, void *param);
+extern FBCALL int fb_GfxPut(void *target, float x, float y, unsigned char *src, int x1, int y1, int x2, int y2, int coord_type, int mode, PUTTER *putter, int alpha, BLENDER *blender, void *param);
 extern FBCALL int fb_GfxWaitVSync(void);
 extern FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, unsigned int border_color, FBSTRING *pattern, int mode, int coord_type);
 extern FBCALL void fb_GfxDraw(void *target, FBSTRING *command);
-extern FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font, int mode, BLENDER *blender, void *param);
+extern FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font, int mode, PUTTER *putter, BLENDER *blender, void *param);
 extern FBCALL void fb_GfxFlip(int from_page, int to_page);
 extern FBCALL void fb_GfxSetPage(int work_page, int visible_page);
 extern FBCALL void fb_GfxLock(void);
