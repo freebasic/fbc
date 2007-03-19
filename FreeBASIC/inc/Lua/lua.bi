@@ -76,7 +76,7 @@ type lua_Integer as ptrdiff_t
 #define lua_isthread(L,n) (lua_type(L, (n)) = LUA_TTHREAD)
 #define lua_isnone(L,n) (lua_type(L, (n)) = LUA_TNONE)
 #define lua_isnoneornil(L, n) (lua_type(L, (n)) <= 0)
-#define lua_pushliteral(L, s) lua_pushlstring(L, "" s, (sizeof(s)\sizeof(char))-1)
+#define lua_pushliteral(L, s) lua_pushlstring(L, "" s, (sizeof(s)\sizeof(zstring))-1)
 #define lua_setglobal(L,s) lua_setfield(L, LUA_GLOBALSINDEX, (s))
 #define lua_getglobal(L,s) lua_getfield(L, LUA_GLOBALSINDEX, (s))
 #define lua_tostring(L,i) lua_tolstring(L, (i), NULL)
