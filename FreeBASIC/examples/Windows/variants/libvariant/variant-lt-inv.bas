@@ -14,8 +14,8 @@ VAR_GEN_COMP_INV( <, double, R8 )
 '':::::
 operator < _
 	( _
-		byref lhs as VARIANT, _
-		byref rhs as CVariant _
+		byref lhs as VARIANT_, _
+		byref rhs as VARIANT _
 	) as integer
 	
 	operator = VarCmp( @lhs, @rhs.var_, NULL, 0 ) < VARCMP_EQ
@@ -26,10 +26,10 @@ end operator
 operator < _
 	( _
 		byval lhs as zstring ptr, _
-		byref rhs as CVariant _
+		byref rhs as VARIANT _
 	) as integer
 	
-	dim as VARIANT tmp = any
+	dim as VARIANT_ tmp = any
 	
 	VariantInit( @tmp )
 	V_VT(@tmp) = VT_BSTR
@@ -45,10 +45,10 @@ end operator
 operator < _
 	( _
 		byval lhs as wstring ptr, _
-		byref rhs as CVariant _
+		byref rhs as VARIANT _
 	) as integer
 	
-	dim as VARIANT tmp = any
+	dim as VARIANT_ tmp = any
 	
 	VariantInit( @tmp )
 	V_VT(@tmp) = VT_BSTR

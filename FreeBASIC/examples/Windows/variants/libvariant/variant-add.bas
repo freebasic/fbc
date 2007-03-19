@@ -14,41 +14,41 @@ VAR_GEN_BOP( +, VarAdd, double, R8 )
 '':::::
 operator + _
 	( _
-		byref lhs as CVariant, _
-		byref rhs as CVariant _
-	) as CVariant
+		byref lhs as VARIANT, _
+		byref rhs as VARIANT _
+	) as VARIANT
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarAdd( @lhs.var_, @rhs.var_, @res )
 	
-	return CVariant( res, FALSE )
+	return VARIANT( res, FALSE )
 	
 end operator
 
 '':::::
 operator + _
 	( _
-		byref lhs as CVariant, _
-		byref rhs as VARIANT _
-	) as CVariant
+		byref lhs as VARIANT, _
+		byref rhs as VARIANT_ _
+	) as VARIANT
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarAdd( @lhs.var_, @rhs, @res )
 	
-	return CVariant( res, FALSE )
+	return VARIANT( res, FALSE )
 	
 end operator
 
 '':::::
 operator + _
 	( _
-		byref lhs as CVariant, _
+		byref lhs as VARIANT, _
 		byval rhs as zstring ptr _
-	) as CVariant
+	) as VARIANT
 	
-	dim as VARIANT tmp = any, res = any
+	dim as VARIANT_ tmp = any, res = any
 	
 	VariantInit( @tmp )
 	V_VT(@tmp) = VT_BSTR
@@ -58,18 +58,18 @@ operator + _
 	
 	VariantClear( @tmp )
 	
-	return CVariant( res, FALSE )
+	return VARIANT( res, FALSE )
 	
 end operator
 
 '':::::
 operator + _
 	( _
-		byref lhs as CVariant, _
+		byref lhs as VARIANT, _
 		byval rhs as wstring ptr _
-	) as CVariant
+	) as VARIANT
 	
-	dim as VARIANT tmp = any, res = any
+	dim as VARIANT_ tmp = any, res = any
 	
 	VariantInit( @tmp )
 	V_VT(@tmp) = VT_BSTR
@@ -79,7 +79,7 @@ operator + _
 	
 	VariantClear( @tmp )
 	
-	return CVariant( res, FALSE )
+	return VARIANT( res, FALSE )
 	
 end operator
 

@@ -11,12 +11,12 @@ VAR_GEN_SELFOP( mod=, VarMod, single, R4 )
 VAR_GEN_SELFOP( mod=, VarMod, double, R8 )
 
 '':::::
-operator CVariant.mod= _
+operator VARIANT.mod= _
 	( _
-		byref rhs as CVariant _
+		byref rhs as VARIANT _
 	)
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarMod( @this.var_, @rhs.var_, @res )
 	
@@ -26,12 +26,12 @@ operator CVariant.mod= _
 end operator
 
 '':::::
-operator CVariant.mod= _
+operator VARIANT.mod= _
 	( _
-		byref rhs as VARIANT _
+		byref rhs as VARIANT_ _
 	)
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarMod( @this.var_, @rhs, @res )
 	

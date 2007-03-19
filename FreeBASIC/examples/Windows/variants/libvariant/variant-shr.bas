@@ -7,11 +7,11 @@
 '':::::
 operator shr _
 	( _
-		byref lhs as CVariant, _
-		byref rhs as CVariant _
-	) as CVariant
+		byref lhs as VARIANT, _
+		byref rhs as VARIANT _
+	) as VARIANT
 	
-	dim as VARIANT res = any, tmp = any
+	dim as VARIANT_ res = any, tmp = any
 	
 	V_VT(@tmp) = VT_I4
 	V_I4(@tmp) = 1 shl cint( rhs )
@@ -20,18 +20,18 @@ operator shr _
 	
 	VariantClear( @tmp )
 	
-	return CVariant( res, FALSE )
+	return VARIANT( res, FALSE )
 	
 end operator
 
 '':::::
 operator shr _
 	( _
-		byref lhs as CVariant, _
+		byref lhs as VARIANT, _
 		byval rhs as integer _
-	) as CVariant
+	) as VARIANT
 	
-	dim as VARIANT res = any, tmp = any
+	dim as VARIANT_ res = any, tmp = any
 	
 	V_VT(@tmp) = VT_I4
 	V_I4(@tmp) = 1 shl rhs
@@ -40,7 +40,7 @@ operator shr _
 	
 	VariantClear( @tmp )
 	
-	return CVariant( res, FALSE )
+	return VARIANT( res, FALSE )
 	
 end operator
 

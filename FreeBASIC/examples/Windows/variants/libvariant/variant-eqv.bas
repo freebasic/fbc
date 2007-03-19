@@ -12,30 +12,30 @@ VAR_GEN_BOP( eqv, VarEqv, ulongint, UI8 )
 '':::::
 operator eqv _
 	( _
-		byref lhs as CVariant, _
-		byref rhs as CVariant _
-	) as CVariant
+		byref lhs as VARIANT, _
+		byref rhs as VARIANT _
+	) as VARIANT
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarEqv( @lhs.var_, @rhs.var_, @res )
 	
-	return CVariant( res, FALSE )
+	return VARIANT( res, FALSE )
 	
 end operator
 
 '':::::
 operator eqv _
 	( _
-		byref lhs as CVariant, _
-		byref rhs as VARIANT _
-	) as CVariant
+		byref lhs as VARIANT, _
+		byref rhs as VARIANT_ _
+	) as VARIANT
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarEqv( @lhs.var_, @rhs, @res )
 	
-	return CVariant( res, FALSE )
+	return VARIANT( res, FALSE )
 	
 end operator
 

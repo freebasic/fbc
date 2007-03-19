@@ -11,12 +11,12 @@ VAR_GEN_SELFOP( +=, VarAdd, single, R4 )
 VAR_GEN_SELFOP( +=, VarAdd, double, R8 )
 
 '':::::
-operator CVariant.+= _
+operator VARIANT.+= _
 	( _
-		byref rhs as CVariant _
+		byref rhs as VARIANT _
 	)
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarAdd( @this.var_, @rhs.var_, @res )
 	
@@ -26,12 +26,12 @@ operator CVariant.+= _
 end operator
 
 '':::::
-operator CVariant.+= _
+operator VARIANT.+= _
 	( _
-		byref rhs as VARIANT _
+		byref rhs as VARIANT_ _
 	)
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarAdd( @this.var_, @rhs, @res )
 	
@@ -41,12 +41,12 @@ operator CVariant.+= _
 end operator
 
 '':::::
-operator CVariant.+= _
+operator VARIANT.+= _
 	( _
 		byval rhs as zstring ptr _
 	)
 	
-	dim as VARIANT tmp = any, res = any
+	dim as VARIANT_ tmp = any, res = any
 	
 	VariantInit( @tmp )
 	V_VT(@tmp) = VT_BSTR
@@ -62,12 +62,12 @@ operator CVariant.+= _
 end operator
 
 '':::::
-operator CVariant.+= _
+operator VARIANT.+= _
 	( _
 		byval rhs as wstring ptr _
 	)
 	
-	dim as VARIANT tmp = any, res = any
+	dim as VARIANT_ tmp = any, res = any
 	
 	VariantInit( @tmp )
 	V_VT(@tmp) = VT_BSTR

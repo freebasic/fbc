@@ -11,7 +11,7 @@ VAR_GEN_ASSIGN( single, R4 )
 VAR_GEN_ASSIGN( double, R8 )
 
 '':::::
-operator CVariant.let _
+operator VARIANT.let _
 	( _
 		byval rhs as VARIANT_NOTHING _
 	)
@@ -21,9 +21,9 @@ operator CVariant.let _
 end operator
 
 '':::::
-operator CVariant.let _
+operator VARIANT.let _
 	( _
-		byref rhs as Cvariant _
+		byref rhs as VARIANT _
 	)
 	
 	VariantClear( @this.var_ )
@@ -32,9 +32,9 @@ operator CVariant.let _
 end operator
 
 '':::::
-operator CVariant.let _
+operator VARIANT.let _
 	( _
-		byref rhs as VARIANT _
+		byref rhs as VARIANT_ _
 	)
 	
 	VariantClear( @this.var_ )
@@ -43,7 +43,7 @@ operator CVariant.let _
 end operator
 
 '':::::
-operator CVariant.let _
+operator VARIANT.let _
 	( _
 		byval rhs as zstring ptr _
 	)
@@ -56,7 +56,7 @@ operator CVariant.let _
 end operator
 
 '':::::
-operator CVariant.let _
+operator VARIANT.let _
 	( _
 		byval rhs as wstring ptr _
 	)

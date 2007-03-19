@@ -19,7 +19,7 @@ OBJS := $(patsubst %.bas,obj/%.o,$(SRCS))
 ##########################
 
 FBC := fbc
-FBCFLAGS := -i ../
+FBCFLAGS := -d VARIANT_ISBUILDING -i ../
 
 ifdef DEBUG
 FBCFLAGS += -g

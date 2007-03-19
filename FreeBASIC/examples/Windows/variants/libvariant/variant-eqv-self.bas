@@ -9,12 +9,12 @@ VAR_GEN_SELFOP( eqv=, VarEqv, longint, I8 )
 VAR_GEN_SELFOP( eqv=, VarEqv, ulongint, UI8 )
 
 '':::::
-operator CVariant.eqv= _
+operator VARIANT.eqv= _
 	( _
-		byref rhs as CVariant _
+		byref rhs as VARIANT _
 	)
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarEqv( @this.var_, @rhs.var_, @res )
 	
@@ -24,12 +24,12 @@ operator CVariant.eqv= _
 end operator
 
 '':::::
-operator CVariant.eqv= _
+operator VARIANT.eqv= _
 	( _
-		byref rhs as VARIANT _
+		byref rhs as VARIANT_ _
 	)
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarEqv( @this.var_, @rhs, @res )
 	

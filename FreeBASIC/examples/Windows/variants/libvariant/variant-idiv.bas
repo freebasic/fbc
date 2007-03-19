@@ -14,30 +14,30 @@ VAR_GEN_BOP( \, VarIdiv, double, R8 )
 '':::::
 operator \ _
 	( _
-		byref lhs as CVariant, _
-		byref rhs as CVariant _
-	) as CVariant
+		byref lhs as VARIANT, _
+		byref rhs as VARIANT _
+	) as VARIANT
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarIdiv( @lhs.var_, @rhs.var_, @res )
 	
-	return CVariant( res, FALSE )
+	return VARIANT( res, FALSE )
 	
 end operator
 
 '':::::
 operator \ _
 	( _
-		byref lhs as CVariant, _
-		byref rhs as VARIANT _
-	) as CVariant
+		byref lhs as VARIANT, _
+		byref rhs as VARIANT_ _
+	) as VARIANT
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarIdiv( @lhs.var_, @rhs, @res )
 	
-	return CVariant( res, FALSE )
+	return VARIANT( res, FALSE )
 	
 end operator
 

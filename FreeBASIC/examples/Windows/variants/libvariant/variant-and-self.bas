@@ -9,12 +9,12 @@ VAR_GEN_SELFOP( and=, VarAnd, longint, I8 )
 VAR_GEN_SELFOP( and=, VarAnd, ulongint, UI8 )
 
 '':::::
-operator CVariant.and= _
+operator VARIANT.and= _
 	( _
-		byref rhs as CVariant _
+		byref rhs as VARIANT _
 	)
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarAnd( @this.var_, @rhs.var_, @res )
 	
@@ -25,12 +25,12 @@ end operator
 
 
 '':::::
-operator CVariant.and= _
+operator VARIANT.and= _
 	( _
-		byref rhs as VARIANT _
+		byref rhs as VARIANT_ _
 	)
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarAnd( @this.var_, @rhs, @res )
 	

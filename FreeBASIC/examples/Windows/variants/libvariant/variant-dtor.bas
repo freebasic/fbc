@@ -4,7 +4,7 @@
 #include once "intern.bi"
 
 '':::::
-destructor CVariant _
+destructor VARIANT _
 	( _
 		_
 	) 

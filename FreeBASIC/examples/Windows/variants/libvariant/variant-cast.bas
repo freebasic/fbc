@@ -11,12 +11,12 @@ VAR_GEN_CAST( single, R4 )
 VAR_GEN_CAST( double, R8 )
 
 '':::::
-operator CVariant.cast _
+operator VARIANT.cast _
 	( _
 		_
 	) as string
 	
-	dim as VARIANT tmp = any
+	dim as VARIANT_ tmp = any
 		
 	VariantInit( @tmp )
 	VariantChangeTypeEx( @tmp, @this.var_, NULL, VARIANT_NOVALUEPROP, VT_BSTR )
@@ -28,12 +28,12 @@ operator CVariant.cast _
 end operator
 
 '':::::
-operator CVariant.cast _
+operator VARIANT.cast _
 	( _
 		_
 	) as wstring ptr
 	
-	dim as VARIANT tmp = any
+	dim as VARIANT_ tmp = any
 		
 	VariantInit( @tmp )
 	VariantChangeTypeEx( @tmp, @this.var_, NULL, VARIANT_NOVALUEPROP, VT_BSTR )

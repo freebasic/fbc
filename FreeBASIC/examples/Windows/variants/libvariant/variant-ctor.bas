@@ -11,7 +11,7 @@ VAR_GEN_CTOR( single, R4 )
 VAR_GEN_CTOR( double, R8 )
 
 '':::::
-constructor CVariant _
+constructor VARIANT _
 	( _
 		_
 	) 
@@ -21,9 +21,9 @@ constructor CVariant _
 end constructor
 
 '':::::
-constructor CVariant _
+constructor VARIANT _
 	( _
-		byref rhs as CVariant _
+		byref rhs as VARIANT _
 	) 
 	
 	VariantInit( @this.var_ )
@@ -32,9 +32,9 @@ constructor CVariant _
 end constructor
 
 '':::::
-constructor CVariant _
+constructor VARIANT _
 	( _
-		byref rhs as CVariant, _
+		byref rhs as VARIANT, _
 		byval deep_copy as integer _
 	) 
 	
@@ -49,9 +49,9 @@ constructor CVariant _
 end constructor
 
 '':::::
-constructor CVariant _
+constructor VARIANT _
 	( _
-		byref rhs as VARIANT _
+		byref rhs as VARIANT_ _
 	) 
 	
 	VariantInit( @this.var_ )
@@ -60,9 +60,9 @@ constructor CVariant _
 end constructor
 
 '':::::
-constructor CVariant _
+constructor VARIANT _
 	( _
-		byref rhs as VARIANT, _
+		byref rhs as VARIANT_, _
 		byval deep_copy as integer _
 	) 
 	
@@ -77,7 +77,7 @@ constructor CVariant _
 end constructor
 
 '':::::
-constructor CVariant _
+constructor VARIANT _
 	( _
 		byval rhs as zstring ptr _
 	)
@@ -90,7 +90,7 @@ constructor CVariant _
 end constructor
 
 '':::::
-constructor CVariant _
+constructor VARIANT _
 	( _
 		byval rhs as wstring ptr _
 	)

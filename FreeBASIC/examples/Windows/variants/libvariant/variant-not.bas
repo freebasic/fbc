@@ -7,14 +7,14 @@
 '':::::
 operator not _
 	( _
-		byref rhs as CVariant _
-	) as CVariant
+		byref rhs as VARIANT _
+	) as VARIANT
 	
-	dim as VARIANT res = any
+	dim as VARIANT_ res = any
 	
 	VarNot( @rhs.var_, @res )
 	
-	return CVariant( res, FALSE )
+	return VARIANT( res, FALSE )
 	
 end operator
 

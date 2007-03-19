@@ -1,6 +1,6 @@
 '':::::
 #macro VAR_GEN_CTOR( r_type, vt_type )
-	constructor CVariant _
+	constructor VARIANT _
 		( _
 			byval rhs as r_type _
 		)
@@ -15,7 +15,7 @@
 
 '':::::
 #macro VAR_GEN_ASSIGN( r_type, vt_type )
-	operator CVariant.let _
+	operator VARIANT.let _
 		( _
 			byval rhs as r_type _
 		)
@@ -30,12 +30,12 @@
 
 '':::::
 #macro VAR_GEN_CAST( ret_type, vt_type )
-	operator CVariant.cast _
+	operator VARIANT.cast _
 		( _
 			_
 		) as ret_type
 		
-		dim as VARIANT tmp = any
+		dim as VARIANT_ tmp = any
 		
 		VariantInit( @tmp )
 		VariantChangeTypeEx( @tmp, @this.var_, NULL, VARIANT_NOVALUEPROP, VT_##vt_type )
@@ -51,11 +51,11 @@
 #macro VAR_GEN_BOP( op, proc, r_type, vt_type )
 	operator op _
 		( _
-			byref lhs as CVariant, _
+			byref lhs as VARIANT, _
 			byval rhs as r_type _
-		) as CVariant
+		) as VARIANT
 		
-		dim as VARIANT tmp = any, res = any
+		dim as VARIANT_ tmp = any, res = any
 		
 		VariantInit( @tmp )
 		V_VT(@tmp) = VT_##vt_type
@@ -63,7 +63,7 @@
 		
 		proc( @lhs.var_, @tmp, @res )
 		
-		return CVariant( res, FALSE )
+		return VARIANT( res, FALSE )
 		
 	end operator
 #endmacro
@@ -73,10 +73,10 @@
 	operator op _
 		( _
 			byval lhs as r_type, _
-			byref rhs as CVariant _
-		) as CVariant
+			byref rhs as VARIANT _
+		) as VARIANT
 		
-		dim as VARIANT tmp = any, res = any
+		dim as VARIANT_ tmp = any, res = any
 		
 		VariantInit( @tmp )
 		V_VT(@tmp) = VT_##vt_type
@@ -84,19 +84,19 @@
 		
 		proc( @tmp, @rhs.var_, @res )
 		
-		return CVariant( res, FALSE )
+		return VARIANT( res, FALSE )
 		
 	end operator
 #endmacro
 
 '':::::
 #macro VAR_GEN_SELFOP( op, proc, r_type, vt_type )
-	operator CVariant.##op _
+	operator VARIANT.##op _
 		( _
 			byval rhs as r_type _
 		)
 		
-		dim as VARIANT tmp = any, res = any
+		dim as VARIANT_ tmp = any, res = any
 		
 		VariantInit( @tmp )
 		V_VT(@tmp) = VT_##vt_type
@@ -114,11 +114,11 @@
 #macro VAR_GEN_COMP( op, r_type, vt_type )
 	operator op _
 		( _
-			byref lhs as CVariant, _
+			byref lhs as VARIANT, _
 			byval rhs as r_type _
 		) as integer
 		
-		dim as VARIANT tmp = any
+		dim as VARIANT_ tmp = any
 		
 		VariantInit( @tmp )
 		V_VT(@tmp) = VT_##vt_type
@@ -134,10 +134,10 @@
 	operator op _
 		( _
 			byval lhs as r_type, _
-			byref rhs as CVariant _
+			byref rhs as VARIANT _
 		) as integer
 		
-		dim as VARIANT tmp = any
+		dim as VARIANT_ tmp = any
 		
 		VariantInit( @tmp )
 		V_VT(@tmp) = VT_##vt_type
