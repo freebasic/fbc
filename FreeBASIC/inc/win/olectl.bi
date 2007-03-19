@@ -317,8 +317,8 @@ declare function OleIconToCursor alias "OleIconToCursor" (byval as HINSTANCE, by
 declare function OleLoadPicture alias "OleLoadPicture" (byval as LPSTREAM, byval as LONG, byval as BOOL, byval as IID ptr, byval as PVOID ptr) as HRESULT
 declare function OleLoadPictureEx alias "OleLoadPictureEx" (byval as LPSTREAM, byval as LONG, byval as BOOL, byval as IID ptr, byval as DWORD, byval as DWORD, byval as DWORD, byval as LPVOID ptr) as HRESULT
 declare function OleLoadPicturePath alias "OleLoadPicturePath" (byval as LPOLESTR, byval as LPUNKNOWN, byval as DWORD, byval as OLE_COLOR, byval as IID ptr, byval as LPVOID ptr) as HRESULT
-declare function OleLoadPictureFile alias "OleLoadPictureFile" (byval as VARIANT, byval as LPDISPATCH ptr) as HRESULT
-declare function OleLoadPictureFileEx alias "OleLoadPictureFileEx" (byval as VARIANT, byval as DWORD, byval as DWORD, byval as DWORD, byval as LPDISPATCH ptr) as HRESULT
+declare function OleLoadPictureFile alias "OleLoadPictureFile" (byval as VARIANT_, byval as LPDISPATCH ptr) as HRESULT
+declare function OleLoadPictureFileEx alias "OleLoadPictureFileEx" (byval as VARIANT_, byval as DWORD, byval as DWORD, byval as DWORD, byval as LPDISPATCH ptr) as HRESULT
 declare function OleSavePictureFile alias "OleSavePictureFile" (byval as LPDISPATCH, byval as BSTR) as HRESULT
 declare function OleTranslateColor alias "OleTranslateColor" (byval as OLE_COLOR, byval as HPALETTE, byval as COLORREF ptr) as HRESULT
 

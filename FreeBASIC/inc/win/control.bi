@@ -51,7 +51,7 @@ type IAMCollectionVtbl
 	GetTypeInfoCount as function(byval as IAMCollection ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IAMCollection ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IAMCollection ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IAMCollection ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IAMCollection ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	get_Count as function(byval as IAMCollection ptr, byval as LONG ptr) as HRESULT
 	Item as function(byval as IAMCollection ptr, byval as integer, byval as IUnknown ptr ptr) as HRESULT
 	get__NewEnum as function(byval as IAMCollection ptr, byval as IUnknown ptr ptr) as HRESULT
@@ -83,7 +83,7 @@ type IMediaControlVtbl
 	GetTypeInfoCount as function(byval as IMediaControl ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IMediaControl ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IMediaControl ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IMediaControl ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IMediaControl ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	Run as function(byval as IMediaControl ptr) as HRESULT
 	Pause as function(byval as IMediaControl ptr) as HRESULT
 	Stop as function(byval as IMediaControl ptr) as HRESULT
@@ -127,7 +127,7 @@ type IMediaEventVtbl
 	GetTypeInfoCount as function(byval as IMediaEvent ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IMediaEvent ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IMediaEvent ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IMediaEvent ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IMediaEvent ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	GetEventHandle as function(byval as IMediaEvent ptr, byval as OAEVENT ptr) as HRESULT
 	GetEvent as function(byval as IMediaEvent ptr, byval as integer ptr, byval as LONG_PTR ptr, byval as LONG_PTR ptr, byval as integer) as HRESULT
 	WaitForCompletion as function(byval as IMediaEvent ptr, byval as integer, byval as integer ptr) as HRESULT
@@ -165,7 +165,7 @@ type IMediaEventExVtbl
 	GetTypeInfoCount as function(byval as IMediaEventEx ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IMediaEventEx ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IMediaEventEx ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IMediaEventEx ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IMediaEventEx ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	GetEventHandle as function(byval as IMediaEventEx ptr, byval as OAEVENT ptr) as HRESULT
 	GetEvent as function(byval as IMediaEventEx ptr, byval as integer ptr, byval as LONG_PTR ptr, byval as LONG_PTR ptr, byval as integer) as HRESULT
 	WaitForCompletion as function(byval as IMediaEventEx ptr, byval as integer, byval as integer ptr) as HRESULT
@@ -209,7 +209,7 @@ type IMediaPositionVtbl
 	GetTypeInfoCount as function(byval as IMediaPosition ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IMediaPosition ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IMediaPosition ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IMediaPosition ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IMediaPosition ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	get_Duration as function(byval as IMediaPosition ptr, byval as REFTIME ptr) as HRESULT
 	put_CurrentPosition as function(byval as IMediaPosition ptr, byval as REFTIME) as HRESULT
 	get_CurrentPosition as function(byval as IMediaPosition ptr, byval as REFTIME ptr) as HRESULT
@@ -257,7 +257,7 @@ type IBasicAudioVtbl
 	GetTypeInfoCount as function(byval as IBasicAudio ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IBasicAudio ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IBasicAudio ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IBasicAudio ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IBasicAudio ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	put_Volume as function(byval as IBasicAudio ptr, byval as integer) as HRESULT
 	get_Volume as function(byval as IBasicAudio ptr, byval as integer ptr) as HRESULT
 	put_Balance as function(byval as IBasicAudio ptr, byval as integer) as HRESULT
@@ -291,7 +291,7 @@ type IVideoWindowVtbl
 	GetTypeInfoCount as function(byval as IVideoWindow ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IVideoWindow ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IVideoWindow ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IVideoWindow ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IVideoWindow ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	put_Caption as function(byval as IVideoWindow ptr, byval as BSTR) as HRESULT
 	get_Caption as function(byval as IVideoWindow ptr, byval as BSTR ptr) as HRESULT
 	put_WindowStyle as function(byval as IVideoWindow ptr, byval as integer) as HRESULT
@@ -395,7 +395,7 @@ type IBasicVideoVtbl
 	GetTypeInfoCount as function(byval as IBasicVideo ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IBasicVideo ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IBasicVideo ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IBasicVideo ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IBasicVideo ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	get_AvgTimePerFrame as function(byval as IBasicVideo ptr, byval as REFTIME ptr) as HRESULT
 	get_BitRate as function(byval as IBasicVideo ptr, byval as integer ptr) as HRESULT
 	get_BitErrorRate as function(byval as IBasicVideo ptr, byval as integer ptr) as HRESULT
@@ -485,7 +485,7 @@ type IBasicVideo2Vtbl
 	GetTypeInfoCount as function(byval as IBasicVideo2 ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IBasicVideo2 ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IBasicVideo2 ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IBasicVideo2 ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IBasicVideo2 ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	get_AvgTimePerFrame as function(byval as IBasicVideo2 ptr, byval as REFTIME ptr) as HRESULT
 	get_BitRate as function(byval as IBasicVideo2 ptr, byval as integer ptr) as HRESULT
 	get_BitErrorRate as function(byval as IBasicVideo2 ptr, byval as integer ptr) as HRESULT
@@ -600,8 +600,8 @@ type IQueueCommandVtbl
 	QueryInterface as function(byval as IQueueCommand ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
 	AddRef as function(byval as IQueueCommand ptr) as ULONG
 	Release as function(byval as IQueueCommand ptr) as ULONG
-	InvokeAtStreamTime as function(byval as IQueueCommand ptr, byval as IDeferredCommand ptr ptr, byval as REFTIME, byval as GUID ptr, byval as integer, byval as short, byval as integer, byval as VARIANT ptr, byval as VARIANT ptr, byval as short ptr) as HRESULT
-	InvokeAtPresentationTime as function(byval as IQueueCommand ptr, byval as IDeferredCommand ptr ptr, byval as REFTIME, byval as GUID ptr, byval as integer, byval as short, byval as integer, byval as VARIANT ptr, byval as VARIANT ptr, byval as short ptr) as HRESULT
+	InvokeAtStreamTime as function(byval as IQueueCommand ptr, byval as IDeferredCommand ptr ptr, byval as REFTIME, byval as GUID ptr, byval as integer, byval as short, byval as integer, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as short ptr) as HRESULT
+	InvokeAtPresentationTime as function(byval as IQueueCommand ptr, byval as IDeferredCommand ptr ptr, byval as REFTIME, byval as GUID ptr, byval as integer, byval as short, byval as integer, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as short ptr) as HRESULT
 end type
 
 #define IQueueCommand_QueryInterface(This,riid,ppvObject) (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
@@ -626,7 +626,7 @@ type IFilterInfoVtbl
 	GetTypeInfoCount as function(byval as IFilterInfo ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IFilterInfo ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IFilterInfo ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IFilterInfo ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IFilterInfo ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	FindPin as function(byval as IFilterInfo ptr, byval as BSTR, byval as IDispatch ptr ptr) as HRESULT
 	get_Name as function(byval as IFilterInfo ptr, byval as BSTR ptr) as HRESULT
 	get_VendorInfo as function(byval as IFilterInfo ptr, byval as BSTR ptr) as HRESULT
@@ -668,7 +668,7 @@ type IRegFilterInfoVtbl
 	GetTypeInfoCount as function(byval as IRegFilterInfo ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IRegFilterInfo ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IRegFilterInfo ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IRegFilterInfo ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IRegFilterInfo ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	get_Name as function(byval as IRegFilterInfo ptr, byval as BSTR ptr) as HRESULT
 	Filter as function(byval as IRegFilterInfo ptr, byval as IDispatch ptr ptr) as HRESULT
 end type
@@ -698,7 +698,7 @@ type IMediaTypeInfoVtbl
 	GetTypeInfoCount as function(byval as IMediaTypeInfo ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IMediaTypeInfo ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IMediaTypeInfo ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IMediaTypeInfo ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IMediaTypeInfo ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	get_Type as function(byval as IMediaTypeInfo ptr, byval as BSTR ptr) as HRESULT
 	get_Subtype as function(byval as IMediaTypeInfo ptr, byval as BSTR ptr) as HRESULT
 end type
@@ -728,7 +728,7 @@ type IPinInfoVtbl
 	GetTypeInfoCount as function(byval as IPinInfo ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IPinInfo ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IPinInfo ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IPinInfo ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IPinInfo ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	get_Pin as function(byval as IPinInfo ptr, byval as IUnknown ptr ptr) as HRESULT
 	get_ConnectedTo as function(byval as IPinInfo ptr, byval as IDispatch ptr ptr) as HRESULT
 	get_ConnectionMediaType as function(byval as IPinInfo ptr, byval as IDispatch ptr ptr) as HRESULT
@@ -780,7 +780,7 @@ type IAMStatsVtbl
 	GetTypeInfoCount as function(byval as IAMStats ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IAMStats ptr, byval as UINT, byval as LCID, byval as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval as IAMStats ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IAMStats ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IAMStats ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	Reset as function(byval as IAMStats ptr) as HRESULT
 	get_Count as function(byval as IAMStats ptr, byval as LONG ptr) as HRESULT
 	GetValueByIndex as function(byval as IAMStats ptr, byval as integer, byval as BSTR ptr, byval as integer ptr, byval as double ptr, byval as double ptr, byval as double ptr, byval as double ptr, byval as double ptr) as HRESULT

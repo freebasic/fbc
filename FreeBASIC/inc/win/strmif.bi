@@ -2041,9 +2041,9 @@ type IMediaPropertyBagVtbl
 	QueryInterface as function(byval as IMediaPropertyBag ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
 	AddRef as function(byval as IMediaPropertyBag ptr) as ULONG
 	Release as function(byval as IMediaPropertyBag ptr) as ULONG
-	Read as function(byval as IMediaPropertyBag ptr, byval as LPCOLESTR, byval as VARIANT ptr, byval as IErrorLog ptr) as HRESULT
-	Write as function(byval as IMediaPropertyBag ptr, byval as LPCOLESTR, byval as VARIANT ptr) as HRESULT
-	EnumProperty as function(byval as IMediaPropertyBag ptr, byval as ULONG, byval as VARIANT ptr, byval as VARIANT ptr) as HRESULT
+	Read as function(byval as IMediaPropertyBag ptr, byval as LPCOLESTR, byval as VARIANT_ ptr, byval as IErrorLog ptr) as HRESULT
+	Write as function(byval as IMediaPropertyBag ptr, byval as LPCOLESTR, byval as VARIANT_ ptr) as HRESULT
+	EnumProperty as function(byval as IMediaPropertyBag ptr, byval as ULONG, byval as VARIANT_ ptr, byval as VARIANT_ ptr) as HRESULT
 end type
 
 type LPPERSISTMEDIAPROPERTYBAG as IPersistMediaPropertyBag ptr
@@ -2802,15 +2802,15 @@ type ICodecAPIVtbl
 	Release as function(byval as ICodecAPI ptr) as ULONG
 	IsSupported as function(byval as ICodecAPI ptr, byval as GUID ptr) as HRESULT
 	IsModifiable as function(byval as ICodecAPI ptr, byval as GUID ptr) as HRESULT
-	GetParameterRange as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr) as HRESULT
-	GetParameterValues as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as VARIANT ptr ptr, byval as ULONG ptr) as HRESULT
-	GetDefaultValue as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
-	GetValue as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
-	SetValue as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
+	GetParameterRange as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr) as HRESULT
+	GetParameterValues as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as VARIANT_ ptr ptr, byval as ULONG ptr) as HRESULT
+	GetDefaultValue as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as VARIANT_ ptr) as HRESULT
+	GetValue as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as VARIANT_ ptr) as HRESULT
+	SetValue as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as VARIANT_ ptr) as HRESULT
 	RegisterForEvent as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as LONG_PTR) as HRESULT
 	UnregisterForEvent as function(byval as ICodecAPI ptr, byval as GUID ptr) as HRESULT
 	SetAllDefaults as function(byval as ICodecAPI ptr) as HRESULT
-	SetValueWithNotify as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as VARIANT ptr, byval as GUID ptr ptr, byval as ULONG ptr) as HRESULT
+	SetValueWithNotify as function(byval as ICodecAPI ptr, byval as GUID ptr, byval as VARIANT_ ptr, byval as GUID ptr ptr, byval as ULONG ptr) as HRESULT
 	SetAllDefaultsWithNotify as function(byval as ICodecAPI ptr, byval as GUID ptr ptr, byval as ULONG ptr) as HRESULT
 	GetAllSettings as function(byval as ICodecAPI ptr, byval as IStream ptr) as HRESULT
 	SetAllSettings as function(byval as ICodecAPI ptr, byval as IStream ptr) as HRESULT
@@ -2846,11 +2846,11 @@ type IEncoderAPIVtbl
 	Release as function(byval as IEncoderAPI ptr) as ULONG
 	IsSupported as function(byval as IEncoderAPI ptr, byval as GUID ptr) as HRESULT
 	IsAvailable as function(byval as IEncoderAPI ptr, byval as GUID ptr) as HRESULT
-	GetParameterRange as function(byval as IEncoderAPI ptr, byval as GUID ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr) as HRESULT
-	GetParameterValues as function(byval as IEncoderAPI ptr, byval as GUID ptr, byval as VARIANT ptr ptr, byval as ULONG ptr) as HRESULT
-	GetDefaultValue as function(byval as IEncoderAPI ptr, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
-	GetValue as function(byval as IEncoderAPI ptr, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
-	SetValue as function(byval as IEncoderAPI ptr, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
+	GetParameterRange as function(byval as IEncoderAPI ptr, byval as GUID ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr) as HRESULT
+	GetParameterValues as function(byval as IEncoderAPI ptr, byval as GUID ptr, byval as VARIANT_ ptr ptr, byval as ULONG ptr) as HRESULT
+	GetDefaultValue as function(byval as IEncoderAPI ptr, byval as GUID ptr, byval as VARIANT_ ptr) as HRESULT
+	GetValue as function(byval as IEncoderAPI ptr, byval as GUID ptr, byval as VARIANT_ ptr) as HRESULT
+	SetValue as function(byval as IEncoderAPI ptr, byval as GUID ptr, byval as VARIANT_ ptr) as HRESULT
 end type
 
 extern IID_IVideoEncoder alias "IID_IVideoEncoder" as IID
@@ -2867,11 +2867,11 @@ type IVideoEncoderVtbl
 	Release as function(byval as IVideoEncoder ptr) as ULONG
 	IsSupported as function(byval as IVideoEncoder ptr, byval as GUID ptr) as HRESULT
 	IsAvailable as function(byval as IVideoEncoder ptr, byval as GUID ptr) as HRESULT
-	GetParameterRange as function(byval as IVideoEncoder ptr, byval as GUID ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr) as HRESULT
-	GetParameterValues as function(byval as IVideoEncoder ptr, byval as GUID ptr, byval as VARIANT ptr ptr, byval as ULONG ptr) as HRESULT
-	GetDefaultValue as function(byval as IVideoEncoder ptr, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
-	GetValue as function(byval as IVideoEncoder ptr, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
-	SetValue as function(byval as IVideoEncoder ptr, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
+	GetParameterRange as function(byval as IVideoEncoder ptr, byval as GUID ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr) as HRESULT
+	GetParameterValues as function(byval as IVideoEncoder ptr, byval as GUID ptr, byval as VARIANT_ ptr ptr, byval as ULONG ptr) as HRESULT
+	GetDefaultValue as function(byval as IVideoEncoder ptr, byval as GUID ptr, byval as VARIANT_ ptr) as HRESULT
+	GetValue as function(byval as IVideoEncoder ptr, byval as GUID ptr, byval as VARIANT_ ptr) as HRESULT
+	SetValue as function(byval as IVideoEncoder ptr, byval as GUID ptr, byval as VARIANT_ ptr) as HRESULT
 end type
 
 enum VIDEOENCODER_BITRATE_MODE
@@ -4214,9 +4214,9 @@ type IVPManagerVtbl
 	GetVideoPortIndex as function(byval as IVPManager ptr, byval as DWORD ptr) as HRESULT
 end type
 
-declare function VARIANT_UserSize alias "VARIANT_UserSize" (byval as uinteger ptr, byval as uinteger, byval as VARIANT ptr) as uinteger
-declare function VARIANT_UserMarshal alias "VARIANT_UserMarshal" (byval as uinteger ptr, byval as ubyte ptr, byval as VARIANT ptr) as ubyte ptr
-declare function VARIANT_UserUnmarshal alias "VARIANT_UserUnmarshal" (byval as uinteger ptr, byval as ubyte ptr, byval as VARIANT ptr) as ubyte ptr
-declare sub VARIANT_UserFree alias "VARIANT_UserFree" (byval as uinteger ptr, byval as VARIANT ptr)
+declare function VARIANT_UserSize alias "VARIANT_UserSize" (byval as uinteger ptr, byval as uinteger, byval as VARIANT_ ptr) as uinteger
+declare function VARIANT_UserMarshal alias "VARIANT_UserMarshal" (byval as uinteger ptr, byval as ubyte ptr, byval as VARIANT_ ptr) as ubyte ptr
+declare function VARIANT_UserUnmarshal alias "VARIANT_UserUnmarshal" (byval as uinteger ptr, byval as ubyte ptr, byval as VARIANT_ ptr) as ubyte ptr
+declare sub VARIANT_UserFree alias "VARIANT_UserFree" (byval as uinteger ptr, byval as VARIANT_ ptr)
 
 #endif

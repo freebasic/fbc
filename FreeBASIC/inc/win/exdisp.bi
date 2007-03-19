@@ -44,14 +44,14 @@ type IWebBrowserVtbl
 	GetTypeInfoCount as function(byval as IWebBrowser ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IWebBrowser ptr, byval as UINT, byval as LCID, byval as LPTYPEINFO ptr) as HRESULT
 	GetIDsOfNames as function(byval as IWebBrowser ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IWebBrowser ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IWebBrowser ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	GoBack as function(byval as IWebBrowser ptr) as HRESULT
 	GoForward as function(byval as IWebBrowser ptr) as HRESULT
 	GoHome as function(byval as IWebBrowser ptr) as HRESULT
 	GoSearch as function(byval as IWebBrowser ptr) as HRESULT
-	Navigate as function(byval as IWebBrowser ptr, byval as BSTR, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr) as HRESULT
+	Navigate as function(byval as IWebBrowser ptr, byval as BSTR, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr) as HRESULT
 	Refresh as function(byval as IWebBrowser ptr) as HRESULT
-	Refresh2 as function(byval as IWebBrowser ptr, byval as VARIANT ptr) as HRESULT
+	Refresh2 as function(byval as IWebBrowser ptr, byval as VARIANT_ ptr) as HRESULT
 	Stop as function(byval as IWebBrowser ptr) as HRESULT
 	get_Application as function(byval as IWebBrowser ptr, byval as IDispatch ptr ptr) as HRESULT
 	get_Parent as function(byval as IWebBrowser ptr, byval as IDispatch ptr ptr) as HRESULT
@@ -86,14 +86,14 @@ type IWebBrowserAppVtbl
 	GetTypeInfoCount as function(byval as IWebBrowserApp ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IWebBrowserApp ptr, byval as UINT, byval as LCID, byval as LPTYPEINFO ptr) as HRESULT
 	GetIDsOfNames as function(byval as IWebBrowserApp ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IWebBrowserApp ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IWebBrowserApp ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	GoBack as function(byval as IWebBrowserApp ptr) as HRESULT
 	GoForward as function(byval as IWebBrowserApp ptr) as HRESULT
 	GoHome as function(byval as IWebBrowserApp ptr) as HRESULT
 	GoSearch as function(byval as IWebBrowserApp ptr) as HRESULT
-	Navigate as function(byval as IWebBrowserApp ptr, byval as BSTR, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr) as HRESULT
+	Navigate as function(byval as IWebBrowserApp ptr, byval as BSTR, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr) as HRESULT
 	Refresh as function(byval as IWebBrowserApp ptr) as HRESULT
-	Refresh2 as function(byval as IWebBrowserApp ptr, byval as VARIANT ptr) as HRESULT
+	Refresh2 as function(byval as IWebBrowserApp ptr, byval as VARIANT_ ptr) as HRESULT
 	Stop as function(byval as IWebBrowserApp ptr) as HRESULT
 	get_Application as function(byval as IWebBrowserApp ptr, byval as IDispatch ptr ptr) as HRESULT
 	get_Parent as function(byval as IWebBrowserApp ptr, byval as IDispatch ptr ptr) as HRESULT
@@ -114,8 +114,8 @@ type IWebBrowserAppVtbl
 	get_Busy as function(byval as IWebBrowserApp ptr, byval as VARIANT_BOOL ptr) as HRESULT
 	Quit as function(byval as IWebBrowserApp ptr) as HRESULT
 	ClientToWindow as function(byval as IWebBrowserApp ptr, byval as integer ptr, byval as integer ptr) as HRESULT
-	PutProperty as function(byval as IWebBrowserApp ptr, byval as BSTR, byval as VARIANT) as HRESULT
-	GetProperty as function(byval as IWebBrowserApp ptr, byval as BSTR, byval as VARIANT ptr) as HRESULT
+	PutProperty as function(byval as IWebBrowserApp ptr, byval as BSTR, byval as VARIANT_) as HRESULT
+	GetProperty as function(byval as IWebBrowserApp ptr, byval as BSTR, byval as VARIANT_ ptr) as HRESULT
 	get_Name as function(byval as IWebBrowserApp ptr, byval as BSTR ptr) as HRESULT
 	get_HWND as function(byval as IWebBrowserApp ptr, byval as integer ptr) as HRESULT
 	get_FullName as function(byval as IWebBrowserApp ptr, byval as BSTR ptr) as HRESULT
@@ -148,14 +148,14 @@ type IWebBrowser2Vtbl
 	GetTypeInfoCount as function(byval as IWebBrowser2 ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IWebBrowser2 ptr, byval as UINT, byval as LCID, byval as LPTYPEINFO ptr) as HRESULT
 	GetIDsOfNames as function(byval as IWebBrowser2 ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IWebBrowser2 ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IWebBrowser2 ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	GoBack as function(byval as IWebBrowser2 ptr) as HRESULT
 	GoForward as function(byval as IWebBrowser2 ptr) as HRESULT
 	GoHome as function(byval as IWebBrowser2 ptr) as HRESULT
 	GoSearch as function(byval as IWebBrowser2 ptr) as HRESULT
-	Navigate as function(byval as IWebBrowser2 ptr, byval as BSTR, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr) as HRESULT
+	Navigate as function(byval as IWebBrowser2 ptr, byval as BSTR, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr) as HRESULT
 	Refresh as function(byval as IWebBrowser2 ptr) as HRESULT
-	Refresh2 as function(byval as IWebBrowser2 ptr, byval as VARIANT ptr) as HRESULT
+	Refresh2 as function(byval as IWebBrowser2 ptr, byval as VARIANT_ ptr) as HRESULT
 	Stop as function(byval as IWebBrowser2 ptr) as HRESULT
 	get_Application as function(byval as IWebBrowser2 ptr, byval as IDispatch ptr ptr) as HRESULT
 	get_Parent as function(byval as IWebBrowser2 ptr, byval as IDispatch ptr ptr) as HRESULT
@@ -176,8 +176,8 @@ type IWebBrowser2Vtbl
 	get_Busy as function(byval as IWebBrowser2 ptr, byval as VARIANT_BOOL ptr) as HRESULT
 	Quit as function(byval as IWebBrowser2 ptr) as HRESULT
 	ClientToWindow as function(byval as IWebBrowser2 ptr, byval as integer ptr, byval as integer ptr) as HRESULT
-	PutProperty as function(byval as IWebBrowser2 ptr, byval as BSTR, byval as VARIANT) as HRESULT
-	GetProperty as function(byval as IWebBrowser2 ptr, byval as BSTR, byval as VARIANT ptr) as HRESULT
+	PutProperty as function(byval as IWebBrowser2 ptr, byval as BSTR, byval as VARIANT_) as HRESULT
+	GetProperty as function(byval as IWebBrowser2 ptr, byval as BSTR, byval as VARIANT_ ptr) as HRESULT
 	get_Name as function(byval as IWebBrowser2 ptr, byval as BSTR ptr) as HRESULT
 	get_HWND as function(byval as IWebBrowser2 ptr, byval as integer ptr) as HRESULT
 	get_FullName as function(byval as IWebBrowser2 ptr, byval as BSTR ptr) as HRESULT
@@ -194,10 +194,10 @@ type IWebBrowser2Vtbl
 	put_MenuBar as function(byval as IWebBrowser2 ptr, byval as VARIANT_BOOL) as HRESULT
 	get_FullScreen as function(byval as IWebBrowser2 ptr, byval as VARIANT_BOOL ptr) as HRESULT
 	put_FullScreen as function(byval as IWebBrowser2 ptr, byval as VARIANT_BOOL) as HRESULT
-	Navigate2 as function(byval as IWebBrowser2 ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr) as HRESULT
+	Navigate2 as function(byval as IWebBrowser2 ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr) as HRESULT
 	QueryStatusWB as function(byval as IWebBrowser2 ptr, byval as OLECMDID, byval as OLECMDF ptr) as HRESULT
-	ExecWB as function(byval as IWebBrowser2 ptr, byval as OLECMDID, byval as OLECMDEXECOPT, byval as VARIANT ptr, byval as VARIANT ptr) as HRESULT
-	ShowBrowserBar as function(byval as IWebBrowser2 ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr) as HRESULT
+	ExecWB as function(byval as IWebBrowser2 ptr, byval as OLECMDID, byval as OLECMDEXECOPT, byval as VARIANT_ ptr, byval as VARIANT_ ptr) as HRESULT
+	ShowBrowserBar as function(byval as IWebBrowser2 ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr) as HRESULT
 	get_ReadyState as function(byval as IWebBrowser2 ptr, byval as READYSTATE ptr) as HRESULT
 	get_Offline as function(byval as IWebBrowser2 ptr, byval as VARIANT_BOOL ptr) as HRESULT
 	put_Offline as function(byval as IWebBrowser2 ptr, byval as VARIANT_BOOL) as HRESULT
@@ -229,7 +229,7 @@ type DWebBrowserEvents2Vtbl
 	GetTypeInfoCount as function(byval as DWebBrowserEvents2 ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as DWebBrowserEvents2 ptr, byval as UINT, byval as LCID, byval as LPTYPEINFO ptr) as HRESULT
 	GetIDsOfNames as function(byval as DWebBrowserEvents2 ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as DWebBrowserEvents2 ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as DWebBrowserEvents2 ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	StatusTextChange as sub(byval as DWebBrowserEvents2 ptr, byval as BSTR)
 	ProgressChange as sub(byval as DWebBrowserEvents2 ptr, byval as integer, byval as integer)
 	CommandStateChange as sub(byval as DWebBrowserEvents2 ptr, byval as integer, byval as VARIANT_BOOL)
@@ -237,10 +237,10 @@ type DWebBrowserEvents2Vtbl
 	DownloadComplete as sub(byval as DWebBrowserEvents2 ptr)
 	TitleChange as sub(byval as DWebBrowserEvents2 ptr, byval as BSTR)
 	PropertyChange as sub(byval as DWebBrowserEvents2 ptr, byval as BSTR)
-	BeforeNavigate2 as sub(byval as DWebBrowserEvents2 ptr, byval as IDispatch ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT ptr, byval as VARIANT_BOOL ptr)
+	BeforeNavigate2 as sub(byval as DWebBrowserEvents2 ptr, byval as IDispatch ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_ ptr, byval as VARIANT_BOOL ptr)
 	NewWindow2 as sub(byval as DWebBrowserEvents2 ptr, byval as IDispatch ptr ptr, byval as VARIANT_BOOL ptr)
-	NavigateComplete as sub(byval as DWebBrowserEvents2 ptr, byval as IDispatch ptr, byval as VARIANT ptr)
-	DocumentComplete as sub(byval as DWebBrowserEvents2 ptr, byval as IDispatch ptr, byval as VARIANT ptr)
+	NavigateComplete as sub(byval as DWebBrowserEvents2 ptr, byval as IDispatch ptr, byval as VARIANT_ ptr)
+	DocumentComplete as sub(byval as DWebBrowserEvents2 ptr, byval as IDispatch ptr, byval as VARIANT_ ptr)
 	OnQuit as sub(byval as DWebBrowserEvents2 ptr)
 	OnVisible as sub(byval as DWebBrowserEvents2 ptr, byval as VARIANT_BOOL)
 	OnToolBar as sub(byval as DWebBrowserEvents2 ptr, byval as VARIANT_BOOL)

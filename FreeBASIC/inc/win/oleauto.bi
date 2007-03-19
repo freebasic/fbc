@@ -213,7 +213,7 @@ declare function SafeArrayGetIID alias "SafeArrayGetIID" (byval as SAFEARRAY ptr
 declare sub VariantInit alias "VariantInit" (byval as VARIANTARG ptr)
 declare function VariantClear alias "VariantClear" (byval as VARIANTARG ptr) as HRESULT
 declare function VariantCopy alias "VariantCopy" (byval as VARIANTARG ptr, byval as VARIANTARG ptr) as HRESULT
-declare function VariantCopyInd alias "VariantCopyInd" (byval as VARIANT ptr, byval as VARIANTARG ptr) as HRESULT
+declare function VariantCopyInd alias "VariantCopyInd" (byval as VARIANT_ ptr, byval as VARIANTARG ptr) as HRESULT
 declare function VariantChangeType alias "VariantChangeType" (byval as VARIANTARG ptr, byval as VARIANTARG ptr, byval as ushort, byval as VARTYPE) as HRESULT
 declare function VariantChangeTypeEx alias "VariantChangeTypeEx" (byval as VARIANTARG ptr, byval as VARIANTARG ptr, byval as LCID, byval as ushort, byval as VARTYPE) as HRESULT
 declare function VarUI1FromI2 alias "VarUI1FromI2" (byval as SHORT, byval as BYTE ptr) as HRESULT
@@ -360,9 +360,9 @@ declare function QueryPathOfRegTypeLib alias "QueryPathOfRegTypeLib" (byval as G
 declare function RegisterTypeLib alias "RegisterTypeLib" (byval as LPTYPELIB, byval as OLECHAR ptr, byval as OLECHAR ptr) as HRESULT
 declare function UnRegisterTypeLib alias "UnRegisterTypeLib" (byval as GUID ptr, byval as WORD, byval as WORD, byval as LCID, byval as SYSKIND) as HRESULT
 declare function CreateTypeLib alias "CreateTypeLib" (byval as SYSKIND, byval as OLECHAR ptr, byval as LPCREATETYPELIB ptr) as HRESULT
-declare function DispGetParam alias "DispGetParam" (byval as DISPPARAMS ptr, byval as UINT, byval as VARTYPE, byval as VARIANT ptr, byval as UINT ptr) as HRESULT
+declare function DispGetParam alias "DispGetParam" (byval as DISPPARAMS ptr, byval as UINT, byval as VARTYPE, byval as VARIANT_ ptr, byval as UINT ptr) as HRESULT
 declare function DispGetIDsOfNames alias "DispGetIDsOfNames" (byval as LPTYPEINFO, byval as OLECHAR ptr ptr, byval as UINT, byval as DISPID ptr) as HRESULT
-declare function DispInvoke alias "DispInvoke" (byval as any ptr, byval as LPTYPEINFO, byval as DISPID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+declare function DispInvoke alias "DispInvoke" (byval as any ptr, byval as LPTYPEINFO, byval as DISPID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 declare function CreateDispTypeInfo alias "CreateDispTypeInfo" (byval as INTERFACEDATA ptr, byval as LCID, byval as LPTYPEINFO ptr) as HRESULT
 declare function CreateStdDispatch alias "CreateStdDispatch" (byval as IUnknown ptr, byval as any ptr, byval as LPTYPEINFO, byval as IUnknown ptr ptr) as HRESULT
 declare function RegisterActiveObject alias "RegisterActiveObject" (byval as IUnknown ptr, byval as CLSID ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
@@ -375,7 +375,7 @@ declare function OaBuildVersion alias "OaBuildVersion" () as uinteger
 declare function VectorFromBstr alias "VectorFromBstr" (byval as BSTR, byval as SAFEARRAY ptr ptr) as HRESULT
 declare function BstrFromVector alias "BstrFromVector" (byval as SAFEARRAY ptr, byval as BSTR ptr) as HRESULT
 declare function VarParseNumFromStr alias "VarParseNumFromStr" (byval as OLECHAR ptr, byval as LCID, byval as ULONG, byval as NUMPARSE ptr, byval as BYTE ptr) as HRESULT
-declare function VarNumFromParseNum alias "VarNumFromParseNum" (byval as NUMPARSE ptr, byval as BYTE ptr, byval as ULONG, byval as VARIANT ptr) as HRESULT
+declare function VarNumFromParseNum alias "VarNumFromParseNum" (byval as NUMPARSE ptr, byval as BYTE ptr, byval as ULONG, byval as VARIANT_ ptr) as HRESULT
 declare function VarI8FromUI1 alias "VarI8FromUI1" (byval as BYTE, byval as LONG64 ptr) as HRESULT
 declare function VarI8FromI2 alias "VarI8FromI2" (byval as SHORT, byval as LONG64 ptr) as HRESULT
 declare function VarI8FromI4 alias "VarI8FromI4" (byval as LONG, byval as LONG64 ptr) as HRESULT

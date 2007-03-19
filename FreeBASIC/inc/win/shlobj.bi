@@ -759,7 +759,7 @@ type IColumnProviderVtbl
 	Release as function(byval as IColumnProvider ptr) as ULONG
 	Initialize as function(byval as IColumnProvider ptr, byval as LPCSHCOLUMNINIT) as HRESULT
 	GetColumnInfo as function(byval as IColumnProvider ptr, byval as DWORD, byval as SHCOLUMNINFO ptr) as HRESULT
-	GetItemData as function(byval as IColumnProvider ptr, byval as LPCSHCOLUMNID, byval as LPCSHCOLUMNDATA, byval as VARIANT ptr) as HRESULT
+	GetItemData as function(byval as IColumnProvider ptr, byval as LPCSHCOLUMNID, byval as LPCSHCOLUMNDATA, byval as VARIANT_ ptr) as HRESULT
 end type
 
 type IQueryInfoVtbl_ as IQueryInfoVtbl
@@ -1039,7 +1039,7 @@ type IShellFolder2Vtbl
 	EnumSearches as function(byval as IShellFolder2 ptr, byval as IEnumExtraSearch ptr ptr) as HRESULT
 	GetDefaultColumn as function(byval as IShellFolder2 ptr, byval as DWORD, byval as ULONG ptr, byval as ULONG ptr) as HRESULT
 	GetDefaultColumnState as function(byval as IShellFolder2 ptr, byval as UINT, byval as SHCOLSTATEF ptr) as HRESULT
-	GetDetailsEx as function(byval as IShellFolder2 ptr, byval as LPCITEMIDLIST, byval as SHCOLUMNID ptr, byval as VARIANT ptr) as HRESULT
+	GetDetailsEx as function(byval as IShellFolder2 ptr, byval as LPCITEMIDLIST, byval as SHCOLUMNID ptr, byval as VARIANT_ ptr) as HRESULT
 	GetDetailsOf as function(byval as IShellFolder2 ptr, byval as LPCITEMIDLIST, byval as UINT, byval as SHELLDETAILS ptr) as HRESULT
 	MapColumnToSCID as function(byval as IShellFolder2 ptr, byval as UINT, byval as SHCOLUMNID ptr) as HRESULT
 end type

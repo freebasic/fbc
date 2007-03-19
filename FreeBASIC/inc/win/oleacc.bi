@@ -157,35 +157,35 @@ type IAccessibleVtbl
 	GetTypeInfoCount as function(byval as IAccessible ptr, byval as UINT ptr) as HRESULT
 	GetTypeInfo as function(byval as IAccessible ptr, byval as UINT, byval as LCID, byval as LPTYPEINFO ptr) as HRESULT
 	GetIDsOfNames as function(byval as IAccessible ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IAccessible ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	Invoke as function(byval as IAccessible ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT_ ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	get_accParent as function(byval as IAccessible ptr, byval as IDispatch ptr ptr) as HRESULT
 	get_accChildCount as function(byval as IAccessible ptr, byval as integer ptr) as HRESULT
-	get_accChild as function(byval as IAccessible ptr, byval as VARIANT, byval as IDispatch ptr ptr) as HRESULT
-	get_accName as function(byval as IAccessible ptr, byval as VARIANT, byval as BSTR ptr) as HRESULT
-	get_accValue as function(byval as IAccessible ptr, byval as VARIANT, byval as BSTR ptr) as HRESULT
-	get_accDescription as function(byval as IAccessible ptr, byval as VARIANT, byval as BSTR ptr) as HRESULT
-	get_accRole as function(byval as IAccessible ptr, byval as VARIANT, byval as VARIANT ptr) as HRESULT
-	get_accState as function(byval as IAccessible ptr, byval as VARIANT, byval as VARIANT ptr) as HRESULT
-	get_accHelp as function(byval as IAccessible ptr, byval as VARIANT, byval as BSTR ptr) as HRESULT
-	get_accHelpTopic as function(byval as IAccessible ptr, byval as BSTR ptr, byval as VARIANT, byval as integer ptr) as HRESULT
-	get_accKeyboardShortcut as function(byval as IAccessible ptr, byval as VARIANT, byval as BSTR ptr) as HRESULT
-	get_accFocus as function(byval as IAccessible ptr, byval as VARIANT ptr) as HRESULT
-	get_accSelection as function(byval as IAccessible ptr, byval as VARIANT ptr) as HRESULT
-	get_accDefaultAction as function(byval as IAccessible ptr, byval as VARIANT, byval as BSTR ptr) as HRESULT
-	accSelect as function(byval as IAccessible ptr, byval as integer, byval as VARIANT) as HRESULT
-	accLocation as function(byval as IAccessible ptr, byval as integer ptr, byval as integer ptr, byval as integer ptr, byval as integer ptr, byval as VARIANT) as HRESULT
-	accNavigate as function(byval as IAccessible ptr, byval as integer, byval as VARIANT, byval as VARIANT ptr) as HRESULT
-	accHitTest as function(byval as IAccessible ptr, byval as integer, byval as integer, byval as VARIANT ptr) as HRESULT
-	accDoDefaultAction as function(byval as IAccessible ptr, byval as VARIANT) as HRESULT
-	put_accName as function(byval as IAccessible ptr, byval as VARIANT, byval as BSTR) as HRESULT
-	put_accValue as function(byval as IAccessible ptr, byval as VARIANT, byval as BSTR) as HRESULT
+	get_accChild as function(byval as IAccessible ptr, byval as VARIANT_, byval as IDispatch ptr ptr) as HRESULT
+	get_accName as function(byval as IAccessible ptr, byval as VARIANT_, byval as BSTR ptr) as HRESULT
+	get_accValue as function(byval as IAccessible ptr, byval as VARIANT_, byval as BSTR ptr) as HRESULT
+	get_accDescription as function(byval as IAccessible ptr, byval as VARIANT_, byval as BSTR ptr) as HRESULT
+	get_accRole as function(byval as IAccessible ptr, byval as VARIANT_, byval as VARIANT_ ptr) as HRESULT
+	get_accState as function(byval as IAccessible ptr, byval as VARIANT_, byval as VARIANT_ ptr) as HRESULT
+	get_accHelp as function(byval as IAccessible ptr, byval as VARIANT_, byval as BSTR ptr) as HRESULT
+	get_accHelpTopic as function(byval as IAccessible ptr, byval as BSTR ptr, byval as VARIANT_, byval as integer ptr) as HRESULT
+	get_accKeyboardShortcut as function(byval as IAccessible ptr, byval as VARIANT_, byval as BSTR ptr) as HRESULT
+	get_accFocus as function(byval as IAccessible ptr, byval as VARIANT_ ptr) as HRESULT
+	get_accSelection as function(byval as IAccessible ptr, byval as VARIANT_ ptr) as HRESULT
+	get_accDefaultAction as function(byval as IAccessible ptr, byval as VARIANT_, byval as BSTR ptr) as HRESULT
+	accSelect as function(byval as IAccessible ptr, byval as integer, byval as VARIANT_) as HRESULT
+	accLocation as function(byval as IAccessible ptr, byval as integer ptr, byval as integer ptr, byval as integer ptr, byval as integer ptr, byval as VARIANT_) as HRESULT
+	accNavigate as function(byval as IAccessible ptr, byval as integer, byval as VARIANT_, byval as VARIANT_ ptr) as HRESULT
+	accHitTest as function(byval as IAccessible ptr, byval as integer, byval as integer, byval as VARIANT_ ptr) as HRESULT
+	accDoDefaultAction as function(byval as IAccessible ptr, byval as VARIANT_) as HRESULT
+	put_accName as function(byval as IAccessible ptr, byval as VARIANT_, byval as BSTR) as HRESULT
+	put_accValue as function(byval as IAccessible ptr, byval as VARIANT_, byval as BSTR) as HRESULT
 end type
 
 type LPACCESSIBLE as IAccessible ptr
 
-declare function AccessibleChildren alias "AccessibleChildren" (byval as IAccessible ptr, byval as LONG, byval as LONG, byval as VARIANT ptr, byval as LONG ptr) as HRESULT
-declare function AccessibleObjectFromEvent alias "AccessibleObjectFromEvent" (byval as HWND, byval as DWORD, byval as DWORD, byval as IAccessible ptr, byval as VARIANT ptr) as HRESULT
-declare function AccessibleObjectFromPoint alias "AccessibleObjectFromPoint" (byval as POINT, byval as IAccessible ptr ptr, byval as VARIANT ptr) as HRESULT
+declare function AccessibleChildren alias "AccessibleChildren" (byval as IAccessible ptr, byval as LONG, byval as LONG, byval as VARIANT_ ptr, byval as LONG ptr) as HRESULT
+declare function AccessibleObjectFromEvent alias "AccessibleObjectFromEvent" (byval as HWND, byval as DWORD, byval as DWORD, byval as IAccessible ptr, byval as VARIANT_ ptr) as HRESULT
+declare function AccessibleObjectFromPoint alias "AccessibleObjectFromPoint" (byval as POINT, byval as IAccessible ptr ptr, byval as VARIANT_ ptr) as HRESULT
 declare function AccessibleObjectFromWindow alias "AccessibleObjectFromWindow" (byval as HWND, byval as DWORD, byval as IID ptr, byval as any ptr ptr) as HRESULT
 declare function CreateStdAccessibleObject alias "CreateStdAccessibleObject" (byval as HWND, byval as LONG, byval as IID ptr, byval as any ptr ptr) as HRESULT
 declare sub GetOleaccVersionInfo alias "GetOleaccVersionInfo" (byval as DWORD ptr, byval as DWORD ptr)

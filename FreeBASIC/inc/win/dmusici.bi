@@ -1124,8 +1124,8 @@ type IDirectMusicScriptVtbl
 	Release as function(byval as IDirectMusicScript ptr) as ULONG
 	Init as function(byval as IDirectMusicScript ptr, byval as IDirectMusicPerformance ptr, byval as DMUS_SCRIPT_ERRORINFO ptr) as HRESULT
 	CallRoutine as function(byval as IDirectMusicScript ptr, byval as WCHAR ptr, byval as DMUS_SCRIPT_ERRORINFO ptr) as HRESULT
-	SetVariableVariant as function(byval as IDirectMusicScript ptr, byval as WCHAR ptr, byval as VARIANT, byval as BOOL, byval as DMUS_SCRIPT_ERRORINFO ptr) as HRESULT
-	GetVariableVariant as function(byval as IDirectMusicScript ptr, byval as WCHAR ptr, byval as VARIANT ptr, byval as DMUS_SCRIPT_ERRORINFO ptr) as HRESULT
+	SetVariableVariant as function(byval as IDirectMusicScript ptr, byval as WCHAR ptr, byval as VARIANT_, byval as BOOL, byval as DMUS_SCRIPT_ERRORINFO ptr) as HRESULT
+	GetVariableVariant as function(byval as IDirectMusicScript ptr, byval as WCHAR ptr, byval as VARIANT_ ptr, byval as DMUS_SCRIPT_ERRORINFO ptr) as HRESULT
 	SetVariableNumber as function(byval as IDirectMusicScript ptr, byval as WCHAR ptr, byval as LONG, byval as DMUS_SCRIPT_ERRORINFO ptr) as HRESULT
 	GetVariableNumber as function(byval as IDirectMusicScript ptr, byval as WCHAR ptr, byval as LONG ptr, byval as DMUS_SCRIPT_ERRORINFO ptr) as HRESULT
 	SetVariableObject as function(byval as IDirectMusicScript ptr, byval as WCHAR ptr, byval as IUnknown ptr, byval as DMUS_SCRIPT_ERRORINFO ptr) as HRESULT
