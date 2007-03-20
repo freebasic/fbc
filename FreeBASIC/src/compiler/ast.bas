@@ -32,7 +32,7 @@
 #include once "inc\list.bi"
 #include once "inc\ir.bi"
 #include once "inc\ast.bi"
-	
+
 declare sub astProcListInit _
 	( _
 	)
