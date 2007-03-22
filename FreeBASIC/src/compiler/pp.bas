@@ -735,7 +735,7 @@ private function dtypeToString( byref res as string, byval dtype as integer, byv
     function = TRUE
     
     dim as string ptr_string
-    do while( dtype > FB_DATATYPE_POINTER )
+    do while( dtype >= FB_DATATYPE_POINTER )
     	ptr_string += " ptr"
     	dtype -= FB_DATATYPE_POINTER
     loop
