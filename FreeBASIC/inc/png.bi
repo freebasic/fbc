@@ -11,13 +11,13 @@
 
 #inclib "png"
 
-#define PNG_LIBPNG_VER_STRING "1.2.8"
-#define PNG_HEADER_VERSION_STRING " libpng version 1.2.8 - December 3, 2004 (header)"
+#define PNG_LIBPNG_VER_STRING "1.2.16"
+#define PNG_HEADER_VERSION_STRING !" libpng version 1.2.16 - January 31, 2007 (header)\n"
 #define PNG_LIBPNG_VER_SONUM 0
 #define PNG_LIBPNG_VER_DLLNUM 13
 #define PNG_LIBPNG_VER_MAJOR 1
 #define PNG_LIBPNG_VER_MINOR 2
-#define PNG_LIBPNG_VER_RELEASE 8
+#define PNG_LIBPNG_VER_RELEASE 16
 #define PNG_LIBPNG_VER_BUILD 0
 #define PNG_LIBPNG_BUILD_ALPHA 1
 #define PNG_LIBPNG_BUILD_BETA 2
@@ -28,7 +28,7 @@
 #define PNG_LIBPNG_BUILD_PRIVATE 16
 #define PNG_LIBPNG_BUILD_SPECIAL 32
 #define PNG_LIBPNG_BUILD_BASE_TYPE 4
-#define PNG_LIBPNG_VER 10208
+#define PNG_LIBPNG_VER 10216
 
 #include once "zlib.bi"
 
@@ -504,7 +504,7 @@ type png_struct_def
 	user_height_max as png_uint_32
 end type
 
-type version_1_2_8 as png_structp
+type version_1_2_16 as png_structp
 type png_structpp as png_struct ptr ptr
 
 #define PNG_FILLER_BEFORE 0
@@ -604,6 +604,7 @@ declare sub png_convert_from_struct_tm (byval ptime as png_timep, byval ttime as
 declare sub png_convert_from_time_t (byval ptime as png_timep, byval ttime as time_t)
 declare sub png_set_expand (byval png_ptr as png_structp)
 declare sub png_set_gray_1_2_4_to_8 (byval png_ptr as png_structp)
+declare sub png_set_expand_gray_1_2_4_to_8 (byval png_ptr as png_structp)
 declare sub png_set_palette_to_rgb (byval png_ptr as png_structp)
 declare sub png_set_tRNS_to_alpha (byval png_ptr as png_structp)
 declare sub png_set_bgr (byval png_ptr as png_structp)
@@ -773,6 +774,13 @@ declare sub png_set_strip_error_numbers (byval png_ptr as png_structp, byval str
 declare sub png_set_user_limits (byval png_ptr as png_structp, byval user_width_max as png_uint_32, byval user_height_max as png_uint_32)
 declare function png_get_user_width_max (byval png_ptr as png_structp) as png_uint_32
 declare function png_get_user_height_max (byval png_ptr as png_structp) as png_uint_32
+declare function png_get_uint_32 (byval buf as png_bytep) as png_uint_32
+declare function png_get_uint_16 (byval buf as png_bytep) as png_uint_16
+declare function png_get_int_32 (byval buf as png_bytep) as png_int_32
+declare function png_get_uint_31 (byval png_ptr as png_structp, byval buf as png_bytep) as png_uint_32
+declare sub png_save_uint_32 (byval buf as png_bytep, byval i as png_uint_32)
+declare sub png_save_int_32 (byval buf as png_bytep, byval i as png_int_32)
+declare sub png_save_uint_16 (byval buf as png_bytep, byval i as uinteger)
 end extern
 
 #define PNG_COLOR_DIST(c1, c2) (abs(cint(c1.red) - cint(c2.red)) + abs(cint(c1.green) - cint(c2.green)) + abs(cint(c1.blue) - cint(c2.blue)))
