@@ -99,6 +99,7 @@ Version 0.17 Beta:
 - DyLibSymbol is now overloaded; it can take a short as the second arg, to specify the proc's ordinal. Patch by voodooattack
 - the TYPEOF() compiler intrinsic, which substitues the type of the variable given in it's place, "dim as typeof(foo) bar"... see 
   http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgTypeof for details (cha0s)
+- the win32 DirectX gfx driver will now go fullscreen on the nearest monitor when the user presses Alt-Enter/maximize (DrV)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
@@ -150,15 +151,15 @@ Version 0.17 Beta:
 - Console was still cleared when exiting a gfx mode on certain terminals under Linux (lillo)
 - Serial driver on windows was not setting DTR high when opening the device (jeffm)
 - Serial driver on windows was ignoring RB/TB buffer size parameters (jeffm)
-- DOS gfxlib always failed when no mouse was detected
+- DOS gfxlib always failed when no mouse was detected (DrV)
 - Win32 GDI driver did not use a custom palette in fullscreen mode, and was giving approximated colors (lillo)
 - static arrays with lower bounds <> 0 would fail when passed as index-less arguments to quirk gfx statements (cha0s)
 - fb_GfxGet was using the array descriptor's 'ptr' field to assert the validity of the data, instead of the 'data' field (cha0s)
 - arrays with lbounds <> 0 passed as args or dynamic would fail in quirk gfx functions (cha0s)
 - there is no more special color value to flag default color in COLOR and gfx primitives, resulting in no more "hole" in supported colors range (lillo)
 - DirectDraw surface restoring was bugged, resulting in crashes if another DirectX-based program entered fullscreen (lillo)
-- KILL was always returning 0
-- DIR on DOS now only returns files/directories with the attributes specified
+- KILL was always returning 0 (DrV)
+- DIR on DOS now only returns files/directories with the attributes specified (DrV)
 - the BIT, BITSET, BITRESET macros now use TYPEOF() to determine the variable type when accessing. (cha0s)
 - the quotes of literal strings were not being preserved when used inside #IF expressions (v1c)
 - symbols were case-sensitive when compared inside #IF expressions (v1c)
