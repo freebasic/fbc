@@ -59,6 +59,6 @@ FBCALL double fb_FileDateTime
 		
 	tm = localtime( &buf.st_mtime );
 	
-	return fb_DateSerial( 1900 + tm->tm_year, tm->tm_mon, tm->tm_mday ) +
+	return fb_DateSerial( 1900 + tm->tm_year, 1+tm->tm_mon, tm->tm_mday ) +
 		   fb_TimeSerial( tm->tm_hour, tm->tm_min, tm->tm_sec );
 }
