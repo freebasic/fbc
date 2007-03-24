@@ -1418,6 +1418,31 @@ const FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
 	end if
 #endmacro
 
+#macro hCheckCastOvlEx _
+	( _
+		rec_cnt, _
+		param_dtype, _
+		param_subtype, _
+		arg_expr _
+	)
+
+	if( rec_cnt = 0 ) then
+		dim as integer err_num = any
+		dim as FBSYMBOL ptr proc = any
+
+		rec_cnt += 1
+		proc = symbFindCastOvlProc( param_dtype, _
+									param_subtype, _
+									arg_expr, _
+									@err_num )
+		rec_cnt -= 1
+
+		if( proc <> NULL ) then
+			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT
+		end if
+	end if
+#endmacro
+
 '':::::
 private function hCalcTypesDiff _
 	( _
@@ -1667,7 +1692,7 @@ private function hCheckOvlParam _
 		return 0
 	end if
 
-	static as integer ctor_rec_cnt = 0
+	static as integer cast_rec_cnt = 0, ctor_rec_cnt = 0
 
 	'' same types?
 	if( param_dtype = arg_dtype ) then
@@ -1695,6 +1720,7 @@ private function hCheckOvlParam _
 	'' UDT? try to find a ctor
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
         hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr, arg_mode )
+        hCheckCastOvlEx( cast_rec_cnt, param_dtype, param_subtype, arg_expr )
 		return 0
 
 	'' enum param? refuse any other argument type, even integers,
@@ -1706,22 +1732,8 @@ private function hCheckOvlParam _
 		select case arg_dtype
 		'' UDT arg? try implicit casting..
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			static as integer cast_rec_cnt = 0
-			if( cast_rec_cnt <> 0 ) then
-				return 0
-			end if
-
-			dim as integer err_num = any
-			dim as FBSYMBOL ptr proc = any
-
-			cast_rec_cnt += 1
-			proc = symbFindCastOvlProc( param_dtype, _
-										param_subtype, _
-										arg_expr, _
-										@err_num )
-			cast_rec_cnt -= 1
-
-			return iif( proc <> NULL, FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT, 0 )
+			hCheckCastOvlEx( cast_rec_cnt, param_dtype, param_subtype, arg_expr )
+			return 0
 		end select
     end select
 
