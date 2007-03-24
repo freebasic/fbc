@@ -66,12 +66,13 @@ static void fb_hPutPResetC(unsigned char *src, unsigned char *dest, int w, int h
 /*:::::*/
 void fb_hPutPReset(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
-	PUTTER *all_putters[] = {
+	static PUTTER *all_putters[] = {
 		fb_hPutPResetC, fb_hPutPResetC, NULL, fb_hPutPResetC,
 #if defined(TARGET_X86)
 		fb_hPutPResetMMX, fb_hPutPResetMMX, NULL, fb_hPutPResetMMX,
 #endif
-	}, *putter;
+	};
+	PUTTER *putter;
 	FB_GFXCTX *context = fb_hGetContext();
 	
 	if (!context->putter[PUT_MODE_PRESET]) {

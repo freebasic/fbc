@@ -116,12 +116,13 @@ static void fb_hPutAdd4C(unsigned char *src, unsigned char *dest, int w, int h, 
 /*:::::*/
 void fb_hPutAdd(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
-	PUTTER *all_putters[] = {
+	static PUTTER *all_putters[] = {
 		fb_hPutOrC, fb_hPutAdd2C, NULL, fb_hPutAdd4C,
 #if defined(TARGET_X86)
 		fb_hPutOrMMX, fb_hPutAdd2MMX, NULL, fb_hPutAdd4MMX,
 #endif
-	}, *putter;
+	};
+	PUTTER *putter;
 	FB_GFXCTX *context = fb_hGetContext();
 	
 	if (!context->putter[PUT_MODE_ADD]) {

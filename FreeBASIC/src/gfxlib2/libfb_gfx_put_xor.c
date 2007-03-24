@@ -67,12 +67,13 @@ static void fb_hPutXorC(unsigned char *src, unsigned char *dest, int w, int h, i
 /*:::::*/
 void fb_hPutXor(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
-	PUTTER *all_putters[] = {
+	static PUTTER *all_putters[] = {
 		fb_hPutXorC, fb_hPutXorC, NULL, fb_hPutXorC,
 #if defined(TARGET_X86)
 		fb_hPutXorMMX, fb_hPutXorMMX, NULL, fb_hPutXorMMX,
 #endif
-	}, *putter;
+	};
+	PUTTER *putter;
 	FB_GFXCTX *context = fb_hGetContext();
 	
 	if (!context->putter[PUT_MODE_XOR]) {

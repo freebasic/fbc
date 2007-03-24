@@ -67,12 +67,13 @@ static void fb_hPutAndC(unsigned char *src, unsigned char *dest, int w, int h, i
 /*:::::*/
 void fb_hPutAnd(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
-	PUTTER *all_putters[] = {
+	static PUTTER *all_putters[] = {
 		fb_hPutAndC, fb_hPutAndC, NULL, fb_hPutAndC,
 #if defined(TARGET_X86)
 		fb_hPutAndMMX, fb_hPutAndMMX, NULL, fb_hPutAndMMX,
 #endif
-	}, *putter;
+	};
+	PUTTER *putter;
 	FB_GFXCTX *context = fb_hGetContext();
 	
 	if (!context->putter[PUT_MODE_AND]) {

@@ -108,12 +108,13 @@ static void fb_hPutTrans4C(unsigned char *src, unsigned char *dest, int w, int h
 /*:::::*/
 void fb_hPutTrans(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
-	PUTTER *all_putters[] = {
+	static PUTTER *all_putters[] = {
 		fb_hPutTrans1C, fb_hPutTrans2C, NULL, fb_hPutTrans4C,
 #if defined(TARGET_X86)
 		fb_hPutTrans1MMX, fb_hPutTrans2MMX, NULL, fb_hPutTrans4MMX,
 #endif
-	}, *putter;
+	};
+	PUTTER *putter;
 	FB_GFXCTX *context = fb_hGetContext();
 	
 	if (!context->putter[PUT_MODE_TRANS]) {

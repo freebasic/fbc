@@ -101,9 +101,10 @@ static void fb_hPutCustom4(unsigned char *src, unsigned char *dest, int w, int h
 /*:::::*/
 void fb_hPutCustom(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
-	PUTTER *all_putters[] = {
+	static PUTTER *all_putters[] = {
 		fb_hPutCustom1, fb_hPutCustom2, NULL, fb_hPutCustom4,
-	}, *putter;
+	};
+	PUTTER *putter;
 	FB_GFXCTX *context = fb_hGetContext();
 	
 	if (!context->putter[PUT_MODE_CUSTOM]) {

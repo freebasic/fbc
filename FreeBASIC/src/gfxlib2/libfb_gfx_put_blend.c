@@ -128,12 +128,13 @@ static void fb_hPutBlend4C(unsigned char *src, unsigned char *dest, int w, int h
 /*:::::*/
 void fb_hPutBlend(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
-	PUTTER *all_putters[] = {
+	static PUTTER *all_putters[] = {
 		fb_hPutTrans1C, fb_hPutBlend2C, NULL, fb_hPutBlend4C,
 #if defined(TARGET_X86)
 		fb_hPutTrans1MMX, fb_hPutBlend2MMX, NULL, fb_hPutBlend4MMX,
 #endif
-	}, *putter;
+	};
+	PUTTER *putter;
 	FB_GFXCTX *context = fb_hGetContext();
 	
 	if (alpha == 0) {
