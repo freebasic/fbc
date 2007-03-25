@@ -163,6 +163,8 @@ Version 0.17 Beta:
 - the BIT, BITSET, BITRESET macros now use TYPEOF() to determine the variable type when accessing. (cha0s)
 - the quotes of literal strings were not being preserved when used inside #IF expressions (v1c)
 - symbols were case-sensitive when compared inside #IF expressions (v1c)
+- ulongints were being improperly seen as pointers since the bottom 32-bits were 0 and they were only being checked as the native integer type(thanks counting_pine) (cha0s)
+- ulongints would qualify as pointers if they were completely 0, a check had to be added for native pointer width equivalence.(cha0s)
 
 Version 0.16 Beta:
 

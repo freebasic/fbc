@@ -1505,10 +1505,15 @@ private function hCalcTypesDiff _
 						return 0
 					end if
 					'' not 0 (NULL)?
-					if( astGetValInt( arg_expr ) <> 0 ) then
+					if( astGetValLong( arg_expr ) <> 0 ) then
 						return 0
 					end if
-
+					
+					'' not native pointer width?
+					if( symbGetDataSize( arg_dtype ) <> FB_POINTERSIZE ) then
+						return 0
+					end if
+					
 					return FB_OVLPROC_HALFMATCH
 				end if
 
