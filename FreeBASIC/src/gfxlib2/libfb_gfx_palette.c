@@ -77,7 +77,9 @@ void fb_hRestorePalette(void)
 static void set_color(int index, unsigned int color)
 {
 	int r, g, b;
-
+	
+	index &= (__fb_gfx->default_palette->colors - 1);
+	
 	if (__fb_gfx->default_palette == &fb_palette_256) {
 		r = ((color & 0x3F) * 255.0) / 63.0;
 		g = (((color & 0x3F00) >> 8) * 255.0) / 63.0;
