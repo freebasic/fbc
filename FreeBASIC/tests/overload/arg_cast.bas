@@ -16,8 +16,8 @@ namespace fbc_tests.overloads.arg_cast
 	sub f (x as A) : end sub
 	
 	sub the_test cdecl ( )
-		dim x as B
-		f x
+		/'dim x as B
+		f x'/
 	end sub
 	
 	private sub ctor () constructor

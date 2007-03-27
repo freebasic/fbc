@@ -1725,7 +1725,9 @@ private function hCheckOvlParam _
 	'' UDT? try to find a ctor
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
         hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr, arg_mode )
-        hCheckCastOvlEx( cast_rec_cnt, param_dtype, param_subtype, arg_expr )
+        
+        '' !!!FIXME!!! Casts should be considered..??
+        '' hCheckCastOvlEx( cast_rec_cnt, param_dtype, param_subtype, arg_expr )
 		return 0
 
 	'' enum param? refuse any other argument type, even integers,
