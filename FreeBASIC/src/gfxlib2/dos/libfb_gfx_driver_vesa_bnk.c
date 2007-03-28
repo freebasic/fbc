@@ -177,6 +177,7 @@ static void driver_update(void)
 	int framebuffer_start;
 	int bank_size;
 	int bank_granularity;
+	int bank_add;
 	int todo;
 	int copy_size;
 	int y1, y2;
@@ -193,6 +194,7 @@ static void driver_update(void)
 
 	bank_size = fb_dos.vesa_mode_info.WinSize * 1024;
 	bank_granularity = fb_dos.vesa_mode_info.WinGranularity * 1024;
+	bank_add = bank_size / bank_granularity;
 	
 	for (y1 = 0; y1 < fb_dos.h; y1++) {
 		if (__fb_gfx->dirty[y1]) {
@@ -227,7 +229,7 @@ static void driver_update(void)
 				/* move on to the next bank of data */
 				todo -= copy_size;
 				memory_buffer += copy_size;
-				fb_dos_vesa_bank_number += bank_size / bank_granularity;
+				fb_dos_vesa_bank_number += bank_add;
 			}
 			
 			break;
