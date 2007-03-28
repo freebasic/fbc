@@ -69,7 +69,7 @@ declare function hGetProcParamsTypeCode _
 	{ _
 		"v", _					'' void
 		"a", _					'' byte
-		"b", _					'' ubyte
+		"h", _					'' ubyte
 		"c", _                  '' char
 		"s", _                  '' short
 		"t", _                  '' ushort
