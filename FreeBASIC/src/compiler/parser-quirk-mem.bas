@@ -356,3 +356,4 @@ function cOperatorDelete _
 	function = TRUE
 
 end function
+:
