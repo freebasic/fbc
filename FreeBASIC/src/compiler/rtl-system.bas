@@ -325,8 +325,8 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 	 	), _
-		/' threadcreate ( byval proc as sub( byval param as integer ),
-						  byval param as integer = 0) as any ptr '/ _
+		/' threadcreate ( byval proc as sub( byval param as any ptr ),
+						  byval param as any ptr = 0) as any ptr '/ _
 		( _
 			@"threadcreate", @"fb_ThreadCreate", _
 	 		FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
@@ -337,7 +337,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			) _
 	 		} _
 	 	), _

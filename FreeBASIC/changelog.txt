@@ -44,6 +44,7 @@ Version 0.17 Beta:
 - MK* and CV* will now evaluate constant expressions at compile-time (cha0s)
 - TYPE() now supports intrinsic types, as well as UDT's. (cha0s)
 - Addition, subtraction, multiplication, and both types of division can now be done at the preprocessor (cha0s)
+- THREADCREATE and thread procedures now take ANY PTR parameters instead of INTEGER (DrV)
 
 [added]
 - the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)

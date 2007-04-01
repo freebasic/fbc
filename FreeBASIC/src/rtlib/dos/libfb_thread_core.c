@@ -42,7 +42,7 @@
 
 
 /*:::::*/
-FBCALL FBTHREAD	*fb_ThreadCreate( FB_THREADPROC proc, int param )
+FBCALL FBTHREAD	*fb_ThreadCreate( FB_THREADPROC proc, void *param )
 {
 	return NULL;
 }

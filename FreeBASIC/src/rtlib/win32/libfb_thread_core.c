@@ -58,7 +58,7 @@ static DWORD WINAPI threadproc( LPVOID param )
 }
 
 /*:::::*/
-FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, int param )
+FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param )
 {
 	FBTHREAD *thread;
 #ifdef TARGET_WIN32

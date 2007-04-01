@@ -44,7 +44,7 @@ typedef struct _FBTHREAD
 } FBTHREAD;
 
 /*:::::*/
-FBCALL FBTHREAD *fb_ThreadCreate( void *proc, int param )
+FBCALL FBTHREAD *fb_ThreadCreate( void *proc, void *param )
 {
 	return NULL;
 }

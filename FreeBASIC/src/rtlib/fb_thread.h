@@ -32,20 +32,20 @@
 #ifndef __FB_THREAD_H__
 #define __FB_THREAD_H__
 
-typedef void (FBCALL *FB_THREADPROC)( int param );
+typedef void (FBCALL *FB_THREADPROC)( void *param );
 
 typedef struct _FBTHREAD
 {
 	FB_THREADID   id;
 	FB_THREADPROC proc;
-	int           param;
+	void         *param;
 	void         *opaque;
 } FBTHREAD;
 
 struct _FBMUTEX;
 struct _FBCOND;
 
-FBCALL FBTHREAD 		*fb_ThreadCreate( FB_THREADPROC proc, int param );
+FBCALL FBTHREAD 		*fb_ThreadCreate( FB_THREADPROC proc, void *param );
 FBCALL void              fb_ThreadWait  ( FBTHREAD *thread );
 
 FBCALL struct _FBMUTEX  *fb_MutexCreate ( void );
