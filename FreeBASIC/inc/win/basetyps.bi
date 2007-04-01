@@ -9,7 +9,7 @@
 #ifndef __win_basetyps_bi__
 #define __win_basetyps_bi__
 
-#define STDMETHOD(m) m as as function
+#define STDMETHOD(m) m as function
 #define PURE
 #define THIS_ INTERFACE ptr,
 #define THIS INTERFACE ptr
