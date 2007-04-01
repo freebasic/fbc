@@ -1504,9 +1504,16 @@ private function hCalcTypesDiff _
 					if( astIsCONST( arg_expr ) = FALSE ) then
 						return 0
 					end if
+					
 					'' not 0 (NULL)?
-					if( astGetValLong( arg_expr ) <> 0 ) then
-						return 0
+					if( arg_dtype = FB_DATATYPE_INTEGER ) then
+						if( astGetValInt( arg_expr ) <> 0 ) then
+							return 0
+						end if
+					else
+						if( astGetValLong( arg_expr ) <> 0 ) then
+							return 0
+						end if
 					end if
 					
 					'' not native pointer width?
