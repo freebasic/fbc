@@ -39,12 +39,11 @@
 #include "fb_con.h"
 
 static HANDLE in_handle, out_handle;
+static int is_init = FALSE;
 
 /*:::::*/
 HANDLE fb_hConsoleGetHandle( int is_input )
 {
-	static int is_init = FALSE;
-
 	if( is_init == FALSE )
 	{
 		is_init = TRUE;
@@ -65,4 +64,18 @@ HANDLE fb_hConsoleGetHandle( int is_input )
     }
 
 	return (is_input? in_handle : out_handle);
+}
+
+void fb_hConsoleResetHandle( int is_input )
+{
+	if( is_input )
+	{
+		freopen( "CONIN$", "r", stdin );
+		is_init = FALSE;
+	}
+	else 
+	{
+		freopen( "CONOUT$", "w", stdout );
+		is_init = FALSE;
+	}
 }
