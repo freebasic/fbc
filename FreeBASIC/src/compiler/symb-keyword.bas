@@ -137,7 +137,7 @@ end type
         ( @"CASE"       , FB_TK_CASE        , FB_TKCLASS_KEYWORD ), _
         ( @"IS"         , FB_TK_IS          , FB_TKCLASS_KEYWORD ), _
         ( @"USING"      , FB_TK_USING       , FB_TKCLASS_KEYWORD ), _
-        ( @"LEN"        , FB_TK_LEN         , FB_TKCLASS_KEYWORD ), _
+        ( @"LEN"        , FB_TK_LEN         , FB_TKCLASS_QUIRKWD ), _
         ( @"PEEK"       , FB_TK_PEEK        , FB_TKCLASS_KEYWORD ), _
         ( @"POKE"       , FB_TK_POKE        , FB_TKCLASS_KEYWORD ), _
         ( @"SWAP"       , FB_TK_SWAP        , FB_TKCLASS_KEYWORD ), _
