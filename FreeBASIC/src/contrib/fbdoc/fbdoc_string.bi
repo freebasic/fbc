@@ -51,6 +51,11 @@ namespace fb.fbdoc
 			byval sp as integer = FALSE _
 		) as string
 
+	declare function GetBaseName _
+		( _
+			byref filename as string _
+		) as string
+
 end namespace
 
 #endif

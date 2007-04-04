@@ -433,6 +433,8 @@ namespace fb.fbdoc
 		ctx->converter->setCssClass( WIKI_TOKEN_ACTION_IMG, "fb_img" )
 		ctx->converter->setTagDoGen( WIKI_TOKEN_HORZLINE, false )
 		ctx->converter->setTagDoGen( WIKI_TOKEN_SECT_ITEM, false )
+
+		ctx->converter->setOutputDir( *ctx->outputdir )
 		
 		this.EmitPages()
 

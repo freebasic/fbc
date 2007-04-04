@@ -84,6 +84,7 @@ namespace fb.fbdoc
 
 	end function
 
+	'':::::
 	function Lang.GetOption _
 		( _
 			byval sKey as zstring ptr, _
@@ -98,6 +99,7 @@ namespace fb.fbdoc
 
 	end function
 
+	'':::::
 	sub Lang.SetOption _
 		( _
 			byval sKey as zstring ptr, _
@@ -112,6 +114,7 @@ namespace fb.fbdoc
 
 	end sub
 
+	'':::::
 	function Lang.ExpandString _
 		( _
 			byval sText as zstring  ptr _
@@ -122,4 +125,3 @@ namespace fb.fbdoc
 	end function
 
 end namespace
-

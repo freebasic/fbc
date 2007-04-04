@@ -129,7 +129,7 @@ Running:
 
 Credits:
 
-  o Jeffery R. Marshall (coder[at]execulink.com)
+  o Jeffery R. Marshall (coder[at]execulink.com):
     - main developer of fbdoc application
 
   o Andre Victor T. Vicentini (av1ctor[at]yahoo.com.br):

@@ -61,6 +61,11 @@ namespace fb.fbdoc
 				byval value as integer _
 			)
 
+		declare sub setOutputDir _
+			( _
+				byval value as zstring ptr _
+			)
+
 		declare function gen _
 			( _
 				byval page as zstring ptr, _

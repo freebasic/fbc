@@ -98,6 +98,7 @@ namespace fb.fbdoc
 		as integer indent
 		as integer newlevel
 		as integer level
+		as zstring ptr outputdir
 
 	end type
 
@@ -139,6 +140,7 @@ namespace fb.fbdoc
 		ctx = new CWakka2HtmlCtx
 
 		ctx->urlbase = NULL
+		ctx->outputdir = NULL
 		ctx->indentbase = 0
 
 		for i = 0 to WIKI_TAGS - 1
@@ -167,6 +169,7 @@ namespace fb.fbdoc
 
 		ZSet @ctx->urlbase, @""
 		ZSet @ctx->page, @""
+		ZSet @ctx->outputdir, @""
 
 	end constructor
 
@@ -186,6 +189,7 @@ namespace fb.fbdoc
 			ZFree @ctx->cssClassTb(i)
 		next i
 		ZFree @ctx->page
+		ZFree @ctx->outputdir
 
 		''
 		_FreeRe( ctx )
@@ -236,6 +240,16 @@ namespace fb.fbdoc
 		)
 
 		ctx->tagGenTb( token_id ) = value
+
+	end sub
+
+	'':::::
+	sub CWakka2Html.setOutputDir _
+		( _
+			byval value as zstring ptr _
+		)
+
+		zSet @ctx->outputdir, value
 
 	end sub
 
@@ -783,14 +797,32 @@ namespace fb.fbdoc
 			byval paramsTb as WikiToken_Action ptr _
 		) as string
 		
-		dim as string res, cssclass, strAlt, strUrl
+		dim as string res, cssclass, strAlt, strUrl, strFile
+		dim as integer h = any, bAdd = FALSE
 
 		cssclass = *ctx->cssClassTb(WIKI_TOKEN_ACTION_IMG)
 
 		strAlt = paramsTb->GetParam( "alt" )
 		strUrl = paramsTb->GetParam( "url" )
 
-		if left(strUrl, 1) = "/" then
+		if( trim(left(strUrl,7)) = "http://" ) then
+			strUrl = "images/" + GetBaseName( strUrl )
+			strFile = *ctx->outputdir + strUrl
+		else
+			if left(strUrl, 1) = "/" then
+				strFile = *ctx->outputdir + "images" + strUrl
+			else
+				strFile = *ctx->outputdir + "images/" + strUrl
+			end if
+		end if
+
+		h = freefile
+		if( open( strFile for input access read as #h ) = 0 ) then
+			bAdd = TRUE
+			close #h
+		end if
+
+		if( bAdd ) then
 
 			res = "<div class=""" + cssclass + """><img"
 

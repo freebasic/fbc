@@ -213,4 +213,24 @@ namespace fb.fbdoc
 
 	end function
 
+	'':::::
+	function GetBaseName _
+		( _
+			byref filename as string _
+		) as string
+
+		dim i as integer = any
+
+		function = filename
+
+		for i = len( filename ) to 1 step -1
+			select case mid( filename, i, 1 )
+			case "/", "\"
+				function = mid( filename, i + 1 )
+				exit for
+			end select
+		next i
+
+	end function
+
 end namespace

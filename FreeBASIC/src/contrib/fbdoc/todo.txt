@@ -3,11 +3,15 @@ fbdoc TODO list
 
 [ ]	add proxy support to CHttp.
 
-[ ]	add the insert delete methods to CWiki to allow programmatic editing 
+[ ]	add the insert/delete methods to CWiki to allow programmatic editing 
 	of wakka script.
 
-[ ] add an image getter preferably using libCURL so the on-line images
+[ ] add an image getter using libCURL so the on-line images
 	can be included in the CHM version of the docs.
+	[ ] built-in support for image getting ( uses external tool currently )
+	[ ] only include images in the HTML tarball that are actually referenced
+	    by the doc pages
+	[X] add support to CWakka2Html for images
 
 [ ]	remove preservation of the TAB + "~" indentation.  only TAB is needed.
 	- The "~" characters are preserved for now to allow easy testing of
@@ -27,25 +31,29 @@ fbdoc TODO list
 	[ ] 'putpage [dest] [page] [@pagelist]'
 		store a single or multiple pages from ./fbdoc/cache to on-line.
 	[ ] 'chkdocs [options]'
-		checks document links, missing pages, some formatting etc, and gerates a
-		report of possible problems needing attention in the documentation
+		checks document links, missing pages, some formatting etc, and generates
+		a report of possible problems needing attention in the documentation
 	[ ] 'mkprntoc [options]'
 		makes PrintToc page from wakka script sources
-	[ ] 'renpage' [oldname newname] [@list]
+	[ ] 'renpage [oldname newname] [@list]'
 		renames pages by updating referring links on all other pages.
 		newpage/clone, and oldpage/delete still must be performed by a user.
-	[ ] 'mkerrlst [options]
+	[ ] 'mkerrlst [options]'
 		makes CompilerErrMsg from fbc sources
+	[ ] 'getimagelist'
+		scans wakka sources for the urls of images
+	[ ] 'getimage filelist.txt'
+		downloads images from urls to the html/images directory
 
 [ ] Code clean-up
 	[ ] refactor common code in CWakka2Html and CWakka2fbhelp
 	[ ] refactor common code in CWiki2Chm, CWiki2Txt, and CWiki2fbhelp
-	[ ] combine mkfbhelpfile.bas with CWiki2Txt an don't write out 100's of
+	[ ] combine mkfbhelpfile.bas with CWiki2Txt and don't write out 100's of
 		files during the build
 
 [ ] Distribution
 	[ ] add makefiles, scripts, a batchfile, ( anything ) to build all docs
-	  from scratch and zip/gzip all files needed for distribution.
+	    from scratch and zip/gzip all files needed for distribution.
 
 [ ] Documentation
 	[ ] create documentation for fbdoc command line options
