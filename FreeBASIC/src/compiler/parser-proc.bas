@@ -500,10 +500,6 @@ function cProcHeader _
 	if( head_proc = NULL ) then
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
-		else
-			if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-				exit function
-			end if
 		end if
     end if
 
