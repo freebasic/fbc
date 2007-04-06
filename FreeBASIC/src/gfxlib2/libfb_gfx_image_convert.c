@@ -62,7 +62,7 @@ void fb_image_convert_8to32(const unsigned char *src, unsigned char *dest, int w
 		r = __fb_gfx->device_palette[*src] & 0xFF;
 		g = (__fb_gfx->device_palette[*src] >> 8) & 0xFF;
 		b = (__fb_gfx->device_palette[*src] >> 16) & 0xFF;
-		*d++ = b | (g << 8) | (r << 16);
+		*d++ = 0xFF000000 | b | (g << 8) | (r << 16);
 		src++;
 	}
 }
@@ -84,7 +84,7 @@ void fb_image_convert_24to32(const unsigned char *src, unsigned char *dest, int 
 	unsigned int *d = (unsigned int *)dest;
 
 	for (; w; w--) {
-		*d++ = ((unsigned int)src[0] << 16) | ((unsigned int)src[1] << 8) | ((unsigned int)src[2]);
+		*d++ = 0xFF000000 | ((unsigned int)src[0] << 16) | ((unsigned int)src[1] << 8) | ((unsigned int)src[2]);
 		src += 3;
 	}
 }
@@ -111,8 +111,8 @@ void fb_image_convert_32to32(const unsigned char *src, unsigned char *dest, int 
 
 	for (; w; w--)
 	{
-		c = *(unsigned int *)src & 0x00FFFFFF;
-		*d++ = (c >> 16) | (c & 0x00FF00) | (c << 16);
+		c = *(unsigned int *)src;
+		*d++ = (c >> 16) | (c & 0xFF00FF00) | (c << 16);
 		src += sizeof( unsigned int );
 	}
 }
@@ -134,7 +134,7 @@ void fb_image_convert_24bgrto32(const unsigned char *src, unsigned char *dest, i
 	unsigned int *d = (unsigned int *)dest;
 
 	for (; w; w--) {
-		*d++ = *(unsigned int *)src & 0xFFFFFF;
+		*d++ = 0xFF000000 | (*(unsigned int *)src & 0xFFFFFF);
 		src += 3;
 	}
 }
