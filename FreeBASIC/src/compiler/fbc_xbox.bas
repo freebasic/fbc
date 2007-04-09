@@ -86,6 +86,17 @@ private function _linkFiles _
 	'' set entry point
 	ldcline += " -e _WinMainCRTStartup "
 	
+	'' set executable name
+	ldcline += "-o " + QUOTE + tmpexename + QUOTE
+	
+	'' add library search paths
+	ldcline += *fbcGetLibPathList( )
+	
+	dim as string libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
+	
+	'' link with crt0.o (C runtime init)
+	ldcline += " " + QUOTE + libdir + (RSLASH + "crt0.o" + QUOTE + " ")
+	
 	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
 	do while( iof <> NULL )
@@ -100,11 +111,6 @@ private function _linkFiles _
 		objf = listGetNext( objf )
 	loop
 	
-	'' set executable name
-	ldcline += "-o " + QUOTE + tmpexename + QUOTE
-	
-	'' add library search paths
-	ldcline += *fbcGetLibPathList( )
 	
 	'' init lib group
 	ldcline += " -( "
