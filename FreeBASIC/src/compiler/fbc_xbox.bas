@@ -119,7 +119,6 @@ private function _linkFiles _
 	ldcline += *fbcGetLibList( NULL )
 	
 	'' rtlib initialization and termination
-	dim as string libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
 	ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
 	
 	'' end lib group
