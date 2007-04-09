@@ -5,16 +5,18 @@
 
 namespace fbc_tests.string_.cvi_mki
 
-	const as double  cv_d  = cvd      ("TESTTEST")
-	const as single  cv_s  = cvs      ("TESTTEST")
-	const as integer cv_i  = cvi      ("TESTTEST")
-	const as long    cv_l  = cvl      ("TESTTEST")
-	const as short   cv_sh = cvshort  ("TESTTEST")
-	const as longint cv_li = cvlongint("TESTTEST")
+	const as double  cv_d  = 1.646488698019057e+098
+	const as single  cv_s  = 3.629605e+012         
+	const as integer cv_i  = 1414743380            
+	const as long    cv_l  = 1414743380            
+	const as short   cv_sh = 17748                 
+	const as longint cv_li = 6076276550747243860   
 	
 	sub CVXtest cdecl ()
-		CU_ASSERT( cv_d  = cvd      ("TESTTEST") )
-		CU_ASSERT( cv_s  = cvs      ("TESTTEST") )
+		dim as double d = cvd("TESTTEST")
+		dim as single s = cvs("TESTTEST")
+		CU_ASSERT( abs(cv_d - d) < .01 )
+		CU_ASSERT( abs(cv_s - s) < .01 )
 		CU_ASSERT( cv_i  = cvi      ("TESTTEST") )
 		CU_ASSERT( cv_l  = cvl      ("TESTTEST") )
 		CU_ASSERT( cv_sh = cvshort  ("TESTTEST") )

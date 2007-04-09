@@ -457,15 +457,15 @@ function cCVXFunct _
 			select case as const tk
 			
 			case FB_TK_CVD
-				funcexpr = astNewCONSTi( cvd( *zs ), FB_DATATYPE_DOUBLE )
+				funcexpr = astNewCONSTf( cvd( *zs ), FB_DATATYPE_DOUBLE )
 			case FB_TK_CVS
-				funcexpr = astNewCONSTi( cvs( *zs ), FB_DATATYPE_SINGLE )
+				funcexpr = astNewCONSTf( cvs( *zs ), FB_DATATYPE_SINGLE )
 			case FB_TK_CVI, FB_TK_CVL
 				funcexpr = astNewCONSTi( cvi( *zs ), FB_DATATYPE_INTEGER )
 			case FB_TK_CVSHORT
 				funcexpr = astNewCONSTi( cvshort( *zs ), FB_DATATYPE_SHORT )
 			case FB_TK_CVLONGINT
-				funcexpr = astNewCONSTi( cvlongint( *zs ), FB_DATATYPE_LONGINT )
+				funcexpr = astNewCONSTl( cvlongint( *zs ), FB_DATATYPE_LONGINT )
 				
 			end select
 	
