@@ -150,7 +150,8 @@ private function hDefPath_cb( ) as string static
 		cwd = curdir( )
 
 		'' check for root directory case (C:\)
-		if( right(cwd, 1) = "\" ) then
+		'' !!! backslash character, backwards-compatibility hack, replace with literal !!!
+		if( right(cwd, 1) = chr(92) ) then
 			cwd = left(cwd, len( cwd ) - 1 )
 		end if
 
