@@ -1117,10 +1117,28 @@ private sub hWriteExport _
 
     '' for each proc exported..
     do while( s <> NULL )
+
     	select case symbGetClass( s )
 		'' name space?
 		case FB_SYMBCLASS_NAMESPACE
 			hWriteExport( symbGetNamespaceTbHead( s ) )
+
+		case FB_SYMBCLASS_STRUCT
+
+			'' Does struct have exports?
+
+			dim as FBSYMBOL ptr walkSymbols 
+			walkSymbols = symbGetUDTSymbTbHead( s )
+			do while( walkSymbols <> NULL )
+    			if( symbIsExport( walkSymbols ) ) then
+    				hEmitExportHeader( )
+    				sname = hStripUnderscore( symbGetMangledName( walkSymbols ) )
+    				emitWriteStr( ".ascii " + QUOTE + " -export:" + _
+    							  sname + (QUOTE + NEWLINE), _
+    							  TRUE )
+				end if
+				walkSymbols = symbGetNext( walkSymbols )
+			loop
 
     	case FB_SYMBCLASS_PROC
     		if( symbGetIsDeclared( s ) ) then
