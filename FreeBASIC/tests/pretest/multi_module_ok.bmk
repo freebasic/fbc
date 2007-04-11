@@ -1,7 +1,0 @@
-
-# TEST_MODE : MULTI_MODULE_OK
-
-MAIN := multi_module_ok.bas
-
-SRCS := multi_module_subs.bas
-
