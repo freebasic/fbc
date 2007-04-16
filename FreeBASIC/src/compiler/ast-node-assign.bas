@@ -231,13 +231,13 @@ private function hCheckPointerOps _
 
 	function = FALSE
 
-    if( ldtype >= FB_DATATYPE_POINTER ) then
+    if( typeIsPOINTER( ldtype ) ) then
 		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
 			errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
 		end if
 
     '' r-side expr is a ptr?
-    elseif( rdtype >= FB_DATATYPE_POINTER ) then
+    elseif( typeIsPOINTER( rdtype ) ) then
     	errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
     end if
 
@@ -335,7 +335,7 @@ function astCheckASSIGN _
 		'' don't convert strings
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
-			if( r->defined ) then
+			if( astIsCONST( r ) ) then
 				r = astCheckConst( l->dtype, r )
 				if( r = NULL ) then
 					exit function
@@ -536,7 +536,7 @@ function astNewASSIGN _
 		'' don't convert strings
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
-			if( r->defined ) then
+			if( astIsCONST( r ) ) then
 				r = astCheckConst( l->dtype, r )
 				if( r = NULL ) then
 					exit function

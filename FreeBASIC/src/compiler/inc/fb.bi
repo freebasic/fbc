@@ -540,6 +540,12 @@ declare function fbObjInfoReadLib _
 '' macros
 ''
 
+#define typeIsPOINTER(d) (d >= FB_DATATYPE_POINTER)
+'' #define typeIsPOINTER(d) (d = FB_DATATYPE_POINTER)
+#define typeStripPOINTER(d,s) d -= FB_DATATYPE_POINTER
+'' #define typeStripPOINTER(d,s) d = s->ptr->typ: s = s->ptr->subtype
+
+
 #define fbLangOptIsSet( opt ) ((env.langopt and (opt)) <> 0)
 
 #define fbLangIsSet( opt ) (env.clopt.lang = opt)

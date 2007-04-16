@@ -3415,7 +3415,7 @@ function rtlStrToVal _
 		return astNewCONV( to_dtype, NULL, expr )
 
 	case else
-		if( to_dtype >= FB_DATATYPE_POINTER ) then
+		if( typeIsPOINTER( to_dtype ) ) then
 			f = PROCLOOKUP( STR2UINT )
 		'' anything else..
 		else

@@ -73,7 +73,7 @@ function astBuildVarInc _
 	dim as AST_OP op = any
 
 	options = AST_OPOPT_DEFAULT
-	if( symbGetType( lhs ) >= FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( symbGetType( lhs ) ) ) then
 		options or= AST_OPOPT_LPTRARITH
 	end if
 
@@ -816,7 +816,7 @@ function astBuildMultiDeref _
 
 
 		else
-			dtype -= FB_DATATYPE_POINTER
+			typeStripPOINTER( dtype, subtype )
 
 			'' incomplete type?
 			select case dtype

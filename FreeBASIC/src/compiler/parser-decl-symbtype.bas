@@ -233,7 +233,7 @@ function cTypeOf _
 
 		'' byref args have a deref, 
 		'' but they maintain their type
-		if( dtype >= FB_DATATYPE_POINTER ) then
+		if( typeIsPOINTER( dtype ) ) then
 			if( derefs > 0 ) then
 				'' balance it
 				dtype  -= (FB_DATATYPE_POINTER * derefs)

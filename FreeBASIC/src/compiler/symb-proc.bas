@@ -1492,7 +1492,7 @@ private function hCalcTypesDiff _
 			end select
 
 			'' check pointers..
-			if( param_dtype >= FB_DATATYPE_POINTER ) then
+			if( typeIsPOINTER( param_dtype ) ) then
 				'' isn't arg a pointer too?
 				if( arg_dtype < FB_DATATYPE_POINTER ) then
 					'' not an expression?
@@ -1544,7 +1544,7 @@ private function hCalcTypesDiff _
 				return 0
 
 			'' param not a pointer, but is arg?
-			elseif( arg_dtype >= FB_DATATYPE_POINTER ) then
+			elseif( typeIsPOINTER( arg_dtype ) ) then
 				'' use an UINT instead or LONGINT will match if any..
 				arg_dtype = FB_DATATYPE_UINT
 			end if
@@ -1553,7 +1553,7 @@ private function hCalcTypesDiff _
 
 		'' float? (ok due the auto-coercion, unless it's a pointer)
 		case FB_DATACLASS_FPOINT
-			if( param_dtype >= FB_DATATYPE_POINTER ) then
+			if( typeIsPOINTER( param_dtype ) ) then
 				return 0
 			end if
 
@@ -1581,7 +1581,7 @@ private function hCalcTypesDiff _
 		select case as const arg_dclass
 		'' only accept if it's an integer (but pointers)
 		case FB_DATACLASS_INTEGER
-			if( arg_dtype >= FB_DATATYPE_POINTER ) then
+			if( typeIsPOINTER( arg_dtype ) ) then
 				return 0
 			end if
 
@@ -1714,7 +1714,7 @@ private function hCheckOvlParam _
 		end if
 
 		'' pointer? check if valid (could be a NULL)
-		if( param_dtype >= FB_DATATYPE_POINTER ) then
+		if( typeIsPOINTER( param_dtype ) ) then
 			if( astPtrCheck( param_dtype, _
 				 			 param_subtype, _
 				 			 arg_expr ) ) then
@@ -2116,7 +2116,7 @@ private function hCheckCastOvl _
 			return FB_OVLPROC_FULLMATCH
 		end if
 
-		if( proc_dtype >= FB_DATATYPE_POINTER ) then
+		if( typeIsPOINTER( proc_dtype ) ) then
 			return 0
 		end if
 	end if

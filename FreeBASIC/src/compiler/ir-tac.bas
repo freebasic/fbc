@@ -276,7 +276,7 @@ end sub
 		t = vreg->typ
 
 		dt = vreg->dtype
-		if( dt >= FB_DATATYPE_POINTER ) then
+		if( typeIsPOINTER( dt ) ) then
 			dt = FB_DATATYPE_ULONG
 			dc = FB_DATACLASS_INTEGER
 		else
@@ -611,7 +611,7 @@ private sub _emitConvert _
 		byval dtype2 as integer _
 	) static
 
-	if( dtype1 > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dtype1 ) ) then
 		dtype1 = FB_DATATYPE_POINTER
 	end if
 
@@ -982,7 +982,7 @@ private function hNewVR _
 
 	dim as IRVREG ptr v = any
 
-	if( dtype > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dtype ) ) then
 		dtype = FB_DATATYPE_POINTER
 	end if
 
@@ -1200,7 +1200,7 @@ private sub _setVregDataType _
 		byval dtype as integer _
 	)
 
-	if( dtype > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dtype ) ) then
 		dtype = FB_DATATYPE_POINTER
 	end if
 

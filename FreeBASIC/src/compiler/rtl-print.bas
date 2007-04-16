@@ -1034,7 +1034,7 @@ function rtlPrint _
 			end if
 
 		case else
-			if( dtype >= FB_DATATYPE_POINTER ) then
+			if( typeIsPOINTER( dtype ) ) then
 				if( islprint ) then
 					f = PROCLOOKUP( LPRINTUINT )
 				else
@@ -1238,7 +1238,7 @@ function rtlWrite _
 			f = PROCLOOKUP( WRITEDOUBLE )
 
 		case else
-			if( dtype >= FB_DATATYPE_POINTER ) then
+			if( typeIsPOINTER( dtype ) ) then
 				f = PROCLOOKUP( WRITEUINT )
 				expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 

@@ -34,7 +34,7 @@ private sub hCONVConstEvalInt _
 		byval v as ASTNODE ptr _
 	)
 
-	if( to_dtype > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( to_dtype ) ) then
 		to_dtype = FB_DATATYPE_POINTER
 	end if
 
@@ -114,7 +114,7 @@ private sub hCONVConstEvalFlt _
 	dim as integer vdtype = any
 
     vdtype = v->dtype
-	if( vdtype > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( vdtype ) ) then
 		vdtype = FB_DATATYPE_POINTER
 	end if
 
@@ -255,7 +255,7 @@ end sub
 	)
 
     '' to pointer? only allow integers..
-    if( to_dtype >= FB_DATATYPE_POINTER ) then
+    if( typeIsPOINTER( to_dtype ) ) then
 		select case as const ldtype
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
@@ -267,7 +267,7 @@ end sub
 		end select
 
     '' from pointer? only allow integers..
-    elseif( ldtype >= FB_DATATYPE_POINTER ) then
+    elseif( typeIsPOINTER( ldtype ) ) then
 		select case as const to_dtype
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
@@ -425,7 +425,7 @@ function astNewCONV _
     end if
 
 	'' constant? evaluate at compile-time
-	if( l->defined ) then
+	if( astIsCONST( l ) ) then
 
 		select case as const to_dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT

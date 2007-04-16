@@ -49,7 +49,7 @@ private sub hOptConstRemNeg _
 					if( p->class = AST_NODECLASS_BOP ) then
 						if( p->op.op = AST_OP_ADD ) then
 							r = p->r
-							if( r->defined ) then
+							if( astIsCONST( r ) ) then
 								p->op.op = AST_OP_SUB
 								p->l = p->r
 								p->r = n->l
@@ -84,7 +84,7 @@ private sub hConvDataType _
 		byval to_dtype as integer _
 	)
 
-	if( to_dtype > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( to_dtype ) ) then
 		to_dtype = FB_DATATYPE_POINTER
 	end if
 
@@ -127,7 +127,7 @@ private sub hConvDataType _
 
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 
-		if( vdtype > FB_DATATYPE_POINTER ) then
+		if( typeIsPOINTER( vdtype ) ) then
 			vdtype = FB_DATATYPE_POINTER
 		end if
 
@@ -285,7 +285,7 @@ private function hPrepConst _
 	if( dtype = INVALID ) then
 		'' an ENUM or POINTER always has the precedence
 		if( (r->dtype = FB_DATATYPE_ENUM) or _
-			(r->dtype >= FB_DATATYPE_POINTER) ) then
+			(typeIsPOINTER( r->dtype )) ) then
 			return r->dtype
 		else
 			return v->dtype
@@ -333,7 +333,7 @@ private function hConstAccumADDSUB _
 		l = n->l
 		r = n->r
 
-		if( r->defined ) then
+		if( astIsCONST( r ) ) then
 
 			if( op < 0 ) then
 				if( o = AST_OP_ADD ) then
@@ -432,7 +432,7 @@ private function hConstAccumMUL _
 		l = n->l
 		r = n->r
 
-		if( r->defined ) then
+		if( astIsCONST( r ) ) then
 
 			dtype = hPrepConst( v, r )
 
@@ -493,7 +493,7 @@ private function hOptConstAccum1 _
 	'' (this will handle for ex. a+1+b+2-3, that will become a+b
 	if( n->class = AST_NODECLASS_BOP ) then
 		r = n->r
-		if( r->defined ) then
+		if( astIsCONST( r ) ) then
 			select case as const n->op.op
 			case AST_OP_ADD
 				v.dtype = INVALID
@@ -599,7 +599,7 @@ private sub hOptConstAccum2 _
 			else
 				'' an ENUM or POINTER always have the precedence
 				if( (r->dtype = FB_DATATYPE_ENUM) or _
-					(r->dtype >= FB_DATATYPE_POINTER) ) then
+					(typeIsPOINTER( r->dtype )) ) then
 					n->dtype = r->dtype
 				else
 					n->dtype = l->dtype
@@ -643,7 +643,7 @@ private function hConstDistMUL _
 		l = n->l
 		r = n->r
 
-		if( r->defined ) then
+		if( astIsCONST( r ) ) then
 
 			dtype = hPrepConst( v, r )
 
@@ -703,7 +703,7 @@ private function hOptConstDistMUL _
 	'' (this will handle for ex. 2 * (3 + a * 2) that will become 6 + a * 4 (with Accum2's help))
 	if( n->class = AST_NODECLASS_BOP ) then
 		r = n->r
-		if( r->defined ) then
+		if( astIsCONST( r ) ) then
 			if( n->op.op = AST_OP_MUL ) then
 
 				v.dtype = INVALID
@@ -905,7 +905,7 @@ private sub hOptConstIDX _
 
         	'' remove l node if it's a const and add it to parent's offset
         	l = n->l
-        	if( l->defined ) then
+        	if( astIsCONST( l ) ) then
 				select case as const l->dtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					c = cint( l->con.val.long )
@@ -943,7 +943,7 @@ private sub hOptConstIDX _
 			if( l->class = AST_NODECLASS_BOP ) then
 				if( l->op.op = AST_OP_MUL ) then
 					lr = l->r
-					if( lr->defined ) then
+					if( astIsCONST( lr ) ) then
 						if( irGetOption( IR_OPT_ADDRCISC ) ) then
 							select case as const lr->dtype
 							case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -1222,7 +1222,7 @@ private sub hOptToShift _
 		select case op
 		case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD
 			r = n->r
-			if( r->defined ) then
+			if( astIsCONST( r ) ) then
 				if( symbGetDataClass( n->dtype ) = FB_DATACLASS_INTEGER ) then
 					if( symbGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
 						const_val = r->con.val.int
@@ -1303,7 +1303,7 @@ private function hOptNullOp _
 		op = n->op.op
 		l = n->l
 		r = n->r
-		if( r->defined ) then
+		if( astIsCONST( r ) ) then
 			if( symbGetDataClass( n->dtype ) = FB_DATACLASS_INTEGER ) then
 				if( symbGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
 					v = r->con.val.int
@@ -1738,7 +1738,7 @@ function astOptAssignment _
 	else
 		if( irGetOption( IR_OPT_FPU_BOPSELF ) = FALSE ) then
 			'' try to optimize if a constant is being assigned to a float var
-  			if( r->defined ) then
+  			if( astIsCONST( r ) ) then
   				if( dclass = FB_DATACLASS_FPOINT ) then
 					if( symbGetDataClass( r->dtype ) <> FB_DATACLASS_FPOINT ) then
 						n->r = astNewCONV( dtype, NULL, r )

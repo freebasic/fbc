@@ -2112,7 +2112,7 @@ function rtlFileInputGet _
 		f = PROCLOOKUP( INPUTDOUBLE )
 
 	case else
-		if( dtype >= FB_DATATYPE_POINTER ) then	'' non-sense but..
+		if( typeIsPOINTER( dtype ) ) then	'' non-sense but..
 			f = PROCLOOKUP( INPUTINT )
 			dstexpr = astNewCONV( FB_DATATYPE_UINT, NULL, dstexpr )
 

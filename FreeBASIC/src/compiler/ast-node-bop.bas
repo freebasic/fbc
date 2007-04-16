@@ -576,7 +576,7 @@ private function hCheckPointer _
     case AST_OP_ADD, AST_OP_SUB
 
     	'' another pointer?
-    	if( dtype >= FB_DATATYPE_POINTER ) then
+    	if( typeIsPOINTER( dtype ) ) then
     		return FALSE
     	end if
 
@@ -633,7 +633,7 @@ private function hDoPointerArith _
 	end if
 
     '' another pointer?
-    if( edtype >= FB_DATATYPE_POINTER ) then
+    if( typeIsPOINTER( edtype ) ) then
     	'' only allow if it's a subtraction
     	if( op = AST_OP_SUB ) then
     		'' types can't be different..
@@ -852,7 +852,7 @@ function astNewBOP _
 
 	''::::::
     '' pointers?
-    if( ldtype >= FB_DATATYPE_POINTER ) then
+    if( typeIsPOINTER( ldtype ) ) then
 		'' do arithmetics?
 		if( (options and AST_OPOPT_LPTRARITH) <> 0 ) then
     		return hDoPointerArith( op, l, r )
@@ -862,7 +862,7 @@ function astNewBOP _
     		end if
 		end if
 
-    elseif( rdtype >= FB_DATATYPE_POINTER ) then
+    elseif( typeIsPOINTER( rdtype ) ) then
 		'' do arithmetics?
 		if( (options and AST_OPOPT_RPTRARITH) <> 0 ) then
 			return hDoPointerArith( op, r, l )
@@ -1191,7 +1191,7 @@ function astNewBOP _
 
 				'' an ENUM or POINTER always has the precedence
 				if( (rdtype = FB_DATATYPE_ENUM) or _
-					(rdtype >= FB_DATATYPE_POINTER) ) then
+					(typeIsPOINTER( rdtype )) ) then
 					dtype = rdtype
 					subtype = r->subtype
 				else
@@ -1254,7 +1254,7 @@ function astNewBOP _
 	''::::::
 
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
-	if( l->defined and r->defined ) then
+	if( astIsCONST( l ) and astIsCONST( r ) ) then
 
 		select case as const ldtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -1282,7 +1282,7 @@ function astNewBOP _
 
 		return l
 
-	elseif( l->defined ) then
+	elseif( astIsCONST( l ) ) then
 		select case op
 		case AST_OP_ADD, AST_OP_MUL
 			'' ? + c = c + ?  |  ? * c = ? * c
@@ -1298,7 +1298,7 @@ function astNewBOP _
 			op = AST_OP_ADD
 		end select
 
-	elseif( r->defined ) then
+	elseif( astIsCONST( r ) ) then
 		select case op
 		case AST_OP_ADD
 			'' offset?

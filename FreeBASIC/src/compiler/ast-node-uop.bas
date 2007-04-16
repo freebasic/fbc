@@ -191,7 +191,7 @@ function astNewUOP _
 
 	'' pointer?
 	case else
-		if( dtype >= FB_DATATYPE_POINTER ) then
+		if( typeIsPOINTER( dtype ) ) then
     		'' only NOT allowed
     		if( op <> AST_OP_NOT ) then
     			exit function
@@ -255,7 +255,7 @@ function astNewUOP _
 	end select
 
 	'' constant folding
-	if( o->defined ) then
+	if( astIsCONST( o ) ) then
 
 		if( op = AST_OP_NEG ) then
 			if( astGetDataClass( o ) = FB_DATACLASS_INTEGER ) then

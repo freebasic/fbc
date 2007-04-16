@@ -970,11 +970,18 @@ private function hCheckOpOvlParams _
 			case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF
 				'' must be an integer
 				if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
+					dim as integer is_integer = TRUE
+					if( typeIsPOINTER( symbGetType( param ) ) ) then
+						is_integer = FALSE
+					end if
 					select case symbGetType( param )
-					case is >= FB_DATATYPE_POINTER, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+					case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+						is_integer = FALSE
+					end select
+					if( is_integer = FALSE ) then
 						hParamError( proc, 1, FB_ERRMSG_PARAMMUSTBEANINTEGER )
 						exit function
-					end select
+					end if
 				else
 					hParamError( proc, 1, FB_ERRMSG_PARAMMUSTBEANINTEGER )
 					exit function

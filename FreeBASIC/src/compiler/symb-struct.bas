@@ -414,11 +414,12 @@ function symbAddField _
 			end if
     	end if
 
-	'' check pointers
-	case is >= FB_DATATYPE_POINTER
-		base_parent->udt.options or= FB_UDTOPT_HASPTRFIELD
-
 	end select
+	
+	'' check pointers
+	if( typeIsPOINTER( dtype ) ) then
+		base_parent->udt.options or= FB_UDTOPT_HASPTRFIELD
+	end if
 
 	'' struct?
 	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then

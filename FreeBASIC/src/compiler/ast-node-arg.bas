@@ -995,7 +995,7 @@ private function hCheckParam _
 		end if
 
 		'' const?
-		if( arg->defined ) then
+		if( astIsCONST( arg ) ) then
 			arg = astCheckConst( param_dtype, arg )
 			if( arg = NULL ) then
 				exit function
@@ -1013,7 +1013,7 @@ private function hCheckParam _
 	end if
 
 	'' pointer checking
-	if( param_dtype >= FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( param_dtype ) ) then
 		if( astPtrCheck( param_dtype, symbGetSubtype( param ), arg ) = FALSE ) then
 			if( arg->dtype < FB_DATATYPE_POINTER ) then
 				hParamWarning( parent, FB_WARNINGMSG_PASSINGSCALARASPTR )
@@ -1022,7 +1022,7 @@ private function hCheckParam _
 			end if
 		end if
 
-    elseif( arg->dtype >= FB_DATATYPE_POINTER ) then
+    elseif( typeIsPOINTER( arg->dtype ) ) then
     	hParamWarning( parent, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
 	end if
 

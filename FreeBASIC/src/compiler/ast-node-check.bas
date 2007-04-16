@@ -42,11 +42,11 @@ function astNewBOUNDCHK _
     dim as ASTNODE ptr n = any
 
 	'' lbound is a const?
-	if( lb->defined ) then
+	if( astIsCONST( lb ) ) then
 		'' ubound too?
-		if( ub->defined ) then
+		if( astIsCONST( ub ) ) then
 			'' index also?
-			if( l->defined ) then
+			if( astIsCONST( l ) ) then
 				'' i < lbound?
 				if( l->con.val.int < lb->con.val.int ) then
 					return NULL

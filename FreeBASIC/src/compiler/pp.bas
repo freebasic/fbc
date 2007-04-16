@@ -735,9 +735,9 @@ private function dtypeToString( byref res as string, byval dtype as integer, byv
     function = TRUE
     
     dim as string ptr_string
-    do while( dtype >= FB_DATATYPE_POINTER )
+    do while( typeIsPOINTER( dtype ) )
     	ptr_string += " ptr"
-    	dtype -= FB_DATATYPE_POINTER
+    	typeStripPOINTER( dtype, subtype )
     loop
     
 	select case as const dtype

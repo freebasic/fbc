@@ -976,7 +976,7 @@ function astUpdComp2Branch _
 #endif
 
 		'' CONST?
-		if( n->defined ) then
+		if( astIsCONST( n ) ) then
 			if( isinverse = FALSE ) then
 				'' branch if false
 				select case as const dtype

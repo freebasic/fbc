@@ -78,7 +78,7 @@ function astNewDEREF _
 			end if
 		end if
 
-		if( l->defined ) then
+		if( astIsCONST( l ) ) then
 			ofs += astGetValueAsInt( l )
 			astDelNode( l )
 			l = NULL

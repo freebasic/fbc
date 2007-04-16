@@ -418,7 +418,7 @@ private function hGetRegName _
 
     dim as integer tb
 
-	if( dtype >= FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dtype ) ) then
 		dtype = FB_DATATYPE_UINT
 	end if
 
@@ -6530,7 +6530,7 @@ private sub _getResultReg _
 		byref r2 as integer _
 	) static
 
-	if( dtype >= FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dtype ) ) then
 		dtype = FB_DATATYPE_UINT
 	end if
 
@@ -6825,7 +6825,7 @@ private function _getTypeString _
 		function = @".INVALID"
 
     case else
-    	if( dtype >= FB_DATATYPE_POINTER ) then
+    	if( typeIsPOINTER( dtype ) ) then
     		function = @".long"
     	else
     		function = @".INVALID"

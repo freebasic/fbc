@@ -174,7 +174,7 @@ function cStrIdxOrMemberDeref _
 	end select
 
 	'' FuncPtrOrMemberDeref?
-	if( dtype >= FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dtype ) ) then
 		dim as integer isfuncptr = FALSE, isfield = FALSE
 
 		select case lexGetToken( )
@@ -343,7 +343,7 @@ private function hCast _
 		end if
 	end select
 
-	if( dtype >= FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dtype ) ) then
 		ptronly = TRUE
 	end if
 

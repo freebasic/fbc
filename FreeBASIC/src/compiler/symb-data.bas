@@ -76,7 +76,7 @@ function symbGetDataClass _
 		byval dtype as integer _
 	) as integer static
 
-	if( dtype > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dtype ) ) then
 		dtype = FB_DATATYPE_POINTER
 	end if
 
@@ -95,14 +95,14 @@ function symbMaxDataType _
 
     function = INVALID
 
-    if( ldtype > FB_DATATYPE_POINTER ) then
+    if( typeIsPOINTER( ldtype ) ) then
     	'' can't be POINTER, due the -1 +1 hacks below
     	dtype1 = FB_DATATYPE_UINT
     else
     	dtype1 = symb_dtypeTB(ldtype).remaptype
     end if
 
-    if( rdtype > FB_DATATYPE_POINTER ) then
+    if( typeIsPOINTER( rdtype ) ) then
     	'' ditto
     	dtype2 = FB_DATATYPE_UINT
     else
@@ -200,7 +200,7 @@ function symbIsSigned _
 		byval dtype as integer _
 	) as integer static
 
-	if( dtype > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dtype ) ) then
 		dtype = FB_DATATYPE_POINTER
 	end if
 
@@ -214,7 +214,7 @@ function symbGetDataSize _
 		byval dtype as integer _
 	) as integer static
 
-	if( dtype > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dtype ) ) then
 		dtype = FB_DATATYPE_POINTER
 	end if
 
@@ -228,7 +228,7 @@ function symbGetDataBits _
 		byval dtype as integer _
 	) as integer static
 
-	if( dtype > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dtype ) ) then
 		dtype = FB_DATATYPE_POINTER
 	end if
 
@@ -243,7 +243,7 @@ function symbRemapType _
 		byval subtype as FBSYMBOL ptr _
 	) as integer static
 
-	if( dtype > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dtype ) ) then
 		function = FB_DATATYPE_UINT
 
 	elseif( dtype = FB_DATATYPE_BITFIELD ) then
@@ -265,7 +265,7 @@ function symbGetSignedType _
 	dim as integer dt
 
 	dt = dtype
-	if( dt > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dt ) ) then
 		dt = FB_DATATYPE_POINTER
 	end if
 
@@ -314,7 +314,7 @@ function symbGetUnsignedType _
 	dim as integer dt
 
 	dt = dtype
-	if( dt > FB_DATATYPE_POINTER ) then
+	if( typeIsPOINTER( dt ) ) then
 		dt = FB_DATATYPE_POINTER
 	end if
 

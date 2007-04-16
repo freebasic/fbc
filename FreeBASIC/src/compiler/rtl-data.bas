@@ -302,7 +302,7 @@ function rtlDataRead _
 		exit function						'' illegal
 
 	case else
-		if( dtype >= FB_DATATYPE_POINTER ) then
+		if( typeIsPOINTER( dtype ) ) then
 			f = PROCLOOKUP( DATAREADPTR )
 		else
 			exit function

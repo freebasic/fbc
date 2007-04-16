@@ -343,7 +343,7 @@ private function hStepExpression _
 	'' as the right-hand-side to the FOR += operation.
 
     '' pointer counter?
-    if ( lhs_dtype >= FB_DATATYPE_POINTER ) then
+    if ( typeIsPOINTER( lhs_dtype ) ) then
 
 	    '' is STEP a complex expression?
 		if( rhs->sym <> NULL ) then
@@ -705,7 +705,7 @@ private function hForStep _
 
 			'' get constant step
 			stk->for.stp.sym = NULL
-			if( dtype >= FB_DATATYPE_POINTER ) then
+			if( typeIsPOINTER( dtype ) ) then
 				stk->for.stp.dtype = FB_DATATYPE_LONG
 			else
 				stk->for.stp.dtype = dtype
@@ -726,7 +726,7 @@ private function hForStep _
 			dim as FBSYMBOL ptr tmp_subtype = subtype
 
 			'' step can't be a pointer if counter is
-			if( dtype >= FB_DATATYPE_POINTER ) then
+			if( typeIsPOINTER( dtype ) ) then
 				tmp_dtype = FB_DATATYPE_LONG
 				tmp_subtype = NULL
 			end if

@@ -52,7 +52,8 @@ declare sub 	 hDeclENUM				( _
 										)
 
 declare function hDeclPointer			( _
-											byref dtype as integer _
+											byref dtype as integer, _
+											byref subtype as FBSYMBOL ptr _
 										) as string
 
 declare function hDeclArrayDims			( _
@@ -725,12 +726,13 @@ private function hDeclUDTField _
 	) as string static
 
 	dim as string desc
+	dim as FBSYMBOL ptr subtype = NULL '' implement me!
 
     desc = *sname
     desc += ":"
 
-    if( stype >= FB_DATATYPE_POINTER ) then
-    	desc += hDeclPointer( stype )
+    if( typeIsPOINTER( stype ) ) then
+    	desc += hDeclPointer( stype, subtype )
     end if
 
 	if( stypeopt = NULL ) then
@@ -750,10 +752,13 @@ private function hDeclDynArray _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as string static
-
+	
+	'' !!FIXME!! need to change array DATAYTPE
+	
     dim as string desc, dimdesc
     dim as FBVARDIM ptr d
     dim as integer ofs, i, dtype
+    dim as FBSYMBOL ptr subtype = NULL '' implement me!
 
 	'' declare the array descriptor
 	desc = str( ctx.typecnt ) + "=s" + _
@@ -764,8 +769,8 @@ private function hDeclDynArray _
 
 	dtype = symbGetType( sym )
 	'' pointer?
-    if( dtype >= FB_DATATYPE_POINTER ) then
-    	dimdesc += hDeclPointer( dtype )
+    if( typeIsPOINTER( dtype ) ) then
+    	dimdesc += hDeclPointer( dtype, subtype )
     end if
 
 	dimdesc += str( remapTB(dtype) )
@@ -839,14 +844,15 @@ end function
 '':::::
 private function hDeclPointer _
 	( _
-		byref dtype as integer _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
 	) as string static
 
     dim as string desc
 
     desc = ""
-    do while( dtype >= FB_DATATYPE_POINTER )
-    	dtype -= FB_DATATYPE_POINTER
+    do while( typeIsPOINTER( dtype ) )
+    	typeStripPOINTER( dtype, subtype )
     	desc += str( ctx.typecnt ) + "=*"
     	ctx.typecnt += 1
     loop
@@ -906,10 +912,11 @@ private function hGetDataType _
     end if
 
     dtype = symbGetType( sym )
+    subtype = symbGetSubtype( sym )
 
     '' pointer?
-    if( dtype >= FB_DATATYPE_POINTER ) then
-    	desc += hDeclPointer( dtype )
+    if( typeIsPOINTER( dtype ) ) then
+    	desc += hDeclPointer( dtype, subtype )
     end if
 
     select case dtype

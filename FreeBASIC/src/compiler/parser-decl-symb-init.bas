@@ -50,11 +50,13 @@ private function hDoAssign _
 
     dim as ASTNODE lside = any
 	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	dtype = symbGetType( ctx.sym )
+	subtype = symbGetSubtype( ctx.sym )
 
 	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype -= FB_DATATYPE_POINTER
+		typeStripPOINTER( dtype, subtype )
 	end if
 
     astBuildVAR( @lside, NULL, 0, dtype, symbGetSubtype( ctx.sym ) )
@@ -115,8 +117,9 @@ private function hElmInit _
 
             '' generate an expression matching the symbol's type
 			dim as integer dtype = symbGetType( ctx.sym )
+			dim as FBSYMBOL ptr subtype = symbGetSubtype( ctx.sym )
 			if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-				dtype -= FB_DATATYPE_POINTER
+				typeStripPOINTER( dtype, subtype )
 			end if
 			expr = astNewCONSTz( dtype )
 
@@ -202,11 +205,10 @@ private function hArrayInit _
 
 	''
 	dtype = symbGetType( ctx.sym )
-	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype -= FB_DATATYPE_POINTER
-	end if
-
 	subtype = symbGetSubtype( ctx.sym )
+	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
+		typeStripPOINTER( dtype, subtype )
+	end if
 
 	'' for each array element..
 	elm_cnt = 0
@@ -367,11 +369,10 @@ private function hUDTInit _
 
 	''
 	dtype = symbGetType( ctx.sym )
-	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype -= FB_DATATYPE_POINTER
-	end if
-
 	subtype = symbGetSubtype( ctx.sym )
+	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
+		typeStripPOINTER( dtype, subtype )
+	end if
 
 	''
 	elm = symbGetUDTFirstElm( subtype )
@@ -503,11 +504,10 @@ function cInitializer _
 	end if
 
 	dtype = symbGetType( sym )
-	if( (options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype -= FB_DATATYPE_POINTER
-	end if
-
 	subtype = symbGetSubtype( sym )
+	if( (options and FB_INIOPT_DODEREF) <> 0 ) then
+		typeStripPOINTER( dtype, subtype )
+	end if
 
 	''
 	ctx.options = options

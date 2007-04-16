@@ -318,7 +318,7 @@ function cOperatorDelete _
        	end if
 	end if
 	
-	dtype -= FB_DATATYPE_POINTER
+	typeStripPOINTER( dtype, subtype )
 	
 	'' check for ANY ptr
 	if( dtype = FB_DATATYPE_VOID ) then

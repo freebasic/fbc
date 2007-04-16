@@ -1674,9 +1674,9 @@ function symbTypeToStr _
 		res = *symb_dtypeTB(dtype_np).name
 	end select
 
-	do while( dtype >= FB_DATATYPE_POINTER )
+	do while( typeIsPOINTER( dtype ) )
 		res += " ptr"
-		dtype -= FB_DATATYPE_POINTER
+		typeStripPOINTER( dtype, subtype )
 	loop
 
 	function = strptr( res )
@@ -1787,7 +1787,7 @@ function symbCalcLen _
 		function = subtype->lgt
 
 	case else
-		if( dtype >= FB_DATATYPE_POINTER ) then
+		if( typeIsPOINTER( dtype ) ) then
 			function = FB_POINTERSIZE
 		else
 			function = 0

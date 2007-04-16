@@ -34,18 +34,15 @@ private function hCheckIndex _
 	) as ASTNODE ptr
 
 	'' if index isn't an integer, convert
-	select case astGetDataType( expr )
-	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
-
-	case is >= FB_DATATYPE_POINTER
+	if( (astGetDataType( expr ) = FB_DATATYPE_INTEGER) or (astGetDataType( expr ) = FB_DATATYPE_INTEGER) ) then
+	elseif( typeIsPOINTER( astGetDataType( expr ) ) ) then
 		if( errReport( FB_ERRMSG_INVALIDARRAYINDEX, TRUE ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake an expr
 			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
-
-	case else
+	else
 		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
 		if( expr = NULL ) then
 			if( errReport( FB_ERRMSG_INVALIDARRAYINDEX, TRUE ) = FALSE ) then
@@ -55,7 +52,7 @@ private function hCheckIndex _
 				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 		end if
-	end select
+	end if
 
 	function = expr
 
@@ -587,7 +584,7 @@ function cMemberDeref _
 
 			else
        			lexSkipToken( LEXCHECK_NOPERIOD )
-				dtype -= FB_DATATYPE_POINTER
+				typeStripPOINTER( dtype, subtype )
 			end if
 
        		'' DREF*
@@ -672,7 +669,7 @@ function cMemberDeref _
 								 	 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
 
 
-				dtype -= FB_DATATYPE_POINTER
+				typeStripPOINTER( dtype, subtype )
 			end if
 
 			'' '.'?
@@ -1608,7 +1605,7 @@ function cWithVariable _
    	varexpr = astNewVAR( sym, 0, dtype, subtype )
 
    	'' UdtMember
-   	dtype -= FB_DATATYPE_POINTER
+   	typeStripPOINTER( dtype, subtype )
 
     '' '.'
     lexSkipToken( LEXCHECK_NOPERIOD )
