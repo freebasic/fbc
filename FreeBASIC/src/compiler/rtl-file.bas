@@ -87,7 +87,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -149,7 +149,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -181,7 +181,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -213,7 +213,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -245,7 +245,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -277,7 +277,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -309,7 +309,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -700,7 +700,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -748,10 +748,10 @@
 			5, _
 	 		{ _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -946,7 +946,7 @@
 			3, _
 	 		{ _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1249,7 +1249,7 @@ function rtlFileOpen _
 	if( doencoding ) then
 		'' byval encoding as zstring ptr
 		if( fencoding = NULL ) then
-			fencoding = astNewCONSTi( 0, FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
+			fencoding = astNewCONSTi( 0, typeSetType( FB_DATATYPE_CHAR, 1 ) )
 		end if
 		if( astNewARG( proc, fencoding ) = NULL ) then
 			exit function
@@ -2058,7 +2058,7 @@ function rtlFileInputGet _
 	''
 	args = 1
 	dtype = astGetDataType( dstexpr )
-	select case as const dtype
+	select case as const typeGetDatatype( dtype )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 		f = PROCLOOKUP( INPUTSTR )
 		args = 4
@@ -2111,16 +2111,12 @@ function rtlFileInputGet _
 	case FB_DATATYPE_DOUBLE
 		f = PROCLOOKUP( INPUTDOUBLE )
 
+	case FB_DATATYPE_POINTER
+		f = PROCLOOKUP( INPUTINT )
+		dstexpr = astNewCONV( FB_DATATYPE_UINT, NULL, dstexpr )
 	case else
-		if( typeIsPOINTER( dtype ) ) then	'' non-sense but..
-			f = PROCLOOKUP( INPUTINT )
-			dstexpr = astNewCONV( FB_DATATYPE_UINT, NULL, dstexpr )
-
-		'' UDT, bit-fields..
-		else
-			errReport( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
-		end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		exit function
 	end select
 
     proc = astNewCALL( f )

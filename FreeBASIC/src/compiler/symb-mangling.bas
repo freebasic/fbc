@@ -270,7 +270,7 @@ private function hAbbrevFind _
 
 	'' builtin?
 	if( subtype = NULL ) then
-		if( dtype < FB_DATATYPE_POINTER ) then
+		if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
 			if( dtype <> FB_DATATYPE_STRING ) then
 				return -1
 			end if
@@ -413,7 +413,7 @@ function symbMangleType _
 
     case else
     	'' builtin?
-    	if( dtype < FB_DATATYPE_POINTER ) then
+    	if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
     		return typecodeTB( dtype )
     	end if
 
@@ -425,7 +425,7 @@ function symbMangleType _
     	'' pointer..
     	else
     		sig = "P"
-    		sig += symbMangleType( dtype - FB_DATATYPE_POINTER, subtype )
+    		sig += symbMangleType( typeDeref( dtype ), subtype )
     	end if
 
     end select

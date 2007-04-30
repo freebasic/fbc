@@ -1181,9 +1181,11 @@ private function ppParentExpr _
   		lexSkipToken( )
         
 		parexpr.class = PPEXPR_CLASS_STR
-		if( ppTypeOf( parexpr.str ) = FALSE ) then
+		dim as zstring ptr res = ppTypeOf( )
+		if( res = NULL ) then
 			exit function
 		end if
+		parexpr.str += *res
 	    
   	'' '(' Expression ')'
   	case CHAR_LPRNT

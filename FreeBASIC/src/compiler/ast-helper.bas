@@ -73,7 +73,7 @@ function astBuildVarInc _
 	dim as AST_OP op = any
 
 	options = AST_OPOPT_DEFAULT
-	if( typeIsPOINTER( symbGetType( lhs ) ) ) then
+	if( typeGetDatatype( symbGetType( lhs ) ) = FB_DATATYPE_POINTER ) then
 		options or= AST_OPOPT_LPTRARITH
 	end if
 
@@ -106,7 +106,7 @@ function astBuildVarDeref _
             						   0, _
             						   symbGetType( sym ), _
             						   symbGetSubtype( sym ) ), _
-            			  	symbGetType( sym ) - FB_DATATYPE_POINTER, _
+            			  	           typeDeref(symbGetType( sym )), _
             			  	symbGetSubtype( sym ) )
 
 end function
@@ -227,7 +227,7 @@ function astBuildVarField _
 	if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
 		expr = astNewDEREF( astNewVAR( sym, _
 						    		   0, _
-						    		   FB_DATATYPE_POINTER + symbGetType( sym ), _
+						    		   typeAddrOf( symbGetType( sym ) ), _
 						    		   symbGetSubtype( sym ) ), _
 						    symbGetType( sym ), _
 						    symbGetSubtype( sym ), _
@@ -647,7 +647,7 @@ function astBuildProcResultVar _
     select case symbGetType( proc )
     case FB_DATATYPE_STRUCT
 		'' pointer? deref
-		if( symbGetProcRealType( proc ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
+		if( typeIsPtrTo( symbGetProcRealType( proc ), 1, FB_DATATYPE_STRUCT ) ) then
 			lhs = astNewDEREF( lhs, FB_DATATYPE_STRUCT, symbGetSubtype( res ) )
 		end if
 	'case FB_DATATYPE_CLASS
@@ -693,8 +693,8 @@ function astBuildInstPtr _
 	dtype = symbGetType( sym )
 	subtype = symbGetSubtype( sym )
 
-	'' it's always an param
-	expr = astNewVAR( sym, 0, FB_DATATYPE_POINTER + dtype, subtype )
+	'' it's always a param
+	expr = astNewVAR( sym, 0, typeSetType( dtype, 1 ), subtype )
 
 	if( fld <> NULL ) then
 		dtype = symbGetType( fld )
@@ -745,7 +745,7 @@ function astBuildMockInstPtr _
 	) as ASTNODE ptr
 
 	function = astNewCONSTi( 0, _
-							 FB_DATATYPE_POINTER + symbGetType( sym ), _
+							 typeSetType( symbGetType( sym ), 1 ), _
 							 sym )
 
 end function
@@ -782,7 +782,7 @@ function astBuildMultiDeref _
 	) as ASTNODE ptr
 
 	do while( cnt > 0 )
-		if( dtype < FB_DATATYPE_POINTER ) then
+		if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
 			if( symb.globOpOvlTb(AST_OP_DEREF).head = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
 					return NULL
@@ -816,7 +816,7 @@ function astBuildMultiDeref _
 
 
 		else
-			typeStripPOINTER( dtype, subtype )
+			dtype = typeDeref( dtype )
 
 			'' incomplete type?
 			select case dtype
@@ -882,7 +882,7 @@ function astBuildArrayDescIniTree _
 
     if( array_expr = NULL ) then
     	if( symbGetIsDynamic( array ) ) then
-    		array_expr = astNewCONSTi( 0, FB_DATATYPE_POINTER + dtype, subtype )
+    		array_expr = astNewCONSTi( 0, typeSetType( dtype, 1 ), subtype )
     	else
     		array_expr = astNewADDROF( astNewVAR( array, 0, dtype, subtype ) )
     	end if
@@ -995,10 +995,10 @@ function astBuildStrPtr _
 	'' note: only var-len strings expressions should be passed
 
 	'' *cast( zstring ptr ptr, @lhs )
-	function = astNewDEREF( astNewCONV( FB_DATATYPE_POINTER*2 + FB_DATATYPE_CHAR, _
+	function = astNewDEREF( astNewCONV( typeSetType( FB_DATATYPE_CHAR, 2 ), _
 								 	    NULL, _
 								 	  	astNewADDROF( lhs ) ), _
-						  	FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
+						  	typeSetType( FB_DATATYPE_CHAR, 1 ), _
 						  	NULL )
 
 end function

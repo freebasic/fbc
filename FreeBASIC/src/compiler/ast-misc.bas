@@ -757,7 +757,7 @@ function astPtrCheck _
 	select case astGetClass( expr )
 	case AST_NODECLASS_CONST, AST_NODECLASS_ENUM
     	'' expr not a pointer?
-    	if( edtype < FB_DATATYPE_POINTER ) then
+    	if( typeGetDatatype( edtype ) <> FB_DATATYPE_POINTER ) then
     		'' not NULL?
     		if( astGetValInt( expr ) <> NULL ) then
     			exit function
@@ -768,7 +768,7 @@ function astPtrCheck _
 
 	case else
     	'' expr not a pointer?
-    	if( edtype < FB_DATATYPE_POINTER ) then
+    	if( typeGetDatatype( edtype ) <> FB_DATATYPE_POINTER ) then
     		exit function
     	end if
 	end select
@@ -777,8 +777,8 @@ function astPtrCheck _
 	if( pdtype <> edtype ) then
 
     	'' remove the pointers
-    	pdtype_np = pdtype mod FB_DATATYPE_POINTER
-    	edtype_np = edtype mod FB_DATATYPE_POINTER
+    	pdtype_np = typeGetPtrType( pdtype ) 
+    	edtype_np = typeGetPtrType( edtype ) 
 
     	'' 1st) is one of them an ANY PTR?
     	if( pdtype_np = FB_DATATYPE_VOID ) then
@@ -788,7 +788,7 @@ function astPtrCheck _
     	end if
 
     	'' 2nd) same level of indirection?
-    	if( (pdtype - pdtype_np) <> (edtype - edtype_np) ) then
+    	if( typeGetPtrCnt( pdtype ) <> typeGetPtrCnt( edtype ) ) then
     		exit function
     	end if
 
@@ -932,7 +932,7 @@ function astUpdComp2Branch _
 		ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID, NULL, n, @err_num )
 		if( ovlProc = NULL ) then
 			'' no? try pointers...
-			ovlProc = symbFindCastOvlProc( FB_DATATYPE_POINTER + FB_DATATYPE_VOID, NULL, _
+			ovlProc = symbFindCastOvlProc( typeSetType( FB_DATATYPE_VOID, 1 ), NULL, _
 										   n, _
 										   @err_num )
 			if( ovlProc = NULL ) then

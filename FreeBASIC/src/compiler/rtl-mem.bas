@@ -31,18 +31,18 @@
 		/' fb_NullPtrChk ( byval p as any ptr, byval linenum as integer, byval fname as zstring ptr ) as any ptr '/ _
 		( _
 			@FB_RTL_NULLPTRCHK, NULL, _
-	 		FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_VOID, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -118,7 +118,7 @@
 		/' allocate ( byval bytes as integer ) as any ptr '/ _
 		( _
 			@"allocate", @"malloc", _
-			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -130,7 +130,7 @@
 		/' callocate ( byval bytes as integer ) as any ptr '/ _
 		( _
 			@"callocate", @"calloc", _
-			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
  			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -145,12 +145,12 @@
 		/' reallocate ( byval p as any ptr, byval bytes as integer ) as any ptr '/ _
 		( _
 			@"reallocate", @"realloc", _
-			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
  			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_VOID, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
@@ -165,7 +165,7 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_VOID, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -190,7 +190,7 @@
 		/' new ( byval bytes as uinteger ) as any ptr '/ _
 		( _
 			cast( zstring ptr, AST_OP_NEW ), NULL, _
-			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
 			1, _
 			{ _
@@ -202,7 +202,7 @@
 		/' new[] ( byval bytes as uinteger ) as any ptr '/ _
 		( _
 			cast( zstring ptr, AST_OP_NEW_VEC ), NULL, _
-			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
 			1, _
 			{ _
@@ -219,7 +219,7 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -231,7 +231,7 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -295,8 +295,8 @@ function rtlNullPtrCheck _
 
 	'' ptr
 	if( astNewARG( proc, _
-				   astNewCONV( FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, p ), _
-				   FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) = NULL ) then
+				   astNewCONV( typeSetType( FB_DATATYPE_VOID, 1 ), NULL, p ), _
+				   typeSetType( FB_DATATYPE_VOID, 1 ) ) = NULL ) then
 		exit function
 	end if
 
@@ -371,8 +371,8 @@ function rtlMemSwap _
 		'' returned in registers?
 		if( astIsCALL( src ) ) then
 			dim as FBSYMBOL ptr subtype = src->subtype
-			if( symbGetUDTRetType( subtype ) <> FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
-				'' patch type
+			'' patch type
+			if( (typeIsPtrTo( symbGetUDTRetType( subtype ), 1, FB_DATATYPE_STRUCT ) = FALSE) ) then
 				astSetType( src, symbGetUDTRetType( subtype ), NULL )
 			end if
 		end if

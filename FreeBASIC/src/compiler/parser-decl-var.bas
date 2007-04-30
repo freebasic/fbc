@@ -62,7 +62,7 @@ function hSymbolType _
 			return FALSE
 		else
 			'' error recovery: fake a type
-			dtype += FB_DATATYPE_POINTER
+			dtype = typeAddrOf( dtype )
 			subtype = NULL
 			lgt = FB_POINTERSIZE
 			ptrcnt = 1
@@ -1951,7 +1951,7 @@ function cAutoVarDecl _
 
 		'' add var after parsing the expression, or the the var itself could be used
 		sym = hDeclStaticVar( sym, id, NULL, _
-		                      dtype, subtype, dtype \ FB_DATATYPE_POINTER, _
+		                      dtype, subtype, typeGetPtrCnt( dtype ), _
 		                      symbCalcLen( dtype, subtype ), FALSE, attrib, _
 		                      0, dTB() )
 

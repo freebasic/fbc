@@ -332,7 +332,7 @@ private function hCallCtorList _
 
     	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
     	label = symbAddLabel( NULL )
-    	iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
+    	iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
 
 		flush_tree = astNewLINK( flush_tree, _
 								 astBuildVarAssign( iter, _
@@ -447,7 +447,7 @@ private function hFlushTree _
         				   	   	   	   			  	0, _
 	       				   	   	   	   			  	dtype, _
         				   	   	   	   			  	subtype ), _
-        							     dtype - FB_DATATYPE_POINTER, _
+        							     typeDeref( dtype ), _
         							     subtype, _
         							     n->typeini.ofs )
         		end if

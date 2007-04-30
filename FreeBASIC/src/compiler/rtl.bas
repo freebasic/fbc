@@ -105,12 +105,10 @@ end sub
 #macro CNTPTR(dtype,cnt)
 	scope
 		dim as integer t
-		dim as FBSYMBOL ptr _sym
 		t = dtype
-		_sym = NULL
 		cnt = 0
-		do while( typeIsPOINTER( t ) )
-			typeStripPOINTER( t, subtype )
+		do while( typeGetDatatype( t ) = FB_DATATYPE_POINTER )
+			t = typeDeref( t )
 			cnt += 1
 		loop
 	end scope

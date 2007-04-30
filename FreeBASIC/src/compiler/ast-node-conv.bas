@@ -34,7 +34,7 @@ private sub hCONVConstEvalInt _
 		byval v as ASTNODE ptr _
 	)
 
-	if( typeIsPOINTER( to_dtype ) ) then
+	if( typeGetDatatype( to_dtype ) = FB_DATATYPE_POINTER ) then
 		to_dtype = FB_DATATYPE_POINTER
 	end if
 
@@ -114,7 +114,7 @@ private sub hCONVConstEvalFlt _
 	dim as integer vdtype = any
 
     vdtype = v->dtype
-	if( typeIsPOINTER( vdtype ) ) then
+	if( typeGetDatatype( vdtype ) = FB_DATATYPE_POINTER ) then
 		vdtype = FB_DATATYPE_POINTER
 	end if
 
@@ -255,25 +255,25 @@ end sub
 	)
 
     '' to pointer? only allow integers..
-    if( typeIsPOINTER( to_dtype ) ) then
+    if( typeGetDatatype( to_dtype ) = FB_DATATYPE_POINTER ) then
 		select case as const ldtype
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 
 		case else
-			if( ldtype < FB_DATATYPE_POINTER ) then
+			if( typeGetDatatype( ldtype ) <> FB_DATATYPE_POINTER ) then
 				exit function
 			end if
 		end select
 
     '' from pointer? only allow integers..
-    elseif( typeIsPOINTER( ldtype ) ) then
+    elseif( typeGetDatatype( ldtype ) = FB_DATATYPE_POINTER ) then
 		select case as const to_dtype
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 
 		case else
-			if( to_dtype < FB_DATATYPE_POINTER ) then
+			if( typeGetDatatype( to_dtype ) <> FB_DATATYPE_POINTER ) then
 				exit function
 			end if
 		end select

@@ -731,7 +731,7 @@ private function hDeclUDTField _
     desc = *sname
     desc += ":"
 
-    if( typeIsPOINTER( stype ) ) then
+    if( typeGetDatatype( stype ) = FB_DATATYPE_POINTER ) then
     	desc += hDeclPointer( stype, subtype )
     end if
 
@@ -769,7 +769,7 @@ private function hDeclDynArray _
 
 	dtype = symbGetType( sym )
 	'' pointer?
-    if( typeIsPOINTER( dtype ) ) then
+    if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
     	dimdesc += hDeclPointer( dtype, subtype )
     end if
 
@@ -851,8 +851,8 @@ private function hDeclPointer _
     dim as string desc
 
     desc = ""
-    do while( typeIsPOINTER( dtype ) )
-    	typeStripPOINTER( dtype, subtype )
+    do while( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER )
+    	dtype = typeDeref( dtype )
     	desc += str( ctx.typecnt ) + "=*"
     	ctx.typecnt += 1
     loop
@@ -915,7 +915,7 @@ private function hGetDataType _
     subtype = symbGetSubtype( sym )
 
     '' pointer?
-    if( typeIsPOINTER( dtype ) ) then
+    if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
     	desc += hDeclPointer( dtype, subtype )
     end if
 

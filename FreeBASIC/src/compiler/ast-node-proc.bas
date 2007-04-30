@@ -517,7 +517,7 @@ private function hCheckErrHnd _
            	astAdd( rtlErrorSetFuncName( NULL, _
            								 astNewVAR( .lastfun, _
            						   		 0, _
-           						   		 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR ) ) )
+           						   		 typeSetType( FB_DATATYPE_CHAR, 1 ) ) ) )
            	.lastfun = NULL
 		end if
 
@@ -525,7 +525,7 @@ private function hCheckErrHnd _
            	astAdd( rtlErrorSetModName( NULL, _
            								astNewVAR( .lastmod, _
            						   		0, _
-           						   		FB_DATATYPE_POINTER+FB_DATATYPE_CHAR ) ) )
+           						   		typeSetType( FB_DATATYPE_CHAR, 1 ) ) ) )
 
 			.lastmod = NULL
 		end if
@@ -533,7 +533,7 @@ private function hCheckErrHnd _
 		if( .lasthnd <> NULL ) then
        		rtlErrorSetHandler( astNewVAR( .lasthnd, _
        					  	  			   0, _
-       					  	  			   FB_DATATYPE_POINTER+FB_DATATYPE_VOID ), _
+       					  	  			   typeSetType( FB_DATATYPE_VOID, 1 ) ), _
        							FALSE )
 			.lasthnd = NULL
 		end if
@@ -859,7 +859,7 @@ private sub hCallCtorList _
 
     cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
     label = symbAddLabel( NULL )
-    iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
+    iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
 
 	if( fld <> NULL ) then
     	if( is_ctor ) then

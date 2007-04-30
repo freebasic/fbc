@@ -38,7 +38,7 @@ private function hCtorList _
 
     cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
     label = symbAddLabel( NULL )
-    this_ = symbAddTempVar( FB_DATATYPE_POINTER + symbGetType( sym ), _
+    this_ = symbAddTempVar( typeAddrOf( symbGetType( sym ) ), _
     					    subtype, _
     					    FALSE, _
     					    FALSE )

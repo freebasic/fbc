@@ -34,7 +34,7 @@
 								   byval resnxtlabel as any ptr ) as integer '/ _
 		( _
 			@FB_RTL_ERRORTHROW, NULL, _
-			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -42,13 +42,13 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -58,7 +58,7 @@
 								   byval resnxtlabel as any ptr ) as any ptr '/ _
 		( _
 			@FB_RTL_ERRORTHROWEX, NULL, _
-			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
@@ -69,25 +69,25 @@
 					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_VOID, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_VOID, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
 		/' fb_ErrorSetHandler( byval newhandler as any ptr ) as any ptr '/ _
 		( _
 			@FB_RTL_ERRORSETHANDLER, NULL, _
-			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_VOID, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -113,14 +113,14 @@
 		/' fb_ErrorResume( ) as any ptr '/ _
 		( _
 			@FB_RTL_ERRORRESUME, NULL, _
-			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
 		/' fb_ErrorResumeNext( ) as any ptr '/ _
 		( _
 			@FB_RTL_ERRORRESUMENEXT, NULL, _
-			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
@@ -134,38 +134,38 @@
 		/' ERFN ( ) as zstring ptr '/ _
 		( _
 			@"erfn", @"fb_ErrorGetFuncName", _
-			FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_FUNCMODE_STDCALL, _
+			typeSetType( FB_DATATYPE_CHAR, 1 ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
 		/' ERMN ( ) as zstring ptr '/ _
 		( _
 			@"ermn", @"fb_ErrorGetModName", _
-			FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_FUNCMODE_STDCALL, _
+			typeSetType( FB_DATATYPE_CHAR, 1 ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
 		/' fb_ErrorSetModName ( byval modname as zstring ptr ) as zstring ptr '/ _
 		( _
 			@FB_RTL_ERRORSETMODNAME, NULL, _
-			FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_FUNCMODE_STDCALL, _
+			typeSetType( FB_DATATYPE_CHAR, 1 ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
 		/' fb_ErrorSetFuncName ( byval funname as zstring ptr ) as zstring ptr '/ _
 		( _
 			@FB_RTL_ERRORSETFUNCNAME, NULL, _
-			FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_FUNCMODE_STDCALL, _
+			typeSetType( FB_DATATYPE_CHAR, 1 ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -179,16 +179,16 @@
 			4, _
 	 		{ _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -202,16 +202,16 @@
 			4, _
 	 		{ _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_WCHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -225,16 +225,16 @@
 			4, _
 	 		{ _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -248,16 +248,16 @@
 			4, _
 	 		{ _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
+					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 	 	), _
@@ -455,8 +455,8 @@ sub rtlErrorSetHandler _
     	if( fbIsModLevel( ) = FALSE ) then
     		with parser.currproc->proc.ext->err
     			if( .lasthnd = NULL ) then
-					.lasthnd = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
-                	expr = astNewVAR( .lasthnd, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
+					.lasthnd = symbAddTempVar( typeSetType( FB_DATATYPE_VOID, 1 ) )
+                	expr = astNewVAR( .lasthnd, 0, typeSetType( FB_DATATYPE_VOID, 1 ) )
                 	astAdd( astNewASSIGN( expr, proc ) )
     			end if
     		end with
@@ -549,8 +549,8 @@ function rtlErrorSetModName _
 
     if( sym <> NULL ) then
     	with sym->proc.ext->err
-			.lastmod = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
-           	expr = astNewVAR( .lastmod, 0, FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
+			.lastmod = symbAddTempVar( typeSetType( FB_DATATYPE_CHAR, 1 ) )
+           	expr = astNewVAR( .lastmod, 0, typeSetType( FB_DATATYPE_CHAR, 1 ) )
           	function = astNewASSIGN( expr, proc )
     	end with
     else
@@ -577,8 +577,8 @@ function rtlErrorSetFuncName _
 
     if( sym <> NULL ) then
     	with sym->proc.ext->err
-			.lastfun = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
-            expr = astNewVAR( .lastfun, 0, FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
+			.lastfun = symbAddTempVar( typeSetType( FB_DATATYPE_CHAR, 1 ) )
+            expr = astNewVAR( .lastfun, 0, typeSetType( FB_DATATYPE_CHAR, 1 ) )
             function = astNewASSIGN( expr, proc )
     	end with
     else

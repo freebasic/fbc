@@ -231,13 +231,13 @@ private function hCheckPointerOps _
 
 	function = FALSE
 
-    if( typeIsPOINTER( ldtype ) ) then
+    if( typeGetDatatype( ldtype ) = FB_DATATYPE_POINTER ) then
 		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
 			errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
 		end if
 
     '' r-side expr is a ptr?
-    elseif( typeIsPOINTER( rdtype ) ) then
+    elseif( typeGetDatatype( rdtype ) = FB_DATATYPE_POINTER ) then
     	errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
     end if
 
@@ -431,7 +431,7 @@ function astNewASSIGN _
         '' is r an UDT too?
         dim as integer is_udt = TRUE
         if( astIsCALL( r ) ) then
-        	is_udt = symbGetUDTRetType( r->subtype ) = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT
+        	is_udt = typeIsPtrTo( symbGetUDTRetType( r->subtype ), 1, FB_DATATYPE_STRUCT )
         end if
 
 		if( is_udt ) then

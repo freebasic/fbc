@@ -343,7 +343,7 @@ private function hStepExpression _
 	'' as the right-hand-side to the FOR += operation.
 
     '' pointer counter?
-    if ( typeIsPOINTER( lhs_dtype ) ) then
+    if ( typeGetDatatype( lhs_dtype ) = FB_DATATYPE_POINTER ) then
 
 	    '' is STEP a complex expression?
 		if( rhs->sym <> NULL ) then
@@ -356,7 +356,7 @@ private function hStepExpression _
 
 			function = astNewBOP( AST_OP_MUL, _
 			                      astNewVAR( rhs->sym, 0, FB_DATATYPE_INTEGER ), _
-			                      astNewCONSTi( symbCalcLen( lhs_dtype mod FB_DATATYPE_POINTER, _
+			                      astNewCONSTi( symbCalcLen( typeGetPtrType( lhs_dtype ), _
 			                                                 lhs_subtype, _
 			                                                 FALSE ), _
 			                                    FB_DATATYPE_UINT ) )
@@ -369,7 +369,7 @@ private function hStepExpression _
 			'' taking the STEP value, and multiplying it by
 			'' the width of the counter type.
 
-			function = astNewCONSTi( rhs->value.int * symbCalcLen( lhs_dtype mod FB_DATATYPE_POINTER, _
+			function = astNewCONSTi( rhs->value.int * symbCalcLen( typeGetPtrType( lhs_dtype ), _
 			                                                       lhs_subtype, _
 			                                                       FALSE ), _
 			                         FB_DATATYPE_INTEGER )
@@ -705,7 +705,7 @@ private function hForStep _
 
 			'' get constant step
 			stk->for.stp.sym = NULL
-			if( typeIsPOINTER( dtype ) ) then
+			if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
 				stk->for.stp.dtype = FB_DATATYPE_LONG
 			else
 				stk->for.stp.dtype = dtype
@@ -726,7 +726,7 @@ private function hForStep _
 			dim as FBSYMBOL ptr tmp_subtype = subtype
 
 			'' step can't be a pointer if counter is
-			if( typeIsPOINTER( dtype ) ) then
+			if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
 				tmp_dtype = FB_DATATYPE_LONG
 				tmp_subtype = NULL
 			end if
@@ -920,7 +920,7 @@ function cForStmtBegin _
 
 	case else
 		'' not a ptr?
-		if( dtype < FB_DATATYPE_POINTER ) then
+		if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
 			if( errReport( FB_ERRMSG_EXPECTEDSCALAR, TRUE ) = FALSE ) then
 				exit function
 			else

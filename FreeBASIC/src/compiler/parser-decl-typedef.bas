@@ -60,7 +60,7 @@ function cTypedefDecl _
 					select case lexGetToken( )
 					case FB_TK_PTR, FB_TK_POINTER
 						lexSkipToken( )
-						dtype += FB_DATATYPE_POINTER
+						dtype = typeAddrOf( dtype )
 						ptrcnt += 1
 					case else
 						exit do
@@ -163,7 +163,7 @@ function cTypedefDecl _
 						select case lexGetToken( )
 						case FB_TK_PTR, FB_TK_POINTER
 							lexSkipToken( )
-							dtype += FB_DATATYPE_POINTER
+							dtype = typeAddrOf( dtype )
 							ptrcnt += 1
 						case else
 							exit do
@@ -172,7 +172,7 @@ function cTypedefDecl _
 				end if
 
 			else
-				dtype += ptrcnt * FB_DATATYPE_POINTER
+				dtype = typeSetType( dtype, ptrcnt )
 			end if
     	end if
 

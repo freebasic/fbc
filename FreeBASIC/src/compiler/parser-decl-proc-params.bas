@@ -483,7 +483,7 @@ private function hParamDecl _
     		exit function
     	else
     		'' error recovery: fake correct type
-    		param_dtype += FB_DATATYPE_POINTER
+    		param_dtype = typeAddrOf( param_dtype )
     	end if
 
 	'' can't be as ANY on non-prototypes
@@ -493,7 +493,7 @@ private function hParamDecl _
     			exit function
     		else
     			'' error recovery: fake correct type
-    			param_dtype += FB_DATATYPE_POINTER
+    			param_dtype = typeAddrOf( param_dtype )
     		end if
 
     	else
@@ -502,7 +502,7 @@ private function hParamDecl _
     				exit function
     			else
     				'' error recovery: fake correct param
-    				param_dtype += FB_DATATYPE_POINTER
+    				param_dtype = typeAddrOf( param_dtype )
     			end if
     		end if
     	end if

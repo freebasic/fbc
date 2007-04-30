@@ -205,7 +205,7 @@ function astNewCONSTz _
     	function = astNewCONSTwstr( NULL )
 
     case FB_DATATYPE_STRUCT
-    	function = astNewCONST( NULL, FB_DATATYPE_POINTER + dtype, subtype )
+    	function = astNewCONST( NULL, typeAddrOf( dtype ), subtype )
 
     case else
     	if( dtype = INVALID ) then

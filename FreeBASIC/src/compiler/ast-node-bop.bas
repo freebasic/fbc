@@ -576,7 +576,7 @@ private function hCheckPointer _
     case AST_OP_ADD, AST_OP_SUB
 
     	'' another pointer?
-    	if( typeIsPOINTER( dtype ) ) then
+    	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
     		return FALSE
     	end if
 
@@ -621,19 +621,19 @@ private function hDoPointerArith _
     end if
 
     '' calc len( *p )
-    lgt = symbCalcLen( astGetDataType( p ) - FB_DATATYPE_POINTER, astGetSubType( p ) )
+    lgt = symbCalcLen( typeDeref( astGetDataType( p ) ), astGetSubType( p ) )
 
 	'' incomplete type?
 	if( lgt = 0 ) then
 		'' unless it's a void ptr.. pretend it's a byte ptr
-		if( astGetDataType( p ) <> FB_DATATYPE_POINTER + FB_DATATYPE_VOID ) then
+		if( astGetDataType( p ) <> typeSetType( FB_DATATYPE_VOID, 1 ) ) then
 			exit function
 		end if
 		lgt = 1
 	end if
 
     '' another pointer?
-    if( typeIsPOINTER( edtype ) ) then
+    if( typeGetDatatype( edtype ) = FB_DATATYPE_POINTER ) then
     	'' only allow if it's a subtraction
     	if( op = AST_OP_SUB ) then
     		'' types can't be different..
@@ -852,7 +852,7 @@ function astNewBOP _
 
 	''::::::
     '' pointers?
-    if( typeIsPOINTER( ldtype ) ) then
+    if( typeGetDatatype( ldtype ) = FB_DATATYPE_POINTER ) then
 		'' do arithmetics?
 		if( (options and AST_OPOPT_LPTRARITH) <> 0 ) then
     		return hDoPointerArith( op, l, r )
@@ -862,7 +862,7 @@ function astNewBOP _
     		end if
 		end if
 
-    elseif( typeIsPOINTER( rdtype ) ) then
+    elseif( typeGetDatatype( rdtype ) = FB_DATATYPE_POINTER ) then
 		'' do arithmetics?
 		if( (options and AST_OPOPT_RPTRARITH) <> 0 ) then
 			return hDoPointerArith( op, r, l )
@@ -1191,7 +1191,7 @@ function astNewBOP _
 
 				'' an ENUM or POINTER always has the precedence
 				if( (rdtype = FB_DATATYPE_ENUM) or _
-					(typeIsPOINTER( rdtype )) ) then
+					(typeGetDatatype( rdtype ) = FB_DATATYPE_POINTER) ) then
 					dtype = rdtype
 					subtype = r->subtype
 				else
@@ -1466,23 +1466,23 @@ function astNewSelfBOP _
 
 		dtype = astGetDataType( l )
 		subtype = astGetSubType( l )
-		tmp = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
+		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
 
 		'' tmp = @lvalue
-		ll = astNewASSIGN( astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _
+		ll = astNewASSIGN( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
 					   	   astNewADDROF( l ) )
 
 		'' *tmp = *tmp op expr
 		lr = astNewASSIGN( astNewDEREF( astNewVAR( tmp, _
 				   		   			   			   0, _
-				   		   			   			   FB_DATATYPE_POINTER + dtype, _
+				   		   			   			   typeAddrOf( dtype ), _
 				   		   			   			   subtype ),_
 				   		   			    dtype, _
 				   		   			    subtype ), _
 						   astNewBOP( op, _
 				   		   			  astNewDEREF( astNewVAR( tmp, _
 				   		   			   			  			  0, _
-				   		   			   			  			  FB_DATATYPE_POINTER + dtype, _
+				   		   			   			  			  typeAddrOf( dtype ), _
 				   		   			   			  			  subtype ), _
 				   		   			   			   dtype, _
 				   		   			   			   subtype ), _

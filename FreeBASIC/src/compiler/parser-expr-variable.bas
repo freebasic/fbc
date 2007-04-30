@@ -35,7 +35,7 @@ private function hCheckIndex _
 
 	'' if index isn't an integer, convert
 	if( (astGetDataType( expr ) = FB_DATATYPE_INTEGER) or (astGetDataType( expr ) = FB_DATATYPE_INTEGER) ) then
-	elseif( typeIsPOINTER( astGetDataType( expr ) ) ) then
+	elseif( typeGetDatatype( astGetDataType( expr ) ) = FB_DATATYPE_POINTER ) then
 		if( errReport( FB_ERRMSG_INVALIDARRAYINDEX, TRUE ) = FALSE ) then
 			exit function
 		else
@@ -395,7 +395,7 @@ function cMemberAccess _
 		'' it's a proc call, but was it originally returning an UDT?
 		if( astIsCALL( expr ) ) then
 			if( symbGetUDTRetType( astGetSubtype( expr ) ) <> _
-								FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
+								typeSetType( FB_DATATYPE_STRUCT, 1 ) ) then
 
 				'' it's returning the result in registers, move to a temp var
 				'' (note: if it's being returned in regs, there's no DTOR)
@@ -540,7 +540,7 @@ function cMemberDeref _
         	is_field = TRUE
 
 			dim as integer is_ovl = FALSE
-			if( dtype < FB_DATATYPE_POINTER ) then
+			if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
 				'' check op overloading
     			if( symb.globOpOvlTb(AST_OP_FLDDEREF).head = NULL ) then
 					if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
@@ -584,7 +584,7 @@ function cMemberDeref _
 
 			else
        			lexSkipToken( LEXCHECK_NOPERIOD )
-				typeStripPOINTER( dtype, subtype )
+				dtype = typeDeref( dtype )
 			end if
 
        		'' DREF*
@@ -633,7 +633,7 @@ function cMemberDeref _
 			end if
 
 			'' string, fixstr, w|zstring?
-			if( dtype < FB_DATATYPE_POINTER ) then
+			if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
 
 				select case dtype
 				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
@@ -651,14 +651,14 @@ function cMemberDeref _
 
 			else
 				'' times length
-				lgt = symbCalcLen( dtype - FB_DATATYPE_POINTER, subtype )
+				lgt = symbCalcLen( typeDeref( dtype ), subtype )
 
 				if( lgt = 0 ) then
 					if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
 						exit function
 					else
 						'' error recovery: fake a type
-						dtype = FB_DATATYPE_POINTER + FB_DATATYPE_BYTE
+						dtype = typeAddrOf( FB_DATATYPE_BYTE )
 						subtype = NULL
 						lgt = 1
 					end if
@@ -669,7 +669,7 @@ function cMemberDeref _
 								 	 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
 
 
-				typeStripPOINTER( dtype, subtype )
+				dtype = typeDeref( dtype )
 			end if
 
 			'' '.'?
@@ -691,7 +691,7 @@ function cMemberDeref _
 				exit function
 			else
 				'' error recovery: fake a type
-				dtype = FB_DATATYPE_POINTER + FB_DATATYPE_BYTE
+				dtype = typeAddrOf( FB_DATATYPE_BYTE )
 				subtype = NULL
 			end if
 
@@ -834,7 +834,7 @@ function cFuncPtrOrMemberDeref _
 
    		'' check for functions called through pointers
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
+   			if( dtype = typeAddrOf( FB_DATATYPE_FUNCTION ) ) then
 				isfuncptr = TRUE
    			end if
    		end if
@@ -1445,7 +1445,7 @@ function cVariableEx _
 
     		else
    				'' check if calling functions through pointers
-   				is_funcptr = (dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION)
+   				is_funcptr = (dtype = typeAddrOf( FB_DATATYPE_FUNCTION ))
 
     			'' using (...) with scalars?
     			if( (is_array = FALSE) and (is_funcptr = FALSE) ) then
@@ -1523,7 +1523,7 @@ function cVariableEx _
    				if( method_sym = NULL ) then
    					'' check if calling functions through pointers
    					if( lexGetToken( ) = CHAR_LPRNT ) then
-   						is_funcptr = (dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION)
+   						is_funcptr = (dtype = typeAddrOf( FB_DATATYPE_FUNCTION ))
    					end if
    				end if
 			end if
@@ -1533,7 +1533,7 @@ function cVariableEx _
 	'' AST will handle descriptor pointers
 	if( is_byref ) then
 		'' byref or import? by now it's a pointer var, the real type will be set bellow
-		varexpr = astNewVAR( sym, 0, FB_DATATYPE_POINTER + dtype, subtype )
+		varexpr = astNewVAR( sym, 0, typeAddrOf( dtype ), subtype )
 	else
 		varexpr = astNewVAR( sym, 0, dtype, subtype )
 	end if
@@ -1605,7 +1605,7 @@ function cWithVariable _
    	varexpr = astNewVAR( sym, 0, dtype, subtype )
 
    	'' UdtMember
-   	typeStripPOINTER( dtype, subtype )
+   	dtype = typeDeref( dtype )
 
     '' '.'
     lexSkipToken( LEXCHECK_NOPERIOD )
@@ -1661,7 +1661,7 @@ function cWithVariable _
 	else
    		'' check if calling functions through pointers
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			isfuncptr = (dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION)
+   			isfuncptr = (dtype = typeAddrOf( FB_DATATYPE_FUNCTION ))
    		end if
 	end if
 
@@ -1769,7 +1769,7 @@ function cDataMember _
 	end if
 
    	'' build this.field
-   	varexpr = astNewVAR( this_, 0, FB_DATATYPE_POINTER + FB_DATATYPE_VOID, NULL )
+   	varexpr = astNewVAR( this_, 0, typeSetType( FB_DATATYPE_VOID, 1 ), NULL )
 
 	if( fldexpr <> NULL ) then
 		varexpr = astNewBOP( AST_OP_ADD, varexpr, fldexpr )
@@ -1797,7 +1797,7 @@ function cDataMember _
 	else
    		'' check if calling functions through pointers
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			isfuncptr = (dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION)
+   			isfuncptr = (dtype = typeAddrOf( FB_DATATYPE_FUNCTION ))
    		end if
 	end if
 
@@ -1863,7 +1863,7 @@ function cVarOrDerefEx _
 			'' allow addresses?
 			if( allow_addrof ) then
 				'' not a pointer? (@foo[bar] will be converted to foo + bar)
-				if( astGetDataType( expr ) < FB_DATATYPE_POINTER ) then
+				if( typeGetDatatype( astGetDataType( expr ) ) <> FB_DATATYPE_POINTER ) then
 					hInvalidType( )
 					return NULL
 				end if

@@ -93,8 +93,8 @@ private sub hFixForwardRef _
 		p = n->prev
 
 		ref = n->ref
-
-		symbGetType( ref ) = dtype + (symbGetPtrCnt( ref ) * FB_DATATYPE_POINTER)
+		
+		symbGetType( ref ) = typeSetType( dtype, symbGetPtrCnt( ref ) )
 		symbGetSubtype( ref ) = sym
 		symbGetPtrCnt( ref ) = ptrcnt
 		ref->lgt = symbCalcLen( symbGetType( ref ), sym )

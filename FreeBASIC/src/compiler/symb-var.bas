@@ -125,14 +125,14 @@ private function hCreateDescType _
 	symbAddField( sym, _
 				  NULL, _
 				  0, dTB(), _
-				  FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
+				  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 1, _
 				  FB_POINTERSIZE, 0 )
 
 	'' ptr			as any ptr
 	symbAddField( sym, _
 				  NULL, _
 				  0, dTB(), _
-				  FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
+				  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 1, _
 				  FB_POINTERSIZE, 0 )
 
     '' size			as integer

@@ -417,7 +417,7 @@ function symbAddField _
 	end select
 	
 	'' check pointers
-	if( typeIsPOINTER( dtype ) ) then
+	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
 		base_parent->udt.options or= FB_UDTOPT_HASPTRFIELD
 	end if
 
@@ -550,7 +550,7 @@ private function hGetReturnType _
 	'' udt has a dtor, copy-ctor or virtual methods? it's never
 	'' returned in registers
 	if( symbIsTrivial( sym ) = FALSE ) then
-		return FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT
+		return typeAddrOf( FB_DATATYPE_STRUCT )
 	end if
 
 	'' use the un-padded UDT len
@@ -631,7 +631,7 @@ private function hGetReturnType _
 	end select
 
 	'' if nothing matched, it's the pointer that was passed as the 1st arg
-	function = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT
+	function = typeAddrOf( FB_DATATYPE_STRUCT )
 
 end function
 

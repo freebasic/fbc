@@ -122,7 +122,7 @@ function cSymbolTypeFuncPtr _
     			exit function
 			else
 				'' error recovery: fake a type
-				dtype += FB_DATATYPE_POINTER
+				dtype = typeAddrOf( dtype )
 				subtype = NULL
 				ptrcnt = 1
 			end if
@@ -233,10 +233,13 @@ function cTypeOf _
 
 		'' byref args have a deref, 
 		'' but they maintain their type
-		if( typeIsPOINTER( dtype ) ) then
+		if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
 			if( derefs > 0 ) then
 				'' balance it
-				dtype  -= (FB_DATATYPE_POINTER * derefs)
+				dim as integer do_deref=any
+				for do_deref = 0 to derefs-1
+					dtype = typeDeref( dtype )
+				next
 				ptrcnt -= (derefs)
 			end if
 		end if
@@ -401,7 +404,7 @@ function cSymbolType _
 		    isfunction = (lexGetToken( ) = FB_TK_FUNCTION)
 		    lexSkipToken( )
 	
-			dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION
+			dtype = typeAddrOf( FB_DATATYPE_FUNCTION )
 			lgt = FB_POINTERSIZE
 			ptrcnt = 1
 	
@@ -565,7 +568,7 @@ exit_search:
 			select case lexGetToken( )
 			case FB_TK_PTR, FB_TK_POINTER
 				lexSkipToken( )
-				dtype += FB_DATATYPE_POINTER
+				dtype = typeAddrOf( dtype )
 				ptrcnt += 1
 			case else
 				exit do
@@ -585,7 +588,7 @@ exit_search:
 					exit function
 				else
 					'' error recovery: fake a type
-					dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
+					dtype = typeSetType( FB_DATATYPE_VOID, 1 )
 					subtype = NULL
 					ptrcnt = 1
 				end if
@@ -600,7 +603,7 @@ exit_search:
 						exit function
 					else
 						'' error recovery: make pointer
-						dtype += FB_DATATYPE_POINTER
+						dtype = typeAddrOf( dtype )
 						lgt = FB_POINTERSIZE
 					end if
 

@@ -56,7 +56,7 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
     end if
 
     '' create a temporary pointer
-    dtype += FB_DATATYPE_POINTER
+    dtype = typeAddrOf( dtype )
     subtype = astGetSubType( expr )
 
     sym = symbAddTempVar( dtype, subtype )

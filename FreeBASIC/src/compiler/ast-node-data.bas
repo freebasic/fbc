@@ -319,7 +319,7 @@ private sub hCreateDataDesc _
 	symbAddField( ast.data.desc, _
 				  NULL, _
 				  0, dTB(), _
-				  FB_DATATYPE_POINTER + FB_DATATYPE_VOID, NULL, 0, _
+				  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 0, _
 				  FB_POINTERSIZE, 0 )
 
     ''

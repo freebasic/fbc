@@ -191,7 +191,7 @@ function astNewUOP _
 
 	'' pointer?
 	case else
-		if( typeIsPOINTER( dtype ) ) then
+		if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
     		'' only NOT allowed
     		if( op <> AST_OP_NOT ) then
     			exit function

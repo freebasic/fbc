@@ -86,7 +86,7 @@ private function hCallCtorList _
 
     cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
     label = symbAddLabel( NULL )
-    iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
+    iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
 
 	'' iter = @vector[0]
 	tree = astBuildVarAssign( iter, ptr_expr )
@@ -205,7 +205,7 @@ private function hNewOp _
 		tree = astNewLINK( tree, _
 						   astNewASSIGN( astNewDEREF( astNewVAR( ptr_sym, _
 						   									     0, _
-						   									     FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER, _
+						   									     typeSetType( FB_DATATYPE_INTEGER, 1 ), _
 						   									     NULL ), _
                                                       FB_DATATYPE_INTEGER, _
                                                       NULL ), _
@@ -218,13 +218,13 @@ private function hNewOp _
 						   astNewSelfBOP( AST_OP_ADD_SELF, _
 						   	  			  astNewVAR( ptr_sym, _
 						   	  			 			 0, _
-						   	  			 			 FB_DATATYPE_POINTER+FB_DATATYPE_VOID, _
+						   	  			 			 typeSetType( FB_DATATYPE_VOID, 1 ), _
 						   	  			 			 NULL ), _
             			   	  			  astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_INTEGER ), _
             			   	  			  NULL ) )
 
 		astDelTree( ptr_expr )
-		ptr_expr = astNewVAR( ptr_sym, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL )
+		ptr_expr = astNewVAR( ptr_sym, 0, typeSetType( FB_DATATYPE_VOID, 1 ), NULL )
 
     else
 		'' ptr = new( len )
@@ -303,14 +303,14 @@ private function hCallDtorList _
 
     cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
     label = symbAddLabel( NULL )
-    iter = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
+    iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
     elmts = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
 
 	'' DELETE[]'s counter is at: cast(integer ptr, vector)[-1]
 
 	'' elmts = cast(integer ptr, vector)[-1]
 	expr = astNewDEREF( astNewBOP( AST_OP_ADD, _
-					  			   astNewCONV( FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER, _
+					  			   astNewCONV( typeSetType( FB_DATATYPE_INTEGER, 1 ), _
 							 			 	   NULL, _
 							 			 	   astCloneTree( ptr_expr ) ), _
 					  			   astNewCONSTi( -FB_INTEGERSIZE, FB_DATATYPE_INTEGER ) ), _

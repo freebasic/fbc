@@ -103,7 +103,7 @@ function irGetVRDataClass _
 
 	dtype = vreg->dtype
 
-	if( typeIsPOINTER( dtype ) ) then
+	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
 		dtype = FB_DATATYPE_POINTER
 	end if
 
@@ -121,7 +121,7 @@ function irGetVRDataSize _
 
 	dtype = vreg->dtype
 
-	if( typeIsPOINTER( dtype ) ) then
+	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
 		dtype = FB_DATATYPE_POINTER
 	end if
 

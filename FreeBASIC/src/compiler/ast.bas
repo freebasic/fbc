@@ -1059,23 +1059,23 @@ function astRemSideFx _
 	case FB_DATATYPE_STRUCT, _ ' FB_DATATYPE_CLASS
 		 FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
-		tmp = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, FALSE, FALSE )
+		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
 
 		'' tmp = @b
-		t = astNewASSIGN( astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _
+		t = astNewASSIGN( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
 				   	  	  astNewADDROF( n ) )
 
 		'' return *tmp
 		function = astNewLINK( t, _
 						   	   astNewDEREF( astNewVAR( tmp, _
 			   		   			   			  	 	   0, _
-			   		   			   			  	 	   FB_DATATYPE_POINTER + dtype, _
+			   		   			   			  	 	   typeAddrOf( dtype ), _
 			   		   			   			  	 	   subtype ),_
 			   		   			   	  	  	dtype, _
 			   		   			   	  	  	subtype ) )
 
 		'' repatch node
-		n = astNewDEREF( astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _
+		n = astNewDEREF( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
 			   		   	 dtype, _
 			   		   	 subtype )
 

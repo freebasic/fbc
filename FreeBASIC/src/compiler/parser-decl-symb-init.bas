@@ -56,7 +56,7 @@ private function hDoAssign _
 	subtype = symbGetSubtype( ctx.sym )
 
 	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		typeStripPOINTER( dtype, subtype )
+		dtype = typeDeref( dtype )
 	end if
 
     astBuildVAR( @lside, NULL, 0, dtype, symbGetSubtype( ctx.sym ) )
@@ -119,7 +119,7 @@ private function hElmInit _
 			dim as integer dtype = symbGetType( ctx.sym )
 			dim as FBSYMBOL ptr subtype = symbGetSubtype( ctx.sym )
 			if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-				typeStripPOINTER( dtype, subtype )
+				dtype = typeDeref( dtype )
 			end if
 			expr = astNewCONSTz( dtype )
 
@@ -207,7 +207,7 @@ private function hArrayInit _
 	dtype = symbGetType( ctx.sym )
 	subtype = symbGetSubtype( ctx.sym )
 	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		typeStripPOINTER( dtype, subtype )
+		dtype = typeDeref( dtype )
 	end if
 
 	'' for each array element..
@@ -371,7 +371,7 @@ private function hUDTInit _
 	dtype = symbGetType( ctx.sym )
 	subtype = symbGetSubtype( ctx.sym )
 	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		typeStripPOINTER( dtype, subtype )
+		dtype = typeDeref( dtype )
 	end if
 
 	''
@@ -506,7 +506,7 @@ function cInitializer _
 	dtype = symbGetType( sym )
 	subtype = symbGetSubtype( sym )
 	if( (options and FB_INIOPT_DODEREF) <> 0 ) then
-		typeStripPOINTER( dtype, subtype )
+		dtype = typeDeref( dtype )
 	end if
 
 	''

@@ -131,7 +131,7 @@ function symbCalcProcParamsLen _
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
     if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
-    	if( symbGetProcRealType( proc ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
+    	if( typeIsPtrTo( symbGetProcRealType( proc ), 1, FB_DATATYPE_STRUCT ) ) then
     		lgt += FB_POINTERSIZE
     	end if
     end if
@@ -245,7 +245,7 @@ private function hGetProcRealType _
     select case dtype
     '' string? it's actually a pointer to a string descriptor
     case FB_DATATYPE_STRING
-    	 return FB_DATATYPE_POINTER + FB_DATATYPE_STRING
+    	 return typeAddrOf( FB_DATATYPE_STRING )
 
     '' UDT? follow GCC 3.x's ABI
     case FB_DATATYPE_STRUCT
@@ -410,13 +410,13 @@ private function hAddOvlProc _
 				if( param->typ <> ovl_param->typ ) then
 					'' handle special cases: zstring ptr and string args
 					select case param->typ
-					case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
+					case typeSetType( FB_DATATYPE_CHAR, 1 )
 						if( ovl_param->typ <> FB_DATATYPE_STRING ) then
 							exit do
 						end if
 
 					case FB_DATATYPE_STRING
-						if( ovl_param->typ <> FB_DATATYPE_POINTER + FB_DATATYPE_CHAR ) then
+						if( typeIsPtrTo( ovl_param->typ, 1, FB_DATATYPE_CHAR ) = FALSE ) then
 							exit do
 						end if
 
@@ -1150,8 +1150,8 @@ function symbAddProcResultParam _
 		return NULL
 	end if
 
-	'' returning a ptr?
-	if( proc->proc.real_dtype <> FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
+	'' returns in a reg?
+	if( typeIsPtrTo( proc->proc.real_dtype, 1, FB_DATATYPE_STRUCT ) = FALSE ) then
 		return NULL
 	end if
 
@@ -1185,7 +1185,7 @@ function symbAddProcResult _
 	'' UDT?
 	if( proc->typ = FB_DATATYPE_STRUCT ) then
 		'' returning a ptr? result is at the hidden arg
-		if( proc->proc.real_dtype = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
+		if( typeIsPtrTo( proc->proc.real_dtype, 1, FB_DATATYPE_STRUCT ) ) then
 			return symbGetProcResult( proc )
 		end if
 	end if
@@ -1471,17 +1471,17 @@ private function hCalcTypesDiff _
 			select case as const arg_dtype
 			case FB_DATATYPE_CHAR
 				select case param_dtype
-				case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
+				case typeSetType( FB_DATATYPE_CHAR, 1 )
 					return FB_OVLPROC_FULLMATCH
-				case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
+				case typeSetType( FB_DATATYPE_WCHAR, 1 )
 					return FB_OVLPROC_HALFMATCH
 				end select
 
 			case FB_DATATYPE_WCHAR
 				select case param_dtype
-				case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
+				case typeSetType( FB_DATATYPE_WCHAR, 1 )
 					return FB_OVLPROC_FULLMATCH
-				case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
+				case typeSetType( FB_DATATYPE_CHAR, 1 )
 					return FB_OVLPROC_HALFMATCH
 				end select
 
@@ -1492,9 +1492,9 @@ private function hCalcTypesDiff _
 			end select
 
 			'' check pointers..
-			if( typeIsPOINTER( param_dtype ) ) then
+			if( typeGetDatatype( param_dtype ) = FB_DATATYPE_POINTER ) then
 				'' isn't arg a pointer too?
-				if( arg_dtype < FB_DATATYPE_POINTER ) then
+				if( typeGetDatatype( arg_dtype ) <> FB_DATATYPE_POINTER ) then
 					'' not an expression?
 					if( arg_expr = NULL ) then
 						return 0
@@ -1525,13 +1525,13 @@ private function hCalcTypesDiff _
 				end if
 
 				'' param is an any ptr?
-				if( param_dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) then
+				if( typeIsPtrTo( param_dtype, 1, FB_DATATYPE_VOID ) ) then
 					'' as in g++, the arg indirection level shouldn't matter..
 					return FB_OVLPROC_FULLMATCH
 				end if
 
 				'' arg is an any ptr?
-				if( arg_dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) then
+				if( typeIsPtrTo( arg_dtype, 1, FB_DATATYPE_VOID ) ) then
 					'' not the same level of indirection?
 					if( param_ptrcnt > 1 ) then
 						return 0
@@ -1544,7 +1544,7 @@ private function hCalcTypesDiff _
 				return 0
 
 			'' param not a pointer, but is arg?
-			elseif( typeIsPOINTER( arg_dtype ) ) then
+			elseif( typeGetDatatype( arg_dtype ) = FB_DATATYPE_POINTER ) then
 				'' use an UINT instead or LONGINT will match if any..
 				arg_dtype = FB_DATATYPE_UINT
 			end if
@@ -1553,7 +1553,7 @@ private function hCalcTypesDiff _
 
 		'' float? (ok due the auto-coercion, unless it's a pointer)
 		case FB_DATACLASS_FPOINT
-			if( typeIsPOINTER( param_dtype ) ) then
+			if( typeGetDatatype( param_dtype ) = FB_DATATYPE_POINTER ) then
 				return 0
 			end if
 
@@ -1562,9 +1562,9 @@ private function hCalcTypesDiff _
 		'' string? only if it's a w|zstring ptr arg
 		case FB_DATACLASS_STRING
 			select case param_dtype
-			case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
+			case typeSetType( FB_DATATYPE_CHAR, 1 )
 				return FB_OVLPROC_FULLMATCH
-			case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
+			case typeSetType( FB_DATATYPE_WCHAR, 1 )
 				return FB_OVLPROC_HALFMATCH
 			case else
 				return 0
@@ -1581,7 +1581,7 @@ private function hCalcTypesDiff _
 		select case as const arg_dclass
 		'' only accept if it's an integer (but pointers)
 		case FB_DATACLASS_INTEGER
-			if( typeIsPOINTER( arg_dtype ) ) then
+			if( typeGetDatatype( arg_dtype ) = FB_DATATYPE_POINTER ) then
 				return 0
 			end if
 
@@ -1694,7 +1694,7 @@ private function hCheckOvlParam _
 			end if
 
 			'' pretend param is a pointer
-			param_dtype += FB_DATATYPE_POINTER
+			param_dtype = typeAddrOf( param_dtype )
 			param_ptrcnt += 1
 		end if
 	end select
@@ -1714,7 +1714,7 @@ private function hCheckOvlParam _
 		end if
 
 		'' pointer? check if valid (could be a NULL)
-		if( typeIsPOINTER( param_dtype ) ) then
+		if( typeGetDatatype( param_dtype ) = FB_DATATYPE_POINTER ) then
 			if( astPtrCheck( param_dtype, _
 				 			 param_subtype, _
 				 			 arg_expr ) ) then
@@ -2116,7 +2116,7 @@ private function hCheckCastOvl _
 			return FB_OVLPROC_FULLMATCH
 		end if
 
-		if( typeIsPOINTER( proc_dtype ) ) then
+		if( typeGetDatatype( proc_dtype ) = FB_DATATYPE_POINTER ) then
 			return 0
 		end if
 	end if

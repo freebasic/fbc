@@ -174,13 +174,13 @@ function cStrIdxOrMemberDeref _
 	end select
 
 	'' FuncPtrOrMemberDeref?
-	if( typeIsPOINTER( dtype ) ) then
+	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
 		dim as integer isfuncptr = FALSE, isfield = FALSE
 
 		select case lexGetToken( )
 		'' function ptr '(' ?
 		case CHAR_LPRNT
-			isfuncptr = ( dtype = FB_DATATYPE_POINTER+FB_DATATYPE_FUNCTION )
+			isfuncptr = typeIsPtrTo( dtype, 1, FB_DATATYPE_FUNCTION )
 			isfield = isfuncptr
 
 		'' ptr ('->' | '[') ?
@@ -319,7 +319,7 @@ private function hCast _
 			hSkipUntil( CHAR_COMMA )
 
 			if( ptronly ) then
-				dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID
+				dtype = typeSetType( FB_DATATYPE_VOID, 1 )
 			else
 				dtype = FB_DATATYPE_INTEGER
 			end if
@@ -335,7 +335,7 @@ private function hCast _
 		else
 			'' error recovery: create a fake type
 			if( ptronly ) then
-				dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID
+				dtype = typeSetType( FB_DATATYPE_VOID, 1 )
 			else
 				dtype = FB_DATATYPE_INTEGER
 			end if
@@ -343,7 +343,7 @@ private function hCast _
 		end if
 	end select
 
-	if( typeIsPOINTER( dtype ) ) then
+	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
 		ptronly = TRUE
 	end if
 
@@ -793,7 +793,7 @@ function cAddrOfExpression _
 
 		'' anything else: do cast( zstring ptr, @expr )
 		else
-			expr = astNewCONV( FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
+			expr = astNewCONV( typeSetType( FB_DATATYPE_CHAR, 1 ), _
 							   NULL, _
 							   astNewADDROF( expr ) )
 		end if

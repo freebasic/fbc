@@ -37,7 +37,7 @@
 	 		1, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -69,7 +69,7 @@
 	 		2, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_PARAMMODE_BYVAL, FALSE _
+	 				typeSetType( FB_DATATYPE_WCHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
@@ -168,7 +168,7 @@
 	 		1, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYREF, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -302,7 +302,7 @@ function rtlDataRead _
 		exit function						'' illegal
 
 	case else
-		if( typeIsPOINTER( dtype ) ) then
+		if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
 			f = PROCLOOKUP( DATAREADPTR )
 		else
 			exit function

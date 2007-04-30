@@ -540,11 +540,28 @@ declare function fbObjInfoReadLib _
 '' macros
 ''
 
-#define typeIsPOINTER(d) (d >= FB_DATATYPE_POINTER)
-'' #define typeIsPOINTER(d) (d = FB_DATATYPE_POINTER)
-#define typeStripPOINTER(d,s) d -= FB_DATATYPE_POINTER
-'' #define typeStripPOINTER(d,s) d = s->ptr->typ: s = s->ptr->subtype
+'' datatype accessors/manipulators
+#define typeGetDatatype(dt)     (iif(dt >= FB_DATATYPE_POINTER, FB_DATATYPE_POINTER, dt)) '' dt
+#define typeSetType(typ,ptrcnt) (ptrcnt * FB_DATATYPE_POINTER + typ) '' FB_DATATYPE_POINTER
+#define typeAddrOf(dt)          (dt + FB_DATATYPE_POINTER) '' FB_DATATYPE_POINTER
 
+#macro typeDeref(dt/', somewhere'/) ''type/ptr info has to come from somewhere besides dtype
+	iif(dt >= FB_DATATYPE_POINTER, dt-FB_DATATYPE_POINTER, INVALID)
+#endmacro
+#macro typeGetPtrCnt(dt/', somewhere'/) ''ditto
+	(dt \ FB_DATATYPE_POINTER)
+#endmacro
+#macro typeGetPtrType(dt/', somewhere'/) ''ditto
+	(iif(dt >= FB_DATATYPE_POINTER, dt Mod FB_DATATYPE_POINTER, dt))
+#endmacro
+
+#macro typeIsPtrTo(dt, ptrcnt, np)
+	iif( typeGetDatatype( dt ) = FB_DATATYPE_POINTER, _ 
+	     iif( typeGetPtrCnt( dt ) = ptrcnt, _ 
+	          iif( typeGetPtrType( dt ) = np, _ 
+	               TRUE, _ 
+	               FALSE ), FALSE ), FALSE )
+#endmacro
 
 #define fbLangOptIsSet( opt ) ((env.langopt and (opt)) <> 0)
 

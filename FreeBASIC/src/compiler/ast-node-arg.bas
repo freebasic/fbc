@@ -155,16 +155,16 @@ private function hAllocTmpWstrPtr _
 	dim as AST_TMPSTRLIST_ITEM ptr t = any
 
 	'' create temp wstring ptr to pass as parameter
-	t = hTmpStrListAdd( parent, NULL, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FALSE )
+	t = hTmpStrListAdd( parent, NULL, typeSetType( FB_DATATYPE_WCHAR, 1 ), FALSE )
 
 	'' evil hack: a function returning a "wstring" is actually returning a pointer,
 	'' but NewAssign() shouldn't copy the string, just the pointer
-	astSetType( n, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, NULL )
+	astSetType( n, typeSetType( FB_DATATYPE_WCHAR, 1 ), NULL )
 
 	'' temp string = src string
 	return astNewASSIGN( astNewVAR( t->sym, _
 									0, _
-									FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, _
+									typeSetType( FB_DATATYPE_WCHAR, 1 ), _
 									NULL, _
 									TRUE ), _
 						 n )
@@ -344,7 +344,7 @@ private function hStrArgToStrPtrParam _
         '' fixed-len..
         else
             '' get the address of
-			n->l = astNewCONV( FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
+			n->l = astNewCONV( typeSetType( FB_DATATYPE_CHAR, 1 ), _
     					   	   NULL, _
 						   	   astNewADDROF( n->l ) )
 		end if
@@ -493,7 +493,7 @@ private function hCheckByDescParam _
 			'' it's a pointer, but it will be seen as anything else
 			'' (ie: "array() as string"), so, remap the type
   			astDelTree( arg )
-			n->l = astNewVAR( s, 0, FB_DATATYPE_POINTER + FB_DATATYPE_VOID )
+			n->l = astNewVAR( s, 0, typeSetType( FB_DATATYPE_VOID, 1 ) )
         	return TRUE
         end if
 		
@@ -679,7 +679,7 @@ private sub hUDTPassByval _
 		'' not returned in registers?
 		dim as integer is_udt = TRUE
 		if( astIsCALL( arg ) ) then
-			is_udt = symbGetUDTRetType( subtype ) = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT
+			is_udt = typeIsPtrTo( symbGetUDTRetType( subtype ), 1, FB_DATATYPE_STRUCT )
 		end if
 
 		'' udt? push byte by byte to stack
@@ -809,7 +809,7 @@ private function hCheckUDTParam _
 		'' it's a proc call, but was it originally returning an UDT?
     	if( astIsCALL( arg ) ) then
 			if( symbGetUDTRetType( arg->subtype ) <> _
-									FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
+									typeSetType( FB_DATATYPE_STRUCT, 1 ) ) then
 
 				'' create a temporary UDT and pass it..
 				dim as FBSYMBOL ptr tmp = any
@@ -931,14 +931,14 @@ private function hCheckParam _
 
 		select case symbGetType( param )
 		'' zstring ptr param?
-		case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
+		case typeSetType( FB_DATATYPE_CHAR, 1 )
 			'' if it's a wstring param, convert..
 			if( arg->dtype = FB_DATATYPE_WCHAR ) then
 				n->l = rtlToStr( arg )
 			end if
 
 		'' wstring ptr?
-		case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
+		case typeSetType( FB_DATATYPE_WCHAR, 1 )
 			'' if it's not a wstring param, convert..
 			if( arg->dtype <> FB_DATATYPE_WCHAR ) then
 				n->l = rtlToWstr( arg )
@@ -1013,16 +1013,16 @@ private function hCheckParam _
 	end if
 
 	'' pointer checking
-	if( typeIsPOINTER( param_dtype ) ) then
+	if( typeGetDatatype( param_dtype ) = FB_DATATYPE_POINTER ) then
 		if( astPtrCheck( param_dtype, symbGetSubtype( param ), arg ) = FALSE ) then
-			if( arg->dtype < FB_DATATYPE_POINTER ) then
+			if( typeGetDatatype( arg->dtype ) <> FB_DATATYPE_POINTER ) then
 				hParamWarning( parent, FB_WARNINGMSG_PASSINGSCALARASPTR )
 			else
 				hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 			end if
 		end if
 
-    elseif( typeIsPOINTER( arg->dtype ) ) then
+    elseif( typeGetDatatype( arg->dtype ) = FB_DATATYPE_POINTER ) then
     	hParamWarning( parent, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
 	end if
 

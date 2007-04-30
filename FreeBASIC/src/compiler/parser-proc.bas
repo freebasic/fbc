@@ -271,7 +271,7 @@ private function hCheckRetType _
     		exit function
     	else
     		'' error recovery: fake a type
-    		dtype += FB_DATATYPE_POINTER
+    		dtype = typeAddrOf( dtype )
     		subtype = NULL
     		ptrcnt = 1
     	end if
@@ -971,7 +971,7 @@ private function hCheckOpOvlParams _
 				'' must be an integer
 				if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
 					dim as integer is_integer = TRUE
-					if( typeIsPOINTER( symbGetType( param ) ) ) then
+					if( typeGetDatatype( symbGetType( param ) ) = FB_DATATYPE_POINTER ) then
 						is_integer = FALSE
 					end if
 					select case symbGetType( param )
@@ -990,7 +990,7 @@ private function hCheckOpOvlParams _
 			case else
 				'' must be a pointer
 				if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
-					if( symbGetType( param ) < FB_DATATYPE_POINTER ) then
+					if( typeGetDatatype( symbGetType( param ) ) <> FB_DATATYPE_POINTER ) then
 						hParamError( proc, 1, FB_ERRMSG_PARAMMUSTBEAPOINTER )
 						exit function
 					end if
@@ -1076,7 +1076,7 @@ private function hCheckOpOvlParams _
 		select case op
 		case AST_OP_ADDROF
 			'' return type must be a pointer
-			if( symbGetType( proc ) < FB_DATATYPE_POINTER ) then
+			if( typeGetDatatype( symbGetType( proc ) ) <> FB_DATATYPE_POINTER ) then
 				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 				exit function
 			end if
@@ -1097,7 +1097,7 @@ private function hCheckOpOvlParams _
 		select case op
 		case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF
 			'' should return a pointer
-			if( symbGetType( proc ) < FB_DATATYPE_POINTER ) then
+			if( typeGetDatatype( symbGetType( proc ) ) <> FB_DATATYPE_POINTER ) then
 				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 				exit function
 			end if

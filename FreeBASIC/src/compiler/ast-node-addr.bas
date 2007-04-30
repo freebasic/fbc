@@ -40,7 +40,7 @@ function astNewOFFSET _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_OFFSET, _
-					FB_DATATYPE_POINTER + l->dtype, _
+					typeSetType( l->dtype, 1 ), _
 					l->subtype )
 
 	if( n = NULL ) then
@@ -285,7 +285,7 @@ function astNewADDROF _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ADDROF, _
-					FB_DATATYPE_POINTER + dtype, _
+					typeSetType( dtype, 1 ), _
 					subtype )
 	if( n = NULL ) then
 		return NULL

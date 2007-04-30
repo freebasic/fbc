@@ -565,8 +565,7 @@ function symbNewSymbol _
 	symtb->tail = s
 
 	'' forward type? add to the back-patch list..
-	dtype -= ptrcnt * FB_DATATYPE_POINTER
-	if( dtype = FB_DATATYPE_FWDREF ) then
+	if( typeGetPtrType( dtype ) = FB_DATATYPE_FWDREF ) then
 		symbAddToFwdRef( subtype, s )
 	end if
 
@@ -1658,13 +1657,14 @@ end function
 function symbTypeToStr _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval lgt as integer _
 	) as zstring ptr
 
 	static as string res
 	dim as integer dtype_np = any
 
-	dtype_np = dtype mod FB_DATATYPE_POINTER
+	dtype_np = typeGetPtrType( dtype ) 
 
 	select case as const dtype_np
 	case FB_DATATYPE_FWDREF, FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
@@ -1672,11 +1672,16 @@ function symbTypeToStr _
 
 	case else
 		res = *symb_dtypeTB(dtype_np).name
+		if( dtype_np = FB_DATATYPE_FIXSTR ) then
+			if( lgt > 0 ) then
+				res += " " + str(lgt-1)
+			end if
+		end if
 	end select
-
-	do while( typeIsPOINTER( dtype ) )
+	
+	do while( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER )
 		res += " ptr"
-		typeStripPOINTER( dtype, subtype )
+		dtype = typeDeref( dtype )
 	loop
 
 	function = strptr( res )
@@ -1787,7 +1792,7 @@ function symbCalcLen _
 		function = subtype->lgt
 
 	case else
-		if( typeIsPOINTER( dtype ) ) then
+		if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
 			function = FB_POINTERSIZE
 		else
 			function = 0

@@ -142,7 +142,7 @@ function cOperatorNew _
 	end if
 
 	'' temp pointer
-	tmp = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype, , FALSE )
+	tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, , FALSE )
 
 	'' Constructor?
 	dim as ASTNODE ptr ctor_expr = NULL
@@ -235,7 +235,7 @@ function cOperatorNew _
 	expr = astNewMEM( op, _
 					  astNewVAR( tmp, _
 						  		 0, _
-						  		 FB_DATATYPE_POINTER + dtype, _
+						  		 typeAddrOf( dtype ), _
 						  		 subtype ), _
 					  elmts_expr, _
 					  ctor_expr, _
@@ -254,7 +254,7 @@ function cOperatorNew _
 	'' return the pointer
 	function = astNewVAR( tmp, _
 						  0, _
-						  FB_DATATYPE_POINTER + dtype, _
+						  typeAddrOf( dtype ), _
 						  subtype )
 
 end function
@@ -308,8 +308,9 @@ function cOperatorDelete _
 
 	dim as integer dtype = astGetDataType( ptr_expr )
 	dim as FBSYMBOL ptr subtype = astGetSubType( ptr_expr )
-
-	if( dtype < FB_DATATYPE_POINTER ) then
+    
+    '' not a ptr?
+	if( typeGetDatatype( dtype ) = FALSE ) then
        	if( errReport( FB_ERRMSG_EXPECTEDPOINTER ) = FALSE ) then
        		exit function
        	else
@@ -318,7 +319,7 @@ function cOperatorDelete _
        	end if
 	end if
 	
-	typeStripPOINTER( dtype, subtype )
+	dtype = typeDeref( dtype )
 	
 	'' check for ANY ptr
 	if( dtype = FB_DATATYPE_VOID ) then

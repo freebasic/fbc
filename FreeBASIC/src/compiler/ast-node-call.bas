@@ -55,8 +55,9 @@ private sub hAllocTempStruct _
 
 	'' follow GCC 3.x's ABI
 	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
+
 		'' not returned in registers?
-		if( symbGetProcRealType( sym ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
+		if( typeIsPtrTo( symbGetProcRealType( sym ), 1, FB_DATATYPE_STRUCT ) ) then
 
 			'' create a temp struct (can't be static, could be an object)
 			n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, _
@@ -165,9 +166,9 @@ private function hCallProc _
 	dtype = n->dtype
 
 	select case dtype
-	'' returning an string? it's actually a pointer to a string descriptor
+	'' returning a string? it's actually a pointer to a string descriptor
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-		dtype += FB_DATATYPE_POINTER
+		dtype = typeAddrOf( dtype )
 
 	'' UDT's can be returned in regs or as a pointer to the hidden param passed
 	case FB_DATATYPE_STRUCT
@@ -273,7 +274,9 @@ private sub hCheckTempStruct _
 
 	'' follow GCC 3.x's ABI
 	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-		if( symbGetProcRealType( sym ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
+		
+		'' not in a reg?
+		if( typeIsPtrTo( symbGetProcRealType( sym ), 1, FB_DATATYPE_STRUCT ) ) then
 
         	'' pass the address of the temp struct (it must be cleared if it
         	'' includes string fields)

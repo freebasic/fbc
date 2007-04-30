@@ -43,7 +43,7 @@ const fbdllreason = "__FB_DLLREASON__"
 
 	'' instance
 	symbAddProcParam( proc, "__FB_DLLINSTANCE__", _
-					  FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
+					  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 1, _
 					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
 					  INVALID, 0, NULL )
 
@@ -55,7 +55,7 @@ const fbdllreason = "__FB_DLLREASON__"
 
 	'' reserved
 	symbAddProcParam( proc, "__FB_DLLRESERVED__", _
-					  FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
+					  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 1, _
 					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, INVALID, 0, NULL )
 
 	'' function DllMain( byval instance as any ptr, byval reason as uinteger, _
@@ -91,7 +91,7 @@ const fbdllreason = "__FB_DLLREASON__"
 	''	main( 0, NULL )
     main = astNewCALL( env.main.proc )
     astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
-    astNewARG( main, astNewCONSTi( NULL, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) )
+    astNewARG( main, astNewCONSTi( NULL, typeSetType( FB_DATATYPE_VOID, 1 ) ) )
     astAdd( main )
 
 	'' end if
@@ -122,7 +122,7 @@ private sub hDllMainBegin_GlobCtor ( )
 	'' main( 0, NULL )
     main = astNewCALL( env.main.proc )
     astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
-    astNewARG( main, astNewCONSTi( NULL, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) )
+    astNewARG( main, astNewCONSTi( NULL, typeSetType( FB_DATATYPE_VOID, 1 ) ) )
     astAdd( main )
 
    	astProcEnd( procnode, FALSE )
@@ -165,7 +165,7 @@ const fbargv = "__FB_ARGV__"
 
 	'' argv
 	env.main.argv = symbAddProcParam( proc, fbargv, _
-					  				  FB_DATATYPE_POINTER+FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, NULL, 2, _
+					  				  typeSetType( FB_DATATYPE_CHAR, 2 ), NULL, 2, _
 					  				  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
 					  				  INVALID, 0, NULL )
 

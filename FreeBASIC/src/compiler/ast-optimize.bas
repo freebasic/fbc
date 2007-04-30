@@ -84,7 +84,7 @@ private sub hConvDataType _
 		byval to_dtype as integer _
 	)
 
-	if( typeIsPOINTER( to_dtype ) ) then
+	if( typeGetDatatype( to_dtype ) = FB_DATATYPE_POINTER ) then
 		to_dtype = FB_DATATYPE_POINTER
 	end if
 
@@ -127,7 +127,7 @@ private sub hConvDataType _
 
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 
-		if( typeIsPOINTER( vdtype ) ) then
+		if( typeGetDatatype( vdtype ) = FB_DATATYPE_POINTER ) then
 			vdtype = FB_DATATYPE_POINTER
 		end if
 
@@ -285,7 +285,7 @@ private function hPrepConst _
 	if( dtype = INVALID ) then
 		'' an ENUM or POINTER always has the precedence
 		if( (r->dtype = FB_DATATYPE_ENUM) or _
-			(typeIsPOINTER( r->dtype )) ) then
+			(typeGetDatatype( r->dtype ) = FB_DATATYPE_POINTER) ) then
 			return r->dtype
 		else
 			return v->dtype
@@ -599,7 +599,7 @@ private sub hOptConstAccum2 _
 			else
 				'' an ENUM or POINTER always have the precedence
 				if( (r->dtype = FB_DATATYPE_ENUM) or _
-					(typeIsPOINTER( r->dtype )) ) then
+					(typeGetDatatype( r->dtype ) = FB_DATATYPE_POINTER) ) then
 					n->dtype = r->dtype
 				else
 					n->dtype = l->dtype

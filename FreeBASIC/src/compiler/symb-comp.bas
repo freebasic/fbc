@@ -219,8 +219,8 @@ private sub hAssignList _
 
     cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL )
     label = symbAddLabel( NULL )
-    dst = symbAddTempVar( FB_DATATYPE_POINTER + symbGetType( fld ), subtype )
-    src = symbAddTempVar( FB_DATATYPE_POINTER + symbGetType( fld ), subtype )
+    dst = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
+    src = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
 
     '' dst = @this.dst(0)
     astAdd( astBuildVarAssign( dst, astNewADDROF( dstexpr ) ) )
