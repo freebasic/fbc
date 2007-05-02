@@ -135,7 +135,7 @@ private function processOptions _
 			dim as string d = ucase( mid( arg, 7 ) )
 			
 			if( ctx.exclist = NULL ) then
-				ctx.exclist = new CList( 4, len( excListNode ) )
+				ctx.exclist = new CList( 48, len( excListNode ) )
 			end if
 			
 			dim as excListNode ptr n = ctx.exclist->insert( )
@@ -146,6 +146,32 @@ private function processOptions _
 			return vbFalse
 		end select
 			
+	next
+	
+	dim as excListNode ptr n = any
+#if defined( TARGET_WIN32 )	
+	dim as string exclude_list(0)
+#elseif defined( TARGET_LINUX )	
+	dim as string exclude_list(9) => _
+	{ "caca", "cairo", "disphelper", "Windows", "win", _
+	  "bass.bi", "bassmod.bi", "jni.bi", "windows.bi" }
+#elseif defined( TARGET_DOS )
+	dim as string exclude_list(50) => _
+	{ "caca", "cairo", "cryptlib", "CUnit", "Curl", _ 
+	  "disphelper", "dll", "freetype", "GL", "GMP", _ 
+	  "GSL", "Gtk", "IUP", "libxml", "mini", _ 
+	  "networking", "sound", "SDL", "spidermonkey", "unicode", _ 
+	  "Windows", "wx-c", "al", "fastcgi", "freetype2", _
+	  "gdsl", "IL", "libxslt", "postgresql", "win", _
+	  "bass.bi", "bassmod.bi", "caca.bi", "cryptlib.bi", "curl.bi", _
+	  "expat.bi", "fmod.bi", "FreeImage.bi", "giflib.bi", "gmp.bi", _
+	  "japi.bi", "jni.bi", "jpeglib.bi", "jpgalleg.bi", "mini.bi", _
+	  "mxml.bi", "Newton.bi", "pdflib.bi", "png.bi", "windows.bi" }
+#endif
+	for i as integer = 0 to ubound(exclude_list)-1
+		n = ctx.exclist->insert( )
+		exclude_list(i) = ucase(exclude_list(i))
+		n->name = zStr.dup( exclude_list(i) )
 	next
 	
 	if( datser = 0 ) then

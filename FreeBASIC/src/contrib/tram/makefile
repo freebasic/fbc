@@ -18,8 +18,15 @@ LIBS :=
 
 ifeq ($(TARGET),linux)
 	EXEEXT :=
-else
+	GLOB_DEF := -d TARGET_LINUX
+endif
+ifeq ($(TARGET),dos)
 	EXEEXT := .exe
+	GLOB_DEF := -d TARGET_DOS
+endif
+ifeq ($(TARGET),win32)
+	EXEEXT := .exe
+	GLOB_DEF := -d TARGET_WIN32
 endif
 
 FBC := fbc
@@ -38,7 +45,7 @@ VPATH = .
 APP = $(MAIN)$(EXEEXT)
 
 $(objpath)/%.o : %.bas
-	$(FBC) $(FBCFLAGS) -m $(MAIN) -c $< -o $@
+	$(FBC) $(FBCFLAGS) -m $(MAIN) -c $< -o $@ $(GLOB_DEF)
 
 ##########################
 
