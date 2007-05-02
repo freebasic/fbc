@@ -18,24 +18,12 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-'' !!!REMOVEME!!! this is not needed when the next 0.17 testing is released for all platforms
-#ifndef __FB_LANG__
-option explicit
-option escape
-# define QUOTE "\""
-# define NEWLINE "\r\n"
-# define RSLASH "\\"
-# define TABCHAR "\t"
-# define ESCCHAR "\27"
-# define LFCHAR "\n"
-#else
-# define QUOTE !"\""
-# define NEWLINE !"\r\n"
-# define RSLASH !"\\"
-# define TABCHAR !"\t"
-# define ESCCHAR !"\27"
-# define LFCHAR !"\n"
-#endif
+#define QUOTE !"\""
+#define NEWLINE !"\r\n"
+#define RSLASH !"\\"
+#define TABCHAR !"\t"
+#define ESCCHAR !"\27"
+#define LFCHAR !"\n"
 
 #include once "inc\list.bi"
 #include once "inc\hash.bi"
@@ -84,7 +72,7 @@ const INVALID               = -1
 
 ''
 const FB_VER_MAJOR          = 0
-const FB_VER_MINOR          = 17
+const FB_VER_MINOR          = 18
 const FB_VER_PATCH          = 0
 const FB_VERSION            = str( FB_VER_MAJOR ) + "." + str( FB_VER_MINOR )
 const FB_BUILD_DATE         = __DATE__
