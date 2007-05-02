@@ -5,12 +5,6 @@
 #ifndef __dj_include_dir_h_
 #define __dj_include_dir_h_
 
-' !!!hack!!! - DrV
-type ulonglong field = 4
-	a as uinteger
-	b as uinteger
-end type
-
 ' ffblk is also enhanced for LFNs; the dos 21 byte reserved area is used to
 ' hold the extra information.  Fields marked LFN are only valid if the magic
 ' is set to LFN32
@@ -32,12 +26,12 @@ end type
 
 type ffblklfn field = 1
 	fd_attrib		as uinteger
-	fd_ctime		as ulonglong
-	fd_atime		as ulonglong
-	fd_mtime		as ulonglong
+	fd_ctime		as ulongint
+	fd_atime		as ulongint
+	fd_mtime		as ulongint
 	fd_sizehi		as uinteger
 	fd_size			as uinteger
-	fd_reserved		as ulonglong
+	fd_reserved		as ulongint
 	fd_longname(259)	as byte
 	fd_name(13)		as byte
 end type
@@ -63,7 +57,7 @@ end type
 #define DIRECTORY &H08
 #define DRIVE	  &H10
 
-declare function	file_tree_walk	cdecl alias "__file_tree_walk"	(byval dir as zstring ptr, byval fn as function(byval path as zstring ptr, byval ff as ffblk ptr) as integer) as integer
+declare function	__file_tree_walk	cdecl alias "__file_tree_walk"	(byval dir as zstring ptr, byval fn as function(byval path as zstring ptr, byval ff as ffblk ptr) as integer) as integer
 declare function	findfirst	cdecl alias "findfirst"		(byval pathname as zstring ptr, byval ffblk_ as ffblk ptr, byval attrib as integer) as integer
 declare function	findnext	cdecl alias "findnext"		(byval ffblk_ as ffblk ptr) as integer
 declare function	fnmerge		cdecl alias "fnmerge"		(byval spath as zstring ptr, byval sdrive as zstring ptr, byval sdir as zstring ptr, byval sname as zstring ptr, byval ext as zstring ptr) as integer
