@@ -93,7 +93,8 @@ private function processOptions _
 	ctx.output = "zip.zip"
 	ctx.exclist = NULL
 	ctx.serial = 0
-
+	ctx.exclist = new CList( 48, len( excListNode ) )
+	
 	for i = 1 to argc-1
 		arg = *argv[i]
 		select case left( arg, 6 )
@@ -134,10 +135,6 @@ private function processOptions _
 		case "-excl="
 			dim as string d = ucase( mid( arg, 7 ) )
 			
-			if( ctx.exclist = NULL ) then
-				ctx.exclist = new CList( 48, len( excListNode ) )
-			end if
-			
 			dim as excListNode ptr n = ctx.exclist->insert( )
 			
 			n->name = zStr.dup( d )
@@ -166,7 +163,8 @@ private function processOptions _
 	  "bass.bi", "bassmod.bi", "caca.bi", "cryptlib.bi", "curl.bi", _
 	  "expat.bi", "fmod.bi", "FreeImage.bi", "giflib.bi", "gmp.bi", _
 	  "japi.bi", "jni.bi", "jpeglib.bi", "jpgalleg.bi", "mini.bi", _
-	  "mxml.bi", "Newton.bi", "pdflib.bi", "png.bi", "windows.bi" }
+	  "mxml.bi", "Newton.bi", "pdflib.bi", "png.bi", "windows.bi", _
+	  "gif_read.bas", "jpeg_read.bas", "png_read.bas" }
 #endif
 	for i as integer = 0 to ubound(exclude_list)-1
 		n = ctx.exclist->insert( )
@@ -291,7 +289,7 @@ private function topDir_cb _
 	) as integer
 	
 	'' don't include the CVS meta-data
-	if( *fname = "CVS" ) then
+	if( ucase( *fname ) = "CVS" ) then
 		return FALSE
 	end if
 
