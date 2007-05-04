@@ -356,7 +356,7 @@ private function hStepExpression _
 
 			function = astNewBOP( AST_OP_MUL, _
 			                      astNewVAR( rhs->sym, 0, FB_DATATYPE_INTEGER ), _
-			                      astNewCONSTi( symbCalcLen( typeGetPtrType( lhs_dtype ), _
+			                      astNewCONSTi( symbCalcLen( typeDeref( lhs_dtype ), _
 			                                                 lhs_subtype, _
 			                                                 FALSE ), _
 			                                    FB_DATATYPE_UINT ) )
@@ -369,7 +369,7 @@ private function hStepExpression _
 			'' taking the STEP value, and multiplying it by
 			'' the width of the counter type.
 
-			function = astNewCONSTi( rhs->value.int * symbCalcLen( typeGetPtrType( lhs_dtype ), _
+			function = astNewCONSTi( rhs->value.int * symbCalcLen( typeDeref( lhs_dtype ), _
 			                                                       lhs_subtype, _
 			                                                       FALSE ), _
 			                         FB_DATATYPE_INTEGER )
