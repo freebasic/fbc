@@ -12,13 +12,13 @@ sub test1 cdecl
 #include "inc1.bi"
   CU_ASSERT_EQUAL( inc_counter1, 2 )
 
-#include once "inc1.bi"
+#include once "../pp/inc1.bi"
   CU_ASSERT_EQUAL( inc_counter1, 2 )
 
-#include once "inc1.bi"
+#include once "../pp/inc1.bi"
   CU_ASSERT_EQUAL( inc_counter1, 2 )
 
-#include "inc1.bi"
+#include "../pp/inc1.bi"
   CU_ASSERT_EQUAL( inc_counter1, 3 )
 
 end sub

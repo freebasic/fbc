@@ -31,7 +31,7 @@ sub test5 cdecl
   CU_ASSERT_EQUAL( inc_counter4, 1 )
   CU_ASSERT_EQUAL( inc_counter5, 2 )
 
-#include once "inc5.bi"
+#include once "../pp/inc5.bi"
   CU_ASSERT_EQUAL( inc_counter1, 6 )
   CU_ASSERT_EQUAL( inc_counter2, 1 )
   CU_ASSERT_EQUAL( inc_counter3, 3 )

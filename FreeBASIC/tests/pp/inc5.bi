@@ -3,5 +3,5 @@
   #include "inc2.bi"
   #include "inc3.bi"
   #include "inc4.bi"
-  #include once "inc4.bi"
+  #include once "../pp/inc4.bi"
   inc_counter5 += 1

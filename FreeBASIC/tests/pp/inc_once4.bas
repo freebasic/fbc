@@ -27,13 +27,13 @@ sub test4 cdecl
   CU_ASSERT_EQUAL( inc_counter3, 1 )
   CU_ASSERT_EQUAL( inc_counter4, 1 )
 
-#include once "inc4.bi"
+#include once "../pp/inc4.bi"
   CU_ASSERT_EQUAL( inc_counter1, 2 )
   CU_ASSERT_EQUAL( inc_counter2, 1 )
   CU_ASSERT_EQUAL( inc_counter3, 1 )
   CU_ASSERT_EQUAL( inc_counter4, 1 )
 
-#include "inc4.bi"
+#include "../pp/inc4.bi"
   CU_ASSERT_EQUAL( inc_counter1, 2 )
   CU_ASSERT_EQUAL( inc_counter2, 1 )
   CU_ASSERT_EQUAL( inc_counter3, 1 )

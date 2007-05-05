@@ -962,6 +962,93 @@ function fbPragmaOnce _
 end function
 
 ''::::
+function is_rootpath( byref path as zstring ptr ) as integer
+	if( path = NULL ) then
+		exit function
+	end if
+	#if defined( __fb_linux__ )
+		function = (path[0] = asc("/"))
+	#else
+		if( path[0] = NULL ) then
+			exit function
+		end if
+		if( path[1] = asc(":") ) then
+			function = TRUE
+		end if
+		if( (path[0] = asc("/")) or (path[0] = asc("\")) ) then
+			'' quirky drive letters...
+			*path = left( hEnvDir( ), 1 ) + ":" + *path
+			function = TRUE
+		end if
+	#endif
+end function
+
+''::::
+function solve_path( byval path as zstring ptr ) as integer
+	
+	'' solves a path to it's lowest common denominator...
+	
+	'' c:\foo\bar\..\baz => c:\foo\baz, etc
+	static as string root_spec	
+#ifdef __FB_Linux__
+	root_spec = "/"
+#else
+	root_spec = ucase(left(*path, 2) + "/")
+#endif
+
+    
+	dim as integer str_len = len(*path), c = 0, s = 0
+    static as zstring * 256 accum(255)
+	
+	for i as integer = 0 to str_len-1
+		
+		if( (path[i] <> asc("/")) and (path[i] <> asc("\")) ) then
+			accum(s)[c] = path[i]
+			c += 1
+		else
+			accum(s)[c] = 0
+			if( accum(s) = "." ) then
+				accum(s) = ""
+			elseif( accum(s) = ".." ) then
+				accum(s) = ""
+				if( s > 0 ) then
+					s -= 1
+					accum(s) = ""
+				else
+					exit function
+				end if
+			else
+				s += 1
+			end if
+			c = 0
+		end if
+	next
+	accum(s)[c] = 0
+	s += 1
+	
+	dim as integer j = 0, k = 0
+	for i as integer = 0 to s-1
+		do while accum(i)[j]
+			path[k] = accum(i)[j]
+			j += 1: k += 1
+		loop
+		j = 0
+		if( i < s-1 ) then
+			path[k] = asc("/")
+			k += 1
+		end if
+	next
+	path[k] = 0
+	
+	if(ucase(left(*path, 3)) <> root_spec) then
+		*path = root_spec + *path
+	end if
+	
+	function = TRUE
+
+end function
+
+''::::
 function fbIncludeFile _
 	( _
 		byval filename as zstring ptr, _
@@ -1007,10 +1094,24 @@ function fbIncludeFile _
 			incfile = *filename
 		end if
 	end if
-
-	''
-	hRevertSlash( incfile, FALSE )
-
+	
+	'' if this isn't a root path, make it one.
+	if( is_rootpath( incfile ) = FALSE ) then
+		incfile = hCurDir( ) + "/" + incfile
+	end if
+	
+	'' now, if it isn't a root path(even possible?), we have a fatal.
+	if( is_rootpath( incfile ) = FALSE ) then
+		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + incfile + QUOTE )
+		return errFatal( )  
+	end if
+ 	
+ 	'' solve out the .. and .
+	if( solve_path( incfile ) = FALSE ) then
+		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + incfile + QUOTE )
+		return errFatal( )  
+	end if
+		
 	'' #include ONCE 
 	if( isonce ) then
         '' we should respect the path

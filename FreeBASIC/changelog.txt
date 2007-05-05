@@ -1,6 +1,16 @@
 Version 0.17 Beta:
 
 [changed]
+
+[added]
+
+[fixed]
+- the #include once and #pragma once PP directives weren't fully solving the paths of their include files (cha0s)
+
+
+Version 0.17 Beta:
+
+[changed]
 - see the migrating.txt file for the list of changes because the new -lang command-line option (v1c)
 - #undef can't remove symbols defined inside namespaces anymore, to allow namespace redefinition to work (v1c)
 - calling "SCREEN 0" now causes an 80x25 text mode to be set and cleared by default (lillo)

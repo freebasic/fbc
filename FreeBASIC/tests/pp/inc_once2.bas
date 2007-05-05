@@ -9,13 +9,16 @@ sub test2 cdecl
 #include "inc2.bi"
   CU_ASSERT_EQUAL( inc_counter2, 1 )
 
+#include "../pp/inc2.bi"
+  CU_ASSERT_EQUAL( inc_counter2, 1 )
+
 #include "inc2.bi"
   CU_ASSERT_EQUAL( inc_counter2, 1 )
 
 #include once "inc2.bi"
   CU_ASSERT_EQUAL( inc_counter2, 1 )
 
-#include once "inc2.bi"
+#include once "../pp/inc2.bi"
   CU_ASSERT_EQUAL( inc_counter2, 1 )
 
 #include "inc2.bi"

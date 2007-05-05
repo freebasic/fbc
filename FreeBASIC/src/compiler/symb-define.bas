@@ -105,62 +105,9 @@ end function
 
  '':::::
 private function hDefPath_cb( ) as string static
-
-	dim as string path
-
-	'' absolute path given?
-#if defined(__FB_WIN32__) or defined(__FB_DOS__)
-	if( env.inf.name[1] = asc(":") ) then
-#else
-	if( left( env.inf.name, 1 ) = "/" ) then
-#endif
-		'' leave path, with trailing slash
-		path = hStripFilename( env.inf.name )
-
-		'' remove trailing slash
-		path = left( path, len( path ) - 1 )
-
-		function = path
-
-	else
-		'' relative path
-
-		'' not in the original directory?
-		if( instr( env.inf.name, "/" ) > 0 ) then
-			'' leave path, with trailing slash
-			path = hStripFilename( env.inf.name )
-
-			'' remove trailing slash
-			path = left( path, len( path ) - 1 )
-
-			'' add leading slash
-#if defined(__FB_WIN32__) or defined(__FB_DOS__)
-			path = "\" + path
-#else
-			path = "/" + path
-#endif
-
-		else
-			path = ""
-		end if
-
-#if defined(__FB_WIN32__) or defined(__FB_DOS__)
-		dim as string cwd
-
-		cwd = curdir( )
-
-		'' check for root directory case (C:\)
-		if( right(cwd, 1) = "\" ) then
-			cwd = left(cwd, len( cwd ) - 1 )
-		end if
-
-		function = cwd + path
-#else
-		function = curdir( ) + path
-#endif
-
-	end if
-
+	
+	function = hEnvDir( )
+	
 end function
 
 '':::::

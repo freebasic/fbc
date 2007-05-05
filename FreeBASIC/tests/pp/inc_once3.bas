@@ -13,7 +13,7 @@ sub test3 cdecl
   CU_ASSERT_EQUAL( inc_counter2, 1 )
   CU_ASSERT_EQUAL( inc_counter3, 1 )
 
-#include "inc3.bi"
+#include "../pp/inc3.bi"
   CU_ASSERT_EQUAL( inc_counter1, 2 )
   CU_ASSERT_EQUAL( inc_counter2, 1 )
   CU_ASSERT_EQUAL( inc_counter3, 2 )
@@ -23,7 +23,7 @@ sub test3 cdecl
   CU_ASSERT_EQUAL( inc_counter2, 1 )
   CU_ASSERT_EQUAL( inc_counter3, 2 )
 
-#include once "inc3.bi"
+#include once "../pp/inc3.bi"
   CU_ASSERT_EQUAL( inc_counter1, 2 )
   CU_ASSERT_EQUAL( inc_counter2, 1 )
   CU_ASSERT_EQUAL( inc_counter3, 2 )
