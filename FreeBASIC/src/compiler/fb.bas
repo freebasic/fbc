@@ -1040,7 +1040,7 @@ function solve_path( byval path as zstring ptr ) as integer
 	next
 	path[k] = 0
 	
-	if(ucase(left(*path, 3)) <> root_spec) then
+	if(ucase(left(*path, len(root_spec))) <> root_spec) then
 		*path = root_spec + *path
 	end if
 	
