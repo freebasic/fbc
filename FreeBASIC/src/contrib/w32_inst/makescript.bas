@@ -5,10 +5,6 @@
 ' Written by MJS, Sept/2005
 '
 
-option explicit
-
-defint a-z
-
 #include "regex.bi"
 #include "crt.bi"
 
@@ -86,10 +82,10 @@ declare function 	get_path						( byval fname as string ) as string
 declare function 	get_file						( byval fname as string ) as string
 declare sub 		list_files						( byval sections as SectionInfo ptr, byval section_count as integer)
 
-declare function    ReplaceEntryTexts               ( dest as string, texts() as string ) as string
+declare function    ReplaceEntryTexts               ( byref dest as string, texts() as string ) as string
 declare sub         LoadSectionFiles                ( byval section as SectionInfo ptr )
-declare sub         FilterFileEntries               ( byval section as SectionInfo ptr, entries as FileNameEntry ptr )
-declare sub         OutputSection                   ( byval f as integer, byval section as SectionInfo ptr, prefix as string, suffix as string )
+declare sub         FilterFileEntries               ( byval section as SectionInfo ptr, byref entries as FileNameEntry ptr )
+declare sub         OutputSection                   ( byval f as integer, byval section as SectionInfo ptr, byref prefix as string, byref suffix as string )
 
 	
 	redim as string ConfigFiles( 1 to 1 )
@@ -179,11 +175,11 @@ sub list_files(byval sections as SectionInfo ptr, byval section_count as integer
 
 end sub
 
-private function IsFolder( s as string )
+private function IsFolder( byref s as string ) as integer
 	function = len( dir( s, 16 ) ) > 0
 end function
 
-private function ReplaceEntryTexts( dest as string, texts() as string ) as string
+private function ReplaceEntryTexts( byref dest as string, texts() as string ) as string
 	dim as integer p, p_old, idx
 	dim as string result, tmp
 
@@ -206,7 +202,7 @@ private function ReplaceEntryTexts( dest as string, texts() as string ) as strin
 	function = result
 end function
 
-private function ReplaceEntry( dest as string, source as string, matches() as regmatch_t ) as string
+private function ReplaceEntry( byref dest as string, byref source as string, matches() as regmatch_t ) as string
 	dim as integer i, max_idx = ubound( matches )
 	redim texts( 0 to max_idx ) as string
 
