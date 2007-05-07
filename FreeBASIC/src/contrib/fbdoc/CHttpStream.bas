@@ -149,6 +149,15 @@ namespace fb
 		curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, @recv_cb )
 		curl_easy_setopt( curl, CURLOPT_WRITEDATA, @ctx->stream )
 
+
+		'' This option should not be needed.  It wasn't in earlier version
+		'' but some where between libcurl 7.16.0 and 7.16.2, there seems to
+		'' be a problem getting pages consistently from www.freebasic.net/wiki
+		'' could be a bug in libcurl.  It wasn't a problem before.  This is the
+		'' work-around for now.
+
+		curl_easy_setopt( curl, CURLOPT_FRESH_CONNECT, @ctx->stream )
+
  		if( curl_easy_perform( curl ) <> 0 ) then
  			if( ctx->stream.buffer <> NULL ) then
  				deallocate( ctx->stream.buffer )
