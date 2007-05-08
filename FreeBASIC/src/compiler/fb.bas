@@ -923,7 +923,6 @@ sub fbGetDefaultLibs _
 
 	case FB_COMPTARGET_XBOX
 		hAddLib( "fbgfx" )
-		hAddLib( "SDL" )
 		hAddLib( "openxdk" )
 		hAddLib( "hal" )
 		hAddLib( "c" )
