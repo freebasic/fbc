@@ -16,23 +16,18 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 ''
 
-'' TODO: unhook excl, read .lst for files
-''
-''
-
 #include once "vbcompat.bi"
 #include once "file.bi"
 #include once "list.bi"
 #include once "zstr.bi"
 
 #include once "../../compiler/inc/fb.bi"
-'' "automatic" version #
 
 #define NULL 0
 
 const TRAM_FILELIST = "tram_filelist.txt"
 
-#ifndef __FB_LINUX__
+#ifndef TARGET_LINUX
 #define TRAM_USE_STDOUT
 const TRAM_ARCH_TOOL = "zip.exe"
 const TRAM_ARCH_OPTIONS = "-@ -q -9 {output}"
@@ -48,7 +43,6 @@ using file
 	
 type ctx
 	root	as zstring * 256
-	mask	as zstring * 16
 	output	as zstring * 128
 	serial	as double
 	search	as CSearch ptr
@@ -92,7 +86,6 @@ private function processOptions _
 	
 	'' defaults
 	ctx.root = "../../.."
-	ctx.mask = "*.*"
 	ctx.output = ""
 	ctx.serial = 0
 	
@@ -107,15 +100,18 @@ private function processOptions _
 					ctx.distro = FB_LINUX
 				case "DOS"
 					ctx.distro = FB_DOS
+				case "COMPILER"
+					ctx.distro = FB_COMPILER
+				case "RTLIB"
+					ctx.distro = FB_RTLIB
+				case "GFXLIB"
+					ctx.distro = FB_GFXLIB
 				case else
 					return vbFalse
 			end select
 			
 		case "-root="
 			ctx.root = mid( arg, 7 )
-
-		case "-mask="
-			ctx.mask = mid( arg, 7 )
 
 		case "-file="
 			ctx.output = mid( arg, 7 )
@@ -153,6 +149,12 @@ private function processOptions _
 			
 	next
 	
+	if( timser <> 0 ) then
+		if( datser = 0 ) then
+			return vbFalse
+		end if
+	end if
+	
 	ctx.serial = datser + timser
 	
 	if( ctx.output = "" ) then
@@ -167,20 +169,25 @@ private function processOptions _
 		ctx.output &= "-"
 		ctx.output &= year( now )
 		ctx.output &= "-"
-		if( datser <> 0 ) then
+		if( ctx.serial <> 0 ) then
 			ctx.output &= "testing-"
 		end if
 		select case as const ctx.distro
 			case FB_WIN32
-				ctx.output &= "win32.zip"
+				ctx.output &= "win32"
 			case FB_LINUX
-				ctx.output &= "linux.tar.gz"
+				ctx.output &= "linux"
 			case FB_DOS
-				ctx.output &= "dos.zip"
+				ctx.output &= "dos"
+			case FB_COMPILER
+				ctx.output &= "src-compiler"
+			case FB_RTLIB
+				ctx.output &= "src-rtlib"
+			case FB_GFXLIB
+				ctx.output &= "src-gfxlib"
 		end select
 	end if
 
-	
 	function = vbTrue
 
 end function
@@ -191,7 +198,7 @@ private function collectFiles _
 		_
 	) as integer
 	
-	function = ctx.search->byDate( ctx.mask, _
+	function = ctx.search->byDate( "*.*", _
 							       ctx.serial, _
 							       CSearch.searchBy_SerialNewer )
 
@@ -216,9 +223,9 @@ end sub
 
 '':::::
 private sub showUsage 
-	print "Usage: tram -root=base_path [-mask=*.*]"
-	print "            -date=yyyy/mm/dd [-time=hh:mm:ss]"
-	print "            [-file=output_name] [-excl=dir_name]*"
+	? "Usage: tram [-root=base_path  ]"
+	? "            [-date=yyyy/mm/dd ] [-time=hh:mm:ss]"
+	? "            [-file=output_name] [-dist=win32|linux|dos]"
 end sub
 
 '':::::
@@ -226,12 +233,22 @@ private sub archiveFiles
 
 	dim as CSearchEntry ptr e
 	dim as integer o
-	dim as string options, cdir, listfile
+	dim as string options, cdir, listfile, file_ext
 	
 	cdir = hRevertSlash( curdir )
-	chdir ctx.root
+	
+	'' hack
+	cdir = mid( cdir, instr(cdir, "FreeBASIC") )
+	
+	chdir ctx.root & "/.."
+	
+#ifdef TRAM_USE_STDOUT
+	file_ext = "zip"
+#else
+	file_ext = "tar.gz"
+#endif
 
-	options = hReplace( TRAM_ARCH_OPTIONS, "{output}", cdir + "/" + ctx.output )
+	options = hReplace( TRAM_ARCH_OPTIONS, "{output}", cdir + "/" + ctx.output + "." + file_ext )
 	
 	o = freefile
 
@@ -256,6 +273,7 @@ private sub archiveFiles
 	
 	e = ctx.search->getFirst( )
 	do while( e <> NULL )
+		print #o, "FreeBASIC/";
 		if( e->path <> NULL ) then
 			print #o, *e->path + "/";
 		end if

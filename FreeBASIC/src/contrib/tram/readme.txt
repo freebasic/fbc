@@ -3,9 +3,9 @@ TRAM - Testing Release Archive Maker
 
 o Usage:
 
-tram [-root=base_path] [-mask=*.*] [-dist=win32|linux|dos]
-     [-date=yyyy/mm/dd] [-time=hh:mm:ss]
-     [-file=output_name]
+tram [-root=base_path  ] 
+     [-date=yyyy/mm/dd ] [-time=hh:mm:ss]
+     [-file=output_name] [-dist=win32|linux|dos|compiler|rtlib|gfxlib]
 
 o Notes:
 	
@@ -23,5 +23,3 @@ o Example:
 
 tram   -date=2006/05/01 -dist=win32
 ./tram -date=2006/05/01 -dist=linux
-tram   -date=2006/05/01 -dist=dos
-

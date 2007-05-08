@@ -15,17 +15,18 @@ OBJS := $(patsubst %.bas,$(objpath)/%.o,$(SRCS))
 LIBS :=
 
 ##########################
-
-ifeq ($(TARGET),linux)
+ifeq ($(OS),Linux)
 	EXEEXT :=
+else
+	EXEEXT := .exe
+endif
+ifeq ($(TARGET),linux)
 	GLOB_DEF := -d TARGET_LINUX
 endif
 ifeq ($(TARGET),dos)
-	EXEEXT := .exe
 	GLOB_DEF := -d TARGET_DOS
 endif
 ifeq ($(TARGET),win32)
-	EXEEXT := .exe
 	GLOB_DEF := -d TARGET_WIN32
 endif
 
