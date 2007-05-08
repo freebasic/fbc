@@ -37,6 +37,8 @@ ifdef DEBUG
 	FBCFLAGS += -exx -g
 endif
 
+FBCFLAGS += -i ../../compiler
+
 .SUFFIXES:
 .SUFFIXES: .bas $(EXEEXT)
 

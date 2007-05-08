@@ -1,15 +1,27 @@
 TRAM - Testing Release Archive Maker
-(c) 2006 by v1ctor
+(c) 2006-2007 by v1ctor
 
 o Usage:
 
-tram -root=base_path [-mask=*.*]
-     -date=yyyy/mm/dd [-time=hh:mm:ss]
-     [-file=output_name] [-excl=dir_name]*
+tram [-root=base_path] [-mask=*.*] [-dist=win32|linux|dos]
+     [-date=yyyy/mm/dd] [-time=hh:mm:ss]
+     [-file=output_name]
 
-
+o Notes:
+	
+	If -date is omitted, all files in the distribution are included.
+	
+	If -root is omitted, "../../.." is assumed.
+	
+	If -dist is omitted, "win32" is assumed.
+		o The file lists are pulled from [root]/manifest/current
+	
+	If -file is omitted, it is constructed as follows:
+		FB-v[FB_VER_MAJOR].[FB_VER_MINOR]-[monthname( month( now ), -1 )]-[day( now )]-[year( now )]-[dist].[zip|gz]
+	
 o Example:
 
-tram -root=../../.. -date=2006/05/20 -excl=dos -excl=linux -file=FB-v0.17b-may-08-2007-testing-win32.zip
-tram -root=../../.. -date=2006/05/20 -excl=win32 -excl=cygwin -excl=linux -file=FB-v0.17b-may-08-2007-testing-dos.zip
-./tram -root=../../.. -date=2006/05/20 -excl=dos -excl=cygwin -excl=win32 -file=FB-v0.17b-may-08-2007-testing-linux.tar.gz
+tram   -date=2006/05/01 -dist=win32
+./tram -date=2006/05/01 -dist=linux
+tram   -date=2006/05/01 -dist=dos
+

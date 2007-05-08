@@ -20,9 +20,9 @@ namespace fb.file
 	type CSearchCtx_
 		root 	as zstring ptr
 		list	as CList ptr
-		dirCb 	as CSearchDirCallback
 		intrCtx	as intrCtx
 		findCtx as findCtx
+		distro  as integer
 	end type
 
 	declare sub _resetList _
@@ -36,17 +36,23 @@ namespace fb.file
 			byval path as zstring ptr _
 		) as integer
 
+	declare function _readFiles _
+		( _
+			byval ctx as CSearchCtx ptr, _
+			byval path as zstring ptr _
+		) as integer
+
 	'':::::
 	constructor CSearch _
 		( _
 			byval root as zstring ptr, _
-			byval dirCb as CSearchDirCallback = NULL _
+			byval distro as FB_DISTRO _
 		) 
 	
 		ctx = new CSearchCtx
 		
 		ctx->root = zStr.Dup( root )
-		ctx->dirCb = dirCb
+		ctx->distro = distro
 		
 		ctx->list = new CList( 30, len( CSearchEntry ), CList.flags_NOCLEAR )
 		ctx->intrCtx.node = NULL
@@ -113,7 +119,8 @@ namespace fb.file
 		
 		_resetList( ctx->list )
 		
-		function = _findFiles( ctx, NULL ) > 0
+		function = _readFiles( ctx, NULL ) > 0
+		
 		
 	end function
 	
@@ -164,7 +171,7 @@ namespace fb.file
 	end function
 	
 	'':::::
-	private function _findFiles _
+	private function _readFiles _
 		( _
 			byval ctx as CSearchCtx ptr, _
 			byval path as zstring ptr _
@@ -173,19 +180,19 @@ namespace fb.file
 		dim as string fname, fpath
 		dim as integer files = 0
 		
-		'' add files
+		'' root path
 		if( ctx->root <> NULL ) then
 			fpath = *ctx->root + "/"
 		end if	
 		
-		if( path <> NULL ) then
-			fpath += *path + "/" 
+		'' open the .lst for this distro
+        var ff = freefile
+		if( open( fpath + *DISTRO_FILE(ctx->distro), for input, as ff ) <> 0 ) then
+			return 0
 		end if
-			
-		fname = *ctx->findCtx.mask
 		
-		fname = dir( fpath + fname, vbNormal )
-		do while len( fname ) > 0
+		do while not eof(ff)
+			input #ff, fname
 			dim as double serial = filedatetime( fpath + fname )
 				
 			select case ctx->findCtx.mode
@@ -196,58 +203,12 @@ namespace fb.file
 				end if
 			end select
 			
-			fname = dir( )
 		loop
 		
-		'' collect dirs (can't use recursion here, DIR() has a global context)
-		type DIRENTRY
-			name	as zstring ptr
-		end type
-		
-		dim as CList ptr l = new CList( 16, len( DIRENTRY ), CList.flags_NOCLEAR )
-		dim as DIRENTRY ptr node = any, nxt = any
-		
-		fname = dir( fpath + "*.*", vbDirectory )
-		do while len( fname ) > 0
-			select case fname
-			case ".", ".."
-			
-			case else
-				dim as integer doAdd = iif( ctx->dirCb <> NULL, ctx->dirCb( path, fname ), TRUE )
-				
-				if( doAdd ) then
-					node = l->insert( )
-					node->name = zStr.dup( fname )
-				end if
-			end select
-			
-			fname = dir( )
-		loop
-		
-		'' recurse
-		node = l->getHead( )
-		do while( node <> NULL )
-			nxt = l->getNext( node )
-			
-			if( path <> NULL ) then
-				fname = *path + "/"
-			else
-				fname = ""
-			end if
-			fname += *node->name
-			
-			files += _findFiles( ctx, fname )
-			
-			zStr.del( node->name )
-			l->remove( node )
-			
-			node = nxt
-		loop
-
-		delete l
+		close ff
 		
 		function = files
-	
+		
 	end function
 
 end namespace

@@ -16,10 +16,17 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 ''
 
+'' TODO: unhook excl, read .lst for files
+''
+''
+
 #include once "vbcompat.bi"
 #include once "file.bi"
 #include once "list.bi"
 #include once "zstr.bi"
+
+#include once "../../compiler/inc/fb.bi"
+'' "automatic" version #
 
 #define NULL 0
 
@@ -39,17 +46,13 @@ const TRAM_NEWLINE = chr( 10 )
 using fb
 using file
 	
-type excListNode
-	name	as zstring ptr
-end type	
-	
 type ctx
 	root	as zstring * 256
 	mask	as zstring * 16
 	output	as zstring * 128
 	serial	as double
-	exclist	as CList ptr
 	search	as CSearch ptr
+	distro  as FB_DISTRO
 end type
 
 declare function main _
@@ -88,16 +91,26 @@ private function processOptions _
 	dim as string arg
 	
 	'' defaults
-	ctx.root = "."
+	ctx.root = "../../.."
 	ctx.mask = "*.*"
-	ctx.output = "zip.zip"
-	ctx.exclist = NULL
+	ctx.output = ""
 	ctx.serial = 0
-	ctx.exclist = new CList( 48, len( excListNode ) )
 	
 	for i = 1 to argc-1
 		arg = *argv[i]
 		select case left( arg, 6 )
+		case "-dist="
+			select case ucase(mid( arg, 7 ))
+				case "WIN32"
+					ctx.distro = FB_WIN32
+				case "LINUX"
+					ctx.distro = FB_LINUX
+				case "DOS"
+					ctx.distro = FB_DOS
+				case else
+					return vbFalse
+			end select
+			
 		case "-root="
 			ctx.root = mid( arg, 7 )
 
@@ -116,6 +129,8 @@ private function processOptions _
 								 	 	 cint( mid( d, 1+4+1, 2 ) ), _
 								 	 	 cint( mid( d, 1+4+1+2+1, 2 ) ) )
 				end if
+			else
+				datser = 0
 			end if
 
 		case "-time="
@@ -132,51 +147,39 @@ private function processOptions _
 			end if
 								 
 
-		case "-excl="
-			dim as string d = ucase( mid( arg, 7 ) )
-			
-			dim as excListNode ptr n = ctx.exclist->insert( )
-			
-			n->name = zStr.dup( d )
-		
 		case else
 			return vbFalse
 		end select
 			
 	next
 	
-	dim as excListNode ptr n = any
-#if defined( TARGET_WIN32 )	
-	dim as string exclude_list(0)
-#elseif defined( TARGET_LINUX )	
-	dim as string exclude_list(9) => _
-	{ "caca", "cairo", "disphelper", "Windows", "win", _
-	  "bass.bi", "bassmod.bi", "jni.bi", "windows.bi" }
-#elseif defined( TARGET_DOS )
-	dim as string exclude_list(50) => _
-	{ "caca", "cairo", "cryptlib", "CUnit", "Curl", _ 
-	  "disphelper", "dll", "freetype", "GL", "GMP", _ 
-	  "GSL", "Gtk", "IUP", "libxml", "mini", _ 
-	  "networking", "sound", "SDL", "spidermonkey", "unicode", _ 
-	  "Windows", "wx-c", "al", "fastcgi", "freetype2", _
-	  "gdsl", "IL", "libxslt", "postgresql", "win", _
-	  "bass.bi", "bassmod.bi", "caca.bi", "cryptlib.bi", "curl.bi", _
-	  "expat.bi", "fmod.bi", "FreeImage.bi", "giflib.bi", "gmp.bi", _
-	  "japi.bi", "jni.bi", "jpeglib.bi", "jpgalleg.bi", "mini.bi", _
-	  "mxml.bi", "Newton.bi", "pdflib.bi", "png.bi", "windows.bi", _
-	  "gif_read.bas", "jpeg_read.bas", "png_read.bas" }
-#endif
-	for i as integer = 0 to ubound(exclude_list)-1
-		n = ctx.exclist->insert( )
-		exclude_list(i) = ucase(exclude_list(i))
-		n->name = zStr.dup( exclude_list(i) )
-	next
-	
-	if( datser = 0 ) then
-		return vbFalse 
-	end if
-	
 	ctx.serial = datser + timser
+	
+	if( ctx.output = "" ) then
+		ctx.output &= "FB-v"
+		ctx.output &= FB_VER_MAJOR
+		ctx.output &= "."
+		ctx.output &= FB_VER_MINOR
+		ctx.output &= "-"
+		ctx.output &= monthname( month( now ), -1 )
+		ctx.output &= "-"
+		ctx.output &= day( now )
+		ctx.output &= "-"
+		ctx.output &= year( now )
+		ctx.output &= "-"
+		if( datser <> 0 ) then
+			ctx.output &= "testing-"
+		end if
+		select case as const ctx.distro
+			case FB_WIN32
+				ctx.output &= "win32.zip"
+			case FB_LINUX
+				ctx.output &= "linux.tar.gz"
+			case FB_DOS
+				ctx.output &= "dos.zip"
+		end select
+	end if
+
 	
 	function = vbTrue
 
@@ -282,62 +285,6 @@ private sub archiveFiles
 end sub
 
 '':::::
-private function topDir_cb _
-	( _
-		byval path as zstring ptr, _
-		byval fname as zstring ptr _
-	) as integer
-	
-	'' don't include the CVS meta-data
-	if( ucase( *fname ) = "CVS" ) then
-		return FALSE
-	end if
-
-	'' not at root? don't check..
-	if( path <> NULL ) then
-		return TRUE
-	end if
-	
-	'' exclude /tests and /src
-	select case *fname	
-	case "tests", "src"
-		return FALSE
-	end select
-	
-	function = TRUE
-	
-end function
-
-'':::::
-private function excList_cb _
-	( _
-		byval path as zstring ptr, _
-		byval fname as zstring ptr _
-	) as integer
-	
-	'' check top dir first
-	if( topDir_cb( path, fname ) = FALSE ) then
-		return FALSE
-	end if
-	
-	dim as string uc_fname = ucase( *fname )
-	
-	dim as excListNode ptr n = ctx.exclist->getHead( )
-	
-	do until( n = NULL )
-		
-		if( *n->name = uc_fname ) then
-			return FALSE
-		end if
-		
-		n = ctx.exclist->getNext( n )
-	loop
-	
-	function = TRUE
-	
-end function
-
-'':::::
 private function main _
 	( _
 		byval argc as integer, _
@@ -349,9 +296,7 @@ private function main _
 		return 1
 	end if
 
-	dim as CSearchDirCallback cb = iif( ctx.exclist <> NULL, @excList_cb, @topDir_cb )
-	
-	ctx.search = new CSearch( ctx.root, cb )
+	ctx.search = new CSearch( ctx.root, ctx.distro )
 	
 	if( collectFiles( ) = vbFalse ) then
 		return 1

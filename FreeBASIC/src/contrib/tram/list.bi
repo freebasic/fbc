@@ -1,5 +1,5 @@
-#ifndef __LIST_BI__
-#define __LIST_BI__
+#ifndef __CLIST_BI__
+#define __CLIST_BI__
 
 namespace fb
 
@@ -60,4 +60,4 @@ namespace fb
 
 end namespace
 
-#endif '' __LIST_BI__
+#endif '' __CLIST_BI__

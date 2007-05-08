@@ -1,6 +1,13 @@
 #ifndef __fb_file_bi__
 #define __fb_file_bi__
 
+enum FB_DISTRO
+	FB_WIN32
+	FB_LINUX
+	FB_DOS
+	FB_DISTROS
+end enum
+
 #ifndef FALSE
 # define FALSE 0
 # define TRUE -1
@@ -34,7 +41,7 @@ namespace fb.file
 		declare constructor _
 			( _
 				byval root as zstring ptr, _
-				byval dirCb as CSearchDirCallback = NULL _
+				byval distro as FB_DISTRO _
 			) 
 	
 		declare destructor _
@@ -58,7 +65,12 @@ namespace fb.file
 	
 		ctx as CSearchCtx ptr
 	end type
-
+	
+	'' dirty
+	dim shared as zstring ptr DISTRO_FILE(FB_DISTROS-1) = { @"manifest/current/win32.lst", _
+	                                                        @"manifest/current/linux.lst", _
+	                                                        @"manifest/current/dos32.lst" }
+	
 end namespace
 
 #endif '' __fb_file_bi__
