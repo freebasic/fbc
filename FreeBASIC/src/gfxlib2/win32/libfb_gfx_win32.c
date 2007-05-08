@@ -44,8 +44,10 @@ const GFXDRIVER *__fb_gfx_drivers_list[] = {
 #define MONITOR_DEFAULTTONEAREST 0x00000002
 
 typedef HMONITOR (WINAPI *MONITORFROMWINDOW)(HWND hwnd, DWORD dwFlags);
+typedef HMONITOR (WINAPI *MONITORFROMPOINT)(POINT pt, DWORD dwFlags);
 
 static MONITORFROMWINDOW pMonitorFromWindow = NULL;
+static MONITORFROMPOINT pMonitorFromPoint = NULL;
 
 static CRITICAL_SECTION update_lock;
 static HANDLE handle;
@@ -434,6 +436,19 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	info.dwOSVersionInfoSize = sizeof(info);
 	GetVersionEx(&info);
 	fb_win32.version = (info.dwMajorVersion << 8) | info.dwMinorVersion;
+
+	if (!pMonitorFromPoint) {
+		HMODULE user32_library = GetModuleHandle("USER32");
+		pMonitorFromPoint = (MONITORFROMPOINT)GetProcAddress(user32_library, "MonitorFromPoint");
+	}
+
+	if (pMonitorFromPoint) {
+		POINT pt;
+		GetCursorPos(&pt);
+		fb_win32.monitor = pMonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
+	} else {
+		fb_win32.monitor = NULL;
+	}
 
 	cursor_shown = TRUE;
 	last_mouse_pos.x = 0xFFFF;
