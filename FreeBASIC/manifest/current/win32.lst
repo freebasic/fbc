@@ -6,7 +6,7 @@ fblogo.ico
 migrating.txt
 readme.txt
 start_shell.exe
-uninst.exe
+bin/cygwin/i386pe.x
 bin/win32/GoRC.exe
 bin/win32/ar.exe
 bin/win32/as.exe
@@ -15,6 +15,7 @@ bin/win32/gdb.exe
 bin/win32/i386pe.x
 bin/win32/ld.exe
 bin/win32/res/fblogo.ico
+bin/win32/res/fblogo.obj
 bin/win32/res/fblogo.rc
 docs/GoRC.txt
 docs/fbc.1
@@ -1871,14 +1872,11 @@ lib/win32/libadvapi32.dll.a
 lib/win32/liballeg.dll.a
 lib/win32/libart_lgpl_2.dll.a
 lib/win32/libatk-1.0.dll.a
-lib/win32/libavicap32.dll.a
 lib/win32/libavifil32.dll.a
 lib/win32/libbass.dll.a
 lib/win32/libbassmod.dll.a
 lib/win32/libbfd.a
 lib/win32/libbig_int.a
-lib/win32/libc++util.a
-lib/win32/libcairo.dll.a
 lib/win32/libcgi-util.a
 lib/win32/libcgui.dll.a
 lib/win32/libcoldname.a
@@ -1889,7 +1887,6 @@ lib/win32/libcrypt.dll.a
 lib/win32/libcrypt32.dll.a
 lib/win32/libctl3d32.dll.a
 lib/win32/libcunit.a
-lib/win32/libcunit.dll.a
 lib/win32/libcurl.dll.a
 lib/win32/libcurses.a
 lib/win32/libd3d9.dll.a
@@ -1916,19 +1913,15 @@ lib/win32/libfreetype.dll.a
 lib/win32/libgcc.a
 lib/win32/libgd.a
 lib/win32/libgdi32.dll.a
-lib/win32/libgdiplus.dll.a
 lib/win32/libgdk-win32-2.0.dll.a
 lib/win32/libgdk_pixbuf-2.0.dll.a
 lib/win32/libgdkglext-win32-1.0.dll.a
 lib/win32/libgdsl.a
 lib/win32/libgif.dll.a
 lib/win32/libglade-2.0.dll.a
-lib/win32/libglaux.dll.a
 lib/win32/libglfw.a
-lib/win32/libglfw2.5.0.a
 lib/win32/libglib-2.0.dll.a
 lib/win32/libglu32.dll.a
-lib/win32/libglut.dll.a
 lib/win32/libglut32.dll.a
 lib/win32/libgmodule-2.0.dll.a
 lib/win32/libgmon.a
@@ -1948,7 +1941,6 @@ lib/win32/libiup.dll.a
 lib/win32/libiupcontrols.dll.a
 lib/win32/libjpeg.dll.a
 lib/win32/libjs.dll.a
-lib/win32/libjvm.dll.a
 lib/win32/libkernel32.dll.a
 lib/win32/liblua.a
 lib/win32/liblualib.a
@@ -1983,9 +1975,7 @@ lib/win32/libpcre.dll.a
 lib/win32/libpcreposix.dll.a
 lib/win32/libpdf.dll.a
 lib/win32/libpng.dll.a
-lib/win32/libpng13.dll.a
 lib/win32/libpowrprof.dll.a
-lib/win32/libpq.dll.a
 lib/win32/libpsapi.dll.a
 lib/win32/librasapi32.dll.a
 lib/win32/librasdlg.dll.a
@@ -1998,7 +1988,6 @@ lib/win32/libshell32.dll.a
 lib/win32/libshfolder.dll.a
 lib/win32/libshlwapi.dll.a
 lib/win32/libsnmpapi.dll.a
-lib/win32/libsqlite.dll.a
 lib/win32/libsqlite3.dll.a
 lib/win32/libstrmiids.a
 lib/win32/libsupc++.a
