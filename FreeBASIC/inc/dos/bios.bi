@@ -85,13 +85,13 @@ end type
 
 #define _bios_equiplist		biosequip
 #define _bios_memsize		biosmemory
-'#define _bios_printer(_c, _p, _d)   ((unsigned)biosprint(_c, _d, _p))
-'#define _bios_serialcom(_c, _p, _d) ((unsigned)bioscom(_c, _d, _p))
-'#define _bios_keybrd(_c)            ((unsigned)bioskey(_c))
+#define _bios_printer(_c, _p, _d)   cast(uinteger, biosprint(_c, _d, _p))
+#define _bios_serialcom(_c, _p, _d) cast(uinteger, bioscom(_c, _d, _p))
+#define _bios_keybrd(_c)            cast(uinteger, bioskey(_c))
 
 
-declare function bios_disk	cdecl alias "_bios_disk"	(byval cmd as uinteger, byref di as diskinfo_t) as uinteger
-declare function bios_timeofday	cdecl alias "_bios_timeofday"	(byval cmd as integer, byval timeval as uinteger ptr) as uinteger
+declare function _bios_disk	cdecl alias "_bios_disk"	(byval cmd as uinteger, byref di as diskinfo_t) as uinteger
+declare function _bios_timeofday	cdecl alias "_bios_timeofday"	(byval cmd as integer, byval timeval as uinteger ptr) as uinteger
 
 ' For int86(), int86x() and union REGS. 
 #include "dos/dos.bi"

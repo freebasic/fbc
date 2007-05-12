@@ -8,7 +8,7 @@
 #inclib "c"
 
 extern directvideo alias "directvideo" as integer ' ignored by gppconio
-extern wscroll alias "_wscroll" as integer
+extern _wscroll alias "_wscroll" as integer
 
 #define _NOCURSOR      0
 #define _SOLIDCURSOR   1
@@ -66,7 +66,7 @@ declare sub		blinkvideo		cdecl alias "blinkvideo"	()
 declare function	cgets			cdecl alias "cgets"		(byval strn as byte ptr) as byte ptr
 declare sub		clreol			cdecl alias "clreol"		()
 declare sub		clrscr			cdecl alias "clrscr"		()
-declare function	conio_kbhit		cdecl alias "_conio_kbhit"	() as integer ' checks for ungetch char
+declare function	_conio_kbhit		cdecl alias "_conio_kbhit"	() as integer ' checks for ungetch char
 declare function	cprintf			cdecl alias "cprintf"		(byval sformat as zstring ptr) as integer
 declare function	cputs			cdecl alias "cputs"		(byval strn as zstring ptr) as integer
 ''''declare function	cscanf			cdecl alias "cscanf"		(byval sformat as zstring ptr) as integer
@@ -85,8 +85,8 @@ declare function	movetext		cdecl alias "movetext"		(byval left_ as integer, byva
 declare sub		normvideo		cdecl alias "normvideo"		()
 declare function	putch			cdecl alias "putch"		(byval c as integer) as integer
 declare function	puttext			cdecl alias "puttext"		(byval left_ as integer, byval top as integer, byval right_ as integer, byval bottom as integer, byval source as any ptr) as integer
-declare sub		setcursortype		cdecl alias "_setcursortype"	(byval type_ as integer)
-declare sub		set_screen_lines	cdecl alias "_set_screen_lines"	(byval nlines as integer)
+declare sub		_setcursortype		cdecl alias "_setcursortype"	(byval type_ as integer)
+declare sub		_set_screen_lines	cdecl alias "_set_screen_lines"	(byval nlines as integer)
 declare sub		textattr		cdecl alias "textattr"		(byval attr as integer)
 declare sub		textbackground		cdecl alias "textbackground"	(byval colr as integer)
 declare sub		textcolor		cdecl alias "textcolor"		(byval colr as integer)

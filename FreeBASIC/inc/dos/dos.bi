@@ -94,16 +94,14 @@ type SREGS
 	ss	as ushort
 end type
 
-' no bitfields in fb... :(
-'struct ftime {
-'  unsigned ft_tsec:5;	/* 0-29, double to get real seconds */
-'  unsigned ft_min:6;	/* 0-59 */
-'  unsigned ft_hour:5;	/* 0-23 */
-'  unsigned ft_day:5;	/* 1-31 */
-'  unsigned ft_month:4;	/* 1-12 */
-'  unsigned ft_year:7;	/* since 1980 */
-'};
-#define ftime	uinteger
+type ftime
+	ft_tsec:5 as uinteger
+	ft_min:6 as uinteger
+	ft_hour:5 as uinteger
+	ft_day:5 as uinteger
+	ft_month:4 as uinteger
+	ft_year:7 as uinteger
+end type
 
 type date
 	da_year	as short
@@ -133,14 +131,14 @@ declare function	_get_dos_version cdecl alias "_get_dos_version"	( byval a as in
 
 declare function	int86 cdecl alias "int86"	( byval ivec as integer, byval in as REGS ptr, byval out as REGS ptr ) as integer
 declare function	int86x cdecl alias "int86x"	( byval ivec as integer, byval in as REGS ptr, byval out as REGS ptr, byval seg as SREGS ptr ) as integer
-declare function	intdos cdecl alias "intdos"	( byval in as REGS ptr, byval out as REGS ptr ) as integer
-declare function	intdosx cdecl alias "intdosx"	( byval in as REGS ptr, byval out as REGS ptr, byval seg as SREGS ptr ) as integer
+'declare function	intdos cdecl alias "intdos"	( byval in as REGS ptr, byval out as REGS ptr ) as integer
+'declare function	intdosx cdecl alias "intdosx"	( byval in as REGS ptr, byval out as REGS ptr, byval seg as SREGS ptr ) as integer
 declare function	bdos cdecl alias "bdos"		( byval func as integer, byval dx as uinteger, byval al as uinteger ) as integer
-declare function	bdosptr cdecl alias "bdosptr"	( byval func as integer, byval dx as any ptr, byval al as uinteger ) as integer
+'declare function	bdosptr cdecl alias "bdosptr"	( byval func as integer, byval dx as any ptr, byval al as uinteger ) as integer
 
-''#define bdosptr(a, b, c) bdos(a, (unsigned)(b), c)
-''#define intdos(a, b) int86(0x21, a, b)
-''#define intdosx(a, b, c) int86x(0x21, a, b, c)
+#define bdosptr(a, b, c) bdos(a, cast(uinteger, (b)), c)
+#define intdos(a, b) int86(0x21, a, b)
+#define intdosx(a, b, c) int86x(0x21, a, b, c)
 
 declare function	enable cdecl alias "enable"	( ) as integer
 declare function	disable cdecl alias "disable"	( ) as integer
@@ -233,9 +231,9 @@ declare function	_dos_findfirst cdecl alias "_dos_findfirst"	( byval _name as zs
 declare function	_dos_findnext cdecl alias "_dos_findnext"	( byval _result as _find_t ptr ) as uinteger
 
 declare sub		_dos_getdate cdecl alias "_dos_getdate"		( byval _date as _dosdate_t ptr )
-declare function	_dos_setdate cdecl alias "_dos_setdate"		( byval _date as _dosdate_t ptr )
+declare function	_dos_setdate cdecl alias "_dos_setdate"		( byval _date as _dosdate_t ptr ) as uinteger
 declare sub		_dos_gettime cdecl alias "_dos_gettime"		( byval _time as _dostime_t ptr )
-declare function	_dos_settime cdecl alias "_dos_settime"		( byval _time as _dostime_t ptr )
+declare function	_dos_settime cdecl alias "_dos_settime"		( byval _time as _dostime_t ptr ) as uinteger
 
 declare function	_dos_getftime cdecl alias "_dos_getftime"	( byval _handle as integer, byval _p_date as uinteger ptr, byval _p_time as uinteger ptr ) as uinteger
 declare function	_dos_setftime cdecl alias "_dos_setftime"	( byval _handle as integer, byval _date as uinteger, byval _time as uinteger ) as uinteger

@@ -40,8 +40,8 @@ type MS3DMATERIAL FIELD = 1
 	m_shininess as single	    '' 0.0f - 128.0f
 	m_transparency as single	'' 0.0f - 1.0f
 	m_mode as ubyte	            '' 0, 1, 2 is unused now
-	m_texture as zstring * 127
-	m_alphamap as zstring * 127
+	m_texture as zstring * 128
+	m_alphamap as zstring * 128
 end type
 
 '' Keyframe data
@@ -191,7 +191,7 @@ function Model_LoadModelData(byval pM as MODEL ptr, byref filename as string) as
 
 	nVertices = peek(short,pPtr)
 	pM->m_numVertices = nVertices
-	pM->m_pVertices = allocate(len(VERTEX)*nVertices)
+	pM->m_pVertices = allocate(len(VERTEX)*(nVertices+1))
 	pPtr = pPtr + len(short)
 
 	for i = 0 to nVertices - 1
@@ -203,7 +203,7 @@ function Model_LoadModelData(byval pM as MODEL ptr, byref filename as string) as
 
 	nTriangles = peek(short,pPtr)
 	pM->m_numTriangles = nTriangles
-	pM->m_pTriangles = allocate(len(TRIANGLE)*nTriangles)
+	pM->m_pTriangles = allocate(len(TRIANGLE)*(nTriangles+1))
 	pPtr = pPtr + len(short)
 
 	for i = 0 to nTriangles - 1
@@ -223,7 +223,7 @@ function Model_LoadModelData(byval pM as MODEL ptr, byref filename as string) as
 
 	nGroups = peek(short,pPtr)
 	pM->m_numMeshes = nGroups
-	pM->m_pMeshes = allocate(len(MESH)*nGroups)
+	pM->m_pMeshes = allocate(len(MESH)*(nGroups+1))
 	pPtr = pPtr + len(short)
 
 	for i = 0 to nGroups - 1
@@ -232,7 +232,7 @@ function Model_LoadModelData(byval pM as MODEL ptr, byref filename as string) as
 		nTriangles = peek(short,pPtr)
 		pPtr = pPtr + len(short)
 
-		pTriangleIndices = allocate(len(integer)*nTriangles)
+		pTriangleIndices = allocate(len(integer)*(nTriangles+1))
 
 		for j = 0 to nTriangles - 1
 			pTriangleIndices[j] = peek(short,pPtr)
@@ -249,7 +249,7 @@ function Model_LoadModelData(byval pM as MODEL ptr, byref filename as string) as
 
 	nMaterials = peek(short,pPtr)
 	pM->m_numMaterials = nMaterials
-	pM->m_pMaterials = allocate(len(MATERIAL)*nMaterials)
+	pM->m_pMaterials = allocate(len(MATERIAL)*(nMaterials+1))
 	pPtr = pPtr + len(short)
 	dim ptemp as ubyte ptr
 	for i = 0 to nMaterials - 1

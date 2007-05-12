@@ -141,7 +141,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 	if (!pal)
 		fb_hRestorePalette();
 	size = ((header.biWidth * BYTES_PER_PIXEL(header.biBitCount)) + 3) & ~0x3;
-	buffer = (unsigned char *)malloc(size);
+	buffer = (unsigned char *)malloc(size + 1);
 	switch (expand) {
 		case 1: padding = 4 - (((header.biWidth + 7) >> 3) & 0x3); break;
 		case 4: padding = 4 - (((header.biWidth + 1) >> 1) & 0x3); break;
