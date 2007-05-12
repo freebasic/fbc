@@ -371,7 +371,11 @@ function astAddAfter _
 	after_node->next = NULL
 
 	n = astAdd( n )
-
+    
+    if( next_ = NULL ) then
+    	return NULL
+    end if
+    
 	next_->prev = n
 	n->next = next_
 	ast.proc.curr->r = tail_
