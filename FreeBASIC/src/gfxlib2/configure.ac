@@ -1,10 +1,10 @@
 # configure.ac for the FB Gfx Library		-*- Autoconf -*-
 # Process this file with autoconf to generate a configuration script.
 
-AC_INIT([fbgfxlib],[0.16],[http://sourceforge.net/projects/fbc])
+AC_INIT([fbgfxlib],[0.17],[http://sourceforge.net/projects/fbc])
 AC_PREREQ([2.59])
 
-AC_COPYRIGHT([Copyright (C) 2005 Angelo Mottola (a.mottola@libero.it)])
+AC_COPYRIGHT([Copyright (C) 2005-2007 Angelo Mottola (a.mottola@libero.it)])
 
 AC_CONFIG_SRCDIR([fb_gfx.h])
 AC_CONFIG_AUX_DIR([../config])
@@ -66,8 +66,17 @@ AC_PATH_X
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h limits.h malloc.h stddef.h stdlib.h string.h sys/ioctl.h unistd.h])
 
-# Check for GL/gl.h
-AC_CHECK_HEADERS([GL/gl.h],[FBRT_OPENGL=opengl],[FBRT_OPENGL=])
+# Check if opengl is disabled
+AC_ARG_ENABLE([opengl],
+[  --disable-opengl          disable opengl support],,
+[enable_opengl=yes])
+
+if test "$enable_opengl" = yes; then
+  # Check for GL/gl.h only if the feature is enabled
+  AC_CHECK_HEADERS([GL/gl.h],[FBRT_OPENGL=opengl],[FBRT_OPENGL=])
+else
+  FBRT_OPENGL=
+fi
 AC_SUBST([FBRT_OPENGL])
 
 # Make sure off_t is 64-bit in *nix
