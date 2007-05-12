@@ -6,7 +6,6 @@ fblogo.ico
 migrating.txt
 readme.txt
 start_shell.exe
-uninst.exe
 bin/win32/GoRC.exe
 bin/win32/ar.exe
 bin/win32/as.exe
