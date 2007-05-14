@@ -52,7 +52,12 @@ var ICONS_GROUP
 !insertmacro MUI_PAGE_STARTMENU Application $ICONS_GROUP
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
+
 ; Finish page
+!define MUI_FINISHPAGE_SHOWREADME_TEXT $(TEXT_FINISHPAGE_README)
+!define MUI_FINISHPAGE_SHOWREADME $INSTDIR\readme.txt
+!define MUI_FINISHPAGE_RUN_NOTCHECKED
+!define MUI_FINISHPAGE_RUN_TEXT $(TEXT_FINISHPAGE_SHELL)
 !define MUI_FINISHPAGE_RUN "$INSTDIR\start_shell.exe"
 !define MUI_FINISHPAGE_RUN_PARAMETERS ""
 !insertmacro MUI_PAGE_FINISH
@@ -110,6 +115,14 @@ LangString TEXT_SECT_DESCR_LIBS ${LANG_PORTUGUESEBR} "Bibliotecas externas e seu
 ;;;ENABLE_SOURCES;;;LangString TEXT_SECT_DESCR_SOURCES  ${LANG_ENGLISH} "Sources the compiler and its libraries were built from"
 ;;;ENABLE_SOURCES;;;LangString TEXT_SECT_DESCR_SOURCES  ${LANG_GERMAN}  "Quelltexte aus denen der Compiler und die Bibliotheken erstellt wurden"
 ;;;ENABLE_SOURCES;;;LangString TEXT_SECT_DESCR_SOURCES  ${LANG_PORTUGUESEBR} "Código-fonte do compilador e suas bibliotecas"
+
+LangString TEXT_FINISHPAGE_README     ${LANG_ENGLISH} "Show readme.txt"
+LangString TEXT_FINISHPAGE_README     ${LANG_GERMAN}  "LiesMish-Datei anzeigen (Englische Version)"
+LangString TEXT_FINISHPAGE_README     ${LANG_PORTUGUESEBR} "Visualizar readme.txt (versão em Inglês)"
+
+LangString TEXT_FINISHPAGE_SHELL      ${LANG_ENGLISH} "Start a command prompt for FreeBASIC"
+LangString TEXT_FINISHPAGE_SHELL      ${LANG_GERMAN}  "Befehlszeile mit FreeBASIC starten"
+LangString TEXT_FINISHPAGE_SHELL      ${LANG_PORTUGUESEBR} "Iniciar linha de comandos do FreeBASIC"
 
 Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
