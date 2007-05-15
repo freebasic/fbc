@@ -6,6 +6,7 @@ Version 0.17 Beta:
 
 [fixed]
 - the #include once and #pragma once PP directives weren't fully solving the paths of their include files (cha0s)
+- overloaded property resolution was failing (cha0s)
 
 
 Version 0.17 Beta:

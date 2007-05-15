@@ -346,7 +346,7 @@ private function hOvlProcArgList _
 
 		do
 			'' count mismatch?
-			if( args >= params ) then
+			if( args > params ) then
 				if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
 					exit function
 				else
