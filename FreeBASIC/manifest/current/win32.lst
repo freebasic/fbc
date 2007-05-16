@@ -12,6 +12,7 @@ bin/win32/ar.exe
 bin/win32/as.exe
 bin/win32/dlltool.exe
 bin/win32/gdb.exe
+bin/win32/gprof.exe
 bin/win32/i386pe.x
 bin/win32/ld.exe
 bin/win32/res/fblogo.ico

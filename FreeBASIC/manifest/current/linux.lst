@@ -7,6 +7,7 @@ readme.txt
 bin/linux/ar
 bin/linux/as
 bin/linux/elf_i386.x
+bin/linux/gprof
 bin/linux/ld
 docs/fbc.1
 docs/gpl.txt
