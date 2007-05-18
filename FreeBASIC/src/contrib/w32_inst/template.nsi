@@ -117,7 +117,7 @@ LangString TEXT_SECT_DESCR_LIBS ${LANG_PORTUGUESEBR} "Bibliotecas externas e seu
 ;;;ENABLE_SOURCES;;;LangString TEXT_SECT_DESCR_SOURCES  ${LANG_PORTUGUESEBR} "Código-fonte do compilador e suas bibliotecas"
 
 LangString TEXT_FINISHPAGE_README     ${LANG_ENGLISH} "Show readme.txt"
-LangString TEXT_FINISHPAGE_README     ${LANG_GERMAN}  "LiesMish-Datei anzeigen (Englische Version)"
+LangString TEXT_FINISHPAGE_README     ${LANG_GERMAN}  "LiesMich-Datei anzeigen (Englische Version)"
 LangString TEXT_FINISHPAGE_README     ${LANG_PORTUGUESEBR} "Visualizar readme.txt (versão em Inglês)"
 
 LangString TEXT_FINISHPAGE_SHELL      ${LANG_ENGLISH} "Start a command prompt for FreeBASIC"
