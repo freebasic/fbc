@@ -428,6 +428,12 @@ function symbAddField _
 			parent->lgt = parent->ofs
 		end if
 
+		'' update the bit position, wrapping around
+		if( bits > 0 ) then
+			parent->udt.bitpos += bits
+			parent->udt.bitpos and= (symbGetDataBits( dtype ) - 1)
+		end if
+
 	'' union..
 	else
 		symbSetIsUnionField( sym )
@@ -437,12 +443,9 @@ function symbAddField _
 		if( lgt > parent->lgt ) then
 			parent->lgt = lgt
 		end if
-	end if
 
-	'' update the bit position, wrapping around
-	if( bits > 0 ) then
-		parent->udt.bitpos += bits
-		parent->udt.bitpos and= (symbGetDataBits( dtype ) - 1)
+		'' bit position doesn't change in a union
+
 	end if
 
     function = sym
