@@ -1,12 +1,16 @@
-Version 0.17 Beta:
+Version 0.18 Beta:
 
 [changed]
+- include file and import library for libcurl 7.16.2 library (jeffm)
 
 [added]
+- include file and import library for LZO 2.02 (DrV)
 
 [fixed]
 - the #include once and #pragma once PP directives weren't fully solving the paths of their include files (cha0s)
 - overloaded property resolution was failing (cha0s)
+- nehe/data/font.tga was missing half the characters (jeffm)
+- bug #1716570 - bit positions of bitfields shouldn't advance in a UNION (jeffm)
 
 
 Version 0.17 Beta:
