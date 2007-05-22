@@ -209,17 +209,19 @@ function cTypeOf _
 			subtype = astGetSubtype( expr )
 		else
 			while walk
-				'' if it's a field, get this node's type, 
-				'' don't "solve" the tree
-				if( astGetClass( walk ) = AST_NODECLASS_FIELD ) then
+				'' ? astGetClass( walk )
+				select case as const astGetClass( walk )
+				case AST_NODECLASS_FIELD, AST_NODECLASS_IDX
+					'' if it's a field, get this node's type, 
+					'' don't "solve" the tree
 					sym = astGetSymbol( walk )
 					exit while
-				end if 
-		
-				'' count derefs
-				if( astGetClass( walk ) = AST_NODECLASS_DEREF ) then
+					
+				case AST_NODECLASS_DEREF
+					'' count derefs
 					derefs += 1
-				end if
+					
+				end select
 		
 				'' update/walk
 				sym = astGetSymbol( walk )

@@ -34,6 +34,9 @@ namespace fbc_tests.quirk.typeof_
 		dim as sometype thingy
 		dim as string bar(2)
 		
+		#if typeof(bar(0)) <> string
+			CU_ASSERT(0)
+		#endif
 		#if typeof(bar) <> string
 			CU_ASSERT(0)
 		#endif

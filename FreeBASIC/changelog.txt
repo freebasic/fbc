@@ -11,7 +11,8 @@ Version 0.18 Beta:
 - overloaded property resolution was failing (cha0s)
 - nehe/data/font.tga was missing half the characters (jeffm)
 - bug #1716570 - bit positions of bitfields shouldn't advance in a UNION (jeffm)
-
+- PUT would crash with a null pointer for a source (cha0s)
+- TYPEOF would crash when handling an array with an index expression (cha0s)
 
 Version 0.17 Beta:
 
