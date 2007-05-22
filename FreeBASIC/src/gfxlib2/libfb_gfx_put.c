@@ -74,7 +74,7 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	int x, y, w, h, pitch, bpp;
 	PUT_HEADER *header;
 	
-	if (!__fb_gfx)
+	if ((!__fb_gfx) || (!src))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
 	fb_hPrepareTarget(context, target, MASK_A_32);
