@@ -36,7 +36,8 @@ void fb_GfxClear(int mode)
     int reset_console_start = 0, reset_console_end = 0;
     int new_x = -1, new_y = -1;
 	
-	fb_hPrepareTarget(context, NULL, context->bg_color);
+	fb_hPrepareTarget(context, NULL);
+	fb_hSetPixelTransfer(context, context->bg_color);
 	
     DRIVER_LOCK();
 

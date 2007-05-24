@@ -35,7 +35,8 @@ FBCALL float fb_GfxPMap(float coord, int func)
 	if (!__fb_gfx)
 		return 0.0;
 	
-	fb_hPrepareTarget(context, NULL, MASK_A_32);
+	fb_hPrepareTarget(context, NULL);
+	fb_hSetPixelTransfer(context, MASK_A_32);
 	
 	switch (func) {
 		

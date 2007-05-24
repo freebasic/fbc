@@ -69,6 +69,8 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int flags, FBSTRIN
 			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
 		goto exit_error_unlocked;
 	}
+
+	fb_hPrepareTarget(context, target);
 	
 	if (mode != PUT_MODE_ALPHA) {
 		if (flags & DEFAULT_COLOR_1)
@@ -77,7 +79,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int flags, FBSTRIN
 			color = fb_hFixColor(context->target_bpp, color);
 	}
 	
-	fb_hPrepareTarget(context, target, color);
+	fb_hSetPixelTransfer(context, color);
 	
 	fb_hFixRelative(context, flags, &fx, &fy, NULL, NULL);
 	

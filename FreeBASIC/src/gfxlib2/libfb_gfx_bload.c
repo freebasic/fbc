@@ -103,7 +103,8 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 		height = MIN(__fb_gfx->h, header.biHeight);
 		bpp = __fb_gfx->bpp;
 	}
-	fb_hPrepareTarget(ctx, dest, MASK_A_32);
+	fb_hPrepareTarget(ctx, dest);
+	fb_hSetPixelTransfer(ctx, MASK_A_32);
 
 	expand = (header.biBitCount < 8) ? header.biBitCount : 0;
 	if (header.biCompression == BI_BITFIELDS) {
@@ -206,7 +207,8 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal)
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
 	
-	fb_hPrepareTarget(context, NULL, MASK_A_32);
+	fb_hPrepareTarget(context, NULL);
+	fb_hSetPixelTransfer(context, MASK_A_32);
 
 	id = fgetc(f);
 	switch (id) {

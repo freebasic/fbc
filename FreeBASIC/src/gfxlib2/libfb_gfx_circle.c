@@ -128,13 +128,16 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 	
 	orig_x = fx;
 	orig_y = fy;
+
+	fb_hPrepareTarget(context, target);
+
 	orig_color = color;
 	if (flags & DEFAULT_COLOR_1)
 		color = context->fg_color;
 	else
 		color = fb_hFixColor(context->target_bpp, color);
 	
-	fb_hPrepareTarget(context, target, color);
+	fb_hSetPixelTransfer(context, color);
 	
 	fb_hFixRelative(context, flags, &fx, &fy, NULL, NULL);
 	

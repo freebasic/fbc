@@ -77,7 +77,8 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	if ((!__fb_gfx) || (!src))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
-	fb_hPrepareTarget(context, target, MASK_A_32);
+	fb_hPrepareTarget(context, target);
+	fb_hSetPixelTransfer(context, MASK_A_32);
 	
 	fb_hFixRelative(context, coord_type, &fx, &fy, NULL, NULL);
 	

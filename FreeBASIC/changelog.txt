@@ -1,7 +1,7 @@
 Version 0.18 Beta:
 
 [changed]
-- include file and import library for libcurl 7.16.2 library (jeffm)
+- include file and import library for libcurl 7.16.2 (jeffm)
 
 [added]
 - include file and import library for LZO 2.02 (DrV)
@@ -13,6 +13,7 @@ Version 0.18 Beta:
 - bug #1716570 - bit positions of bitfields shouldn't advance in a UNION (jeffm)
 - PUT would crash with a null pointer for a source (cha0s)
 - TYPEOF would crash when handling an array with an index expression (cha0s)
+- bug #1696394 - default colors for GFX primitives were being set using the wrong target bpp (jeffm)
 
 Version 0.17 Beta:
 

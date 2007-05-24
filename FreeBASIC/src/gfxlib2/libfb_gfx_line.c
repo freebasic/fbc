@@ -122,13 +122,16 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 	if (!__fb_gfx)
 		return;
 
+	fb_hPrepareTarget(context, target);
+
 	if (flags & DEFAULT_COLOR_1)
 		color = context->fg_color;
 	else
 		color = fb_hFixColor(context->target_bpp, color);
-	style &= 0xFFFF;
 
-	fb_hPrepareTarget(context, target, color);
+	fb_hSetPixelTransfer(context,color);
+
+	style &= 0xFFFF;
 	
 	fb_hFixRelative(context, flags, &fx1, &fy1, &fx2, &fy2);
 

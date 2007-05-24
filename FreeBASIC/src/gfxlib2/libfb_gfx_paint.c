@@ -74,6 +74,8 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	if (!__fb_gfx)
 		return;
 
+	fb_hPrepareTarget(context, target);
+
 	if (flags & DEFAULT_COLOR_1)
 		color = context->fg_color;
 	else
@@ -83,7 +85,7 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	else
 		border_color = fb_hFixColor(context->target_bpp, border_color);
 
-	fb_hPrepareTarget(context, target, color);
+	fb_hSetPixelTransfer(context,color);
 
 	fb_hFixRelative(context, flags, &fx, &fy, NULL, NULL);
 

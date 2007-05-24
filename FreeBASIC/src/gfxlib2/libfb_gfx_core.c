@@ -82,7 +82,8 @@ FB_GFXCTX *fb_hGetContext(void)
             context->fg_color = __fb_gfx->color_mask;
         context->bg_color = MASK_A_32 & __fb_gfx->color_mask;
 		context->flags = CTX_BUFFER_INIT;
-		fb_hPrepareTarget(context, NULL, MASK_A_32);
+		fb_hPrepareTarget(context, NULL);
+		fb_hSetPixelTransfer(context, MASK_A_32);
 	}
 	
 	return context;
@@ -90,7 +91,7 @@ FB_GFXCTX *fb_hGetContext(void)
 
 
 /*:::::*/
-void fb_hPrepareTarget(FB_GFXCTX *context, void *target, unsigned int color)
+void fb_hPrepareTarget(FB_GFXCTX *context, void *target)
 {
 	PUT_HEADER *header;
 	unsigned char *data;
@@ -137,6 +138,10 @@ void fb_hPrepareTarget(FB_GFXCTX *context, void *target, unsigned int color)
 		context->flags &= ~(CTX_BUFFER_SET | CTX_BUFFER_INIT);
 	}
 	context->last_target = target;
+}
+
+void fb_hSetPixelTransfer(FB_GFXCTX *context, unsigned int color)
+{
 	if ((__fb_gfx->flags & ALPHA_PRIMITIVES) && (context->target_bpp == 4) && ((color & MASK_A_32) != MASK_A_32)) {
 		context->put_pixel = fb_hPutPixelAlpha;
 		context->pixel_set = fb_hPixelSetAlpha;
@@ -147,7 +152,6 @@ void fb_hPrepareTarget(FB_GFXCTX *context, void *target, unsigned int color)
 	}
 	context->get_pixel = fb_hGetPixel;
 }
-
 
 /*:::::*/
 void fb_hTranslateCoord(FB_GFXCTX *context, float fx, float fy, int *x, int *y)

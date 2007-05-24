@@ -220,7 +220,8 @@ void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask)
             return;
     }
 
-	fb_hPrepareTarget(context, NULL, MASK_A_32);
+	fb_hPrepareTarget(context, NULL);
+	fb_hSetPixelTransfer(context, MASK_A_32);
 
 	DRIVER_LOCK();
 

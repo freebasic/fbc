@@ -45,7 +45,8 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 		return;
 	}
 	
-	fb_hPrepareTarget(context, NULL, MASK_A_32);
+	fb_hPrepareTarget(context, NULL);
+	fb_hSetPixelTransfer(context, MASK_A_32);
 
 	if (from_page < 0) {
 		src = context->line[0];
@@ -104,7 +105,8 @@ FBCALL void fb_GfxSetPage(int work_page, int visible_page)
 	if (!__fb_gfx)
 		return;
 	
-	fb_hPrepareTarget(context, NULL, MASK_A_32);
+	fb_hPrepareTarget(context, NULL);
+	fb_hSetPixelTransfer(context, MASK_A_32);
 
 	if ((work_page < 0) && (visible_page < 0))
 		work_page = visible_page = 0;

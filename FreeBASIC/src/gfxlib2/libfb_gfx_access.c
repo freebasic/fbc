@@ -68,7 +68,8 @@ FBCALL void *fb_GfxScreenPtr(void)
 	
 	if (!__fb_gfx)
 		return NULL;
-	fb_hPrepareTarget(context, NULL, MASK_A_32);
+	fb_hPrepareTarget(context, NULL);
+	fb_hSetPixelTransfer(context, MASK_A_32);
 	
 	return context->line[0];
 }

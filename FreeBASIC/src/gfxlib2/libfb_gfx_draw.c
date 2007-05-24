@@ -82,7 +82,8 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 		return;
 	}
 	
-	fb_hPrepareTarget(context, target, MASK_A_32);
+	fb_hPrepareTarget(context, target);
+	fb_hSetPixelTransfer(context, MASK_A_32);
 
 	x = context->last_x + 0.5;
 	y = context->last_y + 0.5;
