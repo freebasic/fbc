@@ -1014,7 +1014,7 @@ private sub hDeclENUM _
 
 	e = symbGetENUMFirstElm( sym )
 	do while( e <> NULL )
-        desc += *symbGetMangledName( e ) + ":" + str( symbGetConstValInt( e ) ) + ","
+        desc += *symbGetName( e ) + ":" + str( symbGetConstValInt( e ) ) + ","
 
 		e = symbGetENUMNextElm( e )
 	loop
