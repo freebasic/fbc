@@ -680,7 +680,7 @@ function hCurDir( ) as string static
 		cwd = curdir( )
 
 		'' check for root directory case (C:\)
-		if( right(cwd, 1) = "\" ) then
+		if( right(cwd, 1) = RSLASH ) then
 			cwd = left(cwd, len( cwd ) - 1 )
 		end if
 
@@ -723,7 +723,7 @@ function hEnvDir( ) as string static
 
 			'' add leading slash
 #if defined(__FB_WIN32__) or defined(__FB_DOS__)
-			path = "\" + path
+			path = RSLASH + path
 #else
 			path = "/" + path
 #endif

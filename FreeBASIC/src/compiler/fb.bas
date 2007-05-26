@@ -974,7 +974,7 @@ function is_rootpath( byref path as zstring ptr ) as integer
 		if( path[1] = asc(":") ) then
 			function = TRUE
 		end if
-		if( (path[0] = asc("/")) or (path[0] = asc("\")) ) then
+		if( (path[0] = asc("/")) or (path[0] = asc(RSLASH)) ) then
 			'' quirky drive letters...
 			*path = left( hEnvDir( ), 1 ) + ":" + *path
 			function = TRUE
@@ -996,12 +996,12 @@ function solve_path( byval path as zstring ptr ) as integer
 #endif
 
     
-	dim as integer str_len = len(*path), c = 0, s = 0
+	dim as integer str_len = len(*path), c = 0, s = 0, i = any
     static as zstring * 256 accum(255)
 	
-	for i as integer = 0 to str_len-1
+	for i = 0 to str_len-1
 		
-		if( (path[i] <> asc("/")) and (path[i] <> asc("\")) ) then
+		if( (path[i] <> asc("/")) and (path[i] <> asc(RSLASH)) ) then
 			accum(s)[c] = path[i]
 			c += 1
 		else
@@ -1026,7 +1026,7 @@ function solve_path( byval path as zstring ptr ) as integer
 	s += 1
 	
 	dim as integer j = 0, k = 0
-	for i as integer = 0 to s-1
+	for i = 0 to s-1
 		do while accum(i)[j]
 			path[k] = accum(i)[j]
 			j += 1: k += 1

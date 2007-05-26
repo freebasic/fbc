@@ -18,12 +18,23 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
+#ifndef __FB_LANG__
+option explicit   
+option escape   
+#define QUOTE "\""   
+#define NEWLINE "\r\n"   
+#define RSLASH "\\"   
+#define TABCHAR "\t"   
+#define ESCCHAR "\27"   
+#define LFCHAR "\n" 
+#else
 #define QUOTE !"\""
 #define NEWLINE !"\r\n"
 #define RSLASH !"\\"
 #define TABCHAR !"\t"
 #define ESCCHAR !"\27"
 #define LFCHAR !"\n"
+#endif
 
 #include once "inc\list.bi"
 #include once "inc\hash.bi"
