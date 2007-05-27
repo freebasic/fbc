@@ -62,6 +62,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 {
 	int depth = MAX(8, depth_arg);
 	int is_rgb, bpp;
+	int red_pos, blue_pos;
 	
 	fb_dos_detect();
 	fb_dos_vesa_detect();
@@ -83,17 +84,29 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	fb_dos_lock_data(&video, sizeof(video));
 	fb_dos_lock_data(&blitter, sizeof(blitter));
 	data_locked = TRUE;
-
-	is_rgb = (depth > 8) && (fb_dos.vesa_mode_info.LinRedFieldPosition != 0);
 	
-	if (fb_dos.vesa_mode_info.LinBlueFieldPosition == 10 || fb_dos.vesa_mode_info.LinRedFieldPosition == 10)
+	/* Lin* fields are only required for VBE 3.0 */
+	if( fb_dos.vesa_mode_info.LinRedFieldPosition == 0 && fb_dos.vesa_mode_info.LinBlueFieldPosition == 0)
+	{
+		red_pos = fb_dos.vesa_mode_info.RedFieldPosition;
+		blue_pos = fb_dos.vesa_mode_info.BlueFieldPosition;
+	}
+	else
+	{
+		red_pos = fb_dos.vesa_mode_info.LinRedFieldPosition;
+		blue_pos = fb_dos.vesa_mode_info.LinBlueFieldPosition;
+	}
+	
+	is_rgb = (depth > 8) && (red_pos == 0);
+	
+	if (blue_pos == 10 || red_pos == 10)
 		bpp = 15;
-	else if (fb_dos.vesa_mode_info.LinBlueFieldPosition == 11 || fb_dos.vesa_mode_info.LinRedFieldPosition == 11)
+	else if (blue_pos == 11 || red_pos == 11)
 		bpp = 16;
 	else
 		bpp = fb_dos.vesa_mode_info.BitsPerPixel;
 	
-	blitter = fb_hGetBlitter(fb_dos.vesa_mode_info.BitsPerPixel, is_rgb); /* FIXME */
+	blitter = fb_hGetBlitter(fb_dos.vesa_mode_info.BitsPerPixel, is_rgb);
 	if (!blitter)
 		return -1;
 	
