@@ -524,7 +524,7 @@ void fb_hWin32Exit(void)
 		return;
 	fb_win32.is_running = FALSE;
 	if (handle) {
-		WaitForSingleObject(handle, INFINITE);
+		WaitForSingleObject(handle, 200);
 		DeleteCriticalSection(&update_lock);
 	}
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, screensaver_active, NULL, 0);

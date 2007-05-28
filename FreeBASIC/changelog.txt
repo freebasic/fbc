@@ -14,6 +14,7 @@ Version 0.18 Beta:
 - PUT would crash with a null pointer for a source (cha0s)
 - TYPEOF would crash when handling an array with an index expression (cha0s)
 - bug #1696394 - default colors for GFX primitives were being set using the wrong target bpp (jeffm)
+- there was a deadlock when an app ended when the screen was locked (cha0s)
 
 Version 0.17 Beta:
 
