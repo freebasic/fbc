@@ -2,6 +2,7 @@ Version 0.18 Beta:
 
 [changed]
 - include file and import library for libcurl 7.16.2 (jeffm)
+- MK* had to be reverted, it will not evaluate constant numeric expressions to constant literal expressions anymore (it will behave like it used to), because of the NULL-terminated nature of literal strings, sorry (CV* still evaluates to constants(arguably much more important ;)) (cha0s)
 
 [added]
 - include file and import library for LZO 2.02 (DrV)

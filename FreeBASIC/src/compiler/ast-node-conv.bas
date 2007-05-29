@@ -41,13 +41,6 @@ private sub hCONVConstEvalInt _
 	select case as const v->dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		
-		dim as double temp_value = v->con.val.long, max_value = ast_maxlimitTB(to_dtype), min_value = ast_minlimitTB(to_dtype)
-		if( temp_value > max_value ) then
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		elseif( temp_value < min_value ) then
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		end if
-
 		select case as const to_dtype
 		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.long )
@@ -71,13 +64,6 @@ private sub hCONVConstEvalInt _
 
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		
-		dim as double temp_value = v->con.val.float, max_value = ast_maxlimitTB(to_dtype), min_value = ast_minlimitTB(to_dtype)
-		if( temp_value > max_value ) then
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		elseif( temp_value < min_value ) then
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		end if
-
 		select case as const to_dtype
 		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.float )
@@ -100,13 +86,6 @@ private sub hCONVConstEvalInt _
 		end select
 
 	case else
-		
-		dim as double temp_value = v->con.val.int, max_value = ast_maxlimitTB(to_dtype), min_value = ast_minlimitTB(to_dtype)
-		if( temp_value > max_value ) then
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		elseif( temp_value < min_value ) then
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		end if
 		
 		select case as const to_dtype
 		case FB_DATATYPE_BYTE
@@ -226,13 +205,6 @@ private sub hCONVConstEval64 _
 
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		
-		dim as double temp_value = v->con.val.float, max_value = ast_maxlimitTB(to_dtype), min_value = ast_minlimitTB(to_dtype)
-		if( temp_value > max_value ) then
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		elseif( temp_value < min_value ) then
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		end if
-		
 		if( to_dtype = FB_DATATYPE_LONGINT ) then
 			v->con.val.long = clngint( v->con.val.float )
 		else
@@ -240,13 +212,6 @@ private sub hCONVConstEval64 _
 		end if
 
 	case FB_DATATYPE_LONG
-		
-		dim as double temp_value = v->con.val.int, max_value = ast_maxlimitTB(to_dtype), min_value = ast_minlimitTB(to_dtype)
-		if( temp_value > max_value ) then
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		elseif( temp_value < min_value ) then
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		end if
 		
 		if( FB_LONGSIZE = len( integer ) ) then
 			if( to_dtype = FB_DATATYPE_LONGINT ) then

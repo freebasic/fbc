@@ -552,27 +552,29 @@ function cMKXFunct _
 		hMatchRPRNT( )
 		
 	    dim as FBSYMBOL ptr litsym = any
-		
-		'' constant? eval at compile-time
-		if( astIsCONST( expr1 ) = TRUE ) then
-		
-			select case as const tk
-			case FB_TK_MKD
-				doMKX( mkd )
-			case FB_TK_MKS
-				doMKX( mks )
-			case FB_TK_MKI, FB_TK_MKL
-				doMKX( mki )
-			case FB_TK_MKSHORT
-				doMKX( mkshort )
-			case FB_TK_MKLONGINT
-				doMKX( mklongint )
-			end select
 
-	    	astDelNode( expr1 )
-	    	expr1 = NULL
-		
-		end if
+'       '' I don't know how to do this properly, the NULLs ruin it.
+'       		
+'		'' constant? eval at compile-time
+'		if( astIsCONST( expr1 ) = TRUE ) then
+'		
+'			select case as const tk
+'			case FB_TK_MKD
+'				doMKX( mkd )
+'			case FB_TK_MKS
+'				doMKX( mks )
+'			case FB_TK_MKI, FB_TK_MKL
+'				doMKX( mki )
+'			case FB_TK_MKSHORT
+'				doMKX( mkshort )
+'			case FB_TK_MKLONGINT
+'				doMKX( mklongint )
+'			end select
+'
+'	    	astDelNode( expr1 )
+'	    	expr1 = NULL
+'		
+'		end if
 		
         if( expr1 <> NULL ) then
 			select case as const tk

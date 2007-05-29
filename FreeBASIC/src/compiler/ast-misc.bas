@@ -679,7 +679,7 @@ chk_long:
 			'' too big?
 			if( astGetValueAsULongInt( n ) > 9223372036854775807ULL ) then
 				n = astNewCONV( dtype, NULL, n )
-				errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+				errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
 			end if
 		end if
 
@@ -691,7 +691,7 @@ chk_ulong:
 			'' too big?
 			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
 				n = astNewCONV( dtype, NULL, n )
-				errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+				errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
 			end if
 		end if
 
@@ -703,7 +703,7 @@ chk_int:
 		if( (lval < ast_minlimitTB( dtype )) or _
 			(lval > clngint( ast_maxlimitTB( dtype ) )) ) then
 			n = astNewCONV( dtype, NULL, n )
-			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
 		end if
 
     case FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR, _
@@ -715,7 +715,7 @@ chk_uint:
 		if( (ulval < culngint( ast_minlimitTB( dtype ) )) or _
 			(ulval > ast_maxlimitTB( dtype )) ) then
 			n = astNewCONV( dtype, NULL, n )
-			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
 		end if
 
 	case FB_DATATYPE_LONG
