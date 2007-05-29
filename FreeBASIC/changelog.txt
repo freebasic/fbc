@@ -5,6 +5,7 @@ Version 0.18 Beta:
 
 [added]
 - include file and import library for LZO 2.02 (DrV)
+- literal conversion overflow warnings (cha0s)
 
 [fixed]
 - the #include once and #pragma once PP directives weren't fully solving the paths of their include files (cha0s)
@@ -15,6 +16,7 @@ Version 0.18 Beta:
 - TYPEOF would crash when handling an array with an index expression (cha0s)
 - bug #1696394 - default colors for GFX primitives were being set using the wrong target bpp (jeffm)
 - there was a deadlock when an app ended when the screen was locked (cha0s)
+- converting a constant floating-point to an unsigned integer was incorrect (cha0s)
 
 Version 0.17 Beta:
 

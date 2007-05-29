@@ -209,7 +209,6 @@ function cTypeOf _
 			subtype = astGetSubtype( expr )
 		else
 			while walk
-				'' ? astGetClass( walk )
 				select case as const astGetClass( walk )
 				case AST_NODECLASS_FIELD, AST_NODECLASS_IDX
 					'' if it's a field, get this node's type, 

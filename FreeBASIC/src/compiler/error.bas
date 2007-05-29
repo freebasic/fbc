@@ -60,7 +60,8 @@ end type
 		( 2, @"Object files or libraries with mixed multithreading (-mt) options" ), _
 		( 2, @"Object files or libraries with mixed language (-lang) options" ), _
 		( 0, @"Deleting ANY pointers is undefined" ), _
-		( 2, @"Array too large for stack, consider making it dynamic or SHARED" ) _
+		( 2, @"Array too large for stack, consider making it dynamic or SHARED" ), _
+		( 0, @"Overflow in constant conversion" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _

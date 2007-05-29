@@ -223,8 +223,10 @@ end type
 union FBVALUE
 	str				as FBSYMBOL_ ptr
 	int				as integer
+	uint			as uinteger
 	float			as double
 	long			as longint
+	ulong			as ulongint
 end union
 
 '' keyword

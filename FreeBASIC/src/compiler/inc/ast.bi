@@ -1339,6 +1339,8 @@ extern ast as ASTCTX
 
 extern ast_bitmaskTB( 0 to 32 ) as uinteger
 
+extern ast_maxlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as ulongint
+
 extern ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as longint
 
 extern ast_classTB( 0 to AST_CLASSES-1 ) as AST_CLASSINFO

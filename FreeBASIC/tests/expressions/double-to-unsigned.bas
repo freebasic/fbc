@@ -27,6 +27,9 @@ sub test cdecl ()
 	
 	CU_ASSERT_EQUAL( i, 1235 )
 	CU_ASSERT_EQUAL( l, 1235 )
+	
+	i = 4.2e9
+	CU_ASSERT_EQUAL( i, 4.2e9 )
 
 end sub
 
