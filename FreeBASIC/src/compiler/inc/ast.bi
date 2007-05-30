@@ -940,6 +940,11 @@ declare function astTypeIniIsConst _
 		byval tree as ASTNODE ptr _
 	) as integer
 
+declare function astTypeIniCheckScope _
+	( _
+		byval tree as ASTNODE ptr _
+	) as integer
+
 declare function astTypeIniUpdate _
 	( _
 		byval tree as ASTNODE ptr _

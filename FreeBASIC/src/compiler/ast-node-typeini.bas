@@ -846,6 +846,56 @@ function astTypeIniIsConst _
 end function
 
 '':::::
+function astTypeIniCheckScope _
+	( _
+		byval n as ASTNODE ptr _
+	) as integer
+
+	dim as FBSYMBOL ptr sym = any
+
+	function = FALSE
+
+	if( n <> NULL ) then
+
+    	select case n->class
+		case AST_NODECLASS_VAR, AST_NODECLASS_CONST		
+
+			sym = astGetSymbol( n )
+			if( sym <> NULL ) then
+
+				if( ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_SHARED or _
+				 						   FB_SYMBATTRIB_COMMON or _
+				 						   FB_SYMBATTRIB_STATIC or _
+										   FB_SYMBATTRIB_DESCRIPTOR or _
+				 						   FB_SYMBATTRIB_TEMP)) = 0) ) then
+
+					function = TRUE
+					exit function
+				end if
+
+			end if
+
+		end select
+
+		if( n->l <> NULL ) then
+			if( astTypeIniCheckScope( n->l ) ) then
+				function = TRUE
+				exit function
+			end if
+		end if
+
+		if( n->r <> NULL ) then
+			if( astTypeIniCheckScope( n->r ) ) then
+				function = TRUE
+				exit function
+			end if
+		end if
+
+	end if
+
+end function
+
+'':::::
 private sub hWalk _
 	( _
 		byval node as ASTNODE ptr, _

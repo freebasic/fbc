@@ -1,8 +1,8 @@
 Version 0.18 Beta:
 
 [changed]
-- include file and import library for libcurl 7.16.2 (jeffm)
-- MK* had to be reverted, it will not evaluate constant numeric expressions to constant literal expressions anymore (it will behave like it used to), because of the NULL-terminated nature of literal strings, sorry (CV* still evaluates to constants(arguably much more important ;)) (cha0s)
+- include file and import library for libcurl 7.15.4 (jeffm)
+- #1723533 - MK* had to be reverted, it will not evaluate constant numeric expressions to constant literal expressions anymore (it will behave like it used to), because of the NULL-terminated nature of literal strings, sorry (CV* still evaluates to constants(arguably much more important ;)) (cha0s)
 
 [added]
 - include file and import library for LZO 2.02 (DrV)
@@ -12,12 +12,13 @@ Version 0.18 Beta:
 - the #include once and #pragma once PP directives weren't fully solving the paths of their include files (cha0s)
 - overloaded property resolution was failing (cha0s)
 - nehe/data/font.tga was missing half the characters (jeffm)
-- bug #1716570 - bit positions of bitfields shouldn't advance in a UNION (jeffm)
+- #1716570 - bit positions of bitfields shouldn't advance in a UNION (jeffm)
 - PUT would crash with a null pointer for a source (cha0s)
 - TYPEOF would crash when handling an array with an index expression (cha0s)
-- bug #1696394 - default colors for GFX primitives were being set using the wrong target bpp (jeffm)
-- there was a deadlock when an app ended when the screen was locked (cha0s)
-- converting a constant floating-point to an unsigned integer was incorrect (cha0s)
+- #1696394 - default colors for GFX primitives were being set using the wrong target bpp (jeffm)
+- #1711210 - there was a deadlock when an app ended when the screen was locked (cha0s)
+- #1726019 - converting a constant floating-point to an unsigned integer was incorrect (cha0s)
+- #1680718 - local variables were being allowed with static and shared initializers (jeffm)
 
 Version 0.17 Beta:
 

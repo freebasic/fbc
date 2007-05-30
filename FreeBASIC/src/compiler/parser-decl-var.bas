@@ -904,12 +904,26 @@ private function hVarInit _
 
 		'' only if it's not an object, static or global instances are allowed
 		if( has_ctor = FALSE ) then
+
 			if( astTypeIniIsConst( initree ) = FALSE ) then
+				errReport( FB_ERRMSG_EXPECTEDCONST )
 				'' error recovery: discard the tree
 				astDelTree( initree )
 				initree = NULL
 				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 			end if
+
+		'' if it is an object, don't allow local references
+		else
+
+			if( astTypeIniCheckScope( initree ) = TRUE ) then
+				errReport( FB_ERRMSG_INVALIDINITIALIZER )
+				'' error recovery: discard the tree
+				astDelTree( initree )
+				initree = NULL
+				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
+			end if
+
 		end if
 
 	end if
