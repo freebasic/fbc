@@ -12,14 +12,11 @@
 #inclib "curl"
 
 '' begin include curlver.bi
-#define LIBCURL_VERSION "7.16.2"
+#define LIBCURL_VERSION "7.15.4"
 #define LIBCURL_VERSION_MAJOR 7
-#define LIBCURL_VERSION_MINOR 16
-#define LIBCURL_VERSION_PATCH 2
-#define LIBCURL_VERSION_NUM &h071002
-#define LIBCURL_TIMESTAMP "Wed Apr 11 13:12:42 UTC 2007"
-
-'' end include
+#define LIBCURL_VERSION_MINOR 15
+#define LIBCURL_VERSION_PATCH 4
+#define LIBCURL_VERSION_NUM &h070f04
 
 #include once "crt/stdio.bi"
 #include once "crt/limits.bi"
@@ -35,9 +32,6 @@ type curl_off_t as off_t
 #define CURL_FORMAT_OFF_T "%ld"
 
 type curl_slist_ as curl_slist
-type curl_socket_t as integer
-
-#define CURL_SOCKET_BAD -1
 
 type curl_httppost
 	next as curl_httppost ptr
@@ -76,13 +70,6 @@ type curl_write_callback as function cdecl(byval as zstring ptr, byval as size_t
 #define CURL_READFUNC_ABORT &h10000000
 
 type curl_read_callback as function cdecl(byval as zstring ptr, byval as size_t, byval as size_t, byval as any ptr) as size_t
-
-enum curlsocktype
-	CURLSOCKTYPE_IPCXN
-	CURLSOCKTYPE_LAST
-end enum
-
-type curl_sockopt_callback as function cdecl(byval as any ptr, byval as curl_socket_t, byval as curlsocktype) as integer
 type curl_passwd_callback as function cdecl(byval as any ptr, byval as zstring ptr, byval as zstring ptr, byval as integer) as integer
 
 enum curlioerr
@@ -197,12 +184,15 @@ enum CURLcode
 	CURLE_TFTP_NOSUCHUSER
 	CURLE_CONV_FAILED
 	CURLE_CONV_REQD
-	CURLE_SSL_CACERT_BADFILE
-	CURLE_REMOTE_FILE_NOT_FOUND
-	CURLE_SSH
-	CURLE_SSL_SHUTDOWN_FAILED
 	CURL_LAST
 end enum
+
+#define CURLE_OPERATION_TIMEDOUT CURLE_OPERATION_TIMEOUTED
+#define CURLE_HTTP_NOT_FOUND CURLE_HTTP_RETURNED_ERROR
+#define CURLE_HTTP_PORT_FAILED CURLE_INTERFACE_FAILED
+#define CURLE_FTP_PARTIAL_FILE CURLE_PARTIAL_FILE
+#define CURLE_FTP_BAD_DOWNLOAD_RESUME CURLE_BAD_DOWNLOAD_RESUME
+#define CURLE_ALREADY_COMPLETE 99999
 
 type curl_conv_callback as function cdecl(byval as zstring ptr, byval as size_t) as CURLcode
 type curl_ssl_ctx_callback as function cdecl(byval as CURL ptr, byval as any ptr, byval as any ptr) as CURLcode
@@ -219,15 +209,8 @@ end enum
 #define CURLAUTH_DIGEST (1 shl 1)
 #define CURLAUTH_GSSNEGOTIATE (1 shl 2)
 #define CURLAUTH_NTLM (1 shl 3)
-#define CURLAUTH_ANY  ( not 0 )
-#define CURLAUTH_ANYSAFE ( not (1 shl 0))
-#define CURLSSH_AUTH_ANY  ( not 0 )
-#define CURLSSH_AUTH_NONE 0
-#define CURLSSH_AUTH_PUBLICKEY (1 shl 0)
-#define CURLSSH_AUTH_PASSWORD (1 shl 1)
-#define CURLSSH_AUTH_HOST (1 shl 2)
-#define CURLSSH_AUTH_KEYBOARD (1 shl 3)
-#define CURLSSH_AUTH_DEFAULT  ( not 0 )
+#define CURLAUTH_ANY (not 0)
+#define CURLAUTH_ANYSAFE (not (1 shl 0))
 #define CURLE_ALREADY_COMPLETE 99999
 #define CURL_ERROR_SIZE 256
 
@@ -237,14 +220,6 @@ enum curl_ftpssl
 	CURLFTPSSL_CONTROL
 	CURLFTPSSL_ALL
 	CURLFTPSSL_LAST
-end enum
-
-
-enum curl_ftpccc
-	CURLFTPSSL_CCC_NONE
-	CURLFTPSSL_CCC_PASSIVE
-	CURLFTPSSL_CCC_ACTIVE
-	CURLFTPSSL_CCC_LAST
 end enum
 
 
@@ -384,9 +359,14 @@ enum CURLoption
 	CURLOPT_FTP_SSL = 0+119
 	CURLOPT_POSTFIELDSIZE_LARGE = 30000+120
 	CURLOPT_TCP_NODELAY = 0+121
+	CURLOPT_SOURCE_USERPWD = 10000+123
+	CURLOPT_SOURCE_PREQUOTE = 10000+127
+	CURLOPT_SOURCE_POSTQUOTE = 10000+128
 	CURLOPT_FTPSSLAUTH = 0+129
 	CURLOPT_IOCTLFUNCTION = 20000+130
 	CURLOPT_IOCTLDATA = 10000+131
+	CURLOPT_SOURCE_URL = 10000+132
+	CURLOPT_SOURCE_QUOTE = 10000+133
 	CURLOPT_FTP_ACCOUNT = 10000+134
 	CURLOPT_COOKIELIST = 10000+135
 	CURLOPT_IGNORE_CONTENT_LENGTH = 0+136
@@ -398,20 +378,6 @@ enum CURLoption
 	CURLOPT_CONV_FROM_NETWORK_FUNCTION = 20000+142
 	CURLOPT_CONV_TO_NETWORK_FUNCTION = 20000+143
 	CURLOPT_CONV_FROM_UTF8_FUNCTION = 20000+144
-	CURLOPT_MAX_SEND_SPEED_LARGE = 30000+145
-	CURLOPT_MAX_RECV_SPEED_LARGE = 30000+146
-	CURLOPT_FTP_ALTERNATIVE_TO_USER = 10000+147
-	CURLOPT_SOCKOPTFUNCTION = 20000+148
-	CURLOPT_SOCKOPTDATA = 10000+149
-	CURLOPT_SSL_SESSIONID_CACHE = 0+150
-	CURLOPT_SSH_AUTH_TYPES = 0+151
-	CURLOPT_SSH_PUBLIC_KEYFILE = 10000+152
-	CURLOPT_SSH_PRIVATE_KEYFILE = 10000+153
-	CURLOPT_FTP_SSL_CCC = 0+154
-	CURLOPT_TIMEOUT_MS = 0+155
-	CURLOPT_CONNECTTIMEOUT_MS = 0+156
-	CURLOPT_HTTP_TRANSFER_DECODING = 0+157
-	CURLOPT_HTTP_CONTENT_DECODING = 0+158
 	CURLOPT_LASTENTRY
 end enum
 
@@ -422,6 +388,15 @@ end enum
 #define CURLOPT_WRITEDATA CURLOPT_FILE
 #define CURLOPT_READDATA CURLOPT_INFILE
 #define CURLOPT_HEADERDATA CURLOPT_WRITEHEADER
+#define CURLOPT_HTTPREQUEST -1
+#define CURLOPT_MUTE -2
+#define CURLOPT_PASSWDFUNCTION -3
+#define CURLOPT_PASSWDDATA -4
+#define CURLOPT_CLOSEFUNCTION -5
+#define CURLOPT_SOURCE_HOST -6
+#define CURLOPT_SOURCE_PATH -7
+#define CURLOPT_SOURCE_PORT -8
+#define CURLOPT_PASV_HOST -9
 
 enum 
 	CURL_HTTP_VERSION_NONE
@@ -500,10 +475,6 @@ end enum
 
 
 declare function curl_formadd cdecl alias "curl_formadd" (byval httppost as curl_httppost ptr ptr, byval last_post as curl_httppost ptr ptr, ...) as CURLFORMcode
-
-type curl_formget_callback as function cdecl(byval as any ptr, byval as zstring ptr, byval as size_t) as size_t
-
-declare function curl_formget cdecl alias "curl_formget" (byval form as curl_httppost ptr, byval arg as any ptr, byval append as curl_formget_callback) as integer
 declare sub curl_formfree cdecl alias "curl_formfree" (byval form as curl_httppost ptr)
 declare function curl_getenv cdecl alias "curl_getenv" (byval variable as zstring ptr) as zstring ptr
 declare function curl_version cdecl alias "curl_version" () as zstring ptr
@@ -636,11 +607,10 @@ enum CURLversion
 	CURLVERSION_FIRST
 	CURLVERSION_SECOND
 	CURLVERSION_THIRD
-	CURLVERSION_FOURTH
 	CURLVERSION_LAST
 end enum
 
-#define CURLVERSION_NOW CURLVERSION_FOURTH
+#define CURLVERSION_NOW CURLVERSION_THIRD
 
 type curl_version_info_data
 	age as CURLversion
@@ -655,8 +625,6 @@ type curl_version_info_data
 	ares as zstring ptr
 	ares_num as integer
 	libidn as zstring ptr
-	iconv_ver_num as integer
-	libssh_version as zstring ptr
 end type
 
 #define CURL_VERSION_IPV6 (1 shl 0)
@@ -697,6 +665,9 @@ declare sub curl_easy_reset cdecl alias "curl_easy_reset" (byval curl as CURL pt
 #include once "crt/sys/types.bi"
 
 type CURLM as any
+type curl_socket_t as integer
+
+#define CURL_SOCKET_BAD -1
 
 enum CURLMcode
 	CURLM_CALL_MULTI_PERFORM = -1
@@ -728,7 +699,6 @@ type CURLMsg
 	data as CURLMsg_data
 end type
 
-
 declare function curl_multi_init cdecl alias "curl_multi_init" () as CURLM ptr
 declare function curl_multi_add_handle cdecl alias "curl_multi_add_handle" (byval multi_handle as CURLM ptr, byval curl_handle as CURL ptr) as CURLMcode
 declare function curl_multi_remove_handle cdecl alias "curl_multi_remove_handle" (byval multi_handle as CURLM ptr, byval curl_handle as CURL ptr) as CURLMcode
@@ -745,25 +715,20 @@ declare function curl_multi_strerror cdecl alias "curl_multi_strerror" (byval as
 #define CURL_POLL_REMOVE 4
 #define CURL_SOCKET_TIMEOUT -1
 
-type curl_socket_callback as function cdecl(byval as CURL ptr, byval as curl_socket_t, byval as integer, byval as any ptr, byval as any ptr) as integer
-type curl_multi_timer_callback as function cdecl(byval as CURLM ptr, byval as integer, byval as any ptr) as integer
+type curl_socket_callback as function cdecl(byval as CURL ptr, byval as curl_socket_t, byval as integer, byval as any ptr) as integer
 
-declare function curl_multi_socket cdecl alias "curl_multi_socket" (byval multi_handle as CURLM ptr, byval s as curl_socket_t, byval running_handles as integer ptr) as CURLMcode
-declare function curl_multi_socket_all cdecl alias "curl_multi_socket_all" (byval multi_handle as CURLM ptr, byval running_handles as integer ptr) as CURLMcode
+declare function curl_multi_socket cdecl alias "curl_multi_socket" (byval multi_handle as CURLM ptr, byval s as curl_socket_t) as CURLMcode
+declare function curl_multi_socket_all cdecl alias "curl_multi_socket_all" (byval multi_handle as CURLM ptr) as CURLMcode
 declare function curl_multi_timeout cdecl alias "curl_multi_timeout" (byval multi_handle as CURLM ptr, byval milliseconds as integer ptr) as CURLMcode
 
 enum CURLMoption
 	CURLMOPT_SOCKETFUNCTION = 20000+1
 	CURLMOPT_SOCKETDATA = 10000+2
-	CURLMOPT_PIPELINING = 0+3
-	CURLMOPT_TIMERFUNCTION = 20000+4
-	CURLMOPT_TIMERDATA = 10000+5
 	CURLMOPT_LASTENTRY
 end enum
 
 
 declare function curl_multi_setopt cdecl alias "curl_multi_setopt" (byval multi_handle as CURLM ptr, byval option as CURLMoption, ...) as CURLMcode
-declare function curl_multi_assign cdecl alias "curl_multi_assign" (byval multi_handle as CURLM ptr, byval sockfd as curl_socket_t, byval sockp as any ptr) as CURLMcode
 '' end include
 
 #endif
