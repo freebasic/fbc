@@ -55,6 +55,7 @@ typedef struct LINUXDRIVER
 	int (*init)(void);
 	void (*exit)(void);
 	void (*update)(void);
+	int mouse_clip;
 } LINUXDRIVER;
 
 
@@ -73,8 +74,8 @@ extern void fb_hX11Lock(void);
 extern void fb_hX11Unlock(void);
 extern void fb_hX11SetPalette(int index, int r, int g, int b);
 extern void fb_hX11WaitVSync(void);
-extern int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons);
-extern void fb_hX11SetMouse(int x, int y, int cursor);
+extern int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons, int *clip);
+extern void fb_hX11SetMouse(int x, int y, int cursor, int clip);
 extern void fb_hX11SetWindowTitle(char *title);
 extern int fb_hX11SetWindowPos(int x, int y);
 extern int *fb_hX11FetchModes(int depth, int *size);

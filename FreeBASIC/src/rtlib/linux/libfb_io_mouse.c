@@ -179,7 +179,7 @@ static void mouse_exit(void)
 
 
 /*:::::*/
-int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons)
+int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	int temp_z, temp_buttons;
 	
@@ -211,6 +211,7 @@ int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons)
 	*y = mouse_y;
 	*z = mouse_z;
 	*buttons = mouse_buttons;
+	*clip = 0;
 	
 	BG_UNLOCK();
 	
@@ -219,7 +220,7 @@ int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons)
 
 
 /*:::::*/
-int fb_ConsoleSetMouse(int x, int y, int cursor)
+int fb_ConsoleSetMouse(int x, int y, int cursor, int clip)
 {
 	return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 }

@@ -289,7 +289,7 @@ static int fb_dos_mouse_init(void)
 }
 
 /*:::::*/
-int fb_dos_get_mouse(int *x, int *y, int *z, int *buttons)
+int fb_dos_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	if (!fb_dos.mouse_ok) return -1;
 	
@@ -297,12 +297,13 @@ int fb_dos_get_mouse(int *x, int *y, int *z, int *buttons)
 	*y = fb_dos_mouse_y;
 	*z = (fb_dos.mouse_wheel_ok ? fb_dos_mouse_z : 0);
 	*buttons = fb_dos_mouse_buttons;
+	*clip = fb_dos.mouse_clip;
 	
 	return 0;
 }
 
 /*:::::*/
-void fb_dos_set_mouse(int x, int y, int cursor)
+void fb_dos_set_mouse(int x, int y, int cursor, int clip)
 {
 	int new_x, new_y;
 	
@@ -319,6 +320,11 @@ void fb_dos_set_mouse(int x, int y, int cursor)
 	
 	fb_dos_mouse_x = new_x;
 	fb_dos_mouse_y = new_y;
+	
+	if (clip == 0)
+		fb_dos.mouse_clip = FALSE;
+	else if (clip > 0)
+		fb_dos.mouse_clip = TRUE;
 }
 
 

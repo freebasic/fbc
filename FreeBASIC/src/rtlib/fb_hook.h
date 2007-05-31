@@ -99,11 +99,11 @@ FBCALL int          fb_LineInputWstr    ( const FB_WCHAR *text, FB_WCHAR *dst,
        										  int addnewline );
 
 FBCALL int          fb_Multikey         ( int scancode );
-FBCALL int          fb_GetMouse         ( int *x, int *y, int *z, int *buttons );
-FBCALL int          fb_SetMouse         ( int x, int y, int cursor );
+FBCALL int          fb_GetMouse         ( int *x, int *y, int *z, int *buttons, int *clip );
+FBCALL int          fb_SetMouse         ( int x, int y, int cursor, int clip );
 typedef int         (*FB_MULTIKEYPROC)  ( int scancode );
-typedef int         (*FB_GETMOUSEPROC)  ( int *x, int *y, int *z, int *buttons );
-typedef int         (*FB_SETMOUSEPROC)  ( int x, int y, int cursor );
+typedef int         (*FB_GETMOUSEPROC)  ( int *x, int *y, int *z, int *buttons, int *clip );
+typedef int         (*FB_SETMOUSEPROC)  ( int x, int y, int cursor, int clip );
 
 FBCALL int          fb_In               ( unsigned short port );
 FBCALL int          fb_Out              ( unsigned short port, unsigned char value );

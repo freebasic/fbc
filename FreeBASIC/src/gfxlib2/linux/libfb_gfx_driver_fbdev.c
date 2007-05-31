@@ -46,8 +46,8 @@ static void driver_lock(void);
 static void driver_unlock(void);
 static void driver_set_palette(int index, int r, int g, int b);
 static void driver_wait_vsync(void);
-static int driver_get_mouse(int *x, int *y, int *z, int *buttons);
-static void driver_set_mouse(int x, int y, int cursor);
+static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip);
+static void driver_set_mouse(int x, int y, int cursor, int clip);
 static int *driver_fetch_modes(int depth, int *size);
 
 GFXDRIVER fb_gfxDriverFBDev =
@@ -59,8 +59,8 @@ GFXDRIVER fb_gfxDriverFBDev =
 	driver_unlock,		/* void (*unlock)(void); */
 	driver_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
 	driver_wait_vsync,	/* void (*wait_vsync)(void); */
-	driver_get_mouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
-	driver_set_mouse,	/* void (*set_mouse)(int x, int y, int cursor); */
+	driver_get_mouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
+	driver_set_mouse,	/* void (*set_mouse)(int x, int y, int cursor, int clip); */
 	NULL,			/* void (*set_window_title)(char *title); */
 	NULL,			/* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,	/* int *(*fetch_modes)(void); */
@@ -91,6 +91,7 @@ static int framebuffer_offset, is_running = FALSE, is_active = TRUE;
 static int vsync_flags = 0, is_palette_changed = FALSE;
 static int mouse_fd = -1, mouse_packet_size, mouse_shown = TRUE;
 static int mouse_x, mouse_y, mouse_z, mouse_buttons;
+static int mouse_clip = 0;
 static unsigned int last_click_time = 0;
 static pthread_t thread;
 static pthread_mutex_t mutex;
@@ -614,7 +615,7 @@ static void driver_wait_vsync(void)
 
 
 /*:::::*/
-static int driver_get_mouse(int *x, int *y, int *z, int *buttons)
+static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	if (mouse_fd < 0)
 		return -1;
@@ -622,18 +623,23 @@ static int driver_get_mouse(int *x, int *y, int *z, int *buttons)
 	*y = mouse_y;
 	*z = mouse_z;
 	*buttons = mouse_buttons;
+	*clip = mouse_clip;
 	return 0;
 }
 
 
 /*:::::*/
-static void driver_set_mouse(int x, int y, int cursor)
+static void driver_set_mouse(int x, int y, int cursor, int clip)
 {
 	if ((x >= 0) && (x < __fb_gfx->w))
 		mouse_x = x;
 	if ((y >= 0) && (y < __fb_gfx->h))
 		mouse_y = y;
 	mouse_shown = (cursor != 0);
+	if (clip == 0)
+		mouse_clip = FALSE;
+	else if (clip > 0)
+		mouse_clip = TRUE;
 }
 
 

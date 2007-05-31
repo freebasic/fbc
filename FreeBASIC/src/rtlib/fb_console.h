@@ -201,8 +201,8 @@ FBCALL void 		fb_WriteWstr 		( int fnum, FB_WCHAR *s, int mask );
        int          fb_ConsoleKeyHit    ( void );
 
        int          fb_ConsoleMultikey  ( int scancode );
-       int          fb_ConsoleGetMouse  ( int *x, int *y, int *z, int *buttons );
-       int          fb_ConsoleSetMouse  ( int x, int y, int cursor );
+       int          fb_ConsoleGetMouse  ( int *x, int *y, int *z, int *buttons, int *clip );
+       int          fb_ConsoleSetMouse  ( int x, int y, int cursor, int clip );
 
        void         fb_ConsolePrintBuffer( const char *buffer, int mask );
        void         fb_ConsolePrintBufferWstr( const FB_WCHAR *buffer, int mask );

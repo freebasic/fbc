@@ -764,12 +764,12 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_GfxGetMouse ( byref x as integer, byref y as integer, byref z as integer, byref buttons as integer ) as integer '/ _
+		/' fb_GfxGetMouse ( byref x as integer, byref y as integer, byref z as integer, byref buttons as integer, byref clip as integer ) as integer '/ _
 		( _
 			@"getmouse", @"fb_GetMouse", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 			@rtlMultinput_cb, FB_RTL_OPT_NONE, _
-			4, _
+			5, _
 			{ _
 				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, FALSE _
@@ -782,15 +782,18 @@ declare function hPorts_cb _
 				), _
 				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
-	 			) _
+	 			), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
+				) _
 	 		} _
 		), _
-		/' fb_GfxSetMouse ( byval x as integer = -1, byval y as integer = -1, byval cursor as integer = -1 ) as integer '/ _
+		/' fb_GfxSetMouse ( byval x as integer = -1, byval y as integer = -1, byval cursor as integer = -1, byval clip as integer = -1 ) as integer '/ _
 		( _
 			@"setmouse", @"fb_SetMouse", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
-			3, _
+			4, _
 			{ _
 				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
@@ -800,7 +803,10 @@ declare function hPorts_cb _
 				), _
 				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			) _
+	 			), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+				) _
 	 		} _
 		), _
 		/' fb_GfxGetJoystick ( byval id as integer, byref buttons as integer = 0, _

@@ -54,6 +54,7 @@ typedef struct WIN32DRIVER
 	void (*exit)(void);
 	void (*paint)(void);
 	void (*thread)(HANDLE running_event);
+	int mouse_clip;
 } WIN32DRIVER;
 
 
@@ -74,8 +75,8 @@ extern void fb_hWin32Lock(void);
 extern void fb_hWin32Unlock(void);
 extern void fb_hWin32SetPalette(int index, int r, int g, int b);
 extern void fb_hWin32WaitVSync(void);
-extern int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons);
-extern void fb_hWin32SetMouse(int x, int y, int cursor);
+extern int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons, int *clip);
+extern void fb_hWin32SetMouse(int x, int y, int cursor, int clip);
 extern void fb_hWin32SetWindowTitle(char *title);
 extern int fb_hWin32SetWindowPos(int x, int y);
 

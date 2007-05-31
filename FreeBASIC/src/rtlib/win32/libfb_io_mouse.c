@@ -55,7 +55,7 @@ void ProcessMouseEvent(const MOUSE_EVENT_RECORD *pEvent)
 }
 
 /*:::::*/
-int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
+int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
 {
 #if 0
 	INPUT_RECORD ir;
@@ -107,6 +107,7 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 	*y = last_y - 1;
 	*z = last_z;
     *buttons = last_buttons;
+    *clip = 0;
 
     fb_hConvertFromConsole( x, y, NULL, NULL );
 
@@ -115,7 +116,7 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 
 
 /*:::::*/
-int fb_ConsoleSetMouse( int x, int y, int cursor )
+int fb_ConsoleSetMouse( int x, int y, int cursor, int clip )
 {
 	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 }

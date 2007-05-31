@@ -191,4 +191,80 @@ typedef struct _DOS_COUNTRY_INFO_GENERAL DOS_COUNTRY_INFO_GENERAL;
 
 int fb_hIntlGetInfo( DOS_COUNTRY_INFO_GENERAL *pInfo );
 
+/**************************************************************************************************
+ * Threading
+ **************************************************************************************************/
+ 
+extern void fb_ThreadingExit( void );
+
+typedef struct _FB_DOS_THREAD FB_DOS_THREAD;
+
+typedef struct _FBMUTEX {
+	unsigned int locked;
+	int lock_count;
+	FB_DOS_THREAD *owner;
+} FBMUTEX;
+
+typedef volatile unsigned int FB_DOS_SPINLOCK;
+
+/* TLS flags */
+#define FB_DOS_TLS_INUSE	0x00000001
+
+/* thread-local storage */
+typedef struct _FB_DOS_TLS {
+	void *value;
+	unsigned int flags;
+} FB_DOS_TLS;
+
+/* internal DOS thread data */
+struct _FB_DOS_THREAD {
+	FB_DOS_THREAD *prev;
+	FB_DOS_THREAD *next;
+	
+	/* stack */
+	void *stack;
+	
+	/* thread-local storage */
+	FB_DOS_TLS *tls;
+	int tls_max;
+	int tls_count;
+	FBMUTEX *tls_mutex;
+	
+};
+
+extern FB_DOS_THREAD __fb_idle_thread;
+extern FB_DOS_THREAD __fb_main_thread;
+extern FB_DOS_THREAD *__fb_curr_thread;
+
+/* thread-local storage */
+typedef int FB_DOS_TLS_KEY;
+#define FB_DOS_INVALID_TLS_KEY ((FB_DOS_TLS_KEY)~0)
+
+extern FB_DOS_TLS_KEY fb_hTlsAlloc( void );
+extern void fb_hTlsFree( FB_DOS_TLS_KEY key );
+extern void *fb_hTlsGet( FB_DOS_TLS_KEY key );
+extern void fb_hTlsSet( FB_DOS_TLS_KEY key, void *value );
+
+typedef FB_DOS_TLS_KEY FB_TLSENTRY;
+typedef FB_DOS_THREAD *FB_THREADID;
+
+extern FBMUTEX __fb_thread_mutex;
+
+#ifdef MULTITHREADED
+extern FBMUTEX __fb_global_mutex;
+extern FBMUTEX __fb_string_mutex;
+
+extern void fb_hMutexLock( FBMUTEX *mutex );
+extern void fb_hMutexUnlock( FBMUTEX *mutex );
+
+# define FB_LOCK()					fb_hMutexLock( &__fb_global_mutex )
+# define FB_UNLOCK()				fb_hMutexUnlock( &__fb_global_mutex )
+# define FB_STRLOCK()				fb_hMutexLock( &__fb_string_mutex )
+# define FB_STRUNLOCK()				fb_hMutexUnlock( &__fb_string_mutex )
+# define FB_TLSALLOC(key) 			key = fb_hTlsAlloc( )
+# define FB_TLSFREE(key)			fb_hTlsFree( (key) )
+# define FB_TLSSET(key,value)		fb_hTlsSet( (key), (void *)(value) )
+# define FB_TLSGET(key)				fb_hTlsGet( (key) )
+#endif
+
 #endif

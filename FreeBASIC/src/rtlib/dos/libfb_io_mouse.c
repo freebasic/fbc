@@ -46,7 +46,7 @@ static int wheel_pos;
 static __dpmi_regs regs;
 
 /*:::::*/
-int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
+int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
 {	
 	if (inited == -1) {
 		regs.x.ax = 0x0;	/* detect mouse driver and mouse existence */
@@ -57,7 +57,7 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 		__dpmi_int(0x33, &regs);
 		wheel_ok = ((regs.x.ax == 0x574D) && (regs.x.cx & 1)) ? TRUE : FALSE;
 		
-		wheel_pos = wheel_ok ? 0 : -1;
+		wheel_pos = 0;
 	}
 	
 	if (inited == 0) {
@@ -77,13 +77,14 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 	if (y) *y = regs.x.dx / 8;	/* char height is 8 pixels */
 	if (z) *z = wheel_pos;
 	if (buttons) *buttons = regs.h.bl;
+	if (clip) *clip = 0;
 	
 	return FB_RTERROR_OK;
 }
 
 
 /*:::::*/
-int fb_ConsoleSetMouse( int x, int y, int cursor )
+int fb_ConsoleSetMouse( int x, int y, int cursor, int clip )
 {
 	int mx, my;
 	

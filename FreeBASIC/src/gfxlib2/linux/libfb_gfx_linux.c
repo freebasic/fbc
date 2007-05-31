@@ -692,7 +692,7 @@ void fb_hX11WaitVSync(void)
 
 
 /*:::::*/
-int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons)
+int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	Window root, child;
 	int root_x, root_y, win_x, win_y;
@@ -716,12 +716,14 @@ int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons)
 		*buttons = mouse_buttons;
 	}
 	
+	*clip = fb_linux.mouse_clip;
+	
 	return 0;
 }
 
 
 /*:::::*/
-void fb_hX11SetMouse(int x, int y, int show)
+void fb_hX11SetMouse(int x, int y, int show, int clip)
 {
 	if ((x >= 0) && (has_focus)) {
 		mouse_on = TRUE;
@@ -739,6 +741,10 @@ void fb_hX11SetMouse(int x, int y, int show)
 		XDefineCursor(fb_linux.display, fb_linux.window, blank_cursor);
 		cursor_shown = FALSE;
 	}
+	if (clip == 0)
+		fb_linux.mouse_clip = FALSE;
+	else if (clip > 0)
+		fb_linux.mouse_clip = TRUE;
 }
 
 

@@ -57,6 +57,25 @@ static BOOL (WINAPI *_TrackMouseEvent)(TRACKMOUSEEVENT *) = NULL;
 static POINT last_mouse_pos;
 static UINT WM_MOUSEENTER;
 
+/*:::::*/
+static void fb_hSetMouseClip( void )
+{
+	RECT rc;
+	POINT point;
+	GetClientRect(fb_win32.wnd, &rc);
+	point.x = rc.left;
+	point.y = rc.top;
+	ClientToScreen(fb_win32.wnd, &point);
+	rc.left = point.x;
+	rc.top = point.y;
+	point.x = rc.right;
+	point.y = rc.bottom;
+	ClientToScreen(fb_win32.wnd, &point);
+	rc.right = point.x;
+	rc.bottom = point.y;
+	ClipCursor(&rc);
+}
+
 
 /*:::::*/
 static void ToggleFullScreen( void )
@@ -69,6 +88,9 @@ static void ToggleFullScreen( void )
 	}
 	
 	fb_win32.monitor = pMonitorFromWindow ? pMonitorFromWindow(fb_win32.wnd, MONITOR_DEFAULTTONEAREST) : NULL;
+	
+	if (fb_win32.mouse_clip)
+		ClipCursor(NULL);
 	
 	fb_win32.exit();
 	fb_win32.flags ^= DRIVER_FULLSCREEN;
@@ -148,6 +170,12 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			if ((fb_win32.is_active) && (mouse_on)) {
 				message = WM_MOUSEENTER;
 				break;
+			}
+			if (fb_win32.mouse_clip) {
+				if (!fb_win32.is_active)
+					ClipCursor(NULL);
+				else
+					fb_hSetMouseClip();
 			}
 			return 0;
 		
@@ -373,6 +401,11 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			fb_win32.paint();
 			fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
 			break;
+		
+		case WM_MOVING:
+			if (fb_win32.mouse_clip)
+				ClipCursor(NULL);
+			break;
 	}
 	
 	if ((message == WM_MOUSEMOVE) || (message == WM_MOUSEENTER)) {
@@ -383,6 +416,9 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			_TrackMouseEvent(&track_e);
 			has_focus = TRUE;
 			e.type = EVENT_MOUSE_ENTER;
+			if (fb_win32.mouse_clip) {
+				fb_hSetMouseClip();
+			}
 		}
 	}
 
@@ -452,6 +488,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 
 	cursor_shown = TRUE;
 	last_mouse_pos.x = 0xFFFF;
+	fb_win32.mouse_clip = FALSE;
 	
 	WM_MOUSEENTER = RegisterWindowMessage("FB WM_MOUSEENTER emulation");
 	if (!_TrackMouseEvent) {
@@ -529,6 +566,10 @@ void fb_hWin32Exit(void)
 	}
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, screensaver_active, NULL, 0);
 	UnregisterClass(fb_win32.window_class, fb_win32.hinstance);
+	if (fb_win32.mouse_clip) {
+		ClipCursor(NULL);
+		fb_win32.mouse_clip = FALSE;
+	}
 }
 
 
@@ -565,7 +606,7 @@ void fb_hWin32WaitVSync(void)
 
 
 /*:::::*/
-int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons)
+int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	if ((!fb_win32.is_active) || (!mouse_on))
 		return -1;
@@ -574,13 +615,14 @@ int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons)
 	*y = mouse_y;
 	*z = mouse_wheel;
 	*buttons = mouse_buttons;
+	*clip = fb_win32.mouse_clip;
 
 	return 0;
 }
 
 
 /*:::::*/
-void fb_hWin32SetMouse(int x, int y, int cursor)
+void fb_hWin32SetMouse(int x, int y, int cursor, int clip)
 {
 	POINT point;
 
@@ -601,6 +643,15 @@ void fb_hWin32SetMouse(int x, int y, int cursor)
 	else if ((cursor > 0) && (!cursor_shown)) {
 		cursor_shown = TRUE;
 		PostMessage(fb_win32.wnd, WM_SETCURSOR, 0, 0);
+	}
+	
+	if (clip == 0) {
+		fb_win32.mouse_clip = FALSE;
+		ClipCursor(NULL);
+	}
+	else if (clip > 0) {
+		fb_win32.mouse_clip = TRUE;
+		fb_hSetMouseClip();
 	}
 }
 

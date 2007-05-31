@@ -83,6 +83,7 @@ typedef struct fb_dos_t {
 	int mouse_ok;
 	int mouse_wheel_ok;
 	int mouse_cursor;
+	int mouse_clip;
 
 	int bios_mode;
 	
@@ -122,8 +123,8 @@ extern fb_dos_t fb_dos;
 
 /* mouse */
 
-extern int fb_dos_get_mouse(int *x, int *y, int *z, int *buttons);
-extern void fb_dos_set_mouse(int x, int y, int cursor);
+extern int fb_dos_get_mouse(int *x, int *y, int *z, int *buttons, int *clip);
+extern void fb_dos_set_mouse(int x, int y, int cursor, int clip);
 extern int fb_dos_update_mouse(void);
 
 /* VGA */
