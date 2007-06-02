@@ -72,13 +72,13 @@ function cAsmCode _
 		text = *lexGetText( )
 		sym = NULL
 		doskip = FALSE
-
+        
 		select case as const lexGetClass( LEXCHECK_NOWHITESPC )
 
 		'' id?
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
-			if( emitIsKeyword( text ) = FALSE ) then
+			if( emitIsKeyword( lcase(text) ) = FALSE ) then
 				dim as FBSYMBOL ptr base_parent = any
 
 				chain_ = cIdentifier( base_parent )
