@@ -33,6 +33,7 @@
  * sys_getexepath.c -- get the executable path for DOS
  *
  * chng: jan/2005 written [DrV]
+ *       jun/2007 replace / with \ in path
  *
  */
 
@@ -42,16 +43,24 @@
 char *fb_hGetExePath( char *dst, int maxlen )
 {
 	char *p;
-
-	strncpy(dst, __fb_ctx.argv[0], maxlen);
-
+	int len, i;
+	
+	len = strlen( __fb_ctx.argv[0] );
+	if( len >= maxlen )
+		len = maxlen - 1;
+	
+	memcpy( dst, __fb_ctx.argv[0], len );
+	
 	p = strrchr( dst, '/' );
 	if( p != NULL )
 		*p = '\0';
 	else
 		dst[0] = '\0';
-
-
+	
+	for( i = 0; i < len; i++ )
+		if( dst[i] == '/' )
+			dst[i] = '\\';
+	
 	return p;
 }
 
