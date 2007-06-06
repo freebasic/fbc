@@ -21,6 +21,7 @@ Version 0.18 Beta:
 - #1711210 - there was a deadlock when an app ended when the screen was locked (cha0s)
 - #1726019 - converting a constant floating-point to an unsigned integer was incorrect (cha0s)
 - #1680718 - local variables were being allowed with static and shared initializers (jeffm)
+- the 'elements' arg on get/put wasn't being checked for validity, causing internal width multiplication to fail on all but numeric types(cha0s)
 
 Version 0.17 Beta:
 

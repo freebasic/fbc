@@ -634,10 +634,27 @@ private function hFilePut _
 				end if
 			end if
 		end if
+		
+		'' elems has to be an integer or able to be converted
+		if( elmexpr ) then
+			if( typeGetDatatype( astGetDatatype( elmexpr ) ) = FB_DATATYPE_POINTER ) then
+				errReportWarn( FB_WARNINGMSG_PASSINGPTRTOSCALAR )
+			end if
+			if( astGetDatatype( elmexpr ) <> FB_DATATYPE_INTEGER ) then
+				elmexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, elmexpr )
+				if( elmexpr = NULL ) then
+					if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+						exit function
+					else
+						elmexpr = NULL
+					end if
+				end if
+			end if
+		end if
 	else
 		elmexpr = NULL
 	end if
-
+	
 	if( isarray = FALSE ) then
 		function = rtlFilePut( fileexpr, posexpr, srcexpr, elmexpr, isfunc )
 	else
@@ -738,6 +755,22 @@ private function hFileGet _
 					exit function
 				else
 					elmexpr = NULL
+				end if
+			end if
+			'' elems has to be an integer or able to be converted
+			if( elmexpr ) then
+				if( typeGetDatatype( astGetDatatype( elmexpr ) ) = FB_DATATYPE_POINTER ) then
+					errReportWarn( FB_WARNINGMSG_PASSINGPTRTOSCALAR )
+				end if
+				if( astGetDatatype( elmexpr ) <> FB_DATATYPE_INTEGER ) then
+					elmexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, elmexpr )
+					if( elmexpr = NULL ) then
+						if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+							exit function
+						else
+							elmexpr = NULL
+						end if
+					end if
 				end if
 			end if
 		end if
