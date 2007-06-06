@@ -88,7 +88,7 @@ int fb_ConsoleSetMouse( int x, int y, int cursor, int clip )
 {
 	int mx, my;
 	
-	fb_ConsoleGetMouse(&mx, &my, NULL, NULL);
+	fb_ConsoleGetMouse(&mx, &my, NULL, NULL, NULL);
 	
 	if (inited == 0) return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	

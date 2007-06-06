@@ -592,7 +592,7 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	
 	if (fb_dos.mouse_ok)
 	{
-		fb_dos_set_mouse(fb_dos.w / 2, fb_dos.h / 2, TRUE);
+		fb_dos_set_mouse(fb_dos.w / 2, fb_dos.h / 2, TRUE, 0);
 		fb_dos.mouse_x_old = fb_dos.w / 2;
 		fb_dos.mouse_y_old = fb_dos.h / 2;
 	}
