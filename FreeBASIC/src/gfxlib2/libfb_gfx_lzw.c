@@ -26,68 +26,10 @@
  */
 
 #include "fb_gfx.h"
-
-#define MAX_CODE	4095
-#define TABLE_SIZE	5021
-
-#define OUTPUT_CODE(c)						\
-{											\
-	if (bit) {								\
-		*out_buffer++ |= (c & 0xF) << 4;	\
-		*out_buffer++ = c >> 4;				\
-		size++;								\
-	}										\
-	else {									\
-		*out_buffer++ = c & 0xFF;			\
-		*out_buffer = c >> 8;				\
-	}										\
-	size++;									\
-	if (size >= *out_size)					\
-		return -1;							\
-	bit ^= 1;								\
-}
-
-#define INPUT_CODE(c)						\
-{											\
-	if (bit) {								\
-		c = *in_buffer++ >> 4;				\
-		c |= *in_buffer++ << 4;				\
-		in_size--;							\
-	}										\
-	else {									\
-		c = *in_buffer++;					\
-		c |= (*in_buffer & 0xF) << 8;		\
-	}										\
-	in_size--;								\
-	bit ^= 1;								\
-}
+#include "fb_gfx_lzw.h"
 
 
-typedef struct LZW_ENTRY
-{
-	short code;
-	unsigned short prefix;
-	unsigned char value;
-} LZW_ENTRY;
-
-static LZW_ENTRY entry[TABLE_SIZE];
-
-
-/*:::::*/
-static LZW_ENTRY *find_match(unsigned short prefix, unsigned char value)
-{
-	unsigned short index, offset = 1;
-
-	index = ((unsigned short)value << 4) ^ prefix;
-	if (index)
-		offset = TABLE_SIZE - index;
-	while (1) {
-		if ((entry[index].code == -1) ||
-		    ((entry[index].prefix == prefix) && (entry[index].value == value)))
-			return &entry[index];
-		index = (index + offset) % TABLE_SIZE;
-	}
-}
+LZW_ENTRY fb_lzw_entry[TABLE_SIZE];
 
 
 /*:::::*/
@@ -96,50 +38,13 @@ static unsigned char *decode_string(unsigned char *buffer, int code)
 	int index = 0;
 
 	while (code > 255) {
-		*buffer++ = entry[code].value;
-		code = entry[code].prefix;
+		*buffer++ = fb_lzw_entry[code].value;
+		code = fb_lzw_entry[code].prefix;
 		if (index++ >= MAX_CODE - 1)
 			return NULL;
 	}
 	*buffer = code;
 	return buffer;
-}
-
-
-/*:::::*/
-FBCALL int fb_hEncode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size)
-{
-	LZW_ENTRY *e;
-	unsigned short string_code, next_code = 256;
-	unsigned char bit = 0;
-	int size;
-
-	size = 0;
-	fb_hMemSet(entry, -1, sizeof(entry));
-	string_code = *in_buffer++;
-	in_size--;
-	while (in_size) {
-		e = find_match(string_code, *in_buffer);
-		if (e->code != -1)
-			string_code = (unsigned short)e->code;
-		else {
-			if (next_code < MAX_CODE) {
-				e->code = next_code++;
-				e->prefix = string_code;
-				e->value = *in_buffer;
-			}
-			OUTPUT_CODE(string_code);
-			string_code = *in_buffer;
-		}
-		in_buffer++;
-		in_size--;
-	}
-	OUTPUT_CODE(string_code);
-	OUTPUT_CODE(MAX_CODE);
-	if (bit)
-		size++;
-	*out_size = size;
-	return 0;
 }
 
 
@@ -174,8 +79,8 @@ FBCALL int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char
 			(*out_size)++;
 		}
 		if (next_code < MAX_CODE) {
-			entry[next_code].prefix = old_code;
-			entry[next_code].value = byte;
+			fb_lzw_entry[next_code].prefix = old_code;
+			fb_lzw_entry[next_code].value = byte;
 			next_code++;
 		}
 		old_code = new_code;
