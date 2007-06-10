@@ -22,6 +22,7 @@ Version 0.18 Beta:
 - #1726019 - converting a constant floating-point to an unsigned integer was incorrect (cha0s)
 - #1680718 - local variables were being allowed with static and shared initializers (jeffm)
 - the 'elements' arg on get/put wasn't being checked for validity, causing internal width multiplication to fail on all but numeric types(cha0s)
+- "as ANY" as being allowed on TYPE members(cha0s)
 
 Version 0.17 Beta:
 

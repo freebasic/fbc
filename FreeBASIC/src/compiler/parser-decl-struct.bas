@@ -362,7 +362,7 @@ private function hTypeMultElementDecl _
     function = FALSE
 
     '' SymbolType
-    if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+    if( hSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
     	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     		exit function
     	else
@@ -579,7 +579,7 @@ private function hTypeElementDecl _
     end if
 
     '' SymbolType
-    if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+    if( hSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
     	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     		exit function
 		else
