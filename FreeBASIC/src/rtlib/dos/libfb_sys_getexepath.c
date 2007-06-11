@@ -50,6 +50,7 @@ char *fb_hGetExePath( char *dst, int maxlen )
 		len = maxlen - 1;
 	
 	memcpy( dst, __fb_ctx.argv[0], len );
+	dst[len + 1] = '\0';
 	
 	fb_hConvertPath( dst, len );
 	
