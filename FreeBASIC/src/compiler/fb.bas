@@ -919,7 +919,7 @@ sub fbGetDefaultLibs _
 	case FB_COMPTARGET_DOS
 		hAddLib( "c" )
 		hAddLib( "m" )
-		hAddLib( "supcxx" )
+		hAddLib( "supcx" )
 
 	case FB_COMPTARGET_XBOX
 		hAddLib( "fbgfx" )
