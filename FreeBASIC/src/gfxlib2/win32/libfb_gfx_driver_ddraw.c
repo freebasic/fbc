@@ -79,6 +79,11 @@ typedef struct FLASHWINFO {
 	DWORD dwTimeout;
 } FLASHWINFO, *PFLASHWINFO;
 
+typedef struct DEVENUMDATA {
+	GUID guid;
+	BOOL success;
+} DEVENUMDATA;
+
 typedef BOOL (WINAPI *FLASHWINDOWEX)(PFLASHWINFO pwfi);
 
 static FLASHWINDOWEX FlashWindowEx = NULL;
@@ -221,6 +226,7 @@ static int directx_init(void)
 	HRESULT res;
 	DWORD style;
 	int i, depth, is_rgb = FALSE, height, flags;
+	DEVENUMDATA dev_enum_data;
 
 	lpDD = NULL;
 	lpDDS = NULL;
@@ -240,10 +246,16 @@ static int directx_init(void)
 	DirectDrawEnumerateEx = (DIRECTDRAWENUMERATEEX)GetProcAddress(dd_library, "DirectDrawEnumerateExA");
 	DirectInputCreate = (DIRECTINPUTCREATE)GetProcAddress(di_library, "DirectInputCreateA");
 	
-	if (!(fb_win32.flags & DRIVER_FULLSCREEN) || (fb_win32.monitor == NULL) || !DirectDrawEnumerateEx || (DirectDrawEnumerateEx(ddenum_callback, &monitor_guid, DDENUM_ATTACHEDSECONDARYDEVICES) != DD_OK))
+	if (!(fb_win32.flags & DRIVER_FULLSCREEN) || (fb_win32.monitor == NULL) || !DirectDrawEnumerateEx ||
+	    (DirectDrawEnumerateEx(ddenum_callback, &dev_enum_data, DDENUM_ATTACHEDSECONDARYDEVICES) != DD_OK) ||
+	    !dev_enum_data.success )
+	{
 		ddGUID = NULL;
+	}
 	else
-		ddGUID = &monitor_guid;
+	{
+		ddGUID = &dev_enum_data.guid;
+	}
 	
 	if ((!DirectDrawCreate) || (DirectDrawCreate(ddGUID, &lpDD1, NULL) != DD_OK))
 		return -1;
