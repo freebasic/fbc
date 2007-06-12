@@ -246,6 +246,8 @@ static int directx_init(void)
 	DirectDrawEnumerateEx = (DIRECTDRAWENUMERATEEX)GetProcAddress(dd_library, "DirectDrawEnumerateExA");
 	DirectInputCreate = (DIRECTINPUTCREATE)GetProcAddress(di_library, "DirectInputCreateA");
 	
+	dev_enum_data.success = FALSE;
+	
 	if (!(fb_win32.flags & DRIVER_FULLSCREEN) || (fb_win32.monitor == NULL) || !DirectDrawEnumerateEx ||
 	    (DirectDrawEnumerateEx(ddenum_callback, &dev_enum_data, DDENUM_ATTACHEDSECONDARYDEVICES) != DD_OK) ||
 	    !dev_enum_data.success )
