@@ -1843,6 +1843,7 @@ function symbFindClosestOvlProc _
 			next
 
 			'' fewer params? check if the ones missing are optional
+			dim as integer total_args = args
 			if( args < params ) then
 				if( (matches > 0) or (args = 0) ) then
 					do while( param <> NULL )
@@ -1853,12 +1854,13 @@ function symbFindClosestOvlProc _
 			    		else
 			    			matches += FB_OVLPROC_FULLMATCH
 			    		end if
-
+						total_args += 1
 						'' next param
 						param = symbGetProcPrevParam( ovl, param )
 					loop
 				end if
 			end if
+			matches /= total_args
 
 		    '' closer?
 		    if( matches > max_matches ) then

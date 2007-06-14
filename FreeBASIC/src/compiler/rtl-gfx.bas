@@ -973,7 +973,7 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_GfxControl_s ( byval what as integer, byref param1 as string, byval param2 as any ptr ptr ) as void '/ _
+		/' fb_GfxControl_s ( byval what as integer, byref param1 as string ) as void '/ _
 		( _
 			@"screencontrol", @"fb_GfxControl_s", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
