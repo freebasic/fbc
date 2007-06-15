@@ -10,6 +10,7 @@ Version 0.18 Beta:
 - literal conversion overflow warnings (cha0s)
 - SETMOUSE now has a 4th parameter, clip, which allows restricting the mouse pointer to the graphics window; GETMOUSE now has a 5th parameter, clip, to retrieve the current mouse clipping status
   IMPORTANT: this is a binary incompatible change - you must recompile any code that uses SETMOUSE or GETMOUSE (DrV)
+- a vararg procedure can now be defined in a TYPE, it has to be unique (cha0s)
 
 [fixed]
 - the #include once and #pragma once PP directives weren't fully solving the paths of their include files (cha0s)

@@ -460,7 +460,6 @@ function cProcHeader _
 	'' ID
 	if( (options and FB_PROCOPT_HASPARENT) <> 0 ) then
 		parent = symbGetCurrentNamespc( )
-		attrib or= FB_SYMBATTRIB_OVERLOADED
 
 	else
 		parent = cParentId( FB_IDOPT_ISDECL or _
@@ -580,6 +579,15 @@ function cProcHeader _
 		end if
 	end if
 
+	'' not vararg?
+	if( iif( symbGetProcParams( proc ) > 0, _ 
+	         symbGetProcTailParam( proc )->param.mode <> FB_PARAMMODE_VARARG, _ 
+	         TRUE ) ) then
+		if( (options and FB_PROCOPT_HASPARENT) <> 0 ) then
+			attrib or= FB_SYMBATTRIB_OVERLOADED
+		end if
+	end if
+	                   
     select case as const lexGetToken( )
     '' (CONSTRUCTOR | DESTRUCTOR)?
     case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
