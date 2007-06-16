@@ -741,10 +741,18 @@ void fb_hX11SetMouse(int x, int y, int show, int clip)
 		XDefineCursor(fb_linux.display, fb_linux.window, blank_cursor);
 		cursor_shown = FALSE;
 	}
-	if (clip == 0)
+	if (clip == 0) {
 		fb_linux.mouse_clip = FALSE;
-	else if (clip > 0)
+		XUngrabPointer(fb_linux.display, CurrentTime);
+	}
+	else if (clip > 0) {
 		fb_linux.mouse_clip = TRUE;
+		while (1) {
+			if (XGrabPointer(fb_linux.display, fb_linux.window, True, 0, GrabModeAsync, GrabModeAsync, fb_linux.window, None, CurrentTime) == GrabSuccess)
+				break;
+			usleep(100000);
+		}
+	}
 }
 
 
