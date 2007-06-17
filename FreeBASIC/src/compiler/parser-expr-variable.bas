@@ -203,18 +203,20 @@ function cUdtMember _
 
 		case else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			'' no error recovery: caller will take care
-			exit function
+			
+    		'' add a temp var
+    		return symbAddTempVar( FB_DATATYPE_INTEGER )
 		end select
 
     	dim as FBSYMCHAIN ptr chain_ = symbLookupCompField( subtype, lexGetText( ) )
     	if( chain_ = NULL ) then
     		if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, _
     							lexGetText( ) ) <> FALSE ) then
-    			'' no error recovery: caller will take care
     			lexSkipToken( )
     		end if
-    		exit function
+    		
+    		'' add a temp var
+    		return symbAddTempVar( FB_DATATYPE_INTEGER )
     	end if
 
     	'' since methods don't start a new hash, params and local
@@ -236,8 +238,10 @@ function cUdtMember _
     	'' nothing found..
     	if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, _
     						lexGetText( ) ) <> FALSE ) then
-    		'' no error recovery: caller will take care
     		lexSkipToken( )
+    		
+			'' add a temp var
+			function = symbAddTempVar( FB_DATATYPE_INTEGER )
     	end if
     	exit function
 
@@ -824,7 +828,7 @@ function cFuncPtrOrMemberDeref _
 	if( isfuncptr = FALSE ) then
 		'' MemberDeref?
 		expr = cMemberDeref( dtype, subtype, expr, checkarray )
-
+		
 		if( expr = NULL ) then
 			exit function
 		end if
@@ -1495,8 +1499,7 @@ function cVariableEx _
 				if( fld = NULL ) then
 					if( errGetLast( ) <> FB_ERRMSG_OK ) then
 						exit function
-					end if
-
+					end if  
 				else
 					'' constant? exit..
 					if( symbIsConst( fld ) ) then
@@ -1535,6 +1538,7 @@ function cVariableEx _
 		'' byref or import? by now it's a pointer var, the real type will be set bellow
 		varexpr = astNewVAR( sym, 0, typeAddrOf( dtype ), subtype )
 	else
+		
 		varexpr = astNewVAR( sym, 0, dtype, subtype )
 	end if
 
