@@ -1358,7 +1358,7 @@ namespace fb.fbdoc
 			return FALSE
 		case "anchor"
 			return _emitActionAnchor( ctx, paramsTb )
-		case "color"
+		case "color", "colour"
 			return _emitActionColor( ctx, paramsTb )
 		end select
 

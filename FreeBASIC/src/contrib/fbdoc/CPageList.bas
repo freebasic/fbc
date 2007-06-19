@@ -260,7 +260,7 @@ namespace fb.fbdoc
 
 		page = NewEnum( @page_i )
 		while( page )
-			? Space(page->GetLevel()*3) & page->GetLevel() & " - " + page->GetName() + " = '" + page->GetTitle() + "'"
+			print Space(page->GetLevel()*3) & page->GetLevel() & " - " + page->GetName() + " = '" + page->GetTitle() + "'"
 			page = NextEnum( @page_i )
 		wend
 

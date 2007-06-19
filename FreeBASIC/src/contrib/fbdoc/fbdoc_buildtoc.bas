@@ -61,11 +61,11 @@ namespace fb.fbdoc
 
 		sPageName = page->GetName()
 		if( len(sPageName) = 0 ) then
-			? "Warning: Page with no key name should never happen."
+			print "Warning: Page with no key name should never happen."
 			return FALSE
 		end if
 
-		? "Scanning: " + sPageName
+		print "Scanning: " + sPageName
 		sBody = LoadPage( sPageName )
 		if( len( sBody ) = 0 ) then
 			return FALSE
@@ -192,7 +192,7 @@ namespace fb.fbdoc
 			exit sub
 		end if
 
-		? "Building Toc: " + sPageName
+		print "Building Toc: " + sPageName
 		
 		sTitle = page->GetTitle()
 

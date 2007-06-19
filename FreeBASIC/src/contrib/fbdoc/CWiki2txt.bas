@@ -151,13 +151,13 @@ namespace fb.fbdoc
 				if( len(sName) > 0 ) then
 					sBody = LoadPage( sName, TRUE )
 					if( len(sbody) > 0 ) then
-						? "Emitting: " + page->GetName() + " = '" + page->GetTitle() + "'"
+						print "Emitting: " + page->GetName() + " = '" + page->GetTitle() + "'"
 						if this.EmitDefPage( page, sBody ) then
 							page->SetEmitted( TRUE )	
 						end if
 						okCount += 1
 					else
-						? "Error On: " + page->GetName() + " = '" + page->GetTitle() + "'"
+						print "Error On: " + page->GetName() + " = '" + page->GetTitle() + "'"
 						errCount += 1
 					end if
 				end if
@@ -287,12 +287,12 @@ namespace fb.fbdoc
 				page->SetPageTitle( sTitle )
 			end if
 
-			? "Emitting: " + page->GetName() + " = '" + page->GetTitle() + "'"
+			print "Emitting: " + page->GetName() + " = '" + page->GetTitle() + "'"
 			if this.EmitDefPage( page, sBody ) then
 				page->SetEmitted( TRUE )	
 			end if
 		else
-			? "Error On: " + page->GetName() + " = '" + page->GetTitle() + "'"
+			print "Error On: " + page->GetName() + " = '" + page->GetTitle() + "'"
 		end if
 
 		delete page

@@ -47,12 +47,12 @@ namespace fb.fbdoc
 		function = ""
 
 		if( sPage = NULL ) then
-			? "Warning: LoadPage was passed NULL"
+			print "Warning: LoadPage was passed NULL"
 			return ""
 		end if
 
 		if( len(*sPage) = 0) then
-			? "Warning: LoadPage was passed empty page name"
+			print "Warning: LoadPage was passed empty page name"
 			return ""
 		end if
 
@@ -78,7 +78,7 @@ namespace fb.fbdoc
 
 		if bLoadPage = TRUE then
 			dim as CWikiCon ptr wikicon = Connection_Create( )
-			? "Loading '" + *sPage + "'"
+			print "Loading '" + *sPage + "'"
 			if( wikicon->LoadPage( sPage, TRUE, TRUE, sBody ) <> FALSE ) then
 				if( wikicon->GetPageID() > 0 ) then
 					if( len(sBody) > 0 ) then

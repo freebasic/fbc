@@ -40,7 +40,8 @@ namespace fb.fbdoc
 							actionre, _
 							action2re, _
 							indentre, _
-							actionparamre
+							actionparamre, _
+							quotere
 
 		as CList ptr 		tokenlist
 		as CList ptr		actparamlist
@@ -137,6 +138,13 @@ namespace fb.fbdoc
 			exit function
 		end if
 
+		ctx->quotere = new CRegex( $"(&quot)", REGEX_OPT_CASELESS)
+		if( ctx->quotere = NULL ) then	
+			exit function
+		end if
+
+		
+
 		function = TRUE
 
 	end function
@@ -146,6 +154,11 @@ namespace fb.fbdoc
  		( _
 			byval ctx as CWikiCtx ptr _
 		) 
+
+		if( ctx->quotere <> NULL ) then
+			delete ctx->quotere
+			ctx->quotere = NULL
+		end if
 
 		if( ctx->actionparamre <> NULL ) then
 			delete ctx->actionparamre
@@ -308,9 +321,10 @@ namespace fb.fbdoc
 		) 
 		
 		dim as WikiAction_Param ptr param, last
+		dim as zstring ptr match
 		
 		token->action->paramhead = NULL
-			
+
 		if( ctx->actionparamre->Search( text ) ) then
 			last = NULL
 			do
@@ -323,7 +337,23 @@ namespace fb.fbdoc
 				param->next = NULL
 				
 				param->name = *ctx->actionparamre->GetStr( 1 )
-				param->value = *ctx->actionparamre->GetStr( 2 )
+				match = ctx->actionparamre->GetStr( 2 )
+
+				param->value = ""
+
+				if( ctx->quotere->Search( match ) ) then
+					dim as integer ofs = 0
+					do
+						dim as integer mofs = ctx->quotere->GetOfs( 0 )
+						param->value += mid( *match, 1+ofs, mofs-ofs ) + chr(34)
+						ofs = mofs + ctx->quotere->GetLen( 0 )
+					loop while ctx->quotere->SearchNext()
+					if( ofs < len( *match  ) ) then
+						param->value += mid( *match, 1+ofs )
+					end if
+				else
+					param->value = *match
+				end if
 
 				last = param
 
@@ -896,13 +926,25 @@ namespace fb.fbdoc
 			case WIKI_TOKEN_ACTION
 
 				dim as WikiAction_Param ptr param, nxt
+				dim as string tmp
+				dim as integer i
 
 				t = "{{" + token->action->name
 
 				param = token->action->paramhead
 				dim as integer p = 1
 				do while( param <> NULL )
-					t += " " + param->name + "=""" + param->value + """"
+					i = instr( param->value, chr(34) )
+					if( i > 0 ) then
+						tmp = param->value
+						do
+							mid( tmp, i, 1 ) = "&quot"
+							i = instr(i, tmp, chr(34) )
+						loop while ( i > 0 )
+						t += " " + param->name + "=""" + tmp + """"
+					else
+						t += " " + param->name + "=""" + param->value + """"
+					end if
 					param = param->next
 					p += 1
 				loop

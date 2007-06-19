@@ -906,7 +906,7 @@ namespace fb.fbdoc
 			return _actionGenImage( ctx, paramsTb )
 		case "anchor"
 			return _actionGenAnchor( ctx, paramsTb )
-		case "color"
+		case "color", "colour"
 			return _actionGenColor( ctx, paramsTb )
 		case else
 			return ""

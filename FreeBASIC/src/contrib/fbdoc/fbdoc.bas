@@ -90,34 +90,34 @@ const default_TocPage = "DocToc"
 	end if
 
 	if( bShowHelp ) then
-		? "fbdoc options
-		? ""
-		? "options:"
-		? "   -makeini       create the default ini file if it does not exist and exit"
-		? "   -useweb        load pages from wiki web"
-		? "   -usesql        load pages from sql database"
-		? "   -usecache      use cache as only source"
-		? "   -cachedir      set the location of the cache directory"
-		? "   -refresh       refresh all pages"
-		? "   -chm           generate html and chm output"
-		? "   -fbhelp        generate output for fbhelp viewer"
-		? "   -txt           generate ascii text output"
-		? "   -version       show version"
-		? "   -getpage page1 [page2 [ ... pageN ]]]"
-		? "                  get specified pages from web and store in the cache"
-		? "   -getpage @listfile"
-		? "                  get specified pages using a list file from web and 
-		? "                  store in the cache"
-		? "   -makepage pagename"
-		? "                  process a single page (and links on page) only"
-		? "   -maketitles    generate titles.txt
-		? ""
+		print "fbdoc options
+		print ""
+		print "options:"
+		print "   -makeini       create the default ini file if it does not exist and exit"
+		print "   -useweb        load pages from wiki web"
+		print "   -usesql        load pages from sql database"
+		print "   -usecache      use cache as only source"
+		print "   -cachedir      set the location of the cache directory"
+		print "   -refresh       refresh all pages"
+		print "   -chm           generate html and chm output"
+		print "   -fbhelp        generate output for fbhelp viewer"
+		print "   -txt           generate ascii text output"
+		print "   -version       show version"
+		print "   -getpage page1 [page2 [ ... pageN ]]]"
+		print "                  get specified pages from web and store in the cache"
+		print "   -getpage @listfile"
+		print "                  get specified pages using a list file from web and 
+		print "                  store in the cache"
+		print "   -makepage pagename"
+		print "                  process a single page (and links on page) only"
+		print "   -maketitles    generate titles.txt
+		print ""
 		end 1
 	end if
 
 	if( bShowVersion ) then
-		? "FreeBASIC User's Manual Converter/Generator - Version 0.1b"
-		? "Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink[dot]com)"
+		print "FreeBASIC User's Manual Converter/Generator - Version 0.1b"
+		print "Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink[dot]com)"
 		end 1
 	end if
 
@@ -196,7 +196,7 @@ const default_TocPage = "DocToc"
 				i += 1
 				sCacheDir = command(i)
 				if sCacheDir = "" then
-					? "Cache directory not specified"
+					print "Cache directory not specified"
 					end 1
 				end if
 				if right(sCacheDir, 1) <> "/" then
@@ -208,7 +208,7 @@ const default_TocPage = "DocToc"
 					sTocPage = command(i)
 				end if
 			case else
-				? "Unrecognized option '" + command(i) + "'"
+				print "Unrecognized option '" + command(i) + "'"
 				end 1
 			end select
 		
@@ -258,14 +258,14 @@ const default_TocPage = "DocToc"
 	'' Load connection options from the ini file
 	connopts = new COptions( sConnFile )
 	if( connopts = NULL ) then
-		? "Unable to load connection options file '" + sConnFile + "'"
+		print "Unable to load connection options file '" + sConnFile + "'"
 		end 1
 	end if
 
 	'' Load language options
 	sLangFile = "templates/default/lang/en/common.ini"
 	if( Lang.LoadOptions( sLangFile ) = FALSE ) then
-		? "Unable to load language file '" + sLangFile + "'"
+		print "Unable to load language file '" + sLangFile + "'"
 		end 1
 	end if
 
@@ -275,10 +275,10 @@ const default_TocPage = "DocToc"
 	'' Initialize the cache
 	sCacheDir = connopts->Get( "cache_dir", sCacheDir )
 	if LocalCache_Create( sCacheDir, CacheRefreshMode ) = FALSE then
-		? "Unable to use local cache dir " + sCacheDir
+		print "Unable to use local cache dir " + sCacheDir
 		end 1
 	else
-		? "Using local cache dir " + sCacheDir
+		print "Using local cache dir " + sCacheDir
 	end if
 
 	'' Initialize the wiki connection - in case its needed

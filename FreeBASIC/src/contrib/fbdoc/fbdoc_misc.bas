@@ -46,11 +46,11 @@ namespace fb.fbdoc
 
 		h = freefile
 
-		? "Generating pages titles list:"
+		print "Generating pages titles list:"
 
 		if( open(*sFileName for output as #h) = 0 ) then
 
-			? "Writing '" + *sFileName + "'"
+			print "Writing '" + *sFileName + "'"
 
 			page = paglist->NewEnum( @page_i )
 			while( page )
@@ -58,14 +58,14 @@ namespace fb.fbdoc
 
 				sTitle = FormatPageTitle( page->GetPageTitle() )
 
-				? #h, """"; sName; """,""";  sTitle; """"
+				print #h, """"; sName; """,""";  sTitle; """"
 				page = paglist->NextEnum( @page_i )
 			wend
 
 			close #h
 		else
 
-			? "Unable to write '" + *sFileName + "'"
+			print "Unable to write '" + *sFileName + "'"
 
 		end if
 

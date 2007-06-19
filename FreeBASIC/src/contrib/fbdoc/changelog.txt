@@ -1,3 +1,10 @@
+June 18, 2007
+- changed: using libcurl 7.15.4
+- fixed: check &quot inside action parameters
+- fixed: CWiki->Build() generates &quot when inside action parameter
+- changed: cosmetic source changes ( ? => print )
+- added: "colour" as alias for "color"
+
 April 4, 2007:
 - added support for images.
 

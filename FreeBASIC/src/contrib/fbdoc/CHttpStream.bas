@@ -118,6 +118,7 @@ namespace fb
 		) as integer
 
 		dim as CURL ptr curl
+		dim as CURLcode ret
 		
 		if( ctx = NULL ) then
 			return FALSE
@@ -145,26 +146,35 @@ namespace fb
  		if( doreset ) then
  			curl_easy_reset( curl )
  		end if
+
+		'' curl_easy_setopt( curl, CURLOPT_VERBOSE, TRUE )
 		curl_easy_setopt( curl, CURLOPT_URL, url )
 		curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, @recv_cb )
 		curl_easy_setopt( curl, CURLOPT_WRITEDATA, @ctx->stream )
-
 
 		'' This option should not be needed.  It wasn't in earlier version
 		'' but some where between libcurl 7.16.0 and 7.16.2, there seems to
 		'' be a problem getting pages consistently from www.freebasic.net/wiki
 		'' could be a bug in libcurl.  It wasn't a problem before.  This is the
 		'' work-around for now.
+		'' curl_easy_setopt( curl, CURLOPT_FRESH_CONNECT, TRUE )
 
-		curl_easy_setopt( curl, CURLOPT_FRESH_CONNECT, @ctx->stream )
+		'' This shouldn't be needed either, as it wasn't in previous versions
+		'' But now, we might get CURLE_COULDNT_RESOLVE_HOST on the first try
+		'' But not on the second, weird.  Problem with time-out values?
+		ret = curl_easy_perform( curl )
+		if( ret = CURLE_COULDNT_RESOLVE_HOST ) then
+			'' Retry
+			ret = curl_easy_perform( curl )
+		end if
 
- 		if( curl_easy_perform( curl ) <> 0 ) then
+		if( ret <> 0 ) then
  			if( ctx->stream.buffer <> NULL ) then
  				deallocate( ctx->stream.buffer )
  				ctx->stream.buffer = NULL
  			end if
  			return FALSE
- 		end if
+		end if
  		
 		if( ctx->stream.buffer <> NULL ) then
 			ctx->stream.buffer[ctx->stream.pos] = 0
