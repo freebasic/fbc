@@ -561,17 +561,22 @@ void fb_hWin32Exit(void)
 {
 	if (!fb_win32.is_running)
 		return;
+	
 	fb_win32.is_running = FALSE;
+	
 	if (handle) {
-		WaitForSingleObject(handle, 200);
+		WaitForSingleObject(handle, 1000);
 		DeleteCriticalSection(&update_lock);
 	}
+	
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, screensaver_active, NULL, 0);
 	UnregisterClass(fb_win32.window_class, fb_win32.hinstance);
+	
 	if (fb_win32.mouse_clip) {
 		ClipCursor(NULL);
 		fb_win32.mouse_clip = FALSE;
 	}
+	
 }
 
 
