@@ -546,6 +546,8 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 		handle = events[1];
 		if (result != WAIT_OBJECT_0)
 			return -1;
+			
+			SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL);
 	}
 	else
 		handle = NULL;

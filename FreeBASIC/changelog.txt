@@ -4,6 +4,7 @@ Version 0.18 Beta:
 - include file and import library for libcurl 7.15.4 (jeffm)
 - #1723533 - MK* had to be reverted, it will not evaluate constant numeric expressions to constant literal expressions anymore (it will behave like it used to), because of the NULL-terminated nature of literal strings, sorry (CV* still evaluates to constants(arguably much more important ;)) (cha0s)
 - the overload resolution wasn't normalizing the total sum of its matching args (cha0s)
+- gfxlib creates its windows with THREAD_PRIORITY_ABOVE_NORMAL again, without it was jerky (cha0s)
 
 [added]
 - include file and import library for LZO 2.02 (DrV)
