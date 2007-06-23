@@ -83,7 +83,7 @@ static __inline__ int snprintf (char *buffer, size_t n, const char *format, ...)
     va_list va;
 
     va_start( va, format );
-	res = vsprintf( buffer, format, va );
+	res = vsnprintf( buffer, n, format, va );
     va_end( va );
 
     return res;
