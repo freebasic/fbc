@@ -80,8 +80,34 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	fb_hPrepareTarget(context, target);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 	
-	fb_hFixRelative(context, coord_type, &fx, &fy, NULL, NULL);
+	// quirky but good
+	int lhs, rhs;
+	switch (coord_type) {
+		
+		case COORD_TYPE_RA:
+			lhs = COORD_TYPE_R;
+			rhs = COORD_TYPE_A;
+			break;
+		case COORD_TYPE_RR:
+			lhs = COORD_TYPE_R;
+			rhs = COORD_TYPE_R;
+			break;
+		case COORD_TYPE_AA:
+			lhs = COORD_TYPE_A;
+			rhs = COORD_TYPE_A;
+			break;
+		case COORD_TYPE_AR:
+			lhs = COORD_TYPE_A;
+			rhs = COORD_TYPE_R;
+			break;
+	}
 	
+	fb_hFixRelative(context, lhs, &fx, &fy, NULL, NULL);
+	
+	if( rhs == COORD_TYPE_R ) {
+		x2 += x1;
+		y2 += y1;
+	}
 	fb_hTranslateCoord(context, fx, fy, &x, &y);
 	
 	header = (PUT_HEADER *)src;

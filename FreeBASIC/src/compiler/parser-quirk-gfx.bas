@@ -932,9 +932,9 @@ function cGfxPut as integer
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
-		coordtype = FBGFX_COORDTYPE_R
+		coordtype = FBGFX_COORDTYPE_RA
 	else
-		coordtype = FBGFX_COORDTYPE_A
+		coordtype = FBGFX_COORDTYPE_AA
 	end if
 
 	'' '(' Expr ',' Expr ')'
@@ -974,7 +974,16 @@ function cGfxPut as integer
 				errReport FB_ERRMSG_EXPECTEDMINUS
 				exit function
 			end if
-
+			
+			'' STEP?
+			if( hMatch( FB_TK_STEP ) ) then
+				if( coordtype = FBGFX_COORDTYPE_RA ) then
+					coordtype = FBGFX_COORDTYPE_RR
+				else
+					coordtype = FBGFX_COORDTYPE_AR
+				end if
+			end if
+			
 			hMatchLPRNT( )
 			hMatchExpression( x2expr )
 			hMatchCOMMA( )
@@ -992,7 +1001,7 @@ function cGfxPut as integer
 			end if
 		end if
 	end if
-
+	
 	''
 	function = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, _
 						  x1expr, y1expr, x2expr, y2expr, _
