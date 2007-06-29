@@ -136,6 +136,7 @@ examples/lib/mylib.bi
 examples/lib/test.bas
 examples/libxml/read1.bas
 examples/libxml/test.xml
+examples/lzo/lzoex.bas
 examples/macro.bas
 examples/makefile
 examples/mini/example.bas
@@ -167,6 +168,7 @@ examples/pre-include/test.bas
 examples/preprocessor.bas
 examples/ptr_index.bas
 examples/ptr_test.bas
+examples/quicklz/qlz.bas
 examples/regex/CRegex/CRegex.bas
 examples/regex/CRegex/CRegex.bi
 examples/regex/CRegex/test.bas
@@ -343,6 +345,7 @@ inc/dos/go32.bi
 inc/dos/inlines/pc.bi
 inc/dos/pc.bi
 inc/dos/sys/djtypes.bi
+inc/dos/sys/exceptn.bi
 inc/dos/sys/farptr.bi
 inc/dos/sys/movedata.bi
 inc/dos/sys/segments.bi
@@ -668,6 +671,16 @@ inc/libxslt/xsltInternals.bi
 inc/libxslt/xsltconfig.bi
 inc/libxslt/xsltexports.bi
 inc/libxslt/xsltutils.bi
+inc/lzo/lzo1.bi
+inc/lzo/lzo1a.bi
+inc/lzo/lzo1b.bi
+inc/lzo/lzo1c.bi
+inc/lzo/lzo1f.bi
+inc/lzo/lzo1x.bi
+inc/lzo/lzo1y.bi
+inc/lzo/lzo1z.bi
+inc/lzo/lzoconf.bi
+inc/lzo/lzodefs.bi
 inc/mini.bi
 inc/mxml.bi
 inc/mysql/my_alloc.bi
@@ -698,6 +711,7 @@ inc/pdflib.bi
 inc/png.bi
 inc/postgresql/libpq-fe.bi
 inc/postgresql/postgres_ext.bi
+inc/quicklz.bi
 inc/regex.bi
 inc/spidermonkey/jsapi.bi
 inc/spidermonkey/jscompat.bi
