@@ -36,13 +36,7 @@
  *
  */
 
-#ifndef fbhandlesdefined
-#include "fb_xbox.h"
-HANDLE __fb_in_handle, __fb_out_handle;
-#define fbhandlesdefined
-#endif
-
-#include "../fb.h"
+#include "fb.h"
 
 /*:::::*/
 int fb_ConsoleLocate( int row, int col, int cursor )

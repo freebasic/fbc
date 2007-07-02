@@ -30,9 +30,9 @@
  */
 
 /*
- * io_serial.c -- serial port access for Windows
+ * io_serial.c -- serial port access for xbox
  *
- * chng: aug/2005 written [mjs]
+ * chng: / written []
  *
  */
 

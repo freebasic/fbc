@@ -35,20 +35,8 @@
  * chng: jan/2005 written [v1ctor]
  *
  */
-#ifndef fbhandlesdefined
-#include "fb_xbox.h"
-HANDLE __fb_in_handle, __fb_out_handle;
-#define fbhandlesdefined
-#endif
 
-#ifndef DWORD
-#define DWORD int
-#endif
-
-
-#include "../fb.h"
-#include <stdio.h>
-
+#include "fb.h"
 
 /*:::::*/
 void fb_ConsoleClear( int mode )

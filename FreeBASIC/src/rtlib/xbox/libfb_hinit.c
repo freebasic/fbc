@@ -37,37 +37,12 @@
  */
 
 #include <stdlib.h>
-#include "../fb.h"
-#include "../fb_rterr.h"
-#include "fb_xbox.h"
+#include "fb.h"
 
 #ifdef MULTITHREADED
 CRITICAL_SECTION __fb_global_mutex;
 CRITICAL_SECTION __fb_string_mutex;
 #endif
-
-void DrawPixel(SDL_Surface *screen, int x, int y, unsigned char R, unsigned char G, unsigned char B)
-{
-	unsigned int color = SDL_MapRGB(screen->format, R, G, B);
-	unsigned int *bufp;
-	bufp = (unsigned int *)screen->pixels + y*screen->pitch/4 + x;
-	*bufp = color;
-}
-
-void drawScreen(int width, int height, int bpp)
-{
-	SDL_Init(SDL_INIT_VIDEO);
-	SDL_Surface *screen = SDL_SetVideoMode(width, height, bpp, SDL_HWSURFACE | SDL_DOUBLEBUF);
-	for(int x=0; x<width; x++)
-	{
-		for(int y=0; y<height; y++)
-		{
-			DrawPixel(screen, x, y, y/2, y/2, x/3);
-		}
-	}
-	SDL_Flip(screen);
-	XSleep(1000);
-}
 
 /*:::::*/
 void fb_hInit ( void )
@@ -91,5 +66,4 @@ void fb_hInit ( void )
 
 #endif
 
-    drawScreen(640, 480, 8);
 }

@@ -36,9 +36,7 @@
  *
  */
 
-#include "../fb.h"
-#include "../fb_rterr.h"
-#include "fb_xbox.h"
+#include "fb.h"
 
 /*:::::*/
 FBCALL int fb_Shell ( FBSTRING *program )

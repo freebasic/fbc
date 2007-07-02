@@ -36,17 +36,10 @@
  *
  */
 
-#ifndef fbhandlesdefined
-#include "fb_xbox.h"
-HANDLE __fb_in_handle, __fb_out_handle;
-#define fbhandlesdefined
-#endif
-
-#include "../fb.h"
-
+#include "fb.h"
 
 /*:::::*/
 int fb_ConsoleGetMaxRow( void )
 {
-	return 0; //Hey fb_ConsoleGetMaxRow(void), how do you type with boxing gloves on your hands?
+	return 0;
 }

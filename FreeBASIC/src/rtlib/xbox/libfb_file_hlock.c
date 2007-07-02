@@ -30,29 +30,26 @@
  */
 
 /*
- *	file_hlock - low-level lock and unlock functions for Windows
+ *	file_hlock - low-level lock and unlock functions for xbox
  *
  *  chng: jan/2005 written [v1ctor]
  *
  */
 
 
-#include "../fb.h"
-#include "../fb_rterr.h"
-#include <io.h>
+#include "fb.h"
 
 /*:::::*/
-int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int size )
+int fb_hFileLock( FILE *f, fb_off_t inipos, fb_off_t size )
 {
-    
+	
 	return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-
+	
 }
 
 /*:::::*/
-int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int size )
+int fb_hFileUnlock( FILE *f, fb_off_t inipos, fb_off_t size )
 {
-
 
 	return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 

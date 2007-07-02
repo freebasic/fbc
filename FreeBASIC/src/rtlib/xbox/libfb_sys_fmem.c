@@ -36,8 +36,7 @@
  *
  */
 
-#include "../fb.h"
-#include "fb_xbox.h"
+#include "fb.h"
 
 /*:::::*/
 FBCALL unsigned int fb_GetMemAvail ( int mode )
@@ -46,6 +45,6 @@ FBCALL unsigned int fb_GetMemAvail ( int mode )
 	
 	MmQueryStatistics(&ms);
 	
-	return ms.AvailablePages * 4096; /* !!!FIXME!! is this right - page size = 4k? */
+	return ms.AvailablePages * 4096;
 
 }

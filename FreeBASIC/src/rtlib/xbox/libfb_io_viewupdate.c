@@ -30,16 +30,16 @@
  */
 
 /*
- * libfb_io_vwupd.c -- view print update (console, no gfx) for Windows
+ * libfb_io_vwupd.c -- view print update (console, no gfx) for xbox
  *
- * chng: jan/2005 written [DrV]
+ * chng: / written []
  *
  */
 
-#include "../fb.h"
+#include "fb.h"
 
 /*:::::*/
 void fb_ConsoleViewUpdate( void )
 {
-	/* do nothing */
+
 }

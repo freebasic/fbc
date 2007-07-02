@@ -30,7 +30,7 @@
  */
 
 /*
- * io_width.c -- width (console, no gfx) for xbox
+ * io_printbuff.c -- low-level print to console function for xbox
  *
  * chng: / written []
  *
@@ -38,9 +38,23 @@
 
 #include "fb.h"
 
+/*:::::*/
+void fb_ConsolePrintBufferWstrEx
+	(
+		const FB_WCHAR *buffer,
+		size_t chars,
+		int mask
+	)
+{
+	/* !!!WRITEME!!! */
+}
 
 /*:::::*/
-int fb_ConsoleWidth( int cols, int rows )
+void fb_ConsolePrintBufferWstr
+	(
+		const FB_WCHAR *buffer,
+		int mask
+	)
 {
-	return 0;
+    return fb_ConsolePrintBufferWstrEx( buffer, fb_wstr_Len( buffer ), mask );
 }

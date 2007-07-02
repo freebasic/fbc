@@ -30,28 +30,14 @@
  */
 
 /*
- * io_color.c -- color (console, no gfx) function for Windows
+ * io_color.c -- color (console, no gfx) function for xbox
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: / written []
  *
  */
 
-#ifndef fbhandlesdefined
-#include "fb_xbox.h"
-HANDLE __fb_in_handle, __fb_out_handle;
-#define fbhandlesdefined
-#endif
+#include "fb.h"
 
-#include "../fb.h"
-#include "../fb_colors.h"
-
-
-/* globals */
-int colorlut[16] ; // These variables don't have a soul!!
-
-int fb_last_bc, fb_last_fc;/* = FB_COLOR_BLACK,
-	 = FB_COLOR_WHITE;
-*/
 /*:::::*/
 int fb_ConsoleColor( int fc, int bc, int flags )
 {

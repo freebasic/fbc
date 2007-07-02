@@ -30,20 +30,13 @@
  */
 
 /*
- * io_scroll.c -- console scrolling for when VIEW is used for Windows
+ * io_scroll.c -- console scrolling for when VIEW is used for xbox
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: / written []
  *
  */
 
-#ifndef fbhandlesdefined
-#include "fb_xbox.h"
-HANDLE __fb_in_handle, __fb_out_handle;
-#define fbhandlesdefined
-#endif
-
-#include "../fb.h"
-
+#include "fb.h"
 
 /*:::::*/
 void fb_ConsoleScroll( int nrows )

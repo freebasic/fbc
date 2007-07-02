@@ -30,25 +30,30 @@
  */
 
 /*
- * io_printer.c -- printer access for Windows
+ * io_printer.c -- printer access for xbox
  *
- * chng: jul/2005 written [mjs]
+ * chng: / written []
  *
  */
 
 #include "fb.h"
 
-int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
+int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDevice )
 {
-    return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+	return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 }
 
-int fb_PrinterWrite( void *pvHandle, const void *data, size_t length )
+int fb_PrinterWrite( struct _DEV_LPT_INFO *devInfo, const void *data, size_t length )
 {
-    return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+	return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 }
 
-int fb_PrinterClose( void *pvHandle )
+int fb_PrinterWriteWstr( struct _DEV_LPT_INFO *devInfo, const FB_WCHAR *data, size_t length )
 {
-    return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+	return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+}
+
+int fb_PrinterClose( struct _DEV_LPT_INFO *devInfo )
+{
+	return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 }

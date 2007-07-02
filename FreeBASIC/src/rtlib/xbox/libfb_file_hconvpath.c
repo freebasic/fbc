@@ -30,7 +30,7 @@
  */
 
 /*
- * str_convpath - path conversion for Windows
+ * str_convpath - path conversion for xbox
  *
  * chng: jan/2005 written [v1ctor]
  *

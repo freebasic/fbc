@@ -30,15 +30,13 @@
  */
 
 /*
- * sys_exec.c -- exec function for XBOX
+ * sys_exec.c -- exec function for xbox
  *
  * chng: jul/2005 written [DrV]
  *
  */
 
-#include "../fb.h"
-#include "../fb_rterr.h"
-#include "fb_xbox.h"
+#include "fb.h"
 
 /*:::::*/
 FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )

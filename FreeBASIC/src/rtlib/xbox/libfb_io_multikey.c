@@ -36,8 +36,7 @@
  *
  */
 
-#include "../fb.h"
-#include "../fb_scancodes.h"
+#include "fb.h"
 
 /*:::::*/
 int fb_ConsoleMultikey( int scancode )

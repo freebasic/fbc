@@ -30,26 +30,13 @@
  */
 
 /*
- * io_printbuff.c -- low-level print to console function for Windows
+ * io_printbuff.c -- low-level print to console function for xbox
  *
- * chng: oct/2004 written [v1ctor]
- *       nov/2004 fixed scrolling problem if printing at bottom/right w/o a newline [v1ctor]
+ * chng: / written []
  *
  */
-#ifndef fbhandlesdefined
-#include "fb_xbox.h"
-HANDLE __fb_in_handle, __fb_out_handle;
-#define fbhandlesdefined
-#endif
 
-//For some reason, we need to define a dword after we remove all libs.
-#ifndef DWORD
-#define DWORD int
-#endif
-
-#include <stdio.h>
-#include "../fb.h"
-
+#include "fb.h"
 
 /*:::::*/
 void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
@@ -60,6 +47,6 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 /*:::::*/
 void fb_ConsolePrintBuffer( const char *buffer, int mask )
 {
-    return fb_ConsolePrintBufferEx( buffer, strlen(buffer), mask );
+	fb_ConsolePrintBufferEx( buffer, strlen(buffer), mask );
 }
 

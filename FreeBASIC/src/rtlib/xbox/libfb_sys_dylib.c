@@ -36,8 +36,7 @@
  *
  */
 
-#include "../fb.h"
-#include <stdio.h>
+#include "fb.h"
 
 
 /*:::::*/

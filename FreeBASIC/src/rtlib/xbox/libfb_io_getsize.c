@@ -36,19 +36,10 @@
  *
  */
 
-#ifndef fbhandlesdefined
-#include "fb_xbox.h"
-HANDLE __fb_in_handle, __fb_out_handle;
-#define fbhandlesdefined
-#endif
-
-#include "../fb.h"
-#include <stdio.h>
-
-
+#include "fb.h"
 
 /*:::::*/
 FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
-	//Console routines? For what? The herc mono video card I put in my x-box?
+	
 }
