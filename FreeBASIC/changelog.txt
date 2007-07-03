@@ -29,6 +29,7 @@ Version 0.18 Beta:
 - "as ANY" as being allowed on TYPE members(cha0s)
 - bogus field accesses should have been creating a fake symbol (cha0s)
 - gfxlib wasn't waiting long enough when preventing a potential deadlock, causing deinitialization to fail (and crappy graphics consequences) (cha0s)
+- #1735413 - UDT initialization would fail if the initialization expression was surrounded in parenthesis, due to the udt = (elm, elm) syntax. it will now fallback to check if the first expression encountered matches the udt type, if so, it will attempt a ctor call/assign. (cha0s)
 
 Version 0.17 Beta:
 

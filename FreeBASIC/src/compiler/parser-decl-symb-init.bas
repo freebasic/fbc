@@ -34,6 +34,7 @@ type FB_INITCTX
 	dimcnt		as integer
 	tree		as ASTNODE ptr
 	options		as FB_INIOPT
+	init_expr   as ASTNODE ptr
 end type
 
 declare function hUDTInit _
@@ -45,7 +46,8 @@ declare function hUDTInit _
 private function hDoAssign _
 	( _
 		byref ctx as FB_INITCTX, _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval no_fake as integer = FALSE _
 	) as integer
 
     dim as ASTNODE lside = any
@@ -68,12 +70,19 @@ private function hDoAssign _
     	'' check if it's a cast
     	expr = astNewCONV( dtype, symbGetSubtype( ctx.sym ), expr )
     	if( expr = NULL ) then
+    		
+			'' hand it back...
+			if( no_fake ) then
+				exit function
+			end if
+			
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
 	        	return FALSE
 	        else
 	        	'' error recovery: create a fake expression
 	        	astDelTree( expr )
 	        	expr = astNewCONSTz( dtype )
+	        	
 	        end if
 		end if
 	end if
@@ -88,7 +97,8 @@ end function
 '':::::
 private function hElmInit _
 	( _
-		byref ctx as FB_INITCTX _
+		byref ctx as FB_INITCTX, _
+		byval no_fake as integer = FALSE _
 	) as integer
 
     dim as ASTNODE ptr expr = any
@@ -109,6 +119,7 @@ private function hElmInit _
 
 	'' invalid expression
 	if( expr = NULL ) then
+		
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
@@ -125,19 +136,23 @@ private function hElmInit _
 
 		end if
 	end if
+	
+	'' to hand it back if necessary
+	ctx.init_expr = expr
 
     '' restore context if needed
 	parser.ctxsym    = oldsym
 	parser.ctx_dtype = old_dtype
 
-	function = hDoAssign( ctx, expr )
+	function = hDoAssign( ctx, expr, no_fake )
 
 end function
 
 '':::::
 private function hArrayInit _
 	( _
-		byref ctx as FB_INITCTX _
+		byref ctx as FB_INITCTX, _
+		byval no_fake as integer = FALSE _
 	) as integer
 
     dim as integer dimensions = any, elements = any, elm_cnt = any
@@ -227,7 +242,7 @@ private function hArrayInit _
 				end if
 
 			case else
-				if( hElmInit( ctx ) = FALSE ) then
+				if( hElmInit( ctx, no_fake ) = FALSE ) then
 					exit function
 				end if
 			end select
@@ -389,7 +404,7 @@ private function hUDTInit _
 	ctx.options and= not FB_INIOPT_DODEREF
 	ctx.dim_ = NULL
 	ctx.dimcnt = 0
-
+	
 	'' for each UDT element..
 	do
 		elm_cnt += 1
@@ -429,11 +444,51 @@ private function hUDTInit _
 				ctx.options or= FB_INIOPT_ISOBJ
 			end if
 		end select
-
-        if( hArrayInit( ctx ) = FALSE ) then
-          	exit function
+		
+		'' element assignment failed?
+        if( hArrayInit( ctx, TRUE ) = FALSE ) then
+        	
+        	'' must be first...
+        	if( elm_cnt > 1 ) then
+        		exit function
+        	end if
+			
+    		'' nothing passed back...
+    		if( ctx.init_expr = NULL ) then
+    			exit function
+    		end if
+			
+			'' try to assign the expression to the parent
+	    	dim as integer is_ctorcall = any
+			dim as FB_PARAMMODE arg_mode = INVALID
+			dim as ASTNODE ptr expr = ctx.init_expr
+			
+			ctx = old_ctx
+			
+	    	expr = astBuildImplicitCtorCallEx( ctx.sym, expr, arg_mode, is_ctorcall )
+	        if( expr = NULL ) then
+	        	exit function
+	        end if
+			
+			'' ')'
+			if( hMatch( CHAR_RPRNT ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip until next ')'
+					hSkipUntil( CHAR_RPRNT, TRUE )
+				end if
+			end if
+			
+	    	if( is_ctorcall ) then
+	    		return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr ) <> NULL
+	    	else
+	    		'' try to assign it (do a shallow copy)
+	        	return hDoAssign( ctx, expr )
+	        end if
+    		
         end if
-
+        
         lgt += symbGetLen( elm ) * symbGetArrayElements( elm )
 
 		'' next
