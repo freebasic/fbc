@@ -1282,7 +1282,8 @@ private function hOptNullOp _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr l = any, r = any
-	dim as integer v = any, op = any
+	dim as integer op = any
+	dim as longint v = any
 
 	if( n = NULL ) then
 		return n
@@ -1309,66 +1310,68 @@ private function hOptNullOp _
 			if( symbGetDataClass( n->dtype ) = FB_DATACLASS_INTEGER ) then
 				if( symbGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
 					v = r->con.val.int
-					select case as const op
-					case AST_OP_MUL
-						if( v = 0 ) then
-							astDelTree( l )
-							astDelNode( n )
-							return r
-						elseif( v = 1 ) then
-							astDelNode( r )
-							astDelNode( n )
-							return hOptNullOp( l )
-						end if
-
-					case AST_OP_MOD
-						if( v = 1 ) then
-							r->con.val.int = 0
-							astDelTree( l )
-							astDelNode( n )
-							return r
-						end if
-
-					case AST_OP_INTDIV
-						if( v = 1 ) then
-							astDelNode( r )
-							astDelNode( n )
-							return hOptNullOp( l )
-						end if
-
-					case AST_OP_ADD, AST_OP_SUB, _
-						 AST_OP_SHR, AST_OP_SHL, _
-						 AST_OP_XOR
-						if( v = 0 ) then
-							astDelNode( r )
-							astDelNode( n )
-							return hOptNullOp( l )
-						end if
-
-					case AST_OP_OR
-						if( v = 0 ) then
-							astDelNode( r )
-							astDelNode( n )
-							return hOptNullOp( l )
-						elseif( v = -1 ) then
-							astDelTree( l )
-							astDelNode( n )
-							return r
-						end if
-
-					case AST_OP_AND
-						if( v = -1 ) then
-							astDelNode( r )
-							astDelNode( n )
-							return hOptNullOp( l )
-						elseif( v = 0 ) then
-							astDelTree( l )
-							astDelNode( n )
-							return r
-						end if
-
-					end select
+				else
+					v = r->con.val.long
 				end if
+				select case as const op
+				case AST_OP_MUL
+					if( v = 0 ) then
+						astDelTree( l )
+						astDelNode( n )
+						return r
+					elseif( v = 1 ) then
+						astDelNode( r )
+						astDelNode( n )
+						return hOptNullOp( l )
+					end if
+
+				case AST_OP_MOD
+					if( v = 1 ) then
+						r->con.val.int = 0
+						astDelTree( l )
+						astDelNode( n )
+						return r
+					end if
+
+				case AST_OP_INTDIV
+					if( v = 1 ) then
+						astDelNode( r )
+						astDelNode( n )
+						return hOptNullOp( l )
+					end if
+
+				case AST_OP_ADD, AST_OP_SUB, _
+					 AST_OP_SHR, AST_OP_SHL, _
+					 AST_OP_XOR
+					if( v = 0 ) then
+						astDelNode( r )
+						astDelNode( n )
+						return hOptNullOp( l )
+					end if
+
+				case AST_OP_OR
+					if( v = 0 ) then
+						astDelNode( r )
+						astDelNode( n )
+						return hOptNullOp( l )
+					elseif( v = -1 ) then
+						astDelTree( l )
+						astDelNode( n )
+						return r
+					end if
+
+				case AST_OP_AND
+					if( v = -1 ) then
+						astDelNode( r )
+						astDelNode( n )
+						return hOptNullOp( l )
+					elseif( v = 0 ) then
+						astDelTree( l )
+						astDelNode( n )
+						return r
+					end if
+
+				end select
 		 	end if
 		end if
 	end if
