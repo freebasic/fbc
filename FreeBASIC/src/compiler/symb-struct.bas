@@ -824,11 +824,26 @@ end function
 '':::::
 function symbGetUDTNextElm _
 	( _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval check_union as integer _
 	) as FBSYMBOL ptr
-
+	
+	dim as integer skip_next = FALSE
+	
+	'' check for unions
+	if( check_union = TRUE ) then
+		if( symbGetIsUnionField( sym ) ) then
+			skip_next = TRUE
+			do while( iif( sym, symbGetIsUnionField( sym ), FALSE ) )
+				sym = sym->next
+			loop
+		end if
+	end if
+	
 	'' find the next field
-	sym = sym->next
+	if( skip_next = FALSE ) then
+		sym = sym->next
+	end if
 	do while( sym <> NULL )
 		if( symbIsField( sym ) ) then
 			return sym

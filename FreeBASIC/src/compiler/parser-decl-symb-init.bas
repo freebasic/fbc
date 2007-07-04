@@ -450,11 +450,13 @@ private function hUDTInit _
         	
         	'' must be first...
         	if( elm_cnt > 1 ) then
+        		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
         		exit function
         	end if
 			
     		'' nothing passed back...
     		if( ctx.init_expr = NULL ) then
+    			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
     			exit function
     		end if
 			
@@ -492,7 +494,7 @@ private function hUDTInit _
         lgt += symbGetLen( elm ) * symbGetArrayElements( elm )
 
 		'' next
-		elm = symbGetUDTNextElm( elm )
+		elm = symbGetUDTNextElm( elm, TRUE )
 
 	'' ','
 	loop while( hMatch( CHAR_COMMA ) )
