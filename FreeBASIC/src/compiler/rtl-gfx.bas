@@ -984,7 +984,7 @@ declare function hPorts_cb _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, TRUE, NULL _
+					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF _
 	 			) _
 	 		} _
 		), _
