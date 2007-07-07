@@ -1,4 +1,9 @@
-Version 0.18 Beta:
+Version 0.18.1 Beta:
+
+[changed]
+- the default calling convention of variables has changed in -lang FB. UDT's (including strings) will default to BYREF, all else will default to BYVAL (cha0s)
+
+Version 0.18.0 Beta:
 
 [changed]
 - include file and import library for libcurl 7.15.4 (jeffm)

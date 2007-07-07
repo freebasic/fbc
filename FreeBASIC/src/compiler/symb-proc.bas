@@ -2715,3 +2715,25 @@ function symbDemangleMethod _
 
 end function
 
+'':::::
+function symbGetDefaultCallConv _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+	
+	select case dtype
+    case FB_DATATYPE_FWDREF, _ 
+         FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, _ 
+         FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+         
+         return FB_PARAMMODE_BYREF
+         
+    case else
+         return FB_PARAMMODE_BYVAL
+         
+    end select
+	
+	
+end function
+

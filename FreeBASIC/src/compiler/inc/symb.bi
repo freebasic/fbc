@@ -1738,6 +1738,11 @@ declare sub symbHashListRemoveNamespace _
 		byval ns as FBSYMBOL ptr _
 	)
 
+declare function symbGetDefaultCallConv _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
 ''
 '' macros
 ''

@@ -253,7 +253,7 @@ private function hParamDecl _
 	dim as ASTNODE ptr optval = any
 	dim as integer param_dtype = any, param_mode = any, param_len = any
 	dim as integer param_suffix = any, param_ptrcnt = any, attrib = any
-	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any
+	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any, use_default = any
 	dim as FBSYMBOL ptr param_subtype = any, s = any
 
 	function = NULL
@@ -397,6 +397,7 @@ private function hParamDecl _
 
 	if( param_mode = INVALID ) then
 		param_mode = env.opt.parammode
+		use_default = TRUE
     	if( fbPdCheckIsSet( FB_PDCHECK_PARAMMODE ) ) then
     		hParamWarning( proc, param_id, FB_WARNINGMSG_NOEXPLICITPARAMMODE )
     	end if
@@ -464,8 +465,19 @@ private function hParamDecl _
     	param_suffix = param_dtype
     	param_ptrcnt = 0
     end if
-
-    ''
+	
+	'' in lang FB,
+	if( fbLangIsSet( FB_LANG_QB ) ) then
+		
+		'' we have to delay the true default until now, since 
+		'' byval/byref depends on the symbol type
+		if( use_default = TRUE ) then
+			param_mode = symbGetDefaultCallConv( param_dtype, param_subtype )
+		end if
+		
+	end if
+	
+    '' QB def-by-letter hax
     if( param_dtype = INVALID ) then
         param_dtype = symbGetDefType( param_id )
         param_suffix = param_dtype

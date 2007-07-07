@@ -276,13 +276,12 @@ private sub hSetLangCtx _
 	)
 
 	if( lang = FB_LANG_FB ) then
-		env.opt.parammode = FB_PARAMMODE_BYVAL
 		env.opt.explicit = TRUE
 	else
-		env.opt.parammode = FB_PARAMMODE_BYREF
 		env.opt.explicit = FALSE
 	end if
 
+	env.opt.parammode       = FB_PARAMMODE_BYREF
 	env.opt.procpublic		= TRUE
 	env.opt.escapestr		= FALSE
 	env.opt.dynamic			= FALSE
