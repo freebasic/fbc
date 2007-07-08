@@ -406,8 +406,8 @@ private function hUDTInit _
 	ctx.dimcnt = 0
 	
 	'' for each UDT element..
+	elm_cnt = 1
 	do
-		elm_cnt += 1
 		if( elm_cnt > elements ) then
 			if( errReport( FB_ERRMSG_TOOMANYEXPRESSIONS ) = FALSE ) then
 				exit function
@@ -494,7 +494,7 @@ private function hUDTInit _
         lgt += symbGetLen( elm ) * symbGetArrayElements( elm )
 
 		'' next
-		elm = symbGetUDTNextElm( elm, TRUE )
+		elm = symbGetUDTNextElm( elm, TRUE, elm_cnt )
 
 	'' ','
 	loop while( hMatch( CHAR_COMMA ) )

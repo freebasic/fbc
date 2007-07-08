@@ -1709,7 +1709,8 @@ declare function symbGetUDTFirstElm _
 declare function symbGetUDTNextElm _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval check_union as integer = FALSE _
+		byval check_union as integer = FALSE, _
+		byref elms as integer = 0 _
 	) as FBSYMBOL ptr
 
 declare function symbGetEnumFirstElm _
