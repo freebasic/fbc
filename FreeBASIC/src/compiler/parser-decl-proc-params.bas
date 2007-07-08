@@ -467,7 +467,7 @@ private function hParamDecl _
     end if
 	
 	'' in lang FB,
-	if( fbLangIsSet( FB_LANG_QB ) ) then
+	if( fbLangIsSet( FB_LANG_FB ) ) then
 		
 		'' we have to delay the true default until now, since 
 		'' byval/byref depends on the symbol type
