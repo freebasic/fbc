@@ -353,10 +353,10 @@ typedef struct GFXDRIVER
 	 * This function pointer must not be NULL.
 	 *
 	 * \param[in] title initial window title
-	 * \param w desired display mode width in pixels
-	 * \param h desired display mode height in pixels
-	 * \param refresh_rate desired refresh rate in Hz
-	 * \param flags DRIVER_ flags
+	 * \param[in] w desired display mode width in pixels
+	 * \param[in] h desired display mode height in pixels
+	 * \param[in] refresh_rate desired refresh rate in Hz
+	 * \param[in] flags DRIVER_ flags
 	 *
 	 * \return -1 on failure; 0 on success
 	 */
@@ -395,10 +395,10 @@ typedef struct GFXDRIVER
 	
 	/** Driver set palette function pointer.
 	 *
-	 * \param index index of the palette entry to set in the range [0..255]
-	 * \param r red value in the range [0..63]
-	 * \param g green value in the range [0..63]
-	 * \param b blue value in the range [0..63]
+	 * \param[in] index index of the palette entry to set in the range [0..255]
+	 * \param[in] r red value in the range [0..63]
+	 * \param[in] g green value in the range [0..63]
+	 * \param[in] b blue value in the range [0..63]
 	 */
 	void (*set_palette)(int index, int r, int g, int b);
 	
@@ -432,10 +432,10 @@ typedef struct GFXDRIVER
 	 *
 	 * Can be NULL if the driver cannot set the mouse state.
 	 *
-	 * \param x x position in pixels relative to the graphics drawing area; if >= 0, the mouse cursor should be moved here; otherwise, this parameter should be ignored
-	 * \param y y position in pixels relative to the graphics drawing area; if >= 0, the mouse cursor should be moved here; otherwise, this parameter should be ignored
-	 * \param cursor cursor visibility state; if 0, the mouse cursor should be hidden; if > 0, the mouse cursor should be shown; otherwise, this parameter should be ignored
-	 * \param clip cursor clip state; if 0, the mouse cursor should be unclipped; if > 0, the mouse cursor should be clipped to the graphics drawing area; otherwise, this parameter should be ignored
+	 * \param[in] x x position in pixels relative to the graphics drawing area; if >= 0, the mouse cursor should be moved here; otherwise, this parameter should be ignored
+	 * \param[in] y y position in pixels relative to the graphics drawing area; if >= 0, the mouse cursor should be moved here; otherwise, this parameter should be ignored
+	 * \param[in] cursor cursor visibility state; if 0, the mouse cursor should be hidden; if > 0, the mouse cursor should be shown; otherwise, this parameter should be ignored
+	 * \param[in] clip cursor clip state; if 0, the mouse cursor should be unclipped; if > 0, the mouse cursor should be clipped to the graphics drawing area; otherwise, this parameter should be ignored
 	 */
 	void (*set_mouse)(int x, int y, int cursor, int clip);
 	
@@ -443,14 +443,14 @@ typedef struct GFXDRIVER
 	 *
 	 * Can be NULL if the driver cannot set the window title.
 	 *
-	 * \param title string to set the window title to
+	 * \param[in] title string to set the window title to
 	 */
 	void (*set_window_title)(char *title);
 	
 	/** Driver set/get window position function pointer.
 	 *
-	 * \param x x position in pixels to move the window to, relative to the display device; if 0x80000000, ignore
-	 * \param y y position in pixels to move the window to, relative to the display device; if 0x80000000, ignore
+	 * \param[in] x x position in pixels to move the window to, relative to the display device; if 0x80000000, ignore
+	 * \param[in] y y position in pixels to move the window to, relative to the display device; if 0x80000000, ignore
 	 * \return (current x position & 0xFFFF) | (current y position << 16)
 	 */
 	int (*set_window_pos)(int x, int y);
@@ -462,9 +462,9 @@ typedef struct GFXDRIVER
 	 *
 	 * Can be NULL if this driver cannot obtain a list of available modes.
 	 *
-	 * \param depth bits per pixel for which to retrieve modes
-	 * \param size count of ints returned
-	 * \return array of \param size ints allocated by malloc(), each containing (height | (width << 16)) for one of the available modes
+	 * \param[in] depth bits per pixel for which to retrieve modes
+	 * \param[in] size count of ints returned
+	 * \return array of size ints allocated by malloc(), each containing (height | (width << 16)) for one of the available modes
 	 */
 	int *(*fetch_modes)(int depth, int *size);
 	
