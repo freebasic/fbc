@@ -299,52 +299,187 @@ typedef struct FB_GFXCTX {
 
 typedef struct FBGFX
 {
-	int id;									/* Mode id number for contexts identification */
-    int mode_num;							/* Current mode number */
-    unsigned char **page;					/* Pages memory */
-    int num_pages;							/* Number of requested pages */
-    int visible_page;						/* Current visible page number */
-    unsigned char *framebuffer;				/* Our current visible framebuffer */
-    int w, h;								/* Current mode width and height */
-    int depth;								/* Current mode depth in bits per pixel */
-    int bpp;								/* Bytes per pixel */
-    int pitch;								/* Width of a framebuffer line in bytes */
-    unsigned int *palette;					/* Current RGB color values for each palette index */
-    unsigned int *device_palette;			/* Current RGB color values of visible device palette */
-    unsigned char *color_association;		/* Palette color index associations for CGA/EGA emulation */
-    char *dirty;							/* Dirty lines buffer */
-    const struct GFXDRIVER *driver;			/* Gfx driver in use */
-    int color_mask;							/* Color bit mask for colordepth emulation */
-    const struct PALETTE *default_palette;	/* Default palette for current mode */
-    int scanline_size;						/* Vertical size of a single scanline in pixels */
-    int cursor_x, cursor_y;					/* Current graphical text cursor position (in chars, 0 based) */
-    const struct FONT *font;				/* Current font */
-    int text_w, text_h;						/* Graphical text console size in characters */
-    char *key;								/* Keyboard states */
-	int refresh_rate;						/* Driver refresh rate */
-	GFX_CHAR_CELL **con_pages;				/* Character information for all pages */
-    EVENT *event_queue;						/* The OS events queue array */
-    int event_head, event_tail;				/* Indices for the head and tail event in the array */
-    struct _FBMUTEX *event_mutex;			/* Mutex lock for accessing the events queue */
-	volatile int flags;						/* Status flags */
+	int id;									/**< Mode id number for contexts identification */
+    int mode_num;							/**< Current mode number */
+    unsigned char **page;					/**< Pages memory */
+    int num_pages;							/**< Number of requested pages */
+    int visible_page;						/**< Current visible page number */
+    unsigned char *framebuffer;				/**< Our current visible framebuffer */
+    int w, h;								/**< Current mode width and height */
+    int depth;								/**< Current mode depth in bits per pixel */
+    int bpp;								/**< Bytes per pixel */
+    int pitch;								/**< Width of a framebuffer line in bytes */
+    unsigned int *palette;					/**< Current RGB color values for each palette index */
+    unsigned int *device_palette;			/**< Current RGB color values of visible device palette */
+    unsigned char *color_association;		/**< Palette color index associations for CGA/EGA emulation */
+    char *dirty;							/**< Dirty lines buffer */
+    const struct GFXDRIVER *driver;			/**< Gfx driver in use */
+    int color_mask;							/**< Color bit mask for colordepth emulation */
+    const struct PALETTE *default_palette;	/**< Default palette for current mode */
+    int scanline_size;						/**< Vertical size of a single scanline in pixels */
+    int cursor_x, cursor_y;					/**< Current graphical text cursor position (in chars, 0 based) */
+    const struct FONT *font;				/**< Current font */
+    int text_w, text_h;						/**< Graphical text console size in characters */
+    char *key;								/**< Keyboard states */
+	int refresh_rate;						/**< Driver refresh rate */
+	GFX_CHAR_CELL **con_pages;				/**< Character information for all pages */
+    EVENT *event_queue;						/**< The OS events queue array */
+    int event_head, event_tail;				/**< Indices for the head and tail event in the array */
+    struct _FBMUTEX *event_mutex;			/**< Mutex lock for accessing the events queue */
+	volatile int flags;						/**< Status flags */
 } FBGFX;
 
 
 typedef struct GFXDRIVER
 {
+	/** Name of the graphics driver.
+	 *
+	 * This string is compared case-insensitively with the FBGFX environment variable
+	 * and/or the ScreenControl SET_DRIVER_NAME string, if those have been set,
+	 * to override the automatic driver selection.
+	 *
+	 * This string must also be human-readable.
+	 */
 	char *name;
+	
+	/** Driver initialization function pointer.
+	 *
+	 * This function is called from fb_GfxScreen or fb_GfxScreenRes;
+	 * the driver should first check to see if there are any flags that
+	 * it does not support (for example, DRIVER_OPENGL).  If all flags
+	 * specified are supported by this driver, the driver should attempt
+	 * to set the requested mode.
+	 *
+	 * This function pointer must not be NULL.
+	 *
+	 * \param[in] title initial window title
+	 * \param w desired display mode width in pixels
+	 * \param h desired display mode height in pixels
+	 * \param refresh_rate desired refresh rate in Hz
+	 * \param flags DRIVER_ flags
+	 *
+	 * \return -1 on failure; 0 on success
+	 */
 	int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags);
+	
+	/** Driver exit function pointer.
+	 *
+	 * This function is called when a driver should clean up all allocated resources
+	 * and restore the graphics device to its state before the driver was initialized.
+	 *
+	 * In some cases this function will be called even when a driver failed to initialize.
+	 * It is the driver's responsibility to track which resources it has or has not allocated
+	 * so that such resources are not released twice if the exit function is called when the 
+	 * init function failed.
+	 *
+	 * This function pointer must not be NULL.
+	 */
 	void (*exit)(void);
+	
+	/** Driver lock function pointer.
+	 *
+	 * The driver must not update the display from the internal framebuffer between calls to 
+	 * lock and unlock.
+	 *
+	 * This function pointer must not be NULL.
+	 */
 	void (*lock)(void);
+	
+	/** Driver unlock function pointer.
+	 *
+	 * This function pointer must not be NULL.
+	 *
+	 * \see lock
+	 */
 	void (*unlock)(void);
+	
+	/** Driver set palette function pointer.
+	 *
+	 * \param index index of the palette entry to set in the range [0..255]
+	 * \param r red value in the range [0..63]
+	 * \param g green value in the range [0..63]
+	 * \param b blue value in the range [0..63]
+	 */
 	void (*set_palette)(int index, int r, int g, int b);
+	
+	/** Driver wait for vertical synchronization function pointer.
+	 *
+	 * This function should block until the next vertical retrace period.
+	 * If it is not possible to use the actual hardware vertical retrace,
+	 * this function should wait an amount of time equivalent to 1 / refresh_rate seconds.
+	 *
+	 * Can be NULL if the driver cannot wait for vsync.
+	 */
 	void (*wait_vsync)(void);
+	
+	/** Driver get mouse state function pointer.
+	 *
+	 * The driver should fill the parameters with the current mouse state.
+	 * The driver can assume that all of the pointers are valid (non-null).
+	 *
+	 * Can be NULL if the driver cannot get the mouse state.
+	 *
+	 * \param[out] x x position in pixels relative to the graphics drawing area
+	 * \param[out] y y position in pixels relative to the graphics drawing area
+	 * \param[out] z scroll wheel position; initially 0
+	 * \param[out] buttons bitfield with each bit representing the state of one button (1 if the button is pressed, 0 if not)
+	 * \param[out] clip current mouse clipping status (1 if the mouse is currently clipped to the graphics drawing area; 0 if it is not)
+	 * \return 0 on success; -1 on failure
+	 */
 	int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip);
+	
+	/** Driver set mouse state function pointer.
+	 *
+	 * Can be NULL if the driver cannot set the mouse state.
+	 *
+	 * \param x x position in pixels relative to the graphics drawing area; if >= 0, the mouse cursor should be moved here; otherwise, this parameter should be ignored
+	 * \param y y position in pixels relative to the graphics drawing area; if >= 0, the mouse cursor should be moved here; otherwise, this parameter should be ignored
+	 * \param cursor cursor visibility state; if 0, the mouse cursor should be hidden; if > 0, the mouse cursor should be shown; otherwise, this parameter should be ignored
+	 * \param clip cursor clip state; if 0, the mouse cursor should be unclipped; if > 0, the mouse cursor should be clipped to the graphics drawing area; otherwise, this parameter should be ignored
+	 */
 	void (*set_mouse)(int x, int y, int cursor, int clip);
+	
+	/** Driver set window title function pointer.
+	 *
+	 * Can be NULL if the driver cannot set the window title.
+	 *
+	 * \param title string to set the window title to
+	 */
 	void (*set_window_title)(char *title);
+	
+	/** Driver set/get window position function pointer.
+	 *
+	 * \param x x position in pixels to move the window to, relative to the display device; if 0x80000000, ignore
+	 * \param y y position in pixels to move the window to, relative to the display device; if 0x80000000, ignore
+	 * \return (current x position & 0xFFFF) | (current y position << 16)
+	 */
 	int (*set_window_pos)(int x, int y);
+	
+	/** Driver fetch mode list function pointer.
+	 *
+	 * This function returns a list of available modes for this driver.  The list need not be sorted or
+	 * ordered in any way.
+	 *
+	 * Can be NULL if this driver cannot obtain a list of available modes.
+	 *
+	 * \param depth bits per pixel for which to retrieve modes
+	 * \param size count of ints returned
+	 * \return array of \param size ints allocated by malloc(), each containing (height | (width << 16)) for one of the available modes
+	 */
 	int *(*fetch_modes)(int depth, int *size);
+	
+	/** Driver page flip function pointer.
+	 *
+	 * This function flips the drawing page with the visible page.
+	 * It is only needed for OpenGL drivers and can be NULL otherwise.
+	 */
 	void (*flip)(void);
+	
+	/** Driver poll events function pointer.
+	 *
+	 * This function should poll for event and post those that are available with fb_hPostEvent.
+	 * It is only needed for OpenGL drivers and can be NULL otherwise.
+	 */
 	void (*poll_events)(void);
 } GFXDRIVER;
 
