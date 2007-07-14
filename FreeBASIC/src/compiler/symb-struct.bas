@@ -447,8 +447,10 @@ function symbAddField _
 		'' bit position doesn't change in a union
 
 	end if
-
+	
     function = sym
+    
+    sym->parent = parent
 
 end function
 
@@ -541,6 +543,8 @@ sub symbInsertInnerUDT _
     '' remove from inner udt list
     inner->udt.ns.symtb.head = NULL
     inner->udt.ns.symtb.tail = NULL
+    
+    inner->parent = parent
 
 end sub
 
@@ -821,24 +825,129 @@ function symbGetUDTFirstElm _
 
 end function
 
+
+'':::::
+function symbIsDeeper _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval next_ as FBSYMBOL ptr _
+	) as integer
+	
+	function = FALSE
+	
+	if( next_ = NULL ) then
+		exit function
+	end if
+	
+	next_ = next_->parent
+	
+	do while( next_ )
+		if( next_ = sym ) then
+			return TRUE
+		end if
+		next_ = next_->parent
+	loop
+	
+end function	
+
+'':::::
+function symbGetUnionParent _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+	
+	function = FALSE
+	
+	'' if element's parent is an anonymous non-union struct... 
+	select case symbGetType( sym )
+	case FB_DATATYPE_STRUCT', FB_DATATYPE_CLASS
+		if( symbGetUDTIsUnion( sym ) = FALSE ) then
+			if( symbGetUDTIsAnon( sym ) ) then
+				
+				'' then we use its parent
+				if( sym->parent ) then
+					if( symbGetUDTIsUnion( sym->parent ) ) then
+						function = sym->parent
+					end if
+				end if
+			end if
+		else
+			
+			'' otherwise, the immediate parent
+			function = sym
+		end if
+	end select
+	
+end function	
+
 '':::::
 function symbGetUDTNextElm _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval check_union as integer, _
-		byref elms as integer _
+		byref elms as integer = 0 _
 	) as FBSYMBOL ptr
 	
 	dim as integer skip_next = FALSE
 	
 	'' check for unions
-	if( check_union = TRUE ) then
-		if( symbGetIsUnionField( sym ) ) then
-			skip_next = TRUE
-			do while( iif( sym, symbGetIsUnionField( sym ), FALSE ) )
-				sym = sym->next
-				elms += 1
-			loop
+	if( check_union ) then
+		
+		dim as FBSYMBOL ptr union_parent = symbGetUnionParent( sym->parent )
+		dim as integer skip_the_rest = FALSE
+		
+		'' union initialization
+		if( union_parent ) then
+			
+			'' if the next var isn't a child of this one's parent
+			if( sym->next ) then
+				if( symbIsDeeper( sym->parent, sym->next ) = FALSE ) then
+					skip_the_rest = TRUE
+				end if
+				
+				'' immediate parent is a union
+				if( symbGetUDTIsUnion( sym->parent ) ) then
+					
+					'' same parent as next
+					if( sym->parent = sym->next->parent ) then
+						skip_the_rest = TRUE
+					end if
+				end if
+			end if
+			
+			'' 
+			if( skip_the_rest = TRUE ) then
+				
+				'' disable auto increment
+				skip_next = TRUE
+				
+				dim as integer keep_skipping = any
+				do
+					keep_skipping = FALSE
+					
+					'' skip symbols until their parent is no longer the union parent
+					do while( iif( sym, symbIsDeeper( union_parent, sym ), FALSE ) )
+						sym = sym->next
+						elms += 1
+					loop
+					
+					'' if the previous var is from another struct
+					if( sym ) then
+						if( sym->prev ) then
+							if( sym->parent <> sym->prev->parent ) then
+								
+								'' recalibrate the parent
+								union_parent = symbGetUnionParent( sym->parent )
+								
+								'' keep skipping if the previous var is in our same union
+								if( symbIsDeeper( union_parent, sym->prev ) ) then
+									keep_skipping = TRUE
+								end if
+							end if
+						end if
+					end if
+				loop while( keep_skipping = TRUE )
+			end if
 		end if
 	end if
 	

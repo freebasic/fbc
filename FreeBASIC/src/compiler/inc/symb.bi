@@ -571,7 +571,9 @@ type FBSYMBOL
 	hash			as FBSYMHASH				'' hash tb (namespace) it's part of
 
 	symtb			as FBSYMBOLTB ptr			'' symbol tb it's part of
-
+	
+	parent          as FBSYMBOL ptr
+	
 	prev			as FBSYMBOL ptr				'' next in symbol tb list
 	next			as FBSYMBOL ptr             '' prev /
 end type

@@ -324,14 +324,18 @@ private function hUDTInit _
 	( _
 		byref ctx as FB_INITCTX _
 	) as integer
-
+	
+	static as integer rec_cnt
+	
 	dim as integer elements = any, elm_cnt = any, elm_ofs = any
 	dim as integer lgt = any, baseofs = any, pad_lgt = any, dtype = any
     dim as FBSYMBOL ptr elm = any, subtype = any
     dim as FB_INITCTX old_ctx = any
 
     function = FALSE
-
+    
+    rec_cnt += 1
+    
     '' ctor?
     if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
     	dim as ASTNODE ptr expr = any
@@ -340,6 +344,7 @@ private function hUDTInit _
 	    expr = cExpression( )
 	    if( expr = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				rec_cnt -= 1
 				exit function
 			else
 				'' error recovery: fake an expr
@@ -364,22 +369,60 @@ private function hUDTInit _
     	dim as integer is_ctorcall = any
     	expr = astBuildImplicitCtorCallEx( ctx.sym, expr, arg_mode, is_ctorcall )
         if( expr = NULL ) then
+        	rec_cnt -= 1
         	exit function
         end if
 
     	if( is_ctorcall ) then
+    		rec_cnt -= 1
     		return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr ) <> NULL
     	else
     		'' try to assign it (do a shallow copy)
+    		rec_cnt -= 1
         	return hDoAssign( ctx, expr )
         end if
     end if
-
+	
+	dim as integer parenth = TRUE, comma = FALSE
+	
 	'' '('
-	if( hMatch( CHAR_LPRNT ) = FALSE ) then
-		'' it can be a function returning an UDT or another UDT
-		'' variable for non-static symbols..
-		return hElmInit( ctx )
+	if( lexGetToken( ) <> CHAR_LPRNT ) then
+		
+		if( rec_cnt > 1 ) then
+			'' get lookahead
+			dim as integer lookie = lexGetLookAhead( 1 ), is_ok = TRUE
+			
+			'' if it's a comma, set to leave one for the parent func
+			'' (see below)
+			if( lookie = CHAR_COMMA ) then
+				comma = TRUE
+				
+'			'' if it isn't EOL, then fallback on hElmInit 
+'			elseif( lookie = FB_TK_EOL ) then
+'			else
+'				is_ok = FALSE
+			end if
+			
+			'' we didn't have a parenth, so skip the checks
+'			if( is_ok ) then
+				parenth = FALSE
+'			else
+'				'' it can be a function returning an UDT or another UDT
+'				'' variable for non-static symbols..
+'				rec_cnt -= 1
+'				return hElmInit( ctx )
+'			end if
+		else
+			rec_cnt -= 1
+			return hElmInit( ctx )
+'			if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+'				rec_cnt -= 1
+'				exit function
+'			end if
+		end if
+	end if
+	if( parenth ) then
+		lexSkipToken( )
 	end if
 
 	''
@@ -410,14 +453,14 @@ private function hUDTInit _
 	do
 		if( elm_cnt > elements ) then
 			if( errReport( FB_ERRMSG_TOOMANYEXPRESSIONS ) = FALSE ) then
+				rec_cnt -= 1
 				exit function
 			else
-				'' error recovery: skip until next ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
+				'' error recovery: jump out
 				exit do
 			end if
 		end if
-
+		
 		elm_ofs = elm->ofs
 		if( lgt > 0 ) then
 			pad_lgt = elm_ofs - lgt
@@ -451,12 +494,14 @@ private function hUDTInit _
         	'' must be first...
         	if( elm_cnt > 1 ) then
         		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+        		rec_cnt -= 1
         		exit function
         	end if
 			
     		'' nothing passed back...
     		if( ctx.init_expr = NULL ) then
     			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+    			rec_cnt -= 1
     			exit function
     		end if
 			
@@ -469,23 +514,30 @@ private function hUDTInit _
 			
 	    	expr = astBuildImplicitCtorCallEx( ctx.sym, expr, arg_mode, is_ctorcall )
 	        if( expr = NULL ) then
+	        	rec_cnt -= 1
 	        	exit function
 	        end if
 			
 			'' ')'
-			if( hMatch( CHAR_RPRNT ) = FALSE ) then
-				if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip until next ')'
-					hSkipUntil( CHAR_RPRNT, TRUE )
+			if( parenth ) then
+				if( lexGetToken( ) <> CHAR_RPRNT ) then
+					if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+						rec_cnt -= 1
+						exit function
+					else
+						'' error recovery: skip until next ')'
+						hSkipUntil( CHAR_RPRNT, TRUE )
+					end if
 				end if
+				lexSkipToken( )
 			end if
 			
 	    	if( is_ctorcall ) then
+	    		rec_cnt -= 1
 	    		return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr ) <> NULL
 	    	else
 	    		'' try to assign it (do a shallow copy)
+	    		rec_cnt -= 1
 	        	return hDoAssign( ctx, expr )
 	        end if
     		
@@ -495,20 +547,43 @@ private function hUDTInit _
 
 		'' next
 		elm = symbGetUDTNextElm( elm, TRUE, elm_cnt )
-
-	'' ','
-	loop while( hMatch( CHAR_COMMA ) )
+		
+		'' if we're not top level,
+		if( rec_cnt > 1 ) then
+			
+			'' if there's a comma at the end, we have to leave it for
+			'' the parent UDT initializer, to signal that we completed
+			'' initializing this UDT, and the next field should be assigned.
+		    if( comma = TRUE ) then
+		    	if( elm_cnt > elements ) then
+		    		exit do
+		    	end if
+		    end if
+			
+		end if
+		
+		'' ','
+		if( hMatch( CHAR_COMMA ) = FALSE ) then
+			exit do
+		end if
+		
+	loop
 
 	'' restore parent
 	ctx = old_ctx
-
+    
 	'' ')'
-	if( hMatch( CHAR_RPRNT ) = FALSE ) then
-		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-			exit function
+	if( parenth ) then
+		if( lexGetToken( ) <> CHAR_RPRNT ) then
+			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+				rec_cnt -= 1
+				exit function
+			else
+				'' error recovery: skip until next ')'
+				hSkipUntil( CHAR_RPRNT, TRUE )
+			end if
 		else
-			'' error recovery: skip until next ')'
-			hSkipUntil( CHAR_RPRNT, TRUE )
+			lexSkipToken( )
 		end if
 	end if
 
@@ -522,7 +597,9 @@ private function hUDTInit _
 	end if
 
 	astTypeIniGetOfs( ctx.tree ) = baseofs + sym_len
-
+	
+	rec_cnt -= 1
+	
 	function = TRUE
 
 end function

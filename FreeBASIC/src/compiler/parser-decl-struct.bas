@@ -844,6 +844,8 @@ decl_inner:		'' it's an anonymous inner UDT
 				if( inner = NULL ) then
 					exit function
 				end if
+				
+				inner->udt.options or= iif( isunion, FB_UDTOPT_ISUNION, 0 )
 
 				'' walk through all the anon UDT's symbols, and
 				'' promote their attributes from the root
