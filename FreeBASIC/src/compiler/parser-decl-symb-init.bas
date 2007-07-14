@@ -396,29 +396,12 @@ private function hUDTInit _
 			'' (see below)
 			if( lookie = CHAR_COMMA ) then
 				comma = TRUE
-				
-'			'' if it isn't EOL, then fallback on hElmInit 
-'			elseif( lookie = FB_TK_EOL ) then
-'			else
-'				is_ok = FALSE
 			end if
 			
-			'' we didn't have a parenth, so skip the checks
-'			if( is_ok ) then
-				parenth = FALSE
-'			else
-'				'' it can be a function returning an UDT or another UDT
-'				'' variable for non-static symbols..
-'				rec_cnt -= 1
-'				return hElmInit( ctx )
-'			end if
+			parenth = FALSE
 		else
 			rec_cnt -= 1
 			return hElmInit( ctx )
-'			if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
-'				rec_cnt -= 1
-'				exit function
-'			end if
 		end if
 	end if
 	if( parenth ) then

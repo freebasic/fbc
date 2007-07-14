@@ -936,12 +936,16 @@ function symbGetUDTNextElm _
 						if( sym->prev ) then
 							if( sym->parent <> sym->prev->parent ) then
 								
-								'' recalibrate the parent
-								union_parent = symbGetUnionParent( sym->parent )
-								
-								'' keep skipping if the previous var is in our same union
-								if( symbIsDeeper( union_parent, sym->prev ) ) then
-									keep_skipping = TRUE
+								'' immediately in a union
+								if( symbGetUDTIsUnion( sym->parent ) ) then
+									
+									'' recalibrate the parent
+									union_parent = symbGetUnionParent( sym->parent )
+									
+									'' keep skipping if the previous var is in our same union
+									if( symbIsDeeper( union_parent, sym->prev ) ) then
+										keep_skipping = TRUE
+									end if
 								end if
 							end if
 						end if
