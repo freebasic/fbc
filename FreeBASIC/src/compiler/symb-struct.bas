@@ -479,6 +479,11 @@ sub symbInsertInnerUDT _
 
     '' move the nodes from inner to parent
     fld = inner->udt.ns.symtb.head
+    
+    '' unless it's a fake struct
+    if( fld = NULL ) then
+    	exit sub
+    end if
 
     fld->prev = parent->udt.ns.symtb.tail
     if( parent->udt.ns.symtb.tail = NULL ) then
