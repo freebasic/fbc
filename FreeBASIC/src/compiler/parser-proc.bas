@@ -682,6 +682,8 @@ function cProcHeader _
     			exit function
     		end if
     	end if
+    	
+    	proc->parent = parent
 
     	return proc
     end if
@@ -822,7 +824,7 @@ function cProcHeader _
     symbSetProcIncFile( proc, env.inf.incfile )
 
     function = proc
-
+    
 end function
 
 '':::::
