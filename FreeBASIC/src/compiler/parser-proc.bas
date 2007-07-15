@@ -683,8 +683,6 @@ function cProcHeader _
     		end if
     	end if
     	
-    	proc->parent = parent
-
     	return proc
     end if
 

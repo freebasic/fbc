@@ -563,6 +563,8 @@ function symbNewSymbol _
 	s->symtb = symtb
 
 	symtb->tail = s
+	
+	s->parent = NULL
 
 	'' forward type? add to the back-patch list..
 	if( typeGetPtrType( dtype ) = FB_DATATYPE_FWDREF ) then
