@@ -17,27 +17,40 @@ AC_CANONICAL_TARGET
 case "$target" in
 	*-*-linux* )
 		AC_DEFINE([TARGET_LINUX],1,[Linux build])
-		FBRT_TARGET=linux;;
+		FBRT_TARGET_BASE=unix
+		FBRT_TARGET=linux
+		;;
 	*-*-mingw* )
 		AC_DEFINE([TARGET_WIN32],1,[Win32 build])
-		FBRT_TARGET=win32;;
+		FBRT_TARGET_BASE=
+		FBRT_TARGET=win32
+		;;
 	*-*-cygwin* )
 		AC_DEFINE([TARGET_CYGWIN],1,[Cygwin build])
-		FBRT_TARGET=win32;;
+		FBRT_TARGET_BASE=
+		FBRT_TARGET=win32
+		;;
 	*-*-msdos* )
 		AC_DEFINE([TARGET_DOS],1,[Djgpp build])
-		FBRT_TARGET=dos;;
+		FBRT_TARGET_BASE=
+		FBRT_TARGET=dos
+		;;
 	*-*-xbox* )
 		AC_DEFINE([TARGET_XBOX],1,[Xbox build])
-		FBRT_TARGET=xbox;;
+		FBRT_TARGET_BASE=
+		FBRT_TARGET=xbox
+		;;
 	*-*-freebsd* )
 		AC_DEFINE([TARGET_FREEBSD],1,[FreeBSD build])
-		FBRT_TARGET=linux;;
+		FBRT_TARGET_BASE=unix
+		FBRT_TARGET=freebsd
+		;;
 	*)
 		AC_MSG_ERROR([Unsupported target])
 		;;
 esac
 
+AC_SUBST([FBRT_TARGET_BASE])
 AC_SUBST([FBRT_TARGET])
 
 case "$target_cpu" in
