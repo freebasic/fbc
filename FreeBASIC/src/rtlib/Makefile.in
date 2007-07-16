@@ -77,6 +77,7 @@ FBRT_CPUDEPOBJS += $(patsubst @srcdir@/@FBRT_CPU@/%.s,$(FBRT_OBJDEST)/%.o,$(wild
 FBRT_STATICOBJS := $(patsubst @srcdir@/static/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/static/*.c))
 FBRT_HEADERS := $(wildcard @srcdir@/*.h)
 FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_TARGET@/*.h)
+FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_TARGET_BASE@/*.h)
 FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_CPU@/*.h)
 
 ##################################################################
