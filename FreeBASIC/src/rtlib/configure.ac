@@ -17,6 +17,7 @@ AC_CANONICAL_TARGET
 case "$target" in
 	*-*-linux* )
 		AC_DEFINE([TARGET_LINUX],1,[Linux build])
+		AC_DEFINE([TARGET_BASE_UNIX],1,[Unix base build])
 		FBRT_TARGET_BASE=unix
 		FBRT_TARGET=linux
 		;;
@@ -42,6 +43,7 @@ case "$target" in
 		;;
 	*-*-freebsd* )
 		AC_DEFINE([TARGET_FREEBSD],1,[FreeBSD build])
+		AC_DEFINE([TARGET_BASE_UNIX],1,[Unix base build])
 		FBRT_TARGET_BASE=unix
 		FBRT_TARGET=freebsd
 		;;

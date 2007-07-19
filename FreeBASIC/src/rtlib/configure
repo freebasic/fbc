@@ -1904,6 +1904,11 @@ cat >>confdefs.h <<\_ACEOF
 #define TARGET_LINUX 1
 _ACEOF
 
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_BASE_UNIX 1
+_ACEOF
+
 		FBRT_TARGET_BASE=unix
 		FBRT_TARGET=linux
 		;;
@@ -1947,6 +1952,11 @@ _ACEOF
 
 cat >>confdefs.h <<\_ACEOF
 #define TARGET_FREEBSD 1
+_ACEOF
+
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_BASE_UNIX 1
 _ACEOF
 
 		FBRT_TARGET_BASE=unix

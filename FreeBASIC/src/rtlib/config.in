@@ -296,6 +296,9 @@
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
+/* Unix base build */
+#undef TARGET_BASE_UNIX
+
 /* Cygwin build */
 #undef TARGET_CYGWIN
 
