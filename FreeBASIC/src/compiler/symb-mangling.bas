@@ -455,7 +455,7 @@ function symbMangleParam _
 
 	end select
 
-	return symbMangleType( dtype, symbGetSubtype( param ) )
+	return symbMangleType( dtype, symbGetSubtype( param ) ) & *iif( symbGetParamMode( param ) = FB_PARAMMODE_BYDESC, @"Ar", @"" )
 
 end function
 

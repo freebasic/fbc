@@ -36,6 +36,7 @@ Version 0.18.0 Beta:
 - gfxlib wasn't waiting long enough when preventing a potential deadlock, causing deinitialization to fail (and crappy graphics consequences) (cha0s)
 - #1735413 - UDT initialization would fail if the initialization expression was surrounded in parenthesis, due to the udt = (elm, elm) syntax. it will now fallback to check if the first expression encountered matches the udt type, if so, it will attempt a ctor call/assign. (cha0s)
 - #1734192 - UDT initialization with unions should have been checking the first union element against the given expresssion. (cha0s)
+- Mangling params taking FB arrays wasn't unique from params as the array's datatype. Recompile any libraries/linked objects taking arrays as parameterse.
 
 Version 0.17 Beta:
 
