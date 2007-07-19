@@ -124,6 +124,7 @@ sub rtlAddIntrinsicProcs _
 	dim as integer param_len, ptrcnt
 	dim as FBSYMBOL ptr proc
 	dim as ASTNODE ptr param_optval
+	dim as FBSYMBOL ptr subtype
 
 	'' for each proc..
 	do
@@ -138,14 +139,82 @@ sub rtlAddIntrinsicProcs _
 
 		if( doadd ) then
 			proc = symbPreAddProc( NULL )
-
+			
 			'' for each parameter..
 			for i = 0 to procdef->params-1
+				subtype = NULL
 				with procdef->paramTb(i)
 					if( .isopt ) then
 						attrib = FB_SYMBATTRIB_OPTIONAL
 
 						select case as const .dtype
+						
+						'' function pointers need a symbol built so they can check matches
+						case FB_DATATYPE_FUNCTION
+							.dtype = typeAddrOf( FB_DATATYPE_FUNCTION )
+							dim as integer inner_attrib, func_arg
+							dim as integer inner_param_len, inner_ptrcnt
+							dim as ASTNODE ptr inner_param_optval
+							dim as FBSYMBOL ptr inner_proc
+							
+							'' scan through the next args as child args
+							inner_proc = symbPreAddProc( NULL )
+							for func_arg = 0 to .optval-1
+								i += 1
+								
+								with procdef->paramTb(i)
+									if( .isopt ) then
+										inner_attrib = FB_SYMBATTRIB_OPTIONAL
+										select case as const .dtype
+										case FB_DATATYPE_STRING
+											'' only NULL can be used
+											inner_param_optval = astNewCONSTstr( "" )
+				
+										case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+											inner_param_optval = astNewCONSTf( .optval, .dtype )
+				
+										case else
+											inner_param_optval = astNewCONSTi( .optval, .dtype )
+										end select
+									else
+										inner_param_optval = NULL
+										inner_attrib = 0
+									end if
+										
+									if( .dtype <> INVALID ) then
+										inner_param_len = symbCalcParamLen( .dtype, NULL, .mode )
+									else
+										inner_param_len = FB_POINTERSIZE
+									end if
+									
+									CNTPTR( .dtype, inner_ptrcnt )
+									
+									symbAddProcParam( inner_proc, NULL, _
+									                  .dtype, NULL, typeGetPtrCnt(.dtype), _
+									                  inner_param_len, .mode, INVALID, _
+									                  inner_attrib, inner_param_optval )
+								end with
+							next
+							
+							'' next arg is result type
+							i += 1
+							with procdef->paramTb(i)
+								
+								'' add it
+								subtype = symbAddPrototype( inner_proc, _
+								                            NULL, NULL, NULL, _
+								                            .dtype, NULL, typeGetPtrCnt(.dtype), _
+								                            0, FB_FUNCMODE_DEFAULT, _
+								                            FB_SYMBOPT_DECLARING )
+							    
+								if( subtype <> NULL ) then
+									symbSetIsFuncPtr( subtype )
+								end if
+								
+							end with
+							
+							param_optval = NULL
+							
 						case FB_DATATYPE_STRING
 							'' only NULL can be used
 							param_optval = astNewCONSTstr( "" )
@@ -162,15 +231,15 @@ sub rtlAddIntrinsicProcs _
 					end if
 
 					if( .dtype <> INVALID ) then
-						param_len = symbCalcParamLen( .dtype, NULL, .mode )
+						param_len = symbCalcParamLen( .dtype, subtype, .mode )
 					else
 						param_len = FB_POINTERSIZE
 					end if
-
+					
 					CNTPTR( .dtype, ptrcnt )
 
 					symbAddProcParam( proc, NULL, _
-							  	  	 .dtype, NULL, ptrcnt, _
+							  	  	 .dtype, subtype, ptrcnt, _
 							  	  	 param_len, .mode, INVALID, _
 							  	  	 attrib, param_optval )
 

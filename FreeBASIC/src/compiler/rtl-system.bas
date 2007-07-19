@@ -331,10 +331,16 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 			@"threadcreate", @"fb_ThreadCreate", _
 	 		typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
 	 		@hMultithread_cb, FB_RTL_OPT_MT, _
-	 		2, _
+	 		4, _
 	 		{ _
 	 			( _
+	 				FB_DATATYPE_FUNCTION, FB_PARAMMODE_BYVAL, TRUE, 1 _
+	 			), _
+	 			( _
 	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_VOID, NULL, FALSE _
 	 			), _
 	 			( _
 	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, TRUE, 0 _
