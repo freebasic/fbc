@@ -563,6 +563,11 @@ private function hAddInfoObject as integer
     	safeKill( FB_INFOSEC_OBJNAME )
     end if
 
+#ifdef DISABLE_OBJINFO
+	function = FALSE
+
+#else '' DISABLE_OBJINFO
+
     if( fbObjInfoWriteObj( @fbc.ld_liblist, @fbc.ld_libpathlist ) ) then
     	function = TRUE
 
@@ -574,6 +579,8 @@ private function hAddInfoObject as integer
 
     	function = FALSE
     end if
+
+#endif '' DISABLE_OBJINFO
 
 end function
 
@@ -753,6 +760,11 @@ private function collectObjInfo _
 		return FALSE
     end if
 
+#ifdef DISABLE_OBJINFO
+	function = FALSE
+
+#else '' DISABLE_OBJINFO
+
 	scope
 		'' for each object passed in the cmd-line
 		dim as string ptr obj = listGetHead( @fbc.objlist )
@@ -784,6 +796,8 @@ private function collectObjInfo _
 	end scope
 
 	function = TRUE
+
+#endif '' DISABLE_OBJINFO
 
 end function
 

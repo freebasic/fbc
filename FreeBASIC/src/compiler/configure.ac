@@ -1,7 +1,7 @@
 # configure.ac for the FB Compiler		-*- Autoconf -*-
 # Process this file with autoconf to generate a configuration script.
 
-AC_INIT([fbc],[0.17],[http://sourceforge.net/projects/fbc])
+AC_INIT([fbc],[0.18.1],[http://sourceforge.net/projects/fbc])
 AC_PREREQ([2.59])
 
 AC_COPYRIGHT([Copyright (C) 2004-2007 The FreeBASIC development team])
@@ -90,6 +90,23 @@ else
   MAINT=
 fi
 AC_SUBST([MAINT])
+
+# Optionally disable OBJINFO support, (bfd and iberty).  This was added to
+# allow building and debugging fbc with a broader range of binutils and
+# gdb versions.  Compatability with BFD really depends on matching versions
+# of BFD between binutils and gdb plus fbc's bfd.bi header file -- which is
+# not always possible.
+AC_ARG_ENABLE(objinfo,
+[  --disable-objinfo        disable direct reading/writing of obj/lib files],
+ [if test "$enableval" != "no"; then
+    FBC_OBJINFO=objinfo
+ else
+    FBC_OBJINFO=
+ fi],
+ FBC_OBJINFO=objinfo
+)
+AC_SUBST([FBC_OBJINFO])
+
 
 # Output
 AC_CONFIG_FILES([Makefile])
