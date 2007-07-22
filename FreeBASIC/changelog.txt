@@ -3,6 +3,9 @@ Version 0.18.1 Beta:
 [changed]
 - the default calling convention of variables has changed in -lang FB. UDT's (including strings) will default to BYREF, all else will default to BYVAL (cha0s)
 
+[added]
+- configure option for --disable-objinfo to allow building and using fbc with a broader range of binutils (jeffm)
+
 Version 0.18.0 Beta:
 
 [changed]
