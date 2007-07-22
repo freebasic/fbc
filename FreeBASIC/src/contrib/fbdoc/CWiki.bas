@@ -46,6 +46,8 @@ namespace fb.fbdoc
 		as CList ptr 		tokenlist
 		as CList ptr		actparamlist
 		as CList ptr		pagelinklist
+
+		as WikiToken ptr    currenttoken
 	end type
 
 	const WIKI_PATTERN =  $"\%\%.*?\%\%|" + _
@@ -67,6 +69,8 @@ namespace fb.fbdoc
 
 		select case _id
 		case WIKI_TOKEN_ACTION
+			'' !!! FIXME: !!! - this will not release action parameters, until
+			'' either CWiki goes out of scope, or CWiki->Parse() is called again
 			delete action
 			action = NULL
 		case WIKI_TOKEN_INDENT, WIKI_TOKEN_LIST, WIKI_TOKEN_HEADER
@@ -75,6 +79,9 @@ namespace fb.fbdoc
 		case WIKI_TOKEN_LINK
 			delete link
 			link = NULL
+		case WIKI_TOKEN_CODE
+			delete code
+			code = NULL
 		end select
 
 		_id = new_value
@@ -86,9 +93,142 @@ namespace fb.fbdoc
 			indent = new WikiToken_Indent
 		case WIKI_TOKEN_LINK
 			link = new WikiToken_Link
+		case WIKI_TOKEN_CODE
+			code = new WikiToken_Code
 		end select
 		
 	end property
+
+	'':::::
+	public operator WikiToken.Let( byref other as WikiToken )
+		
+		with other
+
+			text = .text
+			start = .start
+			length = .length
+
+			id = _id
+
+			select case _id
+			case WIKI_TOKEN_ACTION
+				*action = *.action
+			case WIKI_TOKEN_INDENT, WIKI_TOKEN_LIST, WIKI_TOKEN_HEADER
+				*indent = *.indent
+			case WIKI_TOKEN_LINK
+				*link = *.link
+			case WIKI_TOKEN_CODE
+				*code = *.code
+			end select
+
+		end with
+
+	end operator
+
+	'':::::
+	operator WikiToken.cast _
+		( _
+		) as string
+
+		dim i as integer
+		dim as WikiToken ptr token = @this
+		dim as string t
+		
+		select case as const token->id
+		case WIKI_TOKEN_LT
+			t = "<"
+		case WIKI_TOKEN_GT
+			t = ">"
+		case WIKI_TOKEN_BOXLEFT
+			t = "<<"
+		case WIKI_TOKEN_BOXRIGHT
+			t = ">>"
+		case WIKI_TOKEN_CLEAR
+			t = "::c::"
+		case WIKI_TOKEN_KBD
+			t = "#%"
+		case WIKI_TOKEN_BOLD
+			t = "**"
+		case WIKI_TOKEN_BOLD_SECTION
+			t = "=="
+		case WIKI_TOKEN_ITALIC
+			t = "//"
+		case WIKI_TOKEN_UNDERLINE
+			t = "__"
+		case WIKI_TOKEN_MONOSPACE
+			t = "##"
+		case WIKI_TOKEN_NOTES
+			t = "''"
+		case WIKI_TOKEN_STRIKE
+			t = "++"
+		case WIKI_TOKEN_CENTER
+			t = "@@"
+		case WIKI_TOKEN_HEADER
+			t = string( token->header->level, "=" )
+		case WIKI_TOKEN_NEWLINE
+			t = chr(10)
+		case WIKI_TOKEN_CODE
+			t = "%%(" + token->code->lang + ")"
+			t += token->text
+			t += "%%"
+		case WIKI_TOKEN_PRE
+			t = "%%"
+			t += token->text
+			t += "%%"
+		case WIKI_TOKEN_LINK
+			if( token->text > "" ) then
+				t = "[[" + token->link->url + " " + token->text + "]]"
+			else
+				t = "[[" + token->link->url + "]]"
+			end if
+
+		case WIKI_TOKEN_ACTION
+
+			dim as WikiAction_Param ptr param, nxt
+			dim as string tmp
+			dim as integer i
+
+			t = "{{" + token->action->name
+
+			param = token->action->paramhead
+			dim as integer p = 1
+			do while( param <> NULL )
+				i = instr( param->value, chr(34) )
+				if( i > 0 ) then
+					tmp = param->value
+					do
+						tmp = left( tmp, i - 1) & "&quot" & mid( tmp, i + 1 )
+						i = instr(i + 5, tmp, chr(34) )
+					loop while ( i > 0 )
+					t += " " + param->name + "=""" + tmp + """"
+				else
+					t += " " + param->name + "=""" + param->value + """"
+				end if
+				param = param->next
+				p += 1
+			loop
+
+			t += "}}
+			
+		case WIKI_TOKEN_INDENT
+			'' t = string( token->indent->level, 9 ) + token->indent->bullet
+			t = token->indent->indent + token->indent->bullet
+		case WIKI_TOKEN_LIST
+			'' t = string( token->indent->level, 9 ) + token->indent->bullet
+			t = token->indent->indent + token->indent->bullet
+		case WIKI_TOKEN_TEXT
+			t = token->text
+		case WIKI_TOKEN_RAW
+			t = """""" + token->text + """"""
+		case WIKI_TOKEN_FORCENL
+			t = "---"
+		case WIKI_TOKEN_HORZLINE
+			t = "----"
+		end select
+
+		operator = t
+
+	end operator
 
 	'':::::
 	private function _AllocRe _
@@ -216,6 +356,8 @@ namespace fb.fbdoc
 		ctx->tokenlist = new CList( 16, len( WikiToken ) )
 		ctx->actparamlist = new CList( 16, len( WikiAction_Param ) )
 		ctx->pagelinklist = new CList( 16, len( WikiPageLink ) )
+
+		ctx->currenttoken = NULL
 		
 	end constructor
 
@@ -238,6 +380,8 @@ namespace fb.fbdoc
 			
 			token = nxt
 		loop
+
+		ctx->currenttoken = NULL
 		
 	end sub
 
@@ -371,7 +515,13 @@ namespace fb.fbdoc
 			byval length as integer _
 		)
 		
-		dim as WikiToken ptr token = ctx->tokenlist->Insert()
+		dim as WikiToken ptr token = any
+		
+		if( ctx->currenttoken <> NULL ) then
+			token = ctx->tokenlist->Insert( CList.insert_before, ctx->currenttoken )
+		else
+			token = ctx->tokenlist->Insert( CList.insert_last )
+		end if
 
 		token->start = start
 		token->length = length
@@ -458,7 +608,12 @@ namespace fb.fbdoc
 			match = ctx->codere->GetStr( 1 )
 			if( left( *match, 8 ) = "(qbasic)" ) then
 				token->id = WIKI_TOKEN_CODE
+				token->code->lang = "qbasic"
 				token->text = mid( *match, 1+8 )
+			elseif( left( *match, 11 ) = "(freebasic)" ) then
+				token->id = WIKI_TOKEN_CODE
+				token->text = mid( *match, 1+11 )
+				token->code->lang = "freebasic"
 			else
 				token->id = WIKI_TOKEN_PRE
 				token->text = *match
@@ -551,26 +706,62 @@ namespace fb.fbdoc
 			exit sub
 		end if
 
-		dim as WikiToken ptr token = ctx->tokenlist->Insert()
+		dim as WikiToken ptr token = any
+
+		if( ctx->currenttoken <> NULL ) then
+			token = ctx->tokenlist->Insert( CList.insert_before, ctx->currenttoken )
+		else
+			token = ctx->tokenlist->Insert( CList.insert_last )
+		end if
 
 		token->start = start
 		token->length = length
 		token->id = WIKI_TOKEN_TEXT
 		token->text = *text
-		
+
 	end sub
 
+	''::::
+	function CWiki.MoveFirst() as WikiToken ptr
+		ctx->currenttoken = ctx->tokenlist->GetHead()
+		function = ctx->currenttoken
+	end function
+
+	''::::
+	function CWiki.MoveLast() as WikiToken ptr
+		ctx->currenttoken = ctx->tokenlist->GetTail()
+		function = ctx->currenttoken
+	end function
+
+	''::::
+	function CWiki.MoveNext() as WikiToken ptr
+		ctx->currenttoken = ctx->tokenlist->GetNext( ctx->currenttoken )
+		function = ctx->currenttoken
+	end function
+
+	''::::
+	function CWiki.MovePrevious() as WikiToken ptr
+		ctx->currenttoken = ctx->tokenlist->GetPrev( ctx->currenttoken )
+		function = ctx->currenttoken
+	end function
+
+	''::::
+	function CWiki.GetCurrent() as WikiToken ptr
+		function = ctx->currenttoken
+	end function
+
 	'':::::
-	function CWiki.Parse _
+	function CWiki.Insert _
 		( _
-			byval pagename as zstring ptr, _
-			byval body as zstring ptr _
+			byval body as zstring ptr, _
+			byval token as WikiToken ptr = NULL _
 		) as integer
 
-		_FreeTokenlist( ctx )
-		_FreePageLinkList( ctx )
-		_FreeActParamlist( ctx )
-		
+		if( token <> NULL ) then
+			'' TODO: verify that token is in the token list
+			ctx->currenttoken = token
+		end if
+
 		if( ctx->re->Search( body ) ) then
 			dim as integer ofs = 0
 			
@@ -593,9 +784,54 @@ namespace fb.fbdoc
 		end if
 		
 		function = TRUE
+
+	end function
+
+	'':::::
+	function CWiki.Parse _
+		( _
+			byval pagename as zstring ptr, _
+			byval body as zstring ptr _
+		) as integer
+
+		_FreeTokenlist( ctx )
+		_FreePageLinkList( ctx )
+		_FreeActParamlist( ctx )
+		
+		function = Insert( body )
 			
 	end function
-		
+
+	'':::::
+	function CWiki.Remove _
+	( _
+		byval token as WikiToken ptr = NULL _
+	) as integer
+
+		_FreePageLinkList( ctx )
+
+		if( token = NULL ) then
+			token = ctx->currenttoken
+		end if
+
+		if( token <> NULL ) then
+
+			ctx->currenttoken = ctx->tokenlist->GetNext(token)
+
+			token->text = ""
+			token->id = WIKI_TOKEN_NULL
+
+			ctx->tokenlist->Remove(token)
+
+			function = TRUE
+
+		else
+
+			function = FALSE
+
+		end if
+
+	end function
 
 	'':::::
 	sub CWiki.Dump _
@@ -646,7 +882,7 @@ namespace fb.fbdoc
 			case WIKI_TOKEN_NEWLINE
 				t = "nl"
 			case WIKI_TOKEN_CODE
-				t = "code"
+				t = "code:" + token->code->lang
 			case WIKI_TOKEN_PRE
 				t = "pre"
 			case WIKI_TOKEN_LINK
@@ -867,112 +1103,16 @@ namespace fb.fbdoc
 		( _
 		) as string
 
-		dim ret as string, i as integer
-
-		dim as WikiToken ptr token
-		dim as string t
+		dim ret as string
+		dim as WikiToken ptr token = ctx->tokenlist->GetHead()
 		
-		token = ctx->tokenlist->GetHead()
 		do while( token <> NULL )
-			
-			select case as const token->id
-			case WIKI_TOKEN_LT
-				t = "<"
-			case WIKI_TOKEN_GT
-				t = ">"
-			case WIKI_TOKEN_BOXLEFT
-				t = "<<"
-			case WIKI_TOKEN_BOXRIGHT
-				t = ">>"
-			case WIKI_TOKEN_CLEAR
-				t = "::c::"
-			case WIKI_TOKEN_KBD
-				t = "#%"
-			case WIKI_TOKEN_BOLD
-				t = "**"
-			case WIKI_TOKEN_BOLD_SECTION
-				t = "=="
-			case WIKI_TOKEN_ITALIC
-				t = "//"
-			case WIKI_TOKEN_UNDERLINE
-				t = "__"
-			case WIKI_TOKEN_MONOSPACE
-				t = "##"
-			case WIKI_TOKEN_NOTES
-				t = "''"
-			case WIKI_TOKEN_STRIKE
-				t = "++"
-			case WIKI_TOKEN_CENTER
-				t = "@@"
-			case WIKI_TOKEN_HEADER
-				t = string( token->header->level, "=" )
-			case WIKI_TOKEN_NEWLINE
-				t = chr(10)
-			case WIKI_TOKEN_CODE
-				t = "%%(qbasic)"
-				t += token->text
-				t += "%%"
-			case WIKI_TOKEN_PRE
-				t = "%%"
-				t += token->text
-				t += "%%"
-			case WIKI_TOKEN_LINK
-				if( token->text > "" ) then
-					t = "[[" + token->link->url + " " + token->text + "]]"
-				else
-					t = "[[" + token->link->url + "]]"
-				end if
-
-			case WIKI_TOKEN_ACTION
-
-				dim as WikiAction_Param ptr param, nxt
-				dim as string tmp
-				dim as integer i
-
-				t = "{{" + token->action->name
-
-				param = token->action->paramhead
-				dim as integer p = 1
-				do while( param <> NULL )
-					i = instr( param->value, chr(34) )
-					if( i > 0 ) then
-						tmp = param->value
-						do
-							mid( tmp, i, 1 ) = "&quot"
-							i = instr(i, tmp, chr(34) )
-						loop while ( i > 0 )
-						t += " " + param->name + "=""" + tmp + """"
-					else
-						t += " " + param->name + "=""" + param->value + """"
-					end if
-					param = param->next
-					p += 1
-				loop
-
-				t += "}}
-				
-			case WIKI_TOKEN_INDENT
-				'' t = string( token->indent->level, 9 ) + token->indent->bullet
-				t = token->indent->indent + token->indent->bullet
-			case WIKI_TOKEN_LIST
-				'' t = string( token->indent->level, 9 ) + token->indent->bullet
-				t = token->indent->indent + token->indent->bullet
-			case WIKI_TOKEN_TEXT
-				t = token->text
-			case WIKI_TOKEN_RAW
-				t = """""" + token->text + """"""
-			case WIKI_TOKEN_FORCENL
-				t = "---"
-			case WIKI_TOKEN_HORZLINE
-				t = "----"
-			end select
-
-			ret += t
-			
+			ret &= *token
 			token = ctx->tokenlist->GetNext( token )
 		loop
 		
 		function = ret	
+
 	end function
 
 

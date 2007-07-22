@@ -3,8 +3,10 @@ fbdoc TODO list
 
 [ ]	add proxy support to CHttp.
 
-[ ]	add the insert/delete methods to CWiki to allow programmatic editing 
-	of wakka script.
+[ ]	add new methods to CWiki to allow programmatic editing of wakka script.
+	[X] Insert( text )
+	[ ] Remove() - take special care to remove parameters and page links
+		when the token is removed
 
 [ ] add an image getter using libCURL so the on-line images
 	can be included in the CHM version of the docs.

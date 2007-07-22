@@ -1,3 +1,11 @@
+July 20, 2007
+- added: CWiki->Insert(body)
+- added: a private current token field to CWiki.  Allows cursor-like
+  movement through the token list allowing for iteration, inseration, and
+  removal of tokens.
+- added: CList->InsertBefore([node]), CList->InsertAfter([node])
+- changed: CList->Insert([where][,node]) now takes INSERTION_POINT, node
+
 June 18, 2007
 - changed: using libcurl 7.15.4
 - fixed: check &quot inside action parameters

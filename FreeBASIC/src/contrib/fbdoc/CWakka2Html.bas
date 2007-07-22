@@ -582,7 +582,7 @@ namespace fb.fbdoc
 			end if
 
 		case "section":
-			''if( lcase(left( *ctx->page, 5 )) = "propg" ) then
+			
 			if( ctx->indentbase = 1 ) then
 				res += _closeTags( ctx, res )
 				ctx->tagFlags(WIKI_TAG_SECTION) = 1
@@ -593,12 +593,13 @@ namespace fb.fbdoc
 			return res + "<b><u>" + strValue + "</u></b>"
 
 		case "subsect":			
-			''if( lcase(left( *ctx->page, 5 )) = "propg" ) then
+
 			if( ctx->indentbase = 1 ) then
-				res += _closeTags( ctx, res )
-				ctx->tagFlags(WIKI_TAG_SECTION) = 1
-				return res + "<div class=""fb_sect_title"">" + strValue +  _
-							"</div><div class=""fb_sect_cont"">"
+				'' res += _closeTags( ctx, res )
+				'' ctx->tagFlags(WIKI_TAG_SECTION) = 1
+				res += "<div class=""fb_sect_title"">" + strValue + "</div>"
+				'' res += "<div class=""fb_sect_cont"">"
+				return res
 			end if
 
 			return res + "<b>" + strValue + "</b>"
@@ -976,23 +977,9 @@ namespace fb.fbdoc
 		case WIKI_TOKEN_NEWLINE
 			ctx->nlcnt += 1
 
-			'if( ctx->newlevel = 0 ) then
-			'	if( ctx->nlcnt < 3 ) then
-					if( ctx->skipnl = false ) then
-						res += "<br \>" + nl
-					end if
-			'	end if
-			'end if
-
-			'if( ctx->level = 0 ) then
-			'	if( ctx->indent = 0 ) then
-			'		if( ctx->skipnl = false ) then
-			'			if( ctx->nlcnt < 3 ) then
-			'				
-			'			end if
-			'		endif
-			'	end if
-			'end if
+			if( ctx->skipnl = false ) then
+				res += "<br \>" + nl
+			end if
 
 			ctx->skipnl = false
 			ctx->newlevel = 0

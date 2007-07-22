@@ -185,8 +185,9 @@ namespace fb
 	end function
 	
 	'':::::
-	function CList.insert _
+	function CList.insertafter _
 		( _
+			byval prev_node_ as any ptr _
 		) as any ptr static
 	
 		dim as TNODE ptr node, tail
@@ -195,30 +196,124 @@ namespace fb
 		if( ctx->fhead = NULL ) Then
 			_allocTB( ctx, cunsg(ctx->nodes) \ 4 )
 		end if
-	
+
 		'' take from free list
 		node = ctx->fhead
 		ctx->fhead = node->next
-	
+
 		if( (ctx->flags and flags_LINKUSEDNODES) <> 0 ) then
 			'' add to used list
-			tail = ctx->tail
-			ctx->tail = node
-			if( tail <> NULL ) then
-				tail->next = node
+
+			if( prev_node_ <> NULL ) then
+				tail = cast( TNODE ptr, cast( byte ptr, prev_node_ ) - len( TNODE ) )
 			else
+				tail = ctx->tail
+			end if
+
+			if( tail <> NULL ) then
+
+				node->prev = tail
+				node->next = tail->next
+				tail->next = node
+
+				if( node->next <> NULL ) then
+					node->next->prev = node
+				else
+					ctx->tail = node
+				end if
+
+			else
+				
 				ctx->head = node
-			end If
-	
-			node->prev = tail
-			node->next = NULL
-	
+				ctx->tail = node
+				node->prev = NULL
+				node->next = NULL
+
+			end if
+
 			function = cast( byte ptr, node ) + len( TNODE )
 	
 		else
 			function = node
 		end if
 	
+	end function
+
+	'':::::
+	function CList.insertbefore _
+		( _
+			byval next_node_ as any ptr _
+		) as any ptr static
+	
+		dim as TNODE ptr node, head
+	
+		'' alloc new node list if there are no free nodes
+		if( ctx->fhead = NULL ) Then
+			_allocTB( ctx, cunsg(ctx->nodes) \ 4 )
+		end if
+
+		'' take from free list
+		node = ctx->fhead
+		ctx->fhead = node->next
+
+		if( (ctx->flags and flags_LINKUSEDNODES) <> 0 ) then
+			'' add to used list
+
+			if( next_node_ <> NULL ) then
+				head = cast( TNODE ptr, cast( byte ptr, next_node_ ) - len( TNODE ) )
+			else
+				head = ctx->head
+			end if
+
+			if( head <> NULL ) then
+
+				node->prev = head->prev
+				node->next = head
+				head->prev = node
+
+				if( node->prev <> NULL ) then
+					node->prev->next = node
+				else
+					ctx->head = node
+				end if
+
+			else
+				
+				ctx->head = node
+				ctx->tail = node
+				node->prev = NULL
+				node->next = NULL
+
+			end if
+
+			function = cast( byte ptr, node ) + len( TNODE )
+	
+		else
+			function = node
+		end if
+	
+	end function
+
+	'':::::
+	function CList.insert _
+		( _
+			byval where as INSERTION_POINT, _
+			byval node as any ptr _
+		) as any ptr static
+
+		select case where
+		case insert_first
+			function = insertbefore( NULL )
+		case insert_last
+			function = insertafter( NULL )
+		case insert_before
+			function = insertbefore( node )
+		case insert_after
+			function = insertafter( node )
+		case else
+			function = NULL
+		end select
+
 	end function
 	
 	'':::::

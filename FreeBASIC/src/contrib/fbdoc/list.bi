@@ -34,6 +34,13 @@ namespace fb
 			flags_NOCLEAR			= flags_LINKFREENODES or flags_LINKUSEDNODES
 			flags_ALL 				= &hFFFFFFFF
 		end enum
+
+		enum INSERTION_POINT
+			insert_first
+			insert_last
+			insert_before
+			insert_after
+		end enum
 		
 		declare constructor _
 			( _
@@ -46,10 +53,22 @@ namespace fb
 			( _
 			) 
 		
+		declare function insertbefore _
+			( _
+				byval node as any ptr = 0 _
+			) as any ptr
+
+		declare function insertafter _
+			( _
+				byval node as any ptr = 0 _
+			) as any ptr
+
 		declare function insert _
 			( _
+				byval where as INSERTION_POINT = insert_last, _
+				byval node as any ptr = 0 _
 			) as any ptr
-		
+
 		declare sub remove	_
 			( _
 				byval node as any ptr _

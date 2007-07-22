@@ -106,6 +106,10 @@ namespace fb.fbdoc
 		as integer        linkclass
 	end type
 
+	type WikiToken_Code
+		as string 				lang
+	end type
+
 	type WikiToken_Indent
 		as integer				level
 		as string               indent
@@ -128,10 +132,14 @@ namespace fb.fbdoc
 			as WikiToken_Indent	ptr indent
 			as WikiToken_Indent	ptr list
 			as WikiToken_Indent	ptr header
+			as WikiToken_Code   ptr code
 		end union
 
 		declare property id () as WIKI_TOKEN
 		declare property id ( byval new_value as WIKI_TOKEN )
+
+		declare operator let( byref other as WikiToken )
+		declare operator cast() as string
 
 	end type
 
@@ -158,6 +166,27 @@ namespace fb.fbdoc
 			( _
 				byval pagename as zstring ptr, _
 				byval body as zstring ptr _
+			) as integer
+
+		declare function MoveFirst() as WikiToken ptr
+
+		declare function MoveLast() as WikiToken ptr
+
+		declare function MoveNext() as WikiToken ptr
+
+		declare function MovePrevious() as WikiToken ptr
+
+		declare function GetCurrent() as WikiToken ptr
+
+		declare function Insert _
+			( _
+				byval body as zstring ptr, _
+				byval token as WikiToken ptr = NULL _
+			) as integer
+
+		declare function Remove _
+			( _
+				byval token as WikiToken ptr = NULL _
 			) as integer
 
 		declare function Build _
