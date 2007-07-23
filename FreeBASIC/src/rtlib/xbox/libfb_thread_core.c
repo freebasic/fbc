@@ -58,7 +58,7 @@ static void NTAPI threadproc(void *param1, void *param2)
 
 
 /*:::::*/
-FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param )
+FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size )
 {
 	NTSTATUS status;
 	FBTHREAD *thread;
@@ -73,7 +73,7 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param )
 	
 	status = PsCreateSystemThreadEx( &thread->id, /* ThreadHandle */
 	                                 0,           /* ThreadExtraSize */
-	                                 65536,       /* KernelStackSize */
+	                                 /* stack_size??? */ 65536,       /* KernelStackSize */
 	                                 0,           /* TlsDataSize */
 	                                 NULL,        /* ThreadId */
 	                                 &thread,     /* StartContext1 */

@@ -45,7 +45,7 @@ typedef struct _FBTHREAD
 struct _FBMUTEX;
 struct _FBCOND;
 
-FBCALL FBTHREAD 		*fb_ThreadCreate( FB_THREADPROC proc, void *param );
+FBCALL FBTHREAD 		*fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size );
 FBCALL void              fb_ThreadWait  ( FBTHREAD *thread );
 
 FBCALL struct _FBMUTEX  *fb_MutexCreate ( void );

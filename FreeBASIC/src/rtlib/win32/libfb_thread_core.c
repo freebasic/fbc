@@ -58,7 +58,7 @@ static DWORD WINAPI threadproc( LPVOID param )
 }
 
 /*:::::*/
-FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param )
+FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size )
 {
 	FBTHREAD *thread;
 #ifdef TARGET_WIN32
@@ -76,7 +76,7 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param )
 
 #ifdef TARGET_WIN32
     thread->id = (HANDLE)_beginthreadex( NULL, 
-    									 0, 
+    									 stack_size, 
     									 threadproc, 
     									 (void *)thread, 
     									 0, 
@@ -84,7 +84,7 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param )
 #else
     {
         thread->id = CreateThread( NULL,
-                                   0,
+                                   stack_size,
                                    threadproc,
                                    (void*)thread,
                                    0,
