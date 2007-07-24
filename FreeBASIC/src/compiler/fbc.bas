@@ -603,6 +603,7 @@ private function archiveFiles _
     '' output library file name
     arcline += QUOTE + fbc.outname + (QUOTE + " ")
 
+#ifndef DISABLE_OBJINFO
     '' the first object must be the info one
     if( fbIsCrossComp( ) = FALSE ) then
     	if( hAddInfoObject( ) ) then
@@ -610,6 +611,7 @@ private function archiveFiles _
     		has_infobj = TRUE
     	end if
     end if
+#endif '' DISABLE_OBJINFO
 
     '' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
