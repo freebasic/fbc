@@ -1149,10 +1149,10 @@ private function hForStmtClose _
 
 		'' check
 		hScalarNext( stk )
-    end select
+	end select
 
-    '' end label (loop exit)
-    astAdd( astNewLABEL( stk->for.endlabel ) )
+	'' end label (loop exit)
+	astAdd( astNewLABEL( stk->for.endlabel ) )
 
 	'' close the outer scope block
 	if( stk->for.outerscopenode <> NULL ) then
@@ -1160,8 +1160,10 @@ private function hForStmtClose _
 	end if
 	
 	'' add the temp bit, to make the branch checker happy
-	symbGetAttrib( stk->for.end.sym ) or= FB_SYMBATTRIB_TEMP
-	if( stk->for.stp.sym ) then
+	if( stk->for.end.sym <> NULL ) then
+		symbGetAttrib( stk->for.end.sym ) or= FB_SYMBATTRIB_TEMP
+	end if
+	if( stk->for.stp.sym <> NULL ) then
 		symbGetAttrib( stk->for.stp.sym ) or= FB_SYMBATTRIB_TEMP
 	end if
 
