@@ -315,6 +315,13 @@ function cAssignment _
 				exit function
 			end if
 		end if
+	else
+		'' type variable?
+		if( astIsConst( assgexpr ) ) then
+			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
+				exit function
+			end if
+		end if
 	end if
 
 	'' '='?
