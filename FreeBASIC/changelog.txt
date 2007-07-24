@@ -10,8 +10,9 @@ Version 0.18.1 Beta:
 [fixed]
 - #1735413 - UDT initialization would fail if the initialization expression was surrounded in parenthesis, due to the udt = (elm, elm) syntax. it will now fallback to check if the first expression encountered matches the udt type, if so, it will attempt a ctor call/assign. (cha0s)
 - #1734192 - UDT initialization with unions should have been checking the first union element against the given expresssion. (cha0s)
-- Mangling params taking FB arrays wasn't unique from params as the array's datatype. Recompile any libraries/linked objects taking arrays as parameterse.
+- Mangling params taking FB arrays wasn't unique from params as the array's datatype. Recompile any libraries/linked objects taking arrays as parameters.
 - ThreadCreate was accepting literally "any" pointer at its first parameter. Added a mechanism for building function pointer symbols (to check against, say the first arg passed to ThreadCreate) at the rtl symbol initializer. (cha0s)
+- #1713886 - symbols in FOR had the temp bit stripped out to make scope jumping work, but it can be added in later, otherwise the branch checker will get confused (cha0s)
 
 Version 0.18.0 Beta:
 

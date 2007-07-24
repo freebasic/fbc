@@ -1158,6 +1158,12 @@ private function hForStmtClose _
 	if( stk->for.outerscopenode <> NULL ) then
 		astScopeEnd( stk->for.outerscopenode )
 	end if
+	
+	'' add the temp bit, to make the branch checker happy
+	symbGetAttrib( stk->for.end.sym ) or= FB_SYMBATTRIB_TEMP
+	if( stk->for.stp.sym ) then
+		symbGetAttrib( stk->for.stp.sym ) or= FB_SYMBATTRIB_TEMP
+	end if
 
 	function = TRUE
 
