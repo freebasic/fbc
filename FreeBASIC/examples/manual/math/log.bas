@@ -1,0 +1,18 @@
+'' examples/manual/math/log.bas
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgLog
+'' --------
+
+'Find the logarithm of any base
+Function LogBaseX (ByVal Number As Double, ByVal BaseX As Double) As Double
+	LogBaseX = Log( Number ) / Log( BaseX )
+	'For reference:   1/log(10)=0.43429448
+End Function
+
+Print "The log base 10 of 20 is:"; LogBaseX ( 20 , 10 )
+Print "The log base 2 of 16 is:"; LogBaseX ( 16 , 2 )
+
+Sleep
