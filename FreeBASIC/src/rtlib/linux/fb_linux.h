@@ -39,17 +39,6 @@
 #ifndef __FB_LINUX_H__
 #define __FB_LINUX_H__
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <signal.h>
-#include <termios.h>
-#include <dirent.h>
-#include <dlfcn.h>
-#include <pthread.h>
-#include <termcap.h>
 #include <sys/mman.h>
 #ifdef HAVE_SYS_IO_H
  #include <sys/io.h>
@@ -66,24 +55,6 @@
 
 #define BG_LOCK()			pthread_mutex_lock(&__fb_con.bg_mutex);
 #define BG_UNLOCK()			pthread_mutex_unlock(&__fb_con.bg_mutex);
-
-#ifdef MULTITHREADED
-extern pthread_mutex_t __fb_global_mutex;
-extern pthread_mutex_t __fb_string_mutex;
-# define FB_LOCK()					pthread_mutex_lock(&__fb_global_mutex)
-# define FB_UNLOCK()				pthread_mutex_unlock(&__fb_global_mutex)
-# define FB_STRLOCK()				pthread_mutex_lock(&__fb_string_mutex)
-# define FB_STRUNLOCK()				pthread_mutex_unlock(&__fb_string_mutex)
-# define FB_TLSENTRY				pthread_key_t
-# define FB_TLSALLOC(key) 			pthread_key_create( &(key), NULL )
-# define FB_TLSFREE(key)			pthread_key_delete( (key) )
-# define FB_TLSSET(key,value)		pthread_setspecific((key), (const void *)(value))
-# define FB_TLSGET(key)				pthread_getspecific((key))
-#endif
-
-#define FB_THREADID pthread_t
-
-#define FB_DYLIB void*
 
 #define SEQ_LOCATE			0			/* "cm" - move cursor */
 #define SEQ_HOME			1			/* "ho" - home cursor */
@@ -113,16 +84,6 @@ extern pthread_mutex_t __fb_string_mutex;
 #define SEQ_EXIT_GFX_MODE	106			/* xxxx - cleanup after console gfx mode */
 #define SEQ_SET_COLOR_EX	107			/* xxxx - extended set color */
 
-
-typedef struct _FB_DIRCTX
-{
-	int in_use;
-	int attrib;
-	DIR *dir;
-	char filespec[MAX_PATH];
-	char dirname[MAX_PATH];
-} FB_DIRCTX;
-
 typedef struct FBCONSOLE
 {
 	int inited;
@@ -149,8 +110,6 @@ typedef struct FBCONSOLE
 	void (*mouse_update)(int cb, int cx, int cy);
 	void (*gfx_exit)(void);
 } FBCONSOLE;
-
-typedef off_t fb_off_t;
 
 extern FBCONSOLE __fb_con;
 

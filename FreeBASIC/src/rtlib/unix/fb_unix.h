@@ -1,12 +1,83 @@
+/*
+ *  libfb - FreeBASIC's runtime library
+ *	Copyright (C) 2004-2007 The FreeBASIC development team.
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  As a special exception, the copyright holders of this library give
+ *  you permission to link this library with independent modules to
+ *  produce an executable, regardless of the license terms of these
+ *  independent modules, and to copy and distribute the resulting
+ *  executable under terms of your choice, provided that you also meet,
+ *  for each linked independent module, the terms and conditions of the
+ *  license of that module. An independent module is a module which is
+ *  not derived from or based on this library. If you modify this library,
+ *  you may extend this exception to your version of the library, but
+ *  you are not obligated to do so. If you do not wish to do so, delete
+ *  this exception statement from your version.
+ */
+
+/*
+ * fb_unix.h -- unix base target-specific header
+ *
+ * chng: jul/2007 written [DrV]
+ *
+ */
+
 #ifndef __FB_UNIX_H__
 #define __FB_UNIX_H__
 
-/*
-  probably some stuff is going to get split from linux/fb_linux.h
-  an put here, but it's not been done yet.
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdarg.h>
+#include <signal.h>
+#include <termios.h>
+#include <dirent.h>
+#include <dlfcn.h>
+#include <pthread.h>
+#include <termcap.h>
 
-  So, this file just exists for now to make the build scripts work.
+#ifdef MULTITHREADED
+extern pthread_mutex_t __fb_global_mutex;
+extern pthread_mutex_t __fb_string_mutex;
+# define FB_LOCK()					pthread_mutex_lock(&__fb_global_mutex)
+# define FB_UNLOCK()				pthread_mutex_unlock(&__fb_global_mutex)
+# define FB_STRLOCK()				pthread_mutex_lock(&__fb_string_mutex)
+# define FB_STRUNLOCK()				pthread_mutex_unlock(&__fb_string_mutex)
+# define FB_TLSENTRY				pthread_key_t
+# define FB_TLSALLOC(key) 			pthread_key_create( &(key), NULL )
+# define FB_TLSFREE(key)			pthread_key_delete( (key) )
+# define FB_TLSSET(key,value)		pthread_setspecific((key), (const void *)(value))
+# define FB_TLSGET(key)				pthread_getspecific((key))
+#endif
 
-*/
+#define FB_THREADID pthread_t
+
+#define FB_DYLIB void*
+
+typedef struct _FB_DIRCTX
+{
+	int in_use;
+	int attrib;
+	DIR *dir;
+	char filespec[MAX_PATH];
+	char dirname[MAX_PATH];
+} FB_DIRCTX;
+
+typedef off_t fb_off_t;
 
 #endif
