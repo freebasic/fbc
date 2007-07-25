@@ -6851,11 +6851,15 @@ private function _getSectionString _
 
 	select case as const section
 	case IR_SECTION_CONST
-		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-			ostr += "rodata"
-		else
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32, _
+		     FB_COMPTARGET_CYGWIN, _
+		     FB_COMPTARGET_DOS, _
+		     FB_COMPTARGET_XBOX
 			ostr += "rdata"
-		end if
+		case else
+			ostr += "rodata"
+		end select
 
 	case IR_SECTION_DATA
 		ostr += "data"
