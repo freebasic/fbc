@@ -57,18 +57,28 @@ static void *threadproc( void *param )
 }
 
 /*:::::*/
-FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param )
+FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size )
 {
 	FBTHREAD *thread;
+	pthread_attr_t tattr;
 
 	thread = (FBTHREAD *)malloc( sizeof(FBTHREAD) );
 	if( !thread )
 		return NULL;
 
-    thread->proc	= proc;
-    thread->param 	= param;
+	thread->proc	= proc;
+	thread->param 	= param;
 
-	if( pthread_create( &thread->id, NULL, threadproc, (void *)thread ) ) {
+	if( pthread_attr_init( &tattr ) ) {
+		free( thread );
+		return NULL;
+	}
+
+	if( stack_size >= PTHREAD_STACK_MIN ) {
+		pthread_attr_setstacksize( &tattr, stack_size );
+	}
+
+	if( pthread_create( &thread->id, &tattr, threadproc, (void *)thread ) ) {
 		free( (void *)thread );
 		return NULL;
 	}
