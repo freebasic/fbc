@@ -655,6 +655,11 @@ sub fbSetPaths _
 		pathTB(FB_PATH_BIN) = FB_BINPATH + "win32" + RSLASH
 		pathTB(FB_PATH_INC) = FB_INCPATH
 		pathTB(FB_PATH_LIB) = FB_LIBPATH + "xbox"
+	
+	case FB_COMPTARGET_FREEBSD
+		pathTB(FB_PATH_BIN) = FB_BINPATH + "freebsd" + RSLASH
+		pathTB(FB_PATH_INC) = FB_INCPATH
+		pathTB(FB_PATH_LIB) = FB_LIBPATH + "freebsd"
 	end select
 
 #if not( defined( TARGET_WIN32 ) or defined( TARGET_DOS ) or defined( TARGET_CYGWIN ) or defined( TARGET_XBOX ) )
