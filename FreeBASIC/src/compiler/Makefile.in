@@ -70,7 +70,7 @@ endif
 
 ifeq (@FBC_TARGET@,linux)
 	FBC_OSDEPSRCS := fbc_linux.bas
-	DEFS := -d TARGET_LINUX -d TARGET_X86
+	DEFS := -d TARGET_LINUX -d TARGET_X86 -d CROSSCOMP_FREEBSD
 endif
 
 ifeq (@FBC_TARGET@,cygwin)
