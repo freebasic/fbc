@@ -56,7 +56,7 @@ private function _linkFiles _
 	function = FALSE
 
     '' set path
-	ldpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ld.exe"
+	ldpath = fbGetPath( FB_PATH_BIN ) + "ld.exe"
 
     if( hFileExists( ldpath ) = FALSE ) then
 		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
@@ -83,7 +83,7 @@ private function _linkFiles _
 	end if
 
 	'' set script file and subsystem
-	ldcline = "-T " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_BIN ) + ("i386pe.x" + QUOTE + " -subsystem ") + fbc.subsystem
+	ldcline = "-T " + QUOTE + fbGetPath( FB_PATH_BIN ) + ("i386pe.x" + QUOTE + " -subsystem ") + fbc.subsystem
 
     if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		''
@@ -128,7 +128,7 @@ private function _linkFiles _
 	ldcline += *fbcGetLibPathList( )
 
 	'' crt entry
-	dim as string libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
+	dim as string libdir = fbGetPath( FB_PATH_LIB )
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		ldcline += " " + QUOTE + libdir + (RSLASH + "crt0.o" + QUOTE + " ")
 	else
@@ -204,7 +204,7 @@ end function
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
-	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
+	arcpath = fbGetPath( FB_PATH_BIN ) + "ar.exe"
 
     if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
@@ -225,10 +225,10 @@ private function _compileResFiles _
 
 	'' replace the include env var
 	oldinclude = trim( environ( "INCLUDE" ) )
-	setenviron "INCLUDE=" + exepath( ) + *fbGetPath( FB_PATH_INC ) + "win" + RSLASH + "rc"
+	setenviron "INCLUDE=" + fbGetPath( FB_PATH_INC ) + "win" + RSLASH + "rc"
 
 	''
-	rescmppath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "GoRC.exe"
+	rescmppath = fbGetPath( FB_PATH_BIN ) + "GoRC.exe"
 
 	'' set input files (.rc's and .res') and output files (.obj's)
 	dim as string ptr rcf = listGetHead( @rclist )
@@ -377,7 +377,7 @@ private function makeImpLib _
 	function = FALSE
 
 	'' set path
-	dtpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "dlltool.exe"
+	dtpath = fbGetPath( FB_PATH_BIN ) + "dlltool.exe"
 
     if( hFileExists( dtpath ) = FALSE ) then
 		errReportEx( FB_ERRMSG_EXEMISSING, dtpath, -1 )

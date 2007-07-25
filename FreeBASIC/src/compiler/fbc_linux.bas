@@ -50,7 +50,7 @@ private function _linkFiles _
 	function = FALSE
 
 	'' set path
-	bindir = exepath( ) + *fbGetPath( FB_PATH_BIN )
+	bindir = fbGetPath( FB_PATH_BIN )
 #ifdef TARGET_LINUX
 	ldpath = bindir + "ld"
 #else
@@ -109,7 +109,7 @@ private function _linkFiles _
 	'' add library search paths
 	ldcline += *fbcGetLibPathList( )
 
-	dim as string libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
+	dim as string libdir = fbGetPath( FB_PATH_LIB )
 
 	'' crt init stuff
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
@@ -178,9 +178,9 @@ private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
 #ifdef TARGET_LINUX
-	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar"
+	arcpath = fbGetPath( FB_PATH_BIN ) + "ar"
 #else
-	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
+	arcpath = fbGetPath( FB_PATH_BIN ) + "ar.exe"
 #endif
 
     if( exec( arcpath, *cmdline ) <> 0 ) then
@@ -309,10 +309,10 @@ private function _compileResFiles _
 
 	'' compile icon source file
 #ifdef TARGET_LINUX
-	if( exec( exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as", _
+	if( exec( fbGetPath( FB_PATH_BIN ) + "as", _
 			  iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
 #else
-	if( exec( exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as.exe", _
+	if( exec( fbGetPath( FB_PATH_BIN ) + "as.exe", _
 			  iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
 #endif
 		kill( iconsrc )

@@ -164,7 +164,8 @@ declare sub getDefaultLibs _
 		( FBC_OPT_LANG			, @"lang"     	 ), _
 		( FBC_OPT_WA			, @"Wa"     	 ), _
 		( FBC_OPT_WL			, @"Wl"     	 ), _
-		( FBC_OPT_GEN			, @"gen"		 ) _
+		( FBC_OPT_GEN			, @"gen"		 ), _
+		( FBC_OPT_PREFIX		, @"prefix"      ) _
 	}
 
 	'on error goto runtime_err
@@ -497,7 +498,7 @@ private function assembleFile _
     	path = environ( "AS" )
     	if( len( path ) = 0 ) then
         	'' when not set, then simply use some default value
-        	path = exepath( ) + *fbGetPath( FB_PATH_BIN )
+        	path = fbGetPath( FB_PATH_BIN )
 
 #ifdef TARGET_LINUX
 			path += "as"
@@ -844,14 +845,14 @@ private sub setDefaultOptions( )
 
 	fbc.compileonly = FALSE
 	fbc.preserveasm	= FALSE
-	fbc.verbose		= FALSE
+	fbc.verbose     = FALSE
 	fbc.stacksize	= FBC_DEFSTACKSIZE
 
 	fbc.mainfile	= ""
 	fbc.mainpath	= ""
     fbc.mapfile     = ""
-	fbc.mainset 	= FALSE
-	fbc.outname		= ""
+	fbc.mainset     = FALSE
+	fbc.outname     = ""
 	fbc.outaddext   = FALSE
 
 	fbc.extopt.gas	= ""
@@ -1454,6 +1455,16 @@ private function processOptions _
 				fbc.extopt.ld = " " + hReplace( *nxt, ",", " " ) + " "
 
 				del_cnt += 1
+
+			case FBC_OPT_PREFIX
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				fbSetPrefix( *nxt )
+
+				del_cnt += 1
 			end select
 
 			hDelArgNode( arg )
@@ -1610,7 +1621,7 @@ end sub
 private sub setDefaultLibPaths
 
 	'' compiler's /lib
-	fbcAddDefLibPath( exepath( ) + *fbGetPath( FB_PATH_LIB ) )
+	fbcAddDefLibPath( fbGetPath( FB_PATH_LIB ) )
 
     '' and the current path
 	fbcAddDefLibPath( "./" )
@@ -1682,6 +1693,7 @@ private sub printOptions( )
 	printOption( "-noerrline", "Do not show source line where error occured" )
 	printOption( "-o <name>", "Set object file path/name (must be passed after the .bas file)" )
 	printOption( "-p <name>", "Add a path to search for libraries" )
+	print "-prefix <path>"; " Set the compiler prefix path"
 	printOption( "-profile", "Enable function profiling" )
 	printOption( "-r", "Do not delete the asm file(s)" )
 	select case fbGetOption( FB_COMPOPT_TARGET )

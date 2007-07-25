@@ -51,9 +51,9 @@ private function _linkFiles _
 	
 	'' set path
 #ifdef TARGET_WIN32
-	ldpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ld.exe"
+	ldpath = fbGetPath( FB_PATH_BIN ) + "ld.exe"
 #else
-	ldpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ld"
+	ldpath = fbGetPath( FB_PATH_BIN ) + "ld"
 #endif
 	
 	if( hFileExists( ldpath ) = FALSE ) then
@@ -72,7 +72,7 @@ private function _linkFiles _
 	tmpexename = fbc.outname + ".exe"
 	
 	'' set script file
-	ldcline = "-T " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_BIN ) + ("i386pe.x" + QUOTE + _
+	ldcline = "-T " + QUOTE + fbGetPath( FB_PATH_BIN ) + ("i386pe.x" + QUOTE + _
 		" -nostdlib --file-alignment 0x20 --section-alignment 0x20 -shared")
 	
 	if( len( fbc.mapfile ) > 0) then
@@ -92,7 +92,7 @@ private function _linkFiles _
 	'' add library search paths
 	ldcline += *fbcGetLibPathList( )
 	
-	dim as string libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
+	dim as string libdir = fbGetPath( FB_PATH_LIB )
 	
 	'' link with crt0.o (C runtime init)
 	ldcline += " " + QUOTE + libdir + (RSLASH + "crt0.o" + QUOTE + " ")
@@ -164,9 +164,9 @@ private function _linkFiles _
 	end if
 	
 #ifdef TARGET_WIN32
-	cxbepath = exepath() + *fbGetPath(FB_PATH_BIN) + "cxbe.exe"
+	cxbepath = fbGetPath(FB_PATH_BIN) + "cxbe.exe"
 #else
-	cxbepath = exepath() + *fbGetPath(FB_PATH_BIN) + "cxbe"
+	cxbepath = fbGetPath(FB_PATH_BIN) + "cxbe"
 #endif
 	
 	if( hFileExists( cxbepath ) = FALSE ) then
@@ -195,9 +195,9 @@ private function _archiveFiles _
 	dim arcpath as string
 	
 #ifdef TARGET_WIN32
-	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
+	arcpath = fbGetPath( FB_PATH_BIN ) + "ar.exe"
 #else
-	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar"
+	arcpath = fbGetPath( FB_PATH_BIN ) + "ar"
 #endif
 	
 	if( exec( arcpath, *cmdline ) <> 0 ) then
@@ -219,10 +219,10 @@ private function _compileResFiles _
 	
 	'' change the include env var
 	oldinclude = trim( environ( "INCLUDE" ) )
-	setenviron "INCLUDE=" + exepath( ) + *fbGetPath( FB_PATH_INC ) + ("win" + RSLASH + "rc")
+	setenviron "INCLUDE=" + fbGetPath( FB_PATH_INC ) + ("win" + RSLASH + "rc")
 	
 	''
-	rescmppath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "GoRC.exe"
+	rescmppath = fbGetPath( FB_PATH_BIN ) + "GoRC.exe"
 	
 	'' set input files (.rc's and .res') and output files (.obj's)
 	dim as string ptr rcf = listGetHead( @rclist )

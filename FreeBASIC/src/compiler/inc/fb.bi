@@ -373,7 +373,7 @@ declare sub fbSetPaths _
 declare function fbGetPath _
 	( _
 		byval path as integer _
-	) as zstring ptr
+	) as string
 
 declare sub fbSetDefaultOptions _
 	( _
@@ -534,6 +534,11 @@ declare function fbObjInfoReadLib _
 		byval addOption as FB_CALLBACK_ADDOPTION, _
 		byval libpathlist as TLIST ptr _
 	) as integer
+	
+declare sub fbSetPrefix _
+	( _
+		byref prefix as string _
+	)
 
 ''
 '' macros

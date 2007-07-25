@@ -45,6 +45,7 @@ declare sub	parserSetCtx ( )
 	dim shared infileTb( ) as FBFILE
 	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
 	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB_MAXPATHLEN+1
+	dim shared fbPrefix as string
 
 	dim shared as FB_LANG_INFO langTb(0 to FB_LANGS-1) = _
 	{ _
@@ -300,7 +301,7 @@ private sub hSetCtx( )
 	''
 	env.incpaths = 0
 
-	fbAddIncPath( exepath( ) + *fbGetPath( FB_PATH_INC ) )
+	fbAddIncPath( fbGetPath( FB_PATH_INC ) )
 
 	''
 	select case env.clopt.target
@@ -656,7 +657,7 @@ sub fbSetPaths _
 		pathTB(FB_PATH_LIB) = FB_LIBPATH + "xbox"
 	end select
 
-#ifdef TARGET_LINUX
+#if not( defined( TARGET_WIN32 ) or defined( TARGET_DOS ) or defined( TARGET_CYGWIN ) or defined( TARGET_XBOX ) )
 	hRevertSlash( pathTB(FB_PATH_BIN), FALSE )
 	hRevertSlash( pathTB(FB_PATH_INC), FALSE )
 	hRevertSlash( pathTB(FB_PATH_LIB), FALSE )
@@ -668,11 +669,37 @@ end sub
 function fbGetPath _
 	( _
 		byval path as integer _
-	) as zstring ptr static
+	) as string static
 
-	function = @pathTB( path )
+	if( len( fbPrefix ) ) then
+		function = fbPrefix + pathTB( path )
+	else
+		function = exepath( ) + pathTB( path )
+	end if
 
 end function
+
+'':::::
+sub fbSetPrefix _
+	( _
+		byref prefix as string _
+	)
+
+	fbPrefix = prefix
+
+	'' trim trailing slash
+	if( right( fbPrefix, 1 )  = "/" ) then
+		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
+	end if
+
+#if defined( TARGET_WIN32 ) or defined( TARGET_DOS ) or defined( TARGET_CYGWIN ) or defined( TARGET_XBOX )
+	if( right( fbPrefix, 1 ) = RSLASH then
+		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
+	end if
+#endif
+	
+
+end sub
 
 '':::::
 function fbGetEntryPoint( ) as string static

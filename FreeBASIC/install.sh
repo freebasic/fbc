@@ -32,7 +32,9 @@ install()
 
 	if [ -w $link ]; then
 		rm -f "$link"/fbc
-		(cd $link; ln -s "$dest"/fbc fbc)
+		echo "#!/bin/sh">"$link"/fbc
+		echo "$dest/fbc -prefix $dest $*">>"$link"/fbc
+		chmod a+x "$link"/fbc
 		linkmsg="A link to the compiler binary has also been created as $link/fbc"
 	else
 		linkmsg="It was not possible to install a link to the compiler binary as $link/fbc"

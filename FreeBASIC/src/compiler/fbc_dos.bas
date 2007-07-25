@@ -63,7 +63,7 @@ private function _linkFiles _
 	function = FALSE
 
 	'' set path
-	ldpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ld.exe"
+	ldpath = fbGetPath( FB_PATH_BIN ) + "ld.exe"
 
     if( hFileExists( ldpath ) = FALSE ) then
 		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
@@ -81,7 +81,7 @@ private function _linkFiles _
     '' set script file
     select case fbGetOption( FB_COMPOPT_OUTTYPE )
 	case FB_OUTTYPE_EXECUTABLE
-		ldcline = " -T " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_BIN ) + _
+		ldcline = " -T " + QUOTE + fbGetPath( FB_PATH_BIN ) + _
 				  ("i386go32.x" + QUOTE)
 	case else
 		ldcline = ""
@@ -102,10 +102,10 @@ private function _linkFiles _
 
 	'' link with crt0.o (C runtime init) or gcrt0.o for gmon profiling
 	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-		ldcline += " " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + _
+		ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + _
 				   (RSLASH + "gcrt0.o" + QUOTE + " ")
 	else
-		ldcline += " " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + _
+		ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + _
 				   (RSLASH + "crt0.o" + QUOTE + " ")
 	end if
 
@@ -133,7 +133,7 @@ private function _linkFiles _
     ldcline += *fbcGetLibList( NULL )
 
 	'' rtlib initialization and termination, must be included in the group
-	dim as string libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
+	dim as string libdir = fbGetPath( FB_PATH_LIB )
 	ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
 
     '' end lib group
@@ -183,7 +183,7 @@ end function
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
-	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
+	arcpath = fbGetPath( FB_PATH_BIN ) + "ar.exe"
 
     if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
