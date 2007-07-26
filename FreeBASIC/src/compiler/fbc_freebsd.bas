@@ -69,6 +69,10 @@ private function _linkFiles _
 			fbc.outname = hStripFilename( fbc.outname ) + "lib" + hStripPath( fbc.outname ) + ".so"
 		end select
 	end if
+	
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
+		ldcline = "-dynamic-linker /libexec/ld-elf.so.1"
+	end if
 
 	''
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
