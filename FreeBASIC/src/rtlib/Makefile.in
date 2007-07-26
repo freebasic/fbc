@@ -26,7 +26,12 @@ LIBICONV = @LIBICONV@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 SHELL = @SHELL@
-VPATH = @srcdir@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_TARGET_BASE@ @srcdir@/@FBRT_CPU@ @srcdir@/static
+
+ifneq (,@FBRT_TARGET_BASE@)
+    VPATH = @srcdir@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_TARGET_BASE@ @srcdir@/@FBRT_CPU@ @srcdir@/static
+else
+    VPATH = @srcdir@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_CPU@ @srcdir@/static
+endif
 
 datadir = @datadir@
 exec_prefix = @prefix@
@@ -42,7 +47,11 @@ ifdef DEBUG
     DEFS += -DDEBUG
 endif
 
-INCLUDES = -I$(srcdir) -I$(srcdir)/@FBRT_TARGET@ -I$(srcdir)/@FBRT_TARGET_BASE@ -I$(srcdir)/@FBRT_CPU@ -I.
+ifneq (,@FBRT_TARGET_BASE@)
+    INCLUDES = -I$(srcdir) -I$(srcdir)/@FBRT_TARGET@ -I$(srcdir)/@FBRT_TARGET_BASE@ -I$(srcdir)/@FBRT_CPU@ -I.
+else
+    INCLUDES = -I$(srcdir) -I$(srcdir)/@FBRT_TARGET@ -I$(srcdir)/@FBRT_CPU@ -I.
+endif
 
 # config.h must be always included before any system header in *nix
 INCLUDES += -include config.h
@@ -70,15 +79,19 @@ FBRT_OBJS := $(patsubst @srcdir@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/*.c
 FBRT_OBJS += $(patsubst @srcdir@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/*.s))
 FBRT_OSDEPOBJS := $(patsubst @srcdir@/@FBRT_TARGET@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.c))
 FBRT_OSDEPOBJS += $(patsubst @srcdir@/@FBRT_TARGET@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.s))
-FBRT_BASEDEPOBJS := $(patsubst @srcdir@/@FBRT_TARGET_BASE@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET_BASE@/*.c))
-FBRT_BASEDEPOBJS += $(patsubst @srcdir@/@FBRT_TARGET_BASE@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET_BASE@/*.s))
 FBRT_CPUDEPOBJS := $(patsubst @srcdir@/@FBRT_CPU@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_CPU@/*.c))
 FBRT_CPUDEPOBJS += $(patsubst @srcdir@/@FBRT_CPU@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_CPU@/*.s))
 FBRT_STATICOBJS := $(patsubst @srcdir@/static/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/static/*.c))
 FBRT_HEADERS := $(wildcard @srcdir@/*.h)
 FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_TARGET@/*.h)
-FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_TARGET_BASE@/*.h)
 FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_CPU@/*.h)
+FBRT_BASEDEPOBJS :=
+
+ifneq (,@FBRT_TARGET_BASE@)
+    FBRT_BASEDEPOBJS += $(patsubst @srcdir@/@FBRT_TARGET_BASE@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET_BASE@/*.c))
+    FBRT_BASEDEPOBJS += $(patsubst @srcdir@/@FBRT_TARGET_BASE@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET_BASE@/*.s))
+    FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_TARGET_BASE@/*.h)
+endif
 
 ##################################################################
 
