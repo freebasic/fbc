@@ -966,6 +966,13 @@ sub fbGetDefaultLibs _
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
 			hAddLib( "gmon" )
 		end if
+	
+	case FB_COMPTARGET_FREEBSD
+		hAddLib( "c" )
+		hAddLib( "m" )
+		hAddLib( "pthread" )
+		hAddLib( "ncurses" )
+		hAddLib( "supc++" )
 
 	end select
 
