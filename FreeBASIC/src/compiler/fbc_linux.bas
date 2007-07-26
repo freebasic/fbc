@@ -51,16 +51,13 @@ private function _linkFiles _
 
 	'' set path
 	bindir = fbGetPath( FB_PATH_BIN )
-#ifdef TARGET_LINUX
-	ldpath = bindir + "ld"
-#else
-	ldpath = bindir + "ld.exe"
-#endif
 
-    if( hFileExists( ldpath ) = FALSE ) then
+	ldpath = bindir + "ld" + FB_HOST_EXEEXT
+
+	if( hFileExists( ldpath ) = FALSE ) then
 		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
 		exit function
-    end if
+	end if
 
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		dllname = hStripPath( hStripExt( fbc.outname ) )
@@ -81,23 +78,23 @@ private function _linkFiles _
 #endif
 	end if
 
-    ''
-    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+	''
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		ldcline = "-shared --export-dynamic -h" + hStripPath( fbc.outname )
 
-    else
-    	'' tell LD to add all symbols declared as EXPORT to the symbol table
-    	if( fbGetOption( FB_COMPOPT_EXPORT ) ) then
-    		ldcline += " --export-dynamic"
-    	end if
-    end if
+	else
+		'' tell LD to add all symbols declared as EXPORT to the symbol table
+		if( fbGetOption( FB_COMPOPT_EXPORT ) ) then
+			ldcline += " --export-dynamic"
+		end if
+	end if
 
 	'' set script file
 	ldcline += (" -T " + QUOTE) + bindir + ("elf_i386.x" + QUOTE)
 
-    if( len( fbc.mapfile ) > 0) then
-        ldcline += " -Map " + fbc.mapfile
-    end if
+	if( len( fbc.mapfile ) > 0) then
+		ldcline += " -Map " + fbc.mapfile
+	end if
 
 	''
 	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
@@ -123,35 +120,35 @@ private function _linkFiles _
 	ldcline += " " + QUOTE + libdir + ("/crti.o" + QUOTE)
 	ldcline += " " + QUOTE + libdir + ("/crtbegin.o" + QUOTE + " ")
 
-    '' add objects from output list
+	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
 	do while( iof <> NULL )
-    	ldcline += QUOTE + iof->outf + (QUOTE + " ")
-    	iof = listGetNext( iof )
-    loop
+		ldcline += QUOTE + iof->outf + (QUOTE + " ")
+		iof = listGetNext( iof )
+	loop
 
-    '' add objects from cmm-line
+	'' add objects from cmm-line
 	dim as string ptr objf = listGetHead( @fbc.objlist )
 	do while( objf <> NULL )
-    	ldcline += QUOTE + *objf + (QUOTE + " ")
-    	objf = listGetNext( objf )
-    loop
+		ldcline += QUOTE + *objf + (QUOTE + " ")
+		objf = listGetNext( objf )
+	loop
 
-    '' set executable name
-    ldcline += "-o " + QUOTE + fbc.outname + QUOTE
+	'' set executable name
+	ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
 	'' init lib group
-    ldcline += " -( "
+	ldcline += " -( "
 
-    '' add libraries from cmm-line and found when parsing
-    ldcline += *fbcGetLibList( dllname )
+	'' add libraries from cmm-line and found when parsing
+	ldcline += *fbcGetLibList( dllname )
 
 	'' rtlib initialization and termination (must be included in the group or
 	'' dlopen() will fail because fb_hRtExit() will be undefined)
 	ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
 
-    '' end lib group
-    ldcline += "-) "
+	'' end lib group
+	ldcline += "-) "
 
 	'' crt end stuff
 	ldcline += QUOTE + libdir + ("/crtend.o" + QUOTE + " " )
@@ -160,16 +157,16 @@ private function _linkFiles _
    	'' extra options
    	ldcline += fbc.extopt.ld
 
-    '' invoke ld
-    if( fbc.verbose ) then
-    	print "linking: ", ldcline
-    end if
+	'' invoke ld
+	if( fbc.verbose ) then
+		print "linking: ", ldcline
+	end if
 
-    if( exec( ldpath, ldcline ) <> 0 ) then
+	if( exec( ldpath, ldcline ) <> 0 ) then
 		exit function
-    end if
+	end if
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -177,15 +174,11 @@ end function
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
-#ifdef TARGET_LINUX
-	arcpath = fbGetPath( FB_PATH_BIN ) + "ar"
-#else
-	arcpath = fbGetPath( FB_PATH_BIN ) + "ar.exe"
-#endif
+	arcpath = fbGetPath( FB_PATH_BIN ) + "ar" + FB_HOST_EXEEXT
 
-    if( exec( arcpath, *cmdline ) <> 0 ) then
+	if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
-    end if
+	end if
 
 	return TRUE
 
@@ -308,13 +301,8 @@ private function _compileResFiles _
 	end if
 
 	'' compile icon source file
-#ifdef TARGET_LINUX
-	if( exec( fbGetPath( FB_PATH_BIN ) + "as", _
-			  iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
-#else
-	if( exec( fbGetPath( FB_PATH_BIN ) + "as.exe", _
-			  iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
-#endif
+	if( exec( fbGetPath( FB_PATH_BIN ) + "as" + FB_HOST_EXEEXT, _
+	          iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
 		kill( iconsrc )
 		exit function
 	end if

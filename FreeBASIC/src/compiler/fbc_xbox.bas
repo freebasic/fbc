@@ -50,11 +50,7 @@ private function _linkFiles _
 	function = FALSE
 	
 	'' set path
-#ifdef TARGET_WIN32
-	ldpath = fbGetPath( FB_PATH_BIN ) + "ld.exe"
-#else
-	ldpath = fbGetPath( FB_PATH_BIN ) + "ld"
-#endif
+	ldpath = fbGetPath( FB_PATH_BIN ) + "ld" + FB_HOST_EXEEXT
 	
 	if( hFileExists( ldpath ) = FALSE ) then
 		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
@@ -163,11 +159,7 @@ private function _linkFiles _
 		print "cxbe: ", cxbecline
 	end if
 	
-#ifdef TARGET_WIN32
-	cxbepath = fbGetPath(FB_PATH_BIN) + "cxbe.exe"
-#else
-	cxbepath = fbGetPath(FB_PATH_BIN) + "cxbe"
-#endif
+	cxbepath = fbGetPath(FB_PATH_BIN) + "cxbe" + FB_HOST_EXEEXT
 	
 	if( hFileExists( cxbepath ) = FALSE ) then
 		errReportEx( FB_ERRMSG_EXEMISSING, cxbepath, -1 )
@@ -194,11 +186,7 @@ private function _archiveFiles _
 	
 	dim arcpath as string
 	
-#ifdef TARGET_WIN32
-	arcpath = fbGetPath( FB_PATH_BIN ) + "ar.exe"
-#else
-	arcpath = fbGetPath( FB_PATH_BIN ) + "ar"
-#endif
+	arcpath = fbGetPath( FB_PATH_BIN ) + "ar" + FB_HOST_EXEEXT
 	
 	if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE

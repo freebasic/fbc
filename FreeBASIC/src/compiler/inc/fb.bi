@@ -119,16 +119,22 @@ const FB_TARGET             = "freebsd"
 
 #if defined(__FB_WIN32__)
 const FB_HOST               = "win32"
+const FB_HOST_EXEEXT        = ".exe"
 #elseif defined(__FB_CYGWIN__)
 const FB_HOST               = "cygwin"
+const FB_HOST_EXEEXT        = ".exe"
 #elseif defined(__FB_LINUX__)
 const FB_HOST               = "linux"
+const FB_HOST_EXEEXT        = ""
 #elseif defined(__FB_DOS__)
 const FB_HOST               = "dos"
+const FB_HOST_EXEEXT        = ".exe"
 #elseif defined(__FB_XBOX__)
 const FB_HOST               = "xbox"
+const FB_HOST_EXEEXT        = ".xbe"
 #elseif defined(__FB_FREEBSD__)
 const FB_HOST               = "freebsd"
+const FB_HOST_EXEEXT        = ""
 #endif
 
 
