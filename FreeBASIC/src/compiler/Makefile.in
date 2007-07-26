@@ -92,6 +92,12 @@ ifeq (@FBC_TARGET@,xbox)
 	FBC_LIBS += -l intl
 endif
 
+ifeq (@FBC_TARGET@,freebsd)
+	FBC_OSDEPSRCS := fbc_freebsd.bas fbc_linux.bas
+	DEFS := -d TARGET_FREEBSD -d TARGET_X86 -d CROSSCOMP_LINUX
+	FBC_LIBS += -l intl
+endif
+
 ifneq (@FBC_OBJINFO@,objinfo)
     DEFS += -d DISABLE_OBJINFO
 endif
