@@ -698,7 +698,7 @@ sub fbSetPrefix _
 	end if
 
 #if defined( TARGET_WIN32 ) or defined( TARGET_DOS ) or defined( TARGET_CYGWIN ) or defined( TARGET_XBOX )
-	if( right( fbPrefix, 1 ) = RSLASH then
+	if( right( fbPrefix, 1 ) = RSLASH ) then
 		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
 	end if
 #endif
