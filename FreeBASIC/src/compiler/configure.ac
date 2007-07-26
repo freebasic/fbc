@@ -30,6 +30,9 @@ case "$target" in
 	*-*-xbox* )
 		AC_DEFINE([TARGET_XBOX],1,[Xbox build])
 		FBC_TARGET=xbox;;
+	*-*-freebsd* )
+		AC_DEFINE([TARGET_FREEBSD],1,[FreeBSD build])
+		FBC_TARGET=freebsd;;
 	*)
 		AC_MSG_ERROR([Unsupported target])
 		;;
@@ -50,6 +53,9 @@ case "$host" in
 	*-*-msdos* )
 		AC_DEFINE([HOST_DOS],1,[Djgpp build])
 		FBC_HOST=dos;;
+	*-*-freebsd* )
+		AC_DEFINE([HOST_FREEBSD],1,[FreeBSD build])
+		FBC_HOST=freebsd;;
 	*)
 		AC_MSG_ERROR([Unsupported host])
 		;;
