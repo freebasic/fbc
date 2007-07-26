@@ -166,19 +166,17 @@ extern "C" {
 #define FB_IS_EXT_KEY(k) \
     ((int) (((((unsigned) (k)) & 0xFF)==FB_EXT_CHAR) && (((k) & 0xFF00)!=0)))
 
-#if defined(TARGET_BASE_UNIX)
-#include "unix/fb_unix.h"
-#endif
-
 #if defined(TARGET_WIN32) || defined(TARGET_CYGWIN)
 #include "win32/fb_win32.h"
 #elif defined(TARGET_LINUX)
+#include "unix/fb_unix.h"
 #include "linux/fb_linux.h"
 #elif defined(TARGET_DOS)
 #include "dos/fb_dos.h"
 #elif defined(TARGET_XBOX)
 #include "xbox/fb_xbox.h"
 #elif defined(TARGET_FREEBSD)
+#include "unix/fb_unix.h"
 #include "freebsd/fb_freebsd.h"
 #endif
 
