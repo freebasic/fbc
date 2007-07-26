@@ -387,6 +387,11 @@ private sub initTarget( )
 	case FB_COMPTARGET_XBOX
 		fbcInit_xbox( )
 #endif
+
+#if defined(TARGET_FREEBSD) or defined(CROSSCOMP_FREEBSD)
+	case FB_COMPTARGET_FREEBSD
+		fbcInit_freebsd( )
+#endif
 	end select
 
 end sub
@@ -500,11 +505,7 @@ private function assembleFile _
         	'' when not set, then simply use some default value
         	path = fbGetPath( FB_PATH_BIN )
 
-#ifdef TARGET_LINUX
-			path += "as"
-#else
-			path += "as.exe"
-#endif
+			path += "as" + FB_HOST_EXEEXT
     	end if
 
     	if( hFileExists( path ) = FALSE ) then
@@ -1652,7 +1653,7 @@ private sub printOptions( )
 	select case fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 		printOption( "", "*.rc = resource script, *.res = compiled resource" )
-	case FB_COMPTARGET_LINUX
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD
 		printOption( "", "*.xpm = icon resource" )
 	end select
 
