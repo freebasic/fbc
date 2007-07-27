@@ -232,10 +232,15 @@ private function hAllocTemp _
 	if( s = NULL ) then
 		return NULL
 	end if
-
-    '' remove the temp flag or breakScope() won't call the dtors (and in
-    '' this specific case, the temp vars are live for more than one stmt)
-    symbGetAttrib( s ) and= not FB_SYMBATTRIB_TEMP
+    
+    '' lang QB doesn't allow UDT's anyway...
+    if( env.clopt.lang <> FB_LANG_QB ) then
+    	
+	    '' remove the temp flag or breakScope() won't call the dtors (and in
+	    '' this specific case, the temp vars are live for more than one stmt)
+	    symbGetAttrib( s ) and= not FB_SYMBATTRIB_TEMP
+	    
+	end if
 
     function = s
 
@@ -1159,14 +1164,6 @@ private function hForStmtClose _
 		astScopeEnd( stk->for.outerscopenode )
 	end if
 	
-	'' add the temp bit, to make the branch checker happy
-	if( stk->for.end.sym <> NULL ) then
-		symbGetAttrib( stk->for.end.sym ) or= FB_SYMBATTRIB_TEMP
-	end if
-	if( stk->for.stp.sym <> NULL ) then
-		symbGetAttrib( stk->for.stp.sym ) or= FB_SYMBATTRIB_TEMP
-	end if
-
 	function = TRUE
 
 end function
