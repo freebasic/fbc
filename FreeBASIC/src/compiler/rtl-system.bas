@@ -334,7 +334,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		5, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_FUNCTION, FB_PARAMMODE_BYVAL, TRUE, 1 _
+	 				typeSetType( FB_DATATYPE_FUNCTION, 1 ), FB_PARAMMODE_BYVAL, TRUE, 1 _
 	 			), _
 	 			( _
 	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _

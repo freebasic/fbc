@@ -148,10 +148,15 @@ sub rtlAddIntrinsicProcs _
 						attrib = FB_SYMBATTRIB_OPTIONAL
 
 						select case as const .dtype
-						
+						case FB_DATATYPE_STRING
+							'' only NULL can be used
+							param_optval = astNewCONSTstr( "" )
+
+						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+							param_optval = astNewCONSTf( .optval, .dtype )
+
 						'' function pointers need a symbol built so they can check matches
-						case FB_DATATYPE_FUNCTION
-							.dtype = typeAddrOf( FB_DATATYPE_FUNCTION )
+						case typeSetType(FB_DATATYPE_FUNCTION, 1)
 							dim as integer inner_attrib, func_arg
 							dim as integer inner_param_len, inner_ptrcnt
 							dim as ASTNODE ptr inner_param_optval
@@ -190,9 +195,9 @@ sub rtlAddIntrinsicProcs _
 									CNTPTR( .dtype, inner_ptrcnt )
 									
 									symbAddProcParam( inner_proc, NULL, _
-									                  .dtype, NULL, typeGetPtrCnt(.dtype), _
-									                  inner_param_len, .mode, INVALID, _
-									                  inner_attrib, inner_param_optval )
+													  .dtype, NULL, typeGetPtrCnt(.dtype), _
+													  inner_param_len, .mode, INVALID, _
+													  inner_attrib, inner_param_optval )
 								end with
 							next
 							
@@ -202,11 +207,11 @@ sub rtlAddIntrinsicProcs _
 								
 								'' add it
 								subtype = symbAddPrototype( inner_proc, _
-								                            NULL, NULL, NULL, _
-								                            .dtype, NULL, typeGetPtrCnt(.dtype), _
-								                            0, FB_FUNCMODE_DEFAULT, _
-								                            FB_SYMBOPT_DECLARING )
-							    
+															NULL, NULL, NULL, _
+															.dtype, NULL, typeGetPtrCnt(.dtype), _
+															0, FB_FUNCMODE_DEFAULT, _
+															FB_SYMBOPT_DECLARING )
+								
 								if( subtype <> NULL ) then
 									symbSetIsFuncPtr( subtype )
 								end if
@@ -214,16 +219,10 @@ sub rtlAddIntrinsicProcs _
 							end with
 							
 							param_optval = NULL
-							
-						case FB_DATATYPE_STRING
-							'' only NULL can be used
-							param_optval = astNewCONSTstr( "" )
-
-						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-							param_optval = astNewCONSTf( .optval, .dtype )
-
+						
 						case else
 							param_optval = astNewCONSTi( .optval, .dtype )
+
 						end select
 					else
 						attrib = 0
