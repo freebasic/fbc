@@ -363,8 +363,11 @@ static int fb_dos_timer_handler(unsigned irq)
 	fb_dos_sti();
 #endif
 
-	if( fb_dos.set_palette )
-		fb_dos.set_palette();
+	if( fb_dos.depth <= 8 && fb_dos.set_palette && fb_dos.pal_dirty )
+	{
+		fb_dos.set_palette( );
+		if( fb_dos.mouse_ok ) fb_hSoftCursorPaletteChanged( );
+	}
 	
 	mouse_x = fb_dos_mouse_x;
 	mouse_y = fb_dos_mouse_y;
@@ -477,15 +480,7 @@ void fb_dos_set_palette(int idx, int r, int g, int b)
 void fb_dos_vga_set_palette(void)
 {
 	int i, color_count;
-
-	if( fb_dos.depth > 8 )
-		return;
-
-	if( !fb_dos.pal_dirty )
-		return;
 	
-	if ( fb_dos.mouse_ok ) fb_hSoftCursorPaletteChanged();
-
 	color_count = MIN( (1 << fb_dos.depth), fb_dos.pal_last + 1 );
 	
 	outportb(0x3C8, fb_dos.pal_first);
@@ -498,6 +493,7 @@ void fb_dos_vga_set_palette(void)
 	fb_dos.pal_dirty = FALSE;
 	fb_dos.pal_last = 0;
 	fb_dos.pal_first = 256;
+	
 }
 
 /*:::::*/
@@ -575,6 +571,7 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	fb_dos_lock_data(&__fb_gfx->event_queue, sizeof(EVENT) * MAX_EVENTS);
 	lock_array(kb_scan_to_ascii);
 	lock_array(kb_numpad_to_ascii);
+	lock_code(fb_dos_vesa_set_palette, fb_dos_vesa_set_palette_end);
 	
 	fb_dos.w = w;
 	fb_dos.h = h;
@@ -602,7 +599,7 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	}
 	
 	fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
-
+	
 	return 0;
 }
 
@@ -622,6 +619,12 @@ void fb_dos_exit(void)
 	fb_dos_sti();
 
 	fb_dos.w = fb_dos.h = fb_dos.depth = fb_dos.refresh = 0;
+	
+	if( fb_dos.palbuf_sel )
+	{
+		__dpmi_free_dos_memory( fb_dos.palbuf_sel );
+		fb_dos.palbuf_sel = fb_dos.palbuf_seg = 0;
+	}
 
 	/* unlock code and data */
 
@@ -655,6 +658,7 @@ void fb_dos_exit(void)
 	fb_dos_unlock_data(&__fb_gfx->event_queue, sizeof(EVENT) * MAX_EVENTS);
 	unlock_array(kb_scan_to_ascii);
 	unlock_array(kb_numpad_to_ascii);
+	unlock_code(fb_dos_vesa_set_palette, fb_dos_vesa_set_palette_end);
 	
 	fb_dos_restore_video_mode();
 

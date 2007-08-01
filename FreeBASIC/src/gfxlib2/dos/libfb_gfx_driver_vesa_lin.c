@@ -112,7 +112,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	
 	fb_dos.update = driver_update;
 	fb_dos.update_len = (unsigned int)end_of_driver_update - (unsigned int)driver_update;
-	fb_dos.set_palette = fb_dos_vga_set_palette; /* FIXME */
+	fb_dos.set_palette = fb_dos_vesa_set_palette;
 	
 	__djgpp_nearptr_enable();
 	nearptr_enabled = TRUE;

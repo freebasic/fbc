@@ -47,6 +47,7 @@
 #define RM_TO_LINEAR(addr)  ((((addr) & 0xFFFF0000) >> 12) + ((addr) & 0xFFFF))
 #define RM_OFFSET(addr)     ((addr) & 0xF)
 #define RM_SEGMENT(addr)    (((addr) >> 4) & 0xFFFF)
+#define SEGOFF_TO_RM(s, o)  (((s) << 4) + (o))
 
 #define SCREENLIST(w, h) ((h) | (w) << 16)
 
@@ -54,9 +55,9 @@
 /* globals */
 
 typedef struct fb_dos_pal_t {
-	unsigned char r;
-	unsigned char g;
 	unsigned char b;
+	unsigned char g;
+	unsigned char r;
 	unsigned char pad;
 } fb_dos_pal_t;
 
@@ -110,12 +111,18 @@ typedef struct fb_dos_t {
 	VesaModeInfo vesa_mode_info;
 	VesaModeInfo *vesa_modes;
 	int num_vesa_modes;
+	int vesa_use_pm;
+	unsigned long vesa_mmio_linear;
+	unsigned int vesa_mmio_sel;
 
 	int mouse_x_old;
 	int mouse_y_old;
 	int mouse_z_old;
 	int mouse_buttons_old;
 	char key_old[128];
+	
+	int palbuf_sel; /* real-mode palette transfer buffer for VESA VBE modes */
+	int palbuf_seg;
 	
 } fb_dos_t;
 
@@ -138,9 +145,12 @@ extern void fb_dos_vesa_detect(void);
 extern int fb_dos_vesa_set_mode(int w, int h, int depth, int linear);
 extern int *fb_dos_vesa_fetch_modes(int depth, int *size);
 extern void vesa_get_pm_functions(void);
+extern void fb_dos_vesa_set_palette(void);
+extern void fb_dos_vesa_set_palette_end(void);
 
 extern VesaPMInfo *fb_dos_vesa_pm_info;
-extern void *fb_dos_vesa_pm_bank_switcher;
+extern intptr_t fb_dos_vesa_pm_bank_switcher;
+extern intptr_t fb_dos_vesa_pm_set_palette;
 
 /* shared */
 

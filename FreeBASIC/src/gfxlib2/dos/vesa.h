@@ -170,4 +170,38 @@ typedef struct VesaPMInfo
 	unsigned short IOPrivInfo;
 } __attribute__ ((packed)) VesaPMInfo;
 
+enum VBE_FUNCS
+{
+	VBE_INFO            = 0x4F00,
+	VBE_MODEINFO        = 0x4F01,
+	VBE_SETMODE         = 0x4F02,
+	VBE_GETMODE         = 0x4F03,
+	VBE_SAVERESTORE     = 0x4F04,
+	VBE_WINCTRL         = 0x4F05,
+	VBE_SETGETLOGLEN    = 0x4F06,
+	VBE_SETGETDISPSTART = 0x4F07,
+	VBE_SETGETDACFMT    = 0x4F08,
+	VBE_SETGETPAL       = 0x4F09,
+	VBE_PMODE           = 0x4F0A
+};
+
+enum VBE_STATUS
+{
+	VBE_STATUS_OK       = 0x004F
+};
+
+enum
+{
+	VBE_SETGETPAL_SET       = 0x00, /* set palette data */
+	VBE_SETGETPAL_GET       = 0x01, /* get palette data */
+	VBE_SETGETPAL_SETSEC    = 0x02, /* set secondary palette data */
+	VBE_SETGETPAL_GETSEC    = 0x03, /* get secondary palette data */
+	VBE_SETGETPAL_SET_BLANK = 0x80  /* wait for vertical blank */
+};
+
+enum
+{
+	VBE_PMODE_GET = 0x00 /* return protected mode table */
+};
+
 #endif
