@@ -1,16 +1,16 @@
 FBWIKI SAMPLE BUILDER
 ---------------------
 
-This is a collection of FreeBASIC sample code extracted
-from the FreeBASIC official documentation.
+This is a collection of FreeBASIC sample code extracted from the FreeBASIC 
+official documentation.
 
 For full documentation, please visit:
 
    http://www.freebasic.net/wiki
 
 
-This software has been provided as-is without any
-warranty whatsoever.  Use at your own risk.
+This software has been provided as-is without any warranty whatsoever.  
+Use at your own risk.
 
 
 Builing the Sample Builder:
@@ -37,13 +37,16 @@ command line arguments.
     samples
 
 
-Special Directories
--------------------
+Special Files and Directories
+-----------------------------
 
-There are two special directories under ./examples/manual/
+./samples.ini
 
-    ./examples/manual/check
+    This file lists the source files that require special build steps.
 
-        This directory contains code snippets from the documentation that
-        will compile, but have no real usefulness outside of the manual
-        pages themselves.  There are here only as a syntax check.
+
+./examples/manual/check/
+
+    This directory contains code snippets from the documentation that
+    will compile, but have no real usefulness outside of the manual
+    pages themselves.  There are here only as a syntax check.

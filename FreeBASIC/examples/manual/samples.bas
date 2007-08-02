@@ -64,6 +64,72 @@ function AdjustPath( byref s as string, byval addsep as integer ) as string
 end function
 
 '' --------------------------------------------------------
+'' SPECIAL BUILDS
+'' --------------------------------------------------------
+
+type SpecialBuildFileT
+	target as string
+	source as string
+	index1 as integer
+	index2 as integer
+end type
+
+'' Special Build Information
+dim shared sbFiles() as SpecialBuildFileT
+dim shared nsbFiles as integer
+dim shared sbCmds() as string
+dim shared nsbCmds as integer
+
+sub ReadSampleIni( byref filename as string )
+	
+	dim h as integer, x as string, i as integer
+	h = freefile
+
+	nsbFiles = 0
+	redim sbFiles(0)
+	nsbCmds = 0
+	redim sbCmds(0)
+
+	if( open( filename for input access read as #h ) = 0 ) then
+		while eof(h) = 0
+			line input #h, x
+			x = trim( x, any chr(9,32) )
+			if( (x > "") and (left(x, 1) <> "#") ) then
+				if( (left(x, 1) = "[") and (right(x, 1) = "]") ) then
+					nsbfiles += 1
+					redim preserve sbFiles( 0 to nsbFiles - 1 )
+					with sbFiles( nsbFiles - 1 )
+						.target = ""
+						.source = SetPathChars( trim( mid( x, 2, len(x) - 2), any chr(9,32) ), psc )
+						.index1 = nsbCmds
+						.index2 = nsbCmds
+					end with
+				else
+					nsbCmds += 1
+					redim preserve sbCmds( 0 to nsbCmds - 1 )
+					sbCmds( nsbCmds - 1 ) = x
+					sbFiles( nsbFiles - 1 ).index2 = nsbCmds
+				end if
+			end if
+		wend
+		close #h
+	else
+		print "Warning: Unable to open '" & filename & "'"
+	end if
+end sub
+
+function IsSpecialBuild( byref filename as string ) as integer
+	function = FALSE
+	dim i as integer
+	for i = 0 to nsbFiles - 1
+		if( filename = sbFiles(i).source ) then
+			function = TRUE
+			exit for
+		end if
+	next
+end function
+
+'' --------------------------------------------------------
 
 sub ScanDirectories _
 	( _
@@ -333,23 +399,42 @@ ScanFiles( sourcedir, dirs(), ndirs, files(), nfiles )
 
 dim as string source, target
 
+ReadSampleIni( exepath & psc & "samples.ini" )
+
 '' compile the sources
 for i = 1 to nfiles
 
 	select case cmd
 	case CMD_COMPILE
-
+		
 		source = files(i)
-		target = left(files(i), len(files(i))-4) & exe_ext
 
-		DoCompile( sourcedir, fbc, source, target )
+		if( IsSpecialBuild( source ) = TRUE ) then
+
+			print "SPECIAL : " & files(i)
+
+		else
+		
+			target = left(files(i), len(files(i))-4) & exe_ext
+
+			DoCompile( sourcedir, fbc, source, target )
+
+		end if
 
 	case CMD_CLEAN
 
 		source = files(i)
-		target = left(files(i), len(files(i))-4) & exe_ext
 
-		DoClean( sourcedir, source, target )
+		if( IsSpecialBuild( source ) = TRUE ) then
+
+			print "SPECIAL : " & files(i)
+
+		else
+
+			target = left(files(i), len(files(i))-4) & exe_ext
+			DoClean( sourcedir, source, target )
+
+		end if
 
 	end select
 
