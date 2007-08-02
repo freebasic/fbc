@@ -36,3 +36,14 @@ command line arguments.
 
     samples
 
+
+Special Directories
+-------------------
+
+There are two special directories under ./examples/manual/
+
+    ./examples/manual/check
+
+        This directory contains code snippets from the documentation that
+        will compile, but have no real usefulness outside of the manual
+        pages themselves.  There are here only as a syntax check.

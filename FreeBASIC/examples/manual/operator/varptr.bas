@@ -8,8 +8,16 @@
 
 Dim a As Integer, addr As Integer
 a = 10
-addr = VarPtr(a) ' place the address of a in addr
-Poke Integer, addr, -1000 ' change all 4 bytes (size of INTEGER) of a
+
+'' place the address of a in addr
+addr = Cint( VarPtr(a) )
+
+'' change all 4 bytes (size of INTEGER) of a
+Poke Integer, addr, -1000 
 Print a
-addr = @a ' place the address of a in addr (same as above)
-Print Peek( addr ) 'print the least or most significant byte, depending on the CPU endianess
+
+'' place the address of a in addr (same as above)
+addr = Cint( @a )
+
+'' print the least or most significant byte, depending on the CPU endianess
+Print Peek( addr ) 
