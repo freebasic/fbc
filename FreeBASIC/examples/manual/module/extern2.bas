@@ -1,4 +1,4 @@
-'' examples/manual/incoming/KeyPgExtern_2.bas
+'' examples/manual/module/extern2.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.

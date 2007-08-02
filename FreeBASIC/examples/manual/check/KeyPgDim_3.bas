@@ -1,4 +1,4 @@
-'' examples/manual/incoming/KeyPgDim_3.bas
+'' examples/manual/check/KeyPgDim_3.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.

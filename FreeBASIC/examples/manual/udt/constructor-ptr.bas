@@ -1,4 +1,4 @@
-'' examples/manual/incoming/KeyPgConstructor_1.bas
+'' examples/manual/udt/constructor-ptr.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.

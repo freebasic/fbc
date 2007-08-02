@@ -1,4 +1,4 @@
-'' examples/manual/incoming/KeyPgNamespace_1.bas
+'' examples/manual/module/namespace.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.

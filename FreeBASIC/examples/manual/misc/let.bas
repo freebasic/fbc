@@ -1,4 +1,4 @@
-'' examples/manual/incoming/KeyPgLet_1.bas
+'' examples/manual/misc/let.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.

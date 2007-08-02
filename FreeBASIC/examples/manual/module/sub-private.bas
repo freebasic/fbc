@@ -1,4 +1,4 @@
-'' examples/manual/incoming/KeyPgPrivate_1.bas
+'' examples/manual/module/sub-private.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.

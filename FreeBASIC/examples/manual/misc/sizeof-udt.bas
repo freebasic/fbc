@@ -1,4 +1,4 @@
-'' examples/manual/incoming/KeyPgSizeof_2.bas
+'' examples/manual/misc/sizeof-udt.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.

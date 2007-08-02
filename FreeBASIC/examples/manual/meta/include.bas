@@ -1,4 +1,4 @@
-'' examples/manual/incoming/KeyPgMetaInclude_2.bas
+'' examples/manual/meta/include.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.

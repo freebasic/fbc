@@ -1,4 +1,4 @@
-'' examples/manual/incoming/KeyPgScreenlist_1.bas
+'' examples/manual/gfx/screenlist.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
