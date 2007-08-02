@@ -469,9 +469,9 @@ static void fb_dos_timer_exit(void)
 void fb_dos_set_palette(int idx, int r, int g, int b)
 {
 	fb_dos.pal_dirty = TRUE;
-	fb_dos.pal[idx].r = r;
-	fb_dos.pal[idx].g = g;
-	fb_dos.pal[idx].b = b;
+	fb_dos.pal[idx].r = r >> 2;
+	fb_dos.pal[idx].g = g >> 2;
+	fb_dos.pal[idx].b = b >> 2;
 	fb_dos.pal_first = MIN(fb_dos.pal_first, idx);
 	fb_dos.pal_last = MAX(fb_dos.pal_last, idx);
 }
@@ -485,9 +485,9 @@ void fb_dos_vga_set_palette(void)
 	
 	outportb(0x3C8, fb_dos.pal_first);
 	for (i = fb_dos.pal_first; i < color_count; i++) {
-		outportb(0x3C9, fb_dos.pal[i].r >> 2);
-		outportb(0x3C9, fb_dos.pal[i].g >> 2);
-		outportb(0x3C9, fb_dos.pal[i].b >> 2);
+		outportb(0x3C9, fb_dos.pal[i].r);
+		outportb(0x3C9, fb_dos.pal[i].g);
+		outportb(0x3C9, fb_dos.pal[i].b);
 	}
 	
 	fb_dos.pal_dirty = FALSE;
