@@ -9,8 +9,18 @@ For full documentation, please visit:
    http://www.freebasic.net/wiki
 
 
-This software has been provided as-is without any warranty whatsoever.  
+This software has been provided as-is without any warranty whatsoever.
 Use at your own risk.
+
+
+About the Samples
+-----------------
+
+These sources have been extracted for the primary purpose of compile
+checking all of the manual's example code.  So while most of the examples 
+are probably useful, not all of them will be.  Some examples are only one or 
+two lines of code that don't have any real usefulness outside of the manual
+itself.
 
 
 Builing the Sample Builder:
@@ -43,10 +53,3 @@ Special Files and Directories
 ./samples.ini
 
     This file lists the source files that require special build steps.
-
-
-./examples/manual/check/
-
-    This directory contains code snippets from the documentation that
-    will compile, but have no real usefulness outside of the manual
-    pages themselves.  There are here only as a syntax check.

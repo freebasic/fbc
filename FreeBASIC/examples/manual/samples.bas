@@ -131,46 +131,46 @@ end function
 
 '' --------------------------------------------------------
 
+sub AddDir( byref d as string, dirs() as string, byref ndirs as integer )
+	dim i as integer
+	for i = 1 to ndirs
+		if( dirs(i) = d ) then
+			exit for
+		end if
+	next
+	if( i > ndirs ) then
+		ndirs += 1
+		if ndirs = 1 then
+			redim dirs( 1 to ndirs )
+		else
+			redim preserve dirs( 1 to ndirs )
+		end if
+		dirs( ndirs ) = d
+	end if
+end sub
+
 sub ScanDirectories _
 	( _
 		byref sourcedir as string, _
-		dirs() as string, byref ndirs as integer, _
-		filters() as string, byref nfilters as integer _
+		byref sourcedir2 as string, _
+		dirs() as string, byref ndirs as integer _
 	)
 
-	dim d as string, i as integer, b as integer
+	dim d as string, i as integer, b as integer, start as integer
 
 	'' get directories
-	ndirs = 0
-	d = dir( sourcedir & "*.*", fbDirectory )
+	start = ndirs + 1
+	d = dir( sourcedir & sourcedir2 & "*.*", fbDirectory )
 	while( d > "" )
 		if(( d <> "." ) and ( d <> ".." )) then
-
-			b = FALSE
-			if( nfilters > 0 ) then
-				for i = 1 to nfilters
-					if( lcase(filters(i)) = lcase(d)) then
-						b = TRUE
-						exit for
-					end if
-				next
-			else
-				b = TRUE
-			end if
-
-			if( b = TRUE ) then
-				ndirs += 1
-				if ndirs = 1 then
-					redim dirs( 1 to ndirs )
-				else
-					redim preserve dirs( 1 to ndirs )
-				end if
-				dirs( ndirs ) = d & psc
-			end if
-
+			AddDir( sourcedir2 & d & psc, dirs(), ndirs )
 		end if
 		d = dir()
 	wend
+
+	for i = start to ndirs
+		ScanDirectories sourcedir, dirs(i), dirs(), ndirs
+	next
 
 end sub
 
@@ -214,7 +214,7 @@ function DoCompile _
 
 	ret = 0
 
-	if( dir( sourcedir & target ) > "" ) then
+  if( fileexists( sourcedir & target ) <> FALSE ) then
 		if FileDateTime( sourcedir & source ) > FileDateTime( sourcedir & target ) then
 			b = TRUE
 		else
@@ -272,8 +272,8 @@ function DoClean _
 		byref target as string _
 	) as integer
 
-	if( dir(sourcedir & source) > "" ) then
-		if( dir(sourcedir & target) > "" ) then
+  if( fileexists(sourcedir & source) <> FALSE ) then
+    if( fileexists(sourcedir & target) <> FALSE ) then
 			print "removing " & sourcedir & target
 			if( kill( sourcedir & target ) <> 0 ) then
 				print "error removing " & sourcedir & target
@@ -291,18 +291,16 @@ end function
 
 enum COMMAND_ID
 	CMD_COMPILE = 1
-	CMD_CLEAN = 2
+	CMD_CLEAN
+	CMD_LIST
 end enum
 
 dim fbc as string, sourcedir as string, i as integer
-
 dim dirs() as string, ndirs as integer
 dim files() as string, nfiles as integer
-dim filters() as string, nfilters as integer
 
 ndirs = 0
 nfiles = 0
-nfilters = 0
 
 dim cmd as COMMAND_ID
 
@@ -315,12 +313,16 @@ case "compile"
 case "clean"
 	cmd = CMD_CLEAN
 
+case "list"
+	cmd = CMD_LIST
+
 case else
 	print "samples command [-fbc path" & psc & "fbc" & exe_ext & "] [-sourcedir path] [dirs...]"
 	print
 	print "   Command:"
-	print "      compile"
-	print "      clean"
+	print "      compile     compiles the samples"
+	print "      clean       removes files created during compilation"
+	print "      list        list the files only"
 	print
 	print "   Options:"
 	print "      -fbc path" & psc & "fbc" & exe_ext
@@ -358,13 +360,7 @@ while( command(i) > "" )
 		end select
 
 	else
-		nfilters += 1
-		if( nfilters = 1 ) then
-			redim filters(1 to nfilters)
-		else
-			redim preserve filters( 1 to nfilters )
-		end if
-		filters(nfilters) = command(i)
+		AddDir( AdjustPath( SetPathChars( command(i), psc ), TRUE ), dirs(), ndirs )
 
 	end if
 
@@ -381,7 +377,7 @@ if( cmd = CMD_COMPILE ) then
 		fbc = AdjustPath( ".." & psc & ".." & psc & "fbc" & exe_ext, FALSE )
 	end if
 
-	if( dir( fbc ) = "" ) then
+	if( fileexists( fbc ) = 0 ) then
 		print "'" + fbc + "' not found"
 		end
 	end if
@@ -394,7 +390,14 @@ if( cmd = CMD_COMPILE ) then
 end if
 
 '' Scan for directories and files
-ScanDirectories( sourcedir, dirs(), ndirs, filters(), nfilters )
+if( nDirs > 0 ) then
+	for i = 1 to nDirs
+		ScanDirectories( sourcedir, dirs(i), dirs(), ndirs )
+	next
+else
+	ScanDirectories( sourcedir, "", dirs(), ndirs )
+end if
+
 ScanFiles( sourcedir, dirs(), ndirs, files(), nfiles )
 
 dim as string source, target
@@ -405,6 +408,9 @@ ReadSampleIni( exepath & psc & "samples.ini" )
 for i = 1 to nfiles
 
 	select case cmd
+	case CMD_LIST
+		print files(i)
+
 	case CMD_COMPILE
 		
 		source = files(i)
