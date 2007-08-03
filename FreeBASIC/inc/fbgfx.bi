@@ -107,7 +107,8 @@ namespace FB
 					 EVENT_MOUSE_EXIT			= 10	, _
 					 EVENT_WINDOW_GOT_FOCUS		= 11	, _
 					 EVENT_WINDOW_LOST_FOCUS	= 12	, _
-					 EVENT_WINDOW_CLOSE			= 13
+					 EVENT_WINDOW_CLOSE			= 13	, _
+					 EVENT_MOUSE_HWHEEL			= 14
 
 
 	'' Event structure, to be used with ScreenEvent
@@ -121,12 +122,13 @@ namespace FB
 			end type
 			type
 				x as integer
-				y as integer
+				y as integer 
 				dx as integer
 				dy as integer
 			end type
 			button as integer
 			z as integer
+			w as integer
 		end union
 	end type
 
@@ -172,11 +174,13 @@ namespace FB
 	const as integer PUT_HEADER_NEW				= &h7
 
 
-	'' Mouse button constants to be used with GETMOUSE
+	'' Mouse button constants to be used with GETMOUSE/ScreenEvent
 	''
 	const as integer BUTTON_LEFT				= &h1	, _
 					 BUTTON_RIGHT				= &h2	, _
-					 BUTTON_MIDDLE				= &h4
+					 BUTTON_MIDDLE				= &h4	, _
+					 BUTTON_X1					= &h8	, _
+					 BUTTON_X2					= &h10
 
 
 	'' Keyboard scancodes returned by MULTIKEY

@@ -30,6 +30,22 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#ifndef WM_XBUTTONDOWN
+#ifdef WM_MOUSELAST
+#undef WM_MOUSELAST
+#endif
+#define WM_XBUTTONDOWN 523
+#define WM_XBUTTONUP 524
+#define WM_XBUTTONDBLCLK 525
+#define WM_MOUSEHWHEEL 526
+#define WM_MOUSELAST 527
+#endif
+
+#ifndef MK_XBUTTON1
+#define MK_XBUTTON1	32
+#define MK_XBUTTON2	64
+#endif
+
 #define WINDOW_CLASS_PREFIX "fbgfxclass_"
 
 #ifndef LWA_COLORKEY

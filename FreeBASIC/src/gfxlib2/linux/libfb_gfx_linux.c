@@ -222,9 +222,9 @@ static void *window_thread(void *arg)
 				case ButtonPress:
 					e.type = EVENT_MOUSE_BUTTON_PRESS;
 					switch (event.xbutton.button) {
-						case Button1:	mouse_buttons |= 0x1; e.button = 0x1; break;
-						case Button3:	mouse_buttons |= 0x2; e.button = 0x2; break;
-						case Button2:	mouse_buttons |= 0x4; e.button = 0x4; break;
+						case Button1:	mouse_buttons |= BUTTON_LEFT  ; e.button = BUTTON_LEFT  ; break;
+						case Button3:	mouse_buttons |= BUTTON_RIGHT ; e.button = BUTTON_RIGHT ; break;
+						case Button2:	mouse_buttons |= BUTTON_MIDDLE; e.button = BUTTON_MIDDLE; break;
 						case Button4:	e.z = mouse_wheel++; e.type = EVENT_MOUSE_WHEEL; break;
 						case Button5:	e.z = mouse_wheel--; e.type = EVENT_MOUSE_WHEEL; break;
 					}
@@ -236,9 +236,9 @@ static void *window_thread(void *arg)
 				case ButtonRelease:
 					e.type = EVENT_MOUSE_BUTTON_RELEASE;
 					switch (event.xbutton.button) {
-						case Button1:	mouse_buttons &= ~0x1; e.button = 0x1; break;
-						case Button3:	mouse_buttons &= ~0x2; e.button = 0x2; break;
-						case Button2:	mouse_buttons &= ~0x4; e.button = 0x4; break;
+						case Button1:	mouse_buttons &= ~BUTTON_LEFT  ; e.button = BUTTON_LEFT  ; break;
+						case Button3:	mouse_buttons &= ~BUTTON_RIGHT ; e.button = BUTTON_RIGHT ; break;
+						case Button2:	mouse_buttons &= ~BUTTON_MIDDLE; e.button = BUTTON_MIDDLE; break;
 						default:		e.type = 0; break;
 					}
 					break;

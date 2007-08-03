@@ -52,7 +52,7 @@ static MONITORFROMPOINT pMonitorFromPoint = NULL;
 static CRITICAL_SECTION update_lock;
 static HANDLE handle;
 static BOOL screensaver_active, cursor_shown, has_focus = FALSE;
-static int mouse_buttons, mouse_wheel, mouse_x, mouse_y, mouse_on;
+static int mouse_buttons, mouse_wheel, mouse_hwheel, mouse_x, mouse_y, mouse_on;
 static BOOL (WINAPI *_TrackMouseEvent)(TRACKMOUSEEVENT *) = NULL;
 static POINT last_mouse_pos;
 static UINT WM_MOUSEENTER;
@@ -213,49 +213,69 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		case WM_LBUTTONDOWN:
 		case WM_LBUTTONDBLCLK:
 			SetCapture( hWnd );
-			mouse_buttons |= 0x1;
+			mouse_buttons |= BUTTON_LEFT;
 			e.type = (message == WM_LBUTTONDOWN ? EVENT_MOUSE_BUTTON_PRESS : EVENT_MOUSE_DOUBLE_CLICK);
-			e.button = 0x1;
+			e.button = BUTTON_LEFT;
 			break;
 
 		case WM_LBUTTONUP:
-			mouse_buttons &= ~0x1;
+			mouse_buttons &= ~BUTTON_LEFT;
 			if(!mouse_buttons && GetCapture() == hWnd)
 				ReleaseCapture();
 			e.type = EVENT_MOUSE_BUTTON_RELEASE;
-			e.button = 0x1;
+			e.button = BUTTON_LEFT;
 			break;
 
 		case WM_RBUTTONDOWN:
 		case WM_RBUTTONDBLCLK:
 			SetCapture( hWnd );
-			mouse_buttons |= 0x2;
+			mouse_buttons |= BUTTON_RIGHT;
 			e.type = (message == WM_RBUTTONDOWN ? EVENT_MOUSE_BUTTON_PRESS : EVENT_MOUSE_DOUBLE_CLICK);
-			e.button = 0x2;
+			e.button = BUTTON_RIGHT;
 			break;
 
 		case WM_RBUTTONUP:
-			mouse_buttons &= ~0x2;
+			mouse_buttons &= ~BUTTON_RIGHT;
 			if(!mouse_buttons && GetCapture() == hWnd)
 				ReleaseCapture();
 			e.type = EVENT_MOUSE_BUTTON_RELEASE;
-			e.button = 0x2;
+			e.button = BUTTON_RIGHT;
 			break;
 
 		case WM_MBUTTONDOWN:
 		case WM_MBUTTONDBLCLK:
 			SetCapture( hWnd );
-			mouse_buttons |= 0x4;
+			mouse_buttons |= BUTTON_MIDDLE;
 			e.type = (message == WM_MBUTTONDOWN ? EVENT_MOUSE_BUTTON_PRESS : EVENT_MOUSE_DOUBLE_CLICK);
-			e.button = 0x4;
+			e.button = BUTTON_MIDDLE;
 			break;
 
 		case WM_MBUTTONUP:
-			mouse_buttons &= ~0x4;
+			mouse_buttons &= ~BUTTON_MIDDLE;
 			if(!mouse_buttons && GetCapture() == hWnd)
 				ReleaseCapture();
 			e.type = EVENT_MOUSE_BUTTON_RELEASE;
-			e.button = 0x4;
+			e.button = BUTTON_MIDDLE;
+			break;
+
+		case WM_XBUTTONDOWN:
+		case WM_XBUTTONDBLCLK:
+			if (fb_win32.version < 0x500)
+				break;
+			SetCapture( hWnd );
+			mouse_buttons |= (LOWORD(wParam) == MK_XBUTTON1 ? BUTTON_X1 : BUTTON_X2 );
+			e.type = (message == WM_XBUTTONDOWN ? EVENT_MOUSE_BUTTON_PRESS : EVENT_MOUSE_DOUBLE_CLICK);
+			e.button = (LOWORD(wParam) == MK_XBUTTON1 ? BUTTON_X1 : BUTTON_X2 );
+			break;
+
+		case WM_XBUTTONUP:
+			if (fb_win32.version < 0x500)
+				break;
+			mouse_buttons &= (LOWORD(wParam) == MK_XBUTTON1 ? ~BUTTON_X1 : ~BUTTON_X2 );
+			if(!mouse_buttons && GetCapture() == hWnd)
+				ReleaseCapture();
+			e.type = EVENT_MOUSE_BUTTON_RELEASE;
+			e.button = (LOWORD(wParam) == MK_XBUTTON1 ? BUTTON_X1 : BUTTON_X2 );
 			break;
 
 		case WM_MOUSEWHEEL:
@@ -267,6 +287,17 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				mouse_wheel--;
 			e.type = EVENT_MOUSE_WHEEL;
 			e.z = mouse_wheel;
+			break;
+		
+		case WM_MOUSEHWHEEL:
+			if (fb_win32.version < 0x500)
+				break;
+			if ((signed)wParam > 0)
+				mouse_hwheel++;
+			else
+				mouse_hwheel--;
+			e.type = EVENT_MOUSE_HWHEEL;
+			e.w = mouse_hwheel;
 			break;
 		
 		case WM_SIZE:
@@ -713,4 +744,5 @@ int fb_hGetWindowHandle(void)
 {
 	return (int)fb_win32.wnd;
 }
+
 

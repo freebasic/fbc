@@ -194,8 +194,15 @@ extern "C" {
 #define EVENT_WINDOW_GOT_FOCUS		11
 #define EVENT_WINDOW_LOST_FOCUS		12
 #define EVENT_WINDOW_CLOSE			13
+#define EVENT_MOUSE_HWHEEL			14
 
 #define MAX_EVENTS					128
+
+#define BUTTON_LEFT					0x1
+#define BUTTON_RIGHT					0x2
+#define BUTTON_MIDDLE				0x4
+#define BUTTON_X1						0x8
+#define BUTTON_X2						0x10
 
 #define GET_WINDOW_POS				0
 #define GET_WINDOW_TITLE			1
@@ -261,6 +268,7 @@ struct _EVENT {
 		};
 		int button;
 		int z;
+		int w;
 	};
 } __attribute__((__packed__));
 typedef struct _EVENT EVENT;
