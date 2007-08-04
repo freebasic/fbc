@@ -417,7 +417,9 @@ namespace fb.fbdoc
 		end if
 
 		if( bDefault = TRUE ) then
-			res += "<tt><div class=""qbasic"">
+			'' !!! TODO !!!: select class based on code tag
+			'' res += "<tt><div class=""qbasic"">
+			res += "<tt><div class=""freebasic"">
 			res += Text2Html( *text, TRUE, TRUE )
 			res += "</div></tt><br />" + nl
 			return res
@@ -486,7 +488,9 @@ namespace fb.fbdoc
 			res += "</span>"
 		end if
 
-		res = "<tt><div class=""qbasic"">" + nl + res + "</div></tt><br />" + nl
+		'' !!! TODO !!!: select class based on code tag
+		'' res = "<tt><div class=""qbasic"">" + nl + res + "</div></tt><br />" + nl
+		res = "<tt><div class=""freebasic"">" + nl + res + "</div></tt><br />" + nl
 
 		return res
 	end function
@@ -553,6 +557,8 @@ namespace fb.fbdoc
 			( @"back"     , false, @"{#fb_sect_back}"   ), _
 			( @"close"    , false, @"{#fb_sect_close}"  ) _
 		}
+		'' "filename" and "tag" are also valid, but have no output, 
+		'' so they aren't in the table above
 
 		dim as string res, strItem, strValue, strName, strPage, ext
 		dim as integer isblock, itemidx
@@ -645,6 +651,14 @@ namespace fb.fbdoc
 				res = ""
 			end if
 			
+			return res
+
+		case "filename":
+
+			return res
+
+		case "tag"
+
 			return res
 
 		case else			

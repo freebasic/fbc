@@ -99,6 +99,12 @@ namespace fb.fbdoc
 				byval sParamName as zstring ptr _
 			) as string
 
+		declare sub SetParam _
+			( _
+				byval sParamName as zstring ptr, _
+				byref sValue as string _
+			)
+
 	end type
 
 	type WikiToken_Link
@@ -209,6 +215,16 @@ namespace fb.fbdoc
 		declare function GetPageTitle _
 			( _
 			) as string
+
+		declare property PageName _
+			( _
+			) as string
+
+		declare property PageName _
+			( _
+				byref sPageName as string _
+			)
+			
 
 		ctx as CWikiCtx ptr
 

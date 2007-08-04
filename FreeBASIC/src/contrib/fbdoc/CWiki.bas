@@ -48,6 +48,7 @@ namespace fb.fbdoc
 		as CList ptr		pagelinklist
 
 		as WikiToken ptr    currenttoken
+		as string           pagename
 	end type
 
 	const WIKI_PATTERN =  $"\%\%.*?\%\%|" + _
@@ -357,6 +358,8 @@ namespace fb.fbdoc
 		ctx->actparamlist = new CList( 16, len( WikiAction_Param ) )
 		ctx->pagelinklist = new CList( 16, len( WikiPageLink ) )
 
+		ctx->pagename = ""
+
 		ctx->currenttoken = NULL
 		
 	end constructor
@@ -438,6 +441,8 @@ namespace fb.fbdoc
 		if( ctx = NULL ) then
 			exit destructor
 		end if
+
+		ctx->pagename = ""
 		
 		''
 		_FreeActParamList( ctx )
@@ -790,7 +795,7 @@ namespace fb.fbdoc
 	'':::::
 	function CWiki.Parse _
 		( _
-			byval pagename as zstring ptr, _
+			byval spagename as zstring ptr, _
 			byval body as zstring ptr _
 		) as integer
 
@@ -798,6 +803,7 @@ namespace fb.fbdoc
 		_FreePageLinkList( ctx )
 		_FreeActParamlist( ctx )
 		
+		ctx->pagename = *spagename
 		function = Insert( body )
 			
 	end function
@@ -1099,6 +1105,28 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
+	sub WikiToken_Action.SetParam _
+		( _
+			byval sParamName as zstring ptr, _
+			byref sValue as string _
+		)
+
+		dim as WikiAction_Param ptr param = this.paramhead
+
+		do while( param <> NULL )
+
+			if lcase(param->name) = lcase(*sParamName) then
+				param->value = sValue
+				exit sub
+			end if
+
+			param = param->next
+
+		loop
+
+	end sub
+
+	'':::::
 	function CWiki.Build _
 		( _
 		) as string
@@ -1115,5 +1143,23 @@ namespace fb.fbdoc
 
 	end function
 
+	'':::::
+	property CWiki.PageName _
+		( _
+		) as string
+
+		property = ctx->pagename
+
+	end property
+
+	'':::::
+	property CWiki.PageName _
+		( _
+			byref spagename as string _
+		)
+
+		ctx->pagename = spagename
+
+	end property
 
 end namespace

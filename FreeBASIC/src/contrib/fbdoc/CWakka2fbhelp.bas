@@ -977,6 +977,8 @@ namespace fb.fbdoc
 			( @"back"     , false, @"{#fb_sect_back}"   ), _
 			( @"close"    , false, @"{#fb_sect_close}"  ) _
 		}
+		'' "filename" and "tag" are also valid, but have no output, 
+		'' so they aren't in the table above
 
 		dim as string strItem, strValue, strName, strPage, ext
 		dim as integer isblock, itemidx
@@ -1041,6 +1043,12 @@ namespace fb.fbdoc
 				ctx->tagFlags(WIKI_TAG_SECTION) = 0
 			end if
 			
+			return FALSE
+
+		case "filename":
+			return FALSE
+			
+		case "close"
 			return FALSE
 
 		case else			

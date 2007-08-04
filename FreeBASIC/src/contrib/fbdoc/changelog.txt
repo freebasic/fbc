@@ -1,3 +1,9 @@
+August 4, 2007
+- added: support for ExtLib* pages
+
+July 25, 2007
+- added: WikiToken_Action->SetParam()
+
 July 20, 2007
 - added: CWiki->Insert(body)
 - added: a private current token field to CWiki.  Allows cursor-like

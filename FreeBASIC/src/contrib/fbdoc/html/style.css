@@ -182,3 +182,22 @@ tt .qbasic {
 .qbasic .key {color: #000080;}
 .qbasic .def {color: #008000;}
 .qbasic .oth {color: #000060;}
+
+.freebasic {
+	background: #efefdf;
+	padding: 12pt;
+	margin-right: 14pt;
+	border: 1px solid #8f8f8f;
+}
+
+tt .freebasic {
+	font-family: "Couier New", courier, monospace; 
+}  
+
+.freebasic .com {color: #606060;}
+.freebasic .quo {color: #008000;}
+.freebasic .num {color: #800000;}
+.freebasic .wrd {color: #000000;}
+.freebasic .key {color: #000080;}
+.freebasic .def {color: #008000;}
+.freebasic .oth {color: #000060;}

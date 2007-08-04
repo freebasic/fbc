@@ -126,13 +126,15 @@ namespace fb.fbdoc
 			exit function
 		end if
 
-		'' TODO: use a datafile to specify a list, matched on patterns of pages names
+		'' !!! TODO !!!: use a datafile to specify a list, matched on patterns of pages names
 		'' to include in auto-generated TOC.  e.g. DocTOc, CatPg*, CVS*
 
 		if( _
 			( lcase(*sPage) = "doctoc" ) _
 			or ( lcase(left(*sPage, 5)) = "catpg") _
 			or ( lcase(left(*sPage, 3)) = "cvs") _
+			or ( lcase(left(*sPage, 3)) = "svn") _
+			or ( lcase(*sPage) = "extlibtoc" ) _
 		) then
 			function = TRUE
 		end if
