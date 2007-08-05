@@ -32,7 +32,8 @@ type CHttp_
 	declare function post _
 		( _
 			byval url as zstring ptr, _
-			byval form as CHttpForm ptr _
+			byval form as CHttpForm ptr, _
+			byval is_binary as integer = FALSE _
 		) as string
 	
 	declare function getHandle _

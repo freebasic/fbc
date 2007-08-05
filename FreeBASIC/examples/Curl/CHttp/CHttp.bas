@@ -1,7 +1,7 @@
 ''
 '' CHttp - a class wrapper for the CURL library
 ''
-'' to build: fbc -lib CHtpp.bas CHttpStream.bas CHttpForm.bas
+'' to build: fbc -lib CHttp.bas CHttpStream.bas CHttpForm.bas
 ''
 
 #include once "CHttp.bi"
@@ -62,7 +62,8 @@ end destructor
 function CHttp.post _
 	( _
 		byval url as zstring ptr, _
-		byval form as CHTtpForm ptr _
+		byval form as CHTtpForm ptr, _
+		byval is_binary as integer _
 	) as string
 
 	if( ctx->curl = NULL ) then
@@ -72,11 +73,12 @@ function CHttp.post _
 	dim as CHttpStream ptr stream = new CHttpStream( @this )
 
     curl_easy_reset( ctx->curl )
+    
     curl_easy_setopt( ctx->curl, CURLOPT_HTTPHEADER, ctx->headerlist )
     curl_easy_setopt( ctx->curl, CURLOPT_HTTPPOST, form->getHandle( ) )
 
-    if( stream->receive( url, FALSE ) ) then
-    	function = stream->read( )
+    if( stream->receive( url, NULL, FALSE ) ) then
+    	function = stream->read( is_binary )
     end if
     
     delete stream
