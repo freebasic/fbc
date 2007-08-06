@@ -3,6 +3,7 @@ Version 0.18.1 Beta:
 [changed]
 - the default calling convention of variables has changed in -lang FB. UDT's (including strings) will default to BYREF, all else will default to BYVAL (cha0s)
 - TYPEs with default constructor/destructors or methods had to be allowed on the module level. This affects you if you define a TYPE inside a function with any functions inside the TYPE, or any child objects that have constructors or destructors. This includes elements 'as string', since they need constructors and destructors to initialize and clean up memory (cha0s)
+- ODE 0.8 headers, import library, and examples, thanks D.J.Peters, (jeffm)
 
 [added]
 - configure option for --disable-objinfo to allow building and using fbc with a broader range of binutils (jeffm)

@@ -1,9 +1,7 @@
 /'************************************************************************
  *                                                                       *
- * Open Dynamics Engine, Copyright (C) 2001-2003 Russell L. Smith.       *
+ * Open Dynamics Engine, Copyright (C) 2001,2002 Russell L. Smith.       *
  * All rights reserved.  Email: russ@q12.org   Web: www.q12.org          *
- *                                                                       *
- * Ported to FreeBASIC by D.J.Peters (Joshy) http://www.freebasic.eu     *
  *                                                                       *
  * This library is free software; you can redistribute it and/or         *
  * modify it under the terms of EITHER:                                  *
@@ -21,11 +19,10 @@
  * LICENSE.TXT and LICENSE-BSD.TXT for more details.                     *
  *                                                                       *
  ************************************************************************'/
-#ifndef __ode_compatibility_bi__
-#define __ode_compatibility_bi__
+#ifndef __VERSION_BI
+#define __VERSION_BI
 
-#define dQtoR(q,R) dRfromQ((R),(q))
-#define dRtoQ(R,q) dQfromR((q),(R))
-#define dWtoDQ(w,q,dq) dDQfromW((dq),(w),(q))
+' high byte is major version, low byte is minor version 
+#define DS_VERSION &H0002
 
-#endif '__ode_compatibility_bi__
+#endif '__VERSION_BI
