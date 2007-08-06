@@ -259,12 +259,20 @@ namespace fb.fbdoc
 				sBodyHtml +=  DBG_INDENT + "</ul>"  + crlf
 			wend
 
+			if( level = 0 ) then
+				sBodyHtml +=  DBG_INDENT + "<ul>" + crlf
+			end if
+
 			sBodyHtml +=  DBG_INDENT + "<li><object type=""text/sitemap"">"
 			sBodyHtml +=  "<param name=""Name"" value=""" + page->GetFormattedTitle() + """>"
 			if( len( page->GetName()) > 0 ) then
 				sBodyHtml +=  "<param name=""Local"" value=""" + page->GetName() + ".html"">"
 			end if
 			sBodyHtml +=  "</object>" + crlf
+
+			if( level = 0 ) then
+				sBodyHtml +=  DBG_INDENT + "</ul>" + crlf
+			end if
 
 			page = ctx->toclist->NextEnum( @page_i )
 		wend

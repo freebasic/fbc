@@ -1,3 +1,6 @@
+August 5, 2007
+- removed "Table of Contents" as top level node in CHM
+
 August 4, 2007
 - added: support for ExtLib* pages
 
