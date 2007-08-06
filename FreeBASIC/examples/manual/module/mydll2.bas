@@ -12,7 +12,7 @@
 
 Function AddNumbers cdecl Alias "AddNumbers" _
   ( _
-    ByVal operand1 As Integer, ByVal operand2 As Integer _
+	ByVal operand1 As Integer, ByVal operand2 As Integer _
   ) As Integer Export
 
    AddNumbers = operand1 + operand2
