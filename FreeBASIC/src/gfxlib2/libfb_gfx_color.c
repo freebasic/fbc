@@ -31,7 +31,17 @@
 int fb_GfxColor(int fg, int bg, int flags)
 {
 	FB_GFXCTX *context = fb_hGetContext();
-	int cur = context->fg_color | (context->bg_color << 16);
+	int cur;
+	if (__fb_gfx->depth <= 8) {
+		cur = context->fg_color | (context->bg_color << 16);
+	} else if (__fb_gfx->depth == 16) {
+		unsigned c = context->fg_color;
+		cur = (((c & 0x001F) << 3) | ((c >> 2) & 0x7) |
+		       ((c & 0x07E0) << 5) | ((c >> 1) & 0x300) |
+		       ((c & 0xF800) << 8) | ((c << 3) & 0x70000) | 0xff000000);
+	} else {
+		cur = context->fg_color;
+	}
 	
 	switch (__fb_gfx->mode_num) {
 	
