@@ -43,7 +43,7 @@
 char *fb_hGetExePath( char *dst, int maxlen )
 {
 	char *p;
-	int len, i;
+	int len;
 	
 	len = strlen( __fb_ctx.argv[0] );
 	if( len >= maxlen )
