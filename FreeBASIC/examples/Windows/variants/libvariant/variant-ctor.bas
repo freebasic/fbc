@@ -17,7 +17,7 @@ constructor VARIANT _
 	) 
 	
 	VariantInit( @this.var_ )
-		
+	
 end constructor
 
 '':::::
@@ -56,7 +56,7 @@ constructor VARIANT _
 	
 	VariantInit( @this.var_ )
 	VariantCopy( @this.var_, @rhs )
-		
+	
 end constructor
 
 '':::::
@@ -83,9 +83,13 @@ constructor VARIANT _
 	)
 	
 	VariantInit( @this.var_ )
-
-	V_VT(@this.var_) = VT_BSTR
-	V_BSTR(@this.var_) = SysAllocStringByteLen( rhs, len( *rhs ) )
+	
+	var wlen = MultiByteToWideChar(CP_ACP, NULL, rhs, &HFFFFFFFF, 0, 0)
+	
+ 	V_VT(@this.var_) = VT_BSTR
+	V_BSTR(@this.var_) = SysAllocStringLen(NULL, wlen)	
+	
+	MultiByteToWideChar(CP_ACP, NULL, rhs, &HFFFFFFFF, V_BSTR(@this.var_), wlen)
 	
 end constructor
 
@@ -96,7 +100,7 @@ constructor VARIANT _
 	)
 	
 	VariantInit( @this.var_ )
-
+	
 	V_VT(@this.var_) = VT_BSTR
 	V_BSTR(@this.var_) = SysAllocStringLen( rhs, len( *rhs ) )
 	
