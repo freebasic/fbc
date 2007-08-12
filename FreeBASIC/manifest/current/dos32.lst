@@ -628,7 +628,6 @@ examples/manual/proguide/shared-lib/mylib.bi
 examples/manual/proguide/shared-lib/mytest.bas
 examples/manual/proguide/static-lib/mylib.bas
 examples/manual/proguide/static-lib/mylib.bi
-examples/manual/proguide/static-lib/mylib.exe
 examples/manual/proguide/static-lib/mytest.bas
 examples/manual/samples.bas
 examples/manual/samples.ini
@@ -1375,6 +1374,5 @@ lib/dos/liblua.a
 lib/dos/liblualib.a
 lib/dos/libm.a
 lib/dos/libsupcx.a
-lib/dos/libsupcxx.a
 lib/dos/libtinyptc.a
 lib/dos/libz.a
