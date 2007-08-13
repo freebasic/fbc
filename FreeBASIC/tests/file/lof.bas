@@ -4,7 +4,7 @@
 
 namespace fbc_tests.file.lof_
 
-const filename = ".\file\lof.bas"
+const filename = "./file/lof.bas"
 
 sub test cdecl ()
 
