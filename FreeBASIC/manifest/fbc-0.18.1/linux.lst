@@ -2169,6 +2169,5 @@ lib/linux/libfbmt.a
 lib/linux/libgcc.a
 lib/linux/libgcc_eh.a
 lib/linux/libiberty.a
-lib/linux/libintl.a
 lib/linux/libsupc++.a
 lib/linux/libtinyptc.a
