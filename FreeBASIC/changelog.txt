@@ -1,3 +1,13 @@
+Version 0.18.2 Beta:
+
+[changed]
+- fix zstring constructor in libvariant patch by voodooattack (tracker #1750468) (DrV)
+- extend 16-bit colors returned from screen function in gfx mode to full 32-bit colors patch by counting_pine (tracker #1726579) (DrV)
+- fixes for COLOR function in gfx mode (DrV)
+- Return just the foreground color for full-color modes, since both colors can't fit in one 32-bit integer (DrV)
+- Upsample 16-bit colors to 32-bit, with opacity, for compatibility with other gfx functions. patch by counting_pine (tracker #1726580) (DrV)
+- updated ode headers copyright notice (jeffm)
+
 Version 0.18.1 Beta:
 
 [changed]
