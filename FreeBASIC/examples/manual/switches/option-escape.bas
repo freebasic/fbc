@@ -1,4 +1,4 @@
-'' examples/manual/switches/option-escape3.bas
+'' examples/manual/switches/option-escape.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
