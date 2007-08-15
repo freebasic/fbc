@@ -6,7 +6,11 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOptionbase
 '' --------
 
-'' Compile with -lang deprecated or qb
-Option Base 1
-Dim foo(10)
+'' Compile with the "-lang qb" or "-lang deprecated" compiler switches
 
+Dim foo(10) As Integer      ' declares an array with indices 0-10
+
+Option Base 5
+
+Dim bar(15) As Integer      ' declares an array with indices 5-15
+Dim baz(0 To 4) As Integer  ' declares an array with indices 0-4

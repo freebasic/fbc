@@ -6,11 +6,9 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOptionexplicit
 '' --------
 
-' compile with -lang deprecated or qb
+'' Compile with the "-lang qb" or "-lang deprecated" compiler switches
+
 Option Explicit
 
-'' a must be declared ...
-Dim a As Integer
-
-'' ... or else this statement will fail to compile
-a = 1
+Dim a As Integer            ' 'a' must be declared..
+a = 1                       ' ..or this statement will fail to compile.

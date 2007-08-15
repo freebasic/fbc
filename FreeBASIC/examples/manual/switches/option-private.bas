@@ -6,11 +6,18 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOptionprivate
 '' --------
 
-' compile with -lang deprecated
-Option Private
+'' Compile with the "-lang deprecated" compiler switch
 
-Sub I_am_private()
+Sub ProcWithExternalLinkage()
+   ' ...
 End Sub
 
-Public Sub I_am_public()
+Option Private
+
+Sub ProcWithInternalLinkage()
+   ' ...
+End Sub
+
+Public Sub AnotherProcWithExternalLinkage()
+   ' ...
 End Sub

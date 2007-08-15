@@ -6,7 +6,9 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOptionnokeyword
 '' --------
 
-' compile with -lang deprecated
-Option NoKeyword Int
-Dim Int As Integer
-'' Do some processing with the variable "int"
+'' Compile with the "-lang deprecated" compiler switch
+
+Option NoKeyword Int        ' remove the keyword 'int' from the internal
+	                        ' symbol table
+
+Dim Int As Integer          ' declare a variable with the name 'int'

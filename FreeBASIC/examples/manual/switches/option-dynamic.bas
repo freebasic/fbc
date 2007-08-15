@@ -6,8 +6,12 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOptiondynamic
 '' --------
 
-' compile with -lang deprecated
+'' Compile with "-lang deprecated" compiler switch
+
+Dim foo(99) As Integer      ' declares a fixed-length array
+
 Option Dynamic
-Dim a(100)
-'......
-ReDim a(200)
+
+Dim bar(99) As Integer      ' declares a variable-length array
+' ...
+ReDim bar(199) As Integer   ' resize the array

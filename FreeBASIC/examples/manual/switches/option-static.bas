@@ -6,8 +6,12 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOptionstatic
 '' --------
 
-' compile with -lang deprecated
+'' Compile with the "-lang deprecated" compiler switch
+
 Option Dynamic
-Dim a(100)   '<<this array will be dynamic
+
+Dim foo(100) As Integer			' declares a variable-length array
+
 Option Static
-Dim b(100)   '<<this array will be static
+
+Dim bar(100) As Integer			' declares a fixed-length array
