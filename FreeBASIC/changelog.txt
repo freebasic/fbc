@@ -8,6 +8,13 @@ Version 0.18.2 Beta:
 - Upsample 16-bit colors to 32-bit, with opacity, for compatibility with other gfx functions. patch by counting_pine (tracker #1726580) (DrV)
 - updated ode headers copyright notice (jeffm)
 
+[added]
+- the "windows-ms" mangling support to EXTERN .. END EXTERN, so MS-ish DLL's can be created and used without editing the .def files (v1c)
+
+[fixed]
+- casting overloaded operators were not being checked when initializing variables with incompatible types (v1c)
+
+
 Version 0.18.1 Beta:
 
 [changed]
@@ -27,6 +34,7 @@ Version 0.18.1 Beta:
 - ThreadCreate was accepting literally "any" pointer at its first parameter. Added a mechanism for building function pointer symbols (to check against, say the first arg passed to ThreadCreate) at the rtl symbol initializer. (cha0s)
 - #1713886 - symbols in FOR had the temp bit stripped out to make scope jumping work, but it can be added in later, otherwise the branch checker will get confused (cha0s)
 - #1696229(part one!) - constant symbols in TYPEs could be modified with disastrous results. (cha0s)
+
 
 Version 0.18.0 Beta:
 
@@ -59,6 +67,7 @@ Version 0.18.0 Beta:
 - "as ANY" as being allowed on TYPE members(cha0s)
 - bogus field accesses should have been creating a fake symbol (cha0s)
 - gfxlib wasn't waiting long enough when preventing a potential deadlock, causing deinitialization to fail (and crappy graphics consequences) (cha0s)
+
 
 Version 0.17 Beta:
 
@@ -230,6 +239,7 @@ Version 0.17 Beta:
 - ulongints would qualify as pointers if they were completely 0, a check had to be added for native pointer width equivalence.(cha0s)
 - palette would access invalid memory if the index given was >= maximum palette indices. (cha0s)
 - CVS, CVD weren't using floats internally, CVLONGINT wasn't using a longint internally (cha0s)
+
 
 Version 0.16 Beta:
 
