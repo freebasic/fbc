@@ -503,17 +503,24 @@ private sub _emitProcEnd _
 		byval exitlabel as FBSYMBOL ptr _
 	) static
 
-    dim as integer bytestopop, mode
+    dim as integer bytestopop
 
     _flush( )
 
-    mode = symbGetProcMode( proc )
-    if( (mode = FB_FUNCMODE_CDECL) or _
-    	((mode = FB_FUNCMODE_STDCALL) and (env.clopt.nostdcall)) ) then
-		bytestopop = 0
-	else
+    select case as const symbGetProcMode( proc )
+    case FB_FUNCMODE_CDECL
+    	bytestopop = 0
+
+    case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
+    	if( env.clopt.nostdcall ) then
+			bytestopop = 0
+		else
+			bytestopop = symbGetProcParamsLen( proc )
+		end if
+
+	case else
 		bytestopop = symbGetProcParamsLen( proc )
-	end if
+	end select
 
 	emitProcFooter( proc, bytestopop, initlabel, exitlabel )
 
@@ -1556,28 +1563,38 @@ private sub hFlushCALL _
 		byval vr as IRVREG ptr _
 	) static
 
-    dim as integer mode
     dim as integer vr_dclass, vr_dtype, vr_typ, vr_reg, vr_reg2
     dim as IRVREG ptr va
 
-	'' call function
+	'' function?
     if( proc <> NULL ) then
-    	mode = symbGetProcMode( proc )
-    	if( (mode = FB_FUNCMODE_CDECL) or _
-    		((mode = FB_FUNCMODE_STDCALL) and (env.clopt.nostdcall)) ) then
-			if( bytestopop = 0 ) then
-				bytestopop = symbGetProcParamsLen( proc )
+    	'' pop up the stack if needed
+    	select case symbGetProcMode( proc )
+    	case FB_FUNCMODE_CDECL
+    		'' if this func is VARARG, astCALL() already set the size
+    		if( bytestopop = 0 ) then
+    			bytestopop = symbGetProcParamsLen( proc )
+    		end if
+
+    	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
+    		'' nothing to pop, unless -nostdcall was used
+    		if( env.clopt.nostdcall ) then
+				if( bytestopop = 0 ) then
+					bytestopop = symbGetProcParamsLen( proc )
+				end if
 			end if
-		else
+
+		'' pascal etc.. nothing to pop
+		case else
 			bytestopop = 0
-		end if
+		end select
 
     	'' save used registers and free the FPU stack
     	hPreserveRegs( )
 
 		emitCALL( proc, bytestopop )
 
-	'' call or jump to pointer
+	'' call or jump to pointer..
 	else
 
     	'' if it's a CALL, save used registers and free the FPU stack

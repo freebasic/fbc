@@ -644,6 +644,10 @@ function symbGetCompCloneProc _
 
     select case symbGetClass( sym )
     case FB_SYMBCLASS_STRUCT
+   		if( sym->udt.ext = NULL ) then
+   			return NULL
+   		end if
+
     	return sym->udt.ext->anon.clone
 
     case FB_SYMBCLASS_CLASS

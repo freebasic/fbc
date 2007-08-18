@@ -368,15 +368,31 @@ function astNewASSIGN _
 
 	function = NULL
 
+	'' 1st) check assign op overloading (unless the types are the same and
+	''      there's no clone function: just do a shallow copy)
 	if( (options and AST_OPOPT_DONTCHKOPOVL) = 0 ) then
-		'' 1st) check assign op overloading
-		proc = symbFindSelfBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
-		if( proc <> NULL ) then
-			'' build a proc call
-			return astBuildCall( proc, 2, l, r )
-		else
-			if( err_num <> FB_ERRMSG_OK ) then
-				return NULL
+
+   		dim as integer check_letop = TRUE
+
+   		select case l->dtype
+   		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			if( l->dtype = r->dtype ) then
+				if( l->subtype = r->subtype ) then
+					check_letop = (symbGetCompCloneProc( l->subtype ) <> NULL)
+				end if
+			end if
+		end select
+
+		if( check_letop ) then
+			proc = symbFindSelfBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
+
+			if( proc <> NULL ) then
+				'' build a proc call
+				return astBuildCall( proc, 2, l, r )
+			else
+				if( err_num <> FB_ERRMSG_OK ) then
+					return NULL
+				end if
 			end if
 		end if
 	end if
@@ -385,8 +401,8 @@ function astNewASSIGN _
 	ldclass = symbGetDataClass( ldtype )
 	lsubtype = l->subtype
 
+	'' 2nd) implicit casting op overloading
 	if( (options and AST_OPOPT_DONTCHKOPOVL) = 0 ) then
-		'' 2nd) implicit casting op overloading
 		proc = symbFindCastOvlProc( ldtype, lsubtype, r, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call

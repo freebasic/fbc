@@ -1504,7 +1504,7 @@ private function hCalcTypesDiff _
 					if( astIsCONST( arg_expr ) = FALSE ) then
 						return 0
 					end if
-					
+
 					'' not 0 (NULL)?
 					if( arg_dtype = FB_DATATYPE_INTEGER ) then
 						if( astGetValInt( arg_expr ) <> 0 ) then
@@ -1515,12 +1515,12 @@ private function hCalcTypesDiff _
 							return 0
 						end if
 					end if
-					
+
 					'' not native pointer width?
 					if( symbGetDataSize( arg_dtype ) <> FB_POINTERSIZE ) then
 						return 0
 					end if
-					
+
 					return FB_OVLPROC_HALFMATCH
 				end if
 
@@ -1732,9 +1732,9 @@ private function hCheckOvlParam _
 	'' UDT? try to find a ctor
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
         hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr, arg_mode )
-        
-        '' !!!FIXME!!! Casts should be considered..??
-        '' hCheckCastOvlEx( cast_rec_cnt, param_dtype, param_subtype, arg_expr )
+
+        '' and at last, try implicit casting..
+        hCheckCastOvlEx( cast_rec_cnt, param_dtype, param_subtype, arg_expr )
 		return 0
 
 	'' enum param? refuse any other argument type, even integers,
@@ -2721,19 +2721,19 @@ function symbGetDefaultCallConv _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
-	
+
 	select case dtype
-    case FB_DATATYPE_FWDREF, _ 
-         FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, _ 
+    case FB_DATATYPE_FWDREF, _
+         FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, _
          FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-         
+
          return FB_PARAMMODE_BYREF
-         
+
     case else
          return FB_PARAMMODE_BYVAL
-         
+
     end select
-	
-	
+
+
 end function
 

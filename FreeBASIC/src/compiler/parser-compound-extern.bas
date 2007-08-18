@@ -74,6 +74,9 @@ function cExternStmtBegin _
 	case "windows"
 		mangling = FB_MANGLING_STDCALL
 
+	case "windows-ms"
+		mangling = FB_MANGLING_STDCALL_MS
+
 	case "c++"
 		mangling = FB_MANGLING_CPP
 

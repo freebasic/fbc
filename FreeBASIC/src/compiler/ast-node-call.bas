@@ -186,13 +186,14 @@ private function hCallProc _
 	end if
 
 	if( mode <> FB_FUNCMODE_CDECL ) then
-		if( mode = FB_FUNCMODE_STDCALL ) then
+		select case mode
+		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
 			if( env.clopt.nostdcall = FALSE ) then
 				bytestopop = 0
 			end if
-		else
+		case else
 			bytestopop = 0
-		end if
+		end select
 	else
 		bytestopop += bytesaligned
 		bytesaligned = 0
@@ -274,7 +275,7 @@ private sub hCheckTempStruct _
 
 	'' follow GCC 3.x's ABI
 	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-		
+
 		'' not in a reg?
 		if( typeIsPtrTo( symbGetProcRealType( sym ), 1, FB_DATATYPE_STRUCT ) ) then
 

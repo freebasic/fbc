@@ -422,6 +422,11 @@ function symbMangleType _
     		sig = "R"
     		sig += symbMangleType( dtype - FB_DATATYPE_REFERENCE, subtype )
 
+    	'' array?
+    	elseif( (dtype and FB_DATATYPE_ARRAY) <> 0 ) then
+    		sig = "A"
+    		sig += symbMangleType( dtype and (not FB_DATATYPE_ARRAY), subtype )
+
     	'' pointer..
     	else
     		sig = "P"
@@ -446,8 +451,11 @@ function symbMangleParam _
 
 	select case as const symbGetParamMode( param )
 	'' by reference (or descriptor)?
-	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+	case FB_PARAMMODE_BYREF
 		dtype or= FB_DATATYPE_REFERENCE
+
+	case FB_PARAMMODE_BYDESC
+		dtype or= FB_DATATYPE_REFERENCE or FB_DATATYPE_ARRAY
 
        '' var arg?
 	case FB_PARAMMODE_VARARG
@@ -455,7 +463,7 @@ function symbMangleParam _
 
 	end select
 
-	return symbMangleType( dtype, symbGetSubtype( param ) ) & *iif( symbGetParamMode( param ) = FB_PARAMMODE_BYDESC, @"Ar", @"" )
+	return symbMangleType( dtype, symbGetSubtype( param ) )
 
 end function
 

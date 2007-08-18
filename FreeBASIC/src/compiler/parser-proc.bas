@@ -408,6 +408,9 @@ function cProcCallingConv _
 
 		case FB_MANGLING_STDCALL
 			function = FB_FUNCMODE_STDCALL
+
+		case FB_MANGLING_STDCALL_MS
+			function = FB_FUNCMODE_STDCALL_MS
 		end select
 	end select
 
@@ -580,14 +583,14 @@ function cProcHeader _
 	end if
 
 	'' not vararg?
-	if( iif( symbGetProcParams( proc ) > 0, _ 
-	         symbGetProcTailParam( proc )->param.mode <> FB_PARAMMODE_VARARG, _ 
+	if( iif( symbGetProcParams( proc ) > 0, _
+	         symbGetProcTailParam( proc )->param.mode <> FB_PARAMMODE_VARARG, _
 	         TRUE ) ) then
 		if( (options and FB_PROCOPT_HASPARENT) <> 0 ) then
 			attrib or= FB_SYMBATTRIB_OVERLOADED
 		end if
 	end if
-	                   
+
     select case as const lexGetToken( )
     '' (CONSTRUCTOR | DESTRUCTOR)?
     case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
@@ -682,7 +685,7 @@ function cProcHeader _
     			exit function
     		end if
     	end if
-    	
+
     	return proc
     end if
 
@@ -822,7 +825,7 @@ function cProcHeader _
     symbSetProcIncFile( proc, env.inf.incfile )
 
     function = proc
-    
+
 end function
 
 '':::::
@@ -842,31 +845,31 @@ private function hCheckOpOvlParams _
 		hParamError( proc, num, FB_ERRMSG_VARARGPARAMNOTALLOWED )
 		exit function
 	end if
-	
+
 	'' optional?
 	if( symbGetIsOptional( param ) ) then
 		hParamError( proc, num, FB_ERRMSG_PARAMCANTBEOPTIONAL )
 		exit function
 	end if
 	#endmacro
-	
+
 	function = FALSE
-	
+
 	'' 1st) check the number of params
 	dim as integer min_params = any, max_params = any
 	select case as const astGetOpClass( op )
 	case AST_NODECLASS_UOP, AST_NODECLASS_ADDROF
 		min_params = iif( astGetOpIsSelf( op ), 0, 1 )
 		max_params = min_params
-	
+
 	case AST_NODECLASS_CONV
 		min_params = 0
 		max_params = min_params
-	
+
 	case AST_NODECLASS_ASSIGN, AST_NODECLASS_MEM
 		min_params = 1
 		max_params = min_params
-	
+
 	case AST_NODECLASS_COMP
 		'' self only if FOR, STEP and NEXT
 		if( astGetOpIsSelf( op ) ) then
@@ -881,20 +884,20 @@ private function hCheckOpOvlParams _
 			min_params = 2
 			max_params = min_params
 		end if
-	
+
 	'' bop..
 	case else
 		min_params = iif( astGetOpIsSelf( op ), 1, 2 )
 		max_params = min_params
 	end select
-	
+
 	dim as integer params = symbGetProcParams( proc )
 	dim as integer real_params = params - iif( is_method, 1, 0 )
 	if( (real_params < min_params) or (real_params > max_params) ) then
 		errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
 	   	exit function
 	end if
-	
+
 	'' 2nd) check method-only ops
 	select case as const astGetOpClass( op )
 	case AST_NODECLASS_CONV, AST_NODECLASS_ASSIGN
@@ -903,7 +906,7 @@ private function hCheckOpOvlParams _
 				errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
 			end if
 		end if
-	
+
 	case AST_NODECLASS_BOP, AST_NODECLASS_ADDROF
 		if( is_method or astGetOpIsSelf( op ) ) then
 			if( parent = NULL ) then
@@ -914,66 +917,66 @@ private function hCheckOpOvlParams _
 				errReport( FB_ERRMSG_OPCANNOTBEAMETHOD, TRUE )
 			end if
 		end if
-	
+
 	case AST_NODECLASS_MEM, AST_NODECLASS_COMP
 		if astGetOpIsSelf( op ) then
 			if( parent = NULL ) then
 				errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
 			end if
 		end if
-	
+
 	case else
 		if( is_method ) then
 			errReport( FB_ERRMSG_OPCANNOTBEAMETHOD, TRUE )
 		end if
 	end select
-	
+
 	if( params > 0 ) then
 		'' 3rd) check the params, at least one param must be an
 		''      user-defined type (struct, enum or class)
 		dim as FBSYMBOL ptr param = symbGetProcHeadParam( proc )
-	
+
 		hCheckParam( proc, param, 1 )
-	
+
 		select case as const astGetOpClass( op )
 		'' unary, cast or addressing?
 		case AST_NODECLASS_UOP, AST_NODECLASS_CONV, AST_NODECLASS_ADDROF
 			'' is the param an UDT?
 			select case symbGetType( param )
 			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-	
+
 			case else
 				hParamError( proc, 1, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
 				exit function
 			end select
-	
+
 		'' binary?
 		case AST_NODECLASS_BOP
-	
+
 			if( params > 1 ) then
 				dim as FBSYMBOL ptr nxtparam = param->next
-	
+
 				hCheckParam( proc, nxtparam, 2 )
-	
+
 				'' is the 1st param an UDT?
 				select case symbGetType( param )
 				case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-	
+
 				case else
 					'' try the 2nd one..
 					select case symbGetType( nxtparam )
 					case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-	
+
 					case else
 						hParamError( proc, 2, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
 						exit function
 					end select
 				end select
 			end if
-	
+
 		'' NEW or DELETE?
 		case AST_NODECLASS_MEM
-	
+
 			select case op
 			case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF
 				'' must be an integer
@@ -994,7 +997,7 @@ private function hCheckOpOvlParams _
 					hParamError( proc, 1, FB_ERRMSG_PARAMMUSTBEANINTEGER )
 					exit function
 				end if
-	
+
 			case else
 				'' must be a pointer
 				if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
@@ -1006,9 +1009,9 @@ private function hCheckOpOvlParams _
 					hParamError( proc, 1, FB_ERRMSG_PARAMMUSTBEAPOINTER )
 					exit function
 				end if
-	
+
 			end select
-	
+
 		'' FOR, STEP or NEXT?
 		case AST_NODECLASS_COMP
 
@@ -1019,30 +1022,30 @@ private function hCheckOpOvlParams _
 				if( is_method ) then
 					param = param->next
 				end if
-	
+
 				'' must be of the same type as parent
 				if( (param = NULL) or (parent = NULL) ) then
 					hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
 					exit function
 				end if
-	
+
 				hCheckParam( proc, param, 1 )
-	
+
 				'' same type?
 				if( (symbGetType( param ) <> symbGetType( parent )) or _
 					(symbGetSubtype( param ) <> parent) ) then
 					hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
 					exit function
 				end if
-	
+
 			end if
 		end if
 
 		end select
 	end if
-	
+
 	'' 4th) check the result
-	
+
 	select case astGetOpClass( op )
 	case AST_NODECLASS_CONV
 		'' return and param types can't be the same
@@ -1050,13 +1053,13 @@ private function hCheckOpOvlParams _
 			errReport( FB_ERRMSG_SAMEPARAMANDRESULTTYPES, TRUE )
 			exit function
 		end if
-	
+
 		'' return type can't be a void
 		if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
 			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 			exit function
 		end if
-	
+
 	'' unary?
 	case AST_NODECLASS_UOP
 		'' return type can't be a void
@@ -1064,7 +1067,7 @@ private function hCheckOpOvlParams _
 			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 			exit function
 		end if
-	
+
 	'' assignment?
 	case AST_NODECLASS_ASSIGN
 		'' it must be a SUB
@@ -1072,7 +1075,7 @@ private function hCheckOpOvlParams _
 			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 			exit function
 		end if
-	
+
 	'' addressing?
 	case AST_NODECLASS_ADDROF
 		'' return type can't be a void
@@ -1080,7 +1083,7 @@ private function hCheckOpOvlParams _
 			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 			exit function
 		end if
-	
+
 		select case op
 		case AST_OP_ADDROF
 			'' return type must be a pointer
@@ -1088,18 +1091,18 @@ private function hCheckOpOvlParams _
 				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 				exit function
 			end if
-	
+
 		case AST_OP_FLDDEREF
 			'' return type must be an UDT
 			select case symbGetType( proc )
 			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-	
+
 			case else
 				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 				exit function
 			end select
 		end select
-	
+
 	'' mem?
 	case AST_NODECLASS_MEM
 		select case op
@@ -1109,7 +1112,7 @@ private function hCheckOpOvlParams _
 				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 				exit function
 			end if
-	
+
 		case else
 			'' should not return anything
 			if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
@@ -1117,10 +1120,10 @@ private function hCheckOpOvlParams _
 				exit function
 			end if
 		end select
-	
+
 	'' binary?
 	case AST_NODECLASS_BOP
-	
+
 		select case as const op
 		'' relational? it must return an integer
 		case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
@@ -1128,7 +1131,7 @@ private function hCheckOpOvlParams _
 				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 				exit function
 			end if
-	
+
 		'' self? must be a SUB
 		case else
 			if( astGetOpIsSelf( op ) ) then
@@ -1136,17 +1139,17 @@ private function hCheckOpOvlParams _
 					errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 					exit function
 				end if
-	
+
 			'' anything else, it can't be a void
 			else
 				if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
 					errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 					exit function
 				end if
-	
+
 			end if
 		end select
-	
+
 	case AST_NODECLASS_COMP
 
 		'' FOR, STEP or NEXT?

@@ -409,17 +409,17 @@ enum FB_TOKEN
 	FB_TK_CHR
 	FB_TK_WCHR
 	FB_TK_STR
-    FB_TK_CVD      
-    FB_TK_CVS      
-    FB_TK_CVI      
-    FB_TK_CVL      
-    FB_TK_CVSHORT  
+    FB_TK_CVD
+    FB_TK_CVS
+    FB_TK_CVI
+    FB_TK_CVL
+    FB_TK_CVSHORT
 	FB_TK_CVLONGINT
-    FB_TK_MKD      
-    FB_TK_MKS      
-    FB_TK_MKI      
-    FB_TK_MKL      
-    FB_TK_MKSHORT  
+    FB_TK_MKD
+    FB_TK_MKS
+    FB_TK_MKI
+    FB_TK_MKL
+    FB_TK_MKSHORT
 	FB_TK_MKLONGINT
 	FB_TK_WSTR
 	FB_TK_MID
@@ -533,6 +533,7 @@ enum FB_MANGLING
 	FB_MANGLING_BASIC
 	FB_MANGLING_CDECL
 	FB_MANGLING_STDCALL
+	FB_MANGLING_STDCALL_MS
 	FB_MANGLING_CPP
 	FB_MANGLING_PASCAL
 end enum
@@ -548,6 +549,7 @@ end enum
 '' call conventions
 enum FB_FUNCMODE
 	FB_FUNCMODE_STDCALL			= 1             '' ditto
+	FB_FUNCMODE_STDCALL_MS						'' ms/vb-style: don't include the @n suffix
 	FB_FUNCMODE_CDECL
 	FB_FUNCMODE_PASCAL
 end enum
@@ -589,7 +591,8 @@ enum FB_DATATYPE
 	FB_DATATYPE_FWDREF
 	FB_DATATYPE_POINTER            				'' must be the last
 
-	FB_DATATYPE_REFERENCE		= &h00010000	'' used when mangling
+	FB_DATATYPE_ARRAY			= &h00010000	'' used when mangling
+	FB_DATATYPE_REFERENCE		= &h00100000	'' ditto (must be the last!)
 end enum
 
 const FB_DATATYPES = FB_DATATYPE_POINTER + 1
