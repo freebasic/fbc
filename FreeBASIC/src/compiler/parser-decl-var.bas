@@ -530,14 +530,20 @@ private function hDeclDynArray _
    								  dimensions, dTB() )
 
 		else
-			'' external?
-			if( symbIsExtern( sym ) ) then
-				if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
-   					sym = NULL
-				else
-					hVarExtToPub( sym, attrib )
+			'' a dupe param?
+'			if( symbIsParamByDesc( sym ) ) then
+'				sym = NULL
+'			else
+				
+				'' external?
+				if( symbIsExtern( sym ) ) then
+					if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
+	   					sym = NULL
+					else
+						hVarExtToPub( sym, attrib )
+					end if
 				end if
-			end if
+'			end if
 		end if
 	end if
 
