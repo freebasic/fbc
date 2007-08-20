@@ -6,5 +6,5 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgRandomize
 '' --------
 
-'e.g.
-Randomize Timer
+'' Seed the RNG, which is set to C's rand().
+Randomize Timer, 1
