@@ -531,9 +531,9 @@ private function hDeclDynArray _
 
 		else
 			'' a dupe param?
-'			if( symbIsParamByDesc( sym ) ) then
-'				sym = NULL
-'			else
+			if( symbIsParamByDesc( sym ) ) then
+				sym = NULL
+			else
 				
 				'' external?
 				if( symbIsExtern( sym ) ) then
@@ -543,7 +543,7 @@ private function hDeclDynArray _
 						hVarExtToPub( sym, attrib )
 					end if
 				end if
-'			end if
+			end if
 		end if
 	end if
 
