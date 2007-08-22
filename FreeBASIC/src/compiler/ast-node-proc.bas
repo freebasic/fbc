@@ -745,7 +745,7 @@ private function hDeclProcParams _
 
 	''
 	i = 1
-	p = symbGetProcHeadParam( proc )
+	p = symbGetProcLastParam( proc )
 	do while( p <> NULL )
 
 		if( p->param.mode <> FB_PARAMMODE_VARARG ) then
@@ -756,7 +756,7 @@ private function hDeclProcParams _
 			end if
 		end if
 
-		p = symbGetParamNext( p )
+		p = symbGetProcPrevParam( proc, p )
 		i += 1
 	loop
 

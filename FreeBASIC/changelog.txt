@@ -14,6 +14,7 @@ Version 0.18.2 Beta:
 [fixed]
 - casting overloaded operators were not being checked when initializing variables with incompatible types (v1c)
 - #1777001 - array parameters were not being checked for duplicates when DIMming local variable-length arrays (cha0s)
+- #1745849 - pascal calling convention was emitting bad asm - regression test added (jeffm)
 
 
 Version 0.18.1 Beta:

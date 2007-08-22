@@ -1115,13 +1115,14 @@ function astNewARG _
 			parent->r = n
 		else
 			t = parent->call.lastarg
-			parent->r = n
+			t->r = n
 		end if
 
 		parent->call.lastarg = n
 		n->r = NULL
 
 	else
+
 		'' non-pascal, the latest param added will be the first pushed
 		parent->r = n
 		n->r = t

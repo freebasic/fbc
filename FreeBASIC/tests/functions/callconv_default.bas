@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.functions.callconv
+namespace fbc_tests.functions.callconv_default
 	
 	type bar_f as bar
 	
@@ -82,7 +82,7 @@ namespace fbc_tests.functions.callconv
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.functions.callconv")
+		fbcu.add_suite("fbc_tests.functions.callconv_default")
 		fbcu.add_test("test", @test)
 		fbcu.add_test("test2", @test2)
 		fbcu.add_test("test3", @test3)
