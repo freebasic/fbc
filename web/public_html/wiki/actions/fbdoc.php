@@ -1,79 +1,94 @@
 <?php
 
-	$itemTB = array( 'category' => 'Category', 
-					 'keyword' => 'Keyword', 
-					 'title' => 'Title', 
-					 'syntax' => 'Syntax', 
-					 'usage' => 'Usage',
-					 'param' => 'Parameters', 
-					 'ret'=> 'Return Value', 
-					 'desc' => 'Description', 
-					 'ex' => 'Examples', 
-					 'diff' => 'Differences from QB',
-					 'see' => 'See also', 
-					 'back' => 'Back',
-					 'close' => 'Close' );
-	
-	if( $item )
+	$itemTB = array( 
+		'category' => 'Category', 
+		'keyword' => 'Keyword', 
+		'title' => 'Title', 
+		'syntax' => 'Syntax', 
+		'usage' => 'Usage',
+		'param' => 'Parameters', 
+		'ret'=> 'Return Value', 
+		'desc' => 'Description', 
+		'ex' => 'Examples', 
+		'lang' => 'Dialect Differences',
+		'target' => 'Platform Differences',
+		'diff' => 'Differences from QB',
+		'see' => 'See also', 
+		'back' => 'Back',
+		'close' => 'Close',
+		'tag' => 'tag',
+		'filename' => 'filename' 
+	);
+    
+	If( $item )
 		$item = $this->ReturnSafeHTML( $item );
-	else 
+	Else 
 	{ 
-		if( $wikka_vars ) 
+		If( $wikka_vars ) 
 			$item = $this->ReturnSafeHTML( $wikka_vars );
-		else 
+		Else 
 			$item = $this->GetPageTag( );
 	}
 
-
-	if( $value )
+	If( $value )
 		$value = $this->ReturnSafeHTML( $value );
-
-
-	
 
 	switch( $item )
 	{
-	case 'title':
-		print( "<h3>$value</h3>" );
+	Case 'title':
+		Print( "<h3>$value</h3>" );
 		break;
 
-	case 'section':
-		print( "<b><u>$value</u></b>" );
+	Case 'section':
+		Print( "<b><u>$value</u></b>" );
 		break;
 
-	case 'subsect':
-		print( "<b>$value</b>" );
+	Case 'subsect':
+		Print( "<b>$value</b>" );
 		break;
 
-	case 'category':
+	Case 'category':
 		list( $page, $name ) = explode( '|', $value );
 		
-		print( "<a name=\"#cat_$page\"></a><b>$name:</b>" );
+		Print( "<a name=\"#cat_$page\"></a><b>$name:</b>" );
 		break;
-		
-	case 'keyword':
+			
+	Case 'keyword':
 		list( $page, $name ) = explode( '|', $value );
 		
 		$class = '';
-		/*if( $this->ExistsPage( $page ) == FALSE )
+		/*If( $this->ExistsPage( $page ) == FALSE )
 			$class = 'class="missingpage"';*/
-			
-		print( "<a $class href=\"" . $this->config['base_url'] . $page . "\">$name</a>" );
+				
+		Print( "<a $class href=\"" . $this->config['base_url'] . $page . "\">$name</a>" );
 		break;
 	
-	case 'back':
+	Case 'back':
 		list( $page, $name ) = explode( '|', $value );
 		
-		print( "<div align=\"center\">Back to <a href=\"" . $this->config['base_url'] . $page . "\">$name</a></div>" );
+		Print( "<div align=\"center\">Back to <a href=\"" . $this->config['base_url'] . $page . "\">$name</a></div>" );
 		break;
 
-	case 'close':
+	Case 'close':
+		break;
+
+	Case 'tag':
+		break;
+
+	Case 'filename':
 		break;
 	
 	default:
-		$name = $itemTB[$item];
-		print( "<b>$name:</b>" );
+		If( $itemTB[$item] )
+		{
+			$name = $itemTB[$item];
+			Print( "<b>$name:</b>" );
+		}
+		else
+		{
+			Print( "<i>Unknown item " . $item . "</i>" );
+		}
 	}
-		
-		
+				
+				
 ?>
