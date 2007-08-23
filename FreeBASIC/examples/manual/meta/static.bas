@@ -7,7 +7,7 @@
 '' --------
 
 ' compile with -lang deprecated or qb
-Option Dynamic
-Dim a(100)   '<<this array will be dynamic
-Option Static
-Dim b(100)   '<<this array will be static
+'$dynamic
+Dim a(100)   '<<this array will be variable-length
+'$static
+Dim b(100)   '<<this array will be fixed-length

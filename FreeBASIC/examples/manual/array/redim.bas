@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgRedim
 '' --------
 
-'' Define a dynamic array with 5 elements
+'' Define a variable-length array with 5 elements
 ''
 ReDim array(1 To 5) As Integer
 
@@ -14,7 +14,7 @@ For index As Integer = LBound(array) To UBound(array)
 	array(index) = index
 Next
 
-'' Redefine a dynamic array with 10 elements
+'' Resize a variable-length array with 10 elements
 ''
 ReDim Preserve array(9) As Integer
 
