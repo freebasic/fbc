@@ -53,81 +53,43 @@ $language_data = array (
 	'LANG_NAME' => 'QBasic/QuickBASIC',
 	'COMMENT_SINGLE' => array(1 => "'", 2 => 'REM'),
 	'COMMENT_MULTI' => array(),
-	'CASE_KEYWORDS' => GESHI_CAPS_CAPITALIZE,
+	'CASE_KEYWORDS' => GESHI_CAPS_UPPER,
 	'QUOTEMARKS' => array('"'),
 	'ESCAPE_CHAR' => '',
 	'KEYWORDS' => array(
 		1 => array(
-			'Do', 'Loop', 'While', 'Wend', 'Then', 'Else', 'Elseif', 'If',
-			'For', 'To', 'Next', 'Step', 'Goto', 'Gosub', 'Return', 'Resume', 'Select',
-			'Case', 'Until', 'Exit', 'Continue', 'With', 'Scope',
-			
-			'String', 'Zstring', 'Wstring',
-			'Unsigned',
-			'Byte', 'Ubyte', 
-			'Short', 'Ushort', 
-			'Integer', 'Uinteger', 'Long',
-			'Longint', 'Ulongint', 
-			'Single', 'Double',
-			'Ptr', 'Pointer'
+			'DO', 'LOOP', 'WHILE', 'WEND', 'THEN', 'ELSE', 'ELSEIF', 'IF',
+			'FOR', 'TO', 'NEXT', 'STEP', 'GOTO', 'GOSUB', 'RETURN', 'RESUME', 'SELECT',
+			'CASE', 'UNTIL'
 			),
 		3 => array(
-			'Abs', 'Absolute', 'Access', 'Alias', 'And', 'Any', 'Append', 'As', 'Asc', 'Atn',
-			
-			'Base', 'Beep', 'Binary', 'Bload', 'Bsave', 'Byval', 'Byref',
-			
-			'Call', 'Calls', 'Case', 'Cdbl', 'Cdecl', 'Chain', 'Chdir', 'Chdir', 'Chr', 'Cint', 
-			'Circle', 'Clear', 'Clng', 'Close', 'Cls', 'Com', 'Command', 'Common', 'Const', 'Color', 
-			'Cos', 'Csng', 'Csrlin', 'Cvd', 'Cvdmbf', 'Cvi', 'Cvl', 'Cvs', 'Cvsmdf', 
-			
-			'Data', 'Date', 'Declare', 'Def', 'Fn', 'Seg', 'Defdbl', 'Defint', 'Deflng', 'Defsng', 
-			'Defstr', 'Dim', 'Draw', 
-			
-			'End', 'Environ', 'Environ', 'Eof', 'Eqv', 'Erase', 'Erdev', 'Erdev', 'Erl', 'Err', 
-			'Error', 'Exp', 
-			
-			'Field', 'Fileattr', 'Files', 'Fix', 'Fre', 'Freefile', 'Function', 
-			
-			'Get', 
-			
-			'Hex', 
-			
-			'Inkey', 'Inp', 'Input', 'Input', 'Instr', 'Int', 'Ioctl', 'Ioctl', 'Is',
-			
-			'Key', 'Kill', 
-			
-			'Lbound', 'Lcase', 'Left', 'Len', 'Let', 'Line', 'List', 'Loc', 'Local', 'Locate', 'Lock', 
-			'Lof', 'Log', 'Unlock', 'Lpos', 'Lprint', 'Lset', 'Ltrim', 
-			
-			'Mid', 'Mkd', 'Mkdir', 'Mkdmbf', 'Mki', 'Mkl', 'Mks', 'Mksmbf', 'Mod', 
-			
-			'Name', 'Not', 'Oct', 'Off', 'On', 
-			
-			'Open', 'Option', 'Or', 'Out', 'Output',
-			
-			'Pen', 'Play', 'Paint', 'Palette', 'Pcopy', 'Peek', 'Pmap', 'Point', 'Poke', 'Pos', 
-			'Preset', 'Print', 'Ptr', 'Pset', 'Put', 
-			
-			'Random', 'Randomize', 'Read', 'Redim', 'Reset', 'Restore', 'Right', 'Rmdir', 'Rnd', 
-			'Rset', 'Rtrim', 'Run', 
-			
-			'Sadd', 'Screen', 'Seek', 'Setmem', 'Sgn', 'Shared', 'Shell', 'Signal', 'Sin', 'Sleep', 
-			'Sound', 'Space', 'Spc', 'Sqr', 'Static', 'Stick', 'Stop', 'Str', 'Strig', 'Sub', 
-			'Swap', 'System', 'Strig', 'Shr', 'Shl',
-			
-			'Tab', 'Tan', 'Time', 'Timer', 'Troff', 'Tron', 'Type', 
-			
-			'Ubound', 'Ucase', 'Uevent', 'Unlock', 'Using', 
-			
-			'Val', 'Varptr', 'Varptr', 'Varseg', 'View', 
-			
-			'Wait', 'Width', 'Window', 'Write', 
-			
-			'Xor'
+			'ABS', 'ABSOLUTE', 'ACCESS', 'ALIAS', 'AND', 'ANY', 'APPEND', 'AS', 'ASC', 'ATN',
+			'BASE', 'BEEP', 'BINARY', 'BLOAD', 'BSAVE', 'BYVAL', 'CALL', 'CALLS', 'CASE',
+			'CDBL', 'CDECL', 'CHAIN', 'CHDIR', 'CHDIR', 'CHR$', 'CINT', 'CIRCLE', 'CLEAR',
+			'CLNG', 'CLOSE', 'CLS', 'COM', 'COMMAND$', 'COMMON', 'CONST', 'COS', 'CSNG',
+			'CSRLIN', 'CVD', 'CVDMBF', 'CVI', 'CVL', 'CVS', 'CVSMDF', 'DATA', 'DATE$',
+			'DECLARE', 'DEF', 'FN', 'SEG', 'DEFDBL', 'DEFINT', 'DEFLNG', 'DEFSNG', 'DEFSTR',
+			'DIM', 'DOUBLE', 'DRAW', 'END', 'ENVIRON', 'ENVIRON$', 'EOF', 'EQV', 'ERASE',
+			'ERDEV', 'ERDEV$', 'ERL', 'ERR', 'ERROR', 'EXIT', 'EXP', 'FIELD', 'FILEATTR',
+			'FILES', 'FIX', 'FRE', 'FREEFILE', 'FUNCTION', 'GET', 'HEX$', 'IMP', 'INKEY$',
+			'INP', 'INPUT', 'INPUT$', 'INSTR', 'INT', 'INTEGER', 'IOCTL', 'IOCTL$', 'IS',
+			'KEY', 'KILL', 'LBOUND', 'LCASE$', 'LEFT$', 'LEN', 'LET', 'LINE', 'LIST', 'LOC',
+			'LOCAL', 'LOCATE', 'LOCK', 'LOF', 'LOG', 'UNLOCK', 'LONG', 'LPOS', 'LPRINT',
+			'LSET', 'LTRIM$', 'MID$', 'MKD$', 'MKDIR', 'MKDMBF$', 'MKI$', 'MKL$',
+			'MKS$', 'MKSMBF$', 'MOD', 'NAME', 'NOT', 'OCT$', 'OFF', 'ON', 'PEN', 'PLAY',
+			'STRIG', 'TIMER', 'UEVENT', 'OPEN', 'OPTION', 'BASE', 'OR', 'OUT', 'OUTPUT',
+			'PAINT', 'PALETTE', 'PCOPY', 'PEEK', 'PMAP', 'POINT', 'POKE', 'POS', 'PRESET',
+			'PRINT', 'USING', 'PSET', 'PUT', 'RANDOM', 'RANDOMIZE', 'READ', 'REDIM', 'RESET',
+			'RESTORE', 'RIGHT$', 'RMDIR', 'RND', 'RSET', 'RTRIM$', 'RUN', 'SADD', 'SCREEN',
+			'SEEK', 'SETMEM', 'SGN', 'SHARED', 'SHELL', 'SIGNAL', 'SIN', 'SINGLE', 'SLEEP',
+			'SOUND', 'SPACE$', 'SPC', 'SQR', 'STATIC', 'STICK', 'STOP', 'STR$', 'STRIG',
+			'STRING', 'STRING$', 'SUB', 'SWAP', 'SYSTEM', 'TAB', 'TAN', 'TIME$', 'TIMER',
+			'TROFF', 'TRON', 'TYPE', 'UBOUND', 'UCASE$', 'UEVENT', 'UNLOCK', 'USING', 'VAL',
+			'VARPTR', 'VARPTR$', 'VARSEG', 'VIEW', 'WAIT', 'WIDTH', 'WINDOW', 'WRITE', 'XOR'
 			)
 		),
 	'SYMBOLS' => array(
-		'(', ')', '{', '}', '[', ']', '=', '+', '-', '*', '/', '\\', '^', '!', '%', '#', '&', '$', ':', '@', '>', '<'
+		'(', ')'
 		),
 	'CASE_SENSITIVE' => array(
 		GESHI_COMMENTS => false,
