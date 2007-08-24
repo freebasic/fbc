@@ -1,4 +1,4 @@
-'' examples/manual/faq/DOS/call-int.bas
+'' examples/manual/faq/dos/call-int.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
