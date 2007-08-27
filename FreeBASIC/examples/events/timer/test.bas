@@ -5,23 +5,21 @@
 '' (compile timer.bas first, of course)
 ''
 
-
-
 #include once "timer.bi"
 
 declare sub timer_handler ( byval id as integer )
 
-	dim as integer t1, t2, t3
+	dim as CTimer ptr t1, t2, t3
 	
 	print "starting.."
 	
-	t1 = timercreate( 500, @timer_handler, 1 )
-	t2 = timercreate( 5000, @timer_handler, 2 )
-	t3 = timercreate( 10000, @timer_handler, 3 )
+	t1 = new CTimer( 500, @timer_handler, 1 )
+	t2 = new CTimer( 5000, @timer_handler, 2 )
+	t3 = new CTimer( 10000, @timer_handler, 3 )
 	
-	timeron t1
-	timeron t2
-	timeron t3
+	t1->on
+	t2->on
+	t3->on
 	
 	do
 		print "(main loop)"
@@ -30,12 +28,13 @@ declare sub timer_handler ( byval id as integer )
 
 	print "exiting.."
 	
-	timeroff t3
-	timeroff t2
-	timeroff t1
-	timerdestroy t3
-	timerdestroy t2
-	timerdestroy t1
+	t3->off
+	t2->off
+	t1->off
+	
+	delete t3
+	delete t2
+	delete t1
 	
 	end
 

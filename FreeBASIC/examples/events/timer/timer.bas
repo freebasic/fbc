@@ -9,24 +9,8 @@
 
 #include once "timer.bi"
 
-enum TIMER_STATES
-	TIMER_STATE_KILLED
-	TIMER_STATE_RUNNING
-	TIMER_STATE_STOPPED
-	TIMER_STATE_EXITING
-end enum
-
-type TIMER_CTX
-	state		as TIMER_STATES
-	interval	as integer
-	callback	as TIMER_CALLBACK
-	userdata	as integer
-	cond		as any ptr
-	thread		as any ptr
-end type
-
 '':::::
-private sub timer_thread( byval ctx as TIMER_CTX ptr )
+sub CTimer.threadcb( byval ctx as CTimer ptr )
         
 	do
 		select case ctx->state
@@ -59,90 +43,64 @@ private sub timer_thread( byval ctx as TIMER_CTX ptr )
 end sub
 
 '':::::
-function timercreate( _
-				      byval interval as integer, _
-					  byval callback as TIMER_CALLBACK, _
-					  byval userdata as integer = 0 _
-					) as integer
+constructor CTimer _
+	( byval interval as integer, _
+	  byval callback as TIMER_CALLBACK, _
+	  byval userdata as integer = 0 _
+	)
 	
-	dim as TIMER_CTX ptr ctx
+	this.state	  = TIMER_STATE_STOPPED
+	this.interval = interval
+	this.callback = callback
+	this.userdata = userdata
+	this.cond	  = condcreate( )
+	this.thread   = threadcreate( @threadcb, cast( any ptr, @this ) )
 	
-	ctx = allocate( len( TIMER_CTX ) )
-	
-	ctx->state	  = TIMER_STATE_STOPPED
-	ctx->interval = interval
-	ctx->callback = callback
-	ctx->userdata = userdata
-	ctx->cond	  = condcreate( )
-	ctx->thread   = threadcreate( @timer_thread, cint( ctx ) )
-	
-	function = cint( ctx )
-
-end function
+end constructor
 
 '':::::
-sub timeron( _
-		     byval id as integer _
-		   )
+sub CTimer.on _
+	( _
+	)
 	
-	dim ctx as TIMER_CTX ptr = cast( TIMER_CTX ptr, id )
-	
-	if( ctx = 0 ) then
-		exit sub
-	end if
-	
-	if( ctx->state = TIMER_STATE_KILLED ) then
+	if( this.state = TIMER_STATE_KILLED ) then
 		exit sub
 	end if
 		
-	ctx->state = TIMER_STATE_RUNNING
-	condsignal( ctx->cond )
+	this.state = TIMER_STATE_RUNNING
+	condsignal( this.cond )
 
 end sub
 
 '':::::
-sub timeroff( _
-			  byval id as integer _
-			)
+sub CTimer.off _
+	( _
+	)
 	
-	dim ctx as TIMER_CTX ptr = cast( TIMER_CTX ptr, id )
-	
-	if( ctx = 0 ) then
+	if( this.state = TIMER_STATE_KILLED ) then
 		exit sub
 	end if
 
-	if( ctx->state = TIMER_STATE_KILLED ) then
-		exit sub
-	end if
-
-	ctx->state = TIMER_STATE_STOPPED
+	this.state = TIMER_STATE_STOPPED
 
 end sub
 
 '':::::
-sub timerdestroy( _
-			      byval id as integer _
-			    )
+destructor CTimer _
+	( _
+		_
+	)
 	
-	dim ctx as TIMER_CTX ptr = cast( TIMER_CTX ptr, id )
-	
-	if( ctx = 0 ) then
-		exit sub
+	if( this.state = TIMER_STATE_KILLED ) then
+		return
 	end if
 
-	if( ctx->state = TIMER_STATE_KILLED ) then
-		exit sub
-	end if
-
-	ctx->state = TIMER_STATE_EXITING
+	this.state = TIMER_STATE_EXITING
 	
-	condsignal( ctx->cond )
-	threadwait( ctx->thread )			
-	conddestroy( ctx->cond )
+	condsignal( this.cond )
+	threadwait( this.thread )			
+	conddestroy( this.cond )
 	
-	ctx->state = TIMER_STATE_KILLED
+	this.state = TIMER_STATE_KILLED
 	
-	deallocate( ctx )
-	
-end sub
-	
+end destructor

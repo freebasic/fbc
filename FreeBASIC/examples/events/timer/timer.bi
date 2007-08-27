@@ -9,23 +9,47 @@
 
 type TIMER_CALLBACK as sub( byval userdata as integer )
 
-declare function timercreate				( _
-					   		   				  byval interval as integer, _
-					   		   				  byval callback as TIMER_CALLBACK, _
-					   		   				  byval userdata as integer = 0 _
-					 		 				) as integer
+type CTimer
 
-declare sub 	 timeron					( _
-											  byval id as integer _
-											)
+	declare constructor _
+		( byval interval as integer, _
+		  byval callback as TIMER_CALLBACK, _
+		  byval userdata as integer = 0 _
+		)
+	
+	declare sub on _
+		( _
+		)
+	
+	declare sub off	_
+		( _
+		)
+	
+	declare destructor _
+		( _
+		)
 
-declare sub 	 timeroff					( _
-											  byval id as integer _
-											)
+private:
+	enum TIMER_STATES
+		TIMER_STATE_KILLED
+		TIMER_STATE_RUNNING
+		TIMER_STATE_STOPPED
+		TIMER_STATE_EXITING
+	end enum
 
-declare sub 	 timerdestroy				( _
-											  byval id as integer _
-											)
+	declare static sub threadcb _
+		( byval ctx as CTimer ptr _
+		)
+
+	state		as TIMER_STATES
+	interval	as integer
+	callback	as TIMER_CALLBACK
+	userdata	as integer
+	cond		as any ptr
+	thread		as any ptr
+end type
+
+
 
 
 #endif
