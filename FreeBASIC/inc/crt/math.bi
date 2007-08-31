@@ -222,6 +222,7 @@ type _complex
 	y as double
 end type
 
+extern "c"
 declare function _cabs (byval as _complex) as double
 declare function _hypot (byval as double, byval as double) as double
 declare function _j0 (byval as double) as double
@@ -248,6 +249,7 @@ declare function __isnanl (byval _x as double) as integer
 declare function __signbit (byval x as double) as integer
 declare function __signbitf (byval x as single) as integer
 declare function __signbitl (byval x as double) as integer
+end extern
 #endif
 
 #endif
