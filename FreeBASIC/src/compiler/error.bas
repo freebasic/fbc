@@ -46,8 +46,8 @@ end type
 		( 1, @"Identifier's name too big, truncated" ), _
 		( 1, @"Literal number too big, truncated" ), _
 		( 1, @"Literal string too big, truncated" ), _
-		( 0, @"UDT with pointer or dynamic string fields" ), _
-		( 0, @"UDT with dynamic string fields" ), _
+		( 0, @"UDT with pointer or var-len string fields" ), _
+		( 0, @"UDT with var-len string fields" ), _
 		( 0, @"Implicit variable allocation" ), _
 		( 0, @"Missing closing quote in literal string" ), _
 		( 0, @"Function result was not explicitly set" ), _
@@ -60,7 +60,7 @@ end type
 		( 2, @"Object files or libraries with mixed multithreading (-mt) options" ), _
 		( 2, @"Object files or libraries with mixed language (-lang) options" ), _
 		( 0, @"Deleting ANY pointers is undefined" ), _
-		( 2, @"Array too large for stack, consider making it dynamic or SHARED" ), _
+		( 2, @"Array too large for stack, consider making it var-len or SHARED" ), _
 		( 0, @"Overflow in constant conversion" ) _
 	}
 
@@ -116,7 +116,7 @@ end type
 		@"Too many array dimensions", _
 		@"Expected scalar counter", _
 		@"Illegal outside a CONSTRUCTOR, DESTRUCTOR, FUNCTION, OPERATOR, PROPERTY or SUB block", _
-		@"Expected dynamic array", _
+		@"Expected var-len array", _
 		@"Fixed-len strings cannot be returned from functions", _
 		@"Array already dimensioned", _
 		@"Illegal without the -ex option", _
@@ -135,12 +135,12 @@ end type
 		@"Array not dimensioned", _
 		@"Array access, index expected", _
 		@"Expected 'END ENUM'", _
-		@"Dynamic arrays cannot be initialized", _
+		@"Var-len arrays cannot be initialized", _
 		@"Invalid bitfield", _
 		@"Too many parameters", _
 		@"Macro text too long", _
 		@"Invalid command-line option", _
-		@"Dynamic strings cannot be initialized", _
+		@"Var-len strings cannot be initialized", _
 		@"Recursive TYPE or UNION not allowed", _
 		@"Recursive DEFINE not allowed", _
 		@"Array fields cannot be redimensioned", _
@@ -157,7 +157,7 @@ end type
 		@"No matching overloaded function", _
 		@"Division by zero", _
 		@"Cannot pop stack, underflow", _
-		@"UDT's containing dynamic string fields cannot be initialized", _
+		@"UDT's containing var-len string fields cannot be initialized", _
 		@"Branching to scope block containing local variables", _
 		@"Branching to other functions or to module-level", _
 		@"Branch crossing local array, var-len string or object definition", _
@@ -213,7 +213,7 @@ end type
 		@"Declaration outside the original namespace or class", _
 		@"A destructor should not have any parameters", _
 		@"Expected class or UDT identifier", _
-		@"Dynamic strings cannot be part of UNION's or nested TYPE's", _
+		@"Var-len strings cannot be part of UNION's or nested TYPE's", _
 		@"Fields with constructors cannot be part of UNION's or nested TYPE's", _
 		@"Fields with destructors cannot be part of UNION's or nested TYPE's", _
 		@"Illegal outside a CONSTRUCTOR block", _
