@@ -565,9 +565,9 @@ type DCB
 	wReserved as WORD
 	XonLim as WORD
 	XoffLim as WORD
-	ByteSize as BYTE
-	Parity as BYTE
-	StopBits as BYTE
+	ByteSize as UBYTE
+	Parity as UBYTE
+	StopBits as UBYTE
 	XonChar as byte
 	XoffChar as byte
 	ErrorChar as byte
@@ -956,10 +956,10 @@ end type
 type LPSYSTEM_INFO as SYSTEM_INFO ptr
 
 type SYSTEM_POWER_STATUS
-	ACLineStatus as BYTE
-	BatteryFlag as BYTE
-	BatteryLifePercent as BYTE
-	Reserved1 as BYTE
+	ACLineStatus as UBYTE
+	BatteryFlag as UBYTE
+	BatteryLifePercent as UBYTE
+	Reserved1 as UBYTE
 	BatteryLifeTime as DWORD
 	BatteryFullLifeTime as DWORD
 end type
@@ -1019,10 +1019,10 @@ type LDT_ENTRY_HighWord_Bits
 end type
 
 type LDT_ENTRY_HighWord_Bytes
-	BaseMid as BYTE
-	Flags1 as BYTE
-	Flags2 as BYTE
-	BaseHi as BYTE
+	BaseMid as UBYTE
+	Flags1 as UBYTE
+	Flags2 as UBYTE
+	BaseHi as UBYTE
 end type
 
 union LDT_ENTRY_HighWord
@@ -1054,8 +1054,8 @@ end type
 type PROCESS_HEAP_ENTRY
 	lpData as PVOID
 	cbData as DWORD
-	cbOverhead as BYTE
-	iRegionIndex as BYTE
+	cbOverhead as UBYTE
+	iRegionIndex as UBYTE
 	wFlags as WORD
 	union
 		Block as PROCESS_HEAP_ENTRY_Block
@@ -1066,8 +1066,8 @@ end type
 type LPPROCESS_HEAP_ENTRY as PROCESS_HEAP_ENTRY ptr
 
 type OFSTRUCT
-	cBytes as BYTE
-	fFixedDisk as BYTE
+	cBytes as UBYTE
+	fFixedDisk as UBYTE
 	nErrCode as WORD
 	Reserved1 as WORD
 	Reserved2 as WORD
@@ -1081,7 +1081,7 @@ type WIN_CERTIFICATE
 	dwLength as DWORD
 	wRevision as WORD
 	wCertificateType as WORD
-	bCertificate(0 to 1-1) as BYTE
+	bCertificate(0 to 1-1) as UBYTE
 end type
 
 type LPWIN_CERTIFICATE as WIN_CERTIFICATE ptr
@@ -1191,7 +1191,7 @@ declare sub AddRefActCtx (byval as HANDLE)
 declare function AddVectoredExceptionHandler (byval as ULONG, byval as PVECTORED_EXCEPTION_HANDLER) as PVOID
 declare function AdjustTokenGroups (byval as HANDLE, byval as BOOL, byval as PTOKEN_GROUPS, byval as DWORD, byval as PTOKEN_GROUPS, byval as PDWORD) as BOOL
 declare function AdjustTokenPrivileges (byval as HANDLE, byval as BOOL, byval as PTOKEN_PRIVILEGES, byval as DWORD, byval as PTOKEN_PRIVILEGES, byval as PDWORD) as BOOL
-declare function AllocateAndInitializeSid (byval as PSID_IDENTIFIER_AUTHORITY, byval as BYTE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as PSID ptr) as BOOL
+declare function AllocateAndInitializeSid (byval as PSID_IDENTIFIER_AUTHORITY, byval as UBYTE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as PSID ptr) as BOOL
 declare function AllocateLocallyUniqueId (byval as PLUID) as BOOL
 declare function AreAllAccessesGranted (byval as DWORD, byval as DWORD) as BOOL
 declare function AreAnyAccessesGranted (byval as DWORD, byval as DWORD) as BOOL
@@ -1386,7 +1386,7 @@ declare sub InitializeCriticalSection (byval as LPCRITICAL_SECTION)
 declare function InitializeCriticalSectionAndSpinCount (byval as LPCRITICAL_SECTION, byval as DWORD) as BOOL
 declare function SetCriticalSectionSpinCount (byval as LPCRITICAL_SECTION, byval as DWORD) as DWORD
 declare function InitializeSecurityDescriptor (byval as PSECURITY_DESCRIPTOR, byval as DWORD) as BOOL
-declare function InitializeSid (byval as PSID, byval as PSID_IDENTIFIER_AUTHORITY, byval as BYTE) as BOOL
+declare function InitializeSid (byval as PSID, byval as PSID_IDENTIFIER_AUTHORITY, byval as UBYTE) as BOOL
 declare sub InitializeSListHead (byval as PSLIST_HEADER)
 declare function InterlockedCompareExchange (byval as LPLONG, byval as LONG, byval as LONG) as LONG
 declare function InterlockedDecrement (byval as LPLONG) as LONG

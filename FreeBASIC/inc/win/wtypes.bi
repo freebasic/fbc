@@ -23,7 +23,7 @@
 #ifndef BLOB
 type BLOB
 	cbSize as ULONG
-	pBlobData as BYTE ptr
+	pBlobData as UBYTE ptr
 end type
 
 type PBLOB as BLOB ptr
@@ -225,8 +225,8 @@ type DECIMAL
 	wReserved as USHORT
 	union
 		type
-			scale as BYTE
-			sign as BYTE
+			scale as UBYTE
+			sign as UBYTE
 		end type
 		signscale as USHORT
 	end union

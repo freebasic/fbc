@@ -567,8 +567,8 @@ type AVIINDEXENTRY
 end type
 
 type AVIPALCHANGE
-	bFirstEntry as BYTE
-	bNumEntries as BYTE
+	bFirstEntry as UBYTE
+	bNumEntries as UBYTE
 	wFlags as WORD
 	peNew(0 to 1-1) as PALETTEENTRY
 end type

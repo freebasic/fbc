@@ -66,8 +66,8 @@ type LPBOOL as BOOL ptr
 type WORD as ushort
 type FLOAT as single
 type PFLOAT as FLOAT ptr
-type PBYTE as BYTE ptr
-type LPBYTE as BYTE ptr
+type PBYTE as UBYTE ptr
+type LPBYTE as UBYTE ptr
 type PINT as integer ptr
 type LPINT as integer ptr
 type PWORD as WORD ptr

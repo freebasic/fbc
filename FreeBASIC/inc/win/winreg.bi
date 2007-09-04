@@ -93,7 +93,7 @@ declare function RegQueryValue alias "RegQueryValueW" (byval as HKEY, byval as L
 declare function RegReplaceKey alias "RegReplaceKeyW" (byval as HKEY, byval as LPCWSTR, byval as LPCWSTR, byval as LPCWSTR) as LONG
 declare function RegRestoreKey alias "RegRestoreKeyW" (byval as HKEY, byval as LPCWSTR, byval as DWORD) as LONG
 declare function RegSaveKey alias "RegSaveKeyW" (byval as HKEY, byval as LPCWSTR, byval as LPSECURITY_ATTRIBUTES) as LONG
-declare function RegSetValueEx alias "RegSetValueExW" (byval as HKEY, byval as LPCWSTR, byval as DWORD, byval as DWORD, byval as BYTE ptr, byval as DWORD) as LONG
+declare function RegSetValueEx alias "RegSetValueExW" (byval as HKEY, byval as LPCWSTR, byval as DWORD, byval as DWORD, byval as UBYTE ptr, byval as DWORD) as LONG
 declare function RegSetValue alias "RegSetValueW" (byval as HKEY, byval as LPCWSTR, byval as DWORD, byval as LPCWSTR, byval as DWORD) as LONG
 declare function RegUnLoadKey alias "RegUnLoadKeyW" (byval as HKEY, byval as LPCWSTR) as LONG
 
@@ -122,7 +122,7 @@ declare function RegReplaceKey alias "RegReplaceKeyA" (byval as HKEY, byval as L
 declare function RegRestoreKey alias "RegRestoreKeyA" (byval as HKEY, byval as LPCSTR, byval as DWORD) as LONG
 declare function RegSaveKey alias "RegSaveKeyA" (byval as HKEY, byval as LPCSTR, byval as LPSECURITY_ATTRIBUTES) as LONG
 declare function RegSetValue alias "RegSetValueA" (byval as HKEY, byval as LPCSTR, byval as DWORD, byval as LPCSTR, byval as DWORD) as LONG
-declare function RegSetValueEx alias "RegSetValueExA" (byval as HKEY, byval as LPCSTR, byval as DWORD, byval as DWORD, byval as BYTE ptr, byval as DWORD) as LONG
+declare function RegSetValueEx alias "RegSetValueExA" (byval as HKEY, byval as LPCSTR, byval as DWORD, byval as DWORD, byval as UBYTE ptr, byval as DWORD) as LONG
 declare function RegUnLoadKey alias "RegUnLoadKeyA" (byval as HKEY, byval as LPCSTR) as LONG
 
 #endif ''UNICODE

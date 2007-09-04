@@ -121,17 +121,17 @@ type DMUS_EXTENSIONCHUNK
 	cbSize as ULONG
 	ulNextExtCkIdx as ULONG
 	ExtCkID as FOURCC
-	byExtCk(0 to 4-1) as BYTE
+	byExtCk(0 to 4-1) as UBYTE
 end type
 
 type DMUS_COPYRIGHT
 	cbSize as ULONG
-	byCopyright(0 to 4-1) as BYTE
+	byCopyright(0 to 4-1) as UBYTE
 end type
 
 type DMUS_WAVEDATA
 	cbSize as ULONG
-	byData(0 to 4-1) as BYTE
+	byData(0 to 4-1) as UBYTE
 end type
 
 type DMUS_WAVE

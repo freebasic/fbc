@@ -58,7 +58,7 @@ type MODEMDEVCAPS
 	dwModemOptions as DWORD
 	dwMaxDTERate as DWORD
 	dwMaxDCERate as DWORD
-	abVariablePortion(0 to 1-1) as BYTE
+	abVariablePortion(0 to 1-1) as UBYTE
 end type
 
 type PMODEMDEVCAPS as MODEMDEVCAPS ptr
@@ -76,7 +76,7 @@ type MODEMSETTINGS
 	dwPreferredModemOptions as DWORD
 	dwNegotiatedModemOptions as DWORD
 	dwNegotiatedDCERate as DWORD
-	abVariablePortion(0 to 1-1) as BYTE
+	abVariablePortion(0 to 1-1) as UBYTE
 end type
 
 type PMODEMSETTINGS as MODEMSETTINGS ptr

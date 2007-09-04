@@ -158,7 +158,7 @@ type DEV_BROADCAST_HANDLE
 	dbch_hdevnotify as DWORD
 	dbch_eventguid as GUID
 	dbch_nameoffset as LONG
-	dbch_data(0 to 1-1) as BYTE
+	dbch_data(0 to 1-1) as UBYTE
 end type
 
 type PDEV_BROADCAST_HANDLE as DEV_BROADCAST_HANDLE ptr

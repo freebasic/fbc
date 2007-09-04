@@ -154,7 +154,7 @@ type SQLGUID
     Data1 as DWORD
     Data2 as WORD 
     Data3 as WORD 
-    Data4(0 to 8-1) as BYTE
+    Data4(0 to 8-1) as UBYTE
 end type
 #endif
 

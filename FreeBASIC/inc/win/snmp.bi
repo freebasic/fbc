@@ -122,7 +122,7 @@ type AsnGauge32 as AsnUnsigned32
 type AsnTimeticks as AsnUnsigned32
 
 type AsnOctetString
-	stream as BYTE ptr
+	stream as UBYTE ptr
 	length as UINT
 	dynamic as BOOL
 end type
@@ -158,7 +158,7 @@ union AsnAny_asnValue
 end union
 
 type AsnAny
-	asnType as BYTE
+	asnType as UBYTE
 	asnValue as AsnAny_asnValue
 end type
 
@@ -178,7 +178,7 @@ declare sub SnmpExtensionClose alias "SnmpExtensionClose" ()
 declare function SnmpExtensionInit alias "SnmpExtensionInit" (byval as DWORD, byval as HANDLE ptr, byval as AsnObjectIdentifier ptr) as BOOL
 declare function SnmpExtensionInitEx alias "SnmpExtensionInitEx" (byval as AsnObjectIdentifier ptr) as BOOL
 declare function SnmpExtensionMonitor alias "SnmpExtensionMonitor" (byval as LPVOID) as BOOL
-declare function SnmpExtensionQuery alias "SnmpExtensionQuery" (byval as BYTE, byval as SnmpVarBindList ptr, byval as AsnInteger32 ptr, byval as AsnInteger32 ptr) as BOOL
+declare function SnmpExtensionQuery alias "SnmpExtensionQuery" (byval as UBYTE, byval as SnmpVarBindList ptr, byval as AsnInteger32 ptr, byval as AsnInteger32 ptr) as BOOL
 declare function SnmpExtensionQueryEx alias "SnmpExtensionQueryEx" (byval as DWORD, byval as DWORD, byval as SnmpVarBindList ptr, byval as AsnOctetString ptr, byval as AsnInteger32 ptr, byval as AsnInteger32 ptr) as BOOL
 declare function SnmpExtensionTrap alias "SnmpExtensionTrap" (byval as AsnObjectIdentifier ptr, byval as AsnInteger32 ptr, byval as AsnInteger32 ptr, byval as AsnTimeticks ptr, byval as SnmpVarBindList ptr) as BOOL
 declare function SnmpSvcGetUptime alias "SnmpSvcGetUptime" () as DWORD

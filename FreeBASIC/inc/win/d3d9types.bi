@@ -1227,10 +1227,10 @@ end type
 type D3DVERTEXELEMENT9
 	Stream as WORD
 	Offset as WORD
-	Type as BYTE
-	Method as BYTE
-	Usage as BYTE
-	UsageIndex as BYTE
+	Type as UBYTE
+	Method as UBYTE
+	Usage as UBYTE
+	UsageIndex as UBYTE
 end type
 
 type LPD3DVERTEXELEMENT9 as D3DVERTEXELEMENT9 ptr

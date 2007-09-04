@@ -741,7 +741,7 @@ type LPSOCKET_ADDRESS_LIST as SOCKET_ADDRESS_LIST ptr
 #ifndef BLOB
 type BLOB
 	cbSize as ULONG
-	pBlobData as BYTE ptr
+	pBlobData as UBYTE ptr
 end type
 
 type PBLOB as BLOB ptr

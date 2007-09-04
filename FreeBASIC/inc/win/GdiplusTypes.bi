@@ -13,7 +13,7 @@ type ImageAbort as function (byval as any ptr) as BOOL
 type DrawImageAbort as ImageAbort
 type GetThumbnailImageAbort as ImageAbort
 
-type EnumerateMetafileProc as function (byval as EmfPlusRecordType, byval as UINT, byval as UINT, byval as BYTE ptr, byval as any ptr) as BOOL
+type EnumerateMetafileProc as function (byval as EmfPlusRecordType, byval as UINT, byval as UINT, byval as UBYTE ptr, byval as any ptr) as BOOL
 
 type REAL as single
 
@@ -299,7 +299,7 @@ type PathData
 	declare destructor ()
 	Count as INT_
 	Points as PointF ptr
-	Types as BYTE ptr
+	Types as UBYTE ptr
 end type
 
 private constructor PathData()

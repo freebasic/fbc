@@ -1220,9 +1220,9 @@ type LPBITMAPCOREHEADER as BITMAPCOREHEADER ptr
 type PBITMAPCOREHEADER as BITMAPCOREHEADER ptr
 
 type RGBTRIPLE field=1
-	rgbtBlue as BYTE
-	rgbtGreen as BYTE
-	rgbtRed as BYTE
+	rgbtBlue as UBYTE
+	rgbtGreen as UBYTE
+	rgbtRed as UBYTE
 end type
 
 type LPRGBTRIPLE as RGBTRIPLE ptr
@@ -1264,10 +1264,10 @@ type LPBITMAPINFOHEADER as BITMAPINFOHEADER ptr
 type PBITMAPINFOHEADER as BITMAPINFOHEADER ptr
 
 type RGBQUAD
-	rgbBlue as BYTE
-	rgbGreen as BYTE
-	rgbRed as BYTE
-	rgbReserved as BYTE
+	rgbBlue as UBYTE
+	rgbGreen as UBYTE
+	rgbRed as UBYTE
+	rgbReserved as UBYTE
 end type
 
 type LPRGBQUAD as RGBQUAD ptr
@@ -1360,7 +1360,7 @@ type LPCOLORADJUSTMENT as COLORADJUSTMENT ptr
 
 #ifndef UNICODE
 type DEVMODEA
-	dmDeviceName(0 to 32-1) as BYTE
+	dmDeviceName(0 to 32-1) as UBYTE
 	dmSpecVersion as WORD
 	dmDriverVersion as WORD
 	dmSize as WORD
@@ -1386,7 +1386,7 @@ type DEVMODEA
 	dmYResolution as short
 	dmTTOption as short
 	dmCollate as short
-	dmFormName(0 to 32-1) as BYTE
+	dmFormName(0 to 32-1) as UBYTE
 	dmLogPixels as WORD
 	dmBitsPerPel as DWORD
 	dmPelsWidth as DWORD
@@ -1645,10 +1645,10 @@ end type
 type PEMRCREATEMONOBRUSH as EMRCREATEMONOBRUSH ptr
 
 type PALETTEENTRY
-	peRed as BYTE
-	peGreen as BYTE
-	peBlue as BYTE
-	peFlags as BYTE
+	peRed as UBYTE
+	peGreen as UBYTE
+	peBlue as UBYTE
+	peFlags as UBYTE
 end type
 
 type LPPALETTEENTRY as PALETTEENTRY ptr
@@ -1717,16 +1717,16 @@ type EMRINTERSECTCLIPRECT as EMREXCLUDECLIPRECT
 type PEMRINTERSECTCLIPRECT as EMREXCLUDECLIPRECT ptr
 
 type PANOSE
-	bFamilyType as BYTE
-	bSerifStyle as BYTE
-	bWeight as BYTE
-	bProportion as BYTE
-	bContrast as BYTE
-	bStrokeVariation as BYTE
-	bArmStyle as BYTE
-	bLetterform as BYTE
-	bMidline as BYTE
-	bXHeight as BYTE
+	bFamilyType as UBYTE
+	bSerifStyle as UBYTE
+	bWeight as UBYTE
+	bProportion as UBYTE
+	bContrast as UBYTE
+	bStrokeVariation as UBYTE
+	bArmStyle as UBYTE
+	bLetterform as UBYTE
+	bMidline as UBYTE
+	bXHeight as UBYTE
 end type
 
 #ifndef UNICODE
@@ -1736,14 +1736,14 @@ type LOGFONTA
 	lfEscapement as LONG
 	lfOrientation as LONG
 	lfWeight as LONG
-	lfItalic as BYTE
-	lfUnderline as BYTE
-	lfStrikeOut as BYTE
-	lfCharSet as BYTE
-	lfOutPrecision as BYTE
-	lfClipPrecision as BYTE
-	lfQuality as BYTE
-	lfPitchAndFamily as BYTE
+	lfItalic as UBYTE
+	lfUnderline as UBYTE
+	lfStrikeOut as UBYTE
+	lfCharSet as UBYTE
+	lfOutPrecision as UBYTE
+	lfClipPrecision as UBYTE
+	lfQuality as UBYTE
+	lfPitchAndFamily as UBYTE
 	lfFaceName as zstring * 32
 end type
 
@@ -1757,14 +1757,14 @@ type LOGFONTW
 	lfEscapement as LONG
 	lfOrientation as LONG
 	lfWeight as LONG
-	lfItalic as BYTE
-	lfUnderline as BYTE
-	lfStrikeOut as BYTE
-	lfCharSet as BYTE
-	lfOutPrecision as BYTE
-	lfClipPrecision as BYTE
-	lfQuality as BYTE
-	lfPitchAndFamily as BYTE
+	lfItalic as UBYTE
+	lfUnderline as UBYTE
+	lfStrikeOut as UBYTE
+	lfCharSet as UBYTE
+	lfOutPrecision as UBYTE
+	lfClipPrecision as UBYTE
+	lfQuality as UBYTE
+	lfPitchAndFamily as UBYTE
 	lfFaceName as wstring * 32
 end type
 
@@ -1775,13 +1775,13 @@ type LPLOGFONTW as LOGFONTW ptr
 #ifndef UNICODE
 type EXTLOGFONTA
 	elfLogFont as LOGFONTA
-	elfFullName(0 to 64-1) as BYTE
-	elfStyle(0 to 32-1) as BYTE
+	elfFullName(0 to 64-1) as UBYTE
+	elfStyle(0 to 32-1) as UBYTE
 	elfVersion as DWORD
 	elfStyleSize as DWORD
 	elfMatch as DWORD
 	elfReserved as DWORD
-	elfVendorId(0 to 4-1) as BYTE
+	elfVendorId(0 to 4-1) as UBYTE
 	elfCulture as DWORD
 	elfPanose as PANOSE
 end type
@@ -1798,7 +1798,7 @@ type EXTLOGFONTW
 	elfStyleSize as DWORD
 	elfMatch as DWORD
 	elfReserved as DWORD
-	elfVendorId(0 to 4-1) as BYTE
+	elfVendorId(0 to 4-1) as UBYTE
 	elfCulture as DWORD
 	elfPanose as PANOSE
 end type
@@ -1853,7 +1853,7 @@ type EMREXTSELECTCLIPRGN
 	emr as EMR
 	cbRgnData as DWORD
 	iMode as DWORD
-	RgnData(0 to 1-1) as BYTE
+	RgnData(0 to 1-1) as UBYTE
 end type
 
 type PEMREXTSELECTCLIPRGN as EMREXTSELECTCLIPRGN ptr
@@ -1898,7 +1898,7 @@ type EMRFILLRGN
 	rclBounds as RECTL
 	cbRgnData as DWORD
 	ihBrush as DWORD
-	RgnData(0 to 1-1) as BYTE
+	RgnData(0 to 1-1) as UBYTE
 end type
 
 type PEMRFILLRGN as EMRFILLRGN ptr
@@ -1916,7 +1916,7 @@ type EMRFRAMERGN
 	cbRgnData as DWORD
 	ihBrush as DWORD
 	szlStroke as SIZEL
-	RgnData(0 to 1-1) as BYTE
+	RgnData(0 to 1-1) as UBYTE
 end type
 
 type PEMRFRAMERGN as EMRFRAMERGN ptr
@@ -1924,7 +1924,7 @@ type PEMRFRAMERGN as EMRFRAMERGN ptr
 type EMRGDICOMMENT
 	emr as EMR
 	cbData as DWORD
-	Data(0 to 1-1) as BYTE
+	Data(0 to 1-1) as UBYTE
 end type
 
 type PEMRGDICOMMENT as EMRGDICOMMENT ptr
@@ -1933,7 +1933,7 @@ type EMRINVERTRGN
 	emr as EMR
 	rclBounds as RECTL
 	cbRgnData as DWORD
-	RgnData(0 to 1-1) as BYTE
+	RgnData(0 to 1-1) as UBYTE
 end type
 
 type PEMRINVERTRGN as EMRINVERTRGN ptr
@@ -2023,7 +2023,7 @@ type EMRPOLYDRAW
 	rclBounds as RECTL
 	cptl as DWORD
 	aptl(0 to 1-1) as POINTL
-	abTypes(0 to 1-1) as BYTE
+	abTypes(0 to 1-1) as UBYTE
 end type
 
 type PEMRPOLYDRAW as EMRPOLYDRAW ptr
@@ -2033,7 +2033,7 @@ type EMRPOLYDRAW16
 	rclBounds as RECTL
 	cpts as DWORD
 	apts(0 to 1-1) as POINTS
-	abTypes(0 to 1-1) as BYTE
+	abTypes(0 to 1-1) as UBYTE
 end type
 
 type PEMRPOLYDRAW16 as EMRPOLYDRAW16 ptr
@@ -2429,15 +2429,15 @@ type TEXTMETRICA
 	tmOverhang as LONG
 	tmDigitizedAspectX as LONG
 	tmDigitizedAspectY as LONG
-	tmFirstChar as BYTE
-	tmLastChar as BYTE
-	tmDefaultChar as BYTE
-	tmBreakChar as BYTE
-	tmItalic as BYTE
-	tmUnderlined as BYTE
-	tmStruckOut as BYTE
-	tmPitchAndFamily as BYTE
-	tmCharSet as BYTE
+	tmFirstChar as UBYTE
+	tmLastChar as UBYTE
+	tmDefaultChar as UBYTE
+	tmBreakChar as UBYTE
+	tmItalic as UBYTE
+	tmUnderlined as UBYTE
+	tmStruckOut as UBYTE
+	tmPitchAndFamily as UBYTE
+	tmCharSet as UBYTE
 end type
 
 type PTEXTMETRICA as TEXTMETRICA ptr
@@ -2460,11 +2460,11 @@ type TEXTMETRICW
 	tmLastChar as WCHAR
 	tmDefaultChar as WCHAR
 	tmBreakChar as WCHAR
-	tmItalic as BYTE
-	tmUnderlined as BYTE
-	tmStruckOut as BYTE
-	tmPitchAndFamily as BYTE
-	tmCharSet as BYTE
+	tmItalic as UBYTE
+	tmUnderlined as UBYTE
+	tmStruckOut as UBYTE
+	tmPitchAndFamily as UBYTE
+	tmCharSet as UBYTE
 end type
 
 type PTEXTMETRICW as TEXTMETRICW ptr
@@ -2575,7 +2575,7 @@ type LPMAT2 as MAT2 ptr
 type OUTLINETEXTMETRICA
 	otmSize as UINT
 	otmTextMetrics as TEXTMETRICA
-	otmFiller as BYTE
+	otmFiller as UBYTE
 	otmPanoseNumber as PANOSE
 	otmfsSelection as UINT
 	otmfsType as UINT
@@ -2614,7 +2614,7 @@ type LPOUTLINETEXTMETRICA as OUTLINETEXTMETRICA ptr
 type OUTLINETEXTMETRICW
 	otmSize as UINT
 	otmTextMetrics as TEXTMETRICW
-	otmFiller as BYTE
+	otmFiller as UBYTE
 	otmPanoseNumber as PANOSE
 	otmfsSelection as UINT
 	otmfsType as UINT
@@ -2689,26 +2689,26 @@ type PIXELFORMATDESCRIPTOR
 	nSize as WORD
 	nVersion as WORD
 	dwFlags as DWORD
-	iPixelType as BYTE
-	cColorBits as BYTE
-	cRedBits as BYTE
-	cRedShift as BYTE
-	cGreenBits as BYTE
-	cGreenShift as BYTE
-	cBlueBits as BYTE
-	cBlueShift as BYTE
-	cAlphaBits as BYTE
-	cAlphaShift as BYTE
-	cAccumBits as BYTE
-	cAccumRedBits as BYTE
-	cAccumGreenBits as BYTE
-	cAccumBlueBits as BYTE
-	cAccumAlphaBits as BYTE
-	cDepthBits as BYTE
-	cStencilBits as BYTE
-	cAuxBuffers as BYTE
-	iLayerType as BYTE
-	bReserved as BYTE
+	iPixelType as UBYTE
+	cColorBits as UBYTE
+	cRedBits as UBYTE
+	cRedShift as UBYTE
+	cGreenBits as UBYTE
+	cGreenShift as UBYTE
+	cBlueBits as UBYTE
+	cBlueShift as UBYTE
+	cAlphaBits as UBYTE
+	cAlphaShift as UBYTE
+	cAccumBits as UBYTE
+	cAccumRedBits as UBYTE
+	cAccumGreenBits as UBYTE
+	cAccumBlueBits as UBYTE
+	cAccumAlphaBits as UBYTE
+	cDepthBits as UBYTE
+	cStencilBits as UBYTE
+	cAuxBuffers as UBYTE
+	iLayerType as UBYTE
+	bReserved as UBYTE
 	dwLayerMask as DWORD
 	dwVisibleMask as DWORD
 	dwDamageMask as DWORD
@@ -2749,15 +2749,15 @@ type NEWTEXTMETRICA
 	tmOverhang as LONG
 	tmDigitizedAspectX as LONG
 	tmDigitizedAspectY as LONG
-	tmFirstChar as BYTE
-	tmLastChar as BYTE
-	tmDefaultChar as BYTE
-	tmBreakChar as BYTE
-	tmItalic as BYTE
-	tmUnderlined as BYTE
-	tmStruckOut as BYTE
-	tmPitchAndFamily as BYTE
-	tmCharSet as BYTE
+	tmFirstChar as UBYTE
+	tmLastChar as UBYTE
+	tmDefaultChar as UBYTE
+	tmBreakChar as UBYTE
+	tmItalic as UBYTE
+	tmUnderlined as UBYTE
+	tmStruckOut as UBYTE
+	tmPitchAndFamily as UBYTE
+	tmCharSet as UBYTE
 	ntmFlags as DWORD
 	ntmSizeEM as UINT
 	ntmCellHeight as UINT
@@ -2784,11 +2784,11 @@ type NEWTEXTMETRICW
 	tmLastChar as WCHAR
 	tmDefaultChar as WCHAR
 	tmBreakChar as WCHAR
-	tmItalic as BYTE
-	tmUnderlined as BYTE
-	tmStruckOut as BYTE
-	tmPitchAndFamily as BYTE
-	tmCharSet as BYTE
+	tmItalic as UBYTE
+	tmUnderlined as UBYTE
+	tmStruckOut as UBYTE
+	tmPitchAndFamily as UBYTE
+	tmCharSet as UBYTE
 	ntmFlags as DWORD
 	ntmSizeEM as UINT
 	ntmCellHeight as UINT
@@ -2818,7 +2818,7 @@ type PELARRAY
 	paYCount as LONG
 	paXExt as LONG
 	paYExt as LONG
-	paRGBs as BYTE
+	paRGBs as UBYTE
 end type
 
 type PPELARRAY as PELARRAY ptr
@@ -2827,8 +2827,8 @@ type LPPELARRAY as PELARRAY ptr
 #ifndef UNICODE
 type ENUMLOGFONTA
 	elfLogFont as LOGFONTA
-	elfFullName(0 to 64-1) as BYTE
-	elfStyle(0 to 32-1) as BYTE
+	elfFullName(0 to 64-1) as UBYTE
+	elfStyle(0 to 32-1) as UBYTE
 end type
 
 type LPENUMLOGFONTA as ENUMLOGFONTA ptr
@@ -2846,9 +2846,9 @@ type LPENUMLOGFONTW as ENUMLOGFONTW ptr
 #ifndef UNICODE
 type ENUMLOGFONTEXA
 	elfLogFont as LOGFONTA
-	elfFullName(0 to 64-1) as BYTE
-	elfStyle(0 to 32-1) as BYTE
-	elfScript(0 to 32-1) as BYTE
+	elfFullName(0 to 64-1) as UBYTE
+	elfStyle(0 to 32-1) as UBYTE
+	elfScript(0 to 32-1) as UBYTE
 end type
 
 type LPENUMLOGFONTEXA as ENUMLOGFONTEXA ptr
@@ -2857,8 +2857,8 @@ type LPENUMLOGFONTEXA as ENUMLOGFONTEXA ptr
 type ENUMLOGFONTEXW
 	elfLogFont as LOGFONTW
 	elfFullName as wstring * 64
-	elfStyle(0 to 32-1) as BYTE
-	elfScript(0 to 32-1) as BYTE
+	elfStyle(0 to 32-1) as UBYTE
+	elfScript(0 to 32-1) as UBYTE
 end type
 
 type LPENUMLOGFONTEXW as ENUMLOGFONTEXW ptr
@@ -2909,26 +2909,26 @@ type LAYERPLANEDESCRIPTOR
 	nSize as WORD
 	nVersion as WORD
 	dwFlags as DWORD
-	iPixelType as BYTE
-	cColorBits as BYTE
-	cRedBits as BYTE
-	cRedShift as BYTE
-	cGreenBits as BYTE
-	cGreenShift as BYTE
-	cBlueBits as BYTE
-	cBlueShift as BYTE
-	cAlphaBits as BYTE
-	cAlphaShift as BYTE
-	cAccumBits as BYTE
-	cAccumRedBits as BYTE
-	cAccumGreenBits as BYTE
-	cAccumBlueBits as BYTE
-	cAccumAlphaBits as BYTE
-	cDepthBits as BYTE
-	cStencilBits as BYTE
-	cAuxBuffers as BYTE
-	iLayerPlane as BYTE
-	bReserved as BYTE
+	iPixelType as UBYTE
+	cColorBits as UBYTE
+	cRedBits as UBYTE
+	cRedShift as UBYTE
+	cGreenBits as UBYTE
+	cGreenShift as UBYTE
+	cBlueBits as UBYTE
+	cBlueShift as UBYTE
+	cAlphaBits as UBYTE
+	cAlphaShift as UBYTE
+	cAccumBits as UBYTE
+	cAccumRedBits as UBYTE
+	cAccumGreenBits as UBYTE
+	cAccumBlueBits as UBYTE
+	cAccumAlphaBits as UBYTE
+	cDepthBits as UBYTE
+	cStencilBits as UBYTE
+	cAuxBuffers as UBYTE
+	iLayerPlane as UBYTE
+	bReserved as UBYTE
 	crTransparent as COLORREF
 end type
 
@@ -2936,10 +2936,10 @@ type PLAYERPLANEDESCRIPTOR as LAYERPLANEDESCRIPTOR ptr
 type LPLAYERPLANEDESCRIPTOR as LAYERPLANEDESCRIPTOR ptr
 
 type BLENDFUNCTION
-	BlendOp as BYTE
-	BlendFlags as BYTE
-	SourceConstantAlpha as BYTE
-	AlphaFormat as BYTE
+	BlendOp as UBYTE
+	BlendFlags as UBYTE
+	SourceConstantAlpha as UBYTE
+	AlphaFormat as UBYTE
 end type
 
 type PBLENDFUNCTION as BLENDFUNCTION ptr
@@ -3139,7 +3139,7 @@ declare function FillRgn (byval as HDC, byval as HRGN, byval as HBRUSH) as integ
 declare function FixBrushOrgEx (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
 declare function FlattenPath (byval as HDC) as BOOL
 declare function FloodFill (byval as HDC, byval as integer, byval as integer, byval as COLORREF) as BOOL
-declare function GdiComment (byval as HDC, byval as UINT, byval as BYTE ptr) as BOOL
+declare function GdiComment (byval as HDC, byval as UINT, byval as UBYTE ptr) as BOOL
 declare function GdiFlush () as BOOL
 declare function GdiGetBatchLimit () as DWORD
 declare function GdiSetBatchLimit (byval as DWORD) as DWORD
@@ -3225,7 +3225,7 @@ declare function PlayMetaFileRecord (byval as HDC, byval as LPHANDLETABLE, byval
 declare function PlgBlt (byval as HDC, byval as POINT ptr, byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as HBITMAP, byval as integer, byval as integer) as BOOL
 declare function PolyBezier (byval as HDC, byval as POINT ptr, byval as DWORD) as BOOL
 declare function PolyBezierTo (byval as HDC, byval as POINT ptr, byval as DWORD) as BOOL
-declare function PolyDraw (byval as HDC, byval as POINT ptr, byval as BYTE ptr, byval as integer) as BOOL
+declare function PolyDraw (byval as HDC, byval as POINT ptr, byval as UBYTE ptr, byval as integer) as BOOL
 declare function Polygon (byval as HDC, byval as POINT ptr, byval as integer) as BOOL
 declare function Polyline (byval as HDC, byval as POINT ptr, byval as integer) as BOOL
 declare function PolylineTo (byval as HDC, byval as POINT ptr, byval as DWORD) as BOOL
@@ -3264,12 +3264,12 @@ declare function SetDeviceGammaRamp (byval as HDC, byval as PVOID) as BOOL
 declare function SetDIBColorTable (byval as HDC, byval as UINT, byval as UINT, byval as RGBQUAD ptr) as UINT
 declare function SetDIBits (byval as HDC, byval as HBITMAP, byval as UINT, byval as UINT, byval as PCVOID, byval as BITMAPINFO ptr, byval as UINT) as integer
 declare function SetDIBitsToDevice (byval as HDC, byval as integer, byval as integer, byval as DWORD, byval as DWORD, byval as integer, byval as integer, byval as UINT, byval as UINT, byval as PCVOID, byval as BITMAPINFO ptr, byval as UINT) as integer
-declare function SetEnhMetaFileBits (byval as UINT, byval as BYTE ptr) as HENHMETAFILE
+declare function SetEnhMetaFileBits (byval as UINT, byval as UBYTE ptr) as HENHMETAFILE
 declare function SetGraphicsMode (byval as HDC, byval as integer) as integer
 declare function SetICMMode (byval as HDC, byval as integer) as integer
 declare function SetMapMode (byval as HDC, byval as integer) as integer
 declare function SetMapperFlags (byval as HDC, byval as DWORD) as DWORD
-declare function SetMetaFileBitsEx (byval as UINT, byval as BYTE ptr) as HMETAFILE
+declare function SetMetaFileBitsEx (byval as UINT, byval as UBYTE ptr) as HMETAFILE
 declare function SetMetaRgn (byval as HDC) as integer
 declare function SetMiterLimit (byval as HDC, byval as FLOAT, byval as PFLOAT) as BOOL
 declare function SetPaletteEntries (byval as HPALETTE, byval as UINT, byval as UINT, byval as PALETTEENTRY ptr) as UINT
@@ -3289,7 +3289,7 @@ declare function SetViewportExtEx (byval as HDC, byval as integer, byval as inte
 declare function SetViewportOrgEx (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
 declare function SetWindowExtEx (byval as HDC, byval as integer, byval as integer, byval as LPSIZE) as BOOL
 declare function SetWindowOrgEx (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
-declare function SetWinMetaFileBits (byval as UINT, byval as BYTE ptr, byval as HDC, byval as METAFILEPICT ptr) as HENHMETAFILE
+declare function SetWinMetaFileBits (byval as UINT, byval as UBYTE ptr, byval as HDC, byval as METAFILEPICT ptr) as HENHMETAFILE
 declare function SetWorldTransform (byval as HDC, byval as XFORM ptr) as BOOL
 declare function StartPage (byval as HDC) as integer
 declare function StretchBlt (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as DWORD) as BOOL
@@ -3412,7 +3412,7 @@ declare function wglUseFontOutlines alias "wglUseFontOutlinesW" (byval as HDC, b
 declare function GetGlyphIndices alias "GetGlyphIndicesW" (byval as HDC, byval as LPCWSTR, byval as integer, byval as LPWORD, byval as DWORD) as DWORD
 
 #else ''UNICODE
-type BCHAR as BYTE
+type BCHAR as UBYTE
 type DOCINFO as DOCINFOA
 type LPDOCINFO as DOCINFOA ptr
 type LOGFONT as LOGFONTA

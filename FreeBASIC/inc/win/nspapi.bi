@@ -36,7 +36,7 @@
 #ifndef BLOB
 type BLOB
 	cbSize as ULONG
-	pBlobData as BYTE ptr
+	pBlobData as UBYTE ptr
 end type
 
 type PBLOB as BLOB ptr
@@ -49,8 +49,8 @@ type SERVICE_ADDRESS
 	dwAddressFlags as DWORD
 	dwAddressLength as DWORD
 	dwPrincipalLength as DWORD
-	lpAddress as BYTE ptr
-	lpPrincipal as BYTE ptr
+	lpAddress as UBYTE ptr
+	lpPrincipal as UBYTE ptr
 end type
 #endif
 

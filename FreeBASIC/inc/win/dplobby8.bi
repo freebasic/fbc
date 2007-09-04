@@ -120,7 +120,7 @@ type PDPL_MESSAGE_DISCONNECT as DPL_MESSAGE_DISCONNECT ptr
 type DPL_MESSAGE_RECEIVE
 	dwSize as DWORD
 	hSender as DPNHANDLE
-	pBuffer as BYTE ptr
+	pBuffer as UBYTE ptr
 	dwBufferSize as DWORD
 	pvConnectionContext as PVOID
 end type
@@ -147,9 +147,9 @@ type IDirectPlay8LobbyClientVtbl
 	AddRef as function(byval as IDirectPlay8LobbyClient ptr) as ULONG
 	Release as function(byval as IDirectPlay8LobbyClient ptr) as ULONG
 	Initialize as function(byval as IDirectPlay8LobbyClient ptr, byval as PVOID, byval as PFNDPNMESSAGEHANDLER, byval as DWORD) as HRESULT
-	EnumLocalPrograms as function(byval as IDirectPlay8LobbyClient ptr, byval as GUID ptr, byval as BYTE ptr, byval as DWORD ptr, byval as DWORD ptr, byval as DWORD) as HRESULT
+	EnumLocalPrograms as function(byval as IDirectPlay8LobbyClient ptr, byval as GUID ptr, byval as UBYTE ptr, byval as DWORD ptr, byval as DWORD ptr, byval as DWORD) as HRESULT
 	ConnectApplication as function(byval as IDirectPlay8LobbyClient ptr, byval as DPL_CONNECT_INFO ptr, byval as PVOID, byval as DPNHANDLE ptr, byval as DWORD, byval as DWORD) as HRESULT
-	Send as function(byval as IDirectPlay8LobbyClient ptr, byval as DPNHANDLE, byval as BYTE ptr, byval as DWORD, byval as DWORD) as HRESULT
+	Send as function(byval as IDirectPlay8LobbyClient ptr, byval as DPNHANDLE, byval as UBYTE ptr, byval as DWORD, byval as DWORD) as HRESULT
 	ReleaseApplication as function(byval as IDirectPlay8LobbyClient ptr, byval as DPNHANDLE, byval as DWORD) as HRESULT
 	Close as function(byval as IDirectPlay8LobbyClient ptr, byval as DWORD) as HRESULT
 	GetConnectionSettings as function(byval as IDirectPlay8LobbyClient ptr, byval as DPNHANDLE, byval as DPL_CONNECTION_SETTINGS ptr, byval as DWORD ptr, byval as DWORD) as HRESULT
@@ -169,7 +169,7 @@ type IDirectPlay8LobbiedApplicationVtbl
 	Initialize as function(byval as IDirectPlay8LobbiedApplication ptr, byval as PVOID, byval as PFNDPNMESSAGEHANDLER, byval as DPNHANDLE ptr, byval as DWORD) as HRESULT
 	RegisterProgram as function(byval as IDirectPlay8LobbiedApplication ptr, byval as PDPL_PROGRAM_DESC, byval as DWORD) as HRESULT
 	UnRegisterProgram as function(byval as IDirectPlay8LobbiedApplication ptr, byval as GUID ptr, byval as DWORD) as HRESULT
-	Send as function(byval as IDirectPlay8LobbiedApplication ptr, byval as DPNHANDLE, byval as BYTE ptr, byval as DWORD, byval as DWORD) as HRESULT
+	Send as function(byval as IDirectPlay8LobbiedApplication ptr, byval as DPNHANDLE, byval as UBYTE ptr, byval as DWORD, byval as DWORD) as HRESULT
 	SetAppAvailable as function(byval as IDirectPlay8LobbiedApplication ptr, byval as BOOL, byval as DWORD) as HRESULT
 	UpdateStatus as function(byval as IDirectPlay8LobbiedApplication ptr, byval as DPNHANDLE, byval as DWORD, byval as DWORD) as HRESULT
 	Close as function(byval as IDirectPlay8LobbiedApplication ptr, byval as DWORD) as HRESULT

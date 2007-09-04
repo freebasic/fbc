@@ -81,7 +81,7 @@ type DVTARGETDEVICE
 	tdDeviceNameOffset as WORD
 	tdPortNameOffset as WORD
 	tdExtDevmodeOffset as WORD
-	tdData(0 to 1-1) as BYTE
+	tdData(0 to 1-1) as UBYTE
 end type
 
 type FORMATETC
@@ -100,7 +100,7 @@ type RemSTGMEDIUM
 	pData as ULONG
 	pUnkForRelease as uinteger
 	cbData as uinteger
-	data(0 to 1-1) as BYTE
+	data(0 to 1-1) as UBYTE
 end type
 
 type HLITEM

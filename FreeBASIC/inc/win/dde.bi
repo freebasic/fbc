@@ -42,7 +42,7 @@ type DDEDATA
 	reserved:1 as ushort
 	fAckReq:1 as ushort
 	cfFormat as short
-	Value(0 to 1-1) as BYTE
+	Value(0 to 1-1) as UBYTE
 end type
 
 type DDEPOKE
@@ -50,7 +50,7 @@ type DDEPOKE
 	fRelease:1 as ushort
 	fReserved:2 as ushort
 	cfFormat as short
-	Value(0 to 1-1) as BYTE
+	Value(0 to 1-1) as UBYTE
 end type
 
 type DDELN
@@ -68,7 +68,7 @@ type DDEUP
 	fReserved:1 as ushort
 	fAckReq:1 as ushort
 	cfFormat as short
-	rgb_(0 to 1-1) as BYTE
+	rgb_(0 to 1-1) as UBYTE
 end type
 
 declare function DdeSetQualityOfService alias "DdeSetQualityOfService" (byval as HWND, byval as SECURITY_QUALITY_OF_SERVICE ptr, byval as PSECURITY_QUALITY_OF_SERVICE) as BOOL

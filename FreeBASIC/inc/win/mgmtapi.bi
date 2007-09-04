@@ -30,7 +30,7 @@ declare function SnmpMgrGetTrap alias "SnmpMgrGetTrap" (byval as AsnObjectIdenti
 declare function SnmpMgrGetTrapEx alias "SnmpMgrGetTrapEx" (byval as AsnObjectIdentifier ptr, byval as AsnNetworkAddress ptr, byval as AsnNetworkAddress ptr, byval as AsnInteger32 ptr, byval as AsnInteger32 ptr, byval as AsnOctetString ptr, byval as AsnTimeticks ptr, byval as SnmpVarBindList ptr) as BOOL
 declare function SnmpMgrOidToStr alias "SnmpMgrOidToStr" (byval as AsnObjectIdentifier ptr, byval as LPSTR ptr) as BOOL
 declare function SnmpMgrOpen alias "SnmpMgrOpen" (byval as LPSTR, byval as LPSTR, byval as INT_, byval as INT_) as LPSNMP_MGR_SESSION
-declare function SnmpMgrRequest alias "SnmpMgrRequest" (byval as LPSNMP_MGR_SESSION, byval as BYTE, byval as SnmpVarBindList ptr, byval as AsnInteger32 ptr, byval as AsnInteger32 ptr) as INT_
+declare function SnmpMgrRequest alias "SnmpMgrRequest" (byval as LPSNMP_MGR_SESSION, byval as UBYTE, byval as SnmpVarBindList ptr, byval as AsnInteger32 ptr, byval as AsnInteger32 ptr) as INT_
 declare function SnmpMgrStrToOid alias "SnmpMgrStrToOid" (byval as LPSTR, byval as AsnObjectIdentifier ptr) as BOOL
 declare function SnmpMgrTrapListen alias "SnmpMgrTrapListen" (byval as HANDLE ptr) as BOOL
 

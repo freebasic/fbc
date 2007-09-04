@@ -54,7 +54,7 @@ type IP_ADAPTER_INFO
 	AdapterName as zstring * 256+4
 	Description as zstring * 128+4
 	AddressLength as UINT
-	Address(0 to 8-1) as BYTE
+	Address(0 to 8-1) as UBYTE
 	Index as DWORD
 	Type as UINT
 	DhcpEnabled as UINT

@@ -104,7 +104,7 @@ type MODULEENTRY32W
 	th32ProcessID as DWORD
 	GlblcntUsage as DWORD
 	ProccntUsage as DWORD
-	modBaseAddr as BYTE ptr
+	modBaseAddr as UBYTE ptr
 	modBaseSize as DWORD
 	hModule as HMODULE
 	szModule as wstring * 255+1
@@ -121,7 +121,7 @@ type MODULEENTRY32
 	th32ProcessID as DWORD
 	GlblcntUsage as DWORD
 	ProccntUsage as DWORD
-	modBaseAddr as BYTE ptr
+	modBaseAddr as UBYTE ptr
 	modBaseSize as DWORD
 	hModule as HMODULE
 	szModule as zstring * 255+1

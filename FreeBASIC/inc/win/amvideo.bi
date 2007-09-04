@@ -220,12 +220,12 @@ type MPEG1VIDEOINFO
 	hdr as VIDEOINFOHEADER
 	dwStartTimeCode as DWORD
 	cbSequenceHeader as DWORD
-	bSequenceHeader(0 to 1-1) as BYTE
+	bSequenceHeader(0 to 1-1) as UBYTE
 end type
 
 #define MAX_SIZE_MPEG1_SEQUENCE_INFO 140
 #define SIZE_MPEG1VIDEOINFO(pv) (FIELD_OFFSET(MPEG1VIDEOINFO, bSequenceHeader(0)) + (pv)->cbSequenceHeader)
-#define MPEG1_SEQUENCE_INFO(pv) cast(BYTE ptr,(pv)->bSequenceHeader)
+#define MPEG1_SEQUENCE_INFO(pv) cast(UBYTE ptr,(pv)->bSequenceHeader)
 
 type ANALOGVIDEOINFO
 	rcSource as RECT

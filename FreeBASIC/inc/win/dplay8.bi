@@ -169,7 +169,7 @@ type PDPN_APPLICATION_DESC as DPN_APPLICATION_DESC ptr
 
 type BUFFERDESC
 	dwBufferSize as DWORD
-	pBufferData as BYTE ptr
+	pBufferData as UBYTE ptr
 end type
 
 type DPN_BUFFER_DESC as BUFFERDESC

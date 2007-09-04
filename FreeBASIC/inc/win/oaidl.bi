@@ -288,7 +288,7 @@ type wireVARIANT
 	union
 		lVal as LONG
 		llVal as LONGLONG
-		bVal as BYTE
+		bVal as UBYTE
 		iVal as SHORT
 		fltVal as FLOAT
 		dblVal as DOUBLE
@@ -301,7 +301,7 @@ type wireVARIANT
 		pdispVal as LPDISPATCH
 		parray as wirePSAFEARRAY
 		brecVal as wireBRECORD
-		pbVal as BYTE ptr
+		pbVal as UBYTE ptr
 		piVal as SHORT ptr
 		plVal as LONG ptr
 		pfltVal as FLOAT ptr
@@ -855,8 +855,8 @@ type ITypeMarshalVtbl
 	AddRef as function (byval as ITypeMarshal ptr) as ULONG
 	Release as function (byval as ITypeMarshal ptr) as ULONG
 	Size as function (byval as ITypeMarshal ptr, byval as PVOID, byval as DWORD, byval as PVOID, byval as ULONG ptr) as HRESULT
-	Marshal as function (byval as ITypeMarshal ptr, byval as PVOID, byval as DWORD, byval as PVOID, byval as ULONG, byval as BYTE ptr, byval as ULONG ptr) as HRESULT
-	Unmarshal as function (byval as ITypeMarshal ptr, byval as PVOID, byval as DWORD, byval as ULONG, byval as BYTE ptr, byval as ULONG ptr) as HRESULT
+	Marshal as function (byval as ITypeMarshal ptr, byval as PVOID, byval as DWORD, byval as PVOID, byval as ULONG, byval as UBYTE ptr, byval as ULONG ptr) as HRESULT
+	Unmarshal as function (byval as ITypeMarshal ptr, byval as PVOID, byval as DWORD, byval as ULONG, byval as UBYTE ptr, byval as ULONG ptr) as HRESULT
 	Free as function (byval as ITypeMarshal ptr, byval as PVOID) as HRESULT
 end type
 

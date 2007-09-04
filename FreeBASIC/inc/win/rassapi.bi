@@ -72,12 +72,12 @@ end union
 type RAS_PARAMETERS
 	P_Key as zstring * 32
 	P_Type as RAS_PARAMS_FORMAT
-	P_Attributes as BYTE
+	P_Attributes as UBYTE
 	P_Value as RAS_PARAMS_VALUE
 end type
 
 type RAS_USER_0
-	bfPrivilege as BYTE
+	bfPrivilege as UBYTE
 	szPhoneNumber as wstring * 128+1
 end type
 

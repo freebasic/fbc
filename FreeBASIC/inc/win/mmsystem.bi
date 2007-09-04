@@ -903,13 +903,13 @@ type MMVERSION as UINT
 type MMRESULT as UINT
 
 type MMTIME_u_smpte field=1
-	hour as BYTE
-	min_ as BYTE
-	sec as BYTE
-	frame as BYTE
-	fps as BYTE
-	dummy as BYTE
-	pad(0 to 2-1) as BYTE
+	hour as UBYTE
+	min_ as UBYTE
+	sec as UBYTE
+	frame as UBYTE
+	fps as UBYTE
+	dummy as UBYTE
+	pad(0 to 2-1) as UBYTE
 end type
 
 type MMTIME_u_midi field=1

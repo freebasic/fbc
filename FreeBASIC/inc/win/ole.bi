@@ -36,7 +36,7 @@ type OLETARGETDEVICE
 	otdExtDevmodeSize as USHORT
 	otdEnvironmentOffset as USHORT
 	otdEnvironmentSize as USHORT
-	otdData(0 to 1-1) as BYTE
+	otdData(0 to 1-1) as UBYTE
 end type
 
 type LPOLETARGETDEVICE as OLETARGETDEVICE ptr

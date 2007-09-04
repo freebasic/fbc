@@ -1709,9 +1709,9 @@ type LPDRAGLISTINFO as DRAGLISTINFO ptr
 type TBBUTTON
 	iBitmap as integer
 	idCommand as integer
-	fsState as BYTE
-	fsStyle as BYTE
-	bReserved(0 to 2-1) as BYTE
+	fsState as UBYTE
+	fsStyle as UBYTE
+	bReserved(0 to 2-1) as UBYTE
 	dwData as DWORD
 	iString as integer
 end type
@@ -1733,8 +1733,8 @@ type TBBUTTONINFOA
 	dwMask as DWORD
 	idCommand as integer
 	iImage as integer
-	fsState as BYTE
-	fsStyle as BYTE
+	fsState as UBYTE
+	fsStyle as UBYTE
 	cx as WORD
 	lParam as DWORD
 	pszText as LPSTR
@@ -1760,8 +1760,8 @@ type TBBUTTONINFOW
 	dwMask as DWORD
 	idCommand as integer
 	iImage as integer
-	fsState as BYTE
-	fsStyle as BYTE
+	fsState as UBYTE
+	fsStyle as UBYTE
 	cx as WORD
 	lParam as DWORD
 	pszText as LPWSTR

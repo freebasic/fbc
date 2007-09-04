@@ -176,10 +176,10 @@
 #define stc32 &h45f
 
 type CRGB
-	bRed as BYTE
-	bGreen as BYTE
-	bBlue as BYTE
-	bExtra as BYTE
+	bRed as UBYTE
+	bGreen as UBYTE
+	bBlue as UBYTE
+	bExtra as UBYTE
 end type
 
 #endif

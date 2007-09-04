@@ -195,7 +195,7 @@ type AM_MEDIA_TYPE
 	formattype as GUID
 	pUnk as IUnknown ptr
 	cbFormat as ULONG
-	pbFormat as BYTE ptr
+	pbFormat as UBYTE ptr
 end type
 
 enum PIN_DIRECTION
@@ -455,7 +455,7 @@ type IMediaSampleVtbl
 	QueryInterface as function(byval as IMediaSample ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
 	AddRef as function(byval as IMediaSample ptr) as ULONG
 	Release as function(byval as IMediaSample ptr) as ULONG
-	GetPointer as function(byval as IMediaSample ptr, byval as BYTE ptr ptr) as HRESULT
+	GetPointer as function(byval as IMediaSample ptr, byval as UBYTE ptr ptr) as HRESULT
 	GetSize as function(byval as IMediaSample ptr) as integer
 	GetTime as function(byval as IMediaSample ptr, byval as REFERENCE_TIME ptr, byval as REFERENCE_TIME ptr) as HRESULT
 	SetTime as function(byval as IMediaSample ptr, byval as REFERENCE_TIME ptr, byval as REFERENCE_TIME ptr) as HRESULT
@@ -498,7 +498,7 @@ type AM_SAMPLE2_PROPERTIES
 	tStop as REFERENCE_TIME
 	dwStreamId as DWORD
 	pMediaType as AM_MEDIA_TYPE ptr
-	pbBuffer as BYTE ptr
+	pbBuffer as UBYTE ptr
 	cbBuffer as LONG
 end type
 
@@ -514,7 +514,7 @@ type IMediaSample2Vtbl
 	QueryInterface as function(byval as IMediaSample2 ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
 	AddRef as function(byval as IMediaSample2 ptr) as ULONG
 	Release as function(byval as IMediaSample2 ptr) as ULONG
-	GetPointer as function(byval as IMediaSample2 ptr, byval as BYTE ptr ptr) as HRESULT
+	GetPointer as function(byval as IMediaSample2 ptr, byval as UBYTE ptr ptr) as HRESULT
 	GetSize as function(byval as IMediaSample2 ptr) as integer
 	GetTime as function(byval as IMediaSample2 ptr, byval as REFERENCE_TIME ptr, byval as REFERENCE_TIME ptr) as HRESULT
 	SetTime as function(byval as IMediaSample2 ptr, byval as REFERENCE_TIME ptr, byval as REFERENCE_TIME ptr) as HRESULT
@@ -530,8 +530,8 @@ type IMediaSample2Vtbl
 	SetDiscontinuity as function(byval as IMediaSample2 ptr, byval as BOOL) as HRESULT
 	GetMediaTime as function(byval as IMediaSample2 ptr, byval as LONGLONG ptr, byval as LONGLONG ptr) as HRESULT
 	SetMediaTime as function(byval as IMediaSample2 ptr, byval as LONGLONG ptr, byval as LONGLONG ptr) as HRESULT
-	GetProperties as function(byval as IMediaSample2 ptr, byval as DWORD, byval as BYTE ptr) as HRESULT
-	SetProperties as function(byval as IMediaSample2 ptr, byval as DWORD, byval as BYTE ptr) as HRESULT
+	GetProperties as function(byval as IMediaSample2 ptr, byval as DWORD, byval as UBYTE ptr) as HRESULT
+	SetProperties as function(byval as IMediaSample2 ptr, byval as DWORD, byval as UBYTE ptr) as HRESULT
 end type
 
 type PMEDIASAMPLE2 as IMediaSample2 ptr
@@ -1224,7 +1224,7 @@ type IAsyncReaderVtbl
 	Request as function(byval as IAsyncReader ptr, byval as IMediaSample ptr, byval as DWORD_PTR) as HRESULT
 	WaitForNext as function(byval as IAsyncReader ptr, byval as DWORD, byval as IMediaSample ptr ptr, byval as DWORD_PTR ptr) as HRESULT
 	SyncReadAligned as function(byval as IAsyncReader ptr, byval as IMediaSample ptr) as HRESULT
-	SyncRead as function(byval as IAsyncReader ptr, byval as LONGLONG, byval as LONG, byval as BYTE ptr) as HRESULT
+	SyncRead as function(byval as IAsyncReader ptr, byval as LONGLONG, byval as LONG, byval as UBYTE ptr) as HRESULT
 	Length as function(byval as IAsyncReader ptr, byval as LONGLONG ptr, byval as LONGLONG ptr) as HRESULT
 	BeginFlush as function(byval as IAsyncReader ptr) as HRESULT
 	EndFlush as function(byval as IAsyncReader ptr) as HRESULT
@@ -1403,7 +1403,7 @@ type IAMStreamConfigVtbl
 	SetFormat as function(byval as IAMStreamConfig ptr, byval as AM_MEDIA_TYPE ptr) as HRESULT
 	GetFormat as function(byval as IAMStreamConfig ptr, byval as AM_MEDIA_TYPE ptr ptr) as HRESULT
 	GetNumberOfCapabilities as function(byval as IAMStreamConfig ptr, byval as integer ptr, byval as integer ptr) as HRESULT
-	GetStreamCaps as function(byval as IAMStreamConfig ptr, byval as integer, byval as AM_MEDIA_TYPE ptr ptr, byval as BYTE ptr) as HRESULT
+	GetStreamCaps as function(byval as IAMStreamConfig ptr, byval as integer, byval as AM_MEDIA_TYPE ptr ptr, byval as UBYTE ptr) as HRESULT
 end type
 
 enum InterleavingMode
@@ -2235,9 +2235,9 @@ type IAMDevMemoryAllocatorVtbl
 	AddRef as function(byval as IAMDevMemoryAllocator ptr) as ULONG
 	Release as function(byval as IAMDevMemoryAllocator ptr) as ULONG
 	GetInfo as function(byval as IAMDevMemoryAllocator ptr, byval as DWORD ptr, byval as DWORD ptr, byval as DWORD ptr, byval as DWORD ptr) as HRESULT
-	CheckMemory as function(byval as IAMDevMemoryAllocator ptr, byval as BYTE ptr) as HRESULT
-	Alloc as function(byval as IAMDevMemoryAllocator ptr, byval as BYTE ptr ptr, byval as DWORD ptr) as HRESULT
-	Free as function(byval as IAMDevMemoryAllocator ptr, byval as BYTE ptr) as HRESULT
+	CheckMemory as function(byval as IAMDevMemoryAllocator ptr, byval as UBYTE ptr) as HRESULT
+	Alloc as function(byval as IAMDevMemoryAllocator ptr, byval as UBYTE ptr ptr, byval as DWORD ptr) as HRESULT
+	Free as function(byval as IAMDevMemoryAllocator ptr, byval as UBYTE ptr) as HRESULT
 	GetDevMemoryObject as function(byval as IAMDevMemoryAllocator ptr, byval as IUnknown ptr ptr, byval as IUnknown ptr) as HRESULT
 end type
 
@@ -2516,8 +2516,8 @@ type IDVEncVtbl
 	QueryInterface as function(byval as IDVEnc ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
 	AddRef as function(byval as IDVEnc ptr) as ULONG
 	Release as function(byval as IDVEnc ptr) as ULONG
-	get_IFormatResolution as function(byval as IDVEnc ptr, byval as integer ptr, byval as integer ptr, byval as integer ptr, byval as BYTE, byval as DVINFO ptr) as HRESULT
-	put_IFormatResolution as function(byval as IDVEnc ptr, byval as integer, byval as integer, byval as integer, byval as BYTE, byval as DVINFO ptr) as HRESULT
+	get_IFormatResolution as function(byval as IDVEnc ptr, byval as integer ptr, byval as integer ptr, byval as integer ptr, byval as UBYTE, byval as DVINFO ptr) as HRESULT
+	put_IFormatResolution as function(byval as IDVEnc ptr, byval as integer, byval as integer, byval as integer, byval as UBYTE, byval as DVINFO ptr) as HRESULT
 end type
 
 enum DVDECODERRESOLUTION
@@ -2943,12 +2943,12 @@ type SPRMARRAY as DVD_REGISTER ptr
 
 type DVD_ATR
 	ulCAT as ULONG
-	pbATRI(0 to 768-1) as BYTE
+	pbATRI(0 to 768-1) as UBYTE
 end type
 
-type DVD_VideoATR as BYTE ptr
-type DVD_AudioATR as BYTE ptr
-type DVD_SubpictureATR as BYTE ptr
+type DVD_VideoATR as UBYTE ptr
+type DVD_AudioATR as UBYTE ptr
+type DVD_SubpictureATR as UBYTE ptr
 
 enum DVD_FRAMERATE
 	DVD_FPS_25 = 1
@@ -2975,10 +2975,10 @@ enum DVD_TIMECODE_FLAGS
 end enum
 
 type DVD_HMSF_TIMECODE
-	bHours as BYTE
-	bMinutes as BYTE
-	bSeconds as BYTE
-	bFrames as BYTE
+	bHours as UBYTE
+	bMinutes as UBYTE
+	bSeconds as UBYTE
+	bFrames as UBYTE
 end type
 
 type DVD_PLAYBACK_LOCATION2
@@ -3118,14 +3118,14 @@ end enum
 
 type DVD_AudioAttributes
 	AppMode as DVD_AUDIO_APPMODE
-	AppModeData as BYTE
+	AppModeData as UBYTE
 	AudioFormat as DVD_AUDIO_FORMAT
 	Language as LCID
 	LanguageExtension as DVD_AUDIO_LANG_EXT
 	fHasMultichannelInfo as BOOL
 	dwFrequency as DWORD
-	bQuantization as BYTE
-	bNumberOfChannels as BYTE
+	bQuantization as UBYTE
+	bNumberOfChannels as UBYTE
 	dwReserved(0 to 2-1) as DWORD
 end type
 
@@ -3170,7 +3170,7 @@ enum DVD_KARAOKE_ASSIGNMENT
 end enum
 
 type DVD_KaraokeAttributes
-	bVersion as BYTE
+	bVersion as UBYTE
 	fMasterOfCeremoniesInGuideVocal1 as BOOL
 	fDuet as BOOL
 	ChannelAssignment as DVD_KARAOKE_ASSIGNMENT
@@ -3322,7 +3322,7 @@ type IDvdInfoVtbl
 	GetCurrentAudioAttributes as function(byval as IDvdInfo ptr, byval as DVD_AudioATR ptr) as HRESULT
 	GetCurrentSubpictureAttributes as function(byval as IDvdInfo ptr, byval as DVD_SubpictureATR ptr) as HRESULT
 	GetCurrentVolumeInfo as function(byval as IDvdInfo ptr, byval as ULONG ptr, byval as ULONG ptr, byval as DVD_DISC_SIDE ptr, byval as ULONG ptr) as HRESULT
-	GetDVDTextInfo as function(byval as IDvdInfo ptr, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+	GetDVDTextInfo as function(byval as IDvdInfo ptr, byval as UBYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
 	GetPlayerParentalLevel as function(byval as IDvdInfo ptr, byval as ULONG ptr, byval as ULONG ptr) as HRESULT
 	GetNumberOfChapters as function(byval as IDvdInfo ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
 	GetTitleParentalLevels as function(byval as IDvdInfo ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
@@ -3398,7 +3398,7 @@ type IDvdControl2Vtbl
 	SetSubpictureState as function(byval as IDvdControl2 ptr, byval as BOOL, byval as DWORD, byval as IDvdCmd ptr ptr) as HRESULT
 	SelectAngle as function(byval as IDvdControl2 ptr, byval as ULONG, byval as DWORD, byval as IDvdCmd ptr ptr) as HRESULT
 	SelectParentalLevel as function(byval as IDvdControl2 ptr, byval as ULONG) as HRESULT
-	SelectParentalCountry as function(byval as IDvdControl2 ptr, byval as BYTE ptr) as HRESULT
+	SelectParentalCountry as function(byval as IDvdControl2 ptr, byval as UBYTE ptr) as HRESULT
 	SelectKaraokeAudioPresentationMode as function(byval as IDvdControl2 ptr, byval as ULONG) as HRESULT
 	SelectVideoModePreference as function(byval as IDvdControl2 ptr, byval as ULONG) as HRESULT
 	SetDVDDirectory as function(byval as IDvdControl2 ptr, byval as LPCWSTR) as HRESULT
@@ -3517,9 +3517,9 @@ type IDvdInfo2Vtbl
 	GetDVDVolumeInfo as function(byval as IDvdInfo2 ptr, byval as ULONG ptr, byval as ULONG ptr, byval as DVD_DISC_SIDE ptr, byval as ULONG ptr) as HRESULT
 	GetDVDTextNumberOfLanguages as function(byval as IDvdInfo2 ptr, byval as ULONG ptr) as HRESULT
 	GetDVDTextLanguageInfo as function(byval as IDvdInfo2 ptr, byval as ULONG, byval as ULONG ptr, byval as LCID ptr, byval as DVD_TextCharSet ptr) as HRESULT
-	GetDVDTextStringAsNative as function(byval as IDvdInfo2 ptr, byval as ULONG, byval as ULONG, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr, byval as DVD_TextStringType ptr) as HRESULT
+	GetDVDTextStringAsNative as function(byval as IDvdInfo2 ptr, byval as ULONG, byval as ULONG, byval as UBYTE ptr, byval as ULONG, byval as ULONG ptr, byval as DVD_TextStringType ptr) as HRESULT
 	GetDVDTextStringAsUnicode as function(byval as IDvdInfo2 ptr, byval as ULONG, byval as ULONG, byval as WCHAR ptr, byval as ULONG, byval as ULONG ptr, byval as DVD_TextStringType ptr) as HRESULT
-	GetPlayerParentalLevel as function(byval as IDvdInfo2 ptr, byval as ULONG ptr, byval as BYTE ptr) as HRESULT
+	GetPlayerParentalLevel as function(byval as IDvdInfo2 ptr, byval as ULONG ptr, byval as UBYTE ptr) as HRESULT
 	GetNumberOfChapters as function(byval as IDvdInfo2 ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
 	GetTitleParentalLevels as function(byval as IDvdInfo2 ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
 	GetDVDDirectory as function(byval as IDvdInfo2 ptr, byval as LPWSTR, byval as ULONG, byval as ULONG ptr) as HRESULT
@@ -3854,7 +3854,7 @@ type IVMRWindowlessControlVtbl
 	SetVideoClippingWindow as function(byval as IVMRWindowlessControl ptr, byval as HWND) as HRESULT
 	RepaintVideo as function(byval as IVMRWindowlessControl ptr, byval as HWND, byval as HDC) as HRESULT
 	DisplayModeChanged as function(byval as IVMRWindowlessControl ptr) as HRESULT
-	GetCurrentImage as function(byval as IVMRWindowlessControl ptr, byval as BYTE ptr ptr) as HRESULT
+	GetCurrentImage as function(byval as IVMRWindowlessControl ptr, byval as UBYTE ptr ptr) as HRESULT
 	SetBorderColor as function(byval as IVMRWindowlessControl ptr, byval as COLORREF) as HRESULT
 	GetBorderColor as function(byval as IVMRWindowlessControl ptr, byval as COLORREF ptr) as HRESULT
 	SetColorKey as function(byval as IVMRWindowlessControl ptr, byval as COLORREF) as HRESULT
@@ -4159,7 +4159,7 @@ type IVMRSurfaceVtbl
 	AddRef as function(byval as IVMRSurface ptr) as ULONG
 	Release as function(byval as IVMRSurface ptr) as ULONG
 	IsSurfaceLocked as function(byval as IVMRSurface ptr) as HRESULT
-	LockSurface as function(byval as IVMRSurface ptr, byval as BYTE ptr ptr) as HRESULT
+	LockSurface as function(byval as IVMRSurface ptr, byval as UBYTE ptr ptr) as HRESULT
 	UnlockSurface as function(byval as IVMRSurface ptr) as HRESULT
 	GetSurface as function(byval as IVMRSurface ptr, byval as LPDIRECTDRAWSURFACE7 ptr) as HRESULT
 end type

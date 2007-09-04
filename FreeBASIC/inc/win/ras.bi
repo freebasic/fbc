@@ -244,7 +244,7 @@ type RASAMBW
 	dwSize as DWORD
 	dwError as DWORD
 	szNetBiosError as wstring *16+1
-	bLana as BYTE
+	bLana as UBYTE
 end type
 
 type LPRASAMBW as RASAMBW ptr
@@ -254,7 +254,7 @@ type RASAMBA
 	dwSize as DWORD
 	dwError as DWORD
 	szNetBiosError as zstring * 16+1
-	bLana as BYTE
+	bLana as UBYTE
 end type
 
 type LPRASAMBA as RASAMBA ptr
@@ -267,7 +267,7 @@ type RASPPPNBFW
 	dwNetBiosError as DWORD
 	szNetBiosError as wstring *16+1
 	szWorkstationName as wstring *16+1
-	bLana as BYTE
+	bLana as UBYTE
 end type
 
 type LPRASPPPNBFW as RASPPPNBFW ptr
@@ -279,7 +279,7 @@ type RASPPPNBFA
 	dwNetBiosError as DWORD
 	szNetBiosError as zstring * 16+1
 	szWorkstationName as zstring * 16+1
-	bLana as BYTE
+	bLana as UBYTE
 end type
 
 type LPRASPPPNBFA as RASPPPNBFA ptr
@@ -399,10 +399,10 @@ type LPRASCTRYINFOA as RASCTRYINFO ptr
 #endif
 
 type RASIPADDR
-	a as BYTE
-	b as BYTE
-	c as BYTE
-	d as BYTE
+	a as UBYTE
+	b as UBYTE
+	c as UBYTE
+	d as UBYTE
 end type
 
 #ifdef UNICODE

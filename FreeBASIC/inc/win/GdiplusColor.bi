@@ -223,7 +223,7 @@ private constructor Color(byval argb_ as ARGB)
 end constructor
 
 private function Color.GetAlpha() as ubyte
-	function = cast(BYTE, Argb_ shr AlphaShift)
+	function = cast(UBYTE, Argb_ shr AlphaShift)
 end function
 
 private function Color.GetA() as ubyte
@@ -231,7 +231,7 @@ private function Color.GetA() as ubyte
 end function
 
 private function Color.GetRed() as ubyte
-	function = cast(BYTE, Argb_ shr RedShift)
+	function = cast(UBYTE, Argb_ shr RedShift)
 end function
 
 private function Color.GetR() as ubyte
@@ -239,7 +239,7 @@ private function Color.GetR() as ubyte
 end function
 
 private function Color.GetGreen() as ubyte
-	function = cast(BYTE, Argb_ shr GreenShift)
+	function = cast(UBYTE, Argb_ shr GreenShift)
 end function
 
 private function Color.GetG() as ubyte
@@ -247,7 +247,7 @@ private function Color.GetG() as ubyte
 end function
 
 private function Color.GetBlue() as ubyte
-	function = cast(BYTE, Argb_ shr BlueShift)
+	function = cast(UBYTE, Argb_ shr BlueShift)
 end function
 
 private function Color.GetB() as ubyte

@@ -451,8 +451,8 @@ end enum
 
 type CPINFO
 	MaxCharSize as UINT
-	DefaultChar(0 to 2-1) as BYTE
-	LeadByte(0 to 12-1) as BYTE
+	DefaultChar(0 to 2-1) as UBYTE
+	LeadByte(0 to 12-1) as UBYTE
 end type
 
 type LPCPINFO as CPINFO ptr
@@ -460,8 +460,8 @@ type LPCPINFO as CPINFO ptr
 #ifndef UNICODE
 type CPINFOEXA
 	MaxCharSize as UINT
-	DefaultChar(0 to 2-1) as BYTE
-	LeadByte(0 to 12-1) as BYTE
+	DefaultChar(0 to 2-1) as UBYTE
+	LeadByte(0 to 12-1) as UBYTE
 	UnicodeDefaultChar as WCHAR
 	CodePage as UINT
 	CodePageName as zstring * 260
@@ -472,8 +472,8 @@ type LPCPINFOEXA as CPINFOEXA ptr
 #else ''UNICODE
 type CPINFOEXW
 	MaxCharSize as UINT
-	DefaultChar(0 to 2-1) as BYTE
-	LeadByte(0 to 12-1) as BYTE
+	DefaultChar(0 to 2-1) as UBYTE
+	LeadByte(0 to 12-1) as UBYTE
 	UnicodeDefaultChar as WCHAR
 	CodePage as UINT
 	CodePageName as wstring * 260
@@ -555,8 +555,8 @@ declare function GetThreadLocale alias "GetThreadLocale" () as LCID
 declare function GetUserDefaultLangID alias "GetUserDefaultLangID" () as LANGID
 declare function GetUserDefaultLCID alias "GetUserDefaultLCID" () as LCID
 declare function GetUserGeoID alias "GetUserGeoID" (byval as GEOCLASS) as GEOID
-declare function IsDBCSLeadByte alias "IsDBCSLeadByte" (byval as BYTE) as BOOL
-declare function IsDBCSLeadByteEx alias "IsDBCSLeadByteEx" (byval as UINT, byval as BYTE) as BOOL
+declare function IsDBCSLeadByte alias "IsDBCSLeadByte" (byval as UBYTE) as BOOL
+declare function IsDBCSLeadByteEx alias "IsDBCSLeadByteEx" (byval as UINT, byval as UBYTE) as BOOL
 declare function IsNLSDefinedString alias "IsNLSDefinedString" (byval as NLS_FUNCTION, byval as DWORD, byval as LPNLSVERSIONINFO, byval as LPCWSTR, byval as integer) as BOOL
 declare function IsValidCodePage alias "IsValidCodePage" (byval as UINT) as BOOL
 declare function IsValidLocale alias "IsValidLocale" (byval as LCID, byval as DWORD) as BOOL

@@ -361,7 +361,7 @@ type PDISK_GEOMETRY as DISK_GEOMETRY ptr
 type DISK_GEOMETRY_EX
 	Geometry as DISK_GEOMETRY
 	DiskSize as LARGE_INTEGER
-	Data(0 to 1-1) as BYTE
+	Data(0 to 1-1) as UBYTE
 end type
 
 type PDISK_GEOMETRY_EX as DISK_GEOMETRY_EX ptr
@@ -410,14 +410,14 @@ type DISK_RECORD
 	EndTime as LARGE_INTEGER
 	VirtualAddress as PVOID
 	NumberOfBytes as DWORD
-	DeviceNumber as BYTE
+	DeviceNumber as UBYTE
 	ReadRequest as BOOLEAN
 end type
 
 type PDISK_RECORD as DISK_RECORD ptr
 
 type DISK_LOGGING
-	Function as BYTE
+	Function as UBYTE
 	BufferAddress as PVOID
 	BufferSize as DWORD
 end type
@@ -502,7 +502,7 @@ type PARTITION_INFORMATION
 	PartitionLength as LARGE_INTEGER
 	HiddenSectors as DWORD
 	PartitionNumber as DWORD
-	PartitionType as BYTE
+	PartitionType as UBYTE
 	BootIndicator as BOOLEAN
 	RecognizedPartition as BOOLEAN
 	RewritePartition as BOOLEAN
@@ -534,7 +534,7 @@ end type
 type PDRIVE_LAYOUT_INFORMATION_MBR as DRIVE_LAYOUT_INFORMATION_MBR ptr
 
 type PARTITION_INFORMATION_MBR
-	PartitionType as BYTE
+	PartitionType as UBYTE
 	BootIndicator as BOOLEAN
 	RecognizedPartition as BOOLEAN
 	HiddenSectors as DWORD
@@ -617,7 +617,7 @@ end type
 type PREASSIGN_BLOCKS as REASSIGN_BLOCKS ptr
 
 type SET_PARTITION_INFORMATION
-	PartitionType as BYTE
+	PartitionType as UBYTE
 end type
 
 type PSET_PARTITION_INFORMATION as SET_PARTITION_INFORMATION ptr
@@ -644,7 +644,7 @@ type PVERIFY_INFORMATION as VERIFY_INFORMATION ptr
 type VOLUME_BITMAP_BUFFER
 	StartingLcn as LARGE_INTEGER
 	BitmapSize as LARGE_INTEGER
-	Buffer(0 to 1-1) as BYTE
+	Buffer(0 to 1-1) as UBYTE
 end type
 
 type PVOLUME_BITMAP_BUFFER as VOLUME_BITMAP_BUFFER ptr

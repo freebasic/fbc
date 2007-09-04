@@ -21,8 +21,8 @@ type ImageCodecInfo
 	Version as DWORD
 	SigCount as DWORD
 	SigSize as DWORD
-	SigPattern as BYTE ptr
-	SigMask as BYTE ptr
+	SigPattern as UBYTE ptr
+	SigMask as UBYTE ptr
 end type
 
 enum ImageCodecFlags

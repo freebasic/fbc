@@ -363,7 +363,7 @@ type HCERTCHAINENGINE as PVOID
 
 type CRYPTOAPI_BLOB
 	cbData as DWORD
-	pbData as BYTE ptr
+	pbData as UBYTE ptr
 end type
 
 type CRYPT_INTEGER_BLOB as CRYPTOAPI_BLOB
@@ -431,7 +431,7 @@ type PCRYPT_ALGORITHM_IDENTIFIER as CRYPT_ALGORITHM_IDENTIFIER ptr
 
 type CRYPT_BIT_BLOB
 	cbData as DWORD
-	pbData as BYTE ptr
+	pbData as UBYTE ptr
 	cUnusedBits as DWORD
 end type
 
@@ -471,7 +471,7 @@ type PCERT_INFO as CERT_INFO ptr
 
 type CERT_CONTEXT
 	dwCertEncodingType as DWORD
-	pbCertEncoded as BYTE ptr
+	pbCertEncoded as UBYTE ptr
 	cbCertEncoded as DWORD
 	pCertInfo as PCERT_INFO
 	hCertStore as HCERTSTORE
@@ -551,7 +551,7 @@ type PCRL_INFO as CRL_INFO ptr
 
 type CRL_CONTEXT
 	dwCertEncodingType as DWORD
-	pbCrlEncoded as BYTE ptr
+	pbCrlEncoded as UBYTE ptr
 	cbCrlEncoded as DWORD
 	pCrlInfo as PCRL_INFO
 	hCertStore as HCERTSTORE
@@ -627,12 +627,12 @@ type PCTL_INFO as CTL_INFO ptr
 
 type CTL_CONTEXT
 	dwMsgAndCertEncodingType as DWORD
-	pbCtlEncoded as BYTE ptr
+	pbCtlEncoded as UBYTE ptr
 	cbCtlEncoded as DWORD
 	pCtlInfo as PCTL_INFO
 	hCertStore as HCERTSTORE
 	hCryptMsg as HCRYPTMSG
-	pbCtlContent as BYTE ptr
+	pbCtlContent as UBYTE ptr
 	cbCtlContent as DWORD
 end type
 
@@ -681,8 +681,8 @@ type PROV_ENUMALGS
 end type
 
 type PUBLICKEYSTRUC
-	bType_ as BYTE
-	bVersion as BYTE
+	bType_ as UBYTE
+	bVersion as UBYTE
 	reserved as WORD
 	aiKeyAlg as ALG_ID
 end type
@@ -695,9 +695,9 @@ end type
 
 type HMAC_Info
 	HashAlgid as ALG_ID
-	pbInnerString as BYTE ptr
+	pbInnerString as UBYTE ptr
 	cbInnerString as DWORD
-	pbOuterString as BYTE ptr
+	pbOuterString as UBYTE ptr
 	cbOuterString as DWORD
 end type
 

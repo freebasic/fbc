@@ -315,7 +315,7 @@ type LPIDA as CIDA ptr
 
 type SHITEMID field=1
 	cb as USHORT
-	abID(0 to 1-1) as BYTE
+	abID(0 to 1-1) as UBYTE
 end type
 
 type LPSHITEMID as SHITEMID ptr

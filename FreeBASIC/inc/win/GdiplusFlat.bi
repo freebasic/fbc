@@ -11,13 +11,13 @@
 
 extern "windows"
 declare function GdipCreatePath (byval brushMode as GpFillMode, byval path as GpPath ptr ptr) as GpStatus
-declare function GdipCreatePath2 (byval as GpPointF ptr, byval as BYTE ptr, byval as INT_, byval as GpFillMode, byval path as GpPath ptr ptr) as GpStatus
-declare function GdipCreatePath2I (byval as GpPoint ptr, byval as BYTE ptr, byval as INT_, byval as GpFillMode, byval path as GpPath ptr ptr) as GpStatus
+declare function GdipCreatePath2 (byval as GpPointF ptr, byval as UBYTE ptr, byval as INT_, byval as GpFillMode, byval path as GpPath ptr ptr) as GpStatus
+declare function GdipCreatePath2I (byval as GpPoint ptr, byval as UBYTE ptr, byval as INT_, byval as GpFillMode, byval path as GpPath ptr ptr) as GpStatus
 declare function GdipClonePath (byval path as GpPath ptr, byval clonePath as GpPath ptr ptr) as GpStatus
 declare function GdipDeletePath (byval path as GpPath ptr) as GpStatus
 declare function GdipResetPath (byval path as GpPath ptr) as GpStatus
 declare function GdipGetPointCount (byval path as GpPath ptr, byval count as INT_ ptr) as GpStatus
-declare function GdipGetPathTypes (byval path as GpPath ptr, byval types as BYTE ptr, byval count as INT_) as GpStatus
+declare function GdipGetPathTypes (byval path as GpPath ptr, byval types as UBYTE ptr, byval count as INT_) as GpStatus
 declare function GdipGetPathPoints (byval as GpPath ptr, byval points as GpPointF ptr, byval count as INT_) as GpStatus
 declare function GdipGetPathPointsI (byval as GpPath ptr, byval points as GpPoint ptr, byval count as INT_) as GpStatus
 declare function GdipGetPathFillMode (byval path as GpPath ptr, byval fillmode as GpFillMode ptr) as GpStatus
@@ -78,7 +78,7 @@ declare function GdipCreatePathIter (byval iterator as GpPathIterator ptr ptr, b
 declare function GdipDeletePathIter (byval iterator as GpPathIterator ptr) as GpStatus
 declare function GdipPathIterNextSubpath (byval iterator as GpPathIterator ptr, byval resultCount as INT_ ptr, byval startIndex as INT_ ptr, byval endIndex as INT_ ptr, byval isClosed as BOOL ptr) as GpStatus
 declare function GdipPathIterNextSubpathPath (byval iterator as GpPathIterator ptr, byval resultCount as INT_ ptr, byval path as GpPath ptr, byval isClosed as BOOL ptr) as GpStatus
-declare function GdipPathIterNextPathType (byval iterator as GpPathIterator ptr, byval resultCount as INT_ ptr, byval pathType as BYTE ptr, byval startIndex as INT_ ptr, byval endIndex as INT_ ptr) as GpStatus
+declare function GdipPathIterNextPathType (byval iterator as GpPathIterator ptr, byval resultCount as INT_ ptr, byval pathType as UBYTE ptr, byval startIndex as INT_ ptr, byval endIndex as INT_ ptr) as GpStatus
 declare function GdipPathIterNextMarker (byval iterator as GpPathIterator ptr, byval resultCount as INT_ ptr, byval startIndex as INT_ ptr, byval endIndex as INT_ ptr) as GpStatus
 declare function GdipPathIterNextMarkerPath (byval iterator as GpPathIterator ptr, byval resultCount as INT_ ptr, byval path as GpPath ptr) as GpStatus
 declare function GdipPathIterGetCount (byval iterator as GpPathIterator ptr, byval count as INT_ ptr) as GpStatus
@@ -86,8 +86,8 @@ declare function GdipPathIterGetSubpathCount (byval iterator as GpPathIterator p
 declare function GdipPathIterIsValid (byval iterator as GpPathIterator ptr, byval valid as BOOL ptr) as GpStatus
 declare function GdipPathIterHasCurve (byval iterator as GpPathIterator ptr, byval hasCurve as BOOL ptr) as GpStatus
 declare function GdipPathIterRewind (byval iterator as GpPathIterator ptr) as GpStatus
-declare function GdipPathIterEnumerate (byval iterator as GpPathIterator ptr, byval resultCount as INT_ ptr, byval points as GpPointF ptr, byval types as BYTE ptr, byval count as INT_) as GpStatus
-declare function GdipPathIterCopyData (byval iterator as GpPathIterator ptr, byval resultCount as INT_ ptr, byval points as GpPointF ptr, byval types as BYTE ptr, byval startIndex as INT_, byval endIndex as INT_) as GpStatus
+declare function GdipPathIterEnumerate (byval iterator as GpPathIterator ptr, byval resultCount as INT_ ptr, byval points as GpPointF ptr, byval types as UBYTE ptr, byval count as INT_) as GpStatus
+declare function GdipPathIterCopyData (byval iterator as GpPathIterator ptr, byval resultCount as INT_ ptr, byval points as GpPointF ptr, byval types as UBYTE ptr, byval startIndex as INT_, byval endIndex as INT_) as GpStatus
 declare function GdipCreateMatrix (byval matrix as GpMatrix ptr ptr) as GpStatus
 declare function GdipCreateMatrix2 (byval m11 as REAL, byval m12 as REAL, byval m21 as REAL, byval m22 as REAL, byval dx as REAL, byval dy as REAL, byval matrix as GpMatrix ptr ptr) as GpStatus
 declare function GdipCreateMatrix3 (byval rect as GpRectF ptr, byval dstplg as GpPointF ptr, byval matrix as GpMatrix ptr ptr) as GpStatus
@@ -113,7 +113,7 @@ declare function GdipCreateRegion (byval region as GpRegion ptr ptr) as GpStatus
 declare function GdipCreateRegionRect (byval rect as GpRectF ptr, byval region as GpRegion ptr ptr) as GpStatus
 declare function GdipCreateRegionRectI (byval rect as GpRect ptr, byval region as GpRegion ptr ptr) as GpStatus
 declare function GdipCreateRegionPath (byval path as GpPath ptr, byval region as GpRegion ptr ptr) as GpStatus
-declare function GdipCreateRegionRgnData (byval regionData as BYTE ptr, byval size as INT_, byval region as GpRegion ptr ptr) as GpStatus
+declare function GdipCreateRegionRgnData (byval regionData as UBYTE ptr, byval size as INT_, byval region as GpRegion ptr ptr) as GpStatus
 declare function GdipCreateRegionHrgn (byval hRgn as HRGN, byval region as GpRegion ptr ptr) as GpStatus
 declare function GdipCloneRegion (byval region as GpRegion ptr, byval cloneRegion as GpRegion ptr ptr) as GpStatus
 declare function GdipDeleteRegion (byval region as GpRegion ptr) as GpStatus
@@ -133,7 +133,7 @@ declare function GdipIsEmptyRegion (byval region as GpRegion ptr, byval graphics
 declare function GdipIsInfiniteRegion (byval region as GpRegion ptr, byval graphics as GpGraphics ptr, byval result as BOOL ptr) as GpStatus
 declare function GdipIsEqualRegion (byval region as GpRegion ptr, byval region2 as GpRegion ptr, byval graphics as GpGraphics ptr, byval result as BOOL ptr) as GpStatus
 declare function GdipGetRegionDataSize (byval region as GpRegion ptr, byval bufferSize as UINT ptr) as GpStatus
-declare function GdipGetRegionData (byval region as GpRegion ptr, byval buffer as BYTE ptr, byval bufferSize as UINT, byval sizeFilled as UINT ptr) as GpStatus
+declare function GdipGetRegionData (byval region as GpRegion ptr, byval buffer as UBYTE ptr, byval bufferSize as UINT, byval sizeFilled as UINT ptr) as GpStatus
 declare function GdipIsVisibleRegionPoint (byval region as GpRegion ptr, byval x as REAL, byval y as REAL, byval graphics as GpGraphics ptr, byval result as BOOL ptr) as GpStatus
 declare function GdipIsVisibleRegionPointI (byval region as GpRegion ptr, byval x as INT_, byval y as INT_, byval graphics as GpGraphics ptr, byval result as BOOL ptr) as GpStatus
 declare function GdipIsVisibleRegionRect (byval region as GpRegion ptr, byval x as REAL, byval y as REAL, byval width as REAL, byval height as REAL, byval graphics as GpGraphics ptr, byval result as BOOL ptr) as GpStatus
@@ -348,7 +348,7 @@ declare function GdipCreateBitmapFromStream (byval stream as IStream ptr, byval 
 declare function GdipCreateBitmapFromFile (byval filename as LPCWSTR, byval bitmap as GpBitmap ptr ptr) as GpStatus
 declare function GdipCreateBitmapFromStreamICM (byval stream as IStream ptr, byval bitmap as GpBitmap ptr ptr) as GpStatus
 declare function GdipCreateBitmapFromFileICM (byval filename as LPCWSTR, byval bitmap as GpBitmap ptr ptr) as GpStatus
-declare function GdipCreateBitmapFromScan0 (byval width as INT_, byval height as INT_, byval stride as INT_, byval format as PixelFormat, byval scan0 as BYTE ptr, byval bitmap as GpBitmap ptr ptr) as GpStatus
+declare function GdipCreateBitmapFromScan0 (byval width as INT_, byval height as INT_, byval stride as INT_, byval format as PixelFormat, byval scan0 as UBYTE ptr, byval bitmap as GpBitmap ptr ptr) as GpStatus
 declare function GdipCreateBitmapFromGraphics (byval width as INT_, byval height as INT_, byval target as GpGraphics ptr, byval bitmap as GpBitmap ptr ptr) as GpStatus
 #ifdef IDirectDrawSurface7
 declare function GdipCreateBitmapFromDirectDrawSurface (byval surface as IDirectDrawSurface7 ptr, byval bitmap as GpBitmap ptr ptr) as GpStatus
@@ -498,7 +498,7 @@ declare function GdipEnumerateMetafileSrcRectDestRect (byval graphics as GpGraph
 declare function GdipEnumerateMetafileSrcRectDestRectI (byval graphics as GpGraphics ptr, byval metafile as GpMetafile ptr, byval destRect as Rect, byval srcRect as Rect, byval srcUnit as Unit, byval callback as EnumerateMetafileProc, byval callbackData as any ptr, byval imageAttributes as GpImageAttributes ptr) as GpStatus
 declare function GdipEnumerateMetafileSrcRectDestPoints (byval graphics as GpGraphics ptr, byval metafile as GpMetafile ptr, byval destPoints as PointF ptr, byval count as INT_, byval srcRect as RectF, byval srcUnit as Unit, byval callback as EnumerateMetafileProc, byval callbackData as any ptr, byval imageAttributes as GpImageAttributes ptr) as GpStatus
 declare function GdipEnumerateMetafileSrcRectDestPointsI (byval graphics as GpGraphics ptr, byval metafile as GpMetafile ptr, byval destPoints as Point ptr, byval count as INT_, byval srcRect as Rect, byval srcUnit as Unit, byval callback as EnumerateMetafileProc, byval callbackData as any ptr, byval imageAttributes as GpImageAttributes ptr) as GpStatus
-declare function GdipPlayMetafileRecord (byval metafile as GpMetafile ptr, byval recordType as EmfPlusRecordType, byval flags as UINT, byval dataSize as UINT, byval data as BYTE ptr) as GpStatus
+declare function GdipPlayMetafileRecord (byval metafile as GpMetafile ptr, byval recordType as EmfPlusRecordType, byval flags as UINT, byval dataSize as UINT, byval data as UBYTE ptr) as GpStatus
 declare function GdipSetClipGraphics (byval graphics as GpGraphics ptr, byval srcgraphics as GpGraphics ptr, byval combineMode as CombineMode) as GpStatus
 declare function GdipSetClipRect (byval graphics as GpGraphics ptr, byval x as REAL, byval y as REAL, byval width as REAL, byval height as REAL, byval combineMode as CombineMode) as GpStatus
 declare function GdipSetClipRectI (byval graphics as GpGraphics ptr, byval x as INT_, byval y as INT_, byval width as INT_, byval height as INT_, byval combineMode as CombineMode) as GpStatus
@@ -549,7 +549,7 @@ declare function GdipGetImageDecodersSize (byval numDecoders as UINT ptr, byval 
 declare function GdipGetImageDecoders (byval numDecoders as UINT, byval size as UINT, byval decoders as ImageCodecInfo ptr) as GpStatus
 declare function GdipGetImageEncodersSize (byval numEncoders as UINT ptr, byval size as UINT ptr) as GpStatus
 declare function GdipGetImageEncoders (byval numEncoders as UINT, byval size as UINT, byval encoders as ImageCodecInfo ptr) as GpStatus
-declare function GdipComment (byval graphics as GpGraphics ptr, byval sizeData as UINT, byval data as BYTE ptr) as GpStatus
+declare function GdipComment (byval graphics as GpGraphics ptr, byval sizeData as UINT, byval data as UBYTE ptr) as GpStatus
 declare function GdipCreateFontFamilyFromName (byval name as LPCWSTR, byval fontCollection as GpFontCollection ptr, byval FontFamily as GpFontFamily ptr ptr) as GpStatus
 declare function GdipDeleteFontFamily (byval FontFamily as GpFontFamily ptr) as GpStatus
 declare function GdipCloneFontFamily (byval FontFamily as GpFontFamily ptr, byval clonedFontFamily as GpFontFamily ptr ptr) as GpStatus

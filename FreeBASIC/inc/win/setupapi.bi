@@ -576,7 +576,7 @@ type PINFCONTEXT as INFCONTEXT ptr
 type SP_INF_INFORMATION
 	InfStyle as DWORD
 	InfCount as DWORD
-	VersionData(0 to 1-1) as BYTE
+	VersionData(0 to 1-1) as UBYTE
 end type
 
 type PSP_INF_INFORMATION as SP_INF_INFORMATION ptr
@@ -889,7 +889,7 @@ type SP_SELECTDEVICE_PARAMS_A
 	Instructions as zstring * 256
 	ListLabel as zstring * 30
 	SubTitle as zstring * 256
-	Reserved(0 to 2-1) as BYTE
+	Reserved(0 to 2-1) as UBYTE
 end type
 
 type PSP_SELECTDEVICE_PARAMS_A as SP_SELECTDEVICE_PARAMS_A ptr
@@ -1308,9 +1308,9 @@ declare function SetupDiOpenClassRegKeyEx alias "SetupDiOpenClassRegKeyExW" (byv
 declare function SetupDiOpenDeviceInfo alias "SetupDiOpenDeviceInfoW" (byval as HDEVINFO, byval as PCWSTR, byval as HWND, byval as DWORD, byval as PSP_DEVINFO_DATA) as BOOL
 declare function SetupDiOpenDeviceInterface alias "SetupDiOpenDeviceInterfaceW" (byval as HDEVINFO, byval as PCWSTR, byval as DWORD, byval as PSP_DEVICE_INTERFACE_DATA) as BOOL
 declare function SetupDiSetClassInstallParams alias "SetupDiSetClassInstallParamsW" (byval as HDEVINFO, byval as PSP_DEVINFO_DATA, byval as PSP_CLASSINSTALL_HEADER, byval as DWORD) as BOOL
-declare function SetupDiSetClassRegistryProperty alias "SetupDiSetClassRegistryPropertyW" (byval as LPGUID, byval as DWORD, byval as BYTE ptr, byval as DWORD, byval as PCWSTR, byval as PVOID) as BOOL
+declare function SetupDiSetClassRegistryProperty alias "SetupDiSetClassRegistryPropertyW" (byval as LPGUID, byval as DWORD, byval as UBYTE ptr, byval as DWORD, byval as PCWSTR, byval as PVOID) as BOOL
 declare function SetupDiSetDeviceInstallParams alias "SetupDiSetDeviceInstallParamsW" (byval as HDEVINFO, byval as PSP_DEVINFO_DATA, byval as PSP_DEVINSTALL_PARAMS_W) as BOOL
-declare function SetupDiSetDeviceRegistryProperty alias "SetupDiSetDeviceRegistryPropertyW" (byval as HDEVINFO, byval as PSP_DEVINFO_DATA, byval as DWORD, byval as BYTE ptr, byval as DWORD) as BOOL
+declare function SetupDiSetDeviceRegistryProperty alias "SetupDiSetDeviceRegistryPropertyW" (byval as HDEVINFO, byval as PSP_DEVINFO_DATA, byval as DWORD, byval as UBYTE ptr, byval as DWORD) as BOOL
 declare function SetupDiSetDriverInstallParams alias "SetupDiSetDriverInstallParamsW" (byval as HDEVINFO, byval as PSP_DEVINFO_DATA, byval as PSP_DRVINFO_DATA_W, byval as PSP_DRVINSTALL_PARAMS) as BOOL
 declare function SetupDiSetSelectedDriver alias "SetupDiSetSelectedDriverW" (byval as HDEVINFO, byval as PSP_DEVINFO_DATA, byval as PSP_DRVINFO_DATA_W) as BOOL
 declare function SetupDuplicateDiskSpaceList alias "SetupDuplicateDiskSpaceListW" (byval as HDSKSPC, byval as PVOID, byval as DWORD, byval as UINT) as HDSKSPC
@@ -1423,9 +1423,9 @@ declare function SetupDiOpenClassRegKeyEx alias "SetupDiOpenClassRegKeyExA" (byv
 declare function SetupDiOpenDeviceInfo alias "SetupDiOpenDeviceInfoA" (byval as HDEVINFO, byval as PCSTR, byval as HWND, byval as DWORD, byval as PSP_DEVINFO_DATA) as BOOL
 declare function SetupDiOpenDeviceInterface alias "SetupDiOpenDeviceInterfaceA" (byval as HDEVINFO, byval as PCSTR, byval as DWORD, byval as PSP_DEVICE_INTERFACE_DATA) as BOOL
 declare function SetupDiSetClassInstallParams alias "SetupDiSetClassInstallParamsA" (byval as HDEVINFO, byval as PSP_DEVINFO_DATA, byval as PSP_CLASSINSTALL_HEADER, byval as DWORD) as BOOL
-declare function SetupDiSetClassRegistryProperty alias "SetupDiSetClassRegistryPropertyA" (byval as LPGUID, byval as DWORD, byval as BYTE ptr, byval as DWORD, byval as PCSTR, byval as PVOID) as BOOL
+declare function SetupDiSetClassRegistryProperty alias "SetupDiSetClassRegistryPropertyA" (byval as LPGUID, byval as DWORD, byval as UBYTE ptr, byval as DWORD, byval as PCSTR, byval as PVOID) as BOOL
 declare function SetupDiSetDeviceInstallParams alias "SetupDiSetDeviceInstallParamsA" (byval as HDEVINFO, byval as PSP_DEVINFO_DATA, byval as PSP_DEVINSTALL_PARAMS_A) as BOOL
-declare function SetupDiSetDeviceRegistryProperty alias "SetupDiSetDeviceRegistryPropertyA" (byval as HDEVINFO, byval as PSP_DEVINFO_DATA, byval as DWORD, byval as BYTE ptr, byval as DWORD) as BOOL
+declare function SetupDiSetDeviceRegistryProperty alias "SetupDiSetDeviceRegistryPropertyA" (byval as HDEVINFO, byval as PSP_DEVINFO_DATA, byval as DWORD, byval as UBYTE ptr, byval as DWORD) as BOOL
 declare function SetupDiSetDriverInstallParams alias "SetupDiSetDriverInstallParamsA" (byval as HDEVINFO, byval as PSP_DEVINFO_DATA, byval as PSP_DRVINFO_DATA_A, byval as PSP_DRVINSTALL_PARAMS) as BOOL
 declare function SetupDiSetSelectedDriver alias "SetupDiSetSelectedDriverA" (byval as HDEVINFO, byval as PSP_DEVINFO_DATA, byval as PSP_DRVINFO_DATA_A) as BOOL
 declare function SetupDuplicateDiskSpaceList alias "SetupDuplicateDiskSpaceListA" (byval as HDSKSPC, byval as PVOID, byval as DWORD, byval as UINT) as HDSKSPC

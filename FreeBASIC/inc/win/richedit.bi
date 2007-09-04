@@ -269,8 +269,8 @@ type CHARFORMATA field=4
 	yHeight as LONG
 	yOffset as LONG
 	crTextColor as COLORREF
-	bCharSet as BYTE
-	bPitchAndFamily as BYTE
+	bCharSet as UBYTE
+	bPitchAndFamily as UBYTE
 	szFaceName as zstring * 32
 end type
 
@@ -281,8 +281,8 @@ type CHARFORMAT2A field=4
 	yHeight as LONG
 	yOffset as LONG
 	crTextColor as COLORREF
-	bCharSet as BYTE
-	bPitchAndFamily as BYTE
+	bCharSet as UBYTE
+	bPitchAndFamily as UBYTE
 	szFaceName as zstring * 32
 	wWeight as WORD
 	sSpacing as SHORT
@@ -291,9 +291,9 @@ type CHARFORMAT2A field=4
 	dwReserved as DWORD
 	sStyle as SHORT
 	wKerning as WORD
-	bUnderlineType as BYTE
-	bAnimation as BYTE
-	bRevAuthor as BYTE
+	bUnderlineType as UBYTE
+	bAnimation as UBYTE
+	bRevAuthor as UBYTE
 end type
 
 #else ''UNICODE
@@ -304,8 +304,8 @@ type CHARFORMATW field=4
 	yHeight as LONG
 	yOffset as LONG
 	crTextColor as COLORREF
-	bCharSet as BYTE
-	bPitchAndFamily as BYTE
+	bCharSet as UBYTE
+	bPitchAndFamily as UBYTE
 	szFaceName as wstring * 32
 end type
 
@@ -316,8 +316,8 @@ type CHARFORMAT2W field=4
 	yHeight as LONG
 	yOffset as LONG
 	crTextColor as COLORREF
-	bCharSet as BYTE
-	bPitchAndFamily as BYTE
+	bCharSet as UBYTE
+	bPitchAndFamily as UBYTE
 	szFaceName as wstring * 32
 	wWeight as WORD
 	sSpacing as SHORT
@@ -326,9 +326,9 @@ type CHARFORMAT2W field=4
 	dwReserved as DWORD
 	sStyle as SHORT
 	wKerning as WORD
-	bUnderlineType as BYTE
-	bAnimation as BYTE
-	bRevAuthor as BYTE
+	bUnderlineType as UBYTE
+	bAnimation as UBYTE
+	bRevAuthor as UBYTE
 end type
 #endif ''UNICODE
 
@@ -462,8 +462,8 @@ type PARAFORMAT2 field=4
 	dySpaceAfter as LONG
 	dyLineSpacing as LONG
 	sStype as SHORT
-	bLineSpacingRule as BYTE
-	bOutlineLevel as BYTE
+	bLineSpacingRule as UBYTE
+	bOutlineLevel as UBYTE
 	wShadingWeight as WORD
 	wShadingStyle as WORD
 	wNumberingStart as WORD
@@ -529,7 +529,7 @@ end type
 #define ST_KEEPUNDO 1
 #define ST_SELECTION 2
 
-type EDITWORDBREAKPROCEX as function (byval as zstring ptr, byval as LONG, byval as BYTE, byval as INT_) as LONG
+type EDITWORDBREAKPROCEX as function (byval as zstring ptr, byval as LONG, byval as UBYTE, byval as INT_) as LONG
 
 #define TO_ADVANCEDTYPOGRAPHY 1
 #define TO_SIMPLELINEBREAK 2

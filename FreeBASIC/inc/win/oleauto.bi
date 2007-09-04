@@ -216,22 +216,22 @@ declare function VariantCopy alias "VariantCopy" (byval as VARIANTARG ptr, byval
 declare function VariantCopyInd alias "VariantCopyInd" (byval as VARIANT_ ptr, byval as VARIANTARG ptr) as HRESULT
 declare function VariantChangeType alias "VariantChangeType" (byval as VARIANTARG ptr, byval as VARIANTARG ptr, byval as ushort, byval as VARTYPE) as HRESULT
 declare function VariantChangeTypeEx alias "VariantChangeTypeEx" (byval as VARIANTARG ptr, byval as VARIANTARG ptr, byval as LCID, byval as ushort, byval as VARTYPE) as HRESULT
-declare function VarUI1FromI2 alias "VarUI1FromI2" (byval as SHORT, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromI4 alias "VarUI1FromI4" (byval as LONG, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromI8 alias "VarUI1FromI8" (byval as LONG64, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromR4 alias "VarUI1FromR4" (byval as FLOAT, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromR8 alias "VarUI1FromR8" (byval as DOUBLE, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromDate alias "VarUI1FromDate" (byval as DATE_, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromBool alias "VarUI1FromBool" (byval as VARIANT_BOOL, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromI1 alias "VarUI1FromI1" (byval as byte, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromUI2 alias "VarUI1FromUI2" (byval as USHORT, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromUI4 alias "VarUI1FromUI4" (byval as ULONG, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromUI8 alias "VarUI1FromUI8" (byval as ULONG64, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromStr alias "VarUI1FromStr" (byval as OLECHAR ptr, byval as LCID, byval as ULONG, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromCy alias "VarUI1FromCy" (byval as CY, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromDec alias "VarUI1FromDec" (byval as DECIMAL ptr, byval as BYTE ptr) as HRESULT
-declare function VarUI1FromDisp alias "VarUI1FromDisp" (byval as IDispatch ptr, byval as LCID, byval as BYTE ptr) as HRESULT
-declare function VarI2FromUI1 alias "VarI2FromUI1" (byval as BYTE, byval as SHORT ptr) as HRESULT
+declare function VarUI1FromI2 alias "VarUI1FromI2" (byval as SHORT, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromI4 alias "VarUI1FromI4" (byval as LONG, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromI8 alias "VarUI1FromI8" (byval as LONG64, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromR4 alias "VarUI1FromR4" (byval as FLOAT, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromR8 alias "VarUI1FromR8" (byval as DOUBLE, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromDate alias "VarUI1FromDate" (byval as DATE_, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromBool alias "VarUI1FromBool" (byval as VARIANT_BOOL, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromI1 alias "VarUI1FromI1" (byval as byte, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromUI2 alias "VarUI1FromUI2" (byval as USHORT, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromUI4 alias "VarUI1FromUI4" (byval as ULONG, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromUI8 alias "VarUI1FromUI8" (byval as ULONG64, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromStr alias "VarUI1FromStr" (byval as OLECHAR ptr, byval as LCID, byval as ULONG, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromCy alias "VarUI1FromCy" (byval as CY, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromDec alias "VarUI1FromDec" (byval as DECIMAL ptr, byval as UBYTE ptr) as HRESULT
+declare function VarUI1FromDisp alias "VarUI1FromDisp" (byval as IDispatch ptr, byval as LCID, byval as UBYTE ptr) as HRESULT
+declare function VarI2FromUI1 alias "VarI2FromUI1" (byval as UBYTE, byval as SHORT ptr) as HRESULT
 declare function VarI2FromI4 alias "VarI2FromI4" (byval as LONG, byval as SHORT ptr) as HRESULT
 declare function VarI2FromI8 alias "VarI2FromI8" (byval as LONG64, byval as SHORT ptr) as HRESULT
 declare function VarI2FromR4 alias "VarI2FromR4" (byval as FLOAT, byval as SHORT ptr) as HRESULT
@@ -246,7 +246,7 @@ declare function VarI2FromStr alias "VarI2FromStr" (byval as OLECHAR ptr, byval 
 declare function VarI2FromCy alias "VarI2FromCy" (byval as CY, byval as SHORT ptr) as HRESULT
 declare function VarI2FromDec alias "VarI2FromDec" (byval as DECIMAL ptr, byval as SHORT ptr) as HRESULT
 declare function VarI2FromDisp alias "VarI2FromDisp" (byval as IDispatch ptr, byval as LCID, byval as SHORT ptr) as HRESULT
-declare function VarI4FromUI1 alias "VarI4FromUI1" (byval as BYTE, byval as LONG ptr) as HRESULT
+declare function VarI4FromUI1 alias "VarI4FromUI1" (byval as UBYTE, byval as LONG ptr) as HRESULT
 declare function VarI4FromI2 alias "VarI4FromI2" (byval as SHORT, byval as LONG ptr) as HRESULT
 declare function VarI4FromI8 alias "VarI4FromI8" (byval as LONG64, byval as LONG ptr) as HRESULT
 declare function VarI4FromR4 alias "VarI4FromR4" (byval as FLOAT, byval as LONG ptr) as HRESULT
@@ -261,7 +261,7 @@ declare function VarI4FromStr alias "VarI4FromStr" (byval as OLECHAR ptr, byval 
 declare function VarI4FromCy alias "VarI4FromCy" (byval as CY, byval as LONG ptr) as HRESULT
 declare function VarI4FromDec alias "VarI4FromDec" (byval as DECIMAL ptr, byval as LONG ptr) as HRESULT
 declare function VarI4FromDisp alias "VarI4FromDisp" (byval as IDispatch ptr, byval as LCID, byval as LONG ptr) as HRESULT
-declare function VarR4FromUI1 alias "VarR4FromUI1" (byval as BYTE, byval as FLOAT ptr) as HRESULT
+declare function VarR4FromUI1 alias "VarR4FromUI1" (byval as UBYTE, byval as FLOAT ptr) as HRESULT
 declare function VarR4FromI2 alias "VarR4FromI2" (byval as SHORT, byval as FLOAT ptr) as HRESULT
 declare function VarR4FromI4 alias "VarR4FromI4" (byval as LONG, byval as FLOAT ptr) as HRESULT
 declare function VarR4FromI8 alias "VarR4FromI8" (byval as LONG64, byval as FLOAT ptr) as HRESULT
@@ -276,7 +276,7 @@ declare function VarR4FromStr alias "VarR4FromStr" (byval as OLECHAR ptr, byval 
 declare function VarR4FromCy alias "VarR4FromCy" (byval as CY, byval as FLOAT ptr) as HRESULT
 declare function VarR4FromDec alias "VarR4FromDec" (byval as DECIMAL ptr, byval as FLOAT ptr) as HRESULT
 declare function VarR4FromDisp alias "VarR4FromDisp" (byval as IDispatch ptr, byval as LCID, byval as FLOAT ptr) as HRESULT
-declare function VarR8FromUI1 alias "VarR8FromUI1" (byval as BYTE, byval as double ptr) as HRESULT
+declare function VarR8FromUI1 alias "VarR8FromUI1" (byval as UBYTE, byval as double ptr) as HRESULT
 declare function VarR8FromI2 alias "VarR8FromI2" (byval as SHORT, byval as double ptr) as HRESULT
 declare function VarR8FromI4 alias "VarR8FromI4" (byval as LONG, byval as double ptr) as HRESULT
 declare function VarR8FromI8 alias "VarR8FromI8" (byval as LONG64, byval as double ptr) as HRESULT
@@ -291,7 +291,7 @@ declare function VarR8FromStr alias "VarR8FromStr" (byval as OLECHAR ptr, byval 
 declare function VarR8FromCy alias "VarR8FromCy" (byval as CY, byval as double ptr) as HRESULT
 declare function VarR8FromDec alias "VarR8FromDec" (byval as DECIMAL ptr, byval as double ptr) as HRESULT
 declare function VarR8FromDisp alias "VarR8FromDisp" (byval as IDispatch ptr, byval as LCID, byval as double ptr) as HRESULT
-declare function VarDateFromUI1 alias "VarDateFromUI1" (byval as BYTE, byval as DATE_ ptr) as HRESULT
+declare function VarDateFromUI1 alias "VarDateFromUI1" (byval as UBYTE, byval as DATE_ ptr) as HRESULT
 declare function VarDateFromI2 alias "VarDateFromI2" (byval as SHORT, byval as DATE_ ptr) as HRESULT
 declare function VarDateFromI4 alias "VarDateFromI4" (byval as LONG, byval as DATE_ ptr) as HRESULT
 declare function VarDateFromI8 alias "VarDateFromI8" (byval as LONG64, byval as DATE_ ptr) as HRESULT
@@ -306,7 +306,7 @@ declare function VarDateFromBool alias "VarDateFromBool" (byval as VARIANT_BOOL,
 declare function VarDateFromCy alias "VarDateFromCy" (byval as CY, byval as DATE_ ptr) as HRESULT
 declare function VarDateFromDec alias "VarDateFromDec" (byval as DECIMAL ptr, byval as DATE_ ptr) as HRESULT
 declare function VarDateFromDisp alias "VarDateFromDisp" (byval as IDispatch ptr, byval as LCID, byval as DATE_ ptr) as HRESULT
-declare function VarCyFromUI1 alias "VarCyFromUI1" (byval as BYTE, byval as CY ptr) as HRESULT
+declare function VarCyFromUI1 alias "VarCyFromUI1" (byval as UBYTE, byval as CY ptr) as HRESULT
 declare function VarCyFromI2 alias "VarCyFromI2" (byval sIn as SHORT, byval as CY ptr) as HRESULT
 declare function VarCyFromI4 alias "VarCyFromI4" (byval as LONG, byval as CY ptr) as HRESULT
 declare function VarCyFromI8 alias "VarCyFromI8" (byval as LONG64, byval as CY ptr) as HRESULT
@@ -321,7 +321,7 @@ declare function VarCyFromUI8 alias "VarCyFromUI8" (byval as ULONG64, byval as C
 declare function VarCyFromDec alias "VarCyFromDec" (byval as DECIMAL ptr, byval as CY ptr) as HRESULT
 declare function VarCyFromStr alias "VarCyFromStr" (byval as OLECHAR ptr, byval as LCID, byval as ULONG, byval as CY ptr) as HRESULT
 declare function VarCyFromDisp alias "VarCyFromDisp" (byval as IDispatch ptr, byval as LCID, byval as CY ptr) as HRESULT
-declare function VarBstrFromUI1 alias "VarBstrFromUI1" (byval as BYTE, byval as LCID, byval as ULONG, byval as BSTR ptr) as HRESULT
+declare function VarBstrFromUI1 alias "VarBstrFromUI1" (byval as UBYTE, byval as LCID, byval as ULONG, byval as BSTR ptr) as HRESULT
 declare function VarBstrFromI2 alias "VarBstrFromI2" (byval as SHORT, byval as LCID, byval as ULONG, byval as BSTR ptr) as HRESULT
 declare function VarBstrFromI4 alias "VarBstrFromI4" (byval as LONG, byval as LCID, byval as ULONG, byval as BSTR ptr) as HRESULT
 declare function VarBstrFromI8 alias "VarBstrFromI8" (byval as LONG64, byval as LCID, byval as ULONG, byval as BSTR ptr) as HRESULT
@@ -336,7 +336,7 @@ declare function VarBstrFromUI4 alias "VarBstrFromUI4" (byval as ULONG, byval as
 declare function VarBstrFromCy alias "VarBstrFromCy" (byval as CY, byval as LCID, byval as ULONG, byval as BSTR ptr) as HRESULT
 declare function VarBstrFromDec alias "VarBstrFromDec" (byval as DECIMAL ptr, byval as LCID, byval as ULONG, byval as BSTR ptr) as HRESULT
 declare function VarBstrFromDisp alias "VarBstrFromDisp" (byval as IDispatch ptr, byval as LCID, byval as ULONG, byval as BSTR ptr) as HRESULT
-declare function VarBoolFromUI1 alias "VarBoolFromUI1" (byval as BYTE, byval as VARIANT_BOOL ptr) as HRESULT
+declare function VarBoolFromUI1 alias "VarBoolFromUI1" (byval as UBYTE, byval as VARIANT_BOOL ptr) as HRESULT
 declare function VarBoolFromI2 alias "VarBoolFromI2" (byval as SHORT, byval as VARIANT_BOOL ptr) as HRESULT
 declare function VarBoolFromI4 alias "VarBoolFromI4" (byval as LONG, byval as VARIANT_BOOL ptr) as HRESULT
 declare function VarBoolFromI8 alias "VarBoolFromI8" (byval as LONG64, byval as VARIANT_BOOL ptr) as HRESULT
@@ -374,9 +374,9 @@ declare function CreateErrorInfo alias "CreateErrorInfo" (byval as LPCREATEERROR
 declare function OaBuildVersion alias "OaBuildVersion" () as uinteger
 declare function VectorFromBstr alias "VectorFromBstr" (byval as BSTR, byval as SAFEARRAY ptr ptr) as HRESULT
 declare function BstrFromVector alias "BstrFromVector" (byval as SAFEARRAY ptr, byval as BSTR ptr) as HRESULT
-declare function VarParseNumFromStr alias "VarParseNumFromStr" (byval as OLECHAR ptr, byval as LCID, byval as ULONG, byval as NUMPARSE ptr, byval as BYTE ptr) as HRESULT
-declare function VarNumFromParseNum alias "VarNumFromParseNum" (byval as NUMPARSE ptr, byval as BYTE ptr, byval as ULONG, byval as VARIANT_ ptr) as HRESULT
-declare function VarI8FromUI1 alias "VarI8FromUI1" (byval as BYTE, byval as LONG64 ptr) as HRESULT
+declare function VarParseNumFromStr alias "VarParseNumFromStr" (byval as OLECHAR ptr, byval as LCID, byval as ULONG, byval as NUMPARSE ptr, byval as UBYTE ptr) as HRESULT
+declare function VarNumFromParseNum alias "VarNumFromParseNum" (byval as NUMPARSE ptr, byval as UBYTE ptr, byval as ULONG, byval as VARIANT_ ptr) as HRESULT
+declare function VarI8FromUI1 alias "VarI8FromUI1" (byval as UBYTE, byval as LONG64 ptr) as HRESULT
 declare function VarI8FromI2 alias "VarI8FromI2" (byval as SHORT, byval as LONG64 ptr) as HRESULT
 declare function VarI8FromI4 alias "VarI8FromI4" (byval as LONG, byval as LONG64 ptr) as HRESULT
 declare function VarI8FromR4 alias "VarI8FromR4" (byval as FLOAT, byval as LONG64 ptr) as HRESULT
@@ -392,7 +392,7 @@ declare function VarI8FromDec alias "VarI8FromDec" (byval pdecIn as DECIMAL ptr,
 declare function VarI8FromInt alias "VarI8FromInt" (byval intIn as INT_, byval as LONG64 ptr) as HRESULT
 declare function VarI8FromCy alias "VarI8FromCy" (byval as CY, byval as LONG64 ptr) as HRESULT
 declare function VarI8FromDisp alias "VarI8FromDisp" (byval as IDispatch ptr, byval as LCID, byval as LONG64 ptr) as HRESULT
-declare function VarI1FromUI1 alias "VarI1FromUI1" (byval as BYTE, byval as zstring ptr) as HRESULT
+declare function VarI1FromUI1 alias "VarI1FromUI1" (byval as UBYTE, byval as zstring ptr) as HRESULT
 declare function VarI1FromI2 alias "VarI1FromI2" (byval as SHORT, byval as zstring ptr) as HRESULT
 declare function VarI1FromI4 alias "VarI1FromI4" (byval as LONG, byval as zstring ptr) as HRESULT
 declare function VarI1FromI8 alias "VarI1FromI8" (byval as LONG64, byval as zstring ptr) as HRESULT
@@ -407,7 +407,7 @@ declare function VarI1FromUI8 alias "VarI1FromUI8" (byval as ULONG64, byval as z
 declare function VarI1FromCy alias "VarI1FromCy" (byval as CY, byval as zstring ptr) as HRESULT
 declare function VarI1FromDec alias "VarI1FromDec" (byval as DECIMAL ptr, byval as zstring ptr) as HRESULT
 declare function VarI1FromDisp alias "VarI1FromDisp" (byval as IDispatch ptr, byval as LCID, byval as zstring ptr) as HRESULT
-declare function VarUI2FromUI1 alias "VarUI2FromUI1" (byval as BYTE, byval as USHORT ptr) as HRESULT
+declare function VarUI2FromUI1 alias "VarUI2FromUI1" (byval as UBYTE, byval as USHORT ptr) as HRESULT
 declare function VarUI2FromI2 alias "VarUI2FromI2" (byval as SHORT, byval as USHORT ptr) as HRESULT
 declare function VarUI2FromI4 alias "VarUI2FromI4" (byval as LONG, byval as USHORT ptr) as HRESULT
 declare function VarUI2FromI8 alias "VarUI2FromI8" (byval as LONG64, byval as USHORT ptr) as HRESULT
@@ -423,7 +423,7 @@ declare function VarUI2FromCy alias "VarUI2FromCy" (byval as CY, byval as USHORT
 declare function VarUI2FromDec alias "VarUI2FromDec" (byval as DECIMAL ptr, byval as USHORT ptr) as HRESULT
 declare function VarUI2FromDisp alias "VarUI2FromDisp" (byval as IDispatch ptr, byval as LCID, byval as USHORT ptr) as HRESULT
 declare function VarUI4FromStr alias "VarUI4FromStr" (byval as OLECHAR ptr, byval as LCID, byval as ULONG, byval as ULONG ptr) as HRESULT
-declare function VarUI4FromUI1 alias "VarUI4FromUI1" (byval as BYTE, byval as ULONG ptr) as HRESULT
+declare function VarUI4FromUI1 alias "VarUI4FromUI1" (byval as UBYTE, byval as ULONG ptr) as HRESULT
 declare function VarUI4FromI2 alias "VarUI4FromI2" (byval as SHORT, byval as ULONG ptr) as HRESULT
 declare function VarUI4FromI4 alias "VarUI4FromI4" (byval as LONG, byval as ULONG ptr) as HRESULT
 declare function VarUI4FromI8 alias "VarUI4FromI8" (byval as LONG64, byval as ULONG ptr) as HRESULT
@@ -437,7 +437,7 @@ declare function VarUI4FromUI8 alias "VarUI4FromUI8" (byval as ULONG64, byval as
 declare function VarUI4FromCy alias "VarUI4FromCy" (byval as CY, byval as ULONG ptr) as HRESULT
 declare function VarUI4FromDec alias "VarUI4FromDec" (byval as DECIMAL ptr, byval as ULONG ptr) as HRESULT
 declare function VarUI4FromDisp alias "VarUI4FromDisp" (byval as IDispatch ptr, byval as LCID, byval as ULONG ptr) as HRESULT
-declare function VarUI8FromUI1 alias "VarUI8FromUI1" (byval as BYTE, byval as ULONG64 ptr) as HRESULT
+declare function VarUI8FromUI1 alias "VarUI8FromUI1" (byval as UBYTE, byval as ULONG64 ptr) as HRESULT
 declare function VarUI8FromI2 alias "VarUI8FromI2" (byval as SHORT, byval as ULONG64 ptr) as HRESULT
 declare function VarUI8FromI4 alias "VarUI8FromI4" (byval as LONG, byval as ULONG64 ptr) as HRESULT
 declare function VarUI8FromI8 alias "VarUI8FromI8" (byval as LONG64, byval as ULONG64 ptr) as HRESULT
@@ -453,7 +453,7 @@ declare function VarUI8FromDec alias "VarUI8FromDec" (byval as DECIMAL ptr, byva
 declare function VarUI8FromInt alias "VarUI8FromInt" (byval as INT_, byval as ULONG64 ptr) as HRESULT
 declare function VarUI8FromCy alias "VarUI8FromCy" (byval as CY, byval as ULONG64 ptr) as HRESULT
 declare function VarUI8FromDisp alias "VarUI8FromDisp" (byval as IDispatch ptr, byval as LCID, byval as ULONG64 ptr) as HRESULT
-declare function VarDecFromUI1 alias "VarDecFromUI1" (byval as BYTE, byval as DECIMAL ptr) as HRESULT
+declare function VarDecFromUI1 alias "VarDecFromUI1" (byval as UBYTE, byval as DECIMAL ptr) as HRESULT
 declare function VarDecFromI2 alias "VarDecFromI2" (byval as SHORT, byval as DECIMAL ptr) as HRESULT
 declare function VarDecFromI4 alias "VarDecFromI4" (byval as LONG, byval as DECIMAL ptr) as HRESULT
 declare function VarDecFromI8 alias "VarDecFromI8" (byval as LONG64, byval as DECIMAL ptr) as HRESULT

@@ -1579,7 +1579,7 @@ type DIMOUSESTATE
 	lX as LONG
 	lY as LONG
 	lZ as LONG
-	rgbButtons(0 to 4-1) as BYTE
+	rgbButtons(0 to 4-1) as UBYTE
 end type
 
 type LPDIMOUSESTATE as DIMOUSESTATE ptr
@@ -1588,7 +1588,7 @@ type DIMOUSESTATE2
 	lX as LONG
 	lY as LONG
 	lZ as LONG
-	rgbButtons(0 to 8-1) as BYTE
+	rgbButtons(0 to 8-1) as UBYTE
 end type
 
 type LPDIMOUSESTATE2 as DIMOUSESTATE2 ptr
@@ -1775,7 +1775,7 @@ type DIJOYSTATE
 	lRz as LONG
 	rglSlider(0 to 2-1) as LONG
 	rgdwPOV(0 to 4-1) as DWORD
-	rgbButtons(0 to 32-1) as BYTE
+	rgbButtons(0 to 32-1) as UBYTE
 end type
 
 type LPDIJOYSTATE as DIJOYSTATE ptr
@@ -1789,7 +1789,7 @@ type DIJOYSTATE2
 	lRz as LONG
 	rglSlider(0 to 2-1) as LONG
 	rgdwPOV(0 to 4-1) as DWORD
-	rgbButtons(0 to 128-1) as BYTE
+	rgbButtons(0 to 128-1) as UBYTE
 	lVX as LONG
 	lVY as LONG
 	lVZ as LONG

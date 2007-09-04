@@ -112,9 +112,9 @@ type USN as LONGLONG
 #define ANSI_NULL 0
 #define UNICODE_NULL 0
 
-type BOOLEAN as BYTE
-type PBOOLEAN as BYTE ptr
-type FCHAR as BYTE
+type BOOLEAN as UBYTE
+type PBOOLEAN as UBYTE ptr
+type FCHAR as UBYTE
 type FSHORT as WORD
 type FLONG as DWORD
 
@@ -1231,8 +1231,8 @@ end type
 type PGENERIC_MAPPING as GENERIC_MAPPING ptr
 
 type ACE_HEADER
-	AceType as BYTE
-	AceFlags as BYTE
+	AceType as UBYTE
+	AceFlags as UBYTE
 	AceSize as WORD
 end type
 
@@ -1315,8 +1315,8 @@ end type
 type PSYSTEM_ALARM_OBJECT_ACE as SYSTEM_ALARM_OBJECT_ACE ptr
 
 type ACL
-	AclRevision as BYTE
-	Sbz1 as BYTE
+	AclRevision as UBYTE
+	Sbz1 as UBYTE
 	AclSize as WORD
 	AceCount as WORD
 	Sbz2 as WORD
@@ -1355,7 +1355,7 @@ type FLOATING_SAVE_AREA
 	ErrorSelector as DWORD
 	DataOffset as DWORD
 	DataSelector as DWORD
-	RegisterArea(0 to 80-1) as BYTE
+	RegisterArea(0 to 80-1) as UBYTE
 	Cr0NpxState as DWORD
 end type
 
@@ -1384,7 +1384,7 @@ type CONTEXT
 	EFlags as DWORD
 	Esp as DWORD
 	SegSs as DWORD
-	ExtendedRegisters(0 to 512-1) as BYTE
+	ExtendedRegisters(0 to 512-1) as UBYTE
 end type
 
 type PCONTEXT as CONTEXT ptr
@@ -1495,7 +1495,7 @@ end type
 type PSE_IMPERSONATION_STATE as SE_IMPERSONATION_STATE ptr
 
 type SID_IDENTIFIER_AUTHORITY
-	Value(0 to 6-1) as BYTE
+	Value(0 to 6-1) as UBYTE
 end type
 
 type PSID_IDENTIFIER_AUTHORITY as SID_IDENTIFIER_AUTHORITY ptr
@@ -1503,8 +1503,8 @@ type LPSID_IDENTIFIER_AUTHORITY as SID_IDENTIFIER_AUTHORITY ptr
 type PSID as PVOID
 
 type SID
-	Revision as BYTE
-	SubAuthorityCount as BYTE
+	Revision as UBYTE
+	SubAuthorityCount as UBYTE
 	IdentifierAuthority as SID_IDENTIFIER_AUTHORITY
 	SubAuthority(0 to 1-1) as DWORD
 end type
@@ -1603,8 +1603,8 @@ type SECURITY_DESCRIPTOR_CONTROL as WORD
 type PSECURITY_DESCRIPTOR_CONTROL as WORD ptr
 
 type SECURITY_DESCRIPTOR
-	Revision as BYTE
-	Sbz1 as BYTE
+	Revision as UBYTE
+	Sbz1 as UBYTE
 	Control as SECURITY_DESCRIPTOR_CONTROL
 	Owner as PSID
 	Group as PSID
@@ -1784,7 +1784,7 @@ type PMEMORY_BASIC_INFORMATION as MEMORY_BASIC_INFORMATION ptr
 type MESSAGE_RESOURCE_ENTRY
 	Length as WORD
 	Flags as WORD
-	Text(0 to 1-1) as BYTE
+	Text(0 to 1-1) as UBYTE
 end type
 
 type PMESSAGE_RESOURCE_ENTRY as MESSAGE_RESOURCE_ENTRY ptr
@@ -1910,8 +1910,8 @@ type OSVERSIONINFOEXA
 	wServicePackMajor as WORD
 	wServicePackMinor as WORD
 	wSuiteMask as WORD
-	wProductType as BYTE
-	wReserved as BYTE
+	wProductType as UBYTE
+	wReserved as UBYTE
 end type
 
 type POSVERSIONINFOEXA as OSVERSIONINFOEXA ptr
@@ -1928,8 +1928,8 @@ type OSVERSIONINFOEXW
 	wServicePackMajor as WORD
 	wServicePackMinor as WORD
 	wSuiteMask as WORD
-	wProductType as BYTE
-	wReserved as BYTE
+	wProductType as UBYTE
+	wReserved as UBYTE
 end type
 
 type POSVERSIONINFOEXW as OSVERSIONINFOEXW ptr
@@ -1938,8 +1938,8 @@ type LPOSVERSIONINFOEXW as OSVERSIONINFOEXW ptr
 
 type IMAGE_VXD_HEADER field=2
 	e32_magic as WORD
-	e32_border as BYTE
-	e32_worder as BYTE
+	e32_border as UBYTE
+	e32_worder as UBYTE
 	e32_level as DWORD
 	e32_cpu as WORD
 	e32_os as WORD
@@ -1983,7 +1983,7 @@ type IMAGE_VXD_HEADER field=2
 	e32_instpreload as DWORD
 	e32_instdemand as DWORD
 	e32_heapsize as DWORD
-	e32_res3(0 to 12-1) as BYTE
+	e32_res3(0 to 12-1) as UBYTE
 	e32_winresoff as DWORD
 	e32_winreslen as DWORD
 	e32_devid as WORD
@@ -2013,8 +2013,8 @@ type PIMAGE_DATA_DIRECTORY as IMAGE_DATA_DIRECTORY ptr
 
 type IMAGE_OPTIONAL_HEADER
 	Magic as WORD
-	MajorLinkerVersion as BYTE
-	MinorLinkerVersion as BYTE
+	MajorLinkerVersion as UBYTE
+	MinorLinkerVersion as UBYTE
 	SizeOfCode as DWORD
 	SizeOfInitializedData as DWORD
 	SizeOfUninitializedData as DWORD
@@ -2049,8 +2049,8 @@ type PIMAGE_OPTIONAL_HEADER as IMAGE_OPTIONAL_HEADER ptr
 
 type IMAGE_ROM_OPTIONAL_HEADER
 	Magic as WORD
-	MajorLinkerVersion as BYTE
-	MinorLinkerVersion as BYTE
+	MajorLinkerVersion as UBYTE
+	MinorLinkerVersion as UBYTE
 	SizeOfCode as DWORD
 	SizeOfInitializedData as DWORD
 	SizeOfUninitializedData as DWORD
@@ -2114,8 +2114,8 @@ type IMAGE_OS2_HEADER field=2
 	ne_cmovent as WORD
 	ne_align as WORD
 	ne_cres as WORD
-	ne_exetyp as BYTE
-	ne_flagsothers as BYTE
+	ne_exetyp as UBYTE
+	ne_flagsothers as UBYTE
 	ne_pretthunks as WORD
 	ne_psegrefbytes as WORD
 	ne_swaparea as WORD
@@ -2145,7 +2145,7 @@ union IMAGE_SECTION_HEADER_Misc
 end union
 
 type IMAGE_SECTION_HEADER
-	Name(0 to 8-1) as BYTE
+	Name(0 to 8-1) as UBYTE
 	Misc as IMAGE_SECTION_HEADER_Misc
 	VirtualAddress as DWORD
 	SizeOfRawData as DWORD
@@ -2165,7 +2165,7 @@ type IMAGE_SYMBOL_N_Name field=2
 end type
 
 union IMAGE_SYMBOL_N field=2
-	ShortName(0 to 8-1) as BYTE
+	ShortName(0 to 8-1) as UBYTE
 	LongName(0 to 2-1) as PBYTE
 	Name as IMAGE_SYMBOL_N_Name
 end union
@@ -2174,15 +2174,15 @@ type IMAGE_SYMBOL field=2
 	Value as DWORD
 	SectionNumber as SHORT
 	Type as WORD
-	StorageClass as BYTE
-	NumberOfAuxSymbols as BYTE
+	StorageClass as UBYTE
+	NumberOfAuxSymbols as UBYTE
 	N as IMAGE_SYMBOL_N
 end type
 
 type PIMAGE_SYMBOL as IMAGE_SYMBOL ptr
 
 type IMAGE_AUX_SYMBOL_File field=2
-	Name(0 to 18-1) as BYTE
+	Name(0 to 18-1) as UBYTE
 end type
 
 type IMAGE_AUX_SYMBOL_Sym_Misc_LnSz field=2
@@ -2222,7 +2222,7 @@ type IMAGE_AUX_SYMBOL_Section field=2
 	NumberOfLinenumbers as WORD
 	CheckSum as DWORD
 	Number as SHORT
-	Selection as BYTE
+	Selection as UBYTE
 end type
 
 union IMAGE_AUX_SYMBOL field=2
@@ -2278,13 +2278,13 @@ type PIMAGE_LINENUMBER as IMAGE_LINENUMBER ptr
 
 
 type IMAGE_ARCHIVE_MEMBER_HEADER
-	Name(0 to 16-1) as BYTE
-	Date(0 to 12-1) as BYTE
-	UserID(0 to 6-1) as BYTE
-	GroupID(0 to 6-1) as BYTE
-	Mode(0 to 8-1) as BYTE
-	Size(0 to 10-1) as BYTE
-	EndHeader(0 to 2-1) as BYTE
+	Name(0 to 16-1) as UBYTE
+	Date(0 to 12-1) as UBYTE
+	UserID(0 to 6-1) as UBYTE
+	GroupID(0 to 6-1) as UBYTE
+	Mode(0 to 8-1) as UBYTE
+	Size(0 to 10-1) as UBYTE
+	EndHeader(0 to 2-1) as UBYTE
 end type
 
 type PIMAGE_ARCHIVE_MEMBER_HEADER as IMAGE_ARCHIVE_MEMBER_HEADER ptr
@@ -2307,7 +2307,7 @@ type PIMAGE_EXPORT_DIRECTORY as IMAGE_EXPORT_DIRECTORY ptr
 
 type IMAGE_IMPORT_BY_NAME
 	Hint as WORD
-	Name(0 to 1-1) as BYTE
+	Name(0 to 1-1) as UBYTE
 end type
 
 type PIMAGE_IMPORT_BY_NAME as IMAGE_IMPORT_BY_NAME ptr
@@ -2492,8 +2492,8 @@ type IMAGE_DEBUG_MISC
 	DataType as DWORD
 	Length as DWORD
 	Unicode_ as BOOLEAN
-	Reserved(0 to 3-1) as BYTE
-	Data(0 to 1-1) as BYTE
+	Reserved(0 to 3-1) as UBYTE
+	Data(0 to 1-1) as UBYTE
 end type
 
 type PIMAGE_DEBUG_MISC as IMAGE_DEBUG_MISC ptr
@@ -2572,7 +2572,7 @@ end type
 type PNT_TIB as NT_TIB ptr
 
 type REPARSE_DATA_BUFFER_u_GenericReparseBuffer
-	DataBuffer(0 to 1-1) as BYTE
+	DataBuffer(0 to 1-1) as UBYTE
 end type
 
 type REPARSE_DATA_BUFFER_u_MountPointReparseBuffer
@@ -2605,7 +2605,7 @@ end type
 type PREPARSE_DATA_BUFFER as REPARSE_DATA_BUFFER ptr
 
 type REPARSE_GUID_DATA_BUFFER_GenericReparseBuffer
-	DataBuffer(0 to 1-1) as BYTE
+	DataBuffer(0 to 1-1) as UBYTE
 end type
 
 type REPARSE_GUID_DATA_BUFFER
@@ -3111,7 +3111,7 @@ type POSVERSIONINFOEX as OSVERSIONINFOEXA ptr
 type LPOSVERSIONINFOEX as OSVERSIONINFOEXA ptr
 #endif ''UNICODE
 
-declare function VerSetConditionMask alias "VerSetConditionMask" (byval as ULONGLONG, byval as DWORD, byval as BYTE) as ULONGLONG
+declare function VerSetConditionMask alias "VerSetConditionMask" (byval as ULONGLONG, byval as DWORD, byval as UBYTE) as ULONGLONG
 declare function GetCurrentFiber alias "GetCurrentFiber" () as PVOID
 declare function GetFiberData alias "GetFiberData" () as PVOID
 

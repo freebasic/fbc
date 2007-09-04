@@ -591,11 +591,11 @@ type ID3DXTextureGutterHelperVtbl
 	GetFaceMap as function(byval as ID3DXTextureGutterHelper ptr, byval as UINT ptr) as HRESULT
 	GetBaryMap as function(byval as ID3DXTextureGutterHelper ptr, byval as D3DXVECTOR2 ptr) as HRESULT
 	GetTexelMap as function(byval as ID3DXTextureGutterHelper ptr, byval as D3DXVECTOR2 ptr) as HRESULT
-	GetGutterMap as function(byval as ID3DXTextureGutterHelper ptr, byval as BYTE ptr) as HRESULT
+	GetGutterMap as function(byval as ID3DXTextureGutterHelper ptr, byval as UBYTE ptr) as HRESULT
 	SetFaceMap as function(byval as ID3DXTextureGutterHelper ptr, byval as UINT ptr) as HRESULT
 	SetBaryMap as function(byval as ID3DXTextureGutterHelper ptr, byval as D3DXVECTOR2 ptr) as HRESULT
 	SetTexelMap as function(byval as ID3DXTextureGutterHelper ptr, byval as D3DXVECTOR2 ptr) as HRESULT
-	SetGutterMap as function(byval as ID3DXTextureGutterHelper ptr, byval as BYTE ptr) as HRESULT
+	SetGutterMap as function(byval as ID3DXTextureGutterHelper ptr, byval as UBYTE ptr) as HRESULT
 end type
 
 type LPD3DXPRTENGINE as ID3DXPRTEngine ptr

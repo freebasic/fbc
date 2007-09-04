@@ -2086,7 +2086,7 @@ end type
 type HDEVNOTIFY as HDEVNOTIFY__ ptr
 
 type ACCEL
-	fVirt as BYTE
+	fVirt as UBYTE
 	key as WORD
 	cmd as WORD
 end type
@@ -2203,8 +2203,8 @@ type CURSORSHAPE
 	cx as integer
 	cy as integer
 	cbWidth as integer
-	Planes as BYTE
-	BitsPixel as BYTE
+	Planes as UBYTE
+	BitsPixel as UBYTE
 end type
 
 type LPCURSORSHAPE as CURSORSHAPE ptr
@@ -2306,7 +2306,7 @@ type PAINTSTRUCT
 	rcPaint as RECT
 	fRestore as BOOL
 	fIncUpdate as BOOL
-	rgbReserved(0 to 32-1) as BYTE
+	rgbReserved(0 to 32-1) as UBYTE
 end type
 
 type LPPAINTSTRUCT as PAINTSTRUCT ptr
@@ -3201,7 +3201,7 @@ type LPRAWKEYBOARD as RAWKEYBOARD ptr
 type RAWHID
 	dwSizeHid as DWORD
 	dwCount as DWORD
-	bRawData as BYTE
+	bRawData as UBYTE
 end type
 
 type PRAWHID as RAWHID ptr
@@ -3303,7 +3303,7 @@ declare function CopyRect (byval as LPRECT, byval as LPCRECT) as BOOL
 declare function CountClipboardFormats () as integer
 declare function CreateCaret (byval as HWND, byval as HBITMAP, byval as integer, byval as integer) as BOOL
 declare function CreateCursor (byval as HINSTANCE, byval as integer, byval as integer, byval as integer, byval as integer, byval as PCVOID, byval as PCVOID) as HCURSOR
-declare function CreateIcon (byval as HINSTANCE, byval as integer, byval as integer, byval as BYTE, byval as BYTE, byval as BYTE ptr, byval as BYTE ptr) as HICON
+declare function CreateIcon (byval as HINSTANCE, byval as integer, byval as integer, byval as UBYTE, byval as UBYTE, byval as UBYTE ptr, byval as UBYTE ptr) as HICON
 declare function CreateIconFromResource (byval as PBYTE, byval as DWORD, byval as BOOL, byval as DWORD) as HICON
 declare function CreateIconFromResourceEx (byval as PBYTE, byval as DWORD, byval as BOOL, byval as DWORD, byval as integer, byval as integer, byval as UINT) as HICON
 declare function CreateIconIndirect (byval as PICONINFO) as HICON
@@ -3464,7 +3464,7 @@ declare function IsWindowUnicode (byval as HWND) as BOOL
 declare function IsWindowVisible (byval as HWND) as BOOL
 declare function IsWinEventHookInstalled (byval as DWORD) as BOOL
 declare function IsZoomed (byval as HWND) as BOOL
-declare sub keybd_event (byval as BYTE, byval as BYTE, byval as DWORD, byval as DWORD)
+declare sub keybd_event (byval as UBYTE, byval as UBYTE, byval as DWORD, byval as DWORD)
 declare function KillTimer (byval as HWND, byval as UINT) as BOOL
 declare function LockWindowUpdate (byval as HWND) as BOOL
 declare function LockWorkStation () as BOOL
@@ -3580,9 +3580,9 @@ declare function WindowFromPoint (byval as POINT) as HWND
 declare function WinExec (byval as LPCSTR, byval as UINT) as UINT
 declare function AllowSetForegroundWindow (byval as DWORD) as BOOL
 declare function LockSetForegroundWindow (byval as UINT) as BOOL
-declare function SetLayeredWindowAttributes (byval as HWND, byval as COLORREF, byval as BYTE, byval as DWORD) as BOOL
+declare function SetLayeredWindowAttributes (byval as HWND, byval as COLORREF, byval as UBYTE, byval as DWORD) as BOOL
 declare function UpdateLayeredWindow (byval as HWND, byval as HDC, byval as POINT ptr, byval as SIZE ptr, byval as HDC, byval as POINT ptr, byval as COLORREF, byval as BLENDFUNCTION ptr, byval as DWORD) as BOOL
-declare function GetLayeredWindowAttributes (byval as HWND, byval as COLORREF ptr, byval as BYTE ptr, byval as DWORD ptr) as BOOL
+declare function GetLayeredWindowAttributes (byval as HWND, byval as COLORREF ptr, byval as UBYTE ptr, byval as DWORD ptr) as BOOL
 
 #ifdef UNICODE
 type WNDCLASS as WNDCLASSW
