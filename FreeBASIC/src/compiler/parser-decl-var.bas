@@ -482,9 +482,12 @@ private function hDeclDynArray _
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)		'' always 0
     dim as FBSYMBOL ptr desc
     dim as FB_SYMBOPT options
+	dim as integer is_redim
+	
+	is_redim = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
 
     function = NULL
-
+	
     if( dimensions <> -1 ) then
 		'' DIM'g dynamic arrays gens code, check if allowed
     	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
@@ -531,7 +534,7 @@ private function hDeclDynArray _
 
 		else
 			'' a dupe param?
-			if( symbIsParamByDesc( sym ) ) then
+			if( iif( symbIsParamByDesc( sym ), is_redim = FALSE, FALSE ) ) then
 				sym = NULL
 			else
 				
