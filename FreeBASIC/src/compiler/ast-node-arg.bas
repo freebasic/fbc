@@ -1010,6 +1010,16 @@ private function hCheckParam _
 
 		n->l = arg
 
+	else
+		'' check for overflows
+		if( symbGetDataClass( arg->dtype ) = FB_DATACLASS_FPOINT ) then
+			if( astIsCONST( arg ) ) then
+				arg = astCheckConst( param_dtype, arg )
+				if( arg = NULL ) then
+					exit function
+				end if
+			end if
+		end if
 	end if
 
 	'' pointer checking

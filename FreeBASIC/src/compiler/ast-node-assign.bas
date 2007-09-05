@@ -346,6 +346,16 @@ function astCheckASSIGN _
 				exit function
 			end if
 		end if
+	else
+		'' check for overflows
+		if( symbGetDataClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+			if( astIsCONST( r ) ) then
+				r = astCheckConst( l->dtype, r )
+				if( r = NULL ) then
+					exit function
+				end if
+			end if
+		end if
 	end if
 
 	function = TRUE
@@ -570,6 +580,16 @@ function astNewASSIGN _
 
 			if( doconv ) then
 				r = astNewCONV( ldtype, l->subtype, r )
+				if( r = NULL ) then
+					exit function
+				end if
+			end if
+		end if
+	else
+		'' check for overflows
+		if( symbGetDataClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+			if( astIsCONST( r ) ) then
+				r = astCheckConst( l->dtype, r )
 				if( r = NULL ) then
 					exit function
 				end if
