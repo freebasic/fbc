@@ -50,6 +50,7 @@ tests/dim/mod_extern/submod.bmk
 tests/dim/mod_extern/submod_a.bas
 tests/dim/mod_extern/submod_b.bas
 tests/dim/redim.bas
+tests/dim/redim_param.bas
 tests/dim/static.bas
 tests/dim/submod/submod.bmk
 tests/dim/submod/submod_a.bas
@@ -90,7 +91,8 @@ tests/functions/bydesc_array2.bas
 tests/functions/bydesc_array_str.bas
 tests/functions/bydesc_arrayfield.bas
 tests/functions/bydesc_arrayfield_str.bas
-tests/functions/callconv.bas
+tests/functions/callconv_default.bas
+tests/functions/callconv_mode.bas
 tests/functions/fixstr_arg.bas
 tests/functions/str_paramcopy.bas
 tests/functions/str_paramrecursion.bas
@@ -334,6 +336,8 @@ tests/structs/imp_var_dup.bas
 tests/structs/init_union.bas
 tests/structs/intrinsic_anon.bas
 tests/structs/obj_byval_return.bas
+tests/structs/obj_cast_ovl.bas
+tests/structs/obj_cast_ovl2.bas
 tests/structs/obj_default_param.bas
 tests/structs/obj_field_ini.bas
 tests/structs/obj_field_ini_str.bas
