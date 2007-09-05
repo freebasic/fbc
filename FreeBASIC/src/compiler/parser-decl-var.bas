@@ -533,9 +533,16 @@ private function hDeclDynArray _
    								  dimensions, dTB() )
 
 		else
-			'' a dupe param?
-			if( iif( symbIsParamByDesc( sym ), is_redim = FALSE, FALSE ) ) then
+			'' dup checks
+			
+			'' [re]dim () after existing already?
+			if( dimensions = -1 ) then
 				sym = NULL
+			
+			'' dim foo(variable)?
+			elseif( is_redim = FALSE ) then
+				sym = NULL
+			
 			else
 				
 				'' external?
