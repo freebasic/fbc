@@ -818,6 +818,7 @@ declare function EnumPrinterDrivers alias "EnumPrinterDriversW" (byval as LPWSTR
 declare function EnumPrinters alias "EnumPrintersW" (byval as DWORD, byval as LPWSTR, byval as DWORD, byval as PBYTE, byval as DWORD, byval as PDWORD, byval as PDWORD) as BOOL
 declare function EnumPrintProcessorDatatypes alias "EnumPrintProcessorDatatypesW" (byval as LPWSTR, byval as LPWSTR, byval as DWORD, byval as PBYTE, byval as DWORD, byval as PDWORD, byval as PDWORD) as BOOL
 declare function EnumPrintProcessors alias "EnumPrintProcessorsW" (byval as LPWSTR, byval as LPWSTR, byval as DWORD, byval as PBYTE, byval as DWORD, byval as PDWORD, byval as PDWORD) as BOOL
+declare function GetDefaultPrinter alias "GetDefaultPrinterW" (byval as LPWSTR, byval as LPDWORD) as BOOL
 declare function GetForm alias "GetFormW" (byval as HANDLE, byval as LPWSTR, byval as DWORD, byval as PBYTE, byval as DWORD, byval as PDWORD) as BOOL
 declare function GetJob alias "GetJobW" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as PBYTE, byval as DWORD, byval as PDWORD) as BOOL
 declare function GetPrinter alias "GetPrinterW" (byval as HANDLE, byval as DWORD, byval as PBYTE, byval as DWORD, byval as PDWORD) as BOOL
@@ -922,6 +923,7 @@ declare function EnumPrinterDrivers alias "EnumPrinterDriversA" (byval as LPSTR,
 declare function EnumPrinters alias "EnumPrintersA" (byval as DWORD, byval as LPSTR, byval as DWORD, byval as PBYTE, byval as DWORD, byval as PDWORD, byval as PDWORD) as BOOL
 declare function EnumPrintProcessorDatatypes alias "EnumPrintProcessorDatatypesA" (byval as LPSTR, byval as LPSTR, byval as DWORD, byval as PBYTE, byval as DWORD, byval as PDWORD, byval as PDWORD) as BOOL
 declare function EnumPrintProcessors alias "EnumPrintProcessorsA" (byval as LPSTR, byval as LPSTR, byval as DWORD, byval as PBYTE, byval as DWORD, byval as PDWORD, byval as PDWORD) as BOOL
+declare function GetDefaultPrinter alias "GetDefaultPrinterA" (byval as LPSTR, byval as LPDWORD) as BOOL
 declare function GetForm alias "GetFormA" (byval as HANDLE, byval as LPSTR, byval as DWORD, byval as PBYTE, byval as DWORD, byval as PDWORD) as BOOL
 declare function GetJob alias "GetJobA" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as PBYTE, byval as DWORD, byval as PDWORD) as BOOL
 declare function GetPrinter alias "GetPrinterA" (byval as HANDLE, byval as DWORD, byval as PBYTE, byval as DWORD, byval as PDWORD) as BOOL
