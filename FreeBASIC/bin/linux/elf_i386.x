@@ -120,19 +120,6 @@ SECTIONS
     KEEP (*(.dtors))
   }
 
-  .fb_ctors :
-  {
-    ___FB_GLOBCTOR_INI__ = . ; __FB_GLOBCTOR_INI__ = . ;
-    *(.fb_ctors)
-    ___FB_GLOBCTOR_END__ = . ; __FB_GLOBCTOR_END__ = . ;
-  }
-  .fb_dtors :
-  {
-    ___FB_GLOBDTOR_INI__ = . ; __FB_GLOBDTOR_INI__ = . ;
-    *(.fb_dtors)
-    ___FB_GLOBDTOR_END__ = . ; __FB_GLOBDTOR_END__ = . ;
-  }
-
   .jcr            : { KEEP (*(.jcr)) }
   .got            : { *(.got.plt) *(.got) }
   _edata = .;

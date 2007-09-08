@@ -25,13 +25,6 @@ SECTIONS
     *(.dtor)
     djgpp_last_dtor = . ;
 
-    ___FB_GLOBCTOR_INI__ = . ; __FB_GLOBCTOR_INI__ = . ;
-    *(.fb_ctors);
-    ___FB_GLOBCTOR_END__ = . ; __FB_GLOBCTOR_END__ = . ;
-    ___FB_GLOBDTOR_INI__ = . ; __FB_GLOBDTOR_INI__ = . ;
-    *(.fb_dtors);
-    ___FB_GLOBDTOR_END__ = . ; __FB_GLOBDTOR_END__ = . ;
-
     __environ = . ;
     PROVIDE(_environ = .) ;
     LONG(0) ;
