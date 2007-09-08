@@ -6,20 +6,21 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgExternBlock
 '' --------
 
-Extern "c++"
-	'' This namespace uses C++ mangling
-	Namespace Ns1
-		Declare Function theFunction( ByVal As Integer ) As UInteger
-	End Namespace
+Extern "C"
+	'' This procedure uses the CDECL convention and is seen externally
+	'' as "SomeProcedure".
+	Declare Sub SomeProcedure ( ByVal As Integer )
 End Extern
 
-'' This namespace uses FreeBASIC mangling.
-Namespace Ns2
-	Declare Function theFunction( ByVal As Integer ) As UInteger
-End Namespace
+Extern "C++"
+	'' This procedure uses the CDECL convention and its name is mangled
+	'' compatible to that of g++-4.x.
+	Declare Function AnotherProcedure ( ByVal As Integer ) As Integer
+End Extern
 
-'' Both the functions don't exist, but this demonstrates the point that GNU LD recognizes C++ symbols and reports an understandable name.
-'' Compare Ns1::theFunction(int) with _ZN3NS211THEFUNCTIONEi@4.
-
-Print Ns1.theFunction( 1 )
-Print Ns2.theFunction( 1 )
+Extern "Windows"
+	'' This procedure uses the STDCALL convention and is seen externally
+	'' as "YetAnotherProcedure@4" on DOS/Windows platforms, and
+	'' "YetAnotherProcedure" on Linux platforms.
+	Declare Function YetAnotherProcedure ( ByVal As Integer ) As Integer
+End Extern
