@@ -1,7 +1,7 @@
 # configure.ac for the FB Compiler		-*- Autoconf -*-
 # Process this file with autoconf to generate a configuration script.
 
-AC_INIT([fbc],[0.18.1],[http://sourceforge.net/projects/fbc])
+AC_INIT([fbc],[0.18.2],[http://sourceforge.net/projects/fbc])
 AC_PREREQ([2.59])
 
 AC_COPYRIGHT([Copyright (C) 2004-2007 The FreeBASIC development team])
@@ -124,6 +124,63 @@ AC_ARG_ENABLE(objinfo,
  FBC_OBJINFO=objinfo
 )
 AC_SUBST([FBC_OBJINFO])
+
+
+#
+# Cross-compile targets
+#
+# If the default target is also specified with --enable-crosscomp-(target),
+# it will be silently ignored.
+#
+
+
+AC_ARG_ENABLE(crosscomp-cygwin,
+ [  --enable-crosscomp-cygwin    enable -target cygwin],
+ [if test "$FBC_TARGET" != "cygwin"; then
+    FBC_CROSSCOMP_CYGWIN=yes
+  fi]
+)
+AC_SUBST([FBC_CROSSCOMP_CYGWIN])
+
+AC_ARG_ENABLE(crosscomp-dos,
+ [  --enable-crosscomp-dos       enable -target dos],
+ [if test "$FBC_TARGET" != "dos"; then
+    FBC_CROSSCOMP_DOS=yes
+  fi]
+)
+AC_SUBST([FBC_CROSSCOMP_DOS])
+
+AC_ARG_ENABLE(crosscomp-freebsd,
+ [  --enable-crosscomp-freebsd   enable -target freebsd],
+ [if test "$FBC_TARGET" != "freebsd"; then
+    FBC_CROSSCOMP_FREEBSD=yes
+  fi]
+)
+AC_SUBST([FBC_CROSSCOMP_FREEBSD])
+
+AC_ARG_ENABLE(crosscomp-linux,
+ [  --enable-crosscomp-linux     enable -target linux],
+ [if test "$FBC_TARGET" != "linux"; then
+    FBC_CROSSCOMP_LINUX=yes
+  fi]
+)
+AC_SUBST([FBC_CROSSCOMP_LINUX])
+
+AC_ARG_ENABLE(crosscomp-win32,
+ [  --enable-crosscomp-win32     enable -target win32],
+ [if test "$FBC_TARGET" != "win32"; then
+    FBC_CROSSCOMP_WIN32=yes
+  fi]
+)
+AC_SUBST([FBC_CROSSCOMP_WIN32])
+
+AC_ARG_ENABLE(crosscomp-xbox,
+ [  --enable-crosscomp-xbox      enable -target xbox],
+ [if test "$FBC_TARGET" != "xbox"; then
+    FBC_CROSSCOMP_XBOX=yes
+  fi]
+)
+AC_SUBST([FBC_CROSSCOMP_XBOX])
 
 
 # Output
