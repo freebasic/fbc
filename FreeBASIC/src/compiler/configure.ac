@@ -66,8 +66,20 @@ AC_SUBST([FBC_HOST])
 case "$target_cpu" in
 	i?86 | x86 )
 		AC_DEFINE([TARGET_X86],1,[x86 build])
+		FBC_TARGET_CPU=x86
 		;;
 esac
+
+AC_SUBST([FBC_TARGET_CPU])
+
+case "$host_cpu" in
+	i?86 | x86 )
+		AC_DEFINE([HOST_X86],1,[x86 host])
+		FBC_HOST_CPU=x86
+		;;
+esac
+
+AC_SUBST([FBC_HOST_CPU])
 
 # Checks for programs.
 AC_PROG_MAKE_SET
