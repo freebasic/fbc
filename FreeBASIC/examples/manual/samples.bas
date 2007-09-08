@@ -471,6 +471,7 @@ function DoSpecialBuild _
 	last = sbFiles(i).index2 - 1
 
 	if( last - first < 0 ) then
+		function = BUILD_NOT_NEEDED
 		exit function
 	end if
 
