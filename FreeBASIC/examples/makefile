@@ -1,7 +1,11 @@
 
-DIRLIST := Allegro big_int CGUI classes cryptlib CUnit Curl curses CVS DB disphelper file
-DIRLIST += freetype gfx GL GL/NeHe GSL Gtk Gtk/Tutorials IUP libxml Lua namespace
-DIRLIST += pdflib regex SDL sound unicode Windows Windows/gui Windows/winsock wx-c
+DIRLIST := libraries/Allegro libraries/big_int libraries/CGUI libraries/cryptlib libraries/CUnit libraries/Curl 
+DIRLIST += libraries/curses libraries/DB libraries/disphelper libraries/freetype libraries/GL libraries/GL/NeHe
+DIRLIST += libraries/GSL libraries/Gtk libraries/Gtk/Tutorials libraries/IUP libraries/libxml libraries/Lua
+DIRLIST += libraries/pdflib libraries/regex libraries/SDL libraries/sound libraries/wx-c
+DIRLIST += unicode namespace gfx classes misc misc/file
+DIRLIST += Windows Windows/gui Windows/winsock 
+
 
 ###
 

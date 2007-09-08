@@ -6,35 +6,29 @@
 
 #include once "fbgl.bi" 
 
-const XRES = 640
-const YRES = 480
+const XRES = 320
+const YRES = 240
 
-	'' import the fbgl symbols
-	using fbgl
-	
-	'' create a window 
-	init XRES, YRES
+	var win = fbgl( XRES, YRES )
 	
 	'' change to anti-aliased mode
-	setBlend BLEND_ANTIALISED
-	setLineSmooth TRUE
+	win.blendMode = fbgl.ANTIALISED
+	win.lineSmooth = TRUE
 	
 	do 
-		dim i as integer
-		
 		'' clear the working page
-		cls
+		win.cls
 		
 		'' draw the contents
-		for i = 1 to 1000
+		for i as integer = 1 to 1000
 			'' use 255 (100%) for alpha 
-			color rgba(rnd * 255, rnd * 255, rnd * 255, 255) 
+			win.color = rgba(rnd * 255, rnd * 255, rnd * 255, 255) 
 	   		
 	   		'' line x1, y2, x2, y2
-	   		line rnd * XRES, rnd * YRES, rnd * XRES, rnd * YRES
+	   		win.line rnd * XRES, rnd * YRES, rnd * XRES, rnd * YRES
 		next
 	   	
 	   '' copy the working page to the visible one
-	   flip
+	   win.flip
 	   
 	loop while len( inkey ) = 0
