@@ -306,6 +306,7 @@ tests/string/mid_stmt_dref_dest.bas
 tests/string/oct.bas
 tests/string/redim.bas
 tests/string/rtrim.bas
+tests/string/str_idx.bas
 tests/string/str_pad.bas
 tests/string/strptr.bas
 tests/string/trim.bas
@@ -335,6 +336,10 @@ tests/structs/func_backpatching.bas
 tests/structs/imp_var_dup.bas
 tests/structs/init_union.bas
 tests/structs/intrinsic_anon.bas
+tests/structs/obj_access_const.bas
+tests/structs/obj_access_const2.bas
+tests/structs/obj_access_const3.bas
+tests/structs/obj_access_const4.bas
 tests/structs/obj_byval_return.bas
 tests/structs/obj_cast_ovl.bas
 tests/structs/obj_cast_ovl2.bas
