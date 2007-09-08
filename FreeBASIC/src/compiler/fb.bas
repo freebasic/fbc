@@ -1003,21 +1003,22 @@ function is_rootpath( byref path as zstring ptr ) as integer
 	if( path = NULL ) then
 		exit function
 	end if
-	#if defined( __fb_linux__ )
-		function = (path[0] = asc("/"))
-	#else
-		if( path[0] = NULL ) then
-			exit function
-		end if
-		if( path[1] = asc(":") ) then
-			function = TRUE
-		end if
-		if( (path[0] = asc("/")) or (path[0] = asc(RSLASH)) ) then
-			'' quirky drive letters...
-			*path = left( hEnvDir( ), 1 ) + ":" + *path
-			function = TRUE
-		end if
-	#endif
+	
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+	if( path[0] = NULL ) then
+		exit function
+	end if
+	if( path[1] = asc(":") ) then
+		function = TRUE
+	end if
+	if( (path[0] = asc("/")) or (path[0] = asc(RSLASH)) ) then
+		'' quirky drive letters...
+		*path = left( hEnvDir( ), 1 ) + ":" + *path
+		function = TRUE
+	end if
+#else
+	function = (path[0] = asc("/"))	
+#endif
 end function
 
 ''::::
@@ -1027,12 +1028,11 @@ function solve_path( byval path as zstring ptr ) as integer
 	
 	'' c:\foo\bar\..\baz => c:\foo\baz, etc
 	static as string root_spec	
-#ifdef __FB_Linux__
-	root_spec = "/"
-#else
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
 	root_spec = ucase(left(*path, 2) + "/")
+#else
+	root_spec = "/"
 #endif
-
     
 	dim as integer str_len = len(*path), c = 0, s = 0, i = any
     static as zstring * 256 accum(255)
