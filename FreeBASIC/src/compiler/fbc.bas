@@ -1719,6 +1719,9 @@ private sub printOptions( )
  #ifdef CROSSCOMP_DOS
 	desc += " dos"
  #endif
+  #ifdef CROSSCOMP_FREEBSD
+	desc += " freebsd"
+ #endif
  #ifdef CROSSCOMP_LINUX
 	desc += " linux"
  #endif
@@ -1727,9 +1730,6 @@ private sub printOptions( )
  #endif
  #ifdef CROSSCOMP_XBOX
 	desc += " xbox"
- #endif
- #ifdef CROSSCOMP_FREEBSD
-	desc += " freebsd"
  #endif
 
 	print "-target <name>"; desc
