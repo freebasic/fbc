@@ -40,7 +40,7 @@ End Sub
 sub proc /' no alias '/ ( byval bar as zstring ptr /' const '/ = 0, _
 						 byref baz as integer /' in-out '/ = 0 ) /' void '/
 
-  ASSERT( bar = 0 /' this comment wouldn't appear in ASSERT '/ )
+  cu_ASSERT_equal( bar, 0 /' this comment wouldn't appear in ASSERT '/ )
 
 end sub
 

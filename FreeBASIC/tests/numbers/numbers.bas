@@ -42,8 +42,8 @@ sub test_1 cdecl ()
 	# print two warnings follow
 	b_lb = -129
 	b_ub = 128
-	ASSERT( b_lb = test_b_ub )
-	ASSERT( b_ub = test_b_lb )
+	cu_assert( b_lb = test_b_ub )
+	cu_assert( b_ub = test_b_lb )
 
 end sub
 
@@ -54,8 +54,8 @@ sub test_2 cdecl ()
 	# print two warnings follow
 	ub_lb = -1
 	ub_ub = 256
-	ASSERT( ub_lb = test_ub_ub )
-	ASSERT( ub_ub = test_ub_lb )
+	cu_assert( ub_lb = test_ub_ub )
+	cu_assert( ub_ub = test_ub_lb )
 
 end sub
 
@@ -66,8 +66,8 @@ sub test_3 cdecl ()
 	# print two warnings follow
 	s_lb = -32769
 	s_ub = 32768
-	ASSERT( s_lb = test_s_ub )
-	ASSERT( s_ub = test_s_lb )
+	cu_assert( s_lb = test_s_ub )
+	cu_assert( s_ub = test_s_lb )
 
 end sub
 
@@ -78,8 +78,8 @@ sub test_4 cdecl ()
 	# print two warnings follow
 	us_lb = -1
 	us_ub = 65536
-	ASSERT( us_lb = test_us_ub )
-	ASSERT( us_ub = test_us_lb )
+	cu_assert( us_lb = test_us_ub )
+	cu_assert( us_ub = test_us_lb )
 
 end sub
 
@@ -90,8 +90,8 @@ sub test_5 cdecl ()
 	# print two warnings follow
 	i_lb = -2147483649
 	i_ub = 2147483648
-	ASSERT( i_lb = test_i_ub )
-	ASSERT( i_ub = test_i_lb )
+	cu_assert( i_lb = test_i_ub )
+	cu_assert( i_ub = test_i_lb )
 
 end sub
 
@@ -102,8 +102,8 @@ sub test_6 cdecl ()
 	# print two warnings follow
 	ui_lb = -1
 	ui_ub = 4294967296
-	ASSERT( ui_lb = test_ui_ub )
-	ASSERT( ui_ub = test_ui_lb )
+	cu_assert( ui_lb = test_ui_ub )
+	cu_assert( ui_ub = test_ui_lb )
 
 end sub
 
@@ -114,8 +114,8 @@ sub test_7 cdecl ()
 	# print two warnings follow
 	l_lb = -9223372036854775809
 	l_ub = 9223372036854775808
-	ASSERT( l_lb = test_l_ub )
-	ASSERT( l_ub = test_l_lb )
+	cu_assert( l_lb = test_l_ub )
+	cu_assert( l_ub = test_l_lb )
 
 end sub
 
@@ -130,9 +130,9 @@ sub test_8 cdecl ()
 	'' the lexer will complain the number is too big
 	ul = 18446744073709551616
 	#endif
-	ASSERT( ul_lb = test_ul_ub )
+	cu_assert( ul_lb = test_ul_ub )
 	#if 0
-	ASSERT( ul_ub = test_ul_lb )
+	cu_assert( ul_ub = test_ul_lb )
 	#endif
 
 end sub

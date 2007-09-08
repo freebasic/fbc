@@ -11,11 +11,11 @@ end function
 sub test_1 cdecl ()
 	dim as integer bar(0 To 1) = { 1, 1234 }
 	
-	assert( bar(0) = 1 )
+	cu_assert_equal( bar(0), 1 )
 	
 	bar(foo()) += 1
 	
-	assert( bar(0) = 2 )
+	cu_assert_equal( bar(0), 2 )
 end sub
 
 sub ctor () constructor
