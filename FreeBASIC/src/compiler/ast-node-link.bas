@@ -63,27 +63,6 @@ function astNewLINK _
 end function
 
 '':::::
-sub astSetTypeLINK _
-	( _
-		byval n as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	)
-
-    n->dtype = dtype
-    n->subtype = subtype
-
-	if( n->link.ret_left ) then
-		n->l->dtype = dtype
-		n->l->subtype = subtype
-	else
-		n->r->dtype = dtype
-		n->r->subtype = subtype
-	end if
-
-end sub
-
-'':::::
 function astLoadLINK _
 	( _
 		byval n as ASTNODE ptr _

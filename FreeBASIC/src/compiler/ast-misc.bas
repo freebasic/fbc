@@ -1232,3 +1232,67 @@ sub astDtorListDel _
     loop
 
 end sub
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' hacks
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+sub astIncOffset _
+	( _
+		byval n as ASTNODE ptr, _
+		byval ofs as integer _
+	)
+	
+	select case as const n->class
+	case AST_NODECLASS_VAR
+		n->var_.ofs += ofs
+		
+	case AST_NODECLASS_IDX
+		n->idx.ofs += ofs
+
+	case AST_NODECLASS_DEREF
+		n->ptr.ofs += ofs
+		
+	case AST_NODECLASS_LINK
+		if( n->link.ret_left ) then
+			astIncOffset( n->l, ofs )
+		else
+			astIncOffset( n->r, ofs )
+		end if
+			
+	case AST_NODECLASS_FIELD
+		astIncOffset( n->l, ofs )
+	
+	case else
+		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+	end select
+	
+end sub
+
+'':::::
+sub astSetType _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
+
+    n->dtype = dtype
+    n->subtype = subtype
+
+	select case n->class
+	case AST_NODECLASS_LINK
+		if( n->link.ret_left ) then
+			astSetType( n->l, dtype, subtype )
+		else
+			astSetType( n->r, dtype, subtype )
+		end if
+
+	case AST_NODECLASS_FIELD
+		astSetType( n->l, dtype, subtype )
+		
+	end select
+
+end sub
+

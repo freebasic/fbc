@@ -57,22 +57,6 @@ function astNewFIELD _
 end function
 
 '':::::
-sub astSetTypeFIELD _
-	( _
-		byval n as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	)
-
-    n->dtype = dtype
-    n->subtype = subtype
-
-	n->l->dtype = dtype
-	n->l->subtype = subtype
-
-end sub
-
-'':::::
 private function hGetBitField _
 	( _
 		byval n as ASTNODE ptr, _

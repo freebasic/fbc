@@ -186,41 +186,24 @@ function cPeekFunct _
     	expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
 
-	dim as FBSYMBOL ptr fld = NULL, method_sym = NULL
-
    	'' ('.' UdtMember)?
    	if( lexGetToken( ) = CHAR_DOT ) then
+		select case	dtype
+		case FB_DATATYPE_STRUCT	', FB_DATATYPE_CLASS
+
+		case else
+			if(	errReport( FB_ERRMSG_EXPECTEDUDT, TRUE ) = FALSE ) then
+				exit function
+			end	if
+		end	select
+
     	lexSkipToken( LEXCHECK_NOPERIOD )
 
-    	fld = cUdtMember( dtype, subtype, expr, method_sym, TRUE )
-    	if( fld <> NULL ) then
-			'' constant? exit..
-			if( symbIsConst( fld ) ) then
-				astDeltree( funcexpr )
-				funcexpr = expr
-				return TRUE
-			end if
+    	funcexpr = cUdtMember( dtype, subtype, expr, TRUE )
 
-    		dtype = symbGetType( fld )
-    		subtype = symbGetSubType( fld )
-    	end if
-    end if
-
-	if( expr <> NULL ) then
+    else
 		funcexpr = astNewDEREF( expr, dtype, subtype )
-	end if
-
-	if( fld <> NULL ) then
-    	funcexpr = astNewFIELD( funcexpr, fld, dtype, subtype )
-	end if
-
-	'' method call?
-	if( method_sym <> NULL ) then
-		funcexpr = cMethodCall( method_sym, funcexpr )
-		if( funcexpr = NULL ) then
-			exit function
-		end if
-	end if
+    end if
 
 	''
 	function = (errGetLast() = FB_ERRMSG_OK)

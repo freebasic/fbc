@@ -301,5 +301,130 @@ function astLoadNIDXARRAY	_
 
 end function
 
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' dumping
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+private function hNodeToStr _
+	( _
+		byval n as ASTNODE ptr _
+	) as string
+
+	select case as const n->class
+	case AST_NODECLASS_BOP
+		select case as const n->op.op
+		case AST_OP_ADD
+			return "+"
+		case AST_OP_SUB
+			return "-"
+		case AST_OP_MUL
+			return "*"
+		case AST_OP_DIV
+			return "/"
+		case AST_OP_INTDIV
+			return "\"
+		case AST_OP_MOD
+			return "%"
+		case AST_OP_AND
+			return "&"
+		case AST_OP_OR
+			return "|"
+		case AST_OP_XOR
+			return "^"
+		case AST_OP_EQV
+			return "<->"
+		case AST_OP_IMP
+			return "->"
+		case AST_OP_SHL
+			return "<<"
+		case AST_OP_SHR
+			return ">>"
+		case AST_OP_POW
+			return "**"
+		case AST_OP_CONCAT
+			return "&"
+		end select
+
+	case AST_NODECLASS_UOP
+		select case as const n->op.op
+		case AST_OP_ADD
+			return "+"
+		case AST_OP_SUB
+			return "-"
+		end select
+
+	case AST_NODECLASS_CONST
+		select case as const n->dtype
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+			return str( n->con.val.long )
+
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+			return str( n->con.val.float )
+
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				return str( n->con.val.int )
+			else
+				return str( n->con.val.long )
+			end if
+
+		case else
+            return str( n->con.val.int )
+		end select
+
+	case AST_NODECLASS_VAR
+		return *symbGetName( n->sym )
+
+	case else
+		return "#"
+	end select
+
+end function
+
+'':::::
+sub astDumpTree _
+	( _
+		byval n as ASTNODE ptr, _
+		byval col as integer _
+	)
+
+	if( col <= 4 or col >= 76 ) then
+		col = 40
+	end if
+
+	dim as string s = hNodeToStr( n )
+	locate , col-1-(len(s)\2)
+	print s
+
+	locate , col-2
+	if( n->l <> NULL ) then
+		if( n->r <> NULL ) then
+			print "/ \"
+		else
+			print "/"
+		end if
+	elseif( n->r <> NULL ) then
+		print "  \"
+	else
+		print
+	end if
+
+	dim as integer ln = csrlin, ln1 = 0, ln2 = 0
+	if( n->l <> NULL ) then
+		astDumpTree( n->l, col-3 )
+		ln1 = csrlin
+	end if
+	if( n->r <> NULL ) then
+		locate ln
+		astDumpTree( n->r, col+3 )
+		ln2 = csrlin
+	end if
+
+	if( ln1 > ln2 ) then
+		locate ln1
+	end if
+
+end sub
 
 

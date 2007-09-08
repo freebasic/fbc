@@ -196,6 +196,8 @@ private function _init _
 		regTB(i) = emitGetRegClass( i )
 	next
 
+	''
+	irSetOption( IR_OPT_NESTEDFIELDS )
 	function = TRUE
 
 end function

@@ -501,7 +501,7 @@ private function hAssignOrCall _
 	        			exit function
 	        		end if
 	        	else
-	        		expr = cDataMember( NULL, chain_, TRUE )
+	        		expr = cImplicitDataMember( chain_, TRUE )
 	        		if( expr = NULL ) then
 	        			exit function
 	        		end if

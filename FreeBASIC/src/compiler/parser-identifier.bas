@@ -223,6 +223,19 @@ function cIdentifier _
     		exit do
     	end select
 
+    	'' check visibility (of the UDT only, because symbols can be
+    	'' overloaded or the names duplicated, so that check can only
+    	'' be done by specific functions)
+		if( parent <> NULL ) then
+			if( symbCheckAccess( parent, sym ) = FALSE ) then
+				if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+					if( errReport( FB_ERRMSG_ILLEGALMEMBERACCESS ) = FALSE ) then
+						return NULL
+					end if
+				end if
+			end if
+		end if
+
     	'' '.'?
     	if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
     		'' if it's a namespace, the '.' is obligatory, the
@@ -346,9 +359,7 @@ function cParentId _
 	) as FBSYMBOL ptr
 
     dim as FBSYMCHAIN ptr chain_ = any
-    dim as FBSYMBOL ptr parent = any, base_parent = any
-
-    base_parent = NULL
+    dim as FBSYMBOL ptr sym = any, parent = any, base_parent = any
 
 	if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
 	    return NULL
@@ -362,55 +373,67 @@ function cParentId _
     	end if
     end if
 
+    sym = NULL
     parent = NULL
+    base_parent = NULL
 
     do while( chain_ <> NULL )
 
-    	select case as const symbGetClass( chain_->sym )
+    	sym = chain_->sym
+    	select case as const symbGetClass( sym )
     	case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS, FB_SYMBCLASS_ENUM
-    		parent = chain_->sym
 
     	case FB_SYMBCLASS_STRUCT
     		if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
+    			sym = parent
     			exit do
     		end if
 
     		'' ordinary struct?
-    		if( symbGetIsUnique( chain_->sym ) = FALSE ) then
+    		if( symbGetIsUnique( sym ) = FALSE ) then
+    			sym = parent
     			exit do
     		end if
 
-    		parent = chain_->sym
-
     	case FB_SYMBCLASS_TYPEDEF
-            dim as FBSYMBOL ptr sym = any
 
             '' typedef of a TYPE/CLASS?
-            select case as const symbGetType( chain_->sym )
+            select case as const symbGetType( sym )
             case FB_DATATYPE_STRUCT
     			if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
+    				sym = parent
     				exit do
     			end if
 
-    			sym = symbGetSubtype( chain_->sym )
+    			sym = symbGetSubtype( sym )
 
     			'' ordinary struct?
     			if( symbGetIsUnique( sym ) = FALSE ) then
+    				sym = parent
     				exit do
     			end if
 
 			case FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-    			sym = symbGetSubtype( chain_->sym )
+    			sym = symbGetSubtype( sym )
 
     		case else
+    			sym = parent
     			exit do
     		end select
 
-    		parent = sym
-
     	case else
+    		sym = parent
     		exit do
     	end select
+
+    	'' check visibility
+		if( parent <> NULL ) then
+			if( symbCheckAccess( parent, sym ) = FALSE ) then
+				if( errReport( FB_ERRMSG_ILLEGALMEMBERACCESS ) = FALSE ) then
+					return NULL
+				end if
+			end if
+		end if
 
     	'' '.'?
     	if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
@@ -428,9 +451,9 @@ function cParentId _
     		end if
     	end if
 
-    	if( symbGetClass( parent ) = FB_SYMBCLASS_ENUM ) then
+    	if( symbGetClass( sym ) = FB_SYMBCLASS_ENUM ) then
     		'' not in BASIC mangling mode?
-    		if( symbGetMangling( parent ) <> FB_MANGLING_BASIC ) then
+    		if( symbGetMangling( sym ) <> FB_MANGLING_BASIC ) then
     			if( errReport( FB_ERRMSG_NONSCOPEDENUM ) = FALSE ) then
     				return NULL
     			else
@@ -444,6 +467,8 @@ function cParentId _
 
     	'' skip '.'
     	lexSkipToken( LEXCHECK_NOPERIOD )
+
+    	parent = sym
 
     	if( base_parent = NULL ) then
     		base_parent = parent
@@ -472,13 +497,13 @@ function cParentId _
     		end if
     	end select
 
-    	chain_ = symbLookupAt( parent, lexGetText( ), FALSE )
+    	chain_ = symbLookupAt( sym, lexGetText( ), FALSE )
     loop
 
 	''
 	hCheckDecl( base_parent, parent, chain_, options )
 
-	function = parent
+	function = sym
 
 end function
 

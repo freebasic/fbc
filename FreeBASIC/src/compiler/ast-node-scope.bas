@@ -296,6 +296,40 @@ private sub hBranchWarning _
 end sub
 
 '':::::
+private function hFindCommonParent _
+	( _
+		byval branch_parent as ASTNODE ptr, _
+		byval label_parent_sym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	dim as ASTNODE ptr label_parent = label_parent_sym->scp.backnode
+
+	dim as integer branch_scope = symbGetScope( branch_parent->sym )
+	dim as integer label_scope = symbGetScope( label_parent_sym )
+
+	if( branch_scope > label_scope ) then
+		do
+			branch_parent = branch_parent->block.parent
+			branch_scope = symbGetScope( branch_parent->sym )
+		loop until( branch_scope = label_scope )
+
+	elseif( branch_scope < label_scope ) then
+		do
+			label_parent = label_parent->block.parent
+			label_scope = symbGetScope( label_parent->sym )
+		loop until( label_scope = branch_scope )
+	end if
+
+	do until( branch_parent = label_parent )
+		branch_parent = branch_parent->block.parent
+		label_parent = label_parent->block.parent
+	loop
+
+	function = branch_parent->sym
+
+end function
+
+'':::::
 private function hCheckCrossing _
 	( _
 		byval n as ASTNODE ptr, _
@@ -353,33 +387,37 @@ end function
 '':::::
 private function hCheckScopeLocals _
 	( _
-		byval n as ASTNODE ptr _
+		byval n as ASTNODE ptr, _
+		byval top_parent as FBSYMBOL ptr = NULL _
 	) as integer
 
-    dim as FBSYMBOL ptr dst = any, blk = any, src_blk = any
-    dim as integer dst_stmt = any, src_stmt = any
+    dim as FBSYMBOL ptr label = any, blk = any
+    dim as integer label_stmt = any, branch_stmt = any
 
-    dst = n->sym
-    dst_stmt = symbGetLabelStmt( dst )
+    if( top_parent = NULL ) then
+    	top_parent = n->break.parent->sym
+    end if
 
-    src_blk = n->break.parent->sym
-    src_stmt = n->break.stmtnum
+    branch_stmt = n->break.stmtnum
 
-    blk = symbGetLabelParent( dst )
+    label = n->sym
+    label_stmt = symbGetLabelStmt( label )
+
+    blk = symbGetLabelParent( label )
     do
     	'' check for any var allocated between the block's
     	'' beginning and the branch
-    	if( hCheckCrossing( n, blk, 0, dst_stmt ) = FALSE ) then
+    	if( hCheckCrossing( n, blk, 0, label_stmt ) = FALSE ) then
     		return FALSE
     	end if
 
     	blk = symbGetParent( blk )
 
     	'' same parent?
-    	if( symbIsProc( blk ) or (blk = src_blk) ) then
+    	if( blk = top_parent ) then
     		'' forward?
-			if( dst_stmt > src_stmt ) then
-    			if( hCheckCrossing( n, blk, src_stmt, dst_stmt ) = FALSE ) then
+			if( label_stmt > branch_stmt ) then
+    			if( hCheckCrossing( n, blk, branch_stmt, label_stmt ) = FALSE ) then
     				return FALSE
     			end if
     		end if
@@ -462,11 +500,11 @@ private sub hDelLocals _
 	)
 
 	dim as FBSYMBOL ptr s = any
-	dim as integer dst_stmt = any, src_stmt = any
+	dim as integer label_stmt = any, branch_stmt = any
 	dim as ASTNODE ptr blk = any
 
-	dst_stmt = symbGetLabelStmt( n->sym )
-	src_stmt = n->break.stmtnum
+	label_stmt = symbGetLabelStmt( n->sym )
+	branch_stmt = n->break.stmtnum
 
     '' for each parent (starting from the branch ones)
     blk = n->break.parent
@@ -475,7 +513,7 @@ private sub hDelLocals _
     	'' the block and the branch
     	hDestroyBlockLocals( blk->sym, _
     						 0, _
-    						 src_stmt, _
+    						 branch_stmt, _
     						 astGetPrev( n->l ) ) '' prev node will change
 
     	blk = blk->block.parent
@@ -484,14 +522,14 @@ private sub hDelLocals _
     	end if
 
     	'' target label found?
-    	if( hIsInside( blk, dst_stmt ) ) then
+    	if( hIsInside( blk, label_stmt ) ) then
     		if( check_backward ) then
     			'' if backward, free any dyn var allocated
     			'' between the target label and the branch
-				if( dst_stmt <= src_stmt ) then
+				if( label_stmt <= branch_stmt ) then
     				hDestroyBlockLocals( blk->sym, _
-    									 dst_stmt, _
-    									 src_stmt, _
+    									 label_stmt, _
+    									 branch_stmt, _
     									 astGetPrev( n->l ) )
     			end if
     		end if
@@ -528,40 +566,40 @@ private function hCheckBranch _
 		byval n as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr src_parent = any
-    dim as FBSYMBOL ptr dst = any, dst_parent = any
-    dim as integer src_scope = any, dst_scope = any
-    dim as integer src_stmt = any, dst_stmt = any, isparent = any
+    dim as ASTNODE ptr branch_parent = any
+    dim as FBSYMBOL ptr label = any, label_parent = any
+    dim as integer branch_scope = any, label_scope = any
+    dim as integer branch_stmt = any, label_stmt = any, isparent = any
 
 	function = FALSE
 
-    dst = n->sym
+    label = n->sym
 
     '' not declared?
-    if( symbGetLabelIsDeclared( dst ) = FALSE ) then
+    if( symbGetLabelIsDeclared( label ) = FALSE ) then
     	hBranchError( FB_ERRMSG_BRANCHTARGETOUTSIDECURRPROC, n )
     	exit function
     end if
 
 	'' branching to other procs or mod-level?
-    if( hIsTargetOutside( proc->sym, dst ) ) then
+    if( hIsTargetOutside( proc->sym, label ) ) then
     	hBranchError( FB_ERRMSG_BRANCHTARGETOUTSIDECURRPROC, n )
         exit function
     end if
 
     ''
-    dst_scope = symbGetScope( dst )
-    dst_parent = symbGetLabelParent( dst )
-    dst_stmt = symbGetLabelStmt( dst )
+    label_scope = symbGetScope( label )
+    label_parent = symbGetLabelParent( label )
+    label_stmt = symbGetLabelStmt( label )
 
-    src_scope = n->break.scope
-    src_parent = n->break.parent
-    src_stmt = n->break.stmtnum
+    branch_scope = n->break.scope
+    branch_parent = n->break.parent
+    branch_stmt = n->break.stmtnum
 
     '' inside parent?
-    if( hIsInside( src_parent, dst_stmt ) ) then
+    if( hIsInside( branch_parent, label_stmt ) ) then
     	'' jumping to a child block?
-    	if( dst_scope > src_scope ) then
+    	if( label_scope > branch_scope ) then
            	'' any locals?
 			if( hCheckScopeLocals( n ) = FALSE ) then
        			if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -570,20 +608,20 @@ private function hCheckBranch _
        		end if
 
     		'' backward?
-    		if( dst_stmt <= src_stmt ) then
+    		if( label_stmt <= branch_stmt ) then
     			hDelBackwardLocals( n )
     		end if
 
     	'' same level..
     	else
     		'' backward?
-    		if( dst_stmt <= src_stmt ) then
+    		if( label_stmt <= branch_stmt ) then
     			hDelBackwardLocals( n )
 
     		'' forward..
     		else
     			'' crossing any declaration?
-    			if( hCheckCrossing( n, dst_parent, src_stmt, dst_stmt ) = FALSE ) then
+    			if( hCheckCrossing( n, label_parent, branch_stmt, label_stmt ) = FALSE ) then
        				if( errGetLast( ) <> FB_ERRMSG_OK ) then
        					exit function
        				end if
@@ -597,16 +635,17 @@ private function hCheckBranch _
     '' outside..
 
    	'' jumping to a scope block?
-	if( symbIsScope( dst_parent ) ) then
-		isparent = (dst_parent->scp.backnode->block.inistmt <= _
-					src_parent->block.inistmt) and _
-  	    		   (dst_parent->scp.backnode->block.endstmt >= _
-  	    		    src_parent->block.endstmt)
+	if( symbIsScope( label_parent ) ) then
+		isparent = (label_parent->scp.backnode->block.inistmt <= _
+					branch_parent->block.inistmt) and _
+  	    		   (label_parent->scp.backnode->block.endstmt >= _
+  	    		    branch_parent->block.endstmt)
 
 		'' not a parent block?
         if( isparent = FALSE ) then
 			'' any locals?
-			if( hCheckScopeLocals( n ) = FALSE ) then
+			if( hCheckScopeLocals( n, _
+								   hFindCommonParent( branch_parent, label_parent ) ) = FALSE ) then
        			if( errGetLast( ) <> FB_ERRMSG_OK ) then
        				exit function
        			end if
@@ -620,9 +659,9 @@ private function hCheckBranch _
 
    	if( isparent ) then
    	   	'' forward?
-   		if( dst_stmt > src_stmt ) then
+   		if( label_stmt > branch_stmt ) then
    			'' crossing any declaration?
-   			if( hCheckCrossing( n, dst_parent, src_stmt, dst_stmt ) = FALSE ) then
+   			if( hCheckCrossing( n, label_parent, branch_stmt, label_stmt ) = FALSE ) then
        			if( errGetLast( ) <> FB_ERRMSG_OK ) then
        				exit function
        			end if

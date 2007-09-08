@@ -507,6 +507,7 @@ enum IR_OPT
 	IR_OPT_ADDRCISC			= &h01000000			'' complex addressing modes (base+idx*disp)
 	IR_OPT_REUSEOPER        = &h02000000			'' reuse destine operand
 	IR_OPT_IMMOPER          = &h04000000			'' allow immediate operands
+	IR_OPT_NESTEDFIELDS		= &h08000000			'' optimize (reduce) the accesses to UDT fields?
 end enum
 
 type IRCTX

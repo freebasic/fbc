@@ -102,6 +102,15 @@ private function hFindId _
     	do
     		select case as const symbGetClass( sym )
 			case FB_SYMBCLASS_CONST
+    			'' check visibility
+				if( base_parent <> NULL ) then
+					if( symbCheckAccess( base_parent, sym ) = FALSE ) then
+						if( errReport( FB_ERRMSG_ILLEGALMEMBERACCESS ) = FALSE ) then
+							return astNewCONSTi( 0 )
+						end if
+					end if
+				end if
+
 				return cConstantEx( sym )
 
 			case FB_SYMBCLASS_PROC
@@ -111,7 +120,7 @@ private function hFindId _
            		return cVariableEx( chain_, fbGetCheckArray( ) )
 
         	case FB_SYMBCLASS_FIELD
-        		return cDataMember( NULL, chain_, fbGetCheckArray( ) )
+        		return cImplicitDataMember( chain_, fbGetCheckArray( ) )
 
   			'' quirk-keyword?
   			case FB_SYMBCLASS_KEYWORD

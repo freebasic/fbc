@@ -741,9 +741,8 @@ declare function cWithVariable _
 		byval checkarray as integer _
 	) as ASTNODE ptr
 
-declare function cDataMember _
+declare function cImplicitDataMember _
 	( _
-		byval sym as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
 		byval checkarray as integer _
 	) as ASTNODE ptr
@@ -853,10 +852,9 @@ declare function cUdtMember _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byref expr as ASTNODE ptr, _
-		byref method_sym as FBSYMBOL ptr, _
-		byval checkarray as integer _
-	) as FBSYMBOL ptr
+		byval varexpr as ASTNODE ptr, _
+		byval check_array as integer _
+	) as ASTNODE ptr
 
 declare function cMemberAccess _
 	( _

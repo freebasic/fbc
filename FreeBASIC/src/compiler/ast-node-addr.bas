@@ -27,6 +27,24 @@
 #include once "inc\ast.bi"
 
 '':::::
+function astGetOFFSETChildOfs _
+	( _
+		byval l as ASTNODE ptr _
+	) as integer
+
+	'' var?
+	if( astIsVAR( l ) ) then
+		function = l->var_.ofs
+
+	'' array..
+	else
+		function = l->idx.ofs + l->r->var_.ofs + _
+					 symbGetArrayDiff( l->sym ) + symbGetOfs( l->sym )
+	end if
+	
+end function
+
+'':::::
 function astNewOFFSET _
 	( _
 		byval l as ASTNODE ptr _
@@ -51,15 +69,8 @@ function astNewOFFSET _
 	n->l = l
 	n->sym = l->sym
 
-	'' var?
-	if( astIsVAR( l ) ) then
-		n->ofs.ofs = l->var_.ofs
-
-	'' array..
-	else
-		n->ofs.ofs = l->idx.ofs + l->r->var_.ofs + _
-					 symbGetArrayDiff( l->sym ) + symbGetOfs( l->sym )
-	end if
+	'' must be computed here or optimizations that depend on 0 offset values will fail
+	n->ofs.ofs = astGetOFFSETChildOfs( l )
 
 	'' access counter must be updated here too
 	'' because the var initializers used with static strings

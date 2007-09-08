@@ -1,11 +1,11 @@
+
+[ ] make cUdtMember process symbols as cIdentifier does or ambiguous access
+    tests won't work
+    - check if the new optimizations won't break when -ex or -exx are used
+
 [ ] output member functions and static member data to the STABS TYPE/UDT info
     - operators must be handled as well
     - properties may need a __get/__set suffix
-
-[ ] make cUdtMember process symbols as cIdentifier does or ambiguous access
-    tests won't be done
-    - also do handle dups, CLASSes will allow anything to be defined (including
-      TYPE's), and a "TYPE FOO" plus a "CONST FOO=" could exist
 
 [ ] STATIC
     - add static data members, they must be initialized outside the TYPE|CLASS

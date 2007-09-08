@@ -367,7 +367,6 @@ type AST_SETTYPECB as sub _
 
 type AST_CLASSINFO
 	loadcb			as AST_LOADCB
-	settypecb		as AST_SETTYPECB
 	iscode			as integer
 end type
 
@@ -1235,6 +1234,24 @@ declare sub astDtorListClear _
 	( _
 	)
 
+declare sub astIncOffset _
+	( _
+		byval n as ASTNODE ptr, _
+		byval ofs as integer _
+	)
+
+declare sub astSetType _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
+
+declare function astGetOFFSETChildOfs _
+	( _
+		byval l as ASTNODE ptr _
+	) as integer
+
 ''
 '' macros
 ''
@@ -1310,8 +1327,6 @@ declare sub astDtorListClear _
 #define astGetProc() ast.proc.curr
 
 #define astGetProcTailNode() ast.proc.curr->r
-
-#define astSetType(n, dtype, subtype) ast_classTB(n->class).settypecb( n, dtype, subtype )
 
 #define astTypeIniGetOfs( n ) n->typeini.ofs
 
