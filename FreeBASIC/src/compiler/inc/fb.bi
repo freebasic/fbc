@@ -103,20 +103,6 @@ const FB_SIGN               = "FreeBASIC v" +  FB_VERSION + "b"
                                      (__FB_VER_MINOR__ = minor and __FB_VER_PATCH__ >= patch_level))))
 #endif
 
-#if defined(TARGET_WIN32)
-const FB_TARGET             = "win32"
-#elseif defined(TARGET_CYGWIN)
-const FB_TARGET             = "cygwin"
-#elseif defined(TARGET_LINUX)
-const FB_TARGET             = "linux"
-#elseif defined(TARGET_DOS)
-const FB_TARGET             = "dos"
-#elseif defined(TARGET_XBOX)
-const FB_TARGET             = "xbox"
-#elseif defined(TARGET_FREEBSD)
-const FB_TARGET             = "freebsd"
-#endif
-
 #if defined(__FB_WIN32__)
 const FB_HOST               = "win32"
 const FB_HOST_EXEEXT        = ".exe"
@@ -129,12 +115,11 @@ const FB_HOST_EXEEXT        = ""
 #elseif defined(__FB_DOS__)
 const FB_HOST               = "dos"
 const FB_HOST_EXEEXT        = ".exe"
-#elseif defined(__FB_XBOX__)
-const FB_HOST               = "xbox"
-const FB_HOST_EXEEXT        = ".xbe"
 #elseif defined(__FB_FREEBSD__)
 const FB_HOST               = "freebsd"
 const FB_HOST_EXEEXT        = ""
+#else
+#error Unsupported host
 #endif
 
 
@@ -207,16 +192,22 @@ enum FB_COMPTARGET
 end enum
 
 #if defined(TARGET_WIN32)
+const FB_TARGET         = "win32"
 const FB_DEFAULT_TARGET = FB_COMPTARGET_WIN32
 #elseif defined(TARGET_CYGWIN)
+const FB_TARGET         = "cygwin"
 const FB_DEFAULT_TARGET = FB_COMPTARGET_CYGWIN
 #elseif defined(TARGET_LINUX)
+const FB_TARGET         = "linux"
 const FB_DEFAULT_TARGET = FB_COMPTARGET_LINUX
 #elseif defined(TARGET_DOS)
+const FB_TARGET         = "dos"
 const FB_DEFAULT_TARGET = FB_COMPTARGET_DOS
 #elseif defined(TARGET_XBOX)
+const FB_TARGET         = "xbox"
 const FB_DEFAULT_TARGET = FB_COMPTARGET_XBOX
 #elseif defined(TARGET_FREEBSD)
+const FB_TARGET         = "freebsd"
 const FB_DEFAULT_TARGET = FB_COMPTARGET_FREEBSD
 #else
 #error Unsupported target
