@@ -230,6 +230,30 @@ namespace fb.fbdoc
 	end sub
 
 	'':::::
+	private sub remove_trailing_whitespace( byref body as string )
+
+		dim as integer i, n = len(body)
+		const whitespace = chr(9,10,13,32)
+
+		i = n
+		while( i >= 1 )
+			if instr(whitespace,mid(body, i, 1)) = 0 then
+				exit while
+			end if
+			i -= 1
+		wend
+
+		if( i < n ) then
+			if( i > 0 ) then
+				body = left( body, i )
+			else
+				body = chr(10)
+			end if
+		end if
+
+	end sub
+
+	'':::::
 	private function get_pageid _
 		( _
 			byval ctx as CWikiConCtx ptr _
@@ -295,6 +319,7 @@ namespace fb.fbdoc
 		if( stream->Receive( URL, TRUE ) ) then
 			body = stream->Read()
 			remove_http_headers( body )
+''			remove_trailing_whitespace( body )
 		end if
 		
 		delete stream
@@ -318,9 +343,11 @@ namespace fb.fbdoc
 	'':::::
 	function CWikiCon.StorePage _
 		( _
-			byval body as zstring ptr, _
+			byval body_in as zstring ptr, _
 			byval note as zstring ptr _
 		) as integer
+		
+		dim body as string
 
 		if( ctx = NULL ) then
 			return FALSE
@@ -340,6 +367,10 @@ namespace fb.fbdoc
 		form->Add( "wakka", *ctx->pagename + wakka_edit )
 
 		form->Add( "previous",  ctx->pageid )
+
+		body = *body_in
+''		remove_trailing_whitespace( body )
+
 		form->Add( "body", body, "text/html" )
 		if( note ) then
 			form->Add( "note", *note )

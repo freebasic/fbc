@@ -26,6 +26,7 @@
 #include once "fbdoc_defs.bi"
 #include once "fbdoc_string.bi"
 #include once "CWikiCache.bi"
+#include once "file.bi"
 
 namespace fb.fbdoc
 
@@ -87,7 +88,7 @@ namespace fb.fbdoc
 
 		sLocalFile = *ctx->localdir + *sPage + cache_ext
 
-		if( dir( sLocalFile ) > "" ) then
+		if( fileexists( sLocalFile ) ) then
 			h = freefile
 			if( open( sLocalFile for binary as #h) = 0 ) then
 				if( lof(h) > 0 ) then
@@ -127,7 +128,7 @@ namespace fb.fbdoc
 
 		sLocalFile = *ctx->localdir + *sPage + cache_ext
 
-		if dir( sLocalFile ) > "" then
+		if( fileexists( sLocalFile ) ) then
 			kill sLocalFile
 		end if
 

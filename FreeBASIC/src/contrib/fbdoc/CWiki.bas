@@ -611,17 +611,26 @@ namespace fb.fbdoc
 		'' code?	 	
 		if( ctx->codere->Search( text ) ) then
 			match = ctx->codere->GetStr( 1 )
+
 			if( left( *match, 8 ) = "(qbasic)" ) then
 				token->id = WIKI_TOKEN_CODE
 				token->code->lang = "qbasic"
 				token->text = mid( *match, 1+8 )
+
 			elseif( left( *match, 11 ) = "(freebasic)" ) then
 				token->id = WIKI_TOKEN_CODE
 				token->text = mid( *match, 1+11 )
 				token->code->lang = "freebasic"
+
+			elseif( left( *match, 3 ) = "(c)" ) then
+				token->id = WIKI_TOKEN_CODE
+				token->text = mid( *match, 1+3 )
+				token->code->lang = "c"
+
 			else
 				token->id = WIKI_TOKEN_PRE
 				token->text = *match
+
 			end if
 			exit sub
 		end if

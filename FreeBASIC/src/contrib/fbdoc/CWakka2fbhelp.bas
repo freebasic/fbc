@@ -1490,7 +1490,12 @@ namespace fb.fbdoc
 		
 		case WIKI_TOKEN_CODE:
 			ctx->indentlevel2 = ctx->indentlevel + 1
-			_emitCode( ctx, token->text )
+			select case token->code->lang
+			case "freebasic", "qbasic"
+				_emitCode( ctx, token->text )
+			case else
+				_emitPreformatted( ctx, token->text )
+			end select
 			ctx->indentlevel2 = 0
 			return TRUE
 		

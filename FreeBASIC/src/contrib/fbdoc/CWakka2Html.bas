@@ -417,8 +417,11 @@ namespace fb.fbdoc
 		end if
 
 		if( bDefault = TRUE ) then
-			'' !!! TODO !!!: select class based on code tag
+			'' select class based on code tag?
 			'' res += "<tt><div class=""qbasic"">
+			'' only qbasic/freebasic should be formatted here
+			'' all other formatters should be <PRE> only
+
 			res += "<tt><div class=""freebasic"">
 			res += Text2Html( *text, TRUE, TRUE )
 			res += "</div></tt><br />" + nl
@@ -488,8 +491,11 @@ namespace fb.fbdoc
 			res += "</span>"
 		end if
 
-		'' !!! TODO !!!: select class based on code tag
+		'' select class based on code tag?
 		'' res = "<tt><div class=""qbasic"">" + nl + res + "</div></tt><br />" + nl
+		'' only freebasic/qbasic should ever be formatted here
+		'' all other code types will get <PRE>
+
 		res = "<tt><div class=""freebasic"">" + nl + res + "</div></tt><br />" + nl
 
 		return res
