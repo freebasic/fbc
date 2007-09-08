@@ -109,23 +109,23 @@ endif
 
 ifeq (@FBC_TARGET@,freebsd)
 	FBC_OSDEPSRCS := fbc_freebsd.bas
-	FBC_OSDEPSRCS += fbc_linux.bas
+	FBC_OSDEPSRCS += fbc_cyg.bas fbc_dos.bas fbc_linux.bas fbc_win32.bas fbc_xbox.bas 
 	DEFS += -d TARGET_FREEBSD
-	DEFS += -d CROSSCOMP_LINUX
+	DEFS += -d CROSSCOMP_CYGWIN -d CROSSCOMP_DOS -d CROSSCOMP_LINUX -d CROSSCOMP_WIN32 -d CROSSCOMP_XBOX
 endif
 
 ifeq (@FBC_TARGET@,linux)
 	FBC_OSDEPSRCS := fbc_linux.bas
-	FBC_OSDEPSRCS += fbc_freebsd.bas
+	FBC_OSDEPSRCS += fbc_cyg.bas fbc_dos.bas fbc_freebsd.bas fbc_win32.bas fbc_xbox.bas
 	DEFS += -d TARGET_LINUX
-	DEFS += -d CROSSCOMP_FREEBSD
+	DEFS += -d CROSSCOMP_CYGWIN -d CROSSCOMP_DOS -d CROSSCOMP_FREEBSD -d CROSSCOMP_WIN32 -d CROSSCOMP_XBOX
 endif
 
 ifeq (@FBC_TARGET@,win32)
 	FBC_OSDEPSRCS := fbc_win32.bas
-	FBC_OSDEPSRCS += fbc_dos.bas fbc_linux.bas fbc_xbox.bas fbc_cyg.bas
-	DEFS += -d TARGET_WIN32 
-	DEFS += -d CROSSCOMP_DOS -d CROSSCOMP_XBOX -d CROSSCOMP_LINUX -d CROSSCOMP_CYGWIN
+	FBC_OSDEPSRCS += fbc_cyg.bas fbc_dos.bas fbc_linux.bas fbc_xbox.bas
+	DEFS += -d TARGET_WIN32
+	DEFS += -d CROSSCOMP_CYGWIN -d CROSSCOMP_DOS -d CROSSCOMP_LINUX -d CROSSCOMP_XBOX
 endif
 
 ifeq (@FBC_TARGET@,xbox)
