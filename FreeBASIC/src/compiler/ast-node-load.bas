@@ -67,7 +67,7 @@ function astLoadLOAD _
 
 	if( ast.doemit ) then
 		if( n->lod.isres ) then
-			vr = irAllocVREG( irGetVRDataType( v1 ) )
+			vr = irAllocVREG( irGetVRDataType( v1 ), irGetVRSubType( v1 ) )
 			irEmitLOADRES( v1, vr )
 		else
 			irEmitLOAD( v1 )

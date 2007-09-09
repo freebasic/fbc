@@ -128,7 +128,11 @@ function astLoadBOUNDCHK _
     if( ast.doemit ) then
     	'' handler = boundchk( ... ): if handler <> NULL then handler( )
     	label = symbAddLabel( NULL )
-    	irEmitBOPEx( AST_OP_EQ, vr, irAllocVRIMM( FB_DATATYPE_INTEGER, 0 ), NULL, label )
+    	irEmitBOPEx( AST_OP_EQ, _
+    				 vr, _
+    				 irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, 0 ), _
+    				 NULL, _
+    				 label )
     	irEmitJUMPPTR( vr )
     	irEmitLABELNF( label )
     end if
@@ -216,7 +220,11 @@ function astLoadPTRCHK _
     if( ast.doemit ) then
     	'' handler = ptrchk( ... ): if handler <> NULL then handler( )
     	label = symbAddLabel( NULL )
-    	irEmitBOPEx( AST_OP_EQ, vr, irAllocVRIMM( FB_DATATYPE_INTEGER, 0 ), NULL, label )
+    	irEmitBOPEx( AST_OP_EQ, _
+    				 vr, _
+    				 irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, 0 ), _
+    				 NULL, _
+    				 label )
     	irEmitJUMPPTR( vr )
     	irEmitLABELNF( label )
     end if

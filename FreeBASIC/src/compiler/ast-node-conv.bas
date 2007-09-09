@@ -40,7 +40,7 @@ private sub hCONVConstEvalInt _
 
 	select case as const v->dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		
+
 		select case as const to_dtype
 		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.long )
@@ -63,7 +63,7 @@ private sub hCONVConstEvalInt _
 		end select
 
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		
+
 		select case as const to_dtype
 		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.float )
@@ -86,7 +86,7 @@ private sub hCONVConstEvalInt _
 		end select
 
 	case else
-		
+
 		select case as const to_dtype
 		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.int )
@@ -204,7 +204,7 @@ private sub hCONVConstEval64 _
 		'' do nothing
 
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		
+
 		if( to_dtype = FB_DATATYPE_LONGINT ) then
 			v->con.val.long = clngint( v->con.val.float )
 		else
@@ -212,7 +212,7 @@ private sub hCONVConstEval64 _
 		end if
 
 	case FB_DATATYPE_LONG
-		
+
 		if( FB_LONGSIZE = len( integer ) ) then
 			if( to_dtype = FB_DATATYPE_LONGINT ) then
 				v->con.val.long = clngint( v->con.val.int )
@@ -532,11 +532,11 @@ function astLoadCONV _
 
 	if( ast.doemit ) then
 		if( n->cast.doconv ) then
-			vr = irAllocVreg( n->dtype )
-			irEmitConvert( vr, n->dtype, vs, INVALID )
+			vr = irAllocVreg( n->dtype, n->subtype )
+			irEmitConvert( n->dtype, n->subtype, vr, vs )
 		else
 			vr = vs
-			irSetVregDataType( vr, n->dtype )
+			irSetVregDataType( vr, n->dtype, n->subtype )
 		end if
 	end if
 

@@ -1962,6 +1962,11 @@ function astOptimizeTree _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
+	'' high-level IR? don't do anything..
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		return n
+	end if
+
 	'' calls must be done in the order below
     ast.isopt = TRUE
 

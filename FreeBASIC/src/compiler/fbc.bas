@@ -411,6 +411,20 @@ private sub setCompOptions( )
 end sub
 
 '':::::
+private function hGetOutFileExt as string
+
+	select case fbGetOption( FB_COMPOPT_BACKEND )
+	case FB_BACKEND_GAS
+		return ".asm"
+
+	case FB_BACKEND_GCC
+		return ".c"
+
+	end select
+
+end function
+
+'':::::
 private function compileFiles _
 	( _
 	) as integer
@@ -453,7 +467,7 @@ private function compileFiles _
     	end if
 
     	'' create output asm name
-    	iof->asmf = hStripExt( iof->outf ) + ".asm"
+    	iof->asmf = hStripExt( iof->outf ) + hGetOutFileExt( )
 
 		'' add the libs and paths passed in the cmd-line
     	setLibList( )
@@ -488,7 +502,7 @@ private function compileFiles _
 end function
 
 '':::::
-private function assembleFile _
+private function assembleFile_GAS _
 	( _
 		byref cmdline as string _
 	) as integer
@@ -523,7 +537,7 @@ private function assembleFile _
 end function
 
 '':::::
-private function assembleFiles _
+private function assembleFiles_GAS _
 	( _
 	) as integer
 
@@ -547,7 +561,7 @@ private function assembleFiles _
                    fbc.extopt.gas
 
     	'' invoke as
-		if( assembleFile( ascline ) = FALSE ) then
+		if( assembleFile_GAS( ascline ) = FALSE ) then
 			exit function
 		end if
 
@@ -557,6 +571,93 @@ private function assembleFiles _
     function = TRUE
 
 end function
+
+'':::::
+private function assembleFile_GCC _
+	( _
+		byref cmdline as string _
+	) as integer
+
+	static as string path
+	static as integer has_path = FALSE
+
+    if( has_path = FALSE ) then
+    	has_path = TRUE
+
+    	'' check the environment variable first
+    	path = environ( "GCC" )
+    	if( len( path ) = 0 ) then
+			path = "gcc" + FB_HOST_EXEEXT
+    	end if
+
+    	if( hFileExists( path ) = FALSE ) then
+			errReportEx( FB_ERRMSG_EXEMISSING, path, -1 )
+			return FALSE
+    	end if
+    end if
+
+    if( fbc.verbose ) then
+    	print "assembling: ", path + " " + cmdline
+    end if
+
+    function = (exec( path, cmdline ) = 0)
+
+end function
+
+'':::::
+private function assembleFiles_GCC _
+	( _
+	) as integer
+
+	dim as string ascline
+
+	function = FALSE
+
+	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
+	do while( iof <> NULL )
+
+    	'' gcc' options
+    	ascline = "-c -nostdlib -nostdinc "
+
+    	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
+			ascline = "-c "
+    	else
+    		ascline = ""
+    	end if
+
+		ascline += QUOTE + iof->asmf + _
+				   (QUOTE + " -o " + QUOTE) + _
+				   iof->outf + (QUOTE) + _
+                   fbc.extopt.gas
+
+    	'' invoke as
+		if( assembleFile_GCC( ascline ) = FALSE ) then
+			exit function
+		end if
+
+    	iof = listGetNext( iof )
+    loop
+
+    function = TRUE
+
+end function
+
+'':::::
+private function assembleFiles _
+	( _
+	) as integer
+
+	select case fbGetOption( FB_COMPOPT_BACKEND )
+	case FB_BACKEND_GAS
+		return assembleFiles_GAS( )
+
+	case FB_BACKEND_GCC
+		return assembleFiles_GCC( )
+
+	end select
+
+end function
+
 
 '':::::
 private function hAddInfoObject as integer

@@ -162,17 +162,23 @@ private function hCallProc _
     dim as IRVREG ptr vreg = any, vr = any
     dim as ASTNODE ptr p = any
     dim as integer dtype = any
+    dim as FBSYMBOL ptr subtype
 
 	dtype = n->dtype
+	subtype = n->subtype
 
 	select case dtype
 	'' returning a string? it's actually a pointer to a string descriptor
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
 		dtype = typeAddrOf( dtype )
+		subtype = NULL
 
 	'' UDT's can be returned in regs or as a pointer to the hidden param passed
 	case FB_DATATYPE_STRUCT
 		dtype = symbGetUDTRetType( n->subtype )
+		if( dtype <> FB_DATATYPE_STRUCT ) then
+			subtype = NULL
+		end if
 
 	'case FB_DATATYPE_CLASS
 		' ...
@@ -181,7 +187,7 @@ private function hCallProc _
 	if( ast.doemit ) then
 		vreg = NULL
 		if( dtype <> FB_DATATYPE_VOID ) then
-			vreg = irAllocVREG( dtype )
+			vreg = irAllocVREG( dtype, subtype )
 		end if
 	end if
 

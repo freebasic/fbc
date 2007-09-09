@@ -1410,6 +1410,12 @@ function astNewBOP _
 	n->r = r
 	n->op.ex = ex
 	n->op.op = op
+
+	'' always alloc the result VR if it's a HL IR
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		options or= AST_OPOPT_ALLOCRES
+	end if
+
 	n->op.options = options
 
 	function = n
@@ -1533,7 +1539,7 @@ function astLoadBOP _
 	if( ast.doemit ) then
 		'' result type can be different, with boolean operations on floats
 		if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
-			vr = irAllocVREG( n->dtype )
+			vr = irAllocVREG( n->dtype, n->subtype )
 		else
 			vr = NULL
 		end if

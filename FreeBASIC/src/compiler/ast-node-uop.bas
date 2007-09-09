@@ -359,7 +359,7 @@ function astLoadUOP _
 
 	if( ast.doemit ) then
 		if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
-			vr = irAllocVREG( o->dtype )
+			vr = irAllocVREG( o->dtype, o->subtype )
 		else
 			vr = NULL
 		end if

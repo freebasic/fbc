@@ -80,7 +80,9 @@ end type
 
 type IRVREG
 	typ			as IRVREGTYPE_ENUM				'' VAR, IMM, IDX, etc
+
 	dtype		as FB_DATATYPE					'' CHAR, INTEGER, ...
+	subtype		as FBSYMBOL ptr
 
 	reg			as integer						'' reg
 	value		as FBVALUE						'' imm value (hi-word of longint's at vaux->value)
@@ -174,10 +176,10 @@ type IR_VTBL
 
 	emitConvert as sub _
 	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval v1 as IRVREG ptr, _
-		byval dtype1 as integer, _
-		byval v2 as IRVREG ptr, _
-		byval dtype2 as integer _
+		byval v2 as IRVREG ptr _
 	)
 
 	emitLabel as sub _
@@ -410,30 +412,35 @@ type IR_VTBL
 
 	allocVreg as function _
 	( _
-		byval dtype as integer _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as IRVREG ptr
 
 	allocVrImm as function _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval value as integer _
 	) as IRVREG ptr
 
 	allocVrImm64 as function _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval value as longint _
 	) as IRVREG ptr
 
 	allocVrImmF as function _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval value as double _
 	) as IRVREG ptr
 
 	allocVrVar as function _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
 		byval ofs as integer _
 	) as IRVREG ptr
@@ -441,6 +448,7 @@ type IR_VTBL
 	allocVrIdx as function _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
 		byval ofs as integer, _
 		byval mult as integer, _
@@ -450,6 +458,7 @@ type IR_VTBL
 	allocVrPtr as function _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval ofs as integer, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
@@ -457,6 +466,7 @@ type IR_VTBL
 	allocVrOfs as function _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
 		byval ofs as integer _
 	) as IRVREG ptr
@@ -464,7 +474,8 @@ type IR_VTBL
 	setVregDataType as sub _
 	( _
 		byval vreg as IRVREG ptr, _
-		byval dtype as integer _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	)
 
 	getDistance as function _
@@ -504,10 +515,12 @@ enum IR_OPT
 	IR_OPT_CPU_BOPSETFLAGS	= &h00004000
 	IR_OPT_CPU_64BITREGS	= &h00008000			'' 64-bit wide registers
 
-	IR_OPT_ADDRCISC			= &h01000000			'' complex addressing modes (base+idx*disp)
-	IR_OPT_REUSEOPER        = &h02000000			'' reuse destine operand
-	IR_OPT_IMMOPER          = &h04000000			'' allow immediate operands
-	IR_OPT_NESTEDFIELDS		= &h08000000			'' optimize (reduce) the accesses to UDT fields?
+	IR_OPT_ADDRCISC			= &h00100000			'' complex addressing modes (base+idx*disp)
+	IR_OPT_REUSEOPER        = &h00200000			'' reuse destine operand
+	IR_OPT_IMMOPER          = &h00400000			'' allow immediate operands
+	IR_OPT_NESTEDFIELDS		= &h00800000			'' optimize (reduce) the accesses to UDT fields?
+
+	IR_OPT_HIGHLEVEL		= &h10000000			'' high-level, preserve the HL constructions
 end enum
 
 type IRCTX
@@ -545,23 +558,23 @@ declare function irGetVRDataSize _
 
 #define irSetOption( op ) ir.options or= op
 
-#define irAllocVreg(dtype) ir.vtbl.allocVreg( dtype )
+#define irAllocVreg(dtype, stype) ir.vtbl.allocVreg( dtype, stype )
 
-#define irSetVregDataType(v,dtype) ir.vtbl.setVregDataType( v, dtype )
+#define irSetVregDataType(v, dtype, stype) ir.vtbl.setVregDataType( v, dtype, stype )
 
-#define irAllocVrImm(dtype, value) ir.vtbl.allocVrImm( dtype, value )
+#define irAllocVrImm(dtype, stype, value) ir.vtbl.allocVrImm( dtype, stype, value )
 
-#define irAllocVrImm64(dtype, value) ir.vtbl.allocVrImm64( dtype, value )
+#define irAllocVrImm64(dtype, stype, value) ir.vtbl.allocVrImm64( dtype, stype, value )
 
-#define irAllocVrImmF(dtype, value) ir.vtbl.allocVrImmF( dtype, value )
+#define irAllocVrImmF(dtype, stype, value) ir.vtbl.allocVrImmF( dtype, stype, value )
 
-#define irAllocVrVar(dtype, sym, ofs) ir.vtbl.allocVrVar( dtype, sym, ofs )
+#define irAllocVrVar(dtype, stype, sym, ofs) ir.vtbl.allocVrVar( dtype, stype, sym, ofs )
 
-#define irAllocVrIdx(dtype, sym, ofs, mult, vidx) ir.vtbl.allocVrIdx( dtype, sym, ofs, mult, vidx )
+#define irAllocVrIdx(dtype, stype, sym, ofs, mult, vidx) ir.vtbl.allocVrIdx( dtype, stype, sym, ofs, mult, vidx )
 
-#define irAllocVrPtr(dtype, ofs, vidx) ir.vtbl.allocVrPtr( dtype, ofs, vidx )
+#define irAllocVrPtr(dtype, stype, ofs, vidx) ir.vtbl.allocVrPtr( dtype, stype, ofs, vidx )
 
-#define irAllocVrOfs(dtype, sym, ofs) ir.vtbl.allocVrOfs( dtype, sym, ofs )
+#define irAllocVrOfs(dtype, stype, sym, ofs) ir.vtbl.allocVrOfs( dtype, stype, sym, ofs )
 
 #define irProcBegin(proc) ir.vtbl.procBegin( proc )
 
@@ -607,7 +620,7 @@ declare function irGetVRDataSize _
 
 #define irEmitVARINIPAD(bytes) ir.vtbl.emitVarIniPad( bytes )
 
-#define irEmitCONVERT(v1, dtype1, v2, dtype2) ir.vtbl.emitConvert( v1, dtype1, v2, dtype2 )
+#define irEmitCONVERT(dtype, stype, v1, v2) ir.vtbl.emitConvert( dtype, stype, v1, v2 )
 
 #define irEmitLABEL(label) ir.vtbl.emitLabel( label )
 
@@ -691,6 +704,8 @@ declare function irGetVRDataSize _
 #define irGetVRType(v) v->typ
 
 #define irGetVRDataType(v) v->dtype
+
+#define irGetVRSubType(v) v->subtype
 
 #define irGetVROfs(v) v->ofs
 

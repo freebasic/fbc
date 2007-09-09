@@ -55,7 +55,7 @@ function astLoadENUM _
 	) as IRVREG ptr
 
 	if( ast.doemit ) then
-		function = irAllocVRIMM( FB_DATATYPE_INTEGER, n->con.val.int )
+		function = irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, n->con.val.int )
 	end if
 
 end function

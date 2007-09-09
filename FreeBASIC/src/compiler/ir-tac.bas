@@ -198,6 +198,7 @@ private function _init _
 
 	''
 	irSetOption( IR_OPT_NESTEDFIELDS )
+
 	function = TRUE
 
 end function
@@ -614,17 +615,17 @@ end sub
 '':::::
 private sub _emitConvert _
 	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval v1 as IRVREG ptr, _
-		byval dtype1 as integer, _
-		byval v2 as IRVREG ptr, _
-		byval dtype2 as integer _
+		byval v2 as IRVREG ptr _
 	) static
 
-	if( typeGetDatatype( dtype1 ) = FB_DATATYPE_POINTER ) then
-		dtype1 = FB_DATATYPE_POINTER
+	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
+		dtype = FB_DATATYPE_POINTER
 	end if
 
-	select case symb_dtypeTB(dtype1).class
+	select case symb_dtypeTB(dtype).class
 	case FB_DATACLASS_INTEGER
 		_emit( AST_OP_TOINT, v1, v2, NULL )
 	case FB_DATACLASS_FPOINT
@@ -986,6 +987,7 @@ end sub
 private function hNewVR _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval vtype as integer _
 	) as IRVREG ptr
 
@@ -999,6 +1001,7 @@ private function hNewVR _
 
 	v->typ = vtype
 	v->dtype = dtype
+	v->subtype = subtype
 	v->sym = NULL
 	v->reg = INVALID
 	v->vidx	= NULL
@@ -1016,16 +1019,17 @@ end function
 '':::::
 private function _allocVreg _
 	( _
-		byval dtype as integer _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any
 
-	vr = hNewVR( dtype, IR_VREGTYPE_REG )
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_REG )
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
-		 vr->vaux = hNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_REG )
+		 vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_REG )
 	end if
 
 	function = vr
@@ -1036,18 +1040,19 @@ end function
 private function _allocVrImm _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval value as integer _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any
 
-	vr = hNewVR( dtype, IR_VREGTYPE_IMM )
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
 
 	vr->value.int = value
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
-		 vr->vaux = hNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_IMM )
+		 vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IMM )
 		 vr->vaux->value.int = 0
 	end if
 
@@ -1059,17 +1064,18 @@ end function
 private function _allocVrImm64 _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval value as longint _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any
 
-	vr = hNewVR( dtype, IR_VREGTYPE_IMM )
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
 
 	vr->value.int = cuint( value )
 
 	'' aux
-	vr->vaux = hNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_IMM )
+	vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IMM )
 
 	vr->vaux->value.int = cint( value shr 32 )
 
@@ -1081,6 +1087,7 @@ end function
 private function _allocVrImmF _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval value as double _
 	) as IRVREG ptr
 
@@ -1089,10 +1096,10 @@ private function _allocVrImmF _
 	'' the FPU doesn't support immediates? create a temp const var_..
 	if( irGetOption( IR_OPT_FPU_IMMOPER ) = FALSE ) then
 		dim as FBSYMBOL ptr s = symbAllocFloatConst( value, dtype )
-		return irAllocVRVAR( dtype, s, symbGetOfs( s ) )
+		return irAllocVRVAR( dtype, subtype, s, symbGetOfs( s ) )
 	end if
 
-	vr = hNewVR( dtype, IR_VREGTYPE_IMM )
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
 
 	vr->value.float = value
 
@@ -1104,20 +1111,21 @@ end function
 private function _allocVrVar _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
 		byval ofs as integer _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any, va = any
 
-	vr = hNewVR( dtype, IR_VREGTYPE_VAR )
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_VAR )
 
 	vr->sym = symbol
 	vr->ofs = ofs
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
-		va = hNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_VAR )
+		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_VAR )
 		vr->vaux = va
 		va->ofs = ofs + FB_INTEGERSIZE
 	end if
@@ -1130,6 +1138,7 @@ end function
 private function _allocVrIdx _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
 		byval ofs as integer, _
 		byval mult as integer, _
@@ -1138,7 +1147,7 @@ private function _allocVrIdx _
 
 	dim as IRVREG ptr vr = any, va = any
 
-	vr = hNewVR( dtype, IR_VREGTYPE_IDX )
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IDX )
 
 	vr->sym = symbol
 	vr->ofs = ofs
@@ -1147,7 +1156,7 @@ private function _allocVrIdx _
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
-		va = hNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_IDX )
+		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IDX )
 		vr->vaux= va
 		va->ofs = ofs + FB_INTEGERSIZE
 	end if
@@ -1160,13 +1169,14 @@ end function
 private function _allocVrPtr _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval ofs as integer, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any, va = any
 
-	vr = hNewVR( dtype, IR_VREGTYPE_PTR )
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_PTR )
 
 	vr->ofs = ofs
 	vr->mult = 1
@@ -1174,7 +1184,7 @@ private function _allocVrPtr _
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
-		va = hNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_IDX )
+		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IDX )
 		vr->vaux= va
 		va->ofs = ofs + FB_INTEGERSIZE
 	end if
@@ -1187,13 +1197,14 @@ end function
 private function _allocVrOfs _
 	( _
 		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
 		byval ofs as integer _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any
 
-	vr = hNewVR( dtype, IR_VREGTYPE_OFS )
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_OFS )
 
 	vr->sym = symbol
 	vr->ofs = ofs
@@ -1206,7 +1217,8 @@ end function
 private sub _setVregDataType _
 	( _
 		byval vreg as IRVREG ptr, _
-		byval dtype as integer _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	)
 
 	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
@@ -1215,11 +1227,12 @@ private sub _setVregDataType _
 
 	if( vreg <> NULL ) then
 		vreg->dtype = dtype
+		vreg->subtype = subtype
 	end if
 
 end sub
 
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
 private sub hRename _

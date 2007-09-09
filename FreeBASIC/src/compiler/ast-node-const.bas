@@ -232,16 +232,16 @@ function astLoadCONST _
 		select case dtype
 		'' longint?
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			return irAllocVrImm64( dtype, n->con.val.long )
+			return irAllocVrImm64( dtype, NULL, n->con.val.long )
 
 		'' floating-point?
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			return irAllocVrImmF( dtype, n->con.val.float )
+			return irAllocVrImmF( dtype, NULL, n->con.val.float )
 
 		'' long?
 		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = len( integer ) ) then
-				return irAllocVrImm( dtype, n->con.val.int )
+				return irAllocVrImm( dtype, NULL, n->con.val.int )
 			else
 				'' !!!FIXME!!! cross-compilation 32-bit -> 64-bit
 				errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
@@ -249,7 +249,7 @@ function astLoadCONST _
 
 		''
 		case else
-			return irAllocVRIMM( dtype, n->con.val.int )
+			return irAllocVRIMM( dtype, NULL, n->con.val.int )
 		end select
 	end if
 

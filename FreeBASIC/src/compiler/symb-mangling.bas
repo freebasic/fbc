@@ -477,20 +477,26 @@ private function hAddUnderscore _
 	if( inited = FALSE ) then
 		inited = TRUE
 
-		select case as const env.clopt.target
-    	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-        	if( env.clopt.nounderprefix ) then
-	        	res = FALSE
-    	    else
-        		res = TRUE
-        	end if
-
-		case FB_COMPTARGET_LINUX
+		'' high-level IR? don't add anything..
+		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 			res = FALSE
 
-		case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
-        	res = TRUE
-    	end select
+		else
+			select case as const env.clopt.target
+    		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+        		if( env.clopt.nounderprefix ) then
+	        		res = FALSE
+    	    	else
+        			res = TRUE
+        		end if
+
+			case FB_COMPTARGET_LINUX
+				res = FALSE
+
+			case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+        		res = TRUE
+    		end select
+    	end if
     end if
 
 	function = res
@@ -721,6 +727,19 @@ private function hMangleVariable  _
 		else
 			'' needed because inline-asm..
 			id_str = irProcGetFrameRegName( )
+
+    		'' high-level?
+    		if( id_str = NULL ) then
+    			'' BASIC? use the upper-cased name
+    			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
+					id_str = sym->id.name
+
+				'' else, the case-sensitive name saved in the alias..
+				else
+	    			id_str = sym->id.alias
+				end if
+			end if
+
 		end if
 	end if
 
@@ -835,6 +854,11 @@ private function hGetProcSuffix _
     if( sym->proc.mode <> FB_FUNCMODE_STDCALL ) then
     	return NULL
     end if
+
+	'' high-level IR? don't add anything..
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		return NULL
+	end if
 
 	*(@suffix + 1) = str( sym->proc.lgt )
 

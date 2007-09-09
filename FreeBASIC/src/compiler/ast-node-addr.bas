@@ -41,7 +41,7 @@ function astGetOFFSETChildOfs _
 		function = l->idx.ofs + l->r->var_.ofs + _
 					 symbGetArrayDiff( l->sym ) + symbGetOfs( l->sym )
 	end if
-	
+
 end function
 
 '':::::
@@ -98,7 +98,7 @@ function astLoadOFFSET _
 	end if
 
 	if( ast.doemit ) then
-		vr = irAllocVROFS( n->dtype, sym, n->ofs.ofs )
+		vr = irAllocVROFS( n->dtype, n->subtype, sym, n->ofs.ofs )
 	end if
 
 	l = n->l
@@ -296,7 +296,7 @@ function astNewADDROF _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ADDROF, _
-					typeSetType( dtype, 1 ), _
+					typeAddrOf( dtype ), _
 					subtype )
 	if( n = NULL ) then
 		return NULL
@@ -331,7 +331,7 @@ function astLoadADDROF _
 			(irGetVRDataClass( v1 ) <> FB_DATACLASS_INTEGER) or _
 			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
 
-			vr = irAllocVREG( FB_DATATYPE_POINTER )
+			vr = irAllocVREG( n->dtype, n->subtype )
 			irEmitADDR( AST_OP_ADDROF, v1, vr )
 
 		else
