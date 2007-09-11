@@ -533,26 +533,27 @@ private function hDeclDynArray _
    								  dimensions, dTB() )
 
 		else
-			'' dup checks
+			'' var already exists; dup checks
 			
-			'' [re]dim () after existing already?
-			if( dimensions = -1 ) then
+			'' EXTERNal?
+			if( symbIsExtern( sym ) ) then
+				
+				'' another EXTERN? (declared twice)
+				if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
+   					sym = NULL
+   					
+				else
+	   				'' define it...
+					hVarExtToPub( sym, attrib )
+				end if
+			
+			'' [re]dim ()?
+			elseif( dimensions = -1 ) then
 				sym = NULL
-			
+				
 			'' dim foo(variable)?
 			elseif( is_redim = FALSE ) then
 				sym = NULL
-			
-			else
-				
-				'' external?
-				if( symbIsExtern( sym ) ) then
-					if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
-	   					sym = NULL
-					else
-						hVarExtToPub( sym, attrib )
-					end if
-				end if
 			end if
 		end if
 	end if
