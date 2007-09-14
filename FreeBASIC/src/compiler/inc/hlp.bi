@@ -50,11 +50,6 @@ declare function hMatch _
 		byval token as integer _
 	) as integer
 
-declare function hMakeTmpStr _
-	( _
-		byval islabel as integer = TRUE _
-	) as zstring ptr
-
 declare function hMakeProfileLabelName _
 	( _
 	) as zstring ptr
@@ -131,13 +126,18 @@ declare function hCheckFileFormat _
 		byval f as integer _
 	) as integer
 
-declare function hCurDir _ 
-	( _ 
+declare function hCurDir _
+	( _
 	) as string
 
-declare function hEnvDir _ 
-	( _ 
+declare function hEnvDir _
+	( _
 	) as string
+
+declare function hHexUInt _
+	( _
+		byval value as uinteger _
+	) as zstring ptr
 
 #include once "inc\hlp-str.bi"
 

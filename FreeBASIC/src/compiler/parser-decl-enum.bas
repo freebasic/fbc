@@ -248,7 +248,7 @@ function cEnumDecl _
 		lexSkipToken( )
 
     case else
-    	id = *hMakeTmpStr( FALSE )
+    	id = *hMakeTmpStrNL( )
     end select
 
 	'' (ALIAS LITSTR)?

@@ -204,7 +204,7 @@ function symbAddArrayDesc _
 
 	'' field?
 	if( symbIsField( array ) ) then
-		id = hMakeTmpStr( FALSE )
+		id = hMakeTmpStrNL( )
 
 		attrib = FB_SYMBATTRIB_LOCAL
 
@@ -224,7 +224,7 @@ function symbAddArrayDesc _
 
 		'' otherwise, create a temporary name..
 		else
-			id = hMakeTmpStr( FALSE )
+			id = hMakeTmpStrNL( )
 		end if
 
 		attrib = array->attrib and (FB_SYMBATTRIB_SHARED or _
@@ -530,6 +530,7 @@ function symbAddVarEx _
 			end if
 		end if
 	end if
+
 	s = symbNewSymbol( options or FB_SYMBOPT_DOHASH, _
 					   NULL, _
 					   symtb, hashtb, _
@@ -599,7 +600,7 @@ function symbAddTempVar _
     dim as FBSYMBOL ptr s
     dim as FBARRAYDIM dTB(0)
 
-	id = *hMakeTmpStr( FALSE )
+	id = *hMakeTmpStrNL( )
 
 	attrib = FB_SYMBATTRIB_TEMP
 	if( checkstatic ) then

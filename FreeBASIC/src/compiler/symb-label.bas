@@ -73,14 +73,14 @@ function symbAddLabel _
 		if( (options and FB_SYMBOPT_CREATEALIAS) = 0 ) then
     		id_alias = symbol
 		else
-			id_alias = hMakeTmpStr( TRUE )
+			id_alias = hMakeTmpStr( )
 		end if
 
 		id = symbol
 
 	else
 		id = NULL
-		id_alias = hMakeTmpStr( TRUE )
+		id_alias = hMakeTmpStr( )
 	end if
 
     if( (options and FB_SYMBOPT_MOVETOGLOB) <> 0 ) then

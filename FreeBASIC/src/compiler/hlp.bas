@@ -28,7 +28,6 @@
 #include once "inc\dstr.bi"
 
 type FBHLPCTX
-	tmpcnt		as uinteger
 	profilecnt  as uinteger
 end type
 
@@ -39,7 +38,6 @@ end type
 '':::::
 sub hlpInit
 
-	ctx.tmpcnt  = 0
 	ctx.profilecnt = 0
 
 end sub
@@ -118,26 +116,6 @@ function hHexUInt _
 	loop
 
 	function = p
-
-end function
-
-'':::::
-function hMakeTmpStr _
-	( _
-		byval islabel as integer _
-	) as zstring ptr static
-
-	static as zstring * 4 + 8 + 1 res
-
-	if( islabel ) then
-		res = ".Lt_" + *hHexUInt( ctx.tmpcnt )
-	else
-		res = "Lt_" + *hHexUInt( ctx.tmpcnt )
-	end if
-
-	ctx.tmpcnt += 1
-
-	function = @res
 
 end function
 
@@ -731,7 +709,7 @@ function hEnvDir( ) as string static
 		else
 			path = ""
 		end if
-		
+
 		function = hCurDir( ) + path
 
 	end if

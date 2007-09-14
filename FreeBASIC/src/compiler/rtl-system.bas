@@ -19,7 +19,7 @@
 '' intrinsic runtime lib system functions (END, COMMAND, BEEP, SLEEP, TIMER, ...)
 ''
 '' chng: oct/2004 written [v1ctor]
-''       jan/2007 fb_DylibSymbolByOrd [voodooattack] 
+''       jan/2007 fb_DylibSymbolByOrd [voodooattack]
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -501,7 +501,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 				FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
-	 	), _        
+	 	), _
 		/' dylibfree ( byval library as any ptr ) as void '/ _
 		( _
 			@"dylibfree", @"fb_DylibFree", _
@@ -649,26 +649,23 @@ function rtlInitApp _
 
 	function = NULL
 
+	if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
+		'' call __monstartup() on win32/cygwin if profiling
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			if( env.clopt.profile ) then
+				'' __monstartup()
+    			proc = astNewCALL( PROCLOOKUP( PROFILEMONSTARTUP ), NULL )
+    			astAdd( proc )
+			end if
+		end select
 
-	'' call __monstartup() on win32/cygwin if profiling
-	if( env.clopt.target = FB_COMPTARGET_WIN32 or _
-		env.clopt.target = FB_COMPTARGET_CYGWIN ) then
-	
-		if( env.clopt.profile ) then
-			'' __monstartup()
-    		proc = astNewCALL( PROCLOOKUP( PROFILEMONSTARTUP ), NULL )
+    	'' call default CRT0 constructors (only required for Win32)
+		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+			'' __main()
+    		proc = astNewCALL( PROCLOOKUP( INITCRTCTOR ), NULL )
     		astAdd( proc )
-		end if
-	
-	end if
-
-    '' call default CRT0 constructors (only required for Win32)
-	if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
-
-		'' __main()
-    	proc = astNewCALL( PROCLOOKUP( INITCRTCTOR ), NULL )
-    	astAdd( proc )
-
+    	end if
     end if
 
 	'' init( argc, argv, lang )
@@ -694,7 +691,7 @@ function rtlInitApp _
 	if( astNewARG( proc, astNewCONSTi( env.clopt.lang, FB_DATATYPE_INTEGER ) ) = NULL ) then
 		exit function
 	end if
-	
+
     astAdd( proc )
 
     function = proc

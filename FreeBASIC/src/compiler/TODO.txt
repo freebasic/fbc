@@ -106,11 +106,6 @@
 	  	- (not so simple) solution: let the AST do it
 	- shared/module-level vars must be emitted before any proc
 	- scopes must be preserved or local vars won't work
-	- if()'s must be translated to
-	  if(vreg reverse(op) vreg) goto label
-	  { -- scope
-	  } -- end scope
-	  label:
         - function calls must be passed complete to IR, with params
         - stdcall names shouldn't be mangled, but anything else should - at least
           the g++ mangling uses no special characters

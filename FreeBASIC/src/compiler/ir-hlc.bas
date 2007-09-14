@@ -40,7 +40,8 @@ end type
 
 declare function hDtypeToStr _
 	( _
-		byval vreg as IRVREG ptr _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as zstring ptr
 
 
@@ -154,24 +155,29 @@ end sub
 '':::::
 private sub hWriteLine _
 	( _
-		byval s as zstring ptr, _
+		byval s as zstring ptr = NULL, _
 		byval addcommas as integer = TRUE _
 	)
 
 	static as string ln
 
-	if( ctx.identcnt > 0 ) then
-		ln = string( ctx.identcnt, TABCHAR )
-		ln += *s
+	if( s <> NULL ) then
+		if( ctx.identcnt > 0 ) then
+			ln = string( ctx.identcnt, TABCHAR )
+			ln += *s
+		else
+			ln = *s
+		end if
+
+		if( addcommas ) then
+			ln += ";"
+		end if
+
+		ln += NEWLINE
+
 	else
-		ln = *s
+		ln = NEWLINE
 	end if
-
-	if( addcommas ) then
-		ln += ";"
-	end if
-
-	ln += NEWLINE
 
 	if( put( #env.outf.num, , ln ) <> 0 ) then
 	end if
@@ -248,6 +254,21 @@ private function _procAllocStatVars _
 	) as integer
 
 	function = 0
+
+end function
+
+'':::::
+private function _makeTmpStr _
+	( _
+		byval islabel as integer _
+	) as zstring ptr
+
+	static as zstring * 3 + 10 + 1 res
+
+	res = "fb$" & ctx.regcnt
+	ctx.regcnt += 1
+
+	function = @res
 
 end function
 
@@ -446,8 +467,6 @@ private sub hLoadVreg _
 
 		vreg->reg = ctx.regcnt
 		ctx.regcnt += 1
-
-    	hWriteLine( *hDtypeToStr( vreg ) & " fb$" & vreg->reg )
     end if
 
     '' index?
@@ -462,17 +481,32 @@ end sub
 '':::::
 private function hDtypeToStr _
 	( _
-		byval vreg as IRVREG ptr _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as zstring ptr
 
 	static as string res
 
-	dim as integer dtype = typeGetDatatype( vreg->dtype )
+	dim as integer ptrcnt = 0
 
-	res = dtypeTb(dtype).name
+	dim as integer dt = typeGetDatatype( dtype )
+	if( dt = FB_DATATYPE_POINTER ) then
+		ptrcnt = typeGetPtrCnt( dtype )
+		dtype = typeGetPtrType( dtype )
+	else
+		dtype = dt
+	end if
 
-	if( dtype = FB_DATATYPE_POINTER ) then
-		for i as integer = 0 to typeGetPtrCnt( vreg->dtype ) - 1
+	select case as const dtype
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+		res = *symbGetName( subtype )
+
+	case else
+		res = dtypeTb(dtype).name
+	end select
+
+	if( ptrcnt > 0 ) then
+		for i as integer = 0 to ptrcnt - 1
 			res += "*"
 		next
 	end if
@@ -491,32 +525,45 @@ private function hVregToStr _
 	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
         dim as string operand
 
-		dim as integer do_deref = any
+		dim as integer do_deref = any, add_plus = any
 
-		'' type casting?
-		if( vreg->dtype <> symbGetType( vreg->sym ) or _
-		    vreg->subtype <> symbGetSubType( vreg->sym ) ) then
-			operand = "*(" + *hDtypeToStr( vreg ) + " *)(&"
-			do_deref = TRUE
+		if( vreg->sym <> NULL ) then
+			'' type casting?
+			if( vreg->dtype <> symbGetType( vreg->sym ) or _
+		    	vreg->subtype <> symbGetSubType( vreg->sym ) ) then
+				operand = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + " *)(&"
+				do_deref = TRUE
+
+			else
+				do_deref = (vreg->ofs <> 0) or (vreg->vidx <> NULL)
+
+				if( do_deref ) then
+					operand += "*(&"
+				end if
+			end if
+
+			operand += *symbGetMangledName( vreg->sym )
+			add_plus = TRUE
 
 		else
-			do_deref = (vreg->ofs <> 0) or (vreg->vidx <> NULL)
-
-			if( do_deref ) then
-				operand += "*(&"
-			end if
+			operand = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + " *)("
+			do_deref = TRUE
+			add_plus = FALSE
 		end if
 
-		operand += *symbGetMangledName( vreg->sym )
-
 		if( vreg->vidx <> NULL ) then
-			operand += "+"
+			if( add_plus ) then
+				operand += "+"
+			end if
 			operand += hVregToStr( vreg->vidx )
+			add_plus = TRUE
 		end if
 
 		'' offset?
 		if( vreg->ofs <> 0 ) then
-			operand += "+"
+			if( add_plus ) then
+				operand += "+"
+			end if
 			operand += str( vreg->ofs )
 		end if
 
@@ -565,6 +612,18 @@ private sub _emitLabel _
 		byval label as FBSYMBOL ptr _
 	)
 
+	hWriteLine( *symbGetMangledName( label ) + ":" )
+
+end sub
+
+'':::::
+private sub _emitLabelNF _
+	( _
+		byval label as FBSYMBOL ptr _
+	)
+
+	hWriteLine( *symbGetMangledName( label ) + ":" )
+
 end sub
 
 '':::::
@@ -573,53 +632,7 @@ private sub _emitReturn _
 		byval bytestopop as integer _
 	)
 
-end sub
-
-'':::::
-private sub _emitProcBegin _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval initlabel as FBSYMBOL ptr _
-	)
-
-	hWriteLine( symbGetMangledName( proc ), FALSE )
-	hWriteLine( "{", FALSE )
-	ctx.identcnt += 1
-
-end sub
-
-'':::::
-private sub _emitProcEnd _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval initlabel as FBSYMBOL ptr, _
-		byval exitlabel as FBSYMBOL ptr _
-	)
-
-	ctx.identcnt -= 1
-	hWriteLine( "}", FALSE )
-
-end sub
-
-'':::::
-private sub _emitScopeBegin _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-	hWriteLine( "{", FALSE )
-	ctx.identcnt += 1
-
-end sub
-
-'':::::
-private sub _emitScopeEnd _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-	ctx.identcnt -= 1
-	hWriteLine( "}", FALSE )
+	/' do nothing '/
 
 end sub
 
@@ -642,15 +655,37 @@ private sub _emitInfoSection _
 end sub
 
 '':::::
+private function hPrepDefine _
+	( _
+		byval vreg as IRVREG ptr _
+	) as string
+
+	function = "#define " & _
+				hVregToStr( vreg ) & _
+				" ((" & _
+				*hDtypeToStr( vreg->dtype, vreg->subtype ) & _
+				")("
+
+end function
+
+'':::::
 private sub hWriteBOP _
 	( _
 		byref op as string, _
-		byref vrs as string, _
-		byref v1s as string, _
-		byref v2s as string _
+		byval vr as IRVREG ptr, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr _
 	)
 
-	hWriteLine( vrs & " = " & v1s & op & v2s )
+    if( vr = NULL ) then
+    	vr = v1
+	end if
+
+	if( irIsREG( vr ) ) then
+		hWriteLine( hPrepDefine( vr ) & hVregToStr( v1 ) & op & hVregToStr( v2 ) & "))", FALSE )
+	else
+		hWriteLine( hVregToStr( vr ) & " = " & hVregToStr( v1 ) & op & hVregToStr( v2 ) )
+	end if
 
 end sub
 
@@ -666,70 +701,104 @@ private sub _emitBopEx _
 
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
-
-	dim as string v1s = hVregToStr( v1 )
-	dim as string v2s = hVregToStr( v2 )
-	dim as string vrs
-
-    if( vr <> NULL ) then
-		if( v1 <> vr ) then
-			hLoadVreg( vr )
-			vrs = hVregToStr( vr )
-		else
-			vrs = v1s
-		end if
-
-	else
-		vrs = v1s
-	end if
+	hLoadVreg( vr )
 
 	select case as const op
 	case AST_OP_ADD
-		hWriteBOP( "+", vrs, v1s, v2s )
+		hWriteBOP( "+", vr, v1, v2 )
 
 	case AST_OP_SUB
-		hWriteBOP( "-", vrs, v1s, v2s )
+		hWriteBOP( "-", vr, v1, v2 )
 
 	case AST_OP_MUL
-		hWriteBOP( "*", vrs, v1s, v2s )
+		hWriteBOP( "*", vr, v1, v2 )
 
 	case AST_OP_DIV
-		hWriteBOP( "/", vrs, v1s, v2s )
+		hWriteBOP( "/", vr, v1, v2 )
 
 	case AST_OP_INTDIV
-		hWriteBOP( "/", vrs, v1s, v2s )
+		hWriteBOP( "/", vr, v1, v2 )
 
 	case AST_OP_MOD
-		hWriteBOP( "%", vrs, v1s, v2s )
+		hWriteBOP( "%", vr, v1, v2 )
 
 	case AST_OP_SHL
-		hWriteBOP( "<<", vrs, v1s, v2s )
+		hWriteBOP( "<<", vr, v1, v2 )
 
 	case AST_OP_SHR
-		hWriteBOP( ">>", vrs, v1s, v2s )
+		hWriteBOP( ">>", vr, v1, v2 )
 
 	case AST_OP_AND
-		hWriteBOP( "&", vrs, v1s, v2s )
+		hWriteBOP( "&", vr, v1, v2 )
 
 	case AST_OP_OR
-		hWriteBOP( "|", vrs, v1s, v2s )
+		hWriteBOP( "|", vr, v1, v2 )
 
 	case AST_OP_XOR
-		hWriteBOP( "^", vrs, v1s, v2s )
+		hWriteBOP( "^", vr, v1, v2 )
 
 	case AST_OP_EQV
-		hWriteBOP( "^", vrs, v1s, v2s )
-		hWriteLine( vrs & " = ~" & vrs )
+    	if( vr = NULL ) then
+    		vr = v1
+		end if
+
+		'' vr = ~(v1 ^ v2)
+		if( irIsREG( vr ) ) then
+			hWriteLine( hPrepDefine( vr ) & "~(" & _
+						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & ")))", FALSE )
+		else
+			hWriteLine( hVregToStr( vr ) & " = ~(" & _
+						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & ")" )
+		end if
 
 	case AST_OP_IMP
-		hWriteLine( vrs & " = ~" & v1s )
-		hWriteBOP( "|", vrs, vrs, v2s )
+    	if( vr = NULL ) then
+    		vr = v1
+		end if
+
+		'' vr = ~v1 | v2
+		if( irIsREG( vr ) ) then
+			hWriteLine( hPrepDefine( vr ) & "~" & _
+						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & "))", FALSE )
+		else
+			hWriteLine( hVregToStr( vr ) & " = ~" & _
+						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) )
+		end if
 
 	case AST_OP_ATAN2
 		'' mark C's atn2() as used
 
     case AST_OP_POW
     	'' mark C's pow() as used
+
+	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
+		dim as string ops
+		select case as const op
+		case AST_OP_EQ
+			ops = "=="
+		case AST_OP_GT
+			ops = ">"
+		case AST_OP_LT
+			ops = "<"
+		case AST_OP_NE
+			ops = "!="
+		case AST_OP_GE
+			ops = ">="
+		case AST_OP_LE
+			ops = "<="
+		end select
+
+		if( vr <> NULL ) then
+			hWriteBOP( ops, vr, v1, v2 )
+		else
+			hWriteLine( "if (" & _
+						hVregToStr( v1 ) & _
+						ops & _
+						hVregToStr( v2 ) & _
+						") goto " & _
+						*symbGetMangledName( ex ) _
+					  )
+		end if
 
 	end select
 
@@ -749,6 +818,26 @@ private sub _emitBop _
 end sub
 
 '':::::
+private sub hWriteUOP _
+	( _
+		byref op as string, _
+		byval vr as IRVREG ptr, _
+		byval v1 as IRVREG ptr _
+	)
+
+    if( vr = NULL ) then
+    	vr = v1
+	end if
+
+	if( irIsREG( vr ) ) then
+		hWriteLine( hPrepDefine( vr ) & op & hVregToStr( v1 ) & "))", FALSE )
+	else
+		hWriteLine( hVregToStr( vr ) & " = " & op & hVregToStr( v1 ) )
+	end if
+
+end sub
+
+'':::::
 private sub _emitUop _
 	( _
 		byval op as integer, _
@@ -757,28 +846,14 @@ private sub _emitUop _
 	)
 
 	hLoadVreg( v1 )
-
-    dim as string v1s = hVregToStr( v1 )
-    dim as string vrs
-
-    if( vr <> NULL ) then
-		if( v1 <> vr ) then
-			hLoadVreg( vr )
-			vrs = hVregToStr( vr )
-		else
-			vrs = v1s
-		end if
-
-	else
-		vrs = v1s
-	end if
+	hLoadVreg( vr )
 
 	select case as const op
 	case AST_OP_NEG
-		hWriteLine( vrs & " = -" & v1s )
+		hWriteUOP( "-", vr, v1 )
 
 	case AST_OP_NOT
-		hWriteLine( vrs & " = ~" & v1s )
+		hWriteUOP( "~", vr, v1 )
 
 	case AST_OP_ABS
 		'' mark C's abs() or fbas() as used
@@ -825,6 +900,17 @@ private sub _emitConvert _
 		byval v2 as IRVREG ptr _
 	)
 
+	hLoadVreg( v1 )
+	hLoadVreg( v2 )
+
+	if( irIsREG( v1 ) ) then
+		hWriteLine( hPrepDefine( v1 ) & hVregToStr( v2 ) & "))", FALSE )
+	else
+		hWriteLine( hVregToStr( v1 ) & _
+					" = (" & *hDtypeToStr( v1->dtype, v1->subtype ) & ")" & _
+					hVregToStr( v2 ) )
+	end if
+
 end sub
 
 '':::::
@@ -835,9 +921,19 @@ private sub _emitStore _
 	)
 
 	if( v1 <> v2 ) then
-		hLoadVreg( v1 )
-		hLoadVreg( v2 )
-		hWriteLine( hVregToStr( v1 ) & " = " & hVregToStr( v2 ) )
+		'' casting needed?
+		if( (v1->dtype <> v2->dtype) or (v1->subtype <> v2->subtype) ) then
+			_emitConvert( FB_DATATYPE_VOID, NULL, v1, v2 )
+		else
+			hLoadVreg( v1 )
+			hLoadVreg( v2 )
+
+			if( irIsREG( v1 ) ) then
+				hWriteLine( hPrepDefine( v1 ) & hVregToStr( v2 ) & "))", FALSE )
+			else
+				hWriteLine( hVregToStr( v1 ) & " = " & hVregToStr( v2 ) )
+			end if
+		end if
 	end if
 
 end sub
@@ -847,6 +943,8 @@ private sub _emitSpillRegs _
 	( _
 	)
 
+	/' do nothing '/
+
 end sub
 
 '':::::
@@ -854,6 +952,8 @@ private sub _emitLoad _
 	( _
 		byval v1 as IRVREG ptr _
 	)
+
+	/' do nothing '/
 
 end sub
 
@@ -863,6 +963,9 @@ private sub _emitLoadRes _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr _
 	)
+
+	_emitStore( vr, v1 )
+	hWriteLine( "return " & hVregToStr( vr ) )
 
 end sub
 
@@ -901,13 +1004,24 @@ private sub _emitAddr _
 		byval vr as IRVREG ptr _
 	)
 
-end sub
+	hLoadVreg( v1 )
+	hLoadVreg( vr )
 
-'':::::
-private sub _emitLabelNF _
-	( _
-		byval l as FBSYMBOL ptr _
-	)
+	select case op
+	case AST_OP_ADDROF
+		if( irIsREG( vr ) ) then
+			hWriteLine( hPrepDefine( vr ) & "&" & hVregToStr( v1 ) & "))", FALSE )
+		else
+			hWriteLine( hVregToStr( vr ) & " = &" & hVregToStr( v1 ) )
+		end if
+
+	case AST_OP_DEREF
+		if( irIsREG( vr ) ) then
+			hWriteLine( hPrepDefine( vr ) & "*" & hVregToStr( v1 ) & "))", FALSE )
+		else
+			hWriteLine( hVregToStr( vr ) & " = *" & hVregToStr( v1 ) )
+		end if
+	end select
 
 end sub
 
@@ -918,6 +1032,18 @@ private sub _emitCall _
 		byval bytestopop as integer, _
 		byval vr as IRVREG ptr _
 	)
+
+	if( vr = NULL ) then
+		hWriteLine( *symbGetMangledName( proc ) & "()" )
+	else
+		hLoadVreg( vr )
+
+		if( irIsREG( vr ) ) then
+			hWriteLine( hPrepDefine( vr ) & *symbGetMangledName( proc ) & "()))", FALSE )
+		else
+			hWriteLine( hVregToStr( vr ) & " = " & *symbGetMangledName( proc ) & "()" )
+		end if
+	end if
 
 end sub
 
@@ -937,6 +1063,8 @@ private sub _emitStackAlign _
 		byval bytes as integer _
 	)
 
+	/' do nothing '/
+
 end sub
 
 '':::::
@@ -953,6 +1081,11 @@ private sub _emitBranch _
 		byval op as integer, _
 		byval label as FBSYMBOL ptr _
 	)
+
+	select case op
+	case AST_OP_JMP
+		hWriteLine( "goto " & *symbGetMangledName( label ) )
+	end select
 
 end sub
 
@@ -975,6 +1108,10 @@ private sub _emitDBG _
 		byval ex as integer _
 	)
 
+	if( op = AST_OP_DBG_LINEINI ) then
+		hWriteLine( "#line " & ex & " """ & env.inf.name & """", FALSE )
+	end if
+
 end sub
 
 '':::::
@@ -982,6 +1119,8 @@ private sub _emitComment _
 	( _
 		byval text as zstring ptr _
 	)
+
+	hWriteLine( "//" & *text, FALSE )
 
 end sub
 
@@ -1073,13 +1212,74 @@ private sub _emitVarIniPad _
 
 end sub
 
+'':::::
+private sub _emitProcBegin _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval initlabel as FBSYMBOL ptr _
+	)
+
+	hWriteLine( )
+
+	if( env.clopt.debug ) then
+		_emitDBG( AST_OP_DBG_LINEINI, proc, proc->proc.ext->dbg.iniline )
+	end if
+
+	if( symbIsPublic( proc ) = FALSE ) then
+		hWriteLine( "static", FALSE )
+	end if
+
+	hWriteLine( hDtypeToStr( symbGetType( proc ), symbGetSubType( proc ) ), FALSE )
+	hWriteLine( *symbGetMangledName( proc ), FALSE )
+
+	hWriteLine( "()", FALSE )
+
+	hWriteLine( "{", FALSE )
+	ctx.identcnt += 1
+
+end sub
+
+'':::::
+private sub _emitProcEnd _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval initlabel as FBSYMBOL ptr, _
+		byval exitlabel as FBSYMBOL ptr _
+	)
+
+	ctx.identcnt -= 1
+	hWriteLine( "}", FALSE )
+
+end sub
+
+'':::::
+private sub _emitScopeBegin _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+	hWriteLine( "{", FALSE )
+	ctx.identcnt += 1
+
+end sub
+
+'':::::
+private sub _emitScopeEnd _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+	ctx.identcnt -= 1
+	hWriteLine( "}" )
+
+end sub
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
 private sub _flush
 
-	flistReset( @ctx.vregTB )
-	ctx.regcnt = 0
+	/' do nothing '/
 
 end sub
 
@@ -1089,7 +1289,7 @@ private function _GetDistance _
 		byval vreg as IRVREG ptr _
 	) as uinteger
 
-	/' unused '/
+	/' do nothing '/
 
 	function = 0
 
@@ -1103,7 +1303,7 @@ private sub _loadVR _
 		byval doload as integer _
 	)
 
-
+    /' do nothing '/
 
 end sub
 
@@ -1114,7 +1314,7 @@ private sub _storeVR _
 		byval reg as integer _
 	)
 
-	/' unused '/
+	/' do nothing '/
 
 end sub
 
@@ -1124,7 +1324,7 @@ private sub _xchgTOS _
 		byval reg as integer _
 	)
 
-	/' unused '/
+	/' do nothing '/
 
 end sub
 
@@ -1200,7 +1400,8 @@ function irHLC_ctor _
 		@_getDistance, _
 		@_loadVr, _
 		@_storeVr, _
-		@_xchgTOS _
+		@_xchgTOS, _
+		@_makeTmpStr _
 	)
 
 	ir.vtbl = _vtbl

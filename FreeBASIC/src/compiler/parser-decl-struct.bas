@@ -844,7 +844,7 @@ decl_inner:		'' it's an anonymous inner UDT
 				if( inner = NULL ) then
 					exit function
 				end if
-				
+
 				inner->udt.options or= iif( isunion, FB_UDTOPT_ISUNION, 0 )
 
 				'' walk through all the anon UDT's symbols, and
@@ -960,21 +960,21 @@ decl_inner:		'' it's an anonymous inner UDT
 
 end function
 
-function hCheckForCDtorOrMethods _ 
-	( _ 
-		byval sym as FBSYMBOL ptr _ 
+function hCheckForCDtorOrMethods _
+	( _
+		byval sym as FBSYMBOL ptr _
 	) as integer
-	
+
 	'' inside a proc?
 	if( fbIsModLevel( ) = FALSE ) then
-		
-		'' we can't allow objects (or their children) with c/dtor 
+
+		'' we can't allow objects (or their children) with c/dtor
 		if( symbGetUDTHasCtorField( sym ) ) then
 			if( errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( sym ) ) = FALSE ) then
 				exit function
 			end if
 		end if
-		
+
 		'' can't allow methods either...
 		dim as FBSYMBOL ptr walk = symbGetUDTFirstElm( sym )
 		do while( walk <> NULL )
@@ -985,11 +985,11 @@ function hCheckForCDtorOrMethods _
 			end if
 			walk = walk->next
 		loop
-		
+
 	end if
-	
+
 	function = TRUE
-	
+
 end function
 
 '':::::
@@ -1074,7 +1074,7 @@ function cTypeDecl _
 		lexEatToken( @id )
 
 	else
-		id = *hMakeTmpStr( FALSE )
+		id = *hMakeTmpStrNL( )
 	end if
 
 	palias = NULL
@@ -1158,28 +1158,28 @@ function cTypeDecl _
 	cCompStmtPush( FB_TK_TYPE, _
 	 		   	   FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
 	 					 			        and (not FB_CMPSTMT_MASK_DATA) )
-	
-	'' we have to store some contextual information, 
+
+	'' we have to store some contextual information,
 	'' while there's no proper scope stack
-	
+
 	dim as ASTNODE ptr currproc = ast.proc.curr, currblock = ast.currblock
 	dim as FBSYMBOL ptr currprocsym = parser.currproc, currblocksym = parser.currblock
 	dim as integer scope_depth = parser.scope
-	
+
 	sym = hTypeAdd( NULL, id, palias, isunion, align )
-	
+
 	'' restore the context
 	ast.proc.curr = currproc
 	ast.currblock = currblock
-	
+
 	parser.currproc = currprocsym
 	parser.currblock = currblocksym
 	parser.scope = scope_depth
-	
+
 	if( hCheckForCDtorOrMethods( sym ) = FALSE ) then
 		exit function
 	end if
-	
+
 	'' end the compound
 	stk = cCompStmtGetTOS( FB_TK_TYPE )
 	if( stk <> NULL ) then

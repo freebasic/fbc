@@ -1190,7 +1190,12 @@ function symbAddProcResult _
 		end if
 	end if
 
-	res = symbAddVarEx( NULL, NULL, proc->typ, proc->subtype, 0, 0, 0, _
+	dim as zstring ptr id = NULL
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		id = @"fb$result"
+	end if
+
+	res = symbAddVarEx( id, NULL, proc->typ, proc->subtype, 0, 0, 0, _
 					  	dTB(), FB_SYMBATTRIB_FUNCRESULT, _
 					  	FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
 

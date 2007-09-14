@@ -88,7 +88,7 @@ function symbAllocFloatConst _
 		return s
 	end if
 
-	id_alias = *hMakeTmpStr( FALSE )
+	id_alias = *hMakeTmpStrNL( )
 
 	'' it must be declare as SHARED, because even if currently inside an
 	'' proc, the global symbol tb should be used, so just one constant
@@ -130,7 +130,7 @@ function symbAllocStrConst _
 		id = "{fbsc}"
 		id += *sname
 	else
-		id = *hMakeTmpStr( FALSE )
+		id = *hMakeTmpStrNL( )
 	end if
 
 	''
@@ -143,7 +143,7 @@ function symbAllocStrConst _
 		return s
 	end if
 
-	id_alias = *hMakeTmpStr( FALSE )
+	id_alias = *hMakeTmpStrNL( )
 
 	'' lgt += the null-char (rtlib wrappers will take it into account)
 
@@ -187,7 +187,7 @@ function symbAllocWStrConst _
 		id = "{fbwc}"
 		id += *hEscapeW( sname )
 	else
-		id = *hMakeTmpStr( FALSE )
+		id = *hMakeTmpStrNL( )
 	end if
 
 	''
@@ -200,7 +200,7 @@ function symbAllocWStrConst _
 		return s
 	end if
 
-	id_alias = *hMakeTmpStr( FALSE )
+	id_alias = *hMakeTmpStrNL( )
 
 	'' lgt = (lgt + null-char) * sizeof( wstring ) (see parser-decl-symbinit.bas)
 	'' it must be declare as SHARED, see symbAllocFloatConst()

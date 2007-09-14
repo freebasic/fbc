@@ -27,6 +27,7 @@
 #include once "inc\emit.bi"
 #include once "inc\flist.bi"
 #include once "inc\ir.bi"
+#include once "inc\hlp.bi"
 
 type IRTAC_CTX
 	tacTB			as TFLIST
@@ -34,6 +35,8 @@ type IRTAC_CTX
 	tacidx			as IRTAC ptr
 
 	vregTB			as TFLIST
+
+	tmpcnt		as uinteger
 end type
 
 declare sub hFlushUOP _
@@ -183,6 +186,7 @@ private function _init _
 	''
 	ctx.tacidx = NULL
 	ctx.taccnt = 0
+	ctx.tmpcnt = 0
 
 	flistNew( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
 
@@ -451,6 +455,26 @@ private function _procAllocStaticVars _
 	) as integer
 
 	function = emitProcAllocStaticVars( head_sym )
+
+end function
+
+'':::::
+private function _makeTmpStr _
+	( _
+		byval islabel as integer _
+	) as zstring ptr
+
+	static as zstring * 4 + 8 + 1 res
+
+	if( islabel ) then
+		res = ".Lt_" + *hHexUInt( ctx.tmpcnt )
+	else
+		res = "Lt_" + *hHexUInt( ctx.tmpcnt )
+	end if
+
+	ctx.tmpcnt += 1
+
+	function = @res
 
 end function
 
@@ -2807,7 +2831,8 @@ function irTAC_ctor _
 		@_getDistance, _
 		@_loadVr, _
 		@_storeVr, _
-		@_xchgTOS _
+		@_xchgTOS, _
+		@_makeTmpStr _
 	)
 
 	ir.vtbl = _vtbl

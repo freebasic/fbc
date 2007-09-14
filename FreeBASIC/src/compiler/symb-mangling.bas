@@ -719,17 +719,9 @@ private function hMangleVariable  _
     			suffix_len = 1
     		end if
 
-		'' static?
-		elseif( symbIsStatic( sym ) ) then
-			id_str = hMakeTmpStr( FALSE )
-
-		'' local..
 		else
-			'' needed because inline-asm..
-			id_str = irProcGetFrameRegName( )
-
     		'' high-level?
-    		if( id_str = NULL ) then
+			if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
     			'' BASIC? use the upper-cased name
     			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
 					id_str = sym->id.name
@@ -738,8 +730,16 @@ private function hMangleVariable  _
 				else
 	    			id_str = sym->id.alias
 				end if
-			end if
 
+			else
+				'' static?
+				if( symbIsStatic( sym ) ) then
+					id_str = hMakeTmpStrNL( )
+				'' local..
+				else
+					id_str = irProcGetFrameRegName( )
+				end if
+			end if
 		end if
 	end if
 
