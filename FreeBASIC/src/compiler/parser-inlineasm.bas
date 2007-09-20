@@ -89,17 +89,17 @@ function cAsmCode _
 						'' function?
 						case FB_SYMBCLASS_PROC
 							text = *symbGetMangledName( s )
-							goto exit_search
+							exit do, do
 
 						'' const?
 						case FB_SYMBCLASS_CONST
 							text = symbGetConstValueAsStr( s )
-							goto exit_search
+							exit do, do
 
 						'' label?
 						case FB_SYMBCLASS_LABEL
 							text = *symbGetMangledName( s )
-							goto exit_search
+							exit do, do
 
 						case FB_SYMBCLASS_VAR
 							'' var?
@@ -108,7 +108,7 @@ function cAsmCode _
 							if( sym <> NULL ) then
 								symbSetIsAccessed( sym )
 							end if
-							goto exit_search
+							exit do, do
 
 						end select
 
@@ -117,7 +117,6 @@ function cAsmCode _
 
 					chain_ = symbChainGetNext( chain_ )
 				loop
-exit_search:
             end if
 
 		'' lit number?

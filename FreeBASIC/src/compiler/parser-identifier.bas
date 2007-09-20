@@ -330,7 +330,7 @@ function cIdentifier _
         				'' field, never static..
         				if( symbGetClass( sym ) = FB_SYMBCLASS_FIELD ) then
 							errReport( FB_ERRMSG_ACCESSTONONSTATICMEMBER )
-        					goto exit_check
+        					exit do, do
         				end if
 
         				sym = sym->hash.next
@@ -338,7 +338,6 @@ function cIdentifier _
 
     				iter = symbChainGetNext( iter )
     			loop while( iter <> NULL )
-exit_check:
     		end select
     	end if
     loop

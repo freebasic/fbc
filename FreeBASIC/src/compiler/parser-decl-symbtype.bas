@@ -446,14 +446,14 @@ function cSymbolType _
 							dtype = FB_DATATYPE_STRUCT
 							subtype = sym
 							lgt = symbGetLen( sym )
-							goto exit_search
+							exit do, do
 	
 		    			case FB_SYMBCLASS_ENUM
 							lexSkipToken( )
 							dtype = FB_DATATYPE_ENUM
 							subtype = sym
 							lgt = FB_INTEGERSIZE
-							goto exit_search
+							exit do, do
 	
 						case FB_SYMBCLASS_TYPEDEF
 							lexSkipToken( )
@@ -461,7 +461,7 @@ function cSymbolType _
 							subtype = symbGetSubtype( sym )
 							lgt = symbGetLen( sym )
 							ptrcnt = symbGetPtrCnt( sym )
-							goto exit_search
+							exit do, do
 						end select
 	
 						sym = sym->hash.next
@@ -469,8 +469,6 @@ function cSymbolType _
 	
 					chain_ = symbChainGetNext( chain_ )
 				loop while( chain_ <> NULL )
-	
-exit_search:
 			end if
 		end select
 	
