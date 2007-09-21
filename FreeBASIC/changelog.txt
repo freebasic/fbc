@@ -23,6 +23,7 @@ Version 0.18.2 Beta:
 - #1745849 - pascal calling convention was emitting bad asm - regression test added (jeffm)
 - #1785469 - was missing extern "c" block in crt/math.bi (DrV)
 - #1799517 - VAL() was evaluating out-of-bound characters impromperly in non-base 10 numbers. (cha0s)
+- #1790722 - INPUT wasn't prompting with a '?' if no prompt string was given (cha0s)
 
 
 Version 0.18.1 Beta:

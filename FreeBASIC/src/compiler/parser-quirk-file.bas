@@ -406,6 +406,7 @@ function cInputStmt _
 	end if
 
 	'' '#'?
+	addquestion = FALSE
 	if( hMatch( CHAR_SHARP ) ) then
 		isfile = TRUE
 		'' Expression
@@ -421,11 +422,11 @@ function cInputStmt _
 			lexSkipToken( )
     	else
     		filestrexpr = NULL
+			addquestion = TRUE
     	end if
 	end if
 
 	'' ','|';'
-	addquestion = FALSE
 	if( (isfile) or (filestrexpr <> NULL) ) then
 		if( hMatch( CHAR_COMMA ) = FALSE ) then
 			if( hMatch( CHAR_SEMICOLON ) = FALSE ) then
