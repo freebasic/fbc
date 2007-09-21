@@ -22,6 +22,7 @@ Version 0.18.2 Beta:
 - #1777001 - array parameters were not being checked for duplicates when DIMming local variable-length arrays (cha0s)
 - #1745849 - pascal calling convention was emitting bad asm - regression test added (jeffm)
 - #1785469 - was missing extern "c" block in crt/math.bi (DrV)
+- #1799517 - VAL() was evaluating out-of-bound characters impromperly in non-base 10 numbers. (cha0s)
 
 
 Version 0.18.1 Beta:
