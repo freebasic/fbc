@@ -136,12 +136,14 @@ type IR_VTBL
 	procAllocArg as function _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval lgt as integer _
 	) as integer
 
 	procAllocLocal as function _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval lgt as integer _
 	) as integer
 
@@ -589,9 +591,9 @@ declare function irGetVRDataSize _
 
 #define irScopeEnd(s) ir.vtbl.scopeEnd( s )
 
-#define irProcAllocArg(proc,lgt) ir.vtbl.procAllocArg( proc, lgt )
+#define irProcAllocArg(proc, s, lgt) ir.vtbl.procAllocArg( proc, s, lgt )
 
-#define irProcAllocLocal(proc, lgt) ir.vtbl.procAllocLocal( proc, lgt )
+#define irProcAllocLocal(proc, s, lgt) ir.vtbl.procAllocLocal( proc, s, lgt )
 
 #define irProcAllocStaticVars(head_sym) ir.vtbl.procAllocStaticVars( head_sym )
 

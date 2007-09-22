@@ -199,15 +199,15 @@ private sub hProcFlush _
 	''
 	symbNestBegin( sym, FALSE )
 
-	'' allocate the non-static local variables on stack
-	symbProcAllocLocalVars( sym )
-
 	'' emit header
 	if( ast.doemit ) then
 		symbSetProcIsEmitted( sym )
 
 		irEmitPROCBEGIN( sym, p->block.initlabel )
 	end if
+
+	'' allocate the non-static local variables on stack
+	symbProcAllocLocalVars( sym )
 
 	'' flush nodes
 	n = p->l
@@ -371,11 +371,11 @@ function astAddAfter _
 	after_node->next = NULL
 
 	n = astAdd( n )
-    
+
     if( next_ = NULL ) then
     	return NULL
     end if
-    
+
 	next_->prev = n
 	n->next = next_
 	ast.proc.curr->r = tail_

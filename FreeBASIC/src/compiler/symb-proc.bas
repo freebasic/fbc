@@ -145,6 +145,7 @@ function symbAddProcParam _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
+		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval ptrcnt as integer, _
@@ -163,7 +164,7 @@ function symbAddProcParam _
     					   NULL, _
     					   @proc->proc.paramtb, NULL, _
     					   FB_SYMBCLASS_PARAM, _
-    				   	   id, NULL, _
+    				   	   id, id_alias, _
     				   	   dtype, subtype, ptrcnt, _
     				   	   attrib )
     if( param = NULL ) then
@@ -1222,7 +1223,6 @@ function symAddProcInstancePtr _
 	) as FBSYMBOL ptr
 
 	dim as integer dtype = any
-
 	select case symbGetClass( parent )
 	case FB_SYMBCLASS_STRUCT
 		dtype = FB_DATATYPE_STRUCT
@@ -1230,7 +1230,8 @@ function symAddProcInstancePtr _
 		'dtype = FB_DATATYPE_CLASS
 	end select
 
-    function = symbAddProcParam( proc, FB_INSTANCEPTR, _
+    function = symbAddProcParam( proc, _
+    							 FB_INSTANCEPTR, NULL, _
     					  		 dtype, parent, 0, _
     					  		 FB_POINTERSIZE, FB_PARAMMODE_BYREF, INVALID, _
     					  		 FB_SYMBATTRIB_PARAMINSTANCE, NULL )
@@ -2410,16 +2411,23 @@ function symbProcAllocLocalVars _
 
     dim as FBSYMBOL ptr s = any
     dim as integer lgt = any
+    dim as integer mask = any
 
     function = FALSE
+
+    '' prepare mask (if the IR is HL, pass the local static vars too)
+    if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+    	mask = FB_SYMBATTRIB_SHARED
+    else
+    	mask = FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+    end if
 
     s = symbGetProcSymbTbHead( proc )
     do while( s <> NULL )
     	'' variable?
     	if( s->class = FB_SYMBCLASS_VAR ) then
     		'' not shared or static?
-    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
-    			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
+    		if( (s->attrib and mask) = 0 ) then
 
 				'' not a parameter?
     			if( (s->attrib and (FB_SYMBATTRIB_PARAMBYDESC or _
@@ -2427,14 +2435,14 @@ function symbProcAllocLocalVars _
     			  				   	FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
 
 					lgt = s->lgt * symbGetArrayElements( s )
-					s->ofs = irProcAllocLocal( parser.currproc, lgt )
+					s->ofs = irProcAllocLocal( parser.currproc, s, lgt )
 
 				'' parameter..
 				else
 					lgt = iif( (s->attrib and FB_SYMBATTRIB_PARAMBYVAL), _
 						   	   s->lgt, _
 						   	   FB_POINTERSIZE )
-					s->ofs = irProcAllocArg( parser.currproc, lgt )
+					s->ofs = irProcAllocArg( parser.currproc, s, lgt )
 
 				end if
 

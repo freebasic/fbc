@@ -713,11 +713,11 @@ function astLoadSCOPEBEGIN _
 
 	s->scp.emit.baseofs = symbGetProcLocalOfs( parser.currproc )
 
-	symbScopeAllocLocals( s )
-
 	if( ast.doemit ) then
 		irEmitSCOPEBEGIN( s )
 	end if
+
+	symbScopeAllocLocals( s )
 
 	function = NULL
 

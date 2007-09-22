@@ -18,23 +18,12 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-#ifndef __FB_LANG__
-option explicit   
-option escape   
-#define QUOTE "\""   
-#define NEWLINE "\r\n"   
-#define RSLASH "\\"   
-#define TABCHAR "\t"   
-#define ESCCHAR "\27"   
-#define LFCHAR "\n" 
-#else
 #define QUOTE !"\""
 #define NEWLINE !"\r\n"
 #define RSLASH !"\\"
 #define TABCHAR !"\t"
 #define ESCCHAR !"\27"
 #define LFCHAR !"\n"
-#endif
 
 #include once "inc\list.bi"
 #include once "inc\hash.bi"
@@ -531,7 +520,7 @@ declare function fbObjInfoReadLib _
 		byval addOption as FB_CALLBACK_ADDOPTION, _
 		byval libpathlist as TLIST ptr _
 	) as integer
-	
+
 declare sub fbSetPrefix _
 	( _
 		byref prefix as string _
@@ -540,29 +529,6 @@ declare sub fbSetPrefix _
 ''
 '' macros
 ''
-
-'' datatype accessors/manipulators
-#define typeGetDatatype(dt)     (iif(dt >= FB_DATATYPE_POINTER, FB_DATATYPE_POINTER, dt)) '' dt
-#define typeSetType(typ,ptrcnt) (ptrcnt * FB_DATATYPE_POINTER + typ) '' FB_DATATYPE_POINTER
-#define typeAddrOf(dt)          (dt + FB_DATATYPE_POINTER) '' FB_DATATYPE_POINTER
-
-#macro typeDeref(dt/', somewhere'/) ''type/ptr info has to come from somewhere besides dtype
-	iif(dt >= FB_DATATYPE_POINTER, dt-FB_DATATYPE_POINTER, INVALID)
-#endmacro
-#macro typeGetPtrCnt(dt/', somewhere'/) ''ditto
-	(dt \ FB_DATATYPE_POINTER)
-#endmacro
-#macro typeGetPtrType(dt/', somewhere'/) ''ditto
-	(iif(dt >= FB_DATATYPE_POINTER, dt Mod FB_DATATYPE_POINTER, dt))
-#endmacro
-
-#macro typeIsPtrTo(dt, ptrcnt, np)
-	iif( typeGetDatatype( dt ) = FB_DATATYPE_POINTER, _ 
-	     iif( typeGetPtrCnt( dt ) = ptrcnt, _ 
-	          iif( typeGetPtrType( dt ) = np, _ 
-	               TRUE, _ 
-	               FALSE ), FALSE ), FALSE )
-#endmacro
 
 #define fbLangOptIsSet( opt ) ((env.langopt and (opt)) <> 0)
 

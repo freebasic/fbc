@@ -42,19 +42,19 @@ const fbdllreason = "__FB_DLLREASON__"
 	proc = symbPreAddProc( NULL )
 
 	'' instance
-	symbAddProcParam( proc, "__FB_DLLINSTANCE__", _
+	symbAddProcParam( proc, "__FB_DLLINSTANCE__", NULL, _
 					  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 1, _
 					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
 					  INVALID, 0, NULL )
 
 	'' reason
-	param = symbAddProcParam( proc, fbdllreason, _
+	param = symbAddProcParam( proc, fbdllreason, NULL, _
 					  		  FB_DATATYPE_UINT, NULL, 0, _
 					  		  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, _
 					  		  INVALID, 0, NULL )
 
 	'' reserved
-	symbAddProcParam( proc, "__FB_DLLRESERVED__", _
+	symbAddProcParam( proc, "__FB_DLLRESERVED__", NULL, _
 					  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 1, _
 					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, INVALID, 0, NULL )
 
@@ -158,13 +158,13 @@ const fbargv = "__FB_ARGV__"
 	proc = symbPreAddProc( NULL )
 
 	'' argc
-	env.main.argc = symbAddProcParam( proc, fbargc, _
+	env.main.argc = symbAddProcParam( proc, fbargc, NULL, _
 					  			   	  FB_DATATYPE_INTEGER, NULL, 0, _
 					  				  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, _
 					  				  INVALID, 0, NULL )
 
 	'' argv
-	env.main.argv = symbAddProcParam( proc, fbargv, _
+	env.main.argv = symbAddProcParam( proc, fbargv, NULL, _
 					  				  typeSetType( FB_DATATYPE_CHAR, 2 ), NULL, 2, _
 					  				  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
 					  				  INVALID, 0, NULL )

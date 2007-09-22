@@ -618,12 +618,12 @@ function symbAddTempVar _
     	return NULL
     end if
 
-	'' alloc? (should be used only by IR)
+	'' alloc? (should be used by IR only)
 	if( doalloc ) then
     	'' not static?
     	if( (s->attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
 
-			s->ofs = irProcAllocLocal( parser.currproc, s->lgt )
+			s->ofs = irProcAllocLocal( parser.currproc, s, s->lgt )
 
 		end if
 	end if

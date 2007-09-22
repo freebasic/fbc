@@ -850,7 +850,7 @@ function hForwardCall _
 
         ''
 		if( symbAddProcParam( proc, _
-							  NULL, _
+							  NULL, NULL, _
 						  	  dtype, _
 						  	  NULL, _
 						  	  0, _

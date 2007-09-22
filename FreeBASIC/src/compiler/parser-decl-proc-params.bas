@@ -226,6 +226,7 @@ private function hMockParam _
 
 	s = symbAddProcParam( proc, _
 						  NULL, _
+						  NULL, _
 						  dtype, NULL, 0, plen, _
 					  	  pmode, _
 					  	  INVALID, _
@@ -287,7 +288,8 @@ private function hParamDecl _
 				end if
 			end if
 
-			return symbAddProcParam( proc, NULL, _
+			return symbAddProcParam( proc, _
+									 NULL, NULL, _
 						   	     	 INVALID, NULL, 0, _
 						   	     	 0, FB_PARAMMODE_VARARG, INVALID, _
 						   	      	 0, NULL )
@@ -465,18 +467,18 @@ private function hParamDecl _
     	param_suffix = param_dtype
     	param_ptrcnt = 0
     end if
-	
+
 	'' in lang FB,
 	if( fbLangIsSet( FB_LANG_FB ) ) then
-		
-		'' we have to delay the true default until now, since 
+
+		'' we have to delay the true default until now, since
 		'' byval/byref depends on the symbol type
 		if( use_default = TRUE ) then
 			param_mode = symbGetDefaultCallConv( param_dtype, param_subtype )
 		end if
-		
+
 	end if
-	
+
     '' QB def-by-letter hax
     if( param_dtype = INVALID ) then
         param_dtype = symbGetDefType( param_id )
@@ -590,7 +592,8 @@ private function hParamDecl _
     	param_id = NULL
     end if
 
-    s = symbAddProcParam( proc, param_id, _
+    s = symbAddProcParam( proc, _
+    					  param_id, NULL, _
     					  param_dtype, param_subtype, param_ptrcnt, _
     					  param_len, param_mode, param_suffix, _
     					  attrib, optval )

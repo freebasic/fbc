@@ -571,9 +571,9 @@ type FBSYMBOL
 	hash			as FBSYMHASH				'' hash tb (namespace) it's part of
 
 	symtb			as FBSYMBOLTB ptr			'' symbol tb it's part of
-	
+
 	parent          as FBSYMBOL ptr
-	
+
 	prev			as FBSYMBOL ptr				'' next in symbol tb list
 	next			as FBSYMBOL ptr             '' prev /
 end type
@@ -1027,6 +1027,7 @@ declare function symbAddProcParam _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
+		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval ptrcnt as integer, _
@@ -2366,6 +2367,28 @@ declare function symbGetDefaultCallConv _
 
 #define symbLookupCompField( parent, id ) symbLookupAt( parent, id, FALSE, TRUE )
 
+'' datatype accessors/manipulators
+#define typeGetDatatype(dt)     (iif(dt >= FB_DATATYPE_POINTER, FB_DATATYPE_POINTER, dt)) '' dt
+#define typeSetType(typ,ptrcnt) (ptrcnt * FB_DATATYPE_POINTER + typ) '' FB_DATATYPE_POINTER
+#define typeAddrOf(dt)          (dt + FB_DATATYPE_POINTER) '' FB_DATATYPE_POINTER
+
+#macro typeDeref(dt/', somewhere'/) ''type/ptr info has to come from somewhere besides dtype
+	iif(dt >= FB_DATATYPE_POINTER, dt-FB_DATATYPE_POINTER, INVALID)
+#endmacro
+#macro typeGetPtrCnt(dt/', somewhere'/) ''ditto
+	(dt \ FB_DATATYPE_POINTER)
+#endmacro
+#macro typeGetPtrType(dt/', somewhere'/) ''ditto
+	(iif(dt >= FB_DATATYPE_POINTER, dt Mod FB_DATATYPE_POINTER, dt))
+#endmacro
+
+#macro typeIsPtrTo(dt, ptrcnt, np)
+	iif( typeGetDatatype( dt ) = FB_DATATYPE_POINTER, _
+	     iif( typeGetPtrCnt( dt ) = ptrcnt, _
+	          iif( typeGetPtrType( dt ) = np, _
+	               TRUE, _
+	               FALSE ), FALSE ), FALSE )
+#endmacro
 
 ''
 '' inter-module globals

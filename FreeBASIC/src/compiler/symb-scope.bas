@@ -107,21 +107,28 @@ function symbScopeAllocLocals _
 		byval scp as FBSYMBOL ptr _
 	) as integer
 
-    dim as integer lgt
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr s = any
+    dim as integer lgt = any
+    dim as integer mask = any
 
     function = FALSE
+
+    '' prepare mask (if the IR is HL, pass the local static vars too)
+    if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+    	mask = FB_SYMBATTRIB_SHARED
+    else
+    	mask = FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+    end if
 
     s = symbGetScopeSymbTbHead( scp )
     do while( s <> NULL )
 		'' variable?
 		if( s->class = FB_SYMBCLASS_VAR ) then
     		'' not shared or static?
-    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
-    			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
+    		if( (s->attrib and mask) = 0 ) then
 
 				lgt = s->lgt * symbGetArrayElements( s )
-				s->ofs = irProcAllocLocal( parser.currproc, lgt )
+				s->ofs = irProcAllocLocal( parser.currproc, s, lgt )
 
 				symbSetVarIsAllocated( s )
 

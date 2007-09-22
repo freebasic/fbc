@@ -401,10 +401,11 @@ end sub
 private function _procAllocArg _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval lgt as integer _
 	) as integer
 
-	function = emitProcAllocArg( proc, lgt )
+	function = emitProcAllocArg( proc, sym, lgt )
 
 end function
 
@@ -412,10 +413,11 @@ end function
 private function _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval lgt as integer _
 	) as integer
 
-	function = emitProcAllocLocal( proc, lgt )
+	function = emitProcAllocLocal( proc, sym, lgt )
 
 end function
 

@@ -1127,7 +1127,7 @@ private sub hWriteExport _
 
 			'' Does struct have exports?
 
-			dim as FBSYMBOL ptr walkSymbols 
+			dim as FBSYMBOL ptr walkSymbols
 			walkSymbols = symbGetUDTSymbTbHead( s )
 			do while( walkSymbols <> NULL )
     			if( symbIsExport( walkSymbols ) ) then
@@ -6655,6 +6655,7 @@ end function
 private function _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval lgt as integer _
 	) as integer static
 
@@ -6676,6 +6677,7 @@ end function
 private function _procAllocArg _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval lgt as integer _
 	) as integer static
 

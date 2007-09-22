@@ -204,8 +204,11 @@ end sub
 private function _procAllocArg _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval lgt as integer _
 	) as integer
+
+	/' do nothing '/
 
 	function = 0
 
@@ -215,8 +218,21 @@ end function
 private function _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval lgt as integer _
 	) as integer
+
+	dim as string ln
+
+	if( symbIsStatic( sym ) ) then
+		ln = "static "
+	end if
+
+	ln += *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) )
+	ln += " "
+	ln += *symbGetMangledName( sym )
+
+	hWriteLine( ln )
 
 	function = 0
 
@@ -248,10 +264,12 @@ private sub _scopeEnd _
 end sub
 
 '':::::
-private function _procAllocStatVars _
+private function _procAllocStaticVars _
 	( _
 		byval head_sym as FBSYMBOL ptr _
 	) as integer
+
+	/' do nothing '/
 
 	function = 0
 
@@ -531,7 +549,27 @@ private function hVregToStr _
 			'' type casting?
 			if( vreg->dtype <> symbGetType( vreg->sym ) or _
 		    	vreg->subtype <> symbGetSubType( vreg->sym ) ) then
-				operand = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + " *)(&"
+
+				'' byref or import?
+				dim as integer is_ptr = (symbGetAttrib( vreg->sym ) and _
+										 (FB_SYMBATTRIB_PARAMBYREF or _
+										  FB_SYMBATTRIB_IMPORT)) or _
+										(typeGetDatatype( symbGetType( vreg->sym ) ) = FB_DATATYPE_POINTER)
+
+				if( is_ptr = FALSE ) then
+					operand = "*("
+				else
+				    operand = "("
+				end if
+
+				operand += *hDtypeToStr( vreg->dtype, vreg->subtype )
+
+				if( is_ptr = FALSE ) then
+					operand += "*)(&"
+				else
+					operand += ")("
+				end if
+
 				do_deref = TRUE
 
 			else
@@ -546,7 +584,7 @@ private function hVregToStr _
 			add_plus = TRUE
 
 		else
-			operand = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + " *)("
+			operand = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + "*)("
 			do_deref = TRUE
 			add_plus = FALSE
 		end if
@@ -924,6 +962,7 @@ private sub _emitStore _
 		'' casting needed?
 		if( (v1->dtype <> v2->dtype) or (v1->subtype <> v2->subtype) ) then
 			_emitConvert( FB_DATATYPE_VOID, NULL, v1, v2 )
+
 		else
 			hLoadVreg( v1 )
 			hLoadVreg( v2 )
@@ -1017,7 +1056,7 @@ private sub _emitAddr _
 
 	case AST_OP_DEREF
 		if( irIsREG( vr ) ) then
-			hWriteLine( hPrepDefine( vr ) & "*" & hVregToStr( v1 ) & "))", FALSE )
+			hWriteLine( hPrepDefine( vr ) & hVregToStr( v1 ) & "))", FALSE )
 		else
 			hWriteLine( hVregToStr( vr ) & " = *" & hVregToStr( v1 ) )
 		end if
@@ -1219,6 +1258,8 @@ private sub _emitProcBegin _
 		byval initlabel as FBSYMBOL ptr _
 	)
 
+	dim as string ln
+
 	hWriteLine( )
 
 	if( env.clopt.debug ) then
@@ -1226,13 +1267,15 @@ private sub _emitProcBegin _
 	end if
 
 	if( symbIsPublic( proc ) = FALSE ) then
-		hWriteLine( "static", FALSE )
+		ln = "static "
 	end if
 
-	hWriteLine( hDtypeToStr( symbGetType( proc ), symbGetSubType( proc ) ), FALSE )
-	hWriteLine( *symbGetMangledName( proc ), FALSE )
+	ln += *hDtypeToStr( symbGetType( proc ), symbGetSubType( proc ) )
+	ln += " "
+	ln += *symbGetMangledName( proc )
+	ln += "()"
 
-	hWriteLine( "()", FALSE )
+	hWriteLine( ln, FALSE )
 
 	hWriteLine( "{", FALSE )
 	ctx.identcnt += 1
@@ -1347,7 +1390,7 @@ function irHLC_ctor _
 		@_procGetFrameRegName, _
 		@_scopeBegin, _
 		@_scopeEnd, _
-		@_procAllocStatVars, _
+		@_procAllocStaticVars, _
 		@_emit, _
 		@_emitConvert, _
 		@_emitLabel, _
