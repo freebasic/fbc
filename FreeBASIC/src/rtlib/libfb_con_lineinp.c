@@ -74,7 +74,7 @@ int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
 
     FB_UNLOCK();
 
-    tmp_result = fb_ConReadLine();
+    tmp_result = fb_ConReadLine( FALSE );
 
     if( addnewline ) {
 				fb_PrintVoid( 0, FB_PRINT_NEWLINE );

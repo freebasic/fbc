@@ -128,43 +128,61 @@ void fb_hHookConScroll(struct _fb_ConHooks *handle,
     handle->Coord.Y = handle->Border.Bottom;
 }
 
-static
-int  fb_hHookConWriteGfx (FB_GFXCTX *context, int target_x, int target_y,
-                          const void *buffer, size_t length,
-                          int *dirty_start, int *dirty_end )
+static int fb_hHookConWriteGfx
+	(
+		FB_GFXCTX *context,
+		int target_x, int target_y,
+        const void *buffer, size_t length,
+        int *dirty_start, int *dirty_end
+	)
 {
-	const unsigned char *pachText = (const unsigned char *) buffer;
-    int char_bit_mask;
-    int char_row_byte_count = BYTES_PER_PIXEL(__fb_gfx->font->w);
-    size_t i, char_size = char_row_byte_count * __fb_gfx->font->h;
 
-    for( i=0; i!=length; ++i ) {
-        size_t char_index = (size_t) *pachText++;
-        const unsigned char *src = &__fb_gfx->font->data[char_index * char_size];
-        int char_y;
-        for (char_y = 0;
-             char_y != __fb_gfx->font->h;
-             char_y++)
-        {
-            int char_x, char_row_byte;
-            int text_y = target_y + char_y;
-            int text_x = target_x;
-            for( char_row_byte=0;
-                 char_row_byte!=char_row_byte_count;
-                 ++char_row_byte )
-            {
-                unsigned char char_data = *src++;
-                for (char_x = 0, char_bit_mask = 1;
-                     char_x != 8;
-                     char_x++, char_bit_mask <<= 1)
-                {
-                    unsigned color = (char_data & char_bit_mask) ? context->fg_color : context->bg_color;
-                    context->put_pixel(context, text_x++, text_y, color);
-                }
-            }
-        }
-        target_x += __fb_gfx->font->w;
+	const unsigned char *pachText = (const unsigned char *) buffer;
+
+    /* cursor? */
+    if( (length == 1) && ((size_t)*pachText == 255) )
+    {
+    	/* note: can't use 'mask' because it will be always 0 (due the endless
+    	         levels if indirection */
+    	int x;
+    	for( x = 0; x < __fb_gfx->font->w; x++ )
+    	{
+    		context->put_pixel( context,
+    							target_x + x,
+    							target_y + __fb_gfx->font->h - 1,
+    							context->fg_color );
+    	}
     }
+    else
+    {
+	    int char_bit_mask;
+	    int char_row_byte_count = BYTES_PER_PIXEL(__fb_gfx->font->w);
+	    size_t i, char_size = char_row_byte_count * __fb_gfx->font->h;
+
+	    for( i=0; i!=length; ++i ) {
+	        size_t char_index = (size_t) *pachText++;
+	        const unsigned char *src = &__fb_gfx->font->data[char_index * char_size];
+	        int char_y;
+	        for (char_y = 0; char_y != __fb_gfx->font->h; char_y++)
+	        {
+	            int char_x, char_row_byte;
+	            int text_y = target_y + char_y;
+	            int text_x = target_x;
+	            for( char_row_byte=0; char_row_byte!=char_row_byte_count; ++char_row_byte )
+	            {
+	                unsigned char char_data = *src++;
+	                for (char_x = 0, char_bit_mask = 1;
+	                     char_x != 8;
+	                     char_x++, char_bit_mask <<= 1)
+	                {
+	                    unsigned color = (char_data & char_bit_mask) ? context->fg_color : context->bg_color;
+	                    context->put_pixel(context, text_x++, text_y, color);
+	                }
+	            }
+	        }
+	        target_x += __fb_gfx->font->w;
+	    }
+	}
 
     fb_hSetDirty( dirty_start, dirty_end,
                   target_y, target_y + __fb_gfx->font->h );
@@ -172,10 +190,12 @@ int  fb_hHookConWriteGfx (FB_GFXCTX *context, int target_x, int target_y,
     return TRUE;
 }
 
-static
-int  fb_hHookConWrite (struct _fb_ConHooks *handle,
-                       const void *buffer,
-                       size_t length )
+static int fb_hHookConWrite
+	(
+		struct _fb_ConHooks *handle,
+        const void *buffer,
+        size_t length
+	)
 {
     const char *pachText = (const char *) buffer;
     fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
@@ -204,7 +224,12 @@ int  fb_hHookConWrite (struct _fb_ConHooks *handle,
 }
 
 /*:::::*/
-void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask)
+void fb_GfxPrintBufferEx
+	(
+		const void *buffer,
+		size_t len,
+		int mask
+	)
 {
 	FB_GFXCTX *context = fb_hGetContext();
     const char *pachText = (const char *) buffer;
@@ -275,14 +300,23 @@ void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask)
 
 
 /*:::::*/
-void fb_GfxPrintBuffer(const char *buffer, int mask)
+void fb_GfxPrintBuffer
+	(
+		const char *buffer,
+		int mask
+	)
 {
     fb_GfxPrintBufferEx(buffer, strlen(buffer), mask);
 }
 
 
 /*:::::*/
-int fb_GfxLocateRaw(int y, int x, int cursor)
+int fb_GfxLocateRaw
+	(
+		int y,
+		int x,
+		int cursor
+	)
 {
 	if (x > -1)
 		__fb_gfx->cursor_x = x;
@@ -293,7 +327,12 @@ int fb_GfxLocateRaw(int y, int x, int cursor)
 
 
 /*:::::*/
-int fb_GfxLocate(int y, int x, int cursor)
+int fb_GfxLocate
+	(
+		int y,
+		int x,
+		int cursor
+	)
 {
     int ret;
     __fb_gfx->flags &= ~PRINT_SCROLL_WAS_OFF;
@@ -317,7 +356,11 @@ int fb_GfxGetY(void)
 }
 
 /*:::::*/
-void fb_GfxGetXY( int *col, int *row )
+void fb_GfxGetXY
+	(
+		int *col,
+		int *row
+	)
 {
 	if( col != NULL )
 		*col = fb_GfxGetX( );
@@ -328,7 +371,11 @@ void fb_GfxGetXY( int *col, int *row )
 }
 
 /*:::::*/
-void fb_GfxGetSize( int *cols, int *rows )
+void fb_GfxGetSize
+	(
+		int *cols,
+		int *rows
+	)
 {
 	if( cols != NULL )
 		*cols = __fb_gfx->text_w;

@@ -64,7 +64,7 @@ int fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
 
     FB_UNLOCK();
 
-    tmp_result = fb_ConReadLine();
+    tmp_result = fb_ConReadLine( FALSE );
 
     if( addnewline )
       fb_PrintVoid( 0, FB_PRINT_NEWLINE );

@@ -147,8 +147,8 @@ FBCALL int          fb_ConsoleView      ( int toprow, int botrow );
 
        void         fb_ConsoleScroll    ( int nrows );
 
-       void         fb_ConReadLineEx    ( FBSTRING *dst );
-FBCALL FBSTRING    *fb_ConReadLine      ( void );
+       void         fb_ConReadLineEx    ( FBSTRING *dst, int soft_cursor );
+FBCALL FBSTRING    *fb_ConReadLine      ( int soft_cursor );
 
 FBCALL void         fb_PrintPad         ( int fnum, int mask );
        void         fb_PrintPadEx       ( struct _FB_FILE *handle, int mask );
