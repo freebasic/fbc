@@ -14,6 +14,7 @@ Version 0.18.2 Beta:
 [added]
 - the "windows-ms" mangling support to EXTERN .. END EXTERN, so MS-ish DLL's can be created and used without editing the .def files (v1c)
 - the configure script for the compiler now accepts --enable-crosscomp-(target) to choose -target support on all platforms when building fbc (DrV)
+- cursor support for INPUT/LINE INPUT in GFX modes (v1c)
 
 [fixed]
 - #1785162 - math overflows weren't being checked if the floating point #s were the same type (cha0s)
