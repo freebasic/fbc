@@ -32,19 +32,19 @@ end sub
 
 '':::::
 private function hCreateResFile( byval cline as zstring ptr ) as string
-    dim as integer f
- 	dim as string resfile
+	dim as integer f
+	dim as string resfile
 
-    resfile = fbc.mainpath + "temp.res"
+	resfile = fbc.mainpath + "temp.res"
 
-    f = freefile( )
-    if( open( resfile, for output, as #f ) <> 0 ) then
-    	return ""
-    end if
+	f = freefile( )
+	if( open( resfile, for output, as #f ) <> 0 ) then
+		return ""
+	end if
 
-    print #f, *cline
+	print #f, *cline
 
-    close #f
+	close #f
 
 	function = resfile
 
@@ -56,7 +56,7 @@ private function _linkFiles _
 	) as integer
 
 	dim as string ldcline, ldpath
-#ifndef TARGET_DOS
+#ifndef __FB_DOS__
 	dim as string resfile
 #endif
 
@@ -65,10 +65,10 @@ private function _linkFiles _
 	'' set path
 	ldpath = fbGetPath( FB_PATH_BIN ) + "ld" + FB_HOST_EXEEXT
 
-    if( hFileExists( ldpath ) = FALSE ) then
+	if( hFileExists( ldpath ) = FALSE ) then
 		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
 		exit function
-    end if
+	end if
 
 	'' add extension
 	if( fbc.outaddext ) then
@@ -78,18 +78,17 @@ private function _linkFiles _
 		end select
 	end if
 
-    '' set script file
-    select case fbGetOption( FB_COMPOPT_OUTTYPE )
+	'' set script file
+	select case fbGetOption( FB_COMPOPT_OUTTYPE )
 	case FB_OUTTYPE_EXECUTABLE
-		ldcline = " -T " + QUOTE + fbGetPath( FB_PATH_BIN ) + _
-				  ("i386go32.x" + QUOTE)
+		ldcline = " -T " + QUOTE + fbGetPath( FB_PATH_BIN ) + "i386go32.x" + QUOTE
 	case else
 		ldcline = ""
 	end select
 
-    if( len( fbc.mapfile ) > 0) then
-        ldcline += " -Map " + fbc.mapfile
-    end if
+	if( len( fbc.mapfile ) > 0) then
+		ldcline += " -Map " + fbc.mapfile
+	end if
 
 	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
@@ -102,61 +101,62 @@ private function _linkFiles _
 
 	'' link with crt0.o (C runtime init) or gcrt0.o for gmon profiling
 	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-		ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + _
-				   (RSLASH + "gcrt0.o" + QUOTE + " ")
+		ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + RSLASH + "gcrt0.o" + QUOTE + " "
 	else
-		ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + _
-				   (RSLASH + "crt0.o" + QUOTE + " ")
+		ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + RSLASH + "crt0.o" + QUOTE + " "
 	end if
 
-    '' add objects from output list
+	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
 	do while( iof <> NULL )
-    	ldcline += QUOTE + iof->outf + (QUOTE + " ")
-    	iof = listGetNext( iof )
-    loop
+		ldcline += QUOTE + iof->outf + (QUOTE + " ")
+		iof = listGetNext( iof )
+	loop
 
-    '' add objects from cmm-line
+	'' add objects from cmm-line
 	dim as string ptr objf = listGetHead( @fbc.objlist )
 	do while( objf <> NULL )
-    	ldcline += QUOTE + *objf + (QUOTE + " ")
-    	objf = listGetNext( objf )
-    loop
+		ldcline += QUOTE + *objf + (QUOTE + " ")
+		objf = listGetNext( objf )
+	loop
 
-    '' set executable name
-    ldcline += "-o " + QUOTE + fbc.outname + QUOTE
+	'' set executable name
+	ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
-    '' init lib group
-    ldcline += " -( "
+	'' init lib group
+	ldcline += " -( "
 
-    '' add libraries from cmm-line and found when parsing
-    ldcline += *fbcGetLibList( NULL )
+	'' add libraries from cmm-line and found when parsing
+	ldcline += *fbcGetLibList( NULL )
 
 	'' rtlib initialization and termination, must be included in the group
 	dim as string libdir = fbGetPath( FB_PATH_LIB )
-	ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
+	ldcline += QUOTE + libdir + RSLASH + "fbrt0.o" + QUOTE + " "
 
-    '' end lib group
-    ldcline += "-) "
+	'' end lib group
+	ldcline += "-) "
 
-   	'' extra options
-   	ldcline += fbc.extopt.ld
+	'' extra options
+	ldcline += fbc.extopt.ld
 
-    '' invoke ld
-    if( fbc.verbose ) then
-    	print "linking: ", ldpath + " " + ldcline
-    end if
+	'' invoke ld
+	if( fbc.verbose ) then
+		print "linking: ", ldpath + " " + ldcline
+	end if
 
-#ifndef TARGET_DOS
-    resfile = hCreateResFile( ldcline )
-    ldcline = "@" + resfile
+#ifndef __FB_DOS__
+	resfile = hCreateResFile( ldcline )
+	if( len( resfile ) = 0 ) then
+		exit function
+	end if
+	ldcline = "@" + resfile
 #endif
 
-    if( exec( ldpath, ldcline ) <> 0 ) then
+	if( exec( ldpath, ldcline ) <> 0 ) then
 		exit function
-    end if
+	end if
 
-#ifndef TARGET_DOS
+#ifndef __FB_DOS__
 	kill( resfile )
 #endif
 
@@ -175,7 +175,7 @@ private function _linkFiles _
 
 	close #f
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -185,9 +185,9 @@ private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 
 	arcpath = fbGetPath( FB_PATH_BIN ) + "ar" + FB_HOST_EXEEXT
 
-    if( exec( arcpath, *cmdline ) <> 0 ) then
+	if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
-    end if
+	end if
 
 	return TRUE
 
@@ -243,8 +243,8 @@ end function
 '':::::
 function fbcInit_dos( ) as integer
 
-    static as FBC_VTBL vtbl = _
-    ( _
+	static as FBC_VTBL vtbl = _
+	( _
 		@_processOptions, _
 		@_listFiles, _
 		@_compileResFiles, _

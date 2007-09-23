@@ -105,7 +105,7 @@ declare sub	parserSetCtx ( )
 	}
 
 '' const
-#if defined(TARGET_WIN32) or defined(TARGET_DOS) or defined(TARGET_XBOX)
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
 	const PATHDIV = RSLASH
 #else
 	const PATHDIV = "/"
@@ -114,9 +114,6 @@ declare sub	parserSetCtx ( )
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' interface
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-#define hFind
-#define 
 
 '':::::
 sub fbAddIncPath _
@@ -662,7 +659,7 @@ sub fbSetPaths _
 		pathTB(FB_PATH_LIB) = FB_LIBPATH + "freebsd"
 	end select
 
-#if not( defined( TARGET_WIN32 ) or defined( TARGET_DOS ) or defined( TARGET_CYGWIN ) or defined( TARGET_XBOX ) )
+#if not( defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
 	hRevertSlash( pathTB(FB_PATH_BIN), FALSE )
 	hRevertSlash( pathTB(FB_PATH_INC), FALSE )
 	hRevertSlash( pathTB(FB_PATH_LIB), FALSE )
@@ -697,7 +694,7 @@ sub fbSetPrefix _
 		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
 	end if
 
-#if defined( TARGET_WIN32 ) or defined( TARGET_DOS ) or defined( TARGET_CYGWIN ) or defined( TARGET_XBOX )
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
 	if( right( fbPrefix, 1 ) = RSLASH ) then
 		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
 	end if
