@@ -659,7 +659,7 @@ sub fbSetPaths _
 		pathTB(FB_PATH_LIB) = FB_LIBPATH + "freebsd"
 	end select
 
-#if not( defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+#if not( defined( __FB_WIN32__ ) or defined( __FB_DOS__ ) )
 	hRevertSlash( pathTB(FB_PATH_BIN), FALSE )
 	hRevertSlash( pathTB(FB_PATH_INC), FALSE )
 	hRevertSlash( pathTB(FB_PATH_LIB), FALSE )

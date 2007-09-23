@@ -30,6 +30,7 @@ private sub _setDefaultLibPaths
 
 end sub
 
+#ifdef __FB_WIN32__
 '':::::
 private function hCreateResFile( byval cline as zstring ptr ) as string
 	dim as integer f
@@ -49,6 +50,7 @@ private function hCreateResFile( byval cline as zstring ptr ) as string
 	function = resfile
 
 end function
+#endif
 
 '':::::
 private function _linkFiles _
@@ -56,7 +58,7 @@ private function _linkFiles _
 	) as integer
 
 	dim as string ldcline, ldpath
-#ifndef __FB_DOS__
+#ifdef __FB_WIN32__
 	dim as string resfile
 #endif
 
@@ -144,7 +146,7 @@ private function _linkFiles _
 		print "linking: ", ldpath + " " + ldcline
 	end if
 
-#ifndef __FB_DOS__
+#ifdef __FB_WIN32__
 	resfile = hCreateResFile( ldcline )
 	if( len( resfile ) = 0 ) then
 		exit function
@@ -156,7 +158,7 @@ private function _linkFiles _
 		exit function
 	end if
 
-#ifndef __FB_DOS__
+#ifdef __FB_WIN32__
 	kill( resfile )
 #endif
 
