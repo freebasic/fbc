@@ -39,7 +39,6 @@
 #include <unistd.h>
 
 #include "fb.h"
-#include "fb_linux.h"
 
 /*:::::*/
 FBCALL int fb_Shell ( FBSTRING *program )

@@ -38,11 +38,10 @@
  */
 
 #include "fb.h"
-#include "fb_linux.h"
 
-#define CTRL_ALWAYS	0x0800D101
-#define ENTER_UTF8	"\e%G"
-#define EXIT_UTF8  	"\e%@"
+#define CTRL_ALWAYS 0x0800D101
+#define ENTER_UTF8  "\e%G"
+#define EXIT_UTF8   "\e%@"
 
 /*:::::*/
 void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
@@ -50,21 +49,21 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 	size_t avail, avail_len;
 	const unsigned char *cbuffer = (const unsigned char *) buffer;
 	unsigned int c;
-	
-    if (!__fb_con.inited) {
-        fwrite(buffer, len, 1, stdout);
-        fflush(stdout);
+
+	if (!__fb_con.inited) {
+		fwrite(buffer, len, 1, stdout);
+		fflush(stdout);
 		return;
 	}
-	
+
 	/* ToDo: handle scrolling for internal characters/attributes buffer? */
-    avail = (__fb_con.w * __fb_con.h) - (((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1);
-    avail_len = len;
+	avail = (__fb_con.w * __fb_con.h) - (((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1);
+	avail_len = len;
 	if (avail < avail_len)
 		avail_len = avail;
 	memcpy(__fb_con.char_buffer + ((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1, buffer, avail_len);
 	memset(__fb_con.attr_buffer + ((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1, __fb_con.fg_color | (__fb_con.bg_color << 4), avail_len);
-	
+
 	for (; len; len--, cbuffer++) {
 		c = *cbuffer;
 		if( c == 0 ) 
@@ -86,7 +85,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 		}
 		else
 			fputc(c, __fb_con.f_out);
-		
+
 		__fb_con.cur_x++;
 		if ((c == 10) || (__fb_con.cur_x >= __fb_con.w)) {
 			__fb_con.cur_x = 1;
@@ -102,6 +101,6 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 /*:::::*/
 void fb_ConsolePrintBuffer( const char *buffer, int mask )
 {
-    return fb_ConsolePrintBufferEx( buffer, strlen(buffer), mask );
+	return fb_ConsolePrintBufferEx( buffer, strlen(buffer), mask );
 }
 

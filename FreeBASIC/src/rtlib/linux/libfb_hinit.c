@@ -30,17 +30,19 @@
  */
 
 /*
- * sys_beep.c -- beep function for Linux
+ * init.c -- libfb initialization for Linux
  *
- * chng: feb/2005 written [lillo]
+ * chng: jan/2005 written [lillo]
+ *       feb/2005 rewritten to remove ncurses dependency [lillo]
  *
  */
 
 #include "fb.h"
 
-
 /*:::::*/
-FBCALL void beep(void)
+void fb_hInit ( void )
 {
-	fb_hTermOut(SEQ_BEEP);
+	fb_unix_hInit( );
+	
+	__fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
 }

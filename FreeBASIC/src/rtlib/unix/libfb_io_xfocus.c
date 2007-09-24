@@ -37,7 +37,6 @@
  */
 
 #include "fb.h"
-#include "fb_linux.h"
 #include <X11/Xlib.h>
 
 typedef Display *(*XOPENDISPLAY)(char *);
@@ -45,9 +44,9 @@ typedef int (*XCLOSEDISPLAY)(Display *);
 typedef int (*XGETINPUTFOCUS)(Display *, Window *, int *);
 
 typedef struct {
-    XOPENDISPLAY OpenDisplay;
-    XCLOSEDISPLAY CloseDisplay;
-    XGETINPUTFOCUS GetInputFocus;
+	XOPENDISPLAY OpenDisplay;
+	XCLOSEDISPLAY CloseDisplay;
+	XGETINPUTFOCUS GetInputFocus;
 } X_FUNCS;
 
 static int ref_count = 0;
@@ -61,7 +60,7 @@ static Window xterm_window;
 /*:::::*/
 int fb_hXTermInitFocus(void)
 {
-    const char *funcs[] = { "XOpenDisplay", "XCloseDisplay", "XGetInputFocus", NULL };
+	const char *funcs[] = { "XOpenDisplay", "XCloseDisplay", "XGetInputFocus", NULL };
 	int dummy;
 	
 	ref_count++;
@@ -69,7 +68,7 @@ int fb_hXTermInitFocus(void)
 		return 0;
 	
 	xlib = fb_hDynLoad("libX11.so", funcs, (void **)&X);
-    if (!xlib)
+	if (!xlib)
 		return -1;
 	
 	display = X.OpenDisplay(NULL);

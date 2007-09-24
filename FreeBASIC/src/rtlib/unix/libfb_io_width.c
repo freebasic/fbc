@@ -37,7 +37,6 @@
  */
 
 #include "fb.h"
-#include "fb_linux.h"
 
 /*:::::*/
 int fb_ConsoleWidth( int cols, int rows )

@@ -38,7 +38,6 @@
  */
 
 #include "fb.h"
-#include "fb_linux.h"
 
 #define MAX_BUFFER_LEN	256
 

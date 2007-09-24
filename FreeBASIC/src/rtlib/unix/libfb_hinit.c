@@ -38,7 +38,7 @@
  */
 
 #include "fb.h"
-#include "fb_linux.h"
+#include "fb_unix.h"
 
 #ifdef MULTITHREADED
 pthread_mutex_t __fb_global_mutex;
@@ -242,7 +242,7 @@ int fb_hInitConsole ( )
 
 
 /*:::::*/
-void fb_hInit ( void )
+void fb_unix_hInit ( void )
 {
 	const int sigs[] = { SIGABRT, SIGFPE, SIGILL, SIGSEGV, SIGTERM, SIGINT, SIGQUIT, -1 };
 	char buffer[2048], *p, *term;
@@ -278,8 +278,6 @@ void fb_hInit ( void )
 
 	memset(&__fb_con, 0, sizeof(__fb_con));
 
-	__fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
-
 	/* Init termcap */
 	term = getenv("TERM");
 	if ((!term) || (tgetent(buffer, term) <= 0))
@@ -299,12 +297,14 @@ void fb_hInit ( void )
 		__fb_con.inited = INIT_CONSOLE;
 	else
 		__fb_con.inited = INIT_X11;
+
 	if (!strncasecmp(term, "eterm", 5))
 		__fb_con.term_type = TERM_ETERM;
 	else if (!strncmp(term, "xterm", 5))
 		__fb_con.term_type = TERM_XTERM;
 	else
 		__fb_con.term_type = TERM_GENERIC;
+
 	if (fb_hInitConsole()) {
 		__fb_con.inited = FALSE;
 		return;

@@ -71,7 +71,7 @@ char *fb_hGetShortPath( char *src, char *dst, int maxlen )
 		}
 		dst = old_dst;
 		dst[maxlen - 1] = '\0';
-    }
+	}
 
 	return dst;
 }

@@ -30,17 +30,17 @@
  */
 
 /*
- * sys_beep.c -- beep function for Linux
+ * exit.c -- end helper for Linux
  *
- * chng: feb/2005 written [lillo]
+ * chng: jan/2005 written [lillo]
+ *       feb/2005 rewritten to remove ncurses dependency [lillo]
  *
  */
 
 #include "fb.h"
 
-
-/*:::::*/
-FBCALL void beep(void)
+ /*:::::*/
+void fb_hEnd ( int unused )
 {
-	fb_hTermOut(SEQ_BEEP);
+	fb_unix_hEnd( unused );
 }

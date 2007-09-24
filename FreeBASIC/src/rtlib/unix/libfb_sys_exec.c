@@ -43,10 +43,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#define MAX_PATH	1024
 
 #include "fb.h"
-#include "fb_system.h"
 
 /*:::::*/
 FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
