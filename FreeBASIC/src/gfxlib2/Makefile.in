@@ -48,8 +48,11 @@ endif
 
 INCLUDES = -I$(srcdir) -I$(srcdir)/@FBRT_TARGET@ -I$(srcdir)/@FBRT_CPU@ -I.
 
+INCLUDES += @X_INCLUDES@
+
 # config.h must be always included before any system header in *nix
 INCLUDES += -include config.h
+
 
 FBRT_LIB = libfbgfx.a
 FBRT_OBJDEST = .

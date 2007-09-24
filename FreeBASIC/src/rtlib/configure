@@ -313,7 +313,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os FBRT_TARGET_BASE FBRT_TARGET FBRT_CPU SET_MAKE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP RANLIB ac_ct_RANLIB ACLOCAL AUTOCONF AUTOHEADER ALLOCA LIBOBJS POW_LIB MAINT LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os FBRT_TARGET_BASE FBRT_TARGET FBRT_CPU SET_MAKE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP RANLIB ac_ct_RANLIB ACLOCAL AUTOCONF AUTOHEADER X_INCLUDES ALLOCA LIBOBJS POW_LIB MAINT LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -3254,6 +3254,13 @@ else
   echo "$as_me:$LINENO: result: libraries $x_libraries, headers $x_includes" >&5
 echo "${ECHO_T}libraries $x_libraries, headers $x_includes" >&6
 fi
+
+if test -z "$x_includes" || test "x$x_includes" = xNONE; then
+	X_INCLUDES=""
+else
+	X_INCLUDES="-I$x_includes"
+fi
+
 
 
 
@@ -8764,6 +8771,7 @@ s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@ACLOCAL@,$ACLOCAL,;t t
 s,@AUTOCONF@,$AUTOCONF,;t t
 s,@AUTOHEADER@,$AUTOHEADER,;t t
+s,@X_INCLUDES@,$X_INCLUDES,;t t
 s,@ALLOCA@,$ALLOCA,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@POW_LIB@,$POW_LIB,;t t

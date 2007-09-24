@@ -90,6 +90,13 @@ AC_CHECK_PROGS([AUTOHEADER], [autoheader], [$MISSING autoheader])
 
 # Checks for header files.
 AC_PATH_X
+if test -z "$x_includes" || test "x$x_includes" = xNONE; then
+	X_INCLUDES=""
+else
+	X_INCLUDES="-I$x_includes"
+fi
+AC_SUBST([X_INCLUDES])
+
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
