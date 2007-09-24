@@ -150,7 +150,6 @@ FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
 	else
 	{
 		res = execvp( application, argv );
-		exit(1); /* if execvp returns, there was an error */
 	}
 
 	fb_hInitConsole();
