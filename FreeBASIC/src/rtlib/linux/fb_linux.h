@@ -115,8 +115,6 @@ extern FBCONSOLE __fb_con;
 
 extern int fb_hTermOut( int code, int param1, int param2);
 extern int fb_hGetCh(int remove);
-extern int fb_hInitConsole(void);
-extern void fb_hExitConsole(void);
 extern int fb_hXTermInitFocus(void);
 extern void fb_hXTermExitFocus(void);
 extern int fb_hXTermHasFocus(void);

@@ -80,4 +80,7 @@ typedef struct _FB_DIRCTX
 
 typedef off_t fb_off_t;
 
+extern int fb_hInitConsole(void);
+extern void fb_hExitConsole(void);
+
 #endif
