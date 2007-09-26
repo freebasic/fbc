@@ -10,11 +10,14 @@ Version 0.18.2 Beta:
 - examples directory reorganized putting all external library examples in ./examples/libraries/ (v1c)
 - replaced "dynamic" with "var-len" terminology in the compiler error messages (jeffm)
 - BYTE replaced by UBYTE in the windows headers (v1c)
+- SCREEN now follows the QB syntax in -lang qb (v1c)
 
 [added]
 - the "windows-ms" mangling support to EXTERN .. END EXTERN, so MS-ish DLL's can be created and used without editing the .def files (v1c)
 - the configure script for the compiler now accepts --enable-crosscomp-(target) to choose -target support on all platforms when building fbc (DrV)
 - cursor support for INPUT/LINE INPUT in GFX modes (v1c)
+- 'PCOPY [srcPg] [, dstPg]' and 'SCREEN [, activePg] [, visiblePg]' for non-graphic, console, screen 0 mode - for DOS and Windows only (v1c)
+- SCREEN() (without parameters) will return the current screen pages as: (activePg or (visiblePg shl 8)) (v1c)
 
 [fixed]
 - #1785162 - math overflows weren't being checked if the floating point #s were the same type (cha0s)
