@@ -79,54 +79,64 @@ int fb_ConsoleWidth( int cols, int rows )
 
     cur = size.X | (size.Y << 16);
 
-    if( do_change ) {
-        SMALL_RECT rect;
-        rect.Left = rect.Top = 0;
-        rect.Right = size.X - 1;
-        if( rect.Right > max.X )
-            rect.Right = max.X;
+    if( do_change == FALSE )
+    	return cur;
 
-        rect.Bottom = rect.Top + size.Y - 1;
-        if( rect.Bottom > max.Y )
-            rect.Bottom = max.Y;
+    SMALL_RECT rect;
+    rect.Left = rect.Top = 0;
+    rect.Right = size.X - 1;
+    if( rect.Right > max.X )
+    	rect.Right = max.X;
 
-        /* Ensure that the window isn't larget than the destination screen
-         * buffer size */
-        if( rect.Bottom < (nrows-1) ) {
-            SMALL_RECT rTmp;
-            memcpy( &rTmp, &rect, sizeof(SMALL_RECT) );
-            if( rTmp.Right >= ncols )
-                rTmp.Right = ncols - 1;
-            SetConsoleWindowInfo( __fb_out_handle, TRUE, &rTmp );
-        } else if( rect.Right < (ncols-1) ) {
-            SMALL_RECT rTmp;
-            memcpy( &rTmp, &rect, sizeof(SMALL_RECT) );
-            if( rTmp.Bottom >= nrows )
-                rTmp.Bottom = nrows - 1;
-            SetConsoleWindowInfo( __fb_out_handle, TRUE, &rTmp );
+	rect.Bottom = rect.Top + size.Y - 1;
+    if( rect.Bottom > max.Y )
+		rect.Bottom = max.Y;
+
+	/* Ensure that the window isn't larger than the destination screen
+     * buffer size */
+    int do_resize = FALSE;
+    SMALL_RECT rectRes;
+    if( rect.Bottom < (nrows-1) )
+	{
+    	do_resize = TRUE;
+        memcpy( &rectRes, &rect, sizeof(SMALL_RECT) );
+        if( rectRes.Right >= ncols )
+        	rectRes.Right = ncols - 1;
+	}
+    else if( rect.Right < (ncols-1) )
+    {
+    	do_resize = TRUE;
+        memcpy( &rectRes, &rect, sizeof(SMALL_RECT) );
+        if( rectRes.Bottom >= nrows )
+        	rectRes.Bottom = nrows - 1;
+	}
+
+    if( do_resize )
+	{
+    	int i;
+        for( i = 0; i < FB_CONSOLE_MAXPAGES; i++ )
+        {
+        	if( __fb_con.pgHandleTb[i] != NULL )
+        		SetConsoleWindowInfo( __fb_con.pgHandleTb[i], TRUE, &rectRes );
         }
+	}
 
-        /* Now set the screen buffer size and ensure that the window is
-         * large enough to show the whole buffer */
-        SetConsoleScreenBufferSize( __fb_out_handle, size );
-        SetConsoleWindowInfo( __fb_out_handle, TRUE, &rect );
-#if 0
-        /* Shouldn't be required any more ... */
-        SetConsoleScreenBufferSize( __fb_out_handle, size );
-        SetConsoleWindowInfo( __fb_out_handle, TRUE, &rect );
-#endif
+    /* Now set the screen buffer size and ensure that the window is
+     * large enough to show the whole buffer */
+    int i;
+    for( i = 0; i < FB_CONSOLE_MAXPAGES; i++ )
+    {
+       	if( __fb_con.pgHandleTb[i] != NULL )
+       	{
+       		SetConsoleScreenBufferSize( __fb_con.pgHandleTb[i], size );
+       		SetConsoleWindowInfo( __fb_con.pgHandleTb[i], TRUE, &rect );
+       	}
     }
 
-    SetConsoleActiveScreenBuffer( __fb_out_handle );
-
-    if( do_change ) {
-        /* Re-enable updating */
-        __fb_ConsoleSetByUser = FALSE;
-
-        fb_hUpdateConsoleWindow( );
-
-        __fb_ConsoleSetByUser = TRUE;
-    }
+	/* Re-enable updating */
+    __fb_con.setByUser = FALSE;
+	fb_hUpdateConsoleWindow( );
+    __fb_con.setByUser = TRUE;
 
 	return cur;
 }

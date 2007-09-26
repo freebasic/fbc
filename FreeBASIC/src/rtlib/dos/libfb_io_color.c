@@ -40,22 +40,21 @@
 #include "fb_colors.h"
 #include <pc.h>
 
-/* globals */
-int fb_last_bc = FB_COLOR_BLACK,
-	fb_last_fc = FB_COLOR_WHITE;
+static int last_bc = FB_COLOR_BLACK,
+		   last_fc = FB_COLOR_WHITE;
 
 /*:::::*/
 int fb_ConsoleColor( int fc, int bc, int flags )
 {
-	int cur = fb_last_fc | (fb_last_bc << 16);
-	
+	int cur = last_fc | (last_bc << 16);
+
 	if( !( flags & FB_COLOR_FG_DEFAULT ) )
-		fb_last_fc = fc & 15;
+		last_fc = fc & 15;
 
 	if( !( flags & FB_COLOR_BG_DEFAULT ) )
-		fb_last_bc = bc & 15;
+		last_bc = bc & 15;
 
-	ScreenAttrib = fb_last_fc | (fb_last_bc << 4);
+	ScreenAttrib = last_fc | (last_bc << 4);
 
 	return cur;
 }
@@ -63,6 +62,8 @@ int fb_ConsoleColor( int fc, int bc, int flags )
 /*:::::*/
 int fb_ConsoleGetColorAtt( void )
 {
+	/* !!!FIXME!!! there must be an attribute for each page */
+
 	return ScreenAttrib;
 
 }

@@ -30,46 +30,32 @@
  */
 
 /*
- * init.c -- libfb initialization for Windows
+ * hook_pcopy.c -- pcopy entrypoint, default to console mode
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: set/2007 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
-#include <float.h>
 #include "fb.h"
 
-/* globals */
-#ifdef MULTITHREADED
-CRITICAL_SECTION __fb_global_mutex;
-CRITICAL_SECTION __fb_string_mutex;
-#endif
-
-FB_CONSOLE_CTX __fb_con /* not initialized */;
-
 /*:::::*/
-void fb_hInit ( void )
+FBCALL int fb_PageCopy( int src, int dst )
 {
-#ifdef TARGET_WIN32
-    /* set FPU precision to 64-bit and round to nearest (as in QB) */
-    _controlfp( _PC_64|_RC_NEAR, _MCW_PC|_MCW_RC );
-#elif defined(__GNUC__) && defined(__i386__)
-    {
-        unsigned int control_word;
-        /* Get FPU control word */
-        __asm__ __volatile__( "fstcw %0" : "=m" (control_word) : );
-        /* Set 64-bit and round to nearest */
-        control_word = (control_word & 0xF0FF) | 0x300;
-        /* Write back FPU control word */
-        __asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
-    }
-#endif
+	fb_DevScrnInit_NoOpen( );
 
-#ifdef MULTITHREADED
-	InitializeCriticalSection(&__fb_global_mutex);
-	InitializeCriticalSection(&__fb_string_mutex);
-#endif
+	if( (src > FB_CONSOLE_MAXPAGES) || (dst > FB_CONSOLE_MAXPAGES) )
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
-	memset( &__fb_con, 0, sizeof( FB_CONSOLE_CTX ) );
+	FB_LOCK();
+
+	int res;
+
+	if( __fb_ctx.hooks.pagecopyproc )
+		res = __fb_ctx.hooks.pagecopyproc( src, dst );
+	else
+        res = fb_ConsolePageCopy( src, dst );
+
+	FB_UNLOCK();
+
+	return res;
 }

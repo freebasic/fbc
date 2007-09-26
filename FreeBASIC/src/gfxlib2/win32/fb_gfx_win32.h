@@ -96,5 +96,7 @@ extern void fb_hWin32SetMouse(int x, int y, int cursor, int clip);
 extern void fb_hWin32SetWindowTitle(char *title);
 extern int fb_hWin32SetWindowPos(int x, int y);
 
+/* from the rtlib */
+extern const unsigned char __fb_keytable[][3];
 
 #endif

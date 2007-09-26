@@ -40,10 +40,6 @@
 #include "fb.h"
 #include <ctype.h>
 
-/* globals */
-fb_FnProcessMouseEvent __fb_MouseEventHook = (fb_FnProcessMouseEvent) NULL;
-
-
 #define KEY_BUFFER_LEN 512
 static int key_buffer[KEY_BUFFER_LEN];
 static size_t key_head = 0, key_tail = 0;
@@ -462,9 +458,9 @@ int fb_ConsoleProcessEvents( void )
                 break;
 
             case MOUSE_EVENT:
-                if( __fb_MouseEventHook != (fb_FnProcessMouseEvent) NULL )
+                if( __fb_con.mouseEventHook != (fb_FnProcessMouseEvent) NULL )
                 {
-                    __fb_MouseEventHook( &ir.Event.MouseEvent );
+                    __fb_con.mouseEventHook( &ir.Event.MouseEvent );
                     got_event = TRUE;
                 }
                 break;

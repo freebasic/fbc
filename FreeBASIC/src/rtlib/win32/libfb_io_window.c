@@ -40,12 +40,9 @@
 #include <float.h>
 #include "fb.h"
 
-/* globals */
-SMALL_RECT __fb_srConsoleWindow;
-
 static SMALL_RECT srRealConsoleWindow;
 
-static __inline__ void ReadConsoleRect( SMALL_RECT *pRect, int GetRealWindow )
+static __inline__ void hReadConsoleRect( SMALL_RECT *pRect, int GetRealWindow )
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
 
@@ -86,11 +83,11 @@ FBCALL void fb_hUpdateConsoleWindow( void )
     /* Whenever the console was set by the user, we MUST NOT query this
      * information again because this would cause a mess with SAA
      * applications otherwise. */
-    if (__fb_ConsoleSetByUser)
+    if (__fb_con.setByUser)
         return;
 
-    ReadConsoleRect( &__fb_srConsoleWindow, FALSE );
-    ReadConsoleRect( &srRealConsoleWindow, TRUE );
+    hReadConsoleRect( &__fb_con.window, FALSE );
+    hReadConsoleRect( &srRealConsoleWindow, TRUE );
 }
 
 /*:::::*/
@@ -113,20 +110,25 @@ FBCALL void fb_hRestoreConsoleWindow( void )
     /* Whenever the console was set by the user, there's no need to
      * restore the original window console because we don't have to
      * mess around with scrollable windows */
-    if (__fb_ConsoleSetByUser)
+    if (__fb_con.setByUser)
         return;
 
     fb_InitConsoleWindow( );
 
     /* Update only when changed! */
-    ReadConsoleRect( &sr, TRUE );
+    hReadConsoleRect( &sr, TRUE );
     if( (sr.Top != srRealConsoleWindow.Top)
         || (sr.Bottom != srRealConsoleWindow.Bottom) )
     {
         /* Keep the left/right coordinate of the console */
         sr.Top = srRealConsoleWindow.Top;
         sr.Bottom = srRealConsoleWindow.Bottom;
-        SetConsoleWindowInfo( __fb_out_handle, TRUE, &srRealConsoleWindow );
+    	int i;
+    	for( i = 0; i < FB_CONSOLE_MAXPAGES; i++ )
+    	{
+       		if( __fb_con.pgHandleTb[i] != NULL )
+        		SetConsoleWindowInfo( __fb_con.pgHandleTb[i], TRUE, &srRealConsoleWindow );
+        }
     }
 }
 

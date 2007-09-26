@@ -203,7 +203,7 @@ function cColorStmt _
 			hMatchRPRNT( )
 		end if
 	else
-		
+
 		'' '('?
 		if( hMatch( CHAR_LPRNT ) = TRUE ) then
 
@@ -211,23 +211,23 @@ function cColorStmt _
 			fore_color = cExpression(  )
 
 			if( hMatch( CHAR_COMMA ) = TRUE ) then
-			
-				'' ',' expr ')'	
+
+				'' ',' expr ')'
 				hMatchExpression( back_color )
 				hMatchRPRNT( )
-			
+
 			else
-				
+
 				'' ')' (',' expr)?
 				hMatchRPRNT( )
 				if( hMatch( CHAR_COMMA ) = TRUE ) then
 					hMatchExpression( back_color )
 				end if
-	
+
 			end if
 
 		else
-			
+
 			'' expr? (',' expr)?
 
 			fore_color = cExpression(  )
@@ -236,7 +236,7 @@ function cColorStmt _
 			end if
 
 		end if
-		
+
 	end if
 
 	function = rtlColor( fore_color, back_color, isfunc )
@@ -245,35 +245,50 @@ end function
 
 '':::::
 '' ScreenFunct   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
+''				 |   SCREEN ( '(' ')' )? -- returns the current active/visible pages
 ''
 function cScreenFunct _
 	( _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr yexpr, xexpr, fexpr
-
 	function = FALSE
 
 	'' SCREEN
 	lexSkipToken( )
 
-	hMatchLPRNT( )
-
-	hMatchExpressionEx( yexpr, FB_DATATYPE_INTEGER )
-
-	hMatchCOMMA( )
-
-	hMatchExpressionEx( xexpr, FB_DATATYPE_INTEGER )
-
-	fexpr = NULL
-	if( hMatch( CHAR_COMMA ) ) then
-		hMatchExpressionEx( fexpr, FB_DATATYPE_INTEGER )
+	dim as integer match_paren = FALSE
+	dim as ASTNODE ptr yexpr = NULL
+	'' '('?
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		lexSkipToken( )
+		match_paren = TRUE
+		yexpr = cExpression( )
 	end if
 
-	hMatchRPRNT( )
+	'' pageset?
+	if( yexpr = NULL ) then
+		funcexpr = rtlPageSet( NULL, NULL, TRUE )
 
-	funcexpr = rtlConsoleReadXY( yexpr, xexpr, fexpr )
+    '' readXY..
+    else
+		dim as ASTNODE ptr xexpr, fexpr
+
+		hMatchCOMMA( )
+
+		hMatchExpressionEx( xexpr, FB_DATATYPE_INTEGER )
+
+		fexpr = NULL
+		if( hMatch( CHAR_COMMA ) ) then
+			hMatchExpressionEx( fexpr, FB_DATATYPE_INTEGER )
+		end if
+
+		funcexpr = rtlConsoleReadXY( yexpr, xexpr, fexpr )
+	end if
+
+	if( match_paren ) then
+		hMatchRPRNT( )
+	end if
 
 	function = funcexpr <> NULL
 

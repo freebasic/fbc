@@ -71,7 +71,7 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 	JS_EVENT event;
 	int i, j, k, count = 0;
 	int version;
-	
+
 	if (!inited) {
 		fb_hMemSet(joydata, 0, sizeof(JOYDATA) * 16);
 		for (i = 0; i < 16; i++)
@@ -96,25 +96,25 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 		}
 		inited = TRUE;
 	}
-	
+
 	*buttons = -1;
 	*a1 = *a2 = *a3 = *a4 = *a5 = *a6 = *a7 = *a8 = -1000.0;
-	
+
 	if ((id < 0) || (id > 15))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	joy = &joydata[id];
-	
+
 	if (joy->fd < 0)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-	
+
 	while (read(joy->fd, &event, sizeof(event)) > 0) {
 		switch (event.type & ~JS_EVENT_INIT) {
-		
+
 			case JS_EVENT_AXIS:
 				if (event.number < 8)
 					joy->axis[event.number] = (float)event.value / 32767.0;
 				break;
-			
+
 			case JS_EVENT_BUTTON:
 				if (event.number < 32) {
 					if (event.value)
@@ -125,7 +125,7 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 				break;
 		}
 	}
-	
+
 	*a1 = joy->axis[0];
 	*a2 = joy->axis[1];
 	*a3 = joy->axis[2];
@@ -135,7 +135,7 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 	*a7 = joy->axis[6];
 	*a8 = joy->axis[7];
 	*buttons = joy->buttons;
-	
-	return FB_RTERROR_OK;
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 

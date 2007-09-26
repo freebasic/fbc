@@ -349,7 +349,7 @@ typedef struct GFXDRIVER
 	 * This string must also be human-readable.
 	 */
 	char *name;
-	
+
 	/** Driver initialization function pointer.
 	 *
 	 * This function is called from fb_GfxScreen or fb_GfxScreenRes;
@@ -369,7 +369,7 @@ typedef struct GFXDRIVER
 	 * \return -1 on failure; 0 on success
 	 */
 	int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags);
-	
+
 	/** Driver exit function pointer.
 	 *
 	 * This function is called when a driver should clean up all allocated resources
@@ -377,22 +377,22 @@ typedef struct GFXDRIVER
 	 *
 	 * In some cases this function will be called even when a driver failed to initialize.
 	 * It is the driver's responsibility to track which resources it has or has not allocated
-	 * so that such resources are not released twice if the exit function is called when the 
+	 * so that such resources are not released twice if the exit function is called when the
 	 * init function failed.
 	 *
 	 * This function pointer must not be NULL.
 	 */
 	void (*exit)(void);
-	
+
 	/** Driver lock function pointer.
 	 *
-	 * The driver must not update the display from the internal framebuffer between calls to 
+	 * The driver must not update the display from the internal framebuffer between calls to
 	 * lock and unlock.
 	 *
 	 * This function pointer must not be NULL.
 	 */
 	void (*lock)(void);
-	
+
 	/** Driver unlock function pointer.
 	 *
 	 * This function pointer must not be NULL.
@@ -400,7 +400,7 @@ typedef struct GFXDRIVER
 	 * \see lock
 	 */
 	void (*unlock)(void);
-	
+
 	/** Driver set palette function pointer.
 	 *
 	 * \param[in] index index of the palette entry to set in the range [0..255]
@@ -409,7 +409,7 @@ typedef struct GFXDRIVER
 	 * \param[in] b blue value in the range [0..63]
 	 */
 	void (*set_palette)(int index, int r, int g, int b);
-	
+
 	/** Driver wait for vertical synchronization function pointer.
 	 *
 	 * This function should block until the next vertical retrace period.
@@ -419,7 +419,7 @@ typedef struct GFXDRIVER
 	 * Can be NULL if the driver cannot wait for vsync.
 	 */
 	void (*wait_vsync)(void);
-	
+
 	/** Driver get mouse state function pointer.
 	 *
 	 * The driver should fill the parameters with the current mouse state.
@@ -435,7 +435,7 @@ typedef struct GFXDRIVER
 	 * \return 0 on success; -1 on failure
 	 */
 	int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip);
-	
+
 	/** Driver set mouse state function pointer.
 	 *
 	 * Can be NULL if the driver cannot set the mouse state.
@@ -446,7 +446,7 @@ typedef struct GFXDRIVER
 	 * \param[in] clip cursor clip state; if 0, the mouse cursor should be unclipped; if > 0, the mouse cursor should be clipped to the graphics drawing area; otherwise, this parameter should be ignored
 	 */
 	void (*set_mouse)(int x, int y, int cursor, int clip);
-	
+
 	/** Driver set window title function pointer.
 	 *
 	 * Can be NULL if the driver cannot set the window title.
@@ -454,7 +454,7 @@ typedef struct GFXDRIVER
 	 * \param[in] title string to set the window title to
 	 */
 	void (*set_window_title)(char *title);
-	
+
 	/** Driver set/get window position function pointer.
 	 *
 	 * \param[in] x x position in pixels to move the window to, relative to the display device; if 0x80000000, ignore
@@ -462,7 +462,7 @@ typedef struct GFXDRIVER
 	 * \return (current x position & 0xFFFF) | (current y position << 16)
 	 */
 	int (*set_window_pos)(int x, int y);
-	
+
 	/** Driver fetch mode list function pointer.
 	 *
 	 * This function returns a list of available modes for this driver.  The list need not be sorted or
@@ -475,14 +475,14 @@ typedef struct GFXDRIVER
 	 * \return array of size ints allocated by malloc(), each containing (height | (width << 16)) for one of the available modes
 	 */
 	int *(*fetch_modes)(int depth, int *size);
-	
+
 	/** Driver page flip function pointer.
 	 *
 	 * This function flips the drawing page with the visible page.
 	 * It is only needed for OpenGL drivers and can be NULL otherwise.
 	 */
 	void (*flip)(void);
-	
+
 	/** Driver poll events function pointer.
 	 *
 	 * This function should poll for event and post those that are available with fb_hPostEvent.
@@ -587,6 +587,7 @@ extern void *fb_hGL_GetProcAddress(const char *proc);
 
 /* Public API */
 extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate);
+extern FBCALL int fb_GfxScreenQB(int mode, int visible, int active);
 extern FBCALL int fb_GfxScreenRes(int width, int height, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, int *refresh_rate, FBSTRING *driver);
 extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth, int flags);
@@ -609,8 +610,7 @@ extern FBCALL int fb_GfxWaitVSync(void);
 extern FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, unsigned int border_color, FBSTRING *pattern, int mode, int coord_type);
 extern FBCALL void fb_GfxDraw(void *target, FBSTRING *command);
 extern FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font, int mode, PUTTER *putter, BLENDER *blender, void *param);
-extern FBCALL void fb_GfxFlip(int from_page, int to_page);
-extern FBCALL void fb_GfxSetPage(int work_page, int visible_page);
+extern FBCALL int fb_GfxFlip(int from_page, int to_page);
 extern FBCALL void fb_GfxLock(void);
 extern FBCALL void fb_GfxUnlock(int start_line, int end_line);
 extern FBCALL void *fb_GfxScreenPtr(void);
@@ -652,6 +652,8 @@ int fb_GfxLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars, int
 unsigned int fb_GfxReadXY( int col, int row, int colorflag );
 void fb_GfxSleep( int msecs );
 int fb_GfxIsRedir( int is_input );
+int fb_GfxPageCopy(int from_page, int to_page);
+int fb_GfxPageSet(int work_page, int visible_page);
 
 typedef void (*FBGFX_IMAGE_CONVERT)(const unsigned char *, unsigned char *, int);
 

@@ -247,8 +247,8 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
             info.wAttributes = screen_info.wAttributes;
         }
 
-        if( __fb_ScrollWasOff ) {
-            __fb_ScrollWasOff = FALSE;
+        if( __fb_con.scrollWasOff ) {
+            __fb_con.scrollWasOff = FALSE;
             ++hooks.Coord.Y;
             hooks.Coord.X = hooks.Border.Left;
             fb_hConCheckScroll( &hooks );
@@ -263,11 +263,14 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
             || hooks.Coord.Y != (hooks.Border.Bottom+1) )
         {
             fb_hConCheckScroll( &hooks );
-        } else {
-            __fb_ScrollWasOff = TRUE;
+        }
+        else
+        {
+            __fb_con.scrollWasOff = TRUE;
             hooks.Coord.X = hooks.Border.Right;
             hooks.Coord.Y = hooks.Border.Bottom;
         }
+
         {
             COORD dwCoord = { (SHORT) hooks.Coord.X, (SHORT) hooks.Coord.Y };
             SetConsoleCursorPosition( info.hOutput,

@@ -264,9 +264,9 @@ void fb_ConsolePrintBufferWstrEx
             info.wAttributes = screen_info.wAttributes;
         }
 
-        if( __fb_ScrollWasOff )
+        if( __fb_con.scrollWasOff )
         {
-            __fb_ScrollWasOff = FALSE;
+            __fb_con.scrollWasOff = FALSE;
             ++hooks.Coord.Y;
             hooks.Coord.X = hooks.Border.Left;
             fb_hConCheckScroll( &hooks );
@@ -281,7 +281,7 @@ void fb_ConsolePrintBufferWstrEx
         }
         else
         {
-            __fb_ScrollWasOff = TRUE;
+            __fb_con.scrollWasOff = TRUE;
             hooks.Coord.X = hooks.Border.Right;
             hooks.Coord.Y = hooks.Border.Bottom;
         }

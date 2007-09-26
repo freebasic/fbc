@@ -28,23 +28,23 @@
 
 
 /*:::::*/
-FBCALL void fb_GfxFlip(int from_page, int to_page)
+FBCALL int fb_GfxFlip(int from_page, int to_page)
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	unsigned char *dest, *src;
 	int i, size, text_size, lock = FALSE;
 	int src_page, dest_page;
-	
+
 	if (!__fb_gfx)
-		return;
-	
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+
 	if (__fb_gfx->driver->flip) {
 		__fb_gfx->driver->flip();
 		if (__fb_gfx->driver->poll_events)
 			__fb_gfx->driver->poll_events();
-		return;
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
-	
+
 	fb_hPrepareTarget(context, NULL);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 
@@ -53,7 +53,7 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 		src_page = context->work_page;
 	}
 	else if (from_page >= __fb_gfx->num_pages)
-		return;
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	else {
 		src = __fb_gfx->page[from_page];
 		src_page = from_page;
@@ -63,23 +63,23 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 		dest_page = __fb_gfx->visible_page;
 	}
 	else if (to_page >= __fb_gfx->num_pages)
-		return;
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	else {
 		dest = __fb_gfx->page[to_page];
 		dest_page = to_page;
 	}
-	
+
 	if (src == dest)
-		return;
+		return fb_ErrorSetNum(FB_RTERROR_OK);
 	if ((dest == __fb_gfx->framebuffer) && (!(__fb_gfx->flags & SCREEN_LOCKED)))
 		lock = TRUE;
 
 	text_size = __fb_gfx->text_w * __fb_gfx->text_h * sizeof(GFX_CHAR_CELL);
-	
+
 	src += (context->view_y * __fb_gfx->pitch) + (context->view_x * __fb_gfx->bpp);
 	dest += (context->view_y * __fb_gfx->pitch) + (context->view_x * __fb_gfx->bpp);
 	size = context->view_w * __fb_gfx->bpp;
-	
+
 	if (lock)
 		DRIVER_LOCK();
 	for (i = context->view_h; i; i--) {
@@ -93,25 +93,34 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 		fb_hMemSet(__fb_gfx->dirty + context->view_y, TRUE, context->view_h);
 		DRIVER_UNLOCK();
 	}
+
+	return fb_ErrorSetNum(FB_RTERROR_OK);
 }
 
+/*:::::*/
+int fb_GfxPageCopy(int from_page, int to_page)
+{
+	return fb_GfxFlip( from_page, to_page );
+}
 
 /*:::::*/
-FBCALL void fb_GfxSetPage(int work_page, int visible_page)
+int fb_GfxPageSet(int work_page, int visible_page)
 {
 	FB_GFXCTX *context = fb_hGetContext();
-	int i;
-	
+
+	int res = context->work_page | (__fb_gfx->visible_page << 8);
+
 	if (!__fb_gfx)
-		return;
-	
+		return -1;
+
 	fb_hPrepareTarget(context, NULL);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 
 	if ((work_page < 0) && (visible_page < 0))
 		work_page = visible_page = 0;
-	
+
 	if ((work_page >= 0) && (work_page < __fb_gfx->num_pages)) {
+		int i;
 		for (i = 0; i < __fb_gfx->h; i++)
 			context->line[i] = __fb_gfx->page[work_page] + (i * __fb_gfx->pitch);
 		context->work_page = work_page;
@@ -123,4 +132,8 @@ FBCALL void fb_GfxSetPage(int work_page, int visible_page)
 		fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
 		DRIVER_UNLOCK();
 	}
+
+	return res;
 }
+
+

@@ -47,7 +47,7 @@ static void __stdcall /* FIXME */ driver_update(void *param1, void *param2)
 		} else {
 			memcpy(framebuffer, __fb_gfx->framebuffer, __fb_gfx->pitch * __fb_gfx->h);
 		}
-		
+
 		 /* !!!FIXME!!! */
 		XSleep(10);
 	}
@@ -57,29 +57,29 @@ static void __stdcall /* FIXME */ driver_update(void *param1, void *param2)
 static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
 	int depth = MAX(8, depth_arg);
-	
+
 	if (depth == 8) {
 		depth = 24;
 		blitter = fb_hGetBlitter(32, FALSE);
 	} else {
 		blitter = NULL;
 	}
-	
+
 	if (flags & DRIVER_OPENGL)
 		return -1;
-	
+
 	if (!XVideoSetMode(w, h, depth == 32 ? 24 : depth, refresh_rate))
 		return -1;
-	
+
 	framebuffer = XVideoGetFB();
-	
+
 	quitting = FALSE;
-	
+
 	//XInput_Init();
-	
+
 	/* !!!FIXME!!! use rtlib thread creation function */
 	XCreateThread(driver_update, NULL, NULL);
-	
+
 	return 0;
 }
 
@@ -87,9 +87,9 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 static void driver_exit(void)
 {
 	quitting = TRUE;
-	
+
 	//XInput_Quit();
-	
+
 	/* !!!FIXME!!! */
 }
 
@@ -136,7 +136,7 @@ static int *driver_fetch_modes(int depth, int *size)
 	void *p = NULL;
 	int num = 0;
 	int *modes = NULL, *new_modes;
-	
+
 	while (XVideoListModes(&vm, depth, 0, &p)) {
 		++num;
 		new_modes = realloc(modes, sizeof(int) * num);
@@ -144,11 +144,11 @@ static int *driver_fetch_modes(int depth, int *size)
 			*size = num - 1;
 			return modes;
 		}
-		
+
 		modes = new_modes;
 		modes[num - 1] = SCREENLIST(vm.width, vm.height);
 	}
-	
+
 	*size = num;
 	return modes;
 }
@@ -188,9 +188,9 @@ void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 {
 	/* !!!FIXME!!! */
 	VIDEO_MODE vm;
-	
+
 	vm = XVideoGetMode();
-	
+
 	*width = vm.width;
 	*height = vm.height;
 	*depth = vm.bpp;
@@ -201,20 +201,20 @@ void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8)
 {
 	static int inited = 0;
-	
+
 	*buttons = -1;
 	*a1 = *a2 = *a3 = *a4 = *a5 = *a6 = *a7 = *a8 = -1000.0;
-	
+
 	if ((id < 0) || (id >= 4) || (!g_Pads[id].hPresent))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-	
+
 	if (!inited) {
 		inited = 1;
 		XInput_Init();
 	}
-	
+
 	XInput_GetEvents();
-	
+
 	*buttons = !!g_Pads[id].CurrentButtons.ucAnalogButtons[XPAD_A] |
 	           (!!g_Pads[id].CurrentButtons.ucAnalogButtons[XPAD_B] << 1) |
 	           (!!g_Pads[id].CurrentButtons.ucAnalogButtons[XPAD_X] << 2) |
@@ -225,28 +225,28 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 	           (!!(g_Pads[id].CurrentButtons.usDigitalButtons & XPAD_BACK) << 7) |
 	           (!!(g_Pads[id].CurrentButtons.usDigitalButtons & XPAD_LEFT_THUMB) << 8) |
 	           (!!(g_Pads[id].CurrentButtons.usDigitalButtons & XPAD_RIGHT_THUMB) << 9);
-	
+
 	*a1 = JOYPOS(g_Pads[id].sLThumbX, -32768, 32767);
 	*a2 = -JOYPOS(g_Pads[id].sLThumbY, -32768, 32767);
 	*a3 = JOYPOS(g_Pads[id].sRThumbX, -32768, 32767);
 	*a4 = -JOYPOS(g_Pads[id].sRThumbY, -32768, 32767);
 	*a5 = (JOYPOS(g_Pads[id].CurrentButtons.ucAnalogButtons[XPAD_LEFT_TRIGGER], 0, 255) + 1.0) / 2.0;
 	*a6 = (JOYPOS(g_Pads[id].CurrentButtons.ucAnalogButtons[XPAD_RIGHT_TRIGGER], 0, 255) + 1.0) / 2.0;
-	
+
 	if (g_Pads[id].CurrentButtons.usDigitalButtons & XPAD_DPAD_RIGHT)
 		*a7 = 1.0;
 	else if (g_Pads[id].CurrentButtons.usDigitalButtons & XPAD_DPAD_LEFT)
 		*a7 = -1.0;
 	else
 		*a7 = 0.0;
-	
+
 	if (g_Pads[id].CurrentButtons.usDigitalButtons & XPAD_DPAD_DOWN)
 		*a8 = 1.0;
 	else if (g_Pads[id].CurrentButtons.usDigitalButtons & XPAD_DPAD_UP)
 		*a8 = -1.0;
 	else
 		*a8 = 0.0;
-	
-	return FB_RTERROR_OK;
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 

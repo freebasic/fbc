@@ -71,12 +71,12 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
 			dwMode |= ENABLE_MOUSE_INPUT;
 			SetConsoleMode( __fb_in_handle, dwMode );
 #if 1
-            __fb_MouseEventHook = ProcessMouseEvent;
+            __fb_con.mouseEventHook = ProcessMouseEvent;
 #endif
             last_x = last_y = 1;
             fb_hConvertToConsole( &last_x, &last_y, NULL, NULL );
 		}
-	} 
+	}
 	if( inited == 0 ) {
 		*x = *y = *z = *buttons = -1;
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );

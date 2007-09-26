@@ -32,7 +32,7 @@ int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	int failure = TRUE;
 	int temp_z, temp_buttons, temp_clip;
-	
+
 	if (!z)
 		z = &temp_z;
 	if (!buttons)
@@ -48,5 +48,5 @@ int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 		*x = *y = *z = *buttons = *clip = -1;
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

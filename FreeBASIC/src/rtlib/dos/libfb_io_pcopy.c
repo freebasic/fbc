@@ -30,46 +30,37 @@
  */
 
 /*
- * init.c -- libfb initialization for Windows
+ * io_pcopy.c -- pcopy (console, no gfx) function for DOS
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: sep/2007 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
-#include <float.h>
 #include "fb.h"
 
-/* globals */
-#ifdef MULTITHREADED
-CRITICAL_SECTION __fb_global_mutex;
-CRITICAL_SECTION __fb_string_mutex;
-#endif
-
-FB_CONSOLE_CTX __fb_con /* not initialized */;
-
 /*:::::*/
-void fb_hInit ( void )
+int fb_ConsolePageCopy	( int src, int dst )
 {
-#ifdef TARGET_WIN32
-    /* set FPU precision to 64-bit and round to nearest (as in QB) */
-    _controlfp( _PC_64|_RC_NEAR, _MCW_PC|_MCW_RC );
-#elif defined(__GNUC__) && defined(__i386__)
-    {
-        unsigned int control_word;
-        /* Get FPU control word */
-        __asm__ __volatile__( "fstcw %0" : "=m" (control_word) : );
-        /* Set 64-bit and round to nearest */
-        control_word = (control_word & 0xF0FF) | 0x300;
-        /* Write back FPU control word */
-        __asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
-    }
-#endif
+	/* use current? */
+	if( src < 0 )
+		src = __fb_con.active;
 
-#ifdef MULTITHREADED
-	InitializeCriticalSection(&__fb_global_mutex);
-	InitializeCriticalSection(&__fb_string_mutex);
-#endif
+	if( dst < 0 )
+		dst = __fb_con.visible;
 
-	memset( &__fb_con, 0, sizeof( FB_CONSOLE_CTX ) );
+	if( src == dst )
+		return fb_ErrorSetNum( FB_RTERROR_OK );
+
+	/* do the copy */
+	int cols, rows;
+	fb_ConsoleGetSize( &cols, &rows );
+
+	unsigned long srcAddr = fb_hGetPageAddr( src, cols, rows );
+	unsigned long dstAddr = fb_hGetPageAddr( dst, cols, rows );
+
+	_movedataw( _dos_ds, srcAddr, _dos_ds, dstAddr, cols * rows );
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
+
+

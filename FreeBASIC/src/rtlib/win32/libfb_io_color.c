@@ -39,18 +39,17 @@
 #include "fb.h"
 #include "fb_colors.h"
 
-/* globals */
-int colorlut[16] = { FB_COLOR_BLACK, FB_COLOR_BLUE,
-					 FB_COLOR_GREEN, FB_COLOR_CYAN,
-					 FB_COLOR_RED, FB_COLOR_MAGENTA,
-					 FB_COLOR_BROWN, FB_COLOR_WHITE,
-					 FB_COLOR_GREY, FB_COLOR_LBLUE,
-					 FB_COLOR_LGREEN, FB_COLOR_LCYAN,
-					 FB_COLOR_LRED, FB_COLOR_LMAGENTA,
-					 FB_COLOR_YELLOW, FB_COLOR_BWHITE };
+static int colorlut[16] = { FB_COLOR_BLACK, FB_COLOR_BLUE,
+					 		FB_COLOR_GREEN, FB_COLOR_CYAN,
+					 		FB_COLOR_RED, FB_COLOR_MAGENTA,
+					 		FB_COLOR_BROWN, FB_COLOR_WHITE,
+					 		FB_COLOR_GREY, FB_COLOR_LBLUE,
+					 		FB_COLOR_LGREEN, FB_COLOR_LCYAN,
+					 		FB_COLOR_LRED, FB_COLOR_LMAGENTA,
+					 		FB_COLOR_YELLOW, FB_COLOR_BWHITE };
 
-int fb_last_bc = FB_COLOR_BLACK,
-	fb_last_fc = FB_COLOR_WHITE;
+static int last_bc = FB_COLOR_BLACK,
+		   last_fc = FB_COLOR_WHITE;
 
 /*:::::*/
 void fb_ConsoleColorEx( HANDLE hConsole, int fc, int bc )
@@ -76,20 +75,20 @@ void fb_ConsoleColorEx( HANDLE hConsole, int fc, int bc )
 /*:::::*/
 int fb_ConsoleColor( int fc, int bc, int flags )
 {
-    int cur = fb_last_fc | (fb_last_bc << 16);
+    int cur = last_fc | (last_bc << 16);
 
     if( !( flags & FB_COLOR_FG_DEFAULT ) ) {
-        fb_last_fc = (fc & 0xF);
-        fc = colorlut[fb_last_fc];
+        last_fc = (fc & 0xF);
+        fc = colorlut[last_fc];
     } else {
-        fc = fb_last_fc;
+        fc = last_fc;
     }
 
     if( !( flags & FB_COLOR_BG_DEFAULT ) ) {
-        fb_last_bc = (bc & 0xF);
-        bc = colorlut[fb_last_bc];
+        last_bc = (bc & 0xF);
+        bc = colorlut[last_bc];
     } else {
-        bc = fb_last_bc;
+        bc = last_bc;
     }
 
     SetConsoleTextAttribute( __fb_out_handle, fc + (bc << 4) );

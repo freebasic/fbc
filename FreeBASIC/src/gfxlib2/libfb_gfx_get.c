@@ -77,7 +77,7 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 		if ((array->size > 0) && ((int)dest + (pitch * h) > (int)array->data + array->size))
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
-	
+
 	DRIVER_LOCK();
 
 	for (; y1 <= y2; y1++) {
@@ -86,6 +86,6 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 	}
 
 	DRIVER_UNLOCK();
-	
-	return FB_RTERROR_OK;
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

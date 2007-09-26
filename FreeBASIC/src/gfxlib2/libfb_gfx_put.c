@@ -43,14 +43,14 @@ static void fb_hPutAlphaMask(unsigned char *src, unsigned char *dest, int w, int
 	unsigned int *d;
 	unsigned int dc, sc;
 	int x;
-	
+
 #if defined(TARGET_X86)
 	if (__fb_gfx->flags & HAS_MMX) {
 		fb_hPutAlphaMaskMMX(src, dest, w, h, src_pitch, dest_pitch, alpha, blender, param);
 		return;
 	}
 #endif
-	
+
 	s = src;
 	d = (unsigned int *)dest;
 	src_pitch -= w;
@@ -73,17 +73,17 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	FB_GFXCTX *context = fb_hGetContext();
 	int x, y, w, h, pitch, bpp;
 	PUT_HEADER *header;
-	
+
 	if ((!__fb_gfx) || (!src))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-	
+
 	fb_hPrepareTarget(context, target);
 	fb_hSetPixelTransfer(context, MASK_A_32);
-	
+
 	// quirky but good
 	int lhs, rhs;
 	switch (coord_type) {
-		
+
 		case COORD_TYPE_RA:
 			lhs = COORD_TYPE_R;
 			rhs = COORD_TYPE_A;
@@ -101,15 +101,15 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 			rhs = COORD_TYPE_R;
 			break;
 	}
-	
+
 	fb_hFixRelative(context, lhs, &fx, &fy, NULL, NULL);
-	
+
 	if( rhs == COORD_TYPE_R ) {
 		x2 += x1;
 		y2 += y1;
 	}
 	fb_hTranslateCoord(context, fx, fy, &x, &y);
-	
+
 	header = (PUT_HEADER *)src;
 	if (header->type == PUT_HEADER_NEW) {
 		bpp = header->bpp;
@@ -134,25 +134,25 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 		else
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
-	
+
 	if (x1 != 0xFFFF0000) {
 		fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
-		
+
 		x1 = MID(0, x1, w-1);
 		x2 = MID(0, x2, w-1);
 		y1 = MID(0, y1, h-1);
 		y2 = MID(0, y2, h-1);
-		
+
 		w = x2 - x1 + 1;
 		h = y2 - y1 + 1;
 		src += (y1 * pitch) + (x1 * bpp);
 	}
-	
+
 	if ((w == 0) || (h == 0) ||
 	    (x + w <= context->view_x) || (x >= context->view_x + context->view_w) ||
 	    (y + h <= context->view_y) || (y >= context->view_y + context->view_h))
-		return FB_RTERROR_OK;
-	
+		return fb_ErrorSetNum( FB_RTERROR_OK );
+
 	if (y < context->view_y) {
 		src += ((context->view_y - y) * pitch);
 		h -= (context->view_y - y);
@@ -167,11 +167,11 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	}
 	if (x + w > context->view_x + context->view_w)
 		w -= ((x + w) - (context->view_x + context->view_w));
-	
+
 	DRIVER_LOCK();
 	putter(src, context->line[y] + (x * context->target_bpp), w, h, pitch, context->target_pitch, alpha, blender, param);
 	SET_DIRTY(context, y, h);
 	DRIVER_UNLOCK();
-	
-	return FB_RTERROR_OK;
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

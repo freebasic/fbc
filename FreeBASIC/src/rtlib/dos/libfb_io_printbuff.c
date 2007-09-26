@@ -45,6 +45,8 @@
 #include <go32.h>
 #include <pc.h>
 
+unsigned short fb_hSetCursorPos( int col, int row );
+
 typedef struct _fb_PrintInfo {
     unsigned short usAttr;
 } fb_PrintInfo;
@@ -59,36 +61,40 @@ void fb_hHookConScroll_BIOS(struct _fb_ConHooks *handle,
     handle->Coord.Y = handle->Border.Bottom;
 }
 
-static
-int  fb_hHookConWrite_BIOS (struct _fb_ConHooks *handle,
-                            const void *buffer,
-                            size_t length )
+static int fb_hHookConWrite_BIOS
+	(
+		struct _fb_ConHooks *handle,
+		const void *buffer,
+        size_t length
+	)
 {
     fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
     const char *pachText = (const char *)buffer;
     __dpmi_regs regs;
     unsigned char uchAttr = (unsigned char) pInfo->usAttr;
-    int tmp_x = handle->Coord.X;
-    int tmp_y = handle->Coord.Y;
+    int pos = (handle->Coord.Y << 8) | handle->Coord.X;
 
     while( length-- ) {
-        unsigned short usPos = (unsigned short) (tmp_y << 8) + tmp_x++;
-        _movedataw( _my_ds(), (int) &usPos, _dos_ds, 0x450, 1 );
+        fb_hSetCursorPos( pos, -1 );
+        ++pos;
         regs.h.ah = 0x09;
         regs.h.al = *pachText++;
-        regs.h.bh = 0x00;
+        regs.h.bh = __fb_con.active;
         regs.h.bl = uchAttr;
         regs.x.cx = 1;
         __dpmi_int(0x10, &regs);
+
     }
 
     return TRUE;
 }
 
-static
-int  fb_hHookConWrite_MEM (struct _fb_ConHooks *handle,
-                           const void *buffer,
-                           size_t length )
+static int fb_hHookConWrite_MEM
+	(
+		struct _fb_ConHooks *handle,
+        const void *buffer,
+        size_t length
+	)
 {
     fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
     const char *pachText = (const char *)buffer;
@@ -106,10 +112,43 @@ int  fb_hHookConWrite_MEM (struct _fb_ConHooks *handle,
     }
 
     _movedataw( _my_ds(), (int) puchBuffer,
-                _dos_ds, __fb_dos_txtmode.phys_addr + (__fb_dos_txtmode.w << 1) * tmp_y + (tmp_x << 1),
+                _dos_ds, __fb_con.phys_addr + (__fb_con.w << 1) * tmp_y + (tmp_x << 1),
                 length );
 
     return TRUE;
+}
+
+/*:::::*/
+unsigned long fb_hGetPageAddr
+	(
+		int pg, int cols, int rows
+	)
+{
+	unsigned long physAddr;
+
+    unsigned char mode = _farpeekb( _dos_ds, 0x465 );
+
+    if( mode & 0x02 )
+		return 0;
+
+	if( mode & 0x04 )
+    	physAddr = 0xB0000;
+	else
+    	physAddr = 0xB8000;
+
+	if( pg != 0 )
+	{
+		if( (cols == 0) || (rows == 0) )
+			fb_ConsoleGetSize( &cols, &rows );
+
+		int pageSize = cols * rows * (sizeof( char ) * 2);
+		if( rows == 25 )
+			pageSize += 96;
+
+		physAddr += pg * pageSize;
+	}
+
+	return physAddr;
 }
 
 /*:::::*/
@@ -134,56 +173,43 @@ void fb_ConsolePrintBufferEx_SCRN( const void *buffer, size_t len, int mask )
     fb_ConsoleGetView( &view_top, &view_bottom );
     win_left = win_top = 0;
 
-    {
-        unsigned char uchCurrentMode = _farpeekb( _dos_ds, 0x465 );
-        __fb_dos_txtmode.w = win_cols;
-        __fb_dos_txtmode.h = win_rows;
-        if( uchCurrentMode & 0x02 ) {
-            __fb_dos_txtmode.phys_addr = 0x00000;
-        } else if( uchCurrentMode & 0x04 ) {
-            __fb_dos_txtmode.phys_addr = 0xB0000;
-        } else {
-            __fb_dos_txtmode.phys_addr = 0xB8000;
-        }
-
-    }
+    __fb_con.w = win_cols;
+    __fb_con.h = win_rows;
+    __fb_con.phys_addr = fb_hGetPageAddr( __fb_con.active, win_cols, win_rows );
 
     hooks.Opaque        = &info;
-    if( __fb_dos_txtmode.phys_addr ) {
-        hooks.Scroll        = fb_hHookConScroll_BIOS;
-        hooks.Write         = fb_hHookConWrite_MEM;
+    if( __fb_con.phys_addr ) {
+        hooks.Scroll = fb_hHookConScroll_BIOS;
+        hooks.Write  = fb_hHookConWrite_MEM;
     } else {
-        hooks.Scroll        = fb_hHookConScroll_BIOS;
-        hooks.Write         = fb_hHookConWrite_BIOS;
+        hooks.Scroll = fb_hHookConScroll_BIOS;
+        hooks.Write  = fb_hHookConWrite_BIOS;
     }
     hooks.Border.Left   = win_left;
     hooks.Border.Top    = win_top + view_top - 1;
     hooks.Border.Right  = win_left + win_cols - 1;
     hooks.Border.Bottom = win_top + view_bottom - 1;
 
-    info.usAttr         = (unsigned short) (unsigned char) fb_ConsoleGetColorAtt();
+    info.usAttr = (unsigned short) (unsigned char) fb_ConsoleGetColorAtt();
 
     {
         fb_ConsoleGetXY_BIOS( &hooks.Coord.X, &hooks.Coord.Y );
 
-        if( __fb_ScrollWasOff ) {
-            __fb_ScrollWasOff = FALSE;
+        if( __fb_con.scrollWasOff ) {
+            __fb_con.scrollWasOff = FALSE;
             ++hooks.Coord.Y;
             hooks.Coord.X = hooks.Border.Left;
             fb_hConCheckScroll( &hooks );
         }
 
-        fb_ConPrintTTY( &hooks,
-                        pachText,
-                        len,
-                        TRUE );
+        fb_ConPrintTTY( &hooks, pachText, len, TRUE );
 
         if( hooks.Coord.X != hooks.Border.Left
             || hooks.Coord.Y != (hooks.Border.Bottom+1) )
         {
             fb_hConCheckScroll( &hooks );
         } else {
-            __fb_ScrollWasOff = TRUE;
+            __fb_con.scrollWasOff = TRUE;
             hooks.Coord.X = hooks.Border.Right;
             hooks.Coord.Y = hooks.Border.Bottom;
         }

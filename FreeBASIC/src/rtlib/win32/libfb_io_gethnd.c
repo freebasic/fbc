@@ -38,44 +38,36 @@
 
 #include "fb_con.h"
 
-static HANDLE in_handle, out_handle;
-static int is_init = FALSE;
-
 /*:::::*/
-HANDLE fb_hConsoleGetHandle( int is_input )
+HANDLE fb_hConsoleGetHandle
+	(
+		int is_input
+	)
 {
+	static int is_init = FALSE;
+
 	if( is_init == FALSE )
 	{
 		is_init = TRUE;
 
-		in_handle = GetStdHandle( STD_INPUT_HANDLE );
-		out_handle = GetStdHandle( STD_OUTPUT_HANDLE );
+		__fb_con.inHandle = GetStdHandle( STD_INPUT_HANDLE );
+		__fb_con.outHandle = GetStdHandle( STD_OUTPUT_HANDLE );
 
-    	if( in_handle != NULL )
+    	if( __fb_con.inHandle != NULL )
 	    {
     	    /* Initialize console mode to enable processed input */
         	DWORD dwMode;
-        	if( GetConsoleMode( in_handle, &dwMode ) )
+        	if( GetConsoleMode( __fb_con.inHandle, &dwMode ) )
         	{
             	dwMode |= ENABLE_PROCESSED_INPUT;
-            	SetConsoleMode( in_handle, dwMode );
+            	SetConsoleMode( __fb_con.inHandle, dwMode );
         	}
     	}
+
+    	__fb_con.active = __fb_con.visible = 0;
+    	__fb_con.pgHandleTb[0] = __fb_con.outHandle;
     }
 
-	return (is_input? in_handle : out_handle);
+	return (is_input? __fb_con.inHandle : __fb_con.pgHandleTb[__fb_con.active]);
 }
 
-void fb_hConsoleResetHandle( int is_input )
-{
-	if( is_input )
-	{
-		freopen( "CONIN$", "r", stdin );
-		is_init = FALSE;
-	}
-	else 
-	{
-		freopen( "CONOUT$", "w", stdout );
-		is_init = FALSE;
-	}
-}

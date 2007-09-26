@@ -226,6 +226,7 @@
 #define FB_RTL_CONSOLEVIEW 				"fb_ConsoleView"
 #define FB_RTL_CONSOLEREADXY 			"fb_ReadXY"
 #define FB_RTL_COLOR					"fb_Color"
+#define FB_RTL_PAGESET					"fb_PageSet"
 
 #define FB_RTL_MEMCOPY 					"fb_MemCopy"
 #define FB_RTL_MEMSWAP 					"fb_MemSwap"
@@ -322,6 +323,7 @@
 #define FB_RTL_GFXPUT 					"fb_GfxPut"
 #define FB_RTL_GFXGET 					"fb_GfxGet"
 #define FB_RTL_GFXSCREENSET 			"fb_GfxScreen"
+#define FB_RTL_GFXSCREENSETQB 			"fb_GfxScreenQB"
 #define FB_RTL_GFXSCREENRES 			"fb_GfxScreenRes"
 #define FB_RTL_GFXEVENT					"fb_GfxEvent"
 #define FB_RTL_GFXIMAGECREATE			"fb_GfxImageCreate"
@@ -547,6 +549,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_CONSOLEVIEW
 	FB_RTL_IDX_CONSOLEREADXY
 	FB_RTL_IDX_COLOR
+	FB_RTL_IDX_PAGESET
 
 	FB_RTL_IDX_MEMCOPY
 	FB_RTL_IDX_MEMSWAP
@@ -653,6 +656,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GFXPUTCUSTOM
 	FB_RTL_IDX_GFXGET
 	FB_RTL_IDX_GFXSCREENSET
+	FB_RTL_IDX_GFXSCREENSETQB
 	FB_RTL_IDX_GFXSCREENRES
 	FB_RTL_IDX_GFXEVENT
 	FB_RTL_IDX_GFXIMAGECREATE
@@ -1200,6 +1204,13 @@ declare function rtlColor _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
+declare function rtlPageSet _
+	( _
+		byval active as ASTNODE ptr, _
+		byval visible as ASTNODE ptr, _
+		byval isfunc as integer _
+	) as ASTNODE ptr
+
 declare function rtlFileClose _
 	( _
 		byval filenum as ASTNODE ptr, _
@@ -1522,6 +1533,13 @@ declare function rtlGfxScreenSet _
 		byval pexpr as ASTNODE ptr, _
 		byval fexpr as ASTNODE ptr, _
 		byval rexpr as ASTNODE ptr _
+	) as integer
+
+declare function rtlGfxScreenSetQB _
+	( _
+		byval mode as ASTNODE ptr, _
+		byval active as ASTNODE ptr, _
+		byval visible as ASTNODE ptr _
 	) as integer
 
 declare function rtlGfxImageCreate _

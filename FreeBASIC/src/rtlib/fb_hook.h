@@ -92,11 +92,6 @@ FBCALL int          fb_LineInput        ( FBSTRING *text, void *dst, int dst_len
 										  int fillrem, int addquestion, int addnewline );
 FBCALL int          fb_LineInputWstr    ( const FB_WCHAR *text, FB_WCHAR *dst,
 										  int max_chars, int addquestion, int addnewline );
-	   int 			fb_ConsoleLineInput	( FBSTRING *text, void *dst, int dst_len,
-	   									  int fillrem, int addquestion, int addnewline );
-       int          fb_ConsoleLineInputWstr ( const FB_WCHAR *text, FB_WCHAR *dst,
-       										  int max_chars, int addquestion,
-       										  int addnewline );
 
 FBCALL int          fb_Multikey         ( int scancode );
 FBCALL int          fb_GetMouse         ( int *x, int *y, int *z, int *buttons, int *clip );
@@ -113,12 +108,16 @@ typedef int         (*FB_OUTPROC)       ( unsigned short port, unsigned char val
 FBCALL void         fb_Sleep            ( int msecs );
 FBCALL void         fb_Delay            ( int msecs );
 FBCALL int          fb_SleepEx          ( int msecs, int kind );
-       void         fb_ConsoleSleep     ( int msecs );
 typedef void        (*FB_SLEEPPROC)     ( int msecs );
 
 FBCALL int 			fb_IsRedirected		( int is_input );
-       int 			fb_ConsoleIsRedirected( int is_input );
 typedef int         (*FB_ISREDIRPROC)  	( int is_input );
+
+FBCALL int			fb_PageCopy			( int src, int dst );
+typedef int         (*FB_PAGECOPYPROC)  ( int src, int dst );
+
+FBCALL int			fb_PageSet			( int active, int visible );
+typedef int         (*FB_PAGESETPROC)   ( int active, int visible );
 
 typedef struct FB_HOOKSTB {
     FB_INKEYPROC    		inkeyproc;
@@ -146,6 +145,8 @@ typedef struct FB_HOOKSTB {
     FB_READXYPROC   		readxyproc;
     FB_SLEEPPROC    		sleepproc;
     FB_ISREDIRPROC			isredirproc;
+    FB_PAGECOPYPROC			pagecopyproc;
+    FB_PAGESETPROC			pagesetproc;
 } FB_HOOKSTB;
 
 #endif /* __FB_HOOK_H__ */

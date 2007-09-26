@@ -56,7 +56,7 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 	int w, h, i, shift = 2, bfSize, biSizeImage, bfOffBits, biClrUsed, filler, bpp, pitch, color;
 	unsigned char *s, *buffer, *p;
 	unsigned int *palette = (unsigned int *)pal;
-	
+
 	if (src) {
 		put_header = (PUT_HEADER *)src;
 		if (put_header->type == PUT_HEADER_NEW) {
@@ -94,7 +94,7 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 		bfSize = bfOffBits + biSizeImage;
 		biClrUsed = 0;
 	}
-	
+
 	fb_hMemSet(&header, 0, sizeof(header));
 	header.bfType = 19778;
 	header.bfSize = bfSize;
@@ -123,7 +123,7 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 			fputc(0, f);
 		}
 	}
-	
+
 	filler = biSizeImage / h;
 	switch (bpp) {
 		case 1:
@@ -136,7 +136,7 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 			break;
 	}
 	buffer = (unsigned char *)calloc(1, filler + 3);
-	
+
 	s += (h - 1) * pitch;
 	for (; h; h--) {
 		p = buffer;
@@ -163,10 +163,10 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 			return FB_RTERROR_FILEIO;
 		s -= pitch;
 	}
-	
+
 	free(buffer);
-	
-	return FB_RTERROR_OK;
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 
@@ -175,20 +175,20 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *p
 {
 	FILE *f;
 	FB_GFXCTX *context = fb_hGetContext();
-	int i, result = FB_RTERROR_OK;
+	int i, result = fb_ErrorSetNum( FB_RTERROR_OK );
 	unsigned int color, *palette = (unsigned int *)pal;
 	char buffer[MAX_PATH], *p;
 
 	snprintf(buffer, MAX_PATH-1, "%s", filename->data);
 	buffer[MAX_PATH-1] = '\0';
 	fb_hConvertPath(buffer, strlen(buffer));
-	
+
 	f = fopen(buffer, "wb");
 	if (!f) {
 		fb_hStrDelTemp(filename);
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
-	
+
 	fb_hPrepareTarget(context, NULL);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 
@@ -229,10 +229,10 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *p
 		else if (!fwrite(src, size, 1, f))
 			result = FB_RTERROR_FILEIO;
 	}
-	
+
 	fclose(f);
-	
+
 	fb_hStrDelTemp(filename);
-	
+
 	return fb_ErrorSetNum( result );
 }

@@ -506,6 +506,25 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
+		/' fb_GfxScreenQB ( byval mode as integer, byval active as integer = 0,
+							byval visible as integer = 0 ) as integer '/ _
+		( _
+			@FB_RTL_GFXSCREENSETQB, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 			) _
+	 		} _
+		), _
 		/' fb_GfxScreenRes ( byval w as integer, byval h as integer, byval depth as integer = 8, _
 									byval num_pages as integer = 1, byval flags as integer = 0, byval refresh_rate as integer = 0 ) '/ _
 		( _
@@ -585,21 +604,6 @@ declare function hPorts_cb _
 				), _
 				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			) _
-	 		} _
-		), _
-		/' pcopy ( byval frompage as integer, byval topage as integer ) as void '/ _
-		( _
-			@"pcopy", @"fb_GfxFlip", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-			2, _
-			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -696,10 +700,10 @@ declare function hPorts_cb _
 			@hGfxlib_cb, FB_RTL_OPT_ERROR, _
 			0 _
 		), _
-		/' fb_GfxSetPage ( byval work_page as integer = -1, byval visible_page as integer = -1 ) as void '/ _
+		/' fb_GfxPageSet cdecl ( byval work_page as integer = -1, byval visible_page as integer = -1 ) as void '/ _
 		( _
-			@"screenset", @"fb_GfxSetPage", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			@"screenset", @"fb_GfxPageSet", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -1507,50 +1511,50 @@ private function hGetPutter _
 	( _
 		byval mode as integer _
 	) as ASTNODE ptr
-	
+
 	dim as ASTNODE ptr n = any, l = any
     dim as integer dtype = any
     dim as FBSYMBOL ptr proc = any, subtype = any
-	
+
 	select case as const mode
-	
+
 	case FBGFX_PUTMODE_TRANS
 		proc = PROCLOOKUP( GFXPUTTRANS )
-		
+
 	case FBGFX_PUTMODE_PSET
 		proc = PROCLOOKUP( GFXPUTPSET )
-	
+
 	case FBGFX_PUTMODE_PRESET
 		proc = PROCLOOKUP( GFXPUTPRESET )
-	
+
 	case FBGFX_PUTMODE_AND
 		proc = PROCLOOKUP( GFXPUTAND )
-	
+
 	case FBGFX_PUTMODE_OR
 		proc = PROCLOOKUP( GFXPUTOR )
-	
+
 	case FBGFX_PUTMODE_XOR
 		proc = PROCLOOKUP( GFXPUTXOR )
-	
+
 	case FBGFX_PUTMODE_ALPHA
 		proc = PROCLOOKUP( GFXPUTALPHA )
-	
+
 	case FBGFX_PUTMODE_BLEND
 		proc = PROCLOOKUP( GFXPUTBLEND )
-	
+
 	case FBGFX_PUTMODE_ADD
 		proc = PROCLOOKUP( GFXPUTADD )
-	
+
 	case FBGFX_PUTMODE_CUSTOM
 		proc = PROCLOOKUP( GFXPUTCUSTOM )
-	
+
 	end select
-	
+
 	''
 	n = astNewOFFSET( astNewVAR( proc, 0, FB_DATATYPE_FUNCTION ) )
-	
+
 	function = n
-	
+
 end function
 
 '':::::
@@ -2077,7 +2081,7 @@ function rtlGfxDrawString _
  	if( astNewARG( proc, astNewCONSTi( mode, FB_DATATYPE_INTEGER ) ) = NULL ) then
  		exit function
  	end if
- 	
+
  	'' byval putter as integer
  	if( astNewARG( proc, putter ) = NULL ) then
  		exit function
@@ -2446,7 +2450,7 @@ function rtlGfxPut _
  	if( astNewARG( proc, astNewCONSTi( mode, FB_DATATYPE_INTEGER ) ) = NULL ) then
  		exit function
  	end if
- 	
+
  	'' byval putter as integer
  	if( astNewARG( proc, hGetPutter( mode ) ) = NULL ) then
  		exit function
@@ -2655,6 +2659,54 @@ function rtlGfxScreenSet _
 		rexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
  	if( astNewARG( proc, rexpr ) = NULL ) then
+ 		exit function
+ 	end if
+
+    ''
+    if( env.clopt.resumeerr ) then
+    	reslabel = symbAddLabel( NULL )
+    	astAdd( astNewLABEL( reslabel ) )
+    else
+    	reslabel = NULL
+    end if
+
+	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+
+end function
+
+'':::::
+function rtlGfxScreenSetQB _
+	( _
+		byval mode as ASTNODE ptr, _
+		byval active as ASTNODE ptr, _
+		byval visible as ASTNODE ptr _
+	) as integer
+
+    dim as ASTNODE ptr proc
+    dim as FBSYMBOL ptr reslabel
+
+	function = FALSE
+
+    proc = astNewCALL( PROCLOOKUP( GFXSCREENSETQB ) )
+
+ 	'' byval mode as integer
+ 	if( astNewARG( proc, mode ) = NULL ) then
+ 		exit function
+ 	end if
+
+ 	'' byval active as integer
+ 	if( active = NULL ) then
+ 		active = astNewCONSTi( 8, FB_DATATYPE_INTEGER )
+ 	end if
+ 	if( astNewARG( proc, active ) = NULL ) then
+ 		exit function
+ 	end if
+
+ 	'' byval visible as integer
+ 	if( visible = NULL ) then
+ 		visible = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+ 	end if
+ 	if( astNewARG( proc, visible ) = NULL ) then
  		exit function
  	end if
 

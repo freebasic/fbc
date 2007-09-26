@@ -113,22 +113,22 @@ static int fb_MultikeyHandler(unsigned irq_number)
 			{
 				int prev;
 				int kbflags;
-				
+
 				prev = key[code];
-				
+
 				/* make sure there is at least one free entry in the keyboard buffer */
 				{
 					unsigned int beg, end, fre, nxt;
 					unsigned short old_sel;
-					
+
 					old_sel = _fargetsel();
 					_farsetsel(_dos_ds);
-					
+
 					beg = _farnspeekw( (0x40 << 4) | 0x80 );
 					end = _farnspeekw( (0x40 << 4) | 0x82 );
 					fre = _farnspeekw( (0x40 << 4) | 0x1C );
 					nxt = _farnspeekw( (0x40 << 4) | 0x1A );
-					
+
 					if( (fre == nxt - 2) || ((nxt == beg) && (fre == end - 2)) )
 					{
 						nxt += 2;
@@ -138,46 +138,46 @@ static int fb_MultikeyHandler(unsigned irq_number)
 						}
 						_farnspokew( (0x40 << 4) | 0x1A, nxt);
 					}
-					
+
 					kbflags = _farnspeekb( (0x40 << 4) | 0x17 );
-					
+
 					_farsetsel(old_sel);
 				}
-				
+
 				/* Remeber scancode status */
-				__fb_force_input_buffer_changed = key[code] = !release_code;
+				__fb_con.forceInpBufferChanged = key[code] = !release_code;
 				if( __fb_dos_multikey_hook != 0 )
 				{
 					int flags = 0;
-					
+
 					if( !release_code )
 					{
 						flags |= KB_PRESS;
 						if( prev )
 							flags |= KB_REPEAT;
 					}
-					
+
 					if( key[SC_CONTROL] )
 						flags |= KB_CTRL;
-					
+
 					if( key[SC_LSHIFT] || key[SC_RSHIFT] )
 						flags |= KB_SHIFT;
-					
+
 					if( key[SC_ALT] )
 						flags |= KB_ALT;
-					
+
 					if( kbflags & (1 << 6) )
 						flags |= KB_CAPSLOCK;
-					
+
 					if( kbflags & (1 << 5) )
 						flags |= KB_NUMLOCK;
-					
+
 					if( got_extended_key )
 					{
 						got_extended_key = FALSE;
 						flags |= KB_EXTENDED;
 					}
-					
+
 					__fb_dos_multikey_hook(code, flags);
 				}
 			}
@@ -198,7 +198,7 @@ static void fb_ConsoleMultikeyExit(void)
 	unlock_proc(fb_MultikeyHandler);
 	unlock_array(key);
 	unlock_var(got_extended_key);
-	unlock_var(__fb_force_input_buffer_changed);
+	unlock_var(__fb_con.forceInpBufferChanged);
 	unlock_var(__fb_dos_multikey_hook);
 }
 
@@ -213,7 +213,7 @@ void fb_ConsoleMultikeyInit( void )
 	/* We have to lock the memory BEFORE we redirect the ISR! */
 	lock_array(key);
 	lock_var(got_extended_key);
-	lock_var(__fb_force_input_buffer_changed);
+	lock_var(__fb_con.forceInpBufferChanged);
 	lock_var(__fb_dos_multikey_hook);
 	lock_proc(fb_MultikeyHandler);
 	lock_proc(fb_ConsoleMultikey);

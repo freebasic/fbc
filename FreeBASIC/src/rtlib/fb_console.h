@@ -36,6 +36,10 @@
 #define FB_NATIVE_TAB 1
 #endif
 
+#ifndef FB_CONSOLE_MAXPAGES
+#define FB_CONSOLE_MAXPAGES 1
+#endif
+
 #define FB_COLOR_FG_DEFAULT   0x00000001
 #define FB_COLOR_BG_DEFAULT   0x00000002
 
@@ -147,8 +151,41 @@ FBCALL int          fb_ConsoleView      ( int toprow, int botrow );
 
        void         fb_ConsoleScroll    ( int nrows );
 
+       int          fb_ConsoleGetkey    ( void );
+       FBSTRING    *fb_ConsoleInkey     ( void );
+       int          fb_ConsoleKeyHit    ( void );
+
+       int          fb_ConsoleMultikey  ( int scancode );
+       int          fb_ConsoleGetMouse  ( int *x, int *y, int *z, int *buttons, int *clip );
+       int          fb_ConsoleSetMouse  ( int x, int y, int cursor, int clip );
+
+       void         fb_ConsolePrintBuffer( const char *buffer, int mask );
+       void         fb_ConsolePrintBufferWstr( const FB_WCHAR *buffer, int mask );
+       void         fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask );
+       void         fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len,
+       											 int mask );
+
+       char        *fb_ConsoleReadStr   ( char *buffer, int len );
+
+       int          fb_ConsoleGetTopRow ( void );
+       int          fb_ConsoleGetBotRow ( void );
+       void         fb_ConsoleSetTopBotRows( int top, int bot );
+
+       void         fb_ConsoleSleep     ( int msecs );
+
+       int 			fb_ConsoleIsRedirected( int is_input );
+
+       int			fb_ConsolePageCopy	( int src, int dst );
+       int			fb_ConsolePageSet	( int active, int visible );
+
        void         fb_ConReadLineEx    ( FBSTRING *dst, int soft_cursor );
 FBCALL FBSTRING    *fb_ConReadLine      ( int soft_cursor );
+
+	   int 			fb_ConsoleLineInput	( FBSTRING *text, void *dst, int dst_len,
+	   									  int fillrem, int addquestion, int addnewline );
+       int          fb_ConsoleLineInputWstr ( const FB_WCHAR *text, FB_WCHAR *dst,
+       										  int max_chars, int addquestion,
+       										  int addnewline );
 
 FBCALL void         fb_PrintPad         ( int fnum, int mask );
        void         fb_PrintPadEx       ( struct _FB_FILE *handle, int mask );
@@ -195,25 +232,5 @@ FBCALL void         fb_WriteDouble      ( int fnum, double val, int mask );
 FBCALL void         fb_WriteString      ( int fnum, FBSTRING *s, int mask );
 FBCALL void         fb_WriteFixString   ( int fnum, char *s, int mask );
 FBCALL void 		fb_WriteWstr 		( int fnum, FB_WCHAR *s, int mask );
-
-       int          fb_ConsoleGetkey    ( void );
-       FBSTRING    *fb_ConsoleInkey     ( void );
-       int          fb_ConsoleKeyHit    ( void );
-
-       int          fb_ConsoleMultikey  ( int scancode );
-       int          fb_ConsoleGetMouse  ( int *x, int *y, int *z, int *buttons, int *clip );
-       int          fb_ConsoleSetMouse  ( int x, int y, int cursor, int clip );
-
-       void         fb_ConsolePrintBuffer( const char *buffer, int mask );
-       void         fb_ConsolePrintBufferWstr( const FB_WCHAR *buffer, int mask );
-       void         fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask );
-       void         fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len,
-       											 int mask );
-
-       char        *fb_ConsoleReadStr   ( char *buffer, int len );
-
-       int          fb_ConsoleGetTopRow ( void );
-       int          fb_ConsoleGetBotRow ( void );
-       void         fb_ConsoleSetTopBotRows( int top, int bot );
 
 #endif /* __FB_CONSOLE_H__ */

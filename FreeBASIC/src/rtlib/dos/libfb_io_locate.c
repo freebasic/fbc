@@ -44,6 +44,24 @@
 #include <sys/farptr.h>
 
 /*:::::*/
+unsigned short fb_hSetCursorPos( int col, int row )
+{
+	unsigned long addr = 0x450 + __fb_con.active * sizeof( short );
+
+	if( row >= 0 )
+	{
+		unsigned short old = _farpeekw( _dos_ds, addr );
+		_farpokew( _dos_ds, addr, (row << 8) | col );
+		return old;
+	}
+	else
+	{
+		_farpokew( _dos_ds, addr, col );
+		return 0;
+	}
+}
+
+/*:::::*/
 int fb_ConsoleLocate_BIOS( int row, int col, int cursor )
 {
     __dpmi_regs regs;
@@ -51,29 +69,31 @@ int fb_ConsoleLocate_BIOS( int row, int col, int cursor )
     int shape_visible;
     unsigned short usShapePos, usShapeSize;
 
-    _movedataw( _dos_ds, 0x450, _my_ds(), (int) &usShapePos, 1 );
-    _movedataw( _dos_ds, 0x460, _my_ds(), (int) &usShapeSize, 1 );
+    usShapePos = _farpeekw( _dos_ds, 0x450 + __fb_con.active * sizeof( short ) );
+    usShapeSize = _farpeekw( _dos_ds, 0x460 );
     shape_visible = (usShapeSize & 0xC000)==0x0000;
 
-    if( col >= 0 ) {
+    if( col >= 0 )
         x = col;
-    } else {
+    else
         x = usShapePos & 0xFF;
-    }
 
-    if( row >= 0 ) {
+    if( row >= 0 )
         y = row;
-    } else {
+    else
         y = (usShapePos >> 8) & 0xFF;
-    }
 
+    /* !!!FIXME!!! is this really needed? */
     regs.x.ax = 0x0200;
-    regs.x.bx = 0x0000;
+    regs.x.bx = __fb_con.active;
     regs.h.dh = (unsigned char) y;
     regs.h.dl = (unsigned char) x;
     __dpmi_int(0x10, &regs);
 
-    if( cursor >= 0) {
+    _farpokew( _dos_ds, 0x450 + __fb_con.active * sizeof( short ), (y << 8) | x );
+
+    if( cursor >= 0)
+    {
         int shape_start, shape_end;
 
         shape_start = (usShapeSize >> 8) & 0x1F;
@@ -93,7 +113,7 @@ int fb_ConsoleLocate_BIOS( int row, int col, int cursor )
 int fb_ConsoleLocate( int row, int col, int cursor )
 {
     int result = fb_ConsoleLocate_BIOS( row-1, col-1, cursor );
-    __fb_ScrollWasOff = FALSE;
+    __fb_con.scrollWasOff = FALSE;
     return result + 0x0101;
 }
 
@@ -119,15 +139,14 @@ void fb_ConsoleGetXY_BIOS( int *col, int *row )
 #if 0
     __dpmi_regs regs;
     regs.x.ax = 0x0300;
-    regs.x.bx = 0x0000;
+    regs.x.bx = __fb_con.active;
     __dpmi_int(0x10, &regs);
     if( col!=NULL )
         *col = regs.h.dl;
     if( row!=NULL )
         *row = regs.h.dh;
 #else
-    unsigned short usPos;
-    _movedataw( _dos_ds, 0x450, _my_ds(), (int) &usPos, 1 );
+    unsigned short usPos = _farpeekw( _dos_ds, 0x450 + __fb_con.active * sizeof( short ) );
     if( col )
         *col = usPos & 0xFF;
     if( row )
@@ -148,16 +167,14 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 /*:::::*/
 unsigned int fb_ConsoleReadXY_BIOS( int col, int row, int colorflag )
 {
-    unsigned short usPosOld;
-    unsigned short usPos = (unsigned short) ((row << 8) + col);
-    __dpmi_regs regs;
+    unsigned short usPosOld = fb_hSetCursorPos( col, row );
 
-    _movedataw( _dos_ds, 0x450, _my_ds(), (int) &usPosOld, 1 );
-    _movedataw( _my_ds(), (int) &usPos, _dos_ds, 0x450, 1 );
+    __dpmi_regs regs;
     regs.x.ax = 0x0800;
-    regs.x.bx = 0x0000;
+    regs.x.bx = __fb_con.active;
     __dpmi_int(0x10, &regs);
-    _movedataw( _my_ds(), (int) &usPosOld, _dos_ds, 0x450, 1 );
+
+    fb_hSetCursorPos( usPosOld, -1 );
 
     if( colorflag )
         return (unsigned int)regs.h.ah;

@@ -974,7 +974,7 @@ function cGfxPut as integer
 				errReport FB_ERRMSG_EXPECTEDMINUS
 				exit function
 			end if
-			
+
 			'' STEP?
 			if( hMatch( FB_TK_STEP ) ) then
 				if( coordtype = FBGFX_COORDTYPE_RA ) then
@@ -983,7 +983,7 @@ function cGfxPut as integer
 					coordtype = FBGFX_COORDTYPE_AR
 				end if
 			end if
-			
+
 			hMatchLPRNT( )
 			hMatchExpression( x2expr )
 			hMatchCOMMA( )
@@ -1001,7 +1001,7 @@ function cGfxPut as integer
 			end if
 		end if
 	end if
-	
+
 	''
 	function = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, _
 						  x1expr, y1expr, x2expr, y2expr, _
@@ -1094,39 +1094,75 @@ end function
 '' GfxScreen     =   SCREEN (num | ((expr (((',' expr)? ',' expr)? expr)? ',' expr))
 ''
 function cGfxScreen as integer
-    dim as ASTNODE ptr mexpr, dexpr, pexpr, fexpr, rexpr
 
 	function = FALSE
 
-	hMatchExpression( mexpr )
+	if( env.clopt.lang <> FB_LANG_QB ) then
+		'' Expr?
+		dim as ASTNODE ptr mexpr = cExpression( )
 
-	dexpr = NULL
-	pexpr = NULL
-	fexpr = NULL
-	rexpr = NULL
+		'' (',' Expr )?
+		dim as ASTNODE ptr dexpr = NULL
+		if( hMatch( CHAR_COMMA ) ) then
+			dexpr = cExpression( )
+		end if
 
-	'' (',' Expr )?
-	if( hMatch( CHAR_COMMA ) ) then
-		dexpr = cExpression( )
+		'' (',' Expr )?
+		dim as ASTNODE ptr pexpr = NULL
+		if( hMatch( CHAR_COMMA ) ) then
+			pexpr = cExpression( )
+		end if
+
+		'' page set?
+		if( mexpr = NULL ) then
+			return rtlPageSet( dexpr, pexpr, FALSE ) <> NULL
+		end if
+
+		'' (',' Expr )?
+		dim as ASTNODE ptr fexpr = NULL
+		if( hMatch( CHAR_COMMA ) ) then
+			fexpr = cExpression( )
+		end if
+
+		'' (',' Expr )?
+		dim as ASTNODE ptr rexpr = NULL
+		if( hMatch( CHAR_COMMA ) ) then
+			rexpr = cExpression( )
+		end if
+
+		function = rtlGfxScreenSet( mexpr, NULL, dexpr, pexpr, fexpr, rexpr )
+
+	else
+		'' mode?
+		dim as ASTNODE ptr mode = cExpression( )
+
+		'' (',' colorswitch )?
+		if( hMatch( CHAR_COMMA ) ) then
+			dim as ASTNODE ptr cswitch = cExpression( )
+			if( cswitch <> NULL ) then
+				'' unused
+				astDelTree( cswitch )
+			end if
+		end if
+
+		'' (',' active )?
+		dim as ASTNODE ptr active = NULL
+		if( hMatch( CHAR_COMMA ) ) then
+			active = cExpression( )
+		end if
+
+		'' (',' visible )?
+		dim as ASTNODE ptr visible = NULL
+		if( hMatch( CHAR_COMMA ) ) then
+			visible = cExpression( )
+		end if
+
+		if( mode = NULL ) then
+			function = rtlPageSet( active, visible, FALSE ) <> NULL
+		else
+			function = rtlGfxScreenSetQB( mode, active, visible )
+		end if
 	end if
-
-	'' (',' Expr )?
-	if( hMatch( CHAR_COMMA ) ) then
-		pexpr = cExpression( )
-	end if
-
-	'' (',' Expr )?
-	if( hMatch( CHAR_COMMA ) ) then
-		fexpr = cExpression( )
-	end if
-
-	'' (',' Expr )?
-	if( hMatch( CHAR_COMMA ) ) then
-		rexpr = cExpression( )
-	end if
-
-	''
-	function = rtlGfxScreenSet( mexpr, NULL, dexpr, pexpr, fexpr, rexpr )
 
 end function
 

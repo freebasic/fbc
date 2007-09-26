@@ -33,6 +33,6 @@ FBCALL int fb_GfxWaitVSync(void)
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	if (__fb_gfx->driver->wait_vsync)
 		__fb_gfx->driver->wait_vsync();
-	
-	return FB_RTERROR_OK;
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

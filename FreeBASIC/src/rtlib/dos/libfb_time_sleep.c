@@ -54,18 +54,18 @@ int fb_hConsoleInputBufferChanged( void )
 
     if( !iCircBufferStatusInited ) {
         iCircBufferStatusInited = TRUE;
-        _movedataw( _dos_ds, 0x41C, _my_ds(), (int) &usCircBufferStatus, 1 );
+        usCircBufferStatus = _farpeekw( _dos_ds, 0x41C );
     }
 
-    _movedataw( _dos_ds, 0x41C, _my_ds(), (int) &usNewStatus, 1 );
+    usNewStatus = _farpeekw( _dos_ds, 0x41C );
     is_changed = usNewStatus!=usCircBufferStatus;
     if( is_changed )
         usCircBufferStatus = usNewStatus;
 
     /* Ensure that no IRQ disturbs us ... */
     fb_dos_cli();
-    is_changed |= __fb_force_input_buffer_changed;
-    __fb_force_input_buffer_changed = FALSE;
+    is_changed |= __fb_con.forceInpBufferChanged;
+    __fb_con.forceInpBufferChanged = FALSE;
     fb_dos_sti();
 
     FB_UNLOCK();

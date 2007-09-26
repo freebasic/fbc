@@ -59,7 +59,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 	BMP_HEADER header;
 	PUT_HEADER *put_header = NULL;
 	unsigned char *buffer, *d = NULL;
-	int result = FB_RTERROR_OK;
+	int result = fb_ErrorSetNum( FB_RTERROR_OK );
 	int i, j, width, height, bpp, color, rgb[3], expand, size, padding, palette[256], palette_entries;
 	void *target_pal = pal;
 	FBGFX_IMAGE_CONVERT convert = NULL;
@@ -191,22 +191,22 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal)
 	unsigned char id;
 	unsigned int color, *palette = pal, size = 0;
 	char buffer[MAX_PATH];
-	int i, result = FB_RTERROR_OK;
+	int i, result = fb_ErrorSetNum( FB_RTERROR_OK );
 
 	if ((!dest) && (!__fb_gfx))
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	
+
 	snprintf(buffer, MAX_PATH-1, "%s", filename->data);
 	buffer[MAX_PATH-1] = '\0';
 	fb_hConvertPath(buffer, strlen(buffer));
-	
+
 	f = fopen(buffer, "rb");
 
 	if (!f) {
 		fb_hStrDelTemp(filename);
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
-	
+
 	fb_hPrepareTarget(context, NULL);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 

@@ -80,18 +80,19 @@ typedef struct {
     unsigned long eax;
 } __dpmi_regs_d;
 
-typedef struct _FB_DOS_TXTMODE {
-	int w;
-	int h;
-	unsigned long phys_addr;
-} FB_DOS_TXTMODE;
+#define FB_CONSOLE_MAXPAGES 8
 
-extern FB_DOS_TXTMODE __fb_dos_txtmode;
+typedef struct _FB_CONSOLE_CTX {
+	int				active, visible;
+	int 			w, h;
+	unsigned long 	phys_addr;
+	int 			scrollWasOff;
+	int 			forceInpBufferChanged;
+} FB_CONSOLE_CTX;
+
+extern FB_CONSOLE_CTX __fb_con;
 
 typedef int (*FnIntHandler)(unsigned irq_number);
-
-extern int __fb_ScrollWasOff;
-extern int __fb_force_input_buffer_changed;
 
 int fb_ConsoleLocate_BIOS( int row, int col, int cursor );
 void fb_ConsoleGetXY_BIOS( int *col, int *row );
@@ -102,6 +103,8 @@ void fb_ConsoleScrollEx( int x1, int y1, int x2, int y2, int nrows );
 
 void fb_ConsoleMultikeyInit( void );
 int fb_hConsoleInputBufferChanged( void );
+
+unsigned long fb_hGetPageAddr( int pg, int cols, int rows );
 
 int fb_isr_set( unsigned irq_number,
                 FnIntHandler pfnIntHandler,
@@ -200,7 +203,7 @@ int fb_hIntlGetInfo( DOS_COUNTRY_INFO_GENERAL *pInfo );
 /**************************************************************************************************
  * Threading
  **************************************************************************************************/
- 
+
 extern void fb_ThreadingExit( void );
 
 typedef struct _FB_DOS_THREAD FB_DOS_THREAD;
@@ -226,16 +229,16 @@ typedef struct _FB_DOS_TLS {
 struct _FB_DOS_THREAD {
 	FB_DOS_THREAD *prev;
 	FB_DOS_THREAD *next;
-	
+
 	/* stack */
 	void *stack;
-	
+
 	/* thread-local storage */
 	FB_DOS_TLS *tls;
 	int tls_max;
 	int tls_count;
 	FBMUTEX *tls_mutex;
-	
+
 };
 
 extern FB_DOS_THREAD __fb_idle_thread;

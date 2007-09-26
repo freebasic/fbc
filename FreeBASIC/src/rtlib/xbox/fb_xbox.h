@@ -66,6 +66,5 @@ typedef long fb_off_t;
 #define FB_DYLIB HANDLE
 
 extern HANDLE __fb_in_handle, __fb_out_handle;
-extern const unsigned char __fb_keytable[][3];
 
 #endif

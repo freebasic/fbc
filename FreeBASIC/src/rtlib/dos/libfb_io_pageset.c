@@ -30,46 +30,38 @@
  */
 
 /*
- * init.c -- libfb initialization for Windows
+ * io_pageset.c -- 'screen , pg, pg' (console, no gfx) function for DOS
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: sep/2007 written [v1c]
  *
  */
 
-#include <stdlib.h>
-#include <float.h>
 #include "fb.h"
 
-/* globals */
-#ifdef MULTITHREADED
-CRITICAL_SECTION __fb_global_mutex;
-CRITICAL_SECTION __fb_string_mutex;
-#endif
-
-FB_CONSOLE_CTX __fb_con /* not initialized */;
-
 /*:::::*/
-void fb_hInit ( void )
+int fb_ConsolePageSet ( int active, int visible )
 {
-#ifdef TARGET_WIN32
-    /* set FPU precision to 64-bit and round to nearest (as in QB) */
-    _controlfp( _PC_64|_RC_NEAR, _MCW_PC|_MCW_RC );
-#elif defined(__GNUC__) && defined(__i386__)
-    {
-        unsigned int control_word;
-        /* Get FPU control word */
-        __asm__ __volatile__( "fstcw %0" : "=m" (control_word) : );
-        /* Set 64-bit and round to nearest */
-        control_word = (control_word & 0xF0FF) | 0x300;
-        /* Write back FPU control word */
-        __asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
-    }
-#endif
+	int res = __fb_con.active | (__fb_con.visible << 8);
 
-#ifdef MULTITHREADED
-	InitializeCriticalSection(&__fb_global_mutex);
-	InitializeCriticalSection(&__fb_string_mutex);
-#endif
+	if( active >= 0 )
+	{
+		__fb_con.active = active;
+	}
 
-	memset( &__fb_con, 0, sizeof( FB_CONSOLE_CTX ) );
+	if( visible >= 0 )
+	{
+		if( __fb_con.visible != visible )
+		{
+        	__dpmi_regs regs;
+        	regs.h.ah = 0x05;
+        	regs.h.al = visible;
+        	__dpmi_int(0x10, &regs);
+
+			__fb_con.visible = visible;
+		}
+	}
+
+	return res;
 }
+
+

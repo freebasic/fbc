@@ -61,13 +61,13 @@ void fb_hConsoleGetWindow( int *left, int *top, int *cols, int *rows )
     else
     {
         if( left != NULL )
-            *left = __fb_srConsoleWindow.Left;
+            *left = __fb_con.window.Left;
         if( top != NULL )
-            *top = __fb_srConsoleWindow.Top;
+            *top = __fb_con.window.Top;
         if( cols != NULL )
-            *cols = __fb_srConsoleWindow.Right - __fb_srConsoleWindow.Left + 1;
+            *cols = __fb_con.window.Right - __fb_con.window.Left + 1;
         if( rows != NULL )
-            *rows = __fb_srConsoleWindow.Bottom - __fb_srConsoleWindow.Top + 1;
+            *rows = __fb_con.window.Bottom - __fb_con.window.Top + 1;
     }
 }
 

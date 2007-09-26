@@ -125,7 +125,7 @@ void fb_GfxViewUpdate( void )
 void fb_hResetCharCells(FB_GFXCTX *context, int do_alloc)
 {
     int i;
-    
+
     if( __fb_gfx!=NULL ) {
         /* Free the previously allocated character cells */
         if( __fb_gfx->con_pages!=NULL ) {
@@ -194,7 +194,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 	/* normalize flags */
 	if ((flags >= 0) && (flags & DRIVER_SHAPED_WINDOW))
 		flags |= DRIVER_SHAPED_WINDOW | DRIVER_NO_FRAME | DRIVER_NO_SWITCH;
-	
+
     release_gfx_mem();
 
 	if ((mode == 0) || (info->w == 0)) {
@@ -234,6 +234,8 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         __fb_ctx.hooks.readxyproc = fb_GfxReadXY;
         __fb_ctx.hooks.sleepproc = fb_GfxSleep;
         __fb_ctx.hooks.isredirproc = fb_GfxIsRedir;
+        __fb_ctx.hooks.pagecopyproc = fb_GfxPageCopy;
+        __fb_ctx.hooks.pagesetproc = fb_GfxPageSet;
         __fb_gfx = (FBGFX *)calloc(1, sizeof(FBGFX));
     }
 
@@ -266,7 +268,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
             __fb_gfx->page[i] = (unsigned char *)malloc(__fb_gfx->pitch * __fb_gfx->h);
         __fb_gfx->num_pages = num_pages;
         __fb_gfx->framebuffer = __fb_gfx->page[0];
-        
+
         /* dirty lines array may be bigger than needed; this is to please the
          gfx driver which is not aware of the scanline size */
         __fb_gfx->dirty = (char *)calloc(1, __fb_gfx->h * __fb_gfx->scanline_size);
@@ -331,7 +333,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 
         __fb_gfx->text_w = info->text_w;
         __fb_gfx->text_h = info->text_h;
-        
+
         context = fb_hGetContext();
 
         fb_hResetCharCells(context, TRUE);
@@ -361,7 +363,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         fb_ConsoleViewEx( 0, 0, __fb_gfx!=NULL );
     }
 
-    return FB_RTERROR_OK;
+    return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 
@@ -382,8 +384,22 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refre
     res = set_mode(info, mode, depth, num_pages, refresh_rate, flags);
     if (res == FB_RTERROR_OK)
         FB_HANDLE_SCREEN->line_length = 0;
-    
-    return res;
+
+    return fb_ErrorSetNum( FB_RTERROR_OK );
+}
+
+/*:::::*/
+FBCALL int fb_GfxScreenQB(int mode, int visible, int active)
+{
+
+	int res = fb_GfxScreen( mode, 0, 0, 0, 0 );
+	if( res != FB_RTERROR_OK )
+		return res;
+
+	if( visible != 0 || active != 0 )
+		return fb_PageSet( visible, active );
+	else
+		return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 
@@ -408,7 +424,7 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, in
 		default:
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
-	
+
 	info.w = w;
 	info.h = h;
 	info.depth = depth;
@@ -421,7 +437,7 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, in
     res = set_mode((const MODEINFO *)&info, -1, depth, num_pages, refresh_rate, flags);
     if (res==FB_RTERROR_OK)
         FB_HANDLE_SCREEN->line_length = 0;
-    
+
     return res;
 }
 

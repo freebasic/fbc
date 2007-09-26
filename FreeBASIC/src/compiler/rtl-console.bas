@@ -210,6 +210,36 @@
 	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
 	 		0 _
 	 	), _
+		/' pcopy ( byval frompage as integer = -1, byval topage as integer = -1 ) as integer '/ _
+		( _
+			@"pcopy", @"fb_PageCopy", _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 			) _
+	 		} _
+		), _
+		/' page ( byval src as integer = -1, byval dst as integer = -1 ) as integer '/ _
+		( _
+			@FB_RTL_PAGESET, @"fb_PageSet", _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 			) _
+	 		} _
+		), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _
@@ -314,13 +344,13 @@ function rtlColor _
 		byval bexpr as ASTNODE ptr, _
 		byval isfunc as integer _
 	) as ASTNODE ptr
-	
+
 	dim as ASTNODE ptr proc
 	dim as integer flags
-	
+
 	function = NULL
 	flags = 0
-	
+
 	''
     proc = astNewCALL( PROCLOOKUP( COLOR ) )
 
@@ -341,7 +371,7 @@ function rtlColor _
     if( astNewARG( proc, bexpr ) = NULL ) then
     	exit function
     end if
-    
+
     '' byval flags as integer
     if( astNewARG( proc, astNewCONSTi( flags, FB_DATATYPE_INTEGER ) ) = NULL ) then
     	exit function
@@ -350,9 +380,48 @@ function rtlColor _
 	if( isfunc = FALSE ) then
 		astAdd( proc )
 	end if
-	
+
 	function = proc
-	
+
+end function
+
+'':::::
+function rtlPageSet _
+	( _
+		byval active as ASTNODE ptr, _
+		byval visible as ASTNODE ptr, _
+		byval isfunc as integer _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr proc
+
+	function = NULL
+
+	''
+    proc = astNewCALL( PROCLOOKUP( PAGESET ) )
+
+    '' byval active as integer = -1
+    if( active = NULL ) then
+    	active = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+    end if
+    if( astNewARG( proc, active ) = NULL ) then
+    	exit function
+    end if
+
+    '' byval visible as integer = -1
+    if( visible = NULL ) then
+    	visible = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+    end if
+    if( astNewARG( proc, visible ) = NULL ) then
+    	exit function
+    end if
+
+	if( isfunc = FALSE ) then
+		astAdd( proc )
+	end if
+
+	function = proc
+
 end function
 
 '':::::

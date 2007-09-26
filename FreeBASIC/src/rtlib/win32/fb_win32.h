@@ -103,17 +103,27 @@ extern CRITICAL_SECTION __fb_string_mutex;
 struct _FBSTRING;
 typedef void (*fb_FnProcessMouseEvent)(const MOUSE_EVENT_RECORD *pEvent);
 
+#define FB_CONSOLE_MAXPAGES 4
+
+typedef struct _FB_CONSOLE_CTX
+{
+	HANDLE 			inHandle, outHandle;
+	HANDLE 			pgHandleTb[FB_CONSOLE_MAXPAGES];
+	int				active, visible;
+	SMALL_RECT 		window;
+	int 			setByUser;
+	int 			scrollWasOff;
+	fb_FnProcessMouseEvent mouseEventHook;
+} FB_CONSOLE_CTX;
+
+extern FB_CONSOLE_CTX __fb_con;
+
 #define __fb_in_handle fb_hConsoleGetHandle( TRUE )
 #define __fb_out_handle fb_hConsoleGetHandle( FALSE )
-extern const unsigned char __fb_keytable[][3];
-extern SMALL_RECT __fb_srConsoleWindow;
-extern fb_FnProcessMouseEvent __fb_MouseEventHook;
-extern int __fb_ConsoleSetByUser;
-extern int __fb_ScrollWasOff;
 
 #define FB_CON_CORRECT_POSITION() \
     do { \
-        if( __fb_ScrollWasOff ) \
+        if( __fb_con.scrollWasOff ) \
             fb_ConsolePrintBufferEx( NULL, 0, FB_PRINT_FORCE_ADJUST ); \
     } while (0)
 
@@ -122,7 +132,7 @@ extern int __fb_ScrollWasOff;
                                           WORD wVkCode,
                                           DWORD dwControlKeyState,
                                           int bEnhancedKeysOnly );
-       
+
 	   int fb_hVirtualToScancode(int vkey);
 
 FBCALL void fb_hRestoreConsoleWindow    ( void );
@@ -153,8 +163,8 @@ FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
        HANDLE fb_hConsoleGetHandle		( int is_input );
 
 #define FB_CONSOLE_WINDOW_EMPTY() \
-    ((__fb_srConsoleWindow.Left==__fb_srConsoleWindow.Right) \
-    || (__fb_srConsoleWindow.Top==__fb_srConsoleWindow.Bottom))
+    ((__fb_con.window.Left==__fb_con.window.Right) \
+    || (__fb_con.window.Top==__fb_con.window.Bottom))
 
        char *fb_hGetLocaleInfo          ( LCID Locale, LCTYPE LCType,
                                           char *pszBuffer, size_t uiSize );

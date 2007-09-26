@@ -45,9 +45,7 @@
 #include <sys/farptr.h>
 
 /* globals */
-int __fb_ScrollWasOff = FALSE;
-FB_DOS_TXTMODE __fb_dos_txtmode;
-int __fb_force_input_buffer_changed = FALSE;
+FB_CONSOLE_CTX __fb_con;
 
 
 /*:::::*/
@@ -58,4 +56,6 @@ void fb_hInit ( void )
 
 	/* turn off blink */
     intensevideo();
+
+    memset( &__fb_con, 0, sizeof( FB_CONSOLE_CTX ) );
 }
