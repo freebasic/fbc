@@ -357,9 +357,11 @@ function rtlArrayRedim _
 
     dtype = symbGetType( s )
 
-	''
-	ctor = symbGetCompDefCtor( symbGetSubtype( s ) )
-	dtor = symbGetCompDtor( symbGetSubtype( s ) )
+	'' pointers to objects do not get instantiated
+	if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
+		ctor = symbGetCompDefCtor( symbGetSubtype( s ) )
+		dtor = symbGetCompDtor( symbGetSubtype( s ) )
+	end if
 
     if( (ctor = NULL) and (dtor = NULL) ) then
 		if( dopreserve = FALSE ) then

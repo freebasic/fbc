@@ -3,6 +3,19 @@
 namespace fbc_tests.dim_.redim_
 
 	dim shared foo() as integer
+	
+	dim shared as integer globcnt
+
+Type T
+       
+        As Integer a, b, c, d
+        Declare Constructor()
+       
+End Type
+
+Constructor T()
+		globcnt += 1
+End Constructor
 
 sub test1
 	redim foo(1 to 2)
@@ -14,6 +27,12 @@ end sub
 
 sub test3
 	redim foo(-1 to 1) as double
+end sub
+
+sub test4 cdecl
+	dim lala() as T
+	redim lala(1) as T
+	CU_ASSERT_EQUAL( globcnt, 0 )
 end sub
 
 sub test cdecl
@@ -34,6 +53,7 @@ private sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.dim.redim")
 	fbcu.add_test("test", @test)
+	fbcu.add_test("test4", @test4)
 
 end sub
 end namespace
