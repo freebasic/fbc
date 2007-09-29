@@ -310,6 +310,7 @@ tests/string/str_idx.bas
 tests/string/str_pad.bas
 tests/string/strptr.bas
 tests/string/trim.bas
+tests/string/val.bas
 tests/structs/anon_align.bas
 tests/structs/anon_nested.bas
 tests/structs/assign_anon.bas

@@ -51,6 +51,7 @@ examples/gfx/rel-flower.bas
 examples/gfx/rel-juliarings.bas
 examples/gfx/rel-lens.bas
 examples/gfx/rel-torus.bas
+examples/libraries/ASpell/aspell_test.bas
 examples/libraries/Allegro/dialog.bas
 examples/libraries/Allegro/hello.bas
 examples/libraries/Allegro/mouse.bas
@@ -243,6 +244,8 @@ examples/libraries/big_int/power.bas
 examples/libraries/caca/cacaball.bas
 examples/libraries/caca/cacaplas.bas
 examples/libraries/cairo/clock.bas
+examples/libraries/compress/lzo/lzoex.bas
+examples/libraries/compress/quicklz/qlz.bas
 examples/libraries/compress/zlib_test.bas
 examples/libraries/cryptlib/hash.bas
 examples/libraries/curses/colors.bas
@@ -250,7 +253,6 @@ examples/libraries/freetype/ft2_print.bas
 examples/libraries/freetype/ft2_test.bas
 examples/libraries/libxml/read1.bas
 examples/libraries/libxml/test.xml
-examples/libraries/lzo/lzoex.bas
 examples/libraries/mini/example.bas
 examples/libraries/networking/http-get.bas
 examples/libraries/ode/drawstuff.bas
@@ -272,7 +274,6 @@ examples/libraries/ode/winlin.bas
 examples/libraries/ode/wood.bmp
 examples/libraries/pdflib/logo.gif
 examples/libraries/pdflib/pdflib_test.bas
-examples/libraries/quicklz/qlz.bas
 examples/libraries/regex/CRegex/CRegex.bas
 examples/libraries/regex/CRegex/CRegex.bi
 examples/libraries/regex/CRegex/test.bas
@@ -1032,6 +1033,7 @@ examples/misc/macro.bas
 examples/misc/mutex.bas
 examples/misc/optargs.bas
 examples/misc/overload.bas
+examples/misc/pcopy.bas
 examples/misc/peek.bas
 examples/misc/preprocessor.bas
 examples/misc/ptr_index.bas
@@ -1232,6 +1234,7 @@ inc/allegro/system.bi
 inc/allegro/text.bi
 inc/allegro/timer.bi
 inc/allegro/unicode.bi
+inc/aspell.bi
 inc/bass.bi
 inc/bassmod.bi
 inc/bfd.bi
