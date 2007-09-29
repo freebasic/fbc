@@ -240,11 +240,13 @@ private function _linkFiles _
     '' group
     ldcline += " -( " + *fbcGetLibList( dllname )
 
-	'' note: for some odd reason, this object must be included in the group when
-	'' 		 linking a DLL, or LD will fail with an "undefined symbol" msg. at least
-	'' 		 the order the .ctors/.dtors appeared will be preserved, so the rtlib ones
-	'' 		 will be the first/last called, respectively
-	ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
+	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
+		'' note: for some odd reason, this object must be included in the group when
+		'' 		 linking a DLL, or LD will fail with an "undefined symbol" msg. at least
+		'' 		 the order the .ctors/.dtors appeared will be preserved, so the rtlib ones
+		'' 		 will be the first/last called, respectively
+		ldcline += QUOTE + libdir + (RSLASH + "fbrt0.o" + QUOTE + " ")
+	end if
 
 	ldcline += "-) "
 

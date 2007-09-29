@@ -165,8 +165,10 @@ private function _linkFiles _
     '' add libraries from cmm-line and found when parsing
     ldcline += *fbcGetLibList( dllname )
 
-	'' rtlib initialization and termination
-	ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " " )
+	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
+		'' rtlib initialization and termination
+		ldcline += QUOTE + libdir + (RSLASH + "fbrt0.o" + QUOTE + " ")
+	end if
 
     '' end lib group
     ldcline += "-) "

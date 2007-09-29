@@ -33,7 +33,7 @@
     [ ] xbox - does openxdk even support profiling with gmon?
                If not, then it shouldn't be an allowable option.
 
-    [ ] remove libfb_ctor.c - replaced by fbrt0.c
+    [X] remove libfb_ctor.c - replaced by fbrt0.c
 
 [ ] add TYPEOF()
     - BIT, BITSET and BITRESET won't work with longint's if the macros aren't rewritten
@@ -51,10 +51,12 @@
           statically, as before)
       [ ] STATIC shouldn't create/allocate arrays, just declare them as static
       [ ] suffixes not optional in keywords (ie: it's always STR$, not STR)
-      [ ] symbols with same name but different sufixes than keywords
-      [ ] arrays with same name as scalars
-      [ ] labels with the same name as procs:
-          declare sub foo \n foo: \n goto foo \n call foo
+      [ ] add "qb" mangling
+          [ ] symbols with same name but different sufixes than keywords
+          [ ] arrays with same name as scalars
+          [ ] labels with the same name as procs:
+              declare sub foo \n foo: \n goto foo \n call foo
+          [ ] add extern "qb" to -lang fb allowing -lang qb compiled libs to be used in -lang fb.  
       [x] move all variables to function-level, implicit or explict (see no SCOPE)
           [ ] check if its done correctly, if they are being cleared right after the
               stack frame setup
@@ -76,8 +78,11 @@
           matter in -lang qb mode, just implement a fb_OpenDev or so in the rtlib doing
           the parsing that will call any supported fb_hFileOpen###'s (COM, LPT, CONS, etc)
       [x] CALL: support undefined functions as in QB, all params BYREF as ANY
-      [ ] DEF - convert to a macro? doesn't it make any symbol called Fn... invalid
-          because it allows forward refs?
+      [ ] DEF - neither a macro nor function will work.  The statements inside the DEF FN...
+          need module level scope except for the parameters which shadow module level
+          vars.  Would be like a module level GOSUB but callable from any scope, taking 
+          parameters and returning a value.  Very messy.  Also, it will make any symbol 
+          called Fn... invalid because it allows forward refs. 
 
       [x] no SCOPE
       [x] no NAMESPACE
