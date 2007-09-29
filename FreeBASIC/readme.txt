@@ -221,7 +221,7 @@ Most Important Features:
 
   o Clean Syntax:
 
-    - Only a small number of keywords have been added. All functions are
+    - Only a small number of keywords have been added. Many functions are
       implemented as libraries, so for the most part, there are no new intrinsic
       routines, and therefore there is a low chance of having name duplication
       with old code. If you want to show a message box in Windows, simply do:
@@ -999,6 +999,8 @@ Links:
     - GLUT: http://www.xmission.com/~nate/glut.html
 
     - GMP: http://www.swox.com/gmp/
+
+    - GNU ASpell: http://aspell.net/
 
     - GRX: http://grx.gnu.de/
 

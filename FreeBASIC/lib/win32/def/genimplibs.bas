@@ -15,7 +15,7 @@ type OPTLIB
 	killat	as integer
 end type
 
-const OPTLIBS = 8
+const OPTLIBS = 9
 	
 declare function hFileExists	( byval filename as string ) as integer
 declare function hStripPath		( byval filename as string ) as string
@@ -26,6 +26,7 @@ declare sub chkoptlibs( optTb() as OPTLIB, byval libs as integer )
 
 '':::::
 	dim as OPTLIB optTb(0 to OPTLIBS-1) = { _
+    ( "ASpell-0.50  (Spell Checker Library, 1.51MB)", "aspell", FALSE ), _
 		( "Allegro (Game library, 0.96MB)", "alleg", FALSE ), _
 		( "Expat (XML library, 0.29MB)", "expat", FALSE ), _
 		( "GMP (Multi-precision arithmetic library, 0.29MB)", "gmp", FALSE ), _
