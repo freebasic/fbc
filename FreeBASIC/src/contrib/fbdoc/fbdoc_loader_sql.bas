@@ -29,6 +29,8 @@
 
 #include once "fbdoc_cache.bi"
 
+#include once "printlog.bi"
+
 namespace fb.fbdoc
 
 	dim shared as mysql  db
@@ -52,21 +54,21 @@ namespace fb.fbdoc
 		dim as string sName, sBody
 		dim as CWikiCache ptr wikicache = LocalCache_Get()
 
-		print "Connecting to database: " + *db_name + " on " + *db_host + ":" + str(db_port)
+		printlog "Connecting to database: " + *db_name + " on " + *db_host + ":" + str(db_port)
 
 		if( NULL = mysql_init( @db )) then
-			print "Error " + str(mysql_errno(@db)) + ": " + *mysql_error(@db)
-			print "Unable to initialize mysql"
+			printlog "Error " + str(mysql_errno(@db)) + ": " + *mysql_error(@db)
+			printlog "Unable to initialize mysql"
 			return FALSE
 		end if
 
 		if( NULL = mysql_real_connect(@db, db_host, db_user, db_pass, db_name, db_port, NULL, 0)) then
-			print "Unable to connect to database"
+			printlog "Unable to connect to database"
 			return FALSE
 		end if
 
 		if( mysql_select_db( @db, db_name ) <> 0 ) then
-			print "Unable to use database "; db_name
+			printlog "Unable to use database " + *db_name
 			mysql_close( @db )
 			return FALSE
 		end if
@@ -74,28 +76,28 @@ namespace fb.fbdoc
 		sql = "SELECT tag, body FROM wikka_pages WHERE ( latest = 'Y' )"
 
 		if( 0 <> mysql_real_query( @db, sql, len(sql)) ) then
-			print "Unable to query wikka_pages"
+			printlog "Unable to query wikka_pages"
 			mysql_close( @db )
 			return FALSE
 		end if
 
 		res = mysql_use_result( @db )
 		if( NULL = res ) then
-			print "Unable to use result set"
+			printlog "Unable to use result set"
 			mysql_close( @db )
 			return FALSE
 		end if
 
-		print "Fetching pages "
+		printlog "Fetching pages "
 		do
 			row = mysql_fetch_row( res )
 			if( NULL = row ) then
 				exit do
 			end if
 			wikicache->SavePage( row[0], row[1] )
-			print ".";
+			printlog ".", TRUE
 		loop
-		print
+		printlog ""
 
 		mysql_free_result( res )
 		mysql_close( @db )

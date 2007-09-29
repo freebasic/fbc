@@ -34,6 +34,7 @@ SRCS += CWikiCache.bas
 SRCS += CPage.bas
 SRCS += CPageList.bas
 SRCS += hash.bas
+SRCS += printlog.bas
 
 HDRS := $(wildcard *.bi)
 

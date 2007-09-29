@@ -37,6 +37,8 @@
 #include once "CPage.bi"
 #include once "CPageList.bi"
 
+#include once "printlog.bi"
+
 namespace fb.fbdoc
 
 	type CWiki2ChmCtx_
@@ -148,13 +150,13 @@ namespace fb.fbdoc
 				if( len(sName) > 0 ) then
 					sBody = LoadPage( sName, TRUE )
 					if( len(sbody) > 0 ) then
-						print "Emitting: " + page->GetName() + " = '" + page->GetTitle() + "'"
+						printlog "Emitting: " + page->GetName() + " = '" + page->GetTitle() + "'"
 						if this.EmitDefPage( page, sBody ) then
 							page->SetEmitted( TRUE )	
 						end if
 						okCount += 1
 					else
-						print "Error On: " + page->GetName() + " = '" + page->GetTitle() + "'"
+						printlog "Error On: " + page->GetName() + " = '" + page->GetTitle() + "'"
 						errCount += 1
 					end if
 				end if
@@ -162,9 +164,9 @@ namespace fb.fbdoc
 			page = ctx->paglist->NextEnum( @page_i )
 		wend
 
-		print str(okCount) + " pages emitted OK"  
+		printlog str(okCount) + " pages emitted OK"  
 		if( errCount > 0 ) then
-			print str(errCount) + " pages had no content and were skipped"
+			printlog str(errCount) + " pages had no content and were skipped"
 		end if
 
 		return TRUE

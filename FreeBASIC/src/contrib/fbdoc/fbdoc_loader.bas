@@ -29,6 +29,8 @@
 #include once "fbdoc_loader_web.bi"
 #include once "fbdoc_loader.bi"
 
+#include once "printlog.bi"
+
 namespace fb.fbdoc
 
 	'':::::
@@ -47,12 +49,12 @@ namespace fb.fbdoc
 		function = ""
 
 		if( sPage = NULL ) then
-			print "Warning: LoadPage was passed NULL"
+			printlog "Warning: LoadPage was passed NULL"
 			return ""
 		end if
 
 		if( len(*sPage) = 0) then
-			print "Warning: LoadPage was passed empty page name"
+			printlog "Warning: LoadPage was passed empty page name"
 			return ""
 		end if
 
@@ -78,7 +80,7 @@ namespace fb.fbdoc
 
 		if bLoadPage = TRUE then
 			dim as CWikiCon ptr wikicon = Connection_Create( )
-			print "Loading '" + *sPage + "'"
+			printlog "Loading '" + *sPage + "'"
 			if( wikicon->LoadPage( sPage, TRUE, TRUE, sBody ) <> FALSE ) then
 				if( wikicon->GetPageID() > 0 ) then
 					if( len(sBody) > 0 ) then

@@ -17,60 +17,45 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' fbdoc_misc - things that don't go anywhere else
+'' printlog
 ''
-'' chng: jun/2006 written [coderJeff]
+''
+'' chng: sep/2007 written [coderJeff]
 ''
 
 #include once "fbdoc_defs.bi"
-#include once "CPage.bi"
-#include once "CPageList.bi"
-#include once "fbdoc_string.bi"
-#include once "fbdoc_misc.bi"
-#include once "fbdoc_keywords.bi"
-
 #include once "printlog.bi"
 
 namespace fb.fbdoc
 
-	'':::::
-	sub misc_dump_titles _
-		( _
-			byval paglist as CPageList ptr, _
-			byval sFileName as zstring ptr _
-		)
+	dim shared as PRINTLOGFUNCTION _customfunc = NULL
 
-		dim as CPage ptr page
-		dim as any ptr page_i
-		dim as string sName, sTitle
-		dim as integer h
-		dim as string k
-
-		h = freefile
-
-		printlog "Generating pages titles list:"
-
-		if( open(*sFileName for output as #h) = 0 ) then
-
-			printlog "Writing '" + *sFileName + "'"
-
-			page = paglist->NewEnum( @page_i )
-			while( page )
-				sName = page->GetName()
-
-				sTitle = FormatPageTitle( page->GetPageTitle() )
-
-				print #h, """"; sName; """,""";  sTitle; """"
-				page = paglist->NextEnum( @page_i )
-			wend
-
-			close #h
+	private function _defaultfunc( byval text as zstring ptr, byval bNoCR as integer ) as integer
+		if( bNoCR ) then
+			print *text;
 		else
-
-			printlog "Unable to write '" + *sFileName + "'"
-
+			print *text
 		end if
+		return TRUE
+	end function
 
-	end sub
+	function PrintLog( byval text as zstring ptr, byval bNoCR as integer ) as integer
+		if( _customfunc ) then
+			return _customfunc(text, bNoCR)
+		else
+			return _defaultfunc(text, bNoCR)
+		end if
+	end function
+
+	function GetPrintLogFunction() as PRINTLOGFUNCTION
+		return _customfunc
+	end function
+
+	function SetPrintLogFunction( byval newfunc as PRINTLOGFUNCTION ) as PRINTLOGFUNCTION
+		dim ret as PRINTLOGFUNCTION = _customfunc
+		_customfunc = newfunc
+		return ret
+	end function
+
 
 end namespace

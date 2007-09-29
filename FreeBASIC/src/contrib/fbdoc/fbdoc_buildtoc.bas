@@ -27,6 +27,8 @@
 #include once "fbdoc_loader.bi"
 #include once "CWiki.bi"
 
+#include once "printlog.bi"
+
 namespace fb.fbdoc
 
 	dim shared as CWiki ptr wiki
@@ -61,11 +63,11 @@ namespace fb.fbdoc
 
 		sPageName = page->GetName()
 		if( len(sPageName) = 0 ) then
-			print "Warning: Page with no key name should never happen."
+			printlog "Warning: Page with no key name should never happen."
 			return FALSE
 		end if
 
-		print "Scanning: " + sPageName
+		printlog "Scanning: " + sPageName
 		sBody = LoadPage( sPageName )
 		if( len( sBody ) = 0 ) then
 			return FALSE
@@ -194,7 +196,7 @@ namespace fb.fbdoc
 			exit sub
 		end if
 
-		print "Building Toc: " + sPageName
+		printlog "Building Toc: " + sPageName
 		
 		sTitle = page->GetTitle()
 

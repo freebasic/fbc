@@ -27,6 +27,8 @@
 #include once "list.bi"
 #include once "hash.bi"
 
+#include once "printlog.bi"
+
 namespace fb.fbdoc
 
 	type PageListItem
@@ -260,7 +262,7 @@ namespace fb.fbdoc
 
 		page = NewEnum( @page_i )
 		while( page )
-			print Space(page->GetLevel()*3) & page->GetLevel() & " - " + page->GetName() + " = '" + page->GetTitle() + "'"
+			printlog Space(page->GetLevel()*3) & page->GetLevel() & " - " + page->GetName() + " = '" + page->GetTitle() + "'"
 			page = NextEnum( @page_i )
 		wend
 
