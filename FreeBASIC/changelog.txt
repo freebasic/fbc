@@ -10,6 +10,9 @@ Version 0.18.2 Beta:
 - examples directory reorganized putting all external library examples in ./examples/libraries/ (v1c)
 - replaced "dynamic" with "var-len" terminology in the compiler error messages (jeffm)
 - BYTE replaced by UBYTE in the windows headers (v1c)
+- fb_ctors/fb_dtors sections removed from *.x linker scripts as they are no longer used (v1c)
+- libfb_ctor.c removed, replaced by fbrt0.c (v1c)
+- don't use fbrt0.o if the cmm-line option "-nodeflibs" was given (jeffm)
 - SCREEN now follows the QB syntax in -lang qb (v1c)
 
 [added]
@@ -18,6 +21,7 @@ Version 0.18.2 Beta:
 - cursor support for INPUT/LINE INPUT in GFX modes (v1c)
 - 'PCOPY [srcPg] [, dstPg]' and 'SCREEN [, activePg] [, visiblePg]' for non-graphic, console, screen 0 mode - for DOS and Windows only (v1c)
 - SCREEN() (without parameters) will return the current screen pages as: (activePg or (visiblePg shl 8)) (v1c)
+- GNU ASpell-0.50 header and import library (jeffm)
 
 [fixed]
 - #1785162 - math overflows weren't being checked if the floating point #s were the same type (cha0s)
