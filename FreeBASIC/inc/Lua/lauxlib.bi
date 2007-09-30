@@ -24,8 +24,8 @@ end type
 #define luaL_argcheck(L, cond,numarg,extramsg) luaL_argerror(L, (numarg), (extramsg))
 #define luaL_checkstring(L,n) luaL_checklstring(L, (n), NULL)
 #define luaL_optstring(L,n,d) luaL_optlstring(L, (n), (d), NULL)
-#define luaL_checkint(L,n) cast(int, luaL_checkinteger(L, (n)))
-#define luaL_optint(L,n,d) cast(int, luaL_optinteger(L, (n), (d)))
+#define luaL_checkint(L,n) cast(integer, luaL_checkinteger(L, (n)))
+#define luaL_optint(L,n,d) cast(integert, luaL_optinteger(L, (n), (d)))
 #define luaL_checklong(L,n) cast(long, luaL_checkinteger(L, (n)))
 #define luaL_optlong(L,n,d) cast(long, luaL_optinteger(L, (n), (d)))
 
