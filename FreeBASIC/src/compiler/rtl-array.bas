@@ -347,21 +347,25 @@ function rtlArrayRedim _
 		exprTB() as ASTNODE ptr, _
 		byval dopreserve as integer, _
 		byval doclear as integer _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr proc, expr
-    dim as FBSYMBOL ptr f, reslabel, ctor, dtor
-    dim as integer i, dtype, isvarlen
+    dim as ASTNODE ptr proc = any, expr = any
+    dim as FBSYMBOL ptr f = any, reslabel = any, ctor = any, dtor = any
+    dim as integer dtype = any
 
     function = FALSE
 
     dtype = symbGetType( s )
 
 	'' pointers to objects do not get instantiated
-	if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
+	select case typeGetDatatype( dtype )
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		ctor = symbGetCompDefCtor( symbGetSubtype( s ) )
 		dtor = symbGetCompDtor( symbGetSubtype( s ) )
-	end if
+	case else
+		ctor = NULL
+		dtor = NULL
+	end select
 
     if( (ctor = NULL) and (dtor = NULL) ) then
 		if( dopreserve = FALSE ) then
@@ -393,13 +397,17 @@ function rtlArrayRedim _
 
 	if( (ctor = NULL) and (dtor = NULL) ) then
 		'' byval doclear as integer
-		if( astNewARG( proc, astNewCONSTi( doclear, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, _
+					   astNewCONSTi( doclear, FB_DATATYPE_INTEGER ), _
+					   FB_DATATYPE_INTEGER ) = NULL ) then
     		exit function
     	end if
 
 		'' byval isvarlen as integer
-		isvarlen = (dtype = FB_DATATYPE_STRING)
-		if( astNewARG( proc, astNewCONSTi( isvarlen, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, _
+					   astNewCONSTi( (dtype = FB_DATATYPE_STRING), _
+									 FB_DATATYPE_INTEGER ), _
+					   FB_DATATYPE_INTEGER ) = NULL ) then
     		exit function
     	end if
 
@@ -428,12 +436,14 @@ function rtlArrayRedim _
     end if
 
 	'' byval dimensions as integer
-	if( astNewARG( proc, astNewCONSTi( dimensions, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, _
+				   astNewCONSTi( dimensions, FB_DATATYPE_INTEGER ), _
+				   FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
 	'' ...
-	for i = 0 to dimensions-1
+	for i as integer = 0 to dimensions-1
 
 		'' lbound
 		expr = exprTB(i, 0)
@@ -489,7 +499,13 @@ function rtlArrayErase _
 	dtype = astGetDataType( arrayexpr )
 
 	''
-	dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
+	select case typeGetDatatype( dtype )
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
+    case else
+    	dtor = NULL
+    end select
+
     if( dtor = NULL ) then
     	proc = astNewCALL( PROCLOOKUP( ARRAYERASE ) )
     else
@@ -547,7 +563,13 @@ function rtlArrayClear _
     dtype = astGetDataType( arrayexpr )
 
 	''
-	dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
+	select case typeGetDatatype( dtype )
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
+	case else
+		dtor = NULL
+	end select
+
     if( dtor = NULL ) then
     	proc = astNewCALL( PROCLOOKUP( ARRAYCLEAR ) )
     else
@@ -621,7 +643,7 @@ function rtlArrayBound _
 		byval sexpr as ASTNODE ptr, _
 		byval dimexpr as ASTNODE ptr, _
 		byval islbound as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -659,7 +681,7 @@ function rtlArrayBoundsCheck _
 		byval rb as ASTNODE ptr, _
 		byval linenum as integer, _
 		byval module as zstring ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f

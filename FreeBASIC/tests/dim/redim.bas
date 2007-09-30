@@ -30,9 +30,17 @@ sub test3
 end sub
 
 sub test4 cdecl
-	dim lala() as T
-	redim lala(1) as T
-	CU_ASSERT_EQUAL( globcnt, 0 )
+	scope
+		dim bar() as T ptr
+		redim bar(1) as T ptr
+		CU_ASSERT_EQUAL( globcnt, 0 )
+	end scope
+
+	scope
+		dim bar () as T
+		redim bar(0 to 1) as T
+		CU_ASSERT_EQUAL( globcnt, 2 )
+	end scope
 end sub
 
 sub test cdecl
