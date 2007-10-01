@@ -12,3 +12,46 @@ After that, build and install the library:
 	$ make
 	$ make install
 
+
+
+CONFIGURE OPTIONS:
+
+When configuring the build process (with ../../configure) there are a few
+options that can be specified to change behaviour and capabilities of the
+fbc compiler.
+
+
+ENABLE CROSS COMPILITION TARGETS
+
+Specify one or more of the following options to enable cross compile targets:
+
+	--enable-crosscomp-cygwin
+	--enable-crosscomp-dos
+	--enable-crosscomp-freebsd
+	--enable-crosscomp-linux
+	--enable-crosscomp-win32
+	--enable-crosscomp-xbox
+
+By default, fbc is not configured with cross compiling capabilities, although
+binary distributions of FreeBASIC may have been made with one or more of
+the cross compilation targets enabled.  Each cross compilation target must
+be explicitly enabled at configure time.  FreeBASIC distributions do not
+include cross compiliation binaries (AS, LD, AR, etc).  The only exception
+is when cross compiling windows to DOS target, the FreeBASIC-dos binary
+package can be used as cross compile tool set for windows to dos.
+
+
+THE OBJINFO FEATURE
+
+Specify the following option to disable the feature:
+
+	--disable-objinfo
+
+By default, fbc is compiled with OBJINFO support.  This features allows
+fbc to write some extra information to object files (.o) and libraries (.a)
+that can be reused later at link time.  This extra information lets fbc
+know later at link time which command line options were used when compiling
+(for example, -mt, -lang) and the names of dependent libraries. This feature
+depends on compatibility between binutils, gdb, BFD, iberty and the bfd.bi
+header in ./inc.  It may be necessary to disable this feature to debug and/or
+use fbc with a broader range of binutils, debuggers, and platforms.
