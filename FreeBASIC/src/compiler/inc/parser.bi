@@ -143,11 +143,19 @@ type FB_CMPSTMTSTK
 	end union
 end type
 
-'' parser context
 type FBPARSER_STMT_WITH
 	sym				as FBSYMBOL ptr
 end type
 
+type FB_LETSTMT_NODE
+	expr			as ASTNODE ptr
+end type
+
+type FBPARSER_STMT_LET
+	list			as TLIST					'' of FB_LETSTMT_NODE
+end type
+
+'' parser context
 type FBPARSER_STMT
 	stk				as TSTACK
 	id				as FB_TOKEN					'' current compound stmt id
@@ -161,6 +169,7 @@ type FBPARSER_STMT
 	select			as FB_CMPSTMTSTK ptr
 	proc			as FB_CMPSTMTSTK ptr
 	with			as FBPARSER_STMT_WITH
+	let				as FBPARSER_STMT_LET
 end type
 
 enum FB_PARSEROPT
@@ -1114,7 +1123,7 @@ declare function hSymbolType _
 		byref lgt as integer, _
 		byref ptrcnt as integer _
 	) as integer
-    
+
 
 
 ''

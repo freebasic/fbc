@@ -1252,6 +1252,11 @@ declare function astGetOFFSETChildOfs _
 		byval l as ASTNODE ptr _
 	) as integer
 
+declare function astGetCALLResUDT _
+	( _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
 ''
 '' macros
 ''

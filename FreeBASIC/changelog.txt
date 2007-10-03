@@ -16,6 +16,7 @@ Version 0.18.2 Beta:
 - SCREEN now follows the QB syntax in -lang qb (v1c)
 
 [added]
+- support for multiple assignments: 'LET( foo, bar, ... ) = UDT_expression' (v1c)
 - the "windows-ms" mangling support to EXTERN .. END EXTERN, so MS-ish DLL's can be created and used without editing the .def files (v1c)
 - the configure script for the compiler now accepts --enable-crosscomp-(target) to choose -target support on all platforms when building fbc (DrV)
 - cursor support for INPUT/LINE INPUT in GFX modes (v1c)

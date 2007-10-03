@@ -27,6 +27,20 @@
 #include once "inc\ast.bi"
 
 '':::::
+sub parserLetInit
+
+	listNew( @parser.stmt.let.list, 16, len( FB_LETSTMT_NODE ) )
+
+end sub
+
+'':::::
+sub parserLetEnd
+
+    listFree( @parser.stmt.let.list )
+
+end sub
+
+'':::::
 function cOperator _
 	( _
 		byval options as FB_OPEROPTS _
@@ -297,6 +311,50 @@ function cOperator _
 end function
 
 '':::::
+private function hDoAssignment _
+	( _
+		byval op as integer, _
+		byval lhs as ASTNODE ptr, _
+		byval rhs as ASTNODE ptr _
+	) as integer
+
+	function = FALSE
+
+    '' BOP?
+    if( op <> INVALID ) then
+    	'' do lvalue op= expr
+    	lhs = astNewSelfBOP( op, _
+    					  	 lhs, _
+    					  	 rhs, _
+    					  	 NULL, _
+    					  	 AST_OPOPT_LPTRARITH )
+
+    	if( lhs = NULL ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    			exit function
+    		end if
+    	else
+    		astAdd( lhs )
+    	end if
+
+	else
+    	'' do lvalue = expr
+    	lhs = astNewASSIGN( lhs, rhs )
+
+    	if( lhs = NULL ) then
+			if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT ) = FALSE ) then
+				exit function
+			end if
+		else
+			astAdd( lhs )
+		end if
+    end if
+
+    function = TRUE
+
+end function
+
+'':::::
 function cAssignment _
 	( _
 		byval assgexpr as ASTNODE ptr _
@@ -371,37 +429,7 @@ function cAssignment _
     parser.ctxsym    = NULL
     parser.ctx_dtype = INVALID
 
-    '' BOP?
-    if( op <> INVALID ) then
-    	'' do lvalue op= expr
-    	expr = astNewSelfBOP( op, _
-    					  	  assgexpr, _
-    					  	  expr, _
-    					  	  NULL, _
-    					  	  AST_OPOPT_LPTRARITH )
-
-    	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			exit function
-    		end if
-    	else
-    		astAdd( expr )
-    	end if
-
-	else
-    	'' do lvalue = expr
-    	expr = astNewASSIGN( assgexpr, expr )
-
-    	if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT ) = FALSE ) then
-				exit function
-			end if
-		else
-			astAdd( expr )
-		end if
-    end if
-
-    function = TRUE
+	function = hDoAssignment( op, assgexpr, expr )
 
 end function
 
@@ -471,6 +499,115 @@ function cAssignmentOrPtrCallEx _
 end function
 
 '':::::
+private function hCard2Ord _
+	( _
+		byval num as integer _
+	) as zstring ptr
+
+	select case num
+	case 1
+		return @"1st"
+	case 2
+		return @"2nd"
+	case 3
+		return @"3rd"
+	case else
+		static as string tmp
+		tmp = str( num ) + "th"
+		return strptr( tmp )
+	end select
+
+end function
+
+'':::::
+private function hReportLetError _
+	( _
+		byval errnum as integer, _
+		byval elmnum as integer _
+	) as integer
+
+	function = errReportEx( errnum, "at the " + *hCard2Ord( elmnum ) + " element of LET()" )
+
+end function
+
+'':::::
+private function hAssignFromField _
+	( _
+		byval fld as FBSYMBOL ptr, _
+		byval lhs as ASTNODE ptr, _
+		byval rhs as FBSYMBOL ptr, _
+		byval num as integer _
+	) as ASTNODE ptr
+
+	'' data member?
+	if( symbIsField( fld ) = FALSE ) then
+       	if( hReportLetError( FB_ERRMSG_NOTADATAMEMBER, num ) = FALSE ) then
+       		return NULL
+       	else
+       		'' error recovery
+       		astDelTree( lhs )
+       		return astNewNOP( )
+       	end if
+	end if
+
+    '' check visibility
+	if( symbCheckAccess( symbGetSubtype( fld ), fld ) = FALSE ) then
+		if( hReportLetError( FB_ERRMSG_ILLEGALMEMBERACCESS, num ) = FALSE ) then
+       		return NULL
+       	else
+       		'' error recovery
+       		astDelTree( lhs )
+       		return astNewNOP()
+		end if
+	end if
+
+	/'' valid data type?
+    select case typeGetDatatype( symbGetType( fld ) )
+    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    	if( symbGetUDTIsUnion( fld ) then
+       		if( hReportLetError( FB_ERRMSG_UNIONSNOTALLOWED, num ) = FALSE ) then
+       			return NULL
+       		else
+       			'' error recovery
+       			astDelTree( lhs )
+       			return astNewNOP()
+       		end if
+       	end if
+	end select
+	'/
+
+	if( symbGetArrayDimensions( fld ) <> 0 ) then
+       	if( hReportLetError( FB_ERRMSG_ARRAYSNOTALLOWED, num ) = FALSE ) then
+       		return NULL
+       	else
+       		'' error recovery
+       		astDelTree( lhs )
+       		return astNewNOP()
+       	end if
+	end if
+
+	'' build field access
+	dim as ASTNODE ptr expr = any
+	expr = astNewVAR( rhs, 0, symbGetType( rhs ), symbGetSubtype( rhs ) )
+	expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetOfs( fld ), FB_DATATYPE_INTEGER ) )
+	expr = astNewDEREF( expr, symbGetType( fld ), symbGetSubType( fld ) )
+	expr = astNewFIELD( expr, fld, symbGetType( fld ), symbGetSubType( fld ) )
+
+    expr = astNewASSIGN( lhs, expr )
+    if( expr = NULL ) then
+		if( hReportLetError( FB_ERRMSG_ILLEGALASSIGNMENT, num ) = FALSE ) then
+			return NULL
+		else
+       		'' error recovery
+       		return astNewNOP()
+       	end if
+	end if
+
+	function = expr
+
+end function
+
+'':::::
 ''Assignment      =   LET? Variable BOP? '=' Expression
 ''				  |	  Variable{function ptr} '(' ProcParamList ')' .
 ''
@@ -479,43 +616,215 @@ function cAssignmentOrPtrCall _
 		_
 	) as integer
 
-	dim as integer islet = any
+	dim as integer ismult = FALSE
 	dim as ASTNODE ptr expr = any
 
 	function = FALSE
 
-	if( lexGetToken( ) = FB_TK_LET ) then
-    	if( fbLangOptIsSet( FB_LANG_OPT_LET ) = FALSE ) then
+	'' not LET?
+	if( lexGetToken( ) <> FB_TK_LET ) then
+		'' Variable
+		expr = cVarOrDeref( )
+		if( expr = NULL ) then
+			exit function
+    	end if
+
+    	return cAssignmentOrPtrCallEx( expr )
+    end if
+
+    '' LET..
+    if( fbLangOptIsSet( FB_LANG_OPT_LET ) = FALSE ) then
+    	if( lexGetLookAhead( 1 ) <> CHAR_LPRNT ) then
     		if( errReportNotAllowed( FB_LANG_OPT_LET ) = FALSE ) then
     			exit function
     		end if
+    	else
+    		ismult = TRUE
+    		lexSkipToken( )
     	end if
+    end if
 
-    	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-    		exit function
-    	end if
+    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+    	exit function
+    end if
 
-		lexSkipToken( )
-		islet = TRUE
-	else
-		islet = FALSE
+	lexSkipToken( )
+
+    '' single?
+    if( ismult = FALSE ) then
+       	expr = cVarOrDeref( )
+		if( expr = NULL ) then
+       		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+       			exit function
+       		else
+       			'' error recovery: skip stmt
+       			hSkipStmt( )
+       			return TRUE
+       		end if
+       	else
+       		return cAssignment( expr )
+       	end if
 	end if
 
-	'' Variable
-	expr = cVarOrDeref( )
-	if( expr <> NULL ) then
-    	function = cAssignmentOrPtrCallEx( expr )
+	'' multiple..
+    dim as integer exprcnt = 0
 
+   	do
+    	'' null expressions are allowed ('let(foo, , bar)')
+        dim as FB_LETSTMT_NODE ptr node = listNewNode( @parser.stmt.let.list )
+
+        node->expr = cVarOrDeref( )
+        if( node->expr <> NULL ) then
+        	exprcnt += 1
+        end if
+
+        '' ','?
+        if( lexGetToken( ) <> CHAR_COMMA ) then
+        	exit do
+        end if
+
+        lexSkipToken( )
+	loop
+
+    if( exprcnt = 0 ) then
+    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+        	exit function
+        end if
+	end if
+
+    '' ')'?
+    if( lexGetToken( ) <> CHAR_RPRNT ) then
+    	if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+        	exit function
+        else
+        	'' error recovery: skip until next ')'
+        	hSkipUntil( CHAR_RPRNT )
+        end if
 	else
-		if( islet ) then
-        	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-        		exit function
-        	else
-        		'' error recovery: skip stmt
-        		hSkipStmt( )
-        	end if
+    	lexSkipToken( )
+	end if
+
+    '' '='?
+    if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+    	if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: skip stmt
+    		hSkipStmt( )
+    	end if
+
+    	expr = NULL
+
+    else
+    	lexSkipToken( )
+
+    	'' Expression?
+    	expr = cExpression( )
+    	if( expr = NULL ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: skip until next stmt
+    			hSkipStmt( )
+       		end if
 		end if
 	end if
+
+
+    if( expr <> NULL ) then
+    	select case typeGetDatatype( astGetDataType( expr ) )
+    	case FB_DATATYPE_STRUCT
+    		if( symbGetUDTIsUnion( astGetSubtype( expr ) ) ) then
+       			if( errReport( FB_ERRMSG_UNIONSNOTALLOWED ) = FALSE ) then
+       				exit function
+       			else
+    				'' error recovery:
+    				astDelTree( expr )
+    				expr = NULL
+       			end if
+       		end if
+
+    	''case FB_DATATYPE_CLASS
+
+    	case else
+    		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery:
+    			astDelTree( expr )
+    			expr = NULL
+    		end if
+    	end select
+    end if
+
+	if( expr = NULL ) then
+        do
+        	dim as FB_LETSTMT_NODE ptr node = listGetHead( @parser.stmt.let.list )
+        	if( node = NULL ) then
+        		exit do
+        	end if
+
+        	listDelNode( @parser.stmt.let.list, node )
+        loop
+
+        exit function
+	end if
+
+
+	'' proc call?
+	if( astIsCALL( expr ) ) then
+		expr = astGetCALLResUDT( expr )
+	end if
+
+	dim as FBSYMBOL ptr tmp = NULL
+	dim as ASTNODE ptr tree = NULL
+
+	if( exprcnt > 0 ) then
+		tmp = symbAddTempVar( typeAddrOf( astGetDatatype( expr ) ), _
+										  astGetSubtype( expr ), _
+										  FALSE, _
+										  FALSE )
+		'' tmp = @expr
+		tree = astBuildVarAssign( tmp, astNewADDROF( expr ) )
+	end if
+
+    dim as FBSYMBOL ptr fld = symbGetUDTFirstElm( astGetSubtype( expr ) )
+    exprcnt = 0
+    do
+    	dim as FB_LETSTMT_NODE ptr node = listGetHead( @parser.stmt.let.list )
+    	if( node = NULL ) then
+        	exit do
+        end if
+
+        '' EOL?
+        if( fld = NULL ) then
+       		if( errReport( FB_ERRMSG_TOOMANYELEMENTS ) = FALSE ) then
+       			exit function
+       		end if
+
+       	else
+    		exprcnt += 1
+
+    		if( node->expr <> NULL ) then
+        		expr = hAssignFromField( fld, node->expr, tmp, exprcnt )
+        		if( expr = NULL ) then
+        			exit function
+        		end if
+
+        		tree = astNewLINK( tree, expr )
+        	end if
+
+        	fld = symbGetUDTNextElm( fld )
+        end if
+
+        listDelNode( @parser.stmt.let.list, node )
+	loop
+
+	'' must add the tree at once because the temporary results
+	'' that may need to be destroyed
+	astAdd( tree )
+
+	function = TRUE
 
 end function
 

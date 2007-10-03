@@ -42,6 +42,10 @@ declare sub	parserAsmInit ( )
 
 declare sub	parserAsmEnd ( )
 
+declare sub	parserLetInit( )
+
+declare sub parserLetEnd( )
+
 '' globals
 	dim shared as PARSERCTX parser
 
@@ -80,16 +84,20 @@ sub	parserInit( )
 
 	parserProcCallInit( )
 
+	parserLetInit( )
+
 end sub
 
 '':::::
 sub	parserEnd( )
 
-	parserAsmEnd( )
+	parserLetEnd( )
 
 	parserProcCallEnd( )
 
 	parserCompoundStmtEnd( )
+
+	parserAsmEnd( )
 
 end sub
 

@@ -278,7 +278,11 @@ end type
 		@"Only member functions can be static", _
 		@"Invalid initializer", _
 		@"Objects with default [con|de]structors or methods are only allowed in the module level", _
-		@"Symbol not a CLASS, ENUM, TYPE or UNION type" _
+		@"Symbol not a CLASS, ENUM, TYPE or UNION type", _
+		@"Too many elements", _
+		@"Only data members supported", _
+		@"UNIONs are not allowed", _
+		@"Arrays are not allowed" _
 	}
 
 
@@ -347,7 +351,7 @@ private sub hPrintErrMsg _
 		print ") ";
 	end if
 
-	print "error"; 
+	print "error";
 
 	if( errnum >= 0 ) then
 		print " " & errnum & ": " & *msg;

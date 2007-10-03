@@ -506,3 +506,33 @@ sub astReplaceSymbolOnCALL _
     end scope
 
 end sub
+
+'':::::
+function astGetCALLResUDT _
+	( _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	'' returning an UDT in registers?
+	if( symbGetUDTRetType( astGetSubtype( expr ) ) <> _
+						   typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+
+		'' move to a temp var
+		'' (note: if it's being returned in regs, there's no DTOR)
+		dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
+				  	  	  	  					  astGetSubtype( expr ), _
+				  	  	  	  					  FALSE, _
+				  	  	  	  					  FALSE )
+
+		expr = astNewASSIGN( astBuildVarField( tmp ), _
+				  	  	 	 expr, _
+				  	  	 	 AST_OPOPT_DONTCHKOPOVL )
+
+    	function = astNewLINK( astBuildVarField( tmp ), expr )
+
+    '' returning result in a hidden arg..
+    else
+    	function = astBuildCallHiddenResVar( expr )
+    end if
+
+end function

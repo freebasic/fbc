@@ -497,28 +497,9 @@ function cMemberAccess _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	'' it's a proc call, but was it originally returning an UDT?
+	'' proc call?
 	if( astIsCALL( expr ) ) then
-		if( symbGetUDTRetType( astGetSubtype( expr ) ) <> _
-							   typeSetType( FB_DATATYPE_STRUCT, 1 ) ) then
-
-			'' it's returning the result in registers, move to a temp var
-			'' (note: if it's being returned in regs, there's no DTOR)
-			dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
-					  	  	  	  					  astGetSubtype( expr ), _
-					  	  	  	  					  FALSE, _
-					  	  	  	  					  FALSE )
-
-			expr = astNewASSIGN( astBuildVarField( tmp ), _
-					  	  	 	 expr, _
-					  	  	 	 AST_OPOPT_DONTCHKOPOVL )
-
-       		expr = astNewLINK( astBuildVarField( tmp ), expr )
-
-       	'' returning result in a hidden arg..
-       	else
-       		expr = astBuildCallHiddenResVar( expr )
-       	end if
+		expr = astGetCALLResUDT( expr )
 	end if
 
  	'' build: cast( udt ptr, (cast( byte ptr, @udt) + fldexpr))->field

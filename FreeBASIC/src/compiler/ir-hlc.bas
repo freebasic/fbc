@@ -52,29 +52,29 @@ declare function hDtypeToStr _
 	dim shared dtypeTB(0 to FB_DATATYPES-1) as DTYPEINFO => _
 	{ _
 		( FB_DATACLASS_INTEGER, 0 			    , "void"  ), _				'' void
-		( FB_DATACLASS_INTEGER, 1			    , "char"  ), _				'' byte
-		( FB_DATACLASS_INTEGER, 1			    , "unsigned char"  ), _		'' ubyte
+		( FB_DATACLASS_INTEGER, 1			    , "byte"  ), _				'' byte
+		( FB_DATACLASS_INTEGER, 1			    , "ubyte"  ), _				'' ubyte
 		( FB_DATACLASS_INTEGER, 1               , "char"  ), _				'' char
 		( FB_DATACLASS_INTEGER, 2               , "short"  ), _				'' short
-		( FB_DATACLASS_INTEGER, 2               , "unsigned char"  ), _		'' ushort
+		( FB_DATACLASS_INTEGER, 2               , "ushort"  ), _			'' ushort
 		( FB_DATACLASS_INTEGER, 2  				, "short" ), _				'' wchar
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "int" ), _				'' int
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "unsigned int" ), _   	'' uint
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "integer" ), _			'' int
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "uinteger" ), _   		'' uint
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "int" ), _				'' enum
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "int" ), _				'' bitfield
 		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, "long" ), _				'' long
-		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, "unsigned long" ), _   	'' ulong
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, "long long" ), _			'' longint
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, "unsigned long long" ), _	'' ulongint
-		( FB_DATACLASS_FPOINT , 4			    , "float" ), _				'' single
+		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, "ulong" ), _   			'' ulong
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, "longint" ), _			'' longint
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, "ulongint" ), _			'' ulongint
+		( FB_DATACLASS_FPOINT , 4			    , "single" ), _				'' single
 		( FB_DATACLASS_FPOINT , 8			    , "double" ), _				'' double
-		( FB_DATACLASS_STRING , FB_STRDESCLEN	, ""          ), _			'' string
-		( FB_DATACLASS_STRING , 1               , "char"  ), _				'' fix-len string
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "void *" ), _				'' struct
+		( FB_DATACLASS_STRING , FB_STRDESCLEN	, "string" ), _				'' string
+		( FB_DATACLASS_STRING , 1               , "fixstr"  ), _			'' fix-len string
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "" ), _					'' struct
 		( FB_DATACLASS_INTEGER, 0  				, "" 		), _			'' namespace
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "void *" ), _				'' function
-		( FB_DATACLASS_INTEGER, 1			    , "void *"  ), _			'' fwd-ref
-		( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , "void *" ) _				'' pointer
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "" ), _					'' function
+		( FB_DATACLASS_INTEGER, 1			    , ""  ), _					'' fwd-ref
+		( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , "" ) _					'' pointer
 	}
 
 '':::::
@@ -100,55 +100,6 @@ end function
 private sub _end
 
 	flistFree( @ctx.vregTB )
-
-end sub
-
-'':::::
-private function _emitBegin _
-	( _
-	) as integer
-
-	if( hFileExists( env.outf.name ) ) then
-		kill env.outf.name
-	end if
-
-	env.outf.num = freefile
-	if( open( env.outf.name, for binary, access read write, as #env.outf.num ) <> 0 ) then
-		return FALSE
-	end if
-
-	ctx.identcnt = 0
-	ctx.regcnt = 0
-
-	function = TRUE
-
-end function
-
-'':::::
-private sub _emitEnd _
-	( _
-		byval tottime as double _
-	)
-
-	''
-	if( close( #env.outf.num ) <> 0 ) then
-		'' ...
-	end if
-
-	env.outf.num = 0
-
-end sub
-
-'':::::
-private sub _emit _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr, _
-		byval ex1 as FBSYMBOL ptr = NULL, _
-		byval ex2 as integer = 0 _
-	)
 
 end sub
 
@@ -181,6 +132,76 @@ private sub hWriteLine _
 
 	if( put( #env.outf.num, , ln ) <> 0 ) then
 	end if
+
+end sub
+
+'':::::
+private sub hEmitHeader( )
+
+	'' typedef's for debugging
+
+	hWriteLine( "typedef char byte" )
+	hWriteLine( "typedef unsigned char ubyte" )
+	hWriteLine( "typedef unsigned short ushort" )
+	hWriteLine( "typedef int integer" )
+	hWriteLine( "typedef unsigned int uinteger" )
+	hWriteLine( "typedef unsigned long ulong" )
+	hWriteLine( "typedef long long longint" )
+	hWriteLine( "typedef unsigned long long ulongint" )
+	hWriteLine( "typedef float single" )
+	hWriteLine( "typedef struct _string { char *data; int len; int size; } string" )
+	hWriteLine( "typedef char fixstr" )
+
+end sub
+
+'':::::
+private function _emitBegin _
+	( _
+	) as integer
+
+	if( hFileExists( env.outf.name ) ) then
+		kill env.outf.name
+	end if
+
+	env.outf.num = freefile
+	if( open( env.outf.name, for binary, access read write, as #env.outf.num ) <> 0 ) then
+		return FALSE
+	end if
+
+	ctx.identcnt = 0
+	ctx.regcnt = 0
+
+	hEmitHeader( )
+
+	function = TRUE
+
+end function
+
+'':::::
+private sub _emitEnd _
+	( _
+		byval tottime as double _
+	)
+
+	''
+	if( close( #env.outf.num ) <> 0 ) then
+		'' ...
+	end if
+
+	env.outf.num = 0
+
+end sub
+
+'':::::
+private sub _emit _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
+		byval ex1 as FBSYMBOL ptr = NULL, _
+		byval ex2 as integer = 0 _
+	)
 
 end sub
 
@@ -1159,7 +1180,8 @@ private sub _emitComment _
 		byval text as zstring ptr _
 	)
 
-	hWriteLine( "//" & *text, FALSE )
+	/' do nothing, this would break #line when debugging '/
+	'''''' hWriteLine( "//" & *text, FALSE )
 
 end sub
 

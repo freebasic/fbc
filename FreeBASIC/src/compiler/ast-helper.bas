@@ -694,7 +694,7 @@ function astBuildInstPtr _
 	subtype = symbGetSubtype( sym )
 
 	'' it's always a param
-	expr = astNewVAR( sym, 0, typeSetType( dtype, 1 ), subtype )
+	expr = astNewVAR( sym, 0, typeAddrOf( dtype ), subtype )
 
 	if( fld <> NULL ) then
 		dtype = symbGetType( fld )
