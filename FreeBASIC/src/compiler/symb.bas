@@ -471,7 +471,18 @@ function symbNewSymbol _
     s->typ = dtype
     s->subtype = subtype
     s->ptrcnt = ptrcnt
-    s->scope = parser.scope
+
+    '' QB quirks
+	if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
+		if( (parser.currproc->stats and (FB_SYMBSTATS_MAINPROC or _
+									  	 FB_SYMBSTATS_MODLEVELPROC)) <> 0 ) then
+			s->scope = FB_MAINSCOPE
+		else
+			s->scope = parser.currproc->scope + 1
+		end if
+	else
+		s->scope = parser.scope
+	end if
 
     '' name
     slen = iif( id <> NULL, len( *id ), 0 )
@@ -563,7 +574,7 @@ function symbNewSymbol _
 	s->symtb = symtb
 
 	symtb->tail = s
-	
+
 	s->parent = NULL
 
 	'' forward type? add to the back-patch list..
@@ -1666,7 +1677,7 @@ function symbTypeToStr _
 	static as string res
 	dim as integer dtype_np = any
 
-	dtype_np = typeGetPtrType( dtype ) 
+	dtype_np = typeGetPtrType( dtype )
 
 	select case as const dtype_np
 	case FB_DATATYPE_FWDREF, FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
@@ -1680,7 +1691,7 @@ function symbTypeToStr _
 			end if
 		end if
 	end select
-	
+
 	do while( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER )
 		res += " ptr"
 		dtype = typeDeref( dtype )
