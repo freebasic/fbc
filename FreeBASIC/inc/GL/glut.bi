@@ -206,7 +206,7 @@ declare sub glutPostOverlayRedisplay alias "glutPostOverlayRedisplay" ()
 declare sub glutPostWindowOverlayRedisplay alias "glutPostWindowOverlayRedisplay" (byval win as integer)
 declare sub glutShowOverlay alias "glutShowOverlay" ()
 declare sub glutHideOverlay alias "glutHideOverlay" ()
-declare function glutCreateMenu alias "glutCreateMenu" (byval func as sub(byval as integer)) as integer
+declare function glutCreateMenu alias "glutCreateMenu" (byval func as sub cdecl(byval as integer)) as integer
 declare sub glutDestroyMenu alias "glutDestroyMenu" (byval menu as integer)
 declare function glutGetMenu alias "glutGetMenu" () as integer
 declare sub glutSetMenu alias "glutSetMenu" (byval menu as integer)
