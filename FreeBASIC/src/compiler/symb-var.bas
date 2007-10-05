@@ -76,7 +76,7 @@ end sub
 private sub hCreateDescDimType _
 	( _
 		_
-	) static
+	)
 
 	static as FBARRAYDIM dTB(0)
 
@@ -113,10 +113,10 @@ end sub
 private function hCreateDescType _
 	( _
 		byval dims as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
 	static as FBARRAYDIM dTB(0)
-    dim as FBSYMBOL ptr sym, dimtype
+    dim as FBSYMBOL ptr sym = any, dimtype = any
 
     ''
     sym = symbStructBegin( NULL, NULL, NULL, FALSE, 0 )
@@ -185,13 +185,13 @@ function symbAddArrayDesc _
 	( _
 		byval array as FBSYMBOL ptr, _
 		byval dimensions as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as zstring ptr id, id_alias
-    dim as FBSYMBOL ptr desc, desctype
-    dim as FB_SYMBATTRIB attrib
-    dim as FBSYMBOLTB ptr symbtb
-    dim as integer isdynamic, ispubext
+    dim as zstring ptr id = any, id_alias = any
+    dim as FBSYMBOL ptr desc = any, desctype = any
+    dim as FB_SYMBATTRIB attrib = any
+    dim as FBSYMBOLTB ptr symbtb = any
+    dim as integer isdynamic = any, ispubext = any
 
 	function = NULL
 
@@ -315,9 +315,9 @@ function symbNewArrayDim _
 		byval s as FBSYMBOL ptr, _
 		byval lower as integer, _
 		byval upper as integer _
-	) as FBVARDIM ptr static
+	) as FBVARDIM ptr
 
-    dim as FBVARDIM ptr d, n
+    dim as FBVARDIM ptr d = any, n = any
 
     function = NULL
 
@@ -411,7 +411,7 @@ private sub hSetupVar _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
 		byval stats as integer _
-	) static
+	)
 
 	if( dtype = INVALID ) then
 		dtype = symbGetDefType( id )
@@ -455,12 +455,12 @@ function symbAddVarEx _
 		dTB() as FBARRAYDIM, _
 		byval attrib as integer, _
 		byval options as FB_SYMBOPT _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr s
-    dim as FBSYMBOLTB ptr symtb
-    dim as FBHASHTB ptr hashtb
-    dim as integer isglobal, suffix, stats
+    dim as FBSYMBOL ptr s = any
+    dim as FBSYMBOLTB ptr symtb = any
+    dim as FBHASHTB ptr hashtb = any
+    dim as integer isglobal = any, suffix = any, stats = any
 
     function = NULL
 
@@ -549,13 +549,6 @@ function symbAddVarEx _
 
 	'' QB quirk: see above
 	if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
-		if( (parser.currproc->stats and (FB_SYMBSTATS_MAINPROC or _
-									  	 FB_SYMBSTATS_MODLEVELPROC)) <> 0 ) then
-			s->scope = FB_MAINSCOPE
-		else
-			s->scope = parser.currproc->scope + 1
-		end if
-
 		s->var_.stmtnum = parser.currproc->proc.ext->stmtnum + 1
 
 	'' move to global?
@@ -577,7 +570,7 @@ function symbAddVar _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
 		byval attrib as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
     function = symbAddVarEx( symbol, NULL, dtype, subtype, ptrcnt, _
     		  			     0, dimensions, dTB(), _
@@ -593,12 +586,13 @@ function symbAddTempVar _
 		byval subtype as FBSYMBOL ptr, _
 		byval doalloc as integer, _
 		byval checkstatic as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
 	static as zstring * FB_MAXNAMELEN+1 id
-	dim as integer attrib
-    dim as FBSYMBOL ptr s
-    dim as FBARRAYDIM dTB(0)
+    static as FBARRAYDIM dTB(0)
+	dim as integer attrib = any
+    dim as FBSYMBOL ptr s = any
+	dim as FB_SYMBOPT options = FB_SYMBOPT_NONE
 
 	id = *hMakeTmpStrNL( )
 
@@ -611,9 +605,13 @@ function symbAddTempVar _
 		end if
 	end if
 
+	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+		options or= FB_SYMBOPT_UNSCOPE
+	end if
+
 	s = symbAddVarEx( id, NULL, dtype, subtype, 0, _
 					  0, 0, dTB(), _
-					  attrib )
+					  attrib, options )
     if( s = NULL ) then
     	return NULL
     end if
@@ -644,7 +642,7 @@ function symbCalcArrayDiff _
 		byval lgt as integer _
 	) as integer
 
-    dim as integer d, diff, elms, mult
+    dim as integer d = any, diff = any, elms = any, mult = any
 
 	if( dimensions <= 0 ) then
 		return 0
@@ -669,9 +667,9 @@ function symbCalcArrayElements _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval n as FBVARDIM ptr = NULL _
-	) as integer static
+	) as integer
 
-    dim as integer e, d
+    dim as integer e = any, d = any
 
 	if( n = NULL ) then
 		n = s->var_.array.dimhead
@@ -693,9 +691,9 @@ private function hCalcArrayElements _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
-	) as integer static
+	) as integer
 
-    dim as integer e, i, d
+    dim as integer e = any, i = any, d = any
 
 	e = 1
 	for i = 0 to dimensions-1
@@ -711,7 +709,7 @@ end function
 function symbGetVarHasCtor _
 	( _
 		byval s as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
     '' shared, static, param or temp?
     if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
@@ -755,7 +753,7 @@ end function
 function symbGetVarHasDtor _
 	( _
 		byval s as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
     '' shared, static, param or temporary?
     if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
@@ -826,9 +824,9 @@ end function
 private sub hDelVarDims _
 	( _
 		byval s as FBSYMBOL ptr _
-	) static
+	)
 
-    dim as FBVARDIM ptr n, nxt
+    dim as FBVARDIM ptr n = any, nxt = any
 
     n = s->var_.array.dimhead
     do while( n <> NULL )
