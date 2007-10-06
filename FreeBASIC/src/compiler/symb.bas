@@ -1677,6 +1677,10 @@ function symbTypeToStr _
 	static as string res
 	dim as integer dtype_np = any
 
+	if( dtype = INVALID ) then
+		return NULL
+	end if
+
 	dtype_np = typeGetPtrType( dtype )
 
 	select case as const dtype_np
