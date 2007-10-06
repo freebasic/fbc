@@ -52,42 +52,75 @@
 #define MAX_STATE		624
 #define PERIOD			397
 
-static double hRnd_Startup( int n );
 
-static double ( *rnd_func )( int ) = hRnd_Startup;
+static double hRnd_Startup( float n );
+
+static double hRnd_CRT ( float n );
+static double hRnd_FAST ( float n );
+static double hRnd_MTWIST ( float n );
+static double hRnd_QB ( float n );
+
+static double ( *rnd_func )( float ) = hRnd_Startup;
 static unsigned int iseed = INITIAL_SEED;
 static unsigned int state[MAX_STATE], *p = NULL;
 
+static double last_num = 0.0;
 
 /*:::::*/
-static double hRnd_Startup( int n )
+static double hRnd_Startup( float n )
 {
-	fb_Randomize( 0.0, 0 );
+
+	switch( __fb_ctx.lang ) {
+	case FB_LANG_QB:
+		rnd_func = hRnd_QB;
+		iseed = INITIAL_SEED;
+		break;
+
+	case FB_LANG_FB_DEPRECATED:
+		rnd_func = hRnd_CRT;
+		break;
+
+	default:
+		fb_Randomize( 0.0, 0 );
+		break;
+
+	}
 	return fb_Rnd( n );
 }
 
 
 /*:::::*/
-static double hRnd_CRT ( int n )
+static double hRnd_CRT ( float n )
 {
+
+	if( n == 0.0 )
+		return last_num;
+
 	/* return between 0 and 1 (but never 1) */
 	return (double)rand( ) * ( 1.0 / ( (double)RAND_MAX + 1.0 ) );
 }
 
 
 /*:::::*/
-static double hRnd_FAST ( int n )
+static double hRnd_FAST ( float n )
 {
+
 	/* return between 0 and 1 (but never 1) */
 	/* Constants from 'Numerical recipes in C' chapter 7.1 */
-	iseed = ( ( 1664525 * iseed ) + 1013904223 );
+	if( n != 0.0 )
+		iseed = ( ( 1664525 * iseed ) + 1013904223 );
+
 	return (double)iseed / (double)4294967296ULL;
 }
 
 
 /*:::::*/
-static double hRnd_MTWIST ( int n )
+static double hRnd_MTWIST ( float n )
 {
+
+	if( n == 0.0 )
+		return last_num;
+
 	unsigned int i, v, xor_mask[2] = { 0, 0x9908B0DF };
 	
 	if( !p ) {
@@ -121,23 +154,22 @@ static double hRnd_MTWIST ( int n )
 
 
 /*:::::*/
-static double hRnd_QB ( int n )
+static double hRnd_QB ( float n )
 {
-	if( n < 0 )
-		iseed = ( n & 0xFFFFFF ) + ( (unsigned int)n >> 24 );
-	iseed = ( ( iseed * 16598013 ) + 12820163 ) & 0xFFFFFF;
+	if( n != 0.0 ) {
+		if( n < 0.0 ) {
+			unsigned int s = *((unsigned int *)&n);
+			iseed = ( s & 0xFFFFFF ) + ( s >> 24 );
+		}
+		iseed = ( ( iseed * 16598013 ) + 12820163 ) & 0xFFFFFF;
+	}
 	return (double)iseed / (double)0x1000000;
 }
 
 
 /*:::::*/
-FBCALL double fb_Rnd ( int n )
+FBCALL double fb_Rnd ( float n )
 {
-	static double last_num = (double)327680 / (double)0x1000000;
-	
-	if( !n )
-		return last_num;
-	
 	last_num = rnd_func( n );
 	
 	return last_num;
@@ -165,6 +197,7 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 	case RND_CRT:
 		rnd_func = hRnd_CRT;
 		srand( (int)seed );
+		rand( );
 		break;
 		
 	case RND_FAST:
@@ -174,9 +207,10 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 		
 	case RND_QB:
 		rnd_func = hRnd_QB;
-		iseed = ( (unsigned int *) &seed )[1];
-		iseed ^= ( iseed >> 16 );
-		iseed = ( ( iseed & 0xFFFF ) << 8 ) | ( iseed & 0xFF );
+		unsigned int s = ( (unsigned int *) &seed )[1];
+		s ^= ( s >> 16 );
+		s = ( ( s & 0xFFFF ) << 8 ) | ( iseed & 0xFF );
+		iseed = s;
 		break;
 		
 	default:

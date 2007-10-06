@@ -130,7 +130,7 @@
 	 			) _
 	 		} _
 		), _
-		/' rnd ( byval n as integer ) as double '/ _
+		/' rnd ( byval n as single ) as double '/ _
 		( _
 			@"rnd", @"fb_Rnd", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_STDCALL, _
@@ -138,7 +138,7 @@
 			1, _
 	 		{ _
 	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 1 _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, TRUE, 1.0 _
 	 			) _
 	 		} _
 	 	), _

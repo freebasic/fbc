@@ -14,6 +14,7 @@ Version 0.18.2 Beta:
 - libfb_ctor.c removed, replaced by fbrt0.c (v1c)
 - don't use fbrt0.o if the cmm-line option "-nodeflibs" was given (jeffm)
 - SCREEN now follows the QB syntax in -lang qb (v1c)
+- RND is now 100% compatible with QB in -lang qb mode (patch written by counting_pine)
 
 [added]
 - support for multiple assignments: 'LET( foo, bar, ... ) = UDT_expression' (v1c)
