@@ -190,7 +190,7 @@ function cVariableDecl _
 		lexSkipToken( )
 
 		attrib or= FB_SYMBATTRIB_STATIC
-		
+
 		'' VAR?
 		if( lexGetToken( ) = FB_TK_VAR ) then
 			return cAutoVarDecl( attrib )
@@ -483,11 +483,11 @@ private function hDeclDynArray _
     dim as FBSYMBOL ptr desc
     dim as FB_SYMBOPT options
 	dim as integer is_redim
-	
+
 	is_redim = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
 
     function = NULL
-	
+
     if( dimensions <> -1 ) then
 		'' DIM'g dynamic arrays gens code, check if allowed
     	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
@@ -534,23 +534,23 @@ private function hDeclDynArray _
 
 		else
 			'' var already exists; dup checks
-			
+
 			'' EXTERNal?
 			if( symbIsExtern( sym ) ) then
-				
+
 				'' another EXTERN? (declared twice)
 				if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
    					sym = NULL
-   					
+
 				else
 	   				'' define it...
 					hVarExtToPub( sym, attrib )
 				end if
-			
+
 			'' [re]dim ()?
 			elseif( dimensions = -1 ) then
 				sym = NULL
-				
+
 			'' dim foo(variable)?
 			elseif( is_redim = FALSE ) then
 				sym = NULL
@@ -903,7 +903,7 @@ private function hVarInit _
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
-		
+
 		'' fake an expression
 		initree = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
@@ -1206,9 +1206,9 @@ function hVarDeclEx _
     do
 		dim as FBSYMBOL ptr parent = cParentId( options )
 		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, options )
-		
+
 		is_typeless = FALSE
-		
+
     	if( is_multdecl = FALSE ) then
     		dtype = suffix
     		subtype	= NULL
@@ -1401,20 +1401,27 @@ function hVarDeclEx _
 					is_dynamic = TRUE
 				end if
 			end if
-			
-			'' crude "array too big for stack" check
-			if( ((attrib and FB_SYMBATTRIB_DYNAMIC) or (attrib and FB_SYMBATTRIB_SHARED)) = 0 ) then
-				dim as uinteger i = any, accum = 1
-				for i = 0 to dimensions - 1
-					accum *= ((dTB(i).upper - dTB(i).lower) + 1) 
-				next
-				accum *= lgt
-				if( accum > fbc.stacksize ) then
+
+			'' "array too big for stack" check
+			if( (attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_SHARED)) = 0 ) then
+				if( symbCalcArrayElements( dimensions, dTB() ) * lgt > fbc.stacksize ) then
 					if( is_dynamic = FALSE ) then
 						errReportWarn( FB_WARNINGMSG_HUGEARRAYONSTACK )
 					end if
 				end if
 			end if
+		end if
+
+		'' don't allow COMMON object instances
+		if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
+   			select case dtype
+   			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+        		if( symbGetHasCtor( subtype ) or symbGetHasDtor( subtype ) ) then
+    				if( errReport( FB_ERRMSG_COMMONCANTBEOBJINST, TRUE ) = FALSE ) then
+    					exit function
+    				end if
+        		end if
+        	end select
 		end if
 
     	''
@@ -2041,7 +2048,7 @@ function cAutoVarDecl _
 					end if
 				end if
 			end if
-	
+
         	astTypeIniEnd( initree, TRUE )
 
         	''

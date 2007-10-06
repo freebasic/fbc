@@ -1,3 +1,10 @@
+[ ] ctor/dtor
+    - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when
+      speed is important, the temporary result instance won't be cleared
+    - ArrayClear will be used instead of a loop calling the dtors to destroy
+      local non-dynamic arrays
+      - callVarDtor will have to use astAddAfter then with scope blocks..
+
 
 [ ] make cUdtMember process symbols as cIdentifier does or ambiguous access
     tests won't work
@@ -11,11 +18,6 @@
     - add static data members, they must be initialized outside the TYPE|CLASS
     - allow all global operators to be declared as static methods so the private
       members could be accessed
-
-[ ] ctor/dtor
-    - ArrayClear will be used instead of a loop calling the dtors to destroy
-      local non-dynamic arrays
-      - callVarDtor will have to use astAddAfter then with scope blocks..
 
 [ ] operator overloading:
     - add support for functions returning references (reuse "BYREF") or the

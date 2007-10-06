@@ -687,7 +687,7 @@ function symbCalcArrayElements _
 end function
 
 '':::::
-private function hCalcArrayElements _
+function symbCalcArrayElements _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _

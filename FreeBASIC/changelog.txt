@@ -34,8 +34,9 @@ Version 0.18.2 Beta:
 - #1799517 - VAL() was evaluating out-of-bound characters impromperly in non-base 10 numbers. (cha0s)
 - #1790722 - INPUT wasn't prompting with a '?' if no prompt string was given (cha0s)
 - REDIM was instantiating objects, even when the array type was a pointer (cha0s)
-- bug #1780306 (temporary variables + GOSUB in -lang qb) (v1c)
+- bug #1780306 - temporary variables + GOSUB in -lang qb (v1c)
 - variables with same names could be redeclared in -lang qb inside compound statements (v1c)
+- bug #1738490 - COMMON can't be used with UDT's that have a ctor/dtor (what includes var-len string fields) (v1c)
 
 
 Version 0.18.1 Beta:
