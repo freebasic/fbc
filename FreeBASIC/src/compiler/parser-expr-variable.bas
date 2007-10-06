@@ -278,6 +278,12 @@ private function hMemberId _
 		byval parent as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
+	if( parent = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDUDT, TRUE )
+		'' no error recovery: caller will take care
+		return NULL
+	end if
+
 	'' ID?
 	select case as const lexGetClass( )
 	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
