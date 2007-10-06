@@ -378,6 +378,10 @@ function astNewASSIGN _
 
 	function = NULL
 
+	if( (l = NULL) or (r = NULL) ) then
+		exit function
+	end if
+
 	'' 1st) check assign op overloading (unless the types are the same and
 	''      there's no clone function: just do a shallow copy)
 	if( (options and AST_OPOPT_DONTCHKOPOVL) = 0 ) then

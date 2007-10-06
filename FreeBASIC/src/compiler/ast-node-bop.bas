@@ -1478,6 +1478,10 @@ function astNewSelfBOP _
 		ll = astNewASSIGN( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
 					   	   astNewADDROF( l ) )
 
+		if( ll = NULL ) then
+			exit function
+		end if
+
 		'' *tmp = *tmp op expr
 		lr = astNewASSIGN( astNewDEREF( astNewVAR( tmp, _
 				   		   			   			   0, _
@@ -1495,6 +1499,10 @@ function astNewSelfBOP _
 					   	   			  r, _
 					   	   			  ex, _
 					   	   			  options or AST_OPOPT_ALLOCRES ) )
+
+		if( lr = NULL ) then
+			exit function
+		end if
 
 		function = astNewLink( ll, lr )
 
