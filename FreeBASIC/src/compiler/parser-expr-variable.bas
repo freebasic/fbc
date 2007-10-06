@@ -264,9 +264,19 @@ private function hUdtConstMember _
 		byval fld as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	function = astNewCONST( @symbGetConstVal( fld ), _
-							symbGetType( fld ), _
-							symbGetSubType( fld ) )
+  	'' string constant?
+  	select case symbGetType( fld )
+  	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+  		function = astNewVAR( symbGetConstValStr( fld ), _
+  							  0, _
+  							  symbGetType( fld ) )
+
+	case else
+		function = astNewCONST( @symbGetConstVal( fld ), _
+								symbGetType( fld ), _
+								symbGetSubType( fld ) )
+
+	end select
 
 end function
 
