@@ -446,9 +446,11 @@ examples/manual/defines/fbargc.bas
 examples/manual/defines/fbargv.bas
 examples/manual/defines/fbbigendian.bas
 examples/manual/defines/fbbuilddate.bas
+examples/manual/defines/fbcygwin.bas
 examples/manual/defines/fbdebug.bas
 examples/manual/defines/fbdos.bas
 examples/manual/defines/fberr.bas
+examples/manual/defines/fbfreebsd.bas
 examples/manual/defines/fblang.bas
 examples/manual/defines/fblinux.bas
 examples/manual/defines/fbmain.bas
@@ -469,6 +471,7 @@ examples/manual/defines/fbverminor.bas
 examples/manual/defines/fbverpatch.bas
 examples/manual/defines/fbversion.bas
 examples/manual/defines/fbwin32.bas
+examples/manual/defines/fbxbox.bas
 examples/manual/defines/file.bas
 examples/manual/defines/filenq.bas
 examples/manual/defines/function.bas

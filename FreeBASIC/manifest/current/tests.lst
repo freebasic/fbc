@@ -63,6 +63,7 @@ tests/dirlist.mk
 tests/expressions/double-to-unsigned.bas
 tests/expressions/iif.bas
 tests/expressions/iif2.bas
+tests/expressions/mult-assign.bas
 tests/expressions/op-self-func.bas
 tests/fbcu/Makefile
 tests/fbcu/fake/fbcu.bi
