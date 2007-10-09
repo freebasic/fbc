@@ -45,11 +45,13 @@ function cExpression _
 		_
 	) as ASTNODE ptr
 
-	dim as integer last_isexpr = astOptimizeTree( fbGetIsExpression( ) )
+	dim as integer last_isexpr = fbGetIsExpression( )
 	fbSetIsExpression( TRUE )
 
 	'' LogExpression
-	function = cLogExpression( )
+	'' FIXME
+	'' Optimize tree here is just a quick hack for bug 1809646
+	function = astOptimizeTree( cLogExpression( ) )
 
 	fbSetIsExpression( last_isexpr )
 
