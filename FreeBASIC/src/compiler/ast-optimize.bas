@@ -1428,6 +1428,7 @@ private function hOptNullOp _
 				else
 					v = r->con.val.long
 				end if
+
 				select case as const op
 				case AST_OP_MUL
 					if( v = 0 ) then
@@ -1447,7 +1448,7 @@ private function hOptNullOp _
 						astDelNode( n )
 						return r
 					end if
-                 
+
 				case AST_OP_INTDIV
 					if( v = 1 ) then
 						astDelNode( r )
@@ -1995,9 +1996,8 @@ function astOptimizeTree _
 	n = hOptConstIDX( n )
 
 	hOptToShift( n )
-    
-    '' !!FIXME!! certain stuff fails...
-	'n = hOptNullOp( n )
+
+	n = hOptNullOp( n )
 
     n = hOptRemConv( n )
 

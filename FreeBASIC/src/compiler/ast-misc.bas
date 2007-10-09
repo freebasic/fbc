@@ -777,8 +777,8 @@ function astPtrCheck _
 	if( pdtype <> edtype ) then
 
     	'' remove the pointers
-    	pdtype_np = typeGetPtrType( pdtype ) 
-    	edtype_np = typeGetPtrType( edtype ) 
+    	pdtype_np = typeGetPtrType( pdtype )
+    	edtype_np = typeGetPtrType( edtype )
 
     	'' 1st) is one of them an ANY PTR?
     	if( pdtype_np = FB_DATATYPE_VOID ) then
@@ -907,6 +907,9 @@ function astUpdComp2Branch _
 	if( n = NULL ) then
 		return NULL
 	end if
+
+	'' the expr must be already optimized because the x86 flag assumptions done below
+	n = astOptimizeTree( n )
 
 	dtype = n->dtype
 
@@ -1243,31 +1246,31 @@ sub astIncOffset _
 		byval n as ASTNODE ptr, _
 		byval ofs as integer _
 	)
-	
+
 	select case as const n->class
 	case AST_NODECLASS_VAR
 		n->var_.ofs += ofs
-		
+
 	case AST_NODECLASS_IDX
 		n->idx.ofs += ofs
 
 	case AST_NODECLASS_DEREF
 		n->ptr.ofs += ofs
-		
+
 	case AST_NODECLASS_LINK
 		if( n->link.ret_left ) then
 			astIncOffset( n->l, ofs )
 		else
 			astIncOffset( n->r, ofs )
 		end if
-			
+
 	case AST_NODECLASS_FIELD
 		astIncOffset( n->l, ofs )
-	
+
 	case else
 		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 	end select
-	
+
 end sub
 
 '':::::
@@ -1291,7 +1294,7 @@ sub astSetType _
 
 	case AST_NODECLASS_FIELD
 		astSetType( n->l, dtype, subtype )
-		
+
 	end select
 
 end sub
