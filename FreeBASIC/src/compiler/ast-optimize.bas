@@ -1457,22 +1457,11 @@ private function hOptNullOp _
 
 				case AST_OP_ADD, AST_OP_SUB, _
 					 AST_OP_SHR, AST_OP_SHL, _
-					 AST_OP_XOR
+					 AST_OP_XOR, AST_OP_OR
 					if( v = 0 ) then
 						astDelNode( r )
 						astDelNode( n )
 						return hOptNullOp( l )
-					end if
-
-				case AST_OP_OR
-					if( v = 0 ) then
-						astDelNode( r )
-						astDelNode( n )
-						return hOptNullOp( l )
-					elseif( v = -1 ) then
-						astDelTree( l )
-						astDelNode( n )
-						return r
 					end if
 
 				case AST_OP_AND
@@ -1480,10 +1469,6 @@ private function hOptNullOp _
 						astDelNode( r )
 						astDelNode( n )
 						return hOptNullOp( l )
-					elseif( v = 0 ) then
-						astDelTree( l )
-						astDelNode( n )
-						return r
 					end if
 
 				end select
