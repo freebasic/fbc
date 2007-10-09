@@ -54,8 +54,7 @@ FBCALL int fb_ArrayErase
     	fb_hArrayDtorStr( array, NULL, 0 );
 
     free( array->ptr );
-    array->ptr = NULL;
-    array->data = NULL;
+    fb_ArrayResetDesc( array );
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }

@@ -159,10 +159,16 @@ FBCALL int fb_ArrayClear
 FBCALL int fb_ArrayClearObj
 	( 
 		FBARRAY *array, 
+		FB_DEFCTOR ctor, 
 		FB_DEFCTOR dtor, 
 		int dofill
 	);
 
+FBCALL void fb_ArrayResetDesc
+	( 
+		FBARRAY *array 
+	);
+	
 FBCALL int fb_ArrayLBound      
 	( 
 		FBARRAY *array, 

@@ -44,9 +44,7 @@
 /*:::::*/
 FBCALL void fb_ArrayResetDesc
 	( 
-		FBARRAY *array, 
-		int element_len, 
-		int maxdimensions 
+		FBARRAY *array 
 	)
 {
     int	i;
@@ -54,16 +52,16 @@ FBCALL void fb_ArrayResetDesc
 
     dim = &array->dimTB[0];
 
-    for( i = 0; i < maxdimensions; i++ )
+    for( i = 0; i < array->dimensions; i++ )
     {
     	dim->elements = 0;
-    	dim->lbound = INT_MAX;
-    	dim->ubound = INT_MIN;
+    	dim->lbound = 0;
+    	dim->ubound = 0;
     	++dim;
     }
 
     array->ptr = NULL;
 
-    FB_ARRAY_SETDESC( array, element_len, 0, 0, 0 );
+    FB_ARRAY_SETDESC( array, array->element_len, 0, 0, 0 );
 }
 

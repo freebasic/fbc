@@ -15,6 +15,7 @@ Version 0.18.2 Beta:
 - don't use fbrt0.o if the cmm-line option "-nodeflibs" was given (jeffm)
 - SCREEN now follows the QB syntax in -lang qb (v1c)
 - RND is now 100% compatible with QB in -lang qb mode (patch written by counting_pine)
+- ERASE is now compatible with QB, that is when ERASE is called on a variable-length array, the bounds information is reset in addition to the data being destroyed (cha0s)
 
 [added]
 - support for multiple assignments: 'LET( foo, bar, ... ) = UDT_expression' (v1c)
@@ -42,6 +43,7 @@ Version 0.18.2 Beta:
 - bug #1682972b - UDTs with operator let weren't initializing the destination variable first, so if operator let didn't do anything, the variable remained uninitialized (cha0s)
 - bug #1720013 - UDTs with operator LET were being allowed to take a byval arg with the same type as the UDT, causing infinite recursion at execution (cha0s)
 - bug #1745685 - rtlib functions whose addresses were taken weren't getting their callbacks called, leading to potential linker errors (cha0s)
+- bug #1772809 - ERASE wasn't reconstructing fixed-length object arrays after destroying them (cha0s)
 
 Version 0.18.1 Beta:
 

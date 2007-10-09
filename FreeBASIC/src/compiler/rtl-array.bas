@@ -192,16 +192,19 @@
 	 			) _
 	 		} _
 		), _
-		/' fb_ArrayClearObj ( array() as ANY, byval dtor as sub cdecl(), _
+		/' fb_ArrayClearObj ( array() as ANY, byval ctor as sub cdecl(), byval dtor as sub cdecl(), _
 							  byval dofill as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYCLEAR_OBJ, NULL, _
 	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
-	 		3, _
+	 		4, _
 	 		{ _
 	 			( _
 	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+	 			), _
+	 			( _
+	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
@@ -556,7 +559,7 @@ function rtlArrayClear _
 
     dim as ASTNODE ptr proc = any
     dim as integer dtype = any
-    dim as FBSYMBOL ptr dtor = any
+    dim as FBSYMBOL ptr ctor = any, dtor = any
 
     function = NULL
 
@@ -565,12 +568,14 @@ function rtlArrayClear _
 	''
 	select case typeGetDatatype( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		ctor = symbGetCompDefCtor( astGetSubtype( arrayexpr ) )
 		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
 	case else
+		ctor = NULL
 		dtor = NULL
 	end select
 
-    if( dtor = NULL ) then
+    if( (ctor = NULL) and (dtor = NULL) ) then
     	proc = astNewCALL( PROCLOOKUP( ARRAYCLEAR ) )
     else
     	proc = astNewCALL( PROCLOOKUP( ARRAYCLEAR_OBJ ) )
@@ -596,9 +601,18 @@ function rtlArrayClear _
 			end if
 		end if
 
+		if( symbGetProcMode( ctor ) <> FB_FUNCMODE_CDECL ) then
+			errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
+		end if
+
 		if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
 			errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
 		end if
+
+		'' byval ctor as sub()
+		if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
+    		exit function
+    	end if
 
 		'' byval dtor as sub()
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
