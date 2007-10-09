@@ -401,8 +401,22 @@ function astNewASSIGN _
 			proc = symbFindSelfBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
 
 			if( proc <> NULL ) then
+				
+				dim as ASTNODE ptr result = any
+				
+				'' if this is a variable initialization, we have to
+				'' ensure that the variable is zeroed in memory, 
+				'' because operator let could do nothing.
+				if( (options and AST_OPOPT_ISINI) <> 0 ) then
+					result = astNewMEM( AST_OP_MEMCLEAR, _
+				                        l, _
+				                        astNewCONSTi( symbGetLen( l->subtype ) ) )
+				else
+					result = NULL
+				end if
+				
 				'' build a proc call
-				return astBuildCall( proc, 2, l, r )
+				return astNewLINK( result, astBuildCall( proc, 2, l, r ) )
 			else
 				if( err_num <> FB_ERRMSG_OK ) then
 					return NULL
@@ -419,6 +433,14 @@ function astNewASSIGN _
 	if( (options and AST_OPOPT_DONTCHKOPOVL) = 0 ) then
 		proc = symbFindCastOvlProc( ldtype, lsubtype, r, @err_num )
 		if( proc <> NULL ) then
+			
+			'' we don't have to worry about initializing the lhs
+			'' in case of an initialization, this is because in
+			'' parser-decl-symb-init.bas::hDoAssign( ), the node
+			'' has already been converted if necessary, therefore
+			'' it would fall back on either a shallow copy, or the
+			'' operator LET, which was handled just above.
+			
 			'' build a proc call
 			r = astBuildCall( proc, 1, r )
 		else
