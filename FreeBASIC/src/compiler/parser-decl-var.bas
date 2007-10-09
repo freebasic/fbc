@@ -551,8 +551,8 @@ private function hDeclDynArray _
 			elseif( dimensions = -1 ) then
 				sym = NULL
 
-			'' dim foo(variable)?
-			elseif( is_redim = FALSE ) then
+			'' dim foo(variable)? (without a preceeding COMMON)
+			elseif( (is_redim = FALSE) and (symbIsCommon( sym ) = FALSE) ) then
 				sym = NULL
 			end if
 		end if
@@ -601,7 +601,11 @@ private function hDeclDynArray _
 
 	'' if COMMON, check for max dimensions used
 	if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
-		if( dimensions > symbGetArrayDimensions( sym ) ) then
+		if( symbGetArrayDimensions( sym ) > -1 ) then
+    		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
+    		'' no error recovery, caller will take care of that
+    		exit function
+    	else
 			symbSetArrayDimensions( sym, dimensions )
 		end if
 

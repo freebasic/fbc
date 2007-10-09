@@ -293,7 +293,7 @@ function symbAddArrayDesc _
 	'' as desc is also a var, clear the var fields
 	desc->var_.array.desc = NULL
 	desc->var_.array.dif = 0
-	desc->var_.array.dims = 0
+	symbSetArrayDimensions( desc, 0 )
 	desc->var_.array.dimhead = NULL
 	desc->var_.array.dimtail = NULL
 	desc->var_.array.elms = 1
@@ -358,7 +358,7 @@ sub symbSetArrayDimTb _
 		s->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), s->lgt )
 
 		if( (s->var_.array.dimhead = NULL) or _
-			(s->var_.array.dims <> dimensions) ) then
+			(symbGetArrayDimensions( s ) <> dimensions) ) then
 
             hDelVarDims( s )
 
@@ -382,8 +382,8 @@ sub symbSetArrayDimTb _
 		s->var_.array.dif = 0
 		s->var_.array.elms = 1
 	end if
-
-	s->var_.array.dims = dimensions
+	
+    symbSetArrayDimensions( s, dimensions )
 
 	'' dims can be -1 with COMMON arrays..
 	if( dimensions <> 0 ) then
@@ -431,7 +431,7 @@ private sub hSetupVar _
 	if( dimensions <> 0 ) then
 		symbSetArrayDimTb( s, dimensions, dTB() )
 	else
-		s->var_.array.dims = 0
+		symbSetArrayDimensions( s, 0 )
 		s->var_.array.dif = 0
 		s->var_.array.elms = 1
 	end if
@@ -839,7 +839,7 @@ private sub hDelVarDims _
 
     s->var_.array.dimhead = NULL
     s->var_.array.dimtail = NULL
-    s->var_.array.dims	  = 0
+    symbSetArrayDimensions( s, 0 )
 
 end sub
 
@@ -854,7 +854,7 @@ sub symbDelVar _
     	exit sub
     end if
 
-    if( s->var_.array.dims > 0 ) then
+    if( symbGetArrayDimensions( s ) > 0 ) then
     	hDelVarDims( s )
     	if( is_tbdel = FALSE ) then
     		'' del the array descriptor, recursively

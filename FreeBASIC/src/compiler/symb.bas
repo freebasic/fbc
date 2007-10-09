@@ -1538,7 +1538,7 @@ function symbIsArray _
 		if( (sym->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) <> 0 ) then
 			return TRUE
 		else
-			return sym->var_.array.dims <> 0
+			return symbGetArrayDimensions( sym ) <> 0
 		end if
 	end select
 

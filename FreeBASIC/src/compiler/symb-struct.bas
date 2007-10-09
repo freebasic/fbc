@@ -365,8 +365,8 @@ function symbAddField _
 	sym->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
 	sym->var_.array.dimhead = NULL
 	sym->var_.array.dimtail = NULL
-
-	sym->var_.array.dims = dimensions
+	
+	symbSetArrayDimensions( sym, dimensions )
 	if( dimensions > 0 ) then
 		dim as integer i
 		for i = 0 to dimensions-1
