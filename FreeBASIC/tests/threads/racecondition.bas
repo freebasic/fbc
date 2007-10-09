@@ -7,7 +7,7 @@ namespace fbc_tests.threads.racecondition
 
 const NUM_THREADS = 100
 
-declare sub cb(byval i as integer) 
+declare sub cb(byval i as any ptr) 
 
 sub test_1 cdecl ()
 
@@ -17,7 +17,7 @@ sub test_1 cdecl ()
 	randomize timer
 	
 	for i = 0 to NUM_THREADS-1
-	    htb(i) = threadcreate( @cb, i ) 
+	    htb(i) = threadcreate( @cb, cast(any ptr, i) ) 
 	    if( htb(i) = 0 ) then 
 	       print "error:" & i
 	       end 
@@ -34,7 +34,7 @@ sub test_1 cdecl ()
 
 end sub
 
-sub cb(byval i as integer) 
+sub cb(byval i as any ptr) 
     sleep rnd * 100
     print "ending:" & i 
 end sub
