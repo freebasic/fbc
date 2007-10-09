@@ -45,7 +45,7 @@ function cExpression _
 		_
 	) as ASTNODE ptr
 
-	dim as integer last_isexpr = fbGetIsExpression( )
+	dim as integer last_isexpr = astOptimizeTree( fbGetIsExpression( ) )
 	fbSetIsExpression( TRUE )
 
 	'' LogExpression
