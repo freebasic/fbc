@@ -1995,8 +1995,9 @@ function astOptimizeTree _
 	n = hOptConstIDX( n )
 
 	hOptToShift( n )
-
-	n = hOptNullOp( n )
+    
+    '' !!FIXME!! certain stuff fails...
+	'n = hOptNullOp( n )
 
     n = hOptRemConv( n )
 

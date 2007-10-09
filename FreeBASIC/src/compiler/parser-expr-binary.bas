@@ -49,9 +49,7 @@ function cExpression _
 	fbSetIsExpression( TRUE )
 
 	'' LogExpression
-	'' FIXME
-	'' Optimize tree here is just a quick hack for bug 1809646
-	function = astOptimizeTree( cLogExpression( ) )
+	function = cLogExpression( )
 
 	fbSetIsExpression( last_isexpr )
 
