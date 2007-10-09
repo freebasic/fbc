@@ -1366,10 +1366,14 @@ function astNewBOP _
 
 					'' can't clone if there's a side-effect in the tree
 					if( astIsClassOnTree( AST_NODECLASS_CALL, l ) = NULL ) then
+						' A pow should always promote l and r to
+						' float, and return a float
+						if( symbGetDataClass( l->dtype ) <> FB_DATACLASS_FPOINT ) then
+							l = astNewCONV( FB_DATATYPE_DOUBLE, NULL, l )
+						end if	
 						astDelNode( r )
 						r = astCloneTree( l )
 						op = AST_OP_MUL
-						dtype = ldtype
 					end if
 				end select
 			end if
