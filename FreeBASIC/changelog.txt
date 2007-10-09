@@ -40,7 +40,7 @@ Version 0.18.2 Beta:
 - bug #1738490 - COMMON can't be used with UDT's that have a ctor/dtor (what includes var-len string fields) (v1c)
 - bug #1682972a - functions returning UDT's through a hidden 1st arg pointer weren't first initializing the UDT (cha0s)
 - bug #1682972b - UDTs with operator let weren't initializing the destination variable first, so if operator let didn't do anything, the variable remained uninitialized (cha0s)
-
+- bug #1720013 - UDTs with operator LET were being allowed to take a byval arg with the same type as the UDT, causing infinite recursion at execution (cha0s)
 Version 0.18.1 Beta:
 
 [changed]

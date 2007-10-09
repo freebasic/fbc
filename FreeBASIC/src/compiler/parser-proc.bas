@@ -1177,7 +1177,7 @@ private function hCheckOpOvlParams _
 		end if
 
 	end select
-
+	
 	function = TRUE
 
 end function
@@ -1440,10 +1440,29 @@ function cOperatorHeader _
 
     symbSetProcOpOvl( proc, op )
 
+	'' operator LET can't take a byval arg of its own type
+	if( op = AST_OP_ASSIGN ) then
+		
+		'' if it's a proto, skip the instance param
+		dim as FBSYMBOL ptr param = symbGetProcHeadParam( proc )
+		if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
+			param = param->next
+		end if
+		
+		'' same parent, byval
+		if( symbGetSubtype( param ) = parent ) then
+			if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
+				if( errReport( FB_ERRMSG_CLONECANTTAKESELFBYVAL, TRUE ) = FALSE ) then
+					exit function
+				end if
+			end if
+		end if
+	end if
+	
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
 		'' check params
 		hCheckOpOvlParams( parent, op, proc, options )
-
+		
     	proc = symbAddOperator( proc, op, palias, plib, _
     						    dtype, subtype, ptrcnt, _
     					        attrib, mode )
