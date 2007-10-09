@@ -515,6 +515,12 @@ private function hProcPtrBody _
 	end if
 
 	symbSetIsCalled( proc )
+	
+	'' call any necessary rtl callbacks...
+	dim as FBRTLCALLBACK callback = symbGetProcCallback( proc )
+	if( callback <> NULL ) then
+		callback( proc )
+	end if
 
 	function = astNewADDROF( astNewVAR( proc, 0, FB_DATATYPE_FUNCTION, proc ) )
 
