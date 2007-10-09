@@ -2146,6 +2146,8 @@ declare function symbGetDefaultCallConv _
 
 #define symbGetUDTOpOvlTb(s) s->udt.ext->opovlTb
 
+#define symbGetUDTInRegister(s) iif( symbGetType( sym ) = FB_DATATYPE_STRUCT, not typeIsPtrTo( symbGetProcRealType( sym ), 1, FB_DATATYPE_STRUCT ), TRUE )
+
 #define symbGetEnumSymbTbHead(s) s->enum_.ns.symtb.head
 
 #define symbGetEnumElements(s) s->enum_.elements

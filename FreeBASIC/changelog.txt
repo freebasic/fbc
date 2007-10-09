@@ -38,7 +38,7 @@ Version 0.18.2 Beta:
 - bug #1780306 - temporary variables + GOSUB in -lang qb (v1c)
 - variables with same names could be redeclared in -lang qb inside compound statements (v1c)
 - bug #1738490 - COMMON can't be used with UDT's that have a ctor/dtor (what includes var-len string fields) (v1c)
-
+- bug #1682972a - functions returning UDT's through a hidden 1st arg pointer weren't first initializing the UDT (cha0s)
 
 Version 0.18.1 Beta:
 

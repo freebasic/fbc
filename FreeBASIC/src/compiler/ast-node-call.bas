@@ -54,21 +54,18 @@ private sub hAllocTempStruct _
 	n->call.tmpres = NULL
 
 	'' follow GCC 3.x's ABI
-	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-
-		'' not returned in registers?
-		if( typeIsPtrTo( symbGetProcRealType( sym ), 1, FB_DATATYPE_STRUCT ) ) then
-
-			'' create a temp struct (can't be static, could be an object)
-			n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, _
-										     symbGetSubtype( sym ), _
-										     FALSE, _
-										     FALSE )
-
-			if( symbGetHasDtor( symbGetSubtype( sym ) ) ) then
-				astDtorListAdd( n->call.tmpres )
-			end if
+	if( symbGetUDTInRegister( sym ) = FALSE ) then
+		
+		'' create a temp struct (can't be static, could be an object)
+		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, _
+									     symbGetSubtype( sym ), _
+									     FALSE, _
+									     FALSE )
+		
+		if( symbGetHasDtor( symbGetSubtype( sym ) ) ) then
+			astDtorListAdd( n->call.tmpres )
 		end if
+		
 	end if
 
 end sub
@@ -280,21 +277,18 @@ private sub hCheckTempStruct _
 	end if
 
 	'' follow GCC 3.x's ABI
-	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
+	if( symbGetUDTInRegister( sym ) = FALSE ) then
 
-		'' not in a reg?
-		if( typeIsPtrTo( symbGetProcRealType( sym ), 1, FB_DATATYPE_STRUCT ) ) then
+    	'' pass the address of the temp struct (it must be cleared if it
+    	'' includes string fields)
+    	vr = astLoad( astNewADDROF( astNewVAR( n->call.tmpres, _
+    							 			   0, _
+    							 			   FB_DATATYPE_STRUCT, _
+    							 			   symbGetSubtype( sym ), _
+    							 			   TRUE ) ) )
 
-        	'' pass the address of the temp struct (it must be cleared if it
-        	'' includes string fields)
-        	vr = astLoad( astNewADDROF( astNewVAR( n->call.tmpres, _
-        							 			   0, _
-        							 			   FB_DATATYPE_STRUCT, _
-        							 			   symbGetSubtype( sym ), _
-        							 			   TRUE ) ) )
-
-        	irEmitPUSHARG( vr, 0 )
-		end if
+    	irEmitPUSHARG( vr, 0 )
+    	
 	end if
 
 end sub

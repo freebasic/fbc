@@ -44,9 +44,9 @@ private function hDoCleanup _
 	case FB_DATATYPE_STRING
 		lgt = FB_STRDESCLEN
 
-	'' UDT with var-len string fields?
+	'' complex UDT?
 	case FB_DATATYPE_STRUCT
-    	if( symbGetUDTHasCtorField( symbGetSubtype( sym ) ) ) then
+    	if( symbGetUDTHasCtorField( symbGetSubtype( sym ) ) or (typeIsPtrTo( symbGetUDTRetType( symbGetSubtype( sym ) ), 1, FB_DATATYPE_STRUCT )) ) then
         	lgt = symbGetLen( sym )
 		else
 			return NULL
