@@ -57,6 +57,15 @@ namespace fbc_tests.optimizations.logic1
 		end if
 	end sub
 	
+	sub test6 cdecl( )
+		dim as integer a
+		if ( a + 0 ) then 
+			CU_ASSERT( 0 )
+		else 
+			CU_ASSERT( -1 )
+		end if
+	end sub
+	
 	private sub ctor () constructor
 	
 		fbcu.add_suite("fbc_tests.optimizations.logic1")
