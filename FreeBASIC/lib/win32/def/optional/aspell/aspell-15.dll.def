@@ -1,3 +1,4 @@
+LIBRARY ASPELL-15.DLL
 EXPORTS
     _ZN24aspeller_default_suggest11SuggestImpl5scoreEPKcS2_ @1
     _ZN24aspeller_default_suggest11SuggestImpl7suggestEPKc @2
