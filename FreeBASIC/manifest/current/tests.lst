@@ -59,6 +59,8 @@ tests/dim/submod/submod_c.bi
 tests/dim/typeof.bas
 tests/dim/udt_init.bas
 tests/dim/udt_init_pad.bas
+tests/dim/udt_initialization.bas
+tests/dim/udt_initialization2.bas
 tests/dirlist.mk
 tests/expressions/double-to-unsigned.bas
 tests/expressions/iif.bas
@@ -95,6 +97,9 @@ tests/functions/bydesc_arrayfield_str.bas
 tests/functions/callconv_default.bas
 tests/functions/callconv_mode.bas
 tests/functions/fixstr_arg.bas
+tests/functions/return_notreg.bas
+tests/functions/return_notreg2.bas
+tests/functions/rtl_cb.bas
 tests/functions/str_paramcopy.bas
 tests/functions/str_paramrecursion.bas
 tests/functions/str_recursion.bas
@@ -176,6 +181,8 @@ tests/optimizations/inline_logexpsqr.bas
 tests/optimizations/inline_sgn.bas
 tests/optimizations/inline_trans.bas
 tests/optimizations/literaldup.bas
+tests/optimizations/logic1.bas
+tests/optimizations/logic2.bas
 tests/optimizations/mul_assoc.bas
 tests/optimizations/toshift.bas
 tests/overload/access_mode.bas
