@@ -44,6 +44,7 @@ Version 0.18.2 Beta:
 - bug #1720013 - UDTs with operator LET were being allowed to take a byval arg with the same type as the UDT, causing infinite recursion at execution (cha0s)
 - bug #1745685 - rtlib functions whose addresses were taken weren't getting their callbacks called, leading to potential linker errors (cha0s)
 - bug #1772809 - ERASE wasn't reconstructing fixed-length object arrays after destroying them (cha0s)
+- bug #1684966 - temporaries' dtor flushing needs to be delayed when updating typeini nodes (cha0s)
 
 Version 0.18.1 Beta:
 

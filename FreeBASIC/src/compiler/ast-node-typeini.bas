@@ -951,7 +951,11 @@ function astTypeIniUpdate _
     if( ast.typeinicnt <= 0 ) then
     	exit function
     end if
-
+	
+	'' temporarily disable destructor calling...
+	dim as integer last_flush = ast.flushdtorlist
+	ast.flushdtorlist = FALSE
+	
 	'' walk
 	expr = tree->l
 	if( expr <> NULL ) then
@@ -962,6 +966,8 @@ function astTypeIniUpdate _
 	if( expr <> NULL ) then
 		hWalk( expr, tree )
 	end if
+
+	ast.flushdtorlist = last_flush
 
 end function
 
