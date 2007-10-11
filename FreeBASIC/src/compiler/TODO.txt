@@ -1,0 +1,261 @@
+[ ] ctor/dtor
+    - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when
+      speed is important, the temporary result instance won't be cleared
+    - ArrayClear will be used instead of a loop calling the dtors to destroy
+      local non-dynamic arrays
+      - callVarDtor will have to use astAddAfter then with scope blocks..
+
+
+[ ] make cUdtMember process symbols as cIdentifier does or ambiguous access
+    tests won't work
+    - check if the new optimizations won't break when -ex or -exx are used
+
+[ ] output member functions and static member data to the STABS TYPE/UDT info
+    - operators must be handled as well
+    - properties may need a __get/__set suffix
+
+[ ] STATIC
+    - add static data members, they must be initialized outside the TYPE|CLASS
+    - allow all global operators to be declared as static methods so the private
+      members could be accessed
+
+[ ] operator overloading:
+    - add support for functions returning references (reuse "BYREF") or the
+      '->' operator will be useless for UDT's with copy-ctors or dtors
+      as returning byval will make a deep copy
+    - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
+
+[ ] remove the internal profiler and use gprof instead, the former won't work with
+    destructors
+
+    [X] mingw
+    [ ] cygwin - not tested yet
+    [X] dos
+    [X] linux
+    [ ] xbox - does openxdk even support profiling with gmon?
+               If not, then it shouldn't be an allowable option.
+
+    [X] remove libfb_ctor.c - replaced by fbrt0.c
+
+[ ] add TYPEOF()
+    - BIT, BITSET and BITRESET won't work with longint's if the macros aren't rewritten
+      using TYPEOF
+
+[ ] quirks:
+    [ ] OPEN ... FOR is not checking for mode
+    	- does QB allow that? CONS won't work without INPUT or OUTPUT
+    [ ] GET and PUT shouldn't allow strings when the number of items is passed
+    [ ] -exx is giving suspicious ptr assignment when module/name are been restored inside ns'
+
+[ ] add the -lang (qb|fb) cmd-line option:
+    - "qb":
+      [ ] SHARED at subs (non-shared vars at mod-level will have to be allocated
+          statically, as before)
+      [ ] STATIC shouldn't create/allocate arrays, just declare them as static
+      [ ] suffixes not optional in keywords (ie: it's always STR$, not STR)
+      [ ] add "qb" mangling
+          [ ] symbols with same name but different sufixes than keywords
+          [ ] arrays with same name as scalars
+          [ ] labels with the same name as procs:
+              declare sub foo \n foo: \n goto foo \n call foo
+          [ ] add extern "qb" to -lang fb allowing -lang qb compiled libs to be used in -lang fb.  
+      [x] move all variables to function-level, implicit or explict (see no SCOPE)
+          [ ] check if its done correctly, if they are being cleared right after the
+              stack frame setup
+      [x] GOSUB and RETURN in subroutines (so RETURN can't be used as a shortcut to EXIT FUNCTION)
+      	  [ ] implement it using setjmp/longjmp later in the rtlib
+      [x] periods in symbol names
+      [x] numeric labels
+      [x] params passed by reference by default
+      [x] DEF### (ie: explicit types required)
+      [x] implicit variables
+      [x] suffixes % & ! # $
+      [x] '$dynamic, '$static, '$include
+      [x] LET
+      [x] ON .. GOTO|GOSUB
+      [x] ON ERROR, RESUME
+      [x] OPTION's
+      [x] DEFSNG by default
+      [x] OPEN should be compatible with QB (ie: OPEN "DEVICE:"), the bloat doesn't
+          matter in -lang qb mode, just implement a fb_OpenDev or so in the rtlib doing
+          the parsing that will call any supported fb_hFileOpen###'s (COM, LPT, CONS, etc)
+      [x] CALL: support undefined functions as in QB, all params BYREF as ANY
+      [ ] DEF - neither a macro nor function will work.  The statements inside the DEF FN...
+          need module level scope except for the parameters which shadow module level
+          vars.  Would be like a module level GOSUB but callable from any scope, taking 
+          parameters and returning a value.  Very messy.  Also, it will make any symbol 
+          called Fn... invalid because it allows forward refs. 
+
+      [x] no SCOPE
+      [x] no NAMESPACE
+      [x] no CLASS (and exception handling)
+      [x] no op and function overloading
+      [x] no EXTERN (periods and suffixes screw mangling)
+      [x] no multi-threading - not thread*, mutex*, cond*
+
+    - "fb" - the inverse of "qb", but show deprecated messages by now for:
+      [ ] without ON ERROR, all stmts returning rt errors should be allowed to
+          be used as functions too
+
+[ ] data/function members:
+    - add virtual (functions only)
+      - the vtable must be compatible with G++ 3.x (ie: compatible with
+        COM interfaces in Windows)
+
+[ ] add a C backend
+	- the va_* macros/quirk-func must be passed to AST, each ABI has different way to
+	  access varargs
+	- how to acccess fields?
+	  	foo.bar.baz would become:
+	  	*((typeof(bar.baz) *)((char *)&foo + offsetof(foo, bar) + offsetof(bar, baz))
+	  	but offsetof() is resolved at FBC compile-time, making the access ABI-dependent
+	  	even if structs are fully emitted
+	  	- (not so simple) solution: let the AST do it
+	- shared/module-level vars must be emitted before any proc
+	- scopes must be preserved or local vars won't work
+        - function calls must be passed complete to IR, with params
+        - stdcall names shouldn't be mangled, but anything else should - at least
+          the g++ mangling uses no special characters
+	- how to handle VARINI###? pass it as a tree plus a callback?
+	- DATA arrays must be emitted in the inverse order because the forward ref links
+	- structs must be fully translated
+        - only accept inline asm in GCC format, pass as-is
+	- use GCC as a high-level assembler, no headers, nothing
+	- linking should still be done by us
+	- if everything is solved, it would become much simpler to add a LLVM back-end as
+	  it's essentially a high-level ASM with virtual-regs
+
+[ ] ParamArray, but with this syntax: foo(...) as bar
+	- array must be built at compile-time and destroyed after the call
+	- take care with objects..
+
+[ ] PP:
+    - add #pragma cmdline="-foo bar -baz"
+	- painful to add
+	- don't allow it if any line was parsed already
+    - [macro expansion: won't work for inner macros
+    - add varargs support, like foo(arg1, ...) ...
+    - support default arguments?
+
+[ ] SCOPE..END SCOPE:
+    - can't optimize multiple MEM_CLEAR's if there's any branch to
+      one of them
+    - error handlers should be restored too (or not allowed at all)
+
+[ ] EXTERN ... END EXTERN
+    - C++ mangling needs CONST's to be handled in param attributes:
+      - refs and ptrs to constants can't be added unless _POINTER is added
+        as a new symbol like with BITFIELD? that will need *a lot* of changes..
+
+
+[ ] disallow (in -lang qb mode):
+	dim foo as foo
+	.. and later ..
+	const|dim|function|etc foo.bar
+
+[ ] fbmain - explicit main function
+    - must check if anything but the init/end labels were defined already inside
+      the implicit main() or the mod-level constructor
+    - must delete proto and all ast nodes
+    - must create as CDECL but it doesn't have to be obligatory
+    - must support RETURN or FUNCTION = to set the result
+    - must check the params if passed byval and if they have the right types
+
+[ ] add the ... subscript when initializing array so
+    "dim array(0 to ...) = {1, 2, 3, 4}" could be allowed
+
+[ ] forward type defs used in byval parms of function ptr type defs shouldn't be an error
+    - the prototype mangling must be updated when that occurs, but how to do that fast
+      enough? the args would have to be linked to parent (the prototype), but updating
+      the mangled alias on every argument can be slow..
+
+[ ] add the wstring type:
+    - fb_ConsoleInput() won't call fb_DevScrnInit_ReadWstr( ), so an input to a
+      wstring won't work.. to not add more bloat, the compiler should have to
+      call fb_ConsoleInput(there_is_any_wstr_argument), not so simple..
+    - auto-convert literal strings to w- or z- on assignments, depending on the l-hand
+      side type
+    - fix the !!!FIXME!!!'s and write the !!!WRITEME!!!'s in the rtlib
+
+[ ] swap of zstring's and var-len string's is not working?? or that's the behaviour..
+
+[ ] passing a temporary string to a zstring ptr should not make yet-another temporary
+    assignment in hStrParamToPtrArg(), just a pointer copy that later should be
+    strDelete()'d
+
+[ ] proc call:
+    - add named parameters (foo := expr)
+      - can be hard to be added because they don't have to come in order, params in
+        prototypes don't require a name and because overloading
+      - := must be a new token because the "foo bar : baz" ambiguity
+
+*** *** *** *** ***
+[ ] all functions returning STRING should actually return the FBSTRING
+    object, but we can't code the it in g++, or in Linux we will need to
+    link (and include) the stdc++ lib, that's over 2.5MB big, so it must
+    be done in pure C, using the G++ ABI (ie: FBSTRING has a dtor, so it's
+    never returned or passed by value):
+    - compiler has to allocate the descriptor as it does now following the gcc ABI
+    - any function in the run-time library returning strings will have to be
+      modified (chicken-egg problem)
+    - no more run-time allocation of temp descriptors (better with threads)
+    - no more STR_LOCK's (ditto)
+    - str_delete won't check for temp descriptors anymore
+
+[ ] fixed-len strings compatible with QB:
+    - no null-term, temporaries always created when passing to functions
+    - probably will need their own assign and concat functions
+
+[ ] "byval as string" arguments should make a temp copy (including descriptor)
+    of the param passed:
+    - must pass (?) the address of the temp descriptor, not the string data, what
+      will break *all* functions assuming the latter - they would have to be
+      declared as zstring ptr, what will need more changes in users' code, because
+      the non-implicit pointer deref
+
+*** *** *** *** ***
+[ ] proc def:
+    - when checking the prototype, the access modifiers must be checked too: PUBLIC, PRIVATE
+    - to support params > 64k, "ret" can't be used
+
+[ ] .stabn can't have args > 65535 (ie: line numbers)
+    - only switching to DWARF2 (ie: too complex) would fix that, let GCC do it..
+
+[ ] arrays will fail in quirk gfx funcs if multi-dimensional and have <> 0 lBounds
+
+[ ] add "fix-len|w|z|string * expr" support to array args passed by descriptor
+
+[ ] named field initializers: ( foo => bar, udt => ( 1, { 2, 3 }, 4 ) )
+    - all fields initialized must be named as a special parser routine will have to be used,
+      that will keep track of what wasn't initialized to fill 'em with 0's - static only,
+      locals are already cleared
+
+[ ] full debug support
+    - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
+    - each overloaded function will show the locals of *ALL* functions
+
+[ ] AndAlso and OrElse, short-circuit versions of And and Or
+    - pay attention to register spills if functions or complex expressions are
+      used in left or right sides
+
+[ ] inline functions
+    - better than macros as they can be "turned off" when debugged
+    - too hard to be added now due the register spills, IR must handle inter blocks and
+      keep track of live vregs
+
+[ ] classes
+    - *MUST* follow the GCC 3.x ABI to make it easier to reuse C++ libs compiled by GCC
+    - Java/Php5-ish syntax: CLASS INTERFACE EXTENDS IMPLEMENTS THROWS ABSTRACT
+    - must support forward references for any kind of symbol, so classes can't be stored
+      directly to AST
+      - how to deal with "foo(expr)"? it could be an array or a function call..
+      - keeping everything in a parser/token tree will allow templates to be added later
+      - class shouldn't be emitted unless referenced
+        - function bodies defined outside classes follow the private/public proc rules
+    - single inheritance, plus interfaces
+    - exceptions - with stack unwind support
+    - pure virtual methods
+    - down casting
+    - some support for RTTI
+
+

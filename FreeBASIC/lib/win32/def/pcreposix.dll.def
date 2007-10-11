@@ -1,0 +1,18 @@
+LIBRARY     PCREPOSIX.DLL
+
+EXPORTS
+    pcre_callout @1 DATA
+    pcre_compile @2
+    pcre_config @3
+    pcre_exec @4
+    pcre_free @5 DATA
+    pcre_fullinfo @6
+    pcre_info @7
+    pcre_malloc @8 DATA
+    pcre_stack_free @9 DATA
+    pcre_stack_malloc @10 DATA
+    pcre_version @11
+    regcomp @12
+    regerror @13
+    regexec @14
+    regfree @15

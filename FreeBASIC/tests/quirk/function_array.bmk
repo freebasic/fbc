@@ -1,0 +1,4 @@
+# TEST_MODE : COMPILE_AND_RUN_FAIL
+
+MAIN := function_array.bas
+

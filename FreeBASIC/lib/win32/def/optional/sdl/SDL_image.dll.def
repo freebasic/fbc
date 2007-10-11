@@ -1,0 +1,30 @@
+LIBRARY     SDL_IMAGE.DLL
+
+EXPORTS
+    IMG_InvertAlpha                @1   
+    IMG_Linked_Version             @2   
+    IMG_Load                       @3   
+    IMG_LoadBMP_RW                 @4   
+    IMG_LoadGIF_RW                 @5   
+    IMG_LoadJPG_RW                 @6   
+    IMG_LoadLBM_RW                 @7   
+    IMG_LoadPCX_RW                 @8   
+    IMG_LoadPNG_RW                 @9   
+    IMG_LoadPNM_RW                 @10  
+    IMG_LoadTGA_RW                 @11  
+    IMG_LoadTIF_RW                 @12  
+    IMG_LoadTyped_RW               @13  
+    IMG_LoadXCF_RW                 @14  
+    IMG_LoadXPM_RW                 @15  
+    IMG_Load_RW                    @16  
+    IMG_ReadXPMFromArray           @17  
+    IMG_isBMP                      @18  
+    IMG_isGIF                      @19  
+    IMG_isJPG                      @20  
+    IMG_isLBM                      @21  
+    IMG_isPCX                      @22  
+    IMG_isPNG                      @23  
+    IMG_isPNM                      @24  
+    IMG_isTIF                      @25  
+    IMG_isXCF                      @26  
+    IMG_isXPM                      @27  

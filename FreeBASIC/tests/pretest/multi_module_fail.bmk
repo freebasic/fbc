@@ -1,0 +1,7 @@
+
+# TEST_MODE : MULTI_MODULE_FAIL
+
+MAIN := multi_module_fail.bas
+
+SRCS := multi_module_subs.bas
+

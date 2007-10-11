@@ -1,0 +1,55 @@
+FBWIKI SAMPLE BUILDER
+---------------------
+
+This is a collection of FreeBASIC sample code extracted from the FreeBASIC 
+official documentation.
+
+For full documentation, please visit:
+
+   http://www.freebasic.net/wiki
+
+
+This software has been provided as-is without any warranty whatsoever.
+Use at your own risk.
+
+
+About the Samples
+-----------------
+
+These sources have been extracted for the primary purpose of compile
+checking all of the manual's example code.  So while most of the examples 
+are probably useful, not all of them will be.  Some examples are only one or 
+two lines of code that don't have any real usefulness outside of the manual
+itself.
+
+
+Builing the Sample Builder:
+---------------------------
+
+First, use fbc to compile the sample builder
+
+    fbc samples.bas
+
+
+Making the Samples:
+-------------------
+
+Next, run 'samples' to build the samples.
+
+    samples compile
+
+
+To see more options on how to build the samples including
+specifying the compiler to use, which directories to build, and
+where the source directory is located, run 'samples' without any
+command line arguments.
+
+    samples
+
+
+Special Files and Directories
+-----------------------------
+
+./samples.ini
+
+    This file lists the source files that require special build steps.

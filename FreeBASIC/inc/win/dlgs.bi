@@ -1,0 +1,185 @@
+''
+''
+'' dlgs -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __win_dlgs_bi__
+#define __win_dlgs_bi__
+
+#define FILEOPENORD 1536
+#define MULTIFILEOPENORD 1537
+#define PRINTDLGORD 1538
+#define PRNSETUPDLGORD 1539
+#define FINDDLGORD 1540
+#define REPLACEDLGORD 1541
+#define FONTDLGORD 1542
+#define FORMATDLGORD31 1543
+#define FORMATDLGORD30 1544
+#define PAGESETUPDLGORD 1546
+#define ctlFirst &h400
+#define ctlLast &h4ff
+#define chx1 &h410
+#define chx2 &h411
+#define chx3 &h412
+#define chx4 &h413
+#define chx5 &h414
+#define chx6 &h415
+#define chx7 &h416
+#define chx8 &h417
+#define chx9 &h418
+#define chx10 &h419
+#define chx11 &h41a
+#define chx12 &h41b
+#define chx13 &h41c
+#define chx14 &h41d
+#define chx15 &h41e
+#define chx16 &h41f
+#define cmb1 &h470
+#define cmb2 &h471
+#define cmb3 &h472
+#define cmb4 &h473
+#define cmb5 &h474
+#define cmb6 &h475
+#define cmb7 &h476
+#define cmb8 &h477
+#define cmb9 &h478
+#define cmb10 &h479
+#define cmb11 &h47a
+#define cmb12 &h47b
+#define cmb13 &h47c
+#define cmb14 &h47d
+#define cmb15 &h47e
+#define cmb16 &h47f
+#define edt1 &h480
+#define edt2 &h481
+#define edt3 &h482
+#define edt4 &h483
+#define edt5 &h484
+#define edt6 &h485
+#define edt7 &h486
+#define edt8 &h487
+#define edt9 &h488
+#define edt10 &h489
+#define edt11 &h48a
+#define edt12 &h48b
+#define edt13 &h48c
+#define edt14 &h48d
+#define edt15 &h48e
+#define edt16 &h48f
+#define frm1 &h434
+#define frm2 &h435
+#define frm3 &h436
+#define frm4 &h437
+#define grp1 &h430
+#define grp2 &h431
+#define grp3 &h432
+#define grp4 &h433
+#define ico1 &h43c
+#define ico2 &h43d
+#define ico3 &h43e
+#define ico4 &h43f
+#define lst1 &h460
+#define lst2 &h461
+#define lst3 &h462
+#define lst4 &h463
+#define lst5 &h464
+#define lst6 &h465
+#define lst7 &h466
+#define lst8 &h467
+#define lst9 &h468
+#define lst10 &h469
+#define lst11 &h46a
+#define lst12 &h46b
+#define lst13 &h46c
+#define lst14 &h46d
+#define lst15 &h46e
+#define lst16 &h46f
+#define psh1 &h400
+#define psh2 &h401
+#define psh3 &h402
+#define psh4 &h403
+#define psh5 &h404
+#define psh6 &h405
+#define psh7 &h406
+#define psh8 &h407
+#define psh9 &h408
+#define psh10 &h409
+#define psh11 &h40a
+#define psh12 &h4&b
+#define psh13 &h40c
+#define psh14 &h40d
+#define psh15 &h40e
+#define pshHelp &h40e
+#define psh16 &h40f
+#define rad1 &h420
+#define rad2 &h421
+#define rad3 &h422
+#define rad4 &h423
+#define rad5 &h424
+#define rad6 &h425
+#define rad7 &h426
+#define rad8 &h427
+#define rad9 &h428
+#define rad10 &h429
+#define rad11 &h42a
+#define rad12 &h42b
+#define rad13 &h42c
+#define rad14 &h42d
+#define rad15 &h42e
+#define rad16 &h42f
+#define rct1 &h438
+#define rct2 &h439
+#define rct3 &h43a
+#define rct4 &h43b
+#define scr1 &h490
+#define scr2 &h491
+#define scr3 &h492
+#define scr4 &h493
+#define scr5 &h494
+#define scr6 &h495
+#define scr7 &h496
+#define scr8 &h497
+#define stc1 &h440
+#define stc2 &h441
+#define stc3 &h442
+#define stc4 &h443
+#define stc5 &h444
+#define stc6 &h445
+#define stc7 &h446
+#define stc8 &h447
+#define stc9 &h448
+#define stc10 &h449
+#define stc11 &h44a
+#define stc12 &h44b
+#define stc13 &h44c
+#define stc14 &h44d
+#define stc15 &h44e
+#define stc16 &h44f
+#define stc17 &h450
+#define stc18 &h451
+#define stc19 &h452
+#define stc20 &h453
+#define stc21 &h454
+#define stc22 &h455
+#define stc23 &h456
+#define stc24 &h457
+#define stc25 &h458
+#define stc26 &h459
+#define stc27 &h45a
+#define stc28 &h45b
+#define stc29 &h45c
+#define stc30 &h45d
+#define stc31 &h45e
+#define stc32 &h45f
+
+type CRGB
+	bRed as UBYTE
+	bGreen as UBYTE
+	bBlue as UBYTE
+	bExtra as UBYTE
+end type
+
+#endif
