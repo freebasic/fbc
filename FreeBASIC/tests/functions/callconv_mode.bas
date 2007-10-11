@@ -100,7 +100,7 @@ namespace fbc_tests.functions.callconv_mode
 		fbcu.add_test("test2", @test2)
 		fbcu.add_test("test3", @test3)
 
-#if defined( __FB_DOS__ ) or defined( __FB_WIN__ )
+#if defined( __FB_DOS__ ) or defined( __FB_WIN32__ )
 		fbcu.add_test("test4", @test4)
 		fbcu.add_test("test5", @test5)
 #endif
