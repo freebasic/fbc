@@ -1,6 +1,15 @@
 Version 0.18.2 Beta:
 
 [changed]
+
+[added]
+
+[fixed]
+- *cast(zstring ptr, @some_var) = "hello" wasn't working... (cha0s)
+
+Version 0.18.2 Beta:
+
+[changed]
 - fix zstring constructor in libvariant patch by voodooattack (tracker #1750468) (DrV)
 - extend 16-bit colors returned from screen function in gfx mode to full 32-bit colors patch by counting_pine (tracker #1726579) (DrV)
 - fixes for COLOR function in gfx mode (DrV)

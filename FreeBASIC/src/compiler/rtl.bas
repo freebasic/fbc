@@ -389,7 +389,11 @@ function rtlCalcStrLen _
 		if( s = NULL ) then
 			function = 0
 		else
-			function = symbGetStrLen( s )
+			if( symbGetType( s ) <> dtype ) then
+				function = 0
+			else
+				function = symbGetStrLen( s )
+			end if
 		end if
 
 	case FB_DATATYPE_WCHAR
@@ -398,7 +402,11 @@ function rtlCalcStrLen _
 		if( s = NULL ) then
 			function = 0
 		else
-			function = symbGetWstrLen( s )
+			if( symbGetType( s ) <> dtype ) then
+				function = 0
+			else
+				function = symbGetWStrLen( s )
+			end if
 		end if
 
 	case else

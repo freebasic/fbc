@@ -306,6 +306,7 @@ tests/string/escape.bas
 tests/string/format.bas
 tests/string/initialization.bas
 tests/string/initialization2.bas
+tests/string/inline_zstring_cast.bas
 tests/string/instr_0.bas
 tests/string/instr_x.bas
 tests/string/len.bas
