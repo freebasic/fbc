@@ -56,6 +56,11 @@ namespace fbc_tests.functions.callconv_mode
 
 	end sub
 
+#if defined( __FB_DOS__ ) or defined( __FB_WIN32__ )
+
+	'' This is a valid test but only on dos/win since
+	'' for linux, stdcall is the 
+
 	''
 	sub test4 cdecl( )
 
@@ -85,6 +90,8 @@ namespace fbc_tests.functions.callconv_mode
 		F( A3, A2, A1 )
 
 	end sub
+
+#endif
 	
 	private sub ctor () constructor
 	
@@ -92,8 +99,11 @@ namespace fbc_tests.functions.callconv_mode
 		fbcu.add_test("test1", @test1)
 		fbcu.add_test("test2", @test2)
 		fbcu.add_test("test3", @test3)
+
+#if defined( __FB_DOS__ ) or defined( __FB_WIN__ )
 		fbcu.add_test("test4", @test4)
 		fbcu.add_test("test5", @test5)
+#endif
 	
 	end sub
 
