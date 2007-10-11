@@ -164,8 +164,11 @@ private function hCalcALign _
 		case 4
 			function = (4 - (ofs and (4-1))) and (4-1)
 		case 8
-			function = (8 - (ofs and (8-1))) and (8-1)
-
+			if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) then
+				function = (8 - (ofs and (8-1))) and (8-1)
+			else
+				function = (4 - (ofs and (4-1))) and (4-1)
+			end if
 		'' anything else (shouldn't happen), align to sizeof(int)
 		case else
 			function = (FB_INTEGERSIZE - (ofs and (FB_INTEGERSIZE-1))) and (FB_INTEGERSIZE-1)

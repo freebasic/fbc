@@ -64,8 +64,13 @@ sub test_size1 cdecl ()
 	CU_ASSERT_EQUAL( sizeof(S1), UNPADLEN )
 	CU_ASSERT_EQUAL( sizeof(S2), UNPADLEN + 3 )
 	CU_ASSERT_EQUAL( sizeof(S4), UNPADLEN + 7 )
-	CU_ASSERT_EQUAL( sizeof(S8), UNPADLEN + 15 )
-	CU_ASSERT_EQUAL( sizeof(S) , UNPADLEN + 15 )
+	#ifdef __FB_WIN32__
+		CU_ASSERT_EQUAL( sizeof(S8), UNPADLEN + 15 )
+		CU_ASSERT_EQUAL( sizeof(S) , UNPADLEN + 15 )
+	#else
+		CU_ASSERT_EQUAL( sizeof(S8), UNPADLEN + 7 )
+		CU_ASSERT_EQUAL( sizeof(S) , UNPADLEN + 7 )
+	#endif
 end sub
 
 sub test_size2 cdecl ()
