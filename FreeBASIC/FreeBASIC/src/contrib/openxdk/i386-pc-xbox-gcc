@@ -1,7 +1,0 @@
-#!/bin/sh
-OPENXDK=/usr/local/openxdk
-MINGW=/mingw
-MINGW_GCC=$MINGW/bin/gcc
-MINGW_GCC_LIB=$MINGW/lib/gcc/mingw32/3.4.2
-MINGW_GCC_LIB_INCLUDE=$MINGW_GCC_LIB/include
-$MINGW_GCC $* -std=gnu99 -ffreestanding -nostdinc -fno-builtin -fno-exceptions -mno-cygwin -march=i386 -I$OPENXDK/i386-pc-xbox/include -I$OPENXDK/include -I$MINGW_GCC_LIB_INCLUDE
