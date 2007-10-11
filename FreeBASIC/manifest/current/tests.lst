@@ -291,6 +291,7 @@ tests/quirk/typeof.bas
 tests/readme.txt
 tests/scopes/branch_cross.bas
 tests/scopes/consts.bas
+tests/scopes/delaydtor.bas
 tests/scopes/enums.bas
 tests/scopes/fornext.bas
 tests/scopes/macros.bas
