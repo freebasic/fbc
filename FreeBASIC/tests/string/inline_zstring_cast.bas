@@ -11,7 +11,7 @@ namespace fbc_tests.string_.inline_zstring_cast
 	end sub
 	
 	sub wtest cdecl ()
-		dim as ubyte foo(63*2)
+		dim as ubyte foo(63*sizeof(wstring))
 		*cast(wstring ptr, @foo(0)) = key
 		CU_ASSERT( *cast(wstring ptr, @foo(0)) = key )
 	end sub
