@@ -1,15 +1,7 @@
 Version 0.18.2 Beta:
 
 [changed]
-
-[added]
-
-[fixed]
-- *cast(zstring ptr, @some_var) = "hello" wasn't working... (cha0s)
-
-Version 0.18.2 Beta:
-
-[changed]
+- TYPE's now have default 4 byte field alignment on dos/linux, was 8 byte. (yetifoot)
 - fix zstring constructor in libvariant patch by voodooattack (tracker #1750468) (DrV)
 - extend 16-bit colors returned from screen function in gfx mode to full 32-bit colors patch by counting_pine (tracker #1726579) (DrV)
 - fixes for COLOR function in gfx mode (DrV)
@@ -34,6 +26,7 @@ Version 0.18.2 Beta:
 - 'PCOPY [srcPg] [, dstPg]' and 'SCREEN [, activePg] [, visiblePg]' for non-graphic, console, screen 0 mode - for DOS and Windows only (v1c)
 - SCREEN() (without parameters) will return the current screen pages as: (activePg or (visiblePg shl 8)) (v1c)
 - GNU ASpell-0.50 header and import library (jeffm)
+- install.sh will copy fbc.1.gz to /usr/share/man/man1/
 
 [fixed]
 - #1785162 - math overflows weren't being checked if the floating point #s were the same type (cha0s)
@@ -54,6 +47,8 @@ Version 0.18.2 Beta:
 - bug #1745685 - rtlib functions whose addresses were taken weren't getting their callbacks called, leading to potential linker errors (cha0s)
 - bug #1772809 - ERASE wasn't reconstructing fixed-length object arrays after destroying them (cha0s)
 - bug #1684966 - temporaries' dtor flushing needs to be delayed when updating typeini nodes (cha0s)
+- *cast(zstring ptr, @some_var) = "hello" wasn't working... (cha0s)
+
 
 Version 0.18.1 Beta:
 
