@@ -29,6 +29,7 @@ install()
 	cp -r inc/* "$dest"/inc
 	cp bin/linux/* "$dest"/bin/linux
 	cp fbc "$dest"
+	cp docs/fbc.1.gz /usr/share/man/man1/fbc.1.gz
 
 	if [ -w $link ]; then
 		rm -f "$link"/fbc
@@ -57,6 +58,9 @@ uninstall()
 	rm -fr $dest
 	if [ -w $link ]; then
 		rm -f "$link"/fbc
+	fi
+	if [ -w /usr/share/man/man1/fbc.1.gz ]; then
+		rm -f /usr/share/man/man1/fbc.1.gz
 	fi
 
 	echo
