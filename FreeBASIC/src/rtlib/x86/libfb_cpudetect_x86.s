@@ -26,11 +26,11 @@
 
 	.intel_syntax noprefix
 
-.section .data
-detected_cpu: .int 0  /* bytes 0-2: low 24 bits of feature flags (CPUID eax = 1, edx) */
-                      /* byte    3: cpu family (03 = 386, 04 = 486, 05 = 586, 06 = 686) */
+.data
+detected_cpu: .long 0  /* bytes 0-2: low 24 bits of feature flags (CPUID eax = 1, edx) */
+                       /* byte    3: cpu family (03 = 386, 04 = 486, 05 = 586, 06 = 686) */
 
-.section .text
+.text
 /*:::::*/
 /* int fb_CpuDetect(void); */
 .globl _fb_CpuDetect
