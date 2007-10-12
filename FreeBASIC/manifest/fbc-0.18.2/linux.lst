@@ -9,7 +9,7 @@ bin/linux/as
 bin/linux/elf_i386.x
 bin/linux/gprof
 bin/linux/ld
-docs/fbc.1
+docs/fbc.1.gz
 docs/gpl.txt
 docs/lgpl.txt
 examples/classes/iterator.bas
