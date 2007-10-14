@@ -4,6 +4,7 @@ Version 0.18.3 Beta:
 - lang qb: INTEGER (%) and LONG (&) are now, respectively, 16- and 32-bit wide (v1c)
 - lang qb: default numeric literals are now assumed to be INTEGER or SINGLE (v1c)
 - lang qb: symbols with the same name as keywords are now allowed: dim left as integer: const dim$ = "" etc (v1c)
+- lang qb: all data types and functions/keywords not present in QuickBASIC were removed (v1c)
 
 [added]
 
