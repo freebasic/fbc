@@ -331,6 +331,19 @@ private function hFieldInit _
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
+
+	else
+    	'' don't allow references to local symbols
+    	dim as FBSYMBOL ptr s = astFindLocalSymbol( initree )
+    	if( s <> NULL ) then
+    		if( errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL, TRUE ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery
+    			astDelTree( initree )
+    			initree = NULL
+    		end if
+    	end if
 	end if
 
 	'' remove the temps from the dtors list if any was added

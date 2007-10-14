@@ -143,34 +143,34 @@ end sub
 sub ppCheck( )
 
 	'' not a '#' char?
-	if( lex->head->id <> CHAR_SHARP ) then
+	if( lex.ctx->head->id <> CHAR_SHARP ) then
 		exit sub
 	end if
 
 	'' already inside the PP? (ie: skipping a false #IF or #ELSE)
-	if( lex->reclevel <> 0 ) then
+	if( lex.ctx->reclevel <> 0 ) then
 		exit sub
 	end if
 
 	'' not at the beginning of line?
-	if( lex->lasttk_id <> FB_TK_EOL ) then
+	if( lex.ctx->lasttk_id <> FB_TK_EOL ) then
 		'' or top of source-file?
-		if( lex->lasttk_id <> INVALID ) then
+		if( lex.ctx->lasttk_id <> INVALID ) then
 			exit sub
 		end if
 	end if
 
-	lex->reclevel += 1
+	lex.ctx->reclevel += 1
 
     '' !!!FIXME!!! if LEXCHECK_KWDNAMESPC is used in future, it
     '' must be restored
-    lex->kwdns = @pp.kwdns
+    lex.ctx->kwdns = @pp.kwdns
 
     lexSkipToken( LEXCHECK_KWDNAMESPC )
 
     '' let the parser do the rest..
     ppParse( )
-	lex->reclevel -= 1
+	lex.ctx->reclevel -= 1
 
 end sub
 
@@ -416,7 +416,7 @@ private function ppLine( ) as integer
 		end if
 
 	else
-		lex->linenum = valint( *lexGetText( ) )
+		lex.ctx->linenum = valint( *lexGetText( ) )
 		lexSkipToken( )
 
 		'' LIT_STR?
@@ -703,7 +703,7 @@ function ppReadLiteralW _
 
 	  	case FB_TK_TYPEOF
 	  		lexSkipToken( )
-	        
+
 	        DWstrConcatAssignA( text, ppTypeOf( ) )
 			exit do
 
@@ -727,14 +727,14 @@ end function
 function ppTypeOf _
 	( _
 	) as zstring ptr
-    
+
     function = FALSE
-    
+
 	'' get type's name
 	dim as zstring ptr res
 	dim as integer dtype, lgt
 	dim as FBSYMBOL ptr subtype
-	
+
     '' '('
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
 		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
@@ -762,7 +762,7 @@ function ppTypeOf _
 	else
 		lexSkipToken( LEXCHECK_NODEFINE )
 	end if
-	
+
 	function = res
 
 end function

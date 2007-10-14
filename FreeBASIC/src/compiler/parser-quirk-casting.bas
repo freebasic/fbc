@@ -153,21 +153,23 @@ function cAnonUDT _
     dim as FBSYMBOL ptr subtype = any
     dim as integer dtype = any, lgt = any, ptrcnt = any
 
+    function = NULL
+
 	'' TYPE
 	lexSkipToken( )
 
     '' ('<' SymbolType '>')?
     if( lexGetToken( ) = FB_TK_LT ) then
     	lexSkipToken( )
-        
+
         '' get UDT or intrinsic type
 		if( cSymbolType( dtype, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
-			
+
 			'' it would be nice to be able to fall back and do
-			'' a cExpression(), like typeof(), or len() do, 
+			'' a cExpression(), like typeof(), or len() do,
 			'' however the ambiguity with the "greater-than '>' operator"
 			'' and the "type<foo'>'(bar)"....
-			
+
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else
@@ -180,7 +182,7 @@ function cAnonUDT _
     	'' '>'
     	if( lexGetToken( ) <> FB_TK_GT ) then
 			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				return NULL
+				exit function
 			else
 				'' error recovery: skip until next '>'
 				hSkipUntil( FB_TK_GT, TRUE )
@@ -195,11 +197,11 @@ function cAnonUDT _
     	'' this allows totally anonymous types.
     	subtype = parser.ctxsym
     	dtype   = parser.ctx_dtype
-    	
+
 		if( subtype <> NULL ) then
-			
+
 			dtype = FB_DATATYPE_STRUCT
-			
+
 			'' typedef? resolve..
 			if( symbIsTypedef( subtype ) ) then
 				subtype = symbGetSubtype( subtype )
@@ -207,7 +209,7 @@ function cAnonUDT _
 
 	    	if( subtype = NULL ) then
 				if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-					return NULL
+					exit function
 				else
 					'' error recovery: fake a node
 					return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -216,14 +218,14 @@ function cAnonUDT _
 
 	    	if( symbIsStruct( subtype ) = FALSE ) then
 				if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-					return NULL
+					exit function
 				else
 					'' error recovery: fake a node
 					return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				end if
 			end if
 		end if
-		
+
     end if
 
     '' has a ctor?
@@ -238,9 +240,6 @@ function cAnonUDT _
 
     '' let the initializer do the rest..
     function = cInitializer( sym, FB_INIOPT_NONE )
-
-    '' del temp var
-    symbDelVar( sym )
 
 end function
 

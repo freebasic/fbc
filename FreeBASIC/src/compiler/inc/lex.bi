@@ -61,7 +61,7 @@ const FB_LEX_MAXK	= 2
 
 const LEX_MAXBUFFCHARS = 8192
 
-type LEX_CTX
+type LEX_TKCTX
 	tokenTB(0 to FB_LEX_MAXK) as FBTOKEN
 	k				as integer					'' look ahead cnt (1..MAXK)
 
@@ -113,6 +113,13 @@ type LEX_CTX
 	lastfilepos 	as integer
 
 	currline		as DZSTRING					'' current line in text form
+end type
+
+type LEX_CTX
+	ctxTB( 0 TO FB_MAXINCRECLEVEL-0 ) as LEX_TKCTX
+	ctx 			as LEX_TKCTX ptr
+
+	insidemacro 	as integer
 end type
 
 declare sub lexInit _
@@ -211,32 +218,32 @@ declare function lexPeekCurrentLine _
 '' macros
 ''
 
-#define lexLineNum( ) lex->linenum
+#define lexLineNum( ) lex.ctx->linenum
 
-#define lexGetLastToken( ) lex->lasttk_id
+#define lexGetLastToken( ) lex.ctx->lasttk_id
 
-#define lexGetTextW( ) @lex->head->textw
+#define lexGetTextW( ) @lex.ctx->head->textw
 
-#define lexGetTextLen( ) lex->head->len
+#define lexGetTextLen( ) lex.ctx->head->len
 
-#define lexGetType( ) lex->head->dtype
+#define lexGetType( ) lex.ctx->head->dtype
 
-#define lexGetSymChain( ) lex->head->sym_chain
+#define lexGetSymChain( ) lex.ctx->head->sym_chain
 
-#define lexGetPeriodPos( ) lex->head->prdpos
+#define lexGetPeriodPos( ) lex.ctx->head->prdpos
 
-#define lexGetHasSlash( ) lex->head->hasesc
+#define lexGetHasSlash( ) lex.ctx->head->hasesc
 
-#define lexGetHead( ) lex->head
+#define lexGetHead( ) lex.ctx->head
 
-#define lexCurrLineGet( ) lex->currline.data
+#define lexCurrLineGet( ) lex.ctx->currline.data
 
-#define lexCurrLineReset( ) DZstrReset( lex->currline )
+#define lexCurrLineReset( ) DZstrReset( lex.ctx->currline )
 
 ''
 '' inter-module globals
 ''
-extern lex as LEX_CTX ptr
+extern lex as LEX_CTX
 
 
 

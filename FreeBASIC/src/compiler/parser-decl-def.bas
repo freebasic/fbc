@@ -64,13 +64,13 @@ function cDefDecl as integer static
 		dtype = FB_DATATYPE_USHORT
 
 	case FB_TK_DEFINT
-		dtype = FB_DATATYPE_INTEGER
+		dtype = fbLangGetType( INTEGER )
 
 	case FB_TK_DEFUINT
 		dtype = FB_DATATYPE_UINT
 
 	case FB_TK_DEFLNG
-		dtype = FB_DATATYPE_LONG
+		dtype = fbLangGetType( LONG )
 
 	case FB_TK_DEFULNG
 		dtype = FB_DATATYPE_ULONG

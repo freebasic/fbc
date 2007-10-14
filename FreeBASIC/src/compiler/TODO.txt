@@ -37,10 +37,6 @@
 
     [X] remove libfb_ctor.c - replaced by fbrt0.c
 
-[ ] add TYPEOF()
-    - BIT, BITSET and BITRESET won't work with longint's if the macros aren't rewritten
-      using TYPEOF
-
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
     	- does QB allow that? CONS won't work without INPUT or OUTPUT
@@ -52,18 +48,29 @@
       [ ] SHARED at subs (non-shared vars at mod-level will have to be allocated
           statically, as before)
       [ ] STATIC shouldn't create/allocate arrays, just declare them as static
-      [ ] suffixes not optional in keywords (ie: it's always STR$, not STR)
+      [ ] ()'s around function arguments passed to byref params should make a copy of the
+          argument
+      [ ] events:
+      	  - there should be a call to the even trapping function on EVERY line
+      	    emitted (we can't use threads because the DOS)
+      	  - to the above work, a new cmd-line option must be added (as in QB)
+      	  [ ] on key()
+      	  [ ] on timer()
+      	  [ ] on uevent
+          - the other events are seldom, if ever, used..
       [ ] add "qb" mangling
-          [ ] symbols with same name but different sufixes than keywords
+          [x] symbols with same name but different sufixes than keywords
           [ ] arrays with same name as scalars
           [ ] labels with the same name as procs:
               declare sub foo \n foo: \n goto foo \n call foo
-          [ ] add extern "qb" to -lang fb allowing -lang qb compiled libs to be used in -lang fb.  
+      [x] suffixes not optional in keywords (ie: it's always STR$, not STR)
+      [x] data type remapping
+      	  [x] INTEGER is 16-bit wide
+      	  [x] LONG is 32-bit wide
+          [ ] CVI should take a short in -lang qb mode
       [x] move all variables to function-level, implicit or explict (see no SCOPE)
-          [ ] check if its done correctly, if they are being cleared right after the
-              stack frame setup
       [x] GOSUB and RETURN in subroutines (so RETURN can't be used as a shortcut to EXIT FUNCTION)
-      	  [ ] implement it using setjmp/longjmp later in the rtlib
+      	  - implement it using setjmp/longjmp later in the rtlib
       [x] periods in symbol names
       [x] numeric labels
       [x] params passed by reference by default
@@ -82,9 +89,9 @@
       [x] CALL: support undefined functions as in QB, all params BYREF as ANY
       [ ] DEF - neither a macro nor function will work.  The statements inside the DEF FN...
           need module level scope except for the parameters which shadow module level
-          vars.  Would be like a module level GOSUB but callable from any scope, taking 
-          parameters and returning a value.  Very messy.  Also, it will make any symbol 
-          called Fn... invalid because it allows forward refs. 
+          vars.  Would be like a module level GOSUB but callable from any scope, taking
+          parameters and returning a value.  Very messy.  Also, it will make any symbol
+          called Fn... invalid because it allows forward refs.
 
       [x] no SCOPE
       [x] no NAMESPACE
@@ -92,6 +99,7 @@
       [x] no op and function overloading
       [x] no EXTERN (periods and suffixes screw mangling)
       [x] no multi-threading - not thread*, mutex*, cond*
+      [x] no keyword not present in QB
 
     - "fb" - the inverse of "qb", but show deprecated messages by now for:
       [ ] without ON ERROR, all stmts returning rt errors should be allowed to
@@ -103,6 +111,8 @@
         COM interfaces in Windows)
 
 [ ] add a C backend
+	- can't use casting from fpoint to int type directly because C won't do rounding,
+	  use inline functions instead (inline ASM if x86)
 	- the va_* macros/quirk-func must be passed to AST, each ABI has different way to
 	  access varargs
 	- how to acccess fields?

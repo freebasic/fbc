@@ -31,7 +31,7 @@
 		/' #define RGB(r,g,b) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or &hFF000000) '/ _
 		( _
 			@"RGB", _
-	 		FB_RTL_OPT_NONE, _
+	 		FB_RTL_OPT_NOQB, _
 	 		3, _
 	 		{ _
 	 			@"R", @"G", @"B" _
@@ -50,7 +50,7 @@
 		/' #define RGBA(r,g,b,a) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or (cuint(a) shl 24)) '/ _
 		( _
 			@"RGBA", _
-			FB_RTL_OPT_NONE, _
+			FB_RTL_OPT_NOQB, _
 	 		4, _
 	 		{ _
 	 			@"R", @"G", @"B", @"A" _
@@ -71,7 +71,7 @@
 		/' #define va_arg(a,t) peek( t, a ) '/ _
 		( _
 			@"VA_ARG", _
-	 		FB_RTL_OPT_NONE, _
+	 		FB_RTL_OPT_NOQB, _
 	 		2, _
 	 		{ _
 	 			@"A", @"T" _
@@ -88,7 +88,7 @@
 		/' #define va_next(a,t) (a + len( t )) '/ _
 		( _
 			@"VA_NEXT", _
-	 		FB_RTL_OPT_NONE, _
+	 		FB_RTL_OPT_NOQB, _
 	 		2, _
 	 		{ _
 	 			@"A", @"T" _
@@ -105,7 +105,7 @@
 		/' #define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e) '/ _
 		( _
 			@"ASSERT", _
-	 		FB_RTL_OPT_DBGONLY, _
+	 		FB_RTL_OPT_DBGONLY or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			@"E" _
@@ -122,7 +122,7 @@
 		/' #define ASSERTWARN(e) if (e) = FALSE then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, #e) '/ _
 		( _
 			@"ASSERTWARN", _
-	 		FB_RTL_OPT_DBGONLY, _
+	 		FB_RTL_OPT_DBGONLY or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			@"E" _
@@ -139,7 +139,7 @@
 		/' #define OFFSETOF(type_,field_) cint( @cast( type_ ptr, 0 )->field_ ) '/ _
 		( _
 			@"OFFSETOF", _
-	 		FB_RTL_OPT_NONE, _
+	 		FB_RTL_OPT_NOQB, _
 	 		2, _
 	 		{ _
 	 			@"T", @"F" _
@@ -156,7 +156,7 @@
         /' ... '/ _
 		( _
 			@"__FB_MIN_VERSION__", _
-     		FB_RTL_OPT_NONE, _
+     		FB_RTL_OPT_NOQB, _
      		3, _
      		{ _
      			@"MAJOR", @"MINOR", @"PATCH_LEVEL" _
@@ -179,7 +179,7 @@
 		/' #define LOWORD(x) (cuint(x) and &h0000FFFF) '/ _
 		( _
 			@"LOWORD", _
-	 		FB_RTL_OPT_NONE, _
+	 		FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			@"X" _
@@ -194,7 +194,7 @@
 		/' #define HIWORD(x) (cyint(x) shr 16) '/ _
 		( _
 			@"HIWORD", _
-	 		FB_RTL_OPT_NONE, _
+	 		FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			@"X" _
@@ -209,7 +209,7 @@
 		/' #define LOBYTE(x) (cuint(x) and &h000000FF) '/ _
 		( _
 			@"LOBYTE", _
-	 		FB_RTL_OPT_NONE, _
+	 		FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			@"X" _
@@ -224,7 +224,7 @@
 		/' #define HIBYTE(x) ((cuint(x) and &h0000FF00) shr 8) '/ _
 		( _
 			@"HIBYTE", _
-	 		FB_RTL_OPT_NONE, _
+	 		FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			@"X" _
@@ -237,9 +237,9 @@
 	 		} _
 	 	), _
 		/' #define BIT(x,y) (((x) and (cast(typeof(x), 1) shl (y))) <> 0) '/ _
-		( _                           
+		( _
 			@"BIT", _
-	 		FB_RTL_OPT_NONE, _
+	 		FB_RTL_OPT_NOQB, _
 	 		2, _
 	 		{ _
 	 			@"X", @"Y" _
@@ -258,7 +258,7 @@
 		/' #define BITSET(x,y) ((x) or (cast(typeof(x), 1) shl (y))) '/ _
 		( _
 			@"BITSET", _
-	 		FB_RTL_OPT_NONE, _
+	 		FB_RTL_OPT_NOQB, _
 	 		2, _
 	 		{ _
 	 			@"X", @"Y" _
@@ -277,7 +277,7 @@
 		/' #define BITRESET(x,y) ((x) and not (cast(typeof(x), 1) shl (y))) '/ _
 		( _
 			@"BITRESET", _
-	 		FB_RTL_OPT_NONE, _
+	 		FB_RTL_OPT_NOQB, _
 	 		2, _
 	 		{ _
 	 			@"X", @"Y" _
@@ -303,12 +303,11 @@
 sub rtlAddIntrinsicMacros _
 	( _
 		byval macdef as FB_RTL_MACRODEF ptr _
-	) static
+	)
 
-	dim as integer i, doadd
-	dim as FB_DEFPARAM ptr param_head, lastparam
-	dim as FB_DEFTOK ptr tok, tok_head
-	dim as FB_RTL_MACROTOKEN ptr ptk
+	dim as FB_DEFPARAM ptr param_head = any, lastparam = any
+	dim as FB_DEFTOK ptr tok = any, tok_head = any
+	dim as FB_RTL_MACROTOKEN ptr ptk = any
 
 	'' for each macro..
 	do
@@ -320,7 +319,7 @@ sub rtlAddIntrinsicMacros _
 		lastparam = NULL
 
 		'' for each parameter..
-		for i = 0 to macdef->params-1
+		for i as integer = 0 to macdef->params-1
 			lastparam = symbAddDefineParam( lastparam, macdef->paramTb(i) )
 			if( param_head = NULL ) then
 				param_head = lastparam
@@ -331,14 +330,23 @@ sub rtlAddIntrinsicMacros _
 		tok_head = NULL
 
     	'' only if debugging?
-    	doadd = TRUE
+    	dim as integer addbody = TRUE
     	if( (macdef->options and FB_RTL_OPT_DBGONLY) <> 0 ) then
     		if( env.clopt.debug = FALSE ) then
-    			doadd = FALSE
+    			addbody = FALSE
     		end if
     	end if
 
-    	if( doadd ) then
+        '' not present in qb mode?
+        dim as integer addmacro = TRUE
+        if( (macdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
+    		if( fbLangIsSet( FB_LANG_QB ) ) then
+    			addmacro = FALSE
+    			addbody = FALSE
+    		end if
+    	end if
+
+    	if( addbody ) then
 			tok = NULL
 
     		ptk = @macdef->tokenTb(0)
@@ -365,7 +373,9 @@ sub rtlAddIntrinsicMacros _
     		loop
     	end if
 
-        symbAddDefineMacro( macdef->name, tok_head, macdef->params, param_head )
+        if( addmacro ) then
+        	symbAddDefineMacro( macdef->name, tok_head, macdef->params, param_head )
+        end if
 
 		'' next
         macdef += 1

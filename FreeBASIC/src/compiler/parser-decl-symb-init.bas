@@ -70,19 +70,19 @@ private function hDoAssign _
     	'' check if it's a cast
     	expr = astNewCONV( dtype, symbGetSubtype( ctx.sym ), expr )
     	if( expr = NULL ) then
-    		
+
 			'' hand it back...
 			if( no_fake ) then
 				exit function
 			end if
-			
+
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
 	        	return FALSE
 	        else
 	        	'' error recovery: create a fake expression
 	        	astDelTree( expr )
 	        	expr = astNewCONSTz( dtype )
-	        	
+
 	        end if
 		end if
 	end if
@@ -119,7 +119,7 @@ private function hElmInit _
 
 	'' invalid expression
 	if( expr = NULL ) then
-		
+
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
@@ -136,7 +136,7 @@ private function hElmInit _
 
 		end if
 	end if
-	
+
 	'' to hand it back if necessary
 	ctx.init_expr = expr
 
@@ -324,18 +324,18 @@ private function hUDTInit _
 	( _
 		byref ctx as FB_INITCTX _
 	) as integer
-	
+
 	static as integer rec_cnt
-	
+
 	dim as integer elements = any, elm_cnt = any, elm_ofs = any
 	dim as integer lgt = any, baseofs = any, pad_lgt = any, dtype = any
     dim as FBSYMBOL ptr elm = any, subtype = any
     dim as FB_INITCTX old_ctx = any
 
     function = FALSE
-    
+
     rec_cnt += 1
-    
+
     '' ctor?
     if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
     	dim as ASTNODE ptr expr = any
@@ -382,22 +382,22 @@ private function hUDTInit _
         	return hDoAssign( ctx, expr )
         end if
     end if
-	
+
 	dim as integer parenth = TRUE, comma = FALSE
-	
+
 	'' '('
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
-		
+
 		if( rec_cnt > 1 ) then
 			'' get lookahead
 			dim as integer lookie = lexGetLookAhead( 1 ), is_ok = TRUE
-			
+
 			'' if it's a comma, set to leave one for the parent func
 			'' (see below)
 			if( lookie = CHAR_COMMA ) then
 				comma = TRUE
 			end if
-			
+
 			parenth = FALSE
 		else
 			rec_cnt -= 1
@@ -430,7 +430,7 @@ private function hUDTInit _
 	ctx.options and= not FB_INIOPT_DODEREF
 	ctx.dim_ = NULL
 	ctx.dimcnt = 0
-	
+
 	'' for each UDT element..
 	elm_cnt = 1
 	do
@@ -443,7 +443,7 @@ private function hUDTInit _
 				exit do
 			end if
 		end if
-		
+
 		elm_ofs = elm->ofs
 		if( lgt > 0 ) then
 			pad_lgt = elm_ofs - lgt
@@ -470,37 +470,37 @@ private function hUDTInit _
 				ctx.options or= FB_INIOPT_ISOBJ
 			end if
 		end select
-		
+
 		'' element assignment failed?
         if( hArrayInit( ctx, TRUE ) = FALSE ) then
-        	
+
         	'' must be first...
         	if( elm_cnt > 1 ) then
         		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
         		rec_cnt -= 1
         		exit function
         	end if
-			
+
     		'' nothing passed back...
     		if( ctx.init_expr = NULL ) then
     			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
     			rec_cnt -= 1
     			exit function
     		end if
-			
+
 			'' try to assign the expression to the parent
 	    	dim as integer is_ctorcall = any
 			dim as FB_PARAMMODE arg_mode = INVALID
 			dim as ASTNODE ptr expr = ctx.init_expr
-			
+
 			ctx = old_ctx
-			
+
 	    	expr = astBuildImplicitCtorCallEx( ctx.sym, expr, arg_mode, is_ctorcall )
 	        if( expr = NULL ) then
 	        	rec_cnt -= 1
 	        	exit function
 	        end if
-			
+
 			'' ')'
 			if( parenth ) then
 				if( lexGetToken( ) <> CHAR_RPRNT ) then
@@ -514,26 +514,26 @@ private function hUDTInit _
 				end if
 				lexSkipToken( )
 			end if
-			
+
+	    	rec_cnt -= 1
+
 	    	if( is_ctorcall ) then
-	    		rec_cnt -= 1
 	    		return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr ) <> NULL
 	    	else
 	    		'' try to assign it (do a shallow copy)
-	    		rec_cnt -= 1
 	        	return hDoAssign( ctx, expr )
 	        end if
-    		
+
         end if
-        
+
         lgt += symbGetLen( elm ) * symbGetArrayElements( elm )
 
 		'' next
 		elm = symbGetUDTNextElm( elm, TRUE, elm_cnt )
-		
+
 		'' if we're not top level,
 		if( rec_cnt > 1 ) then
-			
+
 			'' if there's a comma at the end, we have to leave it for
 			'' the parent UDT initializer, to signal that we completed
 			'' initializing this UDT, and the next field should be assigned.
@@ -542,19 +542,19 @@ private function hUDTInit _
 		    		exit do
 		    	end if
 		    end if
-			
+
 		end if
-		
+
 		'' ','
 		if( hMatch( CHAR_COMMA ) = FALSE ) then
 			exit do
 		end if
-		
+
 	loop
 
 	'' restore parent
 	ctx = old_ctx
-    
+
 	'' ')'
 	if( parenth ) then
 		if( lexGetToken( ) <> CHAR_RPRNT ) then
@@ -580,9 +580,9 @@ private function hUDTInit _
 	end if
 
 	astTypeIniGetOfs( ctx.tree ) = baseofs + sym_len
-	
+
 	rec_cnt -= 1
-	
+
 	function = TRUE
 
 end function

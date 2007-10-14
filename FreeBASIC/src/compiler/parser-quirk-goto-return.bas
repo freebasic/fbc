@@ -80,6 +80,50 @@ private function hFuncReturn _
 end function
 
 '':::::
+private function hGetLabelId _
+	( _
+		_
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr sym = any
+
+	select case as const lexGetClass( )
+	case FB_TKCLASS_NUMLITERAL
+		sym = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+									  	lexGetText( ), _
+									  	FB_SYMBCLASS_LABEL, _
+									  	FALSE, _
+									  	FALSE )
+
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_KEYWORD
+		dim as FBSYMBOL ptr base_parent = any
+		dim as FBSYMCHAIN ptr chain_ = cIdentifier( base_parent, _
+													FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+
+		sym = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
+
+	case else
+		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) ) then
+			hSkipStmt( )
+		end if
+
+		return NULL
+	end select
+
+	if( sym = NULL ) then
+		sym = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
+	end if
+
+	lexSkipToken( )
+
+	function = sym
+
+end function
+
+'':::::
 ''GotoStmt   	  =   GOTO LABEL
 ''				  |   GOSUB LABEL
 ''				  |	  RETURN LABEL?
@@ -91,8 +135,6 @@ function cGotoStmt _
 	) as integer
 
 	dim as FBSYMBOL ptr l = any
-	dim as FBSYMCHAIN ptr chain_ = any
-	dim as FBSYMBOL ptr base_parent = any
 
 	function = FALSE
 
@@ -101,29 +143,12 @@ function cGotoStmt _
 	case FB_TK_GOTO
 		lexSkipToken( )
 
-		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-			l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
-										  lexGetText( ), _
-										  FB_SYMBCLASS_LABEL, _
-										  FALSE, _
-										  FALSE )
-
+        l = hGetLabelId( )
+		if( l <> NULL ) then
+			function = astScopeBreak( l )
 		else
-			chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-			end if
-
-			l = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
+			function = (errGetLast( ) = FB_ERRMSG_OK)
 		end if
-
-		if( l = NULL ) then
-			l = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
-		end if
-
-		lexSkipToken( )
-
-		function = astScopeBreak( l )
 
 	'' GOSUB LABEL
 	case FB_TK_GOSUB
@@ -139,31 +164,13 @@ function cGotoStmt _
 
 		lexSkipToken( )
 
-		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-			l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
-										  lexGetText( ), _
-										  FB_SYMBCLASS_LABEL, _
-										  FALSE, _
-										  FALSE )
-
+		l = hGetLabelId( )
+		if( l <> NULL ) then
+			astAdd( astNewBRANCH( AST_OP_CALL, l ) )
+			function = TRUE
 		else
-			chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-			end if
-
-			l = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
+			function = (errGetLast( ) = FB_ERRMSG_OK)
 		end if
-
-		if( l = NULL ) then
-			l = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
-		end if
-
-		lexSkipToken( )
-
-		astAdd( astNewBRANCH( AST_OP_CALL, l ) )
-
-		function = TRUE
 
 	'' RETURN ((LABEL? Comment|StmtSep|EOF) | Expression)
 	case FB_TK_RETURN
@@ -185,28 +192,14 @@ function cGotoStmt _
 			astAdd( astNewBRANCH( AST_OP_RET, NULL ) )
 			function = TRUE
 
+		'' label?
 		case else
-			if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-				l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
-											  lexGetText( ), _
-											  FB_SYMBCLASS_LABEL, _
-											  FALSE, _
-											  FALSE )
-
-			else
-				chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-				end if
-
-				l = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
-			end if
-
-			'' label?
+			l = hGetLabelId( )
 			if( l <> NULL ) then
-				lexSkipToken( )
 				astAdd( astNewBRANCH( AST_OP_JMP, l ) )
 				function = TRUE
+			else
+				function = (errGetLast( ) = FB_ERRMSG_OK)
 			end if
 		end select
 

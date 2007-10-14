@@ -1047,7 +1047,7 @@
 		( _
 			@"winput", @"fb_FileWstrInput", _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_STDCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			2, _
 	 		{ _
 	 			( _

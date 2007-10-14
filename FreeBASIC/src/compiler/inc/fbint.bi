@@ -664,6 +664,29 @@ type FBMAIN
 	initnode		as ASTNODE ptr
 end type
 
+type FB_LANG_TYPEREMAP
+	integer			as FB_DATATYPE
+	long			as FB_DATATYPE
+end type
+
+type FB_LANG_SIZEREMAP
+	integer			as integer
+	long			as integer
+end type
+
+type FB_LANG_LITREMAP
+	integer			as FB_DATATYPE
+	uint			as FB_DATATYPE
+	double			as FB_DATATYPE
+end type
+
+type FB_LANG_CTX
+	opt				as FB_LANG_OPT				'' language supported features
+	typeremap		as FB_LANG_TYPEREMAP
+	sizeremap		as FB_LANG_SIZEREMAP
+	litremap		as FB_LANG_LITREMAP			'' default numeric literal data type
+end type
+
 type FBENV
 	inf				as FBFILE					'' source file
 	outf			as FBFILE					'' destine file
@@ -676,7 +699,7 @@ type FBENV
 
 	main			as FBMAIN
 
-	langopt			as FB_LANG_OPT				'' language supported features
+	lang			as FB_LANG_CTX				'' language supported features
 	clopt			as FBCMMLINEOPT				'' cmm-line options
 	target			as FBTARGET					'' target specific
 

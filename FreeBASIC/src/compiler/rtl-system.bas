@@ -97,7 +97,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"command", @"fb_Command", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_STRSUFFIX, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -109,14 +109,14 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"curdir", @"fb_CurDir", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_NOQB, _
 	 		0 _
 	 	), _
 		/' exepath ( ) as string '/ _
 		( _
 			@"exepath", @"fb_ExePath", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_NOQB, _
 	 		0 _
 	 	), _
 		/' timer ( ) as double '/ _
@@ -130,14 +130,14 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"time", @"fb_Time", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_STRSUFFIX, _
 	 		0 _
 	 	), _
 		/' date ( ) as string '/ _
 		( _
 			@"date", @"fb_Date", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_STRSUFFIX, _
 	 		0 _
 	 	), _
 		/' shell ( byval cmm as string = "" ) as integer '/ _
@@ -207,7 +207,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"exec", @"fb_Exec", _
 	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_NOQB, _
 	 		2, _
 	 		{ _
 	 			( _
@@ -222,7 +222,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"environ", @"fb_GetEnviron", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_STRSUFFIX, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -273,7 +273,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"dir", @"fb_DirNext", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_OVER, _
+	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -287,7 +287,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"dir", @"fb_Dir", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_OVER, _
+	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 	 		3, _
 	 		{ _
 	 			( _
@@ -330,7 +330,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"threadcreate", @"fb_ThreadCreate", _
 	 		typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
-	 		@hMultithread_cb, FB_RTL_OPT_MT, _
+	 		@hMultithread_cb, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
 	 		5, _
 	 		{ _
 	 			( _
@@ -354,7 +354,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"threadwait", @"fb_ThreadWait", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		@hMultithread_cb, FB_RTL_OPT_MT, _
+	 		@hMultithread_cb, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -366,14 +366,14 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"mutexcreate", @"fb_MutexCreate", _
 	 		typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_MT, _
+	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
 	 		0 _
 	 	), _
 		/' mutexdestroy ( byval id as any ptr ) as void '/ _
 		( _
 			@"mutexdestroy", @"fb_MutexDestroy", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_MT, _
+	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -385,7 +385,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"mutexlock", @"fb_MutexLock", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_MT, _
+	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -397,7 +397,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"mutexunlock", @"fb_MutexUnlock", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_MT, _
+	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -409,14 +409,14 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"condcreate", @"fb_CondCreate", _
 	 		typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_MT, _
+	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
 	 		0 _
 	 	), _
 		/' conddestroy ( byval id as any ptr ) as void '/ _
 		( _
 			@"conddestroy", @"fb_CondDestroy", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_MT, _
+	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -428,7 +428,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"condsignal", @"fb_CondSignal", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_MT, _
+	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -440,7 +440,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"condbroadcast", @"fb_CondBroadcast", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_MT, _
+	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -452,7 +452,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"condwait", @"fb_CondWait", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_MT, _
+	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -464,7 +464,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"dylibload", @"fb_DylibLoad", _
 	 		typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -476,7 +476,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"dylibsymbol", @"fb_DylibSymbol", _
 	 		typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_OVER, _
+	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 	 		2, _
 	 		{ _
 	 			( _
@@ -491,7 +491,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"dylibsymbol", @"fb_DylibSymbolByOrd", _
 	 		typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_OVER, _
+	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 	 		2, _
 	 		{ _
 	 			( _
@@ -506,7 +506,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"dylibfree", @"fb_DylibFree", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 	 			( _

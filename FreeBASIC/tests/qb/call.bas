@@ -1,5 +1,7 @@
 ' TEST_MODE : COMPILE_AND_RUN_OK
 
+#define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
+
 call foo0
 call foo1(1.1)
 call foo2(1.1, 2.2)
@@ -11,16 +13,16 @@ call fooa(arr())
 sub foo0
 end sub
 
-sub foo1(v1 as double)
+sub foo1(v1 as single)
 	assert( v1 = 1.1 )
 end sub
 
-sub foo2(v1 as double, v2 as double)
+sub foo2(v1 as single, v2 as single)
 	assert( v1 = 1.1 )
 	assert( v2 = 2.2 )
 end sub
 
-sub foo3(v1 as double, v2 as double, v3 as double)
+sub foo3(v1 as single, v2 as single, v3 as single)
 	assert( v1 = 1.1 )
 	assert( v2 = 2.2 )
 	assert( v3 = 3.3 )

@@ -738,6 +738,12 @@ declare function cVariable _
 		byval checkarray as integer = TRUE _
 	) as ASTNODE ptr
 
+declare function cVariableEx overload _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval check_array as integer _
+	) as ASTNODE ptr
+
 declare function cVariableEx _
 	( _
 		byval chain as FBSYMCHAIN ptr, _
@@ -777,7 +783,7 @@ declare function cFunctionEx _
 
 declare function cQuirkFunction _
 	( _
-		byval tk as FB_TOKEN _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function cConstant _

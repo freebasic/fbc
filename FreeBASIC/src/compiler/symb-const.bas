@@ -35,10 +35,10 @@ function symbAddConst _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval value as FBVALUE ptr, _
-		byval attrib as integer = FB_SYMBATTRIB_NONE _
-	) as FBSYMBOL ptr static
+		byval attrib as integer _
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym
+    dim as FBSYMBOL ptr sym = any
 
     function = NULL
 
@@ -47,7 +47,9 @@ function symbAddConst _
     					 NULL, NULL, _
     					 FB_SYMBCLASS_CONST, _
     				   	 symbol, NULL, _
-    				   	 dtype, subtype, 0, attrib )
+    				   	 dtype, subtype, _
+    				   	 0, _
+    				   	 attrib )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -63,17 +65,16 @@ function symbAllocFloatConst _
 	( _
 		byval value as double, _
 		byval dtype as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
     static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
-	dim as FBSYMBOL ptr s
-	dim as FBARRAYDIM dTB(0)
-	dim as string svalue
+	static as FBARRAYDIM dTB(0)
+	dim as FBSYMBOL ptr s = any
 
 	function = NULL
 
 	'' can't use STR() because GAS doesn't support the 1.#INF notation
-	svalue = hFloatToStr( value, dtype )
+	dim as string svalue = hFloatToStr( value, dtype )
 
 	id = "{fbnc}"
 	id += svalue
@@ -95,7 +96,7 @@ function symbAllocFloatConst _
 	'' will be ever allocated over the module
 	s = symbAddVarEx( @id, @id_alias, dtype, NULL, 0, 0, 0, dTB(), _
 					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
-					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
+					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
 	''
 	s->var_.littext = ZstrAllocate( len( svalue ) )
@@ -110,12 +111,12 @@ function symbAllocStrConst _
 	( _
 		byval sname as zstring ptr, _
 		byval lgt as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
     static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
-	dim as FBSYMBOL ptr s
-	dim as FBARRAYDIM dTB(0)
-	dim as integer strlen
+	static as FBARRAYDIM dTB(0)
+	dim as FBSYMBOL ptr s = any
+	dim as integer strlen = any
 
 	function = NULL
 
@@ -151,7 +152,7 @@ function symbAllocStrConst _
 	s = symbAddVarEx( @id, @id_alias, FB_DATATYPE_CHAR, NULL, _
 					  0, lgt + 1, 0, dTB(), _
 					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
-					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
+					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
 	''
 	s->var_.littext = ZstrAllocate( strlen )
@@ -166,12 +167,12 @@ function symbAllocWStrConst _
 	( _
 		byval sname as wstring ptr, _
 		byval lgt as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
     static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
-	dim as FBSYMBOL ptr s
-	dim as FBARRAYDIM dTB(0)
-	dim as integer strlen
+	static as FBARRAYDIM dTB(0)
+	dim as FBSYMBOL ptr s = any
+	dim as integer strlen = any
 
 	function = NULL
 
@@ -207,7 +208,7 @@ function symbAllocWStrConst _
 	s = symbAddVarEx( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, _
 					  0, (lgt+1) * len( wstring ), 0, dTB(), _
 					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
-					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
+					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
 	''
 	s->var_.littextw = WstrAllocate( strlen )

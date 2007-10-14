@@ -135,14 +135,14 @@
 		( _
 			@"erfn", @"fb_ErrorGetFuncName", _
 			typeSetType( FB_DATATYPE_CHAR, 1 ), FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' ERMN ( ) as zstring ptr '/ _
 		( _
 			@"ermn", @"fb_ErrorGetModName", _
 			typeSetType( FB_DATATYPE_CHAR, 1 ), FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' fb_ErrorSetModName ( byval modname as zstring ptr ) as zstring ptr '/ _

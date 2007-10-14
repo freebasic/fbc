@@ -1256,7 +1256,14 @@ private function hVarAddUndecl _
 
 	end if
 
-	options = FB_SYMBOPT_ADDSUFFIX
+	'' no suffix?
+	if( dtype = INVALID ) then
+		dtype = symbGetDefType( id )
+	else
+		attrib or= FB_SYMBATTRIB_SUFFIXED
+	end if
+
+	options = 0
 
 	'' respect scopes?
 	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
@@ -1334,94 +1341,24 @@ end function
 '':::::
 ''Variable        =   ID ArrayIdx? UdtMember? FuncPtrOrMemberDeref? .
 ''
-function cVariableEx _
+function cVariableEx overload _
 	( _
-		byval chain_ as FBSYMCHAIN ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval check_array as integer _
 	) as ASTNODE ptr
 
-	dim as zstring ptr id = any
 	dim as integer dtype = any
-	dim as FBSYMBOL ptr sym = any, subtype = any
+	dim as FBSYMBOL ptr subtype = any
 	dim as ASTNODE ptr varexpr = any, idxexpr = any
+	dim as integer is_byref = any, is_funcptr = any, is_array = any
 
-	''
-	id = lexGetText( )
-	dtype = lexGetType( )
-	subtype = NULL
+	function = NULL
 
-	if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-    	'' no suffix? lookup the default type (last DEF###) in the
-    	'' case symbol could not be found..
-    	if( dtype = INVALID ) then
-    		sym = symbFindVarByDefType( chain_, symbGetDefType( id ) )
-    	else
-    		sym = symbFindVarBySuffix( chain_, dtype )
-    	end if
-
-	else
-		if( dtype <> INVALID ) then
-			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
-		end if
-
-		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
-	end if
-
-	if( sym <> NULL ) then
-		dtype = sym->typ
-		subtype = sym->subtype
-
-	else
-		if( env.opt.explicit ) then
-			if( errReportUndef( FB_ERRMSG_VARIABLENOTDECLARED, id ) = FALSE ) then
-				return NULL
-			end if
-		end if
-
-		'' don't allow explicit namespaces
-    	if( chain_ <> NULL ) then
-    		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-    			'' variable?
-    			sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
-    			if( sym <> NULL ) then
-    				'' from a different namespace?
-    				if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
-    					if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-    						return NULL
-    					end if
-    				end if
-    			end if
-    		end if
-    	end if
-
-		'' add undeclared variable
-		if( dtype = INVALID ) then
-			dtype = symbGetDefType( id )
-		end if
-
-		sym = hVarAddUndecl( id, dtype )
-		if( sym = NULL ) then
-			return NULL
-		end if
-
-		'' show warning if inside an expression (ie: var was never set)
-		if( fbGetIsExpression( ) ) then
-			if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-				errReportWarn( FB_WARNINGMSG_IMPLICITALLOCATION, id )
-			end if
-		end if
-
-		subtype = symbGetSubtype( sym )
-	end if
-
+	'' ID
 	lexSkipToken( )
 
-	if( dtype = INVALID ) then
-		dtype = symbGetType( sym )
-	end if
-
-    ''
-	dim as integer is_byref = any, is_funcptr = any, is_array = any
+	dtype = symbGetType( sym )
+	subtype = symbGetSubtype( sym )
 
     is_byref = symbIsParamByRef( sym ) or symbIsImport( sym )
 	is_array = symbIsArray( sym )
@@ -1573,6 +1510,81 @@ function cVariableEx _
 	end if
 
 	function = varexpr
+
+end function
+
+'':::::
+''Variable        =   ID .
+''
+function cVariableEx _
+	( _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval check_array as integer _
+	) as ASTNODE ptr
+
+	dim as zstring ptr id = any
+	dim as integer suffix = any
+	dim as FBSYMBOL ptr sym = any
+
+	id = lexGetText( )
+	suffix = lexGetType( )
+
+	if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+    	'' no suffix? lookup the default type (last DEF###) in the
+    	'' case symbol could not be found..
+    	if( suffix = INVALID ) then
+    		sym = symbFindVarByDefType( chain_, symbGetDefType( id ) )
+    	else
+    		sym = symbFindVarBySuffix( chain_, suffix )
+    	end if
+
+	else
+		if( suffix <> INVALID ) then
+			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+		end if
+
+		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+	end if
+
+	if( sym = NULL ) then
+		if( env.opt.explicit ) then
+			if( errReportUndef( FB_ERRMSG_VARIABLENOTDECLARED, id ) = FALSE ) then
+				return NULL
+			end if
+		end if
+
+		'' don't allow explicit namespaces
+    	if( chain_ <> NULL ) then
+    		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+    			'' variable?
+    			sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+    			if( sym <> NULL ) then
+    				'' from a different namespace?
+    				if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
+    					if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+    						return NULL
+    					end if
+    				end if
+    			end if
+    		end if
+    	end if
+
+		'' add undeclared variable
+		sym = hVarAddUndecl( id, suffix )
+		if( sym = NULL ) then
+			return NULL
+		end if
+
+		'' show warning if inside an expression (ie: var was never set)
+		if( fbGetIsExpression( ) ) then
+			if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
+				errReportWarn( FB_WARNINGMSG_IMPLICITALLOCATION, id )
+			end if
+		end if
+
+	end if
+
+	function = cVariableEx( sym, check_array )
 
 end function
 

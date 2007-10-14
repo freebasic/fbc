@@ -233,12 +233,16 @@ private function hCheckPointerOps _
 
     if( typeGetDatatype( ldtype ) = FB_DATATYPE_POINTER ) then
 		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
-			errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+    		if( env.clopt.lang <> FB_LANG_QB ) then
+				errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+			end if
 		end if
 
     '' r-side expr is a ptr?
     elseif( typeGetDatatype( rdtype ) = FB_DATATYPE_POINTER ) then
-    	errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+    	if( env.clopt.lang <> FB_LANG_QB ) then
+    		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+    	end if
     end if
 
     function = TRUE
@@ -401,11 +405,11 @@ function astNewASSIGN _
 			proc = symbFindSelfBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
 
 			if( proc <> NULL ) then
-				
+
 				dim as ASTNODE ptr result = any
-				
+
 				'' if this is a variable initialization, we have to
-				'' ensure that the variable is zeroed in memory, 
+				'' ensure that the variable is zeroed in memory,
 				'' because operator let could do nothing.
 				if( (options and AST_OPOPT_ISINI) <> 0 ) then
 					result = astNewMEM( AST_OP_MEMCLEAR, _
@@ -414,7 +418,7 @@ function astNewASSIGN _
 				else
 					result = NULL
 				end if
-				
+
 				'' build a proc call
 				return astNewLINK( result, astBuildCall( proc, 2, l, r ) )
 			else
@@ -433,14 +437,14 @@ function astNewASSIGN _
 	if( (options and AST_OPOPT_DONTCHKOPOVL) = 0 ) then
 		proc = symbFindCastOvlProc( ldtype, lsubtype, r, @err_num )
 		if( proc <> NULL ) then
-			
+
 			'' we don't have to worry about initializing the lhs
 			'' in case of an initialization, this is because in
 			'' parser-decl-symb-init.bas::hDoAssign( ), the node
 			'' has already been converted if necessary, therefore
 			'' it would fall back on either a shallow copy, or the
 			'' operator LET, which was handled just above.
-			
+
 			'' build a proc call
 			r = astBuildCall( proc, 1, r )
 		else

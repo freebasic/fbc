@@ -714,8 +714,8 @@ private function hMangleVariable  _
 			end if
 
     		'' suffixed?
-    		if( sym->var_.suffix <> INVALID ) then
-    			suffix_str = @typecodeTB( sym->var_.suffix )
+    		if( symbIsSuffixed( sym ) ) then
+    			suffix_str = @typecodeTB( symbGetType( sym ) )
     			suffix_len = 1
     		end if
 

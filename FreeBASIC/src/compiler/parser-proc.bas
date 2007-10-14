@@ -125,7 +125,11 @@ private function hCheckPrototype _
     		'' as both have the same type, re-set the suffix, because for example
     		'' "a as integer" on the prototype and "a%" or just "a" on the proc
     		'' declaration when in a defint context is allowed in QB
-    		proto_param->param.suffix = param->param.suffix
+    		if( symbIsSuffixed( param ) ) then
+    			symbGetAttrib( proto_param ) or= FB_SYMBATTRIB_SUFFIXED
+    		else
+    		    symbGetAttrib( proto_param ) and = not FB_SYMBATTRIB_SUFFIXED
+    		end if
     	end if
 
     	'' next arg
@@ -186,7 +190,7 @@ private function hGetId _
     	sym = NULL
     end if
 
-	select case lexGetClass( )
+	select case as const lexGetClass( )
 	case FB_TKCLASS_IDENTIFIER
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
@@ -200,11 +204,26 @@ private function hGetId _
 		end if
 
 	case FB_TKCLASS_QUIRKWD
-		'' only if inside a ns and if not local
-		if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
-    		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-    			exit function
-    		else
+		if( env.clopt.lang <> FB_LANG_QB ) then
+			'' only if inside a ns and if not local
+			if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
+    			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+    				exit function
+    			else
+					'' error recovery: fake an id, skip until next '('
+					*id = *hMakeTmpStr( )
+					*dtype = INVALID
+					hSkipUntil( CHAR_LPRNT )
+					return NULL
+				end if
+			end if
+		end if
+
+	case FB_TKCLASS_KEYWORD, FB_TKCLASS_OPERATOR
+		if( env.clopt.lang <> FB_LANG_QB ) then
+			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+				exit function
+			else
 				'' error recovery: fake an id, skip until next '('
 				*id = *hMakeTmpStr( )
 				*dtype = INVALID
@@ -1177,7 +1196,7 @@ private function hCheckOpOvlParams _
 		end if
 
 	end select
-	
+
 	function = TRUE
 
 end function
@@ -1382,18 +1401,6 @@ function cOperatorHeader _
     		op = AST_OP_DEREF
     	end if
 
-    '' explicit step?
-	case AST_OP_FOR
-	    if( symbGetProcParams( proc ) = 3 ) then
-	    	symbGetProcHasStep( proc ) = TRUE
-	    else
-	    	if( first_def = FALSE ) then
-			    if( symbGetProcParams( proc ) = 2 ) then
-			    	symbGetProcHasStep( proc ) = TRUE
-			    end if
-	    	end if
-		end if
-
     end select
 
     '' self? (but type casting)
@@ -1442,13 +1449,13 @@ function cOperatorHeader _
 
 	'' operator LET can't take a byval arg of its own type
 	if( op = AST_OP_ASSIGN ) then
-		
+
 		'' if it's a proto, skip the instance param
 		dim as FBSYMBOL ptr param = symbGetProcHeadParam( proc )
 		if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
 			param = param->next
 		end if
-		
+
 		'' same parent, byval
 		if( symbGetSubtype( param ) = parent ) then
 			if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
@@ -1458,11 +1465,11 @@ function cOperatorHeader _
 			end if
 		end if
 	end if
-	
+
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
 		'' check params
 		hCheckOpOvlParams( parent, op, proc, options )
-		
+
     	proc = symbAddOperator( proc, op, palias, plib, _
     						    dtype, subtype, ptrcnt, _
     					        attrib, mode )

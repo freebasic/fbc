@@ -34,9 +34,7 @@ private sub hCONVConstEvalInt _
 		byval v as ASTNODE ptr _
 	)
 
-	if( typeGetDatatype( to_dtype ) = FB_DATATYPE_POINTER ) then
-		to_dtype = FB_DATATYPE_POINTER
-	end if
+	to_dtype = typeGetDatatype( to_dtype )
 
 	select case as const v->dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -255,23 +253,35 @@ end sub
 #macro hCheckPtr _
 	( _
 		to_dtype, _
-		ldtype _
+		expr_dtype, _
+		expr _
 	)
 
     '' to pointer? only allow integers..
     if( typeGetDatatype( to_dtype ) = FB_DATATYPE_POINTER ) then
-		select case as const ldtype
+		select case as const expr_dtype
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 
+        '' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
+		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
+			 FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
+			 if( astIsCONST( expr ) ) then
+			 	if( astGetValueAsInt( expr ) <> 0 ) then
+			 		exit function
+			 	end if
+			 else
+			 	exit function
+			 end if
+
 		case else
-			if( typeGetDatatype( ldtype ) <> FB_DATATYPE_POINTER ) then
+			if( typeGetDatatype( expr_dtype ) <> FB_DATATYPE_POINTER ) then
 				exit function
 			end if
 		end select
 
     '' from pointer? only allow integers..
-    elseif( typeGetDatatype( ldtype ) = FB_DATATYPE_POINTER ) then
+    elseif( typeGetDatatype( expr_dtype ) = FB_DATATYPE_POINTER ) then
 		select case as const to_dtype
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
@@ -310,7 +320,7 @@ function astCheckCONV _
 	end if
 
 	'' check pointers
-	hCheckPtr( to_dtype, ldtype )
+	hCheckPtr( to_dtype, ldtype, l )
 
 	select case ldtype
 	'' CHAR and WCHAR literals are also from the INTEGER class
@@ -402,7 +412,7 @@ function astNewCONV _
     end select
 
 	'' check pointers
-	hCheckPtr( to_dtype, ldtype )
+	hCheckPtr( to_dtype, ldtype, l )
 
     '' string?
 	if( check_str ) then

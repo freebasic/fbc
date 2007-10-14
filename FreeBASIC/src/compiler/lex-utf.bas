@@ -70,7 +70,7 @@ private function hUTF8ToChar( ) as integer static
     dim as ubyte ptr dst
     dim as integer chars, extbytes, i
 
-	dst = cast( ubyte ptr, @lex->buffw )
+	dst = cast( ubyte ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -125,7 +125,7 @@ private function hUTF8ToUTF16LE( ) as integer static
     dim as ushort ptr dst
     dim as integer chars, extbytes, i
 
-	dst = cast( ushort ptr, @lex->buffw )
+	dst = cast( ushort ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -187,7 +187,7 @@ private function hUTF8ToUTF32LE( ) as integer static
     dim as uinteger ptr dst
     dim as integer chars, extbytes, i
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cast( uinteger ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -238,7 +238,7 @@ private function hUTF8ToUTF32BE( ) as integer static
 
 	chars = hUTF8ToUTF32LE( )
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cast( uinteger ptr, @lex.ctx->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U32_SWAP( c )
@@ -267,8 +267,8 @@ sub lexReadUTF8( )
 # endif
 #endif
 
-	lex->bufflen = chars
-	lex->buffptrw = @lex->buffw
+	lex.ctx->bufflen = chars
+	lex.ctx->buffptrw = @lex.ctx->buffw
 
 end sub
 
@@ -282,7 +282,7 @@ private function hUTF16LEToChar( ) as integer static
     dim as ubyte ptr dst
     dim as integer chars
 
-	dst = cast( ubyte ptr, @lex->buffw )
+	dst = cast( ubyte ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -319,8 +319,8 @@ end function
 '':::::
 private function hUTF16LEToUTF16LE( ) as integer static
 
-	if( get( #env.inf.num, , lex->buffw ) = 0 ) then
-		function = cunsg(seek( env.inf.num ) - lex->filepos) \ len( ushort )
+	if( get( #env.inf.num, , lex.ctx->buffw ) = 0 ) then
+		function = cunsg(seek( env.inf.num ) - lex.ctx->filepos) \ len( ushort )
 	else
 		function = 0
 	end if
@@ -334,7 +334,7 @@ private function hUTF16LEToUTF32LE( ) as integer static
     dim as uinteger ptr dst
     dim as integer chars
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cast( uinteger ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -376,7 +376,7 @@ private function hUTF16LEToUTF32BE( ) as integer static
 
 	chars = hUTF16LEToUTF32LE( )
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cast( uinteger ptr, @lex.ctx->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U32_SWAP( c )
@@ -405,8 +405,8 @@ sub lexReadUTF16LE( ) static
 # endif
 #endif
 
-	lex->bufflen = chars
-	lex->buffptrw = @lex->buffw
+	lex.ctx->bufflen = chars
+	lex.ctx->buffptrw = @lex.ctx->buffw
 
 end sub
 
@@ -420,7 +420,7 @@ private function hUTF16BEToChar( ) as integer static
     dim as ubyte ptr dst
     dim as integer chars
 
-	dst = cast( ubyte ptr, @lex->buffw )
+	dst = cast( ubyte ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -464,7 +464,7 @@ private function hUTF16BEToUTF16LE( ) as integer static
 
 	chars = hUTF16LEToUTF16LE( )
 
-	dst = cast( ushort ptr, @lex->buffw )
+	dst = cast( ushort ptr, @lex.ctx->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U16_SWAP( c )
@@ -482,7 +482,7 @@ private function hUTF16BEToUTF32LE( ) as integer static
     dim as uinteger ptr dst
     dim as integer chars
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cast( uinteger ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -542,8 +542,8 @@ sub lexReadUTF16BE( ) static
 # endif
 #endif
 
-	lex->bufflen = chars
-	lex->buffptrw = @lex->buffw
+	lex.ctx->bufflen = chars
+	lex.ctx->buffptrw = @lex.ctx->buffw
 
 end sub
 
@@ -557,7 +557,7 @@ private function hUTF32LEToChar( ) as integer static
     dim as ubyte ptr dst
     dim as integer chars
 
-	dst = cast( ubyte ptr, @lex->buffw )
+	dst = cast( ubyte ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -588,7 +588,7 @@ private function hUTF32LEToUTF16LE( ) as integer static
     dim as ushort ptr dst
     dim as integer chars
 
-	dst = cast( ushort ptr, @lex->buffw )
+	dst = cast( ushort ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -623,8 +623,8 @@ end function
 '':::::
 private function hUTF32LEToUTF32LE( ) as integer static
 
-	if( get( #env.inf.num, , lex->buffw ) = 0 ) then
-		function = cunsg(seek( env.inf.num ) - lex->filepos) \ len( uinteger )
+	if( get( #env.inf.num, , lex.ctx->buffw ) = 0 ) then
+		function = cunsg(seek( env.inf.num ) - lex.ctx->filepos) \ len( uinteger )
 	else
 		function = 0
 	end if
@@ -639,7 +639,7 @@ private function hUTF32LEToUTF32BE( ) as integer static
 
 	chars = hUTF32LEToUTF32LE( )
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cast( uinteger ptr, @lex.ctx->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U32_SWAP( c )
@@ -668,8 +668,8 @@ sub lexReadUTF32LE( )
 # endif
 #endif
 
-	lex->bufflen = chars
-	lex->buffptrw = @lex->buffw
+	lex.ctx->bufflen = chars
+	lex.ctx->buffptrw = @lex.ctx->buffw
 
 end sub
 
@@ -683,7 +683,7 @@ private function hUTF32BEToChar( ) as integer static
     dim as ubyte ptr dst
     dim as integer chars
 
-	dst = cast( ubyte ptr, @lex->buffw )
+	dst = cast( ubyte ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -716,7 +716,7 @@ private function hUTF32BEToUTF16LE( ) as integer static
     dim as ushort ptr dst
     dim as integer chars
 
-	dst = cast( ushort ptr, @lex->buffw )
+	dst = cast( ushort ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -758,7 +758,7 @@ private function hUTF32BEToUTF32LE( ) as integer static
 
 	chars = hUTF32LEToUTF32LE( )
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cast( uinteger ptr, @lex.ctx->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U32_SWAP( c )
@@ -794,8 +794,8 @@ sub lexReadUTF32BE( )
 # endif
 #endif
 
-	lex->bufflen = chars
-	lex->buffptrw = @lex->buffw
+	lex.ctx->bufflen = chars
+	lex.ctx->buffptrw = @lex.ctx->buffw
 
 end sub
 

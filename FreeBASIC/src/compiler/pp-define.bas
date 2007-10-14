@@ -254,10 +254,10 @@ private function hLoadMacro _
 		return 0
 	end if
 
-	if( lex->deflen = 0 ) then
-		DZstrAssign( lex->deftext, text )
+	if( lex.ctx->deflen = 0 ) then
+		DZstrAssign( lex.ctx->deftext, text )
 	else
-		DZstrAssign( lex->deftext, text + *lex->defptr )
+		DZstrAssign( lex.ctx->deftext, text + *lex.ctx->defptr )
 	end if
 
 	function = len( text )
@@ -295,10 +295,10 @@ private function hLoadDefine _
 				text = symbGetDefineCallback( s )( )
             end if
 
-			if( lex->deflen = 0 ) then
-				DZstrAssign( lex->deftext, text )
+			if( lex.ctx->deflen = 0 ) then
+				DZstrAssign( lex.ctx->deftext, text )
 			else
-				DZstrAssign( lex->deftext, text + *lex->defptr )
+				DZstrAssign( lex.ctx->deftext, text + *lex.ctx->defptr )
 			end if
 
             lgt = len( text )
@@ -328,19 +328,19 @@ private function hLoadDefine _
 			end if
 
 			if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
-				if( lex->deflen = 0 ) then
-					DZstrAssign( lex->deftext, symbGetDefineText( s ) )
+				if( lex.ctx->deflen = 0 ) then
+					DZstrAssign( lex.ctx->deftext, symbGetDefineText( s ) )
 				else
-					DZstrAssign( lex->deftext, _
-								 *symbGetDefineText( s ) + *lex->defptr )
+					DZstrAssign( lex.ctx->deftext, _
+								 *symbGetDefineText( s ) + *lex.ctx->defptr )
 				end if
 
 			else
-				if( lex->deflen = 0 ) then
-					DZstrAssignW( lex->deftext, symbGetDefineTextW( s ) )
+				if( lex.ctx->deflen = 0 ) then
+					DZstrAssignW( lex.ctx->deftext, symbGetDefineTextW( s ) )
 				else
-					DZstrAssign( lex->deftext, _
-								 str( *symbGetDefineTextW( s ) ) + *lex->defptr )
+					DZstrAssign( lex.ctx->deftext, _
+								 str( *symbGetDefineTextW( s ) ) + *lex.ctx->defptr )
 				end if
 			end if
 
@@ -350,11 +350,11 @@ private function hLoadDefine _
 	end if
 
     ''
-	lex->defptr = lex->deftext.data
-	lex->deflen += lgt
+	lex.ctx->defptr = lex.ctx->deftext.data
+	lex.ctx->deflen += lgt
 
 	'' force a re-read
-	lex->currchar = cuint( INVALID )
+	lex.ctx->currchar = cuint( INVALID )
 
 	function = TRUE
 
@@ -543,10 +543,10 @@ private function hLoadMacroW _
 		return NULL
 	end if
 
-	if( lex->deflen = 0 ) then
-		DWstrAssign( lex->deftextw, text.data )
+	if( lex.ctx->deflen = 0 ) then
+		DWstrAssign( lex.ctx->deftextw, text.data )
 	else
-		DWstrAssign( lex->deftextw, *text.data + *lex->defptrw )
+		DWstrAssign( lex.ctx->deftextw, *text.data + *lex.ctx->defptrw )
 	end if
 
 	function = len( *text.data )
@@ -584,10 +584,10 @@ private function hLoadDefineW _
 				DWstrAssignA( text, symbGetDefineCallback( s )( ) )
             end if
 
-			if( lex->deflen = 0 ) then
-				DWstrAssign( lex->deftextw, text.data )
+			if( lex.ctx->deflen = 0 ) then
+				DWstrAssign( lex.ctx->deftextw, text.data )
 			else
-				DWstrAssign( lex->deftextw, *text.data + *lex->defptrw )
+				DWstrAssign( lex.ctx->deftextw, *text.data + *lex.ctx->defptrw )
 			end if
 
             lgt = len( *text.data )
@@ -615,19 +615,19 @@ private function hLoadDefineW _
 			end if
 
 			if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
-				if( lex->deflen = 0 ) then
-					DWstrAssignA( lex->deftextw, symbGetDefineText( s ) )
+				if( lex.ctx->deflen = 0 ) then
+					DWstrAssignA( lex.ctx->deftextw, symbGetDefineText( s ) )
 				else
-					DWstrAssign( lex->deftextw, _
-								 wstr( *symbGetDefineText( s ) ) + *lex->defptrw )
+					DWstrAssign( lex.ctx->deftextw, _
+								 wstr( *symbGetDefineText( s ) ) + *lex.ctx->defptrw )
 				end if
 
 			else
-				if( lex->deflen = 0 ) then
-					DWstrAssign( lex->deftextw, symbGetDefineTextW( s ) )
+				if( lex.ctx->deflen = 0 ) then
+					DWstrAssign( lex.ctx->deftextw, symbGetDefineTextW( s ) )
 				else
-					DWstrAssign( lex->deftextw, _
-								 *symbGetDefineTextW( s ) + *lex->defptrw )
+					DWstrAssign( lex.ctx->deftextw, _
+								 *symbGetDefineTextW( s ) + *lex.ctx->defptrw )
 				end if
 			end if
 
@@ -637,8 +637,8 @@ private function hLoadDefineW _
 	end if
 
     ''
-	lex->defptrw = lex->deftextw.data
-	lex->deflen += lgt
+	lex.ctx->defptrw = lex.ctx->deftextw.data
+	lex.ctx->deflen += lgt
 
 	function = TRUE
 
@@ -651,7 +651,7 @@ function ppDefineLoad _
 	) as integer
 
 	'' recursion?
-	if( s = lex->currmacro ) then
+	if( s = lex.ctx->currmacro ) then
 		if( errReport( FB_ERRMSG_RECURSIVEMACRO ) = FALSE ) then
 			return FALSE
 		else
@@ -662,8 +662,8 @@ function ppDefineLoad _
 	end if
 
 	'' only one level
-	if( lex->currmacro = NULL ) then
-		lex->currmacro = s
+	if( lex.ctx->currmacro = NULL ) then
+		lex.ctx->currmacro = s
 	end if
 
 	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
@@ -673,7 +673,7 @@ function ppDefineLoad _
 	end if
 
 	'' force a re-read
-	lex->currchar = cuint( INVALID )
+	lex.ctx->currchar = cuint( INVALID )
 
 end function
 

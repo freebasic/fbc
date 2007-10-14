@@ -78,7 +78,7 @@ private sub hAddRhsParam _
 	symbAddProcParam( proc, _
 					  "__FB_RHS__", NULL, _
     				  dtype, parent, 0, _
-    				  FB_POINTERSIZE, FB_PARAMMODE_BYREF, INVALID, _
+    				  FB_POINTERSIZE, FB_PARAMMODE_BYREF, _
     				  FB_SYMBATTRIB_NONE, NULL )
 
 end sub

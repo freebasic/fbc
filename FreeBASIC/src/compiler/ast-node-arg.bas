@@ -475,7 +475,7 @@ private function hCheckByDescParam _
 			return FALSE
 		end if
 	end if
-    
+
 	'' type field?
 	if( symbGetClass( s ) = FB_SYMBCLASS_FIELD ) then
 		'' not an array?
@@ -496,7 +496,7 @@ private function hCheckByDescParam _
 			n->l = astNewVAR( s, 0, typeSetType( FB_DATATYPE_VOID, 1 ) )
         	return TRUE
         end if
-		
+
 		'' it's a var? !!!WRITEME!!! (this probably needs to change
 		'' if functions return arrays...)
 		if( symbIsVar( s ) ) then

@@ -87,6 +87,13 @@ function cCompoundStmt as integer
 
 	function = FALSE
 
+    '' QB mode?
+    if( env.clopt.lang = FB_LANG_QB ) then
+    	if( lexGetType() <> INVALID ) then
+    		return FALSE
+    	end if
+    end if
+
 	select case as const lexGetToken( )
 	case FB_TK_IF
 		CHECK_CODEMASK( FB_TK_IF, FB_TK_IF )

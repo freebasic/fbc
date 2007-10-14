@@ -401,6 +401,248 @@ function cProcCall _
 
 end function
 
+'':::::
+private function hProcSymbol _
+	( _
+		byval base_parent as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval iscall as integer _
+	) as integer
+
+	function = FALSE
+
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		exit function
+	end if
+
+	lexSkipToken( )
+
+	''
+	dim as integer do_call = lexGetToken( ) <> FB_TK_ASSIGN
+
+	if( do_call = FALSE ) then
+		'' special case: property
+	    if( symbIsProperty( sym ) ) then
+	      	do_call = TRUE
+
+	    	'' unless it's inside a PROPERTY GET block
+	        if( symbIsProperty( parser.currproc ) ) then
+	        	if( symbGetProcParams( parser.currproc ) = 1 ) then
+	            	if( symbIsProcOverloadOf( parser.currproc, sym ) ) then
+	                	do_call = FALSE
+	                end if
+				end if
+			end if
+		end if
+	end if
+
+	'' ID ProcParamList?
+	if( do_call ) then
+		dim as ASTNODE ptr expr = any
+		expr = cProcCall( base_parent, sym, NULL, NULL )
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+
+		'' assignment of a function deref?
+		if( expr <> NULL ) then
+			return cAssignment( expr )
+	    end if
+
+		return TRUE
+	end if
+
+	'' ID '=' Expression
+
+	'' CALL?
+	if( iscall ) then
+		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
+	end if
+
+	'' check if name is valid (or if overloaded)
+	if( symbIsProcOverloadOf( parser.currproc, sym ) = FALSE ) then
+		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
+	end if
+
+	'' skip the '='
+	lexSkipToken( )
+
+	function = cAssignFunctResult( parser.currproc, FALSE )
+
+end function
+
+'':::::
+private function hVarSymbol _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval iscall as integer _
+	) as integer
+
+	dim as ASTNODE ptr expr = any
+
+	function = FALSE
+
+	'' must process variables here, multiple calls to
+	'' Identifier() will fail if a namespace was explicitly
+	'' given, because the next call will return an inner symbol
+	expr = cVariableEx( sym, TRUE )
+	if( expr = NULL ) then
+		exit function
+	end if
+
+	'' CALL?
+	if( iscall ) then
+		'' not a ptr call?
+	    if( astIsCALL( expr ) = FALSE ) then
+	    	astDelTree( expr )
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip stmt, return
+				hSkipStmt( )
+				return TRUE
+			end if
+	    end if
+	end if
+
+	function = cAssignmentOrPtrCallEx( expr )
+
+end function
+
+''::::
+private function hAssignOrCall_QB _
+	( _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval iscall as integer _
+	) as integer
+
+	function = FALSE
+
+    dim as zstring ptr id = lexGetText( )
+    dim as integer suffix = lexGetType( )
+    dim as integer defdtype = symbGetDefType( id )
+
+    do while( chain_ <> NULL )
+
+    	dim as FBSYMBOL ptr sym = chain_->sym
+		dim as FBSYMBOL ptr var_sym = NULL
+
+    	'' no suffix?
+    	if( suffix = INVALID ) then
+    		do
+    			dim as integer is_match = TRUE
+    			'' is the original symbol suffixed?
+    			if( symbIsSuffixed( sym ) ) then
+    				'' if it's a VAR, lookup the default type (last DEF###) in
+    				'' the case symbol could not be found..
+    				if( symbGetClass( sym ) = FB_SYMBCLASS_VAR ) then
+    					if( defdtype = FB_DATATYPE_STRING ) then
+	          				select case as const symbGetType( sym )
+	          				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+
+	          				case else
+	          					is_match = FALSE
+	          				end select
+    					else
+    						is_match = (symbGetType( sym ) = defdtype)
+    					end if
+    				end if
+    			end if
+
+	    		if( is_match ) then
+	    			select case as const symbGetClass( sym )
+	    			'' proc?
+	    			case FB_SYMBCLASS_PROC
+  						'' if it's a RTL func, the suffix is obligatory
+  						if( symbGetIsRTL( sym ) ) then
+  							is_match = (symbIsSuffixed( sym ) = FALSE)
+  						end if
+
+						if( is_match ) then
+	    					return hProcSymbol( NULL, sym, iscall )
+	    				end if
+
+	    			'' variable?
+	    			case FB_SYMBCLASS_VAR
+           				if( var_sym = NULL ) then
+           					if( symbVarCheckAccess( sym ) ) then
+           						var_sym = sym
+           					end if
+           				end if
+
+	  				'' quirk-keyword?
+	  				case FB_SYMBCLASS_KEYWORD
+  						'' only if not suffixed
+  						if( symbIsSuffixed( sym ) = FALSE ) then
+	  						return cQuirkStmt( sym->key.id )
+	  					end if
+
+					end select
+				end if
+
+				sym = sym->hash.next
+			loop while( sym <> NULL )
+
+    	'' suffix..
+    	else
+    		do
+	      		dim as integer is_match = any
+	       		if( suffix = FB_DATATYPE_STRING ) then
+	          		select case as const symbGetType( sym )
+	          		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+	          			is_match = TRUE
+	          		case else
+	          			is_match = FALSE
+	          		end select
+	          	else
+	          		is_match = (symbGetType( sym ) = suffix)
+	          	end if
+
+	    		if( is_match ) then
+	    			select case as const symbGetClass( sym )
+	    			'' proc?
+	    			case FB_SYMBCLASS_PROC
+	    				return hProcSymbol( NULL, sym, iscall )
+
+	    			'' variable?
+	    			case FB_SYMBCLASS_VAR
+           				if( symbVarCheckAccess( sym ) ) then
+           					var_sym = sym
+           				end if
+
+	  				'' quirk-keyword?
+	  				case FB_SYMBCLASS_KEYWORD
+	  					return cQuirkStmt( sym->key.id )
+
+					end select
+	          	end if
+
+				sym = sym->hash.next
+			loop while( sym <> NULL )
+		end if
+
+		'' vars have the less priority than keywords and rtl procs
+		if( var_sym <> NULL ) then
+			return hVarSymbol( var_sym, iscall )
+		end if
+
+    	chain_ = symbChainGetNext( chain_ )
+    loop
+
+end function
+
 ''::::
 private function hAssignOrCall _
 	( _
@@ -538,6 +780,40 @@ private function hAssignOrCall _
 
 end function
 
+''::::
+private function hProcCallOrAssign_QB _
+	( _
+	) as integer
+
+	function = FALSE
+
+ 	select case as const lexGetClass( )
+    case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_OPERATOR
+
+		return hAssignOrCall_QB( lexGetSymChain( ), FALSE )
+
+  	case FB_TKCLASS_KEYWORD
+
+		if( lexGetToken( ) <> FB_TK_CALL ) then
+			return hAssignOrCall_QB( lexGetSymChain( ), FALSE )
+		end if
+
+    	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+    		exit function
+    	end if
+
+		lexSkipToken( )
+
+  		if( lexGetSymChain( ) = NULL ) then
+			return hForwardCall( )
+		else
+			return hAssignOrCall_QB( lexGetSymChain( ), TRUE )
+		end if
+
+  	end select
+
+end function
+
 '':::::
 ''ProcCallOrAssign=   CALL ID ('(' ProcParamList ')')?
 ''                |   ID ProcParamList?
@@ -552,6 +828,11 @@ function cProcCallOrAssign _
 	dim as ASTNODE ptr expr = any
 
 	function = FALSE
+
+    '' QB mode?
+    if( env.clopt.lang = FB_LANG_QB ) then
+    	return hProcCallOrAssign_QB( )
+    end if
 
   	select case as const lexGetClass( )
     case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
@@ -684,11 +965,7 @@ function cProcCallOrAssign _
 				return hAssignOrCall( base_parent, chain_, TRUE )
 			end if
 
-			if( env.clopt.lang <> FB_LANG_QB ) then
-				return errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			else
-				return hForwardCall( )
-			end if
+			return errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 
 		end select
 
@@ -858,7 +1135,6 @@ function hForwardCall _
 						  	  						NULL, _
 						  	  						mode ), _
 						  	  mode, _
-						  	  INVALID, _
 						  	  0, _
 						  	  NULL ) = NULL ) then
 			exit do

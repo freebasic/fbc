@@ -200,14 +200,14 @@
 		( _
 			@"inkey", @"fb_Inkey", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+	 		@rtlMultinput_cb, FB_RTL_OPT_STRSUFFIX, _
 	 		0 _
 		), _
 		/' getkey ( ) as integer '/ _
 		( _
 			@"getkey", @"fb_Getkey", _
 	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 	 		0 _
 	 	), _
 		/' pcopy ( byval frompage as integer = -1, byval topage as integer = -1 ) as integer '/ _

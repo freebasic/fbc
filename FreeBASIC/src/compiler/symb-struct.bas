@@ -164,7 +164,7 @@ private function hCalcALign _
 		case 4
 			function = (4 - (ofs and (4-1))) and (4-1)
 		case 8
-			if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) then
+			if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
 				function = (8 - (ofs and (8-1))) and (8-1)
 			else
 				function = (4 - (ofs and (4-1))) and (4-1)
@@ -368,7 +368,7 @@ function symbAddField _
 	sym->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
 	sym->var_.array.dimhead = NULL
 	sym->var_.array.dimtail = NULL
-	
+
 	symbSetArrayDimensions( sym, dimensions )
 	if( dimensions > 0 ) then
 		dim as integer i
@@ -418,7 +418,7 @@ function symbAddField _
     	end if
 
 	end select
-	
+
 	'' check pointers
 	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
 		base_parent->udt.options or= FB_UDTOPT_HASPTRFIELD
@@ -450,9 +450,9 @@ function symbAddField _
 		'' bit position doesn't change in a union
 
 	end if
-	
+
     function = sym
-    
+
     sym->parent = parent
 
 end function
@@ -482,7 +482,7 @@ sub symbInsertInnerUDT _
 
     '' move the nodes from inner to parent
     fld = inner->udt.ns.symtb.head
-    
+
     '' unless it's a fake struct
     if( fld = NULL ) then
     	exit sub
@@ -551,7 +551,7 @@ sub symbInsertInnerUDT _
     '' remove from inner udt list
     inner->udt.ns.symtb.head = NULL
     inner->udt.ns.symtb.tail = NULL
-    
+
     inner->parent = parent
 
 end sub
@@ -840,38 +840,38 @@ function symbIsDeeper _
 		byval sym as FBSYMBOL ptr, _
 		byval next_ as FBSYMBOL ptr _
 	) as integer
-	
+
 	function = FALSE
-	
+
 	if( next_ = NULL ) then
 		exit function
 	end if
-	
+
 	next_ = next_->parent
-	
+
 	do while( next_ )
 		if( next_ = sym ) then
 			return TRUE
 		end if
 		next_ = next_->parent
 	loop
-	
-end function	
+
+end function
 
 '':::::
 function symbGetUnionParent _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
-	
+
 	function = FALSE
-	
-	'' if element's parent is an anonymous non-union struct... 
+
+	'' if element's parent is an anonymous non-union struct...
 	select case symbGetType( sym )
 	case FB_DATATYPE_STRUCT', FB_DATATYPE_CLASS
 		if( symbGetUDTIsUnion( sym ) = FALSE ) then
 			if( symbGetUDTIsAnon( sym ) ) then
-				
+
 				'' then we use its parent
 				if( sym->parent ) then
 					if( symbGetUDTIsUnion( sym->parent ) ) then
@@ -880,13 +880,13 @@ function symbGetUnionParent _
 				end if
 			end if
 		else
-			
+
 			'' otherwise, the immediate parent
 			function = sym
 		end if
 	end select
-	
-end function	
+
+end function
 
 '':::::
 function symbGetUDTNextElm _
@@ -895,62 +895,62 @@ function symbGetUDTNextElm _
 		byval check_union as integer, _
 		byref elms as integer = 0 _
 	) as FBSYMBOL ptr
-	
+
 	dim as integer skip_next = FALSE
-	
+
 	'' check for unions
 	if( check_union ) then
-		
+
 		dim as FBSYMBOL ptr union_parent = symbGetUnionParent( sym->parent )
 		dim as integer skip_the_rest = FALSE
-		
+
 		'' union initialization
 		if( union_parent ) then
-			
+
 			'' if the next var isn't a child of this one's parent
 			if( sym->next ) then
 				if( symbIsDeeper( sym->parent, sym->next ) = FALSE ) then
 					skip_the_rest = TRUE
 				end if
-				
+
 				'' immediate parent is a union
 				if( symbGetUDTIsUnion( sym->parent ) ) then
-					
+
 					'' same parent as next
 					if( sym->parent = sym->next->parent ) then
 						skip_the_rest = TRUE
 					end if
 				end if
 			end if
-			
-			'' 
+
+			''
 			if( skip_the_rest = TRUE ) then
-				
+
 				'' disable auto increment
 				skip_next = TRUE
-				
+
 				dim as integer keep_skipping = any
 				do
 					keep_skipping = FALSE
-					
+
 					'' skip symbols until their parent is no longer the union parent
 					do while( iif( sym, symbIsDeeper( union_parent, sym ), FALSE ) )
 						sym = sym->next
 						elms += 1
 					loop
-					
+
 					'' if the previous var is from another struct
 					if( sym ) then
 						if( sym->prev ) then
 							if( sym->parent ) then
 								if( sym->parent <> sym->prev->parent ) then
-									
+
 									'' immediately in a union
 									if( symbGetUDTIsUnion( sym->parent ) ) then
-										
+
 										'' recalibrate the parent
 										union_parent = symbGetUnionParent( sym->parent )
-										
+
 										'' keep skipping if the previous var is in our same union
 										if( symbIsDeeper( union_parent, sym->prev ) ) then
 											keep_skipping = TRUE
@@ -964,7 +964,7 @@ function symbGetUDTNextElm _
 			end if
 		end if
 	end if
-	
+
 	'' find the next field
 	if( skip_next = FALSE ) then
 		sym = sym->next

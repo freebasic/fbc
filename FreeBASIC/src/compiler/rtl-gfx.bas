@@ -596,7 +596,7 @@ declare function hPorts_cb _
 		( _
 			@"flip", @"fb_GfxFlip", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( _
@@ -610,7 +610,7 @@ declare function hPorts_cb _
 		( _
 			@"screencopy", @"fb_GfxFlip", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( _
@@ -625,7 +625,7 @@ declare function hPorts_cb _
 		( _
 			@"pointcoord", @"fb_GfxCursor", _
 			FB_DATATYPE_SINGLE, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -697,14 +697,14 @@ declare function hPorts_cb _
 		( _
 			@"screensync", @"fb_GfxWaitVSync", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-			@hGfxlib_cb, FB_RTL_OPT_ERROR, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' fb_GfxPageSet cdecl ( byval work_page as integer = -1, byval visible_page as integer = -1 ) as void '/ _
 		( _
 			@"screenset", @"fb_GfxPageSet", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( _
@@ -719,14 +719,14 @@ declare function hPorts_cb _
 		( _
 			@"screenlock", @"fb_GfxLock", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' fb_GfxUnlock ( ) as void '/ _
 		( _
 			@"screenunlock", @"fb_GfxUnlock", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( _
@@ -741,14 +741,14 @@ declare function hPorts_cb _
 		( _
 			@"screenptr", @"fb_GfxScreenPtr", _
 			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' fb_GfxSetWindowTitle ( title as string ) as void '/ _
 		( _
 			@"windowtitle", @"fb_GfxSetWindowTitle", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -760,7 +760,7 @@ declare function hPorts_cb _
 		( _
 			@"multikey", @"fb_Multikey", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -772,7 +772,7 @@ declare function hPorts_cb _
 		( _
 			@"getmouse", @"fb_GetMouse", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-			@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+			@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
 				( _
@@ -796,7 +796,7 @@ declare function hPorts_cb _
 		( _
 			@"setmouse", @"fb_SetMouse", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			4, _
 			{ _
 				( _
@@ -821,7 +821,7 @@ declare function hPorts_cb _
 		( _
 			@"getjoystick", @"fb_GfxGetJoystick", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			10, _
 			{ _
 				( _
@@ -861,7 +861,7 @@ declare function hPorts_cb _
 		( _
 			@"screeninfo", @"fb_GfxScreenInfo", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			7, _
 			{ _
 				( _
@@ -891,7 +891,7 @@ declare function hPorts_cb _
 		( _
 			@"screenlist", @"fb_GfxScreenList", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -928,7 +928,7 @@ declare function hPorts_cb _
 		( _
 			@"imagedestroy", @"fb_GfxImageDestroy", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -942,7 +942,7 @@ declare function hPorts_cb _
 		( _
 			@"imageconvertrow", @"fb_GfxImageConvertRow", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			6, _
 			{ _
 				( _
@@ -969,7 +969,7 @@ declare function hPorts_cb _
 		( _
 			@"screenevent", @"fb_GfxEvent", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -981,7 +981,7 @@ declare function hPorts_cb _
 		( _
 			@"screencontrol", @"fb_GfxControl_s", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_OVER, _
+	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( _
@@ -997,7 +997,7 @@ declare function hPorts_cb _
 		( _
 			@"screencontrol", @"fb_GfxControl_i", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_OVER, _
+	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
 				( _
@@ -1021,7 +1021,7 @@ declare function hPorts_cb _
 		( _
 			@"screenglproc", @"fb_GfxGetGLProcAddress", _
 			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_OVER, _
+	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _

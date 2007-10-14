@@ -111,9 +111,12 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' /
 	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' /
 
+	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
+
+	'' reuse - take care
 	FB_SYMBATTRIB_PARAMINSTANCE	= FB_SYMBATTRIB_METHOD
 	FB_SYMBATTRIB_STATICLOCALS	= FB_SYMBATTRIB_OPTIONAL
-	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
+	FB_SYMBATTRIB_SUFFIXED		= FB_SYMBATTRIB_FUNCRESULT
 end enum
 
 '' C standard types
@@ -125,14 +128,14 @@ end enum
 enum FB_SYMBOPT
 	FB_SYMBOPT_NONE				= &h00000000
 
-	FB_SYMBOPT_ADDSUFFIX		= &h00000001
-	FB_SYMBOPT_PRESERVECASE		= &h00000002
-	FB_SYMBOPT_UNSCOPE			= &h00000004
-	FB_SYMBOPT_DECLARING		= &h00000008
-	FB_SYMBOPT_MOVETOGLOB		= &h00000010
-	FB_SYMBOPT_RTL				= &h00000020
-	FB_SYMBOPT_DOHASH			= &h00000040
-	FB_SYMBOPT_CREATEALIAS		= &h00000080
+	FB_SYMBOPT_PRESERVECASE		= &h00000001
+	FB_SYMBOPT_UNSCOPE			= &h00000002
+	FB_SYMBOPT_DECLARING		= &h00000004
+	FB_SYMBOPT_MOVETOGLOB		= &h00000008
+	FB_SYMBOPT_RTL				= &h00000010
+	FB_SYMBOPT_DOHASH			= &h00000020
+	FB_SYMBOPT_CREATEALIAS		= &h00000040
+	FB_SYMBOPT_NODUPCHECK       = &h00000080
 end enum
 
 '' options when looking up symbols
@@ -383,7 +386,6 @@ end type
 '' function param
 type FBS_PARAM
 	mode			as FB_PARAMMODE
-	suffix			as integer					'' QB quirk..
 	var				as FBSYMBOL_ ptr			'' link to decl var in func bodies
 	optexpr			as ASTNODE_ ptr				'' default value
 end type
@@ -457,7 +459,6 @@ type FBS_PROC
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
 	ext				as FB_PROCEXT ptr           '' extra fields, not used with prototypes
-	has_step        as integer                  '' used for operator FOR, NEXT
 end type
 
 '' scope
@@ -494,7 +495,6 @@ type FBVAR_DESC
 end type
 
 type FBS_VAR
-	suffix			as integer					'' QB quirk..
 	union
 		littext		as zstring ptr
 		littextw	as wstring ptr
@@ -859,7 +859,9 @@ declare function symbAddKeyword _
 		byval symbol as zstring ptr, _
 		byval id as integer, _
 		byval class as integer, _
-		byval hashtb as FBHASHTB ptr = NULL _
+		byval hashtb as FBHASHTB ptr = NULL, _
+		byval dtype as integer = INVALID, _
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbAddDefine _
@@ -1033,7 +1035,6 @@ declare function symbAddProcParam _
 		byval ptrcnt as integer, _
 		byval lgt as integer, _
 		byval mode as integer, _
-		byval suffix as integer, _
 		byval attrib as FB_SYMBATTRIB, _
 		byval optexpr as ASTNODE ptr _
 	) as FBSYMBOL ptr
@@ -1284,8 +1285,7 @@ declare function symbNewSymbol _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval ptrcnt as integer, _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE, _
-		byval suffix as integer = INVALID _
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as FBSYMBOL ptr
 
 declare sub symbFreeSymbol _
@@ -1753,6 +1753,13 @@ declare function symbGetDefaultCallConv _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
+
+declare function symbVarCheckAccess _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
+
 ''
 '' macros
 ''
@@ -2180,8 +2187,6 @@ declare function symbGetDefaultCallConv _
 
 #define symbGetProcParams(f) f->proc.params
 
-#define symbGetProcHasStep(f) f->proc.has_step
-
 #define symbGetProcParamsLen(f) f->proc.lgt
 
 #define symbGetProcOptParams(f) f->proc.optparams
@@ -2339,6 +2344,8 @@ declare function symbGetDefaultCallConv _
 #define symbIsTrivial(s) ((s->stats and (FB_SYMBSTATS_HASCOPYCTOR or _
 										 FB_SYMBSTATS_HASDTOR or _
 										 FB_SYMBSTATS_HASVIRTUAL)) = 0)
+
+#define symbIsSuffixed(s) ((s->attrib and FB_SYMBATTRIB_SUFFIXED) <> 0)
 
 #define symbGetCurrentProcName( ) symbGetName( parser.currproc )
 

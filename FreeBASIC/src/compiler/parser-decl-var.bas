@@ -263,9 +263,7 @@ private function hIsConst _
 		exprTB() as ASTNODE ptr _
 	) as integer
 
-    dim as integer i
-
-	for i = 0 to dimensions-1
+	for i as integer = 0 to dimensions-1
 		if( astIsCONST( exprTB(i, 0) ) = FALSE ) then
 			return FALSE
 
@@ -283,9 +281,7 @@ private sub hVarExtToPub _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval attrib as FB_SYMBATTRIB _
-	) static
-
-	dim as FBSYMBOL ptr desc
+	)
 
 	'' remove the extern (or it won't be emitted), make it public (and shared for safety)
 	symbSetAttrib( sym, (attrib and (not FB_SYMBATTRIB_EXTERN)) or _
@@ -294,7 +290,7 @@ private sub hVarExtToPub _
 
     '' array? update the descriptor attributes too
     if( symbGetArrayDimensions( sym ) <> 0 ) then
-    	desc = symbGetArrayDescriptor( sym )
+    	dim as FBSYMBOL ptr desc = symbGetArrayDescriptor( sym )
 
     	attrib = (symbGetAttrib( desc ) and (not FB_SYMBATTRIB_EXTERN)) or _
     	  	  	 FB_SYMBATTRIB_SHARED
@@ -322,10 +318,7 @@ private function hDeclExternVar _
 		byval addsuffix as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
-	) as FBSYMBOL ptr static
-
-	dim as FBSYMBOL ptr desc
-	dim as integer setattrib
+	) as FBSYMBOL ptr
 
     function = NULL
 
@@ -346,7 +339,7 @@ private function hDeclExternVar _
     	end if
 	end if
 
-	setattrib = TRUE
+	dim as integer setattrib = TRUE
 
 	'' dynamic?
 	if( symbIsDynamic( sym ) ) then
@@ -416,12 +409,10 @@ private function hDeclStaticVar _
 		byval attrib as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
-	) as FBSYMBOL ptr static
-
-    dim as FB_SYMBOPT options
-    dim as integer is_extern
+	) as FBSYMBOL ptr
 
     '' any var already defined?
+    dim as integer is_extern = any
     if( sym <> NULL ) then
     	is_extern = symbIsExtern( sym )
     else
@@ -433,10 +424,10 @@ private function hDeclStaticVar _
 
     '' new (or dup) var?
     if( is_extern = FALSE ) then
-		options = FB_SYMBOPT_NONE
+		dim as FB_SYMBOPT options = FB_SYMBOPT_NONE
 
 		if( addsuffix ) then
-			options or= FB_SYMBOPT_ADDSUFFIX
+			attrib or= FB_SYMBATTRIB_SUFFIXED
 		end if
 
 		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
@@ -477,14 +468,11 @@ private function hDeclDynArray _
 		byval addsuffix as integer, _
 		byval attrib as integer, _
 		byval dimensions as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)		'' always 0
-    dim as FBSYMBOL ptr desc
-    dim as FB_SYMBOPT options
-	dim as integer is_redim
 
-	is_redim = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
+	dim as integer is_redim = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
 
     function = NULL
 
@@ -510,10 +498,10 @@ private function hDeclDynArray _
 
     '' new var?
    	if( sym = NULL ) then
-		options = FB_SYMBOPT_NONE
+		dim as FB_SYMBOPT options = FB_SYMBOPT_NONE
 
 		if( addsuffix ) then
-			options or= FB_SYMBOPT_ADDSUFFIX
+			attrib or= FB_SYMBATTRIB_SUFFIXED
 		end if
 
 		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
@@ -641,7 +629,7 @@ private function hGetId _
 	end if
 
     '' ID
-    select case lexGetClass( )
+    select case as const lexGetClass( )
     case FB_TKCLASS_IDENTIFIER
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
@@ -656,13 +644,32 @@ private function hGetId _
 
     	*id = *lexGetText( )
     	suffix = lexGetType( )
-    	hCheckSuffix( suffix )
-
-    	lexSkipToken( )
 
 	case FB_TKCLASS_QUIRKWD
-		'' only if inside a ns and if not local
-		if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
+		if( env.clopt.lang <> FB_LANG_QB ) then
+			'' only if inside a ns and if not local
+			if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
+    			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+    				return NULL
+    			else
+    				'' error recovery: fake an id
+    				*id = *hMakeTmpStr( )
+    				suffix = INVALID
+    			end if
+
+    		else
+    			*id = *lexGetText( )
+    			suffix = lexGetType( )
+    		end if
+
+    	'' QB mode..
+    	else
+    		*id = *lexGetText( )
+    		suffix = lexGetType( )
+    	end if
+
+	case FB_TKCLASS_KEYWORD, FB_TKCLASS_OPERATOR
+		if( env.clopt.lang <> FB_LANG_QB ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     			return NULL
     		else
@@ -671,13 +678,11 @@ private function hGetId _
     			suffix = INVALID
     		end if
 
+    	'' QB mode..
     	else
     		*id = *lexGetText( )
     		suffix = lexGetType( )
-    		hCheckSuffix( suffix )
-    	end if
-
-    	lexSkipToken( )
+		end if
 
     case else
     	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
@@ -689,6 +694,10 @@ private function hGetId _
     	end if
     end select
 
+    hCheckSuffix( suffix )
+
+    lexSkipToken( )
+
     function = chain_
 
 end function
@@ -698,9 +707,9 @@ private function hLookupVar _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
-		byval is_typeless as integer, _
 		byval dtype as integer, _
-		byval suffix as integer, _
+		byval is_typeless as integer, _
+		byval has_suffix as integer, _
 		byval options as FB_IDOPT _
 	) as FBSYMBOL ptr
 
@@ -711,13 +720,13 @@ private function hLookupVar _
     end if
 
     if( is_typeless ) then
-    	if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
+    	if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
     		sym = symbFindVarByDefType( chain_, dtype )
     	else
     		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
     	end if
-    elseif( suffix <> INVALID ) then
-    	sym = symbFindVarBySuffix( chain_, suffix )
+    elseif( has_suffix ) then
+    	sym = symbFindVarBySuffix( chain_, dtype )
 	else
     	sym = symbFindVarByType( chain_, dtype )
     end if
@@ -765,16 +774,15 @@ private sub hMakeArrayDimTB _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
 		dTB() as FBARRAYDIM _
-	) static
-
-    dim as integer i
-    dim as ASTNODE ptr expr
+	)
 
 	if( dimensions = -1 ) then
 		exit sub
 	end if
 
-	for i = 0 to dimensions-1
+	for i as integer = 0 to dimensions-1
+		dim as ASTNODE ptr expr = any
+
 		'' lower bound
 		expr = exprTB(i, 0)
 		dTB(i).lower = astGetValueAsInt( expr )
@@ -1367,7 +1375,7 @@ function hVarDeclEx _
     	end if
 
 		''
-		sym = hLookupVar( parent, chain_, is_typeless, dtype, suffix, options )
+		sym = hLookupVar( parent, chain_, dtype, is_typeless, suffix <> INVALID, options )
 
     	if( sym = NULL ) then
     		'' no symbol was found, check if an explicit namespace was given
@@ -1905,9 +1913,6 @@ function cAutoVarDecl _
     	if( suffix <> INVALID ) then
     		if( errReportEx( FB_ERRMSG_SYNTAXERROR, @id ) = FALSE ) then
     			exit function
-    		else
-    			'' error recovery
-    			suffix = INVALID
     		end if
     	end if
 
@@ -1924,7 +1929,7 @@ function cAutoVarDecl _
 		''
 		dim as FBSYMBOL ptr sym = any
 
-		sym = hLookupVar( parent, chain_, TRUE, INVALID, suffix, FB_IDOPT_ISDECL )
+		sym = hLookupVar( parent, chain_, INVALID, TRUE, FALSE, FB_IDOPT_ISDECL )
 
 		if( sym = NULL ) then
 			'' no symbol was found, check if an explicit namespace was given

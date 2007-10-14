@@ -118,13 +118,7 @@ end sub
 sub rtlAddIntrinsicProcs _
 	( _
 		byval procdef as FB_RTL_PROCDEF ptr _
-	) static
-
-	dim as integer attrib, doadd, i
-	dim as integer param_len, ptrcnt
-	dim as FBSYMBOL ptr proc
-	dim as ASTNODE ptr param_optval
-	dim as FBSYMBOL ptr subtype
+	)
 
 	'' for each proc..
 	do
@@ -132,18 +126,26 @@ sub rtlAddIntrinsicProcs _
 			exit do
 		end if
 
-		doadd = TRUE
+		dim as integer doadd = TRUE
 		if( (procdef->options and (FB_RTL_OPT_MT or FB_RTL_OPT_VBSYMB)) <> 0 ) then
 			doadd = fbLangOptIsSet( FB_LANG_OPT_MT or FB_RTL_OPT_VBSYMB )
 		end if
 
 		if( doadd ) then
-			proc = symbPreAddProc( NULL )
+			if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
+				doadd = env.clopt.lang <> FB_LANG_QB
+			end if
+		end if
+
+		if( doadd ) then
+			dim as FBSYMBOL ptr proc = symbPreAddProc( NULL )
 
 			'' for each parameter..
-			for i = 0 to procdef->params-1
-				subtype = NULL
+			for i as integer = 0 to procdef->params-1
+				dim as FBSYMBOL ptr subtype = NULL
 				with procdef->paramTb(i)
+					dim as integer attrib = any
+					dim as ASTNODE ptr param_optval = any
 					if( .isopt ) then
 						attrib = FB_SYMBATTRIB_OPTIONAL
 
@@ -157,10 +159,10 @@ sub rtlAddIntrinsicProcs _
 
 						'' function pointers need a symbol built so they can check matches
 						case typeSetType(FB_DATATYPE_FUNCTION, 1)
-							dim as integer inner_attrib, func_arg
-							dim as integer inner_param_len, inner_ptrcnt
-							dim as ASTNODE ptr inner_param_optval
-							dim as FBSYMBOL ptr inner_proc
+							dim as integer inner_attrib = any, func_arg = any
+							dim as integer inner_param_len = any, inner_ptrcnt = any
+							dim as ASTNODE ptr inner_param_optval = any
+							dim as FBSYMBOL ptr inner_proc = any
 
 							'' scan through the next args as child args
 							inner_proc = symbPreAddProc( NULL )
@@ -197,7 +199,7 @@ sub rtlAddIntrinsicProcs _
 									symbAddProcParam( inner_proc, _
 													  NULL, NULL, _
 													  .dtype, NULL, typeGetPtrCnt(.dtype), _
-													  inner_param_len, .mode, INVALID, _
+													  inner_param_len, .mode, _
 													  inner_attrib, inner_param_optval )
 								end with
 							next
@@ -230,35 +232,41 @@ sub rtlAddIntrinsicProcs _
 						param_optval = NULL
 					end if
 
+					dim as integer lgt = FB_POINTERSIZE
+					dim as integer ptrcnt = any
 					if( .dtype <> INVALID ) then
-						param_len = symbCalcParamLen( .dtype, subtype, .mode )
+						lgt = symbCalcParamLen( .dtype, subtype, .mode )
+						CNTPTR( .dtype, ptrcnt )
 					else
-						param_len = FB_POINTERSIZE
+						.dtype = typeAddrOf( FB_DATATYPE_VOID )
+						ptrcnt = 1
 					end if
 
-					CNTPTR( .dtype, ptrcnt )
-
 					symbAddProcParam( proc, _
-					    			  NULL, NULL, _
+							  		  NULL, NULL, _
 							  	  	  .dtype, subtype, ptrcnt, _
-							  	  	  param_len, .mode, INVALID, _
+							  	  	  lgt, .mode, _
 							  	  	  attrib, param_optval )
 
 				end with
 			next
 
 			''
+			dim as FB_SYMBATTRIB attrib = 0
 			if( (procdef->options and FB_RTL_OPT_OVER) <> 0 ) then
 				attrib = FB_SYMBATTRIB_OVERLOADED
-			else
-				attrib = 0
 			end if
 
 			''
+			dim as integer ptrcnt = any
 			CNTPTR( procdef->dtype, ptrcnt )
 
 			if( procdef->alias = NULL ) then
 				procdef->alias = procdef->name
+			end if
+
+			if( (procdef->options and FB_RTL_OPT_STRSUFFIX) <> 0 ) then
+				attrib or= FB_SYMBATTRIB_SUFFIXED
 			end if
 
 			'' ordinary proc?

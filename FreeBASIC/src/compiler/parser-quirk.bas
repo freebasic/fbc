@@ -53,6 +53,12 @@ function cQuirkStmt _
 
 		select case lexGetClass( )
 		case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+    		'' QB mode?
+    		if( env.clopt.lang = FB_LANG_QB ) then
+    			if( lexGetType() <> INVALID ) then
+    				return FALSE
+    			end if
+    		end if
 
 		case else
 			if( tk = CHAR_QUESTION ) then	'' PRINT as '?', can't be a keyword..
@@ -129,6 +135,12 @@ function cQuirkStmt _
 		CHECK_CODEMASK( )
 		res = cColorStmt( FALSE ) <> NULL
 
+	case FB_TK_REM
+		'' due the QB quirks..
+		if( env.clopt.lang = FB_LANG_QB ) then
+			res = cComment( )
+		end if
+
 	case else
 		res = FALSE
 	end select
@@ -148,29 +160,35 @@ end function
 ''
 function cQuirkFunction _
 	( _
-		byval tk as FB_TOKEN _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	dim as integer res = FALSE
 	dim as ASTNODE ptr funcexpr = NULL
+	dim as FB_TOKEN tk = sym->key.id
 
 	select case as const tk
-	case FB_TK_MKD, FB_TK_MKS, FB_TK_MKI, FB_TK_MKL, _ 
+	case FB_TK_MKD, FB_TK_MKS, FB_TK_MKI, FB_TK_MKL, _
 	     FB_TK_MKSHORT, FB_TK_MKLONGINT
+
 		res = cMKXFunct( tk, funcexpr )
 
-	case FB_TK_CVD, FB_TK_CVS, FB_TK_CVI, FB_TK_CVL, _ 
+	case FB_TK_CVD, FB_TK_CVS, FB_TK_CVI, FB_TK_CVL, _
 	     FB_TK_CVSHORT, FB_TK_CVLONGINT
+
 		res = cCVXFunct( tk, funcexpr )
 
 	case FB_TK_STR, FB_TK_WSTR, FB_TK_MID, FB_TK_STRING, FB_TK_WSTRING, _
-		 FB_TK_CHR, FB_TK_WCHR, FB_TK_ASC, _
-		 FB_TK_INSTR, FB_TK_TRIM, FB_TK_RTRIM, FB_TK_LTRIM
+		 FB_TK_CHR, FB_TK_WCHR, _
+		 FB_TK_ASC, FB_TK_INSTR, _
+		 FB_TK_TRIM, FB_TK_RTRIM, FB_TK_LTRIM
+
 		res = cStringFunct( tk, funcexpr )
 
 	case FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_FRAC, FB_TK_LEN, FB_TK_SIZEOF, _
 		 FB_TK_SIN, FB_TK_ASIN, FB_TK_COS, FB_TK_ACOS, FB_TK_TAN, FB_TK_ATN, _
 		 FB_TK_SQR, FB_TK_LOG, FB_TK_EXP, FB_TK_ATAN2, FB_TK_INT
+
 		res = cMathFunct( tk, funcexpr )
 
 	case FB_TK_PEEK
@@ -181,6 +199,7 @@ function cQuirkFunction _
 
 	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_OPEN, FB_TK_CLOSE, _
 		 FB_TK_GET, FB_TK_PUT, FB_TK_NAME
+
 		res = cFileFunct( tk, funcexpr )
 
 	case FB_TK_ERR
@@ -190,12 +209,13 @@ function cQuirkFunction _
 		res = cIIFFunct( funcexpr )
 
 	case FB_TK_VA_FIRST
-		res = cVAFunct( funcexpr )
+				res = cVAFunct( funcexpr )
 
 	case FB_TK_CBYTE, FB_TK_CSHORT, FB_TK_CINT, FB_TK_CLNG, FB_TK_CLNGINT, _
 		 FB_TK_CUBYTE, FB_TK_CUSHORT, FB_TK_CUINT, FB_TK_CULNG, FB_TK_CULNGINT, _
 		 FB_TK_CSNG, FB_TK_CDBL, _
          FB_TK_CSIGN, FB_TK_CUNSG
+
 		return cTypeConvExpr( tk )
 
 	case FB_TK_TYPE

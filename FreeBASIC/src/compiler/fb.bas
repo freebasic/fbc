@@ -243,7 +243,7 @@ private sub hSetLangOptions _
 		byval lang as FB_LANG _
 	)
 
-	env.langopt = langTb(lang).options
+	env.lang.opt = langTb(lang).options
 
 end sub
 
@@ -277,6 +277,28 @@ private sub hSetLangCtx _
 		env.opt.explicit = TRUE
 	else
 		env.opt.explicit = FALSE
+	end if
+
+    '' data type remapping
+	if( lang <> FB_LANG_QB ) then
+		env.lang.typeremap.integer = FB_DATATYPE_INTEGER
+		env.lang.sizeremap.integer = FB_INTEGERSIZE
+		env.lang.typeremap.long = FB_DATATYPE_LONG
+		env.lang.sizeremap.long = FB_LONGSIZE
+
+		env.lang.litremap.integer = FB_DATATYPE_INTEGER
+		env.lang.litremap.uint = FB_DATATYPE_UINT
+		env.lang.litremap.double = FB_DATATYPE_DOUBLE
+
+	else
+		env.lang.typeremap.integer = FB_DATATYPE_SHORT
+		env.lang.sizeremap.integer = 2
+		env.lang.typeremap.long = FB_DATATYPE_INTEGER
+		env.lang.sizeremap.long = FB_INTEGERSIZE
+
+		env.lang.litremap.integer = FB_DATATYPE_SHORT
+		env.lang.litremap.uint = FB_DATATYPE_SHORT
+		env.lang.litremap.double = FB_DATATYPE_SINGLE
 	end if
 
 	env.opt.parammode       = FB_PARAMMODE_BYREF
@@ -652,7 +674,7 @@ sub fbSetPaths _
 		pathTB(FB_PATH_BIN) = FB_BINPATH + "win32" + RSLASH
 		pathTB(FB_PATH_INC) = FB_INCPATH
 		pathTB(FB_PATH_LIB) = FB_LIBPATH + "xbox"
-	
+
 	case FB_COMPTARGET_FREEBSD
 		pathTB(FB_PATH_BIN) = FB_BINPATH + "freebsd" + RSLASH
 		pathTB(FB_PATH_INC) = FB_INCPATH
@@ -699,7 +721,7 @@ sub fbSetPrefix _
 		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
 	end if
 #endif
-	
+
 
 end sub
 
@@ -963,7 +985,7 @@ sub fbGetDefaultLibs _
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
 			hAddLib( "gmon" )
 		end if
-	
+
 	case FB_COMPTARGET_FREEBSD
 		hAddLib( "c" )
 		hAddLib( "m" )
@@ -977,7 +999,7 @@ sub fbGetDefaultLibs _
 
 end sub
 
-'':::: 
+''::::
 function fbPragmaOnce _
 	( _
 	) as integer
@@ -1000,7 +1022,7 @@ function is_rootpath( byref path as zstring ptr ) as integer
 	if( path = NULL ) then
 		exit function
 	end if
-	
+
 #if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
 	if( path[0] = NULL ) then
 		exit function
@@ -1014,28 +1036,28 @@ function is_rootpath( byref path as zstring ptr ) as integer
 		function = TRUE
 	end if
 #else
-	function = (path[0] = asc("/"))	
+	function = (path[0] = asc("/"))
 #endif
 end function
 
 ''::::
 function solve_path( byval path as zstring ptr ) as integer
-	
+
 	'' solves a path to it's lowest common denominator...
-	
+
 	'' c:\foo\bar\..\baz => c:\foo\baz, etc
-	static as string root_spec	
+	static as string root_spec
 #if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
 	root_spec = ucase(left(*path, 2) + "/")
 #else
 	root_spec = "/"
 #endif
-    
+
 	dim as integer str_len = len(*path), c = 0, s = 0, i = any
     static as zstring * 256 accum(255)
-	
+
 	for i = 0 to str_len-1
-		
+
 		if( (path[i] <> asc("/")) and (path[i] <> asc(RSLASH)) ) then
 			accum(s)[c] = path[i]
 			c += 1
@@ -1059,7 +1081,7 @@ function solve_path( byval path as zstring ptr ) as integer
 	next
 	accum(s)[c] = 0
 	s += 1
-	
+
 	dim as integer j = 0, k = 0
 	for i = 0 to s-1
 		do while accum(i)[j]
@@ -1073,11 +1095,11 @@ function solve_path( byval path as zstring ptr ) as integer
 		end if
 	next
 	path[k] = 0
-	
+
 	if(ucase(left(*path, len(root_spec))) <> root_spec) then
 		*path = root_spec + *path
 	end if
-	
+
 	function = TRUE
 
 end function
@@ -1128,25 +1150,25 @@ function fbIncludeFile _
 			incfile = *filename
 		end if
 	end if
-	
+
 	'' if this isn't a root path, make it one.
 	if( is_rootpath( incfile ) = FALSE ) then
 		incfile = hCurDir( ) + "/" + incfile
 	end if
-	
+
 	'' now, if it isn't a root path(even possible?), we have a fatal.
 	if( is_rootpath( incfile ) = FALSE ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + incfile + QUOTE )
-		return errFatal( )  
+		return errFatal( )
 	end if
- 	
+
  	'' solve out the .. and .
 	if( solve_path( incfile ) = FALSE ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + incfile + QUOTE )
-		return errFatal( )  
+		return errFatal( )
 	end if
-		
-	'' #include ONCE 
+
+	'' #include ONCE
 	if( isonce ) then
         '' we should respect the path
        	if( hFindIncFile( @env.incfilehash, incfile ) <> NULL ) then

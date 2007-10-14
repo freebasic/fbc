@@ -53,6 +53,13 @@ function cDeclaration _
 
 	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
 
+    '' QB mode?
+    if( env.clopt.lang = FB_LANG_QB ) then
+    	if( lexGetType() <> INVALID ) then
+    		return FALSE
+    	end if
+    end if
+
 	select case as const lexGetToken( )
 	case FB_TK_PUBLIC
 		 if( hCheckScope( ) ) then

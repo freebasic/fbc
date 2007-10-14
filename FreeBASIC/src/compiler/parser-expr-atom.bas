@@ -89,16 +89,143 @@ function cParentExpression _
 end function
 
 '':::::
+private function hFindId_QB _
+	( _
+		byval base_parent as FBSYMBOL ptr, _
+		byval chain_ as FBSYMCHAIN ptr _
+	) as ASTNODE ptr
+
+    dim as zstring ptr id = lexGetText( )
+    dim as integer suffix = lexGetType( )
+    dim as integer defdtype = symbGetDefType( id )
+
+    do
+    	dim as FBSYMBOL ptr sym = chain_->sym
+    	dim as FBSYMBOL ptr var_sym = NULL
+
+    	'' no suffix?
+    	if( suffix = INVALID ) then
+
+    		do
+    			dim as integer is_match = TRUE
+    			'' is the original symbol suffixed?
+    			if( symbIsSuffixed( sym ) ) then
+    				'' if it's a VAR, lookup the default type (last DEF###) in
+    				'' the case symbol could not be found..
+    				if( symbGetClass( sym ) = FB_SYMBCLASS_VAR ) then
+    					if( defdtype = FB_DATATYPE_STRING ) then
+	          				select case as const symbGetType( sym )
+	          				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+
+	          				case else
+	          					is_match = FALSE
+	          				end select
+    					else
+    						is_match = (symbGetType( sym ) = defdtype)
+    					end if
+    				end if
+    			end if
+
+				if( is_match ) then
+    				select case as const symbGetClass( sym )
+					case FB_SYMBCLASS_CONST
+						return cConstantEx( sym )
+
+					case FB_SYMBCLASS_PROC
+  						'' if it's a RTL func, the suffix is obligatory
+  						if( symbGetIsRTL( sym ) ) then
+  							is_match = (symbIsSuffixed( sym ) = FALSE)
+  						end if
+
+						if( is_match ) then
+							return cFunctionEx( base_parent, sym )
+						end if
+
+					case FB_SYMBCLASS_VAR
+	           			if( var_sym = NULL ) then
+	           				if( symbVarCheckAccess( sym ) ) then
+	           					var_sym = sym
+	           				end if
+	           			end if
+
+  					case FB_SYMBCLASS_KEYWORD
+  						'' only if not suffixed
+  						if( symbIsSuffixed( sym ) = FALSE ) then
+  							return cQuirkFunction( sym )
+  						end if
+
+					end select
+				end if
+
+				sym = sym->hash.next
+			loop while( sym <> NULL )
+
+    	'' suffix..
+    	else
+    		do
+	      		dim as integer is_match = any
+	       		if( suffix = FB_DATATYPE_STRING ) then
+	          		select case as const symbGetType( sym )
+	          		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+	          			is_match = TRUE
+	          		case else
+	          			is_match = FALSE
+	          		end select
+	          	else
+	          		is_match = (symbGetType( sym ) = suffix)
+	          	end if
+
+    			if( is_match ) then
+    				select case as const symbGetClass( sym )
+					case FB_SYMBCLASS_CONST
+						return cConstantEx( sym )
+
+					case FB_SYMBCLASS_PROC
+						return cFunctionEx( base_parent, sym )
+
+					case FB_SYMBCLASS_VAR
+           				if( var_sym = NULL ) then
+           					if( symbVarCheckAccess( sym ) ) then
+           						var_sym = sym
+           					end if
+           				end if
+
+  					case FB_SYMBCLASS_KEYWORD
+  						return cQuirkFunction( sym )
+
+					end select
+				end if
+
+				sym = sym->hash.next
+			loop while( sym <> NULL )
+		end if
+
+		'' vars have the less priority than keywords and rtl procs
+		if( var_sym <> NULL ) then
+			return cVariableEx( var_sym, fbGetCheckArray( ) )
+		end if
+
+    	chain_ = symbChainGetNext( chain_ )
+    loop while( chain_ <> NULL )
+
+    function = NULL
+
+end function
+
+'':::::
 private function hFindId _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr sym = any
+    '' QB mode?
+    if( env.clopt.lang = FB_LANG_QB ) then
+    	return hFindId_QB( base_parent, chain_ )
+    end if
 
     do
-    	sym = chain_->sym
+    	dim as FBSYMBOL ptr sym = chain_->sym
     	do
     		select case as const symbGetClass( sym )
 			case FB_SYMBCLASS_CONST
@@ -117,14 +244,14 @@ private function hFindId _
 				return cFunctionEx( base_parent, sym )
 
 			case FB_SYMBCLASS_VAR
-           		return cVariableEx( chain_, fbGetCheckArray( ) )
+	      		return cVariableEx( chain_, fbGetCheckArray( ) )
 
-        	case FB_SYMBCLASS_FIELD
-        		return cImplicitDataMember( chain_, fbGetCheckArray( ) )
+       		case FB_SYMBCLASS_FIELD
+       			return cImplicitDataMember( chain_, fbGetCheckArray( ) )
 
   			'' quirk-keyword?
   			case FB_SYMBCLASS_KEYWORD
-  				return cQuirkFunction( sym->key.id )
+  				return cQuirkFunction( sym )
 
 			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
 				if( symbGetHasCtor( sym ) ) then
@@ -134,15 +261,15 @@ private function hFindId _
 				end if
 
 			case FB_SYMBCLASS_TYPEDEF
-            	'' typedef of a TYPE/CLASS?
-            	select case symbGetType( sym )
-            	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+           		'' typedef of a TYPE/CLASS?
+           		select case symbGetType( sym )
+           		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 					if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
 						'' skip ID, ctorCall() is also used by type<>(...)
 						lexSkipToken( )
 						return cCtorCall( symbGetSubtype( sym ) )
 					end if
-            	end select
+           		end select
 
 			end select
 
@@ -174,14 +301,12 @@ function cAtom _
   	end if
 
   	select case as const tk_class
-  	case FB_TKCLASS_KEYWORD
-  		return cQuirkFunction( cIdentifier( base_parent )->sym->key.id )
-
-  	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+  	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_KEYWORD
   		if( chain_ = NULL ) then
   			chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
   		end if
 
+check_id:
     	'' declared id?
     	if( chain_ <> NULL ) then
     		dim as ASTNODE ptr expr = hFindId( base_parent, chain_ )
@@ -196,8 +321,10 @@ function cAtom _
 		end if
 
   		'' try to alloc an implicit variable..
-    	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-  			return NULL
+    	if( env.clopt.lang <> FB_LANG_QB ) then
+    		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+  				return NULL
+  			end if
   		end if
 
   		if( fbLangOptIsSet( FB_LANG_OPT_IMPLICIT = FALSE ) ) then
@@ -206,7 +333,14 @@ function cAtom _
   			return NULL
   		end if
 
-  		return cVariableEx( NULL, fbGetCheckArray( ) )
+  		return cVariableEx( cast( FBSYMCHAIN ptr, NULL ), fbGetCheckArray( ) )
+
+  	case FB_TKCLASS_OPERATOR
+  		'' QB quirks..
+  		if( env.clopt.lang = FB_LANG_QB ) then
+  			chain_ = lexGetSymChain( )
+  			goto check_id
+  		end if
 
 	case FB_TKCLASS_NUMLITERAL
 		return cNumLiteral( )

@@ -288,8 +288,6 @@ function symbAddArrayDesc _
 									FB_SYMBSTATS_ACCESSED or _
 									FB_SYMBSTATS_HASALIAS)
 
-    desc->var_.suffix = INVALID
-
 	'' as desc is also a var, clear the var fields
 	desc->var_.array.desc = NULL
 	desc->var_.array.dif = 0
@@ -382,7 +380,7 @@ sub symbSetArrayDimTb _
 		s->var_.array.dif = 0
 		s->var_.array.elms = 1
 	end if
-	
+
     symbSetArrayDimensions( s, dimensions )
 
 	'' dims can be -1 with COMMON arrays..
@@ -412,10 +410,6 @@ private sub hSetupVar _
 		dTB() as FBARRAYDIM, _
 		byval stats as integer _
 	)
-
-	if( dtype = INVALID ) then
-		dtype = symbGetDefType( id )
-	end if
 
 	''
 	s->stats or= stats
@@ -460,7 +454,7 @@ function symbAddVarEx _
     dim as FBSYMBOL ptr s = any
     dim as FBSYMBOLTB ptr symtb = any
     dim as FBHASHTB ptr hashtb = any
-    dim as integer isglobal = any, suffix = any, stats = any
+    dim as integer isglobal = any, stats = any
 
     function = NULL
 
@@ -472,19 +466,7 @@ function symbAddVarEx _
 
     ''
     if( lgt <= 0 ) then
-		if( dtype = INVALID ) then
-			suffix = symbGetDefType( id )
-		else
-			suffix = dtype
- 		end if
-    	lgt	= symbCalcLen( suffix, subtype )
-    end if
-
-    ''
-    if( (options and FB_SYMBOPT_ADDSUFFIX) <> 0 ) then
-    	suffix = dtype
-    else
-    	suffix = INVALID
+    	lgt	= symbCalcLen( dtype, subtype )
     end if
 
     '' no explict alias?
@@ -537,8 +519,7 @@ function symbAddVarEx _
 					   FB_SYMBCLASS_VAR, _
 					   id, id_alias, _
 					   dtype, subtype, ptrcnt, _
-					   attrib, _
-					   suffix )
+					   attrib )
 
 	if( s = NULL ) then
 		exit function
@@ -563,7 +544,7 @@ end function
 '':::::
 function symbAddVar _
 	( _
-		byval symbol as zstring ptr, _
+		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval ptrcnt as integer, _
@@ -572,10 +553,9 @@ function symbAddVar _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
 
-    function = symbAddVarEx( symbol, NULL, dtype, subtype, ptrcnt, _
+    function = symbAddVarEx( id, NULL, dtype, subtype, ptrcnt, _
     		  			     0, dimensions, dTB(), _
-    						 attrib, _
-    						 FB_SYMBOPT_ADDSUFFIX )
+    						 attrib )
 
 end function
 
@@ -815,6 +795,31 @@ function symbCloneVar _
 	end if
 
 end function
+
+'':::::
+function symbVarCheckAccess _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
+	'' inside a proc?
+	if( fbIsModLevel( ) = FALSE ) then
+		'' local?
+		if( symbIsLocal( sym ) ) then
+			'' not a main()'s local?
+			if( symbGetScope( sym ) = FB_MAINSCOPE ) then
+				return FALSE
+		    end if
+		'' not shared?
+		elseif( symbIsShared( sym ) = FALSE ) then
+			return FALSE
+		end if
+	end if
+
+	function = TRUE
+
+end function
+
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' del

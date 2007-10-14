@@ -212,8 +212,8 @@ function astTypeIniAddAssign _
 
 	n = hAddNode( tree, _
 				  AST_NODECLASS_TYPEINI_ASSIGN, _
-				  expr->dtype, _
-				  expr->subtype )
+				  symbGetType( sym ), _
+				  symbGetSubtype( sym ) )
 
 	n->l = expr
 	n->sym = sym
@@ -237,8 +237,8 @@ function astTypeIniAddCtorCall _
 
 	n = hAddNode( tree, _
 				  AST_NODECLASS_TYPEINI_CTORCALL, _
-				  INVALID, _
-				  NULL )
+				  symbGetType( sym ), _
+				  symbGetSubtype( sym ) )
 
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
@@ -262,8 +262,8 @@ function astTypeIniAddCtorList _
 
 	n = hAddNode( tree, _
 				  AST_NODECLASS_TYPEINI_CTORLIST, _
-				  INVALID, _
-				  NULL )
+				  symbGetType( sym ), _
+				  symbGetSubtype( sym ) )
 
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
@@ -286,8 +286,10 @@ private function hCallCtor _
 	dim as FBSYMBOL ptr fld = any
 
 	fld = n->sym
-	if( symbIsField( fld ) = FALSE ) then
-		fld = NULL
+	if( fld <> NULL ) then
+		if( symbIsField( fld ) = FALSE ) then
+			fld = NULL
+		end if
 	end if
 
 	'' replace the instance pointer
@@ -314,14 +316,14 @@ private function hCallCtorList _
 	dim as integer dtype = any, elements = any
 
 	fld = n->sym
-
-	dtype = symbGetType( fld )
-	subtype = symbGetSubtype( fld )
-
-	if( symbIsField( fld ) = FALSE ) then
-		fld = NULL
+	if( fld <> NULL ) then
+		if( symbIsField( fld ) = FALSE ) then
+			fld = NULL
+		end if
 	end if
 
+	dtype = n->dtype
+	subtype = n->subtype
 	elements = n->typeini.elements
 
 	'' iter = *cast( subtype ptr, cast( byte ptr, @array(0) ) + ofs) )
@@ -370,9 +372,7 @@ private function hFlushTree _
 		byval do_deref as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr lside = any, n = any, nxt = any, flush_tree = NULL
-    dim as FBSYMBOL ptr sym = any, subtype = any
-    dim as integer dtype = any
+    dim as ASTNODE ptr n = any, nxt = any, flush_tree = NULL
 
 	function = NULL
 
@@ -380,26 +380,25 @@ private function hFlushTree _
     do while( n <> NULL )
         nxt = n->r
 
+		dim as ASTNODE ptr lside = any
+
     	select case as const n->class
     	case AST_NODECLASS_TYPEINI_ASSIGN
-        	sym = n->sym
 
         	if( symbIsParamInstance( basesym ) ) then
         		'' offset is always 0
         		lside = astBuildInstPtr( basesym, _
-        							 	 sym, _
+        							 	 n->sym, _
         							 	 NULL, _
         							 	 0 )
         	else
-        		dtype = symbGetType( sym )
-        		subtype = symbGetSubtype( sym )
 
         		'' var?
         		if( do_deref = FALSE ) then
         			lside = astNewVAR( basesym, _
         				   	   	   	   n->typeini.ofs, _
-	       				   	   	   	   dtype, _
-        				   	   	   	   subtype )
+	       				   	   	   	   n->dtype, _
+        				   	   	   	   n->subtype )
 
         		'' deref..
         		else
@@ -407,17 +406,19 @@ private function hFlushTree _
         				   	   	   	   			    0, _
 	       				   	   	   	   			  	symbGetType( basesym ), _
         				   	   	   	   			  	symbGetSubtype( basesym ) ), _
-        							   	 dtype, _
-        							   	 subtype, _
+        							   	 n->dtype, _
+        							   	 n->subtype, _
         							   	 n->typeini.ofs )
         		end if
 
-        		'' field?
-        		if( symbIsField( sym ) ) then
-        			lside = astNewFIELD( lside, _
-        					 	 	 	 sym, _
-        					 	 	 	 dtype, _
-        					 	 	 	 subtype )
+        		if( n->sym <> NULL ) then
+        			'' field?
+        			if( symbIsField( n->sym ) ) then
+        				lside = astNewFIELD( lside, _
+        					 	 	 	 	 n->sym, _
+        					 	 	 	 	 n->dtype, _
+        					 	 	 	 	 n->subtype )
+        			end if
         		end if
             end if
 
@@ -433,8 +434,8 @@ private function hFlushTree _
         							 	 NULL, _
         							 	 n->typeini.ofs )
             else
-				dtype = symbGetType( basesym )
-				subtype = symbGetSubtype( basesym )
+				dim as integer dtype = symbGetType( basesym )
+				dim as FBSYMBOL ptr subtype = symbGetSubtype( basesym )
 
 				if( do_deref = FALSE ) then
 					lside = astNewVAR( basesym, _
@@ -858,7 +859,7 @@ function astTypeIniCheckScope _
 	if( n <> NULL ) then
 
     	select case n->class
-		case AST_NODECLASS_VAR, AST_NODECLASS_CONST		
+		case AST_NODECLASS_VAR, AST_NODECLASS_CONST
 
 			sym = astGetSymbol( n )
 			if( sym <> NULL ) then
@@ -921,7 +922,6 @@ private sub hWalk _
 		astAdd( astTypeIniFlush( node, _
 								 sym, _
 								 AST_INIOPT_NONE ) )
-
     	exit sub
     end if
 
@@ -951,11 +951,7 @@ function astTypeIniUpdate _
     if( ast.typeinicnt <= 0 ) then
     	exit function
     end if
-	
-	'' temporarily disable destructor calling...
-	dim as integer last_flush = ast.flushdtorlist
-	ast.flushdtorlist = FALSE
-	
+
 	'' walk
 	expr = tree->l
 	if( expr <> NULL ) then
@@ -966,8 +962,6 @@ function astTypeIniUpdate _
 	if( expr <> NULL ) then
 		hWalk( expr, tree )
 	end if
-
-	ast.flushdtorlist = last_flush
 
 end function
 

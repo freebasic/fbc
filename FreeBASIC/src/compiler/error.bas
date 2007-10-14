@@ -284,7 +284,8 @@ end type
 		@"UNIONs are not allowed", _
 		@"Arrays are not allowed", _
 		@"COMMON variables cannot be object instances of CLASS/TYPE's with cons/destructors", _
-		@"Cloning operators (LET, Copy Cnstructors) can't take a byval arg of the parent's type" _
+		@"Cloning operators (LET, Copy constructors) can't take a byval arg of the parent's type", _
+		@"Local symbols can't be referenced" _
 	}
 
 
@@ -431,7 +432,7 @@ function errReportEx _
 			end if
 		end if
 
-		if( lex <> NULL ) then
+		if( lex.ctx <> NULL ) then
 			linenum = lexLineNum( )
 		end if
 

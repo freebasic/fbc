@@ -151,7 +151,6 @@ function symbAddProcParam _
 		byval ptrcnt as integer, _
 		byval lgt as integer, _
 		byval mode as integer, _
-		byval suffix as integer, _
 		byval attrib as FB_SYMBATTRIB, _
 		byval optexpr as ASTNODE ptr _
 	) as FBSYMBOL ptr
@@ -179,7 +178,6 @@ function symbAddProcParam _
 	''
 	param->lgt = lgt
 	param->param.mode = mode
-	param->param.suffix = suffix
 	param->param.optexpr = optexpr
 
 	'' for UDTs, check if not including a byval param to self
@@ -1116,11 +1114,13 @@ function symbAddParam _
 		attrib or= FB_SYMBATTRIB_PARAMINSTANCE
 	end if
 
+	'' QB quirk..
+	if( symbIsSuffixed( param ) ) then
+		attrib or= FB_SYMBATTRIB_SUFFIXED
+	end if
+
     s = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, _
-    				  0, dTB(), attrib, _
-    				  iif( param->param.suffix <> INVALID, _
-    				  	   FB_SYMBOPT_ADDSUFFIX, _
-    				  	   FB_SYMBOPT_NONE ) )
+    				  0, dTB(), attrib )
 
     if( s = NULL ) then
     	return NULL
@@ -1158,8 +1158,9 @@ function symbAddProcResultParam _
 
     s = symbAddVarEx( NULL, NULL, _
     				  FB_DATATYPE_STRUCT, proc->subtype, 0, FB_POINTERSIZE, _
-    				  0, dTB(), FB_SYMBATTRIB_PARAMBYREF, _
-    				  FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
+    				  0, dTB(), _
+    				  FB_SYMBATTRIB_PARAMBYREF, _
+    				  FB_SYMBOPT_PRESERVECASE )
 
 
 	if( proc->proc.ext = NULL ) then
@@ -1196,9 +1197,10 @@ function symbAddProcResult _
 		id = @"fb$result"
 	end if
 
-	res = symbAddVarEx( id, NULL, proc->typ, proc->subtype, 0, 0, 0, _
-					  	dTB(), FB_SYMBATTRIB_FUNCRESULT, _
-					  	FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
+	res = symbAddVarEx( id, NULL, proc->typ, proc->subtype, 0, 0, _
+						0, dTB(), _
+					  	FB_SYMBATTRIB_FUNCRESULT, _
+					  	FB_SYMBOPT_PRESERVECASE )
 
 	if( proc->proc.ext = NULL ) then
 		proc->proc.ext = symbAllocProcExt( )
@@ -1233,7 +1235,7 @@ function symAddProcInstancePtr _
     function = symbAddProcParam( proc, _
     							 FB_INSTANCEPTR, NULL, _
     					  		 dtype, parent, 0, _
-    					  		 FB_POINTERSIZE, FB_PARAMMODE_BYREF, INVALID, _
+    					  		 FB_POINTERSIZE, FB_PARAMMODE_BYREF, _
     					  		 FB_SYMBATTRIB_PARAMINSTANCE, NULL )
 
 end function

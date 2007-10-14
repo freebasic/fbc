@@ -44,21 +44,19 @@ declare sub 		hMultiLineComment		( )
 const UINVALID as uinteger = cuint( INVALID )
 
 '' globals
-	dim shared as LEX_CTX ctxTB( 0 TO FB_MAXINCRECLEVEL-0 )
-	dim shared as LEX_CTX ptr lex
-	dim shared as integer insidemacro
+	dim shared as LEX_CTX lex
 
 '':::::
 '' only update the line count if not inside a multi-line macro
 #define UPDATE_LINENUM( ) 		_
-	if( lex->deflen = 0 ) then 	:_
-		lex->linenum += 1 		:_
+	if( lex.ctx->deflen = 0 ) then 	:_
+		lex.ctx->linenum += 1 		:_
 	end if
 
 '':::::
 sub lexPushCtx( )
 
-	lex += 1
+	lex.ctx += 1
 
 end sub
 
@@ -66,17 +64,17 @@ end sub
 sub lexPopCtx( )
 
 	if( env.includerec = 0 ) then
-		DZstrAllocate( lex->currline, 0 )
+		DZstrAllocate( lex.ctx->currline, 0 )
 	end if
 
 	'' free dynamic strings used in macro expansions
 	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-		DZstrAllocate( lex->deftext, 0 )
+		DZstrAllocate( lex.ctx->deftext, 0 )
 	else
-		DWstrAllocate( lex->deftextw, 0 )
+		DWstrAllocate( lex.ctx->deftextw, 0 )
 	end if
 
-	lex -= 1
+	lex.ctx -= 1
 
 end sub
 
@@ -91,58 +89,58 @@ sub lexInit _
     dim as FBTOKEN ptr n
 
 	if( env.includerec = 0 ) then
-		lex = @ctxTB(0)
+		lex.ctx = @lex.ctxTB(0)
 	end if
 
 	'' create a circular list
-	lex->k = 0
+	lex.ctx->k = 0
 
-	lex->head = @lex->tokenTB(0)
-	lex->tail = lex->head
+	lex.ctx->head = @lex.ctx->tokenTB(0)
+	lex.ctx->tail = lex.ctx->head
 
-	n = lex->head
+	n = lex.ctx->head
 	for i = 0 to FB_LEX_MAXK-1
-		n->next = @lex->tokenTB(i+1)
+		n->next = @lex.ctx->tokenTB(i+1)
 		n = n->next
 	next
-	n->next = lex->head
+	n->next = lex.ctx->head
 
 	''
 	for i = 0 to FB_LEX_MAXK
-		lex->tokenTB(i).id = INVALID
+		lex.ctx->tokenTB(i).id = INVALID
 	next
 
-	lex->currchar = UINVALID
-	lex->lahdchar = UINVALID
+	lex.ctx->currchar = UINVALID
+	lex.ctx->lahdchar = UINVALID
 
-	lex->linenum = 1
-	lex->lasttk_id = INVALID
+	lex.ctx->linenum = 1
+	lex.ctx->lasttk_id = INVALID
 
-	lex->reclevel = 0
-	lex->currmacro = NULL
+	lex.ctx->reclevel = 0
+	lex.ctx->currmacro = NULL
 
 	''
-	lex->bufflen = 0
-	lex->deflen	= 0
+	lex.ctx->bufflen = 0
+	lex.ctx->deflen	= 0
 
 	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-		lex->buffptr = NULL
-		lex->defptr = NULL
-		DZstrAllocate( lex->deftext, 0 )
+		lex.ctx->buffptr = NULL
+		lex.ctx->defptr = NULL
+		DZstrAllocate( lex.ctx->deftext, 0 )
 	else
-		lex->buffptrw = NULL
-		lex->defptrw = NULL
-		DWstrAllocate( lex->deftextw, 0 )
+		lex.ctx->buffptrw = NULL
+		lex.ctx->defptrw = NULL
+		DWstrAllocate( lex.ctx->deftextw, 0 )
 	end if
 
 	''
-	lex->filepos = 0
-	lex->lastfilepos = 0
+	lex.ctx->filepos = 0
+	lex.ctx->lastfilepos = 0
 
 	'' only if it's not on an inc file
 	if( env.includerec = 0 ) then
-		DZstrAllocate( lex->currline, 0 )
-		insidemacro = FALSE
+		DZstrAllocate( lex.ctx->currline, 0 )
+		lex.insidemacro = FALSE
 	end if
 
 	if( isinclude = FALSE ) then
@@ -167,27 +165,27 @@ private function hReadChar _
 	dim as uinteger char = any
 
 	'' any #define'd text?
-	if( lex->deflen > 0 ) then
+	if( lex.ctx->deflen > 0 ) then
 
 		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-			char = *lex->defptr
+			char = *lex.ctx->defptr
 		else
-			char = *lex->defptrw
+			char = *lex.ctx->defptrw
 		end if
 
 		'' update current line text (if not parsing an inc file)
 		if( env.clopt.debug ) then
 			if( env.includerec = 0 ) then
-				if( insidemacro = FALSE ) then
-					insidemacro = TRUE
-					DZstrConcatAssign( lex->currline, " [Macro Expansion: " )
+				if( lex.insidemacro = FALSE ) then
+					lex.insidemacro = TRUE
+					DZstrConcatAssign( lex.ctx->currline, " [Macro Expansion: " )
 				end if
 
 				select case as const char
 				case 0, CHAR_CR, CHAR_LF
 
 				case else
-					DZstrConcatAssignC( lex->currline, char )
+					DZstrConcatAssignC( lex.ctx->currline, char )
 				end select
 			end if
 		end if
@@ -195,15 +193,15 @@ private function hReadChar _
 	else
 
 		'' buffer empty?
-		if( lex->bufflen = 0 ) then
+		if( lex.ctx->bufflen = 0 ) then
 			if( eof( env.inf.num ) = FALSE ) then
-				lex->filepos = seek( env.inf.num )
+				lex.ctx->filepos = seek( env.inf.num )
 
 				select case as const env.inf.format
 				case FBFILE_FORMAT_ASCII
-					if( get( #env.inf.num, , lex->buff ) = 0 ) then
-						lex->bufflen = seek( env.inf.num ) - lex->filepos
-						lex->buffptr = @lex->buff
+					if( get( #env.inf.num, , lex.ctx->buff ) = 0 ) then
+						lex.ctx->bufflen = seek( env.inf.num ) - lex.ctx->filepos
+						lex.ctx->buffptr = @lex.ctx->buff
 					end if
 
 				case FBFILE_FORMAT_UTF8
@@ -227,11 +225,11 @@ private function hReadChar _
 		end if
 
 		''
-		if( lex->bufflen > 0 ) then
+		if( lex.ctx->bufflen > 0 ) then
 			if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-				char = *lex->buffptr
+				char = *lex.ctx->buffptr
 			else
-				char = *lex->buffptrw
+				char = *lex.ctx->buffptrw
 			end if
 
 		else
@@ -241,16 +239,16 @@ private function hReadChar _
 		'' update current line text (if not parsing an inc file)
 		if( env.clopt.debug ) then
 			if( env.includerec = 0 ) then
-				if( insidemacro ) then
-					insidemacro = FALSE
-					DZstrConcatAssign( lex->currline, " ] " )
+				if( lex.insidemacro ) then
+					lex.insidemacro = FALSE
+					DZstrConcatAssign( lex.ctx->currline, " ] " )
 				end if
 
 				select case as const char
 				case 0, CHAR_CR, CHAR_LF
 
 				case else
-					DZstrConcatAssignC( lex->currline, char )
+					DZstrConcatAssignC( lex.ctx->currline, char )
 				end select
 			end if
 		end if
@@ -268,39 +266,39 @@ function lexEatChar _
 	) as uinteger
 
     ''
-    function = lex->currchar
+    function = lex.ctx->currchar
 
 	'' update if a look ahead char wasn't read already
-	if( lex->lahdchar = UINVALID ) then
+	if( lex.ctx->lahdchar = UINVALID ) then
 
 		'' #define'd text?
-		if( lex->deflen > 0 ) then
-			lex->deflen -= 1
+		if( lex.ctx->deflen > 0 ) then
+			lex.ctx->deflen -= 1
 
 			if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-				lex->defptr += 1
+				lex.ctx->defptr += 1
 			else
-				lex->defptrw += 1
+				lex.ctx->defptrw += 1
 			end if
 
 		'' input stream (not EOF?)
-		elseif( lex->currchar <> 0 ) then
-			lex->bufflen -= 1
+		elseif( lex.ctx->currchar <> 0 ) then
+			lex.ctx->bufflen -= 1
 
 			if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-				lex->buffptr += 1
+				lex.ctx->buffptr += 1
 			else
-				lex->buffptrw += 1
+				lex.ctx->buffptrw += 1
 			end if
 
 		end if
 
-    	lex->currchar = UINVALID
+    	lex.ctx->currchar = UINVALID
 
     '' current= lookahead; lookhead = INVALID
     else
-    	lex->currchar = lex->lahdchar
-    	lex->lahdchar = UINVALID
+    	lex.ctx->currchar = lex.ctx->lahdchar
+    	lex.ctx->lahdchar = UINVALID
 	end if
 
 end function
@@ -309,23 +307,23 @@ end function
 private sub hSkipChar
 
 	'' #define'd text?
-	if( lex->deflen > 0 ) then
-		lex->deflen -= 1
+	if( lex.ctx->deflen > 0 ) then
+		lex.ctx->deflen -= 1
 
 		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-			lex->defptr += 1
+			lex.ctx->defptr += 1
 		else
-			lex->defptrw += 1
+			lex.ctx->defptrw += 1
 		end if
 
 	'' input stream (not EOF?)
-	elseif( lex->currchar <> 0 ) then
-		lex->bufflen -= 1
+	elseif( lex.ctx->currchar <> 0 ) then
+		lex.ctx->bufflen -= 1
 
 		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-			lex->buffptr += 1
+			lex.ctx->buffptr += 1
 		else
-			lex->buffptrw += 1
+			lex.ctx->buffptrw += 1
 		end if
 
 	end if
@@ -338,18 +336,18 @@ function lexCurrentChar _
 		byval skipwhitespc as integer = FALSE _
 	) as uinteger
 
-    if( lex->currchar = UINVALID ) then
-    	lex->currchar = hReadChar( )
+    if( lex.ctx->currchar = UINVALID ) then
+    	lex.ctx->currchar = hReadChar( )
     end if
 
     if( skipwhitespc ) then
-    	do while( (lex->currchar = CHAR_TAB) or (lex->currchar = CHAR_SPACE) )
+    	do while( (lex.ctx->currchar = CHAR_TAB) or (lex.ctx->currchar = CHAR_SPACE) )
     		lexEatChar( )
-    		lex->currchar = hReadChar( )
+    		lex.ctx->currchar = hReadChar( )
     	loop
     end if
 
-    function = lex->currchar
+    function = lex.ctx->currchar
 
 end function
 
@@ -359,19 +357,19 @@ function lexGetLookAheadChar _
 		byval skipwhitespc as integer = FALSE _
 	) as uinteger
 
-	if( lex->lahdchar = UINVALID ) then
+	if( lex.ctx->lahdchar = UINVALID ) then
 		hSkipChar( )
-		lex->lahdchar = hReadChar( )
+		lex.ctx->lahdchar = hReadChar( )
 	end if
 
     if( skipwhitespc ) then
-    	do while( (lex->lahdchar = CHAR_TAB) or (lex->lahdchar = CHAR_SPACE) )
+    	do while( (lex.ctx->lahdchar = CHAR_TAB) or (lex.ctx->lahdchar = CHAR_SPACE) )
     		hSkipChar( )
-    		lex->lahdchar = hReadChar( )
+    		lex.ctx->lahdchar = hReadChar( )
     	loop
     end if
 
-	function = lex->lahdchar
+	function = lex.ctx->lahdchar
 
 end function
 
@@ -464,9 +462,14 @@ private sub hReadIdentifier _
 
 	if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 		select case as const lexCurrentChar( )
-		'' '%' or '&'?
-		case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
-			dtype = FB_DATATYPE_INTEGER
+		'' '%'?
+		case FB_TK_INTTYPECHAR
+			dtype = fbLangGetType( INTEGER )
+			c = lexEatChar( )
+
+		'' '&'?
+		case FB_TK_LNGTYPECHAR
+			dtype = fbLangGetType( LONG )
 			c = lexEatChar( )
 
 		'' '!'?
@@ -743,7 +746,7 @@ private sub hReadFloatNumber _
     dim as integer llen = any
     dim as integer skipchar = any
 
-	dtype = FB_DATATYPE_DOUBLE
+	dtype = fbLangGetDefLiteral( DOUBLE )
 	llen = tlen
 	skipchar = FALSE
 
@@ -1092,14 +1095,30 @@ read_char:
 				dtype = FB_DATATYPE_DOUBLE
 				lexEatChar( )
 
-			'' '%' | '&'
-			case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
+			'' '%'
+			case FB_TK_INTTYPECHAR
 				if( islong ) then
 					if( skipchar = FALSE ) then
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 						end if
 					end if
+				else
+					dtype = fbLangGetType( INTEGER )
+				end if
+
+				lexEatChar( )
+
+			'' '&'
+			case FB_TK_LNGTYPECHAR
+				if( islong ) then
+					if( skipchar = FALSE ) then
+						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
+						end if
+					end if
+				else
+					dtype = fbLangGetType( LONG )
 				end if
 
 				lexEatChar( )
@@ -1127,13 +1146,13 @@ read_char:
 				end if
 			else
 				if( issigned ) then
-					dtype = FB_DATATYPE_INTEGER
+					dtype = fbLangGetDefLiteral( INTEGER )
 				else
-					dtype = FB_DATATYPE_UINT
+					dtype = fbLangGetDefLiteral( UINT )
 				end if
 			end if
 		else
-			dtype = FB_DATATYPE_DOUBLE
+			dtype = fbLangGetDefLiteral( DOUBLE )
 		end if
 	end if
 
@@ -1431,6 +1450,7 @@ re_read:
 		case 0
 			t->id = FB_TK_EOF
 			t->class = FB_TKCLASS_DELIMITER
+			t->dtype = INVALID
 			exit sub
 
 		'' line continuation?
@@ -1477,6 +1497,7 @@ re_read:
 			if( islinecont = FALSE ) then
 				t->id = FB_TK_EOL
 				t->class = FB_TKCLASS_DELIMITER
+				t->dtype = INVALID
 				t->len = 1
 				t->text[0] = CHAR_LF					'' t.text = chr( 10 )
 				t->text[1] = 0                          '' /
@@ -1510,7 +1531,7 @@ re_read:
 
 	loop
 
-	lex->lastfilepos = lex->filepos + (lex->buffptr - @lex->buff) - 1
+	lex.ctx->lastfilepos = lex.ctx->filepos + (lex.ctx->buffptr - @lex.ctx->buff) - 1
 
 	select case as const char
 	'' '.'?
@@ -1539,8 +1560,8 @@ re_read:
 
 		t->class = FB_TKCLASS_OPERATOR
 		t->id = lexEatChar( )
-		t->len = 1
 		t->dtype = t->id
+		t->len = 1
 		t->text[0] = char                   	'' t.text = chr( char )
 		t->text[1] = 0                          '' /
 
@@ -1560,7 +1581,7 @@ read_id:
 
 		'' use the special hash tb?
 		if( (flags and LEXCHECK_KWDNAMESPC) <> 0 ) then
-			t->sym_chain = symbLookupAt( lex->kwdns, @t->text, FALSE, FALSE )
+			t->sym_chain = symbLookupAt( lex.ctx->kwdns, @t->text, FALSE, FALSE )
 			'' not found?
 			if( t->sym_chain = NULL ) then
 				t->id = FB_TK_ID
@@ -1611,8 +1632,8 @@ read_id:
 	'' '"'?
 	case CHAR_QUOTE
 		t->class = FB_TKCLASS_STRLITERAL
-
 		t->id = iif( env.opt.escapestr, FB_TK_STRLIT_ESC, FB_TK_STRLIT )
+		t->dtype = INVALID
 
 		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 			hReadString( t, @t->text, flags )
@@ -1630,8 +1651,8 @@ read_id:
 		lexEatChar( )
 
 		t->class = FB_TKCLASS_STRLITERAL
-
 		t->id = iif( char = CHAR_EXCL, FB_TK_STRLIT_ESC, FB_TK_STRLIT_NOESC )
+		t->dtype = INVALID
 
 		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 			dim as zstring ptr ps = any
@@ -1665,9 +1686,9 @@ read_id:
 read_char:
 
 		t->id = lexEatChar( )
-		t->len = 1
 		t->dtype = t->id
 
+		t->len = 1
 		t->text[0] = char                            '' t.text = chr( char )
 		t->text[1] = 0                               '' /
 
@@ -1870,12 +1891,12 @@ function lexGetToken _
 		byval flags as LEXCHECK _
 	) as integer static
 
-    if( lex->head->id = INVALID ) then
-    	lexNextToken( lex->head, flags )
+    if( lex.ctx->head->id = INVALID ) then
+    	lexNextToken( lex.ctx->head, flags )
     	ppCheck( )
     end if
 
-    function = lex->head->id
+    function = lex.ctx->head->id
 
 end function
 
@@ -1885,12 +1906,12 @@ function lexGetClass _
 		byval flags as LEXCHECK _
 	) as integer static
 
-    if( lex->head->id = INVALID ) then
-    	lexNextToken( lex->head, flags )
+    if( lex.ctx->head->id = INVALID ) then
+    	lexNextToken( lex.ctx->head, flags )
     	ppCheck( )
     end if
 
-    function = lex->head->class
+    function = lex.ctx->head->class
 
 end function
 
@@ -1905,16 +1926,16 @@ function lexGetLookAhead _
     	exit function
     end if
 
-	if( k > lex->k ) then
-		lex->k = k
-		lex->tail = lex->tail->next
+	if( k > lex.ctx->k ) then
+		lex.ctx->k = k
+		lex.ctx->tail = lex.ctx->tail->next
 	end if
 
-    if( lex->tail->id = INVALID ) then
-	    lexNextToken( lex->tail, flags )
+    if( lex.ctx->tail->id = INVALID ) then
+	    lexNextToken( lex.ctx->tail, flags )
 	end if
 
-	function = lex->tail->id
+	function = lex.ctx->tail->id
 
 end function
 
@@ -1929,26 +1950,26 @@ function lexGetLookAheadClass _
     	exit function
     end if
 
-	if( k > lex->k ) then
-		lex->k = k
-		lex->tail = lex->tail->next
+	if( k > lex.ctx->k ) then
+		lex.ctx->k = k
+		lex.ctx->tail = lex.ctx->tail->next
 	end if
 
-    if( lex->tail->id = INVALID ) then
-    	lexNextToken( lex->tail, flags )
+    if( lex.ctx->tail->id = INVALID ) then
+    	lexNextToken( lex.ctx->tail, flags )
     end if
 
-    function = lex->tail->class
+    function = lex.ctx->tail->class
 
 end function
 
 '':::::
 private sub hMoveKDown( ) static
 
-    lex->head->id = INVALID
+    lex.ctx->head->id = INVALID
 
-    lex->k -= 1
-    lex->head = lex->head->next
+    lex.ctx->k -= 1
+    lex.ctx->head = lex.ctx->head->next
 
 end sub
 
@@ -1959,7 +1980,7 @@ sub lexSkipToken _
 	) static
 
     '' update stats
-    select case lex->head->id
+    select case lex.ctx->head->id
     case FB_TK_EOL
     	UPDATE_LINENUM( )
     	parser.stmt.cnt += 1
@@ -1969,15 +1990,15 @@ sub lexSkipToken _
     end select
 
 	'' if no macro text been read, reset
-	if( lex->deflen = 0 ) then
-		lex->currmacro = NULL
+	if( lex.ctx->deflen = 0 ) then
+		lex.ctx->currmacro = NULL
 	end if
 
-    lex->lasttk_id = lex->head->id
+    lex.ctx->lasttk_id = lex.ctx->head->id
 
     ''
-    if( lex->k = 0 ) then
-    	lexNextToken( lex->head, flags )
+    if( lex.ctx->k = 0 ) then
+    	lexNextToken( lex.ctx->head, flags )
     else
     	hMoveKDown( )
     end if
@@ -1994,10 +2015,10 @@ sub lexEatToken _
 	) static
 
     ''
-  	if( lex->head->dtype <> FB_DATATYPE_WCHAR ) then
-    	*token = lex->head->text
+  	if( lex.ctx->head->dtype <> FB_DATATYPE_WCHAR ) then
+    	*token = lex.ctx->head->text
     else
-    	*token = str( lex->head->textw )
+    	*token = str( lex.ctx->head->textw )
     end if
 
     lexSkipToken( flags )
@@ -2011,10 +2032,10 @@ function lexGetText _
 
     static as zstring * FB_MAXLITLEN+1 tmpstr
 
-  	if( lex->head->dtype <> FB_DATATYPE_WCHAR ) then
-    	function = @lex->head->text
+  	if( lex.ctx->head->dtype <> FB_DATATYPE_WCHAR ) then
+    	function = @lex.ctx->head->text
     else
-    	tmpstr = str( lex->head->textw )
+    	tmpstr = str( lex.ctx->head->textw )
     	function = @tmpstr
     end if
 
@@ -2035,13 +2056,13 @@ sub lexReadLine _
 	end if
 
     '' check look ahead tokens if any
-    do while( lex->k > 0 )
-    	select case lex->head->id
+    do while( lex.ctx->k > 0 )
+    	select case lex.ctx->head->id
     	case FB_TK_EOF, FB_TK_EOL, endchar
     		exit sub
     	case else
     		if( skipline = FALSE ) then
-   				*dst += lex->head->text
+   				*dst += lex.ctx->head->text
     		end if
     	end select
 
@@ -2049,12 +2070,12 @@ sub lexReadLine _
     loop
 
    	'' check current token
-    select case lex->head->id
+    select case lex.ctx->head->id
     case FB_TK_EOF, FB_TK_EOL, endchar
    		exit sub
    	case else
    		if( skipline = FALSE ) then
-    		*dst += lex->head->text
+    		*dst += lex.ctx->head->text
    		end if
    	end select
 
@@ -2065,8 +2086,8 @@ sub lexReadLine _
 		'' EOF?
 		select case as const char
 		case 0
-			lex->head->id = FB_TK_EOF
-			lex->head->class = FB_TKCLASS_DELIMITER
+			lex.ctx->head->id = FB_TK_EOF
+			lex.ctx->head->class = FB_TKCLASS_DELIMITER
 			exit sub
 
 		'' EOL?
@@ -2077,15 +2098,15 @@ sub lexReadLine _
 				if( lexCurrentChar( ) = CHAR_LF ) then lexEatChar
 			end if
 
-			lex->head->id 	 = FB_TK_EOL
-			lex->head->class = FB_TKCLASS_DELIMITER
+			lex.ctx->head->id 	 = FB_TK_EOL
+			lex.ctx->head->class = FB_TKCLASS_DELIMITER
 			exit sub
 
 		case else
 			'' closing char?
 			if( char = endchar ) then
-				lex->head->id 	 = endchar
-				lex->head->class = FB_TKCLASS_DELIMITER
+				lex.ctx->head->id 	 = endchar
+				lex.ctx->head->class = FB_TKCLASS_DELIMITER
 				exit sub
 			end if
 		end select
@@ -2127,7 +2148,7 @@ function lexPeekCurrentLine _
 
 	'' get file contents around current token
 	old_p = seek( env.inf.num )
-	p = lex->lastfilepos - 512
+	p = lex.ctx->lastfilepos - 512
 	start = 512
 	if( p < 0 ) then
 		start += p

@@ -45,18 +45,18 @@ const fbdllreason = "__FB_DLLREASON__"
 	symbAddProcParam( proc, "__FB_DLLINSTANCE__", NULL, _
 					  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 1, _
 					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
-					  INVALID, 0, NULL )
+					  0, NULL )
 
 	'' reason
 	param = symbAddProcParam( proc, fbdllreason, NULL, _
 					  		  FB_DATATYPE_UINT, NULL, 0, _
 					  		  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, _
-					  		  INVALID, 0, NULL )
+					  		  0, NULL )
 
 	'' reserved
 	symbAddProcParam( proc, "__FB_DLLRESERVED__", NULL, _
 					  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 1, _
-					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, INVALID, 0, NULL )
+					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' function DllMain( byval instance as any ptr, byval reason as uinteger, _
 	''                   byval reserved as any ptr ) as integer
@@ -161,13 +161,13 @@ const fbargv = "__FB_ARGV__"
 	env.main.argc = symbAddProcParam( proc, fbargc, NULL, _
 					  			   	  FB_DATATYPE_INTEGER, NULL, 0, _
 					  				  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, _
-					  				  INVALID, 0, NULL )
+					  				  0, NULL )
 
 	'' argv
 	env.main.argv = symbAddProcParam( proc, fbargv, NULL, _
 					  				  typeSetType( FB_DATATYPE_CHAR, 2 ), NULL, 2, _
 					  				  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
-					  				  INVALID, 0, NULL )
+					  				  0, NULL )
 
 	''
 	if( isdllmain = FALSE ) then

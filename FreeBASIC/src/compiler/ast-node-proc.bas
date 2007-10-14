@@ -311,23 +311,32 @@ function astAdd _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
+	static as integer reclevel = 0
+
 	if( n = NULL ) then
 		return NULL
 	end if
 
-	''
-	hCheckCtor( n )
+	'' typeIniUpdate() and hCallCtors() will recurse in this function
+	if( reclevel = 0 ) then
+		reclevel += 1
 
-	'' do updates and optimizations now as they can
-	'' allocate new vars and create/delete nodes
-	n = astTypeIniUpdate( n )
-	n = astOptimizeTree( n )
-	n = astOptAssignment( n )
-	n = astUpdStrConcat( n )
+		''
+		hCheckCtor( n )
 
-	'' del temp instances
-	if( ast.flushdtorlist ) then
-		n = astDTorListFlush( n, TRUE )
+		'' do updates and optimizations now as they can
+		'' allocate new vars and create/delete nodes
+		n = astTypeIniUpdate( n )
+		n = astOptimizeTree( n )
+		n = astOptAssignment( n )
+		n = astUpdStrConcat( n )
+
+		'' del temp instances
+		if( ast.flushdtorlist ) then
+			n = astDTorListFlush( n, TRUE )
+		end if
+
+		reclevel -= 1
 	end if
 
 	''

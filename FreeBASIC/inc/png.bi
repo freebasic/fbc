@@ -81,7 +81,7 @@ type png_zstreamp as z_stream ptr
 # define PNG_ABORT() abort()
 #endif
 
-#define png_jmpbuf(png) @(png)->jmpbuf(0)
+#define png_jmpbuf(png) @(png)->jmpbuf
 '' end include
 
 #define PNG_LIBPNG_BUILD_TYPE 4

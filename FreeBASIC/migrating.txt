@@ -96,6 +96,9 @@ FreeBASIC Dialects
 
    12) numeric labels
       * No comment.
+      
+   13) global symbols with the same name as keywords
+      * Declare them inside a namespace.
 
 -lang deprecated
     
@@ -124,7 +127,7 @@ FreeBASIC Dialects
 
    Supported: Everything not supported/allowed in the fb mode, plus..
 
-   1) Call can be used with forward-referenced functions. (W.I.P.)
+   1) Call can be used with forward-referenced functions.
 
    2) Shared can be used inside functions. (W.I.P.)
 
@@ -148,11 +151,15 @@ FreeBASIC Dialects
 
    5) Scope blocks
 
-   6) Extern blocks.
+   6) Extern blocks
 
    7) Variable initialization
       * All variables are moved to the procedure scope (like in QuickBASIC),
         making initializing local variables too difficult to support.
+        
+   8) Any data type or function not present in QuickBASIC
+      * No BYTE/SHORT/LONGINT/WSTRING, no pointers, no SHL/SHR, 
+        no IMAGECREATE/SCREENRES etc etc etc.
 
 This file converted from:
    http://www.freebasic.net/wiki/wikka.php?wakka=CompilerDialects

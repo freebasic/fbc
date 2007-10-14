@@ -1,3 +1,16 @@
+Version 0.18.3 Beta:
+
+[changed]
+- lang qb: INTEGER (%) and LONG (&) are now, respectively, 16- and 32-bit wide (v1c)
+- lang qb: default numeric literals are now assumed to be INTEGER or SINGLE (v1c)
+- lang qb: symbols with the same name as keywords are now allowed: dim left as integer: const dim$ = "" etc (v1c)
+
+[added]
+
+[fixed]
+- GOTO, GOSUB and RETURN were accepting invalid labels (v1c)
+
+
 Version 0.18.2 Beta:
 
 [changed]

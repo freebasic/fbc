@@ -90,13 +90,13 @@ function cConstAssign _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
-	) as integer static
+	) as integer
 
     static as zstring * FB_MAXNAMELEN+1 id
-    dim as integer edtype, doskip
-    dim as ASTNODE ptr expr
-    dim as FBSYMBOL ptr parent, litsym
-    dim as FBVALUE value
+    dim as integer doskip = any
+    dim as ASTNODE ptr expr = any
+    dim as FBSYMBOL ptr parent = any, litsym = any
+    dim as FBVALUE value = any
 
 	function = FALSE
 
@@ -112,8 +112,11 @@ function cConstAssign _
     	end if
     end if
 
+	dim as integer suffix = lexGetType( )
+	hCheckSuffix( suffix )
+
 	'' ID
-	select case lexGetClass( )
+	select case as const lexGetClass( )
 	case FB_TKCLASS_IDENTIFIER
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
@@ -127,16 +130,29 @@ function cConstAssign _
 		end if
 
 	case FB_TKCLASS_QUIRKWD
-		'' only if inside a ns and if not local
-		if( (symbIsGlobalNamespc( )) or (parser.scope > FB_MAINSCOPE) ) then
+		if( env.clopt.lang <> FB_LANG_QB ) then
+			'' only if inside a ns and if not local
+			if( (symbIsGlobalNamespc( )) or (parser.scope > FB_MAINSCOPE) ) then
+    			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+    				exit function
+    			else
+					'' error recovery: skip until next stmt or const decl
+					hSkipUntil( FB_TK_DECLSEPCHAR )
+					return TRUE
+    			end if
+    		end if
+    	end if
+
+	case FB_TKCLASS_KEYWORD, FB_TKCLASS_OPERATOR
+		if( env.clopt.lang <> FB_LANG_QB ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     			exit function
-    		else
+			else
 				'' error recovery: skip until next stmt or const decl
 				hSkipUntil( FB_TK_DECLSEPCHAR )
 				return TRUE
-    		end if
-    	end if
+			end if
+		end if
 
 	case else
 		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
@@ -149,10 +165,6 @@ function cConstAssign _
 	end select
 
 	id = *lexGetText( )
-
-	edtype = lexGetType( )
-	hCheckSuffix( edtype )
-
 	lexSkipToken( )
 
 	'' not multiple?
@@ -164,15 +176,17 @@ function cConstAssign _
 	end if
 
 	'' both suffix and type given?
-	if( edtype <> INVALID ) then
+	if( suffix <> INVALID ) then
 		if( dtype <> INVALID ) then
 			if( errReportEx( FB_ERRMSG_SYNTAXERROR, id ) = FALSE ) then
 				exit function
 			end if
 		end if
 
-		dtype = edtype
+		dtype = suffix
 		subtype = NULL
+
+		attrib or= FB_SYMBATTRIB_SUFFIXED
 	end if
 
 	'' '='
@@ -205,9 +219,9 @@ function cConstAssign _
 	end if
 
 	'' check if it's an string
-	edtype = astGetDataType( expr )
+	dim as integer exprdtype = astGetDataType( expr )
 	litsym = NULL
-	select case edtype
+	select case exprdtype
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		litsym = astGetStrLitSymbol( expr )
 	end select
@@ -226,7 +240,7 @@ function cConstAssign _
 
 		value.str = litsym
 
-		if( symbAddConst( @id, edtype, NULL, @value, attrib ) = NULL ) then
+		if( symbAddConst( @id, exprdtype, NULL, @value, attrib ) = NULL ) then
     		if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
     			exit function
     		end if
@@ -243,7 +257,7 @@ function cConstAssign _
 				'' error recovery: create a fake node
 				astDelTree( expr )
 				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				edtype = FB_DATATYPE_INTEGER
+				exprdtype = FB_DATATYPE_INTEGER
 			end if
 		end if
 
@@ -255,14 +269,14 @@ function cConstAssign _
 				else
 					'' error recovery: create a fake node
 					astDelTree( expr )
-					edtype = dtype
+					exprdtype = dtype
 					subtype = NULL
 					expr = astNewCONSTstr( NULL )
 				end if
 			end if
 
 			'' convert if needed
-			if( (dtype <> edtype) or _
+			if( (dtype <> exprdtype) or _
 				(subtype <> astGetSubtype( expr )) ) then
 
 				expr = astNewCONV( dtype, subtype, expr )
@@ -279,7 +293,7 @@ function cConstAssign _
 			end if
 
 		else
-			dtype = edtype
+			dtype = exprdtype
 			subtype = astGetSubtype( expr )
 		end if
 

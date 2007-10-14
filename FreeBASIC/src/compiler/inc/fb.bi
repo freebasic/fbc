@@ -530,11 +530,18 @@ declare sub fbSetPrefix _
 '' macros
 ''
 
-#define fbLangOptIsSet( opt ) ((env.langopt and (opt)) <> 0)
+#define fbLangOptIsSet( op ) ((env.lang.opt and (op)) <> 0)
 
-#define fbLangIsSet( opt ) (env.clopt.lang = opt)
+#define fbLangIsSet( op ) (env.clopt.lang = op)
 
-#define fbPdCheckIsSet( opt ) ((env.clopt.pdcheckopt and (opt)) <> 0)
+#define fbLangGetType( tp ) env.lang.typeremap.tp
+
+#define fbLangGetSize( tp ) env.lang.sizeremap.tp
+
+#define fbLangGetDefLiteral( tp ) env.lang.litremap.tp
+
+#define fbPdCheckIsSet( op ) ((env.clopt.pdcheckopt and (op)) <> 0)
+
 
 ''
 '' new implementation

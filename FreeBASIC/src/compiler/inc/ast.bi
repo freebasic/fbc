@@ -1257,6 +1257,11 @@ declare function astGetCALLResUDT _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function astFindLocalSymbol _
+	( _
+		byval n as ASTNODE ptr _
+	) as FBSYMBOL ptr
+
 ''
 '' macros
 ''

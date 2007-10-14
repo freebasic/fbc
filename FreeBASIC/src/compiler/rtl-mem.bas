@@ -119,7 +119,7 @@
 		( _
 			@"allocate", @"malloc", _
 			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -131,7 +131,7 @@
 		( _
 			@"callocate", @"calloc", _
 			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
- 			NULL, FB_RTL_OPT_NONE, _
+ 			NULL, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( _
@@ -146,7 +146,7 @@
 		( _
 			@"reallocate", @"realloc", _
 			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
- 			NULL, FB_RTL_OPT_NONE, _
+ 			NULL, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( _
@@ -161,7 +161,7 @@
 		( _
 			@"deallocate", @"free", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _

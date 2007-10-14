@@ -323,6 +323,30 @@ function symbCanDuplicate _
 					exit function
 				end if
 
+			'' only if the keyword or the rtl-proc has a string suffix
+			case FB_SYMBCLASS_KEYWORD, FB_SYMBCLASS_PROC
+				if( env.clopt.lang <> FB_LANG_QB ) then
+					exit function
+				end if
+
+				'' only if it's a RTL function..
+				if( symbIsProc( head_sym ) ) then
+					if( symbGetIsRTL( head_sym ) = FALSE ) then
+						exit function
+					end if
+				end if
+
+				'' nothing else takes a suffix but rtl-funcs returning strings
+				if( symbIsSuffixed( s ) ) then
+					if( symbGetType( s ) = symbGetType( head_sym ) ) then
+						exit function
+					end if
+				else
+					if( symbGetType( head_sym ) <> FB_DATATYPE_STRING ) then
+						exit function
+					end if
+				end if
+
 			case else
 				exit function
 			end select
@@ -345,6 +369,30 @@ function symbCanDuplicate _
 					exit function
 				end if
 
+			'' only if the keyword or the rtl-proc has a string suffix
+			case FB_SYMBCLASS_KEYWORD, FB_SYMBCLASS_PROC
+				if( env.clopt.lang <> FB_LANG_QB ) then
+					exit function
+				end if
+
+				'' only if it's a RTL function..
+				if( symbIsProc( head_sym ) ) then
+					if( symbGetIsRTL( head_sym ) = FALSE ) then
+						exit function
+					end if
+				end if
+
+				'' nothing else takes a suffix but rtl-funcs returning strings
+				if( symbIsSuffixed( s ) ) then
+					if( symbGetType( s ) = symbGetType( head_sym ) ) then
+						exit function
+					end if
+				else
+					if( symbGetType( head_sym ) <> FB_DATATYPE_STRING ) then
+						exit function
+					end if
+				end if
+
 			'' allow fields dups, if in a different scope
 			case FB_SYMBCLASS_FIELD
 				'' same scope?
@@ -357,13 +405,12 @@ function symbCanDuplicate _
 			case FB_SYMBCLASS_VAR
 				'' same scope?
 				if( s->scope = head_sym->scope ) then
-					if( (s->var_.suffix = INVALID) or _
-						(head_sym->var_.suffix = INVALID) ) then
-	    				exit function
+					if( env.clopt.lang = FB_LANG_FB ) then
+						exit function
 					end if
 
-    				'' same suffix?
-    				if( head_sym->var_.suffix = s->var_.suffix ) then
+    				'' same data type?
+    				if( symbGetType( head_sym ) = symbGetType( s ) ) then
     					exit function
     				end if
     			end if
@@ -421,8 +468,7 @@ function symbNewSymbol _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval ptrcnt as integer, _
-		byval attrib as FB_SYMBATTRIB, _
-		byval suffix as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
     dim as integer slen = any, delok = any
@@ -431,20 +477,24 @@ function symbNewSymbol _
 
 	if( symtb = NULL ) then
 		symtb = symb.symtb
-		attrib or= FB_SYMBATTRIB_LOCAL
 
 		'' parsing main?
 		if( fbIsModLevel( )  ) then
-			'' not inside a namespace?
-			if( symbIsGlobalNamespc( ) ) then
-				'' add to global tb, unless it's inside a scope block..
-				if( parser.scope = FB_MAINSCOPE ) then
+			'' add to global tb, unless it's inside a scope block..
+			if( parser.scope = FB_MAINSCOPE ) then
+				'' not inside a namespace?
+				if( symbIsGlobalNamespc( ) ) then
 					'' symb.symbtb is pointing to main's symtb (due the
 					'' implicit main function), so it can't be used
 					symtb = @symbGetGlobalTb( )
-					attrib and= not FB_SYMBATTRIB_LOCAL
 				end if
+
+				attrib and= not FB_SYMBATTRIB_LOCAL
+			else
+				attrib or= FB_SYMBATTRIB_LOCAL
 			end if
+		else
+			attrib or= FB_SYMBATTRIB_LOCAL
 		end if
     end if
 
@@ -512,11 +562,6 @@ function symbNewSymbol _
     s->lgt = 0
     s->ofs = 0
 
-    if( class_ = FB_SYMBCLASS_VAR ) then
-    	'' needed by symbCanDup()
-    	s->var_.suffix = suffix
-    end if
-
 	'' add to hash table
 	s->hash.tb = hashtb
 
@@ -534,25 +579,54 @@ function symbNewSymbol _
             s->hash.next = NULL
 
 		else
-			'' can be duplicated?
-			if( symbCanDuplicate( head_sym, s ) = FALSE ) then
-				poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
-				ZstrFree( s->id.alias )
-				ZstrFree( s->id.mangled )
-				if( delok ) then
-					listDelNode( @symb.symlist, s )
+			'' can it be duplicated?
+			if( (options and FB_SYMBOPT_NODUPCHECK) = 0 ) then
+				if( symbCanDuplicate( head_sym, s ) = FALSE ) then
+					poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
+					ZstrFree( s->id.alias )
+					ZstrFree( s->id.mangled )
+					if( delok ) then
+						listDelNode( @symb.symlist, s )
+					end if
+					exit function
 				end if
-				exit function
 			end if
 
 			s->hash.item = head_sym->hash.item
 
-			'' add to head
-			head_sym->hash.item->data = s
-			head_sym->hash.item->name = s->id.name
-			head_sym->hash.prev = s
-			s->hash.prev = NULL
-			s->hash.next = head_sym
+			'' add to head so no scope resolution is needed
+
+    		'' QB mode?
+    		if( env.clopt.lang = FB_LANG_QB ) then
+    			'' keywords must stay at the head
+    			dim as FBSYMBOL ptr prev = NULL
+    			do while( symbIsKeyword( head_sym ) )
+    				prev = head_sym
+    				head_sym = head_sym->hash.next
+    				if( head_sym = NULL ) then
+    					exit do
+    				end if
+    			loop
+
+				if( prev = NULL ) then
+					goto add_prev
+				endif
+
+				prev->hash.next = s
+				s->hash.prev = prev
+				s->hash.next = head_sym
+				if( head_sym <> NULL ) then
+					head_sym->hash.prev = s
+				end if
+
+    		else
+add_prev:		head_sym->hash.item->data = s
+				head_sym->hash.item->name = s->id.name
+				head_sym->hash.prev = s
+				s->hash.prev = NULL
+				s->hash.next = head_sym
+    		end if
+
 		end if
 
 	else
@@ -1033,22 +1107,6 @@ function symbLookupByNameAndSuffix _
 
 end function
 
-'':::
-#macro hCheckModLevelVar( sym )
-	if( fbIsModLevel( ) = FALSE ) then
-		'' local?
-		if( symbIsLocal( sym ) ) then
-			'' not a main()'s local?
-			if( sym->scope = FB_MAINSCOPE ) then
-				return NULL
-		    end if
-		'' not shared?
-		elseif( symbIsShared( sym ) = FALSE ) then
-			return NULL
-		end if
-	end if
-#endmacro
-
 '':::::
 function symbFindByClass _
 	( _
@@ -1076,8 +1134,12 @@ function symbFindByClass _
 
 check_var:
 	'' check if symbol isn't a non-shared module level one
-	if( sym->class = FB_SYMBCLASS_VAR ) then
-		hCheckModLevelVar( sym )
+	if( symbIsVar( sym ) ) then
+		if( symbVarCheckAccess( sym ) ) then
+			return sym
+		else
+			return NULL
+		end if
 	end if
 
 	function = sym
@@ -1100,10 +1162,9 @@ function symbFindVarBySuffix _
    		do while( chain_ <> NULL )
     		sym = chain_->sym
     		do
-    			if( sym->class = FB_SYMBCLASS_VAR ) then
-     				select case sym->typ
-     				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-     				 	FB_DATATYPE_CHAR
+    			if( symbIsVar( sym ) ) then
+     				select case symbGetType( sym )
+     				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
      					goto check_var
      				end select
      			end if
@@ -1119,8 +1180,8 @@ function symbFindVarBySuffix _
     	do while( chain_ <> NULL )
     		sym = chain_->sym
     		do
-    			if( sym->class = FB_SYMBCLASS_VAR ) then
-    				if( sym->typ = suffix ) then
+    			if( symbIsVar( sym ) ) then
+    				if( symbGetType( sym ) = suffix ) then
     					goto check_var
     				end if
     			end if
@@ -1136,9 +1197,11 @@ function symbFindVarBySuffix _
 
 check_var:
 	'' check if symbol isn't a non-shared module level one
-	hCheckModLevelVar( sym )
-
-	function = sym
+	if( symbVarCheckAccess( sym ) ) then
+		function = sym
+	else
+		function = NULL
+	end if
 
 end function
 
@@ -1159,16 +1222,15 @@ function symbFindVarByDefType _
     	do while( chain_ <> NULL )
     		sym = chain_->sym
     		do
-    			if( sym->class = FB_SYMBCLASS_VAR ) then
-    				if( sym->var_.suffix = INVALID ) then
+    			if( symbIsVar( sym ) ) then
+    				if( symbIsSuffixed( sym ) ) then
+    					select case sym->typ
+    					case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+    						goto check_var
+    					end select
+    				else
     					goto check_var
     				end if
-
-    				select case sym->typ
-    				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-    					 FB_DATATYPE_CHAR
-    					goto check_var
-    				end select
     			end if
 
 				sym = sym->hash.next
@@ -1182,10 +1244,12 @@ function symbFindVarByDefType _
     	do while( chain_ <> NULL )
     		sym = chain_->sym
     		do
-    			if( sym->class = FB_SYMBCLASS_VAR ) then
-    				if( sym->var_.suffix = INVALID ) then
-    					goto check_var
-    				elseif( sym->typ = def_dtype ) then
+    			if( symbIsVar( sym ) ) then
+    				if( symbIsSuffixed( sym ) ) then
+    					if( symbGetType( sym ) = def_dtype ) then
+    						goto check_var
+    					end if
+    				else
     					goto check_var
     				end if
     			end if
@@ -1201,9 +1265,11 @@ function symbFindVarByDefType _
 
 check_var:
 	'' check if symbol isn't a non-shared module level one
-	hCheckModLevelVar( sym )
-
-	function = sym
+	if( symbVarCheckAccess( sym ) ) then
+		function = sym
+	else
+		function = NULL
+	end if
 
 end function
 
@@ -1219,8 +1285,8 @@ function symbFindVarByType _
     do while( chain_ <> NULL )
     	sym = chain_->sym
     	do
-    		if( sym->class = FB_SYMBCLASS_VAR ) then
-    			if( sym->typ = dtype ) then
+    		if( symbIsVar( sym ) ) then
+    			if( symbGetType( sym ) = dtype ) then
     				goto check_var
     			end if
     		end if
@@ -1235,9 +1301,11 @@ function symbFindVarByType _
 
 check_var:
 	'' check if symbol isn't a non-shared module level one
-	hCheckModLevelVar( sym )
-
-	function = sym
+	if( symbVarCheckAccess( sym ) ) then
+		function = sym
+	else
+		function = NULL
+	end if
 
 end function
 
