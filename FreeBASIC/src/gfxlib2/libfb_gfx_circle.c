@@ -123,7 +123,7 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 	unsigned int orig_color;
 	float a, b, orig_x, orig_y, increment;
 	
-	if (!__fb_gfx)
+	if (!__fb_gfx || radius <= 0.0)
 		return;
 	
 	orig_x = fx;
