@@ -136,7 +136,7 @@ static void mouse_handler(void)
 /*:::::*/
 static int mouse_init(void)
 {
-    const char *funcs[] = { "Gpm_Open", "Gpm_Close", "Gpm_GetEvent", "gpm_fd" };
+    const char *funcs[] = { "Gpm_Open", "Gpm_Close", "Gpm_GetEvent", "gpm_fd", NULL };
     
 	if (__fb_con.inited == INIT_CONSOLE) {
 	    gpm_lib = fb_hDynLoad("libgpm.so.1", funcs, (void **)&gpm);
