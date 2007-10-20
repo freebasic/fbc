@@ -78,7 +78,41 @@ function cAsmCode _
 		'' id?
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
-			if( emitIsKeyword( lcase(text) ) = FALSE ) then
+			if thistok = FB_TK_SIZEOF then
+
+                '' SIZEOF( valid expression )?
+				cMathFunct( thisTok, expr, TRUE )
+				if( expr <> NULL ) then
+
+                    '' constant expression?
+					if( astIsCONST( expr ) = TRUE ) then
+						'' text replacement
+					    text = str( symbGetConstValInt( expr ) )
+					else
+				        '' error limit?
+						if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+							exit function
+						else
+							'' skip emission
+							doskip = TRUE
+						end if
+
+					end if
+
+					astDelNode( expr )
+
+				else
+
+					'' error limit?
+					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+						exit function
+					else
+						'' skip emission
+						doskip = TRUE
+					end if
+
+				end if
+			elseif( emitIsKeyword( lcase(text) ) = FALSE ) then
 				dim as FBSYMBOL ptr base_parent = any
 
 				chain_ = cIdentifier( base_parent )

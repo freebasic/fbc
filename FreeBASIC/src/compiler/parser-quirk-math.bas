@@ -67,7 +67,8 @@ end function
 function cMathFunct _
 	( _
 		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
+		byref funcexpr as ASTNODE ptr, _
+		byval isasm as integer = FALSE _
 	) as integer
 
     dim as ASTNODE ptr expr = any, expr2 = any
@@ -201,7 +202,17 @@ function cMathFunct _
 			end if
 		end if
 
-		hMatchRPRNT( )
+		if( lexGetToken( ) <> CHAR_RPRNT ) then
+			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+				exit function
+			else
+				hSkipUntil( CHAR_RPRNT, TRUE )
+			end if
+		else
+			if isasm = FALSE then
+				lexSkipToken( )
+			end if
+		end if
 
 		if( expr <> NULL ) then
 			funcexpr = rtlMathLen( expr, is_len )

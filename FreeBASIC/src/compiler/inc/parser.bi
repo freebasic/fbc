@@ -1023,7 +1023,8 @@ declare function cMKXFunct _
 declare function cMathFunct _
 	( _
 		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
+		byref funcexpr as ASTNODE ptr, _
+		byval isasm as integer = FALSE _
 	) as integer
 
 declare function cPeekFunct _
