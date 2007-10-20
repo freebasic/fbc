@@ -97,17 +97,9 @@ end sub
 function irGetVRDataClass _
 	( _
 		byval vreg as IRVREG ptr _
-	) as integer static
+	) as integer
 
-	dim as integer dtype
-
-	dtype = vreg->dtype
-
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_POINTER
-	end if
-
-	function = symb_dtypeTB(dtype).class
+	function = symb_dtypeTB(typeGet( vreg->dtype )).class
 
 end function
 
@@ -115,17 +107,9 @@ end function
 function irGetVRDataSize _
 	( _
 		byval vreg as IRVREG ptr _
-	) as integer static
+	) as integer
 
-	dim as integer dtype
-
-	dtype = vreg->dtype
-
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_POINTER
-	end if
-
-	function = symb_dtypeTB(dtype).size
+	function = symb_dtypeTB(typeGet( vreg->dtype )).size
 
 end function
 

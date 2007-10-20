@@ -34,7 +34,7 @@
 								   byval resnxtlabel as any ptr ) as integer '/ _
 		( _
 			@FB_RTL_ERRORTHROW, NULL, _
-			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -42,13 +42,13 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -58,7 +58,7 @@
 								   byval resnxtlabel as any ptr ) as any ptr '/ _
 		( _
 			@FB_RTL_ERRORTHROWEX, NULL, _
-			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
@@ -69,25 +69,25 @@
 					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_VOID, 1 ),FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_VOID, 1 ),FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
 		/' fb_ErrorSetHandler( byval newhandler as any ptr ) as any ptr '/ _
 		( _
 			@FB_RTL_ERRORSETHANDLER, NULL, _
-			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
 	 			( _
-					typeSetType( FB_DATATYPE_VOID, 1 ),FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -113,14 +113,14 @@
 		/' fb_ErrorResume( ) as any ptr '/ _
 		( _
 			@FB_RTL_ERRORRESUME, NULL, _
-			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
 		/' fb_ErrorResumeNext( ) as any ptr '/ _
 		( _
 			@FB_RTL_ERRORRESUMENEXT, NULL, _
-			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_CDECL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
@@ -134,38 +134,38 @@
 		/' ERFN ( ) as zstring ptr '/ _
 		( _
 			@"erfn", @"fb_ErrorGetFuncName", _
-			typeSetType( FB_DATATYPE_CHAR, 1 ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_CHAR ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' ERMN ( ) as zstring ptr '/ _
 		( _
 			@"ermn", @"fb_ErrorGetModName", _
-			typeSetType( FB_DATATYPE_CHAR, 1 ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_CHAR ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' fb_ErrorSetModName ( byval modname as zstring ptr ) as zstring ptr '/ _
 		( _
 			@FB_RTL_ERRORSETMODNAME, NULL, _
-			typeSetType( FB_DATATYPE_CHAR, 1 ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_CHAR ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
 		/' fb_ErrorSetFuncName ( byval funname as zstring ptr ) as zstring ptr '/ _
 		( _
 			@FB_RTL_ERRORSETFUNCNAME, NULL, _
-			typeSetType( FB_DATATYPE_CHAR, 1 ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_CHAR ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -179,16 +179,16 @@
 			4, _
 	 		{ _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -202,16 +202,16 @@
 			4, _
 	 		{ _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -225,16 +225,16 @@
 			4, _
 	 		{ _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -248,16 +248,16 @@
 			4, _
 	 		{ _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 	 	), _
@@ -455,8 +455,8 @@ sub rtlErrorSetHandler _
     	if( fbIsModLevel( ) = FALSE ) then
     		with parser.currproc->proc.ext->err
     			if( .lasthnd = NULL ) then
-					.lasthnd = symbAddTempVar( typeSetType( FB_DATATYPE_VOID, 1 ) )
-                	expr = astNewVAR( .lasthnd, 0, typeSetType( FB_DATATYPE_VOID, 1 ) )
+					.lasthnd = symbAddTempVar( typeAddrOf( FB_DATATYPE_VOID ) )
+                	expr = astNewVAR( .lasthnd, 0, typeAddrOf( FB_DATATYPE_VOID ) )
                 	astAdd( astNewASSIGN( expr, proc ) )
     			end if
     		end with
@@ -549,8 +549,8 @@ function rtlErrorSetModName _
 
     if( sym <> NULL ) then
     	with sym->proc.ext->err
-			.lastmod = symbAddTempVar( typeSetType( FB_DATATYPE_CHAR, 1 ) )
-           	expr = astNewVAR( .lastmod, 0, typeSetType( FB_DATATYPE_CHAR, 1 ) )
+			.lastmod = symbAddTempVar( typeAddrOf( FB_DATATYPE_CHAR ) )
+           	expr = astNewVAR( .lastmod, 0, typeAddrOf( FB_DATATYPE_CHAR ) )
           	function = astNewASSIGN( expr, proc )
     	end with
     else
@@ -577,8 +577,8 @@ function rtlErrorSetFuncName _
 
     if( sym <> NULL ) then
     	with sym->proc.ext->err
-			.lastfun = symbAddTempVar( typeSetType( FB_DATATYPE_CHAR, 1 ) )
-            expr = astNewVAR( .lastfun, 0, typeSetType( FB_DATATYPE_CHAR, 1 ) )
+			.lastfun = symbAddTempVar( typeAddrOf( FB_DATATYPE_CHAR ) )
+            expr = astNewVAR( .lastfun, 0, typeAddrOf( FB_DATATYPE_CHAR ) )
             function = astNewASSIGN( expr, proc )
     	end with
     else

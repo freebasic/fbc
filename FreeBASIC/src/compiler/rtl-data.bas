@@ -37,7 +37,7 @@
 	 		1, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -69,7 +69,7 @@
 	 		2, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_WCHAR, 1 ),FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_WCHAR ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
@@ -168,7 +168,7 @@
 	 		1, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYREF, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -245,7 +245,7 @@ function rtlDataRead _
 	args = 1
 	dtype = astGetDataType( varexpr )
 
-	select case as const dtype
+	select case as const typeGet( dtype )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		f = PROCLOOKUP( DATAREADSTR )
 		args = 3
@@ -301,12 +301,11 @@ function rtlDataRead _
 	case FB_DATATYPE_STRUCT
 		exit function						'' illegal
 
+	case FB_DATATYPE_POINTER
+		f = PROCLOOKUP( DATAREADPTR )
+
 	case else
-		if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-			f = PROCLOOKUP( DATAREADPTR )
-		else
-			exit function
-		end if
+		exit function
 	end select
 
     if( f = NULL ) then

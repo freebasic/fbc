@@ -362,8 +362,7 @@ declare function cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer = NULL, _
-		byref ptrcnt as integer = NULL _
+		byref lgt as integer = NULL _
 	) as integer
 
 declare function cSymbolType _
@@ -371,7 +370,6 @@ declare function cSymbolType _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as integer, _
-		byref ptrcnt as integer, _
 		byval options as FB_SYMBTYPEOPT = FB_SYMBTYPEOPT_DEFAULT _
 	) as integer
 
@@ -1127,8 +1125,7 @@ declare function hSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer, _
-		byref ptrcnt as integer _
+		byref lgt as integer _
 	) as integer
 
 
@@ -1194,7 +1191,7 @@ declare function hSymbolType _
 
 '':::::
 #macro hCheckSuffix(suffix)
-	if( suffix <> INVALID ) then
+	if( suffix <> FB_DATATYPE_INVALID ) then
 		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then
 			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
 		end if

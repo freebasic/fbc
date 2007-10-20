@@ -35,7 +35,7 @@ function cPokeStmt _
 	) as integer
 
 	dim as ASTNODE ptr expr1 = any, expr2 = any
-	dim as integer poketype = any, lgt = any, ptrcnt = any
+	dim as integer poketype = any, lgt = any
 	dim as FBSYMBOL ptr subtype = any
 
 	function = FALSE
@@ -44,7 +44,7 @@ function cPokeStmt _
 	lexSkipToken( )
 
 	'' (SymbolType ',')?
-	if( cSymbolType( poketype, subtype, lgt, ptrcnt ) ) then
+	if( cSymbolType( poketype, subtype, lgt ) ) then
 
 		'' check for invalid types
 		select case poketype
@@ -116,7 +116,7 @@ function cPeekFunct _
 	) as integer
 
 	dim as ASTNODE ptr expr = any
-	dim as integer dtype = any, lgt = any, ptrcnt = any
+	dim as integer dtype = any, lgt = any
 	dim as FBSYMBOL ptr subtype = any
 
 	function = FALSE
@@ -128,7 +128,7 @@ function cPeekFunct _
 	hMatchLPRNT( )
 
 	'' (SymbolType ',')?
-	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) ) then
+	if( cSymbolType( dtype, subtype, lgt ) ) then
 
 		'' check for invalid types
 		select case dtype

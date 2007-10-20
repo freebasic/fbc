@@ -53,7 +53,7 @@ declare sub 	 hDeclENUM				( _
 
 declare function hDeclPointer			( _
 											byref dtype as integer, _
-											byref subtype as FBSYMBOL ptr _
+											byval subtype as FBSYMBOL ptr _
 										) as string
 
 declare function hDeclArrayDims			( _
@@ -731,7 +731,7 @@ private function hDeclUDTField _
     desc = *sname
     desc += ":"
 
-    if( typeGetDatatype( stype ) = FB_DATATYPE_POINTER ) then
+    if( typeIsPtr( stype ) ) then
     	desc += hDeclPointer( stype, subtype )
     end if
 
@@ -752,9 +752,9 @@ private function hDeclDynArray _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as string static
-	
+
 	'' !!FIXME!! need to change array DATAYTPE
-	
+
     dim as string desc, dimdesc
     dim as FBVARDIM ptr d
     dim as integer ofs, i, dtype
@@ -768,8 +768,9 @@ private function hDeclDynArray _
 	dimdesc = hDeclArrayDims( sym )
 
 	dtype = symbGetType( sym )
+
 	'' pointer?
-    if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
+    if( typeIsPtr( dtype ) ) then
     	dimdesc += hDeclPointer( dtype, subtype )
     end if
 
@@ -845,13 +846,13 @@ end function
 private function hDeclPointer _
 	( _
 		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr _
 	) as string static
 
     dim as string desc
 
     desc = ""
-    do while( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER )
+    do while( typeIsPtr( dtype ) )
     	dtype = typeDeref( dtype )
     	desc += str( ctx.typecnt ) + "=*"
     	ctx.typecnt += 1
@@ -915,14 +916,16 @@ private function hGetDataType _
     subtype = symbGetSubtype( sym )
 
     '' pointer?
-    if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
+    if( typeIsPtr( dtype ) ) then
     	desc += hDeclPointer( dtype, subtype )
     end if
 
-    select case dtype
+    '' the const qualifier isn't taken into account
+    dtype = typeUnsetIsConst( dtype )
+
+    select case as const dtype
     '' UDT?
     case FB_DATATYPE_STRUCT
-    	subtype = symbGetSubType( sym )
     	if( symbIsDescriptor( sym ) = FALSE ) then
     		if( subtype->udt.dbg.typenum = INVALID ) then
     			hDeclUDT( subtype )
@@ -933,7 +936,6 @@ private function hGetDataType _
 
     '' ENUM?
     case FB_DATATYPE_ENUM
-    	subtype = symbGetSubType( sym )
     	if( subtype->enum_.dbg.typenum = INVALID ) then
     		hDeclENUM( subtype )
     	end if
@@ -944,7 +946,7 @@ private function hGetDataType _
     case FB_DATATYPE_FUNCTION
     	desc += str( ctx.typecnt ) + "=f"
     	ctx.typecnt += 1
-    	desc += hGetDataType( symbGetSubType( sym ) )
+    	desc += hGetDataType( subtype )
 
     '' forward reference?
     case FB_DATATYPE_FWDREF
@@ -952,7 +954,7 @@ private function hGetDataType _
 
     '' bitfield?
     case FB_DATATYPE_BITFIELD
-    	desc += hGetDataType( symbGetSubType( sym ) )
+    	desc += hGetDataType( subtype )
 
     '' ordinary type..
     case else

@@ -151,7 +151,7 @@ function cMathFunct _
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
 	case FB_TK_LEN, FB_TK_SIZEOF
-    	dim as integer is_len = any, dtype = any, lgt = any, ptrcnt = any
+    	dim as integer is_len = any, dtype = any, lgt = any
     	dim as FBSYMBOL ptr sym = any, subtype = any
 
 		is_len = (tk = FB_TK_LEN)
@@ -160,7 +160,7 @@ function cMathFunct _
 		hMatchLPRNT( )
 
 		expr = NULL
-		if( cSymbolType( dtype, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
+		if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
 			fbSetCheckArray( FALSE )
 			expr = cExpression( )
 			if( expr = NULL ) then

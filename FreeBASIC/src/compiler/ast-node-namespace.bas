@@ -34,7 +34,7 @@ function astNamespaceBegin _
 
     dim as ASTNODE ptr n = any
 
-	n = astNewNode( AST_NODECLASS_NAMESPC, INVALID )
+	n = astNewNode( AST_NODECLASS_NAMESPC, FB_DATATYPE_INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if

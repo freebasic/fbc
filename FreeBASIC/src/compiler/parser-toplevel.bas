@@ -69,7 +69,7 @@ sub parserSetCtx( )
 	parser.prntcnt = 0
 	parser.options = FB_PARSEROPT_CHKARRAY
 	parser.ctxsym    = NULL
-	parser.ctx_dtype = INVALID
+	parser.ctx_dtype = FB_DATATYPE_INVALID
 
 	parserCompoundStmtSetCtx( )
 
@@ -349,7 +349,7 @@ function hMatchExpr _
 			return NULL
 		else
 			'' error recovery: fake an expr
-			if( dtype = INVALID ) then
+			if( dtype = FB_DATATYPE_INVALID ) then
 				return NULL
 			end if
 

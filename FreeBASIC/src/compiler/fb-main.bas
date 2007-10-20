@@ -43,25 +43,26 @@ const fbdllreason = "__FB_DLLREASON__"
 
 	'' instance
 	symbAddProcParam( proc, "__FB_DLLINSTANCE__", NULL, _
-					  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 1, _
+					  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
 					  0, NULL )
 
 	'' reason
 	param = symbAddProcParam( proc, fbdllreason, NULL, _
-					  		  FB_DATATYPE_UINT, NULL, 0, _
+					  		  FB_DATATYPE_UINT, NULL, _
 					  		  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, _
 					  		  0, NULL )
 
 	'' reserved
 	symbAddProcParam( proc, "__FB_DLLRESERVED__", NULL, _
-					  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 1, _
+					  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' function DllMain( byval instance as any ptr, byval reason as uinteger, _
 	''                   byval reserved as any ptr ) as integer
 	proc = symbAddProc( proc, NULL, "DllMain", NULL, _
-						FB_DATATYPE_INTEGER, NULL, 0, FB_SYMBATTRIB_PUBLIC, _
+						FB_DATATYPE_INTEGER, NULL, _
+						FB_SYMBATTRIB_PUBLIC, _
 						FB_FUNCMODE_STDCALL )
 
     ''
@@ -91,7 +92,7 @@ const fbdllreason = "__FB_DLLREASON__"
 	''	main( 0, NULL )
     main = astNewCALL( env.main.proc )
     astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
-    astNewARG( main, astNewCONSTi( NULL, typeSetType( FB_DATATYPE_VOID, 1 ) ) )
+    astNewARG( main, astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) ) )
     astAdd( main )
 
 	'' end if
@@ -109,7 +110,8 @@ private sub hDllMainBegin_GlobCtor ( )
 
 	'' sub ctor cdecl( )
 	proc = symbAddProc( symbPreAddProc( NULL ), NULL, "__fb_DllMain_ctor", NULL, _
-						FB_DATATYPE_VOID, NULL, 0, FB_SYMBATTRIB_PRIVATE, _
+						FB_DATATYPE_VOID, NULL, _
+						FB_SYMBATTRIB_PRIVATE, _
 						FB_FUNCMODE_CDECL )
 
 	procnode = astProcBegin( proc, FALSE )
@@ -122,7 +124,7 @@ private sub hDllMainBegin_GlobCtor ( )
 	'' main( 0, NULL )
     main = astNewCALL( env.main.proc )
     astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
-    astNewARG( main, astNewCONSTi( NULL, typeSetType( FB_DATATYPE_VOID, 1 ) ) )
+    astNewARG( main, astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) ) )
     astAdd( main )
 
    	astProcEnd( procnode, FALSE )
@@ -159,13 +161,13 @@ const fbargv = "__FB_ARGV__"
 
 	'' argc
 	env.main.argc = symbAddProcParam( proc, fbargc, NULL, _
-					  			   	  FB_DATATYPE_INTEGER, NULL, 0, _
+					  			   	  FB_DATATYPE_INTEGER, NULL, _
 					  				  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, _
 					  				  0, NULL )
 
 	'' argv
 	env.main.argv = symbAddProcParam( proc, fbargv, NULL, _
-					  				  typeSetType( FB_DATATYPE_CHAR, 2 ), NULL, 2, _
+					  				  typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
 					  				  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
 					  				  0, NULL )
 
@@ -178,7 +180,7 @@ const fbargv = "__FB_ARGV__"
 
 	'' function main cdecl( byval argc as integer, byval argv as zstring ptr ptr) as integer
 	env.main.proc = symbAddProc( proc, NULL, fbGetEntryPoint( ), NULL, _
-								 FB_DATATYPE_INTEGER, NULL, 0, _
+								 FB_DATATYPE_INTEGER, NULL, _
 								 attrib, _
 								 FB_FUNCMODE_CDECL )
 
@@ -212,7 +214,7 @@ private sub hModLevelBegin( )
 	'' sub modlevel cdecl( ) constructor
 	env.main.proc = symbAddProc( symbPreAddProc( NULL ), _
 								 "{modlevel}", fbGetModuleEntry( ), NULL, _
-								 FB_DATATYPE_VOID, NULL, 0, _
+								 FB_DATATYPE_VOID, NULL, _
 								 FB_SYMBATTRIB_PRIVATE, _
 								 FB_FUNCMODE_CDECL )
 

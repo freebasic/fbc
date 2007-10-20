@@ -106,7 +106,7 @@ function cAssignFunctResult _
 	rhs = cExpression( )
 	if( rhs = NULL ) then
 		parser.ctxsym    = NULL
-		parser.ctx_dtype = INVALID
+		parser.ctx_dtype = FB_DATATYPE_INVALID
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
@@ -117,7 +117,7 @@ function cAssignFunctResult _
 	end if
 
 	parser.ctxsym    = NULL
-	parser.ctx_dtype = INVALID
+	parser.ctx_dtype = FB_DATATYPE_INVALID
 
     '' set accessed flag here, as proc will be ended before AST is flushed
     symbSetIsAccessed( res )
@@ -540,7 +540,7 @@ private function hAssignOrCall_QB _
 		dim as FBSYMBOL ptr var_sym = NULL
 
     	'' no suffix?
-    	if( suffix = INVALID ) then
+    	if( suffix = FB_DATATYPE_INVALID ) then
     		do
     			dim as integer is_match = TRUE
     			'' is the original symbol suffixed?
@@ -1081,7 +1081,7 @@ function hForwardCall _
 
 	dim as string id = *lexGetText( )
 
-	if( lexGetType( ) <> INVALID ) then
+	if( lexGetType( ) <> FB_DATATYPE_INVALID ) then
     	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     		exit function
     	end if
@@ -1128,9 +1128,7 @@ function hForwardCall _
         ''
 		if( symbAddProcParam( proc, _
 							  NULL, NULL, _
-						  	  dtype, _
-						  	  NULL, _
-						  	  0, _
+						  	  dtype, NULL, _
 						  	  symbCalcProcParamLen( dtype, _
 						  	  						NULL, _
 						  	  						mode ), _

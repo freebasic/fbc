@@ -48,7 +48,7 @@ function symbAddBitField _
     					 NULL, NULL, _
     					 FB_SYMBCLASS_BITFIELD, _
     				   	 NULL, NULL, _
-    				   	 dtype, NULL, 0 )
+    				   	 dtype, NULL )
 	if( sym = NULL ) then
 		return NULL
 	end if

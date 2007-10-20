@@ -51,7 +51,7 @@ function symbAddEnum _
     				   NULL, NULL, _
     				   FB_SYMBCLASS_ENUM, _
     				   id, id_alias, _
-    				   FB_DATATYPE_ENUM, NULL, 0, attrib )
+    				   FB_DATATYPE_ENUM, NULL, attrib )
 	if( e = NULL ) then
 		return NULL
 	end if
@@ -97,7 +97,7 @@ function symbAddEnumElement _
     				   NULL, NULL, _
     				   FB_SYMBCLASS_CONST, _
     				   id, NULL, _
-    				   FB_DATATYPE_ENUM, parent, 0, _
+    				   FB_DATATYPE_ENUM, parent, _
     				   attrib )
 	if( s = NULL ) then
 		return NULL

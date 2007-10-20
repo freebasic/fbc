@@ -190,7 +190,7 @@ function astTypeIniAddPad _
 
 	n = hAddNode( tree, _
 				  AST_NODECLASS_TYPEINI_PAD, _
-				  INVALID, _
+				  FB_DATATYPE_INVALID, _
 				  NULL )
 
 	n->typeini.bytes = bytes

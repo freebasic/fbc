@@ -155,16 +155,16 @@ private function hAllocTmpWstrPtr _
 	dim as AST_TMPSTRLIST_ITEM ptr t = any
 
 	'' create temp wstring ptr to pass as parameter
-	t = hTmpStrListAdd( parent, NULL, typeSetType( FB_DATATYPE_WCHAR, 1 ), FALSE )
+	t = hTmpStrListAdd( parent, NULL, typeAddrOf( FB_DATATYPE_WCHAR ), FALSE )
 
 	'' evil hack: a function returning a "wstring" is actually returning a pointer,
 	'' but NewAssign() shouldn't copy the string, just the pointer
-	astSetType( n, typeSetType( FB_DATATYPE_WCHAR, 1 ), NULL )
+	astSetType( n, typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
 
 	'' temp string = src string
 	return astNewASSIGN( astNewVAR( t->sym, _
 									0, _
-									typeSetType( FB_DATATYPE_WCHAR, 1 ), _
+									typeAddrOf( FB_DATATYPE_WCHAR ), _
 									NULL, _
 									TRUE ), _
 						 n )
@@ -344,7 +344,7 @@ private function hStrArgToStrPtrParam _
         '' fixed-len..
         else
             '' get the address of
-			n->l = astNewCONV( typeSetType( FB_DATATYPE_CHAR, 1 ), _
+			n->l = astNewCONV( typeAddrOf( FB_DATATYPE_CHAR ), _
     					   	   NULL, _
 						   	   astNewADDROF( n->l ) )
 		end if
@@ -493,7 +493,7 @@ private function hCheckByDescParam _
 			'' it's a pointer, but it will be seen as anything else
 			'' (ie: "array() as string"), so, remap the type
   			astDelTree( arg )
-			n->l = astNewVAR( s, 0, typeSetType( FB_DATATYPE_VOID, 1 ) )
+			n->l = astNewVAR( s, 0, typeAddrOf( FB_DATATYPE_VOID ) )
         	return TRUE
         end if
 
@@ -679,7 +679,7 @@ private sub hUDTPassByval _
 		'' not returned in registers?
 		dim as integer is_udt = TRUE
 		if( astIsCALL( arg ) ) then
-			is_udt = typeIsPtrTo( symbGetUDTRetType( subtype ), 1, FB_DATATYPE_STRUCT )
+			is_udt = symbGetUDTRetType( subtype ) = typeAddrOf( FB_DATATYPE_STRUCT )
 		end if
 
 		'' udt? push byte by byte to stack
@@ -809,7 +809,7 @@ private function hCheckUDTParam _
 		'' it's a proc call, but was it originally returning an UDT?
     	if( astIsCALL( arg ) ) then
 			if( symbGetUDTRetType( arg->subtype ) <> _
-									typeSetType( FB_DATATYPE_STRUCT, 1 ) ) then
+									typeAddrOf( FB_DATATYPE_STRUCT ) ) then
 
 				'' create a temporary UDT and pass it..
 				dim as FBSYMBOL ptr tmp = any
@@ -931,14 +931,14 @@ private function hCheckParam _
 
 		select case symbGetType( param )
 		'' zstring ptr param?
-		case typeSetType( FB_DATATYPE_CHAR, 1 )
+		case typeAddrOf( FB_DATATYPE_CHAR )
 			'' if it's a wstring param, convert..
 			if( arg->dtype = FB_DATATYPE_WCHAR ) then
 				n->l = rtlToStr( arg )
 			end if
 
 		'' wstring ptr?
-		case typeSetType( FB_DATATYPE_WCHAR, 1 )
+		case typeAddrOf( FB_DATATYPE_WCHAR )
 			'' if it's not a wstring param, convert..
 			if( arg->dtype <> FB_DATATYPE_WCHAR ) then
 				n->l = rtlToWstr( arg )
@@ -1023,16 +1023,16 @@ private function hCheckParam _
 	end if
 
 	'' pointer checking
-	if( typeGetDatatype( param_dtype ) = FB_DATATYPE_POINTER ) then
+	if( typeIsPtr( param_dtype ) ) then
 		if( astPtrCheck( param_dtype, symbGetSubtype( param ), arg ) = FALSE ) then
-			if( typeGetDatatype( arg->dtype ) <> FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( arg->dtype ) = FALSE ) then
 				hParamWarning( parent, FB_WARNINGMSG_PASSINGSCALARASPTR )
 			else
 				hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 			end if
 		end if
 
-    elseif( typeGetDatatype( arg->dtype ) = FB_DATATYPE_POINTER ) then
+    elseif( typeIsPtr( arg->dtype ) ) then
     	hParamWarning( parent, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
 	end if
 
@@ -1080,7 +1080,7 @@ function astNewARG _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval arg as ASTNODE ptr, _
-		byval dtype as integer = INVALID, _
+		byval dtype as integer, _
 		byval mode as integer = INVALID _
 	) as ASTNODE ptr
 
@@ -1100,12 +1100,12 @@ function astNewARG _
 		arg = hCreateOptArg( param )
 	end if
 
-	if( dtype = INVALID ) then
+	if( dtype = FB_DATATYPE_INVALID ) then
 		dtype = astGetDataType( arg )
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ARG, INVALID )
+	n = astNewNode( AST_NODECLASS_ARG, FB_DATATYPE_INVALID )
 	function = n
 
 	if( n = NULL ) then
@@ -1158,7 +1158,7 @@ function astReplaceARG _
 		byval parent as ASTNODE ptr, _
 		byval argnum as integer, _
 		byval expr as ASTNODE ptr, _
-		byval dtype as integer = INVALID, _
+		byval dtype as integer, _
 		byval mode as integer = INVALID _
 	) as ASTNODE ptr
 
@@ -1168,7 +1168,7 @@ function astReplaceARG _
 
 	sym = parent->sym
 
-	if( dtype = INVALID ) then
+	if( dtype = FB_DATATYPE_INVALID ) then
 		dtype = astGetDataType( expr )
 	end if
 

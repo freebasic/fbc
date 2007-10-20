@@ -71,20 +71,17 @@ private sub hFixForwardRef _
 
     dim as FBFWDREF ptr n = any, p = any
     dim as FBSYMBOL ptr ref = any
-    dim as integer dtype = any, ptrcnt = any
+    dim as integer dtype = any
 
 	select case as const class_
 	case FB_SYMBCLASS_STRUCT
 		dtype = FB_DATATYPE_STRUCT
-		ptrcnt 	= 0
 
 	case FB_SYMBCLASS_ENUM
 		dtype = FB_DATATYPE_ENUM
-		ptrcnt = 0
 
 	case FB_SYMBCLASS_TYPEDEF
 		dtype = symbGetType( sym )
-		ptrcnt = symbGetPtrCnt( sym )
 		sym = symbGetSubtype( sym )
 	end select
 
@@ -93,10 +90,10 @@ private sub hFixForwardRef _
 		p = n->prev
 
 		ref = n->ref
-		
-		symbGetType( ref ) = typeSetType( dtype, symbGetPtrCnt( ref ) )
+
+		'' !!!FIXME!!! must handle the constant mask
+		symbGetType( ref ) = typeMultAddrOf( dtype, symbGetPtrCnt( ref ) )
 		symbGetSubtype( ref ) = sym
-		symbGetPtrCnt( ref ) = ptrcnt
 		ref->lgt = symbCalcLen( symbGetType( ref ), sym )
 
 		listDelNode( @symb.fwdlist, n )
@@ -150,7 +147,6 @@ function symbAddTypedef _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval lgt as integer _
 	) as FBSYMBOL ptr
 
@@ -162,7 +158,7 @@ function symbAddTypedef _
     				   NULL, NULL, _
     				   FB_SYMBCLASS_TYPEDEF, _
     				   id, NULL, _
-    				   dtype, subtype, ptrcnt )
+    				   dtype, subtype )
     if( t = NULL ) then
     	return NULL
     end if
@@ -196,7 +192,7 @@ function symbAddFwdRef _
     				   NULL, NULL, _
     				   FB_SYMBCLASS_FWDREF, _
     				   id, NULL, _
-    				   INVALID, NULL, 0 )
+    				   FB_DATATYPE_INVALID, NULL )
     if( f = NULL ) then
     	return NULL
     end if

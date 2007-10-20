@@ -152,7 +152,7 @@ function astNewDECL _
     dim as ASTNODE ptr n = any
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_DECL, INVALID )
+	n = astNewNode( AST_NODECLASS_DECL, FB_DATATYPE_INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if

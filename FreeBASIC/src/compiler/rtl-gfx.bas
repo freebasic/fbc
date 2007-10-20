@@ -254,13 +254,13 @@ declare function hPorts_cb _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				),_
 				( _
- 					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -434,16 +434,16 @@ declare function hPorts_cb _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				),_
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -564,10 +564,10 @@ declare function hPorts_cb _
 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, TRUE, NULL _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, NULL _
 	 			), _
 				( _
- 					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, TRUE, NULL _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, NULL _
 	 			) _
 	 		} _
 		), _
@@ -582,13 +582,13 @@ declare function hPorts_cb _
 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			), _
 				( _
- 					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, TRUE, NULL _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, NULL _
 	 			) _
 	 		} _
 		), _
@@ -740,7 +740,7 @@ declare function hPorts_cb _
 		/' fb_GfxScreenPtr ( ) as any ptr '/ _
 		( _
 			@"screenptr", @"fb_GfxScreenPtr", _
-			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
@@ -903,7 +903,7 @@ declare function hPorts_cb _
 							   byval color as uinteger = DEFAULT_COLOR, byval depth as integer = 0 ) as any ptr '/ _
 		( _
 			@FB_RTL_GFXIMAGECREATE, NULL, _
-			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
@@ -932,7 +932,7 @@ declare function hPorts_cb _
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -946,13 +946,13 @@ declare function hPorts_cb _
 			6, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -973,7 +973,7 @@ declare function hPorts_cb _
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, TRUE, 0 _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			) _
 	 		} _
 		), _
@@ -1020,7 +1020,7 @@ declare function hPorts_cb _
 		/' fb_GfxGetGLProcAddress ( byval proc as string ) as any ptr '/ _
 		( _
 			@"screenglproc", @"fb_GfxGetGLProcAddress", _
-			typeSetType( FB_DATATYPE_VOID, 1 ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1039,13 +1039,10 @@ declare function hPorts_cb _
 	 		9, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1060,10 +1057,13 @@ declare function hPorts_cb _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -1077,13 +1077,10 @@ declare function hPorts_cb _
 	 		9, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1098,10 +1095,13 @@ declare function hPorts_cb _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -1115,13 +1115,10 @@ declare function hPorts_cb _
 	 		9, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1136,10 +1133,13 @@ declare function hPorts_cb _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -1153,13 +1153,10 @@ declare function hPorts_cb _
 	 		9, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1174,10 +1171,13 @@ declare function hPorts_cb _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -1191,13 +1191,10 @@ declare function hPorts_cb _
 	 		9, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1212,10 +1209,13 @@ declare function hPorts_cb _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -1229,13 +1229,10 @@ declare function hPorts_cb _
 	 		9, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1250,10 +1247,13 @@ declare function hPorts_cb _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -1267,13 +1267,10 @@ declare function hPorts_cb _
 	 		9, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1288,10 +1285,13 @@ declare function hPorts_cb _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -1305,13 +1305,10 @@ declare function hPorts_cb _
 	 		9, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1326,10 +1323,13 @@ declare function hPorts_cb _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -1343,13 +1343,10 @@ declare function hPorts_cb _
 	 		9, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1364,10 +1361,13 @@ declare function hPorts_cb _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -1381,13 +1381,10 @@ declare function hPorts_cb _
 	 		9, _
 	 		{ _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_UBYTE, 1 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1402,10 +1399,13 @@ declare function hPorts_cb _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -1587,7 +1587,7 @@ function rtlGfxPset _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -1650,7 +1650,7 @@ function rtlGfxPoint _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -1704,7 +1704,7 @@ function rtlGfxLine _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -1792,7 +1792,7 @@ function rtlGfxCircle _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -1887,7 +1887,7 @@ function rtlGfxPaint _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -1975,7 +1975,7 @@ function rtlGfxDraw _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2028,7 +2028,7 @@ function rtlGfxDrawString _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2073,7 +2073,7 @@ function rtlGfxDrawString _
 		end if
 		putter = hGetPutter( mode )
 	end if
-	if( astNewARG( proc, fexpr, INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, fexpr, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2305,7 +2305,7 @@ function rtlGfxPalette  _
  		targetmode = FB_PARAMMODE_BYVAL
         gexpr = astNewCONSTi( defval, FB_DATATYPE_INTEGER )
     end if
- 	if( astNewARG( proc, gexpr, INVALID, targetmode ) = NULL ) then
+ 	if( astNewARG( proc, gexpr, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2313,7 +2313,7 @@ function rtlGfxPalette  _
  	if( bexpr = NULL ) then
         bexpr = astNewCONSTi( defval, FB_DATATYPE_INTEGER )
     end if
- 	if( astNewARG( proc, bexpr, INVALID, targetmode ) = NULL ) then
+ 	if( astNewARG( proc, bexpr, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2347,7 +2347,7 @@ function rtlGfxPaletteUsing  _
 
  	'' byref array as integer
  	mode = iif( isptr, FB_PARAMMODE_BYVAL, INVALID )
- 	if( astNewARG( proc, arrayexpr, INVALID, mode ) = NULL ) then
+ 	if( astNewARG( proc, arrayexpr, FB_DATATYPE_INVALID, mode ) = NULL ) then
  		exit function
  	end if
 
@@ -2397,7 +2397,7 @@ function rtlGfxPut _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2417,7 +2417,7 @@ function rtlGfxPut _
 	else
 		argmode = INVALID
 	end if
- 	if( astNewARG( proc, arrayexpr, INVALID, argmode ) = NULL ) then
+ 	if( astNewARG( proc, arrayexpr, FB_DATATYPE_INVALID, argmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2526,7 +2526,7 @@ function rtlGfxGet _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2553,7 +2553,7 @@ function rtlGfxGet _
  	'' byref array as any
 	if( isptr ) then
 		argmode = FB_PARAMMODE_BYVAL
-		descexpr = astNewCONSTi( NULL, typeSetType( FB_DATATYPE_VOID, 1 ) )
+		descexpr = astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) )
 	else
 		argmode = INVALID
 
@@ -2570,7 +2570,7 @@ function rtlGfxGet _
 		end if
 	end if
 
- 	if( astNewARG( proc, arrayexpr, INVALID, argmode ) = NULL ) then
+ 	if( astNewARG( proc, arrayexpr, FB_DATATYPE_INVALID, argmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2580,7 +2580,7 @@ function rtlGfxGet _
  	end if
 
  	'' array() as any
- 	if( astNewARG( proc, descexpr, INVALID, argmode ) = NULL ) then
+ 	if( astNewARG( proc, descexpr, FB_DATATYPE_INVALID, argmode ) = NULL ) then
  		exit function
  	end if
 

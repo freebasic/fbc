@@ -143,7 +143,7 @@ private sub hUdtNext _
 	if( stk->for.explicit_step ) then
 		step_expr = hElmToExpr( @stk->for.stp )
 	end if
-	
+
 	proc = hUdtCallOpOvl( symbGetSubtype( stk->for.cnt.sym ), _
 						  AST_OP_NEXT, _
 						  hElmToExpr( @stk->for.cnt ), _
@@ -232,14 +232,14 @@ private function hAllocTemp _
 	if( s = NULL ) then
 		return NULL
 	end if
-    
+
     '' lang QB doesn't allow UDT's anyway...
     if( env.clopt.lang <> FB_LANG_QB ) then
-    	
+
 	    '' remove the temp flag or breakScope() won't call the dtors (and in
 	    '' this specific case, the temp vars are live for more than one stmt)
 	    symbGetAttrib( s ) and= not FB_SYMBATTRIB_TEMP
-	    
+
 	end if
 
     function = s
@@ -348,7 +348,7 @@ private function hStepExpression _
 	'' as the right-hand-side to the FOR += operation.
 
     '' pointer counter?
-    if ( typeGetDatatype( lhs_dtype ) = FB_DATATYPE_POINTER ) then
+    if ( typeIsPtr( lhs_dtype ) ) then
 
 	    '' is STEP a complex expression?
 		if( rhs->sym <> NULL ) then
@@ -710,7 +710,7 @@ private function hForStep _
 
 			'' get constant step
 			stk->for.stp.sym = NULL
-			if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( dtype ) ) then
 				stk->for.stp.dtype = FB_DATATYPE_LONG
 			else
 				stk->for.stp.dtype = dtype
@@ -731,7 +731,7 @@ private function hForStep _
 			dim as FBSYMBOL ptr tmp_subtype = subtype
 
 			'' step can't be a pointer if counter is
-			if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( dtype ) ) then
 				tmp_dtype = FB_DATATYPE_LONG
 				tmp_subtype = NULL
 			end if
@@ -925,7 +925,7 @@ function cForStmtBegin _
 
 	case else
 		'' not a ptr?
-		if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
+		if( typeIsPtr( dtype ) = FALSE ) then
 			if( errReport( FB_ERRMSG_EXPECTEDSCALAR, TRUE ) = FALSE ) then
 				exit function
 			else
@@ -1051,7 +1051,7 @@ private function hUdtCallOpOvl _
 			.mode = INVALID
 			.next = NULL
 		end with
-		
+
 		'' link in that pesky 3rd arg.
 		if( op = AST_OP_NEXT ) then
 			if( third_arg <> NULL ) then
@@ -1072,19 +1072,19 @@ private function hUdtCallOpOvl _
 		'' some other error?
 		if( err_num <> FB_ERRMSG_OK ) then
 			errReport( err_num, TRUE )
-		
+
 		'' build a message for the user
 		else
 			dim as string op_version = *astGetOpId( op ) + " (with"
 			select case as const op
 			case AST_OP_FOR, AST_OP_STEP
 				'' supposed to be 1 arg
-				if( second_arg = NULL ) then 
+				if( second_arg = NULL ) then
 					op_version += "out"
 				end if
 			case AST_OP_NEXT
 				'' supposed to be 2 args
-				if( third_arg = NULL ) then 
+				if( third_arg = NULL ) then
 					op_version += "out"
 				end if
 			end select
@@ -1163,7 +1163,7 @@ private function hForStmtClose _
 	if( stk->for.outerscopenode <> NULL ) then
 		astScopeEnd( stk->for.outerscopenode )
 	end if
-	
+
 	function = TRUE
 
 end function

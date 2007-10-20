@@ -41,7 +41,7 @@ function astNewBRANCH _
     dim as integer dtype = any
 
     if( l = NULL ) then
-    	dtype = INVALID
+    	dtype = FB_DATATYPE_INVALID
     else
     	dtype = l->dtype
     end if

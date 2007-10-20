@@ -242,14 +242,14 @@ private function hMockParam _
     	end if
 
     case FB_PARAMMODE_VARARG
-    	dtype = INVALID
+    	dtype = FB_DATATYPE_INVALID
     	plen = 0
     end select
 
 	s = symbAddProcParam( proc, _
 						  NULL, _
 						  NULL, _
-						  dtype, NULL, 0, plen, _
+						  dtype, NULL, plen, _
 					  	  pmode, _
 					  	  0, NULL )
 
@@ -274,7 +274,7 @@ private function hParamDecl _
 	dim as zstring ptr id = any
 	dim as ASTNODE ptr optval = any
 	dim as integer dtype = any, mode = any, param_len = any
-	dim as integer ptrcnt = any, attrib = any
+	dim as integer attrib = any
 	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any, use_default = any
 	dim as FBSYMBOL ptr subtype = any, s = any
 
@@ -313,8 +313,8 @@ private function hParamDecl _
 
 			return symbAddProcParam( proc, _
 									 NULL, NULL, _
-						   	     	 INVALID, NULL, 0, _
-						   	     	 0, FB_PARAMMODE_VARARG, _
+						   	     	 FB_DATATYPE_INVALID, NULL, 0, _
+						   	     	 FB_PARAMMODE_VARARG, _
 						   	      	 0, NULL )
 
 		'' syntax error..
@@ -417,7 +417,7 @@ private function hParamDecl _
 
 	'' no id
 	else
-		dtype  = INVALID
+		dtype  = FB_DATATYPE_INVALID
 	end if
 
 	if( mode = INVALID ) then
@@ -432,11 +432,11 @@ private function hParamDecl _
     doskip = FALSE
     if( lexGetToken( ) = FB_TK_AS ) then
     	lexSkipToken( )
-    	if( dtype <> INVALID ) then
+    	if( dtype <> FB_DATATYPE_INVALID ) then
     		if( hParamError( proc, id ) ) then
     			exit function
     		else
-    			dtype = INVALID
+    			dtype = FB_DATATYPE_INVALID
     		end if
     	end if
 
@@ -452,7 +452,7 @@ private function hParamDecl _
 		end if
 
     	if( cSymbolType( dtype, subtype, _
-    					 param_len, ptrcnt, options ) = FALSE ) then
+    					 param_len, options ) = FALSE ) then
     		if( hParamError( proc, id ) = FALSE ) then
     			reclevel -= 1
     			exit function
@@ -460,7 +460,6 @@ private function hParamDecl _
     			'' error recovery: fake type
     			dtype = FB_DATATYPE_INTEGER
     			subtype = NULL
-    			ptrcnt = 0
     			doskip = TRUE
     		end if
     	end if
@@ -485,7 +484,6 @@ private function hParamDecl _
     	end if
 
     	subtype = NULL
-    	ptrcnt = 0
 
     	attrib or= FB_SYMBATTRIB_SUFFIXED
     end if
@@ -502,7 +500,7 @@ private function hParamDecl _
 	end if
 
     '' QB def-by-letter hax
-    if( dtype = INVALID ) then
+    if( dtype = FB_DATATYPE_INVALID ) then
         dtype = symbGetDefType( id )
     end if
 
@@ -614,7 +612,7 @@ private function hParamDecl _
 
     s = symbAddProcParam( proc, _
     					  id, NULL, _
-    					  dtype, subtype, ptrcnt, _
+    					  dtype, subtype, _
     					  param_len, mode, _
     					  attrib, optval )
 

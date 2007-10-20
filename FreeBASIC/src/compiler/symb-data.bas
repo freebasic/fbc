@@ -71,42 +71,30 @@ sub symbDataEnd( )
 end sub
 
 '':::::
-function symbGetDataClass _
-	( _
-		byval dtype as integer _
-	) as integer static
-
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_POINTER
-	end if
-
-	function = symb_dtypeTB(dtype).class
-
-end function
-
-'':::::
 function symbMaxDataType _
 	( _
 		byval ldtype as integer, _
 		byval rdtype as integer _
-	) as integer static
+	) as integer
 
-    dim as integer dtype1, dtype2
+    dim as integer dtype1 = any, dtype2 = any
 
-    function = INVALID
+    function = FB_DATATYPE_INVALID
 
-    if( typeGetDatatype( ldtype ) = FB_DATATYPE_POINTER ) then
+    dtype1 = typeGet( ldtype )
+    if( dtype1 = FB_DATATYPE_POINTER ) then
     	'' can't be POINTER, due the -1 +1 hacks below
-    	dtype1 = FB_DATATYPE_UINT
+    	dtype1 = FB_DATATYPE_ULONG
     else
-    	dtype1 = symb_dtypeTB(ldtype).remaptype
+    	dtype1 = symb_dtypeTB(dtype1).remaptype
     end if
 
-    if( typeGetDatatype( rdtype ) = FB_DATATYPE_POINTER ) then
+    dtype2 = typeGet( rdtype )
+    if( dtype2 = FB_DATATYPE_POINTER ) then
     	'' ditto
-    	dtype2 = FB_DATATYPE_UINT
+    	dtype2 = FB_DATATYPE_ULONG
     else
-    	dtype2 = symb_dtypeTB(rdtype).remaptype
+    	dtype2 = symb_dtypeTB(dtype2).remaptype
     end if
 
     '' same?
@@ -195,63 +183,22 @@ function symbMaxDataType _
 end function
 
 '':::::
-function symbIsSigned _
-	( _
-		byval dtype as integer _
-	) as integer static
-
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_POINTER
-	end if
-
-	function = symb_dtypeTB(dtype).signed
-
-end function
-
-'':::::
-function symbGetDataSize _
-	( _
-		byval dtype as integer _
-	) as integer static
-
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_POINTER
-	end if
-
-	function = symb_dtypeTB(dtype).size
-
-end function
-
-'':::::
-function symbGetDataBits _
-	( _
-		byval dtype as integer _
-	) as integer static
-
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_POINTER
-	end if
-
-	function = symb_dtypeTB(dtype).bits
-
-end function
-
-'':::::
 function symbRemapType _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-		function = FB_DATATYPE_UINT
+	dtype = typeGet( dtype )
+
+	if( dtype = FB_DATATYPE_POINTER ) then
+		function = FB_DATATYPE_ULONG
 
 	elseif( dtype = FB_DATATYPE_BITFIELD ) then
 		function = subtype->typ
 
 	else
 		function = symb_dtypeTB(dtype).remaptype
-
 	end if
 
 end function
@@ -260,14 +207,9 @@ end function
 function symbGetSignedType _
 	( _
 		byval dtype as integer _
-	) as integer static
+	) as integer
 
-	dim as integer dt
-
-	dt = dtype
-	if( typeGetDatatype( dt ) = FB_DATATYPE_POINTER ) then
-		dt = FB_DATATYPE_POINTER
-	end if
+	dim as integer dt = typeGet( dtype )
 
 	if( symb_dtypeTB(dt).class <> FB_DATACLASS_INTEGER ) then
 		return dtype
@@ -280,7 +222,7 @@ function symbGetSignedType _
 	case FB_DATATYPE_USHORT
 		function = FB_DATATYPE_SHORT
 
-	case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
+	case FB_DATATYPE_UINT
 		function = FB_DATATYPE_INTEGER
 
 	case FB_DATATYPE_WCHAR
@@ -293,7 +235,7 @@ function symbGetSignedType _
 			function = FB_DATATYPE_INTEGER
 		end select
 
-	case FB_DATATYPE_ULONG
+	case FB_DATATYPE_ULONG, FB_DATATYPE_POINTER
 		function = FB_DATATYPE_LONG
 
 	case FB_DATATYPE_ULONGINT
@@ -309,14 +251,9 @@ end function
 function symbGetUnsignedType _
 	( _
 		byval dtype as integer _
-	) as integer static
+	) as integer
 
-	dim as integer dt
-
-	dt = dtype
-	if( typeGetDatatype( dt ) = FB_DATATYPE_POINTER ) then
-		dt = FB_DATATYPE_POINTER
-	end if
+	dim as integer dt = typeGet( dtype )
 
 	if( symb_dtypeTB(dt).class <> FB_DATACLASS_INTEGER ) then
 		return dtype
@@ -329,10 +266,10 @@ function symbGetUnsignedType _
 	case FB_DATATYPE_SHORT
 		function = FB_DATATYPE_USHORT
 
-	case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_POINTER
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
 		function = FB_DATATYPE_UINT
 
-	case FB_DATATYPE_LONG
+	case FB_DATATYPE_LONG, FB_DATATYPE_POINTER
 		function = FB_DATATYPE_ULONG
 
 	case FB_DATATYPE_LONGINT

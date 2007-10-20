@@ -48,7 +48,6 @@ function symbAddConst _
     					 FB_SYMBCLASS_CONST, _
     				   	 symbol, NULL, _
     				   	 dtype, subtype, _
-    				   	 0, _
     				   	 attrib )
 	if( sym = NULL ) then
 		exit function
@@ -94,7 +93,10 @@ function symbAllocFloatConst _
 	'' it must be declare as SHARED, because even if currently inside an
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
-	s = symbAddVarEx( @id, @id_alias, dtype, NULL, 0, 0, 0, dTB(), _
+	s = symbAddVarEx( @id, @id_alias, _
+					  dtype, NULL, _
+					  0, _
+					  0, dTB(), _
 					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
 					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
@@ -149,8 +151,10 @@ function symbAllocStrConst _
 	'' lgt += the null-char (rtlib wrappers will take it into account)
 
 	'' it must be declare as SHARED, see symbAllocFloatConst()
-	s = symbAddVarEx( @id, @id_alias, FB_DATATYPE_CHAR, NULL, _
-					  0, lgt + 1, 0, dTB(), _
+	s = symbAddVarEx( @id, @id_alias, _
+					  FB_DATATYPE_CHAR, NULL, _
+					  lgt + 1, _
+					  0, dTB(), _
 					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
 					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
@@ -205,8 +209,10 @@ function symbAllocWStrConst _
 
 	'' lgt = (lgt + null-char) * sizeof( wstring ) (see parser-decl-symbinit.bas)
 	'' it must be declare as SHARED, see symbAllocFloatConst()
-	s = symbAddVarEx( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, _
-					  0, (lgt+1) * len( wstring ), 0, dTB(), _
+	s = symbAddVarEx( @id, @id_alias, _
+					  FB_DATATYPE_WCHAR, NULL, _
+					  (lgt+1) * len( wstring ), _
+					  0, dTB(), _
 					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
 					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 

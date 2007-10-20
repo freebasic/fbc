@@ -87,21 +87,21 @@ private sub hCreateDescDimType _
 	symbAddField( ctx.array_dimtype, _
 				  NULL, _
 				  0, dTB(), _
-				  FB_DATATYPE_INTEGER, NULL, 0, _
+				  FB_DATATYPE_INTEGER, NULL, _
 				  FB_INTEGERSIZE, 0 )
 
 	'' lbound		as integer
 	symbAddField( ctx.array_dimtype, _
 				  NULL, _
 				  0, dTB(), _
-				  FB_DATATYPE_INTEGER, NULL, 0, _
+				  FB_DATATYPE_INTEGER, NULL, _
 				  FB_INTEGERSIZE, 0 )
 
 	'' ubound		as integer
 	symbAddField( ctx.array_dimtype, _
 				  NULL, _
 				  0, dTB(), _
-				  FB_DATATYPE_INTEGER, NULL, 0, _
+				  FB_DATATYPE_INTEGER, NULL, _
 				  FB_INTEGERSIZE, 0 )
 
     ''
@@ -125,35 +125,35 @@ private function hCreateDescType _
 	symbAddField( sym, _
 				  NULL, _
 				  0, dTB(), _
-				  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 1, _
+				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 				  FB_POINTERSIZE, 0 )
 
 	'' ptr			as any ptr
 	symbAddField( sym, _
 				  NULL, _
 				  0, dTB(), _
-				  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 1, _
+				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 				  FB_POINTERSIZE, 0 )
 
     '' size			as integer
 	symbAddField( sym, _
 				  NULL, _
 				  0, dTB(), _
-				  FB_DATATYPE_INTEGER, NULL, 0, _
+				  FB_DATATYPE_INTEGER, NULL, _
 				  FB_INTEGERSIZE, 0 )
 
     '' element_len	as integer
 	symbAddField( sym, _
 				  NULL, _
 				  0, dTB(), _
-				  FB_DATATYPE_INTEGER, NULL, 0, _
+				  FB_DATATYPE_INTEGER, NULL, _
 				  FB_INTEGERSIZE, 0 )
 
     '' dimensions	as integer
 	symbAddField( sym, _
 				  NULL, _
 				  0, dTB(), _
-				  FB_DATATYPE_INTEGER, NULL, 0, _
+				  FB_DATATYPE_INTEGER, NULL, _
 				  FB_INTEGERSIZE, 0 )
 
 
@@ -170,7 +170,7 @@ private function hCreateDescType _
 	symbAddField( sym, _
 				  NULL, _
 				  1, dTB(), _
-				  FB_DATATYPE_STRUCT, dimtype, 0, _
+				  FB_DATATYPE_STRUCT, dimtype, _
 				  symbGetLen( dimtype ), 0 )
 
 	''
@@ -274,7 +274,7 @@ function symbAddArrayDesc _
 					   	  symbtb, NULL, _
 					   	  FB_SYMBCLASS_VAR, _
 					   	  id, id_alias, _
-					   	  FB_DATATYPE_STRUCT, desctype, 0, _
+					   	  FB_DATATYPE_STRUCT, desctype, _
 					   	  attrib )
     if( desc = NULL ) then
     	exit function
@@ -443,7 +443,6 @@ function symbAddVarEx _
 		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval lgt as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
@@ -518,7 +517,7 @@ function symbAddVarEx _
 					   symtb, hashtb, _
 					   FB_SYMBCLASS_VAR, _
 					   id, id_alias, _
-					   dtype, subtype, ptrcnt, _
+					   dtype, subtype, _
 					   attrib )
 
 	if( s = NULL ) then
@@ -547,13 +546,12 @@ function symbAddVar _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
 
-    function = symbAddVarEx( id, NULL, dtype, subtype, ptrcnt, _
+    function = symbAddVarEx( id, NULL, dtype, subtype, _
     		  			     0, dimensions, dTB(), _
     						 attrib )
 
@@ -589,8 +587,9 @@ function symbAddTempVar _
 		options or= FB_SYMBOPT_UNSCOPE
 	end if
 
-	s = symbAddVarEx( id, NULL, dtype, subtype, 0, _
-					  0, 0, dTB(), _
+	s = symbAddVarEx( id, NULL, _
+					  dtype, subtype, 0, _
+					  0, dTB(), _
 					  attrib, options )
     if( s = NULL ) then
     	return NULL

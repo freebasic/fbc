@@ -48,7 +48,7 @@ function cDefDecl as integer static
     	exit function
     end if
 
-	dtype = INVALID
+	dtype = FB_DATATYPE_INVALID
 
 	select case as const lexGetToken( )
 	case FB_TK_DEFBYTE
@@ -91,7 +91,7 @@ function cDefDecl as integer static
 		dtype = FB_DATATYPE_STRING
 	end select
 
-	if( dtype <> INVALID ) then
+	if( dtype <> FB_DATATYPE_INVALID ) then
 		lexSkipToken( )
 
 		'' (CHAR '-' CHAR ','?)*

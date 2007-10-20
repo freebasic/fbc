@@ -37,7 +37,7 @@ function astNewIDX _
 
     dim as ASTNODE ptr n
 
-	if( dtype = INVALID ) then
+	if( dtype = FB_DATATYPE_INVALID ) then
 		dtype = astGetDataType( var_ )
 		subtype = astGetSubType( var_ )
 	end if

@@ -467,7 +467,6 @@ function symbNewSymbol _
 		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
@@ -520,7 +519,6 @@ function symbNewSymbol _
 
     s->typ = dtype
     s->subtype = subtype
-    s->ptrcnt = ptrcnt
 
     '' QB quirks
 	if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
@@ -652,7 +650,7 @@ add_prev:		head_sym->hash.item->data = s
 	s->parent = NULL
 
 	'' forward type? add to the back-patch list..
-	if( typeGetPtrType( dtype ) = FB_DATATYPE_FWDREF ) then
+	if( typeGetDtOnly( dtype ) = FB_DATATYPE_FWDREF ) then
 		symbAddToFwdRef( subtype, s )
 	end if
 
@@ -1095,7 +1093,7 @@ function symbLookupByNameAndSuffix _
     '' any found?
     if( chain_ <> NULL ) then
 		'' check if types match
-    	if( suffix = INVALID ) then
+    	if( suffix = FB_DATATYPE_INVALID ) then
     		function = symbFindVarByDefType( chain_, symbGetDefType( id ) )
     	else
     		function = symbFindVarBySuffix( chain_, suffix )
@@ -1745,11 +1743,11 @@ function symbTypeToStr _
 	static as string res
 	dim as integer dtype_np = any
 
-	if( dtype = INVALID ) then
+	if( dtype = FB_DATATYPE_INVALID ) then
 		return NULL
 	end if
 
-	dtype_np = typeGetPtrType( dtype )
+	dtype_np = typeGetDtOnly( dtype )
 
 	select case as const dtype_np
 	case FB_DATATYPE_FWDREF, FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
@@ -1764,7 +1762,7 @@ function symbTypeToStr _
 		end if
 	end select
 
-	do while( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER )
+	do while( typeIsPtr( dtype ) )
 		res += " ptr"
 		dtype = typeDeref( dtype )
 	loop
@@ -1832,7 +1830,7 @@ function symbCalcLen _
 		byval unpadlen as integer _
 	) as integer
 
-	select case as const dtype
+	select case as const typeGet( dtype )
 	case FB_DATATYPE_FWDREF
 		function = 0
 
@@ -1876,12 +1874,12 @@ function symbCalcLen _
 	case FB_DATATYPE_BITFIELD
 		function = subtype->lgt
 
+	case FB_DATATYPE_POINTER
+		function = FB_POINTERSIZE
+
 	case else
-		if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-			function = FB_POINTERSIZE
-		else
-			function = 0
-		end if
+		function = 0
+
 	end select
 
 end function

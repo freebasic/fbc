@@ -79,7 +79,7 @@ function astNewIIF _
 
     '' are the data types different?
     if( true_dtype <> false_dtype ) then
-    	if( symbMaxDataType( true_dtype, false_dtype ) <> INVALID ) then
+    	if( symbMaxDataType( true_dtype, false_dtype ) <> FB_DATATYPE_INVALID ) then
     		exit function
     	end if
     end if

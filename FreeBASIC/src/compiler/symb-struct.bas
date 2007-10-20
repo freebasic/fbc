@@ -60,7 +60,7 @@ function symbStructBegin _
     				   NULL, NULL, _
     				   FB_SYMBCLASS_STRUCT, _
     				   id, id_alias, _
-    				   FB_DATATYPE_STRUCT, NULL, 0 )
+    				   FB_DATATYPE_STRUCT, NULL )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -221,7 +221,6 @@ function symbAddField _
 		dTB() as FBARRAYDIM, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval lgt as integer, _
 		byval bits as integer _
 	) as FBSYMBOL ptr static
@@ -341,7 +340,7 @@ function symbAddField _
     				     @symbGetUDTSymbTb( parent ), hashtb, _
     				     FB_SYMBCLASS_FIELD, _
     				     id, NULL, _
-    				     dtype, subtype, ptrcnt, _
+    				     dtype, subtype, _
     				     iif( symbIsLocal( parent ), _
     				     	  FB_SYMBATTRIB_LOCAL, _
     				     	  FB_SYMBATTRIB_NONE ) )
@@ -420,7 +419,7 @@ function symbAddField _
 	end select
 
 	'' check pointers
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
+	if( typeIsPtr( dtype ) ) then
 		base_parent->udt.options or= FB_UDTOPT_HASPTRFIELD
 	end if
 
@@ -710,7 +709,6 @@ function symbCloneStruct _
     				  dTB(), _
     				  symbGetType( fld ), _
     				  symbGetSubType( fld ), _
-    				  fld->ptrcnt, _
     				  fld->lgt, _
     				  0 )
 

@@ -24,6 +24,57 @@
 #include once "inc\pool.bi"
 #include once "inc\ast-op.bi"
 
+''
+enum FB_DATACLASS
+	FB_DATACLASS_INTEGER                        '' must be the first
+	FB_DATACLASS_FPOINT
+	FB_DATACLASS_STRING
+	FB_DATACLASS_UDT
+	FB_DATACLASS_UNKNOWN
+end enum
+
+enum FB_DATATYPE
+	FB_DATATYPE_VOID
+	FB_DATATYPE_BYTE
+	FB_DATATYPE_UBYTE
+	FB_DATATYPE_CHAR
+	FB_DATATYPE_SHORT
+	FB_DATATYPE_USHORT
+	FB_DATATYPE_WCHAR
+	FB_DATATYPE_INTEGER
+	FB_DATATYPE_UINT
+	FB_DATATYPE_ENUM
+	FB_DATATYPE_BITFIELD
+	FB_DATATYPE_LONG
+	FB_DATATYPE_ULONG
+	FB_DATATYPE_LONGINT
+	FB_DATATYPE_ULONGINT
+	FB_DATATYPE_SINGLE
+	FB_DATATYPE_DOUBLE
+	FB_DATATYPE_STRING
+	FB_DATATYPE_FIXSTR
+	FB_DATATYPE_STRUCT
+	FB_DATATYPE_NAMESPC
+	FB_DATATYPE_FUNCTION
+	FB_DATATYPE_FWDREF
+	FB_DATATYPE_POINTER
+end enum
+
+const FB_DATATYPES = (FB_DATATYPE_POINTER - FB_DATATYPE_VOID) + 1
+
+const FB_DT_TYPEMASK 		= &b00000000000000000000000000011111 '' max 32 built-in dts
+const FB_DT_PTRMASK  		= &b00000000000000000000000111100000
+const FB_DT_CONSTMASK		= &b00000000000000111111111000000000 '' PTRLEVELS + 1 bit-masks
+const FB_DATATYPE_ARRAY		= &b00000000000010000000000000000000 '' used when mangling
+const FB_DATATYPE_REFERENCE	= &b00000000000100000000000000000000 '' ditto
+const FB_DATATYPE_INVALID	= &b10000000000000000000000000000000
+
+const FB_DT_PTRLEVELS		= 8					'' max levels of pointer indirection
+
+const FB_DT_PTRPOS			= 5
+const FB_DT_CONSTPOS		= FB_DT_PTRPOS + 4
+
+
 '' symbol classes
 enum FB_SYMBCLASS
 	FB_SYMBCLASS_VAR			= 1
@@ -40,9 +91,9 @@ enum FB_SYMBCLASS
 	FB_SYMBCLASS_FIELD
 	FB_SYMBCLASS_BITFIELD
 	FB_SYMBCLASS_TYPEDEF
-	FB_SYMBCLASS_FWDREF								'' forward definition
+	FB_SYMBCLASS_FWDREF							'' forward definition
 	FB_SYMBCLASS_SCOPE
-	FB_SYMBCLASS_NSIMPORT							'' namespace import (an USING)
+	FB_SYMBCLASS_NSIMPORT						'' namespace import (an USING)
 end enum
 
 '' symbol state mask
@@ -119,6 +170,23 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_SUFFIXED		= FB_SYMBATTRIB_FUNCRESULT
 end enum
 
+'' parameter modes
+enum FB_PARAMMODE
+	FB_PARAMMODE_BYVAL 			= 1				'' must start at 1! used for mangling
+	FB_PARAMMODE_BYREF
+	FB_PARAMMODE_BYDESC
+	FB_PARAMMODE_VARARG
+end enum
+
+'' call conventions
+enum FB_FUNCMODE
+	FB_FUNCMODE_STDCALL			= 1             '' ditto
+	FB_FUNCMODE_STDCALL_MS						'' ms/vb-style: don't include the @n suffix
+	FB_FUNCMODE_CDECL
+	FB_FUNCMODE_PASCAL
+end enum
+
+const FB_FUNCMODE_DEFAULT		= FB_FUNCMODE_STDCALL
 '' C standard types
 enum FB_CSTDTYPE
 	FB_CSTDTYPE_SIZET			= 1
@@ -145,6 +213,15 @@ enum FB_SYMBLOOKUPOPT
 	FB_SYMBLOOKUPOPT_PROPGET	= &h00000001
 end enum
 
+''
+enum FB_MANGLING
+	FB_MANGLING_BASIC
+	FB_MANGLING_CDECL
+	FB_MANGLING_STDCALL
+	FB_MANGLING_STDCALL_MS
+	FB_MANGLING_CPP
+	FB_MANGLING_PASCAL
+end enum
 
 type FBSYMBOL_ as FBSYMBOL
 
@@ -543,7 +620,6 @@ type FBSYMBOL
 
 	typ				as FB_DATATYPE
 	subtype			as FBSYMBOL ptr
-	ptrcnt 			as integer
 
 	scope			as ushort
 	mangling		as short 					'' FB_MANGLING
@@ -860,7 +936,7 @@ declare function symbAddKeyword _
 		byval id as integer, _
 		byval class as integer, _
 		byval hashtb as FBHASHTB ptr = NULL, _
-		byval dtype as integer = INVALID, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as FBSYMBOL ptr
 
@@ -919,7 +995,6 @@ declare function symbAddTypedef _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval lgt as integer _
 	) as FBSYMBOL ptr
 
@@ -934,7 +1009,6 @@ declare function symbAddVar _
 		byval symbol as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
 		byval attrib as integer _
@@ -946,7 +1020,6 @@ declare function symbAddVarEx _
 		byval aliasname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval lgt as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
@@ -994,7 +1067,6 @@ declare function symbAddField _
 		dTB() as FBARRAYDIM, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval lgt as integer, _
 		byval bits as integer _
 	) as FBSYMBOL ptr
@@ -1032,7 +1104,6 @@ declare function symbAddProcParam _
 		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval lgt as integer, _
 		byval mode as integer, _
 		byval attrib as FB_SYMBATTRIB, _
@@ -1052,7 +1123,6 @@ declare function symbAddPrototype _
 		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval attrib as integer, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT = FB_SYMBOPT_NONE _
@@ -1066,7 +1136,6 @@ declare function symbAddProc _
 		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval attrib as integer, _
 		byval mode as integer _
 	) as FBSYMBOL ptr
@@ -1079,7 +1148,6 @@ declare function symbAddOperator _
 		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval attrib as integer, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT = FB_SYMBOPT_NONE _
@@ -1100,7 +1168,6 @@ declare function symbAddProcPtr _
 		byval proc as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval mode as integer _
 	) as FBSYMBOL ptr
 
@@ -1284,7 +1351,6 @@ declare function symbNewSymbol _
 		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as FBSYMBOL ptr
 
@@ -1424,26 +1490,6 @@ declare function symbMaxDataType _
 	( _
 		byval dtype1 as integer, _
 		byval dtype2 as integer _
-	) as integer
-
-declare function symbGetDataClass _
-	( _
-		byval dtype as integer _
-	) as integer
-
-declare function symbGetDataSize _
-	( _
-		byval dtype as integer _
-	) as integer
-
-declare function symbGetDataBits _
-	( _
-		byval dtype as integer _
-	) as integer
-
-declare function symbIsSigned _
-	( _
-		byval dtype as integer _
 	) as integer
 
 declare function symbGetSignedType _
@@ -1956,7 +2002,7 @@ declare function symbVarCheckAccess _
 
 #define symbGetSubType(s) s->subtype
 
-#define symbGetPtrCnt(s) s->ptrcnt
+#define symbGetPtrCnt(s) typeGetPtrCnt( symbGetType( s ) )
 
 #define symbGetClass(s) s->class
 
@@ -2153,7 +2199,8 @@ declare function symbVarCheckAccess _
 
 #define symbGetUDTOpOvlTb(s) s->udt.ext->opovlTb
 
-#define symbGetUDTInRegister(s) iif( symbGetType( sym ) = FB_DATATYPE_STRUCT, not typeIsPtrTo( symbGetProcRealType( sym ), 1, FB_DATATYPE_STRUCT ), TRUE )
+#define symbGetUDTInRegister(s) iif( symbGetType( sym ) = FB_DATATYPE_STRUCT, _
+									 symbGetProcRealType( sym ) <> typeAddrOf( FB_DATATYPE_STRUCT ), TRUE )
 
 #define symbGetEnumSymbTbHead(s) s->enum_.ns.symtb.head
 
@@ -2382,28 +2429,60 @@ declare function symbVarCheckAccess _
 
 #define symbLookupCompField( parent, id ) symbLookupAt( parent, id, FALSE, TRUE )
 
-'' datatype accessors/manipulators
-#define typeGetDatatype(dt)     (iif(dt >= FB_DATATYPE_POINTER, FB_DATATYPE_POINTER, dt)) '' dt
-#define typeSetType(typ,ptrcnt) (ptrcnt * FB_DATATYPE_POINTER + typ) '' FB_DATATYPE_POINTER
-#define typeAddrOf(dt)          (dt + FB_DATATYPE_POINTER) '' FB_DATATYPE_POINTER
 
-#macro typeDeref(dt/', somewhere'/) ''type/ptr info has to come from somewhere besides dtype
-	iif(dt >= FB_DATATYPE_POINTER, dt-FB_DATATYPE_POINTER, INVALID)
-#endmacro
-#macro typeGetPtrCnt(dt/', somewhere'/) ''ditto
-	(dt \ FB_DATATYPE_POINTER)
-#endmacro
-#macro typeGetPtrType(dt/', somewhere'/) ''ditto
-	(iif(dt >= FB_DATATYPE_POINTER, dt Mod FB_DATATYPE_POINTER, dt))
-#endmacro
+#define symbGetDataClass( dt ) symb_dtypeTB(typeGet( dt )).class
 
-#macro typeIsPtrTo(dt, ptrcnt, np)
-	iif( typeGetDatatype( dt ) = FB_DATATYPE_POINTER, _
-	     iif( typeGetPtrCnt( dt ) = ptrcnt, _
-	          iif( typeGetPtrType( dt ) = np, _
-	               TRUE, _
-	               FALSE ), FALSE ), FALSE )
-#endmacro
+#define symbGetDataSize( dt ) symb_dtypeTB(typeGet( dt )).size
+
+#define symbGetDataBits( dt ) symb_dtypeTB(typeGet( dt )).bits
+
+#define symbIsSigned( dt ) symb_dtypeTB(typeGet( dt )).signed
+
+'' datatype accessors
+
+#define typeGet( dt ) iif( dt and FB_DT_PTRMASK, FB_DATATYPE_POINTER, dt and FB_DT_TYPEMASK )
+#define typeGetDtOnly( dt ) (dt and FB_DT_TYPEMASK)
+#define typeGetDtAndPtrOnly( dt ) (dt and (FB_DT_TYPEMASK or FB_DT_PTRMASK))
+
+#define typeAddrOf( dt ) _
+	((dt and FB_DT_TYPEMASK) or _
+	 ((dt and FB_DT_PTRMASK) + (1 shl FB_DT_PTRPOS)) or _
+	 ((dt and FB_DT_CONSTMASK) shl 1))
+
+#define typeMultAddrOf( dt, cnt ) _
+	((dt and FB_DT_TYPEMASK) or _
+	 ((dt and FB_DT_PTRMASK) + (cnt shl FB_DT_PTRPOS)) or _
+	 ((dt and FB_DT_CONSTMASK) shl cnt))
+
+#define typeDeref( dt ) _
+	((dt and FB_DT_TYPEMASK) or _
+	 ((dt and FB_DT_PTRMASK) - (1 shl FB_DT_PTRPOS)) or _
+	 (((dt and FB_DT_CONSTMASK) shr 1) and FB_DT_CONSTMASK))
+
+#define typeMultDeref( dt, cnt ) _
+	((dt and FB_DT_TYPEMASK) or _
+	 ((dt and FB_DT_PTRMASK) - (cnt shl FB_DT_PTRPOS)) or _
+	 (((dt and FB_DT_CONSTMASK) shr cnt) and FB_DT_CONSTMASK))
+
+#define	typeIsPtr( dt ) ((dt and FB_DT_PTRMASK) <> 0)
+#define typeGetPtrCnt( dt ) ((dt and FB_DT_PTRMASK) shr FB_DT_PTRPOS)
+
+#define	typeIsConst( dt ) ((dt and (1 shl FB_DT_CONSTPOS)) <> 0)
+#define	typeSetIsConst( dt ) (dt or (1 shl FB_DT_CONSTPOS))
+#define	typeUnsetIsConst( dt ) (dt and not (1 shl FB_DT_CONSTPOS))
+#define	typeGetConstMask( dt ) (dt and FB_DT_CONSTMASK)
+#define	typeGetPtrConstMask( dt ) _
+	(typeGetConstMask( dt ) and not ((1 shl FB_DT_CONSTPOS) shl typeGetPtrCnt( dt )))
+
+#define	typeIsRef( dt ) ((dt and FB_DATATYPE_REFERENCE) <> 0)
+#define	typeSetIsRef( dt ) (dt or FB_DATATYPE_REFERENCE)
+#define	typeUnsetIsRef( dt ) (dt and not FB_DATATYPE_REFERENCE)
+
+#define	typeIsArray( dt ) ((dt and FB_DATATYPE_ARRAY) <> 0)
+#define	typeSetIsArray( dt ) (dt or FB_DATATYPE_ARRAY)
+#define	typeUnsetIsArray( dt ) (dt and not FB_DATATYPE_ARRAY)
+
+#define	typeSetIsRefAndArray( dt ) (dt or (FB_DATATYPE_REFERENCE or FB_DATATYPE_ARRAY))
 
 ''
 '' inter-module globals

@@ -73,7 +73,7 @@ private function hGetBitField _
 	n->subtype = NULL
 
 	'' make a copy, the node itself can't be used or it will be deleted twice
-	c = astNewNode( INVALID, INVALID )
+	c = astNewNode( INVALID, FB_DATATYPE_INVALID )
 	astCopy( c, n )
 
 	'' final type is always an integer (the sign depends if CONV changed

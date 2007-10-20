@@ -212,7 +212,7 @@ private function hGetId _
     			else
 					'' error recovery: fake an id, skip until next '('
 					*id = *hMakeTmpStr( )
-					*dtype = INVALID
+					*dtype = FB_DATATYPE_INVALID
 					hSkipUntil( CHAR_LPRNT )
 					return NULL
 				end if
@@ -226,7 +226,7 @@ private function hGetId _
 			else
 				'' error recovery: fake an id, skip until next '('
 				*id = *hMakeTmpStr( )
-				*dtype = INVALID
+				*dtype = FB_DATATYPE_INVALID
 				hSkipUntil( CHAR_LPRNT )
 				return NULL
 			end if
@@ -238,7 +238,7 @@ private function hGetId _
 		else
 			'' error recovery: fake an id, skip until next '('
 			*id = *hMakeTmpStr( )
-			*dtype = INVALID
+			*dtype = FB_DATATYPE_INVALID
 			hSkipUntil( CHAR_LPRNT )
 			return NULL
 		end if
@@ -248,11 +248,11 @@ private function hGetId _
 	*dtype = lexGetType( )
 
 	if( is_sub ) then
-		if( *dtype <> INVALID ) then
+		if( *dtype <> FB_DATATYPE_INVALID ) then
     		if( errReport( FB_ERRMSG_INVALIDCHARACTER ) = FALSE ) then
     			exit function
     		else
-    			*dtype = INVALID
+    			*dtype = FB_DATATYPE_INVALID
     		end if
     	end if
 	end if
@@ -267,8 +267,7 @@ end function
 private function hCheckRetType _
 	( _
 		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr, _
-		byref ptrcnt as integer _
+		byref subtype as FBSYMBOL ptr _
 	) as integer
 
    	function = FALSE
@@ -282,7 +281,6 @@ private function hCheckRetType _
     		'' error recovery: fake a type
     		dtype = FB_DATATYPE_STRING
     		subtype = NULL
-    		ptrcnt = 0
     	end if
 
     case FB_DATATYPE_VOID
@@ -292,7 +290,6 @@ private function hCheckRetType _
     		'' error recovery: fake a type
     		dtype = typeAddrOf( dtype )
     		subtype = NULL
-    		ptrcnt = 1
     	end if
     end select
 
@@ -436,7 +433,7 @@ function cProcCallingConv _
 end function
 
 #define CREATEFAKEID( proc ) _
-	symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, dtype, subtype, ptrcnt, attrib, mode )
+	symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, dtype, subtype, attrib, mode )
 
 '':::::
 private function hDoNesting _
@@ -513,7 +510,7 @@ function cProcHeader _
 		end if
 	end if
 
-	dim as integer dtype = any, lgt = any, ptrcnt = any
+	dim as integer dtype = any, lgt = any
 	dim as FBSYMBOL ptr head_proc = any, subtype = any
 	dim as FB_SYMBSTATS stats = any
 
@@ -527,7 +524,6 @@ function cProcHeader _
 	hCheckSuffix( dtype )
 
 	subtype = NULL
-	ptrcnt = 0
 	stats = 0
 
 	'' CallConvention?
@@ -646,7 +642,7 @@ function cProcHeader _
 
     '' (AS SymbolType)?
     case FB_TK_AS
-    	if( (dtype <> INVALID) or ((options and FB_PROCOPT_ISSUB) <> 0) ) then
+    	if( (dtype <> FB_DATATYPE_INVALID) or ((options and FB_PROCOPT_ISSUB) <> 0) ) then
     		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     			exit function
     		end if
@@ -654,18 +650,17 @@ function cProcHeader _
 
     	lexSkipToken( )
 
-    	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+    	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
     		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a type
     			dtype = FB_DATATYPE_INTEGER
     			subtype = NULL
-    			ptrcnt = 0
     		end if
 
     	else
-    		if( hCheckRetType( dtype, subtype, ptrcnt ) = FALSE ) then
+    		if( hCheckRetType( dtype, subtype ) = FALSE ) then
     			exit function
     		end if
     	end if
@@ -690,14 +685,14 @@ function cProcHeader _
     end if
 
 	''
-	if( dtype = INVALID ) then
+	if( dtype = FB_DATATYPE_INVALID ) then
 		dtype = symbGetDefType( id )
 	end if
 
 	'' prototype?
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
     	proc = symbAddPrototype( proc, @id, palias, plib, _
-    						 	 dtype, subtype, ptrcnt, _
+    						 	 dtype, subtype, _
     					     	 attrib, mode )
     	if( proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
@@ -724,7 +719,7 @@ function cProcHeader _
     	end if
 
     	head_proc = symbAddProc( proc, @id, palias, NULL, _
-    					   		 dtype, subtype, ptrcnt, _
+    					   		 dtype, subtype, _
     					   		 attrib, mode )
 
     	if( head_proc = NULL ) then
@@ -768,7 +763,7 @@ function cProcHeader _
 				end if
 
     			head_proc = symbAddProc( proc, @id, palias, NULL, _
-    							   		 dtype, subtype, ptrcnt, _
+    							   		 dtype, subtype, _
     							   		 attrib, mode )
     			'' dup def?
     			if( head_proc = NULL ) then
@@ -1001,7 +996,7 @@ private function hCheckOpOvlParams _
 				'' must be an integer
 				if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
 					dim as integer is_integer = TRUE
-					if( typeGetDatatype( symbGetType( param ) ) = FB_DATATYPE_POINTER ) then
+					if( typeIsPtr( symbGetType( param ) ) ) then
 						is_integer = FALSE
 					end if
 					select case symbGetType( param )
@@ -1020,7 +1015,7 @@ private function hCheckOpOvlParams _
 			case else
 				'' must be a pointer
 				if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
-					if( typeGetDatatype( symbGetType( param ) ) <> FB_DATATYPE_POINTER ) then
+					if( typeIsPtr( symbGetType( param ) ) = FALSE ) then
 						hParamError( proc, 1, FB_ERRMSG_PARAMMUSTBEAPOINTER )
 						exit function
 					end if
@@ -1106,7 +1101,7 @@ private function hCheckOpOvlParams _
 		select case op
 		case AST_OP_ADDROF
 			'' return type must be a pointer
-			if( typeGetDatatype( symbGetType( proc ) ) <> FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( symbGetType( proc ) ) = FALSE ) then
 				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 				exit function
 			end if
@@ -1127,7 +1122,7 @@ private function hCheckOpOvlParams _
 		select case op
 		case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF
 			'' should return a pointer
-			if( typeGetDatatype( symbGetType( proc ) ) <> FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( symbGetType( proc ) ) = FALSE ) then
 				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
 				exit function
 			end if
@@ -1319,11 +1314,10 @@ function cOperatorHeader _
 		end if
 	end select
 
-	dim as integer dtype = any, lgt = any, ptrcnt = any
+	dim as integer dtype = any, lgt = any
     dim as FBSYMBOL ptr subtype = any
 
 	subtype = NULL
-	ptrcnt = 0
 
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
@@ -1417,24 +1411,22 @@ function cOperatorHeader _
 				'' error recovery: fake a type
 				dtype = FB_DATATYPE_INTEGER
 				subtype = NULL
-				ptrcnt = 0
 			end if
 
 		else
 			lexSkipToken( )
 
-    		if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+    		if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
     			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     				exit function
     			else
     				'' error recovery: fake a type
     				dtype = FB_DATATYPE_INTEGER
     				subtype = NULL
-    				ptrcnt = 0
     			end if
 
     		else
-    			if( hCheckRetType( dtype, subtype, ptrcnt ) = FALSE ) then
+    			if( hCheckRetType( dtype, subtype ) = FALSE ) then
     				exit function
     			end if
     		end if
@@ -1471,7 +1463,7 @@ function cOperatorHeader _
 		hCheckOpOvlParams( parent, op, proc, options )
 
     	proc = symbAddOperator( proc, op, palias, plib, _
-    						    dtype, subtype, ptrcnt, _
+    						    dtype, subtype, _
     					        attrib, mode )
     	if( proc = NULL ) then
     		errReport( FB_ERRMSG_DUPDEFINITION )
@@ -1506,7 +1498,7 @@ function cOperatorHeader _
     	end if
 
     	head_proc = symbAddOperator( proc, op, palias, NULL, _
-    					   		  	 dtype, subtype, ptrcnt, _
+    					   		  	 dtype, subtype, _
 	    					   	  	 attrib, mode, _
     					   		  	 FB_SYMBOPT_DECLARING )
 
@@ -1544,7 +1536,7 @@ function cOperatorHeader _
     		end if
 
     		head_proc = symbAddOperator( proc, op, palias, NULL, _
-    						   		  	 dtype, subtype, ptrcnt, _
+    						   		  	 dtype, subtype, _
     						   		  	 attrib, mode, _
     						   		  	 FB_SYMBOPT_DECLARING )
 
@@ -1778,7 +1770,7 @@ function cPropertyHeader _
 	end if
 
 	'' id
-	dim as integer dtype = any, lgt = any, ptrcnt = any
+	dim as integer dtype = any, lgt = any
 	dim as FBSYMBOL ptr head_proc = any, subtype = any
 	dim as FB_SYMBSTATS stats = any
 
@@ -1792,7 +1784,6 @@ function cPropertyHeader _
 	hCheckSuffix( dtype )
 
 	subtype = NULL
-	ptrcnt = 0
 	stats = 0
 
 	'' CallConvention?
@@ -1856,18 +1847,17 @@ function cPropertyHeader _
 
     	lexSkipToken( )
 
-    	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+    	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
     		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a type
     			dtype = FB_DATATYPE_INTEGER
     			subtype = NULL
-    			ptrcnt = 0
     		end if
 
     	else
-    		if( hCheckRetType( dtype, subtype, ptrcnt ) = FALSE ) then
+    		if( hCheckRetType( dtype, subtype ) = FALSE ) then
     			exit function
     		end if
     	end if
@@ -1887,7 +1877,7 @@ function cPropertyHeader _
 		is_indexed = symbGetProcParams( proc ) = 1+2
 
     else
-		if( dtype = INVALID ) then
+		if( dtype = FB_DATATYPE_INVALID ) then
 			dtype = symbGetDefType( id )
 		end if
 
@@ -1906,7 +1896,7 @@ function cPropertyHeader _
 	'' prototype?
 	if( is_prototype ) then
     	proc = symbAddPrototype( proc, @id, palias, plib, _
-    						     dtype, subtype, ptrcnt, _
+    						     dtype, subtype, _
     					         attrib, mode )
     	if( proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
@@ -1947,7 +1937,7 @@ function cPropertyHeader _
     	end if
 
     	head_proc = symbAddProc( proc, @id, palias, NULL, _
-    					   		 dtype, subtype, ptrcnt, _
+    					   		 dtype, subtype, _
     					   		 attrib, mode )
 
     	if( head_proc = NULL ) then
@@ -1992,7 +1982,7 @@ function cPropertyHeader _
 			end if
 
     		head_proc = symbAddProc( proc, @id, palias, NULL, _
-    						   		 dtype, subtype, ptrcnt, _
+    						   		 dtype, subtype, _
     						   		 attrib, mode )
     		'' dup def?
     		if( head_proc = NULL ) then
@@ -2243,7 +2233,8 @@ function cCtorHeader _
     			proc = symbAddProc( proc, _
     							    hMakeTmpStr( ), _
     							    NULL, NULL, _
-    							    FB_DATATYPE_VOID, NULL, 0, attrib, mode )
+    							    FB_DATATYPE_VOID, NULL, _
+    							    attrib, mode )
     		end if
 
     	else
@@ -2274,7 +2265,10 @@ function cCtorHeader _
     				exit function
     			else
     				'' error recovery: create a fake symbol
-    				return symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, FB_DATATYPE_VOID, NULL, 0, attrib, mode )
+    				return symbAddProc( proc, _
+    									hMakeTmpStr( ), NULL, NULL, _
+    									FB_DATATYPE_VOID, NULL, _
+    									attrib, mode )
     			end if
     		end if
 
@@ -2288,12 +2282,8 @@ function cCtorHeader _
     			else
     				'' error recovery: create a fake symbol
     				return symbAddProc( proc, _
-    									hMakeTmpStr( ), _
-    									NULL, _
-    									NULL, _
-    									FB_DATATYPE_VOID, _
-    									NULL, _
-    									0, _
+    									hMakeTmpStr( ), NULL, NULL, _
+    									FB_DATATYPE_VOID, NULL, _
     									attrib, _
     									mode )
     			end if
@@ -2307,12 +2297,8 @@ function cCtorHeader _
     			else
     				'' error recovery: create a fake symbol
     				return symbAddProc( proc, _
-    									hMakeTmpStr( ), _
-    									NULL, _
-    									NULL, _
-    									FB_DATATYPE_VOID, _
-    									NULL, _
-    									0, _
+    									hMakeTmpStr( ), NULL, NULL, _
+    									FB_DATATYPE_VOID, NULL, _
     									attrib, _
     									mode )
     			end if

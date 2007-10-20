@@ -32,7 +32,7 @@
 #include once "inc\list.bi"
 #include once "inc\ir.bi"
 #include once "inc\ast.bi"
-	
+
 declare sub astProcListInit _
 	( _
 	)
@@ -995,7 +995,7 @@ function astCloneTree _
 	end if
 
 	''
-	c = astNewNode( INVALID, INVALID )
+	c = astNewNode( INVALID, FB_DATATYPE_INVALID )
 	astCopy( c, n )
 
 	'' walk

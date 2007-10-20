@@ -231,7 +231,7 @@ private function hCheckPointerOps _
 
 	function = FALSE
 
-    if( typeGetDatatype( ldtype ) = FB_DATATYPE_POINTER ) then
+    if( typeIsPtr( ldtype ) ) then
 		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
     		if( env.clopt.lang <> FB_LANG_QB ) then
 				errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
@@ -239,7 +239,7 @@ private function hCheckPointerOps _
 		end if
 
     '' r-side expr is a ptr?
-    elseif( typeGetDatatype( rdtype ) = FB_DATATYPE_POINTER ) then
+    elseif( typeIsPtr( rdtype ) ) then
     	if( env.clopt.lang <> FB_LANG_QB ) then
     		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
     	end if
@@ -487,7 +487,7 @@ function astNewASSIGN _
         '' is r an UDT too?
         dim as integer is_udt = TRUE
         if( astIsCALL( r ) ) then
-        	is_udt = typeIsPtrTo( symbGetUDTRetType( r->subtype ), 1, FB_DATATYPE_STRUCT )
+        	is_udt = symbGetUDTRetType( r->subtype ) = typeAddrOf( FB_DATATYPE_STRUCT )
         end if
 
 		if( is_udt ) then

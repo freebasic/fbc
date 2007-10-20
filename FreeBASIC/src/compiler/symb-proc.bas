@@ -131,7 +131,7 @@ function symbCalcProcParamsLen _
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
     if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
-    	if( typeIsPtrTo( symbGetProcRealType( proc ), 1, FB_DATATYPE_STRUCT ) ) then
+    	if( symbGetProcRealType( proc ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
     		lgt += FB_POINTERSIZE
     	end if
     end if
@@ -148,7 +148,6 @@ function symbAddProcParam _
 		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval lgt as integer, _
 		byval mode as integer, _
 		byval attrib as FB_SYMBATTRIB, _
@@ -164,7 +163,7 @@ function symbAddProcParam _
     					   @proc->proc.paramtb, NULL, _
     					   FB_SYMBCLASS_PARAM, _
     				   	   id, id_alias, _
-    				   	   dtype, subtype, ptrcnt, _
+    				   	   dtype, subtype, _
     				   	   attrib )
     if( param = NULL ) then
     	exit function
@@ -181,7 +180,7 @@ function symbAddProcParam _
 	param->param.optexpr = optexpr
 
 	'' for UDTs, check if not including a byval param to self
-	if( dtype = FB_DATATYPE_STRUCT ) then
+	if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
 		if( mode = FB_PARAMMODE_BYVAL ) then
 			if( subtype = symbGetCurrentNamespc( ) ) then
 				symbSetUdtHasRecByvalParam( subtype )
@@ -241,7 +240,7 @@ private function hGetProcRealType _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
 
-    select case dtype
+    select case typeGet( dtype )
     '' string? it's actually a pointer to a string descriptor
     case FB_DATATYPE_STRING
     	 return typeAddrOf( FB_DATATYPE_STRING )
@@ -308,13 +307,12 @@ private function hAddOvlProc _
 		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval attrib as FB_SYMBATTRIB, _
 		byval preservecase as integer _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr ovl = any, ovl_param = any, param = any
-	dim as integer ovl_params = any, params = any, i = any
+	dim as integer ovl_params = any, params = any
 
 	function = NULL
 
@@ -405,17 +403,35 @@ private function hAddOvlProc _
 					end if
 				end if
 
+				dim as integer pdtype = param->typ
+				dim as integer odtype = ovl_param->typ
+
+				'' check the const qualifier
+				if( (typeGetConstMask( pdtype ) or _
+					typeGetConstMask( odtype )) <> 0 ) then
+
+					'' only matters if it's a 'const ptr' (as in C++)
+					if( typeGetPtrConstMask( pdtype ) <> _
+						typeGetPtrConstMask( odtype ) ) then
+						exit do
+					end if
+
+					pdtype = typeGetDtAndPtrOnly( pdtype )
+					odtype = typeGetDtAndPtrOnly( odtype )
+				end if
+
 				'' not the same type? check next proc..
-				if( param->typ <> ovl_param->typ ) then
+				if( pdtype <> odtype ) then
+
 					'' handle special cases: zstring ptr and string args
-					select case param->typ
-					case typeSetType( FB_DATATYPE_CHAR, 1 )
-						if( ovl_param->typ <> FB_DATATYPE_STRING ) then
+					select case pdtype
+					case typeAddrOf( FB_DATATYPE_CHAR )
+						if( odtype <> FB_DATATYPE_STRING ) then
 							exit do
 						end if
 
 					case FB_DATATYPE_STRING
-						if( typeIsPtrTo( ovl_param->typ, 1, FB_DATATYPE_CHAR ) = FALSE ) then
+						if( odtype <> typeAddrOf( FB_DATATYPE_CHAR ) ) then
 							exit do
 						end if
 
@@ -454,7 +470,7 @@ private function hAddOvlProc _
 						  symtb, hashtb, _
 						  FB_SYMBCLASS_PROC, _
 						  id, id_alias, _
-					      dtype, subtype, ptrcnt, _
+					      dtype, subtype, _
 					      attrib )
 
 	if( proc = NULL ) then
@@ -493,7 +509,6 @@ private function hAddOpOvlProc _
 		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
@@ -504,7 +519,7 @@ private function hAddOpOvlProc _
 		return hAddOvlProc( proc, ovl_head_proc, _
 							symtb, hashtb, _
 							NULL, id_alias, _
-							dtype, subtype, ptrcnt, attrib, _
+							dtype, subtype, attrib, _
 							FALSE )
 	end if
 
@@ -537,7 +552,7 @@ private function hAddOpOvlProc _
 						  symtb, hashtb, _
 						  FB_SYMBCLASS_PROC, _
 						  NULL, id_alias, _
-					      dtype, subtype, ptrcnt, _
+					      dtype, subtype, _
 					      attrib )
 
 	'' there's no id so it can't be added to the chain list
@@ -555,7 +570,6 @@ private function hSetupProc _
 		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval attrib as integer, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
@@ -571,7 +585,7 @@ private function hSetupProc _
 	attrib or= FB_SYMBATTRIB_SHARED
 
 	''
-	if( dtype = INVALID ) then
+	if( dtype = FB_DATATYPE_INVALID ) then
 		dtype = symbGetDefType( id )
 		subtype = NULL
 	end if
@@ -622,7 +636,7 @@ private function hSetupProc _
 					  	  	  	  symbtb, hashtb, _
 					  	  	  	  FB_SYMBCLASS_PROC, _
 					  	  	  	  NULL, id_alias, _
-				   	  	  	  	  FB_DATATYPE_VOID, NULL, 0, _
+				   	  	  	  	  FB_DATATYPE_VOID, NULL, _
 				   	  	  	  	  attrib )
 
 			'' ctor?
@@ -643,7 +657,7 @@ private function hSetupProc _
 			proc = hAddOvlProc( sym, head_proc, _
 								symbtb, hashtb, _
 								NULL, id_alias, _
-							    FB_DATATYPE_VOID, NULL, 0, _
+							    FB_DATATYPE_VOID, NULL, _
 							    attrib, _
 							    FALSE )
 			if( proc = NULL ) then
@@ -683,7 +697,7 @@ private function hSetupProc _
 					  	  	  	  symbtb, hashtb, _
 					  	  	  	  FB_SYMBCLASS_PROC, _
 					  	  	  	  NULL, id_alias, _
-				   	  	  	  	  dtype, subtype, ptrcnt, _
+				   	  	  	  	  dtype, subtype, _
 				   	  	  	  	  attrib )
 
         	symbSetCompOpOvlHead( parent, proc )
@@ -693,7 +707,7 @@ private function hSetupProc _
 			proc = hAddOpOvlProc( sym, head_proc, _
 								  symbtb, hashtb, _
 								  op, id_alias, _
-								  dtype, subtype, ptrcnt, _
+								  dtype, subtype, _
 								  attrib )
 			if( proc = NULL ) then
 				exit function
@@ -720,7 +734,7 @@ add_proc:
 						  	  symbtb, hashtb, _
 						  	  FB_SYMBCLASS_PROC, _
 						  	  id, id_alias, _
-					   	  	  dtype, subtype, ptrcnt, _
+					   	  	  dtype, subtype, _
 					   	  	  attrib )
 
 		'' dup def?
@@ -746,7 +760,7 @@ add_proc:
 			proc = hAddOvlProc( sym, head_proc, _
 								symbtb, hashtb, _
 								id, id_alias, _
-								dtype, subtype, ptrcnt, _
+								dtype, subtype, _
 								attrib, _
 								preserve_case )
 			if( proc = NULL ) then
@@ -859,7 +873,6 @@ function symbAddPrototype _
 		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval attrib as integer, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
@@ -868,7 +881,7 @@ function symbAddPrototype _
     function = NULL
 
 	proc = hSetupProc( proc, id, id_alias, libname, _
-					   dtype, subtype, ptrcnt, _
+					   dtype, subtype, _
 					   attrib, mode, _
 					   options )
 	if( proc = NULL ) then
@@ -888,7 +901,6 @@ function symbAddProc _
 		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval attrib as integer, _
 		byval mode as integer _
 	) as FBSYMBOL ptr
@@ -896,7 +908,7 @@ function symbAddProc _
     function = NULL
 
 	proc = hSetupProc( proc, id, id_alias, libname, _
-					   dtype, subtype, ptrcnt, _
+					   dtype, subtype, _
 					   attrib, mode, _
 					   FB_SYMBOPT_DECLARING )
 	if( proc = NULL ) then
@@ -916,7 +928,6 @@ function symbAddOperator _
 		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval attrib as integer, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
@@ -934,7 +945,7 @@ function symbAddOperator _
 
 	''
 	sym = hSetupProc( proc, NULL, id_alias, libname, _
-					  dtype, subtype, ptrcnt, _
+					  dtype, subtype, _
 					  attrib, mode, _
 					  options )
 
@@ -963,7 +974,7 @@ function symbAddCtor _
     function = NULL
 
 	sym = hSetupProc( proc, NULL, id_alias, libname, _
-					  FB_DATATYPE_VOID, NULL, 0, _
+					  FB_DATATYPE_VOID, NULL, _
 					  attrib, mode, _
 					  options )
 
@@ -995,7 +1006,6 @@ function symbAddProcPtr _
 		byval proc as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval mode as integer _
 	) as FBSYMBOL ptr
 
@@ -1025,7 +1035,7 @@ function symbAddProcPtr _
 	'' create a new prototype
 	sym = symbAddPrototype( proc, _
 							id, NULL, NULL, _
-							dtype, subtype, ptrcnt, _
+							dtype, subtype, _
 							0, mode, _
 							options or FB_SYMBOPT_DECLARING or FB_SYMBOPT_PRESERVECASE )
 
@@ -1119,8 +1129,10 @@ function symbAddParam _
 		attrib or= FB_SYMBATTRIB_SUFFIXED
 	end if
 
-    s = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, _
-    				  0, dTB(), attrib )
+    s = symbAddVarEx( symbol, NULL, _
+    				  dtype, param->subtype, 0, _
+    				  0, dTB(), _
+    				  attrib )
 
     if( s = NULL ) then
     	return NULL
@@ -1152,12 +1164,12 @@ function symbAddProcResultParam _
 	end if
 
 	'' returns in a reg?
-	if( typeIsPtrTo( proc->proc.real_dtype, 1, FB_DATATYPE_STRUCT ) = FALSE ) then
+	if( proc->proc.real_dtype <> typeAddrOf( FB_DATATYPE_STRUCT ) ) then
 		return NULL
 	end if
 
     s = symbAddVarEx( NULL, NULL, _
-    				  FB_DATATYPE_STRUCT, proc->subtype, 0, FB_POINTERSIZE, _
+    				  FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
     				  0, dTB(), _
     				  FB_SYMBATTRIB_PARAMBYREF, _
     				  FB_SYMBOPT_PRESERVECASE )
@@ -1187,7 +1199,7 @@ function symbAddProcResult _
 	'' UDT?
 	if( proc->typ = FB_DATATYPE_STRUCT ) then
 		'' returning a ptr? result is at the hidden arg
-		if( typeIsPtrTo( proc->proc.real_dtype, 1, FB_DATATYPE_STRUCT ) ) then
+		if( proc->proc.real_dtype = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
 			return symbGetProcResult( proc )
 		end if
 	end if
@@ -1197,7 +1209,8 @@ function symbAddProcResult _
 		id = @"fb$result"
 	end if
 
-	res = symbAddVarEx( id, NULL, proc->typ, proc->subtype, 0, 0, _
+	res = symbAddVarEx( id, NULL, _
+						proc->typ, proc->subtype, 0, _
 						0, dTB(), _
 					  	FB_SYMBATTRIB_FUNCRESULT, _
 					  	FB_SYMBOPT_PRESERVECASE )
@@ -1234,8 +1247,8 @@ function symAddProcInstancePtr _
 
     function = symbAddProcParam( proc, _
     							 FB_INSTANCEPTR, NULL, _
-    					  		 dtype, parent, 0, _
-    					  		 FB_POINTERSIZE, FB_PARAMMODE_BYREF, _
+    					  		 dtype, parent, FB_POINTERSIZE, _
+    					  		 FB_PARAMMODE_BYREF, _
     					  		 FB_SYMBATTRIB_PARAMINSTANCE, NULL )
 
 end function
@@ -1464,6 +1477,18 @@ private function hCalcTypesDiff _
 
 	dim as integer arg_dclass = any
 
+    '' has the expr a const qualifier?
+    if( typeGetConstMask( arg_dtype ) ) then
+    	'' different (it only matters if they are pointers)?
+    	if( typeGetPtrConstMask( param_dtype ) <> typeGetPtrConstMask( arg_dtype ) ) then
+    		return 0
+    	end if
+    end if
+
+    '' don't take the const qualifier into account
+    param_dtype = typeGetDtAndPtrOnly( param_dtype )
+    arg_dtype = typeGetDtAndPtrOnly( arg_dtype )
+
 	arg_dclass = symbGetDataClass( arg_dtype )
 
 	'' check classes
@@ -1479,17 +1504,17 @@ private function hCalcTypesDiff _
 			select case as const arg_dtype
 			case FB_DATATYPE_CHAR
 				select case param_dtype
-				case typeSetType( FB_DATATYPE_CHAR, 1 )
+				case typeAddrOf( FB_DATATYPE_CHAR )
 					return FB_OVLPROC_FULLMATCH
-				case typeSetType( FB_DATATYPE_WCHAR, 1 )
+				case typeAddrOf( FB_DATATYPE_WCHAR )
 					return FB_OVLPROC_HALFMATCH
 				end select
 
 			case FB_DATATYPE_WCHAR
 				select case param_dtype
-				case typeSetType( FB_DATATYPE_WCHAR, 1 )
+				case typeAddrOf( FB_DATATYPE_WCHAR )
 					return FB_OVLPROC_FULLMATCH
-				case typeSetType( FB_DATATYPE_CHAR, 1 )
+				case typeAddrOf( FB_DATATYPE_CHAR )
 					return FB_OVLPROC_HALFMATCH
 				end select
 
@@ -1500,9 +1525,9 @@ private function hCalcTypesDiff _
 			end select
 
 			'' check pointers..
-			if( typeGetDatatype( param_dtype ) = FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( param_dtype ) ) then
 				'' isn't arg a pointer too?
-				if( typeGetDatatype( arg_dtype ) <> FB_DATATYPE_POINTER ) then
+				if( typeIsPtr( arg_dtype ) = FALSE ) then
 					'' not an expression?
 					if( arg_expr = NULL ) then
 						return 0
@@ -1533,13 +1558,13 @@ private function hCalcTypesDiff _
 				end if
 
 				'' param is an any ptr?
-				if( typeIsPtrTo( param_dtype, 1, FB_DATATYPE_VOID ) ) then
+				if( param_dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
 					'' as in g++, the arg indirection level shouldn't matter..
 					return FB_OVLPROC_FULLMATCH
 				end if
 
 				'' arg is an any ptr?
-				if( typeIsPtrTo( arg_dtype, 1, FB_DATATYPE_VOID ) ) then
+				if( arg_dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
 					'' not the same level of indirection?
 					if( param_ptrcnt > 1 ) then
 						return 0
@@ -1552,7 +1577,7 @@ private function hCalcTypesDiff _
 				return 0
 
 			'' param not a pointer, but is arg?
-			elseif( typeGetDatatype( arg_dtype ) = FB_DATATYPE_POINTER ) then
+			elseif( typeIsPtr( arg_dtype ) ) then
 				'' use an UINT instead or LONGINT will match if any..
 				arg_dtype = FB_DATATYPE_UINT
 			end if
@@ -1561,7 +1586,7 @@ private function hCalcTypesDiff _
 
 		'' float? (ok due the auto-coercion, unless it's a pointer)
 		case FB_DATACLASS_FPOINT
-			if( typeGetDatatype( param_dtype ) = FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( param_dtype ) ) then
 				return 0
 			end if
 
@@ -1570,9 +1595,9 @@ private function hCalcTypesDiff _
 		'' string? only if it's a w|zstring ptr arg
 		case FB_DATACLASS_STRING
 			select case param_dtype
-			case typeSetType( FB_DATATYPE_CHAR, 1 )
+			case typeAddrOf( FB_DATATYPE_CHAR )
 				return FB_OVLPROC_FULLMATCH
-			case typeSetType( FB_DATATYPE_WCHAR, 1 )
+			case typeAddrOf( FB_DATATYPE_WCHAR )
 				return FB_OVLPROC_HALFMATCH
 			case else
 				return 0
@@ -1589,7 +1614,7 @@ private function hCalcTypesDiff _
 		select case as const arg_dclass
 		'' only accept if it's an integer (but pointers)
 		case FB_DATACLASS_INTEGER
-			if( typeGetDatatype( arg_dtype ) = FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( arg_dtype ) ) then
 				return 0
 			end if
 
@@ -1722,10 +1747,11 @@ private function hCheckOvlParam _
 		end if
 
 		'' pointer? check if valid (could be a NULL)
-		if( typeGetDatatype( param_dtype ) = FB_DATATYPE_POINTER ) then
+		if( typeIsPtr( param_dtype ) ) then
 			if( astPtrCheck( param_dtype, _
 				 			 param_subtype, _
-				 			 arg_expr ) ) then
+				 			 arg_expr, _
+				 			 TRUE ) ) then
 
 				return FB_OVLPROC_FULLMATCH
 			end if
@@ -2126,7 +2152,7 @@ private function hCheckCastOvl _
 			return FB_OVLPROC_FULLMATCH
 		end if
 
-		if( typeGetDatatype( proc_dtype ) = FB_DATATYPE_POINTER ) then
+		if( typeIsPtr( proc_dtype ) ) then
 			return 0
 		end if
 	end if

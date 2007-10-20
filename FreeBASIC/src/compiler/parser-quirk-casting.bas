@@ -38,7 +38,7 @@ function cTypeConvExpr _
     dim as integer dtype = any, op = any
     dim as ASTNODE ptr expr = any
 
-	dtype = INVALID
+	dtype = FB_DATATYPE_INVALID
 	op = INVALID
 
 	select case as const tk
@@ -86,7 +86,7 @@ function cTypeConvExpr _
 
 	end select
 
-	if( dtype = INVALID ) then
+	if( dtype = FB_DATATYPE_INVALID ) then
 		if( op = INVALID ) then
 			return NULL
 		end if
@@ -151,7 +151,7 @@ function cAnonUDT _
 	) as ASTNODE ptr
 
     dim as FBSYMBOL ptr subtype = any
-    dim as integer dtype = any, lgt = any, ptrcnt = any
+    dim as integer dtype = any, lgt = any
 
     function = NULL
 
@@ -163,7 +163,7 @@ function cAnonUDT _
     	lexSkipToken( )
 
         '' get UDT or intrinsic type
-		if( cSymbolType( dtype, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
+		if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
 
 			'' it would be nice to be able to fall back and do
 			'' a cExpression(), like typeof(), or len() do,

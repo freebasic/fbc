@@ -180,7 +180,7 @@ private function hGetTarget _
 		s = astGetSymbol( expr )
 		if( s = NULL ) then
 			'' pointer?
-			if( typeGetDatatype( astGetDataType( expr ) ) = FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( astGetDataType( expr ) ) ) then
 				isptr = TRUE
 				return NULL
 			else
@@ -189,7 +189,7 @@ private function hGetTarget _
 		end if
 
 		'' ptr?
-		isptr = ( typeGetDatatype( symbGetType( s ) ) = FB_DATATYPE_POINTER )
+		isptr = typeIsPtr( symbGetType( s ) )
 
 		'' array?
 		if( symbIsArray( s ) ) then
@@ -309,7 +309,7 @@ private function hGetMode _
 
 			if( ( symbGetType( arg1 ) <> FB_DATATYPE_UINT ) or _
 				( symbGetType( arg2 ) <> FB_DATATYPE_UINT ) or _
-				( typeGetDatatype( symbGetType( arg3 ) ) <> FB_DATATYPE_POINTER ) or _
+				( typeIsPtr( symbGetType( arg3 ) ) = FALSE ) or _
 				( arg1->param.mode <> FB_PARAMMODE_BYVAL ) or _
 				( arg2->param.mode <> FB_PARAMMODE_BYVAL ) or _
 				( arg3->param.mode <> FB_PARAMMODE_BYVAL ) ) then

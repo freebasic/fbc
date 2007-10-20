@@ -18,6 +18,10 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
+const FB_VER_MAJOR          = 0
+const FB_VER_MINOR          = 18
+const FB_VER_PATCH          = 3
+
 #define QUOTE !"\""
 #define NEWLINE !"\r\n"
 #define RSLASH !"\\"
@@ -71,26 +75,12 @@ const NULL                  = 0
 const INVALID               = -1
 
 ''
-const FB_VER_MAJOR          = 0
-const FB_VER_MINOR          = 18
-const FB_VER_PATCH          = 3
-const FB_VERSION            = str( FB_VER_MAJOR ) + "." + str( FB_VER_MINOR ) + "." + str( FB_VER_PATCH )
+const FB_VERSION            = FB_VER_MAJOR & "." & FB_VER_MINOR & "." & FB_VER_PATCH
 const FB_BUILD_DATE         = __DATE__
-const FB_SIGN               = "FreeBASIC v" +  FB_VERSION + "b"
-
-
-#define FB_TO_STRING(v)     #v
-
-#define FB_VER_STR_MAJOR    str(FB_VER_MAJOR)
-#define FB_VER_STR_MINOR    str(FB_VER_MINOR)
-#define FB_VER_STR_PATCH    str(FB_VER_PATCH)
-
-#ifndef __FB_MIN_VERSION__
-#define __FB_MIN_VERSION__(major,minor,patch_level) _
-    ((__FB_VER_MAJOR__ > major) or _
-    ((__FB_VER_MAJOR__ = major) and ((__FB_VER_MINOR__ > minor) or _
-                                     (__FB_VER_MINOR__ = minor and __FB_VER_PATCH__ >= patch_level))))
-#endif
+const FB_SIGN               = "FreeBASIC v" &  FB_VERSION & "b"
+const FB_VER_STR_MAJOR    	= str( FB_VER_MAJOR )
+const FB_VER_STR_MINOR    	= str( FB_VER_MINOR )
+const FB_VER_STR_PATCH    	= str( FB_VER_PATCH )
 
 #if defined(__FB_WIN32__)
 const FB_HOST               = "win32"

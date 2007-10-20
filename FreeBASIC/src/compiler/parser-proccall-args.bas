@@ -253,7 +253,7 @@ private function hOvlProcArg _
 	oldsym    = parser.ctxsym
 	old_dtype = parser.ctx_dtype
 	parser.ctxsym    = NULL
-	parser.ctx_dtype = INVALID
+	parser.ctx_dtype = FB_DATATYPE_INVALID
 
 	'' Expression
 	arg->expr = cExpression( )
@@ -482,7 +482,7 @@ private function hOvlProcArgList _
 	for i = 0 to args-1
         nxt = arg->next
 
-		if( astNewARG( procexpr, arg->expr, INVALID, arg->mode ) = NULL ) then
+		if( astNewARG( procexpr, arg->expr, FB_DATATYPE_INVALID, arg->mode ) = NULL ) then
 			if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
 				exit function
 			else
@@ -502,7 +502,7 @@ private function hOvlProcArgList _
 	'' add the end-of-list optional args, if any
 	params = symbGetProcParams( proc )
     do while( args < params )
-		astNewARG( procexpr, NULL, INVALID, INVALID )
+		astNewARG( procexpr, NULL, FB_DATATYPE_INVALID, INVALID )
 
 		'' next
 		args += 1
@@ -600,7 +600,7 @@ function cProcArgList _
 
 		if( astNewARG( procexpr, _
 					   arg->expr, _
-					   INVALID, _
+					   FB_DATATYPE_INVALID, _
 					   arg->mode ) = NULL ) then
 			exit function
 		end if
@@ -670,7 +670,7 @@ function cProcArgList _
 			end if
 
 			'' add to tree
-			if( astNewARG( procexpr, expr, INVALID, mode ) = NULL ) then
+			if( astNewARG( procexpr, expr, FB_DATATYPE_INVALID, mode ) = NULL ) then
 				if( errGetLast( ) <> FB_ERRMSG_OK ) then
 					exit function
 				else
@@ -717,7 +717,7 @@ function cProcArgList _
 		end if
 
 		'' add to tree
-		if( astNewARG( procexpr, NULL, INVALID, INVALID ) = NULL ) then
+		if( astNewARG( procexpr, NULL, FB_DATATYPE_INVALID, INVALID ) = NULL ) then
 			exit function
 		end if
 

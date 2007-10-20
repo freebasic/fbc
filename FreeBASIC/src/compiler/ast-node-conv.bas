@@ -34,9 +34,10 @@ private sub hCONVConstEvalInt _
 		byval v as ASTNODE ptr _
 	)
 
-	to_dtype = typeGetDatatype( to_dtype )
+	dim as integer vdtype = typeGet( v->dtype )
+	to_dtype = typeGet( to_dtype )
 
-	select case as const v->dtype
+	select case as const vdtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 
 		select case as const to_dtype
@@ -111,12 +112,8 @@ private sub hCONVConstEvalFlt _
 		byval v as ASTNODE ptr _
 	)
 
-	dim as integer vdtype = any
-
-    vdtype = v->dtype
-	if( typeGetDatatype( vdtype ) = FB_DATATYPE_POINTER ) then
-		vdtype = FB_DATATYPE_POINTER
-	end if
+	dim as integer vdtype = typeGet( v->dtype )
+	to_dtype = typeGet( to_dtype )
 
 	select case as const vdtype
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
@@ -197,7 +194,10 @@ private sub hCONVConstEval64 _
 		byval v as ASTNODE ptr _
 	)
 
-	select case as const v->dtype
+	dim as integer vdtype = typeGet( v->dtype )
+	to_dtype = typeGet( to_dtype )
+
+	select case as const vdtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		'' do nothing
 
@@ -258,7 +258,7 @@ end sub
 	)
 
     '' to pointer? only allow integers..
-    if( typeGetDatatype( to_dtype ) = FB_DATATYPE_POINTER ) then
+    if( typeIsPtr( to_dtype ) ) then
 		select case as const expr_dtype
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
@@ -275,19 +275,19 @@ end sub
 			 end if
 
 		case else
-			if( typeGetDatatype( expr_dtype ) <> FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( expr_dtype ) = FALSE ) then
 				exit function
 			end if
 		end select
 
     '' from pointer? only allow integers..
-    elseif( typeGetDatatype( expr_dtype ) = FB_DATATYPE_POINTER ) then
+    elseif( typeIsPtr( expr_dtype ) ) then
 		select case as const to_dtype
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 
 		case else
-			if( typeGetDatatype( to_dtype ) <> FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( to_dtype ) = FALSE ) then
 				exit function
 			end if
 		end select

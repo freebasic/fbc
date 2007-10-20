@@ -34,7 +34,7 @@ private function hCheckIndex _
 	) as ASTNODE ptr
 
 	'' if index isn't an integer, convert
-	select case as const typeGetDatatype( astGetDataType( expr ) )
+	select case as const typeGet( astGetDataType( expr ) )
 	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
 
 	case FB_DATATYPE_POINTER
@@ -604,7 +604,7 @@ function cMemberDeref _
         	is_field = TRUE
 
 			dim as integer is_ovl = FALSE
-			if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( dtype ) = FALSE ) then
 				'' check op overloading
     			if( symb.globOpOvlTb(AST_OP_FLDDEREF).head = NULL ) then
 					if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
@@ -696,9 +696,9 @@ function cMemberDeref _
 			end if
 
 			'' string, fixstr, w|zstring?
-			if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
+			if( typeIsPtr( dtype ) = FALSE ) then
 
-				select case dtype
+				select case as const dtype
 				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 					 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
@@ -849,7 +849,7 @@ function cFuncPtrOrMemberDeref _
 
    		'' check for functions called through pointers
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( dtype = typeAddrOf( FB_DATATYPE_FUNCTION ) ) then
+   			if( typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ) ) then
 				isfuncptr = TRUE
    			end if
    		end if
@@ -1257,7 +1257,7 @@ private function hVarAddUndecl _
 	end if
 
 	'' no suffix?
-	if( dtype = INVALID ) then
+	if( dtype = FB_DATATYPE_INVALID ) then
 		dtype = symbGetDefType( id )
 	else
 		attrib or= FB_SYMBATTRIB_SUFFIXED
@@ -1278,7 +1278,7 @@ private function hVarAddUndecl _
 	end if
 
     s = symbAddVarEx( id, NULL, _
-    				  dtype, NULL, 0, 0, _
+    				  dtype, NULL, 0, _
     				  0, dTB(), _
     				  attrib, _
     				  options )
@@ -1288,7 +1288,7 @@ private function hVarAddUndecl _
 			exit function
 		else
 			'' error recovery: fake an id
-			s = symbAddVar( hMakeTmpStr( ), dtype, NULL, 0, 0, dTB(), attrib )
+			s = symbAddVar( hMakeTmpStr( ), dtype, NULL, 0, dTB(), attrib )
 		end if
 
 	else
@@ -1392,7 +1392,7 @@ function cVariableEx overload _
 
     		else
    				'' check if calling functions through pointers
-   				is_funcptr = (dtype = typeAddrOf( FB_DATATYPE_FUNCTION ))
+   				is_funcptr = (typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
 
     			'' using (...) with scalars?
     			if( (is_array = FALSE) and (is_funcptr = FALSE) ) then
@@ -1488,7 +1488,7 @@ function cVariableEx overload _
 
 				'' check if	calling	functions through pointers
 				if(	lexGetToken( ) = CHAR_LPRNT	) then
-					is_funcptr = (dtype	= FB_DATATYPE_POINTER +	FB_DATATYPE_FUNCTION)
+					is_funcptr = (typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
 				end	if
 
 			end if
@@ -1532,14 +1532,14 @@ function cVariableEx _
 	if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
     	'' no suffix? lookup the default type (last DEF###) in the
     	'' case symbol could not be found..
-    	if( suffix = INVALID ) then
+    	if( suffix = FB_DATATYPE_INVALID ) then
     		sym = symbFindVarByDefType( chain_, symbGetDefType( id ) )
     	else
     		sym = symbFindVarBySuffix( chain_, suffix )
     	end if
 
 	else
-		if( suffix <> INVALID ) then
+		if( suffix <> FB_DATATYPE_INVALID ) then
 			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
 		end if
 
@@ -1619,7 +1619,7 @@ private function hImpField _
 	'' check if	calling	functions through pointers
 	dim as integer is_funcptr = FALSE
 	if(	lexGetToken( ) = CHAR_LPRNT	) then
-		is_funcptr = (dtype	= typeAddrOf( FB_DATATYPE_FUNCTION ))
+		is_funcptr = (typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
 	end	if
 
     '' FuncPtrOrMemberDeref?
@@ -1754,7 +1754,7 @@ function cVarOrDerefEx _
 			'' allow addresses?
 			if( allow_addrof ) then
 				'' not a pointer? (@foo[bar] will be converted to foo + bar)
-				if( typeGetDatatype( astGetDataType( expr ) ) <> FB_DATATYPE_POINTER ) then
+				if( typeIsPtr( astGetDataType( expr ) ) = FALSE ) then
 					hInvalidType( )
 					return NULL
 				end if

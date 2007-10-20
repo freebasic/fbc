@@ -105,9 +105,9 @@ end function
 
  '':::::
 private function hDefPath_cb( ) as string static
-	
+
 	function = hEnvDir( )
-	
+
 end function
 
 '':::::
@@ -252,11 +252,10 @@ end function
 sub symbDefineInit _
 	( _
 		byval ismain as integer _
-	) static
+	)
 
-	dim as string value
-	dim as zstring ptr def
-	dim as integer i
+	static as string value
+	dim as zstring ptr def = any
 
     '' lists
     listNew( @symb.def.paramlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), LIST_FLAGS_NOCLEAR )
@@ -264,7 +263,7 @@ sub symbDefineInit _
     listNew( @symb.def.toklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
 
     '' add the pre-defines
-    for i = 0 to SYMB_MAXDEFINES-1
+    for i as integer = 0 to SYMB_MAXDEFINES-1
     	if( defTb(i).name = NULL ) then
     		exit for
     	end if
@@ -334,9 +333,9 @@ function symbAddDefine _
 		byval isargless as integer = FALSE, _
 		byval proc as function( ) as string = NULL, _
         byval flags as integer = 0 _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym
+    dim as FBSYMBOL ptr sym = any
 
     function = NULL
 
@@ -346,7 +345,7 @@ function symbAddDefine _
     					 NULL, @symbGetGlobalHashTb( ), _
     					 FB_SYMBCLASS_DEFINE, _
     				   	 symbol, NULL, _
-    				   	 FB_DATATYPE_CHAR, NULL, 0 )
+    				   	 FB_DATATYPE_CHAR, NULL )
     if( sym = NULL ) then
     	exit function
     end if
@@ -373,9 +372,9 @@ function symbAddDefineW _
 		byval isargless as integer = FALSE, _
 		byval proc as function( ) as string = NULL, _
         byval flags as integer = 0 _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym
+    dim as FBSYMBOL ptr sym = any
 
     function = NULL
 
@@ -385,7 +384,7 @@ function symbAddDefineW _
     					 NULL, @symbGetGlobalHashTb( ), _
     					 FB_SYMBCLASS_DEFINE, _
     				   	 symbol, NULL, _
-    				   	 FB_DATATYPE_WCHAR, NULL, 0 )
+    				   	 FB_DATATYPE_WCHAR, NULL )
     if( sym = NULL ) then
     	exit function
     end if
@@ -410,9 +409,9 @@ function symbAddDefineMacro _
 		byval tokhead as FB_DEFTOK ptr, _
 		byval params as integer, _
 		byval paramhead as FB_DEFPARAM ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym
+    dim as FBSYMBOL ptr sym = any
 
     function = NULL
 
@@ -422,7 +421,7 @@ function symbAddDefineMacro _
     					 NULL, @symbGetGlobalHashTb( ), _
     					 FB_SYMBCLASS_DEFINE, _
     				   	 symbol, NULL, _
-    				   	 INVALID, NULL, 0 )
+    				   	 FB_DATATYPE_INVALID, NULL )
     if( sym = NULL ) then
     	exit function
     end if

@@ -152,7 +152,7 @@ function cSelectStmtBegin as integer
 		'' is unknown at compile-time, do:
 
 		''  dim wstring ptr tmp
-		sym = symbAddTempVar( typeSetType( FB_DATATYPE_WCHAR, 1 ), NULL )
+		sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
 		if( sym = NULL ) then
 			exit function
 		end if
@@ -165,13 +165,13 @@ function cSelectStmtBegin as integer
 		'' tmp = WstrAlloc( len( expr ) )
 		astAdd( astNewASSIGN( astNewVAR( sym, _
 										 0, _
-										 typeSetType( FB_DATATYPE_WCHAR, 1 ) ), _
+										 typeAddrOf( FB_DATATYPE_WCHAR ) ), _
 							  rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
 
 		'' *tmp = expr
 		expr = astNewASSIGN( astNewDEREF( astNewVAR( sym, _
 								  		 		     0, _
-								  		 		     typeSetType( FB_DATATYPE_WCHAR, 1 ) ), _
+								  		 		     typeAddrOf( FB_DATATYPE_WCHAR ) ), _
 								  	      FB_DATATYPE_WCHAR, _
 								  	      NULL ), _
 				      		 expr )
@@ -271,7 +271,7 @@ end function
 #define NEWCASEVAR(symbol,dtype) 					_
 	iif( dtype <> FB_DATATYPE_WCHAR, 				_
 		 astNewVAR( symbol, 0, dtype ), 			_
-		 astNewDEREF( astNewVAR( symbol, 0, typeSetType( FB_DATATYPE_WCHAR, 1 ) ), _
+		 astNewDEREF( astNewVAR( symbol, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
 					  FB_DATATYPE_WCHAR, 			_
 					  NULL ) 						_
 	   )
@@ -517,7 +517,7 @@ function cSelectStmtEnd as integer
 	case FB_DATATYPE_WCHAR
 		astAdd( rtlStrDelete( astNewVAR( stk->select.sym, _
 										 0, _
-										 typeSetType( FB_DATATYPE_WCHAR, 1 ) ) ) )
+										 typeAddrOf( FB_DATATYPE_WCHAR ) ) ) )
 	end select
 
 	'' pop from stmt stack

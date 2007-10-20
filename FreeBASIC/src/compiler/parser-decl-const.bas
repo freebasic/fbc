@@ -31,9 +31,7 @@ private function hGetType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr _
-	) as integer static
-
-	dim as integer lgt, ptrcnt
+	) as integer
 
 	function = FALSE
 
@@ -41,7 +39,9 @@ private function hGetType _
 	if( lexGetToken( ) = FB_TK_AS ) then
 		lexSkipToken( )
 
-		if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+		dim as integer lgt = any
+
+		if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
 			exit function
 		end if
 
@@ -53,7 +53,7 @@ private function hGetType _
 					exit function
 				else
 					'' error recovery: discard type
-					dtype = INVALID
+					dtype = FB_DATATYPE_INVALID
 					subtype = NULL
 				end if
 			end if
@@ -67,14 +67,14 @@ private function hGetType _
 				exit function
 			else
 				'' error recovery: discard type
-				dtype = INVALID
+				dtype = FB_DATATYPE_INVALID
 				subtype = NULL
 			end if
 
 		end select
 
 	else
-		dtype = INVALID
+		dtype = FB_DATATYPE_INVALID
 		subtype = NULL
 	end if
 
@@ -168,7 +168,7 @@ function cConstAssign _
 	lexSkipToken( )
 
 	'' not multiple?
-	if( dtype = INVALID ) then
+	if( dtype = FB_DATATYPE_INVALID ) then
 		'' (AS SymbolType)?
 		if( hGetType( dtype, subtype ) = FALSE ) then
 			exit function
@@ -176,8 +176,8 @@ function cConstAssign _
 	end if
 
 	'' both suffix and type given?
-	if( suffix <> INVALID ) then
-		if( dtype <> INVALID ) then
+	if( suffix <> FB_DATATYPE_INVALID ) then
+		if( dtype <> FB_DATATYPE_INVALID ) then
 			if( errReportEx( FB_ERRMSG_SYNTAXERROR, id ) = FALSE ) then
 				exit function
 			end if
@@ -229,7 +229,7 @@ function cConstAssign _
 	'' string?
 	if( litsym <> NULL ) then
 
-		if( dtype <> INVALID ) then
+		if( dtype <> FB_DATATYPE_INVALID ) then
 			'' not a string?
 			if( dtype <> FB_DATATYPE_STRING ) then
 				if( errReportEx( FB_ERRMSG_INVALIDDATATYPES, id ) = FALSE ) then
@@ -261,7 +261,7 @@ function cConstAssign _
 			end if
 		end if
 
-		if( dtype <> INVALID ) then
+		if( dtype <> FB_DATATYPE_INVALID ) then
 			'' string?
 			if( dtype = FB_DATATYPE_STRING ) then
 				if( errReportEx( FB_ERRMSG_INVALIDDATATYPES, id ) = FALSE ) then

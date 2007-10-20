@@ -52,7 +52,7 @@ function astDataStmtBegin _
     dim as ASTNODE ptr n = any
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_DATASTMT, INVALID )
+	n = astNewNode( AST_NODECLASS_DATASTMT, FB_DATATYPE_INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -73,7 +73,7 @@ function astDataStmtStore _
     dim as ASTNODE ptr n = any
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_DATASTMT, INVALID )
+	n = astNewNode( AST_NODECLASS_DATASTMT, FB_DATATYPE_INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -288,7 +288,6 @@ function astDataStmtAdd _
 					  	hMakeTmpStr( ), _
 					  	FB_DATATYPE_STRUCT, _
 					  	ast.data.desc, _
-					  	0, _
 					  	len( FB_DATADESC ), _
 					  	1, _
 					  	dTB(), _
@@ -312,14 +311,14 @@ private sub hCreateDataDesc _
 	symbAddField( ast.data.desc, _
 				  NULL, _
 				  0, dTB(), _
-				  FB_DATATYPE_SHORT, NULL, 0, _
+				  FB_DATATYPE_SHORT, NULL, _
 				  2, 0 )
 
 	'' node	as FB_DATASTMT_NODE (no need to create an UNION, all fields are pointers)
 	symbAddField( ast.data.desc, _
 				  NULL, _
 				  0, dTB(), _
-				  typeSetType( FB_DATATYPE_VOID, 1 ), NULL, 0, _
+				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 				  FB_POINTERSIZE, 0 )
 
     ''

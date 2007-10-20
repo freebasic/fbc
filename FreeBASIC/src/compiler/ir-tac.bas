@@ -282,17 +282,16 @@ end sub
 	if( vreg <> NULL ) then
 		t = vreg->typ
 
-		dt = vreg->dtype
-		if( typeGetDatatype( dt ) = FB_DATATYPE_POINTER ) then
+		dt = typeGet( vreg->dtype )
+		if( dt = FB_DATATYPE_POINTER ) then
 			dt = FB_DATATYPE_ULONG
-			dc = FB_DATACLASS_INTEGER
-		else
-			dc = symb_dtypeTB(dt).class
 		end if
+
+		dc = symb_dtypeTB(dt).class
 
 	else
 		t  = INVALID
-		dt = INVALID
+		dt = FB_DATATYPE_INVALID
 		dc = INVALID
 	end if
 #endmacro
@@ -647,11 +646,7 @@ private sub _emitConvert _
 		byval v2 as IRVREG ptr _
 	) static
 
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_POINTER
-	end if
-
-	select case symb_dtypeTB(dtype).class
+	select case symb_dtypeTB(typeGet( dtype )).class
 	case FB_DATACLASS_INTEGER
 		_emit( AST_OP_TOINT, v1, v2, NULL )
 	case FB_DATACLASS_FPOINT
@@ -1019,14 +1014,10 @@ private function hNewVR _
 
 	dim as IRVREG ptr v = any
 
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_POINTER
-	end if
-
 	v = flistNewItem( @ctx.vregTB )
 
 	v->typ = vtype
-	v->dtype = dtype
+	v->dtype = typeGet( dtype )
 	v->subtype = subtype
 	v->sym = NULL
 	v->reg = INVALID
@@ -1247,12 +1238,8 @@ private sub _setVregDataType _
 		byval subtype as FBSYMBOL ptr _
 	)
 
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_POINTER
-	end if
-
 	if( vreg <> NULL ) then
-		vreg->dtype = dtype
+		vreg->dtype = typeGet( dtype )
 		vreg->subtype = subtype
 	end if
 

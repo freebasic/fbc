@@ -54,7 +54,7 @@
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				INVALID, FB_PARAMMODE_VARARG, FALSE _
+	 				FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -83,7 +83,7 @@
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				INVALID, FB_PARAMMODE_VARARG, FALSE _
+	 				FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -104,16 +104,16 @@
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				INVALID, FB_PARAMMODE_VARARG, FALSE _
+	 				FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -134,16 +134,16 @@
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				INVALID, FB_PARAMMODE_VARARG, FALSE _
+	 				FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -173,7 +173,7 @@
 	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -204,10 +204,10 @@
 	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -260,7 +260,7 @@
 								 byval linenum as integer ) as any ptr '/ _
 		( _
 			@FB_RTL_ARRAYSNGBOUNDCHK, NULL, _
-	 		typeSetType( FB_DATATYPE_VOID, 1 ),FB_FUNCMODE_STDCALL, _
+	 		typeAddrOf( FB_DATATYPE_VOID ),FB_FUNCMODE_STDCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		4, _
 	 		{ _
@@ -274,7 +274,7 @@
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -283,7 +283,7 @@
 							  byval linenum as integer ) as any ptr '/ _
 		( _
 			@FB_RTL_ARRAYBOUNDCHK, NULL, _
-	 		typeSetType( FB_DATATYPE_VOID, 1 ),FB_FUNCMODE_STDCALL, _
+	 		typeAddrOf( FB_DATATYPE_VOID ),FB_FUNCMODE_STDCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		5, _
 	 		{ _
@@ -300,7 +300,7 @@
 	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-	 				typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+	 				typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 	 	), _
@@ -361,7 +361,7 @@ function rtlArrayRedim _
     dtype = symbGetType( s )
 
 	'' pointers to objects do not get instantiated
-	select case typeGetDatatype( dtype )
+	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		ctor = symbGetCompDefCtor( symbGetSubtype( s ) )
 		dtor = symbGetCompDtor( symbGetSubtype( s ) )
@@ -502,7 +502,7 @@ function rtlArrayErase _
 	dtype = astGetDataType( arrayexpr )
 
 	''
-	select case typeGetDatatype( dtype )
+	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
     case else
@@ -566,7 +566,7 @@ function rtlArrayClear _
     dtype = astGetDataType( arrayexpr )
 
 	''
-	select case typeGetDatatype( dtype )
+	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		ctor = symbGetCompDefCtor( astGetSubtype( arrayexpr ) )
 		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )

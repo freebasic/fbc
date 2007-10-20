@@ -533,7 +533,8 @@ declare function astPtrCheck _
 	( _
 		byval pdtype as integer, _
 		byval psubtype as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval strictcheck as integer = FALSE _
 	) as integer
 
 declare function astNewNOP _
@@ -667,7 +668,7 @@ declare function astNewFIELD _
 declare function astNewDEREF _
 	( _
 		byval l as ASTNODE ptr, _
-		byval dtype as integer = INVALID, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
 		byval subtype as FBSYMBOL ptr = NULL, _
 		byval ofs as integer = 0 _
 	) as ASTNODE ptr
@@ -688,7 +689,7 @@ declare function astNewARG _
 	( _
 		byval f as ASTNODE ptr, _
 		byval p as ASTNODE ptr, _
-		byval dtype as integer = INVALID, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
 		byval mode as integer = INVALID _
 	) as ASTNODE ptr
 
@@ -697,7 +698,7 @@ declare function astReplaceARG _
 		byval parent as ASTNODE ptr, _
 		byval argnum as integer, _
 		byval expr as ASTNODE ptr, _
-		byval dtype as integer = INVALID, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
 		byval mode as integer = INVALID _
 	) as ASTNODE ptr
 

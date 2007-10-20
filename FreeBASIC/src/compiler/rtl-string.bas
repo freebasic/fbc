@@ -69,7 +69,7 @@
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -106,18 +106,18 @@
 		 				   byval src as wstring ptr) as wstring ptr '/ _
 		( _
 			@FB_RTL_WSTRASSIGN, NULL, _
-			typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_WCHAR ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -125,12 +125,12 @@
 		 				        byref src as any, byval src_len as integer ) as wstring ptr '/ _
 		( _
 			@FB_RTL_WSTRASSIGNWA, NULL, _
-			typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_WCHAR ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -158,7 +158,7 @@
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -185,7 +185,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -224,10 +224,10 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -241,7 +241,7 @@
 			3, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
@@ -267,7 +267,7 @@
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -304,10 +304,10 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -341,18 +341,18 @@
 		 				         byval src as wstring ptr) as wstring ptr '/ _
 		( _
 			@FB_RTL_WSTRCONCATASSIGN, NULL, _
-			typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_WCHAR ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -403,7 +403,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -415,7 +415,7 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -425,7 +425,7 @@
 		/' fb_WstrAlloc ( byval len as integer ) as WSTRING ptr '/ _
 		( _
 			@FB_RTL_WSTRALLOC, NULL, _
-			typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_WCHAR ), FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -586,7 +586,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -598,7 +598,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_CHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -630,7 +630,7 @@
 			3, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -672,7 +672,7 @@
 			5, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -684,7 +684,7 @@
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -744,7 +744,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -771,7 +771,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -798,10 +798,10 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -828,7 +828,7 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
@@ -846,7 +846,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
-					INVALID, FB_PARAMMODE_VARARG, FALSE _
+					FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
 				) _
 			} _
  		), _
@@ -861,7 +861,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
-					INVALID, FB_PARAMMODE_VARARG, FALSE _
+					FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
 				) _
 			} _
  		), _
@@ -896,10 +896,10 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -934,10 +934,10 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -961,7 +961,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -988,10 +988,10 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1018,10 +1018,10 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1045,7 +1045,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1072,10 +1072,10 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1102,10 +1102,10 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1129,7 +1129,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1156,10 +1156,10 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1186,10 +1186,10 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1224,13 +1224,13 @@
 			4, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1257,7 +1257,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1281,7 +1281,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1305,7 +1305,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1329,7 +1329,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1353,7 +1353,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1401,7 +1401,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1428,7 +1428,7 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1506,7 +1506,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1533,7 +1533,7 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1641,7 +1641,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1668,7 +1668,7 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -1776,7 +1776,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1806,7 +1806,7 @@
 					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1881,7 +1881,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1911,7 +1911,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -1986,7 +1986,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -2016,7 +2016,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_VOID, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -2141,7 +2141,7 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -2171,7 +2171,7 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -2222,7 +2222,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -2246,7 +2246,7 @@
 			1, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -2273,10 +2273,10 @@
 			2, _
 			{ _
 				( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -2970,7 +2970,7 @@ function rtlStrDelete _
     '' it could be a wstring ptr too due the temporary
     '' wstrings that must be handled by AST
     case FB_DATATYPE_WCHAR, _
-    	 typeSetType( FB_DATATYPE_WCHAR, 1 )
+    	 typeAddrOf( FB_DATATYPE_WCHAR )
     	proc = astNewCALL( PROCLOOKUP( WSTRDELETE ) )
     case else
     	proc = astNewCALL( PROCLOOKUP( STRDELETE ) )
@@ -3224,8 +3224,13 @@ function rtlToStr _
 
 		'' pointer..
 		case else
-			f = PROCLOOKUP( UINT2STR )
-			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
+			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+				f = PROCLOOKUP( UINT2STR )
+			else
+				f = PROCLOOKUP( ULONGINT2STR )
+			end if
+
+			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
 		end select
 
 	case FB_DATACLASS_FPOINT
@@ -3329,8 +3334,13 @@ function rtlToWstr _
 
 		'' pointer..
 		case else
-			f = PROCLOOKUP( UINT2WSTR )
-			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
+			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+				f = PROCLOOKUP( UINT2WSTR )
+			else
+				f = PROCLOOKUP( ULONGINT2WSTR )
+			end if
+
+			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
 		end select
 
 	case FB_DATACLASS_FPOINT
@@ -3346,7 +3356,7 @@ function rtlToWstr _
 
 	'' UDT's, classes: try cast(wstring ptr) op overloading
 	case FB_DATACLASS_UDT
-		return astNewCONV( typeSetType( FB_DATATYPE_WCHAR, 1 ), NULL, expr )
+		return astNewCONV( typeAddrOf( FB_DATATYPE_WCHAR ), NULL, expr )
 
 	'' anything else: can't convert
 	case else
@@ -3380,7 +3390,7 @@ function rtlStrToVal _
     function = NULL
 
     ''
-	select case as const typeGetDatatype( to_dtype )
+	select case as const typeGet( to_dtype )
 	case FB_DATATYPE_LONGINT
 		f = PROCLOOKUP( STR2LNG )
 
@@ -3415,7 +3425,13 @@ function rtlStrToVal _
 		return astNewCONV( to_dtype, NULL, expr )
 
 	case FB_DATATYPE_POINTER
-		f = PROCLOOKUP( STR2UINT )
+		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+			f = PROCLOOKUP( STR2INT )
+		else
+			f = PROCLOOKUP( STR2LNG )
+		end if
+
+		expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
 
 	case else
 		'' anything else..

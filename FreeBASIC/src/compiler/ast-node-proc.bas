@@ -126,7 +126,7 @@ private function hNewProcNode _
 
 	dim as ASTNODE ptr n = any
 
-	n = astNewNode( AST_NODECLASS_PROC, INVALID, NULL )
+	n = astNewNode( AST_NODECLASS_PROC, FB_DATATYPE_INVALID, NULL )
 
 	'' add to list
 	if( ast.proc.tail <> NULL ) then
@@ -530,7 +530,7 @@ private function hCheckErrHnd _
            	astAdd( rtlErrorSetFuncName( NULL, _
            								 astNewVAR( .lastfun, _
            						   		 0, _
-           						   		 typeSetType( FB_DATATYPE_CHAR, 1 ) ) ) )
+           						   		 typeAddrOf( FB_DATATYPE_CHAR ) ) ) )
            	.lastfun = NULL
 		end if
 
@@ -538,7 +538,7 @@ private function hCheckErrHnd _
            	astAdd( rtlErrorSetModName( NULL, _
            								astNewVAR( .lastmod, _
            						   		0, _
-           						   		typeSetType( FB_DATATYPE_CHAR, 1 ) ) ) )
+           						   		typeAddrOf( FB_DATATYPE_CHAR ) ) ) )
 
 			.lastmod = NULL
 		end if
@@ -546,7 +546,7 @@ private function hCheckErrHnd _
 		if( .lasthnd <> NULL ) then
        		rtlErrorSetHandler( astNewVAR( .lasthnd, _
        					  	  			   0, _
-       					  	  			   typeSetType( FB_DATATYPE_VOID, 1 ) ), _
+       					  	  			   typeAddrOf( FB_DATATYPE_VOID ) ), _
        							FALSE )
 			.lasthnd = NULL
 		end if
@@ -1297,7 +1297,7 @@ function astProcAddStaticInstance _
     					hMakeTmpStr( ), _
 						NULL, _
 						NULL, _
-						FB_DATATYPE_VOID, NULL, 0, _
+						FB_DATATYPE_VOID, NULL, _
 						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
 						FB_FUNCMODE_CDECL )
 
@@ -1354,7 +1354,7 @@ private function hGlobCtorBegin _
     					hMakeTmpStr( ), _
 						iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
 						NULL, _
-						FB_DATATYPE_VOID, NULL, 0, _
+						FB_DATATYPE_VOID, NULL, _
 						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
 						FB_FUNCMODE_CDECL )
 

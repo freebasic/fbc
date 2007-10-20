@@ -60,7 +60,7 @@ function astScopeBegin _
 	end if
 
 	''
-	n = astNewNode( AST_NODECLASS_SCOPEBEGIN, INVALID )
+	n = astNewNode( AST_NODECLASS_SCOPEBEGIN, FB_DATATYPE_INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -125,7 +125,7 @@ function astScopeBreak _
 
 	function = FALSE
 
-	n = astNewNode( AST_NODECLASS_SCOPE_BREAK, INVALID, NULL )
+	n = astNewNode( AST_NODECLASS_SCOPE_BREAK, FB_DATATYPE_INVALID, NULL )
 
 	n->sym = target
 	n->break.parent = ast.currblock
@@ -180,7 +180,7 @@ sub astScopeEnd _
 	''
 	astAdd( astNewDBG( AST_OP_DBG_SCOPEEND, cint( s ) ) )
 
-	n = astNewNode( AST_NODECLASS_SCOPEEND, INVALID )
+	n = astNewNode( AST_NODECLASS_SCOPEEND, FB_DATATYPE_INVALID )
 
     n = astAdd( n )
 

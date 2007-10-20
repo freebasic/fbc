@@ -458,7 +458,7 @@ private sub hReadIdentifier _
 	*pid = 0
 
 	'' [SUFFIX]
-	dtype = INVALID
+	dtype = FB_DATATYPE_INVALID
 
 	if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 		select case as const lexCurrentChar( )
@@ -893,7 +893,7 @@ private sub hReadNumber _
 	islong     = FALSE
 	value	   = 0
 
-	dtype 	   = INVALID
+	dtype 	   = FB_DATATYPE_INVALID
 	*pnum 	   = 0
 	tlen 	   = 0
 	skipchar   = FALSE
@@ -1136,7 +1136,7 @@ read_char:
 		end if
 	end if
 
-	if( dtype = INVALID ) then
+	if( dtype = FB_DATATYPE_INVALID ) then
 		if( isfloat = FALSE ) then
 			if( islong ) then
 				if( issigned ) then
@@ -1450,7 +1450,7 @@ re_read:
 		case 0
 			t->id = FB_TK_EOF
 			t->class = FB_TKCLASS_DELIMITER
-			t->dtype = INVALID
+			t->dtype = FB_DATATYPE_INVALID
 			exit sub
 
 		'' line continuation?
@@ -1497,7 +1497,7 @@ re_read:
 			if( islinecont = FALSE ) then
 				t->id = FB_TK_EOL
 				t->class = FB_TKCLASS_DELIMITER
-				t->dtype = INVALID
+				t->dtype = FB_DATATYPE_INVALID
 				t->len = 1
 				t->text[0] = CHAR_LF					'' t.text = chr( 10 )
 				t->text[1] = 0                          '' /
@@ -1633,7 +1633,7 @@ read_id:
 	case CHAR_QUOTE
 		t->class = FB_TKCLASS_STRLITERAL
 		t->id = iif( env.opt.escapestr, FB_TK_STRLIT_ESC, FB_TK_STRLIT )
-		t->dtype = INVALID
+		t->dtype = FB_DATATYPE_INVALID
 
 		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 			hReadString( t, @t->text, flags )
@@ -1652,7 +1652,7 @@ read_id:
 
 		t->class = FB_TKCLASS_STRLITERAL
 		t->id = iif( char = CHAR_EXCL, FB_TK_STRLIT_ESC, FB_TK_STRLIT_NOESC )
-		t->dtype = INVALID
+		t->dtype = FB_DATATYPE_INVALID
 
 		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 			dim as zstring ptr ps = any

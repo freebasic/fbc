@@ -42,7 +42,7 @@ function astNewLABEL _
     dim as ASTNODE ptr n = any
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_LABEL, INVALID )
+	n = astNewNode( AST_NODECLASS_LABEL, FB_DATATYPE_INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -93,7 +93,7 @@ function astNewLIT _
     dim as ASTNODE ptr n = any
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_LIT, INVALID )
+	n = astNewNode( AST_NODECLASS_LIT, FB_DATATYPE_INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -134,7 +134,7 @@ function astNewASM _
     dim as ASTNODE ptr n = any
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ASM, INVALID )
+	n = astNewNode( AST_NODECLASS_ASM, FB_DATATYPE_INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -205,7 +205,7 @@ function astNewDBG _
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_DBG, INVALID )
+	n = astNewNode( AST_NODECLASS_DBG, FB_DATATYPE_INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -244,7 +244,7 @@ function astNewNOP _
     dim as ASTNODE ptr n = any
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_NOP, INVALID )
+	n = astNewNode( AST_NODECLASS_NOP, FB_DATATYPE_INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -278,7 +278,7 @@ function astNewNIDXARRAY _
     dim as ASTNODE ptr n = any
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_NIDXARRAY, INVALID )
+	n = astNewNode( AST_NODECLASS_NIDXARRAY, FB_DATATYPE_INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if

@@ -576,7 +576,7 @@ private function hCheckPointer _
     case AST_OP_ADD, AST_OP_SUB
 
     	'' another pointer?
-    	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
+    	if( typeIsPtr( dtype ) ) then
     		return FALSE
     	end if
 
@@ -626,14 +626,14 @@ private function hDoPointerArith _
 	'' incomplete type?
 	if( lgt = 0 ) then
 		'' unless it's a void ptr.. pretend it's a byte ptr
-		if( astGetDataType( p ) <> typeSetType( FB_DATATYPE_VOID, 1 ) ) then
+		if( astGetDataType( p ) <> typeAddrOf( FB_DATATYPE_VOID ) ) then
 			exit function
 		end if
 		lgt = 1
 	end if
 
     '' another pointer?
-    if( typeGetDatatype( edtype ) = FB_DATATYPE_POINTER ) then
+    if( typeIsPtr( edtype ) ) then
     	'' only allow if it's a subtraction
     	if( op = AST_OP_SUB ) then
     		'' types can't be different..
@@ -852,7 +852,7 @@ function astNewBOP _
 
 	''::::::
     '' pointers?
-    if( typeGetDatatype( ldtype ) = FB_DATATYPE_POINTER ) then
+    if( typeIsPtr( ldtype ) ) then
 		'' do arithmetics?
 		if( (options and AST_OPOPT_LPTRARITH) <> 0 ) then
     		return hDoPointerArith( op, l, r )
@@ -862,7 +862,7 @@ function astNewBOP _
     		end if
 		end if
 
-    elseif( typeGetDatatype( rdtype ) = FB_DATATYPE_POINTER ) then
+    elseif( typeIsPtr( rdtype ) ) then
 		'' do arithmetics?
 		if( (options and AST_OPOPT_RPTRARITH) <> 0 ) then
 			return hDoPointerArith( op, r, l )
@@ -1180,7 +1180,7 @@ function astNewBOP _
 		dtype = symbMaxDataType( ldtype, rdtype )
 
 		'' don't convert?
-		if( dtype = INVALID ) then
+		if( dtype = FB_DATATYPE_INVALID ) then
 
 			'' as types are different, if class is fp,
 			'' the result type will be always a double
@@ -1190,8 +1190,7 @@ function astNewBOP _
 			else
 
 				'' an ENUM or POINTER always has the precedence
-				if( (rdtype = FB_DATATYPE_ENUM) or _
-					(typeGetDatatype( rdtype ) = FB_DATATYPE_POINTER) ) then
+				if( (rdtype = FB_DATATYPE_ENUM) or typeIsPtr( rdtype ) ) then
 					dtype = rdtype
 					subtype = r->subtype
 				else
@@ -1370,7 +1369,7 @@ function astNewBOP _
 						' float, and return a float
 						if( symbGetDataClass( l->dtype ) <> FB_DATACLASS_FPOINT ) then
 							l = astNewCONV( FB_DATATYPE_DOUBLE, NULL, l )
-						end if	
+						end if
 						astDelNode( r )
 						r = astCloneTree( l )
 						op = AST_OP_MUL

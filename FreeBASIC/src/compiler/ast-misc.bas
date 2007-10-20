@@ -627,9 +627,9 @@ end function
 function astGetStrLitSymbol _
 	( _
 		byval n as ASTNODE ptr _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr s = any
 
     function = NULL
 
@@ -680,16 +680,13 @@ function astCheckConst _
 	( _
 		byval dtype as integer, _
 		byval n as ASTNODE ptr _
-	) as ASTNODE ptr static
-
-	dim as longint lval
-	dim as ulongint ulval
-	dim as double dval, dmin, dmax
+	) as ASTNODE ptr
 
 	'' x86/32-bit assumptions
 
     select case as const dtype
     case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		dim as double dval = any, dmin = any, dmax = any
 
 		if( dtype = FB_DATATYPE_SINGLE ) then
 			dmin = 1.175494351e-38
@@ -734,6 +731,8 @@ chk_ulong:
     	 FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
 
 chk_int:
+		dim as longint lval = any
+
 		lval = astGetValueAsLongInt( n )
 		if( (lval < ast_minlimitTB( dtype )) or _
 			(lval > clngint( ast_maxlimitTB( dtype ) )) ) then
@@ -746,6 +745,8 @@ chk_int:
     	 FB_DATATYPE_UINT
 
 chk_uint:
+		dim as ulongint ulval = any
+
 		ulval = astGetValueAsULongInt( n )
 		if( (ulval < culngint( ast_minlimitTB( dtype ) )) or _
 			(ulval > ast_maxlimitTB( dtype )) ) then
@@ -780,10 +781,11 @@ function astPtrCheck _
 	( _
 		byval pdtype as integer, _
 		byval psubtype as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr _
-	) as integer static
+		byval expr as ASTNODE ptr, _
+		byval strictcheck as integer _
+	) as integer
 
-	dim as integer edtype, pdtype_np, edtype_np
+	dim as integer edtype = any
 
 	function = FALSE
 
@@ -792,7 +794,7 @@ function astPtrCheck _
 	select case astGetClass( expr )
 	case AST_NODECLASS_CONST, AST_NODECLASS_ENUM
     	'' expr not a pointer?
-    	if( typeGetDatatype( edtype ) <> FB_DATATYPE_POINTER ) then
+    	if( typeIsPtr( edtype ) = FALSE ) then
     		'' not NULL?
     		if( astGetValInt( expr ) <> NULL ) then
     			exit function
@@ -803,7 +805,7 @@ function astPtrCheck _
 
 	case else
     	'' expr not a pointer?
-    	if( typeGetDatatype( edtype ) <> FB_DATATYPE_POINTER ) then
+    	if( typeIsPtr( edtype ) = FALSE ) then
     		exit function
     	end if
 	end select
@@ -811,9 +813,18 @@ function astPtrCheck _
 	'' different types?
 	if( pdtype <> edtype ) then
 
+    	'' different constant masks?
+    	if( strictcheck ) then
+    		if( typeGetPtrConstMask( edtype ) <> _
+    			typeGetPtrConstMask( pdtype ) ) then
+    			exit function
+    		end if
+    	end if
+
     	'' remove the pointers
-    	pdtype_np = typeGetPtrType( pdtype )
-    	edtype_np = typeGetPtrType( edtype )
+    	dim as integer pdtype_np = any, edtype_np = any
+    	pdtype_np = typeGetDtOnly( pdtype )
+    	edtype_np = typeGetDtOnly( edtype )
 
     	'' 1st) is one of them an ANY PTR?
     	if( pdtype_np = FB_DATATYPE_VOID ) then
@@ -827,7 +838,18 @@ function astPtrCheck _
     		exit function
     	end if
 
-    	'' 3rd) same size and class?
+    	'' 3rd) different constant masks?
+    	if( strictcheck = FALSE ) then
+    		'' only the expression matters
+    		if( typeGetConstMask( edtype ) <> 0 ) then
+    			if( typeGetPtrConstMask( pdtype ) <> _
+    				typeGetPtrConstMask( edtype ) ) then
+    				exit function
+    			end if
+    		end if
+    	end if
+
+    	'' 4th) same size and class?
     	if( (pdtype_np <= FB_DATATYPE_DOUBLE) and _
     		(edtype_np <= FB_DATATYPE_DOUBLE) ) then
     		if( symbGetDataSize( pdtype_np ) = symbGetDataSize( edtype_np ) ) then
@@ -970,7 +992,7 @@ function astUpdComp2Branch _
 		ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID, NULL, n, @err_num )
 		if( ovlProc = NULL ) then
 			'' no? try pointers...
-			ovlProc = symbFindCastOvlProc( typeSetType( FB_DATATYPE_VOID, 1 ), NULL, _
+			ovlProc = symbFindCastOvlProc( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 										   n, _
 										   @err_num )
 			if( ovlProc = NULL ) then

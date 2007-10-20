@@ -270,7 +270,7 @@ private function hAbbrevFind _
 
 	'' builtin?
 	if( subtype = NULL ) then
-		if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
+		if( typeIsPtr( dtype ) = FALSE ) then
 			if( dtype <> FB_DATATYPE_STRING ) then
 				return -1
 			end if
@@ -413,24 +413,36 @@ function symbMangleType _
 
     case else
     	'' builtin?
-    	if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
+    	if( typeGet( dtype ) = dtype ) then
     		return typecodeTB( dtype )
     	end if
 
     	'' reference?
-    	if( dtype >= FB_DATATYPE_REFERENCE ) then
+    	if( typeIsRef( dtype ) ) then
     		sig = "R"
-    		sig += symbMangleType( dtype - FB_DATATYPE_REFERENCE, subtype )
+    		sig += symbMangleType( typeUnsetIsRef( dtype ), subtype )
 
     	'' array?
-    	elseif( (dtype and FB_DATATYPE_ARRAY) <> 0 ) then
+    	elseif( typeIsArray( dtype ) ) then
     		sig = "A"
-    		sig += symbMangleType( dtype and (not FB_DATATYPE_ARRAY), subtype )
+    		sig += symbMangleType( typeUnsetIsArray( dtype ), subtype )
 
-    	'' pointer..
-    	else
-    		sig = "P"
+    	'' pointer? (must be checked/emitted before CONST)
+    	elseif( typeIsPtr( dtype ) ) then
+    		'' const?
+    		if( typeIsConst( dtype ) ) then
+    			sig = "PK"
+    		else
+    			sig = "P"
+    		end if
+
     		sig += symbMangleType( typeDeref( dtype ), subtype )
+
+    	'' const..
+    	else
+    		'' note: nothing is added (as in C++) because it's not a 'const ptr'
+    		sig += symbMangleType( typeUnsetIsConst( dtype ), subtype )
+
     	end if
 
     end select
@@ -452,10 +464,10 @@ function symbMangleParam _
 	select case as const symbGetParamMode( param )
 	'' by reference (or descriptor)?
 	case FB_PARAMMODE_BYREF
-		dtype or= FB_DATATYPE_REFERENCE
+		dtype = typeSetIsRef( dtype )
 
 	case FB_PARAMMODE_BYDESC
-		dtype or= FB_DATATYPE_REFERENCE or FB_DATATYPE_ARRAY
+		dtype = typeSetIsRefAndArray( dtype )
 
        '' var arg?
 	case FB_PARAMMODE_VARARG

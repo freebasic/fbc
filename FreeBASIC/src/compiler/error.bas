@@ -285,7 +285,9 @@ end type
 		@"Arrays are not allowed", _
 		@"COMMON variables cannot be object instances of CLASS/TYPE's with cons/destructors", _
 		@"Cloning operators (LET, Copy constructors) can't take a byval arg of the parent's type", _
-		@"Local symbols can't be referenced" _
+		@"Local symbols can't be referenced", _
+		@"Expected 'PTR' or 'POINTER'", _
+		@"Too many levels of pointer indirection" _
 	}
 
 

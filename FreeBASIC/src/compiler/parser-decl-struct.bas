@@ -369,13 +369,13 @@ private function hTypeMultElementDecl _
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype
-    dim as integer dims, dtype, lgt, ptrcnt, bits
+    dim as integer dims, dtype, lgt, bits
     dim as ASTNODE ptr initree
 
     function = FALSE
 
     '' SymbolType
-    if( hSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+    if( hSymbolType( dtype, subtype, lgt ) = FALSE ) then
     	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     		exit function
     	else
@@ -467,7 +467,7 @@ private function hTypeMultElementDecl _
         ''
 		sym = symbAddField( parent, @id, _
 						  	dims, dTB(), _
-						  	dtype, subtype, ptrcnt, _
+						  	dtype, subtype, _
 						  	lgt, bits )
 		if( sym = NULL ) then
 			if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
@@ -511,8 +511,9 @@ private function hTypeElementDecl _
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype
-    dim as integer dims, dtype, lgt, ptrcnt, bits
+    dim as integer dims, dtype, lgt, bits
     dim as ASTNODE ptr initree
+
 	function = FALSE
 
 	'' allow keywords as field names
@@ -522,7 +523,7 @@ private function hTypeElementDecl _
 		'' ID
 		id = *lexGetText( )
 
-    	if( lexGetType( ) <> INVALID ) then
+    	if( lexGetType( ) <> FB_DATATYPE_INVALID ) then
     		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     			exit function
     		end if
@@ -554,7 +555,7 @@ private function hTypeElementDecl _
     	else
     		'' error recovery: fake an id
     		id = *hMakeTmpStr( )
-    		dtype = INVALID
+    		dtype = FB_DATATYPE_INVALID
     	end if
     end select
 
@@ -592,7 +593,7 @@ private function hTypeElementDecl _
     end if
 
     '' SymbolType
-    if( hSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+    if( hSymbolType( dtype, subtype, lgt ) = FALSE ) then
     	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     		exit function
 		else
@@ -632,7 +633,7 @@ private function hTypeElementDecl _
 	''
 	sym = symbAddField( parent, @id, _
 					  	dims, dTB(), _
-					  	dtype, subtype, ptrcnt, _
+					  	dtype, subtype, _
 					  	lgt, bits )
 
 	if( sym = NULL ) then

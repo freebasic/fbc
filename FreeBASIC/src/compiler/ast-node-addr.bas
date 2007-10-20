@@ -58,7 +58,7 @@ function astNewOFFSET _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_OFFSET, _
-					typeSetType( l->dtype, 1 ), _
+					typeAddrOf( l->dtype ), _
 					l->subtype )
 
 	if( n = NULL ) then

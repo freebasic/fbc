@@ -37,14 +37,13 @@ function hSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer, _
-		byref ptrcnt as integer _
+		byref lgt as integer _
 	) as integer
 
     function = TRUE
 
 	'' parse the symbol type (INTEGER, STRING, etc...)
-	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
 		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			return FALSE
 		else
@@ -52,7 +51,6 @@ function hSymbolType _
 			dtype = FB_DATATYPE_INTEGER
 			subtype = NULL
 			lgt = FB_INTEGERSIZE
-			ptrcnt = 0
 		end if
 	end if
 
@@ -65,7 +63,6 @@ function hSymbolType _
 			dtype = typeAddrOf( dtype )
 			subtype = NULL
 			lgt = FB_POINTERSIZE
-			ptrcnt = 1
 		end if
 	end if
 
@@ -403,7 +400,6 @@ private function hDeclStaticVar _
 		byval idalias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval lgt as integer, _
 		byval addsuffix as integer, _
 		byval attrib as integer, _
@@ -434,7 +430,7 @@ private function hDeclStaticVar _
 			options or= FB_SYMBOPT_UNSCOPE
 		end if
 
-    	sym = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
+    	sym = symbAddVarEx( id, idalias, dtype, subtype, _
     				  	  	lgt, dimensions, dTB(), _
     				  	  	attrib, options )
 
@@ -462,7 +458,6 @@ private function hDeclDynArray _
 		byval idalias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ptrcnt as integer, _
 		byval is_typeless as integer, _
 		byval lgt as integer, _
 		byval addsuffix as integer, _
@@ -491,7 +486,6 @@ private function hDeclDynArray _
    		if( is_typeless ) then
    			dtype = symbGetType( sym )
    			subtype = symbGetSubtype( sym )
-   			ptrcnt = symbGetPtrCnt( sym )
    			lgt = symbGetLen( sym )
    		end if
     end if
@@ -508,7 +502,7 @@ private function hDeclDynArray _
 			options or= FB_SYMBOPT_UNSCOPE
 		end if
 
-   		sym = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
+   		sym = symbAddVarEx( id, idalias, dtype, subtype, _
    						    lgt, dimensions, dTB(), _
    						    attrib, options )
 
@@ -654,7 +648,7 @@ private function hGetId _
     			else
     				'' error recovery: fake an id
     				*id = *hMakeTmpStr( )
-    				suffix = INVALID
+    				suffix = FB_DATATYPE_INVALID
     			end if
 
     		else
@@ -675,7 +669,7 @@ private function hGetId _
     		else
     			'' error recovery: fake an id
     			*id = *hMakeTmpStr( )
-    			suffix = INVALID
+    			suffix = FB_DATATYPE_INVALID
     		end if
 
     	'' QB mode..
@@ -690,7 +684,7 @@ private function hGetId _
     	else
     		'' error recovery: fake an id
     		*id = *hMakeTmpStr( )
-    		suffix = INVALID
+    		suffix = FB_DATATYPE_INVALID
     	end if
     end select
 
@@ -1001,7 +995,7 @@ private function hCallStaticCtor _
 	'' create a static flag
 	flag = symbAddVarEx( hMakeTmpStr(), NULL, _
 					  	 FB_DATATYPE_INTEGER, NULL, 0, _
-					  	 0, 0, dTB(), _
+					  	 0, dTB(), _
 					     FB_SYMBATTRIB_STATIC )
 
 	tree = astNewLINK( tree, _
@@ -1179,7 +1173,7 @@ function hVarDeclEx _
     dim as ASTNODE ptr initree = any
     dim as integer addsuffix = any, is_dynamic = any, is_multdecl = any
     dim as integer is_typeless = any, is_decl = any, check_exprtb = any
-    dim as integer dtype = any, lgt = any, ofs = any, ptrcnt = any
+    dim as integer dtype = any, lgt = any, ofs = any
     dim as integer dimensions = any, suffix = any
     dim as zstring ptr palias = any
 
@@ -1199,7 +1193,7 @@ function hVarDeclEx _
     	lexSkipToken( )
 
         '' parse the symbol type (INTEGER, STRING, etc...)
-        if( hSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+        if( hSymbolType( dtype, subtype, lgt ) = FALSE ) then
         	exit function
         end if
 
@@ -1224,7 +1218,6 @@ function hVarDeclEx _
     	if( is_multdecl = FALSE ) then
     		dtype = suffix
     		subtype	= NULL
-    		ptrcnt = 0
     		lgt	= 0
     		addsuffix = TRUE
     	else
@@ -1232,13 +1225,13 @@ function hVarDeclEx _
     		'' specified a suffix on a symbol, e.g.
     		''
     		'' DIM AS INTEGER x, y$
-    		if( suffix <> INVALID ) then
+    		if( suffix <> FB_DATATYPE_INVALID ) then
     			if( errReportEx( FB_ERRMSG_SYNTAXERROR, @id ) = FALSE ) then
     				exit function
     			else
     				'' error recovery: the symbol gets the
     				'' type specified 'AS'
-    				suffix = INVALID
+    				suffix = FB_DATATYPE_INVALID
     			end if
     		end if
     	end if
@@ -1333,18 +1326,18 @@ function hVarDeclEx _
     		'' (AS SymbolType)?
     		if( lexGetToken( ) = FB_TK_AS ) then
 
-    			if( dtype <> INVALID ) then
+    			if( dtype <> FB_DATATYPE_INVALID ) then
     				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     					exit function
     				else
-    					dtype = INVALID
+    					dtype = FB_DATATYPE_INVALID
     				end if
     			end if
 
     			lexSkipToken( )
 
 		        '' parse the symbol type (INTEGER, STRING, etc...)
-		        if( hSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+		        if( hSymbolType( dtype, subtype, lgt ) = FALSE ) then
 		        	exit function
 		        end if
 
@@ -1365,7 +1358,7 @@ function hVarDeclEx _
 					end if
     			end if
 
-				if( dtype = INVALID ) then
+				if( dtype = FB_DATATYPE_INVALID ) then
 					is_typeless = TRUE
 					dtype = symbGetDefType( id )
 				end if
@@ -1375,7 +1368,12 @@ function hVarDeclEx _
     	end if
 
 		''
-		sym = hLookupVar( parent, chain_, dtype, is_typeless, suffix <> INVALID, options )
+		sym = hLookupVar( parent, _
+						  chain_, _
+						  dtype, _
+						  is_typeless, _
+						  suffix <> FB_DATATYPE_INVALID, _
+						  options )
 
     	if( sym = NULL ) then
     		'' no symbol was found, check if an explicit namespace was given
@@ -1439,12 +1437,12 @@ function hVarDeclEx _
     	''
     	if( is_dynamic ) then
     		sym = hDeclDynArray( sym, id, palias, _
-    							 dtype, subtype, ptrcnt, is_typeless, _
+    							 dtype, subtype, is_typeless, _
     							 lgt, addsuffix, attrib, _
     							 dimensions )
     	else
 			sym = hDeclStaticVar( sym, id, palias, _
-								  dtype, subtype, ptrcnt, _
+								  dtype, subtype, _
     							  lgt, addsuffix, attrib, _
     							  dimensions, dTB() )
 		end if
@@ -1910,7 +1908,7 @@ function cAutoVarDecl _
 		dim as integer suffix = any
 		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, 0 )
 
-    	if( suffix <> INVALID ) then
+    	if( suffix <> FB_DATATYPE_INVALID ) then
     		if( errReportEx( FB_ERRMSG_SYNTAXERROR, @id ) = FALSE ) then
     			exit function
     		end if
@@ -1929,7 +1927,12 @@ function cAutoVarDecl _
 		''
 		dim as FBSYMBOL ptr sym = any
 
-		sym = hLookupVar( parent, chain_, INVALID, TRUE, FALSE, FB_IDOPT_ISDECL )
+		sym = hLookupVar( parent, _
+						  chain_, _
+						  FB_DATATYPE_INVALID, _
+						  TRUE, _
+						  FALSE, _
+						  FB_IDOPT_ISDECL )
 
 		if( sym = NULL ) then
 			'' no symbol was found, check if an explicit namespace was given
@@ -1998,7 +2001,7 @@ function cAutoVarDecl _
 
 		'' add var after parsing the expression, or the the var itself could be used
 		sym = hDeclStaticVar( sym, id, NULL, _
-		                      dtype, subtype, typeGetPtrCnt( dtype ), _
+		                      dtype, subtype, _
 		                      symbCalcLen( dtype, subtype ), FALSE, attrib, _
 		                      0, dTB() )
 

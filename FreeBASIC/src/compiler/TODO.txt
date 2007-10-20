@@ -1,3 +1,9 @@
+[ ] CONST qualifier
+    - ptr checking must be updated
+    - typedef patching must be fixed
+    - must check assignment
+    - must check overloading resolution and the proc dup check
+
 [ ] ctor/dtor
     - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when
       speed is important, the temporary result instance won't be cleared
@@ -151,12 +157,6 @@
     - can't optimize multiple MEM_CLEAR's if there's any branch to
       one of them
     - error handlers should be restored too (or not allowed at all)
-
-[ ] EXTERN ... END EXTERN
-    - C++ mangling needs CONST's to be handled in param attributes:
-      - refs and ptrs to constants can't be added unless _POINTER is added
-        as a new symbol like with BITFIELD? that will need *a lot* of changes..
-
 
 [ ] disallow (in -lang qb mode):
 	dim foo as foo

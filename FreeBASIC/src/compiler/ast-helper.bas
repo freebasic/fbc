@@ -73,7 +73,7 @@ function astBuildVarInc _
 	dim as AST_OP op = any
 
 	options = AST_OPOPT_DEFAULT
-	if( typeGetDatatype( symbGetType( lhs ) ) = FB_DATATYPE_POINTER ) then
+	if( typeIsPtr( symbGetType( lhs ) ) ) then
 		options or= AST_OPOPT_LPTRARITH
 	end if
 
@@ -544,9 +544,9 @@ function astBuildImplicitCtorCall _
     dim as ASTNODE ptr procexpr = astNewCALL( proc )
 
     '' push the mock instance ptr
-    astNewARG( procexpr, astBuildMockInstPtr( subtype ), INVALID, FB_PARAMMODE_BYVAL )
+    astNewARG( procexpr, astBuildMockInstPtr( subtype ), FB_DATATYPE_INVALID, FB_PARAMMODE_BYVAL )
 
-    astNewARG( procexpr, expr, INVALID, arg_mode )
+    astNewARG( procexpr, expr, FB_DATATYPE_INVALID, arg_mode )
 
     '' add the optional params, if any
     dim as integer params = symbGetProcParams( proc ) - 2
@@ -647,7 +647,7 @@ function astBuildProcResultVar _
     select case symbGetType( proc )
     case FB_DATATYPE_STRUCT
 		'' pointer? deref
-		if( typeIsPtrTo( symbGetProcRealType( proc ), 1, FB_DATATYPE_STRUCT ) ) then
+		if( symbGetProcRealType( proc ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
 			lhs = astNewDEREF( lhs, FB_DATATYPE_STRUCT, symbGetSubtype( res ) )
 		end if
 	'case FB_DATATYPE_CLASS
@@ -745,7 +745,7 @@ function astBuildMockInstPtr _
 	) as ASTNODE ptr
 
 	function = astNewCONSTi( 0, _
-							 typeSetType( symbGetType( sym ), 1 ), _
+							 typeAddrOf( symbGetType( sym ) ), _
 							 sym )
 
 end function
@@ -782,7 +782,7 @@ function astBuildMultiDeref _
 	) as ASTNODE ptr
 
 	do while( cnt > 0 )
-		if( typeGetDatatype( dtype ) <> FB_DATATYPE_POINTER ) then
+		if( typeIsPtr( dtype ) = FALSE ) then
 			if( symb.globOpOvlTb(AST_OP_DEREF).head = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
 					return NULL
@@ -882,7 +882,7 @@ function astBuildArrayDescIniTree _
 
     if( array_expr = NULL ) then
     	if( symbGetIsDynamic( array ) ) then
-    		array_expr = astNewCONSTi( 0, typeSetType( dtype, 1 ), subtype )
+    		array_expr = astNewCONSTi( 0, typeAddrOf( dtype ), subtype )
     	else
     		array_expr = astNewADDROF( astNewVAR( array, 0, dtype, subtype ) )
     	end if
@@ -995,10 +995,10 @@ function astBuildStrPtr _
 	'' note: only var-len strings expressions should be passed
 
 	'' *cast( zstring ptr ptr, @lhs )
-	function = astNewDEREF( astNewCONV( typeSetType( FB_DATATYPE_CHAR, 2 ), _
+	function = astNewDEREF( astNewCONV( typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), _
 								 	    NULL, _
 								 	  	astNewADDROF( lhs ) ), _
-						  	typeSetType( FB_DATATYPE_CHAR, 1 ), _
+						  	typeAddrOf( FB_DATATYPE_CHAR ), _
 						  	NULL )
 
 end function

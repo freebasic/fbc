@@ -77,8 +77,8 @@ private sub hAddRhsParam _
 
 	symbAddProcParam( proc, _
 					  "__FB_RHS__", NULL, _
-    				  dtype, parent, 0, _
-    				  FB_POINTERSIZE, FB_PARAMMODE_BYREF, _
+    				  dtype, parent, FB_POINTERSIZE, _
+    				  FB_PARAMMODE_BYREF, _
     				  FB_SYMBATTRIB_NONE, NULL )
 
 end sub
@@ -122,7 +122,7 @@ private function hProcBegin _
 								op, _
 								NULL, _
 								NULL, _
-								FB_DATATYPE_VOID, NULL, 0, _
+								FB_DATATYPE_VOID, NULL, _
 								attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_PRIVATE, _
 								FB_FUNCMODE_CDECL, _
 								FB_SYMBOPT_DECLARING )

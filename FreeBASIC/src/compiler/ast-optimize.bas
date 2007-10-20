@@ -90,9 +90,8 @@ private sub hConvDataType _
 		byval to_dtype as integer _
 	)
 
-	if( typeGetDatatype( to_dtype ) = FB_DATATYPE_POINTER ) then
-		to_dtype = FB_DATATYPE_POINTER
-	end if
+	vdtype = typeGet( vdtype )
+	to_dtype = typeGet( to_dtype )
 
 	select case as const to_dtype
 	case FB_DATATYPE_LONGINT
@@ -132,10 +131,6 @@ private sub hConvDataType _
 		end select
 
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-
-		if( typeGetDatatype( vdtype ) = FB_DATATYPE_POINTER ) then
-			vdtype = FB_DATATYPE_POINTER
-		end if
 
 		select case as const vdtype
 		case FB_DATATYPE_LONGINT
@@ -260,10 +255,10 @@ private function hPrepConst _
 	dim as integer dtype = any
 
 	'' first node? just copy..
-	if( v->dtype = INVALID ) then
+	if( v->dtype = FB_DATATYPE_INVALID ) then
 		v->dtype = r->dtype
 
-		select case as const v->dtype
+		select case as const typeGet( v->dtype )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			v->val.long = r->con.val.long
 
@@ -281,16 +276,16 @@ private function hPrepConst _
             v->val.int = r->con.val.int
 		end select
 
-		return INVALID
+		return FB_DATATYPE_INVALID
 	end if
 
     ''
 	dtype = symbMaxDataType( v->dtype, r->dtype )
 
 	'' same? don't convert..
-	if( dtype = INVALID ) then
+	if( dtype = FB_DATATYPE_INVALID ) then
 		'' an ENUM or POINTER always has the precedence
-		select case typeGetDatatype( r->dtype )
+		select case typeGet( r->dtype )
 		case FB_DATATYPE_ENUM, FB_DATATYPE_POINTER
 			return r->dtype
 		case else
@@ -351,7 +346,7 @@ private function hConstAccumADDSUB _
 
 			dtype = hPrepConst( v, r )
 
-			if( dtype <> INVALID ) then
+			if( dtype <> FB_DATATYPE_INVALID ) then
 				select case o
 				case AST_OP_ADD
 					select case as const dtype
@@ -442,7 +437,7 @@ private function hConstAccumMUL _
 
 			dtype = hPrepConst( v, r )
 
-			if( dtype <> INVALID ) then
+			if( dtype <> FB_DATATYPE_INVALID ) then
 				select case as const dtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					v->val.long *= r->con.val.long
@@ -503,19 +498,19 @@ private function hOptConstAccum1 _
 
 			select case as const n->op.op
 			case AST_OP_ADD
-				v.dtype = INVALID
+				v.dtype = FB_DATATYPE_INVALID
 				n = hConstAccumADDSUB( n, @v, 1 )
 				'' can't pass ConstAccumADDSUB() to newBOP, the order of
 				'' the params should't matter
 				n = astNewBOP( AST_OP_ADD, n, astNewCONST( @v.val, v.dtype ) )
 
 			case AST_OP_MUL
-				v.dtype = INVALID
+				v.dtype = FB_DATATYPE_INVALID
 				n = hConstAccumMUL( n, @v )
 				n = astNewBOP( AST_OP_MUL, n, astNewCONST( @v.val, v.dtype ) )
 
            	case AST_OP_SUB
-				v.dtype = INVALID
+				v.dtype = FB_DATATYPE_INVALID
 				n = hConstAccumADDSUB( n, @v, -1 )
 				n = astNewBOP( AST_OP_SUB, n, astNewCONST( @v.val, v.dtype ) )
 			end select
@@ -562,11 +557,11 @@ private sub hOptConstAccum2 _
 				 FB_DATATYPE_WCHAR
 
 			case else
-				v.dtype = INVALID
+				v.dtype = FB_DATATYPE_INVALID
 				n->l = hConstAccumADDSUB( n->l, @v, 1 )
 				n->r = hConstAccumADDSUB( n->r, @v, 1 )
 
-				if( v.dtype <> INVALID ) then
+				if( v.dtype <> FB_DATATYPE_INVALID ) then
 					n->l = astNewBOP( AST_OP_ADD, n->l, n->r )
 					n->r = astNewCONST( @v.val, v.dtype )
 					checktype = TRUE
@@ -574,11 +569,11 @@ private sub hOptConstAccum2 _
 			end select
 
 		case AST_OP_MUL
-			v.dtype = INVALID
+			v.dtype = FB_DATATYPE_INVALID
 			n->l = hConstAccumMUL( n->l, @v )
 			n->r = hConstAccumMUL( n->r, @v )
 
-			if( v.dtype <> INVALID ) then
+			if( v.dtype <> FB_DATATYPE_INVALID ) then
 				n->l = astNewBOP( AST_OP_MUL, n->l, n->r )
 				n->r = astNewCONST( @v.val, v.dtype )
 				checktype = TRUE
@@ -590,7 +585,7 @@ private sub hOptConstAccum2 _
 			l = n->l
 			r = n->r
 			dtype = symbMaxDataType( l->dtype, r->dtype )
-			if( dtype <> INVALID ) then
+			if( dtype <> FB_DATATYPE_INVALID ) then
 				if( dtype <> l->dtype ) then
 					n->l = astNewCONV( dtype, r->subtype, l )
 				else
@@ -600,7 +595,7 @@ private sub hOptConstAccum2 _
 
 			else
 				'' an ENUM or POINTER always have the precedence
-				select case typeGetDatatype( r->dtype )
+				select case typeGet( r->dtype )
 				case FB_DATATYPE_ENUM, FB_DATATYPE_POINTER
 					n->dtype = r->dtype
 				case else
@@ -649,7 +644,7 @@ private function hConstDistMUL _
 
 			dtype = hPrepConst( v, r )
 
-			if( dtype <> INVALID ) then
+			if( dtype <> FB_DATATYPE_INVALID ) then
 				select case as const dtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					v->val.long += r->con.val.long
@@ -708,10 +703,10 @@ private function hOptConstDistMUL _
 		if( astIsCONST( r ) ) then
 			if( n->op.op = AST_OP_MUL ) then
 
-				v.dtype = INVALID
+				v.dtype = FB_DATATYPE_INVALID
 				n->l = hConstDistMUL( n->l, @v )
 
-				if( v.dtype <> INVALID ) then
+				if( v.dtype <> FB_DATATYPE_INVALID ) then
 					select case as const v.dtype
 					case FB_DATATYPE_LONGINT
 
@@ -1007,10 +1002,10 @@ private function hOptConstIDX _
 		if( l <> NULL ) then
 
 			dim as ASTVALUE v = any
-			v.dtype = INVALID
+			v.dtype = FB_DATATYPE_INVALID
 			n->l = hConstAccumADDSUB( l, @v, 1 )
 
-        	if( v.dtype <> INVALID ) then
+        	if( v.dtype <> FB_DATATYPE_INVALID ) then
         		dim as integer c = any
         		select case as const v.dtype
         		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT

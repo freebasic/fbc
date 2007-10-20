@@ -104,7 +104,7 @@ private function hFindId_QB _
     	dim as FBSYMBOL ptr var_sym = NULL
 
     	'' no suffix?
-    	if( suffix = INVALID ) then
+    	if( suffix = FB_DATATYPE_INVALID ) then
 
     		do
     			dim as integer is_match = TRUE

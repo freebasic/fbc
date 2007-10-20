@@ -208,7 +208,7 @@ function astNewCONSTz _
     	function = astNewCONST( NULL, typeAddrOf( dtype ), subtype )
 
     case else
-    	if( dtype = INVALID ) then
+    	if( dtype = FB_DATATYPE_INVALID ) then
     		dtype = FB_DATATYPE_INTEGER
     	end if
 

@@ -38,7 +38,7 @@ function astNewDEREF _
     dim as ASTNODE ptr n = any
 
 	if( l <> NULL ) then
-    	if( dtype = INVALID ) then
+    	if( dtype = FB_DATATYPE_INVALID ) then
     		dtype = typeDeref( astGetDataType( l ) )
     		subtype = astGetSubType( l )
     	end if

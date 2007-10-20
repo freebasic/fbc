@@ -253,7 +253,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -484,7 +484,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -745,7 +745,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -793,7 +793,7 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					typeSetType( FB_DATATYPE_WCHAR, 1 ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -918,7 +918,8 @@ function rtlPrint _
 		end select
 
 		dtype = astGetDataType( expr )
-		select case as const typeGetDatatype( dtype )
+
+		select case as const typeGet( dtype )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTSTR )
@@ -1034,16 +1035,25 @@ function rtlPrint _
 			end if
 
 		case FB_DATATYPE_POINTER
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTUINT )
+			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTUINT )
+				else
+					f = PROCLOOKUP( PRINTUINT )
+				end if
 			else
-				f = PROCLOOKUP( PRINTUINT )
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTULONGINT )
+				else
+					f = PROCLOOKUP( PRINTULONGINT )
+				end if
 			end if
-			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
-			
+
+			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+
 		case else
 			exit function
-			
+
 		end select
 
 		args = 3
@@ -1184,7 +1194,7 @@ function rtlWrite _
 
 		dtype = astGetDataType( expr )
 
-		select case as const typeGetDatatype( dtype )
+		select case as const typeGet( dtype )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			f = PROCLOOKUP( WRITESTR )
 
@@ -1236,12 +1246,17 @@ function rtlWrite _
 			f = PROCLOOKUP( WRITEDOUBLE )
 
 		case FB_DATATYPE_POINTER
-			f = PROCLOOKUP( WRITEUINT )
-			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
+			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+				f = PROCLOOKUP( WRITEUINT )
+			else
+				f = PROCLOOKUP( WRITEULONGINT )
+			end if
+
+			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
 
 		case else
 			exit function
-			
+
 		end select
 
 		args = 3

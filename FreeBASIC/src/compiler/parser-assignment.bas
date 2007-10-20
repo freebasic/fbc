@@ -320,6 +320,11 @@ private function hDoAssignment _
 
 	function = FALSE
 
+	'' const?
+	if( typeIsConst( astGetDataType( lhs ) ) ) then
+    	return errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
+	end if
+
     '' BOP?
     if( op <> INVALID ) then
     	'' do lvalue op= expr
@@ -330,7 +335,7 @@ private function hDoAssignment _
     					  	 AST_OPOPT_LPTRARITH )
 
     	if( lhs = NULL ) then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
     			exit function
     		end if
     	else
@@ -342,7 +347,7 @@ private function hDoAssignment _
     	lhs = astNewASSIGN( lhs, rhs )
 
     	if( lhs = NULL ) then
-			if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT ) = FALSE ) then
+			if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE ) = FALSE ) then
 				exit function
 			end if
 		else
@@ -417,7 +422,7 @@ function cAssignment _
     if( expr = NULL ) then
        	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
        		parser.ctxsym = NULL
-       		parser.ctx_dtype = INVALID
+       		parser.ctx_dtype = FB_DATATYPE_INVALID
        		exit function
        	else
     		'' error recovery: skip until next stmt
@@ -427,7 +432,7 @@ function cAssignment _
     end if
 
     parser.ctxsym    = NULL
-    parser.ctx_dtype = INVALID
+    parser.ctx_dtype = FB_DATATYPE_INVALID
 
 	function = hDoAssignment( op, assgexpr, expr )
 
@@ -562,7 +567,7 @@ private function hAssignFromField _
 	end if
 
 	/'' valid data type?
-    select case typeGetDatatype( symbGetType( fld ) )
+    select case typeGet( symbGetType( fld ) )
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
     	if( symbGetUDTIsUnion( fld ) then
        		if( hReportLetError( FB_ERRMSG_UNIONSNOTALLOWED, num ) = FALSE ) then
@@ -675,6 +680,11 @@ function cAssignmentOrPtrCall _
 
         node->expr = cVarOrDeref( )
         if( node->expr <> NULL ) then
+			'' const?
+			if( typeIsConst( astGetDataType( node->expr ) ) ) then
+    			return errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
+			end if
+
         	exprcnt += 1
         end if
 
@@ -732,7 +742,7 @@ function cAssignmentOrPtrCall _
 
 
     if( expr <> NULL ) then
-    	select case typeGetDatatype( astGetDataType( expr ) )
+    	select case typeGet( astGetDataType( expr ) )
     	case FB_DATATYPE_STRUCT
     		if( symbGetUDTIsUnion( astGetSubtype( expr ) ) ) then
        			if( errReport( FB_ERRMSG_UNIONSNOTALLOWED ) = FALSE ) then

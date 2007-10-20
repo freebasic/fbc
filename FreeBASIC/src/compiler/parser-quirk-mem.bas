@@ -35,7 +35,7 @@ function cOperatorNew _
 		_
 	) as ASTNODE ptr
 
-	dim as integer dtype = any, lgt = any, ptrcnt = any
+	dim as integer dtype = any, lgt = any
 	dim as FBSYMBOL ptr subtype = any, tmp = any
 	dim as integer do_clear = TRUE
 
@@ -46,7 +46,7 @@ function cOperatorNew _
 	dim as ASTNODE ptr elmts_expr = NULL
 
 	'' DataType
-	if( hSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+	if( hSymbolType( dtype, subtype, lgt ) = FALSE ) then
 		'' fake expr
    		return NULL
    	else
@@ -308,9 +308,9 @@ function cOperatorDelete _
 
 	dim as integer dtype = astGetDataType( ptr_expr )
 	dim as FBSYMBOL ptr subtype = astGetSubType( ptr_expr )
-    
+
     '' not a ptr?
-	if( typeGetDatatype( dtype ) = FALSE ) then
+	if( typeGet( dtype ) = FALSE ) then
        	if( errReport( FB_ERRMSG_EXPECTEDPOINTER ) = FALSE ) then
        		exit function
        	else
@@ -318,14 +318,14 @@ function cOperatorDelete _
        		return TRUE
        	end if
 	end if
-	
+
 	dtype = typeDeref( dtype )
-	
+
 	'' check for ANY ptr
 	if( dtype = FB_DATATYPE_VOID ) then
 		errReportWarn( FB_WARNINGMSG_DELETEANYPTR )
 	end if
-	
+
 	'' check visibility
 	select case dtype
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS

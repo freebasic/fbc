@@ -586,8 +586,11 @@ function hJumpTbAllocSym _
 
 	sname = *hMakeTmpStr( )
 
-	s = symbAddVarEx( @sname, NULL, FB_DATATYPE_UINT, NULL, 0, _
-					  FB_INTEGERSIZE, 1, dTB(), FB_SYMBATTRIB_SHARED )
+	s = symbAddVarEx( @sname, NULL, _
+					  FB_DATATYPE_UINT, NULL, _
+					  FB_INTEGERSIZE, _
+					  1, dTB(), _
+					  FB_SYMBATTRIB_SHARED )
 
 	symbSetIsJumpTb( s )
 

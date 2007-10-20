@@ -73,8 +73,8 @@ function cSymbolTypeFuncPtr _
 		byval isfunction as integer _
 	) as FBSYMBOL ptr
 
-	dim as integer dtype, lgt, mode, ptrcnt
-	dim as FBSYMBOL ptr proc, subtype
+	dim as integer dtype = any, lgt = any, mode = any
+	dim as FBSYMBOL ptr proc = any, subtype = any
 
 	function = NULL
 
@@ -94,14 +94,13 @@ function cSymbolTypeFuncPtr _
 	if( lexGetToken( ) = FB_TK_AS ) then
 		lexSkipToken( )
 
-		if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+		if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: fake a type
 				dtype = FB_DATATYPE_INTEGER
 				subtype = NULL
-				ptrcnt = 0
 			end if
 		end if
 
@@ -114,7 +113,6 @@ function cSymbolTypeFuncPtr _
 				'' error recovery: fake a type
 				dtype = FB_DATATYPE_INTEGER
 				subtype = NULL
-				ptrcnt = 0
 			end if
 
     	case FB_DATATYPE_VOID
@@ -124,7 +122,6 @@ function cSymbolTypeFuncPtr _
 				'' error recovery: fake a type
 				dtype = typeAddrOf( dtype )
 				subtype = NULL
-				ptrcnt = 1
 			end if
     	end select
 
@@ -137,17 +134,15 @@ function cSymbolTypeFuncPtr _
 				'' error recovery: fake a type
 				dtype = FB_DATATYPE_INTEGER
 				subtype = NULL
-				ptrcnt = 0
 			end if
 
 		else
 			dtype = FB_DATATYPE_VOID
 			subtype = NULL
-			ptrcnt = 0
 		end if
 	end if
 
-	function = symbAddProcPtr( proc, dtype, subtype, ptrcnt, mode )
+	function = symbAddProcPtr( proc, dtype, subtype, mode )
 
 end function
 
@@ -157,8 +152,7 @@ function cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer = NULL, _
-		byref ptrcnt as integer = NULL _
+		byref lgt as integer = NULL _
 	) as integer
 
     function = FALSE
@@ -166,7 +160,7 @@ function cTypeOf _
 	dim as ASTNODE ptr expr = NULL
 
 	'' is it a normal type?
-	if( cSymbolType( dtype, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
+	if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
 		fbSetCheckArray( FALSE )
 
 		expr = cExpression( )
@@ -191,7 +185,6 @@ function cTypeOf _
 		lgt     = rtlCalcExprLen( expr, FALSE )
 		dtype   = astGetDataType( expr )
 		subtype = astGetSubType( expr )
-		ptrcnt  = 0 '' <-- pointer constants?
 
 	else
 		'' ugly hack to deal with arrays w/o indexes
@@ -208,7 +201,7 @@ function cTypeOf _
 			dtype   = astGetDataType( expr )
 			subtype = astGetSubtype( expr )
 		else
-			while walk
+			while( walk <> NULL )
 				select case as const astGetClass( walk )
 				case AST_NODECLASS_FIELD, AST_NODECLASS_IDX
 					'' if it's a field, get this node's type,
@@ -229,19 +222,14 @@ function cTypeOf _
 			lgt     = symbGetLen( sym )
 			dtype   = symbGetType( sym )
 			subtype = symbGetSubtype( sym )
-			ptrcnt  = symbGetPtrCnt( sym )
 		end if
 
 		'' byref args have a deref,
 		'' but they maintain their type
-		if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
+		if( typeIsPtr( dtype ) ) then
 			if( derefs > 0 ) then
 				'' balance it
-				dim as integer do_deref=any
-				for do_deref = 0 to derefs-1
-					dtype = typeDeref( dtype )
-				next
-				ptrcnt -= (derefs)
+				dtype = typeMultDeref( dtype, derefs )
 			end if
 		end if
 
@@ -271,7 +259,6 @@ function cSymbolType _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as integer, _
-		byref ptrcnt as integer, _
 		byval options as FB_SYMBTYPEOPT _
 	) as integer
 
@@ -280,12 +267,16 @@ function cSymbolType _
 	function = FALSE
 
 	lgt = 0
-	dtype = INVALID
+	dtype = FB_DATATYPE_INVALID
 	subtype = NULL
-	ptrcnt = 0
+
+	dim as integer is_const = FALSE
+	dim as integer ptr_cnt = 0
 
 	'' TYPEOF?
-	if( hMatch( FB_TK_TYPEOF ) ) then
+	if( lexGetToken( ) = FB_TK_TYPEOF ) then
+	    lexSkipToken( )
+
 	    '' '('
   		if( hMatch( CHAR_LPRNT ) = FALSE ) then
   			if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
@@ -295,10 +286,12 @@ function cSymbolType _
   				hSkipUntil( CHAR_RPRNT, TRUE )
   			end if
   		end if
+
   		'' datatype
-        if( cTypeOf( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+        if( cTypeOf( dtype, subtype, lgt ) = FALSE ) then
         	return FALSE
         end if
+
 	    '' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
 			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
@@ -310,6 +303,12 @@ function cSymbolType _
 		end if
 
 	else
+
+		'' CONST?
+		if( lexGetToken( ) = FB_TK_CONST ) then
+	    	lexSkipToken( )
+	    	is_const = TRUE
+	    end if
 
 		'' UNSIGNED?
 		isunsigned = hMatch( FB_TK_UNSIGNED )
@@ -407,7 +406,7 @@ function cSymbolType _
 
 			dtype = typeAddrOf( FB_DATATYPE_FUNCTION )
 			lgt = FB_POINTERSIZE
-			ptrcnt = 1
+			ptr_cnt += 1
 
 			subtype = cSymbolTypeFuncPtr( isfunction )
 			if( subtype = NULL ) then
@@ -460,7 +459,7 @@ function cSymbolType _
 							dtype = symbGetType( sym )
 							subtype = symbGetSubtype( sym )
 							lgt = symbGetLen( sym )
-							ptrcnt = symbGetPtrCnt( sym )
+							ptr_cnt += typeGetPtrCnt( dtype )
 							exit do, do
 						end select
 
@@ -473,7 +472,7 @@ function cSymbolType _
 		end select
 
 		'' no type?
-		if( dtype = INVALID ) then
+		if( dtype = FB_DATATYPE_INVALID ) then
 			if( isunsigned ) then
 				errReport( FB_ERRMSG_SYNTAXERROR )
 			end if
@@ -561,21 +560,65 @@ function cSymbolType _
 
 		end select
 
+		'' const?
+		if( is_const ) then
+			dtype = typeSetIsConst( dtype )
+		end if
+
 	else
-		'' (PTR|POINTER)*
+		'' const?
+		if( is_const ) then
+        	dtype = typeSetIsConst( dtype )
+		end if
+
+		'' (CONST (PTR|POINTER) | (PTR|POINTER))*
 		do
-			select case lexGetToken( )
-			case FB_TK_PTR, FB_TK_POINTER
+			select case as const lexGetToken( )
+			'' CONST PTR?
+			case FB_TK_CONST
 				lexSkipToken( )
-				dtype = typeAddrOf( dtype )
-				ptrcnt += 1
+
+				select case lexGetToken( )
+				case FB_TK_PTR, FB_TK_POINTER
+					if( ptr_cnt >= FB_DT_PTRLEVELS ) then
+						if( errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS ) = FALSE ) then
+							exit function
+						end if
+					else
+						dtype = typeSetIsConst( typeAddrOf( dtype ) )
+						ptr_cnt += 1
+					end if
+
+					lexSkipToken( )
+
+				case else
+					if( errReport( FB_ERRMSG_EXPECTEDPTRORPOINTER ) = FALSE ) then
+						exit function
+					end if
+
+					exit do
+				end select
+
+			'' PTR|POINTER?
+			case FB_TK_PTR, FB_TK_POINTER
+				if( ptr_cnt >= FB_DT_PTRLEVELS ) then
+					if( errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS ) = FALSE ) then
+						exit function
+					end if
+				else
+					dtype = typeAddrOf( dtype )
+					ptr_cnt += 1
+				end if
+
+				lexSkipToken( )
+
 			case else
 				exit do
 			end select
 		loop
 	end if
 
-	if( ptrcnt > 0 ) then
+	if( ptr_cnt > 0 ) then
 		lgt = FB_POINTERSIZE
 
 	else
@@ -587,9 +630,8 @@ function cSymbolType _
 					exit function
 				else
 					'' error recovery: fake a type
-					dtype = typeSetType( FB_DATATYPE_VOID, 1 )
+					dtype = typeAddrOf( FB_DATATYPE_VOID )
 					subtype = NULL
-					ptrcnt = 1
 				end if
 			end if
 

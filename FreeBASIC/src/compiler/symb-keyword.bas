@@ -324,7 +324,7 @@ function symbAddKeyword _
     				   @symbGetGlobalTb( ), hashtb, _
     				   FB_SYMBCLASS_KEYWORD, _
     				   symbol, NULL, _
-    				   dtype, NULL, 0, _
+    				   dtype, NULL, _
     				   attrib )
     if( k = NULL ) then
     	return NULL

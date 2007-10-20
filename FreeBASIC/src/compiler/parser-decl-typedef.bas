@@ -26,6 +26,64 @@
 #include once "inc\parser.bi"
 
 '':::::
+private function hPtrDecl _
+	( _
+		byval dtype as FB_DATATYPE _
+	) as FB_DATATYPE
+
+	dim as integer ptr_cnt = 0
+
+	'' (CONST (PTR|POINTER) | (PTR|POINTER))*
+	do
+		select case as const lexGetToken( )
+		'' CONST PTR?
+		case FB_TK_CONST
+			lexSkipToken( )
+
+			select case lexGetToken( )
+			case FB_TK_PTR, FB_TK_POINTER
+				if( ptr_cnt >= FB_DT_PTRLEVELS ) then
+					if( errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS ) = FALSE ) then
+						return FB_DATATYPE_INVALID
+					end if
+				else
+					dtype = typeSetIsConst( typeAddrOf( dtype ) )
+					ptr_cnt += 1
+				end if
+
+				lexSkipToken( )
+
+			case else
+				if( errReport( FB_ERRMSG_EXPECTEDPTRORPOINTER ) = FALSE ) then
+					return FB_DATATYPE_INVALID
+				end if
+
+				exit do
+			end select
+
+		'' PTR|POINTER?
+		case FB_TK_PTR, FB_TK_POINTER
+			if( ptr_cnt >= FB_DT_PTRLEVELS ) then
+				if( errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS ) = FALSE ) then
+					return FB_DATATYPE_INVALID
+				end if
+			else
+				dtype = typeAddrOf( dtype )
+				ptr_cnt += 1
+			end if
+
+			lexSkipToken( )
+
+		case else
+			exit do
+		end select
+	loop
+
+	function = dtype
+
+end function
+
+'':::::
 '' Typedef		= TYPE ((symbol AS DataType (',')?)+
 ''					   AS DataType (symbol (',')?)+
 ''
@@ -36,7 +94,7 @@ function cTypedefDecl _
 
     static as zstring * FB_MAXNAMELEN+1 id, tname
     dim as zstring ptr ptname = any
-    dim as integer dtype = any, lgt = any, ptrcnt = any, isfwd = any, ismult = any
+    dim as integer dtype = any, lgt = any, isfwd = any, ismult = any
     dim as FBSYMBOL ptr parent = any, subtype = any
 
     function = FALSE
@@ -44,7 +102,7 @@ function cTypedefDecl _
     ismult = (pid = NULL)
 
     if( ismult ) then
-    	isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = NULL)
+    	isfwd = (cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE)
     	if( isfwd ) then
     		if( errGetLast( ) <> FB_ERRMSG_OK ) then
     			exit function
@@ -54,25 +112,18 @@ function cTypedefDecl _
 			lexSkipToken( )
     		ptname = @tname
 
-			if( ptrcnt = 0 ) then
-				'' (PTR|POINTER)*
-				do
-					select case lexGetToken( )
-					case FB_TK_PTR, FB_TK_POINTER
-						lexSkipToken( )
-						dtype = typeAddrOf( dtype )
-						ptrcnt += 1
-					case else
-						exit do
-					end select
-				loop
+			if( typeGetPtrCnt( dtype ) = 0 ) then
+				dtype = hPtrDecl( dtype )
+				if( dtype = FB_DATATYPE_INVALID ) then
+					exit function
+				end if
 			end if
     	end if
     end if
 
     do
 		if( ismult = FALSE ) then
-    		isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = NULL)
+    		isfwd = (cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE)
     		if( isfwd ) then
     			if( errGetLast( ) <> FB_ERRMSG_OK ) then
     				exit function
@@ -124,6 +175,8 @@ function cTypedefDecl _
     	end if
 
     	if( isfwd ) then
+    		dim as integer ptrcnt = typeGetPtrCnt( dtype )
+
     		'' pointing to itself? then it's a void..
    			hUcase( ptname, ptname )
 			hUcase( pid, pid )
@@ -158,26 +211,19 @@ function cTypedefDecl _
     			lexSkipToken( )
 
 				if( ptrcnt = 0 ) then
-					'' (PTR|POINTER)*
-					do
-						select case lexGetToken( )
-						case FB_TK_PTR, FB_TK_POINTER
-							lexSkipToken( )
-							dtype = typeAddrOf( dtype )
-							ptrcnt += 1
-						case else
-							exit do
-						end select
-					loop
+					dtype = hPtrDecl( dtype )
+					if( dtype = FB_DATATYPE_INVALID ) then
+						exit function
+					end if
 				end if
 
 			else
-				dtype = typeSetType( dtype, ptrcnt )
+				dtype = typeMultAddrOf( dtype, ptrcnt )
 			end if
     	end if
 
         ''
-    	if( symbAddTypedef( pid, dtype, subtype, ptrcnt, lgt ) = NULL ) then
+    	if( symbAddTypedef( pid, dtype, subtype, lgt ) = NULL ) then
 
 			'' check if the dup definition is different
 			dim as integer isdup = TRUE

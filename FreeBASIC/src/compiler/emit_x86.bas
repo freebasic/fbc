@@ -414,18 +414,12 @@ private function hGetRegName _
 	( _
 		byval dtype as integer, _
 		byval reg as integer _
-	) as zstring ptr static
-
-    dim as integer tb
-
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_UINT
-	end if
+	) as zstring ptr
 
 	if( reg = INVALID ) then
 		function = NULL
 	else
-		tb = dtypeTB(dtype).rnametb
+		dim as integer tb = dtypeTB(typeGet( dtype )).rnametb
 
 		function = @rnameTB(tb, reg)
 	end if
@@ -495,7 +489,7 @@ private sub hPrepOperand _
 	( _
 		byval vreg as IRVREG ptr, _
 		byref operand as string, _
-		byval dtype as FB_DATATYPE = INVALID, _
+		byval dtype as FB_DATATYPE = FB_DATATYPE_INVALID, _
 		byval ofs as integer = 0, _
 		byval isaux as integer = FALSE, _
 		byval addprefix as integer = TRUE _
@@ -506,7 +500,7 @@ private sub hPrepOperand _
     	exit sub
     end if
 
-    if( dtype = INVALID ) then
+    if( dtype = FB_DATATYPE_INVALID ) then
     	dtype = vreg->dtype
     end if
 
@@ -1798,7 +1792,7 @@ private sub _emitSTORI2I _
 	'' dst size = src size
 	if( (svreg->typ = IR_VREGTYPE_IMM) or _
 		(dvreg->dtype = svreg->dtype) or _
-		(symbMaxDataType( dvreg->dtype, svreg->dtype ) = INVALID) ) then
+		(symbMaxDataType( dvreg->dtype, svreg->dtype ) = FB_DATATYPE_INVALID) ) then
 
 		ostr = "mov " + dst + COMMA + src
 		outp ostr
@@ -2372,7 +2366,7 @@ private sub _emitLOADI2I _
 
 	'' dst size = src size
 	if( (dvreg->dtype = svreg->dtype) or _
-		(symbMaxDataType( dvreg->dtype, svreg->dtype ) = INVALID) ) then
+		(symbMaxDataType( dvreg->dtype, svreg->dtype ) = FB_DATATYPE_INVALID) ) then
 
 		ostr = "mov " + dst + COMMA + src
 		outp ostr
@@ -6528,15 +6522,11 @@ private sub _getResultReg _
 		byval dclass as integer, _
 		byref r1 as integer, _
 		byref r2 as integer _
-	) static
-
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-		dtype = FB_DATATYPE_UINT
-	end if
+	)
 
 	if( dclass = FB_DATACLASS_INTEGER ) then
 		r1 = EMIT_REG_EAX
-		if( ISLONGINT( dtype ) ) then
+		if( ISLONGINT( typeGet( dtype ) ) ) then
 			r2 = EMIT_REG_EDX
 		else
 			r2 = INVALID
@@ -6797,7 +6787,7 @@ private function _getTypeString _
 		byval dtype as integer _
 	) as zstring ptr
 
-	select case as const dtype
+	select case as const typeGet( dtype )
     case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
     	function = @".byte"
 
@@ -6826,12 +6816,12 @@ private function _getTypeString _
 	case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
 		function = @".INVALID"
 
+    case FB_DATATYPE_POINTER
+    	function = @".long"
+
     case else
-    	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
-    		function = @".long"
-    	else
-    		function = @".INVALID"
-    	end if
+    	function = @".INVALID"
+
 	end select
 
 end function

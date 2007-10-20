@@ -174,13 +174,13 @@ function cStrIdxOrMemberDeref _
 	end select
 
 	'' FuncPtrOrMemberDeref?
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
+	if( typeIsPtr( dtype ) ) then
 		dim as integer isfuncptr = FALSE, isfield = FALSE
 
 		select case lexGetToken( )
 		'' function ptr '(' ?
 		case CHAR_LPRNT
-			isfuncptr = typeIsPtrTo( dtype, 1, FB_DATATYPE_FUNCTION )
+			isfuncptr = (typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
 			isfield = isfuncptr
 
 		'' ptr ('->' | '[') ?
@@ -292,7 +292,7 @@ private function hCast _
 		byval ptronly as integer _
 	) as ASTNODE ptr
 
-    dim as integer dtype = any, lgt = any, ptrcnt = any
+    dim as integer dtype = any, lgt = any
     dim as FBSYMBOL ptr subtype = any
     dim as ASTNODE ptr expr = any
 
@@ -311,7 +311,7 @@ private function hCast _
 	end if
 
     '' DataType
-    if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+    if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
     	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     		return NULL
     	else
@@ -319,7 +319,7 @@ private function hCast _
 			hSkipUntil( CHAR_COMMA )
 
 			if( ptronly ) then
-				dtype = typeSetType( FB_DATATYPE_VOID, 1 )
+				dtype = typeAddrOf( FB_DATATYPE_VOID )
 			else
 				dtype = FB_DATATYPE_INTEGER
 			end if
@@ -335,7 +335,7 @@ private function hCast _
 		else
 			'' error recovery: create a fake type
 			if( ptronly ) then
-				dtype = typeSetType( FB_DATATYPE_VOID, 1 )
+				dtype = typeAddrOf( FB_DATATYPE_VOID )
 			else
 				dtype = FB_DATATYPE_INTEGER
 			end if
@@ -343,7 +343,7 @@ private function hCast _
 		end if
 	end select
 
-	if( typeGetDatatype( dtype ) = FB_DATATYPE_POINTER ) then
+	if( typeIsPtr( dtype ) ) then
 		ptronly = TRUE
 	end if
 
@@ -515,7 +515,7 @@ private function hProcPtrBody _
 	end if
 
 	symbSetIsCalled( proc )
-	
+
 	'' call any necessary rtl callbacks...
 	dim as FBRTLCALLBACK callback = symbGetProcCallback( proc )
 	if( callback <> NULL ) then
@@ -799,7 +799,7 @@ function cAddrOfExpression _
 
 		'' anything else: do cast( zstring ptr, @expr )
 		else
-			expr = astNewCONV( typeSetType( FB_DATATYPE_CHAR, 1 ), _
+			expr = astNewCONV( typeAddrOf( FB_DATATYPE_CHAR ), _
 							   NULL, _
 							   astNewADDROF( expr ) )
 		end if

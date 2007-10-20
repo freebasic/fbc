@@ -101,19 +101,6 @@ sub rtlEnd
 
 end sub
 
-
-#macro CNTPTR(dtype,cnt)
-	scope
-		dim as integer t
-		t = dtype
-		cnt = 0
-		do while( typeGetDatatype( t ) = FB_DATATYPE_POINTER )
-			t = typeDeref( t )
-			cnt += 1
-		loop
-	end scope
-#endmacro
-
 '':::::
 sub rtlAddIntrinsicProcs _
 	( _
@@ -158,9 +145,9 @@ sub rtlAddIntrinsicProcs _
 							param_optval = astNewCONSTf( .optval, .dtype )
 
 						'' function pointers need a symbol built so they can check matches
-						case typeSetType(FB_DATATYPE_FUNCTION, 1)
+						case typeAddrOf( FB_DATATYPE_FUNCTION )
 							dim as integer inner_attrib = any, func_arg = any
-							dim as integer inner_param_len = any, inner_ptrcnt = any
+							dim as integer inner_param_len = any
 							dim as ASTNODE ptr inner_param_optval = any
 							dim as FBSYMBOL ptr inner_proc = any
 
@@ -188,19 +175,18 @@ sub rtlAddIntrinsicProcs _
 										inner_attrib = 0
 									end if
 
-									if( .dtype <> INVALID ) then
+									if( .dtype <> FB_DATATYPE_INVALID ) then
 										inner_param_len = symbCalcParamLen( .dtype, NULL, .mode )
 									else
 										inner_param_len = FB_POINTERSIZE
 									end if
 
-									CNTPTR( .dtype, inner_ptrcnt )
-
 									symbAddProcParam( inner_proc, _
 													  NULL, NULL, _
-													  .dtype, NULL, typeGetPtrCnt(.dtype), _
-													  inner_param_len, .mode, _
-													  inner_attrib, inner_param_optval )
+													  .dtype, NULL, inner_param_len, _
+													  .mode, _
+													  inner_attrib, _
+													  inner_param_optval )
 								end with
 							next
 
@@ -211,7 +197,7 @@ sub rtlAddIntrinsicProcs _
 								'' add it
 								subtype = symbAddPrototype( inner_proc, _
 															NULL, NULL, NULL, _
-															.dtype, NULL, typeGetPtrCnt(.dtype), _
+															.dtype, NULL, _
 															0, FB_FUNCMODE_DEFAULT, _
 															FB_SYMBOPT_DECLARING )
 
@@ -233,18 +219,15 @@ sub rtlAddIntrinsicProcs _
 					end if
 
 					dim as integer lgt = FB_POINTERSIZE
-					dim as integer ptrcnt = any
-					if( .dtype <> INVALID ) then
+					if( .dtype <> FB_DATATYPE_INVALID ) then
 						lgt = symbCalcParamLen( .dtype, subtype, .mode )
-						CNTPTR( .dtype, ptrcnt )
 					else
 						.dtype = typeAddrOf( FB_DATATYPE_VOID )
-						ptrcnt = 1
 					end if
 
 					symbAddProcParam( proc, _
 							  		  NULL, NULL, _
-							  	  	  .dtype, subtype, ptrcnt, _
+							  	  	  .dtype, subtype, _
 							  	  	  lgt, .mode, _
 							  	  	  attrib, param_optval )
 
@@ -258,9 +241,6 @@ sub rtlAddIntrinsicProcs _
 			end if
 
 			''
-			dim as integer ptrcnt = any
-			CNTPTR( procdef->dtype, ptrcnt )
-
 			if( procdef->alias = NULL ) then
 				procdef->alias = procdef->name
 			end if
@@ -273,7 +253,7 @@ sub rtlAddIntrinsicProcs _
 			if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
 				proc = symbAddPrototype( proc, _
 								 	 	 procdef->name, procdef->alias, NULL, _
-								 	 	 procdef->dtype, NULL, ptrcnt, _
+								 	 	 procdef->dtype, NULL, _
 								 	 	 attrib, procdef->callconv, _
 								 	 	 FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
@@ -281,7 +261,7 @@ sub rtlAddIntrinsicProcs _
 			else
 				proc = symbAddOperator( proc, _
 										cast( AST_OP, procdef->name ), NULL, NULL, _
-    						    		procdef->dtype, NULL, ptrcnt, _
+    						    		procdef->dtype, NULL, _
     					        		attrib or FB_SYMBATTRIB_OPERATOR, _
     					        		procdef->callconv, _
     					        		FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )

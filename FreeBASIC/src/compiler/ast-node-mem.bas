@@ -58,7 +58,7 @@ function astNewMEM _
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_MEM, INVALID )
+	n = astNewNode( AST_NODECLASS_MEM, FB_DATATYPE_INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -205,7 +205,7 @@ private function hNewOp _
 		tree = astNewLINK( tree, _
 						   astNewASSIGN( astNewDEREF( astNewVAR( ptr_sym, _
 						   									     0, _
-						   									     typeSetType( FB_DATATYPE_INTEGER, 1 ), _
+						   									     typeAddrOf( FB_DATATYPE_INTEGER ), _
 						   									     NULL ), _
                                                       FB_DATATYPE_INTEGER, _
                                                       NULL ), _
@@ -218,13 +218,13 @@ private function hNewOp _
 						   astNewSelfBOP( AST_OP_ADD_SELF, _
 						   	  			  astNewVAR( ptr_sym, _
 						   	  			 			 0, _
-						   	  			 			 typeSetType( FB_DATATYPE_VOID, 1 ), _
+						   	  			 			 typeAddrOf( FB_DATATYPE_VOID ), _
 						   	  			 			 NULL ), _
             			   	  			  astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_INTEGER ), _
             			   	  			  NULL ) )
 
 		astDelTree( ptr_expr )
-		ptr_expr = astNewVAR( ptr_sym, 0, typeSetType( FB_DATATYPE_VOID, 1 ), NULL )
+		ptr_expr = astNewVAR( ptr_sym, 0, typeAddrOf( FB_DATATYPE_VOID ), NULL )
 
     else
 		'' ptr = new( len )
@@ -310,7 +310,7 @@ private function hCallDtorList _
 
 	'' elmts = cast(integer ptr, vector)[-1]
 	expr = astNewDEREF( astNewBOP( AST_OP_ADD, _
-					  			   astNewCONV( typeSetType( FB_DATATYPE_INTEGER, 1 ), _
+					  			   astNewCONV( typeAddrOf( FB_DATATYPE_INTEGER ), _
 							 			 	   NULL, _
 							 			 	   astCloneTree( ptr_expr ) ), _
 					  			   astNewCONSTi( -FB_INTEGERSIZE, FB_DATATYPE_INTEGER ) ), _

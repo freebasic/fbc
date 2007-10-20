@@ -89,7 +89,7 @@ function cCompoundStmt as integer
 
     '' QB mode?
     if( env.clopt.lang = FB_LANG_QB ) then
-    	if( lexGetType() <> INVALID ) then
+    	if( lexGetType() <> FB_DATATYPE_INVALID ) then
     		return FALSE
     	end if
     end if

@@ -528,10 +528,10 @@ private function hDtypeToStr _
 
 	dim as integer ptrcnt = 0
 
-	dim as integer dt = typeGetDatatype( dtype )
+	dim as integer dt = typeGet( dtype )
 	if( dt = FB_DATATYPE_POINTER ) then
 		ptrcnt = typeGetPtrCnt( dtype )
-		dtype = typeGetPtrType( dtype )
+		dtype = typeGetDtOnly( dtype )
 	else
 		dtype = dt
 	end if
@@ -575,7 +575,7 @@ private function hVregToStr _
 				dim as integer is_ptr = (symbGetAttrib( vreg->sym ) and _
 										 (FB_SYMBATTRIB_PARAMBYREF or _
 										  FB_SYMBATTRIB_IMPORT)) or _
-										(typeGetDatatype( symbGetType( vreg->sym ) ) = FB_DATATYPE_POINTER)
+										typeIsPtr( symbGetType( vreg->sym ) )
 
 				if( is_ptr = FALSE ) then
 					operand = "*("
