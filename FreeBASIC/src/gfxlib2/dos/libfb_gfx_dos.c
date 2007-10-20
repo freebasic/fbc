@@ -29,6 +29,9 @@
 #include <limits.h>
 #include <sys/nearptr.h>
 
+/* timer ticks per second */
+#define TIMER_HZ 1000
+
 /* driver list */
 
 extern GFXDRIVER fb_gfxDriverVESAlinear;
@@ -47,6 +50,10 @@ const GFXDRIVER *__fb_gfx_drivers_list[] = {
 };
 
 fb_dos_t fb_dos;
+
+volatile int __fb_dos_junk;
+volatile int __fb_dos_update_ticks = 0;
+int __fb_dos_ticks_per_update;
 
 static void fb_dos_save_video_mode(void);
 static void fb_dos_restore_video_mode(void);
@@ -352,11 +359,15 @@ static int fb_dos_timer_handler(unsigned irq)
 	fb_dos.timer_ticks += fb_dos.timer_step;
 	if( (do_abort = fb_dos.timer_ticks < 65536)==FALSE )
 		fb_dos.timer_ticks -= 65536;
-
-	if (fb_dos.in_interrupt)
+		
+	__fb_dos_update_ticks++;
+	
+	if (fb_dos.in_interrupt || fb_dos.locked || __fb_dos_update_ticks < __fb_dos_ticks_per_update)
 		return do_abort;
 
 	fb_dos.in_interrupt = TRUE;
+	
+	__fb_dos_update_ticks -= __fb_dos_ticks_per_update;
 
 #if 0 /* Set to 1 if you want to debug a display driver */
 	outportb(0x20, 0x20);
@@ -584,9 +595,6 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	if (!fb_dos_mouse_init())
 		return -1;
 	
-	if (!fb_dos_timer_init(refresh_rate))
-		return -1;
-	
 	if (fb_dos.mouse_ok)
 	{
 		fb_dos_set_mouse(fb_dos.w / 2, fb_dos.h / 2, TRUE, 0);
@@ -597,8 +605,15 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	{
 		fb_dos.mouse_cursor = FALSE;
 	}
+		
+	__fb_dos_ticks_per_update = TIMER_HZ / refresh_rate;
+	
+	if (!fb_dos_timer_init(TIMER_HZ))
+		return -1;
 	
 	fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
+	
+	fb_dos.locked = 0;
 	
 	return 0;
 }
@@ -668,13 +683,19 @@ void fb_dos_exit(void)
 /*:::::*/
 void fb_dos_lock(void)
 {
-	fb_dos.locked = TRUE;
+	
+	
+	if (!fb_dos.locked)
+		while (__fb_dos_update_ticks >= __fb_dos_ticks_per_update)
+			__fb_dos_junk = 0; /* just something to make sure the loop is not optimized away */
+	
+	fb_dos.locked++;
 }
 
 /*:::::*/
 void fb_dos_unlock(void)
 {
-	fb_dos.locked = FALSE;
+	fb_dos.locked--;
 }
 
 /*:::::*/

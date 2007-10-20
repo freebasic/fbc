@@ -10,6 +10,7 @@ Version 0.18.3 Beta:
 
 [fixed]
 - GOTO, GOSUB and RETURN were accepting invalid labels (v1c)
+- SCREENLOCK/SCREENUNLOCK is now properly handled by the DOS gfxlib (DrV)
 
 
 Version 0.18.2 Beta:
