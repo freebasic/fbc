@@ -1,17 +1,17 @@
 
-
-#include once "jpeglib.bi"
+#include "fbgfx.bi"
+#include "jpeglib.bi"
 
 const SCR_W = 640
 const SCR_H = 480
 const SCR_BPP = 32
 
 declare function imageread_jpg( byval filename as zstring ptr, _
-					    		byval bpp as integer ) as any ptr
+					    		byval bpp as integer ) as FB.IMAGE ptr
 
 	screenres SCR_W, SCR_H, SCR_BPP
 	
-	dim as any ptr img = imageread_jpg( "test.jpg", SCR_BPP )
+	dim as FB.IMAGE ptr img = imageread_jpg( "test.jpg", SCR_BPP )
 	
 	if( img = 0 ) then
 		end 1
@@ -49,11 +49,10 @@ function imageread_jpg( byval filename as zstring ptr, _
     							   jinfo.output_width * jinfo.output_components, _
     							   1 )
     
-    dim img as any ptr
+    dim img as FB.IMAGE ptr
     img = imagecreate( jinfo.output_width, jinfo.output_height )
     
-	dim as byte ptr dst = cast( byte ptr, img ) + 4
-	dim as integer dst_pitch = jinfo.output_width * (bpp shr 3)
+	dim as byte ptr dst = img + 1
 	
 	do while jinfo.output_scanline < jinfo.output_height
         jpeg_read_scanlines( @jinfo, row, 1 )
@@ -61,7 +60,7 @@ function imageread_jpg( byval filename as zstring ptr, _
 		'' !!!FIXME!!! no grayscale support
 		imageconvertrow( *row, 24, dst, bpp, jinfo.output_width )
 		
-		dst += dst_pitch
+		dst += img->pitch
 	loop
 	
     jinfo.mem->free_pool( cast(j_common_ptr, @jinfo ), JPOOL_IMAGE )
