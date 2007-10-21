@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.const.const_to_const
+namespace fbc_tests.const_.const_to_const
 	
 	sub foo( byref bas as const string )
 	end sub

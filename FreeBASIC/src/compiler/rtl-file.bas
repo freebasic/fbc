@@ -1165,11 +1165,11 @@ function rtlFileOpen _
 		byval fencoding as ASTNODE ptr, _
 		byval isfunc as integer, _
         byval openkind as FBOPENKIND _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f, reslabel
-    dim as integer doencoding
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any, reslabel = any
+    dim as integer doencoding = any
 
 	function = NULL
 
@@ -1283,10 +1283,10 @@ function rtlFileOpenShort _
 		byval filenum as ASTNODE ptr, _
 		byval flen as ASTNODE ptr, _
 		byval isfunc as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f, reslabel
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any, reslabel = any
 
 	function = NULL
 
@@ -1345,10 +1345,10 @@ function rtlFileClose _
 	( _
 		byval filenum as ASTNODE ptr, _
 		byval isfunc as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr reslabel
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr reslabel = any
 
 	function = NULL
 
@@ -1382,15 +1382,18 @@ function rtlFileSeek _
 	( _
 		byval filenum as ASTNODE ptr, _
 		byval newpos as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr reslabel, f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr reslabel = any, f = any
+    dim as integer pos_dtype = any
 
 	function = FALSE
-
+    
+    pos_dtype = typeGetDtAndPtrOnly( astGetDataType( newpos ) )
+    
 	''
-	select case as const astGetDataType( newpos )
+	select case as const pos_dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		f = PROCLOOKUP( FILESEEKLARGE )
 
@@ -1434,9 +1437,9 @@ end function
 function rtlFileTell _
 	( _
 		byval filenum as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
     function = NULL
 
@@ -1461,23 +1464,24 @@ function rtlFilePut _
 		byval src as ASTNODE ptr, _
 		byval elements as ASTNODE ptr, _
 		byval isfunc as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc, bytes
-    dim as integer dtype, lgt, isstring, islarge
-    dim as FBSYMBOL ptr f, reslabel
+    dim as ASTNODE ptr proc = any, bytes = any
+    dim as integer dtype = any, o_dtype = any, lgt = any, isstring = any, islarge = any
+    dim as FBSYMBOL ptr f = any, reslabel = any
 
     function = NULL
 
 	''
-	dtype = astGetDataType( src )
+	dtype    = typeGetDtAndPtrOnly( astGetDataType( src ) )
 	isstring = symbIsString( dtype )
 
     if( offset = NULL ) then
     	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
+	o_dtype  = typeGetDtAndPtrOnly( astGetDataType( offset ) )
 
-	select case as const astGetDataType( offset )
+	select case as const o_dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		islarge = TRUE
 
@@ -1568,19 +1572,21 @@ function rtlFilePutArray _
 		byval offset as ASTNODE ptr, _
 		byval src as ASTNODE ptr, _
 		byval isfunc as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr reslabel, f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr reslabel = any, f = any
+    dim as integer o_dtype = any
 
     function = NULL
 
     if( offset = NULL ) then
     	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
+    o_dtype  = typeGetDtAndPtrOnly( astGetDataType( offset ) )
 
 	''
-	select case as const astGetDataType( offset )
+	select case as const o_dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		f = PROCLOOKUP( FILEPUTARRAYLARGE )
 
@@ -1644,23 +1650,24 @@ function rtlFileGet _
 		byval dst as ASTNODE ptr, _
 		byval elements as ASTNODE ptr, _
 		byval isfunc as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc, bytes
-    dim as integer dtype, lgt, isstring, islarge
-    dim as FBSYMBOL ptr f, reslabel
+    dim as ASTNODE ptr proc = any, bytes = any
+    dim as integer dtype = any, o_dtype = any, lgt = any, isstring = any, islarge = any
+    dim as FBSYMBOL ptr f = any, reslabel = any
 
     function = NULL
 
 	''
-	dtype = astGetDataType( dst )
+	dtype = typeGetDtAndPtrOnly( astGetDataType( dst ) )
 	isstring = symbIsString( dtype )
 
     if( offset = NULL ) then
     	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
+   	o_dtype  = typeGetDtAndPtrOnly( astGetDataType( offset ) )
 
-	select case as const astGetDataType( offset )
+	select case as const o_dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		islarge = TRUE
 
@@ -1711,12 +1718,19 @@ function rtlFileGet _
     end if
 
     '' any pointer fields?
-    if( astGetDataType( dst ) = FB_DATATYPE_STRUCT ) then
+    if( dtype = FB_DATATYPE_STRUCT ) then
     	if( symbGetUDTHasPtrField( astGetSubType( dst ) ) ) then
             errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
     end if
-
+	
+	'' dest can't be a top-level const
+	if( typeIsConst( astGetDatatype( dst ) ) ) then
+		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+			exit function
+		end if
+	end if
+	
     '' value as any
     if( astNewARG( proc, dst ) = NULL ) then
  		exit function
@@ -1751,19 +1765,21 @@ function rtlFileGetArray _
 		byval offset as ASTNODE ptr, _
 		byval dst as ASTNODE ptr, _
 		byval isfunc as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr reslabel, f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr reslabel = any, f = any
+    dim as integer o_dtype = any
 
 	function = NULL
 
     if( offset = NULL ) then
     	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
+	o_dtype  = typeGetDtAndPtrOnly( astGetDataType( offset ) )
 
 	''
-	select case as const astGetDataType( offset )
+	select case as const o_dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		f = PROCLOOKUP( FILEGETARRAYLARGE )
 
@@ -1797,6 +1813,13 @@ function rtlFileGetArray _
     	end if
     end if
 
+	'' dest can't be a top-level const
+	if( typeIsConst( astGetDatatype( dst ) ) ) then
+		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+			exit function
+		end if
+	end if
+	
     '' array() as any
     if( astNewARG( proc, dst ) = NULL ) then
     	exit function
@@ -1824,9 +1847,9 @@ function rtlFileStrInput _
 	( _
 		byval bytesexpr as ASTNODE ptr, _
 		byval filenum as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
     function = NULL
 
@@ -1856,11 +1879,11 @@ function rtlFileLineInput _
 		byval dstexpr as ASTNODE ptr, _
 		byval addquestion as integer, _
 		byval addnewline as integer _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-    dim as integer args, lgt, dtype
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer args = any, lgt = any, dtype = any
 
 	function = FALSE
 
@@ -1885,9 +1908,16 @@ function rtlFileLineInput _
  	end if
 
     '' always calc len before pushing the param
-	dtype = astGetDataType( dstexpr )
+	dtype = typeGetDtAndPtrOnly( astGetDataType( dstexpr ) )
 	lgt = rtlCalcStrLen( dstexpr, dtype )
 
+	'' dest can't be a top-level const
+	if( typeIsConst( astGetDatatype( dstexpr ) ) ) then
+		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+			exit function
+		end if
+	end if
+	
 	'' dst as any
     if( astNewARG( proc, dstexpr ) = NULL ) then
  		exit function
@@ -1929,11 +1959,11 @@ function rtlFileLineInputWstr _
 		byval dstexpr as ASTNODE ptr, _
 		byval addquestion as integer, _
 		byval addnewline as integer _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-    dim as integer args, lgt, dtype
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer args = any, lgt = any, dtype = any
 
 	function = FALSE
 
@@ -1958,9 +1988,16 @@ function rtlFileLineInputWstr _
  	end if
 
     '' always calc len before pushing the param
-	dtype = astGetDataType( dstexpr )
+	dtype = typeGetDtAndPtrOnly( astGetDataType( dstexpr ) )
 	lgt = rtlCalcStrLen( dstexpr, dtype )
 
+	'' dest can't be a top-level const
+	if( typeIsConst( astGetDatatype( dstexpr ) ) ) then
+		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+			exit function
+		end if
+	end if
+	
 	'' byval dst as wstring ptr
     if( astNewARG( proc, dstexpr ) = NULL ) then
  		exit function
@@ -1998,9 +2035,9 @@ function rtlFileInput _
 		byval addnewline as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-    dim as integer args
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer args = any
 
 	function = FALSE
 
@@ -2049,15 +2086,15 @@ function rtlFileInputGet _
 		byval islast as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-    dim as integer args, lgt, dtype
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer args = any, lgt = any, dtype = any
 
 	function = FALSE
 
 	''
 	args = 1
-	dtype = astGetDataType( dstexpr )
+	dtype = typeGetDtAndPtrOnly( astGetDataType( dstexpr ) )
 
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
@@ -2124,6 +2161,13 @@ function rtlFileInputGet _
 		lgt = rtlCalcStrLen( dstexpr, dtype )
 	end if
 
+	'' dest can't be a top-level const
+	if( typeIsConst( astGetDatatype( dstexpr ) ) ) then
+		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+			exit function
+		end if
+	end if
+	
     '' byref dst as any | byval dst as wstring ptr
     if( astNewARG( proc, dstexpr ) = NULL ) then
  		exit function
@@ -2163,14 +2207,17 @@ function rtlFileLock _
 		byval endexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-    dim as integer islarge
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer islarge = any, i_dtype = any, e_dtype = any
 
 	function = FALSE
 
+	i_dtype = typeGetDtAndPtrOnly( astGetDataType( iniexpr ) )
+	e_dtype = typeGetDtAndPtrOnly( astGetDataType( endexpr ) )
+	
 	''
-	select case as const astGetDataType( iniexpr )
+	select case as const i_dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		islarge = TRUE
 
@@ -2178,7 +2225,7 @@ function rtlFileLock _
 		islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
 
 	case else
-		select case as const astGetDataType( endexpr )
+		select case as const e_dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			islarge = TRUE
 
@@ -2233,10 +2280,10 @@ function rtlFileRename _
 		byval filename_new as ASTNODE ptr, _
         byval filename_old as ASTNODE ptr, _
         byval isfunc as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr reslabel
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr reslabel = any
 
 	function = NULL
 
@@ -2277,7 +2324,7 @@ function rtlWidthFile _
         byval isfunc as integer _
     ) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = NULL
 
