@@ -327,6 +327,8 @@
 #define FB_RTL_GFXSCREENRES 			"fb_GfxScreenRes"
 #define FB_RTL_GFXEVENT					"fb_GfxEvent"
 #define FB_RTL_GFXIMAGECREATE			"fb_GfxImageCreate"
+#define FB_RTL_GFXGETMOUSE  			"fb_GfxGetMouse"
+#define FB_RTL_GFXGETJOYSTICK  			"fb_GfxGetJoystick"
 
 #define FB_RTL_GFXPUTTRANS				"fb_hPutTrans"
 #define FB_RTL_GFXPUTPSET				"fb_hPutPSet"
@@ -660,6 +662,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GFXSCREENRES
 	FB_RTL_IDX_GFXEVENT
 	FB_RTL_IDX_GFXIMAGECREATE
+	FB_RTL_IDX_GFXGETMOUSE
+	FB_RTL_IDX_GFXGETJOYSTICK
 
 	FB_RTL_IDX_PROFILEMCOUNT
 	FB_RTL_IDX_PROFILEMONSTARTUP
@@ -1552,6 +1556,22 @@ declare function rtlGfxImageCreate _
 		byval dexpr as ASTNODE ptr, _
 		byval flags as integer _
 	) as ASTNODE ptr
+
+declare function rtlGfxGetMouse _
+	( _
+		byval x_expr as ASTNODE ptr, _
+		byval y_expr as ASTNODE ptr, _
+		byval w_expr as ASTNODE ptr, _
+		byval b_expr as ASTNODE ptr, _
+		byval c_expr as ASTNODE ptr _
+	) as integer
+
+declare function rtlGfxGetJoystick _
+	( _
+		byval id_expr as ASTNODE ptr, _
+		byval b_expr as ASTNODE ptr, _
+		a_expr() as ASTNODE ptr _
+	) as integer
 
 declare function rtlProfileCall_mcount _
 	( _

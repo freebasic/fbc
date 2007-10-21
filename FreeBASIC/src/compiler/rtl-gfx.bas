@@ -770,7 +770,7 @@ declare function hPorts_cb _
 		), _
 		/' fb_GfxGetMouse ( byref x as integer, byref y as integer, byref z as integer, byref buttons as integer, byref clip as integer ) as integer '/ _
 		( _
-			@"getmouse", @"fb_GetMouse", _
+			@FB_RTL_GFXGETMOUSE, @"fb_GetMouse", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 			@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			5, _
@@ -819,7 +819,7 @@ declare function hPorts_cb _
 							   byref a7 as single = 0, byref a8 as single = 0 _
 							    ) as integer '/ _
 		( _
-			@"getjoystick", @"fb_GfxGetJoystick", _
+			@FB_RTL_GFXGETJOYSTICK, @"fb_GfxGetJoystick", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			10, _
@@ -2771,5 +2771,60 @@ function rtlGfxImageCreate _
 
 	function = proc
 
+end function
+
+'':::::
+function rtlGfxGetMouse _
+	( _
+		byval x_expr as ASTNODE ptr, _
+		byval y_expr as ASTNODE ptr, _
+		byval w_expr as ASTNODE ptr, _
+		byval b_expr as ASTNODE ptr, _
+		byval c_expr as ASTNODE ptr _
+	) as integer
+
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr reslabel = any
+
+	function = NULL
+
+	proc = astBuildCall( PROCLOOKUP( GFXGETMOUSE ), 5, _ 
+	                     x_expr, y_expr, w_expr, b_expr, c_expr )	
+    ''
+    if( env.clopt.resumeerr ) then
+    	reslabel = symbAddLabel( NULL )
+    	astAdd( astNewLABEL( reslabel ) )
+    else
+    	reslabel = NULL
+    end if
+	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	
+end function
+
+'':::::
+function rtlGfxGetJoystick _
+	( _
+		byval id_expr as ASTNODE ptr, _
+		byval b_expr as ASTNODE ptr, _
+		a_expr() as ASTNODE ptr _
+	) as integer
+
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr reslabel = any
+
+	function = NULL
+
+	proc = astBuildCall( PROCLOOKUP( GFXGETMOUSE ), 5, _ 
+	                     id_expr, b_expr, a_expr(0), a_expr(1), a_expr(2), a_expr(3), _
+	                     a_expr(4), a_expr(5), a_expr(6), a_expr(7) )	
+    ''
+    if( env.clopt.resumeerr ) then
+    	reslabel = symbAddLabel( NULL )
+    	astAdd( astNewLABEL( reslabel ) )
+    else
+    	reslabel = NULL
+    end if
+	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	
 end function
 

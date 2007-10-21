@@ -173,6 +173,24 @@ function cArrayStmt _
 			end if
 
 		case else
+			'' don't allow any consts...
+			if( typeIsConst( astGetDatatype( expr1 ) ) ) then
+				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+					exit function
+				else
+					astDelTree( expr1 )
+					astDelTree( expr2 )
+				end if
+			end if
+			if( typeIsConst( astGetDatatype( expr2 ) ) ) then
+				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+					exit function
+				else
+					astDelTree( expr1 )
+					astDelTree( expr2 )
+				end if
+			end if
+			
 			function = rtlMemSwap( expr1, expr2 )
 		end select
 
