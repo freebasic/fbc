@@ -1573,6 +1573,11 @@ declare function rtlGfxGetJoystick _
 		a_expr() as ASTNODE ptr _
 	) as integer
 
+declare function rtlGfxEvent _
+	( _
+		byval e_expr as ASTNODE ptr _
+	) as integer
+
 declare function rtlProfileCall_mcount _
 	( _
 		_

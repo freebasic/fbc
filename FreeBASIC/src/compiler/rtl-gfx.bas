@@ -967,7 +967,7 @@ declare function hPorts_cb _
 	 	), _
 		/' fb_GfxEvent ( byval e as any ptr = NULL ) as integer '/ _
 		( _
-			@"screenevent", @"fb_GfxEvent", _
+			@FB_RTL_GFXEVENT, @"fb_GfxEvent", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
@@ -2816,6 +2816,29 @@ function rtlGfxGetJoystick _
 	proc = astBuildCall( PROCLOOKUP( GFXGETMOUSE ), 5, _ 
 	                     id_expr, b_expr, a_expr(0), a_expr(1), a_expr(2), a_expr(3), _
 	                     a_expr(4), a_expr(5), a_expr(6), a_expr(7) )	
+    ''
+    if( env.clopt.resumeerr ) then
+    	reslabel = symbAddLabel( NULL )
+    	astAdd( astNewLABEL( reslabel ) )
+    else
+    	reslabel = NULL
+    end if
+	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	
+end function
+
+'':::::
+function rtlGfxEvent _
+	( _
+		byval e_expr as ASTNODE ptr _
+	) as integer
+
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr reslabel = any
+
+	function = NULL
+
+	proc = astBuildCall( PROCLOOKUP( GFXEVENT ), 1, e_expr )	
     ''
     if( env.clopt.resumeerr ) then
     	reslabel = symbAddLabel( NULL )

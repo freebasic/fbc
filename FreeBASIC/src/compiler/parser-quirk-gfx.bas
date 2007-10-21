@@ -130,7 +130,8 @@ end function
 private function hGetTarget _
 	( _
 		byref expr as ASTNODE ptr, _
-		byref isptr as integer _
+		byref isptr as integer, _
+		byval allow_const as integer = FALSE _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr s = any
@@ -208,9 +209,11 @@ private function hGetTarget _
 	end select
 	
 	'' don't allow a pointer to a const...
-	if( (typeGetConstMask( astGetDatatype( expr ) ) and (1 shl (FB_DT_CONSTPOS + iif( nidx_array, 0, 1 )))) ) then
-		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
-		exit function
+	if( allow_const = FALSE ) then
+		if( (typeGetConstMask( astGetDatatype( expr ) ) and (1 shl (FB_DT_CONSTPOS + iif( nidx_array, 0, 1 )))) ) then
+			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
+			exit function
+		end if
 	end if
 	
 	function = s
@@ -849,12 +852,12 @@ function cGfxPalette as integer
     '' this could fail if using was #undef'ed and made a method...
 	if( hMatch( FB_TK_USING ) ) then
 
-		s = hGetTarget( arrayexpr, isptr )
+		s = hGetTarget( arrayexpr, isptr, not isget )
 		if( (s = NULL) and (isptr = FALSE) ) then
             errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
             exit function
         end if
-
+		
         function = rtlGfxPaletteUsing( arrayexpr, isptr, isget )
 
 	else
@@ -907,7 +910,18 @@ function cGfxPalette as integer
 				exit function
 			end if
 		end if
-
+		
+		dim as integer has_const = FALSE
+		if( isget ) then
+			has_const or= iif( rexpr, typeIsConst( astGetDatatype( rexpr ) ), FALSE )
+			has_const or= iif( gexpr, typeIsConst( astGetDatatype( rexpr ) ), FALSE )
+			has_const or= iif( bexpr, typeIsConst( astGetDatatype( rexpr ) ), FALSE )
+		end if
+		
+		if( has_const ) then
+			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
+		end if
+		
 		function = rtlGfxPalette( attexpr, rexpr, gexpr, bexpr, isget )
 
 	end if
@@ -1392,6 +1406,39 @@ function cGfxGetJoystick( ) as integer
 	
 end function
 
+'':::::
+'' GfxEvent =   SCREENEVENT '(' (Expr)?  ')'
+''
+function cGfxEvent( ) as integer
+	
+	dim as ASTNODE ptr e_expr = any
+	dim as integer paren = FALSE
+	
+	function = FALSE
+	
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		paren = TRUE
+		lexSkipToken( )
+	end if
+	
+	hMatchExpression( e_expr )
+	
+	if( paren ) then
+		hMatchRPRNT( )
+	end if
+    
+    if( e_expr ) then
+		if( (typeGetConstMask( astGetDatatype( e_expr ) ) and (1 shl (FB_DT_CONSTPOS + 1))) ) then
+			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
+				exit function
+			end if
+		end if
+	end if
+	
+	function = rtlGfxEvent( e_expr )
+	
+end function
+
 #define CHECK_CODEMASK( ) 												_
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then		:_
     	exit function													:_
@@ -1480,6 +1527,11 @@ function cGfxStmt _
 		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxGetJoystick( )
+
+	case FB_TK_SCREENEVENT
+		CHECK_CODEMASK( )
+		lexSkipToken( )
+		function = cGfxEvent( )
 
 	end select
 
