@@ -1122,12 +1122,14 @@ function astNewARG _
 		dtype = astGetDataType( arg )
 	end if
 
-    '' check const arg to non-const param
-    if( typeIsConst( dtype ) ) then
-    	if( typeIsConst( symbGetType( param ) ) = 0 ) then
-    		hParamError( parent, FB_ERRMSG_CONSTANTCANTBECHANGED )
-    		exit function
-    	end if
+    '' check const arg to non-const param (if not rtl)
+    if( parent->call.isrtl = FALSE ) then
+	    if( typeIsConst( dtype ) ) then
+	    	if( typeIsConst( symbGetType( param ) ) = 0 ) then
+	    		hParamError( parent, FB_ERRMSG_CONSTANTCANTBECHANGED )
+	    		exit function
+	    	end if
+	    end if
     end if
 	
 	'' alloc new node
