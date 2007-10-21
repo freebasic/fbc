@@ -28,9 +28,6 @@
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
 
-sub gdb__( )
-end sub
-
 '':::::
 private function hParamError _
 	( _
@@ -38,7 +35,6 @@ private function hParamError _
 		byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT _
 	) as integer
 	
-	gdb__( )
 	function = errReportParam( parent->sym, parent->call.args+1, NULL, msgnum )
 
 end function
