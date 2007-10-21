@@ -287,7 +287,8 @@ end type
 		@"Cloning operators (LET, Copy constructors) can't take a byval arg of the parent's type", _
 		@"Local symbols can't be referenced", _
 		@"Expected 'PTR' or 'POINTER'", _
-		@"Too many levels of pointer indirection" _
+		@"Too many levels of pointer indirection", _
+		@"Dynamic arrays can't be const" _
 	}
 
 

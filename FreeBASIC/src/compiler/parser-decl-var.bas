@@ -490,6 +490,14 @@ private function hDeclDynArray _
    		end if
     end if
 
+	'' don't allow const dynamic arrays... 
+	'' they can't be assigned even if resized...
+	if( typeIsConst( dtype ) ) then
+		if( errReport( FB_ERRMSG_DYNAMICARRAYSCANTBECONST ) = FALSE ) then
+			exit function
+		end if
+	end if
+	
     '' new var?
    	if( sym = NULL ) then
 		dim as FB_SYMBOPT options = FB_SYMBOPT_NONE
@@ -536,6 +544,7 @@ private function hDeclDynArray _
 			'' dim foo(variable)? (without a preceeding COMMON)
 			elseif( (is_redim = FALSE) and (symbIsCommon( sym ) = FALSE) ) then
 				sym = NULL
+				
 			end if
 		end if
 	end if

@@ -1454,7 +1454,7 @@ end function
 function rtlMultinput_cb _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
     static as integer libsAdded = FALSE
 
@@ -1475,7 +1475,8 @@ end function
 private function hGfxlib_cb _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) as integer static
+	) as integer
+	
     static as integer libsAdded = FALSE
 
 	if( libsadded = FALSE ) then
@@ -1512,9 +1513,8 @@ private function hGetPutter _
 		byval mode as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n = any, l = any
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr proc = any, subtype = any
+	dim as ASTNODE ptr n = any
+    dim as FBSYMBOL ptr proc = any
 
 	select case as const mode
 
@@ -1569,8 +1569,8 @@ function rtlGfxPset _
 		byval ispreset as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as integer targetmode
+    dim as ASTNODE ptr proc = any
+    dim as integer targetmode = any
 
 	function = FALSE
 
@@ -1632,8 +1632,8 @@ function rtlGfxPoint _
 		byval yexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr proc
-	dim as integer targetmode
+	dim as ASTNODE ptr proc = any
+	dim as integer targetmode = any
 
 	function = NULL
 
@@ -1686,8 +1686,8 @@ function rtlGfxLine _
 		byval coordtype as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as integer targetmode
+    dim as ASTNODE ptr proc = any
+    dim as integer targetmode = any
 
 	function = FALSE
 
@@ -1774,8 +1774,8 @@ function rtlGfxCircle _
 		byval coordtype as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as integer targetmode
+    dim as ASTNODE ptr proc = any
+    dim as integer targetmode = any
 
 	function = FALSE
 
@@ -1869,8 +1869,8 @@ function rtlGfxPaint _
 		byval coord_type as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as integer targetmode, pattern
+    dim as ASTNODE ptr proc = any
+    dim as integer targetmode = any, pattern = any
 
     function = FALSE
 
@@ -1902,8 +1902,7 @@ function rtlGfxPaint _
  	end if
 
 	'' byval color as uinteger
-	pattern = astGetDataType( pexpr )
-	if( symbIsString( pattern ) ) then
+	if( symbIsString( astGetDataType( pexpr ) ) ) then
 		pattern = TRUE
 		if( astNewARG( proc, astNewCONSTi( &hFFFF0000, FB_DATATYPE_INTEGER ) ) = NULL ) then
  			exit function
@@ -1957,8 +1956,8 @@ function rtlGfxDraw _
 		byval cexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as integer targetmode
+    dim as ASTNODE ptr proc = any
+    dim as integer targetmode = any
 
 	function = FALSE
 
@@ -2009,9 +2008,9 @@ function rtlGfxDrawString _
 		byval paramexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc, putter
-    dim as integer targetmode
-    dim as FBSYMBOL ptr reslabel
+    dim as ASTNODE ptr proc = any, putter = any
+    dim as integer targetmode = any
+    dim as FBSYMBOL ptr reslabel = any
 
     function = FALSE
 
@@ -2127,7 +2126,7 @@ function rtlGfxView _
 		byval screenflag as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
@@ -2203,7 +2202,7 @@ function rtlGfxWindow _
 		byval screenflag as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
@@ -2263,9 +2262,9 @@ function rtlGfxPalette  _
 		byval isget as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-    dim as integer defval, targetmode
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer defval = any, targetmode = any
 
 	function = FALSE
 
@@ -2332,9 +2331,9 @@ function rtlGfxPaletteUsing  _
 		byval isget as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-    dim as integer mode
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer mode = any
 
 	function = FALSE
 
@@ -2378,9 +2377,9 @@ function rtlGfxPut _
 		byval coordtype as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as integer targetmode, argmode
-    dim as FBSYMBOL ptr reslabel
+    dim as ASTNODE ptr proc = any
+    dim as integer targetmode = any, argmode = any
+    dim as FBSYMBOL ptr reslabel = any
 
     function = FALSE
 
@@ -2507,9 +2506,9 @@ function rtlGfxGet _
 		byval coordtype as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc, descexpr
-    dim as integer targetmode, argmode
-    dim as FBSYMBOL ptr reslabel
+    dim as ASTNODE ptr proc = any, descexpr = any
+    dim as integer targetmode = any, argmode = any
+    dim as FBSYMBOL ptr reslabel = any
 
     function = FALSE
 
@@ -2607,8 +2606,8 @@ function rtlGfxScreenSet _
 		byval rexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f, reslabel
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any, reslabel = any
 
 	function = FALSE
 
@@ -2682,8 +2681,8 @@ function rtlGfxScreenSetQB _
 		byval visible as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr reslabel
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr reslabel = any
 
 	function = FALSE
 
@@ -2732,7 +2731,7 @@ function rtlGfxImageCreate _
 		byval flags as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr proc
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 

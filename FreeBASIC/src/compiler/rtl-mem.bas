@@ -363,8 +363,8 @@ function rtlMemSwap _
 
     function = FALSE
 
-	src_dtype = astGetDataType( src )
-	dst_dtype = astGetDataType( dst )
+	src_dtype = typeGetDtAndPtrOnly( astGetDataType( src ) )
+	dst_dtype = typeGetDtAndPtrOnly( astGetDataType( dst ) )
 
 	select case src_dtype
 	case FB_DATATYPE_STRUCT
@@ -479,7 +479,9 @@ function rtlMemNewOp _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr sym = any
-
+    
+    dtype = typeGetDtAndPtrOnly( dtype )
+    
     '' try to find an overloaded new()
     select case dtype
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
@@ -522,6 +524,8 @@ function rtlMemDeleteOp _
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr sym = any
 
+    dtype = typeGetDtAndPtrOnly( dtype )
+    
     '' try to find an overloaded delete()
     select case dtype
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS

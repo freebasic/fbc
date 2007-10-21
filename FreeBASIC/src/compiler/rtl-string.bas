@@ -2378,10 +2378,10 @@ function rtlStrCompare _
 		byval sdtype1 as integer, _
 		byval str2 as ASTNODE ptr, _
 		byval sdtype2 as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer str1len, str2len
+    dim as ASTNODE ptr proc = any
+    dim as integer str1len = any, str2len = any
 
 	function = NULL
 
@@ -2390,7 +2390,6 @@ function rtlStrCompare _
 
    	'' always calc len before pushing the param
    	str1len = rtlCalcStrLen( str1, sdtype1 )
-
 	str2len = rtlCalcStrLen( str2, sdtype2 )
 
     '' byref str1 as any
@@ -2426,9 +2425,9 @@ function rtlWstrCompare _
 	( _
 		byval str1 as ASTNODE ptr, _
 		byval str2 as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = NULL
 
@@ -2477,7 +2476,6 @@ function rtlStrConcat _
 
    	'' always calc len before pushing the param
    	str1len = rtlCalcStrLen( str1, sdtype1 )
-
 	str2len = rtlCalcStrLen( str2, sdtype2 )
 
     '' byref str1 as any
@@ -2514,10 +2512,10 @@ function rtlWstrConcatWA _
 		byval str1 as ASTNODE ptr, _
 		byval str2 as ASTNODE ptr, _
 		byval sdtype2 as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer str2len
+    dim as ASTNODE ptr proc = any
+    dim as integer str2len = any
 
 	function = NULL
 
@@ -2553,10 +2551,10 @@ function rtlWstrConcatAW _
 		byval str1 as ASTNODE ptr, _
 		byval sdtype1 as integer, _
 		byval str2 as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer str1len
+    dim as ASTNODE ptr proc = any
+    dim as integer str1len = any
 
 	function = NULL
 
@@ -2593,11 +2591,14 @@ function rtlWstrConcat _
 		byval sdtype1 as integer, _
 		byval str2 as ASTNODE ptr, _
 		byval sdtype2 as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = NULL
+	
+	sdtype1 = typeGetDtAndPtrOnly( sdtype1 )
+	sdtype2 = typeGetDtAndPtrOnly( sdtype2 )
 
 	'' both not wstrings?
     if( sdtype1 <> sdtype2 ) then
@@ -2633,10 +2634,10 @@ function rtlStrConcatAssign _
 	( _
 		byval dst as ASTNODE ptr, _
 		byval src as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer lgt, ddtype, sdtype
+    dim as ASTNODE ptr proc = any
+    dim as integer lgt = any, ddtype = any, sdtype = any
 
 	function = NULL
 
@@ -2838,8 +2839,8 @@ function rtlStrAssign _
 
 	function = NULL
 
-    ddtype = astGetDataType( dst )
-    sdtype = astGetDataType( src )
+    ddtype = typeGetDtAndPtrOnly( astGetDataType( dst ) )
+    sdtype = typeGetDtAndPtrOnly( astGetDataType( src ) )
 
 	'' wstring source?
     if( sdtype = FB_DATATYPE_WCHAR ) then
@@ -2904,15 +2905,15 @@ function rtlWstrAssign _
 		byval dst as ASTNODE ptr, _
 		byval src as ASTNODE ptr, _
 		byval is_ini as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer lgt, ddtype, sdtype
+    dim as ASTNODE ptr proc = any
+    dim as integer lgt = any, ddtype = any, sdtype = any
 
 	function = NULL
 
-	ddtype = astGetDataType( dst )
-	sdtype = astGetDataType( src )
+	ddtype = typeGetDtAndPtrOnly( astGetDataType( dst ) )
+	sdtype = typeGetDtAndPtrOnly( astGetDataType( src ) )
 
 	'' both not wstrings?
     if( ddtype <> sdtype ) then
@@ -2965,7 +2966,7 @@ function rtlStrDelete _
 	function = NULL
 
 	''
-    dtype = astGetDataType( strg )
+    dtype = typeGetDtAndPtrOnly( astGetDataType( strg ) )
     select case dtype
     '' it could be a wstring ptr too due the temporary
     '' wstrings that must be handled by AST
@@ -3012,16 +3013,16 @@ end function
 function rtlStrAllocTmpDesc	_
 	( _
 		byval strexpr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer lgt, dtype
-    dim as FBSYMBOL ptr litsym
+    dim as ASTNODE ptr proc = any
+    dim as integer lgt = any, dtype = any
+    dim as FBSYMBOL ptr litsym = any
 
     function = NULL
 
 	''
-   	dtype = astGetDataType( strexpr )
+   	dtype = typeGetDtAndPtrOnly( astGetDataType( strexpr ) )
 
 	select case dtype
 	case FB_DATATYPE_STRING
@@ -3088,10 +3089,9 @@ end function
 function rtlWstrAlloc _
 	( _
 		byval lenexpr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer dtype
+    dim as ASTNODE ptr proc = any
 
 	function = NULL
 
@@ -3156,11 +3156,14 @@ function rtlToStr _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any, litsym = any
+    dim as integer dtype = any
 
     function = NULL
-
+	
+	dtype = typeGetDtAndPtrOnly( astGetDatatype( expr ) )
+	
     '' constant? evaluate
-    if( astIsCONST( expr ) ) then
+    if( astIsCONST( expr ) or typeIsConst( astGetDatatype( expr ) ) ) then
     	dim as string qb_padding
     	if fbLangIsSet( FB_LANG_QB ) then
     		if astGetValueAsDouble( expr ) >= 0 then
@@ -3171,7 +3174,7 @@ function rtlToStr _
     end if
 
     '' wstring literal? convert from unicode at compile-time
-    if( astGetDataType( expr ) = FB_DATATYPE_WCHAR ) then
+    if( dtype = FB_DATATYPE_WCHAR ) then
     	litsym = astGetStrLitSymbol( expr )
     	if( litsym <> NULL ) then
 			if( env.target.wchar.doconv ) then
@@ -3187,7 +3190,7 @@ function rtlToStr _
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
 
-		select case as const astGetDataType( expr )
+		select case as const dtype
 		case FB_DATATYPE_LONGINT
 			f = PROCLOOKUP( LONGINT2STR )
 
@@ -3273,16 +3276,19 @@ function rtlToWstr _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any, litsym = any
+    dim as integer dtype
 
     function = NULL
+    
+    dtype = typeGetDtAndPtrOnly( astGetDataType( expr ) )
 
     '' constant? evaluate
-    if( astIsCONST( expr ) ) then
+    if( astIsCONST( expr ) or typeIsConst( astGetDatatype( expr ) ) ) then
     	return astNewCONSTwstr( astGetValueAsWstr( expr ) )
     end if
 
     '' string literal? convert to unicode at compile-time
-    if( astGetDataType( expr ) = FB_DATATYPE_CHAR ) then
+    if( dtype = FB_DATATYPE_CHAR ) then
     	litsym = astGetStrLitSymbol( expr )
     	if( litsym <> NULL ) then
 			if( env.target.wchar.doconv ) then
@@ -3297,7 +3303,7 @@ function rtlToWstr _
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
 
-		select case as const astGetDataType( expr )
+		select case as const dtype
 		case FB_DATATYPE_LONGINT
 			f = PROCLOOKUP( LONGINT2WSTR )
 
@@ -3465,14 +3471,14 @@ function rtlStrMid _
 		byval expr1 as ASTNODE ptr, _
 		byval expr2 as ASTNODE ptr, _
 		byval expr3 as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
     function = NULL
 
 	''
-    if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
+    if( typeGetDtAndPtrOnly( astGetDataType( expr1 ) ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRMID ) )
     else
     	proc = astNewCALL( PROCLOOKUP( WSTRMID ) )
@@ -3502,15 +3508,15 @@ function rtlStrAssignMid _
 		byval expr2 as ASTNODE ptr, _
 		byval expr3 as ASTNODE ptr, _
 		byval expr4 as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer dst_len
+    dim as ASTNODE ptr proc = any
+    dim as integer dst_len = any
 
     function = NULL
 
 	''
-    if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
+    if( typeGetDtAndPtrOnly( astGetDataType( expr1 ) ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRASSIGNMID ) )
     	dst_len = -1
     else
@@ -3556,14 +3562,14 @@ function rtlStrLSet _
 	( _
 		byval dstexpr as ASTNODE ptr, _
 		byval srcexpr as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
     function = FALSE
 
 	''
-    if( astGetDataType( dstexpr ) <> FB_DATATYPE_WCHAR ) then
+    if( typeGetDtAndPtrOnly( astGetDataType( dstexpr ) ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRLSET ) )
     else
     	proc = astNewCALL( PROCLOOKUP( WSTRLSET ) )
@@ -3591,14 +3597,14 @@ function rtlStrFill _
 	( _
 		byval expr1 as ASTNODE ptr, _
 		byval expr2 as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
 
     function = NULL
 
-	select case astGetDataType( expr2 )
+	select case typeGetDtAndPtrOnly( astGetDataType( expr2 ) )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		f = PROCLOOKUP( STRFILL2 )
 	case else
@@ -3625,14 +3631,14 @@ function rtlWstrFill _
 	( _
 		byval expr1 as ASTNODE ptr, _
 		byval expr2 as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
 
     function = NULL
 
-	if( astGetDataType( expr2 ) = FB_DATATYPE_WCHAR ) then
+	if( typeGetDtAndPtrOnly( astGetDataType( expr2 ) ) = FB_DATATYPE_WCHAR ) then
 		f = PROCLOOKUP( WSTRFILL2 )
 	else
 		f = PROCLOOKUP( WSTRFILL1 )
@@ -3658,14 +3664,14 @@ function rtlStrAsc _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval posexpr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = NULL
 
     ''
-    if( astGetDataType( expr ) <> FB_DATATYPE_WCHAR ) then
+    if( typeGetDtAndPtrOnly( astGetDataType( expr ) ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRASC ) )
     else
     	proc = astNewCALL( PROCLOOKUP( WSTRASC ) )
@@ -3695,10 +3701,10 @@ function rtlStrChr _
 		byval args as integer, _
 		exprtb() as ASTNODE ptr, _
 		byval is_wstr as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr proc, expr
-	dim as integer i
+	dim as ASTNODE ptr proc = any, expr = any
+	dim as integer dtype = any
 
 	function = NULL
 
@@ -3714,8 +3720,9 @@ function rtlStrChr _
     end if
 
     '' ...
-    for i = 0 to args-1
+    for i as integer = 0 to args-1
     	expr = exprtb(i)
+    	dtype = typeGetDtAndPtrOnly( astGetDatatype( expr ) )
 
     	'' check if non-numeric
     	if( astGetDataClass( expr ) >= FB_DATACLASS_STRING ) then
@@ -3724,7 +3731,7 @@ function rtlStrChr _
     	end if
 
     	'' don't allow w|zstring's either..
-    	select case astGetDataType( expr )
+    	select case dtype
     	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		errReportEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, "at parameter: " + str( i+1 ) )
     		exit function
@@ -3752,22 +3759,25 @@ function rtlStrInstr _
 		byval nd_text as ASTNODE ptr, _
 		byval nd_pattern as ASTNODE ptr, _
         byval search_any as integer _
-    ) as ASTNODE ptr static
+    ) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+	dim as integer dtype = any
+	
     function = NULL
-
+	
+	dtype = typeGetDtAndPtrOnly( astGetDataType( nd_text ) )
+	
 	''
     if( search_any ) then
-		if( astGetDataType( nd_text ) <> FB_DATATYPE_WCHAR ) then
+		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRINSTRANY )
 		else
 			f = PROCLOOKUP( WSTRINSTRANY )
 		end if
     else
-		if( astGetDataType( nd_text ) <> FB_DATATYPE_WCHAR ) then
+		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRINSTR )
 		else
 			f = PROCLOOKUP( WSTRINSTR )
@@ -3799,28 +3809,31 @@ function rtlStrTrim _
 		byval nd_text as ASTNODE ptr, _
 		byval nd_pattern as ASTNODE ptr, _
         byval is_any as integer _
-    ) as ASTNODE ptr static
+    ) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer dtype = any
 
     function = NULL
-
+	
+	dtype = typeGetDtAndPtrOnly( astGetDataType( nd_text ) )
+	
 	''
     if( is_any ) then
-		if( astGetDataType( nd_text ) <> FB_DATATYPE_WCHAR ) then
+		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRTRIMANY )
 		else
 			f = PROCLOOKUP( WSTRTRIMANY )
 		end if
     elseif( nd_pattern <> NULL ) then
-		if( astGetDataType( nd_text ) <> FB_DATATYPE_WCHAR ) then
+		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRTRIMEX )
 		else
 			f = PROCLOOKUP( WSTRTRIMEX )
 		end if
     else
-		if( astGetDataType( nd_text ) <> FB_DATATYPE_WCHAR ) then
+		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRTRIM )
 		else
 			f = PROCLOOKUP( WSTRTRIM )
@@ -3849,28 +3862,31 @@ function rtlStrRTrim _
 		byval nd_text as ASTNODE ptr, _
 		byval nd_pattern as ASTNODE ptr, _
         byval is_any as integer _
-    ) as ASTNODE ptr static
+    ) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer dtype = any
 
     function = NULL
-
+	
+	dtype = typeGetDtAndPtrOnly( astGetDataType( nd_text ) )
+	
 	''
     if( is_any ) then
-		if( astGetDataType( nd_text ) <> FB_DATATYPE_WCHAR ) then
+		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRRTRIMANY )
 		else
 			f = PROCLOOKUP( WSTRRTRIMANY )
 		end if
     elseif( nd_pattern <> NULL ) then
-		if( astGetDataType( nd_text ) <> FB_DATATYPE_WCHAR ) then
+		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRRTRIMEX )
 		else
 			f = PROCLOOKUP( WSTRRTRIMEX )
 		end if
     else
-		if( astGetDataType( nd_text ) <> FB_DATATYPE_WCHAR ) then
+		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRRTRIM )
 		else
 			f = PROCLOOKUP( WSTRRTRIM )
@@ -3899,28 +3915,31 @@ function rtlStrLTrim _
 		byval nd_text as ASTNODE ptr, _
 		byval nd_pattern as ASTNODE ptr, _
         byval is_any as integer _
-    ) as ASTNODE ptr static
+    ) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer dtype = any
 
     function = NULL
 
+	dtype = typeGetDtAndPtrOnly( astGetDataType( nd_text ) )
+	
 	''
     if( is_any ) then
-		if( astGetDataType( nd_text ) <> FB_DATATYPE_WCHAR ) then
+		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRLTRIMANY )
 		else
 			f = PROCLOOKUP( WSTRLTRIMANY )
 		end if
     elseif( nd_pattern <> NULL ) then
-		if( astGetDataType( nd_text ) <> FB_DATATYPE_WCHAR ) then
+		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRLTRIMEX )
 		else
 			f = PROCLOOKUP( WSTRLTRIMEX )
 		end if
     else
-		if( astGetDataType( nd_text ) <> FB_DATATYPE_WCHAR ) then
+		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRLTRIM )
 		else
 			f = PROCLOOKUP( WSTRLTRIM )
@@ -3948,10 +3967,10 @@ function rtlStrSwap _
 	( _
 		byval str1 as ASTNODE ptr, _
 		byval str2 as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as integer lgt, dtype
+    dim as ASTNODE ptr proc = any
+    dim as integer lgt = any, dtype = any
 
 	function = FALSE
 
@@ -4002,10 +4021,10 @@ function rtlWstrSwap _
 	( _
 		byval str1 as ASTNODE ptr, _
 		byval str2 as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as integer lgt
+    dim as ASTNODE ptr proc = any
+    dim as integer lgt = any
 
 	function = FALSE
 

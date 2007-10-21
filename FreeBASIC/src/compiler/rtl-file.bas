@@ -1724,13 +1724,6 @@ function rtlFileGet _
     	end if
     end if
 	
-	'' dest can't be a top-level const
-	if( typeIsConst( astGetDatatype( dst ) ) ) then
-		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-			exit function
-		end if
-	end if
-	
     '' value as any
     if( astNewARG( proc, dst ) = NULL ) then
  		exit function
@@ -1813,13 +1806,6 @@ function rtlFileGetArray _
     	end if
     end if
 
-	'' dest can't be a top-level const
-	if( typeIsConst( astGetDatatype( dst ) ) ) then
-		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-			exit function
-		end if
-	end if
-	
     '' array() as any
     if( astNewARG( proc, dst ) = NULL ) then
     	exit function
@@ -1911,13 +1897,6 @@ function rtlFileLineInput _
 	dtype = typeGetDtAndPtrOnly( astGetDataType( dstexpr ) )
 	lgt = rtlCalcStrLen( dstexpr, dtype )
 
-	'' dest can't be a top-level const
-	if( typeIsConst( astGetDatatype( dstexpr ) ) ) then
-		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-			exit function
-		end if
-	end if
-	
 	'' dst as any
     if( astNewARG( proc, dstexpr ) = NULL ) then
  		exit function
@@ -1991,13 +1970,6 @@ function rtlFileLineInputWstr _
 	dtype = typeGetDtAndPtrOnly( astGetDataType( dstexpr ) )
 	lgt = rtlCalcStrLen( dstexpr, dtype )
 
-	'' dest can't be a top-level const
-	if( typeIsConst( astGetDatatype( dstexpr ) ) ) then
-		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-			exit function
-		end if
-	end if
-	
 	'' byval dst as wstring ptr
     if( astNewARG( proc, dstexpr ) = NULL ) then
  		exit function
@@ -2161,13 +2133,6 @@ function rtlFileInputGet _
 		lgt = rtlCalcStrLen( dstexpr, dtype )
 	end if
 
-	'' dest can't be a top-level const
-	if( typeIsConst( astGetDatatype( dstexpr ) ) ) then
-		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-			exit function
-		end if
-	end if
-	
     '' byref dst as any | byval dst as wstring ptr
     if( astNewARG( proc, dstexpr ) = NULL ) then
  		exit function

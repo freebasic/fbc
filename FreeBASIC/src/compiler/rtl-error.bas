@@ -288,10 +288,10 @@ function rtlErrorCheck _
 		byval resexpr as ASTNODE ptr, _
 		byval reslabel as FBSYMBOL ptr, _
 		byval linenum as integer _
-	) as integer static
+	) as integer
 
-	dim as ASTNODE ptr proc, param, dst
-	dim as FBSYMBOL ptr nxtlabel
+	dim as ASTNODE ptr proc = any, param = any, dst = any
+	dim as FBSYMBOL ptr nxtlabel = any
 
 	function = FALSE
 
@@ -368,10 +368,10 @@ sub rtlErrorThrow _
 		byval errexpr as ASTNODE ptr, _
 		byval linenum as integer, _
 		byval module as zstring ptr _
-	) static
+	)
 
-	dim as ASTNODE ptr proc, param, dst
-	dim as FBSYMBOL ptr nxtlabel, reslabel
+	dim as ASTNODE ptr proc = any, param = any, dst = any
+	dim as FBSYMBOL ptr nxtlabel = any, reslabel = any
 
 	''
 	proc = astNewCALL( PROCLOOKUP( ERRORTHROWEX ) )
@@ -437,9 +437,9 @@ sub rtlErrorSetHandler _
 	( _
 		byval newhandler as ASTNODE ptr, _
 		byval savecurrent as integer _
-	) static
+	)
 
-    dim as ASTNODE ptr proc, expr
+    dim as ASTNODE ptr proc = any, expr = any
 
 	''
     proc = astNewCALL( PROCLOOKUP( ERRORSETHANDLER ) )
@@ -473,15 +473,10 @@ end sub
 function rtlErrorGetNum _
 	( _
 		_
-	) as ASTNODE ptr static
-
-    dim as ASTNODE ptr proc
-
-	''
-    proc = astNewCALL( PROCLOOKUP( ERRORGETNUM ) )
+	) as ASTNODE ptr
 
     ''
-    function = proc
+    function = astNewCALL( PROCLOOKUP( ERRORGETNUM ) )
 
 end function
 
@@ -489,9 +484,9 @@ end function
 sub rtlErrorSetNum _
 	( _
 		byval errexpr as ASTNODE ptr _
-	) static
+	)
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	''
     proc = astNewCALL( PROCLOOKUP( ERRORSETNUM ) )
@@ -512,8 +507,8 @@ sub rtlErrorResume _
 		byval isnext as integer _
 	)
 
-    dim as ASTNODE ptr proc, dst
-    dim as FBSYMBOL ptr f
+    dim as ASTNODE ptr proc = any, dst = any
+    dim as FBSYMBOL ptr f = any
 
 	''
 	if( isnext = FALSE ) then

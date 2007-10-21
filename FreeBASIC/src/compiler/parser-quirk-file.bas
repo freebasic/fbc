@@ -363,7 +363,14 @@ function cLineInputStmt _
     	end if
     end if
 
-    select case astGetDataType( dstexpr )
+	'' dest can't be a top-level const
+	if( typeIsConst( astGetDatatype( dstexpr ) ) ) then
+		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+			exit function
+		end if
+	end if
+	
+    select case typeGet( astGetDataType( dstexpr ) )
     case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
     	function = rtlFileLineInput( isfile, expr, dstexpr, addquestion, addnewline )
 
@@ -462,6 +469,13 @@ function cInputStmt _
 			islast = TRUE
 		end if
 
+		'' dest can't be a top-level const
+		if( typeIsConst( astGetDatatype( dstexpr ) ) ) then
+			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+				exit function
+			end if
+		end if
+		
     	if( dstexpr <> NULL ) then
     		if( rtlFileInputGet( dstexpr, islast ) = FALSE ) then
 				exit function
@@ -780,6 +794,13 @@ private function hFileGet _
 		elmexpr = NULL
 	end if
 
+	'' dest can't be a top-level const
+	if( typeIsConst( astGetDatatype( dstexpr ) ) ) then
+		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+			exit function
+		end if
+	end if
+	
 	if( isarray = FALSE ) then
 		function = rtlFileGet( fileexpr, posexpr, dstexpr, elmexpr, isfunc )
 	else

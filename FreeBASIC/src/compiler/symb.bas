@@ -1618,7 +1618,7 @@ function symbIsString _
 		byval dtype as integer _
 	) as integer
 
-	select case as const dtype
+	select case as const typeGetDtAndPtrOnly( dtype )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		function = TRUE
 	case else

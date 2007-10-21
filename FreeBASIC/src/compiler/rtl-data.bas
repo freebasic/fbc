@@ -233,17 +233,17 @@ end sub
 function rtlDataRead _
 	( _
 		byval varexpr as ASTNODE ptr _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-    dim as integer args, dtype, lgt
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer args = any, dtype = any, lgt = any
 
     function = FALSE
 
 	f = NULL
 	args = 1
-	dtype = astGetDataType( varexpr )
+	dtype = typeGetDtAndPtrOnly( astGetDataType( varexpr ) )
 
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
@@ -317,6 +317,8 @@ function rtlDataRead _
     if( args > 1 ) then
     	'' always calc len before pushing the param
 		lgt = rtlCalcStrLen( varexpr, dtype )
+	else
+		lgt = 0
 	end if
 
     '' byref var as any

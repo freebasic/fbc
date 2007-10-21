@@ -893,9 +893,9 @@ function rtlPrint _
         byval islprint as integer = FALSE _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-    dim as integer mask, args, dtype
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer mask = any, args = any, dtype = any
 
     function = FALSE
 
@@ -908,16 +908,16 @@ function rtlPrint _
 		args = 2
 	else
 
+		dtype = typeGetDtAndPtrOnly( astGetDataType( expr ) )
+
 		'' UDT? try to convert to string with type casting op overloading
-		select case astGetDataType( expr )
+		select case dtype
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 			expr = astNewOvlCONV( FB_DATATYPE_STRING, NULL, expr )
 			if( expr = NULL ) then
 				exit function
 			end if
 		end select
-
-		dtype = astGetDataType( expr )
 
 		select case as const typeGet( dtype )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
@@ -1100,9 +1100,9 @@ function rtlPrintSPC _
 		byval fileexpr as ASTNODE ptr, _
 		byval expr as ASTNODE ptr, _
         byval islprint as integer = FALSE _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
@@ -1135,9 +1135,9 @@ function rtlPrintTab _
 		byval fileexpr as ASTNODE ptr, _
 		byval expr as ASTNODE ptr, _
         byval islprint as integer = FALSE _
-    ) as integer static
+    ) as integer
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
@@ -1172,9 +1172,9 @@ function rtlWrite _
 		byval expr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-    dim as integer mask, args, dtype
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer mask = any, args = any, dtype = any
 
 	function = FALSE
 
@@ -1184,15 +1184,15 @@ function rtlWrite _
 	else
 
 		'' UDT? try to convert to string with type casting op overloading
-		select case astGetDataType( expr )
+		dtype = typeGetDtAndPtrOnly( astGetDataType( expr ) )
+
+		select case dtype
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 			expr = astNewOvlCONV( FB_DATATYPE_STRING, NULL, expr )
 			if( expr = NULL ) then
 				exit function
 			end if
 		end select
-
-		dtype = astGetDataType( expr )
 
 		select case as const typeGet( dtype )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
@@ -1303,10 +1303,10 @@ function rtlPrintUsingInit _
 	( _
 		byval usingexpr as ASTNODE ptr, _
         byval islprint as integer = FALSE _
-	) as integer static
+	) as integer 
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
 
 	function = FALSE
 
@@ -1334,9 +1334,9 @@ function rtlPrintUsingEnd _
 	( _
 		byval fileexpr as ASTNODE ptr, _
         byval islprint as integer = FALSE _
-	) as integer static
+	) as integer
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
@@ -1368,9 +1368,9 @@ function rtlPrintUsing _
         byval islprint as integer = FALSE _
     ) as integer
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-    dim as integer mask
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
+    dim as integer mask = any, dtype = any
 
 	function = FALSE
 
@@ -1382,8 +1382,9 @@ function rtlPrintUsing _
     	exit function
     end if
 
+	dtype = typeGetDtAndPtrOnly( astGetDataType( expr ) )
 	'' UDT? try to convert to double with type casting op overloading
-	select case astGetDataType( expr )
+	select case dtype
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		expr = astNewOvlCONV( FB_DATATYPE_DOUBLE, NULL, expr )
 		if( expr = NULL ) then
@@ -1391,7 +1392,7 @@ function rtlPrintUsing _
 		end if
 	end select
 
-	select case astGetDataType( expr )
+	select case typeGet( dtype )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 		f = PROCLOOKUP( PRINTUSGSTR )
 
@@ -1445,7 +1446,7 @@ function rtlWidthDev _
         byval isfunc as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = NULL
 
@@ -1487,7 +1488,7 @@ end function
 function rtlPrinter_cb _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
     static as integer libsAdded = FALSE
 

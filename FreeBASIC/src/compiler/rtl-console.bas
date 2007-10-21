@@ -269,7 +269,7 @@ function rtlConsoleView _
 		byval botexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = NULL
 
@@ -298,7 +298,7 @@ function rtlWidthScreen _
         byval isfunc as integer _
     ) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = NULL
 
@@ -345,8 +345,8 @@ function rtlColor _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr proc
-	dim as integer flags
+	dim as ASTNODE ptr proc = any
+	dim as integer flags = any
 
 	function = NULL
 	flags = 0
@@ -393,7 +393,7 @@ function rtlPageSet _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr proc
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
@@ -432,7 +432,7 @@ function rtlConsoleReadXY _
 		byval colorflagexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr proc
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 

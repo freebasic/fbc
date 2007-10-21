@@ -78,6 +78,13 @@ function cArrayStmt _
 					end if
 
 				else
+					
+					if( typeIsConst( astGetDatatype( expr1 ) ) ) then
+						if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+							exit function
+						end if
+					end if
+					
 					if( symbGetIsDynamic( s ) ) then
 						expr1 = rtlArrayErase( expr1 )
 					else

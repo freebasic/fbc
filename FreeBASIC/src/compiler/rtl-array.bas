@@ -351,7 +351,9 @@ function rtlArrayRedim _
 		byval dopreserve as integer, _
 		byval doclear as integer _
 	) as integer
-
+	
+	'' no const filtering needed... dynamic arrays can't be const
+	
     dim as ASTNODE ptr proc = any, expr = any
     dim as FBSYMBOL ptr f = any, reslabel = any, ctor = any, dtor = any
     dim as integer dtype = any
@@ -360,7 +362,7 @@ function rtlArrayRedim _
 
     dtype = symbGetType( s )
 
-	'' pointers to objects do not get instantiated
+	'' only objects get instantiated
 	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		ctor = symbGetCompDefCtor( symbGetSubtype( s ) )
@@ -499,7 +501,7 @@ function rtlArrayErase _
 
 	function = NULL
 
-	dtype = astGetDataType( arrayexpr )
+	dtype = typeGetDtAndPtrOnly( astGetDataType( arrayexpr ) )
 
 	''
 	select case typeGet( dtype )
@@ -556,7 +558,9 @@ function rtlArrayClear _
 		byval dofill as integer, _
 		byval check_access as integer _
 	) as ASTNODE ptr
-
+	
+	'' no const filtering needed, clear is for dynamic, can't be const...
+	
     dim as ASTNODE ptr proc = any
     dim as integer dtype = any
     dim as FBSYMBOL ptr ctor = any, dtor = any
@@ -659,8 +663,8 @@ function rtlArrayBound _
 		byval islbound as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
 
 	function = NULL
 
@@ -697,8 +701,8 @@ function rtlArrayBoundsCheck _
 		byval module as zstring ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
 
    	function = NULL
 

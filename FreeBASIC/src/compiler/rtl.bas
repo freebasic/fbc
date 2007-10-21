@@ -323,14 +323,14 @@ function rtlCalcExprLen _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval unpadlen as integer = TRUE _
-	) as integer static
+	) as integer
 
-	dim as FBSYMBOL ptr s
-	dim as integer dtype
+	dim as FBSYMBOL ptr s = any
+	dim as integer dtype = any
 
 	function = -1
 
-	dtype = astGetDataType( expr )
+	dtype = typeGetDtAndPtrOnly( astGetDataType( expr ) )
 	select case as const dtype
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		function = rtlCalcStrLen( expr, dtype )
@@ -363,10 +363,12 @@ function rtlCalcStrLen _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer _
-	) as integer static
+	) as integer
 
 	dim as FBSYMBOL ptr s
-
+	
+	dtype = typeGetDtAndPtrOnly( dtype )
+	
 	select case as const dtype
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
 		function = 0

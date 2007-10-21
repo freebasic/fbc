@@ -168,9 +168,9 @@ function rtlMathPow	_
 	( _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc = any
 
 	function = NULL
 
@@ -197,15 +197,15 @@ function rtlMathLen _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval islen as integer = TRUE _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as integer dtype, lgt
-    dim as FBSYMBOL ptr litsym
+    dim as ASTNODE ptr proc = any
+    dim as integer dtype = any, lgt = any
+    dim as FBSYMBOL ptr litsym = any
 
 	function = NULL
 
-	dtype = astGetDataType( expr )
+	dtype = typeGetDtAndPtrOnly( astGetDataType( expr ) )
 
 	'' LEN()?
 	if( islen ) then
@@ -304,13 +304,15 @@ function rtlMathLongintDIV _
 		byval ldtype as integer, _
 		byval rexpr as ASTNODE ptr, _
 		byval rdtype as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
 
 	function = NULL
-
+	
+	dtype = typeGetDtAndPtrOnly( dtype )
+	
 	if( dtype = FB_DATATYPE_LONGINT ) then
 		f = PROCLOOKUP( LONGINTDIV )
 	else
@@ -340,13 +342,15 @@ function rtlMathLongintMOD _
 		byval ldtype as integer, _
 		byval rexpr as ASTNODE ptr, _
 		byval rdtype as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
+    dim as ASTNODE ptr proc = any
+    dim as FBSYMBOL ptr f = any
 
 	function = NULL
-
+	
+	dtype = typeGetDtAndPtrOnly( dtype )
+	
 	if( dtype = FB_DATATYPE_LONGINT ) then
 		f = PROCLOOKUP( LONGINTMOD )
 	else
@@ -373,10 +377,10 @@ function rtlMathFp2ULongint _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
-
+    dim as ASTNODE ptr proc = any
+    
 	function = NULL
 
     proc = astNewCALL( PROCLOOKUP( DBL2ULONGINT)  )
