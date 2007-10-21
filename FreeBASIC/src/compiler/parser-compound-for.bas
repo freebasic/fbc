@@ -911,8 +911,14 @@ function cForStmtBegin _
 
 	end if
 
-	dim as integer dtype = astGetDataType( idexpr )
+	dim as integer dtype = typeGetDtAndPtrOnly( astGetDataType( idexpr ) )
 	dim as FBSYMBOL ptr subtype = astGetSubType( idexpr )
+	
+	if( typeIsConst( astGetDataType( idexpr ) ) ) then
+		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+			exit function
+		end if
+	end if
 
 	select case as const dtype
 	case FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE
