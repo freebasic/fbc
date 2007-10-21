@@ -242,7 +242,7 @@ function cTypeOf _
 end function
 
 '':::::
-''SymbolType      =   UNSIGNED? (
+''SymbolType      =   CONST? UNSIGNED? (
 ''				      ANY
 ''				  |   CHAR|BYTE
 ''				  |	  SHORT|WORD
@@ -252,7 +252,7 @@ end function
 ''                |   STRING ('*' NUM_LIT)?
 ''                |   USERDEFTYPE
 ''				  |   (FUNCTION|SUB) ('(' args ')') (AS SymbolType)?
-''				      (PTR|POINTER)* .
+''				      (CONST? (PTR|POINTER))* .
 ''
 function cSymbolType _
 	( _

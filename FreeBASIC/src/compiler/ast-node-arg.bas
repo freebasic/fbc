@@ -28,13 +28,17 @@
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
 
+sub gdb__( )
+end sub
+
 '':::::
 private function hParamError _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT _
 	) as integer
-
+	
+	gdb__( )
 	function = errReportParam( parent->sym, parent->call.args+1, NULL, msgnum )
 
 end function
@@ -183,7 +187,7 @@ private function hCheckStringArg _
 
 	function = arg
 
-	arg_dtype = arg->dtype
+	arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
 
 	'' calling the runtime lib?
 	if( parent->call.isrtl ) then
@@ -316,7 +320,7 @@ private function hStrArgToStrPtrParam _
 	) as integer
 
 	dim as ASTNODE ptr arg = n->l
-	dim as integer arg_dtype = arg->dtype
+	dim as integer arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
 
 	if( checkrtl = FALSE ) then
 		'' rtl? don't mess..
@@ -452,6 +456,7 @@ private function hCheckByDescParam _
 	) as integer
 
     dim as ASTNODE ptr arg = n->l, desc_tree = any
+    dim as integer arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) ), sym_dtype = any
 
 	'' is arg a pointer?
 	if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
@@ -466,11 +471,13 @@ private function hCheckByDescParam _
 		hParamError( parent )
 		return FALSE
 	end if
-
+	
+	sym_dtype = typeGetDtAndPtrOnly( symbGetType( s ) )
+	
 	'' same type? (don't check if it's a rtl proc)
 	if( parent->call.isrtl = FALSE ) then
-		if( (symbGetDataClass( arg->dtype ) <> symbGetDataClass( symbGetType( s ) )) or _
-			(symbGetDataSize( arg->dtype ) <> symbGetDataSize( symbGetType( s ) )) ) then
+		if( (symbGetDataClass( arg_dtype ) <> symbGetDataClass( sym_dtype )) or _
+			(symbGetDataSize( arg_dtype ) <> symbGetDataSize( sym_dtype )) ) then
 			hParamError( parent )
 			return FALSE
 		end if
@@ -536,22 +543,23 @@ private function hCheckVarargParam _
 	) as integer
 
     dim as ASTNODE ptr arg = n->l
+    dim as integer arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
 
-	select case as const symbGetDataClass( arg->dtype )
+	select case as const symbGetDataClass( arg_dtype )
 	'' var-len string? check..
 	case FB_DATACLASS_STRING
 		return hStrArgToStrPtrParam( parent, n, FALSE )
 
 	case FB_DATACLASS_INTEGER
-		select case arg->dtype
+		select case arg_dtype
 		'' w|zstring? ditto..
 		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			return hStrArgToStrPtrParam( parent, n, FALSE )
 
 		case else
 			'' if < len(integer), convert to int (C ABI)
-			if( symbGetDataSize( arg->dtype ) < FB_INTEGERSIZE ) then
-				n->l = astNewCONV( iif( symbIsSigned( arg->dtype ), _
+			if( symbGetDataSize( arg_dtype ) < FB_INTEGERSIZE ) then
+				n->l = astNewCONV( iif( symbIsSigned( arg_dtype ), _
 									   	FB_DATATYPE_INTEGER, _
 									   	FB_DATATYPE_UINT ), _
 								   NULL, _
@@ -561,7 +569,7 @@ private function hCheckVarargParam _
 
 	case FB_DATACLASS_FPOINT
 		'' float? convert it to double (C ABI)
-		if( arg->dtype = FB_DATATYPE_SINGLE ) then
+		if( arg_dtype = FB_DATATYPE_SINGLE ) then
 			n->l = astNewCONV( FB_DATATYPE_DOUBLE, NULL, arg )
 		end if
 
@@ -583,6 +591,7 @@ private function hCheckVoidParam _
 	) as integer
 
 	dim as ASTNODE ptr arg = n->l
+	dim as integer arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
 
 	if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
 		'' check strings passed BYVAL
@@ -598,7 +607,7 @@ private function hCheckVoidParam _
 
 	'' pass BYREF, check if a temp param isn't needed
 	'' use the arg type, not the param one (as it's VOID)
-	function = hCheckByRefArg( arg->dtype, arg->subtype, n ) <> NULL
+	function = hCheckByRefArg( arg_dtype, arg->subtype, n ) <> NULL
 
 end function
 
@@ -611,9 +620,10 @@ private function hCheckStrParam _
 	) as integer
 
 	dim as ASTNODE ptr arg = n->l
+	dim as integer arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
 
 	'' check arg type
-	select case as const arg->dtype
+	select case as const arg_dtype
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
 
 	'' a z|wstring?
@@ -647,7 +657,7 @@ private function hCheckStrParam _
 	'' byval param?
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
 		'' var-len? deref..
-		if( arg->dtype = FB_DATATYPE_STRING ) then
+		if( arg_dtype = FB_DATATYPE_STRING ) then
 			n->l = astBuildStrPtr( arg )
 			return TRUE
 		end if
@@ -728,6 +738,7 @@ private function hImplicitCtor _
    	static as integer rec_cnt = 0
 
    	dim as FBSYMBOL ptr subtype = symbGetSubtype( param )
+   	dim as integer param_dtype = typeGetDtAndPtrOnly( symbGetType( param ) )
 
    	if( symbGetHasCtor( subtype ) = FALSE ) then
    		return FALSE
@@ -752,7 +763,7 @@ private function hImplicitCtor _
     	return NULL
     end if
 
-    dim as FBSYMBOL ptr tmp = symbAddTempVar( symbGetType( param ), _
+    dim as FBSYMBOL ptr tmp = symbAddTempVar( param_dtype, _
     				  						  subtype, _
     				  						  FALSE, _
     				  						  FALSE )
@@ -784,9 +795,10 @@ private function hCheckUDTParam _
 	) as integer
 
 	dim as ASTNODE ptr arg = n->l
+	dim as integer arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
 
 	'' not another UDT?
-	if( arg->dtype <> FB_DATATYPE_STRUCT ) then
+	if( arg_dtype <> FB_DATATYPE_STRUCT ) then
 		if( hImplicitCtor( parent, param, n ) = FALSE ) then
 			hParamError( parent )
 			return FALSE
@@ -851,15 +863,18 @@ private function hCheckParam _
 	) as integer
 
     dim as ASTNODE ptr arg = any
-    dim as integer param_dtype = any
+    dim as integer param_dtype = any, arg_dtype
 
     function = FALSE
-
+    
 	'' string concatenation is delayed for optimization reasons..
 	n->l = astUpdStrConcat( n->l )
 
 	arg = n->l
-	param_dtype = symbGetType( param )
+
+	'' strip the non-type flags
+	param_dtype = typeGetDtAndPtrOnly( symbGetType( param ) )
+	arg_dtype   = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
 
 	select case symbGetParamMode( param )
 	'' by descriptor?
@@ -878,8 +893,8 @@ private function hCheckParam _
 
 		'' passing a BYVAL ptr to an BYREF arg?
 		if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
-			if( (symbGetDataClass( arg->dtype ) <> FB_DATACLASS_INTEGER) or _
-				(symbGetDataSize( arg->dtype ) <> FB_POINTERSIZE) ) then
+			if( (symbGetDataClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
+				(symbGetDataSize( arg_dtype ) <> FB_POINTERSIZE) ) then
 				hParamError( parent )
 				exit function
 			end if
@@ -889,7 +904,7 @@ private function hCheckParam _
 	end select
 
 	'' UDT arg? convert to param type if possible (including strings)
-	select case arg->dtype
+	select case arg_dtype
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		'' try implicit casting op overloading
 		dim as integer err_num = any
@@ -899,6 +914,7 @@ private function hCheckParam _
 									symbGetSubtype( param ), _
 									arg, _
 									@err_num )
+		
 		if( proc <> NULL ) then
     		static as integer rec_cnt = 0
     		'' recursion? (astBuildCall() will call newARG with the same expr)
@@ -909,11 +925,12 @@ private function hCheckParam _
 				rec_cnt -= 1
 
 				arg = n->l
+				arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
 			end if
 		end if
 	end select
 
-    select case symbGetType( param )
+    select case param_dtype
     '' string param?
     case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
 		return hCheckStrParam( parent, param, n )
@@ -924,23 +941,23 @@ private function hCheckParam _
 
 	end select
 
-	select case as const arg->dtype
+	select case as const arg_dtype
 	'' string arg? check z- and w-string ptr params
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-
-		select case symbGetType( param )
+        
+		select case param_dtype
 		'' zstring ptr param?
 		case typeAddrOf( FB_DATATYPE_CHAR )
 			'' if it's a wstring param, convert..
-			if( arg->dtype = FB_DATATYPE_WCHAR ) then
+			if( arg_dtype = FB_DATATYPE_WCHAR ) then
 				n->l = rtlToStr( arg )
 			end if
 
 		'' wstring ptr?
 		case typeAddrOf( FB_DATATYPE_WCHAR )
 			'' if it's not a wstring param, convert..
-			if( arg->dtype <> FB_DATATYPE_WCHAR ) then
+			if( arg_dtype <> FB_DATATYPE_WCHAR ) then
 				n->l = rtlToWstr( arg )
 			end if
 
@@ -951,6 +968,7 @@ private function hCheckParam _
 
 		hStrArgToStrPtrParam( parent, n, TRUE )
 		arg = n->l
+		arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
 
 	'' UDT? implicit casting failed, can't convert..
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
@@ -961,17 +979,17 @@ private function hCheckParam _
 	'' different types? convert..
 	dim as integer do_conv = any
 
-	do_conv = symbGetDataSize( param_dtype ) <> symbGetDataSize( arg->dtype )
+	do_conv = symbGetDataSize( param_dtype ) <> symbGetDataSize( arg_dtype )
 	if( do_conv = FALSE ) then
-		do_conv = symbGetDataClass( param_dtype ) <> symbGetDataClass( arg->dtype )
+		do_conv = symbGetDataClass( param_dtype ) <> symbGetDataClass( arg_dtype )
 	end if
 
 	if( do_conv ) then
 		'' enum args are only allowed to be passed enum or int params
 		if( (param_dtype = FB_DATATYPE_ENUM) or _
-			(arg->dtype = FB_DATATYPE_ENUM) ) then
+			(arg_dtype = FB_DATATYPE_ENUM) ) then
 			if( symbGetDataClass( param_dtype ) <> _
-				symbGetDataClass( arg->dtype ) ) then
+				symbGetDataClass( arg_dtype ) ) then
 				hParamWarning( parent, FB_WARNINGMSG_IMPLICITCONVERSION )
 			end if
 		end if
@@ -1000,6 +1018,7 @@ private function hCheckParam _
 			if( arg = NULL ) then
 				exit function
 			end if
+			arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
 		end if
 
 		arg = astNewCONV( param_dtype, symbGetSubtype( param ), arg )
@@ -1007,17 +1026,19 @@ private function hCheckParam _
 			hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
+		arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
 
 		n->l = arg
 
 	else
 		'' check for overflows
-		if( symbGetDataClass( arg->dtype ) = FB_DATACLASS_FPOINT ) then
+		if( symbGetDataClass( arg_dtype ) = FB_DATACLASS_FPOINT ) then
 			if( astIsCONST( arg ) ) then
 				arg = astCheckConst( param_dtype, arg )
 				if( arg = NULL ) then
 					exit function
 				end if
+				arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
 			end if
 		end if
 	end if
@@ -1025,14 +1046,14 @@ private function hCheckParam _
 	'' pointer checking
 	if( typeIsPtr( param_dtype ) ) then
 		if( astPtrCheck( param_dtype, symbGetSubtype( param ), arg ) = FALSE ) then
-			if( typeIsPtr( arg->dtype ) = FALSE ) then
+			if( typeIsPtr( arg_dtype ) = FALSE ) then
 				hParamWarning( parent, FB_WARNINGMSG_PASSINGSCALARASPTR )
 			else
 				hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 			end if
 		end if
 
-    elseif( typeIsPtr( arg->dtype ) ) then
+    elseif( typeIsPtr( arg_dtype ) ) then
     	hParamWarning( parent, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
 	end if
 
@@ -1053,6 +1074,7 @@ private function hCreateOptArg _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr tree = symbGetParamOptExpr( param )
+	dim as integer param_dtype = typeGetDtAndPtrOnly( symbGetType( param ) )
 
 	if( tree = NULL ) then
 		return NULL
@@ -1066,7 +1088,7 @@ private function hCreateOptArg _
 	end if
 
 	'' UDT?
-	if( symbGetType( param ) = FB_DATATYPE_STRUCT ) then
+	if( param_dtype = FB_DATATYPE_STRUCT ) then
 		'' update the counters
 		astTypeIniUpdCnt( tree )
 	end if
@@ -1104,6 +1126,14 @@ function astNewARG _
 		dtype = astGetDataType( arg )
 	end if
 
+    '' check const arg to non-const param
+    if( typeIsConst( dtype ) ) then
+    	if( typeIsConst( symbGetType( param ) ) = 0 ) then
+    		hParamError( parent, FB_ERRMSG_CONSTANTCANTBECHANGED )
+    		exit function
+    	end if
+    end if
+	
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ARG, FB_DATATYPE_INVALID )
 	function = n
