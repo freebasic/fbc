@@ -583,6 +583,8 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	lock_array(kb_scan_to_ascii);
 	lock_array(kb_numpad_to_ascii);
 	lock_code(fb_dos_vesa_set_palette, fb_dos_vesa_set_palette_end);
+	lock_var(__fb_dos_update_ticks);
+	lock_var(__fb_dos_ticks_per_update);
 	
 	fb_dos.w = w;
 	fb_dos.h = h;
@@ -674,6 +676,8 @@ void fb_dos_exit(void)
 	unlock_array(kb_scan_to_ascii);
 	unlock_array(kb_numpad_to_ascii);
 	unlock_code(fb_dos_vesa_set_palette, fb_dos_vesa_set_palette_end);
+	unlock_var(__fb_dos_update_ticks);
+	unlock_var(__fb_dos_ticks_per_update);
 	
 	fb_dos_restore_video_mode();
 
