@@ -211,9 +211,14 @@ private function hToStr _
 		byref l as ASTNODE ptr, _
 		byref r as ASTNODE ptr _
 	) as integer
-
+	
+	dim as integer ldtype = any, rdtype = any
+	
+	ldtype = typeGetDtAndPtrOnly( astGetDataType( l ) )
+	rdtype = typeGetDtAndPtrOnly( astGetDataType( r ) )
+	
     '' convert left operand to string if needed
-    select case as const astGetDataType( l )
+    select case as const ldtype
     case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
     	 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
@@ -232,14 +237,14 @@ private function hToStr _
 
 
 	'' convert the right operand to string if needed
-   	select case as const astGetDataType( r )
+   	select case as const rdtype
    	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
    		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
    	'' not a string..
    	case else
    		'' expression is not a wstring?
-   		if( astGetDataType( l ) <> FB_DATATYPE_WCHAR ) then
+   		if( ldtype <> FB_DATATYPE_WCHAR ) then
    			r = rtlToStr( r )
    		else
    			r = rtlToWstr( r )
@@ -826,8 +831,8 @@ function astNewBOP _
 		op = AST_OP_ADD
 	end if
 
-	ldtype = l->dtype
-	rdtype = r->dtype
+	ldtype = typeGetDtAndPtrOnly( astGetDatatype( l ) )
+	rdtype = typeGetDtAndPtrOnly( astGetDatatype( r ) )
 	ldclass = symbGetDataClass( ldtype )
 	rdclass = symbGetDataClass( rdtype )
 
