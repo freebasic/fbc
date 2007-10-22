@@ -106,7 +106,12 @@ AC_SUBST([X_INCLUDES])
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([fcntl.h float.h malloc.h math.h stddef.h stdlib.h stdio.h string.h sys/file.h sys/io.h sys/ioctl.h sys/time.h term.h termcap.h termios.h unistd.h wchar.h wctype.h])
+AC_CHECK_HEADERS([fcntl.h float.h malloc.h math.h stddef.h stdlib.h stdio.h string.h sys/file.h sys/io.h sys/ioctl.h sys/time.h termcap.h termios.h unistd.h wchar.h wctype.h])
+AC_CHECK_HEADERS([curses.h term.h], [], [],
+[[#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif
+]])
 
 # Make sure off_t is 64-bit in *nix
 AC_DEFINE([_FILE_OFFSET_BITS],64,[File offset bits])

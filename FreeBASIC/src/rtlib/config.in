@@ -24,6 +24,9 @@
 /* Define to 1 if you have the `chdir' function. */
 #undef HAVE_CHDIR
 
+/* Define to 1 if you have the <curses.h> header file. */
+#undef HAVE_CURSES_H
+
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
 #undef HAVE_DIRENT_H
