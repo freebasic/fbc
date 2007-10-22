@@ -47,6 +47,12 @@ case "$target" in
 		FBRT_TARGET_BASE=unix
 		FBRT_TARGET=freebsd
 		;;
+	*-*-solaris* )
+		AC_DEFINE([TARGET_SOLARIS],1,[Solaris build])
+		AC_DEFINE([TARGET_BASE_UNIX],1,[Unix base build])
+		FBRT_TARGET_BASE=unix
+		FBRT_TARGET=solaris
+		;;
 	*)
 		AC_MSG_ERROR([Unsupported target])
 		;;
@@ -100,7 +106,7 @@ AC_SUBST([X_INCLUDES])
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([fcntl.h float.h malloc.h math.h stddef.h stdlib.h stdio.h string.h sys/file.h sys/io.h sys/ioctl.h sys/time.h termios.h unistd.h wchar.h wctype.h])
+AC_CHECK_HEADERS([fcntl.h float.h malloc.h math.h stddef.h stdlib.h stdio.h string.h sys/file.h sys/io.h sys/ioctl.h sys/time.h term.h termcap.h termios.h unistd.h wchar.h wctype.h])
 
 # Make sure off_t is 64-bit in *nix
 AC_DEFINE([_FILE_OFFSET_BITS],64,[File offset bits])

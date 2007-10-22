@@ -213,8 +213,14 @@
 /* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
 #undef HAVE_SYS_WAIT_H
 
+/* Define to 1 if you have the <termcap.h> header file. */
+#undef HAVE_TERMCAP_H
+
 /* Define to 1 if you have the <termios.h> header file. */
 #undef HAVE_TERMIOS_H
+
+/* Define to 1 if you have the <term.h> header file. */
+#undef HAVE_TERM_H
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
@@ -287,7 +293,7 @@
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
-   automatically deduced at run-time.
+   automatically deduced at runtime.
 	STACK_DIRECTION > 0 => grows toward higher addresses
 	STACK_DIRECTION < 0 => grows toward lower addresses
 	STACK_DIRECTION = 0 => direction of growth unknown */
@@ -313,6 +319,9 @@
 
 /* Powerpc64 build */
 #undef TARGET_POWERPC64
+
+/* Solaris build */
+#undef TARGET_SOLARIS
 
 /* Sparc64 build */
 #undef TARGET_SPARC64
@@ -357,7 +366,7 @@
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc
 
-/* Define to `long' if <sys/types.h> does not define. */
+/* Define to `long int' if <sys/types.h> does not define. */
 #undef off_t
 
 /* Define to `int' if <sys/types.h> does not define. */
@@ -366,7 +375,7 @@
 /* Define to rpl_realloc if the replacement function should be used. */
 #undef realloc
 
-/* Define to `unsigned' if <sys/types.h> does not define. */
+/* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
 
 /* Define as `fork' if `vfork' does not work. */
