@@ -254,7 +254,7 @@ end type
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
-		@"VAR requires an initializer", _
+		@"Expected initializer", _
 		@"Fields cannot be named as keywords in TYPE's that contain member functions or in CLASS'es", _
 		@"Illegal outside a FOR compound statement", _
 		@"Illegal outside a DO compound statement", _

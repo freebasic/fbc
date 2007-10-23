@@ -830,6 +830,16 @@ private function hVarInit _
 
 	'' default initialization
 	case else
+		
+		if( typeIsConst( symbGetFullType( sym ) ) ) then
+			if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				return astNewCONSTi( 0 )
+			end if
+		end if
+		
     	if( sym <> NULL ) then
     		'' ctor?
     		if( has_defctor ) then
