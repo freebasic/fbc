@@ -908,10 +908,10 @@ function rtlPrint _
 		args = 2
 	else
 
-		dtype = astGetDataType( expr )
+		dtype = astGetFullType( expr )
 
 		'' UDT? try to convert to string with type casting op overloading
-		select case dtype
+		select case typeGet( dtype )
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 			expr = astNewOvlCONV( FB_DATATYPE_STRING, NULL, expr )
 			if( expr = NULL ) then

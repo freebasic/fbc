@@ -6,7 +6,7 @@ namespace fbc_tests.const_.const_to_const
 	end sub
 	
 	sub test cdecl( )
-		dim as const string bar
+		dim as const string bar = "hi"
 		foo( bar )
 	end sub
 	

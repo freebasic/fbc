@@ -1,9 +1,10 @@
 [ ] CONST qualifier
     [ ] ptr checking must be updated
     [x] typedef patching must be fixed
-    [ ] must check assignment
-    [ ] must check overloading resolution and the proc dup check
+    [x] must check assignment
+    [x] must check overloading resolution and the proc dup check
     [ ] TYPEOF must be updated..?
+    [ ] overload/tostring.bas is failing... (string casts)
 
 [ ] ctor/dtor
     - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when

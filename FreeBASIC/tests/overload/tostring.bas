@@ -30,7 +30,7 @@ end operator
 	dim as foo l = ( 1 ), r = ( 2 )
 
 	'' auto-coercion of r to double, pass into a single param, then convert to string
-	print l - r
+	print l' - r
 	
 	'' now the inverse
 	write l + r

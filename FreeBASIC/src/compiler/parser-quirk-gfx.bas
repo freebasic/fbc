@@ -210,7 +210,7 @@ private function hGetTarget _
 	
 	'' don't allow a pointer to a const...
 	if( allow_const = FALSE ) then
-		if( (typeGetConstMask( astGetDatatype( expr ) ) and (1 shl (FB_DT_CONSTPOS + iif( nidx_array, 0, 1 )))) ) then
+		if( (typeGetConstMask( astGetFullType( expr ) ) and (1 shl (FB_DT_CONSTPOS + iif( nidx_array, 0, 1 )))) ) then
 			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 			exit function
 		end if

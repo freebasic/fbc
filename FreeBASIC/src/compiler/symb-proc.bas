@@ -1582,7 +1582,7 @@ private function hCalcTypesDiff _
 				arg_dtype = FB_DATATYPE_UINT
 			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( param_dtype - arg_dtype )
+			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGEt( arg_dtype ) )
 
 		'' float? (ok due the auto-coercion, unless it's a pointer)
 		case FB_DATACLASS_FPOINT
@@ -1590,7 +1590,7 @@ private function hCalcTypesDiff _
 				return 0
 			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( param_dtype - arg_dtype )
+			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGEt( arg_dtype ) )
 
 		'' string? only if it's a w|zstring ptr arg
 		case FB_DATACLASS_STRING
@@ -1625,11 +1625,11 @@ private function hCalcTypesDiff _
 				arg_dtype = symbRemapType( arg_dtype, arg_subtype )
 			end select
 
-			return FB_OVLPROC_HALFMATCH - abs( param_dtype - arg_dtype )
+			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGEt( arg_dtype ) )
 
 		'' or if another float..
 		case FB_DATACLASS_FPOINT
-			return FB_OVLPROC_HALFMATCH - abs( param_dtype - arg_dtype )
+			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGEt( arg_dtype ) )
 
 		'' refuse anything else
 		case else
@@ -1783,7 +1783,7 @@ private function hCheckOvlParam _
 		select case arg_dtype
 		'' UDT arg? try implicit casting..
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			hCheckCastOvlEx( cast_rec_cnt, param_dtype, param_subtype, arg_expr )
+			hCheckCastOvlEx( cast_rec_cnt, symbGetFullType( param ), param_subtype, arg_expr )
 			return 0
 		end select
     end select
@@ -2145,11 +2145,11 @@ private function hCheckCastOvl _
 	dim as integer proc_dtype = any
 	dim as FBSYMBOL ptr proc_subtype = any
 
-	proc_dtype = symbGetType( proc )
+	proc_dtype = symbGetFullType( proc )
 	proc_subtype = symbGetSubType( proc )
 
 	'' same types?
-	if( proc_dtype = to_dtype ) then
+	if( typeGetDtAndPtrOnly( proc_dtype ) = typeGetDtAndPtrOnly( to_dtype ) ) then
 		'' same subtype?
 		if( proc_subtype = to_subtype ) then
 			return FB_OVLPROC_FULLMATCH
@@ -2162,14 +2162,14 @@ private function hCheckCastOvl _
 
 	'' different types..
 
-	select case proc_dtype
+	select case typeGet( proc_dtype )
 	'' UDT or enum? can't be different (this is the last resource,
 	'' don't try to do coercion inside a casting routine)
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
 		return 0
 
 	case else
-		select case to_dtype
+		select case typeGet( to_dtype )
 		'' UDT arg? refuse
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			return 0
@@ -2178,7 +2178,7 @@ private function hCheckCastOvl _
 	end select
 
 	'' last resource, calc the differences
-	function = hCalcTypesDiff( symbGetFullType( proc ), _
+	function = hCalcTypesDiff( proc_dtype, _
 						   	   proc_subtype, _
 						   	   symbGetPtrCnt( proc ), _
 						   	   to_dtype, _
@@ -2230,7 +2230,7 @@ function symbFindCastOvlProc _
 	max_matches = 0
 	amb_cnt = 0
 
-	if( to_dtype <> FB_DATATYPE_VOID ) then
+	if( typeGet( to_dtype ) <> FB_DATATYPE_VOID ) then
 		'' for each overloaded proc..
 		proc = proc_head
 		do while( proc <> NULL )

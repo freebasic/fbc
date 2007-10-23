@@ -3,5 +3,5 @@
 sub foo( byref bas as string )
 end sub
 
-dim as const string bar
+dim as const string bar = "hi"
 foo( bar )
