@@ -69,7 +69,7 @@ function preg_t.match(pattern as zstring ptr, subject as zstring ptr, byval offs
  
 	dim as integer ptr vector = allocate((this.substrings + 1) * 3 * sizeof(integer))
  
-	dim as integer temp_e = pcre_exec(temp_c, 0, subject, len(*subject), offset, flags, vector, (this.substrings + 1) * 3)
+	dim as integer temp_e = pcre_exec(temp_c, 0, subject, len(*subject), offset, 0 /'flags'/, vector, (this.substrings + 1) * 3)
 	if temp_e = 0 then temp_e = this.substrings + 1
 	if temp_e < 0 then
 		this.errorcode = temp_e
@@ -107,7 +107,7 @@ function preg_t.match_all(pattern as zstring ptr, subject as zstring ptr, byval 
  
 	dim as integer temp_l = len(*subject), temp_o = offset
 	do
-		dim as integer temp_e = pcre_exec(temp_c, 0, subject, temp_l, temp_o, flags, vector, (this.substrings + 1) * 3)
+		dim as integer temp_e = pcre_exec(temp_c, 0, subject, temp_l, temp_o, 0 /'flags'/, vector, (this.substrings + 1) * 3)
 		if temp_e = 0 then temp_e = this.substrings + 1
 		if temp_e < 0 then
 			this.errorcode = temp_e
@@ -149,7 +149,7 @@ function preg_t.replace(pattern as zstring ptr, replacement as zstring ptr, subj
  
 	dim as integer temp_s = len(*subject), temp_o = offset
 	do
-		dim as integer temp_e = pcre_exec(temp_c, 0, subject, temp_s, temp_o, flags, vector, (this.substrings + 1) * 3)
+		dim as integer temp_e = pcre_exec(temp_c, 0, subject, temp_s, temp_o, 0 /'flags'/, vector, (this.substrings + 1) * 3)
 		if temp_e = 0 then temp_e = this.substrings + 1
 		if temp_e < 0 then
 			this.errorcode = temp_e
@@ -292,6 +292,8 @@ scope
 end scope
  
 ? preg_match_simple("ba[y-z]", "foo bar baz bay")
+? preg_match_simple("ba.", "bar baz", 2)
+? preg_match_simple(".OO", "foo", , PCRE_CASELESS)
 ?
  
 ? preg_replace_simple("(foo)?ba(r|z)", "//$0//$1$1//$2$$$2//$9//", "foo--foobaz--bar--baz--foo")
