@@ -49,10 +49,13 @@
 #include <dirent.h>
 #include <dlfcn.h>
 #include <pthread.h>
-#include <termcap.h>
+
+#ifdef HAVE_TERMCAP_H
+# include <termcap.h>
+#endif
 
 #ifdef HAVE_SYS_IO_H
- #include <sys/io.h>
+# include <sys/io.h>
 #endif
 #include <sys/ioctl.h>
 

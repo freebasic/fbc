@@ -156,7 +156,7 @@ FBCALL int          fb_ConsoleView      ( int toprow, int botrow );
        int          fb_ConsoleKeyHit    ( void );
 
        int          fb_ConsoleMultikey  ( int scancode );
-       int          fb_ConsoleGetMouse  ( int *x, int *y, int *z, int *buttons, int *clip );
+       int          fb_ConsoleGetMouse  ( int *x, int *y, int *z, int *buttons_, int *clip );
        int          fb_ConsoleSetMouse  ( int x, int y, int cursor, int clip );
 
        void         fb_ConsolePrintBuffer( const char *buffer, int mask );

@@ -44,6 +44,10 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 #include "fb.h"
 
 /*:::::*/

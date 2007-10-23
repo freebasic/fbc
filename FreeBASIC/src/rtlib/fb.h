@@ -178,6 +178,11 @@ extern "C" {
 #elif defined(TARGET_FREEBSD)
 #include "unix/fb_unix.h"
 #include "freebsd/fb_freebsd.h"
+#elif defined(TARGET_SOLARIS)
+#include "unix/fb_unix.h"
+#include "solaris/fb_solaris.h"
+#else
+#error target not supported
 #endif
 
 /**
