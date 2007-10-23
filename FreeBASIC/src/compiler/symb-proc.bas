@@ -1690,11 +1690,11 @@ private function hCheckOvlParam _
 		end if
     end if
 
-	param_dtype = symbGetType( param )
+	param_dtype = symbGetFullType( param )
 	param_subtype = symbGetSubType( param )
 	param_ptrcnt = symbGetPtrCnt( param )
 
-	arg_dtype = astGetDataType( arg_expr )
+	arg_dtype = astGetFullType( arg_expr )
 	arg_subtype = astGetSubType( arg_expr )
 
 	select case symbGetParamMode( param )
@@ -1740,10 +1740,13 @@ private function hCheckOvlParam _
 	static as integer cast_rec_cnt = 0, ctor_rec_cnt = 0
 
 	'' same types?
-	if( param_dtype = arg_dtype ) then
-		'' same subtype? full match..
-		if( param_subtype = arg_subtype ) then
-			return FB_OVLPROC_FULLMATCH
+	if( typeGetDtAndPtrOnly( param_dtype ) = typeGetDtAndPtrOnly( arg_dtype ) ) then
+		
+		if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
+			'' same subtype? full match..
+			if( param_subtype = arg_subtype ) then
+				return FB_OVLPROC_FULLMATCH
+			end if
 		end if
 
 		'' pointer? check if valid (could be a NULL)

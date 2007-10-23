@@ -1041,7 +1041,7 @@ private function hCheckParam _
 
 	'' pointer checking
 	if( typeIsPtr( param_dtype ) ) then
-		if( astPtrCheck( param_dtype, symbGetSubtype( param ), arg ) = FALSE ) then
+		if( astPtrCheck( symbGetFullType( param ), symbGetSubtype( param ), arg ) = FALSE ) then
 			if( typeIsPtr( arg_dtype ) = FALSE ) then
 				hParamWarning( parent, FB_WARNINGMSG_PASSINGSCALARASPTR )
 			else

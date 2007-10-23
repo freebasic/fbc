@@ -789,7 +789,7 @@ function astPtrCheck _
 
 	function = FALSE
 
-	edtype = astGetDataType( expr )
+	edtype = astGetFullType( expr )
 
 	select case astGetClass( expr )
 	case AST_NODECLASS_CONST, AST_NODECLASS_ENUM
@@ -810,16 +810,16 @@ function astPtrCheck _
     	end if
 	end select
 
-	'' different types?
-	if( pdtype <> edtype ) then
+	'' different constant masks?
+	if( strictcheck ) then
+		if( typeGetPtrConstMask( edtype ) <> _
+			typeGetPtrConstMask( pdtype ) ) then
+			exit function
+		end if
+	end if
 
-    	'' different constant masks?
-    	if( strictcheck ) then
-    		if( typeGetPtrConstMask( edtype ) <> _
-    			typeGetPtrConstMask( pdtype ) ) then
-    			exit function
-    		end if
-    	end if
+	'' different types?
+	if( typeGetDtAndPtrOnly( pdtype ) <> typeGetDtAndPtrOnly( edtype ) ) then
 
     	'' remove the pointers
     	dim as integer pdtype_np = any, edtype_np = any
