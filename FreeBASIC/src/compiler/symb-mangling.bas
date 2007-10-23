@@ -366,16 +366,16 @@ function symbMangleType _
 	dim as string sig
 
     '' forward type?
-    if( dtype = FB_DATATYPE_FWDREF ) then
+    if( typeGet( dtype ) = FB_DATATYPE_FWDREF ) then
     	if( subtype = NULL ) then
     		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
     		dtype = FB_DATATYPE_VOID
     	else
-    		dtype = FB_DATATYPE_STRUCT
+    		dtype = typeJoin( dtype, FB_DATATYPE_STRUCT )
     	end if
     end if
 
-    select case as const dtype
+    select case as const typeGet( dtype )
     case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
     	dim as FBSYMBOL ptr ns = symbGetNamespace( subtype )
     	if( ns = @symbGetGlobalNamespc( ) ) then
@@ -459,7 +459,7 @@ function symbMangleParam _
 		byval param as FBSYMBOL ptr _
 	) as string
 
-	dim as integer dtype = symbGetType( param )
+	dim as integer dtype = symbGetFullType( param )
 
 	select case as const symbGetParamMode( param )
 	'' by reference (or descriptor)?
