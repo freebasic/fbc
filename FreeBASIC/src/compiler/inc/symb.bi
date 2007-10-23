@@ -1998,7 +1998,8 @@ declare function symbVarCheckAccess _
 
 #define symbGetWstrLen(s) (cunsg(s->lgt) \ symbGetDataSize( FB_DATATYPE_WCHAR ))
 
-#define symbGetType(s) s->typ
+#define symbGetFullType(s) s->typ
+#define symbGetType(s) typeGetDtAndPtrOnly( symbGetFullType( s ) )
 
 #define symbGetSubType(s) s->subtype
 
@@ -2443,6 +2444,9 @@ declare function symbVarCheckAccess _
 #define typeGet( dt ) iif( dt and FB_DT_PTRMASK, FB_DATATYPE_POINTER, dt and FB_DT_TYPEMASK )
 #define typeGetDtOnly( dt ) (dt and FB_DT_TYPEMASK)
 #define typeGetDtAndPtrOnly( dt ) (dt and (FB_DT_TYPEMASK or FB_DT_PTRMASK))
+#define typeJoin( dt, ndt ) ((dt and (not (FB_DT_TYPEMASK or FB_DT_PTRMASK))) or (ndt and (FB_DT_TYPEMASK or FB_DT_PTRMASK)))
+
+
 
 #define typeAddrOf( dt ) _
 	((dt and FB_DT_TYPEMASK) or _
@@ -2464,7 +2468,7 @@ declare function symbVarCheckAccess _
 	 ((dt and FB_DT_PTRMASK) - (cnt shl FB_DT_PTRPOS)) or _
 	 (((dt and FB_DT_CONSTMASK) shr cnt) and FB_DT_CONSTMASK))
 
-#define	typeIsPtr( dt ) ((dt and FB_DT_PTRMASK) <> 0)
+#define	typeIsPtr( dt ) (((dt and FB_DT_PTRMASK) <> 0))
 #define typeGetPtrCnt( dt ) ((dt and FB_DT_PTRMASK) shr FB_DT_PTRPOS)
 
 #define	typeIsConst( dt ) ((dt and (1 shl FB_DT_CONSTPOS)) <> 0)

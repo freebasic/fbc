@@ -29,10 +29,12 @@
 '':::::
 private function hAllocWithVar( ) as FBSYMBOL ptr
     static as FBARRAYDIM dTB(0)
-    dim as FBSYMBOL ptr sym, subtype
-    dim as ASTNODE ptr expr
-    dim as integer dtype
-
+    dim as FBSYMBOL ptr sym = any, subtype = any
+    dim as ASTNODE ptr expr = any
+    dim as integer dtype = any
+    
+    dtype = FB_DATATYPE_VOID
+    
     '' Variable
 	expr = cVarOrDeref( , , TRUE )
     if( expr = NULL ) then
@@ -47,7 +49,7 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
 
     else
 		'' not an UDT?
-		dtype = astGetDataType( expr )
+		dtype = astGetFullType( expr )
 		if( dtype <> FB_DATATYPE_STRUCT ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				return NULL

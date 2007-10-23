@@ -34,7 +34,7 @@ private function hCheckIndex _
 	) as ASTNODE ptr
 
 	'' if index isn't an integer, convert
-	select case as const typeGet( astGetDataType( expr ) )
+	select case as const astGetDataType( expr )
 	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
 
 	case FB_DATATYPE_POINTER
@@ -269,11 +269,11 @@ private function hUdtConstMember _
   	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
   		function = astNewVAR( symbGetConstValStr( fld ), _
   							  0, _
-  							  symbGetType( fld ) )
+  							  symbGetFullType( fld ) )
 
 	case else
 		function = astNewCONST( @symbGetConstVal( fld ), _
-								symbGetType( fld ), _
+								symbGetFullType( fld ), _
 								symbGetSubType( fld ) )
 
 	end select
@@ -389,7 +389,10 @@ function cUdtMember _
 		if(	fld	= NULL ) then
 			return NULL
 		end	if
-
+		
+		'' make sure the field inherits the parent's constant mask
+		symbGetFullType( fld ) or= typeGetConstMask( dtype )
+		
 		select case	as const symbGetClass( fld )
 		'' const? (enum elmts too), exit
 		case FB_SYMBCLASS_CONST
@@ -414,16 +417,13 @@ function cUdtMember _
 		case FB_SYMBCLASS_FIELD
 			lexSkipToken( )
 
-			dtype =	symbGetType( fld )
+			dtype =	symbGetFullType( fld )
 			subtype	= symbGetSubType( fld )
 
 			dim	as ASTNODE ptr fldexpr = hUdtDataMember( fld, check_array )
 			if(	fldexpr	= NULL ) then
 				exit do
 			end	if
-
-			dtype =	symbGetType( fld )
-			subtype	= symbGetSubType( fld )
 
 			'' ugly	hack to	deal with arrays w/o indexes
 			dim as integer is_nidxarray = FALSE
@@ -449,7 +449,7 @@ function cUdtMember _
 				return astNewNIDXARRAY( varexpr )
 			end if
 
-			select case	dtype
+			select case	typeGet( dtype )
 			case FB_DATATYPE_STRUCT	', FB_DATATYPE_CLASS
 				'' '.'?
 				if( lexGetToken( ) <> CHAR_DOT ) then
@@ -470,10 +470,10 @@ function cUdtMember _
 
 			varexpr	= hUdtStaticMember(	fld, check_array )
 
-			dtype =	symbGetType( fld )
+			dtype =	symbGetFullType( fld )
 			subtype	= symbGetSubType( fld )
 
-			select case	dtype
+			select case	typeGet( dtype )
 			case FB_DATATYPE_STRUCT	', FB_DATATYPE_CLASS
 				if(	lexGetToken( ) <> CHAR_DOT ) then
 					return varexpr
@@ -542,7 +542,7 @@ private function hStrIndexing _
 		end if
 	end if
 
-	if( dtype = FB_DATATYPE_STRING ) then
+	if( typeGet( dtype ) = FB_DATATYPE_STRING ) then
 		'' deref
 		varexpr = astBuildStrPtr( varexpr )
 	else
@@ -551,7 +551,7 @@ private function hStrIndexing _
 	end if
 
 	'' add index
-	if( dtype = FB_DATATYPE_WCHAR ) then
+	if( typeGet( dtype ) = FB_DATATYPE_WCHAR ) then
 		'' times sizeof( wchar ) if it's wstring
 		idxexpr = astNewBOP( AST_OP_SHL, _
 				   			 idxexpr, _
@@ -567,10 +567,10 @@ private function hStrIndexing _
 	varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
 
 	'' not a wstring?
-	if( dtype <> FB_DATATYPE_WCHAR ) then
-		dtype = FB_DATATYPE_UBYTE
+	if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
+		dtype = typeJoin( dtype, FB_DATATYPE_UBYTE )
 	else
-		dtype = env.target.wchar.type
+		dtype = typeJoin( dtype, env.target.wchar.type )
 	end if
 
 	'' make a pointer
@@ -627,14 +627,14 @@ function cMemberDeref _
 
     				lexSkipToken( LEXCHECK_NOPERIOD )
 
-    				varexpr = cMemberAccess( astGetDataType( varexpr ), _
+    				varexpr = cMemberAccess( astGetFullType( varexpr ), _
     										 astGetSubType( varexpr ), _
     										 varexpr )
 					if( varexpr = NULL ) then
 						exit function
 					end if
 
-    				dtype = astGetDataType( varexpr )
+    				dtype = astGetFullType( varexpr )
     				subtype = astGetSubType( varexpr )
     				is_ovl = TRUE
 
@@ -698,7 +698,7 @@ function cMemberDeref _
 			'' string, fixstr, w|zstring?
 			if( typeIsPtr( dtype ) = FALSE ) then
 
-				select case as const dtype
+				select case as const typeGet( dtype )
 				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 					 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
@@ -747,7 +747,7 @@ function cMemberDeref _
 
 		end select
 
-		select case as const dtype
+		select case as const typeGet( dtype )
 		'' incomplete type?
 		case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
 			if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
@@ -798,7 +798,7 @@ function cMemberDeref _
 				exit do
 			end if
 
-    		dtype = astGetDataType( varexpr )
+    		dtype = astGetFullType( varexpr )
     		subtype = astGetSubType( varexpr )
 
 		else
@@ -812,7 +812,7 @@ check_deref:
 				exit function
 			end if
 
-    		dtype = astGetDataType( varexpr )
+    		dtype = astGetFullType( varexpr )
     		subtype = astGetSubType( varexpr )
 		end if
 	loop
@@ -849,7 +849,7 @@ function cFuncPtrOrMemberDeref _
 
    		'' check for functions called through pointers
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ) ) then
+   			if( dtype = typeAddrOf( FB_DATATYPE_FUNCTION ) ) then
 				isfuncptr = TRUE
    			end if
    		end if
@@ -1357,7 +1357,7 @@ function cVariableEx overload _
 	'' ID
 	lexSkipToken( )
 
-	dtype = symbGetType( sym )
+	dtype = symbGetFullType( sym )
 	subtype = symbGetSubtype( sym )
 
     is_byref = symbIsParamByRef( sym ) or symbIsImport( sym )
@@ -1392,7 +1392,7 @@ function cVariableEx overload _
 
     		else
    				'' check if calling functions through pointers
-   				is_funcptr = (typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
+   				is_funcptr = (dtype = typeAddrOf( FB_DATATYPE_FUNCTION ))
 
     			'' using (...) with scalars?
     			if( (is_array = FALSE) and (is_funcptr = FALSE) ) then
@@ -1459,7 +1459,7 @@ function cVariableEx overload _
    			'' ('.' UdtMember)?
    			if( lexGetToken( ) = CHAR_DOT ) then
 
-				select case	dtype
+				select case	typeGet( dtype )
 				case FB_DATATYPE_STRUCT	', FB_DATATYPE_CLASS
 
 				case else
@@ -1488,7 +1488,7 @@ function cVariableEx overload _
 
 				'' check if	calling	functions through pointers
 				if(	lexGetToken( ) = CHAR_LPRNT	) then
-					is_funcptr = (typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
+					is_funcptr = (dtype = typeAddrOf( FB_DATATYPE_FUNCTION ))
 				end	if
 
 			end if
@@ -1613,7 +1613,7 @@ private function hImpField _
    		return varexpr
    	end if
 
-	dtype =	astGetDataType(	varexpr	)
+	dtype =	astGetFullType( varexpr )
 	subtype	= astGetSubType( varexpr )
 
 	'' check if	calling	functions through pointers
@@ -1643,7 +1643,7 @@ function cWithVariable _
     lexSkipToken( LEXCHECK_NOPERIOD )
 
     function = hImpField( sym, _
-    					  typeDeref( symbGetType( sym ) ), _
+    					  typeDeref( symbGetFullType( sym ) ), _
     					  symbGetSubtype( sym ), _
     					  check_array )
 
@@ -1698,9 +1698,9 @@ function cImplicitDataMember _
 		errReport( FB_ERRMSG_STATICMEMBERHASNOINSTANCEPTR )
 		return NULL
 	end if
-
+    
     function = hImpField( this_, _
-    					  symbGetType( this_ ), _
+    					  symbGetFullType( this_ ), _
     					  symbGetSubtype( this_ ), _
     					  check_array )
 

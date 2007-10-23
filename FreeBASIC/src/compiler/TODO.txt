@@ -1,8 +1,9 @@
 [ ] CONST qualifier
-    - ptr checking must be updated
-    - typedef patching must be fixed
-    - must check assignment
-    - must check overloading resolution and the proc dup check
+    [ ] ptr checking must be updated
+    [x] typedef patching must be fixed
+    [ ] must check assignment
+    [ ] must check overloading resolution and the proc dup check
+    [ ] TYPEOF must be updated..?
 
 [ ] ctor/dtor
     - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when

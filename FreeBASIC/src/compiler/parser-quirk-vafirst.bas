@@ -73,7 +73,7 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 	end if
 
 	'' @param
-	expr = astNewVAR( sym, 0, symbGetType( sym ), NULL )
+	expr = astNewVAR( sym, 0, symbGetFullType( sym ), NULL )
 	expr = astNewADDROF( expr )
 
 	'' + paramlen( param )

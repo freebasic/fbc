@@ -205,7 +205,7 @@ function rtlMathLen _
 
 	function = NULL
 
-	dtype = typeGetDtAndPtrOnly( astGetDataType( expr ) )
+	dtype = astGetDataType( expr )
 
 	'' LEN()?
 	if( islen ) then
@@ -311,9 +311,7 @@ function rtlMathLongintDIV _
 
 	function = NULL
 	
-	dtype = typeGetDtAndPtrOnly( dtype )
-	
-	if( dtype = FB_DATATYPE_LONGINT ) then
+	if( typeGet( dtype ) = FB_DATATYPE_LONGINT ) then
 		f = PROCLOOKUP( LONGINTDIV )
 	else
 		f = PROCLOOKUP( ULONGINTDIV )
@@ -349,9 +347,7 @@ function rtlMathLongintMOD _
 
 	function = NULL
 	
-	dtype = typeGetDtAndPtrOnly( dtype )
-	
-	if( dtype = FB_DATATYPE_LONGINT ) then
+	if( typeGet( dtype ) = FB_DATATYPE_LONGINT ) then
 		f = PROCLOOKUP( LONGINTMOD )
 	else
 		f = PROCLOOKUP( ULONGINTMOD )

@@ -126,17 +126,17 @@ function cSelectStmtBegin as integer
 	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	'' store expression into a temp var
-	dtype = astGetDataType( expr )
+	dtype = astGetFullType( expr )
 	subtype = astGetSubType( expr )
 
-	select case dtype
+	select case typeGet( dtype )
 	'' fixed-len or zstring? temp will be a var-len string..
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		dtype = FB_DATATYPE_STRING
 	end select
 
     '' not a wstring?
-	if( dtype <> FB_DATATYPE_WCHAR ) then
+	if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
 		sym = symbAddTempVar( dtype, subtype )
 		if( sym = NULL ) then
 			exit function
@@ -269,7 +269,7 @@ end function
 '':::::
 '' if it's a wstring, do "if *tmp op expr"
 #define NEWCASEVAR(symbol,dtype) 					_
-	iif( dtype <> FB_DATATYPE_WCHAR, 				_
+	iif( typeGet( dtype ) <> FB_DATATYPE_WCHAR, 				_
 		 astNewVAR( symbol, 0, dtype ), 			_
 		 astNewDEREF( astNewVAR( symbol, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
 					  FB_DATATYPE_WCHAR, 			_

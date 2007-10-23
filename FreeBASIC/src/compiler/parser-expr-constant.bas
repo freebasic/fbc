@@ -38,7 +38,7 @@ function cConstantEx _
   	'' ID
   	lexSkipToken( )
 
-	dtype = symbGetType( sym )
+	dtype = symbGetFullType( sym )
 	subtype = symbGetSubType( sym )
 
   	select case as const dtype

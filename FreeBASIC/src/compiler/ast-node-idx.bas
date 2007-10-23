@@ -33,12 +33,12 @@ function astNewIDX _
 		byval idx as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr 
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n = any
 
 	if( dtype = FB_DATATYPE_INVALID ) then
-		dtype = astGetDataType( var_ )
+		dtype = astGetFullType( var_ )
 		subtype = astGetSubType( var_ )
 	end if
 

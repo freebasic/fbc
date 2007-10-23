@@ -169,6 +169,8 @@ private sub hDelProcNode _
 
 end sub
 
+sub GDB( )
+end sub
 ''::::
 private sub hProcFlush _
 	( _
@@ -217,6 +219,7 @@ private sub hProcFlush _
 		astDelNode( n )
 		n = nxt
 	loop
+	GDB( )
 
     '' emit footer
     if( ast.doemit ) then
@@ -784,10 +787,10 @@ private sub hLoadProcResult _
     dim as integer dtype = any
 
 	s = symbGetProcResult( proc )
-	dtype = symbGetType( proc )
+	dtype = symbGetFullType( proc )
     n = NULL
 
-	select case dtype
+	select case typeGet( dtype )
 
 	'' if result is a string, a temp descriptor is needed, as the current one (on stack)
 	'' will be trashed when the function returns (also, the string returned will be

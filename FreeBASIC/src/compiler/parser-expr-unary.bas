@@ -144,10 +144,10 @@ function cStrIdxOrMemberDeref _
 	dim as FBSYMBOL ptr subtype = any
 	dim as integer dtype = any
 
-	dtype = astGetDataType( expr )
+	dtype = astGetFullType( expr )
 	subtype = astGetSubType( expr )
 
-	select case as const dtype
+	select case as const typeGet( dtype )
 	'' zstring indexing?
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
 		'' '['?
@@ -167,7 +167,7 @@ function cStrIdxOrMemberDeref _
 				return NULL
 			end if
 
- 			dtype = astGetDataType( expr )
+ 			dtype = astGetFullType( expr )
  			subtype = astGetSubType( expr )
 		end if
 
@@ -180,7 +180,7 @@ function cStrIdxOrMemberDeref _
 		select case lexGetToken( )
 		'' function ptr '(' ?
 		case CHAR_LPRNT
-			isfuncptr = (typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
+			isfuncptr = (dtype = typeAddrOf( FB_DATATYPE_FUNCTION ))
 			isfield = isfuncptr
 
 		'' ptr ('->' | '[') ?
@@ -328,7 +328,7 @@ private function hCast _
     end if
 
 	'' check for invalid types
-	select case dtype
+	select case typeGet( dtype )
 	case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
 		if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
 			return NULL
@@ -463,7 +463,7 @@ function cDerefExpression _
 
 	function = astBuildMultiDeref( derefcnt, _
 								   expr, _
-								   astGetDataType( expr ), _
+								   astGetFullType( expr ), _
 								   astGetSubType( expr ) )
 
 end function

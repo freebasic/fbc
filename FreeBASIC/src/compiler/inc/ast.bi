@@ -1321,7 +1321,8 @@ declare function astFindLocalSymbol _
 
 #define astGetValLong(n) n->con.val.long
 
-#define astGetDataType(n) n->dtype
+#define astGetFullType(n) n->dtype
+#define astGetDataType(n) typeGetDtAndPtrOnly( astGetFullType( n ) )
 
 #define astGetSubtype(n) n->subtype
 

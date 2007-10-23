@@ -1786,10 +1786,10 @@ private function hCheckOvlParam _
     end select
 
 	'' last resource, calc the differences
-	function = hCalcTypesDiff( param_dtype, _
+	function = hCalcTypesDiff( symbGetFullType( param ), _
 						  	   param_subtype, _
 						  	   param_ptrcnt, _
-						  	   arg_dtype, _
+						  	   astGetFullType( arg_expr ), _
 						  	   arg_subtype, _
 						  	   arg_expr )
 
@@ -2175,7 +2175,7 @@ private function hCheckCastOvl _
 	end select
 
 	'' last resource, calc the differences
-	function = hCalcTypesDiff( proc_dtype, _
+	function = hCalcTypesDiff( symbGetFullType( proc ), _
 						   	   proc_subtype, _
 						   	   symbGetPtrCnt( proc ), _
 						   	   to_dtype, _

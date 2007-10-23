@@ -54,7 +54,7 @@ private function hDoAssign _
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
 
-	dtype = symbGetType( ctx.sym )
+	dtype = symbGetFullType( ctx.sym )
 	subtype = symbGetSubtype( ctx.sym )
 
 	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
@@ -632,7 +632,7 @@ function cInitializer _
 	ctx.dim_ = NULL
 	ctx.dimcnt = 0
 
-	ctx.tree = astTypeIniBegin( dtype, subtype, is_local )
+	ctx.tree = astTypeIniBegin( symbGetFullType( sym ), subtype, is_local )
 
 	'' has ctor?
 	select case dtype

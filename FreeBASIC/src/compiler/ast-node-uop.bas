@@ -171,7 +171,7 @@ function astNewUOP _
     	exit function
     end if
 
-    select case as const dtype
+    select case as const typeGet( dtype )
     '' CHAR and WCHAR literals are also from the INTEGER class..
     case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	'' only if it's a deref pointer, to allow "NOT *p" etc
@@ -186,7 +186,7 @@ function astNewUOP _
 			exit function
 		end if
 
-		dtype = o->dtype
+		dtype = typeJoin( dtype, o->dtype )
     	dclass = symbGetDataClass( dtype )
 
 	'' pointer?
@@ -203,11 +203,15 @@ function astNewUOP _
 
 	'' convert byte to integer
 	if( symbGetDataSize( dtype ) = 1 ) then
+		
+		dim as integer nd = any
 		if( symbIsSigned( dtype ) ) then
-			dtype = FB_DATATYPE_INTEGER
+			nd = FB_DATATYPE_INTEGER
 		else
-			dtype = FB_DATATYPE_UINT
+			nd = FB_DATATYPE_UINT
 		end if
+		
+		dtype = typeJoin( dtype, nd )
 
 		'' !!!FIXME!!! if ENUM's could be BYTE's in future, this will fail
 		o = astNewCONV( dtype, NULL, o )
@@ -219,14 +223,14 @@ function astNewUOP _
 	case AST_OP_NOT
 		if( dclass <> FB_DATACLASS_INTEGER ) then
 			o = astNewCONV( FB_DATATYPE_INTEGER, NULL, o )
-			dtype = FB_DATATYPE_INTEGER
+			dtype = typeJoin( dtype, FB_DATATYPE_INTEGER )
 			subtype = NULL
 		end if
 
 	'' with SGN(int) the result is always a signed integer
 	case AST_OP_SGN
 		if( dclass = FB_DATACLASS_INTEGER ) then
-			dtype = symbGetSignedType( dtype )
+			dtype = typeJoin( dtype, symbGetSignedType( dtype ) )
 			subtype = NULL
 		end if
 
@@ -237,7 +241,7 @@ function astNewUOP _
 
 		if( dclass <> FB_DATACLASS_FPOINT ) then
 			o = astNewCONV( FB_DATATYPE_DOUBLE, NULL, o )
-			dtype = FB_DATATYPE_DOUBLE
+			dtype = typeJoin( dtype, FB_DATATYPE_DOUBLE )
 			subtype = NULL
 		end if
 
@@ -261,7 +265,7 @@ function astNewUOP _
 			if( astGetDataClass( o ) = FB_DATACLASS_INTEGER ) then
 				if( symbIsSigned( dtype ) = FALSE ) then
 					'' test overflow
-					select case dtype
+					select case typeGet( dtype )
 					case FB_DATATYPE_UINT
 chk_uint:
 						if( astGetValInt( o ) and &h80000000 ) then
@@ -291,12 +295,12 @@ chk_ulong:
 						end if
 					end select
 
-					dtype = symbGetSignedType( dtype )
+					dtype = typeJoin( dtype, symbGetSignedType( dtype ) )
 				end if
 			end if
 		end if
 
-		select case as const o->dtype
+		select case as const typeGet( o->dtype )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    hUOPConstFold64( op, o )
 
@@ -315,7 +319,7 @@ chk_ulong:
 			hUOPConstFoldInt( op, o )
 		end select
 
-		o->dtype = dtype
+		o->dtype = typeJoin( o->dtype, dtype )
 		o->subtype = subtype
 
 		return o

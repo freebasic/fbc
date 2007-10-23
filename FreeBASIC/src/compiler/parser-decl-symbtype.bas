@@ -456,7 +456,7 @@ function cSymbolType _
 
 						case FB_SYMBCLASS_TYPEDEF
 							lexSkipToken( )
-							dtype = symbGetType( sym )
+							dtype = symbGetFullType( sym )
 							subtype = symbGetSubtype( sym )
 							lgt = symbGetLen( sym )
 							ptr_cnt += typeGetPtrCnt( dtype )
@@ -476,7 +476,11 @@ function cSymbolType _
 			if( isunsigned ) then
 				errReport( FB_ERRMSG_SYNTAXERROR )
 			end if
-
+            
+			if( is_const ) then
+ 	        	dtype = typeSetIsConst( NULL )
+			end if
+            
 			return FALSE
 		end if
 

@@ -61,7 +61,7 @@ private function hDoCleanup _
 	function = astNewMEM( AST_OP_MEMCLEAR, _
 						  astNewVAR( sym, _
 						  			 0, _
-						  			 symbGetType( sym ), _
+						  			 symbGetFullType( sym ), _
 						  			 symbGetSubtype( sym ) ), _
 						  astNewCONSTi( lgt ) )
 

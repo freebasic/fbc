@@ -176,13 +176,13 @@ private function hCheckZstringOps _
 	function = FALSE
 
 	'' same as for wstring's..
-	if( ldtype = FB_DATATYPE_CHAR ) then
+	if( typeGet( ldtype ) = FB_DATATYPE_CHAR ) then
 		'' don't allow, unless it's a pointer
 		if( l->class <> AST_NODECLASS_DEREF ) then
 			exit function
 		end if
 
-		ldtype = FB_DATATYPE_UBYTE
+		ldtype = typeJoin( ldtype, FB_DATATYPE_UBYTE )
 
 	else
 		'' same as above..
@@ -190,7 +190,7 @@ private function hCheckZstringOps _
 			exit function
 		end if
 
-		rdtype = FB_DATATYPE_UBYTE
+		rdtype = typeJoin( rdtype, FB_DATATYPE_UBYTE )
 	end if
 
 	function = TRUE
@@ -209,7 +209,7 @@ private function hCheckEnumOps _
 	function = FALSE
 
     '' not the same?
-    if( l->dtype <> r->dtype ) then
+    if( typeGetDtAndPtrOnly( l->dtype ) <> typeGetDtAndPtrOnly( r->dtype ) ) then
     	if( (ldclass <> FB_DATACLASS_INTEGER) or _
     		(rdclass <> FB_DATACLASS_INTEGER) ) then
     		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
@@ -392,9 +392,9 @@ function astNewASSIGN _
 
    		dim as integer check_letop = TRUE
 
-   		select case l->dtype
+   		select case typeGet( l->dtype )
    		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			if( l->dtype = r->dtype ) then
+			if( typeGetDtAndPtrOnly( l->dtype ) = typeGetDtAndPtrOnly( r->dtype ) ) then
 				if( l->subtype = r->subtype ) then
 					check_letop = (symbGetCompCloneProc( l->subtype ) <> NULL)
 				end if
@@ -429,13 +429,13 @@ function astNewASSIGN _
 		end if
 	end if
 
-	ldtype = l->dtype
+	ldtype = astGetFullType( l )
 	ldclass = symbGetDataClass( ldtype )
 	lsubtype = l->subtype
 
 	'' 2nd) implicit casting op overloading
 	if( (options and AST_OPOPT_DONTCHKOPOVL) = 0 ) then
-		proc = symbFindCastOvlProc( ldtype, lsubtype, r, @err_num )
+		proc = symbFindCastOvlProc( astGetFullType( l ), lsubtype, r, @err_num )
 		if( proc <> NULL ) then
 
 			'' we don't have to worry about initializing the lhs
@@ -458,8 +458,8 @@ function astNewASSIGN _
 	rdclass = symbGetDataClass( rdtype )
 
     '' strings?
-    if( (ldclass = FB_DATACLASS_STRING) or _
-    	(rdclass = FB_DATACLASS_STRING) ) then
+    if( (typeGet( ldclass ) = FB_DATACLASS_STRING) or _
+    	(typeGet( rdclass ) = FB_DATACLASS_STRING) ) then
 
 		'' both not strings?
 		if( ldclass <> rdclass ) then
@@ -477,8 +477,8 @@ function astNewASSIGN _
 		end if
 
 	'' UDT's?
-	elseif( (ldtype = FB_DATATYPE_STRUCT) or _
-			(rdtype = FB_DATATYPE_STRUCT) ) then
+	elseif( (typeGet( ldtype ) = FB_DATATYPE_STRUCT) or _
+			(typeGet( rdtype ) = FB_DATATYPE_STRUCT) ) then
 
 		if( hCheckUDTOps( l, ldclass, r, rdclass ) = FALSE ) then
 			exit function
@@ -534,12 +534,12 @@ function astNewASSIGN _
 		end if
 
     '' wstrings?
-    elseif( (ldtype = FB_DATATYPE_WCHAR) or _
-    		(rdtype = FB_DATATYPE_WCHAR) ) then
+    elseif( (typeGet( ldtype ) = FB_DATATYPE_WCHAR) or _
+    		(typeGet( rdtype ) = FB_DATATYPE_WCHAR) ) then
 
 		'' both not wstrings? otherwise don't do any assignment by now
 		'' to allow optimizations..
-		if( ldtype <> rdtype ) then
+		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
     		dim as integer is_zstr
 
 			if( hCheckWstringOps( l, ldtype, r, rdtype, is_zstr ) = FALSE ) then
@@ -558,11 +558,11 @@ function astNewASSIGN _
 		end if
 
     '' zstrings?
-    elseif( (ldtype = FB_DATATYPE_CHAR) or _
-    		(rdtype = FB_DATATYPE_CHAR) ) then
+    elseif( (typeGet( ldtype ) = FB_DATATYPE_CHAR) or _
+    		(typeGet( rdtype ) = FB_DATATYPE_CHAR) ) then
 
 		'' both the same? assign as string..
-		if( ldtype = rdtype ) then
+		if( typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype ) ) then
 			return rtlStrAssign( l, r )
 		end if
 
@@ -571,8 +571,8 @@ function astNewASSIGN _
 		end if
 
     '' enums?
-    elseif( (ldtype = FB_DATATYPE_ENUM) or _
-    		(rdtype = FB_DATATYPE_ENUM) ) then
+    elseif( (typeGet( ldtype ) = FB_DATATYPE_ENUM) or _
+    		(typeGet( rdtype ) = FB_DATATYPE_ENUM) ) then
 
 		if( hCheckEnumOps( l, ldclass, r, rdclass ) = FALSE ) then
 			exit function
@@ -588,7 +588,7 @@ function astNewASSIGN _
     end if
 
 	'' convert types if needed
-	if( ldtype <> rdtype ) then
+	if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
 		'' don't convert strings
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
@@ -603,13 +603,13 @@ function astNewASSIGN _
 			'' is a float (unless a special case must be handled)
 			dim as integer doconv = TRUE
 			if( (ldclass = FB_DATACLASS_FPOINT) or (rdclass = FB_DATACLASS_FPOINT) ) then
-				if( ldtype <> FB_DATATYPE_ULONGINT ) then
+				if( typeGet( ldtype ) <> FB_DATATYPE_ULONGINT ) then
 					doconv = irGetOption( IR_OPT_FPU_CONVERTOPER )
 				end if
 			end if
 
 			if( doconv ) then
-				r = astNewCONV( ldtype, l->subtype, r )
+				r = astNewCONV( astGetFullType( l ), l->subtype, r )
 				if( r = NULL ) then
 					exit function
 				end if

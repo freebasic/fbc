@@ -56,7 +56,7 @@ function cOperatorNew _
 	end if
 
 	'' check for invalid types
-	select case as const dtype
+	select case as const typeGet( dtype )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
@@ -72,7 +72,7 @@ function cOperatorNew _
 
 	dim as integer has_ctor = FALSE, has_defctor = FALSE
 
-	select case dtype
+	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		has_ctor = symbGetHasCtor( subtype )
 		has_defctor = (symbGetCompDefCtor( subtype ) <> NULL)
@@ -306,7 +306,7 @@ function cOperatorDelete _
        	end if
 	end if
 
-	dim as integer dtype = astGetDataType( ptr_expr )
+	dim as integer dtype = astGetFullType( ptr_expr )
 	dim as FBSYMBOL ptr subtype = astGetSubType( ptr_expr )
 
     '' not a ptr?
@@ -322,12 +322,12 @@ function cOperatorDelete _
 	dtype = typeDeref( dtype )
 
 	'' check for ANY ptr
-	if( dtype = FB_DATATYPE_VOID ) then
+	if( typeGet( dtype ) = FB_DATATYPE_VOID ) then
 		errReportWarn( FB_WARNINGMSG_DELETEANYPTR )
 	end if
 
 	'' check visibility
-	select case dtype
+	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		dim as FBSYMBOL ptr dtor = symbGetCompDtor( subtype )
 

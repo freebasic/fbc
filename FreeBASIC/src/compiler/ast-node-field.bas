@@ -39,7 +39,7 @@ function astNewFIELD _
 
 	if( dtype = FB_DATATYPE_BITFIELD ) then
 		'' final type is always an unsigned int
-		dtype = FB_DATATYPE_UINT
+		dtype = typeJoin( dtype, FB_DATATYPE_UINT )
 		subtype = NULL
 	end if
 
@@ -69,7 +69,7 @@ private function hGetBitField _
 	s = n->subtype
 
 	'' remap type
-	n->dtype = s->typ
+	n->dtype = typeJoin( n->dtype, s->typ )
 	n->subtype = NULL
 
 	'' make a copy, the node itself can't be used or it will be deleted twice

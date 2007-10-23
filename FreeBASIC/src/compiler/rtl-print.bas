@@ -908,7 +908,7 @@ function rtlPrint _
 		args = 2
 	else
 
-		dtype = typeGetDtAndPtrOnly( astGetDataType( expr ) )
+		dtype = astGetDataType( expr )
 
 		'' UDT? try to convert to string with type casting op overloading
 		select case dtype
@@ -1184,7 +1184,7 @@ function rtlWrite _
 	else
 
 		'' UDT? try to convert to string with type casting op overloading
-		dtype = typeGetDtAndPtrOnly( astGetDataType( expr ) )
+		dtype = astGetDataType( expr )
 
 		select case dtype
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
@@ -1382,7 +1382,7 @@ function rtlPrintUsing _
     	exit function
     end if
 
-	dtype = typeGetDtAndPtrOnly( astGetDataType( expr ) )
+	dtype = astGetDataType( expr )
 	'' UDT? try to convert to double with type casting op overloading
 	select case dtype
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM

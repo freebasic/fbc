@@ -1030,10 +1030,10 @@ function astRemSideFx _
 	dim as integer dtype = any
 	dim as ASTNODE ptr t = any
 
-	dtype = astGetDataType( n )
+	dtype = astGetFullType( n )
 	subtype = astGetSubType( n )
 
-	select case as const dtype
+	select case as const typeGet( dtype )
 	'' complex type? convert to pointer..
 	case FB_DATATYPE_STRUCT, _ ' FB_DATATYPE_CLASS
 		 FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR

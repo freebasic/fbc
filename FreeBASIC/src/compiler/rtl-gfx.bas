@@ -2557,7 +2557,7 @@ function rtlGfxGet _
 		argmode = INVALID
 
 		if( astIsFIELD( arrayexpr ) = FALSE ) then
-			descexpr = astNewVAR( symbol, 0, symbGetType( symbol ) )
+			descexpr = astNewVAR( symbol, 0, symbGetFullType( symbol ) )
 
 		else
 			'' side-effect?

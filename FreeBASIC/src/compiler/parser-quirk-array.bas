@@ -79,7 +79,7 @@ function cArrayStmt _
 
 				else
 					
-					if( typeIsConst( astGetDatatype( expr1 ) ) ) then
+					if( typeIsConst( astGetFullType( expr1 ) ) ) then
 						if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
 							exit function
 						end if
@@ -181,12 +181,12 @@ function cArrayStmt _
 
 		case else
 			'' don't allow any consts...
-			if( typeIsConst( astGetDatatype( expr1 ) ) ) then
+			if( typeIsConst( astGetFullType( expr1 ) ) ) then
 				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
 					exit function
 				end if
 			end if
-			if( typeIsConst( astGetDatatype( expr2 ) ) ) then
+			if( typeIsConst( astGetFullType( expr2 ) ) ) then
 				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
 					exit function
 				end if

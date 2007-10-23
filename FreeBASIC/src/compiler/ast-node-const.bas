@@ -148,7 +148,7 @@ function astNewCONST _
 		exit function
 	end if
 
-	select case as const dtype
+	select case as const typeGEt( dtype )
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		if( v <> NULL ) then
 			n->con.val.long = v->long

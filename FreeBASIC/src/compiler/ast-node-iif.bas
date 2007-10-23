@@ -69,16 +69,16 @@ function astNewIIF _
     end select
 
 	'' UDT's? ditto
-	if( true_dtype = FB_DATATYPE_STRUCT ) then
+	if( typeGet( true_dtype ) = FB_DATATYPE_STRUCT ) then
 		exit function
     end if
 
-    if( false_dtype = FB_DATATYPE_STRUCT ) then
+    if( typeGet( false_dtype ) = FB_DATATYPE_STRUCT ) then
     	exit function
     end if
 
     '' are the data types different?
-    if( true_dtype <> false_dtype ) then
+    if( typeGetDtAndPtrOnly( true_dtype ) <> typeGetDtAndPtrOnly( false_dtype ) ) then
     	if( symbMaxDataType( true_dtype, false_dtype ) <> FB_DATATYPE_INVALID ) then
     		exit function
     	end if
@@ -108,14 +108,14 @@ function astNewIIF _
 	'' assign true to temp
 	truexpr = astNewASSIGN( astNewVAR( n->sym, _
 									   0, _
-									   symbGetType( n->sym ), _
+									   symbGetFullType( n->sym ), _
 									   symbGetSubType( n->sym ) ), _
 					  		truexpr )
 
 	'' assign false to temp
 	falsexpr = astNewASSIGN( astNewVAR( n->sym, _
 										0, _
-										symbGetType( n->sym ), _
+										symbGetFullType( n->sym ), _
 										symbGetSubType( n->sym ) ), _
 					  		 falsexpr )
 
@@ -184,7 +184,7 @@ function astLoadIIF _
 		irEmitLABELNF( exitlabel )
 	end if
 
-	t = astNewVAR( n->sym, 0, symbGetType( n->sym ), symbGetSubType( n->sym ) )
+	t = astNewVAR( n->sym, 0, symbGetFullType( n->sym ), symbGetSubType( n->sym ) )
 	function = astLoad( t )
 	astDelNode( t )
 

@@ -214,8 +214,8 @@ private function hToStr _
 	
 	dim as integer ldtype = any, rdtype = any
 	
-	ldtype = typeGetDtAndPtrOnly( astGetDataType( l ) )
-	rdtype = typeGetDtAndPtrOnly( astGetDataType( r ) )
+	ldtype = astGetDataType( l )
+	rdtype = astGetDataType( r )
 	
     '' convert left operand to string if needed
     select case as const ldtype
@@ -570,7 +570,7 @@ private function hCheckPointer _
 
     '' CHAR and WCHAR literals are also from the INTEGER class
     else
-    	select case dtype
+    	select case typeGet( dtype )
     	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		return FALSE
         end select
@@ -831,14 +831,14 @@ function astNewBOP _
 		op = AST_OP_ADD
 	end if
 
-	ldtype = typeGetDtAndPtrOnly( astGetDatatype( l ) )
-	rdtype = typeGetDtAndPtrOnly( astGetDatatype( r ) )
+	ldtype = astGetFullType( l )
+	rdtype = astGetFullType( r )
 	ldclass = symbGetDataClass( ldtype )
 	rdclass = symbGetDataClass( rdtype )
 
 	'' UDT's? try auto-coercion
-	if( (ldtype = FB_DATATYPE_STRUCT) or _
-		(rdtype = FB_DATATYPE_STRUCT) ) then
+	if( (typeGet( ldtype ) = FB_DATATYPE_STRUCT) or _
+		(typeGet( rdtype ) = FB_DATATYPE_STRUCT) ) then
 
 		'' recursion?
 		if( (options and AST_OPOPT_NOCOERCION) <> 0 ) then
@@ -846,7 +846,7 @@ function astNewBOP _
 		end if
 
 		'' l or both UDTs?
-		if( ldtype = FB_DATATYPE_STRUCT ) then
+		if( typeGet( ldtype ) = FB_DATATYPE_STRUCT ) then
 			return hConvertUDT_l( op, l, r, ex, options )
 
 		'' only r is..
@@ -879,8 +879,8 @@ function astNewBOP _
     end if
 
     '' enums?
-    if( (ldtype = FB_DATATYPE_ENUM) or _
-    	(rdtype = FB_DATATYPE_ENUM) ) then
+    if( (typeGet( ldtype ) = FB_DATATYPE_ENUM) or _
+    	(typeGet( rdtype ) = FB_DATATYPE_ENUM) ) then
     	'' not the same?
     	if( ldtype <> rdtype ) then
     		if( (ldclass <> FB_DATACLASS_INTEGER) or _
@@ -891,18 +891,18 @@ function astNewBOP _
     end if
 
     '' both zstrings? treat as string..
-    if( (ldtype = FB_DATATYPE_CHAR) and _
-    	(rdtype = FB_DATATYPE_CHAR) ) then
+    if( (typeGet( ldtype ) = FB_DATATYPE_CHAR) and _
+    	(typeGet( rdtype ) = FB_DATATYPE_CHAR) ) then
     	ldclass = FB_DATACLASS_STRING
     	rdclass = ldclass
     end if
 
     '' wstrings?
-    if( (ldtype = FB_DATATYPE_WCHAR) or _
-    	(rdtype = FB_DATATYPE_WCHAR) ) then
+    if( (typeGet( ldtype ) = FB_DATATYPE_WCHAR) or _
+    	(typeGet( rdtype ) = FB_DATATYPE_WCHAR) ) then
 
 		'' aren't both wstrings?
-		if( ldtype <> rdtype ) then
+		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
 			if( ldtype = FB_DATATYPE_WCHAR ) then
 				'' is right a string?
 				is_str = (rdclass = FB_DATACLASS_STRING) or (rdtype = FB_DATATYPE_CHAR)
@@ -918,7 +918,7 @@ function astNewBOP _
 
 			'' check for string literals
 			litsym = NULL
-			select case ldtype
+			select case typeGet( ldtype )
 			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				litsym = astGetStrLitSymbol( l )
 				if( litsym <> NULL ) then
@@ -938,21 +938,21 @@ function astNewBOP _
 				'' both literals?
 				if( litsym <> NULL ) then
 					'' ok to convert at compile-time?
-					if( (ldtype = rdtype) or _
+					if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) or _
 						(env.target.wchar.doconv) ) then
 						return hWstrLiteralConcat( l, r )
 					end if
 				end if
 
 				'' both aren't wstrings?
-				if( ldtype <> rdtype ) then
+				if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
 					return rtlWstrConcat( l, ldtype, r, rdtype )
 				end if
 
 				'' result will be always a wstring
-				ldtype = FB_DATATYPE_WCHAR
+				ldtype = typeJoin( ldtype, FB_DATATYPE_WCHAR )
 				ldclass = FB_DATACLASS_INTEGER
-				rdtype = ldtype
+				rdtype = typeJoin( rdtype, ldtype )
 				rdclass = ldclass
 				is_str = TRUE
 
@@ -970,8 +970,8 @@ function astNewBOP _
 				l = rtlWstrCompare( l, r )
 				r = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 
-				ldtype = l->dtype
-				rdtype = r->dtype
+				ldtype = typeJoin( ldtype, l->dtype )
+				rdtype = typeJoin( rdtype, r->dtype )
 				ldclass = FB_DATACLASS_INTEGER
 				rdclass = FB_DATACLASS_INTEGER
 
@@ -982,38 +982,38 @@ function astNewBOP _
 
 		'' one is not a string..
 		else
-			if( ldtype = FB_DATATYPE_WCHAR ) then
+			if( typeGet( ldtype ) = FB_DATATYPE_WCHAR ) then
 				'' don't allow, unless it's a deref pointer
 				if( l->class <> AST_NODECLASS_DEREF ) then
 					exit function
 				end if
 				'' remap the type or the optimizer can
 				'' make a wrong assumption
-				ldtype = env.target.wchar.type
+				ldtype = typeJoin( ldtype, env.target.wchar.type )
 
 			else
 				'' same as above..
 				if( r->class <> AST_NODECLASS_DEREF ) then
 					exit function
 				end if
-				rdtype = env.target.wchar.type
+				rdtype = typeJoin( rdtype, env.target.wchar.type )
 			end if
 		end if
 
     '' strings?
-    elseif( (ldclass = FB_DATACLASS_STRING) or _
-    		(rdclass = FB_DATACLASS_STRING) ) then
+    elseif( (typeGet( ldclass ) = FB_DATACLASS_STRING) or _
+    		(typeGet( rdclass ) = FB_DATACLASS_STRING) ) then
 
 		'' aren't both strings?
-		if( ldclass <> rdclass ) then
+		if( typeGetDtAndPtrOnly( ldclass ) <> typeGetDtAndPtrOnly( rdclass ) ) then
 			if( ldclass = FB_DATACLASS_STRING ) then
 				'' not a zstring?
-				if( rdtype <> FB_DATATYPE_CHAR ) then
+				if( typeGet( rdtype ) <> FB_DATATYPE_CHAR ) then
 					exit function
 				end if
 			else
 				'' not a zstring?
-				if( ldtype <> FB_DATATYPE_CHAR ) then
+				if( typeGet( ldtype ) <> FB_DATATYPE_CHAR ) then
 					exit function
 				end if
 			end if
@@ -1021,8 +1021,8 @@ function astNewBOP _
 
 		'' check for string literals
 		litsym = NULL
-		if( ldtype = FB_DATATYPE_CHAR ) then
-			if( rdtype = FB_DATATYPE_CHAR ) then
+		if( typeGet( ldtype ) = FB_DATATYPE_CHAR ) then
+			if( typeGet( rdtype ) = FB_DATATYPE_CHAR ) then
 				litsym = astGetStrLitSymbol( l )
 				if( litsym <> NULL ) then
 					litsym = astGetStrLitSymbol( r )
@@ -1039,9 +1039,9 @@ function astNewBOP _
 			end if
 
 			'' result will be always an var-len string
-			ldtype = FB_DATATYPE_STRING
+			ldtype = typeJoin( ldtype, FB_DATATYPE_STRING )
 			ldclass = FB_DATACLASS_STRING
-			rdtype = ldtype
+			rdtype = typeJoin( rdtype, ldtype )
 			rdclass = ldclass
 			is_str = TRUE
 
@@ -1059,9 +1059,9 @@ function astNewBOP _
 			l = rtlStrCompare( l, ldtype, r, rdtype )
 			r = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 
-			ldtype = l->dtype
+			ldtype = typeJoin( ldtype, l->dtype )
 			ldclass = FB_DATACLASS_INTEGER
-			rdtype = r->dtype
+			rdtype = typeJoin( rdtype, r->dtype )
 			rdclass = FB_DATACLASS_INTEGER
 
 		'' no other operation allowed
@@ -1070,26 +1070,26 @@ function astNewBOP _
 		end select
 
     '' zstrings?
-    elseif( (ldtype = FB_DATATYPE_CHAR) or _
-    	    (rdtype = FB_DATATYPE_CHAR) ) then
+    elseif( (typeGet( ldtype ) = FB_DATATYPE_CHAR) or _
+    	    (typeGet( rdtype ) = FB_DATATYPE_CHAR) ) then
 
    		'' one is not a string (not fixed, var-len, z- or w-string,
    		'' or the tests above would catch them)
-		if( ldtype = FB_DATATYPE_CHAR ) then
+		if( typeGet( ldtype ) = FB_DATATYPE_CHAR ) then
 			'' don't allow, unless it's a deref pointer
 			if( l->class <> AST_NODECLASS_DEREF ) then
 				exit function
 			end if
 			'' remap the type or the optimizer can
 			'' make a wrong assumption
-			ldtype = FB_DATATYPE_UBYTE
+			ldtype = typeJoin( ldtype, FB_DATATYPE_UBYTE )
 
 		else
 			'' same as above..
 			if( r->class <> AST_NODECLASS_DEREF ) then
 				exit function
 			end if
-			rdtype = FB_DATATYPE_UBYTE
+			rdtype = typeJoin( rdtype, FB_DATATYPE_UBYTE )
 		end if
 
     end if
@@ -1100,9 +1100,9 @@ function astNewBOP _
 	if( symbGetDataSize( ldtype ) = 1 ) then
 		if( is_str = FALSE ) then
 			if( symbIsSigned( ldtype ) ) then
-				ldtype = FB_DATATYPE_INTEGER
+				ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
 			else
-				ldtype = FB_DATATYPE_UINT
+				ldtype = typeJoin( ldtype, FB_DATATYPE_UINT )
 			end if
 			l = astNewCONV( ldtype, NULL, l )
 		end if
@@ -1111,9 +1111,9 @@ function astNewBOP _
 	if( symbGetDataSize( rdtype ) = 1 ) then
 		if( is_str = FALSE ) then
 			if( symbIsSigned( rdtype ) ) then
-				rdtype = FB_DATATYPE_INTEGER
+				rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
 			else
-				rdtype = FB_DATATYPE_UINT
+				rdtype = typeJoin( rdtype, FB_DATATYPE_UINT )
 			end if
 			r = astNewCONV( rdtype, NULL, r )
 		end if
@@ -1125,22 +1125,23 @@ function astNewBOP _
 	case AST_OP_DIV
 
 		if( ldclass <> FB_DATACLASS_FPOINT ) then
-			ldtype = FB_DATATYPE_DOUBLE
+			ldtype = typeJoin( ldtype, FB_DATATYPE_DOUBLE )
 			l = astNewCONV( ldtype, NULL, l )
 			ldclass = FB_DATACLASS_FPOINT
 		end if
 
 		if( rdclass <> FB_DATACLASS_FPOINT ) then
+			rdtype = typeJoin( rdtype, FB_DATATYPE_DOUBLE )
+			
 			if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
-				r = astNewCONV( FB_DATATYPE_DOUBLE, NULL, r )
+				r = astNewCONV( rdtype, NULL, r )
 			else
 				'' if it's an int var, let the FPU do it
 				if( (r->class <> AST_NODECLASS_VAR) or (rdtype <> FB_DATATYPE_INTEGER) ) then
-					r = astNewCONV( FB_DATATYPE_DOUBLE, NULL, r )
+					r = astNewCONV( rdtype, NULL, r )
 				end if
 			end if
 
-			rdtype = FB_DATATYPE_DOUBLE
 			rdclass = FB_DATACLASS_FPOINT
 		end if
 
@@ -1149,13 +1150,13 @@ function astNewBOP _
 		 AST_OP_INTDIV, AST_OP_MOD, AST_OP_SHL, AST_OP_SHR
 
 		if( ldclass <> FB_DATACLASS_INTEGER ) then
-			ldtype = FB_DATATYPE_INTEGER
+			ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
 			l = astNewCONV( ldtype, NULL, l )
 			ldclass = FB_DATACLASS_INTEGER
 		end if
 
 		if( rdclass <> FB_DATACLASS_INTEGER ) then
-			rdtype = FB_DATATYPE_INTEGER
+			rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
 			r = astNewCONV( rdtype, NULL, r )
 			rdclass = FB_DATACLASS_INTEGER
 		end if
@@ -1164,13 +1165,13 @@ function astNewBOP _
 	case AST_OP_ATAN2, AST_OP_POW
 
 		if( ldclass <> FB_DATACLASS_FPOINT ) then
-			ldtype = FB_DATATYPE_DOUBLE
+			ldtype = typeJoin( ldtype, FB_DATATYPE_DOUBLE )
 			l = astNewCONV( ldtype, NULL, l )
 			ldclass = FB_DATACLASS_FPOINT
 		end if
 
 		if( rdclass <> FB_DATACLASS_FPOINT ) then
-			rdtype = FB_DATATYPE_DOUBLE
+			rdtype = typeJoin( rdtype, FB_DATATYPE_DOUBLE )
 			r = astNewCONV( rdtype, NULL, r )
 			rdclass = FB_DATACLASS_FPOINT
 		end if
@@ -1190,7 +1191,7 @@ function astNewBOP _
 			'' as types are different, if class is fp,
 			'' the result type will be always a double
 			if( ldclass = FB_DATACLASS_FPOINT ) then
-				dtype   = FB_DATATYPE_DOUBLE
+				dtype   = typeJoin( dtype, FB_DATATYPE_DOUBLE )
 				subtype = NULL
 			else
 
@@ -1207,7 +1208,7 @@ function astNewBOP _
 
 		else
 			'' convert the l operand?
-			if( dtype <> ldtype ) then
+			if( typeGetDtAndPtrOnly( dtype ) <> typeGetDtAndPtrOnly( ldtype ) ) then
 				subtype = r->subtype
 				l = astNewCONV( dtype, subtype, l )
 				ldtype = dtype
@@ -1241,14 +1242,14 @@ function astNewBOP _
 	select case as const op
 	'' relative ops, the result is always an integer
 	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
-		dtype = FB_DATATYPE_INTEGER
+		dtype = typeJoin( dtype, FB_DATATYPE_INTEGER )
 		subtype = NULL
 
 	'' right-operand must be an integer, so pow2 opts can be done on longint's
 	case AST_OP_SHL, AST_OP_SHR
-		if( rdtype <> FB_DATATYPE_INTEGER ) then
-			if( rdtype <> FB_DATATYPE_UINT ) then
-				rdtype = FB_DATATYPE_INTEGER
+		if( typeGet( rdtype ) <> FB_DATATYPE_INTEGER ) then
+			if( typeGet( rdtype ) <> FB_DATATYPE_UINT ) then
+				rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
 				r = astNewCONV( rdtype, NULL, r )
 				rdclass = FB_DATACLASS_INTEGER
 			end if
@@ -1260,7 +1261,7 @@ function astNewBOP _
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
 	if( astIsCONST( l ) and astIsCONST( r ) ) then
 
-		select case as const ldtype
+		select case as const typeGet( ldtype )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    hBOPConstFold64( op, l, r )
 
@@ -1327,7 +1328,7 @@ function astNewBOP _
 			end if
 
 			'' ? - c = ? + -c
-			select case as const rdtype
+			select case as const typeGet( rdtype )
 			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 				r->con.val.long = -r->con.val.long
 
@@ -1360,7 +1361,7 @@ function astNewBOP _
 						n = l
 						l = l->l
 						astDelNode( n )
-						ldtype = l->dtype
+						ldtype = typeJoin( ldtype, l->dtype )
 					end select
 				end if
 
@@ -1393,14 +1394,14 @@ function astNewBOP _
 
 	case AST_OP_INTDIV
 		'' longint?
-		select case dtype
+		select case typeGet( dtype )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			return rtlMathLongintDIV( dtype, l, ldtype, r, rdtype )
 		end select
 
 	case AST_OP_MOD
 		'' longint?
-		select case dtype
+		select case typeGet( dtype )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			return rtlMathLongintMOD( dtype, l, ldtype, r, rdtype )
 		end select
@@ -1478,7 +1479,7 @@ function astNewSelfBOP _
 		dim as integer dtype = any
 		dim as ASTNODE ptr ll = any, lr = any
 
-		dtype = astGetDataType( l )
+		dtype = astGetFullType( l )
 		subtype = astGetSubType( l )
 		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
 

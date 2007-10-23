@@ -321,7 +321,7 @@ private function hDoAssignment _
 	function = FALSE
 
 	'' const?
-	if( typeIsConst( astGetDataType( lhs ) ) ) then
+	if( typeIsConst( astGetFullType( lhs ) ) ) then
     	return errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 	end if
 
@@ -593,10 +593,10 @@ private function hAssignFromField _
 
 	'' build field access
 	dim as ASTNODE ptr expr = any
-	expr = astNewVAR( rhs, 0, symbGetType( rhs ), symbGetSubtype( rhs ) )
+	expr = astNewVAR( rhs, 0, symbGetFullType( rhs ), symbGetSubtype( rhs ) )
 	expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetOfs( fld ), FB_DATATYPE_INTEGER ) )
-	expr = astNewDEREF( expr, symbGetType( fld ), symbGetSubType( fld ) )
-	expr = astNewFIELD( expr, fld, symbGetType( fld ), symbGetSubType( fld ) )
+	expr = astNewDEREF( expr, symbGetFullType( fld ), symbGetSubType( fld ) )
+	expr = astNewFIELD( expr, fld, symbGetFullType( fld ), symbGetSubType( fld ) )
 
     expr = astNewASSIGN( lhs, expr )
     if( expr = NULL ) then
@@ -681,7 +681,7 @@ function cAssignmentOrPtrCall _
         node->expr = cVarOrDeref( )
         if( node->expr <> NULL ) then
 			'' const?
-			if( typeIsConst( astGetDataType( node->expr ) ) ) then
+			if( typeIsConst( astGetFullType( node->expr ) ) ) then
     			return errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 			end if
 
@@ -742,7 +742,7 @@ function cAssignmentOrPtrCall _
 
 
     if( expr <> NULL ) then
-    	select case typeGet( astGetDataType( expr ) )
+    	select case astGetDataType( expr )
     	case FB_DATATYPE_STRUCT
     		if( symbGetUDTIsUnion( astGetSubtype( expr ) ) ) then
        			if( errReport( FB_ERRMSG_UNIONSNOTALLOWED ) = FALSE ) then

@@ -188,18 +188,19 @@ function symbRemapType _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
-
-	dtype = typeGet( dtype )
-
-	if( dtype = FB_DATATYPE_POINTER ) then
-		function = FB_DATATYPE_ULONG
-
-	elseif( dtype = FB_DATATYPE_BITFIELD ) then
-		function = subtype->typ
-
-	else
-		function = symb_dtypeTB(dtype).remaptype
-	end if
+    
+    dim as integer nd = any
+    
+	select case typeGet( dtype )
+	case FB_DATATYPE_POINTER
+		nd = FB_DATATYPE_ULONG
+	case FB_DATATYPE_BITFIELD
+		nd = subtype->typ
+	case else
+		nd = symb_dtypeTB(dtype).remaptype
+	end select
+	
+	function = typeJoin( dtype, nd )
 
 end function
 
@@ -209,7 +210,7 @@ function symbGetSignedType _
 		byval dtype as integer _
 	) as integer
 
-	dim as integer dt = typeGet( dtype )
+	dim as integer dt = typeGet( dtype ), nd = any
 
 	if( symb_dtypeTB(dt).class <> FB_DATACLASS_INTEGER ) then
 		return dtype
@@ -217,33 +218,35 @@ function symbGetSignedType _
 
 	select case as const dt
 	case FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR
-		function = FB_DATATYPE_BYTE
+		nd = FB_DATATYPE_BYTE
 
 	case FB_DATATYPE_USHORT
-		function = FB_DATATYPE_SHORT
+		nd = FB_DATATYPE_SHORT
 
 	case FB_DATATYPE_UINT
-		function = FB_DATATYPE_INTEGER
+		nd = FB_DATATYPE_INTEGER
 
 	case FB_DATATYPE_WCHAR
 		select case env.target.wchar.type
 		case FB_DATATYPE_UBYTE
-			function = FB_DATATYPE_BYTE
+			nd = FB_DATATYPE_BYTE
 		case FB_DATATYPE_USHORT
-			function = FB_DATATYPE_SHORT
+			nd = FB_DATATYPE_SHORT
 		case else
-			function = FB_DATATYPE_INTEGER
+			nd = FB_DATATYPE_INTEGER
 		end select
 
 	case FB_DATATYPE_ULONG, FB_DATATYPE_POINTER
-		function = FB_DATATYPE_LONG
+		nd = FB_DATATYPE_LONG
 
 	case FB_DATATYPE_ULONGINT
-		function = FB_DATATYPE_LONGINT
+		nd = FB_DATATYPE_LONGINT
 
 	case else
-		function = dtype
+		nd = dtype
 	end select
+	
+	function = typeJoin( dtype, nd )
 
 end function
 
@@ -253,7 +256,7 @@ function symbGetUnsignedType _
 		byval dtype as integer _
 	) as integer
 
-	dim as integer dt = typeGet( dtype )
+	dim as integer dt = typeGet( dtype ), nd = any
 
 	if( symb_dtypeTB(dt).class <> FB_DATACLASS_INTEGER ) then
 		return dtype
@@ -261,23 +264,25 @@ function symbGetUnsignedType _
 
 	select case as const dt
 	case FB_DATATYPE_BYTE
-		function = FB_DATATYPE_UBYTE
+		nd = FB_DATATYPE_UBYTE
 
 	case FB_DATATYPE_SHORT
-		function = FB_DATATYPE_USHORT
+		nd = FB_DATATYPE_USHORT
 
 	case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-		function = FB_DATATYPE_UINT
+		nd = FB_DATATYPE_UINT
 
 	case FB_DATATYPE_LONG, FB_DATATYPE_POINTER
-		function = FB_DATATYPE_ULONG
+		nd = FB_DATATYPE_ULONG
 
 	case FB_DATATYPE_LONGINT
-		function = FB_DATATYPE_ULONGINT
+		nd = FB_DATATYPE_ULONGINT
 
 	case else
-		function = dtype
+		nd = dtype
 	end select
+	
+	function = typeJoin( dtype, nd )
 
 end function
 

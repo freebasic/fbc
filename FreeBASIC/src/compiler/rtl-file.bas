@@ -1390,7 +1390,7 @@ function rtlFileSeek _
 
 	function = FALSE
     
-    pos_dtype = typeGetDtAndPtrOnly( astGetDataType( newpos ) )
+    pos_dtype = astGetDataType( newpos )
     
 	''
 	select case as const pos_dtype
@@ -1473,13 +1473,13 @@ function rtlFilePut _
     function = NULL
 
 	''
-	dtype    = typeGetDtAndPtrOnly( astGetDataType( src ) )
+	dtype    = astGetDataType( src )
 	isstring = symbIsString( dtype )
 
     if( offset = NULL ) then
     	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
-	o_dtype  = typeGetDtAndPtrOnly( astGetDataType( offset ) )
+	o_dtype  = astGetDataType( offset )
 
 	select case as const o_dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -1583,7 +1583,7 @@ function rtlFilePutArray _
     if( offset = NULL ) then
     	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
-    o_dtype  = typeGetDtAndPtrOnly( astGetDataType( offset ) )
+    o_dtype  = astGetDataType( offset )
 
 	''
 	select case as const o_dtype
@@ -1659,13 +1659,13 @@ function rtlFileGet _
     function = NULL
 
 	''
-	dtype = typeGetDtAndPtrOnly( astGetDataType( dst ) )
+	dtype = astGetDataType( dst )
 	isstring = symbIsString( dtype )
 
     if( offset = NULL ) then
     	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
-   	o_dtype  = typeGetDtAndPtrOnly( astGetDataType( offset ) )
+   	o_dtype  = astGetDataType( offset )
 
 	select case as const o_dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -1769,7 +1769,7 @@ function rtlFileGetArray _
     if( offset = NULL ) then
     	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
-	o_dtype  = typeGetDtAndPtrOnly( astGetDataType( offset ) )
+	o_dtype  = astGetDataType( offset )
 
 	''
 	select case as const o_dtype
@@ -1894,7 +1894,7 @@ function rtlFileLineInput _
  	end if
 
     '' always calc len before pushing the param
-	dtype = typeGetDtAndPtrOnly( astGetDataType( dstexpr ) )
+	dtype = astGetDataType( dstexpr )
 	lgt = rtlCalcStrLen( dstexpr, dtype )
 
 	'' dst as any
@@ -1967,7 +1967,7 @@ function rtlFileLineInputWstr _
  	end if
 
     '' always calc len before pushing the param
-	dtype = typeGetDtAndPtrOnly( astGetDataType( dstexpr ) )
+	dtype = astGetDataType( dstexpr )
 	lgt = rtlCalcStrLen( dstexpr, dtype )
 
 	'' byval dst as wstring ptr
@@ -2066,7 +2066,7 @@ function rtlFileInputGet _
 
 	''
 	args = 1
-	dtype = typeGetDtAndPtrOnly( astGetDataType( dstexpr ) )
+	dtype = astGetDataType( dstexpr )
 
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
@@ -2178,8 +2178,8 @@ function rtlFileLock _
 
 	function = FALSE
 
-	i_dtype = typeGetDtAndPtrOnly( astGetDataType( iniexpr ) )
-	e_dtype = typeGetDtAndPtrOnly( astGetDataType( endexpr ) )
+	i_dtype = astGetDataType( iniexpr )
+	e_dtype = astGetDataType( endexpr )
 	
 	''
 	select case as const i_dtype

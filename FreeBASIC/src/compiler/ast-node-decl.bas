@@ -48,7 +48,7 @@ private function hCtorList _
     				   astBuildVarAssign( this_, _
     						   			  astNewADDROF( astNewVAR( sym, _
    											 		  		       0, _
-   											 		  			   symbGetType( sym ), _
+   											 		  			   symbGetFullType( sym ), _
    											 		  			   subtype ) ) ) )
 
 	'' for cnt = 0 to symbGetArrayElements( sym )-1
@@ -115,7 +115,7 @@ private function hCallCtor _
    				return astBuildCtorCall( subtype, _
    										 astNewVAR( sym, _
    											 		0, _
-   											 		symbGetType( sym ), _
+   											 		symbGetFullType( sym ), _
    											 		subtype ) )
 
    			'' array..
@@ -135,7 +135,7 @@ private function hCallCtor _
     function = astNewMEM( AST_OP_MEMCLEAR, _
     			  	  	  astNewVAR( sym, _
     			  		  	 	 	 0, _
-    			   			 	 	 symbGetType( sym ), _
+    			   			 	 	 symbGetFullType( sym ), _
     			   			 	 	 subtype ), _
     			  	  	  astNewCONSTi( lgt ) )
 

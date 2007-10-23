@@ -873,7 +873,7 @@ function cForStmtBegin _
 			flags or= FOR_ISLOCAL
 			idexpr = astNewVAR( sym, _
 								0, _
-								symbGetType( sym ), _
+								symbGetFullType( sym ), _
 								symbGetSubtype( sym ) )
 		end if
 
@@ -911,10 +911,10 @@ function cForStmtBegin _
 
 	end if
 
-	dim as integer dtype = typeGetDtAndPtrOnly( astGetDataType( idexpr ) )
+	dim as integer dtype = astGetDataType( idexpr )
 	dim as FBSYMBOL ptr subtype = astGetSubType( idexpr )
 	
-	if( typeIsConst( astGetDataType( idexpr ) ) ) then
+	if( typeIsConst( astGetFullType( idexpr ) ) ) then
 		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
 			exit function
 		end if

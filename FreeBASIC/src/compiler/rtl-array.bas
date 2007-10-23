@@ -360,7 +360,7 @@ function rtlArrayRedim _
 
     function = FALSE
 
-    dtype = symbGetType( s )
+    dtype = symbGetFullType( s )
 
 	'' only objects get instantiated
 	select case typeGet( dtype )
@@ -501,10 +501,10 @@ function rtlArrayErase _
 
 	function = NULL
 
-	dtype = typeGetDtAndPtrOnly( astGetDataType( arrayexpr ) )
+	dtype = astGetDataType( arrayexpr )
 
 	''
-	select case typeGet( dtype )
+	select case dtype
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
     case else

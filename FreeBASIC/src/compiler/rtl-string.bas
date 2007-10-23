@@ -2597,13 +2597,10 @@ function rtlWstrConcat _
 
 	function = NULL
 	
-	sdtype1 = typeGetDtAndPtrOnly( sdtype1 )
-	sdtype2 = typeGetDtAndPtrOnly( sdtype2 )
-
 	'' both not wstrings?
-    if( sdtype1 <> sdtype2 ) then
+    if( typeGetDtAndPtrOnly( sdtype1 ) <> typeGetDtAndPtrOnly( sdtype2 ) ) then
     	'' left ?
-    	if( sdtype1 = FB_DATATYPE_WCHAR ) then
+    	if( typeGet( sdtype1 ) = FB_DATATYPE_WCHAR ) then
     		return rtlWstrConcatWA( str1, str2, sdtype2 )
 
     	'' right..
@@ -2645,7 +2642,7 @@ function rtlStrConcatAssign _
     proc = astNewCALL( PROCLOOKUP( STRCONCATASSIGN ) )
 
     ''
-   	ddtype = astGetDataType( dst )
+   	ddtype = astGetFullType( dst )
 
 	'' always calc len before pushing the param
 	lgt = rtlCalcStrLen( dst, ddtype )
@@ -2663,7 +2660,7 @@ function rtlStrConcatAssign _
     end if
 
    	'' always calc len before pushing the param
-   	sdtype = astGetDataType( src )
+   	sdtype = astGetFullType( src )
 	lgt = rtlCalcStrLen( src, sdtype )
 
 	'' src as any
@@ -2839,8 +2836,8 @@ function rtlStrAssign _
 
 	function = NULL
 
-    ddtype = typeGetDtAndPtrOnly( astGetDataType( dst ) )
-    sdtype = typeGetDtAndPtrOnly( astGetDataType( src ) )
+    ddtype = astGetDataType( dst )
+    sdtype = astGetDataType( src )
 
 	'' wstring source?
     if( sdtype = FB_DATATYPE_WCHAR ) then
@@ -2861,7 +2858,7 @@ function rtlStrAssign _
 	lgt = rtlCalcStrLen( dst, ddtype )
 
 	'' dst as any
-	if( astNewARG( proc, dst, ddtype ) = NULL ) then
+	if( astNewARG( proc, dst, astGetFullType( dst ) ) = NULL ) then
     	exit function
     end if
 
@@ -2876,7 +2873,7 @@ function rtlStrAssign _
 	lgt = rtlCalcStrLen( src, sdtype )
 
 	'' src as any
-	if( astNewARG( proc, src, sdtype ) = NULL ) then
+	if( astNewARG( proc, src, astGetFullType( src ) ) = NULL ) then
     	exit function
     end if
 
@@ -2912,8 +2909,8 @@ function rtlWstrAssign _
 
 	function = NULL
 
-	ddtype = typeGetDtAndPtrOnly( astGetDataType( dst ) )
-	sdtype = typeGetDtAndPtrOnly( astGetDataType( src ) )
+	ddtype = astGetDataType( dst )
+	sdtype = astGetDataType( src )
 
 	'' both not wstrings?
     if( ddtype <> sdtype ) then
@@ -2966,7 +2963,7 @@ function rtlStrDelete _
 	function = NULL
 
 	''
-    dtype = typeGetDtAndPtrOnly( astGetDataType( strg ) )
+    dtype = astGetDataType( strg )
     select case dtype
     '' it could be a wstring ptr too due the temporary
     '' wstrings that must be handled by AST
@@ -3022,7 +3019,7 @@ function rtlStrAllocTmpDesc	_
     function = NULL
 
 	''
-   	dtype = typeGetDtAndPtrOnly( astGetDataType( strexpr ) )
+   	dtype = astGetDataType( strexpr )
 
 	select case dtype
 	case FB_DATATYPE_STRING
@@ -3160,10 +3157,10 @@ function rtlToStr _
 
     function = NULL
 	
-	dtype = typeGetDtAndPtrOnly( astGetDatatype( expr ) )
+	dtype = astGetDatatype( expr )
 	
     '' constant? evaluate
-    if( astIsCONST( expr ) or typeIsConst( astGetDatatype( expr ) ) ) then
+    if( astIsCONST( expr ) or typeIsConst( astGetFullType( expr ) ) ) then
     	dim as string qb_padding
     	if fbLangIsSet( FB_LANG_QB ) then
     		if astGetValueAsDouble( expr ) >= 0 then
@@ -3280,10 +3277,10 @@ function rtlToWstr _
 
     function = NULL
     
-    dtype = typeGetDtAndPtrOnly( astGetDataType( expr ) )
+    dtype = astGetDataType( expr )
 
     '' constant? evaluate
-    if( astIsCONST( expr ) or typeIsConst( astGetDatatype( expr ) ) ) then
+    if( astIsCONST( expr ) or typeIsConst( astGetFullType( expr ) ) ) then
     	return astNewCONSTwstr( astGetValueAsWstr( expr ) )
     end if
 
@@ -3478,7 +3475,7 @@ function rtlStrMid _
     function = NULL
 
 	''
-    if( typeGetDtAndPtrOnly( astGetDataType( expr1 ) ) <> FB_DATATYPE_WCHAR ) then
+    if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRMID ) )
     else
     	proc = astNewCALL( PROCLOOKUP( WSTRMID ) )
@@ -3516,7 +3513,7 @@ function rtlStrAssignMid _
     function = NULL
 
 	''
-    if( typeGetDtAndPtrOnly( astGetDataType( expr1 ) ) <> FB_DATATYPE_WCHAR ) then
+    if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRASSIGNMID ) )
     	dst_len = -1
     else
@@ -3569,7 +3566,7 @@ function rtlStrLSet _
     function = FALSE
 
 	''
-    if( typeGetDtAndPtrOnly( astGetDataType( dstexpr ) ) <> FB_DATATYPE_WCHAR ) then
+    if( astGetDataType( dstexpr ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRLSET ) )
     else
     	proc = astNewCALL( PROCLOOKUP( WSTRLSET ) )
@@ -3604,7 +3601,7 @@ function rtlStrFill _
 
     function = NULL
 
-	select case typeGetDtAndPtrOnly( astGetDataType( expr2 ) )
+	select case astGetDataType( expr2 )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		f = PROCLOOKUP( STRFILL2 )
 	case else
@@ -3638,7 +3635,7 @@ function rtlWstrFill _
 
     function = NULL
 
-	if( typeGetDtAndPtrOnly( astGetDataType( expr2 ) ) = FB_DATATYPE_WCHAR ) then
+	if( astGetDataType( expr2 ) = FB_DATATYPE_WCHAR ) then
 		f = PROCLOOKUP( WSTRFILL2 )
 	else
 		f = PROCLOOKUP( WSTRFILL1 )
@@ -3671,7 +3668,7 @@ function rtlStrAsc _
 	function = NULL
 
     ''
-    if( typeGetDtAndPtrOnly( astGetDataType( expr ) ) <> FB_DATATYPE_WCHAR ) then
+    if( astGetDataType( expr ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRASC ) )
     else
     	proc = astNewCALL( PROCLOOKUP( WSTRASC ) )
@@ -3722,7 +3719,7 @@ function rtlStrChr _
     '' ...
     for i as integer = 0 to args-1
     	expr = exprtb(i)
-    	dtype = typeGetDtAndPtrOnly( astGetDatatype( expr ) )
+    	dtype = astGetDatatype( expr )
 
     	'' check if non-numeric
     	if( astGetDataClass( expr ) >= FB_DATACLASS_STRING ) then
@@ -3767,7 +3764,7 @@ function rtlStrInstr _
 	
     function = NULL
 	
-	dtype = typeGetDtAndPtrOnly( astGetDataType( nd_text ) )
+	dtype = astGetDataType( nd_text )
 	
 	''
     if( search_any ) then
@@ -3817,7 +3814,7 @@ function rtlStrTrim _
 
     function = NULL
 	
-	dtype = typeGetDtAndPtrOnly( astGetDataType( nd_text ) )
+	dtype = astGetDataType( nd_text )
 	
 	''
     if( is_any ) then
@@ -3870,7 +3867,7 @@ function rtlStrRTrim _
 
     function = NULL
 	
-	dtype = typeGetDtAndPtrOnly( astGetDataType( nd_text ) )
+	dtype = astGetDataType( nd_text )
 	
 	''
     if( is_any ) then
@@ -3923,7 +3920,7 @@ function rtlStrLTrim _
 
     function = NULL
 
-	dtype = typeGetDtAndPtrOnly( astGetDataType( nd_text ) )
+	dtype = astGetDataType( nd_text )
 	
 	''
     if( is_any ) then

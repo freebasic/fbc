@@ -1434,7 +1434,7 @@ function cOperatorHeader _
     end if
 
     ''
-    symbGetType( proc ) = dtype
+    symbGetFullType( proc ) = dtype
     symbGetSubtype( proc ) = subtype
 
     symbSetProcOpOvl( proc, op )
@@ -1885,7 +1885,7 @@ function cPropertyHeader _
     end if
 
     ''
-    symbGetType( proc ) = dtype
+    symbGetFullType( proc ) = dtype
     symbGetSubType( proc ) = subtype
 
 	''

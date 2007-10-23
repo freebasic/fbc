@@ -429,7 +429,7 @@ private function hDeclStaticVar _
 		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
 			options or= FB_SYMBOPT_UNSCOPE
 		end if
-
+        
     	sym = symbAddVarEx( id, idalias, dtype, subtype, _
     				  	  	lgt, dimensions, dTB(), _
     				  	  	attrib, options )
@@ -490,14 +490,6 @@ private function hDeclDynArray _
    		end if
     end if
 
-	'' don't allow const dynamic arrays... 
-	'' they can't be assigned even if resized...
-	if( typeIsConst( dtype ) ) then
-		if( errReport( FB_ERRMSG_DYNAMICARRAYSCANTBECONST ) = FALSE ) then
-			exit function
-		end if
-	end if
-	
     '' new var?
    	if( sym = NULL ) then
 		dim as FB_SYMBOPT options = FB_SYMBOPT_NONE
@@ -555,6 +547,14 @@ private function hDeclDynArray _
 		exit function
 	end if
 
+	'' don't allow const dynamic arrays... 
+	'' they can't be assigned even if resized...
+	if( typeIsConst( symbGetFullType( sym ) ) ) then
+		if( errReport( FB_ERRMSG_DYNAMICARRAYSCANTBECONST ) = FALSE ) then
+			exit function
+		end if
+	end if
+	
 	attrib = symbGetAttrib( sym )
 
 	'' external? don't do any checks..
@@ -2019,7 +2019,7 @@ function cAutoVarDecl _
         	'' build a ini-tree
 			dim as ASTNODE ptr initree = any
 
-        	initree = astTypeIniBegin( dtype, subtype, symbIsLocal( sym ) )
+        	initree = astTypeIniBegin( astGetFullType( expr ), subtype, symbIsLocal( sym ) )
 
         	'' not an object?
         	if( has_ctor = FALSE ) then

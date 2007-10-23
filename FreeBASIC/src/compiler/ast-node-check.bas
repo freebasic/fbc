@@ -207,7 +207,7 @@ function astLoadPTRCHK _
 	'' be spilled as IR can't handle inter-blocks
 	t = astNewASSIGN( astNewVAR( n->sym, _
 								 0, _
-								 symbGetType( n->sym ), _
+								 symbGetFullType( n->sym ), _
 								 symbGetSubType( n->sym ) ), _
 					  l )
 	astLoad( t )
@@ -230,7 +230,7 @@ function astLoadPTRCHK _
     end if
 
 	'' re-load, see above
-	t = astNewVAR( n->sym, 0, symbGetType( n->sym ), symbGetSubType( n->sym ) )
+	t = astNewVAR( n->sym, 0, symbGetFullType( n->sym ), symbGetSubType( n->sym ) )
 	function = astLoad( t )
 	astDelNode( t )
 

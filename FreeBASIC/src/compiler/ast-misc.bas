@@ -684,7 +684,7 @@ function astCheckConst _
 
 	'' x86/32-bit assumptions
 
-    select case as const dtype
+    select case as const typeGet( dtype )
     case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		dim as double dval = any, dmin = any, dmax = any
 
@@ -912,7 +912,7 @@ function astUpdStrConcat _
 		if( n->op.op = AST_OP_ADD ) then
 			l = n->l
 			r = n->r
-			if( n->dtype <> FB_DATATYPE_WCHAR ) then
+			if( typeGet( n->dtype ) <> FB_DATATYPE_WCHAR ) then
 				function = rtlStrConcat( l, l->dtype, r, r->dtype )
 			else
 				function = rtlWstrConcat( l, l->dtype, r, r->dtype )

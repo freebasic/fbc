@@ -259,7 +259,7 @@ end sub
 
     '' to pointer? only allow integers..
     if( typeIsPtr( to_dtype ) ) then
-		select case as const expr_dtype
+		select case as const typeGet( expr_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 
@@ -282,7 +282,7 @@ end sub
 
     '' from pointer? only allow integers..
     elseif( typeIsPtr( expr_dtype ) ) then
-		select case as const to_dtype
+		select case as const typeGet( to_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 
@@ -308,7 +308,7 @@ function astCheckCONV _
 	function = FALSE
 
 	'' UDT? can't convert..
-	if( to_dtype = FB_DATATYPE_STRUCT ) then
+	if( typeGet( to_dtype ) = FB_DATATYPE_STRUCT ) then
 		exit function
 	end if
 
@@ -322,7 +322,7 @@ function astCheckCONV _
 	'' check pointers
 	hCheckPtr( to_dtype, ldtype, l )
 
-	select case ldtype
+	select case typeGet( ldtype )
 	'' CHAR and WCHAR literals are also from the INTEGER class
     case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	'' don't allow, unless it's a deref pointer
@@ -375,7 +375,7 @@ function astNewCONV _
     ldtype = l->dtype
 
     '' same type?
-    if( ldtype = to_dtype ) then
+    if( typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( to_dtype ) ) then
     	if( l->subtype = to_subtype ) then
     		return l
     	end if
@@ -384,7 +384,7 @@ function astNewCONV _
 	'' try casting op overloading
 	hDoGlobOpOverload( to_dtype, to_subtype, l )
 
-	select case as const to_dtype
+	select case as const typeGet( to_dtype )
 	'' to UDT? as op overloading failed, refuse.. ditto with void (used by uop/bop
 	'' to cast to be most precise possible) and strings
 	case FB_DATATYPE_VOID, FB_DATATYPE_STRING, _
@@ -392,7 +392,7 @@ function astNewCONV _
 		exit function
 
 	case else
-		select case ldtype
+		select case typeGet( ldtype )
 		'' from UDT? ditto..
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			exit function
@@ -416,7 +416,7 @@ function astNewCONV _
 
     '' string?
 	if( check_str ) then
-		select case as const ldtype
+		select case as const typeGet( ldtype )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		return rtlStrToVal( l, to_dtype )
@@ -428,7 +428,7 @@ function astNewCONV _
 
     	'' CHAR and WCHAR literals are also from the INTEGER class
     	else
-    		select case ldtype
+    		select case typeGet( ldtype )
     		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     			'' don't allow, unless it's a deref pointer
     			if( astIsDEREF( l ) = FALSE ) then
@@ -441,7 +441,7 @@ function astNewCONV _
 	'' constant? evaluate at compile-time
 	if( astIsCONST( l ) ) then
 
-		select case as const to_dtype
+		select case as const typeGet( to_dtype )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			hCONVConstEval64( to_dtype, l )
 

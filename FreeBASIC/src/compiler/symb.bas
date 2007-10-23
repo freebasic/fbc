@@ -1113,13 +1113,15 @@ function symbFindByClass _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr sym = any
+    dim as integer match = FALSE
 
     '' lookup a symbol with the same class
     do while( chain_ <> NULL )
     	sym = chain_->sym
     	do
     		if( sym->class = class_ ) then
-				goto check_var
+				match = TRUE
+				exit do, do
 			end if
 
 			sym = sym->hash.next
@@ -1127,10 +1129,11 @@ function symbFindByClass _
 
     	chain_ = chain_->next
     loop
+    
+    if( match = FALSE ) then
+		return NULL
+	end if
 
-	return NULL
-
-check_var:
 	'' check if symbol isn't a non-shared module level one
 	if( symbIsVar( sym ) ) then
 		if( symbVarCheckAccess( sym ) ) then
@@ -1618,7 +1621,7 @@ function symbIsString _
 		byval dtype as integer _
 	) as integer
 
-	select case as const typeGetDtAndPtrOnly( dtype )
+	select case as const dtype
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		function = TRUE
 	case else

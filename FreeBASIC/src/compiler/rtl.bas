@@ -330,7 +330,7 @@ function rtlCalcExprLen _
 
 	function = -1
 
-	dtype = typeGetDtAndPtrOnly( astGetDataType( expr ) )
+	dtype = astGetDataType( expr )
 	select case as const dtype
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		function = rtlCalcStrLen( expr, dtype )
@@ -367,9 +367,7 @@ function rtlCalcStrLen _
 
 	dim as FBSYMBOL ptr s
 	
-	dtype = typeGetDtAndPtrOnly( dtype )
-	
-	select case as const dtype
+	select case as const typeGet( dtype )
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
 		function = 0
 
@@ -379,7 +377,7 @@ function rtlCalcStrLen _
 		if( s = NULL ) then
 			function = 0
 		else
-			if( symbGetType( s ) <> dtype ) then
+			if( symbGetType( s ) <> typeGetDtAndPtrOnly( dtype ) ) then
 				function = 0
 			else
 				function = symbGetStrLen( s )
@@ -392,7 +390,7 @@ function rtlCalcStrLen _
 		if( s = NULL ) then
 			function = 0
 		else
-			if( symbGetType( s ) <> dtype ) then
+			if( symbGetType( s ) <> typeGetDtAndPtrOnly( dtype ) ) then
 				function = 0
 			else
 				function = symbGetWStrLen( s )

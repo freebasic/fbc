@@ -181,13 +181,13 @@ function cTypedefDecl _
    			hUcase( ptname, ptname )
 			hUcase( pid, pid )
     		if( *ptname = *pid ) then
-    			dtype = FB_DATATYPE_VOID
+    			dtype = typeJoin( dtype, FB_DATATYPE_VOID )
     			subtype = NULL
     			lgt = 0
 
     		'' else, create a forward reference (or lookup one)
     		else
-    			dtype = FB_DATATYPE_FWDREF
+    			dtype = typeJoin( dtype, FB_DATATYPE_FWDREF )
     			subtype = symbAddFwdRef( ptname )
 				lgt = -1
 				if( subtype = NULL ) then

@@ -122,7 +122,7 @@ private function hMakeArrayIndex _
     end if
 
     function = astNewIDX( varexpr, idxexpr, _
-    					  astGetDataType( varexpr ), astGetSubType( varexpr ) )
+    					  astGetFullType( varexpr ), astGetSubType( varexpr ) )
 
 end function
 
@@ -913,9 +913,9 @@ function cGfxPalette as integer
 		
 		dim as integer has_const = FALSE
 		if( isget ) then
-			has_const or= iif( rexpr, typeIsConst( astGetDatatype( rexpr ) ), FALSE )
-			has_const or= iif( gexpr, typeIsConst( astGetDatatype( rexpr ) ), FALSE )
-			has_const or= iif( bexpr, typeIsConst( astGetDatatype( rexpr ) ), FALSE )
+			has_const or= iif( rexpr, typeIsConst( astGetFullType( rexpr ) ), FALSE )
+			has_const or= iif( gexpr, typeIsConst( astGetFullType( rexpr ) ), FALSE )
+			has_const or= iif( bexpr, typeIsConst( astGetFullType( rexpr ) ), FALSE )
 		end if
 		
 		if( has_const ) then
@@ -1307,7 +1307,7 @@ function cGfxImageCreate( byref funcexpr as ASTNODE ptr ) as integer
 end function
 
 #define CHECK_CONST_ARG(res, exp_) _ 
-	res or= iif( exp_, typeIsConst( astGetDatatype( exp_ ) ), FALSE )
+	res or= iif( exp_, typeIsConst( astGetFullType( exp_ ) ), FALSE )
 
 '':::::
 '' GfxGetMouse    =   GETMOUSE '(' Expr ',' Expr ( ',' Expr ( ',' Expr ( ',' Expr )? )? )? ')'

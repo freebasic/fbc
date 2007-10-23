@@ -40,7 +40,7 @@ function astBuildVarAssign _
 
 	function = astNewASSIGN( astNewVAR( lhs, _
             							0, _
-            							symbGetType( lhs ), _
+            							symbGetFullType( lhs ), _
             							symbGetSubtype( lhs ) ), _
             				 astNewCONSTi( rhs, _
             				 			   FB_DATATYPE_INTEGER ) )
@@ -56,7 +56,7 @@ function astBuildVarAssign _
 
 	function = astNewASSIGN( astNewVAR( lhs, _
             							0, _
-            							symbGetType( lhs ), _
+            							symbGetFullType( lhs ), _
             							symbGetSubtype( lhs ) ), _
             				 rhs )
 
@@ -87,7 +87,7 @@ function astBuildVarInc _
 	function = astNewSelfBOP( op, _
 						   	  astNewVAR( lhs, _
 						   	  			 0, _
-						   	  			 symbGetType( lhs ), _
+						   	  			 symbGetFullType( lhs ), _
 						   	  			 symbGetSubtype( lhs ) ), _
             			   	  astNewCONSTi( rhs, _
             			   	  				FB_DATATYPE_INTEGER ), _
@@ -104,7 +104,7 @@ function astBuildVarDeref _
 
 	function = astNewDEREF( astNewVAR( sym, _
             						   0, _
-            						   symbGetType( sym ), _
+            						   symbGetFullType( sym ), _
             						   symbGetSubtype( sym ) ), _
             			  	           typeDeref(symbGetType( sym )), _
             			  	symbGetSubtype( sym ) )
@@ -129,7 +129,7 @@ function astBuildVarAddrof _
 
 	function = astNewADDROF( astNewVAR( sym, _
             						  	0, _
-            						  	symbGetType( sym ), _
+            						  	symbGetFullType( sym ), _
             						  	symbGetSubtype( sym ) ) )
 
 end function
@@ -164,7 +164,7 @@ function astBuildVarDtorCall _
 		end if
 
 		if( do_free ) then
-			expr = astNewVAR( s, 0, symbGetType( s ), symbGetSubtype( s ) )
+			expr = astNewVAR( s, 0, symbGetFullType( s ), symbGetSubtype( s ) )
 
 			if( symbIsDynamic( s ) ) then
 				function = rtlArrayErase( expr, check_access )
@@ -199,7 +199,7 @@ function astBuildVarDtorCall _
                 function = astBuildDtorCall( subtype, _
                 							 astNewVAR( s, _
                 							 			0, _
-                							 			symbGetType( s ), _
+                							 			symbGetFullType( s ), _
                 							 			subtype ) )
 
 			end if
@@ -227,20 +227,20 @@ function astBuildVarField _
 	if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
 		expr = astNewDEREF( astNewVAR( sym, _
 						    		   0, _
-						    		   typeAddrOf( symbGetType( sym ) ), _
+						    		   typeAddrOf( symbGetFullType( sym ) ), _
 						    		   symbGetSubtype( sym ) ), _
-						    symbGetType( sym ), _
+						    symbGetFullType( sym ), _
 						    symbGetSubtype( sym ), _
 						    ofs )
 	else
 		expr = astNewVAR( sym, _
 						  ofs, _
-						  symbGetType( sym ), _
+						  symbGetFullType( sym ), _
 						  symbGetSubtype( sym ) )
 	end if
 
 	if( fld <> NULL ) then
-		expr = astNewFIELD( expr, fld, symbGetType( fld ), symbGetSubtype( fld ) )
+		expr = astNewFIELD( expr, fld, symbGetFullType( fld ), symbGetSubtype( fld ) )
 	end if
 
 	function = expr
@@ -641,7 +641,7 @@ function astBuildProcResultVar _
 
     dim as ASTNODE PTR lhs = any
 
-    lhs = astNewVAR( res, 0, symbGetType( res ), symbGetSubtype( res ) )
+    lhs = astNewVAR( res, 0, symbGetFullType( res ), symbGetSubtype( res ) )
 
 	'' proc returns an UDT?
     select case symbGetType( proc )
@@ -667,7 +667,7 @@ function astBuildCallHiddenResVar _
     function = astNewLINK( callexpr, _
 						   astNewVAR( callexpr->call.tmpres, _
         							  0, _
-        							  astGetDataType( callexpr ), _
+        							  astGetFullType( callexpr ), _
         							  astGetSubtype( callexpr ) ), _
         				   FALSE )
 
@@ -690,14 +690,14 @@ function astBuildInstPtr _
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
 
-	dtype = symbGetType( sym )
+	dtype = symbGetFullType( sym )
 	subtype = symbGetSubtype( sym )
 
 	'' it's always a param
 	expr = astNewVAR( sym, 0, typeAddrOf( dtype ), subtype )
 
 	if( fld <> NULL ) then
-		dtype = symbGetType( fld )
+		dtype = symbGetFullType( fld )
 		subtype = symbGetSubtype( fld )
 
 		'' build sym.field( index )
@@ -762,7 +762,7 @@ function astBuildTypeIniCtorList _
 
 	dim as ASTNODE ptr tree
 
-	tree = astTypeIniBegin( symbGetType( sym ), symbGetSubtype( sym ), TRUE )
+	tree = astTypeIniBegin( symbGetFullType( sym ), symbGetSubtype( sym ), TRUE )
 
 	astTypeIniAddCtorList( tree, sym, symbGetArrayElements( sym ) )
 
@@ -803,7 +803,7 @@ function astBuildMultiDeref _
 					return NULL
 				end if
 
-				dtype = astGetDataType( expr )
+				dtype = astGetFullType( expr )
 				subtype = astGetSubType( expr )
 
 			else
@@ -819,7 +819,7 @@ function astBuildMultiDeref _
 			dtype = typeDeref( dtype )
 
 			'' incomplete type?
-			select case dtype
+			select case typeGet( dtype )
 			case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
 				if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
 					return NULL
@@ -866,9 +866,9 @@ function astBuildArrayDescIniTree _
     end if
 
     ''
-    tree = astTypeIniBegin( symbGetType( desc ), symbGetSubtype( desc ), TRUE )
+    tree = astTypeIniBegin( symbGetFullType( desc ), symbGetSubtype( desc ), TRUE )
 
-    dtype = symbGetType( array )
+    dtype = symbGetFullType( array )
     subtype = symbGetSubType( array )
     dims = symbGetArrayDimensions( array )
 

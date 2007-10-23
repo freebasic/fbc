@@ -212,7 +212,7 @@ function astTypeIniAddAssign _
 
 	n = hAddNode( tree, _
 				  AST_NODECLASS_TYPEINI_ASSIGN, _
-				  symbGetType( sym ), _
+				  symbGetFullType( sym ), _
 				  symbGetSubtype( sym ) )
 
 	n->l = expr
@@ -237,7 +237,7 @@ function astTypeIniAddCtorCall _
 
 	n = hAddNode( tree, _
 				  AST_NODECLASS_TYPEINI_CTORCALL, _
-				  symbGetType( sym ), _
+				  symbGetFullType( sym ), _
 				  symbGetSubtype( sym ) )
 
 	n->sym = sym
@@ -262,7 +262,7 @@ function astTypeIniAddCtorList _
 
 	n = hAddNode( tree, _
 				  AST_NODECLASS_TYPEINI_CTORLIST, _
-				  symbGetType( sym ), _
+				  symbGetFullType( sym ), _
 				  symbGetSubtype( sym ) )
 
 	n->sym = sym
@@ -404,7 +404,7 @@ private function hFlushTree _
         		else
         			lside = astNewDEREF( astNewVAR( basesym, _
         				   	   	   	   			    0, _
-	       				   	   	   	   			  	symbGetType( basesym ), _
+	       				   	   	   	   			  	symbGetFullType( basesym ), _
         				   	   	   	   			  	symbGetSubtype( basesym ) ), _
         							   	 n->dtype, _
         							   	 n->subtype, _
@@ -434,7 +434,7 @@ private function hFlushTree _
         							 	 NULL, _
         							 	 n->typeini.ofs )
             else
-				dim as integer dtype = symbGetType( basesym )
+				dim as integer dtype = symbGetFullType( basesym )
 				dim as FBSYMBOL ptr subtype = symbGetSubtype( basesym )
 
 				if( do_deref = FALSE ) then
@@ -510,7 +510,7 @@ private function hFlushExprStatic _
 		else
 			'' different types?
 			if( edtype <> sdtype ) then
-				expr = astNewCONV( sdtype, _
+				expr = astNewCONV( symbGetFullType( sym ), _
 								   symbGetSubtype( sym ), _
 								   expr )
 

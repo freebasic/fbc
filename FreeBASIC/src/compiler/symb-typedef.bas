@@ -72,27 +72,21 @@ private sub hFixForwardRef _
     dim as FBFWDREF ptr n = any, p = any
     dim as FBSYMBOL ptr ref = any
     dim as integer dtype = any
-
+	
+	dtype = symbGetFullType( sym )
+	
 	select case as const class_
-	case FB_SYMBCLASS_STRUCT
-		dtype = FB_DATATYPE_STRUCT
-
-	case FB_SYMBCLASS_ENUM
-		dtype = FB_DATATYPE_ENUM
-
 	case FB_SYMBCLASS_TYPEDEF
-		dtype = symbGetType( sym )
 		sym = symbGetSubtype( sym )
 	end select
-
+	
 	n = f->fwd.reftail
 	do while( n <> NULL )
 		p = n->prev
 
 		ref = n->ref
 
-		'' !!!FIXME!!! must handle the constant mask
-		symbGetType( ref ) = typeMultAddrOf( dtype, symbGetPtrCnt( ref ) )
+		symbGetFullType( ref ) = typeMultAddrOf( dtype, symbGetPtrCnt( ref ) )
 		symbGetSubtype( ref ) = sym
 		ref->lgt = symbCalcLen( symbGetType( ref ), sym )
 

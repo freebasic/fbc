@@ -39,7 +39,7 @@ function astNewDEREF _
 
 	if( l <> NULL ) then
     	if( dtype = FB_DATATYPE_INVALID ) then
-    		dtype = typeDeref( astGetDataType( l ) )
+    		dtype = typeDeref( astGetFullType( l ) )
     		subtype = astGetSubType( l )
     	end if
 

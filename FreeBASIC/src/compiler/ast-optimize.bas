@@ -1278,7 +1278,7 @@ private sub hDivToShift_Signed _
 		exit sub
 	end if
 
-	dtype = l->dtype
+	dtype = astGetFullType( l )
 
 	bits = symbGetDataBits( dtype ) - 1
 	'' bytes are converted to int's..
@@ -1852,10 +1852,10 @@ function astOptAssignment _
 	l = n->l
 	r = n->r
 
-	dtype = n->dtype
+	dtype = astGetFullType( n )
 
 	'' strings?
-	select case dtype
+	select case typeGet( dtype )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_WCHAR
 		return hOptStrAssignment( n, l, r )

@@ -112,9 +112,9 @@ function cTypeConvExpr _
 
 	select case op
 	case AST_OP_TOSIGNED
-		dtype = symbGetSignedType( astGetDataType( expr ) )
+		dtype = symbGetSignedType( astGetFullType( expr ) )
 	case AST_OP_TOUNSIGNED
-	    dtype = symbGetUnsignedType( astGetDataType( expr ) )
+	    dtype = symbGetUnsignedType( astGetFullType( expr ) )
 	end select
 
 	expr = astNewCONV( dtype, NULL, expr, INVALID, TRUE )

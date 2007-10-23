@@ -62,7 +62,7 @@ function cMidStmt _
 			exit function
 		end if
 	else
-		if( symbIsConstant( sym ) or typeIsConst( astGetDatatype( expr1 ) ) ) then
+		if( symbIsConstant( sym ) or typeIsConst( astGetFullType( expr1 ) ) ) then
 			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
 				exit function
 			end if
@@ -136,7 +136,7 @@ function cLSetStmt _
 				exit function
 			end if
 		else
-			if( symbIsConstant( sym ) or typeIsConst( astGetDatatype( dstexpr ) ) ) then
+			if( symbIsConstant( sym ) or typeIsConst( astGetFullType( dstexpr ) ) ) then
 				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
 					exit function
 				end if

@@ -243,7 +243,7 @@ function rtlDataRead _
 
 	f = NULL
 	args = 1
-	dtype = typeGetDtAndPtrOnly( astGetDataType( varexpr ) )
+	dtype = astGetDataType( varexpr )
 
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR

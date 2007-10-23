@@ -75,13 +75,13 @@ const fbdllreason = "__FB_DLLREASON__"
 
    	'' function = TRUE
    	astAdd( astNewASSIGN( astNewVAR( symbGetProcResult( proc ), _
-   									 0, symbGetType( proc ) ), _
+   									 0, symbGetFullType( proc ) ), _
    						  astNewCONSTi( 1, symbGetType( proc ) ) ) )
 
 	'' if( reason = DLL_PROCESS_ATTACH ) then
 
 	param = symbGetParamVar( param )
-	reason = astNewVAR( param, 0, symbGetType( param ) )
+	reason = astNewVAR( param, 0, symbGetFullType( param ) )
 	label = symbAddLabel( NULL )
 	astAdd( astNewBOP( AST_OP_NE, _
 					   reason, _
@@ -198,8 +198,8 @@ const fbargv = "__FB_ARGV__"
     dim as ASTNODE ptr argc, argv
 
 	'' call fb_Init
-	argc = astNewVAR( env.main.argc, 0, symbGetType( env.main.argc ) )
-	argv = astNewVAR( env.main.argv, 0, symbGetType( env.main.argv ) )
+	argc = astNewVAR( env.main.argc, 0, symbGetFullType( env.main.argc ) )
+	argv = astNewVAR( env.main.argv, 0, symbGetFullType( env.main.argv ) )
 
     '' init( argc, argv )
     env.main.initnode = rtlInitApp( argc, argv, isdllmain )

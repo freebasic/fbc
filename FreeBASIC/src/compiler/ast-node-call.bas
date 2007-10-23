@@ -85,7 +85,7 @@ function astNewCALL _
 	assert( sym <> NULL )
 
 	''
-	dtype = symbGetType( sym )
+	dtype = symbGetFullType( sym )
 	subtype = symbGetSubType( sym )
 
 	''
@@ -133,7 +133,7 @@ function astNewCALLCTOR _
 	dim as ASTNODE ptr n = any
 
 	n = astNewNode( AST_NODECLASS_CALLCTOR, _
-					astGetDataType( instptr ), _
+					astGetFullType( instptr ), _
 					astGetSubtype( instptr ) )
 	if( n = NULL ) then
 		return NULL
@@ -164,7 +164,7 @@ private function hCallProc _
 	dtype = n->dtype
 	subtype = n->subtype
 
-	select case dtype
+	select case typeGet( dtype )
 	'' returning a string? it's actually a pointer to a string descriptor
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
 		dtype = typeAddrOf( dtype )
@@ -173,7 +173,7 @@ private function hCallProc _
 	'' UDT's can be returned in regs or as a pointer to the hidden param passed
 	case FB_DATATYPE_STRUCT
 		dtype = symbGetUDTRetType( n->subtype )
-		if( dtype <> FB_DATATYPE_STRUCT ) then
+		if( typeGet( dtype ) <> FB_DATATYPE_STRUCT ) then
 			subtype = NULL
 		end if
 
@@ -251,7 +251,7 @@ private sub hCheckTmpStrings _
 		end if
 
 		'' delete the temp string (or wstring)
-		t = rtlStrDelete( astNewVAR( n->sym, 0, symbGetType( n->sym ) ) )
+		t = rtlStrDelete( astNewVAR( n->sym, 0, symbGetFullType( n->sym ) ) )
 		astLoad( t )
 		astDelNode( t )
 

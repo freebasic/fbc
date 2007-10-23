@@ -382,7 +382,7 @@ function symbMangleType _
     		sig = *symbGetMangledName( subtype )
     	else
     		sig = "N"
-    		sig += symbMangleType( symbGetType( ns ), ns )
+    		sig += symbMangleType( symbGetFullType( ns ), ns )
     		sig += *symbGetMangledName( subtype )
     		sig += "E"
     	end if
@@ -404,7 +404,7 @@ function symbMangleType _
     case FB_DATATYPE_FUNCTION
 		'' F(return_type)(params - recursive, reuses hash)E
 		sig = "F"
-		sig += symbMangleType( symbGetType( subtype ), symbGetSubtype( subtype ) )
+		sig += symbMangleType( symbGetFullType( subtype ), symbGetSubtype( subtype ) )
 		sig += hGetProcParamsTypeCode( subtype )
 		sig += "E"
 
@@ -572,7 +572,7 @@ private function hMangleNamespace _
 	end if
 
 	if( dohashing ) then
-		res = symbMangleType( symbGetType( ns ), ns )
+		res = symbMangleType( symbGetFullType( ns ), ns )
 	end if
 
 	'' create a stack
@@ -1116,7 +1116,7 @@ private function hGetOperatorName _
 		res = "cv"
 
 		'' mangle the return type
-		res += symbMangleType( symbGetType( proc ), symbGetSubtype( proc ) )
+		res += symbMangleType( symbGetFullType( proc ), symbGetSubtype( proc ) )
 
 		function = strptr( res )
 

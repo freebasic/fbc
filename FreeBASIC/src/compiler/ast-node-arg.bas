@@ -183,7 +183,7 @@ private function hCheckStringArg _
 
 	function = arg
 
-	arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
+	arg_dtype = astGetDatatype( arg )
 
 	'' calling the runtime lib?
 	if( parent->call.isrtl ) then
@@ -316,7 +316,7 @@ private function hStrArgToStrPtrParam _
 	) as integer
 
 	dim as ASTNODE ptr arg = n->l
-	dim as integer arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
+	dim as integer arg_dtype = astGetDatatype( arg )
 
 	if( checkrtl = FALSE ) then
 		'' rtl? don't mess..
@@ -416,7 +416,7 @@ private function hCheckByRefArg _
 
 	case else
 		'' string? do nothing (ie: functions returning var-len string's)
-		select case as const dtype
+		select case as const typeGet( dtype )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			return TRUE
@@ -452,7 +452,7 @@ private function hCheckByDescParam _
 	) as integer
 
     dim as ASTNODE ptr arg = n->l, desc_tree = any
-    dim as integer arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) ), sym_dtype = any
+    dim as integer arg_dtype = astGetDatatype( arg ), sym_dtype = any
 
 	'' is arg a pointer?
 	if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
@@ -468,7 +468,7 @@ private function hCheckByDescParam _
 		return FALSE
 	end if
 	
-	sym_dtype = typeGetDtAndPtrOnly( symbGetType( s ) )
+	sym_dtype = symbGetType( s )
 	
 	'' same type? (don't check if it's a rtl proc)
 	if( parent->call.isrtl = FALSE ) then
@@ -539,7 +539,7 @@ private function hCheckVarargParam _
 	) as integer
 
     dim as ASTNODE ptr arg = n->l
-    dim as integer arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
+    dim as integer arg_dtype = astGetDatatype( arg )
 
 	select case as const symbGetDataClass( arg_dtype )
 	'' var-len string? check..
@@ -587,7 +587,7 @@ private function hCheckVoidParam _
 	) as integer
 
 	dim as ASTNODE ptr arg = n->l
-	dim as integer arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
+	dim as integer arg_dtype = astGetDatatype( arg )
 
 	if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
 		'' check strings passed BYVAL
@@ -603,7 +603,7 @@ private function hCheckVoidParam _
 
 	'' pass BYREF, check if a temp param isn't needed
 	'' use the arg type, not the param one (as it's VOID)
-	function = hCheckByRefArg( arg_dtype, arg->subtype, n ) <> NULL
+	function = hCheckByRefArg( astGetFullType( arg ), arg->subtype, n ) <> NULL
 
 end function
 
@@ -616,7 +616,7 @@ private function hCheckStrParam _
 	) as integer
 
 	dim as ASTNODE ptr arg = n->l
-	dim as integer arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
+	dim as integer arg_dtype = astGetDatatype( arg )
 
 	'' check arg type
 	select case as const arg_dtype
@@ -707,7 +707,7 @@ private sub hUDTPassByval _
 
 	'' non-trivial type, pass a pointer to a temp copy
 	dim as FBSYMBOL ptr tmp = any
-	tmp = symbAddTempVar( symbGetType( param ), _
+	tmp = symbAddTempVar( symbGetFullType( param ), _
 						  symbGetSubtype( param ), _
 						  FALSE, _
 						  FALSE )
@@ -734,7 +734,7 @@ private function hImplicitCtor _
    	static as integer rec_cnt = 0
 
    	dim as FBSYMBOL ptr subtype = symbGetSubtype( param )
-   	dim as integer param_dtype = typeGetDtAndPtrOnly( symbGetType( param ) )
+   	dim as integer param_dtype = symbGetType( param )
 
    	if( symbGetHasCtor( subtype ) = FALSE ) then
    		return FALSE
@@ -791,7 +791,7 @@ private function hCheckUDTParam _
 	) as integer
 
 	dim as ASTNODE ptr arg = n->l
-	dim as integer arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
+	dim as integer arg_dtype = astGetDatatype( arg )
 
 	'' not another UDT?
 	if( arg_dtype <> FB_DATATYPE_STRUCT ) then
@@ -869,8 +869,8 @@ private function hCheckParam _
 	arg = n->l
 
 	'' strip the non-type flags
-	param_dtype = typeGetDtAndPtrOnly( symbGetType( param ) )
-	arg_dtype   = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
+	param_dtype = symbGetType( param )
+	arg_dtype   = astGetDatatype( arg )
 
 	select case symbGetParamMode( param )
 	'' by descriptor?
@@ -906,7 +906,7 @@ private function hCheckParam _
 		dim as integer err_num = any
 		dim as FBSYMBOL ptr proc = any
 
-		proc = symbFindCastOvlProc( param_dtype, _
+		proc = symbFindCastOvlProc( symbGetFullType( param ), _
 									symbGetSubtype( param ), _
 									arg, _
 									@err_num )
@@ -921,7 +921,7 @@ private function hCheckParam _
 				rec_cnt -= 1
 
 				arg = n->l
-				arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
+				arg_dtype = astGetDatatype( arg )
 			end if
 		end if
 	end select
@@ -964,7 +964,7 @@ private function hCheckParam _
 
 		hStrArgToStrPtrParam( parent, n, TRUE )
 		arg = n->l
-		arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
+		arg_dtype = astGetDatatype( arg )
 
 	'' UDT? implicit casting failed, can't convert..
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
@@ -1010,19 +1010,19 @@ private function hCheckParam _
 
 		'' const?
 		if( astIsCONST( arg ) ) then
-			arg = astCheckConst( param_dtype, arg )
+			arg = astCheckConst( symbGetFullType( param ), arg )
 			if( arg = NULL ) then
 				exit function
 			end if
-			arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
+			arg_dtype = astGetDatatype( arg )
 		end if
 
-		arg = astNewCONV( param_dtype, symbGetSubtype( param ), arg )
+		arg = astNewCONV( symbGetFullType( param ), symbGetSubtype( param ), arg )
 		if( arg = NULL ) then
 			hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
-		arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
+		arg_dtype = astGetDatatype( arg )
 
 		n->l = arg
 
@@ -1030,11 +1030,11 @@ private function hCheckParam _
 		'' check for overflows
 		if( symbGetDataClass( arg_dtype ) = FB_DATACLASS_FPOINT ) then
 			if( astIsCONST( arg ) ) then
-				arg = astCheckConst( param_dtype, arg )
+				arg = astCheckConst( symbGetFullType( param ), arg )
 				if( arg = NULL ) then
 					exit function
 				end if
-				arg_dtype = typeGetDtAndPtrOnly( astGetDatatype( arg ) )
+				arg_dtype = astGetDatatype( arg )
 			end if
 		end if
 	end if
@@ -1055,7 +1055,7 @@ private function hCheckParam _
 
 	'' byref arg? check if a temp param isn't needed
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-		return hCheckByRefArg( param_dtype, symbGetSubtype( param ), n )
+		return hCheckByRefArg( symbGetFullType( param ), symbGetSubtype( param ), n )
         '' it's an implicit pointer
 	end if
 
@@ -1070,7 +1070,7 @@ private function hCreateOptArg _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr tree = symbGetParamOptExpr( param )
-	dim as integer param_dtype = typeGetDtAndPtrOnly( symbGetType( param ) )
+	dim as integer param_dtype = symbGetType( param )
 
 	if( tree = NULL ) then
 		return NULL
@@ -1119,13 +1119,13 @@ function astNewARG _
 	end if
 
 	if( dtype = FB_DATATYPE_INVALID ) then
-		dtype = astGetDataType( arg )
+		dtype = astGetFullType( arg )
 	end if
 
     '' check const arg to non-const param (if not rtl)
     if( parent->call.isrtl = FALSE ) then
 	    if( typeIsConst( dtype ) ) then
-	    	if( typeIsConst( symbGetType( param ) ) = 0 ) then
+	    	if( typeIsConst( symbGetFullType( param ) ) = 0 ) then
 	    		hParamError( parent, FB_ERRMSG_CONSTANTCANTBECHANGED )
 	    		exit function
 	    	end if
