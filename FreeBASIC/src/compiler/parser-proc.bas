@@ -75,7 +75,7 @@ private function hCheckPrototype _
 	end if
 
 	'' check return type
-	if( symbGetType( proto ) <> proc_dtype ) then
+	if( symbGetFullType( proto ) <> proc_dtype ) then
 		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
 		'' no error recovery: ditto
 		exit function
@@ -90,10 +90,10 @@ private function hCheckPrototype _
 
 	'' check each arg
 	for i = 1 to params
-        dim as integer dtype = symbGetType( proto_param )
+        dim as integer dtype = symbGetFullType( proto_param )
 
     	'' convert any AS ANY arg to the final one
-    	if( dtype = FB_DATATYPE_VOID ) then
+    	if( typeGet( dtype ) = FB_DATATYPE_VOID ) then
     		proto_param->typ = param->typ
     		proto_param->subtype = param->subtype
 
