@@ -1132,7 +1132,7 @@ function symbAddParam _
 	end if
 
     s = symbAddVarEx( symbol, NULL, _
-    				  dtype, param->subtype, 0, _
+    				  symbGetFullType( param ), param->subtype, 0, _
     				  0, dTB(), _
     				  attrib )
 
