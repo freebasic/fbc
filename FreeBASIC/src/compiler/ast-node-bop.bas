@@ -274,7 +274,7 @@ private sub hBOPConstFoldInt _
 
 	dim as integer issigned
 
-	select case as const l->dtype
+	select case as const astGetDataType( l )
 	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, _
 		 FB_DATATYPE_ENUM, FB_DATATYPE_LONG
 		issigned = TRUE
@@ -445,7 +445,7 @@ private sub hBOPConstFold64 _
 
 	dim as integer issigned
 
-	select case l->dtype
+	select case astGetDataType( l )
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_LONG
 		issigned = TRUE
 	case else
@@ -695,7 +695,7 @@ private function hConvertUDT_l _
 	dim as ASTNODE ptr t = any
 
 	'' try to convert to l type
-	t = astNewCONV( l->dtype, l->subtype, r )
+	t = astNewCONV( astGetFullType( l ), l->subtype, r )
     if( t <> NULL ) then
     	t = astNewBOP( op, l, t, ex, options or AST_OPOPT_NOCOERCION )
     	if( t <> NULL ) then
@@ -704,7 +704,7 @@ private function hConvertUDT_l _
 	end if
 
     '' try convert to r type
-	t = astNewCONV( r->dtype, r->subtype, l )
+	t = astNewCONV( astGetFullType( r ), r->subtype, l )
     if( t <> NULL ) then
     	t = astNewBOP( op, t, r, ex, options or AST_OPOPT_NOCOERCION )
     	if( t <> NULL ) then
@@ -736,7 +736,7 @@ private function hConvertUDT_r _
 	dim as ASTNODE ptr t = any
 
 	'' try to convert to r type
-	t = astNewCONV( r->dtype, r->subtype, l )
+	t = astNewCONV( astGetFullType( r ), r->subtype, l )
 	if( t <> NULL ) then
     	t = astNewBOP( op, t, r, ex, options or AST_OPOPT_NOCOERCION )
     	if( t <> NULL ) then
@@ -745,7 +745,7 @@ private function hConvertUDT_r _
 	end if
 
     '' try convert to l type
-	t = astNewCONV( l->dtype, l->subtype, r )
+	t = astNewCONV( astGetFullType( l ), l->subtype, r )
     if( t <> NULL ) then
     	t = astNewBOP( op, l, t, ex, options or AST_OPOPT_NOCOERCION )
     	if( t <> NULL ) then
@@ -970,8 +970,8 @@ function astNewBOP _
 				l = rtlWstrCompare( l, r )
 				r = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 
-				ldtype = typeJoin( ldtype, l->dtype )
-				rdtype = typeJoin( rdtype, r->dtype )
+				ldtype = typeJoin( ldtype, astGetFullType( l ) )
+				rdtype = typeJoin( rdtype, astGetFullType( r ) )
 				ldclass = FB_DATACLASS_INTEGER
 				rdclass = FB_DATACLASS_INTEGER
 
@@ -1059,9 +1059,9 @@ function astNewBOP _
 			l = rtlStrCompare( l, ldtype, r, rdtype )
 			r = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 
-			ldtype = typeJoin( ldtype, l->dtype )
+			ldtype = typeJoin( ldtype, astGetFullType( l ) )
 			ldclass = FB_DATACLASS_INTEGER
-			rdtype = typeJoin( rdtype, r->dtype )
+			rdtype = typeJoin( rdtype, astGetFullType( r ) )
 			rdclass = FB_DATACLASS_INTEGER
 
 		'' no other operation allowed
@@ -1280,7 +1280,7 @@ function astNewBOP _
 			hBOPConstFoldInt( op, l, r )
 		end select
 
-		l->dtype = dtype
+		astGetFullType( l ) = dtype
 		l->subtype = subtype
 
 		astDelNode( r )
@@ -1361,7 +1361,7 @@ function astNewBOP _
 						n = l
 						l = l->l
 						astDelNode( n )
-						ldtype = typeJoin( ldtype, l->dtype )
+						ldtype = typeJoin( ldtype, astGetFullType( l ) )
 					end select
 				end if
 
@@ -1373,7 +1373,7 @@ function astNewBOP _
 					if( astIsClassOnTree( AST_NODECLASS_CALL, l ) = NULL ) then
 						' A pow should always promote l and r to
 						' float, and return a float
-						if( symbGetDataClass( l->dtype ) <> FB_DATACLASS_FPOINT ) then
+						if( symbGetDataClass( astGetDataType( l ) ) <> FB_DATACLASS_FPOINT ) then
 							l = astNewCONV( FB_DATATYPE_DOUBLE, NULL, l )
 						end if
 						astDelNode( r )
@@ -1556,7 +1556,7 @@ function astLoadBOP _
 	if( ast.doemit ) then
 		'' result type can be different, with boolean operations on floats
 		if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
-			vr = irAllocVREG( n->dtype, n->subtype )
+			vr = irAllocVREG( astGetDataType( n ), n->subtype )
 		else
 			vr = NULL
 		end if

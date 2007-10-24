@@ -119,7 +119,7 @@ function astIsTreeEqual _
 		exit function
 	end if
 
-	if( l->dtype <> r->dtype ) then
+	if( astGetFullType( l ) <> astGetFullType( r ) ) then
 		exit function
 	end if
 
@@ -145,7 +145,7 @@ function astIsTreeEqual _
 	case AST_NODECLASS_CONST
 		const DBL_EPSILON = 2.2204460492503131e-016
 
-		select case as const l->dtype
+		select case as const astGetDataType( l )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			if( l->con.val.long <> r->con.val.long ) then
 				exit function
@@ -683,8 +683,9 @@ function astCheckConst _
 	) as ASTNODE ptr
 
 	'' x86/32-bit assumptions
+	'' assuming dtype has been stripped of const info
 
-    select case as const typeGet( dtype )
+    select case as const dtype
     case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		dim as double dval = any, dmin = any, dmax = any
 
@@ -888,7 +889,7 @@ function astUpdStrConcat _
 	'' this proc will be called for each function param, same
 	'' with assignment -- assuming here that IIF won't
 	'' support strings
-	select case as const n->dtype
+	select case as const astGetDataType( n )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_WCHAR
 
@@ -912,10 +913,11 @@ function astUpdStrConcat _
 		if( n->op.op = AST_OP_ADD ) then
 			l = n->l
 			r = n->r
-			if( typeGet( n->dtype ) <> FB_DATATYPE_WCHAR ) then
-				function = rtlStrConcat( l, l->dtype, r, r->dtype )
+			dim as integer ldtype = astGetDataType( l ), rdtype = astGetDataType( r )
+			if( astGetDataType( n ) <> FB_DATATYPE_WCHAR ) then
+				function = rtlStrConcat( l, ldtype, r, rdtype )
 			else
-				function = rtlWstrConcat( l, l->dtype, r, r->dtype )
+				function = rtlWstrConcat( l, ldtype, r, rdtype )
 			end if
 			astDelNode( n )
 		end if
@@ -968,7 +970,7 @@ function astUpdComp2Branch _
 	'' the expr must be already optimized because the x86 flag assumptions done below
 	n = astOptimizeTree( n )
 
-	dtype = n->dtype
+	dtype = astGetDataType( n )
 
 	'' string? invalid..
 	if( symbGetDataClass( dtype ) = FB_DATACLASS_STRING ) then
@@ -976,7 +978,7 @@ function astUpdComp2Branch _
 	end if
 
     '' CHAR and WCHAR literals are also from the INTEGER class
-    select case dtype
+    select case as const dtype
     case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	'' don't allow, unless it's a deref pointer
     	if( astIsDEREF( n ) = FALSE ) then
@@ -1015,7 +1017,7 @@ function astUpdComp2Branch _
 
 		'' build cast call
 		n = astBuildCall( ovlProc, 1, n )
-		dtype = n->dtype
+		dtype = astGetDataType( n )
 
 	end select
 
@@ -1093,7 +1095,7 @@ function astUpdComp2Branch _
 			'' otherwise, check if zero (ie= FALSE)
 
 			'' zstring? astNewBOP will think both are zstrings..
-			select case dtype
+			select case as const dtype
 			case FB_DATATYPE_CHAR
 				dtype = FB_DATATYPE_UINT
 			case FB_DATATYPE_WCHAR
@@ -1164,7 +1166,7 @@ function astUpdComp2Branch _
 				doopt = irGetOption( IR_OPT_CPU_BOPSETFLAGS )
 
 				if( doopt ) then
-					select case dtype
+					select case as const dtype
 					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 						'' can't be done with longints either, as flag is set twice
 						doopt = irGetOption( IR_OPT_CPU_64BITREGS )
@@ -1338,7 +1340,7 @@ sub astSetType _
 		byval subtype as FBSYMBOL ptr _
 	)
 
-    n->dtype = dtype
+    astGetFullType( n ) = dtype
     n->subtype = subtype
 
 	select case n->class

@@ -235,7 +235,7 @@ private function hArrayInit _
 			end if
 
 		else
-			select case dtype
+			select case as const dtype
 			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 				if( hUDTInit( ctx ) = FALSE ) then
 					exit function
@@ -635,7 +635,7 @@ function cInitializer _
 	ctx.tree = astTypeIniBegin( symbGetFullType( sym ), subtype, is_local )
 
 	'' has ctor?
-	select case dtype
+	select case as const dtype
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		if( symbGetHasCtor( subtype ) ) then
 			ctx.options or= FB_INIOPT_ISOBJ

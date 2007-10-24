@@ -533,7 +533,7 @@ function symbAddDefineTok _
 
 	''
 	t->type = dtype
-	select case dtype
+	select case as const dtype
 	case FB_DEFTOK_TYPE_TEX
 		t->text = NULL
 	case FB_DEFTOK_TYPE_TEXW

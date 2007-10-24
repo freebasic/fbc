@@ -4,6 +4,7 @@
     [x] must check assignment
     [x] must check overloading resolution and the proc dup check
     [x] TYPEOF must be updated
+    [ ] check consts with IIF
 
 [ ] ctor/dtor
     - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when

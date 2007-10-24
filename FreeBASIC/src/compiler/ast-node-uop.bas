@@ -163,7 +163,7 @@ function astNewUOP _
 	end if
 
     dim as integer dclass = any, dtype = any
-	dtype = o->dtype
+	dtype = astGetFullType( o )
     dclass = symbGetDataClass( dtype )
 
     '' string? can't operate
@@ -186,7 +186,7 @@ function astNewUOP _
 			exit function
 		end if
 
-		dtype = typeJoin( dtype, o->dtype )
+		dtype = typeJoin( dtype, astGetFullType( o ) )
     	dclass = symbGetDataClass( dtype )
 
 	'' pointer?
@@ -290,7 +290,7 @@ chk_ulong:
 						end if
 
 					case else
-						if( -astGetValueAsLongint( o ) < ast_minlimitTB( o->dtype ) ) then
+						if( -astGetValueAsLongint( o ) < ast_minlimitTB( astGetDataType( o ) ) ) then
 							errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 						end if
 					end select
@@ -300,7 +300,7 @@ chk_ulong:
 			end if
 		end if
 
-		select case as const typeGet( o->dtype )
+		select case as const astGetDataType( o )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    hUOPConstFold64( op, o )
 
@@ -319,7 +319,7 @@ chk_ulong:
 			hUOPConstFoldInt( op, o )
 		end select
 
-		o->dtype = typeJoin( o->dtype, dtype )
+		astGetFullType( o ) = typeJoin( astGetFullType( o ), dtype )
 		o->subtype = subtype
 
 		return o
@@ -363,7 +363,7 @@ function astLoadUOP _
 
 	if( ast.doemit ) then
 		if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
-			vr = irAllocVREG( o->dtype, o->subtype )
+			vr = irAllocVREG( astGetDataType( o ), o->subtype )
 		else
 			vr = NULL
 		end if

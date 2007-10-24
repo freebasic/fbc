@@ -1266,14 +1266,14 @@ declare function astFindLocalSymbol _
 ''
 '' macros
 ''
-#define astInitNode(n, class_, dtype, subtype)		:_
-	n->class 		= class_						:_
-	n->dtype 		= dtype							:_
-	n->subtype		= subtype						:_
-	n->defined		= FALSE							:_
-	n->l    		= NULL							:_
-	n->r    		= NULL							:_
-	n->sym			= NULL
+#define astInitNode(n, class_, dtype, subtype) :_
+	    n->class            = class_           :_
+	    astGetFullType( n ) = dtype            :_
+	    n->subtype          = subtype          :_
+	    n->defined          = FALSE            :_
+	    n->l                = NULL             :_
+	    n->r                = NULL             :_
+	    n->sym              = NULL
 
 #define astCopy(dst, src) *dst = *src
 
@@ -1305,7 +1305,7 @@ declare function astFindLocalSymbol _
 
 #define astIsFIELD(n) (n->class = AST_NODECLASS_FIELD)
 
-#define astIsBITFIELD(n) iif( astIsFIELD(n), (n->l->dtype = FB_DATATYPE_BITFIELD), FALSE )
+#define astIsBITFIELD(n) iif( astIsFIELD(n), (astGetDataType( astGetLeft( n ) ) = FB_DATATYPE_BITFIELD), FALSE )
 
 #define astIsNIDXARRAY(n) (n->class = AST_NODECLASS_NIDXARRAY)
 
@@ -1326,9 +1326,9 @@ declare function astFindLocalSymbol _
 
 #define astGetSubtype(n) n->subtype
 
-#define astGetDataClass(n) symbGetDataClass( n->dtype )
+#define astGetDataClass(n) symbGetDataClass( astGetDataType( n ) )
 
-#define astGetDataSize(n) symbGetDataSize( n->dtype )
+#define astGetDataSize(n) symbGetDataSize( astGetDataType( n ) )
 
 #define astGetSymbol(n)	n->sym
 

@@ -79,7 +79,7 @@ function astNewBOUNDCHK _
 
 	n->l = l
 
-	n->sym = symbAddTempVar( l->dtype, l->subtype, FALSE, FALSE )
+	n->sym = symbAddTempVar( astGetDataType( l ), l->subtype, FALSE, FALSE )
 
     '' check must be done using a function because calling ErrorThrow
     '' would spill used regs only if it was called, causing wrong
@@ -166,7 +166,7 @@ function astNewPTRCHK _
 	end if
 
 	'' alloc new node
-	dtype = l->dtype
+	dtype = astGetDataType( l )
 	subtype = l->subtype
 	n = astNewNode( AST_NODECLASS_PTRCHK, dtype, subtype )
 	function = n

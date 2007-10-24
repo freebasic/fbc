@@ -59,7 +59,7 @@ private function hGetType _
 			end if
 		end if
 
-		select case as const dtype
+		select case as const typeGet( dtype )
 		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR, _
 			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
@@ -263,7 +263,7 @@ function cConstAssign _
 
 		if( dtype <> FB_DATATYPE_INVALID ) then
 			'' string?
-			if( dtype = FB_DATATYPE_STRING ) then
+			if( typeGet( dtype ) = FB_DATATYPE_STRING ) then
 				if( errReportEx( FB_ERRMSG_INVALIDDATATYPES, id ) = FALSE ) then
 					exit function
 				else

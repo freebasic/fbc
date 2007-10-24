@@ -991,7 +991,7 @@ private sub hEmitVarConst _
 
     dtype = symbGetType( s )
 
-    select case dtype
+    select case as const dtype
    	case FB_DATATYPE_CHAR
     	stext = QUOTE
     	stext += *hEscape( symbGetVarLitText( s ) )

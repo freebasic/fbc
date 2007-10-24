@@ -273,7 +273,7 @@ private function hCheckRetType _
    	function = FALSE
 
    	'' check for invalid types
-   	select case as const dtype
+   	select case as const typeGet( dtype )
    	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
    		if( errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS ) = FALSE ) then
    			exit function

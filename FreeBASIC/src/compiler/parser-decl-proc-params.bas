@@ -161,7 +161,7 @@ private function hOptionalExpr _
     	end if
     end if
 
-    select case dtype
+    select case as const typeGet( dtype )
     '' UDT? let SymbolInit() build a tree..
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
     	sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
@@ -494,7 +494,7 @@ private function hParamDecl _
 		'' we have to delay the true default until now, since
 		'' byval/byref depends on the symbol type
 		if( use_default = TRUE ) then
-			mode = symbGetDefaultCallConv( dtype, subtype )
+			mode = symbGetDefaultCallConv( typeGet( dtype ), subtype )
 		end if
 
 	end if
@@ -509,7 +509,7 @@ private function hParamDecl _
 	end if
 
     '' check for invalid args
-    select case as const dtype
+    select case as const typeGet( dtype )
     '' can't be a fixed-len string
     case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	if( hParamError( proc, id ) = FALSE ) then
@@ -552,7 +552,7 @@ private function hParamDecl _
     end select
 
     '' calc len
-   	param_len = symbCalcProcParamLen( dtype, subtype, mode )
+   	param_len = symbCalcProcParamLen( typeGet( dtype ), subtype, mode )
    	if( isproto = FALSE ) then
    		if( param_len > (FB_INTEGERSIZE * 4) ) then
    			if( fbPdCheckIsSet( FB_PDCHECK_PARAMSIZE ) ) then

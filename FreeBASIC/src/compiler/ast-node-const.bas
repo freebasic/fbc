@@ -148,7 +148,7 @@ function astNewCONST _
 		exit function
 	end if
 
-	select case as const typeGEt( dtype )
+	select case as const typeGet( dtype )
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		if( v <> NULL ) then
 			n->con.val.long = v->long
@@ -197,7 +197,7 @@ function astNewCONSTz _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr static
 
-    select case as const dtype
+    select case as const typeGet( dtype )
     case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
     	function = astNewCONSTstr( NULL )
 
@@ -227,9 +227,9 @@ function astLoadCONST _
 	dim as integer dtype = any
 
 	if( ast.doemit ) then
-		dtype = n->dtype
+		dtype = astGetDataType( n )
 
-		select case dtype
+		select case as const typeGet( dtype )
 		'' longint?
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			return irAllocVrImm64( dtype, NULL, n->con.val.long )

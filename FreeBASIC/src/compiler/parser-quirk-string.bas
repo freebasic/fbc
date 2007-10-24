@@ -124,7 +124,7 @@ function cLSetStmt _
 	end if
 
 	dtype1 = astGetDataType( dstexpr )
-	select case dtype1
+	select case as const dtype1
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
 		 FB_DATATYPE_STRUCT
@@ -166,7 +166,7 @@ function cLSetStmt _
 	hMatchExpressionEx( srcexpr, dtype1 )
 
 	dtype2 = astGetDataType( srcexpr )
-	select case dtype2
+	select case as const dtype2
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
 		 FB_DATATYPE_STRUCT

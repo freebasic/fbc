@@ -44,15 +44,15 @@ function astNewIIF _
 		exit function
 	end if
 
-	true_dtype = truexpr->dtype
-	false_dtype = falsexpr->dtype
+	true_dtype = astGetFullType( truexpr )
+	false_dtype = astGetFullType( falsexpr )
 
     '' string? invalid
     select case symbGetDataClass( true_dtype )
     case FB_DATACLASS_STRING
     	exit function
     case FB_DATACLASS_INTEGER
-    	select case true_dtype
+    	select case typeGet( true_dtype )
     	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		exit function
     	end select
@@ -62,7 +62,7 @@ function astNewIIF _
     case FB_DATACLASS_STRING
     	exit function
     case FB_DATACLASS_INTEGER
-    	select case false_dtype
+    	select case typeGet( false_dtype )
     	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		exit function
     	end select
@@ -78,10 +78,17 @@ function astNewIIF _
     end if
 
     '' are the data types different?
-    if( typeGetDtAndPtrOnly( true_dtype ) <> typeGetDtAndPtrOnly( false_dtype ) ) then
+    if( true_dtype <> false_dtype ) then
+    	
+    	'' throw different consts away
+    	if( typeGetConstMask( true_dtype ) <> typeGetConstMask( false_dtype ) ) then
+    		exit function
+    	end if
+    	
     	if( symbMaxDataType( true_dtype, false_dtype ) <> FB_DATATYPE_INVALID ) then
     		exit function
     	end if
+    	
     end if
 
 	falselabel = symbAddLabel( NULL )

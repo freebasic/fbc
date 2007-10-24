@@ -58,7 +58,7 @@ function astNewOFFSET _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_OFFSET, _
-					typeAddrOf( l->dtype ), _
+					typeAddrOf( astGetFullType( l ) ), _
 					l->subtype )
 
 	if( n = NULL ) then
@@ -98,7 +98,7 @@ function astLoadOFFSET _
 	end if
 
 	if( ast.doemit ) then
-		vr = irAllocVROFS( n->dtype, n->subtype, sym, n->ofs.ofs )
+		vr = irAllocVROFS( astGetDataType( n ), n->subtype, sym, n->ofs.ofs )
 	end if
 
 	l = n->l
@@ -169,14 +169,12 @@ function astNewADDROF _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
-    dim as integer dtype = any
     dim as FBSYMBOL ptr subtype = any
 
 	if( l = NULL ) then
 		return NULL
 	end if
 
-	dtype = l->dtype
 	subtype = l->subtype
 
 	'' skip any casting if they won't do any conversion
@@ -296,7 +294,7 @@ function astNewADDROF _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ADDROF, _
-					typeAddrOf( dtype ), _
+					typeAddrOf( astGetFullType( l ) ), _
 					subtype )
 	if( n = NULL ) then
 		return NULL
@@ -331,7 +329,7 @@ function astLoadADDROF _
 			(irGetVRDataClass( v1 ) <> FB_DATACLASS_INTEGER) or _
 			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
 
-			vr = irAllocVREG( n->dtype, n->subtype )
+			vr = irAllocVREG( astGetDataType( n ), n->subtype )
 			irEmitADDR( AST_OP_ADDROF, v1, vr )
 
 		else

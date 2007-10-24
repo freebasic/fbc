@@ -169,8 +169,6 @@ private sub hDelProcNode _
 
 end sub
 
-sub GDB( )
-end sub
 ''::::
 private sub hProcFlush _
 	( _
@@ -219,7 +217,6 @@ private sub hProcFlush _
 		astDelNode( n )
 		n = nxt
 	loop
-	GDB( )
 
     '' emit footer
     if( ast.doemit ) then

@@ -131,7 +131,7 @@ function cPeekFunct _
 	if( cSymbolType( dtype, subtype, lgt ) ) then
 
 		'' check for invalid types
-		select case dtype
+		select case typeGet( dtype )
 		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function

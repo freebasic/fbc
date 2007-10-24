@@ -364,7 +364,7 @@ function cProcCall _
 
     	'' CHAR and WCHAR literals are also from the INTEGER class
     	else
-    		select case dtype
+    		select case as const dtype
     		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) <> FALSE ) then
 					'' error recovery: skip
@@ -1129,7 +1129,7 @@ function hForwardCall _
 		if( symbAddProcParam( proc, _
 							  NULL, NULL, _
 						  	  dtype, NULL, _
-						  	  symbCalcProcParamLen( dtype, _
+						  	  symbCalcProcParamLen( typeGet( dtype ), _
 						  	  						NULL, _
 						  	  						mode ), _
 						  	  mode, _

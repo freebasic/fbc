@@ -1443,7 +1443,7 @@ function hVarDeclEx _
 
 		'' don't allow COMMON object instances
 		if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
-   			select case dtype
+   			select case as const typeGet( dtype )
    			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
         		if( symbGetHasCtor( subtype ) or symbGetHasDtor( subtype ) ) then
     				if( errReport( FB_ERRMSG_COMMONCANTBEOBJINST, TRUE ) = FALSE ) then
@@ -1992,7 +1992,7 @@ function cAutoVarDecl _
 		'' check for special types
    		dim as integer has_defctor = FALSE, has_ctor = FALSE, has_dtor = FALSE
 
-		select case dtype
+		select case as const dtype
 		'' wstrings not allowed...
 		case FB_DATATYPE_WCHAR
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then

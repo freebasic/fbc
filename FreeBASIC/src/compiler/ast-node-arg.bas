@@ -348,8 +348,8 @@ private function hStrArgToStrPtrParam _
     					   	   NULL, _
 						   	   astNewADDROF( n->l ) )
 		end if
-
-		n->dtype = n->l->dtype
+		
+		astGetFullType( n ) = astGetFullType( astGetLeft( n ) )
 
 	'' w- or z-string
 	else
@@ -357,7 +357,7 @@ private function hStrArgToStrPtrParam _
     	'' zstring? take the address of
     	case FB_DATATYPE_CHAR
 			n->l = astNewADDROF( arg )
-			n->dtype = n->l->dtype
+			astGetFullType( n ) = astGetFullType( astGetLeft( n ) )
 
 		'' wstring?
 		case FB_DATATYPE_WCHAR
@@ -373,7 +373,7 @@ private function hStrArgToStrPtrParam _
 				n->l = astNewADDROF( arg )
 			end if
 
-			n->dtype = n->l->dtype
+			astGetFullType( n ) = astGetFullType( astGetLeft( n ) )
 
 		end select
 
@@ -1010,7 +1010,7 @@ private function hCheckParam _
 
 		'' const?
 		if( astIsCONST( arg ) ) then
-			arg = astCheckConst( symbGetFullType( param ), arg )
+			arg = astCheckConst( symbGetType( param ), arg )
 			if( arg = NULL ) then
 				exit function
 			end if
@@ -1030,7 +1030,7 @@ private function hCheckParam _
 		'' check for overflows
 		if( symbGetDataClass( arg_dtype ) = FB_DATACLASS_FPOINT ) then
 			if( astIsCONST( arg ) ) then
-				arg = astCheckConst( symbGetFullType( param ), arg )
+				arg = astCheckConst( symbGetType( param ), arg )
 				if( arg = NULL ) then
 					exit function
 				end if

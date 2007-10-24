@@ -44,9 +44,9 @@ function astNewLINK _
 
 	''
 	if( ret_left ) then
-		n = astNewNode( AST_NODECLASS_LINK, l->dtype, l->subtype )
+		n = astNewNode( AST_NODECLASS_LINK, astGetFullType( l ), l->subtype )
 	else
-		n = astNewNode( AST_NODECLASS_LINK, r->dtype, r->subtype )
+		n = astNewNode( AST_NODECLASS_LINK, astGetFullType( r ), r->subtype )
 	end if
 
 	if( n = NULL ) then

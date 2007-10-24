@@ -69,7 +69,7 @@ private function hGetBitField _
 	s = n->subtype
 
 	'' remap type
-	n->dtype = typeJoin( n->dtype, s->typ )
+	astGetFullType( n ) = typeJoin( astGetFullType( n ), s->typ )
 	n->subtype = NULL
 
 	'' make a copy, the node itself can't be used or it will be deleted twice
@@ -103,8 +103,8 @@ function astLoadFIELD _
 
 	'' handle bitfields..
 	l = n->l
-	if( l->dtype = FB_DATATYPE_BITFIELD ) then
-		l = hGetBitField( l, n->dtype )
+	if( astGetDataType( l ) = FB_DATATYPE_BITFIELD ) then
+		l = hGetBitField( l, astGetFullType( l ) )
 	end if
 
 	function = astLoad( l )

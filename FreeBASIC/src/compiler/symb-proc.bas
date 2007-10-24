@@ -78,13 +78,15 @@ function symbCalcProcParamLen _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE _
 	) as integer
-
+	
+	'' assumes dtype has const info stripped
+	
     select case as const mode
     case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
     	function = FB_POINTERSIZE
 
     case FB_PARAMMODE_BYVAL
-    	select case dtype
+    	select case as const dtype
     	case FB_DATATYPE_STRING
     		return FB_POINTERSIZE
 
@@ -1096,7 +1098,7 @@ function symbAddParam _
     case FB_PARAMMODE_BYVAL
     	attrib = FB_SYMBATTRIB_PARAMBYVAL
 
-    	select case dtype
+    	select case as const dtype
     	'' byval string? it's actually an pointer to a zstring
     	case FB_DATATYPE_STRING
     		attrib = FB_SYMBATTRIB_PARAMBYREF
@@ -1199,7 +1201,7 @@ function symbAddProcResult _
 	'' UDT?
 	if( proc->typ = FB_DATATYPE_STRUCT ) then
 		'' returning a ptr? result is at the hidden arg
-		if( proc->proc.real_dtype = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+		if( typeGet( proc->proc.real_dtype ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
 			return symbGetProcResult( proc )
 		end if
 	end if
@@ -1582,7 +1584,7 @@ private function hCalcTypesDiff _
 				arg_dtype = FB_DATATYPE_UINT
 			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGEt( arg_dtype ) )
+			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
 
 		'' float? (ok due the auto-coercion, unless it's a pointer)
 		case FB_DATACLASS_FPOINT
@@ -1590,7 +1592,7 @@ private function hCalcTypesDiff _
 				return 0
 			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGEt( arg_dtype ) )
+			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
 
 		'' string? only if it's a w|zstring ptr arg
 		case FB_DATACLASS_STRING
@@ -1625,11 +1627,11 @@ private function hCalcTypesDiff _
 				arg_dtype = symbRemapType( arg_dtype, arg_subtype )
 			end select
 
-			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGEt( arg_dtype ) )
+			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
 
 		'' or if another float..
 		case FB_DATACLASS_FPOINT
-			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGEt( arg_dtype ) )
+			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
 
 		'' refuse anything else
 		case else
@@ -2522,7 +2524,7 @@ function symbCalcParamLen _
 	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
 		lgt = FB_POINTERSIZE
 	case else
-		if( dtype = FB_DATATYPE_STRING ) then
+		if( typeGet( dtype ) = FB_DATATYPE_STRING ) then
 			lgt = FB_POINTERSIZE
 		else
 			lgt = symbCalcLen( dtype, subtype )
@@ -2765,8 +2767,10 @@ function symbGetDefaultCallConv _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
-
-	select case dtype
+	
+	'' assumes dtype has const info stripped
+	
+	select case as const dtype
     case FB_DATATYPE_FWDREF, _
          FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, _
          FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS

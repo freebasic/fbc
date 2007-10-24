@@ -355,7 +355,7 @@ private function hNodeToStr _
 		end select
 
 	case AST_NODECLASS_CONST
-		select case as const n->dtype
+		select case as const astGetDataType( n )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			return str( n->con.val.long )
 

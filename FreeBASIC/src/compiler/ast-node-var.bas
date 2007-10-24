@@ -138,7 +138,7 @@ function astLoadVAR _
 	end if
 
 	if( ast.doemit ) then
-		function = irAllocVRVAR( n->dtype, n->subtype, s, ofs )
+		function = irAllocVRVAR( astGetDataType( n ), n->subtype, s, ofs )
 	end if
 
 end function

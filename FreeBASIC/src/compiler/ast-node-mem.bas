@@ -124,7 +124,7 @@ private function hNewOp _
 	dim as integer do_init = FALSE, has_ctor = FALSE, save_elmts = FALSE
 
 	'' check ctor or initialization
-	select case dtype
+	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		has_ctor = symbGetHasCtor( subtype )
 	end select
@@ -146,7 +146,7 @@ private function hNewOp _
 	else
 		'' save elements count?
 		if( op = AST_OP_NEW_VEC ) then
-			select case dtype
+			select case typeGet( dtype )
 			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 				save_elmts = symbGetHasDtor( subtype )
 			end select
@@ -190,7 +190,7 @@ private function hNewOp _
 	end if
 
 	''
-	new_expr = rtlMemNewOp( op = AST_OP_NEW_VEC, len_expr, dtype, subtype )
+	new_expr = rtlMemNewOp( op = AST_OP_NEW_VEC, len_expr, typeGet( dtype ), subtype )
 	if( new_expr = NULL ) then
 		return NULL
 	end if
@@ -361,7 +361,7 @@ private function hDelOp _
 
 	dim as integer has_dtor = FALSE
 
-	select case dtype
+	select case as const typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		has_dtor = symbGetCompDtor( subtype ) <> NULL
 	end select
@@ -408,7 +408,7 @@ private function hDelOp _
 	'' delete( ptr )
 	dim as ASTNODE ptr del_expr = any
 
-	del_expr = rtlMemDeleteOp( op = AST_OP_DEL_VEC, ptr_expr, dtype, subtype )
+	del_expr = rtlMemDeleteOp( op = AST_OP_DEL_VEC, ptr_expr, typeGet( dtype ), subtype )
 	if( del_expr = NULL ) then
 		return NULL
 	end if

@@ -2964,7 +2964,7 @@ function rtlStrDelete _
 
 	''
     dtype = astGetDataType( strg )
-    select case dtype
+    select case as const dtype
     '' it could be a wstring ptr too due the temporary
     '' wstrings that must be handled by AST
     case FB_DATATYPE_WCHAR, _
@@ -3021,7 +3021,7 @@ function rtlStrAllocTmpDesc	_
 	''
    	dtype = astGetDataType( strexpr )
 
-	select case dtype
+	select case as const dtype
 	case FB_DATATYPE_STRING
     	proc = astNewCALL( PROCLOOKUP( STRALLOCTMPDESCV ) )
 
@@ -3728,7 +3728,7 @@ function rtlStrChr _
     	end if
 
     	'' don't allow w|zstring's either..
-    	select case dtype
+    	select case as const dtype
     	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		errReportEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, "at parameter: " + str( i+1 ) )
     		exit function

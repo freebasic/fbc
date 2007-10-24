@@ -41,14 +41,14 @@ private function hCheckStringOps _
 	'' check if it's not a byte ptr
 	if( ldclass = FB_DATACLASS_STRING ) then
 		'' not a w|zstring?
-		select case r->dtype
+		select case astGetDataType( r )
 		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
 		case else
 			if( r->class <> AST_NODECLASS_DEREF ) then
 				exit function
-			elseif( r->dtype <> FB_DATATYPE_BYTE ) then
-				if( r->dtype <> FB_DATATYPE_UBYTE ) then
+			elseif( astGetDataType( r ) <> FB_DATATYPE_BYTE ) then
+				if( astGetDataType( r ) <> FB_DATATYPE_UBYTE ) then
 					exit function
 				end if
 			end if
@@ -56,14 +56,15 @@ private function hCheckStringOps _
 
 	else
 		'' not a w|zstring?
-		select case l->dtype
+		dim as FB_DATATYPE dtype = astGetDataType( l )
+		select case as const dtype
 		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
 		case else
 			if( l->class <> AST_NODECLASS_DEREF ) then
 				exit function
-			elseif( l->dtype <> FB_DATATYPE_BYTE ) then
-				if( l->dtype <> FB_DATATYPE_UBYTE ) then
+			elseif( dtype <> FB_DATATYPE_BYTE ) then
+				if( dtype <> FB_DATATYPE_UBYTE ) then
 					exit function
 				end if
 			end if
@@ -88,7 +89,7 @@ private function hCheckUDTOps _
 	function = FALSE
 
 	'' l node must be an UDT's,
-	if( l->dtype <> FB_DATATYPE_STRUCT ) then
+	if( astGetDataType( l ) <> FB_DATATYPE_STRUCT ) then
 		exit function
 	else
 		'' "udtfunct() = udt" is not allowed, l node must be a variable
@@ -98,7 +99,7 @@ private function hCheckUDTOps _
 	end if
 
     '' is r an UDT?
-	if( r->dtype <> FB_DATATYPE_STRUCT ) then
+	if( astGetDataType( r ) <> FB_DATATYPE_STRUCT ) then
 		exit function
 	end if
 
@@ -122,17 +123,22 @@ private function hCheckWstringOps _
 	) as integer
 
 	function = FALSE
-
+	
+	dim as FB_DATATYPE ld = any, rd = any
+	
+	ld = typeGet( ldtype )
+	rd = typeGet( rdtype )
+	
     '' left?
-	if( ldtype = FB_DATATYPE_WCHAR ) then
+	if( ld = FB_DATATYPE_WCHAR ) then
 		'' is right a zstring? (fixed- or
 		'' var-len strings won't reach here)
-		is_zstr = ( rdtype = FB_DATATYPE_CHAR )
+		is_zstr = ( rd = FB_DATATYPE_CHAR )
 
 	'' right?
 	else
 		'' is left a zstring?
-		is_zstr = ( ldtype = FB_DATATYPE_CHAR )
+		is_zstr = ( ld = FB_DATATYPE_CHAR )
 	end if
 
 	if( is_zstr ) then
@@ -141,7 +147,7 @@ private function hCheckWstringOps _
 
 	'' one is not a string, nor a udt, treat as
 	'' numeric type, let emit convert them if needed..
-	if( ldtype = FB_DATATYPE_WCHAR ) then
+	if( ld = FB_DATATYPE_WCHAR ) then
 		'' don't allow, unless it's a pointer
 		if( l->class <> AST_NODECLASS_DEREF ) then
 			exit function
@@ -149,7 +155,7 @@ private function hCheckWstringOps _
 
 		'' remap the type or the optimizer will
 		'' assume it's a string assignment
-		ldtype = env.target.wchar.type
+		ldtype = typeJoin( ldtype, env.target.wchar.type )
 
 	else
 		'' same as above..
@@ -157,7 +163,7 @@ private function hCheckWstringOps _
 			exit function
 		end if
 
-		rdtype = env.target.wchar.type
+		rdtype = typeJoin( rdtype, env.target.wchar.type )
 	end if
 
 	function = TRUE
@@ -209,7 +215,7 @@ private function hCheckEnumOps _
 	function = FALSE
     
     '' not the same?
-    if( typeGetDtAndPtrOnly( l->dtype ) <> typeGetDtAndPtrOnly( r->dtype ) ) then
+    if( astGetDataType( l ) <> astGetDataType( r ) ) then
     	if( (ldclass <> FB_DATACLASS_INTEGER) or _
     		(rdclass <> FB_DATACLASS_INTEGER) ) then
     		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
@@ -269,8 +275,8 @@ function astCheckASSIGN _
 
 	function = FALSE
 
-	ldfull = l->dtype
-	rdfull = r->dtype
+	ldfull = astGetFullType( l )
+	rdfull = astGetFullType( r )
 	ldtype = typeGet( ldfull )
 	rdtype = typeGet( rdfull )
 	ldclass = symbGetDataClass( ldtype )
@@ -306,7 +312,7 @@ function astCheckASSIGN _
 		'' both = wstrings?
 		if( ldtype <> rdtype ) then
     		dim as integer is_zstr
-			if( hCheckWstringOps( l, ldtype, r, rdtype, is_zstr ) = FALSE ) then
+			if( hCheckWstringOps( l, ldfull, r, rdfull, is_zstr ) = FALSE ) then
 				exit function
 			end if
 
@@ -384,7 +390,7 @@ function astNewASSIGN _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
-    dim as FB_DATATYPE ldtype = any, rdtype = any
+    dim as FB_DATATYPE ldtype = any, rdtype = any, ldfull = any, rdfull = any
     dim as FB_DATACLASS ldclass = any, rdclass = any
     dim as FBSYMBOL ptr lsubtype = any, proc = any
 	dim as FB_ERRMSG err_num = any
@@ -395,15 +401,20 @@ function astNewASSIGN _
 		exit function
 	end if
 
+	ldfull = astGetFullType( l )
+	ldtype = typeGet( ldfull )
+	ldclass = symbGetDataClass( ldtype )
+	lsubtype = l->subtype
+
 	'' 1st) check assign op overloading (unless the types are the same and
 	''      there's no clone function: just do a shallow copy)
 	if( (options and AST_OPOPT_DONTCHKOPOVL) = 0 ) then
 
    		dim as integer check_letop = TRUE
 
-   		select case typeGet( l->dtype )
+   		select case as const ldtype
    		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			if( typeGetDtAndPtrOnly( l->dtype ) = typeGetDtAndPtrOnly( r->dtype ) ) then
+			if( ldtype = rdtype ) then
 				if( l->subtype = r->subtype ) then
 					check_letop = (symbGetCompCloneProc( l->subtype ) <> NULL)
 				end if
@@ -438,13 +449,9 @@ function astNewASSIGN _
 		end if
 	end if
 
-	ldtype = astGetFullType( l )
-	ldclass = symbGetDataClass( ldtype )
-	lsubtype = l->subtype
-
 	'' 2nd) implicit casting op overloading
 	if( (options and AST_OPOPT_DONTCHKOPOVL) = 0 ) then
-		proc = symbFindCastOvlProc( astGetFullType( l ), lsubtype, r, @err_num )
+		proc = symbFindCastOvlProc( ldfull, lsubtype, r, @err_num )
 		if( proc <> NULL ) then
 
 			'' we don't have to worry about initializing the lhs
@@ -463,12 +470,13 @@ function astNewASSIGN _
 		end if
 	end if
 
-	rdtype = r->dtype
+	rdfull = astGetFullType( r )
+	rdtype = typeGet( rdfull )
 	rdclass = symbGetDataClass( rdtype )
 
     '' strings?
-    if( (typeGet( ldclass ) = FB_DATACLASS_STRING) or _
-    	(typeGet( rdclass ) = FB_DATACLASS_STRING) ) then
+    if( (ldclass = FB_DATACLASS_STRING) or _
+    	(rdclass = FB_DATACLASS_STRING) ) then
 
 		'' both not strings?
 		if( ldclass <> rdclass ) then
@@ -486,8 +494,8 @@ function astNewASSIGN _
 		end if
 
 	'' UDT's?
-	elseif( (typeGet( ldtype ) = FB_DATATYPE_STRUCT) or _
-			(typeGet( rdtype ) = FB_DATATYPE_STRUCT) ) then
+	elseif( (ldtype = FB_DATATYPE_STRUCT) or _
+			(rdtype = FB_DATATYPE_STRUCT) ) then
 
 		if( hCheckUDTOps( l, ldclass, r, rdclass ) = FALSE ) then
 			exit function
@@ -532,26 +540,28 @@ function astNewASSIGN _
 		'' r is function returning an UDT on registers
 		else
             '' patch both type
-            ldtype = symbGetUDTRetType( r->subtype )
+            ldfull = symbGetUDTRetType( r->subtype )
+            ldtype = typeGet( ldfull )
             lsubtype = NULL
             ldclass = symbGetDataClass( ldtype )
-            astSetType( l, ldtype, NULL )
-
+            astSetType( l, ldfull, NULL )
+            
+            rdfull = ldfull
             rdtype = ldtype
             rdclass = ldclass
-            astSetType( r, rdtype, NULL )
+            astSetType( r, rdfull, NULL )
 		end if
 
     '' wstrings?
-    elseif( (typeGet( ldtype ) = FB_DATATYPE_WCHAR) or _
-    		(typeGet( rdtype ) = FB_DATATYPE_WCHAR) ) then
+    elseif( (ldtype = FB_DATATYPE_WCHAR) or _
+    		(rdtype = FB_DATATYPE_WCHAR) ) then
 
 		'' both not wstrings? otherwise don't do any assignment by now
 		'' to allow optimizations..
-		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
+		if( ldtype <> rdtype ) then
     		dim as integer is_zstr
 
-			if( hCheckWstringOps( l, ldtype, r, rdtype, is_zstr ) = FALSE ) then
+			if( hCheckWstringOps( l, ldfull, r, rdfull, is_zstr ) = FALSE ) then
 				exit function
 			end if
 
@@ -567,11 +577,11 @@ function astNewASSIGN _
 		end if
 
     '' zstrings?
-    elseif( (typeGet( ldtype ) = FB_DATATYPE_CHAR) or _
-    		(typeGet( rdtype ) = FB_DATATYPE_CHAR) ) then
+    elseif( (ldtype = FB_DATATYPE_CHAR) or _
+    		(rdtype = FB_DATATYPE_CHAR) ) then
 
 		'' both the same? assign as string..
-		if( typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype ) ) then
+		if( ldtype = rdtype ) then
 			return rtlStrAssign( l, r )
 		end if
 
@@ -580,8 +590,8 @@ function astNewASSIGN _
 		end if
 
     '' enums?
-    elseif( (typeGet( ldtype ) = FB_DATATYPE_ENUM) or _
-    		(typeGet( rdtype ) = FB_DATATYPE_ENUM) ) then
+    elseif( (ldtype = FB_DATATYPE_ENUM) or _
+    		(rdtype = FB_DATATYPE_ENUM) ) then
 
 		if( hCheckEnumOps( l, ldclass, r, rdclass ) = FALSE ) then
 			exit function
@@ -591,18 +601,18 @@ function astNewASSIGN _
 
     '' check pointers
     if( (options and AST_OPOPT_DONTCHKPTR) = 0 ) then
-		if( hCheckConstAndPointerOps( l, ldtype, r, rdtype ) = FALSE ) then
+		if( hCheckConstAndPointerOps( l, ldfull, r, rdfull ) = FALSE ) then
 			exit function
 		end if
     end if
 
 	'' convert types if needed
-	if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
+	if( ldtype <> rdtype ) then
 		'' don't convert strings
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( astIsCONST( r ) ) then
-				r = astCheckConst( l->dtype, r )
+				r = astCheckConst( ldtype, r )
 				if( r = NULL ) then
 					exit function
 				end if
@@ -612,13 +622,13 @@ function astNewASSIGN _
 			'' is a float (unless a special case must be handled)
 			dim as integer doconv = TRUE
 			if( (ldclass = FB_DATACLASS_FPOINT) or (rdclass = FB_DATACLASS_FPOINT) ) then
-				if( typeGet( ldtype ) <> FB_DATATYPE_ULONGINT ) then
+				if( ldtype <> FB_DATATYPE_ULONGINT ) then
 					doconv = irGetOption( IR_OPT_FPU_CONVERTOPER )
 				end if
 			end if
 
 			if( doconv ) then
-				r = astNewCONV( astGetFullType( l ), l->subtype, r )
+				r = astNewCONV( ldfull, l->subtype, r )
 				if( r = NULL ) then
 					exit function
 				end if
@@ -628,7 +638,7 @@ function astNewASSIGN _
 		'' check for overflows
 		if( symbGetDataClass( rdtype ) = FB_DATACLASS_FPOINT ) then
 			if( astIsCONST( r ) ) then
-				r = astCheckConst( l->dtype, r )
+				r = astCheckConst( ldtype, r )
 				if( r = NULL ) then
 					exit function
 				end if
@@ -637,7 +647,7 @@ function astNewASSIGN _
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ASSIGN, ldtype, lsubtype )
+	n = astNewNode( AST_NODECLASS_ASSIGN, ldfull, lsubtype )
 
 	if( n = NULL ) then
 		return NULL
@@ -662,7 +672,7 @@ private function hSetBitField _
 	s = l->subtype
 
 	'' remap type
-	l->dtype = s->typ
+	astGetFullType( l ) = symbGetFullType( s )
 	l->subtype = NULL
 
 	l = astNewBOP( AST_OP_AND, astCloneTree( l ), _
@@ -695,7 +705,7 @@ function astLoadASSIGN _
 
 	'' handle bitfields..
 	if( l->class = AST_NODECLASS_FIELD ) then
-		if( l->l->dtype = FB_DATATYPE_BITFIELD ) then
+		if( astGetDataType( astGetLeft( l ) ) = FB_DATATYPE_BITFIELD ) then
 			'' l is a field node, use its left child instead
 			r = hSetBitField( l->l, r )
 			'' the field node can be removed

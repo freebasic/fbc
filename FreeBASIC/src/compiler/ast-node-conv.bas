@@ -312,7 +312,7 @@ function astCheckCONV _
 		exit function
 	end if
 
-	ldtype = l->dtype
+	ldtype = astGetFullType( l )
 
     '' string? neither
     if( symbGetDataClass( ldtype ) = FB_DATACLASS_STRING ) then
@@ -372,7 +372,7 @@ function astNewCONV _
 
 	function = NULL
 
-    ldtype = l->dtype
+    ldtype = astGetFullType( l )
 
     '' same type?
     if( typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( to_dtype ) ) then
@@ -466,7 +466,7 @@ function astNewCONV _
 			l->class = AST_NODECLASS_ENUM
 		end if
 
-		l->dtype = to_dtype
+		astGetFullType( l ) = to_dtype
 		l->subtype = to_subtype
 
 		return l
@@ -487,7 +487,7 @@ function astNewCONV _
 		if( l->cast.doconv = FALSE ) then
 			if( doconv = FALSE ) then
 				'' just replace the bottom cast()'s type
-				l->dtype = to_dtype
+				astGetFullType( l ) = to_dtype
 				l->subtype = to_subtype
 				return l
 			end if
@@ -542,11 +542,11 @@ function astLoadCONV _
 
 	if( ast.doemit ) then
 		if( n->cast.doconv ) then
-			vr = irAllocVreg( n->dtype, n->subtype )
-			irEmitConvert( n->dtype, n->subtype, vr, vs )
+			vr = irAllocVreg( astGetDataType( n ), n->subtype )
+			irEmitConvert( astGetDataType( n ), n->subtype, vr, vs )
 		else
 			vr = vs
-			irSetVregDataType( vr, n->dtype, n->subtype )
+			irSetVregDataType( vr, astGetDataType( n ), n->subtype )
 		end if
 	end if
 

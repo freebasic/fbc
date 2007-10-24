@@ -106,7 +106,7 @@ private function hGetRealLen _
 		byval subtype as FBSYMBOL ptr _
 	) as integer static
 
-	select case as const dtype
+	select case as const typeGet( dtype )
 	'' UDT? return its largest field len
 	case FB_DATATYPE_STRUCT
 		function = subtype->udt.lfldlen
@@ -200,7 +200,7 @@ function symbCheckBitField _
 	end if
 
 	'' not an integer type?
-	select case as const dtype
+	select case as const typeGet( dtype )
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
 		 FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 
@@ -237,7 +237,7 @@ function symbAddField _
 
 	'' or use the non-padded len if it's a non-array UDT field (for array
 	'' of UDT's fields the padded len will be used, to follow the GCC ABI)
-	elseif( dtype = FB_DATATYPE_STRUCT ) then
+	elseif( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
 		if( dimensions = 0 ) then
 			lgt = subtype->udt.unpadlgt
 		end if
@@ -382,7 +382,7 @@ function symbAddField _
 	'' multiple len by all array elements (if any)
 	lgt *= sym->var_.array.elms
 
-	select case dtype
+	select case as const typeGet( dtype )
 	'' var-len string fields? must add a ctor, copyctor and dtor
     case FB_DATATYPE_STRING
 		'' if it's an anon udt, it or parent is an UNION
@@ -560,27 +560,29 @@ private function hGetReturnType _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as integer
-
+	
+	dim as FB_DATATYPE dtype = symbGetFullType( sym ), res = FB_DATATYPE_VOID
+	
 	'' udt has a dtor, copy-ctor or virtual methods? it's never
 	'' returned in registers
 	if( symbIsTrivial( sym ) = FALSE ) then
-		return typeAddrOf( FB_DATATYPE_STRUCT )
+		return typeAddrOf( dtype )
 	end if
 
 	'' use the un-padded UDT len
 	select case as const symbGetUDTUnpadLen( sym )
 	case 1
-		return FB_DATATYPE_BYTE
+		res = FB_DATATYPE_BYTE
 
 	case 2
-		return FB_DATATYPE_SHORT
+		res = FB_DATATYPE_SHORT
 
 	case 3
 		'' return as int only if first is a short
 		if( symbGetUDTFirstElm( sym )->lgt = 2 ) then
 			'' and if the struct is not packed
 			if( sym->lgt >= FB_INTEGERSIZE ) then
-				return FB_DATATYPE_INTEGER
+				res = FB_DATATYPE_INTEGER
 			end if
 		end if
 
@@ -591,7 +593,7 @@ private function hGetReturnType _
 			do
 				dim as FBSYMBOL ptr s = symbGetUDTFirstElm( sym )
 				if( s->typ = FB_DATATYPE_SINGLE ) then
-					return FB_DATATYPE_SINGLE
+					res = FB_DATATYPE_SINGLE
 				end if
 
 				if( s->typ <> FB_DATATYPE_STRUCT ) then
@@ -606,7 +608,9 @@ private function hGetReturnType _
 			loop
 		end if
 
-		return FB_DATATYPE_INTEGER
+		if( res = FB_DATATYPE_VOID ) then
+			res = FB_DATATYPE_INTEGER
+		end if
 
 	case FB_INTEGERSIZE + 1, FB_INTEGERSIZE + 2, FB_INTEGERSIZE + 3
 
@@ -614,7 +618,7 @@ private function hGetReturnType _
 		if( symbGetUDTFirstElm( sym )->lgt = FB_INTEGERSIZE ) then
 			'' and if the struct is not packed
 			if( sym->lgt >= FB_INTEGERSIZE*2 ) then
-				return FB_DATATYPE_LONGINT
+				res = FB_DATATYPE_LONGINT
 			end if
 		end if
 
@@ -625,7 +629,7 @@ private function hGetReturnType _
 			do
 				dim as FBSYMBOL ptr s = symbGetUDTFirstElm( sym )
 				if( s->typ = FB_DATATYPE_DOUBLE ) then
-					return FB_DATATYPE_DOUBLE
+					res = FB_DATATYPE_DOUBLE
 				end if
 
 				if( s->typ <> FB_DATATYPE_STRUCT ) then
@@ -639,13 +643,19 @@ private function hGetReturnType _
 				end if
 			loop
 		end if
-
-		return FB_DATATYPE_LONGINT
+		
+		if( res = FB_DATATYPE_VOID ) then
+			res = FB_DATATYPE_LONGINT
+		end if
 
 	end select
 
 	'' if nothing matched, it's the pointer that was passed as the 1st arg
-	function = typeAddrOf( FB_DATATYPE_STRUCT )
+	if( res = FB_DATATYPE_VOID ) then
+		res = typeAddrOf( dtype )
+	end if
+	
+	function = res
 
 end function
 

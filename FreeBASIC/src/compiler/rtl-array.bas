@@ -504,7 +504,7 @@ function rtlArrayErase _
 	dtype = astGetDataType( arrayexpr )
 
 	''
-	select case dtype
+	select case as const dtype
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
     case else

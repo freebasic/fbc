@@ -322,7 +322,7 @@ private function hCallCtorList _
 		end if
 	end if
 
-	dtype = n->dtype
+	dtype = astGetDataType( n )
 	subtype = n->subtype
 	elements = n->typeini.elements
 
@@ -397,7 +397,7 @@ private function hFlushTree _
         		if( do_deref = FALSE ) then
         			lside = astNewVAR( basesym, _
         				   	   	   	   n->typeini.ofs, _
-	       				   	   	   	   n->dtype, _
+	       				   	   	   	   astGetFullType( n ), _
         				   	   	   	   n->subtype )
 
         		'' deref..
@@ -406,7 +406,7 @@ private function hFlushTree _
         				   	   	   	   			    0, _
 	       				   	   	   	   			  	symbGetFullType( basesym ), _
         				   	   	   	   			  	symbGetSubtype( basesym ) ), _
-        							   	 n->dtype, _
+        							   	 astGetFullType( n ), _
         							   	 n->subtype, _
         							   	 n->typeini.ofs )
         		end if
@@ -416,7 +416,7 @@ private function hFlushTree _
         			if( symbIsField( n->sym ) ) then
         				lside = astNewFIELD( lside, _
         					 	 	 	 	 n->sym, _
-        					 	 	 	 	 n->dtype, _
+        					 	 	 	 	 astGetFullType( n ), _
         					 	 	 	 	 n->subtype )
         			end if
         		end if
@@ -907,12 +907,12 @@ private sub hWalk _
     dim as FBSYMBOL ptr sym = any
 
 	if( node->class = AST_NODECLASS_TYPEINI ) then
-		sym = symbAddTempVar( node->dtype, _
+		sym = symbAddTempVar( astGetFullType( node ), _
 							  node->subtype, _
 							  FALSE, _
 							  FALSE )
 
-		expr = astNewVAR( sym, 0, node->dtype, node->subtype )
+		expr = astNewVAR( sym, 0, astGetFullType( node ), node->subtype )
 		if( parent->l = node ) then
 			parent->l = expr
 		else

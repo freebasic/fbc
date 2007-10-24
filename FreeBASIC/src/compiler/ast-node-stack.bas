@@ -40,7 +40,7 @@ function astNewSTACK _
     end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_STACK, l->dtype, NULL )
+	n = astNewNode( AST_NODECLASS_STACK, astGetFullType( l ), NULL )
 	if( n = NULL ) then
 		return NULL
 	end if

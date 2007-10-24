@@ -388,7 +388,7 @@ private function hNewVR _
 	n = flistNewItem( @emit.vregTB )
 
 	n->typ = v->typ
-	n->dtype = v->dtype
+	astGetFullType( n ) = v->dtype
 	n->sym = v->sym
 	n->ofs = v->ofs
 	n->mult = v->mult

@@ -91,10 +91,10 @@ private function hEmitIDX _
 				irEmitLOAD( vidx )
 			end if
 
-			vd = irAllocVRIDX( n->dtype, n->subtype, s, ofs, n->idx.mult, vidx )
+			vd = irAllocVRIDX( astGetDataType( n ), n->subtype, s, ofs, n->idx.mult, vidx )
 
 		else
-			vd = irAllocVRVAR( n->dtype, n->subtype, s, ofs )
+			vd = irAllocVRVAR( astGetDataType( n ), n->subtype, s, ofs )
 		end if
 	end if
 

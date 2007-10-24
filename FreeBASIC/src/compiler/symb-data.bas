@@ -105,14 +105,14 @@ function symbMaxDataType _
     '' don't convert byte <-> ubyte
     select case as const dtype1
     case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
-    	select case dtype2
+    	select case as const dtype2
     	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
     		exit function
     	end select
 
     '' neither short <-> ushort
     case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
-    	select case dtype2
+    	select case as const dtype2
     	case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
     		exit function
     	end select
@@ -160,7 +160,7 @@ function symbMaxDataType _
 
     '' neither single <-> double
     case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-    	select case dtype2
+    	select case as const dtype2
     	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
     		exit function
     	end select

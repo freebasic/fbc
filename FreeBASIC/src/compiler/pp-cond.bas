@@ -742,7 +742,7 @@ private function hNumToBool _
 		byref v as FBVALUE _
 	) as integer
 
-  	select case as const dtype
+  	select case as const typeGet( dtype )
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		function = v.long <> 0LL
 

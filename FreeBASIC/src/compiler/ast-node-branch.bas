@@ -43,7 +43,7 @@ function astNewBRANCH _
     if( l = NULL ) then
     	dtype = FB_DATATYPE_INVALID
     else
-    	dtype = l->dtype
+    	dtype = astGetFullType( l )
     end if
 
 	'' alloc new node
@@ -135,7 +135,7 @@ function astLoadJMPTB _
 	) as IRVREG ptr
 
 	if( ast.doemit ) then
-		irEmitJMPTB( n->dtype, n->jmptb.label )
+		irEmitJMPTB( astGetDataType( n ), n->jmptb.label )
 	end if
 
 	function = NULL

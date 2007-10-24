@@ -282,7 +282,7 @@ private function hAbbrevFind _
 	do while( n <> NULL )
 		'' same type?
 		if( n->subtype = subtype ) then
-			if( n->dtype = dtype ) then
+			if( astGetFullType( n ) = dtype ) then
 				return n->idx
 			end if
 		end if
@@ -306,7 +306,7 @@ private function hAbbrevAdd _
     n = flistNewItem( @ctx.flist )
     n->idx = ctx.cnt
 
-    n->dtype = dtype
+    astGetFullType( n ) = dtype
     n->subtype = subtype
 
     ctx.cnt += 1

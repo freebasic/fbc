@@ -451,7 +451,7 @@ private function hTypeMultElementDecl _
 		end if
 
 		'' ref to self?
-		if( dtype = FB_DATATYPE_STRUCT ) then
+		if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
 			if( subtype = parent ) then
 				if( errReport( FB_ERRMSG_RECURSIVEUDT ) = FALSE ) then
 					exit function

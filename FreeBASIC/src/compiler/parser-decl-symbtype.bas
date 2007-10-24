@@ -105,7 +105,7 @@ function cSymbolTypeFuncPtr _
 		end if
 
     	'' check for invalid types
-    	select case as const dtype
+    	select case as const typeGet( dtype )
     	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		if( errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS ) = FALSE ) then
     			exit function
@@ -487,7 +487,7 @@ function cSymbolType _
 		'' unsigned?
 		if( isunsigned ) then
 			'' remap type, if valid
-			select case as const dtype
+			select case as const typeGet( dtype )
 			case FB_DATATYPE_BYTE
 				dtype = FB_DATATYPE_UBYTE
 
@@ -520,7 +520,7 @@ function cSymbolType _
 			exit function
 		end if
 
-		select case as const dtype
+		select case as const typeGet( dtype )
 		case FB_DATATYPE_STRING
 			'' plus the null-term
 			lgt += 1
@@ -553,7 +553,7 @@ function cSymbolType _
 			''       the number of chars times sizeof(wstring), so
 			''		 always use symbGetWstrLen( ) to retrieve the
 			''       len in characters, not the bytes
-			if( dtype = FB_DATATYPE_WCHAR ) then
+			if( typeGet( dtype ) = FB_DATATYPE_WCHAR ) then
 				lgt *= symbGetDataSize( FB_DATATYPE_WCHAR )
 			end if
 
@@ -627,7 +627,7 @@ function cSymbolType _
 
 	else
 		'' can't have forward typedef's if they aren't pointers
-		if( dtype = FB_DATATYPE_FWDREF ) then
+		if( typeGet( dtype ) = FB_DATATYPE_FWDREF ) then
 			'' forward types are allowed in func prototypes with byref params
 			if( (options and FB_SYMBTYPEOPT_ALLOWFORWARD) = 0 ) then
 				if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
@@ -640,7 +640,7 @@ function cSymbolType _
 			end if
 
 		elseif( lgt <= 0 ) then
-			select case dtype
+			select case as const typeGet( dtype )
 			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				'' LEN() and SIZEOF() allow Z|WSTRING to be used w/o PTR
 				if( (options and FB_SYMBTYPEOPT_CHECKSTRPTR) <> 0 ) then

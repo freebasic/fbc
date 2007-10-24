@@ -161,10 +161,10 @@ private function hCallProc _
     dim as integer dtype = any
     dim as FBSYMBOL ptr subtype
 
-	dtype = n->dtype
+	dtype = astGetDataType( n )
 	subtype = n->subtype
 
-	select case typeGet( dtype )
+	select case as const dtype
 	'' returning a string? it's actually a pointer to a string descriptor
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
 		dtype = typeAddrOf( dtype )
@@ -172,8 +172,8 @@ private function hCallProc _
 
 	'' UDT's can be returned in regs or as a pointer to the hidden param passed
 	case FB_DATATYPE_STRUCT
-		dtype = symbGetUDTRetType( n->subtype )
-		if( typeGet( dtype ) <> FB_DATATYPE_STRUCT ) then
+		dtype = typeGet( symbGetUDTRetType( n->subtype ) )
+		if( dtype <> FB_DATATYPE_STRUCT ) then
 			subtype = NULL
 		end if
 
@@ -358,7 +358,7 @@ function astLoadCALL _
 		''
 		if( param = last_param ) then
 			if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
-				topop += FB_ROUNDLEN( symbCalcLen( l->dtype, NULL ) )
+				topop += FB_ROUNDLEN( symbCalcLen( astGetDataType( l ), NULL ) )
 			end if
 		end if
 

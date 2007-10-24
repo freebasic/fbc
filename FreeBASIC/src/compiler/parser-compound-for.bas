@@ -264,7 +264,7 @@ private function hStoreTemp _
 
 	'' couldn't assign?
 	if( expr = NULL ) then
-		select case dtype
+		select case as const typeGet( dtype )
 		'' TYPE or CLASS
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
@@ -318,7 +318,7 @@ private sub hFlushBOP _
 	end if
 
     '' UDT?
-	if( lhs->dtype = FB_DATATYPE_STRUCT ) then
+	if( astGetDataType( lhs ) = FB_DATATYPE_STRUCT ) then
 		'' handle dtors, etc
 		expr = astUpdComp2Branch( expr, ex, TRUE )
 
@@ -404,8 +404,8 @@ private sub hFlushSelfBOP _
 	dim as ASTNODE ptr lhs_expr = any, rhs_expr = any, expr = any
 	dim as FBSYMBOL ptr lhs_subtype = symbGetSubtype( lhs->sym )
 
-	lhs_expr = astNewVAR( lhs->sym, 0, lhs->dtype, lhs_subtype )
-    rhs_expr = hStepExpression( lhs->dtype, lhs_subtype, rhs )
+	lhs_expr = astNewVAR( lhs->sym, 0, astGetFullType( lhs ), lhs_subtype )
+    rhs_expr = hStepExpression( astGetFullType( lhs ), lhs_subtype, rhs )
 
 	'' attept to create the '+=' expression
 	expr = astNewSelfBOP( op, lhs_expr, rhs_expr )
@@ -626,7 +626,7 @@ private function hStepIsPositive _
 		byval expr as ASTNODE ptr _
 	) as integer
 
-	select case as const dtype
+	select case as const typeGet( dtype )
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		function = (astGetValLong( expr ) >= 0)
 

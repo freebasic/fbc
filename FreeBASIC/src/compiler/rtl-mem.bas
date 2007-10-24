@@ -477,11 +477,12 @@ function rtlMemNewOp _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
+	'' assumes dtype has const info stripped
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr sym = any
     
     '' try to find an overloaded new()
-    select case dtype
+    select case as const dtype
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
     	sym = symbGetCompOpOvlHead( subtype, _
     								iif( is_vector, _
@@ -521,9 +522,11 @@ function rtlMemDeleteOp _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr sym = any
-
+	
+	'' assumes const info is stripped
+	
     '' try to find an overloaded delete()
-    select case dtype
+    select case as const dtype
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
     	sym = symbGetCompOpOvlHead( subtype, _
     								iif( is_vector, _
