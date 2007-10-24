@@ -1167,7 +1167,8 @@ function hForwardCall _
     ''
     proc = symbAddPrototype( proc, id, NULL, NULL, _
     						 FB_DATATYPE_VOID, NULL, 0, _
-    					     0, FB_FUNCMODE_DEFAULT )
+    					     FB_FUNCMODE_DEFAULT )
+	
     if( proc = NULL ) then
     	if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
     		exit function
