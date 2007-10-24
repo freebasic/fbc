@@ -895,7 +895,7 @@ function rtlPrint _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
-    dim as integer mask = any, args = any, dtype = any
+    dim as integer mask = any, args = any
 
     function = FALSE
 
@@ -1172,13 +1172,12 @@ function rtlWrite _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
-    dim as integer mask = any, args = any
+    dim as integer mask = any
 
 	function = FALSE
 
 	if( expr = NULL ) then
 		f = PROCLOOKUP( WRITEVOID )
-		args = 2
 	else
 
 		'' UDT? try to convert to string with type casting op overloading
@@ -1255,7 +1254,6 @@ function rtlWrite _
 
 		end select
 
-		args = 3
 	end if
 
     ''
@@ -1366,7 +1364,7 @@ function rtlPrintUsing _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
-    dim as integer mask = any, dtype = any
+    dim as integer mask = any
 
 	function = FALSE
 
@@ -1378,9 +1376,8 @@ function rtlPrintUsing _
     	exit function
     end if
 
-	dtype = astGetDataType( expr )
 	'' UDT? try to convert to double with type casting op overloading
-	select case dtype
+	select case astGetDataType( expr )
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		expr = astNewOvlCONV( FB_DATATYPE_DOUBLE, NULL, expr )
 		if( expr = NULL ) then
@@ -1388,7 +1385,7 @@ function rtlPrintUsing _
 		end if
 	end select
 
-	select case typeGet( dtype )
+	select case astGetDataType( expr )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 		f = PROCLOOKUP( PRINTUSGSTR )
 
