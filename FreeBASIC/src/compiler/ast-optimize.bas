@@ -256,9 +256,9 @@ private function hPrepConst _
 
 	'' first node? just copy..
 	if( v->dtype = FB_DATATYPE_INVALID ) then
-		v->dtype = r->dtype
+		v->dtype = astGetDataType( r )
 
-		select case as const typeGet( v->dtype )
+		select case as const v->dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			v->val.long = r->con.val.long
 
@@ -280,14 +280,14 @@ private function hPrepConst _
 	end if
 
     ''
-	dtype = symbMaxDataType( v->dtype, r->dtype )
+	dtype = symbMaxDataType( v->dtype, astGetDataType( r ) )
 
 	'' same? don't convert..
 	if( dtype = FB_DATATYPE_INVALID ) then
 		'' an ENUM or POINTER always has the precedence
-		select case typeGet( r->dtype )
+		select case astGetDataType( r )
 		case FB_DATATYPE_ENUM, FB_DATATYPE_POINTER
-			return r->dtype
+			return astGetFullType( r )
 		case else
 			return v->dtype
 		end select
@@ -295,7 +295,7 @@ private function hPrepConst _
 
 	'' convert r to v's type
 	if( dtype = v->dtype ) then
-		hConvDataType( @r->con.val, r->dtype, dtype )
+		hConvDataType( @r->con.val, astGetDataType( r ), dtype )
 
 	'' convert v to r's type
 	else
@@ -349,7 +349,7 @@ private function hConstAccumADDSUB _
 			if( dtype <> FB_DATATYPE_INVALID ) then
 				select case o
 				case AST_OP_ADD
-					select case as const dtype
+					select case as const typeGEt( dtype )
 					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 						v->val.long += r->con.val.long
 
@@ -368,7 +368,7 @@ private function hConstAccumADDSUB _
 					end select
 
 				case AST_OP_SUB
-					select case as const dtype
+					select case as const typeGet( dtype )
 					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 						v->val.long -= r->con.val.long
 
@@ -438,7 +438,7 @@ private function hConstAccumMUL _
 			dtype = hPrepConst( v, r )
 
 			if( dtype <> FB_DATATYPE_INVALID ) then
-				select case as const dtype
+				select case as const typeGet( dtype )
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					v->val.long *= r->con.val.long
 
@@ -552,7 +552,7 @@ private sub hOptConstAccum2 _
 		select case n->op.op
 		case AST_OP_ADD
 			'' don't mess with strings..
-			select case as const n->dtype
+			select case as const astGetDataType( n )
 			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 				 FB_DATATYPE_WCHAR
 
@@ -584,22 +584,22 @@ private sub hOptConstAccum2 _
 			'' update the node data type
 			l = n->l
 			r = n->r
-			dtype = symbMaxDataType( l->dtype, r->dtype )
+			dtype = symbMaxDataType( astGetDataType( l ), astGetDataType( r ) )
 			if( dtype <> FB_DATATYPE_INVALID ) then
-				if( dtype <> l->dtype ) then
+				if( typeGet( dtype ) <> typeGet( l->dtype ) ) then
 					n->l = astNewCONV( dtype, r->subtype, l )
 				else
 					n->r = astNewCONV( dtype, l->subtype, r )
 				end if
-				n->dtype = dtype
+				astGetFullType( n ) = dtype
 
 			else
 				'' an ENUM or POINTER always have the precedence
-				select case typeGet( r->dtype )
+				select case typeGet( astGetDataType( r ) )
 				case FB_DATATYPE_ENUM, FB_DATATYPE_POINTER
-					n->dtype = r->dtype
+					astGetFullType( n ) = astGetFullType( r )
 				case else
-					n->dtype = l->dtype
+					astGetFullType( n ) = astGetFullType( l )
 				end select
 			end if
 		end if
@@ -645,7 +645,7 @@ private function hConstDistMUL _
 			dtype = hPrepConst( v, r )
 
 			if( dtype <> FB_DATATYPE_INVALID ) then
-				select case as const dtype
+				select case as const typeGet( dtype )
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					v->val.long += r->con.val.long
 
@@ -710,7 +710,7 @@ private function hOptConstDistMUL _
 					select case as const v.dtype
 					case FB_DATATYPE_LONGINT
 
-mul_long:				select case as const r->dtype
+mul_long:				select case as const astGetDataType( r )
 						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							v.val.long *= r->con.val.long
 
@@ -732,7 +732,7 @@ mul_long:				select case as const r->dtype
 
 					case FB_DATATYPE_ULONGINT
 
-mul_ulong:				select case as const r->dtype
+mul_ulong:				select case as const astGetDataType( r )
 						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							v.val.long *= cunsg( r->con.val.long )
 
@@ -753,7 +753,7 @@ mul_ulong:				select case as const r->dtype
 						r = astNewCONSTl( v.val.long, v.dtype )
 
 					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-						select case as const r->dtype
+						select case as const astGetDataType( r )
 						case FB_DATATYPE_LONGINT
 							v.val.float *= cdbl( r->con.val.long )
 
@@ -802,7 +802,7 @@ mul_ulong:				select case as const r->dtype
 
 					case else
 
-mul_int:				select case as const r->dtype
+mul_int:				select case as const astGetDataType( r )
 						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							v.val.int *= cint( r->con.val.long )
 
@@ -860,7 +860,7 @@ private sub hOptConstIdxMult _
 			if( astIsCONST( lr ) ) then
 				if( irGetOption( IR_OPT_ADDRCISC ) ) then
 					dim as integer c = any
-					select case as const lr->dtype
+					select case as const astGetDataType( lr )
 					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 						c = cint( lr->con.val.long )
 
@@ -917,8 +917,8 @@ private sub hOptConstIdxMult _
 	end if
 
 	'' convert to integer if needed
-	if( (symbGetDataClass( l->dtype ) <> FB_DATACLASS_INTEGER) or _
-	    (symbGetDataSize( l->dtype ) <> FB_POINTERSIZE) ) then
+	if( (symbGetDataClass( astGetDataType( l ) ) <> FB_DATACLASS_INTEGER) or _
+	    (symbGetDataSize( astGetDataType( l ) ) <> FB_POINTERSIZE) ) then
 		n->l = astNewCONV( FB_DATATYPE_INTEGER, NULL, l )
 	end if
 
@@ -934,7 +934,7 @@ private function hOptDerefAddr _
 
 	select case l->class
 	case AST_NODECLASS_OFFSET
-		dim as integer dtype = n->dtype
+		dim as integer dtype = astGetFullType( n )
 		dim as FBSYMBOL ptr subtype = n->subtype
 
 		'' newBOP() will optimize ofs + const nodes, but we can't use the full
@@ -953,7 +953,7 @@ private function hOptDerefAddr _
 
 	'' convert *@expr to expr
 	case AST_NODECLASS_ADDROF
-		dim as integer dtype = n->dtype
+		dim as integer dtype = astGetFullType( n )
 		dim as FBSYMBOL ptr subtype = n->subtype
 		dim as integer ofs = n->ptr.ofs
 
@@ -1036,7 +1036,7 @@ private function hOptConstIDX _
         	l = n->l
         	if( astIsCONST( l ) ) then
 				dim as integer c = any
-				select case as const l->dtype
+				select case as const astGetDataType( l )
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					c = cint( l->con.val.long )
 
@@ -1156,7 +1156,7 @@ private function hOptAssocADD _
 		case AST_OP_ADD, AST_OP_SUB
 
 			'' don't mess with strings..
-			select case n->dtype
+			select case astGetDataType( n )
 			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 				 FB_DATATYPE_WCHAR
 
@@ -1333,8 +1333,8 @@ private sub hOptToShift _
 		case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD
 			r = n->r
 			if( astIsCONST( r ) ) then
-				if( symbGetDataClass( n->dtype ) = FB_DATACLASS_INTEGER ) then
-					if( symbGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
+				if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+					if( symbGetDataSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
 						const_val = r->con.val.int
 						if( const_val > 0 ) then
 							const_val = hToPow2( const_val )
@@ -1349,7 +1349,7 @@ private sub hOptToShift _
 								case AST_OP_INTDIV
 									if( const_val <= 32 ) then
 										l = n->l
-										if( symbIsSigned( l->dtype ) = FALSE ) then
+										if( symbIsSigned( astGetDataType( l ) ) = FALSE ) then
 											n->op.op = AST_OP_SHR
 											r->con.val.int = const_val
 										else
@@ -1359,7 +1359,7 @@ private sub hOptToShift _
 
 								case AST_OP_MOD
 									'' unsigned types only
-									if( symbIsSigned( n->l->dtype ) = FALSE ) then
+									if( symbIsSigned( astGetDataType( n->l ) ) = FALSE ) then
 										n->op.op = AST_OP_AND
 										r->con.val.int -= 1
 									end if
@@ -1417,8 +1417,8 @@ private function hOptNullOp _
 		l = n->l
 		r = n->r
 		if( astIsCONST( r ) ) then
-			if( symbGetDataClass( n->dtype ) = FB_DATACLASS_INTEGER ) then
-				if( symbGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
+			if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+				if( symbGetDataSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
 					v = r->con.val.int
 				else
 					v = r->con.val.long
@@ -1513,13 +1513,13 @@ private function hDoOptRemConv _
 
 	'' convert l{float} op cast(float, r{var}) to l op r
 	if( n->class = AST_NODECLASS_BOP ) then
-		select case n->dtype
+		select case astGetDataType( n )
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			r = n->r
 			if( r->class = AST_NODECLASS_CONV ) then
 				'' left node can't be a cast() too
 				if( n->l->class <> AST_NODECLASS_CONV ) then
-					select case r->dtype
+					select case astGetDataType( r )
 					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						l = r->l
 
@@ -1532,14 +1532,14 @@ private function hDoOptRemConv _
 						end if
 
 						'' can't be a longint
-						if( symbGetDataSize( t->dtype ) < FB_INTEGERSIZE*2 ) then
+						if( symbGetDataSize( astGetDataType( t ) ) < FB_INTEGERSIZE*2 ) then
 							dorem = FALSE
 
 							select case as const t->class
 							case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 								 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 								'' can't be unsigned either
-								if( symbIsSigned( t->dtype ) ) then
+								if( symbIsSigned( astGetDataType( t ) ) ) then
 									dorem = TRUE
 								end if
 							end select
@@ -1765,7 +1765,7 @@ private function hOptStrAssignment _
 		end select
 	end if
 
-	is_wstr = ( n->dtype = FB_DATATYPE_WCHAR )
+	is_wstr = ( astGetDataType( n ) = FB_DATATYPE_WCHAR )
 
 	if( optimize ) then
 		astDelNode( n )
@@ -1872,7 +1872,7 @@ function astOptAssignment _
 			'' try to optimize if a constant is being assigned to a float var
   			if( astIsCONST( r ) ) then
   				if( dclass = FB_DATACLASS_FPOINT ) then
-					if( symbGetDataClass( r->dtype ) <> FB_DATACLASS_FPOINT ) then
+					if( symbGetDataClass( astGetDataType( r ) ) <> FB_DATACLASS_FPOINT ) then
 						n->r = astNewCONV( dtype, NULL, r )
 					end if
 				end if
@@ -1902,7 +1902,7 @@ function astOptAssignment _
 
 	case AST_NODECLASS_FIELD
 		'' isn't it a bitfield?
-		if( t->l->dtype = FB_DATATYPE_BITFIELD ) then
+		if( astGetDataType( t->l ) = FB_DATATYPE_BITFIELD ) then
 			exit function
 		end if
 
@@ -1927,7 +1927,7 @@ function astOptAssignment _
 	end select
 
 	'' node result is an integer too?
-	if( symbGetDataClass( r->dtype ) <> FB_DATACLASS_INTEGER ) then
+	if( symbGetDataClass( astGetDataType( r ) ) <> FB_DATACLASS_INTEGER ) then
 		exit function
 	end if
 
