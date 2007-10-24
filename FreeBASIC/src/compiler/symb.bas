@@ -1744,20 +1744,27 @@ function symbTypeToStr _
 	) as zstring ptr
 
 	static as string res
-	dim as integer dtype_np = any
-
+	dim as integer dtype_np = any, ptrcnt = any
+    
 	if( dtype = FB_DATATYPE_INVALID ) then
 		return NULL
 	end if
 
+    ptrcnt = typeGetPtrCnt( dtype )
+	if( typeIsConstAt( dtype, ptrcnt ) ) then
+		res = "const "
+	else
+		res = ""
+	end if
+	
 	dtype_np = typeGetDtOnly( dtype )
 
 	select case as const dtype_np
 	case FB_DATATYPE_FWDREF, FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
-		res = *symbGetName( subtype )
+		res += *symbGetName( subtype )
 
 	case else
-		res = *symb_dtypeTB(dtype_np).name
+		res += *symb_dtypeTB(dtype_np).name
 		if( dtype_np = FB_DATATYPE_FIXSTR ) then
 			if( lgt > 0 ) then
 				res += " " + str(lgt-1)
@@ -1765,10 +1772,12 @@ function symbTypeToStr _
 		end if
 	end select
 
-	do while( typeIsPtr( dtype ) )
+	for i as integer = ptrcnt-1 to 0 step -1
+		if( typeIsConstAt( dtype, i ) ) then
+			res += " const"
+		end if
 		res += " ptr"
-		dtype = typeDeref( dtype )
-	loop
+	next
 
 	function = strptr( res )
 

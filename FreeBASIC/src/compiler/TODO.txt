@@ -3,7 +3,7 @@
     [x] typedef patching must be fixed
     [x] must check assignment
     [x] must check overloading resolution and the proc dup check
-    [ ] TYPEOF must be updated..?
+    [x] TYPEOF must be updated
     [ ] overload/tostring.bas is failing... (string casts)
 
 [ ] ctor/dtor

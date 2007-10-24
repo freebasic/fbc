@@ -198,7 +198,7 @@ function cTypeOf _
 		dim as ASTNODE ptr walk = expr
 		dim as FBSYMBOL ptr sym = astGetSymbol( expr )
 		if( sym = NULL ) then
-			dtype   = astGetDataType( expr )
+			dtype   = astGetFullType( expr )
 			subtype = astGetSubtype( expr )
 		else
 			while( walk <> NULL )
@@ -220,7 +220,7 @@ function cTypeOf _
 				walk = astGetLeft( walk )
 			wend
 			lgt     = symbGetLen( sym )
-			dtype   = symbGetType( sym )
+			dtype   = symbGetFullType( sym )
 			subtype = symbGetSubtype( sym )
 		end if
 
