@@ -1122,12 +1122,14 @@ function astNewARG _
 		dtype = astGetFullType( arg )
 	end if
 
-    '' check const arg to non-const param (if not rtl)
+    '' check const arg to non-const non-byval param (if not rtl)
     if( parent->call.isrtl = FALSE ) then
 	    if( typeIsConst( dtype ) ) then
 	    	if( typeIsConst( symbGetFullType( param ) ) = 0 ) then
-	    		hParamError( parent, FB_ERRMSG_CONSTANTCANTBECHANGED )
-	    		exit function
+	    		if( symbGetParamMode( param ) <> FB_PARAMMODE_BYVAL ) then
+		    		hParamError( parent, FB_ERRMSG_ILLEGALASSIGNMENT )
+		    		exit function
+		    	end if
 	    	end if
 	    end if
     end if
