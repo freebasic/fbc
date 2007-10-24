@@ -1092,17 +1092,17 @@ function symbAddParam _
 
 	function = NULL
 
-	dtype = symbGetType( param )
+	dtype = symbGetFullType( param )
 
 	select case as const param->param.mode
     case FB_PARAMMODE_BYVAL
     	attrib = FB_SYMBATTRIB_PARAMBYVAL
 
-    	select case as const dtype
+    	select case symbGetType( param )
     	'' byval string? it's actually an pointer to a zstring
     	case FB_DATATYPE_STRING
     		attrib = FB_SYMBATTRIB_PARAMBYREF
-    		dtype = FB_DATATYPE_CHAR
+    		dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
 
     	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
     		'' has a dtor, copy ctor or virtual methods? it's a copy..
@@ -1132,7 +1132,7 @@ function symbAddParam _
 	end if
 
     s = symbAddVarEx( symbol, NULL, _
-    				  symbGetFullType( param ), param->subtype, 0, _
+    				  dtype, param->subtype, 0, _
     				  0, dTB(), _
     				  attrib )
 
