@@ -908,10 +908,8 @@ function rtlPrint _
 		args = 2
 	else
 
-		dtype = astGetFullType( expr )
-
 		'' UDT? try to convert to string with type casting op overloading
-		select case typeGet( dtype )
+		select case astGetDataType( expr )
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 			expr = astNewOvlCONV( FB_DATATYPE_STRING, NULL, expr )
 			if( expr = NULL ) then
@@ -919,7 +917,7 @@ function rtlPrint _
 			end if
 		end select
 
-		select case as const typeGet( dtype )
+		select case as const astGetDataType( expr )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTSTR )
@@ -1174,7 +1172,7 @@ function rtlWrite _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
-    dim as integer mask = any, args = any, dtype = any
+    dim as integer mask = any, args = any
 
 	function = FALSE
 
@@ -1184,9 +1182,7 @@ function rtlWrite _
 	else
 
 		'' UDT? try to convert to string with type casting op overloading
-		dtype = astGetDataType( expr )
-
-		select case dtype
+		select case astGetDataType( expr )
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 			expr = astNewOvlCONV( FB_DATATYPE_STRING, NULL, expr )
 			if( expr = NULL ) then
@@ -1194,7 +1190,7 @@ function rtlWrite _
 			end if
 		end select
 
-		select case as const typeGet( dtype )
+		select case as const astGetDataType( expr )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			f = PROCLOOKUP( WRITESTR )
 
