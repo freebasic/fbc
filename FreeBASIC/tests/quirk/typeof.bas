@@ -33,7 +33,12 @@ namespace fbc_tests.quirk.typeof_
 	sub typeof_vars cdecl( )
 		dim as sometype thingy
 		dim as string bar(2)
+		dim as const integer ptr ptr const ptr const ptr cp = 0
+		dim as typeof(cp) dp = 0
 		
+		#if typeof(cp) <> typeof(dp)
+			CU_ASSERT(0)
+		#endif
 		#if typeof(bar(0)) <> string
 			CU_ASSERT(0)
 		#endif

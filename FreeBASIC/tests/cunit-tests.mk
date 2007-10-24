@@ -61,7 +61,7 @@ ifeq ($(TARGET),win32)
     FBCU_LIBS += -l user32
 endif
 
-FBC_CFLAGS := -c -w 0 -i $(FBCU_INC)
+FBC_CFLAGS := -c -w 3 -i $(FBCU_INC) -mt
 ifdef DEBUG
 	FBC_CFLAGS += -g
 endif

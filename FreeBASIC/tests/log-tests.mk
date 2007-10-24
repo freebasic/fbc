@@ -142,7 +142,11 @@ $(LOGLIST_MULTI_MODULE_FAIL) \
 # set ABORT_CMD := false to abort on failed tests, true to continue anyway
 ABORT_CMD := true
 
-FBC_CFLAGS := -w 0
+FBC_CFLAGS := -w 3 
+ifdef DEBUG
+	FBC_CFLAGS += -g
+endif
+
 ifneq ($(FB_LANG),)
 FBC_CFLAGS += -lang $(FB_LANG)
 endif
