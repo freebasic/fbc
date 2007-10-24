@@ -207,7 +207,7 @@ private function hCheckEnumOps _
 	) as integer
 
 	function = FALSE
-
+    
     '' not the same?
     if( typeGetDtAndPtrOnly( l->dtype ) <> typeGetDtAndPtrOnly( r->dtype ) ) then
     	if( (ldclass <> FB_DATACLASS_INTEGER) or _
@@ -221,7 +221,7 @@ private function hCheckEnumOps _
 end function
 
 '':::::
-private function hCheckPointerOps _
+private function hCheckConstAndPointerOps _
 	( _
 		byval l as ASTNODE ptr, _
 		byval ldtype as FB_DATATYPE, _
@@ -230,21 +230,28 @@ private function hCheckPointerOps _
 	) as integer
 
 	function = FALSE
-
-    if( typeIsPtr( ldtype ) ) then
-		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
-    		if( env.clopt.lang <> FB_LANG_QB ) then
-				errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+	
+	'' check constant
+	dim as integer rcount = typeGetPtrCnt( rdtype )
+	if( typeIsConstAt( rdtype, rcount ) ) then
+		if( (rcount <> typeGetPtrCnt( ldtype )) or (typeIsConstAt( rdtype, rcount ) = FALSE) ) then
+			if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE ) = FALSE ) then
+				exit function
+			else
+				return TRUE
 			end if
 		end if
-
-    '' r-side expr is a ptr?
-    elseif( typeIsPtr( rdtype ) ) then
-    	if( env.clopt.lang <> FB_LANG_QB ) then
-    		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
-    	end if
-    end if
-
+	end if
+    
+	if( typeIsPtr( ldtype ) ) then
+		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
+			errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+		end if
+	'' r-side expr is a ptr?
+	elseif( typeIsPtr( rdtype ) ) then
+		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+	end if
+    
     function = TRUE
 
 end function
@@ -257,13 +264,15 @@ function astCheckASSIGN _
 	) as integer
 
     dim as ASTNODE ptr n = any
-    dim as FB_DATATYPE ldtype = any, rdtype = any
+    dim as FB_DATATYPE ldtype = any, rdtype = any, ldfull = any, rdfull = any
     dim as FB_DATACLASS ldclass = any, rdclass = any
 
 	function = FALSE
 
-	ldtype = l->dtype
-	rdtype = r->dtype
+	ldfull = l->dtype
+	rdfull = r->dtype
+	ldtype = typeGet( ldfull )
+	rdtype = typeGet( rdfull )
 	ldclass = symbGetDataClass( ldtype )
 	rdclass = symbGetDataClass( rdtype )
 
@@ -330,17 +339,17 @@ function astCheckASSIGN _
 	end if
 
     '' check pointers
-	if( hCheckPointerOps( l, ldtype, r, rdtype ) = FALSE ) then
+	if( hCheckConstAndPointerOps( l, ldfull, r, rdfull ) = FALSE ) then
 		exit function
 	end if
-
+	
 	'' convert types if needed
 	if( ldtype <> rdtype ) then
 		'' don't convert strings
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( astIsCONST( r ) ) then
-				r = astCheckConst( l->dtype, r )
+				r = astCheckConst( ldtype, r )
 				if( r = NULL ) then
 					exit function
 				end if
@@ -354,7 +363,7 @@ function astCheckASSIGN _
 		'' check for overflows
 		if( symbGetDataClass( rdtype ) = FB_DATACLASS_FPOINT ) then
 			if( astIsCONST( r ) ) then
-				r = astCheckConst( l->dtype, r )
+				r = astCheckConst( ldtype, r )
 				if( r = NULL ) then
 					exit function
 				end if
@@ -582,7 +591,7 @@ function astNewASSIGN _
 
     '' check pointers
     if( (options and AST_OPOPT_DONTCHKPTR) = 0 ) then
-		if( hCheckPointerOps( l, ldtype, r, rdtype ) = FALSE ) then
+		if( hCheckConstAndPointerOps( l, ldtype, r, rdtype ) = FALSE ) then
 			exit function
 		end if
     end if

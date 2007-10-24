@@ -2471,7 +2471,9 @@ declare function symbVarCheckAccess _
 #define	typeIsPtr( dt ) (((dt and FB_DT_PTRMASK) <> 0))
 #define typeGetPtrCnt( dt ) ((dt and FB_DT_PTRMASK) shr FB_DT_PTRPOS)
 
-#define	typeIsConst( dt ) ((dt and (1 shl FB_DT_CONSTPOS)) <> 0)
+#define	typeIsConstAt( dt, at ) ((dt and (1 shl (FB_DT_CONSTPOS + at))) <> 0)
+#define	typeIsConst( dt ) typeIsConstAt(dt, 0)
+#define	typeIsPtrToConst( dt ) (typeIsConst(dt) and typeIsPtr(dt))
 #define	typeSetIsConst( dt ) (dt or (1 shl FB_DT_CONSTPOS))
 #define	typeUnsetIsConst( dt ) (dt and not (1 shl FB_DT_CONSTPOS))
 #define	typeGetConstMask( dt ) (dt and FB_DT_CONSTMASK)
