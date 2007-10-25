@@ -6,7 +6,7 @@ namespace fbc_tests.const_.ovl
 	        return 1
 	End function
 	
-	function foo overload (ba2 As Integer Const Ptr) as integer
+	function foo overload (ba2 As Integer const Ptr) as integer
 	        return 2
 	End function
 	
@@ -16,12 +16,10 @@ namespace fbc_tests.const_.ovl
 	
 	sub testy cdecl ( )
 		Dim As Integer Const Ptr ptr p
-		Dim As CONsT Integer const Ptr q = 0
-		Dim As CONsT Integer Ptr r = 0
+		Dim As Integer const Ptr q = 0
 		       
 		assert( foo( p ) = 3 )
 		assert( foo( q ) = 2 )
-		assert( foo( r ) = 1 )
 	end sub
 	
 	private sub ctor () constructor
