@@ -1744,17 +1744,13 @@ private function hCheckOvlParam _
 			end if
 		end if
 
-		dim as integer const_misses = -1
-		if( symbCheckConstAssign( param_dtype, arg_dtype, symbGetParamMode( param ), const_misses ) = FALSE ) then
-			if( const_misses <> -1 ) then
-				dim as integer ptrcnt = typeGetPtrCnt( arg_dtype )
-				return FB_OVLPROC_HALFMATCH * ((ptrcnt+1) - const_misses) / (ptrcnt+1)
-			else
-				return 0
-			end if
+		dim as integer const_matches = any
+		if( symbCheckConstAssign( param_dtype, arg_dtype, symbGetParamMode( param ), const_matches ) = FALSE ) then
+			return 0
 		else
-			if( typeGetConstMask( arg_dtype ) ) then
-				return FB_OVLPROC_FULLMATCH
+			if( const_matches ) then
+				dim as integer ptrcnt = typeGetPtrCnt( arg_dtype )
+				return (FB_OVLPROC_HALFMATCH / (ptrcnt+2)) * const_matches
 			end if
 		end if
 		

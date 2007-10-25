@@ -1944,54 +1944,82 @@ function symbCheckConstAssign _
 		byval ldtype as FB_DATATYPE, _
 		byval rdtype as FB_DATATYPE, _
 		byval mode as FB_PARAMMODE, _
-		byref misses as integer _
+		byref matches as integer _
 	) as integer
 	
-	dim as integer l_cnt = typeGetPtrCnt( ldtype ), r_cnt = typeGetPtrCnt( rdtype )
-	dim as integer ovl_check = (misses = -1)
+	function = FALSE
+	matches = 0
+	
+	'' no consts? short-circuit
+	if( (typeGetConstMask( ldtype ) or typeGetConstMask( rdtype )) = 0 ) then
+		return TRUE
+	end if
+	
+	dim as integer l_cnt = typeGetPtrCnt( ldtype ), r_cnt = typeGetPtrCnt( rdtype ), start_at = any
 	
 	'' any const on te right?
 	if( typeGetConstMask( rdtype ) ) then
 		
 		'' types and ptr depth HAVE to match
-		if( typeGet( ldtype ) <> typeGet( rdtype ) ) then
-			misses = -1
-			return FALSE
+		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
+			exit function
 		end if
 		if( l_cnt <> r_cnt ) then
-			misses = -1
-			return FALSE
+			exit function
 		end if
 		
 	end if
 	
-	dim as integer skip_top = FALSE
+	'' add one for the non-ptr slot
+	r_cnt += 1
 	
-	misses = 0
+	'' byval params need extra matching for
+	'' overload resolution
 	if( mode = FB_PARAMMODE_BYVAL ) then
-		skip_top = TRUE
-		if( typeIsConst( ldtype ) <> typeIsConst( rdtype ) ) then
-			misses += 1
+		start_at = 1
+		matches = r_cnt
+		
+		'' top-level const gets precedence...
+		if( typeIsConst( ldtype ) ) then
+			matches += 1
 		end if
+		
 	else
+		
+		'' just a variable assignment?
 		if( mode = 0 ) then
-			skip_top = TRUE
+			start_at = 1
+		else
+			
+			'' byref/bydesc param, check every level
+			start_at = 0
 		end if
+		
 	end if
 	
-	for i as integer = iif( skip_top, 1, 0 ) to l_cnt
-		if( typeIsConstAt( ldtype, i ) <> typeIsConstAt( rdtype, i ) ) then
-			misses += 1
-		end if
-		if( typeIsConstAt( rdtype, i ) ) then
-			if( typeIsConstAt( ldtype, i ) = FALSE ) then
-				misses = -1
-				return FALSE
+	r_cnt -= start_at
+	
+	'' walk along all the const flags
+	for i as integer = start_at to l_cnt
+		
+		'' same? update matches
+		if( typeIsConstAt( ldtype, i ) = typeIsConstAt( rdtype, i ) ) then
+			if( (r_cnt) > matches ) then
+				matches = r_cnt
 			end if
 		end if
+		
+		'' if r is const and l isn't... (only pointers/refs checked here)
+		if( typeIsConstAt( rdtype, i ) ) then
+			if( typeIsConstAt( ldtype, i ) = FALSE ) then
+				exit function
+			end if
+		end if
+		
+		r_cnt -= 1
 	next
 	
-	function = iif( ovl_check, misses = 0, TRUE )
+	function = TRUE
 	
 end function
 
