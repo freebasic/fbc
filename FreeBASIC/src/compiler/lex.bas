@@ -780,25 +780,9 @@ private sub hReadFloatNumber _
 			end if
 		end if
 	loop
-
+	
 	'' [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ]
 	select case as const lexCurrentChar( )
-	'' '!', 'F', 'f'?
-	case FB_TK_SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
-		dtype = FB_DATATYPE_SINGLE
-
-		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
-			c = lexEatChar( )
-		end if
-
-	'' '#'?
-	case FB_TK_DBLTYPECHAR
-		dtype = FB_DATATYPE_DOUBLE
-
-		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
-			c = lexEatChar( )
-		end if
-
 	'' 'e', 'E', 'd', 'D'?
 	case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 		'' EXPCHAR
@@ -850,7 +834,26 @@ private sub hReadFloatNumber _
 				end if
 			end if
 		loop
+		
+	end select
+	
+	select case as const lexCurrentChar( )
+	'' '!', 'F', 'f'?
+	case FB_TK_SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
+		dtype = FB_DATATYPE_SINGLE
 
+		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
+			c = lexEatChar( )
+		end if
+		
+	'' '#'?
+	case FB_TK_DBLTYPECHAR
+		dtype = FB_DATATYPE_DOUBLE
+
+		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
+			c = lexEatChar( )
+		end if
+        
 	end select
 
 	if( tlen - llen = 0 ) then
