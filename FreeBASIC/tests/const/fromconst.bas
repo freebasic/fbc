@@ -16,6 +16,4 @@ dim as vec kj
 kj = foo
 x = foo.x
 
-'' !!!FIXME!!!
-'' let( x, y, z ) = foo
-
+let( x, y, z ) = foo

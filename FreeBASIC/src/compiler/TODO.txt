@@ -1,11 +1,8 @@
 [ ] CONST qualifier
     [x] ptr checking must be updated
-    [x] typedef patching must be fixed
     [x] must check assignment
     [x] must check overloading resolution and the proc dup check
-    [x] TYPEOF must be updated
     [ ] check consts with IIF
-    [ ] let( x, y, z ) = const_struct is failing...
 
 [ ] ctor/dtor
     - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when

@@ -597,7 +597,7 @@ private function hAssignFromField _
 	expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetOfs( fld ), FB_DATATYPE_INTEGER ) )
 	expr = astNewDEREF( expr, symbGetFullType( fld ), symbGetSubType( fld ) )
 	expr = astNewFIELD( expr, fld, symbGetFullType( fld ), symbGetSubType( fld ) )
-
+	
     expr = astNewASSIGN( lhs, expr )
     if( expr = NULL ) then
 		if( hReportLetError( FB_ERRMSG_ILLEGALASSIGNMENT, num ) = FALSE ) then
@@ -790,7 +790,7 @@ function cAssignmentOrPtrCall _
 	dim as ASTNODE ptr tree = NULL
 
 	if( exprcnt > 0 ) then
-		tmp = symbAddTempVar( typeAddrOf( astGetDatatype( expr ) ), _
+		tmp = symbAddTempVar( typeAddrOf( astGetFulltype( expr ) ), _
 										  astGetSubtype( expr ), _
 										  FALSE, _
 										  FALSE )
