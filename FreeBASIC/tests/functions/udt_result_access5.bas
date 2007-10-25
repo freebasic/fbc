@@ -34,7 +34,7 @@ function tfoo.bar ( ) as tbar
 	return p_bar
 end function
 
-	dim shared as tfoo g_f1
+	dim shared  as tfoo g_f1
 	dim shared as tfoo g_f2 = ( g_f1.bar() )
 
 sub test_1 cdecl

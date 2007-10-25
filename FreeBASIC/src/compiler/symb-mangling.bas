@@ -271,7 +271,7 @@ private function hAbbrevFind _
 	'' builtin?
 	if( subtype = NULL ) then
 		if( typeIsPtr( dtype ) = FALSE ) then
-			if( dtype <> FB_DATATYPE_STRING ) then
+			if( typeGet( dtype ) <> FB_DATATYPE_STRING ) then
 				return -1
 			end if
 		end if
@@ -371,11 +371,11 @@ function symbMangleType _
     		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
     		dtype = FB_DATATYPE_VOID
     	else
-    		dtype = typeJoin( dtype, FB_DATATYPE_STRUCT )
+    		dtype = typeJoin( dtype and (not FB_DATATYPE_INVALID), FB_DATATYPE_STRUCT )
     	end if
     end if
 
-    select case as const typeGet( dtype )
+    select case as const dtype
     case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
     	dim as FBSYMBOL ptr ns = symbGetNamespace( subtype )
     	if( ns = @symbGetGlobalNamespc( ) ) then
@@ -410,41 +410,41 @@ function symbMangleType _
 
     case FB_DATATYPE_STRING
        	sig = "8FBSTRING"
-
-    case else
-    	'' builtin?
-    	if( typeGet( dtype ) = dtype ) then
-    		return typecodeTB( dtype )
-    	end if
-
-    	'' reference?
-    	if( typeIsRef( dtype ) ) then
-    		sig = "R"
-    		sig += symbMangleType( typeUnsetIsRef( dtype ), subtype )
-
-    	'' array?
-    	elseif( typeIsArray( dtype ) ) then
-    		sig = "A"
-    		sig += symbMangleType( typeUnsetIsArray( dtype ), subtype )
-
-    	'' pointer? (must be checked/emitted before CONST)
-    	elseif( typeIsPtr( dtype ) ) then
-    		'' const?
-    		if( typeIsConst( dtype ) ) then
-    			sig = "PK"
-    		else
-    			sig = "P"
-    		end if
-
-    		sig += symbMangleType( typeDeref( dtype ), subtype )
-
-    	'' const..
-    	else
-    		'' note: nothing is added (as in C++) because it's not a 'const ptr'
-    		sig += symbMangleType( typeUnsetIsConst( dtype ), subtype )
-
-    	end if
-
+	
+	case else
+		'' builtin?
+		if( typeGet( dtype ) = dtype ) then
+			return typecodeTB( dtype )
+		end if
+	
+		'' reference?
+		if( typeIsRef( dtype ) ) then
+			sig = "R"
+			sig += symbMangleType( typeUnsetIsRef( dtype ), subtype )
+	
+		'' array?
+		elseif( typeIsArray( dtype ) ) then
+			sig = "A"
+			sig += symbMangleType( typeUnsetIsArray( dtype ), subtype )
+	
+		'' pointer? (must be checked/emitted before CONST)
+		elseif( typeIsPtr( dtype ) ) then
+			'' const?
+			if( typeIsConst( dtype ) ) then
+				sig = "PK"
+			else
+				sig = "P"
+			end if
+	
+			sig += symbMangleType( typeDeref( dtype ), subtype )
+	
+		'' const..
+		else
+			'' note: nothing is added (as in C++) because it's not a 'const ptr'
+			sig += symbMangleType( typeUnsetIsConst( dtype ), subtype )
+	
+		end if
+		
     end select
 
     hAbbrevAdd( dtype, subtype )
