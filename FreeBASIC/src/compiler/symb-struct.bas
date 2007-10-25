@@ -596,7 +596,7 @@ private function hGetReturnType _
 					res = FB_DATATYPE_SINGLE
 				end if
 
-				if( s->typ <> FB_DATATYPE_STRUCT ) then
+				if( typeGet( s->typ ) <> FB_DATATYPE_STRUCT ) then
 					exit do
 				end if
 
@@ -649,7 +649,9 @@ private function hGetReturnType _
 		end if
 
 	end select
-
+	
+	res = typeJoin( dtype, res )
+	
 	'' if nothing matched, it's the pointer that was passed as the 1st arg
 	if( res = FB_DATATYPE_VOID ) then
 		res = typeAddrOf( dtype )

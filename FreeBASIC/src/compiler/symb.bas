@@ -1939,3 +1939,59 @@ function symbCheckAccess _
 
 end function
 
+function symbCheckConstAssign _
+	( _
+		byval ldtype as FB_DATATYPE, _
+		byval rdtype as FB_DATATYPE, _
+		byval mode as FB_PARAMMODE, _
+		byref misses as integer _
+	) as integer
+	
+	dim as integer l_cnt = typeGetPtrCnt( ldtype ), r_cnt = typeGetPtrCnt( rdtype )
+	dim as integer ovl_check = (misses = -1)
+	
+	'' any const on te right?
+	if( typeGetConstMask( rdtype ) ) then
+		
+		'' types and ptr depth HAVE to match
+		if( typeGet( ldtype ) <> typeGet( rdtype ) ) then
+			misses = -1
+			return FALSE
+		end if
+		if( l_cnt <> r_cnt ) then
+			misses = -1
+			return FALSE
+		end if
+		
+	end if
+	
+	dim as integer skip_top = FALSE
+	
+	misses = 0
+	if( mode = FB_PARAMMODE_BYVAL ) then
+		skip_top = TRUE
+		if( typeIsConst( ldtype ) <> typeIsConst( rdtype ) ) then
+			misses += 1
+		end if
+	else
+		if( mode = 0 ) then
+			skip_top = TRUE
+		end if
+	end if
+	
+	for i as integer = iif( skip_top, 1, 0 ) to l_cnt
+		if( typeIsConstAt( ldtype, i ) <> typeIsConstAt( rdtype, i ) ) then
+			misses += 1
+		end if
+		if( typeIsConstAt( rdtype, i ) ) then
+			if( typeIsConstAt( ldtype, i ) = FALSE ) then
+				misses = -1
+				return FALSE
+			end if
+		end if
+	next
+	
+	function = iif( ovl_check, misses = 0, TRUE )
+	
+end function
+

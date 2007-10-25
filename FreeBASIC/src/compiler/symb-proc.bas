@@ -133,7 +133,7 @@ function symbCalcProcParamsLen _
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
     if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
-    	if( symbGetProcRealType( proc ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+    	if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
     		lgt += FB_POINTERSIZE
     	end if
     end if
@@ -1166,7 +1166,7 @@ function symbAddProcResultParam _
 	end if
 
 	'' returns in a reg?
-	if( proc->proc.real_dtype <> typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+	if( typeGetDtAndPtrOnly( proc->proc.real_dtype ) <> typeAddrOf( FB_DATATYPE_STRUCT ) ) then
 		return NULL
 	end if
 
@@ -1201,7 +1201,7 @@ function symbAddProcResult _
 	'' UDT?
 	if( proc->typ = FB_DATATYPE_STRUCT ) then
 		'' returning a ptr? result is at the hidden arg
-		if( typeGet( proc->proc.real_dtype ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+		if( typeGetDtAndPtrOnly( proc->proc.real_dtype ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
 			return symbGetProcResult( proc )
 		end if
 	end if
@@ -1474,19 +1474,12 @@ private function hCalcTypesDiff _
 		byval param_ptrcnt as integer, _
 		byval arg_dtype as integer, _
 		byval arg_subtype as FBSYMBOL ptr, _
-	  	byval arg_expr as ASTNODE ptr _
+	  	byval arg_expr as ASTNODE ptr, _
+	  	byval mode as FB_PARAMMODE = 0 _
 	) as integer
 
 	dim as integer arg_dclass = any
-
-    '' has the expr a const qualifier?
-    if( typeGetConstMask( arg_dtype ) ) then
-    	'' different (it only matters if they are pointers)?
-    	if( typeGetPtrConstMask( param_dtype ) <> typeGetPtrConstMask( arg_dtype ) ) then
-    		return 0
-    	end if
-    end if
-
+	
     '' don't take the const qualifier into account
     param_dtype = typeGetDtAndPtrOnly( param_dtype )
     arg_dtype = typeGetDtAndPtrOnly( arg_dtype )
@@ -1751,6 +1744,20 @@ private function hCheckOvlParam _
 			end if
 		end if
 
+		dim as integer const_misses = -1
+		if( symbCheckConstAssign( param_dtype, arg_dtype, symbGetParamMode( param ), const_misses ) = FALSE ) then
+			if( const_misses <> -1 ) then
+				dim as integer ptrcnt = typeGetPtrCnt( arg_dtype )
+				return FB_OVLPROC_HALFMATCH * ((ptrcnt+1) - const_misses) / (ptrcnt+1)
+			else
+				return 0
+			end if
+		else
+			if( typeGetConstMask( arg_dtype ) ) then
+				return FB_OVLPROC_FULLMATCH
+			end if
+		end if
+		
 		'' pointer? check if valid (could be a NULL)
 		if( typeIsPtr( param_dtype ) ) then
 			if( astPtrCheck( param_dtype, _
@@ -1760,7 +1767,6 @@ private function hCheckOvlParam _
 
 				return FB_OVLPROC_FULLMATCH
 			end if
-
 			return 0
 		end if
 	end if
@@ -1796,7 +1802,8 @@ private function hCheckOvlParam _
 						  	   param_ptrcnt, _
 						  	   astGetFullType( arg_expr ), _
 						  	   arg_subtype, _
-						  	   arg_expr )
+						  	   arg_expr, _
+						  	   symbGetParamMode( param ) )
 
 end function
 
@@ -1864,7 +1871,6 @@ function symbFindClosestOvlProc _
 			end if
 
 			matches = 0
-
 			'' for each arg..
 			arg = arg_head
 			for i = 0 to args-1
@@ -1880,7 +1886,7 @@ function symbFindClosestOvlProc _
 				param = symbGetProcPrevParam( ovl, param )
 				arg = arg->next
 			next
-
+			
 			'' fewer params? check if the ones missing are optional
 			dim as integer total_args = args
 			if( args < params ) then
@@ -2784,4 +2790,5 @@ function symbGetDefaultCallConv _
 
 
 end function
+
 

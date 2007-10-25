@@ -839,17 +839,6 @@ function astPtrCheck _
     		exit function
     	end if
 
-    	'' 3rd) different constant masks?
-    	if( strictcheck = FALSE ) then
-    		'' only the expression matters
-    		if( typeGetConstMask( edtype ) <> 0 ) then
-    			if( typeGetPtrConstMask( pdtype ) <> _
-    				typeGetPtrConstMask( edtype ) ) then
-    				exit function
-    			end if
-    		end if
-    	end if
-
     	'' 4th) same size and class?
     	if( (pdtype_np <= FB_DATATYPE_DOUBLE) and _
     		(edtype_np <= FB_DATATYPE_DOUBLE) ) then
@@ -1357,4 +1346,5 @@ sub astSetType _
 	end select
 
 end sub
+
 

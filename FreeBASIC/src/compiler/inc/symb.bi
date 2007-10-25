@@ -1805,6 +1805,14 @@ declare function symbVarCheckAccess _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
+declare function symbCheckConstAssign _
+	( _
+		byval ldtype as FB_DATATYPE, _
+		byval rdtype as FB_DATATYPE, _
+		byval mode as FB_PARAMMODE = 0, _
+		byref misses as integer = 0 _
+	) as integer
+
 
 ''
 '' macros
@@ -2201,7 +2209,7 @@ declare function symbVarCheckAccess _
 #define symbGetUDTOpOvlTb(s) s->udt.ext->opovlTb
 
 #define symbGetUDTInRegister(s) iif( symbGetType( sym ) = FB_DATATYPE_STRUCT, _
-									 symbGetProcRealType( sym ) <> typeAddrOf( FB_DATATYPE_STRUCT ), TRUE )
+									 typeGetDtAndPtrOnly( symbGetProcRealType( sym ) ) <> typeAddrOf( FB_DATATYPE_STRUCT ), TRUE )
 
 #define symbGetEnumSymbTbHead(s) s->enum_.ns.symtb.head
 

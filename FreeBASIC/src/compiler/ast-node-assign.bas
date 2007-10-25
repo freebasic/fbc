@@ -238,17 +238,14 @@ private function hCheckConstAndPointerOps _
 	function = FALSE
 	
 	'' check constant
-	dim as integer rcount = typeGetPtrCnt( rdtype )
-	if( typeIsConstAt( rdtype, rcount ) ) then
-		if( (rcount <> typeGetPtrCnt( ldtype )) or (typeIsConstAt( rdtype, rcount ) = FALSE) ) then
-			if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE ) = FALSE ) then
-				exit function
-			else
-				return TRUE
-			end if
+	if( symbCheckConstAssign( ldtype, rdtype ) = FALSE ) then
+		if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE ) = FALSE ) then
+			exit function
+		else
+			return TRUE
 		end if
 	end if
-    
+	
 	if( typeIsPtr( ldtype ) ) then
 		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
 			errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
@@ -406,6 +403,10 @@ function astNewASSIGN _
 	ldclass = symbGetDataClass( ldtype )
 	lsubtype = l->subtype
 
+	rdfull = astGetFullType( r )
+	rdtype = typeGet( rdfull )
+	rdclass = symbGetDataClass( rdtype )
+
 	'' 1st) check assign op overloading (unless the types are the same and
 	''      there's no clone function: just do a shallow copy)
 	if( (options and AST_OPOPT_DONTCHKOPOVL) = 0 ) then
@@ -504,7 +505,7 @@ function astNewASSIGN _
         '' is r an UDT too?
         dim as integer is_udt = TRUE
         if( astIsCALL( r ) ) then
-        	is_udt = symbGetUDTRetType( r->subtype ) = typeAddrOf( FB_DATATYPE_STRUCT )
+        	is_udt = typeGetDtAndPtrOnly( symbGetUDTRetType( r->subtype ) ) = typeAddrOf( FB_DATATYPE_STRUCT )
         end if
 
 		if( is_udt ) then
@@ -727,4 +728,5 @@ function astLoadASSIGN _
 	function = vr
 
 end function
+
 

@@ -647,7 +647,7 @@ function astBuildProcResultVar _
     select case symbGetType( proc )
     case FB_DATATYPE_STRUCT
 		'' pointer? deref
-		if( symbGetProcRealType( proc ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
 			lhs = astNewDEREF( lhs, FB_DATATYPE_STRUCT, symbGetSubtype( res ) )
 		end if
 	'case FB_DATATYPE_CLASS

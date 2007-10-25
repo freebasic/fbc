@@ -1392,7 +1392,7 @@ function cVariableEx overload _
 
     		else
    				'' check if calling functions through pointers
-   				is_funcptr = (dtype = typeAddrOf( FB_DATATYPE_FUNCTION ))
+   				is_funcptr = (typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
 
     			'' using (...) with scalars?
     			if( (is_array = FALSE) and (is_funcptr = FALSE) ) then

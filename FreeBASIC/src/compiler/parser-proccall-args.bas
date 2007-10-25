@@ -397,7 +397,7 @@ private function hOvlProcArgList _
 			lkup_options = FB_SYMBLOOKUPOPT_PROPGET
 		end if
 	end if
-
+	
 	ovlproc = symbFindClosestOvlProc( proc, _
 									  args, _
 									  iif( (options and FB_PARSEROPT_HASINSTPTR) <> 0, _
@@ -481,7 +481,7 @@ private function hOvlProcArgList _
 	arg = arg_list->head
 	for i = 0 to args-1
         nxt = arg->next
-
+        
 		if( astNewARG( procexpr, arg->expr, FB_DATATYPE_INVALID, arg->mode ) = NULL ) then
 			if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
 				exit function
@@ -729,4 +729,5 @@ function cProcArgList _
 	function = procexpr
 
 end function
+
 

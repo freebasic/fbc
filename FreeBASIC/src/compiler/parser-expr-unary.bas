@@ -180,7 +180,7 @@ function cStrIdxOrMemberDeref _
 		select case lexGetToken( )
 		'' function ptr '(' ?
 		case CHAR_LPRNT
-			isfuncptr = (dtype = typeAddrOf( FB_DATATYPE_FUNCTION ))
+			isfuncptr = (typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
 			isfield = isfuncptr
 
 		'' ptr ('->' | '[') ?

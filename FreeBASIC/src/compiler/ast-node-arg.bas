@@ -685,7 +685,7 @@ private sub hUDTPassByval _
 		'' not returned in registers?
 		dim as integer is_udt = TRUE
 		if( astIsCALL( arg ) ) then
-			is_udt = symbGetUDTRetType( subtype ) = typeAddrOf( FB_DATATYPE_STRUCT )
+			is_udt = typeGetDtAndPtrOnly( symbGetUDTRetType( subtype ) ) = typeAddrOf( FB_DATATYPE_STRUCT )
 		end if
 
 		'' udt? push byte by byte to stack
@@ -816,7 +816,7 @@ private function hCheckUDTParam _
 	case FB_PARAMMODE_BYREF
 		'' it's a proc call, but was it originally returning an UDT?
     	if( astIsCALL( arg ) ) then
-			if( symbGetUDTRetType( arg->subtype ) <> _
+			if( typeGetDtAndPtrOnly( symbGetUDTRetType( arg->subtype ) ) <> _
 									typeAddrOf( FB_DATATYPE_STRUCT ) ) then
 
 				'' create a temporary UDT and pass it..
@@ -1124,14 +1124,10 @@ function astNewARG _
 
     '' check const arg to non-const non-byval param (if not rtl)
     if( parent->call.isrtl = FALSE ) then
-	    if( typeIsConst( dtype ) ) then
-	    	if( typeIsConst( symbGetFullType( param ) ) = 0 ) then
-	    		if( symbGetParamMode( param ) <> FB_PARAMMODE_BYVAL ) then
-		    		hParamError( parent, FB_ERRMSG_ILLEGALASSIGNMENT )
-		    		exit function
-		    	end if
-	    	end if
-	    end if
+    	if( symbCheckConstAssign( symbGetFullType( param ), dtype, symbGetParamMode( param ) ) = FALSE ) then
+			hParamError( parent, FB_ERRMSG_ILLEGALASSIGNMENT )
+			exit function
+		end if
     end if
 	
 	'' alloc new node
