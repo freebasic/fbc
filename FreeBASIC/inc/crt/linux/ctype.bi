@@ -11,8 +11,6 @@
 
 #include once "crt/sys/types.bi"
 
-declare function isascii cdecl alias "isascii" (byval __c as integer) as integer
-declare function toascii cdecl alias "toascii" (byval __c as integer) as integer
 declare function _toupper cdecl alias "_toupper" (byval as integer) as integer
 declare function _tolower cdecl alias "_tolower" (byval as integer) as integer
 
