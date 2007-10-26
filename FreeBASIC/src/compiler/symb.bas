@@ -1943,8 +1943,10 @@ function symbCheckConstAssign _
 	( _
 		byval ldtype as FB_DATATYPE, _
 		byval rdtype as FB_DATATYPE, _
-		byval mode as FB_PARAMMODE, _
-		byref matches as integer _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval rsubtype as FBSYMBOL ptr, _
+		byval mode as FB_PARAMMODE = 0, _
+		byref matches as integer = 0 _
 	) as integer
 	
 	function = FALSE
@@ -1957,13 +1959,26 @@ function symbCheckConstAssign _
 	
 	dim as integer l_cnt = typeGetPtrCnt( ldtype ), r_cnt = typeGetPtrCnt( rdtype ), start_at = any
 	
-	'' any const on te right?
-	if( typeGetConstMask( rdtype ) ) then
+	'' any ptr const on te right?
+	if( typeGetConstMask( rdtype ) and typeIsPtr( rdtype ) ) then
 		
 		'' types and ptr depth HAVE to match
 		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
+			
+			'' unless it's a ptr to an any ptr
+			if( iif( typeIsPtr( rdtype ), _
+			         iif( typeGetDtAndPtrOnly( ldtype ) = typeAddrOf(FB_DATATYPE_VOID), _
+			              TRUE, _
+			              FALSE ), _
+			         FALSE ) = FALSE ) then
+				exit function
+			end if
+		end if
+		
+		if( lsubtype <> rsubtype ) then
 			exit function
 		end if
+		
 		if( l_cnt <> r_cnt ) then
 			exit function
 		end if

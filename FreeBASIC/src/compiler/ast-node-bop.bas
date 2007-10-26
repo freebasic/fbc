@@ -1242,7 +1242,7 @@ function astNewBOP _
 	select case as const op
 	'' relative ops, the result is always an integer
 	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
-		dtype = typeJoin( dtype, FB_DATATYPE_INTEGER )
+		dtype = FB_DATATYPE_INTEGER
 		subtype = NULL
 
 	'' right-operand must be an integer, so pow2 opts can be done on longint's

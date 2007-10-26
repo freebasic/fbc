@@ -1124,7 +1124,7 @@ function astNewARG _
 
     '' check const arg to non-const non-byval param (if not rtl)
     if( parent->call.isrtl = FALSE ) then
-    	if( symbCheckConstAssign( symbGetFullType( param ), dtype, symbGetParamMode( param ) ) = FALSE ) then
+    	if( symbCheckConstAssign( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
 			hParamError( parent, FB_ERRMSG_ILLEGALASSIGNMENT )
 			exit function
 		end if

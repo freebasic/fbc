@@ -1745,7 +1745,7 @@ private function hCheckOvlParam _
 		end if
 
 		dim as integer const_matches = any
-		if( symbCheckConstAssign( param_dtype, arg_dtype, symbGetParamMode( param ), const_matches ) = FALSE ) then
+		if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype, symbGetParamMode( param ), const_matches ) = FALSE ) then
 			return 0
 		else
 			if( const_matches ) then

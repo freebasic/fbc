@@ -91,6 +91,7 @@ private function hTypeProtoDecl _
 
 		'' start nesting
 		symbNestBegin( parent, FALSE )
+		
 	end if
 
 	'' DECLARE

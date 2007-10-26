@@ -238,7 +238,7 @@ private function hCheckConstAndPointerOps _
 	function = FALSE
 	
 	'' check constant
-	if( symbCheckConstAssign( ldtype, rdtype ) = FALSE ) then
+	if( symbCheckConstAssign( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
 		if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE ) = FALSE ) then
 			exit function
 		else
