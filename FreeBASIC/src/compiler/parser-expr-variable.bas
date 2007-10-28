@@ -34,7 +34,7 @@ private function hCheckIndex _
 	) as ASTNODE ptr
 
 	'' if index isn't an integer, convert
-	select case as const astGetDataType( expr )
+	select case as const typeGet( astGetDataType( expr ) )
 	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
 
 	case FB_DATATYPE_POINTER
@@ -380,9 +380,9 @@ function cUdtMember _
 		byval varexpr as ASTNODE ptr, _
 		byval check_array as integer _
 	) as ASTNODE ptr
-
+	
 	'' note: assuming a pointer is being passed to this function
-	dim as integer is_ptr = TRUE
+	dim as integer is_ptr = TRUE, mask = iif( varexpr, typeGetConstMask( astGetFullType( varexpr ) ), 0 )
 
 	do
 		dim	as FBSYMBOL	ptr	fld	= hMemberId( subtype )
@@ -391,7 +391,7 @@ function cUdtMember _
 		end	if
 		
 		'' make sure the field inherits the parent's constant mask
-		symbGetFullType( fld ) or= typeGetConstMask( dtype )
+		symbGetFullType( fld ) or= mask
 		
 		select case	as const symbGetClass( fld )
 		'' const? (enum elmts too), exit

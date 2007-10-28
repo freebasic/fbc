@@ -1966,11 +1966,7 @@ function symbCheckConstAssign _
 		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
 			
 			'' unless it's a ptr to an any ptr
-			if( iif( typeIsPtr( rdtype ), _
-			         iif( typeGetDtAndPtrOnly( ldtype ) = typeAddrOf(FB_DATATYPE_VOID), _
-			              TRUE, _
-			              FALSE ), _
-			         FALSE ) = FALSE ) then
+			if( (typeGetDtAndPtrOnly( ldtype ) = typeAddrOf(FB_DATATYPE_VOID)) = FALSE ) then
 				exit function
 			end if
 		end if

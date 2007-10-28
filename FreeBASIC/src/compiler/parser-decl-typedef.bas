@@ -237,7 +237,7 @@ function cTypedefDecl _
 											FALSE )
 
 			if( sym <> NULL ) then
-				if( symbGetType( sym ) = dtype ) then
+				if( symbGetFullType( sym ) = dtype ) then
 					if( symbGetSubType( sym ) = subtype ) then
 						isdup = FALSE
 					end if

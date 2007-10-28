@@ -909,7 +909,7 @@ function rtlPrint _
 	else
 
 		'' UDT? try to convert to string with type casting op overloading
-		select case astGetDataType( expr )
+		select case typeGet( astGetDataType( expr ) )
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 			expr = astNewOvlCONV( FB_DATATYPE_STRING, NULL, expr )
 			if( expr = NULL ) then
@@ -917,7 +917,7 @@ function rtlPrint _
 			end if
 		end select
 
-		select case as const astGetDataType( expr )
+		select case as const typeGet( astGetDataType( expr ) )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTSTR )
@@ -1189,7 +1189,7 @@ function rtlWrite _
 			end if
 		end select
 
-		select case as const astGetDataType( expr )
+		select case as const typeGet( astGetDataType( expr ) )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			f = PROCLOOKUP( WRITESTR )
 

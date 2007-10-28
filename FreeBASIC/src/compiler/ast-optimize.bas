@@ -285,7 +285,7 @@ private function hPrepConst _
 	'' same? don't convert..
 	if( dtype = FB_DATATYPE_INVALID ) then
 		'' an ENUM or POINTER always has the precedence
-		select case astGetDataType( r )
+		select case typeGet( astGetDataType( r ) )
 		case FB_DATATYPE_ENUM, FB_DATATYPE_POINTER
 			return astGetFullType( r )
 		case else

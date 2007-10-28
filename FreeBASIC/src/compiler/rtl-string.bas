@@ -2642,7 +2642,7 @@ function rtlStrConcatAssign _
     proc = astNewCALL( PROCLOOKUP( STRCONCATASSIGN ) )
 
     ''
-   	ddtype = astGetFullType( dst )
+   	ddtype = astGetDataType( dst )
 
 	'' always calc len before pushing the param
 	lgt = rtlCalcStrLen( dst, ddtype )
@@ -2660,7 +2660,7 @@ function rtlStrConcatAssign _
     end if
 
    	'' always calc len before pushing the param
-   	sdtype = astGetFullType( src )
+   	sdtype = astGetDataType( src )
 	lgt = rtlCalcStrLen( src, sdtype )
 
 	'' src as any
@@ -2858,7 +2858,7 @@ function rtlStrAssign _
 	lgt = rtlCalcStrLen( dst, ddtype )
 
 	'' dst as any
-	if( astNewARG( proc, dst, astGetFullType( dst ) ) = NULL ) then
+	if( astNewARG( proc, dst, astGetDataType( dst ) ) = NULL ) then
     	exit function
     end if
 
@@ -2873,7 +2873,7 @@ function rtlStrAssign _
 	lgt = rtlCalcStrLen( src, sdtype )
 
 	'' src as any
-	if( astNewARG( proc, src, astGetFullType( src ) ) = NULL ) then
+	if( astNewARG( proc, src, astGetDataType( src ) ) = NULL ) then
     	exit function
     end if
 
