@@ -3554,7 +3554,7 @@ declare function SwapMouseButton (byval as BOOL) as BOOL
 declare function SwitchDesktop (byval as HDESK) as BOOL
 declare sub SwitchToThisWindow (byval as HWND, byval as BOOL)
 declare function TileWindows (byval as HWND, byval as UINT, byval as LPCRECT, byval as UINT, byval as HWND ptr) as WORD
-declare function ToAscii (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWORD, byval as UINT) as integer
+declare function ToAscii_ alias "ToAscii" (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWORD, byval as UINT) as integer
 declare function ToAsciiEx (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWORD, byval as UINT, byval as HKL) as integer
 declare function ToUnicode (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWSTR, byval as integer, byval as UINT) as integer
 declare function ToUnicodeEx (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWSTR, byval as integer, byval as UINT, byval as HKL) as integer
