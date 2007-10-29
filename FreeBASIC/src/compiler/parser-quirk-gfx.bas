@@ -1306,142 +1306,6 @@ function cGfxImageCreate( byref funcexpr as ASTNODE ptr ) as integer
 
 end function
 
-#define CHECK_CONST_ARG(res, exp_) _ 
-	res or= iif( exp_, typeIsConst( astGetFullType( exp_ ) ), FALSE )
-
-'':::::
-'' GfxGetMouse    =   GETMOUSE '(' Expr ',' Expr ( ',' Expr ( ',' Expr ( ',' Expr )? )? )? ')'
-''
-function cGfxGetMouse( byref funcexpr as ASTNODE ptr = NULL ) as integer
-	
-	dim as ASTNODE ptr x_expr, y_expr, w_expr, b_expr, c_expr
-	dim as integer paren = FALSE, has_const = FALSE
-	
-	function = FALSE
-	
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-		paren = TRUE
-		lexSkipToken( )
-	end if
-	
-	hMatchExpression( x_expr )
-	
-	hMatchCOMMA( )
-	
-	hMatchExpression( y_expr )
-	
-	if( hMatch( CHAR_COMMA ) ) then
-		hMatchExpression( w_expr )
-		if( hMatch( CHAR_COMMA ) ) then
-			hMatchExpression( b_expr )
-			if( hMatch( CHAR_COMMA ) ) then
-				hMatchExpression( c_expr )
-			end if
-		end if
-	end if
-	
-	if( paren ) then
-		hMatchRPRNT( )
-	end if
-	
-	CHECK_CONST_ARG( has_const, x_expr )
-	CHECK_CONST_ARG( has_const, y_expr )
-	CHECK_CONST_ARG( has_const, w_expr )
-	CHECK_CONST_ARG( has_const, b_expr )
-	CHECK_CONST_ARG( has_const, c_expr )
-	
-	if( has_const ) then
-		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-			exit function
-		end if
-	end if
-	
-	funcexpr = rtlGfxGetMouse( x_expr, y_expr, w_expr, b_expr, c_expr, paren )
-	function = (funcexpr <> 0)
-	
-end function
-
-'':::::
-'' GfxGetJoystick =   GETJOYSTICK '(' Expr ',' Expr ( ',' Expr ( ',' Expr ( ',' Expr  ( ',' Expr  ( ',' Expr  ( ',' Expr  ( ',' Expr  ( ',' Expr )? )? )? )? )? )? )? )? ')'
-''
-function cGfxGetJoystick( byref funcexpr as ASTNODE ptr = NULL ) as integer
-	
-	dim as ASTNODE ptr id_expr, b_expr, a_expr(7)
-	dim as integer paren = FALSE, has_const = FALSE
-	
-	function = FALSE
-	
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-		paren = TRUE
-		lexSkipToken( )
-	end if
-	
-	hMatchExpression( id_expr )
-	
-	if( hMatch( CHAR_COMMA ) ) then
-		hMatchExpression( b_expr )
-		for i as integer = 0 to 7
-			if( hMatch( CHAR_COMMA ) ) then
-				hMatchExpression( a_expr(i) )
-			end if
-		next
-	end if
-	
-	if( paren ) then
-		hMatchRPRNT( )
-	end if
-	
-	CHECK_CONST_ARG( has_const, id_expr )
-	CHECK_CONST_ARG( has_const, b_expr )
-	for i as integer = 0 to 7
-		CHECK_CONST_ARG( has_const, a_expr(i) )
-	next
-	
-	if( has_const ) then
-		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-			exit function
-		end if
-	end if
-	
-	funcexpr = rtlGfxGetJoystick( id_expr, b_expr, a_expr(), paren )
-	function = (funcexpr <> 0)
-	
-end function
-
-'':::::
-'' GfxEvent =   SCREENEVENT '(' (Expr)?  ')'
-''
-function cGfxEvent( byref funcexpr as ASTNODE ptr = NULL ) as integer
-	
-	dim as ASTNODE ptr e_expr = any
-	dim as integer paren = FALSE
-	
-	function = FALSE
-	
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-		paren = TRUE
-		lexSkipToken( )
-	end if
-	
-	hMatchExpression( e_expr )
-	
-	if( paren ) then
-		hMatchRPRNT( )
-	end if
-    
-    if( e_expr ) then
-		if( (typeGetConstMask( astGetDatatype( e_expr ) ) and (1 shl (FB_DT_CONSTPOS + 1))) ) then
-			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
-				exit function
-			end if
-		end if
-	end if
-	
-	funcexpr = rtlGfxEvent( e_expr, paren )
-	function = (funcexpr <> 0)
-	
-end function
-
 #define CHECK_CODEMASK( ) 												_
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then		:_
     	exit function													:_
@@ -1521,21 +1385,6 @@ function cGfxStmt _
 		lexSkipToken( )
 		function = cGfxScreenRes( )
 
-	case FB_TK_GETMOUSE
-		CHECK_CODEMASK( )
-		lexSkipToken( )
-		function = cGfxGetMouse( )
-
-	case FB_TK_GETJOYSTICK
-		CHECK_CODEMASK( )
-		lexSkipToken( )
-		function = cGfxGetJoystick( )
-
-	case FB_TK_SCREENEVENT
-		CHECK_CODEMASK( )
-		lexSkipToken( )
-		function = cGfxEvent( )
-
 	end select
 
 end function
@@ -1556,18 +1405,6 @@ function cGfxFunct _
 	case FB_TK_IMAGECREATE
 		lexSkipToken( )
 		cGfxImageCreate( expr )
-
-	case FB_TK_GETMOUSE
-		lexSkipToken( )
-		cGfxGetMouse( expr )
-
-	case FB_TK_GETJOYSTICK
-		lexSkipToken( )
-		cGfxGetJoystick( expr )
-
-	case FB_TK_SCREENEVENT
-		lexSkipToken( )
-		cGfxEvent( expr )
 
 	end select
 

@@ -770,25 +770,25 @@ declare function hPorts_cb _
 		), _
 		/' fb_GfxGetMouse ( byref x as integer, byref y as integer, byref z as integer, byref buttons as integer, byref clip as integer ) as integer '/ _
 		( _
-			@FB_RTL_GFXGETMOUSE, @"fb_GetMouse", _
+			@"getmouse", @"fb_GetMouse", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 			@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, FALSE _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, FALSE, 0, TRUE _
 				), _
 				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, FALSE _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, FALSE, 0, TRUE _
 				), _
 				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 				), _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 	 			), _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 				) _
 	 		} _
 		), _
@@ -819,40 +819,40 @@ declare function hPorts_cb _
 							   byref a7 as single = 0, byref a8 as single = 0 _
 							    ) as integer '/ _
 		( _
-			@FB_RTL_GFXGETJOYSTICK, @"fb_GfxGetJoystick", _
+			@"getjoystick", @"fb_GfxGetJoystick", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			10, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE, 0, TRUE _
 				), _
 				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 				), _
 				( _
-					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 				), _
 				( _
-					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 				), _
 				( _
-					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 				), _
 				( _
-					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 				), _
 				( _
-					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 				), _
 				( _
-					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 	 			), _
 				( _
-					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 				), _
 				( _
-					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 	 			) _
 	 		} _
 		), _
@@ -967,13 +967,13 @@ declare function hPorts_cb _
 	 	), _
 		/' fb_GfxEvent ( byval e as any ptr = NULL ) as integer '/ _
 		( _
-			@FB_RTL_GFXEVENT, @"fb_GfxEvent", _
+			@"screenevent", @"fb_GfxEvent", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0, TRUE _
 	 			) _
 	 		} _
 		), _
@@ -2770,98 +2770,5 @@ function rtlGfxImageCreate _
 
 	function = proc
 
-end function
-
-'':::::
-function rtlGfxGetMouse _
-	( _
-		byval x_expr as ASTNODE ptr, _
-		byval y_expr as ASTNODE ptr, _
-		byval w_expr as ASTNODE ptr, _
-		byval b_expr as ASTNODE ptr, _
-		byval c_expr as ASTNODE ptr, _
-		byval is_func as integer _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr proc = any
-	dim as FBSYMBOL ptr reslabel = any
-
-	function = NULL
-
-	proc = astBuildCall( PROCLOOKUP( GFXGETMOUSE ), 5, _ 
-	                     x_expr, y_expr, w_expr, b_expr, c_expr )	
-    ''
-    if( is_func = FALSE ) then
-	    if( env.clopt.resumeerr ) then
-	    	reslabel = symbAddLabel( NULL )
-	    	astAdd( astNewLABEL( reslabel ) )
-	    else
-	    	reslabel = NULL
-	    end if
-		function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-	else
-		function = proc
-	end if
-	
-end function
-
-'':::::
-function rtlGfxGetJoystick _
-	( _
-		byval id_expr as ASTNODE ptr, _
-		byval b_expr as ASTNODE ptr, _
-		a_expr() as ASTNODE ptr, _
-		byval is_func as integer _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr proc = any
-	dim as FBSYMBOL ptr reslabel = any
-
-	function = NULL
-
-	proc = astBuildCall( PROCLOOKUP( GFXGETMOUSE ), 5, _ 
-	                     id_expr, b_expr, a_expr(0), a_expr(1), a_expr(2), a_expr(3), _
-	                     a_expr(4), a_expr(5), a_expr(6), a_expr(7) )	
-    ''
-    if( is_func = FALSE ) then
-	    if( env.clopt.resumeerr ) then
-	    	reslabel = symbAddLabel( NULL )
-	    	astAdd( astNewLABEL( reslabel ) )
-	    else
-	    	reslabel = NULL
-	    end if
-		function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-	else
-		function = proc
-	end if
-	
-end function
-
-'':::::
-function rtlGfxEvent _
-	( _
-		byval e_expr as ASTNODE ptr, _
-		byval is_func as integer _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr proc = any
-	dim as FBSYMBOL ptr reslabel = any
-
-	function = NULL
-
-	proc = astBuildCall( PROCLOOKUP( GFXEVENT ), 1, e_expr )	
-    ''
-    if( is_func = FALSE ) then
-	    if( env.clopt.resumeerr ) then
-	    	reslabel = symbAddLabel( NULL )
-	    	astAdd( astNewLABEL( reslabel ) )
-	    else
-	    	reslabel = NULL
-	    end if
-		function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-	else
-		function = proc
-	end if
-	
 end function
 

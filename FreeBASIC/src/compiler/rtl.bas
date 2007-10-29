@@ -224,12 +224,16 @@ sub rtlAddIntrinsicProcs _
 					else
 						.dtype = typeAddrOf( FB_DATATYPE_VOID )
 					end if
-
-					symbAddProcParam( proc, _
-							  		  NULL, NULL, _
-							  	  	  .dtype, subtype, _
-							  	  	  lgt, .mode, _
-							  	  	  attrib, param_optval )
+					
+					var parm = symbAddProcParam( proc, _
+					                             NULL, NULL, _
+					                             .dtype, subtype, _
+					                             lgt, .mode, _
+					                             attrib, param_optval )
+					
+					if( .check_const ) then
+						symbSetIsRTLConst( parm )
+					end if
 
 				end with
 			next

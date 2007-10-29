@@ -1123,7 +1123,7 @@ function astNewARG _
 	end if
 
     '' check const arg to non-const non-byval param (if not rtl)
-    if( parent->call.isrtl = FALSE ) then
+    if( (symbGetIsRTL( sym ) = FALSE) or (symbGetIsRTLConst( param )) ) then
     	
     	'' but exclude instance pointers
     	if( (symbIsMethod( sym ) = FALSE) or (symbGetProcHeadParam( sym ) <> param) ) then

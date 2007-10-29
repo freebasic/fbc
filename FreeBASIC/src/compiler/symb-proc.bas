@@ -1667,6 +1667,7 @@ end function
 '':::::
 private function hCheckOvlParam _
 	( _
+		byval parent as FBSYMBOL ptr, _
 		byval param as FBSYMBOL ptr, _
 	  	byval arg_expr as ASTNODE ptr, _
 		byval arg_mode as integer _
@@ -1744,13 +1745,16 @@ private function hCheckOvlParam _
 			end if
 		end if
 
-		dim as integer const_matches = any
-		if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype, symbGetParamMode( param ), const_matches ) = FALSE ) then
-			return 0
-		else
-			if( const_matches ) then
-				dim as integer ptrcnt = typeGetPtrCnt( arg_dtype )
-				return (FB_OVLPROC_HALFMATCH / (ptrcnt+2)) * const_matches
+		'' if it's rtl, only if explicitly set
+	    if( (symbGetIsRTL( parent ) = FALSE) or (symbGetIsRTLConst( param )) ) then
+			dim as integer const_matches = any
+			if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype, symbGetParamMode( param ), const_matches ) = FALSE ) then
+				return 0
+			else
+				if( const_matches ) then
+					dim as integer ptrcnt = typeGetPtrCnt( arg_dtype )
+					return (FB_OVLPROC_HALFMATCH / (ptrcnt+2)) * const_matches
+				end if
 			end if
 		end if
 		
@@ -1871,7 +1875,7 @@ function symbFindClosestOvlProc _
 			arg = arg_head
 			for i = 0 to args-1
 
-				arg_matches = hCheckOvlParam( param, arg->expr, arg->mode )
+				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode )
 				if( arg_matches = 0 ) then
 					matches = 0
 					exit for
