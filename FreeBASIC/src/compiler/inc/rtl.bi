@@ -1563,20 +1563,23 @@ declare function rtlGfxGetMouse _
 		byval y_expr as ASTNODE ptr, _
 		byval w_expr as ASTNODE ptr, _
 		byval b_expr as ASTNODE ptr, _
-		byval c_expr as ASTNODE ptr _
-	) as integer
+		byval c_expr as ASTNODE ptr, _
+		byval is_func as integer _
+	) as ASTNODE ptr
 
 declare function rtlGfxGetJoystick _
 	( _
 		byval id_expr as ASTNODE ptr, _
 		byval b_expr as ASTNODE ptr, _
-		a_expr() as ASTNODE ptr _
-	) as integer
+		a_expr() as ASTNODE ptr, _
+		byval is_func as integer _
+	) as ASTNODE ptr
 
 declare function rtlGfxEvent _
 	( _
-		byval e_expr as ASTNODE ptr _
-	) as integer
+		byval e_expr as ASTNODE ptr, _
+		byval is_func as integer _
+	) as ASTNODE ptr
 
 declare function rtlProfileCall_mcount _
 	( _

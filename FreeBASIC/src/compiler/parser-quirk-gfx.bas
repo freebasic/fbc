@@ -1312,7 +1312,7 @@ end function
 '':::::
 '' GfxGetMouse    =   GETMOUSE '(' Expr ',' Expr ( ',' Expr ( ',' Expr ( ',' Expr )? )? )? ')'
 ''
-function cGfxGetMouse( ) as integer
+function cGfxGetMouse( byref funcexpr as ASTNODE ptr = NULL ) as integer
 	
 	dim as ASTNODE ptr x_expr, y_expr, w_expr, b_expr, c_expr
 	dim as integer paren = FALSE, has_const = FALSE
@@ -1356,14 +1356,15 @@ function cGfxGetMouse( ) as integer
 		end if
 	end if
 	
-	function = rtlGfxGetMouse( x_expr, y_expr, w_expr, b_expr, c_expr )
+	funcexpr = rtlGfxGetMouse( x_expr, y_expr, w_expr, b_expr, c_expr, paren )
+	function = (funcexpr <> 0)
 	
 end function
 
 '':::::
 '' GfxGetJoystick =   GETJOYSTICK '(' Expr ',' Expr ( ',' Expr ( ',' Expr ( ',' Expr  ( ',' Expr  ( ',' Expr  ( ',' Expr  ( ',' Expr  ( ',' Expr )? )? )? )? )? )? )? )? ')'
 ''
-function cGfxGetJoystick( ) as integer
+function cGfxGetJoystick( byref funcexpr as ASTNODE ptr = NULL ) as integer
 	
 	dim as ASTNODE ptr id_expr, b_expr, a_expr(7)
 	dim as integer paren = FALSE, has_const = FALSE
@@ -1402,14 +1403,15 @@ function cGfxGetJoystick( ) as integer
 		end if
 	end if
 	
-	function = rtlGfxGetJoystick( id_expr, b_expr, a_expr() )
+	funcexpr = rtlGfxGetJoystick( id_expr, b_expr, a_expr(), paren )
+	function = (funcexpr <> 0)
 	
 end function
 
 '':::::
 '' GfxEvent =   SCREENEVENT '(' (Expr)?  ')'
 ''
-function cGfxEvent( ) as integer
+function cGfxEvent( byref funcexpr as ASTNODE ptr = NULL ) as integer
 	
 	dim as ASTNODE ptr e_expr = any
 	dim as integer paren = FALSE
@@ -1435,7 +1437,8 @@ function cGfxEvent( ) as integer
 		end if
 	end if
 	
-	function = rtlGfxEvent( e_expr )
+	funcexpr = rtlGfxEvent( e_expr, paren )
+	function = (funcexpr <> 0)
 	
 end function
 
@@ -1553,6 +1556,18 @@ function cGfxFunct _
 	case FB_TK_IMAGECREATE
 		lexSkipToken( )
 		cGfxImageCreate( expr )
+
+	case FB_TK_GETMOUSE
+		lexSkipToken( )
+		cGfxGetMouse( expr )
+
+	case FB_TK_GETJOYSTICK
+		lexSkipToken( )
+		cGfxGetJoystick( expr )
+
+	case FB_TK_SCREENEVENT
+		lexSkipToken( )
+		cGfxEvent( expr )
 
 	end select
 

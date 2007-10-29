@@ -2779,8 +2779,9 @@ function rtlGfxGetMouse _
 		byval y_expr as ASTNODE ptr, _
 		byval w_expr as ASTNODE ptr, _
 		byval b_expr as ASTNODE ptr, _
-		byval c_expr as ASTNODE ptr _
-	) as integer
+		byval c_expr as ASTNODE ptr, _
+		byval is_func as integer _
+	) as ASTNODE ptr
 
 	dim as ASTNODE ptr proc = any
 	dim as FBSYMBOL ptr reslabel = any
@@ -2790,13 +2791,17 @@ function rtlGfxGetMouse _
 	proc = astBuildCall( PROCLOOKUP( GFXGETMOUSE ), 5, _ 
 	                     x_expr, y_expr, w_expr, b_expr, c_expr )	
     ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+    if( is_func = FALSE ) then
+	    if( env.clopt.resumeerr ) then
+	    	reslabel = symbAddLabel( NULL )
+	    	astAdd( astNewLABEL( reslabel ) )
+	    else
+	    	reslabel = NULL
+	    end if
+		function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
+	else
+		function = proc
+	end if
 	
 end function
 
@@ -2805,8 +2810,9 @@ function rtlGfxGetJoystick _
 	( _
 		byval id_expr as ASTNODE ptr, _
 		byval b_expr as ASTNODE ptr, _
-		a_expr() as ASTNODE ptr _
-	) as integer
+		a_expr() as ASTNODE ptr, _
+		byval is_func as integer _
+	) as ASTNODE ptr
 
 	dim as ASTNODE ptr proc = any
 	dim as FBSYMBOL ptr reslabel = any
@@ -2817,21 +2823,26 @@ function rtlGfxGetJoystick _
 	                     id_expr, b_expr, a_expr(0), a_expr(1), a_expr(2), a_expr(3), _
 	                     a_expr(4), a_expr(5), a_expr(6), a_expr(7) )	
     ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+    if( is_func = FALSE ) then
+	    if( env.clopt.resumeerr ) then
+	    	reslabel = symbAddLabel( NULL )
+	    	astAdd( astNewLABEL( reslabel ) )
+	    else
+	    	reslabel = NULL
+	    end if
+		function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
+	else
+		function = proc
+	end if
 	
 end function
 
 '':::::
 function rtlGfxEvent _
 	( _
-		byval e_expr as ASTNODE ptr _
-	) as integer
+		byval e_expr as ASTNODE ptr, _
+		byval is_func as integer _
+	) as ASTNODE ptr
 
 	dim as ASTNODE ptr proc = any
 	dim as FBSYMBOL ptr reslabel = any
@@ -2840,13 +2851,17 @@ function rtlGfxEvent _
 
 	proc = astBuildCall( PROCLOOKUP( GFXEVENT ), 1, e_expr )	
     ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+    if( is_func = FALSE ) then
+	    if( env.clopt.resumeerr ) then
+	    	reslabel = symbAddLabel( NULL )
+	    	astAdd( astNewLABEL( reslabel ) )
+	    else
+	    	reslabel = NULL
+	    end if
+		function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
+	else
+		function = proc
+	end if
 	
 end function
 
