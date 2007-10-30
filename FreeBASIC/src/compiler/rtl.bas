@@ -121,6 +121,8 @@ sub rtlAddIntrinsicProcs _
 		if( doadd ) then
 			if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
 				doadd = env.clopt.lang <> FB_LANG_QB
+			elseif( (procdef->options and FB_RTL_OPT_QBONLY) <> 0 ) then
+				doadd = ( env.clopt.lang = FB_LANG_QB )
 			end if
 		end if
 
@@ -406,6 +408,3 @@ function rtlCalcStrLen _
 	end select
 
 end function
-
-
-

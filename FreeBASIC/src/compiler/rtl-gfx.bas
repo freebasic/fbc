@@ -39,7 +39,7 @@ declare function hPorts_cb _
 	) as integer
 
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 56 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 58 ) = _
 	{ _
 		/' fb_GfxPset ( byref target as any, byval x as single, byval y as single, byval color as uinteger, _
 						byval coordType as integer, byval ispreset as integer ) as void '/ _
@@ -854,6 +854,30 @@ declare function hPorts_cb _
 				( _
 					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE _
 	 			) _
+	 		} _
+		), _
+		/' fb_GfxStickQB ( byval arg as integer ) as integer '/ _
+		( _
+			@"stick", @"fb_GfxStickQB", _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_QBONLY, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE, 0, TRUE _
+				) _
+	 		} _
+		), _
+		/' fb_GfxStrigQB ( byval arg as integer ) as integer '/ _
+		( _
+			@"strig", @"fb_GfxStrigQB", _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_QBONLY, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE, 0, TRUE _
+				) _
 	 		} _
 		), _
 		/' fb_GfxScreenInfo ( byref w as integer, byref h as integer, byref depth as integer, _

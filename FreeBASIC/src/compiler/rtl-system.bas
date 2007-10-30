@@ -28,7 +28,7 @@
 
 declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 49 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 46 ) = _
 	{ _
 		/' fb_CpuDetect ( ) as uinteger '/ _
 		( _
@@ -246,7 +246,19 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"sleep", @"fb_Sleep", _
 	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_OVER, _
+	 		@rtlMultinput_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+	 		1, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 			) _
+	 		} _
+	 	), _
+		/' sleep ( byval secs as integer ) as void '/ _
+		( _
+			@"sleep", @"fb_SleepQB", _
+	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		@rtlMultinput_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_QBONLY, _
 	 		1, _
 	 		{ _
 	 			( _
@@ -562,7 +574,6 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		NULL _
 	 	) _
 	 }
-
 
 '':::::
 sub rtlSystemModInit( )

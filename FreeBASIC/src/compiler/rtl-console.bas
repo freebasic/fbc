@@ -31,7 +31,7 @@
 #define FB_COLOR_BG_DEFAULT		&h00000002
 
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 15 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 16 ) = _
 	{ _
 		/' fb_ConsoleView ( byval toprow as integer = 0, _
 							byval botrow as integer = 0 ) as void '/ _
@@ -200,7 +200,14 @@
 		( _
 			@"inkey", @"fb_Inkey", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_STRSUFFIX, _
+	 		@rtlMultinput_cb, FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_NOQB, _
+	 		0 _
+		), _
+		/' inkey ( ) as string '/ _
+		( _
+			@"inkey", @"fb_InkeyQB", _
+	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+	 		@rtlMultinput_cb, FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_QBONLY, _
 	 		0 _
 		), _
 		/' getkey ( ) as integer '/ _
