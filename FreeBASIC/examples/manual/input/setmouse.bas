@@ -6,6 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSetmouse
 '' --------
 
+#include "fbgfx.bi"
 Dim x As Integer, y As Integer, buttons As Integer
 
 ' create a screen 800x600, 32-bit color, 1 video page
@@ -15,10 +16,10 @@ Do
 	' get mouse x, y and button state
 	GetMouse x, y , , buttons                     
 
-	If buttons = 1 Then 
-		' on left mouse click, center mouse
-		SetMouse 400, 300
+	If buttons = 1 Then
+	    ' on left mouse click, center mouse
+	    SetMouse 400, 300
 	End If
 
 	' do loop until esc is pressed
-Loop Until MultiKey(1)                                  
+Loop Until MultiKey(fb.SC_ESCAPE)                             
