@@ -30,13 +30,12 @@
  */
 
 /*
- * file_openqb - QB compatible INKEY
+ * InkeyQB - QB compatible INKEY
  *
  * chng: oct/2007 written [jeffm]
  *
  */
 
-#include <string.h>
 #include "fb.h"
 
 /*:::::*/

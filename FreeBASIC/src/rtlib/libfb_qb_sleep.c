@@ -30,7 +30,7 @@
  */
 
 /*
- * file_openqb - QB compatible SLEEP
+ * SleepQB - QB compatible SLEEP
  *
  * chng: oct/2007 written [jeffm]
  *
