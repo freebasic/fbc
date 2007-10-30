@@ -30,20 +30,30 @@
  */
 
 /*
- * compat_hsleep.c -- Redirects calls to fb_hSleep to fb_Delay
+ * file_openqb - QB compatible INKEY
  *
- * chng: oct/2005 written [mjs]
+ * chng: oct/2007 written [jeffm]
  *
  */
 
+#include <string.h>
 #include "fb.h"
 
-/* This is a very bad quirk to keep compatibility with older sources that
- * rely on this function. However, this function was meant to be a HELPER
- * function and should never be used outside this library ...
- */
-void fb_hSleep ( int msecs )
+/*:::::*/
+FBCALL FBSTRING *fb_InkeyQB( void )
 {
-    fb_Delay( msecs );
-}
+	FBSTRING *res = fb_Inkey();
+	
+	FB_LOCK();
+	
+	if( res && res->data 
+		&& ( FB_STRSIZE(res) == 2 ) 
+		&& ( res->data[0] == FB_EXT_CHAR ) )
+	{
+		res->data[0] = 0;
+	}
 
+	FB_UNLOCK();
+	
+	return res;
+}
