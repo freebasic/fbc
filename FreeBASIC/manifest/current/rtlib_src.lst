@@ -116,7 +116,6 @@ src/rtlib/libfb_array_tmpdesc.c
 src/rtlib/libfb_array_ubound.c
 src/rtlib/libfb_assert.c
 src/rtlib/libfb_assert_wstr.c
-src/rtlib/libfb_compat_hsleep.c
 src/rtlib/libfb_con_lineinp.c
 src/rtlib/libfb_con_lineinp_wstr.c
 src/rtlib/libfb_con_locate.c
@@ -231,7 +230,6 @@ src/rtlib/libfb_file_openencod.c
 src/rtlib/libfb_file_openerr.c
 src/rtlib/libfb_file_openlpt.c
 src/rtlib/libfb_file_openpipe.c
-src/rtlib/libfb_file_openqb.c
 src/rtlib/libfb_file_openscrn.c
 src/rtlib/libfb_file_openshort.c
 src/rtlib/libfb_file_print.c
@@ -322,6 +320,9 @@ src/rtlib/libfb_math_fix.c
 src/rtlib/libfb_math_rnd.c
 src/rtlib/libfb_math_sgn.c
 src/rtlib/libfb_mem_copyclear.c
+src/rtlib/libfb_qb_file_open.c
+src/rtlib/libfb_qb_inkey.c
+src/rtlib/libfb_qb_sleep.c
 src/rtlib/libfb_signals.c
 src/rtlib/libfb_str_asc.c
 src/rtlib/libfb_str_assign.c
@@ -622,7 +623,6 @@ src/rtlib/win32/portio/sources
 src/rtlib/win32/portio/writedriver.c
 src/rtlib/x86/fb_x86.h
 src/rtlib/x86/libfb_cpudetect_x86.s
-src/rtlib/x86/libfb_str_ftoa_x86.s
 src/rtlib/xbox/README.txt
 src/rtlib/xbox/fb_xbox.h
 src/rtlib/xbox/libfb_alloca.s

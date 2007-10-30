@@ -94,6 +94,7 @@ src/gfxlib2/libfb_gfx_screenlist.c
 src/gfxlib2/libfb_gfx_setmouse.c
 src/gfxlib2/libfb_gfx_sleep.c
 src/gfxlib2/libfb_gfx_softcursor.c
+src/gfxlib2/libfb_gfx_stick.c
 src/gfxlib2/libfb_gfx_vars.c
 src/gfxlib2/libfb_gfx_vgaemu.c
 src/gfxlib2/libfb_gfx_view.c

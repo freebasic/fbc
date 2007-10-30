@@ -118,9 +118,9 @@ examples/libraries/regex/CRegex/CRegex.bi
 examples/libraries/regex/CRegex/test.bas
 examples/libraries/regex/CRegex/test.txt
 examples/libraries/regex/pcre_demo.bas
+examples/libraries/regex/preg_class.bas
 examples/libraries/regex/printmatches.bas
 examples/libraries/regex/regex_replace.bas
-examples/libraries/regex/regex_replace2.bas
 examples/libraries/regex/subexpr.bas
 examples/libraries/sound/bass_test.bas
 examples/libraries/sound/bassmod_test.bas
@@ -436,6 +436,8 @@ examples/manual/input/getmouse.bas
 examples/manual/input/inkey.bas
 examples/manual/input/multikey.bas
 examples/manual/input/setmouse.bas
+examples/manual/input/stick.bas
+examples/manual/input/strig.bas
 examples/manual/math/abs.bas
 examples/manual/math/acos.bas
 examples/manual/math/asin.bas
