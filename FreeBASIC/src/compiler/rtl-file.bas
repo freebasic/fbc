@@ -27,7 +27,7 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 63 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 64 ) = _
 	{ _
 		/' fb_FileOpen( byref s as string, byval mode as integer, byval access as integer,
 				        byval lock as integer, byval filenum as integer, _
@@ -1093,8 +1093,20 @@
 		( _
 			@"reset", @"fb_FileReset", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_OVER, _
 			0 _
+		), _
+		/' reset ( byval streamno as integer ) as void '/ _
+		( _
+			@"reset", @"fb_FileResetEx", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_OVER, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
 		), _
 		/' lof ( byval filenum as integer ) as longint '/ _
 		( _

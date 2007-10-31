@@ -161,6 +161,7 @@ FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
        void fb_hConsolePutBackEvents    ( void );
 
        HANDLE fb_hConsoleGetHandle		( int is_input );
+       void   fb_hConsoleResetHandles	( void );
 
 #define FB_CONSOLE_WINDOW_EMPTY() \
     ((__fb_con.window.Left==__fb_con.window.Right) \

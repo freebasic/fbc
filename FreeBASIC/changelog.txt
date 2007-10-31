@@ -6,11 +6,12 @@ Version 0.18.3 Beta:
 - lang qb: symbols with the same name as keywords are now allowed: dim left as integer: const dim$ = "" etc (v1c)
 - lang qb: all data types and functions/keywords not present in QuickBASIC were removed (v1c)
 - allow "3.6e-08f" notation (type specification is accepted after 'e') (cha0s)
-- lang qb: SLEEP(n) expects seconds (jeffm)
-- lang qb: INKEY$ returns CHR$(0) as the extended character (jeffm)
+- lang qb: SLEEP(n) expects seconds (feature request #1718012) (jeffm)
+- lang qb: INKEY$ returns CHR$(0) as the extended character (feature request #1718012) (jeffm)
 
 [added]
 - lang qb: STICK(n) and STRIG(n) functions (jeffm)
+- RESET(0|1) procedure to reset stdio handles after redirection (jeffm)
 
 [fixed]
 - GOTO, GOSUB and RETURN were accepting invalid labels (v1c)
