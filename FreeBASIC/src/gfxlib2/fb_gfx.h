@@ -623,6 +623,10 @@ extern FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal);
 extern FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *pal);
 extern FBCALL void *fb_GfxGetGLProcAddress(const char *proc);
 
+/* Public API - QB compatibility*/
+extern FBCALL int fb_GfxStickQB( int n );
+extern FBCALL int fb_GfxStrigQB( int n );
+
 
 /* Runtime library hooks */
 int fb_GfxGetkey(void);

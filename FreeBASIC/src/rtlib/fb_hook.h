@@ -37,6 +37,7 @@ typedef int         (*FB_GETKEYPROC)    ( void );
 typedef int         (*FB_KEYHITPROC)    ( void );
 
 FBCALL FBSTRING    *fb_Inkey            ( void );
+FBCALL FBSTRING    *fb_InkeyQB          ( void );
 FBCALL int          fb_Getkey           ( void );
 FBCALL int          fb_KeyHit           ( void );
 
@@ -106,6 +107,7 @@ typedef int         (*FB_INPROC)        ( unsigned short port );
 typedef int         (*FB_OUTPROC)       ( unsigned short port, unsigned char value );
 
 FBCALL void         fb_Sleep            ( int msecs );
+FBCALL void         fb_SleepQB          ( int secs );
 FBCALL void         fb_Delay            ( int msecs );
 FBCALL int          fb_SleepEx          ( int msecs, int kind );
 typedef void        (*FB_SLEEPPROC)     ( int msecs );
