@@ -482,6 +482,13 @@ private function hDeclDynArray _
 
     '' any variable already defined?
     if( sym <> NULL ) then
+    	
+    	'' array in a udt?
+    	if( symbIsField( sym ) ) then
+    		errReportEx( FB_ERRMSG_CANTREDIMARRAYFIELDS, *id )
+    		exit function
+    	end if
+    	
    		'' typeless REDIM's?
    		if( is_typeless ) then
    			dtype = symbGetType( sym )
@@ -831,16 +838,17 @@ private function hVarInit _
 	'' default initialization
 	case else
 		
-		if( typeIsConst( symbGetFullType( sym ) ) ) then
-			if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				return astNewCONSTi( 0 )
-			end if
-		end if
-		
     	if( sym <> NULL ) then
+    		
+			if( typeIsConst( symbGetFullType( sym ) ) ) then
+				if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					return astNewCONSTi( 0 )
+				end if
+			end if
+			
     		'' ctor?
     		if( has_defctor ) then
 				'' not already declared, extern, common or dynamic?
