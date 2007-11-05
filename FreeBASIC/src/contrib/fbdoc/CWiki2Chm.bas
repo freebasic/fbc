@@ -47,6 +47,7 @@ namespace fb.fbdoc
 		as zstring ptr outputdir
 		as CPageList ptr paglist
 		as CPageList ptr toclist
+		as CPageList ptr lnklist
 		as CWakka2Html ptr converter
 		as CWiki ptr wiki
 	end type
@@ -58,7 +59,8 @@ namespace fb.fbdoc
 			byval indentbase as integer, _
 			byval outputdir as zstring ptr, _
 			byval paglist as CPageList ptr, _
-			byval toclist as CPageList ptr _
+			byval toclist as CPageList ptr, _
+			byval lnklist as CPageList ptr _
 		)
 
 		ctx = new CWiki2ChmCtx
@@ -69,6 +71,7 @@ namespace fb.fbdoc
 		ZSet @ctx->outputdir, outputdir
 		ctx->paglist = paglist
 		ctx->toclist = toclist
+		ctx->lnklist = lnklist
 		ctx->converter = NULL
 		'' ctx->converter = new CWakka2Html
 		ctx->wiki = new CWiki
@@ -357,17 +360,17 @@ namespace fb.fbdoc
 
 		function = FALSE
 
-		page = ctx->paglist->NewEnum( @page_i )
+		page = ctx->lnklist->NewEnum( @page_i )
 		while( page )
 
-			If( page->GetEmitted() ) then
+			'' If( page->GetEmitted() ) then
 				sBodyHtml +=  "<li><object type=""text/sitemap"">"
 				sBodyHtml +=  "<param name=""Name"" value=""" + page->GetFormattedTitle() + """>"
 				sBodyHtml +=  "<param name=""Local"" value=""" + page->GetName() + ".html"">"
 				sBodyHtml +=  "</object>" + crlf
-			end if
+			'' end if
 
-			page = ctx->paglist->NextEnum( @page_i )
+			page = ctx->lnklist->NextEnum( @page_i )
 		wend
 
 		sHtml = Templates.Get("chm_idx")

@@ -303,7 +303,7 @@ const default_TocPage = "DocToc"
 	end if
 
 	
-	dim as CPageList ptr paglist, toclist
+	dim as CPageList ptr paglist, toclist, lnklist
 
 	if( webPageCount > 0 ) then
 		dim as integer i
@@ -323,7 +323,7 @@ const default_TocPage = "DocToc"
 		sDocToc = sTocPage
 		sTocTitle = Lang.GetOption( "fb_toc_title", "Table of Contents" )
 
-		FBDoc_BuildTOC( sDocToc, sTocTitle, @paglist, @toclist )
+		FBDoc_BuildTOC( sDocToc, sTocTitle, @paglist, @toclist, @lnklist )
 
 	end if
 
@@ -357,7 +357,7 @@ const default_TocPage = "DocToc"
 		Templates.LoadFile( "chm_doctoc", sTemplateDir + "chm_doctoc.tpl.html" )
 
 		dim as CWiki2Chm ptr chm
-		chm = new CWiki2Chm( @"", 1, sOutputDir, paglist, toclist )
+		chm = new CWiki2Chm( @"", 1, sOutputDir, paglist, toclist, lnklist )
 		chm->Emit()
 		delete chm
 
@@ -395,6 +395,7 @@ const default_TocPage = "DocToc"
 
 	end if
 
+	delete lnklist
 	delete toclist
 	delete paglist
 

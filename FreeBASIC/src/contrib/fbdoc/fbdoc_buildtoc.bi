@@ -29,7 +29,8 @@ namespace fb.fbdoc
 			byval tocpagename as zstring ptr, _
 			byval tocpagetitle as zstring ptr, _
 			byval paglist as CPageList ptr ptr, _
-			byval toclist as CPageList ptr ptr _
+			byval toclist as CPageList ptr ptr, _
+			byval lnklist as CPageList ptr ptr _
 		) as integer
 
 	declare function FBDoc_BuildSinglePage _

@@ -36,7 +36,8 @@ namespace fb.fbdoc
 				byval indentbase as integer, _
 				byval outputdir as zstring ptr, _
 				byval paglist as CPageList ptr, _
-				byval toclist as CPageList ptr _
+				byval toclist as CPageList ptr, _
+				byval lnklist as CPageList ptr _
 			)
 
 		declare destructor _

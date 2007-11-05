@@ -164,14 +164,15 @@ namespace fb.fbdoc
 			byval page as CPage ptr, _
 			byval startlevel as integer, _
 			byval toclist as CPageList ptr, _
-			byval paglist as CPageList ptr _
+			byval paglist as CPageList ptr, _
+			byval lnklist as CPageList ptr _
 		)
 
 		dim as CPage ptr newpage, prevpage
 		dim as string sBody, sPageName, sTitle
 		dim as CList ptr lst
 		dim as PageLinkItem ptr pagelink
-		dim as integer bAddPage, bFollowPage
+		dim as integer bAddPage, bFollowPage, bAddLink
 
 		if( page = NULL ) then
 			exit sub
@@ -205,6 +206,7 @@ namespace fb.fbdoc
 		do while( pagelink <> NULL )
 				
 			bAddPage = FALSE
+			bAddLink = FALSE
 			bFollowPage = FALSE
 
 			'' Only {{fbdoc item="sect|subsect"}} links are used as branches in TOC
@@ -218,6 +220,7 @@ namespace fb.fbdoc
 				if( IsInternalURL( pagelink->url ) ) then
 
 					bAddPage = TRUE
+					bAddLink = TRUE
 
 					'' Only special named TOC pages are followed
 					if( IsTOCPage(pagelink->url) ) then
@@ -225,35 +228,31 @@ namespace fb.fbdoc
 					end if
 				end if
 
-			case else
+			case WIKI_PAGELINK_CLASS_DEFAULT
 
-/'
-				'' Special case - remove after DocToc and CatPg* links use {{fbdoc item="keyword" ...}}
+				if( IsInternalURL( pagelink->url ) ) then
 
-				if( (lcase(sPageName) = "doctoc") _
-					or (lcase(sPageName) = "catpgprogrammer") ) then
+					bAddLink = TRUE
 
-					bAddPage = TRUE
-					bFollowPage = TRUE
-
-				else
-
-					'' Only internal pages can be TOC nodes
-					if( IsInternalURL( pagelink->url ) ) then
-
-						bAddPage = TRUE
-
-						'' Only special named TOC pages are followed
-						if( IsTOCPage(pagelink->url) ) then
-							bFollowPage = TRUE
-						end if
-					end if
 				end if
-'/
+
 
 			end select
 
+			''
+			if( bAddLink ) then
+
+				newpage = lnklist->AddNewPage( _
+					pagelink->url, _
+					pagelink->text, _
+					0, TRUE )
+			
+			end if
+
+			''
 			if( bAddPage ) then
+
+				'' Add it to the TOC list
 				newpage = toclist->AddNewPage( _
 					pagelink->url, _
 					pagelink->text, _
@@ -263,7 +262,7 @@ namespace fb.fbdoc
 					' Only follow links that will be later emitted
 					prevpage = paglist->Find( pagelink->url )
 					if( prevpage ) then
-						_BuildTOCFromPage( prevpage, startlevel + pagelink->level + 1, toclist, paglist )
+						_BuildTOCFromPage( prevpage, startlevel + pagelink->level + 1, toclist, paglist, lnklist )
 					end if
 				end if
 			end if
@@ -280,7 +279,8 @@ namespace fb.fbdoc
 			byval toc_pagename as zstring ptr, _
 			byval toc_pagetitle as zstring ptr, _
 			byval paglist as CPageList ptr ptr, _
-			byval toclist as CPageList ptr ptr _
+			byval toclist as CPageList ptr ptr, _
+			byval lnklist as CPageList ptr ptr _
 		) as integer
 
 		dim as CPage ptr page
@@ -294,17 +294,30 @@ namespace fb.fbdoc
 			return FALSE
 		end if
 
-		*paglist = new CPageList
-
-		if( *paglist = NULL ) then
+		if( lnklist = NULL ) then
 			return FALSE
 		end if
 
+		*paglist = new CPageList
 		*toclist = new CPageList
+		*lnklist = new CPageList
 
-		if( *toclist = NULL ) then
-			delete *paglist
-			*paglist = NULL
+		if( *paglist = NULL or *toclist = NULL or *lnklist = NULL ) then
+			if( *paglist ) then
+				delete *paglist
+				*paglist = NULL
+			end if
+
+			if( *toclist ) then
+				delete *toclist
+				*toclist = NULL
+			end if
+
+			if( *lnklist ) then
+				delete *lnklist
+				*lnklist = NULL
+			end if
+
 			return FALSE
 		end if
 
@@ -323,7 +336,7 @@ namespace fb.fbdoc
 
 		'' Build a list of pages as they will appear in the TOC
 		page = (*toclist)->AddNewPage( toc_pagename, toc_pagetitle, 0, TRUE )
-		_BuildTOCFromPage( page, 1, *toclist, *paglist )
+		_BuildTOCFromPage( page, 1, *toclist, *paglist, *lnklist )
 
 		delete wiki
 		wiki = NULL
