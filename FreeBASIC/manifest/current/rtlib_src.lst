@@ -31,6 +31,7 @@ src/rtlib/dos/libfb_farmemset.c
 src/rtlib/dos/libfb_file_dir.c
 src/rtlib/dos/libfb_file_hconvpath.c
 src/rtlib/dos/libfb_file_hlock.c
+src/rtlib/dos/libfb_file_resetex.c
 src/rtlib/dos/libfb_hexit.c
 src/rtlib/dos/libfb_hinit.c
 src/rtlib/dos/libfb_hsignals.c
@@ -507,6 +508,7 @@ src/rtlib/unix/libfb_drv_intl_getweekdayname.c
 src/rtlib/unix/libfb_file_dir.c
 src/rtlib/unix/libfb_file_hconvpath.c
 src/rtlib/unix/libfb_file_hlock.c
+src/rtlib/unix/libfb_file_resetex.c
 src/rtlib/unix/libfb_hdynload.c
 src/rtlib/unix/libfb_hsignals.c
 src/rtlib/unix/libfb_io_cls.c
@@ -554,6 +556,7 @@ src/rtlib/win32/libfb_drv_intl_getweekdayname.c
 src/rtlib/win32/libfb_file_dir.c
 src/rtlib/win32/libfb_file_hconvpath.c
 src/rtlib/win32/libfb_file_hlock.c
+src/rtlib/win32/libfb_file_resetex.c
 src/rtlib/win32/libfb_hdynload.c
 src/rtlib/win32/libfb_hexit.c
 src/rtlib/win32/libfb_hinit.c
