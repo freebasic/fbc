@@ -6,26 +6,18 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCallocate
 '' --------
 
-' Create an integer pointer.
-Dim p As Integer Ptr
-Dim fill_p As Integer
-Dim show_p As Integer
+' Allocate and initialize space for 10 integer elements.
+Dim p As Integer Ptr = CAllocate(10, SizeOf(Integer))
 
-' Allocate cleared space for 10 integers.
-p = CAllocate(10, Len(Integer))
-
-' Fill the array with numbers.
-For fill_p = 0 To 9
-  p[fill_p] = fill_p
+' Fill the memory with integer values.
+For index As Integer = 0 To 9
+	p[index] = (index + 1) * 10
 Next
 
-' Display the values.
-For show_p = 0 To 9
-  Print p[show_p]
+' Display the integer values.
+For index As Integer = 0 To 9
+	Print p[index] ;
 Next
 
-' Await a keypress.
-Sleep
-
-' Exit program.
-End
+' Free the memory.
+Deallocate(p)
