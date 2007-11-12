@@ -171,8 +171,10 @@ private function hFindId_QB _
 	          		case else
 	          			is_match = FALSE
 	          		end select
+
 	          	else
 	          		is_match = (symbGetType( sym ) = suffix)
+
 	          	end if
 
     			if( is_match ) then
@@ -194,6 +196,21 @@ private function hFindId_QB _
   						return cQuirkFunction( sym )
 
 					end select
+
+				else
+
+					'' Special case for INPUT$()
+					if( symbGetClass( sym ) = FB_SYMBCLASS_KEYWORD ) then
+						if( sym->key.id = FB_TK_INPUT ) then
+
+							if( suffix = FB_DATATYPE_STRING ) then
+								return cQuirkFunction( sym )
+							end if
+
+						end if
+
+					end if
+
 				end if
 
 				sym = sym->hash.next
