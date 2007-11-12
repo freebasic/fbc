@@ -50,7 +50,7 @@ End Property
 Dim As BitNum Foo
 
 
-Print "Testing property indexing with datatypes:"
+Print "Testing property indexing with data types:"
 Print "FOO Number's Value: " & Foo.Num
 
   '' Set the bit in the number as true.

@@ -15,7 +15,7 @@ Dim hndl As Any Ptr
 
 hndl=DyLibLoad("mydll.dll")
 
-'' find the proc address (case matters!)
+'' find the procedure address (case matters!)
 AddNumbers = DyLibSymbol( hndl, "AddNumbers" )
 
 '' then call it..

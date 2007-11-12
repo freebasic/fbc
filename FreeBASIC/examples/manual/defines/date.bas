@@ -6,4 +6,4 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDddate
 '' --------
 
-Print "CompileDate: ";__DATE__
+Print "Compile Date: ";__DATE__

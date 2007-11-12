@@ -6,6 +6,6 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDdFBMinVersion
 '' --------
 
-#if Not __FB_MIN_VERSION__(0, 17, 0)
-  #error fbc must be at least version 0.17 To compiler This module
+#if Not __FB_MIN_VERSION__(0, 18, 2)
+ 	#error fbc must be at least version 0.18.2 To compile This module
 #endif

@@ -16,7 +16,7 @@ ScreenInfo w, h, depth,,,,driver_name
 Print Str(w) + "x" + Str(h) + "x" + Str(depth); 
 Print " using " + driver_name + " driver" 
 Sleep 
-' Quit gfx mode and obtain info about desktop 
+' Quit graphics mode and obtain info about desktop 
 Screen 0 
 ScreenInfo w, h, depth 
 Print "Desktop running at " + Str(w) + "x" + Str(h) + "x" + Str(depth); 

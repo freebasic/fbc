@@ -19,4 +19,3 @@ With the_rectangle
 	.x = 234 * t + 48 + .y
 	.y = 321 * t + 2
 End With
-

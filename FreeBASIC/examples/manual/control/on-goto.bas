@@ -6,9 +6,6 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOngoto
 '' --------
 
-'' Compile with -lang deprecated or qb
-
-choice = 3
 On choice Goto labela, labelb, labelc
 
 labela:

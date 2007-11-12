@@ -24,5 +24,3 @@ Dim c As Single
 #if defined(d)
  Print "d is defined"
 #endif
-
-
