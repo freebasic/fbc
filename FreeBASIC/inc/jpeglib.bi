@@ -14,8 +14,6 @@
 
 #include once "crt/stdio.bi"
 
-type UBOOL as ubyte
-
 '' begin include from jmorecfg.bi
 #define BITS_IN_JSAMPLE 8
 #define MAX_COMPONENTS 10
@@ -31,6 +29,12 @@ type UINT8 as ubyte
 type UINT16 as ushort
 type INT16 as short
 type JDIMENSION as uinteger
+
+#ifdef __FB_WIN32__
+type boolean as ubyte
+#else
+type boolean as integer
+#endif
 
 #define JPEG_MAX_DIMENSION 65500L
 #define FALSE 0
@@ -59,13 +63,13 @@ type JCOEFPTR as JCOEF ptr
 
 type JQUANT_TBL
 	quantval(0 to 64-1) as UINT16
-	sent_table as UBOOL
+	sent_table as boolean
 end type
 
 type JHUFF_TBL
 	bits(0 to 17-1) as UINT8
 	huffval(0 to 256-1) as UINT8
-	sent_table as UBOOL
+	sent_table as boolean
 end type
 
 type jpeg_component_info
@@ -81,7 +85,7 @@ type jpeg_component_info
 	DCT_scaled_size as integer
 	downsampled_width as JDIMENSION
 	downsampled_height as JDIMENSION
-	component_needed as UBOOL
+	component_needed as boolean
 	MCU_width as integer
 	MCU_height as integer
 	MCU_blocks as integer
@@ -143,7 +147,7 @@ type jpeg_common_struct
 	mem as jpeg_memory_mgr_ ptr
 	progress as jpeg_progress_mgr_ ptr
 	client_data as any ptr
-	is_decompressor as UBOOL
+	is_decompressor as boolean
 	global_state as integer
 end type
 
@@ -168,7 +172,7 @@ type jpeg_compress_struct
 	mem as jpeg_memory_mgr_ ptr
 	progress as jpeg_progress_mgr_ ptr
 	client_data as any ptr
-	is_decompressor as UBOOL
+	is_decompressor as boolean
 	global_state as integer
 	dest as jpeg_destination_mgr_ ptr
 	image_width as JDIMENSION
@@ -188,23 +192,23 @@ type jpeg_compress_struct
 	arith_ac_K(0 to 16-1) as UINT8
 	num_scans as integer
 	scan_info as jpeg_scan_info ptr
-	raw_data_in as UBOOL
-	arith_code as UBOOL
-	optimize_coding as UBOOL
-	CCIR601_sampling as UBOOL
+	raw_data_in as boolean
+	arith_code as boolean
+	optimize_coding as boolean
+	CCIR601_sampling as boolean
 	smoothing_factor as integer
 	dct_method as J_DCT_METHOD
 	restart_interval as uinteger
 	restart_in_rows as integer
-	write_JFIF_header as UBOOL
+	write_JFIF_header as boolean
 	JFIF_major_version as UINT8
 	JFIF_minor_version as UINT8
 	density_unit as UINT8
 	X_density as UINT16
 	Y_density as UINT16
-	write_Adobe_marker as UBOOL
+	write_Adobe_marker as boolean
 	next_scanline as JDIMENSION
-	progressive_mode as UBOOL
+	progressive_mode as boolean
 	max_h_samp_factor as integer
 	max_v_samp_factor as integer
 	total_iMCU_rows as JDIMENSION
@@ -250,7 +254,7 @@ type jpeg_decompress_struct
 	mem as jpeg_memory_mgr_ ptr
 	progress as jpeg_progress_mgr_ ptr
 	client_data as any ptr
-	is_decompressor as UBOOL
+	is_decompressor as boolean
 	global_state as integer
 	src as jpeg_source_mgr_ ptr
 	image_width as JDIMENSION
@@ -261,18 +265,18 @@ type jpeg_decompress_struct
 	scale_num as uinteger
 	scale_denom as uinteger
 	output_gamma as double
-	buffered_image as UBOOL
-	raw_data_out as UBOOL
+	buffered_image as boolean
+	raw_data_out as boolean
 	dct_method as J_DCT_METHOD
-	do_fancy_upsampling as UBOOL
-	do_block_smoothing as UBOOL
-	quantize_colors as UBOOL
+	do_fancy_upsampling as boolean
+	do_block_smoothing as boolean
+	quantize_colors as boolean
 	dither_mode as J_DITHER_MODE
-	two_pass_quantize as UBOOL
+	two_pass_quantize as boolean
 	desired_number_of_colors as integer
-	enable_1pass_quant as UBOOL
-	enable_external_quant as UBOOL
-	enable_2pass_quant as UBOOL
+	enable_1pass_quant as boolean
+	enable_external_quant as boolean
+	enable_2pass_quant as boolean
 	output_width as JDIMENSION
 	output_height as JDIMENSION
 	out_color_components as integer
@@ -291,21 +295,21 @@ type jpeg_decompress_struct
 	ac_huff_tbl_ptrs(0 to 4-1) as JHUFF_TBL ptr
 	data_precision as integer
 	comp_info as jpeg_component_info ptr
-	progressive_mode as UBOOL
-	arith_code as UBOOL
+	progressive_mode as boolean
+	arith_code as boolean
 	arith_dc_L(0 to 16-1) as UINT8
 	arith_dc_U(0 to 16-1) as UINT8
 	arith_ac_K(0 to 16-1) as UINT8
 	restart_interval as uinteger
-	saw_JFIF_marker as UBOOL
+	saw_JFIF_marker as boolean
 	JFIF_major_version as UINT8
 	JFIF_minor_version as UINT8
 	density_unit as UINT8
 	X_density as UINT16
 	Y_density as UINT16
-	saw_Adobe_marker as UBOOL
+	saw_Adobe_marker as boolean
 	Adobe_transform as UINT8
-	CCIR601_sampling as UBOOL
+	CCIR601_sampling as boolean
 	marker_list as jpeg_saved_marker_ptr
 	max_h_samp_factor as integer
 	max_v_samp_factor as integer
@@ -375,7 +379,7 @@ type jpeg_destination_mgr
 	next_output_byte as JOCTET ptr
 	free_in_buffer as integer
 	init_destination as sub cdecl(byval as j_compress_ptr)
-	empty_output_buffer as function cdecl(byval as j_compress_ptr) as UBOOL
+	empty_output_buffer as function cdecl(byval as j_compress_ptr) as boolean
 	term_destination as sub cdecl(byval as j_compress_ptr)
 end type
 
@@ -383,9 +387,9 @@ type jpeg_source_mgr
 	next_input_byte as JOCTET ptr
 	bytes_in_buffer as integer
 	init_source as sub cdecl(byval as j_decompress_ptr)
-	fill_input_buffer as function cdecl(byval as j_decompress_ptr) as UBOOL
+	fill_input_buffer as function cdecl(byval as j_decompress_ptr) as boolean
 	skip_input_data as sub cdecl(byval as j_decompress_ptr, byval as integer)
-	resync_to_restart as function cdecl(byval as j_decompress_ptr, byval as integer) as UBOOL
+	resync_to_restart as function cdecl(byval as j_decompress_ptr, byval as integer) as boolean
 	term_source as sub cdecl(byval as j_decompress_ptr)
 end type
 
@@ -401,18 +405,18 @@ type jpeg_memory_mgr
 	alloc_large as sub cdecl(byval as j_common_ptr, byval as integer, byval as integer)
 	alloc_sarray as function cdecl(byval as j_common_ptr, byval as integer, byval as JDIMENSION, byval as JDIMENSION) as JSAMPARRAY
 	alloc_barray as function cdecl(byval as j_common_ptr, byval as integer, byval as JDIMENSION, byval as JDIMENSION) as JBLOCKARRAY
-	request_virt_sarray as function cdecl(byval as j_common_ptr, byval as integer, byval as UBOOL, byval as JDIMENSION, byval as JDIMENSION, byval as JDIMENSION) as jvirt_sarray_ptr
-	request_virt_barray as function cdecl(byval as j_common_ptr, byval as integer, byval as UBOOL, byval as JDIMENSION, byval as JDIMENSION, byval as JDIMENSION) as jvirt_barray_ptr
+	request_virt_sarray as function cdecl(byval as j_common_ptr, byval as integer, byval as boolean, byval as JDIMENSION, byval as JDIMENSION, byval as JDIMENSION) as jvirt_sarray_ptr
+	request_virt_barray as function cdecl(byval as j_common_ptr, byval as integer, byval as boolean, byval as JDIMENSION, byval as JDIMENSION, byval as JDIMENSION) as jvirt_barray_ptr
 	realize_virt_arrays as sub cdecl(byval as j_common_ptr)
-	access_virt_sarray as function cdecl(byval as j_common_ptr, byval as jvirt_sarray_ptr, byval as JDIMENSION, byval as JDIMENSION, byval as UBOOL) as JSAMPARRAY
-	access_virt_barray as function cdecl(byval as j_common_ptr, byval as jvirt_barray_ptr, byval as JDIMENSION, byval as JDIMENSION, byval as UBOOL) as JBLOCKARRAY
+	access_virt_sarray as function cdecl(byval as j_common_ptr, byval as jvirt_sarray_ptr, byval as JDIMENSION, byval as JDIMENSION, byval as boolean) as JSAMPARRAY
+	access_virt_barray as function cdecl(byval as j_common_ptr, byval as jvirt_barray_ptr, byval as JDIMENSION, byval as JDIMENSION, byval as boolean) as JBLOCKARRAY
 	free_pool as sub cdecl(byval as j_common_ptr, byval as integer)
 	self_destruct as sub cdecl(byval as j_common_ptr)
 	max_memory_to_use as integer
 	max_alloc_chunk as integer
 end type
 
-type jpeg_marker_parser_method as function cdecl(byval as j_decompress_ptr) as UBOOL
+type jpeg_marker_parser_method as function cdecl(byval as j_decompress_ptr) as boolean
 
 #define jpeg_create_compress(cinfo) jpeg_CreateCompress( cinfo, JPEG_LIB_VERSION, len( jpeg_compress_struct ) )
 #define jpeg_create_decompress(cinfo) jpeg_CreateDecompress( cinfo , JPEG_LIB_VERSION, len( jpeg_decompress_struct ) )
@@ -442,15 +446,15 @@ declare sub jpeg_stdio_src (byval cinfo as j_decompress_ptr, byval infile as FIL
 declare sub jpeg_set_defaults (byval cinfo as j_compress_ptr)
 declare sub jpeg_set_colorspace (byval cinfo as j_compress_ptr, byval colorspace as J_COLOR_SPACE)
 declare sub jpeg_default_colorspace (byval cinfo as j_compress_ptr)
-declare sub jpeg_set_quality (byval cinfo as j_compress_ptr, byval quality as integer, byval force_baseline as UBOOL)
-declare sub jpeg_set_linear_quality (byval cinfo as j_compress_ptr, byval scale_factor as integer, byval force_baseline as UBOOL)
-declare sub jpeg_add_quant_table (byval cinfo as j_compress_ptr, byval which_tbl as integer, byval basic_table as uinteger ptr, byval scale_factor as integer, byval force_baseline as UBOOL)
+declare sub jpeg_set_quality (byval cinfo as j_compress_ptr, byval quality as integer, byval force_baseline as boolean)
+declare sub jpeg_set_linear_quality (byval cinfo as j_compress_ptr, byval scale_factor as integer, byval force_baseline as boolean)
+declare sub jpeg_add_quant_table (byval cinfo as j_compress_ptr, byval which_tbl as integer, byval basic_table as uinteger ptr, byval scale_factor as integer, byval force_baseline as boolean)
 declare function jpeg_quality_scaling (byval quality as integer) as integer
 declare sub jpeg_simple_progression (byval cinfo as j_compress_ptr)
-declare sub jpeg_suppress_tables (byval cinfo as j_compress_ptr, byval suppress as UBOOL)
+declare sub jpeg_suppress_tables (byval cinfo as j_compress_ptr, byval suppress as boolean)
 declare function jpeg_alloc_quant_table (byval cinfo as j_common_ptr) as JQUANT_TBL ptr
 declare function jpeg_alloc_huff_table (byval cinfo as j_common_ptr) as JHUFF_TBL ptr
-declare sub jpeg_start_compress (byval cinfo as j_compress_ptr, byval write_all_tables as UBOOL)
+declare sub jpeg_start_compress (byval cinfo as j_compress_ptr, byval write_all_tables as boolean)
 declare function jpeg_write_scanlines (byval cinfo as j_compress_ptr, byval scanlines as JSAMPARRAY, byval num_lines as JDIMENSION) as JDIMENSION
 declare sub jpeg_finish_compress (byval cinfo as j_compress_ptr)
 declare function jpeg_write_raw_data (byval cinfo as j_compress_ptr, byval data as JSAMPIMAGE, byval num_lines as JDIMENSION) as JDIMENSION
@@ -458,15 +462,15 @@ declare sub jpeg_write_marker (byval cinfo as j_compress_ptr, byval marker as in
 declare sub jpeg_write_m_header (byval cinfo as j_compress_ptr, byval marker as integer, byval datalen as uinteger)
 declare sub jpeg_write_m_byte (byval cinfo as j_compress_ptr, byval val as integer)
 declare sub jpeg_write_tables (byval cinfo as j_compress_ptr)
-declare function jpeg_read_header (byval cinfo as j_decompress_ptr, byval require_image as UBOOL) as integer
-declare function jpeg_start_decompress (byval cinfo as j_decompress_ptr) as UBOOL
+declare function jpeg_read_header (byval cinfo as j_decompress_ptr, byval require_image as boolean) as integer
+declare function jpeg_start_decompress (byval cinfo as j_decompress_ptr) as boolean
 declare function jpeg_read_scanlines (byval cinfo as j_decompress_ptr, byval scanlines as JSAMPARRAY, byval max_lines as JDIMENSION) as JDIMENSION
-declare function jpeg_finish_decompress (byval cinfo as j_decompress_ptr) as UBOOL
+declare function jpeg_finish_decompress (byval cinfo as j_decompress_ptr) as boolean
 declare function jpeg_read_raw_data (byval cinfo as j_decompress_ptr, byval data as JSAMPIMAGE, byval max_lines as JDIMENSION) as JDIMENSION
-declare function jpeg_has_multiple_scans (byval cinfo as j_decompress_ptr) as UBOOL
-declare function jpeg_start_output (byval cinfo as j_decompress_ptr, byval scan_number as integer) as UBOOL
-declare function jpeg_finish_output (byval cinfo as j_decompress_ptr) as UBOOL
-declare function jpeg_input_complete (byval cinfo as j_decompress_ptr) as UBOOL
+declare function jpeg_has_multiple_scans (byval cinfo as j_decompress_ptr) as boolean
+declare function jpeg_start_output (byval cinfo as j_decompress_ptr, byval scan_number as integer) as boolean
+declare function jpeg_finish_output (byval cinfo as j_decompress_ptr) as boolean
+declare function jpeg_input_complete (byval cinfo as j_decompress_ptr) as boolean
 declare sub jpeg_new_colormap (byval cinfo as j_decompress_ptr)
 declare function jpeg_consume_input (byval cinfo as j_decompress_ptr) as integer
 declare sub jpeg_calc_output_dimensions (byval cinfo as j_decompress_ptr)
@@ -479,7 +483,7 @@ declare sub jpeg_abort_compress (byval cinfo as j_compress_ptr)
 declare sub jpeg_abort_decompress (byval cinfo as j_decompress_ptr)
 declare sub jpeg_abort (byval cinfo as j_common_ptr)
 declare sub jpeg_destroy (byval cinfo as j_common_ptr)
-declare function jpeg_resync_to_restart (byval cinfo as j_decompress_ptr, byval desired as integer) as UBOOL
+declare function jpeg_resync_to_restart (byval cinfo as j_decompress_ptr, byval desired as integer) as boolean
 end extern
 
 #endif
