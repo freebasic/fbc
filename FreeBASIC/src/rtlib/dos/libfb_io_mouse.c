@@ -92,8 +92,8 @@ int fb_ConsoleSetMouse( int x, int y, int cursor, int clip )
 	
 	if (inited == 0) return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
-	if (x >= 0) mx = x;
-	if (y >= 0) my = y;
+	if (x >= 0) mx = x * 8;
+	if (y >= 0) my = y * 8;
 	
 	regs.x.ax = 0x4;
 	regs.x.cx = mx;
