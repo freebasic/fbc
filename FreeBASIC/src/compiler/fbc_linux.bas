@@ -52,7 +52,7 @@ private function _linkFiles _
 	'' set path
 	bindir = fbGetPath( FB_PATH_BIN )
 
-	ldpath = bindir + "ld" + FB_HOST_EXEEXT
+	ldpath = "/usr/bin/ld"
 
 	if( hFileExists( ldpath ) = FALSE ) then
 		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
@@ -176,7 +176,7 @@ end function
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
-	arcpath = fbGetPath( FB_PATH_BIN ) + "ar" + FB_HOST_EXEEXT
+	arcpath = "/usr/bin/ar"
 
 	if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE

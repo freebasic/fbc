@@ -514,6 +514,9 @@ private function assembleFile_GAS _
     	has_path = TRUE
 
     	'' check the environment variable first
+#if defined( __FB_LINUX__ )
+		path = "/usr/bin/as"
+#else
     	path = environ( "AS" )
     	if( len( path ) = 0 ) then
         	'' when not set, then simply use some default value
@@ -521,6 +524,7 @@ private function assembleFile_GAS _
 
 			path += "as" + FB_HOST_EXEEXT
     	end if
+#endif
 
     	if( hFileExists( path ) = FALSE ) then
 			errReportEx( FB_ERRMSG_EXEMISSING, path, -1 )
