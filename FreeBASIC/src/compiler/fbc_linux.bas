@@ -62,7 +62,7 @@ private function _linkFiles _
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		dllname = hStripPath( hStripExt( fbc.outname ) )
 	end if
-
+	
 	'' add extension
 	if( fbc.outaddext ) then
 		select case fbGetOption( FB_COMPOPT_OUTTYPE )

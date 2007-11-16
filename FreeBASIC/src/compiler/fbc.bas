@@ -1796,7 +1796,7 @@ private sub printOptions( )
 		printOption( "-mt", "Link with thread-safe runtime library" )
 	end if
 	printOption( "-nodeflibs", "Do not include the default libraries" )
-	printOption( "-noerrline", "Do not show source line where error occurred" )
+	printOption( "-noerrline", "Do not show source line where error occured" )
 	printOption( "-o <name>", "Set object file path/name (must be passed after the .bas file)" )
 	printOption( "-p <name>", "Add a path to search for libraries" )
 	print "-prefix <path>"; " Set the compiler prefix path"
