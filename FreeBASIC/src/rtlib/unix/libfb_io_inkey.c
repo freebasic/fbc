@@ -205,7 +205,7 @@ int fb_hGetCh(int remove)
 FBSTRING *fb_ConsoleInkey( void )
 {
 	FBSTRING *res;
-	int ch, chars;
+	int ch;
 
 	if (!__fb_con.inited)
 		return &__fb_ctx.null_desc;
