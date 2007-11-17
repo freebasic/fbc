@@ -231,4 +231,11 @@ void fb_hArrayDtorObj
 		int base_idx
 	);
 
+void fb_hArrayCtorObj
+	(
+		FBARRAY *array,
+		FB_DEFCTOR ctor,
+		int base_idx
+	);
+
 #endif /* __FB_ARRAY_H__ */
