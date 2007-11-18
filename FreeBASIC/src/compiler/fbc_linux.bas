@@ -52,12 +52,12 @@ private function _linkFiles _
 	'' set path
 	bindir = fbGetPath( FB_PATH_BIN )
 
-	ldpath = "/usr/bin/ld"
+	ldpath = "ld"
 
-	if( hFileExists( ldpath ) = FALSE ) then
-		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
-		exit function
-	end if
+'	if( hFileExists( ldpath ) = FALSE ) then
+'		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
+'		exit function
+'	end if
 
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		dllname = hStripPath( hStripExt( fbc.outname ) )
@@ -176,7 +176,7 @@ end function
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
-	arcpath = "/usr/bin/ar"
+	arcpath = "ar"
 
 	if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
