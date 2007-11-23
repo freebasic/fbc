@@ -102,7 +102,28 @@ private function hTypeProtoDecl _
 		lexSkipToken( )
 		attrib or= FB_SYMBATTRIB_STATIC
 	end if
-
+    
+    '' CONST?
+	if( lexGetToken( ) = FB_TK_CONST ) then
+		'' STATIC + CONST makes no sense
+		if( attrib and FB_SYMBATTRIB_STATIC ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			end if
+			lexSkipToken( )
+		else
+			lexSkipToken( )
+			if( lexGetToken( ) = FB_TK_STATIC ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+					exit function
+				end if
+				lexSkipToken( )
+			else
+				attrib or= FB_SYMBATTRIB_CONST
+			end if
+		end if
+	end if
+	
 	res = TRUE
 
 	select case as const lexGetToken( )

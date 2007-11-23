@@ -382,7 +382,7 @@ function cUdtMember _
 	) as ASTNODE ptr
 	
 	'' note: assuming a pointer is being passed to this function
-	dim as integer is_ptr = TRUE, mask = iif( varexpr, typeGetConstMask( astGetFullType( varexpr ) ), 0 )
+	dim as integer is_ptr = TRUE, mask = iif( varexpr, typeGetConstMask( astGetFullType( varexpr ) ) shr 1, 0 )
 
 	do
 		dim	as FBSYMBOL	ptr	fld	= hMemberId( subtype )
@@ -438,13 +438,13 @@ function cUdtMember _
 			if( is_ptr = FALSE ) then
 				varexpr	= astNewADDROF(	varexpr	)
 			end if
-
+			
 			varexpr	= astNewBOP( AST_OP_ADD, varexpr, fldexpr )
 
 			varexpr	= astNewDEREF( varexpr, dtype, subtype )
 
 			varexpr	= astNewFIELD( varexpr,	fld, dtype, subtype )
-
+			
 			if( is_nidxarray ) then
 				return astNewNIDXARRAY( varexpr )
 			end if

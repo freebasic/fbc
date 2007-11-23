@@ -1246,7 +1246,11 @@ function symAddProcInstancePtr _
 	case FB_SYMBCLASS_CLASS
 		'dtype = FB_DATATYPE_CLASS
 	end select
-
+	
+	if( symbIsConstant( proc ) ) then
+		dtype = typeSetIsConst( dtype ) 
+	end if
+	
     function = symbAddProcParam( proc, _
     							 FB_INSTANCEPTR, NULL, _
     					  		 dtype, parent, FB_POINTERSIZE, _

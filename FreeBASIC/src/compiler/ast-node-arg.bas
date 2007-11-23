@@ -1125,13 +1125,11 @@ function astNewARG _
     '' check const arg to non-const non-byval param (if not rtl)
     if( (symbGetIsRTL( sym ) = FALSE) or (symbGetIsRTLConst( param )) ) then
     	
-    	'' but exclude instance pointers
-    	if( (symbIsMethod( sym ) = FALSE) or (symbGetProcHeadParam( sym ) <> param) ) then
-	    	if( symbCheckConstAssign( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
-				hParamError( parent, FB_ERRMSG_ILLEGALASSIGNMENT )
-				exit function
-			end if
+    	if( symbCheckConstAssign( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
+			hParamError( parent, FB_ERRMSG_ILLEGALASSIGNMENT )
+			exit function
 		end if
+		
     end if
 	
 	'' alloc new node
