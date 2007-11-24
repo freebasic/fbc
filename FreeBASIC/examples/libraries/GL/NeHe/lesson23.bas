@@ -178,7 +178,7 @@ declare sub glDrawCube()
 		if MULTIKEY(FB.SC_LEFT) then yspeed-=0.01     '' If Left Arrow Being Pressed, Decrease yspeed
 
 		flip  '' flip or crash
-		if inkey = chr(255)+"X" then exit do     '' exit if close box is clicked
+		if inkey = chr(255)+"k" then exit do     '' exit if close box is clicked
 	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer

@@ -150,7 +150,7 @@ dim shared gbase as uinteger                       '' Base Display List For The 
 		end if
 
 		flip  '' flip or crash
-		if inkey = chr(255)+"X" then exit do    '' exit if close box is clicked
+		if inkey = chr(255)+"k" then exit do    '' exit if close box is clicked
 	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer

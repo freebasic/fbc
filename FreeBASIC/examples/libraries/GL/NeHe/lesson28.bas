@@ -139,7 +139,7 @@ dim shared as BEZIER_PATCH mybezier            '' The bezier patch we're going t
 		if not MULTIKEY(FB.SC_SPACE) then sp = false
 
 		flip  '' flip or crash
-		if inkey = chr(255)+"X" then exit do              '' exit if close box is clicked
+		if inkey = chr(255)+"k" then exit do              '' exit if close box is clicked
 	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer

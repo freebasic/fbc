@@ -203,7 +203,7 @@ dim shared as glObject obj              '' Object
 		if MULTIKEY(FB.SC_Q) then SpherePos(2) -= 0.05       '' 'Q' Move Ball Away From Viewer
 
 		flip  '' flip or crash
-		if inkey = chr(255)+"X" then exit do            '' exit if close box is clicked
+		if inkey = chr(255)+"k" then exit do            '' exit if close box is clicked
 	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer

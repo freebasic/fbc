@@ -2,7 +2,7 @@
 ''  Jeff Molofee ( NeHe ).  1997-2000.  If You Find This Code
 ''  Useful, Please Let Me Know.
 ''
-''  Original Code & Tutorial Text By Andreas Löffler
+''  Original Code & Tutorial Text By Andreas Lï¿½ffler
 ''  Excellent Job Andreas!
 ''
 ''  Code Heavily Modified By Rob Fletcher ( rpf1@york.ac.uk )
@@ -63,7 +63,7 @@ dim shared t2 as TEXTURE_IMAGE ptr    '' Pointer To The Texture Image Data Type
 	dim yrot as single            '' Y Rotation
 	dim zrot as single            '' Z Rotation
 
-	windowtitle "Andreas Löffler, Rob Fletcher & NeHe's Blitter & Raw Image Loading Tutorial"   '' Set window title
+	windowtitle "Andreas Lï¿½ffler, Rob Fletcher & NeHe's Blitter & Raw Image Loading Tutorial"   '' Set window title
 	screen 18, 16, , 2
 
 	'' ReSizeGLScene
@@ -131,7 +131,7 @@ dim shared t2 as TEXTURE_IMAGE ptr    '' Pointer To The Texture Image Data Type
 		zrot = zrot + 0.4
 
 		flip  '' flip or crash
-		if inkey = chr(255)+"X" then exit do              '' exit if close box is clicked
+		if inkey = chr(255)+"k" then exit do              '' exit if close box is clicked
 	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
