@@ -224,7 +224,7 @@ dim shared texture(0 to 2) as uinteger         '' Storage For 3 Textures
 		end if
 
 		flip  '' flip or crash
-		if inkey = chr(255)+"X" then exit do
+		if inkey = chr(255)+"k" then exit do
 	loop while MULTIKEY(FB.SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer

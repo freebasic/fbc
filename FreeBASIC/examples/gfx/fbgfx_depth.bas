@@ -28,5 +28,5 @@ FOR i = 0 to 2
 	END IF
 	key = INKEY
 	WHILE key = "": key = INKEY: WEND
-	IF key = CHR(255) + "X" THEN END
+	IF key = CHR(255) + "k" THEN END
 NEXT i

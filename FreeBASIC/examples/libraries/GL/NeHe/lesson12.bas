@@ -104,7 +104,7 @@ dim shared top as uinteger               '' Storage For The Top Display List
 		if MULTIKEY(FB.SC_DOWN) then xrot = xrot + 0.2   '' If Down Arrow Being Pressed, Tilt Cubes Down
 
 		flip                                          '' filp or crash
-		if inkey = chr(255)+"X" then exit do        '' exit if close box is clicked
+		if inkey = chr(255)+"k" then exit do        '' exit if close box is clicked
 	loop while MULTIKEY(FB.SC_ESCAPE) = 0                '' exit if EXC is pressed
 
 	while inkey <> "": wend

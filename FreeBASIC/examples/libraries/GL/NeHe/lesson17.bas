@@ -113,7 +113,7 @@ dim shared gloop as integer                       '' Generic Loop Variable
 		cnt2 = cnt2 + 0.0081                                   '' Increase The Second Counter
 
 		flip                                      '' filp or crash
-		if INKEY = CHR(255)+"X" then exit do    '' exit if close box is clicked
+		if INKEY = CHR(255)+"k" then exit do    '' exit if close box is clicked
 	loop while MULTIKEY(FB.SC_ESCAPE) = 0            '' exit if EXC is pressed
 	'' Empty keyboard buffer
 	while INKEY <> "": wend
