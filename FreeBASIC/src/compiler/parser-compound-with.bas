@@ -50,7 +50,7 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
     else
 		'' not an UDT?
 		dtype = astGetFullType( expr )
-		if( dtype <> FB_DATATYPE_STRUCT ) then
+		if( typeGet( dtype ) <> FB_DATATYPE_STRUCT ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				return NULL
 			end if

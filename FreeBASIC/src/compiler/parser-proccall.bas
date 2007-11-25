@@ -306,6 +306,7 @@ function cProcCall _
 	'' ProcArgList
 	procexpr = cProcArgList( base_parent, sym, ptrexpr, @arg_list, options )
 	if( procexpr = NULL ) then
+		hSkipUntil( CHAR_RPRNT )
 		exit function
 	end if
 

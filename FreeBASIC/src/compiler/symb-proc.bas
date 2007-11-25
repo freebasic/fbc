@@ -730,7 +730,7 @@ add_proc:
 		if( parser.scope > FB_MAINSCOPE ) then
 			attrib or= FB_SYMBATTRIB_LOCAL
 		end if
-
+        
 		proc = symbNewSymbol( options or FB_SYMBOPT_DOHASH, _
 							  sym, _
 						  	  symbtb, hashtb, _

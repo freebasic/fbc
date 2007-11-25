@@ -382,16 +382,13 @@ function cUdtMember _
 	) as ASTNODE ptr
 	
 	'' note: assuming a pointer is being passed to this function
-	dim as integer is_ptr = TRUE, mask = iif( varexpr, typeGetConstMask( astGetFullType( varexpr ) ) shr 1, 0 )
+	dim as integer is_ptr = TRUE, mask = typeGetConstMask( dtype )
 
 	do
 		dim	as FBSYMBOL	ptr	fld	= hMemberId( subtype )
 		if(	fld	= NULL ) then
 			return NULL
 		end	if
-		
-		'' make sure the field inherits the parent's constant mask
-		symbGetFullType( fld ) or= mask
 		
 		select case	as const symbGetClass( fld )
 		'' const? (enum elmts too), exit
@@ -417,7 +414,8 @@ function cUdtMember _
 		case FB_SYMBCLASS_FIELD
 			lexSkipToken( )
 
-			dtype =	symbGetFullType( fld )
+			'' make sure the field inherits the parent's constant mask
+			dtype =	symbGetFullType( fld ) or mask
 			subtype	= symbGetSubType( fld )
 
 			dim	as ASTNODE ptr fldexpr = hUdtDataMember( fld, check_array )
@@ -470,7 +468,8 @@ function cUdtMember _
 
 			varexpr	= hUdtStaticMember(	fld, check_array )
 
-			dtype =	symbGetFullType( fld )
+			'' make sure the field inherits the parent's constant mask
+			dtype =	symbGetFullType( fld ) or mask
 			subtype	= symbGetSubType( fld )
 
 			select case	typeGet( dtype )
