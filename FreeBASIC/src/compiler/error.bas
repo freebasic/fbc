@@ -288,7 +288,8 @@ end type
 		@"Local symbols can't be referenced", _
 		@"Expected 'PTR' or 'POINTER'", _
 		@"Too many levels of pointer indirection", _
-		@"Dynamic arrays can't be const" _
+		@"Dynamic arrays can't be const", _
+		@"Non-const UDT cannot invoke const method" _
 	}
 
 

@@ -32,10 +32,11 @@
 private function hParamError _
 	( _
 		byval parent as ASTNODE ptr, _
-		byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT _
+		byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT, _
+		byval is_this as integer = FALSE _
 	) as integer
 	
-	function = errReportParam( parent->sym, parent->call.args+1, NULL, msgnum )
+	function = errReportParam( parent->sym, iif( is_this, 65536, parent->call.args+1 ), NULL, msgnum )
 
 end function
 
@@ -1126,7 +1127,11 @@ function astNewARG _
     if( (symbGetIsRTL( sym ) = FALSE) or (symbGetIsRTLConst( param )) ) then
     	
     	if( symbCheckConstAssign( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
-			hParamError( parent, FB_ERRMSG_ILLEGALASSIGNMENT )
+    		if( symbIsParamInstance( param ) ) then
+    			errReport( FB_ERRMSG_NONCONSTUDTTOCONSTMETHOD, TRUE )
+    		else
+				hParamError( parent, FB_ERRMSG_ILLEGALASSIGNMENT, symbIsParamInstance( param )  )
+			end if
 			exit function
 		end if
 		
