@@ -468,7 +468,7 @@ private function hCheckByDescParam _
 		return FALSE
 	end if
 	
-	sym_dtype = symbGetType( s )
+	sym_dtype = symbGetType( param )
 	
 	'' same type? (don't check if it's a rtl proc)
 	if( parent->call.isrtl = FALSE ) then
