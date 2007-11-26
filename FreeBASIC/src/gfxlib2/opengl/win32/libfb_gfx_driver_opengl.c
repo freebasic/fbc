@@ -288,7 +288,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	hglrc = NULL;
 	hdc = NULL;
 
-	if (!(flags & DRIVER_OPENGL) || (flags & DRIVER_NO_FRAME))
+	if (!(flags & DRIVER_OPENGL))
 		return -1;
 
 	library = fb_hDynLoad("opengl32.dll", wgl_funcs, (void **)&fb_wgl);
