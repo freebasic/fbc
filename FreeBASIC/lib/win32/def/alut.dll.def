@@ -1,0 +1,23 @@
+LIBRARY     ALUT.DLL
+
+EXPORTS
+    alutCreateBufferFromFile       @1
+    alutCreateBufferFromFileImage  @2
+    alutCreateBufferHelloWorld     @3
+    alutCreateBufferWaveform       @4
+    alutExit                       @5
+    alutGetError                   @6
+    alutGetErrorString             @7
+    alutGetMIMETypes               @8
+    alutGetMajorVersion            @9
+    alutGetMinorVersion            @10
+    alutInit                       @11
+    alutInitWithoutContext         @12
+    alutLoadMemoryFromFile         @13
+    alutLoadMemoryFromFileImage    @14
+    alutLoadMemoryHelloWorld       @15
+    alutLoadMemoryWaveform         @16
+    alutLoadWAVFile                @17
+    alutLoadWAVMemory              @18
+    alutSleep                      @19
+    alutUnloadWAV                  @20
