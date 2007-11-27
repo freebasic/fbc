@@ -156,7 +156,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	
 	context = NULL;
 	
-	if ((!(flags & DRIVER_OPENGL)) || (flags & DRIVER_NO_FRAME))
+	if (!(flags & DRIVER_OPENGL))
 		return -1;
 
 	fb_hGL_NormalizeParameters(flags);
