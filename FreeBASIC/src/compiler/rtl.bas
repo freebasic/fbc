@@ -193,6 +193,7 @@ sub rtlAddIntrinsicProcs _
 							next
 
 							'' next arg is result type
+							
 							i += 1
 							with procdef->paramTb(i)
 
@@ -206,7 +207,14 @@ sub rtlAddIntrinsicProcs _
 								if( subtype <> NULL ) then
 									symbSetIsFuncPtr( subtype )
 								end if
-
+                                
+								'' due to the ambiguity (need to say it's optional to 
+								'' even get to this point), the symbol's return type will 
+								'' be what specifies if the parent symbol is optional
+                                if( .isopt = FALSE ) then
+                                	attrib = 0
+                                end if
+                                
 							end with
 
 							param_optval = NULL
