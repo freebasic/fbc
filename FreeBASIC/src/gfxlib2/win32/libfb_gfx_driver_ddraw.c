@@ -454,8 +454,10 @@ static void directx_thread(HANDLE running_event)
 	unsigned char keystate[256];
 	int i;
 
-	if (directx_init())
-		goto error;
+	if (directx_init()) {
+		directx_exit();
+		return;
+	}
 
 	SetEvent(running_event);
 	fb_win32.is_active = TRUE;
@@ -505,9 +507,6 @@ static void directx_thread(HANDLE running_event)
 
 		fb_hWin32Unlock();
 	}
-
-error:
-	directx_exit();
 }
 
 

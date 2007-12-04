@@ -595,10 +595,17 @@ void fb_hWin32Exit(void)
 	
 	fb_win32.is_running = FALSE;
 	
+	if (__fb_gfx->flags & SCREEN_LOCKED) {
+		__fb_gfx->driver->unlock();
+		__fb_gfx->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED);
+	}
+	
 	if (handle) {
-		WaitForSingleObject(handle, 1000);
+		WaitForSingleObject(handle, INFINITE);
 		DeleteCriticalSection(&update_lock);
 	}
+	
+	fb_win32.exit;
 	
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, screensaver_active, NULL, 0);
 	UnregisterClass(fb_win32.window_class, fb_win32.hinstance);
