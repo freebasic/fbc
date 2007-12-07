@@ -30,7 +30,11 @@
 #include <sys/nearptr.h>
 
 /* timer ticks per second */
-#define TIMER_HZ 1000
+#define TIMER_HZ 1024
+
+/* timer implementation */
+/*#define USE_PIC*/
+#define USE_RTC
 
 /* driver list */
 
@@ -50,6 +54,8 @@ const GFXDRIVER *__fb_gfx_drivers_list[] = {
 };
 
 fb_dos_t fb_dos;
+
+int blarf_ticks = 0;
 
 volatile int __fb_dos_junk;
 volatile int __fb_dos_update_ticks = 0;
@@ -348,28 +354,47 @@ static void fb_dos_mouse_exit(void)
 	__dpmi_free_real_mode_callback(&fb_dos_mouse_isr_rmcb);
 }
 
+#ifdef USE_RTC
+static uint8_t fb_dos_read_rtc(uint8_t index);
+#endif
+
 /*:::::*/
 static int fb_dos_timer_handler(unsigned irq)
 {
+#ifdef USE_PIT
 	int do_abort;
+#endif
 	int mouse_x = 0, mouse_y = 0;
 	int buttons;
 	EVENT e;
+	
+	blarf_ticks++;
 
+#ifdef USE_PIT
 	fb_dos.timer_ticks += fb_dos.timer_step;
 	if( (do_abort = fb_dos.timer_ticks < 65536)==FALSE )
 		fb_dos.timer_ticks -= 65536;
-		
+#else
+	fb_dos_read_rtc(0x0C); /* read status register C to clear pending interrupt */
+#endif
+
 	__fb_dos_update_ticks++;
-	
-	if (fb_dos.in_interrupt || fb_dos.locked || __fb_dos_update_ticks < __fb_dos_ticks_per_update)
+
+	if (0) //(fb_dos.in_interrupt || fb_dos.locked || __fb_dos_update_ticks < __fb_dos_ticks_per_update)
+#ifdef USE_PIT
 		return do_abort;
+#else
+		return TRUE; /* don't chain to old ISR */
+#endif
 
 	fb_dos.in_interrupt = TRUE;
 	
 	__fb_dos_update_ticks -= __fb_dos_ticks_per_update;
 
 #if 0 /* Set to 1 if you want to debug a display driver */
+#ifdef USE_RTC
+	outportb(0xA0, 0x20);
+#endif
 	outportb(0x20, 0x20);
 	fb_dos_sti();
 #endif
@@ -379,24 +404,24 @@ static int fb_dos_timer_handler(unsigned irq)
 		fb_dos.set_palette( );
 		if( fb_dos.mouse_ok ) fb_hSoftCursorPaletteChanged( );
 	}
-	
+
 	mouse_x = fb_dos_mouse_x;
 	mouse_y = fb_dos_mouse_y;
 	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
 		fb_hSoftCursorPut(mouse_x, mouse_y);
 	}
-	
+
 	fb_dos.update();
 	fb_hMemSet(__fb_gfx->dirty, FALSE, fb_dos.h);
 
 	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
 		fb_hSoftCursorUnput(mouse_x, mouse_y);
 	}
-	
+
 	e.type = 0;
 
 	if ( fb_dos.mouse_ok ) {	
-	
+
 		if ( (fb_dos.mouse_x_old != mouse_x) || (fb_dos.mouse_y_old != mouse_y) ) {
 			e.type = EVENT_MOUSE_MOVE;
 			e.x = mouse_x;
@@ -405,7 +430,7 @@ static int fb_dos_timer_handler(unsigned irq)
 			e.dy = mouse_y - fb_dos.mouse_y_old;
 			fb_hPostEvent(&e);
 		}
-		
+
 		if ( fb_dos.mouse_z_old != fb_dos_mouse_z ) {
 			e.type = EVENT_MOUSE_WHEEL;
 			e.z = fb_dos_mouse_z;
@@ -430,13 +455,23 @@ static int fb_dos_timer_handler(unsigned irq)
 		fb_dos.mouse_z_old = fb_dos_mouse_z;
 		fb_dos.mouse_buttons_old = fb_dos_mouse_buttons;
 	}
-	
+
 	fb_dos.in_interrupt = FALSE;
 
+#ifdef USE_PIC
 	return do_abort;
+#else
+	return TRUE;
+#endif
 }
 
 static void end_fb_dos_timer_handler(void) { /* do not remove */ }
+
+
+#ifdef USE_PIC
+
+/* PIC timer implementation */
+
 
 /*:::::*/
 static int fb_dos_timer_set_rate(int rate)
@@ -474,6 +509,98 @@ static void fb_dos_timer_exit(void)
 	fb_dos_timer_set_rate( 0 );
 	fb_dos_sti();
 }
+
+
+#else
+
+/* RTC timer implementation 
+   based on information and code from "Periodic Interrupts with the Real Time Clock" by Thiadmer Riemersma
+   http://www.compuphase.com/int70.txt or http://www.phatcode.net/articles.php?id=211
+*/
+
+
+#define PAUSE __asm__ __volatile("jmp 1f\n1: nop")
+
+/*:::::*/
+static uint8_t fb_dos_read_rtc(uint8_t index)
+{
+	uint8_t res;
+	
+	fb_dos_cli();
+	
+	outportb(0x70, index | 0x80u); /* set NMI bit (disable NMI) and write index */
+	PAUSE;
+	res = inportb(0x71);
+	PAUSE;
+	outportb(0x70, 0x0D);          /* leave index at status register D and enable NMI again */
+	PAUSE;
+	inportb(0x71);                 /* always read/write port 71h after writing to port 70h */
+	
+	fb_dos_sti();
+	
+	return res;
+}
+
+
+/*:::::*/
+static void fb_dos_set_rtc(uint8_t index, uint8_t value)
+{
+	fb_dos_cli();
+	
+	outportb(0x70, index | 0x80); /* set NMI bit (disable NMI) and write index */
+	PAUSE;
+	outportb(0x71, value);        /* write value at index */
+	PAUSE;
+	outportb(0x70, 0x0D);         /* leave index at status register D and enable NMI again */
+	PAUSE;
+	inportb(0x71);                /*  always read/write port 71h after writing to port 70h */
+	
+	fb_dos_sti();
+}
+
+
+/*:::::*/
+static int fb_dos_timer_init(int freq)
+{
+	int res;
+	
+	FILE *f = fopen ("C:/gfxlib.txt", "w");
+	
+	if (fb_isr_set( 8, fb_dos_timer_handler, 0, 16384 ))
+	{
+		/* initialize RTC */
+		fb_dos_set_rtc(0x0B, fb_dos_read_rtc(0x0B) | 0x40); /* set periodic interrupt bit in status register B */
+		fb_dos_read_rtc(0x0C);                              /* clear pending interrupt with a read */
+		fb_dos_set_rtc(0x0A, (fb_dos_read_rtc(0x0A) & 0xF0) | 0x06); /* set interrupt rate to 1024 Hz */
+		
+		fb_dos_cli();
+		
+		outportb(0xA1, inportb(0xA1) & 0xFE);         /* initialize secondary PIC */
+		
+		fb_dos_sti();
+		
+		fprintf(f, "worked ok\n");
+		fclose(f);
+		return TRUE;
+	}
+	else
+	{
+		fprintf(f, "failed\n");
+		fclose(f);
+		return FALSE;
+	}
+}
+
+/*:::::*/
+static void fb_dos_timer_exit(void)
+{
+	fb_dos_cli();
+	fb_dos_set_rtc(0x0B, fb_dos_read_rtc(0x0B) & 0xBF); /* clear periodic interrupt bit in status register B */
+	fb_isr_reset( 0 );
+	fb_dos_sti();
+}
+
+#endif
 
 
 /*:::::*/
@@ -634,6 +761,12 @@ void fb_dos_exit(void)
 	fb_dos_kb_exit();
 
 	fb_dos_sti();
+	
+	{
+		FILE *f = fopen("C:/gfxlib.txt", "a");
+		fprintf(f, "ticks = %d\n", blarf_ticks);
+		fclose(f);
+	}
 
 	fb_dos.w = fb_dos.h = fb_dos.depth = fb_dos.refresh = 0;
 	

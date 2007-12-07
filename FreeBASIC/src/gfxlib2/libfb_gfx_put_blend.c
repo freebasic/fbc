@@ -136,12 +136,13 @@ void fb_hPutBlend(unsigned char *src, unsigned char *dest, int w, int h, int src
 #endif
 	};
 	PUTTER *putter;
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	
 	if (alpha == 0) {
-		fb_hPutTrans(src, dest, w, h, src_pitch, dest_pitch, alpha, blender, param);
 		return;
 	}
+	
+	context = fb_hGetContext();
 	
 	if (!context->putter[PUT_MODE_BLEND]) {
 #if defined(TARGET_X86)
