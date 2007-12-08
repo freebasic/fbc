@@ -2,6 +2,7 @@
     [x] ptr checking must be updated
     [x] must check assignment
     [x] must check overloading resolution and the proc dup check
+    [x] CONST member procedures ( declare CONST function|sub proc()... )
     [ ] check consts with IIF
 
 [ ] ctor/dtor
@@ -10,7 +11,6 @@
     - ArrayClear will be used instead of a loop calling the dtors to destroy
       local non-dynamic arrays
       - callVarDtor will have to use astAddAfter then with scope blocks..
-
 
 [ ] make cUdtMember process symbols as cIdentifier does or ambiguous access
     tests won't work
@@ -57,7 +57,7 @@
       [ ] ()'s around function arguments passed to byref params should make a copy of the
           argument
       [ ] events:
-      	  - there should be a call to the even trapping function on EVERY line
+      	  - there should be a call to the event trapping function on EVERY line
       	    emitted (we can't use threads because the DOS)
       	  - to the above work, a new cmd-line option must be added (as in QB)
       	  [ ] on key()

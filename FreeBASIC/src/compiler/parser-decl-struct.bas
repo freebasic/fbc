@@ -46,7 +46,7 @@ declare sub hPatchByvalResultToSelf _
 ''								| DESTRUCTOR
 ''								| OPERATOR Op Params
 ''								| PROPERTY Params
-''								| STATIC? SUB|FUNCTION Params ) .
+''								| (STATIC|CONST)? SUB|FUNCTION Params ) .
 ''
 private function hTypeProtoDecl _
 	( _
