@@ -8,6 +8,7 @@ Version 0.18.3 Beta:
 - allow "3.6e-08f" notation (type specification is accepted after 'e') (cha0s)
 - lang qb: SLEEP(n) expects seconds (feature request #1718012) (jeffm)
 - lang qb: INKEY$ returns CHR$(0) as the extended character (feature request #1718012) (jeffm)
+- lang qb: Show error if NEXT var does not match FOR var (jeffm)
 
 [added]
 - lang qb: STICK(n) and STRIG(n) functions (jeffm)

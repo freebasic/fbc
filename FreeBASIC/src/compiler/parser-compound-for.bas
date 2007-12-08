@@ -1197,13 +1197,30 @@ function cForStmtEnd _
 
 		hForStmtClose( stk )
 
-		'' pop from stmt stack
-		cCompStmtPop( stk )
-
 		'' ID?
 		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+
+			'' pop from stmt stack
+			cCompStmtPop( stk )
+
 			exit do
 		end if
+
+		'' if -lang QB, check that the identifier matches the FOR statement
+		if( env.clopt.lang = FB_LANG_QB ) then
+			if( ucase( *lexGetText() ) <> ucase( *symbGetName( stk->for.cnt.sym ) ) ) then
+
+				if( errReport( FB_ERRMSG_NEXTWITHOUTFOR ) = FALSE ) then
+					return FALSE
+				else
+					'' error recovery: do nothing
+				end if
+
+			end if
+		end if
+
+		'' pop from stmt stack
+		cCompStmtPop( stk )
 
 		lexSkipToken( )
 
