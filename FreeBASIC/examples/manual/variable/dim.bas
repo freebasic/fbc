@@ -18,10 +18,9 @@ Dim e As Single
 Dim f As Double
 Dim g As Integer Ptr
 Dim h As Byte Ptr
-Dim s1 As String * 10   '' fixed string
+Dim s1 As String * 10   '' fixed length string
 Dim s2 As String        '' variable length string
 Dim s3 As ZString Ptr   '' zstring
-
 
 s1 = "Hello World!"
 s2 = "Hello World from FreeBasic!"
@@ -45,5 +44,3 @@ Print "Variable String: "; Len(s2)
 Print "ZString: "; Len(*s3)
 
 Deallocate(s3)
-
-Sleep

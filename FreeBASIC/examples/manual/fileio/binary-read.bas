@@ -8,7 +8,9 @@
 
 '' Now read the number from the file
 Dim x As Single = 0
+
 Open "MyFile.Dat" For Binary As #1
-Get #1, , x
+  Get #1, , x
 Close #1
+
 Print x
