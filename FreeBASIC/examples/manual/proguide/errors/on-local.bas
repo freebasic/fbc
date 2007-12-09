@@ -6,9 +6,11 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgErrorHandling
 '' --------
 
-'' Compile with QB (-lang qb) dialect
+'' Compile with -e
+'' The -e command line option is needed to enable error handling
+
 Declare Sub foo
-foo
+  foo
 Sleep
 
 Sub foo
@@ -16,12 +18,12 @@ Sub foo
 	Dim filename As String
 	filename = ""
 	On Local Error Goto fail
-	Open "" For Input As #1
+  Open filename For Input Access Read As #1
 	Print "No error"
 	On Local Error Goto 0
 	Exit Sub
 	
   fail:
-	Print ("Error " & Err & " in function " & *Erfn & " on line " & Erl)
+  Print ("Error " & Err & " in function " & *Erfn & " on line " & Erl)
 	
 End Sub

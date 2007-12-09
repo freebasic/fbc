@@ -6,6 +6,10 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOngoto
 '' --------
 
+Dim choice as integer
+
+Input "Enter a number: ", choice
+
 On choice Goto labela, labelb, labelc
 
 labela:
