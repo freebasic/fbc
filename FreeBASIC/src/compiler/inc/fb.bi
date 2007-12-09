@@ -131,13 +131,14 @@ end enum
 
 '' pedantic checks
 enum FB_PDCHECK
-    FB_PDCHECK_NONE         = &h00000000
+	FB_PDCHECK_NONE         = &h00000000
 
-    FB_PDCHECK_ESCSEQ       = &h00000001
-    FB_PDCHECK_PARAMMODE    = &h00000002
-    FB_PDCHECK_PARAMSIZE    = &h00000004
+	FB_PDCHECK_ESCSEQ       = &h00000001
+	FB_PDCHECK_PARAMMODE    = &h00000002
+	FB_PDCHECK_PARAMSIZE    = &h00000004
+	FB_PDCHECK_NEXTVAR      = &h00000008
 
-    FB_PDCHECK_ALL          = &hffffffff
+	FB_PDCHECK_ALL          = &hffffffff
 end enum
 
 '' cpu types

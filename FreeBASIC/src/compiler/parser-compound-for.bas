@@ -1219,6 +1219,11 @@ function cForStmtEnd _
 			end if
 		end if
 
+		if( fbPdCheckIsSet( FB_PDCHECK_NEXTVAR ) ) then
+			errReportWarn( FB_WARNINGMSG_NEXTVARMEANINGLESS, *lexGetText() )
+
+		end if
+
 		'' pop from stmt stack
 		cCompStmtPop( stk )
 

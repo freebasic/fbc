@@ -1348,6 +1348,10 @@ private function processOptions _
 					fbSetOption( FB_COMPOPT_PEDANTICCHK, _
 								 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_ESCSEQ )
 
+				case "next"
+					fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+								 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_NEXTVAR )
+
 				case "pedantic"
 					fbSetOption( FB_COMPOPT_PEDANTICCHK, FB_PDCHECK_ALL )
 					value = -1
