@@ -9,16 +9,33 @@ Version 0.18.3 Beta:
 - lang qb: SLEEP(n) expects seconds (feature request #1718012) (jeffm)
 - lang qb: INKEY$ returns CHR$(0) as the extended character (feature request #1718012) (jeffm)
 - lang qb: Show error if NEXT var does not match FOR var (jeffm)
+- PUT ALPHA with alpha paramter = 0 does nothing (DrV)
+- update OpenAL (0.0.8) and alut (1.1.0) headers (DrV)
+- update OpenAL and alut .def files for Win32 (DrV)
 
 [added]
+- CONST qualifiers (v1c and cha0s)
+- CONST member procedures (cha0s)
 - lang qb: STICK(n) and STRIG(n) functions (jeffm)
 - RESET(0|1) procedure to reset stdio handles after redirection (jeffm)
+- headers for ogg and vorbis (DrV)
+- lang qb: error when NEXT var does not match FOR var (jeffm)
+- pedantic "next" warning when variable is specified after NEXT (jeffm)
+- borderless opengl windows on linux (yetifoot)
+- allow GFX_NO_FRAME in Win32 OpenGL gfxlib driver (DrV)
+- added the VK_A-VK_Z and VK_0-VK_9 scancodes in winuser.bi (yetifoot)
+- #1816871 - sizeof() is now usable in asm blocks (yetifoot)
 
 [fixed]
 - GOTO, GOSUB and RETURN were accepting invalid labels (v1c)
 - SCREENLOCK/SCREENUNLOCK is now properly handled by the DOS gfxlib (DrV)
 - DOS console SETMOUSE was not scaling the coordinates (DrV)
 - parameter type mismatches weren't being caught with bydesc parameters (cha0s)
+- more robust solution for solving deadlock on app close if screenlock is called with no screenunlock (cha0s)
+- close window fixes in examples (yetifoot)
+- mouse_init for linux tty was failing (yetifoot)
+- #1815503 - do nothing if radius <= 0 in CIRCLE (yetifoot)
+
 
 Version 0.18.2 Beta:
 
