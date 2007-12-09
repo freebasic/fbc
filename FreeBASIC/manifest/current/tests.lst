@@ -107,6 +107,7 @@ tests/file/pipe.bas
 tests/file/text_in.bas
 tests/file/text_in2.bas
 tests/file/text_in2.txt
+tests/functions/array_param.bas
 tests/functions/array_recursion.bas
 tests/functions/array_recursion_str.bas
 tests/functions/bydesc_array.bas
@@ -354,6 +355,13 @@ tests/structs/bitfield_union.bas
 tests/structs/bool_expr_cast.bas
 tests/structs/clear.bas
 tests/structs/const_access.bas
+tests/structs/const_member.bas
+tests/structs/const_member2.bas
+tests/structs/const_method.bas
+tests/structs/const_method2.bas
+tests/structs/const_method3.bas
+tests/structs/const_method4.bas
+tests/structs/const_method5.bas
 tests/structs/ctor_assign_parenths.bas
 tests/structs/ctor_bitfield.bas
 tests/structs/ctor_bydesc.bas
@@ -418,6 +426,7 @@ tests/structs/str_redim.bas
 tests/structs/with_and_len.bas
 tests/structs/with_prop.bas
 tests/swap/udt.bas
+tests/threads/bad_call.bas
 tests/threads/racecondition.bas
 tests/wstring/asc.bas
 tests/wstring/ascii.bi

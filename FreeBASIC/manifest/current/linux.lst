@@ -341,6 +341,7 @@ examples/manual/check/KeyPgDim_3.bas
 examples/manual/check/KeyPgDim_4.bas
 examples/manual/check/KeyPgDim_5.bas
 examples/manual/check/KeyPgDim_6.bas
+examples/manual/check/KeyPgDim_7.bas
 examples/manual/check/KeyPgMultikey_1.bas
 examples/manual/check/KeyPgOnerror_2.bas
 examples/manual/check/KeyPgOptionbase_1.bas
@@ -693,6 +694,8 @@ examples/manual/operator/integer-divide.bas
 examples/manual/operator/less-than-or-equal.bas
 examples/manual/operator/less-than1.bas
 examples/manual/operator/less-than3.bas
+examples/manual/operator/let-list.bas
+examples/manual/operator/let.bas
 examples/manual/operator/mod-assign.bas
 examples/manual/operator/mod.bas
 examples/manual/operator/multiply-assign.bas
@@ -770,7 +773,9 @@ examples/manual/procs/sub-2.bas
 examples/manual/procs/va_arg.bas
 examples/manual/procs/va_first.bas
 examples/manual/procs/va_next.bas
-examples/manual/proguide/arrays/array.bas
+examples/manual/proguide/arrays/array1.bas
+examples/manual/proguide/arrays/array2.bas
+examples/manual/proguide/arrays/array3.bas
 examples/manual/proguide/arrays/fixedlen_1.bas
 examples/manual/proguide/arrays/fixedlen_2.bas
 examples/manual/proguide/arrays/indexing.bas
@@ -928,13 +933,13 @@ examples/manual/switches/defbyte.bas
 examples/manual/switches/defdbl.bas
 examples/manual/switches/defint.bas
 examples/manual/switches/deflng.bas
-examples/manual/switches/deflngint.bas
+examples/manual/switches/deflongint.bas
 examples/manual/switches/defshort.bas
 examples/manual/switches/defsng.bas
 examples/manual/switches/defstr.bas
 examples/manual/switches/defubyte.bas
 examples/manual/switches/defuint.bas
-examples/manual/switches/defulngint.bas
+examples/manual/switches/defulongint.bas
 examples/manual/switches/defushort.bas
 examples/manual/switches/option-byval.bas
 examples/manual/switches/option-dynamic.bas
@@ -1183,9 +1188,7 @@ inc/SDL/begin_code.bi
 inc/SDL/close_code.bi
 inc/al/al.bi
 inc/al/alc.bi
-inc/al/alctypes.bi
-inc/al/altypes.bi
-inc/al/alu.bi
+inc/al/alext.bi
 inc/al/alut.bi
 inc/allegro.bi
 inc/allegro/3d.bi
@@ -2055,6 +2058,7 @@ inc/ode/ode.bi
 inc/ode/odemath.bi
 inc/ode/rotation.bi
 inc/ode/timer.bi
+inc/ogg/ogg.bi
 inc/pcre/pcre.bi
 inc/pcre/pcreposix.bi
 inc/pdflib.bi
@@ -2077,6 +2081,9 @@ inc/string.bi
 inc/tinyptc.bi
 inc/utf_conv.bi
 inc/vbcompat.bi
+inc/vorbis/codec.bi
+inc/vorbis/vorbisenc.bi
+inc/vorbis/vorbisfile.bi
 inc/wx-c/accel.bi
 inc/wx-c/activateevent.bi
 inc/wx-c/app.bi
