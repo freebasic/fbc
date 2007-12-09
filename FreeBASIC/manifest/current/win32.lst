@@ -2590,12 +2590,9 @@ inc/zlib.bi
 lib/win32/crt2.o
 lib/win32/crtbegin.o
 lib/win32/crtend.o
-lib/win32/def/alut.dll.def
-lib/win32/def/optional/aspell/aspell-15.dll.def
 lib/win32/dllcrt2.o
 lib/win32/fbrt0.o
 lib/win32/gcrt2.o
-lib/win32/libALut.a
 lib/win32/libDevIL.dll.a
 lib/win32/libFreeImage.dll.a
 lib/win32/libILU.dll.a
@@ -2611,6 +2608,7 @@ lib/win32/libSDL_ttf.dll.a
 lib/win32/libaclui.dll.a
 lib/win32/libadvapi32.dll.a
 lib/win32/liballeg.dll.a
+lib/win32/libalut.dll.a
 lib/win32/libart_lgpl_2.dll.a
 lib/win32/libaspell-15.dll.a
 lib/win32/libatk-1.0.dll.a
