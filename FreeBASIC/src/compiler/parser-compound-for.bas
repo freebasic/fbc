@@ -1206,28 +1206,46 @@ function cForStmtEnd _
 			exit do
 		end if
 
-		'' if -lang QB, check that the identifier matches the FOR statement
-		if( env.clopt.lang = FB_LANG_QB ) then
-			if( ucase( *lexGetText() ) <> ucase( *symbGetName( stk->for.cnt.sym ) ) ) then
+		'' ID
+		dim as FBSYMCHAIN ptr chain_ = any
+		dim as FBSYMBOL ptr base_parent = any
+
+		chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+
+		dim as ASTNODE ptr idexpr = any
+
+		'' look up the variable
+		idexpr = cVariable( chain_ )
+
+		if( idexpr = NULL ) then
+			if( errReport( FB_ERRMSG_EXPECTEDVAR ) = FALSE ) then
+				exit function
+			end if
+
+		else
+			'' Same symbol?
+			if( idexpr->sym <> stk->for.cnt.sym ) then
 
 				if( errReport( FB_ERRMSG_NEXTWITHOUTFOR ) = FALSE ) then
 					return FALSE
-				else
-					'' error recovery: do nothing
 				end if
 
 			end if
-		end if
 
-		if( fbPdCheckIsSet( FB_PDCHECK_NEXTVAR ) ) then
-			errReportWarn( FB_WARNINGMSG_NEXTVARMEANINGLESS, *lexGetText() )
+			if( fbPdCheckIsSet( FB_PDCHECK_NEXTVAR ) ) then
+				errReportWarn( FB_WARNINGMSG_NEXTVARMEANINGLESS, *symbGetName(idexpr->sym) )
+			end if
 
+			'' delete idexpr, we don't need it, for anything
+			astDelTree( idexpr )
+		
 		end if
 
 		'' pop from stmt stack
 		cCompStmtPop( stk )
-
-		lexSkipToken( )
 
 		'' ','?
 		if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -1240,5 +1258,3 @@ function cForStmtEnd _
 	function = TRUE
 
 end function
-
-
