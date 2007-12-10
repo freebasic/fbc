@@ -19,7 +19,7 @@ Version 0.18.3 Beta:
 - lang qb: STICK(n) and STRIG(n) functions (jeffm)
 - RESET(0|1) procedure to reset stdio handles after redirection (jeffm)
 - headers for ogg and vorbis (DrV)
-- lang qb: error when NEXT var does not match FOR var (jeffm)
+- error when NEXT var does not match FOR var (jeffm)
 - pedantic "next" warning when variable is specified after NEXT (jeffm)
 - borderless opengl windows on linux (yetifoot)
 - allow GFX_NO_FRAME in Win32 OpenGL gfxlib driver (DrV)
