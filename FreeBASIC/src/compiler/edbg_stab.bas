@@ -568,15 +568,15 @@ sub edbgEmitProcHeader _
 		hEmitSTABS( STAB_TYPE_MAIN, _
 					fbGetEntryPoint( ), _
 					0, _
-					ctx.firstline, _
+					1, _
 					*symbGetMangledName( proc ) )
 
     	'' set the entry line
-    	hEmitSTABD( STAB_TYPE_SLINE, 0, ctx.firstline )
+    	hEmitSTABD( STAB_TYPE_SLINE, 0, 1 )
 
     	'' also correct the end and start lines
-    	proc->proc.ext->dbg.iniline = ctx.firstline
-    	proc->proc.ext->dbg.endline = ctx.lastline
+    	proc->proc.ext->dbg.iniline = 1
+    	proc->proc.ext->dbg.endline = lexLineNum( )
 
     	desc = fbGetEntryPoint( )
     else
