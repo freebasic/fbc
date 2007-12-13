@@ -52,17 +52,18 @@ declare sub 	 hDeclENUM				( _
 										)
 
 declare function hDeclPointer			( _
-											byref dtype as integer, _
-											byval subtype as FBSYMBOL ptr _
+											byref dtype as integer _
 										) as string
 
 declare function hDeclArrayDims			( _
 											byval sym as FBSYMBOL ptr _
 										) as string
 
-declare function hGetDataType			( _
-											byval sym as FBSYMBOL ptr _
-										) as string
+declare function hGetDataType _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval do_array_typing as integer = FALSE _
+	) as string
 
 
 '' globals
@@ -726,13 +727,12 @@ private function hDeclUDTField _
 	) as string static
 
 	dim as string desc
-	dim as FBSYMBOL ptr subtype = NULL '' implement me!
 
     desc = *sname
     desc += ":"
 
     if( typeIsPtr( stype ) ) then
-    	desc += hDeclPointer( stype, subtype )
+    	desc += hDeclPointer( stype )
     end if
 
 	if( stypeopt = NULL ) then
@@ -753,12 +753,9 @@ private function hDeclDynArray _
 		byval sym as FBSYMBOL ptr _
 	) as string static
 
-	'' !!FIXME!! need to change array DATAYTPE
-
     dim as string desc, dimdesc
-    dim as FBVARDIM ptr d
-    dim as integer ofs, i, dtype
-    dim as FBSYMBOL ptr subtype = NULL '' implement me!
+    dim as FBVARDIM ptr d = any
+    dim as integer ofs = any, i = any
 
 	'' declare the array descriptor
 	desc = str( ctx.typecnt ) + "=s" + _
@@ -767,15 +764,8 @@ private function hDeclDynArray _
 
 	dimdesc = hDeclArrayDims( sym )
 
-	dtype = symbGetType( sym )
-
-	'' pointer?
-    if( typeIsPtr( dtype ) ) then
-    	dimdesc += hDeclPointer( dtype, subtype )
-    end if
-
-	dimdesc += str( remapTB(dtype) )
-
+    dimdesc += hGetDataType( sym, TRUE )
+    
 	'' data	as any ptr
 	desc += hDeclUDTField( "data", _
 		    			   FB_DATATYPE_POINTER, _
@@ -845,8 +835,7 @@ end function
 '':::::
 private function hDeclPointer _
 	( _
-		byref dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byref dtype as integer _
 	) as string static
 
     dim as string desc
@@ -889,7 +878,8 @@ end function
 '':::::
 private function hGetDataType _
 	( _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval do_array_typing as integer _
 	) as string
 
 	dim as integer dtype
@@ -901,23 +891,31 @@ private function hGetDataType _
     end if
 
     '' array?
-    if( symbIsArray( sym ) ) then
-    	'' dynamic?
-    	if( symbIsDynamic( sym ) or symbIsParamByDesc( sym ) ) then
-    		desc = hDeclDynArray( sym )
-    	else
-    		desc = hDeclArrayDims( sym )
-		end if
-    else
-    	desc = ""
-    end if
+    if( do_array_typing = FALSE ) then
+	    if( symbIsArray( sym ) ) then
+	    	'' dynamic?
+	    	if( symbIsDynamic( sym ) or symbIsParamByDesc( sym ) ) then
+	    		desc = hDeclDynArray( sym )
+	    	else
+	    		desc = hDeclArrayDims( sym )
+			end if
+	    else
+	    	desc = ""
+	    end if
+	else
+   		desc = ""
+	end if
 
     dtype = symbGetType( sym )
     subtype = symbGetSubtype( sym )
+    
+    if( do_array_typing ) then
+    	dtype = typeAddrOf( dtype )
+    end if
 
     '' pointer?
     if( typeIsPtr( dtype ) ) then
-    	desc += hDeclPointer( dtype, subtype )
+    	desc += hDeclPointer( dtype )
     end if
 
     '' the const qualifier isn't taken into account

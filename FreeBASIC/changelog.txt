@@ -34,6 +34,7 @@ Version 0.18.3 Beta:
 - close window fixes in examples (yetifoot)
 - mouse_init for linux tty was failing (yetifoot)
 - #1815503 - do nothing if radius <= 0 in CIRCLE (yetifoot)
+- the stabs information now contains the datatype of the 'data' and 'ptr' fields in dynamic array descriptors (cha0s)
 
 
 Version 0.18.2 Beta:
