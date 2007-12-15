@@ -19,7 +19,7 @@ Version 0.18.3 Beta:
 - RESET(0|1) procedure to reset stdio handles after redirection (jeffm)
 - headers for ogg and vorbis (yetifoot)
 - error when NEXT var does not match FOR var (jeffm)
-- pedantic "next" warning when variable is specified after NEXT (jeffm)
+- "-w next" warning when variable is specified after NEXT (jeffm)
 - borderless opengl windows on linux (yetifoot)
 - allow GFX_NO_FRAME in Win32 OpenGL gfxlib driver (DrV)
 - added the VK_A-VK_Z and VK_0-VK_9 scancodes in winuser.bi (yetifoot)

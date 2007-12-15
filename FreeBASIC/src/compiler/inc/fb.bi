@@ -139,6 +139,8 @@ enum FB_PDCHECK
 	FB_PDCHECK_NEXTVAR      = &h00000008
 
 	FB_PDCHECK_ALL          = &hffffffff
+
+	FB_PDCHECK_DEFAULT      = FB_PDCHECK_ALL xor ( FB_PDCHECK_NEXTVAR )
 end enum
 
 '' cpu types

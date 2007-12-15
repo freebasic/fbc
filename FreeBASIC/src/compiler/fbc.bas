@@ -1353,7 +1353,7 @@ private function processOptions _
 								 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_NEXTVAR )
 
 				case "pedantic"
-					fbSetOption( FB_COMPOPT_PEDANTICCHK, FB_PDCHECK_ALL )
+					fbSetOption( FB_COMPOPT_PEDANTICCHK, FB_PDCHECK_DEFAULT )
 					value = -1
 
 				case else
