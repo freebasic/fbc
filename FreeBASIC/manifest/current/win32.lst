@@ -517,6 +517,7 @@ examples/manual/control/exit2.bas
 examples/manual/control/for-next.bas
 examples/manual/control/gosub.bas
 examples/manual/control/goto.bas
+examples/manual/control/gotonum.bas
 examples/manual/control/if-then.bas
 examples/manual/control/iif.bas
 examples/manual/control/iif2.bas
@@ -815,6 +816,7 @@ examples/manual/operator/assign-let.bas
 examples/manual/operator/assign.bas
 examples/manual/operator/concat-assign.bas
 examples/manual/operator/concat.bas
+examples/manual/operator/concat_nocvt.bas
 examples/manual/operator/divide-assign.bas
 examples/manual/operator/divide.bas
 examples/manual/operator/equal.bas
