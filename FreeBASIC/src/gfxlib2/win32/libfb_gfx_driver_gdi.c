@@ -24,7 +24,7 @@
  *
  */
 
-#include "../fb_gfx.h"
+#include "fb_gfx.h"
 #include "fb_gfx_win32.h"
 
 #define SCREENLIST(w, h) ((h) | (w) << 16)

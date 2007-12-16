@@ -269,7 +269,7 @@ namespace FB
         SC_DELETE
         SC_F11        = &h57
         SC_F12
-        SC_LWIN       = &h7D
+        SC_LWIN       = &h5B
         SC_RWIN
         SC_MENU
     end enum
