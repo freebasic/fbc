@@ -13,7 +13,7 @@ Version 0.18.3 Beta:
 - update OpenAL and alut .def files for Win32 (DrV)
 
 [added]
-- CONST qualifiers (v1c and cha0s)
+- CONST qualifiers - feature request #1480621 (v1c and cha0s)
 - CONST member procedures (cha0s)
 - lang qb: STICK(n) and STRIG(n) functions (jeffm)
 - RESET(0|1) procedure to reset stdio handles after redirection (jeffm)
@@ -36,6 +36,7 @@ Version 0.18.3 Beta:
 - #1815503 - do nothing if radius <= 0 in CIRCLE (yetifoot)
 - the stabs information now contains the datatype of the 'data' and 'ptr' fields in dynamic array descriptors (cha0s)
 - #1813104 - scancodes for SC_LWIN(&h5b), SC_RWIN(&h5c), SC_MENU(&h5d), are now same in both gfx/console modes and on all platforms (jeffm)
+- "TYPE ID AS SUB() AS DATATYPE" was being seen as a function. Syntax check added (jeffm)
 
 
 Version 0.18.2 Beta:
