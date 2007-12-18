@@ -40,12 +40,6 @@
 #include <pthread.h>
 #include "fb.h"
 
-
-typedef struct _FBMUTEX {
-	pthread_mutex_t id;
-} FBMUTEX;
-
-
 /*:::::*/
 FBCALL FBMUTEX *fb_MutexCreate( void )
 {

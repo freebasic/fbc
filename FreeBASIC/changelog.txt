@@ -11,6 +11,7 @@ Version 0.18.3 Beta:
 - PUT ALPHA with alpha paramter = 0 does nothing (DrV)
 - update OpenAL (0.0.8) and alut (1.1.0) headers (DrV)
 - update OpenAL and alut .def files for Win32 (DrV)
+- CONDWAIT now takes a second parameter, a mutex, and now operates identically to pthread_cond_wait (DrV)
 
 [added]
 - CONST qualifiers - feature request #1480621 (v1c and cha0s)

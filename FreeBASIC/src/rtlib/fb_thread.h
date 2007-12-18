@@ -45,7 +45,7 @@ typedef struct _FBTHREAD
 struct _FBMUTEX;
 struct _FBCOND;
 
-FBCALL FBTHREAD 		*fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size );
+FBCALL FBTHREAD         *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size );
 FBCALL void              fb_ThreadWait  ( FBTHREAD *thread );
 
 FBCALL struct _FBMUTEX  *fb_MutexCreate ( void );
@@ -57,7 +57,7 @@ FBCALL struct _FBCOND   *fb_CondCreate  ( void );
 FBCALL void              fb_CondDestroy ( struct _FBCOND *cond );
 FBCALL void              fb_CondSignal  ( struct _FBCOND *cond );
 FBCALL void              fb_CondBroadcast( struct _FBCOND *cond );
-FBCALL void              fb_CondWait    ( struct _FBCOND *cond );
+FBCALL void              fb_CondWait    ( struct _FBCOND *cond, struct _FBMUTEX *mutex );
 
 /**************************************************************************************************
  * per-thread local storage context

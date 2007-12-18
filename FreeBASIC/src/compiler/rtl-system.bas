@@ -460,13 +460,16 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 	 	), _
-		/' condwait ( byval id as any ptr ) as void '/ _
+		/' condwait ( byval id as any ptr, byval mutex as any ptr ) as void '/ _
 		( _
 			@"condwait", @"fb_CondWait", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
 	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
-	 		1, _
+	 		2, _
 	 		{ _
+	 			( _
+	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
 	 			( _
 	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _

@@ -164,6 +164,10 @@ typedef struct _FB_DIRCTX
 
 typedef off_t fb_off_t;
 
+typedef struct _FBMUTEX {
+	pthread_mutex_t id;
+} FBMUTEX;
+
 extern int fb_hInitConsole(void);
 extern void fb_hExitConsole(void);
 

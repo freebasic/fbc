@@ -38,11 +38,6 @@
 
 #include "fb.h"
 
-typedef struct _FBMUTEX {
-	HANDLE id;
-} FBMUTEX;
-
-
 /*:::::*/
 FBCALL FBMUTEX *fb_MutexCreate( void )
 {
