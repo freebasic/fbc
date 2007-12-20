@@ -25,6 +25,8 @@ Version 0.18.3 Beta:
 - allow GFX_NO_FRAME in Win32 OpenGL gfxlib driver (DrV)
 - added the VK_A-VK_Z and VK_0-VK_9 scancodes in winuser.bi (yetifoot)
 - #1816871 - sizeof() is now usable in asm blocks (yetifoot)
+- INSTR( wstring, ANY wstring ) was missing from the rtlib (jeffm)
+- rtlib implementation of INSTRREV - (W.I.P.) feature request #1244607 (jeffm)
 
 [fixed]
 - GOTO, GOSUB and RETURN were accepting invalid labels (v1c)
@@ -38,6 +40,7 @@ Version 0.18.3 Beta:
 - the stabs information now contains the datatype of the 'data' and 'ptr' fields in dynamic array descriptors (cha0s)
 - #1813104 - scancodes for SC_LWIN(&h5b), SC_RWIN(&h5c), SC_MENU(&h5d), are now same in both gfx/console modes and on all platforms (jeffm)
 - "TYPE ID AS SUB() AS DATATYPE" was being seen as a function. Syntax check added (jeffm)
+- INSTR() now returns 0 if either string is zero length as per documentation (jeffm)
 
 
 Version 0.18.2 Beta:

@@ -227,6 +227,8 @@ FBCALL FBSTRING    *fb_StrFill1         ( int cnt, int fchar );
 FBCALL FBSTRING    *fb_StrFill2         ( int cnt, FBSTRING *src );
 FBCALL int          fb_StrInstr         ( int start, FBSTRING *src, FBSTRING *patt );
 FBCALL int          fb_StrInstrAny      ( int start, FBSTRING *src, FBSTRING *patt );
+FBCALL int          fb_StrInstrRev      ( FBSTRING *src, FBSTRING *patt, int start );
+FBCALL int          fb_StrInstrRevAny   ( FBSTRING *src, FBSTRING *patt, int start );
 FBCALL FBSTRING    *fb_StrMid           ( FBSTRING *src, int start, int len );
 FBCALL void         fb_StrAssignMid     ( FBSTRING *dst, int start, int len, FBSTRING *src );
 
@@ -296,6 +298,10 @@ FBCALL int          fb_WstrInstr        ( int start, const FB_WCHAR *src,
 										  const FB_WCHAR *patt );
 FBCALL int          fb_WstrInstrAny     ( int start, const FB_WCHAR *src,
 										  const FB_WCHAR *patt );
+FBCALL int          fb_WstrInstrRev     ( const FB_WCHAR *src, 
+										  const FB_WCHAR *patt, int start );
+FBCALL int          fb_WstrInstrRevAny  ( const FB_WCHAR *src,
+										  const FB_WCHAR *patt, int start );
 FBCALL FB_WCHAR    *fb_WstrMid          ( const FB_WCHAR *src, int start, int len );
 FBCALL void         fb_WstrAssignMid    ( FB_WCHAR *dst, int dst_len, int start, int len,
 										  const FB_WCHAR *src );

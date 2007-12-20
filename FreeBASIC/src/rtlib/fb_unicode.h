@@ -397,6 +397,16 @@ static __inline__ FB_WCHAR *fb_wstr_Instr
 }
 
 /*:::::*/
+static __inline__ size_t fb_wstr_InstrAny
+	( 
+		const FB_WCHAR *s,
+		const FB_WCHAR *sset
+	)
+{
+	return wcscspn( s, sset );
+}
+
+/*:::::*/
 static __inline__ int fb_wstr_Compare
 	( 
 		const FB_WCHAR *str1,

@@ -30,68 +30,47 @@
  */
 
 /*
- * str_instrany.c -- instrany function
+ * strw_instrrev.c -- instrrevw function
  *
- * chng: oct/2004 written [mjs]
+ * chng: dec/2007 written [jeffm]
  *
  */
 
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 /*:::::*/
-FBCALL int fb_StrInstrAny ( int start, FBSTRING *src, FBSTRING *patt )
+FBCALL int fb_WstrInstrRev ( const FB_WCHAR *src, const FB_WCHAR *patt, int start )
 {
-	int r;
-
-	if( (src == NULL) || (src->data == NULL) || (patt == NULL) || (patt->data == NULL) ) 
+    if( (src != NULL) && (patt != NULL) )
 	{
-		r = 0;
-	}
-	else
-	{
-		size_t size_src = FB_STRSIZE(src);
-		size_t size_patt = FB_STRSIZE(patt);
+		size_t size_src = fb_wstr_Len(src);
+		size_t size_patt = fb_wstr_Len(patt);
+		size_t i, j;
 
-		if( (size_src == 0) || (size_patt == 0) || (start < 1) || (start > size_src) )
+		if( (size_src != 0) && (size_patt != 0) && (start >= 0) && (start <= size_src) )
 		{
-			r = 0;
-		} 
-		else 
-		{
-			size_t i, found, search_len = size_src - start + 1;
-			const char *pachText = src->data + start - 1;
-			r = search_len;
+
+			/* If start is the default value then start from the end */
+			if( (start == 0) || (start > size_src - size_patt) )
+				start = size_src - size_patt + 1;
 			
-			for( i=0; i!=size_patt; ++i ) 
+			/*
+				There is no wcsrstr() function, 
+				so instead do a brute force scan.
+			*/
+
+			for( i=0; i<start; ++i ) 
 			{
-				const char *pszEnd = FB_MEMCHR( pachText, patt->data[i], r );
-				if( pszEnd!=NULL ) 
+				for( j=0; j!=size_patt; ++j ) 
 				{
-					found = pszEnd - pachText;
-					if( found < r )
-						r = found;
+					if( src[start-i+j-1] != patt[j] )
+						break;
 				}
-			}
-			if( r==search_len ) 
-			{
-				r = 0;
-			} 
-			else 
-			{
-				r += start;
+				if( j==size_patt )
+					return start - i;
 			}
 		}
 	}
-
-	FB_STRLOCK();
-
-	/* del if temp */
-	fb_hStrDelTemp_NoLock( src );
-	fb_hStrDelTemp_NoLock( patt );
-
-	FB_STRUNLOCK();
-
-	return r;
+		
+	return 0;
 }
