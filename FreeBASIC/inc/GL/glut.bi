@@ -223,7 +223,7 @@ declare sub glutKeyboardFunc alias "glutKeyboardFunc" (byval func as sub cdecl(b
 declare sub glutMouseFunc alias "glutMouseFunc" (byval func as sub cdecl(byval as integer, byval as integer, byval as integer, byval as integer))
 declare sub glutMotionFunc alias "glutMotionFunc" (byval func as sub cdecl(byval as integer, byval as integer))
 declare sub glutPassiveMotionFunc alias "glutPassiveMotionFunc" (byval func as sub cdecl(byval as integer, byval as integer))
-declare sub glutEntryFunc alias "glutEntryFunc" (byval func as sub(byval as integer))
+declare sub glutEntryFunc alias "glutEntryFunc" (byval func as sub cdecl (byval as integer))
 declare sub glutVisibilityFunc alias "glutVisibilityFunc" (byval func as sub cdecl(byval as integer))
 declare sub glutIdleFunc alias "glutIdleFunc" (byval func as sub cdecl())
 declare sub glutTimerFunc alias "glutTimerFunc" (byval millis as uinteger, byval func as sub cdecl(byval as integer), byval value as integer)
