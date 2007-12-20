@@ -1399,25 +1399,32 @@ private function hOptNullOp _
 		return n
 	end if
 
-	'' convert 'a * 0'   to '0'
-	''         'a MOD 1' to '0'
-	''         'a * 1'   to 'a'
-	''         'a \ 1'   to 'a'
-	''         'a + 0'   to 'a'
-	''         'a - 0'   to 'a'
-	''         'a SHR 0' to 'a'
-	''         'a SHL 0' to 'a'
-	''         'a OR -1' to '-1'
-	''         'a OR 0'  to 'a'
-	''         'a XOR 0' to 'a'
+	'' convert 'a * 0'    to '0'
+	''         'a MOD 1'  to '0'
+	''         'a MOD -1' to '0'
+	''         'a * 1'    to 'a'
+	''         'a \ 1'    to 'a'
+	''         'a + 0'    to 'a'
+	''         'a - 0'    to 'a'
+	''         'a SHR 0'  to 'a'
+	''         'a SHL 0'  to 'a'
+	''         'a OR -1'  to '-1'
+	''         'a OR 0'   to 'a'
+	''         'a XOR 0'  to 'a'
 	''         'a AND -1' to 'a'
-	''         'a AND 0' to '0'
+	''         'a AND 0'  to '0'
+	
+	''         '0 * a'    to '0'
+	''         '0 \ a'    to '0'
+	''         '0 MOD a'  to '0'
+	''         '0 SHR a'  to '0'
+	''         '0 SHL a'  to '0'
 	if( n->class = AST_NODECLASS_BOP ) then
 		op = n->op.op
 		l = n->l
 		r = n->r
-		if( astIsCONST( r ) ) then
-			if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+		if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+			if( astIsCONST( r ) ) then
 				if( symbGetDataSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
 					v = r->con.val.int
 				else
@@ -1437,7 +1444,7 @@ private function hOptNullOp _
 					end if
 
 				case AST_OP_MOD
-					if( v = 1 ) then
+					if( ( v = 1 ) or ( v = -1 ) ) then
 						r->con.val.int = 0
 						astDelTree( l )
 						astDelNode( n )
@@ -1483,7 +1490,24 @@ private function hOptNullOp _
 					end if
 
 				end select
-		 	end if
+
+			elseif( astIsCONST( l ) ) then
+				if( symbGetDataSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
+					v = l->con.val.int
+				else
+					v = l->con.val.long
+				end if
+
+				select case as const op
+				case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD, _
+				     AST_OP_SHR, AST_OP_SHL
+					if( v = 0 ) then
+						astDelTree( r )
+						astDelNode( n )
+						return l
+					end if
+				end select
+			end if
 		end if
 	end if
 
