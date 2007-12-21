@@ -85,15 +85,21 @@ typedef off64_t fb_off_t;
 #ifdef MULTITHREADED
 extern CRITICAL_SECTION __fb_global_mutex;
 extern CRITICAL_SECTION __fb_string_mutex;
+extern CRITICAL_SECTION __fb_mtcore_mutex;
 # define FB_LOCK()					EnterCriticalSection(&__fb_global_mutex)
 # define FB_UNLOCK()				LeaveCriticalSection(&__fb_global_mutex)
 # define FB_STRLOCK()				EnterCriticalSection(&__fb_string_mutex)
 # define FB_STRUNLOCK()				LeaveCriticalSection(&__fb_string_mutex)
+# define FB_MTLOCK()				EnterCriticalSection(&__fb_mtcore_mutex)
+# define FB_MTUNLOCK()				LeaveCriticalSection(&__fb_mtcore_mutex)
 # define FB_TLSENTRY				DWORD
 # define FB_TLSALLOC(key) 			key = TlsAlloc( )
 # define FB_TLSFREE(key)			TlsFree( (key) )
 # define FB_TLSSET(key,value)		TlsSetValue( (key), (LPVOID)(value))
 # define FB_TLSGET(key)				TlsGetValue( (key))
+#else
+# define FB_MTLOCK()
+# define FB_MTUNLOCK()
 #endif
 
 #define FB_THREADID HANDLE

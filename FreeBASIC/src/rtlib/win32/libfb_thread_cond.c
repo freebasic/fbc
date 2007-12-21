@@ -97,12 +97,30 @@ static FBCONDOPS __condops;
 /*:::::*/
 static inline void fb_CondInit( void )
 {
-	if ( InterlockedExchange( &__inited, TRUE ) == TRUE )
+	/*
+		If two threads get here at the same time, make sure
+		only one of them does the initialization while the
+		other one waits.
+	*/
+
+	FB_MTLOCK();
+
+	if ( __inited == TRUE )
+	{
+		FB_MTUNLOCK();
 		return;
+	}
 	
+	/*
+		win95: pSignalObjectAndWait==NULL
+		win98: pSignalObjectAndWait() returns ERROR_INVALID_FUNCTION
+		winnt: pSignalObjectAndWait() returns WAIT_FAILED
+	*/
+
 	pSignalObjectAndWait = (SIGNALOBJECTANDWAIT)GetProcAddress( GetModuleHandle( "KERNEL32" ), "SignalObjectAndWait" );
-	
-	if ( pSignalObjectAndWait )
+
+	if ( (pSignalObjectAndWait != NULL)
+		&& (pSignalObjectAndWait(NULL, NULL, 0, 0) == WAIT_FAILED) )
 	{
 		__condops.create    = fb_CondCreate_nt;
 		__condops.destroy   = fb_CondDestroy_nt;
@@ -118,6 +136,10 @@ static inline void fb_CondInit( void )
 		__condops.broadcast = fb_CondBroadcast_9x;
 		__condops.wait      = fb_CondWait_9x;
 	}
+
+	__inited == TRUE;
+
+	FB_MTUNLOCK();
 }
 
 /*:::::*/

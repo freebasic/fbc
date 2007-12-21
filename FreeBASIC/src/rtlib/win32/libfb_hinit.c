@@ -44,6 +44,7 @@
 #ifdef MULTITHREADED
 CRITICAL_SECTION __fb_global_mutex;
 CRITICAL_SECTION __fb_string_mutex;
+CRITICAL_SECTION __fb_mtcore_mutex;
 #endif
 
 FB_CONSOLE_CTX __fb_con /* not initialized */;
@@ -69,6 +70,7 @@ void fb_hInit ( void )
 #ifdef MULTITHREADED
 	InitializeCriticalSection(&__fb_global_mutex);
 	InitializeCriticalSection(&__fb_string_mutex);
+	InitializeCriticalSection(&__fb_mtcore_mutex);
 #endif
 
 	memset( &__fb_con, 0, sizeof( FB_CONSOLE_CTX ) );
