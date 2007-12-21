@@ -65,7 +65,7 @@ FBCALL void fb_CondBroadcast( struct _FBCOND *cond )
 }
 
 /*:::::*/
-FBCALL void fb_CondWait( struct _FBCOND *cond )
+FBCALL void fb_CondWait( struct _FBCOND *cond, struct _FBMUTEX *mutex )
 {
 	/* */
 }
