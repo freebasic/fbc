@@ -41,10 +41,10 @@
 /*:::::*/
 FBCALL int fb_WstrInstrRevAny ( const FB_WCHAR *src, const FB_WCHAR *patt, int start )
 {
-    if( (src != NULL) && (patt != NULL) ) 
+	if( (src != NULL) && (patt != NULL) ) 
 	{
-        size_t size_src = fb_wstr_Len(src);
-        size_t size_patt = fb_wstr_Len(patt);
+		size_t size_src = fb_wstr_Len(src);
+		size_t size_patt = fb_wstr_Len(patt);
 		size_t i;
 
 		if( (size_src != 0) && (size_patt != 0) && (start >= 0) && (start <= size_src) )
@@ -59,8 +59,8 @@ FBCALL int fb_WstrInstrRevAny ( const FB_WCHAR *src, const FB_WCHAR *patt, int s
 					if( src[start] == patt[i] )
 						return start + 1;
 			}
-        }
-    }
+		}
+	}
 
 	return 0;
 }

@@ -41,22 +41,22 @@
 /*:::::*/
 FBCALL int fb_WstrInstr ( int start, const FB_WCHAR *src, const FB_WCHAR *patt )
 {
-    int r;
-    FB_WCHAR *p;
+	int r;
+	FB_WCHAR *p;
 
-    if( (src == NULL) || (patt == NULL) )
-    	return 0;
+	if( (src == NULL) || (patt == NULL) )
+		return 0;
 
-    if( (start > 0) && (start <= fb_wstr_Len( src )) )
-    {
-    	p = fb_wstr_Instr( &src[start-1], patt );
-    	if( p != NULL )
-    		r = fb_wstr_CalcDiff( src, p ) + 1;
-    	else
-    		r = 0;
-    }
-    else
-    	r = 0;
+	if( (start > 0) && (start <= fb_wstr_Len( src )) )
+	{
+		p = fb_wstr_Instr( &src[start-1], patt );
+		if( p != NULL )
+			r = fb_wstr_CalcDiff( src, p ) + 1;
+		else
+			r = 0;
+	}
+	else
+		r = 0;
 
 	return r;
 }

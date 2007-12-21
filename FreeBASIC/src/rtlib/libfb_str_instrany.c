@@ -32,7 +32,7 @@
 /*
  * str_instrany.c -- instrany function
  *
- * chng: oct/2004 written [mjs]
+ * chng: aug/2005 written [mjs]
  *
  */
 

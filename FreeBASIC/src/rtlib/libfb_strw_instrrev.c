@@ -41,7 +41,7 @@
 /*:::::*/
 FBCALL int fb_WstrInstrRev ( const FB_WCHAR *src, const FB_WCHAR *patt, int start )
 {
-    if( (src != NULL) && (patt != NULL) )
+	if( (src != NULL) && (patt != NULL) )
 	{
 		size_t size_src = fb_wstr_Len(src);
 		size_t size_patt = fb_wstr_Len(patt);
