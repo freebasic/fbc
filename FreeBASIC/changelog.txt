@@ -30,6 +30,7 @@ Version 0.18.3 Beta:
 - rtlib implementation of INSTRREV - (W.I.P.) feature request #1244607 (jeffm)
 
 [fixed]
+- self ops defined as global needed to throw an error - bug #1480621 (cha0s)
 - GOTO, GOSUB and RETURN were accepting invalid labels (v1c)
 - SCREENLOCK/SCREENUNLOCK is now properly handled by the DOS gfxlib (DrV)
 - DOS console SETMOUSE was not scaling the coordinates (DrV)

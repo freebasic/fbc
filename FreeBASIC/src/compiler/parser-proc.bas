@@ -1274,7 +1274,15 @@ function cOperatorHeader _
 			'' no parent?
 			if( parent = NULL ) then
 				'' fake it...
-				op = AST_OP_ADD
+				if astGetOpIsSelf( op ) then
+					if( parent = NULL ) then
+						if( errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE ) = FALSE ) then
+							exit function
+						else
+							op = AST_OP_ADD
+						end if
+					end if
+				end if
 
 			else
 				'' check if operator FOR or NEXT have been already defined
