@@ -61,8 +61,8 @@ static double hRnd_MTWIST ( float n );
 static double hRnd_QB ( float n );
 
 static double ( *rnd_func )( float ) = hRnd_Startup;
-static unsigned int iseed = INITIAL_SEED;
-static unsigned int state[MAX_STATE], *p = NULL;
+static uint32_t iseed = INITIAL_SEED;
+static uint32_t state[MAX_STATE], *p = NULL;
 
 static double last_num = 0.0;
 
@@ -121,7 +121,7 @@ static double hRnd_MTWIST ( float n )
 	if( n == 0.0 )
 		return last_num;
 
-	unsigned int i, v, xor_mask[2] = { 0, 0x9908B0DF };
+	uint32_t i, v, xor_mask[2] = { 0, 0x9908B0DF };
 	
 	if( !p ) {
 		/* initialize state starting with an initial seed */
@@ -156,9 +156,15 @@ static double hRnd_MTWIST ( float n )
 /*:::::*/
 static double hRnd_QB ( float n )
 {
+	union {
+		float f;
+		uint32_t i;
+	} ftoi;
+
 	if( n != 0.0 ) {
 		if( n < 0.0 ) {
-			unsigned int s = *((unsigned int *)&n);
+			ftoi.f = n;
+			uint32_t s = ftoi.i;
 			iseed = ( s & 0xFFFFFF ) + ( s >> 24 );
 		}
 		iseed = ( ( iseed * 16598013 ) + 12820163 ) & 0xFFFFFF;
@@ -181,6 +187,11 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 {
 	int i;
 	
+	union {
+		double d;
+		uint32_t i[2];
+	} dtoi;
+	
 	if( algorithm == RND_AUTO ) {
 		switch( __fb_ctx.lang ) {
 		case FB_LANG_QB:			algorithm = RND_QB;		break;
@@ -202,12 +213,13 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 		
 	case RND_FAST:
 		rnd_func = hRnd_FAST;
-		iseed = (unsigned int)seed;
+		iseed = (uint32_t)seed;
 		break;
 		
 	case RND_QB:
 		rnd_func = hRnd_QB;
-		unsigned int s = ( (unsigned int *) &seed )[1];
+		dtoi.d = seed;
+		uint32_t s = dtoi.i[1];
 		s ^= ( s >> 16 );
 		s = ( ( s & 0xFFFF ) << 8 ) | ( iseed & 0xFF );
 		iseed = s;
