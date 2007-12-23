@@ -43,7 +43,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include "fb.h"
 #include "fb_con.h"
 #include "fb_printer.h"

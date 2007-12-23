@@ -54,6 +54,11 @@
 #include <windows.h>
 #include <io.h>
 
+#include <malloc.h>
+#ifndef alloca
+#define alloca(x) _alloca(x)
+#endif
+
 #define FB_NEWLINE "\r\n"
 #define FB_NEWLINE_WSTR _LC("\r\n")
 
