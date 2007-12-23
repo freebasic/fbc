@@ -137,7 +137,7 @@ static inline void fb_CondInit( void )
 		__condops.wait      = fb_CondWait_9x;
 	}
 
-	__inited == TRUE;
+	__inited = TRUE;
 
 	FB_MTUNLOCK();
 }
