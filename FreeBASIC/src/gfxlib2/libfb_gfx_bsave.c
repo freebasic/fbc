@@ -81,15 +81,15 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 		bpp = __fb_gfx->bpp;
 		pitch = __fb_gfx->pitch;
 	}
-	filler = 3 - ((pitch - 1) & 0x3);
+
 	if (bpp == 1) {
-		biSizeImage = (w + filler) * h;
+		biSizeImage = ( (w + 3) & ~3 ) * h;
 		bfOffBits = 54 + 1024;
 		bfSize = bfOffBits + biSizeImage;
 		biClrUsed = 256;
 	}
 	else {
-		biSizeImage = ((w * 3) + filler) * h;
+		biSizeImage = ( ((w * 3) + 3) & ~3 ) * h;
 		bfOffBits = 54;
 		bfSize = bfOffBits + biSizeImage;
 		biClrUsed = 0;
@@ -124,18 +124,16 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal)
 		}
 	}
 
-	filler = biSizeImage / h;
 	switch (bpp) {
 		case 1:
+			filler = ( (w + 3) & ~3 );
 			break;
 		case 2:
-			filler += ((w * 3 + 1) % 4) - 1;
-			break;
 		case 4:
-			filler += 3 - ((w * 3 - 1) % 4);
+			filler = ( ((w * 3) + 3) & ~3 );
 			break;
 	}
-	buffer = (unsigned char *)calloc(1, filler + 3);
+	buffer = (unsigned char *)calloc(1, filler + 15);
 
 	s += (h - 1) * pitch;
 	for (; h; h--) {

@@ -12,7 +12,7 @@ Version 0.18.3 Beta:
 - update OpenAL (0.0.8) and alut (1.1.0) headers (DrV)
 - update OpenAL and alut .def files for Win32 (DrV)
 - CONDWAIT now takes a second parameter, a mutex, and now operates identically to pthread_cond_wait (DrV)
-- INSTR( s1, ANY s2) returns 0 if s1="" or s2="" (jeffm)
+- INSTR( s1, ANY s2) returns 0 if s1="" or s2="" as per documentation (jeffm)
 
 [added]
 - CONST qualifiers - feature request #1480621 (v1c and cha0s)
@@ -42,7 +42,8 @@ Version 0.18.3 Beta:
 - the stabs information now contains the datatype of the 'data' and 'ptr' fields in dynamic array descriptors (cha0s)
 - #1813104 - scancodes for SC_LWIN(&h5b), SC_RWIN(&h5c), SC_MENU(&h5d), are now same in both gfx/console modes and on all platforms (jeffm)
 - "TYPE ID AS SUB() AS DATATYPE" was being seen as a function. Syntax check added (jeffm)
-- INSTR() now returns 0 if either string is zero length as per documentation (jeffm)
+- #1856569 - BSAVE to BMP was calculating scan line padding incorectly for 8, 15, and 16 bit depths (jeffm)
+- #1825178 - fbgfx/win32 changes thread priority to normal if the gfx window is minimized or inactive, partial fix (jeffm)
 
 
 Version 0.18.2 Beta:
