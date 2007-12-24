@@ -44,8 +44,10 @@ private:
 	state		as TIMER_STATES
 	interval	as integer
 	callback	as TIMER_CALLBACK
+	waiting     as integer
 	userdata	as integer
 	cond		as any ptr
+	cond_mutex  as any ptr
 	thread		as any ptr
 end type
 

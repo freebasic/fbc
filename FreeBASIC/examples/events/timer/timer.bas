@@ -18,7 +18,11 @@ sub CTimer.threadcb( byval ctx as CTimer ptr )
 			exit do
 		
 		case TIMER_STATE_STOPPED
-			condwait( ctx->cond )
+			mutexlock( ctx->cond_mutex )
+				while( ctx->waiting )
+					condwait( ctx->cond, ctx->cond_mutex )
+				wend
+			mutexunlock( ctx->cond_mutex )
 		
 		case TIMER_STATE_RUNNING
 			dim interval as integer
@@ -54,7 +58,9 @@ constructor CTimer _
 	this.callback = callback
 	this.userdata = userdata
 	this.cond	  = condcreate( )
-	this.thread   = threadcreate( @threadcb, cast( any ptr, @this ) )
+	this.thread   = threadcreate( cast(sub(byval as any ptr), @threadcb), cast( any ptr, @this ) )
+	this.cond_mutex = mutexcreate( )
+	this.waiting    = -1
 	
 end constructor
 
@@ -68,7 +74,10 @@ sub CTimer.on _
 	end if
 		
 	this.state = TIMER_STATE_RUNNING
-	condsignal( this.cond )
+	mutexlock( this.cond_mutex )
+		this.waiting = 0
+		condsignal( this.cond )
+	mutexunlock( this.cond_mutex )
 
 end sub
 
@@ -97,9 +106,17 @@ destructor CTimer _
 
 	this.state = TIMER_STATE_EXITING
 	
-	condsignal( this.cond )
+	mutexlock( this.cond_mutex )
+		if( this.waiting ) then
+			this.waiting = 0
+			condsignal( this.cond )
+		end if
+	mutexunlock( this.cond_mutex )
+	
 	threadwait( this.thread )			
 	conddestroy( this.cond )
+	
+	mutexdestroy( this.cond_mutex )
 	
 	this.state = TIMER_STATE_KILLED
 	

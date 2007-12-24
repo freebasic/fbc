@@ -89,19 +89,27 @@ sub serverDel( byval client as CLIENT ptr )
 		
 		'' recv thread stills running?
 		if( client->recvthread <> NULL ) then
-			condsignal( client->recvbuffer.cond )
+			mutexlock( client->recvbuffer.cond_mutex )
+				client->recvbuffer.cond_var = 0
+				condsignal( client->recvbuffer.cond )
+			mutexunlock( client->recvbuffer.cond_mutex )
 			threadwait( client->recvthread )			
 		end if
 		
 		conddestroy( client->recvbuffer.cond )
+		mutexdestroy( client->recvbuffer.cond_mutex )
 	
 		'' send thread stills running?
 		if( client->sendthread <> NULL ) then
-			condsignal( client->sendbuffer.cond )
+			mutexlock( client->sendbuffer.cond_mutex )
+				client->sendbuffer.cond_var = 0
+				condsignal( client->sendbuffer.cond )
+			mutexunlock( client->sendbuffer.cond_mutex )
 			threadwait( client->sendthread )			
 		end if
 		
 		conddestroy( client->sendbuffer.cond )
+		mutexdestroy( client->sendbuffer.cond_mutex )
 		
 		print "Closing connection for: " & CLIENTADDR(client)
 		
@@ -173,7 +181,10 @@ function serverProcess( byval client as CLIENT ptr, byval buffer as zstring ptr 
 		client->sendbuffer.buff[len( integer )] = 0
 		client->sendbuffer.len = len( integer )
 		
-		condsignal( client->sendbuffer.cond )
+		mutexlock( client->sendbuffer.cond_mutex )
+			client->sendbuffer.cond_var = 0
+			condsignal( client->sendbuffer.cond )
+		mutexunlock( client->sendbuffer.cond_mutex )
 
 		function = TRUE
 
@@ -206,7 +217,12 @@ sub serverReceive( byval client as CLIENT ptr )
 		'' process the incoming msg
 		if( serverProcess( client, @client->recvbuffer.buff ) ) then
 			'' wait until it's okay to receive
-			condwait( client->recvbuffer.cond )			
+			mutexlock( client->recvbuffer.cond_mutex )
+				while( client->recvbuffer.cond_var )
+					condwait( client->recvbuffer.cond, client->recvbuffer.cond_mutex )
+				wend
+				client->recvbuffer.cond_var = -1
+			mutexunlock( client->recvbuffer.cond_mutex )
 		end if
 	loop
 	
@@ -241,12 +257,20 @@ sub serverSend( byval client as CLIENT ptr )
 			
 			if( client->sendbuffer.len <= 0 ) then
 				'' signal that it's okay to receive
-				condsignal( client->recvbuffer.cond )
+				mutexlock( client->recvbuffer.cond_mutex )
+					client->recvbuffer.cond_var = 0
+					condsignal( client->recvbuffer.cond )
+				mutexunlock( client->recvbuffer.cond_mutex )
 			end if
 		
 		else
 			'' wait until there's some data to send
-			condwait( client->sendbuffer.cond )
+			mutexlock( client->sendbuffer.cond_mutex )
+				while( client->sendbuffer.cond_var )
+					condwait( client->sendbuffer.cond, client->sendbuffer.cond_mutex )
+				wend
+				client->sendbuffer.cond_var = -1
+			mutexunlock( client->sendbuffer.cond_mutex )
 		end if
 		
 	loop
@@ -265,7 +289,7 @@ sub serverAdd( byval s as SOCKET, byval sa as sockaddr_in ptr )
 	mutexlock( ctx.globmutex )
 	
 	'' allocate node
-	client = allocate( len( CLIENT ) )
+	client = callocate( len( CLIENT ) )
 	
 	'' add to list
 	if( ctx.clientlist.tail <> NULL ) then
@@ -286,9 +310,14 @@ sub serverAdd( byval s as SOCKET, byval sa as sockaddr_in ptr )
 	'' create the conditions
 	client->recvbuffer.cond 	= condcreate( )
 	client->sendbuffer.cond 	= condcreate( )
+	client->recvbuffer.cond_mutex = mutexcreate( )
+	client->sendbuffer.cond_mutex = mutexcreate( )
+	client->recvbuffer.cond_var = -1
+	client->sendbuffer.cond_var = -1
+	
 	'' start new recv and send threads
-	client->recvthread 			= threadcreate( @serverReceive, cint( client ) )
-	client->sendthread 			= threadcreate( @serverSend, cint( client ) )
+	client->recvthread 			= threadcreate( cast(sub(byval as any ptr), @serverReceive), client )
+	client->sendthread 			= threadcreate( cast(sub(byval as any ptr), @serverSend), client )
 	
 	print "New connection from: " & CLIENTADDR(client)
 
@@ -337,7 +366,7 @@ function serverRun( ) as integer
 	
 	ctx.globmutex = mutexcreate( )
 
-	ctx.acceptthread = threadcreate( @serverAccept )
+	ctx.acceptthread = threadcreate( cast(sub(byval as any ptr), @serverAccept) )
 	
 	print "Press ESC to exit"
 	print

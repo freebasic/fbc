@@ -19,6 +19,8 @@ type BUFFER
 	ptr				as zstring ptr
 	len				as integer
 	cond			as any ptr
+	cond_mutex      as any ptr
+	cond_var        as integer
 end type
 
 type CLIENT
