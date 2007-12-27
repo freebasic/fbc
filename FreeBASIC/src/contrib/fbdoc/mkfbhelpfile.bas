@@ -71,7 +71,7 @@ private function WriteIndex( byval h as integer ) as integer
 	for i = 1 to nfiles
 		put #h,, files(i).nameposn
 		put #h,, files(i).fileposn
-	next i
+	next
 
 	return( nfiles * sizeof( integer ) * 2 + sizeof( integer ) * 2)
 
@@ -90,7 +90,7 @@ private function WriteNames( byval h as integer ) as integer
 		b = files(i).filename + chr(0)
 		t += b
 		n += len(b)
-	next i
+	next
 
 	b = "NAME"
 	put #h,,b
@@ -156,7 +156,7 @@ private function WritePages( byval h as integer ) as integer
 		else
 			n += ret
 		end if
-	next i
+	next
 
 	return( n )
 

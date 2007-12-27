@@ -187,7 +187,7 @@ namespace fb.fbdoc
 		ZFree @ctx->urlbase
 		for i = 0 to WIKI_TOKENS - 1
 			ZFree @ctx->cssClassTb(i)
-		next i
+		next
 		ZFree @ctx->page
 		ZFree @ctx->outputdir
 
@@ -513,7 +513,7 @@ namespace fb.fbdoc
 			if( lcase(*itemTb[i].item_name) = lcase(*itemname) ) then
 				return i
 			end if
-		next i
+		next
 		return -1
 
 	end function
@@ -789,7 +789,7 @@ namespace fb.fbdoc
 				col = 1
 				res += "</tr>"
 			end if
-		next i
+		next
 
 		if( cols > 1) then
 			if( col <> 1 ) then
@@ -1207,7 +1207,7 @@ namespace fb.fbdoc
 			x = ""
 			for i = 1 to token->indent->level * 2
 				x += "&nbsp; "
-			next i
+			next
 			res += x
 		
 		end select
@@ -1232,7 +1232,7 @@ namespace fb.fbdoc
 
 		for i = 0 to WIKI_TAGS - 1
 			ctx->tagFlags( i ) = 0
-		next i
+		next
 		
 		text = ""
 

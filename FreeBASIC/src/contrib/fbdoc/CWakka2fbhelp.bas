@@ -528,7 +528,7 @@ namespace fb.fbdoc
 
 		for i = 1 to indentlevel
 			_emitSpecial( ctx, chIndent )
-		next i
+		next
 
 		_emitIndent( ctx )
 
@@ -689,17 +689,17 @@ namespace fb.fbdoc
 							x += chr(c)
 						end if
 
-					next i
+					next
 
 					_emitIndent( ctx )
 					_emitTextNoWrap( ctx, x, TRUE )
 					_emitBreak( ctx, FALSE )
 
-				next j
+				next
 
 				_emitBreak( ctx, FALSE )
 
-			next p
+			next
 			
 			ctx->indentlevel2 = 0
 
@@ -933,7 +933,7 @@ namespace fb.fbdoc
 			if( lcase(*itemTb[i].item_name) = lcase(*itemname) ) then
 				return i
 			end if
-		next i
+		next
 		return -1
 	end function
 
@@ -1216,8 +1216,8 @@ namespace fb.fbdoc
 				else
 					cells( col, row ) = cell_empty
 				end if
-			next row
-		next col
+			next
+		next
 
 		const bord_top = 1
 		const bord_bottom = 2
@@ -1239,7 +1239,7 @@ namespace fb.fbdoc
 				end if
 
 				tmp += string( sizes(i), chtb_horz )
-			next i
+			next
 
 			if( bord and bord_right) then
 				tmp += chtb_topright
@@ -1264,7 +1264,7 @@ namespace fb.fbdoc
 					tmp += chtb_vert
 				end if
 				tmp += left( *cells(i, j) + space( sizes( i )), sizes( i ))
-			next i
+			next
 
 			if( bord and bord_right) then
 				tmp += chtb_vert
@@ -1273,7 +1273,7 @@ namespace fb.fbdoc
 			_emitTextNoWrap( ctx, tmp, TRUE )
 			_emitBreak( ctx, FALSE )
 
-		next j
+		next
 
 		if( bord and bord_bottom) then
 
@@ -1289,7 +1289,7 @@ namespace fb.fbdoc
 				end if
 
 				tmp += string( sizes(i), chtb_horz )
-			next i
+			next
 
 			if( bord and bord_right) then
 				tmp += chtb_botright
@@ -1502,7 +1502,7 @@ namespace fb.fbdoc
 		case WIKI_TOKEN_INDENT:
 			for i = 1 to (token->indent->level - ctx->indentbase)
 				_emitSpecial( ctx, chIndent )
-			next i
+			next
 			return TRUE
 
 		end select
@@ -1524,7 +1524,7 @@ namespace fb.fbdoc
 
 		for i = 0 to WIKI_TAGS - 1
 			ctx->tagFlags( i ) = 0
-		next i
+		next
 		ctx->tagDepth = 0
 		
 		ctx->maxwidth = 76

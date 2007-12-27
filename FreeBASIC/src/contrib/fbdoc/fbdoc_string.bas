@@ -207,7 +207,7 @@ namespace fb.fbdoc
 			else
 				lastcr = FALSE
 			end if
-		next i
+		next
 
 		return res
 
@@ -229,7 +229,7 @@ namespace fb.fbdoc
 				function = mid( filename, i + 1 )
 				exit for
 			end select
-		next i
+		next
 
 	end function
 

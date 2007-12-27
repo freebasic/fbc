@@ -310,7 +310,7 @@ const default_TocPage = "DocToc"
 		dim as string ret
 		for i = 1 to webPageCount
 			ret = LoadPage( webPageList(i), FALSE, TRUE )
-		next i
+		next
 		end 0
 	end if
 

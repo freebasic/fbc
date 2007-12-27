@@ -39,7 +39,7 @@ namespace fb
 				this.list[i].text = NULL
 				this.list[i].info = NULL
 			end if
-		next i
+		next
 		this.count = 0
 	end sub
 
@@ -89,7 +89,7 @@ namespace fb
 					c->info = this.list[i].info
 					tmp.count += 1
 				end if
-			next i		
+			next
 
 			deallocate this.list
 			this.list = tmp.list
@@ -115,7 +115,7 @@ namespace fb
 
 		for i = 0 to len( *s )-1	
 			index += s[i] + ( index shl 3 )
-		next i
+		next
 		index shl= 1
 
 		function = index
@@ -166,7 +166,7 @@ namespace fb
 				'' TODO : use memcpy or similiar
 				for i as integer = 0 to len(*s)
 					c->text[i] = s[i]
-				next i
+				next
 				c->info = info
 				this.count += 1
 				if( this.count > (this.size shr 1) ) then
@@ -202,7 +202,7 @@ namespace fb
 			else
 				print "(Null)"
 			endif 
-		next i
+		next
 		print
 	end sub
 
