@@ -5,14 +5,14 @@
 const THREADS   = 5
 const SECS 		= 3
 
-declare sub mythread ( byval num as integer )
+declare sub mythread ( byval num as any ptr )
 
 	dim as any ptr thread(0 to THREADS-1)
 	dim as integer i 
 	
 	'' create and call the threads
 	for i = 0 to THREADS-1
-		thread(i) = threadcreate( @mythread, i )
+		thread(i) = threadcreate( @mythread, cast(any ptr, i) )
 		if( thread(i) = 0 ) then
 			print "Error creating thread! Exiting..."
 			end 1
@@ -25,11 +25,11 @@ declare sub mythread ( byval num as integer )
 	next
 	
 '':::::	
-sub mythread ( byval num as integer )
+sub mythread ( byval num as any ptr )
 	dim as integer i
 	
 	for i = 0 to SECS-1
-		print "Hello from thread: " & num & " (" & SECS-i & " sec(s) left)"
+		print "Hello from thread: " & cint(num) & " (" & SECS-i & " sec(s) left)"
 		sleep( 1000 )
 	next
 

@@ -2,8 +2,8 @@
 '' freeBASIC threaded consumer/producer example using mutexes
 ''
 
-declare sub consumer ( byval param as integer )
-declare sub producer ( byval param as integer )
+declare sub consumer ( byval param as any ptr )
+declare sub producer ( byval param as any ptr )
 
 	dim shared as any ptr produced, consumed 
 	dim as any ptr consumer_id, producer_id
@@ -33,7 +33,7 @@ declare sub producer ( byval param as integer )
 	sleep
 
 '':::::
-sub consumer ( byval param as integer )
+sub consumer ( byval param as any ptr )
 	dim i as integer
 	
 	for i = 0 to 9
@@ -44,7 +44,7 @@ sub consumer ( byval param as integer )
 end sub
 
 '':::::
-sub producer ( byval param as integer )
+sub producer ( byval param as any ptr )
 	dim i as integer
 	
 	for i = 0 to 9
