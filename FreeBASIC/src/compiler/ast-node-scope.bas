@@ -411,6 +411,10 @@ private function hCheckScopeLocals _
     		return FALSE
     	end if
 
+		if( symbGetSymbtb( blk ) = NULL ) then
+			exit do
+		end if
+
     	blk = symbGetParent( blk )
 
     	'' same parent?
