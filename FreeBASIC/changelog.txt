@@ -29,6 +29,7 @@ Version 0.18.3 Beta:
 - #1816871 - sizeof() is now usable in asm blocks (yetifoot)
 - INSTR( wstring, ANY wstring ) was missing from the rtlib (jeffm)
 - rtlib implementation of INSTRREV - (W.I.P.) feature request #1244607 (jeffm)
+- First version of COM/serial support for DOS, W.I.P. (jeffm)
 
 [fixed]
 - self ops defined as global needed to throw an error - bug #1480621 (cha0s)
