@@ -427,7 +427,7 @@ Most Important Features:
        PUBLIC:
           field1 AS INTEGER
        PRIVATE:
-	  field2 AS INTEGER
+          field2 AS INTEGER
       END TYPE
 
   o Enumerations (ENUM's):
@@ -437,6 +437,23 @@ Most Important Features:
          B = 3
          C
       END ENUM
+
+  o Const Qualifier Type Safety:
+
+    - For variables and arrays of any allowable data type
+
+      DIM variable AS CONST datatype CONST PTR = initializer
+
+    - Procedure parameters and return values
+
+      FUNCTION foo( BYREF arg AS CONST bar ) AS CONST baz
+
+    - Const-methods in User Defined Types (TYPE or CLASS):
+
+      TYPE foo
+        ...
+        DECLARE CONST SUB bar()
+      END TYPE
 
   o Constructors and Destructors in User Defined Types (TYPE or CLASS):
   
