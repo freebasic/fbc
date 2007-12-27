@@ -354,6 +354,8 @@ src/rtlib/libfb_str_hex.c
 src/rtlib/libfb_str_hex_lng.c
 src/rtlib/libfb_str_instr.c
 src/rtlib/libfb_str_instrany.c
+src/rtlib/libfb_str_instrrev.c
+src/rtlib/libfb_str_instrrevany.c
 src/rtlib/libfb_str_lcase.c
 src/rtlib/libfb_str_left.c
 src/rtlib/libfb_str_len.c
@@ -407,6 +409,9 @@ src/rtlib/libfb_strw_ftoa.c
 src/rtlib/libfb_strw_hex.c
 src/rtlib/libfb_strw_hex_lng.c
 src/rtlib/libfb_strw_instr.c
+src/rtlib/libfb_strw_instrany.c
+src/rtlib/libfb_strw_instrrev.c
+src/rtlib/libfb_strw_instrrevany.c
 src/rtlib/libfb_strw_lcase.c
 src/rtlib/libfb_strw_left.c
 src/rtlib/libfb_strw_len.c
