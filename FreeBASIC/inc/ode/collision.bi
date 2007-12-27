@@ -3,7 +3,7 @@
  * Open Dynamics Engine, Copyright (C) 2001-2003 Russell L. Smith.       *
  * All rights reserved.  Email: russ@q12.org   Web: www.q12.org          *
  *                                                                       *
- * Ported to FreeBASIC by D.J.Peters (Joshy) http://www.freebasic.eu     *
+ * Ported to FreeBASIC by D.J.Peters (Joshy) http://fsr.sf.net/forum     *
  *                                                                       *
  * This library is free software; you can redistribute it and/or         *
  * modify it under the terms of EITHER:                                  *
@@ -467,7 +467,7 @@ declare function dGeomIsOffset cdecl alias "dGeomIsOffset" (g as dGeomID) as int
  * @ingroup collide
  '/
 declare function dGeomGetOffsetPosition cdecl alias "dGeomGetOffsetPosition" (g as dGeomID) as dReal ptr
-
+declare sub      dGeomCopyOffsetPosition cdecl alias "dGeomCopyOffsetPosition" (g as dGeomID,byref pos as dVector3)
 /'*
  * @brief Get the offset position vector of a geom.
  *
@@ -482,7 +482,7 @@ declare function dGeomGetOffsetPosition cdecl alias "dGeomGetOffsetPosition" (g 
  * @ingroup collide
  '/
 declare function dGeomGetOffsetRotation cdecl alias "dGeomGetOffsetRotation" ( g as dGeomID) as dReal ptr
-
+declare sub      dGeomCopyOffsetRotation cdecl alias "dGeomCopyOffsetRotation"( g as dGeomID,byref R as dMatrix3)
 
 /'*
  * @brief Get the offset rotation quaternion of a geom.
@@ -495,6 +495,11 @@ declare function dGeomGetOffsetRotation cdecl alias "dGeomGetOffsetRotation" ( g
  * @ingroup collide
  '/
 declare sub dGeomGetOffsetQuaternion cdecl alias "dGeomGetOffsetQuaternion" ( g as dGeomID, resutl as dQuaternion ptr)
+
+/'
+ * Just generate any contacts (disables any contact refining).
+ '/
+#define CONTACTS_UNIMPORTANT &H80000000
 
 ' collision detection
 
@@ -544,7 +549,12 @@ declare sub dGeomGetOffsetQuaternion cdecl alias "dGeomGetOffsetQuaternion" ( g 
  *
  * @ingroup collide
  '/
-declare function dCollide             cdecl alias "dCollide"             ( o1 as dGeomID,  o2 as dGeomID,  flags as integer,  contact as dContactGeom ptr,  skip as integer) as integer
+declare function dCollide cdecl alias "dCollide" ( _
+  o1      as dGeomID, _
+  o2      as dGeomID, _
+  flags   as integer, _
+  contact as dContactGeom ptr, _
+  skip    as integer) as integer
 
 /'*
  * @brief Determines which pairs of geoms in a space may potentially intersect,
@@ -573,7 +583,10 @@ declare function dCollide             cdecl alias "dCollide"             ( o1 as
  * @sa dSpaceCollide2
  * @ingroup collide
  '/
-declare sub      dSpaceCollide        cdecl alias "dSpaceCollide"        ( s  as dSpaceID,  data as any ptr,  callback as dNearCallback ptr)
+declare sub dSpaceCollide cdecl alias "dSpaceCollide" ( _
+  s        as dSpaceID, _
+  lpUser   as any ptr , _
+  callback as dNearCallback ptr)
 
 /'*
  * @brief Determines which geoms from one space may potentially intersect with 
@@ -609,7 +622,11 @@ declare sub      dSpaceCollide        cdecl alias "dSpaceCollide"        ( s  as
  * @sa dSpaceCollide
  * @ingroup collide
  '/
-declare sub      dSpaceCollide2 cdecl alias "dSpaceCollide2" ( o1 as dGeomID,  o2 as dGeomID,  data as any ptr,  callback as dNearCallback ptr)
+declare sub dSpaceCollide2 cdecl alias "dSpaceCollide2" ( _
+  o1 as dGeomID, _
+  o2 as dGeomID, _
+  lpUser   as any ptr, _
+  callback as dNearCallback ptr)
 
 ' standard classes
 ' the maximum number of user classes that are supported 
@@ -699,8 +716,20 @@ declare function dGeomSphereGetRadius      cdecl alias "dGeomSphereGetRadius"  (
  '/
 declare function dGeomSpherePointDepth     cdecl alias "dGeomSpherePointDepth" (sphere as dGeomID,  x as dReal,  y as dReal,  z as dReal) as dReal
 
-declare function dCreateConvex             cdecl alias "dCreateConvex"         (space as dSpaceID,  _planes as dReal ptr,  _planecount as integer,  _points as dReal ptr,  _pointcount as integer,  _polygons as integer ptr ) as dGeomID
-declare sub      dGeomSetConvex            cdecl alias "dGeomSetConvex"        (g as dGeomID     ,  _planes as dReal ptr,  _count as integer,  _points as dReal ptr,  _pointcount as integer,  _polygons as integer ptr)
+declare function dCreateConvex cdecl alias "dCreateConvex" ( _
+  s           as dSpaceID , _
+  _planes     as dReal ptr, _
+  _planecount as integer  , _
+  _points     as dReal ptr, _
+  _pointcount as integer,  _
+  _polygons   as integer ptr ) as dGeomID
+declare sub dGeomSetConvex cdecl alias "dGeomSetConvex" ( _
+  g           as dGeomID  , _
+  _planes     as dReal ptr, _
+  _count      as integer  , _
+  _points     as dReal ptr, _
+  _pointcount as integer  , _
+  _polygons   as integer ptr)
 
 /'*
  * @brief Create a box geom with the provided side lengths.
@@ -737,10 +766,17 @@ declare function dCreateCylinder           cdecl alias "dCreateCylinder"        
 declare sub      dGeomCylinderSetParams    cdecl alias "dGeomCylinderSetParams" (cylinder as dGeomID ,  radius as dReal    ,  length as dReal)
 declare sub      dGeomCylinderGetParams    cdecl alias "dGeomCylinderGetParams" (cylinder as dGeomID ,  radius as dReal ptr,  length as dReal ptr)
 
-declare function dCreateCCylinder          cdecl alias "dCreateCCylinder"         (space     as dSpaceID,  radius as dReal    ,  length as dReal) as dGeomID
-declare sub      dGeomCCylinderSetParams   cdecl alias "dGeomCCylinderSetParams"  (ccylinder as dGeomID ,  radius as dReal    ,  length as dReal)
-declare sub      dGeomCCylinderGetParams   cdecl alias "dGeomCCylinderGetParams"  (ccylinder as dGeomID ,  radius as dReal ptr,  length as dReal ptr)
-declare function dGeomCCylinderPointDepth  cdecl alias "dGeomCCylinderPointDepth" (ccylinder as dGeomID ,  x as dReal,  y as dReal,  z as dReal) as dReal
+' For now we want to have a backwards compatible C-API, note: C++ API is not.
+#define dCreateCCylinder dCreateCapsule
+#define dGeomCCylinderSetParams dGeomCapsuleSetParams
+#define dGeomCCylinderGetParams dGeomCapsuleGetParams
+#define dGeomCCylinderPointDepth dGeomCapsulePointDepth
+#define dCCylinderClass dCapsuleClass
+
+'declare function dCreateCCylinder          cdecl alias "dCreateCCylinder"         (space     as dSpaceID,  radius as dReal    ,  length as dReal) as dGeomID
+'declare sub      dGeomCCylinderSetParams   cdecl alias "dGeomCCylinderSetParams"  (ccylinder as dGeomID ,  radius as dReal    ,  length as dReal)
+'declare sub      dGeomCCylinderGetParams   cdecl alias "dGeomCCylinderGetParams"  (ccylinder as dGeomID ,  radius as dReal ptr,  length as dReal ptr)
+'declare function dGeomCCylinderPointDepth  cdecl alias "dGeomCCylinderPointDepth" (ccylinder as dGeomID ,  x as dReal,  y as dReal,  z as dReal) as dReal
 
 declare function dCreateRay                cdecl alias "dCreateRay"            (space as dSpaceID, length       as dReal) as dGeomID
 declare sub      dGeomRaySetLength         cdecl alias "dGeomRaySetLength"     (ray   as dGeomID,  length       as dReal)
@@ -778,7 +814,10 @@ declare function dGeomTransformGetInfo     cdecl alias "dGeomTransformGetInfo" (
  *
  * @ingroup collide
  '/
-type dHeightfieldGetHeight_t as function cdecl (byval p_user_data as any ptr,byval x as integer, byval z as integer) as dReal
+type dHeightfieldGetHeight_t as function cdecl ( _
+  byval p_user_data as any ptr, _
+  byval x as integer, _
+  byval z as integer) as dReal
 
 
 
@@ -873,11 +912,17 @@ declare sub dGeomHeightfieldDataDestroy cdecl alias "dGeomHeightfieldDataDestroy
  * @ingroup collide
  '/
 declare sub dGeomHeightfieldDataBuildCallback cdecl alias "dGeomHeightfieldDataBuildCallback" ( _
-d as dHeightfieldDataID, _
-pUserData as any ptr, _
-pCallback as any ptr, _
-w as dReal,depth as dReal,widthSamples as integer,depthSamples as integer, _
-scale as dReal,offset as dReal,thickness as dReal,bWrap as integer)
+  h as dHeightfieldDataID, _
+  pUserData    as any ptr, _
+  pCallback    as any ptr, _
+  _width       as dReal,_
+  depth        as dReal, _
+  widthSamples as integer, _
+  depthSamples as integer, _
+  scale        as dReal, _
+  offset       as dReal, _
+  thickness    as dReal, _
+  bWrap        as integer)
 
 /'*
  * @brief Configures a dHeightfieldDataID to use height data in byte format.
@@ -922,7 +967,17 @@ scale as dReal,offset as dReal,thickness as dReal,bWrap as integer)
  *
  * @ingroup collide
  '/
-declare sub dGeomHeightfieldDataBuildByte cdecl alias "dGeomHeightfieldDataBuildByte" (d as dHeightfieldDataID,pHeightData as byte ptr,bCopyHeightData as integer,width as dReal,depth as dReal,widthSamples as integer,depthSamples as integer,scale as dReal,offset as dReal,thickness as dReal,bWrap as integer)
+declare sub dGeomHeightfieldDataBuildByte cdecl alias "dGeomHeightfieldDataBuildByte" ( _
+  d               as dHeightfieldDataID, _
+  pHeightData     as byte ptr, _
+  bCopyHeightData as integer, _
+  _width          as dReal, _
+  depth           as dReal, _
+  widthSamples    as integer, _
+  depthSamples    as integer, _
+  scale           as dReal, _
+  offset          as dReal, _
+  thickness       as dReal,bWrap as integer)
 
 /'*
  * @brief Configures a dHeightfieldDataID to use height data in short format.
@@ -967,7 +1022,18 @@ declare sub dGeomHeightfieldDataBuildByte cdecl alias "dGeomHeightfieldDataBuild
  *
  * @ingroup collide
  '/
-declare sub dGeomHeightfieldDataBuildShort cdecl alias "dGeomHeightfieldDataBuildShort" (d as dHeightfieldDataID,pHeightData as short ptr,bCopyHeightData as integer,width as dReal,depth as dReal,widthSamples as integer,depthSamples as integer,scale as dReal,offset as dReal,thickness as dReal,bWrap as integer)
+declare sub dGeomHeightfieldDataBuildShort cdecl alias "dGeomHeightfieldDataBuildShort" ( _
+  d               as dHeightfieldDataID, _
+  pHeightData     as short ptr, _
+  bCopyHeightData as integer, _
+  _width          as dReal, _
+  depth           as dReal, _
+  widthSamples    as integer, _
+  depthSamples    as integer, _
+  scale           as dReal, _
+  offset          as dReal, _
+  thickness       as dReal, _
+  bWrap           as integer)
 
 /'*
  * @brief Configures a dHeightfieldDataID to use height data in 
@@ -1014,7 +1080,17 @@ declare sub dGeomHeightfieldDataBuildShort cdecl alias "dGeomHeightfieldDataBuil
  *
  * @ingroup collide
  '/
-declare sub dGeomHeightfieldDataBuildSingle cdecl alias "dGeomHeightfieldDataBuildSingle" (d as dHeightfieldDataID,pHeightData as single ptr,bCopyHeightData as integer,width as dReal,depth as dReal,widthSamples as integer,depthSamples as integer,scale as dReal,offset as dReal,thickness as dReal,bWrap as integer)
+declare sub dGeomHeightfieldDataBuildSingle cdecl alias "dGeomHeightfieldDataBuildSingle" ( _
+  d               as dHeightfieldDataID, _
+  pHeightData     as single ptr, _
+  bCopyHeightData as integer,_ 
+  _width          as dReal, _
+  depth           as dReal, _
+  widthSamples    as integer, _
+  depthSamples    as integer, _
+  scale           as dReal, _
+  offset          as dReal, _
+  thickness       as dReal,bWrap as integer)
 
 /'*
  * @brief Configures a dHeightfieldDataID to use height data in 
@@ -1103,14 +1179,44 @@ declare sub dGeomHeightfieldSetHeightfieldData cdecl alias "dGeomHeightfieldSetH
  * @return The dHeightfieldDataID which may be NULL if none was assigned.
  * @ingroup collide
  '/
-declare function dGeomHeightfieldGetHeightfieldData cdecl alias "dGeomHeightfieldGetHeightfieldData" (g as dGeomID) as dHeightfieldDataID
+declare function dGeomHeightfieldGetHeightfieldData cdecl alias "dGeomHeightfieldGetHeightfieldData" ( _
+  g as dGeomID) as dHeightfieldDataID
+
+' utility functions
 
 
+declare sub      dClosestLineSegmentPoints cdecl alias "dClosestLineSegmentPoints" ( _
+  a1  as dVector3, a2  as dVector3,  _
+  b1  as dVector3, b2  as dVector3,  _
+  cp1 as dVector3, cp2 as dVector3)
+declare function dBoxTouchesBox            cdecl alias "dBoxTouchesBox" ( _
+  p1    as dVector3,  _
+  R1    as dMatrix3,  _
+  side1 as dVector3,  _
+  p2    as dVector3,  _
+  R2    as dMatrix3,  _
+  side2 as dVector3) as integer
 
-declare sub      dClosestLineSegmentPoints cdecl alias "dClosestLineSegmentPoints" ( a1 as dVector3,  a2 as dVector3,  b1 as dVector3,  b2 as dVector3,  cp1 as dVector3,  cp2 as dVector3)
-declare function dBoxTouchesBox            cdecl alias "dBoxTouchesBox" ( _p1 as dVector3,  R1 as dMatrix3,  side1 as dVector3,  _p2 as dVector3,  R2 as dMatrix3,  side2 as dVector3) as integer
-declare sub      dInfiniteAABB             cdecl alias "dInfiniteAABB" ( geom as dGeomID,  aabb as dReal ptr)
-declare sub      dCloseODE                 cdecl alias "dCloseODE" ()
+' The meaning of flags parameter is the same as in dCollide()
+declare function dBoxBox cdecl alias "dBoxBox" ( _
+  p1          as dVector3, _
+  R1          as dMatrix3, _
+  side1       as dVector3, _
+  p2          as dVector3, _
+  R2          as dMatrix3, _
+  side2       as dVector3, _
+  normal      as dVector3, _
+  depth       as dReal ptr, _
+  return_code as integer ptr, _
+  flags       as integer, _
+  conatact    as dContactGeom ptr, _
+  skip        as integer) as integer
+
+declare sub dInfiniteAABB cdecl alias "dInfiniteAABB" ( _
+  geom as dGeomID, _
+  aabb as dReal ptr)
+declare sub dInitODE  cdecl alias "dInitODE"
+declare sub dCloseODE cdecl alias "dCloseODE"
 
 type dGetAABBFn       as any
 type dColliderFn      as integer

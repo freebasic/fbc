@@ -3,7 +3,7 @@
  * Open Dynamics Engine, Copyright (C) 2001-2003 Russell L. Smith.       *
  * All rights reserved.  Email: russ@q12.org   Web: www.q12.org          *
  *                                                                       *
- * Ported to FreeBASIC by D.J.Peters (Joshy) http://www.freebasic.eu     *
+ * Ported to FreeBASIC by D.J.Peters (Joshy) http://fsr.sf.net/forum     *
  *                                                                       *
  * This library is free software; you can redistribute it and/or         *
  * modify it under the terms of EITHER:                                  *
@@ -26,7 +26,7 @@
 #include "common.bi"
 
 enum SPARAMS
-  dContactApprox0   = &h0000
+  
   dContactMu2       = &h0001
   dContactFDir1     = &h0002
   dContactBounce    = &h0004
@@ -36,6 +36,8 @@ enum SPARAMS
   dContactMotion2   = &h0040
   dContactSlip1     = &h0080
   dContactSlip2     = &h0100
+
+  dContactApprox0   = &h0000
   dContactApprox1_1 = &h1000
   dContactApprox1_2 = &h2000
   dContactApprox1   = &h3000
@@ -68,11 +70,13 @@ end type
  * in the opposite direction) then the contact depth will be reduced to 
  * zero. This means that the normal vector points "in" to body 1. '/
 type dContactGeom
-  as dVector3 pos 
-  as dVector3 normal
-  as dReal    depth
-  as dGeomID  g1
+  as dVector3 pos        ' contact position
+  as dVector3 normal     ' normal vector
+  as dReal    depth      ' penetration depth
+  as dGeomID  g1         ' the colliding geoms
   as dGeomID  g2
+  as integer  side1      ' (to be documented)
+  as integer  side2
 end type
 
 ' contact info used by contact joint

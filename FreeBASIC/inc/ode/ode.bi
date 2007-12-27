@@ -3,7 +3,7 @@
  * Open Dynamics Engine, Copyright (C) 2001-2003 Russell L. Smith.       *
  * All rights reserved.  Email: russ@q12.org   Web: www.q12.org          *
  *                                                                       *
- * Ported to FreeBASIC by D.J.Peters (Joshy)                             *
+ * Ported to FreeBASIC by D.J.Peters (Joshy) http://fsr.sf.net/forum     *
  *                                                                       *
  * This library is free software; you can redistribute it and/or         *
  * modify it under the terms of EITHER:                                  *
@@ -43,4 +43,4 @@
 #include "ode/collision.bi"
 #include "ode/export-dif.bi"
 
-#endif
+#endif ' __ode_ode_bi__

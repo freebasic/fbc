@@ -3,7 +3,7 @@
  * Open Dynamics Engine, Copyright (C) 2001-2003 Russell L. Smith.       *
  * All rights reserved.  Email: russ@q12.org   Web: www.q12.org          *
  *                                                                       *
- * Ported to FreeBASIC by D.J.Peters (Joshy) http://www.freebasic.eu     *
+ * Ported to FreeBASIC by D.J.Peters (Joshy) http://fsr.sf.net/forum     *
  *                                                                       *
  * This library is free software; you can redistribute it and/or         *
  * modify it under the terms of EITHER:                                  *
@@ -29,7 +29,7 @@
 /' all user defined error functions have this type. error and debug functions
  * should not return.
  '/
-type dMessageFunction as any
+type dMessageFunction as sub cdecl (byval num as integer,msg as zstring ptr,va_list as any ptr)
 
 declare sub      dSetErrorHandler   cdecl alias "dSetErrorHandler"   (byval fn as dMessageFunction ptr)
 declare function dGetErrorHandler   cdecl alias "dGetErrorHandler"   () as dMessageFunction ptr

@@ -3,7 +3,7 @@
  * Open Dynamics Engine, Copyright (C) 2001-2003 Russell L. Smith.       *
  * All rights reserved.  Email: russ@q12.org   Web: www.q12.org          *
  *                                                                       *
- * Ported to FreeBASIC by D.J.Peters (Joshy) http://www.freebasic.eu     *
+ * Ported to FreeBASIC by D.J.Peters (Joshy) http://fsr.sf.net/forum     *
  *                                                                       *
  * This library is free software; you can redistribute it and/or         *
  * modify it under the terms of EITHER:                                  *
@@ -99,6 +99,9 @@ enum
   dJointTypeFixed
   dJointTypeNull
   dJointTypeAMotor
+  dJointTypeLMotor
+  dJointTypePlane2D
+  dJointTypePR
 end enum
 
 enum 
@@ -113,6 +116,8 @@ enum
   dParamStopCFM
   dParamSuspensionERP
   dParamSuspensionCFM
+  dParamERP
+
   dParamLoStop2 = &h100
   dParamHiStop2
   dParamVel2
@@ -124,6 +129,7 @@ enum
   dParamStopCFM2
   dParamSuspensionERP2
   dParamSuspensionCFM2
+  dParamERP2
 
   dParamLoStop3 = &h200
   dParamHiStop3
@@ -136,6 +142,8 @@ enum
   dParamStopCFM3
   dParamSuspensionERP3
   dParamSuspensionCFM3
+  dParamERP3
+
   dParamGroup = &h100
 end enum
 
@@ -144,14 +152,17 @@ enum
  dAMotorEuler = 1
 end enum
 
+' joint force feedback information
 type dJointFeedback
- f1 as dVector3
- t1 as dVector3
- f2 as dVector3
- t2 as dVector3
+  f1 as dVector3 ' force  applied to body 1
+  t1 as dVector3 ' torque applied to body 1
+  f2 as dVector3 ' force  applied to body 2
+  t2 as dVector3 ' torque applied to body 2
 end type
 
-declare sub      dGeomMoved       cdecl alias "dGeomMoved"       (byval as dGeomID)
-declare function dGeomGetBodyNext cdecl alias "dGeomGetBodyNext" (byval as dGeomID) as dGeomID
+extern "C"
+declare sub      dGeomMoved       (byval as dGeomID)
+declare function dGeomGetBodyNext (byval as dGeomID) as dGeomID
+end extern
 
 #endif __ode_common_bi__
