@@ -67,7 +67,7 @@ declare function alutGetMIMETypes cdecl alias "alutGetMIMETypes" (byval loader a
 declare function alutGetMajorVersion cdecl alias "alutGetMajorVersion" () as ALint
 declare function alutGetMinorVersion cdecl alias "alutGetMinorVersion" () as ALint
 declare function alutSleep cdecl alias "alutSleep" (byval duration as ALfloat) as ALboolean
-declare sub alutLoadWAVFile cdecl alias "alutLoadWAVFile" (byval fileName as ALbyte ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr, byval loop as ALboolean ptr)
+declare sub alutLoadWAVFile cdecl alias "alutLoadWAVFile" (byval fileName as zstring ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr, byval loop as ALboolean ptr)
 declare sub alutLoadWAVMemory cdecl alias "alutLoadWAVMemory" (byval buffer as ALbyte ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr, byval loop as ALboolean ptr)
 declare sub alutUnloadWAV cdecl alias "alutUnloadWAV" (byval format as ALenum, byval data as ALvoid ptr, byval size as ALsizei, byval frequency as ALsizei)
 end extern
