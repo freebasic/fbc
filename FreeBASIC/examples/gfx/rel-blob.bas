@@ -205,7 +205,7 @@ private sub pcopy_ ( dest() as integer, source() as integer)
         *offset1 = *offset2
         offset1 = offset1 + 1
         offset2 = offset2 + 1
-    next offset
+    next i
 
 end sub
 
@@ -216,7 +216,7 @@ private sub cls_(buffer() as integer)
     for i = 0 to  SCR_SIZE -1
         *offset = 0
         offset = offset + 1
-    next offset
+    next i
 
 end sub
 

@@ -305,8 +305,8 @@ Sub Draw_Cube()
                     colors(i, j) = rnd          'I'm lazy so I just randomized the colors
                     'read cubes coords from data statements
                     read cube(i,j)
-                next i
-            next j
+                next
+            next
 
             'put values to coords
             Restore TEXTURECOORDS
@@ -314,8 +314,8 @@ Sub Draw_Cube()
                 for j = 0 to 1
                     'read cubes coords from data statements
                     read coords(i,j)
-                next i
-            next j
+                next
+            next
 
 
             color_init = -1

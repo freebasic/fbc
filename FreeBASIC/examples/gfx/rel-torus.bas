@@ -161,6 +161,6 @@ private sub smooth( buffer() as integer)
         ng = ng + ( g shr 2 ) 
         nb = nb + ( b shr 2 ) 
         buffer(offset) = nr shl 16 or ng shl 8 or nb 
-    next i 
+    next offset
 
 end sub 	
