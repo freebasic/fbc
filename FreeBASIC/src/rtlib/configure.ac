@@ -1,7 +1,7 @@
 # configure.ac for the FB Run-Time Library		-*- Autoconf -*-
 # Process this file with autoconf to generate a configuration script.
 
-AC_INIT([fbrtlib],[0.18.1],[http://sourceforge.net/projects/fbc])
+AC_INIT([fbrtlib],[0.18.3],[http://sourceforge.net/projects/fbc])
 AC_PREREQ([2.59])
 
 AC_COPYRIGHT([Copyright (c) 2004-2007 The FreeBASIC development team])
