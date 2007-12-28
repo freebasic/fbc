@@ -43,9 +43,6 @@
 #ifdef MULTITHREADED
 pthread_mutex_t __fb_global_mutex;
 pthread_mutex_t __fb_string_mutex;
-#ifndef PTHREAD_MUTEX_RECURSIVE
-#define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
-#endif
 extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int kind);
 #endif
 

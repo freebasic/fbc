@@ -129,6 +129,13 @@ AC_TYPE_PID_T
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 
+# Checks for declarations.
+AC_CHECK_DECL([PTHREAD_MUTEX_RECURSIVE], [have_pthread_mutex_recursive=1], [], [#include <pthread.h>])
+
+if test "$have_pthread_mutex_recursive" != "1"; then
+    AC_DEFINE([PTHREAD_MUTEX_RECURSIVE],[PTHREAD_MUTEX_RECURSIVE_NP],[])
+fi
+
 # Checks for library functions.
 AC_FUNC_ALLOCA
 AC_FUNC_CLOSEDIR_VOID
