@@ -236,6 +236,7 @@ int fb_DevComOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
 
         if( *pchPos==',' ) {
             /* empty option ... ignore */
+			++uiOption;
             ++pchPos;
             continue;
         }
