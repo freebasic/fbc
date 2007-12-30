@@ -48,6 +48,8 @@
 #include <termios.h>
 #include <dirent.h>
 #include <dlfcn.h>
+
+#define __USE_UNIX98
 #include <pthread.h>
 
 #ifdef HAVE_TERMCAP_H
