@@ -48,16 +48,19 @@ char *fb_hGetExePath( char *dst, int maxlen )
 	if( p )
 	{
 		int len;
-		if( p - dst > maxlen )
+
+		len = p - __fb_ctx.argv[0];
+		if( len > maxlen )
+		{
 			len = maxlen;
-		else
-			len = p - dst;
+		}
+
 		memcpy( dst, __fb_ctx.argv[0], len );
 		dst[len] = '\0';
 	}
 	else
 	{
-		strlcpy( dst, __fb_ctx.argv[0], maxlen );
+		*dst = '\0';
 	}
 
 	return dst;
