@@ -65,8 +65,10 @@ void fb_hExitConsole( void )
 		}
 		
 		/* Cleanup terminal */
+#ifdef TARGET_LINUX
 		if (__fb_con.inited == INIT_CONSOLE)
 			fb_hTermOut(SEQ_EXIT_CHARSET, 0, 0);
+#endif
 		fb_hTermOut(SEQ_RESET_COLOR, 0, 0);
 		fb_hTermOut(SEQ_SHOW_CURSOR, 0, 0);
 		fb_hTermOut(SEQ_EXIT_KEYPAD, 0, 0);

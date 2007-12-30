@@ -91,6 +91,8 @@
 #define SEQ_EXIT_KEYPAD		16			/* "ke" - disable keypad keys */
 #define SEQ_MAX				17
 #define SEQ_EXTRA			100
+
+#ifdef TARGET_LINUX
 #define SEQ_INIT_CHARSET	100			/* xxxx - inits PC 437 characters set */
 #define SEQ_EXIT_CHARSET	101			/* xxxx - exits PC 437 characters set */
 #define SEQ_QUERY_CURSOR	102			/* xxxx - query cursor position (not in termcap) */
@@ -98,6 +100,8 @@
 #define SEQ_INIT_XMOUSE		104			/* xxxx - enable X11 mouse */
 #define SEQ_EXIT_XMOUSE		105			/* xxxx - disable X11 mouse */
 #define SEQ_EXIT_GFX_MODE	106			/* xxxx - cleanup after console gfx mode */
+#endif
+
 #define SEQ_SET_COLOR_EX	107			/* xxxx - extended set color */
 
 typedef struct FBCONSOLE
