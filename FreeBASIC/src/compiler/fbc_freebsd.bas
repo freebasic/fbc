@@ -21,9 +21,9 @@
 '' chng: jul/2007 written [DrV]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbc.bi"
-#include once "inc\hlp.bi"
+#include once "inc/fb.bi"
+#include once "inc/fbc.bi"
+#include once "inc/hlp.bi"
 
 
 ''
@@ -142,7 +142,7 @@ private function _linkFiles _
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' rtlib initialization and termination (must be included in the group or
 		'' dlopen() will fail because fb_hRtExit() will be undefined)
-		ldcline += QUOTE + libdir + (RSLASH + "fbrt0.o" + QUOTE + " ")
+		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " ")
 	end if
 
 	'' end lib group
