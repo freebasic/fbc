@@ -337,15 +337,6 @@ sub rtlAddIntrinsicMacros _
     		end if
     	end if
 
-        '' not present in qb mode?
-        dim as integer addmacro = TRUE
-        if( (macdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
-    		if( fbLangIsSet( FB_LANG_QB ) ) then
-    			addmacro = FALSE
-    			addbody = FALSE
-    		end if
-    	end if
-
     	if( addbody ) then
 			tok = NULL
 
@@ -373,9 +364,17 @@ sub rtlAddIntrinsicMacros _
     		loop
     	end if
 
-        if( addmacro ) then
-        	symbAddDefineMacro( macdef->name, tok_head, macdef->params, param_head )
-        end if
+		'' add the '__' prefix if the macro wasn't present in QB and we are in '-lang qb' mode
+		dim as zstring ptr mname = macdef->name
+        if( (macdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
+    		if( fbLangIsSet( FB_LANG_QB ) ) then
+        		static as string tmp
+        		tmp = "__" + *mname
+        		mname = strptr( tmp )
+    		end if
+    	end if
+
+       	symbAddDefineMacro( mname, tok_head, macdef->params, param_head )
 
 		'' next
         macdef += 1

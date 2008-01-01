@@ -280,25 +280,26 @@ sub symbKeywordInit( )
 	dim as integer i = 0
 	do until( kwdTb(i).name = NULL )
 
-        '' don't add if '-lang qb' is set.
-        dim as integer do_add = TRUE
+        '' add the '__' prefix if the kwd wasn't present in QB and we are in '-lang qb' mode
+        dim as zstring ptr kname = kwdTb(i).name
         if( (kwdTb(i).opt and KWD_OPTION_NO_QB) <> 0 ) then
-        	do_add = (fbLangIsSet( FB_LANG_QB ) = FALSE)
+        	if( fbLangIsSet( FB_LANG_QB ) ) then
+        		static as string tmp
+        		tmp = "__" + *kname
+        		kname = strptr( tmp )
+        	end if
         end if
 
-        if( do_add ) then
-        	'' QB quirks..
-        	if( (kwdTb(i).opt and KWD_OPTION_STRSUFFIX) <> 0 ) then
-				symbAddKeyword( kwdTb(i).name, _
-	    						kwdTb(i).id, _
-	    						kwdTb(i).class, _
-	    						NULL, _
-	    						FB_DATATYPE_STRING, _
-	    						FB_SYMBATTRIB_SUFFIXED )
-
-			else
-				symbAddKeyword( kwdTb(i).name, kwdTb(i).id, kwdTb(i).class )
-			end if
+        '' QB quirks..
+        if( (kwdTb(i).opt and KWD_OPTION_STRSUFFIX) <> 0 ) then
+			symbAddKeyword( kname, _
+	    					kwdTb(i).id, _
+	    					kwdTb(i).class, _
+	    					NULL, _
+	    					FB_DATATYPE_STRING, _
+	    					FB_SYMBATTRIB_SUFFIXED )
+		else
+			symbAddKeyword( kname, kwdTb(i).id, kwdTb(i).class )
 		end if
 
     	i += 1

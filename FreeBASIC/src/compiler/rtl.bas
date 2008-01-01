@@ -119,9 +119,7 @@ sub rtlAddIntrinsicProcs _
 		end if
 
 		if( doadd ) then
-			if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
-				doadd = env.clopt.lang <> FB_LANG_QB
-			elseif( (procdef->options and FB_RTL_OPT_QBONLY) <> 0 ) then
+			if( (procdef->options and FB_RTL_OPT_QBONLY) <> 0 ) then
 				doadd = ( env.clopt.lang = FB_LANG_QB )
 			end if
 		end if
@@ -262,11 +260,21 @@ sub rtlAddIntrinsicProcs _
 			if( (procdef->options and FB_RTL_OPT_STRSUFFIX) <> 0 ) then
 				attrib or= FB_SYMBATTRIB_SUFFIXED
 			end if
+			
+			'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
+			dim as zstring ptr pname = procdef->name
+			if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
+				if( fbLangIsSet( FB_LANG_QB ) ) then
+        			static as string tmp
+        			tmp = "__" + *pname
+        			pname = strptr( tmp )
+				end if
+			end if
 
 			'' ordinary proc?
 			if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
 				proc = symbAddPrototype( proc, _
-								 	 	 procdef->name, procdef->alias, NULL, _
+								 	 	 pname, procdef->alias, NULL, _
 								 	 	 procdef->dtype, NULL, _
 								 	 	 attrib, procdef->callconv, _
 								 	 	 FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
@@ -274,7 +282,7 @@ sub rtlAddIntrinsicProcs _
 			'' operator..
 			else
 				proc = symbAddOperator( proc, _
-										cast( AST_OP, procdef->name ), NULL, NULL, _
+										cast( AST_OP, pname ), NULL, NULL, _
     						    		procdef->dtype, NULL, _
     					        		attrib or FB_SYMBATTRIB_OPERATOR, _
     					        		procdef->callconv, _

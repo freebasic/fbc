@@ -26,6 +26,7 @@
       members could be accessed
 
 [ ] operator overloading:
+    - add 'operator []' (or string-ish classes won't allow 'direct' char access)
     - add support for functions returning references (reuse "BYREF") or the
       '->' operator will be useless for UDT's with copy-ctors or dtors
       as returning byval will make a deep copy
@@ -51,6 +52,10 @@
 
 [ ] add the -lang (qb|fb) cmd-line option:
     - "qb":
+      [ ] DATA can be declared inside compound statements, ie: "IF foo THEN bar ELSE DATA ..."
+      [ ] RESUME is not working with array bounds and null ptr checks because the labels are not passed
+          - that's the reason why QB needs a cmd-line options, every line executed needs a
+            prev and post label to be emitted to allow that to work
       [ ] SHARED at subs (non-shared vars at mod-level will have to be allocated
           statically, as before)
       [ ] STATIC shouldn't create/allocate arrays, just declare them as static
