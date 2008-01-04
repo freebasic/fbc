@@ -86,13 +86,15 @@
 #define COMM_CHECKED_CHIPTYPE 1
 #define COMM_HAVE_BUFFER 2
 
-/* TODO: Only com3 and com4 are currently supported */
+/* Only irq3 to irq7 are supported */
 #define FIRST_IRQ 3
-#define IRQ_COUNT 2
+#define IRQ_COUNT 5
+#define LAST_IRQ (FIRST_IRQ+IRQ_COUNT-1)
 
 #define MAX_COMM 4
 
 #define COMM_PROPS( n ) &comm_props[n-1]
+#define IRQ_PROPS( n ) &irq_props[n-FIRST_IRQ]
 
 /*
 	This define will make this source use the "built-in" 
@@ -133,7 +135,8 @@ typedef struct
 typedef struct
 {
 	int baseaddr;	/* base port address */
-	int irq;		/* irq number */
+	int def_irq;	/* default irq number */
+	int irq;		/* actual irq number in use */
 	int initflags;	/* initialization flags */
 	int inuse;		/* in use flag */
 	int chiptype;	/* chiptype */
@@ -164,6 +167,9 @@ static int comm_exit( int com_num );
 
 static void comm_handler_irq_3 ( void );
 static void comm_handler_irq_4 ( void );
+static void comm_handler_irq_5 ( void );
+static void comm_handler_irq_6 ( void );
+static void comm_handler_irq_7 ( void );
 static int comm_init_irq( irq_props_t *ip );
 static int comm_exit_irq( irq_props_t *ip );
 #define ENABLE() enable()
@@ -179,7 +185,7 @@ static int comm_exit_irq( irq_props_t *ip );
 /* public procs */
 int comm_open( int com_num, 
 	int baud, int parity, int data, int stop, 
-	int txbufsize, int rxbufsize, int flags );
+	int txbufsize, int rxbufsize, int flags, int irq );
 int comm_close( int com_num );
 int comm_putc( int com_num, int ch );
 int comm_getc( int com_num );
@@ -191,20 +197,26 @@ static comm_init_count = 0;
 #ifndef FB_MANAGED_IRQ
 static irq_props_t irq_props[IRQ_COUNT] = {
 	{ 0, 0, 0, 3, 0xb, comm_handler_irq_3, 0, 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 4, 0xc, comm_handler_irq_4, 0, 0, 0, 0, 0, 0 }
+	{ 0, 0, 0, 4, 0xc, comm_handler_irq_4, 0, 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 5, 0xd, comm_handler_irq_5, 0, 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 6, 0xe, comm_handler_irq_6, 0, 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 7, 0xf, comm_handler_irq_7, 0, 0, 0, 0, 0, 0 }
 };
 #else
 static irq_props_t irq_props[IRQ_COUNT] = {
+	{ 0, 0, 0 },
+	{ 0, 0, 0 },
+	{ 0, 0, 0 },
 	{ 0, 0, 0 },
 	{ 0, 0, 0 }
 };
 #endif
 
 static comm_props_t comm_props[MAX_COMM] = {
-	{ 0x3f8, 4, 0, 0, 0, 0, 0 },
-	{ 0x2f8, 3, 0, 0, 0, 0, 0 },
-	{ 0x3e8, 4, 0, 0, 0, 0, 0 },
-	{ 0x2e8, 3, 0, 0, 0, 0, 0 }
+	{ 0x3f8, 4, 4, 0, 0, 0, 0, 0 },
+	{ 0x2f8, 3, 3, 0, 0, 0, 0, 0 },
+	{ 0x3e8, 4, 4, 0, 0, 0, 0, 0 },
+	{ 0x2e8, 3, 3, 0, 0, 0, 0, 0 }
 };
 
 /*:::::*/
@@ -244,7 +256,7 @@ static int BUFFER_alloc( buffer_t * buf, int size )
 	buf->head = buf->tail = buf->length = 0;
 
 	/* TRUE = success */
-	return( buf->size != 0 ); 
+	return ( buf->size != 0 ); 
 }
 
 /*:::::*/
@@ -270,7 +282,7 @@ static int BUFFER_putc( buffer_t * buf, int ch )
 	buf->tail = (buf->tail + 1) & ( buf->size - 1 );
 	buf->length++;
 
-	return( ch );
+	return ch;
 }
 static void end_BUFFER_putc( void ) { }
 
@@ -332,7 +344,7 @@ static int UART_set_baud( unsigned int baseaddr, int baud )
 	int divisor, lsb, msb, tmp;
 
 	if(( baud < 50 ) || ( baud > 115200 ))
-		return( FALSE );
+		return FALSE;
 
 	divisor = 115200 / baud;
 	lsb = divisor & 0xff;
@@ -370,7 +382,7 @@ static int UART_set_data_format( unsigned int baseaddr,
 		fmt |= 3;
 		break;
 	default:
-		return( FALSE );
+		return FALSE;
 	}
 
 	switch( parity )
@@ -390,7 +402,7 @@ static int UART_set_data_format( unsigned int baseaddr,
 		fmt |= 7 << 3;
 		break;
 	default:
-		return( FALSE );
+		return FALSE;
 	}
 
 	switch( stop )
@@ -399,36 +411,29 @@ static int UART_set_data_format( unsigned int baseaddr,
 		break;
 	case FB_SERIAL_STOP_BITS_1_5:
 		if( data != 5 )
-			return( FALSE );
+			return FALSE;
 		break;
 	case FB_SERIAL_STOP_BITS_2:
 		fmt |= 4;
 		break;
 	default:
-		return( FALSE );
+		return FALSE;
 	}
 
 	/* set data format - assumes DLAB is clear */
 	outportb( baseaddr + UART_LCR, fmt );
 
-	return( TRUE );
+	return TRUE;
 }
 
 #ifndef FB_MANAGED_IRQ	
 
 /*:::::*/
-static void comm_handler_irq_3( void )
-{
-	comm_isr( 3 );
-}
-void end_comm_handler_irq_3( void ) { }
-
-/*:::::*/
-static void comm_handler_irq_4 ( void )
-{
-	comm_isr( 4 );
-}
-static void end_comm_handler_irq_4( void ) { }
+static void comm_handler_irq_3( void ) { comm_isr( 3 ); } void end_comm_handler_irq_3( void ) { }
+static void comm_handler_irq_4( void ) { comm_isr( 4 ); } void end_comm_handler_irq_4( void ) { }
+static void comm_handler_irq_5( void ) { comm_isr( 5 ); } void end_comm_handler_irq_5( void ) { }
+static void comm_handler_irq_6( void ) { comm_isr( 6 ); } void end_comm_handler_irq_6( void ) { }
+static void comm_handler_irq_7( void ) { comm_isr( 7 ); } void end_comm_handler_irq_7( void ) { }
 
 #endif /* #ifndef FB_MANAGED_IRQ */
 
@@ -445,7 +450,7 @@ static int comm_isr( unsigned irq )
 	ENABLE();
 #endif
 
-	ip = &irq_props[irq - FIRST_IRQ];
+	ip = IRQ_PROPS(irq);
 
 	if( ip->usecount == 0)
 		return 0;
@@ -535,6 +540,9 @@ static void comm_init_addref( void )
 #ifndef FB_MANAGED_IRQ	
 		lock_proc( comm_handler_irq_3 );
 		lock_proc( comm_handler_irq_4 );
+		lock_proc( comm_handler_irq_5 );
+		lock_proc( comm_handler_irq_6 );
+		lock_proc( comm_handler_irq_7 );
 #endif
 
 		lock_proc( comm_isr );
@@ -560,6 +568,9 @@ static void comm_init_release( void )
 #ifndef FB_MANAGED_IRQ	
 		unlock_proc( comm_handler_irq_3 );
 		unlock_proc( comm_handler_irq_4 );
+		unlock_proc( comm_handler_irq_5 );
+		unlock_proc( comm_handler_irq_6 );
+		unlock_proc( comm_handler_irq_7 );
 #endif
 
 		unlock_array( comm_props );
@@ -631,7 +642,7 @@ static int comm_init( int com_num, unsigned int baseaddr, int irq )
 	int tmp, i;
 
 	if( com_num < 1 || com_num > MAX_COMM )
-		return( FALSE );
+		return FALSE;
 
 	cp = COMM_PROPS(com_num);
 
@@ -642,8 +653,15 @@ static int comm_init( int com_num, unsigned int baseaddr, int irq )
 
 	if( irq )
 		cp->irq = irq;
+	else
+		cp->irq = cp->def_irq;
 
-	ip = &irq_props[cp->irq - FIRST_IRQ];
+	/* irq is valid? */
+	if( (cp->irq < FIRST_IRQ) || (cp->irq > LAST_IRQ) )
+	{
+		comm_init_release();
+		return FALSE;
+	}
 
 	outportb( cp->baseaddr + UART_FCR, 0 );
 
@@ -668,6 +686,10 @@ static int comm_init( int com_num, unsigned int baseaddr, int irq )
 	/* enable interrupt gate */
 	outportb( cp->baseaddr + UART_MCR, MCR_OUT2 );
 
+
+	/* steup the irq for comm handling */
+	ip = IRQ_PROPS(cp->irq);
+
 	if( ip->usecount == 0 )
 	{
 
@@ -678,7 +700,7 @@ static int comm_init( int com_num, unsigned int baseaddr, int irq )
 #endif
 		{
 			comm_init_release();
-			return( FALSE );
+			return FALSE;
 		}
 
 		/* set the interrupt controller mask */
@@ -715,7 +737,7 @@ static int comm_init( int com_num, unsigned int baseaddr, int irq )
 
 	ENABLE();
 
-	return( TRUE );
+	return TRUE;
 }
 
 static int comm_exit( int com_num )
@@ -725,7 +747,7 @@ static int comm_exit( int com_num )
 	int tmp, irq, i;
 
 	if( com_num < 1 || com_num > MAX_COMM )
-		return( FALSE );
+		return FALSE;
 
 	cp = COMM_PROPS(com_num);
 
@@ -743,7 +765,7 @@ static int comm_exit( int com_num )
 	tmp &= ~( IER_SINP | IER_EBRK | IER_TBE | IER_RXRD );
 	outportb( cp->baseaddr + UART_IER, tmp );
 
-	ip = &irq_props[cp->irq - FIRST_IRQ];
+	ip = IRQ_PROPS(cp->irq);
 
 	/* un-chain comm ports for IRQ sharing */
 	DISABLE();
@@ -785,25 +807,25 @@ static int comm_exit( int com_num )
 
 	comm_init_release();
 
-	return( TRUE );
+	return TRUE;
 }
 
 
 /*:::::*/
 int comm_open( int com_num,
 	int baud, int parity, int data, int stop, 
-	int txbufsize, int rxbufsize, int flags )
+	int txbufsize, int rxbufsize, int flags, int irq )
 {
 	comm_props_t *cp;
 	int tmp, ret;
 
 	if( com_num < 1 || com_num > MAX_COMM )
-		return( FALSE );
+		return FALSE;
 
 	cp = COMM_PROPS(com_num);
 
 	if( cp->inuse )
-		return( FALSE );
+		return FALSE;
 
 	if( (cp->initflags & COMM_CHECKED_CHIPTYPE) == 0 )
 	{
@@ -814,7 +836,7 @@ int comm_open( int com_num,
 	/* TODO: Autodetect IRQ in use by baseaddr */
 
 	if( cp->chiptype == 0 )
-		return( FALSE );
+		return FALSE;
 
 	cp->txbuf.data = NULL;
 	cp->txbuf.size = cp->txbuf.head = cp->txbuf.tail = 0;
@@ -827,7 +849,7 @@ int comm_open( int com_num,
 	if( BUFFER_alloc( &cp->rxbuf, rxbufsize ))
 	if( UART_set_baud( cp->baseaddr, baud ))
 	if( UART_set_data_format( cp->baseaddr, parity, data, stop ))
-	if( comm_init( com_num, 0, 0 ))
+	if( comm_init( com_num, 0, irq ))
 		ret = TRUE;
 
 	/* TODO: wait for DSR if OP/DS option is set */
@@ -849,7 +871,7 @@ int comm_open( int com_num,
 	}
 
 	/* TRUE == success */
-	return( cp->inuse );
+	return cp->inuse;
 }
 
 
@@ -860,12 +882,12 @@ int comm_close( int com_num )
 	int tmp, ret;
 
 	if( com_num < 1 || com_num > MAX_COMM )
-		return( FALSE );
+		return FALSE;
 
 	cp = COMM_PROPS(com_num);
 
 	if( cp->inuse == FALSE )
-		return( FALSE );
+		return FALSE;
 
 	ret = comm_exit( com_num );
 
@@ -874,7 +896,7 @@ int comm_close( int com_num )
 	BUFFER_free( &cp->rxbuf);
 	BUFFER_free( &cp->txbuf);
 
-	return( TRUE );
+	return TRUE;
 }
 
 /*:::::*/
@@ -894,7 +916,7 @@ int comm_putc( int com_num, int ch )
 		ch = BUFFER_putc( &cp->txbuf, ch );
 	}
 	ENABLE();
-	return(ch);
+	return ch;
 }
 
 /*:::::*/
@@ -906,7 +928,7 @@ int comm_getc( int com_num )
 	DISABLE();
 	ch = BUFFER_getc( &cp->rxbuf );
 	ENABLE();
-	return(ch);
+	return ch;
 }
 
 /*:::::*/
@@ -918,7 +940,7 @@ int comm_bytes_remaining( int com_num )
 	DISABLE();
 	bytes = cp->rxbuf.length;
 	ENABLE();
-	return(bytes);
+	return bytes;
 }
 
 /*:::::*/
@@ -952,7 +974,8 @@ int fb_SerialOpen( struct _FB_FILE *handle,
 		options->StopBits, 
 		options->TransmitBuffer,
 		options->ReceiveBuffer,
-		flags
+		flags, 
+		options->IRQNumber
 		);
 
 	if( ret )
@@ -982,7 +1005,8 @@ int fb_SerialOpen( struct _FB_FILE *handle,
 		[x]  int                 KeepDTREnabled  -- DT 
 		[ ]  int                 DiscardOnError  -- FE 
 		[ ]  int                 IgnoreAllErrors -- ME 
-		[ ]  unsigned            IRQNumber       -- IR2..IR15 
+		[x]  unsigned            IRQNumber       -- IR2..IR15
+		[ ]  unsigned            IRQNumber       -- IR2..IR7 
 		[x]  unsigned            TransmitBuffer  -- TBn - a value 0 means: default value 
 		[x]  unsigned            ReceiveBuffer   -- RBn - a value 0 means: default value 
 	*/
