@@ -271,9 +271,18 @@ void fb_unix_hInit ( void )
 #endif
 
 #ifdef MULTITHREADED
-	/* make mutex recursive to behave the same on Win32 and Linux */
+	/* make mutex recursive to behave the same on Win32 and Linux (if possible) */
 	pthread_mutexattr_init(&attr);
-	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+
+#	ifdef HAVE_PTHREAD_MUTEX_RECURSIVE
+		pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+#	else
+#		ifdef HAVE_PTHREAD_MUTEX_RECURSIVE_NP
+			pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP);
+#		else
+#			error Need PTHREAD_MUTEX_RECURSIVE or PTHREAD_MUTEX_RECURSIVE_NP
+#		endif
+#	endif
 
 	/* Init multithreading support */
 	pthread_mutex_init(&__fb_global_mutex, &attr);

@@ -107,8 +107,11 @@
 /* Define to 1 if you have the `pow' function. */
 #undef HAVE_POW
 
-/* "Have declaration of PTHREAD_MUTEX_RECURSIVE" */
+/* Define to 1 if you have the declaration of PTHREAD_MUTEX_RECURSIVE */
 #undef HAVE_PTHREAD_MUTEX_RECURSIVE
+
+/* Define to 1 if you have the declaration of PTHREAD_MUTEX_RECURSIVE_NP */
+#undef HAVE_PTHREAD_MUTEX_RECURSIVE_NP
 
 /* Define to 1 if you have the `putenv' function. */
 #undef HAVE_PUTENV
