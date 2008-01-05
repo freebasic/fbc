@@ -826,16 +826,8 @@ namespace fb.fbdoc
 		strAlt = paramsTb->GetParam( "alt" )
 		strUrl = paramsTb->GetParam( "url" )
 
-		if( trim(left(strUrl,7)) = "http://" ) then
-			strUrl = "images/" + GetBaseName( strUrl )
-			strFile = *ctx->outputdir + strUrl
-		else
-			if left(strUrl, 1) = "/" then
-				strFile = *ctx->outputdir + "images" + strUrl
-			else
-				strFile = *ctx->outputdir + "images/" + strUrl
-			end if
-		end if
+		strUrl = "images/" + GetBaseName( strUrl )
+		strFile = *ctx->outputdir + strUrl
 
 		h = freefile
 		if( open( strFile for input access read as #h ) = 0 ) then
