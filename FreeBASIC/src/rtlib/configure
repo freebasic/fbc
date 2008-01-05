@@ -5375,13 +5375,13 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_have_decl_PTHREAD_MUTEX_RECURSIVE" >&5
 echo "${ECHO_T}$ac_cv_have_decl_PTHREAD_MUTEX_RECURSIVE" >&6
 if test $ac_cv_have_decl_PTHREAD_MUTEX_RECURSIVE = yes; then
-  have_pthread_mutex_recursive=1
+  have_pthread_mutex_recursive=yes
 fi
 
 
-if test "$have_pthread_mutex_recursive" != "1"; then
+if test "$have_pthread_mutex_recursive" = yes; then
     cat >>confdefs.h <<\_ACEOF
-#define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
+#define HAVE_PTHREAD_MUTEX_RECURSIVE 1
 _ACEOF
 
 fi
@@ -5444,13 +5444,13 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_have_decl_PTHREAD_MUTEX_RECURSIVE_NP" >&5
 echo "${ECHO_T}$ac_cv_have_decl_PTHREAD_MUTEX_RECURSIVE_NP" >&6
 if test $ac_cv_have_decl_PTHREAD_MUTEX_RECURSIVE_NP = yes; then
-  have_pthread_mutex_recursive_np=1
+  have_pthread_mutex_recursive_np=yes
 fi
 
 
-if test "$have_pthread_mutex_recursive_np" != "1"; then
+if test "$have_pthread_mutex_recursive_np" = yes; then
     cat >>confdefs.h <<\_ACEOF
-#define PTHREAD_MUTEX_RECURSIVE_NP PTHREAD_MUTEX_RECURSIVE_NP
+#define HAVE_PTHREAD_MUTEX_RECURSIVE_NP 1
 _ACEOF
 
 fi
