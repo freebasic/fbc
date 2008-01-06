@@ -2,9 +2,10 @@
 
 #define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
 
-dim i as long, l as long
+dim i as integer, l as long
 dim si as string, sl as string
 dim s as string
+
 
 '' constant:
 i = cvi("ABCD")
@@ -21,19 +22,18 @@ assert(si = "AB")
 assert(sl = "ABCD")
 
 
-
 '' variable:
+si = "AB"
 sl = "ABCD"
-i = cvi(sl)
+
+i = cvi(si)
 l = cvl(sl)
-
-l = &h44434241
-si = mki$(l)
-sl = mkl$(l)
-
 
 assert(i = &h4241)
 assert(l = &h44434241)
+
+si = mki$(i)
+sl = mkl$(l)
 
 assert(si = "AB")
 assert(sl = "ABCD")
