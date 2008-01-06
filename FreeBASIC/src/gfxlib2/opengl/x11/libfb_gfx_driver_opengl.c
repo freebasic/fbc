@@ -25,8 +25,7 @@
  */
 
 #include "fb_gfx.h"
-
-#include "fb_gfx_linux.h"
+#include "fb_gfx_x11.h"
 #include <GL/glx.h>
 
 /* For compatibility with old Mesa headers */
@@ -98,17 +97,17 @@ static int opengl_window_init(void)
 	int h;
 	char *display_name;
 	
-	if (!(fb_linux.flags & DRIVER_FULLSCREEN)) {
-		x = (XDisplayWidth(fb_linux.display, fb_linux.screen) - fb_linux.w) >> 1;
-		y = (XDisplayHeight(fb_linux.display, fb_linux.screen) - fb_linux.h) >> 1;
+	if (!(fb_x11.flags & DRIVER_FULLSCREEN)) {
+		x = (XDisplayWidth(fb_x11.display, fb_x11.screen) - fb_x11.w) >> 1;
+		y = (XDisplayHeight(fb_x11.display, fb_x11.screen) - fb_x11.h) >> 1;
 	}
 	fb_hX11InitWindow(x, y);
 	
-	fb_linux.display_offset = 0;
-	if (fb_linux.flags & DRIVER_FULLSCREEN) {
+	fb_x11.display_offset = 0;
+	if (fb_x11.flags & DRIVER_FULLSCREEN) {
 		display_name = XDisplayName(NULL);
 		if ((!display_name[0]) || (display_name[0] == ':') || (!strncmp(display_name, "unix:", 5))) {
-			if (fb_hX11EnterFullscreen(&h) || (h != fb_linux.h)) {
+			if (fb_hX11EnterFullscreen(&h) || (h != fb_x11.h)) {
 				fb_hX11LeaveFullscreen();
 				return -1;
 			}
@@ -117,7 +116,7 @@ static int opengl_window_init(void)
 			return -1;
 	}
 	
-	XSync(fb_linux.display, False);
+	XSync(fb_x11.display, False);
 	
 	return 0;
 }
@@ -126,10 +125,10 @@ static int opengl_window_init(void)
 /*:::::*/
 static void opengl_window_exit(void)
 {
-	if (fb_linux.flags & DRIVER_FULLSCREEN)
+	if (fb_x11.flags & DRIVER_FULLSCREEN)
 		fb_hX11LeaveFullscreen();
-	XUnmapWindow(fb_linux.display, fb_linux.window);
-	XSync(fb_linux.display, False);
+	XUnmapWindow(fb_x11.display, fb_x11.window);
+	XSync(fb_x11.display, False);
 }
 
 
@@ -152,7 +151,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	int attribs[64] = { GLX_RGBA, GLX_DOUBLEBUFFER, 0 }, *attrib = &attribs[2], *samples_attrib = NULL;
 	int result;
 	
-	fb_hMemSet(&fb_linux, 0, sizeof(fb_linux));
+	fb_hMemSet(&fb_x11, 0, sizeof(fb_x11));
 	
 	context = NULL;
 	
@@ -193,30 +192,30 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	}
 	*attrib = None;
 	
-	fb_linux.init = opengl_window_init;
-	fb_linux.exit = opengl_window_exit;
-	fb_linux.update = opengl_window_update;
+	fb_x11.init = opengl_window_init;
+	fb_x11.exit = opengl_window_exit;
+	fb_x11.update = opengl_window_update;
 
 	fb_hXlibInit();
 	
-	fb_linux.display = XOpenDisplay(NULL);
-	if (!fb_linux.display)
+	fb_x11.display = XOpenDisplay(NULL);
+	if (!fb_x11.display)
 		return -1;
-	fb_linux.screen = XDefaultScreen(fb_linux.display);
+	fb_x11.screen = XDefaultScreen(fb_x11.display);
 	
 	gl_lib = fb_hDynLoad("libGL.so.1", glx_funcs, funcs_ptr);
 	if (!gl_lib)
 		return -1;
 	
 	do {
-		if ((info = __fb_glX.ChooseVisual(fb_linux.display, fb_linux.screen, attribs))) {
-			fb_linux.visual = info->visual;
-			context = __fb_glX.CreateContext(fb_linux.display, info, NULL, True);
+		if ((info = __fb_glX.ChooseVisual(fb_x11.display, fb_x11.screen, attribs))) {
+			fb_x11.visual = info->visual;
+			context = __fb_glX.CreateContext(fb_x11.display, info, NULL, True);
 			XFree(info);
 			if ((int)context > 0)
 				break;
 			else
-				__fb_glX.DestroyContext(fb_linux.display, context);
+				__fb_glX.DestroyContext(fb_x11.display, context);
 		}
 	} while ((samples_attrib) && ((*samples_attrib -= 2) >= 0));
 	if (!info)
@@ -226,7 +225,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	if (result)
 		return result;
 	
-	__fb_glX.MakeCurrent(fb_linux.display, fb_linux.window, context);
+	__fb_glX.MakeCurrent(fb_x11.display, fb_x11.window, context);
 	
 	if (fb_hGL_Init(gl_lib, NULL))
 		return -1;
@@ -242,8 +241,8 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 static void driver_exit(void)
 {
 	if (context > 0) {
-		__fb_glX.MakeCurrent(fb_linux.display, None, NULL);
-		__fb_glX.DestroyContext(fb_linux.display, context);
+		__fb_glX.MakeCurrent(fb_x11.display, None, NULL);
+		__fb_glX.DestroyContext(fb_x11.display, context);
 	}
 	fb_hX11Exit();
     fb_hDynUnload(&gl_lib);
@@ -254,6 +253,6 @@ static void driver_exit(void)
 static void driver_flip(void)
 {
 	fb_hX11Lock();
-	__fb_glX.SwapBuffers(fb_linux.display, fb_linux.window);
+	__fb_glX.SwapBuffers(fb_x11.display, fb_x11.window);
 	fb_hX11Unlock();
 }

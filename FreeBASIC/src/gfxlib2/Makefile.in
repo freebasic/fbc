@@ -26,10 +26,10 @@ LIBICONV = @LIBICONV@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 SHELL = @SHELL@
-VPATH = @srcdir@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_CPU@
+VPATH = @srcdir@ @srcdir@/@FBGFX_BASE@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_CPU@
 
 ifeq (@FBRT_OPENGL@,opengl)
-VPATH += @srcdir@/opengl @srcdir@/opengl/@FBRT_TARGET@
+VPATH += @srcdir@/opengl @srcdir@/opengl/@FBGFX_BASE@ @srcdir@/opengl/@FBRT_TARGET@
 endif
 
 datadir = @datadir@
@@ -46,7 +46,11 @@ ifdef DEBUG
     DEFS += -DDEBUG
 endif
 
-INCLUDES = -I$(srcdir) -I$(srcdir)/@FBRT_TARGET@ -I$(srcdir)/@FBRT_CPU@ -I.
+INCLUDES = -I$(srcdir)
+ifneq (@FBGFX_BASE@,)
+    INCLUDES += -I$(srcdir)/@FBGFX_BASE@
+endif
+INCLUDES += -I$(srcdir)/@FBRT_TARGET@ -I$(srcdir)/@FBRT_CPU@ -I.
 
 INCLUDES += @X_INCLUDES@
 
@@ -70,6 +74,8 @@ ALL_CFLAGS = $(CFLAGS) $(CPPFLAGS) $(INCLUDES) # $(WARN_CFLAGS)
 FBRT_OBJS := $(patsubst @srcdir@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/*.c))
 FBRT_OBJS += $(patsubst @srcdir@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/*.s))
 FBRT_OBJS += $(FBRT_OBJDEST)/libfb_gfx_data.o
+FBRT_BASEDEPOBJS := $(patsubst @srcdir@/@FBGFX_BASE@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBGFX_BASE@/*.c))
+FBRT_BASEDEPOBJS += $(patsubst @srcdir@/@FBGFX_BASE@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBGFX_BASE@/*.s))
 FBRT_OSDEPOBJS := $(patsubst @srcdir@/@FBRT_TARGET@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.c))
 FBRT_OSDEPOBJS += $(patsubst @srcdir@/@FBRT_TARGET@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.s))
 FBRT_CPUDEPOBJS := $(patsubst @srcdir@/@FBRT_CPU@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_CPU@/*.c))
@@ -80,6 +86,8 @@ FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_TARGET@/*.h)
 ifeq (@FBRT_OPENGL@,opengl)
     FBRT_OPENGLDEPOBJS := $(patsubst @srcdir@/opengl/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/opengl/*.c))
     FBRT_OPENGLDEPOBJS += $(patsubst @srcdir@/opengl/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/opengl/*.s))
+    FBRT_OPENGLDEPOBJS += $(patsubst @srcdir@/opengl/@FBGFX_BASE@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/opengl/@FBGFX_BASE@/*.c))
+    FBRT_OPENGLDEPOBJS += $(patsubst @srcdir@/opengl/@FBGFX_BASE@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/opengl/@FBGFX_BASE@/*.s))
     FBRT_OPENGLDEPOBJS += $(patsubst @srcdir@/opengl/@FBRT_TARGET@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/opengl/@FBRT_TARGET@/*.c))
     FBRT_OPENGLDEPOBJS += $(patsubst @srcdir@/opengl/@FBRT_TARGET@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/opengl/@FBRT_TARGET@/*.s))
 endif
@@ -101,8 +109,8 @@ $(FBRT_OBJDEST)/%.o : %.c $(FBRT_HEADERS)
 $(FBRT_OBJDEST)/%.o : %.s fb_gfx_mmx.h
 	$(CC) $(ALL_CFLAGS) $(DEFS) -x assembler-with-cpp -c $< -o $@
 
-$(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OPENGLDEPOBJS)
-	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OPENGLDEPOBJS)
+$(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_BASEDEPOBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OPENGLDEPOBJS)
+	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_BASEDEPOBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OPENGLDEPOBJS)
 	$(RANLIB) $(FBRT_LIB)
 
 @srcdir@/libfb_gfx_data.c: $(FBRT_OBJDEST)/mk_dat$(EXEEXT) @srcdir@/data/data.lst $(FBRT_DATAFILES)
@@ -149,7 +157,7 @@ $(srcdir)/config.in: @MAINT@ $(srcdir)/configure
 # Other miscellaneous targets.
 
 mostlyclean:
-	-rm -rf $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OBJDEST)/mk_dat$(EXEEXT) $(FBRT_OBJDEST)/mk_dat.o $(FBRT_OPENGLDEPOBJS)
+	-rm -rf $(FBRT_OBJS) $(FBRT_BASEDEPOBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OBJDEST)/mk_dat$(EXEEXT) $(FBRT_OBJDEST)/mk_dat.o $(FBRT_OPENGLDEPOBJS)
 	-rm -f $(srcdir)/data/data.dat $(srcdir)/libfb_gfx_data.c
 
 clean: mostlyclean

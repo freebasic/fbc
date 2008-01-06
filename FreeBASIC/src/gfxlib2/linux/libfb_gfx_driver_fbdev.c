@@ -40,6 +40,15 @@
 #define OUTB(port,value)	{ __asm__ __volatile__ ("outb %b0, %w1" : : "a"(value), "Nd"(port)); }
 
 
+typedef struct FBDEVDRIVER
+{
+	int w, h, depth, flags;
+	int refresh_rate;
+	int mouse_clip;
+} FBDEVDRIVER;
+
+static FBDEVDRIVER fb_fbdev;
+
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_exit(void);
 static void driver_lock(void);
@@ -102,7 +111,7 @@ static pthread_cond_t cond;
 static void vga16_blitter(unsigned char *dest, int pitch)
 {
 	unsigned int color;
-	unsigned char buffer[fb_linux.w], pattern;
+	unsigned char buffer[fb_fbdev.w], pattern;
 	unsigned char *s, *source = __fb_gfx->framebuffer;
 	int x, y, plane, i, offset;
 	
@@ -118,11 +127,11 @@ static void vga16_blitter(unsigned char *dest, int pitch)
 	OUTB(0x3CE, 0x08);
 	OUTB(0x3CF, 0xFF);
 	
-	for (y = 0; y < fb_linux.h; y++) {
+	for (y = 0; y < fb_fbdev.h; y++) {
 		if (__fb_gfx->dirty[y]) {
 			offset = 0;
 			s = source;
-			for (x = 0; x < fb_linux.w; x += 8) {
+			for (x = 0; x < fb_fbdev.w; x += 8) {
 				for (plane = 0; plane < 4; plane++) {
 					pattern = 0;
 					for (i = 0; i < 8; i++) {
@@ -137,7 +146,7 @@ static void vga16_blitter(unsigned char *dest, int pitch)
 						if (color & (1 << plane))
 							pattern |= 1 << (7 - i);
 					}
-					buffer[((fb_linux.w >> 3) * plane) + offset] = pattern;
+					buffer[((fb_fbdev.w >> 3) * plane) + offset] = pattern;
 				}
 				offset++;
 				s += 8;
@@ -145,7 +154,7 @@ static void vga16_blitter(unsigned char *dest, int pitch)
 			for (plane = 0; plane < 4; plane++) {
 				OUTB(0x3C4, 0x02);
 				OUTB(0x3C5, (1 << plane));
-				fb_hMemCpy(dest, buffer + ((fb_linux.w >> 3) * plane), (fb_linux.w >> 3));
+				fb_hMemCpy(dest, buffer + ((fb_fbdev.w >> 3) * plane), (fb_fbdev.w >> 3));
 			}
 		}
 		dest += pitch;
@@ -253,7 +262,7 @@ static void *driver_thread(void *arg)
 				if (device_info.type != FB_TYPE_VGA_PLANES)
 					ioctl(device_fd, FBIOPUTCMAP, &cmap);
 				else
-					fb_hMemSet(__fb_gfx->dirty, TRUE, fb_linux.h);
+					fb_hMemSet(__fb_gfx->dirty, TRUE, fb_fbdev.h);
 				if (mouse_fd >= 0)
 					fb_hSoftCursorPaletteChanged();
 				is_palette_changed = FALSE;
@@ -261,7 +270,7 @@ static void *driver_thread(void *arg)
 			if ((mouse_fd >= 0) && (mouse_shown))
 				fb_hSoftCursorPut(mouse_x, mouse_y);
 			blitter(framebuffer + framebuffer_offset, device_info.line_length);
-			fb_hMemSet(__fb_gfx->dirty, FALSE, fb_linux.h);
+			fb_hMemSet(__fb_gfx->dirty, FALSE, fb_fbdev.h);
 			if ((mouse_fd >= 0) && (mouse_shown))
 				fb_hSoftCursorUnput(mouse_x, mouse_y);
 		}
@@ -271,7 +280,7 @@ static void *driver_thread(void *arg)
 		if (vsync_flags & (FB_VBLANK_HAVE_VBLANK | FB_VBLANK_HAVE_VCOUNT))
 			usleep(8000);
 		else
-			usleep(1000000 / ((fb_linux.refresh_rate > 0) ? fb_linux.refresh_rate : 60));
+			usleep(1000000 / ((fb_fbdev.refresh_rate > 0) ? fb_fbdev.refresh_rate : 60));
 	}
 	
 	return NULL;
@@ -301,7 +310,7 @@ static void driver_restore_screen(void)
 	is_active = TRUE;
 	is_palette_changed = TRUE;
 	fb_hMemSet(framebuffer, 0, device_info.smem_len);
-	fb_hMemSet(__fb_gfx->dirty, TRUE, fb_linux.h);
+	fb_hMemSet(__fb_gfx->dirty, TRUE, fb_fbdev.h);
 	pthread_mutex_unlock(&mutex);
 	e.type = EVENT_WINDOW_GOT_FOCUS;
 	fb_hPostEvent(&e);
@@ -333,9 +342,9 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	if (flags & DRIVER_OPENGL)
 		return -1;
 	
-	fb_linux.w = w;
-	fb_linux.h = h;
-	fb_linux.flags = flags;
+	fb_fbdev.w = w;
+	fb_fbdev.h = h;
+	fb_fbdev.flags = flags;
 	depth = MAX(depth, 4);
 	
 	device_name = getenv("FBGFX_FRAMEBUFFER");
@@ -445,8 +454,8 @@ got_mode:
 	if (fb_hConsoleGfxMode(driver_exit, driver_save_screen, driver_restore_screen, driver_key_handler))
 		return -1;
 	
-	fb_hFBDevInfo(&dummy, &dummy, &dummy, &fb_linux.refresh_rate);
-	__fb_gfx->refresh_rate = fb_linux.refresh_rate;
+	fb_hFBDevInfo(&dummy, &dummy, &dummy, &fb_fbdev.refresh_rate);
+	__fb_gfx->refresh_rate = fb_fbdev.refresh_rate;
 	
 	if (ioctl(device_fd, FBIOGET_FSCREENINFO, &device_info) < 0)
 		return -1;
