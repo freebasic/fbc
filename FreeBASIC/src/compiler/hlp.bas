@@ -677,13 +677,15 @@ function hEnvDir( ) as string static
 
 	dim as string path
 
-	'' absolute path given?
-#if defined(__FB_WIN32__) or defined(__FB_DOS__)
-	if( env.inf.name[1] = asc(":") ) then
+#if defined(__FB_WIN32__) Or defined(__FB_DOS__)
+  #define hIsAbsolutePath( path ) path[1] = asc(":")
 #else
-	if( left( env.inf.name, 1 ) = "/" ) then
+  #define hIsAbsolutePath( path ) path[0] = asc("/")
 #endif
-		'' leave path, with trailing slash
+
+	'' absolute path given?
+	if( hIsAbsolutePath( env.inf.name ) ) then
+    	'' leave path, with trailing slash
 		path = hStripFilename( env.inf.name )
 
 		'' remove trailing slash
