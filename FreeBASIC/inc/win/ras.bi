@@ -524,10 +524,37 @@ type RASENTRYNAME as RASENTRYNAMEA
 type LPRASENTRYNAME as RASENTRYNAMEA ptr
 #endif
 
+type RAS_STATS
+	dwSize as DWORD
+	dwBytesXmited as DWORD
+	dwBytesRcved as DWORD
+	dwFramesXmited as DWORD
+	dwFramesRcved as DWORD
+	dwCrcErr as DWORD
+	dwTimeoutErr as DWORD
+	dwAlignmentErr as DWORD
+	dwHardwareOverrunErr as DWORD
+	dwFramingErr as DWORD
+	dwBufferOverrunErr as DWORD
+	dwCompressionRatioIn as DWORD
+	dwCompressionRatioOut as DWORD
+	dwBps as DWORD
+	dwConnectDuration as DWORD
+end type
+
 type ORASADFUNC as function(byval as HWND, byval as LPSTR, byval as DWORD, byval as LPDWORD) as BOOL
 type RASDIALFUNC as sub(byval as UINT, byval as RASCONNSTATE, byval as DWORD)
 type RASDIALFUNC1 as sub(byval as HRASCONN, byval as UINT, byval as RASCONNSTATE, byval as DWORD, byval as DWORD)
 type RASDIALFUNC2 as function(byval as ULONG_PTR, byval as DWORD, byval as HRASCONN, byval as UINT, byval as RASCONNSTATE, byval as DWORD, byval as DWORD) as DWORD
+
+type RasCustomHangUpFn as function cdecl(byval as HRASCONN) as DWORD
+type RasCustomDeleteEntryNotifyFn as function cdecl(byval as LPCTSTR, byval as LPCTSTR, byval as DWORD) as DWORD
+type RasCustomDialFn as function cdecl(byval as HINSTANCE, byval as LPRASDIALEXTENSIONS, byval as LPCTSTR, byval as LPRASDIALPARAMS, byval as DWORD, byval as LPVOID, byval as LPHRASCONN, byval as DWORD) as DWORD
+
+declare function RasGetLinkStatistics alias "RasGetLinkStatistics" (byval as HRASCONN, byval as DWORD, byval as RAS_STATS ptr) as DWORD
+declare function RasGetConnectionStatistics alias "RasGetConnectionStatistics" (byval as HRASCONN, byval as RAS_STATS ptr) as DWORD
+declare function RasClearLinkStatistics alias "RasClearLinkStatistics" (byval as HRASCONN, byval as DWORD) as DWORD
+declare function RasClearConnectionStatistics alias "RasClearConnectionStatistics" (byval as HRASCONN) as DWORD
 
 #ifdef UNICODE
 declare function RasDial alias "RasDialW" (byval as LPRASDIALEXTENSIONS, byval as LPCWSTR, byval as LPRASDIALPARAMSW, byval as DWORD, byval as LPVOID, byval as LPHRASCONN) as DWORD
