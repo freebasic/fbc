@@ -32,18 +32,6 @@
       as returning byval will make a deep copy
     - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
 
-[ ] remove the internal profiler and use gprof instead, the former won't work with
-    destructors
-
-    [X] mingw
-    [ ] cygwin - not tested yet
-    [X] dos
-    [X] linux
-    [ ] xbox - does openxdk even support profiling with gmon?
-               If not, then it shouldn't be an allowable option.
-
-    [X] remove libfb_ctor.c - replaced by fbrt0.c
-
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
     	- does QB allow that? CONS won't work without INPUT or OUTPUT
@@ -52,10 +40,9 @@
 
 [ ] add the -lang (qb|fb) cmd-line option:
     - "qb":
-      [ ] DATA can be declared inside compound statements, ie: "IF foo THEN bar ELSE DATA ..."
       [ ] RESUME is not working with array bounds and null ptr checks because the labels are not passed
-          - that's the reason why QB needs a cmd-line options, every line executed needs a
-            prev and post label to be emitted to allow that to work
+          - that's the reason why QB needs a cmd-line option, every line executed needs a
+            prev and post labels to be emitted to allow that to work
       [ ] SHARED at subs (non-shared vars at mod-level will have to be allocated
           statically, as before)
       [ ] STATIC shouldn't create/allocate arrays, just declare them as static
@@ -63,7 +50,7 @@
           argument
       [ ] events:
       	  - there should be a call to the event trapping function on EVERY line
-      	    emitted (we can't use threads because the DOS)
+      	    emitted (we can't use threads because DOS)
       	  - to the above work, a new cmd-line option must be added (as in QB)
       	  [ ] on key()
       	  [ ] on timer()
@@ -71,7 +58,7 @@
           - the other events are seldom, if ever, used..
       [ ] add "qb" mangling
           [x] symbols with same name but different sufixes than keywords
-          [ ] arrays with same name as scalars
+          [ ] arrays with same name as scalars (most spaghetti-code won't compile w/o this)
           [ ] labels with the same name as procs:
               declare sub foo \n foo: \n goto foo \n call foo
       [x] suffixes not optional in keywords (ie: it's always STR$, not STR)
@@ -110,7 +97,7 @@
       [x] no op and function overloading
       [x] no EXTERN (periods and suffixes screw mangling)
       [x] no multi-threading - not thread*, mutex*, cond*
-      [x] no keyword not present in QB
+      [x] no keyword not present in QB (prefixed with '__')
 
     - "fb" - the inverse of "qb", but show deprecated messages by now for:
       [ ] without ON ERROR, all stmts returning rt errors should be allowed to

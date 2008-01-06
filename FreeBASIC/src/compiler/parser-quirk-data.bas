@@ -101,20 +101,32 @@ function cDataStmt  _
 	'' DATA literal|constant expr (',' literal|constant expr)*
 	case FB_TK_DATA
 
-		'' allowed?
-		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DATA ) = FALSE ) then
-			exit function
-		end if
-
-		'' not in module-level?
-		if( parser.scope > FB_MAINSCOPE ) then
-			if( fbIsModLevel( ) = FALSE ) then
-				errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
-			else
-				errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
+		if( env.clopt.lang <> FB_LANG_QB ) then
+			'' allowed?
+			if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DATA ) = FALSE ) then
+				exit function
 			end if
 
-			return FALSE
+			'' not in module-level?
+			if( parser.scope > FB_MAINSCOPE ) then
+				if( fbIsModLevel( ) = FALSE ) then
+					errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
+				else
+					errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
+				end if
+
+				hSkipStmt( )
+				return FALSE
+			end if
+
+		else
+			'' in QB, DATA can be declared inside compound stmts..
+			if( fbIsModLevel( ) = FALSE ) then
+				errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
+
+				hSkipStmt( )
+				return FALSE
+			end if
 		end if
 
 		dim as ASTNODE ptr tree = astDataStmtBegin( )
