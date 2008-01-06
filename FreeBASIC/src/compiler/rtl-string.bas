@@ -26,7 +26,7 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 163 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 164 ) = _
 	{ _
 		/' fb_StrInit ( byref dst as any, byval dst_len as integer, _
 		 				byref src as any, byval src_len as integer, _
@@ -2075,7 +2075,7 @@
 		( _
 			@FB_RTL_MKI, @"fb_MKI", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -2083,6 +2083,19 @@
 				) _
 			} _
  		), _
+		/' fb_MKI ( byval number as short ) as string '/ _
+		( _
+			@FB_RTL_MKI, @"fb_MKSHORT", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_QBONLY, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_MKL ( byval number as integer ) as string '/ _
 		( _
 			@FB_RTL_MKL, @"fb_MKI", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
@@ -2308,7 +2321,7 @@
 		( _
 			@FB_RTL_CVI, @"fb_CVI", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -2316,6 +2329,19 @@
 				) _
 			} _
  		), _
+		/' fb_CVI ( byref str as string ) as short '/ _
+		( _
+			@FB_RTL_CVI, @"fb_CVSHORT", _
+			FB_DATATYPE_SHORT, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_QBONLY, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_CVL ( byref str as string ) as integer '/ _
 		( _
 			@FB_RTL_CVL, @"fb_CVI", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
