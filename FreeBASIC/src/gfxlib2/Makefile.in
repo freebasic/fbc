@@ -26,7 +26,11 @@ LIBICONV = @LIBICONV@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 SHELL = @SHELL@
-VPATH = @srcdir@ @srcdir@/@FBGFX_BASE@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_CPU@
+ifneq (,@FBRT_TARGET_BASE@)
+    VPATH = @srcdir@ @srcdir@/@FBGFX_BASE@ @srcdir@/@FBRT_TARGET_BASE@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_CPU@
+else
+    VPATH = @srcdir@ @srcdir@/@FBGFX_BASE@ @srcdir@/@FBRT_TARGET@ @srcdir@/@FBRT_CPU@
+endif
 
 ifeq (@FBRT_OPENGL@,opengl)
 VPATH += @srcdir@/opengl @srcdir@/opengl/@FBGFX_BASE@ @srcdir@/opengl/@FBRT_TARGET@
@@ -49,6 +53,9 @@ endif
 INCLUDES = -I$(srcdir)
 ifneq (@FBGFX_BASE@,)
     INCLUDES += -I$(srcdir)/@FBGFX_BASE@
+endif
+ifneq (@FBRT_TARGET_BASE@,)
+    INCLUDES += -I$(srcdir)/@FBRT_TARGET_BASE@
 endif
 INCLUDES += -I$(srcdir)/@FBRT_TARGET@ -I$(srcdir)/@FBRT_CPU@ -I.
 
@@ -182,7 +189,7 @@ install-info:
 install-man:
 
 install:
-	cp libfb*.a ../../../../lib/@FBRT_TARGET@/ -v
+	cp -v libfb*.a ../../../../lib/@FBRT_TARGET@/
 
 .PHONY: installdirs install install-strip mostlyclean clean distclean \
   maintainer-clean check installcheck dvi html info install-info \

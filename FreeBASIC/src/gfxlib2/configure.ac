@@ -17,37 +17,46 @@ AC_CANONICAL_TARGET
 case "$target" in
 	*-*-linux* )
 		AC_DEFINE([TARGET_LINUX],1,[Linux build])
+		AC_DEFINE([TARGET_BASE_UNIX],1,[Unix base build])
 		FBGFX_BASE=x11
+		FBRT_TARGET_BASE=unix
 		FBRT_TARGET=linux
 		;;
 	*-*-mingw* )
 		AC_DEFINE([TARGET_WIN32],1,[Win32 build])
 		FBGFX_BASE=
+		FBRT_TARGET_BASE=
 		FBRT_TARGET=win32
 		;;
 	*-*-cygwin* )
 		AC_DEFINE([TARGET_CYGWIN],1,[Cygwin build])
 		FBGFX_BASE=
+		FBRT_TARGET_BASE=
 		FBRT_TARGET=win32
 		;;
 	*-*-msdos* )
 		AC_DEFINE([TARGET_DOS],1,[Djgpp build])
 		FBGFX_BASE=
+		FBRT_TARGET_BASE=
 		FBRT_TARGET=dos
 		;;
 	*-*-xbox* )
 		AC_DEFINE([TARGET_XBOX],1,[Xbox build])
 		FBGFX_BASE=
+		FBRT_TARGET_BASE=
 		FBRT_TARGET=xbox
 		;;
 	*-*-freebsd* )
 		AC_DEFINE([TARGET_FREEBSD],1,[FreeBSD build])
+		AC_DEFINE([TARGET_BASE_UNIX],1,[Unix base build])
 		FBGFX_BASE=x11
+		FBRT_TARGET_BASE=unix
 		FBRT_TARGET=freebsd
 		;;
 	*-*-solaris* )
 		AC_DEFINE([TARGET_SOLARIS],1,[Solaris build])
 		FBGFX_BASE=x11
+		FBRT_TARGET_BASE=unix
 		FBRT_TARGET=solaris
 		;;
 	*)
@@ -56,6 +65,7 @@ case "$target" in
 esac
 
 AC_SUBST([FBGFX_BASE])
+AC_SUBST([FBRT_TARGET_BASE])
 AC_SUBST([FBRT_TARGET])
 
 case "$target_cpu" in

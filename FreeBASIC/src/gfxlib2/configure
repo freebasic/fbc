@@ -667,6 +667,7 @@ target_cpu
 target_vendor
 target_os
 FBGFX_BASE
+FBRT_TARGET_BASE
 FBRT_TARGET
 FBRT_CPU
 SET_MAKE
@@ -1902,7 +1903,13 @@ cat >>confdefs.h <<\_ACEOF
 #define TARGET_LINUX 1
 _ACEOF
 
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_BASE_UNIX 1
+_ACEOF
+
 		FBGFX_BASE=x11
+		FBRT_TARGET_BASE=unix
 		FBRT_TARGET=linux
 		;;
 	*-*-mingw* )
@@ -1912,6 +1919,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBGFX_BASE=
+		FBRT_TARGET_BASE=
 		FBRT_TARGET=win32
 		;;
 	*-*-cygwin* )
@@ -1921,6 +1929,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBGFX_BASE=
+		FBRT_TARGET_BASE=
 		FBRT_TARGET=win32
 		;;
 	*-*-msdos* )
@@ -1930,6 +1939,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBGFX_BASE=
+		FBRT_TARGET_BASE=
 		FBRT_TARGET=dos
 		;;
 	*-*-xbox* )
@@ -1939,6 +1949,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBGFX_BASE=
+		FBRT_TARGET_BASE=
 		FBRT_TARGET=xbox
 		;;
 	*-*-freebsd* )
@@ -1947,7 +1958,13 @@ cat >>confdefs.h <<\_ACEOF
 #define TARGET_FREEBSD 1
 _ACEOF
 
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_BASE_UNIX 1
+_ACEOF
+
 		FBGFX_BASE=x11
+		FBRT_TARGET_BASE=unix
 		FBRT_TARGET=freebsd
 		;;
 	*-*-solaris* )
@@ -1957,6 +1974,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBGFX_BASE=x11
+		FBRT_TARGET_BASE=unix
 		FBRT_TARGET=solaris
 		;;
 	*)
@@ -1965,6 +1983,7 @@ echo "$as_me: error: Unsupported target" >&2;}
    { (exit 1); exit 1; }; }
 		;;
 esac
+
 
 
 
@@ -6331,6 +6350,7 @@ target_cpu!$target_cpu$ac_delim
 target_vendor!$target_vendor$ac_delim
 target_os!$target_os$ac_delim
 FBGFX_BASE!$FBGFX_BASE$ac_delim
+FBRT_TARGET_BASE!$FBRT_TARGET_BASE$ac_delim
 FBRT_TARGET!$FBRT_TARGET$ac_delim
 FBRT_CPU!$FBRT_CPU$ac_delim
 SET_MAKE!$SET_MAKE$ac_delim
@@ -6354,7 +6374,7 @@ MAINT!$MAINT$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 71; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 72; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

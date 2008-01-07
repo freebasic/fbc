@@ -18,34 +18,26 @@
 */
 
 /*
- * print_wstr.c -- graphical mode wstring text output
+ * freebsd.c -- list of FreeBSD gfx drivers
  *
- * chng: nov/2005 written [v1ctor]
+ * chng: jan/2007 written [DrV]
  *
  */
 
 #include "fb_gfx.h"
-#include "../rtlib/fb_con.h"
-#include <stdlib.h>
+#include "fb_gfx_x11.h"
+
+const GFXDRIVER *__fb_gfx_drivers_list[] = {
+	&fb_gfxDriverX11,
+#ifdef HAVE_GL_GL_H
+	&fb_gfxDriverOpenGL,
+#endif
+	NULL
+};
 
 /*:::::*/
-void fb_GfxPrintBufferWstrEx(const FB_WCHAR *buffer, size_t len, int mask)
+void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 {
-	/* Unicode gfx font support is out of the scope of gfxlib, convert to ascii */
-	
-	char temp[len + 1];
-
-	if( len > 0 )
-		fb_wstr_ConvToA( temp, buffer, len );
-	else
-		*temp = '\0';
-
-	fb_GfxPrintBufferEx( temp, len, mask );
+	if (fb_hX11ScreenInfo(width, height, depth, refresh))
+		*width = *height = *depth = *refresh = 0;
 }
-
-/*:::::*/
-void fb_GfxPrintBufferWstr(const FB_WCHAR *buffer, int mask)
-{
-	fb_GfxPrintBufferWstrEx( buffer, fb_wstr_Len(buffer), mask);
-}
-

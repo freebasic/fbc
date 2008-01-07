@@ -1514,8 +1514,8 @@ private function hGfxlib_cb _
 			symbAddLib( "gdi32" )
 			symbAddLib( "winmm" )
 
-		case FB_COMPTARGET_LINUX
-#ifdef TARGET_LINUX
+		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD
+#if defined( TARGET_LINUX ) or defined( TARGET_FREEBSD )
 			symbAddLibPath( "/usr/X11R6/lib" )
 #endif
 
