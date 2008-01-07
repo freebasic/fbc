@@ -47,7 +47,7 @@ char *fb_hGetExeName( char *dst, int maxlen )
 	p = strrchr( __fb_ctx.argv[0], '/' );
 	if( p )
 	{
-		strlcpy( dst, p, maxlen );
+		strlcpy( dst, p + 1, maxlen );
 	}
 	else
 	{
