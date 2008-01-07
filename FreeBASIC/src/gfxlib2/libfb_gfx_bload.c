@@ -58,7 +58,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 {
 	BMP_HEADER header;
 	PUT_HEADER *put_header = NULL;
-	unsigned char *buffer, *d = NULL;
+	unsigned char *buffer;
 	int result = fb_ErrorSetNum( FB_RTERROR_OK );
 	int i, j, width, height, bpp, color, rgb[3], expand, size, padding, palette[256], palette_entries;
 	void *target_pal = pal;
@@ -86,17 +86,40 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 	if (dest) {
 		put_header = (PUT_HEADER *)dest;
 		/* do not overwrite pre-allocated image buffer header */
-		if (put_header->type != PUT_HEADER_NEW) {
-			put_header->type = PUT_HEADER_NEW;
-			put_header->bpp = ctx->target_bpp;
-			put_header->width = header.biWidth;
-			put_header->height = header.biHeight;
-			put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
+		if (put_header->type == PUT_HEADER_NEW) {
+			width = MIN(put_header->width, header.biWidth);
+			height = MIN(put_header->height, header.biHeight);
+			bpp = put_header->bpp;
+		} else {
+			bpp = put_header->old.bpp;
+			if (bpp == 1 || bpp == 2 || bpp == 4) {
+				width = MIN(put_header->old.width, header.biWidth);
+				height = MIN(put_header->old.height, header.biHeight);
+			}
+			else {
+				if (__fb_ctx.lang == FB_LANG_FB) {
+					put_header->type = PUT_HEADER_NEW;
+					put_header->bpp = ctx->target_bpp;
+					put_header->width = header.biWidth;
+					put_header->height = header.biHeight;
+					put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
+
+					width = MIN(put_header->width, header.biWidth);
+					height = MIN(put_header->height, header.biHeight);
+					bpp = put_header->bpp;
+				}
+				else {
+					put_header->old.bpp = ctx->target_bpp;
+					put_header->old.width = header.biWidth;
+					put_header->old.height = header.biHeight;
+					put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
+					
+					width = MIN(put_header->old.width, header.biWidth);
+					height = MIN(put_header->old.height, header.biHeight);
+					bpp = put_header->old.bpp;
+					}
+			}
 		}
-		width = MIN(put_header->width, header.biWidth);
-		height = MIN(put_header->height, header.biHeight);
-		bpp = put_header->bpp;
-		d = (unsigned char *)dest + sizeof(PUT_HEADER);
 	}
 	else {
 		width = MIN(__fb_gfx->w, header.biWidth);
