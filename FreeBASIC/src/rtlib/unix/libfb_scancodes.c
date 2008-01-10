@@ -41,11 +41,7 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 
-const struct
-{
-	KeySym keysym;
-	int scancode;
-} fb_keysym_to_scancode[] = {
+const KeysymToScancode fb_keysym_to_scancode[] = {
 	{ XK_Escape,		0x01 },	{ XK_F1,			0x3B }, { XK_F2,			0x3C },
 	{ XK_F3,			0x3D }, { XK_F4,			0x3E }, { XK_F5,			0x3F },
 	{ XK_F6,			0x40 }, { XK_F7,			0x41 },	{ XK_F8,			0x42 },
