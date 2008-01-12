@@ -200,7 +200,7 @@ function cEnumBody _
 end function
 
 '':::::
-''EnumDecl        =   ENUM ID? (ALIAS LITSTR)? Comment? SttSeparator
+''EnumDecl        =   ENUM ID? (ALIAS LITSTR)? EXPLICIT? Comment? SttSeparator
 ''                        EnumLine+
 ''					  END ENUM .
 function cEnumDecl _
@@ -276,6 +276,13 @@ function cEnumDecl _
     	end if
 	end if
 
+	'' EXPLICIT?
+	dim as integer isexplicit = FALSE
+	if( lexGetToken( ) = FB_TK_EXPLICIT ) then
+		lexSkipToken( )
+		isexplicit = TRUE
+	end if
+
 	'' Comment? SttSeparator
 	cComment( )
 
@@ -292,7 +299,7 @@ function cEnumDecl _
 	end if
 
 	'' if in BASIC mangling mode, start a new scope
-	if( symbGetMangling( e ) = FB_MANGLING_BASIC ) then
+	if( (symbGetMangling( e ) = FB_MANGLING_BASIC) or (isexplicit = TRUE) ) then
 		symbNestBegin( e, FALSE )
 	end if
 
@@ -300,7 +307,7 @@ function cEnumDecl _
 	dim as integer res = cEnumBody( e, attrib )
 
 	'' close scope
-	if( symbGetMangling( e ) = FB_MANGLING_BASIC ) then
+	if( (symbGetMangling( e ) = FB_MANGLING_BASIC) or (isexplicit = TRUE) ) then
 		symbNestEnd( FALSE )
 	end if
 
@@ -331,9 +338,11 @@ function cEnumDecl _
 		else
 			lexSkipToken( )
 
-			'' if in BASIC mangling mode, do an implicit 'USING enum'
-			if( symbGetMangling( e ) = FB_MANGLING_BASIC ) then
-				symbNamespaceImport( e )
+			if( isexplicit = FALSE ) then
+				'' if in BASIC mangling mode, do an implicit 'USING enum'
+				if( symbGetMangling( e ) = FB_MANGLING_BASIC ) then
+					symbNamespaceImport( e )
+				end if
 			end if
 		end if
 	end if
