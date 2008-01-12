@@ -7,6 +7,7 @@ Version 0.18.4 Beta:
 
 [added]
 - INSTRREV - feature request #1244607 (jeffm)
+- 'ENUM foo EXPLICIT' to allow the enum elements not to be imported to the current namespace (syntax suggested by Pritchard) (v1c)
 
 [fixed]
 - OPEN COM protocol parser was not handling default parameters (jeffm)
