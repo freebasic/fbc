@@ -617,6 +617,7 @@ end function
 '' 				|   MID$ '(' Expression ',' Expression (',' Expression)? ')'
 '' 				|   W|STRING$ '(' Expression ',' Expression{int|str} ')' .
 ''              |   INSTR '(' (Expression{int} ',')? Expression{str}, "ANY"? Expression{str} ')'
+''              |   INSTRREV '(' Expression{str}, "ANY"? Expression{str} (',' Expression{int})? ')'
 ''              |   RTRIM$ '(' Expression{str} (, "ANY" Expression{str} )? ')'
 ''
 function cStringFunct _
@@ -768,6 +769,42 @@ function cStringFunct _
 		if( funcexpr = NULL ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
                	exit function
+			else
+				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+
+		function = TRUE
+
+	case FB_TK_INSTRREV
+		lexSkipToken( )
+
+		hMatchLPRNT( )
+
+		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
+
+		hMatchCOMMA( )
+
+		is_any = hMatch( FB_TK_ANY )
+
+		hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
+
+		expr3 = NULL
+		if( hMatch( CHAR_COMMA ) ) then
+			hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
+		end if
+
+		if( expr3 = NULL ) then
+			expr3 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
+
+		hMatchRPRNT( )
+
+		funcexpr = rtlStrInstrRev( expr3, expr1, expr2, is_any )
+
+		if( funcexpr = NULL ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
 			else
 				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
 			end if

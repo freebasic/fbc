@@ -26,7 +26,7 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 164 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 168 ) = _
 	{ _
 		/' fb_StrInit ( byref dst as any, byval dst_len as integer, _
 		 				byref src as any, byval src_len as integer, _
@@ -938,6 +938,82 @@
 				), _
 				( _
  					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_StrInstrRev ( byref srcstr as string, byref pattern as string, _
+								byval start as integer = 0 ) as integer '/ _
+		( _
+			@FB_RTL_STRINSTRREV, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( _
+ 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_WstrInstrRev ( byval srcstr as wstring ptr, byval pattern as wstring ptr, _
+								byval start as integer = 0 ) as integer '/ _
+		( _
+			@FB_RTL_WSTRINSTRREV, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_StrInstrRevAny ( byref srcstr as string, byref pattern as string, _
+							byval start as integer = 0 ) as integer '/ _
+		( _
+			@FB_RTL_STRINSTRREVANY, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( _
+ 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_WstrInstrRevAny ( byval srcstr as wstring ptr, byval pattern as wstring ptr, _
+									byval start as integer = 0 ) as integer '/ _
+		( _
+			@FB_RTL_WSTRINSTRREVANY, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -3823,6 +3899,57 @@ function rtlStrInstr _
     end if
 
     function = proc
+
+end function
+
+'':::::
+function rtlStrInstrRev _
+	( _
+		byval nd_start as ASTNODE ptr, _
+		byval nd_text as ASTNODE ptr, _
+		byval nd_pattern as ASTNODE ptr, _
+		byval search_any as integer _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer dtype = any
+	
+	function = NULL
+	
+	dtype = astGetDataType( nd_text )
+	
+	''
+	if( search_any ) then
+		if( dtype <> FB_DATATYPE_WCHAR ) then
+			f = PROCLOOKUP( STRINSTRREVANY )
+		else
+			f = PROCLOOKUP( WSTRINSTRREVANY )
+		end if
+	else
+		if( dtype <> FB_DATATYPE_WCHAR ) then
+			f = PROCLOOKUP( STRINSTRREV )
+		else
+			f = PROCLOOKUP( WSTRINSTRREV )
+		end if
+	end if
+
+	proc = astNewCALL( f )
+
+	if( astNewARG( proc, nd_text ) = NULL ) then
+		exit function
+	end if
+
+	if( astNewARG( proc, nd_pattern ) = NULL ) then
+		exit function
+	end if
+
+	''
+	if( astNewARG( proc, nd_start ) = NULL ) then
+		exit function
+	end if
+
+	function = proc
 
 end function
 

@@ -5,9 +5,13 @@ Version 0.18.4 Beta:
 - lang qb: DATA should be allowed inside compound-statements (v1c)
 - lang qb: MKI/CVI now return 16-bit sized results (counting_pine)
 
+[added]
+- INSTRREV - feature request #1244607 (jeffm)
+
 [fixed]
 - OPEN COM protocol parser was not handling default parameters (jeffm)
 - BLOAD could not use old-style image header when loading BMPs (counting_pine)
+
 
 Version 0.18.3 Beta:
 

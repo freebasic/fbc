@@ -37,6 +37,6 @@ Print OtherNumbers(10)
 Sub PrintArray ()
  Dim a As Integer
  For a = 1 To 10
-  Print otherNumbers(a)
+   Print otherNumbers(a)
  Next a
 End Sub

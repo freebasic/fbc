@@ -7,7 +7,7 @@
 '' --------
 
 '' Compile with -e
-'' The -e command line option is needed to enable error handling
+'' The -e command line option is needed to enable error handling.
 
 Declare Sub foo
   foo

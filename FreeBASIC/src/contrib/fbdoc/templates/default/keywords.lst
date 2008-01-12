@@ -211,6 +211,7 @@ Input
 Input #
 Input()
 InStr
+InStrRev
 Int
 Integer
 Is
