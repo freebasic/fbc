@@ -395,40 +395,51 @@ function cGfxLine as integer
 
 	function = FALSE
 
-	'' ( Expr ',' )?
-	target = hGetTarget( texpr, tisptr )
-	if( (target <> NULL) or (tisptr) ) then
-		hMatchCOMMA( )
-	end if
+	'' '-'?
+	if( hMatch( CHAR_MINUS ) ) then
 
-	'' STEP?
-	if( hMatch( FB_TK_STEP ) ) then
-		flags = FBGFX_COORDTYPE_R
-	else
-		flags = FBGFX_COORDTYPE_A
-	end if
-
-	'' ('(' Expr ',' Expr ')')?
-	if( hMatch( CHAR_LPRNT ) ) then
-
-		hMatchExpression( x1expr )
-
-		hMatchCOMMA( )
-
-		hMatchExpression( y1expr )
-
-		hMatchRPRNT( )
-
-	else
 		flags = FBGFX_COORDTYPE_R
 		x1expr = astNewCONSTf( 0, FB_DATATYPE_SINGLE )
 		y1expr = astNewCONSTf( 0, FB_DATATYPE_SINGLE )
-	end if
 
-	'' '-'
-	if( hMatch( CHAR_MINUS ) = FALSE ) then
-		errReport( FB_ERRMSG_EXPECTEDMINUS )
-		exit function
+	else
+
+		'' ( Expr ',' )?
+		target = hGetTarget( texpr, tisptr )
+		if( (target <> NULL) or (tisptr) ) then
+			hMatchCOMMA( )
+		end if
+
+		'' STEP?
+		if( hMatch( FB_TK_STEP ) ) then
+			flags = FBGFX_COORDTYPE_R
+		else
+			flags = FBGFX_COORDTYPE_A
+		end if
+
+		'' ('(' Expr ',' Expr ')')?
+		if( hMatch( CHAR_LPRNT ) ) then
+
+			hMatchExpression( x1expr )
+
+			hMatchCOMMA( )
+
+			hMatchExpression( y1expr )
+
+			hMatchRPRNT( )
+
+		else
+			flags = FBGFX_COORDTYPE_R
+			x1expr = astNewCONSTf( 0, FB_DATATYPE_SINGLE )
+			y1expr = astNewCONSTf( 0, FB_DATATYPE_SINGLE )
+		end if
+
+		'' '-'
+		if( hMatch( CHAR_MINUS ) = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDMINUS )
+			exit function
+		end if
+	
 	end if
 
 	'' STEP?
