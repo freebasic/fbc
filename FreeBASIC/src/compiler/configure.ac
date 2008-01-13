@@ -1,10 +1,10 @@
 # configure.ac for the FB Compiler		-*- Autoconf -*-
 # Process this file with autoconf to generate a configuration script.
 
-AC_INIT([fbc],[0.18.3],[http://sourceforge.net/projects/fbc])
+AC_INIT([fbc],[0.18.4],[http://sourceforge.net/projects/fbc])
 AC_PREREQ([2.59])
 
-AC_COPYRIGHT([Copyright (C) 2004-2007 The FreeBASIC development team])
+AC_COPYRIGHT([Copyright (C) 2004-2008 The FreeBASIC development team])
 
 AC_CONFIG_SRCDIR([inc/fb.bi])
 AC_CONFIG_AUX_DIR([../config])
@@ -132,6 +132,28 @@ AC_SUBST([FBC_OBJINFO])
 # If the default target is also specified with --enable-crosscomp-(target),
 # it will be silently ignored.
 #
+
+AC_ARG_ENABLE(crosscomp-all,
+ [  --enable-crosscomp-all       enable all -target options],
+ [if test "$FBC_TARGET" != "cygwin"; then
+    FBC_CROSSCOMP_CYGWIN=yes
+  fi]
+ [if test "$FBC_TARGET" != "dos"; then
+    FBC_CROSSCOMP_DOS=yes
+  fi]
+ [if test "$FBC_TARGET" != "freebsd"; then
+    FBC_CROSSCOMP_FREEBSD=yes
+  fi]
+ [if test "$FBC_TARGET" != "linux"; then
+    FBC_CROSSCOMP_LINUX=yes
+  fi]
+ [if test "$FBC_TARGET" != "xbox"; then
+    FBC_CROSSCOMP_XBOX=yes
+  fi]
+ [if test "$FBC_TARGET" != "xbox"; then
+    FBC_CROSSCOMP_XBOX=yes
+  fi]
+)
 
 
 AC_ARG_ENABLE(crosscomp-cygwin,

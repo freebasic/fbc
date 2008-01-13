@@ -40,6 +40,12 @@ include cross compilation binaries (AS, LD, AR, etc).  The only exception
 is when cross compiling windows to DOS target, the FreeBASIC-dos binary
 package can be used as cross compile tool set for windows to dos.
 
+For development and debugging specify the following option to enable all
+cross compile targets:
+
+	--enable-crosscomp-all
+
+
 
 THE OBJINFO FEATURE
 
