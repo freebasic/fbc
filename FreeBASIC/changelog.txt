@@ -10,6 +10,7 @@ Version 0.18.4 Beta:
 - 'ENUM foo EXPLICIT' to allow the enum elements not to be imported to the current namespace (syntax suggested by Pritchard) (v1c)
 
 [fixed]
+- lang qb: SLEEP with no arguments not handled correctly in gfx modes (jeffm)
 - lang qb: LINE -(x,y) was not being allowed due to parser changes (jeffm)
 - OPEN COM protocol parser was not handling default parameters (jeffm)
 - BLOAD could not use old-style image header when loading BMPs (counting_pine)

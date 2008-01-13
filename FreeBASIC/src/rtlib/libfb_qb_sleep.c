@@ -41,5 +41,5 @@
 /*:::::*/
 FBCALL void fb_SleepQB( int secs )
 {
-	fb_Sleep( secs * 1000 );
+	fb_Sleep( secs < 0 ? secs : secs * 1000 );
 }
