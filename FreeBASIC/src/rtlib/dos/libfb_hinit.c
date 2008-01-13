@@ -47,6 +47,8 @@
 /* globals */
 FB_CONSOLE_CTX __fb_con;
 
+char *__fb_startup_cwd;
+
 
 /*:::::*/
 void fb_hInit ( void )
@@ -55,7 +57,11 @@ void fb_hInit ( void )
 	_control87(PC_64|RC_NEAR, MCW_PC|MCW_RC);
 
 	/* turn off blink */
-    intensevideo();
+	intensevideo();
 
-    memset( &__fb_con, 0, sizeof( FB_CONSOLE_CTX ) );
+	memset( &__fb_con, 0, sizeof( FB_CONSOLE_CTX ) );
+	
+	__fb_startup_cwd = getcwd(NULL, 1024);
+	
+	fb_hConvertPath( __fb_startup_cwd, strlen( __fb_startup_cwd ) );
 }

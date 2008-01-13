@@ -92,6 +92,8 @@ typedef struct _FB_CONSOLE_CTX {
 
 extern FB_CONSOLE_CTX __fb_con;
 
+extern char *__fb_startup_cwd;
+
 typedef int (*FnIntHandler)(unsigned irq_number);
 
 int fb_ConsoleLocate_BIOS( int row, int col, int cursor );
