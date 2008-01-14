@@ -125,6 +125,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_LANG
 	FB_COMPOPT_PEDANTICCHK
 	FB_COMPOPT_BACKEND
+	FB_COMPOPT_FINDBIN
 
 	FB_COMPOPTIONS
 end enum
@@ -217,6 +218,16 @@ end enum
 const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
 
 ''
+enum FB_FINDBIN
+	FB_FINDBIN_USE_DEFAULT = 0
+	FB_FINDBIN_ALLOW_ENVVAR = 1
+	FB_FINDBIN_ALLOW_BINDIR = 2
+	FB_FINDBIN_ALLOW_SYSTEM = 4
+end enum
+
+const FB_DEFAULT_FINDBIN = FB_FINDBIN_ALLOW_ENVVAR or FB_FINDBIN_ALLOW_BINDIR
+
+''
 type FBCMMLINEOPT
 	debug			as integer					'' true=add debug info (def= false)
 	cputype			as FB_CPUTYPE
@@ -239,6 +250,7 @@ type FBCMMLINEOPT
 	lang			as FB_LANG					'' lang compatibility
 	pdcheckopt		as FB_PDCHECK				'' pedantic checks
 	backend			as FB_BACKEND				'' backend
+	findbin			as FB_FINDBIN				'' find bin file search options
 end type
 
 
@@ -518,6 +530,12 @@ declare sub fbSetPrefix _
 	( _
 		byref prefix as string _
 	)
+
+declare function fbFindBinFile _
+	( _
+		byval filename as zstring ptr, _
+		byval findopts as FB_FINDBIN = FB_FINDBIN_USE_DEFAULT _
+	) as string
 
 ''
 '' macros

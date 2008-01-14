@@ -458,6 +458,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.target		= FB_DEFAULT_TARGET
 	env.clopt.lang			= FB_DEFAULT_LANG
 	env.clopt.backend		= FB_DEFAULT_BACKEND
+	env.clopt.findbin		= FB_DEFAULT_FINDBIN
 	env.clopt.debug			= FALSE
 	env.clopt.errorcheck	= FALSE
 	env.clopt.resumeerr 	= FALSE
@@ -554,6 +555,10 @@ sub fbSetOption _
 
 	case FB_COMPOPT_BACKEND
 		env.clopt.backend = value
+
+	case FB_COMPOPT_FINDBIN
+		env.clopt.findbin = value
+
 	end select
 
 end sub
@@ -627,6 +632,9 @@ function fbGetOption _
 
 	case FB_COMPOPT_BACKEND
 		function = env.clopt.backend
+
+	case FB_COMPOPT_FINDBIN
+		function = env.clopt.findbin
 
 	case else
 		function = FALSE
@@ -1248,3 +1256,55 @@ sub fbReportRtError _
 end sub
 
 
+'':::::
+function fbFindBinFile _
+	( _
+		byval filename as zstring ptr, _
+		byval findopts as FB_FINDBIN _
+	) as string
+
+	dim path as string
+	dim isenv as integer = FALSE
+	dim as FB_FINDBIN opts = any
+
+	function = ""
+
+	if( findopts = FB_FINDBIN_USE_DEFAULT ) then
+		opts = fbGetOption( FB_COMPOPT_FINDBIN )
+	else
+		opts = findopts
+	end if
+
+	'' get from environment variable if allowed
+	if( (opts and FB_FINDBIN_ALLOW_ENVVAR) <> 0 ) then
+		path = environ( ucase(*filename) )
+		if( len(path) ) then
+			isenv = TRUE
+		end if
+	end if
+
+	'' if not set, get a default value
+	if( len(path) = 0 ) then
+		path = fbGetPath( FB_PATH_BIN )
+		path += *filename 
+		path += FB_HOST_EXEEXT
+	end if
+
+	'' Found it?
+	if( hFileExists( path ) ) then
+		return path
+	end if
+
+	if( isenv = FALSE ) then
+
+		'' system default allowed?
+		if( (opts and FB_FINDBIN_ALLOW_SYSTEM) <> 0 ) then
+			path = *filename + FB_HOST_EXEEXT
+			return path
+		end if
+
+	end if
+
+	errReportEx( FB_ERRMSG_EXEMISSING, path, -1 )
+
+end function
