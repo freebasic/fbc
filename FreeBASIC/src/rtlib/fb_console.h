@@ -88,23 +88,32 @@ static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
 #define FB_PRINTWSTR(fnum, s, mask)                                   \
     FB_PRINTWSTR_EX( FB_FILE_TO_HANDLE(fnum), s, fb_wstr_len(s), 0 )
 
-#define FB_PRINTNUM_EX(handle, val, mask, fmt, type)                  \
-    do {                                                              \
-        char buffer[80];                                              \
-        int len;                                                      \
-                                                                      \
-        if( mask & FB_PRINT_BIN_NEWLINE )                             \
-            len = sprintf( buffer, fmt type FB_BINARY_NEWLINE, val ); \
-        else if( mask & FB_PRINT_NEWLINE )                            \
-            len = sprintf( buffer, fmt type FB_NEWLINE, val );        \
-        else                                                          \
-            len = sprintf( buffer, fmt type, val );                   \
-                                                                      \
-        FB_PRINT_EX( handle, buffer, len, mask );                     \
-                                                                      \
-        if( mask & FB_PRINT_PAD )                                     \
-            fb_PrintPadEx ( handle, mask );                           \
-                                                                      \
+#define FB_PRINTNUM_EX(handle, val, mask, fmt, type)                          \
+    do {                                                                      \
+        char buffer[80];                                                      \
+        int len;                                                              \
+                                                                              \
+        if( __fb_ctx.lang == FB_LANG_QB ) {                                   \
+            if( mask & FB_PRINT_BIN_NEWLINE )                                 \
+                len = sprintf( buffer, fmt type " " FB_BINARY_NEWLINE, val ); \
+            else if( mask & FB_PRINT_NEWLINE )                                \
+                len = sprintf( buffer, fmt type " " FB_NEWLINE, val );        \
+            else                                                              \
+                len = sprintf( buffer, fmt type " ", val );                   \
+        } else {                                                              \
+            if( mask & FB_PRINT_BIN_NEWLINE )                                 \
+                len = sprintf( buffer, fmt type FB_BINARY_NEWLINE, val );     \
+            else if( mask & FB_PRINT_NEWLINE )                                \
+                len = sprintf( buffer, fmt type FB_NEWLINE, val );            \
+            else                                                              \
+                len = sprintf( buffer, fmt type, val );                       \
+        }                                                                     \
+                                                                              \
+        FB_PRINT_EX( handle, buffer, len, mask );                             \
+                                                                              \
+        if( mask & FB_PRINT_PAD )                                             \
+            fb_PrintPadEx ( handle, mask );                                   \
+                                                                              \
     } while (0)
 
 #define FB_PRINTNUM(fnum, val, mask, fmt, type)                       \

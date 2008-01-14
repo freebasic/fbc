@@ -55,13 +55,13 @@ function cTypeConvExpr _
 		dtype = FB_DATATYPE_USHORT
 
 	case FB_TK_CINT
-		dtype = FB_DATATYPE_INTEGER
+		dtype = fbLangGetType( integer )
 
 	case FB_TK_CUINT
 		dtype = FB_DATATYPE_UINT
 
 	case FB_TK_CLNG
-		dtype = FB_DATATYPE_LONG
+		dtype = fbLangGetType( long )
 
 	case FB_TK_CULNG
 		dtype = FB_DATATYPE_ULONG

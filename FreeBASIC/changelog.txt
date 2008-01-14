@@ -3,7 +3,8 @@ Version 0.18.4 Beta:
 [changed]
 - lang qb: keywords, data types, functions or macros not present in QB can now used by prefixing them with "__" (ie: "dim foo as __byte __ptr") (v1c)
 - lang qb: DATA should be allowed inside compound-statements (v1c)
-- lang qb: MKI/CVI now return 16-bit sized results (counting_pine)
+- lang qb: MKI/CVI/CINT now return 16-bit sized results (counting_pine)
+- lang qb: PRINT now appends a space when printing numbers (counting_pine)
 
 [added]
 - INSTRREV - feature request #1244607 (jeffm)
