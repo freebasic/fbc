@@ -51,11 +51,12 @@ FBCALL int fb_StrInstrRevAny ( FBSTRING *src, FBSTRING *patt, int start )
 		size_t size_src = FB_STRSIZE(src);
 		size_t size_patt = FB_STRSIZE(patt);
 
-		if( (size_src != 0) && (size_patt != 0) && (start >= 0) && (start <= size_src) )
+		if( (size_src != 0) && (size_patt != 0) && (start != 0) )
 		{
-
-			if( start == 0 )
+			if( start < 0 )
 				start = size_src;
+			else if( start > size_src )
+				start = 0;
 
 			while( start-- && (r == 0) )
 			{

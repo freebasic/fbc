@@ -1,37 +1,37 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.string_.instr_0
+namespace fbc_tests.wstrings.instr_0
 
 private sub wholeStringTest cdecl ()
 
-	CU_ASSERT_EQUAL( 4 , instr("asd"+chr(0), chr(0)) )
-	CU_ASSERT_EQUAL( 3 , instr("asd"+chr(0), "d") )
-	CU_ASSERT_EQUAL( 1 , instr("asd"+chr(0), "a") )
-	CU_ASSERT_EQUAL( 2 , instr("asd"+chr(0), "sd") )
-	CU_ASSERT_EQUAL( 0 , instr("asd"+chr(0), "") )
-	CU_ASSERT_EQUAL( 0 , instr("asd"+chr(0), "asdfg") )
-	CU_ASSERT_EQUAL( 0 , instr("asd"+chr(0), "qwe") )
-	CU_ASSERT_EQUAL( 0 , instr("", "asdf") )
-	CU_ASSERT_EQUAL( 0 , instr("", "") )
+	CU_ASSERT_EQUAL( 0, instr(wstr("asd"+chr(0)), wstr(chr(0))) )
+	CU_ASSERT_EQUAL( 3, instr(wstr("asd"+chr(0)), wstr("d")) )
+	CU_ASSERT_EQUAL( 1, instr(wstr("asd"+chr(0)), wstr("a")) )
+	CU_ASSERT_EQUAL( 2, instr(wstr("asd"+chr(0)), wstr("sd")) )
+	CU_ASSERT_EQUAL( 0, instr(wstr("asd"+chr(0)), wstr("")) )
+	CU_ASSERT_EQUAL( 0, instr(wstr("asd"+chr(0)), wstr("asdfg")) )
+	CU_ASSERT_EQUAL( 0, instr(wstr("asd"+chr(0)), wstr("qwe")) )
+	CU_ASSERT_EQUAL( 0, instr(wstr(""), wstr("asdf")) )
+	CU_ASSERT_EQUAL( 0, instr(wstr(""), wstr("")) )
 
 end sub
 
 private sub partialStringTest cdecl ()
 
-	CU_ASSERT_EQUAL( 4 , instr(2, "asd"+chr(0), chr(0)) )
-	CU_ASSERT_EQUAL( 3 , instr(2, "asd"+chr(0), "d") )
-	CU_ASSERT_EQUAL( 0 , instr(2, "asd"+chr(0), "a") )
-	CU_ASSERT_EQUAL( 2 , instr(2, "asd"+chr(0), "sd") )
-	CU_ASSERT_EQUAL( 0 , instr(2, "asd"+chr(0), "") )
-	CU_ASSERT_EQUAL( 0 , instr(2, "asd"+chr(0), "asdfg") )
-	CU_ASSERT_EQUAL( 0 , instr(2, "asd"+chr(0), "qwe") )
-	CU_ASSERT_EQUAL( 0 , instr(2, "", "asdf") )
-	CU_ASSERT_EQUAL( 0 , instr(2, "", "") )
+	CU_ASSERT_EQUAL( 0, instr(2, wstr("asd"+chr(0)), wstr(chr(0))) )
+	CU_ASSERT_EQUAL( 3, instr(2, wstr("asd"+chr(0)), wstr("d")) )
+	CU_ASSERT_EQUAL( 0, instr(2, wstr("asd"+chr(0)), wstr("a")) )
+	CU_ASSERT_EQUAL( 2, instr(2, wstr("asd"+chr(0)), wstr("sd")) )
+	CU_ASSERT_EQUAL( 0, instr(2, wstr("asd"+chr(0)), wstr("")) )
+	CU_ASSERT_EQUAL( 0, instr(2, wstr("asd"+chr(0)), wstr("asdfg")) )
+	CU_ASSERT_EQUAL( 0, instr(2, wstr("asd"+chr(0)), wstr("qwe")) )
+	CU_ASSERT_EQUAL( 0, instr(2, wstr(""), wstr("asdf")) )
+	CU_ASSERT_EQUAL( 0, instr(2, wstr(""), wstr("")) )
 
 end sub
 
 #define DoTest( s1, s2, start, exp_result ) _
-	CU_ASSERT_EQUAL( exp_result, Instr(start,s1,s2) )
+	CU_ASSERT_EQUAL( exp_result, Instr(start,wstr(s1),wstr(s2)) )
 
 private sub CheckEveryInputValueTest cdecl ()
 
@@ -106,7 +106,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.instr_0")
+	fbcu.add_suite("fbc_tests.wstrings.instr_0")
 	fbcu.add_test("whole string test", @wholeStringTest)
 	fbcu.add_test("partial string test", @partialStringTest)
 	fbcu.add_test("check every input value test", @CheckEveryInputValueTest)

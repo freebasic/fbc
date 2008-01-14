@@ -942,7 +942,7 @@
 			} _
  		), _
 		/' fb_StrInstrRev ( byref srcstr as string, byref pattern as string, _
-								byval start as integer = 0 ) as integer '/ _
+								byval start as integer ) as integer '/ _
 		( _
 			@FB_RTL_STRINSTRREV, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
@@ -961,7 +961,7 @@
 			} _
  		), _
 		/' fb_WstrInstrRev ( byval srcstr as wstring ptr, byval pattern as wstring ptr, _
-								byval start as integer = 0 ) as integer '/ _
+								byval start as integer ) as integer '/ _
 		( _
 			@FB_RTL_WSTRINSTRREV, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
@@ -980,7 +980,7 @@
 			} _
  		), _
 		/' fb_StrInstrRevAny ( byref srcstr as string, byref pattern as string, _
-							byval start as integer = 0 ) as integer '/ _
+							byval start as integer ) as integer '/ _
 		( _
 			@FB_RTL_STRINSTRREVANY, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
@@ -999,7 +999,7 @@
 			} _
  		), _
 		/' fb_WstrInstrRevAny ( byval srcstr as wstring ptr, byval pattern as wstring ptr, _
-									byval start as integer = 0 ) as integer '/ _
+									byval start as integer ) as integer '/ _
 		( _
 			@FB_RTL_WSTRINSTRREVANY, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _

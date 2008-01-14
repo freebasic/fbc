@@ -789,13 +789,10 @@ function cStringFunct _
 
 		hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
 
-		expr3 = NULL
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
-		end if
-
-		if( expr3 = NULL ) then
-			expr3 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		else
+			expr3 = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
 		end if
 
 		hMatchRPRNT( )

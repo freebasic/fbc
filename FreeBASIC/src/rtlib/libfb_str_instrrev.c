@@ -134,31 +134,30 @@ static int fb_hFindNaive( size_t start,
 /*:::::*/
 FBCALL int fb_StrInstrRev ( FBSTRING *src, FBSTRING *patt, int start )
 {
-	int r;
+	int r = 0;
 
-	if( (src == NULL) || (src->data == NULL) ||
-		(patt == NULL) || (patt->data == NULL) )
+	if( (src != NULL) && (src->data != NULL) && (patt != NULL) && (patt->data != NULL) ) 
 	{
-		r = 0;
-	}
-	else
-	{
-		size_t size_src = FB_STRSIZE(src);
+
+ 		size_t size_src = FB_STRSIZE(src);
 		size_t size_patt = FB_STRSIZE(patt);
 
-		if( (size_src == 0) || (size_patt == 0) ||
-			(start < 0 ) || (start > size_src) || (size_patt > size_src) )
-		{	
-			r = 0;
-		}
-		else
+		if( (size_src != 0) && (size_patt != 0) && (size_patt <= size_src) && (start != 0))
 		{
-			if( (start == 0) || (start > size_src - size_patt) )
+			/* handle signed/unsigned comparisons of start and size_* vars */
+			if( start < 0 )
 				start = size_src - size_patt + 1;
-
+			else if( start > size_src )
+				start = 0;
+			else if( start > size_src - size_patt )
+				start = size_src - size_patt + 1;
+			
+			if( start > 0 )
+			{
 				r = fb_hFindBM( start - 1,
 					src->data, size_src,
 					patt->data, size_patt );
+			}
 		}
 	}
 

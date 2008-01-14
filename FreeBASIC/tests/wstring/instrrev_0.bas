@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.string_.instrrev_0
+namespace fbc_tests.wstrings.instrrev_0
 
 private sub wholeStringTest cdecl ()
 
@@ -31,7 +31,7 @@ private sub partialStringTest cdecl ()
 end sub
 
 #define DoTest( s1, s2, start, exp_result ) _
-	CU_ASSERT_EQUAL( exp_result, InstrRev(s1,s2,start) )
+	CU_ASSERT_EQUAL( exp_result, InstrRev(wstr(s1),wstr(s2),start) )
 
 private sub CheckEveryInputValueTest cdecl ()
 
@@ -92,7 +92,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.instrrev_0")
+	fbcu.add_suite("fbc_tests.wstrings.instrrev_0")
 	fbcu.add_test("whole string test", @wholeStringTest)
 	fbcu.add_test("partial string test", @partialStringTest)
 	fbcu.add_test("check every input value test", @CheckEveryInputValueTest)

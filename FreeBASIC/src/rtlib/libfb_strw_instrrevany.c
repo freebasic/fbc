@@ -47,11 +47,12 @@ FBCALL int fb_WstrInstrRevAny ( const FB_WCHAR *src, const FB_WCHAR *patt, int s
 		size_t size_patt = fb_wstr_Len(patt);
 		size_t i;
 
-		if( (size_src != 0) && (size_patt != 0) && (start >= 0) && (start <= size_src) )
+		if( (size_src != 0) && (size_patt != 0) && (start != 0))
 		{
-			/* If start is the default value then start from the end */
-			if( start == 0 )
+			if( start < 0 )
 				start = size_src;
+			else if( start > size_src )
+				start = 0;
 
 			while( start-- )
 			{

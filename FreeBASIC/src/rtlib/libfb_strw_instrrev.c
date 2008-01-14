@@ -47,11 +47,14 @@ FBCALL int fb_WstrInstrRev ( const FB_WCHAR *src, const FB_WCHAR *patt, int star
 		size_t size_patt = fb_wstr_Len(patt);
 		size_t i, j;
 
-		if( (size_src != 0) && (size_patt != 0) && (start >= 0) && (start <= size_src) )
+		if( (size_src != 0) && (size_patt != 0) && (size_patt <= size_src) && (start != 0))
 		{
-
-			/* If start is the default value then start from the end */
-			if( (start == 0) || (start > size_src - size_patt) )
+			/* handle signed/unsigned comparisons of start and size_* vars */
+			if( start < 0 )
+				start = size_src - size_patt + 1;
+			else if( start > size_src )
+				start = 0;
+			else if(start > size_src - size_patt)
 				start = size_src - size_patt + 1;
 			
 			/*
