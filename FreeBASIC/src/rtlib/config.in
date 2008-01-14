@@ -110,7 +110,7 @@
 /* Define to 1 if you have the declaration of PTHREAD_MUTEX_RECURSIVE */
 #undef HAVE_PTHREAD_MUTEX_RECURSIVE
 
-/* Define to 1 if you have the declaration of PTHREAD_MUTEX_RECURSIVE_NP */
+/* Define to 1 if you have the declaration of PTHREAD_MUTEX_RECURSIVE */
 #undef HAVE_PTHREAD_MUTEX_RECURSIVE_NP
 
 /* Define to 1 if you have the `putenv' function. */
@@ -302,7 +302,7 @@
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
-   automatically deduced at runtime.
+   automatically deduced at run-time.
 	STACK_DIRECTION > 0 => grows toward higher addresses
 	STACK_DIRECTION < 0 => grows toward lower addresses
 	STACK_DIRECTION = 0 => direction of growth unknown */
@@ -375,7 +375,7 @@
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc
 
-/* Define to `long int' if <sys/types.h> does not define. */
+/* Define to `long' if <sys/types.h> does not define. */
 #undef off_t
 
 /* Define to `int' if <sys/types.h> does not define. */
@@ -384,7 +384,7 @@
 /* Define to rpl_realloc if the replacement function should be used. */
 #undef realloc
 
-/* Define to `unsigned int' if <sys/types.h> does not define. */
+/* Define to `unsigned' if <sys/types.h> does not define. */
 #undef size_t
 
 /* Define as `fork' if `vfork' does not work. */

@@ -5380,7 +5380,8 @@ fi
 
 
 if test "$have_pthread_mutex_recursive" = yes; then
-    cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define HAVE_PTHREAD_MUTEX_RECURSIVE 1
 _ACEOF
 
@@ -5449,7 +5450,8 @@ fi
 
 
 if test "$have_pthread_mutex_recursive_np" = yes; then
-    cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define HAVE_PTHREAD_MUTEX_RECURSIVE_NP 1
 _ACEOF
 

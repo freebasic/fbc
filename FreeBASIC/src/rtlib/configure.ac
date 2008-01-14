@@ -1,10 +1,10 @@
 # configure.ac for the FB Run-Time Library		-*- Autoconf -*-
 # Process this file with autoconf to generate a configuration script.
 
-AC_INIT([fbrtlib],[0.18.3],[http://sourceforge.net/projects/fbc])
+AC_INIT([fbrtlib],[0.18.4],[http://sourceforge.net/projects/fbc])
 AC_PREREQ([2.59])
 
-AC_COPYRIGHT([Copyright (c) 2004-2007 The FreeBASIC development team])
+AC_COPYRIGHT([Copyright (c) 2004-2008 The FreeBASIC development team])
 
 AC_CONFIG_SRCDIR([fb.h])
 AC_CONFIG_AUX_DIR([../config])
@@ -133,13 +133,15 @@ AC_TYPE_SIZE_T
 AC_CHECK_DECL([PTHREAD_MUTEX_RECURSIVE], [have_pthread_mutex_recursive=yes], [], [#include <pthread.h>])
 
 if test "$have_pthread_mutex_recursive" = yes; then
-    AC_DEFINE([HAVE_PTHREAD_MUTEX_RECURSIVE],1,[])
+    AC_DEFINE([HAVE_PTHREAD_MUTEX_RECURSIVE],1,
+    [Define to 1 if you have the declaration of PTHREAD_MUTEX_RECURSIVE])
 fi
 
 AC_CHECK_DECL([PTHREAD_MUTEX_RECURSIVE_NP], [have_pthread_mutex_recursive_np=yes], [], [#include <pthread.h>])
 
 if test "$have_pthread_mutex_recursive_np" = yes; then
-    AC_DEFINE([HAVE_PTHREAD_MUTEX_RECURSIVE_NP],1,[])
+    AC_DEFINE([HAVE_PTHREAD_MUTEX_RECURSIVE_NP],1,
+    [Define to 1 if you have the declaration of PTHREAD_MUTEX_RECURSIVE])
 fi
 
 # Checks for library functions.
