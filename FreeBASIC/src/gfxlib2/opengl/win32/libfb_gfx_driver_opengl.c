@@ -90,7 +90,6 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 static void driver_exit(void);
 static void driver_lock(void);
 static void driver_unlock(void);
-static void driver_set_palette(int index, int r, int g, int b);
 static void driver_flip(void);
 static int *driver_fetch_modes(int depth, int *size);
 static void driver_poll_events(void);
@@ -350,8 +349,6 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		pfd.cStencilBits = *attrib++ = __fb_gl_params.stencil_bits;
 	}
 	if (__fb_gl_params.num_samples) {
-		WGL_SAMPLE_BUFFERS_ARB, GL_TRUE,
-		WGL_SAMPLES_ARB,		4,
 		*attrib++ = WGL_SAMPLE_BUFFERS_ARB;
 		*attrib++ = GL_TRUE;
 		*attrib++ = WGL_SAMPLES_ARB;
