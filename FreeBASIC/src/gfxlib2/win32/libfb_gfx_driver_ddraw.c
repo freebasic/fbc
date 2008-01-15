@@ -218,7 +218,6 @@ static int directx_init(void)
 	LPDIRECTDRAW lpDD1 = NULL;
 	LPDIRECTDRAWCLIPPER lpDDC = NULL;
 	GUID *ddGUID = NULL;
-	GUID monitor_guid;
 	DIRECTDRAWCREATE DirectDrawCreate;
 	DIRECTDRAWENUMERATEEX DirectDrawEnumerateEx;
 	DIRECTINPUTCREATE DirectInputCreate;
