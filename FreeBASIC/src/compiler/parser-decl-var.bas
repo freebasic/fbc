@@ -1994,7 +1994,7 @@ function cAutoVarDecl _
 			end if
 		end if
 
-		dim as integer dtype = astGetDataType( expr )
+		dim as integer dtype = astGetFullType( expr )
 		dim as FBSYMBOL ptr subtype = astGetSubType( expr )
 
 		'' check for special types
