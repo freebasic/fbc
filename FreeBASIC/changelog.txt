@@ -16,6 +16,7 @@ Version 0.18.4 Beta:
 - OPEN COM protocol parser was not handling default parameters (jeffm)
 - BLOAD could not use old-style image header when loading BMPs (counting_pine)
 - VAR was disregarding the extended type information (like const qualifiers), found by stylin
+- variables with const qualifier shouldn't have been accepting ANY as an initializer (cha0s)
 
 
 Version 0.18.3 Beta:

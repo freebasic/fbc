@@ -925,7 +925,17 @@ private function hVarInit _
 				symbSetDontInit( sym )
 			end if
 		end if
-
+		
+		'' ...or const-qualified vars
+		if( typeIsConst( symbGetFullType( sym ) ) ) then
+			if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				return astNewCONSTi( 0 )
+			end if
+		end if
+		
 		lexSkipToken( )
 
 		exit function
