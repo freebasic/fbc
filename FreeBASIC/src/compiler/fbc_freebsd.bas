@@ -45,16 +45,13 @@ private function _linkFiles _
 	( _
 	) as integer
 
-	dim as string ldpath, ldcline, bindir, dllname
+	dim as string ldpath, ldcline, dllname
 
 	function = FALSE
 
 	'' set path
-	bindir = fbGetPath( FB_PATH_BIN )
-	ldpath = bindir + "ld" + FB_HOST_EXEEXT
-
-	if( hFileExists( ldpath ) = FALSE ) then
-		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
+	ldpath = fbFindBinFile( "ld" )
+	if( len( ldpath ) = 0 ) then
 		exit function
 	end if
 
@@ -86,7 +83,7 @@ private function _linkFiles _
 	end if
 
 	'' set script file
-	ldcline += (" -T " + QUOTE) + bindir + ("elf_i386.x" + QUOTE)
+	ldcline += (" -T " + QUOTE) + fbGetPath( FB_PATH_BIN ) + ("elf_i386.x" + QUOTE)
 
 	if( len( fbc.mapfile ) > 0 ) then
 		ldcline += " -Map " + fbc.mapfile
@@ -172,7 +169,10 @@ end function
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
-	arcpath = fbGetPath( FB_PATH_BIN ) + "ar" + FB_HOST_EXEEXT
+	arcpath = fbFindBinFile( "ar" )
+	if( len( arcpath ) = 0 ) then
+		return FALSE
+	end if
 
 	if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
@@ -196,7 +196,7 @@ private function _compileResFiles _
 	dim as integer outstr_count, buffer_len, state, label
 	dim as ubyte ptr p
 	dim as string * 4096 chunk
-	dim as string iconsrc, buffer, outstr()
+	dim as string aspath, iconsrc, buffer, outstr()
 
 	function = FALSE
 
@@ -299,8 +299,12 @@ private function _compileResFiles _
 	end if
 
 	'' compile icon source file
-	if( exec( fbGetPath( FB_PATH_BIN ) + "as" + FB_HOST_EXEEXT, _
-	          iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
+	aspath = fbFindBinFile( "as" )
+	if( len( aspath ) = 0 ) then
+		exit function
+	end if
+
+	if( exec( aspath, iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
 		kill( iconsrc )
 		exit function
 	end if

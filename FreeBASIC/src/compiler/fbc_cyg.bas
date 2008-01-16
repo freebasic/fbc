@@ -55,13 +55,11 @@ private function _linkFiles _
 
 	function = FALSE
 
-    '' set path
-	ldpath = fbGetPath( FB_PATH_BIN ) + "ld" + FB_HOST_EXEEXT
-
-    if( hFileExists( ldpath ) = FALSE ) then
-		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
+	'' set path
+	ldpath = fbFindBinFile( "ld" )
+	if( len( ldpath ) = 0 ) then
 		exit function
-    end if
+	end if
 
 	'' add extension
 	if( fbc.outaddext ) then
@@ -85,7 +83,7 @@ private function _linkFiles _
 	'' set script file and subsystem
 	ldcline = "-T " + QUOTE + fbGetPath( FB_PATH_BIN ) + ("i386pe.x" + QUOTE + " -subsystem ") + fbc.subsystem
 
-    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		''
 		dllname = hStripPath( hStripExt( fbc.outname ) )
 
@@ -94,8 +92,8 @@ private function _linkFiles _
 
 		'' add aliases for functions without @nn
 		if( fbGetOption( FB_COMPOPT_NOSTDCALL ) ) then
-	   		ldcline += " --add-stdcall-alias"
-    	end if
+			ldcline += " --add-stdcall-alias"
+		end if
 
 		'' export all symbols declared as EXPORT
 		ldcline += " --export-dynamic"
@@ -103,17 +101,17 @@ private function _linkFiles _
 		'' set the entry-point
 		ldcline += " -e _DllMainCRTStartup@12"
 
-    else
-    	'' tell LD to add all symbols declared as EXPORT to the symbol table
-    	if( fbGetOption( FB_COMPOPT_EXPORT ) ) then
-    		ldcline += " --export-dynamic"
-    	end if
+	else
+		'' tell LD to add all symbols declared as EXPORT to the symbol table
+		if( fbGetOption( FB_COMPOPT_EXPORT ) ) then
+			ldcline += " --export-dynamic"
+		end if
 
-    end if
+	end if
 
-    if( len( fbc.mapfile ) > 0) then
-        ldcline += " -Map " + fbc.mapfile
-    end if
+	if( len( fbc.mapfile ) > 0) then
+		ldcline += " -Map " + fbc.mapfile
+	end if
 
 	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
@@ -132,7 +130,7 @@ private function _linkFiles _
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		ldcline += " " + QUOTE + libdir + (RSLASH + "crt0.o" + QUOTE + " ")
 	else
-        '' FIXME
+		'' FIXME
 		ldcline += " " + QUOTE + libdir + (RSLASH + "crt0.o" + QUOTE + " ")
 
 		'' additional support for gmon
@@ -142,63 +140,63 @@ private function _linkFiles _
 
 	end if
 
-    '' add objects from output list
+	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
 	do while( iof <> NULL )
-    	ldcline += QUOTE + iof->outf + (QUOTE + " ")
-    	iof = listGetNext( iof )
-    loop
+		ldcline += QUOTE + iof->outf + (QUOTE + " ")
+		iof = listGetNext( iof )
+	loop
 
-    '' add objects from cmm-line
+	'' add objects from cmm-line
 	dim as string ptr objf = listGetHead( @fbc.objlist )
 	do while( objf <> NULL )
-    	ldcline += QUOTE + *objf + (QUOTE + " ")
-    	objf = listGetNext( objf )
-    loop
+		ldcline += QUOTE + *objf + (QUOTE + " ")
+		objf = listGetNext( objf )
+	loop
 
-    '' set executable name
-    ldcline += "-o " + QUOTE + fbc.outname + QUOTE
+	'' set executable name
+	ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
-    '' init lib group
-    ldcline += " -( "
+	'' init lib group
+	ldcline += " -( "
 
-    '' add libraries from cmm-line and found when parsing
-    ldcline += *fbcGetLibList( dllname )
+	'' add libraries from cmm-line and found when parsing
+	ldcline += *fbcGetLibList( dllname )
 
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' rtlib initialization and termination
 		ldcline += QUOTE + libdir + (RSLASH + "fbrt0.o" + QUOTE + " ")
 	end if
 
-    '' end lib group
-    ldcline += "-) "
+	'' end lib group
+	ldcline += "-) "
 
 	'' crt end
-    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-        '' create the def list to use when creating the import library
-        ldcline += " --output-def " + QUOTE + hStripFilename( fbc.outname ) + dllname + (".def" + QUOTE)
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+		'' create the def list to use when creating the import library
+		ldcline += " --output-def " + QUOTE + hStripFilename( fbc.outname ) + dllname + (".def" + QUOTE)
 	end if
 
-   	'' extra options
-   	ldcline += fbc.extopt.ld
+	'' extra options
+	ldcline += fbc.extopt.ld
 
-    '' invoke ld
-    if( fbc.verbose ) then
-    	print "linking: ", ldcline
-    end if
+	'' invoke ld
+	if( fbc.verbose ) then
+		print "linking: ", ldcline
+	end if
 
-    if( exec( ldpath, ldcline ) <> 0 ) then
+	if( exec( ldpath, ldcline ) <> 0 ) then
 		exit function
-    end if
+	end if
 
-    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		'' create the import library for the dll built
 		if( makeImpLib( hStripFilename( fbc.outname ), dllname ) = FALSE ) then
 			exit function
 		end if
 	end if
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -206,7 +204,10 @@ end function
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
-	arcpath = fbGetPath( FB_PATH_BIN ) + "ar" + FB_HOST_EXEEXT
+	arcpath = fbFindBinFile( "ar" )
+	if( len( arcpath ) = 0 ) then
+		return FALSE
+	end if
 
     if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
@@ -230,7 +231,10 @@ private function _compileResFiles _
 	setenviron "INCLUDE=" + fbGetPath( FB_PATH_INC ) + "win" + RSLASH + "rc"
 
 	''
-	rescmppath = fbGetPath( FB_PATH_BIN ) + "GoRC.exe"
+	rescmppath = fbFindBinFile( "GoRC" )
+	if( len( rescmppath ) = 0 ) then
+		exit function
+	end if
 
 	'' set input files (.rc's and .res') and output files (.obj's)
 	dim as string ptr rcf = listGetHead( @rclist )
@@ -379,12 +383,10 @@ private function makeImpLib _
 	function = FALSE
 
 	'' set path
-	dtpath = fbGetPath( FB_PATH_BIN ) + "dlltool" + FB_HOST_EXEEXT
-
-    if( hFileExists( dtpath ) = FALSE ) then
-		errReportEx( FB_ERRMSG_EXEMISSING, dtpath, -1 )
+	dtpath = fbFindBinFile( "dlltool" )
+	if( len( dtpath ) = 0 ) then
 		exit function
-    end if
+	end if
 
 	''
 	dllfile = *dllpath + *dllname

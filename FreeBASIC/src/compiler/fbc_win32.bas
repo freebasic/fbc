@@ -132,12 +132,10 @@ private function _linkFiles _
 	function = FALSE
 
     '' set path
-	ldpath = fbGetPath( FB_PATH_BIN ) + "ld" + FB_HOST_EXEEXT
-
-    if( hFileExists( ldpath ) = FALSE ) then
-		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
+	ldpath = fbFindBinFile( "ld" )
+	if( len( ldpath ) = 0 ) then
 		exit function
-    end if
+	end if
 
 	'' add extension
 	if( fbc.outaddext ) then
@@ -286,7 +284,10 @@ end function
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
-	arcpath = fbGetPath( FB_PATH_BIN ) + "ar" + FB_HOST_EXEEXT
+	arcpath = fbFindBinFile( "ar" )
+	if( len( arcpath ) = 0 ) then
+		return FALSE
+	end if
 
     if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
@@ -310,7 +311,10 @@ private function _compileResFiles _
 	setenviron "INCLUDE=" + fbGetPath( FB_PATH_INC ) + ("win" + RSLASH + "rc")
 
 	''
-	rescmppath = fbGetPath( FB_PATH_BIN ) + "GoRC.exe"
+	rescmppath = fbFindBinFile( "GoRC" )
+	if( len( rescmppath ) = 0 ) then
+		exit function
+	end if
 
 	'' set input files (.rc's and .res') and output files (.obj's)
 	dim as string ptr rcf = listGetHead( @rclist )
@@ -415,18 +419,21 @@ private function makeDefList( dllname as string ) as integer
 
 	function = FALSE
 
-   	pxpath = fbGetPath( FB_PATH_BIN ) + "pexports" + FB_HOST_EXEEXT
+	pxpath = fbFindBinFile( "pexports" )
+	if( len( pxpath ) = 0 ) then
+		exit function
+	end if
 
-   	pxcline = "-o " + dllname + ".dll >" + dllname + ".def"
+	pxcline = "-o " + dllname + ".dll >" + dllname + ".def"
 
-    '' can't use EXEC coz redirection is needed, damn..
-    '''''if( exec( pxpath, pxcline ) <> 0 ) then
+	'' can't use EXEC coz redirection is needed, damn..
+	'''''if( exec( pxpath, pxcline ) <> 0 ) then
 	'''''	exit function
-    '''''end if
+	'''''end if
 
 	shell pxpath + " " + pxcline
 
-    function = TRUE
+	function = TRUE
 
 end function
 #endif
@@ -482,12 +489,10 @@ private function makeImpLib _
 	function = FALSE
 
 	'' set path
-	dtpath = fbGetPath( FB_PATH_BIN ) + "dlltool" + FB_HOST_EXEEXT
-
-    if( hFileExists( dtpath ) = FALSE ) then
-		errReportEx( FB_ERRMSG_EXEMISSING, dtpath, -1 )
+	dtpath = fbFindBinFile( "dlltool" )
+	if( len(dtpath) = 0 ) then
 		exit function
-    end if
+	end if
 
 	''
 	dllfile = *dllpath + *dllname

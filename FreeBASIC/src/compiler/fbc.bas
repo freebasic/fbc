@@ -513,23 +513,10 @@ private function assembleFile_GAS _
     if( has_path = FALSE ) then
     	has_path = TRUE
 
-#if defined( __FB_LINUX__ )
-		path = "as"
-#else
-    	'' check the environment variable first
-    	path = environ( "AS" )
-    	if( len( path ) = 0 ) then
-        	'' when not set, then simply use some default value
-        	path = fbGetPath( FB_PATH_BIN )
-
-			path += "as" + FB_HOST_EXEEXT
-    	end if
-    	
-    	if( hFileExists( path ) = FALSE ) then
-			errReportEx( FB_ERRMSG_EXEMISSING, path, -1 )
+		path = fbFindBinFile( "as" )
+		if( len( path ) = 0 ) then
 			return FALSE
-    	end if
-#endif
+		end if
 
     end if
 
@@ -586,26 +573,21 @@ private function assembleFile_GCC _
 	static as string path
 	static as integer has_path = FALSE
 
-    if( has_path = FALSE ) then
-    	has_path = TRUE
+	if( has_path = FALSE ) then
+		has_path = TRUE
 
-    	'' check the environment variable first
-    	path = environ( "GCC" )
-    	if( len( path ) = 0 ) then
-			path = "gcc" + FB_HOST_EXEEXT
-    	end if
-
-    	if( hFileExists( path ) = FALSE ) then
-			errReportEx( FB_ERRMSG_EXEMISSING, path, -1 )
+		path = fbFindBinFile( "gcc" )
+		if( len( path ) = 0 ) then
 			return FALSE
-    	end if
-    end if
+		end if
 
-    if( fbc.verbose ) then
-    	print "assembling: ", path + " " + cmdline
-    end if
+	end if
 
-    function = (exec( path, cmdline ) = 0)
+	if( fbc.verbose ) then
+		print "assembling: ", path + " " + cmdline
+	end if
+
+	function = (exec( path, cmdline ) = 0)
 
 end function
 

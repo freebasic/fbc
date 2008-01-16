@@ -65,10 +65,8 @@ private function _linkFiles _
 	function = FALSE
 
 	'' set path
-	ldpath = fbGetPath( FB_PATH_BIN ) + "ld" + FB_HOST_EXEEXT
-
-	if( hFileExists( ldpath ) = FALSE ) then
-		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
+	ldpath = fbFindBinFile( "ld" )
+	if( len( ldpath ) = 0 ) then
 		exit function
 	end if
 
@@ -187,7 +185,10 @@ end function
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
-	arcpath = fbGetPath( FB_PATH_BIN ) + "ar" + FB_HOST_EXEEXT
+	arcpath = fbFindBinFile( "ar" )
+	if( len( arcpath ) = 0 ) then
+		return FALSE
+	end if
 
 	if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE

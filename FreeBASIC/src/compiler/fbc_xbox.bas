@@ -50,10 +50,8 @@ private function _linkFiles _
 	function = FALSE
 	
 	'' set path
-	ldpath = fbGetPath( FB_PATH_BIN ) + "ld" + FB_HOST_EXEEXT
-	
-	if( hFileExists( ldpath ) = FALSE ) then
-		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
+	ldpath = fbFindBinFile( "ld" )
+	if( len( ldpath ) = 0 ) then
 		exit function
 	end if
 	
@@ -160,11 +158,9 @@ private function _linkFiles _
 	if( fbc.verbose ) then
 		print "cxbe: ", cxbecline
 	end if
-	
-	cxbepath = fbGetPath(FB_PATH_BIN) + "cxbe" + FB_HOST_EXEEXT
-	
-	if( hFileExists( cxbepath ) = FALSE ) then
-		errReportEx( FB_ERRMSG_EXEMISSING, cxbepath, -1 )
+
+	cxbepath = fbFindBinFile( "cxbe" )
+	if( len( cxbepath ) = 0 ) then
 		exit function
 	end if
 	
@@ -187,8 +183,11 @@ private function _archiveFiles _
 	) as integer
 	
 	dim arcpath as string
-	
-	arcpath = fbGetPath( FB_PATH_BIN ) + "ar" + FB_HOST_EXEEXT
+
+	arcpath = fbFindBinFile( "ar" )
+	if( len( arcpath ) = 0 ) then
+		return FALSE
+	end if
 	
 	if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
@@ -212,7 +211,10 @@ private function _compileResFiles _
 	setenviron "INCLUDE=" + fbGetPath( FB_PATH_INC ) + ("win" + RSLASH + "rc")
 	
 	''
-	rescmppath = fbGetPath( FB_PATH_BIN ) + "GoRC.exe"
+	rescmppath = fbFindBinFile( "GoRC" )
+	if( len( rescmppath ) = 0 ) then
+		exit function
+	end if
 	
 	'' set input files (.rc's and .res') and output files (.obj's)
 	dim as string ptr rcf = listGetHead( @rclist )
