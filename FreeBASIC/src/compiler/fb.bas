@@ -458,7 +458,14 @@ sub fbSetDefaultOptions( )
 	env.clopt.target		= FB_DEFAULT_TARGET
 	env.clopt.lang			= FB_DEFAULT_LANG
 	env.clopt.backend		= FB_DEFAULT_BACKEND
+#if defined(TARGET_LINUX)
+	env.clopt.findbin		= _
+		FB_FINDBIN_ALLOW_ENVVAR _
+		or FB_FINDBIN_ALLOW_BINDIR _
+		or FB_FINDBIN_ALLOW_SYSTEM
+#else
 	env.clopt.findbin		= FB_DEFAULT_FINDBIN
+#endif
 	env.clopt.debug			= FALSE
 	env.clopt.errorcheck	= FALSE
 	env.clopt.resumeerr 	= FALSE

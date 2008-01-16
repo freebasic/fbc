@@ -383,12 +383,6 @@ function fbcInit_linux( ) as integer
 	''
 	xpmfile = ""
 
-	''
-	fbSetOption( FB_COMPOPT_FINDBIN, _
-		FB_FINDBIN_ALLOW_ENVVAR _
-		or FB_FINDBIN_ALLOW_BINDIR _
-		or FB_FINDBIN_ALLOW_SYSTEM )
-
 	return TRUE
 
 end function
