@@ -5,6 +5,7 @@ Version 0.18.4 Beta:
 - lang qb: DATA should be allowed inside compound-statements (v1c)
 - lang qb: MKI/CVI/CINT now return 16-bit sized results (counting_pine)
 - lang qb: PRINT now appends a space when printing numbers (counting_pine)
+- when finding binutils, fbc checks environment variables, then ./bin/<target>, then (on Linux only) if the sub-program was not found, fbc will invoke the system default (jeffm)
 
 [added]
 - INSTRREV - feature request #1244607 (jeffm)
