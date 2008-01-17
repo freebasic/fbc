@@ -1018,6 +1018,8 @@ examples/manual/strings/cvshort.bas
 examples/manual/strings/hex.bas
 examples/manual/strings/instr.bas
 examples/manual/strings/instr2.bas
+examples/manual/strings/instrrev.bas
+examples/manual/strings/instrrev2.bas
 examples/manual/strings/lcase.bas
 examples/manual/strings/left.bas
 examples/manual/strings/len.bas

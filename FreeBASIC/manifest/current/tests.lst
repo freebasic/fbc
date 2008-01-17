@@ -18,6 +18,7 @@ tests/compound/while.bas
 tests/console/ascii.bas
 tests/console/common.bas
 tests/console/common.bi
+tests/const/any_const.bas
 tests/const/byval_ok.bas
 tests/const/const_to_const.bas
 tests/const/const_to_nonconst.bas
@@ -40,6 +41,7 @@ tests/const/rtl-mid.bas
 tests/const/rtl-swap.bas
 tests/const/typedef.bas
 tests/const/typedef2.bas
+tests/const/var_const.bas
 tests/crt/stdout.bas
 tests/cunit-tests.mk
 tests/data/empty.txt
@@ -296,6 +298,8 @@ tests/qb/file_open_lpt.bas
 tests/qb/file_open_lpt_fail.bas
 tests/qb/file_open_scrn.bas
 tests/qb/file_open_scrn_fail.bas
+tests/qb/mkcv.bas
+tests/qb/qbtypes.bas
 tests/qb/scope_block.bas
 tests/qb/str.bas
 tests/qb/suffixes.bas
@@ -331,10 +335,13 @@ tests/string/initialization2.bas
 tests/string/inline_zstring_cast.bas
 tests/string/instr_0.bas
 tests/string/instr_x.bas
+tests/string/instrrev_0.bas
+tests/string/instrrev_x.bas
 tests/string/len.bas
 tests/string/ltrim.bas
 tests/string/mid_set.bas
 tests/string/mid_stmt_dref_dest.bas
+tests/string/mkcv.bas
 tests/string/oct.bas
 tests/string/redim.bas
 tests/string/rtrim.bas
@@ -433,6 +440,10 @@ tests/wstring/ascii.bi
 tests/wstring/concat_conv.bas
 tests/wstring/data.bas
 tests/wstring/inctest.bas
+tests/wstring/instr_0.bas
+tests/wstring/instr_x.bas
+tests/wstring/instrrev_0.bas
+tests/wstring/instrrev_x.bas
 tests/wstring/len.bas
 tests/wstring/lineinput.bas
 tests/wstring/lineinput.txt

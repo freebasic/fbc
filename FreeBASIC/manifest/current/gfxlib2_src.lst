@@ -40,6 +40,8 @@ src/gfxlib2/fb_gfx.h
 src/gfxlib2/fb_gfx_data.h
 src/gfxlib2/fb_gfx_gl.h
 src/gfxlib2/fb_gfx_lzw.h
+src/gfxlib2/freebsd/libfb_gfx_freebsd.c
+src/gfxlib2/freebsd/libfb_gfx_joystick.c
 src/gfxlib2/libfb_gfx_access.c
 src/gfxlib2/libfb_gfx_blitter.c
 src/gfxlib2/libfb_gfx_bload.c
@@ -103,7 +105,6 @@ src/gfxlib2/libfb_gfx_width.c
 src/gfxlib2/libfb_gfx_window.c
 src/gfxlib2/linux/fb_gfx_linux.h
 src/gfxlib2/linux/libfb_gfx_driver_fbdev.c
-src/gfxlib2/linux/libfb_gfx_driver_x11.c
 src/gfxlib2/linux/libfb_gfx_joystick.c
 src/gfxlib2/linux/libfb_gfx_linux.c
 src/gfxlib2/obj/cygwin/deleteme.txt
@@ -119,14 +120,17 @@ src/gfxlib2/obj/win32/config.status
 src/gfxlib2/obj/win32/deleteme.txt
 src/gfxlib2/obj/win32/stamp-h1
 src/gfxlib2/opengl/libfb_gfx_opengl.c
-src/gfxlib2/opengl/linux/libfb_gfx_driver_opengl.c
 src/gfxlib2/opengl/win32/libfb_gfx_driver_opengl.c
+src/gfxlib2/opengl/x11/libfb_gfx_driver_opengl.c
 src/gfxlib2/tools/mk_dat.c
 src/gfxlib2/win32/fb_gfx_win32.h
 src/gfxlib2/win32/libfb_gfx_driver_ddraw.c
 src/gfxlib2/win32/libfb_gfx_driver_gdi.c
 src/gfxlib2/win32/libfb_gfx_joystick.c
 src/gfxlib2/win32/libfb_gfx_win32.c
+src/gfxlib2/x11/fb_gfx_x11.h
+src/gfxlib2/x11/libfb_gfx_driver_x11.c
+src/gfxlib2/x11/libfb_gfx_x11.c
 src/gfxlib2/x86/fb_gfx_mmx.h
 src/gfxlib2/x86/libfb_gfx_blitter_mmx.s
 src/gfxlib2/x86/libfb_gfx_mmx.s

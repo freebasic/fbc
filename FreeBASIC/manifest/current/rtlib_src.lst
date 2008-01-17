@@ -97,6 +97,9 @@ src/rtlib/fb_unicode.h
 src/rtlib/freebsd/fb_freebsd.h
 src/rtlib/freebsd/libfb_hexit.c
 src/rtlib/freebsd/libfb_hinit.c
+src/rtlib/freebsd/libfb_io_mouse.c
+src/rtlib/freebsd/libfb_io_multikey.c
+src/rtlib/freebsd/libfb_sys_fmem.c
 src/rtlib/freebsd/libfb_sys_getexename.c
 src/rtlib/freebsd/libfb_sys_getexepath.c
 src/rtlib/libfb_array_boundchk.c
@@ -533,6 +536,7 @@ src/rtlib/unix/libfb_io_scroll.c
 src/rtlib/unix/libfb_io_viewupdate.c
 src/rtlib/unix/libfb_io_width.c
 src/rtlib/unix/libfb_io_xfocus.c
+src/rtlib/unix/libfb_scancodes.c
 src/rtlib/unix/libfb_sys_beep.c
 src/rtlib/unix/libfb_sys_delay.c
 src/rtlib/unix/libfb_sys_dylib.c

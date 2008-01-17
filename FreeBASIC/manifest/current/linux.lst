@@ -4,11 +4,7 @@ fblogo.xpm
 install.sh
 migrating.txt
 readme.txt
-bin/linux/ar
-bin/linux/as
 bin/linux/elf_i386.x
-bin/linux/gprof
-bin/linux/ld
 docs/fbc.1.gz
 docs/gpl.txt
 docs/lgpl.txt
@@ -880,6 +876,8 @@ examples/manual/strings/cvshort.bas
 examples/manual/strings/hex.bas
 examples/manual/strings/instr.bas
 examples/manual/strings/instr2.bas
+examples/manual/strings/instrrev.bas
+examples/manual/strings/instrrev2.bas
 examples/manual/strings/lcase.bas
 examples/manual/strings/left.bas
 examples/manual/strings/len.bas
