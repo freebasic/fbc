@@ -4,26 +4,30 @@ namespace fbc_tests.wstrings.instr_X
 
 private sub wholeStringTest cdecl ()
 
-	CU_ASSERT_EQUAL( 2 , instr("d"+chr(0), any chr(0)) )
-	CU_ASSERT_EQUAL( 1 , instr("d"+chr(0), any chr(0)+"d") )
-	CU_ASSERT_EQUAL( 1 , instr("d"+chr(0), any "d"+chr(0)) )
-	CU_ASSERT_EQUAL( 2 , instr("d"+chr(0)+"x", any "x"+chr(0)) )
-	CU_ASSERT_EQUAL( 0 , instr("d"+chr(0)+"x", any "") )
-	CU_ASSERT_EQUAL( 0 , instr("d"+chr(0)+"x", any "q") )
-	CU_ASSERT_EQUAL( 0 , instr("d"+chr(0)+"x", any "qb") )
+	CU_ASSERT_EQUAL( 0 , instr(wstr("yd"+chr(0)), any wstr(chr(0))) )
+	CU_ASSERT_EQUAL( 0 , instr(wstr("yd"+chr(0)), any wstr(chr(0)+"d")) )
+	CU_ASSERT_EQUAL( 2 , instr(wstr("yd"+chr(0)), any wstr("d"+chr(0))) )
+	CU_ASSERT_EQUAL( 2 , instr(wstr("yd"+chr(0)), any wstr("zd"+chr(0))) )
+	CU_ASSERT_EQUAL( 2 , instr(wstr("yd"+chr(0)), any wstr("dz"+chr(0))) )
+	CU_ASSERT_EQUAL( 0 , instr(wstr("yd"+chr(0)+"x"), any wstr("x"+chr(0))) )
+	CU_ASSERT_EQUAL( 0 , instr(wstr("yd"+chr(0)+"x"), any wstr("")) )
+	CU_ASSERT_EQUAL( 0 , instr(wstr("yd"+chr(0)+"x"), any wstr("q")) )
+	CU_ASSERT_EQUAL( 0 , instr(wstr("yd"+chr(0)+"x"), any wstr("qb")) )
 
 end sub
 
 private sub partialStringTest cdecl ()
 
-	CU_ASSERT_EQUAL( 2 , instr(2, "d"+chr(0), any chr(0)) )
-	CU_ASSERT_EQUAL( 2 , instr(2, "d"+chr(0), any chr(0)+"d") )
-	CU_ASSERT_EQUAL( 2 , instr(2, "d"+chr(0), any "d"+chr(0)) )
-	CU_ASSERT_EQUAL( 2 , instr(2, "d"+chr(0)+"x", any "x"+chr(0)) )
-	CU_ASSERT_EQUAL( 0 , instr(2, "d"+chr(0)+"x", any "") )
-	CU_ASSERT_EQUAL( 0 , instr(2, "d"+chr(0)+"x", any "q") )
-	CU_ASSERT_EQUAL( 0 , instr(2, "d"+chr(0)+"x", any "qb") )
-	CU_ASSERT_EQUAL( 0 , instr(3, "d"+chr(0)+"x", any "d"+chr(0)) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr("yd"+chr(0)), any wstr(chr(0))) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr("yd"+chr(0)), any wstr(chr(0)+"d")) )
+	CU_ASSERT_EQUAL( 2 , instr(2, wstr("yd"+chr(0)), any wstr("d"+chr(0))) )
+	CU_ASSERT_EQUAL( 2 , instr(2, wstr("yd"+chr(0)), any wstr("zd"+chr(0))) )
+	CU_ASSERT_EQUAL( 2 , instr(2, wstr("yd"+chr(0)), any wstr("dz"+chr(0))) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr("yd"+chr(0)+"x"), any wstr("x"+chr(0))) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr("yd"+chr(0)+"x"), any wstr("")) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr("yd"+chr(0)+"x"), any wstr("q")) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr("yd"+chr(0)+"x"), any wstr("qb")) )
+	CU_ASSERT_EQUAL( 0 , instr(3, wstr("yd"+chr(0)+"x"), any wstr("d"+chr(0))) )
 
 end sub
 

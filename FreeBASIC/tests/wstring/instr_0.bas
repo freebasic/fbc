@@ -4,29 +4,29 @@ namespace fbc_tests.wstrings.instr_0
 
 private sub wholeStringTest cdecl ()
 
-	CU_ASSERT_EQUAL( 0, instr(wstr("asd"+chr(0)), wstr(chr(0))) )
-	CU_ASSERT_EQUAL( 3, instr(wstr("asd"+chr(0)), wstr("d")) )
-	CU_ASSERT_EQUAL( 1, instr(wstr("asd"+chr(0)), wstr("a")) )
-	CU_ASSERT_EQUAL( 2, instr(wstr("asd"+chr(0)), wstr("sd")) )
-	CU_ASSERT_EQUAL( 0, instr(wstr("asd"+chr(0)), wstr("")) )
-	CU_ASSERT_EQUAL( 0, instr(wstr("asd"+chr(0)), wstr("asdfg")) )
-	CU_ASSERT_EQUAL( 0, instr(wstr("asd"+chr(0)), wstr("qwe")) )
-	CU_ASSERT_EQUAL( 0, instr(wstr(""), wstr("asdf")) )
-	CU_ASSERT_EQUAL( 0, instr(wstr(""), wstr("")) )
+	CU_ASSERT_EQUAL( 0 , instr(wstr("asd"+chr(0)), wstr(chr(0))) )
+	CU_ASSERT_EQUAL( 3 , instr(wstr("asd"+chr(0)), wstr("d")) )
+	CU_ASSERT_EQUAL( 1 , instr(wstr("asd"+chr(0)), wstr("a")) )
+	CU_ASSERT_EQUAL( 2 , instr(wstr("asd"+chr(0)), wstr("sd")) )
+	CU_ASSERT_EQUAL( 0 , instr(wstr("asd"+chr(0)), wstr("")) )
+	CU_ASSERT_EQUAL( 0 , instr(wstr("asd"+chr(0)), wstr("asdfg")) )
+	CU_ASSERT_EQUAL( 0 , instr(wstr("asd"+chr(0)), wstr("qwe")) )
+	CU_ASSERT_EQUAL( 0 , instr(wstr(""), wstr("asdf")) )
+	CU_ASSERT_EQUAL( 0 , instr(wstr(""), wstr("")) )
 
 end sub
 
 private sub partialStringTest cdecl ()
 
-	CU_ASSERT_EQUAL( 0, instr(2, wstr("asd"+chr(0)), wstr(chr(0))) )
-	CU_ASSERT_EQUAL( 3, instr(2, wstr("asd"+chr(0)), wstr("d")) )
-	CU_ASSERT_EQUAL( 0, instr(2, wstr("asd"+chr(0)), wstr("a")) )
-	CU_ASSERT_EQUAL( 2, instr(2, wstr("asd"+chr(0)), wstr("sd")) )
-	CU_ASSERT_EQUAL( 0, instr(2, wstr("asd"+chr(0)), wstr("")) )
-	CU_ASSERT_EQUAL( 0, instr(2, wstr("asd"+chr(0)), wstr("asdfg")) )
-	CU_ASSERT_EQUAL( 0, instr(2, wstr("asd"+chr(0)), wstr("qwe")) )
-	CU_ASSERT_EQUAL( 0, instr(2, wstr(""), wstr("asdf")) )
-	CU_ASSERT_EQUAL( 0, instr(2, wstr(""), wstr("")) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr("asd"+chr(0)), wstr(chr(0))) )
+	CU_ASSERT_EQUAL( 3 , instr(2, wstr("asd"+chr(0)), wstr("d")) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr("asd"+chr(0)), wstr("a")) )
+	CU_ASSERT_EQUAL( 2 , instr(2, wstr("asd"+chr(0)), wstr("sd")) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr("asd"+chr(0)), wstr("")) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr("asd"+chr(0)), wstr("asdfg")) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr("asd"+chr(0)), wstr("qwe")) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr(""), wstr("asdf")) )
+	CU_ASSERT_EQUAL( 0 , instr(2, wstr(""), wstr("")) )
 
 end sub
 

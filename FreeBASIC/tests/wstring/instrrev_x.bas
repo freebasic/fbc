@@ -4,29 +4,31 @@ namespace fbc_tests.wstrings.instrrev_X
 
 private sub wholeStringTest cdecl ()
 
-	CU_ASSERT_EQUAL( 2 , instrrev("d"+chr(0), any chr(0)) )
-	CU_ASSERT_EQUAL( 2 , instrrev("d"+chr(0), any chr(0)+"d") )
-	CU_ASSERT_EQUAL( 2 , instrrev("d"+chr(0), any "d"+chr(0)) )
-	CU_ASSERT_EQUAL( 3 , instrrev("d"+chr(0)+"x", any "x"+chr(0)) )
-	CU_ASSERT_EQUAL( 2 , instrrev("d"+chr(0)+"x", any "d"+chr(0)) )
-	CU_ASSERT_EQUAL( 0 , instrrev("d"+chr(0)+"x", any "") )
-	CU_ASSERT_EQUAL( 0 , instrrev("d"+chr(0)+"x", any "q") )
-	CU_ASSERT_EQUAL( 0 , instrrev("d"+chr(0)+"x", any "qb") )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)), any wstr(chr(0))) )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)), any wstr(chr(0)+"d")) )
+	CU_ASSERT_EQUAL( 2 , instrrev(wstr("yd"+chr(0)), any wstr("d"+chr(0))) )
+	CU_ASSERT_EQUAL( 2 , instrrev(wstr("yd"+chr(0)), any wstr("dz"+chr(0))) )
+	CU_ASSERT_EQUAL( 2 , instrrev(wstr("yd"+chr(0)), any wstr("zd"+chr(0))) )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)+"x"), any wstr("x"+chr(0))) )
+	CU_ASSERT_EQUAL( 2 , instrrev(wstr("yd"+chr(0)+"x"), any wstr("d"+chr(0))) )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)+"x"), any wstr("")) )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)+"x"), any wstr("q")) )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)+"x"), any wstr("qb")) )
 
 end sub
 
 private sub partialStringTest cdecl ()
 
-	CU_ASSERT_EQUAL( 2 , instrrev("d"+chr(0), any chr(0), 2) )
-	CU_ASSERT_EQUAL( 2 , instrrev("d"+chr(0), any chr(0)+"d", 2) )
-	CU_ASSERT_EQUAL( 2 , instrrev("d"+chr(0), any "d"+chr(0), 2) )
-	CU_ASSERT_EQUAL( 2 , instrrev("d"+chr(0)+"x", any "x"+chr(0), 2) )
-	CU_ASSERT_EQUAL( 2 , instrrev("d"+chr(0)+"x", any "d"+chr(0), 2) )
-	CU_ASSERT_EQUAL( 0 , instrrev("d"+chr(0)+"x", any "", 2) )
-	CU_ASSERT_EQUAL( 0 , instrrev("d"+chr(0)+"x", any "q", 2) )
-	CU_ASSERT_EQUAL( 0 , instrrev("d"+chr(0)+"x", any "qb", 2) )
-	CU_ASSERT_EQUAL( 2 , instrrev("d"+chr(0)+"x", any "x"+chr(0), 2) )
-	CU_ASSERT_EQUAL( 2 , instrrev("d"+chr(0)+"x", any "d"+chr(0), 2) )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)), any wstr(chr(0)), 2) )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)), any wstr(chr(0)+"d"), 2) )
+	CU_ASSERT_EQUAL( 2 , instrrev(wstr("yd"+chr(0)), any wstr("d"+chr(0)), 2) )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)+"x"), any wstr("x"+chr(0)), 2) )
+	CU_ASSERT_EQUAL( 2 , instrrev(wstr("yd"+chr(0)+"x"), any wstr("d"+chr(0)), 2) )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)+"x"), any wstr(""), 2) )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)+"x"), any wstr("q"), 2) )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)+"x"), any wstr("qb"), 2) )
+	CU_ASSERT_EQUAL( 0 , instrrev(wstr("yd"+chr(0)+"x"), any wstr("x"+chr(0)), 2) )
+	CU_ASSERT_EQUAL( 2 , instrrev(wstr("yd"+chr(0)+"x"), any wstr("d"+chr(0)), 2) )
 
 end sub
 
