@@ -252,23 +252,30 @@ sub rtlAddIntrinsicProcs _
 				attrib = FB_SYMBATTRIB_OVERLOADED
 			end if
 
-			''
-			if( procdef->alias = NULL ) then
-				procdef->alias = procdef->name
-			end if
-
 			if( (procdef->options and FB_RTL_OPT_STRSUFFIX) <> 0 ) then
 				attrib or= FB_SYMBATTRIB_SUFFIXED
 			end if
 			
-			'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
 			dim as zstring ptr pname = procdef->name
+
+			'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
 			if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
 				if( fbLangIsSet( FB_LANG_QB ) ) then
-        			static as string tmp
-        			tmp = "__" + *pname
-        			pname = strptr( tmp )
+					if( procdef->alias = NULL ) then
+						static as string tmp_alias
+						tmp_alias = *pname
+						procdef->alias = strptr( tmp_alias )
+        			end if
+        			
+        			static as string tmp_name
+        			tmp_name = "__" + *pname
+        			pname = strptr( tmp_name )
 				end if
+			end if
+
+			''
+			if( procdef->alias = NULL ) then
+				procdef->alias = pname
 			end if
 
 			'' ordinary proc?
@@ -327,8 +334,23 @@ function rtlProcLookup _
 	if( rtlLookupTB( pidx ) = NULL ) then
 		chain_ = symbLookupAt( @symbGetGlobalNamespc( ), pname, FALSE, FALSE )
 		if( chain_ = NULL ) then
-			errReportEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
-			rtlLookupTB( pidx ) = NULL
+			'' try to prefix it with a '__' if in -lang qb mode
+			if( fbLangIsSet( FB_LANG_QB ) ) then
+        		static as string tmp_name
+        		tmp_name = "__" + *pname
+        		pname = strptr( tmp_name )
+        		chain_ = symbLookupAt( @symbGetGlobalNamespc( ), pname, FALSE, FALSE )
+        		if( chain_ = NULL ) then
+					errReportEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
+					rtlLookupTB( pidx ) = NULL
+				else
+					rtlLookupTB( pidx ) = chain_->sym
+				end if
+			
+			else
+				errReportEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
+				rtlLookupTB( pidx ) = NULL
+			end if
 		else
 			rtlLookupTB( pidx ) = chain_->sym
 		end if
