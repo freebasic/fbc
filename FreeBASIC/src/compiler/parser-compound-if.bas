@@ -126,6 +126,7 @@ function cIfStmtBegin as integer
 	dim as ASTNODE ptr expr = any
 	dim as FBSYMBOL ptr nl = any, el = any
 	dim as FB_CMPSTMTSTK ptr stk = any
+	dim as integer ismultiline = any
 
 	function = FALSE
 
@@ -182,16 +183,31 @@ function cIfStmtBegin as integer
 
 	select case as const lexGetToken( )
 	'' COMMENT|NEWLINE?
-	case FB_TK_COMMENT, FB_TK_REM, FB_TK_EOL, FB_TK_EOF, FB_TK_STMTSEP
-		stk->if.issingle = FALSE
-		stk->scopenode = astScopeBegin( )
+	case FB_TK_COMMENT, FB_TK_EOL, FB_TK_EOF
+		ismultiline = TRUE
+
+	'' REM | ':'?
+	case FB_TK_REM, FB_TK_STMTSEP
+		'' QB treats "IF...THEN [REM|:] ..." as single-line IF
+		if( fbLangIsSet( FB_LANG_QB ) ) then
+			ismultiline = FALSE
+		else
+			ismultiline = TRUE
+		end if
 
 	case else
+		ismultiline = FALSE
+	end select
+	
+	if( ismultiline ) then
+		stk->if.issingle = FALSE
+		stk->scopenode = astScopeBegin( )
+	else
 		stk->if.issingle = TRUE
 		stk->scopenode = NULL
 		return hIfSingleLine( stk )
-	end select
-
+	end if
+	
 	function = TRUE
 
 end function
