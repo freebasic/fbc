@@ -19,6 +19,7 @@ Version 0.18.4 Beta:
 - BLOAD could not use old-style image header when loading BMPs (counting_pine)
 - VAR was disregarding the extended type information (like const qualifiers), found by stylin
 - variables with const qualifier shouldn't have been accepting ANY as an initializer (cha0s)
+- #1877440 - g++ name mangling for const qualifiers (jeffm)
 
 
 Version 0.18.3 Beta:

@@ -381,7 +381,7 @@ function symbMangleType _
     	if( ns = @symbGetGlobalNamespc( ) ) then
     		sig = *symbGetMangledName( subtype )
     	else
-    		sig = "N"
+			sig = "N"
     		sig += symbMangleType( symbGetFullType( ns ), ns )
     		sig += *symbGetMangledName( subtype )
     		sig += "E"
@@ -419,7 +419,12 @@ function symbMangleType _
 	
 		'' reference?
 		if( typeIsRef( dtype ) ) then
-			sig = "R"
+			'' const?
+			if( typeIsConst( dtype ) ) then
+				sig = "RK"
+			else
+				sig = "R"
+			end if
 			sig += symbMangleType( typeUnsetIsRef( dtype ), subtype )
 	
 		'' array?
@@ -430,7 +435,7 @@ function symbMangleType _
 		'' pointer? (must be checked/emitted before CONST)
 		elseif( typeIsPtr( dtype ) ) then
 			'' const?
-			if( typeIsConst( dtype ) ) then
+			if( typeIsConstAt( dtype, 1 ) ) then
 				sig = "PK"
 			else
 				sig = "P"
@@ -556,7 +561,8 @@ end function
 private function hMangleNamespace _
 	( _
 		byval ns as FBSYMBOL ptr, _
-		byval dohashing as integer = TRUE _
+		byval dohashing as integer = TRUE, _
+		byval isconst as integer = FALSE _
 	) as zstring ptr static
 
 	static as string res
@@ -584,7 +590,11 @@ private function hMangleNamespace _
     loop until( ns = @symbGetGlobalNamespc( ) )
 
 	'' return the chain starting from base parent
-	res = "N"
+	if( isconst ) then
+		res = "NK"
+	else
+		res = "N"
+	end if
 	do
 		ns = nsStk(tos)
 		res += *symbGetMangledName( ns )
@@ -1167,7 +1177,7 @@ private function hMangleProc  _
     '' namespace or class
 	nspc_len = 0
 	if( docpp ) then
-    	nspc_str = hMangleNamespace( symbGetNamespace( sym ) )
+    	nspc_str = hMangleNamespace( symbGetNamespace( sym ), , symbIsConstant( sym ) )
     	if( nspc_str <> NULL ) then
     		nspc_len = len( *nspc_str )
     	end if
