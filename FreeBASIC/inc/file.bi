@@ -16,10 +16,22 @@ const fbFileEncodUTF8    = 1
 const fbFileEncodUTF16   = 2
 const fbFileEncodUTF32   = 3
 
+#if __FB_LANG__ = "qb"
+
+declare function FileCopy alias "fb_FileCopy" ( byval source as __zstring __ptr, byval destination as __zstring __ptr ) as long
+declare function FileAttr alias "fb_FileAttr" ( byval handle as long, byval returntype as long = 1 ) as long
+declare function FileLen alias "fb_FileLen" ( byval filename as __zstring __ptr ) as __longint
+declare function FileExists alias "fb_FileExists" ( byval filename as __zstring __ptr ) as long
+declare function FileDateTime alias "fb_FileDateTime" ( byval filename as __zstring __ptr ) as double
+
+#else
+
 declare function FileCopy alias "fb_FileCopy" ( byval source as zstring ptr, byval destination as zstring ptr ) as integer
 declare function FileAttr alias "fb_FileAttr" ( byval handle as integer, byval returntype as integer = 1 ) as integer
 declare function FileLen alias "fb_FileLen" ( byval filename as zstring ptr ) as longint
 declare function FileExists alias "fb_FileExists" ( byval filename as zstring ptr ) as integer
 declare function FileDateTime alias "fb_FileDateTime" ( byval filename as zstring ptr ) as double
+
+#endif
 
 #endif
