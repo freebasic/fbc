@@ -1197,7 +1197,46 @@ private function hCheckOpOvlParams _
 end function
 
 '':::::
-''OperatorHeader   	=  Operator CallConvention? (ALIAS LIT_STRING)?
+private function hCheckIsSelfCloneByval _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr, _
+		byval is_prototype as integer _
+	) as integer
+
+	function = FALSE
+
+	dim as FBSYMBOL ptr param = symbGetProcHeadParam( proc )
+
+	'' if it's a proto, skip the instance param
+	if( is_prototype ) then
+		param = param->next
+	end if
+
+	'' same parent, byval
+	if( param <> NULL ) then
+		if( symbGetSubtype( param ) = parent ) then
+			if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
+
+				'' At least one additional non-optional parameter?
+				param = param->next
+				while( param <> NULL )
+					if( symbGetIsOptional( param ) = FALSE ) then
+						exit function
+					end if
+					param = param->next
+				wend
+
+				function = TRUE
+
+			end if
+		end if
+	end if
+
+end function
+
+'':::::
+''OperatorHeader   	=  Operator CallConvention? OVERLOAD? (ALIAS LIT_STRING)?
 ''                     Parameters? (AS SymbolType)? STATIC? EXPORT?
 ''
 function cOperatorHeader _
@@ -1330,6 +1369,13 @@ function cOperatorHeader _
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
 
+	'' OVERLOAD?
+	if( lexGetToken( ) = FB_TK_OVERLOAD ) then
+		'' allow it for consistency even though it is not needed 
+		'' member procs are overloaded by default
+		lexSkipToken( )
+	end if
+
     dim as zstring ptr plib = NULL
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
 		'' (LIB STR_LIT)?
@@ -1450,20 +1496,11 @@ function cOperatorHeader _
 	'' operator LET can't take a byval arg of its own type
 	if( op = AST_OP_ASSIGN ) then
 
-		'' if it's a proto, skip the instance param
-		dim as FBSYMBOL ptr param = symbGetProcHeadParam( proc )
-		if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
-			param = param->next
+		if( hCheckIsSelfCloneByval( parent, proc, ( (options and FB_PROCOPT_ISPROTO) <> 0 ) ) ) then
+			errReport( FB_ERRMSG_CLONECANTTAKESELFBYVAL, TRUE )
+			exit function
 		end if
 
-		'' same parent, byval
-		if( symbGetSubtype( param ) = parent ) then
-			if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
-				if( errReport( FB_ERRMSG_CLONECANTTAKESELFBYVAL, TRUE ) = FALSE ) then
-					exit function
-				end if
-			end if
-		end if
 	end if
 
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
@@ -1738,7 +1775,7 @@ private function hCheckPropParams _
 end function
 
 '':::::
-''ProcHeader   		=  ID CallConvention? (ALIAS LIT_STRING)?
+''PropHeader   		=  ID CallConvention? OVERLOAD? (ALIAS LIT_STRING)?
 ''                     Parameters? (AS SymbolType)? STATIC? EXPORT?
 ''
 function cPropertyHeader _
@@ -1796,6 +1833,13 @@ function cPropertyHeader _
 
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
+
+	'' OVERLOAD?
+	if( lexGetToken( ) = FB_TK_OVERLOAD ) then
+		'' allow it for consistency even though it is not needed 
+		'' member procs are overloaded by default
+		lexSkipToken( )
+	end if
 
 	dim as zstring ptr plib = NULL
 	if( is_prototype ) then
@@ -2072,7 +2116,7 @@ function cPropertyHeader _
 end function
 
 '':::::
-''CtorHeader   		=  (ALIAS LIT_STRING)? Parameters? STATIC? EXPORT?
+''CtorHeader   		=  CDECL? OVERLOAD? (ALIAS LIT_STRING)? Parameters? STATIC? EXPORT?
 ''
 function cCtorHeader _
 	( _
@@ -2116,6 +2160,13 @@ function cCtorHeader _
 	'' CallConvention?
 	'' ctors and dtors must be always CDECL if passed to REDIM
 	dim as FB_FUNCMODE mode = cProcCallingConv( FB_FUNCMODE_CDECL )
+
+	'' OVERLOAD?
+	if( lexGetToken( ) = FB_TK_OVERLOAD ) then
+		'' allow it for consistency even though it is not needed 
+		'' member procs are overloaded by default
+		lexSkipToken( )
+	end if
 
     dim as zstring ptr plib = NULL
 	if( is_prototype ) then
@@ -2177,6 +2228,12 @@ function cCtorHeader _
 			end if
 		end if
 	else
+		'' ctor can't take a byval arg of its own type as only non-optional arg
+		if( hCheckIsSelfCloneByval( parent, proc, is_prototype ) ) then
+			errReport( FB_ERRMSG_CLONECANTTAKESELFBYVAL, TRUE )
+			exit function
+		end if
+
     	'' vararg?
     	if( symbGetParamMode( symbGetProcTailParam( proc ) ) = FB_PARAMMODE_VARARG ) then
     		if( hParamError( proc, 0, FB_ERRMSG_VARARGPARAMNOTALLOWED ) = FALSE ) then

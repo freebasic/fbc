@@ -2493,7 +2493,7 @@ declare function symbCheckConstAssign _
 #define	typeUnsetIsConst( dt ) (dt and not (1 shl FB_DT_CONSTPOS))
 #define	typeGetConstMask( dt ) (dt and FB_DT_CONSTMASK)
 #define	typeGetPtrConstMask( dt ) _
-	(typeGetConstMask( dt ) and not ((1 shl FB_DT_CONSTPOS) shl typeGetPtrCnt( dt )))
+	(typeGetConstMask( dt ) and not (1 shl FB_DT_CONSTPOS))
 
 #define	typeIsRef( dt ) ((dt and FB_DATATYPE_REFERENCE) <> 0)
 #define	typeSetIsRef( dt ) (dt or FB_DATATYPE_REFERENCE)

@@ -21,6 +21,9 @@ Version 0.18.4 Beta:
 - VAR was disregarding the extended type information (like const qualifiers), found by stylin
 - variables with const qualifier shouldn't have been accepting ANY as an initializer (cha0s)
 - #1877440 - g++ name mangling for const qualifiers (jeffm)
+- #1877439 - const qualifier overloading with byref (jeffm)
+- #1872532 - fix null pointer access when parsing parameters and allow OVERLOAD in member proc declarations for consistency (jeffm)
+- #1876286 - constructor should not take byval arg of parent type as only parameter ( jeffm )
 
 
 Version 0.18.3 Beta:

@@ -412,10 +412,24 @@ private function hAddOvlProc _
 				if( (typeGetConstMask( pdtype ) or _
 					typeGetConstMask( odtype )) <> 0 ) then
 
-					'' only matters if it's a 'const ptr' (as in C++)
-					if( typeGetPtrConstMask( pdtype ) <> _
-						typeGetPtrConstMask( odtype ) ) then
-						exit do
+					'' both byref?
+					if( (param->param.mode = FB_PARAMMODE_BYREF ) _
+						and (ovl_param->param.mode = FB_PARAMMODE_BYREF )) then
+
+						if( typeGetConstMask( pdtype ) <> _
+							typeGetConstMask( odtype ) ) then
+							exit do
+						end if
+
+
+					'' else only matters if it's a 'const ptr' (as in C++)
+					else
+					
+						if( typeGetPtrConstMask( pdtype ) <> _
+							typeGetPtrConstMask( odtype ) ) then
+							exit do
+						end if
+
 					end if
 
 					pdtype = typeGetDtAndPtrOnly( pdtype )
