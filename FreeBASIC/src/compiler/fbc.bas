@@ -661,7 +661,7 @@ private function hAddInfoObject as integer
     if( fbObjInfoWriteObj( @fbc.ld_liblist, @fbc.ld_libpathlist ) ) then
     	function = TRUE
 
-    '' and error occured or there's no need for an info object, delete it
+    '' and error occurred or there's no need for an info object, delete it
     else
 		if( hFileExists( FB_INFOSEC_OBJNAME ) ) then
     		safeKill( FB_INFOSEC_OBJNAME )
@@ -1783,7 +1783,7 @@ private sub printOptions( )
 		printOption( "-mt", "Link with thread-safe runtime library" )
 	end if
 	printOption( "-nodeflibs", "Do not include the default libraries" )
-	printOption( "-noerrline", "Do not show source line where error occured" )
+	printOption( "-noerrline", "Do not show source line where error occurred" )
 	printOption( "-o <name>", "Set object file path/name (must be passed after the .bas file)" )
 	printOption( "-p <name>", "Add a path to search for libraries" )
 	print "-prefix <path>"; " Set the compiler prefix path"
