@@ -13,15 +13,15 @@ End Type
 
 Dim ex As Example
 
-'' First method of filling the type
+'' Filling the type by setting each field
 ex.field1 = 1
 ex.field2 = 2
 
-'' Second method
+'' Filling the type by setting each field using WITH
 With ex
 	.field1 = 1
 	.field2 = 2
 End With
 
-'' Third method, using temporary types
+'' Fill the variable's fields with a  temporary type
 ex = Type( 1, 2 )

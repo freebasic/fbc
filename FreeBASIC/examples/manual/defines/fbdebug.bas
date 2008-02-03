@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDdfbdebug
 '' --------
 
-#if __FB_DEBUG__ 
+#if __FB_DEBUG__ <> 0
 	    #print Debug mode 
 #else 
 	    #print Release mode 

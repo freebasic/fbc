@@ -11,23 +11,23 @@ Const x_res = 640, y_res = 480, bpp = 32
 Dim scrbuf As Any Ptr, scrsize As Integer
 Dim i As Integer, j As Integer
 
-ScreenRes x_res, y_res, bpp, 2
-ScreenSet 1, 0
+ScreenRes x_res, y_res, bpp
 scrbuf = ScreenPtr
 scrsize = x_res * y_res * bpp / 8
 
-i=1: j=1
 Do
 	ScreenLock
-	memset scrbuf, 0, scrsize
+	    memset scrbuf, 0, scrsize
+	    Circle (320, 240), i
 	ScreenUnlock
-	Circle (320, 240), i
-	Flip
-	If j = 1 Then
+   
+	If j = 0 Then
 	    i = i + 1
-	    If i >= 100 Then j = 2
-	ElseIf j = 2 Then
+	    If i >= 100 Then j = 1
+	ElseIf j = 1 Then
 	    i = i - 1
-	    If i <= 0 Then j = 1
+	    If i <= 0 Then j = 0
 	End If
+   
+	Sleep 1, 1
 Loop While Inkey=""
