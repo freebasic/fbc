@@ -996,6 +996,8 @@ examples/manual/proguide/typalias/overload.bas
 examples/manual/proguide/typalias/procptr_1.bas
 examples/manual/proguide/typalias/procptr_2.bas
 examples/manual/proguide/udt/ctordtor.bas
+examples/manual/proguide/udt/ptr-access.bas
+examples/manual/proguide/udt/simple.bas
 examples/manual/proguide/variables/variables.bas
 examples/manual/proguide/varscope/local.bas
 examples/manual/proguide/varscope/module1.bas
@@ -1126,6 +1128,8 @@ examples/manual/udt/public.bas
 examples/manual/udt/static.bas
 examples/manual/udt/sub.bas
 examples/manual/udt/temp-type.bas
+examples/manual/udt/temp-type2.bas
+examples/manual/udt/temp-type3.bas
 examples/manual/udt/this.bas
 examples/manual/udt/type-fwd.bas
 examples/manual/udt/type1.bas
