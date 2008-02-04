@@ -421,15 +421,12 @@ private function hAddOvlProc _
 							exit do
 						end if
 
+					endif
 
 					'' else only matters if it's a 'const ptr' (as in C++)
-					else
-					
-						if( typeGetPtrConstMask( pdtype ) <> _
-							typeGetPtrConstMask( odtype ) ) then
-							exit do
-						end if
-
+					if( typeGetPtrConstMask( pdtype ) <> _
+						typeGetPtrConstMask( odtype ) ) then
+						exit do
 					end if
 
 					pdtype = typeGetDtAndPtrOnly( pdtype )
@@ -1757,10 +1754,19 @@ private function hCheckOvlParam _
 	if( typeGetDtAndPtrOnly( param_dtype ) = typeGetDtAndPtrOnly( arg_dtype ) ) then
 		
 		if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
+
 			'' same subtype? full match..
 			if( param_subtype = arg_subtype ) then
 				return FB_OVLPROC_FULLMATCH
 			end if
+		
+		elseif( typeGetConstMask( param_dtype ) ) then
+
+			'' param is const but arg isn't?
+			if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype ) ) then
+				return FB_OVLPROC_HALFMATCH
+			end if
+
 		end if
 
 		'' if it's rtl, only if explicitly set
