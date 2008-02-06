@@ -1762,9 +1762,14 @@ private function hCheckOvlParam _
 		
 		elseif( typeGetConstMask( param_dtype ) ) then
 
-			'' param is const but arg isn't?
-			if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype ) ) then
-				return FB_OVLPROC_HALFMATCH
+			'' same subtype? ..
+			if( param_subtype = arg_subtype ) then
+
+				'' param is const but arg isn't?
+				if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype ) ) then
+					return FB_OVLPROC_HALFMATCH
+				end if
+
 			end if
 
 		end if
