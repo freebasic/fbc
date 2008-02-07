@@ -4,8 +4,7 @@
 
 #include once "pcre/pcre.bi" 
 
-const OVECCOUNT = 30    '' should be a multiple of 3
-const NULL = 0 
+dim OVECCOUNT as const uinteger = 30    '' should be a multiple of 3
 
 	dim as pcre ptr re 
 	dim as zstring ptr error_ 
@@ -55,6 +54,8 @@ const NULL = 0
 	
 	'' match succeded 
 	print "match succeeded" 
+	
+	print "rc = " & rc
 	
 	'' the output vector wasn't big enough 
 	if rc = 0 then 
