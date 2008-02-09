@@ -1,6 +1,5 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
-''  and the FreeBASIC development team.
+''	Copyright (C) 2006-2008 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -117,7 +116,7 @@ const default_TocPage = "DocToc"
 
 	if( bShowVersion ) then
 		print "FreeBASIC User's Manual Converter/Generator - Version 0.1b"
-		print "Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink[dot]com)"
+		print "Copyright (C) 2006-2008 The FreeBASIC development team."
 		end 1
 	end if
 

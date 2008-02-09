@@ -1,6 +1,5 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
-''  and the FreeBASIC development team.
+''	Copyright (C) 2006-2008 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -30,7 +29,7 @@ namespace fb
 
 	type CRegexCtx_
 		as pcre ptr 		reg
-		as pcre_extra ptr 	extra
+		as pcre_extra_ ptr 	extra
 		as integer ptr 		vectb
 		as zstring ptr 		subject
 		as integer 			sublen

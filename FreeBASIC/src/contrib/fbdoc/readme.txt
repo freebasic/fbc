@@ -1,7 +1,6 @@
 
   fbdoc - FreeBASIC User's Manual Converter/Generator
-  Copyright (C) 2006, 2007 Jeffery R. Marshall (coder[at]execulink.com)
-    and the FreeBASIC development team.
+  Copyright (C) 2006-2008 The FreeBASIC development team.
 
 License:
 
