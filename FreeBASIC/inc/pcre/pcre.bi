@@ -1,6 +1,7 @@
 ''
 ''
-'' pcre -- header translated with help of SWIG FB wrapper
+'' PCRE -- Perl-Compatible Regular Expressions
+''		   (header translated with help of SWIG FB wrapper)
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
@@ -8,6 +9,36 @@
 ''
 #ifndef __pcre_bi__
 #define __pcre_bi__
+
+''            Copyright (c) 1997-2008 University of Cambridge
+'' 
+'' -----------------------------------------------------------------------------
+'' Redistribution and use in source and binary forms, with or without
+'' modification, are permitted provided that the following conditions are met:
+'' 
+''     * Redistributions of source code must retain the above copyright notice,
+''       this list of conditions and the following disclaimer.
+'' 
+''     * Redistributions in binary form must reproduce the above copyright
+''       notice, this list of conditions and the following disclaimer in the
+''       documentation and/or other materials provided with the distribution.
+'' 
+''     * Neither the name of the University of Cambridge nor the names of its
+''       contributors may be used to endorse or promote products derived from
+''       this software without specific prior written permission.
+'' 
+'' THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+'' IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+'' ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+'' LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+'' CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+'' SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+'' INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+'' CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+'' ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+'' POSSIBILITY OF SUCH DAMAGE.
+'' -----------------------------------------------------------------------------
 
 #inclib "pcre"
 
@@ -135,11 +166,19 @@ end type
 
 extern "c"
 
-extern pcre_malloc as function (byval as size_t) as any ptr
-extern pcre_free as sub (byval as any ptr)
-extern pcre_stack_malloc as function (byval as size_t) as any ptr
-extern pcre_stack_free as sub (byval as any ptr)
-extern pcre_callout as function (byval as pcre_callout_block ptr) as integer
+#ifndef VPCOMPAT
+	extern import pcre_malloc alias "pcre_malloc" as function cdecl (byval as size_t) as any ptr
+	extern import pcre_free alias "pcre_free" as sub cdecl (byval as any ptr)
+	extern import pcre_stack_malloc alias "pcre_stack_malloc" as function cdecl (byval as size_t) as any ptr
+	extern import pcre_stack_free alias "pcre_stack_free" as sub cdecl (byval as any ptr)
+	extern import pcre_callout alias "pcre_callout" as function cdecl (byval as pcre_callout_block ptr) as integer
+#else
+	declare function pcre_malloc (byval as size_t) as any ptr
+	declare sub pcre_free (byval as any ptr)
+	declare function pcre_stack_malloc (byval as size_t) as any ptr
+	declare sub pcre_stack_free (byval as any ptr)
+	declare function pcre_callout (byval as pcre_callout_block ptr) as integer
+#endif
 
 declare function pcre_compile (byval as zstring ptr, byval as integer, byval as byte ptr ptr, byval as integer ptr, byval as ubyte ptr) as pcre ptr
 declare function pcre_compile2 (byval as zstring ptr, byval as integer, byval as integer ptr, byval as byte ptr ptr, byval as integer ptr, byval as ubyte ptr) as pcre ptr
