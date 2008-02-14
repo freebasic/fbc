@@ -2612,7 +2612,7 @@ private function hMangleFunctionPtr _
 
     	'' not an UDT?
     	if( param->subtype = NULL ) then
-    		id += hex( param->typ * cint(param->param.mode) )
+    		id += hex( param->typ ) + "M" + hex( cint(param->param.mode) )
     	else
     		'' notes:
     		'' - can't use hex( param->subtype ), because slots can be

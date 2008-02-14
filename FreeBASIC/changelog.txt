@@ -23,7 +23,8 @@ Version 0.18.4 Beta:
 - #1877440 - g++ name mangling for const qualifiers (jeffm)
 - #1877439 - const qualifier overloading with byref (jeffm)
 - #1872532 - fix null pointer access when parsing parameters and allow OVERLOAD in member proc declarations for consistency (jeffm)
-- #1876286 - constructor should not take byval arg of parent type as only parameter ( jeffm )
+- #1876286 - constructor should not take byval arg of parent type as only parameter (jeffm)
+- #1891840 - Internal name mangling for function ptrs causing collision (jeffm)
 
 
 Version 0.18.3 Beta:
