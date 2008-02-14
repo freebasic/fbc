@@ -520,6 +520,9 @@ examples/manual/data/read.bas
 examples/manual/data/restore.bas
 examples/manual/datatype/byte.bas
 examples/manual/datatype/byte2.bas
+examples/manual/datatype/const-ovl.bas
+examples/manual/datatype/const-ptr.bas
+examples/manual/datatype/const-var.bas
 examples/manual/datatype/double.bas
 examples/manual/datatype/integer.bas
 examples/manual/datatype/long.bas
@@ -657,6 +660,7 @@ examples/manual/fileio/put-array.bas
 examples/manual/fileio/put-buffer.bas
 examples/manual/fileio/put.bas
 examples/manual/fileio/reset.bas
+examples/manual/fileio/resetio.bas
 examples/manual/fileio/seek-func.bas
 examples/manual/fileio/seek-statment.bas
 examples/manual/fileio/write.bas
@@ -801,6 +805,7 @@ examples/manual/operator/assign.bas
 examples/manual/operator/concat-assign.bas
 examples/manual/operator/concat.bas
 examples/manual/operator/concat_nocvt.bas
+examples/manual/operator/delete.bas
 examples/manual/operator/divide-assign.bas
 examples/manual/operator/divide.bas
 examples/manual/operator/equal.bas
@@ -1111,6 +1116,7 @@ examples/manual/threads/mutexunlock.bas
 examples/manual/threads/threadcreate.bas
 examples/manual/threads/threadwait.bas
 examples/manual/udt/access.bas
+examples/manual/udt/const-proc.bas
 examples/manual/udt/constructor-ptr.bas
 examples/manual/udt/constructor.bas
 examples/manual/udt/destructor.bas
@@ -1118,6 +1124,7 @@ examples/manual/udt/enum.bas
 examples/manual/udt/field.bas
 examples/manual/udt/for.bas
 examples/manual/udt/function.bas
+examples/manual/udt/next.bas
 examples/manual/udt/operator.bas
 examples/manual/udt/private.bas
 examples/manual/udt/property.bas
@@ -1126,6 +1133,7 @@ examples/manual/udt/protected.bas
 examples/manual/udt/ptr-access.bas
 examples/manual/udt/public.bas
 examples/manual/udt/static.bas
+examples/manual/udt/step.bas
 examples/manual/udt/sub.bas
 examples/manual/udt/temp-type.bas
 examples/manual/udt/temp-type2.bas
