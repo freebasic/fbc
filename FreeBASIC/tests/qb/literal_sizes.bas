@@ -1,0 +1,41 @@
+' TEST_MODE : COMPILE_AND_RUN_OK
+
+#define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
+#define ASSERT_SHORT(c) ASSERT( len(c) = len(integer) )
+#define ASSERT_LONG(c) ASSERT( len(c) = len(long) )
+
+dim i as integer, l as long
+
+ASSERT( len(integer) = 2 )
+ASSERT( len(long) = 4 )
+
+ASSERT_SHORT( 32767 )
+
+ASSERT_SHORT( &h8000 )
+ASSERT_SHORT( &o100000 )
+ASSERT_SHORT( &b1000000000000000 )
+
+ASSERT_SHORT( &h7fff )
+ASSERT_SHORT( &o077777 )
+ASSERT_SHORT( &b0111111111111111 )
+
+ASSERT_SHORT( &hffff )
+ASSERT_SHORT( &o177777 )
+ASSERT_SHORT( &b1111111111111111 )
+
+
+ASSERT_LONG(  32767& )
+
+ASSERT_LONG(  32768 )
+
+ASSERT_LONG(  &h10000 )
+ASSERT_LONG(  &o200000 )
+ASSERT_LONG(  &o1000000 )
+ASSERT_LONG(  &b10000000000000000 )
+
+
+l = 100000
+ASSERT( l = 100000& )
+
+i = 100
+ASSERT( 100000 \ i = 1000 )

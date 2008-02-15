@@ -503,6 +503,7 @@ private function hReadNonDecNumber _
 	( _
 		byref pnum as zstring ptr, _
 		byref tlen as integer, _
+		byref isshort as integer, _
 		byref islong as integer, _
 		byval flags as LEXCHECK _
 	) as ulongint
@@ -512,6 +513,7 @@ private function hReadNonDecNumber _
 	dim as integer lgt = any
 	dim as integer skipchar = any
 
+	isshort = TRUE
 	islong = FALSE
 	value = 0
 	lgt = 0
@@ -570,6 +572,7 @@ private function hReadNonDecNumber _
 				    	end if
 
 					else
+						if( lgt = 5 ) then isshort = FALSE
                 		value = (value * 16) + c
                 	end if
                 end if
@@ -649,6 +652,11 @@ private function hReadNonDecNumber _
 						end select
 
 					else
+						if( lgt = 6 ) then
+							if( first_c > CHAR_1 ) then isshort = FALSE
+						elseif( lgt = 7 ) then
+							isshort = FALSE
+						endif
 						value = (value * 8) + c
 					end if
 				end if
@@ -704,6 +712,7 @@ private function hReadNonDecNumber _
 				    	end if
 
 					else
+						if( lgt = 17 ) then isshort = FALSE
 						value = (value * 2) + c
 					end if
 				end if
@@ -887,12 +896,13 @@ private sub hReadNumber _
 	)
 
 	dim as uinteger c = any
-	dim as integer isfloat = any, issigned = any, islong = any, forcedsign = any
+	dim as integer isfloat = any, issigned = any, isshort = any, islong = any, forcedsign = any
 	dim as ulongint value = any
 	dim as integer skipchar = any
 
 	isfloat    = FALSE
 	issigned   = TRUE
+	isshort    = TRUE
 	islong     = FALSE
 	value	   = 0
 
@@ -967,6 +977,14 @@ read_char:
 			if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 				if( skipchar = FALSE ) then
 					select case as const tlen
+					case 5
+						if( value > 32767 ) then
+							isshort = FALSE
+						end if
+
+					case 6
+						isshort = FALSE
+
 					case 10
 						if( value > 2147483647ULL ) then
 							issigned = FALSE
@@ -1038,7 +1056,7 @@ read_char:
 	'' hex, oct, bin
 	case CHAR_AMP
 		tlen = 0
-		value = hReadNonDecNumber( pnum, tlen, islong, flags )
+		value = hReadNonDecNumber( pnum, tlen, isshort, islong, flags )
 		'' it should be always assumed to be a signed (long)integer,
 		'' the U(LL) suffix should be used otherwise
 		issigned = TRUE
@@ -1100,7 +1118,9 @@ read_char:
 
 			'' '%'
 			case FB_TK_INTTYPECHAR
-				if( islong ) then
+				if( islong or (isshort = FALSE and _
+					fbLangGetDefLiteral( INTEGER ) = FB_DATATYPE_SHORT) ) then
+
 					if( skipchar = FALSE ) then
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
@@ -1146,6 +1166,12 @@ read_char:
 					dtype = FB_DATATYPE_LONGINT
 				else
 					dtype = FB_DATATYPE_ULONGINT
+				end if
+			elseif( isshort ) then
+				if( issigned ) then
+					dtype = fbLangGetDefLiteral( SHORT )
+				else
+					dtype = fbLangGetDefLiteral( USHORT )
 				end if
 			else
 				if( issigned ) then

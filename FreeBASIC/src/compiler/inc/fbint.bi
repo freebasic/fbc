@@ -606,6 +606,8 @@ type FB_LANG_SIZEREMAP
 end type
 
 type FB_LANG_LITREMAP
+	short			as FB_DATATYPE
+	ushort			as FB_DATATYPE
 	integer			as FB_DATATYPE
 	uint			as FB_DATATYPE
 	double			as FB_DATATYPE

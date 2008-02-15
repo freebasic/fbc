@@ -286,6 +286,8 @@ private sub hSetLangCtx _
 		env.lang.typeremap.long = FB_DATATYPE_LONG
 		env.lang.sizeremap.long = FB_LONGSIZE
 
+		env.lang.litremap.short = FB_DATATYPE_INTEGER
+		env.lang.litremap.ushort = FB_DATATYPE_UINT
 		env.lang.litremap.integer = FB_DATATYPE_INTEGER
 		env.lang.litremap.uint = FB_DATATYPE_UINT
 		env.lang.litremap.double = FB_DATATYPE_DOUBLE
@@ -296,8 +298,10 @@ private sub hSetLangCtx _
 		env.lang.typeremap.long = FB_DATATYPE_INTEGER
 		env.lang.sizeremap.long = FB_INTEGERSIZE
 
-		env.lang.litremap.integer = FB_DATATYPE_SHORT
-		env.lang.litremap.uint = FB_DATATYPE_SHORT
+		env.lang.litremap.short = FB_DATATYPE_SHORT
+		env.lang.litremap.ushort = FB_DATATYPE_USHORT
+		env.lang.litremap.integer = FB_DATATYPE_INTEGER
+		env.lang.litremap.uint = FB_DATATYPE_UINT
 		env.lang.litremap.double = FB_DATATYPE_SINGLE
 	end if
 

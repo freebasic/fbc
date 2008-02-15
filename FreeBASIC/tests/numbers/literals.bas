@@ -21,10 +21,23 @@ sub test1 cdecl ()
 
 end sub
 
+sub test2 cdecl ()
+
+	CU_ASSERT_EQUAL( sizeof(integer),    4 )
+	CU_ASSERT_EQUAL( sizeof(longint),    8 )
+
+	CU_ASSERT_EQUAL( sizeof(1),          sizeof(integer) )
+	CU_ASSERT_EQUAL( sizeof(65536),      sizeof(integer) )
+	CU_ASSERT_EQUAL( sizeof(4294967295), sizeof(integer) )
+	CU_ASSERT_EQUAL( sizeof(4294967296), sizeof(longint) )
+
+end sub
+
 sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.numbers.literals")
 	fbcu.add_test("test1", @test1)
+	fbcu.add_test("test2", @test2)
 
 end sub
 
