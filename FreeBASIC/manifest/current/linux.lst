@@ -1297,6 +1297,7 @@ inc/crt/sys/dos/types.bi
 inc/crt/sys/linux/select.bi
 inc/crt/sys/linux/socket.bi
 inc/crt/sys/linux/types.bi
+inc/crt/sys/linux/unistd.bi
 inc/crt/sys/select.bi
 inc/crt/sys/socket.bi
 inc/crt/sys/stat.bi

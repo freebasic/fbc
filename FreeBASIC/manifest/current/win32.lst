@@ -1455,6 +1455,7 @@ inc/crt/win32/fcntl.bi
 inc/crt/win32/stdio.bi
 inc/crt/win32/stdlib.bi
 inc/crt/win32/time.bi
+inc/crt/win32/unistd.bi
 inc/crt/win32/wchar.bi
 inc/cryptlib.bi
 inc/curl.bi

@@ -985,6 +985,7 @@ inc/crt/dos/dir.bi
 inc/crt/dos/fcntl.bi
 inc/crt/dos/stdio.bi
 inc/crt/dos/time.bi
+inc/crt/dos/unistd.bi
 inc/crt/dos/wchar.bi
 inc/crt/errno.bi
 inc/crt/fcntl.bi
