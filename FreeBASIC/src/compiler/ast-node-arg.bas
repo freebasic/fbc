@@ -470,8 +470,8 @@ private function hCheckByDescParam _
 	
 	sym_dtype = symbGetType( param )
 	
-	'' same type? (don't check if it's a rtl proc)
-	if( parent->call.isrtl = FALSE ) then
+	'' same type? (don't check if it's a rtl proc, or a forward call)
+	if( (parent->call.isrtl = FALSE) and (sym_dtype <> FB_DATATYPE_VOID) ) then
 		if( (symbGetDataClass( arg_dtype ) <> symbGetDataClass( sym_dtype )) or _
 			(symbGetDataSize( arg_dtype ) <> symbGetDataSize( sym_dtype )) ) then
 			hParamError( parent )
