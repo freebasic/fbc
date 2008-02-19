@@ -848,13 +848,10 @@ function cForStmtBegin _
 	end if
 
     '' open outer scope
-    dim as ASTNODE ptr outerscopenode = NULL
-    if( env.clopt.lang <> FB_LANG_QB ) then
-		outerscopenode = astScopeBegin( )
-		if( outerscopenode = NULL ) then
-			if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
-				exit function
-			end if
+    dim as ASTNODE ptr outerscopenode = astScopeBegin( )
+	if( outerscopenode = NULL ) then
+		if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
+			exit function
 		end if
 	end if
 
