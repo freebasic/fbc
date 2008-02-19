@@ -27,6 +27,7 @@ Version 0.18.4 Beta:
 - #1876286 - constructor should not take byval arg of parent type as only parameter (jeffm)
 - #1891840 - Internal name mangling for function ptrs causing collision (jeffm)
 - #1890675 - dereferencing bogus casted expressions would cause a crash (cha0s)
+- #1891408 - forward references weren't taking the symbol-to-be-patched's const info into account when backpatching (cha0s)
 
 
 Version 0.18.3 Beta:

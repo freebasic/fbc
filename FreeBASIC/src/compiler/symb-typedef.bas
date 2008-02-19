@@ -78,6 +78,7 @@ private sub hFixForwardRef _
 	select case as const class_
 	case FB_SYMBCLASS_TYPEDEF
 		sym = symbGetSubtype( sym )
+		dtype = symbGetFullType( sym )
 	end select
 	
 	n = f->fwd.reftail
@@ -85,8 +86,8 @@ private sub hFixForwardRef _
 		p = n->prev
 
 		ref = n->ref
-
-		symbGetFullType( ref ) = typeMultAddrOf( dtype, symbGetPtrCnt( ref ) )
+        
+		symbGetFullType( ref ) = typeMultAddrOf( dtype, symbGetPtrCnt( ref ) ) or typeGetConstMask( symbGetFullType( ref ) )
 		symbGetSubtype( ref ) = sym
 		ref->lgt = symbCalcLen( symbGetType( ref ), sym )
 
