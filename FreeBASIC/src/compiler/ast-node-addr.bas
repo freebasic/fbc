@@ -192,6 +192,12 @@ function astNewADDROF _
 		end if
 
 		n = t->l
+		
+		'' handle error recovery
+		if( n = NULL ) then
+			return NULL
+		end if
+		
 		'' @*const to const
 		if( n->class = AST_NODECLASS_CONST ) then
 			astDelNode( t )

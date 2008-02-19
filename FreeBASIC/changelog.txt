@@ -26,6 +26,7 @@ Version 0.18.4 Beta:
 - #1872532 - fix null pointer access when parsing parameters and allow OVERLOAD in member proc declarations for consistency (jeffm)
 - #1876286 - constructor should not take byval arg of parent type as only parameter (jeffm)
 - #1891840 - Internal name mangling for function ptrs causing collision (jeffm)
+- #1890675 - dereferencing bogus casted expressions would cause a crash (cha0s)
 
 
 Version 0.18.3 Beta:
