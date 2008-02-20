@@ -11,6 +11,8 @@ Version 0.18.4 Beta:
 [added]
 - INSTRREV - feature request #1244607 (jeffm)
 - 'ENUM foo EXPLICIT' to allow the enum elements not to be imported to the current namespace (syntax suggested by Pritchard) (v1c)
+- CRT function: declare function mkstemp( byval template_ as zstring ptr ) as integer (cha0s)
+
 
 [fixed]
 - lang qb: SLEEP with no arguments not handled correctly in gfx modes (jeffm)
