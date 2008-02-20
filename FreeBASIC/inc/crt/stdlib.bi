@@ -16,7 +16,6 @@
 #elseif defined(__FB_LINUX__)
 #include once "crt/linux/stdlib.bi"
 #endif
-#endif
 
 type div_t
 	quot as integer
