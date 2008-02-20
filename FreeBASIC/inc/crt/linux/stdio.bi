@@ -31,12 +31,12 @@ extern stderr alias "stderr" as _IO_FILE ptr
 
 type fpos_t as longint
 
-declare function mkstemp cdecl alias "mkstemp" ( byval template_ as zstring ptr ) as integer
-declare function snprintf cdecl alias "snprintf" (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, ...) as integer
-declare function vsnprintf cdecl alias "vsnprintf" (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, byval arg as va_list) as integer
-declare function popen cdecl alias "popen" (byval as zstring ptr, byval as zstring ptr) as FILE ptr
-declare function pclose cdecl alias "pclose" (byval as FILE ptr) as integer
-declare function getw cdecl alias "getw" (byval as FILE ptr) as integer
-declare function putw cdecl alias "putw" (byval as integer, byval as FILE ptr) as integer
-
+extern "c"
+declare function snprintf (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, ...) as integer
+declare function vsnprintf (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, byval arg as va_list) as integer
+declare function popen (byval as zstring ptr, byval as zstring ptr) as FILE ptr
+declare function pclose (byval as FILE ptr) as integer
+declare function getw (byval as FILE ptr) as integer
+declare function putw (byval as integer, byval as FILE ptr) as integer
+end extern
 #endif
