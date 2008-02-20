@@ -51,5 +51,6 @@ extern __timezone alias "__timezone" as integer
 declare function timegm cdecl alias "timegm" (byval __tp as tm ptr) as time_t
 declare function timelocal cdecl alias "timelocal" (byval __tp as tm ptr) as time_t
 declare function dysize cdecl alias "dysize" (byval __year as integer) as integer
+declare function gettimeofday cdecl alias "gettimeofday" (byval tv as timeval ptr, byval tz as any ptr) as integer
 
 #endif
