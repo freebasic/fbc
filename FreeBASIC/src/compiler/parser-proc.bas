@@ -1212,26 +1212,36 @@ private function hCheckIsSelfCloneByval _
 	if( is_prototype ) then
 		param = param->next
 	end if
-
-	'' same parent, byval
-	if( param <> NULL ) then
-		if( symbGetSubtype( param ) = parent ) then
-			if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
-
-				'' At least one additional non-optional parameter?
-				param = param->next
-				while( param <> NULL )
-					if( symbGetIsOptional( param ) = FALSE ) then
-						exit function
-					end if
-					param = param->next
-				wend
-
-				function = TRUE
-
-			end if
-		end if
+	
+	if( param = NULL ) then
+		exit function
 	end if
+	
+	'' struct?
+	if( symbGetType( param ) <> FB_DATATYPE_STRUCT ) then
+		exit function
+	end if
+	
+	'' same parent?
+	if( symbGetSubtype( param ) <> parent ) then
+		exit function
+	end if
+	
+	'' byval?
+	if( symbGetParamMode( param ) <> FB_PARAMMODE_BYVAL ) then
+		exit function
+	end if
+	
+	'' At least one additional non-optional parameter?
+	param = param->next
+	while( param <> NULL )
+		if( symbGetIsOptional( param ) = FALSE ) then
+			exit function
+		end if
+		param = param->next
+	wend
+
+	function = TRUE
 
 end function
 
