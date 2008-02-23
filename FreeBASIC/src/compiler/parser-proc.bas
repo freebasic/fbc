@@ -1221,7 +1221,7 @@ private function hCheckIsSelfCloneByval _
 	if( symbGetType( param ) <> FB_DATATYPE_STRUCT ) then
 		exit function
 	end if
-	
+
 	'' same parent?
 	if( symbGetSubtype( param ) <> parent ) then
 		exit function
@@ -1230,6 +1230,13 @@ private function hCheckIsSelfCloneByval _
 	'' byval?
 	if( symbGetParamMode( param ) <> FB_PARAMMODE_BYVAL ) then
 		exit function
+	end if
+
+	'' pointer?
+	if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
+		if( typeIsPtr( symbGetType( param ) ) ) then
+			exit function
+		end if
 	end if
 	
 	'' At least one additional non-optional parameter?
