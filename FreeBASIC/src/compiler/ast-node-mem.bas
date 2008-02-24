@@ -118,7 +118,8 @@ private function hNewOp _
 		byval init_expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval do_clear as integer _
+		byval do_clear as integer, _
+		byval placement_expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	dim as integer do_init = FALSE, has_ctor = FALSE, save_elmts = FALSE
@@ -190,9 +191,13 @@ private function hNewOp _
 	end if
 
 	''
-	new_expr = rtlMemNewOp( op = AST_OP_NEW_VEC, len_expr, typeGet( dtype ), subtype )
-	if( new_expr = NULL ) then
-		return NULL
+	if( placement_expr ) then
+		new_expr = placement_expr
+	else
+		new_expr = rtlMemNewOp( op = AST_OP_NEW_VEC, len_expr, typeGet( dtype ), subtype )
+		if( new_expr = NULL ) then
+			return NULL
+		end if
 	end if
 
 	'' save elements count?
@@ -431,14 +436,15 @@ function astNewMEM _
 		byval ex as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval do_clear as integer _
+		byval do_clear as integer, _
+		byval placement_expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
 
 	select case as const op
 	case AST_OP_NEW, AST_OP_NEW_VEC
-		n = hNewOp( op, l, r, ex, dtype, subtype, do_clear )
+		n = hNewOp( op, l, r, ex, dtype, subtype, do_clear, placement_expr )
 
 	case AST_OP_DEL, AST_OP_DEL_VEC
 		n = hDelOp( op, l, dtype, subtype )

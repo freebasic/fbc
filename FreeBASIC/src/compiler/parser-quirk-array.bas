@@ -118,16 +118,6 @@ function cArrayStmt _
 			end if
 		end if
 
-		'' can't be a bitfield..
-		if( astIsBITFIELD( expr1 ) ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-				exit function
-			else
-				hSkipStmt( )
-				return TRUE
-			end if
-		end if
-
 		hMatchCOMMA( )
 
 		expr2 = cVarOrDeref(  )
@@ -138,16 +128,6 @@ function cArrayStmt _
 				astDelTree( expr1 )
 				hSkipStmt( )
 				return true
-			end if
-		end if
-
-		'' can't be a bitfield..
-		if( astIsBITFIELD( expr2 ) ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-				exit function
-			else
-				hSkipStmt( )
-				return TRUE
 			end if
 		end if
 

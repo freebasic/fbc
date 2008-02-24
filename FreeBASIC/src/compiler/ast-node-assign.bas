@@ -680,6 +680,10 @@ private function hSetBitField _
 				   astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
 				   				 FB_DATATYPE_UINT ) )
 
+	'' make sure result will fit in destination...
+	r = astNewBOP( AST_OP_AND, r, _
+				   astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), FB_DATATYPE_UINT ) )
+	
 	if( s->bitfld.bitpos > 0 ) then
 		r = astNewBOP( AST_OP_SHL, r, _
 				   	   astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )

@@ -1031,7 +1031,7 @@ function symbLookupAt _
     	chain_->isimport = FALSE
     	return chain_
     end if
-
+	
     '' nothing found, now search the imports (if any)..
     if( symbGetCompExt( ns ) = NULL ) then
     	return NULL

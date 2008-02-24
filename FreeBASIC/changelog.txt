@@ -12,7 +12,7 @@ Version 0.18.4 Beta:
 - INSTRREV - feature request #1244607 (jeffm)
 - 'ENUM foo EXPLICIT' to allow the enum elements not to be imported to the current namespace (syntax suggested by Pritchard) (v1c)
 - CRT function: declare function mkstemp( byval template_ as zstring ptr ) as integer (cha0s)
-
+- SWAP now supports one or more bitfield variables (cha0s)
 
 [fixed]
 - lang qb: SLEEP with no arguments not handled correctly in gfx modes (jeffm)
@@ -31,7 +31,7 @@ Version 0.18.4 Beta:
 - #1890675 - dereferencing bogus casted expressions would cause a crash (cha0s)
 - #1891408 - forward references weren't taking the symbol-to-be-patched's const info into account when backpatching (cha0s)
 - #1892194 - gfxlib2 had screen 12 with a 256 color palette, instead of 16 (cha0s)
-
+- assignment of bitfields wasn't ensuring that the assignment wouldn't trash the parent variable, if a number too big was assigned (cha0s)
 
 Version 0.18.3 Beta:
 

@@ -383,20 +383,70 @@ function rtlMemSwap _
 
 	'' simple type?
 	'' !!!FIXME!!! other classes should be allowed too, but pointers??
-	if( (dst_dtype <> FB_DATATYPE_STRUCT) and (astIsVAR( dst )) ) then
+	dim as integer l_bf = astIsBITFIELD( dst ), r_bf = astIsBITFIELD( src )
+	if( (dst_dtype <> FB_DATATYPE_STRUCT) and (astIsVAR( dst ) or (l_bf or r_bf)) ) then
+		
+		dim as ASTNODE ptr d = any, s = any
+		dim as FBSYMBOL ptr l_sym = any, r_sym = any
+		
+		'' left-side is bitfield...
+		if( l_bf ) then
+			
+			'' allocate temp var
+			l_sym = symbAddTempVar( symbGetFullType( astGetSubtype( astGetLeft( dst ) ) ) )
+			
+			'' left-side references temp var
+			d = astNewVAR( l_sym )
+			
+			'' assign bitfield to temp var
+			astAdd( astNewASSIGN( d, astCloneTree( dst ) ) )
+			
+		else
+			'' left-side references tree
+			d = dst
+		end if
+		
+		'' push left-side
+		astAdd( astNewSTACK( AST_OP_PUSH, astCloneTree( d ) ) )
 
-		'' push src
-		astAdd( astNewSTACK( AST_OP_PUSH, astCloneTree( src ) ) )
-
-		'' src = dst
-		astAdd( astNewASSIGN( src, astCloneTree( dst ) ) )
-
-		'' pop dst
-		astAdd( astNewSTACK( AST_OP_POP, dst ) )
+		'' right-side is bitfield...
+		if( r_bf ) then
+			
+			'' allocate temp var
+			r_sym = symbAddTempVar( symbGetFullType( astGetSubtype( astGetLeft( src ) ) ) )
+			
+			'' right-side references temp var
+			s = astNewVAR( r_sym )
+			
+			'' assign bitfield to temp var
+			astAdd( astNewASSIGN( s, astCloneTree( src ) ) )
+			
+		else
+			'' right-side references tree
+			s = src
+		end if
+		
+		'' left-side = right-side
+		astAdd( astNewASSIGN( dst, astCloneTree( s ) ) )
+		
+		'' right-side is bitfield...
+		if( r_bf ) then
+			
+			'' pop to temp var
+			s = astNewVAR( r_sym )
+			astAdd( astNewSTACK( AST_OP_POP, s ) )
+			
+			'' assign to right-side from temp var
+			astAdd( astNewASSIGN( src, astCloneTree( s ) ) )
+			
+		else
+			'' pop to right-side
+			astAdd( astNewSTACK( AST_OP_POP, src ) )
+		end if
 
 		exit function
 	end if
-
+	
 	''
     proc = astNewCALL( PROCLOOKUP( MEMSWAP ) )
 
