@@ -796,7 +796,8 @@ declare function astNewMEM _
 		byval ex as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval do_clear as integer _
+		byval do_clear as integer, _
+		byval placement_expr as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astNewBOUNDCHK _

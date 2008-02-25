@@ -303,7 +303,22 @@ private function hMemberId _
 		'' no error recovery: caller will take care
 		return NULL
 	end select
-
+    
+    dim as FBSYMBOL ptr res = NULL
+    select case as const lexGetToken( )
+    	
+	case FB_TK_CONSTRUCTOR
+		res = symbGetCompCtorHead( parent )
+			
+	case FB_TK_DESTRUCTOR
+		res = symbGetCompDtor( parent )
+			
+    end select
+    
+	if( res ) then
+		return res
+    end if
+    
     dim as FBSYMCHAIN ptr chain_ = symbLookupCompField( parent, lexGetText( ) )
     if( chain_ = NULL ) then
     	if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, _

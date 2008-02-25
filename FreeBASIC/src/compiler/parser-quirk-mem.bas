@@ -43,7 +43,18 @@ function cOperatorNew _
 	lexSkipToken( )
 
 	dim as AST_OP op = AST_OP_NEW
-	dim as ASTNODE ptr elmts_expr = NULL
+	dim as ASTNODE ptr elmts_expr = NULL, placement_expr = NULL
+
+	'' '('?
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		
+		'' placement new
+		placement_expr = cExpression( )
+		if( placement_expr = NULL ) then
+			return NULL
+		end if
+		
+	end if
 
 	'' DataType
 	if( hSymbolType( dtype, subtype, lgt ) = FALSE ) then
@@ -241,7 +252,8 @@ function cOperatorNew _
 					  ctor_expr, _
 					  dtype, _
 					  subtype, _
-					  do_clear )
+					  do_clear, _
+					  placement_expr )
 
 	if( expr = NULL ) then
     	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
@@ -249,14 +261,13 @@ function cOperatorNew _
     	end if
 	end if
 
-	astAdd( expr )
-
 	'' return the pointer
-	function = astNewVAR( tmp, _
-						  0, _
-						  typeAddrOf( dtype ), _
-						  subtype )
+	function = astNewLINK( expr, astNewVAR( tmp, _
+	                                        0, _
+	                                        typeAddrOf( dtype ), _
+	                                        subtype ), FALSE )
 
+	
 end function
 
 '':::::
