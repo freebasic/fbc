@@ -1695,6 +1695,16 @@ declare function symbGetCompCloneProc _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
+declare sub symbCompAddDefCtor _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) 
+	
+declare sub symbCompAddDefDtor _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) 
+	
 declare sub symbCompAddDefMembers _
 	( _
 		byval sym as FBSYMBOL ptr _

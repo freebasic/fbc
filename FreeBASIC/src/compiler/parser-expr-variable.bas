@@ -309,9 +309,17 @@ private function hMemberId _
     	
 	case FB_TK_CONSTRUCTOR
 		res = symbGetCompCtorHead( parent )
+		if( res = NULL ) then
+			symbCompAddDefCtor( parent )
+			res = symbGetCompCtorHead( parent )
+		end if
 			
 	case FB_TK_DESTRUCTOR
 		res = symbGetCompDtor( parent )
+		if( res = NULL ) then
+			symbCompAddDefDtor( parent )
+			res = symbGetCompDtor( parent )
+		end if
 			
     end select
     

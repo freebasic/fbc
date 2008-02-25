@@ -354,6 +354,26 @@ private sub hAddClone _
 end sub
 
 '':::::
+sub symbCompAddDefDtor _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) 
+	
+	hAddCtor( sym, FALSE, FALSE )
+	
+end sub
+
+'':::::
+sub symbCompAddDefCtor _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) 
+	
+	hAddCtor( sym, TRUE, FALSE )
+	
+end sub
+
+'':::::
 sub symbCompAddDefMembers _
 	( _
 		byval sym as FBSYMBOL ptr _
