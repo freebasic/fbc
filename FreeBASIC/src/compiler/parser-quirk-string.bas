@@ -461,11 +461,12 @@ function cCVXFunct _
 			case FB_TK_CVS
 				funcexpr = astNewCONSTf( cvs( *zs ), FB_DATATYPE_SINGLE )
 			case FB_TK_CVI
-				if( fbLangIsSet( FB_LANG_QB ) = FALSE ) then
+				select case fbLangGetType( INTEGER )
+				case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
 					funcexpr = astNewCONSTi( cvl( *zs ), FB_DATATYPE_INTEGER )
-				else ''QB's INTEGER type is 16 bit
+				case FB_DATATYPE_SHORT
 					funcexpr = astNewCONSTi( cvshort( *zs ), FB_DATATYPE_SHORT )
-				end if
+				end select
 			case FB_TK_CVL
 				funcexpr = astNewCONSTi( cvl( *zs ), FB_DATATYPE_INTEGER )
 			case FB_TK_CVSHORT
@@ -487,7 +488,12 @@ function cCVXFunct _
 			case FB_TK_CVS
 				funcexpr = astNewCALL( PROCLOOKUP( CVS ) )
 			case FB_TK_CVI
-				funcexpr = astNewCALL( PROCLOOKUP( CVI ) )
+				select case fbLangGetType( INTEGER )
+				case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
+					funcexpr = astNewCALL( PROCLOOKUP( CVI ) )
+				case FB_DATATYPE_SHORT
+					funcexpr = astNewCALL( PROCLOOKUP( CVSHORT ) )
+				end select
 			case FB_TK_CVL
 				funcexpr = astNewCALL( PROCLOOKUP( CVL ) )
 			case FB_TK_CVSHORT
@@ -591,7 +597,12 @@ function cMKXFunct _
 			case FB_TK_MKS
 				funcexpr = astNewCALL( PROCLOOKUP( MKS ) )
 			case FB_TK_MKI
-				funcexpr = astNewCALL( PROCLOOKUP( MKI ) )
+				select case fbLangGetType( INTEGER )
+				case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
+					funcexpr = astNewCALL( PROCLOOKUP( MKI ) )
+				case FB_DATATYPE_SHORT
+					funcexpr = astNewCALL( PROCLOOKUP( MKSHORT ) )
+				end select
 			case FB_TK_MKL
 				funcexpr = astNewCALL( PROCLOOKUP( MKL ) )
 			case FB_TK_MKSHORT

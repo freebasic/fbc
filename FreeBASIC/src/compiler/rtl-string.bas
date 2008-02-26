@@ -2151,23 +2151,11 @@
 		( _
 			@FB_RTL_MKI, @"fb_MKI", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
 				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				) _
-			} _
- 		), _
-		/' fb_MKI ( byval number as short ) as string '/ _
-		( _
-			@FB_RTL_MKI, @"fb_MKSHORT", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_QBONLY, _
-			1, _
-			{ _
-				( _
-					FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
@@ -2397,19 +2385,7 @@
 		( _
 			@FB_RTL_CVI, @"fb_CVI", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_NOQB, _
-			1, _
-			{ _
-				( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-				) _
-			} _
- 		), _
-		/' fb_CVI ( byref str as string ) as short '/ _
-		( _
-			@FB_RTL_CVI, @"fb_CVSHORT", _
-			FB_DATATYPE_SHORT, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_QBONLY, _
+			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
 				( _

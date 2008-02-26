@@ -65,7 +65,7 @@
       [x] data type remapping
       	  [x] INTEGER is 16-bit wide
       	  [x] LONG is 32-bit wide
-          [ ] CVI should take a short in -lang qb mode
+          [x] CVI should take a short in -lang qb mode
       [x] move all variables to function-level, implicit or explict (see no SCOPE)
       [x] GOSUB and RETURN in subroutines (so RETURN can't be used as a shortcut to EXIT FUNCTION)
       	  - implement it using setjmp/longjmp later in the rtlib
