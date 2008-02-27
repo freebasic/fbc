@@ -48,16 +48,12 @@ FBCALL int fb_InputSingle( float *dst )
 
 	len = fb_FileInputNextToken( buffer, FB_INPUT_MAXNUMERICLEN, FB_FALSE, &isfp );
 
-	if( isfp == FALSE )
-	{
-		if( len <= FB_INPUT_MAXINTLEN )
-			*dst = (float)fb_hStr2Int( buffer, len );
-		else
-			*dst = (float)fb_hStr2Longint( buffer, len );
-	}
-	else
+	if( len > 0 ? buffer[0] == '&' : 0 ) { 
+		*dst = (float)fb_hStr2Int( buffer, len );
+	} else {
 		*dst = strtof( buffer, NULL );
-
+	}
+	
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
@@ -68,16 +64,12 @@ FBCALL int fb_InputDouble( double *dst )
     int len, isfp;
 
 	len = fb_FileInputNextToken( buffer, FB_INPUT_MAXNUMERICLEN, FB_FALSE, &isfp );
-
-	if( isfp == FALSE )
-	{
-		if( len <= FB_INPUT_MAXINTLEN )
-			*dst = (double)fb_hStr2Int( buffer, len );
-		else
-			*dst = (double)fb_hStr2Longint( buffer, len );
-	}
-	else
+	
+	if( len > 0 ? buffer[0] == '&' : 0 ) { 
+		*dst = (double)fb_hStr2Int( buffer, len );
+	} else {
 		*dst = strtod( buffer, NULL );
-
+	}
+	
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

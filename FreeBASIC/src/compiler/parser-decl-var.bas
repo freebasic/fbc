@@ -1090,7 +1090,7 @@ private function hCallGlobalCtor _
 	if( (initree = NULL) and (has_dtor = FALSE) ) then
 		return var_decl
 	end if
-
+    
 	astProcAddGlobalInstance( sym, initree, has_dtor )
 
 	'' remove the temps from the dtors list if any was added
@@ -1111,7 +1111,7 @@ private function hFlushInitializer _
 		byval has_defctor as integer, _
 		byval has_dtor as integer _
 	) as ASTNODE ptr
-
+	
 	'' object?
     if( has_dtor ) then
     	'' check visibility
