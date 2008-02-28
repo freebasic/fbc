@@ -258,11 +258,11 @@ function astLoadNOP	_
 	( _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
-
+	
 	'' do nothing
-
+	
 	function = NULL
-
+	
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

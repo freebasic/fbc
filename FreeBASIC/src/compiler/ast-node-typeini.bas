@@ -373,6 +373,7 @@ private function hFlushTree _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any, nxt = any, flush_tree = NULL
+    dim as FBSYMBOL ptr last_bitfield = NULL
 
 	function = NULL
 
@@ -392,7 +393,7 @@ private function hFlushTree _
         							 	 NULL, _
         							 	 0 )
         	else
-
+				
         		'' var?
         		if( do_deref = FALSE ) then
         			lside = astNewVAR( basesym, _
@@ -414,6 +415,7 @@ private function hFlushTree _
         		if( n->sym <> NULL ) then
         			'' field?
         			if( symbIsField( n->sym ) ) then
+        				
         				lside = astNewFIELD( lside, _
         					 	 	 	 	 n->sym, _
         					 	 	 	 	 astGetFullType( n ), _
@@ -421,12 +423,58 @@ private function hFlushTree _
         			end if
         		end if
             end if
-
-			flush_tree = astNewLINK( flush_tree, _
-									 astNewASSIGN( lside, _
-									 			   n->l, _
-									 			   AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR ) )
-
+			
+			dim as integer is_bitfield = FALSE
+			
+			'' not a ctor? 
+			if( symbIsParamInstance( basesym ) = FALSE ) then
+				if( lside->class = AST_NODECLASS_FIELD ) then
+					if( astGetDataType( astGetLeft( lside ) ) = FB_DATATYPE_BITFIELD ) then
+						is_bitfield = TRUE
+						
+						'' new bitfield? 0 it before any bits are set
+						if( last_bitfield <> n->sym->parent ) then
+							
+							lside = astNewASSIGN( lside, _
+						                          astNewCONSTi( 0, astGetDataType( lside ) ), _
+						                          AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
+							
+							last_bitfield = n->sym->parent
+							
+						end if
+					end if
+				end if
+			end if
+			
+			
+			dim as ASTNODE ptr a = astNewASSIGN( lside, _
+			                                     n->l, _
+			                                     AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
+			
+			flush_tree = astNewLINK( flush_tree, a )
+			
+			'' bitfields have to be updated (but i dunno if this is the best place)
+			if( is_bitfield ) then
+				
+				dim as ASTNODE ptr l = a->l, r = a->r
+				
+				if( l->class = AST_NODECLASS_FIELD ) then
+					if( astGetDataType( astGetLeft( l ) ) = FB_DATATYPE_BITFIELD ) then
+						
+						'' l is a field node, use its left child instead
+						r = astSetBitField( l->l, r )
+						
+						'' the field node can be removed, relinked
+						astDelNode( l )
+						l = l->l
+						
+						a->l = l
+						a->r = r
+						
+					end if
+				end if
+			end if
+			
     	case AST_NODECLASS_TYPEINI_PAD
         	if( symbIsParamInstance( basesym ) ) then
         		lside = astBuildInstPtr( basesym, _

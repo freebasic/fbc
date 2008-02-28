@@ -430,7 +430,7 @@ private function hUDTInit _
 	ctx.options and= not FB_INIOPT_DODEREF
 	ctx.dim_ = NULL
 	ctx.dimcnt = 0
-
+	
 	'' for each UDT element..
 	elm_cnt = 1
 	do

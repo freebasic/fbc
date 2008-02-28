@@ -37,6 +37,7 @@ Version 0.18.4 Beta:
 - #1901102 - operator NEW wasn't working correctly when used directly in the body of a type (not in an explicit constructor) ex: type foo: as integer ptr a = new integer: end type (cha0s)
 Version 0.18.3 Beta:
 - #1901924 - INPUTting large numbers to a floating-point were incorrectly allowing integer overflow before being casted to the floating-point type (cha0s)
+- #1900852 - bitfields used in variable initializers weren't handled properly (cha0s)
 
 [changed]
 - lang qb: INTEGER (%) and LONG (&) are now, respectively, 16- and 32-bit wide (v1c)

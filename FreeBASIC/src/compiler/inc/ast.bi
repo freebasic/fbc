@@ -843,6 +843,12 @@ declare function astOptimizeTree _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function astSetBitField _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as ASTNODE ptr
+	
 declare function astOptAssignment _
 	( _
 		byval n as ASTNODE ptr _

@@ -646,7 +646,7 @@ function astNewASSIGN _
 			end if
 		end if
 	end if
-
+	
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ASSIGN, ldfull, lsubtype )
 
@@ -662,7 +662,7 @@ function astNewASSIGN _
 end function
 
 '':::::
-private function hSetBitField _
+function astSetBitField _
 	( _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
@@ -701,7 +701,7 @@ function astLoadASSIGN _
 
     dim as ASTNODE ptr l = any, r = any
     dim as IRVREG ptr vs = any, vr = any
-
+    
 	l = n->l
 	r = n->r
 	if( (l = NULL) or (r = NULL) ) then
@@ -712,7 +712,7 @@ function astLoadASSIGN _
 	if( l->class = AST_NODECLASS_FIELD ) then
 		if( astGetDataType( astGetLeft( l ) ) = FB_DATATYPE_BITFIELD ) then
 			'' l is a field node, use its left child instead
-			r = hSetBitField( l->l, r )
+			r = astSetBitField( l->l, r )
 			'' the field node can be removed
 			astDelNode( l )
 			l = l->l
