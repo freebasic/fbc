@@ -17,7 +17,7 @@ type timeval
 	tv_usec as integer
 end type
 
-#define timerisset(tvp)	 ((tvp)->tv_sec or (tvp)->tv_usec)
+#define timerisset(tvp)	 (((tvp)->tv_sec <> 0) or ((tvp)->tv_usec <> 0))
 #define timercmp(tvp, uvp, cmp) iif((tvp)->tv_sec <> (uvp)->tv_sec, (tvp)->tv_sec cmp (uvp)->tv_sec, (tvp)->tv_usec cmp (uvp)->tv_usec)
 #define timerclear(tvp)	(tvp)->tv_sec = 0: (tvp)->tv_usec = 0
 #endif
