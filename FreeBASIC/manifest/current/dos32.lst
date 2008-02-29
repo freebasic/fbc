@@ -526,6 +526,7 @@ examples/manual/operator/not-logical.bas
 examples/manual/operator/or-assign.bas
 examples/manual/operator/or-bitwise.bas
 examples/manual/operator/or-logical.bas
+examples/manual/operator/placement_new.bas
 examples/manual/operator/pointer-index.bas
 examples/manual/operator/procptr.bas
 examples/manual/operator/shift-left.bas
@@ -838,6 +839,7 @@ examples/misc/asc_chr.bas
 examples/misc/bitfields.bas
 examples/misc/bytestring.bas
 examples/misc/byvaludt.bas
+examples/misc/cgi_test.bas
 examples/misc/chain1.bas
 examples/misc/chain2.bas
 examples/misc/command.bas

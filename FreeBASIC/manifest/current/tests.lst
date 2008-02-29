@@ -40,6 +40,7 @@ tests/const/rtl-getmouse.bas
 tests/const/rtl-line.bas
 tests/const/rtl-mid.bas
 tests/const/rtl-swap.bas
+tests/const/type_alias.bas
 tests/const/typedef.bas
 tests/const/typedef2.bas
 tests/const/var_const.bas
@@ -105,6 +106,8 @@ tests/fbcu/tests/fb-cunit-test.bas
 tests/file/encod.bas
 tests/file/input.bas
 tests/file/input.csv
+tests/file/large_dbl.bas
+tests/file/large_dbl.csv
 tests/file/lof.bas
 tests/file/pipe.bas
 tests/file/text_in.bas
@@ -212,6 +215,7 @@ tests/optimizations/mul_assoc.bas
 tests/optimizations/toshift.bas
 tests/overload/access_mode.bas
 tests/overload/addressof.bas
+tests/overload/allow_byval_ptr.bas
 tests/overload/anontype.bas
 tests/overload/arg_cast.bas
 tests/overload/arg_cast2.bas
@@ -299,6 +303,7 @@ tests/qb/file_open_lpt.bas
 tests/qb/file_open_lpt_fail.bas
 tests/qb/file_open_scrn.bas
 tests/qb/file_open_scrn_fail.bas
+tests/qb/literal_sizes.bas
 tests/qb/mkcv.bas
 tests/qb/qbtypes.bas
 tests/qb/scope_block.bas
@@ -306,6 +311,7 @@ tests/qb/str.bas
 tests/qb/suffixes.bas
 tests/qb/suffixes2.bas
 tests/quirk/casting.bas
+tests/quirk/casting_typo.bas
 tests/quirk/data.bas
 tests/quirk/data_fwd.bas
 tests/quirk/data_fwd2.bas
@@ -355,9 +361,11 @@ tests/structs/anon_align.bas
 tests/structs/anon_nested.bas
 tests/structs/assign_anon.bas
 tests/structs/assignment.bas
+tests/structs/bitfield-misc.bas
 tests/structs/bitfield-opovlcast.bas
 tests/structs/bitfield_access.bas
 tests/structs/bitfield_conv.bas
+tests/structs/bitfield_init.bas
 tests/structs/bitfield_select.bas
 tests/structs/bitfield_union.bas
 tests/structs/bool_expr_cast.bas
@@ -382,8 +390,10 @@ tests/structs/ctor_union_copy.bas
 tests/structs/enum_decl.bas
 tests/structs/func_backpatching.bas
 tests/structs/imp_var_dup.bas
+tests/structs/implicit_dtor.bas
 tests/structs/init_union.bas
 tests/structs/intrinsic_anon.bas
+tests/structs/new_in_type_body.bas
 tests/structs/obj_access_const.bas
 tests/structs/obj_access_const2.bas
 tests/structs/obj_access_const3.bas

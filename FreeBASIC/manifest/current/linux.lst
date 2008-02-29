@@ -696,6 +696,7 @@ examples/manual/operator/not-logical.bas
 examples/manual/operator/or-assign.bas
 examples/manual/operator/or-bitwise.bas
 examples/manual/operator/or-logical.bas
+examples/manual/operator/placement_new.bas
 examples/manual/operator/pointer-index.bas
 examples/manual/operator/procptr.bas
 examples/manual/operator/shift-left.bas
@@ -1015,6 +1016,7 @@ examples/misc/asc_chr.bas
 examples/misc/bitfields.bas
 examples/misc/bytestring.bas
 examples/misc/byvaludt.bas
+examples/misc/cgi_test.bas
 examples/misc/chain1.bas
 examples/misc/chain2.bas
 examples/misc/command.bas
@@ -1270,6 +1272,7 @@ inc/crt/dos/dir.bi
 inc/crt/dos/fcntl.bi
 inc/crt/dos/stdio.bi
 inc/crt/dos/time.bi
+inc/crt/dos/unistd.bi
 inc/crt/dos/wchar.bi
 inc/crt/errno.bi
 inc/crt/fcntl.bi
@@ -1279,7 +1282,9 @@ inc/crt/linux/ctype.bi
 inc/crt/linux/fcntl.bi
 inc/crt/linux/netdb.bi
 inc/crt/linux/stdio.bi
+inc/crt/linux/stdlib.bi
 inc/crt/linux/time.bi
+inc/crt/linux/unistd.bi
 inc/crt/linux/wchar.bi
 inc/crt/malloc.bi
 inc/crt/math.bi
@@ -1297,7 +1302,6 @@ inc/crt/sys/dos/types.bi
 inc/crt/sys/linux/select.bi
 inc/crt/sys/linux/socket.bi
 inc/crt/sys/linux/types.bi
-inc/crt/sys/linux/unistd.bi
 inc/crt/sys/select.bi
 inc/crt/sys/socket.bi
 inc/crt/sys/stat.bi
@@ -1314,6 +1318,7 @@ inc/crt/win32/fcntl.bi
 inc/crt/win32/stdio.bi
 inc/crt/win32/stdlib.bi
 inc/crt/win32/time.bi
+inc/crt/win32/unistd.bi
 inc/crt/win32/wchar.bi
 inc/cryptlib.bi
 inc/curl.bi
