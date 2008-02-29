@@ -469,17 +469,19 @@ function cInputStmt _
 			islast = TRUE
 		end if
 
-		'' dest can't be a top-level const
-		if( typeIsConst( astGetFullType( dstexpr ) ) ) then
-			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+		if( dstexpr <> NULL ) then
+
+			'' dest can't be a top-level const
+			if( typeIsConst( astGetFullType( dstexpr ) ) ) then
+				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
+					exit function
+				end if
+			end if
+
+			if( rtlFileInputGet( dstexpr, islast ) = FALSE ) then
 				exit function
 			end if
-		end if
-		
-    	if( dstexpr <> NULL ) then
-    		if( rtlFileInputGet( dstexpr, islast ) = FALSE ) then
-				exit function
-			end if
+
 		end if
 
     loop until( islast )
