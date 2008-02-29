@@ -53,6 +53,9 @@ int fb_FileGetDataEx( FB_FILE *handle, fb_off_t pos, void *dst, size_t *pchars,
     if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
+	if( pos < 0 )
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );		
+
     FB_LOCK();
 
     res = fb_ErrorSetNum( FB_RTERROR_OK );
@@ -160,8 +163,9 @@ int fb_FileGetDataEx( FB_FILE *handle, fb_off_t pos, void *dst, size_t *pchars,
          * The device must also support the SEEK method and the length
          * must be non-null */
 
-				if( *pchars != handle->len )
-					res = fb_ErrorSetNum( FB_RTERROR_FILEIO );
+		if( *pchars != handle->len )
+			res = fb_ErrorSetNum( FB_RTERROR_FILEIO );
+
 
         size_t skip_size = (handle->len -
         				   ((!is_unicode? read_chars: read_chars*sizeof( FB_WCHAR )) % handle->len)) % handle->len;
@@ -193,7 +197,8 @@ int fb_FileGetDataEx( FB_FILE *handle, fb_off_t pos, void *dst, size_t *pchars,
 
 	FB_UNLOCK();
 
-	return res;
+	/* set the error code again - handle->hooks->pfnSeek() may have reset it */
+	return fb_ErrorSetNum( res );
 }
 
 /*:::::*/

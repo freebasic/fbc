@@ -57,6 +57,9 @@ int fb_FilePutDataEx
     if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
+	if( pos < 0 )
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );		
+
     FB_LOCK();
 
     res = fb_ErrorSetNum( FB_RTERROR_OK );
@@ -94,12 +97,13 @@ int fb_FilePutDataEx
         handle->len!=0 &&
         handle->hooks->pfnSeek!=NULL )
     {
-				if( length != handle->len )
-					res = fb_ErrorSetNum( FB_RTERROR_FILEIO );
-
         /* if in random mode, writes must be of reclen.
          * The device must also support the SEEK method and the length
          * must be non-null */
+
+		if( length != handle->len )
+			res = fb_ErrorSetNum( FB_RTERROR_FILEIO );
+
         size_t skip_size = (handle->len -
         				   ((!is_unicode? length: length*sizeof( FB_WCHAR )) % handle->len)) % handle->len;
         if (skip_size != 0)
@@ -159,7 +163,8 @@ int fb_FilePutDataEx
 
 	FB_UNLOCK();
 
-	return res;
+	/* set the error code again - handle->hooks->pfnSeek() may have reset it */
+	return fb_ErrorSetNum( res );
 }
 
 /*:::::*/
