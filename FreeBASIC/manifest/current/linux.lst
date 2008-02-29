@@ -1298,9 +1298,11 @@ inc/crt/stdint.bi
 inc/crt/stdio.bi
 inc/crt/stdlib.bi
 inc/crt/string.bi
+inc/crt/sys/dos/time.bi
 inc/crt/sys/dos/types.bi
 inc/crt/sys/linux/select.bi
 inc/crt/sys/linux/socket.bi
+inc/crt/sys/linux/time.bi
 inc/crt/sys/linux/types.bi
 inc/crt/sys/select.bi
 inc/crt/sys/socket.bi
@@ -1309,6 +1311,7 @@ inc/crt/sys/time.bi
 inc/crt/sys/types.bi
 inc/crt/sys/uio.bi
 inc/crt/sys/win32/stat.bi
+inc/crt/sys/win32/time.bi
 inc/crt/sys/win32/types.bi
 inc/crt/time.bi
 inc/crt/unistd.bi

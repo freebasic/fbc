@@ -1451,6 +1451,7 @@ inc/crt/sys/time.bi
 inc/crt/sys/types.bi
 inc/crt/sys/uio.bi
 inc/crt/sys/win32/stat.bi
+inc/crt/sys/win32/time.bi
 inc/crt/sys/win32/types.bi
 inc/crt/time.bi
 inc/crt/unistd.bi

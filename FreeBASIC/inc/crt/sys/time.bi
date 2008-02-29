@@ -11,15 +11,18 @@
 
 #include once "crt/time.bi"
 
-#ifndef timeval
-type timeval
-	tv_sec as integer
-	tv_usec as integer
-end type
+#if defined(__FB_WIN32__)
+#include once "crt/sys/win32/time.bi"
+#elseif defined(__FB_LINUX__)
+#include once "crt/sys/linux/time.bi"
+#elseif defined(__FB_DOS__)
+#include once "crt/dos/time.bi"
+#else
+#error Unsupported platform
+#endif
 
 #define timerisset(tvp)	 (((tvp)->tv_sec <> 0) or ((tvp)->tv_usec <> 0))
 #define timercmp(tvp, uvp, cmp) iif((tvp)->tv_sec <> (uvp)->tv_sec, (tvp)->tv_sec cmp (uvp)->tv_sec, (tvp)->tv_usec cmp (uvp)->tv_usec)
 #define timerclear(tvp)	(tvp)->tv_sec = 0: (tvp)->tv_usec = 0
-#endif
 
 #endif

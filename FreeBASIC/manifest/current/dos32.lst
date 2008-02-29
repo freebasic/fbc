@@ -1004,6 +1004,7 @@ inc/crt/stdint.bi
 inc/crt/stdio.bi
 inc/crt/stdlib.bi
 inc/crt/string.bi
+inc/crt/sys/dos/time.bi
 inc/crt/sys/dos/types.bi
 inc/crt/sys/select.bi
 inc/crt/sys/socket.bi
