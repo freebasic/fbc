@@ -29,42 +29,6 @@
 #include <process.h>
 #include <stdio.h>
 
-#if 0 /* WTS stuff */
-
-/* begin - from mingw/include/wtsapi32.h */
-
-/*
-	here for future reference - currently not used.
-	WTSRegisterSessionNotification and
-	WTSUnRegisterSessionNotification will need to be
-	dynamically loaded from wtsapi32.dll if used, 
-	they only exist on WinXP and later. (jeffm)
-*/
-
-#define WM_WTSSESSION_CHANGE		0x02B1
-
-// session notification message flags
-#define WTS_CONSOLE_CONNECT			0x1
-#define WTS_CONSOLE_DISCONNECT		0x2
-#define WTS_REMOTE_CONNECT			0x3
-#define WTS_REMOTE_DISCONNECT		0x4
-#define WTS_SESSION_LOGON			0x5
-#define WTS_SESSION_LOGOFF			0x6
-#define WTS_SESSION_LOCK			0x7
-#define WTS_SESSION_UNLOCK			0x8
-#define WTS_SESSION_REMOTE_CONTROL	0x9
-
-// WTSRegisterSessionNotifiction flags
-#define NOTIFY_FOR_THIS_SESSION		0
-#define NOTIFY_FOR_ALL_SESSIONS		1
-
-BOOL WINAPI WTSRegisterSessionNotification(HWND hWnd, DWORD dwFlags);
-BOOL WINAPI WTSUnRegisterSessionNotification(HWND hWnd);
-
-/* end - from mingw/include/wtsapi32.h */
-
-#endif /* WTS stuff */
-
 WIN32DRIVER fb_win32;
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
@@ -186,58 +150,22 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 	switch (message)
 	{
-
-		/*
-			Here for future reference, currently not used.
-			If the driver is DirectX or OpenGL and the current
-			thread priority is THREAD_PRIORITY_ABOVE_NORMAL,
-			a very slow ~~10 minute fast user switch may occur.
-			This problem has been partially resolved (see WM_ACTIVATE),
-			but not when the gfx window is restored and active at the
-			time of the fast user switch. e.g. pressing the WIN+L
-			shortcut key.  Does not appear to be a problem in full screen
-			modes. Key events notifications to handle are 
-			WTS_SESSION_LOCK and WTS_SESSION_UNLOCK.
-
-		case WM_CREATE:
-			WTSRegisterSessionNotification(hWnd, NOTIFY_FOR_THIS_SESSION);
-			break;
-		case WM_DESTROY:
-			WTSUnRegisterSessionNotification(hWnd);
-			break;
-		case WM_WTSSESSION_CHANGE:
-			switch (wParam) 
-			{
-				case WTS_CONSOLE_DISCONNECT:
-				case WTS_REMOTE_DISCONNECT:
-				case WTS_SESSION_LOCK:
-				case WTS_SESSION_LOGOFF:
-					SetThreadPriority(handle, THREAD_PRIORITY_NORMAL );
-					break;
-
-				case WTS_CONSOLE_CONNECT:
-				case WTS_REMOTE_CONNECT:
-				case WTS_SESSION_UNLOCK:
-				case WTS_SESSION_LOGON:
-					SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL );
-					break;
-			}
-			break;
-		*/
-
 		case WM_ACTIVATE:
 			is_minimized = HIWORD(wParam);
 			fb_win32.is_active = ((!is_minimized) && (LOWORD(wParam) != WA_INACTIVE));
 
 			/*
 				If the window is minimized or inactive, then lower the thread
-				priority to avoid a very slow fast user switch.  (partial fix)
+				priority to avoid a very slow fast-user-switch.
 			*/
 			if (handle) {
-				if (fb_win32.is_active)
-					SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL );
-				else
-					SetThreadPriority(handle, THREAD_PRIORITY_NORMAL );
+				if(fb_win32.flags & DRIVER_HIGH_PRIORITY)
+				{
+					if (fb_win32.is_active)
+						SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL );
+					else
+						SetThreadPriority(handle, THREAD_PRIORITY_NORMAL );
+				}
 			}
 
 			fb_hMemSet(__fb_gfx->key, FALSE, 128);
@@ -664,6 +592,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 		if (result != WAIT_OBJECT_0)
 			return -1;
 			
+		if(flags & DRIVER_HIGH_PRIORITY)
 			SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL);
 	}
 	else

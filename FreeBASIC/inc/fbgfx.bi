@@ -38,7 +38,8 @@ namespace FB
 					 GFX_NO_FRAME				= &h08		, _
 					 GFX_SHAPED_WINDOW			= &h10		, _
 					 GFX_ALWAYS_ON_TOP			= &h20		, _
-					 GFX_ALPHA_PRIMITIVES		= &h40
+					 GFX_ALPHA_PRIMITIVES		= &h40		, _
+					 GFX_HIGH_PRIORITY			= &h80
 	'' OpenGL options
 	const as integer GFX_STENCIL_BUFFER			= &h10000	, _
 					 GFX_ACCUMULATION_BUFFER	= &h20000	, _
@@ -63,7 +64,8 @@ namespace FB
 					 GET_PEN_POS				= 12	, _
 					 GET_COLOR					= 13	, _
 					 GET_ALPHA_PRIMITIVES		= 14	, _
-					 GET_GL_EXTENSIONS			= 15
+					 GET_GL_EXTENSIONS			= 15	, _
+					 GET_HIGH_PRIORITY			= 16
 	'' Setters:
 	const as integer SET_WINDOW_POS				= 100	, _
 					 SET_WINDOW_TITLE			= 101	, _

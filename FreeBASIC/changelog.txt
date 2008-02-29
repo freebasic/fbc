@@ -15,6 +15,8 @@ Version 0.18.4 Beta:
 - SWAP now supports one or more bitfield variables (cha0s)
 - placement new: see wiki for details on syntax and usage (cha0s)
 - explicit ctor/dtor calling (WIP) (cha0s)
+- fb.GFX_HIGH_PRIORITY flag for SCREEN/SCREENRES (jeffm)
+- fb.GET_HIGH_PRIORITY option for SCREENCONTROL (jeffm)
 
 [fixed]
 - lang qb: SLEEP with no arguments not handled correctly in gfx modes (jeffm)
@@ -38,6 +40,7 @@ Version 0.18.4 Beta:
 - #1901924 - INPUTting large numbers to a floating-point were incorrectly allowing integer overflow before being casted to the floating-point type (cha0s)
 - #1900852 - bitfields used in variable initializers weren't handled properly (cha0s)
 - #1900586 - GET #/PUT # not returning errors for mismatched record lengths with RANDOM mode files or negative record numbers (jeffm)
+- #1825178 - reverted: gfxlib (win32 gdi/directx drivers) creates its windows with default thread priority like in 0.17 (jeffm)
 
 
 Version 0.18.3 Beta:

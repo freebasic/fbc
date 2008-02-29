@@ -169,6 +169,11 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 		if (__fb_gfx)
 			res1 = (__fb_gfx->flags & ALPHA_PRIMITIVES) ? FB_TRUE : FB_FALSE;
 		break;
+
+	case GET_HIGH_PRIORITY:
+		if (__fb_gfx)
+			res1 = (__fb_gfx->flags & HIGH_PRIORITY) ? FB_TRUE : FB_FALSE;
+		break;
 	
 	case SET_WINDOW_POS:
 		if ((__fb_gfx) && (__fb_gfx->driver->set_window_pos))
@@ -253,9 +258,9 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 		if ((__fb_gfx) && (__fb_gfx->driver->poll_events))
 			__fb_gfx->driver->poll_events();
 		break;
-		
+
 	}
-	
+		
 	if (what < SET_FIRST_SETTER) {
 		*param1 = res1;
 		*param2 = res2;
