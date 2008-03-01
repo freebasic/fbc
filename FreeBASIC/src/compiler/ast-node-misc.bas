@@ -305,54 +305,242 @@ end function
 '' dumping
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+'' The tables below use 'NameInfo' as the struct for 
+'' information. To keep the size down, the FullName
+'' field and value field (unused anyway) are commented 
+'' out.
+
+type NameInfo
+	'' fullname as zstring ptr
+	name as zstring ptr
+	'' value as integer
+end type
+
 '':::::
-private function hNodeToStr _
+private sub dbg_astOutput _
+	( _
+		byref s as string, _
+		byval col as integer, _
+		byval just as integer, _
+		byval depth as integer = -1 _
+	)
+
+	dim pad as integer = any
+
+	select case just
+	case -1
+		pad = col - len(s)
+	case 1
+		pad = col - 1
+	case else
+		pad = col
+	end select
+
+	if( depth < 0 ) then	
+		print space(pad-1); s
+	else
+		print str(depth); space(pad-1 - len(str(depth)) ); s
+	end if
+
+end sub
+
+''
+dim shared dbg_astNodeClassNames( 0 to AST_CLASSES-1 ) as NameInfo = _
+{ _
+	( /' @"AST_NODECLASS_NOP"              , '/ @"NOP"              /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_LOAD"             , '/ @"LOAD"             /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_ASSIGN"           , '/ @"ASSIGN"           /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_BOP"              , '/ @"BOP"              /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_UOP"              , '/ @"UOP"              /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_CONV"             , '/ @"CONV"             /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_ADDROF"           , '/ @"ADDROF"           /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_BRANCH"           , '/ @"BRANCH"           /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_CALL"             , '/ @"CALL"             /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_CALLCTOR"         , '/ @"CALLCTOR"         /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_STACK"            , '/ @"STACK"            /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_MEM"              , '/ @"MEM"              /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_COMP"             , '/ @"COMP"             /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_LINK"             , '/ @"LINK"             /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_CONST"            , '/ @"CONST"            /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_VAR"              , '/ @"VAR"              /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_IDX"              , '/ @"IDX"              /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_FIELD"            , '/ @"FIELD"            /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_ENUM"             , '/ @"ENUM"             /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_DEREF"            , '/ @"DEREF"            /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_LABEL"            , '/ @"LABEL"            /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_ARG"              , '/ @"ARG"              /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_OFFSET"           , '/ @"OFFSET"           /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_DECL"             , '/ @"DECL"             /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_NIDXARRAY"        , '/ @"NIDXARRAY"        /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_IIF"              , '/ @"IIF"              /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_LIT"              , '/ @"LIT"              /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_ASM"              , '/ @"ASM"              /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_JMPTB"            , '/ @"JMPTB"            /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_DATASTMT"         , '/ @"DATASTMT"         /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_DBG"              , '/ @"DBG"              /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_BOUNDCHK"         , '/ @"BOUNDCHK"         /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_PTRCHK"           , '/ @"PTRCHK"           /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_SCOPEBEGIN"       , '/ @"SCOPEBEGIN"       /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_SCOPEEND"         , '/ @"SCOPEEND"         /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_SCOPE_BREAK"      , '/ @"SCOPE_BREAK"      /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_TYPEINI"          , '/ @"TYPEINI"          /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_TYPEINI_PAD"      , '/ @"TYPEINI_PAD"      /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_TYPEINI_ASSIGN"   , '/ @"TYPEINI_ASSIGN"   /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_TYPEINI_CTORCALL" , '/ @"TYPEINI_CTORCALL" /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_TYPEINI_CTORLIST" , '/ @"TYPEINI_CTORLIST" /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_PROC"             , '/ @"PROC"             /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_NAMESPC"          , '/ @"NAMESPC"          /' , 0 '/ ) _
+}
+
+''
+dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
+{ _
+	( /' @"AST_OP_ASSIGN"          , '/ @"="            /' , 0 '/ ), _
+	( /' @"AST_OP_ADD_SELF"        , '/ @"+="           /' , 0 '/ ), _
+	( /' @"AST_OP_SUB_SELF"        , '/ @"-="           /' , 0 '/ ), _
+	( /' @"AST_OP_MUL_SELF"        , '/ @"*="           /' , 0 '/ ), _
+	( /' @"AST_OP_DIV_SELF"        , '/ @"/="           /' , 0 '/ ), _
+	( /' @"AST_OP_INTDIV_SELF"     , '/ @"\="           /' , 0 '/ ), _
+	( /' @"AST_OP_MOD_SELF"        , '/ @"%="           /' , 0 '/ ), _
+	( /' @"AST_OP_AND_SELF"        , '/ @"&="           /' , 0 '/ ), _
+	( /' @"AST_OP_OR_SELF"         , '/ @"|="           /' , 0 '/ ), _
+	( /' @"AST_OP_XOR_SELF"        , '/ @"^="           /' , 0 '/ ), _
+	( /' @"AST_OP_EQV_SELF"        , '/ @"eqv="         /' , 0 '/ ), _
+	( /' @"AST_OP_IMP_SELF"        , '/ @"imp="         /' , 0 '/ ), _
+	( /' @"AST_OP_SHL_SELF"        , '/ @"<<="          /' , 0 '/ ), _
+	( /' @"AST_OP_SHR_SELF"        , '/ @">>="          /' , 0 '/ ), _
+	( /' @"AST_OP_POW_SELF"        , '/ @"**="          /' , 0 '/ ), _
+	( /' @"AST_OP_CONCAT_SELF"     , '/ @"&="           /' , 0 '/ ), _
+	( /' @"AST_OP_NEW_SELF"        , '/ @"new="         /' , 0 '/ ), _
+	( /' @"AST_OP_NEW_VEC_SELF"    , '/ @"new[]="       /' , 0 '/ ), _
+	( /' @"AST_OP_DEL_SELF"        , '/ @"del="         /' , 0 '/ ), _
+	( /' @"AST_OP_DEL_VEC_SELF"    , '/ @"del[]="       /' , 0 '/ ), _
+	( /' @"AST_OP_ADDROF"          , '/ @"ADDROF"       /' , 0 '/ ), _
+	( /' @"AST_OP_FOR"             , '/ @"FOR"          /' , 0 '/ ), _
+	( /' @"AST_OP_STEP"            , '/ @"STEP"         /' , 0 '/ ), _
+	( /' @"AST_OP_NEXT"            , '/ @"NEXT"         /' , 0 '/ ), _
+	( /' @"AST_OP_CAST"            , '/ @"CAST"         /' , 0 '/ ), _
+	( /' @"AST_OP_ADD"             , '/ @"+"            /' , 0 '/ ), _
+	( /' @"AST_OP_SUB"             , '/ @"-"            /' , 0 '/ ), _
+	( /' @"AST_OP_MUL"             , '/ @"*"            /' , 0 '/ ), _
+	( /' @"AST_OP_DIV"             , '/ @"/"            /' , 0 '/ ), _
+	( /' @"AST_OP_INTDIV"          , '/ @"\"            /' , 0 '/ ), _
+	( /' @"AST_OP_MOD"             , '/ @"%"            /' , 0 '/ ), _
+	( /' @"AST_OP_AND"             , '/ @"&"            /' , 0 '/ ), _
+	( /' @"AST_OP_OR"              , '/ @"|"            /' , 0 '/ ), _
+	( /' @"AST_OP_XOR"             , '/ @"^"            /' , 0 '/ ), _
+	( /' @"AST_OP_EQV"             , '/ @"<=>"          /' , 0 '/ ), _
+	( /' @"AST_OP_IMP"             , '/ @""             /' , 0 '/ ), _
+	( /' @"AST_OP_SHL"             , '/ @"<<"           /' , 0 '/ ), _
+	( /' @"AST_OP_SHR"             , '/ @">>"           /' , 0 '/ ), _
+	( /' @"AST_OP_POW"             , '/ @"**"           /' , 0 '/ ), _
+	( /' @"AST_OP_CONCAT"          , '/ @"&"            /' , 0 '/ ), _
+	( /' @"AST_OP_EQ"              , '/ @"=="           /' , 0 '/ ), _
+	( /' @"AST_OP_GT"              , '/ @">"            /' , 0 '/ ), _
+	( /' @"AST_OP_LT"              , '/ @"<"            /' , 0 '/ ), _
+	( /' @"AST_OP_NE"              , '/ @"<>"           /' , 0 '/ ), _
+	( /' @"AST_OP_GE"              , '/ @">="           /' , 0 '/ ), _
+	( /' @"AST_OP_LE"              , '/ @"<="           /' , 0 '/ ), _
+	( /' @"AST_OP_NOT"             , '/ @"!"            /' , 0 '/ ), _
+	( /' @"AST_OP_PLUS"            , '/ @"+"            /' , 0 '/ ), _
+	( /' @"AST_OP_NEG"             , '/ @"NEG"          /' , 0 '/ ), _
+	( /' @"AST_OP_ABS"             , '/ @"ABS"          /' , 0 '/ ), _
+	( /' @"AST_OP_SGN"             , '/ @"SGN"          /' , 0 '/ ), _
+	( /' @"AST_OP_SIN"             , '/ @"SIN"          /' , 0 '/ ), _
+	( /' @"AST_OP_ASIN"            , '/ @"ASIN"         /' , 0 '/ ), _
+	( /' @"AST_OP_COS"             , '/ @"COS"          /' , 0 '/ ), _
+	( /' @"AST_OP_ACOS"            , '/ @"ACOS"         /' , 0 '/ ), _
+	( /' @"AST_OP_TAN"             , '/ @"TAN"          /' , 0 '/ ), _
+	( /' @"AST_OP_ATAN"            , '/ @"ATAN"         /' , 0 '/ ), _
+	( /' @"AST_OP_ATAN2"           , '/ @"ATAN2"        /' , 0 '/ ), _
+	( /' @"AST_OP_SQRT"            , '/ @"SQRT"         /' , 0 '/ ), _
+	( /' @"AST_OP_LOG"             , '/ @"LOG"          /' , 0 '/ ), _
+	( /' @"AST_OP_EXP"             , '/ @"EXP"          /' , 0 '/ ), _
+	( /' @"AST_OP_FLOOR"           , '/ @"FLOOR"        /' , 0 '/ ), _
+	( /' @"AST_OP_FIX"             , '/ @"FIX"          /' , 0 '/ ), _
+	( /' @"AST_OP_FRAC"            , '/ @"FRAC"         /' , 0 '/ ), _
+	( /' @"AST_OP_DEREF"           , '/ @"DEREF"        /' , 0 '/ ), _
+	( /' @"AST_OP_FLDDEREF"        , '/ @"FLDDEREF"     /' , 0 '/ ), _
+	( /' @"AST_OP_NEW"             , '/ @"NEW"          /' , 0 '/ ), _
+	( /' @"AST_OP_NEW_VEC"         , '/ @"NEW_VEC"      /' , 0 '/ ), _
+	( /' @"AST_OP_DEL"             , '/ @"DEL"          /' , 0 '/ ), _
+	( /' @"AST_OP_DEL_VEC"         , '/ @"DEL_VEC"      /' , 0 '/ ), _
+	( /' @"AST_OP_TOINT"           , '/ @"TOINT"        /' , 0 '/ ), _
+	( /' @"AST_OP_TOFLT"           , '/ @"TOFLT"        /' , 0 '/ ), _
+	( /' @"AST_OP_LOAD"            , '/ @"LOAD"         /' , 0 '/ ), _
+	( /' @"AST_OP_LOADRES"         , '/ @"LOADRES"      /' , 0 '/ ), _
+	( /' @"AST_OP_SPILLREGS"       , '/ @"SPILLREGS"    /' , 0 '/ ), _
+	( /' @"AST_OP_PUSH"            , '/ @"PUSH"         /' , 0 '/ ), _
+	( /' @"AST_OP_POP"             , '/ @"POP"          /' , 0 '/ ), _
+	( /' @"AST_OP_PUSHUDT"         , '/ @"PUSHUDT"      /' , 0 '/ ), _
+	( /' @"AST_OP_STACKALIGN"      , '/ @"STACKALIGN"   /' , 0 '/ ), _
+	( /' @"AST_OP_JEQ"             , '/ @"JEQ"          /' , 0 '/ ), _
+	( /' @"AST_OP_JGT"             , '/ @"JGT"          /' , 0 '/ ), _
+	( /' @"AST_OP_JLT"             , '/ @"JLT"          /' , 0 '/ ), _
+	( /' @"AST_OP_JNE"             , '/ @"JNE"          /' , 0 '/ ), _
+	( /' @"AST_OP_JGE"             , '/ @"JGE"          /' , 0 '/ ), _
+	( /' @"AST_OP_JLE"             , '/ @"JLE"          /' , 0 '/ ), _
+	( /' @"AST_OP_JMP"             , '/ @"JMP"          /' , 0 '/ ), _
+	( /' @"AST_OP_CALL"            , '/ @"CALL"         /' , 0 '/ ), _
+	( /' @"AST_OP_LABEL"           , '/ @"LABEL"        /' , 0 '/ ), _
+	( /' @"AST_OP_RET"             , '/ @"RET"          /' , 0 '/ ), _
+	( /' @"AST_OP_CALLFUNCT"       , '/ @"CALLFUNCT"    /' , 0 '/ ), _
+	( /' @"AST_OP_CALLPTR"         , '/ @"CALLPTR"      /' , 0 '/ ), _
+	( /' @"AST_OP_JUMPPTR"         , '/ @"JUMPPTR"      /' , 0 '/ ), _
+	( /' @"AST_OP_MEMMOVE"         , '/ @"MEMMOVE"      /' , 0 '/ ), _
+	( /' @"AST_OP_MEMSWAP"         , '/ @"MEMSWAP"      /' , 0 '/ ), _
+	( /' @"AST_OP_MEMCLEAR"        , '/ @"MEMCLEAR"     /' , 0 '/ ), _
+	( /' @"AST_OP_STKCLEAR"        , '/ @"STKCLEAR"     /' , 0 '/ ), _
+	( /' @"AST_OP_DBG_LINEINI"     , '/ @"DBG_LINEINI"  /' , 0 '/ ), _
+	( /' @"AST_OP_DBG_LINEEND"     , '/ @"DBG_LINEEND"  /' , 0 '/ ), _
+	( /' @"AST_OP_DBG_SCOPEINI"    , '/ @"DBG_SCOPEINI" /' , 0 '/ ), _
+	( /' @"AST_OP_DBG_SCOPEEND"    , '/ @"BDG_SCOPEEND" /' , 0 '/ ), _
+	( /' @"AST_OP_LIT_COMMENT"     , '/ @"LIT_COMMENT"  /' , 0 '/ ), _
+	( /' @"AST_OP_LIT_ASM"         , '/ @"LIT_ASM"      /' , 0 '/ ), _
+	( /' @"AST_OP_TOSIGNED"        , '/ @"TOSIGNED"     /' , 0 '/ ), _
+	( /' @"AST_OP_TOUNSIGNED"      , '/ @"TOUNSIGNED"   /' , 0 '/ ) _
+}
+
+'':::::
+private function hAstNodeOpToStr _
+	( _
+		byval op as AST_OP _
+	) as string
+
+	if(( op > AST_OPCODES - 1 ) or ( op < 0 )) then
+		return "OP:" + str(op)
+	end if
+
+	return *dbg_astNodeOpNames( op ).name
+
+end function
+
+'':::::
+private function hAstNodeClassToStr _
+	( _
+		byval c as AST_NODECLASS _
+	) as string
+
+	if(( c > AST_CLASSES - 1 ) or ( c < 0 )) then
+		return "CLASS:" + str(c)
+	end if
+
+	return *dbg_astNodeClassNames( c ).name
+
+end function
+
+'':::::
+private function hAstNodeToStr _
 	( _
 		byval n as ASTNODE ptr _
 	) as string
 
 	select case as const n->class
 	case AST_NODECLASS_BOP
-		select case as const n->op.op
-		case AST_OP_ADD
-			return "+"
-		case AST_OP_SUB
-			return "-"
-		case AST_OP_MUL
-			return "*"
-		case AST_OP_DIV
-			return "/"
-		case AST_OP_INTDIV
-			return "\"
-		case AST_OP_MOD
-			return "%"
-		case AST_OP_AND
-			return "&"
-		case AST_OP_OR
-			return "|"
-		case AST_OP_XOR
-			return "^"
-		case AST_OP_EQV
-			return "<->"
-		case AST_OP_IMP
-			return "->"
-		case AST_OP_SHL
-			return "<<"
-		case AST_OP_SHR
-			return ">>"
-		case AST_OP_POW
-			return "**"
-		case AST_OP_CONCAT
-			return "&"
-		end select
+		return hAstNodeOpToStr( n->op.op )
 
 	case AST_NODECLASS_UOP
-		select case as const n->op.op
-		case AST_OP_ADD
-			return "+"
-		case AST_OP_SUB
-			return "-"
-		end select
+		return hAstNodeOpToStr( n->op.op )
 
 	case AST_NODECLASS_CONST
 		select case as const astGetDataType( n )
@@ -374,13 +562,52 @@ private function hNodeToStr _
 		end select
 
 	case AST_NODECLASS_VAR
-		return *symbGetName( n->sym )
+		return """" & *symbGetName( n->sym ) & """"
 
 	case else
-		return "#"
+		return hAstNodeClassToStr( n->class )
 	end select
 
 end function
+
+'':::::
+private sub astDumpTreeEx _
+	( _
+		byval n as ASTNODE ptr, _
+		byval col as integer, _
+		byval just as integer, _
+		byval depth as integer _
+	)
+
+	if( col <= 4 or col >= 76 ) then
+		col = 40
+	end if
+
+	dim as string s = hAstNodeToStr( n )
+	dbg_astOutput( s, col, just, depth )	
+
+	depth += 1
+
+	if( n->l <> NULL ) then
+		if( n->r <> NULL ) then
+			dbg_astOutput( "/ \", col-2, 0 )
+		else
+			dbg_astOutput( "/", col-2, 0 )
+		end if
+	elseif( n->r <> NULL ) then
+		dbg_astOutput( "  \", col-2, 0 )
+	else
+		dbg_astOutput( "", 0, 0 )
+	end if
+
+	if( n->l <> NULL ) then
+		astDumpTreeEx( n->l, col-2, -1, depth )
+	end if
+	if( n->r <> NULL ) then
+		astDumpTreeEx( n->r, col+2, 1, depth )
+	end if
+
+end sub
 
 '':::::
 sub astDumpTree _
@@ -389,42 +616,6 @@ sub astDumpTree _
 		byval col as integer _
 	)
 
-	if( col <= 4 or col >= 76 ) then
-		col = 40
-	end if
-
-	dim as string s = hNodeToStr( n )
-	locate , col-1-(len(s)\2)
-	print s
-
-	locate , col-2
-	if( n->l <> NULL ) then
-		if( n->r <> NULL ) then
-			print "/ \"
-		else
-			print "/"
-		end if
-	elseif( n->r <> NULL ) then
-		print "  \"
-	else
-		print
-	end if
-
-	dim as integer ln = csrlin, ln1 = 0, ln2 = 0
-	if( n->l <> NULL ) then
-		astDumpTree( n->l, col-3 )
-		ln1 = csrlin
-	end if
-	if( n->r <> NULL ) then
-		locate ln
-		astDumpTree( n->r, col+3 )
-		ln2 = csrlin
-	end if
-
-	if( ln1 > ln2 ) then
-		locate ln1
-	end if
+	astDumpTreeEx( n, col, -1, 0 )
 
 end sub
-
-
