@@ -455,24 +455,7 @@ private function hFlushTree _
 			
 			'' bitfields have to be updated (but i dunno if this is the best place)
 			if( is_bitfield ) then
-				
-				dim as ASTNODE ptr l = a->l, r = a->r
-				
-				if( l->class = AST_NODECLASS_FIELD ) then
-					if( astGetDataType( astGetLeft( l ) ) = FB_DATATYPE_BITFIELD ) then
-						
-						'' l is a field node, use its left child instead
-						r = astSetBitField( l->l, r )
-						
-						'' the field node can be removed, relinked
-						astDelNode( l )
-						l = l->l
-						
-						a->l = l
-						a->r = r
-						
-					end if
-				end if
+				astUpdateBitfieldAssignment( a->l, a->r )
 			end if
 			
     	case AST_NODECLASS_TYPEINI_PAD

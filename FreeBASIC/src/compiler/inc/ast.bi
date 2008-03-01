@@ -843,11 +843,11 @@ declare function astOptimizeTree _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astSetBitField _
+declare sub astUpdateBitfieldAssignment _
 	( _
-		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
-	) as ASTNODE ptr
+		byref l as ASTNODE ptr, _
+		byref r as ASTNODE ptr _
+	)
 	
 declare function astOptAssignment _
 	( _
