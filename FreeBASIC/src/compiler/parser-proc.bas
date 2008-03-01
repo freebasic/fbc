@@ -1355,7 +1355,14 @@ function cOperatorHeader _
 				end select
 
 			end if
-
+		
+		case else
+			
+			'' non-self op in a type declaration... !!WRITEME!! static global operators should be allowed?
+			if( (options and FB_PROCOPT_HASPARENT) <> 0 ) then
+				errReport( FB_ERRMSG_METHODINANONUDT, TRUE, " (TODO)" )
+			end if
+			
 	end select
 
     '' check if method should be static or not
