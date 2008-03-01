@@ -1083,7 +1083,8 @@ end function
 '':::::
 private function hOptFieldsCalc _
 	( _
-		byval n as ASTNODE ptr _
+		byval n as ASTNODE ptr, _
+		byval parent as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr l = any, r = any
@@ -1091,17 +1092,18 @@ private function hOptFieldsCalc _
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		n->l = hOptFieldsCalc( l )
+		n->l = hOptFieldsCalc( l, n )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		n->r = hOptFieldsCalc( r )
+		n->r = hOptFieldsCalc( r, n )
 	end if
 
 	'' (@((@foo + offsetof(bar))->bar) + offsetof(baz)))->baz to
     if( n->class = AST_NODECLASS_FIELD ) then
     	l = n->l
+    	
     	if( l->class = AST_NODECLASS_DEREF ) then
 	    	dim as ASTNODE ptr ll = l->l
 	    	if( ll->class = AST_NODECLASS_BOP ) then
@@ -1123,6 +1125,17 @@ private function hOptFieldsCalc _
 	    		end if
 	    	end if
     	else
+    		
+	    	'' resolve bitfields before deleting the field, because
+	    	'' otherwise that'd only happen in LoadFIELD, which won't
+	    	'' get called since the field node is destroyed
+	    	
+	    	'' don't touch assignments though, they'll be handled in
+	    	'' LoadASSIGN... this feels hackish
+	    	if( iif( parent, parent->class <> AST_NODECLASS_ASSIGN, FALSE ) ) then
+	    		astUpdateBitfieldAccess( l )
+	    	end if
+	    	
     		astDelNode( n )
     		n = l
     	end if
@@ -1981,7 +1994,7 @@ function astOptimizeTree _
 	( _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
-
+	
 	'' high-level IR? don't do anything..
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 		return n
@@ -1997,7 +2010,7 @@ function astOptimizeTree _
     '/
 
     if( irGetOption( IR_OPT_NESTEDFIELDS ) ) then
-      n = hOptFieldsCalc( n )
+      n = hOptFieldsCalc( n, NULL )
     end if
 
 	n = hOptAssocADD( n )

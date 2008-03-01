@@ -843,6 +843,11 @@ declare function astOptimizeTree _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare sub astUpdateBitfieldAccess _ 
+	( _ 
+		byref n as ASTNODE ptr _
+	)
+	
 declare sub astUpdateBitfieldAssignment _
 	( _
 		byref l as ASTNODE ptr, _

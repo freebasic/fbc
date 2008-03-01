@@ -93,6 +93,17 @@ private function hGetBitField _
 
 end function
 
+sub astUpdateBitfieldAccess _ 
+	( _ 
+		byref n as ASTNODE ptr _
+	)
+	
+	if( astGetDataType( n ) = FB_DATATYPE_BITFIELD ) then
+		n = hGetBitField( n, astGetFullType( n ) )
+	end if
+	
+end sub
+
 '':::::
 function astLoadFIELD _
 	( _
@@ -103,9 +114,7 @@ function astLoadFIELD _
 
 	'' handle bitfields..
 	l = n->l
-	if( astGetDataType( l ) = FB_DATATYPE_BITFIELD ) then
-		l = hGetBitField( l, astGetFullType( l ) )
-	end if
+	astUpdateBitfieldAccess( l )
 
 	function = astLoad( l )
 
