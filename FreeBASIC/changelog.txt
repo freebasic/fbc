@@ -41,6 +41,7 @@ Version 0.18.4 Beta:
 - #1900852 - bitfields used in variable initializers weren't handled properly (cha0s)
 - #1900586 - GET #/PUT # not returning errors for mismatched record lengths with RANDOM mode files or negative record numbers (jeffm)
 - #1825178 - reverted: gfxlib (win32 gdi/directx drivers) creates its windows with default thread priority like in 0.17 (jeffm)
+- #1865673 - symbols defined inside namespaces that had already been imported were throwing a duplicate definition (cha0s)
 
 
 Version 0.18.3 Beta:

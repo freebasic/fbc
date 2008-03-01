@@ -124,9 +124,9 @@ end function
 				if( chain_->next <> NULL ) then
 					'' imported namespace?
 					if( chain_->isimport ) then
-						dim as FBSYMBOL ptr ns = symbGetNamespace( chain_->sym )
+						dim as FBSYMBOL ptr ns = symbGetNamespace( chain_->sym ), ns2 = symbGetNamespace( chain_->next->sym )
 						'' first symbol declared in other namespace?
-						if( ns <> parent ) then
+						if( iif( parent, ns <> parent, ns <> ns2 ) ) then
 							'' more than one imported symbol
 							errReport( FB_ERRMSG_AMBIGUOUSSYMBOLACCESS )
 							'' (don't return NULL or a new variable would be implicitly created)
