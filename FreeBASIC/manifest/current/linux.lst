@@ -551,8 +551,11 @@ examples/manual/gfx/put-add.bas
 examples/manual/gfx/put-all.bas
 examples/manual/gfx/put-alpha-8bit.bas
 examples/manual/gfx/put-alpha.bas
+examples/manual/gfx/put-and.bas
+examples/manual/gfx/put-or.bas
 examples/manual/gfx/put-pset.bas
 examples/manual/gfx/put-trans.bas
+examples/manual/gfx/put-xor.bas
 examples/manual/gfx/put.bas
 examples/manual/gfx/rgb.bas
 examples/manual/gfx/rgba.bas
