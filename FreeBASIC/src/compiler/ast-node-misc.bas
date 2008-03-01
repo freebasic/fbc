@@ -401,15 +401,15 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_MUL_SELF"        , '/ @"*="           /' , 0 '/ ), _
 	( /' @"AST_OP_DIV_SELF"        , '/ @"/="           /' , 0 '/ ), _
 	( /' @"AST_OP_INTDIV_SELF"     , '/ @"\="           /' , 0 '/ ), _
-	( /' @"AST_OP_MOD_SELF"        , '/ @"%="           /' , 0 '/ ), _
-	( /' @"AST_OP_AND_SELF"        , '/ @"&="           /' , 0 '/ ), _
-	( /' @"AST_OP_OR_SELF"         , '/ @"|="           /' , 0 '/ ), _
-	( /' @"AST_OP_XOR_SELF"        , '/ @"^="           /' , 0 '/ ), _
-	( /' @"AST_OP_EQV_SELF"        , '/ @"eqv="         /' , 0 '/ ), _
-	( /' @"AST_OP_IMP_SELF"        , '/ @"imp="         /' , 0 '/ ), _
-	( /' @"AST_OP_SHL_SELF"        , '/ @"<<="          /' , 0 '/ ), _
-	( /' @"AST_OP_SHR_SELF"        , '/ @">>="          /' , 0 '/ ), _
-	( /' @"AST_OP_POW_SELF"        , '/ @"**="          /' , 0 '/ ), _
+	( /' @"AST_OP_MOD_SELF"        , '/ @"MOD="         /' , 0 '/ ), _
+	( /' @"AST_OP_AND_SELF"        , '/ @"ANS="         /' , 0 '/ ), _
+	( /' @"AST_OP_OR_SELF"         , '/ @"OR="          /' , 0 '/ ), _
+	( /' @"AST_OP_XOR_SELF"        , '/ @"XOR="         /' , 0 '/ ), _
+	( /' @"AST_OP_EQV_SELF"        , '/ @"EQV="         /' , 0 '/ ), _
+	( /' @"AST_OP_IMP_SELF"        , '/ @"IMP="         /' , 0 '/ ), _
+	( /' @"AST_OP_SHL_SELF"        , '/ @"SHL="         /' , 0 '/ ), _
+	( /' @"AST_OP_SHR_SELF"        , '/ @"SHR="         /' , 0 '/ ), _
+	( /' @"AST_OP_POW_SELF"        , '/ @"^="           /' , 0 '/ ), _
 	( /' @"AST_OP_CONCAT_SELF"     , '/ @"&="           /' , 0 '/ ), _
 	( /' @"AST_OP_NEW_SELF"        , '/ @"new="         /' , 0 '/ ), _
 	( /' @"AST_OP_NEW_VEC_SELF"    , '/ @"new[]="       /' , 0 '/ ), _
@@ -425,15 +425,15 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_MUL"             , '/ @"*"            /' , 0 '/ ), _
 	( /' @"AST_OP_DIV"             , '/ @"/"            /' , 0 '/ ), _
 	( /' @"AST_OP_INTDIV"          , '/ @"\"            /' , 0 '/ ), _
-	( /' @"AST_OP_MOD"             , '/ @"%"            /' , 0 '/ ), _
-	( /' @"AST_OP_AND"             , '/ @"&"            /' , 0 '/ ), _
-	( /' @"AST_OP_OR"              , '/ @"|"            /' , 0 '/ ), _
-	( /' @"AST_OP_XOR"             , '/ @"^"            /' , 0 '/ ), _
-	( /' @"AST_OP_EQV"             , '/ @"<=>"          /' , 0 '/ ), _
-	( /' @"AST_OP_IMP"             , '/ @""             /' , 0 '/ ), _
-	( /' @"AST_OP_SHL"             , '/ @"<<"           /' , 0 '/ ), _
-	( /' @"AST_OP_SHR"             , '/ @">>"           /' , 0 '/ ), _
-	( /' @"AST_OP_POW"             , '/ @"**"           /' , 0 '/ ), _
+	( /' @"AST_OP_MOD"             , '/ @"MOD"          /' , 0 '/ ), _
+	( /' @"AST_OP_AND"             , '/ @"AND"          /' , 0 '/ ), _
+	( /' @"AST_OP_OR"              , '/ @"OR"           /' , 0 '/ ), _
+	( /' @"AST_OP_XOR"             , '/ @"XOR"          /' , 0 '/ ), _
+	( /' @"AST_OP_EQV"             , '/ @"EQV"          /' , 0 '/ ), _
+	( /' @"AST_OP_IMP"             , '/ @"IMP"          /' , 0 '/ ), _
+	( /' @"AST_OP_SHL"             , '/ @"SHL"          /' , 0 '/ ), _
+	( /' @"AST_OP_SHR"             , '/ @"SHR"          /' , 0 '/ ), _
+	( /' @"AST_OP_POW"             , '/ @"^"            /' , 0 '/ ), _
 	( /' @"AST_OP_CONCAT"          , '/ @"&"            /' , 0 '/ ), _
 	( /' @"AST_OP_EQ"              , '/ @"=="           /' , 0 '/ ), _
 	( /' @"AST_OP_GT"              , '/ @">"            /' , 0 '/ ), _
@@ -441,7 +441,7 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_NE"              , '/ @"<>"           /' , 0 '/ ), _
 	( /' @"AST_OP_GE"              , '/ @">="           /' , 0 '/ ), _
 	( /' @"AST_OP_LE"              , '/ @"<="           /' , 0 '/ ), _
-	( /' @"AST_OP_NOT"             , '/ @"!"            /' , 0 '/ ), _
+	( /' @"AST_OP_NOT"             , '/ @"NOT"          /' , 0 '/ ), _
 	( /' @"AST_OP_PLUS"            , '/ @"+"            /' , 0 '/ ), _
 	( /' @"AST_OP_NEG"             , '/ @"NEG"          /' , 0 '/ ), _
 	( /' @"AST_OP_ABS"             , '/ @"ABS"          /' , 0 '/ ), _
