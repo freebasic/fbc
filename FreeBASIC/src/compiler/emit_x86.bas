@@ -3377,8 +3377,12 @@ private sub _emitDIVI _
 	if( eaxindest = FALSE ) then
 		if( ecxindest and ecxtrashed ) then
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
-				hPOP "ecx"					'' ecx= tos (eax)
-				outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
+				if( eaxfree = FALSE ) then
+					hPOP "ecx"					'' ecx= tos (eax)
+					outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
+				else
+					hPOP "ecx"					'' ecx= tos (ecx)
+				end if
 			end if
 		end if
 
@@ -3529,8 +3533,12 @@ private sub _emitMODI _
 	if( eaxindest = FALSE ) then
 		if( ecxindest and ecxtrashed ) then
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
-				hPOP "ecx"					'' ecx= tos (eax)
-				outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
+				if( eaxfree = FALSE ) then
+					hPOP "ecx"					'' ecx= tos (eax)
+					outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
+				else
+					hPOP "ecx"					'' ecx= tos (ecx)
+				end if
 			end if
 		end if
 
