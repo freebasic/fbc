@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.structs.ctor_array
+namespace fbc_tests.structs.obj_field_ini_array
 
 '' ubyte
 const TEST_F1_0 = &h11
@@ -111,7 +111,7 @@ end sub
 ''
 private sub ctor () constructor
 
-    fbcu.add_suite("fb-tests-structs:ctor-array")
+    fbcu.add_suite("fb-tests-structs:obj_field_ini_array")
     fbcu.add_test( "test1", @test1)
     fbcu.add_test( "test2", @test2)
 
