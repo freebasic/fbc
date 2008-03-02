@@ -904,7 +904,8 @@ declare function astTypeIniBegin _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval is_local as integer _
+		byval is_local as integer, _
+		byval ofs as integer = 0 _
 	) as ASTNODE ptr
 
 declare sub astTypeIniEnd _
@@ -1127,7 +1128,13 @@ declare function astBuildInstPtr _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr = NULL, _
-		byval idxexpr as ASTNODE ptr = NULL, _
+		byval idxexpr as ASTNODE ptr = NULL _
+	) as ASTNODE ptr
+
+declare function astBuildInstPtrAtOffset _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr = NULL, _
 		byval ofs as integer = 0 _
 	) as ASTNODE ptr
 

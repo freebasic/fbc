@@ -44,6 +44,7 @@ Version 0.18.4 Beta:
 - #1825178 - reverted: gfxlib (win32 gdi/directx drivers) creates its windows with default thread priority like in 0.17 (jeffm)
 - #1865673 - symbols defined inside namespaces that had already been imported were throwing a duplicate definition (cha0s)
 - #1905284 - bitfield accessing wasn't always working when the optimizer would remove the field node (cha0s)
+- #1890693 - array and UDT initializers in TYPE's (jeffm)
 
 
 Version 0.18.3 Beta:

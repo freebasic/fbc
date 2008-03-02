@@ -632,7 +632,7 @@ function cInitializer _
 	ctx.dim_ = NULL
 	ctx.dimcnt = 0
 
-	ctx.tree = astTypeIniBegin( symbGetFullType( sym ), subtype, is_local )
+	ctx.tree = astTypeIniBegin( symbGetFullType( sym ), subtype, is_local, symbGetOfs( sym ) )
 
 	'' has ctor?
 	select case as const dtype

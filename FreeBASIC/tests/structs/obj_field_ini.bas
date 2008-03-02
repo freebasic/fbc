@@ -8,8 +8,8 @@ end type
 
 type B
 	c as A = (1, 2, 3)
+	d as A = (4, 5, 6)
 end type
-
 
 sub test cdecl	
 	
@@ -18,6 +18,10 @@ sub test cdecl
 	CU_ASSERT_EQUAL( x.c.i, 1 )
 	CU_ASSERT_EQUAL( x.c.j, 2 )
 	CU_ASSERT_EQUAL( x.c.k, 3 )
+
+	CU_ASSERT_EQUAL( x.d.i, 4 )
+	CU_ASSERT_EQUAL( x.d.j, 5 )
+	CU_ASSERT_EQUAL( x.d.k, 6 )
 
 end sub
 	

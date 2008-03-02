@@ -735,7 +735,60 @@ function astBuildInstPtr _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr, _
-		byval idxexpr as ASTNODE ptr, _
+		byval idxexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr expr = any
+	dim as integer dtype = any, ofs = any
+	dim as FBSYMBOL ptr subtype = any
+
+	dtype = symbGetFullType( sym )
+	subtype = symbGetSubtype( sym )
+
+	'' it's always a param
+	expr = astNewVAR( sym, 0, typeAddrOf( dtype ), subtype )
+
+	if( fld <> NULL ) then
+		dtype = symbGetFullType( fld )
+		subtype = symbGetSubtype( fld )
+
+		'' build sym.field( index )
+		
+		ofs = symbGetOfs( fld )
+		if( ofs <> 0 ) then
+			expr = astNewBOP( AST_OP_ADD, _
+							  expr, _
+							  astNewCONSTi( ofs, FB_DATATYPE_INTEGER ) )
+		end if
+
+		'' array access?
+		if( idxexpr <> NULL ) then
+			'' times length
+			expr = astNewBOP( AST_OP_ADD, _
+							  expr, _
+							  astNewBOP( AST_OP_MUL, _
+										 idxexpr, _
+										 astNewCONSTi( symbGetLen( fld ), _
+													   FB_DATATYPE_INTEGER ) ) )
+		end if
+
+	end if
+
+	expr = astNewDEREF( expr, dtype, subtype )
+
+	if( fld <> NULL ) then
+		expr = astNewFIELD( expr, fld, dtype, subtype )
+	end if
+
+	function = expr
+
+end function
+
+'':::::
+function astBuildInstPtrAtOffset _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr, _
 		byval ofs as integer _
 	) as ASTNODE ptr
 
@@ -752,39 +805,18 @@ function astBuildInstPtr _
 	if( fld <> NULL ) then
 		dtype = symbGetFullType( fld )
 		subtype = symbGetSubtype( fld )
+	end if
 
-		'' build sym.field( index )
-
-		ofs += symbGetOfs( fld )
-		if( ofs <> 0 ) then
-			expr = astNewBOP( AST_OP_ADD, _
-						  	  expr, _
-						  	  astNewCONSTi( ofs, FB_DATATYPE_INTEGER ) )
-		end if
-
-		'' array access?
-	   	if( idxexpr <> NULL ) then
-			'' times length
-			expr = astNewBOP( AST_OP_ADD, _
-						  	  expr, _
-						  	  astNewBOP( AST_OP_MUL, _
-						     		 	 idxexpr, _
-						  	 		 	 astNewCONSTi( symbGetLen( fld ), _
-						  	 		 	 			   FB_DATATYPE_INTEGER ) ) )
-		end if
-
-    else
-		if( ofs <> 0 ) then
-			expr = astNewBOP( AST_OP_ADD, _
-						  	  expr, _
-						  	  astNewCONSTi( ofs, FB_DATATYPE_INTEGER ) )
-		end if
+	if( ofs <> 0 ) then
+		expr = astNewBOP( AST_OP_ADD, _
+						  expr, _
+						  astNewCONSTi( ofs, FB_DATATYPE_INTEGER ) )
 	end if
 
 	expr = astNewDEREF( expr, dtype, subtype )
 
 	if( fld <> NULL ) then
-	    expr = astNewFIELD( expr, fld, dtype, subtype )
+		expr = astNewFIELD( expr, fld, dtype, subtype )
 	end if
 
 	function = expr
