@@ -45,6 +45,7 @@ Version 0.18.4 Beta:
 - #1865673 - symbols defined inside namespaces that had already been imported were throwing a duplicate definition (cha0s)
 - #1905284 - bitfield accessing wasn't always working when the optimizer would remove the field node (cha0s)
 - #1890693 - array and UDT initializers in TYPE's (jeffm)
+- #1905725 - wrong integer division code when used with implicit/explicit pointers plus constants (v1c)
 
 
 Version 0.18.3 Beta:
