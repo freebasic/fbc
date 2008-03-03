@@ -1603,12 +1603,20 @@ function hVarDeclEx _
 
 				'' not declared already?
     			if( is_decl = FALSE ) then
-            		'' flush the init tree (must be done after adding the decl node)
-					astAdd( hFlushInitializer( sym, _
-									   		   var_decl, _
-									   		   initree, _
-									   		   has_defctor, _
-									   		   has_dtor ) )
+
+					'' move to function scope?
+					if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
+						astAddUnscoped( var_decl )
+
+					else
+
+            			'' flush the init tree (must be done after adding the decl node)
+						astAdd( hFlushInitializer( sym, _
+									   			   var_decl, _
+									   			   initree, _
+									   			   has_defctor, _
+									   			   has_dtor ) )
+					end if
 				end if
 			end if
 
