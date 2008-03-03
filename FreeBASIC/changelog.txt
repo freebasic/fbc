@@ -47,6 +47,7 @@ Version 0.18.4 Beta:
 - #1905284 - bitfield accessing wasn't always working when the optimizer would remove the field node (cha0s)
 - #1890693 - array and UDT initializers in TYPE's (jeffm)
 - #1905725 - wrong integer division code when used with implicit/explicit pointers plus constants (v1c)
+- #1906004 - fb_PageSet() was testing page requests against console limits, even in gfx mode (cha0s)
 
 
 Version 0.18.3 Beta:

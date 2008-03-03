@@ -43,17 +43,18 @@ FBCALL int fb_PageSet( int active, int visible )
 {
 	fb_DevScrnInit_NoOpen( );
 
-	if( (active > FB_CONSOLE_MAXPAGES) || (visible > FB_CONSOLE_MAXPAGES) )
-		return -1;
-
 	FB_LOCK();
 
 	int res;
 
 	if( __fb_ctx.hooks.pagesetproc )
 		res = __fb_ctx.hooks.pagesetproc( active, visible );
-	else
+	else {
+		if( (active > FB_CONSOLE_MAXPAGES) || (visible > FB_CONSOLE_MAXPAGES) )
+			return -1;
+		
         res = fb_ConsolePageSet( active, visible );
+	}
 
 	FB_UNLOCK();
 
