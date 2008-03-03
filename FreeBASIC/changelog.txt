@@ -24,6 +24,7 @@ Version 0.18.4 Beta:
 - lang qb: LINE -(x,y) was not being allowed due to parser changes (jeffm)
 - lang qb: Allow file.bi and datetime.bi headers (jeffm)
 - lang qb: Integer literals outside the range [-32768..32767] were being stored as 16-bit integers (counting_pine)
+- lang qb: OPEN not handling COM/LPT device names correctly (jeffm)
 - OPEN COM protocol parser was not handling default parameters (jeffm)
 - BLOAD could not use old-style image header when loading BMPs (counting_pine)
 - VAR was disregarding the extended type information (like const qualifiers), found by stylin
