@@ -29,6 +29,10 @@ Version 0.18.4 Beta:
 - BLOAD could not use old-style image header when loading BMPs (counting_pine)
 - VAR was disregarding the extended type information (like const qualifiers), found by stylin
 - variables with const qualifier shouldn't have been accepting ANY as an initializer (cha0s)
+- FBC was crashing on invalid data types (e.g. INPUT 1) (counting_pine)
+- VALLNG was accepting invalid characters in hex/oct/bin numbers (counting_pine)
+- VAL now allows longint-sized hex/bin/oct numbers (counting_pine)
+- Many cases of badly-handled numbers in INPUT (counting_pine)
 - #1877440 - g++ name mangling for const qualifiers (jeffm)
 - #1877439 - const qualifier overloading with byref (jeffm)
 - #1872532 - fix null pointer access when parsing parameters and allow OVERLOAD in member proc declarations for consistency (jeffm)

@@ -50,12 +50,7 @@ FBCALL int fb_InputUshort( unsigned short *dst )
 	len = fb_FileInputNextToken( buffer, FB_INPUT_MAXNUMERICLEN, FB_FALSE, &isfp );
 
 	if( isfp == FALSE )
-	{
-		if( len <= FB_INPUT_MAXINTLEN )
-			*dst = (unsigned short)fb_hStr2UInt( buffer, len );
-		else
-			*dst = (unsigned short)fb_hStr2ULongint( buffer, len );
-	}
+		*dst = (unsigned short)fb_hStr2UInt( buffer, len );
 	else
 		*dst = (unsigned short)rint( fb_hStr2Double( buffer, len ) );
 

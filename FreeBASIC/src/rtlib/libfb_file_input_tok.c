@@ -155,7 +155,7 @@ int fb_FileInputNextTokenEx
 		int *isfp
 	)
 {
-    int c, len, isquote, skipdelim;
+    int c, len, isquote, hasamp, skipdelim;
 	FB_INPUTCTX *ctx = FB_TLSGETCTX( INPUT );
 
 	*isfp = FALSE;
@@ -163,6 +163,7 @@ int fb_FileInputNextTokenEx
 	/* */
 	skipdelim = TRUE;
 	isquote = FALSE;
+	hasamp = FALSE;
 	len = 0;
 
 	c = hSkipWhiteSpc( ctx );
@@ -211,8 +212,19 @@ int fb_FileInputNextTokenEx
 
 			goto savechar;
 
+		case '&':
+			hasamp = TRUE;
+			goto savechar;
+
+		case 'd':
+		case 'D':
+		case 'e':
+		case 'E':
 		case '.':
-			*isfp = TRUE;
+			if( !hasamp )
+			{
+				*isfp = TRUE;
+			}
 			goto savechar;
 
 		case '\t':

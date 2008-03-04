@@ -302,10 +302,25 @@ FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
 
        int          fb_FileInputNextToken  ( char *buffer, int maxlen, int isstring, int *isfp );
 
-#define FB_INPUT_MAXINTLEN 11
-#define FB_INPUT_MAXDBLLEN (16 + 1 + 1 + 1 + 3)
-#define FB_INPUT_MAXLONGLEN 22
-#define FB_INPUT_MAXNUMERICLEN FB_INPUT_MAXLONGLEN
+
+ /* Maximum length that can safely be parsed as INTEGER */
+#define FB_INPUT_MAXINTLEN 9
+
+ /* Maximum length that can safely be parsed as LONGINT */
+#define FB_INPUT_MAXLONGLEN 18
+
+ /* Maximum length of a DOUBLE printed in FB ("-1.345678901234567e+100") */
+#define FB_INPUT_MAXDBLLEN (1 + 17 + 1 + 1 + 3)
+
+ /* Maximum length that can represent a LONGINT ("&B" + 64 digits) */
+#define FB_INPUT_MAXLONGBINLEN (2 + 64)
+
+ /* Numeric input max buffer length (max numeric length + delimiter) */
+#define FB_INPUT_MAXNUMERICLEN (FB_INPUT_MAXLONGBINLEN+1)
+
+ /* String input max buffer length */
+#define FB_INPUT_MAXSTRINGLEN 4096
+
 
 /**************************************************************************************************
  * UTF Encoding

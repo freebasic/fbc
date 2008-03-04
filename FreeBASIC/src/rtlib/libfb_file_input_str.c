@@ -47,13 +47,12 @@ int fb_FileInputNextTokenEx ( char *buffer, int max_chars,
 /*:::::*/
 FBCALL int fb_InputString( void *dst, int strlen, int is_last, int fillrem )
 {
-    char buffer[4096+1];
+    char buffer[FB_INPUT_MAXSTRINGLEN+1];
     int len, isfp;
 
-	len = fb_FileInputNextTokenEx( buffer, 4096, TRUE, is_last, &isfp );
+	len = fb_FileInputNextTokenEx( buffer, FB_INPUT_MAXSTRINGLEN, TRUE, is_last, &isfp );
 
 	fb_StrAssign( dst, strlen, buffer, 0, fillrem );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
-

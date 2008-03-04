@@ -50,12 +50,7 @@ FBCALL int fb_InputShort( short *dst )
 	len = fb_FileInputNextToken( buffer, FB_INPUT_MAXNUMERICLEN, FB_FALSE, &isfp );
 
 	if( isfp == FALSE )
-	{
-		if( len <= FB_INPUT_MAXINTLEN )
-			*dst = (short)fb_hStr2Int( buffer, len );
-		else
-			*dst = (short)fb_hStr2Longint( buffer, len );
-	}
+		*dst = (short)fb_hStr2Int( buffer, len );
 	else
 		*dst = (short)rint( fb_hStr2Double( buffer, len ) );
 

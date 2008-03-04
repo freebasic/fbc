@@ -50,15 +50,9 @@ FBCALL int fb_InputUbyte( unsigned char *dst )
 	len = fb_FileInputNextToken( buffer, FB_INPUT_MAXNUMERICLEN, FB_FALSE, &isfp );
 
 	if( isfp == FALSE )
-	{
-		if( len <= FB_INPUT_MAXINTLEN )
-			*dst = (unsigned char)fb_hStr2UInt( buffer, len );
-		else
-			*dst = (unsigned char)fb_hStr2ULongint( buffer, len );
-	}
+		*dst = (unsigned char)fb_hStr2UInt( buffer, len );
 	else
 		*dst = (unsigned char)rint( fb_hStr2Double( buffer, len ) );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
-
