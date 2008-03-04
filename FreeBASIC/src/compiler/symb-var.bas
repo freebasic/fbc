@@ -529,6 +529,7 @@ function symbAddVarEx _
 
 	'' QB quirk: see above
 	if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
+		s->attrib or= FB_SYMBATTRIB_NOSCOPE
 		s->var_.stmtnum = parser.currproc->proc.ext->stmtnum + 1
 
 	'' move to global?

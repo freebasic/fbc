@@ -1603,10 +1603,14 @@ function hVarDeclEx _
 
 				'' not declared already?
     			if( is_decl = FALSE ) then
+					
+					if( ((sym->attrib and FB_SYMBATTRIB_NOSCOPE) <> 0) ) then
 
-					'' move to function scope?
-					if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
-						astAddUnscoped( var_decl )
+						astAddUnscoped( hFlushInitializer( sym, _
+									   			   var_decl, _
+									   			   initree, _
+									   			   has_defctor, _
+									   			   has_dtor ) )
 
 					else
 
