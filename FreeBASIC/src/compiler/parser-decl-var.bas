@@ -811,6 +811,68 @@ private sub hMakeArrayDimTB _
 end sub
 
 '':::::
+private function hVarInitDefault _
+	( _
+        byval sym as FBSYMBOL ptr, _
+        byval isdecl as integer, _
+        byval has_defctor as integer, _
+        byval has_dtor as integer,  _
+        byval opt as integer = FB_INIOPT_NONE _
+	) as ASTNODE ptr
+
+    dim as integer attrib = any
+	dim as ASTNODE ptr initree = any
+
+	function = NULL
+
+	if( sym <> NULL ) then
+		exit function
+	end if
+		
+	attrib = symbGetAttrib( sym )
+
+	if( typeIsConst( symbGetFullType( sym ) ) ) then
+		if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake an expr
+			return astNewCONSTi( 0 )
+		end if
+	end if
+	
+    '' ctor?
+    if( has_defctor ) then
+		'' not already declared, extern, common or dynamic?
+		if( isdecl = FALSE ) then
+			if( ((attrib and (FB_SYMBATTRIB_EXTERN or _
+							  FB_SYMBATTRIB_COMMON or _
+							  FB_SYMBATTRIB_DYNAMIC)) = 0) ) then
+
+    			'' check visibility
+	    		dim as FBSYMBOL ptr subtype = symbGetSubtype( sym )
+	    		if( symbCheckAccess( subtype, _
+	    							 symbGetCompDefCtor( subtype ) ) = FALSE ) then
+
+					errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
+				end if
+
+				function = astBuildTypeIniCtorList( sym )
+			end if
+		end if
+
+    else
+    	'' no default ctor but other ctors defined?
+    	select case symbGetType( sym )
+    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    		if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
+    			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+    		end if
+    	end select
+    end if
+
+end function
+
+'':::::
 private function hVarInit _
 	( _
         byval sym as FBSYMBOL ptr, _
@@ -830,58 +892,6 @@ private function hVarInit _
 	else
 		attrib = 0
 	end if
-
-	'' '=' | '=>' ?
-	select case lexGetToken( )
-	case FB_TK_DBLEQ, FB_TK_EQ
-
-	'' default initialization
-	case else
-		
-    	if( sym <> NULL ) then
-    		
-			if( typeIsConst( symbGetFullType( sym ) ) ) then
-				if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					return astNewCONSTi( 0 )
-				end if
-			end if
-			
-    		'' ctor?
-    		if( has_defctor ) then
-				'' not already declared, extern, common or dynamic?
-				if( isdecl = FALSE ) then
-					if( ((attrib and (FB_SYMBATTRIB_EXTERN or _
-							  	  	  FB_SYMBATTRIB_COMMON or _
-							  	  	  FB_SYMBATTRIB_DYNAMIC)) = 0) ) then
-
-    					'' check visibility
-	    				dim as FBSYMBOL ptr subtype = symbGetSubtype( sym )
-	    				if( symbCheckAccess( subtype, _
-	    									 symbGetCompDefCtor( subtype ) ) = FALSE ) then
-
-							errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
-						end if
-
-						function = astBuildTypeIniCtorList( sym )
-					end if
-				end if
-
-    		else
-    			'' no default ctor but other ctors defined?
-    			select case symbGetType( sym )
-    			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    				if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
-    					errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
-    				end if
-    			end select
-    		end if
-    	end if
-
-    	exit function
-    end select
 
 	'' already declared, extern or common?
 	if( isdecl or _
@@ -903,6 +913,7 @@ private function hVarInit _
 		exit function
 	end if
 
+	'' '=' | '=>'
 	lexSkipToken( )
 
 	if( sym = NULL ) then
@@ -1213,6 +1224,8 @@ function hVarDeclEx _
     dim as integer dtype = any, lgt = any, ofs = any
     dim as integer dimensions = any, suffix = any
     dim as zstring ptr palias = any
+    dim as ASTNODE ptr assign_initree = any
+	dim as integer doassign = any
 
     function = NULL
 
@@ -1510,7 +1523,25 @@ function hVarDeclEx _
 
 		'' check for an initializer
 		if( is_fordecl = FALSE ) then
-			initree = hVarInit( sym, is_decl, has_defctor, has_dtor )
+
+			'' '=' | '=>' ?
+			select case lexGetToken( )
+			case FB_TK_DBLEQ, FB_TK_EQ
+				initree = hVarInit( sym, is_decl, has_defctor, has_dtor )
+	
+				if( ( initree <> NULL ) and ( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) ) then
+					doassign = TRUE
+				else
+					doassign = FALSE
+				end if
+
+			'' default initialization
+			case else
+				initree = hVarInitDefault( sym, is_decl, has_defctor, has_dtor )
+
+				doassign = FALSE
+
+			end select
 
 			if( initree = NULL ) then
 	    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -1518,8 +1549,19 @@ function hVarDeclEx _
 	    		end if
 	    	end if
 
+			'' unscoped? then need a default initree, plus the assignment
+			if( doassign ) then
+				assign_initree = initree
+				initree = hVarInitDefault( sym, is_decl, has_defctor, has_dtor )
+			else
+				assign_initree = NULL
+			end if
+
 	    else
 	    	initree = NULL
+			assign_initree = NULL
+			doassign = FALSE
+
 	    end if
 
 		'' add to AST
@@ -1603,17 +1645,56 @@ function hVarDeclEx _
 
 				'' not declared already?
     			if( is_decl = FALSE ) then
-					
-					if( ((sym->attrib and FB_SYMBATTRIB_NOSCOPE) <> 0) ) then
 
+					'' Just so there is no confusion, each dialect is handled
+					'' separately.  But should be possible (later) when deprecated
+					'' dialect is removed, behaviour can be controlled by 
+					'' FB_LANG_OPT_SCOPE only.
+
+					if( env.clopt.lang = FB_LANG_QB ) then
+
+						'' Initializers are not enabled, so just add the
+						'' default at proc scope.
 						astAddUnscoped( hFlushInitializer( sym, _
 									   			   var_decl, _
 									   			   initree, _
 									   			   has_defctor, _
 									   			   has_dtor ) )
 
-					else
+					elseif( env.clopt.lang = FB_LANG_FB_FBLITE ) then
 
+						'' flush the init tree (must be done after adding the decl node)
+						astAddUnscoped( hFlushInitializer( sym, _
+									   			   var_decl, _
+									   			   initree, _
+									   			   has_defctor, _
+									   			   has_dtor ) )
+
+						'' initializer as assignment?
+						if( doassign ) then
+
+							dim as ASTNODE ptr assign_vardecl = any
+
+							assign_vardecl = astNewDECL( FB_SYMBCLASS_VAR, sym, assign_initree )
+							assign_vardecl = astAdd( hFlushDecl( assign_vardecl ) )
+
+							'' use the initializer as an assignment
+							astAdd( astNewLINK( assign_vardecl, _
+												astTypeIniFlush( assign_initree, _
+											 	 		 		 sym, _
+											  	 		 		 AST_INIOPT_ISINI ) ) )
+							hFlushDecl( assign_vardecl )
+/'
+							astAdd( hFlushInitializer( sym, _
+									   				   assign_vardecl, _
+									   				   assign_initree, _
+									   				   has_defctor, _
+									   				   has_dtor ) )
+'/
+						end if
+
+					'' FB_LANG_FB, FB_LANG_FB_DEPRECATED
+					else  
             			'' flush the init tree (must be done after adding the decl node)
 						astAdd( hFlushInitializer( sym, _
 									   			   var_decl, _
@@ -1621,6 +1702,7 @@ function hVarDeclEx _
 									   			   has_defctor, _
 									   			   has_dtor ) )
 					end if
+
 				end if
 			end if
 
