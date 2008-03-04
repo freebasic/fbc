@@ -87,6 +87,27 @@ declare sub	parserSetCtx ( )
 		) _
 		, _
 		( _
+			@"fblite", _
+			FB_LANG_OPT_MT or _
+			FB_LANG_OPT_NAMESPC or _
+			FB_LANG_OPT_EXTERN or _
+			FB_LANG_OPT_FUNCOVL or _
+			FB_LANG_OPT_INITIALIZER or _
+			FB_LANG_OPT_CALL or _
+			FB_LANG_OPT_LET or _
+			FB_LANG_OPT_PERIODS or _
+			FB_LANG_OPT_NUMLABEL or _
+			FB_LANG_OPT_IMPLICIT or _
+			FB_LANG_OPT_DEFTYPE or _
+			FB_LANG_OPT_SUFFIX or _
+			FB_LANG_OPT_METACMD or _
+			FB_LANG_OPT_QBOPT or _
+			FB_LANG_OPT_DEPRECTOPT or _
+			FB_LANG_OPT_ONERROR or _
+			FB_LANG_OPT_QUIRKFUNC _
+		) _
+		, _
+		( _
 			@"qb", _
 			FB_LANG_OPT_GOSUB or _
 			FB_LANG_OPT_CALL or _

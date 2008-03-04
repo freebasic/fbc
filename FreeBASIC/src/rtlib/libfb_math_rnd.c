@@ -76,6 +76,7 @@ static double hRnd_Startup( float n )
 		iseed = INITIAL_SEED;
 		break;
 
+	case FB_LANG_FB_FBLITE:
 	case FB_LANG_FB_DEPRECATED:
 		rnd_func = hRnd_CRT;
 		break;
@@ -195,6 +196,7 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 	if( algorithm == RND_AUTO ) {
 		switch( __fb_ctx.lang ) {
 		case FB_LANG_QB:			algorithm = RND_QB;		break;
+		case FB_LANG_FB_FBLITE:
 		case FB_LANG_FB_DEPRECATED:	algorithm = RND_CRT;	break;
 		default:
 		case FB_LANG_FB:			algorithm = RND_MTWIST; break;

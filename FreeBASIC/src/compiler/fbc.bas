@@ -828,6 +828,8 @@ private sub objinf_addOption _
 			id = FB_LANG_FB
 		case "deprecated"
 			id = FB_LANG_FB_DEPRECATED
+		case "fblite"
+			id = FB_LANG_FB_FBLITE
 		case "qb"
 			id = FB_LANG_QB
 		end select
@@ -1497,6 +1499,8 @@ private function processOptions _
 					value = FB_LANG_FB
 				case "deprecated"
 					value = FB_LANG_FB_DEPRECATED
+				case "fblite"
+					value = FB_LANG_FB_FBLITE
 				case "qb"
 					value = FB_LANG_QB
 				case else
@@ -1774,7 +1778,7 @@ private sub printOptions( )
 	printOption( "-i <name>", "Add a path to search for include files" )
 	print "-include <name>"; " Include a header file on each source compiled"
 	printOption( "-l <name>", "Add a library file to linker's list" )
-	printOption( "-lang <name>", "Select language compatibility: deprecated, qb" )
+	printOption( "-lang <name>", "Select language compatibility: deprecated, fblite, qb" )
 	printOption( "-lib", "Create a static library" )
 	printOption( "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)" )
 	printOption( "-map <name>", "Save the linking map to file name" )
