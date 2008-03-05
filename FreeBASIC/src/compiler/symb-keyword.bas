@@ -147,7 +147,7 @@ end type
         ( @"ASM"        , FB_TK_ASM         , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"EXTERN"     , FB_TK_EXTERN      , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"WITH"       , FB_TK_WITH        , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
-        ( @"SCOPE"      , FB_TK_SCOPE       , FB_TKCLASS_KEYWORD ), _
+        ( @"SCOPE"      , FB_TK_SCOPE       , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"PUBLIC"     , FB_TK_PUBLIC      , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"PRIVATE"    , FB_TK_PRIVATE     , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"PROTECTED"  , FB_TK_PROTECTED   , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _

@@ -312,6 +312,8 @@ function cIfStmtNext(  ) as integer
 	'' begin scope
 	stk->scopenode = astScopeBegin( )
 
+	cStatement( )
+
 	function = TRUE
 
 end function

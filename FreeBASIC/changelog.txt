@@ -16,6 +16,7 @@ Version 0.18.4 Beta:
 - SWAP now supports one or more bitfield variables (cha0s)
 - placement new: see wiki for details on syntax and usage (cha0s)
 - explicit ctor/dtor calling (WIP) (cha0s)
+- Statements can now be written directly after multi-line ELSE/ELSEIFs, like in QB (counting_pine)
 - fb.GFX_HIGH_PRIORITY flag for SCREEN/SCREENRES (jeffm)
 - fb.GET_HIGH_PRIORITY option for SCREENCONTROL (jeffm)
 
