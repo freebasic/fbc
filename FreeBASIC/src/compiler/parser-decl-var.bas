@@ -1524,22 +1524,27 @@ function hVarDeclEx _
 		'' check for an initializer
 		if( is_fordecl = FALSE ) then
 
+			'' assume no assignment
+			doassign = FALSE
+			assign_initree = NULL
+
 			'' '=' | '=>' ?
 			select case lexGetToken( )
 			case FB_TK_DBLEQ, FB_TK_EQ
 				initree = hVarInit( sym, is_decl, has_defctor, has_dtor )
 	
 				if( ( initree <> NULL ) and ( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) ) then
-					doassign = TRUE
-				else
-					doassign = FALSE
+					'' local?
+					if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+												   FB_SYMBATTRIB_SHARED or _
+												   FB_SYMBATTRIB_COMMON)) = 0 ) then
+						doassign = TRUE
+					end if
 				end if
 
 			'' default initialization
 			case else
 				initree = hVarInitDefault( sym, is_decl, has_defctor, has_dtor )
-
-				doassign = FALSE
 
 			end select
 
@@ -1553,8 +1558,6 @@ function hVarDeclEx _
 			if( doassign ) then
 				assign_initree = initree
 				initree = hVarInitDefault( sym, is_decl, has_defctor, has_dtor )
-			else
-				assign_initree = NULL
 			end if
 
 	    else
