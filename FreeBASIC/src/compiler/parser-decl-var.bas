@@ -1615,15 +1615,29 @@ function hVarDeclEx _
 
 							'' bydesc array params have no descriptor
 							if( desc <> NULL ) then
-								astAdd( astNewLINK( var_decl, _
-													astTypeIniFlush( symbGetTypeIniTree( desc ), _
-											 	 		 			 desc, _
-											  	 		 			 AST_INIOPT_ISINI ) ) )
+
+								if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
+									astAdd( astNewLINK( var_decl, _
+														astTypeIniFlush( symbGetTypeIniTree( desc ), _
+											 	 		 				 desc, _
+											  	 		 				 AST_INIOPT_ISINI ) ) )
+								else
+									astAddUnscoped( astNewLINK( var_decl, _
+														astTypeIniFlush( symbGetTypeIniTree( desc ), _
+											 	 		 				 desc, _
+											  	 		 				 AST_INIOPT_ISINI ) ) )
+								end if
 
 								symbSetTypeIniTree( desc, NULL )
 
 							else
-								astAdd( var_decl )
+
+								if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
+									astAdd( var_decl )
+								else
+									astAddUnscoped( var_decl )
+								end if
+
 							end if
 
 							var_decl = NULL
@@ -1649,22 +1663,17 @@ function hVarDeclEx _
 				'' not declared already?
     			if( is_decl = FALSE ) then
 
-					'' Just so there is no confusion, each dialect is handled
-					'' separately.  But should be possible (later) when deprecated
-					'' dialect is removed, behaviour can be controlled by 
-					'' FB_LANG_OPT_SCOPE only.
+					if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
 
-					if( env.clopt.lang = FB_LANG_QB ) then
-
-						'' Initializers are not enabled, so just add the
-						'' default at proc scope.
-						astAddUnscoped( hFlushInitializer( sym, _
+            			'' flush the init tree (must be done after adding the decl node)
+						astAdd( hFlushInitializer( sym, _
 									   			   var_decl, _
 									   			   initree, _
 									   			   has_defctor, _
 									   			   has_dtor ) )
 
-					elseif( env.clopt.lang = FB_LANG_FB_FBLITE ) then
+					'' unscoped
+					else
 
 						'' flush the init tree (must be done after adding the decl node)
 						astAddUnscoped( hFlushInitializer( sym, _
@@ -1678,32 +1687,22 @@ function hVarDeclEx _
 
 							dim as ASTNODE ptr assign_vardecl = any
 
+							'' clear it before it's initialized?
+							if( symbGetVarHasDtor( sym ) ) then
+								astAdd( astBuildVarDtorCall( sym, TRUE ) )
+							end if
+
 							assign_vardecl = astNewDECL( FB_SYMBCLASS_VAR, sym, assign_initree )
-							assign_vardecl = astAdd( hFlushDecl( assign_vardecl ) )
+							assign_vardecl = hFlushDecl( assign_vardecl )
 
 							'' use the initializer as an assignment
 							astAdd( astNewLINK( assign_vardecl, _
 												astTypeIniFlush( assign_initree, _
 											 	 		 		 sym, _
 											  	 		 		 AST_INIOPT_ISINI ) ) )
-							hFlushDecl( assign_vardecl )
-/'
-							astAdd( hFlushInitializer( sym, _
-									   				   assign_vardecl, _
-									   				   assign_initree, _
-									   				   has_defctor, _
-									   				   has_dtor ) )
-'/
+
 						end if
 
-					'' FB_LANG_FB, FB_LANG_FB_DEPRECATED
-					else  
-            			'' flush the init tree (must be done after adding the decl node)
-						astAdd( hFlushInitializer( sym, _
-									   			   var_decl, _
-									   			   initree, _
-									   			   has_defctor, _
-									   			   has_dtor ) )
 					end if
 
 				end if

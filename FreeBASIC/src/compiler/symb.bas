@@ -522,7 +522,6 @@ function symbNewSymbol _
 
     '' QB quirks
 	if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
-		s->attrib or= FB_SYMBATTRIB_NOSCOPE
 		if( (parser.currproc->stats and (FB_SYMBSTATS_MAINPROC or _
 									  	 FB_SYMBSTATS_MODLEVELPROC)) <> 0 ) then
 			s->scope = FB_MAINSCOPE
