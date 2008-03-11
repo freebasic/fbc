@@ -688,7 +688,7 @@ private sub setUnixPaths( byref prefix as string )
 	pathTB(FB_PATH_INC   ) = prefix + "/include/freebasic"
 	pathTB(FB_PATH_LIB   ) = prefix + "/lib/freebasic"
 	pathTB(FB_PATH_SCRIPT) = pathTB(FB_PATH_LIB   ) + "/" + fbGnuTriplet + "/"
-	pathTB(FB_PATH_BIN   ) = prefix + "/bin"
+	pathTB(FB_PATH_BIN   ) = prefix + "/bin/"
 	
 end sub
 
@@ -710,10 +710,10 @@ private sub setOtherPaths( byref prefix as string )
 		target_dir = "freebsd"
 	end select
 	
-	pathTB(FB_PATH_BIN   ) = prefix + FB_BINPATH + target_dir + RSLASH
+	pathTB(FB_PATH_BIN   ) = prefix + FB_BINPATH + target_dir + PATHDIV
 	pathTB(FB_PATH_INC   ) = prefix + FB_INCPATH
 	pathTB(FB_PATH_LIB   ) = prefix + FB_LIBPATH + target_dir
-	pathTB(FB_PATH_SCRIPT) = prefix + FB_LIBPATH + target_dir + RSLASH
+	pathTB(FB_PATH_SCRIPT) = prefix + FB_LIBPATH + target_dir + PATHDIV
 	
 end sub
 
@@ -1010,7 +1010,7 @@ function fbGetGccLib _
 	
 #else
 	
-	file_loc = fbGetPath( FB_PATH_LIB ) + RSLASH + lib_in
+	file_loc = fbGetPath( FB_PATH_LIB ) + PATHDIV + lib_in
 	
 #endif	
 	
@@ -1155,7 +1155,7 @@ end function
 ''::::
 function solve_path( byval path as zstring ptr ) as integer
 
-	'' solves a path to it's lowest common denominator...
+	'' solves a path to its lowest common denominator...
 
 	'' c:\foo\bar\..\baz => c:\foo\baz, etc
 	static as string root_spec
@@ -1265,7 +1265,7 @@ function fbIncludeFile _
 
 	'' if this isn't a root path, make it one.
 	if( is_rootpath( incfile ) = FALSE ) then
-		incfile = hCurDir( ) + "/" + incfile
+		incfile = hCurDir( ) + PATHDIV + incfile
 	end if
 
 	'' now, if it isn't a root path(even possible?), we have a fatal.
