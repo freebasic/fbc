@@ -1287,7 +1287,7 @@ function symbFindVarByType _
     	sym = chain_->sym
     	do
     		if( symbIsVar( sym ) ) then
-    			if( symbGetType( sym ) = dtype ) then
+    			if( symbGetFullType( sym ) = dtype ) then
     				goto check_var
     			end if
     		end if

@@ -329,7 +329,7 @@ private function hDeclExternVar _
     end if
 
     '' check type
-	if( (dtype <> symbGetType( sym )) or _
+	if( (dtype <> symbGetFullType( sym )) or _
 		(subtype <> symbGetSubType( sym )) ) then
     	if( errReportEx( FB_ERRMSG_TYPEMISMATCH, *id ) = FALSE ) then
     		exit function
@@ -831,15 +831,20 @@ private function hVarInitDefault _
 		
 	attrib = symbGetAttrib( sym )
 
+	'' need initializer?
 	if( typeIsConst( symbGetFullType( sym ) ) ) then
-		if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake an expr
-			return astNewCONSTi( 0 )
+		'' not extern?
+		if( (attrib and FB_SYMBATTRIB_EXTERN) = 0 ) then
+			if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				return astNewCONSTi( 0 )
+			end if
 		end if
+
 	end if
-	
+		
     '' ctor?
     if( has_defctor ) then
 		'' not already declared, extern, common or dynamic?
