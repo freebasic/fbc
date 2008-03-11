@@ -11,10 +11,12 @@
 
 #include once "crt/sys/types.bi"
 
+#ifndef timeval
 type timeval
 	tv_sec as __time_t
 	tv_usec as __suseconds_t
 end type
+#endif
 
 type itimerval
 	it_interval as timeval

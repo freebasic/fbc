@@ -21,8 +21,16 @@
 #error Unsupported platform
 #endif
 
+#ifndef timerisset
 #define timerisset(tvp)	 (((tvp)->tv_sec <> 0) or ((tvp)->tv_usec <> 0))
+#endif
+
+#ifndef timercmp
 #define timercmp(tvp, uvp, cmp) iif((tvp)->tv_sec <> (uvp)->tv_sec, (tvp)->tv_sec cmp (uvp)->tv_sec, (tvp)->tv_usec cmp (uvp)->tv_usec)
+#endif
+
+#ifndef timerclear
 #define timerclear(tvp)	(tvp)->tv_sec = 0: (tvp)->tv_usec = 0
+#endif
 
 #endif
