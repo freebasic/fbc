@@ -45,7 +45,7 @@ declare sub	parserSetCtx ( )
 	dim shared infileTb( ) as FBFILE
 	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
 	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB_MAXPATHLEN+1
-	dim shared fbPrefix as string
+	dim shared as string fbGnuTriplet, fbPrefix
 
 	dim shared as FB_LANG_INFO langTb(0 to FB_LANGS-1) = _
 	{ _
@@ -683,48 +683,88 @@ function fbIsCrossComp _
 
 end function
 
+private sub setUnixPaths( byref prefix as string )
+	
+	pathTB(FB_PATH_INC   ) = prefix + "/include/freebasic"
+	pathTB(FB_PATH_LIB   ) = prefix + "/lib/freebasic"
+	pathTB(FB_PATH_SCRIPT) = pathTB(FB_PATH_LIB   ) + "/" + fbGnuTriplet + "/"
+	pathTB(FB_PATH_BIN   ) = prefix + "/bin"
+	
+end sub
+
+private sub setOtherPaths( byref prefix as string )
+	
+	dim as string target_dir = ""
+	select case as const env.clopt.target
+	case FB_COMPTARGET_WIN32
+		target_dir = "win32"
+	case FB_COMPTARGET_CYGWIN
+		target_dir = "cygwin"
+	case FB_COMPTARGET_LINUX
+		target_dir = "linux"
+	case FB_COMPTARGET_DOS
+		target_dir = "dos"
+	case FB_COMPTARGET_XBOX
+		target_dir = "xbox"
+	case FB_COMPTARGET_FREEBSD
+		target_dir = "freebsd"
+	end select
+	
+	pathTB(FB_PATH_BIN   ) = prefix + FB_BINPATH + target_dir + RSLASH
+	pathTB(FB_PATH_INC   ) = prefix + FB_INCPATH
+	pathTB(FB_PATH_LIB   ) = prefix + FB_LIBPATH + target_dir
+	pathTB(FB_PATH_SCRIPT) = prefix + FB_LIBPATH + target_dir + RSLASH
+	
+end sub
+
 '':::::
 sub fbSetPaths _
 	( _
 		byval target as integer _
-	) static
-
-	select case as const target
-	case FB_COMPTARGET_WIN32
-		pathTB(FB_PATH_BIN) = FB_BINPATH + "win32" + RSLASH
-		pathTB(FB_PATH_INC) = FB_INCPATH
-		pathTB(FB_PATH_LIB) = FB_LIBPATH + "win32"
-
-	case FB_COMPTARGET_CYGWIN
-		pathTB(FB_PATH_BIN) = FB_BINPATH + "cygwin" + RSLASH
-		pathTB(FB_PATH_INC) = FB_INCPATH
-		pathTB(FB_PATH_LIB) = FB_LIBPATH + "cygwin"
-
-	case FB_COMPTARGET_DOS
-		pathTB(FB_PATH_BIN)	= FB_BINPATH + "dos" + RSLASH
-		pathTB(FB_PATH_INC)	= FB_INCPATH
-		pathTB(FB_PATH_LIB)	= FB_LIBPATH + "dos"
-
-	case FB_COMPTARGET_LINUX
-		pathTB(FB_PATH_BIN) = FB_BINPATH + "linux" + RSLASH
-		pathTB(FB_PATH_INC) = FB_INCPATH
-		pathTB(FB_PATH_LIB) = FB_LIBPATH + "linux"
-
-	case FB_COMPTARGET_XBOX
-		pathTB(FB_PATH_BIN) = FB_BINPATH + "win32" + RSLASH
-		pathTB(FB_PATH_INC) = FB_INCPATH
-		pathTB(FB_PATH_LIB) = FB_LIBPATH + "xbox"
-
-	case FB_COMPTARGET_FREEBSD
-		pathTB(FB_PATH_BIN) = FB_BINPATH + "freebsd" + RSLASH
-		pathTB(FB_PATH_INC) = FB_INCPATH
-		pathTB(FB_PATH_LIB) = FB_LIBPATH + "freebsd"
-	end select
+	) 
+	
+	dim as string to_prefix = fbPrefix
+#if defined( __FB_LINUX__ ) or defined( __FB_FREEBSD__ )
+	
+	fbGnuTriplet = "."
+'	select case as const target
+'	case FB_COMPTARGET_WIN32
+'		fbGnuTriplet = "i686-pc-mingw32"
+'	case FB_COMPTARGET_CYGWIN
+'		fbGnuTriplet = "i686-pc-cygwin"
+'	case FB_COMPTARGET_LINUX
+'		#if defined( __FB_LINUX__ )
+'			fbGnuTriplet = "."
+'		#else
+'			fbGnuTriplet = "i686-pc-linux-gnu"
+'		#endif
+'	case FB_COMPTARGET_DOS
+'		fbGnuTriplet = "i386-pc-msdosdjgpp"
+'	case FB_COMPTARGET_XBOX
+'		fbGnuTriplet = "i686-pc-mingw32"
+'	case FB_COMPTARGET_FREEBSD
+'		#if defined( __FB_FREEBSD__ )
+'			fbGnuTriplet = "."
+'		#else
+'			fbGnuTriplet = "i686-pc-freebsd"
+'		#endif
+'	end select
+	
+	if( to_prefix = "" ) then to_prefix = FB_ARCH_PREFIX
+	setUnixPaths( to_prefix )
+	
+#else
+	
+	if( to_prefix = "" ) then to_prefix = exepath
+	setOtherPaths( to_prefix )
+	
+#endif
 
 #if not( defined( __FB_WIN32__ ) or defined( __FB_DOS__ ) )
 	hRevertSlash( pathTB(FB_PATH_BIN), FALSE )
 	hRevertSlash( pathTB(FB_PATH_INC), FALSE )
 	hRevertSlash( pathTB(FB_PATH_LIB), FALSE )
+	hRevertSlash( pathTB(FB_PATH_SCRIPT), FALSE )
 #endif
 
 end sub
@@ -734,13 +774,9 @@ function fbGetPath _
 	( _
 		byval path as integer _
 	) as string static
-
-	if( len( fbPrefix ) ) then
-		function = fbPrefix + pathTB( path )
-	else
-		function = exepath( ) + pathTB( path )
-	end if
-
+	
+	function = pathTB( path )
+	
 end function
 
 '':::::
@@ -748,9 +784,9 @@ sub fbSetPrefix _
 	( _
 		byref prefix as string _
 	)
-
+	
 	fbPrefix = prefix
-
+	
 	'' trim trailing slash
 	if( right( fbPrefix, 1 )  = "/" ) then
 		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
@@ -761,7 +797,6 @@ sub fbSetPrefix _
 		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
 	end if
 #endif
-
 
 end sub
 
@@ -947,6 +982,42 @@ sub fbListLibPathsEx _
 
 end sub
 
+'' :::::
+function fbGetGccLib _
+	( _
+		byref lib_name as string _
+	) as string
+	
+	dim as string file_loc, lib_in = lib_name
+	
+#if defined(__FB_LINUX__) or defined(__FB_FREEBSD__)
+	
+	dim as integer ff = freefile
+	
+	if( open pipe( "gcc -m32 -print-file-name=" & lib_in, for input, as ff ) <> 0 ) then
+		exit function
+	end if
+	
+	input #ff, file_loc
+	
+	close ff
+	
+	dim as string short_loc = hStripPath( file_loc )
+	
+	if( file_loc = short_loc ) then
+		exit function
+	end if
+	
+#else
+	
+	file_loc = fbGetPath( FB_PATH_LIB ) + RSLASH + lib_in
+	
+#endif	
+	
+	function = file_loc
+	
+end function
+
 '':::::
 sub fbGetDefaultLibs _
 	( _
@@ -956,8 +1027,9 @@ sub fbGetDefaultLibs _
 
 	'' note: list of FBS_LIB
 
-#define hAddLib( libname ) _
+#macro hAddLib( libname )
 	symbAddLibEx( dstlist, dsthash, libname, TRUE )
+#endmacro	
 
 	'' don't add default libs?
 	if( env.clopt.nodeflibs ) then
@@ -1319,7 +1391,7 @@ function fbFindBinFile _
 	if( len(path) = 0 ) then
 		path = fbGetPath( FB_PATH_BIN )
 		path += *filename 
-		path += FB_HOST_EXEEXT
+		path += FB_HOST_EXEEXT 
 	end if
 
 	'' Found it?

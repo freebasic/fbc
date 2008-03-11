@@ -32,6 +32,10 @@ const FB_VER_PATCH          = 4
 #include once "inc\list.bi"
 #include once "inc\hash.bi"
 
+#define FB_STRINGIZE(_x) #_x
+
+const FB_ARCH_PREFIX = FB_STRINGIZE(ARCH_PREFIX)
+
 '' \'s are reversed in Linux
 const FB_BINPATH = RSLASH + "bin" + RSLASH
 const FB_INCPATH = RSLASH + "inc" + RSLASH
@@ -291,6 +295,7 @@ enum FB_PATH
 	FB_PATH_BIN
 	FB_PATH_INC
 	FB_PATH_LIB
+	FB_PATH_SCRIPT
 	FB_MAXPATHS
 end enum
 
@@ -334,6 +339,19 @@ type FB_CALLBACK_ADDOPTION as sub _
 		byval objName as zstring ptr _
 	)
 
+enum GCC_LIBS_
+	CRT1_O
+	CRTBEGIN_O
+	CRTEND_O
+	CRTI_O
+	CRTN_O
+	GCRT1_O
+	LIBBFD_A
+	LIBGCC_A
+	LIBIBERTY_A
+	LIBSUPC_A
+	GCC_LIB_MAX
+end enum
 
 #include once "inc\error.bi"
 
@@ -473,6 +491,11 @@ declare function fbIsCrossComp _
 	( _
 	) as integer
 
+declare function fbGetGccLib _
+	( _
+		byref lib_name as string _
+	) as string
+	
 declare sub fbGetDefaultLibs _
 	( _
 		byval dstlist as TLIST ptr, _

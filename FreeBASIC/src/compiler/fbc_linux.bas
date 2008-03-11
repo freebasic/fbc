@@ -25,7 +25,6 @@
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
-
 ''
 '' globals
 ''
@@ -33,11 +32,7 @@
 
 '':::::
 private sub _setDefaultLibPaths
-
-	fbcAddDefLibPath( "/usr/local/lib" )
-	fbcAddDefLibPath( "/lib" )
-	fbcAddDefLibPath( "/usr/lib" )
-
+	
 end sub
 
 '':::::
@@ -86,7 +81,7 @@ private function _linkFiles _
 	end if
 
 	'' set script file
-	ldcline += (" -T " + QUOTE) + fbGetPath( FB_PATH_BIN ) + ("elf_i386.x" + QUOTE)
+	ldcline += (" -T " + QUOTE) + fbGetPath( FB_PATH_SCRIPT ) + ("elf_i386.x" + QUOTE)
 
 	if( len( fbc.mapfile ) > 0) then
 		ldcline += " -Map " + fbc.mapfile
@@ -102,19 +97,17 @@ private function _linkFiles _
 	'' add library search paths
 	ldcline += *fbcGetLibPathList( )
 
-	dim as string libdir = fbGetPath( FB_PATH_LIB )
-
 	'' crt init stuff
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += " " + QUOTE + libdir + ("/gcrt1.o" + QUOTE)
+			ldcline += " " + QUOTE + fbGetGccLib( gcc_lib(GCRT1_O) ) + QUOTE
 		else
-			ldcline += " " + QUOTE + libdir + ("/crt1.o" + QUOTE)
+			ldcline += " " + QUOTE + fbGetGccLib( gcc_lib(CRT1_O) ) + QUOTE
 		end if
 	end if
 
-	ldcline += " " + QUOTE + libdir + ("/crti.o" + QUOTE)
-	ldcline += " " + QUOTE + libdir + ("/crtbegin.o" + QUOTE + " ")
+	ldcline += " " + QUOTE + fbGetGccLib( gcc_lib(CRTI_O) ) + QUOTE
+	ldcline += " " + QUOTE + fbGetGccLib( gcc_lib(CRTBEGIN_O) ) + QUOTE + " "
 
 	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
@@ -142,15 +135,15 @@ private function _linkFiles _
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' rtlib initialization and termination (must be included in the group or
 		'' dlopen() will fail because fb_hRtExit() will be undefined)
-		ldcline += QUOTE + libdir + ("/fbrt0.o" + QUOTE + " ")
+		ldcline += fbGetPath( FB_PATH_LIB ) + QUOTE + "/fbrt0.o" + QUOTE + " "
 	end if
 
 	'' end lib group
 	ldcline += "-) "
 
 	'' crt end stuff
-	ldcline += QUOTE + libdir + ("/crtend.o" + QUOTE + " " )
-	ldcline += QUOTE + libdir + ("/crtn.o" + QUOTE)
+	ldcline += QUOTE + fbGetGccLib( gcc_lib(CRTEND_O) ) + QUOTE + " "
+	ldcline += QUOTE + fbGetGccLib( gcc_lib(CRTN_O) ) + QUOTE + " " 
 
    	'' extra options
    	ldcline += fbc.extopt.ld

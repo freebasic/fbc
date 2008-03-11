@@ -66,7 +66,7 @@ private function _linkFiles _
 	tmpexename = fbc.outname + ".exe"
 	
 	'' set script file
-	ldcline = "-T " + QUOTE + fbGetPath( FB_PATH_BIN ) + ("i386pe.x" + QUOTE + _
+	ldcline = "-T " + QUOTE + fbGetPath( FB_PATH_SCRIPT ) + ("i386pe.x" + QUOTE + _
 		" -nostdlib --file-alignment 0x20 --section-alignment 0x20 -shared")
 	
 	if( len( fbc.mapfile ) > 0) then

@@ -7,70 +7,57 @@ usage()
 	
 Usage: ./install.sh -i|-u [dest]
 
--i	Install FreeBASIC in dest/freebasic
--u	Uninstall FreeBASIC from dest/freebasic
-dest	Destination directory (defaults to /usr/share)
+-i	Install FreeBASIC in dest/
+-u	Uninstall FreeBASIC from dest/
+dest	Destination directory (defaults to /usr)
+
+Installation creates dest/lib/freebasic and /dest/include/freebasic, where 
+library and header files are copied to, respectively. 
+The man page is copied to /usr/share/man/man1. 
+
+Uninstallation removes these directories, and their contents, in addition 
+to the man file.
 
 EOF
 	exit 1
 }
 
 
+i_success_msg()
+{
+	echo
+	echo "================================================================================"
+	echo "***** FreeBASIC compiler successfully installed in $INSTALLDIR *****"
+	echo "================================================================================"
+	echo
+}
 install()
 {
-	dest="$INSTALLDIR/freebasic"
-	link="/usr/bin"
-	
-	mkdir -p -m 0755 "$dest"/bin/linux
-	mkdir -p -m 0755 "$dest"/inc
-	mkdir -p -m 0755 "$dest"/lib/linux
+	mkdir -p -m 0755 "$INSTALLDIR"/lib/freebasic && \
+	mkdir -p -m 0755 "$INSTALLDIR"/include/freebasic && \
+	cp lib/linux/* "$INSTALLDIR"/lib/freebasic && \
+	cp -r inc/* "$INSTALLDIR"/include/freebasic && \
+	cp docs/fbc.1 /usr/share/man/man1/fbc.1.gz && \
+	cp fbc "$INSTALLDIR"/bin && \
+	i_success_msg
+}
 
-	cp lib/linux/* "$dest"/lib/linux
-	cp -r inc/* "$dest"/inc
-	cp bin/linux/* "$dest"/bin/linux
-	cp fbc "$dest"
-	cp docs/fbc.1.gz /usr/share/man/man1/fbc.1.gz
-
-	if [ -w $link ]; then
-		rm -f "$link"/fbc
-		echo "#!/bin/sh">"$link"/fbc
-		echo "$dest/fbc -prefix $dest \$*">>"$link"/fbc
-		chmod a+x "$link"/fbc
-		linkmsg="A link to the compiler binary has also been created as $link/fbc"
-	else
-		linkmsg="It was not possible to install a link to the compiler binary as $link/fbc"
-	fi
-
+u_success_msg()
+{
 	echo
 	echo "================================================================================"
-	echo "FreeBASIC compiler successfully installed in $dest"
-	echo $linkmsg
+	echo "***** FreeBASIC compiler successfully uninstalled from $INSTALLDIR *****"
 	echo "================================================================================"
 	echo
 }
-
-
 uninstall()
 {
-	dest="$INSTALLDIR/freebasic"
-	link="/usr/bin"
-	
-	rm -fr $dest
-	if [ -w $link ]; then
-		rm -f "$link"/fbc
-	fi
-	if [ -w /usr/share/man/man1/fbc.1.gz ]; then
-		rm -f /usr/share/man/man1/fbc.1.gz
-	fi
-
-	echo
-	echo "================================================================================"
-	echo "FreeBASIC compiler successfully uninstalled from $dest"
-	echo "================================================================================"
-	echo
+	rm -fr "$INSTALLDIR"/lib/freebasic && \
+	rm -fr "$INSTALLDIR"/include/freebasic && \
+	rm -f "$INSTALLDIR"/bin/fbc && \ 
+	rm -f /usr/share/man/man1/fbc.1.gz && \ 
+	u_success_msg
 }
-
-
 
 case "$1" in
 	"-i")	ACTION="install";;
@@ -81,7 +68,7 @@ esac
 if [ "$2" != "" ]; then
 	INSTALLDIR="$2"
 else
-	INSTALLDIR="/usr/share"
+	INSTALLDIR="/usr"
 fi
 
 if [ ! -d $INSTALLDIR ]; then

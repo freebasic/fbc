@@ -157,7 +157,7 @@ private function _linkFiles _
 	end if
 
 	'' set script file and subsystem
-	ldcline = ("-T " + QUOTE) + fbGetPath( FB_PATH_BIN ) + ("i386pe.x" + QUOTE + " -subsystem ") + fbc.subsystem
+	ldcline = ("-T " + QUOTE) + fbGetPath( FB_PATH_SCRIPT ) + ("i386pe.x" + QUOTE + " -subsystem ") + fbc.subsystem
 
     if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		''

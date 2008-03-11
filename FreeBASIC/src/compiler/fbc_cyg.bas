@@ -39,11 +39,6 @@ declare function makeImpLib _
 '':::::
 private sub _setDefaultLibPaths
 
-	fbcAddDefLibPath( "/usr/local/i686-pc-cygwin/lib" )
-	fbcAddDefLibPath( "/usr/local/lib" )
-	fbcAddDefLibPath( "/usr/lib" )
-	fbcAddDefLibPath( "/usr/lib/w32api" )
-
 end sub
 
 '':::::
@@ -81,7 +76,7 @@ private function _linkFiles _
 	end if
 
 	'' set script file and subsystem
-	ldcline = "-T " + QUOTE + fbGetPath( FB_PATH_BIN ) + ("i386pe.x" + QUOTE + " -subsystem ") + fbc.subsystem
+	ldcline = "-T " + QUOTE + fbGetPath( FB_PATH_SCRIPT ) + ("i386pe.x" + QUOTE + " -subsystem ") + fbc.subsystem
 
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		''

@@ -81,7 +81,7 @@ private function _linkFiles _
 	'' set script file
 	select case fbGetOption( FB_COMPOPT_OUTTYPE )
 	case FB_OUTTYPE_EXECUTABLE
-		ldcline = " -T " + QUOTE + fbGetPath( FB_PATH_BIN ) + "i386go32.x" + QUOTE
+		ldcline = " -T " + QUOTE + fbGetPath( FB_PATH_SCRIPT ) + "i386go32.x" + QUOTE
 	case else
 		ldcline = ""
 	end select
@@ -99,11 +99,13 @@ private function _linkFiles _
 	'' add library search paths
 	ldcline += *fbcGetLibPathList( )
 
+	dim as string libdir = fbGetPath( FB_PATH_LIB )
+	
 	'' link with crt0.o (C runtime init) or gcrt0.o for gmon profiling
 	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-		ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + RSLASH + "gcrt0.o" + QUOTE + " "
+		ldcline += " " + QUOTE + libdir + RSLASH + "gcrt0.o" + QUOTE + " "
 	else
-		ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + RSLASH + "crt0.o" + QUOTE + " "
+		ldcline += " " + QUOTE + libdir + RSLASH + "crt0.o" + QUOTE + " "
 	end if
 
 	'' add objects from output list
@@ -131,7 +133,6 @@ private function _linkFiles _
 
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' rtlib initialization and termination, must be included in the group
-		dim as string libdir = fbGetPath( FB_PATH_LIB )
 		ldcline += QUOTE + libdir + (RSLASH + "fbrt0.o" + QUOTE + " ")
 	end if
 
