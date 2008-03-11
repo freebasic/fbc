@@ -35,10 +35,11 @@ install()
 {
 	mkdir -p -m 0755 "$INSTALLDIR"/lib/freebasic && \
 	mkdir -p -m 0755 "$INSTALLDIR"/include/freebasic && \
-	cp lib/linux/* "$INSTALLDIR"/lib/freebasic && \
-	cp -r inc/* "$INSTALLDIR"/include/freebasic && \
+	mkdir -p -m 0755 "$INSTALLDIR"/bin && \
+	cp lib/linux/* "$INSTALLDIR"/lib/freebasic/ && \
+	cp -r inc/* "$INSTALLDIR"/include/freebasic/ && \
 	cp docs/fbc.1 /usr/share/man/man1/fbc.1.gz && \
-	cp fbc "$INSTALLDIR"/bin && \
+	cp fbc "$INSTALLDIR"/bin/ && \
 	i_success_msg
 }
 
