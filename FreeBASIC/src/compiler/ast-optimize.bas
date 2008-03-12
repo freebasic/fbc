@@ -1301,22 +1301,43 @@ private sub hDivToShift_Signed _
 
 	l_cpy = astCloneTree( l )
 
-	n->l = astNewCONV( dtype, _
-					   NULL, _
-					   astNewBOP( AST_OP_ADD, _
-				       			  l_cpy, _
-				       			  astNewBOP( AST_OP_SHR, _
-					  			  			 astNewCONV( symbGetUnsignedType( dtype ), _
-					  			  			  			 NULL, _
-					  			  			  			 l, _
-					  			  			  			 AST_OP_TOUNSIGNED _
-					  			  			  		   ), _
-					  			  			 astNewCONSTi( bits, _
-					  									   FB_DATATYPE_INTEGER ), _
-										   ), _
-								), _
-					   AST_OP_TOSIGNED _
-					 )
+	if( const_val = 1 ) then
+		'' n + ( cunsg(n) shr bits )
+		n->l = astNewCONV( dtype, _
+						   NULL, _
+						   astNewBOP( AST_OP_ADD, _
+									  l_cpy, _
+									  astNewBOP( AST_OP_SHR, _
+												 astNewCONV( symbGetUnsignedType( dtype ), _
+															 NULL, _
+															 l, _
+															 AST_OP_TOUNSIGNED _
+														   ), _
+												 astNewCONSTi( bits, _
+															   FB_DATATYPE_INTEGER ), _
+											   ), _
+									), _
+						   AST_OP_TOSIGNED _
+						 )
+	else
+		'' n + ( (n shr bits) and (1 shl const_val - 1) )
+		n->l = astNewCONV( dtype, _
+						   NULL, _
+						   astNewBOP( AST_OP_ADD, _
+									  l_cpy, _
+									  astNewBOP( AST_OP_AND, _
+												 astNewBOP( AST_OP_SHR, _
+															l, _
+															astNewCONSTi( bits, _
+																		  FB_DATATYPE_INTEGER ) _
+														  ), _
+												 astNewCONSTi( 1 shl const_val - 1, _
+															   FB_DATATYPE_INTEGER ), _
+											   ), _
+									), _
+						   AST_OP_TOSIGNED _
+						 )
+	end if
 
 	n->op.op = AST_OP_SHR
 	n->r->con.val.int = const_val

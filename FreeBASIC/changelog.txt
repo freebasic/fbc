@@ -36,6 +36,7 @@ Version 0.18.4 Beta:
 - VALLNG was accepting invalid characters in hex/oct/bin numbers (counting_pine)
 - VAL now allows longint-sized hex/bin/oct numbers (counting_pine)
 - Many cases of badly-handled numbers in INPUT (counting_pine)
+- Faulty logic in optimizing signed integer division by powers of two greater than 1 (counting_pine)
 - #1877440 - g++ name mangling for const qualifiers (jeffm)
 - #1877439 - const qualifier overloading with byref (jeffm)
 - #1872532 - fix null pointer access when parsing parameters and allow OVERLOAD in member proc declarations for consistency (jeffm)
