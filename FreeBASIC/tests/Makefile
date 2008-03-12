@@ -77,6 +77,8 @@ all :
 	@$(ECHO) -e "Options:"
 	@$(ECHO) -e "   FBC=/path/fbc"
 	@$(ECHO) -e "   FB_LANG=fb | qb | deprecated"
+	@$(ECHO) -e "   DEBUG=1"
+	@$(ECHO) -e "   EXTRAERR=1"
 	@$(ECHO) -e ""
 	@$(ECHO) -e "Targets: Configuration and Checks"
 	@$(ECHO) -e "   check"

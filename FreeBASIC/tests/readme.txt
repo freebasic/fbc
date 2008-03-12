@@ -77,6 +77,21 @@ Use 'make log-tests FB_LANG=fb | qb | deprecated' to make a specific
 set of -lang tests.
 
 
+Options
+-------
+FBC=/path/fbc
+   Specify the location of the fbc compiler
+
+FB_LANG=fb | qb | deprecated
+   Specify the compiler dialect
+
+DEBUG=1
+   Adds '-g' option to add debugging information.
+
+EXTRAERR=1
+   Adds '-exx' option to add extra error checking.
+
+
 How the tests are collected
 ---------------------------
 

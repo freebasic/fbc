@@ -65,6 +65,9 @@ FBC_CFLAGS := -c -w 3 -i $(FBCU_INC) -mt
 ifdef DEBUG
 	FBC_CFLAGS += -g
 endif
+ifdef EXTRAERR
+	FBC_CFLAGS += -exx
+endif
 
 FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_DIR) -x $(MAINEXE)
 ifdef DEBUG

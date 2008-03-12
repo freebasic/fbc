@@ -146,6 +146,9 @@ FBC_CFLAGS := -w 3
 ifdef DEBUG
 	FBC_CFLAGS += -g
 endif
+ifdef EXTRAERR
+	FBC_CFLAGS += -exx
+endif
 
 ifneq ($(FB_LANG),)
 FBC_CFLAGS += -lang $(FB_LANG)
