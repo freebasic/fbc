@@ -433,15 +433,19 @@ function astNewASSIGN _
 				'' ensure that the variable is zeroed in memory,
 				'' because operator let could do nothing.
 				if( (options and AST_OPOPT_ISINI) <> 0 ) then
-					result = astNewMEM( AST_OP_MEMCLEAR, _
-				                        l, _
-				                        astNewCONSTi( symbGetLen( l->subtype ) ) )
+					if( symbGetCompDefCtor( l->subtype ) <> NULL ) then
+	   					result = astBuildCtorCall( l->subtype, astCloneTree( l ) )
+	   				else
+						result = astNewMEM( AST_OP_MEMCLEAR, _
+						                    astCloneTree( l ), _
+						                    astNewCONSTi( symbGetLen( l->subtype ) ) )
+					end if
 				else
 					result = NULL
 				end if
 
 				'' build a proc call
-				return astNewLINK( result, astBuildCall( proc, 2, l, r ) )
+				return astNewLINK( astBuildCall( proc, 2, l, r ), result )
 			else
 				if( err_num <> FB_ERRMSG_OK ) then
 					return NULL

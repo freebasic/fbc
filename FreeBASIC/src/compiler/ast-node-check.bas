@@ -166,7 +166,7 @@ function astNewPTRCHK _
 	end if
 
 	'' alloc new node
-	dtype = astGetDataType( l )
+	dtype = astGetFullType( l )
 	subtype = l->subtype
 	n = astNewNode( AST_NODECLASS_PTRCHK, dtype, subtype )
 	function = n
