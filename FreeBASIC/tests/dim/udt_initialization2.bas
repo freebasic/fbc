@@ -32,7 +32,7 @@ namespace fbc_tests.dim_.udt_initialization2
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.dim.array_init")
+		fbcu.add_suite("fbc_tests.dim.udt_initialization2")
 		fbcu.add_test("test 1", @test1)
 	
 	end sub

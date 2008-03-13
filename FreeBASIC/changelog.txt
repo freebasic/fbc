@@ -37,6 +37,8 @@ Version 0.18.4 Beta:
 - VAL now allows longint-sized hex/bin/oct numbers (counting_pine)
 - Many cases of badly-handled numbers in INPUT (counting_pine)
 - Faulty logic in optimizing signed integer division by powers of two greater than 1 (counting_pine)
+- initialization of a UDT should not invoke its LET operator if no casting is needed (jeffm)
+- const qualified data types were not being allowed with null ptr checks (jeffm)
 - #1877440 - g++ name mangling for const qualifiers (jeffm)
 - #1877439 - const qualifier overloading with byref (jeffm)
 - #1872532 - fix null pointer access when parsing parameters and allow OVERLOAD in member proc declarations for consistency (jeffm)

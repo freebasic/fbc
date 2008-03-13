@@ -417,7 +417,15 @@ function astNewASSIGN _
    		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			if( ldtype = rdtype ) then
 				if( l->subtype = r->subtype ) then
-					check_letop = (symbGetCompCloneProc( l->subtype ) <> NULL)
+
+					'' Only invoke the LET operator if it's not an
+					'' initialization.  The initializer should be
+					'' a fully constructed object.
+					if( (options and AST_OPOPT_ISINI) = 0 ) then
+						check_letop = (symbGetCompCloneProc( l->subtype ) <> NULL)
+					else
+						check_letop = FALSE
+					end if
 				end if
 			end if
 		end select
@@ -445,7 +453,7 @@ function astNewASSIGN _
 				end if
 
 				'' build a proc call
-				return astNewLINK( astBuildCall( proc, 2, l, r ), result )
+				return astNewLINK( result, astBuildCall( proc, 2, l, r ) )
 			else
 				if( err_num <> FB_ERRMSG_OK ) then
 					return NULL
