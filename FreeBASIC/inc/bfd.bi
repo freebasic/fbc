@@ -52,7 +52,7 @@ type bfd_size_type as unsigned long
 type flagword as uinteger
 type bfd_byte as ubyte
 
-#if (__BFD_VER__ = 216) or defined(__FB_DOS__)
+#if ((__BFD_VER__ = 216) or (defined(__FB_DOS__) <> 0))
 type file_ptr as long
 type ufile_ptr as unsigned long
 #else
@@ -173,24 +173,31 @@ type bfd_hash_entry
 	hash as uinteger
 end type
 
+#if __BFD_VER__ <= 217
+
 type bfd_hash_table
 	table as bfd_hash_entry ptr ptr
-#if __BFD_VER__ <= 217
 	size as uinteger
-#endif
 #if __BFD_VER__ = 217
 	entsize as uinteger
 #endif
 	newfunc as function cdecl(byval as bfd_hash_entry ptr, byval as bfd_hash_table ptr, byval as zstring ptr) as bfd_hash_entry ptr
 	memory as any ptr
-#if __BFD_VER__ >= 218
+end type
+
+#else '' __BFD_VER__ >= 218
+
+type bfd_hash_table
+	table as bfd_hash_entry ptr ptr
+	newfunc as function cdecl(byval as bfd_hash_entry ptr, byval as bfd_hash_table ptr, byval as zstring ptr) as bfd_hash_entry ptr
+	memory as any ptr
 	size as uinteger
 	count as uinteger
 	entsize as uinteger
 	frozen:1 as uinteger
-#endif
 end type
 
+#endif
 
 #define bfd_get_section_name(bfd, ptr_) ((ptr_)->name + 0)
 #define bfd_get_section_vma(bfd, ptr_) ((ptr_)->vma + 0)
@@ -393,7 +400,7 @@ enum bfd_architecture
 	bfd_arch_vax
 	bfd_arch_i960
 	bfd_arch_or32
-#if __BFD_VER__ >= 217
+#if __BFD_VER__ <= 216
 	bfd_arch_a29k
 #endif
 	bfd_arch_sparc
@@ -404,7 +411,7 @@ enum bfd_architecture
 	bfd_arch_i860
 	bfd_arch_i370
 	bfd_arch_romp
-#if __BFD_VER__ >= 217
+#if __BFD_VER__ <= 216
 	bfd_arch_alliant
 #endif
 	bfd_arch_convex
