@@ -213,7 +213,11 @@ declare sub getDefaultLibs _
     	print "FreeBASIC Compiler - Version " + FB_VERSION + " (" + FB_BUILD_DATE + ")" + _
     		  " for " + FB_HOST + " (target:" + FB_TARGET + ")"
     	print "Copyright (C) 2004-2008 The FreeBASIC development team."
-	print "Configured with prefix " + FB_ARCH_PREFIX
+
+#if defined( __FB_LINUX__ ) or defined( __FB_FREEBSD__ )
+		print "Configured with prefix " + FB_ARCH_PREFIX
+#endif
+
     	print
     	if( fbc.showversion ) then
     		fbcEnd( 0 )
