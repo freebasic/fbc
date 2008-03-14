@@ -1004,7 +1004,7 @@ function fbGetGccLib _
 	
 #else
 	
-	file_loc = fbGetPath( FB_PATH_LIB ) + PATHDIV + lib_in
+	file_loc = fbGetPath( FB_PATH_LIB ) + FB_HOST_PATHDIV + lib_in
 	
 #endif	
 	
