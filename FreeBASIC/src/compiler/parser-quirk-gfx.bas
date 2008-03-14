@@ -925,8 +925,8 @@ function cGfxPalette as integer
 		dim as integer has_const = FALSE
 		if( isget ) then
 			has_const or= iif( rexpr, typeIsConst( astGetFullType( rexpr ) ), FALSE )
-			has_const or= iif( gexpr, typeIsConst( astGetFullType( rexpr ) ), FALSE )
-			has_const or= iif( bexpr, typeIsConst( astGetFullType( rexpr ) ), FALSE )
+			has_const or= iif( gexpr, typeIsConst( astGetFullType( gexpr ) ), FALSE )
+			has_const or= iif( bexpr, typeIsConst( astGetFullType( bexpr ) ), FALSE )
 		end if
 		
 		if( has_const ) then
