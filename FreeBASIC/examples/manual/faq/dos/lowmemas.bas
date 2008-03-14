@@ -9,12 +9,20 @@
 '' DOS only example of inline ASM accessing low memory 
 '' Run in text mode 80x25 only
 ''
-#include "go32.bi" '' Will define "_dos_ds" "pointing" into GO32 block
+
+'' including dos/go32.bi Will define "_dos_ds"
+'' "pointing" into GO32 block
+
+#include "dos/go32.bi" 
+
 Dim As UInteger DDS
+
 DDS=_dos_ds
+
 ? : ? "Hello world !"
 ? "_dos_ds=$";Hex$(DDS) 
 ? "This is just a tEst - abcd ABCD XYZ xyz @[`{ - press any key ..."
+
 Do
   Sleep 1000
   If Inkey$<>"" Then Exit Do
