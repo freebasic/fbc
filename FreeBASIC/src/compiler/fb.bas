@@ -125,12 +125,6 @@ declare sub	parserSetCtx ( )
 		) _
 	}
 
-'' const
-#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
-	const PATHDIV = RSLASH
-#else
-	const PATHDIV = "/"
-#endif
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' interface
@@ -143,13 +137,13 @@ sub fbAddIncPath _
 	)
 
 	if( env.incpaths < FB_MAXINCPATHS ) then
-        ' test for both path dividers because a slash is also supported
-        ' under Win32 and DOS using DJGPP. However, the (back)slashes
-        ' will always be converted to the OS' preferred type of slash.
+		' test for both path dividers because a slash is also supported
+		' under Win32 and DOS using DJGPP. However, the (back)slashes
+		' will always be converted to the OS' preferred type of slash.
 		select case right( *path, 1 )
-        case "/", RSLASH
-        case else
-			*path += PATHDIV
+		case "/", RSLASH
+		case else
+			*path += FB_HOST_PATHDIV
 		end select
 
 		incpathTB( env.incpaths ) = *path
@@ -710,10 +704,10 @@ private sub setOtherPaths( byref prefix as string )
 		target_dir = "freebsd"
 	end select
 	
-	pathTB(FB_PATH_BIN   ) = prefix + FB_BINPATH + target_dir + PATHDIV
+	pathTB(FB_PATH_BIN   ) = prefix + FB_BINPATH + target_dir + FB_HOST_PATHDIV
 	pathTB(FB_PATH_INC   ) = prefix + FB_INCPATH
 	pathTB(FB_PATH_LIB   ) = prefix + FB_LIBPATH + target_dir
-	pathTB(FB_PATH_SCRIPT) = prefix + FB_LIBPATH + target_dir + PATHDIV
+	pathTB(FB_PATH_SCRIPT) = prefix + FB_LIBPATH + target_dir + FB_HOST_PATHDIV
 	
 end sub
 
@@ -1265,7 +1259,7 @@ function fbIncludeFile _
 
 	'' if this isn't a root path, make it one.
 	if( is_rootpath( incfile ) = FALSE ) then
-		incfile = hCurDir( ) + PATHDIV + incfile
+		incfile = hCurDir( ) + FB_HOST_PATHDIV + incfile
 	end if
 
 	'' now, if it isn't a root path(even possible?), we have a fatal.

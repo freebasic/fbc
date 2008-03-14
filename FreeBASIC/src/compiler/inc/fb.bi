@@ -36,11 +36,6 @@ const FB_VER_PATCH          = 4
 
 const FB_ARCH_PREFIX = FB_STRINGIZE(ARCH_PREFIX)
 
-'' \'s are reversed in Linux
-const FB_BINPATH = RSLASH + "bin" + RSLASH
-const FB_INCPATH = RSLASH + "inc" + RSLASH
-const FB_LIBPATH = RSLASH + "lib" + RSLASH
-
 ''
 const FB_MAXPATHLEN         = 260
 
@@ -89,21 +84,31 @@ const FB_VER_STR_PATCH    	= str( FB_VER_PATCH )
 #if defined(__FB_WIN32__)
 const FB_HOST               = "win32"
 const FB_HOST_EXEEXT        = ".exe"
+const FB_HOST_PATHDIV       = RSLASH
 #elseif defined(__FB_CYGWIN__)
 const FB_HOST               = "cygwin"
 const FB_HOST_EXEEXT        = ".exe"
+const FB_HOST_PATHDIV       = "/"
 #elseif defined(__FB_LINUX__)
 const FB_HOST               = "linux"
 const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
 #elseif defined(__FB_DOS__)
 const FB_HOST               = "dos"
 const FB_HOST_EXEEXT        = ".exe"
+const FB_HOST_PATHDIV       = RSLASH
 #elseif defined(__FB_FREEBSD__)
 const FB_HOST               = "freebsd"
 const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
 #else
 #error Unsupported host
 #endif
+
+'' \'s are reversed in Linux
+const FB_BINPATH = FB_HOST_PATHDIV + "bin" + FB_HOST_PATHDIV
+const FB_INCPATH = FB_HOST_PATHDIV + "inc" + FB_HOST_PATHDIV
+const FB_LIBPATH = FB_HOST_PATHDIV + "lib" + FB_HOST_PATHDIV
 
 
 '' compiler options
