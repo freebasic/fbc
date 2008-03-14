@@ -147,8 +147,8 @@ AC_ARG_ENABLE(crosscomp-all,
  [if test "$FBC_TARGET" != "linux"; then
     FBC_CROSSCOMP_LINUX=yes
   fi]
- [if test "$FBC_TARGET" != "xbox"; then
-    FBC_CROSSCOMP_XBOX=yes
+ [if test "$FBC_TARGET" != "win32"; then
+    FBC_CROSSCOMP_WIN32=yes
   fi]
  [if test "$FBC_TARGET" != "xbox"; then
     FBC_CROSSCOMP_XBOX=yes
