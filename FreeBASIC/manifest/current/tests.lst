@@ -24,6 +24,7 @@ tests/const/const_to_const.bas
 tests/const/const_to_nonconst.bas
 tests/const/constptr_to_ptr.bas
 tests/const/diffptrtype.bas
+tests/const/extern.bas
 tests/const/fromconst.bas
 tests/const/funcres.bas
 tests/const/member.bas
@@ -85,6 +86,7 @@ tests/dim/udt_init.bas
 tests/dim/udt_init_pad.bas
 tests/dim/udt_initialization.bas
 tests/dim/udt_initialization2.bas
+tests/dim/udt_initialization3.bas
 tests/dirlist.mk
 tests/expressions/double-to-unsigned.bas
 tests/expressions/iif.bas
@@ -108,6 +110,8 @@ tests/file/input.bas
 tests/file/input.csv
 tests/file/large_dbl.bas
 tests/file/large_dbl.csv
+tests/file/large_int.bas
+tests/file/large_int.csv
 tests/file/lof.bas
 tests/file/pipe.bas
 tests/file/text_in.bas
@@ -366,6 +370,7 @@ tests/structs/bitfield-opovlcast.bas
 tests/structs/bitfield_access.bas
 tests/structs/bitfield_conv.bas
 tests/structs/bitfield_init.bas
+tests/structs/bitfield_logic.bas
 tests/structs/bitfield_select.bas
 tests/structs/bitfield_union.bas
 tests/structs/bool_expr_cast.bas
@@ -403,6 +408,8 @@ tests/structs/obj_cast_ovl.bas
 tests/structs/obj_cast_ovl2.bas
 tests/structs/obj_default_param.bas
 tests/structs/obj_field_ini.bas
+tests/structs/obj_field_ini_array.bas
+tests/structs/obj_field_ini_array_nested.bas
 tests/structs/obj_field_ini_str.bas
 tests/structs/obj_global.bas
 tests/structs/obj_global_dyn.bas

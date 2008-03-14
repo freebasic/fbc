@@ -4,6 +4,7 @@ fblogo.xpm
 install.sh
 migrating.txt
 readme.txt
+bin/linux/elf_i386.x
 docs/fbc.1.gz
 docs/gpl.txt
 docs/lgpl.txt
@@ -475,6 +476,7 @@ examples/manual/error/resume.bas
 examples/manual/extras/freeimage.bas
 examples/manual/extras/gfx-null.bas
 examples/manual/faq/dos/call-int.bas
+examples/manual/faq/dos/lowmemas.bas
 examples/manual/faq/gfxlib2/RGB-component.bas
 examples/manual/faq/gfxlib2/bload-workaround.bas
 examples/manual/faq/gfxlib2/check-for-close.bas
@@ -1293,6 +1295,7 @@ inc/crt/math.bi
 inc/crt/netdb.bi
 inc/crt/netinet/in.bi
 inc/crt/netinet/linux/in.bi
+inc/crt/process.bi
 inc/crt/setjmp.bi
 inc/crt/stdarg.bi
 inc/crt/stddef.bi

@@ -618,6 +618,7 @@ examples/manual/error/resume.bas
 examples/manual/extras/freeimage.bas
 examples/manual/extras/gfx-null.bas
 examples/manual/faq/dos/call-int.bas
+examples/manual/faq/dos/lowmemas.bas
 examples/manual/faq/gfxlib2/RGB-component.bas
 examples/manual/faq/gfxlib2/bload-workaround.bas
 examples/manual/faq/gfxlib2/check-for-close.bas
@@ -1421,6 +1422,7 @@ inc/crt/malloc.bi
 inc/crt/math.bi
 inc/crt/netdb.bi
 inc/crt/netinet/in.bi
+inc/crt/process.bi
 inc/crt/setjmp.bi
 inc/crt/stdarg.bi
 inc/crt/stddef.bi
@@ -1442,6 +1444,7 @@ inc/crt/unistd.bi
 inc/crt/wchar.bi
 inc/crt/win32/ctype.bi
 inc/crt/win32/fcntl.bi
+inc/crt/win32/process.bi
 inc/crt/win32/stdio.bi
 inc/crt/win32/stdlib.bi
 inc/crt/win32/time.bi
@@ -2578,12 +2581,14 @@ inc/wx-c/wxdatetime.bi
 inc/wx-c/wxstring.bi
 inc/wx-c/xmlresource.bi
 inc/zlib.bi
+lib/cygwin/i386pe.x
 lib/win32/crt2.o
 lib/win32/crtbegin.o
 lib/win32/crtend.o
 lib/win32/dllcrt2.o
 lib/win32/fbrt0.o
 lib/win32/gcrt2.o
+lib/win32/i386pe.x
 lib/win32/libDevIL.dll.a
 lib/win32/libFreeImage.dll.a
 lib/win32/libILU.dll.a

@@ -307,6 +307,7 @@ examples/manual/error/resume.bas
 examples/manual/extras/freeimage.bas
 examples/manual/extras/gfx-null.bas
 examples/manual/faq/dos/call-int.bas
+examples/manual/faq/dos/lowmemas.bas
 examples/manual/faq/gfxlib2/RGB-component.bas
 examples/manual/faq/gfxlib2/bload-workaround.bas
 examples/manual/faq/gfxlib2/check-for-close.bas
@@ -1000,6 +1001,7 @@ inc/crt/malloc.bi
 inc/crt/math.bi
 inc/crt/netdb.bi
 inc/crt/netinet/in.bi
+inc/crt/process.bi
 inc/crt/setjmp.bi
 inc/crt/stdarg.bi
 inc/crt/stddef.bi
@@ -1422,6 +1424,7 @@ inc/zlib.bi
 lib/dos/crt0.o
 lib/dos/fbrt0.o
 lib/dos/gcrt0.o
+lib/dos/i386go32.x
 lib/dos/libaldat.a
 lib/dos/liballeg.a
 lib/dos/libbfd.a
