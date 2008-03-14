@@ -12,7 +12,7 @@
 ''
 '' NOTES:
 ''
-'' Internally, we use "/" for the path seperator *always*
+'' Internally, we use "/" for the path seperator *always*.
 '' The special build file samples.ini uses "/" in all paths
 '' The "/" is flipped to "\" only when needed.
 ''
@@ -117,15 +117,15 @@ function ReplaceSubStr _
 		byref rep as string _
 	) as string 
 
-   dim i as integer = 1, ret as string 
-   ret = src 
-   do 
+	dim i as integer = 1, ret as string 
+	ret = src 
+	do 
 	  i = instr(i, ret, old) 
 	  if i = 0 then exit do 
 	  ret = left(ret, i - 1) + rep + mid(ret, i + len(old)) 
 	  i += len(rep) 
-   loop 
-   return ret 
+	loop 
+	return ret 
 
 end function
 
@@ -306,7 +306,7 @@ sub ScanDirectories _
 
 		dim tmp as string		
 		tmp = dirs(i)
-		ScanDirectories sourcedir, tmp, dirs(), ndirs
+		ScanDirectories( sourcedir, tmp, dirs(), ndirs )
 
 	next
 
@@ -382,7 +382,7 @@ function DoCompile _
 
 		dim h as integer = freefile, idx as integer, ret as integer
 
-		if open( sourcedir & source for input access read as #h ) = 0 then
+		if open( sourcedir & source for binary access read as #h ) = 0 then
 
 			dim body as string
 			body = space( lof( h ))
@@ -765,7 +765,9 @@ end if
 '' Scan for directories and files
 if( nDirs > 0 ) then
 	for i = 1 to nDirs
-		ScanDirectories( sourcedir, dirs(i), dirs(), ndirs )
+		dim tmp as string
+		tmp = dirs(i)
+		ScanDirectories( sourcedir, tmp, dirs(), ndirs )
 	next
 else
 	ScanDirectories( sourcedir, "", dirs(), ndirs )
