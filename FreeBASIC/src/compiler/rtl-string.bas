@@ -3238,7 +3238,7 @@ function rtlToStr _
 	dtype = astGetDatatype( expr )
 	
     '' constant? evaluate
-    if( astIsCONST( expr ) or typeIsConst( astGetFullType( expr ) ) ) then
+    if( astIsCONST( expr ) ) then
     	dim as string qb_padding
     	if fbLangIsSet( FB_LANG_QB ) then
     		if astGetValueAsDouble( expr ) >= 0 then
@@ -3358,7 +3358,7 @@ function rtlToWstr _
     dtype = astGetDataType( expr )
 
     '' constant? evaluate
-    if( astIsCONST( expr ) or typeIsConst( astGetFullType( expr ) ) ) then
+    if( astIsCONST( expr ) ) then
     	return astNewCONSTwstr( astGetValueAsWstr( expr ) )
     end if
 
