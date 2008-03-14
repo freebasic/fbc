@@ -9,6 +9,18 @@
 #ifndef __bfd_bi__
 #define __bfd_bi__
 
+'' back-compat - always define __BFD_VER__ now
+#ifdef __BFD_216__
+#define __BFD_VER__ 216
+#elseif defined(__BFD_217__)
+#define __BFD_VER__ 217
+#endif
+
+#ifndef __BFD_VER__
+#define __BFD_VER__ 217
+#print bfd.bi: warning: defaulting to bfd 2.17 header: please define __BFD_VER__
+#endif
+
 #inclib "bfd"
 #inclib "iberty"
 
@@ -40,7 +52,7 @@ type bfd_size_type as unsigned long
 type flagword as uinteger
 type bfd_byte as ubyte
 
-#if defined(__BFD_216__) or defined(__FB_DOS__)
+#if (__BFD_VER__ = 216) or defined(__FB_DOS__)
 type file_ptr as long
 type ufile_ptr as unsigned long
 #else
@@ -163,12 +175,20 @@ end type
 
 type bfd_hash_table
 	table as bfd_hash_entry ptr ptr
+#if __BFD_VER__ <= 217
 	size as uinteger
-#ifndef __BFD_216__	
+#endif
+#if __BFD_VER__ = 217
 	entsize as uinteger
 #endif
 	newfunc as function cdecl(byval as bfd_hash_entry ptr, byval as bfd_hash_table ptr, byval as zstring ptr) as bfd_hash_entry ptr
 	memory as any ptr
+#if __BFD_VER__ >= 218
+	size as uinteger
+	count as uinteger
+	entsize as uinteger
+	frozen:1 as uinteger
+#endif
 end type
 
 
@@ -257,7 +277,7 @@ type bfd_section_
 	id as integer
 	index as integer
 	next as bfd_section ptr
-#ifndef __BFD_216__	
+#if __BFD_VER__ >= 217
 	prev as bfd_section ptr
 #endif
 	flags as flagword
@@ -265,7 +285,7 @@ type bfd_section_
 	linker_mark:1 as uinteger
 	linker_has_input:1 as uinteger
 	gc_mark:1 as uinteger
-#ifndef __BFD_216__	
+#if __BFD_VER__ >= 217
 	gc_mark_from_eh:1 as uinteger
 #endif
 	segment_mark:1 as uinteger
@@ -301,7 +321,7 @@ type bfd_section_
 	owner as bfd ptr
 	symbol as bfd_symbol ptr
 	symbol_ptr_ptr as bfd_symbol ptr ptr
-#ifndef __BFD_216__	
+#if __BFD_VER__ >= 217
 	map_head as asection_map
 	map_tail as asection_map
 #else
@@ -373,7 +393,7 @@ enum bfd_architecture
 	bfd_arch_vax
 	bfd_arch_i960
 	bfd_arch_or32
-#ifdef __BFD_216__	
+#if __BFD_VER__ >= 217
 	bfd_arch_a29k
 #endif
 	bfd_arch_sparc
@@ -384,7 +404,7 @@ enum bfd_architecture
 	bfd_arch_i860
 	bfd_arch_i370
 	bfd_arch_romp
-#ifdef __BFD_216__	
+#if __BFD_VER__ >= 217
 	bfd_arch_alliant
 #endif
 	bfd_arch_convex
@@ -414,7 +434,7 @@ enum bfd_architecture
 	bfd_arch_tic80
 	bfd_arch_v850
 	bfd_arch_arc
-#ifndef __BFD_216__
+#if __BFD_VER__ >= 217
 	bfd_arch_m32c
 #endif
 	bfd_arch_m32r
@@ -426,12 +446,12 @@ enum bfd_architecture
 	bfd_arch_ia64
 	bfd_arch_ip2k
 	bfd_arch_iq2000
-#ifndef __BFD_216__
+#if __BFD_VER__ >= 217
 	bfd_arch_mt
 #endif
 	bfd_arch_pj
 	bfd_arch_avr
-#ifndef __BFD_216__
+#if __BFD_VER__ >= 217
 	bfd_arch_bfin
 #endif
 	bfd_arch_cr16c
@@ -442,12 +462,12 @@ enum bfd_architecture
 	bfd_arch_mmix
 	bfd_arch_xstormy16
 	bfd_arch_msp430
-#ifndef __BFD_216__
+#if __BFD_VER__ >= 217
 	bfd_arch_xc16x
 #endif
 	bfd_arch_xtensa
 	bfd_arch_maxq
-#ifndef __BFD_216__
+#if __BFD_VER__ >= 217
 	bfd_arch_z80
 #endif
 	bfd_arch_last
@@ -1945,7 +1965,7 @@ type bfd_
 	output_has_begun as bfd_boolean
 	section_htab as bfd_hash_table
 	sections as bfd_section ptr
-#ifndef __BFD_216__	
+#if __BFD_VER__ >= 217
 	section_last as bfd_section ptr
 #else
 	section_tail as bfd_section ptr ptr
@@ -2002,7 +2022,7 @@ type bfd_preserve
 	flags as flagword
 	arch_info as bfd_arch_info ptr
 	sections as bfd_section ptr
-#ifndef __BFD_216__	
+#if __BFD_VER__ >= 217
 	section_last as bfd_section ptr
 #else
 	section_tail as bfd_section ptr ptr
@@ -2133,7 +2153,11 @@ end enum
 #define bfd_read_minisymbols(b, d, m, s) BFD_SEND (b, _read_minisymbols, (b, d, m, s))
 #define bfd_minisymbol_to_symbol(b, d, m, f) BFD_SEND (b, _minisymbol_to_symbol, (b, d, m, f))
 #define bfd_link_split_section(abfd, sec) BFD_SEND (abfd, _bfd_link_split_section, (abfd, sec))
+#if __BFD_VER__ >= 218
+#define bfd_section_already_linked(abfd, sec, info) BFD_SEND (abfd, _section_already_linked, (abfd, sec, info))
+#else
 #define bfd_section_already_linked(abfd, sec) BFD_SEND (abfd, _section_already_linked, (abfd, sec))
+#endif
 
 type bfd_target_
 	name as zstring ptr
@@ -2173,7 +2197,7 @@ type bfd_target_
 	_bfd_get_section_contents_in_window as function cdecl(byval as bfd ptr, byval as sec_ptr, byval as bfd_window ptr, byval as file_ptr, byval as bfd_size_type) as bfd_boolean
 	_bfd_copy_private_bfd_data as function cdecl(byval as bfd ptr, byval as bfd ptr) as bfd_boolean
 	_bfd_merge_private_bfd_data as function cdecl(byval as bfd ptr, byval as bfd ptr) as bfd_boolean
-#ifndef __BFD_216__	
+#if __BFD_VER__ >= 217
 	_bfd_init_private_section_data as function cdecl(byval as bfd ptr, byval as sec_ptr, byval as bfd ptr, byval as sec_ptr, byval as bfd_link_info ptr) as bfd_boolean
 #endif
 	_bfd_copy_private_section_data as function cdecl(byval as bfd ptr, byval as sec_ptr, byval as bfd ptr, byval as sec_ptr) as bfd_boolean
@@ -2203,7 +2227,7 @@ type bfd_target_
 	_bfd_is_target_special_symbol as function cdecl(byval as bfd ptr, byval as asymbol ptr) as bfd_boolean
 	_get_lineno as function cdecl(byval as bfd ptr, byval as bfd_symbol ptr) as alent ptr
 	_bfd_find_nearest_line as function cdecl(byval as bfd ptr, byval as bfd_section ptr, byval as bfd_symbol ptr ptr, byval as bfd_vma, byval as byte ptr ptr, byval as byte ptr ptr, byval as uinteger ptr) as bfd_boolean
-#ifndef __BFD_216__	
+#if __BFD_VER__ >= 217
 	_bfd_find_line as function cdecl(byval as bfd ptr, byval as bfd_symbol ptr ptr, byval as bfd_symbol ptr, byval as byte ptr ptr, byval as uinteger ptr) as bfd_boolean
 	_bfd_find_inliner_info as function cdecl(byval as bfd ptr, byval as byte ptr ptr, byval as byte ptr ptr, byval as uinteger ptr) as bfd_boolean
 #endif
@@ -2213,9 +2237,16 @@ type bfd_target_
 	_get_reloc_upper_bound as function cdecl(byval as bfd ptr, byval as sec_ptr) as integer
 	_bfd_canonicalize_reloc as function cdecl(byval as bfd ptr, byval as sec_ptr, byval as arelent ptr ptr, byval as bfd_symbol ptr ptr) as integer
 	reloc_type_lookup as function cdecl(byval as bfd ptr, byval as bfd_reloc_code_real_type) as reloc_howto_type ptr
+#if __BFD_VER__ >= 218
+	reloc_name_lookup as function cdecl(byval as bfd ptr, byval as zstring ptr) as reloc_howto_type ptr
+#endif
 	_bfd_set_arch_mach as function cdecl(byval as bfd ptr, byval as bfd_architecture, byval as uinteger) as bfd_boolean
 	_bfd_set_section_contents as function cdecl(byval as bfd ptr, byval as sec_ptr, byval as any ptr, byval as file_ptr, byval as bfd_size_type) as bfd_boolean
+#if __BFD_VER__ >= 218
+	_bfd_sizeof_headers as function cdecl(byval as bfd ptr, byval as bfd_link_info ptr) as integer
+#else
 	_bfd_sizeof_headers as function cdecl(byval as bfd ptr, byval as bfd_boolean) as integer
+#endif
 	_bfd_get_relocated_section_contents as function cdecl(byval as bfd ptr, byval as bfd_link_info ptr, byval as bfd_link_order ptr, byval as bfd_byte ptr, byval as bfd_boolean, byval as bfd_symbol ptr ptr) as bfd_byte ptr
 	_bfd_relax_section as function cdecl(byval as bfd ptr, byval as bfd_section ptr, byval as bfd_link_info ptr, byval as bfd_boolean ptr) as bfd_boolean
 	_bfd_link_hash_table_create as function cdecl(byval as bfd ptr) as bfd_link_hash_table ptr
@@ -2228,7 +2259,11 @@ type bfd_target_
 	_bfd_merge_sections as function cdecl(byval as bfd ptr, byval as bfd_link_info ptr) as bfd_boolean
 	_bfd_is_group_section as function cdecl(byval as bfd ptr, byval as bfd_section ptr) as bfd_boolean
 	_bfd_discard_group as function cdecl(byval as bfd ptr, byval as bfd_section ptr) as bfd_boolean
+#if __BFD_VER__ >= 218
+	_section_already_linked as sub cdecl(byval as bfd ptr, byval as bfd_section ptr, byval as bfd_link_info ptr)
+#else
 	_section_already_linked as sub cdecl(byval as bfd ptr, byval as bfd_section ptr)
+#endif
 	_bfd_get_dynamic_symtab_upper_bound as function cdecl(byval as bfd ptr) as integer
 	_bfd_canonicalize_dynamic_symtab as function cdecl(byval as bfd ptr, byval as bfd_symbol ptr ptr) as integer
 	_bfd_get_synthetic_symtab as function cdecl(byval as bfd ptr, byval as integer, byval as bfd_symbol ptr ptr, byval as integer, byval as bfd_symbol ptr ptr, byval as bfd_symbol ptr ptr) as integer
@@ -2259,7 +2294,7 @@ declare function bfd_arch_mach_octets_per_byte (byval arch as bfd_architecture, 
 declare function bfd_get_stab_name (byval as integer) as zstring ptr
 declare sub bfd_sprintf_vma (byval as bfd ptr, byval as zstring ptr, byval as bfd_vma)
 declare sub bfd_fprintf_vma (byval as bfd ptr, byval as any ptr, byval as bfd_vma)
-#ifndef __BFD_216__
+#if __BFD_VER__ >= 217
 declare function bfd_hash_table_init (byval as bfd_hash_table ptr, byval as function cdecl(byval as bfd_hash_entry ptr, byval as bfd_hash_table ptr, byval as zstring ptr) as bfd_hash_entry ptr, byval as uinteger) as bfd_boolean
 #else
 declare function bfd_hash_table_init (byval as bfd_hash_table ptr, byval as function cdecl(byval as bfd_hash_entry ptr, byval as bfd_hash_table ptr, byval as zstring ptr) as bfd_hash_entry ptr) as bfd_boolean
@@ -2402,7 +2437,11 @@ declare function bfd_check_format_matches (byval abfd as bfd ptr, byval format a
 declare function bfd_set_format (byval abfd as bfd ptr, byval format as bfd_format) as bfd_boolean
 declare function bfd_format_string (byval format as bfd_format) as zstring ptr
 declare function bfd_link_split_section_ (byval abfd as bfd ptr, byval sec as asection ptr) as bfd_boolean
+#if __BFD_VER__ >= 218
+declare sub bfd_section_already_linked_ (byval abfd as bfd ptr, byval sec as asection ptr, byval info as bfd_link_info ptr)
+#else
 declare sub bfd_section_already_linked_ (byval abfd as bfd ptr, byval sec as asection ptr)
+#endif
 declare function bfd_simple_get_relocated_section_contents (byval abfd as bfd ptr, byval sec as asection ptr, byval outbuf as bfd_byte ptr, byval symbol_table as asymbol ptr ptr) as bfd_byte ptr
 declare function bfd_ecoff_get_gp_value (byval abfd as bfd ptr) as bfd_vma
 declare function bfd_ecoff_set_gp_value (byval abfd as bfd ptr, byval gp_value as bfd_vma) as bfd_boolean
@@ -2416,7 +2455,7 @@ declare function bfd_ecoff_debug_one_external (byval abfd as bfd ptr, byval debu
 declare function bfd_ecoff_debug_size (byval abfd as bfd ptr, byval debug as ecoff_debug_info ptr, byval swap as ecoff_debug_swap ptr) as bfd_size_type
 declare function bfd_ecoff_write_debug (byval abfd as bfd ptr, byval debug as ecoff_debug_info ptr, byval swap as ecoff_debug_swap ptr, byval where as file_ptr) as bfd_boolean
 declare function bfd_ecoff_write_accumulated_debug (byval handle as any ptr, byval abfd as bfd ptr, byval debug as ecoff_debug_info ptr, byval swap as ecoff_debug_swap ptr, byval info as bfd_link_info ptr, byval where as file_ptr) as bfd_boolean
-#ifndef __BFD_216__
+#if __BFD_VER__ >= 217
 declare function bfd_elf_record_link_assignment (byval as bfd ptr, byval as bfd_link_info ptr, byval as zstring ptr, byval as bfd_boolean, byval as bfd_boolean) as bfd_boolean
 #else
 declare function bfd_elf_record_link_assignment (byval as bfd ptr, byval as bfd_link_info ptr, byval as zstring ptr, byval as bfd_boolean) as bfd_boolean
@@ -2467,7 +2506,7 @@ declare function bfd_arm_pe_process_before_allocation (byval as bfd ptr, byval a
 declare function bfd_arm_pe_get_bfd_for_interworking (byval as bfd ptr, byval as bfd_link_info ptr) as bfd_boolean
 declare function bfd_elf32_arm_allocate_interworking_sections (byval as bfd_link_info ptr) as bfd_boolean
 declare function bfd_elf32_arm_process_before_allocation (byval as bfd ptr, byval as bfd_link_info ptr, byval as integer) as bfd_boolean
-#ifndef __BFD_216__
+#if __BFD_VER__ >= 217
 declare sub bfd_elf32_arm_set_target_relocs (byval as bfd_link_info ptr, byval as integer, byval as zstring ptr, byval as integer, byval as integer)
 #else
 declare sub bfd_elf32_arm_set_target_relocs (byval as bfd_link_info ptr, byval as integer, byval as zstring ptr, byval as integer)
