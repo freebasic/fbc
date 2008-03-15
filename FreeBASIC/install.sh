@@ -55,8 +55,8 @@ uninstall()
 {
 	rm -fr "$INSTALLDIR"/lib/freebasic && \
 	rm -fr "$INSTALLDIR"/include/freebasic && \
-	rm -f "$INSTALLDIR"/bin/fbc && \ 
-	rm -f /usr/share/man/man1/fbc.1.gz && \ 
+	rm -f "$INSTALLDIR"/bin/fbc && \
+	rm -f /usr/share/man/man1/fbc.1.gz && \
 	u_success_msg
 }
 
@@ -89,7 +89,7 @@ fi
 
 case $ACTION in
 	"install")	install;;
-	"uninstall")uninstall;;
+	"uninstall")	uninstall;;
 esac
 
 
