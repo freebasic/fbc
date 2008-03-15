@@ -968,6 +968,9 @@ inc/allegro/unicode.bi
 inc/bass.bi
 inc/bassmod.bi
 inc/bfd.bi
+inc/bfd/bfd-216.bi
+inc/bfd/bfd-217.bi
+inc/bfd/bfd-218.bi
 inc/big_int/basic_funcs.bi
 inc/big_int/big_int.bi
 inc/big_int/big_int_full.bi
