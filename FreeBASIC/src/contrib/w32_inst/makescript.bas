@@ -1,12 +1,16 @@
-'
-' Tool to create an NSIS installer script from the template (template.nsi)
-' and the configuration file (replace.conf)
-'
-' Written by MJS, Sept/2005
-'
+'' makescript
+''
+'' Tool to create an NSIS installer script from the template (template.nsi)
+'' and the configuration file (replace.conf)
+''
+'' chng: sep/2006 written [mjs]
+''       mar/2008 check package files against manifests [jeffm]
 
-#include "regex.bi"
-#include "crt.bi"
+#include once "regex.bi"
+#include once "crt.bi"
+#include once "../fbdoc/hash.bi"
+#include once "../fbdoc/list.bi"
+#include once "file.bi"
 
 #define FALSE 0
 #define TRUE (not FALSE)
@@ -87,34 +91,64 @@ declare sub         LoadSectionFiles                ( byval section as SectionIn
 declare sub         FilterFileEntries               ( byval section as SectionInfo ptr, byref entries as FileNameEntry ptr )
 declare sub         OutputSection                   ( byval f as integer, byval section as SectionInfo ptr, byref prefix as string, byref suffix as string )
 
+declare function ReadManifest( byref f as string ) as integer        
+declare function CheckExtraFiles(byval sections as SectionInfo ptr, byval section_count as integer) as integer
+declare function CheckMissingFiles( byref f as string ) as integer
+
+	dim shared filehash as fb.HASH
+	dim shared insthash as fb.HASH
+	dim shared usemanifest as integer
+	const fbpath = "../../../"
 	
 	redim as string ConfigFiles( 1 to 1 )
+	redim as string ManifestFiles( 1 to 1 )
 	dim as string cmd
-	dim as uinteger cmd_idx, config_file_count, config_file_idx
+	dim as uinteger cmd_idx
+	dim as uinteger config_file_count, config_file_idx
+	dim as uinteger manifest_file_count, manifest_file_idx
 	dim as integer add_cfg
 	
 	ConfigFiles( 1 ) = "replace.conf"
 	config_file_count = 1
+
+	manifest_file_count = 0
 	
 	cmd_idx = 1
 	cmd = command( 1 )
 	while len( cmd ) > 0
 
-		'' already exists?
-		add_cfg = TRUE
-		for config_file_idx=1 to config_file_count
-			if( ConfigFiles( config_file_idx ) = cmd ) then
-				add_cfg = FALSE
-			end if
-		next
+		select case lcase(cmd)
+		case "-manifest"
 
-		if( add_cfg ) then
-			config_file_count += 1
-			redim preserve as string ConfigFiles( 1 to config_file_count )
-	
-			ConfigFiles( config_file_count ) = cmd
-		end if
-	
+			cmd_idx += 1
+			cmd = command( cmd_idx )
+
+			if( len(cmd) > 0 ) then
+				manifest_file_count += 1
+				redim preserve as string ManifestFiles( 1 to manifest_file_count )
+				ManifestFiles( manifest_file_count ) = cmd
+				usemanifest = TRUE
+			end if
+
+		case else
+
+			'' already exists?
+			add_cfg = TRUE
+			for config_file_idx=1 to config_file_count
+				if( ConfigFiles( config_file_idx ) = cmd ) then
+					add_cfg = FALSE
+				end if
+			next
+
+			if( add_cfg ) then
+				config_file_count += 1
+				redim preserve as string ConfigFiles( 1 to config_file_count )
+		
+				ConfigFiles( config_file_count ) = cmd
+			end if
+		
+		end select
+			
 		cmd_idx += 1
 		cmd = command( cmd_idx )
 	wend
@@ -123,9 +157,15 @@ declare sub         OutputSection                   ( byval f as integer, byval 
 	dim as SectionInfo ptr sections
 	dim as integer section_count
 	
-	
 	app_config.template = "template.nsi"
 	app_config.output_file = "FreeBASIC.nsi"
+
+	for manifest_file_idx = 1 to manifest_file_count
+		if( ReadManifest( ManifestFiles( manifest_file_idx ) ) = 0 ) then
+			print "Unable to read manifest '" + ManifestFiles( manifest_file_idx ) + "'"
+			end 1
+		end if
+	next
 	
 	section_count = 0
 	sections = NULL
@@ -150,6 +190,19 @@ declare sub         OutputSection                   ( byval f as integer, byval 
 	
 	print "Sorting section entries"
 	sort_sections( sections, section_count )
+
+	if( usemanifest ) then
+		'' must be called first
+
+		print "Checking for extra files in the package but not in the manifest..."
+		CheckExtraFiles( sections, section_count )
+
+		print "Checking for files in the manifest but not in the package..."
+		for manifest_file_idx = 1 to manifest_file_count
+			CheckMissingFiles( ManifestFiles( manifest_file_idx ) )
+		next
+
+	end if
 	
 	print "Processing template"
 	gen_output( app_config.template, app_config.output_file, sections, section_count )
@@ -224,18 +277,25 @@ private sub FilterFileEntries( byval section as SectionInfo ptr, _
 	do while current_entry<>NULL
 		do_delete = FALSE
 
-		if section->exclude_count > 0 then
-			for i=0 to section->exclude_count-1
-				if regexec( section->exc_regex + i, _
-							current_entry->name, _
-							0, _
-							NULL, _
-							0 ) = 0 _
-				then
-					do_delete = TRUE
-					exit for
-				end if
-			next
+		if( usemanifest = TRUE ) then
+			if( filehash.test( current_entry->name ) = 0 ) then
+				do_delete = TRUE
+			end if
+
+		else
+			if section->exclude_count > 0 then
+				for i=0 to section->exclude_count-1
+					if regexec( section->exc_regex + i, _
+								current_entry->name, _
+								0, _
+								NULL, _
+								0 ) = 0 _
+					then
+						do_delete = TRUE
+						exit for
+					end if
+				next
+			end if
 		end if
 
 		if not do_delete then
@@ -993,4 +1053,108 @@ private function FileNameEntryCompareDescending cdecl (byval value1_arg as any p
 	if name1 > name2 then return -1
 	
 	return 0
+end function
+
+private function ReadManifest( byref f as string ) as integer
+	dim h as integer
+	dim x as string
+	dim i as integer
+
+	function = FALSE
+
+	print "Reading manifest '" + f + "'"
+
+	h = freefile
+	if( open( f for input access read as #h ) <> 0 ) then
+		exit function
+	end if
+
+	while( eof(h) = 0 )
+		line input #h, x
+		if( filehash.test( x ) = 0 ) then
+			filehash.add( x )
+			if( fileexists( fbpath + x ) = 0 ) then
+				print "file not found : '" + x + "'"
+			else
+				'' the manifest doesn't have any dirs
+				'' so add them to the hash table
+				i = instrrev( x, "/" )
+				while( i > 0 )
+					if( filehash.test( left( x, i - 1 ) ) = 0 ) then
+						'' add the dir to the hash
+						filehash.add( left( x, i - 1 ) )
+						i = instrrev( x, "/", i - 1 )
+					else
+						exit while
+					end if
+				wend
+			end if
+		end if
+	wend
+	close #h
+
+	function = TRUE
+
+end function
+
+'':::::
+private function CheckExtraFiles(byval sections as SectionInfo ptr, byval section_count as integer) as integer
+	
+	'' assume no extra files until one is found
+	function = TRUE
+
+	dim as integer section_nr
+	dim as SectionInfo ptr section
+	dim as FileNameEntry ptr file_entry
+
+	'' Adding any file to the installer not on the manifest?
+	
+	section = sections
+	do until( section = NULL )
+		file_entry = section->files
+		do while file_entry<>NULL
+
+			'' add to the installer's file has table, it will be
+			'' used in CheckMissingFiles()
+			insthash.add( file_entry->name )
+			
+			if( filehash.test( file_entry->name ) = 0 ) then
+				print "extra file: " + section->id + ":" + file_entry->name
+				function = FALSE
+			end if
+
+			file_entry = file_entry->next
+		loop
+		section = section->next
+	loop
+
+
+end function
+
+'':::::
+private function CheckMissingFiles( byref f as string ) as integer
+	
+	dim h as integer
+	dim x as string
+	dim i as integer
+
+	'' assume no missing files until one is detected
+	function = TRUE
+
+	h = freefile
+	if( open( f for input access read as #h ) <> 0 ) then
+		function = FALSE
+		exit function
+	end if
+
+	while( eof(h) = 0 )
+		line input #h, x
+		if( insthash.test( x ) = 0 ) then
+			print "missing file: " + f + ":" + x
+		end if
+	wend
+	close #h
+
+	function = TRUE
+
 end function
