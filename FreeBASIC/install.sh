@@ -70,7 +70,7 @@ esac
 if [ "$2" != "" ]; then
 	INSTALLDIR="$2"
 else
-	INSTALLDIR="/usr"
+	INSTALLDIR=`./fbc -version | grep prefix | cut -c24- -`
 fi
 
 if [ ! -d $INSTALLDIR ]; then
