@@ -36,9 +36,10 @@ install()
 	mkdir -p -m 0755 "$INSTALLDIR"/lib/freebasic && \
 	mkdir -p -m 0755 "$INSTALLDIR"/include/freebasic && \
 	mkdir -p -m 0755 "$INSTALLDIR"/bin && \
+	mkdir -p -m 0755 "$INSTALLDIR"/share/man/man1 && \
 	cp lib/linux/* "$INSTALLDIR"/lib/freebasic/ && \
 	cp -r inc/* "$INSTALLDIR"/include/freebasic/ && \
-	cp docs/fbc.1 /usr/share/man/man1/fbc.1.gz && \
+	cp docs/fbc.1 "$INSTALLDIR"/share/man/man1/fbc.1.gz && \
 	cp fbc "$INSTALLDIR"/bin/ && \
 	i_success_msg
 }
@@ -56,7 +57,7 @@ uninstall()
 	rm -fr "$INSTALLDIR"/lib/freebasic && \
 	rm -fr "$INSTALLDIR"/include/freebasic && \
 	rm -f "$INSTALLDIR"/bin/fbc && \
-	rm -f /usr/share/man/man1/fbc.1.gz && \
+	rm -f "$INSTALLDIR"/share/man/man1/fbc.1.gz && \
 	u_success_msg
 }
 
