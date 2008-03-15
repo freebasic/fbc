@@ -39,7 +39,7 @@ install()
 	mkdir -p -m 0755 "$INSTALLDIR"/share/man/man1 && \
 	cp lib/linux/* "$INSTALLDIR"/lib/freebasic/ && \
 	cp -r inc/* "$INSTALLDIR"/include/freebasic/ && \
-	cp docs/fbc.1 "$INSTALLDIR"/share/man/man1/fbc.1.gz && \
+	gzip -c docs/fbc.1 > "$INSTALLDIR"/share/man/man1/fbc.1.gz && \
 	cp fbc "$INSTALLDIR"/bin/ && \
 	i_success_msg
 }
