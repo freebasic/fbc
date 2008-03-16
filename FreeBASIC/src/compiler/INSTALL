@@ -61,3 +61,20 @@ know later at link time which command line options were used when compiling
 depends on compatibility between binutils, gdb, BFD, iberty and the bfd.bi
 header in ./inc.  It may be necessary to disable this feature to debug and/or
 use fbc with a broader range of binutils, debuggers, and platforms.
+
+There are a few makefile options to specify how fbc handles the BFD interface.
+( Note: they are ignored if --disable-objinfo was given durring configure. )
+
+By default, fbc will try to use the system's bfd.h header and libbfd.a and
+link with a special fb-to-c bridge module named c-objinfo.c.  To use fb's
+own bfd.bi headers ( and not bfd.h or c-objinfo.c) specify the following 
+option:
+
+	FB_BFD=1
+
+If FB_BFD=1 was passed to the makefile, fbc will default to using a bfd.bi
+header for binutils 2.17.  To specify an alternate binutils version,
+pass the following option to the makefile where 'nnn' is the binutils version
+number (e.g. 216, 217, 218, ... )
+
+	BFD_VER=nnn
