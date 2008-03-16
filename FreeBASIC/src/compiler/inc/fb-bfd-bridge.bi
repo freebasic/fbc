@@ -35,14 +35,14 @@
 '' must match declarations in c-objinfo.c
 
 '' PTR types
-Type bfd As bfd_
-Type asection As asection_
+type bfd as bfd_
+type asection as asection_
 
 '' numeric types
-Type bfd_boolean As Integer
-Type bfd_size_type As Long
-Type file_ptr As Longint
-Type flagword As Uinteger
+type bfd_boolean as integer
+type bfd_size_type as unsigned long
+type file_ptr as longint
+type flagword as uinteger
 
 '' must match c-objinfo.c flags
 #define SEC_HAS_CONTENTS &h100
@@ -54,32 +54,33 @@ enum fb_bfd_format
         bfd_archive
         bfd_core
         bfd_type_end
-End enum
+end enum
 
 '' must match c-objinfo.c::FB_bfd_architecture
 enum fb_bfd_architecture
+        bfd_arch_unknown = 0
         bfd_arch_i386
-End enum
+end enum
 
-Extern "c"
-        Declare Sub fb_bfd_init( )
-        Declare Function fb_bfd_openr (Byval filename As Zstring Ptr, Byval target As Zstring Ptr) As bfd Ptr
-        Declare Function fb_bfd_close (Byval abfd As bfd Ptr) As bfd_boolean
-        Declare Function fb_bfd_check_format (Byval abfd As bfd Ptr, Byval format As fb_bfd_format) As bfd_boolean
-        Declare Function fb_bfd_openr_next_archived_file (Byval archive As bfd Ptr, Byval previous As bfd Ptr) As bfd Ptr
-        Declare Function fb_bfd_openw (Byval filename As Zstring Ptr, Byval target As Zstring Ptr) As bfd Ptr
-        Declare Function fb_bfd_set_format (Byval abfd As bfd Ptr, Byval format As fb_bfd_format) As bfd_boolean
-        Declare Function fb_bfd_get_section_by_name (Byval abfd As bfd Ptr, Byval Name As Zstring Ptr) As asection Ptr
-        Declare Function fb_bfd_get_section_size (Byval section As asection Ptr) As bfd_size_type
-        Declare Function fb_bfd_set_section_size (Byval abfd As bfd Ptr, Byval sec As asection Ptr, Byval Val As bfd_size_type) As bfd_boolean
-        Declare Function fb_bfd_get_filename (Byval abfd As bfd Ptr) As Zstring Ptr
-        Declare Function fb_bfd_make_section (Byval As bfd Ptr, Byval Name As Zstring Ptr) As asection Ptr
-        Declare Function fb_bfd_check_format_matches (Byval abfd As bfd Ptr, Byval format As fb_bfd_format, Byval matching As Byte Ptr ptr Ptr) As bfd_boolean
-        Declare Function fb_bfd_set_section_flags (Byval abfd As bfd Ptr, Byval sec As asection Ptr, Byval flags As flagword) As bfd_boolean
-        Declare Function fb_bfd_get_section_contents (Byval abfd As bfd Ptr, Byval section As asection Ptr, Byval location As Any Ptr, Byval offset As file_ptr, Byval count As bfd_size_type) As bfd_boolean
-        Declare Function fb_bfd_set_section_contents (Byval abfd As bfd Ptr, Byval section As asection Ptr, Byval Data As Any Ptr, Byval offset As file_ptr, Byval count As bfd_size_type) As bfd_boolean
-        Declare Function fb_bfd_set_arch_mach (Byval abfd As bfd Ptr, Byval arch As fb_bfd_architecture, Byval mach As Uinteger) As bfd_boolean
-End Extern
+extern "c"
+        declare sub fb_bfd_init( )
+        declare function fb_bfd_openr (byval filename as zstring ptr, byval target as zstring ptr) as bfd ptr
+        declare function fb_bfd_close (byval abfd as bfd ptr) as bfd_boolean
+        declare function fb_bfd_check_format (byval abfd as bfd ptr, byval format as fb_bfd_format) as bfd_boolean
+        declare function fb_bfd_openr_next_archived_file (byval archive as bfd ptr, byval previous as bfd ptr) as bfd ptr
+        declare function fb_bfd_openw (byval filename as zstring ptr, byval target as zstring ptr) as bfd ptr
+        declare function fb_bfd_set_format (byval abfd as bfd ptr, byval format as fb_bfd_format) as bfd_boolean
+        declare function fb_bfd_get_section_by_name (byval abfd as bfd ptr, byval name as zstring ptr) as asection ptr
+        declare function fb_bfd_get_section_size (byval section as asection ptr) as bfd_size_type
+        declare function fb_bfd_set_section_size (byval abfd as bfd ptr, byval sec as asection ptr, byval val as bfd_size_type) as bfd_boolean
+        declare function fb_bfd_get_filename (byval abfd as bfd ptr) as zstring ptr
+        declare function fb_bfd_make_section (byval as bfd ptr, byval name as zstring ptr) as asection ptr
+        declare function fb_bfd_check_format_matches (byval abfd as bfd ptr, byval format as fb_bfd_format, byval matching as byte ptr ptr ptr) as bfd_boolean
+        declare function fb_bfd_set_section_flags (byval abfd as bfd ptr, byval sec as asection ptr, byval flags as flagword) as bfd_boolean
+        declare function fb_bfd_get_section_contents (byval abfd as bfd ptr, byval section as asection ptr, byval location as any ptr, byval offset as file_ptr, byval count as bfd_size_type) as bfd_boolean
+        declare function fb_bfd_set_section_contents (byval abfd as bfd ptr, byval section as asection ptr, byval data as any ptr, byval offset as file_ptr, byval count as bfd_size_type) as bfd_boolean
+        declare function fb_bfd_set_arch_mach (byval abfd as bfd ptr, byval arch as fb_bfd_architecture, byval mach as uinteger) as bfd_boolean
+end extern
 
 #define bfd_init fb_bfd_init
 #define bfd_openr fb_bfd_openr
