@@ -53,15 +53,18 @@ ifdef EXTRAERR
     FBC_CFLAGS += -exx
 endif
 
-ifdef BFD_VER
-    FBC_CFLAGS += -d BFD_VER=$(BFD_VER)
-endif
+# don't do anything with BFD unless objinfo feature enabled
+ifeq (@FBC_OBJINFO@,objinfo)
 
 ifdef FB_BFD
     FBC_CFLAGS += -d USE_FB_BFD_HEADER
 endif
 
-ifeq (@FBC_OBJINFO@,objinfo)
+# if FB_BFD is undefined then this probably won't matter
+ifdef BFD_VER
+    FBC_CFLAGS += -d __BFD_VER__=$(BFD_VER)
+endif
+
     FBC_LIBS = -l bfd -l iberty
 endif
 
@@ -192,6 +195,8 @@ endif
 # misc
 #
 
+# if objinfo disabled, set a define so we can exclude sections
+# of code from the source
 ifneq (@FBC_OBJINFO@,objinfo)
     DEFS += -d DISABLE_OBJINFO
 endif
@@ -261,7 +266,14 @@ FBC_SRCS += symb-namespace.bas symb-mangling.bas symb-comp.bas
 FBC_SRCS += $(FBC_OSDEPSRCS)
 
 FBC_OBJS := $(patsubst %.bas,%.o,$(FBC_SRCS))
-FBC_OBJS += c-objinfo.o
+
+# only if objinfo is enabled
+ifeq (@FBC_OBJINFO@,objinfo)
+# only if we are not using bfd.bi (FB_BFD is undefined)
+ifndef FB_BFD
+    FBC_OBJS += c-objinfo.o
+endif
+endif
 
 FBC_HEADERS := $(wildcard @srcdir@/inc/*.bi)
 
