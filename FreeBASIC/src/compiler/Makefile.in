@@ -53,6 +53,14 @@ ifdef EXTRAERR
     FBC_CFLAGS += -exx
 endif
 
+ifdef BFD_VER
+    FBC_CFLAGS += -d BFD_VER=$(BFD_VER)
+endif
+
+ifdef FB_BFD
+    FBC_CFLAGS += -d USE_FB_BFD_HEADER
+endif
+
 ifeq (@FBC_OBJINFO@,objinfo)
     FBC_LIBS = -l bfd -l iberty
 endif
@@ -253,6 +261,8 @@ FBC_SRCS += symb-namespace.bas symb-mangling.bas symb-comp.bas
 FBC_SRCS += $(FBC_OSDEPSRCS)
 
 FBC_OBJS := $(patsubst %.bas,%.o,$(FBC_SRCS))
+FBC_OBJS += c-objinfo.o
+
 FBC_HEADERS := $(wildcard @srcdir@/inc/*.bi)
 
 FBC_CFLAGS += -m $(subst .bas,,$(FBC_MAIN))
@@ -267,7 +277,10 @@ all: $(FBC_COMP)
 %.o : %.bas $(FBC_HEADERS)
 	$(FBC) $(FBC_CFLAGS) $(DEFS) $< -o $@
 
-$(FBC_COMP) : $(FBC_OBJS)
+c-objinfo.o : c-objinfo.c
+	$(CC) $(ALL_CFLAGS) -c $< -o $@
+
+$(FBC_COMP) : $(FBC_OBJS) 
 	$(FBC) $(FBC_LFLAGS) $(DEFS) $(FBC_OBJS) $(FBC_LIBS) -x $@
 
 

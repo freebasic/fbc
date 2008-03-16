@@ -26,7 +26,7 @@
 #include once "inc\list.bi"
 #include once "inc\ast.bi"
 
-#include once "bfd.bi"
+#include once "inc\fb-bfd-bridge.bi"
 
 declare function hProcessObject _
 	( _
