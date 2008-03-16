@@ -91,37 +91,37 @@ asection *fb_bfd_get_section_by_name (bfd *abfd, char *name) {
 }
 
 bfd_size_type fb_bfd_get_section_size (asection *section) {
-	bfd_get_section_size( section );
+	return bfd_get_section_size( section );
 }
 
 bfd_boolean fb_bfd_set_section_size (bfd *abfd, asection *sec, bfd_size_type val) {
-	bfd_set_section_size( abfd, sec, val );
+	return bfd_set_section_size( abfd, sec, val );
 }
 
 char *fb_bfd_get_filename (bfd *abfd) {
-	bfd_get_filename( abfd );
+	return bfd_get_filename( abfd );
 }
 
 asection *fb_bfd_make_section (bfd *abfd, char *name) {
-	bfd_make_section( abfd, name );
+	return bfd_make_section( abfd, name );
 }
 
 bfd_boolean fb_bfd_check_format_matches (bfd *abfd, enum FB_bfd_format format, char ***matching) {
-	fb_bfd_check_format_matches( abfd, format, matching );
+	return fb_bfd_check_format_matches( abfd, format, matching );
 }
 
 bfd_boolean fb_bfd_set_section_flags (bfd *abfd, asection *sec, flagword flags) {
-	bfd_set_section_flags( abfd, sec, hMapFlag( flags ) );
+	return bfd_set_section_flags( abfd, sec, hMapFlag( flags ) );
 }
 
 bfd_boolean fb_bfd_get_section_contents (bfd *abfd, asection *section, void *location, file_ptr offset, bfd_size_type count) {
-	bfd_get_section_contents( abfd, section, location, offset, count );
+	return bfd_get_section_contents( abfd, section, location, offset, count );
 }
 
 bfd_boolean fb_bfd_set_section_contents (bfd *abfd, asection *section, void *data, file_ptr offset, bfd_size_type count) {
-	bfd_set_section_contents( abfd, section, data, offset, count );
+	return bfd_set_section_contents( abfd, section, data, offset, count );
 }
 
 bfd_boolean fb_bfd_set_arch_mach (bfd *abfd, enum FB_bfd_architecture arch, unsigned int mach) {
-	bfd_set_arch_mach( abfd, hMapArch( arch ), mach );
+	return bfd_set_arch_mach( abfd, hMapArch( arch ), mach );
 }
