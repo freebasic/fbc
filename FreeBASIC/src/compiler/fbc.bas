@@ -122,7 +122,6 @@ declare sub getDefaultLibs _
 
 ''globals
 	dim shared as FBCCTX fbc
-	dim shared as string gcc_lib(0 to GCC_LIB_MAX-1) 
 
 	'' command-line options
 	dim shared as FBC_OPTION optionTb(0 to FBC_OPTS-1) = _
@@ -214,7 +213,7 @@ declare sub getDefaultLibs _
     		  " for " + FB_HOST + " (target:" + FB_TARGET + ")"
     	print "Copyright (C) 2004-2008 The FreeBASIC development team."
 
-#if defined( __FB_LINUX__ ) or defined( __FB_FREEBSD__ )
+#if defined(TARGET_LINUX) or defined(TARGET_FREEBSD)
 		print "Configured with prefix " + FB_ARCH_PREFIX
 #endif
 
@@ -1720,35 +1719,6 @@ private sub setLibListFromCmd _
 
 end sub
 
-sub setUnixyLibPaths( )
-	
-	gcc_lib(CRT1_O     ) = "crt1.o"
-	gcc_lib(CRTBEGIN_O ) = "crtbegin.o" 
-	gcc_lib(CRTEND_O   ) = "crtend.o" 
-	gcc_lib(CRTI_O     ) = "crti.o" 
-	gcc_lib(CRTN_O     ) = "crtn.o" 
-	gcc_lib(GCRT1_O    ) = "gcrt1.o" 
-	gcc_lib(LIBBFD_A   ) = "libbfd.a" 
-	gcc_lib(LIBGCC_A   ) = "libgcc.a" 
-	gcc_lib(LIBIBERTY_A) = "libiberty.a" 
-	gcc_lib(LIBSUPC_A  ) = "libsupc++.a"
-	
-	for i as integer = 0 to 9
-		
-		dim as string file_loc = fbGetGccLib( gcc_lib(i) )
-		
-		if( file_loc = "" ) then
-			errReportEx( FB_ERRMSG_FILENOTFOUND, gcc_lib(i), -1 )
-			exit sub
-		end if
-		
-		fbcAddDefLibPath( hStripFilename( file_loc ) )
-	next
-	
-	fbcAddDefLibPath( FB_ARCH_PREFIX + "/lib" )
-	
-end sub
-
 '':::::
 private sub setDefaultLibPaths
 
@@ -1759,10 +1729,6 @@ private sub setDefaultLibPaths
 	fbcAddDefLibPath( "./" )
 
 	'' platform dependent paths
-	
-#if defined(__FB_LINUX__) or defined(__FB_FREEBSD)
-	setUnixyLibPaths( )
-#endif
 	fbc.vtbl.setDefaultLibPaths( )
 
 end sub

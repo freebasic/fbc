@@ -230,6 +230,5 @@ declare function fbcGetLibPathList _
 '' globals
 ''
 extern fbc as FBCCTX
-extern as string gcc_lib(0 to GCC_LIB_MAX-1) 
 
 #endif '' __FBC_BI__

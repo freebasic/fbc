@@ -25,14 +25,37 @@
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
+
 ''
 '' globals
 ''
 	dim shared xpmfile as string
 
+
 '':::::
-private sub _setDefaultLibPaths
+private sub _setDefaultLibPaths _
+	( _
+	)
+
+'' only query gcc if the host is linux or freebsd
+#if defined(TARGET_LINUX) or defined(TARGET_FREEBSD)
+	dim as string file_loc
+	dim as integer i = any
+
+	'' add the paths required by gcc libs and object files
+	for i = 0 to GCC_LIBS - 1
+
+		file_loc = fbFindGccLib( i )
+
+		if( len( file_loc ) <> 0 ) then
+			fbSetGccLib( i, file_loc )
+			fbcAddDefLibPath( hStripFilename( file_loc ) )
+		end if
+	next
 	
+	fbcAddDefLibPath( FB_ARCH_PREFIX + "/lib" )
+#endif
+
 end sub
 
 '':::::
@@ -100,14 +123,14 @@ private function _linkFiles _
 	'' crt init stuff
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += " " + QUOTE + fbGetGccLib( gcc_lib(GCRT1_O) ) + QUOTE
+			ldcline += " " + QUOTE + fbGetGccLib( GCRT1_O ) + QUOTE
 		else
-			ldcline += " " + QUOTE + fbGetGccLib( gcc_lib(CRT1_O) ) + QUOTE
+			ldcline += " " + QUOTE + fbGetGccLib( CRT1_O ) + QUOTE
 		end if
 	end if
 
-	ldcline += " " + QUOTE + fbGetGccLib( gcc_lib(CRTI_O) ) + QUOTE
-	ldcline += " " + QUOTE + fbGetGccLib( gcc_lib(CRTBEGIN_O) ) + QUOTE + " "
+	ldcline += " " + QUOTE + fbGetGccLib( CRTI_O ) + QUOTE
+	ldcline += " " + QUOTE + fbGetGccLib( CRTBEGIN_O ) + QUOTE + " "
 
 	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
@@ -142,8 +165,8 @@ private function _linkFiles _
 	ldcline += "-) "
 
 	'' crt end stuff
-	ldcline += QUOTE + fbGetGccLib( gcc_lib(CRTEND_O) ) + QUOTE + " "
-	ldcline += QUOTE + fbGetGccLib( gcc_lib(CRTN_O) ) + QUOTE + " " 
+	ldcline += QUOTE + fbGetGccLib( CRTEND_O ) + QUOTE + " "
+	ldcline += QUOTE + fbGetGccLib( CRTN_O ) + QUOTE + " " 
 
    	'' extra options
    	ldcline += fbc.extopt.ld

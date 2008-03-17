@@ -46,6 +46,7 @@ declare sub	parserSetCtx ( )
 	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
 	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB_MAXPATHLEN+1
 	dim shared as string fbGnuTriplet, fbPrefix
+	dim shared as string gccLibTb(0 to GCC_LIBS - 1) 
 
 	dim shared as FB_LANG_INFO langTb(0 to FB_LANGS-1) = _
 	{ _
@@ -123,6 +124,19 @@ declare sub	parserSetCtx ( )
     		FB_LANG_OPT_SHAREDLOCAL or _
     		FB_LANG_OPT_QUIRKFUNC _
 		) _
+	}
+
+	'' filenames of gcc-libs (same order as enum GCC_LIB)
+	dim shared gccLibFileNameTb( 0 to GCC_LIBS - 1 ) as zstring ptr = _
+	{ _
+		@"crt1.o"           , _
+		@"crtbegin.o"       , _
+		@"crtend.o"         , _
+		@"crti.o"           , _
+		@"crtn.o"           , _
+		@"gcrt1.o"          , _
+		@"libgcc.a"         , _
+		@"libsupc++.a"      _
 	}
 
 
@@ -976,19 +990,57 @@ sub fbListLibPathsEx _
 
 end sub
 
-'' :::::
+'':::::
 function fbGetGccLib _
 	( _
-		byref lib_name as string _
+		byval lib_id as GCC_LIB _
 	) as string
+
+	if( len( gccLibTb( lib_id ) ) = 0 ) then
+		function = *gccLibFileNameTb( lib_id )
+	else
+		function = gccLibTb( lib_id )
+	end if
+
+end function
+
+'':::::
+sub fbSetGccLib _
+	( _
+		byval lib_id as GCC_LIB, _
+		byref lib_name as string _
+	)
+
+	gccLibTb( lib_id ) = lib_name
+
+end sub
+
+'' :::::
+function fbFindGccLib _
+	( _
+		byval lib_id as GCC_LIB _
+	) as string
+
+'' only query gcc if the host is linux or freebsd
+#if defined(TARGET_LINUX) or defined(TARGET_FREEBSD)
+
+	dim as string file_loc, path
+	dim as integer ff = any 
+
+	function = ""
 	
-	dim as string file_loc, lib_in = lib_name
+
+	path = fbFindBinFile( "gcc" )
+	if( len( path ) = 0 ) then
+		exit function
+	end if		
+
+	path += " -m32 -print-file-name=" 
+	path += *gccLibFileNameTb( lib_id )
 	
-#if defined(__FB_LINUX__) or defined(__FB_FREEBSD__)
-	
-	dim as integer ff = freefile
-	
-	if( open pipe( "gcc -m32 -print-file-name=" & lib_in, for input, as ff ) <> 0 ) then
+	ff = freefile
+	if( open pipe( path, for input, as ff ) <> 0 ) then
+		errReportEx( FB_ERRMSG_FILENOTFOUND, *gccLibFileNameTb( lib_id ), -1 )
 		exit function
 	end if
 	
@@ -999,16 +1051,17 @@ function fbGetGccLib _
 	dim as string short_loc = hStripPath( file_loc )
 	
 	if( file_loc = short_loc ) then
+		errReportEx( FB_ERRMSG_FILENOTFOUND, *gccLibFileNameTb( lib_id ), -1 )
 		exit function
 	end if
 	
-#else
-	
-	file_loc = fbGetPath( FB_PATH_LIB ) + FB_HOST_PATHDIV + lib_in
-	
-#endif	
-	
 	function = file_loc
+
+#else
+
+	function = fbGetPath( FB_PATH_LIB ) + FB_HOST_PATHDIV + *gccLibFileNameTb( lib_id )
+
+#endif
 	
 end function
 

@@ -20,6 +20,7 @@ Version 0.18.4 Beta:
 - Statements can now be written directly after multi-line ELSE/ELSEIFs, like in QB (counting_pine)
 - fb.GFX_HIGH_PRIORITY flag for SCREEN/SCREENRES (jeffm)
 - fb.GET_HIGH_PRIORITY option for SCREENCONTROL (jeffm)
+- split bfd.bi by version and add support for binutils 2.18 (DrV)
 
 [fixed]
 - lang qb: SLEEP with no arguments not handled correctly in gfx modes (jeffm)
