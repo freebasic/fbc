@@ -40,6 +40,7 @@ src/compiler/ast-node-uop.bas
 src/compiler/ast-node-var.bas
 src/compiler/ast-optimize.bas
 src/compiler/ast.bas
+src/compiler/c-objinfo.c
 src/compiler/clist.bas
 src/compiler/configure
 src/compiler/configure.ac
@@ -70,6 +71,8 @@ src/compiler/inc/dstr.bi
 src/compiler/inc/emit.bi
 src/compiler/inc/emitdbg.bi
 src/compiler/inc/error.bi
+src/compiler/inc/fb-bfd-bridge.bi
+src/compiler/inc/fb-obj.bi
 src/compiler/inc/fb.bi
 src/compiler/inc/fbc.bi
 src/compiler/inc/fbint.bi
