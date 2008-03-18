@@ -41,6 +41,7 @@ install()
 	cp -ru inc/* "$INSTALLDIR"/include/freebasic/ && \
 	gzip -c docs/fbc.1 > "$INSTALLDIR"/share/man/man1/fbc.1.gz && \
 	cp fbc "$INSTALLDIR"/bin/ && \
+	chmod a+x "$INSTALLDIR"/bin/fbc && \
 	i_success_msg
 }
 
