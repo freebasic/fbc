@@ -188,11 +188,11 @@ int fb_DevComOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
 
     if( port > 0 )
     {
-    	i = sprintf( achDev, "COM%u:", port );
+    	i = sprintf( achDev, "COM%u:", (int)port );
     }
     else
     {
-    	i = (int)(strchr( filename, ':' ) - filename);
+    	i = (strchr( filename, ':' ) - filename);
     	strncpy( achDev, filename, i );
     }
     achDev[i] = 0;
@@ -429,7 +429,7 @@ int fb_DevSerialSetWidth( const char *pszDevice, int width, int default_width )
     if( !fb_DevComTestProtocolEx( NULL, pszDevice, strlen(pszDevice), &port ) )
         return 0;
 
-    i = sprintf( achDev, "COM%u:", port );
+    i = sprintf( achDev, "COM%u:", (int)port );
     achDev[i] = 0;
 
     /* Test all printers. */

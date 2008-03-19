@@ -171,7 +171,7 @@ static void comm_handler_irq_5 ( void );
 static void comm_handler_irq_6 ( void );
 static void comm_handler_irq_7 ( void );
 static int comm_init_irq( irq_props_t *ip );
-static int comm_exit_irq( irq_props_t *ip );
+static void comm_exit_irq( irq_props_t *ip );
 #define ENABLE() enable()
 #define DISABLE() disable()
 
@@ -192,15 +192,15 @@ int comm_getc( int com_num );
 int comm_bytes_remaining( int com_num );
 
 /* local state */
-static comm_init_count = 0;
+static int comm_init_count = 0;
 
 #ifndef FB_MANAGED_IRQ
 static irq_props_t irq_props[IRQ_COUNT] = {
-	{ 0, 0, 0, 3, 0xb, comm_handler_irq_3, 0, 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 4, 0xc, comm_handler_irq_4, 0, 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 5, 0xd, comm_handler_irq_5, 0, 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 6, 0xe, comm_handler_irq_6, 0, 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 7, 0xf, comm_handler_irq_7, 0, 0, 0, 0, 0, 0 }
+	{ 0, 0, 0, 3, 0xb, comm_handler_irq_3 },
+	{ 0, 0, 0, 4, 0xc, comm_handler_irq_4 },
+	{ 0, 0, 0, 5, 0xd, comm_handler_irq_5 },
+	{ 0, 0, 0, 6, 0xe, comm_handler_irq_6 },
+	{ 0, 0, 0, 7, 0xf, comm_handler_irq_7 }
 };
 #else
 static irq_props_t irq_props[IRQ_COUNT] = {
@@ -233,10 +233,14 @@ static inline unsigned int next_pow2( unsigned int n )
 }
 
 /*:::::*/
-static int BUFFER_reset( buffer_t * buf )
+static void BUFFER_reset( buffer_t * buf )
 {
-	memset( buf->data, 0, buf->size);
-	buf->head = buf->tail = buf->length = 0;
+	if( buf )
+	{
+		if( buf->data && buf->size )
+			memset( buf->data, 0, buf->size);
+		buf->head = buf->tail = buf->length = 0;
+	}
 }
 
 /*:::::*/
@@ -253,7 +257,7 @@ static int BUFFER_alloc( buffer_t * buf, int size )
 		fb_dos_lock_data( buf->data, buf->size);
 	}
 
-	buf->head = buf->tail = buf->length = 0;
+	BUFFER_reset( buf );
 
 	/* TRUE = success */
 	return ( buf->size != 0 ); 
@@ -360,6 +364,8 @@ static int UART_set_baud( unsigned int baseaddr, int baud )
 	tmp = inportb( baseaddr + UART_LCR );
 	tmp &= ~LCR_DLAB;
 	outportb( baseaddr + UART_LCR, tmp );
+
+	return( TRUE );
 }
 
 /*:::::*/
@@ -625,7 +631,7 @@ static int comm_init_irq( irq_props_t *ip )
 }
 
 /*:::::*/
-static int comm_exit_irq( irq_props_t *ip )
+static void comm_exit_irq( irq_props_t *ip )
 {
 	_go32_dpmi_set_real_mode_interrupt_vector (ip->intnum, &ip->old_rmhandler);
 	_go32_dpmi_free_real_mode_callback (&ip->new_rmhandler);
@@ -671,7 +677,7 @@ static int comm_init( int com_num, unsigned int baseaddr, int irq )
 	for( i = 0; i < 17; i++ )
 	{
 		tmp = inportb( cp->baseaddr + UART_IIR );
-		if( tmp & 0x38 == 0 )
+		if( (tmp & 0x38) == 0 )
 			break;
 		tmp = inportb( cp->baseaddr + UART_RBR );
 	}
@@ -744,7 +750,7 @@ static int comm_exit( int com_num )
 {
 	comm_props_t *cp;
 	irq_props_t *ip;
-	int tmp, irq, i;
+	int tmp, i;
 
 	if( com_num < 1 || com_num > MAX_COMM )
 		return FALSE;
@@ -817,7 +823,7 @@ int comm_open( int com_num,
 	int txbufsize, int rxbufsize, int flags, int irq )
 {
 	comm_props_t *cp;
-	int tmp, ret;
+	int ret;
 
 	if( com_num < 1 || com_num > MAX_COMM )
 		return FALSE;
@@ -879,7 +885,7 @@ int comm_open( int com_num,
 int comm_close( int com_num )
 {
 	comm_props_t *cp;
-	int tmp, ret;
+	int ret;
 
 	if( com_num < 1 || com_num > MAX_COMM )
 		return FALSE;
