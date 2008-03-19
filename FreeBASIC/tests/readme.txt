@@ -3,19 +3,10 @@ FreeBASIC Tests
 
 This is the directory for FreeBASIC compiler and runtime tests.
 
-Requirements - Windows / Linux
-------------------------------
-   - FreeBASIC Compiler 0.17 or above
-   - make, sh, find, xargs, grep, sed, cat
-   - cunit (version?)
-
-Requirements - Dos
-------------------
-   - FreeBASIC Compiler 0.17 or above
-   - make, sh, find, xargs, grep, sed, cat
-
-fbcu/cunit is not necessary as there is an alternative method to
-build the tests described in *Making the Tests*.
+Requirements - Windows / Linux / Dos
+------------------------------------
+   - FreeBASIC Compiler 0.18.4 or above
+   - make, sh, find, xargs, grep, sed, cat, rm
 
 Summary
 -------
@@ -54,12 +45,12 @@ for any failed tests.
 
 Use 'make log-tests ALLOW_CUNIT=1' to build the cunit tests along
 with the log-tests.  ALLOW_CUNIT=1 is slower than actually linking
-with the fbcu/cunit library, but will allow the tests to be run on 
-DOS systems.  (No support for cunit on DOS as of this writing)
+with the fbcu/cunit library, but should allow tests to be run
+without needing the libcunit.a library.
 
 When 'ALLOW_CUNIT=1' is used, fbcu/fake/fbcu.bi is used as a
 replacement for fbcu/include/fbcu.bi.  This alternate include file
-is necessary for building the tests under DOS.
+may be needed for building the tests under DOS.
 
 Use 'make failed-tests' to rebuild just those tests that failed in
 the last testing session using 'make log-tests'.
@@ -79,6 +70,9 @@ set of -lang tests.
 
 Options
 -------
+OS=DOS
+   Indicate that test suite is being built under a djgpp environment
+
 FBC=/path/fbc
    Specify the location of the fbc compiler
 
@@ -215,3 +209,50 @@ failed.log
    information on a specific failed test, view the '.log' saved in
    the same directory as the test file.
 
+
+How to make libcunit.a on DOS
+-----------------------------
+I had some trouble using the usual configure/make scipts and wrote
+this makefile for dos to compile the cunit library.
+
+## get and unzip CUnit-2.1-0-src.zip
+##
+## place this makefile in Cunit-2.1-0/cunit
+## and save as 'makefile.dos'.  
+## Then build libcunit.a by running
+##   'make -f makefile.dos'
+##
+## Finally, 
+##    copy libcunit.a to FreeBASIC/lib/dos
+
+RM = rm
+AR = ar
+GCC = gcc
+
+SRCS := Sources/Automated/Automated.c
+SRCS += Sources/Basic/Basic.c
+SRCS += Sources/Console/Console.c
+SRCS += Sources/Framework/CUError.c
+SRCS += Sources/Framework/MyMem.c
+SRCS += Sources/Framework/TestDB.c
+SRCS += Sources/Framework/TestRun.c
+SRCS += Sources/Framework/Util.c
+
+OBJS := $(patsubst %.c,%.o,$(SRCS))
+
+LIBNAME = libcunit.a
+
+%.o : %.c
+	$(GCC) -c $< -I./Headers -o $@
+
+all: $(LIBNAME)
+
+$(LIBNAME): $(OBJS)
+	$(AR) cru $(LIBNAME) $(OBJS)
+
+.PHONY: clean
+clean:
+	$(RM) -f $(OBJS)
+	$(RM) -f $(LIBNAME)
+
+## EOF
