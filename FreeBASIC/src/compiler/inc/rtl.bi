@@ -1317,8 +1317,7 @@ declare function rtlFileInput _
 
 declare function rtlFileInputGet _
 	( _
-		byval dstexpr as ASTNODE ptr, _
-		byval islast as integer _
+		byval dstexpr as ASTNODE ptr _
 	) as integer
 
 declare function rtlFileLock _

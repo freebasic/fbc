@@ -147,12 +147,11 @@ static void hSkipDelimiter
 }
 
 /*:::::*/
-void fb_FileInputNextTokenWstrEx
+void fb_FileInputNextTokenWstr
 	(
 		FB_WCHAR *buffer,
 		int max_chars,
-		int is_string,
-		int is_last
+		int is_string
 	)
 {
     int len, isquote, skipdelim;
@@ -214,7 +213,7 @@ void fb_FileInputNextTokenWstrEx
 		case _LC(' '):
 			if( !isquote )
 			{
-				if( !is_string || !is_last )
+				if( !is_string )
 				{
 					goto exit;
 				}
@@ -239,16 +238,5 @@ exit:
 	/* skip comma or newline */
 	if( skipdelim )
 		hSkipDelimiter( ctx, c );
-}
-
-/*:::::*/
-void fb_FileInputNextTokenWstr
-	(
-		FB_WCHAR *buffer,
-		int max_chars,
-		int is_string
-	)
-{
-	fb_FileInputNextTokenWstrEx( buffer, max_chars, is_string, FALSE );
 }
 

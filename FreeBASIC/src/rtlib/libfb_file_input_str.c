@@ -40,17 +40,13 @@
 #include <stdlib.h>
 #include "fb.h"
 
-int fb_FileInputNextTokenEx ( char *buffer, int max_chars,
-							  int is_string, int is_last, int *isfp );
-
-
 /*:::::*/
-FBCALL int fb_InputString( void *dst, int strlen, int is_last, int fillrem )
+FBCALL int fb_InputString( void *dst, int strlen, int fillrem )
 {
     char buffer[FB_INPUT_MAXSTRINGLEN+1];
     int len, isfp;
 
-	len = fb_FileInputNextTokenEx( buffer, FB_INPUT_MAXSTRINGLEN, TRUE, is_last, &isfp );
+	len = fb_FileInputNextToken( buffer, FB_INPUT_MAXSTRINGLEN, TRUE, &isfp );
 
 	fb_StrAssign( dst, strlen, buffer, 0, fillrem );
 

@@ -146,12 +146,11 @@ static void hSkipDelimiter
 }
 
 /*:::::*/
-int fb_FileInputNextTokenEx
+int fb_FileInputNextToken
 	(
 		char *buffer,
 		int max_chars,
 		int is_string,
-		int is_last,
 		int *isfp
 	)
 {
@@ -218,6 +217,19 @@ int fb_FileInputNextTokenEx
 
 		case 'd':
 		case 'D':
+			/* NOTE: if exponent letter is d|D, and
+			 * is_string == FALSE, then convert the d|D
+			 * to an e|E. strtod() which
+			 * will later be used to convert the string
+			 * to float won't accept d|D anywhere but
+			 * on windows. (jeffm)
+			 */
+			if( !hasamp && !is_string )
+			{
+				++c;
+			}
+			/* fall through */
+
 		case 'e':
 		case 'E':
 		case '.':
@@ -231,7 +243,7 @@ int fb_FileInputNextTokenEx
 		case ' ':
 			if( !isquote )
 			{
-				if( !is_string || !is_last )
+				if( !is_string )
 				{
 					goto exit;
 				}
@@ -260,18 +272,3 @@ exit:
 
 	return len;
 }
-
-/*:::::*/
-int fb_FileInputNextToken
-	(
-		char *buffer,
-		int max_chars,
-		int is_string,
-		int *isfp
-	)
-{
-
-	return fb_FileInputNextTokenEx( buffer, max_chars, is_string, FALSE, isfp );
-
-}
-

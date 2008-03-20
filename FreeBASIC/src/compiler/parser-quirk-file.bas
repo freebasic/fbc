@@ -478,7 +478,7 @@ function cInputStmt _
 				end if
 			end if
 
-			if( rtlFileInputGet( dstexpr, islast ) = FALSE ) then
+			if( rtlFileInputGet( dstexpr ) = FALSE ) then
 				exit function
 			end if
 

@@ -915,19 +915,16 @@
 	 			) _
 	 		} _
 		), _
-		/' fb_InputString ( x as any, byval strlen as integer, byval islast as integer,
+		/' fb_InputString ( x as any, byval strlen as integer, 
 							byval fillrem as integer = 1 ) as void '/ _
 		( _
 			@FB_RTL_INPUTSTR, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			4, _
+			3, _
 	 		{ _
 	 			( _
 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -937,19 +934,16 @@
 	 			) _
 	 		} _
 		), _
-		/' fb_InputWstr ( byval dst as wstring ptr, byval maxchars as integer,
-						  byval islast as integer ) as integer '/ _
+		/' fb_InputWstr ( byval dst as wstring ptr, 
+						  byval maxchars as integer ) as integer '/ _
 		( _
 			@FB_RTL_INPUTWSTR, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			3, _
+			2, _
 	 		{ _
 	 			( _
 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -2066,8 +2060,7 @@ end function
 '':::::
 function rtlFileInputGet _
 	( _
-		byval dstexpr as ASTNODE ptr, _
-		byval islast as integer _
+		byval dstexpr as ASTNODE ptr _
 	) as integer
 
     dim as ASTNODE ptr proc = any
@@ -2083,11 +2076,11 @@ function rtlFileInputGet _
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 		f = PROCLOOKUP( INPUTSTR )
-		args = 4
+		args = 3
 
 	case FB_DATATYPE_WCHAR
 		f = PROCLOOKUP( INPUTWSTR )
-		args = 3
+		args = 2
 
 	case FB_DATATYPE_BYTE
 		f = PROCLOOKUP( INPUTBYTE )
@@ -2156,12 +2149,7 @@ function rtlFileInputGet _
  			exit function
  		end if
 
-		'' byval islast as integer
-		if( astNewARG( proc, astNewCONSTi( islast, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
- 			exit function
- 		end if
-
-		if( args > 3 ) then
+		if( args > 2 ) then
 			'' byval fillrem as integer
 			if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     			exit function
