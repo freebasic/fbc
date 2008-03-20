@@ -1191,7 +1191,7 @@ function is_rootpath( byref path as zstring ptr ) as integer
 	end if
 	if( (path[0] = asc("/")) or (path[0] = asc(RSLASH)) ) then
 		'' UNC?
-		if( (path[1] = asc("/")) or (path[0] = asc(RSLASH)) ) then
+		if( (path[1] = asc("/")) or (path[1] = asc(RSLASH)) ) then
 			function = TRUE
 		else
 			'' quirky drive letters...
@@ -1296,10 +1296,10 @@ function solve_path( byval path as zstring ptr ) as integer
 
 			else
 				'' push a component on the stack
-				stk += 1
-				cidx(stk) = r
 				path[w] = c
 				w += 1
+				stk += 1
+				cidx(stk) = w
 
 			end if
 
@@ -1385,13 +1385,13 @@ function fbIncludeFile _
 		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + incfile + QUOTE )
 		return errFatal( )
 	end if
-/'
+
  	'' solve out the .. and .
 	if( solve_path( incfile ) = FALSE ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + incfile + QUOTE )
 		return errFatal( )
 	end if
-'/
+
 	'' #include ONCE
 	if( isonce ) then
         '' we should respect the path
