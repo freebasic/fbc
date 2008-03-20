@@ -8,8 +8,8 @@ namespace fbc_tests.file.input_large_int
 	const BIN_COUNT = 64
 	const MISC_COUNT = 6 + 4 + 4 + 4*4 + 4
 
-	const COUNT = DEC_COUNT * 4 + 2 + _
-				  (HEX_COUNT + OCT_COUNT + BIN_COUNT) * 2 + _
+	const COUNT = DEC_COUNT * 4 + 4 + _
+				  HEX_COUNT * 4 + (OCT_COUNT + BIN_COUNT) * 2 + _
 				  MISC_COUNT
 
 	dim shared as longint check(0 to COUNT-1)
@@ -24,7 +24,7 @@ namespace fbc_tests.file.input_large_int
 		1, 7, 15, 15 }
 
 #if 0
-	sub generate_csv
+	sub generate_csv constructor
 		
 		dim n as longint
 		
@@ -37,11 +37,15 @@ namespace fbc_tests.file.input_large_int
 				n *= 10
 			next i
 			write #1, n, -n
+
+			print #1,  "9223372036854775807" '' 1ull shl 63 - 1
+			print #1, "-9223372036854775808" '' -1ll shl 63
 			
 			''hex
 			n = 1
 			for i as integer = 1 to HEX_COUNT
-				print #1, "&h" & hex(n) & ", &h" & hex(n shl 4 - 1)
+				print #1, "&h" & hex(n) & ", &h" & hex(n shl 3 - 1)
+				print #1, "&h" & hex(n shl 3) & ", &h" & hex(n shl 4 - 1)
 				n shl= 4
 			next i
 			
@@ -93,9 +97,14 @@ namespace fbc_tests.file.input_large_int
 		next i
 		check(p) = n:   p += 1
 		check(p) = -n:  p += 1
+
+		check(p) = 1ull shl 63 - 1:  p += 1
+		check(p) = -1ll shl 63:      p += 1
 		
 		n = 1: for i as integer = 1 to HEX_COUNT
 			check(p) = n:           p += 1
+			check(p) = n shl 3 - 1: p += 1
+			check(p) = n shl 3:     p += 1
 			check(p) = n shl 4 - 1: p += 1
 			n shl= 4
 		next i
@@ -138,9 +147,6 @@ namespace fbc_tests.file.input_large_int
 		close #1
 #endmacro
 
-#if 0
-		generate_csv()
-#endif
 		generate_check()
 
 		TYPE_TEST(     byte )

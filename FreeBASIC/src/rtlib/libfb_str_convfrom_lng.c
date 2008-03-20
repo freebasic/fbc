@@ -80,7 +80,9 @@ FBCALL long long fb_hStr2Longint( char *src, int len )
 		}
 	}
 
-	return strtoll( p, NULL, radix );
+	/* strtoll() saturates values outside [-2^63, 2^63)
+	so use strtoull() instead */
+	return (long long)strtoull( p, NULL, radix );
 }
 
 /*:::::*/
