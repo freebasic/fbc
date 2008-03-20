@@ -1178,21 +1178,26 @@ end function
 
 ''::::
 function is_rootpath( byref path as zstring ptr ) as integer
+
+	function = FALSE
+
 	if( path = NULL ) then
 		exit function
 	end if
 
 #if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
-	if( path[0] = NULL ) then
-		exit function
-	end if
 	if( path[1] = asc(":") ) then
 		function = TRUE
 	end if
 	if( (path[0] = asc("/")) or (path[0] = asc(RSLASH)) ) then
-		'' quirky drive letters...
-		*path = left( hEnvDir( ), 1 ) + ":" + *path
-		function = TRUE
+		'' UNC?
+		if( (path[1] = asc("/")) or (path[0] = asc(RSLASH)) ) then
+			function = TRUE
+		else
+			'' quirky drive letters...
+			*path = left( hEnvDir( ), 1 ) + ":" + *path
+			function = TRUE
+		end if
 	end if
 #else
 	function = (path[0] = asc("/"))
@@ -1200,64 +1205,124 @@ function is_rootpath( byref path as zstring ptr ) as integer
 end function
 
 ''::::
+function get_rootpath_len( byval path as zstring ptr ) as integer
+
+	'' returns number of characters in the root_path
+	'' assuming that 'path' is already been made a
+	'' root path.
+
+	dim i as integer = any
+
+	function = 0
+
+	if( path[0] = NULL ) then
+		exit function
+	end if
+
+	'' {/}
+	function = 1
+
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+
+	'' {d:/}
+	if( path[1] = asc(":") ) then
+		function = 3
+	end if
+	if( (path[0] = asc("/")) or (path[0] = asc(RSLASH)) ) then
+		'' UNC?
+		'' {//}server/share/
+		if( (path[1] = asc("/")) or (path[1] = asc(RSLASH)) ) then
+			function = 2
+		end if
+
+	end if
+
+#endif
+
+end function
+
+''::::
 function solve_path( byval path as zstring ptr ) as integer
 
 	'' solves a path to its lowest common denominator...
-
 	'' c:\foo\bar\..\baz => c:\foo\baz, etc
-	static as string root_spec
-#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
-	root_spec = ucase(left(*path, 2) + "/")
-#else
-	root_spec = "/"
-#endif
+	'' \\server\share\..\.\share2 => \\server\share2, etc
 
-	dim as integer str_len = len(*path), c = 0, s = 0, i = any
-    static as zstring * 256 accum(255)
+	static cidx(0 to FB_MAXPATHLEN \ 2) as integer = any
+	dim as integer stk = any '' # components on the stack
+	dim as integer s = any   '' starting index
+	dim as integer n = any   '' # of chars in current component
+	dim as integer d = any   '' # of .'s in the current component
+	dim as integer r = any   '' index of char we are reading
+	dim as integer w = any   '' index of char we are writing
+	dim as integer c = any   '' current character
 
-	for i = 0 to str_len-1
+	'' set-up stack and don't touch the root path 
+	'' (root path is not on the stack)
 
-		if( (path[i] <> asc("/")) and (path[i] <> asc(RSLASH)) ) then
-			accum(s)[c] = path[i]
-			c += 1
-		else
-			accum(s)[c] = 0
-			if( accum(s) = "." ) then
-				accum(s) = ""
-			elseif( accum(s) = ".." ) then
-				accum(s) = ""
-				if( s > 0 ) then
-					s -= 1
-					accum(s) = ""
-				else
-					exit function
+	stk = 0
+	s = get_rootpath_len( path )
+	cidx(stk) = s
+	w = s
+	n = 0
+	d = 0
+
+	'' scan through the rest of the path
+	for r = s to len( *path ) - 1
+
+		c = path[r]
+
+		'' ('/' | '\')?
+		if( (c = asc("/")) or (c = asc(RSLASH)) ) then
+
+			'' check component
+
+			'' "//"?
+			if( n = 0 ) then
+				'' ignore
+
+			'' "/./"?
+			elseif( (d = 1) and (n = 1) ) then
+				'' ignore
+				w -= 1
+
+			'' "/../"?
+			elseif( (d = 2) and (n = 2) ) then
+				'' pop a component from the stack
+				if( stk ) then
+					stk -= 1
 				end if
+				w = cidx( stk )
+
 			else
-				s += 1
+				'' push a component on the stack
+				stk += 1
+				cidx(stk) = r
+				path[w] = c
+				w += 1
+
 			end if
-			c = 0
-		end if
-	next
-	accum(s)[c] = 0
-	s += 1
 
-	dim as integer j = 0, k = 0
-	for i = 0 to s-1
-		do while accum(i)[j]
-			path[k] = accum(i)[j]
-			j += 1: k += 1
-		loop
-		j = 0
-		if( i < s-1 ) then
-			path[k] = asc("/")
-			k += 1
-		end if
-	next
-	path[k] = 0
+			'' reset counters
+			n = 0
+			d = 0
 
-	if(ucase(left(*path, len(root_spec))) <> root_spec) then
-		*path = root_spec + *path
-	end if
+		else
+			'' '.'?
+			if( c = asc(".") ) then
+				d += 1
+			end if
+
+			'' add char
+			n += 1
+			path[w] = c
+			w += 1
+
+		end if
+
+	next
+
+	path[w] = 0
 
 	function = TRUE
 

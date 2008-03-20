@@ -63,6 +63,7 @@ Version 0.18.4 Beta:
 - #1905725 - wrong integer division code when used with implicit/explicit pointers plus constants (v1c)
 - #1906004 - fb_PageSet() was testing page requests against console limits, even in gfx mode (cha0s)
 - #1909925 - const qualifier with EXTERN should not have been expecting an initializer (jeffm)
+- #1919630 - fbc wasn't handling UNC paths on windows (jeffm)
 
 
 Version 0.18.3 Beta:
