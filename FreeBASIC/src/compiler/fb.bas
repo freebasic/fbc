@@ -1260,8 +1260,6 @@ function solve_path( byval path as zstring ptr ) as integer
 	'' set-up stack and don't touch the root path 
 	'' (root path is not on the stack)
 
-	print "BEFORE: "; *path
-
 	stk = 0
 	s = get_rootpath_len( path )
 	cidx(stk) = s
@@ -1325,8 +1323,6 @@ function solve_path( byval path as zstring ptr ) as integer
 	next
 
 	path[w] = 0
-
-	print "AFTER: "; *path
 
 	function = TRUE
 
