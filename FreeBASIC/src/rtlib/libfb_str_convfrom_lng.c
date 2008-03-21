@@ -103,9 +103,3 @@ FBCALL long long fb_VALLNG ( FBSTRING *str )
 
 	return val;
 }
-
-/*!!!REMOVEME!!!*/
-FBCALL long long fb_VAL64 ( FBSTRING *str )
-{
-	return fb_VALLNG( str );
-}
