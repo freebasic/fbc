@@ -1022,7 +1022,7 @@ function fbFindGccLib _
 	) as string
 
 '' only query gcc if the host is linux or freebsd
-#if defined(TARGET_LINUX) or defined(TARGET_FREEBSD)
+#if defined(__FB_LINUX__) or defined(__FB_FREEBSD__)
 
 	dim as string file_loc, path
 	dim as integer ff = any 
@@ -1211,8 +1211,6 @@ function get_rootpath_len( byval path as zstring ptr ) as integer
 	'' assuming that 'path' is already been made a
 	'' root path.
 
-	dim i as integer = any
-
 	function = 0
 
 	if( path[0] = NULL ) then
@@ -1295,9 +1293,11 @@ function solve_path( byval path as zstring ptr ) as integer
 				w = cidx( stk )
 
 			else
-				'' push a component on the stack
+				'' add char
 				path[w] = c
 				w += 1
+
+				'' push a component on the stack
 				stk += 1
 				cidx(stk) = w
 
