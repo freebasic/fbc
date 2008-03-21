@@ -1956,10 +1956,15 @@ function symbCheckConstAssign _
 	if( (typeGetConstMask( ldtype ) or typeGetConstMask( rdtype )) = 0 ) then
 		return TRUE
 	end if
+
+	'' vararg? they aren't type safe anyway
+	if( mode = FB_PARAMMODE_VARARG ) then
+		return TRUE
+	end if
 	
 	dim as integer l_cnt = typeGetPtrCnt( ldtype ), r_cnt = typeGetPtrCnt( rdtype ), start_at = any
 	
-	'' any ptr const on te right?
+	'' any ptr const on the right?
 	if( typeGetConstMask( rdtype ) and typeIsPtr( rdtype ) ) then
 		
 		'' types and ptr depth HAVE to match
