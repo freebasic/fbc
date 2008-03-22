@@ -4,8 +4,7 @@ fblogo.xpm
 install.sh
 migrating.txt
 readme.txt
-bin/linux/elf_i386.x
-docs/fbc.1.gz
+docs/fbc.1
 docs/gpl.txt
 docs/lgpl.txt
 examples/classes/iterator.bas

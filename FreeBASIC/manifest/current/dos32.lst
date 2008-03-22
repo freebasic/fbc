@@ -6,7 +6,6 @@ bin/dos/ar.exe
 bin/dos/as.exe
 bin/dos/gdb.exe
 bin/dos/gprof.exe
-bin/dos/i386go32.x
 bin/dos/ld.exe
 docs/fbc.1
 docs/gpl.txt

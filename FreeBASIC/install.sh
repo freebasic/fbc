@@ -5,18 +5,24 @@ usage()
 {
 	cat <<EOF
 	
-Usage: ./install.sh -i|-u [dest]
+Usage: 
+./install.sh -i
+./install.sh -u [dest]
 
--i	Install FreeBASIC in dest/
--u	Uninstall FreeBASIC from dest/
-dest	Destination directory (defaults to /usr)
+-i	Install FreeBASIC at the compiler configured prefix
+-u	Uninstall FreeBASIC from the compiler configured prefix, unless dest is 
+specified, then PREFIX=dest.
 
-Installation creates dest/lib/freebasic and /dest/include/freebasic, where 
+Installation creates PREFIX/lib/freebasic and PREFIX/include/freebasic, where 
 library and header files are copied to, respectively. 
-The man page is copied to /usr/share/man/man1. 
+
+If necessary, PREFIX/bin will be created. A copy (not a symlink) of fbc will 
+be placed at PREFIX/bin
+
+The man page is copied to PREFIX/share/man/man1. 
 
 Uninstallation removes these directories, and their contents, in addition 
-to the man file.
+to the man file and fbc.
 
 EOF
 	exit 1
@@ -68,11 +74,15 @@ case "$1" in
 	*)		usage;;
 esac
 
+INSTALLDIR=`./fbc -version | grep prefix | cut -c24- -`
 if [ "$2" != "" ]; then
-	INSTALLDIR="$2"
-else
-	INSTALLDIR=`./fbc -version | grep prefix | cut -c24- -`
+	if [ "$ACTION" = "install" ]; then
+		echo "WARNING: The path is assumed from ./fbc, setting installation path to ["$2"] is being ignored..."
+	else
+		INSTALLDIR="$2"
+	fi
 fi
+
 
 if [ ! -d $INSTALLDIR ]; then
 	echo
