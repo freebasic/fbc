@@ -10,7 +10,7 @@ Version 0.18.4 Beta:
 - bug #1881320 - global operators defined within type body have to be disallowed until the feature is properly implemented (cha0s)
 - Linux/BSD file structure is now a lot more unix-friendly (cha0s)
 - INPUT no longer delimits with space/tab for strings (counting_pine)
-- ignore const correctness when passing arguments to vararg parameters, varargs aren't type safe anyway (jeffm)
+- ignore const correctness when passing to varargs, they aren't type safe anyway (jeffm)
 
 [added]
 - INSTRREV - feature request #1244607 (jeffm)

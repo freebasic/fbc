@@ -63,18 +63,27 @@ header in ./inc.  It may be necessary to disable this feature to debug and/or
 use fbc with a broader range of binutils, debuggers, and platforms.
 
 There are a few makefile options to specify how fbc handles the BFD interface.
-( Note: they are ignored if --disable-objinfo was given durring configure. )
+( Note: they are ignored if --disable-objinfo was given during the 
+configuration step. )
 
-By default, fbc will try to use the system's bfd.h header and libbfd.a and
-link with a special fb-to-c bridge module named c-objinfo.c.  To use fb's
-own bfd.bi headers ( and not bfd.h or c-objinfo.c) specify the following 
-option:
+By default, fbc will compile a special fb-to-c bridge module named 
+c-objinfo.c. This very thin wrapper around some BFD library calls will try to 
+include the system's bfd.h header and link with whatever BFD library is 
+installed. To use fb's own bfd.bi headers (and not bfd.h or c-objinfo.c) 
+specify the following option:
 
 	FB_BFD=1
 
-If FB_BFD=1 was passed to the makefile, fbc will default to using a bfd.bi
-header for binutils 2.17.  To specify an alternate binutils version,
-pass the following option to the makefile where 'nnn' is the binutils version
-number (e.g. 216, 217, 218, ... )
+If FB_BFD=1 was passed to make, fbc will default to using a bfd.bi header for 
+binutils 2.17.  To specify an alternate binutils version, pass the following 
+option to the makefile where 'nnn' is the binutils version number (e.g. 216, 
+217, 218, ... )
 
 	BFD_VER=nnn
+
+Take care when linking to the BFD library.  Newer versions are licensed under 
+GNU GPL version 3 (or later) and can not be legally combined with FreeBASIC's 
+compiler source which is licensed under GNU GPL version 2 (or later).  
+Statically linking to libbfd.a will likely require that it be no greater than
+version 2.17.  However, there are no known licesning conflicts  if the 
+FreeBASIC compiler is linked to a shared version of the BFD library.

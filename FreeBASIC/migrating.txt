@@ -4,35 +4,48 @@ FreeBASIC Dialects
    change the language compatibility mode for different dialects of the 
    basic language.
 
-      +------------+----------------------------------+
-      |-lang option|description                       |
-      |fb          |FreeBASIC compatibility (default) |
-      |qb          |qbasic compatibility              |
-      |deprecated  |previous fbc version compatibility|
-      +------------+----------------------------------+
+   Starting with version 0.18.3b the -lang qb dialect has been further 
+   restricted to only allow what would have been allowed in QuickBASIC.
 
-   The -lang option was needed to allow FB to support object-orientation 
-   and other features in the future, without crippling the QuickBASIC 
-   support or breaking compatibility with old FB sources, and without 
-   making FB difficult to maintain with many different versions of very 
-   similiar packages. The QuickBASIC support can continue to be improved, 
-   if needed, without breaking the sources written specifically for FB.
+      +------------+----------------------------------------------------------------------------+
+      |-lang option|description                                                                 |
+      |fb          |FreeBASIC compatibility (default)                                           |
+      |qb          |qbasic compatibility                                                        |
+      |fblite      |FreeBASIC language compatibility, with a more QBASIC-compatible coding style|
+      |deprecated  |previous fbc version compatibility                                          |
+      +------------+----------------------------------------------------------------------------+
+
+   The -lang option was needed to allow FreeBASIC to support 
+   object-orientation and other features in the future, without crippling 
+   the QuickBASIC support or breaking compatibility with old FreeBASIC 
+   sources, and without making FreeBASIC difficult to maintain with many 
+   different versions of very similar packages. The QuickBASIC support can 
+   continue to be improved, if needed, without breaking the sources written 
+   specifically for FreeBASIC.
 
    To compile old GW-BASIC or QuickBASIC/QBasic sources without too many 
    changes, use the -lang qb option on the command-line when running fbc. 
    This option will evolve into a better compatibility with 
    QuickBASIC/QBasic code.
 
-   To compile FreeBASIC 0.16b or below sources, use the -lang deprecated 
+   To compile FreeBASIC sources from 0.16b, use the -lang deprecated 
    option. This option is maintained for compatibility and will not evolve 
    in the future, and it's likely to disappear when FreeBASIC reaches a 
    non-beta release.
+
+   This dialect is designed for programmers who want to access some of FB's 
+   newer features, but want to retain a more QBASIC-friendly programming 
+   style, use the -lang fblite option.  This dialect will not undergo many 
+   significant changes in future, but will continue to be maintained and 
+   supported.
+   This option is also the most compatible with sources that were made 
+   using older versions of FreeBASIC.
 
    It is recommended to use -lang fb for new projects, as new features 
    (object classes, inheritance..) will be added exclusively to this 
    dialect.
 
--lang fb (the default mode)
+   -lang fb (the default mode)
 
    Not supported:
 
@@ -96,9 +109,9 @@ FreeBASIC Dialects
 
    12) numeric labels
       * No comment.
-      
-   13) global symbols with the same name as keywords
-      * Declare them inside a namespace.
+
+   13) global symbols with the same name as keywords 
+      * Declare them inside a namespace. 
 
 -lang deprecated
     
@@ -123,9 +136,18 @@ FreeBASIC Dialects
       * Periods allowed in symbol names make it too difficult and/or 
         ambiguous.
 
+-lang fblite
+    
+   Supported: Anything allowed in the -lang deprecated dialect, but:
+
+   1) Scope blocks
+      * All variables are given procedure scope.  Explicit Scope blocks 
+        may be added later.
+
 -lang qb
 
-   Supported: Everything not supported/allowed in the fb mode, plus..
+   Supported: Everything not supported/allowed in the -lang fb dialect, 
+   plus..
 
    1) Call can be used with forward-referenced functions.
 
@@ -154,12 +176,12 @@ FreeBASIC Dialects
    6) Extern blocks
 
    7) Variable initialization
-      * All variables are moved to the procedure scope (like in QuickBASIC),
-        making initializing local variables too difficult to support.
-        
-   8) Any data type or function not present in QuickBASIC
-      * No BYTE/SHORT/LONGINT/WSTRING, no pointers, no SHL/SHR, 
-        no IMAGECREATE/SCREENRES etc etc etc.
+      * All variables are moved to the procedure scope (like in QuickBASIC
+        ), making initializing local variables too difficult to support.
+
+   8) Any data type or function not present in QuickBASIC 
+      * No BYTE/SHORT/LONGINT/WSTRING, no pointers, no SHL/SHR, no 
+      IMAGECREATE/SCREENRES etc etc etc. 
 
 This file converted from:
    http://www.freebasic.net/wiki/wikka.php?wakka=CompilerDialects
