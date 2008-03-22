@@ -33,11 +33,10 @@ FreeBASIC Dialects
    in the future, and it's likely to disappear when FreeBASIC reaches a 
    non-beta release.
 
-   This dialect is designed for programmers who want to access some of FB's 
-   newer features, but want to retain a more QBASIC-friendly programming 
-   style, use the -lang fblite option.  This dialect will not undergo many 
-   significant changes in future, but will continue to be maintained and 
-   supported.
+   For programmers who want to access some of FB's newer features, but want 
+   to retain a more QBASIC-friendly programming style, use the -lang fblite 
+   option.  This dialect will not undergo significant changes in future, 
+   but will continue to be maintained and supported.
    This option is also the most compatible with sources that were made 
    using older versions of FreeBASIC.
 
