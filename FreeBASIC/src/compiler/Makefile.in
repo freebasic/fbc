@@ -44,6 +44,10 @@ FBC_CFLAGS = -e -c -i $(srcdir) -target @FBC_HOST@ -arch 486 -d ARCH_PREFIX=$(pr
 
 FBC_LFLAGS := -v -target @FBC_HOST@
 
+ifdef LINK_STATIC
+    FBC_LFLAGS += -Wl -static
+endif
+
 ifdef DEBUG
     FBC_CFLAGS += -g
     FBC_LFLAGS += -g

@@ -1021,9 +1021,16 @@ function fbFindGccLib _
 		byval lib_id as GCC_LIB _
 	) as string
 
+    dim as string lib_file = fbGetPath( FB_PATH_LIB ) + FB_HOST_PATHDIV + *gccLibFileNameTb( lib_id )
+    
 '' only query gcc if the host is linux or freebsd
 #if defined(__FB_LINUX__) or defined(__FB_FREEBSD__)
-
+    
+    '' let the ones in lib override if necessary
+    if( hFileExists( lib_file ) ) then
+    	return lib_file
+    end if
+    
 	dim as string file_loc, path
 	dim as integer ff = any 
 
@@ -1059,7 +1066,7 @@ function fbFindGccLib _
 
 #else
 
-	function = fbGetPath( FB_PATH_LIB ) + FB_HOST_PATHDIV + *gccLibFileNameTb( lib_id )
+	function = lib_file
 
 #endif
 	

@@ -34,7 +34,7 @@ const TRAM_ARCH_OPTIONS = "-@ -q -9 {output}"
 const TRAM_NEWLINE = chr( 13, 10 )
 #else
 const TRAM_ARCH_TOOL = "tar"
-const TRAM_ARCH_OPTIONS = "-czf {output} -T {listing}"
+const TRAM_ARCH_OPTIONS = "-hczf {output} -T {listing}"
 const TRAM_NEWLINE = chr( 10 )
 #endif
 
