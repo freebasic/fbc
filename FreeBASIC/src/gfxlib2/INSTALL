@@ -3,6 +3,9 @@ GNU autotools (Autoconf, Automake and co) are needed to build this library.
 If the "configure" script is not present, generate it:
 	$ autoreconf
 
+If a directory for the target platform is not present, then create it:
+	$ mkdir obj/[target-platform]
+
 If the "Makefile" file is not included, generate it:
 	$ cd obj/[target-platform]
 	$ ../../configure
