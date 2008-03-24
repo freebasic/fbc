@@ -63,7 +63,14 @@ function fbObjInfoReadObj _
 	dim as bfd ptr objf = bfd_openr( objName, NULL )
 
 	if( objf = NULL ) then
+#if defined( DEBUG_BFD )
+		print "BFD couldn't open " & *objName
+#endif
 		return FALSE
+	else
+#if defined( DEBUG_BFD )
+		print "BFD opened " & *objName
+#endif
 	end if
 
 	'' dump it
@@ -97,8 +104,11 @@ function fbObjInfoReadLib _
 	do while( path <> NULL )
 
 		libfile = *path->name
-		libfile += $"\" + filename
+		libfile += FB_HOST_PATHDIV + filename
 		if( hFileExists( libfile ) ) then
+#if defined( DEBUG_BFD )
+			print "BFD found library """ & libfile & """"
+#endif
 			exit do
 		end if
 
@@ -114,7 +124,14 @@ function fbObjInfoReadLib _
 	dim as bfd ptr archf = bfd_openr( libfile, NULL )
 
 	if( archf = NULL ) then
+#if defined( DEBUG_BFD )
+		print "BFD couldn't open " & libfile
+#endif
 		return FALSE
+	else
+#if defined( DEBUG_BFD )
+		print "BFD opened " & libfile
+#endif
 	end if
 
 	'' not a valid archive file?
@@ -203,6 +220,9 @@ private function hFillSection _
             	dim as integer lgt = len( *nlib->name )
             	hWriteByte( lgt )
             	hWriteStr( *nlib->name, lgt )
+#if defined( DEBUG_BFD )
+            	print "BFD wrote library: " & *nlib->name
+#endif
             end if
 
 			nlib = listGetNext( nlib )
@@ -223,6 +243,9 @@ private function hFillSection _
             	dim as integer lgt = len( *npath->name )
             	hWriteByte( lgt )
             	hWriteStr( *npath->name, lgt )
+#if defined( DEBUG_BFD )
+            	print "BFD wrote lib path: " & *nlib->name
+#endif
             end if
 
 			npath = listGetNext( npath )
@@ -311,6 +334,9 @@ function fbObjInfoWriteObj _
 
     '' save the contents
     if( (buf <> NULL) and (size > 0) ) then
+#if defined( DEBUG_BFD )
+    	print "BFD saved data"
+#endif
 		bfd_set_section_size( objf, sec, size )
 		bfd_set_section_contents( objf, sec, buf, 0, size )
 		function = TRUE
@@ -343,6 +369,9 @@ function hProcessLibList _
 	  		exit do
 		end if
 
+#if defined( DEBUG_BFD )
+        print "BFD added library """ & *cast( zstring ptr, p ) & """"
+#endif
 		addLib( cast( zstring ptr, p ), objName )
 
 	  	p += lgt + 1
@@ -372,7 +401,10 @@ function hProcessLibPathList _
 	  	if( lgt = 0 ) then
 	  		exit do
 		end if
-
+        
+#if defined( DEBUG_BFD )
+        print "BFD added library path """ & *cast( zstring ptr, p ) & """"
+#endif
 		addLibPath( cast( zstring ptr, p ), objName )
 
 	  	p += lgt + 1
@@ -438,18 +470,27 @@ private function hProcessObject _
 
 	'' not a valid object file?
 	if( bfd_check_format_matches( objf, bfd_object, NULL ) = FALSE ) then
+#if defined( DEBUG_BFD )
+		print "BFD format mismatch"
+#endif
 		return FALSE
 	end if
 
 	'' search for our special section
 	dim as asection ptr sec = bfd_get_section_by_name( objf, "." + FB_INFOSEC_NAME )
 	if( sec = NULL ) then
+#if defined( DEBUG_BFD )
+		print "BFD couldn't find FB info"
+#endif
 		return FALSE
 	end if
 
   	'' load the section to memory
   	dim as integer size = bfd_get_section_size( sec )
   	if( size = 0 ) then
+#if defined( DEBUG_BFD )
+		print "BFD couldn't load the section"
+#endif
   		return FALSE
 	end if
 
@@ -468,6 +509,9 @@ private function hProcessObject _
 
   	'' check version
   	if( *p <> FB_INFOSEC_VERSION ) then
+#if defined( DEBUG_BFD )
+		print "BFD couldn't match versions"
+#endif
   		return FALSE
   	end if
 
@@ -485,12 +529,21 @@ private function hProcessObject _
       	'' dump the entries
       	select case as const id
       	case FB_INFOSEC_LIB
+#if defined( DEBUG_BFD )
+      		print "BFD found a library in " & *objName
+#endif
 	  		p += hProcessLibList( p, buf_end, addLib, objName )
 
       	case FB_INFOSEC_PTH
+#if defined( DEBUG_BFD )
+      		print "BFD found a path in " & *objName
+#endif
 	  		p += hProcessLibPathList( p, buf_end, addLibPath, objName )
 
       	case FB_INFOSEC_CMD
+#if defined( DEBUG_BFD )
+      		print "BFD found a command in " & *objName
+#endif
 	  		p += hProcessCmdList( p, buf_end, addOption, objName )
 
 	  	case else
