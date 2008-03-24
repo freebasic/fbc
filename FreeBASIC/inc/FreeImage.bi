@@ -1,6 +1,11 @@
-#ifndef __FREEIMAGE_BI__
-#define __FREEIMAGE_BI__
-
+''
+''
+'' FreeImage -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
 '' COVERED CODE IS PROVIDED UNDER THIS LICENSE ON AN "AS IS" BASIS, WITHOUT WARRANTY
 '' OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, WITHOUT LIMITATION, WARRANTIES
 '' THAT THE COVERED CODE IS FREE OF DEFECTS, MERCHANTABLE, FIT FOR A PARTICULAR PURPOSE
@@ -11,179 +16,155 @@
 '' PART OF THIS LICENSE. NO USE OF ANY COVERED CODE IS AUTHORIZED HEREUNDER EXCEPT UNDER
 '' THIS DISCLAIMER.
 
-#inclib "FreeImage"
+#ifndef __FreeImage_bi__
+#define __FreeImage_bi__
 
+#inclib "freeimage"
 
-#define FREEIMAGE_MAJOR_VERSION  3
-#define FREEIMAGE_MINOR_VERSION  5
-#define FREEIMAGE_RELEASE_SERIAL  0
+#define FREEIMAGE_MAJOR_VERSION 3
+#define FREEIMAGE_MINOR_VERSION 10
+#define FREEIMAGE_RELEASE_SERIAL 0
+#define FREEIMAGE_COLORORDER_BGR 0
+#define FREEIMAGE_COLORORDER_RGB 1
+#define FREEIMAGE_COLORORDER 0
 
+type FIBITMAP
+	data as any ptr
+end type
 
-#if not defined(__FB_WIN32__) or not defined(__windows_bi__)
+type FIMULTIBITMAP
+	data as any ptr
+end type
 
-#ifndef FALSE
 #define FALSE 0
-#endif
-#ifndef TRUE
 #define TRUE 1
-#endif
-#ifndef NULL
 #define NULL 0
-#endif
+#define SEEK_SET 0
+#define SEEK_CUR 1
+#define SEEK_END 2
 
-#ifndef SEEK_SET
-#define SEEK_SET  0
-#define SEEK_CUR  1
-#define SEEK_END  2
-#endif
+type BOOL as integer
+type WORD as ushort
+type DWORD as uinteger
 
-
-Type RGBQUAD field=1
-#ifdef __FB_BIGENDIAN__
-		rgbRed As Byte
-		rgbGreen As Byte
-		rgbBlue As Byte
-#else
-		rgbBlue As Byte
-		rgbGreen As Byte
-		rgbRed As Byte
-#endif
-  		rgbReserved as byte
+type tagRGBQUAD
+	rgbBlue as byte
+	rgbGreen as byte
+	rgbRed as byte
+	rgbReserved as byte
 end type
 
-Type RGBTRIPLE field=1
-#ifdef __FB_BIGENDIAN__
-		rgbtRed As Byte
-		rgbtGreen As Byte
-		rgbtBlue As Byte
-#else
-		rgbtBlue As Byte
-		rgbtGreen As Byte
-		rgbtRed As Byte
-#endif
-End Type
+type RGBQUAD as tagRGBQUAD
 
-type BITMAPINFOHEADER field=1
-  	biSize	as uinteger
-  	biWidth	as uinteger
-  	biHeight	as uinteger
-  	biPlanes	as ushort
-  	biBitCount as ushort
-  	biCompression as uinteger
-  	biSizeImage as uinteger
-  	biXPelsPerMeter as uinteger
-  	biYPelsPerMeter as uinteger
-  	biClrUsed as uinteger
-  	biClrImportant as uinteger
+type tagRGBTRIPLE
+	rgbtBlue as byte
+	rgbtGreen as byte
+	rgbtRed as byte
 end type
 
-type BITMAPINFO 
-	bmiHeader		as BITMAPINFOHEADER
-	bmiColors		as RGBQUAD
+type RGBTRIPLE as tagRGBTRIPLE
+
+type tagBITMAPINFOHEADER
+	biSize as DWORD
+	biWidth as LONG
+	biHeight as LONG
+	biPlanes as WORD
+	biBitCount as WORD
+	biCompression as DWORD
+	biSizeImage as DWORD
+	biXPelsPerMeter as LONG
+	biYPelsPerMeter as LONG
+	biClrUsed as DWORD
+	biClrImportant as DWORD
 end type
 
-#endif '' __FB_WIN32__
+type BITMAPINFOHEADER as tagBITMAPINFOHEADER
+type PBITMAPINFOHEADER as tagBITMAPINFOHEADER ptr
 
+type tagBITMAPINFO
+	bmiHeader as BITMAPINFOHEADER
+	bmiColors(0 to 1-1) as RGBQUAD
+end type
 
-#ifndef __FB_BIGENDIAN__
-'' Little Endian (x86 / MS Windows, Linux) : BGR(A) order
-#define FI_RGBA_RED  2
-#define FI_RGBA_GREEN  1
-#define FI_RGBA_BLUE  0
-#define FI_RGBA_ALPHA  3
-#define FI_RGBA_RED_MASK  &H00FF0000
-#define FI_RGBA_GREEN_MASK  &H0000FF00
-#define FI_RGBA_BLUE_MASK  &H000000FF
-#define FI_RGBA_ALPHA_MASK  &HFF000000
-#define FI_RGBA_RED_SHIFT  16
-#define FI_RGBA_GREEN_SHIFT  8
-#define FI_RGBA_BLUE_SHIFT  0
-#define FI_RGBA_ALPHA_SHIFT  24
-#else
-'' Big Endian (PPC / Linux, MaxOSX) : RGB(A) order
-#define FI_RGBA_RED 		0
-#define FI_RGBA_GREEN 	1
-#define FI_RGBA_BLUE 	2
-#define FI_RGBA_ALPHA 	3
-#define FI_RGBA_RED_MASK 	&hFF000000
-Const FI_RGBA_GREEN_MASK=		&h00FF0000
-#define FI_RGBA_BLUE_MASK &h0000FF00
-#define FI_RGBA_ALPHA_MASK 	&h000000FF
-#define FI_RGBA_RED_SHIFT 24
-Const FI_RGBA_GREEN_SHIFT=		16
-Const FI_RGBA_BLUE_SHIFT=		8
-#define FI_RGBA_ALPHA_SHIFT 	0
-#endif '' __FB_BIGENDIAN__
+type BITMAPINFO as tagBITMAPINFO
+type PBITMAPINFO as tagBITMAPINFO ptr
 
-#define FI_RGBA_RGB_MASK  (FI_RGBA_RED_MASK or FI_RGBA_GREEN_MASK or FI_RGBA_BLUE_MASK)
+type tagFIRGB16
+	red as WORD
+	green as WORD
+	blue as WORD
+end type
 
-'' The 16bit macros only include masks and shifts, since each color element is not byte aligned
+type FIRGB16 as tagFIRGB16
 
-#define FI16_555_RED_MASK  &H7C00
-#define FI16_555_GREEN_MASK  &H03E0
-#define FI16_555_BLUE_MASK  &H001F
-#define FI16_555_RED_SHIFT  10
-#define FI16_555_GREEN_SHIFT  5
-#define FI16_555_BLUE_SHIFT  0
-#define FI16_565_RED_MASK  &HF800
-#define FI16_565_GREEN_MASK  &H07E0
-#define FI16_565_BLUE_MASK  &H001F
-#define FI16_565_RED_SHIFT  11
-#define FI16_565_GREEN_SHIFT  5
-#define FI16_565_BLUE_SHIFT  0
+type tagFIRGBA16
+	red as WORD
+	green as WORD
+	blue as WORD
+	alpha as WORD
+end type
 
-#define FIICC_DEFAULT  &H00
-#define FIICC_COLOR_IS_CMYK  &H01
+type FIRGBA16 as tagFIRGBA16
 
-'' Load / Save flag constants -----------------------------------------------
+type tagFIRGBF
+	red as single
+	green as single
+	blue as single
+end type
 
-#define BMP_DEFAULT  0
-#define BMP_SAVE_RLE  1
-#define CUT_DEFAULT  0
-#define DDS_DEFAULT  0
-#define GIF_DEFAULT  0
-#define ICO_DEFAULT  0
-#define ICO_MAKEALPHA  1
-#define IFF_DEFAULT  0
-#define JPEG_DEFAULT  0
-#define JPEG_FAST  1
-#define JPEG_ACCURATE  2
-#define JPEG_QUALITYSUPERB  &H80
-#define JPEG_QUALITYGOOD  &H100
-#define JPEG_QUALITYNORMAL  &H200
-#define JPEG_QUALITYAVERAGE  &H400
-#define JPEG_QUALITYBAD  &H800
-#define KOALA_DEFAULT  0
-#define LBM_DEFAULT  0
-#define MNG_DEFAULT  0
-#define PCD_DEFAULT  0
-#define PCD_BASE  1
-#define PCD_BASEDIV4  2
-#define PCD_BASEDIV16  3
-#define PCX_DEFAULT  0
-#define PNG_DEFAULT  0
-#define PNG_IGNOREGAMMA  1
-#define PNM_DEFAULT  0
-#define PNM_SAVE_RAW  0
-#define PNM_SAVE_ASCII  1
-#define PSD_DEFAULT  0
-#define RAS_DEFAULT  0
-#define TARGA_DEFAULT  0
-#define TARGA_LOAD_RGB888  1
-#define TIFF_DEFAULT  0
-#define TIFF_CMYK  &H0001
-#define TIFF_PACKBITS  &H0100
-#define TIFF_DEFLATE  &H0200
-#define TIFF_ADOBE_DEFLATE  &H0400
-#define TIFF_NONE  &H0800
-#define TIFF_CCITTFAX3  &H1000
-#define TIFF_CCITTFAX4  &H2000
-#define TIFF_LZW  &H4000
-#define WBMP_DEFAULT  0
-#define XBM_DEFAULT  0
-#define XPM_DEFAULT  0
+type FIRGBF as tagFIRGBF
 
-Enum FREE_IMAGE_FORMAT
+type tagFIRGBAF
+	red as single
+	green as single
+	blue as single
+	alpha as single
+end type
+
+type FIRGBAF as tagFIRGBAF
+
+type tagFICOMPLEX
+	r as double
+	i as double
+end type
+
+type FICOMPLEX as tagFICOMPLEX
+
+#define FI_RGBA_RED 2
+#define FI_RGBA_GREEN 1
+#define FI_RGBA_BLUE 0
+#define FI_RGBA_ALPHA 3
+#define FI_RGBA_RED_MASK &h00FF0000
+#define FI_RGBA_GREEN_MASK &h0000FF00
+#define FI_RGBA_BLUE_MASK &h000000FF
+#define FI_RGBA_ALPHA_MASK &hFF000000
+#define FI_RGBA_RED_SHIFT 16
+#define FI_RGBA_GREEN_SHIFT 8
+#define FI_RGBA_BLUE_SHIFT 0
+#define FI_RGBA_ALPHA_SHIFT 24
+#define FI_RGBA_RGB_MASK (&h00FF0000 or &h0000FF00 or &h000000FF)
+#define FI16_555_RED_MASK &h7C00
+#define FI16_555_GREEN_MASK &h03E0
+#define FI16_555_BLUE_MASK &h001F
+#define FI16_555_RED_SHIFT 10
+#define FI16_555_GREEN_SHIFT 5
+#define FI16_555_BLUE_SHIFT 0
+#define FI16_565_RED_MASK &hF800
+#define FI16_565_GREEN_MASK &h07E0
+#define FI16_565_BLUE_MASK &h001F
+#define FI16_565_RED_SHIFT 11
+#define FI16_565_GREEN_SHIFT 5
+#define FI16_565_BLUE_SHIFT 0
+#define FIICC_DEFAULT &h00
+#define FIICC_COLOR_IS_CMYK &h01
+
+type FIICCPROFILE
+	flags as WORD
+	size as DWORD
+	data as any ptr
+end type
+
+enum FREE_IMAGE_FORMAT
 	FIF_UNKNOWN = -1
 	FIF_BMP = 0
 	FIF_ICO = 1
@@ -212,9 +193,15 @@ Enum FREE_IMAGE_FORMAT
 	FIF_XPM = 23
 	FIF_DDS = 24
 	FIF_GIF = 25
-End Enum
+	FIF_HDR = 26
+	FIF_FAXG3 = 27
+	FIF_SGI = 28
+	FIF_EXR = 29
+	FIF_J2K = 30
+	FIF_JP2 = 31
+end enum
 
-Enum FREE_IMAGE_TYPE
+enum FREE_IMAGE_TYPE
 	FIT_UNKNOWN = 0
 	FIT_BITMAP = 1
 	FIT_UINT16 = 2
@@ -224,41 +211,63 @@ Enum FREE_IMAGE_TYPE
 	FIT_FLOAT = 6
 	FIT_DOUBLE = 7
 	FIT_COMPLEX = 8
-End Enum
+	FIT_RGB16 = 9
+	FIT_RGBA16 = 10
+	FIT_RGBF = 11
+	FIT_RGBAF = 12
+end enum
 
-Enum FREE_IMAGE_COLOR_TYPE
+enum FREE_IMAGE_COLOR_TYPE
 	FIC_MINISWHITE = 0
 	FIC_MINISBLACK = 1
 	FIC_RGB = 2
 	FIC_PALETTE = 3
 	FIC_RGBALPHA = 4
 	FIC_CMYK = 5
-End Enum
+end enum
 
-Enum FREE_IMAGE_QUANTIZE
+enum FREE_IMAGE_QUANTIZE
 	FIQ_WUQUANT = 0
 	FIQ_NNQUANT = 1
-End Enum
+end enum
 
-Enum FREE_IMAGE_DITHER
+enum FREE_IMAGE_DITHER
 	FID_FS = 0
 	FID_BAYER4x4 = 1
 	FID_BAYER8x8 = 2
 	FID_CLUSTER6x6 = 3
 	FID_CLUSTER8x8 = 4
 	FID_CLUSTER16x16 = 5
-End Enum
+	FID_BAYER16x16 = 6
+end enum
 
-Enum FREE_IMAGE_FILTER
+enum FREE_IMAGE_JPEG_OPERATION
+	FIJPEG_OP_NONE = 0
+	FIJPEG_OP_FLIP_H = 1
+	FIJPEG_OP_FLIP_V = 2
+	FIJPEG_OP_TRANSPOSE = 3
+	FIJPEG_OP_TRANSVERSE = 4
+	FIJPEG_OP_ROTATE_90 = 5
+	FIJPEG_OP_ROTATE_180 = 6
+	FIJPEG_OP_ROTATE_270 = 7
+end enum
+
+enum FREE_IMAGE_TMO
+	FITMO_DRAGO03 = 0
+	FITMO_REINHARD05 = 1
+	FITMO_FATTAL02 = 2
+end enum
+
+enum FREE_IMAGE_FILTER
 	FILTER_BOX = 0
 	FILTER_BICUBIC = 1
 	FILTER_BILINEAR = 2
 	FILTER_BSPLINE = 3
 	FILTER_CATMULLROM = 4
 	FILTER_LANCZOS3 = 5
-End Enum
+end enum
 
-Enum FREE_IMAGE_COLOR_CHANNEL
+enum FREE_IMAGE_COLOR_CHANNEL
 	FICC_RGB = 0
 	FICC_RED = 1
 	FICC_GREEN = 2
@@ -269,26 +278,27 @@ Enum FREE_IMAGE_COLOR_CHANNEL
 	FICC_IMAG = 7
 	FICC_MAG = 8
 	FICC_PHASE = 9
-End Enum
+end enum
 
-Enum FREE_IMAGE_MDTYPE
+enum FREE_IMAGE_MDTYPE
 	FIDT_NOTYPE = 0
-	FIDT_BYTE = 1
+	FIDT_byte = 1
 	FIDT_ASCII = 2
 	FIDT_SHORT = 3
-	FIDT_Integer = 4
+	FIDT_LONG = 4
 	FIDT_RATIONAL = 5
-	FIDT_SBYTE = 6
+	FIDT_Sbyte = 6
 	FIDT_UNDEFINED = 7
 	FIDT_SSHORT = 8
-	FIDT_SInteger = 9
+	FIDT_SLONG = 9
 	FIDT_SRATIONAL = 10
 	FIDT_FLOAT = 11
 	FIDT_DOUBLE = 12
 	FIDT_IFD = 13
-End Enum
+	FIDT_PALETTE = 14
+end enum
 
-Enum FREE_IMAGE_MDMODEL
+enum FREE_IMAGE_MDMODEL
 	FIMD_NODATA = -1
 	FIMD_COMMENTS = 0
 	FIMD_EXIF_MAIN = 1
@@ -299,223 +309,353 @@ Enum FREE_IMAGE_MDMODEL
 	FIMD_IPTC = 6
 	FIMD_XMP = 7
 	FIMD_GEOTIFF = 8
-	FIMD_CUSTOM = 9
-End Enum
+	FIMD_ANIMATION = 9
+	FIMD_CUSTOM = 10
+end enum
 
-Type FIBITMAP
-	data As Integer
-End Type
+type FIMETADATA
+	data as any ptr
+end type
 
-Type FIMULTIBITMAP
-	data As Integer
-End Type
+type FITAG
+	data as any ptr
+end type
 
+type fi_handle as any ptr
+type FI_ReadProc as function cdecl(byval as any ptr, byval as uinteger, byval as uinteger, byval as fi_handle) as uinteger
+type FI_WriteProc as function cdecl(byval as any ptr, byval as uinteger, byval as uinteger, byval as fi_handle) as uinteger
+type FI_SeekProc as function cdecl(byval as fi_handle, byval as integer, byval as integer) as integer
+type FI_TellProc as function cdecl(byval as fi_handle) as integer
 
-Type FIICCPROFILE
-	flags As Short
-	size As Integer
-	data As any ptr
-End Type
+type FreeImageIO
+	read_proc as FI_ReadProc
+	write_proc as FI_WriteProc
+	seek_proc as FI_SeekProc
+	tell_proc as FI_TellProc
+end type
 
-Type FICOMPLEX
-	r As double
-	i As double
-End Type
+type FIMEMORY
+	data as any ptr
+end type
 
-Type FIMETADATA
-	data As any ptr 
-End Type
+type FI_FormatProc as function cdecl() as byte ptr
+type FI_DescriptionProc as function cdecl() as byte ptr
+type FI_ExtensionListProc as function cdecl() as byte ptr
+type FI_RegExprProc as function cdecl() as byte ptr
+type FI_OpenProc as sub cdecl(byval as FreeImageIO ptr, byval as fi_handle, byval as BOOL)
+type FI_CloseProc as sub cdecl(byval as FreeImageIO ptr, byval as fi_handle, byval as any ptr)
+type FI_PageCountProc as function cdecl(byval as FreeImageIO ptr, byval as fi_handle, byval as any ptr) as integer
+type FI_PageCapabilityProc as function cdecl(byval as FreeImageIO ptr, byval as fi_handle, byval as any ptr) as integer
+type FI_LoadProc as function cdecl(byval as FreeImageIO ptr, byval as fi_handle, byval as integer, byval as integer, byval as any ptr) as FIBITMAP ptr
+type FI_SaveProc as function cdecl(byval as FreeImageIO ptr, byval as FIBITMAP ptr, byval as fi_handle, byval as integer, byval as integer, byval as any ptr) as BOOL
+type FI_ValidateProc as function cdecl(byval as FreeImageIO ptr, byval as fi_handle) as BOOL
+type FI_MimeProc as function cdecl() as byte ptr
+type FI_SupportsExportBPPProc as function cdecl(byval as integer) as BOOL
+type FI_SupportsExportTypeProc as function cdecl(byval as FREE_IMAGE_TYPE) as BOOL
+type FI_SupportsICCProfilesProc as function cdecl() as BOOL
 
-Type FITAG
-	key As byte ptr
-	description As byte ptr
-	id As Short
-	type As Short
-	count As Integer
-	length As Integer
-	value As any ptr
-End Type
+type Plugin
+	format_proc as FI_FormatProc
+	description_proc as FI_DescriptionProc
+	extension_proc as FI_ExtensionListProc
+	regexpr_proc as FI_RegExprProc
+	open_proc as FI_OpenProc
+	close_proc as FI_CloseProc
+	pagecount_proc as FI_PageCountProc
+	pagecapability_proc as FI_PageCapabilityProc
+	load_proc as FI_LoadProc
+	save_proc as FI_SaveProc
+	validate_proc as FI_ValidateProc
+	mime_proc as FI_MimeProc
+	supports_export_bpp_proc as FI_SupportsExportBPPProc
+	supports_export_type_proc as FI_SupportsExportTypeProc
+	supports_icc_profiles_proc as FI_SupportsICCProfilesProc
+end type
 
-Type FreeImageIO
-	read_proc As function (byval buffer as any ptr, byval size as uinteger, byval count as uinteger, byval handle as any ptr) as uinteger
-	write_proc As function (byval buffer as any ptr, byval size as uinteger, byval count as uinteger, byval handle as any ptr) as uinteger
-	seek_proc As function (byval handle as any ptr, byval offset as integer, byval origin as integer) as integer
-	tell_proc As function (byval handle as any ptr) as integer
-End Type
+type FI_InitProc as sub cdecl(byval as Plugin ptr, byval as integer)
 
-Type FIMEMORY
-	data As any ptr
-End Type
+#define BMP_DEFAULT 0
+#define BMP_SAVE_RLE 1
+#define CUT_DEFAULT 0
+#define DDS_DEFAULT 0
+#define EXR_DEFAULT 0
+#define EXR_FLOAT &h0001
+#define EXR_NONE &h0002
+#define EXR_ZIP &h0004
+#define EXR_PIZ &h0008
+#define EXR_PXR24 &h0010
+#define EXR_B44 &h0020
+#define EXR_LC &h0040
+#define FAXG3_DEFAULT 0
+#define GIF_DEFAULT 0
+#define GIF_LOAD256 1
+#define GIF_PLAYBACK 2
+#define HDR_DEFAULT 0
+#define ICO_DEFAULT 0
+#define ICO_MAKEALPHA 1
+#define IFF_DEFAULT 0
+#define J2K_DEFAULT 0
+#define JP2_DEFAULT 0
+#define JPEG_DEFAULT 0
+#define JPEG_FAST &h0001
+#define JPEG_ACCURATE &h0002
+#define JPEG_CMYK &h0004
+#define JPEG_QUALITYSUPERB &h80
+#define JPEG_QUALITYGOOD &h0100
+#define JPEG_QUALITYNORMAL &h0200
+#define JPEG_QUALITYAVERAGE &h0400
+#define JPEG_QUALITYBAD &h0800
+#define JPEG_PROGRESSIVE &h2000
+#define KOALA_DEFAULT 0
+#define LBM_DEFAULT 0
+#define MNG_DEFAULT 0
+#define PCD_DEFAULT 0
+#define PCD_BASE 1
+#define PCD_BASEDIV4 2
+#define PCD_BASEDIV16 3
+#define PCX_DEFAULT 0
+#define PNG_DEFAULT 0
+#define PNG_IGNOREGAMMA 1
+#define PNM_DEFAULT 0
+#define PNM_SAVE_RAW 0
+#define PNM_SAVE_ASCII 1
+#define PSD_DEFAULT 0
+#define RAS_DEFAULT 0
+#define SGI_DEFAULT 0
+#define TARGA_DEFAULT 0
+#define TARGA_LOAD_RGB888 1
+#define TIFF_DEFAULT 0
+#define TIFF_CMYK &h0001
+#define TIFF_PACKBITS &h0100
+#define TIFF_DEFLATE &h0200
+#define TIFF_ADOBE_DEFLATE &h0400
+#define TIFF_NONE &h0800
+#define TIFF_CCITTFAX3 &h1000
+#define TIFF_CCITTFAX4 &h2000
+#define TIFF_LZW &h4000
+#define TIFF_JPEG &h8000
+#define WBMP_DEFAULT 0
+#define XBM_DEFAULT 0
+#define XPM_DEFAULT 0
 
-Type Plugin
-	format_proc As Integer
-	description_proc As Integer
-	extension_proc As Integer
-	regexpr_proc As Integer
-	open_proc As Integer
-	close_proc As Integer
-	pagecount_proc As Integer
-	pagecapability_proc As Integer
-	load_proc As Integer
-	save_proc As Integer
-	validate_proc As Integer
-	mime_proc As Integer
-	supports_export_bpp_proc As Integer
-	supports_export_type_proc As Integer
-	supports_icc_profiles_proc As Integer
-End Type
+declare sub FreeImage_Initialise alias "FreeImage_Initialise" (byval load_local_plugins_only as BOOL = 0)
+declare sub FreeImage_DeInitialise alias "FreeImage_DeInitialise" ()
+declare function FreeImage_GetVersion alias "FreeImage_GetVersion" () as zstring ptr
+declare function FreeImage_GetCopyrightMessage alias "FreeImage_GetCopyrightMessage" () as zstring ptr
 
-Declare Sub FreeImage_Initialise Alias "FreeImage_Initialise" (ByVal load_local_plugins_only As Integer = 0)
-Declare Sub FreeImage_DeInitialise Alias "FreeImage_DeInitialise" ()
-Declare Function FreeImage_GetVersion Alias "FreeImage_GetVersion" () as zstring ptr
-Declare Function FreeImage_GetCopyrightMessage Alias "FreeImage_GetCopyrightMessage" () as zstring ptr
-Declare Sub FreeImage_OutputMessageProc CDECL Alias "FreeImage_OutputMessageProc" (ByVal fif As Integer, byval fmt as zstring ptr, ...)
-Declare Sub FreeImage_SetOutputMessage Alias "FreeImage_SetOutputMessage" (ByVal omf As Integer)
-Declare Function FreeImage_Allocate Alias "FreeImage_Allocate" (ByVal width As Integer, ByVal height As Integer, ByVal bpp As Integer, ByVal red_mask As Integer = 0, ByVal green_mask As Integer = 0, ByVal blue_mask As Integer = 0) As FIBITMAP ptr
-Declare Function FreeImage_AllocateT Alias "FreeImage_AllocateT" (ByVal type As FREE_IMAGE_TYPE, ByVal width As Integer, ByVal height As Integer, ByVal bpp As Integer = 8, ByVal red_mask As Integer = 0, ByVal green_mask As Integer = 0, ByVal blue_mask As Integer = 0) As FIBITMAP ptr
-Declare Function FreeImage_Clone Alias "FreeImage_Clone" (byval dib as FIBITMAP ptr) As FIBITMAP ptr
-Declare Sub FreeImage_Unload Alias "FreeImage_Unload" (byval dib as FIBITMAP ptr)
-Declare Function FreeImage_Load Alias "FreeImage_Load" (ByVal fif As FREE_IMAGE_FORMAT, byval filename as zstring ptr, ByVal flags As Integer = 0) As FIBITMAP ptr
-Declare Function FreeImage_LoadFromHandle Alias "FreeImage_LoadFromHandle" (ByVal fif As FREE_IMAGE_FORMAT, ByVal io As Integer, ByVal handle As Integer, ByVal flags As Integer = 0) As FIBITMAP ptr
-Declare Function FreeImage_Save Alias "FreeImage_Save" (ByVal fif As FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval filename as zstring ptr, ByVal flags As Integer = 0) As Integer
-Declare Function FreeImage_SaveToHandle Alias "FreeImage_SaveToHandle" (ByVal fif As FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, ByVal io As Integer, ByVal handle As Integer, ByVal flags As Integer = 0) As Integer
-Declare Function FreeImage_OpenMemory Alias "FreeImage_OpenMemory" (Byval data As byte ptr = NULL, ByVal size_in_bytes As Integer = 0) As FIMEMORY Ptr
-Declare Sub FreeImage_CloseMemory Alias "FreeImage_CloseMemory" (byval stream As FIMEMORY Ptr)
-Declare Function FreeImage_LoadFromMemory Alias "FreeImage_LoadFromMemory" (ByVal fif As FREE_IMAGE_FORMAT, byval stream As FIMEMORY Ptr, ByVal flags As Integer = 0) As FIBITMAP ptr
-Declare Function FreeImage_SaveToMemory Alias "FreeImage_SaveToMemory" (ByVal fif As FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval stream As FIMEMORY Ptr, ByVal flags As Integer = 0) As Integer
-Declare Function FreeImage_TellMemory Alias "FreeImage_TellMemory" (byval stream As FIMEMORY Ptr) As Integer
-Declare Function FreeImage_SeekMemory Alias "FreeImage_SeekMemory" (byval stream As FIMEMORY Ptr, ByVal offset As Integer, ByVal origin As Integer) As Integer
-Declare Function FreeImage_AcquireMemory Alias "FreeImage_AcquireMemory" (byval stream As FIMEMORY Ptr, byval data As BYTE Ptr ptr, Byval size_in_bytes As Integer ptr) As Integer
-Declare Function FreeImage_RegisterLocalPlugin Alias "FreeImage_RegisterLocalPlugin" (ByVal proc_address As Integer, byval format as zstring ptr, byval description as zstring ptr, byval extension as zstring ptr, byval regexpr as zstring ptr) As FREE_IMAGE_FORMAT
-Declare Function FreeImage_RegisterExternalPlugin Alias "FreeImage_RegisterExternalPlugin" (byval path as zstring ptr, byval format as zstring ptr, byval description as zstring ptr, byval extension as zstring ptr, byval regexpr as zstring ptr) As FREE_IMAGE_FORMAT
-Declare Function FreeImage_GetFIFCount Alias "FreeImage_GetFIFCount" () As Integer
-Declare Function FreeImage_SetPluginEnabled Alias "FreeImage_SetPluginEnabled" (ByVal fif As FREE_IMAGE_FORMAT, ByVal enable As Integer) As Integer
-Declare Function FreeImage_IsPluginEnabled Alias "FreeImage_IsPluginEnabled" (ByVal fif As FREE_IMAGE_FORMAT) As Integer
-Declare Function FreeImage_GetFIFFromFormat Alias "FreeImage_GetFIFFromFormat" (byval format as zstring ptr) As FREE_IMAGE_FORMAT
-Declare Function FreeImage_GetFIFFromMime Alias "FreeImage_GetFIFFromMime" (byval mime as zstring ptr) As FREE_IMAGE_FORMAT
-Declare Function FreeImage_GetFormatFromFIF Alias "FreeImage_GetFormatFromFIF" (ByVal fif As FREE_IMAGE_FORMAT) as zstring ptr
-Declare Function FreeImage_GetFIFExtensionList Alias "FreeImage_GetFIFExtensionList" (ByVal fif As FREE_IMAGE_FORMAT) as zstring ptr
-Declare Function FreeImage_GetFIFDescription Alias "FreeImage_GetFIFDescription" (ByVal fif As FREE_IMAGE_FORMAT) as zstring ptr
-Declare Function FreeImage_GetFIFRegExpr Alias "FreeImage_GetFIFRegExpr" (ByVal fif As FREE_IMAGE_FORMAT) as zstring ptr
-Declare Function FreeImage_GetFIFMimeType Alias "FreeImage_GetFIFMimeType" (ByVal fif As FREE_IMAGE_FORMAT) as zstring ptr
-Declare Function FreeImage_GetFIFFromFilename Alias "FreeImage_GetFIFFromFilename" (byval filename as zstring ptr) As FREE_IMAGE_FORMAT
-Declare Function FreeImage_FIFSupportsReading Alias "FreeImage_FIFSupportsReading" (ByVal fif As FREE_IMAGE_FORMAT) As Integer
-Declare Function FreeImage_FIFSupportsWriting Alias "FreeImage_FIFSupportsWriting" (ByVal fif As FREE_IMAGE_FORMAT) As Integer
-Declare Function FreeImage_FIFSupportsExportBPP Alias "FreeImage_FIFSupportsExportBPP" (ByVal fif As FREE_IMAGE_FORMAT, ByVal bpp As Integer) As Integer
-Declare Function FreeImage_FIFSupportsExportType Alias "FreeImage_FIFSupportsExportType" (ByVal fif As FREE_IMAGE_FORMAT, ByVal type_ As FREE_IMAGE_TYPE) As Integer
-Declare Function FreeImage_FIFSupportsICCProfiles Alias "FreeImage_FIFSupportsICCProfiles" (ByVal fif As FREE_IMAGE_FORMAT) As Integer
-Declare Function FreeImage_OpenMultiBitmap Alias "FreeImage_OpenMultiBitmap" (ByVal fif As FREE_IMAGE_FORMAT, byval filename as zstring ptr, ByVal create_new_ As Integer, ByVal read_only As Integer, ByVal keep_cache_in_memory As Integer = 0) As FIMULTIBITMAP ptr
-Declare Function FreeImage_CloseMultiBitmap Alias "FreeImage_CloseMultiBitmap" (byval bitmap as FIMULTIBITMAP ptr, ByVal flags As Integer = 0) As Integer
-Declare Function FreeImage_GetPageCount Alias "FreeImage_GetPageCount" (byval bitmap as FIMULTIBITMAP ptr) As Integer
-Declare Sub FreeImage_AppendPage Alias "FreeImage_AppendPage" (byval bitmap as FIMULTIBITMAP ptr, ByVal data As FIBITMAP ptr)
-Declare Sub FreeImage_InsertPage Alias "FreeImage_InsertPage" (byval bitmap as FIMULTIBITMAP ptr, ByVal page As Integer, ByVal data As FIBITMAP ptr)
-Declare Sub FreeImage_DeletePage Alias "FreeImage_DeletePage" (byval bitmap as FIMULTIBITMAP ptr, ByVal page As Integer)
-Declare Function FreeImage_LockPage Alias "FreeImage_LockPage" (byval bitmap as FIMULTIBITMAP ptr, ByVal page As Integer) As FIBITMAP ptr
-Declare Sub FreeImage_UnlockPage Alias "FreeImage_UnlockPage" (byval bitmap as FIMULTIBITMAP ptr, ByVal page As FIBITMAP ptr, ByVal changed As Integer)
-Declare Function FreeImage_MovePage Alias "FreeImage_MovePage" (byval bitmap as FIMULTIBITMAP ptr, ByVal target As Integer, ByVal source As Integer) As Integer
-Declare Function FreeImage_GetLockedPageNumbers Alias "FreeImage_GetLockedPageNumbers" (byval bitmap as FIMULTIBITMAP ptr, Byval pages As Integer ptr, Byval count As Integer ptr) As Integer
-Declare Function FreeImage_GetFileType Alias "FreeImage_GetFileType" (byval filename as zstring ptr, ByVal size As Integer = 0) As FREE_IMAGE_FORMAT
-Declare Function FreeImage_GetFileTypeFromHandle Alias "FreeImage_GetFileTypeFromHandle" (ByVal io As Integer, ByVal handle As Integer, ByVal size As Integer = 0) As FREE_IMAGE_FORMAT
-Declare Function FreeImage_GetFileTypeFromMemory Alias "FreeImage_GetFileTypeFromMemory" (byval stream As FIMEMORY Ptr, ByVal size As Integer = 0) As FREE_IMAGE_FORMAT
-Declare Function FreeImage_GetImageType Alias "FreeImage_GetImageType" (byval dib as FIBITMAP ptr) As FREE_IMAGE_TYPE
-Declare Function FreeImage_IsLittleEndian Alias "FreeImage_IsLittleEndian" () As Integer
-Declare Function FreeImage_LookupX11Color Alias "FreeImage_LookupX11Color" (byval szColor as zstring ptr, Byval nRed As Integer ptr, Byval nGreen As Integer ptr, Byval nBlue As Integer ptr) As Integer
-Declare Function FreeImage_LookupSVGColor Alias "FreeImage_LookupSVGColor" (byval szColor as zstring ptr, Byval nRed As Integer ptr, Byval nGreen As Integer ptr, Byval nBlue As Integer ptr) As Integer
-Declare Function FreeImage_GetBits Alias "FreeImage_GetBits" (byval dib as FIBITMAP ptr) as zstring ptr
-Declare Function FreeImage_GetScanLine Alias "FreeImage_GetScanLine" (byval dib as FIBITMAP ptr, ByVal scanline As Integer) as zstring ptr
-Declare Function FreeImage_GetPixelIndex Alias "FreeImage_GetPixelIndex" (byval dib as FIBITMAP ptr, ByVal x As Integer, ByVal y As Integer, Byval value As Byte ptr) As Integer
-Declare Function FreeImage_GetPixelColor Alias "FreeImage_GetPixelColor" (byval dib as FIBITMAP ptr, ByVal x As Integer, ByVal y As Integer, Byval value As RGBQUAD ptr) As Integer
-Declare Function FreeImage_SetPixelIndex Alias "FreeImage_SetPixelIndex" (byval dib as FIBITMAP ptr, ByVal x As Integer, ByVal y As Integer, Byval Value As Byte ptr) As Integer
-Declare Function FreeImage_SetPixelColor Alias "FreeImage_SetPixelColor" (byval dib as FIBITMAP ptr, ByVal x As Integer, ByVal y As Integer, Byval Value As RGBQUAD ptr) As Integer
-Declare Function FreeImage_GetColorsUsed Alias "FreeImage_GetColorsUsed" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetBPP Alias "FreeImage_GetBPP" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetWidth Alias "FreeImage_GetWidth" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetHeight Alias "FreeImage_GetHeight" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetLine Alias "FreeImage_GetLine" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetPitch Alias "FreeImage_GetPitch" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetDIBSize Alias "FreeImage_GetDIBSize" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetPalette Alias "FreeImage_GetPalette" (byval dib as FIBITMAP ptr) As RGBQUAD ptr
-Declare Function FreeImage_GetDotsPerMeterX Alias "FreeImage_GetDotsPerMeterX" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetDotsPerMeterY Alias "FreeImage_GetDotsPerMeterY" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetInfoHeader Alias "FreeImage_GetInfoHeader" (byval dib as FIBITMAP ptr) As BITMAPINFOHEADER Ptr
-Declare Function FreeImage_GetInfo Alias "FreeImage_GetInfo" (byval dib as FIBITMAP ptr) As BITMAPINFO Ptr
-Declare Function FreeImage_GetColorType Alias "FreeImage_GetColorType" (byval dib as FIBITMAP ptr) As FREE_IMAGE_COLOR_TYPE
-Declare Function FreeImage_GetRedMask Alias "FreeImage_GetRedMask" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetGreenMask Alias "FreeImage_GetGreenMask" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetBlueMask Alias "FreeImage_GetBlueMask" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetTransparencyCount Alias "FreeImage_GetTransparencyCount" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetTransparencyTable Alias "FreeImage_GetTransparencyTable" (byval dib as FIBITMAP ptr) as zstring ptr
-Declare Sub FreeImage_SetTransparent Alias "FreeImage_SetTransparent" (byval dib as FIBITMAP ptr, ByVal enabled As Integer)
-Declare Sub FreeImage_SetTransparencyTable Alias "FreeImage_SetTransparencyTable" (byval dib as FIBITMAP ptr, Byval table As byte ptr, ByVal count As Integer)
-Declare Function FreeImage_IsTransparent Alias "FreeImage_IsTransparent" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_HasBackgroundColor Alias "FreeImage_HasBackgroundColor" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetBackgroundColor Alias "FreeImage_GetBackgroundColor" (byval dib as FIBITMAP ptr, ByVal bkcolor As Integer) As Integer
-Declare Function FreeImage_SetBackgroundColor Alias "FreeImage_SetBackgroundColor" (byval dib as FIBITMAP ptr, ByVal bkcolor As Integer) As Integer
-Declare Function FreeImage_GetICCProfile Alias "FreeImage_GetICCProfile" (byval dib as FIBITMAP ptr) As FIICCPROFILE ptr
-Declare Function FreeImage_CreateICCProfile Alias "FreeImage_CreateICCProfile" (byval dib as FIBITMAP ptr, Byval data As any ptr, ByVal size As Integer) As FIICCPROFILE ptr
-Declare Sub FreeImage_DestroyICCProfile Alias "FreeImage_DestroyICCProfile" (byval dib as FIBITMAP ptr)
-Declare Sub FreeImage_ConvertLine1To8 Alias "FreeImage_ConvertLine1To8" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine4To8 Alias "FreeImage_ConvertLine4To8" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine16To8_555 Alias "FreeImage_ConvertLine16To8_555" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine16To8_565 Alias "FreeImage_ConvertLine16To8_565" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine24To8 Alias "FreeImage_ConvertLine24To8" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine32To8 Alias "FreeImage_ConvertLine32To8" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine1To16_555 Alias "FreeImage_ConvertLine1To16_555" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer, ByVal pal As Integer)
-Declare Sub FreeImage_ConvertLine4To16_555 Alias "FreeImage_ConvertLine4To16_555" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer, ByVal pal As Integer)
-Declare Sub FreeImage_ConvertLine8To16_555 Alias "FreeImage_ConvertLine8To16_555" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer, ByVal pal As Integer)
-Declare Sub FreeImage_ConvertLine16_565_To16_555 Alias "FreeImage_ConvertLine16_565_To16_555" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine24To16_555 Alias "FreeImage_ConvertLine24To16_555" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine32To16_555 Alias "FreeImage_ConvertLine32To16_555" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine1To16_565 Alias "FreeImage_ConvertLine1To16_565" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer, ByVal pal As Integer)
-Declare Sub FreeImage_ConvertLine4To16_565 Alias "FreeImage_ConvertLine4To16_565" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer, ByVal pal As Integer)
-Declare Sub FreeImage_ConvertLine8To16_565 Alias "FreeImage_ConvertLine8To16_565" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer, ByVal pal As Integer)
-Declare Sub FreeImage_ConvertLine16_555_To16_565 Alias "FreeImage_ConvertLine16_555_To16_565" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine24To16_565 Alias "FreeImage_ConvertLine24To16_565" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine32To16_565 Alias "FreeImage_ConvertLine32To16_565" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine1To24 Alias "FreeImage_ConvertLine1To24" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer, ByVal pal As Integer)
-Declare Sub FreeImage_ConvertLine4To24 Alias "FreeImage_ConvertLine4To24" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer, ByVal pal As Integer)
-Declare Sub FreeImage_ConvertLine8To24 Alias "FreeImage_ConvertLine8To24" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer, ByVal pal As Integer)
-Declare Sub FreeImage_ConvertLine16To24_555 Alias "FreeImage_ConvertLine16To24_555" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine16To24_565 Alias "FreeImage_ConvertLine16To24_565" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine32To24 Alias "FreeImage_ConvertLine32To24" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine1To32 Alias "FreeImage_ConvertLine1To32" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer, ByVal pal As Integer)
-Declare Sub FreeImage_ConvertLine4To32 Alias "FreeImage_ConvertLine4To32" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer, ByVal pal As Integer)
-Declare Sub FreeImage_ConvertLine8To32 Alias "FreeImage_ConvertLine8To32" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer, ByVal pal As Integer)
-Declare Sub FreeImage_ConvertLine16To32_555 Alias "FreeImage_ConvertLine16To32_555" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine16To32_565 Alias "FreeImage_ConvertLine16To32_565" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Sub FreeImage_ConvertLine24To32 Alias "FreeImage_ConvertLine24To32" (byval target as byte ptr, byval source as byte ptr, ByVal width_in_pixels As Integer)
-Declare Function FreeImage_ConvertTo4Bits alias "FreeImage_ConvertTo4Bits" (byval dib as FIBITMAP ptr) As FIBITMAP ptr
-Declare Function FreeImage_ConvertTo8Bits Alias "FreeImage_ConvertTo8Bits" (byval dib as FIBITMAP ptr) As FIBITMAP ptr
-Declare Function FreeImage_ConvertTo16Bits555 Alias "FreeImage_ConvertTo16Bits555" (byval dib as FIBITMAP ptr) As FIBITMAP ptr
-Declare Function FreeImage_ConvertTo16Bits565 Alias "FreeImage_ConvertTo16Bits565" (byval dib as FIBITMAP ptr) As FIBITMAP ptr
-Declare Function FreeImage_ConvertTo24Bits Alias "FreeImage_ConvertTo24Bits" (byval dib as FIBITMAP ptr) As FIBITMAP ptr
-Declare Function FreeImage_ConvertTo32Bits Alias "FreeImage_ConvertTo32Bits" (byval dib as FIBITMAP ptr) As FIBITMAP ptr
-Declare Function FreeImage_ColorQuantize Alias "FreeImage_ColorQuantize" (byval dib as FIBITMAP ptr, ByVal quantize As FREE_IMAGE_QUANTIZE) As FIBITMAP ptr
-Declare Function FreeImage_Threshold Alias "FreeImage_Threshold" (byval dib as FIBITMAP ptr, ByVal T As Byte) As FIBITMAP ptr
-Declare Function FreeImage_Dither Alias "FreeImage_Dither" (byval dib as FIBITMAP ptr, ByVal algorithm As FREE_IMAGE_DITHER) As FIBITMAP ptr
-Declare Function FreeImage_ConvertFromRawBits Alias "FreeImage_ConvertFromRawBits" (ByRef bits As Integer, ByVal width As Integer, ByVal height As Integer, ByVal pitch As Integer, ByVal bpp As Integer, ByVal red_mask As Integer, ByVal green_mask As Integer, ByVal blue_mask As Integer, ByVal topdown As Integer = 0) As FIBITMAP ptr
-Declare Sub FreeImage_ConvertToRawBits Alias "FreeImage_ConvertToRawBits" (ByRef bits As Integer, byval dib as FIBITMAP ptr, ByVal pitch As Integer, ByVal bpp As Integer, ByVal red_mask As Integer, ByVal green_mask As Integer, ByVal blue_mask As Integer, ByVal topdown As Integer = 0)
-Declare Function FreeImage_ConvertToStandardType Alias "FreeImage_ConvertToStandardType" (ByVal src As Integer, ByVal scale_linear As Integer = 1) As FIBITMAP ptr
-Declare Function FreeImage_ConvertToType Alias "FreeImage_ConvertToType" (ByVal src As Integer, ByVal dst_type As FREE_IMAGE_TYPE, ByVal scale_linear As Integer = 1) As FIBITMAP ptr
-Declare Function FreeImage_ZLibCompress Alias "FreeImage_ZLibCompress" (byval target as byte ptr, ByVal target_size As Integer, byval source as byte ptr, ByVal source_size As Integer) As Integer
-Declare Function FreeImage_ZLibUncompress Alias "FreeImage_ZLibUncompress" (byval target as byte ptr, ByVal target_size As Integer, byval source as byte ptr, ByVal source_size As Integer) As Integer
-Declare Function FreeImage_RotateClassic Alias "FreeImage_RotateClassic" (byval dib as FIBITMAP ptr, ByVal angle As Single) As FIBITMAP ptr
-Declare Function FreeImage_RotateEx Alias "FreeImage_RotateEx" (byval dib as FIBITMAP ptr, ByVal angle As Single, ByVal x_shift As Single, ByVal y_shift As Single, ByVal x_origin As Single, ByVal y_origin As Single, ByVal use_mask As Integer) As FIBITMAP ptr
-Declare Function FreeImage_FlipHorizontal Alias "FreeImage_FlipHorizontal" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_FlipVertical Alias "FreeImage_FlipVertical" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_Rescale Alias "FreeImage_Rescale" (byval dib as FIBITMAP ptr, ByVal dst_width As Integer, ByVal dst_height As Integer, ByVal filter As FREE_IMAGE_FILTER) As FIBITMAP ptr
-Declare Function FreeImage_AdjustCurve Alias "FreeImage_AdjustCurve" (byval dib as FIBITMAP ptr, ByRef LUT As Integer, ByVal channel As FREE_IMAGE_COLOR_CHANNEL) As Integer
-Declare Function FreeImage_AdjustGamma Alias "FreeImage_AdjustGamma" (byval dib as FIBITMAP ptr, ByVal gamma As Single) As Integer
-Declare Function FreeImage_AdjustBrightness Alias "FreeImage_AdjustBrightness" (byval dib as FIBITMAP ptr, ByVal percentage As Single) As Integer
-Declare Function FreeImage_AdjustContrast Alias "FreeImage_AdjustContrast" (byval dib as FIBITMAP ptr, ByVal percentage As Single) As Integer
-Declare Function FreeImage_Invert Alias "FreeImage_Invert" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetHistogram Alias "FreeImage_GetHistogram" (byval dib as FIBITMAP ptr, ByRef histo As Integer, ByVal channel As FREE_IMAGE_COLOR_CHANNEL = FICC_BLACK) As Integer
-Declare Function FreeImage_GetChannel Alias "FreeImage_GetChannel" (byval dib as FIBITMAP ptr, ByVal channel As FREE_IMAGE_COLOR_CHANNEL) As Integer
-Declare Function FreeImage_SetChannel Alias "FreeImage_SetChannel" (byval dib as FIBITMAP ptr, ByVal dib8 As Integer, ByVal channel As FREE_IMAGE_COLOR_CHANNEL) As Integer
-Declare Function FreeImage_GetComplexChannel Alias "FreeImage_GetComplexChannel" (ByVal src As Integer, ByVal channel As FREE_IMAGE_COLOR_CHANNEL) As Integer
-Declare Function FreeImage_SetComplexChannel Alias "FreeImage_SetComplexChannel" (ByVal dst As Integer, ByVal src As Integer, ByVal channel As FREE_IMAGE_COLOR_CHANNEL) As Integer
-Declare Function FreeImage_Copy Alias "FreeImage_Copy" (byval dib as FIBITMAP ptr, ByVal left As Integer, ByVal top As Integer, ByVal right As Integer, ByVal bottom As Integer) As FIBITMAP ptr
-Declare Function FreeImage_Paste Alias "FreeImage_Paste" (ByVal dst As Integer, ByVal src As Integer, ByVal left As Integer, ByVal top As Integer, ByVal alpha As Integer) As Integer
-Declare Function FreeImage_Composite Alias "FreeImage_Composite" (ByVal fg As Integer, ByVal useFileBkg As Integer = 0, ByVal appBkColor As Integer = 0, ByVal bg As Integer = 0) As FIBITMAP ptr
+type FreeImage_OutputMessageFunction as sub cdecl(byval as FREE_IMAGE_FORMAT, byval as zstring ptr)
+type FreeImage_OutputMessageFunctionStdCall as sub (byval as FREE_IMAGE_FORMAT, byval as zstring ptr)
 
-#endif '' __FREEIMAGE_BI__
+declare sub FreeImage_SetOutputMessageStdCall alias "FreeImage_SetOutputMessageStdCall" (byval omf as FreeImage_OutputMessageFunctionStdCall)
+declare sub FreeImage_SetOutputMessage alias "FreeImage_SetOutputMessage" (byval omf as FreeImage_OutputMessageFunction)
+declare sub FreeImage_OutputMessageProc cdecl alias "FreeImage_OutputMessageProc" (byval fif as integer, byval fmt as zstring ptr, ...)
+declare function FreeImage_Allocate alias "FreeImage_Allocate" (byval width as integer, byval height as integer, byval bpp as integer, byval red_mask as uinteger = 0, byval green_mask as uinteger = 0, byval blue_mask as uinteger = 0) as FIBITMAP ptr
+declare function FreeImage_AllocateT alias "FreeImage_AllocateT" (byval type as FREE_IMAGE_TYPE, byval width as integer, byval height as integer, byval bpp as integer = 0, byval red_mask as uinteger = 0, byval green_mask as uinteger = 0, byval blue_mask as uinteger = 0) as FIBITMAP ptr
+declare function FreeImage_Clone alias "FreeImage_Clone" (byval dib as FIBITMAP ptr) as FIBITMAP ptr
+declare sub FreeImage_Unload alias "FreeImage_Unload" (byval dib as FIBITMAP ptr)
+declare function FreeImage_Load alias "FreeImage_Load" (byval fif as FREE_IMAGE_FORMAT, byval filename as zstring ptr, byval flags as integer = 0) as FIBITMAP ptr
+declare function FreeImage_LoadU alias "FreeImage_LoadU" (byval fif as FREE_IMAGE_FORMAT, byval filename as wstring ptr, byval flags as integer = 0) as FIBITMAP ptr
+declare function FreeImage_LoadFromHandle alias "FreeImage_LoadFromHandle" (byval fif as FREE_IMAGE_FORMAT, byval io as FreeImageIO ptr, byval handle as fi_handle, byval flags as integer = 0) as FIBITMAP ptr
+declare function FreeImage_Save alias "FreeImage_Save" (byval fif as FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval filename as zstring ptr, byval flags as integer = 0) as BOOL
+declare function FreeImage_SaveU alias "FreeImage_SaveU" (byval fif as FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval filename as wstring ptr, byval flags as integer = 0) as BOOL
+declare function FreeImage_SaveToHandle alias "FreeImage_SaveToHandle" (byval fif as FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval io as FreeImageIO ptr, byval handle as fi_handle, byval flags as integer = 0) as BOOL
+declare function FreeImage_OpenMemory alias "FreeImage_OpenMemory" (byval data as byte ptr = 0, byval size_in_bytes as DWORD = 0) as FIMEMORY ptr
+declare sub FreeImage_CloseMemory alias "FreeImage_CloseMemory" (byval stream as FIMEMORY ptr)
+declare function FreeImage_LoadFromMemory alias "FreeImage_LoadFromMemory" (byval fif as FREE_IMAGE_FORMAT, byval stream as FIMEMORY ptr, byval flags as integer = 0) as FIBITMAP ptr
+declare function FreeImage_SaveToMemory alias "FreeImage_SaveToMemory" (byval fif as FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval stream as FIMEMORY ptr, byval flags as integer = 0) as BOOL
+declare function FreeImage_TellMemory alias "FreeImage_TellMemory" (byval stream as FIMEMORY ptr) as integer
+declare function FreeImage_SeekMemory alias "FreeImage_SeekMemory" (byval stream as FIMEMORY ptr, byval offset as integer, byval origin as integer) as BOOL
+declare function FreeImage_AcquireMemory alias "FreeImage_AcquireMemory" (byval stream as FIMEMORY ptr, byval data as byte ptr ptr, byval size_in_bytes as DWORD ptr) as BOOL
+declare function FreeImage_ReadMemory alias "FreeImage_ReadMemory" (byval buffer as any ptr, byval size as uinteger, byval count as uinteger, byval stream as FIMEMORY ptr) as uinteger
+declare function FreeImage_WriteMemory alias "FreeImage_WriteMemory" (byval buffer as any ptr, byval size as uinteger, byval count as uinteger, byval stream as FIMEMORY ptr) as uinteger
+declare function FreeImage_LoadMultiBitmapFromMemory alias "FreeImage_LoadMultiBitmapFromMemory" (byval fif as FREE_IMAGE_FORMAT, byval stream as FIMEMORY ptr, byval flags as integer = 0) as FIMULTIBITMAP ptr
+declare function FreeImage_RegisterLocalPlugin alias "FreeImage_RegisterLocalPlugin" (byval proc_address as FI_InitProc, byval format as zstring ptr = 0, byval description as zstring ptr = 0, byval extension as zstring ptr = 0, byval regexpr as zstring ptr = 0) as FREE_IMAGE_FORMAT
+declare function FreeImage_RegisterExternalPlugin alias "FreeImage_RegisterExternalPlugin" (byval path as zstring ptr, byval format as zstring ptr = 0, byval description as zstring ptr = 0, byval extension as zstring ptr = 0, byval regexpr as zstring ptr = 0) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetFIFCount alias "FreeImage_GetFIFCount" () as integer
+declare function FreeImage_SetPluginEnabled alias "FreeImage_SetPluginEnabled" (byval fif as FREE_IMAGE_FORMAT, byval enable as BOOL) as integer
+declare function FreeImage_IsPluginEnabled alias "FreeImage_IsPluginEnabled" (byval fif as FREE_IMAGE_FORMAT) as integer
+declare function FreeImage_GetFIFFromFormat alias "FreeImage_GetFIFFromFormat" (byval format as zstring ptr) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetFIFFromMime alias "FreeImage_GetFIFFromMime" (byval mime as zstring ptr) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetFormatFromFIF alias "FreeImage_GetFormatFromFIF" (byval fif as FREE_IMAGE_FORMAT) as zstring ptr
+declare function FreeImage_GetFIFExtensionList alias "FreeImage_GetFIFExtensionList" (byval fif as FREE_IMAGE_FORMAT) as zstring ptr
+declare function FreeImage_GetFIFDescription alias "FreeImage_GetFIFDescription" (byval fif as FREE_IMAGE_FORMAT) as zstring ptr
+declare function FreeImage_GetFIFRegExpr alias "FreeImage_GetFIFRegExpr" (byval fif as FREE_IMAGE_FORMAT) as zstring ptr
+declare function FreeImage_GetFIFMimeType alias "FreeImage_GetFIFMimeType" (byval fif as FREE_IMAGE_FORMAT) as zstring ptr
+declare function FreeImage_GetFIFFromFilename alias "FreeImage_GetFIFFromFilename" (byval filename as zstring ptr) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetFIFFromFilenameU alias "FreeImage_GetFIFFromFilenameU" (byval filename as wstring ptr) as FREE_IMAGE_FORMAT
+declare function FreeImage_FIFSupportsReading alias "FreeImage_FIFSupportsReading" (byval fif as FREE_IMAGE_FORMAT) as BOOL
+declare function FreeImage_FIFSupportsWriting alias "FreeImage_FIFSupportsWriting" (byval fif as FREE_IMAGE_FORMAT) as BOOL
+declare function FreeImage_FIFSupportsExportBPP alias "FreeImage_FIFSupportsExportBPP" (byval fif as FREE_IMAGE_FORMAT, byval bpp as integer) as BOOL
+declare function FreeImage_FIFSupportsExportType alias "FreeImage_FIFSupportsExportType" (byval fif as FREE_IMAGE_FORMAT, byval type as FREE_IMAGE_TYPE) as BOOL
+declare function FreeImage_FIFSupportsICCProfiles alias "FreeImage_FIFSupportsICCProfiles" (byval fif as FREE_IMAGE_FORMAT) as BOOL
+declare function FreeImage_OpenMultiBitmap alias "FreeImage_OpenMultiBitmap" (byval fif as FREE_IMAGE_FORMAT, byval filename as zstring ptr, byval create_new as BOOL, byval read_only as BOOL, byval keep_cache_in_memory as BOOL = 0, byval flags as integer = 0) as FIMULTIBITMAP ptr
+declare function FreeImage_CloseMultiBitmap alias "FreeImage_CloseMultiBitmap" (byval bitmap as FIMULTIBITMAP ptr, byval flags as integer = 0) as BOOL
+declare function FreeImage_GetPageCount alias "FreeImage_GetPageCount" (byval bitmap as FIMULTIBITMAP ptr) as integer
+declare sub FreeImage_AppendPage alias "FreeImage_AppendPage" (byval bitmap as FIMULTIBITMAP ptr, byval data as FIBITMAP ptr)
+declare sub FreeImage_InsertPage alias "FreeImage_InsertPage" (byval bitmap as FIMULTIBITMAP ptr, byval page as integer, byval data as FIBITMAP ptr)
+declare sub FreeImage_DeletePage alias "FreeImage_DeletePage" (byval bitmap as FIMULTIBITMAP ptr, byval page as integer)
+declare function FreeImage_LockPage alias "FreeImage_LockPage" (byval bitmap as FIMULTIBITMAP ptr, byval page as integer) as FIBITMAP ptr
+declare sub FreeImage_UnlockPage alias "FreeImage_UnlockPage" (byval bitmap as FIMULTIBITMAP ptr, byval data as FIBITMAP ptr, byval changed as BOOL)
+declare function FreeImage_MovePage alias "FreeImage_MovePage" (byval bitmap as FIMULTIBITMAP ptr, byval target as integer, byval source as integer) as BOOL
+declare function FreeImage_GetLockedPageNumbers alias "FreeImage_GetLockedPageNumbers" (byval bitmap as FIMULTIBITMAP ptr, byval pages as integer ptr, byval count as integer ptr) as BOOL
+declare function FreeImage_GetFileType alias "FreeImage_GetFileType" (byval filename as zstring ptr, byval size as integer = 0) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetFileTypeU alias "FreeImage_GetFileTypeU" (byval filename as wstring ptr, byval size as integer = 0) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetFileTypeFromHandle alias "FreeImage_GetFileTypeFromHandle" (byval io as FreeImageIO ptr, byval handle as fi_handle, byval size as integer = 0) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetFileTypeFromMemory alias "FreeImage_GetFileTypeFromMemory" (byval stream as FIMEMORY ptr, byval size as integer = 0) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetImageType alias "FreeImage_GetImageType" (byval dib as FIBITMAP ptr) as FREE_IMAGE_TYPE
+declare function FreeImage_IsLittleEndian alias "FreeImage_IsLittleEndian" () as BOOL
+declare function FreeImage_LookupX11Color alias "FreeImage_LookupX11Color" (byval szColor as zstring ptr, byval nRed as byte ptr, byval nGreen as byte ptr, byval nBlue as byte ptr) as BOOL
+declare function FreeImage_LookupSVGColor alias "FreeImage_LookupSVGColor" (byval szColor as zstring ptr, byval nRed as byte ptr, byval nGreen as byte ptr, byval nBlue as byte ptr) as BOOL
+declare function FreeImage_GetBits alias "FreeImage_GetBits" (byval dib as FIBITMAP ptr) as byte ptr
+declare function FreeImage_GetScanLine alias "FreeImage_GetScanLine" (byval dib as FIBITMAP ptr, byval scanline as integer) as byte ptr
+declare function FreeImage_GetPixelIndex alias "FreeImage_GetPixelIndex" (byval dib as FIBITMAP ptr, byval x as uinteger, byval y as uinteger, byval value as byte ptr) as BOOL
+declare function FreeImage_GetPixelColor alias "FreeImage_GetPixelColor" (byval dib as FIBITMAP ptr, byval x as uinteger, byval y as uinteger, byval value as RGBQUAD ptr) as BOOL
+declare function FreeImage_SetPixelIndex alias "FreeImage_SetPixelIndex" (byval dib as FIBITMAP ptr, byval x as uinteger, byval y as uinteger, byval value as byte ptr) as BOOL
+declare function FreeImage_SetPixelColor alias "FreeImage_SetPixelColor" (byval dib as FIBITMAP ptr, byval x as uinteger, byval y as uinteger, byval value as RGBQUAD ptr) as BOOL
+declare function FreeImage_GetColorsUsed alias "FreeImage_GetColorsUsed" (byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_GetBPP alias "FreeImage_GetBPP" (byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_GetWidth alias "FreeImage_GetWidth" (byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_GetHeight alias "FreeImage_GetHeight" (byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_GetLine alias "FreeImage_GetLine" (byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_GetPitch alias "FreeImage_GetPitch" (byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_GetDIBSize alias "FreeImage_GetDIBSize" (byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_GetPalette alias "FreeImage_GetPalette" (byval dib as FIBITMAP ptr) as RGBQUAD ptr
+declare function FreeImage_GetDotsPerMeterX alias "FreeImage_GetDotsPerMeterX" (byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_GetDotsPerMeterY alias "FreeImage_GetDotsPerMeterY" (byval dib as FIBITMAP ptr) as uinteger
+declare sub FreeImage_SetDotsPerMeterX alias "FreeImage_SetDotsPerMeterX" (byval dib as FIBITMAP ptr, byval res as uinteger)
+declare sub FreeImage_SetDotsPerMeterY alias "FreeImage_SetDotsPerMeterY" (byval dib as FIBITMAP ptr, byval res as uinteger)
+declare function FreeImage_GetInfoHeader alias "FreeImage_GetInfoHeader" (byval dib as FIBITMAP ptr) as BITMAPINFOHEADER ptr
+declare function FreeImage_GetInfo alias "FreeImage_GetInfo" (byval dib as FIBITMAP ptr) as BITMAPINFO ptr
+declare function FreeImage_GetColorType alias "FreeImage_GetColorType" (byval dib as FIBITMAP ptr) as FREE_IMAGE_COLOR_TYPE
+declare function FreeImage_GetRedMask alias "FreeImage_GetRedMask" (byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_GetGreenMask alias "FreeImage_GetGreenMask" (byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_GetBlueMask alias "FreeImage_GetBlueMask" (byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_GetTransparencyCount alias "FreeImage_GetTransparencyCount" (byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_GetTransparencyTable alias "FreeImage_GetTransparencyTable" (byval dib as FIBITMAP ptr) as byte ptr
+declare sub FreeImage_SetTransparent alias "FreeImage_SetTransparent" (byval dib as FIBITMAP ptr, byval enabled as BOOL)
+declare sub FreeImage_SetTransparencyTable alias "FreeImage_SetTransparencyTable" (byval dib as FIBITMAP ptr, byval table as byte ptr, byval count as integer)
+declare function FreeImage_IsTransparent alias "FreeImage_IsTransparent" (byval dib as FIBITMAP ptr) as BOOL
+declare sub FreeImage_SetTransparentIndex alias "FreeImage_SetTransparentIndex" (byval dib as FIBITMAP ptr, byval index as integer)
+declare function FreeImage_GetTransparentIndex alias "FreeImage_GetTransparentIndex" (byval dib as FIBITMAP ptr) as integer
+declare function FreeImage_HasBackgroundColor alias "FreeImage_HasBackgroundColor" (byval dib as FIBITMAP ptr) as BOOL
+declare function FreeImage_GetBackgroundColor alias "FreeImage_GetBackgroundColor" (byval dib as FIBITMAP ptr, byval bkcolor as RGBQUAD ptr) as BOOL
+declare function FreeImage_SetBackgroundColor alias "FreeImage_SetBackgroundColor" (byval dib as FIBITMAP ptr, byval bkcolor as RGBQUAD ptr) as BOOL
+declare function FreeImage_GetICCProfile alias "FreeImage_GetICCProfile" (byval dib as FIBITMAP ptr) as FIICCPROFILE ptr
+declare function FreeImage_CreateICCProfile alias "FreeImage_CreateICCProfile" (byval dib as FIBITMAP ptr, byval data as any ptr, byval size as integer) as FIICCPROFILE ptr
+declare sub FreeImage_DestroyICCProfile alias "FreeImage_DestroyICCProfile" (byval dib as FIBITMAP ptr)
+declare sub FreeImage_ConvertLine1To4 alias "FreeImage_ConvertLine1To4" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine8To4 alias "FreeImage_ConvertLine8To4" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine16To4_555 alias "FreeImage_ConvertLine16To4_555" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine16To4_565 alias "FreeImage_ConvertLine16To4_565" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine24To4 alias "FreeImage_ConvertLine24To4" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine32To4 alias "FreeImage_ConvertLine32To4" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine1To8 alias "FreeImage_ConvertLine1To8" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine4To8 alias "FreeImage_ConvertLine4To8" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine16To8_555 alias "FreeImage_ConvertLine16To8_555" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine16To8_565 alias "FreeImage_ConvertLine16To8_565" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine24To8 alias "FreeImage_ConvertLine24To8" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine32To8 alias "FreeImage_ConvertLine32To8" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine1To16_555 alias "FreeImage_ConvertLine1To16_555" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine4To16_555 alias "FreeImage_ConvertLine4To16_555" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine8To16_555 alias "FreeImage_ConvertLine8To16_555" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine16_565_To16_555 alias "FreeImage_ConvertLine16_565_To16_555" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine24To16_555 alias "FreeImage_ConvertLine24To16_555" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine32To16_555 alias "FreeImage_ConvertLine32To16_555" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine1To16_565 alias "FreeImage_ConvertLine1To16_565" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine4To16_565 alias "FreeImage_ConvertLine4To16_565" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine8To16_565 alias "FreeImage_ConvertLine8To16_565" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine16_555_To16_565 alias "FreeImage_ConvertLine16_555_To16_565" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine24To16_565 alias "FreeImage_ConvertLine24To16_565" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine32To16_565 alias "FreeImage_ConvertLine32To16_565" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine1To24 alias "FreeImage_ConvertLine1To24" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine4To24 alias "FreeImage_ConvertLine4To24" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine8To24 alias "FreeImage_ConvertLine8To24" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine16To24_555 alias "FreeImage_ConvertLine16To24_555" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine16To24_565 alias "FreeImage_ConvertLine16To24_565" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine32To24 alias "FreeImage_ConvertLine32To24" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine1To32 alias "FreeImage_ConvertLine1To32" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine4To32 alias "FreeImage_ConvertLine4To32" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine8To32 alias "FreeImage_ConvertLine8To32" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer, byval palette as RGBQUAD ptr)
+declare sub FreeImage_ConvertLine16To32_555 alias "FreeImage_ConvertLine16To32_555" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine16To32_565 alias "FreeImage_ConvertLine16To32_565" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare sub FreeImage_ConvertLine24To32 alias "FreeImage_ConvertLine24To32" (byval target as byte ptr, byval source as byte ptr, byval width_in_pixels as integer)
+declare function FreeImage_ConvertTo4Bits alias "FreeImage_ConvertTo4Bits" (byval dib as FIBITMAP ptr) as FIBITMAP ptr
+declare function FreeImage_ConvertTo8Bits alias "FreeImage_ConvertTo8Bits" (byval dib as FIBITMAP ptr) as FIBITMAP ptr
+declare function FreeImage_ConvertToGreyscale alias "FreeImage_ConvertToGreyscale" (byval dib as FIBITMAP ptr) as FIBITMAP ptr
+declare function FreeImage_ConvertTo16Bits555 alias "FreeImage_ConvertTo16Bits555" (byval dib as FIBITMAP ptr) as FIBITMAP ptr
+declare function FreeImage_ConvertTo16Bits565 alias "FreeImage_ConvertTo16Bits565" (byval dib as FIBITMAP ptr) as FIBITMAP ptr
+declare function FreeImage_ConvertTo24Bits alias "FreeImage_ConvertTo24Bits" (byval dib as FIBITMAP ptr) as FIBITMAP ptr
+declare function FreeImage_ConvertTo32Bits alias "FreeImage_ConvertTo32Bits" (byval dib as FIBITMAP ptr) as FIBITMAP ptr
+declare function FreeImage_ColorQuantize alias "FreeImage_ColorQuantize" (byval dib as FIBITMAP ptr, byval quantize as FREE_IMAGE_QUANTIZE) as FIBITMAP ptr
+declare function FreeImage_ColorQuantizeEx alias "FreeImage_ColorQuantizeEx" (byval dib as FIBITMAP ptr, byval quantize as FREE_IMAGE_QUANTIZE = FIQ_WUQUANT, byval PaletteSize as integer = 256, byval ReserveSize as integer = 0, byval ReservePalette as RGBQUAD ptr = 0) as FIBITMAP ptr
+declare function FreeImage_Threshold alias "FreeImage_Threshold" (byval dib as FIBITMAP ptr, byval T as byte) as FIBITMAP ptr
+declare function FreeImage_Dither alias "FreeImage_Dither" (byval dib as FIBITMAP ptr, byval algorithm as FREE_IMAGE_DITHER) as FIBITMAP ptr
+declare function FreeImage_ConvertFromRawBits alias "FreeImage_ConvertFromRawBits" (byval bits as byte ptr, byval width as integer, byval height as integer, byval pitch as integer, byval bpp as uinteger, byval red_mask as uinteger, byval green_mask as uinteger, byval blue_mask as uinteger, byval topdown as BOOL = 0) as FIBITMAP ptr
+declare sub FreeImage_ConvertToRawBits alias "FreeImage_ConvertToRawBits" (byval bits as byte ptr, byval dib as FIBITMAP ptr, byval pitch as integer, byval bpp as uinteger, byval red_mask as uinteger, byval green_mask as uinteger, byval blue_mask as uinteger, byval topdown as BOOL = 0)
+declare function FreeImage_ConvertToRGBF alias "FreeImage_ConvertToRGBF" (byval dib as FIBITMAP ptr) as FIBITMAP ptr
+declare function FreeImage_ConvertToStandardType alias "FreeImage_ConvertToStandardType" (byval src as FIBITMAP ptr, byval scale_linear as BOOL = 1) as FIBITMAP ptr
+declare function FreeImage_ConvertToType alias "FreeImage_ConvertToType" (byval src as FIBITMAP ptr, byval dst_type as FREE_IMAGE_TYPE, byval scale_linear as BOOL = 1) as FIBITMAP ptr
+declare function FreeImage_ToneMapping alias "FreeImage_ToneMapping" (byval dib as FIBITMAP ptr, byval tmo as FREE_IMAGE_TMO, byval first_param as double = 0, byval second_param as double = 0) as FIBITMAP ptr
+declare function FreeImage_TmoDrago03 alias "FreeImage_TmoDrago03" (byval src as FIBITMAP ptr, byval gamma as double = 2.2, byval exposure as double = 0) as FIBITMAP ptr
+declare function FreeImage_TmoReinhard05 alias "FreeImage_TmoReinhard05" (byval src as FIBITMAP ptr, byval intensity as double = 0, byval contrast as double = 0) as FIBITMAP ptr
+declare function FreeImage_TmoFattal02 alias "FreeImage_TmoFattal02" (byval src as FIBITMAP ptr, byval color_saturation as double = .5, byval attenuation as double = .85) as FIBITMAP ptr
+declare function FreeImage_ZLibCompress alias "FreeImage_ZLibCompress" (byval target as byte ptr, byval target_size as DWORD, byval source as byte ptr, byval source_size as DWORD) as DWORD
+declare function FreeImage_ZLibUncompress alias "FreeImage_ZLibUncompress" (byval target as byte ptr, byval target_size as DWORD, byval source as byte ptr, byval source_size as DWORD) as DWORD
+declare function FreeImage_ZLibGZip alias "FreeImage_ZLibGZip" (byval target as byte ptr, byval target_size as DWORD, byval source as byte ptr, byval source_size as DWORD) as DWORD
+declare function FreeImage_ZLibGUnzip alias "FreeImage_ZLibGUnzip" (byval target as byte ptr, byval target_size as DWORD, byval source as byte ptr, byval source_size as DWORD) as DWORD
+declare function FreeImage_ZLibCRC32 alias "FreeImage_ZLibCRC32" (byval crc as DWORD, byval source as byte ptr, byval source_size as DWORD) as DWORD
+declare function FreeImage_CreateTag alias "FreeImage_CreateTag" () as FITAG ptr
+declare sub FreeImage_DeleteTag alias "FreeImage_DeleteTag" (byval tag as FITAG ptr)
+declare function FreeImage_CloneTag alias "FreeImage_CloneTag" (byval tag as FITAG ptr) as FITAG ptr
+declare function FreeImage_GetTagKey alias "FreeImage_GetTagKey" (byval tag as FITAG ptr) as zstring ptr
+declare function FreeImage_GetTagDescription alias "FreeImage_GetTagDescription" (byval tag as FITAG ptr) as zstring ptr
+declare function FreeImage_GetTagID alias "FreeImage_GetTagID" (byval tag as FITAG ptr) as WORD
+declare function FreeImage_GetTagType alias "FreeImage_GetTagType" (byval tag as FITAG ptr) as FREE_IMAGE_MDTYPE
+declare function FreeImage_GetTagCount alias "FreeImage_GetTagCount" (byval tag as FITAG ptr) as DWORD
+declare function FreeImage_GetTagLength alias "FreeImage_GetTagLength" (byval tag as FITAG ptr) as DWORD
+declare function FreeImage_GetTagValue alias "FreeImage_GetTagValue" (byval tag as FITAG ptr) as any ptr
+declare function FreeImage_SetTagKey alias "FreeImage_SetTagKey" (byval tag as FITAG ptr, byval key as zstring ptr) as BOOL
+declare function FreeImage_SetTagDescription alias "FreeImage_SetTagDescription" (byval tag as FITAG ptr, byval description as zstring ptr) as BOOL
+declare function FreeImage_SetTagID alias "FreeImage_SetTagID" (byval tag as FITAG ptr, byval id as WORD) as BOOL
+declare function FreeImage_SetTagType alias "FreeImage_SetTagType" (byval tag as FITAG ptr, byval type as FREE_IMAGE_MDTYPE) as BOOL
+declare function FreeImage_SetTagCount alias "FreeImage_SetTagCount" (byval tag as FITAG ptr, byval count as DWORD) as BOOL
+declare function FreeImage_SetTagLength alias "FreeImage_SetTagLength" (byval tag as FITAG ptr, byval length as DWORD) as BOOL
+declare function FreeImage_SetTagValue alias "FreeImage_SetTagValue" (byval tag as FITAG ptr, byval value as any ptr) as BOOL
+declare function FreeImage_FindFirstMetadata alias "FreeImage_FindFirstMetadata" (byval model as FREE_IMAGE_MDMODEL, byval dib as FIBITMAP ptr, byval tag as FITAG ptr ptr) as FIMETADATA ptr
+declare function FreeImage_FindNextMetadata alias "FreeImage_FindNextMetadata" (byval mdhandle as FIMETADATA ptr, byval tag as FITAG ptr ptr) as BOOL
+declare sub FreeImage_FindCloseMetadata alias "FreeImage_FindCloseMetadata" (byval mdhandle as FIMETADATA ptr)
+declare function FreeImage_SetMetadata alias "FreeImage_SetMetadata" (byval model as FREE_IMAGE_MDMODEL, byval dib as FIBITMAP ptr, byval key as zstring ptr, byval tag as FITAG ptr) as BOOL
+declare function FreeImage_GetMetadata alias "FreeImage_GetMetadata" (byval model as FREE_IMAGE_MDMODEL, byval dib as FIBITMAP ptr, byval key as zstring ptr, byval tag as FITAG ptr ptr) as BOOL
+declare function FreeImage_GetMetadataCount alias "FreeImage_GetMetadataCount" (byval model as FREE_IMAGE_MDMODEL, byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_TagToString alias "FreeImage_TagToString" (byval model as FREE_IMAGE_MDMODEL, byval tag as FITAG ptr, byval Make as zstring ptr = 0) as zstring ptr
+declare function FreeImage_RotateClassic alias "FreeImage_RotateClassic" (byval dib as FIBITMAP ptr, byval angle as double) as FIBITMAP ptr
+declare function FreeImage_RotateEx alias "FreeImage_RotateEx" (byval dib as FIBITMAP ptr, byval angle as double, byval x_shift as double, byval y_shift as double, byval x_origin as double, byval y_origin as double, byval use_mask as BOOL) as FIBITMAP ptr
+declare function FreeImage_FlipHorizontal alias "FreeImage_FlipHorizontal" (byval dib as FIBITMAP ptr) as BOOL
+declare function FreeImage_FlipVertical alias "FreeImage_FlipVertical" (byval dib as FIBITMAP ptr) as BOOL
+declare function FreeImage_JPEGTransform alias "FreeImage_JPEGTransform" (byval src_file as zstring ptr, byval dst_file as zstring ptr, byval operation as FREE_IMAGE_JPEG_OPERATION, byval perfect as BOOL = 0) as BOOL
+declare function FreeImage_Rescale alias "FreeImage_Rescale" (byval dib as FIBITMAP ptr, byval dst_width as integer, byval dst_height as integer, byval filter as FREE_IMAGE_FILTER) as FIBITMAP ptr
+declare function FreeImage_MakeThumbnail alias "FreeImage_MakeThumbnail" (byval dib as FIBITMAP ptr, byval max_pixel_size as integer, byval convert as BOOL = 1) as FIBITMAP ptr
+declare function FreeImage_AdjustCurve alias "FreeImage_AdjustCurve" (byval dib as FIBITMAP ptr, byval LUT as byte ptr, byval channel as FREE_IMAGE_COLOR_CHANNEL) as BOOL
+declare function FreeImage_AdjustGamma alias "FreeImage_AdjustGamma" (byval dib as FIBITMAP ptr, byval gamma as double) as BOOL
+declare function FreeImage_AdjustBrightness alias "FreeImage_AdjustBrightness" (byval dib as FIBITMAP ptr, byval percentage as double) as BOOL
+declare function FreeImage_AdjustContrast alias "FreeImage_AdjustContrast" (byval dib as FIBITMAP ptr, byval percentage as double) as BOOL
+declare function FreeImage_Invert alias "FreeImage_Invert" (byval dib as FIBITMAP ptr) as BOOL
+declare function FreeImage_GetHistogram alias "FreeImage_GetHistogram" (byval dib as FIBITMAP ptr, byval histo as DWORD ptr, byval channel as FREE_IMAGE_COLOR_CHANNEL = FICC_BLACK) as BOOL
+declare function FreeImage_GetAdjustColorsLookupTable alias "FreeImage_GetAdjustColorsLookupTable" (byval LUT as byte ptr, byval brightness as double, byval contrast as double, byval gamma as double, byval invert as BOOL) as integer
+declare function FreeImage_AdjustColors alias "FreeImage_AdjustColors" (byval dib as FIBITMAP ptr, byval brightness as double, byval contrast as double, byval gamma as double, byval invert as BOOL = 0) as BOOL
+declare function FreeImage_ApplyColorMapping alias "FreeImage_ApplyColorMapping" (byval dib as FIBITMAP ptr, byval srccolors as RGBQUAD ptr, byval dstcolors as RGBQUAD ptr, byval count as uinteger, byval ignore_alpha as BOOL, byval swap as BOOL) as uinteger
+declare function FreeImage_SwapColors alias "FreeImage_SwapColors" (byval dib as FIBITMAP ptr, byval color_a as RGBQUAD ptr, byval color_b as RGBQUAD ptr, byval ignore_alpha as BOOL) as uinteger
+declare function FreeImage_ApplyPaletteIndexMapping alias "FreeImage_ApplyPaletteIndexMapping" (byval dib as FIBITMAP ptr, byval srcindices as byte ptr, byval dstindices as byte ptr, byval count as uinteger, byval swap as BOOL) as uinteger
+declare function FreeImage_SwapPaletteIndices alias "FreeImage_SwapPaletteIndices" (byval dib as FIBITMAP ptr, byval index_a as byte ptr, byval index_b as byte ptr) as uinteger
+declare function FreeImage_GetChannel alias "FreeImage_GetChannel" (byval dib as FIBITMAP ptr, byval channel as FREE_IMAGE_COLOR_CHANNEL) as FIBITMAP ptr
+declare function FreeImage_SetChannel alias "FreeImage_SetChannel" (byval dib as FIBITMAP ptr, byval dib8 as FIBITMAP ptr, byval channel as FREE_IMAGE_COLOR_CHANNEL) as BOOL
+declare function FreeImage_GetComplexChannel alias "FreeImage_GetComplexChannel" (byval src as FIBITMAP ptr, byval channel as FREE_IMAGE_COLOR_CHANNEL) as FIBITMAP ptr
+declare function FreeImage_SetComplexChannel alias "FreeImage_SetComplexChannel" (byval dst as FIBITMAP ptr, byval src as FIBITMAP ptr, byval channel as FREE_IMAGE_COLOR_CHANNEL) as BOOL
+declare function FreeImage_Copy alias "FreeImage_Copy" (byval dib as FIBITMAP ptr, byval left as integer, byval top as integer, byval right as integer, byval bottom as integer) as FIBITMAP ptr
+declare function FreeImage_Paste alias "FreeImage_Paste" (byval dst as FIBITMAP ptr, byval src as FIBITMAP ptr, byval left as integer, byval top as integer, byval alpha as integer) as BOOL
+declare function FreeImage_Composite alias "FreeImage_Composite" (byval fg as FIBITMAP ptr, byval useFileBkg as BOOL = 0, byval appBkColor as RGBQUAD ptr = 0, byval bg as FIBITMAP ptr = 0) as FIBITMAP ptr
+declare function FreeImage_JPEGCrop alias "FreeImage_JPEGCrop" (byval src_file as zstring ptr, byval dst_file as zstring ptr, byval left as integer, byval top as integer, byval right as integer, byval bottom as integer) as BOOL
+declare function FreeImage_PreMultiplyWithAlpha alias "FreeImage_PreMultiplyWithAlpha" (byval dib as FIBITMAP ptr) as BOOL
+declare function FreeImage_MultigridPoissonSolver alias "FreeImage_MultigridPoissonSolver" (byval Laplacian as FIBITMAP ptr, byval ncycle as integer = 3) as FIBITMAP ptr
+
+#endif
