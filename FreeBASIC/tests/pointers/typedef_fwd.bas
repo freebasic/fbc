@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.pointers.fwdref
+namespace fbc_tests.pointers.typedef_fwdref
 
 type foo as bar
 
@@ -57,7 +57,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.pointers.fwdref")
+	fbcu.add_suite("fbc_tests.pointers.typedef_fwdref")
 	fbcu.add_test("test", @test)
 
 end sub

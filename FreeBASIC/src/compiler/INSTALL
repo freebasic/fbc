@@ -88,5 +88,5 @@ Take care when linking to the BFD library.  Newer versions are licensed under
 GNU GPL version 3 (or later) and can not be legally combined with FreeBASIC's 
 compiler source which is licensed under GNU GPL version 2 (or later).  
 Statically linking to libbfd.a will likely require that it be no greater than
-version 2.17.  However, there are no known licesning conflicts  if the 
+version 2.17.  However, there are no known licensing conflicts if the 
 FreeBASIC compiler is linked to a shared version of the BFD library.
