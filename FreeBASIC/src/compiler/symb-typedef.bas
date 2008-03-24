@@ -78,7 +78,9 @@ private sub hFixForwardRef _
 	select case as const class_
 	case FB_SYMBCLASS_TYPEDEF
 		sym = symbGetSubtype( sym )
-		dtype = symbGetFullType( sym )
+		if( sym ) then
+			dtype = symbGetFullType( sym )
+		end if
 	end select
 	
 	n = f->fwd.reftail
