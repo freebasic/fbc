@@ -97,7 +97,7 @@ function fbObjInfoReadLib _
 	do while( path <> NULL )
 
 		libfile = *path->name
-		libfile += $"\" + filename
+		libfile += FB_HOST_PATHDIV + filename
 		if( hFileExists( libfile ) ) then
 			exit do
 		end if
