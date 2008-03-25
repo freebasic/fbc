@@ -270,6 +270,7 @@ tests/pointers/indexing1.bas
 tests/pointers/indexing2.bas
 tests/pointers/multi_deref.bas
 tests/pointers/prop_new_del.bas
+tests/pointers/typedef_fwd.bas
 tests/pp/inc1.bi
 tests/pp/inc2.bi
 tests/pp/inc2self.bi
