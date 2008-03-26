@@ -19,8 +19,8 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 const FB_VER_MAJOR          = 0
-const FB_VER_MINOR          = 18
-const FB_VER_PATCH          = 4
+const FB_VER_MINOR          = 20
+const FB_VER_PATCH          = 0
 
 #define QUOTE !"\""
 #define NEWLINE !"\r\n"
