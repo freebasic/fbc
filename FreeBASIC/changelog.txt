@@ -36,7 +36,7 @@ Version 0.18.4 Beta:
 - VAR was disregarding the extended type information (like const qualifiers), found by stylin
 - variables with const qualifier shouldn't have been accepting ANY as an initializer (cha0s)
 - FBC was crashing on invalid data types (e.g. INPUT 1) (counting_pine)
-- VALLNG was accepting invalid characters in hex/oct/bin numbers (counting_pine)
+- VALLNG and wstring VAL*s were accepting invalid characters in hex/oct/bin numbers (counting_pine)
 - VAL now allows longint-sized hex/bin/oct numbers (counting_pine)
 - Many cases of badly-handled numbers in INPUT (counting_pine)
 - Faulty logic in optimizing signed integer division by powers of two greater than 1 (counting_pine)
