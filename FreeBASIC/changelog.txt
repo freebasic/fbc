@@ -44,6 +44,7 @@ Version 0.18.4 Beta:
 - const qualified data types were not being allowed with null ptr checks (jeffm)
 - str was trying to fold const qualified variables (counting_pine)
 - INPUT was incorrectly parsing floating-point numbers with the 'd' exponent specifier on non-win32 platforms (jeffm)
+- SCREENGLPROC returns NULL (instead of a linker error) if OpenGL support was not compiled in to the gfxlib (jeffm)
 - #1877440 - g++ name mangling for const qualifiers (jeffm)
 - #1877439 - const qualifier overloading with byref (jeffm)
 - #1872532 - fix null pointer access when parsing parameters and allow OVERLOAD in member proc declarations for consistency (jeffm)

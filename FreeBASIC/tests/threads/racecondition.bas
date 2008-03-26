@@ -1,7 +1,7 @@
 # include "fbcu.bi"
 
 
-
+#ifndef __FB_DOS__
 
 namespace fbc_tests.threads.racecondition
 
@@ -50,3 +50,5 @@ sub ctor () constructor
 end sub
 
 end namespace
+
+#endif '' !defined(__FB_DOS__)

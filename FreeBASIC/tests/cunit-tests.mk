@@ -61,7 +61,10 @@ ifeq ($(TARGET),win32)
     FBCU_LIBS += -l user32
 endif
 
-FBC_CFLAGS := -c -w 3 -i $(FBCU_INC) -mt
+FBC_CFLAGS := -c -w 3 -i $(FBCU_INC) 
+ifneq ($(HOST),dos)
+	FBC_CFLAGS += -mt
+endif
 ifdef DEBUG
 	FBC_CFLAGS += -g
 endif

@@ -162,7 +162,7 @@ dim shared opt_error as integer
 ''
 sub ReadSampleIni( byref filename as string )
 	
-	dim h as integer, x as string, i as integer
+	dim h as integer, x as string, i as integer, skiptonext as integer
 	dim v as string, t as string, p as string
 	dim buildstep as SpecialBuildStep
 	h = freefile
@@ -173,11 +173,13 @@ sub ReadSampleIni( byref filename as string )
 	redim sbCmds(0)
 
 	if( open( filename for input access read as #h ) = 0 ) then
+		skiptonext = FALSE
 		while eof(h) = 0
 			line input #h, x
 			x = trim( x, any chr(9,32) )
 			if( (x > "") and (left(x, 1) <> "#") ) then
 				if( (left(x, 1) = "[") and (right(x, 1) = "]") ) then
+					skiptonext = FALSE
 					nsbfiles += 1
 					redim preserve sbFiles( 0 to nsbFiles - 1 )
 					with sbFiles( nsbFiles - 1 )
@@ -204,18 +206,28 @@ sub ReadSampleIni( byref filename as string )
 
 						if( p = PLATFORM ) then
 
-							select case ucase(v)
-							case "SRC"	
-								buildstep = SBS_SRC
-							case "DST"
-								buildstep = SBS_DST
-							case "CMD"
-								buildstep = SBS_CMD
-							case "DEP"
-								buildstep = SBS_DEP
-							case else
+							if( skiptonext = TRUE ) then
 								buildstep = SBS_INVALID
-							end select
+
+							else
+
+								select case ucase(v)
+								case "SRC"	
+									buildstep = SBS_SRC
+								case "DST"
+									buildstep = SBS_DST
+								case "CMD"
+									buildstep = SBS_CMD
+								case "DEP"
+									buildstep = SBS_DEP
+								case "SKP"
+									buildstep = SBS_INVALID
+									skiptonext = TRUE
+								case else
+									buildstep = SBS_INVALID
+								end select
+
+							end if
 
 							nsbCmds += 1
 							redim preserve sbCmds( 0 to nsbCmds - 1 )

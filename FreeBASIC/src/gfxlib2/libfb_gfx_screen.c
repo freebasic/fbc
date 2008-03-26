@@ -457,3 +457,17 @@ FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 	/* del if temp */
 	fb_hStrDelTemp( title );
 }
+
+
+/*:::::*/
+#if !defined(HAVE_GL_GL_H)
+FBCALL void *fb_GfxGetGLProcAddress(const char *proc)
+{
+	/* if gl.h header was not found at configure time
+	 * then no OpenGL support will be compiled in, and
+	 * this function won't be defined anywhere else, so
+	 * just provide a stub in such a case (jeffm).
+	 */
+	return NULL;
+}
+#endif
