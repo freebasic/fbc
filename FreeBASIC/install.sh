@@ -51,8 +51,8 @@ install()
 	cp -ru inc/* "$INSTALLDIR"/include/freebasic/ && \
 	cp -ru examples/* "$INSTALLDIR"/share/freebasic/examples/ && \
 	cp -ru docs/* "$INSTALLDIR"/share/freebasic/docs/ && \
-	cp -ru readme.txt "$INSTALLDIR"/share/freebasic/docs/ && \
-	cp -ru migrating.txt "$INSTALLDIR"/share/freebasic/docs/ && \
+	cp -ru readme.txt "$INSTALLDIR"/share/freebasic/ && \
+	cp -ru migrating.txt "$INSTALLDIR"/share/freebasic/ && \
 	gzip -c docs/fbc.1 > "$INSTALLDIR"/man/man1/fbc.1.gz && \
 	cp fbc "$INSTALLDIR"/bin/ && \
 	chmod a+x "$INSTALLDIR"/bin/fbc && \
@@ -72,6 +72,7 @@ uninstall()
 	rm -fr "$INSTALLDIR"/lib/freebasic && \
 	rm -fr "$INSTALLDIR"/include/freebasic && \
 	rm -f "$INSTALLDIR"/bin/fbc && \
+	rm -fr "$INSTALLDIR"/share/freebasic && \
 	rm -f "$INSTALLDIR"/man/man1/fbc.1.gz && \
 	u_success_msg
 }
