@@ -213,8 +213,10 @@ declare sub getDefaultLibs _
     		  " for " + FB_HOST + " (target:" + FB_TARGET + ")"
     	print "Copyright (C) 2004-2008 The FreeBASIC development team."
 
-#if defined(TARGET_LINUX) or defined(TARGET_FREEBSD)
+#ifndef STANDALONE
 		print "Configured with prefix " + FB_ARCH_PREFIX
+#else
+		print "Configured as standalone"
 #endif
 
     	print
@@ -1892,7 +1894,11 @@ function fbcGetLibPathList _
 
 	dim as FBS_LIB ptr libp = listGetHead( @fbc.ld_libpathlist )
 	do while( libp <> NULL )
-    	list += " -L " + QUOTE + *libp->name + QUOTE
+		if( right( *libp->name, 1 ) = RSLASH ) then
+    		list += " -L " + QUOTE + left( *libp->name, len(*libp->name) - 1 ) + QUOTE
+		else
+    		list += " -L " + QUOTE + *libp->name + QUOTE
+		end if
     	libp = listGetNext( libp )
     loop
 

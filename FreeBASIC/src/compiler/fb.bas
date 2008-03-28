@@ -40,12 +40,11 @@ declare sub	parserEnd ( )
 
 declare sub	parserSetCtx ( )
 
-
 '' globals
 	dim shared infileTb( ) as FBFILE
 	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
 	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB_MAXPATHLEN+1
-	dim shared as string fbGnuTriplet, fbPrefix
+	dim shared as string fbPrefix
 	dim shared as string gccLibTb(0 to GCC_LIBS - 1) 
 
 	dim shared as FB_LANG_INFO langTb(0 to FB_LANGS-1) = _
@@ -135,9 +134,22 @@ declare sub	parserSetCtx ( )
 		@"crti.o"           , _
 		@"crtn.o"           , _
 		@"gcrt1.o"          , _
-		@"libgcc.a"         , _
-		@"libsupc++.a"      _
+		@"libgcc.a"         _
 	}
+
+#if defined(STANDALONE)
+
+const FB_BINPATH = FB_HOST_PATHDIV + "bin" + FB_HOST_PATHDIV
+const FB_INCPATH = FB_HOST_PATHDIV + "inc" + FB_HOST_PATHDIV
+const FB_LIBPATH = FB_HOST_PATHDIV + "lib" + FB_HOST_PATHDIV
+
+#else
+
+const FB_BINPATH = FB_HOST_PATHDIV + "bin" + FB_HOST_PATHDIV + "freebasic" + FB_HOST_PATHDIV
+const FB_INCPATH = FB_HOST_PATHDIV + "include" + FB_HOST_PATHDIV + "freebasic" + FB_HOST_PATHDIV
+const FB_LIBPATH = FB_HOST_PATHDIV + "lib" + FB_HOST_PATHDIV + "freebasic" + FB_HOST_PATHDIV
+
+#endif
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -212,7 +224,7 @@ function fbAddLibPath _
 end function
 
 '':::::
-function fbaddLibPathEx _
+function fbAddLibPathEx _
 	( _
 		byval pathlist as TLIST ptr, _
 		byval pathhash as THASH ptr, _
@@ -691,17 +703,30 @@ function fbIsCrossComp _
 
 end function
 
-private sub setUnixPaths( byref prefix as string )
-	
-	pathTB(FB_PATH_INC   ) = prefix + "/include/freebasic"
-	pathTB(FB_PATH_LIB   ) = prefix + "/lib/freebasic"
-	pathTB(FB_PATH_SCRIPT) = pathTB(FB_PATH_LIB   ) + "/" + fbGnuTriplet + "/"
-	pathTB(FB_PATH_BIN   ) = prefix + "/bin/"
-	
-end sub
 
-private sub setOtherPaths( byref prefix as string )
-	
+'':::::
+sub fbSetPaths _
+	( _
+		byval target as integer _
+	) 
+
+	dim as string prefix = fbPrefix
+	dim as integer usetargetdir = FALSE
+
+#if defined(STANDALONE)
+
+	if( len(prefix) = 0 ) then
+		prefix = exepath()
+	end if
+
+#else
+
+	if( len(prefix) = 0 ) then
+		prefix = FB_ARCH_PREFIX
+	end if
+
+#endif
+
 	dim as string target_dir = ""
 	select case as const env.clopt.target
 	case FB_COMPTARGET_WIN32
@@ -717,56 +742,11 @@ private sub setOtherPaths( byref prefix as string )
 	case FB_COMPTARGET_FREEBSD
 		target_dir = "freebsd"
 	end select
-	
+
 	pathTB(FB_PATH_BIN   ) = prefix + FB_BINPATH + target_dir + FB_HOST_PATHDIV
 	pathTB(FB_PATH_INC   ) = prefix + FB_INCPATH
-	pathTB(FB_PATH_LIB   ) = prefix + FB_LIBPATH + target_dir
+	pathTB(FB_PATH_LIB   ) = prefix + FB_LIBPATH + target_dir + FB_HOST_PATHDIV
 	pathTB(FB_PATH_SCRIPT) = prefix + FB_LIBPATH + target_dir + FB_HOST_PATHDIV
-	
-end sub
-
-'':::::
-sub fbSetPaths _
-	( _
-		byval target as integer _
-	) 
-	
-	dim as string to_prefix = fbPrefix
-#if defined( __FB_LINUX__ ) or defined( __FB_FREEBSD__ )
-	
-	fbGnuTriplet = "."
-'	select case as const target
-'	case FB_COMPTARGET_WIN32
-'		fbGnuTriplet = "i686-pc-mingw32"
-'	case FB_COMPTARGET_CYGWIN
-'		fbGnuTriplet = "i686-pc-cygwin"
-'	case FB_COMPTARGET_LINUX
-'		#if defined( __FB_LINUX__ )
-'			fbGnuTriplet = "."
-'		#else
-'			fbGnuTriplet = "i686-pc-linux-gnu"
-'		#endif
-'	case FB_COMPTARGET_DOS
-'		fbGnuTriplet = "i386-pc-msdosdjgpp"
-'	case FB_COMPTARGET_XBOX
-'		fbGnuTriplet = "i686-pc-mingw32"
-'	case FB_COMPTARGET_FREEBSD
-'		#if defined( __FB_FREEBSD__ )
-'			fbGnuTriplet = "."
-'		#else
-'			fbGnuTriplet = "i686-pc-freebsd"
-'		#endif
-'	end select
-	
-	if( to_prefix = "" ) then to_prefix = FB_ARCH_PREFIX
-	setUnixPaths( to_prefix )
-	
-#else
-	
-	if( to_prefix = "" ) then to_prefix = exepath
-	setOtherPaths( to_prefix )
-	
-#endif
 
 #if not( defined( __FB_WIN32__ ) or defined( __FB_DOS__ ) )
 	hRevertSlash( pathTB(FB_PATH_BIN), FALSE )
@@ -1021,21 +1001,27 @@ function fbFindGccLib _
 		byval lib_id as GCC_LIB _
 	) as string
 
-    dim as string lib_file = fbGetPath( FB_PATH_LIB ) + FB_HOST_PATHDIV + *gccLibFileNameTb( lib_id )
+    dim as string file_loc
+
+	file_loc = fbGetPath( FB_PATH_LIB ) + *gccLibFileNameTb( lib_id )
+
+	'' Cross compiling? then expect that the needed file will be in the target directory
+	if( fbIsCrossComp() ) then
+		return file_loc
+	end if
+
+    '' let the ones in lib override if necessary
+    if( hFileExists( file_loc ) ) then
+    	return file_loc
+    end if
     
 '' only query gcc if the host is linux or freebsd
 #if defined(__FB_LINUX__) or defined(__FB_FREEBSD__)
     
-    '' let the ones in lib override if necessary
-    if( hFileExists( lib_file ) ) then
-    	return lib_file
-    end if
-    
-	dim as string file_loc, path
+	dim as string path
 	dim as integer ff = any 
 
 	function = ""
-	
 
 	path = fbFindBinFile( "gcc" )
 	if( len( path ) = 0 ) then
@@ -1061,14 +1047,10 @@ function fbFindGccLib _
 		errReportEx( FB_ERRMSG_FILENOTFOUND, *gccLibFileNameTb( lib_id ), -1 )
 		exit function
 	end if
-	
-	function = file_loc
-
-#else
-
-	function = lib_file
 
 #endif
+	
+	function = file_loc
 	
 end function
 

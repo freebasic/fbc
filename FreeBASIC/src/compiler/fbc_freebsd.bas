@@ -34,24 +34,28 @@
 '':::::
 private sub _setDefaultLibPaths
 
-'' only query gcc if the host is linux or freebsd
-#if defined(TARGET_LINUX) or defined(TARGET_FREEBSD)
-	dim as string file_loc
-	dim as integer i = any
+	'' only query gcc if this is not a cross compile
+	if( fbIsCrossComp() = FALSE ) then
+		dim as string file_loc
+		dim as integer i = any
 
-	'' add the paths required by gcc libs and object files
-	for i = 0 to GCC_LIBS - 1
+		'' add the paths required by gcc libs and object files
+		for i = 0 to GCC_LIBS - 1
 
-		file_loc = fbFindGccLib( i )
+			file_loc = fbFindGccLib( i )
 
-		if( len( file_loc ) <> 0 ) then
-			fbSetGccLib( i, file_loc )
-			fbcAddDefLibPath( hStripFilename( file_loc ) )
-		end if
-	next
-	
-	fbcAddDefLibPath( FB_ARCH_PREFIX + "/lib" )
-#endif
+			if( len( file_loc ) <> 0 ) then
+				fbSetGccLib( i, file_loc )
+				fbcAddDefLibPath( hStripFilename( file_loc ) )
+			end if
+		next 
+
+	else
+		dim as integer i = any
+		for i = 0 to GCC_LIBS - 1
+			fbSetGccLib( i, fbFindGccLib( i ) )
+		next
+	endif
 
 end sub
 
@@ -152,7 +156,7 @@ private function _linkFiles _
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' rtlib initialization and termination (must be included in the group or
 		'' dlopen() will fail because fb_hRtExit() will be undefined)
-		ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + "/fbrt0.o" + QUOTE + " "
+		ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + "fbrt0.o" + QUOTE + " "
 	end if
 
 	'' end lib group

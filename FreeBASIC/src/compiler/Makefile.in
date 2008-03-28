@@ -40,7 +40,7 @@ FBC = @FBC@
 
 # !!!FIXME!!! -arch can't be assumed, using target_cpu will give
 #             "686" for example, making fbc to fail in non mmx-cpu's
-FBC_CFLAGS = -e -c -i $(srcdir) -target @FBC_HOST@ -arch 486 -d ARCH_PREFIX=$(prefix)
+FBC_CFLAGS = -e -c -i $(srcdir) -target @FBC_HOST@ -arch 486
 
 FBC_LFLAGS := -v -target @FBC_HOST@
 
@@ -198,6 +198,14 @@ endif
 #
 # misc
 #
+
+# compiling the standalone compiler?
+ifeq (@FBC_STANDALONE@,yes)
+	DEFS += -d STANDALONE
+else
+	DEFS += -d ARCH_PREFIX=$(prefix)
+endif
+
 
 # if objinfo disabled, set a define so we can exclude sections
 # of code from the source

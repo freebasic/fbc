@@ -23,6 +23,39 @@ When configuring the build process (with ../../configure) there are a few
 options that can be specified to change behavior and capabilities of the
 fbc compiler.
 
+INSTALLATION TO ABSOLUTE PREFIX
+
+--prefix=/path
+
+By default the compiler will be configured for a specific installation
+directory.  If the --prefix option is not given, the installation prefix will
+default to /usr/local.  Use --prefix=/path to specify a different installation
+prefix.
+
+fbc installed to "$prefix/bin/fbc"
+headers located in "$prefix/include/freebasic"
+libraries located in "$prefix/lib/freebasic/<target>"
+binaries located in "$prefix/bin/freebasic/<target>"
+
+
+STANDALONE COMPILER
+
+--enable-standalone
+
+An alternative to configuring the compiler for installation at an absolute
+location is to create a "standalone" compiler.  fbc will search for needed
+files relative to where fbc is located.  (This is how fbc 0.18.3 and earlier
+operated).  The directories searched are same as the FreeBASIC developement
+tree:
+
+fbc located at the "top" of the tree
+headers located in "./inc"
+libraries located in "./lib/<target>"
+binaries located in "./bin/<target>"
+
+If the compiler is configured with --enable-standalone then the --prefix
+option will be ignored.
+
 
 ENABLE CROSS COMPILATION TARGETS
 

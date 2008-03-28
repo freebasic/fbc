@@ -40,14 +40,14 @@ i_success_msg()
 }
 install()
 {
-	mkdir -p -m 0755 "$INSTALLDIR"/lib/freebasic && \
+	mkdir -p -m 0755 "$INSTALLDIR"/lib/freebasic/linux && \
 	mkdir -p -m 0755 "$INSTALLDIR"/include/freebasic && \
 	mkdir -p -m 0755 "$INSTALLDIR"/bin && \
 	mkdir -p -m 0755 "$INSTALLDIR"/share/freebasic && \
 	mkdir -p -m 0755 "$INSTALLDIR"/share/freebasic/docs && \
 	mkdir -p -m 0755 "$INSTALLDIR"/share/freebasic/examples && \
 	mkdir -p -m 0755 "$INSTALLDIR"/man/man1 && \
-	cp lib/linux/* "$INSTALLDIR"/lib/freebasic/ && \
+	cp lib/linux/* "$INSTALLDIR"/lib/freebasic/linux/ && \
 	cp -ru inc/* "$INSTALLDIR"/include/freebasic/ && \
 	cp -ru examples/* "$INSTALLDIR"/share/freebasic/examples/ && \
 	cp -ru docs/* "$INSTALLDIR"/share/freebasic/docs/ && \

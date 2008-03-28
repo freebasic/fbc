@@ -89,7 +89,7 @@ private function _linkFiles _
 	dim as string libdir = fbGetPath( FB_PATH_LIB )
 	
 	'' link with crt0.o (C runtime init)
-	ldcline += " " + QUOTE + libdir + (RSLASH + "crt0.o" + QUOTE + " ")
+	ldcline += " " + QUOTE + libdir + ("crt0.o" + QUOTE + " ")
 	
 	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
@@ -114,7 +114,7 @@ private function _linkFiles _
 	
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' rtlib initialization and termination
-		ldcline += QUOTE + libdir + (RSLASH + "fbrt0.o" + QUOTE + " ")
+		ldcline += QUOTE + libdir + ("fbrt0.o" + QUOTE + " ")
 	end if
 	
 	'' end lib group

@@ -103,9 +103,9 @@ private function _linkFiles _
 	
 	'' link with crt0.o (C runtime init) or gcrt0.o for gmon profiling
 	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-		ldcline += " " + QUOTE + libdir + RSLASH + "gcrt0.o" + QUOTE + " "
+		ldcline += " " + QUOTE + libdir + "gcrt0.o" + QUOTE + " "
 	else
-		ldcline += " " + QUOTE + libdir + RSLASH + "crt0.o" + QUOTE + " "
+		ldcline += " " + QUOTE + libdir + "crt0.o" + QUOTE + " "
 	end if
 
 	'' add objects from output list
@@ -133,7 +133,7 @@ private function _linkFiles _
 
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' rtlib initialization and termination, must be included in the group
-		ldcline += QUOTE + libdir + (RSLASH + "fbrt0.o" + QUOTE + " ")
+		ldcline += QUOTE + libdir + ("fbrt0.o" + QUOTE + " ")
 	end if
 
 	'' end lib group
