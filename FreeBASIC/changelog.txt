@@ -1,8 +1,7 @@
 Version 0.18.5 Beta:
 
 [changed]
-- installed directory layout now has target have been used (jeffm)
-- updated install script to copy lib/linux to $prefix/freebasic/lib/linux (jeffm)
+- fbc when installed to a configured --prefix now uses target directories (jeffm)
 - added the --enable-standalone configure switch.  If building for current dos/win32 or to use fbc from inside the development tree, this switch must be used (jeffm)
 
 
