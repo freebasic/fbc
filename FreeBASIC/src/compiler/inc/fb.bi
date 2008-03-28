@@ -105,12 +105,6 @@ const FB_HOST_PATHDIV       = "/"
 #error Unsupported host
 #endif
 
-'' \'s are reversed in Linux
-const FB_BINPATH = FB_HOST_PATHDIV + "bin" + FB_HOST_PATHDIV
-const FB_INCPATH = FB_HOST_PATHDIV + "inc" + FB_HOST_PATHDIV
-const FB_LIBPATH = FB_HOST_PATHDIV + "lib" + FB_HOST_PATHDIV
-
-
 '' compiler options
 enum FB_COMPOPT
 	FB_COMPOPT_DEBUG
@@ -333,7 +327,6 @@ enum GCC_LIB
 	CRTN_O
 	GCRT1_O
 	LIBGCC_A
-	LIBSUPC_A
 	GCC_LIBS
 end enum
 

@@ -205,18 +205,18 @@ private function _linkFiles _
 
 	'' crt entry
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-		ldcline += " " + QUOTE + libdir + (RSLASH + "dllcrt2.o" + QUOTE + " ")
+		ldcline += " " + QUOTE + libdir + ("dllcrt2.o" + QUOTE + " ")
 	else
-		ldcline += " " + QUOTE + libdir + (RSLASH + "crt2.o" + QUOTE + " ")
+		ldcline += " " + QUOTE + libdir + ("crt2.o" + QUOTE + " ")
 
 		'' additional support for gmon
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += QUOTE + libdir + (RSLASH + "gcrt2.o" + QUOTE + " ")
+			ldcline += QUOTE + libdir + ("gcrt2.o" + QUOTE + " ")
 		end if
 
 	end if
 
-	ldcline += "" + QUOTE + libdir + (RSLASH + "crtbegin.o" + QUOTE + " ")
+	ldcline += "" + QUOTE + libdir + ("crtbegin.o" + QUOTE + " ")
 
     '' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
@@ -243,13 +243,13 @@ private function _linkFiles _
 		'' 		 linking a DLL, or LD will fail with an "undefined symbol" msg. at least
 		'' 		 the order the .ctors/.dtors appeared will be preserved, so the rtlib ones
 		'' 		 will be the first/last called, respectively
-		ldcline += QUOTE + libdir + (RSLASH + "fbrt0.o" + QUOTE + " ")
+		ldcline += QUOTE + libdir + ("fbrt0.o" + QUOTE + " ")
 	end if
 
 	ldcline += "-) "
 
 	'' crt end stuff
-	ldcline += QUOTE + libdir + (RSLASH + "crtend.o" + QUOTE)
+	ldcline += QUOTE + libdir + ("crtend.o" + QUOTE)
 
     if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
         '' create the def list to use when creating the import library

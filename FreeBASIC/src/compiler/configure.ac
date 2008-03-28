@@ -126,6 +126,20 @@ AC_ARG_ENABLE(objinfo,
 AC_SUBST([FBC_OBJINFO])
 
 
+# Optionally enable STANDALONE feature.  This allows fbc to be run
+# as a standalone compiler within the developement tree.
+AC_ARG_ENABLE(standalone,
+[  --enable-standalone        build a standalone compiler],
+ [if test "$enableval" != "no"; then
+    FBC_STANDALONE=yes
+ else
+    FBC_STANDALONE=
+ fi],
+ FBC_STANDALONE=no
+)
+AC_SUBST([FBC_STANDALONE])
+
+
 #
 # Cross-compile targets
 #

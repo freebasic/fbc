@@ -123,14 +123,14 @@ private function _linkFiles _
 	'' crt entry
 	dim as string libdir = fbGetPath( FB_PATH_LIB )
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-		ldcline += " " + QUOTE + libdir + (RSLASH + "crt0.o" + QUOTE + " ")
+		ldcline += " " + QUOTE + libdir + ("crt0.o" + QUOTE + " ")
 	else
 		'' FIXME
-		ldcline += " " + QUOTE + libdir + (RSLASH + "crt0.o" + QUOTE + " ")
+		ldcline += " " + QUOTE + libdir + ("crt0.o" + QUOTE + " ")
 
 		'' additional support for gmon
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += QUOTE + libdir + (RSLASH + "gcrt0.o" + QUOTE + " ")
+			ldcline += QUOTE + libdir + ("gcrt0.o" + QUOTE + " ")
 		end if
 
 	end if
@@ -160,7 +160,7 @@ private function _linkFiles _
 
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' rtlib initialization and termination
-		ldcline += QUOTE + libdir + (RSLASH + "fbrt0.o" + QUOTE + " ")
+		ldcline += QUOTE + libdir + ("fbrt0.o" + QUOTE + " ")
 	end if
 
 	'' end lib group
