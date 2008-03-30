@@ -373,7 +373,7 @@ void fb_hX11InitWindow(int x, int y)
 	if (!(fb_x11.flags & DRIVER_FULLSCREEN))
 		XMapRaised(fb_x11.display, fb_x11.window);
 	
-	XMoveResizeWindow(fb_x11.display, fb_x11.window, x, y, fb_x11.w, fb_x11.h);
+	XResizeWindow(fb_x11.display, fb_x11.window, fb_x11.w, fb_x11.h);
 	
 	if (fb_x11.flags & DRIVER_FULLSCREEN) {
 		attribs.override_redirect = True;
