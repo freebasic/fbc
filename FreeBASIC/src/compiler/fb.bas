@@ -134,7 +134,8 @@ declare sub	parserSetCtx ( )
 		@"crti.o"           , _
 		@"crtn.o"           , _
 		@"gcrt1.o"          , _
-		@"libgcc.a"         _
+		@"libgcc.a"         , _
+		@"libsupc++.a"      _
 	}
 
 #if defined(STANDALONE)
