@@ -91,8 +91,8 @@ if [ ! -e ./fbc ]; then
 fi
 
 INSTALLDIR=`./fbc -version | grep prefix | cut -c24- -`
-if [ "$INSTALLDIR" == "" ]; then
-	if [ "$2" == "" ]; then
+if [ "$INSTALLDIR" = "" ]; then
+	if [ "$2" = "" ]; then
 		echo
 		echo "ERROR: Unable to determine the configured prefix from ./fbc -version"
 		echo "ERROR: Need destination path"

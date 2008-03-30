@@ -1380,6 +1380,8 @@ function fbIncludeFile _
 		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + incfile + QUOTE )
 		return errFatal( )
 	end if
+	
+	hRevertSlash( incfile, FALSE )
 
 	'' #include ONCE
 	if( isonce ) then
