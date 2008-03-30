@@ -2,6 +2,7 @@ Version 0.20.0 Beta:
 
 [changed]
 - update FreeImage header to v3.10 and .def files for Win32 (cha0s)
+- x11 gfx driver: let the window manager pick the window position (DrV)
 
 [added]
 
