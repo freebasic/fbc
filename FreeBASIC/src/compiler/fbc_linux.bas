@@ -222,8 +222,10 @@ private function _compileResFiles _
 	dim as string aspath, iconsrc, buffer, outstr()
 
 	function = FALSE
-
-	if( fbGetOption( FB_COMPOPT_OUTTYPE ) <> FB_OUTTYPE_EXECUTABLE ) then
+    
+    '' executbles as well as dynamic libs (ldopen can fail otherwise)
+	if( (fbGetOption( FB_COMPOPT_OUTTYPE ) <> FB_OUTTYPE_EXECUTABLE) and _ 
+	    (fbGetOption( FB_COMPOPT_OUTTYPE ) <> FB_OUTTYPE_DYNAMICLIB) ) then
 		return TRUE
 	end if
 
