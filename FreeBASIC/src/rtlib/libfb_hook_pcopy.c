@@ -43,9 +43,6 @@ FBCALL int fb_PageCopy( int src, int dst )
 {
 	fb_DevScrnInit_NoOpen( );
 
-	if( (src > FB_CONSOLE_MAXPAGES) || (dst > FB_CONSOLE_MAXPAGES) )
-		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-
 	FB_LOCK();
 
 	int res;
@@ -53,7 +50,12 @@ FBCALL int fb_PageCopy( int src, int dst )
 	if( __fb_ctx.hooks.pagecopyproc )
 		res = __fb_ctx.hooks.pagecopyproc( src, dst );
 	else
-        res = fb_ConsolePageCopy( src, dst );
+	{
+		if( (src > FB_CONSOLE_MAXPAGES) || (dst > FB_CONSOLE_MAXPAGES) )
+			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+
+		res = fb_ConsolePageCopy( src, dst );
+	}
 
 	FB_UNLOCK();
 
