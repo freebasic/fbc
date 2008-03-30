@@ -327,6 +327,7 @@ enum GCC_LIB
 	CRTN_O
 	GCRT1_O
 	LIBGCC_A
+	LIBSUPC_A
 	GCC_LIBS
 end enum
 
