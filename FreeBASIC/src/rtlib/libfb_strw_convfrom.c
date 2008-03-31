@@ -41,8 +41,11 @@
 /*:::::*/
 FBCALL double fb_WstrToDouble( const FB_WCHAR *src, int len )
 {
-    const FB_WCHAR *p, *r;
-    int radix;
+	const FB_WCHAR *p, *r;
+	int radix;
+	FB_WCHAR *q, c;
+	int i;
+	double ret;
 
 	/* skip white spc */
 	p = fb_wstr_SkipChar( src, len, 32 );
@@ -72,11 +75,26 @@ FBCALL double fb_WstrToDouble( const FB_WCHAR *src, int len )
 		}
 
 		if( radix != 0 )
-			return (double)fb_WstrRadix2Int( r, len - fb_wstr_CalcDiff( p, r ), radix );
+			return (double)fb_WstrRadix2Longint( r, len - fb_wstr_CalcDiff( p, r ), radix );
 	}
 
-	return wcstod( p, NULL );
+	/* Workaround: wcstod() does not allow 'd' as an exponent specifier on 
+	 * non-win32 platforms, so create a temporary buffer and replace any 
+	 * 'd's with 'e'
+	 */
+	q = malloc( (len + 1) * sizeof(FB_WCHAR) );
+	for( i = 0; i < len; i++ )
+	{
+		c = p[i];
+		if( c == L'd' || c == L'D' )
+			++c;
+		q[i]= c;
+	}
+	q[len] = L'\0';
+	ret = wcstod( q, NULL );
+	free( q );
 
+	return ret;
 }
 
 /*:::::*/

@@ -42,8 +42,10 @@
 /*:::::*/
 FBCALL double fb_hStr2Double( char *src, int len )
 {
-    char 	*p;
-    int 	radix;
+	char *p, *q, c;
+	int radix;
+	int i;
+	double ret;
 
 	/* skip white spc */
 	p = fb_hStrSkipChar( src, len, 32 );
@@ -74,7 +76,25 @@ FBCALL double fb_hStr2Double( char *src, int len )
 		if( radix != 0 )
 			return (double)fb_hStrRadix2Longint( &p[2], len-2, radix );
 	}
-	return strtod( p, NULL );
+
+	/* Workaround: strtod() does not allow 'd' as an exponent specifier on 
+	 * non-win32 platforms, so create a temporary buffer and replace any 
+     * 'd's with 'e'
+     */
+	q = malloc( len + 1 );
+	for( i = 0; i < len; i++ )
+	{
+		c = p[i];
+		if( c == 'd' || c == 'D' ) 
+			++c;
+		q[i] = c;
+	}
+	q[len] = '\0';
+
+	ret = strtod( q, NULL );
+	free( q );
+
+	return ret;
 }
 
 /*:::::*/

@@ -9,6 +9,7 @@ Version 0.20.0 Beta:
 [fixed]
 - wstring VAL*s were accepting invalid characters in hex/oct/bin numbers (counting_pine)
 - PCOPY wouldn't copy graphics screens higher than the max console page (counting_pine)
+- VAL on non-win32 platforms was only accepting 'e' (not 'd') as an exponent specifier (counting_pine)
 
 
 Version 0.18.5 Beta:
