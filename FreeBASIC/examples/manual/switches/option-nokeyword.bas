@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOptionnokeyword
 '' --------
 
-'' Compile with the "-lang deprecated" compiler switch
+'' Compile with the "-lang fblite" compiler switch
 
 Option NoKeyword Int        ' remove the keyword 'int' from the internal
 	                        ' symbol table

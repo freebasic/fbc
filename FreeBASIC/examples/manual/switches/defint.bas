@@ -6,6 +6,6 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDefint
 '' --------
 
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite or qb
 DefInt i
 Dim iNumber

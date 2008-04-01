@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgLpos
 '' --------
 
-' compile with -lang deprecated or qb
+' compile with -lang fblite or qb
 Dim test As String = "LPrint Example test"
 
 Print "Sending '" + test + "' to LPT1 (default)"

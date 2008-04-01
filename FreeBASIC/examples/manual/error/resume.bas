@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgResume
 '' --------
 
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite or qb
 Dim As Single i, j
 
 On Error Goto ErrHandler

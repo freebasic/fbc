@@ -6,10 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpen
 '' --------
 
-Dim openerror As Integer
 
-openerror = Open("file.ext" For Binary Access Read As #1)
-
-If openerror Then
-	Print "Error opening file: " & openerror
+'function version of OPEN
+If Open("file.ext" For Binary Access Read As #1)>0  Then
+	Print "Error opening file "
 End If

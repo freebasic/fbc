@@ -7,7 +7,7 @@
 '' --------
 
 '' test.bas
-'' compile with fbc -exx -lang deprecated test.bas
+'' compile with fbc -exx -lang fblite test.bas
 
 Sub Generate_Error
   On Error Goto Handler

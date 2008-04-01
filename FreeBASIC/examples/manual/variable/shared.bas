@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgShared
 '' --------
 
-'' Compile with -lang qb or deprecated
+'' Compile with -lang qb or fblite
 Declare Sub MySub
 Dim Shared x As Integer
 Dim y As Integer

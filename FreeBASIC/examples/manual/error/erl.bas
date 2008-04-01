@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgErl
 '' --------
 
-' compile with -lang deprecated or qb
+' compile with -lang fblite or qb
 ' note: compilation with '-ex' option is required
 
 On Error Goto ErrorHandler

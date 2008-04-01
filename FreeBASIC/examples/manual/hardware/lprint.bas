@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgLprint
 '' --------
 
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite or qb
 
 '' new-line
 LPrint "Hello World!"

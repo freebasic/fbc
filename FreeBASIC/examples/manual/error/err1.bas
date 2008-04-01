@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgErr
 '' --------
 
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite or qb
 On Error Goto Error_Handler
 Error 150
 End

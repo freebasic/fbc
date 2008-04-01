@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgMetaInclude
 '' --------
 
-'' compile with -lang deprecated or qb
+'' compile with -lang fblite or qb
 '' main.bas file
 
 '$INCLUDE: "header.bi"

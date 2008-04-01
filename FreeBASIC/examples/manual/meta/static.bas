@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgMetaStatic
 '' --------
 
-' compile with -lang deprecated or qb
+' compile with -lang fblite or qb
 '$dynamic
 Dim a(100)   '<<this array will be variable-length
 '$static

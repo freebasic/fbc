@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCall
 '' --------
 
-'' Compile with -lang qb or -lang deprecated
+'' Compile with -lang qb or -lang fblite
 
 Function f ( ) As Integer
 f = 42

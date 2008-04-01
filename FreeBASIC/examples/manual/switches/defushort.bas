@@ -6,6 +6,6 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDefushort
 '' --------
 
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite
 DefUShort u
 Dim uNumber

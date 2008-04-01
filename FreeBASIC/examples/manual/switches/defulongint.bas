@@ -6,6 +6,6 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDefulongint
 '' --------
 
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite
 defulongint l
 Dim lNumber

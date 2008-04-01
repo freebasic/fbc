@@ -6,6 +6,6 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDefsng
 '' --------
 
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite or qb
 DefSng s-z
 Dim sNumber, yNumber

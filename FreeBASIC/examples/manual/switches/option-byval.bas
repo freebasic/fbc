@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOptionbyval
 '' --------
 
-'' compile with the "-lang deprecated" compiler switch
+'' compile with the "-lang fblite" compiler switch
 
 Sub TestDefaultByref( a As Integer )
   '' change the value

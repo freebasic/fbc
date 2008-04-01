@@ -6,6 +6,6 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDefuint
 '' --------
 
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite
 DefInt u
 Dim uNumber

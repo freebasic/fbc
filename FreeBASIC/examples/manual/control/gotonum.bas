@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgGoto
 '' --------
 
-'' Compile with -lang qb or deprecated
+'' Compile with -lang qb or fblite
 1 Goto 3
 2 End
 3 Print "Welcome!"

@@ -15,6 +15,7 @@ f = FreeFile
 
 ' Open the file "file.ext" for binary usage, using the file number "f".
 Open "file.ext" For Binary As #f
+If Err>0 Then Print "Error opening the file":End
 
 ' Place our string inside the file, using number "f".
 Put #f, , buffer

@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgVariables
 '' --------
 
-' compile with -lang qb or deprecated
+' compile with -lang qb or fblite
 Declare Sub PrintConstants()
 
 Dim FirstNumber As Integer

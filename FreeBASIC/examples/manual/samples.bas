@@ -406,6 +406,9 @@ function DoCompile _
 			if instr( lcase(body), "-lang deprecated" ) > 0 then
 				args += " -lang deprecated"
 
+			elseif instr( lcase(body), "-lang fblite" ) > 0 then
+				args += " -lang fblite"
+
 			elseif instr( lcase(body), "-lang qb" ) > 0 then
 				args += " -lang qb"
 

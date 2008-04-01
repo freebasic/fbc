@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOptionstatic
 '' --------
 
-'' Compile with the "-lang deprecated" compiler switch
+'' Compile with the "-lang fblite" compiler switch
 
 Option Dynamic
 

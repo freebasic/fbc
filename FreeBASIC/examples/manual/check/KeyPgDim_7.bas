@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDim
 '' --------
 
-'' Compile with -lang qb or deprecated
+'' Compile with -lang qb or fblite
 
 '' A string variable using the $ type suffix
 Dim strVariable$

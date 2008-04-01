@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOptionexplicit
 '' --------
 
-'' Compile with the "-lang qb" or "-lang deprecated" compiler switches
+'' Compile with the "-lang qb" or "-lang fblite" compiler switches
 
 Option Explicit
 

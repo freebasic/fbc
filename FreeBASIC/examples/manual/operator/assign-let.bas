@@ -6,6 +6,6 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpAssignment
 '' --------
 
-' compile with -lang deprecated or qb
+' compile with -lang fblite or qb
 Dim i As Integer
 Let i = 300 ' <-alternate syntax

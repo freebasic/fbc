@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOptiondynamic
 '' --------
 
-'' Compile with "-lang deprecated" compiler switch
+'' Compile with "-lang fblite" compiler switch
 
 Dim foo(99) As Integer      ' declares a fixed-length array
 

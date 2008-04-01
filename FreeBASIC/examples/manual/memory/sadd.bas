@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSadd
 '' --------
 
-'' Compile with -lang qb or deprecated
+'' Compile with -lang qb or fblite
 Print SAdd(s$)
 s$ = "hello"
 Print SAdd(s$)

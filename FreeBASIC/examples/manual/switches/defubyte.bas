@@ -6,6 +6,6 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDefubyte
 '' --------
 
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite
 DefUByte u
 Dim uNumber

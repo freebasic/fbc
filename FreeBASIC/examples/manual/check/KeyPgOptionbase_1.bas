@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOptionbase
 '' --------
 
-'' Compile with the "-lang qb" or "-lang deprecated" compiler switches
+'' Compile with the "-lang qb" or "-lang fblite" compiler switches
 
 Dim foo(10) As Integer      ' declares an array with indices 0-10
 

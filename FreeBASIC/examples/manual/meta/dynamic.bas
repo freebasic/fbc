@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgMetaDynamic
 '' --------
 
-' compile with -lang deprecated or qb
+' compile with -lang fblite or qb
 '$DYNAMIC
 Dim a(100)
 '......
