@@ -1255,6 +1255,14 @@ private sub hReadString _
 				end if
 
 				lexCurrentChar( )
+
+				' stop certain escapes being passed through
+				select case as const lexCurrentChar( )
+					case asc( "x" ), asc( "X" ), asc( "0" )
+						*ps = CHAR_RSLASH
+						ps += 1
+						lgt += 1
+				end select
 			end if
 
 		end select
@@ -1361,6 +1369,14 @@ private sub hReadWStr _
 				end if
 
 				lexCurrentChar( )
+
+				' stop certain escapes being passed through
+				select case as const lexCurrentChar( )
+					case asc( "x" ), asc( "X" ), asc( "0" )
+						*ps = CHAR_RSLASH
+						ps += 1
+						lgt += 1
+				end select
 			end if
 
 		end select
