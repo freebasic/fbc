@@ -75,7 +75,9 @@ FBCALL int fb_hStr2Int( char *src, int len )
 			return fb_hStrRadix2Int( &p[2], len-2, radix );
 	}
 
-	return atoi( p );
+	/* atoi() saturates values outside [-2^31, 2^31)
+	so use strtoul() instead */
+	return strtoul( p, NULL, 10 );
 }
 
 /*:::::*/

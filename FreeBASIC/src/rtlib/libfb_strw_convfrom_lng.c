@@ -81,7 +81,9 @@ FBCALL long long fb_WstrToLongint( const FB_WCHAR *src, int len )
 		}
 	}
 
-	return wcstoll( p, NULL, radix );
+	/* wcstoll() saturates values outside [-2^63, 2^63)
+	so use wcstoull() instead */
+	return (long long)wcstoull( p, NULL, radix );
 }
 
 /*:::::*/
