@@ -13,8 +13,8 @@
 #include once "parser.bi"
 #include once "xmlerror.bi"
 #include once "parser.bi"
-#include once "sax.bi"
-#include once "sax2.bi"
+#include once "SAX.bi"
+#include once "SAX2.bi"
 
 type xmlParserInputBufferCreateFilenameFunc as xmlParserInputBufferPtr ptr
 type xmlOutputBufferCreateFilenameFunc as xmlOutputBufferPtr ptr
