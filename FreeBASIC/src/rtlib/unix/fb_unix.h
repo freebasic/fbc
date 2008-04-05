@@ -50,8 +50,10 @@
 #include <dlfcn.h>
 #include <pthread.h>
 
+#ifdef WITH_X
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
+#endif
 
 #ifdef HAVE_TERMCAP_H
 # include <termcap.h>
@@ -181,11 +183,13 @@ extern void fb_hExitConsole(void);
 extern void fb_unix_hInit ( void );
 extern void fb_unix_hEnd ( int unused );
 
+#ifdef WITH_X
 typedef struct KeysymToScancode {
   KeySym keysym;
   int scancode;
 } KeysymToScancode;
 
 extern const KeysymToScancode fb_keysym_to_scancode[];
+#endif
 
 #endif

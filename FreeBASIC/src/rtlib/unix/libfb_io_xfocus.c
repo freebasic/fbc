@@ -37,6 +37,8 @@
  */
 
 #include "fb.h"
+
+#ifdef WITH_X
 #include <X11/Xlib.h>
 
 typedef Display *(*XOPENDISPLAY)(char *);
@@ -55,11 +57,12 @@ static X_FUNCS X = { NULL };
 static Display *display;
 static Window xterm_window;
 
-
+#endif /* WITH_X */
 
 /*:::::*/
 int fb_hXTermInitFocus(void)
 {
+#if WITH_X
 	const char *funcs[] = { "XOpenDisplay", "XCloseDisplay", "XGetInputFocus", NULL };
 	int dummy;
 	
@@ -76,7 +79,9 @@ int fb_hXTermInitFocus(void)
 		return -1;
 	
 	X.GetInputFocus(display, &xterm_window, &dummy);
-	
+
+#endif
+
 	return 0;
 }
 
@@ -84,21 +89,28 @@ int fb_hXTermInitFocus(void)
 /*:::::*/
 void fb_hXTermExitFocus(void)
 {
+#if WITH_X
 	ref_count--;
 	if (ref_count > 0)
 		return;
 	X.CloseDisplay(display);
 	fb_hDynUnload(&xlib);
+#endif
 }
 
 
 /*:::::*/
 int fb_hXTermHasFocus(void)
 {
+#if WITH_X
 	Window focus_window;
 	int dummy;
 	
 	X.GetInputFocus(display, &focus_window, &dummy);
 	
 	return (focus_window == xterm_window);
+#else
+	return 0;
+#endif
 }
+

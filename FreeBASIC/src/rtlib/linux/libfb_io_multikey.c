@@ -39,8 +39,12 @@
 #include "fb.h"
 #include "fb_linux.h"
 #include "fb_scancodes.h"
+
+#ifdef WITH_X
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
+#endif
+
 #include <linux/kd.h>
 #include <linux/keyboard.h>
 #include <linux/vt.h>
@@ -51,6 +55,7 @@
 static int keyboard_init(void);
 static void keyboard_exit(void);
 
+#ifdef WITH_X
 typedef Display *(*XOPENDISPLAY)(char *);
 typedef int (*XCLOSEDISPLAY)(Display *);
 typedef void (*XQUERYKEYMAP)(Display *, unsigned char *);
@@ -64,11 +69,16 @@ typedef struct {
     XDISPLAYKEYCODES DisplayKeycodes;
     XKEYCODETOKEYSYM KeycodeToKeysym;
 } X_FUNCS;
+#endif
 
 static pid_t main_pid;
+
+#ifdef WITH_X
 static Display *display;
 static void *xlib = NULL;
 static X_FUNCS X = { NULL };
+#endif
+
 static int key_fd, key_old_mode, key_leds;
 
 static unsigned char key_state[128], scancode[256];
@@ -270,6 +280,8 @@ static void keyboard_console_handler(void)
 }
 
 
+#ifdef WITH_X
+
 /*:::::*/
 static void keyboard_x11_handler(void)
 {
@@ -286,15 +298,19 @@ static void keyboard_x11_handler(void)
 	}
 }
 
+#endif
+
 
 /*:::::*/
 static int keyboard_init(void)
 {
-    const char *funcs[] = {
-        "XOpenDisplay", "XCloseDisplay", "XQueryKeymap", "XDisplayKeycodes", "XKeycodeToKeysym", NULL
-    };
-	int keycode_min, keycode_max, i, j;
+#ifdef WITH_X
+	const char *funcs[] = {
+		"XOpenDisplay", "XCloseDisplay", "XQueryKeymap", "XDisplayKeycodes", "XKeycodeToKeysym", NULL
+	};
 	KeySym keysym;
+#endif
+	int keycode_min, keycode_max, i, j;
 	struct termios term;
 
 	main_pid = getpid();
@@ -320,6 +336,8 @@ static int keyboard_init(void)
 		key_head = key_tail = 0;
 		ioctl(key_fd, KDGETLED, &key_leds);
 	}
+
+#ifdef WITH_X
 	else {
 	    xlib = fb_hDynLoad("libX11.so", funcs, (void **)&X);
 	    if (!xlib)
@@ -345,6 +363,7 @@ static int keyboard_init(void)
 		fb_hXTermInitFocus();
 		__fb_con.keyboard_handler = keyboard_x11_handler;
 	}
+#endif
 
 	__fb_con.keyboard_init = keyboard_init;
 	__fb_con.keyboard_exit = keyboard_exit;
@@ -361,11 +380,13 @@ static void keyboard_exit(void)
 		close(key_fd);
 		key_fd = -1;
 	}
+#ifdef WITH_X
 	else if (__fb_con.inited == INIT_X11) {
 		X.CloseDisplay(display);
 		fb_hDynUnload(&xlib);
 		fb_hXTermExitFocus();
 	}
+#endif
 	__fb_con.keyboard_getch = old_getch;
 	__fb_con.keyboard_handler = NULL;
 	__fb_con.keyboard_exit = NULL;

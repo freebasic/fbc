@@ -93,7 +93,8 @@ static void mouse_handler(void)
 	fd_set set;
 	struct timeval tv = { 0, 0 };
 	int count = 0;
-	
+
+#ifdef WITH_X
 	if (__fb_con.inited == INIT_X11) {
 		if (fb_hXTermHasFocus()) {
 			if (!has_focus)
@@ -110,6 +111,7 @@ static void mouse_handler(void)
 		}
 		return;
 	}
+#endif
 	
 	FD_ZERO(&set);
 	FD_SET(*gpm.fd, &set);
@@ -155,7 +157,9 @@ static int mouse_init(void)
 	else {
 		fb_hTermOut(SEQ_INIT_XMOUSE, 0, 0);
 		__fb_con.mouse_update = mouse_update;
+#ifdef WITH_X
 		fb_hXTermInitFocus();
+#endif
 	}
 	return 0;
 }
@@ -170,7 +174,9 @@ static void mouse_exit(void)
 	}
 	else {
 		fb_hTermOut(SEQ_EXIT_XMOUSE, 0, 0);
+#ifdef WITH_X
 		fb_hXTermExitFocus();
+#endif
 		__fb_con.mouse_update = NULL;
 	}
 	__fb_con.mouse_handler = NULL;
