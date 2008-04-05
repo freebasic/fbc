@@ -41,8 +41,6 @@
 #include <string.h>
 #include "fb.h"
 
-#ifndef TARGET_XBOX
-
 static FB_FILE_HOOKS hooks_dev_pipe = {
     fb_DevFileEof,
     fb_DevPipeClose,
@@ -125,11 +123,3 @@ int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filena
 	return res;
 }
 
-#else
-
-int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )
-{
-    return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-}
-
-#endif
