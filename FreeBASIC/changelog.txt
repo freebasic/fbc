@@ -12,6 +12,8 @@ Version 0.20.0 Beta:
 - VAL on non-win32 platforms was only accepting 'e' (not 'd') as an exponent specifier (counting_pine)
 - VAL* was saturating instead of overflowing large numbers in some cases (counting_pine)
 - wstring VAL was truncating hex/oct/bin numbers to 32 bits (counting_pine)
+- constant ASC expressions were returning signed integers instead of uintegers (counting_pine)
+
 
 Version 0.18.5 Beta:
 

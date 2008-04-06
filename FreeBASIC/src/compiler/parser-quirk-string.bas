@@ -387,13 +387,13 @@ private function cStrASC _
 			if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
 				'' remove internal escape format
 				dim as zstring ptr zs = hUnescape( symbGetVarLitText( litsym ) )
-				funcexpr = astNewCONSTi( asc( *zs, p ), FB_DATATYPE_INTEGER )
+				funcexpr = astNewCONSTi( asc( *zs, p ), FB_DATATYPE_UINT )
 
 			'' wstring..
 	    	else
 				'' ditto
 				dim as wstring ptr ws = hUnescapeW( symbGetVarLitTextW( litsym ) )
-				funcexpr = astNewCONSTi( asc( *ws, p ), FB_DATATYPE_INTEGER )
+				funcexpr = astNewCONSTi( asc( *ws, p ), FB_DATATYPE_UINT )
 			end if
 
 	    	astDelNode( expr1 )
