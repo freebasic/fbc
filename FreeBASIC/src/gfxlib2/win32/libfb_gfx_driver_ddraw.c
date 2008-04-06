@@ -71,23 +71,10 @@ typedef struct MODESLIST {
 	int *data;
 } MODESLIST;
 
-typedef struct FLASHWINFO {
-	UINT cbSize;
-	HWND hwnd;
-	DWORD dwFlags;
-	UINT uCount;
-	DWORD dwTimeout;
-} FLASHWINFO, *PFLASHWINFO;
-
 typedef struct DEVENUMDATA {
 	GUID guid;
 	BOOL success;
 } DEVENUMDATA;
-
-typedef BOOL (WINAPI *FLASHWINDOWEX)(PFLASHWINFO pwfi);
-
-static FLASHWINDOWEX FlashWindowEx = NULL;
-
 
 static int directx_init(void);
 static void directx_exit(void);
@@ -140,16 +127,12 @@ static void restore_surfaces(void)
 				Sleep(300);
 			}
 			
-			if (!FlashWindowEx) {
-				FlashWindowEx = GetProcAddress(GetModuleHandle("USER32"), "FlashWindowEx");
-			}
-			
-			if (FlashWindowEx) {
+			if (fb_win32.FlashWindowEx) {
 				/* stop our window to flash */
 				fwinfo.cbSize = sizeof(fwinfo);
 				fwinfo.hwnd = fb_win32.wnd;
 				fwinfo.dwFlags = 0;
-				FlashWindowEx(&fwinfo);
+				fb_win32.FlashWindowEx(&fwinfo);
 			}
 		}
 		result = IDirectDrawSurface_IsLost(lpDDS);

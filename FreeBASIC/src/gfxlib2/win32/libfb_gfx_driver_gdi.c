@@ -57,9 +57,6 @@ static BITMAPINFO *bitmap_info;
 static HPALETTE palette;
 static unsigned char *buffer;
 
-typedef BOOL (WINAPI *SETLAYEREDWINDOWATTRIBUTES)(HWND hWnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
-static SETLAYEREDWINDOWATTRIBUTES SetLayeredWindowAttributes;
-
 
 /*:::::*/
 static void alpha_remover_blitter(unsigned char *dest, int pitch)
@@ -112,7 +109,6 @@ static int gdi_init(void)
 	DWORD style, ex_style = 0;
 	HDC hdc;
 	RECT rect;
-	HMODULE module;
 	LOGPALETTE *lp;
 	int x, y;
 
@@ -158,12 +154,9 @@ static int gdi_init(void)
 	if (fb_hInitWindow(style | WS_VISIBLE, ex_style, x, y, rect.right, rect.bottom))
 		return -1;
 	if (fb_win32.flags & DRIVER_SHAPED_WINDOW) {
-		if (!(module = GetModuleHandle("USER32")))
+		if (!fb_win32.SetLayeredWindowAttributes)
 			return -1;
-		SetLayeredWindowAttributes = (SETLAYEREDWINDOWATTRIBUTES)GetProcAddress(module, "SetLayeredWindowAttributes");
-		if (!SetLayeredWindowAttributes)
-			return -1;
-		SetLayeredWindowAttributes(fb_win32.wnd, (fb_win32.depth > 8) ? RGB(255, 0, 255) : 0, 0, LWA_COLORKEY);
+		fb_win32.SetLayeredWindowAttributes(fb_win32.wnd, (fb_win32.depth > 8) ? RGB(255, 0, 255) : 0, 0, LWA_COLORKEY);
 	}
 	
 	bitmap_info = (BITMAPINFO *)calloc(1, sizeof(BITMAPINFO) + (sizeof(RGBQUAD) * 256));

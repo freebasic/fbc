@@ -52,6 +52,23 @@
 #define LWA_COLORKEY	0x00000001
 #endif
 
+#ifndef MONITOR_DEFAULTTONEAREST
+#define MONITOR_DEFAULTTONEAREST 0x00000002
+#endif
+
+typedef struct FLASHWINFO {
+	UINT cbSize;
+	HWND hwnd;
+	DWORD dwFlags;
+	UINT uCount;
+	DWORD dwTimeout;
+} FLASHWINFO, *PFLASHWINFO;
+
+typedef BOOL (WINAPI *SETLAYEREDWINDOWATTRIBUTES)(HWND hWnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
+typedef HMONITOR (WINAPI *MONITORFROMWINDOW)(HWND hwnd, DWORD dwFlags);
+typedef HMONITOR (WINAPI *MONITORFROMPOINT)(POINT pt, DWORD dwFlags);
+typedef BOOL (WINAPI *FLASHWINDOWEX)(PFLASHWINFO pwfi);
+typedef BOOL (WINAPI *_TRACKMOUSEEVENT)(TRACKMOUSEEVENT *);
 
 typedef struct WIN32DRIVER
 {
@@ -71,6 +88,13 @@ typedef struct WIN32DRIVER
 	void (*paint)(void);
 	void (*thread)(HANDLE running_event);
 	int mouse_clip;
+	
+	/* user32 procs */
+	SETLAYEREDWINDOWATTRIBUTES SetLayeredWindowAttributes;
+	MONITORFROMWINDOW MonitorFromWindow;
+  MONITORFROMPOINT MonitorFromPoint;
+  FLASHWINDOWEX FlashWindowEx;
+  _TRACKMOUSEEVENT TrackMouseEvent;
 } WIN32DRIVER;
 
 

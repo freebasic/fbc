@@ -40,19 +40,18 @@ const GFXDRIVER *__fb_gfx_drivers_list[] = {
 	NULL
 };
 
-#define MONITOR_DEFAULTTONEAREST 0x00000002
-
-typedef HMONITOR (WINAPI *MONITORFROMWINDOW)(HWND hwnd, DWORD dwFlags);
-typedef HMONITOR (WINAPI *MONITORFROMPOINT)(POINT pt, DWORD dwFlags);
-
-static MONITORFROMWINDOW pMonitorFromWindow = NULL;
-static MONITORFROMPOINT pMonitorFromPoint = NULL;
+static const struct { const char *name; FARPROC *proc; } user32_procs[] = {
+  {"SetLayeredWindowAttributes", (FARPROC *)&fb_win32.SetLayeredWindowAttributes},
+  {"MonitorFromWindow",          (FARPROC *)&fb_win32.MonitorFromWindow         },
+  {"MonitorFromPoint",           (FARPROC *)&fb_win32.MonitorFromPoint          },
+  {"FlashWindowEx",              (FARPROC *)&fb_win32.FlashWindowEx             },
+  {"TrackMouseEvent",            (FARPROC *)&fb_win32.TrackMouseEvent           }
+ };
 
 static CRITICAL_SECTION update_lock;
 static HANDLE handle;
 static BOOL screensaver_active, cursor_shown, has_focus = FALSE;
 static int mouse_buttons, mouse_wheel, mouse_hwheel, mouse_x, mouse_y, mouse_on;
-static BOOL (WINAPI *_TrackMouseEvent)(TRACKMOUSEEVENT *) = NULL;
 static POINT last_mouse_pos;
 static UINT WM_MOUSEENTER;
 
@@ -81,12 +80,8 @@ static void ToggleFullScreen( void )
 {
 	if (fb_win32.flags & DRIVER_NO_SWITCH)
 		return;
-	if (!pMonitorFromWindow) {
-		HMODULE user32_library = GetModuleHandle("USER32");
-		pMonitorFromWindow = (MONITORFROMWINDOW)GetProcAddress(user32_library, "MonitorFromWindow");
-	}
 	
-	fb_win32.monitor = pMonitorFromWindow ? pMonitorFromWindow(fb_win32.wnd, MONITOR_DEFAULTTONEAREST) : NULL;
+	fb_win32.monitor = fb_win32.MonitorFromWindow ? fb_win32.MonitorFromWindow(fb_win32.wnd, MONITOR_DEFAULTTONEAREST) : NULL;
 	
 	if (fb_win32.mouse_clip)
 		ClipCursor(NULL);
@@ -458,7 +453,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			track_e.cbSize = sizeof(TRACKMOUSEEVENT);
 			track_e.dwFlags = TME_LEAVE;
 			track_e.hwndTrack = hWnd;
-			_TrackMouseEvent(&track_e);
+			fb_win32.TrackMouseEvent(&track_e);
 			has_focus = TRUE;
 			e.type = EVENT_MOUSE_ENTER;
 			if (fb_win32.mouse_clip) {
@@ -513,20 +508,22 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	HMODULE module;
 	HANDLE events[2];
 	long result;
+	int i;
 
 	info.dwOSVersionInfoSize = sizeof(info);
 	GetVersionEx(&info);
 	fb_win32.version = (info.dwMajorVersion << 8) | info.dwMinorVersion;
+	
+	module = GetModuleHandle("USER32");
+	
+	for (i = 0; i < sizeof(user32_procs) / sizeof(user32_procs[0]); i++) {
+    *user32_procs[i].proc = GetProcAddress(module, user32_procs[i].name);
+  }
 
-	if (!pMonitorFromPoint) {
-		HMODULE user32_library = GetModuleHandle("USER32");
-		pMonitorFromPoint = (MONITORFROMPOINT)GetProcAddress(user32_library, "MonitorFromPoint");
-	}
-
-	if (pMonitorFromPoint) {
+	if (fb_win32.MonitorFromPoint) {
 		POINT pt;
 		GetCursorPos(&pt);
-		fb_win32.monitor = pMonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
+		fb_win32.monitor = fb_win32.MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
 	} else {
 		fb_win32.monitor = NULL;
 	}
@@ -536,12 +533,9 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	fb_win32.mouse_clip = FALSE;
 	
 	WM_MOUSEENTER = RegisterWindowMessage("FB WM_MOUSEENTER emulation");
-	if (!_TrackMouseEvent) {
-		module = GetModuleHandle("USER32");
-		if (module)
-			_TrackMouseEvent = (BOOL (WINAPI *)(TRACKMOUSEEVENT *))GetProcAddress(module, "TrackMouseEvent");
-		if (!_TrackMouseEvent)
-			_TrackMouseEvent = fb_hTrackMouseEvent;
+	
+	if (!fb_win32.TrackMouseEvent) {
+		fb_win32.TrackMouseEvent = fb_hTrackMouseEvent;
 	}
 
 	SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &screensaver_active, 0);
