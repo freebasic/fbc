@@ -537,7 +537,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	
 	WM_MOUSEENTER = RegisterWindowMessage("FB WM_MOUSEENTER emulation");
 	if (!_TrackMouseEvent) {
-		module = GetModuleHandle("user32.dll");
+		module = GetModuleHandle("USER32");
 		if (module)
 			_TrackMouseEvent = (BOOL (WINAPI *)(TRACKMOUSEEVENT *))GetProcAddress(module, "TrackMouseEvent");
 		if (!_TrackMouseEvent)

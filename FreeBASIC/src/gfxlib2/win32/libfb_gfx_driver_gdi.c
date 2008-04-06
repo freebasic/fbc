@@ -158,7 +158,7 @@ static int gdi_init(void)
 	if (fb_hInitWindow(style | WS_VISIBLE, ex_style, x, y, rect.right, rect.bottom))
 		return -1;
 	if (fb_win32.flags & DRIVER_SHAPED_WINDOW) {
-		if (!(module = GetModuleHandle("user32.dll")))
+		if (!(module = GetModuleHandle("USER32")))
 			return -1;
 		SetLayeredWindowAttributes = (SETLAYEREDWINDOWATTRIBUTES)GetProcAddress(module, "SetLayeredWindowAttributes");
 		if (!SetLayeredWindowAttributes)
