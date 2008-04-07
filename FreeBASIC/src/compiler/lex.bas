@@ -1266,6 +1266,15 @@ private sub hReadString _
 					case asc( "a" )
 						' BELL \a not supported by GAS, change to \7 ("" will be added later)
 						lexEatChar( )
+						*ps = asc( "&" )
+						ps += 1
+						lgt += 1
+						*ps = asc( "h" )
+						ps += 1
+						lgt += 1
+						*ps = asc( "0" )
+						ps += 1
+						lgt += 1
 						*ps = asc( "7" )
 						ps += 1
 						lgt += 1
@@ -1388,6 +1397,15 @@ private sub hReadWStr _
 					case asc( "a" )
 						' BELL \a not supported by GAS, change to \7 ("" will be added later)
 						lexEatChar( )
+						*ps = asc( "&" )
+						ps += 1
+						lgt += 1
+						*ps = asc( "h" )
+						ps += 1
+						lgt += 1
+						*ps = asc( "0" )
+						ps += 1
+						lgt += 1
 						*ps = asc( "7" )
 						ps += 1
 						lgt += 1
