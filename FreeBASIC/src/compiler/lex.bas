@@ -1256,12 +1256,20 @@ private sub hReadString _
 
 				lexCurrentChar( )
 
-				' stop certain escapes being passed through
+				' fix certain escapes
 				select case as const lexCurrentChar( )
 					case asc( "x" ), asc( "X" ), asc( "0" )
+						' These escapes are more than just 1 char after \, which we don't handle yet
 						*ps = CHAR_RSLASH
 						ps += 1
 						lgt += 1
+					case asc( "a" )
+						' BELL \a not supported by GAS, change to \7 ("" will be added later)
+						lexEatChar( )
+						*ps = asc( "7" )
+						ps += 1
+						lgt += 1
+						continue do
 				end select
 			end if
 
@@ -1370,12 +1378,20 @@ private sub hReadWStr _
 
 				lexCurrentChar( )
 
-				' stop certain escapes being passed through
+				' fix certain escapes
 				select case as const lexCurrentChar( )
 					case asc( "x" ), asc( "X" ), asc( "0" )
+						' These escapes are more than just 1 char after \, which we don't handle yet
 						*ps = CHAR_RSLASH
 						ps += 1
 						lgt += 1
+					case asc( "a" )
+						' BELL \a not supported by GAS, change to \7 ("" will be added later)
+						lexEatChar( )
+						*ps = asc( "7" )
+						ps += 1
+						lgt += 1
+						continue do
 				end select
 			end if
 
