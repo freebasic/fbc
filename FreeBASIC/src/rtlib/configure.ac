@@ -53,6 +53,12 @@ case "$target" in
 		FBRT_TARGET_BASE=unix
 		FBRT_TARGET=solaris
 		;;
+	*-*-darwin* )
+		AC_DEFINE([TARGET_DARWIN],1,[Darwin build])
+		AC_DEFINE([TARGET_BASE_UNIX],1,[Unix base build])
+		FBRT_TARGET_BASE=unix
+		FBRT_TARGET=darwin
+		;;
 	*)
 		AC_MSG_ERROR([Unsupported target])
 		;;

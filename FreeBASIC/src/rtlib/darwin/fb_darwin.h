@@ -30,58 +30,13 @@
  */
 
 /*
- * ctor.c -- rtlib initialization and cleanup
+ * fb_darwin.h -- darwin specific stuff.
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: apr/2008 written [DrV]
  *
  */
 
-#include "fb.h"
-
-void fb_hRtInit ( void );
-void fb_hRtExit ( void );
-
-/* note: they must be static, or shared libraries in Linux would reuse the 
-		 same function */
-
-/*:::::*/
-static void fb_hDoInit( void ) /* __attribute__((constructor)) */;
-static void fb_hDoInit( void )
-{
-	/* the last to be defined, the first that will be called */
-	fb_hRtInit( );
-}
-
-/*:::::*/
-static void fb_hDoExit( void ) /* __attribute__((destructor)) */;
-static void fb_hDoExit( void )
-{
-	/* the last to be defined, the last that will be called */
-
-	fb_hRtExit( );
-}
-
-#ifdef TARGET_DARWIN
-
-/* FIXME: this does not actually guarantee execution order between object modules,
-   but darwin doesn't support .?tors.(number) sections */
-
-__attribute__((constructor)) static void priorityhDoInit( void )
-{
-	fb_hDoInit( );
-}
-
-__attribute__((destructor)) static void priorityhDoExit( void )
-{
-	fb_hDoExit( );
-}
-
-#else
-
-/* This puts the init/exit global ctor/dtor for the rtlib in the sorted ctors/dtors
-   section.  A named section of .?tors.65435 = Priority(100) */
-
-static void * priorityhDoInit __attribute__((section(".ctors.65435"), used)) = fb_hDoInit;
-static void * priorityhDoExit __attribute__((section(".dtors.65435"), used)) = fb_hDoExit;
+#ifndef __FB_DARWIN_H__
+#define __FB_DARWIN_H__
 
 #endif

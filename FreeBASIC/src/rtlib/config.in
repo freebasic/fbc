@@ -317,6 +317,9 @@
 /* Cygwin build */
 #undef TARGET_CYGWIN
 
+/* Darwin build */
+#undef TARGET_DARWIN
+
 /* Djgpp build */
 #undef TARGET_DOS
 

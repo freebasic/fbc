@@ -181,6 +181,9 @@ extern "C" {
 #elif defined(TARGET_SOLARIS)
 #include "unix/fb_unix.h"
 #include "solaris/fb_solaris.h"
+#elif defined(TARGET_DARWIN)
+#include "unix/fb_unix.h"
+#include "darwin/fb_darwin.h"
 #else
 #error target not supported
 #endif

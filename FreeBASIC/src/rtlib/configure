@@ -1977,6 +1977,20 @@ _ACEOF
 		FBRT_TARGET_BASE=unix
 		FBRT_TARGET=solaris
 		;;
+	*-*-darwin* )
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_DARWIN 1
+_ACEOF
+
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_BASE_UNIX 1
+_ACEOF
+
+		FBRT_TARGET_BASE=unix
+		FBRT_TARGET=darwin
+		;;
 	*)
 		{ { echo "$as_me:$LINENO: error: Unsupported target" >&5
 echo "$as_me: error: Unsupported target" >&2;}
