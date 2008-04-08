@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth, int flags)
+static void *gfx_imagecreate(int width, int height, unsigned int color, int depth, int flags, int usenewheader)
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	PUT_HEADER *image;
@@ -59,14 +59,14 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int de
 	}
 	
 	pitch = width * bpp;
-	if (__fb_ctx.lang == FB_LANG_FB) {
+	if (usenewheader) {
 		header_size = sizeof(PUT_HEADER);
 		pitch = (pitch + 0xF) & ~0xF;
 	}
 	size = pitch * height;
 	
 	image = (PUT_HEADER *)malloc(size + header_size);
-	if (__fb_ctx.lang != FB_LANG_FB) {
+	if (!usenewheader) {
 		/* use old-style header for compatibility */
 		image->old.bpp = bpp;
 		image->old.width = width;
@@ -87,9 +87,21 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int de
 	return image;
 }
 
+/*:::::*/
+FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth, int flags)
+{
+	return gfx_imagecreate( width, height, color, depth, flags, TRUE );
+}
+
+/*:::::*/
+FBCALL void *fb_GfxImageCreateQB(int width, int height, unsigned int color, int depth, int flags)
+{
+	return gfx_imagecreate( width, height, color, depth, flags, FALSE );
+}
 
 /*:::::*/
 FBCALL void fb_GfxImageDestroy(void *image)
 {
 	free(image);
 }
+

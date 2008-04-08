@@ -54,7 +54,7 @@ typedef struct BMP_HEADER
 
 
 /*:::::*/
-static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
+static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewheader)
 {
 	BMP_HEADER header;
 	PUT_HEADER *put_header = NULL;
@@ -97,7 +97,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal)
 				height = MIN(put_header->old.height, header.biHeight);
 			}
 			else {
-				if (__fb_ctx.lang == FB_LANG_FB) {
+				if (usenewheader) {
 					put_header->type = PUT_HEADER_NEW;
 					put_header->bpp = ctx->target_bpp;
 					put_header->width = header.biWidth;
@@ -207,7 +207,7 @@ exit_error:
 
 
 /*:::::*/
-FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal)
+static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader)
 {
 	FILE *f;
 	FB_GFXCTX *context = fb_hGetContext();
@@ -250,7 +250,7 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal)
 		case 'B':
 			/* Can be a BMP */
 			rewind(f);
-			result = load_bmp(context, f, dest, pal);
+			result = load_bmp(context, f, dest, pal, usenewheader);
 			fclose(f);
 			fb_hStrDelTemp(filename);
 			return result;
@@ -291,4 +291,16 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal)
 	fb_hStrDelTemp(filename);
 
 	return fb_ErrorSetNum( result );
+}
+
+/*:::::*/
+FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal)
+{
+	return gfx_bload( filename, dest, pal, TRUE );
+}
+
+/*:::::*/
+FBCALL int fb_GfxBloadQB(FBSTRING *filename, void *dest, void *pal)
+{
+	return gfx_bload( filename, dest, pal, FALSE );
 }

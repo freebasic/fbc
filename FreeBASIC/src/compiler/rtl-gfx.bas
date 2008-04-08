@@ -39,7 +39,7 @@ declare function hPorts_cb _
 	) as integer
 
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 58 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 61 ) = _
 	{ _
 		/' fb_GfxPset ( byref target as any, byval x as single, byval y as single, byval color as uinteger, _
 						byval coordType as integer, byval ispreset as integer ) as void '/ _
@@ -452,7 +452,41 @@ declare function hPorts_cb _
 		( _
 			@FB_RTL_GFXGET, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
+	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_FBONLY, _
+			8, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_GfxGetQB ( byref target as any, byval x1 as single, byval y1 as single, byval x2 as single, byval y2 as single, _
+					   byref array as any, byval coordType as integer, array() as any ) as integer '/ _
+		( _
+			@FB_RTL_GFXGETQB, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOFB, _
 			8, _
 			{ _
 				( _
@@ -557,7 +591,25 @@ declare function hPorts_cb _
 		( _
 			@"bload", @"fb_GfxBload", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
+	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_FBONLY, _
+			3, _
+			{ _
+				( _
+					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, NULL _
+	 			), _
+				( _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, NULL _
+	 			) _
+	 		} _
+		), _
+		/' fb_GfxBloadQB ( filename as string, byval dest as any ptr = NULL, byval pal as any ptr = NULL ) as integer '/ _
+		( _
+			@"bload", @"fb_GfxBloadQB", _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOFB, _
 			3, _
 			{ _
 				( _
@@ -928,7 +980,32 @@ declare function hPorts_cb _
 		( _
 			@FB_RTL_GFXIMAGECREATE, NULL, _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_STDCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_FBONLY, _
+			5, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
+	 			), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
+	 			), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
+	 			) _
+	 		} _
+		), _
+		/' fb_GfxImageCreateQB ( byval width as integer, byval height as integer, _
+							   byval color as uinteger = DEFAULT_COLOR, byval depth as integer = 0 ) as any ptr '/ _
+		( _
+			@FB_RTL_GFXIMAGECREATEQB, NULL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_STDCALL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
 				( _
@@ -2536,7 +2613,8 @@ function rtlGfxGet _
 
     function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXGET ) )
+	'' use new header in -lang fb, otherwise old header
+    proc = astNewCALL( iif( fbLangIsSet( FB_LANG_FB ), PROCLOOKUP( GFXGET ), PROCLOOKUP( GFXGETQB ) ) )
 
  	'' byref target as any
  	if( target = NULL ) then
@@ -2759,7 +2837,8 @@ function rtlGfxImageCreate _
 
 	function = NULL
 
-	proc = astNewCALL( PROCLOOKUP( GFXIMAGECREATE ) )
+	'' use new header in -lang fb, otherwise old header
+	proc = astNewCALL( iif( fbLangIsSet( FB_LANG_FB ), PROCLOOKUP( GFXIMAGECREATE ), PROCLOOKUP( GFXIMAGECREATEQB ) ) )
 
 	'' byval w as integer
 	if( astNewARG( proc, wexpr ) = NULL ) then

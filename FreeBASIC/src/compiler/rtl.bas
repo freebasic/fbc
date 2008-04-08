@@ -122,6 +122,12 @@ sub rtlAddIntrinsicProcs _
 			if( (procdef->options and FB_RTL_OPT_QBONLY) <> 0 ) then
 				doadd = ( env.clopt.lang = FB_LANG_QB )
 			end if
+			if( (procdef->options and FB_RTL_OPT_FBONLY) <> 0 ) then
+				doadd = ( env.clopt.lang = FB_LANG_FB )
+			end if
+			if( (procdef->options and FB_RTL_OPT_NOFB) <> 0 ) then
+				doadd = ( env.clopt.lang <> FB_LANG_FB )
+			end if
 		end if
 
 		if( doadd ) then
