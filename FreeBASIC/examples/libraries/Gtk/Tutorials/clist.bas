@@ -28,7 +28,7 @@ Sub button_add_clicked Cdecl( Byval user_data As gpointer )
 End Sub
 
 ' User clicked the "Clear List" button. 
-Sub button_clear_clicked( Byval user_data As gpointer )
+Sub button_clear_clicked Cdecl( Byval user_data As gpointer )
 
 	' Clear the list using gtk_clist_clear. This is much faster than
 	' calling gtk_clist_remove once for each row.
@@ -37,7 +37,7 @@ Sub button_clear_clicked( Byval user_data As gpointer )
 End Sub
 
 ' The user clicked the "Hide/Show titles" button. 
-Sub button_hide_show_clicked( Byval user_data As gpointer )
+Sub button_hide_show_clicked Cdecl( Byval user_data As gpointer )
 
 	' Just a flag to remember the status. 0 = currently visible 
 	Static flag As Integer
@@ -54,7 +54,7 @@ Sub button_hide_show_clicked( Byval user_data As gpointer )
 End Sub
 
 ' If we come here, then the user has selected a row in the list. 
-Sub selection_made( Byval clist As GtkWidget Ptr, Byval row As gint, Byval column As gint, Byval event As GdkEventButton Ptr, Byval user_data As gpointer)
+Sub selection_made Cdecl( Byval clist As GtkWidget Ptr, Byval row As gint, Byval column As gint, Byval event As GdkEventButton Ptr, Byval user_data As gpointer)
 
 	Dim text As Zstring Ptr
 
