@@ -17,7 +17,8 @@ Version 0.20.0 Beta:
 - wstring VAL was truncating hex/oct/bin numbers to 32 bits (counting_pine)
 - constant ASC expressions were returning signed integers instead of uintegers (counting_pine)
 - STR should pad numbers if and only if it is called from a lang qb module, even in multi-module programs (counting_pine)
-
+- #1933706 - !"\a" was not working correctly (yetifoot)
+- #1914051 - Some unhandled escape sequences were being allowed through (yetifoot)
 
 Version 0.18.5 Beta:
 
