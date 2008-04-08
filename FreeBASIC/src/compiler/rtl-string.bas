@@ -3312,13 +3312,18 @@ function rtlToStr _
 	
 	'' constant? evaluate
 	if( astIsCONST( expr ) ) then
-		dim as string qb_padding
-		if fbLangIsSet( FB_LANG_QB ) then
-			if astGetValueAsDouble( expr ) >= 0 then
-				qb_padding = " "
+		dim s As String
+		if( pad ) then
+			if( symbIsSigned( astGetDataType( expr ) ) ) then
+				if astGetValueAsDouble( expr ) >= 0 then
+					s = " "
+				end if
+			else
+				s = " "
 			end if
 		end if
-		return astNewCONSTstr( qb_padding + astGetValueAsStr( expr ) )
+		s += astGetValueAsStr( expr )
+		return astNewCONSTstr( s )
 	end if
 
     '' wstring literal? convert from unicode at compile-time

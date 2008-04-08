@@ -54,8 +54,12 @@ FBCALL FBSTRING *fb_LongintToStrQB ( long long num )
 	if( dst != NULL )
 	{
 		/* convert */
+#ifdef TARGET_WIN32
+		dst->data[0] = ' ';
+		_i64toa( num, dst->data + (num >= 0? 1:0), 10 );
+#else
 		sprintf( dst->data, "% lld", num );
-
+#endif
 		fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else
@@ -74,8 +78,12 @@ FBCALL FBSTRING *fb_ULongintToStrQB ( unsigned long long num )
 	if( dst != NULL )
 	{
 		/* convert */
-		sprintf( dst->data, " %llu", num );
-
+#ifdef TARGET_WIN32
+		dst->data[0] = ' ';
+		_ui64toa( num, dst->data + 1, 10 );
+#else
+		sprintf( dst->data, "%llu", num );
+#endif
 		fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else
