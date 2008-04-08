@@ -39,7 +39,7 @@ declare function hPorts_cb _
 	) as integer
 
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 61 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 62 ) = _
 	{ _
 		/' fb_GfxPset ( byref target as any, byval x as single, byval y as single, byval color as uinteger, _
 						byval coordType as integer, byval ispreset as integer ) as void '/ _
@@ -1036,6 +1036,39 @@ declare function hPorts_cb _
 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
+		), _
+		/' fb_GfxImageInfo( byval img as any ptr, byref width as integer = 0, _
+							byref height as integer = 0, byref bpp as integer = 0, _
+							byref pitch as integer = 0, byref size as integer = 0, _
+							byref imgdata as any ptr = 0 ) as integer '/ _
+		( _
+			@"imageinfo", @"fb_GfxImageInfo", _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			7, _
+			{ _
+				( _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
+				), _
+				( _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, TRUE, 0 _
+				) _
+			} _
 		), _
 		/' fb_GfxImageConvertRow( byval src as any ptr, byval src_bpp as integer, _
 								  byval dst as any ptr, byval dst_bpp as integer, _
