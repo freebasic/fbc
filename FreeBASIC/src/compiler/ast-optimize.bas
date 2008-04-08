@@ -2011,6 +2011,85 @@ function astOptAssignment _
 end function
 
 ''::::
+function hOptSelfAssign _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+	
+	''  =           NOP
+	'' / \   =>
+	'' d  d
+
+	dim as ASTNODE ptr l = any, r = any
+	dim as integer dtype = any, dclass = any
+
+	function = n
+
+	if( n = NULL ) then
+		exit function
+	end if
+	
+	if n->class <> AST_NODECLASS_ASSIGN then
+		exit function
+	end if
+	
+	l = n->l
+	r = n->r
+	
+	if( astIsTreeEqual( l, r ) = FALSE ) then
+		exit function
+	end if
+	
+	astDelNode( n )
+	astDelTree( l )
+	astDelTree( r )
+	
+	function = astNewNOP( )
+end function
+
+''::::
+function hOptSelfCompare _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr l = any, r = any
+	dim as integer dtype = any, dclass = any
+
+	function = n
+
+	if( n = NULL ) then
+		exit function
+	end if
+	
+	if n->class <> AST_NODECLASS_BOP then
+		exit function
+	end if
+	
+	l = n->l
+	r = n->r
+	
+	if( astIsTreeEqual( l, r ) = FALSE ) then
+		exit function
+	end if
+	
+	dim as integer c
+	
+	select case as const n->op.op
+	case AST_OP_EQ
+		c = -1
+	case AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
+		c = 0
+	end select
+	
+	astDelNode( n )
+	astDelTree( l )
+	astDelTree( r )
+	
+	function = astNewCONSTi( c )
+end function
+
+''::::
 function astOptimizeTree _
 	( _
 		byval n as ASTNODE ptr _
@@ -2022,17 +2101,17 @@ function astOptimizeTree _
 	end if
 
 	'' calls must be done in the order below
-    ast.isopt = TRUE
+	ast.isopt = TRUE
 
 	/'
-    if( irGetOption( IR_OPT_REMCASTING ) ) then
-      n = hOptRemCasting( n )
-    end if
-    '/
+	if( irGetOption( IR_OPT_REMCASTING ) ) then
+		n = hOptRemCasting( n )
+	end if
+	'/
 
-    if( irGetOption( IR_OPT_NESTEDFIELDS ) ) then
-      n = hOptFieldsCalc( n, NULL )
-    end if
+	if( irGetOption( IR_OPT_NESTEDFIELDS ) ) then
+		n = hOptFieldsCalc( n, NULL )
+	end if
 
 	n = hOptAssocADD( n )
 
@@ -2052,7 +2131,11 @@ function astOptimizeTree _
 
 	n = hOptNullOp( n )
 
-    n = hOptRemConv( n )
+	n = hOptSelfAssign( n )
+
+	n = hOptSelfCompare( n )
+
+ 	n = hOptRemConv( n )
 
 	ast.isopt = FALSE
 
