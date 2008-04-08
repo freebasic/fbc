@@ -3,6 +3,7 @@ Version 0.20.0 Beta:
 [changed]
 - update FreeImage header to v3.10 and .def files for Win32 (cha0s)
 - x11 gfx driver: let the window manager pick the window position (DrV)
+- '&' string concatenation will not pad positive numbers, even in lang qb (counting_pine)
 
 [added]
 
@@ -13,6 +14,7 @@ Version 0.20.0 Beta:
 - VAL* was saturating instead of overflowing large numbers in some cases (counting_pine)
 - wstring VAL was truncating hex/oct/bin numbers to 32 bits (counting_pine)
 - constant ASC expressions were returning signed integers instead of uintegers (counting_pine)
+- STR should pad numbers if and only if it is called from a lang qb module, even in multi-module programs (counting_pine)
 
 
 Version 0.18.5 Beta:

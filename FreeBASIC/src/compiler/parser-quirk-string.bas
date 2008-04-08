@@ -655,7 +655,7 @@ function cStringFunct _
 		hMatchRPRNT( )
 
 		if( is_wstr = FALSE ) then
-			funcexpr = rtlToStr( expr1 )
+			funcexpr = rtlToStr( expr1, fbLangIsSet( FB_LANG_QB ) )
 		else
 			funcexpr = rtlToWstr( expr1 )
 		end if

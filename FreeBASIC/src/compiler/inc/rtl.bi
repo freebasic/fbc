@@ -42,6 +42,13 @@
 #define FB_RTL_DBL2STR					"fb_DoubleToStr"
 #define FB_RTL_WSTR2STR					"fb_WstrToStr"
 
+#define FB_RTL_INT2STR_QB				"fb_IntToStrQB"
+#define FB_RTL_UINT2STR_QB				"fb_UIntToStrQB"
+#define FB_RTL_LONGINT2STR_QB			"fb_LongintToStrQB"
+#define FB_RTL_ULONGINT2STR_QB			"fb_ULongintToStrQB"
+#define FB_RTL_FLT2STR_QB				"fb_FloatToStrQB"
+#define FB_RTL_DBL2STR_QB				"fb_DoubleToStrQB"
+
 #define FB_RTL_STR2INT					"valint"
 #define FB_RTL_STR2UINT					"valuint"
 #define FB_RTL_STR2LNG					"vallng"
@@ -370,6 +377,13 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FLT2STR
 	FB_RTL_IDX_DBL2STR
 	FB_RTL_IDX_WSTR2STR
+
+	FB_RTL_IDX_INT2STR_QB
+	FB_RTL_IDX_UINT2STR_QB
+	FB_RTL_IDX_LONGINT2STR_QB
+	FB_RTL_IDX_ULONGINT2STR_QB
+	FB_RTL_IDX_FLT2STR_QB
+	FB_RTL_IDX_DBL2STR_QB
 
 	FB_RTL_IDX_STR2INT
 	FB_RTL_IDX_STR2UINT
@@ -835,7 +849,8 @@ declare function rtlWstrAlloc _
 
 declare function rtlToStr _
 	( _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval pad as integer _
 	) as ASTNODE ptr
 
 declare function rtlToWstr _

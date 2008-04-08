@@ -48,74 +48,15 @@
 FBCALL FBSTRING *fb_FloatToStr ( float num )
 {
 	FBSTRING 	*dst;
-	int str_offset = 0;
 
 	/* alloc temp string */
-    dst = fb_hStrAllocTemp( NULL, 7+8 );
-	if( dst != NULL )
-    {
-        if( __fb_ctx.lang == FB_LANG_QB ) {
-        	
-        	if( num >= 0 ) {
-        		dst->data[0] = ' ';
-        		str_offset = 1;
-        	}
-        	
-        }
-        size_t tmp_len;
-
-		/* convert */
-#ifdef TARGET_WIN32
-		_gcvt( (double)num, 7, dst->data + str_offset );
-#else
-		sprintf( dst->data + str_offset, "%.7g", num );
-#endif
-
-		tmp_len = strlen( dst->data );				/* fake len */
-
-		/* skip the dot at end if any */
-		if( tmp_len > 0 )
-		{
-			if( dst->data[tmp_len-1] == '.' )
-			{
-				dst->data[tmp_len-1] = '\0';
-				--tmp_len;
-			}
-        }
-        fb_hStrSetLength( dst, tmp_len );
-	}
-	else
-		dst = &__fb_ctx.null_desc;
-
-	return dst;
-}
-
-/*:::::*/
-FBCALL FBSTRING *fb_DoubleToStr ( double num )
-{
-	FBSTRING 	*dst;
-	int str_offset = 0;
-
-	/* alloc temp string */
-    dst = fb_hStrAllocTemp( NULL, 16+8 );
+	dst = fb_hStrAllocTemp( NULL, 7+8 );
 	if( dst != NULL )
 	{
-        if( __fb_ctx.lang == FB_LANG_QB ) {
-        	
-        	if( num >= 0 ) {
-        		dst->data[0] = ' ';
-        		str_offset = 1;
-        	}
-        	
-        }
-        size_t tmp_len;
+		size_t tmp_len;
 
 		/* convert */
-#ifdef TARGET_WIN32
-		_gcvt( num, 16, dst->data + str_offset );
-#else
-		sprintf( dst->data + str_offset, "%.16g", num );
-#endif
+		sprintf( dst->data, "%.7g", num );
 
 		tmp_len = strlen( dst->data );				/* fake len */
 
@@ -136,5 +77,35 @@ FBCALL FBSTRING *fb_DoubleToStr ( double num )
 	return dst;
 }
 
+/*:::::*/
+FBCALL FBSTRING *fb_DoubleToStr ( double num )
+{
+	FBSTRING 	*dst;
 
+	/* alloc temp string */
+	dst = fb_hStrAllocTemp( NULL, 16+8 );
+	if( dst != NULL )
+	{
+		size_t tmp_len;
 
+		/* convert */
+		sprintf( dst->data, "%.16g", num );
+
+		tmp_len = strlen( dst->data );				/* fake len */
+
+		/* skip the dot at end if any */
+		if( tmp_len > 0 )
+		{
+			if( dst->data[tmp_len-1] == '.' )
+			{
+				dst->data[tmp_len-1] = '\0';
+				--tmp_len;
+			}
+		}
+		fb_hStrSetLength( dst, tmp_len );
+	}
+	else
+		dst = &__fb_ctx.null_desc;
+
+	return dst;
+}

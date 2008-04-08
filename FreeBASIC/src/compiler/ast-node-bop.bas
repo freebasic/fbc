@@ -224,7 +224,7 @@ private function hToStr _
 
     '' not a string..
     case else
-    	l = rtlToStr( l )
+    	l = rtlToStr( l, FALSE )
    		if( l = NULL ) then
    			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
    				return FALSE
@@ -245,7 +245,7 @@ private function hToStr _
    	case else
    		'' expression is not a wstring?
    		if( ldtype <> FB_DATATYPE_WCHAR ) then
-   			r = rtlToStr( r )
+   			r = rtlToStr( r, FALSE )
    		else
    			r = rtlToWstr( r )
    		end if

@@ -26,7 +26,7 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 168 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 172 ) = _
 	{ _
 		/' fb_StrInit ( byref dst as any, byval dst_len as integer, _
 		 				byref src as any, byval src_len as integer, _
@@ -446,6 +446,18 @@
 				) _
 			} _
  		), _
+		/' fb_IntToStrQB ( byval number as integer ) as string '/ _
+		( _
+			@FB_RTL_INT2STR_QB, NULL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_QBONLY, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
 		/' fb_IntToWstr ( byval number as integer ) as wstring '/ _
 		( _
 			@FB_RTL_INT2WSTR, NULL, _
@@ -463,6 +475,18 @@
 			@FB_RTL_UINT2STR, NULL, _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_UIntToStrQB ( byval number as uinteger ) as string '/ _
+		( _
+			@FB_RTL_UINT2STR_QB, NULL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
 				( _
@@ -494,6 +518,18 @@
 				) _
 			} _
  		), _
+		/' fb_LongintToStrQB ( byval number as longint ) as string '/ _
+		( _
+			@FB_RTL_LONGINT2STR_QB, NULL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_QBONLY, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
 		/' fb_LongintToWstr ( byval number as longint ) as wstring '/ _
 		( _
 			@FB_RTL_LONGINT2WSTR, NULL, _
@@ -511,6 +547,18 @@
 			@FB_RTL_ULONGINT2STR, NULL, _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
 			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_ULongintToStrQB ( byval number as ulongint ) as string '/ _
+		( _
+			@FB_RTL_ULONGINT2STR_QB, NULL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
 				( _
@@ -542,6 +590,18 @@
 				) _
 			} _
  		), _
+		/' fb_FloatToStrQB ( byval number as single ) as string '/ _
+		( _
+			@FB_RTL_FLT2STR_QB, NULL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_QBONLY, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
 		/' fb_FloatToWstr ( byval number as single ) as wstring '/ _
 		( _
 			@FB_RTL_FLT2WSTR, NULL, _
@@ -565,7 +625,19 @@
 					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
- 		), _
+		), _
+		/' fb_DoubleToStrQB ( byval number as double ) as string '/ _
+		( _
+			@FB_RTL_DBL2STR_QB, NULL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_QBONLY, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
 		/' fb_DoubleToWstr ( byval number as double ) as wstring '/ _
 		( _
 			@FB_RTL_DBL2WSTR, NULL, _
@@ -3226,7 +3298,8 @@ end function
 '':::::
 function rtlToStr _
 	( _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval pad as integer _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
@@ -3237,16 +3310,16 @@ function rtlToStr _
 	
 	dtype = astGetDatatype( expr )
 	
-    '' constant? evaluate
-    if( astIsCONST( expr ) ) then
-    	dim as string qb_padding
-    	if fbLangIsSet( FB_LANG_QB ) then
-    		if astGetValueAsDouble( expr ) >= 0 then
-    			qb_padding = " "
-    		end if
-    	end if
-    	return astNewCONSTstr( qb_padding + astGetValueAsStr( expr ) )
-    end if
+	'' constant? evaluate
+	if( astIsCONST( expr ) ) then
+		dim as string qb_padding
+		if fbLangIsSet( FB_LANG_QB ) then
+			if astGetValueAsDouble( expr ) >= 0 then
+				qb_padding = " "
+			end if
+		end if
+		return astNewCONSTstr( qb_padding + astGetValueAsStr( expr ) )
+	end if
 
     '' wstring literal? convert from unicode at compile-time
     if( dtype = FB_DATATYPE_WCHAR ) then
@@ -3267,30 +3340,46 @@ function rtlToStr _
 
 		select case as const dtype
 		case FB_DATATYPE_LONGINT
-			f = PROCLOOKUP( LONGINT2STR )
+			f = iif( pad = FALSE, _
+			         PROCLOOKUP( LONGINT2STR ), _
+			         PROCLOOKUP( LONGINT2STR_QB ) )
 
 		case FB_DATATYPE_ULONGINT
-			f = PROCLOOKUP( ULONGINT2STR )
+			f = iif( pad = FALSE, _
+			         PROCLOOKUP( ULONGINT2STR ), _
+			         PROCLOOKUP( ULONGINT2STR_QB ) )
 
 		case FB_DATATYPE_LONG
 			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = PROCLOOKUP( INT2STR )
+				f = iif( pad = FALSE, _
+				         PROCLOOKUP( INT2STR ), _
+				         PROCLOOKUP( INT2STR_QB ) )
 			else
-				f = PROCLOOKUP( LONGINT2STR )
+				f = iif( pad = FALSE, _
+				         PROCLOOKUP( LONGINT2STR ), _
+				         PROCLOOKUP( LONGINT2STR_QB ) )
 			end if
 
 		case FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = PROCLOOKUP( UINT2STR )
+				f = iif( pad = FALSE, _
+				         PROCLOOKUP( UINT2STR ), _
+				         PROCLOOKUP( UINT2STR_QB ) )
 			else
-				f = PROCLOOKUP( ULONGINT2STR )
+				f = iif( pad = FALSE, _
+				         PROCLOOKUP( ULONGINT2STR ), _
+				         PROCLOOKUP( ULONGINT2STR_QB ) )
 			end if
 
 		case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-			f = PROCLOOKUP( INT2STR )
+			f = iif( pad = FALSE, _
+			         PROCLOOKUP( INT2STR ), _
+			         PROCLOOKUP( INT2STR_QB ) )
 
 		case FB_DATATYPE_UBYTE, FB_DATATYPE_USHORT, FB_DATATYPE_UINT
-			f = PROCLOOKUP( UINT2STR )
+			f = iif( pad = FALSE, _
+			         PROCLOOKUP( UINT2STR ), _
+			         PROCLOOKUP( UINT2STR_QB ) )
 
 		'' zstring? do nothing
 		case FB_DATATYPE_CHAR
@@ -3303,9 +3392,13 @@ function rtlToStr _
 		'' pointer..
 		case else
 			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = PROCLOOKUP( UINT2STR )
+				f = iif( pad = FALSE, _
+				         PROCLOOKUP( UINT2STR ), _
+				         PROCLOOKUP( UINT2STR_QB ) )
 			else
-				f = PROCLOOKUP( ULONGINT2STR )
+				f = iif( pad = FALSE, _
+				         PROCLOOKUP( ULONGINT2STR ), _
+				         PROCLOOKUP( ULONGINT2STR_QB ) )
 			end if
 
 			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
@@ -3313,9 +3406,13 @@ function rtlToStr _
 
 	case FB_DATACLASS_FPOINT
 		if( astGetDataType( expr ) = FB_DATATYPE_SINGLE ) then
-			f = PROCLOOKUP( FLT2STR )
+			f = iif( pad = FALSE, _
+			         PROCLOOKUP( FLT2STR ), _
+			         PROCLOOKUP( FLT2STR_QB ) )
 		else
-			f = PROCLOOKUP( DBL2STR )
+			f = iif( pad = FALSE, _
+			         PROCLOOKUP( DBL2STR ), _
+			         PROCLOOKUP( DBL2STR_QB ) )
 		end if
 
 	case FB_DATACLASS_STRING
