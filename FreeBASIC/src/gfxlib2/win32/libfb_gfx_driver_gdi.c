@@ -182,7 +182,10 @@ static int gdi_init(void)
 				return -1;
 		}
 		if (fb_win32.flags & DRIVER_SHAPED_WINDOW)
-			fb_win32.blitter = alpha_remover_blitter;
+		{
+			if( fb_win32.depth == 32 )
+				fb_win32.blitter = alpha_remover_blitter;
+		}
 		buffer = malloc(((fb_win32.w + 3) & ~3) * fb_win32.h * __fb_gfx->bpp);
 		if (!buffer)
 			return -1;

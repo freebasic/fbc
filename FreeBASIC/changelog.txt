@@ -19,6 +19,8 @@ Version 0.20.0 Beta:
 - STR should pad numbers if and only if it is called from a lang qb module, even in multi-module programs (counting_pine)
 - #1933706 - !"\a" was not working correctly (yetifoot)
 - #1914051 - Some unhandled escape sequences were being allowed through (yetifoot)
+- #1861363 - gfxlib win32 gdi driver was using the alpha_remover_blitter on depths < 32 bits (jeffm)
+
 
 Version 0.18.5 Beta:
 
