@@ -397,8 +397,8 @@ function symbCanDuplicate _
 			case FB_SYMBCLASS_FIELD
 				'' same scope?
 				if( s->scope = head_sym->scope ) then
-	    			exit function
-    			end if
+					exit function
+				end if
 
 			'' and other vars if they have different suffixes -- if any
 			'' with suffix exist, a suffix-less will not be accepted (and vice-versa)
@@ -409,11 +409,17 @@ function symbCanDuplicate _
 						exit function
 					end if
 
-    				'' same data type?
-    				if( symbGetType( head_sym ) = symbGetType( s ) ) then
-    					exit function
-    				end if
-    			end if
+					'' same data type?
+					if( symbGetType( head_sym ) = symbGetType( s ) ) then
+						exit function
+					end if
+
+					'' neither has a suffix?
+					if( ( symbIsSuffixed( head_sym ) = FALSE ) and ( symbIsSuffixed( s ) = FALSE ) ) then
+						exit function
+					end if
+
+				end if
 
 			case else
 				exit function
