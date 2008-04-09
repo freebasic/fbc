@@ -24,6 +24,8 @@
  *
  */
 
+#ifdef WITH_X
+
 #include "fb_gfx.h"
 #include "fb_gfx_x11.h"
 #include <GL/glx.h>
@@ -256,3 +258,5 @@ static void driver_flip(void)
 	__fb_glX.SwapBuffers(fb_x11.display, fb_x11.window);
 	fb_hX11Unlock();
 }
+
+#endif

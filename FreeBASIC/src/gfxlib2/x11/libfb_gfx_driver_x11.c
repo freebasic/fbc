@@ -24,6 +24,8 @@
  *
  */
 
+#ifdef WITH_X
+
 #include "fb_gfx.h"
 #include "fb_gfx_x11.h"
 
@@ -271,3 +273,5 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	
 	return fb_hX11Init(title, w, h, depth, refresh_rate, flags);
 }
+
+#endif

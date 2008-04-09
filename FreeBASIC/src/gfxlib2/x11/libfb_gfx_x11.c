@@ -24,6 +24,8 @@
  *
  */
 
+#ifdef WITH_X
+
 #include "fb_gfx.h"
 #include "fb_gfx_x11.h"
 #include <unistd.h>
@@ -873,3 +875,14 @@ int fb_hGetWindowHandle(void)
 {
 	return (fb_x11.display ? (int)fb_x11.window : 0);
 }
+
+#else
+
+/*:::::*/
+int fb_hGetWindowHandle(void)
+{
+	return 0;
+}
+
+#endif
+
