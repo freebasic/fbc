@@ -213,6 +213,67 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
+	function Text2Texinfo _
+		( _
+			byref text as string, _
+			byval br as integer, _
+			byval sp as integer _
+		) as string
+		
+		dim as string res
+		dim as integer i
+		dim as integer lastcr
+
+		res = ""
+		lastcr = FALSE
+
+		for i = 1 to len(text)
+			select case mid( text, i, 1)
+			case " ", chr(9)
+				if( sp ) then
+					res += "@ "
+				else
+					res += mid( text, i, 1)
+				end if
+			case "#"
+				res += "@pounds{}"
+			case "{"
+				res += "@{"
+			case "}"
+				res += "@}"
+			case "@"
+				res += "@@"
+			case ":"
+				res += "@:"
+			case chr(13)
+				if( br ) then
+					res += "@*"
+				else
+					res += mid( text, i, 1)
+				end if
+			case chr(10)
+				if( br ) then
+					if( lastcr = FALSE ) then
+						res += "@*"
+					end if
+				end if
+				res += mid( text, i, 1)
+			case else
+				res += mid( text, i, 1)
+			end select
+
+			if( mid( text, i, 1) = chr(13) ) then
+				lastcr = TRUE
+			else
+				lastcr = FALSE
+			end if
+		next
+
+		return res
+
+	end function
+
+	'':::::
 	function GetBaseName _
 		( _
 			byref filename as string _

@@ -26,6 +26,7 @@
 #include once "CWiki2Chm.bi"
 #include once "CWiki2fbhelp.bi"
 #include once "CWiki2txt.bi"
+#include once "CWiki2texinfo.bi"
 #include once "COptions.bi"
 
 #include once "fbdoc_lang.bi"
@@ -48,6 +49,13 @@ const default_wiki_url = "http://www.freebasic.net/wiki/wikka.php"
 const default_CacheDir = "cache/"
 const default_TocPage = "DocToc"
 
+enum OUTPUT_FORMATS
+	OUT_NONE     = 0
+	OUT_CHM      = 1
+	OUT_TXT		 = 2
+	OUT_FBHELP	 = 4
+	OUT_TEXINFO	 = 8
+end enum
 
 '' --------------------------------------------------------------------------
 '' main
@@ -61,11 +69,10 @@ const default_TocPage = "DocToc"
 	dim as integer bMakeTitles = FALSE
 	dim as COptions ptr connopts = NULL
 
-	dim as integer bShowHelp = FALSE, bShowVersion = FALSE
+	dim as integer bShowHelp = FALSE, bShowVersion = FALSE, bNoScan = FALSE
 	dim as integer bUseWeb = FALSE, bUseSql = FALSE, bMakeIni = FALSE
-	dim as integer bEmitChm = FALSE
-	dim as integer bEmitfbhelp = FALSE
-	dim as integer bEmitTxt = FALSE
+	dim as OUTPUT_FORMATS bEmitFormats
+
 	dim as string SinglePage = ""
 	dim as integer bSinglePage = FALSE
 	redim as string webPageList(1 to 10)
@@ -101,6 +108,7 @@ const default_TocPage = "DocToc"
 		print "   -chm           generate html and chm output"
 		print "   -fbhelp        generate output for fbhelp viewer"
 		print "   -txt           generate ascii text output"
+		print "   -texinfo       generate texinfo output"
 		print "   -version       show version"
 		print "   -getpage page1 [page2 [ ... pageN ]]]"
 		print "                  get specified pages from web and store in the cache"
@@ -182,15 +190,19 @@ const default_TocPage = "DocToc"
 			case "-maketitles"
 				bMakeTitles = TRUE
 			case "-chm"
-				bEmitChm = TRUE
+				bEmitFormats or= OUT_CHM
 			case "-fbhelp"
-				bEmitfbhelp = TRUE
+				bEmitFormats or= OUT_FBHELP
 			case "-txt"
-				bEmitTxt = TRUE
+				bEmitFormats or= OUT_TXT
+			case "-texinfo"
+				bEmitFormats or= OUT_TEXINFO
 			case "-getpage"
 				bWebPages = TRUE
 			case "-makepage"
 				bSinglePage = TRUE
+			case "-noscan"
+				bNoScan = TRUE
 			case "-cachedir"
 				i += 1
 				sCacheDir = command(i)
@@ -322,7 +334,13 @@ const default_TocPage = "DocToc"
 		sDocToc = sTocPage
 		sTocTitle = Lang.GetOption( "fb_toc_title", "Table of Contents" )
 
-		FBDoc_BuildTOC( sDocToc, sTocTitle, @paglist, @toclist, @lnklist )
+		if( bNoScan ) then
+			paglist = new CPageList
+			toclist = new CPageList
+			lnklist = new CPageList
+		else
+			FBDoc_BuildTOC( sDocToc, sTocTitle, @paglist, @toclist, @lnklist )
+		endif
 
 	end if
 
@@ -335,13 +353,13 @@ const default_TocPage = "DocToc"
 	end if
 
 	'' Check output format is set
-	if( (bEmitChm = FALSE) and (bEmitfbhelp = FALSE) and (bEmitTxt = FALSE) ) then
+	if( bEmitFormats = OUT_NONE ) then
 		print "Warning: No output format was set."
 	end if
 
 	'' Emit formats
 			
-	if( bEmitChm )then
+	if( ( bEmitFormats and OUT_CHM ) <> 0 )then
 
 		'' Generate CHM
 		sOutputDir = "html/"
@@ -352,8 +370,8 @@ const default_TocPage = "DocToc"
 		Templates.LoadFile( "chm_prj", sTemplateDir + "chm_prj.tpl.html" )
 		Templates.LoadFile( "chm_toc", sTemplateDir + "chm_toc.tpl.html" )
 		Templates.LoadFile( "chm_def", sTemplateDir + "chm_def.tpl.html" )
-		Templates.LoadFile( "htm_toc", sTemplateDir + "htm_toc.tpl.html" )
 		Templates.LoadFile( "chm_doctoc", sTemplateDir + "chm_doctoc.tpl.html" )
+		Templates.LoadFile( "htm_toc", sTemplateDir + "htm_toc.tpl.html" )
 
 		dim as CWiki2Chm ptr chm
 		chm = new CWiki2Chm( @"", 1, sOutputDir, paglist, toclist, lnklist )
@@ -362,7 +380,7 @@ const default_TocPage = "DocToc"
 
 	end if
 
-	if( bEmitfbhelp )then
+	if( ( bEmitFormats and OUT_FBHELP ) <> 0 )then
 
 		'' Generate fbhelp output for fbhelp console viewer
 		sOutputDir = "fbhelp/"
@@ -378,7 +396,7 @@ const default_TocPage = "DocToc"
 
 	end if
 
-	if( bEmitTxt )then
+	if( ( bEmitFormats and OUT_TXT ) <> 0 )then
 
 		'' Generate ascii Txt output for single txt file
 		sOutputDir = "txt/"
@@ -391,6 +409,24 @@ const default_TocPage = "DocToc"
 		txt = new CWiki2txt( @"", 1, sOutputDir, paglist, toclist )
 		txt->Emit()
 		delete txt
+
+	end if
+
+	if( ( bEmitFormats and OUT_TEXINFO ) <> 0 )then
+
+		'' Generate ascii Txt output for single txt file
+		sOutputDir = "texinfo/"
+		sTemplateDir = "templates/default/code/"
+
+		Templates.Clear()
+		Templates.LoadFile( "texinfo_def", sTemplateDir + "texinfo_def.tpl.texinfo" )
+		Templates.LoadFile( "texinfo_doctoc", sTemplateDir + "texinfo_doctoc.tpl.texinfo" )
+		Templates.LoadFile( "texinfo_toc", sTemplateDir + "texinfo_toc.tpl.texinfo" )
+
+		dim as CWiki2texinfo ptr tex
+		tex = new CWiki2texinfo( @"", 1, sOutputDir, paglist, toclist )
+		tex->Emit()
+		delete tex
 
 	end if
 

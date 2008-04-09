@@ -6,7 +6,9 @@ endif
 
 MAIN := fbdoc
 
-SRCS := CWiki2txt.bas
+SRCS := CWakka2texinfo.bas
+SRCS += CWiki2texinfo.bas
+SRCS += CWiki2txt.bas
 SRCS += CWiki2fbhelp.bas
 SRCS += CWakka2fbhelp.bas
 SRCS += CFbCode.bas

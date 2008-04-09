@@ -116,8 +116,6 @@ namespace fb.fbdoc
 
 		ret = Lang.ExpandString( sContent )
 
-		ret = ReplaceSubStr( ret, "&middot;", "-" )
-
 		sOutputFile = *ctx->outputdir + *sFileName
 
 		h = freefile

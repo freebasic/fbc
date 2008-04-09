@@ -1,0 +1,4 @@
+@node top
+@top "FreeBASIC Manual"
+@include DocToc.texinfo
+{$pg_body}

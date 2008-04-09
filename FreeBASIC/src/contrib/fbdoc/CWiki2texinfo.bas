@@ -16,24 +16,23 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' CWiki2txt - emitter for txt file
+'' CWiki2texinfo - emitter for texinfo file
 ''
-'' chng: dec/2006 written [coderJeff]
-''       dec/2006 updated [coderJeff] - using classes
+'' chng: apr/2008 written [coderJeff]
 ''
 
 #include once "fbdoc_defs.bi"
 #include once "fbdoc_lang.bi"
 
 #include once "CWiki.bi"
-#include once "CWakka2fbhelp.bi"
+#include once "CWakka2texinfo.bi"
 
 #include once "fbdoc_loader.bi"
 #include once "fbdoc_templates.bi"
 #include once "fbdoc_keywords.bi"
 #include once "fbdoc_string.bi"
 
-#include once "CWiki2txt.bi"
+#include once "CWiki2texinfo.bi"
 #include once "CPage.bi"
 #include once "CPageList.bi"
 
@@ -41,18 +40,18 @@
 
 namespace fb.fbdoc
 
-	type CWiki2txtCtx_
+	type CWiki2texinfoCtx_
 		as zstring ptr urlbase
 		as integer indentbase
 		as zstring ptr outputdir
 		as CPageList ptr paglist
 		as CPageList ptr toclist
-		as CWakka2fbhelp ptr converter
+		as CWakka2texinfo ptr converter
 		as CWiki ptr wiki
 	end type
 
 	'':::::
-	constructor CWiki2txt _
+	constructor CWiki2texinfo _
 		( _
 			byval urlbase as zstring ptr, _
 			byval indentbase as integer, _
@@ -61,7 +60,7 @@ namespace fb.fbdoc
 			byval toclist as CPageList ptr _
 		)
 
-		ctx = new CWiki2txtCtx
+		ctx = new CWiki2texinfoCtx
 		ctx->urlbase = NULL
 		ZSet @ctx->urlbase, urlbase
 		ctx->indentbase = indentbase
@@ -70,13 +69,13 @@ namespace fb.fbdoc
 		ctx->paglist = paglist
 		ctx->toclist = toclist
 		ctx->converter = NULL
-		'' ctx->converter = new CWakka2txt
+		'' ctx->converter = new CWakka2texinfo
 		ctx->wiki = new CWiki
 
 	end constructor
 
 	'':::::
-	destructor CWiki2txt _
+	destructor CWiki2texinfo _
 		( _
 		)
 		
@@ -95,7 +94,7 @@ namespace fb.fbdoc
 
 	private function _OutputFile _
 		( _
-			byval ctx as CWiki2txtCtx ptr, _
+			byval ctx as CWiki2texinfoCtx ptr, _
 			byval sFileName as zstring ptr, _
 			byval sContent as zstring ptr _
 		) as integer
@@ -132,7 +131,7 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
-	function CWiki2txt.EmitPages _
+	function CWiki2texinfo.EmitPages _
 		( _
 		) as integer
 
@@ -174,7 +173,7 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
-	function CWiki2txt.EmitDefPage _
+	function CWiki2texinfo.EmitDefPage _
 		( _
 			byval page as CPage ptr, _
 			byval sbody as zstring ptr _
@@ -208,63 +207,32 @@ namespace fb.fbdoc
 
 		sBodyTxt = ctx->converter->gen( sPageName, ctx->wiki )
 
-		sTxt = sPageTitle + chr(10)
-
-		if( left( sBodyTxt, 1 ) <> chr(10) ) then
-			sTxt += chr(10)
-		end if
-		
-		sTxt += Lang.ExpandString( sBodyTxt )
-
-		function = _OutputFile( ctx, page->GetName() + ".txt", sTxt )
-
-	end function
-
-	'':::::
-	private function _MakePageHeader _
-		( _
-			byref sText as string, _
-			byval style as integer _
-		) as string
-		
-		dim ret as string
-
-		'' section
-		if( style = 1 ) then
-			ret += chr(10) + chr(10)
-			ret += string( 76, asc("=") ) + chr(10)
-			ret += space(2) + ucase( sText ) + chr(10)
-			ret += space(2) + string( len(sText), "-" ) + chr(10)
-			ret += chr(10) + chr(10)
-
-		'' sub-section
-		elseif( style = 2 ) then
-			ret += chr(10)
-			ret += string( 76, asc("=") ) + chr(10)
-			ret += space(4) + sText + chr(10)
-			ret += chr(10)
-
+		if( lcase( sPageName ) = "doctoc" ) then
+			sTxt = Templates.Get("texinfo_doctoc")
 		else
-			ret += string( 76 - 6 - len(sText) , asc("-") ) 
-			ret += " " + sText + " "
-			ret += string( 4, asc("-") ) 
-			ret += chr(10)
-
+			sTxt = Templates.Get("texinfo_def")
 		end if
 
-		return ret
+		sTxt = ReplaceSubStr( sTxt, "{$pg_body}", sBodyTxt ) 
+		sTxt = ReplaceSubStr( sTxt, "{$pg_title}", sPageTitle )
+		sTxt = ReplaceSubStr( sTxt, "{$pg_name}", sPageName )
+
+		sTxt = Lang.ExpandString( sTxt )
+
+		function = _OutputFile( ctx, page->GetName() + ".texinfo", sTxt )
 
 	end function
 
+
 	'':::::
-	function CWiki2Txt.LoadAndEmitTOC _
+	function CWiki2texinfo.LoadAndEmitTOC _
 		( _
 			byval sPageName as zstring ptr, _
 			byval sOutputFile as zstring ptr _
 		) as integer
 
 		dim as CPage ptr page
-		dim as string sBody, sTitle, f, a
+		dim as string sBody, sTitle, sBodyTxt, sTxt, f
 		dim as CList ptr lst
 		dim as integer h
 		dim as WikiPageLink ptr pagelink
@@ -287,6 +255,7 @@ namespace fb.fbdoc
 			end if
 
 			printlog "Emitting: " + page->GetName() + " = '" + page->GetTitle() + "'"
+
 			if this.EmitDefPage( page, sBody ) then
 				page->SetEmitted( TRUE )	
 			end if
@@ -295,79 +264,63 @@ namespace fb.fbdoc
 		end if
 
 		delete page
-		
 
-		'' Build Output file
+		'' build output
 		lst = ctx->wiki->GetDocTocLinks( false )
 
-		f = *ctx->outputdir + *sOutputFile
-
-		h = freefile
-		if( open(  f for output as #h ) <> 0 ) then
-			printlog "Unable to write '" + f + "'"
-			return FALSE
-		end if
-
-		a = Templates.Get("txt_doctoc")
-
-		a = Lang.ExpandString( a )
-
-		put #h,,a
-
-		f = *ctx->outputdir + *sPageName + ".txt"
-
-		sBody = LoadFileAsString( f )
-		if( len(sbody) > 0 ) then
-			a = _MakePageHeader( *sPageName, 0 ) + sBody + chr(10)
-			put #h,,a
-		end if
-
+		'' First pass - generate a top level menu
+		'' !!! TODO - auto-generate nodes and menus for chapters/sections !!!
 		pagelink = lst->GetHead()
+		sBodyTxt +=  "@menu" + crlf
 		do while( pagelink <> NULL )
-			
 			select case pagelink->link.linkclass
 			case WIKI_PAGELINK_CLASS_SECTION
-				a = _MakePageHeader( pagelink->text, 1 )
-				put #h,,a
+			case WIKI_PAGELINK_CLASS_SUBSECT
+			case else
+				'' hack, menus can't contain ':'
+				sBodyTxt +=  "* " + ReplaceSubStr( pagelink->text, ":", "" ) + ":" + pagelink->link.url + "." + crlf
+			end select
+
+			pagelink = lst->GetNext( pagelink )
+		loop
+		sBodyTxt +=  "@end menu" + crlf
+
+		'' Second pass, generate sectioning and include topics
+		pagelink = lst->GetHead()
+		do while( pagelink <> NULL )
+			select case pagelink->link.linkclass
+			case WIKI_PAGELINK_CLASS_SECTION
+				sBodyTxt +=  "@chapter " + pagelink->text + crlf
 
 			case WIKI_PAGELINK_CLASS_SUBSECT
-				a = _MakePageHeader( pagelink->text, 2 )
-				put #h,,a
-
+				sBodyTxt +=  "@section " + pagelink->text + crlf
 			case else
-
-				f = *ctx->outputdir + pagelink->link.url + ".txt"
-
-				sBody = LoadFileAsString( f )
-				if( len(sbody) > 0 ) then
-
-					a = _MakePageHeader( pagelink->link.url, 0 )
-					put #h,,a
-
-					put #h,,sBody
-
-					a = chr(10) + chr(10)
-					put #h,,a
-
-				end if
-
+				sBodyTxt +=  "@node " + pagelink->link.url + ", , , Top" + crlf
+				sBodyTxt +=  "@subsection " + pagelink->text + crlf
+				sBodyTxt +=  "@include " + pagelink->link.url + ".texinfo" + crlf
 			end select
 
 			pagelink = lst->GetNext( pagelink )
 		loop
 
-		close #h
+		sTxt = Templates.Get("texinfo_toc")
+
+		sTxt = Lang.ExpandString( sTxt )
+
+		sTxt = ReplaceSubStr( sTxt, "{$pg_body}", sBodyTxt )
+
+		function = _OutputFile( ctx, sOutputFile, sTxt )
 
 		return TRUE
 
 	end function
 
 	'':::::
-	function CWiki2txt.Emit _
+	function CWiki2texinfo.Emit _
 		( _
 		) as integer
 
-		ctx->converter = new CWakka2fbhelp
+		ctx->converter = new CWakka2texinfo
 
 		if( ctx->converter = NULL) then
 			return FALSE
@@ -379,7 +332,8 @@ namespace fb.fbdoc
 		ctx->converter->setIsFlat( true )
 
 		this.EmitPages()
-		this.LoadAndEmitTOC( @"PrintToc", @"fbdoc.txt" )
+
+		this.LoadAndEmitTOC( @"PrintToc", @"fbdoc.texinfo" )
 
 		delete ctx->converter
 		ctx->converter = NULL

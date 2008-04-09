@@ -128,7 +128,7 @@ namespace fb.fbdoc
 		end if
 
 		'' !!! TODO !!!: use a datafile to specify a list, matched on patterns of pages names
-		'' to include in auto-generated TOC.  e.g. DocTOc, CatPg*, CVS*
+		'' to include in auto-generated TOC.  e.g. DocToc, CatPg*, CVS*
 
 		if( _
 			( lcase(*sPage) = "doctoc" ) _

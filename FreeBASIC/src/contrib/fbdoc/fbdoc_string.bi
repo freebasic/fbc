@@ -50,6 +50,13 @@ namespace fb.fbdoc
 			byval sp as integer = FALSE _
 		) as string
 
+	declare function Text2Texinfo _
+		( _
+			byref text as string, _
+			byval br as integer = FALSE, _
+			byval sp as integer = FALSE _
+		) as string
+
 	declare function GetBaseName _
 		( _
 			byref filename as string _
