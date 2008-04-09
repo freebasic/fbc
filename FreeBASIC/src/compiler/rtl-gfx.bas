@@ -1044,7 +1044,7 @@ declare function hPorts_cb _
 		( _
 			@"imageinfo", @"fb_GfxImageInfo", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
-			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			7, _
 			{ _
 				( _
