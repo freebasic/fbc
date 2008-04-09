@@ -1039,8 +1039,8 @@ declare function hPorts_cb _
 		), _
 		/' fb_GfxImageInfo( byval img as any ptr, byref width as integer = 0, _
 							byref height as integer = 0, byref bpp as integer = 0, _
-							byref pitch as integer = 0, byref size as integer = 0, _
-							byref imgdata as any ptr = 0 ) as integer '/ _
+							byref pitch as integer = 0, byref pixdata as any ptr = 0, _
+							byref imgsize as integer = 0 ) as integer '/ _
 		( _
 			@"imageinfo", @"fb_GfxImageInfo", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
@@ -1063,10 +1063,10 @@ declare function hPorts_cb _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
 				), _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, TRUE, 0 _
 				), _
 				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, TRUE, 0 _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 _
 				) _
 			} _
 		), _

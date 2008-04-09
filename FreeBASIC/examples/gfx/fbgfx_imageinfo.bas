@@ -1,6 +1,7 @@
 dim as any ptr img
-dim as integer wid, hei, bpp, pitch, size
-dim as ubyte ptr imgdata
+dim as integer wid, hei, bpp, pitch
+dim as byte ptr pixdata
+dim as integer imgsize
 dim as integer x, y
 dim as integer res
 
@@ -16,7 +17,7 @@ end if
 
 '' Get image information:
 
-res = imageinfo(img, wid, hei, bpp, pitch, size, imgdata)
+res = imageinfo(img, wid, hei, bpp, pitch, pixdata, imgsize)
 
 if res = 0 then
 	print "ImageInfo succeeded"
@@ -31,8 +32,8 @@ print "Width:           " & wid
 print "Height:          " & hei
 print "Bytes per pixel: " & bpp
 print "Pitch:           " & pitch
-print "Size:            " & size
-print "img data:        " & imgdata
+print "Pixel data:      " & pixdata
+print "img buffer size: " & imgsize
 
 if res <> 0 then
 	imagedestroy img
@@ -46,7 +47,7 @@ cls
 '' Draw to image buffer
 for y = 0 to hei - 1
 	for x = 0 to wid - 1
-		pset img, (x, y), 56 + sqr( 3*(x-wid\2)^2 + 4*(y-hei\2) ^ 2 ) mod 24
+		pset img, (x, y), 56 + sqr( 3*(x-wid\2)^2 + 4*(y-hei\2)^2 ) mod 24
 	next x
 next y
 line img, (0, 0)-(wid-1, hei-1), 15, b
@@ -58,8 +59,9 @@ put (10, 10), img
 '' PSET image buffer pixels to screen (should look the same)
 screenlock
 	for y = 0 to hei - 1
+		dim as ubyte ptr p = pixdata + y * pitch
 		for x = 0 to wid - 1
-			pset (x + 10+wid+10, y + 10), imgdata[y * pitch \ sizeof(*imgdata) + x]
+			pset (x + 10+wid+10, y + 10), p[x]
 		next x
 	next y
 screenunlock

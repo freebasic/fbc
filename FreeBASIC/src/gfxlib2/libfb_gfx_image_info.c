@@ -28,9 +28,9 @@
 
 
 FBCALL int fb_GfxImageInfo( void *img,
-							int *width, int *height,
-							int *bpp,   int *pitch,
-							int *size,  void **imgdata )
+							int *width,	int *height,
+							int *bpp,	int *pitch,	void **imgdata, 
+							int *size)
 {
 	PUT_HEADER *header;
 	int bpp_, width_, height_, pitch_, size_, headerSize_;
@@ -64,8 +64,8 @@ FBCALL int fb_GfxImageInfo( void *img,
 	*height  = height_;
 	*bpp     = bpp_;
 	*pitch   = pitch_;
-	*size    = headerSize_ + (pitch_ * height_);
 	*imgdata = img + headerSize_;
+	*size    = headerSize_ + (pitch_ * height_);
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

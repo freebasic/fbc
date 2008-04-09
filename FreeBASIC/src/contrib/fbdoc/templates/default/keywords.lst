@@ -203,6 +203,7 @@ IIf
 ImageCreate
 ImageConvertRow
 ImageDestroy
+ImageInfo
 Imp
 Import
 Inkey
