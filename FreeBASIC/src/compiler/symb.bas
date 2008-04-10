@@ -333,6 +333,12 @@ function symbCanDuplicate _
 				if( symbIsProc( head_sym ) ) then
 					if( symbGetIsRTL( head_sym ) = FALSE ) then
 						exit function
+					else
+						'' both RTL? don't allow dup so overloaded procs 
+						'' will get chained
+						if( symbGetIsRTL( head_sym ) ) then
+							exit function
+						end if
 					end if
 				end if
 
