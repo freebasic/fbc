@@ -20,7 +20,6 @@ Version 0.20.0 Beta:
 - #1933706 - !"\a" was not working correctly (yetifoot)
 - #1914051 - Some unhandled escape sequences were being allowed through (yetifoot)
 - #1861363 - gfxlib win32 gdi driver was using the alpha_remover_blitter on depths < 32 bits (jeffm)
-- gfxlib win32 driver was calling driver exit routines twice (jeffm)
 
 
 Version 0.18.5 Beta:
@@ -30,6 +29,7 @@ Version 0.18.5 Beta:
 - added the --enable-standalone configure switch.  If building for current dos/win32 or to use fbc from inside the development tree, this switch must be used (jeffm)
 
 [fixed]
+- gfxlib win32 driver was calling driver exit routines twice (jeffm)
 - included files weren't normalizing slashes before being cached (cha0s)
 - install.sh should use "=" for string comparison instead of "==" (jeffm)
 
