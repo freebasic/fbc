@@ -5,6 +5,7 @@ Version 0.18.5 Beta:
 - added the --enable-standalone configure switch.  If building for current dos/win32 or to use fbc from inside the development tree, this switch must be used (jeffm)
 
 [fixed]
+- gfxlib win32 driver was calling driver exit routines twice (jeffm)
 - included files weren't normalizing slashes before being cached (cha0s)
 - install.sh should use "=" for string comparison instead of "==" (jeffm)
 
