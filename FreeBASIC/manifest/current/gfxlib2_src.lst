@@ -61,6 +61,7 @@ src/gfxlib2/libfb_gfx_get.c
 src/gfxlib2/libfb_gfx_getmouse.c
 src/gfxlib2/libfb_gfx_image.c
 src/gfxlib2/libfb_gfx_image_convert.c
+src/gfxlib2/libfb_gfx_image_info.c
 src/gfxlib2/libfb_gfx_inkey.c
 src/gfxlib2/libfb_gfx_line.c
 src/gfxlib2/libfb_gfx_lineinp.c

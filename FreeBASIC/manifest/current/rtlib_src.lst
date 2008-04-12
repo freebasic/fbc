@@ -16,8 +16,11 @@ src/rtlib/aclocal.m4
 src/rtlib/config.in
 src/rtlib/configure
 src/rtlib/configure.ac
+src/rtlib/darwin/fb_darwin.h
 src/rtlib/dos/fb_dos.h
 src/rtlib/dos/fb_unicode.h
+src/rtlib/dos/libfb_dev_pipe_close.c
+src/rtlib/dos/libfb_dev_pipe_open.c
 src/rtlib/dos/libfb_drv_file_copy.c
 src/rtlib/dos/libfb_drv_intl.c
 src/rtlib/dos/libfb_drv_intl_data.c
@@ -177,8 +180,6 @@ src/rtlib/libfb_dev_lpt_close.c
 src/rtlib/libfb_dev_lpt_test.c
 src/rtlib/libfb_dev_lpt_write.c
 src/rtlib/libfb_dev_lpt_write_wstr.c
-src/rtlib/libfb_dev_pipe_close.c
-src/rtlib/libfb_dev_pipe_open.c
 src/rtlib/libfb_dev_scrn.c
 src/rtlib/libfb_dev_scrn_close.c
 src/rtlib/libfb_dev_scrn_eof.c
@@ -327,6 +328,9 @@ src/rtlib/libfb_mem_copyclear.c
 src/rtlib/libfb_qb_file_open.c
 src/rtlib/libfb_qb_inkey.c
 src/rtlib/libfb_qb_sleep.c
+src/rtlib/libfb_qb_str_convto.c
+src/rtlib/libfb_qb_str_convto_flt.c
+src/rtlib/libfb_qb_str_convto_lng.c
 src/rtlib/libfb_signals.c
 src/rtlib/libfb_str_asc.c
 src/rtlib/libfb_str_assign.c
@@ -510,6 +514,8 @@ src/rtlib/obj/xbox/deleteme.txt
 src/rtlib/obj/xbox/mt/deleteme.txt
 src/rtlib/static/fbrt0.c
 src/rtlib/unix/fb_unix.h
+src/rtlib/unix/libfb_dev_pipe_close.c
+src/rtlib/unix/libfb_dev_pipe_open.c
 src/rtlib/unix/libfb_drv_file_copy.c
 src/rtlib/unix/libfb_drv_intl_get.c
 src/rtlib/unix/libfb_drv_intl_getdateformat.c
@@ -559,6 +565,8 @@ src/rtlib/unix/libfb_unix_hinit.c
 src/rtlib/win32/fb_unicode.h
 src/rtlib/win32/fb_win32.h
 src/rtlib/win32/libfb_alloca.s
+src/rtlib/win32/libfb_dev_pipe_close.c
+src/rtlib/win32/libfb_dev_pipe_open.c
 src/rtlib/win32/libfb_drv_file_copy.c
 src/rtlib/win32/libfb_drv_intl_get.c
 src/rtlib/win32/libfb_drv_intl_getdateformat.c
@@ -641,6 +649,8 @@ src/rtlib/x86/libfb_cpudetect_x86.s
 src/rtlib/xbox/README.txt
 src/rtlib/xbox/fb_xbox.h
 src/rtlib/xbox/libfb_alloca.s
+src/rtlib/xbox/libfb_dev_pipe_close.c
+src/rtlib/xbox/libfb_dev_pipe_open.c
 src/rtlib/xbox/libfb_drv_file_copy.c
 src/rtlib/xbox/libfb_drv_intl_get.c
 src/rtlib/xbox/libfb_drv_intl_getdateformat.c

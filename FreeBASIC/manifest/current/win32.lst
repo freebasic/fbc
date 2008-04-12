@@ -164,6 +164,7 @@ examples/gfx/fbgfx_depth.bas
 examples/gfx/fbgfx_events.bas
 examples/gfx/fbgfx_flame.bas
 examples/gfx/fbgfx_getput.bas
+examples/gfx/fbgfx_imageinfo.bas
 examples/gfx/fbgfx_input.bas
 examples/gfx/fbgfx_test.bas
 examples/gfx/fblogo.bmp
@@ -1086,6 +1087,7 @@ examples/manual/system/chdir.bas
 examples/manual/system/command.bas
 examples/manual/system/curdir.bas
 examples/manual/system/dir.bas
+examples/manual/system/dirretat.bas
 examples/manual/system/environ.bas
 examples/manual/system/exec.bas
 examples/manual/system/exepath.bas
