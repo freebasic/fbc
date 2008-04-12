@@ -17,12 +17,15 @@ Dim As Integer i
 ScreenRes 320, 200, 8
 
 '' Create custom font into PUT buffer
+
 myFont = ImageCreate(NUMCHARS * 8, 9)
-p = myFont + IIf(myFont[0] = 7, 32, 4)
+ '' Put font header at start of pixel data
+ ImageInfo( myFont, , , , , p )
 p[0] = 0
 p[1] = FIRSTCHAR
 p[2] = LASTCHAR
 
+ '' PUT each character into the font and update width information
 For i = FIRSTCHAR To LASTCHAR
 	
 	'' Here we could define a custom width for each letter, but for simplicity we use
@@ -42,7 +45,7 @@ Draw String (10, 10), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", , myFont
 Draw String (10, 26), "abcdefghijklmnopqrstuvwxyz", , myFont
 Draw String (66, 58), "Hello world!", , myFont
 
-'' free the font from memory, now we are done with it
+'' Free the font from memory, now we are done with it
 ImageDestroy myFont
 
 Sleep
