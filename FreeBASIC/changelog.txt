@@ -20,6 +20,7 @@ Version 0.20.0 Beta:
 - #1933706 - !"\a" was not working correctly (yetifoot)
 - #1914051 - Some unhandled escape sequences were being allowed through (yetifoot)
 - #1861363 - gfxlib win32 gdi driver was using the alpha_remover_blitter on depths < 32 bits (jeffm)
+- GET/PUT were discounting padding at the end of UDTs (counting_pine)
 
 
 Version 0.18.5 Beta:

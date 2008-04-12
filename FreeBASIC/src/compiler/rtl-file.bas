@@ -1528,7 +1528,7 @@ function rtlFilePut _
     if( isstring ) then
     	lgt = rtlCalcStrLen( src, dtype )
     else
-    	lgt = rtlCalcExprLen( src )
+    	lgt = rtlCalcExprLen( src, FALSE )
     end if
 
     if( elements = NULL ) then
@@ -1714,7 +1714,7 @@ function rtlFileGet _
     if( isstring ) then
     	lgt = rtlCalcStrLen( dst, dtype )
     else
-    	lgt = rtlCalcExprLen( dst )
+    	lgt = rtlCalcExprLen( dst, FALSE )
     end if
 
     if( elements = NULL ) then
