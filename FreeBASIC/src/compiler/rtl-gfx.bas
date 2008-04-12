@@ -202,7 +202,7 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_GfxDraw ( byval target as any, cmd as string ) '/ _
+		/' fb_GfxDraw ( byref target as any, cmd as string ) '/ _
 		( _
 			@FB_RTL_GFXDRAW, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
@@ -217,7 +217,7 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_GfxDrawString ( byval target as any, byval x as single, byval y as single, _
+		/' fb_GfxDrawString ( byref target as any, byval x as single, byval y as single, _
 		                    byval byval coord_type as integer = COORD_TYPE_A, text as string, _
 		                    byval col as uinteger = DEFAULT_COLOR, byval font as any = NULL, byval mode as integer, _
 		                    byval putter as any ptr, _
@@ -515,8 +515,8 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_GfxScreen ( byval w as integer, byval h as integer = 0, byval depth as integer = 0, _
-		                byval fullscreenFlag as integer = 0 ) as integer '/ _
+		/' fb_GfxScreen ( byval mode as integer, byval depth as integer = 0, byval num_pages as integer = 0, _
+		                byval flags as integer = 0, byval refresh_rate as integer = 0 ) as integer '/ _
 		( _
 			@FB_RTL_GFXSCREENSET, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
