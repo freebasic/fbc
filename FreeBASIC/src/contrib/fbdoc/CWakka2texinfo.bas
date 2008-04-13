@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' CWakka2texinfo - convert wakka format markup to fbhelp console help viewer
+'' CWakka2texinfo - convert wakka format markup to texinfo
 ''
 '' chng: apr/2008 written [coderJeff]
 ''
