@@ -1072,8 +1072,9 @@ function rtlPrint _
  		end if
     end if
 
-    '' byval mask as integer
+	'' byval mask as integer
 	mask = 0
+	if( fbLangIsSet( FB_LANG_QB ) ) then mask or= FB_PRINTMASK_APPEND_SPACE
 	if( iscomma ) then
 		mask or= FB_PRINTMASK_PAD
 	elseif( issemicolon = FALSE ) then

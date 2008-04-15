@@ -50,6 +50,7 @@
                                               * when last character in screen
                                               * buffer gets handles in a special
                                               * way */
+#define FB_PRINT_APPEND_SPACE 0x00000010
 #define FB_PRINT_ISLAST       0x80000000     /* only for USING */
 
 typedef struct _FB_PRINTUSGCTX {
@@ -93,7 +94,7 @@ static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
         char buffer[80];                                                      \
         int len;                                                              \
                                                                               \
-        if( __fb_ctx.lang == FB_LANG_QB ) {                                   \
+        if( mask & FB_PRINT_APPEND_SPACE ) {                                  \
             if( mask & FB_PRINT_BIN_NEWLINE )                                 \
                 len = sprintf( buffer, fmt type " " FB_BINARY_NEWLINE, val ); \
             else if( mask & FB_PRINT_NEWLINE )                                \

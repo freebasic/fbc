@@ -102,14 +102,15 @@ end type
 const FB_DATASTMT_PREFIX	= "_{fbdata}_"
 
 
-'' print modes (same as in rtlib/fb.h)
+'' print modes (same as in rtlib/fb_console.h)
 enum FBPRINTMASK
-	FB_PRINTMASK_NEWLINE	= &h00000001
-	FB_PRINTMASK_PAD        = &h00000002
-	FB_PRINTMASK_ISLAST		= &h80000000
+	FB_PRINTMASK_NEWLINE	  = &h00000001
+	FB_PRINTMASK_PAD          = &h00000002
+	FB_PRINTMASK_APPEND_SPACE = &h00000010
+	FB_PRINTMASK_ISLAST		  = &h80000000
 end enum
 
-'' file constants (same as in rtlib/fb.h)
+'' file constants (same as in rtlib/fb_file.h)
 enum FBFILEMODE
 	FB_FILE_MODE_BINARY
 	FB_FILE_MODE_RANDOM
