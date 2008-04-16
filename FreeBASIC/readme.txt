@@ -32,7 +32,13 @@ Installing:
 
     - Run "sudo ./install.sh -i" from that directory to install the binaries,
       libraries and include files into the system as root, at the default
-      location of /usr/share/freebasic. A link to the compiler binary will be
+      location.
+
+    - In FreeBASIC version 0.18.4 the default installation location is
+      /usr/local
+
+    - In FreeBASIC version 0.18.3 and earlier the default installation
+      location is /usr/share/freebasic. And a link to the compiler binary will be
       created at /usr/bin/fbc. If you don't have root priviledges, you can also
       install into a custom directory; run the install.sh script with no
       arguments for more info. Be warned though that installing with no root
