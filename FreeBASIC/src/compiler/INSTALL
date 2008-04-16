@@ -10,6 +10,10 @@ If the "Makefile" file is not included, generate it:
 	$ cd obj/[target-platform]
 	$ ../../configure
 
+If making a standalone compiler, be sure to specify the --enable-standalone option
+	$ cd obj/[target-platform]
+	$ ../../configure --enable-standalone
+
 After that, build and install the library:
 	$ cd obj/[target-platform]
 	$ make
