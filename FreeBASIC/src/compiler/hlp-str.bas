@@ -543,6 +543,9 @@ function hReEscapeW _
 
 	DWstrAllocate( res, lgt * 2 )
 
+	src = text
+	dst = res.data
+
 	src_end = src + lgt
     do while( src < src_end )
 		char = *src
