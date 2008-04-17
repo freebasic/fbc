@@ -25,27 +25,31 @@ Installing:
 
     - Follow the installer instructions, don't forget to select which external 
       libraries to install, some are not selected by default.
-      
+
   o Linux version:
 
     - Unpack the tar gzip archive to any folder.
 
     - Run "sudo ./install.sh -i" from that directory to install the binaries,
       libraries and include files into the system as root, at the default
-      location.
+      location of /usr/local.
 
-    - In FreeBASIC version 0.18.4 the default installation location is
-      /usr/local
+    - Note: to uninstall FreeBASIC, you can run "install.sh -u"
+      
+  o Linux (standalone) version:
 
-    - In FreeBASIC version 0.18.3 and earlier the default installation
-      location is /usr/share/freebasic. And a link to the compiler binary will be
-      created at /usr/bin/fbc. If you don't have root priviledges, you can also
-      install into a custom directory; run the install.sh script with no
-      arguments for more info. Be warned though that installing with no root
-      priviledges will prevent the script from installing a link to the binary
-      into /usr/bin/fbc.
-    
-    (Note: to uninstall FreeBASIC, you can run "install.sh -u")
+    - Unpack the tar gzip archive to any folder.
+
+    - Run "sudo ./install-standalone.sh -i" from that directory to install 
+      the binaries, libraries and include files into the system as root, at 
+      the default location /usr/share/freebasic. A link to the compiler 
+      binary will be created at /usr/bin/fbc. If you don't have root 
+      priviledges, you can also install into a custom directory; run the 
+      install-standalone.sh script with no arguments for more info. Be warned 
+      though that installing with no root priviledges will prevent the script 
+      from installing a link to the binary into /usr/bin/fbc.
+
+    - Note: to uninstall FreeBASIC, you can run "install-standalone.sh -u"
 
   o DOS:
 
@@ -68,10 +72,21 @@ Running:
       installed (or follow the DOS guide below if nothing works).
   
     - Type "fbc" (without quotes) to see a list of options. To compile the hello
-      example type: "fbc examples\hello.bas", the hello.exe file will be created
-      at the "examples" dir.
+      example type: "fbc examples\misc\hello.bas", the hello executable file will 
+      be created at the "examples\misc" dir.
   
   o Linux version:
+
+    - If the install.sh script was successfully executed with enough priviledges,
+      the compiler binary should have been copied to /usr/local/bin/fbc.
+      This means that any user can invoke FreeBASIC by simply typing "fbc" on any
+      dir the shell is currently at.
+
+    - Type "fbc" (without quotes) to see a list of options. To compile the hello
+      example type: "fbc examples/misc/hello.bas", the hello executable file will 
+      be created at the "examples/misc" dir.
+
+  o Linux (standalone) version:
 
     - If the install.sh script was successfully executed with enough priviledges,
       a link to the compiler binary should have been created at /usr/bin/fbc.
@@ -81,8 +96,8 @@ Running:
       the compiler from any directory.
 
     - Type "fbc" (without quotes) to see a list of options. To compile the hello
-      example type: "fbc examples/hello.bas", the hello executable file will be
-      created at the "examples" dir.
+      example type: "fbc examples/misc/hello.bas", the hello executable file will 
+      be created at the "examples/misc" dir.
 
   o DOS version:
 
@@ -91,8 +106,8 @@ Running:
       (without quotes) and press Enter, if the archive was expanded to C:\.
 
     - Type "fbc" (without quotes) to see a list of options. To compile the hello
-      example type: "fbc examples\hello.bas", the hello.exe file will be created
-      at the "examples" dir.
+      example type: "fbc examples\misc\hello.bas", the hello executable file will 
+      be created at the "examples\misc" dir.
 
     - You can also add the FreeBASIC dir to your PATH environment variable, so
       you will not have to switch to or type the FB's dir every time you want to
@@ -220,7 +235,7 @@ Most Important Features:
       learn anything new if you are familiar with any Microsoft-BASIC variant.
 
     - FreeBASIC is case-insensitive; scalar variables don't need to be
-      dimensioned and suffix can be used (in -lang qb or deprecated only); line 
+      dimensioned and suffix can be used (in -lang qb or fblite only); line 
       numbers are supported (ditto); a main() function is not required; most of 
       the graphic and console statements and functions found in MS-QuickBASIC 
       were implemented, et cetera.

@@ -38,6 +38,14 @@ i_success_msg()
 	echo "================================================================================"
 	echo
 }
+i_copy_if_exists()
+{
+	if [ -e $1 ]; then
+		cp -up $1 $2
+	else
+		true
+	fi
+}
 install()
 {
 	mkdir -p -m 0755 "$INSTALLDIR"/lib/freebasic/linux && \
@@ -47,15 +55,23 @@ install()
 	mkdir -p -m 0755 "$INSTALLDIR"/share/freebasic/docs && \
 	mkdir -p -m 0755 "$INSTALLDIR"/share/freebasic/examples && \
 	mkdir -p -m 0755 "$INSTALLDIR"/man/man1 && \
-	cp lib/linux/* "$INSTALLDIR"/lib/freebasic/linux/ && \
-	cp -ru inc/* "$INSTALLDIR"/include/freebasic/ && \
-	cp -ru examples/* "$INSTALLDIR"/share/freebasic/examples/ && \
-	cp -ru docs/* "$INSTALLDIR"/share/freebasic/docs/ && \
-	cp -ru readme.txt "$INSTALLDIR"/share/freebasic/ && \
-	cp -ru migrating.txt "$INSTALLDIR"/share/freebasic/ && \
+	i_copy_if_exists lib/linux/fbrt0.o "$INSTALLDIR"/lib/freebasic/linux/ && \
+	i_copy_if_exists lib/linux/libfb.a "$INSTALLDIR"/lib/freebasic/linux/ && \
+	i_copy_if_exists lib/linux/libfbmt.a "$INSTALLDIR"/lib/freebasic/linux/ && \
+	i_copy_if_exists lib/linux/libfbgfx.a "$INSTALLDIR"/lib/freebasic/linux/ && \
+	i_copy_if_exists lib/linux/libtinyptc.a "$INSTALLDIR"/lib/freebasic/linux/ && \
+	i_copy_if_exists lib/linux/elf_i386.x "$INSTALLDIR"/lib/freebasic/linux/ && \
+	cp -rup inc/* "$INSTALLDIR"/include/freebasic/ && \
+	cp -rup examples/* "$INSTALLDIR"/share/freebasic/examples/ && \
+	cp -rup docs/* "$INSTALLDIR"/share/freebasic/docs/ && \
+	i_copy_if_exists readme.txt "$INSTALLDIR"/share/freebasic/ && \
+	i_copy_if_exists migrating.txt "$INSTALLDIR"/share/freebasic/ && \
 	gzip -c docs/fbc.1 > "$INSTALLDIR"/man/man1/fbc.1.gz && \
-	cp fbc "$INSTALLDIR"/bin/ && \
-	chmod a+x "$INSTALLDIR"/bin/fbc && \
+	cp fbc -p "$INSTALLDIR"/bin/ && \
+	chmod a+rX "$INSTALLDIR"/lib/freebasic/ && \
+	chmod a+rX "$INSTALLDIR"/include/freebasic/ && \
+	chmod a+rX "$INSTALLDIR"/share/freebasic/ && \
+	chmod a+rx "$INSTALLDIR"/bin/fbc && \
 	i_success_msg
 }
 
@@ -88,6 +104,16 @@ if [ ! -e ./fbc ]; then
 	echo "ERROR: Unable to find ./fbc"
 	echo
 	exit 1
+fi
+
+if [ "$ACTION" = "install" ]; then
+	STANDALONE=`./fbc -version | grep standalone | cut -c15- -`
+	if [ "$STANDALONE" != "" ]; then
+		echo
+		echo "ERROR: ./fbc is configured as standalone.  Use install-standalone.sh to install."
+		echo
+		exit 1
+	fi
 fi
 
 INSTALLDIR=`./fbc -version | grep prefix | cut -c24- -`
@@ -127,5 +153,3 @@ case $ACTION in
 	"install")	install;;
 	"uninstall")	uninstall;;
 esac
-
-

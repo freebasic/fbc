@@ -2,6 +2,7 @@ changelog.txt
 fbc
 fblogo.xpm
 install.sh
+install-standalone.sh
 migrating.txt
 readme.txt
 docs/fbc.1
