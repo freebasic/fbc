@@ -37,6 +37,14 @@ i_create_link()
 		linkmsg="It was not possible to install a link to the compiler binary as $link/fbc"
 	fi
 }
+i_copy_if_exists()
+{
+	if [ -e $1 ]; then
+		cp -up $1 $2
+	else
+		true
+	fi
+}
 install()
 {
 	dest="$INSTALLDIR/freebasic"
@@ -45,28 +53,28 @@ install()
 	mkdir -p -m 0755 "$dest"/bin/linux && \
 	mkdir -p -m 0755 "$dest"/inc && \
 	mkdir -p -m 0755 "$dest"/lib/linux && \
-	cp -up lib/linux/fbrt0.o "$dest"/lib/linux/ && \
-	cp -up lib/linux/libfb.a "$dest"/lib/linux/ && \
-	cp -up lib/linux/libfbmt.a "$dest"/lib/linux/ && \
-	cp -up lib/linux/libfbgfx.a "$dest"/lib/linux/ && \
-	cp -up lib/linux/libtinyptc.a "$dest"/lib/linux/ && \
-	cp -up lib/linux/elf_i386.x "$dest"/lib/linux/ && \
-	cp -up lib/linux/crt1.o "$dest"/lib/linux/ && \
-	cp -up lib/linux/crti.o "$dest"/lib/linux/ && \
-	cp -up lib/linux/libgcc.a "$dest"/lib/linux/ && \
-	cp -up lib/linux/libsupc++.a "$dest"/lib/linux/ && \
-	cp -up lib/linux/crtbegin.o "$dest"/lib/linux/ && \
-	cp -up lib/linux/crtn.o "$dest"/lib/linux/ && \
-	cp -up lib/linux/gcrt1.o "$dest"/lib/linux/ && \
-	cp -up lib/linux/libgcc_eh.a "$dest"/lib/linux/ && \
-	cp -up lib/linux/crtend.o "$dest"/lib/linux/ && \
-	cp -up lib/linux/libbfd.a "$dest"/lib/linux/ && \
-	cp -up lib/linux/libiberty.a "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/fbrt0.o "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/libfb.a "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/libfbmt.a "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/libfbgfx.a "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/libtinyptc.a "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/elf_i386.x "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/crt1.o "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/crti.o "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/libgcc.a "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/libsupc++.a "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/crtbegin.o "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/crtn.o "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/gcrt1.o "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/libgcc_eh.a "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/crtend.o "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/libbfd.a "$dest"/lib/linux/ && \
+	i_copy_if_exists lib/linux/libiberty.a "$dest"/lib/linux/ && \
 	cp -rup inc/* "$dest"/inc/  && \
-	cp -up bin/linux/ar "$dest"/bin/linux && \
-	cp -up bin/linux/as "$dest"/bin/linux && \
-	cp -up bin/linux/gprof "$dest"/bin/linux && \
-	cp -up bin/linux/ld "$dest"/bin/linux && \
+	i_copy_if_exists bin/linux/ar "$dest"/bin/linux && \
+	i_copy_if_exists bin/linux/as "$dest"/bin/linux && \
+	i_copy_if_exists bin/linux/gprof "$dest"/bin/linux && \
+	i_copy_if_exists bin/linux/ld "$dest"/bin/linux && \
 	cp fbc "$dest" && \
 	gzip -c docs/fbc.1 > /usr/share/man/man1/fbc.1.gz && \
 	chmod a+rX "$dest"/lib/ && \
