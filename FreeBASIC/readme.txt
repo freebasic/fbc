@@ -72,8 +72,8 @@ Running:
       installed (or follow the DOS guide below if nothing works).
   
     - Type "fbc" (without quotes) to see a list of options. To compile the hello
-      example type: "fbc examples/misc/hello.bas", the hello executable file will 
-      be created at the "examples/misc" dir.
+      example type: "fbc examples\misc\hello.bas", the hello executable file will 
+      be created at the "examples\misc" dir.
   
   o Linux version:
 
@@ -106,8 +106,8 @@ Running:
       (without quotes) and press Enter, if the archive was expanded to C:\.
 
     - Type "fbc" (without quotes) to see a list of options. To compile the hello
-      example type: "fbc examples/misc/hello.bas", the hello executable file will 
-      be created at the "examples/misc" dir.
+      example type: "fbc examples\misc\hello.bas", the hello executable file will 
+      be created at the "examples\misc" dir.
 
     - You can also add the FreeBASIC dir to your PATH environment variable, so
       you will not have to switch to or type the FB's dir every time you want to
