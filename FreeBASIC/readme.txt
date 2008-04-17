@@ -88,12 +88,12 @@ Running:
 
   o Linux (standalone) version:
 
-    - If the install.sh script was successfully executed with enough priviledges,
-      a link to the compiler binary should have been created at /usr/bin/fbc.
-      This means that any user can invoke FreeBASIC by simply typing "fbc" on any
-      dir the shell is currently at. If it was not possible to create the link,
-      you may want to alter your PATH environmental variable to be able to invoke
-      the compiler from any directory.
+    - If the install-standalone.sh script was successfully executed with enough 
+      priviledges, a link to the compiler binary should have been created at 
+      /usr/bin/fbc. This means that any user can invoke FreeBASIC by simply typing 
+      "fbc" on any dir the shell is currently at. If it was not possible to create 
+      the link, you may want to alter your PATH environmental variable to be able 
+      to invoke the compiler from any directory.
 
     - Type "fbc" (without quotes) to see a list of options. To compile the hello
       example type: "fbc examples/misc/hello.bas", the hello executable file will 
