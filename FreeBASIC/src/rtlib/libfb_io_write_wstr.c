@@ -46,11 +46,16 @@ FBCALL void fb_WriteWstr ( int fnum, FB_WCHAR *s, int mask )
     int len, bufflen;
     FB_FILE *handle = FB_FILE_TO_HANDLE( fnum );
 
-    if( s == NULL )
-    {
-    	fb_hFilePrintBufferWstrEx( handle, _LC("\"\""), 1+1 );
-    	return;
-    }
+	if( s == NULL )
+	{
+		if( mask & FB_PRINT_BIN_NEWLINE )
+			fb_hFilePrintBufferWstrEx( handle, _LC("\"\"" FB_BINARY_NEWLINE), 1+1 );
+		else if( mask & FB_PRINT_NEWLINE )
+			fb_hFilePrintBufferWstrEx( handle, _LC("\"\"" FB_NEWLINE), 1+1 );
+		else
+			fb_hFilePrintBufferWstrEx( handle, _LC("\"\","), 1+1 );
+		return;
+	}
 
     /* close quote + new-line or comma */
     if( mask & FB_PRINT_BIN_NEWLINE )

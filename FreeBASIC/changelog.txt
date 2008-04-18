@@ -22,6 +22,7 @@ Version 0.20.0 Beta:
 - #1861363 - gfxlib win32 gdi driver was using the alpha_remover_blitter on depths < 32 bits (jeffm)
 - GET/PUT were discounting padding at the end of UDTs (counting_pine)
 - escaped strings in unicode sources were crashing the compiler (counting_pine)
+- WRITE wouldn't append a comma to empty strings (counting_pine)
 
 
 Version 0.18.5 Beta:

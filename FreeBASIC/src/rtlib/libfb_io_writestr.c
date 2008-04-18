@@ -78,12 +78,19 @@ static void hWriteStrEx( FB_FILE *handle, const char *s, size_t len, int mask )
 /*:::::*/
 FBCALL void fb_WriteString ( int fnum, FBSTRING *s, int mask )
 {
-    FB_FILE *handle = FB_FILE_TO_HANDLE( fnum );
+	FB_FILE *handle = FB_FILE_TO_HANDLE( fnum );
 
-    if( (s != NULL) && (s->data != NULL) )
-    	hWriteStrEx( handle, s->data, FB_STRSIZE(s), mask );
-    else
-    	fb_hFilePrintBufferEx( handle, "\"\"", 1+1 );
+	if( (s != NULL) && (s->data != NULL) )
+		hWriteStrEx( handle, s->data, FB_STRSIZE(s), mask );
+	else
+	{
+		if( mask & FB_PRINT_BIN_NEWLINE )
+			fb_hFilePrintBufferEx( handle, "\"\"" FB_BINARY_NEWLINE, 1+1 );
+		else if( mask & FB_PRINT_NEWLINE )
+			fb_hFilePrintBufferEx( handle, "\"\"" FB_NEWLINE, 1+1 );
+		else
+			fb_hFilePrintBufferEx( handle, "\"\",", 1+1+1 );
+	}
 
 	/* del if temp */
 	fb_hStrDelTemp( s );
@@ -92,10 +99,17 @@ FBCALL void fb_WriteString ( int fnum, FBSTRING *s, int mask )
 /*:::::*/
 FBCALL void fb_WriteFixString ( int fnum, char *s, int mask )
 {
-    FB_FILE *handle = FB_FILE_TO_HANDLE( fnum );
+	FB_FILE *handle = FB_FILE_TO_HANDLE( fnum );
 
-    if( s != NULL )
-    	hWriteStrEx( handle, s, strlen( s ), mask );
-    else
-    	fb_hFilePrintBufferEx( handle, "\"\"", 1+1 );
+	if( s != NULL )
+		hWriteStrEx( handle, s, strlen( s ), mask );
+	else
+	{
+		if( mask & FB_PRINT_BIN_NEWLINE )
+			fb_hFilePrintBufferEx( handle, "\"\"" FB_BINARY_NEWLINE, 1+1 );
+		else if( mask & FB_PRINT_NEWLINE )
+			fb_hFilePrintBufferEx( handle, "\"\"" FB_NEWLINE, 1+1 );
+		else
+			fb_hFilePrintBufferEx( handle, "\"\",", 1+1+1 );
+	}
 }
