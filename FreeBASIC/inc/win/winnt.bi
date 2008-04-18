@@ -1435,8 +1435,11 @@ end union
 
 type PULARGE_INTEGER as ULARGE_INTEGER ptr
 
-type LUID as LARGE_INTEGER
-type PLUID as LARGE_INTEGER ptr
+type LUID
+	LowPart as DWORD
+	HighPart as LONG
+end type
+type PLUID as LUID ptr
 
 type LUID_AND_ATTRIBUTES
 	Luid as LUID
