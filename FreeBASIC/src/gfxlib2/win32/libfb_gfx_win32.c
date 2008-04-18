@@ -310,120 +310,118 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 		
 		case WM_SIZE:
-        case WM_SYSKEYDOWN:
-            if (!fb_win32.is_active)
-                break;
-            {
-                int is_alt_enter = ((message == WM_SYSKEYDOWN) && (wParam == VK_RETURN) && (lParam & 0x20000000));
-                int is_maximize = ((message == WM_SIZE) && (wParam == SIZE_MAXIMIZED));
-                if ( is_maximize || is_alt_enter) {
-                	if (has_focus) {
+		case WM_SYSKEYDOWN:
+			if (!fb_win32.is_active)
+				break;
+			{
+				int is_alt_enter = ((message == WM_SYSKEYDOWN) && (wParam == VK_RETURN) && (lParam & 0x20000000));
+				int is_maximize = ((message == WM_SIZE) && (wParam == SIZE_MAXIMIZED));
+				if ( is_maximize || is_alt_enter) {
+					if (has_focus) {
 						e.type = EVENT_MOUSE_EXIT;
-	                	fb_hPostEvent(&e);
-	                }
-                    ToggleFullScreen();
-                    return FALSE;
-                }
-                if( message!=WM_SYSKEYDOWN )
-                    break;
-            }
+						fb_hPostEvent(&e);
+					}
+					ToggleFullScreen();
+					return FALSE;
+				}
+				if( message!=WM_SYSKEYDOWN )
+					break;
+			}
 
-        case WM_KEYDOWN:
+		case WM_KEYDOWN:
 		case WM_KEYUP:
-            {
-                WORD wVkCode = (WORD) wParam;
-                WORD wVsCode = (WORD) (( lParam & 0xFF0000 ) >> 16);
-                int is_ext_keycode = ( lParam & 0x1000000 )!=0;
-                size_t repeat_count = ( lParam & 0xFFFF );
-                int is_repeated = (lParam & 0x40000000);
-                DWORD dwControlKeyState = 0;
-                char chAsciiChar;
-                int is_dead_key;
-                int key;
+			{
+				WORD wVkCode = (WORD) wParam;
+				WORD wVsCode = (WORD) (( lParam & 0xFF0000 ) >> 16);
+				int is_ext_keycode = ( lParam & 0x1000000 )!=0;
+				size_t repeat_count = ( lParam & 0xFFFF );
+				int is_repeated = (lParam & 0x40000000);
+				DWORD dwControlKeyState = 0;
+				char chAsciiChar;
+				int is_dead_key;
+				int key;
 
-                GetKeyboardState(key_state);
+				GetKeyboardState(key_state);
 
-                if( (key_state[VK_SHIFT] | key_state[VK_LSHIFT] | key_state[VK_RSHIFT]) & 0x80 )
-                    dwControlKeyState ^= SHIFT_PRESSED;
-                if( (key_state[VK_LCONTROL] | key_state[VK_CONTROL]) & 0x80 )
-                    dwControlKeyState ^= LEFT_CTRL_PRESSED;
-                if( key_state[VK_RCONTROL] & 0x80 )
-                    dwControlKeyState ^= RIGHT_CTRL_PRESSED;
-                if( (key_state[VK_LMENU] | key_state[VK_MENU]) & 0x80 )
-                    dwControlKeyState ^= LEFT_ALT_PRESSED;
-                if( key_state[VK_RMENU] & 0x80 )
-                    dwControlKeyState ^= RIGHT_ALT_PRESSED;
-                if( is_ext_keycode )
-                    dwControlKeyState |= ENHANCED_KEY;
+				if( (key_state[VK_SHIFT] | key_state[VK_LSHIFT] | key_state[VK_RSHIFT]) & 0x80 )
+					dwControlKeyState ^= SHIFT_PRESSED;
+				if( (key_state[VK_LCONTROL] | key_state[VK_CONTROL]) & 0x80 )
+					dwControlKeyState ^= LEFT_CTRL_PRESSED;
+				if( key_state[VK_RCONTROL] & 0x80 )
+					dwControlKeyState ^= RIGHT_CTRL_PRESSED;
+				if( (key_state[VK_LMENU] | key_state[VK_MENU]) & 0x80 )
+					dwControlKeyState ^= LEFT_ALT_PRESSED;
+				if( key_state[VK_RMENU] & 0x80 )
+					dwControlKeyState ^= RIGHT_ALT_PRESSED;
+				if( is_ext_keycode )
+					dwControlKeyState |= ENHANCED_KEY;
 
-                is_dead_key = (MapVirtualKey( wVkCode, 2 ) & 0x80000000)!=0;
-                if( !is_dead_key ) {
-                    WORD wKey = 0;
-                    if( ToAscii( wVkCode, wVsCode, key_state, &wKey, 0 )==1 ) {
-                        chAsciiChar = (char) wKey;
-                    } else {
-                        chAsciiChar = 0;
-                    }
-                } else {
-                    /* Never use ToAscii when a dead key is used - otherwise
-                     * we don't get the combined character (for accents) */
-                    chAsciiChar = 0;
-                }
-                key =
-                    fb_hConsoleTranslateKey( chAsciiChar,
-                                             wVsCode,
-                                             wVkCode,
-                                             dwControlKeyState,
-                                             FALSE );
-                if (message == WM_KEYDOWN) {
-                	if (is_repeated)
-                		e.type = EVENT_KEY_REPEAT;
-                	else
-	        	   	    e.type = EVENT_KEY_PRESS;
+				is_dead_key = (MapVirtualKey( wVkCode, 2 ) & 0x80000000)!=0;
+				if( !is_dead_key ) {
+					WORD wKey = 0;
+					if( ToAscii( wVkCode, wVsCode, key_state, &wKey, 0 )==1 ) {
+						chAsciiChar = (char) wKey;
+					} else {
+						chAsciiChar = 0;
+					}
+				} else {
+					/* Never use ToAscii when a dead key is used - otherwise
+					 * we don't get the combined character (for accents) */
+					chAsciiChar = 0;
+				}
+				key = fb_hConsoleTranslateKey( chAsciiChar,
+				                               wVsCode,
+				                               wVkCode,
+				                               dwControlKeyState,
+				                               FALSE );
+				if (message == WM_KEYDOWN) {
+					if (is_repeated)
+						e.type = EVENT_KEY_REPEAT;
+					else
+						e.type = EVENT_KEY_PRESS;
 					if (key > 0xFF) {
-	   	                while( repeat_count-- ) {
-    	   	                fb_hPostKey(key);
-        	   	        }
-        	   	    }
-                }
-                else
-                	e.type = EVENT_KEY_RELEASE;
-                e.scancode = fb_hVirtualToScancode(wVkCode);
-                e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
+						while( repeat_count-- ) {
+							fb_hPostKey(key);
+						}
+					}
+				}
+				else
+					e.type = EVENT_KEY_RELEASE;
+				e.scancode = fb_hVirtualToScancode(wVkCode);
+				e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
 
-                /* We don't want to enter the menu ... */
-                if( wVkCode==VK_F10 || wVkCode==VK_MENU || key==0x6BFF )
-                    return FALSE;
-            }
-            break;
+				/* We don't want to enter the menu ... */
+				if( wVkCode==VK_F10 || wVkCode==VK_MENU || key==0x6BFF )
+					return FALSE;
+			}
+			break;
 			
-        case WM_CHAR:
-            {
-                size_t repeat_count = ( lParam & 0xFFFF );
-                int key = (int) wParam;
-                if( key < 256 ) {
-                    int target_cp = FB_GFX_GET_CODEPAGE();
-                    if( target_cp!=-1 ) {
-                        char ch[2] = {
-                            (char) key,
-                            0
-                        };
-                        FBSTRING *result =
-                            fb_StrAllocTempDescF( ch, 2 );
-                        result = fb_hIntlConvertString( result,
-                                                        CP_ACP,
-                                                        target_cp );
-                        key = (unsigned) (unsigned char) result->data[0];
-                        fb_hStrDelTemp( result );
-                    }
+		case WM_CHAR:
+			{
+				size_t repeat_count = ( lParam & 0xFFFF );
+				int key = (int) wParam;
+				if( key < 256 ) {
+					int target_cp = FB_GFX_GET_CODEPAGE();
+					if( target_cp!=-1 ) {
+						char ch[2] = {
+							(char) key,
+							0
+						};
+						FBSTRING *result = fb_StrAllocTempDescF( ch, 2 );
+						result = fb_hIntlConvertString( result,
+						                                CP_ACP,
+						                                target_cp );
+						key = (unsigned) (unsigned char) result->data[0];
+						fb_hStrDelTemp( result );
+					}
 
-                    while( repeat_count-- ) {
-                        fb_hPostKey(key);
-                    }
-                }
-            }
+					while( repeat_count-- ) {
+						fb_hPostKey(key);
+					}
+				}
+			}
 
-            break;
+			break;
 
 		case WM_CLOSE:
 			fb_hPostKey(0x6BFF); /* ALT + F4 */
@@ -517,8 +515,8 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	module = GetModuleHandle("USER32");
 	
 	for (i = 0; i < sizeof(user32_procs) / sizeof(user32_procs[0]); i++) {
-    *user32_procs[i].proc = GetProcAddress(module, user32_procs[i].name);
-  }
+		*user32_procs[i].proc = GetProcAddress(module, user32_procs[i].name);
+	}
 
 	if (fb_win32.MonitorFromPoint) {
 		POINT pt;
