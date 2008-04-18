@@ -85,9 +85,9 @@ FBCALL void fb_WriteString ( int fnum, FBSTRING *s, int mask )
 	else
 	{
 		if( mask & FB_PRINT_BIN_NEWLINE )
-			fb_hFilePrintBufferEx( handle, "\"\"" FB_BINARY_NEWLINE, 1+1 );
+			fb_hFilePrintBufferEx( handle, "\"\"" FB_BINARY_NEWLINE, 1+1+sizeof(FB_BINARY_NEWLINE)-1 );
 		else if( mask & FB_PRINT_NEWLINE )
-			fb_hFilePrintBufferEx( handle, "\"\"" FB_NEWLINE, 1+1 );
+			fb_hFilePrintBufferEx( handle, "\"\"" FB_NEWLINE, 1+1+sizeof(FB_NEWLINE)-1 );
 		else
 			fb_hFilePrintBufferEx( handle, "\"\",", 1+1+1 );
 	}
@@ -106,9 +106,9 @@ FBCALL void fb_WriteFixString ( int fnum, char *s, int mask )
 	else
 	{
 		if( mask & FB_PRINT_BIN_NEWLINE )
-			fb_hFilePrintBufferEx( handle, "\"\"" FB_BINARY_NEWLINE, 1+1 );
+			fb_hFilePrintBufferEx( handle, "\"\"" FB_BINARY_NEWLINE, 1+1+sizeof(FB_BINARY_NEWLINE)-1 );
 		else if( mask & FB_PRINT_NEWLINE )
-			fb_hFilePrintBufferEx( handle, "\"\"" FB_NEWLINE, 1+1 );
+			fb_hFilePrintBufferEx( handle, "\"\"" FB_NEWLINE, 1+1+sizeof(FB_NEWLINE)-1 );
 		else
 			fb_hFilePrintBufferEx( handle, "\"\",", 1+1+1 );
 	}
