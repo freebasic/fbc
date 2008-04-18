@@ -27,8 +27,8 @@
 	.intel_syntax noprefix
 
 .data
-detected_cpu: .long 0  /* bytes 0-2: low 24 bits of feature flags (CPUID eax = 1, edx) */
-                       /* byte    3: cpu family (03 = 386, 04 = 486, 05 = 586, 06 = 686) */
+detected_cpu: .long 0  /* bits  0-27: low 24 bits of feature flags (CPUID eax = 1, edx) */
+                       /* bits 28-31: cpu family (3 = 386, 4 = 486, 5 = 586, 6 = 686) */
 
 .text
 /*:::::*/
@@ -64,7 +64,7 @@ detect:
 	jnz cpuid_ok
 
 	/* no CPUID; assume 386 and check if 486 (try toggling bit 18 (AC) of EFLAGS) */
-	mov ebx, 0x03000000
+	mov ebx, 0x30000000
 	mov ecx, esp
 	and esp, 0xFFFFFFFB /* round ESP down to a multiple of 4 (must be aligned if AC becomes enabled) */
 	pushfd
@@ -79,7 +79,7 @@ detect:
 	mov esp, ecx
 	jz cpu486_not_found
 
-	mov ebx, 0x04000000
+	mov ebx, 0x40000000
 
 cpu486_not_found:
 	push edx
@@ -90,17 +90,8 @@ cpu486_not_found:
 cpuid_ok:
 	mov eax, 1
 	cpuid
-	mov ebx, eax
-	shl eax, 16
-	and eax, 0x0F000000 /* family in high byte */
-	cmp eax, 0x0F000000
-	jne no_extended_family
-	shl ebx, 12
-	and ebx, 0xF0000000 /* add extended family if available */
-	add eax, ebx
-
-no_extended_family:
-	and edx, 0x00FFFFFF /* low 24 bits of feature flags */
+	shl eax, 20
+	and edx, 0x0FFFFFFF /* low 28 bits of feature flags */
 	or eax, edx
 	
 cpudetect_exit:

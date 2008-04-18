@@ -604,8 +604,8 @@ function rtlCpuCheck( ) as integer static
 	''
 	proc = astNewCALL( PROCLOOKUP( CPUDETECT ), NULL )
 
-	'' cpu = fb_CpuDetect shr 24
-	cpu = astNewBOP( AST_OP_SHR, proc, astNewCONSTi( 24, FB_DATATYPE_UINT ) )
+	'' cpu = fb_CpuDetect shr 28
+	cpu = astNewBOP( AST_OP_SHR, proc, astNewCONSTi( 28, FB_DATATYPE_UINT ) )
 
 	'' if( cpu < env.clopt.cputype ) then
 	label = symbAddLabel( NULL )
