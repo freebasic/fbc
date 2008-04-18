@@ -77,9 +77,9 @@ install()
 	i_copy_if_exists bin/linux/ld "$dest"/bin/linux && \
 	cp fbc "$dest" && \
 	gzip -c docs/fbc.1 > /usr/share/man/man1/fbc.1.gz && \
-	chmod a+rX "$dest"/lib/ && \
-	chmod a+rX "$dest"/inc/ && \
-	chmod a+rX "$dest"/bin/ && \
+	chmod a+rX -R "$dest"/lib/ && \
+	chmod a+rX -R "$dest"/inc/ && \
+	chmod a+rX -R "$dest"/bin/ && \
 	i_create_link && \
 	i_success_msg
 }

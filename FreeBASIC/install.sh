@@ -68,9 +68,9 @@ install()
 	i_copy_if_exists migrating.txt "$INSTALLDIR"/share/freebasic/ && \
 	gzip -c docs/fbc.1 > "$INSTALLDIR"/man/man1/fbc.1.gz && \
 	cp fbc -p "$INSTALLDIR"/bin/ && \
-	chmod a+rX "$INSTALLDIR"/lib/freebasic/ && \
-	chmod a+rX "$INSTALLDIR"/include/freebasic/ && \
-	chmod a+rX "$INSTALLDIR"/share/freebasic/ && \
+	chmod a+rX -R "$INSTALLDIR"/lib/freebasic/ && \
+	chmod a+rX -R "$INSTALLDIR"/include/freebasic/ && \
+	chmod a+rX -R "$INSTALLDIR"/share/freebasic/ && \
 	chmod a+rx "$INSTALLDIR"/bin/fbc && \
 	i_success_msg
 }
