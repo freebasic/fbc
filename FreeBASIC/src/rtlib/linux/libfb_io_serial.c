@@ -155,8 +155,7 @@ int fb_SerialOpen
     int DesiredAccess = O_RDWR|O_NOCTTY|O_NONBLOCK;
     unsigned int RxBufferSize = BUFSIZ*2;
     int SerialFD = (-1);
-    char *DevName = NULL, DeviceName[512];
-    size_t DevNameLen;
+    char DeviceName[512];
     struct termios oldserp, nwserp;
     speed_t TermSpeed;
 #ifdef HAS_LOCKDEV
@@ -186,24 +185,22 @@ int fb_SerialOpen
         break;
     }
 
+	DeviceName[0] = '\0';
+
     if( iPort == 0 )
 	{
 		if( strcasecmp(pszDevice, "COM") == 0 )
 		{
-			strcpy(DevName, "/dev/modem");      
-			DevNameLen = strlen( DevName );
+			strcpy( DeviceName, "/dev/modem" );      
 		}
 		else
 		{
-			DevName = strcpy( DeviceName, pszDevice );
-			DevNameLen = strlen( DevName );
-			DevName[DevNameLen] = 0;
+			strcpy( DeviceName, pszDevice );
 		}
 	}
 	else
 	{
-		sprintf(DevName, "/dev/ttyS%d", (iPort-1));      
-		DevNameLen = strlen( DevName );
+		sprintf(DeviceName, "/dev/ttyS%d", (iPort-1));      
 	}
     
     /* Setting speed baud line */
@@ -214,12 +211,12 @@ int fb_SerialOpen
     }
 
 #ifdef HAS_LOCKDEV
-    if( dev_testlock(DevName) ) 
+    if( dev_testlock(DeviceName) ) 
     {
         return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
     }
     
-    plckid = dev_lock(DevName);
+    plckid = dev_lock(DeviceName);
     if( plckid < 0 ) 
     {
         return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
@@ -227,12 +224,12 @@ int fb_SerialOpen
 #endif
 
     alarm(SERIAL_TIMEOUT);
-    SerialFD =  open( DevName, DesiredAccess );
+    SerialFD =  open( DeviceName, DesiredAccess );
     alarm(0);
     if( SerialFD < 0) 
     {
 #ifdef HAS_LOCKDEV
-		dev_unlock(DevName, plckid);
+		dev_unlock(DeviceName, plckid);
 #endif
         return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
     }
@@ -413,7 +410,7 @@ int fb_SerialOpen
     if( res != FB_RTERROR_OK ) 
     {
 #ifdef HAS_LOCKDEV
-		dev_unlock(DevName, plckid);
+		dev_unlock(DeviceName, plckid);
 #endif
         tcsetattr( SerialFD, TCSAFLUSH, &oldserp); /* Restore old parameter of serial line */
     	close(SerialFD);
@@ -542,7 +539,7 @@ int fb_SerialClose
     plckid = pInfo->pplckid;
 #endif
 #ifdef HAS_LOCKDEV
-	dev_unlock(DevName, plckid);
+	dev_unlock(DeviceName, plckid);
 #endif
 	
 	/* Restore old parameter of serial line */
