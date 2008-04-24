@@ -19,8 +19,15 @@ ScreenRes 320, 200, 8
 '' Create custom font into PUT buffer
 
 myFont = ImageCreate(NUMCHARS * 8, 9)
+
  '' Put font header at start of pixel data
- ImageInfo( myFont, , , , , p )
+
+#ifndef ImageInfo '' older versions of FB don't have the ImageInfo feature
+p = myFont + IIf(myFont[0] = 7, 32, 4)
+#else
+ImageInfo( myFont, , , , , p )
+#endif
+
 p[0] = 0
 p[1] = FIRSTCHAR
 p[2] = LASTCHAR

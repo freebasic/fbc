@@ -8,29 +8,41 @@
 
 '' Example of using DIR function and retrieving attributes
 
-Dim As Integer GRRR '' Signed because x?x?x?x?x
+#include "dir.bi" '' provides constants to match the attributes against
 
-Dim As UByte VNATTR, VBISDIR
-Dim As UInteger VNFILES=0, VNDIRS=0
-Dim As String VSQQ
+Dim As Integer out_attr '' integer to hold retrieved attributes (must currently be a signed int)
 
-? "DIR" : ?
+Dim As String fname '' file/directory name returned with 
+Dim As Integer filecount, dircount
 
-VSQQ=Dir("*.*",55,@GRRR) '' 55 - Input ATTR mask - all files and subdirs
+fname = Dir("*.*", 55, @out_attr) '' 55 - Input ATTR mask - all files and subdirs
 
-Do
-	If Len(VSQQ) = 0 Then Exit Do '' Empty string breaks Wiki parsing 
-	If (VSQQ<>".") And (VSQQ<>"..") Then '' Not interested in dots
-		VNATTR=Cast(UByte,GRRR) : VBISDIR=(VNATTR And 16) Shr 4
-		VNDIRS=VNDIRS+VBISDIR : VNFILES=VNFILES+1-VBISDIR
-		Do
-	  		If Len (VSQQ) >= 10 Then Exit Do '' Pad to at least 10 chars
-	  		VSQQ=VSQQ + " " 
-		Loop  
-		? VSQQ ; " A" ; VNATTR ; " D" ; VBISDIR
+Print "File listing in " & CurDir & ":"
+
+Do Until Len(fname) = 0 '' loop until Dir returns empty string
+	
+	If (fname <> ".") And (fname <> "..") Then '' ignore current and parent directory entries
+	    
+	    Print fname,
+	    
+	    If out_attr And fbDirectory Then
+	        Print "- directory";
+	        dircount += 1
+	    Else
+	        Print "- file";
+	        filecount += 1
+	    End If
+	    If out_attr And fbReadOnly Then Print ", read-only";
+	    If out_attr And fbHidden Then Print ", hidden";
+	    If out_attr And fbSystem Then Print ", system";
+	    If out_attr And fbArchive Then Print ", archived";
+	    Print
+	    
 	End If
-	VSQQ=Dir(@GRRR)
+	
+	fname = Dir(@out_attr) '' find next name
+	
 Loop
 
-? : ? "Found " ; VNFILES ; " files and " ; VNDIRS ; " subdirs" : ?
-End
+Print
+Print "Found " & filecount & " files and " & dircount & " subdirs"
