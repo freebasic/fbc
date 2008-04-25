@@ -3664,8 +3664,9 @@ test -n "$AUTOHEADER" || AUTOHEADER="$MISSING autoheader"
 # Checks for libraries.
 
 # Checks for header files.
-if test "x$with_x" != xno; then
-    { echo "$as_me:$LINENO: checking for X" >&5
+if test "$FBRT_TARGET_BASE" = "unix"; then
+    if test "x$with_x" != xno; then
+        { echo "$as_me:$LINENO: checking for X" >&5
 echo $ECHO_N "checking for X... $ECHO_C" >&6; }
 
 
@@ -3904,18 +3905,19 @@ else
 echo "${ECHO_T}libraries $x_libraries, headers $x_includes" >&6; }
 fi
 
-    if test -z "$x_includes" || test "x$x_includes" = xNONE; then
-        X_INCLUDES=""
-    else
-        X_INCLUDES="-I$x_includes"
-    fi
+        if test -z "$x_includes" || test "x$x_includes" = xNONE; then
+            X_INCLUDES=""
+        else
+            X_INCLUDES="-I$x_includes"
+        fi
 
-    if test "x$no_x" != "yes"; then
+        if test "x$no_x" != "yes"; then
 
 cat >>confdefs.h <<\_ACEOF
 #define WITH_X 1
 _ACEOF
 
+        fi
     fi
 fi
 

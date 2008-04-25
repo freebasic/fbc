@@ -101,16 +101,18 @@ AC_CHECK_PROGS([AUTOHEADER], [autoheader], [$MISSING autoheader])
 # Checks for libraries.
 
 # Checks for header files.
-if test "x$with_x" != xno; then
-    AC_PATH_X
-    if test -z "$x_includes" || test "x$x_includes" = xNONE; then
-        X_INCLUDES=""
-    else
-        X_INCLUDES="-I$x_includes"
-    fi
-    AC_SUBST([X_INCLUDES])
-    if test "x$no_x" != "yes"; then
-        AC_DEFINE([WITH_X],1,[Define to 1 if you want to use the X Window System])
+if test "$FBRT_TARGET_BASE" = "unix"; then
+    if test "x$with_x" != xno; then
+        AC_PATH_X
+        if test -z "$x_includes" || test "x$x_includes" = xNONE; then
+            X_INCLUDES=""
+        else
+            X_INCLUDES="-I$x_includes"
+        fi
+        AC_SUBST([X_INCLUDES])
+        if test "x$no_x" != "yes"; then
+            AC_DEFINE([WITH_X],1,[Define to 1 if you want to use the X Window System])
+        fi
     fi
 fi
 
