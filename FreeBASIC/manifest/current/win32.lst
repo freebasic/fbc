@@ -674,6 +674,7 @@ examples/manual/gfx/drawstring.bas
 examples/manual/gfx/flip.bas
 examples/manual/gfx/imageconvertrow.bas
 examples/manual/gfx/imagecreate.bas
+examples/manual/gfx/imageinfo.bas
 examples/manual/gfx/line.bas
 examples/manual/gfx/paint.bas
 examples/manual/gfx/paint2.bas
@@ -860,6 +861,7 @@ examples/manual/prepro/else.bas
 examples/manual/prepro/elseif.bas
 examples/manual/prepro/endif.bas
 examples/manual/prepro/error.bas
+examples/manual/prepro/escape.bas
 examples/manual/prepro/header.bi
 examples/manual/prepro/if.bas
 examples/manual/prepro/ifdef.bas
@@ -870,6 +872,7 @@ examples/manual/prepro/libpath.bas
 examples/manual/prepro/line.bas
 examples/manual/prepro/macro.bas
 examples/manual/prepro/macro2.bas
+examples/manual/prepro/noescape.bas
 examples/manual/prepro/pragma.bas
 examples/manual/prepro/print.bas
 examples/manual/prepro/stringize.bas
