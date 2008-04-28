@@ -43,22 +43,23 @@
 
 static char error_buffer[FB_ERROR_MESSAGE_SIZE];
 static const char *error_msg[] = {
-	"",									/* FB_RTERROR_OK */
-	"illegal function call",			/* FB_RTERROR_ILLEGALFUNCTIONCALL */
-	"file not found",					/* FB_RTERROR_FILENOTFOUND */
-	"file I/O error",					/* FB_RTERROR_FILEIO */
-	"out of memory",					/* FB_RTERROR_OUTOFMEM */
-	"illegal resume",					/* FB_RTERROR_ILLEGALRESUME */
-	"out of bounds array access",		/* FB_RTERROR_OUTOFBOUNDS */
-	"null pointer access",				/* FB_RTERROR_NULLPTR */
-	"no priviledges",					/* FB_RTERROR_NOPRIVILEDGES */
-	"\"interrupted\" signal",
-	"\"illegal instruction\" signal",
-	"\"floating point error\" signal",
-	"\"segmentation violation\" signal",
-	"\"termination request\" signal",
-	"\"abnormal termination\" signal",
-	"\"quit request\" signal"
+	"",                                     /* FB_RTERROR_OK */
+	"illegal function call",                /* FB_RTERROR_ILLEGALFUNCTIONCALL */
+	"file not found",                       /* FB_RTERROR_FILENOTFOUND */
+	"file I/O error",                       /* FB_RTERROR_FILEIO */
+	"out of memory",                        /* FB_RTERROR_OUTOFMEM */
+	"illegal resume",                       /* FB_RTERROR_ILLEGALRESUME */
+	"out of bounds array access",           /* FB_RTERROR_OUTOFBOUNDS */
+	"null pointer access",                  /* FB_RTERROR_NULLPTR */
+	"no priviledges",                       /* FB_RTERROR_NOPRIVILEDGES */
+	"\"interrupted\" signal",               /* FB_RTERROR_SIGINT */
+	"\"illegal instruction\" signal",       /* FB_RTERROR_SIGILL */
+	"\"floating point error\" signal",      /* FB_RTERROR_SIGFPE */
+	"\"segmentation violation\" signal",    /* FB_RTERROR_SIGSEGV */
+	"\"termination request\" signal",       /* FB_RTERROR_SIGTERM */
+	"\"abnormal termination\" signal",      /* FB_RTERROR_SIGTERM */
+	"\"quit request\" signal"               /* FB_RTERROR_SIGABRT */
+	"return without gosub",                 /* FB_RTERROR_RETURNWITHOUTGOSUB */
 };
 
 /*:::::*/
