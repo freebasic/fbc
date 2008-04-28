@@ -93,6 +93,7 @@ declare sub	parserSetCtx ( )
 			FB_LANG_OPT_EXTERN or _
 			FB_LANG_OPT_FUNCOVL or _
 			FB_LANG_OPT_INITIALIZER or _
+			FB_LANG_OPT_GOSUB or _
 			FB_LANG_OPT_CALL or _
 			FB_LANG_OPT_LET or _
 			FB_LANG_OPT_PERIODS or _
@@ -352,6 +353,12 @@ private sub hSetLangCtx _
 	env.opt.escapestr		= FALSE
 	env.opt.dynamic			= FALSE
 	env.opt.base = 0
+
+	if( lang <> FB_LANG_QB ) then
+		env.opt.gosub = FALSE
+	else
+		env.opt.gosub = TRUE
+	end if
 
 end sub
 

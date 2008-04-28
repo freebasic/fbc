@@ -28,7 +28,7 @@
 declare function hUndefSymbol( ) as integer
 
 '':::::
-''OptDecl         =   OPTION (EXPLICIT|BASE NUM_LIT|BYVAL|PRIVATE|ESCAPE|DYNAMIC|STATIC)
+''OptDecl         =   OPTION (EXPLICIT|BASE NUM_LIT|BYVAL|PRIVATE|ESCAPE|DYNAMIC|STATIC|GOSUB|NOGOSUB)
 ''
 function cOptDecl as integer
 
@@ -156,6 +156,28 @@ function cOptDecl as integer
 
 				lexSkipToken( LEXCHECK_NODEFINE )
 			loop
+
+		case "GOSUB"
+			if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
+				if( errReportNotAllowed( FB_LANG_OPT_GOSUB ) = FALSE ) then
+					exit function
+				end if
+			else
+				env.opt.gosub = TRUE
+			end if
+
+			lexSkipToken( )
+
+		case "NOGOSUB"
+			if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
+				if( errReportNotAllowed( FB_LANG_OPT_GOSUB ) = FALSE ) then
+					exit function
+				end if
+			else
+				env.opt.gosub = FALSE
+			end if
+
+			lexSkipToken( )
 
 		case else
 			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then

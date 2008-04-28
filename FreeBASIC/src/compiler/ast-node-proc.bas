@@ -648,6 +648,9 @@ function astProcEnd _
 			res = astScopeUpdBreakList( n )
 		end if
 
+		'' gosub used?
+		astGosubAddExit( sym )
+
 		dim as ASTNODE ptr head_node = n->l
 
 		''
@@ -1436,4 +1439,5 @@ private sub hGenGlobalInstancesCtor _
     '' list will be deleted by astProcListEnd( )
 
 end sub
+
 

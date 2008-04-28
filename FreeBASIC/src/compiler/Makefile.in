@@ -221,7 +221,7 @@ FBC_COMP = $(subst .bas,_new$(EXEEXT),$(FBC_MAIN))
 
 FBC_SRCS := $(FBC_MAIN)
 
-FBC_SRCS += ast.bas ast-node-addr.bas ast-node-assign.bas ast-node-bop.bas ast-node-mem.bas
+FBC_SRCS += ast.bas ast-gosub.bas ast-node-addr.bas ast-node-assign.bas ast-node-bop.bas ast-node-mem.bas
 FBC_SRCS += ast-node-branch.bas ast-node-check.bas ast-node-const.bas ast-node-conv.bas
 FBC_SRCS += ast-node-data.bas ast-node-decl.bas ast-node-enum.bas ast-node-call.bas
 FBC_SRCS += ast-node-arg.bas ast-node-idx.bas ast-node-iif.bas ast-node-link.bas
@@ -267,7 +267,7 @@ FBC_SRCS += parser-expr-unary.bas parser-expr-variable.bas
 FBC_SRCS += reg.bas
 
 FBC_SRCS += rtl.bas rtl-array.bas rtl-console.bas rtl-data.bas rtl-error.bas
-FBC_SRCS += rtl-file.bas rtl-gfx.bas rtl-macro.bas rtl-math.bas rtl-mem.bas
+FBC_SRCS += rtl-file.bas rtl-gfx.bas rtl-gosub.bas rtl-macro.bas rtl-math.bas rtl-mem.bas
 FBC_SRCS += rtl-print.bas rtl-profile.bas rtl-string.bas rtl-system.bas
 
 FBC_SRCS += symb.bas symb-const.bas symb-data.bas symb-define.bas symb-enum.bas

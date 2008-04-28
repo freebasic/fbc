@@ -8,6 +8,9 @@ Version 0.20.0 Beta:
 
 [added]
 - IMAGEINFO function, for retrieving useful information about FB gfx buffers (counting_pine)
+- fblite: OPTION GOSUB, OPTION NOGOSUB to enable/disable GOSUB support. State can be checked with the intrinsic define __FB_OPTION_GOSUB__ (jeffm)
+- fblite: GOSUB and ON GOSUB using setjmp/longjmp (jeffm)
+- #1899251 (feature request) - Return without GOSUB runtime error check for both ASM and setjmp/longjump implementations of GOSUB (jeffm)
 
 [fixed]
 - wstring VAL*s were accepting invalid characters in hex/oct/bin numbers (counting_pine)

@@ -34,7 +34,7 @@ function cGOTBStmt _
 		byval isgoto as integer _
 	) as integer
 
-    dim as ASTNODE ptr idxexpr = any
+	dim as ASTNODE ptr idxexpr = any
 	dim as integer l = any
 	dim as FBSYMBOL ptr sym = any, exitlabel = any, tbsym = any
 	dim as FBSYMBOL ptr labelTB(0 to FB_MAXGOTBITEMS-1) = any
@@ -82,7 +82,7 @@ function cGOTBStmt _
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else
-			    '' error recovery: fake an label
+				'' error recovery: fake an label
 				labelTB(l) = symbAddLabel( hMakeTmpStr( ), FB_SYMBOPT_NONE )
 			end if
 		end select
@@ -103,44 +103,45 @@ function cGOTBStmt _
 					  astNewCONSTi( l, FB_DATATYPE_UINT ), exitlabel, FALSE )
 	astAdd( expr )
 
-    '' jump to table[idx]
-    tbsym = hJumpTbAllocSym( )
+	'' jump to table[idx]
+	tbsym = hJumpTbAllocSym( )
 
 	idxexpr = astNewBOP( AST_OP_MUL, _
 						 astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
-    				  	 astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
+						 astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
 
-    expr = astNewIDX( astNewVAR( tbsym, _
-    							 -1*FB_INTEGERSIZE, _
-    							 FB_DATATYPE_UINT ), _
+	expr = astNewIDX( astNewVAR( tbsym, _
+								 -1*FB_INTEGERSIZE, _
+								 FB_DATATYPE_UINT ), _
 					  idxexpr, _
-    				  FB_DATATYPE_UINT, NULL )
+					  FB_DATATYPE_UINT, NULL )
 
-    if( isgoto = FALSE ) then
-    	astAdd( astNewSTACK( AST_OP_PUSH, _
-    						 astNewADDROF( astNewVAR( exitlabel ) ) ) )
-    end if
+	if( isgoto ) then
+		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
 
-    astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
+	else
+		astGosubAddJumpPtr( parser.currproc, expr, exitlabel )
 
-    '' emit table
-    astAdd( astNewLABEL( tbsym ) )
+	end if
 
-    ''
-    dim as integer i = any
-    for i = 0 to l-1
-    	astAdd( astNewJMPTB( FB_DATATYPE_UINT, labelTB(i) ) )
-    next
+	'' emit table
+	astAdd( astNewLABEL( tbsym ) )
 
-    '' emit exit label
-    astAdd( astNewLABEL( exitlabel ) )
+	''
+	dim as integer i = any
+	for i = 0 to l-1
+		astAdd( astNewJMPTB( FB_DATATYPE_UINT, labelTB(i) ) )
+	next
 
-    function = TRUE
+	'' emit exit label
+	astAdd( astNewLABEL( exitlabel ) )
+
+	function = TRUE
 
 end function
 
 '':::::
-''OnStmt 		=	ON LOCAL? (Keyword | Expression) (GOTO|GOSUB) Label .
+''OnStmt		=	ON LOCAL? (Keyword | Expression) (GOTO|GOSUB) Label .
 ''
 function cOnStmt _
 	( _
@@ -184,15 +185,15 @@ function cOnStmt _
 		isgoto = TRUE
 
 	case FB_TK_GOSUB
-	    '' can't do GOSUB with ON ERROR
-	    if( expr = NULL ) then
-	    	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-	    		exit function
-	    	else
-	    		'' error recovery: fake an expr
-	    		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-	    	end if
-	    end if
+		'' can't do GOSUB with ON ERROR
+		if( expr = NULL ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
 
 		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
 			if( errReportNotAllowed( FB_LANG_OPT_GOSUB ) = FALSE ) then
@@ -203,8 +204,21 @@ function cOnStmt _
 			end if
 		end if
 
-	    lexSkipToken( )
-	    isgoto = FALSE
+		'' gosub allowed by OPTION GOSUB?
+		if( env.opt.gosub ) then
+			lexSkipToken( )
+			isgoto = FALSE
+
+		else
+			'' GOSUB is allowed, but hasn't been enabled with OPTION GOSUB
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			else
+				hSkipStmt( )
+				return TRUE
+			end if
+
+		end if
 
 	case else
 		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
@@ -216,7 +230,7 @@ function cOnStmt _
 		end if
 	end select
 
-    '' on error?
+	'' on error?
 	if( expr = NULL ) then
 		isrestore = FALSE
 		'' ON ERROR GOTO 0?
@@ -225,7 +239,7 @@ function cOnStmt _
 				lexSkipToken( )
 				isrestore = TRUE
 			end if
-        end if
+		end if
 
 		if( isrestore = FALSE ) then
 			'' Label
@@ -245,13 +259,13 @@ function cOnStmt _
 			rtlErrorSetHandler( expr, (islocal = TRUE) )
 
 		else
-        	rtlErrorSetHandler( astNewCONSTi( NULL, FB_DATATYPE_UINT ), (islocal = TRUE) )
+			rtlErrorSetHandler( astNewCONSTi( NULL, FB_DATATYPE_UINT ), (islocal = TRUE) )
 		end if
 
 		function = TRUE
 
 	else
-        function = cGOTBStmt( expr, isgoto )
+		function = cGOTBStmt( expr, isgoto )
 	end if
 
 end function

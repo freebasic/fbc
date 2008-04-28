@@ -50,6 +50,7 @@ declare function    hDefOptDynamic_cb	( ) as string
 declare function    hDefOptEscape_cb	( ) as string
 declare function    hDefOptExplicit_cb	( ) as string
 declare function    hDefOptPrivate_cb	( ) as string
+declare function    hDefOptGosub_cb		( ) as string
 declare function 	hDefOutExe_cb 		( ) as string
 declare function 	hDefOutLib_cb 		( ) as string
 declare function 	hDefOutDll_cb 		( ) as string
@@ -62,7 +63,7 @@ declare function	hDefLang_cb			( ) as string
 declare function    hDefPath_cb         ( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
-const SYMB_MAXDEFINES = 32 '' 27
+const SYMB_MAXDEFINES = 32 '' 28
 
 	dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
 	{ _
@@ -86,6 +87,7 @@ const SYMB_MAXDEFINES = 32 '' 27
         (@"__FB_OPTION_ESCAPE__"      ,   NULL                ,  1,   @hDefOptEscape_cb      ), _
         (@"__FB_OPTION_EXPLICIT__"    ,   NULL                ,  1,   @hDefOptExplicit_cb    ), _
         (@"__FB_OPTION_PRIVATE__"     ,   NULL                ,  1,   @hDefOptPrivate_cb     ), _
+        (@"__FB_OPTION_GOSUB__"       ,   NULL                ,  1,   @hDefOptGosub_cb       ), _
         (@"__FB_OUT_EXE__"            ,   NULL                ,  1,   @hDefOutExe_cb         ), _
         (@"__FB_OUT_LIB__"            ,   NULL                ,  1,   @hDefOutLib_cb         ), _
         (@"__FB_OUT_DLL__"            ,   NULL                ,  1,   @hDefOutDll_cb         ), _
@@ -183,6 +185,13 @@ end function
 private function hDefOptPrivate_cb ( ) as string
 
 	function = str( env.opt.procpublic = FALSE )
+
+end function
+
+'':::::
+private function hDefOptGosub_cb ( ) as string
+
+	function = str( env.opt.gosub = TRUE )
 
 end function
 

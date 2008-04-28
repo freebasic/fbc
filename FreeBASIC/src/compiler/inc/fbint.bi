@@ -586,6 +586,7 @@ type FBOPTION
 	procpublic		as integer					'' def    = true
 	escapestr		as integer					'' def    = false
 	dynamic			as integer					'' def    = false
+	gosub			as integer					'' def    = true in FB_LANG_QB, false in all other dialects 
 end type
 
 type FBMAIN
