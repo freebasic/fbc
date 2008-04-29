@@ -64,7 +64,7 @@ typedef struct gosubctx GOSUBCTX;
 		GOSUBCTX does not have a constructor, but it is expected that
 		the compiler will initialize the variable to zero.
 
-		See parser-quirk-goto-return.bas::hGosubInit()
+		See ast-gosub.bas::astGosubAddInit()
 */
 
 
