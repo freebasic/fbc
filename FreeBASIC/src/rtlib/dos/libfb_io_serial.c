@@ -823,7 +823,7 @@ int comm_open( int com_num,
 	int txbufsize, int rxbufsize, int flags, int irq )
 {
 	comm_props_t *cp;
-	int ret;
+	int ret = FALSE;
 
 	if( com_num < 1 || com_num > MAX_COMM )
 		return FALSE;
@@ -831,7 +831,7 @@ int comm_open( int com_num,
 	cp = COMM_PROPS(com_num);
 
 	if( cp->inuse )
-		return FALSE;
+		return ret;
 
 	if( (cp->initflags & COMM_CHECKED_CHIPTYPE) == 0 )
 	{
@@ -850,6 +850,8 @@ int comm_open( int com_num,
 	cp->rxbuf.size = cp->rxbuf.head = cp->rxbuf.tail = 0;
 	cp->txclear = TRUE;
 	cp->flags = flags;
+
+	ret = FALSE;
 
 	if( BUFFER_alloc( &cp->txbuf, txbufsize ))
 	if( BUFFER_alloc( &cp->rxbuf, rxbufsize ))
@@ -1011,8 +1013,8 @@ int fb_SerialOpen( struct _FB_FILE *handle,
 		[x]  int                 KeepDTREnabled  -- DT 
 		[ ]  int                 DiscardOnError  -- FE 
 		[ ]  int                 IgnoreAllErrors -- ME 
-		[x]  unsigned            IRQNumber       -- IR2..IR15
-		[ ]  unsigned            IRQNumber       -- IR2..IR7 
+		[ ]  unsigned            IRQNumber       -- IR2..IR15
+		[x]  unsigned            IRQNumber       -- IR2..IR7 
 		[x]  unsigned            TransmitBuffer  -- TBn - a value 0 means: default value 
 		[x]  unsigned            ReceiveBuffer   -- RBn - a value 0 means: default value 
 	*/
