@@ -23,8 +23,8 @@ Installing:
 
   o Windows version:
 
-    - Follow the installer instructions, don't forget to select which external 
-      libraries to install, some are not selected by default.
+    - Follow the installer instructions.  Don't forget to select which external 
+      libraries to install; some are not selected by default.
 
   o Linux version:
 
@@ -44,9 +44,9 @@ Installing:
       the binaries, libraries and include files into the system as root, at 
       the default location /usr/share/freebasic. A link to the compiler 
       binary will be created at /usr/bin/fbc. If you don't have root 
-      priviledges, you can also install into a custom directory; run the 
+      privileges, you can also install into a custom directory; run the 
       install-standalone.sh script with no arguments for more info. Be warned 
-      though that installing with no root priviledges will prevent the script 
+      though that installing with no root privileges will prevent the script 
       from installing a link to the binary into /usr/bin/fbc.
 
     - Note: to uninstall FreeBASIC, you can run "install-standalone.sh -u"
@@ -54,12 +54,12 @@ Installing:
   o DOS:
 
     - Unpack the zip archive to any folder you want, but give preference to one
-      with no white-spaces on its name and not longer than 8 characters. The
+      with no white-spaces in its name and not longer than 8 characters. The
       directory structure as used inside the archive must be preserved.
 
 
   (Note: if you are installing the DOS version over the Windows one or vice-
-   versa, rename the fbc.exe file of the preview installation to fbc-win.exe or 
+   versa, rename the fbc.exe file of the previous installation to fbc-win.exe or 
    such, or it will be overwritten by the new one.)
 
 
@@ -67,7 +67,7 @@ Running:
 
   o Windows version:
 
-    - A desktop icon and start-menu links should be created by the installer, use
+    - A desktop icon and start-menu links should be created by the installer; use
       them to open the console directly into the directory where FreeBASIC was 
       installed (or follow the DOS guide below if nothing works).
   
@@ -77,7 +77,7 @@ Running:
   
   o Linux version:
 
-    - If the install.sh script was successfully executed with enough priviledges,
+    - If the install.sh script was successfully executed with enough privileges,
       the compiler binary should have been copied to /usr/local/bin/fbc.
       This means that any user can invoke FreeBASIC by simply typing "fbc" on any
       dir the shell is currently at.
@@ -89,7 +89,7 @@ Running:
   o Linux (standalone) version:
 
     - If the install-standalone.sh script was successfully executed with enough 
-      priviledges, a link to the compiler binary should have been created at 
+      privileges, a link to the compiler binary should have been created at 
       /usr/bin/fbc. This means that any user can invoke FreeBASIC by simply typing 
       "fbc" on any dir the shell is currently at. If it was not possible to create 
       the link, you may want to alter your PATH environmental variable to be able 
@@ -101,7 +101,7 @@ Running:
 
   o DOS version:
 
-    - Open the Command-Prompt if in Windows and change to the dir where the
+    - Open the Command Prompt if in Windows and change to the dir where the
       FreeBASIC archive was unpacked. For example, type "cd C:\FreeBASIC"
       (without quotes) and press Enter, if the archive was expanded to C:\.
 
@@ -150,14 +150,13 @@ Requirements:
       problem as long as there's a recent X11 server installed in the system
       (at least XFree86 4.3.0 or any X.org version).
 
-    - If having a working X11 installation is enough to run FreeBASIC gfx 
+    - While having a working X11 installation is enough to run FreeBASIC gfx 
       programs, it may be not enough to compile them; you may need to install 
       the X11 development libraries from your Linux packages repository.
 
     - Unicode wide-strings (WSTRING's) with non-ascii character sets can only be 
-      displayed in console if the locale is set to an UTF-8 version - most modern
-      distros come with support that and char sets other than latin may work 
-      only in xterm.
+      displayed in console if the locale is set to a UTF-8 version - most modern
+      distros support that, but char sets other than latin may work only in xterm.
 
   o DOS version:
 
