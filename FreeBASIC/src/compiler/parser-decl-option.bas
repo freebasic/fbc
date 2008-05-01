@@ -122,26 +122,46 @@ function cOptDecl as integer
 
 		lexSkipToken( )
 
-	case else
+	case FB_TK_GOSUB
+		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
+			if( errReportNotAllowed( FB_LANG_OPT_GOSUB ) = FALSE ) then
+				exit function
+			end if
+		else
+			env.opt.gosub = TRUE
+		end if
 
-   		if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-  			if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-   				exit function
-       		else
-       			'' error recovery: skip stmt
-       			hSkipStmt( )
-       			return TRUE
-       		end if
-       	end if
+		lexSkipToken( )
+
+	case else
 
 		select case ucase( *lexGetText( ) )
 		'' ESCAPE? (it's not a reserved word, there are too many already..)
 		case "ESCAPE"
+
+   			if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+  				if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+   					exit function
+				end if
+			else
+				env.opt.escapestr = TRUE
+       		end if
+
 			lexSkipToken( )
-			env.opt.escapestr = TRUE
 
 		'' NOKEYWORD? (ditto..)
 		case "NOKEYWORD"
+
+   			if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+  				if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+   					exit function
+       			else
+       				'' error recovery: skip stmt
+       				hSkipStmt( )
+       				return TRUE
+       			end if
+       		end if
+
 			lexSkipToken( LEXCHECK_NODEFINE )
 
 			do
@@ -156,17 +176,6 @@ function cOptDecl as integer
 
 				lexSkipToken( LEXCHECK_NODEFINE )
 			loop
-
-		case "GOSUB"
-			if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
-				if( errReportNotAllowed( FB_LANG_OPT_GOSUB ) = FALSE ) then
-					exit function
-				end if
-			else
-				env.opt.gosub = TRUE
-			end if
-
-			lexSkipToken( )
 
 		case "NOGOSUB"
 			if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
