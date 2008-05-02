@@ -80,8 +80,7 @@ declare sub	parserSetCtx ( )
             FB_LANG_OPT_DEFTYPE or _
             FB_LANG_OPT_SUFFIX or _
             FB_LANG_OPT_METACMD or _
-    		FB_LANG_OPT_QBOPT or _
-    		FB_LANG_OPT_DEPRECTOPT or _
+			FB_LANG_OPT_OPTION or _
     		FB_LANG_OPT_ONERROR or _
     		FB_LANG_OPT_QUIRKFUNC _
 		) _
@@ -102,8 +101,7 @@ declare sub	parserSetCtx ( )
 			FB_LANG_OPT_DEFTYPE or _
 			FB_LANG_OPT_SUFFIX or _
 			FB_LANG_OPT_METACMD or _
-			FB_LANG_OPT_QBOPT or _
-			FB_LANG_OPT_DEPRECTOPT or _
+			FB_LANG_OPT_OPTION or _
 			FB_LANG_OPT_ONERROR or _
 			FB_LANG_OPT_QUIRKFUNC _
 		) _
@@ -119,7 +117,7 @@ declare sub	parserSetCtx ( )
             FB_LANG_OPT_DEFTYPE or _
             FB_LANG_OPT_SUFFIX or _
             FB_LANG_OPT_METACMD or _
-    		FB_LANG_OPT_QBOPT or _
+			FB_LANG_OPT_OPTION or _
     		FB_LANG_OPT_ONERROR or _
     		FB_LANG_OPT_SHAREDLOCAL or _
     		FB_LANG_OPT_QUIRKFUNC _
