@@ -28,11 +28,17 @@
 declare function hUndefSymbol( ) as integer
 
 '':::::
-''OptDecl         =   OPTION (EXPLICIT|BASE NUM_LIT|BYVAL|PRIVATE|ESCAPE|DYNAMIC|STATIC|GOSUB|NOGOSUB)
+''OptDecl         =   OPTION (BYVAL|DYNAMIC|STATIC|GOSUB|EXPLICIT|PRIVATE|ESCAPE|BASE NUM_LIT|NOKEYWORD ...|NOGOSUB)
 ''
 function cOptDecl as integer
 
 	function = FALSE
+
+	if( fbLangOptIsSet( FB_LANG_OPT_OPTION ) = FALSE ) then
+		if( errReportNotAllowed( FB_LANG_OPT_OPTION ) = FALSE ) then
+			exit function
+		end if
+	end if
 
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
     	exit function
@@ -42,85 +48,17 @@ function cOptDecl as integer
 	lexSkipToken( )
 
 	select case as const lexGetToken( )
-	case FB_TK_EXPLICIT
-    	if( fbLangOptIsSet( FB_LANG_OPT_QBOPT ) = FALSE ) then
-    		if( errReportNotAllowed( FB_LANG_OPT_QBOPT ) = FALSE ) then
-    			exit function
-    		end if
-    	else
-    		env.opt.explicit = TRUE
-    	end if
-
-		lexSkipToken( )
-
-	case FB_TK_BASE
-    	if( fbLangOptIsSet( FB_LANG_OPT_QBOPT ) = FALSE ) then
-    		if( errReportNotAllowed( FB_LANG_OPT_QBOPT ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: skip stmt
-    			hSkipStmt( )
-    		end if
-    	else
-			lexSkipToken( )
-
-			if( lexGetClass( ) <> FB_TKCLASS_NUMLITERAL ) then
-				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip stmt
-					hSkipStmt( )
-				end if
-
-			else
-				env.opt.base = valint( *lexGetText( ) )
-				lexSkipToken( )
-			end if
-		end if
-
 	case FB_TK_BYVAL
-    	if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-    		if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-    			exit function
-        	end if
-        else
-			env.opt.parammode = FB_PARAMMODE_BYVAL
-        end if
-
 		lexSkipToken( )
-
-	case FB_TK_PRIVATE
-    	if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-    		if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-    			exit function
-        	end if
-        else
-			env.opt.procpublic = FALSE
-		end if
-
-		lexSkipToken( )
+		env.opt.parammode = FB_PARAMMODE_BYVAL
 
 	case FB_TK_DYNAMIC
-    	if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-    		if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-    			exit function
-        	end if
-        else
-			env.opt.dynamic = TRUE
-		end if
-
 		lexSkipToken( )
+		env.opt.dynamic = TRUE
 
 	case FB_TK_STATIC
-    	if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-    		if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-    			exit function
-        	end if
-        else
-			env.opt.dynamic = FALSE
-		end if
-
 		lexSkipToken( )
+		env.opt.dynamic = FALSE
 
 	case FB_TK_GOSUB
 		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
@@ -135,33 +73,40 @@ function cOptDecl as integer
 
 	case else
 
+		'' Search for text match with non-keywords - this
+		'' prevents us from having to add them to the namespace
+
 		select case ucase( *lexGetText( ) )
-		'' ESCAPE? (it's not a reserved word, there are too many already..)
-		case "ESCAPE"
-
-   			if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-  				if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-   					exit function
-				end if
-			else
-				env.opt.escapestr = TRUE
-       		end if
-
+		'' EXPLICIT: Not a keyword in lang qb
+		case "EXPLICIT"
+			env.opt.explicit = TRUE
 			lexSkipToken( )
 
-		'' NOKEYWORD? (ditto..)
+		'' PRIVATE: Ditto
+		case "PRIVATE"
+			lexSkipToken( )
+			env.opt.procpublic = FALSE
+
+		case "ESCAPE"
+			lexSkipToken( )
+			env.opt.escapestr = TRUE
+
+		case "BASE"
+			lexSkipToken( )
+
+			if( lexGetClass( ) <> FB_TKCLASS_NUMLITERAL ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip stmt
+					hSkipStmt( )
+				end if
+			else
+				env.opt.base = valint( *lexGetText( ) )
+				lexSkipToken( )
+			end if
+
 		case "NOKEYWORD"
-
-   			if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-  				if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
-   					exit function
-       			else
-       				'' error recovery: skip stmt
-       				hSkipStmt( )
-       				return TRUE
-       			end if
-       		end if
-
 			lexSkipToken( LEXCHECK_NODEFINE )
 
 			do
