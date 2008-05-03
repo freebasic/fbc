@@ -125,12 +125,17 @@
 '':::::
 sub rtlGosubModInit( )
 
-	rtlAddIntrinsicProcs( @funcdata(0) )
+	'' No need to add these procs if GOSUB isn't allowed in the dialect...
+	if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) ) then
 
-	if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
-		rtlAddIntrinsicProcs( @funcdata1(0) )
-	else
-		rtlAddIntrinsicProcs( @funcdata2(0) )
+		rtlAddIntrinsicProcs( @funcdata(0) )
+
+		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+			rtlAddIntrinsicProcs( @funcdata1(0) )
+		else
+			rtlAddIntrinsicProcs( @funcdata2(0) )
+		end if
+
 	end if
 
 end sub
