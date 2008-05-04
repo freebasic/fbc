@@ -223,8 +223,11 @@ function astGosubAddReturn _
 
 		'' RETURN [label]
 		else
-			'' $$JRM !!!FIXME!!! - need to pop pointer from stack
-			'' astAdd( astNewSTACK( AST_OP_POP, tmp ) )
+			'' pop return address from the stack.  Uses "POP immed" which will be
+			'' handled specially in emit_x86.bas::_emitPOPI()
+			astAdd( astNewSTACK( AST_OP_POP, astNewCONSTi( symbGetDataSize( FB_DATATYPE_POINTER ), FB_DATATYPE_INTEGER ) ) )
+
+			'' GOTO label
 			astAdd( astNewBRANCH( AST_OP_JMP, l ) )
 
 		end if
@@ -232,8 +235,10 @@ function astGosubAddReturn _
 		'' else
 		astAdd( astNewLABEL( label ) )
 
-			'' $$JRM !!!FIXME!!! - better to use rtlErrorCheck (or variation) in the 
-			'' but rtlErrorCheck only takes functions returning an error code as expressions
+			'' TODO: better to use rtlErrorCheck (or variation) here except
+			'' rtlErrorCheck only takes functions returning an error code as expressions.
+			'' (Then compiler isn'dependany on FB_RTERROR_RETURNWITHOUTGOSUB)
+
 			rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ) )
 			if( env.clopt.errorcheck ) then
 				rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ), _
