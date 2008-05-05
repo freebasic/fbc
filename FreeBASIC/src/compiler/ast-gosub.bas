@@ -197,7 +197,7 @@ function astGosubAddReturn _
 		byval l as FBSYMBOL ptr _
 	) as integer
 
-	dim as FBSYMBOL ptr label = any, endlabel = any
+	dim as FBSYMBOL ptr label = any
 
 	'' make sure gosub-ctx var is declared
 	astGosubAddInit( proc )
@@ -206,7 +206,6 @@ function astGosubAddReturn _
 
 		'' if( ctx <> 0 ) then
 		label = symbAddLabel( NULL )
-		endlabel = symbAddLabel( NULL )
 
 		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_NE, _
 					astNewVar( symbGetProcGosubSym( proc ) ), _
@@ -243,7 +242,7 @@ function astGosubAddReturn _
 		end if
 
 		'' end if
-		astAdd( astNewLABEL( endlabel ) )
+
 		function = TRUE
 
 	else
