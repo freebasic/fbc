@@ -26,6 +26,7 @@ Version 0.20.0 Beta:
 - escaped strings in unicode sources were crashing the compiler (counting_pine)
 - WRITE wouldn't append a comma or newline to empty strings (counting_pine)
 - serial driver on linux wasn't handling device names correctly (jeffm)
+- #1957281 - PALETTE in Screen 12 should work like in Screen 13 (counting_pine)
 
 
 Version 0.18.5 Beta:

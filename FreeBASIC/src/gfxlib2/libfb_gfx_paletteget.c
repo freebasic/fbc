@@ -49,11 +49,15 @@ FBCALL void fb_GfxPaletteGet(int index, int *r, int *g, int *b)
 
 FBCALL void fb_GfxPaletteGetUsing(int *data)
 {
-	int i;
+	int i, imax;
 	
 	if (!__fb_gfx)
 		return;
 	
-	for (i = 0; i < __fb_gfx->default_palette->colors; i++)
+	imax = __fb_gfx->default_palette->colors;
+	if(imax > (1 << __fb_gfx->depth))
+		imax = (1 << __fb_gfx->depth);
+	
+	for (i = 0; i < imax; i++)
 		data[i] = (__fb_gfx->device_palette[i] & 0xFCFCFC) >> 2;
 }
