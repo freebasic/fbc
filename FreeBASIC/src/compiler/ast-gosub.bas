@@ -235,15 +235,12 @@ function astGosubAddReturn _
 		'' else
 		astAdd( astNewLABEL( label ) )
 
-			'' TODO: better to use rtlErrorCheck (or variation) here except
-			'' rtlErrorCheck only takes functions returning an error code as expressions.
-			'' (Then compiler isn'dependany on FB_RTERROR_RETURNWITHOUTGOSUB)
-
-			rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ) )
-			if( env.clopt.errorcheck ) then
-				rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ), _
-									lexLineNum( ), env.inf.name )
-			end if
+		'' set/throw error (compiler dependany on FB_RTERROR_RETURNWITHOUTGOSUB)
+		rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ) )
+		if( env.clopt.errorcheck ) then
+			rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ), _
+								lexLineNum( ), env.inf.name )
+		end if
 
 		'' end if
 		astAdd( astNewLABEL( endlabel ) )
@@ -274,8 +271,17 @@ function astGosubAddReturn _
 			'' goto label
 			astAdd( astNewBRANCH( AST_OP_JMP, l ) )
 
-			'' end if
+			'' else
 			astAdd( astNewLABEL( label ) )
+
+			'' set/throw error (compiler dependany on FB_RTERROR_RETURNWITHOUTGOSUB)
+			rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ) )
+			if( env.clopt.errorcheck ) then
+				rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ), _
+									lexLineNum( ), env.inf.name )
+			end if
+
+			'' end if
 
 			function = TRUE
 
