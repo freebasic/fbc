@@ -58,8 +58,8 @@ static const char *error_msg[] = {
 	"\"segmentation violation\" signal",    /* FB_RTERROR_SIGSEGV */
 	"\"termination request\" signal",       /* FB_RTERROR_SIGTERM */
 	"\"abnormal termination\" signal",      /* FB_RTERROR_SIGTERM */
-	"\"quit request\" signal"               /* FB_RTERROR_SIGABRT */
-	"return without gosub",                 /* FB_RTERROR_RETURNWITHOUTGOSUB */
+	"\"quit request\" signal",              /* FB_RTERROR_SIGABRT */
+	"return without gosub"                  /* FB_RTERROR_RETURNWITHOUTGOSUB */
 };
 
 /*:::::*/
