@@ -46,6 +46,74 @@ sub test_shift cdecl ()
 	v2 = 2 ^ 34
 	v2 shr= 34
 	CU_ASSERT( v2 = 1 )
+
+	dim as integer i
+
+	v2 = &h1234567ABCDEFABCull
+	v2 shr= 36
+	CU_ASSERT( v2 = &h0000000001234567ull )
+
+	v2 = &h1234567ABCDEFABCull
+	i = 36
+	v2 shr= i
+	CU_ASSERT( v2 = &h0000000001234567ull )
+
+	
+
+	v2 = &hABCDEFABC1234567ull
+	v2 shl= 36
+	CU_ASSERT( v2 = &h1234567000000000ull )
+
+	v2 = &hABCDEFABC1234567ull
+	i = 36
+	v2 shl= i
+	CU_ASSERT( v2 = &h1234567000000000ull )
+
+
+
+	v2 = &h12345678ABCDEFABull
+	v2 shr= 32
+	CU_ASSERT( v2 = &h0000000012345678ull )
+
+	v2 = &h12345678ABCDEFABull
+	i = 32
+	v2 shr= i
+	CU_ASSERT( v2 = &h0000000012345678ull )
+
+
+
+	v2 = &hABCDEFAB12345678ull
+	v2 shl= 32
+	CU_ASSERT( v2 = &h1234567800000000ull )
+
+	v2 = &hABCDEFAB12345678ull
+	i = 32
+	v2 shl= i
+	CU_ASSERT( v2 = &h1234567800000000ull )
+
+
+
+	v2 = &h123456789ABCDEFAull
+	v2 shr= 28
+	CU_ASSERT( v2 = &h0000000123456789ull )
+
+	v2 = &h123456789ABCDEFAull
+	i = 28
+	v2 shr= i
+	CU_ASSERT( v2 = &h0000000123456789ull )
+
+
+
+	v2 = &hABCDEFA123456789ull
+	v2 shl= 28
+	CU_ASSERT( v2 = &h1234567890000000ull )
+
+	v2 = &hABCDEFA123456789ull
+	i = 28
+	v2 shl= i
+	CU_ASSERT( v2 = &h1234567890000000ull )
+
+
 end sub
 
 sub ctor () constructor
