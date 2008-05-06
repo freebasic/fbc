@@ -3588,9 +3588,6 @@ private sub hSHIFTL _
 	dim as integer preserveeax, preserveecx, preserveebx, preserveedx
 	dim as string a, b
 	dim as IRVREG ptr av, bv
-	dim as integer ecxsavereg
-	dim as string ecxsaveregname
-	dim as integer isecxfree
 	dim as integer eaxindest, edxindest, ebxindest
 
 	''
@@ -3611,7 +3608,7 @@ private sub hSHIFTL _
 	hPrepOperand64( dvreg, dst1, dst2 )
 	hPrepOperand( svreg, src, FB_DATATYPE_INTEGER )
 
-	isecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
+	
 
 	eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
 	edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
@@ -3630,7 +3627,20 @@ private sub hSHIFTL _
 	end if
 
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		if( svreg->value.int >= 32 ) then
+		if( svreg->value.int >= 64 ) then
+			'' zero both result halves
+			if( bv->typ = IR_VREGTYPE_REG ) then
+				outp "xor " + b + ", " + b
+			else
+				outp "mov " + b + ", 0"
+			end if
+			
+			if( av->typ = IR_VREGTYPE_REG ) then
+				outp "xor " + a + ", " + a
+			else
+				outp "mov " + a + ", 0"
+			end if
+		elseif( svreg->value.int >= 32 ) then
 			if( (bv->typ = IR_VREGTYPE_REG) or (av->typ = IR_VREGTYPE_REG) ) then
 				'' a or b is a reg
 				outp "mov " + a + ", " + b
@@ -3695,156 +3705,141 @@ private sub hSHIFTL _
 
 	else
 		'' if src is not an imm, use cl and check for the x86 glitches
-		label = *hMakeTmpStr( )
-
-		'' check if ecx is in dst
-		if( (bv->typ = IR_VREGTYPE_REG) and (bv->reg = EMIT_REG_ECX) ) then
-			tmpreg = hFindFreeReg( FB_DATACLASS_INTEGER )
-			if( tmpreg = INVALID ) then
-				dim as string newb
-				if( eaxindest = FALSE ) then
-					preserveeax = TRUE
-					newb = "eax"
-				elseif( ebxindest = FALSE ) then
-					preserveebx = TRUE
-					newb = "ebx"
-				elseif( edxindest = FALSE ) then
-					preserveedx = TRUE
-					newb = "edx"
-				end if
-				
-				hPUSH( newb )
-				outp "mov " + newb + ", ecx"
-				b = newb
-			else
-				b = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
-				outp "mov " + b + ", ecx"
-			end if
-			outp "mov ecx, " + src
-		elseif( (av->typ = IR_VREGTYPE_REG) and (av->reg = EMIT_REG_ECX) ) then
-			tmpreg = hFindFreeReg( FB_DATACLASS_INTEGER )
-			if( tmpreg = INVALID ) then
-				dim as string newa
-				if( eaxindest = FALSE ) then
-					preserveeax = TRUE
-					newa = "eax"
-				elseif( ebxindest = FALSE ) then
-					preserveebx = TRUE
-					newa = "ebx"
-				elseif( edxindest = FALSE ) then
-					preserveedx = TRUE
-					newa = "edx"
-				end if
-				
-				hPUSH( newa )
-				outp "mov " + newa + ", ecx"
-				a = newa
-			else
-				a = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
-				outp "mov " + a + ", ecx"
-			end if
-			outp "mov ecx, " + src
-		elseif( (svreg->typ <> IR_VREGTYPE_REG) or (svreg->reg <> EMIT_REG_ECX) ) then
-			if( isecxfree = FALSE ) then
-				'' not in dst, not already src, try to alloc a temp to save ecx
-				ecxsavereg = hFindFreeReg( FB_DATACLASS_INTEGER )
-				if( ecxsavereg = INVALID ) then
-					preserveecx = TRUE
-					hPUSH( "ecx" )
-				else
-					ecxsaveregname = *hGetRegName( FB_DATATYPE_INTEGER, ecxsavereg )
-					outp "mov " + ecxsaveregname + ", ecx"
-				end if
-			end if
-			outp "mov ecx, " + src
-		end if
-
-		if( bv->typ = IR_VREGTYPE_REG ) then
-			outp mnemonic64 + a + ", " + b + ", cl"
-			outp mnemonic32 + b + ", cl"
-		elseif( av->typ = IR_VREGTYPE_REG ) then
-			outp "xchg " + a + ", " + b
-			outp mnemonic64 + b + ", " + a + ", cl"
-			outp mnemonic32 + a + ", cl"
-			outp "xchg " + a + ", " + b
-		else
-			'' neither is a reg; get a temp
-			tmpreg = hFindFreeReg( FB_DATACLASS_INTEGER )
-			if( tmpreg = INVALID ) then
-				dim as string newb
-				'' if one of the dst regs was ecx, above checks would pass,
-				'' so don't worry about reusing the same temp reg
-				if( eaxindest = FALSE ) then
-					preserveeax = TRUE
-					newb = "eax"
-				elseif( ebxindest = FALSE ) then
-					preserveebx = TRUE
-					newb = "ebx"
-				elseif( edxindest = FALSE ) then
-					preserveedx = TRUE
-					newb = "edx"
-				end if
-				
-				hPUSH( newb )
-				outp "mov " + newb + ", " + b
-				b = newb
-			else
-				tmpregname = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
-				outp "mov " + tmpregname + ", " + b
-				b = tmpregname
-			end if
-
-			outp mnemonic64 + a + ", " + tmpregname + ", cl"
-			outp mnemonic32 + tmpregname + ", cl"
-		end if
-
-		outp "test cl, 32"
-		hBRANCH( "jz", label )
-
-		if( op = AST_OP_SHL ) then
-			outp "mov " + a + ", " + b
-			if( bv->typ = IR_VREGTYPE_REG ) then
-				outp "xor " + b + ", " + b
-			else
-				outp "mov " + b + ", 0"
-			end if
-		else
-			outp "mov " + b + ", " + a
-
-			if( symbIsSigned( dvreg->dtype ) ) then
-				outp "sar " + a + ", 31"
-			else
-				if( av->typ = IR_VREGTYPE_REG ) Then
-					outp "xor " + a + ", " + a
-				else
-					outp "mov " + a + ", 0"
-				end if
-			end if
-		end if
-
-		hLABEL( label )
 		
-		if( len( tmpregname ) ) then
-			outp "mov " + tmpregname + ", " + b
-		end if
+		dim as integer iseaxfree, isedxfree, isecxfree
+		dim as integer eaxindest, edxindest, ecxindest
+		dim as integer ofs
+		
+		label = *hMakeTmpStr( )
+		
+		hPUSH( dst2 )
+		hPUSH( dst1 )
+		ofs = 0
+		
+		iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+		isedxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX )
+		isecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
+		
+		eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
+ 		edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
+ 		ecxindest = hIsRegInVreg( dvreg, EMIT_REG_ECX )
+		
+		if( (svreg->typ <> IR_VREGTYPE_REG) or (svreg->reg <> EMIT_REG_ECX) ) then
+			'' handle src < dword
+			if( symbGetDataSize( svreg->dtype ) <> FB_INTEGERSIZE ) then
+ 				'' if it's not a reg, the right size was already set at the hPrepOperand() above
+ 				if( svreg->typ = IR_VREGTYPE_REG ) then
+ 					src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
+ 				end if
+ 			end if
+ 
+ 			if( isecxfree = FALSE ) then
+ 				if( ecxindest and dvreg->typ = IR_VREGTYPE_REG ) then
+ 					hMOV( "ecx", src )
+ 					isecxfree = TRUE
+ 				else
+ 					hPUSH( src )
+ 					outp "xchg ecx, [esp]"
+ 					ofs += 4
+ 				end if
+ 			else
+ 				hMOV( "ecx", src )
+ 			end if
+ 		else
+ 			isecxfree = TRUE
+ 		end if
 
-		if( preserveecx ) then
-			hPOP( "ecx" )
-		elseif( ecxsaveregname <> "" ) then
-			outp "mov ecx, " + ecxsaveregname
-		elseif( (bv->typ = IR_VREGTYPE_REG) and (bv->reg = EMIT_REG_ECX) ) then
-			outp "mov ecx, " + b
-		elseif( (av->typ = IR_VREGTYPE_REG) and (av->reg = EMIT_REG_ECX) ) then
-			outp "mov ecx, " + a
-		end if
-
-		if( preserveebx ) then
-			hPOP( "ebx" )
-		elseif( preserveedx ) then
-			hPOP( "edx" )
-		elseif( preserveeax ) then
-			hPOP( "eax" )
-		end if
+		'' load dst1 to eax
+ 		if( eaxindest ) then
+ 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
+ 				outp "xchg eax, [esp+" + str( ofs+0 ) + "]"
+ 			else
+ 				outp "mov eax, [esp+" + str( ofs+0 ) + "]"
+ 			end if
+ 		else
+ 			if( iseaxfree = FALSE ) then
+ 				outp "xchg eax, [esp+" + str( ofs+0 ) + "]"
+ 			else
+ 				outp "mov eax, [esp+" + str( ofs+0 ) + "]"
+ 			end if
+ 		end if
+ 
+ 		'' load dst2 to edx
+ 		if( edxindest ) then
+ 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
+ 				outp "xchg edx, [esp+" + str( ofs+4 ) + "]"
+ 			else
+ 				outp "mov edx, [esp+" + str( ofs+4 ) + "]"
+ 			end if
+ 		else
+ 			if( isedxfree = FALSE ) then
+ 				outp "xchg edx, [esp+" + str( ofs+4 ) + "]"
+ 			else
+ 				outp "mov edx, [esp+" + str( ofs+4 ) + "]"
+ 			end if
+ 		end if
+ 		
+		if( op = AST_OP_SHL ) then
+ 			outp "shld edx, eax, cl"
+ 			outp mnemonic32 + " eax, cl"
+ 		else
+ 			outp "shrd eax, edx, cl"
+ 			outp mnemonic32 + " edx, cl"
+ 		end if
+ 
+ 		outp "test cl, 32"
+ 		hBRANCH( "jz", label )
+ 		
+ 		if( op = AST_OP_SHL ) then
+ 			outp "mov edx, eax"
+ 			outp "xor eax, eax"
+ 		else
+ 			outp "mov eax, edx"
+ 			if( symbIsSigned( dvreg->dtype ) ) then
+ 				outp "sar edx, 31"
+ 			else
+ 				outp "xor edx, edx"
+ 			end if
+ 		end if
+ 
+ 		hLABEL( label )
+ 
+ 		if( isecxfree = FALSE ) then
+ 			hPOP "ecx"
+ 		end if
+ 		
+		'' save dst2
+ 		if( edxindest ) then
+ 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
+ 				outp "xchg edx, [esp+4]"
+ 			else
+ 				outp "mov [esp+4], edx"
+ 			end if
+ 		else
+ 			if( isedxfree = FALSE ) then
+ 				outp "xchg edx, [esp+4]"
+ 			else
+ 				outp "mov [esp+4], edx"
+ 			end if
+ 		end if
+ 
+ 		'' save dst1
+ 		if( eaxindest ) then
+ 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
+ 				outp "xchg eax, [esp+0]"
+ 			else
+ 				outp "mov [esp+0], eax"
+ 			end if
+ 		else
+ 			if( iseaxfree = FALSE ) then
+ 				outp "xchg eax, [esp+0]"
+ 			else
+ 				outp "mov [esp+0], eax"
+ 			end if
+ 		end if
+ 		
+		hPOP( dst1 )
+		hPOP( dst2 )
 	end if
 
 end sub
