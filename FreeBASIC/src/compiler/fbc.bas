@@ -547,11 +547,12 @@ private function assembleFiles_GAS _
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
 	do while( iof <> NULL )
 
-    	'' gas' options
+    	'' gas' options --32 as we only compile for 32bit right now, and 64 bit systems will error trying to do
+	'' a 64 bit compile by default
     	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
-			ascline = "--strip-local-absolute "
+		ascline = "--32 --strip-local-absolute "
     	else
-    		ascline = ""
+    		ascline = "--32"
     	end if
 
 		ascline += QUOTE + iof->asmf + _
