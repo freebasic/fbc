@@ -19,6 +19,7 @@
 '' intermediate representation - high-level, direct to "C" output
 ''
 '' chng: dec/2006 written [v1ctor]
+'' chng: apr/2008 function calling implemented / most operators implemented [sir_mud - sir_mud(at)users(dot)sourceforge(dot)net]
 
 
 #include once "inc\fb.bi"
@@ -44,6 +45,10 @@ declare function hDtypeToStr _
 		byval subtype as FBSYMBOL ptr _
 	) as zstring ptr
 
+declare function hVregToStr _
+	( _
+		byval vreg as IRVREG ptr _
+	) as string
 
 '' globals
 	dim shared as IRHLCCTX ctx
@@ -138,8 +143,10 @@ end sub
 '':::::
 private sub hEmitHeader( )
 
-	'' typedef's for debugging
+	''Headers to prevent warnings
+	hWriteLine( "#include <math.h>", FALSE)
 
+	'' typedef's for debugging
 	hWriteLine( "typedef char byte" )
 	hWriteLine( "typedef unsigned char ubyte" )
 	hWriteLine( "typedef unsigned short ushort" )
@@ -151,6 +158,7 @@ private sub hEmitHeader( )
 	hWriteLine( "typedef float single" )
 	hWriteLine( "typedef struct _string { char *data; int len; int size; } string" )
 	hWriteLine( "typedef char fixstr" )
+
 
 end sub
 
@@ -171,6 +179,8 @@ private function _emitBegin _
 	ctx.identcnt = 0
 	ctx.regcnt = 0
 
+	hWriteLine( "/* Compilation of " & env.inf.name & " started at " & time & " on " & date & " */", FALSE )
+
 	hEmitHeader( )
 
 	function = TRUE
@@ -182,6 +192,8 @@ private sub _emitEnd _
 	( _
 		byval tottime as double _
 	)
+
+	hWriteLine( "/* Total compilation time: " & tottime & " seconds. */", FALSE )
 
 	''
 	if( close( #env.outf.num ) <> 0 ) then
@@ -302,9 +314,9 @@ private function _makeTmpStr _
 		byval islabel as integer _
 	) as zstring ptr
 
-	static as zstring * 3 + 10 + 1 res
+	static as zstring * 5 + 10 + 1 res
 
-	res = "fb$" & ctx.regcnt
+	res = "label$" & ctx.regcnt
 	ctx.regcnt += 1
 
 	function = @res
@@ -506,12 +518,12 @@ private sub hLoadVreg _
 
 		vreg->reg = ctx.regcnt
 		ctx.regcnt += 1
-    end if
+	end if
 
-    '' index?
-    if( vreg->vidx <> NULL ) then
-    	hLoadVreg( vreg->vidx )
-    end if
+	'' index?
+	if( vreg->vidx <> NULL ) then
+		hLoadVreg( vreg->vidx )
+	end if
 
 end sub
 
@@ -655,7 +667,7 @@ private function hVregToStr _
 		end select
 
 	case IR_VREGTYPE_REG
-		return "fb$" & vreg->reg
+		return "temp_var$" & vreg->reg
 
 	case else
     	return ""
@@ -719,6 +731,7 @@ private function hPrepDefine _
 		byval vreg as IRVREG ptr _
 	) as string
 
+
 	function = "#define " & _
 				hVregToStr( vreg ) & _
 				" ((" & _
@@ -744,6 +757,28 @@ private sub hWriteBOP _
 		hWriteLine( hPrepDefine( vr ) & hVregToStr( v1 ) & op & hVregToStr( v2 ) & "))", FALSE )
 	else
 		hWriteLine( hVregToStr( vr ) & " = " & hVregToStr( v1 ) & op & hVregToStr( v2 ) )
+	end if
+
+end sub
+
+
+private sub hWriteBOPEx _
+	( _
+		byref op as string, _
+		byval vr as IRVREG ptr, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr _
+	)
+''Alternate form of binary operators where the actual operator is a function call.
+
+	if( vr = NULL ) then
+    	vr = v1
+	end if
+
+	if( irIsREG( vr ) ) then
+		hWriteLine( hPrepDefine( vr ) & op & "( " & hVregToStr( v1 ) & ", " & hVregToStr( v2 ) & " )))", FALSE )
+	else
+		hWriteLine( hVregToStr( vr ) & " = " & op & "( " & hVregToStr( v1 ) & ", " & hVregToStr( v2 ) & " )" )
 	end if
 
 end sub
@@ -825,10 +860,12 @@ private sub _emitBopEx _
 		end if
 
 	case AST_OP_ATAN2
-		'' mark C's atn2() as used
+		'' mark C's atan2() as used
+		hWriteBOPEx( "atan2", vr, v1, v2 )
 
-    case AST_OP_POW
-    	'' mark C's pow() as used
+	case AST_OP_POW
+		'' mark C's pow() as used
+		hWriteBOPEx( "pow", vr, v1, v2 )
 
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 		dim as string ops
@@ -889,9 +926,9 @@ private sub hWriteUOP _
 	end if
 
 	if( irIsREG( vr ) ) then
-		hWriteLine( hPrepDefine( vr ) & op & hVregToStr( v1 ) & "))", FALSE )
+		hWriteLine( hPrepDefine( vr ) & op & "( " & hVregToStr( v1 ) & " )))", FALSE )
 	else
-		hWriteLine( hVregToStr( vr ) & " = " & op & hVregToStr( v1 ) )
+		hWriteLine( hVregToStr( vr ) & " = " & op & "( " & hVregToStr( v1 ) & " )" )
 	end if
 
 end sub
@@ -915,36 +952,67 @@ private sub _emitUop _
 		hWriteUOP( "~", vr, v1 )
 
 	case AST_OP_ABS
-		'' mark C's abs() or fbas() as used
+		'' mark C's fabs() as used
+		hWriteUOP( "fabs", vr, v1 )
 
+	''!!FIX ME!!
+	''For SGN and FIX with a non-floating point parameter
+	''should we cast the value into the return var's type and call that function?
 	case AST_OP_SGN
 		'' mark fb_sgn#() as used
+		select case v1->dtype
+		case FB_DATATYPE_SINGLE
+			hWriteUOP( "fb_SGNSingle", vr, v1 )
+		case FB_DATATYPE_DOUBLE
+			hWriteUOP( "fb_SGNDouble", vr, v1 )
+		end select
+
 
 	case AST_OP_FIX
 		'' ...
+		select case v1->dtype
+		case FB_DATATYPE_SINGLE
+			hWriteUOP( "fb_FIXSingle", vr, v1 )
+		case FB_DATATYPE_DOUBLE
+			hWriteUOP( "fb_FIXDouble", vr, v1 )
+		end select
 
+
+	''!! WRITE ME !!
+	''Couldn't think of a good way to do this since it requires more than one parameter to the C function.
 	case AST_OP_FRAC
+		errReportEx( FB_ERRMSG_INTERNAL, "The frac operator is not currently implemented in this mode." )
 
 	case AST_OP_SIN
 		'' mark C's sin() as used
+		hWriteUOP( "sin", vr, v1 )
 
 	case AST_OP_ASIN
+		hWriteUOP( "asin", vr, v1 )
 
 	case AST_OP_COS
+		hWriteUOP( "cos", vr, v1 )
 
 	case AST_OP_ACOS
+		hWriteUOP( "acos", vr, v1 )
 
 	case AST_OP_TAN
+		hWriteUOP( "tan", vr, v1 )
 
 	case AST_OP_ATAN
+		hWriteUOP( "atan", vr, v1 )
 
 	case AST_OP_SQRT
+		hWriteUOP( "sqrt", vr, v1 )
 
 	case AST_OP_LOG
+		hWriteUOP( "log", vr, v1 )
 
 	case AST_OP_EXP
+		hWriteUOP( "exp", vr, v1 )
 
 	case AST_OP_FLOOR
+		hWriteUOP( "floor", vr, v1 )
 
 	end select
 
@@ -1047,6 +1115,29 @@ private sub _emitPushUDT _
 
 end sub
 
+private function hemitPushArg( byval vr as IRVREG ptr, byval _done_ as integer ) as string
+''Operates like a sort of stack for parameters.
+''!! FIX ME !!
+''There is an edge case where the function being called is placed within a define messing up
+''the parameter list.
+
+	static ln as string
+
+	if _done_ = TRUE then
+		var temp = ln
+		ln = ""
+		return temp
+	end if
+
+
+		ln = ", " & hVregToStr( vr ) & ln
+
+
+	return ""
+
+end function
+
+
 '':::::
 private sub _emitPushArg _
 	( _
@@ -1054,7 +1145,10 @@ private sub _emitPushArg _
 		byval plen as integer _
 	)
 
+	var throwaway = hemitPushArg( vr, FALSE )
+
 end sub
+
 
 '':::::
 private sub _emitAddr _
@@ -1086,6 +1180,32 @@ private sub _emitAddr _
 end sub
 
 '':::::
+private function hGetParamListNames( byval proc as FBSYMBOL ptr ) as string
+
+	var ln = ""
+
+
+	if proc->proc.params = 0 then
+
+		ln += "( )"
+
+       	else
+
+		ln += "("
+
+		var throwaway = hemitPushArg( 0, TRUE )
+		ln += right( throwaway, len(throwaway)-1 )
+
+		ln += " )"
+
+	end if
+
+	return ln
+
+end function
+
+
+'':::::
 private sub _emitCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -1094,14 +1214,32 @@ private sub _emitCall _
 	)
 
 	if( vr = NULL ) then
-		hWriteLine( *symbGetMangledName( proc ) & "()" )
+
+		var ln = hGetParamListNames( proc )
+
+		hWriteLine( *symbGetMangledName( proc ) & ln )
 	else
 		hLoadVreg( vr )
 
 		if( irIsREG( vr ) ) then
-			hWriteLine( hPrepDefine( vr ) & *symbGetMangledName( proc ) & "()))", FALSE )
+
+			var ln = hGetParamListNames( proc )
+
+			select case *symbGetMangledName( proc )
+			case "fb_GfxScreen", "fb_GfxScreenQB", "fb_GfxScreenRes"
+			''These functions return an integer value but it cannot be used like that in FB so
+			''we simply disregard that value. Otherwise these calls will be placed in a #define
+			''and never actually called.
+				hWriteLine( *symbGetMangledName( proc ) & ln )
+			case else
+				hWriteLine( hPrepDefine( vr ) & *symbGetMangledName( proc ) & ln &"))", FALSE )
+			end select
 		else
-			hWriteLine( hVregToStr( vr ) & " = " & *symbGetMangledName( proc ) & "()" )
+
+			var ln = hGetParamListNames( proc )
+
+			hWriteLine( hVregToStr( vr ) & " = " & *symbGetMangledName( proc ) & ln )
+
 		end if
 	end if
 
@@ -1168,9 +1306,10 @@ private sub _emitDBG _
 		byval ex as integer _
 	)
 
-	if( op = AST_OP_DBG_LINEINI ) then
-		hWriteLine( "#line " & ex & " """ & env.inf.name & """", FALSE )
-	end if
+'	Encase the line number in a comment so the c compiler doesn't freak out.
+' 	if( op = AST_OP_DBG_LINEINI ) then
+' 		hWriteLine( "/* #line " & ex & " """ & env.inf.name & """ */", FALSE )
+'	end if
 
 end sub
 
@@ -1180,8 +1319,8 @@ private sub _emitComment _
 		byval text as zstring ptr _
 	)
 
-	/' do nothing, this would break #line when debugging '/
-	'''''' hWriteLine( "//" & *text, FALSE )
+	/' use old C style comments for greater compatibility '/
+	if len(trim(*text)) > 0 then hWriteLine( "/* " & *text & " */", FALSE ) 'no point in writing blank comments.
 
 end sub
 
@@ -1190,6 +1329,8 @@ private sub _emitASM _
 	( _
 		byval text as zstring ptr _
 	)
+
+
 
 end sub
 
@@ -1253,6 +1394,8 @@ private sub _emitVarIniStr _
 		byval litlgt as integer _
 	)
 
+
+
 end sub
 
 '':::::
@@ -1295,7 +1438,36 @@ private sub _emitProcBegin _
 	ln += *hDtypeToStr( symbGetType( proc ), symbGetSubType( proc ) )
 	ln += " "
 	ln += *symbGetMangledName( proc )
-	ln += "()"
+
+	if proc->proc.params = 0 then
+
+		ln += "( void )" 'This is just to prevent warnings from some C compilers.
+
+        else
+
+		ln += "( "
+		var temp_proc = symbGetProcFirstParam( proc )
+		ln += *hDtypeToStr( symbGetType( temp_proc ), symbGetSubType( temp_proc ) )
+		ln += " " &  ucase( *symbGetName( temp_proc ) )
+
+		if proc->proc.params > 1 then
+
+			var temp_proc_param = symbGetProcFirstParam( proc )
+			temp_proc_param = symbGetProcNextParam( proc, temp_proc_param )
+
+			for n as integer = 2 to proc->proc.params
+
+				ln += ", " & *hDtypeToStr( symbGetType( temp_proc_param ), symbGetSubType( temp_proc_param ) )
+				ln += " " & *symbGetName( temp_proc_param )
+				temp_proc_param = symbGetProcNextParam( proc, temp_proc_param )
+
+			next
+
+		end if
+
+		ln += " )"
+
+	end if
 
 	hWriteLine( ln, FALSE )
 
