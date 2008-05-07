@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' ast support for GOSUB/RETURN (asm and rtlib using setjmp/longjmp)
+'' ast support for GOSUB/RETURN (for asm and setjmp/longjmp implementations)
 ''
 '' chng: apr/2008 written [jeffm]
 
@@ -33,11 +33,13 @@
 '' This must match with fb_error.h in the run-time library
 #define FB_RTERROR_RETURNWITHOUTGOSUB 16
 
-'' currently using the ASM implementation in -lang qb for testing (jeffm)
-#define AsmBackend() (0 <> (env.clopt.lang = FB_LANG_QB))
-
-'' TODO: Select this based on -gen??
-'' #define AsmBackend() (0 <> (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS))
+'' -gen option is used to select the GOSUB implementation:
+''     - GAS emitter will use CALL/RET
+''     - C emitter will use setjmp/longjmp
+'' However, setjmp/longjmp implementation will also work with the GAS emitter,
+'' but since it is like 1000 times slower than CALL/RET, it isn't. (jeffm)
+''
+#define AsmBackend() (FB_BACKEND_GAS = fbGetOption( FB_COMPOPT_BACKEND ))
 
 '':::::
 sub astGosubAddInit _
@@ -234,7 +236,7 @@ function astGosubAddReturn _
 		'' else
 		astAdd( astNewLABEL( label ) )
 
-		'' set/throw error (compiler dependany on FB_RTERROR_RETURNWITHOUTGOSUB)
+		'' set/throw error (note: compiler dependency on rtlib's FB_RTERROR_RETURNWITHOUTGOSUB)
 		rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ) )
 		if( env.clopt.errorcheck ) then
 			rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ), _
@@ -273,7 +275,7 @@ function astGosubAddReturn _
 			'' else
 			astAdd( astNewLABEL( label ) )
 
-			'' set/throw error (compiler dependany on FB_RTERROR_RETURNWITHOUTGOSUB)
+			'' set/throw error (note: compiler dependency on rtlib's FB_RTERROR_RETURNWITHOUTGOSUB)
 			rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ) )
 			if( env.clopt.errorcheck ) then
 				rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ), _
