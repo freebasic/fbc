@@ -1220,25 +1220,26 @@ private sub hReadString _
 
 	do
 		select case as const lexCurrentChar( )
+		'' EOF or EOL?
 		case 0, CHAR_CR, CHAR_LF
+			errReportWarn( FB_WARNINGMSG_NOCLOSINGQUOTE )
 			exit do
 
+		'' '"'?
 		case CHAR_QUOTE
 			lexEatChar( )
 
-			'' check for double-quotes
-			if( lexCurrentChar( ) <> CHAR_QUOTE ) then
-				'' don't skip quotes?
-				if( (flags and LEXCHECK_NOQUOTES) <> 0 ) then
-					if( skipchar = FALSE ) then
-						*ps = CHAR_QUOTE
-						ps += 1
-						lgt += 1
-					end if
+			'' copy quotes? (whether double or not)
+			if( (flags and LEXCHECK_NOQUOTES) <> 0 ) then
+				if( skipchar = FALSE ) then
+					*ps = CHAR_QUOTE
+					ps += 1
+					lgt += 1
 				end if
-
-				exit do
 			end if
+
+			'' not a double-quote? then it's the closing quote
+			if( lexCurrentChar( ) <> CHAR_QUOTE ) then exit do
 
 		'' '\'?
 		case CHAR_RSLASH
@@ -1351,25 +1352,24 @@ private sub hReadWStr _
 		select case as const lexCurrentChar( )
 		'' EOF or EOL?
 		case 0, CHAR_CR, CHAR_LF
+			errReportWarn( FB_WARNINGMSG_NOCLOSINGQUOTE )
 			exit do
 
 		'' '"'?
 		case CHAR_QUOTE
 			lexEatChar( )
 
-			'' check for double-quotes
-			if( lexCurrentChar( ) <> CHAR_QUOTE ) then
-				'' don't skip quotes?
-				if( (flags and LEXCHECK_NOQUOTES) <> 0 ) then
-					if( skipchar = FALSE ) then
-						*ps = CHAR_QUOTE
-						ps += 1
-						lgt += 1
-					end if
+			'' copy quotes? (whether double or not)
+			if( (flags and LEXCHECK_NOQUOTES) <> 0 ) then
+				if( skipchar = FALSE ) then
+					*ps = CHAR_QUOTE
+					ps += 1
+					lgt += 1
 				end if
-
-				exit do
 			end if
+
+			'' not a double-quote? then it's the closing quote
+			if( lexCurrentChar( ) <> CHAR_QUOTE ) then exit do
 
 		'' '\'?
 		case CHAR_RSLASH

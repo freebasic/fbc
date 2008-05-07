@@ -8,6 +8,7 @@ Version 0.20.0 Beta:
 
 [added]
 - IMAGEINFO function, for retrieving useful information about FB gfx buffers (counting_pine)
+- warning message when string literals aren't closed with a quote (counting_pine)
 
 [fixed]
 - wstring VAL*s were accepting invalid characters in hex/oct/bin numbers (counting_pine)
@@ -27,6 +28,7 @@ Version 0.20.0 Beta:
 - WRITE wouldn't append a comma or newline to empty strings (counting_pine)
 - serial driver on linux wasn't handling device names correctly (jeffm)
 - #1957281 - PALETTE in Screen 12 should work like in Screen 13 (counting_pine)
+- string literals in #defines couldn't contain double-quotes (counting_pine)
 
 
 Version 0.18.5 Beta:
