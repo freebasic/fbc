@@ -188,8 +188,7 @@ end type
         ( @"DEFDBL"     , FB_TK_DEFDBL      , FB_TKCLASS_QUIRKWD ), _
         ( @"DEFSTR"     , FB_TK_DEFSTR      , FB_TKCLASS_QUIRKWD ), _
         ( @"OPTION"     , FB_TK_OPTION      , FB_TKCLASS_QUIRKWD ), _
-        ( @"BASE"       , FB_TK_BASE        , FB_TKCLASS_QUIRKWD ), _
-        ( @"EXPLICIT"   , FB_TK_EXPLICIT    , FB_TKCLASS_QUIRKWD ), _
+        ( @"EXPLICIT"   , FB_TK_EXPLICIT    , FB_TKCLASS_QUIRKWD , KWD_OPTION_NO_QB ), _
         ( @"SADD"       , FB_TK_SADD        , FB_TKCLASS_QUIRKWD ), _
         ( @"ON"         , FB_TK_ON          , FB_TKCLASS_QUIRKWD ), _
         ( @"ERROR"      , FB_TK_ERROR       , FB_TKCLASS_QUIRKWD ), _
