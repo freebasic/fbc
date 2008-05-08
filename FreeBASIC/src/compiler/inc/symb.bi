@@ -507,7 +507,12 @@ end type
 enum FB_PROCSTATS
 	FB_PROCSTATS_RETURNUSED		= &h0001
 	FB_PROCSTATS_ASSIGNUSED		= &h0002
+	FB_PROCSTATS_GOSUBUSED		= &h0004
 end enum
+
+type FB_PROCGSB
+	ctx				as FBSYMBOL_ ptr			'' local pointer for gosub stack
+end type
 
 type FB_PROCEXT
 	res				as FBSYMBOL_ ptr			'' result, if any
@@ -519,6 +524,7 @@ type FB_PROCEXT
 	stats			as FB_PROCSTATS
 	stmtnum			as integer
 	priority		as integer
+	gosub			as FB_PROCGSB
 end type
 
 type FB_PROCRTL
@@ -2318,6 +2324,14 @@ declare function symbCheckConstAssign _
 	end if
 	f->proc.ext->priority = p
 #endmacro
+
+#define symbGetProcStatGosub(f) ((f->proc.ext->stats and FB_PROCSTATS_GOSUBUSED) <> 0)
+
+#define symbSetProcStatGosub(f) f->proc.ext->stats or= FB_PROCSTATS_GOSUBUSED
+
+#define symbGetProcGosubSym(f) f->proc.ext->gosub.ctx
+
+#define symbSetProcGosubSym(f,p) f->proc.ext->gosub.ctx = p
 
 #define symbGetProcLocalOfs(p) p->proc.ext->stk.localofs
 

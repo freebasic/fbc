@@ -32,9 +32,9 @@ private function hFuncReturn _
 	( _
 	) as integer
 
-    dim as integer checkexpr = any
+	dim as integer checkexpr = any
 
-    function = FALSE
+	function = FALSE
 
 	dim as FBSYMBOL ptr label = NULL
 	if( parser.stmt.proc <> NULL ) then
@@ -90,10 +90,10 @@ private function hGetLabelId _
 	select case as const lexGetClass( )
 	case FB_TKCLASS_NUMLITERAL
 		sym = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
-									  	lexGetText( ), _
-									  	FB_SYMBCLASS_LABEL, _
-									  	FALSE, _
-									  	FALSE )
+										lexGetText( ), _
+										FB_SYMBCLASS_LABEL, _
+										FALSE, _
+										FALSE )
 
 	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_KEYWORD
 		dim as FBSYMBOL ptr base_parent = any
@@ -124,9 +124,57 @@ private function hGetLabelId _
 end function
 
 '':::::
-''GotoStmt   	  =   GOTO LABEL
+private function hGosubBranch _
+	( _
+	) as integer
+
+	dim as FBSYMBOL ptr l = any
+
+	lexSkipToken( )
+
+	l = hGetLabelId( )
+	if( l <> NULL ) then
+		function = astGosubAddJmp( parser.currproc, l )
+		
+	else
+		function = (errGetLast( ) = FB_ERRMSG_OK)
+	end if
+
+end function
+
+'':::::
+private function hGosubReturn _
+	( _
+	) as integer
+
+	dim as FBSYMBOL ptr l = any
+
+	'' it's a GOSUB's RETURN..
+	lexSkipToken( )
+
+	'' Comment|StmtSep|EOF|ELSE|END IF|ENDIF? just return
+	select case as const lexGetToken( )
+	case FB_TK_EOL, FB_TK_STMTSEP, FB_TK_EOF, FB_TK_COMMENT, _
+		 FB_TK_REM, FB_TK_ELSE, FB_TK_END, FB_TK_ENDIF
+
+		function = astGosubAddReturn( parser.currproc, NULL )
+		
+	'' label?
+	case else
+		l = hGetLabelId( )
+		if( l <> NULL ) then
+			function = astGosubAddReturn( parser.currproc, l )
+		else
+			function = (errGetLast( ) = FB_ERRMSG_OK)
+		end if
+	end select
+
+end function
+
+'':::::
+''GotoStmt		  =   GOTO LABEL
 ''				  |   GOSUB LABEL
-''				  |	  RETURN LABEL?
+''				  |   RETURN LABEL?
 ''				  |   RESUME NEXT? .
 ''
 function cGotoStmt _
@@ -143,7 +191,7 @@ function cGotoStmt _
 	case FB_TK_GOTO
 		lexSkipToken( )
 
-        l = hGetLabelId( )
+		l = hGetLabelId( )
 		if( l <> NULL ) then
 			function = astScopeBreak( l )
 		else
@@ -162,46 +210,34 @@ function cGotoStmt _
 			end if
 		end if
 
-		lexSkipToken( )
+		'' gosub allowed by OPTION GOSUB?
+		if( env.opt.gosub ) then
+			return hGosubBranch( )
 
-		l = hGetLabelId( )
-		if( l <> NULL ) then
-			astAdd( astNewBRANCH( AST_OP_CALL, l ) )
-			function = TRUE
 		else
-			function = (errGetLast( ) = FB_ERRMSG_OK)
+			'' GOSUB is allowed, but hasn't been enabled with OPTION GOSUB
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			else
+				hSkipStmt( )
+				return TRUE
+			end if
+
 		end if
 
 	'' RETURN ((LABEL? Comment|StmtSep|EOF) | Expression)
 	case FB_TK_RETURN
 
-		'' proc return?
-		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
-			return hFuncReturn( )
+		'' gosub allowed by dialect?
+		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) ) then
+			'' gosub allowed by OPTION GOSUB?
+			if( env.opt.gosub ) then
+				return hGosubReturn( )
+			end if
 		end if
 
-		'' it's a GOSUB's RETURN..
-		lexSkipToken( )
-
-		'' Comment|StmtSep|EOF|ELSE|END IF|ENDIF? just return
-		select case as const lexGetToken( )
-		case FB_TK_EOL, FB_TK_STMTSEP, FB_TK_EOF, FB_TK_COMMENT, _
-			 FB_TK_REM, FB_TK_ELSE, FB_TK_END, FB_TK_ENDIF
-
-			'' return 0
-			astAdd( astNewBRANCH( AST_OP_RET, NULL ) )
-			function = TRUE
-
-		'' label?
-		case else
-			l = hGetLabelId( )
-			if( l <> NULL ) then
-				astAdd( astNewBRANCH( AST_OP_JMP, l ) )
-				function = TRUE
-			else
-				function = (errGetLast( ) = FB_ERRMSG_OK)
-			end if
-		end select
+		'' must be proc return?
+		return hFuncReturn( )
 
 	'' RESUME NEXT?
 	case FB_TK_RESUME

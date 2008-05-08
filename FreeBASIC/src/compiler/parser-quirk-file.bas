@@ -34,24 +34,24 @@ function cPrintStmt  _
 		byval tk as FB_TOKEN _
 	) as integer
 
-    dim as ASTNODE ptr usingexpr, filexpr, filexprcopy, expr
-    dim as integer expressions, issemicolon, iscomma, istab, isspc, islprint
+	dim as ASTNODE ptr usingexpr, filexpr, filexprcopy, expr
+	dim as integer expressions, issemicolon, iscomma, istab, isspc, islprint
 
 	function = FALSE
 
 	'' (PRINT|'?')
 	select case tk
 	case FB_TK_PRINT, CHAR_QUESTION
-    	islprint = FALSE
+		islprint = FALSE
 
 	case FB_TK_LPRINT
-    	if( fbLangOptIsSet( FB_LANG_OPT_QBOPT ) = FALSE ) then
-    		if( errReportNotAllowed( FB_LANG_OPT_QBOPT ) = FALSE ) then
-    			exit function
-        	end if
-        else
-	    	islprint = TRUE
-        end if
+		if( fbLangOptIsSet( FB_LANG_OPT_OPTION ) = FALSE ) then
+			if( errReportNotAllowed( FB_LANG_OPT_OPTION ) = FALSE ) then
+				exit function
+			end if
+		else
+			islprint = TRUE
+		end if
 
 	case else
 		exit function
@@ -59,19 +59,19 @@ function cPrintStmt  _
 
 	lexSkipToken( )
 
-    if( islprint ) then
-    	filexpr = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
-    else
-        '' ('#' Expression)?
-        if( hMatch( CHAR_SHARP ) ) then
-            hMatchExpressionEx( filexpr, FB_DATATYPE_INTEGER )
+	if( islprint ) then
+		filexpr = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+	else
+		'' ('#' Expression)?
+		if( hMatch( CHAR_SHARP ) ) then
+			hMatchExpressionEx( filexpr, FB_DATATYPE_INTEGER )
 
-            hMatchCOMMA( )
+			hMatchCOMMA( )
 
-        else
-            filexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-        end if
-    end if
+		else
+			filexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
+	end if
 
 	'' (USING Expression{str} ';')?
 	usingexpr = NULL
@@ -87,38 +87,38 @@ function cPrintStmt  _
 		if( rtlPrintUsingInit( usingexpr, islprint ) = FALSE ) then
 			exit function
 		end if
-    end if
+	end if
 
 	'' side-effect?
 	if( astIsClassOnTree( AST_NODECLASS_CALL, filexpr ) <> NULL ) then
 		astAdd( astRemSideFx( filexpr ) )
 	end if
 
-    '' (Expression?|SPC(Expression)|TAB(Expression) ';'|"," )*
-    expressions = 0
-    do
-        '' (Expression?|SPC(Expression)|TAB(Expression)
-        isspc = FALSE
-        istab = FALSE
-        if( hMatch( FB_TK_SPC ) ) then
-        	isspc = TRUE
+	'' (Expression?|SPC(Expression)|TAB(Expression) ';'|"," )*
+	expressions = 0
+	do
+		'' (Expression?|SPC(Expression)|TAB(Expression)
+		isspc = FALSE
+		istab = FALSE
+		if( hMatch( FB_TK_SPC ) ) then
+			isspc = TRUE
 			hMatchLPRNT( )
 
 			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 			hMatchRPRNT( )
 
-        elseif( hMatch( FB_TK_TAB ) ) then
-            istab = TRUE
+		elseif( hMatch( FB_TK_TAB ) ) then
+			istab = TRUE
 			hMatchLPRNT( )
 
 			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 			hMatchRPRNT( )
 
-        else
-        	expr = cExpression( )
-        end if
+		else
+			expr = cExpression( )
+		end if
 
 		iscomma = FALSE
 		issemicolon = FALSE
@@ -128,80 +128,80 @@ function cPrintStmt  _
 			issemicolon = TRUE
 		end if
 
-    	filexprcopy = astCloneTree( filexpr )
+		filexprcopy = astCloneTree( filexpr )
 
-    	'' handle PRINT w/o expressions
-    	if( (iscomma = FALSE) and _
-    		(issemicolon = FALSE) and _
-    		(expr = NULL) ) then
-    		if( usingexpr = NULL ) then
-    			if( expressions = 0 ) then
-    				if( rtlPrint( filexprcopy, _
-    							  FALSE, _
-    							  FALSE, _
-    							  NULL, _
-    							  islprint ) = FALSE ) then
+		'' handle PRINT w/o expressions
+		if( (iscomma = FALSE) and _
+			(issemicolon = FALSE) and _
+			(expr = NULL) ) then
+			if( usingexpr = NULL ) then
+				if( expressions = 0 ) then
+					if( rtlPrint( filexprcopy, _
+								  FALSE, _
+								  FALSE, _
+								  NULL, _
+								  islprint ) = FALSE ) then
 						exit function
 					end if
-    			end if
-    		else
-    			if( rtlPrintUsingEnd( filexprcopy, _
-    								  islprint ) = FALSE ) then
+				end if
+			else
+				if( rtlPrintUsingEnd( filexprcopy, _
+									  islprint ) = FALSE ) then
 					exit function
 				end if
-    		end if
+			end if
 
-    		exit do
-    	end if
+			exit do
+		end if
 
-    	if( usingexpr = NULL ) then
-    		if( isspc ) then
-    			if( rtlPrintSPC( filexprcopy, _
-    							 expr, _
-    							 islprint ) = FALSE ) then
-					exit function
-				end if
-
-    		elseif( istab ) then
-    			if( rtlPrintTab( filexprcopy, _
-    							 expr, _
-    							 islprint ) = FALSE ) then
+		if( usingexpr = NULL ) then
+			if( isspc ) then
+				if( rtlPrintSPC( filexprcopy, _
+								 expr, _
+								 islprint ) = FALSE ) then
 					exit function
 				end if
 
-    		else
-    			if( rtlPrint( filexprcopy, _
-    						  iscomma, _
-    						  issemicolon, _
-    						  expr, _
-    						  islprint ) = FALSE ) then
+			elseif( istab ) then
+				if( rtlPrintTab( filexprcopy, _
+								 expr, _
+								 islprint ) = FALSE ) then
+					exit function
+				end if
+
+			else
+				if( rtlPrint( filexprcopy, _
+							  iscomma, _
+							  issemicolon, _
+							  expr, _
+							  islprint ) = FALSE ) then
 
 					if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 						exit function
 					end if
 				end if
-    		end if
+			end if
 
-    	else
-    		if( rtlPrintUsing( filexprcopy, _
-    						   expr, _
-    						   iscomma, _
-    						   issemicolon, _
-    						   islprint ) = FALSE ) then
+		else
+			if( rtlPrintUsing( filexprcopy, _
+							   expr, _
+							   iscomma, _
+							   issemicolon, _
+							   islprint ) = FALSE ) then
 
-    			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 					exit function
 				end if
 			end if
-    	end if
+		end if
 
-    	expressions += 1
-    loop while( iscomma or issemicolon )
+		expressions += 1
+	loop while( iscomma or issemicolon )
 
-    ''
-    astDelTree( filexpr )
+	''
+	astDelTree( filexpr )
 
-    function = TRUE
+	function = TRUE
 
 end function
 

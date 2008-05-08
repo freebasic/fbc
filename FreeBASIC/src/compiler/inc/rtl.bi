@@ -357,6 +357,12 @@
 #define FB_RTL_PROFILEMCOUNT            "mcount"
 #define FB_RTL_PROFILEMONSTARTUP        "_monstartup"
 
+#define FB_RTL_GOSUBPUSH                "fb_GosubPush"
+#define FB_RTL_GOSUBPOP                 "fb_GosubPop"
+#define FB_RTL_GOSUBRETURN              "fb_GosubReturn"
+#define FB_RTL_GOSUBEXIT                "fb_GosubExit"
+#define FB_RTL_SETJMP                   "fb_SetJmp"
+
 '' the order doesn't matter but it makes more sense to follow the same
 '' order as the FB_RTL_* defines above
 enum FB_RTL_IDX
@@ -690,6 +696,12 @@ enum FB_RTL_IDX
 
 	FB_RTL_IDX_PROFILEMCOUNT
 	FB_RTL_IDX_PROFILEMONSTARTUP
+
+	FB_RTL_IDX_GOSUBPUSH
+	FB_RTL_IDX_GOSUBPOP
+	FB_RTL_IDX_GOSUBRETURN
+	FB_RTL_IDX_GOSUBEXIT
+	FB_RTL_IDX_SETJMP
 
 	FB_RTL_INDEXES
 end enum
@@ -1624,6 +1636,31 @@ declare function rtlProfileCall_mcount _
 declare function rtlProfileCall_monstartup _
 	( _
 		_
+	) as ASTNODE ptr
+
+declare function rtlGosubPush _
+	( _
+		byval ctx as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare function rtlGosubPop _
+	( _
+		byval ctx as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare function rtlGosubReturn _
+	( _
+		byval ctx as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare function rtlGosubExit _
+	( _
+		byval ctx as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare function rtlSetJmp _
+	( _
+		byval buf as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function rtlMultinput_cb _

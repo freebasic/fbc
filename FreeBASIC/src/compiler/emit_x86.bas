@@ -5565,7 +5565,22 @@ private sub _emitPOPI _
 
 	dsize = symbGetDataSize( dvreg->dtype )
 
-	if( dsize = FB_INTEGERSIZE ) then
+	if( dvreg->typ = IR_VREGTYPE_IMM ) then
+		'' gosub quirk: return-to-label needs to pop return address from the stack
+		'' see ast-gosub.bas::astGosubAddReturn() - (jeffm)
+
+		if( dvreg->value.int = 4 ) then
+			if( hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX ) ) then
+				hPOP "eax"
+			else
+				outp "add esp, 4"
+			end if
+		else
+			ostr = "add esp, " + str( dvreg->value.int )
+			outp ostr
+		end if
+
+	elseif( dsize = FB_INTEGERSIZE ) then
 		ostr = "pop " + dst
 		outp ostr
 
@@ -5575,7 +5590,6 @@ private sub _emitPOPI _
 			ostr = "pop " + dst
 			outp ostr
 		else
-
 			outp "xchg eax, [esp]"
 
 			if( dsize = 1 ) then

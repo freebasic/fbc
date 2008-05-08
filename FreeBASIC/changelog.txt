@@ -5,10 +5,14 @@ Version 0.20.0 Beta:
 - x11 gfx driver: let the window manager pick the window position (DrV)
 - '&' string concatenation will not pad positive numbers, even in lang qb (counting_pine)
 - removed runtime check for dialect in BLOAD/IMAGECREATE/GET so they will respect the dialect where used even if main module is compiled under a different dialect.  qb/fblite uses old header and fb uses new-header. (jeffm)
+- lang qb can now use all the OPTIONs fblite can, e.g. OPTION STATIC|BYVAL|... (counting_pine)
 
 [added]
 - IMAGEINFO function, for retrieving useful information about FB gfx buffers (counting_pine)
 - warning message when string literals aren't closed with a quote (counting_pine)
+- C emitter: GOSUB and ON GOSUB using setjmp/longjmp (jeffm)
+- fblite, qb: OPTION GOSUB, OPTION NOGOSUB to enable/disable GOSUB support. State can be checked with the intrinsic define __FB_OPTION_GOSUB__ (jeffm)
+- #1899251 (feature request) - RETURN without GOSUB runtime error check for both ASM and setjmp/longjump implementations of GOSUB (jeffm)
 
 [fixed]
 - wstring VAL*s were accepting invalid characters in hex/oct/bin numbers (counting_pine)
