@@ -78,7 +78,7 @@ sub astGosubAddInit _
 
 	end if
 
-	sym = symbAddVarEx( @"{gosubctx}", NULL, _
+	sym = symbAddVarEx( hMakeTmpStr(), NULL, _
 						 dtype, NULL, 0, _
 						 0, dTB(), _
 						 FB_SYMBATTRIB_NONE, FB_SYMBOPT_UNSCOPE )
@@ -120,7 +120,9 @@ function astGosubAddJmp _
 
 		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
 					rtlSetJmp( rtlGosubPush( _
-						astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ) ) ) _
+						astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
+							0, _
+							symbGetType( symbGetProcGosubSym( proc ) ) ) ) _
 					) ), _
 					astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
 			  label, _
@@ -171,7 +173,9 @@ function astGosubAddJumpPtr _
 
 		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
 					rtlSetJmp( rtlGosubPush( _
-						astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ) ) ) _
+						astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
+							0, _
+							symbGetType( symbGetProcGosubSym( proc ) ) ) ) _
 					) ), _
 					astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
 			  label, _
@@ -210,7 +214,7 @@ function astGosubAddReturn _
 		label = symbAddLabel( NULL )
 
 		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_NE, _
-					astNewVar( symbGetProcGosubSym( proc ) ), _
+					astNewVar( symbGetProcGosubSym( proc ), 0, symbGetType( symbGetProcGosubSym( proc ) ) ), _
 					astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
 			  label, _
 			  FALSE ) )
@@ -226,7 +230,8 @@ function astGosubAddReturn _
 		else
 			'' pop return address from the stack.  Uses "POP immed" which will be
 			'' handled specially in emit_x86.bas::_emitPOPI()
-			astAdd( astNewSTACK( AST_OP_POP, astNewCONSTi( symbGetDataSize( FB_DATATYPE_POINTER ), FB_DATATYPE_INTEGER ) ) )
+			astAdd( astNewSTACK( AST_OP_POP, _
+				astNewCONSTi( symbGetDataSize( FB_DATATYPE_POINTER ), FB_DATATYPE_INTEGER ) ) )
 
 			'' GOTO label
 			astAdd( astNewBRANCH( AST_OP_JMP, l ) )
@@ -253,7 +258,7 @@ function astGosubAddReturn _
 		if( l = NULL ) then
 	
 			'' fb_GosubReturn( @ctx )
-			function = ( NULL <> rtlGosubReturn( astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ) ) ) ) )
+			function = ( NULL <> rtlGosubReturn( astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), 0, symbGetType( symbGetProcGosubSym( proc ) ) ) ) ) )
 
 		'' RETURN [label]
 		else
@@ -263,7 +268,9 @@ function astGosubAddReturn _
 
 			astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
 						rtlGosubPop( _
-							astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ) ) ) _
+							astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
+								0, _
+								symbGetType( symbGetProcGosubSym( proc ) ) ) ) _
 						), _
 						astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
 				  label, _
@@ -300,7 +307,9 @@ function astGosubAddExit _
 
 	if( symbGetProcStatGosub( proc ) ) then
 		if( AsmBackend() = FALSE ) then
-			astAdd( rtlGosubExit( astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ) ) ) ) )
+			astAdd( rtlGosubExit( astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
+				0, _
+				symbGetType( symbGetProcGosubSym( proc ) ) ) ) ) )
 		end if
 	end if
 
