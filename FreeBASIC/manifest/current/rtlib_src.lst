@@ -251,6 +251,7 @@ src/rtlib/libfb_file_size.c
 src/rtlib/libfb_file_tell.c
 src/rtlib/libfb_file_tree.c
 src/rtlib/libfb_file_winputstr.c
+src/rtlib/libfb_gosub.c
 src/rtlib/libfb_hook_cls.c
 src/rtlib/libfb_hook_color.c
 src/rtlib/libfb_hook_getsize.c

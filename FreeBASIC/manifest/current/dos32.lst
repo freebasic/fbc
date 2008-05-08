@@ -275,6 +275,7 @@ examples/manual/defines/fboptionbyval.bas
 examples/manual/defines/fboptiondynamic.bas
 examples/manual/defines/fboptionescape.bas
 examples/manual/defines/fboptionexplicit.bas
+examples/manual/defines/fboptiongosub.bas
 examples/manual/defines/fboptionprivate.bas
 examples/manual/defines/fboutdll.bas
 examples/manual/defines/fboutexe.bas
@@ -774,6 +775,8 @@ examples/manual/switches/option-byval.bas
 examples/manual/switches/option-dynamic.bas
 examples/manual/switches/option-escape.bas
 examples/manual/switches/option-explicit.bas
+examples/manual/switches/option-gosub.bas
+examples/manual/switches/option-nogosub.bas
 examples/manual/switches/option-nokeyword.bas
 examples/manual/switches/option-private.bas
 examples/manual/switches/option-static.bas

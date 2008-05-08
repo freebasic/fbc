@@ -9,6 +9,7 @@ src/compiler/Makefile.in
 src/compiler/NEWS
 src/compiler/README
 src/compiler/TODO.txt
+src/compiler/ast-gosub.bas
 src/compiler/ast-helper.bas
 src/compiler/ast-misc.bas
 src/compiler/ast-node-addr.bas
@@ -173,6 +174,7 @@ src/compiler/rtl-data.bas
 src/compiler/rtl-error.bas
 src/compiler/rtl-file.bas
 src/compiler/rtl-gfx.bas
+src/compiler/rtl-gosub.bas
 src/compiler/rtl-macro.bas
 src/compiler/rtl-math.bas
 src/compiler/rtl-mem.bas
