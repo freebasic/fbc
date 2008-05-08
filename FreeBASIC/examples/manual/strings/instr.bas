@@ -11,3 +11,6 @@ Print InStr("abcdefg", "de")
 
 ' It will return 0
 Print InStr("abcdefg", "h")
+
+' It will search for any of the characters "f", "b", "c", and return 2 as "b" is encountered first
+Print InStr("abcdefg", Any "fbc")
