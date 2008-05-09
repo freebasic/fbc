@@ -302,7 +302,7 @@ end function
 '':::::
 function astGosubAddExit _
 	( _
-		proc as FBSYMBOL ptr _
+		byval proc as FBSYMBOL ptr _
 	) as integer
 
 	if( symbGetProcStatGosub( proc ) ) then
