@@ -71,7 +71,6 @@ typedef struct gosubctx GOSUBCTX;
 /*:::::*/
 FBCALL void * fb_GosubPush( GOSUBCTX * ctx )
 {
-	int ret;
 	GOSUBNODE *node = malloc( sizeof( GOSUBNODE ) );
 	node->next = ctx->top;
 	ctx->top = node;
