@@ -71,6 +71,9 @@ endif
 ifdef EXTRAERR
 	FBC_CFLAGS += -exx
 endif
+ifdef ARCH
+	FBC_CFLAGS += -arch $(ARCH)
+endif
 
 FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_DIR) -x $(MAINEXE)
 ifdef DEBUG

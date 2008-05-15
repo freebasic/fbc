@@ -5,7 +5,7 @@ This is the directory for FreeBASIC compiler and runtime tests.
 
 Requirements - Windows / Linux / Dos
 ------------------------------------
-   - FreeBASIC Compiler 0.18.4 or above
+   - FreeBASIC Compiler 0.18.5 or above
    - make, sh, find, xargs, grep, sed, cat, rm
 
 Summary
@@ -85,6 +85,8 @@ DEBUG=1
 EXTRAERR=1
    Adds '-exx' option to add extra error checking.
 
+ARCH=486
+   Adds '-arch ARCH' option when compiling tests.
 
 How the tests are collected
 ---------------------------

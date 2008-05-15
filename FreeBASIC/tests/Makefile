@@ -79,6 +79,7 @@ all :
 	@$(ECHO) -e "   FB_LANG=fb | qb | deprecated"
 	@$(ECHO) -e "   DEBUG=1"
 	@$(ECHO) -e "   EXTRAERR=1"
+	@$(ECHO) -e "   ARCH=arch (default is 486)"
 	@$(ECHO) -e "   OS=DOS"
 	@$(ECHO) -e ""
 	@$(ECHO) -e "Targets: Configuration and Checks"
