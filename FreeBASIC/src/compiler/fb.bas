@@ -537,6 +537,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.maxerrors		= FB_DEFAULT_MAXERRORS
 	env.clopt.showsusperrors= FALSE
 	env.clopt.pdcheckopt	= FB_PDCHECK_NONE
+	env.clopt.extraopt      = FB_EXTRAOPT_NONE
 
 	hSetLangOptions( env.clopt.lang )
 
@@ -617,6 +618,9 @@ sub fbSetOption _
 	case FB_COMPOPT_FINDBIN
 		env.clopt.findbin = value
 
+	case FB_COMPOPT_EXTRAOPT
+		env.clopt.extraopt = value
+
 	end select
 
 end sub
@@ -693,6 +697,9 @@ function fbGetOption _
 
 	case FB_COMPOPT_FINDBIN
 		function = env.clopt.findbin
+
+	case FB_COMPOPT_EXTRAOPT
+		function = env.clopt.extraopt
 
 	case else
 		function = FALSE

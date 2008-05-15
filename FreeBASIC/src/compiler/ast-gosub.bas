@@ -34,12 +34,19 @@
 #define FB_RTERROR_RETURNWITHOUTGOSUB 16
 
 '' -gen option is used to select the GOSUB implementation:
-''     - GAS emitter will use CALL/RET
-''     - C emitter will use setjmp/longjmp
-'' However, setjmp/longjmp implementation will also work with the GAS emitter,
-'' but since it is like 1000 times slower than CALL/RET, it isn't. (jeffm)
+''     - GAS backend will use CALL/RET
+''     - C backend will use setjmp/longjmp
+'' However, setjmp/longjmp implementation will also work with the GAS backend,
+'' but since it is like 1000 times slower than CALL/RET, it isn't.  To explicitly
+'' select setjmp/longjmp implementation with ASM backend, use "-z gosub-with-setjmp"
+'' on the command line (jeffm)
 ''
-#define AsmBackend() (FB_BACKEND_GAS = fbGetOption( FB_COMPOPT_BACKEND ))
+#define AsmBackend() _
+	( _
+	( FB_BACKEND_GAS = fbGetOption( FB_COMPOPT_BACKEND )) _
+	and _
+	( 0 = (FB_EXTRAOPT_GOSUB_SETJMP and fbGetOption( FB_COMPOPT_EXTRAOPT )) ) _
+	)
 
 '':::::
 sub astGosubAddInit _

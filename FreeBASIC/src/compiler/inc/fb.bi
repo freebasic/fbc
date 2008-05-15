@@ -129,6 +129,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_PEDANTICCHK
 	FB_COMPOPT_BACKEND
 	FB_COMPOPT_FINDBIN
+	FB_COMPOPT_EXTRAOPT
 
 	FB_COMPOPTIONS
 end enum
@@ -231,6 +232,15 @@ end enum
 
 const FB_DEFAULT_FINDBIN = FB_FINDBIN_ALLOW_ENVVAR or FB_FINDBIN_ALLOW_BINDIR
 
+'' Extra options
+enum FB_EXTRAOPT
+	FB_EXTRAOPT_NONE              = &h00000000
+
+	FB_EXTRAOPT_GOSUB_SETJMP = &h00000001
+
+	FB_EXTRAOPT_DEFAULT           = FB_EXTRAOPT_NONE
+end enum
+
 ''
 type FBCMMLINEOPT
 	debug			as integer					'' true=add debug info (def= false)
@@ -255,6 +265,7 @@ type FBCMMLINEOPT
 	pdcheckopt		as FB_PDCHECK				'' pedantic checks
 	backend			as FB_BACKEND				'' backend
 	findbin			as FB_FINDBIN				'' find bin file search options
+	extraopt		as FB_EXTRAOPT				'' Extra (misc) options
 end type
 
 

@@ -165,7 +165,8 @@ declare sub getDefaultLibs _
 		( FBC_OPT_WA			, @"Wa"     	 ), _
 		( FBC_OPT_WL			, @"Wl"     	 ), _
 		( FBC_OPT_GEN			, @"gen"		 ), _
-		( FBC_OPT_PREFIX		, @"prefix"      ) _
+		( FBC_OPT_PREFIX		, @"prefix"      ), _
+		( FBC_OPT_EXTRAOPT		, @"z"			 ) _
 	}
 
 	'on error goto runtime_err
@@ -1568,6 +1569,26 @@ private function processOptions _
 				end if
 
 				fbSetPrefix( *nxt )
+
+				del_cnt += 1
+
+			case FBC_OPT_EXTRAOPT
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				value = fbGetOption( FB_COMPOPT_EXTRAOPT )
+
+				select case lcase( *nxt )
+				case "gosub-setjmp"
+					value or= FB_EXTRAOPT_GOSUB_SETJMP
+				case else
+					printInvalidOpt( arg )
+					exit function
+				end select
+
+				fbSetOption( FB_COMPOPT_EXTRAOPT, value )
 
 				del_cnt += 1
 			end select
