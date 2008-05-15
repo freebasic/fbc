@@ -167,34 +167,42 @@ const CHAR_NULL   	= 00, _
       CHAR_FORMFEED = 12, _
       CHAR_CR  	  	= 13, _
       CHAR_SPACE  	= 32, _
-      CHAR_0   		= 48, _
-      CHAR_1    	= 49, _
-      CHAR_3    	= 51, _
-      CHAR_7  		= 55, _
-      CHAR_9   		= 57, _
-      CHAR_AUPP    	= 65, _
-      CHAR_ALOW  	= 97, _
-      CHAR_BUPP    	= 66, _
-      CHAR_BLOW    	= 98, _
-      CHAR_DUPP    	= 68, _
-      CHAR_DLOW  	= 100, _
-      CHAR_EUPP    	= 69, _
-      CHAR_ELOW    	= 101, _
-      CHAR_FUPP    	= 70, _
-      CHAR_FLOW    	= 102, _
-      CHAR_HUPP    	= 72, _
-      CHAR_HLOW    	= 104, _
-      CHAR_LUPP    	= 76, _
-      CHAR_LLOW  	= 108, _
-      CHAR_OUPP    	= 79, _
-      CHAR_OLOW    	= 111, _
-      CHAR_UUPP    	= 85, _
-      CHAR_ULOW  	= 117, _
-      CHAR_ZUPP    	= 90, _
-      CHAR_ZLOW  	= 122, _
-	  CHAR_NLOW		= 110, _
-	  CHAR_RLOW		= 114, _
-	  CHAR_TLOW		= 116, _
+      CHAR_0       	= 48, _
+      CHAR_1       	= 49, _
+      CHAR_2       	= 50, _
+      CHAR_3       	= 51, _
+      CHAR_4       	= 52, _
+      CHAR_5       	= 53, _
+      CHAR_6       	= 54, _
+      CHAR_7       	= 55, _
+      CHAR_8       	= 56, _
+      CHAR_9       	= 57, _
+      CHAR_AUPP    	= 65, CHAR_ALOW    	=  97, _
+      CHAR_BUPP    	= 66, CHAR_BLOW    	=  98, _
+      CHAR_CUPP    	= 67, CHAR_CLOW    	=  99, _
+      CHAR_DUPP    	= 68, CHAR_DLOW    	= 100, _
+      CHAR_EUPP    	= 69, CHAR_ELOW    	= 101, _
+      CHAR_FUPP    	= 70, CHAR_FLOW    	= 102, _
+      CHAR_GUPP    	= 71, CHAR_GLOW    	= 103, _
+      CHAR_HUPP    	= 72, CHAR_HLOW    	= 104, _
+      CHAR_IUPP    	= 73, CHAR_ILOW    	= 105, _
+      CHAR_JUPP    	= 74, CHAR_JLOW    	= 106, _
+      CHAR_KUPP    	= 75, CHAR_KLOW    	= 107, _
+      CHAR_LUPP    	= 76, CHAR_LLOW    	= 108, _
+      CHAR_MUPP    	= 77, CHAR_MLOW    	= 109, _
+      CHAR_NUPP    	= 78, CHAR_NLOW    	= 110, _
+      CHAR_OUPP    	= 79, CHAR_OLOW    	= 111, _
+      CHAR_PUPP    	= 80, CHAR_PLOW    	= 112, _
+      CHAR_QUPP    	= 81, CHAR_QLOW    	= 113, _
+      CHAR_RUPP    	= 82, CHAR_RLOW    	= 114, _
+      CHAR_SUPP    	= 83, CHAR_SLOW    	= 115, _
+      CHAR_TUPP    	= 84, CHAR_TLOW    	= 116, _
+      CHAR_UUPP    	= 85, CHAR_ULOW    	= 117, _
+      CHAR_VUPP    	= 86, CHAR_VLOW    	= 118, _
+      CHAR_WUPP    	= 87, CHAR_WLOW    	= 119, _
+      CHAR_XUPP    	= 88, CHAR_XLOW    	= 120, _
+      CHAR_YUPP    	= 89, CHAR_YLOW    	= 121, _
+      CHAR_ZUPP    	= 90, CHAR_ZLOW    	= 122, _
       CHAR_LPRNT  	= 40, _
       CHAR_RPRNT  	= 41, _
       CHAR_COMMA 	= 44, _

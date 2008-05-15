@@ -342,27 +342,31 @@ function hReEscape _
 			case CHAR_0 to CHAR_9
 				isnumber = TRUE
 
-				value = 0
+				value = (char - CHAR_0)
 				'' max 3 digits
-				for i = 1 to 3
-					value = (value * 10) + (char - CHAR_0)
-
+				for i = 2 to 3
 					if( src >= src_end ) then exit for
 
 					char = *src
 					if( (char < CHAR_0) or (char > CHAR_9) ) then
 						exit for
 					end if
+					value = (value * 10) + (char - CHAR_0)
 					src += 1
 				next
 
-			case CHAR_AMP
+			case CHAR_AMP, CHAR_XUPP, CHAR_XLOW
 				if( src >= src_end ) then exit do
 
 				value = 0
 
-				char = *src
-				src += 1
+				if( char = CHAR_AMP ) then
+					char = *src
+					src += 1
+				else
+					'' make '\x', '\X' look like '\&H'
+					char = CHAR_HUPP
+				end if
 
 				select case as const char
 				'' hex?
@@ -427,6 +431,11 @@ function hReEscape _
                 	next
 
 				end select
+
+			case CHAR_ALOW
+				'' GAS does not support '\a'
+				isnumber = TRUE
+				value = CHAR_BELL
 
 			'' 16-bit unicode?
 			case CHAR_ULOW
@@ -569,27 +578,31 @@ function hReEscapeW _
 			case CHAR_0 to CHAR_9
 				isnumber = TRUE
 
-				value = 0
+				value = (char - CHAR_0)
 				'' max 5 digits
-				for i = 1 to 5
-					value = (value * 10) + (char - CHAR_0)
-
+				for i = 2 to 5
 					if( src >= src_end ) then exit for
 
 					char = *src
 					if( (char < CHAR_0) or (char > CHAR_9) ) then
 						exit for
 					end if
+					value = (value * 10) + (char - CHAR_0)
 					src += 1
 				next
 
-			case CHAR_AMP
+			case CHAR_AMP, CHAR_XUPP, CHAR_XLOW
 				if( src >= src_end ) then exit do
 
 				value = 0
 
-				char = *src
-				src += 1
+				if( char = CHAR_AMP ) then
+					char = *src
+					src += 1
+				else
+					'' make '\x', '\X' look like '\&H'
+					char = CHAR_HUPP
+				end if
 
 				select case as const char
 				'' hex?

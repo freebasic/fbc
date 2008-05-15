@@ -33,6 +33,8 @@ Version 0.20.0 Beta:
 - serial driver on linux wasn't handling device names correctly (jeffm)
 - #1957281 - PALETTE in Screen 12 should work like in Screen 13 (counting_pine)
 - string literals in #defines couldn't contain double-quotes (counting_pine)
+- Three-digit decimal escape sequences would swallow the next character if it was decimal as well (counting_pine)
+- #1914051 - !"\x..", !"\X.." were being recognised by GAS but not FB (counting_pine)
 
 
 Version 0.18.5 Beta:
