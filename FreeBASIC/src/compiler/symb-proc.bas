@@ -1848,7 +1848,7 @@ function symbFindClosestOvlProc _
 
 	dim as FBSYMBOL ptr ovl = any, closest_proc = any, param = any
 	dim as integer i = any, arg_matches = any, matches = any
-	dim as integer max_matches = any, amb_cnt = any
+	dim as integer max_matches = any, amb_cnt = any, exact_matches = any
 	dim as FB_CALL_ARG ptr arg = any
 
 	*err_num = FB_ERRMSG_OK
@@ -1900,6 +1900,8 @@ function symbFindClosestOvlProc _
 			end if
 
 			matches = 0
+			exact_matches = 0
+			
 			'' for each arg..
 			arg = arg_head
 			for i = 0 to args-1
@@ -1909,6 +1911,14 @@ function symbFindClosestOvlProc _
 					matches = 0
 					exit for
 				end if
+				
+				'' exact checks are required for operator overload candidates
+				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
+					if( arg_matches = FB_OVLPROC_FULLMATCH ) then
+						exact_matches += 1
+					end if
+				end if
+				
 				matches += arg_matches
 
                	'' next param
@@ -1938,9 +1948,23 @@ function symbFindClosestOvlProc _
 
 		    '' closer?
 		    if( matches > max_matches ) then
-			   	closest_proc = ovl
-			   	max_matches = matches
-			   	amb_cnt = 0
+		    	
+				dim as integer eligible = TRUE
+				
+				'' an operator overload candidate is only eligible if
+				'' there is at least one exact arg match
+				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
+					if( exact_matches = 0 ) then
+						eligible = FALSE
+					end if
+				end if
+				
+				'' it's eligible, update
+				if( eligible ) then
+				   	closest_proc = ovl
+				   	max_matches = matches
+				   	amb_cnt = 0
+				end if
 
 			'' same? ambiguity..
 			elseif( matches = max_matches ) then
@@ -2002,7 +2026,7 @@ function symbFindBopOvlProc _
 	arg2.mode = INVALID
 	arg2.next = NULL
 
-	proc = symbFindClosestOvlProc( symb.globOpOvlTb(op).head, 2, @arg1, err_num )
+	proc = symbFindClosestOvlProc( symb.globOpOvlTb(op).head, 2, @arg1, err_num, FB_SYMBLOOKUPOPT_BOP_OVL )
 
 	if( proc = NULL ) then
 		if( *err_num <> FB_ERRMSG_OK ) then

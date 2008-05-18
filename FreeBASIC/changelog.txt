@@ -7,6 +7,7 @@ Version 0.20.0 Beta:
 - removed runtime check for dialect in BLOAD/IMAGECREATE/GET so they will respect the dialect where used even if main module is compiled under a different dialect.  qb/fblite uses old header and fb uses new-header. (jeffm)
 - lang qb can now use all the OPTIONs fblite can, e.g. OPTION STATIC|BYVAL|... (counting_pine)
 - CVD / CVS may no longer be constant, since binary equivalence cannot be guaranteed at compile-time (counting_pine)
+- binary operator overload resolution logic: Now an operator is only eligible if at least one side of the expression matches the candidate's parameter list exactly, without implicit coercion/casting. (cha0s)
 
 [added]
 - IMAGEINFO function, for retrieving useful information about FB gfx buffers (counting_pine)
