@@ -427,7 +427,11 @@ function cCVXFunct _
 	function = FALSE
 	
 	dim as ASTNODE ptr expr1 = any
-	
+	dim as FB_DATATYPE functype = any
+	dim as integer allowconst = any
+	dim as zstring ptr zs = any
+	dim as integer zslen = any
+
 	select case as const tk
 
 	case FB_TK_CVD, FB_TK_CVS, FB_TK_CVI, FB_TK_CVL, _ 
@@ -449,56 +453,68 @@ function cCVXFunct _
 		case FB_DATATYPE_CHAR
 			litsym = astGetStrLitSymbol( expr1 )
 		end select
-	
-		if( litsym <> NULL ) then
+
+		allowconst = TRUE
+
+		'' determine return type (use this to determine function name)
+		select case as const tk
+		case FB_TK_CVD
+			functype = FB_DATATYPE_DOUBLE
+			allowconst = FALSE
+		case FB_TK_CVS
+			functype = FB_DATATYPE_SINGLE
+			allowconst = FALSE
+		case FB_TK_CVI
+			functype = fbLangGetType( INTEGER )
+		case FB_TK_CVL
+			functype = FB_DATATYPE_INTEGER
+		case FB_TK_CVSHORT
+			functype = FB_DATATYPE_SHORT
+		case FB_TK_CVLONGINT
+			functype = FB_DATATYPE_LONGINT
+		end select
+
+		if( (allowconst <> FALSE) and (litsym <> NULL) ) then
 			'' remove internal escape format
-			dim as zstring ptr zs = hUnescape( symbGetVarLitText( litsym ) )
-			
-			select case as const tk
-			
-			case FB_TK_CVD
+			zs = hUnescape( symbGetVarLitText( litsym ) )
+			zslen = len( *zs )
+		else
+			zs = NULL
+			zslen = 0
+		end if
+
+		if( zslen >= symbGetDataSize( functype ) ) then
+
+			select case as const functype
+			case FB_DATATYPE_DOUBLE
 				funcexpr = astNewCONSTf( cvd( *zs ), FB_DATATYPE_DOUBLE )
-			case FB_TK_CVS
+			case FB_DATATYPE_SINGLE
 				funcexpr = astNewCONSTf( cvs( *zs ), FB_DATATYPE_SINGLE )
-			case FB_TK_CVI
-				select case fbLangGetType( INTEGER )
-				case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
-					funcexpr = astNewCONSTi( cvl( *zs ), FB_DATATYPE_INTEGER )
-				case FB_DATATYPE_SHORT
-					funcexpr = astNewCONSTi( cvshort( *zs ), FB_DATATYPE_SHORT )
-				end select
-			case FB_TK_CVL
+			case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
 				funcexpr = astNewCONSTi( cvl( *zs ), FB_DATATYPE_INTEGER )
-			case FB_TK_CVSHORT
+			case FB_DATATYPE_SHORT
 				funcexpr = astNewCONSTi( cvshort( *zs ), FB_DATATYPE_SHORT )
-			case FB_TK_CVLONGINT
+			case FB_DATATYPE_LONGINT
 				funcexpr = astNewCONSTl( cvlongint( *zs ), FB_DATATYPE_LONGINT )
 				
 			end select
-	
+
 	    	astDelNode( expr1 )
 	    	expr1 = NULL
-	
+
 		end if
         
         if( expr1 <> NULL ) then
-			select case as const tk
-			case FB_TK_CVD
+			select case as const functype
+			case FB_DATATYPE_DOUBLE
 				funcexpr = astNewCALL( PROCLOOKUP( CVD ) )
-			case FB_TK_CVS
+			case FB_DATATYPE_SINGLE
 				funcexpr = astNewCALL( PROCLOOKUP( CVS ) )
-			case FB_TK_CVI
-				select case fbLangGetType( INTEGER )
-				case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
-					funcexpr = astNewCALL( PROCLOOKUP( CVI ) )
-				case FB_DATATYPE_SHORT
-					funcexpr = astNewCALL( PROCLOOKUP( CVSHORT ) )
-				end select
-			case FB_TK_CVL
+			case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
 				funcexpr = astNewCALL( PROCLOOKUP( CVL ) )
-			case FB_TK_CVSHORT
+			case FB_DATATYPE_SHORT
 				funcexpr = astNewCALL( PROCLOOKUP( CVSHORT ) )
-			case FB_TK_CVLONGINT
+			case FB_DATATYPE_LONGINT
 				funcexpr = astNewCALL( PROCLOOKUP( CVLONGINT ) )
 			end select
 		    

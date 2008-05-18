@@ -6,6 +6,7 @@ Version 0.20.0 Beta:
 - '&' string concatenation will not pad positive numbers, even in lang qb (counting_pine)
 - removed runtime check for dialect in BLOAD/IMAGECREATE/GET so they will respect the dialect where used even if main module is compiled under a different dialect.  qb/fblite uses old header and fb uses new-header. (jeffm)
 - lang qb can now use all the OPTIONs fblite can, e.g. OPTION STATIC|BYVAL|... (counting_pine)
+- CVD / CVS may no longer be constant, since binary equivalence cannot be guaranteed at compile-time (counting_pine)
 
 [added]
 - IMAGEINFO function, for retrieving useful information about FB gfx buffers (counting_pine)

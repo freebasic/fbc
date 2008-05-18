@@ -13,14 +13,22 @@ namespace fbc_tests.string_.cvi_mki
 	const as longint cv_li = 6076276550747243860   
 	
 	sub CVXtest cdecl ()
+
 		dim as double d = cvd("TESTTEST")
 		dim as single s = cvs("TESTTEST")
-		CU_ASSERT( abs(cv_d - d) < .01 )
-		CU_ASSERT( abs(cv_s - s) < .01 )
-		CU_ASSERT( cv_i  = cvi      ("TESTTEST") )
-		CU_ASSERT( cv_l  = cvl      ("TESTTEST") )
-		CU_ASSERT( cv_sh = cvshort  ("TESTTEST") )
-		CU_ASSERT( cv_li = cvlongint("TESTTEST") )
+		CU_ASSERT_DOUBLE_EQUAL( cv_d, d, cv_d / 1e15 )
+		CU_ASSERT_DOUBLE_EQUAL( cv_s, s, cv_s / 1e7  )
+
+		CU_ASSERT_EQUAL( cv_i , cvi      ("TESTTEST") )
+		CU_ASSERT_EQUAL( cv_l , cvl      ("TESTTEST") )
+		CU_ASSERT_EQUAL( cv_sh, cvshort  ("TESTTEST") )
+		CU_ASSERT_EQUAL( cv_li, cvlongint("TESTTEST") )
+
+		CU_ASSERT_EQUAL( mki      (cv_i ), "TEST" )
+		CU_ASSERT_EQUAL( mkl      (cv_l ), "TEST" )
+		CU_ASSERT_EQUAL( mkshort  (cv_sh), "TE" )
+		CU_ASSERT_EQUAL( mklongint(cv_li), "TESTTEST" )
+
 	end sub
 	
 	const as double  m_d  = 10000
@@ -52,10 +60,10 @@ namespace fbc_tests.string_.cvi_mki
 		doMKX(mklongint)
 		
 		#macro testMKX(token)
-			CU_ASSERT( token##_d  = token( 10000.0              ) )
-			CU_ASSERT( token##_i  = token( 10000                ) )
-			CU_ASSERT( token##_l  = token( cast(long, 10000)    ) )
-			CU_ASSERT( token##_li = token( cast(longint, 10000) ) )
+			CU_ASSERT_EQUAL( token##_d , token( 10000.0              ) )
+			CU_ASSERT_EQUAL( token##_i , token( 10000                ) )
+			CU_ASSERT_EQUAL( token##_l , token( cast(long, 10000)    ) )
+			CU_ASSERT_EQUAL( token##_li, token( cast(longint, 10000) ) )
 		#endmacro
 		
 		testMKX(mkd)
