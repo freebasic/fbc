@@ -131,10 +131,12 @@ declare function astLoadBRANCH _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
+/'
 declare function astLoadIIF _
 	( _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
+'/
 
 declare function astLoadOFFSET _
 	( _
@@ -350,6 +352,20 @@ declare sub astDelCALL _
 			@"or=", _
 			AST_OP_OR _
 		), _
+		/' AST_OP_ANDALSO_SELF '/ _
+		( _
+			AST_NODECLASS_BOP, _
+			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
+			@"andalso=", _
+			AST_OP_ANDALSO _
+		), _
+		/' AST_OP_ORELSE_SELF '/ _
+		( _
+			AST_NODECLASS_BOP, _
+			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
+			@"orelse=", _
+			AST_OP_ORELSE _
+		), _
 		/' AST_OP_XOR_SELF '/ _
 		( _
 			AST_NODECLASS_BOP, _
@@ -508,6 +524,20 @@ declare sub astDelCALL _
 			AST_OPFLAGS_COMM, _
 			@"or", _
 			AST_OP_OR_SELF _
+		), _
+		/' AST_OP_ANDALSO '/ _
+		( _
+			AST_NODECLASS_BOP, _
+			AST_OPFLAGS_COMM, _
+			@"andalso", _
+			AST_OP_ANDALSO_SELF _
+		), _
+		/' AST_OP_ORELSE '/ _
+		( _
+			AST_NODECLASS_BOP, _
+			AST_OPFLAGS_COMM, _
+			@"orelse", _
+			AST_OP_ORELSE_SELF _
 		), _
 		/' AST_OP_XOR '/ _
 		( _

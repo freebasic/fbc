@@ -1311,6 +1311,11 @@ declare function astGosubAddExit _
 		byval proc as FBSYMBOL ptr _
 	) as integer
 
+declare function astLoadIIF _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
 ''
 '' macros
 ''

@@ -1006,6 +1006,18 @@ private function hGetOperatorName _
 	case AST_OP_OR_SELF
 		function = @"oR"
 
+	case AST_OP_ANDALSO
+		function = @"aa"
+
+	case AST_OP_ANDALSO_SELF
+		function = @"aA"
+
+	case AST_OP_ORELSE
+		function = @"oe"
+
+	case AST_OP_ORELSE_SELF
+		function = @"oE"
+
 	case AST_OP_XOR
 		function = @"eo"
 

@@ -341,6 +341,20 @@ private sub hBOPConstFoldInt _
 	case AST_OP_OR
 		l->con.val.int = l->con.val.int or r->con.val.int
 
+	case AST_OP_ANDALSO
+		if l->con.val.int then
+			l->con.val.int = (r->con.val.int <> 0)
+		else
+			l->con.val.int = 0
+		end if
+
+	case AST_OP_ORELSE
+		if l->con.val.int then
+			l->con.val.int = -1
+		else
+			l->con.val.int = (r->con.val.int <> 0)
+		end if
+
 	case AST_OP_XOR
 		l->con.val.int = l->con.val.int xor r->con.val.int
 
@@ -509,6 +523,20 @@ private sub hBOPConstFold64 _
 
 	case AST_OP_OR
 		l->con.val.long = l->con.val.long or r->con.val.long
+
+	case AST_OP_ANDALSO
+		if l->con.val.long then
+			l->con.val.long = (r->con.val.long <> 0)
+		else
+			l->con.val.long = 0
+		end if
+
+	case AST_OP_ORELSE
+		if l->con.val.long then
+			l->con.val.long = -1
+		else
+			l->con.val.long = (r->con.val.long <> 0)
+		end if
 
 	case AST_OP_XOR
 		l->con.val.long = l->con.val.long xor r->con.val.long
@@ -1147,7 +1175,7 @@ function astNewBOP _
 
 	'' bitwise ops, int div (\), modulus and shift can only operate on integers
 	case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
-		 AST_OP_INTDIV, AST_OP_MOD, AST_OP_SHL, AST_OP_SHR
+		 AST_OP_INTDIV, AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_ANDALSO, AST_OP_ORELSE
 
 		if( ldclass <> FB_DATACLASS_INTEGER ) then
 			ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
@@ -1407,6 +1435,13 @@ function astNewBOP _
 		end select
 
 	end select
+
+	' Trap ANDALSO, ORELSE, and convert them to IIF
+	if op = AST_OP_ANDALSO then
+		return astNewIIF( astNewBOP( AST_OP_NE, l, astNewConstI(0, FB_DATATYPE_INTEGER) ), astNewBOP( AST_OP_NE, r, astNewConstI(0, FB_DATATYPE_INTEGER) ), astNewConstI(0, FB_DATATYPE_INTEGER) )
+	elseif op = AST_OP_ORELSE then
+		return astNewIIF( astNewBOP( AST_OP_EQ, l, astNewConstI(0, FB_DATATYPE_INTEGER) ), astNewBOP( AST_OP_NE, r, astNewConstI(0, FB_DATATYPE_INTEGER) ), astNewConstI(-1, FB_DATATYPE_INTEGER) )
+	end if
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_BOP, dtype, subtype )

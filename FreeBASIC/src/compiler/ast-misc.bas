@@ -1144,7 +1144,7 @@ function astUpdComp2Branch _
 
 	'' binary op that sets the flags?
 	case AST_OP_ADD, AST_OP_SUB, AST_OP_SHL, AST_OP_SHR, _
-		 AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_IMP
+		 AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_IMP, AST_OP_ANDALSO, AST_OP_ORELSE
 		 ', AST_OP_EQV -- NOT doesn't set any flags, so EQV can't be optimized (x86 assumption)
 
 		'' can't optimize if dtors have be called

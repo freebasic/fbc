@@ -402,8 +402,10 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_DIV_SELF"        , '/ @"/="           /' , 0 '/ ), _
 	( /' @"AST_OP_INTDIV_SELF"     , '/ @"\="           /' , 0 '/ ), _
 	( /' @"AST_OP_MOD_SELF"        , '/ @"MOD="         /' , 0 '/ ), _
-	( /' @"AST_OP_AND_SELF"        , '/ @"ANS="         /' , 0 '/ ), _
+	( /' @"AST_OP_AND_SELF"        , '/ @"AND="         /' , 0 '/ ), _
 	( /' @"AST_OP_OR_SELF"         , '/ @"OR="          /' , 0 '/ ), _
+	( /' @"AST_OP_ANDALSO_SELF"    , '/ @"ANDALSO="     /' , 0 '/ ), _
+	( /' @"AST_OP_ORELSE_SELF"     , '/ @"ORELSE="      /' , 0 '/ ), _
 	( /' @"AST_OP_XOR_SELF"        , '/ @"XOR="         /' , 0 '/ ), _
 	( /' @"AST_OP_EQV_SELF"        , '/ @"EQV="         /' , 0 '/ ), _
 	( /' @"AST_OP_IMP_SELF"        , '/ @"IMP="         /' , 0 '/ ), _
@@ -428,6 +430,8 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_MOD"             , '/ @"MOD"          /' , 0 '/ ), _
 	( /' @"AST_OP_AND"             , '/ @"AND"          /' , 0 '/ ), _
 	( /' @"AST_OP_OR"              , '/ @"OR"           /' , 0 '/ ), _
+	( /' @"AST_OP_ANDALSO"         , '/ @"ANDALSO"      /' , 0 '/ ), _
+	( /' @"AST_OP_ORELSE"          , '/ @"ORELSE"       /' , 0 '/ ), _
 	( /' @"AST_OP_XOR"             , '/ @"XOR"          /' , 0 '/ ), _
 	( /' @"AST_OP_EQV"             , '/ @"EQV"          /' , 0 '/ ), _
 	( /' @"AST_OP_IMP"             , '/ @"IMP"          /' , 0 '/ ), _

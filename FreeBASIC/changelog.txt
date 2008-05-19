@@ -16,7 +16,7 @@ Version 0.20.0 Beta:
 - "-z gosub-setjmp" command line switch will select setjmp/longjmp implementation even if the backend is ASM (jeffm)
 - fblite, qb: OPTION GOSUB, OPTION NOGOSUB to enable/disable GOSUB support. State can be checked with the intrinsic define __FB_OPTION_GOSUB__ (jeffm)
 - #1899251 (feature request) - RETURN without GOSUB runtime error check for both ASM and setjmp/longjump implementations of GOSUB (jeffm)
-
+- ANDALSO and ORELSE operators (yetifoot)
 [fixed]
 - wstring VAL*s were accepting invalid characters in hex/oct/bin numbers (counting_pine)
 - PCOPY wouldn't copy graphics screens higher than the max console page (counting_pine)

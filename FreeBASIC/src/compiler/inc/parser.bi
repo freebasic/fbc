@@ -647,6 +647,11 @@ declare function cCatExpression _
 		_
 	) as ASTNODE ptr
 
+declare function cBoolExpression _
+	( _
+		_
+	) as ASTNODE ptr
+
 declare function cLogExpression _
 	( _
 		_

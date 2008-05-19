@@ -45,6 +45,8 @@ end type
 	{ _
         ( @"AND"        , FB_TK_AND         , FB_TKCLASS_OPERATOR ), _
         ( @"OR"         , FB_TK_OR          , FB_TKCLASS_OPERATOR ), _
+        ( @"ANDALSO"    , FB_TK_ANDALSO     , FB_TKCLASS_OPERATOR ), _
+        ( @"ORELSE"     , FB_TK_ORELSE      , FB_TKCLASS_OPERATOR ), _
         ( @"XOR"        , FB_TK_XOR         , FB_TKCLASS_OPERATOR ), _
         ( @"EQV"        , FB_TK_EQV         , FB_TKCLASS_OPERATOR ), _
         ( @"IMP"        , FB_TK_IMP         , FB_TKCLASS_OPERATOR ), _

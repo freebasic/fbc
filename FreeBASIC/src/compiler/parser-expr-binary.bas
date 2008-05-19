@@ -49,9 +49,69 @@ function cExpression _
 	fbSetIsExpression( TRUE )
 
 	'' LogExpression
-	function = cLogExpression( )
+	function = cBoolExpression( )
 
 	fbSetIsExpression( last_isexpr )
+
+end function
+
+
+'':::::
+''BoolExpression      =   LogExpression ( (ANDALSO | ORELSE ) LogExpression )* .
+''
+function cBoolExpression _
+	( _
+		_
+	) as ASTNODE ptr
+
+    dim as integer op = any
+    dim as ASTNODE ptr expr = any, logexpr = any
+
+    '' LogExpression
+    logexpr = cLogExpression( )
+    if( logexpr = NULL ) then
+	   	return NULL
+    end if
+
+    '' ( ... )*
+    do
+    	'' Logical operator
+    	select case as const lexGetToken( )
+    	case FB_TK_ANDALSO
+    		op = AST_OP_ANDALSO
+    	case FB_TK_ORELSE
+    		op = AST_OP_ORELSE
+    	case else
+      		exit do
+    	end select
+
+    	lexSkipToken( )
+
+    	'' LogExpression
+    	expr = cLogExpression( )
+    	if( expr = NULL ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    			return NULL
+    		else
+            	exit do
+    		end if
+    	end if
+
+    	'' do operation
+    	logexpr = astNewBOP( op, logexpr, expr )
+
+        if( logexpr = NULL ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    			return NULL
+    		else
+    			'' error recovery: fake a node
+    			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    		end if
+        end if
+
+    loop
+
+	function = logexpr
 
 end function
 
