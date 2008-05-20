@@ -132,6 +132,15 @@ function cLSetStmt _
 		dim as FBSYMBOL ptr sym = astGetSymbol( dstexpr )
 
 		if( sym = NULL ) then
+			'' deref... 
+			select case as const astGetClass( dstexpr )
+			case AST_NODECLASS_DEREF
+				sym = iif( astGetLeft( dstexpr ), astGetSymbol( astGetLeft( dstexpr ) ), NULL )
+				
+			end select
+		end if
+
+		if( sym = NULL ) then
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
 				exit function
 			end if
