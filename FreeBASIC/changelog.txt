@@ -17,6 +17,7 @@ Version 0.20.0 Beta:
 - fblite, qb: OPTION GOSUB, OPTION NOGOSUB to enable/disable GOSUB support. State can be checked with the intrinsic define __FB_OPTION_GOSUB__ (jeffm)
 - #1899251 (feature request) - RETURN without GOSUB runtime error check for both ASM and setjmp/longjump implementations of GOSUB (jeffm)
 - ANDALSO and ORELSE operators (yetifoot)
+
 [fixed]
 - wstring VAL*s were accepting invalid characters in hex/oct/bin numbers (counting_pine)
 - PCOPY wouldn't copy graphics screens higher than the max console page (counting_pine)
@@ -37,8 +38,8 @@ Version 0.20.0 Beta:
 - #1957281 - PALETTE in Screen 12 should work like in Screen 13 (counting_pine)
 - string literals in #defines couldn't contain double-quotes (counting_pine)
 - Three-digit decimal escape sequences would swallow the next character if it was decimal as well (counting_pine)
-- #1914051 - !"\x..", !"\X.." were being recognised by GAS but not FB (counting_pine)
-
+- #1914051 - !"\x..", !"\X.." escape sequences weren't working properly (counting_pine)
+- #1961732 - LSET wasn't accepting dereferenced vars for the destination (counting_pine)
 
 Version 0.18.5 Beta:
 
