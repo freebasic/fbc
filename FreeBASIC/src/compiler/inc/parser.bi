@@ -990,9 +990,9 @@ declare function cMidStmt _
 		_
 	) as integer
 
-declare function cLSetStmt _
+declare function cLRSetStmt _
 	( _
-		_
+		byval tk as FB_TOKEN _
 	) as integer
 
 declare function cWidthStmt _

@@ -877,6 +877,36 @@
 				) _
 			} _
  		), _
+		/' fb_StrRset overload ( byref dst as string, byref src as string ) as void '/ _
+		( _
+			@FB_RTL_STRRSET, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_OVER, _
+			2, _
+			{ _
+				( _
+					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				) _
+			} _
+ 		), _
+		/' fb_WstrRset ( byval dst as wstring ptr, byval src as wstring ptr ) as void '/ _
+		( _
+			@FB_RTL_WSTRRSET, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( _
+					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+ 		), _
 		/' fb_ASC ( byref str as string, byval pos as integer = 0 ) as uinteger '/ _
 		( _
 			@FB_RTL_STRASC, NULL, _
@@ -2399,36 +2429,6 @@
 				) _
 			} _
  		), _
-		/' fb_StrRset overload ( byref dst as string, byref src as string ) as void '/ _
-		( _
-			@"rset", @"fb_StrRset", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER, _
-			2, _
-			{ _
-				( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-				), _
-				( _
- 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-				) _
-			} _
- 		), _
-		/' fb_WstrRset ( byval dst as wstring ptr, byval src as wstring ptr ) as void '/ _
-		( _
-			@"rset", @"fb_WstrRset", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			2, _
-			{ _
-				( _
-					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
- 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
-				) _
-			} _
- 		), _
 		/' fb_CVD ( byref str as string ) as double '/ _
 		( _
 			@FB_RTL_CVD, @"fb_CVD", _
@@ -3735,10 +3735,11 @@ function rtlStrAssignMid _
 end function
 
 '':::::
-function rtlStrLSet _
+function rtlStrLRSet _
 	( _
 		byval dstexpr as ASTNODE ptr, _
-		byval srcexpr as ASTNODE ptr _
+		byval srcexpr as ASTNODE ptr, _
+		byval is_rset as integer _
 	) as integer
 
     dim as ASTNODE ptr proc = any
@@ -3746,11 +3747,15 @@ function rtlStrLSet _
     function = FALSE
 
 	''
-    if( astGetDataType( dstexpr ) <> FB_DATATYPE_WCHAR ) then
-    	proc = astNewCALL( PROCLOOKUP( STRLSET ) )
-    else
-    	proc = astNewCALL( PROCLOOKUP( WSTRLSET ) )
-    end if
+	if( astGetDataType( dstexpr ) <> FB_DATATYPE_WCHAR ) then
+		proc = astNewCALL( iif( is_rset, _
+		                        PROCLOOKUP( STRRSET ), _
+		                        PROCLOOKUP( STRLSET ) ) )
+	else
+		proc = astNewCALL( iif( is_rset, _
+		                        PROCLOOKUP( WSTRRSET ), _
+		                        PROCLOOKUP( WSTRLSET ) ) )
+	end if
 
     '' dst as string
     if( astNewARG( proc, dstexpr ) = NULL ) then

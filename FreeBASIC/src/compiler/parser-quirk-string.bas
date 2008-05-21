@@ -97,19 +97,21 @@ end function
 	astNewVAR( symbAddTempVar( FB_DATATYPE_STRING ), 0, FB_DATATYPE_STRING )
 
 '':::::
-'' LsetStmt		=	LSET String|UDT (','|'=') Expression|UDT
-function cLSetStmt _
+'' LRsetStmt		=	LSET|RSET String|UDT (','|'=') Expression|UDT
+function cLRSetStmt _
 	( _
-		_
+		byval tk as FB_TOKEN _
 	) as integer
 
     dim as ASTNODE ptr dstexpr = any, srcexpr = any
     dim as integer dtype1 = any, dtype2 = any
     dim as FBSYMBOL ptr dst = any, src = any
+    dim as integer is_rset = any
 
     function = FALSE
 
-	'' LSET
+	'' (LSET|RSET)
+	is_rset = (tk = FB_TK_RSET)
 	lexSkipToken( )
 
 	'' Expression
@@ -128,6 +130,15 @@ function cLSetStmt _
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
 		 FB_DATATYPE_STRUCT
+
+		if( is_rset and (dtype1 = FB_DATATYPE_STRUCT) ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: do lset instead
+				is_rset = FALSE
+			end if
+		end if
 
 		dim as FBSYMBOL ptr sym = astGetSymbol( dstexpr )
 
@@ -220,7 +231,7 @@ function cLSetStmt _
 		function = rtlMemCopyClear( dstexpr, symbGetUDTUnpadLen( dst->subtype ), _
 									srcexpr, symbGetUDTUnpadLen( src->subtype ) )
 	else
-		function = rtlStrLset( dstexpr, srcexpr )
+		function = rtlStrLRSet( dstexpr, srcexpr, is_rset )
 	end if
 
 end function

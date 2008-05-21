@@ -75,6 +75,7 @@
 #define FB_RTL_STRFILL2 				"fb_StrFill2"
 #define FB_RTL_STRLEN 					"fb_StrLen"
 #define FB_RTL_STRLSET 					"fb_StrLset"
+#define FB_RTL_STRRSET 					"fb_StrRset"
 #define FB_RTL_STRASC 					"fb_ASC"
 #define FB_RTL_STRCHR 					"fb_CHR"
 #define FB_RTL_STRINSTR 				"fb_StrInstr"
@@ -118,6 +119,7 @@
 #define FB_RTL_WSTRFILL2 				"fb_WstrFill2"
 #define FB_RTL_WSTRLEN 					"fb_WstrLen"
 #define FB_RTL_WSTRLSET 				"fb_WstrLset"
+#define FB_RTL_WSTRRSET 				"fb_WstrRset"
 #define FB_RTL_WSTRASC 					"fb_WstrAsc"
 #define FB_RTL_WSTRCHR 					"fb_WstrChr"
 #define FB_RTL_WSTRINSTR 				"fb_WstrInstr"
@@ -419,6 +421,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_STRFILL2
 	FB_RTL_IDX_STRLEN
 	FB_RTL_IDX_STRLSET
+	FB_RTL_IDX_STRRSET
 	FB_RTL_IDX_STRASC
 	FB_RTL_IDX_STRCHR
 	FB_RTL_IDX_STRINSTR
@@ -462,6 +465,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_WSTRFILL2
 	FB_RTL_IDX_WSTRLEN
 	FB_RTL_IDX_WSTRLSET
+	FB_RTL_IDX_WSTRRSET
 	FB_RTL_IDX_WSTRASC
 	FB_RTL_IDX_WSTRCHR
 	FB_RTL_IDX_WSTRINSTR
@@ -897,10 +901,11 @@ declare function rtlStrAssignMid _
 		byval expr4 as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function rtlStrLSet _
+declare function rtlStrLRSet _
 	( _
 		byval dstexpr as ASTNODE ptr, _
-		byval srcexpr as ASTNODE ptr _
+		byval srcexpr as ASTNODE ptr, _
+		byval is_rset as integer _
 	) as integer
 
 declare function rtlStrFill _

@@ -40,6 +40,8 @@ Version 0.20.0 Beta:
 - Three-digit decimal escape sequences would swallow the next character if it was decimal as well (counting_pine)
 - #1914051 - !"\x..", !"\X.." escape sequences weren't working properly (counting_pine)
 - #1961732 - LSET wasn't accepting dereferenced vars for the destination (counting_pine)
+- RSET was allowing constants to be modified (counting_pine)
+
 
 Version 0.18.5 Beta:
 

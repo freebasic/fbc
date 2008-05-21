@@ -123,9 +123,9 @@ function cQuirkStmt _
 		CHECK_CODEMASK( )
 		res = cMidStmt( )
 
-	case FB_TK_LSET
+	case FB_TK_LSET, FB_TK_RSET
 		CHECK_CODEMASK( )
-		res = cLSetStmt( )
+		res = cLRSetStmt( tk )
 
     case FB_TK_WIDTH
         CHECK_CODEMASK( )

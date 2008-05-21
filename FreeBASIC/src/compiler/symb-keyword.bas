@@ -261,6 +261,7 @@ end type
         ( @"WCHR"       , FB_TK_WCHR        , FB_TKCLASS_QUIRKWD , KWD_OPTION_NO_QB ), _
         ( @"ASC"        , FB_TK_ASC         , FB_TKCLASS_QUIRKWD ), _
         ( @"LSET"       , FB_TK_LSET        , FB_TKCLASS_QUIRKWD ), _
+        ( @"RSET"       , FB_TK_RSET        , FB_TKCLASS_QUIRKWD ), _
         ( @"PSET"       , FB_TK_PSET        , FB_TKCLASS_QUIRKWD ), _
         ( @"PRESET"     , FB_TK_PRESET      , FB_TKCLASS_QUIRKWD ), _
         ( @"POINT"      , FB_TK_POINT       , FB_TKCLASS_QUIRKWD ), _
