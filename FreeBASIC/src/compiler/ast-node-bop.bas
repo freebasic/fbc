@@ -445,6 +445,20 @@ private sub hBOPConstFoldFlt _
 
     case AST_OP_ATAN2
 		l->con.val.float = atan2( l->con.val.float, r->con.val.float )
+
+	case AST_OP_ANDALSO
+		if l->con.val.float then
+			l->con.val.int = (r->con.val.float <> 0)
+		else
+			l->con.val.int = 0
+		end if
+
+	case AST_OP_ORELSE
+		if l->con.val.float then
+			l->con.val.int = -1
+		else
+			l->con.val.int = (r->con.val.float <> 0)
+		end if
 	end select
 
 end sub
@@ -1175,7 +1189,7 @@ function astNewBOP _
 
 	'' bitwise ops, int div (\), modulus and shift can only operate on integers
 	case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
-		 AST_OP_INTDIV, AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_ANDALSO, AST_OP_ORELSE
+		 AST_OP_INTDIV, AST_OP_MOD, AST_OP_SHL, AST_OP_SHR
 
 		if( ldclass <> FB_DATACLASS_INTEGER ) then
 			ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
@@ -1272,7 +1286,10 @@ function astNewBOP _
 	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
 		dtype = FB_DATATYPE_INTEGER
 		subtype = NULL
-
+	'' ANDALSO and ORELSE always return an integer
+	case AST_OP_ANDALSO, AST_OP_ORELSE
+		dtype = FB_DATATYPE_INTEGER
+		subtype = NULL
 	'' right-operand must be an integer, so pow2 opts can be done on longint's
 	case AST_OP_SHL, AST_OP_SHR
 		if( typeGet( rdtype ) <> FB_DATATYPE_INTEGER ) then
@@ -1436,11 +1453,34 @@ function astNewBOP _
 
 	end select
 
-	' Trap ANDALSO, ORELSE, and convert them to IIF
-	if op = AST_OP_ANDALSO then
-		return astNewIIF( astNewBOP( AST_OP_NE, l, astNewConstI(0, FB_DATATYPE_INTEGER) ), astNewBOP( AST_OP_NE, r, astNewConstI(0, FB_DATATYPE_INTEGER) ), astNewConstI(0, FB_DATATYPE_INTEGER) )
-	elseif op = AST_OP_ORELSE then
-		return astNewIIF( astNewBOP( AST_OP_EQ, l, astNewConstI(0, FB_DATATYPE_INTEGER) ), astNewBOP( AST_OP_NE, r, astNewConstI(0, FB_DATATYPE_INTEGER) ), astNewConstI(-1, FB_DATATYPE_INTEGER) )
+	' Trap ANDALSO, ORELSE, handle floats, and convert to IIF
+	if (op = AST_OP_ANDALSO) or (op = AST_OP_ORELSE) then
+		dim cmp_op as integer
+		dim cmp_constl as ASTNODE ptr
+		dim cmp_constr as ASTNODE ptr
+
+		if ldclass = FB_DATACLASS_FPOINT then
+			cmp_constl = astNewConstf(0.0, FB_DATATYPE_SINGLE)
+			cmp_constr = astNewConstf(0.0, FB_DATATYPE_SINGLE)
+		else
+			cmp_constl = astNewConstI(0, FB_DATATYPE_INTEGER)
+			cmp_constr = astNewConstI(0, FB_DATATYPE_INTEGER)
+		end if
+
+		if op = AST_OP_ANDALSO then
+			cmp_op = AST_OP_NE
+		else
+			cmp_op = AST_OP_EQ
+		end if
+
+		l = astNewBOP( cmp_op, l, cmp_constl )
+		r = astNewBOP( AST_OP_NE, r, cmp_constr )
+
+		if op = AST_OP_ANDALSO then
+			return astNewIIF( l, r, astNewConstI(0, FB_DATATYPE_INTEGER) )
+		else
+			return astNewIIF( l, r, astNewConstI(-1, FB_DATATYPE_INTEGER) )
+		end if
 	end if
 
 	'' alloc new node
