@@ -1320,7 +1320,19 @@ function cOperatorHeader _
 			'' error recovery: fake an op
 			op = AST_OP_ADD
 		end if
-    end if
+    	end if
+
+	select case op
+		case AST_OP_ANDALSO, AST_OP_ANDALSO_SELF, _
+		     AST_OP_ORELSE, AST_OP_ORELSE_SELF
+			if( errReport( FB_ERRMSG_EXPECTEDOPERATOR ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an op
+				op = AST_OP_ADD
+			end if
+	end select
+
 
     select case as const op
 
