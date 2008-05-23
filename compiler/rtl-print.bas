@@ -890,6 +890,24 @@
 
 
 '':::::
+private function hConvertBoolToString _ 
+	( _ 
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+	
+	static as ASTNODE ptr true_node = NULL, false_node = NULL
+	if( true_node = NULL ) then
+		true_node = astNewADDROF( astNewCONSTStr( "true" ) )
+		false_node = astNewADDROF( astNewCONSTStr( "false" ) )
+	end if
+	
+	expr = astNewIIF( expr, true_node, false_node )
+	
+	function = astNewDEREF( expr )
+	
+end function
+
+'':::::
 sub rtlPrintModInit( )
 
 	rtlAddIntrinsicProcs( @funcdata(0) )
@@ -936,7 +954,15 @@ function rtlPrint _
 				exit function
 			end if
 		end select
-
+		
+		'' convert boolean to string
+		select case typeGet( astGetDataType( expr ) )
+		case FB_DATATYPE_BOOL32, FB_DATATYPE_BOOL8
+			
+			expr = hConvertBoolToString( expr )
+			
+		end select
+		
 		select case as const typeGet( astGetDataType( expr ) )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			if( islprint ) then
@@ -950,22 +976,6 @@ function rtlPrint _
 				f = PROCLOOKUP( LPRINTWSTR )
 			else
 				f = PROCLOOKUP( PRINTWSTR )
-			end if
-
-		case FB_DATATYPE_BOOL8
-			'' !!!FIXME!!! (BOOL)
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTBYTE )
-			else
-				f = PROCLOOKUP( PRINTBYTE )
-			end if
-
-		case FB_DATATYPE_BOOL32
-			'' !!!FIXME!!! (BOOL)
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTINT )
-			else
-				f = PROCLOOKUP( PRINTINT )
 			end if
 
 		case FB_DATATYPE_BYTE
@@ -1226,20 +1236,20 @@ function rtlWrite _
 			end if
 		end select
 
+		'' convert boolean to string
+		select case typeGet( astGetDataType( expr ) )
+		case FB_DATATYPE_BOOL32, FB_DATATYPE_BOOL8
+			
+			expr = hConvertBoolToString( expr )
+			
+		end select
+		
 		select case as const typeGet( astGetDataType( expr ) )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			f = PROCLOOKUP( WRITESTR )
 
 		case FB_DATATYPE_WCHAR
 			f = PROCLOOKUP( WRITEWSTR )
-
-		case FB_DATATYPE_BOOL8
-			'' !!!FIXME!!! (BOOL)
-			f = PROCLOOKUP( WRITEBYTE )
-
-		case FB_DATATYPE_BOOL32
-			'' !!!FIXME!!! (BOOL)
-			f = PROCLOOKUP( WRITEINT )
 
 		case FB_DATATYPE_BYTE
 			f = PROCLOOKUP( WRITEBYTE )

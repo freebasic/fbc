@@ -1314,8 +1314,15 @@ function astNewBOP _
 	select case as const op
 	'' relative ops, the result is always an integer
 	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
-		dtype = FB_DATATYPE_INTEGER
+		
+		'' except, if it's boolean
+		select case typeGet( dtype )
+		case FB_DATATYPE_BOOL32, FB_DATATYPE_BOOL8
+		case else
+			dtype = FB_DATATYPE_INTEGER
+		end select
 		subtype = NULL
+		
 	'' ANDALSO and ORELSE always return an integer
 	case AST_OP_ANDALSO, AST_OP_ORELSE
 		dtype = FB_DATATYPE_INTEGER
