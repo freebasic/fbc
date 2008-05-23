@@ -49,10 +49,10 @@ function cOperator _
     	op = AST_OP_OR
 
 	case FB_TK_ANDALSO
-	op = AST_OP_ANDALSO
+		op = AST_OP_ANDALSO
 
 	case FB_TK_ORELSE
-	op = AST_OP_ORELSE
+		op = AST_OP_ORELSE
 
 	case FB_TK_XOR
     	op = AST_OP_XOR

@@ -789,6 +789,12 @@ declare sub astDelCALL _
 			AST_OPFLAGS_NONE, _
 			@"cflt" _
 		), _
+		/' AST_OP_TOBOOL '/ _
+		( _
+			AST_NODECLASS_CONV, _
+			AST_OPFLAGS_NONE, _
+			@"cbool" _
+		), _
 		/' AST_OP_LOAD '/ _
 		( _
 			AST_NODECLASS_LOAD, _

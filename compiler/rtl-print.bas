@@ -952,6 +952,22 @@ function rtlPrint _
 				f = PROCLOOKUP( PRINTWSTR )
 			end if
 
+		case FB_DATATYPE_BOOL8
+			'' !!!FIXME!!! (BOOL)
+			if( islprint ) then
+				f = PROCLOOKUP( LPRINTBYTE )
+			else
+				f = PROCLOOKUP( PRINTBYTE )
+			end if
+
+		case FB_DATATYPE_BOOL32
+			'' !!!FIXME!!! (BOOL)
+			if( islprint ) then
+				f = PROCLOOKUP( LPRINTINT )
+			else
+				f = PROCLOOKUP( PRINTINT )
+			end if
+
 		case FB_DATATYPE_BYTE
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTBYTE )
@@ -1216,6 +1232,14 @@ function rtlWrite _
 
 		case FB_DATATYPE_WCHAR
 			f = PROCLOOKUP( WRITEWSTR )
+
+		case FB_DATATYPE_BOOL8
+			'' !!!FIXME!!! (BOOL)
+			f = PROCLOOKUP( WRITEBYTE )
+
+		case FB_DATATYPE_BOOL32
+			'' !!!FIXME!!! (BOOL)
+			f = PROCLOOKUP( WRITEINT )
 
 		case FB_DATATYPE_BYTE
 			f = PROCLOOKUP( WRITEBYTE )

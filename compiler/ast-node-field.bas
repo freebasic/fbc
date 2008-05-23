@@ -21,8 +21,14 @@ function astNewFIELD _
     dim as ASTNODE ptr n = any
 
 	if( dtype = FB_DATATYPE_BITFIELD ) then
-		'' final type is always an unsigned int
-		dtype = typeJoin( dtype, FB_DATATYPE_UINT )
+		select case symbGetType( subtype )
+		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+			'' final type is always a signed int
+			dtype = typeJoin( dtype, FB_DATATYPE_INTEGER )
+		case else
+			'' final type is always an unsigned int
+			dtype = typeJoin( dtype, FB_DATATYPE_UINT )
+		end select
 		subtype = NULL
 	end if
 
@@ -34,6 +40,13 @@ function astNewFIELD _
 
 	n->sym = sym
 	n->l = p
+
+	'' $$JRM
+	'' convert to boolean if needed?
+	if( ( dtype = FB_DATATYPE_BOOL8 ) or _
+		( dtype = FB_DATATYPE_BOOL32 ) ) then
+		n = astNewCONV( dtype, NULL, n )
+	end if
 
 	function = n
 
@@ -48,11 +61,25 @@ private function hGetBitField _
 
 	dim as ASTNODE ptr c = any
 	dim as FBSYMBOL ptr s = any
+	dim as integer boolconv = any
 
 	s = n->subtype
 
-	'' remap type
-	astGetFullType( n ) = typeJoin( astGetFullType( n ), s->typ )
+	'' remap type - if boolean make sure the bool conversion is after 
+	''              the bitfield access
+
+	select case typeGet( s->typ )
+	case FB_DATATYPE_BOOL8
+		astGetFullType( n ) = typeJoin( astGetFullType( n ), FB_DATATYPE_BYTE )
+		boolconv = TRUE
+	case FB_DATATYPE_BOOL32
+		astGetFullType( n ) = typeJoin( astGetFullType( n ), FB_DATATYPE_INTEGER )
+		boolconv = TRUE
+	case else
+		astGetFullType( n ) = typeJoin( astGetFullType( n ), s->typ )
+		boolconv = FALSE
+	end select
+	
 	n->subtype = NULL
 
 	'' make a copy, the node itself can't be used or it will be deleted twice
@@ -72,20 +99,84 @@ private function hGetBitField _
 	n = astNewBOP( AST_OP_AND, n, _
 				   astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), dtype ) )
 
+	'' do boolean conversion after bitfield access
+	if( boolconv ) then
+		astGetFullType( n ) = typeJoin( astGetFullType( n ), s->typ )
+		n = astNewCONV( FB_DATATYPE_INTEGER, NULL, n )
+	end if
+
 	function = n
 
 end function
 
-sub astUpdateBitfieldAccess _ 
+'':::::
+sub astUpdateFieldAccess _ 
 	( _ 
 		byref n as ASTNODE ptr _
 	)
-	
-	if( astGetDataType( n ) = FB_DATATYPE_BITFIELD ) then
+
+	select case typeGetDtAndPtrOnly( astGetFullType( n ) )
+	case FB_DATATYPE_BITFIELD
 		n = hGetBitField( n, astGetFullType( n ) )
-	end if
+	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		n = astNewCONV( typeGetDtAndPtrOnly( astGetFullType( n ) ), NULL, n )
+	end select
 	
 end sub
+
+'':::::
+private sub hWalk _
+	( _
+		byval node as ASTNODE ptr, _
+		byval parent as ASTNODE ptr _
+	)
+
+    dim as ASTNODE ptr expr = any
+    dim as FBSYMBOL ptr sym = any
+
+	if( node->class = AST_NODECLASS_FIELD ) then
+    	exit sub
+    end if
+
+	'' walk
+	expr = node->l
+	if( expr <> NULL ) then
+		hWalk( expr, node )
+	end if
+
+	expr = node->r
+	if( expr <> NULL ) then
+		hWalk( expr, node )
+	end if
+
+end sub
+
+'':::::
+function astFieldUpdate _
+	( _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
+
+    dim as ASTNODE ptr expr = any
+
+	function = tree
+
+    if( ast.typeinicnt <= 0 ) then
+    	exit function
+    end if
+
+	'' walk
+	expr = tree->l
+	if( expr <> NULL ) then
+		hWalk( expr, tree )
+	end if
+
+	expr = tree->r
+	if( expr <> NULL ) then
+		hWalk( expr, tree )
+	end if
+
+end function
 
 '':::::
 function astLoadFIELD _
@@ -96,9 +187,9 @@ function astLoadFIELD _
     dim as ASTNODE ptr l = any
 	dim as IRVREG ptr vr = any
 
-	'' handle bitfields..
+	'' handle special field access..
 	l = n->l
-	astUpdateBitfieldAccess( l )
+	astUpdateFieldAccess( l )
 
 	vr = astLoad( l )
 

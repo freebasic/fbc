@@ -16,8 +16,20 @@ enum FB_DATACLASS
 	FB_DATACLASS_UNKNOWN
 end enum
 
+'' if FB_DATATYPE changes, take care to update:
+'' - ir-hlc.bas::dtypeTB() array
+'' - edbg_stab.bas::remapTB() array
+'' - symb-mangling.bas::typecodeTB() array
+'' - symb-data.bas::symb_dtypeTB() array
+'' - emit_x86.bas::dtypeTB() array
+'' - FB_DATATYPE_LOW_INDEX below,
+'' - FB_DATATYPE_UPP_INDEX below,
+'' - ast-misc.bas::ast_minlimitTB() array
+'' - ast-misc.bas::ast_maxlimitTB() array
+
 enum FB_DATATYPE
 	FB_DATATYPE_VOID
+	FB_DATATYPE_BOOL8
 	FB_DATATYPE_BYTE
 	FB_DATATYPE_UBYTE
 	FB_DATATYPE_CHAR
@@ -26,6 +38,7 @@ enum FB_DATATYPE
 	FB_DATATYPE_WCHAR
 	FB_DATATYPE_INTEGER
 	FB_DATATYPE_UINT
+	FB_DATATYPE_BOOL32
 	FB_DATATYPE_ENUM
 	FB_DATATYPE_BITFIELD
 	FB_DATATYPE_LONG
@@ -45,6 +58,8 @@ enum FB_DATATYPE
 end enum
 
 const FB_DATATYPES = (FB_DATATYPE_XMMWORD - FB_DATATYPE_VOID) + 1
+const FB_DATATYPE_LOW_INDEX = FB_DATATYPE_BOOL8
+const FB_DATATYPE_UPP_INDEX = FB_DATATYPE_ULONGINT
 
 const FB_DT_TYPEMASK 		= &b00000000000000000000000000011111 '' max 32 built-in dts
 const FB_DT_PTRMASK  		= &b00000000000000000000000111100000
@@ -438,6 +453,7 @@ end type
 type FBS_BITFLD
 	bitpos			as integer
 	bits			as integer
+	typ				as FB_DATATYPE				'' bitfield's original type-decl
 end type
 
 '' enumeration

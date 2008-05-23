@@ -50,6 +50,7 @@ declare function hGetProcParamsTypeCode _
 	dim shared as zstring * 1+1 typecodeTB( 0 to FB_DATATYPES-1 ) => _
 	{ _
 		"v", _					'' void
+		"b", _					'' boolean byte
 		"a", _					'' byte
 		"h", _					'' ubyte
 		"c", _                  '' char
@@ -58,6 +59,7 @@ declare function hGetProcParamsTypeCode _
 		"w", _                  '' wchar
 		"i", _                  '' integer
 		"j", _                  '' uinteger
+		"b", _					'' boolean integer
 		"!", _                  '' enum
 		"!", _                  '' bitfield
 		"l", _                  '' long

@@ -236,6 +236,14 @@ function rtlDataRead _
 		f = PROCLOOKUP( DATAREADWSTR )
 		args = 2
 
+	case FB_DATATYPE_BOOL8
+		'' !!!FIXME!!! (BOOL)
+		f = PROCLOOKUP( DATAREADBYTE )
+
+	case FB_DATATYPE_BOOL32
+		'' !!!FIXME!!! (BOOL)
+		f = PROCLOOKUP( DATAREADINT )
+
 	case FB_DATATYPE_BYTE
 		f = PROCLOOKUP( DATAREADBYTE )
 

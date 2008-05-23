@@ -28,6 +28,10 @@ function hTruncateInt _
 	dim as integer value0 = *value
 
 	select case as const dtype
+	case FB_DATATYPE_BOOL8, FB_DATATYPE, BOOL32
+		*value = cbool( value0 )
+		return FALSE '(cbool( *value ) <> value0)
+
 	case FB_DATATYPE_BYTE
 		*value = cbyte( value0 )
 		return (cbyte( *value ) <> value0) and (cubyte( *value ) <> value0)
@@ -64,6 +68,9 @@ private sub hCONVConstEvalInt _
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 
 		select case as const to_dtype
+		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+			v->con.val.int = cbool( v->con.val.long )
+
 		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.long )
 
@@ -87,6 +94,9 @@ private sub hCONVConstEvalInt _
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 
 		select case as const to_dtype
+		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+			v->con.val.int = cbool( v->con.val.float )
+
 		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.float )
 
@@ -187,6 +197,15 @@ private sub hCONVConstEvalFlt _
 			end if
 		end if
 
+	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+
+		if( to_dtype = FB_DATATYPE_SINGLE ) then
+			v->con.val.float = csng( cbool( v->con.val.int ) )
+		else
+			v->con.val.float = cdbl( cbool( v->con.val.int ) )
+		end if
+
+
 	case else
 
 		if( to_dtype = FB_DATATYPE_SINGLE ) then
@@ -262,6 +281,40 @@ private sub hCONVConstEval64 _
 end sub
 
 '':::::
+private sub hCONVConstEvalBool _
+	( _
+		byval to_dtype as integer, _
+		byval v as ASTNODE ptr _
+	)
+
+	dim as integer vdtype = typeGet( v->dtype )
+	to_dtype = typeGet( to_dtype )
+
+	select case as const vdtype
+	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		'' do nothing
+
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		v->con.val.int = cbool( v->con.val.long )
+
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		v->con.val.int = cbool( v->con.val.float )
+
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			v->con.val.int = cbool( v->con.val.float )
+		else
+			v->con.val.int = cbool( v->con.val.long )
+		end if
+
+	case else
+		v->con.val.int = cbool( v->con.val.int )
+
+	end select
+
+end sub
+
+'':::::
 private function hCheckPtr _
 	( _
 		byval to_dtype as integer, _
@@ -275,11 +328,11 @@ private function hCheckPtr _
 	if( typeIsPtr( to_dtype ) ) then
 		select case as const typeGet( expr_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_BOOL32
 
 		'' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
 		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
-			 FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
+			 FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, FB_DATATYPE_BOOL8
 			 if( astIsCONST( expr ) ) then
 				if( astGetValueAsInt( expr ) <> 0 ) then
 					exit function
@@ -474,6 +527,9 @@ function astNewCONV _
 				hCONVConstEval64( to_dtype, l )
 			end if
 
+		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+			hCONVConstEvalBool( to_dtype, l )
+
 		case else
 			'' byte's, short's, int's and enum's
 			hCONVConstEvalInt( to_dtype, l )
@@ -490,6 +546,7 @@ function astNewCONV _
 		return l
 	end if
 
+	'' assume conversion is necessary ..
 	dim as integer doconv = TRUE
 
 	'' high-level IR? always convert..
@@ -500,13 +557,34 @@ function astNewCONV _
         end if
 
 	else
-		'' only convert if the classes are different (ie, floating<->integer) or
-		'' if sizes are different (ie, byte<->int)
+		'' only convert if the classes are different (ie, floating<->integer)
+		'' or if sizes are different (ie, byte<->int)
 		if( ldclass = symbGetDataClass( to_dtype ) ) then
 			if( symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype ) ) then
 				doconv = FALSE
 			end if
 		end if
+
+	'' special rules for converting booleans and bitfields ...
+	select case typeGet( to_dtype )
+	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		select case typeGet( ldtype )
+		case FB_DATATYPE_BITFIELD
+			doconv = FALSE
+		case else
+			doconv = TRUE
+		end select
+	case FB_DATATYPE_BITFIELD
+		select case typeGet( ldtype )
+		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+			doconv = FALSE
+		end select
+	case else
+		select case typeGet( ldtype )
+		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+			doconv = TRUE
+		end select
+	end select
 
 		if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
 			if (ldclass = FB_DATACLASS_FPOINT) and ( symbGetDataClass( to_dtype ) = FB_DATACLASS_FPOINT ) then

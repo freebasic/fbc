@@ -319,6 +319,7 @@ function astAdd _
 		'' do updates and optimizations now as they can
 		'' allocate new vars and create/delete nodes
 		n = astTypeIniUpdate( n )
+		n = astFieldUpdate( n )
 		n = astOptimizeTree( n )
 		n = astOptAssignment( n )
 		n = astUpdStrConcat( n )

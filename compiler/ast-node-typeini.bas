@@ -505,7 +505,7 @@ private function hFlushTree _
 
 			'' bitfields have to be updated (but i dunno if this is the best place)
 			if( is_bitfield ) then
-				astUpdateBitfieldAssignment( a->l, a->r )
+				astUpdateFieldAssignment( a->l, a->r )
 			end if
 
 		case AST_NODECLASS_TYPEINI_PAD
@@ -1109,5 +1109,3 @@ function astTypeIniClone _
 	function = clone_tree
 
 end function
-
-

@@ -88,6 +88,7 @@ dim shared as IRHLCCTX ctx
 dim shared as zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 { _
     @"void"     , _ '' void
+    @"bool8"    , _ '' boolean byte
     @"byte"     , _ '' byte
     @"ubyte"    , _ '' ubyte
     @"char"     , _ '' char
@@ -97,6 +98,7 @@ dim shared as zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
     @"integer"  , _ '' int
     @"uinteger" , _ '' uint
     @"integer"  , _ '' enum
+    @"bool32"   , _ '' boolean int
     @"integer"  , _ '' bitfield
     @"long"     , _ '' long
     @"ulong"    , _ '' ulong
@@ -862,6 +864,8 @@ private sub hEmitTypedefs( )
 	hWriteLine( "typedef float single", TRUE )
 	hWriteLine( "typedef struct _string { char *data; int len; int size; } string", TRUE )
 	hWriteLine( "typedef char fixstr", TRUE )
+	hWriteLine( "typedef char bool8" )
+	hWriteLine( "typedef int bool32" )
 
     '' Target-dependant wchar type
     dim as string wchartype
@@ -2051,6 +2055,7 @@ private sub _emitBopEx _
 
 		'' vr = ~v1 | v2
         hEmitVregExpr( vr, "~" & hVregToStr( v1 ) & "|" & hVregToStr( v2 ) )
+
 
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 		if( vr <> NULL ) then

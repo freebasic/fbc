@@ -3,7 +3,7 @@
 '' chng: sep/2004 written [v1ctor]
 ''  	 mar/2005 longint support added [v1ctor]
 ''  	 may/2008 SSE/SSE2 instructions [Bryan Stoeberl]
-
+''       may/2008 boolean support added [jeffm]
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -105,14 +105,16 @@ declare function _init_opFnTB_SSE _
 	dim shared dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE => _
 	{ _
 		( FB_DATACLASS_INTEGER, 0 			    , 0, "void ptr"  ), _	'' void
+		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' boolean byte
 		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' byte
 		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' ubyte
 		( FB_DATACLASS_INTEGER, 1               , 0, "byte ptr"  ), _	'' char
 		( FB_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' short
 		( FB_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' ushort
-		( FB_DATACLASS_INTEGER, 2  				, 1, "word ptr" ), _	'' wchar
+		( FB_DATACLASS_INTEGER, 2  				, 1, "word ptr"  ), _	'' wchar
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' int
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _   '' uint
+		( FB_DATACLASS_INTEGER, 4			    , 2, "dword ptr" ), _	'' boolean integer
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' enum
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' bitfield
 		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, 2, "dword ptr" ), _	'' long
@@ -124,7 +126,7 @@ declare function _init_opFnTB_SSE _
 		( FB_DATACLASS_STRING , FB_STRDESCLEN	, 0, ""          ), _	'' string
 		( FB_DATACLASS_STRING , 1               , 0, "byte ptr"  ), _	'' fix-len string
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' struct
-		( FB_DATACLASS_INTEGER, 0  				, 0, "" 		), _	'' namespace
+		( FB_DATACLASS_INTEGER, 0  				, 0, "" 		 ), _	'' namespace
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' function
 		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' fwd-ref
 		( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , 2, "dword ptr" ), _	'' pointer
@@ -1822,7 +1824,7 @@ private sub _emitSTORI2I _
 
 	'' dst size = src size
 	if( (svreg->typ = IR_VREGTYPE_IMM) or _
-		(dvreg->dtype = svreg->dtype) or _
+		(symbGetDataSize( dvreg->dtype ) = symbGetDataSize( svreg->dtype )) or _
 		(symbMaxDataType( dvreg->dtype, svreg->dtype ) = FB_DATATYPE_INVALID) ) then
 
 		ostr = "mov " + dst + COMMA + src
@@ -1835,7 +1837,8 @@ private sub _emitSTORI2I _
 		aux = *hGetRegName( dvreg->dtype, svreg->reg )
 
 		'' dst size > src size
-		if( dvreg->dtype > svreg->dtype ) then
+		'''''if( dvreg->dtype > svreg->dtype ) then
+		if( symbGetDataSize( dvreg->dtype ) > symbGetDataSize( svreg->dtype ) ) then
 			if( symbIsSigned( svreg->dtype ) ) then
 				ostr = "movsx "
 			else
@@ -2407,7 +2410,7 @@ private sub _emitLOADI2I _
 	end if
 
 	'' dst size = src size
-	if( (dvreg->dtype = svreg->dtype) or _
+	if( (symbGetDataSize( dvreg->dtype ) = symbGetDataSize( svreg->dtype )) or _
 		(symbMaxDataType( dvreg->dtype, svreg->dtype ) = FB_DATATYPE_INVALID) ) then
 
 		ostr = "mov " + dst + COMMA + src
@@ -2417,7 +2420,8 @@ private sub _emitLOADI2I _
 
 	else
 		'' dst size > src size
-		if( dvreg->dtype > svreg->dtype ) then
+		if( symbGetDataSize( dvreg->dtype ) > symbGetDataSize( svreg->dtype ) ) then
+		'''''if( dvreg->dtype > svreg->dtype ) then
 			if( symbIsSigned( svreg->dtype ) ) then
 				ostr = "movsx "
 			else
@@ -6245,6 +6249,350 @@ private sub _emitSCOPEEND _
 
 end sub
 
+'' $$JRM
+#define FAST_BOOL (0 <> (fbGetOption(FB_COMPOPT_EXTRAOPT) and FB_EXTRAOPT_FAST_BOOL))
+#macro JRM_DEBUG()
+	outp "# " + __FUNCTION__
+#endmacro
+
+'':::::
+private sub hMovBool _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	dim as string src, dst
+	dim as integer ddsize, sdsize
+
+	hPrepOperand( svreg, src )
+	hPrepOperand( dvreg, dst )
+
+	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = symbGetDataSize( dvreg->dtype )
+
+	'' immediate?
+	if( svreg->typ = IR_VREGTYPE_IMM ) then
+
+		if( svreg->value.int <> 0 ) then
+			if( FAST_BOOL<>FALSE ) then
+				hMOV dst, "1"
+			else
+				hMOV dst, "-1"
+			end if
+		else
+			hMOV dst, "0"
+		end if
+
+	'' dst is one-byte?
+	elseif( ddsize = 1 ) then
+
+		'' is src zero ?
+		outp "cmp " + src + COMMA + "0"
+
+		'' set byte to one (1) if src not equal to zero
+		outp "setne " + dst
+
+		if( FAST_BOOL = FALSE ) then
+			'' convert 0|1 to 0|-1
+			outp "neg " + dst
+		end if
+
+	'' dst is register with 8-bit accessor?
+	elseif( (dvreg->typ = IR_VREGTYPE_REG) _
+		and (dvreg->reg <> EMIT_REG_ESI) _
+		and (dvreg->reg <> EMIT_REG_EDI) ) then
+
+		dim as string dst8
+
+		dst8 = *hGetRegName( FB_DATATYPE_BYTE, dvreg->reg )
+
+		'' is src zero ?
+		outp "cmp " + src + COMMA + "0"
+
+		'' set byte to one (1) if src not equal to zero
+		outp "setne " + dst8
+
+		if( FAST_BOOL = FALSE ) then
+			'' convert 0|1 to 0|-1
+			outp "neg " + dst8
+		end if
+
+		outp "movsx " + dst + COMMA + dst8
+
+	'' do it the hard way .. with an extra reg
+	else
+
+		dim as string aux, aux8
+		dim as integer reg, isfree
+
+		reg = hFindRegNotInVreg( dvreg, TRUE )
+
+		aux8 = *hGetRegName( FB_DATATYPE_BYTE, reg )
+		aux = *hGetRegName( dvreg->dtype, reg )
+
+		isfree = hIsRegFree(FB_DATACLASS_INTEGER, reg )
+		if( isfree = FALSE ) then
+			hPUSH aux
+		end if
+
+		'' is src zero ?
+		outp "cmp " + src + COMMA + "0"
+
+		'' set byte to one (1) if src not equal to zero
+		outp "setne " + aux8
+
+		if( FAST_BOOL = FALSE ) then
+			'' convert 0|1 to 0|-1
+			outp "neg " + aux8
+		end if
+
+		if( dvreg->typ = IR_VREGTYPE_REG ) then
+			outp "movsx " + dst + COMMA + aux8
+		else
+			outp "movsx " + aux + COMMA + aux8
+			outp "mov " + dst + COMMA + aux
+		end if
+
+		if( isfree = FALSE ) then
+			hPOP aux
+		end if
+
+	end if
+
+end sub
+
+':::::
+private sub _emitLOADB2I _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	hMovBool(dvreg, svreg)
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitLOADI2B _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	hMovBool(dvreg, svreg)
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitLOADB2B _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	hMovBool(dvreg, svreg)
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitSTORB2I _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	if( (FAST_BOOL <> FALSE) and (symbGetDataSize( dvreg->dtype ) >= symbGetDataSize( svreg->dtype )) ) then
+		_emitSTORI2I(dvreg, svreg)
+	else
+		hMovBool(dvreg, svreg)
+	endif
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitSTORI2B _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	if( (FAST_BOOL <> FALSE) and (symbGetDataSize( dvreg->dtype ) >= symbGetDataSize( svreg->dtype )) ) then
+		_emitSTORI2I(dvreg, svreg)
+	else
+		hMovBool(dvreg, svreg)
+	end if
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitSTORB2B _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	if( (FAST_BOOL <> FALSE) and (symbGetDataSize( dvreg->dtype ) >= symbGetDataSize( svreg->dtype )) ) then
+		_emitSTORI2I(dvreg, svreg)
+	else
+		hMovBool(dvreg, svreg)
+	endif
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitLOADF2B _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	'' !!!WRITEME!!! (BOOL)
+	_emitLOADF2I(dvreg, svreg)
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitLOADB2F _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	'' !!!WRITEME!!! (BOOL)
+	_emitLOADI2F(dvreg, svreg)
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitLOADB2L _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	'' !!!WRITEME!!! (BOOL)
+	_emitLOADI2L(dvreg, svreg)
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitLOADL2B _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	'' !!!WRITEME!!! (BOOL)
+	_emitLOADL2I(dvreg, svreg)
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitSTORF2B _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	'' !!!WRITEME!!! (BOOL)
+	_emitSTORF2I(dvreg, svreg)
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitSTORB2F _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	'' !!!WRITEME!!! (BOOL)
+	_emitSTORI2F(dvreg, svreg)
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitSTORB2L _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	'' !!!WRITEME!!! (BOOL)
+	_emitSTORI2L(dvreg, svreg)
+
+	JRM_DEBUG()
+
+end sub
+
+'':::::
+private sub _emitSTORL2B _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	) static
+
+	JRM_DEBUG()
+
+	'' !!!WRITEME!!! (BOOL)
+	_emitSTORL2I(dvreg, svreg)
+
+	JRM_DEBUG()
+
+end sub
+''$$JRM
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' initializers
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -6435,13 +6783,15 @@ end sub
 	{ _
 		EMIT_CBENTRY(NOP), _
 		_
-		EMIT_CBENTRY(LOADI2I), EMIT_CBENTRY(LOADF2I), EMIT_CBENTRY(LOADL2I), _
-		EMIT_CBENTRY(LOADI2F), EMIT_CBENTRY(LOADF2F), EMIT_CBENTRY(LOADL2F), _
-		EMIT_CBENTRY(LOADI2L), EMIT_CBENTRY(LOADF2L), EMIT_CBENTRY(LOADL2L), _
-        _
-		EMIT_CBENTRY(STORI2I), EMIT_CBENTRY(STORF2I), EMIT_CBENTRY(STORL2I), _
-		EMIT_CBENTRY(STORI2F), EMIT_CBENTRY(STORF2F), EMIT_CBENTRY(STORL2F), _
-		EMIT_CBENTRY(STORI2L), EMIT_CBENTRY(STORF2L), EMIT_CBENTRY(STORL2L), _
+		EMIT_CBENTRY(LOADI2I), EMIT_CBENTRY(LOADF2I), EMIT_CBENTRY(LOADL2I), EMIT_CBENTRY(LOADB2I), _
+		EMIT_CBENTRY(LOADI2F), EMIT_CBENTRY(LOADF2F), EMIT_CBENTRY(LOADL2F), EMIT_CBENTRY(LOADB2F), _
+		EMIT_CBENTRY(LOADI2L), EMIT_CBENTRY(LOADF2L), EMIT_CBENTRY(LOADL2L), EMIT_CBENTRY(LOADB2L), _
+		EMIT_CBENTRY(LOADI2B), EMIT_CBENTRY(LOADF2B), EMIT_CBENTRY(LOADL2B), EMIT_CBENTRY(LOADB2B), _
+		_
+		EMIT_CBENTRY(STORI2I), EMIT_CBENTRY(STORF2I), EMIT_CBENTRY(STORL2I), EMIT_CBENTRY(STORB2I), _
+		EMIT_CBENTRY(STORI2F), EMIT_CBENTRY(STORF2F), EMIT_CBENTRY(STORL2F), EMIT_CBENTRY(STORB2F), _
+		EMIT_CBENTRY(STORI2L), EMIT_CBENTRY(STORF2L), EMIT_CBENTRY(STORL2L), EMIT_CBENTRY(STORB2L), _
+		EMIT_CBENTRY(STORI2B), EMIT_CBENTRY(STORF2B), EMIT_CBENTRY(STORL2B), EMIT_CBENTRY(STORB2B), _
         _
 		EMIT_CBENTRY(MOVI), EMIT_CBENTRY(MOVF), EMIT_CBENTRY(MOVL), _
 		EMIT_CBENTRY(ADDI), EMIT_CBENTRY(ADDF), EMIT_CBENTRY(ADDL), _
@@ -7006,6 +7356,12 @@ private function _getTypeString _
 	) as zstring ptr
 
 	select case as const typeGet( dtype )
+    case FB_DATATYPE_BOOL8
+    	function = @".byte"
+
+    case FB_DATATYPE_BOOL32
+    	function = @".int"
+
     case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
     	function = @".byte"
 

@@ -48,6 +48,7 @@ end type
         ( @"INT"        , FB_TK_INT         , FB_TKCLASS_KEYWORD ), _
         ( @"STATIC"     , FB_TK_STATIC      , FB_TKCLASS_KEYWORD ), _
         ( @"SHARED"     , FB_TK_SHARED      , FB_TKCLASS_KEYWORD ), _
+        ( @"BOOLEAN"    , FB_TK_BOOLEAN     , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"BYTE"       , FB_TK_BYTE        , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"UBYTE"      , FB_TK_UBYTE       , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"SHORT"      , FB_TK_SHORT       , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
@@ -72,6 +73,7 @@ end type
         ( @"UNTIL"      , FB_TK_UNTIL       , FB_TKCLASS_KEYWORD ), _
         ( @"WEND"       , FB_TK_WEND        , FB_TKCLASS_KEYWORD ), _
         ( @"CONTINUE"   , FB_TK_CONTINUE    , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+        ( @"CBOOL"      , FB_TK_CBOOL       , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"CBYTE"      , FB_TK_CBYTE       , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"CSHORT"     , FB_TK_CSHORT      , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"CINT"       , FB_TK_CINT        , FB_TKCLASS_KEYWORD ), _

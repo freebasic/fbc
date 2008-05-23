@@ -51,9 +51,11 @@ declare function hGetDataType _
 '' globals
 	dim shared ctx as EDBGCTX
 
+	'' same order as FB_DATATYPE
 	dim shared remapTB(0 to FB_DATATYPES-1) as integer = _
 	{ _
 		 7, _									'' void
+		15, _                                   '' boolean byte
 		 2, _                                   '' byte
 		 3, _                                   '' ubyte
 		 4, _                                   '' char
@@ -62,6 +64,7 @@ declare function hGetDataType _
 		 6, _                                   '' wchar
 		 1, _                                   '' int
 		 8, _                                   '' uint
+		16, _                                   '' boolean integer
 		 1, _                                   '' enum
 		 8, _                                   '' bitfield
 		 1, _                                   '' long
@@ -71,10 +74,10 @@ declare function hGetDataType _
 		11, _                                   '' single
 		12, _                                   '' double
 		13, _                                   '' string
-		14  _                                   '' fix-len string
+		14 _                                    '' fix-len string
 	}
 
-	dim shared stabsTB(0 to 15) as zstring ptr = _
+	dim shared stabsTB(0 to 17) as zstring ptr = _
 	{ _
 		@"integer:t1=-1", _
 		@"void:t7=-11", _
@@ -91,6 +94,8 @@ declare function hGetDataType _
 		@"string:t13=s12data:15,0,32;len:1,32,32;size:1,64,32;;", _
 		@"fixstr:t14=-2", _
 		@"pchar:t15=*4;", _
+		@"bool8:t16=@s8;-16", _
+		@"bool32:t17=@s32;-16", _
 		NULL _
 	}
 

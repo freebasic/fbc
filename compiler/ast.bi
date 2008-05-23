@@ -847,12 +847,17 @@ declare function astOptimizeTree _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare sub astUpdateBitfieldAccess _
+declare sub astUpdateFieldAccess _
 	( _
 		byref n as ASTNODE ptr _
 	)
 
-declare sub astUpdateBitfieldAssignment _
+declare function astFieldUpdate _
+	( _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare sub astUpdateFieldAssignment _
 	( _
 		byref l as ASTNODE ptr, _
 		byref r as ASTNODE ptr _
@@ -1461,9 +1466,9 @@ extern ast as ASTCTX
 
 extern ast_bitmaskTB( 0 to 32 ) as uinteger
 
-extern ast_maxlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as ulongint
+extern ast_maxlimitTB( FB_DATATYPE_LOW_INDEX to FB_DATATYPE_UPP_INDEX ) as ulongint
 
-extern ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as longint
+extern ast_minlimitTB( FB_DATATYPE_LOW_INDEX to FB_DATATYPE_UPP_INDEX ) as longint
 
 extern ast_classTB( 0 to AST_CLASSES-1 ) as AST_CLASSINFO
 

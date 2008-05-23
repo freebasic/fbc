@@ -24,6 +24,9 @@ function cTypeConvExpr _
 	op = INVALID
 
 	select case as const tk
+	case FB_TK_CBOOL
+		dtype = FB_DATATYPE_BOOL32
+
 	case FB_TK_CBYTE
 		dtype = FB_DATATYPE_BYTE
 
@@ -89,6 +92,24 @@ function cTypeConvExpr _
 			return NULL
 		else
 			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
+	end if
+
+	if( dtype = FB_DATATYPE_BOOL32 ) then
+		'' always use 1 byte booleans?
+		if( 0 <> ( fbGetOption( FB_COMPOPT_EXTRAOPT ) and FB_EXTRAOPT_BYTE_BOOL ) ) then
+			dtype = FB_DATATYPE_BOOL8
+
+		'' always use 4 byte booleans?
+		elseif( 0 <> ( fbGetOption( FB_COMPOPT_EXTRAOPT ) and FB_EXTRAOPT_INTEGER_BOOL ) ) then
+			dtype = FB_DATATYPE_BOOL32
+
+		else
+			'' if expression is 8-bit, use same size boolean
+			select case typeGetDtAndPtrOnly( astGetFullType( expr ) )
+			case FB_DATATYPE_BOOL8, FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
+				dtype = FB_DATATYPE_BOOL8
+			end select
 		end if
 	end if
 

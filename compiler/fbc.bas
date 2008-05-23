@@ -1850,6 +1850,12 @@ private function processOptions _
 				select case lcase( *nxt )
 				case "gosub-setjmp"
 					value or= FB_EXTRAOPT_GOSUB_SETJMP
+				case "byte-bool"
+					value or= FB_EXTRAOPT_BYTE_BOOL
+				case "integer-bool"
+					value or= FB_EXTRAOPT_INTEGER_BOOL
+				case "fast-bool"
+					value or= FB_EXTRAOPT_FAST_BOOL
 				case else
 					printInvalidOpt( arg )
 					exit function

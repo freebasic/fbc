@@ -285,7 +285,10 @@ const FB_DEFAULT_FINDBIN = FB_FINDBIN_ALLOW_ENVVAR or FB_FINDBIN_ALLOW_BINDIR
 enum FB_EXTRAOPT
 	FB_EXTRAOPT_NONE              = &h00000000
 
-	FB_EXTRAOPT_GOSUB_SETJMP = &h00000001
+	FB_EXTRAOPT_GOSUB_SETJMP  = &h00000001
+	FB_EXTRAOPT_BYTE_BOOL     = &h00000002
+	FB_EXTRAOPT_INTEGER_BOOL  = &h00000004
+	FB_EXTRAOPT_FAST_BOOL     = &h00000008
 
 	FB_EXTRAOPT_DEFAULT           = FB_EXTRAOPT_NONE
 end enum
@@ -630,5 +633,11 @@ declare function fbGetLangId _
 ''
 '' new implementation
 ''
+
+'' !!!TODO!!! - remove when 0.21.0 or later is released
+#ifndef cbool
+#define cbool(x_) iif((x_),-1,0)
+#endif
+
 
 #endif '' __FB_BI__

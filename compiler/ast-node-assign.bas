@@ -681,7 +681,7 @@ function astLoadASSIGN _
 	end if
 
 	'' handle bitfields..
-	astUpdateBitfieldAssignment( l, r )
+	astUpdateFieldAssignment( l, r )
 
 	vs = astLoad( r )
 	vr = astLoad( l )

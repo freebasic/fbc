@@ -17,8 +17,10 @@ declare sub astReplaceSymbolOnCALL _
 	)
 
 '' globals
-	dim shared as longint ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) = _
+	dim shared as longint ast_minlimitTB( FB_DATATYPE_LOW_INDEX to FB_DATATYPE_UPP_INDEX ) = _
 	{ _
+/'		-1LL, _									'' boolean byte
+		-1LL, _									'' boolean integer '/ _
 		-128LL, _								'' byte
 		0LL, _                                  '' ubyte
 		0LL, _                                  '' char
@@ -35,10 +37,12 @@ declare sub astReplaceSymbolOnCALL _
 		0LL _                                   '' ulongint
 	}
 
-	dim shared as ulongint ast_maxlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) = _
+	dim shared as ulongint ast_maxlimitTB( FB_DATATYPE_LOW_INDEX to FB_DATATYPE_UPP_INDEX ) = _
 	{ _
-		127ULL, _                               '' ubyte
-		255ULL, _                               '' byte
+/'		1ULL, _                                 '' boolean byte
+		1ULL _                                  '' boolean integer '/ _
+		127ULL, _                               '' byte
+		255ULL, _                               '' ubyte
 		255ULL, _                               '' char
 		32767ULL, _                             '' short
 		65535ULL, _                             '' ushort
@@ -455,7 +459,9 @@ function astGetValueAsStr _
 	case FB_DATATYPE_DOUBLE
 		function = str( astGetValFloat( n ) )
 
-  	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
+  	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, _
+		 FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+
   		function = str( astGetValInt( n ) )
 
   	case FB_DATATYPE_LONG
@@ -499,7 +505,9 @@ function astGetValueAsWstr _
 	case FB_DATATYPE_DOUBLE
 		res = wstr( astGetValFloat( n ) )
 
-  	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
+  	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, _
+		 FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+
   		res = wstr( astGetValInt( n ) )
 
   	case FB_DATATYPE_LONG
@@ -756,6 +764,8 @@ chk_uint:
 			goto chk_ulong
 		end if
 
+	case FB_DATATYPE_BOOL8
+	case FB_DATATYPE_BOOL32
 	case FB_DATATYPE_BITFIELD
 		'' !!!WRITEME!!! use ->subtype's
 	end select

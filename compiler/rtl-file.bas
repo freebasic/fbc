@@ -2278,6 +2278,14 @@ function rtlFileInputGet _
 		f = PROCLOOKUP( INPUTWSTR )
 		args = 2
 
+	case FB_DATATYPE_BOOL8
+		'' !!!FIXME!!! (BOOL)
+		f = PROCLOOKUP( INPUTBYTE )
+
+	case FB_DATATYPE_BOOL32
+		'' !!!FIXME!!! (BOOL)
+		f = PROCLOOKUP( INPUTINT )
+
 	case FB_DATATYPE_BYTE
 		f = PROCLOOKUP( INPUTBYTE )
 

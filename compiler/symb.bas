@@ -1865,6 +1865,12 @@ function symbCalcLen _
 	case FB_DATATYPE_FWDREF
 		function = 0
 
+	case FB_DATATYPE_BOOL8
+		function = 1
+
+	case FB_DATATYPE_BOOL32
+		function = 4
+
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR
 		function = 1
 

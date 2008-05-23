@@ -633,7 +633,12 @@ private sub _emitConvert _
 
 	select case symb_dtypeTB(typeGet( dtype )).class
 	case FB_DATACLASS_INTEGER
-		_emit( AST_OP_TOINT, v1, v2, NULL )
+		select case typeGet( dtype )
+		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+			_emit( AST_OP_TOBOOL, v1, v2, NULL )
+		case else
+			_emit( AST_OP_TOINT, v1, v2, NULL )
+		end select
 	case FB_DATACLASS_FPOINT
 		_emit( AST_OP_TOFLT, v1, v2, NULL )
 	end select

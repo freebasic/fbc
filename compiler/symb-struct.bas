@@ -189,7 +189,8 @@ function symbCheckBitField _
 	'' not an integer type?
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
-		 FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		 FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+		 FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
 
 		return TRUE
 
@@ -206,17 +207,19 @@ function symbAddField _
 		byval id as zstring ptr, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval dtype as integer, _
+		byval decl_dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as integer, _
 		byval bits as integer _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr sym, tail, base_parent
-    dim as integer pad, updateudt, elen
+    dim as integer pad, updateudt, elen, dtype
     dim as FBHASHTB ptr hashtb
 
     function = NULL
+
+	dtype = decl_dtype
 
     '' calc length if it wasn't given
 	if( lgt <= 0 ) then
@@ -309,7 +312,7 @@ function symbAddField _
 
 	'' bitfield?
 	if( bits > 0 ) then
-		subtype = symbAddBitField( parent->udt.bitpos, bits, dtype, lgt )
+		subtype = symbAddBitField( parent->udt.bitpos, bits, decl_dtype, lgt )
 		dtype = FB_DATATYPE_BITFIELD
 	end if
 

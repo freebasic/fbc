@@ -6,6 +6,7 @@
 
 DIRLIST_FB := \
 pretest \
+boolean \
 comments \
 compound \
 console \

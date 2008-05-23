@@ -166,6 +166,13 @@ function astNewCONST _
 			end if
 		end if
 
+	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		if( v <> NULL ) then
+			n->con.val.int = cbool( v->int )
+		else
+			n->con.val.int = 0
+		end if
+
 	case else
 		if( v <> NULL ) then
 			n->con.val.int = v->int
