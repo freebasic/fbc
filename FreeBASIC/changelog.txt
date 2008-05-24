@@ -1,6 +1,7 @@
 Version 0.20.0 Beta:
 
 [changed]
+- the "-r" compiler switch will now prevent FBC compiling/linking the asm, unless overridden by "-c".  Its old behavior is now given by "-R" (counting_pine)
 - update FreeImage header to v3.10 and .def files for Win32 (cha0s)
 - x11 gfx driver: let the window manager pick the window position (DrV)
 - '&' string concatenation will not pad positive numbers, even in lang qb (counting_pine)
@@ -17,6 +18,7 @@ Version 0.20.0 Beta:
 - fblite, qb: OPTION GOSUB, OPTION NOGOSUB to enable/disable GOSUB support. State can be checked with the intrinsic define __FB_OPTION_GOSUB__ (jeffm)
 - #1899251 (feature request) - RETURN without GOSUB runtime error check for both ASM and setjmp/longjump implementations of GOSUB (jeffm)
 - ANDALSO and ORELSE operators (yetifoot)
+- "-R", "-C" switches, to tell FBC to retain the asm and object files (if written), respectively (counting_pine)
 
 [fixed]
 - wstring VAL*s were accepting invalid characters in hex/oct/bin numbers (counting_pine)

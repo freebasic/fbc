@@ -142,10 +142,12 @@ declare sub getDefaultLibs _
 		( FBC_OPT_ARCH			, @"arch"        ), _
 		( FBC_OPT_DEBUG			, @"g"           ), _
 		( FBC_OPT_COMPILEONLY	, @"c"           ), _
+		( FBC_OPT_EMITONLY		, @"r"           ), _
 		( FBC_OPT_SHAREDLIB		, @"dylib"       ), _
 		( FBC_OPT_SHAREDLIB		, @"dll"         ), _
 		( FBC_OPT_STATICLIB		, @"lib"         ), _
-		( FBC_OPT_PRESERVEFILES	, @"r"           ), _
+		( FBC_OPT_PRESERVEOBJ	, @"C"           ), _
+		( FBC_OPT_PRESERVEASM 	, @"R"           ), _
 		( FBC_OPT_VERBOSE		, @"v"           ), _
 		( FBC_OPT_VERSION		, @"version"     ), _
 		( FBC_OPT_OUTPUTNAME	, @"x"           ), _
@@ -238,52 +240,57 @@ declare sub getDefaultLibs _
     	fbcEnd( 1 )
     end if
 
-    '' assemble
-   	if( assembleFiles( ) = FALSE ) then
-   		delFiles( )
-   		fbcEnd( 1 )
-   	end if
-
-	if( fbc.compileonly ) then
+	if( fbc.emitonly ) then
 
 	else
-		'' set the default lib paths before scanning for other libs
-		setDefaultLibPaths( )
 
-    	'' scan objects and libraries for more libraries and paths
-    	collectObjInfo( )
+		'' assemble
+		if( assembleFiles( ) = FALSE ) then
+			delFiles( )
+			fbcEnd( 1 )
+		end if
 
-    	'' link
-    	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_STATICLIB ) then
-    		if( archiveFiles( ) = FALSE ) then
-    			delFiles( )
-    			fbcEnd( 1 )
-    		end if
+		if( fbc.compileonly ) then
 
-    	else
-			'' only add the default libraries to the LD cmd-line, and not to the
-			'' objects and static libraries, for speed/size reasons
-			getDefaultLibs( )
+		else
+			'' set the default lib paths before scanning for other libs
+			setDefaultLibPaths( )
 
-			'' resource files..
-			if( compileResFiles( ) = FALSE ) then
-				delFiles( )
-				fbcEnd( 1 )
+			'' scan objects and libraries for more libraries and paths
+			collectObjInfo( )
+
+			'' link
+			if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_STATICLIB ) then
+				if( archiveFiles( ) = FALSE ) then
+					delFiles( )
+					fbcEnd( 1 )
+				end if
+
+			else
+				'' only add the default libraries to the LD cmd-line, and not to the
+				'' objects and static libraries, for speed/size reasons
+				getDefaultLibs( )
+
+				'' resource files..
+				if( compileResFiles( ) = FALSE ) then
+					delFiles( )
+					fbcEnd( 1 )
+				end if
+
+				if( linkFiles( ) = FALSE ) then
+					delFiles( )
+					fbcEnd( 1 )
+				end if
 			end if
+		end if
+	end if
 
-    		if( linkFiles( ) = FALSE ) then
-    			delFiles( )
-    			fbcEnd( 1 )
-    		end if
-    	end if
-    end if
+	'' del temps
+	if( delFiles( ) = FALSE ) then
+		fbcEnd( 1 )
+	end if
 
-    '' del temps
-    if( delFiles( ) = FALSE ) then
-    	fbcEnd( 1 )
-    end if
-
-    fbcEnd( 0 )
+	fbcEnd( 0 )
 
 runtime_err:
 #ifdef erfn
@@ -774,8 +781,10 @@ private function delFiles as integer
 			safeKill( iof->asmf )
 		end if
 
-		if( fbc.compileonly = FALSE ) then
-			safeKill( iof->outf )
+		if( fbc.emitonly = FALSE ) then
+			if( fbc.preserveobj = FALSE ) then
+				safeKill( iof->outf )
+			end if
 		end if
 
     	iof = listGetNext( iof )
@@ -943,8 +952,10 @@ private sub setDefaultOptions( )
 
 	fbSetDefaultOptions( )
 
+	fbc.emitonly    = FALSE
 	fbc.compileonly = FALSE
 	fbc.preserveasm	= FALSE
+	fbc.preserveobj	= FALSE
 	fbc.verbose     = FALSE
 	fbc.stacksize	= FBC_DEFSTACKSIZE
 
@@ -1241,15 +1252,27 @@ private function processOptions _
 			case FBC_OPT_COMPILEONLY
 				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
 				fbc.compileonly = TRUE
+				fbc.emitonly = FALSE
+				fbc.preserveobj = TRUE
+
+			case FBC_OPT_EMITONLY
+				if( fbc.compileonly = FALSE )then
+					fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
+					fbc.emitonly = TRUE
+				end if
+				fbc.preserveasm = TRUE
+
+			case FBC_OPT_PRESERVEOBJ
+				fbc.preserveobj = TRUE
+
+			case FBC_OPT_PRESERVEASM
+				fbc.preserveasm = TRUE
 
 			case FBC_OPT_SHAREDLIB
 				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_DYNAMICLIB )
 
 			case FBC_OPT_STATICLIB
 				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_STATICLIB )
-
-			case FBC_OPT_PRESERVEFILES
-				fbc.preserveasm = TRUE
 
 			case FBC_OPT_VERBOSE
 				fbc.verbose = TRUE
@@ -1789,6 +1812,7 @@ private sub printOptions( )
 	printOption( "-arch <type>", "Set target architecture (default: 486)" )
 	printOption( "-b <name>", "Add a source file to compilation" )
 	printOption( "-c", "Compile only, do not link" )
+	printOption( "-C", "Do not delete the object file(s)" )
 	printOption( "-d <name=val>", "Add a preprocessor's define" )
 	select case fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD
@@ -1821,7 +1845,8 @@ private sub printOptions( )
 	printOption( "-p <name>", "Add a path to search for libraries" )
 	print "-prefix <path>"; " Set the compiler prefix path"
 	printOption( "-profile", "Enable function profiling" )
-	printOption( "-r", "Do not delete the asm file(s)" )
+	printOption( "-r", "Write asm only, do not compile" )
+	printOption( "-R", "Do not delete the asm file(s)" )
 	select case fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 		printOption( "-s <name>", "Set subsystem (gui, console)" )

@@ -45,9 +45,11 @@ enum FBC_OPT
 	FBC_OPT_ARCH
 	FBC_OPT_DEBUG
 	FBC_OPT_COMPILEONLY
+	FBC_OPT_EMITONLY
 	FBC_OPT_SHAREDLIB
 	FBC_OPT_STATICLIB
-	FBC_OPT_PRESERVEFILES
+	FBC_OPT_PRESERVEOBJ
+	FBC_OPT_PRESERVEASM
 	FBC_OPT_VERBOSE
 	FBC_OPT_VERSION
 	FBC_OPT_OUTPUTNAME
@@ -133,8 +135,10 @@ end type
 type FBCCTX
 	arglist				as TLIST					'' of string ptr
 
+	emitonly			as integer
 	compileonly			as integer
 	preserveasm			as integer
+	preserveobj			as integer
 	verbose				as integer
 	stacksize			as integer
 	showversion			as integer
