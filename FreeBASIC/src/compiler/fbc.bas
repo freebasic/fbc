@@ -1806,6 +1806,9 @@ private sub printOptions( )
 	end select
 
 	print
+	print "invoke as 'fbc -target PLATFORM' alone to show options for cross compilation to that platform"
+
+	print
 	print "options:"
 
 	printOption( "-a <name>", "Add an object file to linker's list" )
