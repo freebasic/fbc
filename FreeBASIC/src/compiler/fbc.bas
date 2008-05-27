@@ -1805,8 +1805,17 @@ private sub printOptions( )
 		printOption( "", "*.xpm = icon resource" )
 	end select
 
+#if defined(CROSSCOMP_WIN32) or _
+	defined(CROSSCOMP_CYGWIN) or _
+	defined(CROSSCOMP_DOS) or _
+	defined(CROSSCOMP_LINUX) or _
+	defined(CROSSCOMP_XBOX) or _
+	defined(CROSSCOMP_FREEBSD)
+
 	print
 	print "invoke as 'fbc -target PLATFORM' alone to show options for cross compilation to that platform"
+
+#endif
 
 	print
 	print "options:"
