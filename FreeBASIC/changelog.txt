@@ -43,6 +43,7 @@ Version 0.20.0 Beta:
 - #1914051 - !"\x..", !"\X.." escape sequences weren't working properly (counting_pine)
 - #1961732 - LSET wasn't accepting dereferenced vars for the destination (counting_pine)
 - RSET was allowing constants to be modified (counting_pine)
+- CPTR() will generate a warning if casting to anything but pointer, integer, or enum and will generate a pedantic warning when casting to anything but pointer (jeffm)
 
 
 Version 0.18.5 Beta:

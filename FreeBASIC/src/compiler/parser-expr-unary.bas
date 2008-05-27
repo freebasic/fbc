@@ -341,7 +341,27 @@ private function hCast _
 			end if
             subtype = NULL
 		end if
+
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, _
+		 FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+		 FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
+		 FB_DATATYPE_ENUM
+
+		if( ptronly) then
+			if( fbPdCheckIsSet( FB_PDCHECK_CASTTONONPTR ) ) then
+				errReportWarn( FB_WARNINGMSG_CASTTONONPTR )
+			end if
+		end if
+
+	case FB_DATATYPE_POINTER
+
+	case else
+		if( ptronly) then
+			errReportWarn( FB_WARNINGMSG_CASTTONONPTR )
+		end if
+
 	end select
+
 
 	if( typeIsPtr( dtype ) ) then
 		ptronly = TRUE
