@@ -301,6 +301,7 @@ FBCALL int          fb_FileLineInput    ( int fnum, void *dst, int dst_len, int 
 FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
 
        int          fb_FileInputNextToken  ( char *buffer, int maxlen, int isstring, int *isfp );
+       void         fb_FileInputNextTokenWstr  ( FB_WCHAR *buffer, int max_chars, int is_string );
 
 
  /* Maximum length that can safely be parsed as INTEGER */
