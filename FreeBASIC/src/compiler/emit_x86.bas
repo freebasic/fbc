@@ -1809,7 +1809,7 @@ end sub
 
 '':::::
 private sub _emitSTORF2L _
-	( 
+	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
@@ -6366,10 +6366,10 @@ private sub _emitNEGF_SSE _
 	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
-			outp "fstp qword ptr [esp]
+			outp "fstp qword ptr [esp]"
 			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
-			outp "fstp dword ptr [esp]
+			outp "fstp dword ptr [esp]"
 			outp "movlpd " + dst + COMMA + "dword ptr [esp]"
 		end if
 		outp "add esp" + COMMA + str( ddsize )
@@ -6542,10 +6542,10 @@ private sub _emitABSF_SSE _
 	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
-			outp "fstp qword ptr [esp]
+			outp "fstp qword ptr [esp]"
 			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
-			outp "fstp dword ptr [esp]
+			outp "fstp dword ptr [esp]"
 			outp "movss " + dst + COMMA + "dword ptr [esp]"
 		end if
 		outp "add esp" + COMMA + str( ddsize )
@@ -6657,10 +6657,10 @@ private sub _emitSGNF_SSE _
 	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
-			outp "fstp qword ptr [esp]
+			outp "fstp qword ptr [esp]"
 			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
-			outp "fstp dword ptr [esp]
+			outp "fstp dword ptr [esp]"
 			outp "movlpd " + dst + COMMA + "dword ptr [esp]"
 		end if
 		outp "add esp" + COMMA + str( ddsize )
