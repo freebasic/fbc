@@ -7,9 +7,8 @@
 '' --------
 
 'Double a number
-Dim i As Integer
-
-For i = 1 To 10
-	Print 1 Shl i
+For i As Integer = 0 To 10
+	
+	Print 5 Shl i, Bin(5 Shl i, 16)
+	
 Next i
-Sleep

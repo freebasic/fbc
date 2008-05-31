@@ -6,10 +6,9 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpShiftRight
 '' --------
 
-'Half a number
-Dim i As Integer
-
-For i = 1 To 10
-	Print 1000 Shr i
+'Halve a number
+For i As Integer = 0 To 10
+	
+	Print 1000 Shr i, Bin(1000 Shr i, 16)
+	
 Next i
-Sleep
