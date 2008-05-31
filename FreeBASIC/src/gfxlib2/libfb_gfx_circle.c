@@ -144,7 +144,7 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 	fb_hTranslateCoord(context, fx, fy, &x, &y);
 	
 	if (aspect == 0.0)
-		aspect = (4.0 / 3.0) * ((float)__fb_gfx->h / (float)__fb_gfx->w);
+		aspect = __fb_gfx->aspect;
 
 	if (aspect > 1.0) {
 		a = (radius / aspect);

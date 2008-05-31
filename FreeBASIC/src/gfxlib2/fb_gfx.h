@@ -331,6 +331,7 @@ typedef struct FBGFX
     int cursor_x, cursor_y;					/**< Current graphical text cursor position (in chars, 0 based) */
     const struct FONT *font;				/**< Current font */
     int text_w, text_h;						/**< Graphical text console size in characters */
+    float aspect;							/**< Aspect ratio (used in CIRCLE) */
     char *key;								/**< Keyboard states */
 	int refresh_rate;						/**< Driver refresh rate */
 	GFX_CHAR_CELL **con_pages;				/**< Character information for all pages */
