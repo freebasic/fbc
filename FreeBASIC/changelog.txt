@@ -21,6 +21,10 @@ Version 0.20.0 Beta:
 - #1899251 (feature request) - RETURN without GOSUB runtime error check for both ASM and setjmp/longjump implementations of GOSUB (jeffm)
 - ANDALSO and ORELSE operators (yetifoot)
 - "-R", "-C" switches, to tell FBC to retain the asm and object files (if written), respectively (counting_pine)
+- SSE/SSE2 instructions in x86 emitter for floating point math (Bryan Stoeberl)
+- "-fpu FPU|SSE" command line switch (Bryan Stoeberl)
+- OPTION("FPU|SSE") to specify proc return method (Bryan Stoeberl)
+- CPU check for SSE applications (Bryan Stoeberl)
 
 [fixed]
 - wstring VAL*s were accepting invalid characters in hex/oct/bin numbers (counting_pine)
