@@ -493,6 +493,7 @@ examples/manual/operator/address-var.bas
 examples/manual/operator/and-assign.bas
 examples/manual/operator/and-bitwise.bas
 examples/manual/operator/and-logical.bas
+examples/manual/operator/andalso.bas
 examples/manual/operator/arrayindex.bas
 examples/manual/operator/assign-let.bas
 examples/manual/operator/assign.bas
@@ -532,6 +533,7 @@ examples/manual/operator/not-logical.bas
 examples/manual/operator/or-assign.bas
 examples/manual/operator/or-bitwise.bas
 examples/manual/operator/or-logical.bas
+examples/manual/operator/orelse.bas
 examples/manual/operator/placement_new.bas
 examples/manual/operator/pointer-index.bas
 examples/manual/operator/procptr.bas

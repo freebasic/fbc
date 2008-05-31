@@ -93,6 +93,7 @@ tests/expressions/iif.bas
 tests/expressions/iif2.bas
 tests/expressions/mult-assign.bas
 tests/expressions/op-self-func.bas
+tests/expressions/shortcutops.bas
 tests/fbcu/Makefile
 tests/fbcu/fake/fbcu.bi
 tests/fbcu/include/fbcu-common.bi
@@ -230,6 +231,8 @@ tests/overload/const_enum.bas
 tests/overload/defaults.bas
 tests/overload/funptr.bas
 tests/overload/hex_oct_bin.bas
+tests/overload/implicit_ctor.bas
+tests/overload/implicit_ctor2.bas
 tests/overload/integer_width.bas
 tests/overload/op_addrof.bas
 tests/overload/op_cast_coercion.bas
@@ -244,6 +247,7 @@ tests/overload/op_missing_parent.bas
 tests/overload/op_new_delete.bas
 tests/overload/op_to_ptr.bas
 tests/overload/op_to_self.bas
+tests/overload/overruled_ctor.bas
 tests/overload/simple.bas
 tests/overload/strings.bas
 tests/overload/strings_ptr.bas
