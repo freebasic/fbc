@@ -26,6 +26,7 @@ Alias
 Allocate
 Alpha
 And
+AndAlso
 Any
 Append
 As
@@ -288,6 +289,7 @@ Option NoKeyword
 Option Private
 Option Static
 Or
+OrElse
 Out
 Output
 Overload
@@ -474,6 +476,7 @@ __FB_OUT_EXE__
 __FB_OUT_LIB__
 __FB_OUT_OBJ__
 __FB_SIGNATURE__
+__FB_SSE__
 __FB_VERSION__
 __FB_VER_MAJOR__
 __FB_VER_MINOR__
