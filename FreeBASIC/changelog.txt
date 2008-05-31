@@ -10,6 +10,7 @@ Version 0.20.0 Beta:
 - CVD / CVS may no longer be constant, since binary equivalence cannot be guaranteed at compile-time (counting_pine)
 - binary operator overload resolution logic: Now an operator is only eligible if at least one side of the expression matches the candidate's parameter list exactly, without implicit coercion/casting. (cha0s)
 - the default aspect ratio for CIRCLE is now 1.0 in SCREENRES modes (counting_pine)
+- CIRCLE should get its size from just the horizontal scale of the WINDOW/VIEW viewport - its ratio should be unaffected (counting_pine)
 
 [added]
 - IMAGEINFO function, for retrieving useful information about FB gfx buffers (counting_pine)
