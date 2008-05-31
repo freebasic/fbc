@@ -74,6 +74,9 @@ endif
 ifdef ARCH
 	FBC_CFLAGS += -arch $(ARCH)
 endif
+ifneq ($(FPU),)
+	FBC_CFLAGS += -fpu $(FPU)
+endif
 
 FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_DIR) -x $(MAINEXE)
 ifdef DEBUG
@@ -97,7 +100,7 @@ all : make_fbcu $(CUNIT_TESTS_INC) build_tests run_tests
 
 .PHONY: make_fbcu $(FBCU_BIN)
 make_fbcu : $(FBCU_BIN)
-	cd $(FBCU_DIR) && make 
+	cd $(FBCU_DIR) && make FPU=$(FPU)
 
 # ------------------------------------------------------------------------
 # Auto-generate the file CUNIT_TESTS_INC - needed by this makefile
