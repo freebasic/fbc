@@ -432,6 +432,8 @@ private sub hSetupVar _
 
 	s->var_.initree = NULL
 
+	s->var_.align = 0	'' default alignment
+
 	s->var_.stmtnum = parser.stmt.cnt
 
 end sub
