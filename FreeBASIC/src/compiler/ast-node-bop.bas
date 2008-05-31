@@ -1233,8 +1233,14 @@ function astNewBOP _
 			'' as types are different, if class is fp,
 			'' the result type will be always a double
 			if( ldclass = FB_DATACLASS_FPOINT ) then
-				dtype   = typeJoin( dtype, FB_DATATYPE_DOUBLE )
-				subtype = NULL
+
+				if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
+					dtype   = ldtype
+					subtype = l->subtype
+				else
+					dtype   = typeJoin( dtype, FB_DATATYPE_DOUBLE )
+					subtype = NULL
+				end if					
 			else
 
 				'' an ENUM or POINTER always has the precedence

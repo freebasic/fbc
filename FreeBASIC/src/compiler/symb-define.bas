@@ -311,6 +311,12 @@ sub symbDefineInit _
 		symbAddDefine( "__FB_MAIN__", NULL, 0 )
 	end if
 
+
+	'' add SSE define
+	if( env.clopt.fputype >= FB_FPUTYPE_SSE ) then
+		symbAddDefine( "__FB_SSE__", NULL, 0 )
+	end if
+
 	'' macro params
 	symb.def.param = 0
 

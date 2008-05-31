@@ -49,6 +49,12 @@ enum IR_SECTION
     IR_SECTION_INFO
 end enum
 
+enum IR_REGFAMILY
+	IR_REG_FPU_STACK
+	IR_REG_SSE
+end enum
+	
+
 ''
 type IRVREG_ as IRVREG
 type IRTAC_ as IRTAC
@@ -85,6 +91,8 @@ type IRVREG
 	subtype		as FBSYMBOL ptr
 
 	reg			as integer						'' reg
+	regFamily		as IR_REGFAMILY
+
 	value		as FBVALUE						'' imm value (hi-word of longint's at vaux->value)
 
 	sym			as FBSYMBOL ptr					'' symbol

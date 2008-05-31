@@ -83,10 +83,15 @@ private function hCheckPrototype _
 
 	'' and sub type
 	if( symbGetSubtype( proto ) <> proc_subtype ) then
-       	errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
-       	'' no error recovery: ditto
-       	exit function
-    end if
+		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+		'' no error recovery: ditto
+		exit function
+	end if
+
+	'' check return method
+	if( proto->proc.returnMethod <> proc->proc.returnMethod ) then
+		errReportWarn( FB_WARNINGMSG_RETURNMETHODMISMATCH )
+	end if
 
 	'' check each arg
 	for i = 1 to params
@@ -394,6 +399,43 @@ private function hParseAttributes _
 
 end function
 
+
+'':::::
+function cProcReturnMethod _
+	( _
+		byval dtype as FB_DATATYPE _
+	) as FB_PROC_RETURN_METHOD
+
+	'' (OPTION(LIT_STRING))?
+
+	dim as string returnMethod
+
+	function = FB_RETURN_FPU
+
+	'' not allowed for non floating-point types
+	if( symbGetDataClass( dtype ) <> FB_DATACLASS_FPOINT ) then exit function
+
+	if( lexGetToken( ) = FB_TK_OPTION ) then
+		lexSkipToken( )
+		hMatchLPRNT( )
+		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			end if
+		else
+			returnMethod = trim( ucase( *lexGetText( ) ) )
+			if( returnMethod = "SSE" ) then
+				function = FB_RETURN_SSE
+			elseif( returnMethod = "FPU" ) then
+				function = FB_RETURN_FPU
+			end if
+			lexSkipToken
+		end if
+		hMatchRPRNT( )
+	end if
+end function
+
+
 '':::::
 function cProcCallingConv _
 	( _
@@ -658,12 +700,13 @@ function cProcHeader _
     			dtype = FB_DATATYPE_INTEGER
     			subtype = NULL
     		end if
-
     	else
     		if( hCheckRetType( dtype, subtype ) = FALSE ) then
     			exit function
     		end if
     	end if
+
+	proc->proc.returnMethod = cProcReturnMethod( dtype )
 
 	case else
         if( (options and FB_PROCOPT_ISSUB) = 0 ) then
@@ -1520,6 +1563,9 @@ function cOperatorHeader _
     				exit function
     			end if
     		end if
+
+	proc->proc.returnMethod = cProcReturnMethod( dtype )
+
     	end if
     end if
 
@@ -1951,6 +1997,8 @@ function cPropertyHeader _
     	end if
 
     	is_get = TRUE
+
+	proc->proc.returnMethod = cProcReturnMethod( dtype )
 
 	else
 		is_get = FALSE

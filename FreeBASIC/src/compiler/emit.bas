@@ -394,6 +394,8 @@ private function hNewVR _
 	n->mult = v->mult
 	n->value = v->value
 
+	n->regFamily = v->regFamily
+
 	if( v->typ = IR_VREGTYPE_REG ) then
 		dclass = symbGetDataClass( v->dtype )
 		n->reg = emit.regTB(dclass)->getRealReg( emit.regTB(dclass), v->reg )

@@ -137,6 +137,8 @@ function cSymbolTypeFuncPtr _
 				end if
 			end select
 
+			proc->proc.returnMethod = cProcReturnMethod( dtype )
+
 		end if
 
 	else

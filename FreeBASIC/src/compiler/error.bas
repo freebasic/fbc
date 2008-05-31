@@ -63,7 +63,8 @@ end type
 		( 2, @"Array too large for stack, consider making it var-len or SHARED" ), _
 		( 0, @"Overflow in constant conversion" ), _
 		( 0, @"Variable following NEXT is meaningless" ), _
-		( 0, @"Cast to non-pointer" ) _
+		( 0, @"Cast to non-pointer" ), _
+		( 0, @"Return method mismatch" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _

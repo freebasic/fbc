@@ -140,6 +140,7 @@ declare sub getDefaultLibs _
 		( FBC_OPT_UNDERSCORE	, @"underscore"  ), _
 		( FBC_OPT_SHOWSUSPERR	, @"showsusperr" ), _
 		( FBC_OPT_ARCH			, @"arch"        ), _
+		( FBC_OPT_FPU			, @"fpu"         ), _
 		( FBC_OPT_DEBUG			, @"g"           ), _
 		( FBC_OPT_COMPILEONLY	, @"c"           ), _
 		( FBC_OPT_EMITONLY		, @"r"           ), _
@@ -1243,6 +1244,26 @@ private function processOptions _
 				end select
 
 				fbSetOption( FB_COMPOPT_CPUTYPE, value )
+
+				del_cnt += 1
+
+			case FBC_OPT_FPU
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				select case ucase( *nxt )
+				case "FPU"
+					value = FB_FPUTYPE_FPU
+				case "SSE"
+					value = FB_FPUTYPE_SSE
+				case else
+					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
+					exit function
+				end select
+
+				fbSetOption( FB_COMPOPT_FPUTYPE, value )
 
 				del_cnt += 1
 

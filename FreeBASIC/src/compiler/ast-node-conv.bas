@@ -481,6 +481,14 @@ function astNewCONV _
 		end if
 	end if
 
+	if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
+		if (ldclass = FB_DATACLASS_FPOINT) and ( symbGetDataClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
+			if( symbGetDataSize( ldtype ) <> symbGetDataSize( to_dtype ) ) then
+				doConv = TRUE
+			end if
+		end if
+	end if
+
 	'' casting another cast?
 	if( l->class = AST_NODECLASS_CONV ) then
 		'' no conversion in both?

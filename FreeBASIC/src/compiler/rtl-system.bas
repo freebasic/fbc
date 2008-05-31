@@ -623,14 +623,40 @@ function rtlCpuCheck( ) as integer static
 			  astNewVAR( s, 0, FB_DATATYPE_CHAR ) )
 
 	'' end 1
-    proc = astNewCALL( PROCLOOKUP( END ), NULL )
-    if( astNewARG( proc, astNewCONSTi( 1, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    	exit function
-    end if
-    astAdd( proc )
+	proc = astNewCALL( PROCLOOKUP( END ), NULL )
+	if( astNewARG( proc, astNewCONSTi( 1, FB_DATATYPE_INTEGER ) ) = NULL ) then
+		exit function
+	end if
+	astAdd( proc )
 
 	'' end if
 	astAdd( astNewLABEL( label ) )
+
+	if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
+		proc = astNewCALL( PROCLOOKUP( CPUDETECT ), NULL )
+
+		'' cpu = fb_CpuDetect And &h6000000
+		cpu = astNewBOP( AST_OP_AND, proc, astNewCONSTi( &h6000000, FB_DATATYPE_UINT ) )
+
+		'' if( fpu <> &h6000000 ) then
+		label = symbAddLabel( NULL )
+		astAdd( astNewBOP( AST_OP_EQ, _
+						   cpu, _
+						   astNewCONSTi( &h6000000, FB_DATATYPE_UINT ), _
+						   label, _
+						   AST_OPOPT_NONE ) )
+
+		'' print "This program requires SSE and SSE2 instructions to run."
+		s = symbAllocStrConst( "This program requires SSE and SSE2 instructions to run.", -1 )
+		rtlPrint( astNewCONSTi( 0, FB_DATATYPE_INTEGER ), _
+					  FALSE, _
+					  FALSE, _
+					astNewVAR( s, 0, FB_DATATYPE_CHAR ) )
+
+
+		'' end if
+		astAdd( astNewLABEL( label ) )
+	end if
 
 	function = TRUE
 

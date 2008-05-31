@@ -532,6 +532,12 @@ type FB_PROCRTL
 	callback		as FBRTLCALLBACK
 end type
 
+enum FB_PROC_RETURN_METHOD
+	FB_RETURN_FPU
+	FB_RETURN_SSE
+end enum
+
+
 type FBS_PROC
 	symtb			as FBSYMBOLTB				'' local symbols table
 	params			as short
@@ -541,6 +547,7 @@ type FBS_PROC
 	real_dtype		as FB_DATATYPE				'' used with STRING and UDT functions
 	lib				as FBS_LIB ptr
 	lgt				as integer					'' parameters length (in bytes)
+	returnMethod		as FB_PROC_RETURN_METHOD
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
 	ext				as FB_PROCEXT ptr           '' extra fields, not used with prototypes
@@ -588,6 +595,9 @@ type FBS_VAR
 	array			as FBS_ARRAY
 	desc			as FBVAR_DESC
 	stmtnum			as integer					'' can't use colnum as it's unreliable
+
+	align			as integer					'' 0 = use default alignment
+
 end type
 
 '' namespace
@@ -1406,6 +1416,20 @@ declare function symbAllocFloatConst _
 		byval value as double, _
 		byval dtype as integer _
 	) as FBSYMBOL ptr
+
+
+declare function symbAllocIntConst _
+	( _
+		byval value as integer, _
+		byval dtype as integer _
+	) as FBSYMBOL ptr
+
+declare function symbAllocLongIntConst _
+	( _
+		byval value as longint, _
+		byval dtype as integer _
+	) as FBSYMBOL ptr
+
 
 declare function symbAllocStrConst _
 	( _

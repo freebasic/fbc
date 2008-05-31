@@ -595,6 +595,10 @@ private function hSetupProc _
 
     function = NULL
 
+#if _SSE
+	'dim as integer returnMethod = sym->proc.returnMethod
+#endif
+
 	attrib or= FB_SYMBATTRIB_SHARED
 
 	''
@@ -872,6 +876,10 @@ add_proc:
 	end if
 
 	proc->stats or= stats
+#if _SSE
+	'proc->proc.returnMethod = returnMethod
+#endif
+
 
 	function = proc
 
@@ -1081,6 +1089,8 @@ function symbPreAddProc _
 	proc->proc.ext = NULL
 	proc->attrib = 0
 	proc->stats = 0
+
+	proc->proc.returnMethod = FB_RETURN_FPU
 
     '' to allow getNamespace() and GetParent() to work
     proc->symtb = @symbGetCompSymbTb( symbGetCurrentNamespc( ) )

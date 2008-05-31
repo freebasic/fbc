@@ -833,6 +833,11 @@ declare function cAsmBlock _
 		_
 	) as integer
 
+declare function cProcReturnMethod _
+	( _
+		byval dtype as FB_DATATYPE _
+	) as FB_PROC_RETURN_METHOD
+
 declare function cProcCallingConv _
 	( _
 		byval default as FB_FUNCMODE = FB_FUNCMODE_DEFAULT _

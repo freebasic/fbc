@@ -185,6 +185,9 @@ private function hCallProc _
 		vreg = NULL
 		if( dtype <> FB_DATATYPE_VOID ) then
 			vreg = irAllocVREG( dtype, subtype )
+			if( sym->proc.returnMethod = FB_RETURN_FPU ) then
+				vreg->regFamily = IR_REG_FPU_STACK
+			end if
 		end if
 	end if
 
