@@ -19,8 +19,7 @@ declare sub astReplaceSymbolOnCALL _
 '' globals
 	dim shared as longint ast_minlimitTB( FB_DATATYPE_LOW_INDEX to FB_DATATYPE_UPP_INDEX ) = _
 	{ _
-/'		-1LL, _									'' boolean byte
-		-1LL, _									'' boolean integer '/ _
+		-1LL, _									'' boolean byte
 		-128LL, _								'' byte
 		0LL, _                                  '' ubyte
 		0LL, _                                  '' char
@@ -29,6 +28,7 @@ declare sub astReplaceSymbolOnCALL _
 		0LL, _                                  '' wchar
 		-2147483648LL, _                        '' int
 		0LL, _                                  '' uint
+		-1LL, _									'' boolean integer
 		-2147483648LL, _                        '' enum
 		0LL, _                                  '' bitfield
 		-2147483648LL, _                        '' long
@@ -39,8 +39,7 @@ declare sub astReplaceSymbolOnCALL _
 
 	dim shared as ulongint ast_maxlimitTB( FB_DATATYPE_LOW_INDEX to FB_DATATYPE_UPP_INDEX ) = _
 	{ _
-/'		1ULL, _                                 '' boolean byte
-		1ULL _                                  '' boolean integer '/ _
+		1ULL, _                                 '' boolean byte
 		127ULL, _                               '' byte
 		255ULL, _                               '' ubyte
 		255ULL, _                               '' char
@@ -49,6 +48,7 @@ declare sub astReplaceSymbolOnCALL _
 		65535ULL, _                             '' wchar
 		2147483647ULL, _                        '' int
 		4294967295ULL, _                        '' uint
+		1ULL, _                                  '' boolean integer
 		2147483647ULL, _                        '' enum
 		4294967295ULL, _                        '' bitfield
 		2147483647ULL, _                        '' long
