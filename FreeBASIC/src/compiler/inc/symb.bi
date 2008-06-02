@@ -535,6 +535,7 @@ end type
 enum FB_PROC_RETURN_METHOD
 	FB_RETURN_FPU
 	FB_RETURN_SSE
+	FB_RETURN_DEFAULT			'' if none specified, take from the proto
 end enum
 
 

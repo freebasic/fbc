@@ -89,8 +89,9 @@ private function hCheckPrototype _
 	end if
 
 	'' check return method
-	if( proto->proc.returnMethod <> proc->proc.returnMethod ) then
-		errReportWarn( FB_WARNINGMSG_RETURNMETHODMISMATCH )
+	if( proc->proc.returnMethod <> FB_RETURN_DEFAULT) and _
+		( proto->proc.returnMethod <> proc->proc.returnMethod ) then
+			errReportWarn( FB_WARNINGMSG_RETURNMETHODMISMATCH )
 	end if
 
 	'' check each arg
@@ -410,7 +411,7 @@ function cProcReturnMethod _
 
 	dim as string returnMethod
 
-	function = FB_RETURN_FPU
+	function = FB_RETURN_DEFAULT
 
 	'' not allowed for non floating-point types
 	if( symbGetDataClass( dtype ) <> FB_DATACLASS_FPOINT ) then exit function

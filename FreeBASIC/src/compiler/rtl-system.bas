@@ -652,6 +652,12 @@ function rtlCpuCheck( ) as integer static
 					  FALSE, _
 					  FALSE, _
 					astNewVAR( s, 0, FB_DATATYPE_CHAR ) )
+		'' end 1
+		proc = astNewCALL( PROCLOOKUP( END ), NULL )
+		if( astNewARG( proc, astNewCONSTi( 1, FB_DATATYPE_INTEGER ) ) = NULL ) then
+			exit function
+		end if
+		astAdd( proc )
 
 
 		'' end if

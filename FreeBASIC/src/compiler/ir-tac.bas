@@ -2279,7 +2279,7 @@ private sub hFlushLOAD _
 			vr->typ = IR_VREGTYPE_REG
 
 			'' decide where to put the float (st(0) or xmm0) at the end of the function
-			if( ast.proc.curr->sym->proc.returnMethod = FB_RETURN_FPU ) then
+			if( ast.proc.curr->sym->proc.returnMethod <> FB_RETURN_SSE ) then
 				vr->regFamily = IR_REG_FPU_STACK
 			end if
 
