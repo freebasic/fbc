@@ -674,7 +674,7 @@ private function hVregToStr _
 		return "temp_var$" & vreg->reg
 
 	case else
-    	return ""
+    	return "/* unknown */"
 	end select
 
 end function
