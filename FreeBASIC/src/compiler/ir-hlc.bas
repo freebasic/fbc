@@ -27,6 +27,10 @@
 #include once "inc\ir.bi"
 #include once "inc\flist.bi"
 
+'' Argument stack for function calls
+dim shared as string arg_stack(0 to 511)
+dim shared as integer arg_stack_ptr = 512
+
 type DTYPEINFO
 	class			as integer
 	size			as integer
@@ -1115,15 +1119,29 @@ private sub _emitPushUDT _
 
 end sub
 
-dim shared as string arg_stack(0 to 511)
-dim shared as integer arg_stack_ptr = 512
-
+'':::::
 private sub hemitPushArg( byval vr as IRVREG ptr, byval _done_ as integer )
 
-	arg_stack_ptr -= 1
-	arg_stack(arg_stack_ptr) = hVregToStr( vr )
+	if arg_stack_ptr < 0 then
+		' TODO FIXME arg stack push fault
+	else
+		arg_stack_ptr -= 1
+		arg_stack(arg_stack_ptr) = hVregToStr( vr )
+	end if
 
 end sub
+
+'':::::
+private function hemitPopArg( ) as string
+
+	if arg_stack_ptr >= 512 then
+		' TODO FIXME arg stack pop fault
+	else
+		function = arg_stack(arg_stack_ptr)
+		arg_stack_ptr += 1
+	end if
+
+end function
 
 '':::::
 private sub _emitPushArg _
