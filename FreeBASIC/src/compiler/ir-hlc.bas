@@ -1115,28 +1115,15 @@ private sub _emitPushUDT _
 
 end sub
 
-private function hemitPushArg( byval vr as IRVREG ptr, byval _done_ as integer ) as string
-''Operates like a sort of stack for parameters.
-''!! FIX ME !!
-''There is an edge case where the function being called is placed within a define messing up
-''the parameter list.
+dim shared as string arg_stack(0 to 511)
+dim shared as integer arg_stack_ptr = 512
 
-	static ln as string
+private sub hemitPushArg( byval vr as IRVREG ptr, byval _done_ as integer )
 
-	if _done_ = TRUE then
-		var temp = ln
-		ln = ""
-		return temp
-	end if
+	arg_stack_ptr -= 1
+	arg_stack(arg_stack_ptr) = hVregToStr( vr )
 
-
-		ln = ", " & hVregToStr( vr ) & ln
-
-
-	return ""
-
-end function
-
+end sub
 
 '':::::
 private sub _emitPushArg _
@@ -1145,10 +1132,9 @@ private sub _emitPushArg _
 		byval plen as integer _
 	)
 
-	var throwaway = hemitPushArg( vr, FALSE )
+	hemitPushArg( vr, FALSE )
 
 end sub
-
 
 '':::::
 private sub _emitAddr _
@@ -1191,10 +1177,15 @@ private function hGetParamListNames( byval proc as FBSYMBOL ptr ) as string
 
        	else
 
-		ln += "("
+		ln += "( "
 
-		var throwaway = hemitPushArg( 0, TRUE )
-		ln += right( throwaway, len(throwaway)-1 )
+		for i as integer = 1 to proc->proc.params
+			ln += arg_stack(arg_stack_ptr)
+			arg_stack_ptr += 1
+			if i <> proc->proc.params then
+				ln += ", "
+			end if
+		next i
 
 		ln += " )"
 
@@ -1446,25 +1437,15 @@ private sub _emitProcBegin _
         else
 
 		ln += "( "
-		var temp_proc = symbGetProcFirstParam( proc )
-		ln += *hDtypeToStr( symbGetType( temp_proc ), symbGetSubType( temp_proc ) )
-		ln += " " &  ucase( *symbGetName( temp_proc ) )
-
-		if proc->proc.params > 1 then
-
-			var temp_proc_param = symbGetProcFirstParam( proc )
-			temp_proc_param = symbGetProcNextParam( proc, temp_proc_param )
-
-			for n as integer = 2 to proc->proc.params
-
-				ln += ", " & *hDtypeToStr( symbGetType( temp_proc_param ), symbGetSubType( temp_proc_param ) )
-				ln += " " & *symbGetName( temp_proc_param )
-				temp_proc_param = symbGetProcNextParam( proc, temp_proc_param )
-
-			next
-
-		end if
-
+		var temp_proc_param = symbGetProcLastParam( proc )
+		while temp_proc_param
+			ln += *hDtypeToStr( symbGetType( temp_proc_param ), symbGetSubType( temp_proc_param ) )
+			ln += " " &  ucase( *symbGetName( temp_proc_param ) )
+			temp_proc_param = symbGetProcPrevParam( proc, temp_proc_param )
+			if temp_proc_param then
+				ln += ", "
+			end if
+		wend
 		ln += " )"
 
 	end if
