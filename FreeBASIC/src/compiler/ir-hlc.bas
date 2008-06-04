@@ -27,9 +27,11 @@
 #include once "inc\ir.bi"
 #include once "inc\flist.bi"
 
-'' Argument stack for function calls
-dim shared as string arg_stack(0 to 511)
-dim shared as integer arg_stack_ptr = 512
+'' Argument stack list type for function calls
+type ARGLIST
+	s as string ptr
+	next as ARGLIST ptr
+end type
 
 type DTYPEINFO
 	class			as integer
@@ -41,6 +43,7 @@ type IRHLCCTX
 	identcnt		as integer
 	regcnt			as integer
 	vregTB			as TFLIST
+	arg_stack		as ARGLIST ptr
 end type
 
 declare function hDtypeToStr _
@@ -85,6 +88,34 @@ declare function hVregToStr _
 		( FB_DATACLASS_INTEGER, 1			    , ""  ), _					'' fwd-ref
 		( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , "" ) _					'' pointer
 	}
+
+'':::::
+private sub hPushArg( byval vr as IRVREG ptr, byval _done_ as integer )
+
+	dim as ARGLIST ptr node = callocate( sizeof( ARGLIST ) )
+
+	node->s = callocate( sizeof( string ) )
+	*node->s = hVregToStr( vr )
+	node->next = ctx.arg_stack
+	ctx.arg_stack = node
+
+end sub
+
+'':::::
+private function hPopArg( ) as string
+
+	if ctx.arg_stack then
+		dim as ARGLIST ptr node = ctx.arg_stack
+		function = *node->s
+		*node->s = ""
+		deallocate( node->s )
+		ctx.arg_stack = node->next
+		deallocate( node )
+	else
+		/' TODO FIXME some kind of error for stack failure '/
+	end if
+
+end function
 
 '':::::
 private function _init _
@@ -656,6 +687,11 @@ private function hVregToStr _
 			operand += str( vreg->ofs )
 		end if
 
+		' find literal strings, and just print the text, not the label
+		if symbGetIsLiteral( vreg->sym ) and (symbGetType( vreg->sym ) = FB_DATATYPE_CHAR) then
+			operand =  """" & *symbGetVarLitText( vreg->sym ) & """"
+		end if
+
 		return operand
 
 	case IR_VREGTYPE_IMM
@@ -674,7 +710,8 @@ private function hVregToStr _
 		return "temp_var$" & vreg->reg
 
 	case else
-    	return "/* unknown */"
+    		return "/* unknown */"
+
 	end select
 
 end function
@@ -1120,37 +1157,13 @@ private sub _emitPushUDT _
 end sub
 
 '':::::
-private sub hemitPushArg( byval vr as IRVREG ptr, byval _done_ as integer )
-
-	if arg_stack_ptr < 0 then
-		' TODO FIXME arg stack push fault
-	else
-		arg_stack_ptr -= 1
-		arg_stack(arg_stack_ptr) = hVregToStr( vr )
-	end if
-
-end sub
-
-'':::::
-private function hemitPopArg( ) as string
-
-	if arg_stack_ptr >= 512 then
-		' TODO FIXME arg stack pop fault
-	else
-		function = arg_stack(arg_stack_ptr)
-		arg_stack_ptr += 1
-	end if
-
-end function
-
-'':::::
 private sub _emitPushArg _
 	( _
 		byval vr as IRVREG ptr, _
 		byval plen as integer _
 	)
 
-	hemitPushArg( vr, FALSE )
+	hPushArg( vr, FALSE )
 
 end sub
 
@@ -1184,7 +1197,7 @@ private sub _emitAddr _
 end sub
 
 '':::::
-private function hGetParamListNames( byval proc as FBSYMBOL ptr ) as string
+private function hPopParamListNames( byval proc as FBSYMBOL ptr ) as string
 
 	var ln = ""
 
@@ -1196,10 +1209,9 @@ private function hGetParamListNames( byval proc as FBSYMBOL ptr ) as string
        	else
 
 		ln += "( "
-
+		
 		for i as integer = 1 to proc->proc.params
-			ln += arg_stack(arg_stack_ptr)
-			arg_stack_ptr += 1
+			ln += hPopArg( )
 			if i <> proc->proc.params then
 				ln += ", "
 			end if
@@ -1224,7 +1236,7 @@ private sub _emitCall _
 
 	if( vr = NULL ) then
 
-		var ln = hGetParamListNames( proc )
+		var ln = hPopParamListNames( proc )
 
 		hWriteLine( *symbGetMangledName( proc ) & ln )
 	else
@@ -1232,7 +1244,7 @@ private sub _emitCall _
 
 		if( irIsREG( vr ) ) then
 
-			var ln = hGetParamListNames( proc )
+			var ln = hPopParamListNames( proc )
 
 			select case *symbGetMangledName( proc )
 			case "fb_GfxScreen", "fb_GfxScreenQB", "fb_GfxScreenRes"
@@ -1245,7 +1257,7 @@ private sub _emitCall _
 			end select
 		else
 
-			var ln = hGetParamListNames( proc )
+			var ln = hPopParamListNames( proc )
 
 			hWriteLine( hVregToStr( vr ) & " = " & *symbGetMangledName( proc ) & ln )
 
