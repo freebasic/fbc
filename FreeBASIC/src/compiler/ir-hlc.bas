@@ -254,7 +254,7 @@ private sub emitDecls _
 					emitDecls( symbGetScopeSymbTbHead( s ) )
 				'' variable?
 				case FB_SYMBCLASS_VAR
-					hWriteLine( "extern " & *hDtypeToStr( symbGetType( s ), symbGetSubType( s ) ) & " " & *symbGetMangledName( s ) & ";", FALSE )
+					hWriteLine( "extern " & *hDtypeToStr( symbGetType( s ), symbGetSubType( s ) ) & " " & *symbGetMangledName( s ) & "[];", FALSE )
 				'' enum?
 				case FB_SYMBCLASS_ENUM
 					hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE )
@@ -1126,17 +1126,17 @@ private sub _emitBopEx _
 		dim as string ops
 		select case as const op
 		case AST_OP_EQ
-			ops = "=="
+			ops = " == "
 		case AST_OP_GT
-			ops = ">"
+			ops = " > "
 		case AST_OP_LT
-			ops = "<"
+			ops = " < "
 		case AST_OP_NE
-			ops = "!="
+			ops = " != "
 		case AST_OP_GE
-			ops = ">="
+			ops = " >= "
 		case AST_OP_LE
-			ops = "<="
+			ops = " <= "
 		end select
 
 		if( vr <> NULL ) then
@@ -1425,10 +1425,31 @@ private function hPopParamListNames( byval proc as FBSYMBOL ptr ) as string
 		ln += "( )"
 
        	else
+		ln += "( "
+		var temp_proc_param = symbGetProcLastParam( proc )
+		while temp_proc_param
 
+			' cast the arg to the right type
+			ln += "("
+			ln += *hDtypeToStr( symbGetType( temp_proc_param ), symbGetSubType( temp_proc_param ) )
+			if temp_proc_param->param.mode = FB_PARAMMODE_BYREF then
+				' TODO FIXME how should byref be done?
+				ln += " *"
+			end if
+			ln += ")"
+			ln += hPopArg( )
+			temp_proc_param = symbGetProcPrevParam( proc, temp_proc_param )
+			if temp_proc_param then
+				ln += ", "
+			end if
+		wend
+		ln += " )"
+
+/'
 		ln += "( "
 		
 		for i as integer = 1 to proc->proc.params
+			ln += "(" & *hDtypeToStr( vreg->dtype, vreg->subtype )
 			ln += hPopArg( )
 			if i <> proc->proc.params then
 				ln += ", "
@@ -1436,7 +1457,7 @@ private function hPopParamListNames( byval proc as FBSYMBOL ptr ) as string
 		next i
 
 		ln += " )"
-
+'/
 	end if
 
 	return ln
