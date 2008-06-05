@@ -212,23 +212,20 @@ private function needHack _
 	if left( *symbGetName( s ), 6 ) = "{fbfp}" then return -1
 	if left( *symbGetMangledName( s ), 6 ) = "{fbfp}" then return -1
 
-	if left( *symbGetName( s ), 3 ) = "fb_" then return -1
-	if left( *symbGetMangledName( s ), 3 ) = "fb_" then return -1
-
-	'if left( *symbGetName( s ), 7 ) = "fb_ctor" then return -1
-	'if left( *symbGetMangledName( s ), 7 ) = "fb_ctor" then return -1
+	if left( *symbGetName( s ), 7 ) = "fb_ctor" then return -1
+	if left( *symbGetMangledName( s ), 7 ) = "fb_ctor" then return -1
 
 	select case *symbGetMangledName( s )
 		case "rename", "calloc", "malloc", "realloc", _
-		     "atexit", "bsearch", "qsort"', "fb_ThreadCreate", _
-		     '"fb_StrAllocTempDescZEx", "fb_DataReadUInt"
+		     "atexit", "bsearch", "qsort", "fb_ThreadCreate", _
+		     "fb_StrAllocTempDescZEx", "fb_DataReadUInt", "fb_PrintString", "fb_DoubleToStr"
 			return -1
 	end select
 
 	select case *symbGetName( s )
 		case "rename", "calloc", "malloc", "realloc", _
-		     "atexit", "bsearch", "qsort"', "fb_ThreadCreate", _
-		     '"fb_StrAllocTempDescZEx", "fb_DataReadUInt"
+		     "atexit", "bsearch", "qsort", "fb_ThreadCreate", _
+		     "fb_StrAllocTempDescZEx", "fb_DataReadUInt", "fb_PrintString", "fb_DoubleToStr"
 			return -1
 	end select
 
@@ -1003,6 +1000,12 @@ private sub hWriteBOP _
 		if typeIsPtr( symbGetType( vr->sym ) ) then
 			rcast = "(ubyte *)"
 		end if
+	end if
+
+	' look for /, floating point divide
+	if op = " / " then
+		lcast = "(double)"
+		rcast = "(double)"
 	end if
 
 	if( irIsREG( vr ) ) then
