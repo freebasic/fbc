@@ -1222,7 +1222,10 @@ private sub hReadString _
 		select case as const lexCurrentChar( )
 		'' EOF or EOL?
 		case 0, CHAR_CR, CHAR_LF
-			errReportWarn( FB_WARNINGMSG_NOCLOSINGQUOTE )
+			' Only warn if not in comments
+			if (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 then
+				errReportWarn( FB_WARNINGMSG_NOCLOSINGQUOTE )
+			end if
 			exit do
 
 		'' '"'?
