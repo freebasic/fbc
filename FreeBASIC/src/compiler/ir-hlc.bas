@@ -154,6 +154,10 @@ end function
 '':::::
 private sub _end
 
+	if ctx.arg_stack then
+		errReportEx( FB_ERRMSG_INTERNAL, "Argument stack not empty." )
+	end if
+
 	flistFree( @ctx.vregTB )
 
 end sub
@@ -198,6 +202,16 @@ private sub hWriteLine _
 end sub
 
 '':::::
+dim shared as zstring ptr hack_list(0 to 255) = { _
+	@"rename", @"calloc", @"malloc", @"realloc", _
+	@"atexit", @"bsearch", @"qsort", @"fb_ThreadCreate", _
+	@"fb_StrAllocTempDescZEx", @"fb_DataReadUInt", _
+	@"fb_PrintString", @"fb_DoubleToStr", _
+	@"fb_IntToStr", @"fb_UIntToStr", _
+	NULL _
+}
+
+'':::::
 private function needHack _
 	( _
 		byval s as FBSYMBOL ptr _
@@ -205,6 +219,9 @@ private function needHack _
 
 	' TODO FIXME this is all a big hack, this are skipped as they cause too
 	' much trouble right now, stuff like function pointers in the decl, etc
+	' strings as return, changing number of args...
+
+	dim as integer i
 
 	if *symbGetName( s ) = "" then return -1
 	if *symbGetMangledName( s ) = "" then return -1
@@ -215,19 +232,15 @@ private function needHack _
 	if left( *symbGetName( s ), 7 ) = "fb_ctor" then return -1
 	if left( *symbGetMangledName( s ), 7 ) = "fb_ctor" then return -1
 
-	select case *symbGetMangledName( s )
-		case "rename", "calloc", "malloc", "realloc", _
-		     "atexit", "bsearch", "qsort", "fb_ThreadCreate", _
-		     "fb_StrAllocTempDescZEx", "fb_DataReadUInt", "fb_PrintString", "fb_DoubleToStr"
+	i = 0
+	while hack_list(i)
+		if *hack_list(i) = *symbGetMangledName( s ) then
 			return -1
-	end select
-
-	select case *symbGetName( s )
-		case "rename", "calloc", "malloc", "realloc", _
-		     "atexit", "bsearch", "qsort", "fb_ThreadCreate", _
-		     "fb_StrAllocTempDescZEx", "fb_DataReadUInt", "fb_PrintString", "fb_DoubleToStr"
+		elseif *hack_list(i) = *symbGetName( s ) then
 			return -1
-	end select
+		end if
+		i += 1
+	wend
 
 	return 0
 
@@ -491,6 +504,15 @@ private function _procAllocLocal _
 	end if
 
 	hWriteLine( ln )
+
+	if symbGetType( sym ) = FB_DATATYPE_STRUCT then
+		ln = ""
+		ln += "memset( &" & *symbGetMangledName( sym )
+		ln += ", 0, " & symbGetUDTLen( sym, FALSE ) & " );"
+		hWriteLine( ln )
+	elseif symbGetType( sym ) = FB_DATATYPE_STRING then
+		hWriteLine( "memset( &" & *symbGetMangledName( sym ) & ", 0, 12 );" )
+	end if
 
 	function = 0
 
@@ -975,10 +997,57 @@ private function hPrepDefine _
 
 end function
 
+''::::
+private function hBOPToStr _
+	( _
+		byval op as integer _
+	) as string
+
+	select case as const op
+		case AST_OP_ADD
+			return " + "
+		case AST_OP_SUB
+			return " - "
+		case AST_OP_MUL
+			return " * "
+		case AST_OP_DIV
+			return " / "
+		case AST_OP_INTDIV
+			return " / "
+		case AST_OP_MOD
+			return " % "
+		case AST_OP_SHL
+			return " << "
+		case AST_OP_SHR
+			return " >> "
+		case AST_OP_AND
+			return " & "
+		case AST_OP_OR
+			return " | "
+		case AST_OP_XOR
+			return " ^ "
+		case AST_OP_EQ
+			return " == "
+		case AST_OP_GT
+			return " > "
+		case AST_OP_LT
+			return " < "
+		case AST_OP_NE
+			return " != "
+		case AST_OP_GE
+			return " >= "
+		case AST_OP_LE
+			return " <= "
+		case else
+			return "unknown_op"
+	end select
+
+end function
+
 '':::::
 private sub hWriteBOP _
 	( _
-		byref op as string, _
+		byval op as integer, _
 		byval vr as IRVREG ptr, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr _
@@ -1003,19 +1072,18 @@ private sub hWriteBOP _
 	end if
 
 	' look for /, floating point divide
-	if op = " / " then
+	if op = AST_OP_DIV then
 		lcast = "(double)"
 		rcast = "(double)"
 	end if
 
 	if( irIsREG( vr ) ) then
-		hWriteLine( hPrepDefine( vr ) & lcast & hVregToStr( v1 ) & op & rcast & hVregToStr( v2 ) & "))", FALSE )
+		hWriteLine( hPrepDefine( vr ) & lcast & hVregToStr( v1 ) & hBOPToStr( op ) & rcast & hVregToStr( v2 ) & "))", FALSE )
 	else
-		hWriteLine( hVregToStr( vr ) & " = " & hVregToStr( v1 ) & op & hVregToStr( v2 ) )
+		hWriteLine( hVregToStr( vr ) & " = " & hVregToStr( v1 ) & hBOPToStr( op ) & hVregToStr( v2 ) )
 	end if
 
 end sub
-
 
 private sub hWriteBOPEx _
 	( _
@@ -1053,42 +1121,14 @@ private sub _emitBopEx _
 	hLoadVreg( vr )
 
 	select case as const op
-	case AST_OP_ADD
-		hWriteBOP( " + ", vr, v1, v2 )
-
-	case AST_OP_SUB
-		hWriteBOP( " - ", vr, v1, v2 )
-
-	case AST_OP_MUL
-		hWriteBOP( " * ", vr, v1, v2 )
-
-	case AST_OP_DIV
-		hWriteBOP( " / ", vr, v1, v2 )
-
-	case AST_OP_INTDIV
-		hWriteBOP( " / ", vr, v1, v2 )
-
-	case AST_OP_MOD
-		hWriteBOP( " % ", vr, v1, v2 )
-
-	case AST_OP_SHL
-		hWriteBOP( " << ", vr, v1, v2 )
-
-	case AST_OP_SHR
-		hWriteBOP( " >> ", vr, v1, v2 )
-
-	case AST_OP_AND
-		hWriteBOP( " & ", vr, v1, v2 )
-
-	case AST_OP_OR
-		hWriteBOP( " | ", vr, v1, v2 )
-
-	case AST_OP_XOR
-		hWriteBOP( " ^ ", vr, v1, v2 )
+	case AST_OP_ADD, AST_OP_SUB, AST_OP_MUL, AST_OP_DIV, AST_OP_INTDIV, _
+	     AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
+	     AST_OP_XOR
+		hWriteBOP( op, vr, v1, v2 )
 
 	case AST_OP_EQV
-    	if( vr = NULL ) then
-    		vr = v1
+		if( vr = NULL ) then
+			vr = v1
 		end if
 
 		'' vr = ~(v1 ^ v2)
@@ -1101,8 +1141,8 @@ private sub _emitBopEx _
 		end if
 
 	case AST_OP_IMP
-    	if( vr = NULL ) then
-    		vr = v1
+    		if( vr = NULL ) then
+    			vr = v1
 		end if
 
 		'' vr = ~v1 | v2
@@ -1123,35 +1163,19 @@ private sub _emitBopEx _
 		hWriteBOPEx( "pow", vr, v1, v2 )
 
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-		dim as string ops
-		select case as const op
-		case AST_OP_EQ
-			ops = " == "
-		case AST_OP_GT
-			ops = " > "
-		case AST_OP_LT
-			ops = " < "
-		case AST_OP_NE
-			ops = " != "
-		case AST_OP_GE
-			ops = " >= "
-		case AST_OP_LE
-			ops = " <= "
-		end select
-
 		if( vr <> NULL ) then
-			hWriteBOP( ops, vr, v1, v2 )
+			hWriteBOP( op, vr, v1, v2 )
 		else
 			hWriteLine( "if (" & _
 						hVregToStr( v1 ) & _
-						ops & _
+						hBOPToStr( op ) & _
 						hVregToStr( v2 ) & _
 						") goto " & _
 						*symbGetMangledName( ex ) _
 					  )
 		end if
 	case else
-		print "UNHANDLED BOP!"
+		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled bop." )
 	end select
 
 end sub
@@ -1271,7 +1295,7 @@ private sub _emitUop _
 		hWriteUOP( "floor", vr, v1 )
 
 	case else
-		print "UNHANDLED UOP!"
+		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled uop." )
 
 	end select
 
@@ -1486,7 +1510,7 @@ private sub _emitCall _
 			var ln = hPopParamListNames( proc )
 
 			select case *symbGetMangledName( proc )
-			case "fb_GfxScreen", "fb_GfxScreenQB", "fb_GfxScreenRes"
+			case "fb_GfxScreen", "fb_GfxScreenQB", "fb_GfxScreenRes", "fb_StrAssign", "fb_FileGet", "fb_FileOpen", "fb_FileClose", "fb_GfxBload", "fb_GfxPut"
 			''These functions return an integer value but it cannot be used like that in FB so
 			''we simply disregard that value. Otherwise these calls will be placed in a #define
 			''and never actually called.
@@ -1544,7 +1568,7 @@ private sub _emitBranch _
 	case AST_OP_JMP
 		hWriteLine( "goto " & *symbGetMangledName( label ) )
 	case else
-		print "UNKNOWN BRANCH!"
+		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled branch type." )
 	end select
 
 end sub
