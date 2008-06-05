@@ -987,12 +987,26 @@ private sub hWriteBOP _
 		byval v2 as IRVREG ptr _
 	)
 
-    if( vr = NULL ) then
-    	vr = v1
+	dim as string lcast, rcast
+
+	if( vr = NULL ) then
+    		vr = v1
+	end if
+
+	' look for pointer artithmatic, as FB expects it all to be 1 based
+	if v1->sym then
+		if typeIsPtr( symbGetType( v1->sym ) ) then
+			lcast = "(ubyte *)"
+		end if
+	end if
+	if vr->sym then
+		if typeIsPtr( symbGetType( vr->sym ) ) then
+			rcast = "(ubyte *)"
+		end if
 	end if
 
 	if( irIsREG( vr ) ) then
-		hWriteLine( hPrepDefine( vr ) & hVregToStr( v1 ) & op & hVregToStr( v2 ) & "))", FALSE )
+		hWriteLine( hPrepDefine( vr ) & lcast & hVregToStr( v1 ) & op & rcast & hVregToStr( v2 ) & "))", FALSE )
 	else
 		hWriteLine( hVregToStr( vr ) & " = " & hVregToStr( v1 ) & op & hVregToStr( v2 ) )
 	end if
