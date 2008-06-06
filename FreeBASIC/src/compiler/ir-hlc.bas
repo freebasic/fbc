@@ -21,7 +21,6 @@
 '' chng: dec/2006 written [v1ctor]
 '' chng: apr/2008 function calling implemented / most operators implemented [sir_mud - sir_mud(at)users(dot)sourceforge(dot)net]
 
-
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\ir.bi"
@@ -124,7 +123,7 @@ private function hPopArg( ) as string
 		ctx.arg_stack = node->next
 		deallocate( node )
 	else
-		/' TODO FIXME some kind of error for stack failure '/
+		errReportEx( FB_ERRMSG_INTERNAL, "Arg stack pop failure." )
 	end if
 
 end function
@@ -138,11 +137,11 @@ private function _init _
 	flistNew( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
 	irSetOption( IR_OPT_HIGHLEVEL or _
-				 IR_OPT_CPU_BOPSELF or _
-				 IR_OPT_REUSEOPER or _
-				 IR_OPT_IMMOPER or _
-				 IR_OPT_FPU_IMMOPER _
-	 		   )
+				IR_OPT_CPU_BOPSELF or _
+				IR_OPT_REUSEOPER or _
+				IR_OPT_IMMOPER or _
+				IR_OPT_FPU_IMMOPER _
+			)
 
 	' initialize the current section
 	ctx.section = SECTION_HEAD
@@ -197,6 +196,8 @@ private sub hWriteLine _
 			ctx.body_txt += ln
 		case SECTION_FOOT
 			ctx.foot_txt += ln
+		case else
+			errReportEx( FB_ERRMSG_INTERNAL, "Bad section." )
 	end select
 
 end sub
@@ -315,6 +316,7 @@ private sub emitDecls _
 					if hasvoid = 0 then
 						if (s->attrib and FB_SYMBATTRIB_OVERLOADED) = 0 then
 							if *symbGetMangledName( s ) <> "" then
+								' TODO FIXME extern??
 								var str_static = ""
 								' TODO FIXME THIS DOESN'T WORK WITH CTOR??
 								if( symbIsStatic( s ) ) then
@@ -328,6 +330,8 @@ private sub emitDecls _
 					else
 						' TODO FIXME, void params??
 					end if
+				case else
+					errReportEx( FB_ERRMSG_INTERNAL, "Unknown symbol class." )
 			end select
 		end if
 		s = s->next
@@ -393,6 +397,10 @@ private sub _emitEnd _
 
 	emitDecls( symbGetGlobalTbHead( ) )
 
+	'' TODO FIXME, why is this not in the decls?  It has floats, so doesn't work right with
+	'' c assuming everything is an int by default
+	hWriteLine( "int fb_GfxPut( void *, single, single, void *, integer, integer, integer, integer, integer, integer, void*, integer, void*, void* )" )
+
 	ctx.section = SECTION_FOOT
 
 	hWriteLine( "/* Total compilation time: " & tottime & " seconds. */", FALSE )
@@ -424,6 +432,8 @@ private sub _emit _
 		byval ex1 as FBSYMBOL ptr = NULL, _
 		byval ex2 as integer = 0 _
 	)
+
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -505,15 +515,6 @@ private function _procAllocLocal _
 
 	hWriteLine( ln )
 
-	if symbGetType( sym ) = FB_DATATYPE_STRUCT then
-		ln = ""
-		ln += "memset( &" & *symbGetMangledName( sym )
-		ln += ", 0, " & symbGetUDTLen( sym, FALSE ) & " );"
-		hWriteLine( ln )
-	elseif symbGetType( sym ) = FB_DATATYPE_STRING then
-		hWriteLine( "memset( &" & *symbGetMangledName( sym ) & ", 0, 12 );" )
-	end if
-
 	function = 0
 
 end function
@@ -522,6 +523,8 @@ end function
 private function _procGetFrameRegName _
 	( _
 	) as zstring ptr
+
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 	function = NULL
 
@@ -821,25 +824,25 @@ private function hVregToStr _
 
 	select case as const vreg->typ
 	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
-        dim as string operand
+	dim as string operand
 
 		dim as integer do_deref = any, add_plus = any
 
 		if( vreg->sym <> NULL ) then
 			'' type casting?
 			if( vreg->dtype <> symbGetType( vreg->sym ) or _
-		    	vreg->subtype <> symbGetSubType( vreg->sym ) ) then
+			vreg->subtype <> symbGetSubType( vreg->sym ) ) then
 
 				'' byref or import?
 				dim as integer is_ptr = (symbGetAttrib( vreg->sym ) and _
-										 (FB_SYMBATTRIB_PARAMBYREF or _
-										  FB_SYMBATTRIB_IMPORT)) or _
+										(FB_SYMBATTRIB_PARAMBYREF or _
+										FB_SYMBATTRIB_IMPORT)) or _
 										typeIsPtr( symbGetType( vreg->sym ) )
 
 				if( is_ptr = FALSE ) then
 					operand = "*("
 				else
-				    operand = "("
+				operand = "("
 				end if
 
 				operand += *hDtypeToStr( vreg->dtype, vreg->subtype )
@@ -926,7 +929,7 @@ private function hVregToStr _
 		return "temp_var$" & vreg->reg
 
 	case else
-    		return "/* unknown */"
+		return "/* unknown */"
 
 	end select
 
@@ -962,6 +965,8 @@ private sub _emitReturn _
 
 	/' do nothing '/
 
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
 end sub
 
 ''::::
@@ -971,6 +976,8 @@ private sub _emitJmpTb _
 		byval label as FBSYMBOL ptr _
 	)
 
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
 end sub
 
 '':::::
@@ -979,6 +986,8 @@ private sub _emitInfoSection _
 		byval liblist as TLIST ptr, _
 		byval libpathlist as TLIST ptr _
 	)
+
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -1056,25 +1065,23 @@ private sub hWriteBOP _
 	dim as string lcast, rcast
 
 	if( vr = NULL ) then
-    		vr = v1
+		vr = v1
 	end if
 
+	hWriteLine( "/* BOP vr.dtype = " & *hDtypeToStr( vr->dtype, vr->subtype ) & ", v1.dtype = " & *hDtypeToStr( v1->dtype, v1->subtype ) & ", v2.dtype = " & *hDtypeToStr( v2->dtype, v2->subtype ) & " */" )
+
 	' look for pointer artithmatic, as FB expects it all to be 1 based
-	if v1->sym then
-		if typeIsPtr( symbGetType( v1->sym ) ) then
-			lcast = "(ubyte *)"
-		end if
+	if typeGetPtrCnt( v1->dtype ) > 0 then
+		lcast += "(ubyte *)"
 	end if
-	if vr->sym then
-		if typeIsPtr( symbGetType( vr->sym ) ) then
-			rcast = "(ubyte *)"
-		end if
+	if typeGetPtrCnt( v2->dtype ) > 0 then
+		rcast += "(ubyte *)"
 	end if
 
 	' look for /, floating point divide
 	if op = AST_OP_DIV then
-		lcast = "(double)"
-		rcast = "(double)"
+		lcast += "(double)"
+		rcast += "(double)"
 	end if
 
 	if( irIsREG( vr ) ) then
@@ -1095,7 +1102,7 @@ private sub hWriteBOPEx _
 ''Alternate form of binary operators where the actual operator is a function call.
 
 	if( vr = NULL ) then
-    	vr = v1
+	vr = v1
 	end if
 
 	if( irIsREG( vr ) ) then
@@ -1122,8 +1129,8 @@ private sub _emitBopEx _
 
 	select case as const op
 	case AST_OP_ADD, AST_OP_SUB, AST_OP_MUL, AST_OP_DIV, AST_OP_INTDIV, _
-	     AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
-	     AST_OP_XOR
+	AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
+	AST_OP_XOR
 		hWriteBOP( op, vr, v1, v2 )
 
 	case AST_OP_EQV
@@ -1141,8 +1148,8 @@ private sub _emitBopEx _
 		end if
 
 	case AST_OP_IMP
-    		if( vr = NULL ) then
-    			vr = v1
+		if( vr = NULL ) then
+			vr = v1
 		end if
 
 		'' vr = ~v1 | v2
@@ -1172,7 +1179,7 @@ private sub _emitBopEx _
 						hVregToStr( v2 ) & _
 						") goto " & _
 						*symbGetMangledName( ex ) _
-					  )
+					)
 		end if
 	case else
 		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled bop." )
@@ -1201,8 +1208,8 @@ private sub hWriteUOP _
 		byval v1 as IRVREG ptr _
 	)
 
-    if( vr = NULL ) then
-    	vr = v1
+if( vr = NULL ) then
+	vr = v1
 	end if
 
 	if( irIsREG( vr ) ) then
@@ -1356,6 +1363,8 @@ private sub _emitSpillRegs _
 
 	/' do nothing '/
 
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
 end sub
 
 '':::::
@@ -1387,6 +1396,8 @@ private sub _emitStack _
 		byval v1 as IRVREG ptr _
 	)
 
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
 end sub
 
 '':::::
@@ -1395,6 +1406,8 @@ private sub _emitPushUDT _
 		byval v1 as IRVREG ptr, _
 		byval lgt as integer _
 	)
+
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -1448,11 +1461,10 @@ private function hPopParamListNames( byval proc as FBSYMBOL ptr ) as string
 
 		ln += "( )"
 
-       	else
+	else
 		ln += "( "
 		var temp_proc_param = symbGetProcLastParam( proc )
 		while temp_proc_param
-
 			' cast the arg to the right type
 			ln += "("
 			ln += *hDtypeToStr( symbGetType( temp_proc_param ), symbGetSubType( temp_proc_param ) )
@@ -1468,20 +1480,6 @@ private function hPopParamListNames( byval proc as FBSYMBOL ptr ) as string
 			end if
 		wend
 		ln += " )"
-
-/'
-		ln += "( "
-		
-		for i as integer = 1 to proc->proc.params
-			ln += "(" & *hDtypeToStr( vreg->dtype, vreg->subtype )
-			ln += hPopArg( )
-			if i <> proc->proc.params then
-				ln += ", "
-			end if
-		next i
-
-		ln += " )"
-'/
 	end if
 
 	return ln
@@ -1510,11 +1508,16 @@ private sub _emitCall _
 			var ln = hPopParamListNames( proc )
 
 			select case *symbGetMangledName( proc )
-			case "fb_GfxScreen", "fb_GfxScreenQB", "fb_GfxScreenRes", "fb_StrAssign", "fb_FileGet", "fb_FileOpen", "fb_FileClose", "fb_GfxBload", "fb_GfxPut"
+			case "fb_GfxScreen", "fb_GfxScreenQB", "fb_GfxScreenRes", "fb_StrAssign", "fb_FileGet", "fb_FileOpen", "fb_FileClose", "fb_GfxBload", "fb_GfxPut", "fb_Color", "fb_SleepEx"
 			''These functions return an integer value but it cannot be used like that in FB so
 			''we simply disregard that value. Otherwise these calls will be placed in a #define
 			''and never actually called.
 				hWriteLine( *symbGetMangledName( proc ) & ln )
+			case "fb_StrConcat", "fb_StrConcatAssign"
+				'' This could be either used or discarded return, it needs to be called
+				'' anyway, so can't use a define unless it can be determined if it is
+				'' used or not.
+				hWriteLine( *hDtypeToStr( vr->dtype, vr->subtype ) & " " & hVregToStr( vr ) & " = (" & *hDtypeToStr( vr->dtype, vr->subtype ) & ")" & *symbGetMangledName( proc ) & ln )
 			case else
 				hWriteLine( hPrepDefine( vr ) & *symbGetMangledName( proc ) & ln &"))", FALSE )
 			end select
@@ -1537,6 +1540,8 @@ private sub _emitCallPtr _
 		byval bytestopop as integer _
 	)
 
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
 end sub
 
 '':::::
@@ -1547,6 +1552,8 @@ private sub _emitStackAlign _
 
 	/' do nothing '/
 
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
 end sub
 
 '':::::
@@ -1554,6 +1561,8 @@ private sub _emitJumpPtr _
 	( _
 		byval v1 as IRVREG ptr _
 	)
+
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -1581,6 +1590,9 @@ private sub _emitMem _
 		byval v2 as IRVREG ptr, _
 		byval bytes as integer _
 	)
+
+	' TODO FIXME crude clear memory
+	hWriteLine("memset( &" & hVregToStr( v1 ) & ", 0, " & hVregToStr( v2 ) & " )" )
 
 end sub
 
@@ -1616,7 +1628,7 @@ private sub _emitASM _
 		byval text as zstring ptr _
 	)
 
-
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -1626,6 +1638,8 @@ private sub _emitVarIniBegin _
 		byval sym as FBSYMBOL ptr _
 	)
 
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
 end sub
 
 '':::::
@@ -1633,6 +1647,8 @@ private sub _emitVarIniEnd _
 	( _
 		byval sym as FBSYMBOL ptr _
 	)
+
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -1643,6 +1659,8 @@ private sub _emitVarIniI _
 		byval value as integer _
 	)
 
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
 end sub
 
 '':::::
@@ -1651,6 +1669,8 @@ private sub _emitVarIniF _
 		byval dtype as integer, _
 		byval value as double _
 	)
+
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -1661,6 +1681,8 @@ private sub _emitVarIniI64 _
 		byval value as longint _
 	)
 
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
 end sub
 
 '':::::
@@ -1669,6 +1691,8 @@ private sub _emitVarIniOfs _
 		byval sym as FBSYMBOL ptr, _
 		byval ofs as integer _
 	)
+
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -1680,7 +1704,7 @@ private sub _emitVarIniStr _
 		byval litlgt as integer _
 	)
 
-
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -1692,6 +1716,8 @@ private sub _emitVarIniWstr _
 		byval litlgt as integer _
 	)
 
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
 end sub
 
 '':::::
@@ -1699,6 +1725,8 @@ private sub _emitVarIniPad _
 	( _
 		byval bytes as integer _
 	)
+
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -1729,7 +1757,7 @@ private sub _emitProcBegin _
 
 		ln += "( void )" 'This is just to prevent warnings from some C compilers.
 
-        else
+	else
 
 		ln += "( "
 		var temp_proc_param = symbGetProcLastParam( proc )
@@ -1799,6 +1827,8 @@ private sub _flush
 
 	/' do nothing '/
 
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
 end sub
 
 '':::::
@@ -1808,6 +1838,8 @@ private function _GetDistance _
 	) as uinteger
 
 	/' do nothing '/
+
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 	function = 0
 
@@ -1821,7 +1853,9 @@ private sub _loadVR _
 		byval doload as integer _
 	)
 
-    /' do nothing '/
+/' do nothing '/
+
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -1834,6 +1868,8 @@ private sub _storeVR _
 
 	/' do nothing '/
 
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
 end sub
 
 '':::::
@@ -1843,6 +1879,8 @@ private sub _xchgTOS _
 	)
 
 	/' do nothing '/
+
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
