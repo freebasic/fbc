@@ -629,6 +629,10 @@ private function hCheckPointer _
 
     	return TRUE
 
+	'' short-circuit ops?  operands will be checked against zero, so allow.
+	case AST_OP_ANDALSO, AST_OP_ORELSE
+		return TRUE
+
 	'' relational op?
 	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
 
