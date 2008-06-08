@@ -39,6 +39,7 @@ Version 0.20.0 Beta:
 - #1861363 - gfxlib win32 gdi driver was using the alpha_remover_blitter on depths < 32 bits (jeffm)
 - #1931922 - lang qb: prototypes for overloaded procdefs were not being added correctly (jeffm)
 - lang qb/fblite was allowing dups of unsuffixed variables having different types (jeffm)
+- lang qb: LEN() was allowing UDT's and typedef's (jeffm)
 - GET/PUT were discounting padding at the end of UDTs (counting_pine)
 - escaped strings in unicode sources were crashing the compiler (counting_pine)
 - WRITE wouldn't append a comma or newline to empty strings (counting_pine)

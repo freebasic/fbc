@@ -151,7 +151,7 @@ function cMathFunct _
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
 	case FB_TK_LEN, FB_TK_SIZEOF
-    	dim as integer is_len = any, dtype = any, lgt = any
+    	dim as integer is_len = any, dtype = any, lgt = any, is_type = any
     	dim as FBSYMBOL ptr sym = any, subtype = any
 
 		is_len = (tk = FB_TK_LEN)
@@ -159,8 +159,21 @@ function cMathFunct _
 
 		hMatchLPRNT( )
 
+		'' QB quirk: LEN() only takes expressions
+		if( fbLangIsSet( FB_LANG_QB ) ) then
+			if( is_len ) then
+				is_type = FALSE
+			else
+				'' SIZEOF()
+				is_type = cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE )
+			end if
+		else
+			is_type = cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE )
+		end if
+
+		''
 		expr = NULL
-		if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
+		if( is_type = FALSE ) then
 			fbSetCheckArray( FALSE )
 			expr = cExpression( )
 			if( expr = NULL ) then
