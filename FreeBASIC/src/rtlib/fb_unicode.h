@@ -75,6 +75,7 @@ typedef uint8_t  UTF_8;
 # include "win32/fb_unicode.h"
 #else
 # define __USE_ISOC99 1
+# define __USE_ISOC95 1
 # include <wchar.h>
 # include <wctype.h>
 #endif
