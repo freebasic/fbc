@@ -1996,6 +1996,13 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBRT_CPU=x86;;
+	x86_64 )
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_X86_64 1
+_ACEOF
+
+		FBRT_CPU=x86_64;;
 	sparc64 )
 
 cat >>confdefs.h <<\_ACEOF

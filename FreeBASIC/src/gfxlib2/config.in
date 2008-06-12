@@ -148,6 +148,9 @@
 /* x86 build */
 #undef TARGET_X86
 
+/* x86_64 build */
+#undef TARGET_X86_64
+
 /* Xbox build */
 #undef TARGET_XBOX
 
