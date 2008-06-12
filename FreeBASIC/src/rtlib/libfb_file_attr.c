@@ -69,7 +69,11 @@ FBCALL int fb_FileAttr
 			ret = file_mode_map[file->mode];
 			err = FB_RTERROR_OK;
 			break;
-				
+			
+/* FB_FILE_ATTR_HANDLE only enabled on x86 for now due to return value size issues */
+#ifdef TARGET_X86
+
+
 		case FB_FILE_ATTR_HANDLE:
 
       /* TODO: standardize the DEV_* structs, or provide a device hook function to get OS handle */
@@ -107,6 +111,7 @@ FBCALL int fb_FileAttr
 				err = FB_RTERROR_OK;
 			}
 			break;
+#endif
 				
 		case FB_FILE_ATTR_ENCODING:
 			ret = file->encod;

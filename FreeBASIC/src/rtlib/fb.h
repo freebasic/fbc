@@ -226,7 +226,7 @@ extern "C" {
 #ifndef FB_TLSENTRY
     /** Define a TLS (Thread local storage) slot.
      */
-# define FB_TLSENTRY unsigned int
+# define FB_TLSENTRY uintptr_t
 #endif
 
 #ifndef FB_TLSALLOC
@@ -240,7 +240,7 @@ extern "C" {
 #ifndef FB_TLSSET
     /** Set the value of a TLS (Thread local storage) slot.
      */
-# define FB_TLSSET(key,value) key = (unsigned int)value
+# define FB_TLSSET(key,value) key = (FB_TLSENTRY)value
 #endif
 #ifndef FB_TLSGET
     /** Get the value from a TLS (Thread local storage) slot.
