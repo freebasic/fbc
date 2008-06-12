@@ -214,7 +214,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 			fb_x11.visual = info->visual;
 			context = __fb_glX.CreateContext(fb_x11.display, info, NULL, True);
 			XFree(info);
-			if ((int)context > 0)
+			if ((intptr_t)context > 0)
 				break;
 			else
 				__fb_glX.DestroyContext(fb_x11.display, context);
