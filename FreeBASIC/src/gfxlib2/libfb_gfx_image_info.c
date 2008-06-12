@@ -33,9 +33,7 @@ FBCALL int fb_GfxImageInfo( void *img,
 							int *size)
 {
 	PUT_HEADER *header;
-	int bpp_, width_, height_, pitch_, size_, headerSize_;
-	void *imgdata_;
-	int ret;
+	int bpp_, width_, height_, pitch_, headerSize_;
 
 	header = (PUT_HEADER *)img;
 
