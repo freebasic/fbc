@@ -110,6 +110,9 @@ private function _linkFiles _
 	'' set script file
 	ldcline += (" -T " + QUOTE) + fbGetPath( FB_PATH_SCRIPT ) + ("elf_i386.x" + QUOTE)
 
+	'' set emulation
+	ldcline += " -m elf_i386" 
+
 	if( len( fbc.mapfile ) > 0) then
 		ldcline += " -Map " + fbc.mapfile
 	end if
@@ -329,7 +332,7 @@ private function _compileResFiles _
 		exit function
 	end if
 
-	if( exec( aspath, iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
+	if( exec( aspath, iconsrc + " --32 -o " + hStripExt( iconsrc ) + ".o" ) ) then
 		kill( iconsrc )
 		exit function
 	end if
