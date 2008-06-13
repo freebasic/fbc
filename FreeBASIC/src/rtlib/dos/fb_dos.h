@@ -50,6 +50,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdint.h>
 
 #ifdef FB_DOS_USE_CONIO
 # include <conio.h>
