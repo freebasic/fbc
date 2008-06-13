@@ -124,6 +124,9 @@ private function _linkFiles _
 		end if
 	end if
 
+	'' fill in libc
+	gccLibFileNameTb( LIBC_SO ) = @"libc.so"
+
 	'' add library search paths
 	ldcline += *fbcGetLibPathList( )
 

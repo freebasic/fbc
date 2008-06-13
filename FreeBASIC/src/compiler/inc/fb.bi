@@ -353,8 +353,11 @@ enum GCC_LIB
 	GCRT1_O
 	LIBGCC_A
 	LIBSUPC_A
+	LIBC_SO
 	GCC_LIBS
 end enum
+
+extern gccLibFileNameTb( 0 to GCC_LIBS - 1 ) as zstring ptr
 
 #include once "inc\error.bi"
 #include once "inc\fb-obj.bi"

@@ -134,7 +134,8 @@ declare sub	parserSetCtx ( )
 		@"crtn.o"           , _
 		@"gcrt1.o"          , _
 		@"libgcc.a"         , _
-		@"libsupc++.a"      _
+		@"libsupc++.a"      , _
+		NULL                  _ '' libc.so
 	}
 
 #if defined(STANDALONE)
@@ -1022,6 +1023,8 @@ function fbFindGccLib _
 	) as string
 
     dim as string file_loc
+
+	if gccLibFileNameTb( lib_id ) = NULL then return ""
 
 	file_loc = fbGetPath( FB_PATH_LIB ) + *gccLibFileNameTb( lib_id )
 
