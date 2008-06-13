@@ -93,8 +93,8 @@ typedef HRESULT (WINAPI *DIRECTDRAWENUMERATEEX)(LPDDENUMCALLBACKEX lpCallback,LP
  * defined in import library LIBDINPUT.A, and as we're not
  * linking with it, we need to define it here...
  */
-static DIOBJECTDATAFORMAT c_rgodfDIKeyboard[256];
-static const DIDATAFORMAT c_dfDIKeyboard = { 24, 16, 0x2, 256, 256, c_rgodfDIKeyboard };
+DIOBJECTDATAFORMAT c_rgodfDIKeyboard[256];
+const DIDATAFORMAT c_dfDIKeyboard = { 24, 16, 0x2, 256, 256, c_rgodfDIKeyboard };
 static HMODULE dd_library;
 static HMODULE di_library;
 static LPDIRECTDRAW2 lpDD = NULL;
