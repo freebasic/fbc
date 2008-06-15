@@ -1,6 +1,9 @@
 {{fbdoc item="title" value="Procedures"}}----
 Keywords that work with procedures
 
+{{fbdoc item="desc"}}
+	These keywords control the declaration and definition of procedures, how they are called, how arguments are passed and how they are seen externally. Procedures can also be declared to be executed automatically.
+
 **{{anchor name="DECLARATION|Declaration"}}**
 	Keywords that declare and define procedures.
 **{{anchor name="CALLCONV|Calling conventions"}}**

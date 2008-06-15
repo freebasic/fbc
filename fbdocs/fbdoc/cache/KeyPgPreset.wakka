@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="PRESET"}}----
-Graphics statement to plot a single pixel.
+Plots a single pixel
 
 {{fbdoc item="syntax"}}##
 	**PReset** [//target// ,] [STEP] (//x//, //y//) [,//color//]

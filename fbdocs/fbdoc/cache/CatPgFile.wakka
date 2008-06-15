@@ -1,6 +1,9 @@
 {{fbdoc item="title" value="File I/O Functions"}}----
 Statements and procedures for working with files and devices
 
+{{fbdoc item="desc"}}
+	These statements and procedures provide file and device i/o capabilities. So called //file numbers// can be bound to files or devices, which can be read or written to using formatted (text mode) or unformatted (binary mode) data. In binary mode, files and devices can be read from or written to in arbitrary locations. For multithreaded applications, files and devices can also be locked.
+
 **{{anchor name="FILEOPS|Opening Files or Devices"}}**
 	Procedures and other keywords that provide read or write access to a file or device.
 **{{anchor name="FILEIO|Reading from and Writing to Files or Devices"}}**

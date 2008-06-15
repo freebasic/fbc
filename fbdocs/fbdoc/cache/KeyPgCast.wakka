@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CAST"}}----
-Converts an expression to a specified data type.
+Converts an expression to a specified data type
 
 {{fbdoc item="syntax"}}##
 	Cast( [[DataType datatype]], //expression// )

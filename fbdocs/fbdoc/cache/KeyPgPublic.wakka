@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="PUBLIC"}}----
-Specifies procedure visibility to other modules.
+Specifies procedure visibility to other modules
 
 {{fbdoc item="syntax"}}##
 	**Public** //procedure_definition// ...

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value=" #ERROR"}}----
-Preprocessor diagnositc directive.
+Preprocessor diagnositc directive
 
 {{fbdoc item="syntax"}}##
 	**#error**  error_text

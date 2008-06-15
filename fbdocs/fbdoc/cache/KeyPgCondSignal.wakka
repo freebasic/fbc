@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CONDSIGNAL"}}----
-Restarts a thread suspended by a call to ##[[KeyPgCondWait Condwait]]##.
+Restarts a thread suspended by a call to ##[[KeyPgCondWait Condwait]]##
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Condsignal** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]])

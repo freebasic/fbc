@@ -2,7 +2,7 @@
 Macro to return the high byte of an expression
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Hibyte**( //x// ) (([[KeyPgCuint CUint]](//x//) [[KeyPgAnd and]] &h0000FF00) [[KeyPgShr shr]] 8)
+	[[KeyPgPpdefine #define]] **Hibyte**( //x// ) (([[KeyPgCuint CUint]](//x//) [[KeyPgOpAnd and]] &h0000FF00) [[KeyPgOpShiftRight shr]] 8)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Hibyte**(//x//)
@@ -46,8 +46,6 @@ The Binary representation of the LSB Is    10000001
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgShr Shr]]##
-	- ##[[KeyPgShl Shl]]##
 	- ##[[KeyPgLoByte Lobyte]]##
 
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

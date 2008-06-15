@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="VAR"}}----
-Declares a variable whose type is implied from the initializer expression.
+Declares a variable whose type is implied from the initializer expression
 
 {{fbdoc item="syntax"}}##
 	**Var** [[[KeyPgShared shared]]] //symbolname// = //expression//[, //symbolname// = //expression//]

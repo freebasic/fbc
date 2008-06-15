@@ -53,4 +53,3 @@ ex = type( 1, 2 )
 	- ##[[KeyPgTypeAlias Type (Alias)]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}
-   

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="EOF"}}----
-Checks to see if the end of an open file has been reached.
+Checks to see if the end of an open file has been reached
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Eof** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]

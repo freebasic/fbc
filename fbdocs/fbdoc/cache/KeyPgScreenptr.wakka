@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENPTR"}}----
-Graphics function to return a pointer to the current work page framebuffer memory.
+Returns a pointer to the current work page's framebuffer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screenptr** ( ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]

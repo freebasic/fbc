@@ -1,6 +1,6 @@
 ===This wiki is using a very flexible but simple categorizing system to keep everything properly organized.===
 
-{{Category page="/"  col="10"}}
+{{Category page="/" col="10"}}
 ==Here's how it works :==
 ~- The master list of the categories is **Category Category** (//without the space//) which will automatically list all known maincategories, and should never be edited. This list is easily accessed from the Wiki's top navigation bar. (Categories).
 ~- Each category has a WikiName name of the form ""CategoryName"" for example CategoryWiki etc. (see list of maincategories above)

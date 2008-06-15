@@ -1,7 +1,9 @@
 {{fbdoc item="title" value="Preprocessor Operators"}}----
+Operators that are executed by the preprocessor
+
 <<
-	- {{fbdoc item="keyword" value="KeyPgStringize|(#  #) Stringize"}}
-	- {{fbdoc item="keyword" value="KeyPgPreConcat|(##) Name Concatenation"}}
+	- {{fbdoc item="keyword" value="KeyPgOpPpStringize|(#  #) Stringize"}}
+	- {{fbdoc item="keyword" value="KeyPgOpPpConcat|(##) Name Concatenation"}}
 
 >>
 

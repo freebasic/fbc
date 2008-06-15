@@ -23,11 +23,18 @@ FreeBASIC programmer's guide
 	Numeric Types
 	Strings (string, zstring, and wstring)
 	{{fbdoc item="keyword" value="ProPgDataConversion|Coercion and Conversion"}}
-	{{fbdoc item="keyword" value="ProPgArrayIndex|Array Index"}}
 	{{fbdoc item="keyword" value="ProPgConstants|Constants"}}
 	{{fbdoc item="keyword" value="ProPgVariables|Variables"}}
-	{{fbdoc item="keyword" value="ProPgArrays|Arrays"}}
-	{{fbdoc item="keyword" value="ProPgPointers|Pointers"}}
+
+	{{fbdoc item="subsect" value="Arrays"}}
+		{{fbdoc item="keyword" value="ProPgArrays|Overview"}}
+		{{fbdoc item="keyword" value="ProPgArrayIndex|Array Indexing"}}
+		Passing Arrays to Procedures
+		Resizing Dynamic Arrays
+
+	{{fbdoc item="subsect" value="Pointers"}}
+		{{fbdoc item="keyword" value="ProPgPointers|Overview"}}
+		{{fbdoc item="keyword" value="ProPgPtrArithmetic|Pointer arithmetic"}}
 
 {{fbdoc item="section" value="Declarations"}}
 	{{fbdoc item="keyword" value="ProPgImplicitdeclarations|Implicit Declarations"}}
@@ -41,12 +48,12 @@ FreeBASIC programmer's guide
 	Overview
 	{{fbdoc item="keyword" value="ProPgTypeAliases|Type Aliases"}}
 	{{fbdoc item="keyword" value="KeyPgTypeTemp|Temporary Types"}}
-	Constructors and Destructors
-	Properties
+	{{fbdoc item="keyword" value="ProPgCtorsDtors|Constructors and Destructors"}}
 	{{fbdoc item="keyword" value="ProPgMemberProcedures|Member Procedures"}}
+	Properties
+	{{fbdoc item="keyword" value="ProPgMemberAccessRights|Member Access Rights"}}
 	{{fbdoc item="keyword" value="ProPgOperatorOverloading|Operator Overloading"}}
 	Iterators
-	Member Access Control
 	New and Delete
 <<>>{{fbdoc item="section" value="Statements and Expressions"}}
 	Assignments

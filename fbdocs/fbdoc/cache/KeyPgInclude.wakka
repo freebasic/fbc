@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="#INCLUDE"}}----
-Preprocessor statement to include contents of another source file.
+Preprocessor statement to include contents of another source file
 
 {{fbdoc item="syntax"}}##
 	**#include** [once] //"file"//

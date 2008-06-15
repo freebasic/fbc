@@ -1,4 +1,6 @@
 {{fbdoc item="title" value="Literals"}}----
+Non-variable compile-time string and numeric values
+
 Literals are numbers or strings of characters specified directly in the source code.  Literals may be used to assign a variable or constant a value, passed to a procedure, or used in an expression.
 
 {{fbdoc item="section" value="Decimal, Hexadecimal, Octal, and Binary Literals"}}

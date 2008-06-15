@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="__FILE__"}}----
-Intrinsic define (macro string) set by the compiler.
+Intrinsic define (macro string) set by the compiler
 
 {{fbdoc item="syntax"}}##
 	""__FILE__""

@@ -1,25 +1,19 @@
 {{fbdoc item="title" value="PRINT"}}----
-Output statement to write text to screen or file. 
+Writes text to the screen
 
 {{fbdoc item="syntax"}}##
-	**Print** [ using //formatstring//,] [//expressionlist//] [(, | ;)] ...
+	**Print** [ //expressionlist// ] [ , | ; ]
 ##
 {{fbdoc item="param"}}
-	##//using//##
-		clause to indicate formatting is to be used
-	##//formatstring//##
-		format string to use when ##**using**## is specified
-	##//expression//##
+	##//expressionlist//##
 		list of items to print
 
 {{fbdoc item="desc"}}
-	Prints ##//expressionlist//## to screen.
+	##**Print**## outputs a list of values to the screen. Numeric values are converted to their string representation, with left padding for the sign. Objects of user-defined types must overload ##Operator Cast () As String##.
 
-	The ##[[KeyPgPrintusing Print Using]]## clause formats //expresionlist// according to //formatstring//.
+	Consecutive values in the expression list are seperated either by a comma (,) or semicolon (;). A comma indicates printing should take place at the next 14 column boundary, while a semicolon indicates values are printed with no space between them.
 
-	Any data type but UDT's can be passed in **Print**'s ##//expressionlist//##, expressions do **not** have to be converted to strings first.
-
-	Using a comma (,) as separator or in the end of the ##//expressionlist//## will place the cursor in the next column (every 14 characters), using a semi-colon (;) won't move the cursor. If neither of them are used in the end of the ##//expressionlist//##, then a new-line will be printed.
+	A new-line character is printed after the values in the expression list unless the expression list is followed by a comma or semicolon.
 
 	Printing to graphics screen may not work in all modes. All QB standard modes available in the port are supported. With extended ##[[KeyPgScreengraphics Screen (Graphics)]]## 14 to 21, printing to screen is allowed only in 8 bits resolution (the default one).
 

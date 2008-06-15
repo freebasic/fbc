@@ -1,6 +1,9 @@
 {{fbdoc item="title" value="Screen Functions"}}----
 Statements and procedures that work with the graphics display
 
+{{fbdoc item="desc"}}
+	These statements and procedures control the graphics capabilities of ""FreeBASIC's"" graphics library. Screen modes can be set with varying resolutions and color depths, window events can be handled, and specific OpenGL procedures can be retrieved.
+
 **{{anchor name="MODES|Working with screen modes"}}**
 	Procedures for setting and retrieving information about screen modes.
 **{{anchor name="PAGES|Working with pages"}}**
@@ -18,7 +21,7 @@ Statements and procedures that work with the graphics display
 	=={{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}==
 		Gets information about the system desktop or current display mode.
 	=={{fbdoc item="keyword" value="KeyPgScreencontrol|SCREENCONTROL"}}==
-		Gets or Sets internal graphics library settings.
+		Gets or sets internal graphics library settings.
 	=={{fbdoc item="keyword" value="KeyPgScreenevent|SCREENEVENT"}}==
 		Gets system events.
 	=={{fbdoc item="keyword" value="KeyPgScreenglproc|SCREENGLPROC"}}==
@@ -53,4 +56,3 @@ Statements and procedures that work with the graphics display
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-   

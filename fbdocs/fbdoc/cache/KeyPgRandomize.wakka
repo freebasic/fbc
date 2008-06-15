@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="RANDOMIZE"}}----
-Seeds the random number generator.
+Seeds the random number generator
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Randomize** ( [[KeyPgByval byval]] //seed// [[KeyPgAs as]] [[KeyPgDouble double]] = -1,  [[KeyPgByval byval]] //algorithm// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )

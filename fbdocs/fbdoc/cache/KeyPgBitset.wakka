@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="BITSET"}}----
-Macro that sets a bit in an integer.
+Macro that sets a bit in an integer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Bitset**( //value//, //bit_number// ) ((//value//) [[KeyPgOr or]] (1 [[KeyPgShl shl]] (//bit_number//)))
+	[[KeyPgPpdefine #define]] **Bitset**( //value//, //bit_number// ) ((//value//) [[KeyPgOpOr or]] ([[KeyPgCast Cast]]([[KeyPgTypeof TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft shl]] (//bit_number//)))
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Bitset**(//value//, //bit_number//)
@@ -11,7 +11,7 @@ Macro that sets a bit in an integer.
 	##//value//##
 		The integer value to set a bit in.  It is not modified.
 	##//bit_number//##
-		The zero-based number of the bit to set; 0 is the least-significant bit.
+		The zero-based number of the bit to set; 0 is the least-significant bit.  The valid range for this number is 0 to 31, unless ##//value//## is a ##[[KeyPgLongint LongInt]]##, in which case the range is from 0 to 63.
 
 {{fbdoc item="ret"}}
 	##//value//## with bit ##//bit_number//## set to 1.
@@ -20,17 +20,15 @@ Macro that sets a bit in an integer.
 	Macro returning ##//value//## with the bit ##//bit_number//## set to 1.
 	##foo = **Bitset**( bar, 5 )##  does the same as ##foo = bar or (1 shl 5)##.
 
-	To set the bit on a 64 bit integer, pass the ##//bit_number//## as a 64 bit integer.
-
 {{fbdoc item="ex"}}
 %%(qbasic)
 print bitset(4, 0)
-print bitset(0, 63LL)
+print hex(bitset(1ull, 63))
 %%
 	will produce the output:
 
-%%5
-8000000000000000
+%% 5
+8000000000000001
 %%
 
 {{fbdoc item="diff"}}

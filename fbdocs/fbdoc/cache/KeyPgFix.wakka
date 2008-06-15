@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="FIX"}}----
-Function to return the integer part of a number.
+Returns the integer part of a number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fix** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="WOCT"}}----
-Converts a number to a Unicode octal representation.
+Converts a number to a Unicode octal representation
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Woct""**( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]

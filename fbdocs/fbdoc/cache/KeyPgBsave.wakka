@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="BSAVE"}}----
-Graphics statement to save a block of binary data into a file.
+Graphics statement to save a block of binary data into a file
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bsave** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByval byval]] //addr// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByval byval]] //pal// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -22,19 +22,10 @@ Graphics statement to save a block of binary data into a file.
 
 {{fbdoc item="desc"}}
 	##**Bsave**## saves a block of binary data into a specified file. It can also be used to save pixel data from current work page into a file, by specifying 0 as ##//addr//## argument:
-%%(qbasic)
-	BSAVE "image.bsv", 0, 64000
-%%
-	is in fact equivalent to:
-%%(qbasic)
-	SCREENLOCK
-	BSAVE "image.bsv", SCREENPTR, 64000
-	SCREENUNLOCK
-%%
 
 	When saving pixel data, the data will be saved in the current gfx mode pixel format; see Internal pixel formats for details. Also keep in mind a pixel may require more than one byte, so the size argument will need to be adjusted accordingly.
 
-	##**Bsave**## can also be used to save images as standard BMP files; just specify a filename with the .bmp extension to use this feature. In this case, the size parameter can be omitted, as the image size is directly taken from the screen or buffer, depending on if addr is 0 or not.
+	##**Bsave**## can also be used to save images as standard BMP files; just specify a filename with the .bmp extension to use this feature. In this case, the size parameter can be omitted, as the image size is directly taken from the screen or buffer, depending on if ##//addr//## is 0 or not.
 
 	If raw pixel data is being saved in a paletted gfx mode, ##**Bsave**## will attach the palette at the end of the file. Palette data is taken either from the ##//pal//## parameter, which must be an array holding the palette in [[KeyPgPalette Palette Using]] format, either from the currently set palette if ##//pal//## is 0 or not specified. When saving a BMP file in paletted mode, the same rules for the ##//pal//## parameter apply.
 
@@ -56,7 +47,7 @@ BSAVE "hello.bmp", 0
 {{fbdoc item="diff"}}
 	- can save BMP files
 	- supports saving raw binary data larger than 64K
-	- FB raw ##**Bsave**##'d files cannot be loaded from QB (but QB-BSAVEd files can be loaded from FB)
+	- FB raw ##**Bsave**##'d files cannot be loaded from QB (but files ##**BSave**##'d from QB can be loaded from FB)
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgBload Bload]]##

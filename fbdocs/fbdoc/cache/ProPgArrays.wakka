@@ -75,7 +75,7 @@ print arrayptr[i + 1]
 %%
 
 	- See [[ProPgArrayIndex Array Indexing]] for accessing elements with array notation
-	- See [[KeyPgPtrIndex Pointer Indexing]] for accessing elements with pointer notation
+	- See ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer Index)"}}## for accessing elements with pointer notation
 
 {{fbdoc item="see"}}
 	- [[ProPgVariableScope Variable Scope]]

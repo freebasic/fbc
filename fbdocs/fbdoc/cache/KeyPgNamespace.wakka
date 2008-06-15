@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="NAMESPACE"}}----
-Namespaces are used to organize code in distinguishable groups.
+Declares a namespace block
 
 {{fbdoc item="syntax"}}##
 	**Namespace** //identifier//

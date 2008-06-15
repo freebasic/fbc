@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="PAINT"}}----
-Graphics command to fill an area delimited by a border of specified color.
+Fills an area delimited by a border of a specified color
 
 {{fbdoc item="syntax"}}##
 	**Paint** [//target//,] [STEP] (//x//, //y//)[, [//paint//][, [//border_color//]]]

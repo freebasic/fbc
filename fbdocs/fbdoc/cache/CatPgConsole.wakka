@@ -1,6 +1,9 @@
 {{fbdoc item="title" value="Console Functions"}}----
 Procedures that work with the console
 
+{{fbdoc item="desc"}}
+	These procedures provide ways to output text to the console, as well as control where and how text is output.
+
 **{{anchor name="CONFIG|Configuring the Console"}}**
 	Statements that affect how text is displayed.
 **{{anchor name="CURPOS|Cursor Color and Positioning"}}**

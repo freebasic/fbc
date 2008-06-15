@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CLOSE"}}----
-Stream I/O function to terminate access to a device.
+Stream I/O function to terminate access to a device
 
 {{fbdoc item="syntax"}}##
 	**Close** [[#]//filenum// ] [, [#]//filenum// ...]

@@ -1,5 +1,5 @@
-{{fbdoc item="title" value="EXTERN...END EXTERN""}}----
-Statement block to specify calling convention for declarations.
+{{fbdoc item="title" value="EXTERN...END EXTERN"}}----
+Statement block to specify calling convention for declarations
 
 {{fbdoc item="syntax"}}##
 	**Extern """c++""" | """c""" | """windows"""**

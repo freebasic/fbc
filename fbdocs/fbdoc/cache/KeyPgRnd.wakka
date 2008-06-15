@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="RND"}}----
-Returns a [[KeyPgDouble double]] precision random number between 0 and 1.
+Returns a random [[KeyPgDouble double]] precision number in the range [0, 1)
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rnd** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgDouble double]]

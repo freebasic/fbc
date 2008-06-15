@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ACOS"}}----
-Function that finds the arccosine of an angle.
+Finds the arccosine of an angle
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Acos""** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]

@@ -10,7 +10,7 @@ Pointers that point to procedures
 ' declares a pointer to sub procedure that takes no arguments
 dim pointerToProcedure as sub
 %%
-	Procedure pointers store procedure addresses, which are retrieved using the ##[[KeyPgAt address-of operator (@)]]## or the ##[[KeyPgProcptr ProcPtr operator]]##:
+	Procedure pointers store procedure addresses, which are retrieved using ##[[KeyPgOpAt Operator @]]## (Address of) or the ##[[KeyPgOpProcptr ProcPtr operator]]##:
 
 %%(qbasic)
 function Add (a as integer, b as integer) as integer
@@ -56,7 +56,7 @@ print "3 + 4 = " & DoOperation(3, 4, @Add)
 %%
 
 {{fbdoc item="section" value="Pointers to procedure pointers"}}
-	Because the syntax of a procedure pointer does not allow declaration of a pointer to procedure pointer, a type alias is used. Notice how it is necessary to surround a dereferenced pointer to procedure pointer by parenthesis when calling the procedure. This is because the function-call operator '()' has higher precedence than the ##[[KeyPgValOf dereference operator (*)]]##:
+	Because the syntax of a procedure pointer does not allow declaration of a pointer to procedure pointer, a type alias is used. Notice how it is necessary to surround a dereferenced pointer to procedure pointer by parenthesis when calling the procedure. This is because the function-call operator '()' has higher precedence than ##[[KeyPgOpValueOf Operator *]]## (Value of):
 
 %%(qbasic)
 sub Halve (byref i as integer)
@@ -92,7 +92,7 @@ print "Value of 'i' after all operations performed: " & i
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgFunction Function]]##
 	- ##[[KeyPgPointer Pointer]]##
-	- ##[[KeyPgAt Address Of operator]]##
-	- ##[[KeyPgProcptr ProcPtr operator]]##
+	- ##[[KeyPgOpAt Operator * (Address of)]]##
+	- ##[[KeyPgOpProcptr ProcPtr operator]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

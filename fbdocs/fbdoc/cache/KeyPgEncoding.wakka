@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ENCODING"}}----
-Specifies character format of a text file.
+Specifies character format of a text file
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgOpen open]] //filename// for {Input|Output|Append} **Encoding** "//utf-8//"|"//utf-16//"|"//utf-32//"|"//ascii//" as [#]//filenum// 

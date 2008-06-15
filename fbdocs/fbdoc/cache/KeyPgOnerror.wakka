@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ON ERROR"}}----
-Error handling statement to set the current error handler.
+Error handling statement to set the current error handler
 
 {{fbdoc item="syntax"}}##
 	**On [Local] Error Goto** //label//
@@ -22,6 +22,7 @@ Error handling statement to set the current error handler.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+'' Compile with QB (-lang qb) dialect
 on error goto errorhandler
 error 24 '' simulate an error
 print "this message will not be seen"
@@ -32,8 +33,9 @@ end
 %%
 
 {{fbdoc item="lang"}}
-	-  ON ERROR is not supported in //-lang fb//. Statements can be used in its function form to return an error code
+	-  ON ERROR is supported in //-lang qb// only. In //-lang fb//, statements can be used in function form to return an error code
 %%(qbasic)
+'' Compile with FB default (-lang fb) dialect 
 IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN handle_error
 %% 
 {{fbdoc item="diff"}}

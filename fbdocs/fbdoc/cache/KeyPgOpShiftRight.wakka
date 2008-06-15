@@ -1,0 +1,65 @@
+{{fbdoc item="title" value="Operator Shr (Shift right)"}}----
+Shifts the bits of a numeric expression to the right
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Shr** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Shr** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Shr** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Shr** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgUlongint ulongint]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
+##
+{{fbdoc item="usage"}}##
+	//result// = //lhs// **Shr** //rhs//
+##
+{{fbdoc item="param"}}
+	//lhs//
+		The left-hand side expression.
+	//rhs//
+		The right-hand side shift expression.
+
+{{fbdoc item="ret"}}
+	Returns the result of //lhs// being shifted right //rhs// number of times.
+
+{{fbdoc item="desc"}}
+	**##Operator Shr## (Shift right)** shifts all of the bits in the left-hand side expression (//lhs//) right a number of times specified by the right-hand side expression (//rhs//). This has the effect of dividing //lhs// by two for each shift. For example, ##"&b0101 **Shr** 1"## returns the binary number ##&b010##, and ##"5 **Shr** 1"## and returns ##2##.
+
+	If the left-hand side expression is signed, the sign bit is recopied into its place after the shift.
+
+	Neither of the operands are modified in any way.
+
+	This operator can be overloaded for user-defined types.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'Half a number
+DIM i AS INTEGER
+
+FOR i = 1 TO 10
+	PRINT 1000 SHR i
+NEXT i
+SLEEP
+%%
+Output:
+%%
+500
+250
+125
+62
+31
+15
+7
+3
+1
+0
+%%
+
+{{fbdoc item="lang"}}
+	- In the //QB// dialect, this operator cannot be overloaded.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[CatPgOpArithmetic Arithmetic Operators]]
+	- [[CatPgMath Mathematical Functions]]
+
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

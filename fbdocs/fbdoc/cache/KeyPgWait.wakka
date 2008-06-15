@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="WAIT"}}----
-Statement for accessing hardware ports.
+Reads from a hardware port with a mask
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wait** ( [[KeyPgByval byval]] //port// [[KeyPgAs as]] [[KeyPgUshort ushort]] , [[KeyPgByval byval]] //and_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //xor_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -11,9 +11,9 @@ Statement for accessing hardware ports.
 	##//port//##
 		port to read
 	##//and_mask//##
-		mask value to [[KeyPgAnd And]] the port value with
+		mask value to [[KeyPgOpAnd And]] the port value with
 	##//xor_mask//##
-		mask value to [[KeyPgXor Xor]] the port value with
+		mask value to [[KeyPgOpXor Xor]] the port value with
 
 {{fbdoc item="ret"}}
 	0 if successful, -1 on failure.

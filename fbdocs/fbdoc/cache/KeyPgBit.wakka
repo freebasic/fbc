@@ -1,31 +1,38 @@
 {{fbdoc item="title" value="BIT"}}----
-Macro that returns the value of one bit of an integer.
+Macro that returns the value of one bit of an integer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Bit**( //value//, //bit_number// ) (((//value//) [[KeyPgAnd and]] (1 [[KeyPgShl shl]] (//bit_number//))) > 0)
+	[[KeyPgPpdefine #define]] **Bit**( //value//, //bit_number// ) (((//value//) [[KeyPgOpAnd and]] ([[KeyPgCast Cast]]([[KeyPgTypeof TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft shl]] (//bit_number//))) <> 0)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Bit**(//value//, //bit_number//)
 ##
 {{fbdoc item="param"}}
-	##value##
+	##//value//##
 		Value in which to test the bit.
-	##bit_number##
+	##//bit_number//##
 		Zero-based number of the bit to test, where 0 is the least-significant bit.
 
 {{fbdoc item="ret"}}
 	""-1"" if bit ##//bit_number//## is set in ##//value//##, else 0.
 
 {{fbdoc item="desc"}}
-	##**Bit**## returns -1 if the bit ##//bit_number//## of ##//value//## is 1, returns 0 if bit is 0. ##foo = **Bit**( bar, 10 )##  is the same as ##foo = (bar and 10 shl 10) > 0##.
+	##**Bit**## returns -1 if the bit ##//bit_number//## of ##//value//## is 1, returns 0 if bit is 0.
+
+	##foo = **Bit**( bar, 10 )##  is the same as ##foo = (bar and 1 shl 10) <> 0##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
 PRINT BIT(4,2)
+PRINT BIT(5,1)
+PRINT BIT(&H8000000000000000ULL,63)
 %%
 	will produce the output:
 
-%%-1
+%%
+-1
+0
+-1
 %%
 
 {{fbdoc item="diff"}}

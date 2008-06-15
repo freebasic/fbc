@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="#MACRO...#ENDMACRO"}}----
-Preprocessor directive to define a multiline macro.
+Preprocessor directive to define a multiline macro
 
 {{fbdoc item="syntax"}}##
 	**#macro** //macro_name//( [ //param1// [, //param_list//] ] )

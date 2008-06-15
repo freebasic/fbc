@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SEEK (Statement)"}}----
-Sets the position of the next read/write operation on a file.
+Sets the position of the next read/write operation on a file
 
 {{fbdoc item="syntax"}}##
 	**Seek** [#]//filenum//, //position//

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SETTIME"}}----
-Statement to set the current system time
+Sets the current system time
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Settime** ( [[KeyPgByref byref]] //newtime// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]

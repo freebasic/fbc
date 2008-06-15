@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ALIAS"}}----
-Clause of the ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## statements that provides an alternate internal name.
+Clause of the ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## statements that provides an alternate internal name
 
 {{fbdoc item="syntax"}}##
 	[[[KeyPgDeclare declare]]] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //usablename// **Alias "//alternatename//"** (...)

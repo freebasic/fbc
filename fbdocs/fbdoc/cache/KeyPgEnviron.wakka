@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ENVIRON"}}----
-Returns the value of a system environment variable.
+Returns the value of a system environment variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Environ** ( [[KeyPgByref byref]] //varname// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]

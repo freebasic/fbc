@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="EXPORT"}}----
-Declaration specifier to indicate that a procedure in a DLL should be visible from other programs.
+Declaration specifier to indicate that a procedure in a DLL should be visible from other programs
 
 {{fbdoc item="syntax"}}##
 	{ [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc_name// ( //argumentlist// ) [ [[KeyPgAs as]] [[DataType datatype]] ] **Export**

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="RMDIR"}}----
-Removes a folder/directory from the file system.
+Removes a folder/directory from the file system
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rmdir** ( [[KeyPgByref byref]] //folder// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]

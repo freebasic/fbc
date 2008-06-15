@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="DYLIBLOAD"}}----
-Loads to a Dynamic Link Library (DLL) into memory at runtime.
+Loads to a Dynamic Link Library (DLL) into memory at runtime
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibload** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPointer Pointer]]

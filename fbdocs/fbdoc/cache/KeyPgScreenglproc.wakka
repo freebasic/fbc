@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENGLPROC"}}----
-Function to get the address of an OpenGL procedure
+Gets the address of an OpenGL procedure
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ScreenGLProc""** ( [[KeyPgByval byval]] procname [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
@@ -40,4 +40,3 @@ end if
 	- ##[[KeyPgScreencontrol ScreenControl]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}
-   

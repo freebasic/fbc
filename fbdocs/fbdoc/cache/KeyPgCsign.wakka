@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CSIGN"}}----
-Converts an expression to signed.
+Converts an expression to signed
 
 {{fbdoc item="syntax"}}##
 	**Csign** ( //expression// )
@@ -8,7 +8,7 @@ Converts an expression to signed.
 	//variable// = **Csign** ( //expression// )
 ##
 {{fbdoc item="desc"}}
-	Converts an unsigned ##//expression//## to a signed one, useful to force signed behaviour of division or multiplication (including with ##[[KeyPgShl Shl]]## and ##[[KeyPgShr Shr]]##).
+	Converts an unsigned ##//expression//## to a signed one, useful to force signed behaviour of division or multiplication (including with ##[[KeyPgOpShiftLeft Shl]]## and ##[[KeyPgOpShiftRight Shr]]##).
 
 	This is the opposite of ##[[KeyPgCunsg Cunsg]]##.
 

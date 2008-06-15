@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="REM"}}----
-Indicates comments in the source code.
+Indicates comments in the source code
 
 {{fbdoc item="syntax"}}##
 	**Rem** comment
@@ -10,7 +10,7 @@ Indicates comments in the source code.
 	   comment '/
 ##
 {{fbdoc item="desc"}}
-	A source code line beginning with ##**Rem**## indicates that the line is comment and will not be compiled.  ##**Rem**## must be the first keyword on the line.
+	A source code line beginning with ##**Rem**## indicates that the line is comment and will not be compiled.  
 	
 	The single quote character (') may also be used to indicate a comment and may appear after other keywords on a source line.
 
@@ -22,11 +22,15 @@ Indicates comments in the source code.
 comment as a header of
 this example '/
 
-rem this is a single line comment
+REM this is a single line comment
 
-'this is a single line comment
+' this is a single line comment
 
-dim a as integer   'comment following a statement
+? "Hello" : REM comment following a statement
+
+dim a as integer ' comment following a statement
+
+? "FreeBASIC" : ' also acceptable 
 
 dim b as /' can comment in here also '/    integer
 

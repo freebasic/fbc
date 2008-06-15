@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="USING (Namespaces)"}}----
-Using inherits all members of a specified namespace into the global namespace.
+Brings namespace symbols into the current scope
 
 {{fbdoc item="syntax"}}##
 	**Using** //identifier// [, //identifier// [, ...] ]

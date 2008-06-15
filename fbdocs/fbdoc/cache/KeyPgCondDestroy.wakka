@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CONDDESTROY"}}----
-Function that destroys a multi-threading conditional variable when it is no more needed.
+Destroys a multi-threading conditional variable when it is no more needed
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Conddestroy** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )

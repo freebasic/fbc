@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="INP"}}----
-Function for hardware port accessing.
+Returns a value at a hardware port
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Inp** ( [[KeyPgByval byval]] //port// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]

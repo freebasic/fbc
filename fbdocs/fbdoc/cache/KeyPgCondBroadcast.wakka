@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CONDBROADCAST"}}----
-Function that restarts all threads ##[[KeyPgCondWait Condwait]]##ing for the handle.
+Restarts all threads ##[[KeyPgCondWait Condwait]]##ing for the handle
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Condbroadcast** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]])

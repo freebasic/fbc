@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="REALLOCATE"}}----
-Reallocates storage for an existing reserved block of memory.
+Reallocates storage for an existing reserved block of memory
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Reallocate**( //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]

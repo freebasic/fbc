@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CSRLIN"}}----
-Returns the row position of the cursor.
+Returns the row position of the cursor
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Csrlin** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]

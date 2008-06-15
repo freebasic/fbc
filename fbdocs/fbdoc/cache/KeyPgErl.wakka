@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ERL"}}----
-Error handling function to return the line where the error occured.
+Error handling function to return the line where the error occured
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Erl** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]

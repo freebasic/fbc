@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="#IF"}}----
-Preprocessor conditional directive.
+Preprocessor conditional directive
 
 {{fbdoc item="syntax"}}##
 	**#if** (expression)

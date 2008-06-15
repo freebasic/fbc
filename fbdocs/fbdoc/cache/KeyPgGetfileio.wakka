@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="GET (File I/O)"}}----
-Reads data from a file to a buffer.
+Reads data from a file to a buffer
 
 {{fbdoc item="syntax"}}##
 	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data// [[KeyPgAs As]] [[KeyPgAny Any]] [, //amount// [[KeyPgAs As]] [[KeyPgInteger Integer]]]
@@ -14,7 +14,7 @@ Reads data from a file to a buffer.
 	##//position//##
 		The position where the read must start. If the file was opened ##For Random##, the position is in records; otherwise, it is in bytes. If omitted, read starts at the present file pointer position.  The first byte of the file is located at position 1.
 	##//data//##
-		The buffer where data is written. It can be a numeric variable, a string, an array, a user defined type or a dereferenced pointer. The read operation will try to fill completely the variable, unless //amount// is given or the ##[[KeyPgEof EOF]]## is reached.  Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by [[KeyPgValOf dereferencing]] the pointer.)  Get will automatically infer that the rest of the buffer continues after the first variable.  If you pass a pointer, then ##**Get**## will overwrite the pointer, not the memory it points to.
+		The buffer where data is written. It can be a numeric variable, a string, an array, a user defined type or a dereferenced pointer. The read operation will try to fill completely the variable, unless //amount// is given or the ##[[KeyPgEof EOF]]## is reached.  Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf Operator * (Value of)]]##.)  Get will automatically infer that the rest of the buffer continues after the first variable.  If you pass a pointer, then ##**Get**## will overwrite the pointer, not the memory it points to.
 	##//amount//##
 		Limits ##**Get**## to read  read ##//amount// * [[KeyPgSizeof Sizeof]](//datatype//)## bytes of data.  If ##//amount//## is omitted it defaults to 1, and ##Get## reads one variable of the buffer's data type.
 

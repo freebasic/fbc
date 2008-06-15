@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ALLOCATE"}}----
-Allocates a certain number of bytes from the free store.
+Allocates a certain number of bytes from the free store
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Allocate**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]

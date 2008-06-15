@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Returning Values"}}----
-**Returning Values** refers to the ability of a ##[[KeyPgFunction Function]]## to have a value when the function finishes such that the value can be used in an expression or assigned to a variable.
+**Returning Values** refers to the ability of a ##[[KeyPgFunction Function]]## procedure to have a value when the function finishes such that the value can be used in an expression or assigned to a variable.
 
 The value of a function can be returned in three ways:
 

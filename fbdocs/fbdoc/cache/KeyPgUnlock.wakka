@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="UNLOCK"}}----
-Removes a previous access restriction (lock) on a file.
+Removes a previous access restriction (lock) on a file
 
 {{fbdoc item="syntax"}}##
 	**Unlock** #//filenum// [, //record// ]

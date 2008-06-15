@@ -1,4 +1,6 @@
 {{fbdoc item="title" value="Header Files (.bi)"}}----
+Provides an interface for a module
+
 A header file is a special kind of source file that typically only contains preprocessor statements, defines, declarations, prototypes, constants, enumerations, or similar types of statements, however, a header file can contain any valid source code if the purpose suits.  What makes them different from other module (.bas) source files, is instead of being compiled directly, they are included by another source file (module or header) using the ##[[KeyPgInclude #include]]## preprocessor directive.  All precompiled libraries typically have one or more header files that can be included in another source file and will introduce to the compiler all the names of the procedures usable in a particular library.
 
 {{fbdoc item="section" value="FreeBASIC Header Files"}}

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MUTEXDESTROY"}}----
-Destroys a mutex.
+Destroys a mutex
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Mutexdestroy** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )

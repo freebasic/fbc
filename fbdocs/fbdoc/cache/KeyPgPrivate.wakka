@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="PRIVATE"}}----
-Specifies procedure visibility to other modules.
+Specifies procedure visibility to other modules
 
 {{fbdoc item="syntax"}}##
 	**Private** //procedure_definition// ...

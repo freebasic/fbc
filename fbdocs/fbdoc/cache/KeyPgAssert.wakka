@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="ASSERT"}}----
-Debugging macro that halts program execution if an expression is not true.
+Debugging macro that halts program execution if an expression is not true
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **ASSERT**(//expression//) [[KeyPgIfthen if]] (expression) = 0 [[KeyPgThen then]] : fb_Assert( [[KeyPgDdfile __FILE__]], [[KeyPgDdline __LINE__]], [[KeyPgDdfunction __FUNCTION__]], [[KeyPgStringize #]]expression ) : [[KeyPgEndif end if]]
+	[[KeyPgPpdefine #define]] **ASSERT**(//expression//) [[KeyPgIfthen if]] (expression) = 0 [[KeyPgThen then]] : fb_Assert( [[KeyPgDdfile __FILE__]], [[KeyPgDdline __LINE__]], [[KeyPgDdfunction __FUNCTION__]], [[KeyPgOpPpStringize #]]expression ) : [[KeyPgEndif end if]]
 ##
 {{fbdoc item="usage"}}##
 	**ASSERT**( //expression// )

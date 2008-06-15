@@ -3,7 +3,7 @@ fbc command-line usage
 
 	The official FreeBASIC distribution comes with **fbc**, FreeBASIC's flagship compiler. **fbc** is a command line compiler, and can be launched from the console - from DOS, the Windows command prompt or a Linux shell. Running **fbc** from the console without any arguments displays a list of available options, or command-line switches, that can be used to adjust the behavior of the compiler.
 
-	At it's simplest, **fbc** takes a source file as a command-line argument and produces an executable file. It does this by compiling the source file (.bas) into an object file (.o) and linking this object file to other object files and libraries it needs to run, producing the final executable file. The compiled object file is deleted at this point. For example, the following command,
+	At it's simplest, **fbc** takes a source file as a command-line argument and produces an executable file. It does this by compiling the source file (.bas) into an assembly (.asm) file, then compiling this into an object file (.o) using GAS and finally linking using LD this object file to other object files and libraries it needs to run, producing the final executable file. The assembly and compiled object files are deleted at this point by default. For example, the following command,
 
 		##fbc foo.bas##
 
@@ -109,8 +109,11 @@ fbc command-line usage
 >>::c::
 
 {{fbdoc item="ex"}}
+	##fbc myfile.bas##
+		//(With DOS version of FBC, compile and link a DOS executable ##MYFILE.EXE##.)//
+
 	##fbc -s gui myfile.bas##
-		//(Compile and link a Windows executable ##myfile.exe##. Running the program will not show the console - MS-DOS Prompt, DOS box, etc.)//
+		//(With Windows version of FBC, compile and link a Windows executable ##myfile.exe##. Running the program will not show the console window ("MS-DOS Prompt"))//
 
 	##fbc -lib module1.bas module2.bas module3.bas -x libmylib.a##
 		//(Compile and link a static library ##libmylib.a## from the three source files)//

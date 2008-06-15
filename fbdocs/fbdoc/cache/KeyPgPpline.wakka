@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="#LINE"}}----
-Preprocessor directive to set the current line number and file name.
+Preprocessor directive to set the current line number and file name
 
 {{fbdoc item="syntax"}}##
 	**#line** //number// [ "//name//" ]

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="PSET"}}----
-Graphics statement to plot a single pixel.
+Plots a single pixel
 
 {{fbdoc item="syntax"}}##
 	**PSet** [//target// ,] [STEP] (//x//, //y//) [,//color//]

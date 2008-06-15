@@ -8,10 +8,10 @@ Datatypes whose values are addresses in memory
 Dim myInteger As Integer = 10
 Dim myPointer As Integer Pointer = @myInteger
 %%
-	defines an integer and an integer pointer that points to the location in memory where the integer is stored. The [[KeyPgAt address-of operator]] (@) is used to retrieve the address of the integer.
+	defines an integer and an integer pointer that points to the location in memory where the integer is stored. ##[[KeyPgOpAt Operator @]]## (Address of) is used to retrieve the address of the integer.
 
 ==Accessing the pointed to data==
-	The data pointed to by a pointer can be accessed with the [[KeyPgValOf dereference operator]] (*). This operator returns a reference to the data that is pointed to, that matches the type of pointer. The following,
+	The data pointed to by a pointer can be accessed with ##[[KeyPgOpValueOf Operator *]]## (Value of). This operator returns a reference to the data that is pointed to, that matches the type of pointer. The following,
 
 %%(qbasic)
 *myPointer = 20
@@ -39,15 +39,17 @@ Dim p As myType Pointer = @x
 Print p->a
 Print p->b
 %%
-	The first method uses the 'dot' form of the [[KeyPgDot member access operator]]. This operator accesses members from references, so the pointer is dereferenced first. The member access operator has higher priority over the dereference operator, so parenthesis are needed to dereference the pointer before using it with the member access operator.
+	The first method uses ##[[KeyPgOpMemberAccess Operator . (Member access)]]##. This operator accesses members from references, so the pointer is dereferenced first. The member access operator has higher priority over the dereference operator, so parenthesis are needed to dereference the pointer before using it with the member access operator.
 
-	The second method uses the 'arrow' form of the [[KeyPgPtrField member access operator]]. This operator accesses members from pointers, which are automatically dereferenced. This can make code a little clearer, although both forms produce identical results.
+	The second method uses ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]##. This operator accesses members from pointers, which are automatically dereferenced. This can make code a little clearer, although both forms produce identical results.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgAt (@) Address of]]##
-	- ##[[KeyPgValOf (*) Value of]]##
-	- ##[[KeyPgVarptr Varptr]]##
-	- ##[[KeyPgStrptr Strptr]]##
-	- ##[[KeyPgProcptr Procptr]]##
+	- ##[[KeyPgOpAt Operator @ (Address of)]]##
+	- ##[[KeyPgOpValueOf Operator * (Value of)]]##
+	- ##[[KeyPgOpMemberAccess Operator . (Member access)]]##
+	- ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]##
+	- ##[[KeyPgOpVarptr Varptr]]##
+	- ##[[KeyPgOpStrptr Strptr]]##
+	- ##[[KeyPgOpProcptr Procptr]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

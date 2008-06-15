@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CONDCREATE"}}----
-Function that creates a conditional variable to be used in synchronizing threads.
+Creates a conditional variable to be used in synchronizing threads
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Condcreate** ( ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]

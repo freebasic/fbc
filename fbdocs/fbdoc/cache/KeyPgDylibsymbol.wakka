@@ -1,9 +1,9 @@
 {{fbdoc item="title" value="DYLIBSYMBOL"}}----
-Returns the address of a function or variable in a dll.
+Returns the address of a function or variable in a dll
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibsymbol** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr ]], [[KeyPgByref byref]] //symbol// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibsymbol** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr ]], [[KeyPgByval byval]] //symbol// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibsymbol** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //symbol// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibsymbol** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //symbol// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Dylibsymbol** ( //library//, //symbol// )

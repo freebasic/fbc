@@ -21,6 +21,6 @@ sleep
 	- 
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgVarptr Varptr]]##
+	- ##[[KeyPgOpVarptr Varptr]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

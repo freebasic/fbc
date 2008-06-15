@@ -2,16 +2,22 @@
 Writes a list of values to a file or device
 
 {{fbdoc item="syntax"}}##
-	**Print #** //filenum//, //values//
+	**Print #** //filenum//**,** [ //expressionlist// ] [ , | ; ]
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
 		The file number of a file or device.
-	##//values//##
-		Comma-seperated list of values to write.
+	##//expressionlist//##
+		List of values to write.
 
 {{fbdoc item="desc"}}
-	Prints argument list to opened file that corresponds to #. Args can be any combination of constants and variables.
+	##**Print #**## outputs a list of values to a file or device. Numeric values are converted to their string representation, with left padding for the sign. Objects of user-defined types must overload ##Operator Cast () As String##.
+
+	Consecutive values in the expression list are seperated either by a comma (,) or semicolon (;). A comma indicates printing should take place at the next 14 column boundary, while a semicolon indicates values are printed with no space between them.
+
+	Note that the comma (,) following the file number is still necessary, even if no expression list is given.
+
+	A new-line character is printed after the values in the expression list unless the expression list is followed by a comma or semicolon.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -27,6 +33,8 @@ open "bleh.dat"  for output as #1
 	- None
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgPrintusingPp Print # Using]]##
 	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrintusing Print Using]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

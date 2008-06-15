@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="FORMAT"}}----
-String function to format a number in a specified format
+Formats a number in a specified format
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Format** ( [[KeyPgByval byval]] //numerical_expression// [[KeyPgAs as]] [[KeyPgDouble double]], //formatting_expression// [[KeyPgAs as]] [[KeyPgStringtype string]] = "" ) [[KeyPgAs as]] [[KeyPgStringtype string]]

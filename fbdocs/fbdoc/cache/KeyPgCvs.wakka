@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CVS"}}----
-Converts an four byte string to an single-precision variable.
+Converts an four byte string to an single-precision variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvs** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgSingle single]]

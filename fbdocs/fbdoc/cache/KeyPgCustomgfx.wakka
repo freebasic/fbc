@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CUSTOM"}}----
-Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects a custom method.
+Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects a custom method
 
 {{fbdoc item="syntax"}}##
 	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ], **Custom** [, //custom_function_ptr// ]

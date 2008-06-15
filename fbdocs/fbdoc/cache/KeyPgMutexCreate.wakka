@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MUTEXCREATE"}}----
-Creates a mutex used for synchronizing the execution of threads.
+Creates a mutex used for synchronizing the execution of threads
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mutexcreate** ( ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]

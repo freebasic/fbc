@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="POS"}}----
-Returns the horizontal (left-right) position of the text cursor.
+Returns the horizontal (left-right) position of the text cursor
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Pos** [[KeyPgOverload overload]] ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]

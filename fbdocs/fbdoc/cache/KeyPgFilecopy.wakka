@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="FILECOPY"}}----
-Copies a file.
+Copies a file
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileCopy""** ( //source// [[KeyPgAs as]] [[KeyPgStringtype string]], //destination// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]

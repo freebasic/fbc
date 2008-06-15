@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SIN"}}----
-Function that returns the sine of a number.
+Returns the sine of a number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]

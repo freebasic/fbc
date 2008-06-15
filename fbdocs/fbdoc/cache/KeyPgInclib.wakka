@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="#INCLIB"}}----
-Preprocessor directive.
+Preprocessor directive
 
 {{fbdoc item="syntax"}}##
 	**#inclib** //"filename"//

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="TIMER"}}----
-Returns the number of seconds passed since starting the computer.
+Returns the number of seconds passed since starting the computer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Timer** ( ) [[KeyPgAs as]] [[KeyPgDouble double]]

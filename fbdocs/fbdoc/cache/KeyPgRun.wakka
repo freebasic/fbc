@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="RUN"}}----
-Transfers execution to an external program.
+Transfers execution to an external program
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Run** ( [[KeyPgByref byref]] //program// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //arguments// [[KeyPgAs as]] [[KeyPgString string]] = ##"####"## ) [[KeyPgAs as]] [[KeyPgString integer]]

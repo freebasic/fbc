@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="WINPUT()"}}----
-Read a number of wide-characters from console or file
+Reads a number of wide-characters from console or file
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( [[KeyPgByval byval]] //num// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype wstring]]

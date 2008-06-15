@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="__FB_OPTION_PRIVATE__"}}----
-Intrinsic define (macro value) set by the compiler.
+Intrinsic define (macro value) set by the compiler
 
 {{fbdoc item="syntax"}}##
 	""__FB_OPTION_PRIVATE__""

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OPTION BYVAL"}}----
-Compiler switch to set default method for passing parameters.
+Compiler switch to set default method for passing parameters
 
 {{fbdoc item="syntax"}}##
 	**Option Byval**

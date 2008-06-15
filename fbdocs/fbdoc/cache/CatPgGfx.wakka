@@ -1,4 +1,6 @@
 {{fbdoc item="title" value="Graphics Keyword List"}}----
+A list of the keywords and procedures of ""FreeBASIC""'s graphics library
+
 <<
 	- {{fbdoc item="keyword" value="KeyPgAlphaGfx|ALPHA"}}
 	- {{fbdoc item="keyword" value="KeyPgBload|BLOAD"}}

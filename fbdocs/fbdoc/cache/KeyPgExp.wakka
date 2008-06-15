@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="EXP"}}----
-Returns //**e**// raised to the power of a given number.
+Returns //**e**// raised to the power of a given number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Exp** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]

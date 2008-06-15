@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="FUNCTION"}}----
-Defines a procedure returning a value.
+Defines a procedure returning a value
 
 {{fbdoc item="syntax"}}##
 	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] **Function** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [([//parameter_list//])] [[[KeyPgAs As]] //return_type//] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]

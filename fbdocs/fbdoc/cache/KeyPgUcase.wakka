@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="UCASE"}}----
-Returns an upper case copy of a string.
+Returns an upper case copy of a string
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ucase** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]

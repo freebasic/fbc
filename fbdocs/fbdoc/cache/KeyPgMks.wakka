@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MKS"}}----
-Does a binary copy from a ##[[KeyPgSingle single]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes.
+Does a binary copy from a ##[[KeyPgSingle single]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mks** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]

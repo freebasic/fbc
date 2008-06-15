@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="VIEW (GRAPHICS)"}}----
-Statement to define new physical coordinates mapping and clipping region.
+Sets new physical coordinate mapping and clipping region
 
 {{fbdoc item="syntax"}}##
 	**View** [SCREEN] ( //x1//, //y1// )-( //x2//, //y2// )[, [ //color// ] [, //border// ]]]

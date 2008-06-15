@@ -1,5 +1,8 @@
 {{fbdoc item="title" value="Mathematical Functions"}}----
-Procedures that work with numbers mathematically.
+Procedures that work with numbers mathematically
+
+{{fbdoc item="desc"}}
+	This set of procedures provide basic algebraic and trigonometric function. Random numbers can also be retrieved, using a variety of random number generators (RNGs).
 
 **{{anchor name="ALGEBRA|Algebraic Procedures"}}**
 	Absolute values, logarithms, square roots and more.
@@ -15,8 +18,6 @@ Procedures that work with numbers mathematically.
 		Returns //e// raised to some power.
 	=={{fbdoc item="keyword" value="KeyPgLog|LOG"}}==
 		Returns the natural logarithm of a number.
-	=={{fbdoc item="keyword" value="KeyPgMod|MOD"}}==
-		Returns the remainder of a quotient.
 	=={{fbdoc item="keyword" value="KeyPgSqr|SQR"}}==
 		Returns the square root of a number.
 	=={{fbdoc item="keyword" value="KeyPgFix|FIX"}}==

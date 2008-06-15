@@ -1,10 +1,12 @@
 {{fbdoc item="title" value="String Operators"}}----
+Operators that work with strings
+
 <<
-	- {{fbdoc item="keyword" value="KeyPgConcat|+ (String concatenation)"}}
-	- {{fbdoc item="keyword" value="KeyPgConcatConv|& (String concatenation with conversion)"}}
-	- {{fbdoc item="keyword" value="KeyPgStrIndex|[] (String indexing)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpStringIndex|Operator [] (String index)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpConcatConvert|Operator & (String concatenation with conversion)"}}
 
 >>
 ::c::
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}
+   

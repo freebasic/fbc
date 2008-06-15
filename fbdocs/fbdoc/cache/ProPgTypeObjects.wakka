@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="Types as Objects"}}----
-
-!!! WRITEME !!!
+An example of the overloadable operators and member procedures
 
 {{fbdoc item="desc"}}
+!!! WRITEME !!!
 
 %%(qbasic)
 '' Sample Type showing available methods and operators

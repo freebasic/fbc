@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="PMAP"}}----
-Graphics function to map coordinates between view and physical mapping.
+Maps coordinates between view and physical mapping
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **PMap** ( [[KeyPgByval byval]] //coord// [[KeyPgAs as]] [[KeyPgSingle single]], [[KeyPgByval byval]] //func// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgSingle single]]

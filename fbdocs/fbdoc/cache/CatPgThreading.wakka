@@ -1,6 +1,9 @@
 {{fbdoc item="title" value="Threading Support Functions"}}----
 Procedures for working with multithreaded applications
 
+{{fbdoc item="desc"}}
+	These procedures allow for multithreaded programming. Threads and conditional variables can be created and destroyed, and so-called //mutexes// can be obtained to protect thread-sensitive data.
+
 **{{anchor name="THREADS|Threads"}}**
 	Procedures that start and wait for threaded procedures.
 **{{anchor name="CONDVARS|Conditional Varables"}}**

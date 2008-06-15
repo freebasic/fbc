@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MKSHORT"}}----
-Does a binary copy from a ##[[KeyPgShort short]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 2 bytes.
+Does a binary copy from a ##[[KeyPgShort short]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 2 bytes
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkshort** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]

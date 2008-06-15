@@ -1,4 +1,6 @@
-{{fbdoc item="title" value="Functional Keywords List"}}----
+{{fbdoc item="title" value="Functional Keyword List"}}----
+List of ""FreeBASIC"" keywords sorted by the function they perform
+
 <<
 {{fbdoc item="section" value="Arrays"}}
 	- {{fbdoc item="keyword" value="KeyPgErase|ERASE"}}
@@ -15,8 +17,6 @@
 	- {{fbdoc item="keyword" value="KeyPgHiword|HIWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgLoByte|LOBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgLoWord|LOWORD"}}
-	- {{fbdoc item="keyword" value="KeyPgShl|SHL"}}
-	- {{fbdoc item="keyword" value="KeyPgShr|SHR"}}
 
 {{fbdoc item="section" value="Compiler switches"}}
 	- {{fbdoc item="keyword" value="KeyPgDynamic|$DYNAMIC"}}
@@ -226,12 +226,12 @@
 	- {{fbdoc item="keyword" value="KeyPgLprint|LPRINT"}}
 
 {{fbdoc item="section" value="Bitwise operators"}}
-	- {{fbdoc item="keyword" value="KeyPgAnd|AND"}}
-	- {{fbdoc item="keyword" value="KeyPgEqv|EQV"}}
-	- {{fbdoc item="keyword" value="KeyPgImp|IMP"}}
-	- {{fbdoc item="keyword" value="KeyPgOr|OR"}}
-	- {{fbdoc item="keyword" value="KeyPgNot|NOT"}}
-	- {{fbdoc item="keyword" value="KeyPgXor|XOR"}}
+	- {{fbdoc item="keyword" value="KeyPgOpAnd|AND"}}
+	- {{fbdoc item="keyword" value="KeyPgOpEqv|EQV"}}
+	- {{fbdoc item="keyword" value="KeyPgOpImp|IMP"}}
+	- {{fbdoc item="keyword" value="KeyPgOpOr|OR"}}
+	- {{fbdoc item="keyword" value="KeyPgOpNot|NOT"}}
+	- {{fbdoc item="keyword" value="KeyPgOpXor|XOR"}}
 
 {{fbdoc item="section" value="Math"}}
 	- {{fbdoc item="keyword" value="KeyPgAbs|ABS"}}
@@ -245,7 +245,6 @@
 	- {{fbdoc item="keyword" value="KeyPgFrac|FRAC"}}
 	- {{fbdoc item="keyword" value="KeyPgInt|INT"}}
 	- {{fbdoc item="keyword" value="KeyPgLog|LOG"}}
-	- {{fbdoc item="keyword" value="KeyPgMod|MOD"}}
 	- {{fbdoc item="keyword" value="KeyPgRandomize|RANDOMIZE"}}
 	- {{fbdoc item="keyword" value="KeyPgRnd|RND"}}
 	- {{fbdoc item="keyword" value="KeyPgSgn|SGN"}}
@@ -325,11 +324,11 @@
 
 {{fbdoc item="section" value="Pointers"}}
 	- {{fbdoc item="keyword" value="KeyPgPointer|POINTER"}}
-	- {{fbdoc item="keyword" value="KeyPgProcptr|PROCPTR"}}
+	- {{fbdoc item="keyword" value="KeyPgOpProcptr|PROCPTR"}}
 	- {{fbdoc item="keyword" value="KeyPgPtr|PTR"}}
 	- {{fbdoc item="keyword" value="KeyPgSadd|SADD"}}
-	- {{fbdoc item="keyword" value="KeyPgStrptr|STRPTR"}}
-	- {{fbdoc item="keyword" value="KeyPgVarptr|VARPTR"}}
+	- {{fbdoc item="keyword" value="KeyPgOpStrptr|STRPTR"}}
+	- {{fbdoc item="keyword" value="KeyPgOpVarptr|VARPTR"}}
 
 {{fbdoc item="section" value="Predefined symbols"}}
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}} 

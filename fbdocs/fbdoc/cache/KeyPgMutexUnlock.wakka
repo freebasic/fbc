@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MUTEXUNLOCK"}}----
-Releases a mutex lock.
+Releases a mutex lock
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Mutexunlock** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )

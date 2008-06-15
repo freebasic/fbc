@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SLEEP"}}----
-Waits until a specified time has elapsed, or a key is pressed.
+Waits until a specified time has elapsed, or a key is pressed
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //msecs// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]

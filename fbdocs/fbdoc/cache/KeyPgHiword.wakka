@@ -2,7 +2,7 @@
 Macro to return the high word of an expression
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Hiword**( //x// ) ([[KeyPgCuint CUint]](//x//) [[KeyPgShr shr]] 16)
+	[[KeyPgPpdefine #define]] **Hiword**( //x// ) ([[KeyPgCuint CUint]](//x//) [[KeyPgOpShiftRight shr]] 16)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Hiword**(//x//)

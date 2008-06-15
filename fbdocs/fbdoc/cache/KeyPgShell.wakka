@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SHELL"}}----
-Sends a command to the system command interpreter.
+Sends a command to the system command interpreter
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Shell**( //command// [[KeyPgAs as]] [[KeyPgString string]] )

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="DYLIBFREE"}}----
-Unloads a dynamic link library from memory.
+Unloads a dynamic link library from memory
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Dylibfree** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPointer pointer]] )

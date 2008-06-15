@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="LOF"}}----
-Returns the length of an open disk file.
+Returns the length of an open disk file
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lof** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]

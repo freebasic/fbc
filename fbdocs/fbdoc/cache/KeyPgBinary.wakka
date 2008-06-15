@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="BINARY"}}----
-Specifies file or device to be opened for binary mode.
+Specifies file or device to be opened for binary mode
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgOpen Open]] //filename// for **Binary** [[[KeyPgAccess Access]] //access_type//] [[[KeyPgLock Lock]] //lock_type//] as [#]//filenum// 

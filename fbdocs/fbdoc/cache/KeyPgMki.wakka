@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MKI"}}----
-Does a binary copy from a ##[[KeyPgInteger integer]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes.
+Does a binary copy from a ##[[KeyPgInteger integer]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mki** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]

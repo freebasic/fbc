@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="WINDOW"}}----
-Graphics statement to define new view coordinates mapping for current viewport.
+Sets new view coordinates mapping for current viewport
 
 {{fbdoc item="syntax"}}##
 	**Window** [ [SCREEN] ( //x1//, //y1// )-( //x2//, //y2// ) ]

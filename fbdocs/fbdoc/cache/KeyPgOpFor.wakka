@@ -1,0 +1,116 @@
+{{fbdoc item="title" value="Operator For (iteration)"}}----
+Declares or defines operators for a user defined type for use in a ##[[KeyPgFor...Next]]## loop.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **For** ()
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **For** ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //stp// [[KeyPgAs as]] //typename// )
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Step** ()
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Step** ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //stp// [[KeyPgAs as]] //typename// )
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Next** ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //cond// [[KeyPgAs as]] //typename// ) [[KeyPgAs as]] [[KeyPgInteger Integer]]
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Next** ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //cond// [[KeyPgAs as]] //typename//, [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //stp// [[KeyPgAs as]] //typename// ) [[KeyPgAs as]] [[KeyPgInteger Integer]]
+	End Type
+##
+{{fbdoc item="usage"}}##
+	[[KeyPgFornext For]] //variable// = //start_value// To //end_value//
+		//statements//
+	[[KeyPgFornext Next]]
+
+	[[KeyPgFornext For]] //variable// = //start_value// To //end_value// [[KeyPgFornext Step]] //step_value//
+		//statements//
+	[[KeyPgFornext Next]]
+##
+{{fbdoc item="param"}}
+	##//typename//## 
+		name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgUnion Union]]##
+	##//cond//## 
+		end value for the ##**For...Next**## loop
+	##//stp//##
+		step value for each iteration of the loop
+	##//variable//##
+		a variable that will change on each iteration of the loop
+	##//start_value//##
+		the initial value for ##//variable//## on the first iteration of the loop
+	##//end_value//##
+		the end value to compare ##//variable//## with to determine the end condition and passed as ##//cond//##
+	##//step_value//##
+		an optional step value to be passed as ##//stp//##
+	##//statements//##
+		the statements to execute on each iteration of the loop
+
+{{fbdoc item="desc"}}
+	The ##**For...Next**## statement can be use a ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgUnion Union]]## variable as the iterator if the user defined type overloads the ##**For**##, ##**Next**##, and ##**Step**## operators.
+
+	Two forms of the operators are used depending on if the ##**For...Next**## specifies ##[[KeyPgStep Step]]## value.  In the one usage, a step value of ##//stp//## is passed to indicate the increment or decrement.  In the other usage, a ##//stp//## value is not passed.  The operators can only accept parameters that are of the same type as ##//typename//##.  A hidden instance parameter is passed to the operators where ##[[KeyPgThis This]]## is the value to be iterated.
+
+	The order of operations for handling the ##[[KeyPgFornext For...Next]]## statement are as follows:
+		- Initialize ##//variable//## to ##//start_value//##.
+		- Invoke ##**For**()## operator to allow additional initialization.
+		- Invoke ##**Next**()## operator to allow testing for a zero iteration loop.  This operator should return zero (0) to exit the loop, or non-zero (-1) to continue.
+		- Execute ##//statement//##.
+		- Invoke ##**Step**()## operator.
+		- Invoke ##**Next**()## operator.  This operator should return zero (0) to exit the loop, or non-zero (-1) to continue.
+
+	If ##//step_value//## is not given in the ##[[KeyPgFornext For...Next]]## statement, then the ##**For**()##, ##**Step**()##, and ##**Next**(//cond//)## operators are performed.  If ##//step_value//## is given, then the ##**For**(//stp//)##, ##**Step**(//stp//)##, and ##**Next**(//cond//,//stp//)## operators are performed.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' Example Type
+
+type T
+
+  value as double
+
+  declare constructor( byval x as double = 0 )
+
+  declare operator += ( byval x as double )
+
+  declare operator for()
+  declare operator step()
+  declare operator next( byref cond as T ) as integer
+
+  declare operator cast() as string
+
+end type
+
+constructor T ( byval x as double )
+  value = x
+end constructor
+
+operator <= ( byref lhs as T, byref rhs as T ) as integer
+  operator = ( lhs.value <= rhs.value )
+end operator
+
+operator T.+= ( byval x as double )
+  value +=  x
+end operator
+
+operator T.for()
+end operator
+
+operator T.step()
+  this += 1
+end operator
+
+operator T.next( byref cond as T ) as integer
+  operator = ( this <= cond )
+end operator
+
+operator T.cast() as string
+  operator = str( value )
+end operator
+
+'' Example Usage
+
+for i as T = 1 to 10
+  print i
+next i
+%%
+{{fbdoc item="lang"}}
+	- Supported only with //-lang fb//.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgFornext For...Next]]##
+	- ##[[KeyPgOperator Operator]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="KILL"}}----
-Deletes a file from disk
+Deletes a file from disk / storage media.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Kill** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -15,18 +15,21 @@ Deletes a file from disk
 	Returns zero (0) on success, or non-zero on error.
 
 {{fbdoc item="desc"}}
-	Deletes a file from the disk drive.
-
+	Deletes a file from disk / storage media.
+	
+	 
 {{fbdoc item="ex"}}
 %%(qbasic)dim filename as string = "file.ext"
 dim result as integer = kill( filename )
 
-if 0 <> result then print "error trying to kill " & filename" & "."
+if result <> 0 then print "error trying to kill " ; filename ; " !!!"
 %%
 {{fbdoc item="diff"}}
-	- None
+	- KILL can optionally be used as function in FB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgShell Shell]]##
+	- ##[[KeyPgRmdir Rmdir]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}
+

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="EXEC"}}----
-Temporarily transfers execution to an external program.
+Temporarily transfers execution to an external program
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Exec** ( [[KeyPgByref byref]] //program// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //arguments// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]

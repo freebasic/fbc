@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="LOCATE"}}----
-Console/Graphics statement to set the current cursor position.
+Sets the current cursor position
 
 {{fbdoc item="syntax"}}##
 	**Locate** [//row// [[KeyPgAs as]] [[KeyPgInteger integer]] ][, [//column// [[KeyPgAs as]] [[KeyPgInteger integer]] ][, [//cursorstate// [[KeyPgAs as]] [[KeyPgInteger integer]] ]][, [//start// [[KeyPgAs as]] [[KeyPgInteger integer]] ][, [//stop// [[KeyPgAs as]] [[KeyPgInteger integer]] ]

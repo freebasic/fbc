@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENLOCK"}}----
-Graphics statement to lock the working page framebuffer.
+Locks the working page's framebuffer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenlock** ( )

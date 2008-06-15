@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="COLOR"}}----
-Sets the display foreground / background color that is used with console output and graphics output of text.
+Sets the display foreground / background color that is used with console output and graphics output of text
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Color** ( [[KeyPgByval byval]] //foreground// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //background// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]

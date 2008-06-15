@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="LIB"}}----
-Specifies the DLL where a sub or function can be found as part of a declaration.
+Specifies the DLL where a sub or function can be found as part of a declaration
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc_name// **Lib** "//dllname//" [[KeyPgAlias alias]] "//symbol_name//" ( //arguments list// ) [[KeyPgAs as]] //return_type//

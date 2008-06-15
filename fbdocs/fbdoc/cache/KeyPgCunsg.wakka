@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CUNSG"}}----
-Converts an expression to unsigned.
+Converts an expression to unsigned
 
 {{fbdoc item="syntax"}}##
 	**Cunsg** ( //expression// )
@@ -7,7 +7,7 @@ Converts an expression to unsigned.
 {{fbdoc item="usage"}}##
 	//variable// = **Cunsg** ( //expression// )
 ##
-	Converts a signed ##//expression//## to an unsigned one, useful to force unsigned behaviour of division or multiplication (including with ##[[KeyPgShl Shl]]## and ##[[KeyPgShr Shr]]##).
+	Converts a signed ##//expression//## to an unsigned one, useful to force unsigned behaviour of division or multiplication (including with ##[[KeyPgOpShiftLeft Shl]]## and ##[[KeyPgOpShiftRight Shr]]##).
 
 	This is the opposite of ##[[KeyPgCsign Csign]]##.
 

@@ -26,7 +26,7 @@ Called automatically when a class or user defined type is created
 
 	Chaining of constructors in nested types is supported.  Any fields that have their own default constructor are called first.
 
-	Constructors are called when declaring global or local static instances of ##//typename//## and when allocating ##//typename//## dynamically using the ##[[KeyPgNew New]]## operator.
+	Constructors are called when declaring global or local static instances of ##//typename//## and when allocating ##//typename//## dynamically using the ##[[KeyPgOpNew New]]## operator.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -102,7 +102,7 @@ print "  x4 = "; x4
 {{fbdoc item="see"}}
 	- ##[[KeyPgType Class]]##
 	- ##[[KeyPgModuleConstructor Constructor (Module)]]##
-	- ##[[KeyPgNew New]]##
+	- ##[[KeyPgOpNew New]]##
 	- ##[[KeyPgDestructor Destructor]]##
 	- ##[[KeyPgType Type]]##
 

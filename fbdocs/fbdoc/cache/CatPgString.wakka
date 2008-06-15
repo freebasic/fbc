@@ -1,6 +1,9 @@
 {{fbdoc item="title" value="String Functions"}}----
 Statements and Procedures that work with strings
 
+{{fbdoc item="desc"}}
+	These statements and procedures provide a myriad of ways to create and manipulate strings and substrings. Numbers can be converted to strings and vice-versa. Procedures are also provided to aid in serialization of numeric data, perhaps for persistant storage.
+
 **{{anchor name="CREATESTR|Creating Strings"}}**
 	String data types and procedures that create new strings.
 **{{anchor name="CHRCONVERT|Character Conversions"}}**

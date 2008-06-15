@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CVLONGINT"}}----
-Converts an eight byte string to a long integer variable.
+Converts an eight byte string to a long integer variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvlongint** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]

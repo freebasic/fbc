@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OCT"}}----
-Converts a number to octal representation.
+Converts a number to octal representation
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Oct""**( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]

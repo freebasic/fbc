@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="#LIBPATH"}}----
-Preprocessor statement to add a search path for libraries.
+Preprocessor statement to add a search path for libraries
 
 {{fbdoc item="syntax"}}##
 	**#libpath** "//path//"

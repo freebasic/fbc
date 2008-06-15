@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="STRING (Function)"}}----
-Creates and fills a string of a certain length with a certain character.
+Creates and fills a string of a certain length with a certain character
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **String**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch_code// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]

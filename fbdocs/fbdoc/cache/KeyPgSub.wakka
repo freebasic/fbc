@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SUB"}}----
-Defines a procedure.
+Defines a procedure
 
 {{fbdoc item="syntax"}}##
 	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] **Sub** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [( [//parameter_list//] )] [[[KeyPgStatic Static]]]
@@ -24,7 +24,6 @@ Defines a procedure.
 			##//identifier//##: the name of the variable referenced in the subroutine
 			##//type//##: the type of variable
 			##//default_value//##: the value of the argument if none is specified in the call
-		##//return_type//##: the type of variable returned by the subroutine
 		##//statements//##: one or more statements that make up the subroutine body
 
 {{fbdoc item="desc"}}

@@ -1,15 +1,15 @@
 {{fbdoc item="title" value="VAL"}}----
-Converts a string to a floating point number.
+Converts a string to a floating point number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Val** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Val** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Val**( //str// )
+	//result// = **Val**( //strnum// )
 ##
 {{fbdoc item="param"}}
-	##//str//##
+	##//strnum//##
 		the string containing a number to convert
 
 {{fbdoc item="ret"}}
@@ -18,9 +18,15 @@ Converts a string to a floating point number.
 	If the first character of the string is invalid, ##**Val**## will return a 0.
 
 {{fbdoc item="desc"}}
-	##**Val**##("10") will return 10.0, and ##**Val**##("10.10") will return 10.1. The function parses the string from the left and returns the longest number it can read, stopping at the first non-suitable charater it finds.
+	##**Val**##("10") will return 10.0, and ##**Val**##("10.10") will return 10.1. The function parses the string from the left, skipping any white space, and returns the longest number it can read, stopping at the first non-suitable character it finds.  Scientific notation is recognised, with ##"D"## or ##"E"## used to specify the exponent.
 
-	Incidentally, this function is the opposite of ##[[KeyPgStr Str]]##, which converts a number to a string.
+	##**Val**## can be used to convert integer numbers in binary / octal / hexadecimal format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prepended, for example: ##**Val**("&HFF")## returns 255.
+
+	**Note**:
+	If you want to return an integer, consider using ##[[KeyPgValint ValInt]]## or ##[[KeyPgVallng ValLng]]## instead.  They are faster, since they don't use floating-point numbers, and only ##[[KeyPgVallng ValLng]]## provides full 64-bit precision for ##[[KeyPgLongint LongInt]]##s.
+
+
+	If you want to convert a number into string format, use the ##[[KeyPgStr Str]]## function.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

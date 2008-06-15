@@ -1,4 +1,6 @@
 {{fbdoc item="title" value="Variable Scope"}}----
+Visibility and access rules for variables and objects
+
 A variable's scope refers to its visibility in a program. A variable is not visible (cannot be accessed) outside the scope in which it was declared. Where and how a variable is declared determines its scope.
 
 	In FreeBASIC, there are 4 categories of scope: **//local//**, **//shared//**, **//common//** and **//common shared//**. Each of these scopes has different visibility rules, which are detailed below.
@@ -181,6 +183,7 @@ End Sub
 	See examples above.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgScope Scope]]##
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgCommon Common]]##
 	- ##[[KeyPgShared Shared]]##

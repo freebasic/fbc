@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ALPHA"}}----
-Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects alpha blending as the method.
+Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects alpha blending as the method
 
 {{fbdoc item="syntax"}}##
 	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ], **Alpha** [, //alphaval// ]

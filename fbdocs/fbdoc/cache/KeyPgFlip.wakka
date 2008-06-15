@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="FLIP"}}----
-Graphics statement for changing the the current video display page.
+Changes the current video display page
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Flip** ( [[KeyPgByval byval]] //frompage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //topage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )

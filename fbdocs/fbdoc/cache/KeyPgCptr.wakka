@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CPTR"}}----
-Converts a pointer expression to a specified data type pointer.
+Converts a pointer expression to a specified data type pointer
 
 {{fbdoc item="syntax"}}##
 	**Cptr**( [[DataType DataType]] [[KeyPgPtr ptr]], //expression// )

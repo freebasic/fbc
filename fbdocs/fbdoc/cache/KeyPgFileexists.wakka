@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="FILEEXISTS"}}----
-Function to test existence of a file.
+Tests the existence of a file
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileExists""**( [[KeyPgByval byval]] //filename// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]

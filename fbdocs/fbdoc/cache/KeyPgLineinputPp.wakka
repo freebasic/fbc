@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="LINE INPUT #"}}----
-Reads one line of text from a file.
+Reads one line of text from a file
 
 {{fbdoc item="syntax"}}##
 	**Line Input** #//file number, string_variable//

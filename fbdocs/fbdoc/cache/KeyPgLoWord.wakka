@@ -2,7 +2,7 @@
 Macro to return the low word of an expression
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Loword**( //x// ) ([[KeyPgCuint CUint]](//x//) [[KeyPgAnd and]] &h0000FFFF)
+	[[KeyPgPpdefine #define]] **Loword**( //x// ) ([[KeyPgCuint CUint]](//x//) [[KeyPgOpAnd and]] &h0000FFFF)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Loword**(//x//)

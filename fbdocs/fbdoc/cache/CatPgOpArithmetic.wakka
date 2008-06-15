@@ -1,15 +1,17 @@
 {{fbdoc item="title" value="Arithmetic Operators"}}----
+Operators allowing mathematical expressions with numbers
+
 <<
-	- {{fbdoc item="keyword" value="KeyPgAddition|+ (Addition)"}}
-	- {{fbdoc item="keyword" value="KeyPgSubtraction|- (Subtraction)"}}
-	- {{fbdoc item="keyword" value="KeyPgMultiplication|* (Multiplication)"}}
-	- {{fbdoc item="keyword" value="KeyPgDivision|/ (Division)"}}
-	- {{fbdoc item="keyword" value="KeyPgIntegerDivision|\ (Integer division)"}}
-	- {{fbdoc item="keyword" value="KeyPgExponentiation|^ (Exponentiation)"}}
-	- {{fbdoc item="keyword" value="KeyPgMod|MOD (Integer modulo)"}}
-	- {{fbdoc item="keyword" value="KeyPgNegation|- (Negation)"}}
-	- {{fbdoc item="keyword" value="KeyPgShl|SHL (Shift-left)"}}
-	- {{fbdoc item="keyword" value="KeyPgShr|SHR (Shift-right)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpAdd|+ (Add)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpSubtract|- (Subtract)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpMultiply|* (Multiply)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpDivide|/ (Divide)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpIntegerDivide|\ (Integer divide)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpExponentiate|^ (Exponentiate)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpModulus|MOD (Modulus)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpNegate|- (Negate)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpShiftLeft|SHL (Shift left)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpShiftRight|SHR (Shift right)"}}
 
 >>
 ::c::

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="BLOAD"}}----
-Graphics statement to load a block of binary data or a BMP from a file.
+Graphics statement to load a block of binary data or a BMP from a file
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bload** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByval byval]] //addr// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0, [[KeyPgByval byval]] //pal// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -59,6 +59,6 @@ sleep
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgBsave Bsave]]##
-	- ##[[KeyPgVarptr Varptr]]##
+	- ##[[KeyPgOpVarptr Varptr]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

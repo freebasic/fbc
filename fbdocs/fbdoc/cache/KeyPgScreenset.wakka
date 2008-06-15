@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENSET"}}----
-Statement to set current work and visible pages.
+Sets current work and visible pages
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenset** ( [[KeyPgByval byval]] //work_page// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //visible_page// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )

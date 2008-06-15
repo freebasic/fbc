@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENCONTROL"}}----
-Function to set or get internal graphics library settings
+Sets or gets internal graphics library settings
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ScreenControl""** ( [[KeyPgByval byval]] what [[KeyPgAs as]] [[KeyPgInteger integer]] [, [[KeyPgByref byref]] param1 [[KeyPgAs as]] [[KeyPgInteger integer]] [, [[KeyPgByref byref]] param2 [[KeyPgAs as]] [[KeyPgInteger integer]] [, [[KeyPgByref byref]] param3 [[KeyPgAs as]] [[KeyPgInteger integer]] [, [[KeyPgByref byref]] param4 [[KeyPgAs as]] [[KeyPgInteger integer]]]]]] )

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ASM"}}----
-Code block that allows the use of architecture-specific instructions.
+Code block that allows the use of architecture-specific instructions
 
 {{fbdoc item="syntax"}}##
 	**Asm**

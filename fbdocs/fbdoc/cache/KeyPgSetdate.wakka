@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SETDATE"}}----
-Statement to set the current system date
+Sets the current system date
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setdate** ( [[KeyPgByref byref]] //newdate// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="WIDTH"}}----
-Console function to set or return the number of rows and columns of the display.
+Sets or gets the number of rows and columns of the display
 
 {{fbdoc item="syntax"}}##
 	**Width** [//columns//] [, //rows//]

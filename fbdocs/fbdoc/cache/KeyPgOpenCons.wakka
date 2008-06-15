@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OPEN CONS"}}----
-Opens the console for input or output as a file.
+Opens the console for input or output as a file
 
 {{fbdoc item="syntax"}}##
 	**[[KeyPgOpen Open]] Cons** [for //mode//] [[KeyPgAs as]] [#]//filenum// [[KeyPgAs as]] [[KeyPgInteger integer]]

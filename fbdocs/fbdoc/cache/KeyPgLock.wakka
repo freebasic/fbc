@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="LOCK"}}----
-Restricts read/write access to a file or portion of a file.
+Restricts read/write access to a file or portion of a file
 
 {{fbdoc item="syntax"}}##
 	**Lock** #//filenum// [, //record// ]

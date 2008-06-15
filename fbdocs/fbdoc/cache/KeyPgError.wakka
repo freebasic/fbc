@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ERROR"}}----
-Error handling statement to force an error to be generated.
+Error handling statement to force an error to be generated
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Error** ( //errno// [[KeyPgAs as]] [[KeyPgInteger integer]] )

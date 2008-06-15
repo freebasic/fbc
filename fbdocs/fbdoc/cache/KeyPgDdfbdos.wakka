@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="__FB_DOS__"}}----
-Intrinsic define set by the compiler.
+Intrinsic define set by the compiler
 
 {{fbdoc item="syntax"}}##
 	""__FB_DOS__""

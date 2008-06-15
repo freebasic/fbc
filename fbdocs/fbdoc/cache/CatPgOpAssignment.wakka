@@ -1,20 +1,23 @@
 {{fbdoc item="title" value="Assignment Operators"}}----
+Operators that assign their result to the 'left-hand side' operand
+
 <<
 	- {{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineConcat|+= (Concatentate and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineAdd|+= (Add and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineSub|-= (Subtract and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineMulti|*= (Multiply and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineDiv|/= (Divide and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineIntDiv|\= (Integer Divide and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineMod|MOD= (Modulus and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineAnd|AND= (Conjunction and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineEqv|EQV= (Equivalence and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineImp|IMP= (Implication and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineOr|OR= (Inclusive Or and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineXor|XOR= (Exclusive Or and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineShl|SHL= (Shift Left and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineShr|SHR= (Shift Right and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineConcat|Operator &= (Concatentate and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineAdd|Operator += (Add and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineSub|Operator -= (Subtract and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineMultiply|Operator *= (Multiply and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineDivide|Operator /= (Divide and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineIntegerDivide|Operator \= (Integer Divide and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineExponentiate|Operator ^= (Exponentiate and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineModulus|Operator MOD= (Modulus and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineAnd|Operator AND= (Conjunction and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineEqv|Operator EQV= (Equivalence and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineImp|Operator IMP= (Implication and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineOr|Operator OR= (Inclusive Disjunction and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineXor|Operator XOR= (Exclusive Disjunction and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineShiftLeft|Operator SHL= (Shift Left and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineShiftRight|Operator SHR= (Shift Right and Assign)"}}
 
 <<
 ::c::

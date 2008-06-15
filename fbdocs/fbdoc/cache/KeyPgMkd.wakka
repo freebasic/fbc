@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MKD"}}----
-Does a binary copy from a ##[[KeyPgDouble double]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 8 bytes.
+Does a binary copy from a ##[[KeyPgDouble double]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 8 bytes
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkd** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]

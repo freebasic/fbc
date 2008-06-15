@@ -474,8 +474,8 @@ I hope that helps you get started with understanding how things are displayed in
 **More reading**
 ----
 
-http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgNew
-http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDelete
+http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpNew
+http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpDelete
 http://en.wikipedia.org/wiki/Copy_constructor
 http://en.wikipedia.org/wiki/Object_copy
 http://en.wikipedia.org/wiki/Name_mangling

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MID (Function)"}}----
-Returns a substring of a string.
+Returns a substring of a string
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByref byref]] //str// as [[KeyPgStringtype string]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgStringtype string]]

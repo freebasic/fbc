@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="__FB_MIN_VERSION__"}}----
-Builtin macro function to test minimum compiler version.
+Builtin macro function to test minimum compiler version
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **""__FB_MIN_VERSION__""**( //major//, //minor//, //patch//) _

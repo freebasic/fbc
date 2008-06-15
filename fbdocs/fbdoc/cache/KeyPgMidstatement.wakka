@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MID (STATEMENT)"}}----
-Overwrites a substring of a string with another.
+Overwrites a substring of a string with another
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Mid** ( [[KeyPgByref byref]] //text// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //length// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //expression// [[KeyPgAs as]] [[KeyPgStringtype string]] )

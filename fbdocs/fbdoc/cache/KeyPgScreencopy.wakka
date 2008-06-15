@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENCOPY"}}----
-Statement to copy the contents of a graphical page into another graphical page.
+Copies the contents of a graphical page into another graphical page
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screencopy** ( [[KeyPgByval byval]] //frompage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //topage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )

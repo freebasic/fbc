@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="BIN"}}----
-Function that returns a binary (base 2) string representation of an integer.
+Returns a binary (base 2) string representation of an integer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgString string]]

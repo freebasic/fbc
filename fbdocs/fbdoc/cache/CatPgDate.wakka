@@ -1,6 +1,9 @@
 {{fbdoc item="title" value="Date and Time Functions"}}----
 Procedures that work with dates and time
 
+{{fbdoc item="desc"}}
+	These procedures provide ways to deal with date and time intervals in a consistent way. Additional procedures are provided to set and get the current system date and time , and to retrieve a timestamp for sensitive timing algorithms.
+
 **{{anchor name="VBCOMPAT|VisualBasic compatible procedures"}}**
 	Procedures for working with so-called [[ProPgDates date serials]], similar to those used in Visual Basic(r).
 **{{anchor name="DATETIME|Date and time procedures"}}**

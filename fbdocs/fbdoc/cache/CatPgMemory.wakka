@@ -1,6 +1,9 @@
 {{fbdoc item="title" value="Memory Functions"}}----
 Procedures that work with static and dynamic memory
 
+{{fbdoc item="desc"}}
+	These procedures provide access to the free store, or heap. Memory from the free store can be reserved and freed, and procedures are provided to read and write directly to that memory.
+
 **{{anchor name="DYNAMEM|Working with Dynamic Memory"}}**
 	Procedures that reserve, resize or free dynamic memory.
 **{{anchor name="MISC|Miscellaneous Procedures"}}**

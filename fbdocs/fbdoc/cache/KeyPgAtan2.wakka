@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ATAN2"}}----
-Returns the arctangent of a ratio.
+Returns the arctangent of a ratio
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ATan2""** ( [[KeyPgByval byval]] //y// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByval byval]] //x// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]

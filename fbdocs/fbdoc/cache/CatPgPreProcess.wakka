@@ -3,7 +3,6 @@ Commands that control the preprocessor
 
 {{fbdoc item="desc"}}
 	Preprocessor commands are sent to the compiler to control what gets compiled and how. They can be used to choose to compile one block of code rather than another for cross-platform compatibility, include headers or other source files, define small inline functions called macros, or alter how the compiler handles variables.
-{{fbdoc item="close"}}
 
 **{{anchor name="CONDCOMP|Conditional Compilation"}}**
 	Commands that allow for branches in compilation based on conditions.
@@ -37,9 +36,9 @@ Commands that control the preprocessor
 		Creates a multi-line text-replacement macro.
 	=={{fbdoc item="keyword" value="KeyPgPpundef|#UNDEF"}}==
 		Undefines a symbol.
-	==[[KeyPgStringize # Preprocessor stringize]]==
+	==[[KeyPgOpPpStringize # Preprocessor stringize]]==
 		Converts text into a string literal.
-	==[[KeyPgPreConcat ## Preprocessor concatenate]]==
+	==[[KeyPgOpPpConcat ## Preprocessor concatenate]]==
 		Concatenates two pieces of text.
 <<>>{{anchor name="TODO"}}{{fbdoc item="section" value="TODO"}}
 	=={{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE"}}==

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="PALETTE"}}----
-Graphics statement used to customize colours in modes with paletted colours.
+Customizes colours in modes with paletted colours
 
 {{fbdoc item="syntax"}}##
 	**Palette** [Get] [//index//, //color//]

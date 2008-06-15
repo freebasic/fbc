@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OUTPUT"}}----
-Specifies text file to be opened for output mode.
+Specifies text file to be opened for output mode
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgOpen open]] //filename// for **Output** [[[KeyPgEncoding encoding]] //encoding_type//] [[[KeyPgLock lock]] //lock_type//] as [#]//filenum// 

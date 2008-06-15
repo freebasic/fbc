@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="RESUME NEXT"}}----
-Error handling statement to resume execution after a jump to an error handler.
+Error handling statement to resume execution after a jump to an error handler
 
 {{fbdoc item="syntax"}}##
 	**Resume Next**

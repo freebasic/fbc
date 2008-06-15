@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SEEK (Function)"}}----
-Gets the position of the next read/write operation for a file or device.
+Gets the position of the next read/write operation for a file or device
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Seek** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]

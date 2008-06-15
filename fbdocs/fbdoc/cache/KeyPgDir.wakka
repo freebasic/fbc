@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="DIR"}}----
-Returns files and/or directories that match //file_spec// and //attrib_mask//.
+Returns a file or directory
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByref byref]] //file_spec// [[KeyPgAs as]] [[KeyPgStringtype string]] = "", [[KeyPgByval byval]] //attrib_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = &h21,  [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgStringtype string]]

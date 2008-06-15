@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="#DEFINE"}}----
-Preprocessor directive to define a macro.
+Preprocessor directive to define a macro
 
 {{fbdoc item="syntax"}}##
 	#define //identifier//

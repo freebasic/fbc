@@ -1,0 +1,58 @@
+{{fbdoc item="title" value="Operator STRPTR (String pointer)"}}----
+Returns the address of a string's character data.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Strptr** ( [[KeyPgByref bryef]] //lhs// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Strptr** ( [[KeyPgByref bryef]] //lhs// [[KeyPgAs as]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Strptr** ( //lhs// )
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		A string.
+
+{{fbdoc item="ret"}}
+	Returns a ##[[KeyPgZstring Zstring]] [[KeyPgPtr Ptr]]## to a string's character data.
+
+{{fbdoc item="desc"}}
+	This operator returns a ##[[KeyPgZstring Zstring]] [[KeyPgPtr Ptr]]## that points to the beginning of a string's character data. ##**Operator Strptr**## is the proper method for aquiring the address of a string's character data.
+
+	Note that when passed a ##[[KeyPgWstring Wstring]]##, ##**Operator Strptr**## still returns a ##[[KeyPgZstring Zstring]] [[KeyPgPtr Ptr]]##, which may not be the desired result.
+
+	The related ##[[KeyPgOpVarptr Operator Varptr (Variable pointer)]]## and ##[[KeyPgOpAt Operator @ (Address of)]]##, when used with a ##[[KeyPgStringtype String]]##, return the address of the internal string descriptor.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' This example uses Strptr to demonstrate using pointers with strings
+Dim myString as String
+Dim toMyString as ZString Ptr
+
+' Note that using standard VARPTR notation will return a pointer to the descriptor, not the string data itself
+myString = "Improper method for Strings"
+toMyString = @myString
+print myString
+print *toMyString
+print
+
+' However, using Strptr returns the proper pointer
+myString = "Hello World Examples Are Silly"
+toMyString = Strptr(myString)
+print myString
+print *toMyString
+print
+
+' And the pointer acts like pointers to other types
+myString = "MyString has now changed"
+print myString
+print *toMyString
+print
+%%
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpVarptr Operator Varptr (Variable pointer)]]##
+	- ##[[KeyPgOpAt Operator @ (Address of)]]##
+	- ##[[KeyPgStringtype String]]##
+	- [[ProPgPointers Pointers]]
+
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

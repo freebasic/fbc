@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ERMN"}}----
-Error reporting function.
+Error reporting function
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ermn** ( ) [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]]

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CVD"}}----
-Converts an eight byte string to a double-precision variable.
+Converts an eight byte string to a double-precision variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvd** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="LET"}}----
-Indicates the assignment operator.
+Indicates the assignment operator
 
 {{fbdoc item="syntax"}}##
 	**Let** //variable// = //value//

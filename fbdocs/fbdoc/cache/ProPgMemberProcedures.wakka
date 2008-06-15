@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Member Procedures"}}----
-Items discussed in this wiki:
+Procedures with full access to members of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
 
 **{{anchor name="DECL|Declaration and definition"}}**
 	Declaring and defining member procedures.
@@ -19,7 +19,7 @@ Items discussed in this wiki:
 {{anchor name="DECL"}}{{fbdoc item="section" value="Declaration and definition"}}
 	Member procedures are declared much like normal module-level procedures except that they are declared within, and defined outside, a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition *.
 
-	When defining member procedures, the procedure name is prefixed with the name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## and the scope resolution operator (##[[KeyPgDot operator .]]##). It is an error to define a member procedure without a matching declaration in the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition.
+	When defining member procedures, the procedure name is prefixed with the name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## and the member access operator (##[[KeyPgOpMemberAccess Operator . (Member access)]]##). It is an error to define a member procedure without a matching declaration in the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition.
 
 	The following example declares and defines a ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## member procedure:
 
@@ -43,7 +43,7 @@ end function
 	* //In the future, member procedures may be able to be defined within the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition.//
 
 {{anchor name="USAGE"}}{{fbdoc item="section" value="Usage"}}
-	Member procedures are referred to just like member data, that is, their name is prefixed with the name of an object instance and the field operator (##[[KeyPgDot operator .]]##) *.
+	Member procedures are referred to just like member data, that is, their name is prefixed with the name of an object instance and the member access operator (##[[KeyPgOpMemberAccess Operator . (Member access)]]##) *.
 
 	The following example, using the code from the last example, calls ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## member procedures:
 
@@ -57,11 +57,11 @@ bar.f(bar.g())
 	* //Static member procedures do not require an object instance in order to be called.//
 
 {{anchor name="THIS"}}{{fbdoc item="section" value="The hidden parameter, This"}}
-	Member procedures actually have an additional parameter than what they are declared with *. When they are called, using the name of an instance and ##[[KeyPgDot operator .]]##, a reference to that instance is passed along with any other arguments in the call, allowing the member procedure direct access to the instance.
+	Member procedures actually have an additional parameter than what they are declared with *. When they are called, using the name of an instance and ##[[KeyPgOpMemberAccess Operator . (Member access)]]##, a reference to that instance is passed along with any other arguments in the call, allowing the member procedure direct access to the instance.
 
-	The additional parameter added by the compiler is called ##[[KeyPgThis This]]##, and since it's a reference, any modifications to ##[[KeyPgThis This]]## are actually modifications to the instance that was passed to the member procedure when it was called. You can use ##[[KeyPgThis This]]## just like any other variable, ie., pass it to procedures taking a object of the same type, call other member procedures and access member data using the field operator ##[[KeyPgDot operator .]]##, etc.
+	The additional parameter added by the compiler is called ##[[KeyPgThis This]]##, and since it's a reference, any modifications to ##[[KeyPgThis This]]## are actually modifications to the instance that was passed to the member procedure when it was called. You can use ##[[KeyPgThis This]]## just like any other variable, ie., pass it to procedures taking a object of the same type, call other member procedures and access member data using ##[[KeyPgOpMemberAccess Operator . (Member access)]]##, etc.
 
-	Most of the time, however, using ##[[KeyPgThis This]]## explicitly is unnecessary; member procedures can refer to other members of the instance which they are passed directly by name, without having to qualify it with ##[[KeyPgThis This]]## and the field operator ##[[KeyPgDot operator .]]##. The only times when you need to qualify member names with ##[[KeyPgThis This]]## is when the member name is hidden, for example, by a parameter or local variable. In these situations, qualifying the member name is the only way to refer to these hidden member names.
+	Most of the time, however, using ##[[KeyPgThis This]]## explicitly is unnecessary; member procedures can refer to other members of the instance which they are passed directly by name, without having to qualify it with ##[[KeyPgThis This]]## and ##[[KeyPgOpMemberAccess Operator . (Member access)]]##. The only times when you need to qualify member names with ##[[KeyPgThis This]]## is when the member name is hidden, for example, by a parameter or local variable. In these situations, qualifying the member name is the only way to refer to these hidden member names.
 
 	The following example uses the ##[[KeyPgThis This]]## keyword to refer to member data whose name is hidden by a parameter and local variable:
 
@@ -145,9 +145,9 @@ bar.f(bar.g())
 	end function
 	%%
 
-	Static member procedures can be called like non-static member procedures, qualifying the name of the procedure with the name of an instance and the field operator (##[[KeyPgDot operator .]]##).
+	Static member procedures can be called like non-static member procedures, qualifying the name of the procedure with the name of an instance and the member access operator (##[[KeyPgOpMemberAccess Operator . (Member access)]]##).
 
-	They can also be called by qualifying the procedure name with the name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## they were declared in and the scope resolution operator (##[[KeyPgDot operator .]]##). In other words, an instance is not required in order to call static-member procedures.
+	They can also be called by qualifying the procedure name with the name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## they were declared in and the member access operator (##[[KeyPgOpMemberAccess Operator . (Member access)]]##). In other words, an instance is not required in order to call static-member procedures.
 
 	The following example, using the code from the last example, uses both ways to call static member procedures:
 	

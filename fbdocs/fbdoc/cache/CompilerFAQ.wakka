@@ -7,9 +7,9 @@
 	==- {{anchor name="item4|Why should I use FreeBASIC rather than other GPL or commercial BASICs?"}}==
 	==- {{anchor name="item5|How fast is FreeBASIC?"}}==
 	==- {{anchor name="item6|What differences are there between FreeBASIC and QuickBasic?"}}==
-	==- {{anchor name="item7|How compatible is FreeBASIC with Windows? Dos? Linux? QBasic code?"}}==
+	==- {{anchor name="item7|How compatible is FreeBASIC with Windows? DOS? Linux? QBasic code?"}}==
 	==- {{anchor name="item8|Does FreeBASIC support Object Oriented Programming?"}}==
-	==- {{anchor name="item9|What are the planned features for FreeBASIC?"}}==
+	==- {{anchor name="item9|What are the future plans with FB / ToDo list ?"}}==
 
 **Getting Started with FreeBASIC questions**
 	
@@ -30,7 +30,7 @@
 
 	Aside from having a syntax nearly 100% compatible with QuickBasic, FreeBASIC introduces several new features to the aged language, including pointers to variables and functions, and unsigned data types.
 
-	FreeBASIC is written in FreeBASIC.
+	FreeBASIC compiler is self-hosting - written in FreeBASIC, most libraries however are written in C.
 
 {{anchor name="item2"}}==Who is responsible for FreeBASIC?==
 	The first versions of FreeBASIC were developed exclusively by V1ctor. Later versions gained contributions from many people, including DrV who developed the DOS32 port, and Lillo, who developed the Linux port and the graphics library. 
@@ -56,14 +56,14 @@
 		- FreeBASIC has ports to Windows, Linux, and 32-bit DOS. It retains consistent syntax between the three ports.
 
 {{anchor name="item5"}}==How fast is FreeBASIC?==
-	Most tests run by the community have shown FreeBASIC to be exponentially faster than QuickBasic, faster than most other GPL or commercial BASICs, and often approaching GCC in terms of speed.
+	Most tests run by the community have shown FreeBASIC is significantly faster than QuickBasic, faster than most other GPL or commercial BASICs, and often approaching GCC in terms of speed.
 
-	One area where there is a notable speed deficiency is in 32-bit console modes. While FreeBASIC is consistently on-par with other 32-bit console mode applications, 32-bit console mode operations are significantly slower than 16-bit console operations, as seen in QuickBasic.
+	One area where there is a notable speed deficiency is in 32-bit console modes. While FreeBASIC is consistently on-par with other 32-bit console mode applications, 32-bit console mode operations are significantly slower than 16-bit console operations, as seen in QuickBasic. In DOS version, some I/O operations can slow down after porting from a 16-bit BASIC to FB - optimizing the code brings the speed back.
 
 {{anchor name="item6"}}==What differences are there between FreeBASIC and QuickBasic?==
 	See [[LangQB Differences betwen FreeBASIC and QuickBasic]].
 
-{{anchor name="item7"}}==How compatible is FreeBASIC with Windows? Dos? Linux? QBasic code?==
+{{anchor name="item7"}}==How compatible is FreeBASIC with Windows? DOS? Linux? QBasic code?==
 	FreeBASIC is fully compatible with Windows, MS-DOS, Free-DOS and Linux. When planning to create a program for all three platforms, however, keep API availablility in mind -- Code utilizing OpenGL will work in Windows and Linux, for example, but won't in DOS, because OpenGL is not available for DOS.
 
 	FreeBASIC is 99% backward compatible with QB code. There are some minor differences, but they are either minor, or a result of the new 32-bit platform upon which FreeBASIC is built.
@@ -71,10 +71,9 @@
 	See [[LangQB Differences betwen FreeBASIC and QuickBasic]].
 
 {{anchor name="item8"}}==Does FreeBASIC support Object Oriented Programming?==
-	FreeBASIC does not currently support Object Oriented Programming. It will be supported in a future release.
+	FreeBASIC does not support Object Oriented Programming in versions up to 0.16. It will be supported in 0.18.
 
-{{anchor name="item9"}}==What are the planned features for FreeBASIC?==
-	- Object Oriented Programming
+{{anchor name="item9"}}==What are the future plans with FB / ToDo list ?==
 
 	You can find out what's planned for the future releases by directly looking at the TODO file for the compiler, currently in CVS [[http://fbc.cvs.sourceforge.net/fbc/FreeBASIC/src/compiler/TODO.txt?view=markup here]].
 

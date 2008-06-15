@@ -13,7 +13,7 @@ Control flow statement to jump to another part of the program
 %%(qbasic)'' Compile with -lang deprecated or qb
 1 goto 3
 2 end
-3 print "Welcome!
+3 print "Welcome!"
 4 goto 2
 %%
 

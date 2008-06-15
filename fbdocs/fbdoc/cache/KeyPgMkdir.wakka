@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MKDIR"}}----
-Makes a folder/directory on the local file system.
+Makes a folder/directory on the local file system
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkdir** ( [[KeyPgByref byref]] //folder// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]

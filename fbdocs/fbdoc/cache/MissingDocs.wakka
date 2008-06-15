@@ -1,36 +1,32 @@
 {{fbdoc item="title" value="Missing Documentation"}}----
 Please edit this page to remove items when they are written.
 
-==Language and non-keyword related texts Needed==
-	- Variable Declaration/Initialisation (including implicit declaration)
-	- Differences between versions (windows, linux, DOS)
-	- Cross compiling
-	- Function calling overview
-	- Source and Include Files
-	- Statements and Statement blocks
-	- Expressions
-	- Finish formatting the style change that was started beginning of 2006.
-	- See [[CatPgProgrammer Programmer's Guide]] (W.I.P.)
+{{fbdoc item="section" value="Language and non-keyword related texts needed"}}
+	Variable Declaration/Initialisation (including implicit declaration)
+	Differences between versions (windows, linux, DOS)
+	Cross compiling
+	Function calling overview
+	Source and Include Files
+	Statements and Statement blocks
+	Expressions
+	See [[CatPgProgrammer Programmer's Guide]] (W.I.P.)
 
-==Missing Keywords== 
+{{fbdoc item="section" value="Missing keyword pages"}}
 	None
 
-==Incomplete Documentation==
-
-	[[KeyPgPrintPp Print #]]
+{{fbdoc item="section" value="Pages/topics with incomplete documentation"}}
 	[[KeyPgOpenCom Open Com]]
 	[[KeyPgExternCpp Extern...End Extern]]
 	[[KeyPgType Type...End Type]]
-	- static members
-	- for/next/step overloads
-	- more overloaded ops? (need to check this)
-	- command line options need updating [[CompilerCmdLine command line options]]
+	static members
+	for/next/step overloads
+	more overloaded ops? (need to check this)
+	command line options need updating [[CompilerCmdLine command line options]]
 		
 ----
-
 The documents listed and linked below need to be updated or enhanced in some way.
 
-==Missing examples==
+{{fbdoc item="section" value="Pages with missing examples"}}
 	[[KeyPgOpenLpt]] needs more examples, or non-specific platform example.
 	[[KeyPgFlip Flip]]
 	[[KeyPgPmap Pmap]]
@@ -39,13 +35,13 @@ The documents listed and linked below need to be updated or enhanced in some way
 	KeyPgTransgfx
 	KeyPgCustomgfx
 
-==Examples to be reviewed==
+{{fbdoc item="section" value="Pages with examples needed review"}}
 	None
 
-==Pages that are no longer needed and can be deleted==
+{{fbdoc item="section" value="Pages no longer needed and can be deleted"}}
 	None
 
-==Pages requiring new style update==
-	KeyPgDim
+{{fbdoc item="section" value="Pages requiring new syntax/format update"}}
+	None
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

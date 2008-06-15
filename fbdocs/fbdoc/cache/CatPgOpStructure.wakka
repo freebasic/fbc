@@ -1,10 +1,10 @@
 {{fbdoc item="title" value="Structure Operators"}}----
+Operators that access members of an object instance
+
 <<
-	- {{fbdoc item="keyword" value="KeyPgDot|(.) field"}}
-	- {{fbdoc item="keyword" value="KeyPgPtrField|(->) Pointer to field"}}
+	- {{fbdoc item="keyword" value="KeyPgOpMemberAccess|Operator . (Member access)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpPtrMemberAccess|Operator -> (Pointer to member access)"}}
 
->>
-
-::c::
+>>::c::
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

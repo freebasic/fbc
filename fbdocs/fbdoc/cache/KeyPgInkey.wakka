@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="INKEY"}}----
-Returns a string representing the first key waiting in the keyboard buffer.
+Returns a string representing the first key waiting in the keyboard buffer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Inkey** ( ) [[KeyPgAs as]] [[KeyPgStringtype string]]

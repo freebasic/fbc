@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MKL"}}----
-Does a binary copy from a ##[[KeyPgInteger long]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes.
+Does a binary copy from a ##[[KeyPgInteger long]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkl** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]

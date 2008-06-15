@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OVERLOAD"}}----
-Declaration specifier to overload number and types of parameters passed to procedures.
+Declaration specifier to overload number and types of parameters passed to procedures
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] //proc_name// **Overload** ( //argumentlist// ) [[KeyPgAs as]] [[DataType datatype]]

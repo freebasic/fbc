@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREEN (GRAPHICS)"}}----
-Statement to initialize a graphics mode using QB-like mode numbers.
+Initializes a graphics mode using QB-like mode numbers
 
 {{fbdoc item="syntax"}}##
 	**Screen** //mode// [, [ //depth// ] [, [ //num_pages// ] [, [ //flags// ] [, [ //refresh_rate// ]]]]]

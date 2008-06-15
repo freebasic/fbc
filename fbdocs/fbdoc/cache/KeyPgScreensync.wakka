@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENSYNC"}}----
-Graphics statement to synchronize display updates with hardware.
+Synchronizes display updates with hardware
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screensync** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]

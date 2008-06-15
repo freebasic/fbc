@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CONDWAIT"}}----
-Stops execution of current thread until some other thread signals that execution can continue.
+Stops execution of current thread until some other thread signals that execution can continue
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Condwait** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )

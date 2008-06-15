@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="THREADWAIT"}}----
-Waits until the designated thread has been completed before returning.
+Waits until the designated thread has been completed before returning
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Threadwait** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )

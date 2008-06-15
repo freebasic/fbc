@@ -5,30 +5,27 @@ Declares or defines an overloaded operator
 	[[KeyPgType Type]] //typename//
 		[[KeyPgDeclare declare]] **Operator** [[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
 		[[KeyPgDeclare declare]] **Operator** //assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpNew new]] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+		[[KeyPgDeclare declare]] [[KeyPgStaticMember static]] **Operator** [[KeyPgOpNew new]][] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpDelete delete]] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+		[[KeyPgDeclare declare]] [[KeyPgStaticMember static]] **Operator** [[KeyPgOpDelete delete]][] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 	End Type
 
 	[[KeyPgDeclare declare]] **Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
 	[[KeyPgDeclare declare]] **Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
 
 	**Operator** //typename//.[[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
-		//statements//
-	**End Operator**
-
 	**Operator** //typename//.//assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
-		//statements//
-	**End Operator**
-
 	**Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
-		//statements//
-	**End Operator**
-
 	**Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
-		//statements//
-	**End Operator**
+	**Operator** //typename//.[[KeyPgOpNew new]] ( //size// as uinteger ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgStaticMember static]] **Operator** //typename//.[[KeyPgOpNew new]][] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	**Operator** //typename//.[[KeyPgOpDelete delete]] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	[[KeyPgStaticMember static]] **Operator** //typename//.[[KeyPgOpDelete delete]][] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
-		name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgEnum Enum]]##
+		name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgUnion Union]]##, or ##[[KeyPgEnum Enum]]##
 	##//assignment_op//## 
 		let += -= *= /= \= mod= shl= shr= and= or= xor= imp= eqv= ^=
 	##//unary_op//##
@@ -37,7 +34,7 @@ Declares or defines an overloaded operator
 		+ - * / \ mod shl shr and or xor imp eqv ^ = <> < > <= >=
 
 {{fbdoc item="desc"}}
-	The built in operators like ##=##, ##+##, and ##cast## have predefined behaviours when used in expressions.  These operators can be overloaded to do something other than predefined operations when at least one of the arguments to the operator is a ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgEnum Enum]]## data type.
+	The built in operators like ##=##, ##+##, and ##cast## have predefined behaviours when used in expressions.  These operators can be overloaded to do something other than predefined operations when at least one of the arguments to the operator is a ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgEnum Enum]]##, or ##[[KeyPgUnion Union]]## data type.
 
 	Operators can be overloaded to accept different data types as parameters.  Only the ##[[KeyPgCast Cast]]## Operator can be overloaded to return different types.
 
@@ -45,7 +42,7 @@ Declares or defines an overloaded operator
 
 	##**Let**##, ##**Cast**##, and other assignment operators must be declared inside the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.  They are passed a hidden ##[[KeyPgThis this]]## parameter and have a return data type same as the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## they are declared in.
 
-	Unary operators must be declared outside the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgEnum Enum]]## and have a return data type explicity declared.  Unary operators can be overloaded to return any valid data type, except for the pointer member access operator ##[[KeyPgPtrField ->]]## which must return a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## data type.
+	Unary operators must be declared outside the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgEnum Enum]]## and have a return data type explicity declared.  Unary operators can be overloaded to return any valid data type, except for ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]## which must return a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## data type.
 
 	Binary operators must be declared outside the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgEnum Enum]]## and have a return data type explicity declared.  Binary operators can be overloaded with valid data types, except for relational operators, which must return ##[[KeyPgInteger Integer]]##.
 

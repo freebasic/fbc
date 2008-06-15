@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CVSHORT"}}----
-Converts an two byte string to a short variable.
+Converts an two byte string to a short variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvshort** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgShort short]]

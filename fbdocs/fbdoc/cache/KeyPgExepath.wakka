@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="EXEPATH"}}----
-Returns the path of the running program.
+Returns the path of the running program
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Exepath** ( ) [[KeyPgAs as]] [[KeyPgStringtype string]]

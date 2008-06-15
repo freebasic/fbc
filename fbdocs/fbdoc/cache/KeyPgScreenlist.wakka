@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENLIST"}}----
-Graphics function used to find out at runtime which fullscreen video modes are available on the host machine.
+Finds available fullscreen video modes
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screenlist** ( [[KeyPgByval byval]] //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]

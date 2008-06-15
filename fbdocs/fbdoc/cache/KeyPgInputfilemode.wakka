@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="INPUT (FILE MODE)"}}----
-Specifies text file to be opened for input mode.
+Specifies text file to be opened for input mode
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgOpen open]] //filename// for **Input** [[[KeyPgEncoding encoding]] //encoding_type//] [[[KeyPgLock lock]] //lock_type//] as [#]//filenum// 

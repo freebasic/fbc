@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="DRAW"}}----
-Statement for sequenced pixel plotting.
+Statement for sequenced pixel plotting
 
 {{fbdoc item="syntax"}}##
 	**Draw** [//target//,] //cmd//
@@ -43,6 +43,6 @@ Sleep
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
-	- ##[[KeyPgVarptr VarPtr]]##
+	- ##[[KeyPgOpVarptr VarPtr]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

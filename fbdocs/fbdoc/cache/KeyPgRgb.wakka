@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="RGB"}}----
-Function to compute valid color value for hi/truecolor modes.
+Computes a valid color value for hi/truecolor modes
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **RGB**(//r//,//g//,//b//) (([[KeyPgCuint cuint]](r) [[KeyPgShl shl]] 16) [[KeyPgOr or]] ([[KeyPgCuint cuint]](g) [[KeyPgShl shl]] 8) [[KeyPgOr or]] [[KeyPgCuint cuint]](b) [[KeyPgOr or]] &hFF000000)
+	[[KeyPgPpdefine #define]] **RGB**(//r//,//g//,//b//) (([[KeyPgCuint cuint]](r) [[KeyPgOpShiftLeft shl]] 16) [[KeyPgOpOr or]] ([[KeyPgCuint cuint]](g) [[KeyPgOpShiftLeft shl]] 8) [[KeyPgOpOr or]] [[KeyPgCuint cuint]](b) [[KeyPgOpOr or]] &hFF000000)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **RGB**(//red//, //green//, //blue//)
@@ -43,3 +43,4 @@ Sleep 'wait before exiting
 	- ##[[KeyPgColor Color]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}
+   

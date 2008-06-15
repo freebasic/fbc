@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="EXTERN"}}----
-Declares a symbol defined in another module.
+Declares a symbol defined in another module
 
 {{fbdoc item="syntax"}}##
 	**Extern** [ [[KeyPgImport import]] ] //symbolname//[( //subscripts//)] [ [[KeyPgAlias alias]] "//aliasname//" ] [ [[KeyPgAs as]] [[DataType DataType]] ] [, ...]

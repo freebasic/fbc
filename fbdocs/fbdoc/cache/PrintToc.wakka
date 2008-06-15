@@ -31,11 +31,16 @@
 
 	{{fbdoc item="subsect" value="Variables and Datatypes"}}
 		[[ProPgDataConversion Coercion and Conversion]]
-		[[ProPgArrayIndex Array Index]]
 		[[ProPgConstants Constants]]
 		[[ProPgVariables Variables]]
-		[[ProPgArrays Arrays]]
-		[[ProPgPointers Pointers]]
+
+		{{fbdoc item="subsect" value="Arrays"}}
+			[[ProPgArrays Overview]]
+			[[ProPgArrayIndex Array Indexing]]
+
+		{{fbdoc item="subsect" value="Pointers"}}
+			[[ProPgPointers Overview]]
+			[[ProPgPtrArithmetic Pointer arithmetic]]
 
 	{{fbdoc item="subsect" value="Declarations"}}
 		[[ProPgImplicitdeclarations Implicit Declarations]]
@@ -45,7 +50,9 @@
 	{{fbdoc item="subsect" value="User Defined Types"}}
 		[[ProPgTypeAliases Type Aliases]]
 		[[KeyPgTypeTemp Temporary Types]]
+		[[ProPgCtorsDtors Constructors and Destructors]]
 		[[ProPgMemberProcedures Member Procedures]]
+		[[ProPgMemberAccessRights Member Access Rights]]
 		[[ProPgOperatorOverloading Operator Overloading]]
 
 	{{fbdoc item="subsect" value="Statements and Expressions"}}
@@ -84,72 +91,76 @@
 
 	{{fbdoc item="subsect" value="Assignment Operators"}}
 		[[KeyPgOpAssignment = (Assignment)]]
-		[[KeyPgCombineConcat &= (Concatenate and Assign)]]
-		[[KeyPgCombineAdd += (Add and Assign)]]
-		[[KeyPgCombineSub -= (Subtract and Assign)]]
-		[[KeyPgCombineMulti *= (Multiply and Assign)]]
-		[[KeyPgCombineDiv /= (Divide and Assign)]]
-		[[KeyPgCombineIntDiv \= (Integer Divide and Assign)]]
-		[[KeyPgCombineExp ^= (Exponentiate and Assign)]]
-		[[KeyPgCombineMod MOD= (Modulus and Assign)]]
-		[[KeyPgCombineAnd AND= (Conjunction and Assign)]]
-		[[KeyPgCombineEqv EQV= (Equivalence and Assign)]]
-		[[KeyPgCombineImp IMP= (Implication and Assign)]]
-		[[KeyPgCombineOr OR= (Inclusive Or and Assign)]]
-		[[KeyPgCombineXor XOR= (Exclusive Or and Assign)]]
-		[[KeyPgCombineShl SHL= (Shift Left and Assign)]]
-		[[KeyPgCombineShr SHR= (Shift Right and Assign)]]
+		[[KeyPgOpCombineConcat &= (Concatenate and Assign)]]
+		[[KeyPgOpCombineAdd += (Add and Assign)]]
+		[[KeyPgOpCombineSub -= (Subtract and Assign)]]
+		[[KeyPgOpCombineMultiply *= (Multiply and Assign)]]
+		[[KeyPgOpCombineDivide /= (Divide and Assign)]]
+		[[KeyPgOpCombineIntegerDivide \= (Integer Divide and Assign)]]
+		[[KeyPgOpCombineExponentiate ^= (Exponentiate and Assign)]]
+		[[KeyPgOpCombineModulus MOD= (Modulus and Assign)]]
+		[[KeyPgOpCombineAnd AND= (Conjunction and Assign)]]
+		[[KeyPgOpCombineEqv EQV= (Equivalence and Assign)]]
+		[[KeyPgOpCombineImp IMP= (Implication and Assign)]]
+		[[KeyPgOpCombineOr OR= (Inclusive Disjunction and Assign)]]
+		[[KeyPgOpCombineXor XOR= (Exclusive Disjunction and Assign)]]
+		[[KeyPgOpCombineShiftLeft SHL= (Shift Left and Assign)]]
+		[[KeyPgOpCombineShiftRight SHR= (Shift Right and Assign)]]
 
 	{{fbdoc item="subsect" value="Arithmetic Operators"}}
-		[[KeyPgAddition + (Addition)]]
-		[[KeyPgSubtraction - (Subtraction)]]
-		[[KeyPgMultiplication * (Multiplication)]]
-		[[KeyPgDivision / (Division)]]
-		[[KeyPgIntegerDivision \ (Integer division)]]
-		[[KeyPgExponentiation ^ (Exponentiation)]]
-		[[KeyPgMod MOD (Integer modulo)]]
-		[[KeyPgNegation - (Negation)]]
-		[[KeyPgShl SHL (Shift-left)]]
-		[[KeyPgShr SHR (Shift-right)]]
+		[[KeyPgOpAdd + (Add)]]
+		[[KeyPgOpSubtract - (Subtract)]]
+		[[KeyPgOpMultiply * (Multiply)]]
+		[[KeyPgOpDivide / (Divide)]]
+		[[KeyPgOpIntegerDivide \ (Integer divide)]]
+		[[KeyPgOpExponentiate ^ (Exponentiate)]]
+		[[KeyPgOpModulus MOD (Modulus)]]
+		[[KeyPgOpNegate - (Negate)]]
+		[[KeyPgOpShiftLeft SHL (Shift left)]]
+		[[KeyPgOpShiftRight SHR (Shift right)]]
+
+	{{fbdoc item="subsect" value="Indexing Operators"}}
+		[[KeyPgOpArrayIndex () (Array index)]]
+		{{fbdoc item="keyword" value="KeyPgOpStringIndex|[] (String index)"}}
+		{{fbdoc item="keyword" value="KeyPgOpPtrIndex|[] (Pointer index)"}}
 
 	{{fbdoc item="subsect" value="String Operators"}}
-		[[KeyPgConcat + (String concatenation)]]
-		[[KeyPgConcatConv & (String concatenation with conversion)]]
-		{{fbdoc item="keyword" value="KeyPgStrIndex|[] (String indexing)"}}
+		[[KeyPgOpConcatConvert & (String concatenation with conversion)]]
+		[[KeyPgOpStrptr STRPTR (String pointer)]]
 
 	{{fbdoc item="subsect" value="Relational Operators"}}
-		[[KeyPgInequality <> (Inequality)]]
-		[[KeyPgLessThan < (Less than)]]
-		[[KeyPgLessThanOrEqual <= (Less than or equal)]]
-		[[KeyPgEqual = (Equality)]]
-		[[KeyPgGreaterThanOrEqual >= (Greater than or equal)]]
-		[[KeyPgGreaterThan > (Greater than)]]
+		[[KeyPgOpEqual = (Equal)]]
+		[[KeyPgOpNotEqual <> (Not equal)]]
+		[[KeyPgOpLessThan < (Less than)]]
+		[[KeyPgOpLessThanOrEqual <= (Less than or equal)]]
+		[[KeyPgOpGreaterThanOrEqual >= (Greater than or equal)]]
+		[[KeyPgOpGreaterThan > (Greater than)]]
 
 	{{fbdoc item="subsect" value="Bitwise Operators"}}
-		[[KeyPgAnd AND (Conjunction)]]
-		[[KeyPgEqv EQV (Equivalence)]]
-		[[KeyPgImp IMP (Implication)]]
-		[[KeyPgNot NOT (Complement)]]
-		[[KeyPgOr OR (Disjunction, Inclusive Or)]]
-		[[KeyPgXor XOR (Exclusive Or)]]
+		[[KeyPgOpAnd AND (Conjunction)]]
+		[[KeyPgOpEqv EQV (Equivalence)]]
+		[[KeyPgOpImp IMP (Implication)]]
+		[[KeyPgOpNot NOT (Complement)]]
+		[[KeyPgOpOr OR (Inclusive Disjunction)]]
+		[[KeyPgOpXor XOR (Exclusive Disjunction)]]
 
 	{{fbdoc item="subsect" value="Preprocessor Operators"}}
-		[[KeyPgStringize # (Argument stringize)]]
-		[[KeyPgPreConcat ## (Argument concatenation)]]
+		[[KeyPgOpPpStringize # (Argument stringize)]]
+		[[KeyPgOpPpConcat ## (Argument concatenation)]]
 
 	{{fbdoc item="subsect" value="Pointer Operators"}}
-		[[KeyPgAt @ (Address of)]]
-		[[KeyPgValOf * (Value of)]]
-		[[KeyPgPtrAddSub + - (Pointer arithmetics)]]
-		{{fbdoc item="keyword" value="KeyPgPtrIndex|[] (Pointer indexing)"}}
+		[[KeyPgOpAt @ (Address of)]]
+		[[KeyPgOpValueOf * (Value of)]]
+		[[KeyPgOpVarptr VARPTR (Variable pointer)]]
+		[[KeyPgOpProcptr PROCPTR (Procedure pointer)]]
 
 	{{fbdoc item="subsect" value="Type or Class Operators"}}
-		[[KeyPgDot . (Field access)]]
-		[[KeyPgPtrField -> (Field pointer access)]]
+		[[KeyPgOpMemberAccess . (Member access)]]
+		[[KeyPgOpPtrMemberAccess -> (Pointer to member access)]]
 
 	{{fbdoc item="subsect" value="Memory Operators"}}
-		[[KeyPgNew New]]
-		[[KeyPgDelete Delete]]
+		[[KeyPgOpNew New]]
+		[[KeyPgOpDelete Delete]]
 		[[OpPrecedence Operator Precedence]]
 
 	{{fbdoc item="subsect" value="Statements"}}
@@ -235,7 +246,7 @@
 		[[KeyPgAlias ALIAS]]
 		[[KeyPgAllocate ALLOCATE]]
 		[[KeyPgAlphaGfx ALPHA (Graphics PUT)]]
-		[[KeyPgAnd AND]]
+		[[KeyPgOpAnd AND]]
 		[[KeyPgAny ANY]]
 		[[KeyPgAppend APPEND]]
 		[[KeyPgAs AS]]
@@ -335,7 +346,7 @@
 		[[KeyPgDefuint DEFUINT]]
 		[[KeyPgDefulngint DEFULNGINT]]
 		[[KeyPgDefushort DEFUSHORT]]
-		[[KeyPgDelete DELETE]]
+		[[KeyPgOpDelete DELETE]]
 		[[KeyPgDestructor DESTRUCTOR]]
 		[[KeyPgModuleDestructor DESTRUCTOR (Module)]]
 		[[KeyPgDim DIM]]
@@ -359,7 +370,7 @@
 		[[KeyPgSetenviron ENVIRON statement]]
 		[[KeyPgEnviron ENVIRON]]
 		[[KeyPgEof EOF]]
-		[[KeyPgEqv EQV]]
+		[[KeyPgOpEqv EQV]]
 		[[KeyPgErase ERASE]]
 		[[KeyPgErfn ERFN]]
 		[[KeyPgErl ERL]]
@@ -413,7 +424,7 @@
 		[[KeyPgImageConvertRow IMAGECONVERTROW]]
 		[[KeyPgImagecreate IMAGECREATE]]
 		[[KeyPgImageDestroy IMAGEDESTROY]]
-		[[KeyPgImp IMP]]
+		[[KeyPgOpImp IMP]]
 		[[KeyPgImport IMPORT]]
 		[[KeyPgInkey INKEY]]
 		[[KeyPgInp INP]]
@@ -467,7 +478,7 @@
 		[[KeyPgMklongint MKLONGINT]]
 		[[KeyPgMks MKS]]
 		[[KeyPgMkshort MKSHORT]]
-		[[KeyPgMod MOD]]
+		[[KeyPgOpModulus MOD]]
 		[[KeyPgMonth MONTH]]
 		[[KeyPgMonthname MONTHNAME]]
 		[[KeyPgMultikey MULTIKEY]]
@@ -480,9 +491,9 @@
 		[[KeyPgName NAME]]
 		[[KeyPgNamespace NAMESPACE]]
 		[[KeyPgNext NEXT]]
-		[[KeyPgNew NEW]]
+		[[KeyPgOpNew NEW]]
 		[[KeyPgResumenext NEXT (RESUME)]]
-		[[KeyPgNot NOT]]
+		[[KeyPgOpNot NOT]]
 		[[KeyPgNow NOW]]
 
 	{{fbdoc item="subsect" value="O"}}
@@ -508,7 +519,7 @@
 		[[KeyPgOptionprivate OPTION PRIVATE]]
 		[[KeyPgMetaStatic OPTION STATIC]]
 		[[KeyPgOperator OPERATOR]]
-		[[KeyPgOr OR]]
+		[[KeyPgOpOr OR]]
 		[[KeyPgOut OUT]]
 		[[KeyPgOutput OUTPUT]]
 		[[KeyPgOverload OVERLOAD]]
@@ -532,7 +543,7 @@
 		[[KeyPgPrintusingPp PRINT USING #]]
 		[[KeyPgPrivate PRIVATE]]
 		[[KeyPgVisPrivate PRIVATE: (Access Control)]]
-		[[KeyPgProcptr PROCPTR]]
+		[[KeyPgOpProcptr PROCPTR]]
 		[[KeyPgProperty PROPERTY]]
 		[[KeyPgVisProtected PROTECTED: (Access Control)]]
 		[[KeyPgPset PSET]]
@@ -593,9 +604,7 @@
 		[[KeyPgSgn SGN]]
 		[[KeyPgShared SHARED]]
 		[[KeyPgShell SHELL]]
-		[[KeyPgShl SHL]]
 		[[KeyPgShort SHORT]]
-		[[KeyPgShr SHR]]
 		[[KeyPgSin SIN]]
 		[[KeyPgSingle SINGLE]]
 		[[KeyPgSizeof SIZEOF]]
@@ -611,7 +620,7 @@
 		[[KeyPgStr STR]]
 		[[KeyPgString STRING (Function)]]
 		[[KeyPgStringtype STRING]]
-		[[KeyPgStrptr STRPTR]]
+		[[KeyPgOpStrptr STRPTR]]
 		[[KeyPgSub SUB]]
 		[[KeyPgMemberSub SUB (Member)]]
 		[[KeyPgSwap SWAP]]
@@ -660,7 +669,7 @@
 		[[KeyPgValuint VALUINT]]
 		[[KeyPgValulng VALULNG]]
 		[[KeyPgVar VAR]]
-		[[KeyPgVarptr VARPTR]]
+		[[KeyPgOpVarptr VARPTR]]
 		[[KeyPgViewtext VIEW PRINT]]
 		[[KeyPgViewgraphics VIEW (Graphics)]]
 
@@ -689,7 +698,7 @@
 		[[KeyPgFunWstring WSTRING(Function)]]
 
 	{{fbdoc item="subsect" value="X"}}
-		[[KeyPgXor XOR]]
+		[[KeyPgOpXor XOR]]
 
 	{{fbdoc item="subsect" value="Y"}}
 		[[KeyPgYear YEAR]]

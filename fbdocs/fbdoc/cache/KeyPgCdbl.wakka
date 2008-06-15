@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CDBL"}}----
-Converts numeric or string expression to ##[[KeyPgDouble Double]]## precision floating point.
+Converts numeric or string expression to ##[[KeyPgDouble Double]]## precision floating point
 
 {{fbdoc item="syntax"}}##
 	**Cdbl**( //expression// )

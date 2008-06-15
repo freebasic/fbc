@@ -58,7 +58,7 @@ rem $static
 {{fbdoc item="section" value="Single-line comment parsing"}}
 	When you make a single-line comment, FBC will parse the comment, to check for a metacommand.  If it finds a multi-line comment, it will treat it as usual, and continue parsing the single-line comment after the close-comment marker.
 
-	If you want to prevent FBC parsing the single-line comment, put another single quote (##**'**##), at the start of the comment.  FBC will treat the rest of the line, including multi-line comment markers and metacommands, as ordinary text, and will ignore it.
+	If you want to prevent FBC parsing the single-line comment, put another single quote (##**'**##), at the start of the comment.  FBC will treat the rest of the line, including multi-line comment markers and metacommands, as ordinary text, and will ignore it.  Other words encountered in a comment will also stop the parsing.
 
 	%%(qbasic)
 '' $static <-- will not get parsed

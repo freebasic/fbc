@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="LEN"}}----
-Returns the length of a variable or data type.
+Returns the length of a variable or data type
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Len** ( [[KeyPgByref byref]] //variable// [[KeyPgAs as]] [[KeyPgAny any]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]	

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="WBIN"}}----
-Returns the binary wstring (unicode) representation of the integer //number//.
+Returns the binary wstring (unicode) representation of a number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]

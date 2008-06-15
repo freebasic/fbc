@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="__LINE__"}}----
-Intrinsic define (macro value) set by the compiler.
+Intrinsic define (macro value) set by the compiler
 
 {{fbdoc item="syntax"}}##
 	""__LINE__""

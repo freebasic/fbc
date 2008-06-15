@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="IMAGEDESTROY"}}----
-Frees memory associated with an image buffer.
+Frees memory associated with an image buffer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageDestroy""**( //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )

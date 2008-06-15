@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="HEX"}}----
-Returns the hexadecimal of the given number.
+Returns the hexadecimal of the given number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgString string]]

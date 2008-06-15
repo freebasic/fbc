@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="DEALLOCATE"}}----
-Frees previously allocated memory.
+Frees previously allocated memory
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Deallocate**( //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )

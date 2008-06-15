@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="WSPACE"}}----
-Fills a certain length of a  wstring with spaces (" ").
+Fills a certain length of a wstring with spaces (" ")
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wspace**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]

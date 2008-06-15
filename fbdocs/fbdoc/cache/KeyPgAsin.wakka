@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ASIN"}}----
-Function that returns the arcsine of a number.
+Finds the arcsine of a number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Asin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]

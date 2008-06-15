@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="GETKEY"}}----
-Returns the ascii code of the first key in the keyboard buffer.
+Returns the ascii code of the first key in the keyboard buffer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getkey** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]

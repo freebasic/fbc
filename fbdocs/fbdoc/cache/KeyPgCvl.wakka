@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CVL"}}----
-Converts an four byte string to an integer (long) variable.
+Converts an four byte string to an integer (long) variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvl** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="DEFINED"}}----
-Preprocessor function to test if a symbol has been defined.
+Preprocessor function to test if a symbol has been defined
 
 {{fbdoc item="syntax"}}##
 	**defined** (//symbol_name//)

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="#IFDEF"}}----
-Preprocessor conditional directive.
+Preprocessor conditional directive
 
 {{fbdoc item="syntax"}}##
 	**#ifdef** //symbol//

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENUNLOCK"}}----
-Graphics statement to unlock work page framebuffer.
+Unlocks work page's framebuffer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenunlock** ( [[KeyPgByval byval]] //startline// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //endline// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="TAB"}}----
-Output function to set the column when writing to screen or file.
+Sets the column when writing to screen or file
 
 {{fbdoc item="syntax"}}##
 	**Tab**( //column// )

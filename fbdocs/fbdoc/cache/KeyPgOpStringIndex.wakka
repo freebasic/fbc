@@ -1,0 +1,49 @@
+{{fbdoc item="title" value="Operator [] (String index)"}}----
+Returns a reference to a character in a string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **[]** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgUbyte ubyte]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **[]** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgZstring zstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgUbyte ubyte]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **[]** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgWstring wstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] //T//
+##
+~&//Note that **##Operator {}## (String index)** returns a reference. As of 02.27.07, ""FreeBASIC"" syntax does not support returning references. When it does, this syntax will need to be changed.//
+
+{{fbdoc item="usage"}}##
+	//result// = //lhs// **[** //rhs// **]**
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		The string.
+	##//rhs//##
+		A zero-based offset from the first character.
+	##//T//##
+		The wide-character type (varies per platform).
+
+{{fbdoc item="desc"}}
+	This operator returns a reference to a specific character in a string.
+
+	The user must ensure that the indexes do not exceed the range "[0, ##[[KeyPgLen Len]]##(//lhs//))". Outside this range, results are undefined.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim a as string = "Hello, world!"
+dim i as integer
+
+for i=0 to len(a)-1
+	print chr(a[i]);
+next
+%%
+
+Will print
+%%
+Hello, World!
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer index)"}}##
+	- [[CatPgOpString String Operators]]
+
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

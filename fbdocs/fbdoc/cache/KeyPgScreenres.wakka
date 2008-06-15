@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENRES"}}----
-Statement to initialize a graphics mode by specifying horizontal and vertical resolution. 
+Initializes a graphics mode by specifying horizontal and vertical resolution
 
 {{fbdoc item="syntax"}}##
 	**Screenres** //width// [[KeyPgAs as]] [[KeyPgInteger integer]], //height// [[KeyPgAs as]] [[KeyPgInteger integer]], //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 8, //num_pages// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1, //flags// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, //refresh_rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0

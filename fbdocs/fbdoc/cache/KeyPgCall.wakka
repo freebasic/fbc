@@ -5,22 +5,21 @@ Statement to invoke a subroutine
 	**Call** //procname// ([//parameter list//])
 ##
 {{fbdoc item="desc"}}
-	Calls a previously defined subroutine or function.
+	Calls a ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]##.
 
-	A holdover from earlier dialects of BASIC, but can be a useful syntatical convention to show that the return value from a function is being discarded intentionally.
-
+	This keyword is a holdover from earlier dialects of BASIC, and is mainly deprecated.
+	In //-lang qb//, it can be used to call ##[[KeyPgSub sub]]##s in code before they are declared.  The function will be implicitly ##[[KeyPgDeclare Declare]]##'d, with any parameters passed ##[[KeyPgByref Byref]] As [[KeyPgAny Any]]##
 {{fbdoc item="ex"}}
-%%(qbasic)'' Compile with -lang qb
+%%(qbasic)'' Compile with -lang qb or -lang deprecated
 
-declare sub foobar(x, y)
+declare sub foobar(byval x as integer, byval y as integer)
 call foobar(35, 42)
 
-sub foobar(x, y)
+sub foobar(byval x as integer, byval y as integer)
 print x; y
-end sub
-%%
+end sub%%
 
-%%(qbasic)'' Compile with -lang qb
+%%(qbasic)'' Compile with -lang qb or -lang deprecated
 
 function f ( ) as integer
 f = 42
@@ -29,12 +28,24 @@ end function
 call f ' execute function f, but ignore the answer
 %%
 
+%%(qbasic)'' Compile with -lang qb
+
+call mysub(15, 16) '' call "mysub" before it has been declared, or even mentioned.
+
+sub mysub(byref a as integer, byref b as integer)
+	
+	print a, b
+	
+end sub
+%%
+
 {{fbdoc item="lang"}}
-	- The use of CALL is not allowed in the //lang fb// option
+	- The use of ##**Call**## is not allowed in the //-lang fb// option
+	- //-lang deprecated// does not allow you to call functions that have not been previously declared.
 
 {{fbdoc item="diff"}}
 	- The procedure must have already been declared.
-	- CALL in QB will make a copy of all parameters, so passing [[KeyPgByref BYREF]] won't ever change the argument inside the callee.
+	- ##**Call**## in QB will make a copy of all parameters, so changes made to the arguments inside the called ##[[KeyPgSub Sub]]## will not be reflected in the variables in the caller.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDeclare Declare]]##

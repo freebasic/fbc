@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ACCESS"}}----
-Clause of the ##[[KeyPgOpen Open]]## statement to specify requested privileges.
+Clause of the ##[[KeyPgOpen Open]]## statement to specify requested privileges
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgOpen open]] //filename// for [[KeyPgBinary binary]] **Access** {**Read** | **Write** | **Read Write**} as [#]//filenum//

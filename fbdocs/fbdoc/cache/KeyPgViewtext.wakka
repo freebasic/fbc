@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="VIEW PRINT"}}----
-Console function to set printable area.
+Sets the printable area of the screen
 
 {{fbdoc item="syntax"}}##
 	**View Print** //firstrow// **To** //lastrow//

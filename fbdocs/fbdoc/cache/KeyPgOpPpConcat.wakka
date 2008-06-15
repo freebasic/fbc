@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="## Preprocessor Concatenate"}}----
+Preprocessor operator to concatenate strings
+
+{{fbdoc item="syntax"}}##
+	text**""##""**text
+##
+{{fbdoc item="desc"}}
+	This operator creates a new token by concatenating the texts at both sides of it.  This text can be recognised by other macros and further expanded.  One use, is to create a macro that expands to different macro names, variable names, and function names depending on the arguments received.
+
+	Because this preprocessor operator creates new symbol names at compile time, it is recommended that ##[[KeyPgOptionexplicit Option Explicit]]## be used when working with macros that make use of this operator.
+
+{{fbdoc item="ex"}}
+	Example :
+		%%(qbasic)
+#define Concat(t,n) t##n
+
+Print concat (12,34)
+
+Dim Concat (hello,world) as integer
+Concat (hello,world)=99
+print helloworld
+%%
+	Will output:
+		%%
+1234
+99
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpdefine #define]]##	
+	- [[CatPgOpPrepro Preprocessor Operators]]
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="WSTRING (Function)"}}----
-Fills a wstring with a certain length of a certain wide character.
+Fills a wstring with a certain length of a certain wide character
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch_code// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]

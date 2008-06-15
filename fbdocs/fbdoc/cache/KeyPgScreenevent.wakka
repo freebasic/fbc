@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENEVENT"}}----
-Graphics function to query for and retrieve system events.
+Queries for and retrieves system events
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ScreenEvent""** ( [[KeyPgByval byval]] event [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]

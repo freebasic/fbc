@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="BEEP"}}----
-Function that produces a beep sound.
+Produces a beep sound
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Beep** ( )

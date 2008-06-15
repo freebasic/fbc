@@ -1,15 +1,15 @@
 {{fbdoc item="title" value="VALULNG"}}----
-Converts a string to a unsigned long integer number.
+Converts a string to a unsigned long integer number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valulng** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valulng** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valulng** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valulng** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Valulng**( //str// )
+	//result// = **Valulng**( //strnum// )
 ##
 {{fbdoc item="param"}}
-	##//str//##
+	##//strnum//##
 		the string containing a number to convert
 
 {{fbdoc item="ret"}}
@@ -18,9 +18,11 @@ Converts a string to a unsigned long integer number.
 	If the first character of the string is invalid, ##**Valulng**## will return a 0.
 
 {{fbdoc item="desc"}}
-	For example, ##**Valulng**##("10") will return 10, and ##**Valulng**##("10.10") will return 10 too. The function parses the string from the left and returns the longest integer it can read, stopping at the first non-suitable charater.
+	For example, ##**Valulng**("10")## will return 10, and ##**Valulng**("10.60")## will return 10 as well. The function parses the string from the left, skipping any white space, and returns the longest number it can read, stopping at the first non-suitable character it finds.  Any non-numeric characters, including decimal points and exponent specifiers, are considered non-suitable.
 
-	Incidentally, this function is the opposite of ##[[KeyPgStr Str]]##, which converts a number to a string.
+	##**Valulng**## can be used to convert integer numbers in [[KeyPgBin binary]] / [[KeyPgOct octal]] / [[KeyPgHex hexadecimal]] format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prepended, for example: ##**Valulng**("&HFF")## returns 255.
+
+	If you want to convert a number into string format, use the ##[[KeyPgStr Str]]## function.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

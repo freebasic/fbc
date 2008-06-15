@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="ASSERTWARN"}}----
-Debugging macro that prints a warning if an expression is not true.
+Debugging macro that prints a warning if an expression is not true
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **ASSERTWARN**(//expression//) [[KeyPgIfthen if]] (expression) = 0 [[KeyPgThen then]] : fb_AssertWarn( [[KeyPgDdfile __FILE__]], [[KeyPgDdline __LINE__]], [[KeyPgDdfunction __FUNCTION__]], [[KeyPgStringize #]]expression ) : [[KeyPgEndif end if]]
+	[[KeyPgPpdefine #define]] **ASSERTWARN**(//expression//) [[KeyPgIfthen if]] (expression) = 0 [[KeyPgThen then]] : fb_AssertWarn( [[KeyPgDdfile __FILE__]], [[KeyPgDdline __LINE__]], [[KeyPgDdfunction __FUNCTION__]], [[KeyPgOpPpStringize #]]expression ) : [[KeyPgEndif end if]]
 ##
 {{fbdoc item="usage"}}##
 	**ASSERTWARN**( //expression// )

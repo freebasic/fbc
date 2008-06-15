@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="FILELEN"}}----
-Finds the length of a file given its filename.
+Finds the length of a file given its filename
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileLen""** ( //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]

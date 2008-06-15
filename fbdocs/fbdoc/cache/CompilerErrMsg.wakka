@@ -55,121 +55,121 @@ During the program compilation three types of errors can arise:
 	- //22 Internal!//
 	- //23 Parameter type mismatch//
 	- //24 File not found//
-	- //25 Illegal outside of FOR, DO, SUB or FUNCTION//
-	- //26 Invalid data types//
-	- //27 Invalid character//
-	- //28 File access error//
-	- //29 Recursion level too deep//
-	- //30 Expected pointer//
-	- //31 Expected 'LOOP'//
-	- //32 Expected 'WEND'//
-	- //33 Expected 'THEN'//
-	- //34 Expected 'END IF'//
-	- //35 Illegal 'END'//
-	- //36 Expected 'CASE'//
-	- //37 Expected 'END SELECT'//
-	- //38 Wrong number of dimensions//
-	- //39 'SUB' or 'FUNCTION' without 'END SUB' or 'END FUNCTION'//
-	- //40 Expected 'END SUB' or 'END FUNCTION'//
-	- //41 Illegal parameter specification//
-	- //42 Variable not declared//
-	- //43 Variable required//
-	- //44 Illegal outside a compound statement//
-	- //45 Expected 'END ASM'//
-	- //46 Function not declared//
-	- //47 Expected ';'//
-	- //48 Undefined label//
-	- //49 Too many array dimensions//
-	- //50 Expected scalar counter//
-	- //51 Illegal outside a function block//
-	- //52 Expected dynamic array//
-	- //53 Fixed-len strings cannot be returned from functions//
-	- //54 Array already dimensioned//
-	- //55 Illegal without the -ex option//
-	- //56 Type mismatch//
-	- //57 Illegal specification//
-	- //58 Expected 'END WITH'//
-	- //59 Illegal inside functions//
-	- //60 Expected array//
-	- //61 Expected '{'//
-	- //62 Expected '}'//
-	- //63 Too many expressions//
-	- //64 Expected explicit result type//
-	- //65 Range too large//
-	- //66 Forward references not allowed//
-	- //67 Incomplete type//
-	- //68 Array not dimensioned//
-	- //69 Array access, index expected//
-	- //70 Expected 'END ENUM'//
-	- //71 Dynamic arrays cannot be initialized//
-	- //72 Invalid bitfield//
-	- //73 Too many parameters//
-	- //74 Macro text too long//
-	- //75 Invalid command-line option//
-	- //76 Dynamic strings cannot be initialized//
-	- //77 Recursive TYPE or UNION not allowed//
-	- //78 Recursive DEFINE not allowed//
-	- //79 Array fields cannot be redimensioned//
-	- //80 Identifier cannot include periods//
-	- //81 Executable not found//
-	- //82 Array out-of-bounds//
-	- //83 Missing command-line option for//
-	- //84 Math overflow//
-	- //85 Expected 'ANY'//
-	- //86 Expected 'END SCOPE'//
-	- //87 Illegal inside a compound statement or scoped block//
-	- //88 UDT function results cannot be passed by reference//
-	- //89 Ambiguous call to overloaded function//
-	- //90 No matching overloaded function//
-	- //91 Division by zero//
-	- //92 Cannot pop stack, underflow//
-	- //93 UDT's containing dynamic string fields cannot be initialized//
-	- //94 Branching to scope block containing local variables//
-	- //95 Branching to other functions or to module-level//
-	- //96 Branch crossing local array, var-len string or object definition//
-	- //97 LOOP without DO//
-	- //98 NEXT without FOR//
-	- //99 WEND without WHILE//
-	- //100 END WITH without WITH//
-	- //101 END IF without IF//
-	- //102 END SELECT without SELECT//
-	- //103 END SUB or FUNCTION without SUB or FUNCTION//
-	- //104 END SCOPE without SCOPE//
-	- //105 END NAMESPACE without NAMESPACE//
-	- //106 END EXTERN without EXTERN//
-	- //107 ELSEIF without IF//
-	- //108 ELSE without IF//
-	- //109 CASE without SELECT//
-	- //110 Cannot modify a constant//
-	- //111 Expected period ('.')//
-	- //112 Expected END NAMESPACE//
-	- //113 Illegal inside a NAMESPACE block//
-	- //114 Symbols defined inside namespaces cannot be removed//
-	- //115 Expected END EXTERN//
-	- //116 Expected 'END SUB'//
-	- //117 Expected 'END FUNCTION'//
-	- //118 Expected 'END CONSTRUCTOR'//
-	- //119 Expected 'END DESTRUCTOR'//
-	- //120 Expected 'END OPERATOR'//
-	- //121 Expected 'END PROPERTY'//
-	- //122 Declaration outside the original namespace//
-	- //123 No end of multi-line comment, expected "'/"//
-	- //124 Too many errors, exiting//
-	- //125 Expected 'ENDMACRO'//
-	- //126 EXTERN or COMMON variables cannot be initialized//
-	- //127 At least one parameter must be a user-defined type//
-	- //128 Parameter or result must be a user-defined type//
-	- //129 Both parameters can't be of the same type//
-	- //130 Parameter and result can't be of the same type//
-	- //131 Invalid result type for this operator//
-	- //132 Invalid parameter type, it must be the same as the parent TYPE/CLASS//
-	- //133 Vararg parameters are not allowed in overloaded functions//
-	- //134 Illegal outside an OPERATOR block//
-	- //135 Parameter cannot be optional//
-	- //136 Only valid in -lang//
-	- //137 Default types or suffixes are only valid in -lang//
-	- //138 Suffixes are only valid in -lang//
-	- //139 Implicit variables are only valid in -lang//
+	- //25 Invalid data types//
+	- //26 Invalid character//
+	- //27 File access error//
+	- //28 Recursion level too deep//
+	- //29 Expected pointer//
+	- //30 Expected 'LOOP'//
+	- //31 Expected 'WEND'//
+	- //32 Expected 'THEN'//
+	- //33 Expected 'END IF'//
+	- //34 Illegal 'END'//
+	- //35 Expected 'CASE'//
+	- //36 Expected 'END SELECT'//
+	- //37 Wrong number of dimensions//
+	- //38 'SUB' or 'FUNCTION' without 'END SUB' or 'END FUNCTION'//
+	- //39 Expected 'END SUB' or 'END FUNCTION'//
+	- //40 Illegal parameter specification//
+	- //41 Variable not declared//
+	- //42 Variable required//
+	- //43 Illegal outside a compound statement//
+	- //44 Expected 'END ASM'//
+	- //45 Function not declared//
+	- //46 Expected ';'//
+	- //47 Undefined label//
+	- //48 Too many array dimensions//
+	- //49 Expected scalar counter//
+	- //50 Illegal outside a CONSTRUCTOR, DESTRUCTOR, FUNCTION, OPERATOR, PROPERTY or SUB block//
+	- //51 Expected dynamic array//
+	- //52 Fixed-len strings cannot be returned from functions//
+	- //53 Array already dimensioned//
+	- //54 Illegal without the -ex option//
+	- //55 Type mismatch//
+	- //56 Illegal specification//
+	- //57 Expected 'END WITH'//
+	- //58 Illegal inside functions//
+	- //59 Expected array//
+	- //60 Expected '{'//
+	- //61 Expected '}'//
+	- //62 Too many expressions//
+	- //63 Expected explicit result type//
+	- //64 Range too large//
+	- //65 Forward references not allowed//
+	- //66 Incomplete type//
+	- //67 Array not dimensioned//
+	- //68 Array access, index expected//
+	- //69 Expected 'END ENUM'//
+	- //70 Dynamic arrays cannot be initialized//
+	- //71 Invalid bitfield//
+	- //72 Too many parameters//
+	- //73 Macro text too long//
+	- //74 Invalid command-line option//
+	- //75 Dynamic strings cannot be initialized//
+	- //76 Recursive TYPE or UNION not allowed//
+	- //77 Recursive DEFINE not allowed//
+	- //78 Array fields cannot be redimensioned//
+	- //79 Identifier cannot include periods//
+	- //80 Executable not found//
+	- //81 Array out-of-bounds//
+	- //82 Missing command-line option for//
+	- //83 Math overflow//
+	- //84 Expected 'ANY'//
+	- //85 Expected 'END SCOPE'//
+	- //86 Illegal inside a compound statement or scoped block//
+	- //87 UDT function results cannot be passed by reference//
+	- //88 Ambiguous call to overloaded function//
+	- //89 No matching overloaded function//
+	- //90 Division by zero//
+	- //91 Cannot pop stack, underflow//
+	- //92 UDT's containing dynamic string fields cannot be initialized//
+	- //93 Branching to scope block containing local variables//
+	- //94 Branching to other functions or to module-level//
+	- //95 Branch crossing local array, var-len string or object definition//
+	- //96 LOOP without DO//
+	- //97 NEXT without FOR//
+	- //98 WEND without WHILE//
+	- //99 END WITH without WITH//
+	- //100 END IF without IF//
+	- //101 END SELECT without SELECT//
+	- //102 END SUB or FUNCTION without SUB or FUNCTION//
+	- //103 END SCOPE without SCOPE//
+	- //104 END NAMESPACE without NAMESPACE//
+	- //105 END EXTERN without EXTERN//
+	- //106 ELSEIF without IF//
+	- //107 ELSE without IF//
+	- //108 CASE without SELECT//
+	- //109 Cannot modify a constant//
+	- //110 Expected period ('.')//
+	- //111 Expected END NAMESPACE//
+	- //112 Illegal inside a NAMESPACE block//
+	- //113 Symbols defined inside namespaces cannot be removed//
+	- //114 Expected END EXTERN//
+	- //115 Expected 'END SUB'//
+	- //116 Expected 'END FUNCTION'//
+	- //117 Expected 'END CONSTRUCTOR'//
+	- //118 Expected 'END DESTRUCTOR'//
+	- //119 Expected 'END OPERATOR'//
+	- //120 Expected 'END PROPERTY'//
+	- //121 Declaration outside the original namespace//
+	- //122 No end of multi-line comment, expected "'/"//
+	- //123 Too many errors, exiting//
+	- //124 Expected 'ENDMACRO'//
+	- //125 EXTERN or COMMON variables cannot be initialized//
+	- //126 At least one parameter must be a user-defined type//
+	- //127 Parameter or result must be a user-defined type//
+	- //128 Both parameters can't be of the same type//
+	- //129 Parameter and result can't be of the same type//
+	- //130 Invalid result type for this operator//
+	- //131 Invalid parameter type, it must be the same as the parent TYPE/CLASS//
+	- //132 Vararg parameters are not allowed in overloaded functions//
+	- //133 Illegal outside an OPERATOR block//
+	- //134 Parameter cannot be optional//
+	- //135 Only valid in -lang//
+	- //136 Default types or suffixes are only valid in -lang//
+	- //137 Suffixes are only valid in -lang//
+	- //138 Implicit variables are only valid in -lang//
+	- //139 Auto variables are only valid in -lang//
 	- //140 Invalid array index//
 	- //141 Operator must be a member function//
 	- //142 Operator cannot be a member function//
@@ -181,44 +181,66 @@ During the program compilation three types of errors can arise:
 	- //148 Dynamic strings cannot be part of UNION's or nested TYPE's//
 	- //149 Fields with constructors cannot be part of UNION's or nested TYPE's//
 	- //150 Fields with destructors cannot be part of UNION's or nested TYPE's//
-	- //151 Illegal outside a constructor//
-	- //152 UDT's with methods must have unique names//
-	- //153 Parent is not a class or UDT//
-	- //154 Call to another constructor must be the first statement//
-	- //155 The constructor or destructor calling convention must be CDECL//
-	- //156 This symbol cannot be undefined//
-	- //157 Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors//
-	- //158 Invalid assignment/conversion//
-	- //159 Invalid array subscript//
-	- //160 TYPE or CLASS has no default constructor//
-	- //161 Invalid priority attribute//
-	- //162 PROPERTY GET should have no parameter, or just one if indexed//
-	- //163 PROPERTY SET should have one parameter, or just two if indexed//
-	- //164 Expected 'PROPERTY'//
-	- //165 Illegal outside a PROPERTY block//
-	- //166 PROPERTY has no GET method/accessor//
-	- //167 PROPERTY has no SET method/accessor//
-	- //168 PROPERTY has no indexed GET method/accessor//
-	- //169 PROPERTY has no indexed SET method/accessor//
-	- //170 Missing overloaded operator: //
-	- //171 The NEW[] operator does not allow explicit calls to constructors//
-	- //172 The NEW[] operator only supports the { ANY } initialization//
-	- //173 The NEW operator cannot be used with strings//
-	- //174 Illegal member access//
-	- //175 Expected ':'//
-	- //176 The default constructor has no public access//
-	- //177 Constructor has no public access//
-	- //178 Destructor has no public access//
-	- //179 Illegal non-static member access//
-	- //180 Member cannot be static//
-	- //181 Member isn't static//
-	- //182 Only static members can be accessed from static functions//
-	- //183 The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN//
-	- //184 The function prototype wasn't declared as STATIC//
-	- //185 This operator cannot be STATIC//
-	- //186 Parameter must be an integer//
-	- //187 Parameter must be a pointer//
-	- //188 VAR requires an initializer//
+	- //151 Illegal outside a CONSTRUCTOR block//
+	- //152 Illegal outside a DESTRUCTOR block//
+	- //153 UDT's with methods must have unique names//
+	- //154 Parent is not a class or UDT//
+	- //155 Call to another constructor must be the first statement//
+	- //156 The constructor or destructor calling convention must be CDECL//
+	- //157 This symbol cannot be undefined//
+	- //158 Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors//
+	- //159 Invalid assignment/conversion//
+	- //160 Invalid array subscript//
+	- //161 TYPE or CLASS has no default constructor//
+	- //162 Invalid priority attribute//
+	- //163 PROPERTY GET should have no parameter, or just one if indexed//
+	- //164 PROPERTY SET should have one parameter, or just two if indexed//
+	- //165 Expected 'PROPERTY'//
+	- //166 Illegal outside a PROPERTY block//
+	- //167 PROPERTY has no GET method/accessor//
+	- //168 PROPERTY has no SET method/accessor//
+	- //169 PROPERTY has no indexed GET method/accessor//
+	- //170 PROPERTY has no indexed SET method/accessor//
+	- //171 Missing overloaded operator: //
+	- //172 The NEW[] operator does not allow explicit calls to constructors//
+	- //173 The NEW[] operator only supports the { ANY } initialization//
+	- //174 The NEW operator cannot be used with strings//
+	- //175 Illegal member access//
+	- //176 Expected ':'//
+	- //177 The default constructor has no public access//
+	- //178 Constructor has no public access//
+	- //179 Destructor has no public access//
+	- //180 Illegal non-static member access//
+	- //181 Member cannot be static//
+	- //182 Member isn't static//
+	- //183 Only static members can be accessed from static functions//
+	- //184 The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN//
+	- //185 The function prototype wasn't declared as STATIC//
+	- //186 This operator cannot be STATIC//
+	- //187 Parameter must be an integer//
+	- //188 Parameter must be a pointer//
+	- //189 VAR requires an initializer//
+	- //190 Fields cannot be named as keywords in TYPE's that contain member functions or in CLASS'es//
+	- //191 Illegal outside a FOR compound statement//
+	- //192 Illegal outside a DO compound statement//
+	- //193 Illegal outside a WHILE compound statement//
+	- //194 Illegal outside a SELECT compound statement//
+	- //195 Expected 'FOR'//
+	- //196 Expected 'DO'//
+	- //197 Expected 'WHILE'//
+	- //198 Expected 'SELECT'//
+	- //199 No outer FOR compound statement found//
+	- //200 No outer DO compound statement found//
+	- //201 No outer WHILE compound statement found//
+	- //202 No outer SELECT compound statement found//
+	- //203 Expected 'CONSTRUCTOR', 'DESTRUCTOR', 'DO', 'FOR', 'FUNCTION', 'OPERATOR', 'PROPERTY', 'SELECT', 'SUB' or 'WHILE'//
+	- //204 Expected 'DO', 'FOR' or 'WHILE'//
+	- //205 Illegal outside a SUB block//
+	- //206 Illegal outside a FUNCTION block//
+	- //207 Ambigous symbol access, explicit scope resolution required//
+	- //208 An ENUM, TYPE or UNION cannot be empty//
+	- //209 ENUM's declared inside EXTERN .. END EXTERN blocks don't open new scopes//
+	- //210 Only member functions can be static//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.

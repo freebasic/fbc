@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="APPEND"}}----
-Specifies text file to be opened for append mode.
+Specifies text file to be opened for append mode
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgOpen open]] //filename// for **Append** [[[KeyPgEncoding encoding]] //encoding_type//] [[[KeyPgLock lock]] //lock_type//] as [#]//filenum// 

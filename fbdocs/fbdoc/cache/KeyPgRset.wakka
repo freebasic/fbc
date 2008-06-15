@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="RSET"}}----
-Right justifies a string in a string buffer.
+Right justifies a string in a string buffer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Rset** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgStringtype string]] , [[KeyPgByref byref]] //src// [[KeyPgAs as]] [[KeyPgStringtype string]] )

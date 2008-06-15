@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="LINE (GRAPHICS)"}}----
-Graphics statement to draw a line
+Draws a line
 
 {{fbdoc item="syntax"}}##
 	**Line** [//target//,] [[STEP] (//x1//, //y1//)]-[STEP] (//x2, y2//) [, [//color//][, [B|BF][, //style//]]]

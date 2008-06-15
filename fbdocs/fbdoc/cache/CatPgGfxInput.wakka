@@ -1,5 +1,8 @@
 {{fbdoc item="title" value="User Input Functions"}}----
-Procedures for working with mice, gaming devices and keyboards.
+Procedures for working with mice, gaming devices and keyboards
+
+{{fbdoc item="desc"}}
+	These procedures provide access to external devices such as keyboards, mice and gamepads.
 
 **{{anchor name="MOUSEJOY|Mouse and Joystick Input"}}**
 	Procedures that provide state information of the mouse or joystick.

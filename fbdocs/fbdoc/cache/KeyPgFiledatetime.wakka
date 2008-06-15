@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="FILEDATETIME"}}----
-Function to return the last modified date and time of a file as [[ProPgDates Date Serial]] 
+Returns the last modified date and time of a file as [[ProPgDates Date Serial]] 
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileDateTime""**( [[KeyPgByval byval]] //filename// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgDouble double]]

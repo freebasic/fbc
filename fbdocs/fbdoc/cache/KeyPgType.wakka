@@ -73,6 +73,7 @@ c.blue = 64
 	- ##[[KeyPgOffsetof OffsetOf]]##
 	- ##[[KeyPgTypeTemp Type (Temporary)]]##
 	- ##[[KeyPgTypeAlias Type (Alias)]]##
+	- ##[[KeyPgTypeof Typeof]]##
 	- ##[[KeyPgField Field]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

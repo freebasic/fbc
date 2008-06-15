@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="#UNDEF"}}----
-Preprocessor directive to undefine a macro.
+Preprocessor directive to undefine a macro
 
 {{fbdoc item="syntax"}}##
 	**#undef** //symbol//

@@ -1,6 +1,9 @@
 {{fbdoc item="title" value="2D Drawing Functions"}}----
 Statements and procedures for working with 2D graphics
 
+{{fbdoc item="desc"}}
+	The statements and procedures listed here provide ways of drawing to the screen. Image buffers can be created and blittted to the screen using a variety of blending methods. Palette colors can be retrieved or set in graphics mode that support them.
+
 **{{anchor name="COLOR|Working with Color"}}**
 	Procedures that control the color used by other drawing procedures.
 **{{anchor name="DRAWING|Drawing to Image Buffers"}}**
