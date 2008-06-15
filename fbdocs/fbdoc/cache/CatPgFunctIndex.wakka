@@ -277,6 +277,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgEndblock|END (Block)"}}
 	- {{fbdoc item="keyword" value="KeyPgLet|LET"}}
 	- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
+	- {{fbdoc item="keyword" value="KeyPgOption|OPTION()"}}
 	- {{fbdoc item="keyword" value="KeyPgTo|TO"}}
 	- {{fbdoc item="keyword" value="KeyPgRead|READ"}}
 	- {{fbdoc item="keyword" value="KeyPgRem|REM"}}

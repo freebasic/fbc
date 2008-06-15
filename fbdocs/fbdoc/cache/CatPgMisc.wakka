@@ -49,6 +49,7 @@
 		- {{fbdoc item="keyword" value="KeyPgTypeof|TYPEOF"}}
 		- {{fbdoc item="keyword" value="KeyPgLet|LET"}}
 		- {{fbdoc item="keyword" value="KeyPgRem|REM"}}
+		- {{fbdoc item="keyword" value="KeyPgOption|OPTION()"}}
 
 >>
 

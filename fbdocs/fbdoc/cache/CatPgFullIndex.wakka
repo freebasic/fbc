@@ -339,6 +339,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgOpenLpt|OPEN LPT"}}
 	- {{fbdoc item="keyword" value="KeyPgOpenPipe|OPEN PIPE"}}
 	- {{fbdoc item="keyword" value="KeyPgOpenScrn|OPEN SCRN"}}
+	- {{fbdoc item="keyword" value="KeyPgOption|OPTION()"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionbase|OPTION BASE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionbyval|OPTION BYVAL"}}
 	- {{fbdoc item="keyword" value="KeyPgOptiondynamic|OPTION DYNAMIC"}}

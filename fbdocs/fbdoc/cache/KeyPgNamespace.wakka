@@ -2,10 +2,16 @@
 Declares a namespace block
 
 {{fbdoc item="syntax"}}##
-	**Namespace** //identifier//
+	**Namespace** //identifier// [ [[KeyPgAlias Alias]] "//aliasname//" ]
 		//statements//
 	**End Namespace**
 ##
+{{fbdoc item="param"}}
+	##//identifier//##
+		The name of the namespace.
+	##//aliasname//##
+		An alternate external name for the namespace.
+
 {{fbdoc item="desc"}}
 	Namespaces are commonly used in libraries where you don't want all the symbols from that library to crowd the user's space (called the Global Namespace). 
 
