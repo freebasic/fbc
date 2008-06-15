@@ -31,7 +31,7 @@ Operator to dynamically allocate memory and construct data of a specified type.
 {{fbdoc item="ex"}}
 %%(qbasic)
 type Rational
-	as integer	numerator, denominator = 1
+	as integer	numerator, denominator
 end type
 
 scope

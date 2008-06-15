@@ -1,22 +1,25 @@
-{{fbdoc item="title" value="Standard Identifier Rules"}}
+{{fbdoc item="title" value="Identifier Rules"}}
 ----
 
 {{fbdoc item="desc"}}
-**Standard Identifier Rules** refer to the idea that a [[DtVariables variable]] name must follow certain rules.
+All identifiers must follow certain rules.  An identifier is a name which uniquely identifies a [[DtVariables variable]], ##[[KeyPgType Type]]##, ##[[KeyPgUnion Union]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgSub Sub]]##, or ##[[KeyPgProperty Property]]##.
 
-Identifier names must composed of letters, numbers, and character "_". These reference names cannot contain most other symbols because such symbols are part of the FreeBASIC programming language. They also cannot contain spaces. 
+Identifiers may contain only letters (specifically, the upper- and lower-case Latin characters ##a##-##z## and ##A##-##Z##), digits (##0##-##9##), and the underscore character (##_##). The first character of an identifier may only be a letter or underscore, not a digit.
 
-Identifiers may have a symbol at the end referring to one of the standard data types. 
-	- % for Integer
-	- & for Long
-	- ! for Single
-	- # for Double
-	- $ for String
-The use of these symbols is generally discouraged in modern FreeBASIC code. 
-The alternative is to be explicit - 
-	"Dim As Integer foo" instead of "Dim foo%", etc.
+Identifiers are case-insensitive: ##FOO## and ##foo## (and all other permutations of upper- and lower-case) refer to the same entity.
+
+In ##-lang qb## and ##-lang deprecated## modes, identifiers may have a symbol at the end referring to one of the standard data types:
+	- ##%## for ##[[KeyPgInteger Integer]]##
+	- ##&## for ##[[KeyPgLong Long]]##
+	- ##!## for ##[[KeyPgSingle Single]]##
+	- ##### for ##[[KeyPgDouble Double]]##
+	- ##$## for ##[[KeyPgStringtype String]]##
+The use of these symbols is generally discouraged in modern FreeBASIC code and is not allowed in ##-lang fb## mode (the default).
+The alternative is to be explicit - for example, ##Dim As Integer foo## or ##Dim foo As Integer## instead of ##Dim foo%##
+
+In ##-lang qb## and ##-lang deprecated## modes, identifiers may contain one or more periods (##.##).
 
 {{fbdoc item="see"}}
-	- [[DtVariables Variable]]
+	- [[DtVariables Variables]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -11,7 +11,7 @@ Work in Progress: **New pages created for this guide should use the ""ProPg""* p
 
 {{fbdoc item="section" value="Variables and Datatypes"}}
 	- [[ProPgLiterals Literals]]
-	- [[ProPgIdentifierRules Standard Identifier Rules]]
+	- [[ProPgIdentifierRules Identifier Rules]]
 	- Constants and Enumerations
 	- Numeric Types
 	- Strings (string, zstring, and wstring)

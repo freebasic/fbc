@@ -46,6 +46,7 @@
 	[[ProPgRadians Radians]]
 	[[ProPgErrorHandling Error Handling]]
 	[[ProPgErrorHandling Error Handling]]
+	[[GfxInternalFormats Internal Graphics Formats]]
 
 {{fbdoc item="section" value="Operators"}}
 
@@ -325,6 +326,7 @@
 		[[KeyPgFor FOR]]
 		[[KeyPgFornext FOR...NEXT]]
 		[[KeyPgFormat FORMAT]]
+		[[KeyPgFrac FRAC]]
 		[[KeyPgFre FRE]]
 		[[KeyPgFreefile FREEFILE]]
 		[[KeyPgFunction FUNCTION]]
@@ -497,6 +499,7 @@
 		[[KeyPgScreencontrol SCREENCONTROL]]
 		[[KeyPgScreenevent SCREENEVENT]]
 		[[KeyPgScreeninfo SCREENINFO]]
+		[[KeyPgScreenglproc SCREENGLPROC]]
 		[[KeyPgScreenlist SCREENLIST]]
 		[[KeyPgScreenlock SCREENLOCK]]
 		[[KeyPgScreenptr SCREENPTR]]
@@ -635,6 +638,7 @@
 	[[TutMathAngles Different ways angles are measured]]
 	[[TutMathIntroTrig A Brief Introduction To Trigonometry]]
 	[[TutBeginnersGuideToTypesAsObjects Beginners Guide to Types as Objects]]
+	[[TutBeginnersGuideToTypesAsObjects2 Beginners Guide to Types as Objects 2]]
 	[[FaqPggetputstructure Get Put Structure]]
 	[[FaqPgbloadworkaround Bload Work-around]]
 	[[SrcPgGfxNull SrcPgGfxNull]]

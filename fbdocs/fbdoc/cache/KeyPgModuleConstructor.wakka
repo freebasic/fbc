@@ -38,19 +38,19 @@ sub Destructor2() destructor
 	print "Destructor2() called"
 end sub
 
-	'' ------------------------------------------------------------------------
+	'' ----------------------
 	print "module-level code"
 
 	end 0
-	'' ------------------------------------------------------------------------
+	'' ----------------------
 %%
 	**Output:**
 ##%%
-	Constructor1() called
-	Constructor2() called
-	module-level code
-	Destructor1() called
-	Destructor2() called
+Constructor1() called
+Constructor2() called
+module-level code
+Destructor1() called
+Destructor2() called
 %%##
 
 {{fbdoc item="diff"}}

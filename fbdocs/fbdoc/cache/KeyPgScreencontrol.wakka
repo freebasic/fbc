@@ -88,6 +88,8 @@ Function to set or get internal graphics library settings
 %%(qbasic)'' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
 
+using fb
+
 dim e as EVENT
 dim as integer x, y, pressed, col
 dim as any ptr img

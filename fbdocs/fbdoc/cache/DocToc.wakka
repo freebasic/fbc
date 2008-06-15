@@ -42,7 +42,7 @@
 		[[KeyPgSelectcase Select Case]]
 		[[KeyPgWhilewend While...Wend]]
 		[[KeyPgScope Scope...End Scope]]
-		[[KeyPgNamespace NameSpace...End NameSpace]]	
+		[[KeyPgNamespace Namespace...End Namespace]]	
 
 	{{fbdoc item="subsect" value="Procedures""}}
 		[[KeyPgCall Call]]

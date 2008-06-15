@@ -388,6 +388,7 @@
 	- {{fbdoc item="keyword" value="KeyPgScreencontrol|SCREENCONTROL"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenevent|SCREENEVENT"}}
 	- {{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}
+	- {{fbdoc item="keyword" value="KeyPgScreenglproc|SCREENGLPROC"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenlist|SCREENLIST"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenlock|SCREENLOCK"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenptr|SCREENPTR"}}
