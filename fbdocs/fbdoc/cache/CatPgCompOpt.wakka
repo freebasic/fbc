@@ -1,0 +1,84 @@
+{{fbdoc item="title" value="Compiler Options"}}----
+Command line compiler options for the fbc compiler:
+
+	{{fbdoc item="keyword" value="ProPgCompOpta|-a < name >"}}
+		- Add an object file to linker's list
+	{{fbdoc item="keyword" value="ProPgCompOptarch|-arch < type >"}}
+		- Set target architecture (default: 486)
+	{{fbdoc item="keyword" value="ProPgCompOptb|-b < name >"}}
+		- Add a source file to compilation
+	{{fbdoc item="keyword" value="ProPgCompOptc|-c"}}
+		- Compile only, do not link
+	{{fbdoc item="keyword" value="ProPgCompOptd|-d < name=val >"}}
+		- Add a preprocessor's define
+	{{fbdoc item="keyword" value="ProPgCompOptdll|-dll"}}
+		- Create a DLL, including the import library.  (Same as -dylib)
+	{{fbdoc item="keyword" value="ProPgCompOptdylib|-dylib"}}
+		- Create a DLL, including the import library
+	{{fbdoc item="keyword" value="ProPgCompOptentry|-entry < name >"}}
+		- Main file without extension, the entry point (default is the first .bas file on the command line)
+	{{fbdoc item="keyword" value="ProPgCompOpte|-e"}}
+		- Add error checking
+	{{fbdoc item="keyword" value="ProPgCompOptex|-ex"}}
+		- Add error checking with RESUME support
+	{{fbdoc item="keyword" value="ProPgCompOptexx|-exx"}}
+		- Same as -ex plus array bounds and null-pointer checking
+	{{fbdoc item="keyword" value="ProPgCompOptexport|-export"}}
+		- Export symbols for dynamic linkage
+	{{fbdoc item="keyword" value="ProPgCompOptg|-g"}}
+		- Add debug info
+	{{fbdoc item="keyword" value="ProPgCompOpti|-i < name >"}}
+		- Add a path to search for include files
+	{{fbdoc item="keyword" value="ProPgCompOptinclude|-include < name >"}}
+		- Include a header file on each source compiled
+	{{fbdoc item="keyword" value="ProPgCompOptl|-l < name >"}}
+		- Add a library file to linker's list
+	{{fbdoc item="keyword" value="ProPgCompOptlang|-lang < name >"}}
+		- Select language compatibility: deprecated, qb
+	{{fbdoc item="keyword" value="ProPgCompOptlib|-lib"}}
+		- Create a static library
+	{{fbdoc item="keyword" value="ProPgCompOptm|-m < name >"}}
+		- Main file without extension, the entry point (default is the first .bas file on the command line)
+	{{fbdoc item="keyword" value="ProPgCompOptmap|-map < name >"}}
+		- Save the linking map to file name
+	{{fbdoc item="keyword" value="ProPgCompOptmaxerr|-maxerr < val >"}}
+		- Only stop parsing if <val> errors occurred
+	{{fbdoc item="keyword" value="ProPgCompOptmt|-mt"}}
+		- Link with thread-safe runtime library
+	{{fbdoc item="keyword" value="ProPgCompOptnodeflibs|-nodeflibs"}}
+		- Do not include the default libraries
+	{{fbdoc item="keyword" value="ProPgCompOptnoerrline|-noerrline"}}
+		- Do not show source line where error occured
+	{{fbdoc item="keyword" value="ProPgCompOpto|-o < name >"}}
+		- Set object file path/name (must be passed after the .bas file)
+	{{fbdoc item="keyword" value="ProPgCompOptp|-p < name >"}}
+		- Add a path to search for libraries
+	{{fbdoc item="keyword" value="ProPgCompOptprefix|-prefix < path >"}}
+		- Set the compiler prefix path
+	{{fbdoc item="keyword" value="ProPgCompOptprofile|-profile"}}
+		- Enable function profiling
+	{{fbdoc item="keyword" value="ProPgCompOptr|-r"}}
+		- Do not delete the asm file(s)
+	{{fbdoc item="keyword" value="ProPgCompOpts|-s < name >"}}
+		- Set subsystem (gui, console)
+	{{fbdoc item="keyword" value="ProPgCompOpttarget|-target < platform >"}}
+		- Set the target platform for cross compilation
+	{{fbdoc item="keyword" value="ProPgCompOptt|-t < value >"}}
+		- Set stack size in kbytes (default: 1M)
+	{{fbdoc item="keyword" value="ProPgCompOptv|-v"}}
+		- Be verbose
+	{{fbdoc item="keyword" value="ProPgCompOptversion|-version"}}
+		- Show compiler version
+	{{fbdoc item="keyword" value="ProPgCompOptw|-w < value >"}}
+		- Set min warning level: all, pedantic or a value
+	{{fbdoc item="keyword" value="ProPgCompOptWa|-Wa < opt >"}}
+		- Pass options to GAS (separated by commas)
+	{{fbdoc item="keyword" value="ProPgCompOptWl|-Wl < opt >"}}
+		- Pass options to LD (separated by commas)
+	{{fbdoc item="keyword" value="ProPgCompOptx|-x < name >"}}
+		- Set executable/library path/name
+
+{{fbdoc item="see"}}
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -40,7 +40,7 @@ Code block that allows the use of architecture-specific instructions
 		
 		See these external references:
 		~- [[http://developer.intel.com/design/Pentium4/documentation.htm Intel Pentium 4 manuals]]
-		~- [[http://nasm.sourceforge.net/doc/html/nasmdocb.html NASM x86 Instruction Reference]] (Please note that NASM is not the assembler used by FreeBASIC, but this page provides a good overview of x86 instructions)
+		~- [[http://home.comcast.net/~fbkotler/nasmdocb.html NASM x86 Instruction Reference]] (Please note that NASM is not the assembler used by FreeBASIC, but this page provides a good overview of x86 instructions)
 		
 		==Disallowed Instructions==
 		~Note that the FreeBASIC compiler produces 32-bit protected-mode code for the x86 which usually runs in an unprivileged user level; therefore, privileged and sensitive instructions will assemble correctly but are likely to cause a runtime 'Illegal instruction', or SIGILL error.  The only known exceptions to this are RDTSC (Read Time Stamp Counter), which has been shown to be allowed by most, or all OS'es, and IN and OUT instructions, usable and useful in DOS (only).  However the usefulness of RDTSC has been diminished with the advent of multi-core and hibernating CPUs.  The following are the privileged and sensitive instructions as of the Intel Pentium 4 and Xeon:

@@ -26,20 +26,20 @@ Statements that affect how code is compiled
 	- {{fbdoc item="keyword" value="KeyPgDefdbl|DEFDBL"}}
 	- {{fbdoc item="keyword" value="KeyPgDefint|DEFINT"}}
 	- {{fbdoc item="keyword" value="KeyPgDeflng|DEFLNG"}}
-	- {{fbdoc item="keyword" value="KeyPgDeflngint|DEFLNGINT"}}
+	- {{fbdoc item="keyword" value="KeyPgDeflongint|DEFLONGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgDefshort|DEFSHORT"}}
 	- {{fbdoc item="keyword" value="KeyPgDefsng|DEFSNG"}}
 	- {{fbdoc item="keyword" value="KeyPgDefstr|DEFSTR"}}
 	- {{fbdoc item="keyword" value="KeyPgDefubyte|DEFUBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgDefuint|DEFUINT"}}
-	- {{fbdoc item="keyword" value="KeyPgDefulngint|DEFULNGINT"}}
+	- {{fbdoc item="keyword" value="KeyPgDefulongint|DEFULONGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgDefushort|DEFUSHORT"}}
 
 
 >>
 ::c::
 {{fbdoc item="lang"}}
-	- ##[[KeyPgDeflngint DEFLNGINT]]## and ##[[KeyPgDefulngint DEFULNGINT]]## only available in the //[[CompilerDialects QB and deprecated dialects]]//.
+	- ##[[KeyPgDeflongint DEFLONGINT]]## and ##[[KeyPgDefulongint DEFULONGINT]]## only available in the //[[CompilerDialects QB and deprecated dialects]]//.
 	- The various ##OPTION## statements only available in the //[[CompilerDialects deprecated dialect]]// except for ##[[KeyPgOptionbase OPTION BASE]]## and ##[[KeyPgOptionexplicit OPTION EXPLICIT]]## which are also available in the //[[CompilerDialects QB dialect]]//.
 
 {{fbdoc item="see"}}

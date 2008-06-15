@@ -1,0 +1,13 @@
+{{fbdoc item="title" value="Compiler Option: -r"}}----
+Do not delete the asm file(s)
+
+{{fbdoc item="syntax"}}##
+	**-r**
+##
+{{fbdoc item="desc"}}
+	The ##-r## compiler option causes the asm file(s) that are generated during the compile process to not be deleted. Preprocessor macros are expanded in these files.
+
+{{fbdoc item="see"}}
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

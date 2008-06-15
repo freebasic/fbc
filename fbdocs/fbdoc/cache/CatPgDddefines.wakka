@@ -16,12 +16,18 @@ Preprocessor symbols defined by the compiler
 	Defines that provide context information about the compilation process.
 
 <<{{anchor name="PLATFORM"}}{{fbdoc item="section" value="Platform Information"}}
-	=={{fbdoc item="keyword" value="KeyPgDdfblinux|__FB_LINUX__"}}==
-		Defined if compiling in Linux.
 	=={{fbdoc item="keyword" value="KeyPgDdfbwin32|__FB_WIN32__"}}==
-		Defined if compiling in Windows.
+		Defined if compiling for Windows.
+	=={{fbdoc item="keyword" value="KeyPgDdfblinux|__FB_LINUX__"}}==
+		Defined if compiling for Linux.
 	=={{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}==
-		Defined if compiling in DOS.
+		Defined if compiling for DOS.
+	=={{fbdoc item="keyword" value="KeyPgDdfbcygwin|__FB_CYGWIN__"}}==
+		Defined if compiling for Cygwin.
+	=={{fbdoc item="keyword" value="KeyPgDdfbfreebsd|__FB_FREEBSD__"}}==
+		Defined if compiling for FreeBSD.
+	=={{fbdoc item="keyword" value="KeyPgDdfbxbox|__FB_XBOX__"}}==
+		Defined if compiling for Xbox.
 	=={{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}==
 		Defined if compiling on a system using big-endian byte-order.
 

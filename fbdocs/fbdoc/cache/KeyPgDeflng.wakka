@@ -30,7 +30,7 @@ print len(lNumber) ' Displays 4, the number of bytes in a long.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDefint Defint]]##
-	- ##[[KeyPgDefulngint Defulngint]]##
+	- ##[[KeyPgDefulongint Defulongint]]##
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgLongint Longint]]##
 

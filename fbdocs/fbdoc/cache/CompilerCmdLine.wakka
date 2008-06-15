@@ -64,8 +64,8 @@ fbc command-line usage
 	{{fbdoc item="subsect" value="Platform specific"}}
 		**##-arch < //architecture// >##**
 			Set the target CPU architecture (defaults to 486 if not specified, can be 386, 486, 586, 686).
-		**##-target < "dos"|"linux"|"win32"|"xbox"|"cygwin" >##**
-			( Windows ) Used with the Windows version of the compiler to create DOS32, Linux or Xbox executables . The bin and lib folders must have the /dos, /linux or /xbox subfolders from the appropiate distribution.
+		**##-target < "dos"|"linux"|"win32"|"xbox"|"cygwin"|"freebsd" >##**
+			Used with (typically the Windows version) of the compiler to create an executable for a platform that is different from platform on which the source is being compiled and linked. The bin and lib folders must have the /dos, /linux or /xbox subfolders from the appropiate distribution.  This option is only available if the fbc compiler was built with cross compilation targets enabled.
 		**##-s < //subsystem// >##**
 			( Windows ) Specifies the executable subsystem. Allowed subsystems are ##gui## and ##console## (by default, ##console## is used). Specifying a gui subsystem prevents the console window from appearing behind the program window.
 		**##-t < //stack size// >##**
@@ -128,6 +128,7 @@ fbc command-line usage
 		//(Link an executable ##application.exe##)//
 
 {{fbdoc item="see"}}
+	- [[CatPgCompOpt Compiler Options]]
 	- [[CompilerInstalling Installing FreeBASIC]]
 	- [[CompilerRunning Invoking the FreeBASIC compiler]]
 

@@ -1,0 +1,19 @@
+{{fbdoc item="title" value="Compiler Option: -include"}}----
+Include a header file on each source compiled
+
+{{fbdoc item="syntax"}}##
+	**-include** < //include file// >
+##
+{{fbdoc item="param"}}
+	##//include file//##
+		The header file name with extension to include.
+
+{{fbdoc item="desc"}}
+	The ##-include## compiler option specifies a file to ##[[KeyPgInclude #include]]## before processing each source. If multiple ##-include## switches are used, the order that they are listed determines the order in which the files are included.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInclude #include]]##
+	- [[ProPgHeaderFiles Header Files]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

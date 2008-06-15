@@ -33,5 +33,6 @@ Preprocessor directive
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgInclude #include]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

@@ -16,9 +16,11 @@ Preprocessor directive
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgInclude #include]]##
+	- [[ProPgCompOptl Compiler Option: -l]]
+	- [[ProPgCompOptp Compiler Option: -p]]
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

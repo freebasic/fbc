@@ -59,3 +59,5 @@ NOTE: To use this code with an array, pass your array to the function, like this
 %%(freebasic)
 show_image_info( varptr( myarray( 0 ) ) )
 %%
+
+   

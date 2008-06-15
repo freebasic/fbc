@@ -1,0 +1,18 @@
+{{fbdoc item="title" value="Compiler Option: -b"}}----
+Add a source file to compilation
+
+{{fbdoc item="syntax"}}##
+		[ **-b** ] < //source file// >
+##
+{{fbdoc item="param"}}
+	##//source file//##
+		The name with extension of the basic source file.
+
+{{fbdoc item="desc"}}
+	The ##-b## compiler option adds a source file to be compiled. The "-b" is optional if the source file name has a ".bas" extension.  For all other extensions, the //-b// must be specified.
+
+{{fbdoc item="see"}}
+	- [[ProPgCompOpta Compiler Option: -a]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

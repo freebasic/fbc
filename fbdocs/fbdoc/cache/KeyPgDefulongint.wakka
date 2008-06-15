@@ -1,8 +1,8 @@
-{{fbdoc item="title" value="DEFULNGINT"}}----
+{{fbdoc item="title" value="DEFULONGINT"}}----
 Specifies a default data type for a range of variable names
 
 {{fbdoc item="syntax"}}##
-	**Defulngint** //start_letter//[**-**//end_letter// ][, ...]
+	**Defulongint** //start_letter//[**-**//end_letter// ][, ...]
 ##
 {{fbdoc item="param"}}
 	##//start_letter//##
@@ -11,7 +11,7 @@ Specifies a default data type for a range of variable names
 		the last letter in the range
 
 {{fbdoc item="desc"}}
-	##**Defulngint**## specifies that variables and arrays which aren't declared with a datatype - or not declared at all - are implicitly declared of type ##[[KeyPgUlongint Ulongint]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
+	##**Defulongint**## specifies that variables and arrays which aren't declared with a datatype - or not declared at all - are implicitly declared of type ##[[KeyPgUlongint Ulongint]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
 	This will make 'lNumber' a ##[[KeyPgUlongint Ulongint]]## number since it's first letter starts with l.
@@ -29,7 +29,7 @@ dim lNumber
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDefint Defint]]##
-	- ##[[KeyPgDeflngint Deflngint]]##
+	- ##[[KeyPgDeflongint Deflongint]]##
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgUlongint Ulongint]]##
 

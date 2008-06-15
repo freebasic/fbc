@@ -98,4 +98,4 @@ SC_LWIN		&h7D
 SC_RWIN		&h7E
 SC_MENU		&h7F
 
-{{fbdoc item="back" value="KeyPgMultikey|Multikey"}}
+{{fbdoc item="back" value="KeyPgMultikey|Multikey"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}

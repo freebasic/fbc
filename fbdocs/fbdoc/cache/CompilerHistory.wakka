@@ -68,6 +68,7 @@ Chronology of the FreeBASIC project.
 		- Because the 0.17 sources can only be compiled with a version 0.16+2006-July-Testing combination, a release was made to allow users to install and compile FreeBASIC without applying any patch.
 		- Major installation problems on the Linux release, so an additional Linux release was made a week later to correct the problems.
 		- Some users found minor installation problems on DOS/Windows and workarounds made available.
+		- First full release with graphics working (almost) with DOS target also
 		- The major change in this full release compared to version 0.16, was that all procedure paramaters are passed BYVAL.
 
 	**2007 Jun 7**

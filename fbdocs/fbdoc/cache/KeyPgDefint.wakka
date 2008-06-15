@@ -30,7 +30,7 @@ dim iNumber
 	- ##[[KeyPgDefbyte Defbyte]]##
 	- ##[[KeyPgDefdbl Defdbl]]##
 	- ##[[KeyPgDeflng Deflng]]##
-	- ##[[KeyPgDeflngint Deflngint]]##
+	- ##[[KeyPgDeflongint Deflongint]]##
 	- ##[[KeyPgDefshort Defshort]]##
 	- ##[[KeyPgDefsng Defsng]]##
 	- ##[[KeyPgDefstr Defstr]]##

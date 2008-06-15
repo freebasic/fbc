@@ -22,7 +22,7 @@ Returns a reference to a character in a string
 {{fbdoc item="desc"}}
 	This operator returns a reference to a specific character in a string.
 
-	The user must ensure that the index does not exceed the range "[0, ##[[KeyPgLen Len]](//lhs//)##)". Outside this range, results are undefined.
+	The user must ensure that the index does not exceed the range "[0, ##[[KeyPgLen Len]](//lhs//) - 1##]". Outside this range, results are undefined.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/stringindex.bas"}}%%(freebasic)

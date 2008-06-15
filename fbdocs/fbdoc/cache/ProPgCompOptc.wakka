@@ -1,0 +1,14 @@
+{{fbdoc item="title" value="Compiler Option: -c"}}----
+Compile only, do not link
+
+{{fbdoc item="syntax"}}##
+	**-c**
+##
+{{fbdoc item="desc"}}
+	The ##-c## compiler option causes any specified source files to be compiled but not linked to an executable.  The output is to make an object file.
+
+{{fbdoc item="see"}}
+	- [[ProPgCompOptb -b option]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

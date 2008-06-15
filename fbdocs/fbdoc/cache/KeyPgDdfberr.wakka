@@ -38,5 +38,9 @@ end select
 {{fbdoc item="see"}} 
 	- ##[[KeyPgDdfbmt __FB_MT__]]##
 	- ##[[KeyPgDdfbdebug __FB_DEBUG__]]##
+	- [[ProPgCompOpte Compiler Option: -e]]
+	- [[ProPgCompOptex Compiler Option: -ex]]
+	- [[ProPgCompOptexx Compiler Option: -exx]]
+	- [[ProPgErrorHandling Error Handling]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

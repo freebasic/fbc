@@ -35,6 +35,7 @@ An index of header files distributed with FreeBASIC for use with external librar
 {{fbdoc item="section" value="Music / Sound"}}
 	{{fbdoc item="keyword" value="ExtLibbass|BASS"}} - Audio library for use in Windows.
 	{{fbdoc item="keyword" value="ExtLibbassmod|BASSMOD"}} - BASSMOD is a MOD only (XM, IT, S3M, MOD, MTM, UMX) version of BASS
+	{{fbdoc item="keyword" value="ExtLibfbsound|FBSOUND"}} - Audio and DSP library for Windows and Linux (free for comercial apps too).
 	{{fbdoc item="keyword" value="ExtLibfmod|FMOD"}} - Auido library supporting just about any format.
 	{{fbdoc item="keyword" value="ExtLibal|OpenAL"}} - Cross-platform 3D audio API
 
@@ -42,6 +43,7 @@ An index of header files distributed with FreeBASIC for use with external librar
 	{{fbdoc item="keyword" value="ExtLibCUnit|CUnit"}} - Lightweight system for writing, administering, and running unit tests in C.
 	{{fbdoc item="keyword" value="ExtLibbfd|bfd"}} - Allows applications to use the same routines to operate on object files whatever the object file format.
 	{{fbdoc item="keyword" value="ExtLibgdsl|gdsl"}} - The Generic Data Structures Library is a collection of routines for generic data structures.
+	{{fbdoc item="keyword" value="ExtLibaspell|GNU ASpell"}} - Free and Open Source spell checker.
 
 {{fbdoc item="section" value="Embeddable Languages"}}
 	{{fbdoc item="keyword" value="ExtLibspidermonkey|spidermonkey"}} - Embeddable javascript engine.
@@ -84,6 +86,8 @@ An index of header files distributed with FreeBASIC for use with external librar
 	{{fbdoc item="keyword" value="ExtLibdos|DOS API"}}
 	{{fbdoc item="keyword" value="ExtLibdisphelper|disphelper"}} - Helper library to use COM objects from plain C 
 
+{{fbdoc item="section" value="User Contributed Libraries"}}
+	Visit http://www.freebasic.net/arch/ for other libraries.
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
    

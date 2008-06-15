@@ -1,16 +1,15 @@
-chklinks: 2007/09/04 08:10:38
+chklinks: 2007/10/01 19:35:53
 
-Loaded 848 page names from 'PageIndex.txt'
+Loaded 902 page names from 'PageIndex.txt'
 scanning pages:
 
-Found 13158 links
-Saved 13158 links to 'linklist.csv'
-Saved 725 page names to 'DocPages.txt'
-Saved 699 file names to 'samplist.csv'
+Found 13522 links
+Saved 13522 links to 'linklist.csv'
+Saved 769 page names to 'DocPages.txt'
+Saved 703 file names to 'samplist.csv'
 
 Checking missing pages:
-Missing page 'ProPgCallingConventions'
-Found 1 links to missing pages
+No missing pages
 
 Checking 'CatPgFullIndex':
 	Ignoring 'KeyPgOp*' pages
@@ -26,26 +25,16 @@ Checking missing backlinks:
 	Ignoring missing backlinks to 'catpggfx'
 	Ignoring missing backlinks to 'catpgprogrammer'
 	Ignoring missing backlinks to 'catpgopindex'
-'ProPgErrorHandling' does not have backlink to 'DocToc'
-'KeyPgSleep' does not have backlink to 'CatPgMisc'
-'KeyPgEnd' does not have backlink to 'CatPgMisc'
-'KeyPgEndblock' does not have backlink to 'CatPgMisc'
-'ProPgCruntime' does not have backlink to 'DocToc'
-'GfxScancodes' does not have backlink to 'DocToc'
-Found 6 missing backlinks
+No missing backlinks
 
 Checking invalid backlinks:
-'CatPgProgrammer' should be removed from 'ProPgCompOptlang'
-'CatPgControlFlow' should be removed from 'KeyPgEnd'
-'CatPgControlFlow' should be removed from 'KeyPgEndblock'
-'CatPgControlFlow' should be removed from 'KeyPgSleep'
 'CatPgUserDefTypes' should be removed from 'KeyPgClass'
 'DocToc' should be removed from 'DataType'
 'DocToc' should be removed from 'FreeBASIC'
 'CatPgProgrammer' should be removed from 'ProPgTypeObjects'
 'DocToc' should be removed from 'CVSCompile'
 'CommunityTutorials' should be removed from 'FBWikiTutorialTemplate'
-Found 10 invalid backlinks
+Found 6 invalid backlinks
 
 Checking headers:
 Found 0 invalid headers
@@ -62,6 +51,7 @@ Found 0 pages with no backlink at all
 Checking PrintToc for missing pages:
 Reading '../fbdoc/cache/PrintToc.wakka'
 Missing 'AntoniGual'
+Missing 'CatPgCompOpt'
 Missing 'CatPgFullIndex'
 Missing 'CatPgFunctIndex'
 Missing 'CatPgGfx'
@@ -90,7 +80,6 @@ Missing 'GfxLib'
 Missing 'JeffMarshall'
 Missing 'LaananFisher'
 Missing 'LilloWiki'
-Missing 'ProPgCompOptlang'
 Missing 'RandyKeeling'
 Missing 'SirMud'
 Missing 'SotSvart'
@@ -119,4 +108,4 @@ Missing 'fblogoto9.png', but is not on a DOC page
 Found 1 references to missing image files
 
 
-Execution time: 38 seconds.
+Execution time: 28 seconds.

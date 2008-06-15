@@ -22,7 +22,8 @@ Intrinsic define set by the compiler
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpifdef #IFDEF]]##
-	- ##[[KeyPgPpifndef #IFNDEF]]##
+	- [[ProPgCompOptm Compiler Option: -m]]
+	- ##[[KeyPgPpifdef #ifdef]]##
+	- ##[[KeyPgPpifndef #ifndef]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

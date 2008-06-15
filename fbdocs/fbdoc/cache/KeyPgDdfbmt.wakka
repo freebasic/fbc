@@ -23,5 +23,6 @@ Intrinsic define (macro value) set by the compiler
 
 {{fbdoc item="see"}} 
 	- ##[[KeyPgDdfbdebug __FB_DEBUG__]]##
+	- [[ProPgCompOptmt Compiler Option: -mt]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

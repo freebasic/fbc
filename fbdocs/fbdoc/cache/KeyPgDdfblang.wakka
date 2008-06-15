@@ -30,5 +30,6 @@ Intrinsic define (macro value) set by the compiler
 
 {{fbdoc item="see"}} 
 	- ##[[KeyPgDdfbversion __FB_VERSION__]]##
+	- [[ProPgCompOptlang Compiler Option: -lang]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

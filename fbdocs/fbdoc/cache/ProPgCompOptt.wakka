@@ -1,0 +1,20 @@
+{{fbdoc item="title" value="Compiler Option: -t"}}----
+Set stack size in kilobytes
+
+{{fbdoc item="syntax"}}##
+	**-t** < //stack size// >
+##
+{{fbdoc item="param"}}
+	##//stack size//##
+		Stack size in kilobytes.
+
+{{fbdoc item="desc"}}
+	The ##-t## compiler option sets the stack size in kilobytes (defaults to 1024 KBytes). The local arrays are created in the stack, so 1MB of stack is not always enough.
+
+{{fbdoc item="target"}}
+	- Supported on Windows and DOS platforms only.
+
+{{fbdoc item="see"}}
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

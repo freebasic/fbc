@@ -14,6 +14,7 @@ Preprocessor directive to define a multiline macro
 	The ##[[KeyPgPpifdef #ifdef]]## and ##[[KeyPgPpifndef #ifndef]]## preprocessor conditionals can test if ##//macro_name//## exists or does not exist.
 
 	The ##[[KeyPgPpundef #undef]]## preprocessor directive will undefine a macro so that it may be redefined with another definition.
+	Macro substitution can be checked by using the -g -r switches. The compiler does'nt erase the intermediate .asm file where the code actually sent to the compiler can be seen close to its translation into assembler.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/macro.bas"}}%%(freebasic)

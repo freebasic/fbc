@@ -1,12 +1,14 @@
-Hello i'm wrote FBSound (for Lin and Win it's open source and free for commercial apps too)
-Last release is FBSound v0.03b 
-[[http://sourceforge.net/project/showfiles.php?group_id=149199 Download page]]
+Hello i'm wrote the cross platform Audio and DSP library FBSound
+(open source and free for commercial apps too)
+
+Platforms: Win32 and Linux x86
+Download: [[http://sourceforge.net/project/showfiles.php?group_id=149199 Last release is FBSound v0.03]]
+Forum: [[http://fsr.sf.net/forum forum. (english and german)]]
+
+The new sound lib with 3D and multichannel support (playback and capture) are in work.
 
 My primary project FSR
 [[http://fsr.sf.net Free Speed Racer]]
-
-For any FBSound or programming question 
-you can use my [[http://fsr.sf.net/forum forum.]]
 
 D.J.Peters 
 (aka. Joshy)

@@ -72,10 +72,10 @@ sleep
 %%
 
 {{fbdoc item="lang"}}
-	- Threading is not allowed in -lang qb
+	- Threading is not allowed in ##-lang qb##
 
 {{fbdoc item="target"}}
-	- The DOS version of FreeBASIC does not allow for threads, as the OS does not support them.
+	- **Threadcreate** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.
 	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FB issue. 
 
 {{fbdoc item="diff"}}

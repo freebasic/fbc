@@ -6,6 +6,7 @@ FreeBASIC programmer's guide
 <<{{fbdoc item="section" value="Getting Started"}}
 	{{fbdoc item="keyword" value="ProPgHelloWorld|Hello World"}}
 	{{fbdoc item="keyword" value="ProPgPrimer1|FreeBASIC Primer #1"}}
+	{{fbdoc item="keyword" value="CatPgCompOpt|Compiler Options"}}
 
 {{fbdoc item="section" value="Source Files"}}
 	{{fbdoc item="keyword" value="ProPgSourceFiles|Source Files (.bas)"}}

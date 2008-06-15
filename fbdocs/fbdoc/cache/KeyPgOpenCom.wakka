@@ -60,6 +60,9 @@ OPEN COM "COM1:115200" as 1
 {{fbdoc item="diff"}}
 	- In QB the syntax was  OPEN  "COMx:[baudrate] [,parity, [data_bits, [stop_bits, [extended_options]]]]"  FOR INPUT|OUTPUT|RANDOM AS [#] n
 
+{{fbdoc item="lang"}}
+	- In -lang qb the old syntax OPEN "COMx:....   is supported. 
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen Open]]##
 

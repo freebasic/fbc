@@ -1,0 +1,22 @@
+{{fbdoc item="title" value="Compiler Option: -d"}}----
+Add a preprocessor definition
+
+{{fbdoc item="syntax"}}##
+	**-d** < //name//=//value// >
+##
+{{fbdoc item="param"}}
+	##//name//##
+		Name of the preprocessor macro to define.
+	##//value//##
+		Value to give to the macro.
+
+{{fbdoc item="desc"}}
+	The ##-d## compiler option adds a preprocessor macro to all source files. The same as using the preprocessor directive ##[[KeyPgPpdefine #define]]## or ##[[KeyPgPpmacro #macro]]##.
+
+{{fbdoc item="see"}}
+	- [[KeyPgPpdefine #define]]
+	- [[KeyPgPpmacro #macro]]
+	- [[CatPgDddefines Intrinsic Defines]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

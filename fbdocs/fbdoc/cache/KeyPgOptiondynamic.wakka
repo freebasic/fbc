@@ -26,7 +26,7 @@ redim bar(199) as integer   ' resize the array
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- [[KeyPgDdfboptiondynamic __FB_OPTION_DYNAMIC__]]##
+	- ##[[KeyPgDdfboptiondynamic __FB_OPTION_DYNAMIC__]]##
 	- [[KeyPgMetaDynamic $Dynamic]]
 	- ##[[KeyPgOptionstatic Option Static]]##
 	- ##[[KeyPgDim Dim]]##

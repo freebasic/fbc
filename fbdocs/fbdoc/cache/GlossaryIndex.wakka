@@ -363,15 +363,15 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 @@{{anchor name="Index|Back to top"}}@@
 
-======----{{anchor name="F"}} X----======
+======----{{anchor name="X"}} X----======
 
 @@{{anchor name="Index|Back to top"}}@@
 
-======----{{anchor name="F"}} Y----======
+======----{{anchor name="Y"}} Y----======
 
 @@{{anchor name="Index|Back to top"}}@@
 
-======----{{anchor name="F"}} Z----======
+======----{{anchor name="Z"}} Z----======
 
 **zstring**
 	A zstring is in essence a standard C style string ending with an embedded null character. This data type is provided for greater compatibility with C libraries.

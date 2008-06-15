@@ -8,7 +8,7 @@ External linkage attribute for public data located in DLL's
 	Is used only on Win32 platforms with the ##[[KeyPgExtern Extern]]## keyword and is needed to access global variables in DLLs.  This is due to the level of indirection on any such access: an implicit pointer dereference.
 
 {{fbdoc item="ex"}}
-%%
+{{fbdoc item="filename" value="examples/manual/module/mydll.c"}}%%(c)
 /* mydll.c :
 	compile with
 	  gcc -shared -Wl,--strip-all -o mydll.dll mydll.c

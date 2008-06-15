@@ -5,9 +5,7 @@ Intrinsic define set by the compiler
 	""__FB_DOS__""
 ##
 {{fbdoc item="desc"}}
-	Define without a value created at compile time by the DOS version of the compiler
-
-	It can be used to compile parts of the program only if the target is DOS
+	Define without a value created at compile time in the DOS version of the compiler, or when the //-target dos// command line option is used. It can be used to compile parts of the program only if the target is DOS.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbdos.bas"}}%%(freebasic)
@@ -19,8 +17,7 @@ Intrinsic define set by the compiler
 %%
 
 {{fbdoc item="diff"}}
-	- Did not exist in QB
-
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfblinux __FB_LINUX__]]##

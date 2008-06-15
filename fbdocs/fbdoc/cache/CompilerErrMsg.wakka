@@ -246,6 +246,12 @@ During the program compilation three types of errors can arise:
 	- //210 Only member functions can be static//
 	- //211 Invalid initializer//
 	- //212 Objects with default [con|de]structors or methods are only allowed in the module level//
+	- //213 Symbol not a CLASS, ENUM, TYPE or UNION type//
+	- //214 Too many elements//
+	- //215 Only data members supported//
+	- //216 UNIONs are not allowed//
+	- //217 Arrays are not allowed//
+	- //218 COMMON variables cannot be object instances of CLASS/TYPE's with cons/destructors//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.

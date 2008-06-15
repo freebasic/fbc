@@ -103,8 +103,8 @@ Close #PPO
 
 Print "Printing Completed!"
 %%
-{{fbdoc item="diff"}}
-	- In QB the syntax was OPEN "LPT" or OPEN "PRN"
+{{fbdoc item="lang"}}
+	- In the -lang qb dialect the old syntax is supported OPEN "LPT:..." . This syntax used in the other dialects will open a regular file.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLprint Lprint]]##

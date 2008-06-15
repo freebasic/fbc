@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="Compiler Option: -o"}}----
+Set object file path/name
+
+{{fbdoc item="syntax"}}##
+	**-o** < //output file// >
+##
+{{fbdoc item="param"}}
+	##//output file//##
+		Name of the output file.
+
+{{fbdoc item="desc"}}
+	The ##-o## compiler option sets the output file name of a compiled source file, or object file (.o). The "-o" switch needs to follow immediately after source files specified with the "-b" switch. This switch only has an effect when used with the "-c" switch, as object files are not saved otherwise. If "-o" is not specified for a given file, the output file name will be the same as the source file name with an ".o" extension.
+
+{{fbdoc item="see"}}
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

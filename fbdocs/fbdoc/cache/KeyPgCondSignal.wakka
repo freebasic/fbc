@@ -14,8 +14,6 @@ Restarts a thread suspended by a call to ##[[KeyPgCondWait Condwait]]##
 {{fbdoc item="desc"}}
 	Once the conditional is created with ##[[KeyPgCondCreate Condcreate]]## and the threads are started, one of more of them can be set to ##[[KeyPgCondWait Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
 
-	Multihtreading is not implemented as a service in MSDOS so this fuction does'nt exist in FB for DOS32.
-
 {{fbdoc item="ex"}}
 	See ##[[KeyPgCondCreate Condcreate]]##
 
@@ -23,7 +21,7 @@ Restarts a thread suspended by a call to ##[[KeyPgCondWait Condwait]]##
 	- Threading is not allowed in -lang qb
 
 {{fbdoc item="target"}}
-	- The DOS version of FreeBASIC does not allow for threads, as the OS does not support them.
+	- **Condsignal** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.
 	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FB issue. 
 
 {{fbdoc item="diff"}}

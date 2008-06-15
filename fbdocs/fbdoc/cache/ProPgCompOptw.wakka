@@ -1,0 +1,19 @@
+{{fbdoc item="title" value="Compiler Option: -w"}}----
+Set minimum warning level
+
+{{fbdoc item="syntax"}}##
+	**-w** < //level// >
+##
+{{fbdoc item="param"}}
+	##//level//##
+		The warning level.  "0" | "1" | "all" | "pedantic"
+
+{{fbdoc item="desc"}}
+	The ##-w## compiler option set minimum warning level.  The default is ##-w 0##
+
+	{{table columns="2" cellpadding="1" cells="level;description;0;shows all compiler warnings;1;hide compiler warnings;all;shows all compiler warnings;pedantic;show extra sytax warnings"}}
+
+{{fbdoc item="see"}}
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

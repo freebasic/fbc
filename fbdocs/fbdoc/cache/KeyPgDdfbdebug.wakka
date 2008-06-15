@@ -21,8 +21,9 @@ Intrinsic define (macro value) set by the compiler
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
-{{fbdoc item="see"}} 
+{{fbdoc item="see"}}
 	- ##[[KeyPgDdfberr __FB_ERR__]]##
 	- ##[[KeyPgDdfbmt __FB_MT__]]##
+	- [[ProPgCompOptg Compiler Option: -g]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

@@ -5,7 +5,7 @@ Removes a folder/directory from the file system
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rmdir** ( [[KeyPgByref byref]] //folder// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Mkdir**( //folder// )
+	//result// = **Rmdir**( //folder// )
 ##
 {{fbdoc item="param"}}
 	##//folder//##

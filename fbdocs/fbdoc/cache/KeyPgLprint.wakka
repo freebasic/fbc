@@ -39,11 +39,13 @@ LPRINT CHR(12)
 
 {{fbdoc item="diff"}}
 	- None
+{{fbdoc item="lang"}}
+	- LPRINT is not supported with -lang fb. In this dialect the printer must be properly opened with  [[KeyPgOpenLpt Open LPT]]  and [[KeyPgPrintPp Print #]] must be used to print.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpenLpt Open LPT]]##
 	- ##[[KeyPgPrint Print]]##
-	- ##[[KeyPgPrintusing Print Using]]##
+	- ##[[KeyPgPrintPp Print #]]##
 	- ##[[KeyPgWrite Write]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

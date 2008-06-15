@@ -1,43 +1,41 @@
 {{fbdoc item="title" value="OPEN PIPE"}}----
-Opens a sub process and allows input to be read from or output to be written to the sub process
+Opens an external process' standard input (//stdin//) or output (//stdout//) stream for file operations
 
 {{fbdoc item="syntax"}}##
-	**Open Pipe** //command// [[KeyPgAs as]] [[KeyPgString string]] for {[[KeyPgInputfilemode input]] | [[KeyPgOutput output]]} [[KeyPgAs as]] [#]//filenum//
-	**Open Pipe** //command// [[KeyPgAs as]] [[KeyPgString string]] for [[KeyPgBinary binary]] [[KeyPgAccess access]] {[[KeyPgReadFile read]] | [[KeyPgWriteFile write]]} [#]//filenum//
+	**Open Pipe** //shell_command// **For** **[[KeyPgInputfilemode Input]]** **As** [**#**]//filenumber//
+	**Open Pipe** //shell_command// **For** **[[KeyPgOutput Output]]** **As** [**#**]//filenumber//
+	**Open Pipe** //shell_command// **For** **[[KeyPgBinary Binary]]** //access_type// [**#**]//filenumber//
 ##
 {{fbdoc item="usage"}}##
-	**Open Pipe** //command// for input as #//filenum//
-	**Open Pipe** //command// for output as #//filenum//
-	**Open Pipe** //command// for binary access read as #//filenum//
-	**Open Pipe** //command// for binary access write as #//filenum//
-	//result// = **Open Pipe**( //command// ... )
+	//result// = **Open Pipe**( //command//, **For** {**[[KeyPgInputfilemode Input]]**|**[[KeyPgOutput Output]]**}, **As** //filenumber// )
+		##//or,//##
+	//result// = **Open Pipe**( //command//, **For** **[[KeyPgBinary Binary]]**, //access_type//, **As** //filenumber// )
+		##//(or in the QB-like syntax,)//##
+	**Open Pipe** //filename// **For** {**[[KeyPgInputfilemode Input]]**|**[[KeyPgOutput Output]]**} **As** //filenumber//
+		##//(or,)//##
+	**Open Pipe** //filename// **For** **[[KeyPgBinary Binary]]** //access_type// **As** //filenumber//
 ##
 {{fbdoc item="param"}}
-	##//command//##
-		the sub-process to execute in the operating systems command shell.
-	##FOR {INPUT | OUTPUT}##
-		opens the pipe in text mode for input (reading) or output (writing)
-	##FOR BINARY ACCESS {READ | WRITE}##
-		opens the pipe in binary mode for input (reading) or output (writing)
-	##//filenum//##
-		the unused file number to associate with the opened pipe on success
+	##//shell_command//##
+		The external process to execute in the operating system command shell. Relative file paths are relative to the current directory (see ##[[KeyPgCurdir Curdir]]##).
+	##//access_type//##
+		The type of read or write access requested by the calling process.
+			- ##[[KeyPgAccess Access]]## {##Read##|##Write##} //(either the //stdin// or //stdout// stream of the external process can be opened)//
+	##//filenumber//##
+		An available file number to bind to the external process' //stdin// or //stdout// stream.
 
 {{fbdoc item="ret"}}
-	When used as function, OPEN PIPE returns zero (0) on sucess and a non-zero errorcode otherwise.
+	In the first usage, ##**Open Pipe**## returns zero (0) on success and a non-zero errorcode otherwise.
 
 {{fbdoc item="desc"}}
-	This statement opens a sub-process by running ##//command//## in the operating system's shell.  The output of the sub-process can be read back to the program using standard file commands such as ##[[KeyPgLineinputPp Line Input #]]##.  Input to the sub-process can be supplied using standard file commands such as ##[[KeyPgPrintPp Print #]]##.  ##**Open Pipe**## is uni-directional: the stream of data can only flow one way, either from the program to the sub-process, or from the sub-process to the program.
+	##**Open Pipe**## executes another process in the command shell and opens either its //stdin// or //stdout// streams for reading or writing. A //file number// is bound to the stream, which is used in subsequent file operations, such as ##[[KeyPgInputPp Input #]]##. An available //file number// can be retrieved with ##[[KeyPgFreefile Freefile]]##. If the external process does not exist, a runtime error is thrown.
 
-	##//command//## specifies the sub-process to execute and must use the standard devices stdin / stdout for its input / output.
+	The ##[[KeyPgInputfilemode Input]]## and ##[[KeyPgOutput Output]]## //file modes// open the external process' //stdin// and //stdout// streams, respectively, for sequential text I/O, useful for reading or writing plain text. Characters, words or whole lines can then be read or written using text-mode file operations, such as ##[[KeyPgLineinput Line Input #]]## and ##[[KeyPgPrintPp Print #]]##.
 
-	##FOR INPUT## allows the program to read the output (stdout) of the sub-process as a text stream
-	##FOR OUTPUT## allows the program to send data as input (stdin) to the sub-process as a text stream
-	##BINARY ACCESS READ## allows the program to read the output (stdout) of the sub-process as a binary stream
-	##BINARY ACCESS WRITE## allows the program to send data as input (stdin) to the sub-process as a binary stream
+	The ##[[KeyPgBinary Binary]]## //file mode// opens the external process' //stdin// or //stdout// streams - depending on the //access type// specified (see description of the ##//access_type//## parameter above) - for random-access reading or writing of arbitrarily sized and interpretted raw data. Simple data type values, like ##[[KeyPgByte Byte]]## and ##[[KeyPgLongint Longint]]##, and whole chunks of memory can be read from or written to the streams with binary-mode file operations like ##[[KeyPgGetfileio Get #]]## and ##[[KeyPgPutfileio Put #]]##.
 
-	BINARY streams are not supported on all implementations of the C run time library.  ##**Open Pipe**## returns with an error if it is unable to open a binary stream.
-
-	##//filenum//## is an unsed file number.
+{{fbdoc item="target"}}
+	- The ##[[KeyPgBinary Binary]]## //file mode// is not supported on all platforms; ##**Open Pipe**## will throw an error if it is unable to open the external process' //stdin// or //stdout// streams in binary mode.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/openpipe.bas"}}%%(freebasic)
@@ -54,7 +52,8 @@ loop
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgOpen Close]]##
+	- ##[[KeyPgOpenCons Open Cons]]##
+	- ##[[KeyPgOpenErr Open Err]]##
+	- ##[[KeyPgFreefile Freefile]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
