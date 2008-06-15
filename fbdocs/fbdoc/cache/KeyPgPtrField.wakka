@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="-> Pointer to Field Operator"}}
+----
+
+{{fbdoc item="syntax"}}
+	//UDTPointer// -> //fieldname//
+	    
+	    
+	       
+{{fbdoc item="desc"}}
+	The  pointer to field operator selects a field of the UDT variable pointed to by a pointer.
+	
+
+{{fbdoc item="ex"}}
+
+##%%(qbasic)Type rect
+	x As Integer
+	y As Integer
+End Type
+
+Dim r As rect
+Dim rp As rect Pointer = @r
+
+rp->x = 4
+rp->y = 2
+
+Print "x = " & rp->x & ", y = " & rp->y
+Sleep%%
+
+{{fbdoc item="diff"}}
+	- New to FB
+
+{{fbdoc item="see"}}
+	- [[KeyPgAt (@) Address of]]
+	- [[KeyPgType TYPE...END TYPE]]
+
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

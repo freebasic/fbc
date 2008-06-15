@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="ERASE"}}
+----
+{{fbdoc item="syntax"}}
+	ERASE array [, array...]
+
+{{fbdoc item="desc"}}
+	Erases dynamic arrays from memory, or clears all elements in a static array.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+erase MyArray
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[KeyPgCommon COMMON]]
+	- [[KeyPgDim DIM]]
+	- [[KeyPgErase ERASE]]
+	- [[KeyPgExtern EXTERN]]
+	- [[KeyPgLbound LBOUND]]
+	- [[KeyPgRedim REDIM]]
+	- [[KeyPgPreserve PRESERVE]]
+	- [[KeyPgShared SHARED]]
+	- [[KeyPgStatic STATIC]]
+	- [[KeyPgUbound UBOUND]]
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

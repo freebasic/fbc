@@ -1,0 +1,100 @@
+{{fbdoc item="title" value="GET (FILE I/O)"}}
+----
+{{fbdoc item="syntax"}}##
+	**Get** #//handle// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgInteger Integer]]], //buffer// [[KeyPgAs As]] [[KeyPgAny Any]] [, //amount// [[KeyPgAs As]] [[KeyPgInteger Integer]]]
+	**Get** #//handle// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgInteger Integer]]], //buffer()// [[KeyPgAs As]] [[KeyPgAny Any]]
+##
+{{fbdoc item="param"}}
+	##//handle//##
+		The value passed to ##[[KeyPgOpen Open]]## when the file was opened
+	##//position//##
+		The position where the read must start. If the file was opened ##For Random##, the position is in records; otherwise, it is in bytes. If omitted, read starts at the present file pointer position.
+	##//buffer//##
+		The buffer where data is written. It can be a numeric variable, a string , an array, an user defined type or a pointer to memory. The read operation will try to fill completely the variable, unless //amount// is given or the ##[[KeyPgEof EOF]]## is reached. 
+	##//amount//##
+		Limits GET to read  read ##//amount// * [[KeyPgSizeof Sizeof]](//buffer_datatype//)## bytes of data.  If ##//buffer//## is a dereferenced pointer, ##//amount//## is mandatory. For other data types, if ##//amount//## is omitted, ##Get## tries to fill completely the buffer.
+
+{{fbdoc item="ret"}}
+	0 on success; nonzero on error.
+
+{{fbdoc item="desc"}}
+	Reads binary data from a file to a buffer variable
+	GET can be used as a function, and will return 0 on success or an error code on failure.	
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+	dim buffer as integer
+	dim an_array(0 to 9) as integer
+	dim pmem as integer ptr
+   
+	dim x as integer
+	
+	' Find the first free file handle.
+	f = freefile
+
+	' Open the file "file.ext" for binary usage, using the handle "f".
+	open "file.ext" for binary as #f
+
+	' Read 4 bytes from the file into buffer, using handle "f".
+	get #f, , buffer
+ 
+	' print out result
+	print buffer
+  
+	' Read 40 (10 * 4) bytes from the file into an_array, using handle "f".
+	get #f, , an_array()
+
+	' print out result
+	for x = 0 to 9
+		print an_array(x)
+	next
+	
+	' allocate memory for 5 integers
+	pmem = allocate(5 * sizeof(integer))
+	' Read 5 integers from the file into allocated memory
+	get #f,, *pmem, 5    ' Note pmem must be dereferenced (*pmem)
+   
+	' print out result using [] Pointer Indexing or pointer arithmic 
+	for x = 0 to 4
+		print pmem[x] ; *(pmem + x)
+	next
+   
+	' Close the file.  
+	close #f
+	end
+%%
+
+%%(qbasic)
+' Load a small text file to a string
+
+Option Explicit
+
+Function LoadFile(f As string) As String
+  Dim h As Integer
+  Dim txt As String
+  h = FreeFile
+  Open f For Binary Access Read As #h
+  If Lof(h) > 0 Then
+	txt = String(Lof(h),0)
+	Get #h,,txt
+  End If
+  Close #h
+  Return txt
+End Function
+
+Dim ExampleStr As String
+ExampleStr = LoadFile("smallfile.txt")
+Print ExampleStr
+%%
+
+{{fbdoc item="diff"}}
+	- GET can read full arrays as in VB or, alternatively, read a multiple of the data size into the memory.
+	- GET can now be used as a function.
+
+{{fbdoc item="see"}}
+	- [[KeyPgOpen OPEN]]
+	- [[KeyPgClose CLOSE]] 
+	- [[KeyPgPutfileio PUT (FILE I/O)]] 
+	- [[KeyPgFreefile FREEFILE]] 
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

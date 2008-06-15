@@ -1,0 +1,24 @@
+{{fbdoc item="title" value="ALPHA"}}
+----
+Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects alpha blending as the method.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] [[KeyPgPutgraphics put]]  [ [[KeyPgByref byref]] //target// [[KeyPgAs as]] [[KeyPgAny any]], ] [ Step ] ( [[KeyPgByval byval]] //x// [[KeyPgAs as]] [[KeyPgSingle single]], [[KeyPgByval byval]] //y// [[KeyPgAs as]] [[KeyPgSingle single]] ), [[KeyPgByref byref]] //array// [[KeyPgAs as]] [[KeyPgAny any]], **Alpha** [, [[KeyPgByval byval]] //alphaval// [[KeyPgAs as]] [[KeyPgInteger integer]] ]
+##
+{{fbdoc item="param"}}
+	##//alphaval//##
+		Optional alpha parameter in the range [0..255].  Overrides alpha values in individual pixels.
+
+{{fbdoc item="desc"}}
+	##Alpha## selects alpha blending as the method for ##[[KeyPgPutgraphics Put]]##ting an image.  If the optional ##//alphaval//## parameter is specified, it overrides the alpha value of each pixel, and the mask color will be skipped; this works in 15, 16, 24, or 32-bit color depths.  If ##//alphaval//## is not specified, ##Alpha## will only work in 32-bit color depth, and ##[[KeyPgPutgraphics Put]]## will use the alpha value embedded within each pixel; pixels using the mask color will not be skipped.
+
+{{fbdoc item="ex"}}
+	         For an example see ##[[KeyPgPutgraphics Put (Graphics)]]##.
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPutgraphics Put]]##
+	
+{{fbdoc item="back" value="CatPgFile|FILE"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

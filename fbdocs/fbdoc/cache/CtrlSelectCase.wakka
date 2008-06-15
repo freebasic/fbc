@@ -1,0 +1,7 @@
+{{fbdoc item="title" value="SELECT CASE"}}
+----
+
+{{fbdoc item="desc"}}
+See [[KeyPgSelectcase SELECT CASE]].
+
+{{fbdoc item="back" value="CatPgControlflow|CONTROL FLOW"}}

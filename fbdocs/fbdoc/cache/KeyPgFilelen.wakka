@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="FILELEN"}}
+----
+Finds the length of a file given its filename.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileLen""** ( //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	#include "file.bi"
+	//result// = **""FileLen""**(//filename//)
+##
+//or//
+##
+	#include "vbcompat.bi"
+	//result// = **""FileLen""**(//filename//)
+##
+{{fbdoc item="param"}}
+	##//filename//##
+		A ##[[KeyPgStringtype string]]## argument specifying the filename of the file whose length to return.
+
+{{fbdoc item="desc"}}
+	Returns the size in bytes of the file specified by //filename//.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#include "file.bi"
+dim length as integer
+length = FILELEN("file.txt")
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic.  Existed in Visual Basic.
+
+{{fbdoc item="see"}}
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

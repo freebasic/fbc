@@ -1,0 +1,33 @@
+{{fbdoc item="title" value="REM"}}
+----
+{{fbdoc item="syntax"}}
+	rem comment
+
+{{fbdoc item="desc"}}
+	REM is the same as a comment symbol ('). It comments out a line of text text. 
+	From version 0.16  multiline comments are allowed, they must be surrounded by the  /'   and '/ symbols.
+	In versions previous to 0.16    #if 0      ...     #endif  is required to coment out blocks of test  
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+/' this is a multi line 
+comment as a header of
+this example '/
+rem this is a single line comment
+'this is a single line comment
+dim a as integer   'comment a line of code
+#if 0
+this way of commenting out code was
+required before version 0.16
+#endif
+
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

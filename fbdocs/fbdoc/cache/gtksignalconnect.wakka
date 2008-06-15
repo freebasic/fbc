@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="gtk_signal_connect"}}
+----
+{{fbdoc item="syntax"}}
+ gtk_signal_connect( Object Gtkwidget ptr, Gtk////Command String, @Call_Back_Function_Name, Data ZString Ptr )
+
+{{fbdoc item="desc"}}
+ Inserts a hook into the Gtk signal handler. This means that when a Gtk Object, (Object), generates a specific signal, (Gtk////Command), then it will execute the function, (Call_Back_Function_Name), and pass the Data, (Data), onto the call back function, (Call_Back_Function_Name). (See example)
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+ FUNCTION MyClick( BYVAL Object AS GtkObject ptr, BYVAL User_Data AS gpointer )
+   PRINT "I WAS CLICKED!"
+ END FUNCTION
+ gtk_signal_connect( MyButton1, "clicked", @MyClick, 0 )
+%%
+
+ or
+%%(qbasic)
+ FUNCTION MyClick2( BYVAL Object AS GtkObject ptr, BYVAL User_Data AS gpointer )
+   PRINT "I WAS CLICKED with"+*User_Data+"!"
+ END FUNCTION
+ DIM buf AS ZSTRING * 256
+ gtk_signal_connect( MyButton2, "clicked", @MyClick2, g_strptr( buf ) )
+%%
+
+
+{{fbdoc item="diff"}}
+ - None
+
+{{fbdoc item="see"}}
+ - [[gtkmain gtk_main]]
+ - [[gtkinit gtk_init]]
+
+{{fbdoc item="back" value="TutIndexGTK|GTK Reference Index"}}

@@ -1,0 +1,154 @@
+{{fbdoc item="title" value="Compiler Error Messages"}}----
+During the program compilation three types of errors can arise:
+
+==Compiler Warnings:==
+	The warnings don't stop the compilation, just alert the user some non-recommended and error-prone operation is attempted in the code. 
+	Sometimes one of these operations is coded deliberately to achieve a result, in this case the warnings can be disabled by setting  the - w 1 option at the command line.
+
+	- //1 Passing scalar as pointer//
+	- //2 Passing pointer to scalar//
+	- //3 Passing different pointer types//
+	- //4 Suspicious pointer assignment//
+	- //5 Implicit conversion//
+	- //6 Cannot export symbol without -export option//
+	- //7 Identifier's name too big, truncated//
+	- //8 Literal number too big, truncated//
+	- //9 Literal string too big, truncated//
+	-//10 UDT with pointer or dynamic string fields// 
+	-//11 UDT with dynamic string fields//
+	-//12 Implicit variable allocation//
+	-//13 Missing closing quote in literal string//
+	-//14 Function result was not explicitly set//
+	-//15 Branch crossing local variable definition//
+
+==Compiler Error messages:==
+	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
+
+	- //1  Argument count mismatch//
+	- //2  Expected End-of-File//
+	- //3  Expected End-of-Line//
+	- //4  Duplicated definition//
+	- //5  Expected 'AS'//
+	- //6  Expected '('//
+	- //7  Expected ')'//
+	- //8  Undefined symbol//
+	- //9  Expected expression//
+	- //10 Expected '='//
+	- //11 Expected constant//
+	- //12 Expected 'TO'//
+	- //13 Expected 'NEXT'//
+	- //14 Expected identifier//
+	- //15 Internal: Tables Full!//
+	- //16 Expected '-'//
+	- //17 Expected ','//
+	- //18 Syntax error//
+	- //19 Element not defined//
+	- //20 Expected 'END TYPE' or 'END UNION'//
+	- //21 Type mismatch//
+	- //22 Internal!//
+	- //23 Parameter type mismatch//
+	- //24 File not found//
+	- //25 Illegal outside of FOR, DO, SUB or FUNCTION//
+	- //26 Invalid data types//
+	- //27 Invalid character//
+	- //28 File access error//
+	- //29 Recursion level too depth//
+	- //30 Expected pointer//
+	- //31 Expected 'LOOP'//
+	- //32 Expected 'WEND'//
+	- //33 Expected 'THEN'//
+	- //34 Expected 'END IF'//
+	- //35 'END' without IF, SELECT, SUB or FUNCTION//
+	- //36 Expected 'CASE'//
+	- //37 Expected 'END SELECT'//
+	- //38 Wrong number of dimensions//
+	- //39 'SUB' or 'FUNCTION' without 'END SUB' or 'END FUNCTION'//
+	- //40 Expected 'END SUB' or 'END FUNCTION'//
+	- //41 Illegal parameter specification//
+	- //42 Variable not declared//
+	- //43 Variable required//
+	- //44 Illegal outside a compound statement//
+	- //45 Expected 'END ASM'//
+	- //46 SUB or FUNCTION not declared//
+	- //47 Expected ';'//
+	- //48 Undefined label//
+	- //49 Too many array dimensions//
+	- //50 Expected scalar counter//
+	- //51 Illegal outside a SUB or FUNCTION//
+	- //52 Expected dynamic array//
+	- //53 Cannot return fixed-len strings from functions//
+	- //54 Array already dimensioned//
+	- //55 Illegal without the -ex option//
+	- //56 Type mismatch//
+	- //57 Illegal specification//
+	- //58 Expected 'END WITH'//
+	- //59 Illegal inside a SUB or FUNCTION//
+	- //60 Expected array//
+	- //61 Expected '{'//
+	- //62 Expected '}'//
+	- //63 Too many expressions//
+	- //64 Expected explicit result type//
+	- //65 Range too large//
+	- //66 Forward references not allowed//
+	- //67 Incomplete type//
+	- //68 Array not dimensioned//
+	- //69 Array access, index expected//
+	- //70 Expected 'END ENUM'//
+	- //71 Cannot initialize dynamic arrays//
+	- //72 Invalid bitfield//
+	- //73 Too many parameters//
+	- //74 Macro text too long//
+	- //75 Invalid command-line option//
+	- //76 Cannot initialize dynamic strings//
+	- //77 Recursive TYPE or UNION not allowed//
+	- //78 Array fields cannot be redimensioned//
+	- //79 Identifier cannot include periods//
+	- //80 Executable not found//
+	- //81 Array out-of-bounds//
+	- //82 Missing command-line option for//
+	- //83 Math overflow//
+	- //84 Expected 'ANY'//
+	- //85 Expected 'END SCOPE'//
+	- //86 Illegal inside a SCOPE block//
+	- //87 Cannot pass an UDT result by reference//
+	- //88 Ambiguous call to overloaded function//
+	- //89 No matching overloaded function//
+	- //90 Division by zero//
+	- //91 Cannot pop stack, underflow//
+	- //92 Cannot initialize UDT's containing dynamic string fields//
+	- //93 Branching to scope blocks containing local variables//
+	- //94 Branching to other SUB's/FUNCTION's or to module-level//
+	- //95 Branch crossing local array or object definition//
+	- //95 LOOP without DO//
+	- //96 NEXT without FOR//
+	- //97 WEND without WHILE//
+	- //98 END WITH without WITH//
+	- //99 END IF without IF//
+	- //100 END SELECT without SELECT//
+	- //101 END SUB or FUNCTION without SUB or FUNCTION//
+	- //102 END SCOPE without SCOPE//
+	- //103 END MAMESPACE without NAMESPACE//
+	- //104 END EXTERN without EXTERN//
+	- //105 ELSEIF without IF//
+	- //106 ELSE without IF//
+	- //107 CASE without SELECT//
+	- //108 Cannot modify a constant//
+	- //109 Expected period ('.')//
+	- //110 Expected END NAMESPACE//
+	- //111 Illegal inside a NAMESPACE block//
+	- //112 Symbols defined in other namespaces cannot be removed//
+	- //113 Expected END EXTERN//
+	- //114 Expected 'END SUB'//
+	- //115 Expected 'END FUNCTION'//
+	- //116 Declaration outside the original namespace//
+	- //117 No end of multi-line comment, expected //
+	- //119 Too many errors, exiting//
+
+==Third party programs errors==
+	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.
+	If an IDE or a make utility are been used, additional errors can arise. These errors are outside the scope of this help.
+ 
+ 
+[[CompilerAbout About]] &middot; [[CompilerFeatures Main Features]] &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  [[CompilerInstalling Installing]] &middot; [[CompilerRunning Running]] &middot;  [[CompileCmdLine Using the Command Line]] &middot; **Compiler Error Messages** &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]]
+ 
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="ON...GOTO"}}
+----
+{{fbdoc item="syntax"}}
+	ON //expression// GOTO label1[, ...]
+
+{{fbdoc item="desc"}}
+	Branches to different labels depending on the value of //expression//. An expression value of 1 will branch to the first label, a value of 2 to the second, etc.  If the value of //expression// is zero (0) or greater than the number of items in the list, excecution continues on the next statment following the ON..GOTO.
+
+	It is recommended that the structured [[KeyPgSelectcase SELECT CASE]] condtitional statement be used instead of ON...GOTO.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+choice = 3
+on choice goto labela, labelb, labelc
+
+labela:
+print "choice a"
+end
+
+labelb:
+print "choice b"
+end
+
+labelc:
+print "choice c"
+end
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[KeyPgSelectcase SELECT CASE]]
+	- [[KeyPgOngosub ON...GOSUB]]
+	- [[KeyPgGoto GOTO]]
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+

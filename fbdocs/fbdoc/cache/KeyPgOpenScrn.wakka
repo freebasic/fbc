@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="OPEN SCRN"}}
+----
+{{fbdoc item="syntax"}}
+	OPEN SCRN [FOR INPUT|OUTPUT] AS //n//
+
+{{fbdoc item="desc"}}
+	This command opens the console for both input and output as a file, allowing to read/write from/to it with normal file commands. 
+	This comand may use direct access to the console for speed in some implementations, so  it should not be used when the input / output is required to be redirected or piped with OS commands.    
+	The normal console options as COLOR, LOCATE do not work in this mode
+	
+	The [FOR INPUT|OUTPUT] clause is allowed for compatibility, but it is ignored.
+	
+	//n// is a FB file handle that must be unused.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+OPEN SCRN for input  AS #1
+print #1,"Please write something and press ENTER"
+line input #1,a$
+PRINT #1, "You wrote";a$
+CLOSE
+sleep
+%%
+
+{{fbdoc item="diff"}}
+	- New to FB
+
+{{fbdoc item="see"}}
+	- [[KeyPgOpenCons OPEN CONS]]
+
+ {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

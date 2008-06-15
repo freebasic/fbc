@@ -1,0 +1,20 @@
+{{fbdoc item="title" value="ENCODING"}}
+----
+{{fbdoc item="syntax"}}
+	OPEN "//filename//" FOR [INPUT|OUTPUT|APPEND] ENCODING "//utf-8//"|"//utf-16//"| "//utf-32//" |"//ascii//" AS [#]//FILENUM//
+
+{{fbdoc item="desc"}}
+	ENCODING specifies the format for an Unicode text file, so  WINPUT # and PRINT # use the correct encoding.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- QB had no support for Unicode
+
+{{fbdoc item="see"}}
+	- [[KeyPgOpen OPEN]]
+
+
+{{fbdoc item="back" value="CatPgFile|File Functions"}}

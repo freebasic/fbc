@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="POINT"}}
+----
+Graphics function to return the colour attribute of a specified pixel coordinate.
+
+{{fbdoc item="syntax"}}##
+	//result// = **Point**( //coord_x//, //coord_y// [,//buffer//] )
+##
+{{fbdoc item="usage"}}##
+	##//coord_x//##
+		x coordinate of the pixel
+	##//coord_y//##
+		y coordinate of the pixel
+	##//buffer//##
+		the image buffer to read from
+
+{{fbdoc item="ret"}}##
+	The color attribute at the specified coordinates
+
+{{fbdoc item="desc"}}
+	GfxLib Function that reads the color of the pixel at the coordinate ##//coord_x//##, ##//coord_y//## of the screen, or of ##//buffer//##, if supplied.
+The value return is a color index in 256 or less colors ##[[KeyPgScreengraphics Screen]]##s, and a RGB value in true color modes. If the coordinates are offscreen, -1 is returned
+
+	The function ##**Point**## does not work in text modes.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+screen 13 
+line (10,10)-(100,100),12
+print point(20,20)
+%%
+Will print
+<<12>>
+::c::
+
+{{fbdoc item="diff"}}
+	- None, in the VGA compatible SCREEN modes. In SVGA modes, it returns a RGB value
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPset Pset]]##
+	- ##[[KeyPgPmap Pmap]]##
+	- ##[[KeyPgColor Color]]##
+	- ##[[KeyPgViewgraphics View (Grpahics)]]##
+	- ##[[KeyPgWindow Window]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

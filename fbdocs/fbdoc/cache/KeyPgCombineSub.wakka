@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="-= (Combined Subtraction)"}}
+----
+Operator to subtract and assign a number to a variable
+
+{{fbdoc item="syntax"}}##
+	//variable// **-=** //number//
+##
+{{fbdoc item="desc"}}
+	The combined subtraction operator is a shortcut method of writing subtraction expressions. The expression ##n -= 2## is the equivalent of writing ##n = n - 2##. 
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+DIM n AS DOUBLE
+n = 6
+n -= 2.2
+PRINT n
+SLEEP
+%%##
+
+The output would look like:
+##%%(qbasic)
+3.8
+%%##
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- {{fbdoc item="keyword" value="KeyPgSubtraction|- (Subtraction)"}}
+	- [[CatPgMath Mathematical Functions]]
+
+**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]

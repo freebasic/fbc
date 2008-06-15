@@ -1,0 +1,24 @@
+{{fbdoc item="title" value="PRINT #"}}
+----
+{{fbdoc item="syntax"}}
+	PRINT #//filenumber//, arg1 [,arg2...]
+
+{{fbdoc item="desc"}}
+	Prints argument list to opened file that corresponds to #. Args can be any combination of constants and variables.
+{{fbdoc item="ex"}}
+%%(qbasic)
+open "bleh.dat"  for output as #1
+	
+	print #1, "abc def"
+	print #1, 1234, 5678.901, "xyz zzz"
+	
+	close #1
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}

@@ -1,0 +1,57 @@
+{{fbdoc item="title" value="HIBYTE"}}
+----
+MACRO that calculates the high byte of a variable.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgPpdefine #define]] **HIBYTE**(//x//) (([[KeyPgCuint CUint]](//x//) [[KeyPgAnd and]] &h0000FF00) [[KeyPgShr shr]] 8)
+##
+{{fbdoc item="usage"}}##
+	//result// = **HIBYTE**(//x//)
+##
+{{fbdoc item="param"}}
+	##//x//##
+		Number to retrieve high-byte from.
+
+{{fbdoc item="ret"}}
+	The most significant byte of ##//x//##.
+
+{{fbdoc item="desc"}}
+	A ##[[KeyPgByte Byte]]## is 8 bits. This is best understood by an example. 
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+DIM N AS UINTEGER
+
+'Note there are 16 bits
+N = &b1010101110000001
+PRINT "N is                                       "; N
+PRINT "The binary representation of N is          "; BIN$(N)
+PRINT "The most significant byte (MSB) of N is    "; HIBYTE(N)
+PRINT "The least significant byte (LSB) of N is   "; LOBYTE(N)
+PRINT "The binary representation of the MSB is    "; BIN$(HIBYTE(N))
+PRINT "The binary representation of the LSB is    "; BIN$(LOBYTE(N))
+SLEEP
+%%##
+
+The output would look like:
+##%%(qbasic)
+N is                                       43905
+The binary representation of N is          1010101110000001
+The most significant byte (MSB) of N is    171
+The least significant byte (LSB) of N is   129
+The binary representation of the MSB is    10101011
+The binary representation of the LSB is    10000001
+%%##
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgShr Shr]]##
+	- ##[[KeyPgShl Shl]]##
+	- ##[[KeyPgLoByte LOBYTE]]##
+
+{{fbdoc item="back" value="CatPgMath|Math"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+
+
+

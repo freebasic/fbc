@@ -1,0 +1,14 @@
+{{fbdoc item="title" value="IMPORT"}}----
+
+{{fbdoc item="syntax"}}
+	[[KeyPgExtern EXTERN]] [IMPORT] //symbolname//[( //subscripts//)] [ALIAS "//aliasname//"] [AS [[DataType DataType]]] [, ...]
+
+{{fbdoc item="desc"}}
+	Is used only on Win32 platforms with the [[KeyPgExtern EXTERN]] keyword; is needed to access global variables in DLLs.  This is because there is a level of indirection on any such access: an implicit pointer dereference.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgExtern EXTERN]]
+

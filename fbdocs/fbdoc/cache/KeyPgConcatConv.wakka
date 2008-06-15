@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="&  String Concatenation with conversion"}}
+----
+Operator to concatenate two strings, converting non-strings to strings as needed.
+
+{{fbdoc item="syntax"}}##
+	//variable1// **&** //variable2//
+##
+{{fbdoc item="usage"}}##
+	//result// = //variable1// **&** //variable2//
+##
+{{fbdoc item="desc"}}
+	The concatenation returns a string made of sticking both variables together. If some of the variables are not strings, the ##[[KeyPgStr Str]]## function is called automatically to convert the variable to a string.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+DIM AS STRING A,C
+DIM AS SINGLE B
+A="The result is: "
+B=124.3
+C=A & B
+PRINT C
+SLEEP
+%%##
+
+The output would look like:
+%%
+The result is: 124.3
+%%
+::c::
+{{fbdoc item="diff"}}
+	- New to FB. It's a Visual Basic function
+
+{{fbdoc item="see"}}
+	- {{fbdoc item="keyword" value="KeyPgConcat|+ String Concatenation"}}
+	- [[OpString String Operators]]
+	- [[KeyPgStr STR$]]
+
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

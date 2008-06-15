@@ -1,0 +1,30 @@
+{{fbdoc item="title" value="Standard Data Types"}}----
+<<
+==Integer types==
+	- {{fbdoc item="keyword" value="KeyPgByte|BYTE (8-bit signed)"}}
+	- {{fbdoc item="keyword" value="KeyPgUbyte|UBYTE (8-bit unsigned)"}}
+	- {{fbdoc item="keyword" value="KeyPgShort|SHORT (16-bit signed)"}}
+	- {{fbdoc item="keyword" value="KeyPgUshort|USHORT (16-bit unsigned)"}}
+	- {{fbdoc item="keyword" value="KeyPgInteger|INTEGER (32-bit signed)"}}
+	- {{fbdoc item="keyword" value="KeyPgUinteger|UINTEGER (32-bit unsigned)"}}
+	- {{fbdoc item="keyword" value="KeyPgLong|LONG (32-bit signed)"}}
+	- {{fbdoc item="keyword" value="KeyPgLongint|LONGINT (64-bit signed)"}}
+	- {{fbdoc item="keyword" value="KeyPgUlongint|ULONGINT (64-bit unsigned)"}}
+
+<<>>
+==Floating-point types==
+	- {{fbdoc item="keyword" value="KeyPgSingle|SINGLE (Single-precision)"}}
+	- {{fbdoc item="keyword" value="KeyPgDouble|DOUBLE (Double-precision)"}}
+
+==String types==
+	- {{fbdoc item="keyword" value="KeyPgStringtype|STRING (Variable- and fixed-length strings)"}}
+	- {{fbdoc item="keyword" value="KeyPgZstring|ZSTRING (Null-terminated strings)"}}
+	- {{fbdoc item="keyword" value="KeyPgWstring|WSTRING (Wide-character strings)"}}
+
+>>
+
+::c::
+
+**Data Types**: **Standard Data Types** &middot; [[DtConstants Constants]] &middot; [[DtVariables Variables]] &middot; [[DtArrays Arrays]] &middot; [[DtPointers Pointers]] &middot; [[CatPgUserDefTypes User Defined Types]] &middot; [[CatPgCasting Converting Data Types]] 
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

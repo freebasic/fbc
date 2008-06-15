@@ -1,0 +1,44 @@
+{{fbdoc item="title" value="SCREENPTR"}}
+----
+Graphics function to return a pointer to the current work page framebuffer memory.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screenptr** ( ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//ret// = **Screenptr**
+##
+{{fbdoc item="ret"}}
+	a pointer to the current work page framebuffer memory, or NULL (0) if no gfx mode is set.
+
+{{fbdoc item="desc"}}
+	It can be used either to test if a call to ##[[KeyPgScreengraphics Screen (Graphics)]]## is successful, either to do read/write operations directly to the work page memory, providing the page is first locked and later unlocked via the ##[[KeyPgScreenlock Screenlock]]## and ##[[KeyPgScreenunlock Screenunlock]]## statements. The pointer returned by **Screenptr** is only valid after a successful call to ##[[KeyPgScreengraphics Screen (Graphics)]]##, and is invalidated by subsequent calls to ##[[KeyPgScreengraphics Screen (Graphics)]]##.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' Set good old 320x200 in 8bpp mode
+' No pages specified so we have one work page = visible page
+SCREEN 13
+' We're in an 8bpp mode, so a BYTE PTR is needed for framebuffer access
+DIM framebuffer AS BYTE PTR
+framebuffer = SCREENPTR
+' We need to lock current work page before access is possible
+SCREENLOCK
+' Plot a white pixel at coordinates 160,100 on the work page
+POKE framebuffer + (100 * 320) + 160, 15
+' Unlock work page so our change is made visible
+SCREENUNLOCK
+SLEEP
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgScreenlock Screenlock]]##
+	- ##[[KeyPgScreenunlock Screenunlock]]##
+	- ##[[KeyPgPtr Ptr]]##
+	- ##[[KeyPgPointer Pointer]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

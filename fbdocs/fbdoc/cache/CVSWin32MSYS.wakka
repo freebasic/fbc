@@ -1,0 +1,79 @@
+If one desires the very latest Win32 FB, it can be compiled using MSYS, the Minimal SYStem put out by the MinGW people.  Most users should stay with the stable Win32 build!  But the latest additions and corrections are available in this way.
+
+	**1**)  Install MSYS/MinGW correctly and well.  This is difficult if one uses the info and packages at http://www.mingw.org .  However, it is not bad if one uses the SourceForge package at http://sf.net/projects/mingw-install .  If your install is not working well, it is recommended that you scrag it completely and install using that sf.net package.
+
+	**2**)  Get CVS and unzip it into the MSYS' /bin directory.  It's not included in MSYS.  At this writing, the latest version of CVS can be retrieved from: http://ftp.gnu.org/non-gnu/cvs/binary/stable/x86-woe/cvs-1-11-21.zip
+
+	**3**)  Get the latest FB source code via cvs.  Press Enter when prompted for password.  MSYS rxvt I/O is often buggy, so if the system halts after you press Enter, you may then have to hold down Ctrl and press C.  You may also see a few error messages about a file named ~/.cvspass ; it is safe to ignore them.
+	
+	##mkdir ~/fbccvs
+	cd ~/fbccvs
+	cvs -z3 -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc co ""FreeBASIC""##
+
+	**4**)  Copy the latest FreeBASIC Win32 distribution (always use the testing/unstable versions that must be installed over the stable one) to /FBbin.  I have it installed in conventional fashion, so:
+
+	##mkdir /FBbin
+	cd /FBbin
+	cp -rv "/c/Program Files/""FreeBASIC"""/* .##
+
+	**5**)  Add /FBbin to path.  You will need to use a text editor.  Windows Notepad runs fine under MSYS, but unfortunately, you will need a text editor which will handle the Unix/Windows CR/LF divide, and Notepad won't.  Windows Wordpad will; under a default XP install, one can do the following in MSYS: ##"C:\Program Files\Windows NT\Accessories\wordpad.exe" /etc/profile##
+	So, using a text editor of some appropriate sort, add the following to the *bottom* of text file /etc/profile : 
+
+		##export PATH="$PATH:/FBbin"##
+		
+	Then close the MSYS shell window, and start another.
+
+	**6**)  Make rtlib and rtlibx.
+	
+		**a**. Set up to make rtlib, and make it.
+
+			##cd ~/fbccvs/""FreeBASIC""/src/rtlib/obj/win32
+			chmod +x ../../configure
+			../../configure
+			make CFLAGS=-O2 && make CFLAGS=-O2 MULTITHREADED=1##
+
+		**b**. Do the same for rtlibx.
+
+			##cd ~/fbccvs/""FreeBASIC""/src/rtlibx/obj/win32
+			chmod +x ../../configure
+			../../configure
+			make CFLAGS=-O2 && make CFLAGS=-O2 MULTITHREADED=1##
+
+	**7**)  Prepare for and make gfxlib2.
+	
+		**a**.  Compilation of gfxlib2 requires DirectX header files to be installed.  They don't come with MSYS, or Cygwin.  The DirectX header files for Wine don't work.  At the moment, the only known way to do it is to use a package like the one available at this web site: http://www.streetcds.co.uk/dx/dx80_mgw.zip , download and unzip it to the /dx80 directory under the MSYS path.
+
+		**b**.  Make gfxlib2.
+
+			##cd ~/fbccvs/""FreeBASIC""/src/gfxlib2/obj/win32
+			chmod +x ../../configure
+			../../configure
+			make CFLAGS=-O2 INCLUDES="-I../.. -I../../win32 -I. -I/dx80/include"##
+
+	**8**)  Set up to make the compiler, and make it.
+
+		##cd ~/fbccvs/""FreeBASIC""/src/compiler/obj/win32
+		chmod +x ../../configure
+		../../configure
+		make##
+
+	**9**)  Replace old .bi's with new.
+
+		##rm -rfv /FBbin/inc/*
+		cp -rfv ~/fbccvs/""FreeBASIC""/inc/* /FBbin/inc##
+
+	**10**)  Overwrite old compiler and libs with new.
+
+		##cp -fv ~/fbccvs/""FreeBASIC""/src/compiler/obj/win32/fbc_new.exe /FBbin/fbc.exe
+		cp -fv ~/fbccvs/""FreeBASIC""/src/rtlib/obj/win32/*.a /FBbin/lib/win32
+		cp -fv ~/fbccvs/""FreeBASIC""/src/rtlibx/obj/win32/*.a /FBbin/lib/win32
+		cp -fv ~/fbccvs/""FreeBASIC""/src/gfxlib2/obj/win32/*.a /FBbin/lib/win32##
+
+	**11**)  Copy MSYS/MinGW-specific library to FB linker library directory if it's not included already.
+
+		##cp /mingw/lib/libmingwex.a /FBbin/lib/win32##
+
+And you're ready to roll!  The newest FB is now in your MSYS /FBbin.  
+
+Recently it has come to light that although the above often works, there can be chicken-and-egg-related problems.  Please see this forum thread for info:
+http://www.freebasic.net/forum/viewtopic.php?p=32260#32260

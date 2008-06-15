@@ -1,0 +1,25 @@
+{{fbdoc item="title" value="__FB_OPTION_DYNAMIC__"}}
+----
+Intrinsic define (macro value) set by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_OPTION_DYNAMIC__""
+##
+{{fbdoc item="desc"}}
+	##""__FB_OPTION_DYNAMIC__""## indicates if the compiler is currently set to either Dynamic or Static array allocation.
+
+	Returns zero (0) if the current state is Dynamic.  Returns non-zero (-1) if the current state is Static.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}} 
+	- ##[[KeyPgDynamic Option Dynamic]]##
+	- ##[[KeyPgMetaStatic Option Static]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+

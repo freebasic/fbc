@@ -1,0 +1,25 @@
+{{fbdoc item="title" value="ELSEIF"}}
+----
+{{fbdoc item="syntax"}}
+if [condition] then [action] ELSEIF [condition] then [action]
+
+{{fbdoc item="desc"}}
+see [[KeyPgIfthen IF...THEN]].
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+ If A = 1 then
+  print "ONE!"
+  elseif A = 2 then
+  Print "TWO!"
+  end if
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="CatPgConditional|CONDITIONAL"}}
+

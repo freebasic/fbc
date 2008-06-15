@@ -1,0 +1,26 @@
+{{fbdoc item="title" value=">= (Greater-than or Equal) Operator"}}
+----
+Operator to compare expressions.
+
+{{fbdoc item="syntax"}}##
+	//lhs expression// **>=** //rhs expression//
+##
+{{fbdoc item="desc"}}
+	The >= (Greater-than) or Equal Operator evaluates two expressions, compares them and returns the resulting condition. The condition is false (0) if the left-hand side expression is less than the right-hand side expression, or true (-1) if it is greater than or equal to the right-hand side expression.
+
+{{fbdoc item="ex"}}
+
+The [[KeyPgLessThan < (Less-than) Operator]] is complement to the >= (Greater-than or Equal) Operator, and is functionally identical when combined with the [[KeyPgNot Not (Bit-wise Complement) Operator]]:
+
+##%%(qbasic)
+   if( 420 >= 69 ) then print "( 420 >= 69 ) is true."
+   if not( 420 < 69 ) then print "not( 420 < 69 ) is true."
+%%##
+
+{{fbdoc item="diff"}}
+	- none
+
+{{fbdoc item="see"}}
+	- [[CatPgOperators Operators]]
+
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

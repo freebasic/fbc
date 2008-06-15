@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="SCREEN (Console)"}}
+----
+{{fbdoc item="syntax"}}
+	//integer_variable//= SCREEN (//row//,//column//[,//color flag//] )
+
+{{fbdoc item="desc"}}
+	SCREEN returns the character or the atribute found at a given position of a console output. It works in console mode and in graphics mode.
+	
+	//row//,//column// indicate the position to be searched.The top left corner of the console is  (1,1)
+	If //color flag//  is zero, SCREEN returns the ascii code of the character found.
+	If //color flag// is not zero, SCREEN returns the color attribute of the character.
+	
+	The color attribute is a a byte where the high nibble (group of 4 bits) represents the cell background color and the lower nibble represents the character color.
+	The color values are:
+	{{table columns="2" cellpadding="1" cells="value;color;0;BLACK;1;BLUE;2;GREEN;3;CYAN ;4;RED;5;MAGENTA;6;BROWN;7;WHITE;8;GRAY;9;BRIGHT BLUE;10;BRIGHT GREEN ;11; BrIGHT RCYAN;12;BRIGHT RED;13;PINK;14;YELLOW;15;BRIGHT WHITE"}}
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+Example :
+character_ascii_value = SCREEN( row, col )
+attribute = SCREEN( row, col, 1 )
+background=attribute shr 4
+cell_color= attribute and &hf
+%%
+
+{{fbdoc item="diff"}}
+	- In QB the SCREEN function worked in graphics modes too.
+{{fbdoc item="see"}}
+	- [[KeyPgScreengraphics SCREEN (Graphics)]]
+	
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

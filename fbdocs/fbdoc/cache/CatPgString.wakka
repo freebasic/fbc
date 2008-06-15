@@ -1,0 +1,44 @@
+{{fbdoc item="title" value="String Functions"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgAsc|ASC"}}
+	- {{fbdoc item="keyword" value="KeyPgBin|BIN"}}
+	- {{fbdoc item="keyword" value="KeyPgChr|CHR"}}
+	- {{fbdoc item="keyword" value="KeyPgHex|HEX"}}
+	- {{fbdoc item="keyword" value="KeyPgInstr|INSTR"}}
+	- {{fbdoc item="keyword" value="KeyPgLcase|LCASE"}}
+	- {{fbdoc item="keyword" value="KeyPgLeft|LEFT"}}
+	- {{fbdoc item="keyword" value="KeyPgLen|LEN"}}
+	- {{fbdoc item="keyword" value="KeyPgLtrim|LTRIM"}}
+	- {{fbdoc item="keyword" value="KeyPgMidfunction|MID (Function)"}}
+	- {{fbdoc item="keyword" value="KeyPgMidstatement|MID (Statement)"}}
+	- {{fbdoc item="keyword" value="KeyPgMkd|MKD"}}
+	- {{fbdoc item="keyword" value="KeyPgMki|MKI"}}
+	- {{fbdoc item="keyword" value="KeyPgMkl|MKL"}}
+	- {{fbdoc item="keyword" value="KeyPgMks|MKS"}}
+	- {{fbdoc item="keyword" value="KeyPgOct|OCT"}}
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgRight|RIGHT"}}
+	- {{fbdoc item="keyword" value="KeyPgRtrim|RTRIM"}}
+	- {{fbdoc item="keyword" value="KeyPgSpace|SPACE"}}
+	- {{fbdoc item="keyword" value="KeyPgStr|STR"}}
+	- {{fbdoc item="keyword" value="KeyPgString|STRING (Function)"}}
+	- {{fbdoc item="keyword" value="KeyPgTrim|TRIM"}}
+	- {{fbdoc item="keyword" value="KeyPgUcase|UCASE"}}
+	- {{fbdoc item="keyword" value="KeyPgVal|VAL"}}
+	- {{fbdoc item="keyword" value="KeyPgValint|VALINT"}}
+	- {{fbdoc item="keyword" value="KeyPgVallng|VALLNG"}}
+	- {{fbdoc item="keyword" value="KeyPgValuint|VALUINT"}}
+	- {{fbdoc item="keyword" value="KeyPgValulng|VALULNG"}}
+	- {{fbdoc item="keyword" value="KeyPgWbin|WBIN"}}
+	- {{fbdoc item="keyword" value="KeyPgWchr|WCHR"}}
+	- {{fbdoc item="keyword" value="KeyPgWhex|WHEX"}}
+	- {{fbdoc item="keyword" value="KeyPgWinput|WINPUT"}}
+	- {{fbdoc item="keyword" value="KeyPgWoct|WOCT"}}
+	- {{fbdoc item="keyword" value="KeyPgWspace|WSPACE"}}
+	- {{fbdoc item="keyword" value="KeyPgWstr|WSTR"}}
+	- {{fbdoc item="keyword" value="KeyPgFunWstring|WSTRING(Function)"}}
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

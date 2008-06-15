@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="INPUT()"}}
+----
+{{fbdoc item="syntax"}}
+INPUT[$](num)
+input[$](num,[#]filenum)
+
+{{fbdoc item="desc"}}
+Num must be a number 0 to 255 and filenum must be the slot of a file currently open for INPUT
+The first version waits for the user to input 'num' characters at the keyboard and returns them in a string. Extended keys are not read. The characters are not echoed to the screen.
+The second version reads two characters from a file and updates the pointer
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+PRINT "Select a color number" 
+PRINT "1.-BLUE"
+PRINT "2.-RED"
+PRINT "3.-GREEN"
+do
+ a$=input$(1)
+loop until a$>="1" and a$<="3"
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+~- [[KeyPgInput INPUT]]
+~- [[KeyPgGetkey  GETKEY]]
+~- [[KeyPgInput INKEY$]]
+
+
+{{fbdoc item="back" value="CatPgInput|INPUT"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

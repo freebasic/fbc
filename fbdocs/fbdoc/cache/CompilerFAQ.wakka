@@ -1,0 +1,126 @@
+{{fbdoc item="title" value="Frequently Asked Questions"}}
+----
+
+**FreeBASIC questions:**
+	==- {{anchor name="item1|What is FreeBASIC?"}}==
+	==- {{anchor name="item2|Who is responsible for FreeBASIC?"}}==
+	==- {{anchor name="item3|Why should I use FreeBASIC rather than QBasic?"}}==
+	==- {{anchor name="item4|Why should I use FreeBASIC rather than other GPL or commercial BASICs?"}}==
+	==- {{anchor name="item5|How fast is FreeBASIC?"}}==
+	==- {{anchor name="item6|What differences are there between FreeBASIC and QuickBasic?"}}==
+	==- {{anchor name="item7|How compatible is FreeBASIC with Windows? Dos? Linux? QBasic code?"}}==
+	==- {{anchor name="item8|Does FreeBASIC support Object Oriented Programming?"}}==
+	==- {{anchor name="item9|What are the planned features for FreeBASIC?"}}==
+
+**Getting Started with FreeBASIC questions**
+	==- {{anchor name="item21|When running FreeBASIC in DOS, I get a 'Error: No DPMI' message."}}==
+	==- {{anchor name="item22|Is there a possibility how to get rid of this CWSDPMI.EXE and CWSDPMI.SWP?"}}==
+	==- {{anchor name="item23|Why doesn't the QB gui open when I start FreeBASIC?"}}==
+	==- {{anchor name="item24|I double-click on fbc.exe and it doesn't open!"}}==
+	==- {{anchor name="item25|Where can I find more information about FreeBASIC?"}}==
+	==- {{anchor name="item26|How do I get rid of the console in a graphics application?"}}==
+
+**Advanced FreeBASIC**
+	==- {{anchor name="item31|How do I link to C libraries?"}}==
+	==- {{anchor name="item32|Can I use a debugger?"}}==
+
+----
+@@**FreeBASIC questions**@@
+
+{{anchor name="item1"}}==What is FreeBASIC?==
+	FreeBASIC is a free, 32-bit BASIC compiler for Windows (32-bit), 32 bit protected-mode DOS (COFF executables, like DJGPP), and Linux (x86). It began as an attempt to create a code-compatible, free alternative to Microsoft QuickBasic, but has quickly grown into a powerful development tool, already including support for libraries such as Allegro, SDL, OpenGL, and many others with its default installation.
+
+	Aside from having a syntax nearly 100% compatible with QuickBasic, FreeBASIC introduces several new features to the aged language, including pointers to variables and functions, and unsigned data types.
+
+	FreeBASIC is written in FreeBASIC.
+
+{{anchor name="item2"}}==Who is responsible for FreeBASIC?==
+	The first versions of FreeBASIC were developed exclusively by V1ctor. Later versions gained contributions from many people, including DrV who developed the DOS32 port, and Lillo, who developed the Linux port and the graphics library. 
+
+	See the [[CompilerCredits FreeBASIC Credits]] page.
+
+{{anchor name="item3"}}==Why should I use FreeBASIC rather than QBasic?==
+	FreeBASIC has innumerable advantages over QBasic, QuickBasic, PDS, and Visual Basic for DOS. 
+		- It supports 32-bit processors, where QBasic is designed for 16-bit CPU's.
+		- It supports modern OSes. It has ports to Windows, Linux, and 32-bit DOS.
+		- It supports modern APIs such as SDL, DirectX, Win32, and OpenGL.
+		- It is distributed under the GPL, meaning it's free and legal to use, unlike most copies of QuickBasic / other BASICs.
+		- The library is distributed under the LGPL, meaning you may do whatever you want with your compiled programs, including selling them.
+		- FreeBASIC is many times faster than QuickBasic / other BASICs.
+		- FreeBASIC supports many features, such as pointers and inline Assembly, which are not available in QuickBasic / other BASICs.
+
+{{anchor name="item4"}}==Why should I use FreeBASIC rather than other GPL or commercial BASICs?==
+	FreeBASIC has many traits which make it more desirable than other BASICs released under the GPL.
+		- FreeBASIC adheres closely to the standard BASIC syntax, making it easier to use.
+		- FreeBASIC is compiled to actual programs (executables), not bytecode.
+		- FreeBASIC has a large, dedicated community which has actively participated in the development of FreeBASIC.
+		- FreeBASIC utilizes standard methods of accessing common C libraries. SDL, for example, is standard C SDL, not a new set of intrinsic commands.
+		- FreeBASIC has ports to Windows, Linux, and 32-bit DOS. It retains consistent syntax between the three ports.
+
+{{anchor name="item5"}}==How fast is FreeBASIC?==
+	Most tests run by the community have shown FreeBASIC to be exponentially faster than QuickBasic, faster than most other GPL or commercial BASICs, and often approaching GCC in terms of speed.
+
+	One area where there is a notable speed deficiency is in 32-bit console modes. While FreeBASIC is consistently on-par with other 32-bit console mode applications, 32-bit console mode operations are significantly slower than 16-bit console operations, as seen in QuickBasic.
+
+{{anchor name="item6"}}==What differences are there between FreeBASIC and QuickBasic?==
+	See [[LangQB Differences betwen FreeBASIC and QuickBasic]].
+
+{{anchor name="item7"}}==How compatible is FreeBASIC with Windows? Dos? Linux? QBasic code?==
+	FreeBASIC is fully compatible with Windows, MS-DOS, Free-DOS and Linux. When planning to create a program for all three platforms, however, keep API availablility in mind -- Code utilizing OpenGL will work in Windows and Linux, for example, but won't in DOS, because OpenGL is not available for DOS.
+
+	FreeBASIC is 99% backward compatible with QB code. There are some minor differences, but they are either minor, or a result of the new 32-bit platform upon which FreeBASIC is built.
+
+	See [[LangQB Differences betwen FreeBASIC and QuickBasic]].
+
+{{anchor name="item8"}}==Does FreeBASIC support Object Oriented Programming?==
+	FreeBASIC does not currently support Object Oriented Programming. It will be supported in a future release.
+
+{{anchor name="item9"}}==What are the planned features for FreeBASIC?==
+	- Object Oriented Programming
+
+	You can find out what's planned for the future releases by directly looking at the TODO file for the compiler, currently in CVS [[http://cvs.sourceforge.net/viewcvs.py/fbc/FreeBASIC/src/compiler/TODO.txt?view=markup here]].
+
+----
+@@**Getting Started with FreeBASIC questions**@@
+
+{{anchor name="item21"}}==When running FreeBASIC in DOS, I get a "Error: No DPMI" message.==
+	     You need the file "CWSDPMI.EXE". See requirements, and see below how to get rid of it.
+
+{{anchor name="item22"}}==Is there a possibility how to get rid of this CWSDPMI.EXE and CWSDPMI.SWP ?==
+	     Yes. To get rid of CWSDPMI.EXE and create a standalone DOS executable, you need the CWSDPMI package and the "EXE2COFF.EXE" file. Using EXE2COFF, you remove the CWSDPMI.EXE loader (file loses 2 KB of size, a "COFF" file without extension results), and then glue the file "CWSDSTUB.EXE" before this COFF. The new executable is cca 21 KB bigger than the original one, but it is standalone, no additional files are needed. To get rid of CWSDPMI.SWP, you can then edit your executable with CWSPARAM.EXE, and disable the swapping / paging.  Note, however, that this will limit the memory that can be allocated to the amount of physical memory that is installed in a system. This work can be done both with the FBC.EXE file and all executables created by FBC. The method is also described in the CWSDPMI docs in the package.
+
+{{anchor name="item23"}}==Why doesn't the QB gui open when I start FreeBASIC?==
+	QB had a GUI.  FreeBASIC does not.
+
+{{anchor name="item24"}}==I double-click on fbc.exe and it doesn't open!==
+	FreeBASIC is only a compiler, not a complete QuickBasic clone. It is a console mode application. It will accept a BAS file on the command line, and spit out an EXE file.
+
+	There are a numbers of IDEs available for FreeBASIC, however. The easiest way to get started with a full programming environment is to download the exellent FBIde+FreeBASIC package from [[http://sourceforge.net/project/showfiles.php?group_id=135923 this site.]]  Be sure to set the FBIde path correctly to where you have installed the latest fbc.exe (FreeBASIC compilation executable).
+
+{{anchor name="item25"}}==Where can I find more information about FreeBASIC?==
+	The FreeBASIC WIKI is the most up-to-date manual for using FreeBASIC, available [[http://www.freebasic.net/wiki/ here]].
+
+	Active FreeBASIC related forums, besides the [[http://www.freebasic.net/forum official one]], can be found at  [[http://www.fbtk.net// Freebasic.tk]] and [[http://www.qbasicnews.com/ qbasicnews]]. 
+
+	Active magazines which regularly have FreeBASIC related articles are [[http://www.petesqbsite.com/sections/express/express.shtml QB Express]] and [[http://www.qbxl.net/ QBXL Magazine]]. These magazines are always looking for new articles, so if you think you've got a good idea for an article about FreeBASIC, submit it!
+
+{{anchor name="item26"}}==How do I get rid of the console in a graphics application?==
+	Just add //-s gui// to the fbc command line when compiling. FBIDE has a menu option that allows you to edit the command line.
+
+----
+@@**Advanced FreeBASIC**@@
+
+{{anchor name="item31"}}==How do I link to C libraries?==
+	C libraries are set up in much the same way in FreeBASIC as they are in C. Every library included with FreeBASIC has a basic include file named "//library name//.bi" which uses the [[KeyPgInclib #INCLIB]] metacommandto include the library, and the [[KeyPgDeclare Declare statement]] to declare the functions within the library. FreeBASIC includes hundreds of BI files, so take a look!
+
+{{anchor name="item32"}}==Can I use a debugger?==
+	FreeBASIC can use any debugger compatible with gnu's GDB. Insight is an user friendly wrapper for GDB 
+	- Get Insight from [[http://prdownloads.sourceforge.net/dev-cpp/Insight_Binary.DevPak?download Dev-CPP]]
+	- Rename the file to Insight.tar.bz2, and decompress it to an empty folder
+	- Compile your program with the -g switch
+	- Run <Your_Insight_Dir>\bin\usr\bin\Insight.exe
+	- Do File>Open to load your program into Insight
+	- From there you can watch, set breakpoints, step, examine memory and registers. Check Insight's help
+
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

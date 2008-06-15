@@ -1,0 +1,44 @@
+{{fbdoc item="title" value="MKL"}}
+----
+Does a binary copy from a ##[[KeyPgInteger long]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkl** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+##
+{{fbdoc item="usage"}}##
+	//result// = MKL[$]( //number// )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		A ##[[KeyPgInteger integer]]## variable to binary copy to a ##[[KeyPgStringtype string]]##.
+
+{{fbdoc item="ret"}}
+	Returns a ##[[KeyPgStringtype string]]## with a binary copy of the ##[[KeyPgInteger long]]##.
+
+{{fbdoc item="desc"}}
+	Does a binary copy  from a long variable to a string, setting its length to 4 bytes. The resulting string can be read back to a LONG by CVL.
+
+	This function is useful to write numeric values to buffers without using a TYPE definition.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim a as long
+a=4534
+b$=mkl(a)
+print a, cvl(b$)
+sleep
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgMkd Mkd]]##
+	- ##[[KeyPgMki Mki]]##
+	- ##[[KeyPgMks Mks]]##
+	- ##[[KeyPgCvd Cvd]]##
+	- ##[[KeyPgCvi Cvi]]##
+	- ##[[KeyPgCvl Cvl]]##
+	- ##[[KeyPgCvs Cvs]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

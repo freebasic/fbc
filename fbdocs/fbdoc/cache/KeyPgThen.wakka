@@ -1,0 +1,10 @@
+{{fbdoc item="title" value="THEN"}}
+----
+
+{{fbdoc item="desc"}}
+A component of an IF [...] Then decision statement.
+See [[KeyPgIfthen IF...THEN]].
+
+
+{{fbdoc item="back" value="CatPgControlflow|CONTROL FLOW"}}
+

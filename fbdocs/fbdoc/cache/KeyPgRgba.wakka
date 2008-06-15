@@ -1,0 +1,43 @@
+{{fbdoc item="title" value="RGBA"}}
+----
+Function to compute valid color value including alpha (translucency) for hi/truecolor modes.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgPpdefine #define]] **RGBA**(//r//,//g//,//b//,//a//) (([[KeyPgCuint cuint]](r) [[KeyPgShl shl]] 16) [[KeyPgOr or]] ([[KeyPgCuint cuint]](g) [[KeyPgShl shl]] 8) [[KeyPgOr or]] [[KeyPgCuint cuint]](b) [[KeyPgOr or]] ([[KeyPgCuint cuint]](a) [[KeyPgShl shl]] 24))
+##
+{{fbdoc item="usage"}}##
+	**RGBA**(//red//, //green//, //blue//, //alpha//)
+##
+{{fbdoc item="param"}}
+	##//red//##
+		red colour component value
+	##//green//##
+		green colour component value
+	##//blue//##
+		blue colour component value
+	##//alpha//##
+		alpha component value
+
+{{fbdoc item="ret"}}
+	the combined colour
+
+{{fbdoc item="desc"}}
+	##//Red//##, ##//green//##, ##//blue//## and ##//alpha//## are components ranging 0-255.
+
+	The ##**RGBA**## function can be used to compute a valid color value including an alpha channel for use while in hi/truecolor modes. It returns an integer  in the format &hRRGGBBAA, where RR, GG, BB, AA  equals the values passed to this function, in hexadecimal format.
+
+Example:
+	See ##[[KeyPgPutgraphics Put (Graphics)]]## example.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgColor Color]]##
+	- ##[[KeyPgRgb RGB]]##
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

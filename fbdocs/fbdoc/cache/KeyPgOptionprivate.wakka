@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="OPTION PRIVATE"}}
+----
+{{fbdoc item="syntax"}}
+	OPTION PRIVATE 
+
+{{fbdoc item="desc"}}
+	Sets subs/functions to be private by default (instead of [[KeyPgPublic PUBLIC]] by default). This means subs/functions are only accessible within the module and is hidden to other modules, unless they have 'public' before them. This means two subs/functions can have the same name, as long as they are private and are in seperate modules.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+option private
+
+sub I_am_private()
+end sub
+
+public sub I_am_public()
+end sub
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- [[KeyPgPrivate PRIVATE]]
+	- [[KeyPgPublic PUBLIC]]
+	- [[KeyPgSub SUB]]
+	- [[KeyPgFunction FUNCTION]]
+	- [[KeyPgOptionbase OPTION BASE]]
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

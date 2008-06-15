@@ -1,0 +1,74 @@
+{{fbdoc item="title" value="DATA"}}
+----
+{{fbdoc item="syntax"}}##
+	**Data** //constant_expression1// [,//constant_expression2//]...
+##
+{{fbdoc item="desc"}}
+	##Data## stores a list of constant numeric or alphabetical expressions that are evaluated at compile time and stored as constants that can be read into variables by using ##[[KeyPgRead Read]]##. 
+	
+	All the ##Data## statements in the program behave as a single chained list; after the last element of a ##Data## is read, the first element of the following ##Data## will be read. If a ##Read## is attempted after the last element of the last ##Data##, an error will occur.  
+
+	##Data## statements are only visible from within the module in which they are defined.
+	
+	##Data## constants can only be of simple types (numeric or string). String constants must be enclosed in double quotes. 
+	
+	A numeric value can be read as a numeric literal into a string. A string read into a numeric variable will be evaluated by the ##[[KeyPgVal Val]]## function.
+	
+	##[[KeyPgRestore Restore]]## alters the position from which ##Data## are read.
+
+	##Data## is normally used to initialize variables. FB also allows the initialization of static variables in their declarations; see [[CatPgInitialisation Variable Initializers]] for more information.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+
+' Create an array of 5 integers and a string to hold the data.
+DIM h(4) AS INTEGER
+DIM hs AS STRING
+
+' Set up to loop 5 times (for 5 numbers... check the data)
+FOR read_data = 0 TO 4
+
+  ' Read in an integer.
+  READ h(read_data)
+
+  ' Display it.
+  PRINT "Number"; read_data;" = "; h(read_data)
+
+NEXT
+
+' Spacer.
+PRINT
+
+' Read in a string.
+READ hs
+
+' Print it.
+PRINT  "String = " + hs
+
+
+' Await a keypress.
+SLEEP
+
+' Exit program.
+END
+
+
+
+' Block of data.
+
+DATA 3, 234, 435/4, 23+433, 87643,"Good"+ "Bye!"
+
+
+
+%%
+
+{{fbdoc item="diff"}}
+	- Alphabetic string literals now must be enclosed within quotation marks.
+	- Empty constant expressions were evaluated in QB to number 0 or to empty strings. In FB they give a compile error.
+	- Constant expressions are allowed in FB's ##Data##. They are evaluated before storing. QB allowed only constant //values//.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgRead Read]]##
+	- ##[[KeyPgRestore Restore]]##
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

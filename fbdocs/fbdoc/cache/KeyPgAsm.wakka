@@ -1,0 +1,100 @@
+{{fbdoc item="title" value="ASM"}}
+----
+Code block that allows the use of architecture-specific instructions.
+
+{{fbdoc item="syntax"}}##
+	**Asm**
+		//architecture-dependent instructions//
+	End **Asm**
+
+		##//Or//##
+
+	**Asm** //architecture-dependent instructions//
+##
+{{fbdoc item="desc"}}
+	The ##Asm## block is used to insert specific machine-code instructions in a program in order to perform operations that cannot be carried out using the features of the language or to hand-optimize performance-sensitive sections of code.
+
+	The current FreeBASIC compiler currently only produces code for Intel 80x86-based machines; however, in the furture, the compiler might be ported to a platform which does not support the same instruction set.  Therefore, ##Asm## blocks should only be used when necessary, and a FreeBASIC-only alternative should be provided if possible.
+
+	The return value of a function may be set by using the ##[[KeyPgFunction Function]]## keyword within brackets as shown in the example below.
+
+	[[x86 x86]] Specific:
+
+		==Syntax==
+			The syntax of the inline assembler is a simplified form of Intel syntax.  Intel syntax is used by the majority of x86 assemblers, such as MASM, TASM, and NASM. In general, the destination of an instruction is placed first, followed by the source. Variables and functions defined by a program may be referenced in an Asm block.
+		
+		==Register Names==
+		~The names of the registers for the x86 architecture are written as follows in an ##Asm## block:
+		~- 4-byte integer registers: ##eax##, ##ebx##, ##ecx##, ##edx,## ##ebp##, ##esp##, ##edi##, ##esi##
+		~- 2-byte integer registers: ##ax##, ##bx##, ##cx##, ##dx##, ##bp##, ##sp##, ##di##, ##si## (low words of 4-byte ##e##- registers)
+		~- 1-byte integer registers: ##al##, ##ah##, ##bl##, ##bh##, ##cl##, ##ch##, ##dl##, ##dh## (low and high bytes of 2-byte -##x## registers)
+		~- Floating-point registers: ##st(0)##, ##st(1)##, ##st(2)##, ##st(3)##, ##st(4)##, ##st(5)##, ##st(6)##, ##st(7)##
+		~- MMX registers (aliased onto floating-point registers): ##mm0##, ##mm1##, ##mm2##, ##mm3##, ##mm4##, ##mm5##, ##mm6##, ##mm7##
+		~- SSE registers: ##xmm0##, ##xmm1##, ##xmm2##, ##xmm3##, ##xmm4##, ##xmm5##, ##xmm6##, ##xmm7##
+		
+		==Instruction Set==
+		
+		See these external references:
+		~- [[http://developer.intel.com/design/Pentium4/documentation.htm Intel Pentium 4 manuals]]
+		~- [[http://nasm.sourceforge.net/doc/html/nasmdocb.html NASM x86 Instruction Reference]]
+		
+		==Disallowed Instructions==
+		~Note that the FreeBASIC compiler produces 32-bit protected-mode code for the x86 which usually runs in an unpriveleged user level; therefore, priveleged and sensitive instructions will assemble correctly but will cause a runtime 'Illegal instruction' error.  The following are the priveleged and sensitive instructions as of the Intel Pentium 4 and Xeon:
+		
+		~- ##cli##
+		~- ##clts##
+		~- ##hlt##
+		~- ##in##
+		~- ##ins##
+		~- ##int##
+		~- ##invd##
+		~- ##invlpg##
+		~- ##lgdt##
+		~- ##lidt##
+		~- ##lldt##
+		~- ##lmsw##
+		~- ##ltr##
+		~- ##mov## to/from ##CR##n, ##DR##n, ##TR##n
+		~- ##out##
+		~- ##outs##
+		~- ##rdmsr##
+		~- ##rdpmc##
+		~- ##rdtsc##
+		~- ##sgdt##
+		~- ##sidt##
+		~- ##sldt##
+		~- ##smsw##
+		~- ##sti##
+		~- ##str##
+		~- ##wbinvd##
+		~- ##wrmsr##
+		
+		~Also, the segment registers (##cs##, ##ds##, ##es##, ##fs##, ##gs##) should not be accessed from an ##Asm## block, except in certain cases with the DOS port (note that they do NOT work the same way as in real-mode DOS).  The operating system is responsible for memory management; the meaning of segments (selectors) in protected mode is very different from real-mode memory addressing.
+
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+'' This is an example for the x86 architecture.
+Function AddFive(ByVal num As Integer) As Integer
+	ASM
+		mov eax, [num]
+		add eax, 5
+		mov [Function], eax
+	End ASM
+End Function
+
+Dim i As Integer = 4
+
+Print "4 + 5 ="; AddFive(i)
+%%##
+
+##%%4 + 5 = 9%%##
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
+
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,0 +1,111 @@
+===={{fbdoc item="title" value="Missing Documentation"}}====
+
+----
+Please edit this page to remove items when they are written.
+
+==Language and non-keyword related texts==
+	- Variable Declaration/Initialisation (including implicit declaration)
+	- Differences between versions (windows, linux, DOS)
+	- Cross compiling
+	- Function calling overview
+	- Graphics library internal formats
+	- Source and Include Files
+	- Statements and Statement blocks
+	- Expressions
+
+	- An introduction to unicode and the different encodings 
+	- Unnamed udt (TYPE)
+
+==Undocumented keywords== 
+
+	##[[KeyPgPpline #LINE]]##
+	##[[KeyPgPpmacro #MACRO]]##
+	##[[KeyPgPplibpath #LIBPATH]]##
+	
+	datetime.bi:
+	
+	fbUseSystem
+	fbFirstJan1
+	fbFirstFourDays
+	fbFirstFullWeek
+	fbSunday
+	fbMonday
+	fbTuesday
+	fbWednesday
+	fbThursday
+	fbFriday
+	fbSaturday
+	
+	
+	dir.bi:
+	
+	fbReadOnly
+	fbHidden
+	fbSystem
+	fbDirectory
+	fbArchive
+	fbNormal
+
+
+==Incomplete Documentation==
+
+	Pages that have '!!! WRITE ME !!!' or '!!! DELETE ME !!!'
+	
+	1. LangMeta
+	2. MissingDocs
+	3. KeyPgPpline
+	4. KeyPgPpmacro
+	5. KeyPgPplibpath
+	6. KeyPgOpenLpt
+	7. KeyPgFunction
+	8. FaqPgrtlib
+	9. CatPgUser
+	10. KeyPgScreenres
+	11. KeyPgDeclare
+
+----
+
+
+The documents listed and linked below need to be updated or enhanced in some way.
+
+==Platform specific==
+	 
+
+==Missing example==
+Needs Code Examples:
+
+	 [[KeyPgOpenLpt]] needs more examples, or non-specific platform example.
+	 ""#LIBPATH""
+	 ""#LINE""
+	 ""__FB_ERR__""
+	 ""__FB_OUT_EXE__""
+	 ""__FB_OUT_DLL__""
+	 ""__FB_OUT_LIB__""
+	 ""__FB_OUT_OBJ__""
+	 ""__FB_OPTION_DYNAMIC__""
+	 Dateadd
+	 Datediff
+	 Datepart
+	 Datevalue
+	 Erl
+	 Flip
+	 Import
+	 Inp
+	 Input(file i/o)
+	 Int
+	 Lib
+	 Loc
+	 Option byval
+	 Output
+	 Pcopy
+	 Pmap
+	 Pointer
+	 Random
+	 Rgba
+	 Screencopy
+	 Threadwait
+	 Wait
+	 Window
+
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

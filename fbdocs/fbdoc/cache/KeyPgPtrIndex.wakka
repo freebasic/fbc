@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="[] Pointer Indexing"}}----
+
+{{fbdoc item="syntax"}}
+	//pointer_variable//[//expression//]  
+	
+{{fbdoc item="desc"}}
+	Pointer indexing operator [] allows to adress the places contiguous to where a pointer points to. The memory position pointed to is //pointer_variable// +/- (//expression// * SIZEOF(*//pointed_variable//)). The pointer itself is not changed.
+
+	Is up to the user to ensure the resulting pointer points to meaningful data.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+Dim a(10) As Integer
+Dim pa As Integer Ptr
+
+For i = 0 To 10
+	a(i)=i 'Here, we'll place the numbers 0 through 10 into the array.
+Next i
+pa=@a(0)
+
+For i=0 To 10
+	Print pa[i];'Here, we will print the contents of pa[i] without a 
+	            'carriage return at the end of each print.
+Next i
+%%
+
+Will print
+%%
+0 1 2 3 4 5 6 7 8 9 10
+%%
+::c::
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- [[KeyPgPtrAddSub Pointer Addition and substraction]]
+	- [[KeyPgStrIndex String Indexing]]
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

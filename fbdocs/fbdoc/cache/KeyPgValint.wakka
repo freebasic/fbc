@@ -1,0 +1,49 @@
+{{fbdoc item="title" value="VALINT"}}
+----
+Converts a string to an integer number.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valint** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Valint** ( //str// )
+##
+{{fbdoc item="param"}}
+	##//str//##
+		the string to convert
+
+{{fbdoc item="ret"}}
+	Returns an ##[[KeyPgInteger Integer]]## of the converted string
+
+	If the first character of the string is invalid, ##**Valint**## will return a 0.
+
+{{fbdoc item="desc"}}
+	For example, ##**Valint**##("10") will return 10, and ##**Valint**##("10.10") will return 10 as well. The function parses the string from the left and returns the longest integer it can read, stopping at the first non-suitable charater.
+
+	Incidentally, this function is the opposite of ##[[KeyPgStr Str]]##, which converts a number to a string.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim a as string, b as integer
+a = "20xa211"
+b = valint(a)
+print a, b
+%%
+
+%%
+20xa211   20
+%%
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgStr Str]]##
+	- ##[[KeyPgVal Val]]##
+	- ##[[KeyPgVallng Vallng]]##
+	- ##[[KeyPgValuint Valuint]]##
+	- ##[[KeyPgChr Chr]]##
+	- ##[[KeyPgAsc Asc]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="__FB_LINUX__"}}
+----
+Intrinsic define set by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_LINUX__""
+##
+{{fbdoc item="desc"}}
+	Define without a value created at compile time by the Linux version of the compiler
+	It can be used to compile parts of the program only if the target is Linux
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#IFDEF __FB_LINUX__
+
+  ...instructions only for linux...
+
+#ELSE
+  
+ ...instructions not for Linux...
+
+#ENDIF 
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB
+
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfbdos __FB_DOS__]]##
+	- ##[[KeyPgDdfbwin32 __FB_WIN32__]]##
+	
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

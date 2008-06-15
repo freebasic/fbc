@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="ERL"}}
+----
+Error handling function to return the line where the error occured.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Erl** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Erl**
+##
+{{fbdoc item="ret"}}
+	An [[KeyPgInteger integer]] return value containing the line number where the last error occured.
+
+{{fbdoc item="desc"}}
+	##**Erl**## will return the line number where the last error occurred. If no error has occurred, ##**Erl**## will return 0.
+
+	##**Erl**## cannot always be used effectively -- QB-like error handling must be enabled.
+
+	##**Erl**## is reset by RESUME and RESUME NEXT
+
+{{fbdoc item="ex"}}
+
+%%(qbasic)
+
+%%
+
+{{fbdoc item="diff"}}
+	-
+
+{{fbdoc item="see"}}
+	-{{fbdoc item="keyword" value="LangErrorHandling|Error Handling"}}
+	-{{fbdoc item="keyword" value="KeyPgErr|ERR"}}
+
+{{fbdoc item="back" value="CatPgError|ERROR"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

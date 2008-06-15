@@ -1,0 +1,20 @@
+{{fbdoc item="title" value="OPTION BYVAL"}}
+----
+{{fbdoc item="syntax"}}
+	OPTION BYVAL
+
+{{fbdoc item="desc"}}
+	Sets BYVAL as the default method for passing arguments to FUNCTIONS and SUBS. If OPTION BYVAL is not used, the default methode is BYREF, as in QB.
+
+	
+{{fbdoc item="ex"}}
+	%%(qbasic)
+	%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}  {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

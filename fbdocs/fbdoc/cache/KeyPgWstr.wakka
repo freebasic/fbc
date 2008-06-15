@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="WSTR"}}
+----
+String function to convert number or ASCII to ##[[KeyPgWstring]]##
+
+{{fbdoc item="syntax"}}##
+	**Wstr** (//numerical_expression//) 
+	**Wstr** (//ASCII_String_variable// )
+##
+{{fbdoc item="usage"}}##
+	//result// = **Wstr** (//numerical_expression//) 
+	//result// = **Wstr** (//ASCII_String_variable//)
+##
+{{fbdoc item="param"}}
+	##//numerical_expression//##
+		numeric expression to convert to a ##[[KeyPgWstring]]##
+	##//ASCII_String_variable//##
+		ASCII string or expression to convert to a ##[[KeyPgWstring]]##
+
+{{fbdoc item="ret"}}
+	Returns the ##[[KeyPgWstring]]## representation of the numeric or ASCII expression.
+
+{{fbdoc item="desc"}}
+	The ##**Wstr**## function converts numerical variables to their Unicode representation. In this use it matches the ##[[KeyPgStr Str]]## function.
+
+	It can be used to convert ASCII strings to Unicode strings.  
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#include "windows.bi"
+dim zs as zstring * 20
+dim ws as wstring * 20
+
+zs = "Hello World"
+ws = wstr(zs)
+MessageBox(null, ws, wstr("Unicode 'Hello World'"), MB_OK or MB_ICONINFORMATION)
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgStr Str]]##
+	- ##[[KeyPgWstring Wstring]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}
+

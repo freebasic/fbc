@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="ERFN"}}
+----
+Error reporting function.
+
+{{fbdoc item="syntax"}}	##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Erfn** ( ) [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Erfn** ( ) 
+##
+{{fbdoc item="ret"}}
+	Returns a pointer to the string identifying the function where the error occured.
+
+	Returns NULL if the source is not compiled with the '-exx' compiler option.
+
+{{fbdoc item="desc"}}
+	An error reporting function returning a pointer to the name of the function.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' test.bas
+'' compile with fbc -exx test.bas
+
+sub Generate_Error
+  on error goto Handler
+  error 1000
+  exit sub
+Handler:
+  print "Error Function: "; *ERFN()
+  print "Error Module  : "; *ERMN()
+  resume Next
+end sub
+
+Generate_Error
+
+%%
+**Output:**
+%%Error Function: GENERATE_ERROR
+Error Module  : test.bas
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}} 
+	- ##[[KeyPgErl Erl]]##
+	- ##[[KeyPgErmn Ermn]]##
+	- ##[[KeyPgOnerror On...Error]]##
+
+{{fbdoc item="back" value="CatPgError|ERROR"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

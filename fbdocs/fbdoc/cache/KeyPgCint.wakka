@@ -1,0 +1,47 @@
+{{fbdoc item="title" value="CINT"}}
+----
+Converts numeric or string expression to an ##[[KeyPgInteger Integer]]##
+
+{{fbdoc item="syntax"}}##
+	**Cint**( //expression// )
+##
+{{fbdoc item="usage"}}##
+	//variable// = **Cint**(//numeric expression//)
+	//variable// = **Cint**(//string expression//)
+##
+{{fbdoc item="desc"}}
+	The ##**Cint**## function rounds off the decimal part of ##//numeric expression//## and returns a 32-bit ##[[KeyPgInteger Integer]]##. The function does not check for an overflow, so be sure not to pass a value which is less than -2 147 483 648 or larger than 2 147 483 647. The name is derived from 'Convert to INTeger'.
+
+	If the argument of ##**Cint**## is a string expression, it is first converted to numeric by using ##[[KeyPgVal Val]]##.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' Using the CINT function to convert a numeric value
+
+'Create an INTEGER variable
+DIM numeric_value AS INTEGER, a$
+
+'Convert a numeric value
+numeric_value = CINT(-300.23)
+
+'Print the result, should return -300
+PRINT numeric_value
+SLEEP
+%%
+
+{{fbdoc item="diff"}}
+	- The string argument was not allowed in QB
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCbyte Cbyte]]##
+	- ##[[KeyPgCubyte Cubyte]]##
+	- ##[[KeyPgCshort Cshort]]##
+	- ##[[KeyPgCushort Cushort]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgClngint Clngint]]##
+	- ##[[KeyPgCulngint Culngint]]##
+	- ##[[KeyPgCsng Csng]]##
+	- ##[[KeyPgCdbl Cdbl]]##
+
+{{fbdoc item="back" value="DtConvert|Converting Data Types"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

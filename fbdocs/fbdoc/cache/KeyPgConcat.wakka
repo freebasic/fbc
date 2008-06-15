@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="+ String Concatenation"}}
+----
+Operator to concatenate two string expressions.
+
+{{fbdoc item="syntax"}}##
+	//string1// **+** //string2//
+##
+{{fbdoc item="usage"}}##
+	//result// = //string1// **+** //string2//
+##
+{{fbdoc item="desc"}}
+	The concatenation operator takes two string expressions and returns a single string where ##//string1//## follows ##//string2//##.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+DIM  AS STRING A,B,C
+A="Hello,"
+B=" World!"
+C=A+B
+PRINT C 
+SLEEP
+%%##
+
+The output would look like:
+%%
+Hello, World!
+%%
+::c::
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- {{fbdoc item="keyword" value="KeyPgConcatConv|& String Concatenation with Conversion"}}
+	- [[OpString String Operators]]
+
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

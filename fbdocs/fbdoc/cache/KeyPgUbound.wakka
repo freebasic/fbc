@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="UBOUND"}}
+----
+{{fbdoc item="syntax"}}
+Ubound(array[, dimension])
+
+{{fbdoc item="desc"}}
+Ubound returns the highest index that can be used in an array.
+
+If the second parameter is included, it will determine the dimension of the array to check for the highest bound.
+
+Optionally Dimension says what dimension to check the highest bound. 1 for first dimension, and 2 for second dimension etc.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+
+dim array(-10 to 10, 5 to 15, 1 to 2) as integer
+print ubound(array, 1) 'returns 10
+print ubound(array, 2) 'returns 15
+print ubound(array, 3) 'returns 2
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+ 	- [[KeyPgCommon COMMON]]
+	- [[KeyPgDim DIM]]
+	- [[KeyPgErase ERASE]]
+	- [[KeyPgExtern EXTERN]]
+	- [[KeyPgLbound LBOUND]]
+	- [[KeyPgRedim REDIM]]
+	- [[KeyPgPreserve PRESERVE]]
+	- [[KeyPgShared SHARED]]
+	- [[KeyPgStatic STATIC]]
+	- [[KeyPgUbound UBOUND]]
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

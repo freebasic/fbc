@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="= Asignment Operator"}}
+----
+Operator to assign a value to a variable.
+
+{{fbdoc item="syntax"}}##
+	[ [[KeyPgLet Let]] ] //variable// **=** //value//
+##
+{{fbdoc item="desc"}}
+	The asignment operator assigns the variable its left the value of the expression on its right. 
+
+	The equal sign symbol is used both for assignment, and  ##[[KeyPgEqual = (Equality) Operator]]##. To avoid confusion the optional ##[[KeyPgLet Let]]## keyword may be used.
+
+{{fbdoc item="ex"}}
+
+%%(qbasic)
+  dim i as integer
+   i = 420    ' <- this is the assignment operator
+  LET i=300 ' <-alternate syntax
+  
+   if  i = 69 then   '<-this is the equivalence operator 
+	  print "ERROR: i should equal 420"
+	  end -1
+   end if
+
+   print "All is good."
+   end 0
+%%
+
+{{fbdoc item="diff"}}
+	- none
+
+{{fbdoc item="see"}}
+	- [[CatPgOperators Operators]]
+	- [[KeyPgEqual = (Equality) Operator]]
+
+**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]

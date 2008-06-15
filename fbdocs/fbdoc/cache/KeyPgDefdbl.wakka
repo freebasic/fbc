@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="DEFDBL"}}
+----
+Sets a default data type for variables
+
+{{fbdoc item="syntax"}}##
+	**Defdbl** //letterrange//[, //letterrange//]...
+##
+{{fbdoc item="desc"}}
+	##**Defdbl**## is used to default variables to a ##[[KeyPgDouble Double]]##-precision decimal number that start with a letter in the range given.
+	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+
+	This will make 'aNum' a ##[[KeyPgDouble Double]]##-precision decimal number since it is in the range of a-d:
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+defdbl a-d
+dim aNum 'implicit: As Double
+
+print len(aNum) ' Prints 8, the number of bytes in a double.
+%%
+
+{{fbdoc item="diff"}}
+	- None known
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDefbyte Defbyte]]##
+	- ##[[KeyPgDefint Defint]]##
+	- ##[[KeyPgDeflng Deflng]]##
+	- ##[[KeyPgDefshort Defshort]]##
+	- ##[[KeyPgDefsng Defsng]]##
+	- ##[[KeyPgDefstr Defstr]]##
+	- ##[[KeyPgDefubyte Defubyte]]##
+	- ##[[KeyPgDefuint Defuint]]##
+	- ##[[KeyPgDefushort Defushort]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+
+
+

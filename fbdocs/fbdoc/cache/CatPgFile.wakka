@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="File IO Functions"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgAccess|ACCESS"}}
+	- {{fbdoc item="keyword" value="KeyPgAppend|APPEND"}}
+	- {{fbdoc item="keyword" value="KeyPgBinary|BINARY"}}
+	- {{fbdoc item="keyword" value="KeyPgChdir|CHDIR"}}
+	- {{fbdoc item="keyword" value="KeyPgClose|CLOSE"}}
+	- {{fbdoc item="keyword" value="KeyPgCurdir|CURDIR$"}}
+	- {{fbdoc item="keyword" value="KeyPgDir|DIR$"}}
+	- {{fbdoc item="keyword" value="KeyPgEncoding|ENCODING"}}
+	- {{fbdoc item="keyword" value="KeyPgEof|EOF"}}
+	- {{fbdoc item="keyword" value="KeyPgFreefile|FREEFILE"}}
+	- {{fbdoc item="keyword" value="KeyPgGetfileio|GET #"}}
+	- {{fbdoc item="keyword" value="KeyPgInputPp|INPUT #"}}
+	- {{fbdoc item="keyword" value="KeyPgInputfilemode|INPUT (FILE MODE)"}}
+	- {{fbdoc item="keyword" value="KeyPgKill|KILL"}}
+	- {{fbdoc item="keyword" value="KeyPgLineinputPp|LINE INPUT #"}}
+	- {{fbdoc item="keyword" value="KeyPgLoc|LOC"}}
+	- {{fbdoc item="keyword" value="KeyPgLock|LOCK"}}
+	- {{fbdoc item="keyword" value="KeyPgLof|LOF"}}
+	- {{fbdoc item="keyword" value="KeyPgLset|LSET"}}
+	- {{fbdoc item="keyword" value="KeyPgMkdir|MKDIR"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
+	- {{fbdoc item="keyword" value="KeyPgOpen|OPEN"}}
+	- {{fbdoc item="keyword" value="KeyPgOutput|OUTPUT"}}
+	- {{fbdoc item="keyword" value="KeyPgPos|POS"}}
+	- {{fbdoc item="keyword" value="KeyPgPutfileio|PUT #"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}
+	- {{fbdoc item="keyword" value="KeyPgRandom|RANDOM"}}
+	- {{fbdoc item="keyword" value="KeyPgReset|RESET"}}
+	- {{fbdoc item="keyword" value="KeyPgRmdir|RMDIR"}}
+	- {{fbdoc item="keyword" value="KeyPgRset|RSET"}}
+	- {{fbdoc item="keyword" value="KeyPgSeekset|SEEK (Statement)"}}
+	- {{fbdoc item="keyword" value="KeyPgSeekreturn|SEEK (Function)"}}
+	- {{fbdoc item="keyword" value="KeyPgUnlock|UNLOCK"}}
+	- {{fbdoc item="keyword" value="KeyPgWinput|WINPUT #"}}
+	- {{fbdoc item="keyword" value="KeyPgWrite|WRITE (FILE I/O)"}}
+
+==Extended library (file.bi)==
+	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
+
+
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

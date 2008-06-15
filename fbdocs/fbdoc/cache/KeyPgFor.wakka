@@ -1,0 +1,41 @@
+{{fbdoc item="title" value="FOR"}}
+----
+{{fbdoc item="syntax"}}
+	FOR //iterator// = //initial_value// TO //end_value// [ STEP //increment// ]
+		[ //[[KeyPgStatementblock statement block]]// ]
+	NEXT [ //iterator// ]
+
+	//**iterator**//: a variable [[CatPgIdentifier identifier]] that is used to iterate from an initial value to an end value
+	//**initial_value**//: an [[CatPgExpression expression]] that denotes the starting value of the iterator
+	//**end_value**//: an expression used to compare with the value of the iterator
+	//**increment**//: an expression that is added to the iterator after every iteration
+
+{{fbdoc item="desc"}}
+	The FOR statement causes the execution of the [[CatPgStatements statements]] in the following //[[CatPgStatementblock statement block]]// until //iterator// compares **greater than** //end_value//. //iterator// will be incremented the amount of //increment// following each execution of the //statement block//. If an increment is not given, //iterator// will be implicitly incremented by 1.
+
+	If //end_value// is less than //initial_value// then a negative //increment// must be specified or the //statement block// will not execute at all, since //initial_value// compares greater than //end_value//.
+
+	If an [[KeyPgExit EXIT]] FOR statement is encountered inside the //statement block//, the loop is terminated, and execution resumes immediately following the enclosing NEXT statement. If a [[KeyPgContinue CONTINUE]] FOR statement is encountered, the rest of the //statement block// is skipped and execution resumes at the FOR statement.
+
+	Like all control flow statements, the FOR statement can be nested, ie., it can be used in a statement block of another FOR statement.
+
+	After initial evaluation, the //increment// is stored internally, and thus cannot be changed for subsequent executions.
+
+//	**note**: When a negative //increment// is specified, the FOR statement loops until //iterator// compares //less than// //end_value//.
+//
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' TODO: write examples, including negative, and floating point STEP values
+%%
+
+{{fbdoc item="diff"}}
+	- [[KeyPgByref ByRef]] Arguments cannot be used as counters.
+
+{{fbdoc item="see"}}
+	- [[KeyPgContinue CONTINUE]]
+	- [[KeyPgExit EXIT]]
+	- [[KeyPgNext NEXT]]
+	- [[KeyPgFornext FOR...NEXT]]
+
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}

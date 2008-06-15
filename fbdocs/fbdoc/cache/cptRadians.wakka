@@ -1,0 +1,6 @@
+{{fbdoc item="title" value="Radian system of measuring angles"}}
+
+FreeBASIC utilizes the Radian system of measurement in all functions which utilize angles.
+
+In the radian system of measure, a full circle is divided into 2 * pi. 
+

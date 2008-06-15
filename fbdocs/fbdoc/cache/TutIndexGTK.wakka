@@ -1,0 +1,4 @@
+- {{fbdoc item="keyword" value="gtkinit|GTK_INIT"}}
+- {{fbdoc item="keyword" value="gtkmain|GTK_MAIN"}}
+- {{fbdoc item="keyword" value="gtkmainquit|GTK_MAIN_QUIT"}}
+- {{fbdoc item="keyword" value="gtksignalconnect|GTK_SIGNAL_CONNECT"}}

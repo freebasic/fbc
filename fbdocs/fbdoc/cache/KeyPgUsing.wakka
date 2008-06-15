@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="USING (Namespaces)"}}
+----
+Using inherits all members of a specified namespace into the global namespace.
+
+{{fbdoc item="syntax"}}
+	##**Using** //identifier//##
+
+{{fbdoc item="desc"}}
+	The ##Using## command allows all symbols from a given namespace to be accessed without the namespace's name prefix. Unlike ""C++"" but like C#, the ##Namespace## keyword is not needed after ##Using##, because individual symbols cannot be inherited from a namespace. Inheriting a whole namespace can save typing, but sometimes some meaning of the code can be lost, and conflicts with other symbols could be created.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+namespace Sample
+	type T
+		x as integer
+	end type
+end namespace
+
+dim SomeVariable as Sample.T '' Just using the name T would not find the symbol, because it is inside a namespace.
+using Sample '' Now the whole namespace has been inherited into the global namespace.
+dim OtherVariable as T '' This statement is valid now, since T exists without the "Sample." prefix.
+%%##
+
+{{fbdoc item="diff"}}
+	- QB had the ##Using## keyword, but for other purposes. Namespaces did not exist in QB.
+
+{{fbdoc item="see"}}
+	- [[KeyPgNamespace Namespace]]

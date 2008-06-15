@@ -1,0 +1,42 @@
+{{fbdoc item="title" value="#INCLUDE"}}
+----
+Preprocessor statement to include contents of another source file.
+
+{{fbdoc item="syntax"}}##
+	**#include** [once] //"file"//
+	Or
+	'$Include [once]: '//file//'
+##
+{{fbdoc item="desc"}}
+	##**#include**## makes the file given act as if it was placed in code at the point where include was called. ##**#include**## makes the compiler stop compiling the current file and start compiling the include file. Once the compiler has reached the end of the include file, the original source file continues to be compiled.
+
+	This is useful to remove code from a file and separate it into more files. It's useful to have a single file with declarations in a program formed by several modules. You may include files within an include file, although avoid including the original file into itself, this will not produce valid results. The standard include file ends in .bi, and is mainly for declaring subs/functions/variables of a library.
+
+	The ##**Once**## option avoids automatically multiple inclusions of a .bi file in programs formed by many modules.
+
+	##**'$Include:**## is a deprecated form, it exists for compatibility with QuickBasic. It's recommended to use ##**#include**## instead.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' header.bi file
+TYPE FooType
+	Bar AS BYTE
+	Barbeque AS BYTE 
+END TYPE
+DIM Foo as FooType
+%%
+
+%%(qbasic)
+' main.bas file
+#INCLUDE "header.bi"
+Foo.Bar = 1
+Foo.Barbeque = 2
+%%
+
+{{fbdoc item="diff"}}
+	- Only ##'$INCLUDE:## was allowed in QB
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpdefine #define]]##
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

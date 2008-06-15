@@ -1,0 +1,24 @@
+{{fbdoc item="title" value="Error Handling Functions"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgErl|ERL"}}
+	- {{fbdoc item="keyword" value="KeyPgErfn|ERFN"}}
+	- {{fbdoc item="keyword" value="KeyPgErmn|ERMN"}}
+	- {{fbdoc item="keyword" value="KeyPgErr|ERR"}}
+	- {{fbdoc item="keyword" value="KeyPgError|ERROR"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgLocal|LOCAL"}}
+	- {{fbdoc item="keyword" value="KeyPgOnerror|ON ERROR"}}
+	- {{fbdoc item="keyword" value="KeyPgResume|RESUME"}}
+	- {{fbdoc item="keyword" value="KeyPgResumenext|RESUME NEXT"}}
+
+
+>>
+
+
+::c::
+
+{{fbdoc item="see"}}
+	- [[LangErrorHandling Error Handling]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

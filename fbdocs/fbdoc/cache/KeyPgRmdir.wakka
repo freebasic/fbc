@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="RMDIR"}}
+----
+Removes a folder/directory from the file system.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rmdir** ( [[KeyPgByref byref]] //folder// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	RMDIR //folder//
+##
+{{fbdoc item="param"}}
+	##//folder//##
+		The folder/directory to be removed.
+
+{{fbdoc item="desc"}}
+	Removes a folder from the file system. The function will fail if the folder is not empty.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' if a folder called "foo" exists and you want it removed:
+rmdir "foo"
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgShell Shell]]##
+	- ##[[KeyPgChdir Chdir]]##
+	- ##[[KeyPgMkdir Mkdir]]##
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

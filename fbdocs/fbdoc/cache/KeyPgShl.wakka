@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="SHL"}}
+----
+Operator that shifts the bits of an integer left.
+
+{{fbdoc item="syntax"}}##
+	//number// **Shl** //places//
+##
+{{fbdoc item="usage"}}##
+	//result// = //number// **Shl** //places//
+##
+{{fbdoc item="desc"}}
+	##**Shl**## shifts all bits in the argument ##//number//## integer to the left by argument ##//places//##. This has the effect of multiplying the argument ##//number//## by two for each shift given in the argument ##//places//##. Both arguments, ##//numbers//## and ##//places//## are integers. This is easiest to see in a binary number. For example &b0101 ##**Shl**## 1 return the binary number &b01010. In base 10 numbers this looks like 5 SHL 1 and returns 10. Note that ##**Shl**## returns integers only.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'Double a number
+DIM i AS INTEGER
+
+FOR i = 1 TO 10
+	PRINT 1 SHL i
+NEXT i
+SLEEP
+%%
+
+The output would look like:
+##%%(qbasic)
+2
+4
+8
+16
+32
+64
+128
+256
+512
+1024
+%%##
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgShr Shr]]##
+	- [[OpArithmatic Arithmetic Operators]]
+
+**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]

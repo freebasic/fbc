@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="DEFSNG"}}
+----
+Sets a default data type for variables
+
+{{fbdoc item="syntax"}}##
+	**Defsng** //letterrange//[, //letterrange//]...
+##
+{{fbdoc item="desc"}}
+	##**Defsng**## is used to default variables to a ##[[KeyPgSingle Single]]##-precision decimal number that start with a letter in the range given.
+
+	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+
+	This will make 'sNumber' and 'yNumber' a ##[[KeyPgSingle Single]]##-precision decimal number since it is in the range of s-z.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+defsng s-z
+dim sNumber, yNumber
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDefint Defint]]##
+	- ##[[KeyPgDefdbl Defdbl]]##
+	- ##[[KeyPgDeflng Deflng]]##
+	- ##[[KeyPgDefstr Defstr]]##
+	- ##[[KeyPgSingle Single]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

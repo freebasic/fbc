@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="RESET"}}
+----
+Closes all open files.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Reset** ( )
+##
+{{fbdoc item="usage"}}##
+	reset
+##
+
+{{fbdoc item="desc"}}
+Closes all disk files.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+open "test.txt" for output as #1
+print #1, "testing 123"
+reset
+%%
+
+{{fbdoc item="diff"}}
+	-
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgClose Close]]##
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}

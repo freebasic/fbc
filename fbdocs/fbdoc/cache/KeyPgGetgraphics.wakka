@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="GET (GRAPHICS)"}}
+----
+{{fbdoc item="syntax"}}##
+	**Get** [//target//,] [STEP] (//x1//, //y1//)-[STEP](//x2//, //y2//), //arrayname//[(//idx//)]
+##
+{{fbdoc item="param"}}
+	##//target//##
+		is the address of the image buffer to get from
+	##STEP##
+		indicates that, ##(//x1//,  //y1//)## offsets are relative to the current graphics cursor position.	
+	##(//x1//,  //y1//)##
+		upper-left coordinates of image area to get
+	##STEP##
+		indicates that, ##(//x2//,  //y2//)## offsets are relative
+	##(//x2//,  //y2//)##
+		lower-right coordinates of image area to get
+	##//arrayname//##
+		array variable or pointer to memory location to store the new image
+
+{{fbdoc item="desc"}}
+	Statement to save a block of pixels data into an array for later use. Pixel data is taken from the current work page as set by ##[[KeyPgScreenset Screenset]]##, or from the target ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer if specified.
+
+	##(//x1//, //y1//)##  and ##(//x2//, //y2//)## are coordinates of the opposite corners of the graphics blocks to retrieve. The first is the upper-left corner, and the second is the lower-right corner. ##STEP## specifies a pair of coordinates is relative to the last graphics cursor position. ##STEP## before the second pair of coordinates specifies those are relative to the first pair. Pixel data is stored into arrayname, which can be an array (with or without index) or a pointer to a buffer big enough to hold the data (for example a buffer created by the ##[[KeyPgImagecreate Imagecreate]]## function).
+
+	The coordinates of the block are affected by the most recent ##[[KeyPgWindow Window]]## and ##[[KeyPgViewgraphics View (Graphics)]]## statements, and must be both inside the current clipping region set by ##[[KeyPgViewgraphics View (Graphics)]]##, otherwise an illegal function call runtime error will be triggered, and the function will have no effect.
+
+	As previously said, the supplied array must be large enough to hold the block you're going to save; the required array size depends on both the block size in pixels and the current color depth. Use the following formulas to compute the right size in bytes:
+
+	For color depths 1, 2, 4 and 8:
+	##size = 4 + (w * h)##
+	For color depths 15 and 16:
+	##size = 4 + (w * h * 2)##
+	For color depths 24 and 32:
+	##size = 4 + (w * h * 4)##
+
+	Where w and h are the width and height of the graphics block you want to save. Assuming you're working with ##[[KeyPgInteger Integer]]## arrays, and as an ##[[KeyPgInteger Integer]]## in FB is 4 bytes long, to save an 8bpp 32x32 block for example, you'll need an array of ((4 + (32 * 32)) / 4) elements.
+
+	An easier way to create suitable buffers for your images is by using the ##[[KeyPgImagecreate ImageCreate]]## function, you may like to have a look at it.
+
+{{fbdoc item="ex"}}
+	For an example see ##[[KeyPgPutgraphics Put (Graphics)]]##.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPutgraphics Put (Graphics)]]##
+	- ##[[KeyPgGetfileio Get (File I/O)]]##
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgWindow Window]]##
+	- ##[[KeyPgViewgraphics View (Graphics)]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="Temporary Types"}}
+----
+{{fbdoc item="syntax"}}
+	TYPE( a, b, c, ... )
+	TYPE<//typename//>( a, b, c, ... )
+
+{{fbdoc item="desc"}}
+	Used to create a temporary type. It can also be used as an even shorter shortcut than WITH (see below) if you are changing all the records.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+type Example
+	as integer field1
+	as integer field2
+end type
+
+dim ex as Example
+
+'' First method of filling the type
+ex.field1 = 1
+ex.field2 = 2
+
+'' Second method
+with ex
+	.field1 = 1
+	.field2 = 2
+end with
+
+'' Third method, using temporary types
+ex = type( 1, 2 )
+'' This can also be expressed in the following way, if you want your code to be more readable
+ex = type<Example>( 1, 2 )
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgType TYPE...END TYPE]]
+	- [[KeyPgTypeDef TYPE AS]]

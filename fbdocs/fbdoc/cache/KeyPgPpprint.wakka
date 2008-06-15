@@ -1,0 +1,22 @@
+{{fbdoc item="title" value=" #PRINT"}}
+----
+Preprocessor diagnositc directive.
+
+{{fbdoc item="syntax"}}##
+	**#print** //text//
+##
+{{fbdoc item="desc"}}
+	Causes compiler to output ##//text//## to screen during compilation.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#PRINT Now compiling module foo
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPperror #error]]##
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

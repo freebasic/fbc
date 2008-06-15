@@ -1,0 +1,84 @@
+{{fbdoc item="title" value="PUT (FILE I/O)"}}
+----
+{{fbdoc item="syntax"}}##
+	**Put** #//handle// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgInteger Integer]]], //data// [[KeyPgAs As]] [[KeyPgAny Any]] [, //amount// [[KeyPgAs As]] [[KeyPgInteger Integer]]]
+	**Put** #//handle// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgInteger Integer]]], //data()// [[KeyPgAs As]] [[KeyPgAny Any]]
+##
+{{fbdoc item="param"}}
+	##//handle//##
+		The value passed to ##[[KeyPgOpen Open]]## when the file was opened.
+	##//position//##
+		Is the position where the writr must start. If the file was opened ##For Random##, the position is in records, else it is given in bytes. If omitted, writing starts at the present file pointer position.
+	##//data//##
+		Is the buffer where data is read. It can be a numeric variable, a string , an array or a pointer. The operation will try to transfert to disk the complete variable, unless ##//amount//## is given. 
+	##//amount//##
+		Limits ##Put## to write to file ##//amount// * [[KeyPgSizeof Sizeof]](//buffer_datatype//)## bytes of data.  If ##//buffer//## is a pointer, ##//amount//## is mandatory. For other data types, if ##//amount//## is omitted, ##Put## tries to copy the whole buffer.
+
+{{fbdoc item="ret"}}
+	0 on success; nonzero on error.
+
+{{fbdoc item="desc"}}
+	Writes binary data from a buffer variable to a file.
+	##Put## can be used as a function, and will return 0 on success or an error code on failure.	
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' Create a integer variable
+Dim buffer As Integer
+
+' Find the first free file handle.
+f = Freefile
+
+' Open the file "file.ext" for binary usage, using the handle "f".
+Open "file.ext" For Binary As #f
+  buffer=10
+  ' Write 4 bytes from the buffer into the file, using handle "f"
+  ' starting at the beginning of the file (1).
+  Put #f, 1, buffer
+
+' Close the file.  
+Close #f
+
+' End the program.
+End
+%%
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+OPTION EXPLICIT
+Dim As Byte Ptr lpBuffer
+Dim As Integer hFile,Counter,Size
+
+Size=256
+
+lpBuffer=Allocate(Size)
+For Counter=0 to Size-1
+  lpBuffer[Counter]=(Counter and &HFF)
+Next
+
+' Get free file handle.
+hFile = Freefile()
+
+' Open the file "test.bin" in binary writing mode.
+Open "test.bin" For Binary Access Write As #hFile
+  ' Write 256 bytes from the memory pointened by lpBuffer.
+  Put #f, , lpBuffer[0],Size
+' Close the file.  
+Close #hFile
+' Free the allocated memory.
+Deallocate lpBuffer
+' End the program.
+End
+%%
+
+{{fbdoc item="diff"}}
+	- PUT can write full arrays as in VB or, alternatively, write a multiple of the data size from //buffer//'s memory location.
+	- PUT can now be used as a function.
+
+{{fbdoc item="see"}}
+	- [[KeyPgOpen OPEN]]
+	- [[KeyPgClose CLOSE]] 
+	- [[KeyPgGetfileio GET (FILE I/O)]] 
+	- [[KeyPgFreefile FREEFILE]] 
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

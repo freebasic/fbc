@@ -1,0 +1,35 @@
+{{fbdoc item="title" value="__FB_DOS__"}}
+----
+Intrinsic define set by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_DOS__""
+##
+{{fbdoc item="desc"}}
+	Define without a value created at compile time by the DOS version of the compiler
+
+	It can be used to compile parts of the program only if the target is DOS
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#IFDEF __FB_DOS__
+
+  ...instructions only for DOS...
+
+#ELSE
+  
+ ...instructions not for DOS...
+
+#ENDIF 
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB
+
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
+	- ##[[KeyPgDdfbwin32 __FB_WIN32__]]##
+	
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

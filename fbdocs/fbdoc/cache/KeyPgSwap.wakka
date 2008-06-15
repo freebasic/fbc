@@ -1,0 +1,26 @@
+{{fbdoc item="title" value="SWAP"}}
+----
+{{fbdoc item="syntax"}}
+	swap a, b
+
+{{fbdoc item="desc"}}
+	Swaps the value of two variables.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' e.g. using swap to order 2 numbers:
+
+input "input a number: "; a
+input "input another number: "; b
+if a > b then swap a, b
+print "the numbers, in ascending order are:"
+print a, b
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

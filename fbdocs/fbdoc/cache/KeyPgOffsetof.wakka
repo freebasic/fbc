@@ -1,0 +1,48 @@
+{{fbdoc item="title" value="OFFSETOF"}}
+----
+{{fbdoc item="syntax"}}
+	OFFSETOF( //typename//, //fieldname// )
+
+	//typename//
+		Name of the type as defined using the [[KeyPgType TYPE...END TYPE]] statments.
+
+	//fieldname//
+		Name of the field as defined within the type.
+
+{{fbdoc item="desc"}}
+	OFFSETOF will return the location //fieldname// as offset in bytes from the beginning of //typename//.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+Option Explicit
+
+Type MyType
+  x as Single
+  y As Single
+  Union
+	b As Byte
+	i As Integer
+  End Union
+End Type
+
+Print "OffsetOf x = "; offsetof(MyType, x)
+Print "OffsetOf y = "; offsetof(MyType, y)
+Print "OffsetOf b = "; offsetof(MyType, b)
+Print "OffsetOf i = "; offsetof(MyType, i)
+%%
+
+**Output**
+%%OffsetOf x =  0
+OffsetOf y =  4
+OffsetOf b =  8
+OffsetOf i =  8
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic.
+
+{{fbdoc item="see"}}
+	- [[KeyPgType TYPE...END TYPE]]
+	- [[KeyPgSizeof SIZEOF]]
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

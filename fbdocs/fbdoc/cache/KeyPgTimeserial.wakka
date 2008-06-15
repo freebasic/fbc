@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="TIMESERIAL"}}
+----
+Date function to return a [[DtDateSer Date Serial]] for the specified hours, minutes, and seconds
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeSerial""** ( [[KeyPgByval byval]] //hour// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //minute// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //second// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	#include "vbcompat.bi"
+	//result// = **""TimeSerial""**(//hours//, //minutes//, //seconds//)
+##
+{{fbdoc item="param"}}
+	##//hour//##
+		number of hours, in the range 0-23
+	##//minute//##
+		number of minutes
+	##//second//##
+		number of seconds
+
+{{fbdoc item="ret"}}
+	Returns a [[DtDateSer date serial]] containing the time formed by the values in the ##//hours//##, ##//minutes//## and ##//seconds//## parameters.The date serial returned has no integer part.
+
+{{fbdoc item="desc"}}
+
+	##//hours//## must be specified in the range 0-23
+
+	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#include "vbcompat.bi"
+a!=dateserial(2005,11,28)+timeserial(23,15,00)
+print format(a!,"yyyy/mm/dd hh:mm:ss") 
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB. This function appeared in PDS and VBDOS
+
+{{fbdoc item="see"}}
+	- [[DtDateSer Date Serials]]
+	- ##[[KeyPgDateserial DateSerial]]##
+	- ##[[KeyPgTimevalue TimeValue]]##
+	- ##[[KeyPgDatevalue DateValue]]##
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

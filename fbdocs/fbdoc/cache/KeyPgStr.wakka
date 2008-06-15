@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="STR"}}
+----
+Converts a numeric expression to a ##[[KeyPgStringtype String]]##.
+
+{{fbdoc item="syntax"}}##
+	**Str** ( //number// )
+##
+{{fbdoc item="usage"}}##
+	//result// = **Str** ( //number// )
+##
+{{fbdoc item="desc"}}
+	##**Str**## will convert a //number// into a string. 
+
+	For example, ##**Str**(3)## will become "3", or ##**Str**(3.33)## will become "3.33".
+
+	Incidentally, this is the opposite of the ##[[KeyPgVal Val]]## function, which converts a string into a number.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim a as integer
+dim b as string
+a = 8421
+b = str(a)
+print a, b
+%%
+
+{{fbdoc item="diff"}}
+	- STR will not return a space in front of a positive number. In QB, STR(1) would return " 1", but in FB, it will return "1".
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgVal Val]]##
+	- ##[[KeyPgChr Chr]]##
+	- ##[[KeyPgAsc Asc]]##
+
+{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}
+

@@ -1,0 +1,35 @@
+{{fbdoc item="title" value="FIX"}}
+----
+Function to return the integer part of a number.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fix** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Fix** ( //number// )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		the decimal number to truncate
+
+{{fbdoc item="ret"}}
+	Returns the integer part of a number.
+
+{{fbdoc item="desc"}}
+	Equivalent to: 
+		##[[KeyPgSgn Sgn]](//number//) * [[KeyPgInt Int]]([[KeyPgAbs Abs]](//number//))##.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+print fix(1.9) '' will print 1.0, 
+print fix(-1.9) '' will print -1.0
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInt Int]]##
+	- ##[[KeyPgCint Cint]]##
+
+{{fbdoc item="back" value="CatPgMath|Math"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

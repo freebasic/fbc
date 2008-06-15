@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="CUNSG"}}
+----
+Converts an expression to unsigned.
+
+{{fbdoc item="syntax"}}##
+	**Cunsg** ( //expression// )
+##
+{{fbdoc item="usage"}}##
+	//variable// = **Cunsg** ( //expression// )
+##
+	Converts a signed ##//expression//## to an unsigned one, useful to force unsigned behaviour of division or multiplication (including with ##[[KeyPgShl Shl]]## and ##[[KeyPgShr Shr]]##).
+
+	This is the opposite of ##[[KeyPgCsign Csign]]##.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim value as short = -1
+print cunsg(value)  '' will print 65535
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCsign Csign]]##
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+

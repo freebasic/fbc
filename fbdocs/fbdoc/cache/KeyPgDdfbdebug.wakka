@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="__FB_DEBUG__"}}
+----
+Intrinsic define (macro value) set by the compiler.
+
+{{fbdoc item="syntax"}}
+	##""__FB_DEBUG__""##
+
+{{fbdoc item="desc"}}
+	##""__FB_DEBUG__""## indicates if the the generate debug information option '-g' was specified on the command line at the time of compilation.
+
+	Returns non-zero (-1) if the option was specified.  Returns zero (0) otherwise.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#if __FB_DEBUG__ 
+	    #print Debug mode 
+#else 
+	    #print Release mode 
+#endif
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}} 
+	- ##[[KeyPgDdfberr __FB_ERR__]]##
+	- ##[[KeyPgDdfbmt __FB_MT__]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

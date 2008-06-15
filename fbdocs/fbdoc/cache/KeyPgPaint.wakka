@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="PAINT"}}
+----
+Graphics command to fill an area delimited by a border of specified color.
+
+{{fbdoc item="syntax"}}##
+	**Paint** [//target//,] [STEP] (//x//, //y//)[, [//paint//][, [//border_color//]]]
+##
+{{fbdoc item="param"}}
+	##//target//##
+		specifies buffer to draw on.  
+	##STEP##
+		indicates that coordinates are relative
+	##(//x, y//)##
+		coordinates of the pixel on which to start the flood fill (paint).
+	##//paint//##
+		the color attribute or fill pattern
+	##//border_color//	##
+		boundary color for the fill
+
+{{fbdoc item="desc"}}
+	Graphics command to fill an area delimited by a border of specified color. Also known as 'flood-fill' or 'paint bucket', ##**Paint**## can operate on the current work page as set by the ##[[KeyPgScreenset Screenset]]## statement or on the target ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer, if specified. Filling starts at specified ##(//x//,//y//)## coordinates; if ##STEP## is specified, these are relative to the last graphics cursor position. Coordinates are also affected by custom coordinates system set up by ##[[KeyPgWindow Window]]## and/or ##[[KeyPgViewgraphics View (Graphics)]]## statements; clipping set by ##[[KeyPgViewgraphics View]]## also applies.
+	If the ##//paint//## argument is a number, it is assumed a color in the same format used by the ##[[KeyPgColor Color]]## statement, and the region is flood-filled using that color. If ##//paint//## is a ##[[KeyPgString String]]##, the region will be filled using a pattern; the pattern is always 8x8 pixels, and the passed string must hold pixels data in a format dependent on the current color depth. The string holds pattern pixels row by row, and its size should be as follows:
+
+	For color depths 1, 2, 4 and 8:
+	##size = 8 * 8 = 64##
+	For color depths 15 and 16:
+	##size = (8 * 8) * 2 = 128##
+	For color depths 24 and 32:
+	##size = (8 * 8) * 4 = 256##
+
+	If the passed string is smaller, missing pixels will be 0. If the 'paint' argument is omitted, normal filling is performed using the current foreground color set by ##[[KeyPgColor Color]]##. Flood-filling continues until pixels of the specified border color are found; if ##//border_color//## is omitted, current background color is assumed.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' draws a white circle painted blue inside, then waits 3 seconds.
+screen 13
+circle (160, 100), 30, 15
+paint (160, 100), 1, 15
+sleep 3000
+%%
+
+{{fbdoc item="diff"}}
+	- The background color parameter supported by QB is not supported by the FB version.
+	- QB version could not draw onto a GET/PUT buffer.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreengraphics Screen]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+

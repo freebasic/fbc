@@ -1,0 +1,63 @@
+{{fbdoc item="title" value="UNION"}}
+----
+{{fbdoc item="syntax"}}
+	UNION unionName 
+	~symbolName AS DataType
+	~...
+	END UNION
+
+{{fbdoc item="desc"}}
+	Unions are similiar to a Type-End Type structure, except that the elements of a union occupy the same space in memory. The size of the Union is the size of the largest data item. Since they occupy the same space, only a single element can be used. Unions can be nested inside a type structure. See Example.
+{{fbdoc item="ex"}}
+%%(qbasic)
+'define our union
+union AUnion
+	a as ubyte
+	b as integer
+end union
+'define a composite type
+type CompType
+	s as string * 20
+	ui as byte 'Flag to tell us what to use in union.
+	union 
+	    au as ubyte
+	    bu as integer
+	end union
+end type
+
+'Flags to let us know what to use in union.
+'You can only use a single element of a union.
+const IsInteger = 1
+const IsUByte = 2
+
+dim MyUnion as AUnion
+dim MyComposite as CompType
+
+'Can only set one value in union
+MyUnion.a = 128
+
+MyComposite.s = "Type + Union"
+MyComposite.ui = IsInteger 'Tells us this is an integer union
+MyComposite.bu = 1500
+
+print "Union: ";MyUnion.a
+
+print "Composite: ";
+if MyComposite.ui = IsInteger then
+	print MyComposite.bu
+elseif MyComposite.ui = IsUByte then
+	print MyComposite.au
+else
+	print "Unknown type."
+end if
+
+sleep
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgType TYPE...END TYPE]]
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

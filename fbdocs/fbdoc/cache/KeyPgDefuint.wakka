@@ -1,0 +1,27 @@
+{{fbdoc item="title" value="DEFUINT"}}
+----
+Sets a default data type for variables
+
+{{fbdoc item="syntax"}}##
+	**Defuint** //letterrange//[, //letterrange//]...
+##
+{{fbdoc item="desc"}}
+	##**Defuint**## is used to default variables to a [[KeyPgUinteger Uinteger]] number that start with a letter in the range given.
+
+	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+
+this will make 'uNumber' a ##[[KeyPgUinteger Uinteger]]## number since it's first letter starts with u.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+defint u
+dim uNumber
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDefint Defint]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

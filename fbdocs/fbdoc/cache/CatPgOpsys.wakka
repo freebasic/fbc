@@ -1,0 +1,20 @@
+{{fbdoc item="title" value="Operating System Functions"}}----
+
+<<
+	- {{fbdoc item="keyword" value="KeyPgCommand|COMMAND$"}}
+	- {{fbdoc item="keyword" value="KeyPgExec|EXEC"}}
+	- {{fbdoc item="keyword" value="KeyPgExepath|EXEPATH"}}
+	- {{fbdoc item="keyword" value="KeyPgEnviron|ENVIRON"}}
+	- {{fbdoc item="keyword" value="KeyPgFre|FRE"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgRun|RUN"}}
+	- {{fbdoc item="keyword" value="KeyPgSetenviron|SETENVIRON"}}
+	- {{fbdoc item="keyword" value="KeyPgShell|SHELL"}}
+	- {{fbdoc item="keyword" value="KeyPgSystem|SYSTEM"}}
+
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

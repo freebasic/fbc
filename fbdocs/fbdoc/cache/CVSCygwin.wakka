@@ -1,0 +1,95 @@
+At the moment, there is no standard distribution for Cygwin.  Therefore, if you wish to have a Cygwin-specific build of FreeBASIC, you'll have to build it yourself.  You will need to have Cygwin installed with solid development capability, including gcc and perl and cocom and cvs.  nano is recommended for simple & effective text editing.
+
+1.  Get source code via cvs.  Press Enter when prompted for password.
+
+	##cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/fbc login
+	mkdir ~/fbccvs
+	cd ~/fbccvs
+	cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/fbc co ""FreeBASIC""
+	cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/fbc logout##
+
+2.  Copy 0.15b, standard distribution, to ~/FBbin.  I have it installed in conventional fashion, so:
+
+	##mkdir ~/FBbin
+	cd ~/FBbin
+	cp -rv "/cygdrive/c/Program Files/""FreeBASIC"""/* .##
+
+3.  Add ~/FBbin to path
+
+	Add the following to the top of text file ~/.bashrc:
+
+		##PATH=~/FBbin:$PATH
+		export PATH##
+	    
+	then close the Cygwin shell window, and start another.
+
+4.  Copy 0.16b, latest standard, on top of ~/FBbin.  I have it stored in my Cygwin home directory in the distribution zip file, so:
+
+	##cd /tmp/$USER
+	mkdir t
+	cd t
+	unzip ~/FB-v0.16b-mar-04-testing-win32.zip
+	cp -rfv * ~/FBbin
+	cd ..
+	rm -rf t##
+
+5.  Make compiler.
+
+	Set up to make the compiler, and make it.  CFLAGS is set here for a non-debug build, smaller and faster.
+
+	    ##cd ~/fbccvs/""FreeBASIC""/src/compiler
+	    autoreconf
+	    cd ~/fbccvs/""FreeBASIC""/src/compiler/obj/cygwin
+	    chmod +x ../../configure
+	    ../../configure
+	    make CFLAGS=-O2##
+
+6.  Make all libs.
+
+	a.  Set up to make rtlib, and make it.  CFLAGS is set here for a non-debug build, smaller and faster.
+
+	    ##cd ~/fbccvs/""FreeBASIC""/src/rtlib
+	    autoreconf
+	    cd ~/fbccvs/""FreeBASIC""/src/rtlib/obj/cygwin
+	    chmod +x ../../configure
+	    ../../configure
+	    make CFLAGS=-O2 MULTITHREADED=1 ##
+
+	b.  Do the same for rtlibx.
+
+	    ##cd ~/fbccvs/""FreeBASIC""/src/rtlibx
+	    autoreconf
+	    cd ~/fbccvs/""FreeBASIC""/src/rtlibx/obj/cygwin
+	    chmod +x ../../configure
+	    ../../configure
+	    make CFLAGS=-O2 MULTITHREADED=1 ##
+
+	c.  Ditto, gfxlib2.
+
+	    ##cd ~/fbccvs/""FreeBASIC""/src/gfxlib2
+	    autoreconf
+	    cd ~/fbccvs/""FreeBASIC""/src/gfxlib2/obj/cygwin
+	    chmod +x ../../configure
+	    ../../configure
+	    make CFLAGS=-O2##
+
+7.  Replace old .bi's with new.
+
+	##rm -rfv ~/FBbin/inc/*
+	cp -rfv ~/fbccvs/""FreeBASIC""/inc/* ~/FBbin/inc##
+
+8.  Overwrite old compiler and libs with new.
+
+	##cp -fv ~/fbccvs/""FreeBASIC""/src/compiler/obj/cygwin/fbc_new.exe ~/FBbin/fbc.exe
+	cp -fv ~/fbccvs/""FreeBASIC""/src/rtlib/obj/cygwin/*.a ~/FBbin/lib/win32
+	cp -fv ~/fbccvs/""FreeBASIC""/src/rtlibx/obj/cygwin/*.a ~/FBbin/lib/win32
+	cp -fv ~/fbccvs/""FreeBASIC""/src/gfxlib2/obj/cygwin/*.a ~/FBbin/lib/win32##
+
+9.  Copy needed library file to FB linker directory.
+
+	##cp /lib/mingw/libmingwex.a ~/FBbin/lib/win32##
+
+And now, in ~/FBbin, you should have a working fbc.exe with everything it needs.
+
+Recently it has come to light that although the above often works, there can be chicken-and-egg-related problems.  Please see this forum thread for info:
+http://www.freebasic.net/forum/viewtopic.php?p=32260#32260

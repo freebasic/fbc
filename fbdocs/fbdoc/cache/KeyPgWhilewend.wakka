@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="WHILE...WEND"}}
+----
+{{fbdoc item="syntax"}}
+	While [//condition//]
+		[//statements//]
+	Wend
+
+{{fbdoc item="desc"}}
+	While[...] Wend will repeat the //statements// between while and wend, while //condition// is true.
+
+	//condition// may be any valid expression that evaluates to False (zero) or True (non-zero).
+
+	If //condition// is false when the WHILE statement begins, none of the //statements// will be executed.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+DIM x as integer
+While x = 0
+	x = 1
+WEND
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[KeyPgDoloop DO...LOOP]]
+	- [[KeyPgContinue CONTINUE]]
+	- [[KeyPgExit EXIT]]
+
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}

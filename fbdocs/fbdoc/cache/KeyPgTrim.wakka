@@ -1,0 +1,54 @@
+{{fbdoc item="title" value="TRIM"}}----
+
+{{fbdoc item="syntax"}}
+	TRIM[$]( //expression// [, [ANY] //trimset//]] )
+
+{{fbdoc item="desc"}}
+	The function has three forms as follows:
+	
+	TRIM[$](//expression//)
+		Trims spaces (ASCII #32) from the left and right hand side of //expression// and returns the result.
+
+	TRIM[$](//expression//, //trimset//)
+		Trims characters from the left and right hand side of //expression// if they exactly match //trimset//.  Comparisons are case sensitive.  If //trimset// is a zero (0) length string, then no characters will be trimmed from //expression//.
+
+	TRIM[$](//expression//, ANY //trimset//)
+		Trims any character found in //trimset// from the left and right hand side of //expression// and returns the result.  Comparisons are case sensitive.  If //trimset// is a zero (0) length string, then no characters will be trimmed from //expression//.
+
+{{fbdoc item="ex"}}
+~Example #1:
+~~%%(qbasic)
+Dim s as String
+
+s = " ... Stuck in the middle ... "
+
+Print "'" + Trim(s) + "'"
+Print "'" + Trim(s, ANY " .") + "'"
+%%
+~Output
+~~%%
+'... Stuck in the middle ...'
+'Stuck in the middle'
+%%
+~Example #2
+~~%%(qbasic)
+Dim t as String
+t = "BaaBaaaaB With You aaBBaaBaa"
+
+Print "'" + Trim(t, "Baa") + "'"
+Print "'" + Trim(t, ANY "Ba") + "'"
+%%
+~Output
+~~%%
+'aaB With You aaB'
+' With You '		
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic.
+
+{{fbdoc item="see"}}
+	- [[KeyPgLtrim LTRIM]] 
+	- [[KeyPgRtrim RTRIM]]
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="RANDOMIZE"}}
+----
+Seeds the random number generator.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Randomize** ( [[KeyPgByval byval]] //seed// [[KeyPgAs as]] [[KeyPgDouble double]] = -1 )
+##
+{{fbdoc item="usage"}}##
+	RANDOMIZE [ //seed// ]
+##
+{{fbdoc item="param"}}
+	##//seed//##
+		A ##[[KeyPgDouble double]]## seed value for the random number generator.
+
+{{fbdoc item="desc"}}
+	Sets the random seed that helps rnd generate random numbers. For good results, using a seed that is not quite predictable provides good results for random numbers.
+
+	An good example of a non-predictable seed is the ##[[KeyPgDouble double]]## precision number returned by (##[[KeyPgTimer Timer]]##).
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'e.g.
+randomize timer
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgRnd Rnd]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

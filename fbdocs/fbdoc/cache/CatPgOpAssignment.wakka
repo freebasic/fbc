@@ -1,0 +1,7 @@
+{{fbdoc item="title" value="Assignment Operators"}}----
+	- {{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}
+	- {{fbdoc item="keyword" value="KeyPgCombineMulti|*= (Combined Multiplication)"}}
+	- {{fbdoc item="keyword" value="KeyPgCombineDiv|/= (Combined Division)"}}
+	- {{fbdoc item="keyword" value="KeyPgCombineIntDiv|\= (Combined Integer Division)"}}
+	- {{fbdoc item="keyword" value="KeyPgCombineSub|-= (Combined Subtraction)"}}
+	- {{fbdoc item="keyword" value="KeyPgCombineAdd|+= (Combined Addition)"}}

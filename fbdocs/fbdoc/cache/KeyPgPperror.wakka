@@ -1,0 +1,27 @@
+{{fbdoc item="title" value=" #ERROR"}}
+----
+Preprocessor diagnositc directive.
+
+{{fbdoc item="syntax"}}##
+	**#error**  error_text
+##
+{{fbdoc item="desc"}}
+	##**#error**## stops compiling and displays error_text when compiler finds it. 
+	This keyword must be surrounded by an ##[[KeyPgPpif #if]]## <condition> ...##[[KeyPgPpendif #endif]]## so compiler can reach ##**#error**## only if <condition> is meet.
+
+{{fbdoc item="ex"}}
+	%%(qbasic)
+	#IF C=1 
+	#ERROR Bad value of c 
+	#ENDIF
+	%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgPpprint #print]]##
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+

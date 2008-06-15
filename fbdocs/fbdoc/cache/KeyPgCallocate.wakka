@@ -1,0 +1,59 @@
+{{fbdoc item="title" value="CALLOCATE"}}
+----
+Allocates a certain number of bytes from the free store and clears the contents.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Callocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //num_elements// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+##
+
+{{fbdoc item="usage"}}##
+	//ptr_var// = CALLOCATE(//bytes//)
+##
+
+{{fbdoc item="param"}}
+	##//num_elements//##
+		Number of elements to return
+	##//size//##
+		Length in bytes of each element.
+
+{{fbdoc item="ret"}}
+	##//ptr_var//##
+	Pointer to memory allocated.
+
+{{fbdoc item="desc"}}
+	The same as ##[[KeyPgAllocate Allocate]]##, but clears the contents.
+	This function is not part of the FB RTLib, it is an alias for the C lib's //calloc//, so it's not garanteed to be thread safe in all platforms.
+{{fbdoc item="ex"}}
+%%(qbasic)
+' Create an integer pointer.
+Dim p As Integer Ptr
+
+' Allocate cleared space for 10 integers.
+p = cAllocate(10, Len(Integer))
+
+' Fill the array with numbers.
+For fill_p = 0 To 9
+  p[fill_p] = fill_p
+Next
+
+' Display the values.
+For show_p = 0 To 9
+  print p[show_p]
+Next
+
+' Await a keypress.
+Sleep
+
+' Exit program.
+End
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgAllocate Allocate]]##
+	- ##[[KeyPgDeallocate Deallocate]]##
+	- ##[[KeyPgReallocate Reallocate]]##
+
+{{fbdoc item="back" value="CatPgMisc|MISC"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

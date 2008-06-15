@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="RUN"}}
+----
+Transfers execution to an external program.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Run**( //program// [[KeyPgAs as]] [[KeyPgString string]][, //arguments// [[KeyPgAs as]] [[KeyPgString string]]] ) [[KeyPgAs as]] [[KeyPgString integer]]
+##
+{{fbdoc item="usage"}}##
+		Run( //program//[, //arguments//] )
+			##//or//##
+		//result// = Run( //program//[, //arguments//] )
+##
+{{fbdoc item="param"}}
+	##//program//##
+		The program (executable) to transfer control to.
+	##//arguments//##
+		The command-line arguments to be passed to the program. (Requires at least version 0.16)
+
+{{fbdoc item="ret"}}
+	The return value will be negative one (-1) if the program could not be executed.
+
+{{fbdoc item="desc"}}
+	Transfers control over to an external program. When the program exits, execution will return to the system.
+
+{{fbdoc item="ex"}}
+	For example, if the executable "file.exe" exists in the current folder this code will execute it, and exit to system when complete:
+%%(qbasic)
+run "file.exe"
+%%
+
+{{fbdoc item="diff"}}
+	- Run needs the full executable name, including extension (.exe) on platforms that have one (Win32, DOS).
+	- Second form of the syntax is new to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgChain Chain]]##
+	- ##[[KeyPgShell Shell]]##
+	- ##[[KeyPgExec Exec]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

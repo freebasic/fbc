@@ -1,0 +1,21 @@
+{{fbdoc item="title" value="Running"}}----
+
+==Windows version==
+	- A desktop icon and start-menu links should be created by the installer, use them to open the console directly into the directory where FreeBASIC was installed (or follow the DOS guide below if nothing works).
+	- Type "fbc" (without quotes) to see a list of options. To compile the hello example type: "fbc examples\hello.bas", the hello.exe file will be created at the "examples" dir.
+
+
+==Linux version==
+	- If the install.sh script was successfully executed with enough priviledges, a link to the compiler binary should have been created at /usr/bin/fbc. This means that any user can invoke FreeBASIC by simply typing "fbc" on any dir the shell is currently at. If it was not possible to create the link, you may want to alter your PATH environmental variable to be able to invoke the compiler from any directory.
+	- Type "fbc" (without quotes) to see a list of options. To compile the hello example type: "fbc examples/hello.bas", the hello executable file will be created at the "examples" dir.
+
+
+==DOS version==
+	- Open the Command-Prompt if in Windows and change to the dir where the FreeBASIC archive was unpacked. For example, type "cd C:\FreeBASIC" (without quotes) and press Enter, if the archive was expanded to C:\.
+	- Type "fbc" (without quotes) to see a list of options. To compile the hello example type: "fbc examples\hello.bas", the hello.exe file will be created at the "examples" dir.
+	- You can also add the FreeBASIC dir to your PATH environment variable, so you will not have to switch to or type the FB's dir every time you want to compile your project's files.
+
+
+[[CompilerAbout About]] &middot; [[CompilerFeatures Main Features]] &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  [[CompilerInstalling Installing]] &middot; **Running** &middot;  [[CompileCmdLine Using the Command Line]] &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

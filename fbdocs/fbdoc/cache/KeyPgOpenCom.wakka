@@ -1,0 +1,66 @@
+{{fbdoc item="title" value="OPEN COM"}}
+----
+{{fbdoc item="syntax"}}
+	OPEN COM "COMx:[ //baudrate// ][ , //parity// ,[ //data_bits//,[ //stop_bits//,[ //extended_options// ] ] ] ]" as //n//
+
+{{fbdoc item="desc"}}
+	This command opens a serial port of the PC, allowing to send and receive data by using the normal file commands as PRINT #, INPUT#, GET #,...
+	As of version 0.15 it is implemented only in the Win32 version
+	    
+	//baudrate// = 300, 1200, etc ..., default = 300
+
+	//parity//
+	N None
+	E Even (DEFAULT)
+	O Odd
+	S Space
+	M Mark
+	QB quirk: PE   Parity = EVEN, Check parity = ON
+
+	//data_bits// = 5, 6, 7, or 8, default = 7
+
+	//stop_bits// = 1, 1.5, or 2
+	Default value when omitted:
+	Baud rate <= 110, and data bits = 5, defaults to 1.5
+	Baud rate <= 110, and data bits >= 6, defaults to 2
+	Baud rate > 110, defaults to 1
+
+	//extended_options://
+
+	CSn   Set the CTS duration (in ms) (n>=0), 0 = turn off, default = 1000
+	DSn   Set the DSR duration (in ms) (n>=0), 0 = turn off, default = 1000
+	CDn   Set the Carrier Datect duration (in ms) (n>=0), 0 = turn off
+	OPn   Set the "Open Timeout" (in ms) (n>=0), 0 = turn off
+	TBn   Set the "Transmit Buffer" size (n>=0), 0 = default, depends on platform
+	RBn   Set the "Receive Buffer" size (n>=0), 0 = default, depends on platform
+	RS     Suppress RTS detection
+	LF (or ASC)  Communicate in ASCII mode (add LF to every CR) - Win32 doesn't support this one
+	BIN    The opposite of LF and it'll always work
+	PE     Enable "Parity" check
+	DT     Keep DTR enabled after CLOSE
+	FE     Discard invalid character on error
+	ME    Ignore all errors
+	IRn    IRQ number for COM (only supported on DOS)
+
+ All options are optional. The order of baudrate, parity, data_bits, stop_bits is fixed. Any skipped (fixed) option (baudrate, etc...) must be empty.
+
+	//n// is a file handle  that must be free
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+OPEN COM "COM1:9600,N,,2" as 1
+%%
+	Opens COM1 with 9600 baud, no parity, 7 data bits and 2 stop bits.
+
+%%(qbasic)
+OPEN COM "COM1:115200" as 1
+%%
+	Opens COM1 with 115200 baud, "even" parity, 7 data bits and 1 stop bits. 
+
+{{fbdoc item="diff"}}
+	- In QB the syntax was  OPEN  "COMx:[baudrate] [,parity, [data_bits, [stop_bits, [extended_options]]]]"  FOR INPUT|OUTPUT|RANDOM AS [#] n
+
+{{fbdoc item="see"}}
+	- [[KeyPgOpen OPEN]]	
+
+ {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

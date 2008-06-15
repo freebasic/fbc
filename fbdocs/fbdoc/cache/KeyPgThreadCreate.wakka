@@ -1,0 +1,81 @@
+{{fbdoc item="title" value="THREADCREATE"}}
+----
+**Threadcreate** starts a user function in a separate execution thread.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Threadcreate** ( [[KeyPgByval byval]] //proc// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //param// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Threadcreate** ( //proc// )
+		##//Or//##
+	//result// = **Threadcreate** ( //proc//, //param// )
+##
+{{fbdoc item="param"}}
+	##//proc//##
+		A pointer to the ##[[KeyPgSub SUB]]## intended to work as a thread.
+	##//param//##
+		Optional integer argument for the ##[[KeyPgSub SUB]]## pointed to by //proc// (it can be an integer, or a pointer to a structure or an array if more arguments are needed). //param// is passed BYVAL so it can't be used to return a result.
+
+{{fbdoc item="ret"}}
+	**Threadcreate** returns an ##[[KeyPgInteger integer]]## handle to the thread created. If the handle is 0, the thread creation has failed.
+
+{{fbdoc item="desc"}}
+	The user function is started as a thread executes in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or  using the waiting times in the main program.
+
+	NOTE: The DOS version of FreeBasic does not allow for threads, as the OS does not support them.
+
+	Before closing, a program must wait for the termination of all the threads it has launched, see ##[[KeyPgThreadWait Threadwait]]##.
+
+	To avoid different threads simultaneous access to shared resources, FB implements Mutexes, flags that can be "owned" by a single thread when doing a critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim shared terminate=0
+
+sub mythread (i)
+while 1
+  b=0
+  while b<80
+	print "*";
+	a=0
+	 while a<&h7ffffff
+	   a+=1
+	wend
+	b+=1
+  wend
+  if terminate=1 then exit sub
+wend
+end sub
+
+print "Main program prints dots"
+print "Thread prints asterisks"
+i=threadcreate(@mythread,0)
+print "Thread launched";
+b=0
+  while b<80
+
+	a=0
+	 while a<&h3
+	    print ".";
+	   a+=1
+	wend
+	b+=1
+  wend
+terminate=1
+print "Terminate launched";
+threadwait (i)
+print "Thread terminated"
+sleep
+%%
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgThreadWait Threadwait]]##
+	- ##[[KeyPgMutexCreate Mutexcreate]]##
+	- ##[[KeyPgMutexLock Mutexlock]]##
+	- ##[[KeyPgMutexUnlock Mutexunlock]]##
+	- ##[[KeyPgMutexDestroy Mutexdestroy]]##
+
+{{fbdoc item="back" value="CatPgThreading|THREADING"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

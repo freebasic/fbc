@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="LPOS"}}
+----
+Returns the number of characters sent to the printer port in the last ##[[KeyPgLprint Lprint]]## statement.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lpos** ( [[KeyPgByval byval]] //printer// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = LPOS(//printer//)
+##
+{{fbdoc item="param"}}
+	##//printer//##
+		Either 0, 1, 2 or 3.  Represents the printer port (LPT#)
+
+{{fbdoc item="ret"}}
+	Returns the number of characters sent.
+
+{{fbdoc item="desc"}}
+	Used to determine, from the last ##[[KeyPgLprint Lprint]]##, how many characters were sent to the printer port.
+
+{{fbdoc item="ex"}}
+%%(qbasic) DIM test AS STRING = "LPrint Example test"
+
+PRINT "Sending '" + test + "' to LPT1 (default)"
+LPRINT test
+PRINT "LPT1 last recieved " + LPOS(1) + " characters" + chr$(10) + chr$(13) + "String sent was " + len(test) + " characters long"
+
+SLEEP%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLprint Lprint]]##
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

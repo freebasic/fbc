@@ -1,0 +1,44 @@
+{{fbdoc item="title" value="ON ERROR"}}
+----
+Error handling statement to set the current error handler.
+
+{{fbdoc item="syntax"}}##
+	**On [Local] Error Goto** //label//
+##
+{{fbdoc item="usage"}}##
+	**On [Local] Error Goto** //label//
+##
+{{fbdoc item="param"}}
+	##//label//##
+		label to jump to when error occurs
+
+{{fbdoc item="desc"}}
+	##[[KeyPgOnerror On Error]]## triggers a jump to an error handler when an error occurs. 
+
+	If ##[[KeyPgLocal Local]]## is not used the handler must be in the main part of the module. Using ##[[KeyPgLocal Local]]## allows to have the error handler inside the ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]## where the ##**On Error**## is located.
+	
+	##**On Error GOTO 0**## deactivates the current error handler.
+
+	The use of QB-like error handling requires compilation with switch -e , -ex or -exx activated.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+on error goto errorhandler
+error 24 '' simulate an error
+print "this message will not be seen"
+
+errorhandler:
+print "Error #"; err; "!"
+end
+%%
+
+{{fbdoc item="diff"}}
+	- QB has no LOCAL clause and requires the label to be in the main part of the module. 
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgError Error]]##
+	- ##[[KeyPgLocal Local]]##
+	- ##[[KeyPgErr Err]]##
+
+{{fbdoc item="back" value="CatPgError|ERROR"}}
+

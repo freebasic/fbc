@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="MKSHORT$"}}
+----
+Does a binary copy from a ##[[KeyPgShort short]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 2 bytes.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkshort** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+##
+{{fbdoc item="usage"}}##
+~//result// = MKSHORT(//number//)
+##
+{{fbdoc item="param"}}
+	##//number//##
+		A ##[[KeyPgShort short]]## variable to binary copy to a ##[[KeyPgStringtype string]]##.
+
+{{fbdoc item="ret"}}
+	Returns a ##[[KeyPgStringtype string]]## with a binary copy of the ##[[KeyPgShort short]]##.
+
+{{fbdoc item="desc"}}
+~Does a binary copy  from a SHORT variable to a string, setting its length to 2 bytes. The resulting string can be read back to a SHORT by CVSHORT
+~This function is useful to write numeric values to buffers without using a TYPE definition.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim a as short
+a=4534
+b$=mkshort$(a)
+print a, cvshort(b$)
+sleep
+%%
+
+{{fbdoc item="diff"}}
+~- In QBasic this function is called MKI$.
+
+{{fbdoc item="see"}}
+~- ##[[KeyPgCvshort Cvshort]]##
+
+{{fbdoc item="back" value="CatFunctions|Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

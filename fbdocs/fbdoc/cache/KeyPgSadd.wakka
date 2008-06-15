@@ -1,0 +1,25 @@
+{{fbdoc item="title" value="SADD"}}
+----
+{{fbdoc item="syntax"}}
+sadd (stringvar$)
+
+{{fbdoc item="desc"}}
+Returns the memory offset of the string data in the string variable.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+print sadd(s$)
+s$ = "hello"
+print sadd(s$)
+s$ = "abcdefg, 1234567, 54321"
+print sadd(s$)
+sleep
+%%##
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- [[KeyPgVarptr VARPTR]]
+
+{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}

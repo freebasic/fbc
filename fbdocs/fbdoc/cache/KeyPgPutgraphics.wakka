@@ -1,0 +1,121 @@
+{{fbdoc item="title" value="PUT (GRAPHICS)"}}
+----
+Graphics statement to copy an image on to another image or screen
+
+{{fbdoc item="syntax"}}##
+	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ] [ ,//method// [ ,( //alpha//|//blender// ) ] ]
+##
+{{fbdoc item="param"}}
+	##//target//##
+		is the address of the buffer where the image is to be drawn. If it's omitted, the image gets blitted to screen. See below.
+	##STEP##
+		indicates that, ##(//x//,  //y//)## offsets are relative to the current graphics cursor position.	
+	##(//x//,  //y//)##
+		specify offsets from the upper-left corner of the destination buffer, or screen, that the image gets drawn to. 
+	##//source//##
+		is the address of the buffer of the image to be drawn. See below.
+	##(//x1//, //y1//)-(//x2//,//y2//)##
+		specify a rectangular area in the source buffer to draw. If omitted, the entire buffer is drawn.
+	##//method//##
+		specifies the method used to draw the image to the destination buffer, and can be any one of the following (the default method is XOR):
+
+		Background-independent methods
+			##PSET## : Source pixel values are copied without modification.
+			##PRESET## : Source pixel values are 1's-complement negated before being copied.
+			##TRANS## : Source pixel values are copied without modification. Does not draw source pixels of mask color. See below.
+		Background-dependent methods
+			##AND## : Destination pixels are bitwise ANDed with source pixels. See below.
+			##OR## : Destination pixels are bitwise ORed with source pixels. See below.
+			##XOR## : Destination pixels are bitwise XORed with source pixels. See below.
+			##ALPHA## : Source is blended with a translucency factor specified in the alpha parameter. Does not draw source pixels of mask color. See below.
+			##CUSTOM## : Uses a user-defined function to perform blending the source with the destination. See below.
+
+	##//alpha//## 
+		is a 0-255 value specifying the opacity of an ALPHA method blit.
+	##//blender//## 
+		specifies the address of a user-defined function to be called in a CUSTOM method blit. See below.
+
+{{fbdoc item="desc"}}
+	The ##**Put**## statement can be used to draw an image onto another image. The 'x' and 'y' coordinates are affected by the last call to the ##[[KeyPgViewgraphics View]]## and ##[[KeyPgWindow Window]]## statements, and plotted image respects the current clipping region set by last call to the ##[[KeyPgViewgraphics View]]## statement. The source image is clipped if it is drawn outside the destination buffer.
+
+	**Valid Image Buffers**
+		The ##//source//## and ##//target//## image buffers must be valid image buffers. Valid image buffers are created using the ##[[KeyPgGetgraphics Get]]## or ##[[KeyPgImagecreate ImageCreate]]## statements. Valid image buffers can be specified in a ##**Put**## statement using an array name with optional index, or a pointer with optional index.
+
+	**Drawing methods**
+		Depending on the method used, the existing pixel values in the destination buffer are used to calculate the pixel values that are actually drawn. The ##PSET##, ##PRESET## and ##TRANS## methods do not use the destination buffer for calculating final pixel values, while the ##AND##, ##OR##, ##XOR## and ##ALPHA## methods do. Images that are drawn with these latter methods will look differetly depending on the content of the destination buffer.
+
+	**Different pixel formats**
+		The pixel format of an image buffer must be compatible with the current gfx mode color depth; that is, if you acquire an image using ##[[KeyPgGetgraphics Get]]## and you later change screen mode via the ##[[KeyPgScreengraphics Screen]]## statement, the image data may not be valid in the new gfx mode, and may produce undesired results.
+
+		The ##AND##, ##OR## and ##XOR## methods produce different results depending on the current color depth, as pixels are stored in different formats; see Internal pixel formats for details. 
+
+	**Mask Color**
+		The ##TRANS## and ##ALPHA## methods do not draw pixels in the source image that use the mask color. The mask color depends on the current color depth: in paletted modes (up to 8 bpp) it is equal to color index 0, while in hi/truecolor modes (15, 16, 24 and 32 bpp) it is equal to color &HFF00FF (bright pink). 
+
+	**Alpha drawing**
+		The ##ALPHA## method can be used in two modes. If the ##//alpha//## parameter is specified, this is used to specify the level of translucency for the whole image to be drawn; a value of 0 will draw a completely transparent image, whereas a value of 255 will draw a completely solid one. This mode works only in hi/truecolor modes (15, 16, 24 and 32 bpp). If the ##//alpha//## parameter is omitted, the ##ALPHA## method will take the alpha level value on a per-pixel basis, allowing to draw images with an alpha channel (certain parts of the image can be made more or less translucent than others). This mode works only in 32 bpp mode, as this is the only color depth that allows for an embedded alpha value in each pixel.
+
+	**Custom Blend Function**
+		The ##CUSTOM## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will recieve the source and destination pixel values. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
+
+		##[[KeyPgDeclare declare]] [[KeyPgFunction function]] //identifier// ( [[KeyPgByval byval]] //source_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //destination_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]]) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]##
+
+			##//identifier//## is the name of the function. Can be anything.
+			##//source_pixel//## is the current pixel value of the source image.
+			##//destination_pixel//## is the current pixel value of the destination image.
+
+{{fbdoc item="ex"}}
+	The following example shows how to allocate memory for an image, draw that image using various methods including a custom blender, and free the memory for the image:
+##%%(qbasic)option explicit
+declare function checkered_blend( byval src as uinteger, byval dest as uinteger ) as uinteger
+
+   screen 14, 16                                   '' set 320x240x16 gfx mode
+   
+   dim as any ptr sprite
+   sprite = ImageCreate( 32, 32 )                  '' allocate memory for 32x32 sprite
+   
+   line sprite, ( 0, 0 )-( 31, 31 ), &HFF0000, BF  '' draw a sprite ...
+   line sprite, ( 0, 0 )-( 31, 31 ), &H00FF00, B
+   line sprite, ( 8, 8 )-( 23, 23 ), &HFF00FF, BF
+   line sprite, ( 1, 1 )-( 30, 30 ), &H0000FF
+   line sprite, ( 30, 1 )-( 1, 30 ), &H0000FF
+   
+   cls
+   dim as integer i : for i = 0 to 63              '' draw the background
+	  line( i,0 )-( i,240 ), rgb( i * 4, i * 4, i * 4 )
+   next i
+   
+   '' demonstrate all drawing methods ...
+   put( 8,16 ), sprite, pset : locate 4,12 : print "<- pset"
+   put step( 16,24 ), sprite, preset : locate 7,12 : print "<- preset"
+   put step( -16,24 ), sprite, and : locate 10,12 : print "<- and"
+   put step( 16,24 ), sprite, OR : locate 13,12 : print "<- or"
+   put step( -16,24 ), sprite, XOR : locate 16,12 : print "<- xor"
+   put step( 16,24 ), sprite, TRANS : locate 19,12 : print "<- trans"
+   put step( -16,24 ), sprite, ALPHA, 96 : locate 22,12 : print "<- alpha"
+   put step( 16,24 ), sprite, CUSTOM, @checkered_blend : locate 25,12 : print "<- custom"
+   
+   ImageDestroy( sprite )                          '' free allocated memory for sprite
+   sleep : end 0
+
+'' custom blender function: chequered put
+function checkered_blend( byval src as uinteger, byval dest as uinteger ) as uinteger
+   static CNT
+   dim as uinteger pixel = iif(((CNT and 4)shr 2) XOR ((CNT and 128)shr 7),src,dest) 
+   CNT += 1
+   return pixel
+end function%%##
+
+{{fbdoc item="diff"}}
+	- The ##TRANS##, ##ALPHA## and ##CUSTOM## methods are new to FreeBASIC.
+	- In QB, the destination was always the screen.
+	- QB throws a run-time error instead of clipping out of bounds images
+	- In QB, only arrays you be specified as source images
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgGetgraphics Get (Graphics)]]##
+	- ##[[KeyPgPutfileio Put (File I/O)]]##
+	- ##[[KeyPgImagecreate ImageCreate]]##
+	- ##[[KeyPgAlphaGfx Alpha]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

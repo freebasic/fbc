@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="PRESERVE"}}
+----
+{{fbdoc item="syntax"}}
+	redim PRESERVE array(...) as data type
+
+{{fbdoc item="desc"}}
+	Used with [[KeyPgRedim REDIM]] so that when an array is resized, data is not reset but is preserved. This means when the array is enlarged that only new data is reset, while the old data remains the same.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+redim array(1 to 3) as integer
+array(1) = 10
+array(2) = 5
+array(3) = 8
+redim preserve array(2 to 10)
+for i = 2 to 10
+print "array("; i; ") = "; array(i)
+next
+%%
+
+{{fbdoc item="diff"}}
+	- PRESERVE wasn't supported until PDS 7.1
+
+{{fbdoc item="see"}}
+	- [[KeyPgCommon COMMON]]
+	- [[KeyPgDim DIM]]
+	- [[KeyPgErase ERASE]]
+	- [[KeyPgExtern EXTERN]]
+	- [[KeyPgLbound LBOUND]]
+	- [[KeyPgRedim REDIM]]
+	- [[KeyPgPreserve PRESERVE]]
+	- [[KeyPgShared SHARED]]
+	- [[KeyPgStatic STATIC]]
+	- [[KeyPgUbound UBOUND]]
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

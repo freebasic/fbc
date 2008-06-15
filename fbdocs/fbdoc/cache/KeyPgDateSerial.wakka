@@ -1,0 +1,42 @@
+{{fbdoc item="title" value="DATESERIAL"}}
+----
+Date function to return [[DtDateSer Date Serial]] for the specified year, month, and day.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateSerial""** ( [[KeyPgByval byval]] //year// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //month// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //day// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	#include "vbcompat.bi"
+	//date_serial// = **""DateSerial""**(//year//,//month//,//day//)
+##
+{{fbdoc item="param"}}
+	##//year//##
+		the year
+	##//month//##
+		the month of the year
+	##//day//##
+		the day of the month
+
+{{fbdoc item="ret"}}
+	Returns a [[DtDateSer date serial]] containing the date formed by the values in the ##//year//##, ##//month//## and ##//day//## parameters.The date serial returned has no decimal part.
+
+{{fbdoc item="desc"}}
+	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#include "vbcompat.bi"
+a!=dateserial (2005,11,28)
+print format(a!,"yyyy/mm/dd hh:mm:ss") 
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB. This function appeared in PDS and VBDOS
+
+{{fbdoc item="see"}}
+	- [[DtDateSer Date Serials]]
+	- ##[[KeyPgDateserial DateSerial]]##
+	- ##[[KeyPgTimevalue TimeValue]]##
+	- ##[[KeyPgDatevalue DateValue]]##
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

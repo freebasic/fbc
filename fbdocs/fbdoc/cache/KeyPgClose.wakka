@@ -1,0 +1,53 @@
+{{fbdoc item="title" value="CLOSE"}}
+----
+Stream I/O function to terminate access to a device.
+
+{{fbdoc item="syntax"}}##
+	**Close** [[#]//slot//][,[#]//slot//]....
+##
+{{fbdoc item="param"}}
+	##//slot//##
+		list of file slots to close
+
+{{fbdoc item="desc"}}
+	Closes the files whose slot numbers are passed as arguments. If an unused slot number is passed, **Close** returns an error.
+
+	**Close** without arguments closes all the files presently opened.
+	Exiting a program thru an ##[[KeyPgEnd End]]## statement does implicitly close all files.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+
+' Create a string and fill it.
+Dim buffer As String
+buffer = "Hello World within a file."
+
+' Find the first free file handle.
+f = Freefile
+
+' Open the file "file.ext" for binary usage, using the handle "f".
+Open "file.ext" For Binary As #f
+
+  ' Place our string inside the file, using handle "f".
+  Put #f, , buffer
+
+' Close the file.  We could also do 'Close #f', but it's only necessary if more than one handle is open.
+Close
+
+
+' End the program. (Check the file "file.ext" upon running to see the output.)
+End
+
+%%
+
+{{fbdoc item="diff"}}
+	- None 
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgPutfileio Put (File I/O)]]## 
+	- ##[[KeyPgGetfileio Get (File I/O)]]##
+	- ##[[KeyPgFreefile Freefile]]##
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}
+

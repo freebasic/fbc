@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="VA_ARG"}}
+----
+{{fbdoc item="syntax"}}
+	//Current Argument// = VA_ARG ( //argument list//, //type// )
+
+{{fbdoc item="desc"}}
+	The VA_ARG macro allows the use of a variable number of arguments within a function. VA_ARG returns the current argument in the list, //argument list//, with an expected data type of //type//. Before VA_ARG can be used, it must be Initialized with the command [[KeyPgVaFirst VA_FIRST]]. Unlike the C macro with the same name, VA_ARG does not automatically increment //argument list// to the next argument within the list. The command [[KeyPgVaNext VA_NEXT]] must be used for this purpose.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+FUNCTION Avg cdecl (Count as INTEGER, ... ) AS DOUBLE
+	DIM ARG AS ANY PTR 
+	DIM SUM AS DOUBLE = 0
+	DIM i AS INTEGER
+	
+	ARG = VA_FIRST()
+
+	FOR i = 1 TO COUNT
+	    SUM += VA_ARG(ARG, DOUBLE)
+	    ARG = VA_NEXT(ARG,DOUBLE)
+	NEXT i
+	RETURN SUM/COUNT
+end function
+
+PRINT AVG (4, 3.4,5.0,3.2,4.1)
+PRINT AVG (2, 65.2,454.65481)
+
+SLEEP
+%%##
+
+The output would look like:
+##%%(qbasic)
+3.925
+259.927405
+%%##
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- [[KeyPgDots ...]]
+	- [[KeyPgVaFirst VA_FIRST]]
+	- [[KeyPgVaNext VA_NEXT]]
+
+{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}  {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

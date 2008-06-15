@@ -1,0 +1,22 @@
+{{fbdoc item="title" value="Installing"}}----
+
+==Windows version==
+	- Follow the installer instructions, don't forget to select which external libraries to install, some are not selected by default.
+
+
+==Linux version==
+	- Unpack the tar gzip archive to any folder.
+	- Run **"sudo ./install.sh -i"** (without quotes) from that directory to install the binaries, libraries and include files into the system as root, at the default location of /usr/share/freebasic. A link to the compiler binary will be created at /usr/bin/fbc. If you don't have root priviledges, you can also install into a custom directory; run the install.sh script with no arguments for more info. Be warned though that installing with no root priviledges will prevent the script from installing a link to the binary into /usr/bin/fbc.
+
+	(Note: to uninstall FreeBASIC, you can run "install.sh -u")
+
+
+==DOS==
+	- Unpack the zip archive to any folder you want, but give preference to one with no white-spaces in its name and not longer than 8 characters. The directory structure as used inside the archive must be preserved.
+
+	(Note: if you are installing the DOS version over the Windows one or vice-versa, rename the fbc.exe file of the previous installation to fbc-win.exe or such, or it will be overwritten by the new one.)
+
+
+[[CompilerAbout About]] &middot; [[CompilerFeatures Main Features]] &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  **Installing** &middot; [[CompilerRunning Running]] &middot;  [[CompileCmdLine Using the Command Line]] &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

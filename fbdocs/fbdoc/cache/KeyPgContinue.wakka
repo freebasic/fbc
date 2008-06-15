@@ -1,0 +1,35 @@
+{{fbdoc item="title" value="CONTINUE"}}
+----
+{{fbdoc item="syntax"}}
+	CONTINUE {do | for | while}
+
+{{fbdoc item="desc"}}
+	Skips all code until the end clause of a loop structure, i.e. [[KeyPgDoloop DO...LOOP]], [[KeyPgFornext FOR...NEXT]], or a [[KeyPgWhilewend WHILE...WEND]] block, then executes the limit condition check. In the case of a For...Next, the variable is incremented according to the STEP specified.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+Dim As Integer o
+
+? "Here are odd numbers 0-10!"
+?
+For o = 0 To 10
+
+  If ( o And 1 ) = 0 Then 
+	Continue For
+	
+  End If
+  
+  ? o
+  
+Next
+Sleep
+
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- [[KeyPgExit EXIT]]
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

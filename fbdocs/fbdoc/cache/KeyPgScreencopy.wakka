@@ -1,0 +1,42 @@
+{{fbdoc item="title" value="SCREENCOPY"}}
+----
+Statement to copy the contents of a graphical page into another graphical page.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screencopy** ( [[KeyPgByval byval]] //frompage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 , [[KeyPgByval byval]] //topage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
+##
+{{fbdoc item="usage"}}##
+	**Screencopy** [//from_page//][, //to_page//]
+##
+{{fbdoc item="param"}}
+	##//frompage//##
+		page to copy from
+	##//topage//##
+		page to copy to
+
+{{fbdoc item="desc"}}
+	##//from_page//## is the page to copy from. If you omit this argument, the current work page is assumed.
+
+	##//to_page//## is the page to copy to. If you omit this argument, the currently visible page is assumed.
+
+	Page numbers range from 0 to the num_pages specified when setting the graphics mode minus 1 
+
+	You can use this function to add a double buffer to your graphics. Any SCREEN mode supports this function; you must supply valid page numbers otherwise ##**Screencopy**## will have no effect. This function has two aliases: ##[[KeyPgFlip Flip]]## and ##[[KeyPgPcopy PCopy]]##.
+
+Example:
+	See ##[[KeyPgScreenset Screenset]]## example.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- New to FB. QB had PCOPY, doing the same function.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgScreenres Screenres]]##
+	- ##[[KeyPgScreenset Screenset]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}

@@ -1,0 +1,16 @@
+{{fbdoc item="title" value="User Input Functions"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgGetjoystick|GETJOYSTICK"}}
+	- {{fbdoc item="keyword" value="KeyPgGetmouse|GETMOUSE"}}
+	- {{fbdoc item="keyword" value="KeyPgMultikey|MULTIKEY"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgInkey|INKEY$""}}
+	- {{fbdoc item="keyword" value="KeyPgInput|INPUT"}}
+	- {{fbdoc item="keyword" value="KeyPgLineinput|LINE INPUT"}}
+
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

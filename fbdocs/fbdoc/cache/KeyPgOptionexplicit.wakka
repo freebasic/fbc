@@ -1,0 +1,19 @@
+{{fbdoc item="title" value="OPTION EXPLICIT"}}----
+{{fbdoc item="syntax"}}
+	OPTION EXPLICIT
+
+{{fbdoc item="desc"}}
+	Requires all variables to be declared with DIM, REDIM  or STATIC before they can be used. By default this option is off. OPTION EXPLICIT requires more typing but can help detect mistyped variables.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+option explicit
+a = 1 '' this will fail with variable not declared
+%%
+	
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+
+{{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

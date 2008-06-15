@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="STATIC"}}
+----
+{{fbdoc item="syntax"}}
+	    STATIC //symbolname//[( //subscripts// )] [AS [[DataType DataType]]] [, ...]
+
+{{fbdoc item="desc"}}
+	Declares variables and arrays which become local to a procedure and preserves values between procedure calls (the values are not destroyed when the procedure is ended).
+	The keyword static can be used too at the end of a FUNCTION /SUB header. This is a shortcut that makes STATIC all local variables defined in the function.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+declare sub IsStatic
+'Call the sub the first time
+IsStatic
+'Call it again.
+IsStatic
+
+sub IsStatic
+	static var as integer
+	var += 1
+	Print "In sub ";var;" times."
+end sub
+
+'output
+'In sub  1 times.
+'In sub  2 times.
+%%
+
+{{fbdoc item="diff"}}
+	- STATIC can be used with arrays too, the same way as DIM or REDIM.
+
+{{fbdoc item="see"}}
+	- [[KeyPgCommon COMMON]]
+	- [[KeyPgDim DIM]]
+	- [[KeyPgErase ERASE]]
+	- [[KeyPgExtern EXTERN]]
+	- [[KeyPgLbound LBOUND]]
+	- [[KeyPgRedim REDIM]]
+	- [[KeyPgPreserve PRESERVE]]
+	- [[KeyPgShared SHARED]]
+	- [[KeyPgDynamic $DYNAMIC]]
+	- [[KeyPgStatic STATIC]]
+	- [[KeyPgUbound UBOUND]]
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

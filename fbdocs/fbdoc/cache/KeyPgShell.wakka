@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="SHELL"}}
+----
+Sends a command to the system command interpreter.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Shell**( //command// [[KeyPgAs as]] [[KeyPgString string]] )
+##
+{{fbdoc item="usage"}}##
+		Shell( //command// )
+##
+{{fbdoc item="param"}}
+	##//command//##
+		A string specifying the command to send to the command interpreter.
+
+{{fbdoc item="desc"}}
+	Program execution will be suspended until the command interpreter exits.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'e.g. for windows:
+shell "dir c:*.*"
+
+'e.g. for linux:
+shell "ls"
+%%
+
+{{fbdoc item="diff"}}
+	- QB allowed SHELL on its own without a "command" argument which caused a default command shell to be started.  Execution in the main program would suspend until exit from the command shell.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgExec Exec]]##
+	- ##[[KeyPgRun Run]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

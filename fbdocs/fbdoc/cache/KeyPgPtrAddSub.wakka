@@ -1,0 +1,48 @@
+{{fbdoc item="title" value="Pointer Arithmetics"}}----
+
+{{fbdoc item="syntax"}}
+	pointer_variable + integer_expression 
+	pointer_variable - integer_expression
+
+{{fbdoc item="desc"}}
+~Pointer addition / substraction allows to move the place where a pointer points to . The resulting memory position will be pointer_variable +/- (integer_value* SIZEOF(pointed variable))
+
+~Is up to the user to ensure the resulting pointer points to meaningful data.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+Option Explicit 'This ensures we can only have declared variables
+
+Dim a(10) As Integer
+Dim pa As Integer Ptr
+Dim i As Integer
+
+
+For i = 0 To 10
+	a(i) = i 'Here we place the numbers 0 through 10 into our integer array.
+Next i
+
+pa = @a(0) 'Here we set our pointer pa to look at the first element of a.
+
+For i = 0 To 10
+	Print *pa;  'Here we print the current value at the memory address pa is looking at.
+	pa += 1     'Here we tell the memory address to move ahead by one.
+	'Therefore we will move pa 11 times
+	'and we will print pa(0),pa(1),pa(2) etc...
+Next i
+%%
+
+<<
+012345678910
+<<
+::c::
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- [[KeyPgAt (@) Address of]]
+	- [[KeyPgValOf (*) Value of]]
+	
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

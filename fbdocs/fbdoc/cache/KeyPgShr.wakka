@@ -1,0 +1,49 @@
+{{fbdoc item="title" value="SHR"}}
+----
+Operator that shifts the bits of an integer arithmetically right.
+
+{{fbdoc item="syntax"}}##
+	//number// **Shr** //places//
+##
+{{fbdoc item="usage"}}##
+	//result// = //number// **Shr** //places//
+##
+{{fbdoc item="desc"}}
+	##**Shr**## shifts all bits in the argument ##//number//## integer to the right by argument ##//places//##. This has the effect of dividing the argument ##//number//## by two for each shift given in the argument ##//places//##. Both arguments, ##//numbers//## and ##//places//## are integers. This is easiest to see in a binary number. For example &b0101 ##**Shr**## 1 return the binary number &b010. In base 10 numbers this looks like 5 ##**Shr**## 1 and returns 2. Note that ##**Shr**## returns integers only.
+
+	If the ##//number//## variable is signed, the sign bit is recopied into its place after the shift.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'Half a number
+DIM i AS INTEGER
+
+FOR i = 1 TO 10
+	PRINT 1000 SHR i
+NEXT i
+SLEEP
+%%
+
+The output would look like:
+##%%(qbasic)
+500
+250
+125
+62
+31
+15
+7
+3
+1
+0
+%%##
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgShl Shl]]##
+	- [[OpArithmatic Arithmetic Operators]]
+
+**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]
+

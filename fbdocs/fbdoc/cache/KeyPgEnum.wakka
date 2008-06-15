@@ -1,0 +1,41 @@
+{{fbdoc item="title" value="ENUM"}}
+----
+{{fbdoc item="syntax"}}
+	enum [//symbolname//]
+		//symbolname// [= //expression//] [, ...]
+		...
+	end enum
+
+{{fbdoc item="desc"}}
+	Enum (short for enumeration) creates a numbered list with items that correspond to discrete values. If no initial value is given, the first item will be set to 0.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+enum MyEnum
+	option1 = 1
+	option2
+	option3
+end enum
+
+dim MyVar as MyEnum
+
+MyVar = option1
+
+select case MyVar
+	case option1
+		print "Option 1"
+	case option2
+		print "Option 2"
+	case option3
+		print "Option 3"
+end select
+
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}}
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

@@ -1,0 +1,33 @@
+{{fbdoc item="title" value="WCHR"}}
+----
+{{fbdoc item="syntax"}}
+//wstring//=WCHR( //expression// [, ...] )
+
+{{fbdoc item="desc"}}
+	WCHR returns an Unicode string containing the character(s) represented by the Unicodes passed to it. For example, WCHR(934) returns "&#934;".
+
+	When WCHR is used with constants or literals which can be evaluated at compile time, it can be used in initializers.
+
+	Not all Unicode characters can be displayed on any machine, the characters available depend on the font presently in use in the console. Graphics modes can't display Unicode chars, as the GfxLib built-in font is not Unicode.
+	FB for DOS and fullscreen Windows consoles do not support Unicode.
+	 
+{{fbdoc item="ex"}}
+%%(qbasic)
+#define unicode
+print "the character represented by the ASCII code of 934 is:"; WCHR(934)
+%%
+<<&#934;<<
+::c::
+%%(qbasic)
+print WCHR(933, 934, 935)  
+%%
+<<&#933;&#934;&#935;<<
+::c::
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+	- [[KeyPgChr CHR]]
+	- [[KeyPgWstr WSTR]]
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

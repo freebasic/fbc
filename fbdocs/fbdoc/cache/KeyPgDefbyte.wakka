@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="DEFBYTE"}}
+----
+Sets a default data type for variables
+
+{{fbdoc item="syntax"}}##
+	**Defbyte** //letterrange//[, //letterrange//]...
+##
+{{fbdoc item="desc"}}
+	##**Defbyte**## is used to default variables to a ##[[KeyPgByte Byte]]## number that start with a letter in the range given.
+
+	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+
+	This will make 'bNumber' a ##[[KeyPgByte Byte]]## number since it's first letter starts with b:
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+defbyte b
+dim bNumber
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDefdbl Defdbl]]##
+	- ##[[KeyPgDefint Defint]]##
+	- ##[[KeyPgDeflng Deflng]]##
+	- ##[[KeyPgDefshort Defshort]]##
+	- ##[[KeyPgDefsng Defsng]]##
+	- ##[[KeyPgDefstr Defstr]]##
+	- ##[[KeyPgDefubyte Defubyte]]##
+	- ##[[KeyPgDefuint Defuint]]##
+	- ##[[KeyPgDefushort Defushort]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+
+
+

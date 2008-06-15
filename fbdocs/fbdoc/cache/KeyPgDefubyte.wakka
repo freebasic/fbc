@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="DEFUBYTE"}}
+----
+Sets a default data type for variables
+
+{{fbdoc item="syntax"}}##
+	**Defubyte** //letterrange//[, //letterrange//]...
+##
+{{fbdoc item="desc"}}
+	##**Defubyte**## is used to default variables to a ##[[KeyPgUbyte Ubyte]]## number that start with a letter in the range given.
+
+	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+
+	This will make 'uNumber' a ##[[KeyPgUbyte Ubyte]]## number since it's first letter starts with u.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+defubyte u
+dim uNumber
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDefint Defint]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

@@ -1,0 +1,11 @@
+{{fbdoc item="title" value="Pointer Operators"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgAt|(@) Address of"}}
+	- {{fbdoc item="keyword" value="KeyPgValOf|(*) Value of"}}
+	- {{fbdoc item="keyword" value="KeyPgPtrAddSub|(+ -) Pointer Arithmetics"}}
+	- {{fbdoc item="keyword" value="KeyPgPtrIndex|([]) Pointer Indexing"}}
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

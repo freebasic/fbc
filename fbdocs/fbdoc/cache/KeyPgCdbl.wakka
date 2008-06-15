@@ -1,0 +1,47 @@
+{{fbdoc item="title" value="CDBL"}}
+----
+Converts numeric or string expression to ##[[KeyPgDouble Double]]## precision floating point.
+
+{{fbdoc item="syntax"}}##
+	**Cdbl**( //expression// )
+##
+{{fbdoc item="usage"}}##
+	//variable// = **Cdbl**(//numeric value//)
+	//variable// = **Cdbl**(//string expression//)
+##
+{{fbdoc item="desc"}}
+	The ##**CDbl**## function returns a 64-bit ##[[KeyPgDouble Double]]## value. The function does not check for an overflow, so be sure not to pass a value outside the representable range of the ##[[KeyPgDouble Double]]## data type. The name can be explained as 'Convert to ""DouBLe""'.
+
+	If the argument to ##**CDbl**## is a string expression, it is first converted to numeric by using ##[[KeyPgVal Val]]##.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' Using the CDBL function to convert a numeric value
+
+'Create an DOUBLE variable
+DIM numeric_value AS DOUBLE
+
+'Convert a numeric value
+numeric_value = CDBL(-12345678.123)
+
+'Print the result, should return -12345678.123
+PRINT numeric_value
+SLEEP
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCbyte Cbyte]]##
+	- ##[[KeyPgCubyte Cubyte]]##
+	- ##[[KeyPgCshort Cshort]]##
+	- ##[[KeyPgCushort Cushort]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCint Cint]]##
+	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgClngint Clngint]]##
+	- ##[[KeyPgCulngint Culngint]]##
+	- ##[[KeyPgCsng Csng]]##
+
+{{fbdoc item="back" value="DtConvert|Converting Data Types"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

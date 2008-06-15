@@ -1,0 +1,47 @@
+{{fbdoc item="title" value="AS"}}
+----
+Optional part of a declaration which specifies a data type, or part of the [[KeyPgOpen Open]] statement which specifies a file handle.
+
+{{fbdoc item="syntax"}}##
+	//symbolname// **AS** [[DataType DataType]]
+
+	[[KeyPgOpen Open]] ... **AS** //#filenumber//
+	[[KeyPgType Type]] ... **AS** [[DataType DataType]]
+##
+{{fbdoc item="desc"}}
+	##**As**## is used to declare the type of variables, fields or arguments and is also used in the ##[[KeyPgOpen Open]]## statement to determine the file handle. ##**As**## is also used in the ##[[KeyPgType Type]]## ... ##**As**## clause, similar to C's typedef statement.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' don't try to compile this code, the examples are unrelated
+DECLARE SUB mySub (X AS integer, Y as Float, Z as String)
+...
+
+DIM X AS integer
+...
+
+Type myType
+  X AS integer
+  Y as Float
+  Z as String
+END Type
+...
+
+type TheNewType as myType
+...
+
+OPEN "test" FOR INPUT AS #1
+...
+%%
+
+{{fbdoc item="diff"}}
+	- Type aliasing wasn't supported in QB.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDeclare Declare]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgOpen Open]]##
+
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

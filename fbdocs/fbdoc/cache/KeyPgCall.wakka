@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="CALL"}}
+----
+Statement to invoke a subroutine
+
+{{fbdoc item="syntax"}}##
+	**Call** //procname// ([//parameter list//])
+##
+{{fbdoc item="desc"}}
+	Calls a previously defined subroutine or function.
+
+	A holdover from earlier dialects of BASIC, but can be a useful syntatical convention to show that the return value from a function is being discarded intentionally.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+declare sub foobar(x, y)
+call foobar(35, 42)
+
+sub foobar(x, y)
+print x; y
+end sub%%
+
+%%(qbasic)
+function f ( ) as integer
+f = 42
+end function
+
+call f ' execute function f, but ignore the answer%%
+
+{{fbdoc item="diff"}}
+	- The procedure must have already been declared.
+	- CALL in QB will make a copy of all parameters, so passing [[KeyPgByref BYREF]] won't ever change the argument inside the callee.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDeclare Declare]]##
+	- ##[[KeyPgSub Sub]]##
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

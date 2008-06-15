@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="RIGHT"}}
+----
+Returns the right most characters of the source string of the length specified.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Right** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //expression// [[KeyPgAs as]] [[KeyPgStringtype string]] , [[KeyPgByval byval]] //characters// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Right** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //characters// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//result// = RIGHT[$]( //expression//, //characters// )
+##
+{{fbdoc item="param"}}
+	##//expression//##
+		The source ##[[KeyPgStringtype string]]##.
+	##//characters//##
+		The number of characters to return from the source ##[[KeyPgStringtype string]]##.
+
+{{fbdoc item="ret"}}
+	Returns the rightmost number of characters specified from the source ##[[KeyPgStringtype string]]##.
+
+{{fbdoc item="desc"}}
+	Returns n-//characters// starting from the right of the string //expression//.
+	The expression can be a wstring (Unicode string), in this case RIGHT returns a wstring.The DOS version does not support Unicode.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+text$ = "hello world"
+print right(text$, 5) 'displays "world"
+%%
+
+An Unicode example:
+<<
+dim text as wstring*20
+text = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;!"
+print right(text, 5) 'displays " &#1084;&#1080;&#1088;!"
+<<
+::c::
+
+{{fbdoc item="diff"}}
+	- QB does not support Unicode
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLeft Left]]##
+	- ##[[KeyPgMidfunction Mid (Function)]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

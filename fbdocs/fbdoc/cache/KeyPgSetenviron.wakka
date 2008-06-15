@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="SETENVIRON"}}
+----
+Sets a system environemental variable.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setenviron** ( [[KeyPgByref byref]] //varname// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	SETENVIRON //varname//
+##
+{{fbdoc item="param"}}
+	##//varname//##
+		The name of the environemental variable to set.
+
+{{fbdoc item="desc"}}
+	Modifies system environment variables.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'e.g. to set the system variable "path" to "c:":
+
+shell "set path" 'shows the value of path
+setenviron "path=c:"
+shell "set path" 'shows the new value of path
+%%
+
+{{fbdoc item="diff"}}
+	- It was called just ENVIRON in QB
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgEnviron Environ]]##
+	- ##[[KeyPgShell Shell]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

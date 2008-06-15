@@ -1,0 +1,30 @@
+{{fbdoc item="title" value="SIZEOF"}}
+----
+{{fbdoc item="syntax"}}##
+	**Sizeof** ( //variable// | [[DataType DataType]] )
+##
+{{fbdoc item="desc"}}
+	The ##Sizeof## operator returns the length of a //variable// or [[DataType DataType]]. 
+
+	Different from ##[[KeyPgLen Len]]##, when used with fixed-length strings (including ##[[KeyPgZstring Zstring]]##s and ##[[KeyPgWstring Wstring]]##s) it will return the number of characters allocated, and when used with variable-length strings, it will return the size of the string descriptor.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+print sizeof(byte) ' returns 1
+%%
+%%(qbasic)
+type bar
+	a as integer
+	b as double
+end type
+dim foo as bar
+print sizeof(foo)
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLen Len]]##
+
+{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}

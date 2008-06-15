@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="WBIN"}}
+----
+Returns the binary wstring (unicode) representation of the integer //number//.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] , [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//wstring// = WBIN( //number// [, //digits//] )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		A whole number or expression evaluating to a whole number.
+	##//digits//##
+		Optional number of digits to return.
+
+{{fbdoc item="ret"}}
+	Returns a binary [[KeyPgStringtype string]] representation of //number//.
+
+{{fbdoc item="desc"}}
+	Returns a wstring (Unicode) representing the binary value of the integer //expression//. Binary digits range from 0 to 1.
+	If you specify //digits// > 0, the result wstring will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
+	The length of the wstring will not go longer than the maximum number of digits required for the type of //expression// (32 for an integer, 64 for floating point or longint)
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+PRINT WBIN(54321)     '' displays 1101010000110001
+PRINT WBIN(54321, 5)  '' displays 10001
+PRINT WBIN(54321, 20) '' displays 00001101010000110001
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgBin Bin]]##
+	- ##[[KeyPgWhex Whex]]##
+	- ##[[KeyPgWoct Woct]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

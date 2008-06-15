@@ -1,0 +1,61 @@
+{{fbdoc item="title" value="INSTR"}}----
+	Locates the first occurrence of a substring within a string.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instr**( [//start// [[KeyPgAs as]] [[KeyPgInteger integer]],] //string// [[KeyPgAs as]] [[KeyPgString string]], [any] //substring// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+		//first// = Instr( //string//, //substring// )
+			##//or//##
+		//first// = Instr( //start//, //string//, //substring// )
+##
+{{fbdoc item="param"}}
+	##//string//##
+		The string to be searched.
+	##//substring//##
+		The string to be searched for. If ##any## is specified, then every character of ##//substring//## is searched for individually.
+	##//start//##
+		The position in ##//string//## at which the search will begin.
+
+{{fbdoc item="ret"}}
+	The position of the first occurrence of ##//substring//## in ##//string//##. Zero (0) is returned if ##//substring//## is not found, either ##//string//## or ##//substring//## are empty strings, or ##//start//## < 0.
+
+{{fbdoc item="desc"}}
+	Locates the position of the first occurrence of a substring within a string. If //start// is omitted, the search will begin with the first character of //string//.
+	
+	The //string// and //substring// can be Unicode.The DOS version does not support Unicode.
+	
+{{fbdoc item="ex"}}
+%%(qbasic)
+' It will return 4
+PRINT INSTR("abcdefg", "de")
+
+' It will return 0
+PRINT INSTR("abcdefg", "h")
+%%
+%%(qbasic)
+dim test as string
+dim idx as integer
+
+test = "abababab"
+idx = instr(test, "b")
+
+do while idx > 0 'if not found loop will be skipped
+	print """b"" at " & idx
+	idx = instr(idx + 1, Test, "b")
+loop
+%%
+<<'A Unicode example:
+dim text as wstring*20
+text = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;!"
+print instr(text,"&#1077;&#1090;") ' displays 5
+<<
+::c::
+
+{{fbdoc item="diff"}}
+	- QB returns //start// if //search// is a zero length string.
+	- QB did not support Unicode
+{{fbdoc item="see"}}
+	- [[KeyPgMidfunction MID (Function)]]
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

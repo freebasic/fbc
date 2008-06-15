@@ -1,0 +1,30 @@
+{{fbdoc item="title" value="INTEGER"}}
+----
+Standard data type: 32 bit signed
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Integer**##
+
+{{fbdoc item="desc"}}
+32-bit signed whole-number data type. Can hold values from -2147483648 to 2147483647.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+  Dim x As Integer = &H80000000
+  Dim y As Integer = &H7FFFFFFF
+  Print "Integer Range = "; x; " to "; y
+%%
+	**Output:**
+	%%Integer Range = -2147483648 to  2147483647%%
+
+
+{{fbdoc item="diff"}}
+	- The INTEGER type was 16-bit wide in QB.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgUinteger Uinteger]]##
+	- ##[[KeyPgCint Cint]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
+

@@ -1,0 +1,24 @@
+{{fbdoc item="title" value="Bitwise Operators Truth Tables"}}
+----
+
+<<
+===[[KeyPgAnd AND]]===
+{{table columns="3" cellpadding="1" cellspacing="2" cells=" A ; B ; Y ;0;0;0;0;1;0;1;0;0;1;1;1"}}
+===[[KeyPgOr OR]]===
+{{table columns="3" cellpadding="1" cells=" A ; B ; Y ;0;0;0;0;1;1;1;0;1;1;1;1"}}
+===[[KeyPgXor XOR]]===
+{{table columns="3" cellpadding="1" cells=" A ; B ; Y ;0;0;0;0;1;1;1;0;1;1;1;0"}}
+
+<<>>
+===[[KeyPgNot NOT]]===
+{{table columns="2" cellpadding="1" cells=" A ; Y ;0;1;1;0"}}
+===[[KeyPgEqv EQV]]===
+{{table columns="3" cellpadding="1" cells=" A ; B ; Y ;0;0;1;0;1;0;1;0;0;1;1;1"}}
+===[[KeyPgImp IMP]]===
+{{table columns="3" cellpadding="1" cells=" A ; B ; Y ;0;0;1;0;1;1;1;0;0;1;1;1"}}
+
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

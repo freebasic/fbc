@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="PEEK"}}
+----
+{{fbdoc item="syntax"}}
+	PEEK( //address// )
+	PEEK( DataType, //address// )
+
+{{fbdoc item="desc"}}
+	PEEK returns the value in memory given by a memory address. This was how pointer features were coded in the old BASIC dialects. Without a type specification it will return a single byte.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'Getting the address of a variable and reading its contents by its address:
+
+Dim x As INTEGER, addr As Integer
+addr = Varptr(x)
+x = 5
+Print x
+Print Peek( INTEGER, addr )
+%%
+
+{{fbdoc item="diff"}}
+	- Only the byte form were supported in QB.
+	- DEF SEG isn't needed anymore because the address space is 32-bit flat in FreeBASIC.
+	
+
+{{fbdoc item="see"}}
+	- [[KeyPgPoke POKE]]
+
+{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}

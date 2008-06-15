@@ -1,0 +1,43 @@
+{{fbdoc item="title" value="MKS"}}
+----
+Does a binary copy from a ##[[KeyPgSingle single]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mks** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+##
+{{fbdoc item="usage"}}##
+	//result// = MKS[$]( //number// )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		A ##[[KeyPgSingle single]]## variable to binary copy to a ##[[KeyPgStringtype string]]##.
+
+{{fbdoc item="ret"}}
+	Returns a ##[[KeyPgStringtype string]]## with a binary copy of the ##[[KeyPgSingle single]]##.
+
+{{fbdoc item="desc"}}
+	Does a binary copy  from a SINGLE variable to a string, setting its length to 4 bytes. The resulting string can be read back to a single by CVS.
+
+	This function is useful to write numeric values to buffers without using a TYPE definition.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim n as single
+n = 1.2345
+e$ = mks(n)
+print n,cvs(n)
+%%
+
+{{fbdoc item="diff"}}
+	-None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgMki Mki]]##
+	- ##[[KeyPgMkl Mkl]]##
+	- ##[[KeyPgMks Mks]]##
+	- ##[[KeyPgCvd Cvd]]##
+	- ##[[KeyPgCvi Cvi]]##
+	- ##[[KeyPgCvl Cvl]]##
+	- ##[[KeyPgCvs Cvs]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

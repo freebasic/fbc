@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="PCOPY"}}
+----
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Pcopy** ( [[KeyPgByval byval]] //source// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //destination// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+##
+{{fbdoc item="usage"}}##
+	**Pcopy** //source//, //destination//
+##
+{{fbdoc item="param"}}
+	##//source//##
+		page to copy from
+	##//destination//##
+		page to copy to
+
+{{fbdoc item="desc"}}
+	Copies one graphical video page to another. Useful for drawing all graphics on one invisible page and copying it to the active visible page - creating smooth graphics and animation. Known as 'double buffering' or 'page flipping'.
+
+	##//source//## and ##//destination//## refer to page numbers. The 'source' page is copied over the 'destination' page when pcopy is called.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- Does not work in text mode, as it did in QB. FB has a single page in text mode.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgFlip Flip]]##
+	- ##[[KeyPgScreencopy Screencopy]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}

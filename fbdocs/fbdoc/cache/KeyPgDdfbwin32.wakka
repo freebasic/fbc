@@ -1,0 +1,35 @@
+{{fbdoc item="title" value="__FB_WIN32__"}}
+----
+Intrinsic define set by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_WIN32__""
+##
+{{fbdoc item="desc"}}
+	Define without a value created at compile time by the Win32 version of the compiler
+	
+	It can be used to compile parts of the program only if the target is Win32
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#IFDEF __FB_WIN32__
+
+  ...instructions only for Win32...
+
+#ELSE
+  
+ ...instructions not for Win32...
+
+#ENDIF 
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB
+
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfbdos __FB_DOS__]]##
+	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
+	
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

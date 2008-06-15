@@ -1,0 +1,13 @@
+{{fbdoc item="title" value="Logical Operators"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgAnd|AND"}}
+	- {{fbdoc item="keyword" value="KeyPgEqv|EQV"}}
+	- {{fbdoc item="keyword" value="KeyPgImp|IMP"}}
+	- {{fbdoc item="keyword" value="KeyPgNot|NOT"}}
+	- {{fbdoc item="keyword" value="KeyPgOr|OR"}}
+	- {{fbdoc item="keyword" value="KeyPgXor|XOR"}}
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

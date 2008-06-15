@@ -1,0 +1,44 @@
+{{fbdoc item="title" value="Intrinsic Defines"}}----
+
+{{fbdoc item="desc"}}
+	Intrinsic defines are set by the compiler and may be used as any other defined symbol.  Intrinsic defines often convey information about the state of the compiler, either in general or at a specific point in the compilation process.  Most intrinsic defines are associated with a value.
+
+<<
+	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfblinux|__FB_LINUX__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdFBMain|__FB_MAIN__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdFBMinVersion|__FB_MIN_VERSION__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbsignature|__FB_SIGNATURE__"}} 
+	- {{fbdoc item="keyword" value="KeyPgDdfbversion|__FB_VERSION__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdFBVerMajor|__FB_VER_MAJOR__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdFBVerMinor|__FB_VER_MINOR__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdFBVerPatch|__FB_VER_PATCH__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbwin32|__FB_WIN32__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfile|__FILE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfunction|__FUNCTION__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdline|__LINE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdtime|__TIME__"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfberr|__FB_ERR__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbmt|__FB_MT__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboptionbyval|__FB_OPTION_BYVAL__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboptiondynamic|__FB_OPTION_DYNAMIC__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboptionescape|__FB_OPTION_ESCAPE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboptionexplicit|__FB_OPTION_EXPLICIT__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboptionprivate|__FB_OPTION_PRIVATE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboutdll|__FB_OUT_DLL__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboutexe|__FB_OUT_EXE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboutlib|__FB_OUT_LIB__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}
+
+
+
+
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

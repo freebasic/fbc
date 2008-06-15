@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="WINPUT()"}}
+----
+{{fbdoc item="syntax"}}
+//wstring//=WINPUT(num)
+//wstring//=WINPUT(num,[#]filenum)
+
+{{fbdoc item="desc"}}
+Num must be a number 0 to 255 and filenum must be the slot of a file currently open for INPUT 
+The first version waits for the user to input 'num' characters at the keyboard and returns them in a wstring. Extended keys are not read. The characters are not echoed to the screen.
+The second version reads //num// characters from a  text file and updates the pointer
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim a as wstring
+PRINT "Select a color number" 
+PRINT "1.-BLUE"
+PRINT "2.-RED"
+PRINT "3.-GREEN"
+do
+ a$=winput(1)
+loop until a>="1" and a<="3"
+%%
+
+{{fbdoc item="diff"}}
+	- QB does not support Unicode
+
+{{fbdoc item="see"}}
+~- [[KeyPgInput INPUT]]
+
+
+{{fbdoc item="back" value="CatPgInput|INPUT"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

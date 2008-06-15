@@ -1,0 +1,8 @@
+{{fbdoc item="title" value="WEND"}}
+----
+{{fbdoc item="desc"}}
+A component of a While [...] Wend loop.
+See [[KeyPgWhilewend WHILE...WEND]].
+
+{{fbdoc item="back" value="CatPgControlflow|CONTROL FLOW"}}
+

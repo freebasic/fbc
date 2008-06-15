@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="Essential Concepts"}}----
+<<
+	- [[CptArrayIndex Array Index]]
+	- [[CptAscii ASCII]]
+	- [[cptIdentifierRules Standard Identifier Rules]]
+	- [[cptRadians Radians]]
+
+<<>>
+	- [[cptPassByRef Passing Variables by Reference]]
+	- [[cptPassByVal Passing Variables by Value]]
+	- [[cptReturn Returning a Value]]
+	- [[CptVarScope Variable Scope]]
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

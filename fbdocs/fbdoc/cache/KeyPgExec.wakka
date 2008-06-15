@@ -1,0 +1,44 @@
+{{fbdoc item="title" value="EXEC"}}----
+Temporarily transfers execution to an external program.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Exec**( //program// [[KeyPgAs as]] [[KeyPgString string]][, //arguments// [[KeyPgAs as]] [[KeyPgString string]]] ) [[KeyPgAs as]] [[KeyPgString integer]]
+##
+{{fbdoc item="usage"}}##
+		Exec( //program//[, //arguments//] )
+			##//or//##
+		//result// = Exec( //program//[, //arguments//] )
+##
+{{fbdoc item="param"}}
+	##//program//##
+		The program (executable) to transfer control to.
+	##//arguments//##
+		The command-line arguments to be passed to the program. (Requires at least version 0.16)
+
+{{fbdoc item="ret"}}
+	The exit status of the program, or negative one (-1) if the program could not be executed.
+
+{{fbdoc item="desc"}}
+	Transfers control over to an external program. When the program exits, execution resumes immediately after the call to **Exec**.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+'A Windows based example but the same idea applies to Linux
+CONST exename = "NoSuchProgram.exe"
+CONST cmdline = "arg1 arg2 arg3"
+DIM result AS INTEGER
+result = EXEC( exename, cmdline )
+IF result = -1 THEN
+	PRINT "Error running "; exename
+ELSE
+	PRINT "Exit code:"; result
+END IF
+%%##
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- [[KeyPgCommand COMMAND$]]
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

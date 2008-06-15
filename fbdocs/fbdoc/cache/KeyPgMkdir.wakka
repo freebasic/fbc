@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="MKDIR"}}
+----
+Makes a folder/directory on the local file system.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkdir** ( [[KeyPgByref byref]] //folder// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	MKDIR //folder//
+##
+{{fbdoc item="param"}}
+	##//folder//##
+		The folder/directory to be created.
+
+{{fbdoc item="desc"}}
+	Makes a folder on the local file system.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+mkdir "data" ''creates a folder called 'data' in the current path.
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgShell Shell]]##
+	- ##[[KeyPgChdir Chdir]]##
+	- ##[[KeyPgRmdir Rmdir]]##
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

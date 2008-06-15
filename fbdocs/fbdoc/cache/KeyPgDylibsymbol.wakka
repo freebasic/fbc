@@ -1,0 +1,55 @@
+{{fbdoc item="title" value="DYLIBSYMBOL"}}
+----
+Returns the address of a function or variable in a dll.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibsymbol** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByref byref]] //symbol// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Dylibsymbol** ( //library//, //symbol// )
+##
+{{fbdoc item="param"}}
+	##//library//##
+		The [[KeyPgInteger integer]] handle of a DLL returned by ##[[KeyPgDylibload Dylibload]]##
+	##//symbol//##
+		A [[KeyPgStringtype string]] containing name of the function, or variable in the library to return the address of.
+
+{{fbdoc item="ret"}}
+	A ##[[KeyPgPtr pointer]]## to the function or variable in the library.
+
+{{fbdoc item="desc"}}
+##**Dylibsymbol**## returns a pointer to the variable or function named 'symbol' , in the dll pointed by 'libhandle'. ##//libhandle//## is obtained by loading the dll with ##[[KeyPgDylibload Dylibload]]##. The symbol must have been ##[[KeyPgExport Export]]##ed in the dll.
+If 'libhandle' is 0, the symbol is searched in the current executable or dll.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'mydll.dll
+'in the DLL the function must be declared as CDECL and export
+function AddNumbers cdecl alias "AddNumbers" ( byval operand1 as integer, byval operand2 as integer ) as integer export
+   AddNumbers = operand1 + operand2
+end function
+%%
+
+%%(qbasic)
+'main program
+' create a function pointer, arguments must be the same as in the original function
+dim AddNumbers as function ( byval operand1 as integer, byval operand2 as integer ) as integer
+'
+hndl=dylibload("mydll.dll")
+' find the proc address (case matters!)
+AddNumbers = dylibsymbol( hndl, "AddNumbers" )
+' call it..
+print "1 + 2 ="; AddNumbers( 1, 2 )
+dylibfree hndl
+sleep
+%%
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+~- ##[[KeyPgDylibload Dylibload]]##
+~- ##[[KeyPgDylibload Dylibload]]##
+~- ##[[KeyPgExport Export]]##
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

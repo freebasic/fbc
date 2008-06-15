@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="BYREF"}}
+----
+Declaration specifier to explicitly pass a parameter by reference
+
+{{fbdoc item="syntax"}}##
+	**Byref** //param1// [[KeyPgAs as]] [[DataType DataType]]
+##
+{{fbdoc item="usage"}}##
+	[ [[KeyPgDeclare declare]] ] [[KeyPgSub sub]] | [[KeyPgFunction function]] //Name// ( **Byref** //param1// [[KeyPgAs as]] [[DataType DataType]]  )
+##
+{{fbdoc item="desc"}}
+	Passes a variable by reference, that is its address, to a subroutine or function. When a variable is passed by reference, the contents of the variable can be changed by the target subroutine or function.
+	
+	This is the default argument passing convention, unless ##[[KeyPgOptionbyval Option Byval]]## is in effect.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim MyVar as integer
+
+sub ChangeVar(byref AVar as integer)
+	AVar = AVar + 1
+end sub
+
+MyVar = 1
+print "MyVar: "; MyVar 'output = 1
+ChangeVar MyVar
+print "MyVar: "; MyVar 'output = 2
+sleep
+end
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDeclare Declare]]##
+	- ##[[KeyPgByval Byval]]##
+
+{{fbdoc item="back" value="CatPgMisc|MISC"}}

@@ -1,0 +1,23 @@
+{{fbdoc item="title" value="LET"}}
+----
+{{fbdoc item="syntax"}}
+	[LET]variable = value
+
+{{fbdoc item="desc"}}
+	Command intended to help the programmer to distinguish an assignment ( LET a=1 ) from an equality test ( IF a=1 THEN.. ). As the compiler does not require it, it's normally omitted. 
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'e.g. these two lines have the same effect:
+
+let x = 100
+x = 100
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

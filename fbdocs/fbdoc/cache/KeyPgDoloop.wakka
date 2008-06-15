@@ -1,0 +1,42 @@
+{{fbdoc item="title" value="DO...LOOP"}}
+----
+{{fbdoc item="syntax"}}
+	DO [{UNTIL | WHILE} //condition//]
+		[//statement block//]
+	LOOP
+
+	DO
+		[//statement block//]
+	LOOP [{UNTIL | WHILE} //condition//]
+
+{{fbdoc item="desc"}}
+	Repeats a block of statements until/while the //condition// is True.
+
+	//condition// may be any valid expression that evaluates to False (zero) or True (non-zero).
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'This will continue to print "hello" on the screen until the condition (a > 10) is met.
+DIM a AS INTEGER
+a = 1
+PRINT "variable ""a""'s value is: "; a
+
+DO
+	PRINT "hello"
+	a += 1
+	    PRINT "variable ""a""'s value is: "; a
+LOOP UNTIL a > 10
+
+PRINT "variable ""a""'s value is: "; a
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[KeyPgContinue CONTINUE]]
+	- [[KeyPgExit EXIT]]
+	- [[KeyPgFornext FOR...NEXT]]
+	- [[KeyPgWhilewend WHILE...WEND]]
+
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}

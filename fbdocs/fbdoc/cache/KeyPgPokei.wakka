@@ -1,0 +1,20 @@
+{{fbdoc item="title" value="POKEI"}}
+----
+{{fbdoc item="syntax"}}
+
+
+{{fbdoc item="desc"}}
+See [[KeyPgPoke POKE]].
+ Removed keyword
+ This keyword was supported up to version 0.11. Use POKE INTEGER  <address>, <value> instead
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

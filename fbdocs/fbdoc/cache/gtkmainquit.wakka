@@ -1,0 +1,21 @@
+{{fbdoc item="title" value="gtk_main_quit"}}
+----
+{{fbdoc item="syntax"}}
+ gtk_main( )
+
+{{fbdoc item="desc"}}
+ Returns control from the GTK library to your application. This function is usually called when a [[gtksignalconnect gtk_signal_connect]] calls a function in your FreeBASIC application.
+
+{{fbdoc item="ex"}}
+ gtk_main_quit( )
+
+
+{{fbdoc item="diff"}}
+ - None
+
+{{fbdoc item="see"}}
+ - [[gtkmain gtk_main]]
+ - [[gtkinit gtk_init]]
+ - [[gtksignalconnect gtk_signal_connect]]
+
+{{fbdoc item="back" value="TutIndexGTK|GTK REference Index"}}

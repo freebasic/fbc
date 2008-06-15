@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="STEP"}}
+----
+{{fbdoc item="syntax"}}
+	FOR //iterator// = //initial_value// TO //end_value// STEP //increment//
+
+	LINE [ //buffer//, ] STEP ( //x1//, //y1// ) - STEP ( //x2//, //y2// ) [, [ //color// ][, [ B|BF ][, //style// ] ] ]
+
+	CIRCLE [ //target,// ] STEP ( //x//, //y// ), //radius// [, [ //color// ][, [ //start// ][, [ //end// ][, [ //aspect// ][, F] ] ] ] ]
+
+	PAINT [ //target//, ] STEP ( //x//, //y// ) [, [ //paint// ][, [ //border_color// ] ] ]
+
+{{fbdoc item="desc"}}
+	In a [[KeyPgFor FOR]] statement, STEP specifies the increment of the loop iterator with each loop.
+
+	In a [[KeyPgLinegraphics LINE]], [[KeyPgCircle CIRCLE]] or [[KeyPgPaint PAINT]] statement, STEP indicates that the following coordinate has values relative to the graphics cursor.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+FOR I=10 TO 1 STEP -1
+%%
+
+%%(qbasic)
+LINE -STEP(10,10),13
+%%
+
+{{fbdoc item="see"}}
+	- [[KeyPgFor FOR]]
+	- [[KeyPgLinegraphics LINE]]
+	- [[KeyPgCircle CIRCLE]]
+	- [[KeyPgPaint PAINT]]
+
+{{fbdoc item="back" value="CatPgControlflow|CONTROL FLOW"}}

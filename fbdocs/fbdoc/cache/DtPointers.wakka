@@ -1,0 +1,96 @@
+{{fbdoc item="title" value="Pointers"}}
+----
+
+{{fbdoc item="desc"}}
+	Pointers are [[DtVariables Variables]] which, instead of holding data on their own, point to a memory location that the programmer chooses. 
+
+	In FreeBASIC, pointer variables can defined using the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command using the **ptr** (or **pointer**) suffix on the data type name. For example, to define a pointer to an integer named //myPointer//, you'd would type
+
+%%
+DIM myPointer AS INTEGER PTR
+%%
+==Pointer Notation:==
+	After being defined with the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command, pointers have their own notation which must be used. Also, standard variables can be modified using other keywords. 
+
+	In this example, we'll create two variables: //myVariable// and //myPointer//.
+
+%%
+DIM myVariable AS INTEGER
+DIM myPointer AS INTEGER PTR
+%%
+	If we were to write the following lines of code:
+
+%%
+myVariable = 10
+myPointer = 10
+%%
+	we will have two completely different results. //myVariable// will be set to 10 as expected, but //myPointer// is told to point to the memory address at 10. In order to actually write to the address at //myPointer//, the following line of code must be used:
+
+%%
+*myPointer = 5
+%%
+	//(However, if you use the previous three code lines in order, you will effectively be writing the number 5 to the memory location 10. This will most likely cause your program crash, and could possibly crash your operating system, as well.)//
+	
+	This is called "dereferencing", and causes the compiler not to alter the variable, but instead the data to which the variable points.
+
+	In order for //myPointer// to be useful, it has to be pointed at a memory location you have already created. Luckily, we have created one -- //myVariable//. To find out the memory address of //myVariable//, you can use the notation //@myVariable//. Think of the **@** operator as saying, "at the location of," which is logical. In this way, you can write:
+
+%%
+myPointer = @myVariable
+*myPointer = 5
+%%
+	Now you have just set the value of //myVariable// to 5.
+
+	
+==Addressing user-defined TYPEs with pointers:==
+	If you create a [[KeyPgType Type]], then set pointer to point to it, you cannot use the standard dot notation to access the elements within the type. Let's say we set up the following situation:
+	
+%%
+TYPE myType
+   X AS INTEGER
+   Y AS INTEGER
+END TYPE
+
+DIM myVariable AS myType
+DIM myPointer AS myType PTR
+
+myPointer = @myVariable
+%%
+	The following line of code, though it looks vaguely logical, is not valid:
+
+%%
+*myPointer.x = 10
+%%
+	It is not valid because it is vague.  The TYPE element, .x, could conceivably hold a pointer value.  Another way to write it, which is also not valid, is:
+%%
+(*myPointer).x = 10
+%%	
+	The way to do it, is to use a minus sign and a greater than sign to create an arrow operator (->). For example:
+	
+%%
+myPointer->x = 10
+%%
+	
+{{fbdoc item="ex"}}
+%%(qbasic)
+
+DIM FirstNumber AS INTEGER
+DIM SecondNumber as INTEGER ptr
+
+FirstNumber = 1
+SecondNumber = @FirstNumber
+
+print FirstNumber; *SecondNumber ' will display 1 1
+%%
+
+{{fbdoc item="see"}}
+	- [[KeyPgAt (@) Address of]]
+	- [[KeyPgValOf (*) Value of]]
+	- [[KeyPgVarptr VARPTR]]
+	- [[KeyPgStrptr STRPTR]]
+	- [[KeyPgProcptr PROCPTR]]
+	- [[KeyPgDim DIM]]
+
+**Data Types**: [[CatPgStdDataTypes Standard Data Types]] &middot; [[DtConstants Constants]] &middot; [[DtVariables Variables]] &middot; [[DtArrays Arrays]] &middot; **Pointers** &middot; [[CatPgUserDefTypes User Defined Types]] &middot; [[CatPgCasting Converting Data Types]] 
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

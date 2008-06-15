@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="WINDOW"}}
+----
+Graphics statement to define new view coordinates mapping for current viewport.
+
+{{fbdoc item="syntax"}}##
+	**Window** [[SCREEN] (//x1//, //y1//)-(//x2//, //y2//)]
+##
+{{fbdoc item="param"}}
+	##SCREEN##
+		Optional argument specifying y coordinates increase from top to bottom.
+	##(//x1//, //y1//)-(//x2//, //y2//)##
+		New floating point values corresponding to the opposite corners of the current viewport.
+
+{{fbdoc item="desc"}}
+	##**Window**## is used to define a new coordinates system. ##(//x1//,//y1//)## and ##(//x2//,//y2//)## are the new coordinates to be mapped to the opposite corners of the current viewport; all future coordinates passed to gfx primitive statements will be affected by this new mapping. If ##SCREEN## is omitted, the new coordinates system will be cartesian, that is, with y coordinates increasing from bottom to top. Call ##**Window**## with no argument to disable the coordinates transformation.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgViewgraphics View (Graphics)]]##
+	- ##[[KeyPgPmap PMap]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

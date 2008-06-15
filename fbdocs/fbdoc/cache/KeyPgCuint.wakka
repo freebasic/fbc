@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="CUINT"}}
+----
+Converts numeric or string expression to an unsigned integer (##[[KeyPgUinteger Uinteger]]##)
+
+{{fbdoc item="syntax"}}##
+	**Cuint**( //expression// )
+##
+{{fbdoc item="usage"}}##
+	//variable// = **Cuint**(//numeric expression//)
+	//variable// = **Cuint**(//string expression//)
+##
+{{fbdoc item="desc"}}
+	The ##**Cuint**## function rounds off the decimal part and returns a 32 bit ##[[KeyPgUinteger Uinteger]]## value. The function does not check for an overflow, so be sure not to pas a value thats less/larger then 0 to 4 294 967 296.  The name can be explained as 'Convert to Unsigned INTeger'.
+	If the argument to ##**Cuint**## is a string expression, it is first converted to numeric by using ##[[KeyPgVal Val]]##.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' Using the CUINT function to convert a numeric value
+
+'Create an UNSIGNED INTEGER variable
+DIM numeric_value AS UINTEGER
+
+'Convert a numeric value
+numeric_value = CUINT(300.23)
+
+'Print the result = 300
+PRINT numeric_value
+SLEEP
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCbyte Cbyte]]##
+	- ##[[KeyPgCubyte Cubyte]]##
+	- ##[[KeyPgCshort Cshort]]##
+	- ##[[KeyPgCushort Cushort]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCint Cint]]##
+	- ##[[KeyPgClngint Clngint]]##
+	- ##[[KeyPgCulngint Culngint]]##
+	- ##[[KeyPgCsng Csng]]##
+	- ##[[KeyPgCdbl Cdbl]]##
+
+{{fbdoc item="back" value="DtConvert|Converting Data Types"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

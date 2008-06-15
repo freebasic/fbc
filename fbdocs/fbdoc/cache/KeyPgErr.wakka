@@ -1,0 +1,51 @@
+{{fbdoc item="title" value="ERR"}}
+----
+Error handling function to return the error number of the last error.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Err** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Err**
+##
+{{fbdoc item="ret"}}
+	After an error, returns the error code that occured. 
+
+{{fbdoc item="desc"}}
+	##**Err**## can always be used, even if QB-like error handling is not enabled.
+
+	##**Err**## is reset by ##[[KeyPgResume Resume]]## and ##[[KeyPgResumenext Resume Next]]##.
+	
+	NOTE: PRINT ERR after an error occurred is likely to print 0, because PRINT sets a new ERR value when executed. To print an ERR value it must be first copied to an auxiliar variable and print that one.
+
+	Freebasic uses these runtime error codes:
+	{{table columns="2" cellpadding="1" cells="0;No error;1;Illegal function call;  2;File not found signal;3;File I/O error;4;Out of memory;5;Illegal resume;6;Out of bounds array access;7;Null Pointer Access;8;No privileges;9;interrupted signal;10;illegal instruction signal;11;floating point error signal;12;segmentation violation  signal;13;Termination request signal;14;abnormal termination signal; 15;quit request signal"}}
+
+{{fbdoc item="ex"}}
+An example using qbasic style error handling (compile with -ex option)
+%%(qbasic)
+on error goto Error_Handler
+error 150
+end
+
+Error_Handler:
+  n = Err
+  print "Error #"; n
+  resume next
+%%
+An example using online error handling 
+%%(qbasic)
+do
+input "Input filename ";a$
+if a$="" then exit do
+open a$ for input as #1
+loop until err=0
+%%
+{{fbdoc item="diff"}}
+	- Error numbers are not the same as in QB.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOnerror On Error]]##
+	- {{fbdoc item="keyword" value="LangErrorHandling|Error Handling"}} 
+
+{{fbdoc item="back" value="CatPgError|ERROR"}}

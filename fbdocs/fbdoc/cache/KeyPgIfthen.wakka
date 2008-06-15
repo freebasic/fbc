@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="IF...THEN"}}
+----
+{{fbdoc item="syntax"}}
+	IF //expression// THEN //statement(s)// [ELSE //statement(s)//]
+	IF //expression// THEN : //statement(s)// [ELSE //statement(s)//] : END IF
+			
+	IF //expression// THEN
+		//statement(s)//
+	[ELSEIF //expression// THEN]
+		//statement(s)//
+	[ELSE]
+		//statement(s)//
+	END IF
+
+{{fbdoc item="desc"}}
+	IF...THEN is a way to make decisions. It is a mechanism to execute code only if a condition is true, and can provide alternative code to execute based on more conditions.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'e.g. here is a simple "guess the number" game using if...then for a decision.
+
+RANDOMIZE TIMER 
+x = RND * 11    'Create a random number between 0 and 10.999...
+	            
+PRINT "guess the number between 0 and 10"
+
+DO 'Start a loop
+	INPUT "guess"; y 'Input a number from the user
+	IF x = y THEN
+		PRINT "right!" 'He/she guessed the right number!
+		EXIT DO
+	ELSEIF y > 10 THEN 'The number is higher then 10
+		PRINT "The number cant be greater then 10! Use the force!"
+	ELSEIF x > y THEN 
+		PRINT "too low" 'The users guess is to low
+	ELSEIF x < y THEN
+		PRINT "too high" 'The users guess is to high
+	END IF
+LOOP 'Go back to the start of the loop
+%%
+
+{{fbdoc item="diff"}}
+	- END IF must be used in single line IF's if a semi-colon comes right after the THEN
+
+{{fbdoc item="see"}}
+	- [[KeyPgDoloop DO...LOOP]]
+	- [[KeyPgPpif #IF]]
+	- [[KeyPgSelectcase SELECT CASE]]
+
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}

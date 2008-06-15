@@ -1,0 +1,33 @@
+{{fbdoc item="title" value="PUBLIC"}}
+----
+{{fbdoc item="syntax"}}
+	PUBLIC //sub/function name//
+
+{{fbdoc item="desc"}}
+	Explicitly sets an individual sub/function to be public. This means the sub/function is freely accessible between other modules.
+
+	The only reason one needs to use the public prefix on subs/functions is if they are private by default (using [[KeyPgOptionprivate OPTION PRIVATE]]), because subs/functions are public by default normally.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+e.g.
+
+option private
+sub i_am_private
+end sub
+
+public sub i_am_public
+end sub
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- [[KeyPgPrivate PRIVATE]]
+	- [[KeyPgOptionprivate OPTION PRIVATE]]
+	- [[KeyPgSub SUB]]
+	- [[KeyPgFunction FUNCTION]]
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

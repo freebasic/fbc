@@ -1,0 +1,18 @@
+{{fbdoc item="title" value="Compiling from CVS"}}----
+
+The source code of ""FreeBASIC"" is maintained on Sourceforge using a concurrent versioning system (CVS), which allows different developers to work on the source code at the same time. It is possible for users to download this source code using anonymous read access and compile it using GNU development tools.
+
+Compiling the CVS is not recommended for most users. ""FreeBASIC"" is a self-hosting compiler, still in active development, so there will be times when the current CVS cannot be compiled by the last official release. Note also that the procedures for building the compiler from CVS described here may change with future versions of ""FreeBASIC"".
+
+The following guidelines are provided as a resource for those interested in learning how to compile the CVS. They describe the procedures to build the source code of ""FreeBasic"" 0.16b from the CVS.
+
+Windows users should use MSYS to compile the CVS. Linux users will usually have the development tools required installed in their system. The Cygwin build may be useful for Windows users wishing to access Linux libraries in windows. The DOS build is normally cross-compiled from the windows build. Advanced users may be able to cross-compile between other builds, but the correct development tools and libraries would be needed, and it has not been widely tested.
+
+	[[CVSCygwin Compiling from CVS for Cygwin]]
+	[[CVSWin32MSYS Compiling from CVS for Win32, using MSYS]]
+	[[CVSLinux Compiling from CVS for Linux]]
+
+For Windows only, Pritchard is regularly compiling the latest and making it available for download.  His files must be added carefully to the current stable distribution, to replace certain originals.  The web page is here:  
+@@ [[http://www.qbasic.com/wbb/filebase_entry.php?entryid=77&sid= http://www.qbasic.com/wbb/filebase_entry.php?entryid=77&sid=]] @@
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

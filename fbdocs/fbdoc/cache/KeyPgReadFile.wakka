@@ -1,0 +1,20 @@
+{{fbdoc item="title" value="READ (File I/O) "}}
+----
+{{fbdoc item="syntax"}}
+Open //file// As String For Binary Access **Read** As #//filenum// As Integer
+
+{{fbdoc item="desc"}}
+Modifier for the "Access" clause. Read specfies that the file is accessible for input.
+
+{{fbdoc item="ex"}}
+See example at [[KeyPgAccess ACCESS]]
+
+{{fbdoc item="diff"}}
+	- None known.
+
+{{fbdoc item="see"}}
+	- [[KeyPgOpen OPEN]]
+	- [[KeyPgAccess ACCESS]]
+	- [[KeyPgWriteFile WRITE]]
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

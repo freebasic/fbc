@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="DATEVALUE"}}
+----
+Date function to return a [[DtDateSer Date Serial]] from a string.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateValue""** ( //stringdate// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	#include "vbcompat.bi"
+	//result// = **""DateValue""**(//stringdate//)
+##
+{{fbdoc item="param"}}
+	##//stringdate//##
+		the string to convert to a date serial
+
+{{fbdoc item="ret"}}
+	Returns a [[DtDateSer Date Serial]] from a date string.
+
+{{fbdoc item="desc"}}
+
+	The date string must be in the format set in the regional settings of the OS. So DATEVALUE(DATE) will work only if the regional settings specify the same date format QB used. If the date is in a different format than the OS's regional settings DATESTRING and MID should be used, or the OS settings could be changed temporally.
+
+	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB. This function appeared in PDS and VBDOS
+
+{{fbdoc item="see"}}
+	- [[DtDateSer Date Serials]]
+	- ##[[KeyPgDateserial DateSerial]]##
+	- ##[[KeyPgTimevalue TimeValue]]##
+	- ##[[KeyPgDatevalue DateValue]]##
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

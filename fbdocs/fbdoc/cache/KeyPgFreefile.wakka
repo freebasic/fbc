@@ -1,0 +1,60 @@
+{{fbdoc item="title" value="FREEFILE"}}
+----
+Returns a free file number.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Freefile** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Freefile**
+##
+{{fbdoc item="ret"}}
+	The ##[[KeyPgInteger integer]]## handle of the next available free file number.
+
+{{fbdoc item="desc"}}
+	Returns the number of the next free file slot. This value is a required argument to ##[[KeyPgOpen Open]]## a file. Freefile is useful when opening files in complex programs where the programmer can't keep track of the used slots.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' Create a string and fill it.
+Dim buffer As String
+buffer = "Hello World within a file."
+
+' Find the first free file handle.
+f = Freefile
+
+' Open the file "file.ext" for binary usage, using the handle "f".
+Open "file.ext" For Binary As #f
+
+' Place our string inside the file, using handle "f".
+Put #f, , buffer
+
+' Close the file.
+Close
+
+' End the program. (Check the file "file.ext" upon running to see the output.)
+End
+%%
+
+	When using multiple FREEFILE's, the FREEFILE statement should be used *just* before the [[KeyPgOpen Open]] statement:
+%%(qbasic) ' The CORRECT WAY:
+fr = FREEFILE
+OPEN "File1" FOR INPUT AS #fr
+fs = FREEFILE
+OPEN "file2" FOR INPUT AS #fs%%
+	As opposed to:
+%%(qbasic) ' The WRONG way:
+fr = FREEFILE
+fs = FREEFILE
+OPEN "file1" FOR INPUT AS #fr
+OPEN "file2" FOR INPUT AS #fs%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgPutfileio Put (File I/O)]]##
+	- ##[[KeyPgGetfileio Get (File I/O)]]##
+
+{{fbdoc item="back" value="CatPgFunction|FUNCTION"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

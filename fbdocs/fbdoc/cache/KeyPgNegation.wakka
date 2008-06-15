@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="- (Negation)"}}
+----
+Operator to negate (change the sign of) a number.
+
+{{fbdoc item="syntax"}}##
+	**-** //number//
+##
+{{fbdoc item="usage"}}##
+	//result// = **-** //number//
+##
+{{fbdoc item="desc"}}
+	The negation operator is used to give the negitive value of ##//number//##. ##//number//## can be any valid numerical expression.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+DIM n AS LONGINT
+PRINT -5
+n = 65432568459
+n = - n
+PRINT n
+SLEEP
+%%##
+
+The output would look like:
+##%%(qbasic)
+-5
+-65432568459
+%%##
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[CatPgMath Mathematical Functions]]
+
+**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]

@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="CLNGINT"}}
+----
+Converts numeric or string expression to 64-bit integer (##[[KeyPgLongint Longint]]##)
+
+{{fbdoc item="syntax"}}##
+	**Clngint**( //expression// )
+##
+{{fbdoc item="usage"}}##
+	//variable// = **Clngint**(//numeric expression//)
+	//variable// = **Clngint**(//string expression//)
+##
+	The ##**Clngint**## function rounds off the decimal part and returns a 64 bit ##[[KeyPgLongint Longint]]## value. The function does not check for an overflow, so be sure not to pas a value thats less/larger than -9 223 372 036 854 775 808 to 9 223 372 036 854 775 807. The name can be explained as 'Convert to ""LoNG INTeger""'.
+
+	If the argument to ##**Clngint**## is a string expression, it is first converted to numeric by using VAL.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' Using the CLNGINT function to convert a numeric value
+
+'Create an LONG INTEGER variable
+DIM numeric_value AS LONGINT
+
+'Convert a numeric value
+numeric_value = CLNGINT(-12345678.123)
+
+'Print the result, should return -12345678
+PRINT numeric_value
+SLEEP
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCbyte Cbyte]]##
+	- ##[[KeyPgCubyte Cubyte]]##
+	- ##[[KeyPgCshort Cshort]]##
+	- ##[[KeyPgCushort Cushort]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCint Cint]]##
+	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgCulngint Culngint]]##
+	- ##[[KeyPgCsng Csng]]##
+	- ##[[KeyPgCdbl Cdbl]]##
+
+{{fbdoc item="back" value="DtConvert|Converting Data Types"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

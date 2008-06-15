@@ -1,0 +1,104 @@
+{{fbdoc item="title" value="DRAW STRING"}}
+----
+Graphics statement to render text to an image or screen
+
+{{fbdoc item="syntax"}}##
+	**Draw String** [//buffer//,] [STEP] (//x//, //y//), //string// [,//color// [, //font// [, //method// [, (//alpha//|//blender//) ] ] ] ]
+##
+{{fbdoc item="param"}}
+	##//buffer//##
+		The sprite to draw the string on. If this is not supplied, it will be drawn to the screen.
+	##STEP##
+		Use relative or absolute coordinates. If ##STEP## is added, the x and y coordinates are translated relative to the last drawn point. 
+	##//x//##
+		the x position to draw to
+	##//y//##
+		the y position to draw to
+	##//string//##
+		the text to draw
+	##//color//##
+		if no font is supplied, 'color' is the color of the font. If font is supplied, the font format itself specifies the color for each pixel.
+	##//font//##
+		an image buffer containing a custom font. If no font is suppiled, the standard font for the current mode is used.
+	##//method//##
+		specifies how the font characters are drawn on top of the target surface. The same methods as found for the [[KeyPgPutgraphics Put]] statement are allowed, with the only difference that the default method is ##TRANS## for this function.
+	##//alpha//##
+		alpha value for the ##ALPHA## drawing method, ranging 0-255.
+	##//blender//##
+		custom blender function for the ##CUSTOM## drawing method; see ##[[KeyPgPutgraphics Put (Graphics)]]## statement description for details.
+
+{{fbdoc item="desc"}}
+	This graphics keyword prints a string to the screen with pixel positioning, transparent background, and can use an user supplied font. **##Draw String##** does not update any text cursor or wrap at the end of line.
+
+==The custom font format:==
+	The font is stored  in a standard ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer; the font has to be stored in a buffer using the same depth as the current color depth, otherwise **##Draw String##** will bump out with an illegal function call runtime error.
+
+	First line of pixels in the font buffer holds the "header" of the font, on a byte (and NOT pixel) basis. The very first byte identifies the font header version; currently this must be 0. Second byte tells the ascii code of the first supported character in the font; third byte tells the last supported ascii code. So if the font supports the full range 0-255, 0 and 255 will be the contents of these two bytes. Next comes the width of each of the supported characters, each in a byte. Supposing a characters range of 32-128, the header would have the first three bytes holding 0, 32 and 128, followed by 96 bytes telling the widths of the corresponding chars.
+
+	The font height is obtained by subtracting 1 from the buffer height, that is, while the first buffer line of pixels acts as a font header, the remaining lines define the glyphs layout. The buffer must be as wide as necessary to hold all the supported character sprites in the same row, one after another.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+DIM TextBuffer AS ANY PTR
+SCREEN 14, 32
+' Red Background
+PAINT (0, 0), &HFF0000
+' Output "Hello World"
+DRAW STRING ( 0,  0), "Hello World"
+' Using PRINT results in losing the information about text-background
+LOCATE 1, 15
+PRINT "Hello World"
+' output "Hello World" in yellow
+DRAW STRING ( 0, 10), "Hello World", &HFFFF00
+' set standard-Color to green, so that "hello world" is outputted in this color
+COLOR &H00FF00, &HFFFFFF ' Background-Color does not have any influence on DRAW STRING.
+DRAW STRING ( 0, 20), "Hello World"
+' Using Print, you aren't able to position the Text on y=40
+' Background-color has influence on PRINT, too
+LOCATE 3, 15
+PRINT "Hello World"
+' Re-Direction to a buffer:
+TextBuffer = IMAGECREATE(88, 8)
+DRAW STRING TextBuffer, (0, 0),"Hello World",&H00FFFF
+PUT (100, 100), TextBuffer, PSET
+SLEEP
+%%
+%%(qbasic)
+#DEFINE FIRST    32
+#DEFINE LAST    128
+DIM AS UBYTE PTR p, myFont
+DIM AS single w,ws
+ws=6.28/255
+SCREENRES 320, 200, 32, 2
+' Create custom font into GET/PUT buffer
+myFont = IMAGECREATE((LAST - FIRST + 1) * 8, 9)
+p = myFont + 4
+p[0] = 0
+p[1] = FIRST
+p[2] = LAST
+FOR i = FIRST TO LAST
+	' Here we could define a custom width for each letter, but for simplicity we use
+	' a fixed width of 8 since we are reusing the default font glyphs
+	p[3 + i - FIRST] = 8
+	' Create character onto custom font buffer by drawing using default font
+	DRAW STRING myFont, ((i - FIRST) * 8, 1), CHR(i)
+NEXT i
+' Now the font buffer is ready; we could save it using BSAVE for later use
+' Here we draw a string using the custom font and the ALPHA method
+WHILE len(INKEY)=0
+  value=sin(w)*127+127:w+=ws
+  cls
+  DRAW STRING (100, 100), "Hello world!",, myFont, ALPHA, Value
+  SLEEP 10
+WEND
+END
+%%
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPutgraphics Put (Graphics)]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

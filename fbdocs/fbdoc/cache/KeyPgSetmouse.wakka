@@ -1,0 +1,43 @@
+{{fbdoc item="title" value="SETMOUSE"}}
+----
+Graphics function to set the position and visibility of the mouse cursor.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setmouse** ( [[KeyPgByval byval]] //x// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 , [[KeyPgByval byval]] //y// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 , [[KeyPgByval byval]] //visibility// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	**Setmouse** [//x//], [//y//], [//visibility//]
+##
+{{fbdoc item="param"}}
+	##//x//##
+		optional set x coordinate
+	##//y//##
+		optional set y coordinate
+	##//visibility//##
+		optional set visibility - 1 indicates visible, 0 indicates hidden
+
+{{fbdoc item="ret"}}
+	0 on success, non-zero to indicate failure.
+
+{{fbdoc item="desc"}}
+	##**Setmouse**## will set the ##//X//,//Y//## coordinates of the mouse pointer, as well as setting it's visibility.  Mouse position is set using the X and Y parameters.  The mouse will be visible if visibility is set to 1, and invisible if visibility is set to 0.  ##**Setmouse**## is intended for graphics modes initiated using the ##[[KeyPgScreengraphics Screen (Graphics)]]## statement only.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+screen 19, 32, 1                         'creates a screen 800x600, 32-bit color, 1 video page
+do
+	getmouse x, y , , buttons                     'get mouse x, y and button state
+	if buttons = 1 then setmouse 400, 300    'on left mouse click, center mouse
+loop until multikey(1)                                    'do loop until esc is pressed
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgGetmouse Getmouse]]##
+	- ##[[KeyPgScreengraphics Screen]]##
+	- ##[[KeyPgMultikey Multikey]]##
+	- ##[[KeyPgGetkey Getkey]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

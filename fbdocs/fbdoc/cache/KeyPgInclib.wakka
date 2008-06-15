@@ -1,0 +1,25 @@
+{{fbdoc item="title" value="#INCLIB"}}
+----
+Preprocessor directive.
+
+{{fbdoc item="syntax"}}##
+	**#inclib** //"filename"//
+	Or
+	'$Inclib: //"filename"//
+##
+{{fbdoc item="desc"}}
+	Includes a library (.a file) in the linking process, making it easier for the user to compile, since the user doesn't have to explicitly type at the command line: "fbc sourcefile -a libfile".
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' incomplete code snipet
+#inclib "mylib" 'this will include libmylib.a in the link process
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInclude #include]]##
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

@@ -1,0 +1,128 @@
+{{fbdoc item="title" value="DIM"}}
+----
+{{fbdoc item="syntax"}}
+	Declaring a Single Variable:
+		DIM [[[KeyPgShared SHARED]]] //symbolname// [AS [[DataType DataType]]] [, ...]
+		DIM [[[KeyPgShared SHARED]]] AS [[DataType DataType]] //symbolname// [, ...]
+
+	Declaring Arrays:
+		DIM [[[KeyPgShared SHARED]]] //symbolname// ( [//lbound// TO] //ubound// [, ...] ) [AS [[DataType DataType]]] [,...]
+		DIM [[[KeyPgShared SHARED]]] AS [[DataType DataType]] //symbolname// ( [//lbound// TO] //ubound// [, ...] ) [,...]
+	
+	Initializing Values:
+		DIM //scalar_symbol// [AS [[DataType DataType]]] = //expression//
+		DIM //array_symbol// ([//lbound// TO] //ubound//) [AS [[DataType DataType]]] => { //expression// [, ...] }
+		DIM //udt_symbol// AS [[DataType DataType]] = ( //expression// [, ...] )
+
+{{fbdoc item="desc"}}
+	Declares a named variable and allocates memory to accommodate it.  Though FreeBASIC does not require the declaration of variables, DIM is used assign array and variables of any of the supported variable types, UDTs, or enumerations.
+
+	**Declaring Multiple Variables**
+		Dim is a special keyword and supports a number of different syntaxes.  When declaring multiple variables, the first syntax specified above allows multiple variables of multiple types to be declared in one statement.  However, for compactness, the second syntax shown is the preferred method for declaring multiple variables of the same type.  Using the first syntax, the "AS type" portion refers only to the variable of that clause.  For instance:
+		
+			%%DIM var1, var2, var3 AS DOUBLE    : REM risky%%	
+		This code will declare **only** var3 as a double-precision floating point.  Var////1 and var2 will be set to the latest DEF""###"" used, DEFINT by default, because no type was specified in their respective clauses.  The same example using the alternative syntax:
+	
+			%%DIM AS DOUBLE var1, var2, var3%%	
+		Will declare and allocate var1, var2, var3 all as DOUBLEs.
+
+	**Arrays**
+		As with most BASIC dialects, FreeBASIC supports arrays with indexes ranging from a lower bound to an upper bound.  In the syntaxes shown above, lbound refers to the lower bound, or the smallest index.  Ubound refers to the upper bound, or the largest index.  If a lower bound is not specified, lbound is automatically assumed to be zero, unless [[KeyPgOptionbase OPTION BASE]] 1 is used,  so an array declared with the following code:
+	
+			%%DIM array(ubound) AS type%%
+		Will declare an array with indexes ranging from 0 to ubound, for a total of (ubound + 1) indexes.  
+
+		Multidimensional arrays can be declared as well.  The following example will declare a three-dimensional array of single precision floating-point numbers. The maximum number of dimensions of a multidimensional array is 8. 
+		Multidimensional arrays are stored in row-major order: values with the same last index are contiguous. This is diferent from Qb's default.
+
+			%%DIM array(1 TO 2, 6, 3 TO 5) AS SINGLE%%			
+		The first dimension of the declared array has indexes from 1 to 2, the second, 0 to 6, and the third, 3 to 5.  For more information on arrays, please visit the dedicated [[DtArrays page]].  
+		If the values used  with DIM to declare the dimensions of an array are all constants, the array will be created STATIC (unless $DYNAMIC is specified), while using one or more variables to declare the dimensions of an array makes it DYNAMIC, no matter if $STATIC has been issued.
+	
+		Variables and arrays are stored on the stack by default. The stack space is limited, by default to 1 MB, and exceeding this space results in a crash, with various error messages possible. Defining arrays in the main module and using SHARED to make them accessible to subs/functions makes FB to place the arrays in main memory, allowing them to be up to 2GB.
+	            
+	**Variable Initializers**
+		Arrays, variables and UDTs may be given a value at the time of their declaration using DIM, with the syntax shown above.  Please note the important differences between initializing different types.  Scalar variables are initialized as they would in a normal assignment, using an equals sign.  UDTs and arrays are assigned with an equal sign followed by a greater than symbol (=>).  Array values are given in comma delimited values enclosed by curly brackets, and UDT values are given in comma delimited values enclosed by parenthesis.
+		
+		These methods of initializing variables can be nested within one another for complex assignments.  For instance, to initialize a multidimensional array:
+
+			%%DIM array(1 to 2, 1 to 5) as Integer => {{1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}}%%			
+		In this declaration, the values for the left-most dimension are given as 5-index arrays.  Nesting allows for arrays of any dimension to be intialized.
+
+		UDTs and arrays can be nested within each other as well.  For instance, the following code declares and initializes an array of UDTs
+			
+			%%TYPE mytype
+	var1 AS DOUBLE
+	var2 AS INTEGER
+	var3 AS STRING
+END TYPE
+		
+DIM var(2) AS mtype => {(1.0, 1, "Hello"), (2.0, 2, "GoodBye")}%%		
+		For module-level, static, or global variables, initialized values must be constant expressions.  FreeBASIC will report a compile-time error if otherwise.
+		
+		
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim a as byte
+dim b as short
+dim c as integer
+dim d as longint
+dim au as ubyte
+dim bu as ushort
+dim cu as uinteger
+dim du as ulongint
+dim e as single
+dim f as double
+dim g as integer ptr
+dim h as byte ptr
+dim s1 as string * 10 'fixed string
+dim s2 as string      'variable length string
+dim s3 as zstring ptr 'zstring
+
+
+s1 = "Hello World!"
+s2 = "Hello World from FreeBasic!"
+s3 = allocate( len( s2 ) + 1 )
+*s3 = s2
+
+print "Byte: ";len(a)
+print "Short: ";len(b)
+print "Integer: ";len(c)
+print "Longint: ";len(d)
+print "UByte: ";len(au)
+print "UShort: ";len(bu)
+print "UInteger: ";len(cu)
+print "ULongint: ";len(du)
+print "Single: ";len(e)
+print "Double: ";len(f)
+print "Integer Pointer: ";len(g)
+print "Byte Pointer: ";len(h)
+print "Fixed String: ";len(s1)
+print "Variable String: ";len(s2)
+print "ZString: ";len(*s3)
+
+deallocate(s3)
+
+sleep
+%%
+
+{{fbdoc item="diff"}}
+	- Variable Initializers are new to FreeBASIC
+	- The alternate syntax "DIM AS DataType //symbolname//, [...]" is new to FreeBASIC
+	- Multidimensional arrays are stored in row-major order in FB, they were stored in column-major order in QB by default. Row major order: values with the same last index are contiguous. Column-major order: values wih the same first index are contiguous.
+	- Arrays up to 2 GB in size are possible in FB (use SHARED), QB static arrays were limited to 64K and to the DOS memory available if made DYNAMIC and /AH was used .
+
+	      
+{{fbdoc item="see"}}
+	- [[KeyPgCommon COMMON]]
+	- [[KeyPgDim DIM]]
+	- [[KeyPgErase ERASE]]
+	- [[KeyPgExtern EXTERN]]
+	- [[KeyPgLbound LBOUND]]
+	- [[KeyPgRedim REDIM]]
+	- [[KeyPgPreserve PRESERVE]]
+	- [[KeyPgShared SHARED]]
+	- [[KeyPgStatic STATIC]]
+	- [[KeyPgUbound UBOUND]]
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

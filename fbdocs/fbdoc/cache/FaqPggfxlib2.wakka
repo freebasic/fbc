@@ -1,0 +1,78 @@
+{{fbdoc item="title" value="Frequently Asked FB Graphics Library Questions"}}
+{{anchor name="item0"}}
+----
+
+**FreeBASIC Graphics Library questions:**
+	==- {{anchor name="item5|How can I link/use Gfxlib?"}}==
+	==- {{anchor name="item1|How are GET/PUT arrays managed?"}}==
+	==- {{anchor name="item2|Can I get rid of the 'DOS' screen?"}}==
+	==- {{anchor name="item3|How can I get the red, green, blue, or alpha component of a colour?"}}==
+	==- {{anchor name="item4|How can I make the 'x' close my application?"}}==
+
+
+----
+@@**FreeBASIC Graphics Library questions**@@
+
+{{anchor name="item5"}}==How can I link/use Gfxlib?==
+	Gfxlib is "built in" into the language, there's no .bi file to include or library to link. FB detects you want to use Gfxlib when it finds a SCREEN or SCREENRES instruction. So to use Gfxlib, just start a graphics screen mode and use the graphics commands.
+	
+{{anchor name="item1"}}==How are GET/PUT arrays managed?==
+	In FreeBASIC, images can be used as arrays (as in QB) or as pointers. Either way, the image data is contained in one continuous chunk. The chunk consists of a four byte header (32 bits), followed by the image data.
+	The first 3 bits of this header contain the image color depth in bytes-per-pixel. (8-bit color, depth = 1; 16-bit color, depth = 2; 32-bit color, depth = 4). The next 13 bits contain the image width. The last 16 bits contain the image's height.  You can find code examples of how to read this data [[FaqPggetputstructure HERE]].
+
+	The actual pixel data then follows, the size of this area can be obtained using the formula
+
+	pixel_data_size_bytes = ( img_Width * img_Height * img_Depth )
+
+
+	The total size of the image can be obtained using this formula
+
+	image_size_bytes = 4 + ( img_Width * img_Height * img_Depth )
+
+	{{anchor name="item0|Back to top"}}
+
+{{anchor name="item2"}}==Can I get rid of the 'DOS' screen?==
+	Definitely. You have to give FB the right command for it when you compile your program.
+		- If you compile from a command prompt, simply add "-s gui" to the end, like "fbc myprg.bas -s gui"
+		- If you compile in a specific IDE, you have to edit the "Compiler Defaults". In Jelly-Fish Pro, its "Compiler->Set Compiler Defaults->Compiler Options". Add "-s gui" (NO QUOTES) in that box.
+
+	{{anchor name="item0|Back to top"}}
+
+
+{{anchor name="item3"}}==How can I get the red, green, blue, or alpha component of a colour?==
+
+	Each byte in a colour attribute corresponds with the red, green, blue, and alpha components.  The following example shows how to extract the component values from a 16, 24, or 32 bit colour attribute.
+	
+	%%(qbasic)
+#define rgb_a(x) ((x) Shr 24)
+#define rgb_r(x) ((x) Shr 16 And 255)
+#define rgb_g(x) ((x) Shr 8 And 255)
+#define rgb_b(x) ((x) And 255)
+
+'' Assume a 16, 24, or 32 bit screen mode has been set
+c = point(x, y)
+red = rgb_r(c)
+green = rgb_g(c)
+blue = rgb_b(c)
+alpha = rgb_a(c)
+%%
+
+	{{anchor name="item0|Back to top"}}
+
+{{anchor name="item4"}}==How can I make the 'x' close my application?==
+	The "Close" button, or "X" button, however you prefer to call it, can be enabled by checking for the right ascii scan code. Ascii scancodes can be read through inkey. 
+
+	Here is a small example of how to enable the "x":
+
+%%(qbasic)
+Screen 13
+Do
+  Print "Click the 'x' to close this app."
+  sleep
+Loop Until Inkey = Chr( 255 ) + "k"
+%%
+
+	NOTE: If you use an old version of FB, you may have to use:
+	- Chr( 255 ) + "X"
+
+	{{anchor name="item0|Back to top"}}

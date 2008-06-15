@@ -1,0 +1,13 @@
+{{fbdoc item="title" value="About"}}----
+	
+	**FreeBASIC** is a free, 32-bit BASIC compiler for **Windows** (32-bit), protected-mode **DOS**, and **Linux** (x86). It began as an attempt to create a code-compatible, free alternative to Microsoft QuickBASIC, but has quickly grown into a powerful development tool, already including support for libraries such as Allegro, SDL, OpenGL, Gtk, the Windows API and many others with its default installation.
+
+	Aside from having a syntax the most compatible possible with MS-QuickBASIC, **FreeBASIC** introduces several new features such as pointers, unsigned data types, inline-assembly, a pre-processor and many others.
+
+	**FreeBASIC** is a self-hosting compiler (that is, written in **FreeBASIC**), and was developed by V1ctor.
+
+
+**About** &middot; [[CompilerFeatures Main Features]] &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  [[CompilerInstalling Installing]] &middot; [[CompilerRunning Running]] &middot;  [[CompileCmdLine Using the Command Line]] &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]] 
+
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

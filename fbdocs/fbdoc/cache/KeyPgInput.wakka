@@ -1,0 +1,51 @@
+{{fbdoc item="title" value="INPUT"}}
+----
+Input function to read one or more values entered by the user.
+
+{{fbdoc item="syntax"}}##
+	**Input** [;] ["//prompt//" {;|,} ] //variables_list//
+##
+{{fbdoc item="desc"}}
+	Presents a prompt to the user and allows him|her to enter the value of one or more variables, separated by a comma.
+
+	"//prompt//" is the prompt issued to the screen.  It can be omitted but, if it is present, it must be a literal string, enclosed in quotes. The separator after the prompt can be a semicolon, which will make ##**Input**## add a question mark and a space ("? ") at the end of the prompt; or a comma, in which case input will be immediately after the prompt.
+
+	The optional semicolon before the prompt will cause the program to stay on the same line after the input has been entered.
+
+	If ##**Input**## gets more variables than it expects, it will ignore the extra ones; if it gets fewer variables than it expects, it will use substitute 0 and "" for the missing variables.
+
+	If ##**Input**## expects a numerical variable and gets a string that isn't a valid number, it will get the number from the valid characters at the beginning of the string (0 if the first character is invalid).
+
+	##**Input**## has a limited edit capacity: it allows to erase characters using the backspace key.  If a better user interface is needed, a custom input routine should be used.
+
+{{fbdoc item="ex"}}
+%%(qbasic)dim as double a, b
+dim as string yn
+
+do
+	
+	input   "Please enter a number: ", a
+	input ; "And another: ", b
+	print , "Thank you"
+	sleep 500
+	print
+	print "The total is "; a + b
+	print
+	
+	do
+	    input "Would you like to enter some more numbers"; yn
+	    yn = lcase$(yn)
+	loop until yn = "y" or yn = "n"
+	
+loop while lcase$(yn) = "y"%%
+
+{{fbdoc item="diff"}}
+	- If the user inputs the wrong number of values, or if it expects a number for a value and gets a string that is not a valid number, then QBASIC issues the message "Redo from start", and does not continue further until it receives a valid input.
+	- If no prompt is given, QBASIC will prompt with "? ", while FreeBASIC will not give any prompt.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInputPp Input #]]##
+	- ##[[KeyPgInputNum Input()]]##
+	- ##[[KeyPgLineinput Line Input]]##
+
+{{fbdoc item="back" value="CatPgInput|INPUT"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

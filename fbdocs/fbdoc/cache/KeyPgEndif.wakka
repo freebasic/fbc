@@ -1,0 +1,24 @@
+{{fbdoc item="title" value="END IF"}}
+----
+{{fbdoc item="syntax"}}
+if [statement] then
+ [action]
+END IF
+
+{{fbdoc item="desc"}}
+END IF is used to denote the end of a block IF statement.
+{{fbdoc item="ex"}}
+%%(qbasic)
+if a = 1 then
+ print "A is equal to one!"
+END IF
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- [[KeyPgIfthen IFTHEN]]
+
+{{fbdoc item="back" value="CatPgConditional|CONDITIONAL"}}
+

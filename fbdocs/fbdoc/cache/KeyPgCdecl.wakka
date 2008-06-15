@@ -1,0 +1,27 @@
+{{fbdoc item="title" value="CDECL"}}
+----
+{{fbdoc item="syntax"}}
+declare {function | sub} procName cdecl alias
+
+{{fbdoc item="desc"}}
+Stands for C-Declare, which when used with a declare statement passes the arguments from right to left (C convention), rather than left to right ([[KeyPgPascal Pascal]] convention). Stack is poped by the caller, not by the called function.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+e.g. declaring 'pixelColor' from the SDL library.
+
+declare function pixelColor cdecl alias "pixelColor" (byval dst as SDL_Surface ptr, _
+	                                                  byval x as Sint16, _
+	                                                  byval y as Sint16, _
+	                                                  byval color as Uint32) as integer
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- [[KeyPgDeclare DECLARE]]
+	- [[KeyPgPascal PASCAL]]
+	- [[KeyPgStdcall STDCALL]]
+
+{{fbdoc item="back" value="CatPgCallingconvention|CALLING CONVENTION"}}

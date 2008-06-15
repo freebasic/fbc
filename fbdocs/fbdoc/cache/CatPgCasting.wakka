@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="Converting Data Types"}}
+----
+<<
+==Generic==
+	- {{fbdoc item="keyword" value="KeyPgCast|CAST"}}
+
+==To Pointer types==
+	- {{fbdoc item="keyword" value="KeyPgCptr|CPTR"}}
+
+==To Integer types ==
+	- {{fbdoc item="keyword" value="KeyPgCbyte|CBYTE"}}
+	- {{fbdoc item="keyword" value="KeyPgCubyte|CUBYTE"}}
+	- {{fbdoc item="keyword" value="KeyPgCshort|CSHORT"}}
+	- {{fbdoc item="keyword" value="KeyPgCushort|CUSHORT"}}
+	- {{fbdoc item="keyword" value="KeyPgClng|CLNG"}}
+	- {{fbdoc item="keyword" value="KeyPgCuint|CUINT"}}
+	- {{fbdoc item="keyword" value="KeyPgCint|CINT"}}
+	- {{fbdoc item="keyword" value="KeyPgClngint|CLNGINT"}}
+	- {{fbdoc item="keyword" value="KeyPgCulngint|CULNGINT"}}
+
+<<>>
+==To Floating-point==
+	- {{fbdoc item="keyword" value="KeyPgCsng|CSNG"}}
+	- {{fbdoc item="keyword" value="KeyPgCdbl|CDBL"}}
+
+==To/from Strings==
+	- {{fbdoc item="keyword" value="KeyPgStr|STR"}}
+	- {{fbdoc item="keyword" value="KeyPgVal|VAL"}}
+	- {{fbdoc item="keyword" value="KeyPgValint|VALINT"}}
+	- {{fbdoc item="keyword" value="KeyPgVallng|VALLNG"}}
+	- {{fbdoc item="keyword" value="KeyPgValuint|VALUINT"}}
+	- {{fbdoc item="keyword" value="KeyPgValulng|VALULNG"}}
+	- {{fbdoc item="keyword" value="KeyPgWstr|WSTR"}}
+
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}
+

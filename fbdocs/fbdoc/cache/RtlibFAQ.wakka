@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="Frequently Asked Questions"}}
+----
+
+==How to play sound using FreeBASIC in DOS ? A frequency, or WAV or MP3 files ?==
+	This is NOT easy in bare DOS; there is built-in access to standard libraries which works well if you're in a DOS box under Windows. If you are in bare DOS, you can either access the soundcard using a (mostly SB16 compatible) driver, if it is available for your card (unfortunately, this is becoming more and more a problem, the DOS drivers are poor or even inexistent), or access the card directly (this is low-level programming, hardware-related, assembler is also needed, and you need technical docs about the card). The probably only source of inspiration is the DOS audio player MPXPLAY (written in C with some ASM), supporting both methods. To play compressed files (MP3, OGG, FLAC, ...) , you additionally need the decompressing code.  
+	
+	
+==FreeBASIC gives me an error 'ld: can?t find -lX11' or something similar!==
+	FreeBASIC under linux uses ld to link it's files under linux. This program requires that any libraries you use have the '-dev' versions installed. For example, for the above error message, you'd want to install xlib-dev for your distribution. Other common errors are for glibc, which requires glibc-dev, and sdl, which requires sdl-dev. Most distributions make these easily available on your install media.
+
+==How to access the DOS interrupts?==
+	The DOS interrupts can be accessed only from the DOS version, only because you must be in a DOS session for the interrupts to exist. 
+
+	The access to interrupts  is much slower than QB's : in FB the DPMI server will have to do 2 context switches, going to real-mode and coming back. All of that will eat hundreds of clocks in raw-DOS and thousands of clocks if emm386 is loaded or if inside a Windows' DOS box. 
+You need djgpp's dpmi lib:
+
+%%(qbasic)
+#include "dos/dpmi.bi"
+
+type RegTypeX as __dpmi_regs
+
+#define INTERRUPTX(v,r) __dpmi_int( v, @r )
+%%
+
+==How to access the serial ports in fb?==
+
+	**DOS**
+	The DOS INT14 is not very useful as it sends/reads a single char in each call. So it's better to use  an external DOS32 comms library. /* does someone know a good one ? */
+
+	**Windows**
+	As of v0.15 OPEN COM is implemented for Windows
+
+	**Linux**
+	Linux is based on the UNIX paradigm, so serial ports are accessed as files(everything in Unix is a file or a process). This means that a developer can use standard documentation and the OPEN command to open /dev/ttys devices and manipulate them in a manner similar to C/""C++"".
+	!!!WRITEME!!!
+
+==How to print?==
+	FB Version 0.15 supports character output to printer. 
+	To print graphics two approaches are possible:
+	- Preprocess the graphics, program the printer and send the pixels in FB. This is portable but depends on the printer model.  
+	- In Windows and Linux there are specific API calls. This is not OS-portable but the OS's printer driver makes it printer-independent 
+
+==How to access the harware ports?==
+	As of V0.15 QB's INP and OUT are implemented. For the Windows version the required device driver is installed the first time the program is run.
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,0 +1,25 @@
+{{fbdoc item="title" value="Threading Support Functions"}}----
+
+<<
+	- {{fbdoc item="keyword" value="KeyPgCondWait|CONDWAIT"}}
+	- {{fbdoc item="keyword" value="KeyPgCondSignal|CONDSIGNAL"}}
+	- {{fbdoc item="keyword" value="KeyPgCondBroadcast|CONDBROADCAST"}}
+	- {{fbdoc item="keyword" value="KeyPgCondDestroy|CONDDESTROY"}}
+	- {{fbdoc item="keyword" value="KeyPgCondCreate|CONDCREATE"}}
+
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgMutexUnlock|MUTEXUNLOCK"}}
+	- {{fbdoc item="keyword" value="KeyPgMutexLock|MUTEXLOCK"}}
+	- {{fbdoc item="keyword" value="KeyPgMutexDestroy|MUTEXDESTROY"}}
+	- {{fbdoc item="keyword" value="KeyPgMutexCreate|MUTEXCREATE"}}
+	- {{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}
+	- {{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}
+
+>>
+
+NOTE: The DOS version of FreeBasic does not allow for threads, as the OS does not support them.
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}
+

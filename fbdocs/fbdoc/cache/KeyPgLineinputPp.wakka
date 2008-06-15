@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="LINE INPUT #"}}
+----
+Reads one line of text from a file.
+
+{{fbdoc item="syntax"}}##
+	**Line Input** #//file number, string_variable//
+##
+{{fbdoc item="param"}}
+	##//file number//##
+		file number of an open file
+	##//string_variable//##
+		variable to receive the line of text
+
+{{fbdoc item="desc"}}
+	Reads a line from an open sequential file and stores it in a string variable.  
+
+	A line of text does not include the end of line characters.  An end of line character may be the LF character (##[[KeyPgChr Chr]]##(10)) or the CRLF character pair (##[[KeyPgChr Chr]]##(13,10)).
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+Dim Filehandle As Integer
+Dim txt As String
+	
+On Local Error Goto HandleErrors
+	
+Filehandle = Freefile
+Open "test_text_file.txt" For Input As #filehandle
+
+If Lof(filehandle) > 0 Then
+	    Line Input #filehandle, txt
+Else
+	    Goto HandleErrors
+End If
+
+Close #filehandle
+print "The first line of test_text_file.txt is:"
+print txt
+	
+HandleErrors:
+print "Error."
+Return ""
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}

@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="SLEEP"}}
+----
+Waits until a specified time has elapsed, or a key is pressed.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //msecs// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** ( [[KeyPgByval byval]] //msecs// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //kind// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	SLEEP [ //msecs// [, //kind//]]
+##
+{{fbdoc item="param"}}
+	##//msecs//##
+		Optional number of milliseconds to wait (default is to wait for a keypress).
+	##//kind//##
+		Optional flag with a value of 1, to specify if the wait can be interupted by a keypress.
+
+{{fbdoc item="desc"}}
+	SLEEP will wait until //msecs// 'milliseconds' given elapsed (if any value was passed) or until the user presses a key. If //msecs// is below 100 ms then SLEEP will always wait the full requested amount (key presses are ignored).
+
+	Include the second parameter, "1", for a "deep" sleep, which cannot be interrupted by pressing a key.
+
+	The accuracy of SLEEP is variable depending on the OS cycle time (Windows NT/2K/XP: 15 ms,  9x/Me: 50 ms, Linux 10ms, DOS 55 ms).
+
+	Call SLEEP with 25ms or less to release time-slice when waiting for user input or looping inside a thread.
+
+	SLEEP does not clear the keyboard buffer and any keys pressed during a call to SLEEP are retained and can be read using [[KeyPgInkey Inkey$]].
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+print "press a key"
+sleep
+getkey 'clear the keyboard buffer
+print "waiting half second"
+sleep 500
+%%
+
+{{fbdoc item="diff"}}
+	- The delay had to be given in seconds in QB
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgTimer Timer]]##
+	- ##[[KeyPgInkey Inkey$]]##
+
+{{fbdoc item="back" value="CatPgMisc|MISC"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

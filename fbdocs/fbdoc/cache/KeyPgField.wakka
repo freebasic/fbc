@@ -1,0 +1,56 @@
+{{fbdoc item="title" value="FIELD"}}
+----
+{{fbdoc item="syntax"}}
+TYPE typename FIELD= 1,2,4
+ .....
+END TYPE
+
+{{fbdoc item="desc"}}
+~~A TYPE variable has its fields aligned to the word length of the system, 4 bytes presently. FIELD modifies the default alignment
+to byte (FIELD 1) or two bytes (FIELD 2). This allows to use a TYPE variable to read/write files with packed data.
+
+{{fbdoc item="ex"}}
+%%(qbasic)type bitmap_header field = 1
+	bfType          as ushort
+	bfsize          as uinteger
+	bfReserved1     as ushort
+	bfReserved2     as ushort
+	bfOffBits       as uinteger
+	biSize          as uinteger
+	biWidth         as uinteger
+	biHeight        as uinteger
+	biPlanes        as ushort
+	biBitCount      as ushort
+	biCompression   as uinteger
+	biSizeImage     as uinteger
+	biXPelsPerMeter as uinteger
+	biYPelsPerMeter as uinteger
+	biClrUsed       as uinteger
+	biClrImportant  as uinteger
+end type
+
+dim bmp_header as bitmap_header
+
+'Open up bmp.bmp and get it's header data:
+'Note: Will not work without a bmp.bmp to load . . .
+open "bmp.bmp" for binary as #1
+
+	get #1,,bmp_header
+	
+close #1
+
+print bmp_header.biWidth, bmp_header.biHeight
+
+sleep
+
+%%
+
+{{fbdoc item="diff"}}
+~-New to FreeBasic
+~-Qbasic had its TYPE variables byte aligned,so FIELD=1 is needed to read binary data written by a QB program.
+~-The keyword FIELD was used in QB to create a file buffer with fields variable at run time. This use is not supported in FB.
+
+{{fbdoc item="see"}}
+	- [[KeyPgType TYPE]]
+
+{{fbdoc item="back" value=""}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

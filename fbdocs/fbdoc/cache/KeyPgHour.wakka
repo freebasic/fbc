@@ -1,0 +1,35 @@
+{{fbdoc item="title" value="HOUR"}}
+----
+Date function to return the hours for a specified [[DtDateSer Date Serial]] 
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hour** ( [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	#include "vbcompat.bi"
+	//result// = **Hour**(//dateserial//)
+##
+{{fbdoc item="param"}}
+	##//date_serial//##
+		the date serial
+
+{{fbdoc item="ret"}}
+	Returns the hour from a variable containing a date in  [[DtDateSer Date Serial]]  format.
+
+{{fbdoc item="desc"}}
+. 
+	The compiler will not recognise this function unless "vbcompat.bi" is included.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#include "vbcompat.bi"
+a!=dateserial (2005,11,28)+timeserial(7,30,50)
+print format(a!,"yyyy/mm/dd hh:mm:ss ") ;hour(a!)
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB. This function appeared in PDS and VBDOS
+
+{{fbdoc item="see"}}
+	- [[DtDateSer Date Serials]]
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

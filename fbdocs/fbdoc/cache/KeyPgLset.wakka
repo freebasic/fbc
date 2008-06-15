@@ -1,0 +1,47 @@
+{{fbdoc item="title" value="LSET"}}
+----
+{{fbdoc item="syntax"}}
+lset string_var, string_expression
+lset dest_udt, origin_udt
+
+{{fbdoc item="desc"}}
+LSET left justifies text into the string buffer 'string_var', filling the left part of the string with 'string_expression' and the right part with spaces. The string buffer size is not modified.
+For compatibility with QBasic, LSET can too copy an user defined variable into another one. The copy is made byte to byte, without any care for  fields or alignment. It's up to the programmer to take care for the  validity of the result. 
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+buffer$ = space$(10)
+lset buffer$, "91.5"
+print "-["; buffer$; "]-"
+%%
+
+%%(qbasic)
+type mytype1
+x as integer
+y as integer
+end type
+
+type mytype2
+z as integer
+end type
+
+dim a as mytype1 , b as mytype2
+b.z=1234
+
+lset  a, b
+%%
+{{fbdoc item="diff"}}
+~-In QB, the syntax was LSET A$=B$.
+
+{{fbdoc item="see"}}
+	- [[KeyPgRset RSET]]
+	- [[KeyPgSpace SPACE$]]
+	- [[KeyPgPutfileio PUT (FILE I/O)]]
+	- [[KeyPgMkd MKD$]]
+	- [[KeyPgMki MKI$]]
+	- [[KeyPgMkl MKL$]]
+	- [[KeyPgMks MKS$]]
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}
+

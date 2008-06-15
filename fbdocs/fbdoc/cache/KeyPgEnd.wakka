@@ -1,0 +1,55 @@
+{{fbdoc item="title" value="END"}}
+----
+{{fbdoc item="syntax"}}
+	END { sub | function | if | select | type | enum | scope | with }
+	END [ //return_value// ]
+
+{{fbdoc item="desc"}}
+	The first syntax is used to signify the end of the most recent code block. The type of the block must be included in the command, either [[KeyPgSub SUB]], [[KeyPgFunction FUNCTION]], [[KeyPgIfthen IF]], [[KeyPgSelectcase SELECT]], [[KeyPgType TYPE]], [[KeyPgEnum ENUM]], [[KeyPgScope SCOPE]] or [[KeyPgWith WITH]].
+
+	The second syntax is used to terminate the program, and return to the OS. An optional return value, an integer, can be specified to return an error code to the system. If no return value is given, a value of 0 is automatically returned.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' This program stores input from the user in a string, checks the strings length,
+'' by calling valid_string, and either displays the string, or an error message
+
+option explicit   '' force explicit variable declarations
+option byval      '' default passing arguments by value
+option escape     '' allow C string literal escape sequences
+
+function valid_string( s as string ) as integer
+   return len( s )
+end function
+
+'' assign input to text string (a string of spaces will input as an empty string)
+dim as string text
+print "Type in some text ( try \"abc\" ): " ;
+input text
+
+'' check if string is valid (not empty). If so, print an error message and return
+'' to the OS with error code -1
+if( not valid_string( text ) ) then
+   print "ERROR: you must enter a valid string"
+   sleep : end -1
+end if
+
+'' string is valid, so print the string and return to the OS with error code 0
+print "You entered: " ; text
+sleep : end 0
+%%
+
+{{fbdoc item="diff"}}
+	- The END statement supports specifying a custom return value to be sent to the OS.
+
+{{fbdoc item="see"}}
+	- [[KeyPgSub SUB]]
+	- [[KeyPgFunction FUNCTION]]
+	- [[KeyPgIfthen IF]]
+	- [[KeyPgSelectcase SELECT]]
+	- [[KeyPgType TYPE]]
+	- [[KeyPgEnum ENUM]]
+	- [[KeyPgScope SCOPE]]
+	- [[KeyPgWith WITH]]
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

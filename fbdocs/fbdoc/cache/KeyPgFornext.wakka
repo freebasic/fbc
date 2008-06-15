@@ -1,0 +1,30 @@
+{{fbdoc item="title" value="FOR...NEXT"}}
+----
+{{fbdoc item="syntax"}}
+	FOR //counter// = //startvalue// TO //endvalue// [STEP //stepvalue//] 
+		[//statement block//]
+	NEXT [//counter//]
+
+{{fbdoc item="desc"}}
+A FOR [...] NEXT loop initializes //counter// to //startvalue//, then executes the //statement block//'s, incrementing //counter// by //stepvalue// until it reaches //endvalue//. If //stepvalue// is not explicitly given it will set to 1.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim i as single
+print "counting from 3 to 0, with a step of -1"
+FOR i = 3 TO 0 STEP -1
+	print "i is "; i
+NEXT
+%%
+
+{{fbdoc item="diff"}}
+	- [[KeyPgByref ByRef]] Arguments cannot be used as counters.
+
+{{fbdoc item="see"}}
+	- [[KeyPgStep STEP]]   
+	- [[KeyPgNext NEXT]]
+	- [[KeyPgDoloop DO...LOOP]]
+	- [[KeyPgExit EXIT]]
+	- [[KeyPgContinue CONTINUE]]
+
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}

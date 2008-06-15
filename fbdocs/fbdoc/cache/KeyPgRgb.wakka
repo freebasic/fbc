@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="RGB"}}
+----
+Function to compute valid color value for hi/truecolor modes.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgPpdefine #define]] **RGB**(//r//,//g//,//b//) (([[KeyPgCuint cuint]](r) [[KeyPgShl shl]] 16) [[KeyPgOr or]] ([[KeyPgCuint cuint]](g) [[KeyPgShl shl]] 8) [[KeyPgOr or]] [[KeyPgCuint cuint]](b))
+##
+{{fbdoc item="usage"}}##
+	**RGB**(//red//, //green//, //blue//)
+##
+{{fbdoc item="param"}}
+	##//red//##
+		red colour component value
+	##//green//##
+		green colour component value
+	##//blue//##
+		blue colour component value
+
+{{fbdoc item="ret"}}
+	the combined colour
+
+{{fbdoc item="desc"}}
+	##//Red//##, ##//green//## and ##//blue//## are components ranging 0-255.
+
+	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an integer  in the format &hRRGGBB, where RR, GG and BB equals the values passed to this function, in hexadecimal format.
+
+Example:
+	See ##[[KeyPgPutgraphics Put (Graphics)]]## example in addition.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+ScreenRes 640,480,32  '32 bit color
+Line(0,0)-(319,479), Rgb(255,0,0) 'draws a bright red box on the left side of the window
+Line(639,0)-(320,479), Rgb(0,0,255) 'draws a bright blue box on the right side of the window
+
+Sleep 'wait before exiting
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgColor Color]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

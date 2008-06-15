@@ -1,0 +1,43 @@
+{{fbdoc item="title" value="ON...GOSUB"}}
+----
+{{fbdoc item="syntax"}}
+	ON //expression// GOSUB //label1//[, ...]
+
+{{fbdoc item="desc"}}
+	Branches to different labels depending on the value of //expression//. An expression value of 1 will branch to the first label, a value of 2 to the second, etc.  If the value of //expression// is zero (0) or greater than the number of items in the list, excecution continues on the next statment following the ON..GOSUB.
+	
+	This statement behaves exactly like [[KeyPgGosub GOSUB]] and execution may return to the statement following the ON..GOSUB using [[KeyPgReturn RETURN]].
+
+	It is recommended that the structured [[KeyPgSelectcase SELECT CASE]] condtitional statement be used instead of ON...GOSUB.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+choice = 3
+on choice gosub labela, labelb, labelc
+print "Good bye."
+end
+
+labela:
+print "choice a"
+return
+
+labelb:
+print "choice b"
+return
+
+labelc:
+print "choice c"
+return
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[KeyPgSelectcase SELECT CASE]]
+	- [[KeyPgOngoto ON...GOTO]]
+	- [[KeyPgGosub GOSUB]]
+	- [[KeyPgReturn RETURN]]
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+

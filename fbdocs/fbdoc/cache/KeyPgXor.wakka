@@ -1,0 +1,72 @@
+{{fbdoc item="title" value="XOR"}}
+----
+Operator that finds the bitwise ##**Xor**## (exclusion) of two integers.
+
+{{fbdoc item="syntax"}}##
+	//number1// **Xor** //number2//
+##
+{{fbdoc item="usage"}}##
+	//result// = //number1// **Xor** //number2//
+##
+{{fbdoc item="desc"}}
+	##**Xor**##, at its most primitive level, is a boolean operation, a logic function that takes in two bits and outputs a resulting bit. 
+
+	If given two bits, this function returns true if ONLY one of the bits are true, and false for any other combination. The truth table below demonstrates all combinations of a boolean xor operation:
+
+##%%(qbasic)
+Bit1     Bit2    Result
+ 0         0        0
+ 1         0        1
+ 0         1        1
+ 1         1        0
+%%##
+	This holds true for conditional expressions in FreeBasic.  When using ##**Xor**## encased in an If block, While loop, or Do loop, the output will behave quite literally:
+##%%(qbasic)If condition1 Xor condition2 Then expression1%%##
+	Is translated as:
+##%%(qbasic)If condition1 is only true, or only condition2 is true, then perform expression1%%##
+	When given two expressions, numbers, or variables that return a number that is more than a single bit, ##**Xor**## is performed "bitwise". A bitwise operation compares each bit of one number, with each bit of another number, performing a logic operation for every bit.
+	The boolean math expression below describes this:
+##%%(qbasic)
+00001111 Xor
+00011110 
+--------  equals
+00010001
+%%##
+	Notice how in the resulting number of the operation, reflects an ##**Xor**## operation performed on each bit of the top operand, with each corresponding bit of the bottom operand.  The same logic is also used when working with conditions. ##**Xor**##, when used bitwise, is mostly performed with positive integers, such as ##[[KeyPgUbyte Ubyte]]##, ##[[KeyPgUinteger Uinteger]]##, or ##[[KeyPgUlongint Ulongint]]##. It can, however, be used with any numerical type.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' Using the XOR operator on two numeric values
+DIM AS UBYTE numeric_value1, numeric_value2
+numeric_value1 = 15 '00001111
+numeric_value2 = 30 '00011110
+
+'Result =  17  =     00010001
+PRINT numeric_value1 XOR numeric_value2
+SLEEP%%
+
+%%(qbasic)
+' Using the XOR operator on two conditional expressions
+Dim As UByte numeric_value
+numeric_value1 = 10
+numeric_value2 = 15
+
+IF numeric_value1 = 10 XOR numeric_value2 = 20 Then Print "Numeric_Value1 equals 10 or Numeric_Value2 equals 20"
+SLEEP
+
+' This will output "Numeric_Value1 equals 10 or Numeric_Value2 equals 20"
+' because only the first condition of the IF statement is true
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[TblTruth Operator Truth Tables]]
+	- ##[[KeyPgAnd And]]##
+	- ##[[KeyPgOr Or]]##
+	- ##[[KeyPgNot Not]]##
+	- ##[[KeyPgEqv Eqv]]##
+	- ##[[KeyPgImp Imp]]##
+
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -1,0 +1,79 @@
+{{fbdoc item="title" value="DIR$"}}
+----
+Returns files and/or directories that match //file_spec// and //attrib_mask//.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByref byref]] //file_spec// [[KeyPgAs as]] [[KeyPgStringtype string]] = "" , [[KeyPgByval byval]] //attrib_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = &h21,  [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0) [[KeyPgAs as]] [[KeyPgStringtype string]]
+##
+{{fbdoc item="usage"}}##
+	//retstr// = DIR( //file_spec//, //attrib_mask//, //out_attrib//)
+
+	or
+
+	//retstr// = DIR( //out_attrib//)
+##
+{{fbdoc item="param"}}
+	##//file_spec//##
+		Optional ##[[KeyPgStringtype string]]## argument specifying the name of the files or directories to be matched.
+	##//attrib_mask//##
+		Optional ##[[KeyPgInteger integer]]## mask specifying the file attributes of the files or directories to be matched.  
+	##//out_attrib//##
+		Optional ##[[KeyPgInteger integer]] [[KeyPgPtr ptr]]## which is set to the sttributes of the file or directory returned.
+
+{{fbdoc item="ret"}}
+	##//retstr//##
+		A ##[[KeyPgStringtype string]]## containing the name of file or directory returned.
+
+{{fbdoc item="desc"}}
+	Returns files and/or directories that match //file_spec// and //attrib_mask//. The //file_spec// parameter can include wildcards ("*" and/or "?") and paths.
+
+	The //attrib_mask// optional parameter is a combination of the following flags (each file with any of them set will be matched):
+		##&h##01 - read only
+		##&h##02 - hidden
+		##&h##04 - system
+		##&h##10 - directories
+		##&h##20 - archive
+
+	By default //attrib_mask// is set to &h21 (ie.: search for files with the archive or read-only flags set).
+
+	The //out_attrib// optional parameter if passed will be loaded with the attributes of the file been returned.
+
+	When //file_spec// is set to an empty string or no arguments are passed (or just //file_attrib//), then **DIR**[$] will return the next file found.
+
+	The result will be an empty string when no files were found.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+Const attrib_readonly   = &h01
+Const attrib_hidden     = &h02
+Const attrib_system     = &h04
+Const attrib_directory  = &h10
+Const attrib_archive    = &h20
+
+Sub list_files (filespec as string, byval attrib as integer)
+	Dim filename As String
+
+	filename = dir( filespec, attrib )
+	Do
+	    Print filename
+	    filename = dir( )
+	Loop While len( filename ) > 0
+End Sub
+
+Print "directories:"
+list_files "*", attrib_directory
+
+Print "archive files:"
+list_files "*", attrib_archive
+%%
+
+{{fbdoc item="diff"}}
+	- The //attrib_mask// parameter is new to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgCurdir Curdir$]]##
+	- ##[[KeyPgMkdir Mkdir]]##
+	- ##[[KeyPgRmdir Rmdir]]##
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

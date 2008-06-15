@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="GETKEY"}}
+----
+Returns the ascii code of the first key in the keyboard buffer.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getkey** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Getkey**
+##
+{{fbdoc item="ret"}}
+	The [[KeyPgInteger integer]] value of the ascii code returned.
+
+{{fbdoc item="desc"}}
+	It returns the ascii code of the first key in the keyboard buffer. The key is removed from the buffer. If no key is present, ##**Getkey**## waits for it. For extended keys (returning two characters) it skips the constant first char and returns the second one.
+
+	The key read is not echoed to the screen.
+
+	For a keyword not stopping the program if no key is at the buffer see INKEY$ or GfxLib's ##[[KeyPgMultikey Multikey]]##.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'it returns the getkey value for each key pressed
+print "press ESC to end"
+do
+a=getkey
+print a
+loop until a=27
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInkey Inkey$]]##
+	- ##[[KeyPgInputnum Input()]]##
+	- ##[[KeyPgMultikey Multikey]]##
+
+{{fbdoc item="back" value="CatPgInput|INPUT"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

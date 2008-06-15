@@ -1,0 +1,12 @@
+{{fbdoc item="title" value="User Defined Types"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgType|TYPE...END TYPE"}}
+	- {{fbdoc item="keyword" value="KeyPgTypeDef|Type Aliasing"}}
+	- {{fbdoc item="keyword" value="KeyPgUnion|UNION..END UNION"}}
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}
+
+

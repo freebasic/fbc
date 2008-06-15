@@ -1,0 +1,56 @@
+{{fbdoc item="title" value="HIWORD"}}
+----
+MACRO that calculates the high word of a variable.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgPpdefine #define]] **HIWORD**(//x//) ([[KeyPgCuint CUint]](//x//) [[KeyPgShr shr]] 16)
+##
+{{fbdoc item="usage"}}##
+	//result// = **HIWORD**(//x//)
+##
+{{fbdoc item="param"}}
+	##//x//##
+		Number to retrieve high-word from.
+
+{{fbdoc item="ret"}}
+	The most significant word of ##//x//##.
+
+{{fbdoc item="desc"}}
+	A word is 2 bytes and a byte is 8 bits. This is best understood by an example. 
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+DIM N AS UINTEGER
+
+'Note there are 32 bits
+N = &b10000000000000011111111111111111
+
+PRINT "N is                                       "; N
+PRINT "The binary representation of N is          "; BIN$(N)
+PRINT "The most significant word (MSW) of N is    "; HIWORD(N)
+PRINT "The least significant word (LSW) of N is   "; LOWORD(N)
+PRINT "The binary representation of the MSW is    "; BIN$(HIWORD(N))
+PRINT "The binary representation of the LSW is    "; BIN$(LOWORD(N))
+
+SLEEP
+%%##
+
+The output would look like:
+##%%(qbasic)
+N is                                       2147614719
+The binary representation of N is          10000000000000011111111111111111
+The most significant word (MSW) of N is    32769
+The least significant word (LSW) of N is   65535
+The binary representation of the MSW is    1000000000000001
+The binary representation of the LSW is    1111111111111111
+%%##
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLoWord LOWORD]]##
+	- ##[[KeyPgHibyte HIBYTE]]##
+	- ##[[KeyPgLoByte LOBYTE]]##
+
+{{fbdoc item="back" value="CatPgMath|Math"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

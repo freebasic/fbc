@@ -1,0 +1,47 @@
+{{fbdoc item="title" value="CSNG"}}
+----
+Converts numeric or string expression to ##[[KeyPgSingle Single]]## precision floating point.
+
+{{fbdoc item="syntax"}}##
+	**Csng**( //expression// )
+##
+{{fbdoc item="usage"}}##
+	//variable// = **Csng**(//numeric value//)
+	//variable// = **Csng**(//string expression//)
+##
+{{fbdoc item="desc"}}
+	The ##**Csng**## function returns a 32-bit ##[[KeyPgSingle Single]]## value. The function does not check for an overflow, so be sure not to pass a value outside the representable range of the ##[[KeyPgSingle Single]]## data type. The name can be explained as 'Convert to ""SiNGle""'.
+
+	If the argument to ##**Csng**## is a string expression, it is first converted to numeric by using ##[[KeyPgVal Val]]##.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' Using the CSNG function to convert a numeric value
+
+'Create an SINGLE variable
+DIM numeric_value AS SINGLE
+
+'Convert a numeric value
+numeric_value = CSNG(-12345.123)
+
+'Print the result, should return -12345.123
+PRINT numeric_value
+SLEEP
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCbyte Cbyte]]##
+	- ##[[KeyPgCubyte Cubyte]]##
+	- ##[[KeyPgCshort Cshort]]##
+	- ##[[KeyPgCushort Cushort]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCint Cint]]##
+	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgClngint Clngint]]##
+	- ##[[KeyPgCulngint Culngint]]##
+	- ##[[KeyPgCdbl Cdbl]]##
+
+{{fbdoc item="back" value="DtConvert|Converting Data Types"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}

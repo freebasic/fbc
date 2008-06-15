@@ -1,0 +1,57 @@
+%%(qbasic)Function img_Width( p As Any Ptr ) As Integer
+
+  Dim As uShort Ptr header
+  Dim As Integer w
+  
+  header = p
+  
+  w = header[0] Shr 3 '' first 13 bytes, slice off 3 bits on the right
+  
+  Return w
+  
+End Function
+
+Function img_Depth( p As Any Ptr ) As Integer
+
+  Dim As uShort Ptr header
+  Dim As Integer d
+  
+  header = p
+  
+  d = header[0] And &b0000000000000111 '' last 3 bytes
+  
+  Return d
+  
+End Function
+
+Function img_Height( p As Any Ptr ) As Integer
+
+  Dim As uShort Ptr header
+  Dim As Integer h
+  
+  header = p
+  
+  h = header[1]
+  
+  Return h
+  
+End Function
+
+
+Screen 17, 32
+
+
+Dim As Any Ptr picture
+
+picture = ImageCreate( 10, 10, 7 )
+Put( 30, 30 ), picture
+
+? "This picture's width is: " & img_Width( picture )
+? "This picture's height is: " & img_Height( picture )
+? "This picture uses " & img_Depth( picture ) & " bytes for every pixel."
+ 
+Sleep%%
+
+NOTE: To use this code with an array, pass your array to the functions, like this:
+
+%%(qbasic)? "This picture's height is: " & img_Height( VarPtr( myarray( 0 ) ) )%%

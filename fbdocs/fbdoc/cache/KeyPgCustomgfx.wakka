@@ -1,0 +1,21 @@
+{{fbdoc item="title" value="CUSTOM"}}
+----
+{{fbdoc item="syntax"}}
+PUT (X,Y),array,CUSTOM,custom_function_ptr
+
+{{fbdoc item="desc"}}
+CUSTOM selects an user custom function as the method for PUT'ting images
+
+
+{{fbdoc item="ex"}}
+	         For an example see ##[[KeyPgPutgraphics Put (Graphics)]]##.
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+	- 
+
+{{fbdoc item="see"}}
+	- [[KeyPgPutgraphics PUT]]
+	
+
+{{fbdoc item="back" value="CatPgFile|FILE"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

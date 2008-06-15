@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="CONDBROADCAST"}}
+----
+Function that restarts all threads ##[[KeyPgCondWait Condwait]]##ing for the handle.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Condbroadcast** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+##
+{{fbdoc item="usage"}}##
+	**Condbroadcast** ( //handle// )
+##
+{{fbdoc item="param"}}
+	##//handle//##
+		The ##[[KeyPgInteger integer]]## handle returned by a previous call to ##[[KeyPgCondCreate Condcreate]]##.
+
+{{fbdoc item="desc"}}
+	Once the conditional is ##[[KeyPgCondCreate Condcreate]]## and the threads are started, one of more of them can be set to ##[[KeyPgCondWait Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
+	Multihtreading is not implemented as a service in MSDOS so this fuction does'nt exist in FB for DOS32.
+
+{{fbdoc item="ex"}}
+	See ##[[KeyPgCondCreate Condcreate]]##
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCondCreate Condcreate]]##
+	- ##[[KeyPgCondDestroy Conddestroy]]##
+	- ##[[KeyPgCondSignal Condsignal]]##
+	- ##[[KeyPgCondWait Condwait]]##
+	- ##[[KeyPgThreadCreate Threadcreate]]##
+
+{{fbdoc item="back" value="CatPgThreading|THREADING"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical  keywords list"}}

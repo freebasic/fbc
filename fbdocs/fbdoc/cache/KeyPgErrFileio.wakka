@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="ERR:"}}
+----
+{{fbdoc item="syntax"}}
+OPEN "ERR:" FOR OUTPUT AS #1
+
+{{fbdoc item="desc"}}
+ERR: can be used with OPEN indicate the input/output will go to the error device. The error device is normally the screen. The main use is when CONS: output is redirected, the messages sent to ERR: will still reach the screen. The err device can be redirected too in Win XP or Linux, not in DOS or W9x. Console formatting keywords as LOCATE or COLOR will not work.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'PROGRAM CONSTEST.BAS
+OPEN "CONS:" FOR OUTPUT AS #1
+OPEN "ERR:" FOR OUTPUT AS #2
+PRINT #1 "HELLO"
+PRINT #2 "fINISHED"
+CLOSE #1
+%%
+if it's run like this
+%%
+constest.bas>>contestout.txt
+%%
+The "tERMINATED" message will still be seen.
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- [[KeyPgCons CONS:]]
+	
+
+{{fbdoc item="back" value="CatPgFile|FILE"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

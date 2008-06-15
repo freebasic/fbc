@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="USHORT"}}
+----
+Standard data type: 16 bit signed
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Ushort**##
+
+{{fbdoc item="desc"}}
+16-bit unsigned whole-number data type. Can hold values from 0 to 65365.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+  Dim x As UShort = 0
+  Dim y As UShort = &HFFFF
+  Print "UShort Range = "; x; " to "; y
+%%
+	**Output:**
+	%%UShort Range = 0 to 65535%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgShort Short]]##
+	- ##[[KeyPgCushort Cushort]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
+

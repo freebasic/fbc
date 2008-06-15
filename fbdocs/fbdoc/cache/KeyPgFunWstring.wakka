@@ -1,0 +1,43 @@
+{{fbdoc item="title" value="WSTRING (Function)"}}----
+	Fills a wstring with a certain length of a certain wide character.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch_code// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch// [[KeyPgAs as]] [[KeyPgString wstring]] ) [[KeyPgAs as]] [[KeyPgString wstring]]
+##
+{{fbdoc item="usage"}}##
+		//result// = Wstring( //count//, //ch_code// )
+			##//or//##
+		//result// = Wstring( //count//, //ch// )
+##
+{{fbdoc item="param"}}
+	##//count//##
+		An integer specifying the length of the wstring to be created.
+	##//ch_code//##
+		An integer specifying the Unicode char to be used to fill the wstring.
+	##//ch//##
+		A wstring whose first character is to be used to fill the wstring.
+
+{{fbdoc item="ret"}}
+	The created wstring. An empty wstring will be returned if either ##//ch//## is an empty string, or ##//count//## <= 0.
+
+{{fbdoc item="desc"}}
+	WSTRING generates a temporal wstring filled with //count// copies of an Unicode character. This string can be printed or assigned to a previously DIMed wstring.
+{{fbdoc item="ex"}}
+##%%(qbasic)
+   PRINT WSTRING( 4, 934 )         
+   PRINT WSTRING( 5, "Indeed" )   
+   end 0%%##
+   <<&#934;&#934;&#934;&#934;
+   IIII<<
+   ::c::
+
+
+{{fbdoc item="diff"}}
+	- QBasic does not support Unicode
+
+{{fbdoc item="see"}}
+	- [[KeyPgStringtype STRING]] (data type)
+	- [[KeyPgWspace WSPACE]]
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

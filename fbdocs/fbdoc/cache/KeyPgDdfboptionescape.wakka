@@ -1,0 +1,27 @@
+{{fbdoc item="title" value="__FB_OPTION_ESCAPE__"}}
+----
+Intrinsic define (macro value) set by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_OPTION_ESCAPE__""
+##
+{{fbdoc item="desc"}}
+	##""__FB_OPTION_ESCAPE__""## indicates if ##[[KeyPgOptionescape Option Escape]]## has been used previously in the source.
+
+	Returns zero (0) if the option has not been set.  Returns non-zero (-1) if the option has been set.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#if( __FB_OPTION_ESCAPE__ <> 0 )
+  #error Option Escape must not bew used with this include file
+#endif
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}} 
+	- ##[[KeyPgOptionescape Option Escape]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+

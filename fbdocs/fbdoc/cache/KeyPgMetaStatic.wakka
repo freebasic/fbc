@@ -1,0 +1,33 @@
+{{fbdoc item="title" value="$STATIC"}}
+----
+{{fbdoc item="syntax"}}
+	'$STATIC
+
+	Or
+
+	OPTION STATIC
+
+{{fbdoc item="desc"}}
+	$STATIC ends the action of a previous $DYNAMIC, so from this point all arrays declared with DIM are static.
+By default, arrays declared with DIM are static. An array declared with REDIM is always dynamic.Arrays declared in SUBS or FUNCTIONS are always dynamic.
+
+	The deprecated  '$STATIC form exists for compatibility with QB and can be used too. OPTION STATIC is the VB-like version of the same command.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+option dynamic
+dim a(100)   '<<this array will be dynamic
+option STATIC
+dim b(100)   '<<this array will be static
+%%
+
+{{fbdoc item="diff"}}
+	- When used inside comments it must be the first token
+
+{{fbdoc item="see"}}
+	- [[KeyPgDynamic $DYNAMIC]]
+	- [[KeyPgDim DIM]]
+	- [[KeyPgRedim REDIM]]
+	- [[KeyPgErase ERASE]]
+
+{{fbdoc item="back" value="CatPgPreProcess|Pre-Processor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

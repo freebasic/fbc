@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="SEEK (Function)"}}
+----
+{{fbdoc item="syntax"}}
+	SEEK(//handle//)
+
+{{fbdoc item="desc"}}
+	Returns the position  of the next read/write in the file //handle//. 
+	The position is given in record lengths if the file was opened FOR RANDOM, in bytes in any other case.
+	In FB the position is 1 based, the first record of a file is at position 1.
+	The [[KeyPgSeekset SEEK ]] statement is used to set the position of the next read/write
+	
+{{fbdoc item="ex"}}
+%%(qbasic)
+f = freefile
+open "file.ext" for binary as #f
+...
+position = seek(f)
+...
+close #f
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[KeyPgSeekset SEEK (Statement)]]
+	- [[KeyPgLoc LOC]]
+	- [[KeyPgOpen OPEN]]
+
+{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+

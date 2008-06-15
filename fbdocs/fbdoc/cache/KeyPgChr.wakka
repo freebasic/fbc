@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="CHR"}}
+----
+Function that returns a string of characters from integer values
+
+{{fbdoc item="syntax"}}
+	**Chr** [$]( //expression// [, ...] )
+
+{{fbdoc item="desc"}}
+	**Chr** returns a string containing the character represented by the [[CptAscii ASCII]] code passed to it. For example, ##**Chr**(97)## returns "a".
+
+	**Chr** with multiple arguments produces a string with all of the characters represented by the [[CptAscii ASCII]] codes passed to it, in order.
+
+	When **Chr** is used with constants or literals which can be evaluated at compile time, it can be used in initializers.
+
+	##[[KeyPgAsc Asc]]## performs the opposite function, returning a number containing the [[CptAscii ASCII]] code represented by a string.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+print "the character represented by the ASCII code of 97 is: "; CHR(97)
+%%
+
+%%(qbasic)
+print chr(97, 98, 99) ' prints abc
+%%
+
+%%(qbasic)
+dim s as string * 3 = chr(97, 98, 99) ' s initially has the value "abc"
+%%
+
+{{fbdoc item="diff"}}
+	- Accepts multiple arguments
+	- Evaluated at compile time when used with constants
+
+{{fbdoc item="see"}}
+	- [[CptAscii ASCII Character Codes]]
+	- ##[[KeyPgAsc Asc]]##
+	- ##[[KeyPgStr Str]]##
+	- ##[[KeyPgVal Val]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

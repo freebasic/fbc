@@ -1,0 +1,103 @@
+{{fbdoc item="title" value="OPEN"}}
+----
+{{fbdoc item="syntax"}}##
+	**Open** //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] for //mode// [encoding //encoding_type// [[KeyPgAs as]] [[KeyPgStringtype string]]] [[[KeyPgAccess access]] //access_type//] [//lock_type//] [[KeyPgAs as]] [#]//slot// [[KeyPgAs as]] [[KeyPgInteger integer]] [len = //record_length// [[KeyPgAs as]] [[KeyPgInteger integer]]]##
+{{fbdoc item="param"}}
+	##//filename//##
+		Name of file to open; must be a legal file name in the target OS, without wildcards.  Non-absolute file specs are relative to the current directory. This file must exist if ##//mode//## is ##[[KeyPgInputfilemode Input]]##.
+	##//mode//##
+		One of:
+		- ##[[KeyPgInputfilemode Input]]## - open file for sequential text-mode input.
+		- ##[[KeyPgOutput Output]]## - open file for sequential text-mode output, the file is emptied if there is data in it.
+		- ##[[KeyPgAppend Append]]## - open file for sequential text-mode output, and set the write pointer at the end of the data already in the file.
+		- ##[[KeyPgBinary Binary]]## - open file for random-access binary-mode input and/or output. 
+		- ##[[KeyPgRandom Random]]## - open file for random-access input and/or output  with fixed-length records (see Len clause)
+	##//encoding_type//##
+		Optional argument, valid only with text modes (INPUT, OUTPUT, APPEND); one of:
+		- ##"utf8"## 
+		- ##"utf16"##
+		- ##"utf32"## 
+		- ##"ascii"## (the default)
+	##//access_type//##
+		Optional argument; Binary and Random modes allow to both read and write the file, unless an ##[[KeyPgAccess Access]]## type is specified; one of: 
+		- ##Read## - the file is opened for input only
+		- ##Write## - the file is opened for output only
+		- ##Read Write## - the file is opened for input and output (the default)
+	##//lock_type//##
+		Optional argument; indicates the way the file is locked for other processes (users or threads); one of:
+		- ##Shared## - The file can be freely accessed by other processes     
+		- ##Lock Read## - The file can't be opened simultaneously for reading
+		- ##Lock Write## - The file can't be opened simultaneously for writing
+		- ##Lock Read Write## - The file cannot be opened simultaneously by other processes.
+		
+		If no lock type is stated, the file will be ##Shared## for other threads of the program and ##Lock Read Write## for other programs.
+		##[[KeyPgLock Lock]]## and ##[[KeyPgUnlock Unlock]]## can be used to temporarily restrict access to parts of a file.
+	##//slot//##
+		A valid FB file slot number (in the range 1-255) not being used for any other file presently open. The slot identifies the file for the rest of file operations. A free slot can be found using the ##[[KeyPgFreefile FreeFile]]## function.
+	##//record_length//##
+		Optional parameter, meaningful only for files opened ##For Random##; the amount of bytes the file pointer will move for each individual ##[[KeyPgGetfileio Get]]## and ##[[KeyPgPutfileio Put]]##.  It must match the size of the bufer variable used when reading and writing data. The default is 128 bytes.
+
+{{fbdoc item="desc"}}
+	Opens a file or device for reading and/or writing in the given file //slot//, with the given file //mode//. 
+	If the file does not exist, a new file will be created, unless FOR INPUT is specified; in this case, an error is issued.
+	The file pointer is initialized by OPEN at the beginning of the file, except if opened FOR APPEND; in this case, the pointer is set at the end of the existing data.
+	The data existing in the file is preserved by OPEN unless FOR [[KeyPgOutput OUTPUT]] is specified; in this case, the file is emptied.
+	
+	Using MS-DOS device names to open streams to hardware devices ("LPT:", "SCR:",..) is no longer allowed; FreeBASIC's new composite keywords must be used: see [[KeyPgOpenCom OPEN COM]],  [[KeyPgOpenCons OPEN CONS]],  [[KeyPgOpenErr OPEN ERR]],  [[KeyPgOpenPipe OPEN PIPE]],  [[KeyPgOpenLpt OPEN LPT]],  [[KeyPgOpenScrn OPEN SCRN]].
+	OPEN can be used as a function which returns the error code that the operation sets in [[KeyPgErr ERR]].
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' Create a string and fill it.
+Dim buffer As String
+buffer = "Hello World within a file."
+
+' Find the first free file handle.
+f = Freefile
+
+' Open the file "file.ext" for binary usage, using the handle "f".
+Open "file.ext" For Binary As #f
+
+' Place our string inside the file, using handle "f".
+Put #f, , buffer
+
+' Close all open files.  
+Close
+
+' End the program. (Check the file "file.ext" upon running to see the output.)
+End
+%%
+
+%%(qbasic)
+'OPEN A COM PORT
+OPEN COM "COM1:9600,N,8,1" AS #1
+'COM1, 9600 BAUD, NO PARITY BIT, EIGHT DATA BITS, ONE STOP BIT
+%%
+
+%%(qbasic)
+dim openerror as integer
+
+openerror = OPEN("file.ext" FOR BINARY ACCESS READ AS #1)
+
+IF openerror THEN
+	PRINT "Error opening file: " & openerror
+END IF
+%%
+
+{{fbdoc item="diff"}}
+	- The QB's "variable" syntax.  OPEN //file_mode_string//,[#]//slot_numeric_expr//,//file_name_string//,//record_length_numeric_expr// is not allowed in FB
+	- Using MS-DOS device names to open hardware devices ("LPT:", "SCR:",..) is no more allowed, new composite keywords must be used . See [[KeyPgOpenCom OPEN COM]],  [[KeyPgOpenCons OPEN CONS]],  [[KeyPgOpenErr OPEN ERR]],  [[KeyPgOpenPipe OPEN PIPE]],  [[KeyPgOpenLpt OPEN LPT]],  [[KeyPgOpenScrn OPEN SCRN]]
+	- OPEN can now be used as a function.
+
+{{fbdoc item="see"}}
+	- [[KeyPgOpenCom OPEN COM]]
+	- [[KeyPgOpenCons OPEN CONS]]
+	- [[KeyPgOpenErr OPEN ERR]]
+	- [[KeyPgOpenPipe OPEN PIPE]]
+
+	- [[KeyPgClose CLOSE]]
+	- [[KeyPgInputPp INPUT #]]
+	- [[KeyPgGetfileio GET (FILE I/O)]]
+	- [[KeyPgPutfileio PUT (FILE I/O)]]
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

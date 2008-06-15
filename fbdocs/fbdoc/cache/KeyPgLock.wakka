@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="LOCK"}}----
+{{fbdoc item="syntax"}}
+	LOCK #//handle//[, {//record// | [//start//] TO //end//}]
+
+{{fbdoc item="desc"}}
+	LOCK restricts temporally access by other threads or programs to a part of a file, usually to allow safe writing to it.
+	
+	//handle// is the file slot number used to [[KeyPgOpen OPEN]] the file
+	//record// specifies a single record number ([[KeyPgRandom RANDOM]] files)) or  byte position  ([[KeyPgBinary BINARY]] files)) to lock
+	//start// specifies the first record number ([[KeyPgRandom RANDOM]] files)) or  byte position  ([[KeyPgBinary BINARY]] files)). If it's omited the present record /byte is used.
+	//end// specifies the last record number ([[KeyPgRandom RANDOM]] files)) or  byte position  ([[KeyPgBinary BINARY]] files)). 
+	After modifying the data, an [[KeyPgUnlock UNLOCK]] with the same parameters as the LOCK should be issued .
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+''e.g. locking a file, reading 100 bytes, and unlocking it. To run, make sure there exists a file called 'file.ext' in the current directory that is at least 100 bytes.
+
+dim array(1 to 100)
+f = freefile
+open "file.ext" for binary as #f
+lock #f, 1 to 100
+for i = 1 to 100
+	get #f, i, array(i)
+next
+unlock #f, 1 to 100
+close #f
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[KeyPgUnlock UNLOCK]]
+	- [[KeyPgOpen OPEN]]
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

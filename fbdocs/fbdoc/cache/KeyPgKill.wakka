@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="KILL"}}
+----
+Deletes a disk file.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Kill** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	KILL //filename//
+##
+{{fbdoc item="param"}}
+	##//filename//##
+		The //filename// is the name of the disk file to delete. If the file is not in the current directory, a the path must also be given //[path]file$//.
+
+{{fbdoc item="desc"}}
+	Deletes a file from the disk drive.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+kill "file.ext"
+%%
+
+{{fbdoc item="diff"}}
+	-
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgShell Shell]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

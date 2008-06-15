@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="FILECOPY"}}
+----
+Copies a file.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileCopy""** ( //source// [[KeyPgAs as]] [[KeyPgStringtype string]], //destination// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	#include "file.bi"
+	**""FileCopy""** //source//, //destination//
+##
+//or//
+##
+	#include "vbcompat.bi"
+	**""FileCopy""** //source//, //destination//
+##
+{{fbdoc item="param"}}
+	##//source//##
+		A ##[[KeyPgStringtype string]]## argument specifying the filename of the file to copy from.  This file must exist.
+	##//destination//##
+		A ##[[KeyPgStringtype string]]## argument specifying the filename of the file to copy to.  This file will be overwritten if it exists.  This file should not be currently referenced by any open file handles.
+
+{{fbdoc item="desc"}}
+	Copies the contents of the source file into the destination file, overwriting the destination file if it already exists.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#include "file.bi"
+FILECOPY "source.txt", "destination.txt"
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic.  Existed in Visual Basic.
+
+{{fbdoc item="see"}}
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

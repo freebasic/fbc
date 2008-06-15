@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="LONG"}}
+----
+Standard data type: 32 bit signed
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Long**##
+
+{{fbdoc item="desc"}}
+Same as ##[[KeyPgInteger Integer]]##. A 32-bit signed whole-number data type.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+  Dim x As Long = &H80000000
+  Dim y As Long = &H7FFFFFFF
+  Print "Long Range = "; x; " to "; y
+%%
+	**Output:**
+	%%Long Range = -2147483648 to  2147483647%%
+
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInteger Integer]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
+

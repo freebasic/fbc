@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="INT"}}
+----
+Function to return the integer part of a number
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Int** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Int** ( //number//)
+##
+{{fbdoc item="param"}}
+	##//number//##
+		the number
+
+{{fbdoc item="ret"}}
+	Returns the largest integer less than or equal to the input.
+
+{{fbdoc item="desc"}}
+	 e.g. int(4.9) will return 4.0, and int(-1.3) will return -2.0
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgFix Fix]]##
+	- ##[[KeyPgCint Cint]]##
+
+{{fbdoc item="back" value="CatPgMath|Math"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

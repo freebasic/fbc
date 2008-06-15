@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="LPRINT"}}
+----
+{{fbdoc item="syntax"}}##
+	**Lprint**  [ [[KeyPgPrintusing Using]] //formatstring//,] [//expressionlist//] [(, | ;)] ...
+##
+{{fbdoc item="param"}}
+	##//formatstring//##
+		string specifying the output format
+	##//expressionlist//##
+		list of variables to output according to the specified format
+
+{{fbdoc item="desc"}}
+	Prints ##//expressionlist//## to the printer attached to the parallel port LPT1, or if it does not exist, to the default printer.  To print to a printer different from the default one, use ##[[KeyPgOpenLpt OPEN LPT]]##.
+
+	The ##[[KeyPgPrintUsing Using]]## clause formats ##//expresionlist//## according to ##//formatstring//##.  Any data type but UDT's can be passed to **##Lprint##** ##//expressionlist##//, expressions do **not** have to be converted to strings first.
+
+	Using a comma (,) as separator or in the end of the ##//expressionlist//## will place the cursor in the next column (every 14 characters), using a semi-colon (;) won't move the cursor. If neither of them are used in the end of the ##//expressionlist//##, then a new-line will be printed.
+
+	Some printers will not print at all until a character 12 (End of Page) is printed.
+
+	Internally, FreeBASIC uses the special file handle -1 for printing using **##Lprint##**.  This handle may be safely closed using ##[[KeyPgClose Close]]## -1.  Next use of **##Lprint##** will automatically reopen it as needed.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' new-line
+LPRINT "Hello World!"
+
+'' no new-line
+LPRINT "Hello"; "World"; "!";
+LPRINT
+
+'' column separator
+LPRINT "Hello!", "World!"
+LPRINT CHR(12)
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpenLpt Open LPT]]##
+	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrintusing Print Using]]##
+	- ##[[KeyPgWrite Write]]##
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

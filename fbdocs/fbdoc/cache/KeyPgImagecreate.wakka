@@ -1,0 +1,59 @@
+{{fbdoc item="title" value="IMAGECREATE"}}
+----
+Creates and initializes storage for an image.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub function]] **""ImageCreate""**( //width// [[KeyPgAs as]] [[KeyPgInteger integer]], //height// [[KeyPgAs as]] [[KeyPgInteger integer]][, //color// [[KeyPgAs as]] [[KeyPgUinteger uinteger]]] )
+##
+{{fbdoc item="usage"}}##
+		//buffer// = ""ImageCreate""( //width//, //height// )
+			##//or//##
+		//buffer// = ""ImageCreate""( //width//, //height//, //color// )
+##
+{{fbdoc item="param"}}
+	##//width//##
+		Desired width of the image buffer to create.
+	##//height//##
+		Desired height of the image buffer to create.
+	##//color//##
+		The pixel value to fill the image buffer with upon creation.
+
+{{fbdoc item="ret"}}
+	The address of the image buffer, or zero (0) if the buffer could not be created.
+
+{{fbdoc item="desc"}}
+	Allocates and initializes a memory buffer for an image. If ##//color//## is not specified, a value of zero (0) for paletted modes, or &HFF00FF for hi/truecolor modes will be used to fill the image buffer.
+	
+	##**""ImageCreate""**## can only be used after setting a gfx mode with the ##[[KeyPgScreengraphics Screen]]## statement or ##[[KeyPgScreenres ScreenRes]]## statement.  The created image buffer remains valid between mode changes as long as the different modes use the same pixel format.  Images can be deleted with ##[[KeyPgImageDestroy ImageDestroy]]##.
+
+	The ##**""ImageCreate""**## function is an alternative to using the ##[[KeyPgGetgraphics Get (Graphics)]]## statement to create a buffer, and can ease the creation of an image buffer for use 2D drawing functions.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)option explicit
+
+   '' set screen mode
+   screen 15, 32
+   
+   '' allocate and draw to an image buffer
+   dim image_buffer as any ptr
+   image_buffer = ImageCreate( 64, 64, RGBA( 64, 160, 0, 255 ) )
+   circle image_buffer, ( 32, 32 ), 28, RGBA( 255, 0, 0, 128 ),,,,F
+   
+   '' blit image buffer to screen
+   put( 160, 120 ), image_buffer, pset
+   put( 180, 140 ), image_buffer, ALPHA
+   
+   '' free image buffer memory
+   ImageDestroy( image_buffer )
+   
+   end 0
+%%##
+
+{{fbdoc item="diff"}}
+	- New to FB
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgGetgraphics Get (Graphics)]]##
+	- ##[[KeyPgImageDestroy ImageDestroy]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

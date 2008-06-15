@@ -1,0 +1,42 @@
+{{fbdoc item="title" value="OPEN CONS"}}
+----
+{{fbdoc item="syntax"}}##
+	**[[KeyPgOpen open]] cons** [for //file_mode//] [[KeyPgAs as]] [#]//n// [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}
+	##**open cons** [for //file_mode//] as [#]//n//##
+
+{{fbdoc item="param"}}
+	##//file_mode//##
+		Either ##[[KeyPgInputfilemode Input]]## or ##[[KeyPgOutput Output]]##.  If omitted, ##[[KeyPgOutput Output]]## is assumed.
+	##//n//##
+		An unused file handle.
+
+{{fbdoc item="desc"}}
+	This command opens the console for input/output as a file, allowing to read/write from/to it with normal file commands. 
+	This command opens the internal OS's stdin to read and stdout to write to the console. This form should be used when the input / output has been redirected or piped with OS commands.
+	The normal console commands, such as ##[[KeyPgColor Color]]## and ##[[KeyPgLocate Locate]]##, do not work in this mode, because they do not accept a file handle.
+	It is not possible to open a console both for input and output with the same handle.
+	An unused file handle can be found using ##[[KeyPgFreefile FreeFile]]##.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+Open CONS For input As #1
+Open CONS For output as #2
+
+Print #2,"Please write something and press ENTER"
+Line Input #1,a$
+Print #2, "You wrote : ";a$
+
+Close
+Sleep
+%%
+
+{{fbdoc item="diff"}}
+	- In QB the syntax was OPEN "CON:" FOR INPUT|OUTPUT AS [#] //n// 
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpenScrn Open Scrn]]##
+	- ##[[KeyPgFreefile FreeFile]]##
+
+ {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

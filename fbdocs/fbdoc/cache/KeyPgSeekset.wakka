@@ -1,0 +1,30 @@
+{{fbdoc item="title" value="SEEK (Statement)"}}
+----
+{{fbdoc item="syntax"}}
+	SEEK #//handle//, //position//
+
+{{fbdoc item="desc"}}
+	Sets the position (in bytes) within a file for the next read/write to occur at (given the file //handle//).
+	The position is given in records if the file was opened AS RANDOM, in bytes in any other case.
+	In FB the position is 1 based, the first record of a file is at position 1.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'e.g. if you want to skip to the 100th byte in the file for reading/writing:
+f = freefile
+open "file.ext" for binary as #f
+...
+seek f, 100
+...
+close #f
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[KeyPgSeekreturn SEEK Function]]
+	- [[KeyPgOpen OPEN]]
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

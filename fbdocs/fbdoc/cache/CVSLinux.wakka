@@ -1,0 +1,93 @@
+This procedure works rather well.  You will need many standard development tools and libraries, including but not limited to gcc, perl, autoconf, ncurses-dev, gpm-dev, libx11-dev, libxpm-dev, libxrandr-dev, and libglitz-glx1-dev.  At least some of these are likely to not come with a 'stock' desktop development Linux distribution.  All of them are easily available using apt-get, on Linuxi which use the apt (.deb) packaging system.
+
+1.  Log in to CVS.  Press Enter when prompted for password.
+
+	##cvs -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc login##
+
+2. Get source code via cvs.
+
+	##mkdir ~/fbccvs
+	cd ~/fbccvs
+	""cvs -z3 -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc co FreeBASIC""
+	cvs -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc logout##
+
+3. Copy 0.15b, standard distribution, to ~/FBbin. I have the .tar.gz in my home directory,
+so:
+
+	##cd
+	""tar xzvf FreeBASIC-v0.15b-linux.tar.gz""
+	""mv FreeBASIC FBbin""##
+
+3. Add ~/FBbin to path
+
+Add the following to the bottom of text file ~/.bashrc:
+
+	##PATH=~/FBbin:$PATH
+	export PATH##
+
+then close the shell window, and start another (or log out and in again).
+
+4. Copy 0.16b, latest standard, on top of ~/FBbin. I have the .tar.gz in my home directory,
+so:
+	
+	##cd ~/FBbin
+	tar xzvf ~/FB-v0.16b-mar-04-testing-linux.tar.gz##
+
+5. Make compiler.
+
+Set up to make the compiler, and make it. CFLAGS is set here for a non-debug build, smaller and faster.  You may see a warning or two during autoreconf, but these are safe to ignore.
+
+	##""cd ~/fbccvs/FreeBASIC/src/compiler""
+	autoreconf
+	""cd ~/fbccvs/FreeBASIC/src/compiler/obj/linux""
+	chmod +x ../../configure
+	../../configure
+	make CFLAGS=-O2##
+
+6. Make all libs.
+
+	a. Set up to make rtlib, and make it.  CFLAGS is set here for a non-debug build, smaller and faster.
+
+		##""cd ~/fbccvs/FreeBASIC/src/rtlib""
+		autoreconf
+		""cd ~/fbccvs/FreeBASIC/src/rtlib/obj/linux""
+		chmod +x ../../configure
+		../../configure
+		make CFLAGS=-O2
+		make CFLAGS=-O2 MULTITHREADED=1##
+
+	b. Do the same for rtlibx.
+	
+		##""cd ~/fbccvs/FreeBASIC/src/rtlibx""
+		autoreconf
+		""cd ~/fbccvs/FreeBASIC/src/rtlibx/obj/linux""
+		chmod +x ../../configure
+		../../configure
+		make CFLAGS=-O2
+		make CFLAGS=-O2 MULTITHREADED=1##
+	
+	c. Ditto, gfxlib2.
+	
+		##""cd ~/fbccvs/FreeBASIC/src/gfxlib2""
+		autoreconf
+		""cd ~/fbccvs/FreeBASIC/src/gfxlib2/obj/linux""
+		chmod +x ../../configure
+		../../configure
+		make CFLAGS=-O2##
+
+7. Replace old .bi's with new.
+
+	##rm -rfv ~/FBbin/inc/*
+	""cp -rfv ~/fbccvs/FreeBASIC/inc/* ~/FBbin/inc""##
+
+8. Overwrite old compiler and libs with new.
+
+	##""/bin/cp -fv ~/fbccvs/FreeBASIC/src/compiler/obj/linux/fbc_new ~/FBbin/fbc""
+	""/bin/cp -fv ~/fbccvs/FreeBASIC/src/rtlib/obj/linux/*.a ~/FBbin/lib/linux""
+	""/bin/cp -fv ~/fbccvs/FreeBASIC/src/rtlibx/obj/linux/*.a ~/FBbin/lib/linux""
+	""/bin/cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/linux/*.a ~/FBbin/lib/linux""##
+
+That's it!  If you run 'fbc', you should see results.
+
+Recently it has come to light that although the above often works, there can be chicken-and-egg-related problems.  Please see this forum thread for info:
+http://www.freebasic.net/forum/viewtopic.php?p=32260#32260

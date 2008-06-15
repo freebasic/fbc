@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="MOD"}}
+----
+Operator to divide two numbers and return the remainder.
+
+{{fbdoc item="syntax"}}##
+	//number1// **Mod** //number2//
+##
+{{fbdoc item="usage"}}##
+	//result// = //number1// **Mod** //number2//
+##
+{{fbdoc item="desc"}}
+	##**Mod**## is the modulus or "remainder" arthimetic operator. The result of ##**Mod**## is the integer remainder of ##//number1//## divided by ##//number2//##. If either ##//number1//## or ##//number2//## is not an integer value then it is rounded to the nearest whole number.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+PRINT 47 MOD 7
+PRINT 5.6 MOD 2.1
+PRINT 5.1 MOD 2.8
+%%##
+
+The output would look like:
+##%%(qbasic)
+5
+0
+2
+%%##
+
+This is because: 
+	- 47 divided by 7 gives a remainder of 5
+	- 5.6 is rounded to 6 while 2.1 is rounded to 2. This makes the problem 6 MOD 2 which means 6 divided by 2 which gives a remainder of 0
+	- 5.1 is rounded to 5 while 2.8 is rounded to 3. This makes the problem 5 MOD 3 which means 5 divided by 3 which gives a remainder of 2
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[OpArithmatic Arithmetic Operators]]##
+
+**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]

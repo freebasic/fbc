@@ -1,0 +1,88 @@
+{{fbdoc item="title" value="Error Handling"}}----
+
+	Freebasic can handle the errors in tne following ways:
+	- By default the program does nothing with the errors, code should process the errors in the next line
+	- If compiled with -e or -ex options, FB  uses QB-like error handling.
+	- **Future** OOP versions of FB may have a java-like TRY..CATCH...FINALY exception handler implemented.
+
+	**NOTE:** The following information is valid unless the error produces an OS General Protection Fault (for example if program writes outside the process memory area). In that case the OS will stop inmediately the program and issue an error: nothing can avoid it from inside FB.
+
+==Default error handling==
+
+	The default FB behavior is to set the ERR variable and continue. 
+
+%%(qbasic)
+open "xzxwz.zwz" for input as #1
+print ERR
+sleep
+%%
+
+	(The example program supposes there is no xzxwz.zwz file). The program does not stop, it sets the ERR variable and continues. The error can be processed in the next line.
+
+	Some IO functions OPEN, PUT... can be used in a FUNCTION form, returning an error number or zero if everything went ok.
+
+%%(qbasic)
+print open ("xzxwz.zwz" for input as #1)
+sleep
+%%
+
+==QB-Like error handling==
+
+	If the  -e or -ex switch is used at compile the program is expected to have a QB-like error handler enabled. If no handler processes the error, program stops with an error.
+
+	Notice if QB-Like error handling is used, the programmer should be prepared to handle ALL error conditions. For example GETMOUSE issues an error if the cursor goes off the window.
+
+%%(qbasic)
+ON ERROR GOTO FAILED
+open "xzxwz.zwz" for input as #1
+ON ERROR GOTO 0
+sleep
+END
+
+FAILED:
+PRINT ERR
+sleep
+END
+%%
+
+	ON ERROR sets an error handling routine, the program will jump to it when an error is found. ON ERROR GOTO 0 disables the error handling.
+
+	If an error handling routine is not set when an error occurs, the program will stop and send to the console an error message.
+%%
+Aborting program due to runtime error 2 (file not found)
+%%
+::c::
+	The error handler routine can be at the end of the program, as in QB. The ON LOCAL ERROR allows to set a local error handler routine at the end of  the same SUB or FUNCTION
+
+%%(qbasic)
+declare sub foo
+foo
+print "ok"
+sleep
+
+sub foo
+on local error goto fail
+open "xzxwz.zwz" for input as #1
+on local error goto 0
+exit sub
+fail:
+print "Error "err
+sleep
+end sub
+%%
+
+	If the -e switch is used the error handler must terminate the program. 
+	With -ex the error routine can end by a RESUME (retries the statement that caused the error) or RESUME NEXT (continues at the next instruction) 
+
+==Error codes==
+
+	Freebasic returns the following runtime error codes:
+~{{table columns="2" cellpadding="1" cells="0;No error;1;Illegal function call;  2;File not found signal;3;File I/O error;4;Out of memory;5;Illegal resume;6;Out of bounds array access;7;Null Pointer Access;8;No privileges;9;interrupted signal;10;illegal instruction signal;11;floating point error signal;12;segmentation violation  signal;13;Termination request signal;14;abnormal termination signal; 15;quit request signal"}}
+
+
+	No user error code range is defined, so if ERROR is used to set an error code it is wise to use high values, to avoid collisions in case the list of built-in errors is enhanced. 
+
+{{fbdoc item="see"}}
+	- [[CatPgError Error Handling Functions]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

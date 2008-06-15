@@ -1,0 +1,42 @@
+{{fbdoc item="title" value="THREADWAIT"}}
+----
+**Threadwait** waits until the designated thread has been completed before returning.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Threadwait** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+##
+{{fbdoc item="usage"}}##
+	**Threadwait** ( //id// )
+##
+{{fbdoc item="param"}}
+	##//id//##
+	    [[KeyPgInteger integer]] handle of a thread created by ##[[KeyPgThreadCreate Threadcreate]]##
+
+{{fbdoc item="desc"}}
+	**Threadwait** doesn't return until the tread designed by ##//id//## ends. **Threadwait** does not force the thread to end; If a thread requires a signal to force it's end, a mechanism such as shared variables must be used.
+
+	NOTE: The DOS version of FreeBasic does not allow for threads, as the OS does not support them.
+
+	Threads are launched by the ##[[KeyPgThreadCreate Threadcreate]]## function.
+
+	To avoid different threads simultaneous access to shared resources, FB implements Mutexes, flags that can be "owned" by a single thread when doing a critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##
+
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgThreadCreate Threadcreate]]##
+	- ##[[KeyPgMutexCreate Mutexcreate]]##
+	- ##[[KeyPgMutexLock Mutexlock]]##
+	- ##[[KeyPgMutexUnlock Mutexunlock]]##
+	- ##[[KeyPgMutexDestroy Mutexdestroy]]##
+
+{{fbdoc item="back" value="CatPgThreading|THREADING"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="DEFINT"}}
+----
+Sets a default data type for variables
+
+{{fbdoc item="syntax"}}##
+	**Defint** //letterrange//[, //letterrange//]...
+##
+{{fbdoc item="desc"}}
+	##**Defint**## is used to default variables to a ##[[KeyPgInteger Integer]]## number that start with a letter in the range given.
+
+	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+
+	This will make 'iNumber' an ##[[KeyPgInteger Integer]]## number since it's first letter starts with i.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+defint i
+dim iNumber
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDefbyte Defbyte]]##
+	- ##[[KeyPgDefdbl Defdbl]]##
+	- ##[[KeyPgDeflng Deflng]]##
+	- ##[[KeyPgDefshort Defshort]]##
+	- ##[[KeyPgDefsng Defsng]]##
+	- ##[[KeyPgDefstr Defstr]]##
+	- ##[[KeyPgDefubyte Defubyte]]##
+	- ##[[KeyPgDefuint Defuint]]##
+	- ##[[KeyPgDefushort Defushort]]##
+	- ##[[KeyPgInteger Integer]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+

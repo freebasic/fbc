@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="IS"}}
+----
+{{fbdoc item="desc"}}
+A clause used in  SELECT CASE compound statements.
+
+See [[KeyPgSelectcase SELECT CASE]].
+
+{{fbdoc item="back" value="CatPgControlflow|CONTROL FLOW"}}
+

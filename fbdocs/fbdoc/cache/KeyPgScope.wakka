@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="SCOPE...END SCOPE"}}
+----
+{{fbdoc item="syntax"}}
+	SCOPE
+		[//statements//]
+	END SCOPE
+
+{{fbdoc item="desc"}}
+	The Scope block allows variables to be temporarily (re)defined and used in a program.  When a variable is DIMensioned within a scope structure, that variable can be used until the end of the scope.  During this time, any variables outside the scope that have the same name will be ignored, and will not be accessible by that name.
+
+Any statements in the Scope block before the variable is dimensioned will use the variable as defined outside the Scope.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+Dim As Integer x = 5, y = 2
+Print "x ="; x; ", "; "y ="; y
+Scope
+	dim x as integer = 3
+	Print "x ="; x; ", "; "y ="; y
+	Scope
+	    Dim y As Integer = 4
+	    Print "x ="; x; ", "; "y ="; y
+	End Scope
+End Scope
+Print "x ="; x; ", "; "y ="; y
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgDim DIM]]
+
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}

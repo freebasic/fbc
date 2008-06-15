@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="LBOUND"}}
+----
+{{fbdoc item="syntax"}}
+Lbound(array[, dimension])
+
+{{fbdoc item="desc"}}
+Lbound returns the lowest index that can be used in an array.
+
+If the second parameter is included, it will determine the dimension of the array to check for the lowest bound.
+
+Optionally Dimension says what dimension to check the lowest bound. 1 for first dimension, and 2 for second dimension etc.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+
+dim array(-10 to 10, 5 to 15, 1 to 2) as integer
+print Lbound(array, 1) 'returns -10
+print Lbound(array, 2) 'returns 5
+print Lbound(array, 3) 'returns 1
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[KeyPgCommon COMMON]]
+	- [[KeyPgDim DIM]]
+	- [[KeyPgErase ERASE]]
+	- [[KeyPgExtern EXTERN]]
+	- [[KeyPgLbound LBOUND]]
+	- [[KeyPgRedim REDIM]]
+	- [[KeyPgPreserve PRESERVE]]
+	- [[KeyPgShared SHARED]]
+	- [[KeyPgStatic STATIC]]
+	- [[KeyPgUbound UBOUND]]
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

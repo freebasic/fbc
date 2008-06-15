@@ -1,0 +1,26 @@
+======Naming Conventions======
+This page features the various naming conventions used on the FBWiki.
+
+====Keywords====
+----
+~-Keywords should be prefixed by the letters "Key********Pg" followed by the name of the command, eg, the documentation page for Screen would would have a filename of **Key********Pg********Screen**
+~-Preproccesor Keywords (e.g. #Define) should have a postfix of "PP".  In this manner the documentation page for #Define would be Key********Pg********Define********PP
+
+====Tutorials====
+----
+	- Tutorials should be prefixed by the letters "Tut"
+	- The first letter of each word in the name of the tutorial will be capitalized e.g. **Tut********Hello********World**
+
+====Code====
+----
+~-If you are submitting a program's source code to the wiki the page name should be prepended with "Code"
+~- The first letter of each word in the name of page should be capitalized e.g. **Code********Hello********World**
+
+====Libraries====
+----
+~-Pages concerning a Library, whether included in the distribution or not should be prefixed by "Lib"
+~- The first letter of each word in the name of page should be capitalized e.g. **Lib********Hello********World**
+
+====Screenshot Images====
+----
+~-If you use an image you will need to name the image in the following manner, **pagename.numberofthescreenshot.fileextension**, where **pagename** is the name of the page the screen shot will be used on, **numberofthescreenshot** is an integer indicating the number it is in a sequence, each page will start it's sequence with 0 and increment by one from there, **fileextension** is the proper file extension for that images format (i.e. .gif, .jpg, .png). 

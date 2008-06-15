@@ -1,0 +1,49 @@
+{{fbdoc item="title" value="EXTERN"}}----
+
+{{fbdoc item="syntax"}}
+	EXTERN [[[KeyPgImport IMPORT]]] //symbolname//[( //subscripts//)] [ALIAS "//aliasname//"] [AS [[DataType DataType]]] [, ...]
+
+{{fbdoc item="desc"}}
+	Declares //symbolname// as extern, without allocating any space for it (different from [[KeyPgCommon COMMON]]).
+
+	If the //aliasname// is given, it will be used to reference the variable or array when emitting the code. 
+
+	If IMPORT is used, the symbol will be added to the dynamic library import list so its address can be fixed at run-time.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' module1.bas
+EXTERN Foo ALIAS "foo" As Integer
+
+sub SetFoo
+	foo = 1234
+end sub
+%%
+
+%%(qbasic)
+'' module2.bas
+declare sub SetFoo
+EXTERN Foo ALIAS "foo" As Integer
+DIM foo As Integer = 0
+
+SetFoo
+Print Foo
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgCommon COMMON]]
+	- [[KeyPgDim DIM]]
+	- [[KeyPgErase ERASE]]
+	- [[KeyPgExtern EXTERN]]
+	- [[KeyPgLbound LBOUND]]
+	- [[KeyPgRedim REDIM]]
+	- [[KeyPgPreserve PRESERVE]]
+	- [[KeyPgShared SHARED]]
+	- [[KeyPgStatic STATIC]]
+	- [[KeyPgUbound UBOUND]]
+
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

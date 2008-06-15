@@ -1,0 +1,114 @@
+{{fbdoc item="title" value="Most Important Features"}}----
+
+==BASIC Compatibility==
+	- FreeBASIC is not a "new" BASIC language. You don't need to learn anything new if you are familiar with any Microsoft-BASIC variant.
+	- FreeBASIC is case-insensitive; scalar variables don't need to be dimensioned and suffixes can be used; line numbers are supported; MAIN function is not required; most of the graphic and console statements and functions found in MS-QuickBASIC were implemented, et cetera.
+
+==Clean Syntax==
+	- Only a small number of keywords have been added. All functions are implemented as libraries, so for the most part, there are no new intrinsic routines, and therefore there is a low chance of having name duplication with old code.
+
+==Most of the known C libraries and API's can be used without wrappers or helpers==
+	- GTK+ 2.0: cross-platform GUI Toolkit (over 1MB of headers, including support for Glade, libart and glGtk)
+	- libxml and libxslt: defacto standard XML and XSL libraries
+	- GSL - GNU Scientific library: complex numbers, vectors and matrices, FFT, linear algebra, statistics, sorting, differential equations, and a dozen other sub-libraries with mathematical routines
+	- GMP - GNU Multiple Precision Arithmetic Library: known as the fastest bignum library
+	- SDL - Simple DirectMedia Layer: multimedia library for audio, user input, 3D and 2D gfx (including the sub-libraries such as SDL_Net, SDL_TTF, etc)
+	- OpenGL: portable library for developing interactive 2D and 3D graphics games and applications (including support for frameworks such as GLUT and GLFW, plus the GL Extensions)
+	- Allegro: game programming library (graphics, sounds, player input, etc)
+	- GD, DevIL, FreeImage, GRX and other graphic-related libraries
+	- OpenAL, Fmod, BASS: 2D and 3D sound systems, with support for mod, mp3, ogg, etc
+	- ODE and Newton - dynamics engines: rigid body dynamics simulation
+	- cgi-util and FastCGI: web development
+	- DirectX - Direct3D, DirectDraw, DirectSound, DirectMusic, DirectInput, DirectPlay and DirectShow, with interfaces up to version 9
+	- DispHelper - COM IDispatch interfaces made easy
+	- more to come...
+
+==Multi-platform==
+	- FreeBASIC currently runs on 32-bit Windows, Linux, and MS-DOS and also creates applications for the Xbox console. More platforms to come.
+	- The run-time library was written with portability in mind. All third-party tools used exist on most operating systems already as they are from the GNU binutils. The compiler is written in 100% FreeBASIC code (that is, FreeBASIC compiles itself.), which makes it simple to be bootstrapped as it doesn't depend on non-portable tools.
+
+==Unicode support==
+	- Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source (.bas) or header (.bi) files, they can be freely mixed with other sources/headers in the same project (also with other ASCII files).
+	- Literal strings can be typed in the original non-latin alphabet, just use a text-editor that supports some of the Unicode formats listed above.
+	- The WSTRING type holds wide-characters, all string functions (like LEFT, TRIM, etc) will work with wide-strings too.
+	- OPEN was extended to support the ENCODING "format" option, files in UTF-8, UTF-16LE and UTF-32LE can be read (using INPUT # or LINE INPUT #) and written (using PRINT # or WRITE #) when opened in INPUT, OUTPUT and APPEND modes, all the conversion between Unicode to ASCII will be done automatically if necessary.
+	- PRINT'ing to console is also supported (see Requirements), INPUT or LINE INPUT from console does not allow wide-characters to be entered yet.
+
+==A large number of variable types available==
+	- Integer: BYTE, UBYTE, SHORT, USHORT, INTEGER, UINTEGER, LONGINT and ULONGINT (64-bit)
+	- Floating-point: SINGLE and DOUBLE
+	- String: fixed, variable-length or null-terminated (ZSTRING's), up to 2GB long
+	- Unicode strings (WSTRING's), like ZSTRING's, but with support for wide characters. Use the Windows unicode API functions directly, etc.
+
+==User-defined Types (UDT's)==
+	- Unlimited nesting.
+	- BASIC's TYPE statement is supported, along with the new UNION statement (including nameless nested UNION's).
+	- Array fields utilizing up to eight dimensions can be used.
+	- Function field types.
+	- Bit fields.
+  	
+==Enumerations (ENUM's)==
+	- List of constants easily modifiable.
+
+==Arrays==
+	- Dynamic and static arrays are supported, up to 2 GB in size.
+	- Up to eight dimensions, including arrays with unknown dimensions.
+	- Any lower and upper boundaries.
+	- REDIM PRESERVE statement is supported to resize any dynamic array and keep its contents intact.
+
+==Pointers==
+	- Pointers to any of the data types listed above, including UDT's and arrays.
+	- Uses the same syntax as C.
+	- Unlimited indirection levels (e.g., pointer to pointer to ...).
+	- Function pointers.
+	- Indexing []'s (including string indexing).
+	- Function dereferencing.
+	- Type Casting.
+  
+==Variable initializers== 
+	- For static, module-level or local variables, arrays and UDT's.
+
+==Optional function arguments==
+	- For numeric and strings types.
+	  
+==Function overloading==
+	- Including functions with optional arguments.
+
+==Inline Assembly==
+	- Intel syntax.
+	- Reference variables directly by name; no "trick code" needed.
+
+==Preprocessor==
+	- Same syntax as in C.
+	- #DEFINE's with arguments also supported (aka macros).
+
+==Typedefs==
+	- Supporting forward referencing as in C.
+
+==Escape characters inside literal strings==
+	- Same as in C (except numbers are interpreted as decimal, not octal).
+
+==Debugging support==
+	- Full debugging support with GDB (the GNU debugger) or Insight (the GDB GUI frontend).
+	- Array bounds checking (only enabled by the -exx command-line option).
+	- Null pointers checking (same as above).
+
+==Create OBJ's, LIB's, DLL's, and console or GUI EXE's==
+	- You are in no way locked to an IDE or editor of any kind.
+	- You can create static and dynamic libraries adding just one command-line option (-lib or -dll).
+
+==As a 32-bit application==
+	- FreeBASIC can compile source code files up to 2 GB long.
+	- The number of symbols (variables, constants, et cetera) is only limited by the total memory available during compile time. (You can, for example, include OpenGL, Gtk/SDL, BASS, simultaneously in your source code.)
+
+==Optimized code generation==
+	- While FreeBASIC is not an optimizing compiler, it does many kinds of general optimizations to generate the fastest possible code on x86 CPU's, not losing to other BASIC alternatives, including the commercial ones.
+
+==Completely free==
+	- All third-party tools are also free. No piece of abandoned or copyrighted software is used (except GoRC on Win32). The assembler, linker, archiver, and other command-line applications come from the GNU binutil programming tools.
+
+
+
+[[CompilerAbout About]] &middot; **Main Features** &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  [[CompilerInstalling Installing]] &middot; [[CompilerRunning Running]] &middot;  [[CompileCmdLine Using the Command Line]] &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="DEFLNG"}}
+----
+Sets a default data type for variables
+
+{{fbdoc item="syntax"}}##
+	**Deflng** //letterrange//[, //letterrange//]...
+##
+{{fbdoc item="desc"}}
+	##**Deflng**## is used to default variables to a ##[[KeyPgLong Long]]## integer number that start with a letter in the range given.
+
+	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+
+	This will make 'lNumber' a ##[[KeyPgLong Long]]## integer number since it starts with l.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+deflng l
+dim lNumber ' implicit: As Long
+
+print len(lNumber) ' Displays 4, the number of bytes in a long.
+%%
+
+{{fbdoc item="diff"}}
+	- None known
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDefbyte Defbyte]]##
+	- ##[[KeyPgDefdbl Defdbl]]##
+	- ##[[KeyPgDefint Defint]]##
+	- ##[[KeyPgDefshort Defshort]]##
+	- ##[[KeyPgDefsng Defsng]]##
+	- ##[[KeyPgDefstr Defstr]]##
+	- ##[[KeyPgDefubyte Defubyte]]##
+	- ##[[KeyPgDefuint Defuint]]##
+	- ##[[KeyPgDefushort Defushort]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+

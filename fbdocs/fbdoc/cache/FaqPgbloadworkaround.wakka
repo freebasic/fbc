@@ -1,0 +1,30 @@
+These functions allow you to use BSAVE and BLOAD in a text mode.
+
+%%(qbasic)Sub _bsave( file As String, p As Any Ptr, sz As Integer ) 
+
+
+  Dim As Integer ff 
+  ff = FreeFile 
+  
+  Open file For Binary As ff 
+	fb_fileput( ff, 0, ByVal p, sz ) 
+	
+  Close 
+
+  
+End Sub 
+
+
+Sub _bload( file As String, p As Any Ptr ) 
+
+
+  Dim As Integer ff 
+  ff = FreeFile 
+  
+  Open file For Binary As ff 
+	fb_fileget( ff, 0, ByVal p, Lof( ff ) ) 
+	
+  Close 
+
+  
+End Sub%%

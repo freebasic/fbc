@@ -1,0 +1,61 @@
+{{fbdoc item="title" value="BSAVE"}}
+----
+Graphics statement to save a block of binary data into a file.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bsave** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] , [[KeyPgByval byval]] //addr// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	**Bsave** //filename//, //addr// [, //size//]
+##
+{{fbdoc item="param"}}
+	##//filename//##
+		the name of the file where data will be saved.
+	##//addr//##
+		the address where to save data from. If 0 (NULL), data is taken from current work page.
+	##//size//##
+		size of the data block to be saved, in bytes.
+
+{{fbdoc item="ret"}}
+	Zero is returned if ##**Bsave**## completed successfully, otherwise a non-zero value is returned to indicate failure.
+
+{{fbdoc item="desc"}}
+	##**Bsave**## saves a block of binary data into a specified file. It can also be used to save pixel data from current work page into a file, by specifying 0 as ##//addr//## argument:
+%%(qbasic)
+	BSAVE "image.bsv", 0, 64000
+%%
+	is in fact equivalent to:
+%%(qbasic)
+	SCREENLOCK
+	BSAVE "image.bsv", SCREENPTR, 64000
+	SCREENUNLOCK
+%%
+
+	When saving pixel data, the data will be saved in the current gfx mode pixel format; see Internal pixel formats for details. Also keep in mind a pixel may require more than one byte, so the size argument will need to be adjusted accordingly.
+
+	##**Bsave**## can also be used to save images as standard BMP files; just specify a filename with the .bmp extension to use this feature. In this case, the size parameter can be omitted, as the image size is directly taken from the screen or buffer, depending on if addr is 0 or not.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+' Set gfx mode
+SCREENRES 320, 200, 32
+
+' Clear with black on white
+COLOR RGB(0, 0, 0), RGB(255, 255, 255)
+CLS
+
+LOCATE 13, 15: PRINT "Hello world!"
+
+' Save as BMP
+BSAVE "hello.bmp", 0
+%%
+
+{{fbdoc item="diff"}}
+	- can save BMP files
+	- supports saving raw binary data larger than 64K
+	- FB raw ##**Bsave**##'d files cannot be loaded from QB (but QB-BSAVEd files can be loaded from FB)
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgBload Bload]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

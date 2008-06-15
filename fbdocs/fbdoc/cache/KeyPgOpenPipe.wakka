@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="OPEN PIPE"}}
+----
+{{fbdoc item="syntax"}}
+	OPEN PIPE "//command//" FOR INPUT|OUTPUT AS //n//
+
+{{fbdoc item="desc"}}
+	This command runs an os command and pipes its input or output to the fb exe.  This allows the  FB program to write /read to the command using standard file commands as PRINT #, LINE INPUT #   
+	//command// must be a console mode program using  the standard OS devices stdin / stdout for its input/output.
+	FOR INPUT means the stdout of the external comand will be inputted to the FB program
+	FOR OUTPUT means the FB program output will be sent as input to the external program
+	OPEN PIPE can't link to both the input and output of the program.
+	
+	//n// is a FB file handle that must be unused.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+open pipe "fbc.exe" for input as #1
+print "Output of fbc:"
+do while not eof(1)
+   line input #1, text
+   print text
+loop
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- [[KeyPgOpen OPEN]]
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

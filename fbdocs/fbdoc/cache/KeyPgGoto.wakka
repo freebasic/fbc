@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="GOTO"}}
+----
+{{fbdoc item="syntax"}}
+	GOTO label
+
+{{fbdoc item="desc"}}
+	Jumps code execution to a line label.
+
+	Goto's should be avoided for more modern structures such as [[KeyPgDoloop DO...LOOP]], [[KeyPgFornext FOR...NEXT]], [[KeyPgSub SUB]], and [[KeyPgFunction FUNCTION]].
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+1 goto 3
+2 end
+3 print "Welcome!
+4 goto 2
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- [[KeyPgGosub GOSUB]]
+	- [[KeyPgSub SUB]]
+	- [[KeyPgFunction FUNCTION]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

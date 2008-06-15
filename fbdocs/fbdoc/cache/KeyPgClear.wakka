@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="CLEAR"}}
+----
+Clears or initializes the contents of an array.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Clear** [[KeyPgCdecl cdecl]] ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //value// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByval byval]] //bytes// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+##
+
+{{fbdoc item="usage"}}##
+	CLEAR( //dst// , //value// , //bytes// )
+##
+
+{{fbdoc item="param"}}
+	##//dst//##
+		An array to be cleared with a specific character.
+	##//value//##
+		Ascii character in the range (0 to 255) to clear the array with.
+	##//bytes//##
+		Number of bytes to write to the array.
+
+{{fbdoc item="desc"}}
+	Sets the contents of an array to a value (usually 0 is useful). Does the same as C's memset.  If the value is omitted, 0 is used.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim array(1 to 100) as integer
+clear Array(1), 0, len(Array(1)) * ubound(Array)
+%%
+
+{{fbdoc item="diff"}}
+~-New to FB
+~-The keyword CLEAR was used in QB to erase all variables, close all files, and optionally change the stack size. This use is not supported in FB.
+
+{{fbdoc item="see"}}
+~- ##[[KeyPgErase Erase]]##
+~- ##[[KeyPgReset Reset]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

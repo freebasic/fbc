@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="DEFUSHORT"}}
+----
+Sets a default data type for variables
+
+{{fbdoc item="syntax"}}##
+	**Defushort** //letterrange//[, //letterrange//]...
+##
+{{fbdoc item="desc"}}
+	##**Defushort**## is used to default variables to a ##[[KeyPgUshort Ushort]]## number that start with a letter in the range given.
+
+	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+
+
+{{fbdoc item="ex"}}
+	This will make 'uNumber' a ##[[KeyPgUshort Ushort]]## number since it's first letter starts with u.
+
+%%(qbasic)
+defushort u
+dim uNumber
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDefint Defint]]##
+	- ##[[KeyPgDefint Defshort]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

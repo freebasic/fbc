@@ -1,0 +1,42 @@
+{{fbdoc item="title" value="EXTERN ''C++''"}}
+----
+Allows FB to obey GNU ""C++""'s mangling and naming conventions
+
+{{fbdoc item="syntax"}}
+	##**extern """c++"""**
+		//declarative statements//
+	**end extern**##
+
+{{fbdoc item="desc"}}
+	The ##extern """c++"""## block treats any declarations inside as if the symbols were being emitted by GNU ""C++"". Only declarations can appear inside a ""C++"" block, which includes declare, type, union, const, enum, namespace, etc, but not any executable code such as assignments or function calls.
+
+	Symbols declared with ""C++"" style mangling will be reported with easy to read names by the linker if a reference is not found, such as ""Ns1""::theFunction(int) instead of _ZN3NS211THEFUNCTIONEi@4. Also, functions declared inside of ""C++"" blocks automatically have the CDECL calling convention.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+extern "c++"
+	'' This namespace uses C++ mangling
+	namespace Ns1
+		declare function theFunction( byval as integer ) as uinteger
+	end namespace
+end extern
+
+'' This namespace uses FreeBASIC mangling.
+namespace Ns2
+	declare function theFunction( byval as integer ) as uinteger
+end namespace
+
+'' Both the functions don't exist, but this demonstrates the point that GNU LD recognizes C++ symbols and reports an understandable name.
+'' Compare Ns1::theFunction(int) with _ZN3NS211THEFUNCTIONEi@4.
+
+print Ns1.theFunction( 1 )
+print Ns2.theFunction( 1 )
+%%##
+
+{{fbdoc item="diff"}}
+	- QB did not have ""C++"" blocks
+
+{{fbdoc item="see"}}
+	- [[KeyPgNamespace Namespace]]
+	- [[KeyPgDeclare Declare]]
+	- [[KeyPgCdecl Cdecl]]

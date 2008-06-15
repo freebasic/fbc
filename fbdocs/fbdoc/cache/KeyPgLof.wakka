@@ -1,0 +1,41 @@
+{{fbdoc item="title" value="LOF"}}
+----
+Returns the length of an open disk file.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lof** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Lof**( //filenum// )
+##
+{{fbdoc item="param"}}
+	##//filenum//##
+		The file number of an open disk file.
+
+{{fbdoc item="ret"}}
+	The length in bytes of an open disk file.
+
+{{fbdoc item="desc"}}
+	Returns the length of a file opened previously with ##[[KeyPgOpen Open]]## using the given ##//handle//##.
+
+	With ##[[KeyPgOpenCom Open Com]]## it returns the length of the data pending to be read in the receive buffer.
+
+	The length is given in bytes.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+f = freefile
+open "file.ext" for binary as #f
+print lof(f)
+close #f
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLoc Loc]]##
+	- ##[[KeyPgEof Eof]]##
+	- ##[[KeyPgOpen Open]]##
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

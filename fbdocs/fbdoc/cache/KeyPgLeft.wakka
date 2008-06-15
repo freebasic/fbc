@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="LEFT"}}
+----
+Returns the left most characters of a string of the requested length.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Left** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //expression// [[KeyPgAs as]] [[KeyPgStringtype string]] , [[KeyPgByval byval]] //characters// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Left** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //characters// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//result// = LEFT[$]( //expression//, //characters//)
+##
+{{fbdoc item="param"}}
+	##//expression//##
+		The source ##[[KeyPgStringtype string]]##.
+	##//characters//##
+		The number of characters to return from the source ##[[KeyPgStringtype string]]##.
+
+{{fbdoc item="ret"}}
+	Returns the leftmost number of characters specified from the source ##[[KeyPgStringtype string]]##.
+
+{{fbdoc item="desc"}}
+	Returns n-//characters// starting from the left of string //expression//.
+	The expression can be a wstring (Unicode string), in this case LEFT returns a wstring.The DOS version does not support Unicode.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+text$ = "hello world"
+print left(text$, 5) 'displays "hello"
+%%
+An Unicode example:
+<<
+dim text as wstring*20
+text = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;!"
+print left(text, 6) 'displays "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;"
+<<
+::c::
+
+{{fbdoc item="diff"}}
+	- QB does not support unicode
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgRight Right]]##
+	- ##[[KeyPgMidfunction Mid (Function)]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

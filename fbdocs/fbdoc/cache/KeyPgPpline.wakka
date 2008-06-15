@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="#LINE"}}
+----
+Preprocessor directive to set the current line number and file name.
+
+{{fbdoc item="syntax"}}##
+	**#line** //number// [ "//name//" ]
+##
+{{fbdoc item="param"}}
+	##//number// ##
+		new line number
+	##"//name//"##
+		new file name (optional)
+
+{{fbdoc item="desc"}}
+	!!! WRITE ME !!!
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfile __FILE__]]##
+	- ##[[KeyPgDdline __LINE__]]##
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

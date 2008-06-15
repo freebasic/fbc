@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="FreeBASIC"}}
+----
+
+FreeBASIC is a Compiler for Microsoft Dialect BASIC.
+
+It can be seen as the **true** successor of GWBASIC, QuickBasic, QBASIC, and Visual Basic for DOS.
+Some of FB's major features are:
+
+~-Open Source
+~~FB's Compiler is licensed under the [[CompilerGPL GPL]].
+~~The run time library is licensed under the [[GNULGPL LGPL]]
+~-Compilation
+~~FB complies into ASM and then into machine code, meaning no more slow interpretation.
+~-32 Bit
+~~FB frees itself of the 16-bit legacy of its predecessors
+~-Multiplatform
+~~As of current FB works natively on Windows, Linux, and 32-Bit DOS
+~-QB Compatible
+~~The syntax of FB is backward compatible with QuickBasic syntax, [[LangQB with a few exceptions.]]
+~-Written in FreeBASIC
+~~Unlike most BASIC compilers, FB is written in FreeBASIC.  FB can, and does, compile itself.
+~-C libraries
+~~With a little knowledge of C and FreeBASIC, it becomes easy to port any library for which there exists a wrapper for C to FreeBASIC
+~~To make this even easier, a tool to do this automatically is under development.
+
+{{fbdoc item="see"}}
+	- [[CompilerAbout About FreeBASIC]]
+	- [[CompilerFAQ Freebasic FAQ]]
+
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

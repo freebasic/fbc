@@ -1,0 +1,110 @@
+{{image class="center" alt="FB Logo" title="FB Logo" url="/images/fblogo.gif" link="RecentChanges"}}{{fbdoc item="title" value="Table of Contents"}}
+<<
+{{fbdoc item="section" value="The Compiler"}}
+	[[CompilerAbout About]]
+	[[CompilerFeatures Main Features]]
+	[[CompilerCredits Credits]]
+
+	[[CompilerRequirements Requirements]]
+	[[CompilerInstalling Installing]]
+	[[CompilerRunning Running]]
+	[[CompileCmdLine Using the Command Line]]
+	[[CompileErrMsg Compiler Error Messages]]
+	
+	[[CompilerQB FreeBasic and Qbasic]]
+	[[LangQB Differences from QB]]
+
+{{fbdoc item="section" value="The Language"}}
+	[[CatPgFullIndex Alphabetical Keywords List]]
+	[[CatPgFunctIndex Functional Keywords List]]
+
+	    [[CatConcepts FreeBASIC Essential Concepts]]
+
+	{{fbdoc item="subsect" value="Data Types"}}
+		[[CatPgStdDataTypes Standard Data Types]]
+		[[DtConstants Constants]]
+		[[DtVariables Variables]]
+		[[DtArrays Arrays]]
+		[[DtPointers Pointers]]
+		[[CatPgUserDefTypes User Defined Types]]
+		[[CatPgCasting Converting Data Types]]
+	
+	{{fbdoc item="subsect" value="Operators"}}
+		[[CatPgOperators Operators List]]
+		[[OpPrecedence Operator Precedence]]
+		
+	{{fbdoc item="subsect" value="Compound Statements"}}
+		[[KeyPgDoloop Do...Loop]]
+		[[KeyPgFornext For...Next]]
+		[[KeyPgIfthen If...Then]]
+		[[KeyPgSelectcase Select Case]]
+		[[KeyPgWhilewend While...Wend]]
+		[[KeyPgWith With...End With]]
+		[[KeyPgScope Scope...End Scope]]
+		[[KeyPgNamespace NameSpace...End NameSpace]]
+	
+	{{fbdoc item="subsect" value="Procedures""}}
+		[[KeyPgCall Call]]
+		[[KeyPgDeclare Declare]]
+		[[KeyPgFunction Function]]
+		[[KeyPgSub Subroutine]]
+		[[CatPgVarArg Variable Arguments]]
+
+	{{fbdoc item="subsect" value="Other""}}
+		[[KeyPgAsm Inline ASM]]
+		[[LangErrorHandling Error Handling]]
+		[[CatPgPreProcess Preprocessor]]
+		[[CatPgDddefines Intrinsic Defines]]
+
+<<>>
+{{fbdoc item="section" value="Runtime Library"}}
+	[[CatPgConsole Console Functions]]
+	[[CatPgDate Date and Time Functions]]
+	[[CatPgError Error Handling Functions]]
+	[[CatPgFile File IO Functions]]
+	[[CatPgMath Mathematical Functions]]
+	[[CatPgOpsys Operating System Functions]]
+	[[CatPgString String Functions]]
+	[[CatPgThreading Threading Support Functions]]
+	[[CatPgInput User Input Functions]]
+
+
+{{fbdoc item="section" value="Graphics Library"}}
+	[[CatPgGfx Graphics Function Index]]
+	[[CatPgGfx2D 2D Drawing Functions]]
+	[[CatPgGfxFile File IO Functions]]
+	[[CatPgGfxInput User Input Functions]]
+	[[CatPgGfxScreen Screen Functions]]
+
+{{fbdoc item="section" value="FAQs"}}
+	[[CompilerFAQ Compiler FAQ]]
+	[[FaqPggfxlib2 Graphics Library FAQ]]
+	[[FaqPgrtlib Run-Time Library FAQ]]
+	[[FaqPgxbox XBox port FAQ]]
+
+{{fbdoc item="section" value="Miscellaneous"}}
+	[[CVSCompile Compiling from CVS]]
+	[[DtDateSer  Date Serials]]
+	[[DebuggerRunning Debugging]]
+	[[GnuLicenses Licenses]]
+	[[ObsoletedKwds Obsoleted keywords]]
+
+{{fbdoc item="section" value="Tables"}}
+	[[CptAscii ASCII Character Codes]]
+	[[TblTruth Bitwise Operators]]
+	[[GfxScancodes Keyboard Scan Codes]]
+	[[OpPrecedence Operator Precedence]]
+	[[TblVarTypes Variable Types]]
+	[[GfxDefPalettes Default Palettes]]
+
+{{fbdoc item="section" value="Contributing"}}
+	[[CompilerContacting How to contact the developers]]
+	[[CompilerReportingBugs How to report a bug]]
+	[[MissingDocs Docs pages that need to be written]]
+
+	[[ContributorList Documentation Contributors]]
+ 	
+>>
+
+::c::
+{{fbdoc item="back" value="FBWiki|Main Page"}}

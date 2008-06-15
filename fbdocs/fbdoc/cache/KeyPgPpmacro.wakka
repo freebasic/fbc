@@ -1,0 +1,22 @@
+{{fbdoc item="title" value="#MACRO...#ENDMACRO"}}
+----
+Preprocessor directive to define a multiline macro.
+
+{{fbdoc item="syntax"}}##
+	**#macro** //macro_name//( [ //param// [, //param_list//] ] )
+	**#endmacro**
+##
+{{fbdoc item="desc"}}
+	!!! WRITE ME !!!
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpdefine #define]]##
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

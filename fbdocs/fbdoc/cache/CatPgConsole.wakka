@@ -1,0 +1,22 @@
+{{fbdoc item="title" value="Console Functions"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgCls|CLS"}}
+	- {{fbdoc item="keyword" value="KeyPgColor|COLOR"}}
+	- {{fbdoc item="keyword" value="KeyPgCsrlin|CSRLIN"}}
+	- {{fbdoc item="keyword" value="KeyPgLocate|LOCATE"}}
+	- {{fbdoc item="keyword" value="KeyPgPrint|PRINT"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintusing|PRINT USING"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgSpc|SPC"}}
+	- {{fbdoc item="keyword" value="KeyPgTab|TAB"}}
+	- {{fbdoc item="keyword" value="KeyPgViewtext|VIEW PRINT"}}
+	- {{fbdoc item="keyword" value="KeyPgWidth|WIDTH"}}
+	- {{fbdoc item="keyword" value="KeyPgWrite|WRITE"}}
+
+
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

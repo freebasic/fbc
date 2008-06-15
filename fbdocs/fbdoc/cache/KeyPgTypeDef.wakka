@@ -1,0 +1,44 @@
+{{fbdoc item="title" value="Type Aliasing"}}
+----
+{{fbdoc item="syntax"}}
+	TYPE //typename// AS //symbol//
+
+{{fbdoc item="desc"}}
+	Type aliasing is used to allow forward declarations of [[CatPgUserDefTypes User Defined Types]].
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+TYPE ParentFwd as Parent
+TYPE Child
+	Name as zstring * 32
+	ParentRef AS ParentFwd ptr
+	''...
+END TYPE
+
+TYPE Parent
+	Name as zstring * 32
+	ChildList(0 to 9) AS Child
+	''...
+END TYPE
+
+DIM p AS Parent
+p.Name = "Foo"
+with p.ChildList(0)
+	.Name = "Jr."
+	.ParentRef = @p
+	'' ...
+end with	
+
+with p.ChildList(0)
+	print .Name; " is child of "; .parentRef->Name
+end with
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgType TYPE...END TYPE]]
+	- [[KeyPgTypeTemp TYPE()]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

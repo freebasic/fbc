@@ -1,0 +1,66 @@
+{{fbdoc item="title" value="READ"}}
+----
+{{fbdoc item="syntax"}}
+	Read //variable_list//
+	
+
+{{fbdoc item="desc"}}
+	Reads data stored in the application with the [[KeyPgData DATA]] command. 
+	
+	The elements of the //variable_list// must be of basic types, numeric, strings  or elements  of arrays and UDT's.
+	All the DATA statements in the program behave as a single list, after the last element of a DATA is read, the first element of the following DATA will be read. If a READ is attempted after the last element of the last DATA an error will occur.
+	Data constants can only be of simple types (numeric or string). Alphanumeric string constants must be enclosed in quotes. 
+	A numeric value can be read as a numeric literal into a string. A string read into a numeric variable will be evaluated by the [[KeyPgVal VAL]] function.
+	The [[KeyPgRestore RESTORE label]] statement resets the next-element pointer to the start of the DATA following the label. This allows to alter the order in which the DATA  are READ. 
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+
+
+' Create an array of 5 integers and a string to hold the data.
+DIM h(4) AS INTEGER
+DIM hs AS STRING
+
+' Set up to loop 5 times (for 5 numbers... check the data)
+FOR read_data = 0 TO 4
+
+  ' Read in an integer.
+  READ h(read_data)
+
+  ' Display it.
+  PRINT "Number"; read_data;" = "; h(read_data)
+
+NEXT
+
+' Spacer.
+PRINT
+
+' Read in a string.
+READ hs
+
+' Print it.
+PRINT  "String = " + hs
+
+' Await a keypress.
+SLEEP
+
+' Exit program.
+END
+
+
+
+' Block of data.
+
+DATA 3, 234, 4354, 23433, 87643, "Bye!"
+
+%%
+
+{{fbdoc item="diff"}}
+	- Alphabetic string literals now MUST be enclosed within quotation marks  
+	- Empty constant expressions were evaluated in QB to number 0 or to empty strings. In FB they give a compile error.
+	- Constant expressions are allowed in FB's DATA. They are evaluated before storing. QB allowed only constant values	
+
+{{fbdoc item="see"}}
+	- [[KeyPgData DATA]]
+	- [[KeyPgRestore RESTORE]]
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

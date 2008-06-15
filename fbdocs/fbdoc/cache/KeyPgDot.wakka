@@ -1,0 +1,40 @@
+{{fbdoc item="title" value=". Field Operator"}}
+----
+
+{{fbdoc item="syntax"}}
+	//UDTvariable//. //fieldname//
+	    
+	    with  //UDTvariable//
+	    .//fieldname// =  //expression//
+	    ...
+	    end with
+	       
+{{fbdoc item="desc"}}
+	The dot (field operator) selects a field of a variable defined as an user defined type.
+	For compatibility with QB, "fake" dot operators are allowed in  the names of simple variables. Good practice recommends to substitute that dots by underscore characters.   
+
+{{fbdoc item="ex"}}
+
+##%%(qbasic)
+  type rect
+  x as integer
+  y as integer
+  end type
+  dim r as rect
+  dim fake.dot as integer
+  with r
+  .x=4
+  .y=2
+  end with
+ fake.dot=1
+  print "x= " r.x, "y="  r.y
+  print fake.dot
+  sleep
+%%
+
+{{fbdoc item="diff"}}
+	- none
+
+{{fbdoc item="see"}}
+	-
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

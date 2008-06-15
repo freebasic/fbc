@@ -1,0 +1,30 @@
+{{fbdoc item="title" value="#UNDEF"}}
+----
+Preprocessor directive to undefine a macro.
+
+{{fbdoc item="syntax"}}##
+	**#undef** //symbol//
+##
+{{fbdoc item="desc"}}
+	Undefines a symbol previously defined with ##[[KeyPgPpdefine #define]]##.
+	
+	Can be used to ensure that a macro or symbol has a limited lifespan and does not conflict with a similar macro definition that may be defined later in the source code.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#DEFINE ADD2(a_, b_)  ((a_) + (b_))
+Print ADD2(1, 2)
+' Macro no longer needed so get rid of it ...
+#UNDEF ADD2
+%%
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpdefine #define]]##
+	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgPpifdef #ifdef]]##
+	- ##[[KeyPgPpifndef #ifndef]]##
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

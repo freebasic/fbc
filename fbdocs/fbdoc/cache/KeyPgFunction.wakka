@@ -1,0 +1,117 @@
+{{fbdoc item="title" value="FUNCTION"}}
+----
+{{fbdoc item="syntax"}}
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] **Function** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [([//parameter_list//])] [[[KeyPgAs As]] //return_type//] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//statements//
+		...
+		{ {[[KeyPgReturn Return]] [//return_value//]}|{Function = //return_value//}|{//identifier// = //return_value//} }
+		...
+	[[KeyPgEnd End]] Function
+
+	where
+		//identifier// = the name of the function
+		//external_identifier// = externally visible (to the linker) name enclosed in quotes
+		//parameter_list// = parameter[, parameter[, ...]]
+		//parameter// = [[[KeyPgByref ByRef]]|[[KeyPgByval ByVal]]] //identifier// [[[KeyPgAs As]] //type//] [= //default_value//]
+			//identifier// = the name of the variable referenced in the function
+			//type// = the type of variable
+			//default_value// = the value of the argument if none is specified in the call
+		//return_type// = the type of variable returned by the function
+		//statements// = one or more statements that make up the function body
+		//return_value// = the value returned from the function
+
+{{fbdoc item="desc"}}
+	A function defines a block of code which can be executed with a single statement (a function call), and provide a value back to the caller when finished (a return value). **!!! write me: finish overview?**
+
+	//Access Rights// : The [[KeyPgPublic Public]] and [[KeyPgPrivate Private]] keywords specify public or private intra module-level access rights, respectively. If neither is given, the function defaults to public access ([[KeyPgPublic Public]]).
+	
+	//Calling Convention// : Calling convention, or the order in which arguments are pushed and popped from the stack during function calls, is specified with the [[KeyPgCdecl CDecl]], [[KeyPgPascal Pascal]] and [[KeyPgStdcall StdCall]] keywords. If none are given, the function uses the standard convention by default ([[KeyPgStdcall StdCall]]).
+	
+	//Passing Arguments// : Functions may recieve one or more variables, or arguments, when called. These arguments are listed as //parameters// in the //parameter_list//. The [[KeyPgByref ByRef]] and [[KeyPgByval ByVal]] keywords specify whether the argument will be passed by reference or by value, respectively. The argument's type is given by [[KeyPgAs As]] //type// following the //parameter//. If a parameter in the declaration is given a default value, the parameter is optional.
+
+	//Overloaded Functions// : An overloaded function may share the same name (//identifier//) as another with a different signature. The [[KeyPgOverload Overload]] keyword specifies that a function may be overloaded. A function must be defined - or declared - using the [[KeyPgOverload Overload]] keyword prior to any functions that overload them.
+	
+	//Returning values// : //return_type// specifies the [[DataType data type]] returned by a function upon exit. If no data type is specified, then the function will return the default data type, which will be Integer unless set to another data type using DEFSNG, DEFDBL, DEFLNG, etc. Functions return values //(and soon, references)//, using a three (3) methods: the [[KeyPgReturn Return]] keyword followed by a value exits the function immediately, and returns that value to the caller. Functions can also return values by assigning the Function keyword or the function's //identifier// to the desired return value. The latter two methods do not cause the function to exit, however. Since functions return values, function calls evaluate to expressions. Thus, function calls can be made wherever an expression is expected, like in [[KeyPgOpAssignment assignments]] or [[KeyPgIfthen If statements]].
+
+	//Local Variable Preservation// : The [[KeyPgStatic Static]] keyword specifies that a function's locally declared variables are preserved between function calls. Upon entering a function defined with [[KeyPgStatic Static]], local variables have the same value as when the function was last called.
+
+{{fbdoc item="ex"}}
+
+%%(qbasic)
+'This program demonstrates the declaration of a function and said function returning a value.
+
+Declare Function ReturnTen ()
+
+Print ReturnTen () 'ReturnTen returns an integer by default.
+
+Function ReturnTen()
+	Return 10
+End Function
+
+%%
+
+%%(qbasic)
+'This program demonstrates the declaration of a function and said function returning a value.
+
+Declare Function ReturnTen ()
+
+Print ReturnTen () 'ReturnTen returns an integer by default.
+
+Function ReturnTen()
+	ReturnTen = 10
+End Function
+
+%%
+
+%%(qbasic)
+'This program demonstrates function overloading.
+
+Declare Function ReturnTen Overload (a As Double) 'The overloaded functions must be FIRST.
+Declare Function ReturnTen Overload (a As String) 
+Declare Function ReturnTen (a)
+
+
+Print ReturnTen (10.000!)   'ReturnTen will take a double and return an int.
+Print ReturnTen (10)        'ReturnTen will take an int and return an int.
+Print ReturnTen ("10")      'ReturnTen will take a string and return an int.
+
+
+Function ReturnTen Overload (a As Double)
+	Return Int(a)
+End Function
+
+Function ReturnTen Overload (a As String)
+	Return Val(a)
+End Function
+
+Function ReturnTen (a As Integer)
+	Return a
+End Function
+%%
+
+%%(qbasic)
+' The following demonstrates optional parameters.
+
+Function TestFunc(P As String = "Default") As String
+	Return P
+End Function
+
+Print TestFunc("Testing:")
+Print TestFunc
+%%
+
+{{fbdoc item="diff"}}
+	- Parameters can be optional in FreeBASIC.
+	- Return value can now be specified by a [[KeyPgReturn RETURN]] statement
+	- Function overloading supported.
+	- The return value can be ignored in the calling code.
+
+{{fbdoc item="see"}}
+	- [[KeyPgDeclare DECLARE]]
+	- [[KeyPgSub SUB]]
+	- [[KeyPgExit EXIT]]
+	- [[KeyPgPublic PUBLIC]]
+	- [[KeyPgPrivate PRIVATE]]
+	- [[KeyPgAsm ASM]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

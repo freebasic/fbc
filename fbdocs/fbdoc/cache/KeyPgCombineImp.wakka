@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="IMP= (Combined IMP)"}}
+----
+Operator that finds the bitwise ##**Imp**## (implication) of two integers and assign the result to the a first operand.
+
+{{fbdoc item="syntax"}}##
+	**Imp=** //number//
+##
+{{fbdoc item="usage"}}##
+	//variable// **Imp=** //number//
+##
+{{fbdoc item="desc"}}
+	The combined ##**Imp=**## operator is a shortcut method of writing ##**Imp**## expressions. The expression ##n **Imp**= m## is the equivalent of writing ##n = n **Imp** m##. ##**IMP**## is a bitwise operator which is the same as (##[[KeyPgNot Not]]## ##//variable//##) ##[[KeyPgOr Or]]## ##//number//##.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+dim as ubyte a = &b00110011
+dim as ubyte b = &b01010101
+a Imp= b
+'' Result    a = &b11011101
+print bin(a)
+%%##
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgImp Imp]]##
+
+{{fbdoc item="back" value="CatPgOperators|Operators"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="CONST"}}
+----
+Non-modifiable variable declaration
+
+{{fbdoc item="syntax"}}##
+	**Const** //symbolname// [AS [[DataType DataType]]] = //value// [, ...]
+##
+{{fbdoc item="desc"}}
+	Declares non-modifiable constant data that can be integer or decimal (floating-point) numbers or strings. The constant type will be inferred even if explicitly given.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+const Red = RGB(252, 2, 4)
+const Black = RGB(0, 0, 0)
+const Text = "This is red text on a black bkgnd."
+
+locate 1, 1
+color Red, Black
+print Text
+sleep
+end
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpdefine #DEFINE]]##
+	- ##[[KeyPgEnum Enum]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

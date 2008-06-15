@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="Date and Time Functions"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgDate|DATE"}}
+	- {{fbdoc item="keyword" value="KeyPgSetdate|SETDATE"}}
+	- {{fbdoc item="keyword" value="KeyPgSettime|SETTIME"}}
+	- {{fbdoc item="keyword" value="KeyPgTime|TIME"}}
+	- {{fbdoc item="keyword" value="KeyPgTimer|TIMER"}}
+
+==Extended library (datetime.bi)==
+	- {{fbdoc item="keyword" value="KeyPgDateAdd|DATEADD"}}
+	- {{fbdoc item="keyword" value="KeyPgDateDiff|DATEDIFF"}}
+	- {{fbdoc item="keyword" value="KeyPgDatePart|DATEPART"}}
+	- {{fbdoc item="keyword" value="KeyPgDateSerial|DATESERIAL"}}
+	- {{fbdoc item="keyword" value="KeyPgDateValue|DATEVALUE"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgDay|DAY"}}
+	- {{fbdoc item="keyword" value="KeyPgHour|HOUR"}}
+	- {{fbdoc item="keyword" value="KeyPgMinute|MINUTE"}}
+	- {{fbdoc item="keyword" value="KeyPgMonth|MONTH"}}
+	- {{fbdoc item="keyword" value="KeyPgMonthname|MONTHNAME"}}
+	- {{fbdoc item="keyword" value="KeyPgNow|NOW"}}
+	- {{fbdoc item="keyword" value="KeyPgSecond|SECOND"}}
+	- {{fbdoc item="keyword" value="KeyPgTimeserial|TIMESERIAL"}}
+	- {{fbdoc item="keyword" value="KeyPgTimeValue|TIMEVALUE"}}
+	- {{fbdoc item="keyword" value="KeyPgWeekday|WEEKDAY"}}
+	- {{fbdoc item="keyword" value="KeyPgWeekdayname|WEEKDAYNAME"}}
+	- {{fbdoc item="keyword" value="KeyPgYear|YEAR"}}
+
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

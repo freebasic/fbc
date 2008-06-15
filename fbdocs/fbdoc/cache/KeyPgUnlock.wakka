@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="UNLOCK"}}
+----
+{{fbdoc item="syntax"}}
+UNLOCK //fileslot// [, {//record//| [//start//] TO //end//}]
+
+{{fbdoc item="desc"}}
+UNLOCK removes the temporal access restriction set by [[KeyPgLock LOCK]]. 
+	
+	//fileslot// is the one used to [[KeyPgOpen OPEN]] the file.
+	
+	//record// specifies a single record number ([[KeyPgRandom RANDOM]] files)) or  byte position  ([[KeyPgBinary BINARY]] files)) to lock
+	
+	//start// specifies the first record number ([[KeyPgRandom RANDOM]] files)) or  byte position  ([[KeyPgBinary BINARY]] files)). If it's omited the present record /byte is used.
+	
+	//end// specifies the last record number ([[KeyPgRandom RANDOM]] files)) or  byte position  ([[KeyPgBinary BINARY]] files)).
+	 
+	It is strongly recommended to use in UNLOCK the same arguments used in the previous [[KeyPgLock LOCK]] .
+
+{{fbdoc item="ex"}}
+	         For an example see ##[[KeyPgLock Lock]]##.
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- [[KeyPgLock LOCK]]
+	- [[KeyPgOpen OPEN]]
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

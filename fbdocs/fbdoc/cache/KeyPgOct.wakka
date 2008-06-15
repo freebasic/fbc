@@ -1,0 +1,51 @@
+{{fbdoc item="title" value="OCT"}}
+----
+Converts a number to octal representation.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Oct""**[$]( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Oct""**[$]( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Oct""**[$]( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Oct""**[$]( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Oct""**[$]( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Oct""**[$]( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Oct""**[$]( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Oct""**[$]( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+##
+{{fbdoc item="usage"}}##
+		//octal// = ""Oct""[$]( //number// )
+			##//or//##
+		//octal// = ""Oct""[$]( //number//, //digits// )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		Number to convert to octal representation.
+	##//digits//##
+		Desired number of digits in the returned string.
+
+{{fbdoc item="ret"}}
+	The octal representation of the number, truncated or padded with zeros ("0") to the specified number of digits, if specified.
+
+{{fbdoc item="desc"}}
+	Returns the octal string representation of //number//. Octal digits range from 0 to 7.
+	If you specify //digits// > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
+	The length of the returned string will not be longer than the maximum number of digits required for the type of //number// (3 characters for ##[[KeyPgByte Byte]]##, 6 for ##[[KeyPgShort Short]]##, 11 for ##[[KeyPgInteger Integer]]##, and 22 for ##[[KeyPgLongint Longint]]##)
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+Print Oct(54321)    '' will display 152061
+Print Oct(54321, 4) '' will display 2061
+Print Oct(54321, 8) '' will display 00152061%%
+
+{{fbdoc item="diff"}}
+	- In QBASIC, there was no way to specify the number of digits returned.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgWoct Woct]]##
+	- ##[[KeyPgBin Bin]]##
+	- ##[[KeyPgHex Hex]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

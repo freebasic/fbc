@@ -1,0 +1,56 @@
+{{fbdoc item="title" value="SCREENRES"}}
+----
+Statement to initialize a graphics mode by specifying horizontal and vertical resolution. 
+
+{{fbdoc item="syntax"}}##
+	**Screenres** //width//, //height//[,[ //depth//][,[ //num_pages//][,[//flags//][,[//refresh_rate//]]]]]
+ ##
+{{fbdoc item="param"}}
+	##//width//##, ##//height//##
+		display width and height in pixels. In fullscreen modes is up to the user to check with ##[[KeyPgScreenlist Screenlist]]## if the requested mode is available in the graphics card.
+	##//depth//##
+		is the color depth in bits per pixel. If you omit this argument, the default depth for given mode is set. Values of 8, 15,16 ,24, 32 bits are allowed.
+	##//num_pages//##
+		is the number of video pages you want, see below. Default if omitted is 1.
+	##//flags//##
+		Are used to select several things as graphics driver, fullscreen mode. There are constants predefined in the fbgfx.bi file ready to use. See ##[[KeyPgScreengraphics Screen]]##  for available flags. 
+	##//refresh_rate//##
+		requests a refresh rate, if this is not available in the present card or the parameter is not specified, FB selects the rate automatically.
+
+{{fbdoc item="desc"}}
+
+	##**Screenres**## tells the compiler to link the GfxLib and initializes a QB-only, QB-on-GUI or OpenGl graphics mode, depending on the ##//flags//## setting
+
+	In QB-only modes a dumb window or fullscren resolution is set, one or more buffers in standard memory are created,  console commands are redirected to their graphic versions, a [[GfxDefPalettes default palette]] is set and an automatic screen refresh thread is started. QB-like  graphics and console statements can be used.  
+
+	 In QB-on-GUI modes one or more buffers in standard memory are created,  console commands are redirected to their graphic versions and a [[GfxDefPalettes default palette]] is set . QB-like  graphics and console statements can be used.  Is up to the user to create a window and to refresh it with the contents of the graphics buffers.
+
+	In OpenGl modes a dumb window or fullscren resolution is set, one or more buffers in standard memory are created, and the OS's OpenGL library is initialized. From here only openGL commands can be used to write to the Gfx buffer. QB-like and console commands are forbidden. This mode allows to initialize OpenGL in a portable way. 
+
+	See the details in ##[[KeyPgScreengraphics Screen (Graphics)]]## keyword.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+
+ScreenRes 640, 480, 8       'This line will set the screen mode to 640x480x8.
+	                        'The following code block will draw diagonal lines over the whole screen.
+For a = 1 to 640
+	For b = 1 to 480
+	    Pset (a,b),(a + b) AND 255
+	Next b
+Next a
+	                        'The following line will print "Hello World!" over the lines we've drawn.
+Print "Hello world!!"
+
+Sleep
+End
+
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreengraphics Screen]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

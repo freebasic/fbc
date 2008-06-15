@@ -1,0 +1,21 @@
+{{fbdoc item="title" value="OPTION NOKEYWORD"}}
+----
+{{fbdoc item="syntax"}}
+	Option Nokeyword keyword
+{{fbdoc item="desc"}}
+	Makes FB not find keyword in it's internal keyword table so it can be redefined in an external library. Useful when linking a library having a symbol with the same name as a FB keyword. Note that now types can have the same name as keywords, so sometimes Option Nokeyword is not necessary when it was in the past.
+	
+
+{{fbdoc item="ex"}}
+	%%(qbasic)
+option nokeyword pos
+dim pos as integer
+'' Do some processing with the variable "pos"
+%%
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}  {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

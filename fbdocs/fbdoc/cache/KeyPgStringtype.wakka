@@ -1,0 +1,42 @@
+{{fbdoc item="title" value="STRING"}}
+----
+Standard data type: 8 bit character string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **String** [ * //size//]
+##
+{{fbdoc item="desc"}}
+	A ##**String**## is an array of characters.
+
+	A ##**String**## declared without the ##//size//## parameter is dynamically resized depending on the length of the string. The length can range from 0 bytes to 2 gigabytes. A descriptor contains a pointer to the actual string and the size of the STRING. ##[[KeyPgVarptr Varptr]]## will return a pointer to the descriptor, while ##[[KeyPgStrptr Strptr]]## will point to the actual string. Despite the use of the descriptor, an implicit chr$(0) is added to the end of the string, to allow passing them to functions in external libraries without making slow copies.
+
+	A ##**String**## declared with ##//size//## is a QB-style fixed length string. It has no descriptor and it is not resized to fit its contents. As in QB, if data overflows the size of the string, it is truncated on the right side.
+
+	String variable names need not end in a dollar sign as in other dialects of BASIC.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' Variable-length
+dim a as string
+a = "Hello"
+'' Or
+dim a$
+a$ = "World"
+
+'' Fixed-length
+dim a as string * 32
+a = "Hello World"
+%%
+
+{{fbdoc item="diff"}}
+	- In QB the strings were limited to 32767 characters.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgString String (Function)]]## (function)
+	- ##[[KeyPgZstring Zstring]]##
+	- ##[[KeyPgStr Str]]##
+	- ##[[KeyPgStrptr Strptr]]##
+	- ##[[KeyPgVarptr Varptr]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
+

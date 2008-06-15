@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="EXPORT"}}
+----
+{{fbdoc item="syntax"}}
+FUNCTION foo ( arguments ) AS output_type EXPORT
+
+{{fbdoc item="desc"}}
+If a function is declared with this clause in a DLL, it is added to the public export table, so external programs can dynamically link to it using DYLIBSYMBOL. Be sure to use the -export [[CompileCmdLine command line]] option when compiling; otherwise, the function will not be exported at all.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'mydll.dll
+'in the DLL the function must be declared as CDECL and export
+FUNCTION AddNumbers CDECL ALIAS "AddNumbers" ( BYVAL operand1 AS INTEGER, BYVAL operand2 AS INTEGER) AS INTEGER EXPORT
+   AddNumbers = operand1 + operand2
+END FUNCTION
+%%
+
+%%(qbasic)
+'main program
+' create a function pointer, arguments must be the same as in the original function
+dim AddNumbers as function ( byval operand1 as integer, byval operand2 as integer ) as integer
+'
+hndl=DYLIBLOAD("mydll.dll")
+' find the proc address (case matters!)
+AddNumbers = DYLIBSYMBOL( hndl, "AddNumbers" )
+' call it..
+print "1 + 2 ="; AddNumbers( 1, 2 )
+sleep
+%%
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+~- [[KeyPgDylibload DYLIBLOAD]]
+~- [[KeyPgDylibsymbol DYLIBSYMBOL]]
+~- [[KeyPgAlias ALIAS]]
+
+{{fbdoc item="back" value=""}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

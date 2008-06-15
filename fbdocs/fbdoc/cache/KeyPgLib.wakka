@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="LIB"}}
+----
+{{fbdoc item="syntax"}}
+~DECLARE [SUB|FUNCTION] foo ALIAS "myfoo" LIB "mydll" ( arguments list ) AS typename 
+{{fbdoc item="desc"}}
+~In function declarations, LIB indicates the dll containing the function. The compiler generates the needed code to link to it.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- 
+{{fbdoc item="back" value="CatPgMisc|MISC"}}

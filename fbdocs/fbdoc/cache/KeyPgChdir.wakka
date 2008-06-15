@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="CHDIR"}}
+----
+Changes drive and directory to that specified.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Chdir** ( [[KeyPgByref byref]] //path// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+CHDIR //path//
+##
+{{fbdoc item="param"}}
+	##//path//##
+		A ##[[KeyPgStringtype string]]## argument specifying the path to change to.
+
+{{fbdoc item="desc"}}
+	Changes the current  drive and directory to that specified.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+ DIM myString as String
+ myString = "c:\windows"
+ CHDIR myString
+%%
+
+{{fbdoc item="diff"}}
+	- In QB, CHDIR could not change drives.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgMkdir Mkdir]]##
+	- ##[[KeyPgRmdir Rmdir]]##
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

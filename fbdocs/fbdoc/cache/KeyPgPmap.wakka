@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="PMAP"}}
+----
+Graphics function to map coordinates between view and physical mapping.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **PMap** ( [[KeyPgByval byval]] //coord// [[KeyPgAs as]] [[KeyPgSingle single]] , [[KeyPgByval byval]] //func// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
+##
+{{fbdoc item="usage"}}##
+	**PMap**(//coord//, //func//)
+##
+{{fbdoc item="param"}}
+	##//coord//##
+		an expression indicating the coordinate to be mapped.
+	##//func//##
+		the mapping function number to be applied to given coordinate.
+
+{{fbdoc item="ret"}}
+	the mapped coordinate value.
+
+{{fbdoc item="desc"}}
+	This function allows to convert a coordinate between view (as defined by the ##[[KeyPgWindow Window]]## statement) and physical (as set by the ##[[KeyPgViewgraphics View (Graphics)]]## statement) mappings. Depending on the value of func, expr is used to compute a different mapping to be returned by PMAP:
+
+		{{table columns="2" cellpadding="1" cells="func value:;return value:;0;Treats expr as x view coordinate and returns corresponding x physical coordinate.;1;Treats expr as y view coordinate and returns corresponding y physical coordinate.;2;Treats expr as x physical coordinate and returns corresponding x view coordinate.;3;Treats expr as y physical coordinate and returns corresponding y view coordinate."}}
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgWindow Window]]##
+	- ##[[KeyPgViewgraphics View (Graphics)]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

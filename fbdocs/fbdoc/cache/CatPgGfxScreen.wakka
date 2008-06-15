@@ -1,0 +1,20 @@
+{{fbdoc item="title" value="Screen Functions"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN"}}
+	- {{fbdoc item="keyword" value="KeyPgScreencopy|SCREENCOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}
+	- {{fbdoc item="keyword" value="KeyPgScreenlist|SCREENLIST"}}
+	- {{fbdoc item="keyword" value="KeyPgScreenlock|SCREENLOCK"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgScreenptr|SCREENPTR"}}
+	- {{fbdoc item="keyword" value="KeyPgScreenres|SCREENRES"}}
+	- {{fbdoc item="keyword" value="KeyPgScreenset|SCREENSET"}}
+	- {{fbdoc item="keyword" value="KeyPgScreensync|SCREENSYNC"}}
+	- {{fbdoc item="keyword" value="KeyPgScreenunlock|SCREENUNLOCK"}}
+
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

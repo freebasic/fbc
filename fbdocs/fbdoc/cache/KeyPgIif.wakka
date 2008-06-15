@@ -1,0 +1,27 @@
+{{fbdoc item="title" value="IIF"}}
+----
+{{fbdoc item="syntax"}}
+IIF (condition, numeric_value_if_true, numeric_value_if_false)
+
+{{fbdoc item="desc"}}
+IIF returns a different numeric value depending of the result of a conditional expression. Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+a= (x + y + iif(b > 0, 4, 7)) / z
+%%
+is equivalent to:
+%%(qbasic)
+temp = x + y
+if b > 0 then temp = temp + 4 else temp = temp + 7
+a = temp / z
+%%
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="|"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+

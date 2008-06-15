@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="MKI"}}
+----
+Does a binary copy from a ##[[KeyPgInteger integer]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mki** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+##
+{{fbdoc item="usage"}}##
+	//result// = MKI[$]( //number// )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		A ##[[KeyPgInteger integer]]## variable to binary copy to a ##[[KeyPgStringtype string]]##.
+
+{{fbdoc item="ret"}}
+	Returns a ##[[KeyPgStringtype string]]## with a binary copy of the ##[[KeyPgInteger integer]]##.
+
+{{fbdoc item="desc"}}
+	Does a binary copy  from an INTEGER variable to a string, setting its length to 4 bytes. The resulting string can be read back to an INTERGER by CVI
+
+	This function is useful to write numeric values to buffers without using a TYPE definition.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim a as integer
+a=4534
+b$=mki(a)
+print a, cvi(b$)
+sleep
+%%
+
+{{fbdoc item="diff"}}
+	- In QBasic MKI$ does what MKSHORT$ does in FB
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCvi Cvi]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

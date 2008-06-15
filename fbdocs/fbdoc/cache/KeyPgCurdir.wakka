@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="CURDIR$"}}
+----
+Returns the current directory/folder.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Curdir** ( ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Curdir**
+##
+{{fbdoc item="ret"}}
+	A ##[[KeyPgStringtype string]]## which is set to the name of the current directory/folder.
+
+{{fbdoc item="desc"}}
+Returns the current directory/folder.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+print curdir$
+sleep
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgDir Dir$]]##
+	- ##[[KeyPgMkdir Mkdir]]##
+	- ##[[KeyPgRmdir Rmdir]]##
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

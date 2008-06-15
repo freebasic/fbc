@@ -1,0 +1,26 @@
+{{fbdoc item="title" value="PASCAL"}}
+----
+{{fbdoc item="syntax"}}
+declare {function | sub} procName pascal alias
+
+{{fbdoc item="desc"}}
+Forces the standard pascal calling convention when calling a sub/function.
+
+This exists for compadibility with pascal libraries, so that they can be used with FreeBasic.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+declare function MyFunc pascal alias "MyFunc" (MyParm as integer) as integer
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- [[KeyPgDeclare DECLARE]]
+	- [[KeyPgCdecl CDECL]]
+	- [[KeyPgPascal PASCAL]]
+	- [[KeyPgStdcall STDCALL]]
+
+{{fbdoc item="back" value="CatPgCallingconvention|CALLING CONVENTION"}}

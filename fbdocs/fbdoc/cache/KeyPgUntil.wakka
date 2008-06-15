@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="UNTIL"}}
+----
+{{fbdoc item="syntax"}}
+
+
+{{fbdoc item="desc"}}
+UNTIL is used with the [[KeyPgDoloop DO...LOOP]] structure. See it for more info.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+DIM a AS INTEGER
+
+a = 1
+DO
+	PRINT "hello"
+a = a + 1
+LOOP UNTIL a > 10
+
+'This will continue to print "hello" on the screen until the condition (a > 10) is met. 
+%%
+
+{{fbdoc item="diff"}}
+	- 
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="CatPgConditional|CONDITIONAL"}}
+

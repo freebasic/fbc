@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="DEFSHORT"}}
+----
+Sets a default data type for variables
+
+{{fbdoc item="syntax"}}##
+	**Defshort** //letterrange//[, //letterrange//]...
+##
+{{fbdoc item="desc"}}
+	##**Defshort**## is used to default variables to a ##[[KeyPgShort Short]]## number that start with a letter in the range given.
+
+	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+
+	This will make 'sNumber' a ##[[KeyPgShort Short]]## number since it's first letter starts with s.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+defshort s
+dim sNumber
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+	- In QBasic, to make variables default to a 2 byte integer, DEFINT was used.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDefbyte Defbyte]]##
+	- ##[[KeyPgDefdbl Defdbl]]##
+	- ##[[KeyPgDefint Defint]]##
+	- ##[[KeyPgDeflng Deflng]]##
+	- ##[[KeyPgDefsng Defsng]]##
+	- ##[[KeyPgDefstr Defstr]]##
+	- ##[[KeyPgDefubyte Defubyte]]##
+	- ##[[KeyPgDefuint Defuint]]##
+	- ##[[KeyPgDefushort Defushort]]##
+	- ##[[KeyPgInteger Integer]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

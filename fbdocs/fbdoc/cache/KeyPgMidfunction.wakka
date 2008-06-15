@@ -1,0 +1,33 @@
+{{fbdoc item="title" value="MID (Function)"}}----
+
+{{fbdoc item="syntax"}}
+	MID[$](//text//, //start//[, //length//])
+
+{{fbdoc item="desc"}}
+	MID returns a string containing the characters from the //text// string, starting at //start//, //length// characters long. 
+
+	If //length// is omitted, it will return a string containing characters from //text//, starting at //start//, until the end of the string //text//.
+
+	The expression can be a wstring (Unicode string), in this case LEFT returns a wstring.The DOS version does not support Unicode.
+	
+{{fbdoc item="ex"}}
+%%(qbasic)
+PRINT MID("abcdefg", 3, 2) ' returns "cd"
+PRINT MID("abcdefg", 3)     ' returns "cdefg"
+PRINT MID("abcdefg", 2, 1) ' returns "b"%%
+
+An Unicode example:
+<<
+dim text as wstring*20
+text = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;!"
+print mid(text, 6,4) 'displays "&#1090;, &#1084;"
+<<
+::c::
+{{fbdoc item="diff"}}
+	- QB does not support Unicode
+
+{{fbdoc item="see"}}
+	- [[KeyPgInstr INSTR]]
+	- [[KeyPgMidstatement MID (Statement)]]
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

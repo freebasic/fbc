@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="Preprocessor"}}----
+
+{{fbdoc item="desc"}}
+	Preprocessor commands are sent to the compiler to control what gets compiled and how. They can be used to choose to compile one block of code rather than another for cross-platform compatibility, include headers or other source files, define small inline functions called macros, or alter how the compiler handles variables.
+{{fbdoc item="close"}}
+
+<<
+	- {{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}
+	- {{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}
+	- {{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}
+	- {{fbdoc item="keyword" value="KeyPgPpendif|#ENDIF"}}
+	- {{fbdoc item="keyword" value="KeyPgPperror|#ERROR"}}
+	- {{fbdoc item="keyword" value="KeyPgPpif|#IF"}}
+	- {{fbdoc item="keyword" value="KeyPgPpifdef|#IFDEF"}}
+	- {{fbdoc item="keyword" value="KeyPgPpifndef|#IFNDEF"}}
+
+	- {{fbdoc item="keyword" value="KeyPgPpmacro|#MACRO"}}
+	- {{fbdoc item="keyword" value="KeyPgPpmacro|#ENDMACRO"}}
+
+	- {{fbdoc item="keyword" value="KeyPgDynamic|'$DYNAMIC"}}
+	- {{fbdoc item="keyword" value="KeyPgInclude|'$INCLUDE"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgInclib|#INCLIB"}}
+	- {{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE"}}
+	- {{fbdoc item="keyword" value="KeyPgPplibpath|#LIBPATH"}}
+	- {{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}
+	- {{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}
+	- {{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}
+	- {{fbdoc item="keyword" value="KeyPgPpundef|#UNDEF"}}
+
+	- [[KeyPgStringize # Preprocessor stringize]]
+	- [[KeyPgPreConcat ## Preprocessor concatenate]]
+
+	- {{fbdoc item="keyword" value="KeyPgDefined|DEFINED"}}
+
+
+
+
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

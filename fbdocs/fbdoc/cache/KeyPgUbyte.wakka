@@ -1,0 +1,35 @@
+{{fbdoc item="title" value="UBYTE"}}
+----
+Standard data type: 8 bit unsigned
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Ubyte**##
+
+{{fbdoc item="desc"}}
+	8-bit unsigned whole-number data type. Can hold a value in the range of 0 to 255.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+DIM ubytevar AS UBYTE
+ubytevar = 200
+PRINT "ubytevar= ", ubytevar
+%%
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+  Dim x As UByte = 0
+  Dim y As UByte = &HFF
+  Print "UByte Range = "; x; " to "; y
+%%
+	**Output:**
+	%%UByte Range = 0 to 255%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgByte Byte]]##
+	- ##[[KeyPgCubyte Cubyte]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
+

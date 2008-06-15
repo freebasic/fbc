@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="WAIT"}}
+----
+Statement for accessing hardware ports.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wait** ( [[KeyPgByval byval]] //port// [[KeyPgAs as]] [[KeyPgUshort ushort]] , [[KeyPgByval byval]] //and_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //xor_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	**Wait** //port,// //and_value// [, //xor_value//]
+##
+{{fbdoc item="param"}}
+	##//port//##
+		port to read
+	##//and_mask//##
+		mask value to [[KeyPgAnd And]] the port value with
+	##//xor_mask//##
+		mask value to [[KeyPgXor Xor]] the port value with
+
+{{fbdoc item="ret"}}
+	0 if successful, -1 on failure.
+
+{{fbdoc item="desc"}}
+	##**Wait**## keeps reading ##//port//## until the reading ANDed with ##//and_mask//## and optionally XORed with ##//xor_mask//## gives a non-zero result.
+
+	In the Windows and Linux versions a port number (&H3DA) is hooked by the graphics library to emulate QB's VGA vert syncing. This use is deprecated; use ##[[KeyPgScreensync ScreenSync]]## instead.
+
+	Using true port access in the Windows version requires the program to install a device driver for the present session. For that reason, Windows executables using hardware port access should be run with administrator permits each time the computer is restarted. Further runs don't require admin rights as they just use the already installed driver. The driver is only 3K in size and is embedded in the executable.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInp Inp]]##
+	- ##[[KeyPgOut Out]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

@@ -1,0 +1,57 @@
+{{fbdoc item="title" value="LTRIM"}}----
+
+{{fbdoc item="syntax"}}
+	LTRIM[$]( //expression// [, [ANY] //trimset//]] )
+
+{{fbdoc item="desc"}}
+	The function has three forms as follows:
+	
+	LTRIM[$](//expression//)
+		Trims spaces (ASCII #32) from the left hand side of //expression// and returns the result.
+
+	LTRIM[$](//expression//, //trimset//)
+		Trims characters from the left hand side of //expression// if they exactly match //trimset//.  Comparisons are case sensitive.  If //trimset// is a zero (0) length string, then no characters will be trimmed from //expression//.
+
+	LTRIM[$](//expression//, ANY //trimset//)
+		Trims any character found in //trimset// from the left hand side of //expression// and returns the result.  Comparisons are case sensitive.  If //trimset// is a zero (0) length string, then no characters will be trimmed from //expression//.
+		
+
+{{fbdoc item="ex"}}
+~Example #1:
+~~%%(qbasic)
+Dim s as String
+
+s = "  101 Things to do."
+
+Print "'" + LTrim(s) + "'"
+Print "'" + LTrim(s, " 01") + "'"
+Print "'" + LTrim(s, ANY " 01") + "'"
+%%
+~Output
+~~%%
+'101 Things to do.'
+'  101 Things to do.'
+'Things to do.'
+%%
+~Example #2
+~~%%(qbasic)
+Dim t as String
+t = "BaaBaaBAA Test Pattern"
+
+Print "'" + LTrim(t, "Baa") + "'"
+Print "'" + LTrim(t, ANY "BaA") + "'"
+%%
+~Output
+~~%%
+'BAA Test Pattern'
+' Test Pattern'
+%%
+
+{{fbdoc item="diff"}}
+	- QB does not support //trimset// or the ANY clause.
+
+{{fbdoc item="see"}}
+	- [[KeyPgRtrim RTRIM]] 
+	- [[KeyPgTrim TRIM]]
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

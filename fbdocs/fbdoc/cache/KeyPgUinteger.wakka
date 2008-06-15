@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="UINTEGER"}}
+----
+Standard data type: 32 bit unsigned
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Uinteger**##
+
+{{fbdoc item="desc"}}
+32-bit unsigned whole-number data type. Can hold values from 0 to 4294967295.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+  Dim x As UInteger = 0
+  Dim y As UInteger = &HFFFFFFFF
+  Print "UInteger Range = "; x; " to "; y
+%%
+	**Output:**
+	%%UInteger Range = 0 to 4294967295%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInteger Integer]]##
+	- ##[[KeyPgCuint Cuint]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
+

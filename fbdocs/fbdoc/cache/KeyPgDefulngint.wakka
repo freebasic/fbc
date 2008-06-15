@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="DEFULNGINT"}}
+----
+Sets a default data type for variables
+
+{{fbdoc item="syntax"}}##
+	**Defulngint** //letterrange//[, //letterrange//]...
+##
+{{fbdoc item="desc"}}
+	##**Defulngint**## is used to make variables whose name starts with a letter in the range given to defaut to a ##[[KeyPgUlongint Ulongint]]## number .
+	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+
+	This will make 'lNumber' a ##[[KeyPgUlongint Ulongint]]## number since it's first letter starts with l.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+defulongint l
+dim lNumber
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDefint Defint]]##
+	- ##[[KeyPgDeflngint Deflngint]]##
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+

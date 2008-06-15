@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="* (Multiplication)"}}
+----
+Operator to multiply to numbers
+
+{{fbdoc item="syntax"}}##
+	//number1// **""*""** //number2//
+##
+{{fbdoc item="usage"}}##
+	//result// = //number1// **""*""** //number2//
+##
+{{fbdoc item="desc"}}
+	The multiplication operator is used to multiply two numbers. For example 2 * 3 is the same thing as 2 {{fbdoc item="keyword" value="KeyPgAddition|+"}} 2 {{fbdoc item="keyword" value="KeyPgAddition|+"}} 2. Multiplication, *, is the inverse of division, {{fbdoc item="keyword" value="KeyPgDivision|/"}}. The arguments ##//number1//## and ##//number2//## can be any valid numerical expression.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+DIM n AS DOUBLE
+n = 4 * 5
+PRINT n
+SLEEP
+%%##
+
+The output would look like:
+##%%(qbasic)
+ 20
+%%##
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- {{fbdoc item="keyword" value="KeyPgDivision|/ (Division)"}}
+	- {{fbdoc item="keyword" value="KeyPgAddition|+ (Addition)"}}
+	- [[CatPgMath Mathematical Functions]]
+
+**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]
+

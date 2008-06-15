@@ -1,0 +1,48 @@
+{{fbdoc item="title" value="GOTO"}}
+----
+{{fbdoc item="syntax"}}
+	//symbolname// :
+
+	Or
+
+	//literalnumber//
+
+{{fbdoc item="desc"}}
+	        
+	Designates a point where a [[KeyPgGoto GOTO]] or [[KeyPgGosub GOSUB]] can jump to. 
+	       
+	   A label can be an positive integer line number or a //symbolname//. In both cases must start at the first column of line. An //symbolname// label must end with a colon (:) character.
+
+	Both [[KeyPgGoto GOTO]] and [[KeyPgGosub GOSUB]] should be avoided for more modern structures such as [[KeyPgDoloop DO...LOOP]], [[KeyPgFornext FOR...NEXT]], [[KeyPgSub SUB]], and [[KeyPgFunction FUNCTION]].
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+beginning:
+3 print "Hello World!"
+goto beginning
+%%
+
+%%(qbasic)
+'' Labels can be used to "bookmark" DATA blocks, allowing RESTORE to alter the READ sequence.
+read a,b,c
+restore here
+read d,e
+print a,b,c,d,e 
+
+data 1,2,3,4,5
+here:
+data 6,7,8
+
+1,2,3,6,7
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[KeyPgGosub GOSUB]]
+	- [[KeyPgGoto GOTO]]
+	- [[KeyPgSub SUB]]
+	- [[KeyPgFunction FUNCTION]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

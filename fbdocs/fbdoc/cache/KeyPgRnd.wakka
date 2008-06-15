@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="RND"}}
+----
+Returns a [[KeyPgDouble double]] precision random number between 0 and 1.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rnd** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	//result// = Rnd ( //number// )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		Optional [[KeyPgInteger integer]] argument. If //number// has a value of 0, the last random number generated is repeated, for any other number a new random number is returned. The default for no argument is to return a new random number.
+
+{{fbdoc item="ret"}}
+	Returns the random number generated.
+
+{{fbdoc item="desc"}}
+	Returns a decimal (floating point) number between 0 and 1 (including 0 but not including 1), based off the random seed (see ##[[KeyPgRandomize Randomize]]##).
+	In general use, it's more generally multiplied by a number to get a larger random number.
+	RND is a wrapper for the C runtime function rand. Because of the different C runtimes provided by each system, the resolution of RND is 31 bits for the DOS and Linux versions and 15 bits for the Win32 version. 
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+ Dim X as Integer
+ Dim Y as Double
+
+ x = RND(1) 'will give a floating point number between 0 and 1
+ print x
+
+ y = rnd(1) * 10 'willl give a floating point number between 0 and 9
+ print Y
+
+ Z = int(Rnd(1) * 10) + 1 'Will give an integer number between 1 and 10
+ print Z
+%%
+
+{{fbdoc item="diff"}}
+	- A different algorithm finds the random number than QB, so the random numbers will be different for a given RANDOMIZEd seed.
+	- If the optional argument is less than 0, it has the same meaning as passing an argument of 1.
+	-  QB's RND resolution is approx 24 bits, while FB for Win32 gives 15 bits, FB for DOS and Linux give 31 bits.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgRandomize Randomize]]##
+
+{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

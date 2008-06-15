@@ -1,0 +1,91 @@
+{{fbdoc item="title" value="GETJOYSTICK"}}
+----
+Input function to read buttons and axis information from attached gaming devices.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getjoystick** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByref byref]] //buttons// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByref byref]] //a1// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a2// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a3// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a4// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a5// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a6// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Getjoystick** (//id//, //buttons//, //x//, //y//[, //z//[, //r//[, //u//[, //v//]]]])
+##
+{{fbdoc item="param"}}
+	##//id//##
+		the device id number (0 - 15)
+	##//buttons//##
+		the button status
+	##//x//##
+		first axis value
+	##//y//##
+		second axis value
+	##//z//##
+		third axis value
+	##//r//##
+		fourth axis value
+	##//u//##
+		fifth axis value
+	##//v//##
+		sixth axis value
+
+{{fbdoc item="ret"}}
+	0 on success or 1 on failure.
+
+{{fbdoc item="desc"}}
+	##**Getjoystick**## will retrieves the button state, and the axis positions for up to 6 axes, for the joystick determined by ##//id//##, a number between 0 and 15. Buttons are stored in a similar manner to ##[[KeyPgGetmouse Getmouse]]##, with each bit in ##//buttons//## representing a button. all of the axis positions stored in ##//x//##, ##//y//##, ##//z//##, ##//r//##, ##//u//##, and ##//v//## are stored in floating point format.
+
+	##**Getjoystick**## will return 0 upon successful completion; It will return 1 upon failure. Failure can be caused by specifying an illegal joystick number, specifying a joystick which doesn't exist, or a failure in the joystick API.
+
+	##**Getjoystick**## will only function after a video mode has been set using the ##[[KeyPgScreengraphics Screen]]## command.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+
+screen 12
+
+dim x as single
+dim y as single
+dim buttons as integer
+dim result as integer
+
+const JoystickID = 0
+
+'This line checks to see if the joystick is ok.
+
+if GETJOYSTICK(JoystickID,buttons,x,y) then 
+	print "Joystick doesn't exist or joystick error."
+	print
+	print "Press any key to continue."
+	sleep
+	end
+end if
+
+
+do
+	result = GETJOYSTICK(JoystickID,buttons,x,y)
+
+	locate 1,1
+	print ;"result:";result;" x:" ;x;" y:";y;" Buttons:";buttons,"","",""
+	
+	
+	'This tests to see which buttons from 1 to 27 are pressed. 
+	for a = 0 to 26 
+	    if (buttons AND (1 shl a)) then 
+	        print "Button ";a;" pressed.    "
+	    else 
+	        print "Button ";a;" not pressed."
+	    end if
+	next a
+loop
+
+
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgSetmouse Setmouse]]##
+	- ##[[KeyPgGetmouse Getmouse]]##
+	- ##[[KeyPgMultikey Multikey]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

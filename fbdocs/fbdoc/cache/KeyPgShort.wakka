@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="SHORT"}}
+----
+Standard data type: 16 bit signed
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Short**##
+
+{{fbdoc item="desc"}}
+16-bit signed whole-number data type. Can hold values from -32768 to 32767.
+
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+  Dim x As Short = &H8000
+  Dim y As Short = &H7FFF
+  Print "Short Range = "; x; " to "; y
+%%
+	**Output:**
+	%%Short Range = -32768 to  32767%%
+
+{{fbdoc item="diff"}}
+	- The name "short" is new to FreeBasic, however they are the same as integers in QB
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgUshort Ushort]]##
+	- ##[[KeyPgCshort Cshort]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
+

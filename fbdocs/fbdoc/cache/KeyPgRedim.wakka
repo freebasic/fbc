@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="REDIM"}}
+----
+{{fbdoc item="syntax"}}
+	REDIM [[[KeyPgShared SHARED]]] [PRESERVE] //symbolname//(//subscripts//) AS [[DataType DataType]] [, ...]
+
+{{fbdoc item="desc"}}
+	Using REDIM to declare an array creates it at run time so forces it to be a dynamic array, where as [[KeyPgDim DIM]] forces an array to be static unless the metacommand [[KeyPgDynamic $DYNAMIC]] is used.
+
+	REDIM is used also to change the size of an array declared as dynamic (upper and lower bounds). The contents of a redimmed array is not preserved unless the clause PRESERVE is used.
+
+	"REDIM SHARED" cannot be used within a sub or function.  However, if an array is set up as [[KeyPgShared COMMON]] [[KeyPgShared SHARED]], and is REDIM'd inside a sub or function without the SHARED word specified, the array does not lose its SHARED attribute.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'e.g. on using dynamic arrays:
+
+'$DYNAMIC
+DIM x(10) AS INTEGER
+PRINT UBOUND(x)
+
+REDIM x(100) AS INTEGER
+PRINT UBOUND(x)
+%%
+
+{{fbdoc item="diff"}}
+	- PRESERVE wasn't supported in QB.
+
+{{fbdoc item="see"}}
+	- [[KeyPgCommon COMMON]]
+	- [[KeyPgDim DIM]]
+	- [[KeyPgErase ERASE]]
+	- [[KeyPgExtern EXTERN]]
+	- [[KeyPgLbound LBOUND]]
+	- [[KeyPgRedim REDIM]]
+	- [[KeyPgPreserve PRESERVE]]
+	- [[KeyPgShared SHARED]]
+	- [[KeyPgStatic STATIC]]
+	- [[KeyPgUbound UBOUND]]
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

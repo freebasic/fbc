@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="LEN"}}
+----
+{{fbdoc item="syntax"}}
+	LEN( {//variable// | [[DataType DataType]]} )
+
+{{fbdoc item="desc"}}
+	LEN will return the length of a //variable// or [[DataType DataType]]. If the //variable// is a string, it will return the length in characters. Otherwise, it will return the number of bytes. 
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+print len("hello world") 'returns "11"
+print len(Integer) ' returns 4
+
+type xyz
+	a as integer
+	b as integer
+end type
+
+print len(xyz) ' returns 8
+%%
+
+{{fbdoc item="diff"}}
+	- Can be used with built-in types and user-defined types.
+
+{{fbdoc item="see"}}
+	- [[KeyPgSizeof SIZEOF]]
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

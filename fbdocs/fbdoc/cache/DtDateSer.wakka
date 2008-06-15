@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="Date Serials"}}
+----
+
+{{fbdoc item="desc"}}
+	A date serial is a number that holds a date and time value in the same format used by PDS or VBDOS. The value is a count of the days from 0hAM of December 30,1899; it's mainly used for easy counting of the time between two dates.
+
+	The date serial unit is one day and the fractional part represents the time of the day. If a date serial is written into an integer, the time is lost. FB date serials are not limited to dates between 1753 and 2078 as VBDOS's were. FB's date serial handling functions use [[KeyPgDouble DOUBLE]] arguments.
+
+	FB's date serial handling functions require the inclusion of ##vbcompat.bi## or ##datetime.bi## in the source.
+
+	A date serial can be created by the functions ##[[KeyPgNow Now]]##, ##[[KeyPgTimeserial TimeSerial]]##+##[[KeyPgDateSerial DateSerial]]##, or ##[[KeyPgDateValue DateValue]]##+##[[KeyPgTimeValue TimeValue]]##.
+
+	The functions ##[[KeyPgYear Year]]##, ##[[KeyPgMonth Month]]##, ##[[KeyPgWeekday Weekday]]##, ##[[KeyPgDay Day]]##, ##[[KeyPgHour Hour]]##, ##[[KeyPgMinute Minute]]##, ##[[KeyPgSecond Second]]## allow to recover the different components of a date serial.
+
+	The ##[[KeyPgFormat Format]]## function has formatting expresions to print date serials in a human readable way.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#include "vbcompat.bi"
+a!=0
+print "the origin of the date serials is"; format(a,"yyyy/mm/dd hh:mm:ss")
+a!=now
+print "now  is"; format(a!,"yyyy/mm/dd hh:mm:ss")
+b!=dateserial(2000,1,1)
+print int(a!-b!);" days have passed since 2000/01/01"
+%%
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}

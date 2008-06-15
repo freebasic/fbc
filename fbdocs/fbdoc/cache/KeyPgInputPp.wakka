@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="INPUT #"}}
+----
+{{fbdoc item="syntax"}}
+INPUT # filenum, list of variables   
+
+{{fbdoc item="desc"}}
+Gets the variables in the list from the open for INPUT file filenum. The variables must be in the file as text separed with commas and strings enclosed in double quotes, the format WRITE # produces.
+If a value does not match the type of the variable an error is issued. 
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+open "myfile.txt" for output as #1
+write #1, 1,"Hello, World",34.5
+close #1
+
+open "myfile.txt" for input as #1
+input #1, a,b$,c!
+close #1
+print a,b$,c!
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+~- [[KeyPgInput INPUT]]
+~- [[KeyPgWrite WRITE #]]
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+
+

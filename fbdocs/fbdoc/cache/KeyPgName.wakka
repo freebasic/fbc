@@ -1,0 +1,21 @@
+{{fbdoc item="title" value="NAME"}}
+----
+{{fbdoc item="syntax"}}
+NAME //oldname// as string, //newname// as string
+
+{{fbdoc item="desc"}}
+Renames a file originally called //oldname// to //newname//.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+name "dsc001.jpg", "landscape.jpg"
+%%
+renames the file "dsc001.jpg" to "landscape.jpg".
+
+{{fbdoc item="diff"}}
+	- In QB, NAME required AS rather than a comma between the old and new names.
+
+{{fbdoc item="see"}}
+	- [[KeyPgKill KILL]]
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}

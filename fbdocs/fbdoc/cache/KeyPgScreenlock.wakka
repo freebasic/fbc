@@ -1,0 +1,35 @@
+{{fbdoc item="title" value="SCREENLOCK"}}
+----
+Graphics statement to lock the working page framebuffer.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenlock** ( )
+##
+{{fbdoc item="usage"}}##
+	**Screenlock**
+##
+
+{{fbdoc item="desc"}}
+	The ##**Screenlock**## function locks the current work page framebuffer for direct memory access. 
+
+	Framebuffer memory may be freely accessed (read/write) during the time a screen is locked, however, primitive gfx statements may not be called during the time that a screen is locked.
+
+	The screen remains locked until the use of ##[[KeyPgScreenunlock Screenunlock]]## statement.  ##**Screenlock**## must only be used on a screen that is unlocked - or in otherwords, a screen that is not already locked with ##**Screenlock**##. 
+
+	It is strongly recommended that the lock on a page be held for as short a time as possible.
+
+	Once the page is locked, the screen contents will not be automatically updated until the page is unlocked with the ##[[KeyPgScreenunlock Screenunlock]]## statement.  If the work page is the same as the visible page, any modifications to the page memory while locked will not become visible until ##[[KeyPgScreenunlock Screenunlock]]## is called.
+
+
+{{fbdoc item="ex"}}
+	         See [[KeyPgScreenptr Screenptr]] example.
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgScreenunlock Screenunlock]]##
+	- ##[[KeyPgScreenptr Screenptr]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}

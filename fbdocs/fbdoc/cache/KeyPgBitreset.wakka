@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="BITRESET"}}
+----
+Macro that clears a bit in an integer.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgPpdefine #define]] **BITRESET**( //value//, //bit_number// ) ((//value//) [[KeyPgAnd and]] [[KeyPgNot not]] (1 [[KeyPgShl shl]] (//bit_number//)))
+##
+{{fbdoc item="usage"}}##
+	//result// = BITRESET( //value//, //bit_number// )
+##
+{{fbdoc item="param"}}
+	##//value//##
+		The integer value to clear a bit in.  It is not modified.
+	##//bit_number//##
+		The zero-based number of the bit to clear; 0 is the least-significant bit.
+
+{{fbdoc item="ret"}}
+	##//value//## with bit ##//bit_number//## cleared.
+
+{{fbdoc item="desc"}}
+	Macro returning ##//value//## with the bit ##//bit_number//## reset to 0.
+	##foo = BITRESET( bar, 5 )##  does the same as ##foo = bar and not (1 shl 5)##.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+PRINT BITRESET(5,0)
+%%##
+##%%
+4
+%%##
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgBit BIT]]##
+	- ##[[KeyPgBitset BITSET]]##
+	
+
+{{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

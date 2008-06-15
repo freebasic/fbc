@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="$DYNAMIC"}}
+----
+{{fbdoc item="syntax"}}
+	OPTION DYNAMIC
+
+	Or
+
+	'$DYNAMIC
+
+{{fbdoc item="desc"}}
+	OPTION DYNAMIC allocates any arrays into dynamic memory by default.  When this option is turned off, the [[KeyPgRedim REDIM]] keyword must be used to allocate a Dynamic array.
+
+	Dynamic memory is memory that is allocated during the course of program execution, as the program needs it.  Static memory, or the memory DIM uses by default, is set aside at the start of program execution.  This type of memory is faster, but it is less flexible and cannot be reallocated or freed.  With the OPTION DYNAMIC switch on, DIM effectively acts like REDIM, using dynamic memory.
+
+	If an array is DIMmed using variables to specify dimensions, the array is implicitly declared as dynamic, even if the keyword DYNAMIC is not used.
+
+	The deprecated  '$DYNAMIC form exists for compatibility with QuickBasic.
+
+e.g.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+Option Dynamic
+Dim a(100)
+'......
+ReDim a(200)
+%%
+
+{{fbdoc item="diff"}}
+	- When used inside comments it must be the first token
+
+{{fbdoc item="see"}}
+	- [[KeyPgMetaStatic $STATIC]]
+	- [[KeyPgDim DIM]]
+	- [[KeyPgRedim REDIM]]
+	- [[KeyPgErase ERASE]]
+
+{{fbdoc item="back" value="CatPgPreProcess|Pre-Processor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

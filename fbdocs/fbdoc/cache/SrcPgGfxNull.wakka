@@ -1,0 +1,120 @@
+This is an example of use of GfxLib's  GFX_NULL driver in Windows. The client area of the window is updated using GfxLib, menus, toolbars or dialogs can be added to the window using normal Win API calls.
+
+%%(qbasic)
+'Example of use of the GFX_NULL driver in windows
+'The GfxLib is set up in the ON_Create sub
+'The GFXLib buffer is drawn  to screen in th On_Paint Sub
+'The GfXLib is updated in the event loop 
+'
+option explicit
+#include "fbgfx.bi"
+#include once "windows.bi"
+
+dim shared bmi as bitmapv4header
+dim shared mywin as rect
+'
+'--------------------------------------------------------------------------
+
+function on_paint(hwnd as HWND,wparam as WPARAM,lparam as LPARAM)
+  dim rct as RECT
+  dim pnt as PAINTSTRUCT
+  dim hDC as HDC
+  'draw the gfx buffer to screen
+  hDC = BeginPaint(hWnd, @pnt)
+  GetClientRect( hWnd, @rct )
+  with rct 
+	StretchDIBits hDC, 0, 0,.right-.left+1,.bottom-.top+1, 0, 0, .right-.left+1,_
+   .bottom-.top+1,ScreenPtr,cptr(bitmapinfo ptr, @bmi), DIB_RGB_COLORS, SRCCOPY
+  end with 
+  EndPaint hWnd, @pnt
+
+end function     
+'
+'---------------------------------------------------------------------------
+function on_Create(hwnd as HWND,wparam as WPARAM,lparam as LPARAM)
+	dim rct as RECT
+	'set a gfxscreen of the size of the client area
+	GetClientRect( hWnd, @mywin)
+	ScreenRes mywin.right+1,mywin.bottom+1, 32, 1, GFX_NULL
+	 'and create a bmp header,required to paint it yo screen
+	 with bmi
+	  .bV4Size = Len(BITMAPV4HEADER)
+	  .bv4width=mywin.right+1
+	  .bv4height=-(mywin.bottom+1)   'negative value=>top to bottom bmp
+	  '(standard BMP's are bottom to top)
+	  .bv4planes=  1
+	  .bv4bitcount=32
+	  .bv4v4compression=0
+	  .bv4sizeimage=mywin.right+1*mywin.bottom+1*4
+	  .bV4RedMask = &h0F00
+	  .bV4GreenMask = &h00F0
+	  .bV4BlueMask = &h000F
+	  .bV4AlphaMask = &hF000
+	end with
+end function
+'
+'---------------------------------------------------------------------------
+function on_Destroy(hwnd as HWND,wparam as WPARAM,lparam as LPARAM)
+	   'clear arrays....
+	   PostQuitMessage( 0 )
+end function
+'
+'----------------------------------------------------------------------------
+function WndProc ( byval hWnd as HWND,byval message as UINT, _
+	               byval wParam as WPARAM,byval lParam as LPARAM ) as LRESULT
+   
+	function = 0
+	select case as const  message
+	  case WM_CREATE:On_create(hwnd,wparam,lparam)
+	  case WM_PAINT:On_paint(hwnd,wparam,lparam)
+	  case WM_DESTROY:On_destroy(hwnd,wparam,lparam)
+	 case else 
+	   function = DefWindowProc( hWnd, message, wParam, lParam )   
+	end select
+end function
+'
+'------------------------------------------------------------------------------
+'main program create window + event loop
+  dim wMsg as MSG
+  dim wcls as WNDCLASS     
+  dim szAppName as zstring*30=>"Random Rectangles"
+  dim hWnd as HWND
+  dim i 
+  with wcls
+	 .style         = CS_HREDRAW or CS_VREDRAW
+	 .lpfnWndProc   = @WndProc
+	 .cbClsExtra    = 0
+	 .cbWndExtra    = 0
+	 .hInstance     = GetModuleHandle( null ) 
+	 .hIcon         = LoadIcon( NULL, IDI_APPLICATION )
+	 .hCursor       = LoadCursor( NULL, IDC_ARROW )
+	 .hbrBackground = GetStockObject(WHITE_BRUSH )
+	 .lpszMenuName  = NULL
+	 .lpszClassName = @szAppName
+  end with
+	   
+  if( RegisterClass( @wcls ) = FALSE ) then end
+ 'make a non-resizable screen
+  hWnd = CreateWindowEx( 0,szAppName,"Example of GFX_NULL",_
+	                WS_OVERLAPPEDWINDOW and not (WS_sizebox or ws_maximizebox),_
+	            CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT, CW_USEDEFAULT, _
+	                     NULL,NULL, wcls.hinstance,NULL )
+  ShowWindow( hWnd, SW_NORMAL )
+  UpdateWindow( hWnd )
+  
+  while 1
+	  if PeekMessage( @wMsg, NULL, 0,0, PM_REMOVE) then   
+	      if wmsg.message=WM_QUIT then exit while
+	      TranslateMessage( @wMsg )
+	      DispatchMessage( @wMsg )
+	     else
+	      'update the gfx buffer
+	      line (rnd*mywin.right,rnd*mywin.bottom)-(rnd*mywin.right,rnd*mywin.bottom),_
+	        rgb(rnd*255,rnd*255,rnd*255),bf
+	      redrawwindow (hwnd,0,0,rdw_invalidate)
+	  end if
+  wend
+end wMsg.wparam 
+%%
+
+{{fbdoc item="back" value="KeyPgScreengraphics|SCREEN (Graphics)"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

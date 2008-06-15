@@ -1,0 +1,33 @@
+{{fbdoc item="title" value="UCASE"}}
+----
+Returns an upper case copy of a string.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ucase** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ucase** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//result// = UCASE[$]( //str// )
+##
+{{fbdoc item="param"}}
+	##//str//##
+		A ##[[KeyPgStringtype String]]## expression.
+
+{{fbdoc item="ret"}}
+	Returns an uppercase copy of the ##[[KeyPgStringtype String]]##.
+
+{{fbdoc item="desc"}}
+	Returns the input //expression// string with all letters upper cased.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+print ucase("Hello World abCDefGH") '' displays "HELLO WORLD ABCDEFGH"
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLcase Lcase]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

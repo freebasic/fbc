@@ -1,0 +1,33 @@
+{{fbdoc item="title" value="LCASE"}}
+----
+Returns a lower case copy of a string.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lcase** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //expression// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lcase** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Lcase**( //expression// )
+##
+{{fbdoc item="param"}}
+	##//expression//##
+		String to convert to lowercase.
+
+{{fbdoc item="ret"}}
+	Lowercase copy of ##//expression//##.
+
+{{fbdoc item="desc"}}
+	Returns the //expression// string with all letters lower cased.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+print lcase$("Hello World abCDefGH") '' displays "hello world abcdefgh"
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgUcase Ucase]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

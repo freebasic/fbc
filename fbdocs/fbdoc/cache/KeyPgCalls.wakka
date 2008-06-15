@@ -1,0 +1,21 @@
+{{fbdoc item="title" value="CALLS"}}
+----
+{{fbdoc item="syntax"}}
+	CALLS subname ([parameter list])
+
+{{fbdoc item="desc"}}
+	Redundant, and the same as [[KeyPgCall CALL]]. Kept for compatibility reasons.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+calls foobar(4)
+%%
+
+{{fbdoc item="diff"}}
+	- 
+	- 
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

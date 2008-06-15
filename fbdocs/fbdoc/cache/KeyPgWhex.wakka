@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="WHEX"}}
+----
+Returns the hexadecimal wstring (unicode) representation of the integer //number//.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] , [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//wstring//=WHEX( //number// [, //digits//] )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		A whole number or expression evaluating to a whole number.
+	##//digits//##
+		Optional number of digits to return.
+
+{{fbdoc item="ret"}}
+	Returns a hexadecimal [[KeyPgStringtype string]] representation of //number//.
+
+{{fbdoc item="desc"}}
+	Hexadecimal digits range from 0-9, or A-F.
+	If you specify //digits// > 0, the result wstring will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
+	The length of the wstring will not go longer than the maximum number of digits required for the type of //expression// (8 for an integer, 16 for floating point or longint)
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+PRINT WHEX(54321)    '' will display D431
+PRINT WHEX(54321, 2) '' will display 31
+PRINT WHEX(54321, 5) '' will display 0D431
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgHex Hex]]##
+	- ##[[KeyPgWbin Wbin]]##
+	- ##[[KeyPgWoct Woct]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

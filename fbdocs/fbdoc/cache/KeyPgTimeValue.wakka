@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="TIMEVALUE"}}
+----
+Date function to return a [[DtDateSer Date Serial]] from the specified time string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeValue""** ( //timestring// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	#include "vbcompat.bi"
+	//result// = **""TimeValue""**(//timestring//)
+##
+{{fbdoc item="param"}}
+	##//timestring//##
+		the string to convert
+
+{{fbdoc item="ret"}}
+	Returns a [[DtDateSer Date Serial]] from a time string.
+
+{{fbdoc item="desc"}}
+	
+	The time string must be in the format ##"23:59:59"## or  ##"11:59:59PM"##
+
+	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#include "vbcompat.bi"
+a!=timevalue (07:12:28AM)
+print format(a!," hh:mm:ss ") )
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB. This function appeared in PDS and VBDOS
+
+{{fbdoc item="see"}}
+	- [[DtDateSer Date Serials]]
+	- ##[[KeyPgDateserial DateSerial]]##
+	- ##[[KeyPgTimevalue TimeValue]]##
+	- ##[[KeyPgDatevalue DateValue]]##
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

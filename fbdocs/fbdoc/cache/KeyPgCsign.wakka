@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="CSIGN"}}
+----
+Converts an expression to signed.
+
+{{fbdoc item="syntax"}}##
+	**Csign** ( //expression// )
+##
+{{fbdoc item="usage"}}##
+	//variable// = **Csign** ( //expression// )
+##
+{{fbdoc item="desc"}}
+	Converts an unsigned ##//expression//## to a signed one, useful to force signed behaviour of division or multiplication (including with ##[[KeyPgShl Shl]]## and ##[[KeyPgShr Shr]]##).
+
+	This is the opposite of ##[[KeyPgCunsg Cunsg]]##.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim value as ushort = 65535
+print csign(value)  '' will print -1
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCunsg Cunsg]]##
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+

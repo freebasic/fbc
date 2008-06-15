@@ -1,0 +1,12 @@
+===={{fbdoc item="title" value="Reporting a bug"}}====
+
+	Before reporting a bug, try to make sure it's a bug in FreeBasic and not a bug in your own code.  Try to write a small test that reproduces the problem you are encountering.  Read any relevant documentation; if none exists, try finding the relevant section of code in the compiler or runtime library sources.  If you show people that you have tried to solve your own problem, rather than immediately running for help, you will be more likely to find people willing to help you.
+
+	Be as specific as you can - "The FOOBAR runtime library function fails with a segmentation fault on Win32 when passed a variable-length string" is much better than "It crashes".
+
+	The first place to go in the case you believe you've encountered a bug is [[http://www.freebasic.net/forum/ the official FB forum]].
+
+	If you have isolated a compiler bug completely, and you have steps to reproduce it and a small piece of sample code, you can also file a bug report on the tracker page at [[http://sourceforge.net/tracker/?group_id=122342&atid=693196 Sourceforge.net]].
+
+	DO NOT file general "it doesn't work!" bug reports in the [[http://www.sourceforge.net SourceForge]] system. Only isolated, reproducible bugs should be posted there. 
+

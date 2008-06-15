@@ -1,0 +1,12 @@
+{{fbdoc item="title" value="File IO Functions"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgBload|BLOAD"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgBsave|BSAVE"}}
+
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

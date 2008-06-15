@@ -1,0 +1,33 @@
+{{fbdoc item="title" value="SPACE"}}----
+	Creates a string of a certain length filled with spaces spaces (" ").
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Space**[$]( //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+##
+{{fbdoc item="syntax"}}##
+		//String// = Space( //count// )
+##
+{{fbdoc item="param"}}
+	##//count//##
+		An integer type specifying the length of the string to be created.
+
+{{fbdoc item="ret"}}
+	The created string. An empty string will be returned if ##//count//## <= 0.
+
+{{fbdoc item="desc"}}
+	**Space** creates a string with the specified number of spaces.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+DIM A AS WSTRING *14
+A="x"+space(10)+"x"  'prints x             x
+%%
+
+::c::
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[KeyPgWspace Wspace]]
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

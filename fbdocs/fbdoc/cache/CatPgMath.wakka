@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="Mathematical Functions"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgAbs|ABS"}}
+	- {{fbdoc item="keyword" value="KeyPgAcos|ACOS"}}
+	- {{fbdoc item="keyword" value="KeyPgAsin|ASIN"}}
+	- {{fbdoc item="keyword" value="KeyPgAtan2|ATAN2"}}
+	- {{fbdoc item="keyword" value="KeyPgAtn|ATN"}}
+	- {{fbdoc item="keyword" value="KeyPgCos|COS"}}
+	- {{fbdoc item="keyword" value="KeyPgExp|EXP"}}
+	- {{fbdoc item="keyword" value="KeyPgFix|FIX"}}
+	- {{fbdoc item="keyword" value="KeyPgHibyte|HIBYTE"}}
+	- {{fbdoc item="keyword" value="KeyPgInt|INT"}}
+	- {{fbdoc item="keyword" value="KeyPgHiword|HIWORD"}}
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgLoByte|LOBYTE"}}
+	- {{fbdoc item="keyword" value="KeyPgLog|LOG"}}
+	- {{fbdoc item="keyword" value="KeyPgLoWord|LOWORD"}}
+	- {{fbdoc item="keyword" value="KeyPgMod|MOD"}}
+	- {{fbdoc item="keyword" value="KeyPgSgn|SGN"}}
+	- {{fbdoc item="keyword" value="KeyPgShl|SHL"}}
+	- {{fbdoc item="keyword" value="KeyPgShr|SHR"}}
+	- {{fbdoc item="keyword" value="KeyPgSin|SIN"}}
+	- {{fbdoc item="keyword" value="KeyPgSqr|SQR"}}
+	- {{fbdoc item="keyword" value="KeyPgTan|TAN"}}
+
+>>
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}
+

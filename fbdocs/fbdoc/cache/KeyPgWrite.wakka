@@ -1,0 +1,42 @@
+{{fbdoc item="title" value="WRITE"}}
+----
+Output statement to write text to screen or file. 
+
+{{fbdoc item="syntax"}}##
+	**Write** [#//filenum//,] [//expressionlist//] [(, | ;)] ...
+##
+{{fbdoc item="param"}}
+	##//filenum//##
+		handle to a file, console, or pipe to write the text.
+	##//expression//##
+		list of items to print
+
+{{fbdoc item="desc"}}
+	Writes ##//expressionlist//## to screen or to a text file (if **#**##//filenum//## is used). The values are separed with commas, and the text strings are enclosed in double quotes. The resulting format can be read by ##[[KeyPgInputPp Input #]]##. ##**Write** # ## provides an easy way to save data to file in a both human and machine readable way, with comma delimiting for multiple data.
+
+	The ##//expressionlist//## can be separed by commas as with ##[[KeyPgPrint Print]]##, but the output formatting is not tabbed as in PRINT style, it's comma delimited.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+open "myfile.txt" for output as #1
+write #1, 1, "Hello, World", 34.5
+close #1
+
+open "myfile.txt" for input as #1
+input #1, a, b$, c!
+close #1
+write a, b$, c!
+%%
+
+%%
+1,"Hello, World",34.5
+%%
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInputPp Input #]]##
+	- ##[[KeyPgPrint Print]]##
+
+
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

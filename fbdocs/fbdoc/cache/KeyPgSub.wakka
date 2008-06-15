@@ -1,0 +1,93 @@
+{{fbdoc item="title" value="SUB"}}
+----
+{{fbdoc item="syntax"}}
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] **Sub** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [( [//parameter_list//] )] [[[KeyPgStatic Static]]]
+		//statements//
+		...
+		[[[KeyPgReturn Return]]]
+		...
+	[[KeyPgEnd End]] Sub
+
+	[[[KeyPgPublic Public]]] **Sub** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [()] [[[KeyPgConstructor Constructor]]|[[KeyPgDestructor Destructor]]] [[[KeyPgStatic Static]]]
+		//statements//
+		...
+		[[[KeyPgReturn Return]]]
+		...
+	[[KeyPgEnd End]] Sub
+
+	where
+		//identifier// = the name of the subroutine
+		//external_identifier// = externally visible (to the linker) name enclosed in quotes
+		//parameter_list// = parameter[, parameter[, ...]]
+		//parameter// = [[[KeyPgByref ByRef]]|[[KeyPgByval ByVal]]] //identifier// [[[KeyPgAs As]] //type//] [= //default_value//]
+			//identifier// = the name of the variable referenced in the subroutine
+			//type// = the type of variable
+			//default_value// = the value of the argument if none is specified in the call
+		//return_type// = the type of variable returned by the subroutine
+		//statements// = one or more statements that make up the subroutine body
+
+{{fbdoc item="desc"}}
+	A subroutine is a block of code which may be called at any time from a program.  This code may need to be executed multiple times, and subroutines provide an invaluable means to simplify code by replacing these blocks of code with a single subroutine call.  A subroutine also serves to allow a user to extend the FreeBasic language to provide custom commands.  Many of the functions built into FreeBasic are merely subroutines part of a "runtime libaray" linked to by default.
+
+The "Sub" keyword marks the beginning of a subroutine, and its end is marked by "End Sub".  The "name" parameter is the name by which this subroutine is called.  For instance, if the declaration is "sub foo...end sub", the user can execute the code in between "sub foo" and "end sub" by using "foo" as a statement.  This code is executed separate from the code which calls the subroutine, so any variable names, unless they are shared, are not available to the subroutine.  Values can, however, be passed using parameters.
+
+Parameters are the arguments passed to any statement.  For instance, if a user executes a statement as "print 4", the value "4" is passed to the function "print."  Parameters that need to be passed to a subroutine are supplied by one or more parameter arguments in the "sub" keyword.  Creating a subroutine with "sub foo, bar...end sub", allows the code in between "sub" and "end sub" to refer to the first passed argument as "foo" and the second passed argument as "bar".  If a parameter is given a default value, that parameter is optional.
+
+Parameters must also have a supplied type, in the form "parameter as type".  If this is omitted, "type" is assumed to be "Integer".  A passed value MUST be of the type specified.
+
+A subroutine can also specify how parameters are passed, either as "byref" or "byval", as shown in the syntax definition.  If a parameter is "byref", the parameter name literally becomes a reference to the original variable passed to the subroutine.  Any changes made to that variable will be reflected outside of the subroutine.  If a parameter is passed "byval", however, the value of any passed variable is copied into a new variable, and any changes made to it will not affect the original.
+
+The STATIC specifier indicates that the values of all local variables defined in the sub should be preserved between calls.  To specify inidividual local variables as static see the [[KeyPgStatic STATIC]] keyword.
+
+Sub is the same as [[KeyPgFunction FUNCTION]], except it does not allow a value to be returned.
+
+The second syntax defines either a constructor or destructor using the [[KeyPgConstructor Constructor]] and [[KeyPgDestructor Destructor]] keywords, respectively.  Constructor subroutines are executed before the first line of code in the module, while destructors execute on module exit. Note the public access specifier and empty parameter list for both constructors and destructors.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' Example of writing colored text using a sub:
+
+option explicit
+option byval
+
+sub PrintColoredText( colour as integer, text as string )
+   color colour
+   print text
+end sub
+
+   PrintColoredText( 1, "blue" )        '' a few colors
+   PrintColoredText( 2, "green" )
+   PrintColoredText( 4, "red" )
+   print
+   
+   dim i as integer = 0
+   while( i<16 )                        '' all 16 colors
+	  PrintColoredText( i, "color " + str$(i) )
+   next
+
+   end 0
+%%
+%%(qbasic)
+' The following demonstrates optional parameters.
+
+Sub TestSub(P As String = "Default")
+	Print P
+End Sub
+
+TestSub "Testing:"
+TestSub
+%%
+
+{{fbdoc item="diff"}}
+	- Public and Private access specifiers are new to FreeBASIC
+	- Constructor subroutines are new to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgDeclare DECLARE]]
+	- [[KeyPgFunction FUNCTION]]
+	- [[KeyPgExit EXIT]]
+	- [[KeyPgPublic PUBLIC]]
+	- [[KeyPgPrivate PRIVATE]]
+	- [[KeyPgStatic STATIC]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,0 +1,52 @@
+{{fbdoc item="title" value="WIDTH"}}
+----
+Console function to set or return the number of rows and columns of the display.
+
+{{fbdoc item="syntax"}}##
+	**Width** [//columns//] [, //rows//]
+	**Width** **Lprint** //columns//
+	**Width** {#//filenum// | //devicename// }, //columns//
+	//result// = **Width** ( )
+##
+{{fbdoc item="param"}}
+	##//columns//##
+		columns (in characters) for output
+	##//rows//##
+		rows (in characters) for output
+	##//filenum//##
+		file handle to apply to
+	##//devicename//##
+		devicenemt to apply to
+
+{{fbdoc item="ret"}}
+	Returns a 32 bit ##[[KeyPgInteger Integer]]## where the ##[[KeyPgHiword HIWORD]]## is the number of columns and the ##[[KeyPgLoWord LOWORD]]## is the number of rows currently set.
+
+{{fbdoc item="desc"}}
+	Sets the maximum number of columns of characters of  an output device (console, printer of text file) . If text sent to the device reaches the width an automatic carry return is generated.  
+
+	If the device is the console a second argument specifying maximum number of rows is allowed. On a Windows any values > 0 can be used in windowed mode. On DOS or Windows full-screen console, the valid dimensions depend on the capabilities of the hardware. Linux doesn't allow applications to change the console size. 
+
+	Using ##**Width**## as a function returns the current console width in the low word and the current height in the high word.
+
+	In graphics modes ##**Width**## is used to indirectly select the font size by setting one of the height x width pairs allowed (See ##[[KeyPgScreengraphics Screen (Graphics)]]##). If  rows x cols is an invalid combination, no changes are made to the screen display. Using the width command forces a screen clear (##[[KeyPgCls Cls]]##) 
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+width 40, 25
+print "hello"
+%%
+
+%%(qbasic)
+DIM AS INTEGER w
+w = WIDTH
+Print "rows:"; w AND &HFFFF; " cols:"; w SHR 16
+%%
+
+{{fbdoc item="diff"}}
+	- Only 80x25 and 80x50 modes could be set in text mode in QB. Graphics modes work the same.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCsrlin Csrlin]]##
+	- ##[[KeyPgPos Pos]]##
+
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

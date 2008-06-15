@@ -1,0 +1,42 @@
+{{fbdoc item="title" value="NEXT"}}
+----
+{{fbdoc item="syntax"}}
+	NEXT [ //identifier_list// ]
+
+{{fbdoc item="desc"}}
+	Indicates the end of a statement block associated with a matching [[KeyPgFor FOR]] statement. //identifier_list//, if given, must match the identifiers used in the associated FOR statements in reverse order. 
+
+	There should be exactly one NEXT statement (or one item in the identifier list) for every FOR statement.
+
+{{fbdoc item="see"}}
+	- [[KeyPgFor FOR]] statement
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+for i=1 to 10
+for j=1 to 2
+   ...
+next
+next
+%%
+
+%%(qbasic)
+for i=1 to 10
+for j=1 to 2
+   ...
+next j
+next i
+%%
+
+%%(qbasic)
+for i=1 to 10
+for j=1 to 2
+   ...
+next j,i
+%%
+
+
+
+
+
+{{fbdoc item="back" value="CatPgControlflow|CONTROL FLOW"}}

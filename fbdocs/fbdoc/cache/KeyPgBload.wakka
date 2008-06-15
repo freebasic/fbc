@@ -1,0 +1,70 @@
+{{fbdoc item="title" value="BLOAD"}}
+----
+Graphics statement to load a block of binary data or a BMP from a file.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bload** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] , [[KeyPgByval byval]] //addr// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	**Bload** //filename// [, //addr//]
+##
+{{fbdoc item="param"}}
+	##//filename//##
+		the name of the file to load data from
+	##//addr//##
+		memory location to load data to
+
+{{fbdoc item="ret"}}
+	Zero is returned if ##**Bload**## completed successfully, otherwise a non-zero value is returned to indicate failure.
+	
+		
+{{fbdoc item="desc"}}
+	##//addr//## is a memory address of where to load data. If omitted or 0 (NULL), data is loaded on the current screen work page.
+
+	##**Bload**## can be used in several ways:
+		-If ##//addr//## is specified and the file is not a bmp it loads a block of ##[[KeyPgBsave Bsave]]##'d binary data into an array
+		-If ##//addr//## is 0 or not specified and the file is not a bmp it loads raw pixel data (##[[KeyPgBsave Bsave]]## format) to the screen
+		-If ##//addr//## is specified and the file is a bmp, it loads the bmp, and the array is made a ##[[KeyPgPutgraphics Put]]## buffer.
+		-If ##//addr//## is not specified or 0 and the file is a bmp, the image is loaded to the current work page.
+
+%%(qbasic)
+	BLOAD "image.bsv", 0
+%%
+	is in fact equivalent to:
+%%(qbasic)
+	SCREENLOCK
+	BLOAD "image.bsv", SCREENPTR
+	SCREENUNLOCK
+%%
+
+	A raw pixel image must only be ##**Bload**##'d to the same ##[[KeyPgScreengraphics Screen]]## mode as it was set when the ##[[KeyPgBsave Bsave]]## was used.
+	##**Bload**## supports loading BMPs as long as they are not RLE compressed; the BMP pixels data will be automatically converted to the proper pixel format for the current color depth. The bmp is displayed with its top left corner in the top left corner of the screen or buffer.
+
+	If you're loading raw ##[[KeyPgBsave Bsave]]##'d pixel data, pay attention that the pixel data stored in the file is in the same pixel format as the one used by the current video mode; see Internal pixel formats for details.
+
+	##**Bload**## will fail with a runtime error if the file cannot be found, or if its format is not supported. It will also fail if trying to load a truecolor BMP while in paletted mode.
+
+	##**Bload**## may only be used to load graphics files.  For loading other types of files use ##[[KeyPgOpen Open]]## and ##[[KeyPgGetfileio Get (File I/O)]]##.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'Load a graphic to current work page
+SCREEN 18, 32
+cls
+bload "picture.bmp"
+
+'Load a 48x48 bitmap into an array
+SCREEN 18, 32
+dim garray(4 * (48 * 48) + 4) as byte
+bload "picture.bmp", @garray(0)
+put (10,10),garray(0)
+%%
+
+{{fbdoc item="diff"}}
+	- loads bitmaps (.bmp) to screen or buffer in addition to ##[[KeyPgBsave Bsave]]##'d files
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgBsave Bsave]]##
+	- ##[[KeyPgVarptr Varptr]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

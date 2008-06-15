@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="VA_FIRST"}}
+----
+{{fbdoc item="syntax"}}
+	//Argument Pointer// = VA_ARG ( )
+
+{{fbdoc item="desc"}}
+	The VA_FIRST macro initializes a [[DtPointers pointer]], //Argument Pointer//, to point to the first variable argument passed to a function.
+
+{{fbdoc item="ex"}}
+##%%(qbasic)
+FUNCTION Avg cdecl (Count as INTEGER, ... ) AS DOUBLE
+	DIM ARG AS ANY PTR 
+	DIM SUM AS DOUBLE = 0
+	DIM i AS INTEGER
+	
+	ARG = VA_FIRST()
+
+	FOR i = 1 TO COUNT
+	    SUM += VA_ARG(ARG, DOUBLE)
+	    ARG = VA_NEXT(ARG,DOUBLE)
+	NEXT i
+	RETURN SUM/COUNT
+end function
+
+PRINT AVG (4, 3.4,5.0,3.2,4.1)
+PRINT AVG (2, 65.2,454.65481)
+
+SLEEP
+%%##
+
+The output would look like:
+##%%(qbasic)
+3.925
+259.927405
+%%##
+
+{{fbdoc item="diff"}}
+	- New to FreeBasic
+
+{{fbdoc item="see"}}
+	- [[KeyPgDots ...]]
+	- [[KeyPgVaArg VA_ARG]]
+	- [[KeyPgVaNext VA_NEXT]]
+
+{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}  {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
