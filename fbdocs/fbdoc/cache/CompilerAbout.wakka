@@ -1,10 +1,8 @@
 {{fbdoc item="title" value="About"}}----
-	
-	**FreeBASIC** is a free, 32-bit BASIC compiler for **Windows** (32-bit), protected-mode **DOS**, and **Linux** (x86). It began as an attempt to create a code-compatible, free alternative to Microsoft QuickBASIC, but has quickly grown into a powerful development tool, already including support for libraries such as Allegro, SDL, OpenGL, Gtk, the Windows API and many others with its default installation.
+About the ""FreeBASIC"" project
 
-	Aside from having a syntax the most compatible possible with MS-QuickBASIC, **FreeBASIC** introduces several new features such as pointers, unsigned data types, inline-assembly, a pre-processor and many others.
+	The ""FreeBASIC"" project is a set of cross-platform development tools initially created by Andre Victor, consisting of a compiler, GNU-based assembler, linker and archiver, and supporting runtime libraries, including a software-based graphics library. The compiler, //##fbc##//, currently supports building for i386-based architectures on the DOS, Linux, Windows and Xbox platforms. The project also contains thin bindings (header files) to some popular 3rd party libraries such as the [[en.wikipedia.org/wiki/C_standard_library C runtime library]], [[http://www.talula.demon.co.uk/allegro/ Allegro]], [[libsdl.org SDL]], [[opengl.org OpenGL]], [[gtk.org Gtk]], [[msdn2.microsoft.com/en-us/library/aa383750.aspx the Windows API]] and many others, as well as example programs for many of these libraries.
 
-	**FreeBASIC** is a self-hosting compiler (that is, written in **FreeBASIC**), and was developed by V1ctor.
-
+	""FreeBASIC"" is a high-level programming language supporting procedural, object-orientated and meta-programming paradigms, with a syntax compatible to [[en.wikipedia.org/wiki/QuickBASIC Microsoft QuickBASIC]]. In fact, the ""FreeBASIC"" project originally began as an attempt to create a code-compatible, free alternative to [[en.wikipedia.org/wiki/QuickBASIC Microsoft QuickBASIC]], but it has since grown into a powerful development tool. ""FreeBASIC"" can be seen to extend the capabilities of [[en.wikipedia.org/wiki/QuickBASIC Microsoft QuickBASIC]] in a number of ways, supporting more data types, language constructs, programming styles, and modern platforms and APIs.
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="USHORT"}}----
-Standard data type: 16 bit signed
+Standard data type: 16 bit unsigned
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Ushort**
 ##
 {{fbdoc item="desc"}}
-	16-bit unsigned whole-number data type. Can hold values from 0 to 65365.
+	16-bit unsigned whole-number data type. Can hold values from 0 to 65535.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

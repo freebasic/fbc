@@ -2,7 +2,7 @@
 Copies an image on to another image or screen
 
 {{fbdoc item="syntax"}}##
-	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ] [ ,//method// [ ,( //alphaval//|//value//|//blender// [ ,//param//]) ] ]
+	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-[ STEP ]( //x2//,//y2// ) ] [ ,//method// [ ,( //alphaval//|//value//|//blender// [ ,//param//]) ] ]
 ##
 {{fbdoc item="param"}}
 	##//target//##
@@ -13,8 +13,8 @@ Copies an image on to another image or screen
 		specify offsets from the upper-left corner of the destination buffer, or screen, that the image gets drawn to. 
 	##//source//##
 		is the address of the buffer of the image to be drawn. See below.
-	##(//x1//, //y1//)-(//x2//, //y2//)##
-		specify a rectangular area in the source buffer to draw. If omitted, the entire buffer is drawn.
+	##(//x1//, //y1//)-[ STEP ](//x2//, //y2//)##
+		specify a rectangular area in the source buffer to draw. If omitted, the entire buffer is drawn. STEP indicates that x2 and y2 are relative to x1 and y1, respectively.
 	##//method//##
 		specifies the method used to draw the image to the destination buffer, and can be any one of the following (the default method is ##XOR##):
 

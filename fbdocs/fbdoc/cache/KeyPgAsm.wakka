@@ -22,7 +22,7 @@ Code block that allows the use of architecture-specific instructions
 	[[x86 x86]] Specific:
 
 		==Syntax==
-			The syntax of the inline assembler is a simplified form of Intel syntax.  Intel syntax is used by the majority of x86 assemblers, such as MASM, TASM, NASM, YASM and FASM. In general, the destination of an instruction is placed first, followed by the source. Variables and functions defined by a program may be referenced in an Asm block.  The assembler used by FreeBASIC is GAS, using the .intel_syntax noprefix directive, and ASM blocks are passed through unmodified, except for the substitution of local variable names for stack frame references.
+			The syntax of the inline assembler is a simplified form of Intel syntax.  Intel syntax is used by the majority of x86 assemblers, such as MASM, TASM, NASM, YASM and FASM. In general, the destination of an instruction is placed first, followed by the source. Variables and functions defined by a program may be referenced in an Asm block.  The assembler used by FreeBASIC is GAS, using the .intel_syntax noprefix directive, and ASM blocks are passed through unmodified, except for the substitution of local variable names for stack frame references, and commenting removal.
 		
 		==Register Preservation==
 			When an ASM block is opened, the registers ebx, esi, and edi are pushed to the stack, when the block is closed, these registers are popped back from the stack.  This is because these registers are required to be preserved by most or all OS's using the x86 CPU.  You can therefore use these registers without explicitly preserving them yourself.
@@ -61,7 +61,7 @@ Code block that allows the use of architecture-specific instructions
 		~- ##out## *1
 		~- ##outs## *1
 		~- ##rdmsr##
-		~- ##rdpmc##
+		~- ##rdpmc## *2
 		~- ##rdtsc## *2
 		~- ##sgdt##
 		~- ##sidt##
@@ -73,8 +73,7 @@ Code block that allows the use of architecture-specific instructions
 		
 		~ *1: I/O sensitive *2: otherwise sensitive
 		
-		~Also, the INT instruction is usable in the DOS version/target only. Finally, the segment registers (##cs##, ##ds##, ##es##, ##fs##, ##gs##) should not be accessed from an ##Asm## block, except in certain cases with the DOS port (note that they do NOT work the same way as in real-mode DOS).  The operating system or DPMI host is responsible for memory management; the meaning of segments (selectors) in protected mode is very different from real-mode memory addressing.
-
+		~Also, the INT instruction is usable in the DOS version/target only. Finally, the segment registers (##cs##, ##ds##, ##es##, ##fs##, ##gs##) should not be accessed from an ##Asm## block, except in certain cases with the DOS port (note that they do NOT work the same way as in real-mode DOS).  The operating system or DPMI host is responsible for memory management; the meaning of segments (selectors) in protected mode is very different from real-mode memory addressing. The privileged instructions will work correctly in DOS when running on a Ring 0 DPMI kernel, like the (non-default) Ring 0 version of CWSDPMI, or WDOSX. Nevertheless most of them are not really useful and dangerous when executed from DPMI code. 
 
 {{fbdoc item="ex"}}
 %%(qbasic)

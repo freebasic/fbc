@@ -56,7 +56,7 @@ The current maintainer of this port is [[DrV DrV]].
 
 {{anchor name="item10"}}==10. How can I do graphics in DOS ?==
 	There are several possibilities: 
-		-Use the FB graphics library. It uses VESA (banked or linear) to access the video card and supports any resolution reported by the card's VESA VBE driver, in addition to standard VGA modes. Note: use the **2007-May** version of FB installed **over 0.16** , the FB DOS graphics does **not work** at all in previous releases.
+		-Use the FB graphics library. It uses VESA (banked or linear) to access the video card and supports any resolution reported by the card's VESA VBE driver, in addition to standard VGA modes. Note: use the **0.17 full 2007-May-14** version of FB or newer, the FB DOS graphics does **not work** at all in previous releases.
 		-VGA mode 320x200x8bpp: very simple, maximum reliability and compatibility, but low resolution and 256 colours only, see example.
 		-VGA mode 320x240x8bpp: similar to above, less easy, maximum reliability and compatibility, but low resolution and 256 colours only, see example.
 		-VGA mode 640x480x4bpp: difficult to set pixels, maximum reliability and compatibility, but low resolution and 16 colours only, no public example yet (?).

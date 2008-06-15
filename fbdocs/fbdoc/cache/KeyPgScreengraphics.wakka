@@ -12,18 +12,18 @@ Initializes a graphics mode using QB-like mode numbers
 	##//num_pages//##
 		is the number of video pages you want, see below.  If omitted, it defaults to 1.
 	##//flags//##
-		Are used to select several things as graphics driver, fullscreen mode. There are constants predefined in the fbgfx.bi file ready to use.  See below for available flags. 
+		Are used to select several things as graphics driver, fullscreen mode. There are constants predefined in the ##fbgfx.bi## file ready to use.  See below for available flags. 
 	##//refresh_rate//##
 		requests a refresh rate.  If it is not available in the present card or the parameter is omitted, FB chooses the rate automatically.
 
 {{fbdoc item="desc"}}
-	##**Screen**## tells the compiler to link the GfxLib and initializes a QB-only, QB-on-GUI or OpenGl graphics mode, depending on the //flags// setting.
+	##**Screen**## tells the compiler to link the GfxLib and initializes a QB-only, QB-on-GUI or OpenGL graphics mode, depending on the //flags// setting.
 
 	In QB-only modes a dumb window or fullscreen resolution is set, one or more buffers in standard memory are created, console commands are redirected to their graphic versions, a [[GfxDefPalettes default palette]] is set and an automatic screen refresh thread is started.  QB-like graphics and console statements can be used.
 
 	 In QB-on-GUI modes one or more buffers in standard memory are created, console commands are redirected to their graphic versions and a [[GfxDefPalettes default palette]] is set.  QB-like graphics and console statements can be used.  Is up to the user to create a window and to refresh it with the contents of the graphics buffers.
 
-	In OpenGl modes a dumb window or fullscreen resolution is set, one or more buffers in standard memory are created, and the OS's OpenGL library is initialized.  From here OpenGL only openGL commands can be used; QB-like and console commands are forbidden.  This allows to initialize OpenGL in a portable way; you can then also use [[KeyPgScreencontrol ScreenControl]] to properly customize the GL pixel format to be used before ##**Screen**## is called or to retrieve the list of supported OpenGL extensions after a mode has been set, and [[KeyPgScreenglproc ScreenGLProc]] to obtain extension function pointers.
+	In OpenGL modes a dumb window or fullscreen resolution is set, one or more buffers in standard memory are created, and the OS's OpenGL library is initialized.  From here OpenGL only OpenGL commands can be used; QB-like and console commands are forbidden.  This allows to initialize OpenGL in a portable way; you can then also use [[KeyPgScreencontrol ScreenControl]] to properly customize the GL pixel format to be used before ##**Screen**## is called or to retrieve the list of supported OpenGL extensions after a mode has been set, and [[KeyPgScreenglproc ScreenGLProc]] to obtain extension function pointers.
 
 	Any buffer that is created in standard memory uses one of three supported internal pixel formats, depending on the desired color depth; see [[GfxInternalFormats Internal pixel formats]] for details.
 
@@ -33,9 +33,9 @@ Initializes a graphics mode using QB-like mode numbers
 
 __mode details__
 	Available modes list:
-	QB compatibilty modes:
+	QB compatibility modes:
 {{table columns="6" cellpadding="1" cells="Mode nr;Resolution;Emulation;Text;char size;colors on screen;1;320x200;CGA ;40X25;8x8;16 background, 1 of four sets foreground;2;640x200;CGA;80x25;8x8;16 colors to 2 attributes;7;320x200;EGA;40x25;8x8;16 colors to 16 attributes;8;640x200;EGA;40x25;8x8;16 colors to 16 attributes;9;640x350;EGA;80x25 0r 80x43;8x14 or 8x8;16 colors to 16 attributes;11;640x480;VGA;80x30 or 80x60;8x16 or 8x8;256K colors to 2 attributes;12;640x480;VGA;80x30 or 80x60;8x16 or 8x8;256K colors to 16 attributes;13;320x200;MCGA;40X25;8X8;256K colors to 256 attributes"}}
-	New FB SVGA modes:
+	New FB modes:
 {{table columns="6" cellpadding="1" cells="Mode nr;Resolution;Emulation;Text;char size;colors on screen;14;320x240;###;40x30;8x8;256K colors to 256 attributes or direct color; 15;400x300;###;50x37;8x8;256K colors to 256 attributes or direct color; 16;512x384;###;64x24 or 64x48;8x16 or 8x8;256K colors to 256 attributes or direct color;17;640x400;###;80x25 or 80x50;8x16 or 8x8;256K colors to 256 attributes or direct color;18;640x480;###;80x30 or 80x60;8x16 or 8x8;256K colors to 256 attributes or direct color; 19;800x600;###;100x37 or 100x75;8x16 or 8x8;256K colors to 256 attributes or direct color;20;1024x768;###;128x48 or 128x96;8x16 or 8x8;256K colors to 256 attributes or direct color; 21;1280x1024;###;160x64 or 160x128;8x16 or 8x8;256K colors to 256 attributes or direct color"}} 
 
 __depth details__
@@ -46,18 +46,19 @@ __num pages details__
 
 __flags details:__
 
-~If flags are omited FB uses QB-compatible graphics in windowed mode.  These constants are defined in fbgfx.bi.
+~If flags are omitted, FB uses QB-compatible graphics in windowed (except in DOS) mode.  These constants are defined in ##fbgfx.bi## . Note that most of the flags are not supported in DOS.
+
 ~Available flags:
 
 ~__graphic mode flags__
 ~~-GFX_NULL (-1) Starts a QB-on-GUI graphics mode.  It creates a graphics buffer but not a window.  User must implement the  window, the events manager and and refresh screen as needed.  This mode allows to mix FB drawing functions with API-driven windows. This flag overrides all other mode flags.  See an [[SrcPgGfxNull Example of GFX_NULL]] in Windows.
-~~-GFX_OPENGL(&h02) Initializes OpenGL to draw in a dumb window.  FB Graphic functions can't be used.  The screen is not automatically updated, FLIP must be used.  This option provides a portable way to initialize the OpenGl Library.
+~~-GFX_OPENGL(&h02) Initializes OpenGL to draw in a dumb window.  FB Graphic functions can't be used.  The screen is not automatically updated, FLIP must be used.  This option provides a portable way to initialize the OpenGL Library.
 ~~-If none of the above options is specified, FB enters the QB-only graphics mode: it creates a buffer and a dumb window and sets a thread that automatically updates the screen and manages keyboard and mouse.  The FB drawing functions can be used. 
 
 ~__window mode flags__
 ~~Window mode flags are meaningless if  GFX_NULL mode is used
 ~~-GFX_WINDOWED (&h00)
-~~-GFX_FULLSCREEN (&h01) The graphics card switch mode is switched to the requested mode and color depth and OS fullscreen mode is used.  If the mode is not availabe in the present card FB switches to windowed mode.
+~~-GFX_FULLSCREEN (&h01) The graphics card switch mode is switched to the requested mode and color depth and OS fullscreen mode is used.  If the mode is not available in the present card FB switches to windowed mode.
 ~~-If GFX_FULLSCREEN is not specified, FB opens a window of the requested size in the present desktop.
 ~~-GFX_NO_SWITCH (&h04) prevents the user from changing to fullscreen or to windowed mode by pressing Alt-Enter.
 ~~-GFX_NO_FRAME (&h08) creates a window without a border.
@@ -68,10 +69,10 @@ __flags details:__
 ~~Flags working in any mode, they activate special behaviours
 ~~-GFX_ALPHA_PRIMITIVES (&h40) Tells the graphics library to enable alpha channel support for all drawing primitives. This means the alpha specified in a color value (via either the [[KeyPgRgba RGBA]] macro or direct color in the form &hAARRGGBB) will always be used by all primitives.
 
-~__OpenGl Buffer flags__
+~__OpenGL Buffer flags__
 ~~These flags work only in OpenGL graphics mode, must be combined with GFX_OPENGL
-~~-GFX_STENCIL_BUFFER  (&h10000) Forces OpenGl to use Stencil buffer 
-~~-GFX_ACCUMULATION_BUFFER  (&h20000) Forces OpenGl to use Accumulation buffer
+~~-GFX_STENCIL_BUFFER  (&h10000) Forces OpenGL to use Stencil buffer 
+~~-GFX_ACCUMULATION_BUFFER  (&h20000) Forces OpenGL to use Accumulation buffer
 ~~-GFX_MULTISAMPLE (&h40000) Requests fullscreen antialiasing thru the ARB_multisample extension
 
 	Depending on if the fullscreen parameter is 0 or 1, ##**Screen**## will try to set the specified video mode in windowed or fullscreen mode, respectively.  If fullscreen is 1 and the system cannot set specified mode in fullscreen, it'll try in windowed mode. If fullscreen is 0 and the system fails to open a window for specified mode, it'll try fullscreen.  If everything fails, ##**Screen**## will have no effect and execution will resume from the statement following the ##**Screen**## call.  You should take care of checking if a gfx mode has been set or not, and behave accordingly; a way to check if ##**Screen**## is successful is to test the return value of the ##[[KeyPgScreenptr Screenptr]]## function, have a look at it for details.
@@ -93,7 +94,7 @@ IF SCREENPTR = 0 THEN
 END IF%%
 
 {{fbdoc item="target"}}
-	- In DOS the QB compatibility modes 1 to 13 are real VGA modes, mode 14 is a ""ModeX"" and hi-res modules use the protected mode VESA interface. Winowed modes and the OpenGL switches are not available as the OS does'nt provide support for them. 
+	- In DOS, linear framebuffer or banked VESA VBE modes are used whenever possible; if not available, drivers for the standard VGA modes or a 320x240x8 ""ModeX"" driver are used if possible. Windowing and OpenGL related switches are not available. 
 
 {{fbdoc item="diff"}}
 	- In QB the syntax was ##**Screen** //mode//,//colormode//,//active_page//,//visible_page//##. Of those parameters FreeBASIC supports only //mode// and redefines the rest. The use of ##**Screen** ,,apage,vpage## to swap screen pages is not allowed in FB. ##[[KeyPgScreenset Screenset]]## should be used instead.
@@ -110,6 +111,6 @@ END IF%%
 	- ##[[KeyPgScreencopy Screencopy]]##
 	- ##[[KeyPgScreeninfo Screeninfo]]##
 	- ##[[KeyPgScreenglproc Screenglproc]]##
-	- [[GfxInternalFormats Internal pixel formats]]
+	- ##[[GfxInternalFormats Internal pixel formats]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

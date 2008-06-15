@@ -1,0 +1,53 @@
+FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASIC, by FreeBASIC Community Members.
+
+<<{{anchor name="GRAPHIC"}}{{fbdoc item="section" value="Graphics Code"}}
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8024  PNG_LOAD by yetifoot]]
+
+{{anchor name="SND"}}{{fbdoc item="section" value="Sound Code"}}
+	[[http://www.freebasic.net/forum/viewtopic.php?t=6216 FBSound by D.J. Peters]]
+
+{{anchor name="MATH"}}{{fbdoc item="section" value="Math Code"}}
+	[[http://sourceforge.net/projects/fbmath/ FBMath by jdebord]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=4135&highlight= Pixel-Perfect Collision Detection by 1000101]]
+
+{{anchor name="TEXT"}}{{fbdoc item="section" value="Text/Parser Code"}}
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7437 XML Parser by Pritchard]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=5693 Expression Parser by yetifoot]]
+
+{{anchor name="GAME"}}{{fbdoc item="section" value="FreeBASIC Games"}}
+	[[http://games.freebasic.net/ FreeBASIC Games Directory by Lachie Dazdarian]]
+	[[http://csgp.suret.net/ Cute Short Game Project by redcrab]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=3931 Kingdoms by Piptol]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=5068 Lynn's Legacy by cha0s and Josiah Tobin]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7796 Nanohost by Several]]
+	[[http://lithium.zext.net/ Several Games by Lithium]]
+	[[http://lachie.phatcode.net/starcage.php Star Cage by Lachie Dazdarian]]
+	[[http://syn9.thingie.net/?table=griffonlegend The Griffon Legend by syn9]]
+
+{{anchor name="GUI"}}{{fbdoc item="section" value="GUI Code"}}
+	[[http://www.execulink.com/~coder/freebasic/jmgui.html In Game GUI by coderJeff]]
+	[[http://sourceforge.net/projects/zine/ Zine GUI by VonGodric]]
+
+<<>>{{anchor name="WEB"}}{{fbdoc item="section" value="Web Code"}}
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7913 Basic Hypertext Preprocessor (WIN) by fishhf]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8454 ChiSock by cha0s]]
+
+{{anchor name="IO"}}{{fbdoc item="section" value="I/O Code"}}
+	[[http://www.freebasic.net/forum/viewtopic.php?p=74711#74711 Text Input by Pritchard & sir_mud]]
+
+{{anchor name="OSSPEC"}}{{fbdoc item="section" value="OS Specific Code"}}
+	[[http://www.freebasic.net/forum/viewtopic.php?t=1173 Screen Saver Kit (WIN) by jofers]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=5942 ServiceFB (Win) by zerospeed]]
+
+{{anchor name="EDITOR"}}{{fbdoc item="section" value="Editors"}}
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7441 FB CAD by owen]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=6715 FBEdit by KetilO]]
+
+{{anchor name="OTHER"}}{{fbdoc item="section" value="Miscellaneous Code"}}
+	[[http://fbstd.sourceforge.net/ FBstd C++ Lib Port (W.I.P.) by stylin]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=6859 Testly by zerospeed]]
+
+{{anchor name="SITES"}}{{fbdoc item="section" value="Community Websites"}}
+
+>>::c::This is a place to post worthy projects/code snippets for FreeBASIC, in their relative categories.  To add a page, link to either it's wiki page, website, or thread on the FreeBASIC Forums.  State the project name and who it's by.  Sections may be broken down into their own separate pages some time in the future.  Note:  Due to FB being in Beta stage of development, earlier coded projects may need to be reconfigured or recompiled to work on later versions of FreeBASIC.
+{{fbdoc item="back" value="FBWiki|Main Page"}}

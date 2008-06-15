@@ -25,6 +25,7 @@ Please edit this page to remove items when they are written.
 	for/next/step overloads
 	more overloaded ops? (need to check this)
 	command line options need updating [[CompilerCmdLine command line options]]
+	The Operator precedence table do not include FOR-NEXT, array indexing or CAST
 		
 ----
 The documents listed and linked below need to be updated or enhanced in some way.
