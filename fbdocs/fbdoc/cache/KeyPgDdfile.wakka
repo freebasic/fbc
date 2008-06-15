@@ -6,7 +6,7 @@ Intrinsic define (macro string) set by the compiler.
 	""__FILE__""
 ##
 {{fbdoc item="desc"}}
-	Substituted with the source file name where used.
+	Substituted with the quoted source file name where used.
 	
 	An example of normal use is to report wrong values in debugging.
 
@@ -24,6 +24,7 @@ Error: a = -32767 in test.bas (MAIN) line 47
 	- Did not exist in QB
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgDdfilenq __FILE_NQ__]]##
 	- ##[[KeyPgDdfunction __FUNCTION__]]##
 	- ##[[KeyPgDdline __LINE__]]##
 

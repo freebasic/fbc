@@ -24,7 +24,32 @@ Date function to return a [[DtDateSer Date Serial]] from a string.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+#include "vbcompat.bi"
 
+dim as integer v1, v2
+dim as string  s1, s2
+
+print "Enter first date: ";
+line input s1
+
+if IsDate( s1 ) = 0 then
+  print "not a date"
+  end
+end if
+
+print "Enter second date: ";
+line input s2
+
+if IsDate( s2 ) = 0 then
+  print "not a date"
+  end
+end if
+
+'' convert the strings to date serials
+v1 = DateValue( s1 )
+v2 = DateValue( s2 )
+
+print "Number of days between dates is " & abs( v2 - v1 )
 %%
 
 {{fbdoc item="diff"}}

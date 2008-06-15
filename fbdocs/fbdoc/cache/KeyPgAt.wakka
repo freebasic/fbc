@@ -17,6 +17,8 @@ Operator that returns the address of its operand.
 
 	When used with a variable-length string, ##@## returns a pointer to the internal string descriptor.  Use ##[[KeyPgStrptr StrPtr]]## to get the address of the actual character data.
 
+	When used with an array variable, ##@## returns a pointer to the element indexed by the array subscripts.  For example, @myarray(0) returns a pointer to myarray(0).
+
 {{fbdoc item="ex"}}
 ##%%(qbasic)
 'This program demonstrates the use of the @ operator.

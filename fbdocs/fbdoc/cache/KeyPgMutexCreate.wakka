@@ -28,32 +28,33 @@ Creates a Mutex used for synchronizing the execution of threads.
 '' the threads will not be in sync and some of the data may be printed
 '' out of place.
 
-DECLARE SUB thread1
-DECLARE SUB thread2
+const MAX_THREADS = 10
+
+DECLARE SUB thread( byval id as integer )
 DECLARE SUB teletype (BYVAL text AS STRING, BYVAL x AS INTEGER, BYVAL y AS INTEGER)
 
 DIM SHARED threadsync AS INTEGER
-DIM SHARED thread1handle AS INTEGER
-DIM SHARED thread2handle AS INTEGER
+
+DIM handleTb(0 to MAX_THREADS-1) AS INTEGER
 
 '' Create a mutex to syncronize the threads
 threadsync = MUTEXCREATE
 
-'' Call thread 1
-thread1handle = THREADCREATE(@thread1)
-IF thread1handle = 0 THEN
-	PRINT "Error creating thread1"
-END IF
+'' Create threads
+for i = 0 to MAX_THREADS-1
+	handleTb(i) = THREADCREATE(@thread, i)
+	IF handleTb(i) = 0 THEN
+		PRINT "Error creating thread:"; i
+		exit for
+	END IF
+next
 
-'' Call thread 2
-thread2handle = THREADCREATE(@thread2)
-IF thread2handle = 0 THEN
-	PRINT "Error creating thread1"
-END IF
-
-'' Wait until both threads are finished
-THREADWAIT(thread1handle)
-THREADWAIT(thread2handle)
+'' Wait until all threads are finished
+for i = 0 to MAX_THREADS-1
+	if( handleTb(i) <> 0 ) then
+		THREADWAIT( handleTb(i) )
+	end if
+next
 
 teletype "Testing.................", 1, 1
 teletype "Testing again...........", 10, 1
@@ -61,40 +62,28 @@ teletype "Testing again...........", 10, 1
 '' Discard the mutex when we are through using teletype
 MUTEXDESTROY threadsync
 
-SLEEP
-END
-
-'' Thread 1 calls a simple "teletype" routine
-SUB thread1
-	teletype "This is a test...", 4, 1
-END SUB
-
-'' ...As does thread 2
-SUB thread2
-	teletype "This is another test...", 7, 1
+SUB thread( byval id as integer )
+	teletype "Thread (" & id & ").........", 1, 1+id
 END SUB
 
 '' Teletype unfurls some text across the screen at a given location
 SUB teletype (BYVAL text AS STRING, BYVAL x AS INTEGER, BYVAL y AS INTEGER)
 	DIM i AS INTEGER
-	DIM text_length AS INTEGER
 
-	text_length = LEN(text)
-	FOR a = 0 TO text_length
-	    '' MutexLock prevents the two simultaniously running
+	FOR i = 0 TO LEN(text)-1
+	    '' MutexLock prevents the two simultaneously running
 	    '' threads from sharing "x", "y", and "a"
 	    MUTEXLOCK threadsync
 
-	    LOCATE x,(y+a)
-	    PRINT CHR(text[a])
+	    LOCATE y, x+i
+	    PRINT CHR(text[i])
 
 	    '' MutexUnlock releases these variables for other use
 	    MUTEXUNLOCK threadsync
 
 	    SLEEP 25
-   NEXT a
-END SUB
-%%
+   NEXT
+END SUB%%
 
 {{fbdoc item="diff"}}
 	- This function is new to FreeBASIC

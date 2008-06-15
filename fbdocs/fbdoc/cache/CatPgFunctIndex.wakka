@@ -95,6 +95,7 @@
 	- {{fbdoc item="keyword" value="KeyPgDateValue|DATEVALUE"}}
 	- {{fbdoc item="keyword" value="KeyPgDay|DAY"}}
 	- {{fbdoc item="keyword" value="KeyPgHour|HOUR"}}
+	- {{fbdoc item="keyword" value="KeyPgIsDate|ISDATE"}}
 	- {{fbdoc item="keyword" value="KeyPgMinute|MINUTE"}}
 	- {{fbdoc item="keyword" value="KeyPgMonth|MONTH"}}
 	- {{fbdoc item="keyword" value="KeyPgMonthname|MONTHNAME"}}
@@ -335,7 +336,9 @@
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerMinor|__FB_VER_MINOR__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerPatch|__FB_VER_PATCH__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfile|__FILE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfilenq|__FILE_NQ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfunction|__FUNCTION__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfunctionnq|__FUNCTION_NQ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbmt|__FB_MT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionbyval|__FB_OPTION_BYVAL__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptiondynamic|__FB_OPTION_DYNAMIC__"}}

@@ -6,7 +6,7 @@ Intrinsic define (macro string) set by the compiler.
 	""__FUNCTION__""
 ##
 {{fbdoc item="desc"}}
-	Substituted with the name of the current function block where used.
+	Substituted with the quoted name of the current function block where used.
 	
 	Its normal use is to report wrong values in debugging.
 
@@ -25,6 +25,7 @@ Error: a = -32767 in test.bas (MAIN) line 47
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfile __FILE__]]##
+	- ##[[KeyPgDdfunctionnq __FUNCTION_NQ__]]##
 	- ##[[KeyPgDdline __LINE__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

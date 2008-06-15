@@ -16,7 +16,7 @@ PRINT MID("abcdefg", 3, 2) ' returns "cd"
 PRINT MID("abcdefg", 3)     ' returns "cdefg"
 PRINT MID("abcdefg", 2, 1) ' returns "b"%%
 
-An Unicode example:
+A Unicode example:
 <<
 dim text as wstring*20
 text = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;!"

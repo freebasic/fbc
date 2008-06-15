@@ -1,0 +1,23 @@
+{{fbdoc item="title" value="__FILE_NQ__"}}
+----
+Intrinsic define (macro string) set by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FILE_NQ__""
+##
+{{fbdoc item="desc"}}
+	Substituted with the non-quoted source file name where used.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfile __FILE__]]##
+	- ##[[KeyPgDdfunctionnq __FUNCTION_NQ__]]##
+	- ##[[KeyPgDdline __LINE__]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

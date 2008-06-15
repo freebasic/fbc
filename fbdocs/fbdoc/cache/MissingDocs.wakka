@@ -18,24 +18,12 @@ Please edit this page to remove items when they are written.
 
 ==Undocumented keywords== 
 
-	##[[KeyPgPpline #LINE]]##
-	##[[KeyPgPpmacro #MACRO]]##
-	##[[KeyPgPplibpath #LIBPATH]]##
-	
-	datetime.bi:
-	
-	fbUseSystem
-	fbFirstJan1
-	fbFirstFourDays
-	fbFirstFullWeek
-	fbSunday
-	fbMonday
-	fbTuesday
-	fbWednesday
-	fbThursday
-	fbFriday
-	fbSaturday
-	
+	##[[KeyPgPpline #line]]##
+	##[[KeyPgPpmacro #macro]]##
+	##[[KeyPgPplibpath #libpath]]##
+	##[[KeyPgFiledate Filedate]]##
+	##[[KeyPgFileattr Fileattr]]##
+	##[[KeyPgFileexists Fileexists]]##
 	
 	dir.bi:
 	
@@ -46,66 +34,54 @@ Please edit this page to remove items when they are written.
 	fbArchive
 	fbNormal
 
-
 ==Incomplete Documentation==
 
 	Pages that have '!!! WRITE ME !!!' or '!!! DELETE ME !!!'
 	
-	1. LangMeta
-	2. MissingDocs
+	1. MissingDocs
+	2. FaqPgrtlib
 	3. KeyPgPpline
-	4. KeyPgPpmacro
-	5. KeyPgPplibpath
-	6. KeyPgOpenLpt
-	7. KeyPgFunction
-	8. FaqPgrtlib
+	4. KeyPgPplibpath
+	5. KeyPgPpmacro
+	6. LangMeta
+	7. KeyPgOpenLpt
+	8. KeyPgFunction
 	9. CatPgUser
-	10. KeyPgScreenres
-	11. KeyPgDeclare
-
+	10. KeyPgDeclare
 ----
-
 
 The documents listed and linked below need to be updated or enhanced in some way.
 
 ==Platform specific==
-	 
 
 ==Missing example==
 Needs Code Examples:
 
-	 [[KeyPgOpenLpt]] needs more examples, or non-specific platform example.
-	 ""#LIBPATH""
-	 ""#LINE""
-	 ""__FB_ERR__""
-	 ""__FB_OUT_EXE__""
-	 ""__FB_OUT_DLL__""
-	 ""__FB_OUT_LIB__""
-	 ""__FB_OUT_OBJ__""
-	 ""__FB_OPTION_DYNAMIC__""
-	 Dateadd
-	 Datediff
-	 Datepart
-	 Datevalue
-	 Erl
-	 Flip
-	 Import
-	 Inp
-	 Input(file i/o)
-	 Int
-	 Lib
-	 Loc
-	 Option byval
-	 Output
-	 Pcopy
-	 Pmap
-	 Pointer
-	 Random
-	 Rgba
-	 Screencopy
-	 Threadwait
-	 Wait
-	 Window
-
+	[[KeyPgOpenLpt]] needs more examples, or non-specific platform example.
+	[[KeyPgPplibpath #LIBPATH]]
+	[[KeyPgPpline #LINE]]
+	[[KeyPgDdfberr __FB_ERR__]]
+	[[KeyPgDdfboutexe __FB_OUT_EXE__]]
+	[[KeyPgDdfboutlib __FB_OUT_LIB__]]
+	[[KeyPgDdfboutdll __FB_OUT_DLL__]]
+	[[KeyPgDdfboutobj __FB_OUT_OBJ__]]
+	[[KeyPgDdfboptiondynamic __FB_OPTION_DYNAMIC__]]
+	[[KeyPgDdfilenq __FILE_NQ__]]
+	[[KeyPgDateadd Dateadd]]
+	[[KeyPgDatediff Datediff]]
+	[[KeyPgDatepart Datepart]]
+	[[KeyPgFlip Flip]]
+	[[KeyPgImport Import]]
+	[[KeyPgInputfilemode Input(file i/o)]]
+	[[KeyPgLib Lib]]
+	[[KeyPgOptionbyval Option byval]]
+	[[KeyPgOutput Output]]
+	[[KeyPgPcopy Pcopy]]
+	[[KeyPgPmap Pmap]]
+	[[KeyPgPointer Pointer]] (links to Ptr example?)
+	[[KeyPgRandom Random]]
+	[[KeyPgRgba Rgba]]
+	[[KeyPgScreencopy Screencopy]]
+	[[KeyPgWait Wait]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

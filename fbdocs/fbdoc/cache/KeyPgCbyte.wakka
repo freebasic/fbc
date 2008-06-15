@@ -12,7 +12,7 @@ Converts numeric or string expression to ##[[KeyPgByte Byte]]##
 {{fbdoc item="desc"}}
 	The ##**Cbyte**## function rounds off the decimal part and returns a 8 bit ##[[KeyPgByte Byte]]## value. The function does not check for an overflow, so be sure not to pas a value thats less/larger then -128 to 127. The name can be explained as 'Convert to Byte'.
 
-	If the argument of ##**Cbyte**## is a string expression, it is converted to numeric by using ##[[KeyPgVal Val]]##.
+	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

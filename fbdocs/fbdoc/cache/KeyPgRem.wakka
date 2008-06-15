@@ -1,33 +1,47 @@
 {{fbdoc item="title" value="REM"}}
 ----
-{{fbdoc item="syntax"}}
-	rem comment
+Indicates comments in the source code.
 
+{{fbdoc item="syntax"}}##
+	**Rem** comment
+
+	' Comment
+
+	/' Multi-line
+	   comment '/
+##
 {{fbdoc item="desc"}}
-	REM is the same as a comment symbol ('). It comments out a line of text text. 
-	From version 0.16  multiline comments are allowed, they must be surrounded by the  /'   and '/ symbols.
-	In versions previous to 0.16    #if 0      ...     #endif  is required to coment out blocks of test  
+	A source code line beginning with ##**Rem**## indicates that the line is comment and will not be compiled.  ##**Rem**## must be the first keyword on the line.
+	
+	The single quote character (') may also be used to indicate a comment and may appear after other keywords on a source line.
 
+	Multi-line comments are marked with the tokens ##**/'**## and ##**'/**##.  All text between the two markers is considered comment text and is not compiled.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+	%%(qbasic)
 /' this is a multi line 
 comment as a header of
 this example '/
+
 rem this is a single line comment
+
 'this is a single line comment
-dim a as integer   'comment a line of code
+
+dim a as integer   'comment following a statement
+
+dim b as /' can comment in here also '/    integer
+
 #if 0
-this way of commenting out code was
-required before version 0.16
+	this way of commenting out code was
+	required before version 0.16
 #endif
 
 %%
 
 {{fbdoc item="diff"}}
-	- 
+	- Multiline comments new to FreeBASIC version 0.16
 
 {{fbdoc item="see"}}
-	- 
+	- ##[[KeyPgPpif #if]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

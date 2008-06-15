@@ -4,27 +4,31 @@ Preprocessor directive to define a macro.
 
 {{fbdoc item="syntax"}}##
 	#define //identifier//
-	#define //identifier value//
-	#define //identifier//(//arguments//) //code_using_arguments//
+	#define //identifier// //text//
+	#define //identifier//([//parameters//]) //macro_text//
 ##
 {{fbdoc item="desc"}}
 	Pre-processor keyword that defines an identifier with a custom meaning:
-		- Identifiers without value can be checked for existence with ##[[KeyPgPpifdef #ifdef]]## and ##[[KeyPgPpifndef #ifndef]]## to hide parts of code to the compiler (conditional compiling)
-		- Identifiers with value are substituted by its value in the code before compiling,  allowing a sort of  "shorthand"
-		- Identifiers with arguments are called MACROS and are substituted by the code_using_arguments before compiling. **Note:** Surround arguments with parentheses in the macro to avoid surprises, as FreeBASIC performs a dumb substitution.
-
-	By simply defining the idenfier to something different your program can run completely different (i.e. think cross-compatibility, portability).	This command has allowed freebasic to be ported to linux, and potentially new systems.
+		- Empty defines (without //text//) can be checked for existence with ##[[KeyPgPpifdef #ifdef]]## and ##[[KeyPgPpifndef #ifndef]]## to hide parts of code to the compiler (conditional compiling).
+		- Non-empty defines (with //text//) are substituted by its //text// when the source is parsed, allowing a sort of "shorthand".
+		- Defines with parameters are substituted by the //macro_text//, that will contain all the arguments passed replaced. **Note:** The open parentheses character ('(') must immediately follow the //identifier//, there should be no white-spaces between them.
 
 {{fbdoc item="ex"}}
 ##%%(qbasic)
 #define DEBUGGING
+#ifdef DEBUGGING
+...
+#endif
 
 #define FALSE 0
-#define TRUE not FALSE
+#define TRUE (not FALSE)
 
 #define MyRGB(R,G,B) (((R)SHL 16)  OR ((G)SHL 8) OR (B)) 
+print hex( MyRGB(&hff, &h00, &hff) )
 
-a=MyRGB(a,b,c)%%##
+#define printval(bar) _
+	print #bar; " ="; bar
+%%##
 
 {{fbdoc item="diff"}}
 	- New to Freebasic
@@ -32,5 +36,6 @@ a=MyRGB(a,b,c)%%##
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpundef #undef]]##
 	- ##[[KeyPgPpifdef #ifdef]]##
+	- ##[[KeyPgPpmacro #macro]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

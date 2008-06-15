@@ -1,16 +1,17 @@
 {{fbdoc item="title" value="PTR"}}
 ----
-{{fbdoc item="syntax"}}
-	DIM //symbolname// AS [[DataType DataType]] {PTR | [[KeyPgPointer POINTER]]}
+A variable declaration type modifier
 
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //symbolname// [[KeyPgAs as]] [[DataType DataType]] {**Ptr** | [[KeyPgPointer pointer]]}
+##
 {{fbdoc item="desc"}}
-	Declares a pointer variable. The same as [[KeyPgPointer POINTER]].
+	Declares a pointer variable. The same as ##[[KeyPgPointer Pointer]]##.
 
-	The operator '@' or [[KeyPgVarptr VARPTR]] are used to take the address of a variable. The '*' operator is used to dereference the pointer, that's it, access the actual value stored in the memory location the pointer is pointing at.
+	The ##[[KeyPgAt (@) Address of]]## operator or ##[[KeyPgVarptr Varptr]]## are used to take the address of a variable. The ##[[KeyPgValOf (*) Value of]]## operator is used to dereference the pointer, that's it, access the actual value stored in the memory location the pointer is pointing at.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-
 ' Create the pointer.
 Dim p As Integer Ptr
 
@@ -33,7 +34,7 @@ Print p
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	    - [[KeyPgPointer POINTER]]
-	    - [[KeyPgAllocate ALLOCATE]]
+	- ##[[KeyPgPointer Pointer]]##
+	- ##[[KeyPgAllocate Allocate]]##
 
-{{fbdoc item="back" value="CatPgMisc|MISC"}}
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

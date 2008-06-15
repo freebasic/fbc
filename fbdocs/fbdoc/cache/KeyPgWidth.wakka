@@ -19,7 +19,7 @@ Console function to set or return the number of rows and columns of the display.
 		devicenemt to apply to
 
 {{fbdoc item="ret"}}
-	Returns a 32 bit ##[[KeyPgInteger Integer]]## where the ##[[KeyPgHiword HIWORD]]## is the number of columns and the ##[[KeyPgLoWord LOWORD]]## is the number of rows currently set.
+	Returns a 32 bit ##[[KeyPgInteger Integer]]## where the ##[[KeyPgHiword HIWORD]]## is the number of rows and the ##[[KeyPgLoWord LOWORD]]## is the number of columns currently set.
 
 {{fbdoc item="desc"}}
 	Sets the maximum number of columns of characters of  an output device (console, printer of text file) . If text sent to the device reaches the width an automatic carry return is generated.  
@@ -36,10 +36,10 @@ width 40, 25
 print "hello"
 %%
 
-%%(qbasic)
-DIM AS INTEGER w
-w = WIDTH
-Print "rows:"; w AND &HFFFF; " cols:"; w SHR 16
+%%(qbasic)Dim As Integer w
+w = Width
+Print "rows: " & hiword(w)
+Print "cols: " & loword(w)
 %%
 
 {{fbdoc item="diff"}}

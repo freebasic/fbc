@@ -6,7 +6,6 @@
 	==- {{anchor name="item1|Why is BSAVE/BLOAD crashing?"}}==
 	==- {{anchor name="item8|How do I play sound?"}}==
 	==- {{anchor name="item3|FreeBASIC gives me an error 'ld: can't find -lX11' or something similar!"}}==
-	==- {{anchor name="item4|How do I access the DOS interrupts?"}}==
 	==- {{anchor name="item5|How do I access the serial ports?"}}==
 	==- {{anchor name="item6|How do I print?"}}==
 	==- {{anchor name="item7|How do I access the harware ports?"}}==
@@ -26,29 +25,14 @@
 	Of the QB's sound keywords only BEEP is implemented in FB. 
 	If PC speaker sound is required, it should be programmed using IN and OUT. See the example in the OUT keyword for a replacement of SOUND. 
 	There is a library called QBSound that allows to emulate qb's ability to PLAY in the background tunes encoded in strings, it uses the soundcard's synthesizer.
-	If what's required is to play .wav or .mp3 files thru a soundcard, external libraries as FMOD or BASS can be used in Linux and Windows. For DOS see the DOS FAQ section.
+	If what's required is to play .wav or .mp3 files thru a soundcard, external libraries as FMOD or BASS can be used in Linux and Windows. For DOS see the [[FaqDOS DOS FAQ section]].
+
 
 {{anchor name="item0|Back to top"}}
+	
 	
 {{anchor name="item3"}}==FreeBASIC gives me an error 'ld: can't find -lX11' or something similar!==
 	FreeBASIC under linux uses ld to link it's files under linux. This program requires that any libraries you use have the '-dev' versions installed. For example, for the above error message, you'd want to install xlib-dev for your distribution. Other common errors are for glibc, which requires glibc-dev, and sdl, which requires sdl-dev. Most distributions make these easily available on your install media.
-
-{{anchor name="item0|Back to top"}}
-
-{{anchor name="item4"}}==How do I access the DOS interrupts?==
-	The DOS interrupts can be accessed only from the DOS version.
-	
-		The access to interrupts is slower than in QB: in FB the DPMI server will have to do 2 context switches, going to real-mode and coming back. All of that will eat hundreds of clocks in raw DOS and thousands of clocks if emm386 is loaded or if inside a Windows' DOS box. The slow down might be negligible or relevant, it depends. You should try to minimize the number of such calls.
-		 
-Use DJGPP's DPMI wrapper:
-
-%%(qbasic)
-#include "dos/dpmi.bi"
-
-type RegTypeX as __dpmi_regs
-
-#define INTERRUPTX(v,r) __dpmi_int( v, @r )
-%%
 
 {{anchor name="item0|Back to top"}}
 
@@ -62,8 +46,7 @@ type RegTypeX as __dpmi_regs
 	As of v0.15 OPEN COM is implemented for Windows
 
 	**Linux**
-	Linux is based on the UNIX paradigm, so serial ports are accessed as files(everything in Unix is a file or a process). This means that a developer can use standard documentation and the OPEN command to open /dev/ttys devices and manipulate them in a manner similar to C/""C++"".
-	!!!WRITEME!!!
+	As of v0.17 OPEN COM is implemented for Linux.
 
 {{anchor name="item0|Back to top"}}
 

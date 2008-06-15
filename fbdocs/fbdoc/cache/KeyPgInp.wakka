@@ -22,6 +22,12 @@ Function for hardware port accessing.
 	
 	Using true port access in the Windows version requires the program to install a device driver for the present session. For that reason, Windows executables using hardware port access should be run with administrator permits each time the computer is restarted. Further runs don't require admin rights as they just use the already installed driver. The driver is only 3K in size and is embedded in the executable.
 
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' Turn off PC speaker
+out &h61,inp(&h61) and &hfc
+%%	
+
 {{fbdoc item="diff"}}
 	- VGA Palete management is emulated in Windows and Linux versions.
 

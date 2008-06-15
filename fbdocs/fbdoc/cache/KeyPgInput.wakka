@@ -19,6 +19,16 @@ Input function to read one or more values entered by the user.
 	##**Input**## has a limited edit capacity: it allows to erase characters using the backspace key.  If a better user interface is needed, a custom input routine should be used.
 
 {{fbdoc item="ex"}}
+
+	**Example #1**
+%%(qbasic)
+Dim n As String, a As Integer
+Input "Enter [Name, Age]: ", n, a
+Print n
+Print a
+%%
+
+	**Example #2**
 %%(qbasic)dim as double a, b
 dim as string yn
 

@@ -2,6 +2,7 @@
 ----
 {{fbdoc item="syntax"}}##
 	**Open** //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] for //mode// [encoding //encoding_type// [[KeyPgAs as]] [[KeyPgStringtype string]]] [[[KeyPgAccess access]] //access_type//] [//lock_type//] [[KeyPgAs as]] [#]//slot// [[KeyPgAs as]] [[KeyPgInteger integer]] [len = //record_length// [[KeyPgAs as]] [[KeyPgInteger integer]]]##
+
 {{fbdoc item="param"}}
 	##//filename//##
 		Name of file to open; must be a legal file name in the target OS, without wildcards.  Non-absolute file specs are relative to the current directory. This file must exist if ##//mode//## is ##[[KeyPgInputfilemode Input]]##.
@@ -39,11 +40,15 @@
 
 {{fbdoc item="desc"}}
 	Opens a file or device for reading and/or writing in the given file //slot//, with the given file //mode//. 
+
 	If the file does not exist, a new file will be created, unless FOR INPUT is specified; in this case, an error is issued.
+
 	The file pointer is initialized by OPEN at the beginning of the file, except if opened FOR APPEND; in this case, the pointer is set at the end of the existing data.
+
 	The data existing in the file is preserved by OPEN unless FOR [[KeyPgOutput OUTPUT]] is specified; in this case, the file is emptied.
 	
 	Using MS-DOS device names to open streams to hardware devices ("LPT:", "SCR:",..) is no longer allowed; FreeBASIC's new composite keywords must be used: see [[KeyPgOpenCom OPEN COM]],  [[KeyPgOpenCons OPEN CONS]],  [[KeyPgOpenErr OPEN ERR]],  [[KeyPgOpenPipe OPEN PIPE]],  [[KeyPgOpenLpt OPEN LPT]],  [[KeyPgOpenScrn OPEN SCRN]].
+
 	OPEN can be used as a function which returns the error code that the operation sets in [[KeyPgErr ERR]].
 
 {{fbdoc item="ex"}}
@@ -85,8 +90,7 @@ END IF
 %%
 
 {{fbdoc item="diff"}}
-	- The QB's "variable" syntax.  OPEN //file_mode_string//,[#]//slot_numeric_expr//,//file_name_string//,//record_length_numeric_expr// is not allowed in FB
-	- Using MS-DOS device names to open hardware devices ("LPT:", "SCR:",..) is no more allowed, new composite keywords must be used . See [[KeyPgOpenCom OPEN COM]],  [[KeyPgOpenCons OPEN CONS]],  [[KeyPgOpenErr OPEN ERR]],  [[KeyPgOpenPipe OPEN PIPE]],  [[KeyPgOpenLpt OPEN LPT]],  [[KeyPgOpenScrn OPEN SCRN]]
+	- Using MS-DOS device names to open hardware devices is no more allowed, check the description section for the alternatives.
 	- OPEN can now be used as a function.
 
 {{fbdoc item="see"}}
@@ -94,10 +98,10 @@ END IF
 	- [[KeyPgOpenCons OPEN CONS]]
 	- [[KeyPgOpenErr OPEN ERR]]
 	- [[KeyPgOpenPipe OPEN PIPE]]
-
 	- [[KeyPgClose CLOSE]]
 	- [[KeyPgInputPp INPUT #]]
 	- [[KeyPgGetfileio GET (FILE I/O)]]
 	- [[KeyPgPutfileio PUT (FILE I/O)]]
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

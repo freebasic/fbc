@@ -34,11 +34,11 @@ Date function to return the difference of two dates measured by a specified inte
 
 	##//first_dayofweek//## Affects the counting when 'ww' interval is used.
 
-		{{table columns="2" cellpadding="1" cells="value;first day of week;omitted;sunday;0;local settings;1;sunday;2;monday;3;tuesday;4;wednesday;5;thursday;6;friday;7;saturday"}}
+		{{table columns="3" cellpadding="1" cells="value;first day of week;constant;omitted;sunday;###;0;local settings;fbUseSystem;1;sunday;fbSunday;2;monday;fbMonday;3;tuesday;fbTuesday;4;wednesday;fbWednesday;5;thursday;fbThursday;6;friday;fbFriday;7;saturday;fbSaturday"}}
 
 	##//first_weekofyear//## specifies which year (previous or next) that the week which spans the end of one year and the beginning of the next should included with.
 
-		{{table columns="2" cellpadding="1" cells="value;first week of year;0;local settings;1;January 1's week;2;first weeks having 4 days in the year;3;first full week of year"}}
+		{{table columns="3" cellpadding="1" cells="value;first week of year;constant;0;local settings;fbUseSystem;1;January 1's week;fbFirstJan1;2;first weeks having 4 days in the year;fbFirstFourDays;3;first full week of year;fbFirstFullWeek"}}
 
 	Notice if you do an arithmetical substraction of two date serials you get the difference in days.
 
@@ -46,6 +46,24 @@ Date function to return the difference of two dates measured by a specified inte
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+#include "vbcompat.bi"
+
+dim s as string, d1 as double, d2 as double
+
+line input "Enter your birthday: ", s
+
+if Isdate( s ) then
+  d1 = DateValue( s )
+  d2 = now()
+
+  print "You are " & DateDiff( "yyyy", d1, d2 ) & " years old."
+  print "You are " & DateDiff( "d", d1, d2 ) & " days old."
+  print "You are " & DateDiff( "s", d1, d2 ) & " seconds old."
+
+else
+  print "Invalid date"
+
+end if
 %%
 
 {{fbdoc item="diff"}}

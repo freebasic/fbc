@@ -13,9 +13,11 @@
 	- {{fbdoc item="keyword" value="KeyPgDateSerial|DATESERIAL"}}
 	- {{fbdoc item="keyword" value="KeyPgDateValue|DATEVALUE"}}
 
+
 <<>>
 	- {{fbdoc item="keyword" value="KeyPgDay|DAY"}}
 	- {{fbdoc item="keyword" value="KeyPgHour|HOUR"}}
+	- {{fbdoc item="keyword" value="KeyPgIsDate|ISDATE"}}
 	- {{fbdoc item="keyword" value="KeyPgMinute|MINUTE"}}
 	- {{fbdoc item="keyword" value="KeyPgMonth|MONTH"}}
 	- {{fbdoc item="keyword" value="KeyPgMonthname|MONTHNAME"}}

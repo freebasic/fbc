@@ -36,5 +36,9 @@
 	- none
 
 {{fbdoc item="see"}}
-	-
+	- [[KeyPgPtrField (.) Pointer to field operator]]
+	- [[KeyPgAt (@) Address of]]
+	- [[KeyPgValOf (*) Value of]]
+	- [[KeyPgType TYPE...END TYPE]]
+
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

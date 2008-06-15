@@ -21,8 +21,8 @@ Function to return the integer part of a number.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-print fix(1.9) '' will print 1.0, 
-print fix(-1.9) '' will print -1.0
+Print fix(1.9)  '' will print  1
+Print fix(-1.9) '' will print -1 
 %%
 
 {{fbdoc item="diff"}}

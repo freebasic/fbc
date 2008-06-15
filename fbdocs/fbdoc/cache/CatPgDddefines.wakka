@@ -17,7 +17,9 @@
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerPatch|__FB_VER_PATCH__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbwin32|__FB_WIN32__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfile|__FILE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfilenq|__FILE_NQ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfunction|__FUNCTION__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfunctionnq|__FUNCTION_NQ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdline|__LINE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdtime|__TIME__"}}
 <<>>

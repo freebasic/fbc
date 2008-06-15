@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Installing"}}----
 
 ==Windows version==
-	- Follow the installer instructions, don't forget to select which external libraries to install, some are not selected by default.
+	- Follow the installer instructions, don't forget to select which external libraries to install, some are not selected by default. FreeBASIC uses the NSIS installer having a strong compression, the download size is cca 5 MB, after extraction the total size is cca 50 MB.
 
 
 ==Linux version==

@@ -1,15 +1,17 @@
 {{fbdoc item="title" value="POINTER"}}
 ----
-{{fbdoc item="syntax"}}
-	DIM //symbolname// AS [[DataType DataType]] {POINTER | [[KeyPgPtr PTR]]}
+A variable declaration type modifier
 
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //symbolname// [[KeyPgAs as]] [[DataType DataType]] {**Pointer** | [[KeyPgPtr ptr]]}
+##
 {{fbdoc item="desc"}}
-	Declares a pointer variable. The same as [[KeyPgPtr PTR]].
+	Declares a pointer variable. The same as ##[[KeyPgPtr Ptr]]##.
 
 {{fbdoc item="ex"}}
-	         For example see [[KeyPgPtr PTR]].
-	
-{{fbdoc item="see"}}
-	- [[KeyPgPtr PTR]]
+	     For example see ##[[KeyPgPtr Ptr]]##.
 
-{{fbdoc item="back" value="CatPgMisc|MISC"}}
+{{fbdoc item="see"}}
+	- ##[[KeyPgPtr Ptr]]##
+
+{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

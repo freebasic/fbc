@@ -25,6 +25,57 @@
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+dim shared printsync as integer
+
+sub mythread(byval id as integer)
+
+  dim as double t, w
+  dim as integer i, n
+
+  if( id = 1 ) then
+	w = 1
+	n = 10
+  else
+	w = 0.3
+	n = 5
+  end if
+
+  for i = 1 to n
+
+	mutexlock printsync
+	print "Thread #"; id; ": on step #"; i
+	mutexunlock printsync
+
+	'' simulate some work
+	t = timer
+	while( timer - t ) < w
+	wend
+
+  next i
+
+  mutexlock printsync
+  print "Thread #"; id; " is done "
+  mutexunlock printsync
+
+end sub
+
+print "Starting threads ... "
+
+'' create a mutex to sync printing
+printsync = MutexCreate()
+
+'' create 2 threads, each taking a different
+'' amount of time to complete
+t1 = threadcreate( @mythread, 1 )
+t2 = threadcreate( @mythread, 2 )
+
+'' wait for threads to complete
+threadwait( t1 )
+threadwait( t2 )
+
+mutexdestroy printsync
+
+print "All done."
 %%
 
 

@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="IMAGECONVERTROW"}}
 ----
-Converts a row of an image buffer into a different bit depth.
+Converts a row of image data into a different bit depth.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageConvertRow""** ( [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //src_bpp// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //dst_bpp// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //isrgb// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 )
@@ -10,24 +10,26 @@ Converts a row of an image buffer into a different bit depth.
 			##//or//##
 		""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //width//, //isrgb// )
 			##//or//##
+		""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //numofpixels// )	
+			##//or//##
 		""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //numofpixels//, //isrgb// )	
 		
 ##
 {{fbdoc item="param"}}
 	##//src//##
-		The address of the start of the source row
+		The address of the start of the source row.  The source can either be a full-color image with a bit depth of 24 or 32 bits per pixel, or a paletted image with a bit depth of 1-8 bits per pixel.  Converting a paletted image will only work properly if you are in a screen mode that is using the correct palette for the image when you do the conversion.
 	##//src_bpp//##
-		The number of bits per pixel in the source row
+		The number of bits per pixel in the source row.  1-8, 24 and 32.
 	##//dst//##
-		The address of the start of the destination row
-	##//src_bpp//##
-		The number of bits per pixel in the destination row
+		The address of the start of the destination row.  The image can be a full-color image of 16 or 32 bits per pixel.  If the source is a paletted image, the destination can also be a paletted image of 1 to 8 bits per pixel.
+	##//dst_bpp//##
+		The number of bits per pixel in the destination row.  Valid values for this are 1-8, 16 and 32.
 	##//width//## or ##//numofpixels//##
-		The size of one row in pixels
-		 Or number of pixels=(width*height)  to convert a whole picture at once. 
+		The size of the row in pixels.
+		Alternatively, the number of pixels in the image = (width*height) to convert an entire image at once.
+		This only works properly if the rows are all contiguous, with no spare bytes in between.  This is the case with a standard FreeBASIC image buffer, but not necessarily the case with other image formats.  For example, for BMP images a row must take up a multiple of 4 bytes, and so may have padding bytes at the end of the row for bit depths less than 32 bits; and PNG images always have a filter byte at the start of each row.
 	##//isrgb//##
-		A value of zero indicates that the Red and Blue channels are the other way round in one of the rows.
-		Use this to make sure the Red and Blue channels are swapped in the conversion.
+		A value of zero indicates that the Red and Blue channels are the other way round in the source image.  Use this switch if you want the Red and Blue channels to be swapped in the conversion.
 
 {{fbdoc item="desc"}}
 	Copies the row of an image from one address to another, converting the number of bits per pixel to match the destination image.

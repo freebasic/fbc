@@ -24,7 +24,7 @@ Date function to return the number of day of the week
 
 	//first day of week// is optional
 
-		{{table columns="2" cellpadding="1" cells="value;first day of week;omitted;sunday;0;local settings;1;sunday;2;monday;3;tuesday;4;wednesday;5;thursday;6;friday;7;saturday"}}
+		{{table columns="3" cellpadding="1" cells="value;first day of week;constant;omitted;sunday;###;0;local settings;fbUseSystem;1;sunday;fbSunday;2;monday;fbMonday;3;tuesday;fbTuesday;4;wednesday;fbWednesday;5;thursday;fbThursday;6;friday;fbFriday;7;saturday;fbSaturday"}}
 
 	The compiler will not recognise this function unless "vbcompat.bi" is included.
 

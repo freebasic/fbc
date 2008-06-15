@@ -5,7 +5,7 @@
 
 {{fbdoc item="desc"}}
 	This command opens a serial port of the PC, allowing to send and receive data by using the normal file commands as PRINT #, INPUT#, GET #,...
-	As of version 0.15 it is implemented only in the Win32 version
+	As of version 0.17 it is implemented only in the Win32  and  Linux version
 	    
 	//baudrate// = 300, 1200, etc ..., default = 300
 

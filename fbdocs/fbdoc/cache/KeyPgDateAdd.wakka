@@ -29,6 +29,23 @@ Date function to offset a date wit a specified interval
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+#include "vbcompat.bi"
+
+const fmt = "ddddd ttttt"
+dim d as double
+d = now()
+
+print "1 hour from now is ";
+print Format( DateAdd( "h", 1, d ), fmt )
+
+print "1 day from now is ";
+print Format( DateAdd( "d", 1, d ), fmt )
+
+print "1 week from now is ";
+print Format( DateAdd( "ww", 1, d ), fmt )
+
+print "1 month from now is ";
+print Format( DateAdd( "m", 1, d ), fmt )
 %%
 
 {{fbdoc item="diff"}}
