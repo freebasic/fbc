@@ -857,7 +857,7 @@ public function HelpBox_GetUrlFromPosition _
 		return ""
 	end if
 
-	if( row > ctl->buffer.rowcount ) then
+	if( row >= ctl->buffer.rowcount ) then
 		return ""
 	end if
 
@@ -874,14 +874,17 @@ public function HelpBox_GetUrlFromPosition _
 
 	for i = 0 to ctl->buffer.rowindex[row].usercount - 1
 
-		link = cast(helplink_t ptr, ctl->buffer.rowindex[row].userdata) + i
+		link = cast(helplink_t ptr, ctl->buffer.rowindex[row].userdata)
 
-		if( link->url ) then
-			if( link->url_size > 0 ) then
-				if( col >= link->col ) then
-					if( col < link->col + link->length ) then
-						return left( *link->url, link->url_size )
-					end if					
+		if( link ) then
+			link += i
+			if( link->url ) then
+				if( link->url_size > 0 ) then
+					if( col >= link->col ) then
+						if( col < link->col + link->length ) then
+							return left( *link->url, link->url_size )
+						end if					
+					end if
 				end if
 			end if
 		end if
@@ -914,25 +917,28 @@ public function HelpBox_SetNextUrlPosition _
 	for row = ctl->row to ctl->buffer.rowcount - 1
 		if( ctl->buffer.rowindex[row].usercount > 0 ) then
 			for i = 0 to ctl->buffer.rowindex[row].usercount - 1
-				link = cast(helplink_t ptr, ctl->buffer.rowindex[row].userdata) + i
-				if( target <> NULL ) then
-					if( link->anchor ) then
-						if( link->anchor_size > 0 ) then
-							if( lcase( left( *link->anchor, link->anchor_size )) = lcase(*target) ) then
-								HelpBox_SetPosition( ctl, link->col, row )
-								HelpBox_SetScrollIndex( ctl, ctl->leftindex, row )
-								return TRUE
+				link = cast(helplink_t ptr, ctl->buffer.rowindex[row].userdata)
+				if( link ) then
+					link += i
+					if( target <> NULL ) then
+						if( link->anchor ) then
+							if( link->anchor_size > 0 ) then
+								if( lcase( left( *link->anchor, link->anchor_size )) = lcase(*target) ) then
+									HelpBox_SetPosition( ctl, link->col, row )
+									HelpBox_SetScrollIndex( ctl, ctl->leftindex, row )
+									return TRUE
+								end if
 							end if
 						end if
-					end if
-				else
-					if( link->url ) then
-						if( link->url_size > 0 ) then
-							if( link->col > col ) then
-								ch = link->text[0]
-								if( (char = 0) or ( toupper(char) = toupper(ch)) ) then
-									HelpBox_SetPosition( ctl, link->col, row )
-									return TRUE
+					else
+						if( link->url ) then
+							if( link->url_size > 0 ) then
+								if( link->col > col ) then
+									ch = link->text[0]
+									if( (char = 0) or ( toupper(char) = toupper(ch)) ) then
+										HelpBox_SetPosition( ctl, link->col, row )
+										return TRUE
+									end if
 								end if
 							end if
 						end if
@@ -948,23 +954,26 @@ public function HelpBox_SetNextUrlPosition _
 	for row = 0 to ctl->row - 1
 		if( ctl->buffer.rowindex[row].usercount > 0 ) then
 			for i = 0 to ctl->buffer.rowindex[row].usercount - 1
-				link = cast(helplink_t ptr, ctl->buffer.rowindex[row].userdata) + i
-				if( target <> NULL ) then
-					if( link->anchor ) then
-						if( link->anchor_size > 0 ) then
-							if( lcase( left( *link->anchor, link->anchor_size )) = lcase(*target) ) then
-								HelpBox_SetPosition( ctl, link->col, row )
-								return TRUE
+				link = cast(helplink_t ptr, ctl->buffer.rowindex[row].userdata)
+				if( link ) then
+					link += i
+					if( target <> NULL ) then
+						if( link->anchor ) then
+							if( link->anchor_size > 0 ) then
+								if( lcase( left( *link->anchor, link->anchor_size )) = lcase(*target) ) then
+									HelpBox_SetPosition( ctl, link->col, row )
+									return TRUE
+								end if
 							end if
 						end if
-					end if
-				else
-					if( link->url ) then
-						if( link->url_size > 0 ) then
-							ch = link->text[0]
-							if( (char = 0) or ( toupper(char) = toupper(ch)) ) then
-								HelpBox_SetPosition( ctl, link->col, row )
-								return TRUE
+					else
+						if( link->url ) then
+							if( link->url_size > 0 ) then
+								ch = link->text[0]
+								if( (char = 0) or ( toupper(char) = toupper(ch)) ) then
+									HelpBox_SetPosition( ctl, link->col, row )
+									return TRUE
+								end if
 							end if
 						end if
 					end if
@@ -1000,14 +1009,17 @@ public function HelpBox_SetPrevUrlPosition _
 	for row = ctl->row to 0 step - 1
 		if( ctl->buffer.rowindex[row].usercount > 0 ) then
 			for i = ctl->buffer.rowindex[row].usercount - 1 to 0 step - 1
-				link = cast(helplink_t ptr, ctl->buffer.rowindex[row].userdata) + i
-				if( link->url ) then
-					if( link->url_size > 0 ) then
-						if( link->col < col ) then
-							ch = link->text[0]
-							if( (char = 0) or ( toupper(char) = toupper(ch)) ) then
-								HelpBox_SetPosition( ctl, link->col, row )
-								return TRUE
+				link = cast(helplink_t ptr, ctl->buffer.rowindex[row].userdata)
+				if( link ) then
+					link += i
+					if( link->url ) then
+						if( link->url_size > 0 ) then
+							if( link->col < col ) then
+								ch = link->text[0]
+								if( (char = 0) or ( toupper(char) = toupper(ch)) ) then
+									HelpBox_SetPosition( ctl, link->col, row )
+									return TRUE
+								end if
 							end if
 						end if
 					end if
@@ -1020,13 +1032,16 @@ public function HelpBox_SetPrevUrlPosition _
 	for row = ctl->buffer.rowcount - 1 to ctl->row step - 1
 		if( ctl->buffer.rowindex[row].usercount > 0 ) then
 			for i = ctl->buffer.rowindex[row].usercount - 1 to 0 step - 1
-				link = cast(helplink_t ptr, ctl->buffer.rowindex[row].userdata) + i
-				if( link->url ) then
-					if( link->url_size > 0 ) then
-						ch = link->text[0]
-						if( (char = 0) or ( toupper(char) = toupper(ch)) ) then
-							HelpBox_SetPosition( ctl, link->col, row )
-							return TRUE
+				link = cast(helplink_t ptr, ctl->buffer.rowindex[row].userdata) 
+				if( link ) then
+					link += i
+					if( link->url ) then
+						if( link->url_size > 0 ) then
+							ch = link->text[0]
+							if( (char = 0) or ( toupper(char) = toupper(ch)) ) then
+								HelpBox_SetPosition( ctl, link->col, row )
+								return TRUE
+							end if
 						end if
 					end if
 				end if

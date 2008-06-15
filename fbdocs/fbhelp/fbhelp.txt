@@ -1,4 +1,4 @@
-  fbhelp - FreeBASIC help viewer v0.4b
+  fbhelp - FreeBASIC help viewer v0.5b
   Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com)
 
 
@@ -59,7 +59,10 @@ Running:
   Command line options:
 
       /bw                     black and white display only
+      /? /h /help             this help page
+      /version                display version
 
+  The command lines options allow "/" or "-" as the prefix.
 
   Both the dos version and the windows version will run in a dos window.
 
@@ -132,6 +135,9 @@ Usage:
 
 Compiling:
 
-    - Requires fbc version 0.17 or later and zlib. (www.zlib.net)
+    Requires:
+	  - fbhelp sources ( http://www.coderjeff.ca/ )
+      - FreeBASIC version 0.17b or later ( http://www.freebasic.net/ )
+	  - zlib libraries ( http://www.zlib.net/ )
 
 EOF

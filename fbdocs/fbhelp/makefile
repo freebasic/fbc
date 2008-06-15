@@ -55,6 +55,10 @@ LIBS += -l fbgfx -l user32 -l gdi32
 else
 ifeq ($(TARGET),linux)
 LIBS += -l fbgfx -p /usr/X11R6/lib -l X11 -l Xpm -l Xext -l Xrandr -l Xrender
+else
+ifeq ($(TARGET),dos)
+LIBS += -l fbgfx -l c
+endif
 endif
 endif
 

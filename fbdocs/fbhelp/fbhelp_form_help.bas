@@ -18,6 +18,7 @@
 '' chng: jul/2006 written [coderJeff]
 
 #include once "common.bi"
+#include once "fbhelp.bi"
 #include once "fbhelp_screen.bi"
 #include once "fbhelp_textbuffer.bi"
 #include once "fbhelp_controls.bi"
@@ -67,8 +68,8 @@ public sub HelpScreen_Show( byval pexepath as zstring ptr )
 	Control_Set @frm, @border.ctl, 0, 0, w, h, DEFAULT_FORECOLOR, DEFAULT_BACKCOLOR, CONTROL_FLAG_REDRAW or FRAME_FLAG_NOFILL or FRAME_FLAG_CLOSEBUTTON or CONTROL_FLAG_VISIBLE, 0
 	with border
 		.ctl.handler = @Frame_Default_Handler
-		.title = "FreeBASIC Manual"
-		.status = "fbhelp - Copyright (C) 2006 Jeffery R. Marshall - coder@execulink.com"
+		.title = APP_TITLE
+		.status = APP_NAME + " " + APP_VERSION + " - " + APP_COPYRIGHT
 	end with
 	Forms_Add_Control @frm, cast( control_t ptr, @border )
 

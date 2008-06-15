@@ -18,6 +18,7 @@
 '' chng: jul/2006 written [coderJeff]
 
 #include once "common.bi"
+#include once "fbhelp.bi"
 #include once "fbhelp_screen.bi"
 #include once "fbhelp_controls.bi"
 #include once "fbhelp_file.bi"
@@ -33,9 +34,22 @@ declare sub HelpScreen_Show ( byval pexepath as zstring ptr )
 
 	i = 1
 	while( len( command(i) ) > 0 )
-		if( lcase(command(i)) = "/bw" ) then
+		select case lcase(command(i))
+		case "/?", "/help", "/h", "-help", "-h"
+			? "Usage: " + APP_NAME + " [options]
+			?
+			? "options:
+			? "   /? /h /help   this help page"
+			? "   /bw           black and white only"
+			? "   /version      display version"
+			end 0
+		case "/bw", "-bw"
 			Screen_SetColorMode( FALSE )
-		end if
+		case "/version", "-version"
+			? APP_NAME + " " + APP_VERSION + " - " + APP_COPYRIGHT
+			? "Last built on " + __DATE__ + " " + __TIME__
+			end 0
+		end select
 		i += 1
 	wend
 
