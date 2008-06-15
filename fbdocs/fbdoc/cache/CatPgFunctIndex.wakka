@@ -172,6 +172,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
 
 {{fbdoc item="section" value="Graphics"}}
+	- {{fbdoc item="keyword" value="KeyPgAddGfx|ADD (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgAlphaGfx|ALPHA (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgCircle|CIRCLE"}}
 	- {{fbdoc item="keyword" value="KeyPgCls|CLS"}}

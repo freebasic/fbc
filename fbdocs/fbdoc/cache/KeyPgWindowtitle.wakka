@@ -28,6 +28,9 @@ SLEEP
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
+{{fbdoc item="target"}}
+	- Not present in DOS version / target of FreeBASIC
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 

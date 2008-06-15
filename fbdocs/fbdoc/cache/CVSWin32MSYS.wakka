@@ -15,42 +15,43 @@ If you want the very latest version of ""FreeBASIC"" on ""Win32"", it can be com
 	=={{anchor name="updating|Updating the FreeBASIC software installed in MSYS"}}==
 		- {{anchor name="updating1|Replace old files with new ones from the source folder"}}
 		- {{anchor name="updating2|Replace the old compiler and library files with the new ones you've just made"}}
-		- {{anchor name="updating3|Copy MSYS/MinGW-specific library to FB linker library directory if it's not included already"}}
+		- {{anchor name="updating3|Copy additional libraries to the FB linker library directory"}}
 
 
 	{{anchor name="setup"}}===Setting up the MSYS/""MinGW"" environment===
 		
 		{{anchor name="setup1"}}==Install the packages for ""MinGW"" and MSYS==
 		
-			The packages you will need can be found on the Downloads page of http://www.mingw.org, in the "Current" section. These should be installed or extracted to C:\""MinGW""
-				-mingw-runtime
-				-binutils
-				-gcc-core
-				-w32api
-				-mingw32-make
-			On this page you will also find an installer for MSYS-1.0.  Download and install this into "C:\msys\1.0" and run the post-install.  When prompted for your ""MinGW"" installation, type: c:/""MinGW""
+			The packages you will need can be found on the Downloads page of [[http://www.mingw.org]].  You will need the binary versions from the "Current" or "Candidate" section (the latest versions on the page at time of writing are provided in brackets below.) These should be installed or extracted to C:\""MinGW"":
+				-make ([[http://prdownloads.sf.net/mingw/mingw32-make-3.80.0-3.exe?download mingw32-make-3.80.0-3]])
+				-binutils ([[http://prdownloads.sf.net/mingw/binutils-2.16.91-20060119-1.tar.gz?download binutils-2.16.91]])
+				-GCC-3.4 ([[http://prdownloads.sf.net/mingw/gcc-core-3.4.5-20060117-1.tar.gz?download gcc-core-3.4.5]], [[http://prdownloads.sf.net/mingw/gcc-g++-3.4.5-20060117-1.tar.gz?download gcc-g++-3.4.5]])
+				-""MinGW"" Runtime ([[http://prdownloads.sf.net/mingw/mingw-runtime-3.9.tar.gz?download mingw-runtime-3.9]])
+				-Windows API ([[http://prdownloads.sf.net/mingw/w32api-3.6.tar.gz?download w32api-3.6]])
+			On this page you will also find an installer for MSYS ([[http://prdownloads.sf.net/mingw/MSYS-1.0.10.exe?download MSYS-1.0.10.exe]]).  Download and install this into "C:\msys\1.0" and run the post-install.  When prompted for your ""MinGW"" installation, type: c:/""MinGW""
 		
 		{{anchor name="setup2"}}==Add other necessary files and packages==
 			
 			In order to download the ""FreeBASIC"" source code from CVS, you will need cvs.exe. At the time of writing, the latest version of CVS can be retrieved from: http://ftp.gnu.org/non-gnu/cvs/binary/stable/x86-woe/cvs-1-11-22.zip
-			Download this and extract cvs.exe to c:\""MinGW""\bin 
-			In order to make gfxlib2, you will need ""DirectX"" header files to be installed. At the moment, the only known way to do it is to use a package like the one available at this web site: http://www.streetcds.co.uk/dx/dx80_mgw.zip
+			Download this and extract cvs.exe to C:\""MinGW""\bin
+			In order to make gfxlib2, you will need ""DirectX"" header files to be installed. At the moment, the only known way to do it is to use a package like the one available here: [[http://www.streetcds.co.uk/dx/dx80_mgw.zip]]
 			Download and extract it to C:\""MinGW""
 		
 		{{anchor name="setup3"}}==Add the ""FreeBASIC"" program==
 		
 			(For the following steps, you will need to type these commands into an MSYS terminal.)
-			You will need the latest version of ""FreeBASIC"" in order to compile fbc.exe.  This next step will assume that you have it installed in C:\Program Files\""FreeBASIC""
+			You will need the latest version of ""FreeBASIC"" in order to compile fbc.exe.  It should be the last available stable version, and patched with the latest testing version, if there is one.
+			This next step will assume that you have it installed in C:\Program Files\""FreeBASIC"".
 			
 			Open up an MSYS terminal.
 			In it, type the following commands:
-				%%mkdir /FBbin
+			%%mkdir /FBbin
 cp -rv "/c/Program Files/FreeBASIC"/* /FBbin%%
-			This will copy ""FreeBASIC"" into your MSYS installation.
+			This will copy ""FreeBASIC"" into your MSYS installation.  Note: If you need to find this folder on your hard disk, it should be located at C:\msys\1.0\FBbin\
 			In order for MSYS to be able to find ""FreeBASIC"", you will need to add it to the path.
 			Type the following command:
-				%%echo 'export PATH="$PATH:/FBbin"' >> /etc/profile%%
-			This adds a command to the bottom of the startup script so that next time MSYS starts it will add /Fbbin to your path.  You will need to restart MSYS for this to take effect.
+			%%echo 'export PATH="$PATH:/FBbin"' >> /etc/profile%%
+			This adds a command to the bottom of the startup script so that next time MSYS starts it will add /FBbin to your path.  You will need to restart MSYS for this to take effect.
 		
 	{{anchor name="making"}}===Making the ""FreeBASIC"" executable and libraries===
 		
@@ -63,9 +64,9 @@ cp -rv "/c/Program Files/FreeBASIC"/* /FBbin%%
 			
 			%%mkdir ~/fbccvs
 cd ~/fbccvs
-cvs -z3 -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc co FreeBASIC%%
-			During this step you may get a message about "dying gasps" from the ""SourceForge"" server.  It is probably safe to ignore this, but if it happens, I suggest repeating the step and making sure all the files are checked out.  If it gets up to ""FreeBASIC/tests/wstring"" folder it should be OK.
-		
+cvs -z6 -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc co FreeBASIC%%
+			During this step you may get a message about "dying gasps" from the ""SourceForge"" server.  It is probably safe to ignore this - if it gets up to ""FreeBASIC/tests/wstring"" folder it should be OK.  Otherwise, try the command again until you're sure it has finished.
+			
 		{{anchor name="making2"}}==Make rtlib==
 			
 			%%cd ~/fbccvs/FreeBASIC/src/rtlib/obj/win32
@@ -80,6 +81,14 @@ make CFLAGS=-O2%%
 		
 		{{anchor name="making4"}}==Make fbc==
 			
+			Before building fbc, you may need to update your FBbin/inc folder, to make sure you are compiling fbc with the latest versions of the header files:
+			%%cp -rfv ~/fbccvs/FreeBASIC/inc/* /FBbin/inc%%
+			
+			You may also be be missing some libraries - libbfd.a, libiberty.a and libintl.a - from your original build, which you will need to compile the new version of fbc.
+			You can find them here: [[http://www.freebasic.net/temp/bfd-v2.17-win32.rar]].
+			These files should go into your FBbin/lib/win32 folder.
+			
+			Now enter this to build fbc:
 			%%cd ~/fbccvs/FreeBASIC/src/compiler/obj/win32
 ../../configure
 make%%
@@ -91,8 +100,10 @@ make%%
 		
 		{{anchor name="updating1"}}==Replace old files with new ones from the source folder==
 			
-			%%cp -fv ~/fbccvs/FreeBASIC/bin/win32/* /FBbin/bin/win32
-cp -rfv ~/fbccvs/FreeBASIC/inc/* /FBbin/inc%%
+			Update the FBbin/bin/win32 folder with any files from CVS:
+			%%cp -fv ~/fbccvs/FreeBASIC/bin/win32/* /FBbin/bin/win32%%
+			If you didn't do it earlier, you should update your FBbin/inc folder now:
+			%%cp -rfv ~/fbccvs/FreeBASIC/inc/* /FBbin/inc%%
 		
 		{{anchor name="updating2"}}==Replace the old compiler and library files with the new ones you've just made==
 			
@@ -101,10 +112,13 @@ cp -fv ~/fbccvs/FreeBASIC/src/rtlib/obj/win32/*.a /FBbin/lib/win32
 cp -fv ~/fbccvs/FreeBASIC/src/rtlib/obj/win32/fbrt0.o /FBbin/lib/win32
 cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/win32/*.a /FBbin/lib/win32%%
 		
-		{{anchor name="updating3"}}==Copy MSYS/""MinGW""-specific library to FB linker library directory if it's not included already==
-			
+		{{anchor name="updating3"}}==Copy additional libraries to the FB linker library directory==
+			If you are missing a copy of ""libsupc++.a"", you can find it in the folder where you installed the libraries for ""gcc-g++"".  To copy it across from there, use the following command:
+			%%cp /mingw/lib/libsupc++.a /FBbin/lib/win32%%
+			You may also be missing a copy of libmingwex.a, which you installed as part ofthe ""MinGW"" runtime.  You can copy it over with the following command:
 			%%cp /mingw/lib/libmingwex.a /FBbin/lib/win32%%
-	
+			
+
 	And you're ready to roll! The newest FB is now in your MSYS /FBbin.
 	
 	Note: recently it has come to light that although the above often works, there can be chicken-and-egg-related problems. Please see this forum thread for info:

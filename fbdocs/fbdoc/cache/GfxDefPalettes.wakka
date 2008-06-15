@@ -1,34 +1,44 @@
 {{fbdoc item="title" value="Default Palettes"}}----
 Default color values for FreeBASIC graphics and text screen modes
 
-	FreeBASIC initializes palette indexes with the colors in the table. The colors are the same as in QB. Colors in graphics mode can be changed using the ##[[KeyPgPalette Palette]]## statement. Colors in console can't be changed in a portable mode. 
+	FreeBASIC initializes palette indexes with the colors in the table. The colors are the same as in QB. Colors in graphics mode can be changed using the ##[[KeyPgPalette Palette]]## statement. Colors in console can't be changed in a portable mode.
 
 **{{anchor name="SCRN1|Screen mode 1"}}**
-	Four (4) colors.
+	4 colors: Black and white, and two others
 **{{anchor name="SCRN2_10_11|Screen modes 2, 10 and 11"}}**
-	Monochromatic, black and white.
+	Monochromatic: black and white.
 **{{anchor name="SCRN7_8_9_12_CON|Screen modes 7, 8, 9, 12, and Console"}}**
-	Two sets of eight (8) colors, normal and intense (bright)
+	Two sets of 8 colors: normal and intense (bright)
 **{{anchor name="SCRN13_8BIT|Screen 13 and 8-bit modes"}}**
 	Multiple color and greyscale bands
 
 <<{{anchor name="SCRN1"}}{{fbdoc item="section" value="Screen mode 1"}}
 
+	{{image title="4 color palette" url="http://img405.imageshack.us/img405/3870/gfxdefpalettespal4lw0.png"}}
+	
 	{{table columns="2" cellpadding="2" cells="Value;Name;0;black;1;cyan;2;magenta;3;white"}}
-
+	
 {{anchor name="SCRN2_10_11"}}{{fbdoc item="section" value="Screen modes 2, 10 and 11"}}
+
+	{{image title="2 color palette" url="http://img367.imageshack.us/img367/2378/gfxdefpalettespal2qz4.png"}}
 
 	{{table columns="2" cellpadding="2" cells="Value;Name;0;black;1;white"}}
 
 {{anchor name="SCRN7_8_9_12_CON"}}{{fbdoc item="section" value="Screen modes 7, 8, 9, 12, and Console"}}
 
+	{{image title="16 color palette" url="http://img367.imageshack.us/img367/6214/gfxdefpalettespal16ij4.png"}}
+
 	{{table columns="4" cellpadding="2" cells="Normal Value;Normal Name;Intense Value;Intense Name;0;black;8;dark grey;1;blue;9;bright blue;2;green;10;bright green;3;cyan;11;bright cyan;4;red;12;bright red;5;pink;13;bright pink;6;yellow;14;bright yellow;7;grey;15;white"}}
 <<>>{{anchor name="SCRN13_8BIT"}}{{fbdoc item="section" value="Screen 13 and 8-bit modes"}}
+
+	{{image title="256 color palette" url="http://img405.imageshack.us/img405/4093/gfxdefpalettespal256zc4.png"}}
+
 	{{fbdoc item="subsect" value="Screen 12 color band"}}
-		Colors one (1) through fifteen (15) are the same as screen 12 mode.
+	
+		Colors 0 through 15 are the same as screen 12 mode.
 
 	{{fbdoc item="subsect" value="Greyscale band"}}
-		Colors sixteen (16) through thirty-one (31) are greyscale from black to white.
+		Colors 16 through 31 are greyscale from black to white.
 
 	{{fbdoc item="subsect" value="Brightness/saturation bands"}}
 		3 bands of decreasing brightness, each containing 3 bands of decreasing saturation, each containing 24 hues of color starting and ending at blue.
@@ -36,7 +46,8 @@ Default color values for FreeBASIC graphics and text screen modes
 		{{table columns="10" cellpadding="2" cells="Name;HB/HS;HB/MS;HB/LS;MB/HS;MB/MS;MB/LS;LB/HS;LB/MS;LB/LS;blue;32;56;80;104;128;152;176;200;224;magenta;36;60;84;108;132;156;180;204;228;red;40;64;88;112;136;160;184;208;232;yellow;44;58;92;116;140;164;188;212;236;green;48;72;96;120;144;168;192;216;240;cyan;52;76;100;124;148;172;194;220;244"}}
 
 	{{fbdoc item="subsect" value="Black band"}}
-		Colors two-forty-eight (248) through two-fifty-five (255) are black.
+		Colors 248 through 255 are black.
+
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -3,10 +3,8 @@ Returns the hexadecimal of the given number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
@@ -15,7 +13,7 @@ Returns the hexadecimal of the given number
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]	
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Hex**( //number// [, //digits// ] )
+	//result// = **Hex**[$]( //number// [, //digits// ] )
 ##
 {{fbdoc item="param"}}
 	##//number//##
@@ -24,20 +22,23 @@ Returns the hexadecimal of the given number
 		Optional number of digits to return.
 
 {{fbdoc item="ret"}}
-	Hexadecimal [[KeyPgString string]] representation of number.
+	A [[KeyPgString string]] containing the hexadecimal representation of ##//number//##.
 
 {{fbdoc item="desc"}}
-	Returns the hexadecimal string representation of the integer ##//expression//##. Hexadecimal digits range from 0-9, or A-F.
+	Returns the hexadecimal string representation of the integer ##//number//##. Hexadecimal digits range from 0-9, or A-F.
 
 	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
 
-	The length of the string will not go longer than the maximum number of digits required for the type of ##//expression//## (8 for an integer, 16 for floating point or longinteger)
+	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (8 for an ##[[KeyPgInteger integer]]##, 16 for a ##[[KeyPgLongint Longint]])##.
+
+	If you want to convert a hexadecimal string back into a number, the easiest way to do it is to prepend the string with ##"&H"##, and convert it as a normal numeric string, using ##[[KeyPgValint Valint]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-print Hex(54321)
-print Hex(54321, 2)
-print Hex(54321, 5)
+'54321 is D431 in hex
+Print Hex(54321)
+Print Hex(54321, 2)
+Print Hex(54321, 5)
 %%
 	will produce the output:
 
@@ -48,6 +49,7 @@ print Hex(54321, 5)
 
 {{fbdoc item="diff"}}
 	- In QBASIC, there was no way to specify the number of digits returned.
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgBin Bin]]##

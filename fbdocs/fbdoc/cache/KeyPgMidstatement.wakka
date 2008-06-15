@@ -23,12 +23,15 @@ Overwrites a substring of a string with another
 
 	If ##//length//## is not specified, all of ##//expression//## is copied. The size of the string ##//text//## is unchanged; if ##//expression//## is too big, as much of it is copied up to the end of ##//text//##.
 
+	##**Mid**## can also be used as a function to return part of another string.  See [[KeyPgMidfunction Mid (Function)]].
+
 {{fbdoc item="ex"}}
 %%(qbasic)dim text as string
 
 text = "abc 123"
-print text 'returns "abc 123"
+print text 'displays "abc 123"
 
+' replace part of text with another string
 mid(text, 5, 3) = "456" 
 print text 'displays "abc 456"
 %%

@@ -16,7 +16,7 @@ Returns a string representation of a number or Unicode character string
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Str**( //number// )
+	//result// = **Str**[$]( //number// )
 		//or//
 	//result// = **Str**( //string// )
 ##
@@ -27,11 +27,9 @@ Returns a string representation of a number or Unicode character string
 		String expression to convert to a string.
 
 {{fbdoc item="desc"}}
-	##**Str**## converts numeric variables to their string representation. It is the ##[[KeyPgString String]]## equivalent to ##[[KeyPgWstr Wstr]]##.
+	##**Str**## converts numeric variables to their string representation. Used this way it is the ##[[KeyPgString String]]## equivalent to ##[[KeyPgWstr Wstr]]## applied to numeric variables, and the opposite of the ##[[KeyPgVal Val]]## function, which converts a string into a number.
 
-	##**Str**## also converts Unicode character strings to ASCII character strings. If an ASCII character string is given, that string is returned unmodified.
-
-	##**Str**## is the opposite of the ##[[KeyPgVal Val]]## function, which converts a string into a number.
+	##**Str**## also converts Unicode character strings to ASCII character strings. Used this way it does the opposite of ##[[KeyPgWstr Wstr]]##. If an ASCII character string is given, that string is returned unmodified.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -46,10 +44,11 @@ print a, b
 	- For //-lang qb//, ##**Str**## will left pad a positive number with a space.
 
 {{fbdoc item="target"}}
-	- DOS does not support the wide-character string version of ##**Str**##.
+	- DOS version/target of FB does not support the wide-character string version of ##**Str**##.
 
 {{fbdoc item="diff"}}
 	- QB does not support the wide-character string version of ##**Str**##.
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgVal Val]]##

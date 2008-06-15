@@ -9,7 +9,14 @@ A header file is a special kind of source file that typically only contains prep
 	- dir.bi
 	- fbgfx.bi
 	- file.bi
+	- string.bi
 	- vbcompat.bi
+
+{{fbdoc item="section" value="Case Sensitivity"}}
+	Although the FreeBASIC language itself is not case-sensitive, the file system on which it is running might be.  If a header file can not be found, check that FreeBASIC is searching for it the correct location and ensure that name of both the directory and filename of the header file specified in the ##[[KeyPgInclude #include]]## statement is using the correct upper and lower case letters.
+
+{{fbdoc item="section" value="Path Separators"}}
+	FreeBASIC will automatically switch backslash ( \ ) and forward slash ( / ) characters as needed for a given platform.  This allows source code to be easily cross compatible.
 
 {{fbdoc item="section" value="Including a header only once"}}
 	It is common that header files need to ##[[KeyPgInclude #include]]## other header files to compile correctly.  FreeBASIC offers three methods for guarding against including a header file more than once.
@@ -33,11 +40,11 @@ A header file is a special kind of source file that typically only contains prep
 
 {{fbdoc item="section" value="#include once"}}
 	At the point in the source code where the header file is included, the optional ##"once"## specifier of the ##[[KeyPgInclude #include]]## directive can tell the compiler to only include the source file one time.
-	%%(qbasic)
+%%(qbasic)
 '' header.bi
 #include once "fbgfx.bi"
 %%
-	%%(qbasic)
+%%(qbasic)
 '' module.bas
 #include once "fbgfx.bi"
 #include once "header.bi"

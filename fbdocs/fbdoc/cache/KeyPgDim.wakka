@@ -40,13 +40,13 @@ Declares a variable
 		The first dimension of the declared array has indices from 1 to 2, the second, 0 to 6, and the third, 3 to 5.  For more information on arrays, please visit the dedicated [[ProPgArrays page]].
 		If the values used  with ##**Dim**## to declare the dimensions of an array are all constants, the array will be created ##[[KeyPgOptionstatic Static]]## (unless ##[[KeyPgOptiondynamic Option Dynamic]]## is specified), while using one or more variables to declare the dimensions of an array makes it dynamic, even if ##[[KeyPgOptionstatic Option Static]]## has been issued.
 	
-		Variables and arrays are stored on the stack by default. The stack space is limited, by default to 1 MB, and exceeding this space results in a crash, with various error messages possible. Defining arrays in the main module and using ##[[KeyPgShared Shared]]## to make them accessible to subs/functions makes FB to place the arrays in main memory, allowing them to be up to 2GB. Using the //-t  stack_size_in_kbytes// in the command line can help too. 
+		Variables and arrays are stored on the stack by default. The stack space is limited, by default to 1 MB, and exceeding this space results in a crash, with various error messages possible. Defining arrays in the main module and using ##[[KeyPgShared Shared]]## to make them accessible to subs/functions makes FB to place the arrays in main memory, allowing them to be up to 2GB. Using the //-t  stack_size_in_kbytes// in the command line while compiling can help too, if you need to store more than 1 MB on the stack. 
 		
 		Arrays can be declared as resizable (dynamic) in several ways: Using ##**Dim**## with an empty set of indexes (##**Dim** x()##), using ##**Dim**## with indexes that are variables or using the keyword ##[[KeyPgRedim Redim]]##, or declaring it past the metacommand ##[[KeyPgMetaDynamic $Dynamic]]##. Dynamic arrays can't use initializers.
 		Arrays declared with ##**Dim**## and constant indexes and not preceeded by ##[[KeyPgOptiondynamic Option Dynamic]]## are static (not resizable at runtime) and can use initializers.
 	            
 	**Variable Initializers**
-		Arrays, variables, strings, and UDTs are initialized to zero or null srtrings by default when they are created.
+		Arrays, variables, strings, and UDTs are initialized to zero or null strings by default when they are created.
 		To avoid the overhead of initializing the variables the ##**Any**## clause can be used with ##**Dim**## to tell the compiler to only preserve the place for the variable but don't initialize it, so the variable will contain garbage. In this case  the programmer should not make assumptions about the initial values.
 		Static arrays, variables, zstrings and UDTs may be given a value at the time of their declaration using ##**Dim**##, with the syntax shown above.  Please note the important differences between initializing different types. Arrays, variables and UDT are initialized as they would in a normal assignment, using an equals sign.  The ##=>## sign can be used with fixed length strings to avoid the declaration ressembling an expression.
 		 Array values are given in comma-delimited values enclosed by curly brackets, and UDT values are given in comma delimited values enclosed by parenthesis.
@@ -54,7 +54,7 @@ Declares a variable
 		These methods of initializing variables can be nested within one another for complex assignments.  For instance, to initialize a multidimensional array:
 
 			%%(qbasic)Dim array(1 to 2, 1 to 5) as Integer => {{1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}}%%			
-		In this declaration, the values for the left-most dimension are given as 5-index arrays.  Nesting allows for arrays of any dimension to be intialized.
+		In this declaration, the values for the left-most dimension are given as 5-index arrays.  Nesting allows for arrays of any dimension to be initialized.
 
 		UDTs and arrays can be nested within each other as well.  For instance, the following code declares and initializes an array of UDTs
 			
@@ -121,7 +121,7 @@ Sleep
 	- Variable Initializers are new to FreeBASIC
 	- The alternate syntax ##Dim As DataType //symbolname//, [...]## is new to FreeBASIC
 	- Multidimensional arrays are stored in row-major order in FB, they were stored in column-major order in QB by default. Row major order: values with the same last index are contiguous. Column-major order: values with the same first index are contiguous.
-	- Dynamic arrays up to 2GB in size are possible in FB. QB static arrays were limited to 64KB and to the DOS memory available if made dynamic and ///AH// was used.
+	- Dynamic arrays up to 2GB in size are possible in FB. In QB static arrays were limited to 64KB and to the DOS memory available (several 100 KB at best) if made dynamic and ///AH// was used.
 
 	      
 {{fbdoc item="see"}}

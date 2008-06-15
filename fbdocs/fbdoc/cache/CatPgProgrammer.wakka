@@ -10,7 +10,7 @@ FreeBASIC programmer's guide
 {{fbdoc item="section" value="Source Files"}}
 	{{fbdoc item="keyword" value="ProPgSourceFiles|Source Files (.bas)"}}
 	{{fbdoc item="keyword" value="ProPgHeaderFiles|Header Files (.bi)"}}
-	Using Prebuilt Libraries
+	{{fbdoc item="keyword" value="ProPgPrebuiltLibraries|Using Prebuilt Libraries"}}
 
 {{fbdoc item="section" value="Lexical Conventions"}}
 	{{fbdoc item="keyword" value="ProPgComments|Comments"}}

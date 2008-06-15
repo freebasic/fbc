@@ -15,7 +15,7 @@ Converts a number to octal representation
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Oct""**( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Oct**( //number// [, //digits// ] )
+	//result// = **Oct**[$]( //number// [, //digits// ] )
 ##
 {{fbdoc item="param"}}
 	##//number//##
@@ -24,20 +24,22 @@ Converts a number to octal representation
 		Desired number of digits in the returned string.
 
 {{fbdoc item="ret"}}
-	The octal representation of the number, truncated or padded with zeros ("0") to the specified number of digits, if specified.
+	A string containing the octal representation of ##//number//##.
 
 {{fbdoc item="desc"}}
-	Returns the octal string representation of //number//. Octal digits range from 0 to 7.
+	Returns the octal string representation of ##//number//##. Octal digits range from 0 to 7.
 
-	If you specify //digits// > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
+	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
 
-	The length of the returned string will not be longer than the maximum number of digits required for the type of //number// (3 characters for ##[[KeyPgByte Byte]]##, 6 for ##[[KeyPgShort Short]]##, 11 for ##[[KeyPgInteger Integer]]##, and 22 for ##[[KeyPgLongint Longint]]##)
+	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//number//## (3 characters for ##[[KeyPgByte Byte]]##, 6 for ##[[KeyPgShort Short]]##, 11 for ##[[KeyPgInteger Integer]]##, and 22 for ##[[KeyPgLongint Longint]]##)
+
+	If you want to convert an octal string back into a number, the easiest way to do it is to prepend the string with ##"&O"##, and convert it as a normal numeric string, using ##[[KeyPgValint Valint]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-print Oct(54321)
-print Oct(54321, 4)
-print Oct(54321, 8)
+Print Oct(54321)
+Print Oct(54321, 4)
+Print Oct(54321, 8)
 %%
 	will produce the output:
 
@@ -48,6 +50,7 @@ print Oct(54321, 8)
 
 {{fbdoc item="diff"}}
 	- In QBASIC, there was no way to specify the number of digits returned.
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgBin Bin]]##

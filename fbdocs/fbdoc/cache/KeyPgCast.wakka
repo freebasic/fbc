@@ -21,4 +21,3 @@ print cast( byte, &h0080 )
 	- ##[[KeyPgCint Cint]]##
 	 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}
-   

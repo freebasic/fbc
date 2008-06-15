@@ -3,7 +3,7 @@ Since version 0.17, FreeBASIC introduced a -lang command-line option, that is us
 
 ==Architecture/Platform incompatibilities==
 	- The [[KeyPgInteger INTEGER]] data type is 32 bits, rather than 16 bits in QuickBASIC.
-	- FreeBASIC is written for 32-bit operating systems and a 32 bit DOS extender, and cannot utilize code which depends on 16-bit DOS, 16 bit assembly or memory model (segment & offset, XMS, ...). 	
+	- FreeBASIC is written for 32-bit operating systems and a 32 bit DOS extender, and cannot utilize code which depends on 16-bit DOS, 16 bit assembly or memory model (segment & offset, XMS/EMS, ...). 	
 	- DEF SEG is no longer necessary and will not work - any code which POKEs to video memory this way will no longer function, however, for DOS it can be easily rewritten using DPMI features. 
 	- CALL INTERRUPT no longer functions, as it relies on 16-bit DOS. DOS interrupts can be called in the DOS32 version by using the DPMI library, but they might work slowly because of the 32bit-16bit-32bit  mode changes the processor will have to perform. 
 	- Text mode has a single screen, so you can't use PCOPY or screen switching.
@@ -14,13 +14,13 @@ Since version 0.17, FreeBASIC introduced a -lang command-line option, that is us
 	- A variable name can't be a keyword plus a type suffix (%,#,!,#,$) as in DIM FOR%, or a keyword less the suffix (DIM LEFT as INTEGER).
 	- SHARED can't be used inside a SUB or FUNCTION as it resulted in shared variables not defined in the main program. A proper DIM SHARED in the main program must be used.
 	- COMMON declarations do not depend on the order they are made, variables are matched by name and for that reason named COMMON is no more supported. All COMMON arrays are DYNAMIC in FB.
-	- If a single line [[KeyPgIfthen IF]] has an (unnecessary) colon direcly after the THEN, it has to be terminated by an [[KeyPgEndif END IF]] in FB. If that unneeded colon is removed, FB will behave as QB.
+	- If a single line [[KeyPgIfthen IF]] has an (unnecessary) colon directly after the THEN, it has to be terminated by an [[KeyPgEndif END IF]] in FB. If that unneeded colon is removed, FB will behave as QB.
 
 ==Design differences==
 	- All functions must have been declared, even with a CALL in FreeBASIC. With CALL it was possible to invoke prototype-less functions in QuickBASIC. (to be supported in future with -lang qb)
 	- In FreeBASIC all arrays must be explicitly declared. (Interpreted QuickBASIC arrays are automatically created with up to 10 indices.)
 	- Strings use a null (char 0) terminator to be compatible with C libraries and the Windows API, fixed-length strings can't contain chr$(0) chars for now.
-	- When INKEY$ reads an extended key (Num Pad, Arrows...) it returns a two character string. In FB the first character is CHR(255), while in QB this first char is CHR(0). 
+	- When INKEY[$] reads an extended key (Num Pad, Arrows...) it returns a two character string. In FB the first character is CHR[$](255), while in QB this first char is CHR$(0). 
 	- With fixed length strings FreeBASIC gives the real length as [[KeyPgLen LEN]] plus one (null-char), even on [[KeyPgType TYPE]] fields.
 	- The arrays are stored in row-major order in FB, they were stored in column-major order in QB by default. Row major order: data with the same  last index are contiguous. Column-major order: data wih the same first index are contiguous.  For example, if you have DIM A(1 TO 3, 1 TO 8), in row-major order the elements are stored such that A(3,5) is followed in memory by A(3,6); in column-major order A(3,5) is followed in memory by A(4,5).
 	- Programs don't stop anymore on run-time errors unless -e or -ex option is used in the command line. Using these options allow the use of QB style error handling (ON ERROR, RESUME...).
@@ -33,7 +33,7 @@ Since version 0.17, FreeBASIC introduced a -lang command-line option, that is us
 	- FB's [[KeyPgColor COLOR]] does not allow a third argument for border color.
 	- FB's [[KeyPgTimer TIMER]] returns the number of seconds since the computer started, while QB's TIMER returns the number of seconds since midnight. (No more wrapping at midnight! :))
 	- In QB a chr$(13) inside a string did a CR+LF when PRINT'ed. In FB the CHR(13) prints just at what it is, a CR.
-	- EOF can no longer be used to detect an empty comms buffer. Empty buffer should be tested comparing LOC with 0 in FB.
+	- EOF can no longer be used to detect an empty comms buffer. Empty buffer should be tested comparing LOC with 0 in FB. Also, for files opened in RANDOM or BINARY mode, EOF returns non-zero already after reading exactly the file size, see ##[[KeyPgEof Eof]]##. 
 	- Integer variables do not signal overflow errors in FB, even with the -ex option on. Any QB code relying in catching integer overflow errors will not work in FB. 
 
 ==Archaic commands==
@@ -41,9 +41,9 @@ Since version 0.17, FreeBASIC introduced a -lang command-line option, that is us
 	- FIELD statement (for record definition at runtime) has been left aside. The keyword FIELD is used in FB to specify field alignment in [[KeyPgType TYPE]] variables.
 	- PC Speaker commands no longer function: Any references to SOUND or PLAY statements will result in an error message. There is a third party library available to emulate this functionality, but it's not included with FreeBASIC.
 	- Fake event-driven programming (ON KEY, ON PEN, ON STRIG, ON TIMER) no longer works. They could be emulated by a separate library.
-	- MKSMBF$ and all the ""MKxMBF$"" commands supporting the pre-QB4.0 Microsoft propietary floating point format (MBF) are not implemented.
+	- MKSMBF$ and all the ""MKxMBF$"" commands supporting the pre-QB4.0 Microsoft proprietary floating point format (MBF) are not implemented.
 	- The use of parenthesis in the arguments passed to a function to emulate by-value passing is not permitted. The CALL quirk resulting in all arguments being passed by value, no longer works. The proper [[KeyPgByval BYVAL]] and [[KeyPgByref BYREF]] keywords must be used.
-	- FILES is not implemented. Instead, PDS 7.1 [[KeyPgDir DIR$]] can be used.
+	- FILES is not implemented. Instead, PDS 7.1-compatible [[KeyPgDir DIR]][$] can be used.
 	- IOCTL, ERRDEV and ERRDEV$, low level functions to access hardware are not implemented as they were OS-dependent. 
 	- CALL ABSOLUTE to run inline machine code is no longer supported. Instead you can use [[KeyPgAsm ASM]]...END ASM blocks to insert inline assembler commands. Or use the ASM... one line command.
 

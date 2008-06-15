@@ -5,7 +5,7 @@ Returns a string of characters from one or more ASCII integer values
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Chr** ( [[KeyPgByval byval]] //ch// [[KeyPgAs as]] [[KeyPgInteger integer]] [, ... ] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Chr**( //ch0// [, //ch1// ... //chN// ] )
+	//result// = **Chr**[$]( //ch0// [, //ch1// ... //chN// ] )
 ##
 {{fbdoc item="param"}}
 	##//ch//##
@@ -35,8 +35,9 @@ dim s as string = chr(97, 98, 99)
 %%
 
 {{fbdoc item="diff"}}
-	- Accepts multiple integer values as arguments.
-	- Evaluated at compile time when used with constants or literals.
+	- FB accepts multiple integer values as arguments, QB accepted only one.
+	- FB evaluates the CHR function at compile time when used with constants or literals.
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
 
 {{fbdoc item="see"}}
 	- [[CptAscii ASCII Character Codes]]

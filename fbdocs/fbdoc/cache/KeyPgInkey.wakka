@@ -5,7 +5,7 @@ Returns a string representing the first key waiting in the keyboard buffer
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Inkey** ( ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Inkey**
+	//result// = **Inkey**[$]
 ##
 {{fbdoc item="ret"}}
 	The first character found in the keyboard buffer, or the null string (##"####"##) if none found.
@@ -28,6 +28,7 @@ loop until inkey = "q"
 
 {{fbdoc item="diff"}}
 	- QBasic returned a ##Chr(0)## as the first character for an extended key, but FreeBASIC returns ##Chr(255)## as the first character.
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGetkey Getkey]]##

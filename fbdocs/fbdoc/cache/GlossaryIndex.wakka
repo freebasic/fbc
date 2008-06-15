@@ -12,7 +12,8 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A variable or expression that points to a memory address where it is not known, at least from the compiler's point of view, what type of data is stored at that address.  In C this would be the same as a void pointer or (void *).  See ##[[KeyPgPtr ptr]]##.
 
 **archive**
-	An archive is a group or files or a single file packed into a container format and usually compressed afterwards. Typical container formats are GNU Tar and Zip. Typical compression formats are Gzip and Zip.
+	An archive is a group or files or a single file packed into a container format and usually compressed before or afterwards. Typical container formats are GNU Tar and Zip. Typical compression formats are Gzip and Zip.
+	
 	
 **argument**
 	Data that is passed to a procedure. The procedure refers to this data using the parameter(s) in it's parameter list.
@@ -95,6 +96,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **destructor (TYPE or CLASS)**
 	A special member function of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## that is called when an object is destroyed.
 
+** DPMI **
+	A method / standard allowing to execute protected mode code (mostly also 32-bit) on a 16-bit real mode DOS kernel. Affects only DOS version of FreeBASIC. See also ##[[FaqDOS DOS related FAQ]]## 
+
 @@{{anchor name="Index|Back to top"}}@@
 
 ======----{{anchor name="E"}} E----======
@@ -135,7 +139,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A graphics primitive is another term for common shapes like circles and rectangles.
 
 **global variable**
-	A variable that is visible to the procedures within a module, across multiple modules or both. See ##[[KeyPgCommon Common]]## and ##[[KeyPgExtern Extern]]##.
+	A variable that is visible to all procedures within a module, across multiple modules, or both. See ##[[KeyPgCommon Common]]## and ##[[KeyPgExtern Extern]]##.
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -285,7 +289,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A library that exists once on a system that multiple executables can link to at runtime. See ##[[ProPgSharedLibraries Shared Libraries (DLLs)]]##.
 
 **source code**
-	Code written by the programmer, not yet compiled.
+	Code written by the programmer, in a human-readable form, not yet compiled.
 
 **stack (container)**
 	A collection of data that offers last-in first-out (LIFO) storage and retrieval. Typically, elements can only be inserted, accessed and removed from the top of the stack.

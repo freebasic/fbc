@@ -23,6 +23,7 @@
 	{{fbdoc item="subsect" value="Source Files"}}
 		[[ProPgSourceFiles Source Files (.bas)]]
 		[[ProPgHeaderFiles Header Files (.bi)]]
+		[[ProPgPrebuiltLibraries Using Prebuilt Libraries]]
 
 	{{fbdoc item="subsect" value="Lexical Conventions"}}
 		[[ProPgComments Comments]]
@@ -250,6 +251,7 @@
 		[[KeyPgAbs ABS]]
 		[[KeyPgAccess ACCESS]]
 		[[KeyPgAcos ACOS]]
+		[[KeyPgAddGfx ADD (Graphics PUT)]]
 		[[KeyPgAlias ALIAS]]
 		[[KeyPgAllocate ALLOCATE]]
 		[[KeyPgAlphaGfx ALPHA (Graphics PUT)]]

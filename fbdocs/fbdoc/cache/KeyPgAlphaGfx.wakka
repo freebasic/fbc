@@ -12,17 +12,23 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects a
 		Optional alpha parameter in the range [0..255].  Overrides alpha values in individual pixels.
 
 {{fbdoc item="desc"}}
-	##Alpha## selects alpha blending as the method for ##[[KeyPgPutgraphics Put]]##ting an image.  If the ##//alphaval//## parameter is specified, it overrides the alpha value of each pixel, and the mask color (magenta) will be treated as transparent.  This works in 15, 16, 24, or 32-bit color depths.  If ##//alphaval//## is not specified, ##Alpha## will only work in 32-bit color depth, and ##[[KeyPgPutgraphics Put]]## will use the alpha value embedded within each pixel.  Pixels using the mask color will be treated as normal, and drawn with their given alpha value.
+	##**Alpha**## selects alpha blending as the method for ##[[KeyPgPutgraphics Put]]##ting an image.  If the ##//alphaval//## parameter is specified, it overrides the alpha value of each pixel, and the mask color (magenta) will be treated as transparent.  This works in 15, 16, 24, or 32-bit color depths.
+
+	If ##//alphaval//## is not specified, ##**Alpha**## will only work in 32-bit color depth, and ##[[KeyPgPutgraphics Put]]## will use the alpha value embedded within each pixel.  Pixels using the mask color will be treated as normal, and drawn with their given alpha value.
+	
+	##**Alpha**## also has another mode which allows an 8-bit image to be ##[[KeyPgPutgraphics Put]]## on top of a 32-bit image.  In this case, it will replace the alpha channel of the 32-bit image with the contents of the 8-bit image.
+
 
 {{fbdoc item="ex"}}
+This example compares the two different ##**Alpha**## modes, including how they react to the mask color
 	%%(qbasic)
-''set up a 32-bit screen
+'' Set up a 32-bit screen
 screenres 320, 200, 32
 
 '' Draw checkered background
 for y as integer = 0 to 199
 	for x as integer = 0 to 319
-	    pset (x, y), iif((x \ 4 xor y \ 4) and 1, rgb(160, 160, 160), rgb(128, 128, 128))
+	    pset (x, y), iif((x shr 2 xor y shr 2) and 1, rgb(160, 160, 160), rgb(128, 128, 128))
 	next x
 next y
 
@@ -60,18 +66,78 @@ put (80 - 16, 150 - 16), img, trans
 draw string (200, 10), "Full alpha"
 put (240 - 16, 100 - 16), img, alpha
 
-'' free the image memory
+'' Free the image memory
 imagedestroy img
 
-'' wait for a keypress
-sleep
-%%
+'' Wait for a keypress
+sleep%%
 {{image class="center" title="Put Alpha example output" url="http://img109.imageshack.us/img109/6937/putalphaexamplerz9.png" link="http://img109.imageshack.us/my.php?image=putalphaexamplerz9.png"}}
+
+	This example shows the special method for setting a 32-bit alpha channel using an 8-bit image
+	%%(qbasic)
+dim as any ptr img8, img32
+dim as integer x, y, i
+
+'' Set up an 8-bit graphics screen
+screenres 320, 200, 8
+for i = 0 to 255
+	palette i,  i, i, i
+next i
+color 255, 0
+
+'' Create an 8-bit image
+img8 = imagecreate(64, 64, 0,  8)
+for y = 0 to 63
+	for x = 0 to 63
+	    dim as single x2 = x - 31.5, y2 = y - 31.5
+	    dim as single t = sqr(x2 ^ 2 + y2 ^ 2) / 5
+	    pset img8, (x, y), sin(t) ^ 2 * 255
+	next x
+next y
+
+draw string (16, 4), "8-bit Alpha sprite"
+put (16, 16), img8
+sleep
+
+
+'' Set up a 32-bit graphics screen
+screenres 320, 200, 32
+for y = 0 to 199
+	for x = 0 to 319
+	    pset (x, y), iif(x - y and 3, rgb(160, 160, 160), rgb(128, 128, 128))
+	next x
+next y
+
+'' Create a 32-bit, fully opaque sprite
+img32 = imagecreate(64, 64, 0, 32)
+for y = 0 to 63
+	for x = 0 to 63
+	    pset img32, (x, y), rgb(x * 4, y * 4, 128)
+	next x
+next y
+
+draw string (16, 4), "Original Alpha channel"
+put (16, 16), img32, alpha
+
+'' Put a new alpha channel using the 8-bit image
+put img32, (0, 0), img8, alpha
+
+draw string (16, 104), "New Alpha channel"
+put (16, 116), img32, alpha
+
+''Free the memory for the two images
+imagedestroy img8
+imagedestroy img32
+
+sleep%%
+{{image class="center" title="Put Alpha example 2 output" url="http://img410.imageshack.us/img410/7645/keypgputalphaexample2sc7.png" link="http://img410.imageshack.us/my.php?image=keypgputalphaexample2sc7.png"}}
 
 {{fbdoc item="diff"}}
 	- New to Freebasic
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPutgraphics Put (Graphics)]]##
+	- ##[[KeyPgTransGfx Trans]]##
+	- ##[[KeyPgCustomgfx Custom]]##
 	
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

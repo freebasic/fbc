@@ -22,7 +22,7 @@ Code block that allows the use of architecture-specific instructions
 	[[x86 x86]] Specific:
 
 		==Syntax==
-			The syntax of the inline assembler is a simplified form of Intel syntax.  Intel syntax is used by the majority of x86 assemblers, such as MASM, TASM, and NASM. In general, the destination of an instruction is placed first, followed by the source. Variables and functions defined by a program may be referenced in an Asm block.  The assembler used by FreeBASIC is GAS, using the .intel_syntax noprefix directive, and ASM blocks are passed through unmodified, except for the substitution of local variable names for stack frame references.
+			The syntax of the inline assembler is a simplified form of Intel syntax.  Intel syntax is used by the majority of x86 assemblers, such as MASM, TASM, NASM, YASM and FASM. In general, the destination of an instruction is placed first, followed by the source. Variables and functions defined by a program may be referenced in an Asm block.  The assembler used by FreeBASIC is GAS, using the .intel_syntax noprefix directive, and ASM blocks are passed through unmodified, except for the substitution of local variable names for stack frame references.
 		
 		==Register Preservation==
 			When an ASM block is opened, the registers ebx, esi, and edi are pushed to the stack, when the block is closed, these registers are popped back from the stack.  This is because these registers are required to be preserved by most or all OS's using the x86 CPU.  You can therefore use these registers without explicitly preserving them yourself.
@@ -43,14 +43,13 @@ Code block that allows the use of architecture-specific instructions
 		~- [[http://nasm.sourceforge.net/doc/html/nasmdocb.html NASM x86 Instruction Reference]] (Please note that NASM is not the assembler used by FreeBASIC, but this page provides a good overview of x86 instructions)
 		
 		==Disallowed Instructions==
-		~Note that the FreeBASIC compiler produces 32-bit protected-mode code for the x86 which usually runs in an unpriveleged user level; therefore, privileged and sensitive instructions will assemble correctly but are likely to cause a runtime 'Illegal instruction', or SIGILL error.  The only known exceptions to this are RDTSC (Read Time Stamp Counter), which has been shown to be allowed by most, or all OS'es, and IN and OUT instructions, usable and useful in DOS (only).  However the usefulness of rdtsc has been diminished with the advent of multi-core and hibernating CPUs.  The following are the priveleged and sensitive instructions as of the Intel Pentium 4 and Xeon:
+		~Note that the FreeBASIC compiler produces 32-bit protected-mode code for the x86 which usually runs in an unprivileged user level; therefore, privileged and sensitive instructions will assemble correctly but are likely to cause a runtime 'Illegal instruction', or SIGILL error.  The only known exceptions to this are RDTSC (Read Time Stamp Counter), which has been shown to be allowed by most, or all OS'es, and IN and OUT instructions, usable and useful in DOS (only).  However the usefulness of RDTSC has been diminished with the advent of multi-core and hibernating CPUs.  The following are the privileged and sensitive instructions as of the Intel Pentium 4 and Xeon:
 		
-		~- ##cli##
+		~- ##cli## *1
 		~- ##clts##
 		~- ##hlt##
-		~- ##in##
-		~- ##ins##
-		~- ##int##
+		~- ##in## *1
+		~- ##ins## *1
 		~- ##invd##
 		~- ##invlpg##
 		~- ##lgdt##
@@ -59,21 +58,22 @@ Code block that allows the use of architecture-specific instructions
 		~- ##lmsw##
 		~- ##ltr##
 		~- ##mov## to/from ##CR##n, ##DR##n, ##TR##n
-		~- ##out##
-		~- ##outs##
+		~- ##out## *1
+		~- ##outs## *1
 		~- ##rdmsr##
 		~- ##rdpmc##
-		~- ##rdtsc##
+		~- ##rdtsc## *2
 		~- ##sgdt##
 		~- ##sidt##
 		~- ##sldt##
-		~- ##smsw##
-		~- ##sti##
+		~- ##sti## *1
 		~- ##str##
 		~- ##wbinvd##
 		~- ##wrmsr##
 		
-		~Also, the segment registers (##cs##, ##ds##, ##es##, ##fs##, ##gs##) should not be accessed from an ##Asm## block, except in certain cases with the DOS port (note that they do NOT work the same way as in real-mode DOS).  The operating system is responsible for memory management; the meaning of segments (selectors) in protected mode is very different from real-mode memory addressing.
+		~ *1: I/O sensitive *2: otherwise sensitive
+		
+		~Also, the INT instruction is usable in the DOS version/target only. Finally, the segment registers (##cs##, ##ds##, ##es##, ##fs##, ##gs##) should not be accessed from an ##Asm## block, except in certain cases with the DOS port (note that they do NOT work the same way as in real-mode DOS).  The operating system or DPMI host is responsible for memory management; the meaning of segments (selectors) in protected mode is very different from real-mode memory addressing.
 
 
 {{fbdoc item="ex"}}

@@ -21,7 +21,7 @@ Statements and procedures for working with 2D graphics
 	=={{fbdoc item="keyword" value="KeyPgRgb|RGB"}}==
 		Returns a color value for hi/truecolor modes.
 	=={{fbdoc item="keyword" value="KeyPgRgba|RGBA"}}==
-		Returns a color value including alpha (translucency) for hi/truecolor modes.
+		Returns a color value including alpha (transparency) for hi/truecolor modes.
 	=={{fbdoc item="keyword" value="KeyPgPoint|POINT"}}==
 		Gets a pixel value from an image buffer or screen.
 
@@ -58,8 +58,10 @@ Statements and procedures for working with 2D graphics
 		Blits an image buffer to another image buffer or screen.
 
 	{{fbdoc item="subsect" value="Blending Methods"}}
+		=={{fbdoc item="keyword" value="KeyPgAddGfx|ADD"}}==
+			Saturated addition of the source and target components.
 		=={{fbdoc item="keyword" value="KeyPgAlphaGfx|ALPHA"}}==
-			Blends using a uniform translucency or the image buffer's alpha channel.
+			Blends using a uniform transparency or the image buffer's alpha channel.
 		=={{fbdoc item="keyword" value="KeyPgTransGfx|TRANS"}}==
 			Pixels matching the transparent mask color are not blitted.
 		=={{fbdoc item="keyword" value="KeyPgCustomgfx|CUSTOM"}}==

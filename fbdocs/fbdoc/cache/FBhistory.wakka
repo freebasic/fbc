@@ -1,0 +1,25 @@
+{{fbdoc item="title" value="History of FreeBasic"}}----
+
+	**2004 September** Project started by [[V1ctor]]
+
+	**???** Version 0.01 (non-public) compiled using VB-DOS
+
+	**???** FBC first time compiled itself
+	
+	**2005 January 31** Version 0.11 released, DOS port added by [[DrV]]
+
+	**2006 June 11...19** Version 0.16 released
+	
+	**2006 July 30** First 0.17 "testing" version, not much new
+	
+	**2006 August 1** DOS graphics bug fixed (worked never before), "inofficial" patch provided
+	
+	**2006 Sept...Dec** Heavy rewrite of FB, neither "stable" nor "testing" releases, introduced dialect split and OOP
+	
+	**2006 November** Started providing CVS versions of FB, Win and Linux, later also DOS
+	
+	**2007 January ... April** Rewriting continues
+	
+	**2007 May 2** The next 0.17 "testing" version, very much new  
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

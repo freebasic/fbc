@@ -2,23 +2,21 @@
 Graphics statement to render text to an image or screen
 
 {{fbdoc item="syntax"}}##
-	**Draw String** [//buffer//,] [STEP] (//x//, //y//), //string// [,//color// [, //font// [, //method// [, (//alpha//|//blender//) ] ] ] ]
+	**Draw String** [//buffer//,] [STEP] (//x//, //y//), //text// [,//color// [, //font// [, //method// [, (//alpha//|//blender//) ] ] ] ]
 ##
 {{fbdoc item="param"}}
 	##//buffer//##
-		The sprite to draw the string on. If this is not supplied, it will be drawn to the screen.
+		the sprite to draw the string on. If this is not supplied, it will be drawn to the screen.
 	##STEP##
-		Use relative or absolute coordinates. If ##STEP## is added, the x and y coordinates are translated relative to the last drawn point.
-	##//x//##
-		the x position to draw to
-	##//y//##
-		the y position to draw to
-	##//string//##
-		the text to draw
+		use relative coordinates. If ##STEP## is added, the x and y coordinates are translated relative to the last drawn point.
+	##//x//##, ##//y//##
+		the horizontal / vertical position to draw to, relative to the top left hand corner of the screen (unless ##STEP## is used - see above).  The top left corner of the text will be drawn at this position.
+	##//text//##
+		the string containing the text to draw
 	##//color//##
-		if no font is supplied, 'color' is the color of the font. If font is supplied, the font format itself specifies the color for each pixel.
+		if no font is supplied, this allows you to choose the color of the text. If font is supplied, the font itself specifies the color for each pixel.
 	##//font//##
-		an image buffer containing a custom font. If no font is suppiled, the standard font for the current mode is used.
+		an image buffer containing a custom font. If no font is supplied, the standard font for the current mode is used.
 	##//method//##
 		specifies how the font characters are drawn on top of the target surface. The same methods as found for the [[KeyPgPutgraphics Put]] statement are allowed, with the only difference that the default method is ##TRANS## for this function.
 	##//alpha//##
@@ -27,117 +25,88 @@ Graphics statement to render text to an image or screen
 		custom blender function for the ##CUSTOM## drawing method; see ##[[KeyPgPutgraphics Put (Graphics)]]## statement description for details.
 
 {{fbdoc item="desc"}}
-	This graphics keyword prints a string to the screen with pixel positioning, transparent background, and can use an user supplied font. **##Draw String##** does not update any text cursor or wrap at the end of line.
+	This graphics keyword prints a string to the screen with pixel positioning, transparent background, and can use an user-supplied font. **##Draw String##** does not update any text or graphics cursor.  It doesn't wrap at the end of line, or at carriage return characters.
+	
+	In graphics mode, this function provides a flexible alternative to ##[[KeyPgPrint Print]]##.  It has several key advantages:
+	    - ##**Draw String**## can print text to any coordinate on the screen, while ##[[KeyPgPrint Print]]## is constrained to the character grid accessible by ##[[KeyPgLocate Locate]]##.
+	    - ##[[KeyPgPrint Print]]## will override the background behind the text with the current background color.  ##**Draw String**## does not do this: it leaves the pixels in the background untouched.
+	    - Like ##[[KeyPgPutgraphics Put]]##, ##**Draw String**## has several different methods for printing text, such as ##[[KeyPgAlphaGfx Alpha]]## and ##[[KeyPgCustomgfx Custom]]##.
+	    - ##**Draw String**## doesn't have to use the default character set: a user can create his own custom font to be used instead.
 
 ==The custom font format:==
 	The font is stored  in a standard ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer; the font has to be stored in a buffer using the same depth as the current color depth, otherwise **##Draw String##** will bump out with an illegal function call runtime error.
 
-	First line of pixels in the font buffer holds the "header" of the font, on a byte (and NOT pixel) basis. The very first byte identifies the font header version; currently this must be 0. Second byte tells the ascii code of the first supported character in the font; third byte tells the last supported ascii code. So if the font supports the full range 0-255, 0 and 255 will be the contents of these two bytes. Next comes the width of each of the supported characters, each in a byte. Supposing a characters range of 32-128, the header would have the first three bytes holding 0, 32 and 128, followed by 96 bytes telling the widths of the corresponding chars.
+	First line of pixels in the font buffer holds the "header" of the font, on a byte (and NOT pixel) basis. The very first byte identifies the font header version; currently this must be 0. Second byte tells the ascii code of the first supported character in the font; third byte tells the last supported ascii code. So if the font supports the full range 0-255, 0 and 255 will be the contents of these two bytes. Next comes the width of each of the supported characters, each in a byte. Supposing a characters range of 32-127 (inclusive), the header would have the first three bytes holding 0, 32 and 127, followed by 96 bytes telling the widths of the corresponding chars.
 
-	The font height is obtained by subtracting 1 from the buffer height, that is, while the first buffer line of pixels acts as a font header, the remaining lines define the glyphs layout. The buffer must be as wide as necessary to hold all the supported character sprites in the same row, one after another.
+	The font height is obtained by subtracting 1 from the buffer height, that is, while the first buffer line of pixels acts as a font header, the remaining lines define the glyphs' layout. The buffer must be as wide as necessary to hold all the supported character sprites in the same row, one after another.
 
 {{fbdoc item="ex"}}
+	This gives an example of basic ##**Draw String**## usage: it uses it to print ##"Hello world"## in the center of the screen:
 %%(qbasic)
-dim s as string
-dim as integer x, y
-
 const w = 320, h = 200 '' screen dimensions
-const cw = 8, ch = 16  '' character dimensions
 
+dim x as integer, y as integer, s as string
 
-'open a graphics window
+'' Open a graphics window
 screenres w, h
 
-
-'draw a string in the centre of the screen:
+'' Draw a string in the centre of the screen:
 
 s = "Hello world"
-x = (w - len(s) * cw) \ 2
-y = (h - ch) \ 2
+x = (w - len(s) * 8) \ 2
+y = (h - 1 * 8) \ 2
 
 draw string (x, y), s
 
+'' Wait for a keypress before ending the program
 sleep
 %%
-{{image class="center" title="Draw String Example 1" url="http://img110.imageshack.us/img110/7010/keypgdrawstringexample1nj4.png" link="http://img110.imageshack.us/my.php?image=keypgdrawstringexample1nj4.png"}}
+{{image class="center" title="Draw String Example 1" url="http://img355.imageshack.us/img355/5697/keypgdrawstringexample1fl0.png" link="http://img355.imageshack.us/my.php?image=keypgdrawstringexample1fl0.png"}}
 
+	This example shows you how to create and use your own custom font.  For simplicity, it uses ##**Draw String**## with the default font to create the glyphs.
 %%(qbasic)
-const RED = rgb(255, 0, 0)
-const YELLOW = rgb(255, 255, 0)
-const GREEN = rgb(0, 255, 0)
-const CYAN = rgb(0, 255, 0)
-const WHITE = rgba(255, 255, 255, 0)
-dim TextBuffer as any ptr
+'' Define character range
+const FIRSTCHAR = 32, LASTCHAR = 127
 
-screen 14, 32
-
-' Red Background
-paint (0, 0), RED
-
-' Output "Hello World"
-draw string (0,  0), "Hello World"
-
-' Using PRINT results in losing the information about text-background
-locate 1, 15
-print "Hello World"
-
-' Output "Hello World" in yellow
-draw string (0, 10), "Hello World", YELLOW
-
-' Set standard color to green, so that "Hello World" is outputted in this color
-color GREEN, WHITE ' Background color does not have any influence on DRAW STRING.
-draw string (0, 20), "Hello World"
-
-' Using Print, you aren't able to position the Text on y=40
-' Background color has influence on Print, too
-locate 3, 15
-print "Hello World"
-
-' Redirection to a buffer:
-TextBuffer = IMAGECREATE(88, 8)
-draw string TextBuffer, (0, 0), "Hello World", CYAN
-put (100, 100), TextBuffer, pset
-
-sleep
-%%
-{{image class="center" title="Draw String Example 2" url="http://img201.imageshack.us/img201/3599/keypgdrawstringexample2fr2.png" link="http://img201.imageshack.us/my.php?image=keypgdrawstringexample2fr2.png"}}
-
-%%(qbasic)#DEFINE FIRST    32
-#DEFINE LAST    128
+const NUMCHARS = (LASTCHAR - FIRSTCHAR) + 1
 dim as ubyte ptr p, myFont
-dim as single w
-dim as integer value, i
-const ws = 6.28 / 255
+dim as integer i
 
-screenres 320, 200, 32, 2
-screenset 0, 1
+'' Open a 256 color graphics screen (320*200)
+screenres 320, 200, 8
 
-' Create custom font into GET/PUT buffer
-myFont = IMAGECREATE((LAST - FIRST + 1) * 8, 9)
+'' Create custom font into PUT buffer
+myFont = imagecreate(NUMCHARS * 8, 9)
 p = myFont + iif(myFont[0] = 7, 32, 4)
 p[0] = 0
-p[1] = FIRST
-p[2] = LAST
-for i = FIRST to LAST
-	' Here we could define a custom width for each letter, but for simplicity we use
-	' a fixed width of 8 since we are reusing the default font glyphs
-	p[3 + i - FIRST] = 8
-	' Create character onto custom font buffer by drawing using default font
-	draw string myFont, ((i - FIRST) * 8, 1), chr(i)
+p[1] = FIRSTCHAR
+p[2] = LASTCHAR
+
+for i = FIRSTCHAR to LASTCHAR
+	
+	'' Here we could define a custom width for each letter, but for simplicity we use
+	'' a fixed width of 8 since we are reusing the default font glyphs
+	p[3 + i - FIRSTCHAR] = 8
+	
+	'' Create character onto custom font buffer by drawing using default font
+	draw string myFont, ((i - FIRSTCHAR) * 8, 1), chr(i), 32 + (i mod 24) + 24
+	
 next i
 
+'' Now the font buffer is ready; we could save it using BSAVE for later use
+rem bsave "myfont.bmp", myFont
 
-' Now the font buffer is ready; we could save it using BSAVE for later use
-' Here we draw a string using the custom font and the ALPHA method
-while len(inkey)=0
-  value = sin(w)*127+127: w += ws
-  cls
-  draw string (100, 100), "Hello world!",, myFont, ALPHA, Value
-  screencopy
-  sleep 10
-wend
+'' Here we draw a string using the custom font
+draw string (10, 10), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", , myFont
+draw string (10, 26), "abcdefghijklmnopqrstuvwxyz", , myFont
+draw string (66, 58), "Hello world!", , myFont
+
+'' free the font from memory, now we are done with it
+imagedestroy myFont
+
+sleep
 %%
-{{image class="center" title="Draw String Example 3 (cycles through shades of grey between black and white)" url="http://img201.imageshack.us/img201/7518/keypgdrawstringexample3dt8.png" link="http://img201.imageshack.us/my.php?image=keypgdrawstringexample3dt8.png"}}
+{{image class="center" title="Draw String Example 2" url="http://img363.imageshack.us/img363/9928/keypgdrawstringexample2ja3.png" link="http://img363.imageshack.us/my.php?image=keypgdrawstringexample2ja3.png"}}
 
 {{fbdoc item="diff"}}
 	- New to Freebasic

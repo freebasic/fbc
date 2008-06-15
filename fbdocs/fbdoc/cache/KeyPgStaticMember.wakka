@@ -10,7 +10,7 @@ Declaration specifier for a static member procedure.
 	##//typename//##
 		name of a user defined data type			
 	##//membertype//##
-		##[[KeyPgMemberSub Sub]]##, ##[[KeyPgMemberFunction Function]]##, ##[[KeyPgOperator Operator]]##, or ##[[KeyPgProperty Property]]##.
+		##[[KeyPgMemberSub Sub]]## or ##[[KeyPgMemberFunction Function]]##.
 	##//membername// ...##
 		Name of the member to declare or define with parameter list or return value following.
 

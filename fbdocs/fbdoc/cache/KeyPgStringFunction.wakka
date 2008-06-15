@@ -6,9 +6,9 @@ Creates and fills a string of a certain length with a certain character
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **String**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **String**( //count//, //ch_code// )
+	//result// = **String**[$]( //count//, //ch_code// )
 		##//or//##
-	//result// = **String**( //count//, //ch// )
+	//result// = **String**[$]( //count//, //ch// )
 ##
 {{fbdoc item="param"}}
 	##//count//##
@@ -31,7 +31,7 @@ end 0
 %%
 
 {{fbdoc item="diff"}}
-	- None
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgString String]] (data type)##

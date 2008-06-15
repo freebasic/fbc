@@ -6,7 +6,7 @@ Removes surrounding substrings or characters on the left and right side of a str
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Trim** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]], [ **Any** ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgWstring wstring]] = [[KeyPgWstr Wstr]](" ") ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Trim**( //str// [, [ **Any** ] //trimset// ] )
+	//result// = **Trim**[$]( //str// [, [ **Any** ] //trimset// ] )
 ##
 {{fbdoc item="param"}}
 	##//str//##
@@ -23,6 +23,8 @@ Removes surrounding substrings or characters on the left and right side of a str
 	If the ##**Any**## keyword is used, any character matching a character in ##//trimset//## will be trimmed.
 	
 	All comparisons are case-sensitive.
+
+	The Dollar "$" sign suffix is tolerated for compatibility with [[KeyPgLtrim Ltrim]] and [[KeyPgRtrim Rtrim]] but deprecated.
 
 {{fbdoc item="ex"}}
 %%(qbasic)dim s1 as string = " ... Stuck in the middle ... "
@@ -42,8 +44,8 @@ Print "'" + trim(s2, any "Ba") + "'"
 ' With You '		
 %%
 
-{{fbdoc item="lang"}}
-	- DOS does not support the wide-character version of ##**Trim**##.
+{{fbdoc item="target"}}
+	- DOS version/target of FB does not support the wide-character version of ##**Trim**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic.

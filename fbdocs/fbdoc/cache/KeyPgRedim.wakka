@@ -9,7 +9,7 @@ Defines or resizes a dynamic array
 	##[[KeyPgShared Shared]]##
 		Specifies shared (global) access to the array throughout the module.
 	##[[KeyPgPreserve Preserve]]##
-		When used with an existing array, the contents of the array will be preserved during the resize.
+		When used with an existing array, the contents of the array will be preserved during the resize. Note that preserve will not work with multi-dimensional arrays.
 	##//symbolname//##
 		A new or existing variable id.
 	##//subscript//##: [ //lowerbound// TO ] //upperbound//

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="RGBA"}}----
-Computes a valid color value including alpha (translucency) for hi/truecolor modes
+Computes a valid color value including alpha (transparency) for hi/truecolor modes
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **RGBA**(//r//,//g//,//b//,//a//) (([[KeyPgCuint cuint]](r) [[KeyPgOpShiftLeft shl]] 16) [[KeyPgOpOr or]] ([[KeyPgCuint cuint]](g) [[KeyPgOpShiftLeft shl]] 8) [[KeyPgOpOr or]] [[KeyPgCuint cuint]](b) [[KeyPgOpOr or]] ([[KeyPgCuint cuint]](a) [[KeyPgOpShiftLeft shl]] 24))

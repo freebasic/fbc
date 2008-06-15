@@ -3,10 +3,8 @@ Returns a binary (base 2) string representation of an integer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
@@ -15,7 +13,7 @@ Returns a binary (base 2) string representation of an integer
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]	
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Bin**( //number// [, //digits// ] )
+	//result// = **Bin**[$]( //number// [, //digits// ] )
 ##
 {{fbdoc item="param"}}
 	##//number//##
@@ -24,19 +22,21 @@ Returns a binary (base 2) string representation of an integer
 		Desired number of digits in the returned string.
 
 {{fbdoc item="ret"}}
-	The binary representation of ##//number//##, truncated or padded with zeros ("0") to the specified number of ##//digits//##, if specified.
+	A string containing the binary representation of ##//number//##.
 
 {{fbdoc item="desc"}}
-	Returns a string representing the binary value of the integer ##//expression//##. Binary digits range from 0 to 1.
+	Returns a string representing the binary value of the integer ##//number//##. Binary digits range from 0 to 1.
 
 	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
 
-	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//number//## (8 characters for ##[[KeyPgByte byte]]##, 16 for ##[[KeyPgShort short]]##, 32 for ##[[KeyPgInteger integer]]##, and 64 for ##[[KeyPgLongint longint]]##).
+	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (32 for an ##[[KeyPgInteger integer]]##, 64 for a ##[[KeyPgLongint Longint]])##.
+
+	If you want to convert a binary string back into a number, the easiest way to do it is to prepend the string with ##"&B"##, and convert it as a normal numeric string, using ##[[KeyPgValint Valint]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)PRINT BIN(54321)
-PRINT BIN(54321, 5)
-PRINT BIN(54321, 20)
+%%(qbasic)Print Bin(54321)
+Print Bin(54321, 5)
+Print Bin(54321, 20)
 %%
 	will produce the output:
 
