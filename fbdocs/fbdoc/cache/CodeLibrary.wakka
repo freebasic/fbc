@@ -35,6 +35,7 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 	[[http://www.freebasic.net/forum/viewtopic.php?t=4135 Pixel Perfect Collision by 1000101]]
 
 {{anchor name="TEXT"}}{{fbdoc item="section" value="Text/Parser Code"}}
+	[[http://hmcsoft.org/p/libini.php Cross Platform INI library by SirMud]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7437 XML Parser by Pritchard]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=5693 Expression Parser by yetifoot]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7667 AES Encryption/Decryption by Zamaster]]

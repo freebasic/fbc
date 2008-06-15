@@ -1,6 +1,12 @@
 {{fbdoc item="title" value="SirMud's Wiki User page"}}----
 I am SirMud or sir_mud on the forums.
 
+{{fbdoc item="section" value="FreeBASIC on Linux"}}
+	- Debian package available for FreeBASIC .18 IR2, download at http://hmcsoft.org/fb/freebasic_0_18_IR2.deb
+
+{{fbdoc item="section" value="FreeBASIC Portable"}}
+	- FBOtG is a portable distribution of FB designed to work from a USB flash drive. More info [[http://hmcsoft.org/p/fbotg.php here]]
+
 {{fbdoc item="section" value="My Code"}}
 	- Recipe Database - Get it [[http://recipedatabase.org here]]
 		Store, search and organize your recipe collection. Works great for small, large and in-between collections.

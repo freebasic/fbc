@@ -47,6 +47,7 @@ cd ~/fbcSVN/FreeBASIC/src/rtlib/obj/linux
 make && make MULTITHREADED=1
 cp *.a ~/fbcSVN/FreeBASIC/lib/linux/
 cp fbrt0.o ~/fbcSVN/FreeBASIC/lib/linux/
+cp libfb_ctor.o ~/fbcSVN/FreeBASIC/lib/linux/
 %%
 
 		{{anchor name="making3"}}==Make gfxlib==

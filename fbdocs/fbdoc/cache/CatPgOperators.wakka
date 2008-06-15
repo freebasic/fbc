@@ -1,7 +1,9 @@
 {{fbdoc item="title" value="Operators"}}----
 Procedures that operate on one or more operands
 
-**{{anchor name="ASSIGN|Assignment Operators"}}**
+""FreeBASIC"" has numerous //operators// that perform a certain function with their //operands//. Many operators use a "##operand //operator// operand##" syntax, like ##[[KeyPgOpAssignment Operator = (Assignment)]]## or ##[[KeyPgOpAdd Operator +]]##, while others are called like normal procedures, like ##[[KeyPgOpStrptr Operator Strptr]]##.
+
+<<**{{anchor name="ASSIGN|Assignment Operators"}}**
 	Operators that assign the value of one operand to the other.
 **{{anchor name="ARITHMETIC|Arithmetic Operators"}}**
 	Operators that perform mathematical computations on their operands and return the result.
@@ -12,8 +14,8 @@ Procedures that operate on one or more operands
 **{{anchor name="RELATIONAL|Relational Operators"}}**
 	Operators that compare the relationship between their operands.
 **{{anchor name="LOGICAL|Logical Operators"}}**
-	Operators that perform bitwise computation with their operands and return the result.
-**{{anchor name="PREPROC|Preprocessor Operators"}}**
+	Operators that perform bitwise computations with their operands and return the result.
+<<>>**{{anchor name="PREPROC|Preprocessor Operators"}}**
 	Operators that control preprocessor behavior.
 **{{anchor name="POINTER|Pointer Operators"}}**
 	Operators that work with pointers and addresses.
@@ -23,7 +25,7 @@ Procedures that operate on one or more operands
 	Operators that allocate and construct objects.
 **{{anchor name="ITERATION|Iteration Operators"}}**
 	Operators that allow user defined types to be used with [[KeyPgFornext For...Next]] loops.
-
+>>::c::
 <<{{anchor name="ASSIGN"}}{{fbdoc item="section" value="Assignment Operators"}}
 	=={{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}==
 		Assigns the value of one operand to the other.
