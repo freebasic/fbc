@@ -1,5 +1,5 @@
 ''  fbhelp - FreeBASIC help viewer
-''  Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com)
+''  Copyright (C) 2006-2008 Jeffery R. Marshall (coder[at]execulink.com)
 
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -98,9 +98,9 @@ end enum
 			if( bAddNL ) then
 				?
 			end if
-			? "Usage: " + APP_NAME + " [options]
+			? "Usage: " + APP_NAME + " [options]"
 			?
-			? "options:
+			? "options:"
 			? "   " + opt_char + "h " + opt_char + "help      this help page"
 			? "   " + opt_char + "blue         use blue back ground"
 			? "   " + opt_char + "bw           black and white only"

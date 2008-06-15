@@ -1,5 +1,5 @@
-  fbhelp - FreeBASIC help viewer v0.7b
-  Copyright (C) 2006-2007 Jeffery R. Marshall (coder[at]execulink.com)
+  fbhelp - FreeBASIC help viewer v0.8b
+  Copyright (C) 2006-2008 Jeffery R. Marshall (coder[at]execulink.com)
 
 
 License:
@@ -141,18 +141,20 @@ Usage:
 Compiling:
 
   o Requirements:
-	  - fbhelp sources ( http://www.coderjeff.ca/ )
-	  - if fbhelp sources are not available from the website, please contact
-	    Jeff Marshall ( coder[at]execulink[dot]com )
-      - FreeBASIC version 0.17b from CVS or later ( http://www.freebasic.net/ )
-	  - zlib libraries ( http://www.zlib.net/ )
+      - fbhelp sources ( http://fbc.svn.sourceforge.net/svnroot/fbc/trunk/fbdocs/fbdoc )
+      - if fbhelp sources are not available from the website, please contact
+        Jeff Marshall ( coder[at]execulink[dot]com )
+      - FreeBASIC version 0.17b or later ( http://www.freebasic.net/ )
+      - zlib libraries ( http://www.zlib.net/ )
 
   o Making:
 
       make TARGET={target} [GFX=1]
 
-	  - where {target} is dos, linux, or win32
-	  - use GFX=1 to make the graphical version (640x480x8 only)
-	  - omit GFX=1 to make the console version
+      - where {target} is dos, linux, or win32
+      - use GFX=1 to make the graphical version (640x480x8 only)
+      - omit GFX=1 to make the console version
+
+      Use fbdoc (the FreeBASIC document generator) to create fbhelp.dat
 
 EOF
