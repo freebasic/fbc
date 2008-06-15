@@ -15,7 +15,7 @@ Sets a system environment variable
 	Return zero (0) if successful, non-zero otherwise.
 
 {{fbdoc item="desc"}}
-	Modifies system environment variables.  There are several variables available for editing other than the default ones on your system.  An example of this would be fbgfx, where you can choose the form of graphics driver FBGfxLib will use.
+	Modifies system environment variables.  There are several variables available for editing other than the default ones on your system.  An example of this would be fbgfx, where you can choose the form of graphics driver the FreeBASIC graphics library will use.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/setenviron.bas"}}%%(freebasic)
@@ -75,4 +75,3 @@ ScreenUnlock
 	- ##[[KeyPgShell Shell]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}
-   

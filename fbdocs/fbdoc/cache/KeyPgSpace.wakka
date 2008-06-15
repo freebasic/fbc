@@ -24,7 +24,7 @@ A="x"+space(10)+"x"  'prints x             x
 %%
 
 {{fbdoc item="diff"}}
-	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FreeBASIC.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgWspace Wspace]]##

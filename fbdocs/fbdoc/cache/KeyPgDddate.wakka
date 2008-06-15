@@ -5,19 +5,19 @@ Intrinsic define (macro value) set by the compiler
 	""__DATE__""
 ##
 {{fbdoc item="desc"}}
-	Substitutes the compiler date (yyyy-mm-dd format) were used.
+	Substitutes the compiler date (##yyyy-mm-dd## format) were used.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/date.bas"}}%%(freebasic)
-Print "CompileDate: ";__DATE__
+Print "Compile Date: ";__DATE__
 %%
 
 %%
-CompileDate: 2005-05-31
+Compile Date: 2005-05-31
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdtime __TIME__]]##

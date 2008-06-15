@@ -48,7 +48,7 @@ print "'" + rtrim(s2, any "Ba") + "'"
 	- DOS does not support the wide-character version of ##**Rtrim**##.
 
 {{fbdoc item="diff"}}
-	- QB does not support specifying a trimset string or the ##ANY## clause.
+	- QB does not support specifying a ##//trimset//## string or the ##ANY## clause.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLtrim Ltrim]]##

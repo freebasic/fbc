@@ -10,7 +10,7 @@ Outputs formatted text to a file or device
 	##//formatstring//##
 		Format string to use.
 	##//expressionlist//##
-		List of items to print, seperated by commas or semi-colons.
+		List of items to print, separated by commas or semi-colons.
 
 {{fbdoc item="desc"}}
 	Output various expressions to a file or device using a format determined by the ##//formatstring//## parameter. Internally, ##**Print Using**## uses a buffer size of 2048 bytes, while it is highly unlikely that this buffer would be filled, it should be noted that output would be truncated should this limit be reached.
@@ -55,15 +55,14 @@ print #filenum, using "'###', '+###.###'"; 123.456, -123.456
 close(filenum)
 %%
 	will produce the file:
-
-	%%
-This file is called 'file.txt'
+%%
+This file is called "file.txt"
 Some numerical values are:
 '123', '-123.456'
 %%
 
 {{fbdoc item="diff"}}
-	- In QB a not-to-be-formatted //expressionlist// could be entered before the ##**Using**## clause;
+	- In QB a not-to-be-formatted ##//expressionlist//## could be entered before the ##**Using**## clause;
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPrintPp Print #]]##

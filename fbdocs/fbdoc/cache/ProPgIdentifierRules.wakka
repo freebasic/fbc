@@ -1,23 +1,32 @@
 {{fbdoc item="title" value="Identifier Rules"}}----
 Naming conventions for FreeBASIC symbols
 
-All identifiers must follow certain rules.  An identifier is a name which uniquely identifies a [[ProPgVariables variable]], ##[[KeyPgType Type]]##, ##[[KeyPgUnion Union]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgSub Sub]]##, or ##[[KeyPgProperty Property]]##.
+{{fbdoc item="desc"}}
+	An identifier is a symbolic name which uniquely identifies a [[ProPgVariables variable]], ##[[KeyPgType Type]]##, ##[[KeyPgUnion Union]]##, ##[[KeyPgEnum Enum]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgSub Sub]]##, or ##[[KeyPgProperty Property]]##, within its [[ProPgVariableScope scope]] or ##[[KeyPgNamespace Namespace]]##.
 
-Identifiers may contain only letters (specifically, the upper- and lower-case Latin characters ##a##-##z## and ##A##-##Z##), digits (##0##-##9##), and the underscore character (##_##). The first character of an identifier may only be a letter or underscore, not a digit.
+	Identifiers may contain only uppercase and lowercase Latin characters ##a##-##z## and ##A##-##Z##), digits (##0##-##9##), and the underscore character (##_##). The first character of an identifier must be a letter or underscore, not a digit.
 
-Identifiers are case-insensitive: ##FOO## and ##foo## (and all other permutations of upper- and lower-case) refer to the same entity.
+	Identifiers are case-insensitive: ##FOO## and ##foo## (and all other permutations of uppercase and lowercase) refer to the same symbol.
 
-In ##-lang qb## and ##-lang deprecated## modes, identifiers may have a symbol at the end referring to one of the standard data types:
+	In the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, identifiers may have a type suffix at the end indicating one of the standard data types:
+
 	- ##%## for ##[[KeyPgInteger Integer]]##
 	- ##&## for ##[[KeyPgLong Long]]##
 	- ##!## for ##[[KeyPgSingle Single]]##
 	- ##### for ##[[KeyPgDouble Double]]##
 	- ##$## for ##[[KeyPgString String]]##
-The use of these symbols is generally discouraged in modern FreeBASIC code and is not allowed in ##-lang fb## mode (the default).
 
-The alternative is to be explicit - for example, ##Dim As Integer foo## or ##Dim foo As Integer## instead of ##Dim foo%##
+	The use of these symbols is generally discouraged in and is not allowed in the //[[ProPgCompOptlang -lang fb]]// dialect (the default).
 
-In ##-lang qb## and ##-lang deprecated## modes, identifiers may contain one or more periods (##.##).
+	The alternative is to be explicit - for example, ##Dim As Integer foo## or ##Dim foo As Integer## instead of ##Dim foo%##
+
+	In the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, identifiers may contain one or more periods (##.##).
+
+{{fbdoc item="lang"}}
+	- Periods in symbol names are only supported in the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects.
+
+{{fbdoc item="diff"}}
+	- Support for the underscore character (##_##) in symbol names is new to FreeBASIC.
 
 {{fbdoc item="see"}}
 	- [[ProPgVariables Variables]]

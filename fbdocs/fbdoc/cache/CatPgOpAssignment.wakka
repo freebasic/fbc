@@ -19,6 +19,10 @@ The assignment operators perform an assignment to the first, or //left-hand side
 	Assigns the value of an integer divide between two operands.
 =={{fbdoc item="keyword" value="KeyPgOpCombineExponentiate|Operator ^= (Exponentiate and Assign)"}}==
 	Assigns the value of a exponentiation between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpLet|Operator Let (Assignment)"}}==
+	Assigns the value of one user defined type to another.
+=={{fbdoc item="keyword" value="KeyPgOpLetlist|Operator Let() (Assignment)"}}==
+	Assigns the fields of a user defined type to a list of variables.
 <<>>=={{fbdoc item="keyword" value="KeyPgOpCombineModulus|Operator Mod= (Modulus and Assign)"}}==
 	Assigns the value of a modulus between two operands.
 =={{fbdoc item="keyword" value="KeyPgOpCombineAnd|Operator And= (Conjunction and Assign)"}}==

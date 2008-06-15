@@ -31,11 +31,11 @@ Gets an interval from a date
 
 		{{table columns="3" cellpadding="1" cells="value;first day of week;constant;omitted;sunday;###;0;local settings;fbUseSystem;1;sunday;fbSunday;2;monday;fbMonday;3;tuesday;fbTuesday;4;wednesday;fbWednesday;5;thursday;fbThursday;6;friday;fbFriday;7;saturday;fbSaturday"}}
 
-	##//first_weekofyear//##  specifies which year (previous or next) that the week which spans the end of one year and the beginning of the next should included with. Affects the output when 'ww' interval is required.
+	##//first_weekofyear//##  specifies which year (previous or next) that the week which spans the end of one year and the beginning of the next should included with. Affects the output when ##'ww'## interval is required.
 
 		{{table columns="3" cellpadding="1" cells="value;first week of year;constant;0;local settings;fbUseSystem;1;January 1's week;fbFirstJan1;2;first weeks having 4 days in the year;fbFirstFourDays;3;first full week of year;fbFirstFullWeek"}}
 
-	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/dates/datepart.bas"}}%%(freebasic)

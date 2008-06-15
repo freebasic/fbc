@@ -13,11 +13,11 @@ PRINT __FB_SIGNATURE__
 %%
 
 %%
-FreeBASIC v0.18b
+FreeBASIC v0.18.2b
 %%
 
 {{fbdoc item="diff"}}
-	- Did not exist in QB
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfbversion __FB_VERSION__]]##

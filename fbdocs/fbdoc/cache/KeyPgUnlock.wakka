@@ -11,7 +11,7 @@ Removes a previous access restriction (lock) on a file
 	##//record//##
 		The record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) to unlock. If omitted, the entire file is unlocked.
 	##//start//##
-		The first record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) in a range to unlock. If omitted, the current record/byte position (##[[KeyPgSeekreturn Seek]]##(//filenum//)) is used.
+		The first record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) in a range to unlock. If omitted, the current record/byte position (##[[KeyPgSeekreturn Seek]]##(##//filenum//##) is used.
 	##//end//##
 		The last record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) in a range to unlock.
 

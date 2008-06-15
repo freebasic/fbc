@@ -10,12 +10,12 @@ Reads a list of values from the keyboard
 	##//seperator//##
 		a semicolon (;), which appends "? " to the prompt, or comma (,), which appends nothing.
 	##//variable_list//##
-		a list of comma-seperated variables used to hold the values read from the user.
+		a list of comma-separated variables used to hold the values read from the user.
 
 {{fbdoc item="desc"}}
-	Reads a list of comma-seperated values from the keyboard up until the first carriage return. Numerical values are converted from their string representation into the corresponding types in the variable list. Characters are echoed to the screen as they are typed.
+	Reads a list of comma-separated values from the keyboard up until the first carriage return. Numerical values are converted from their string representation into the corresponding types in the variable list. Characters are echoed to the screen as they are typed.
 
-	The prompt - if any - is written to the screen at the current cursor location, and characters read are echoed to the screen immediately folllowing the prompt. If no prompt is specified, characters are echoed at the current cursor location.
+	The prompt - if any - is written to the screen at the current cursor location, and characters read are echoed to the screen immediately following the prompt. If no prompt is specified, characters are echoed at the current cursor location.
 
 	The optional leading semicolon after ##**Input**## is similar to the optional trailing semicolon in a ##[[KeyPgPrint Print]]## statement: the cursor will remain on the same line after all of the characters have been echoed, otherwise, the cursor will move to the beginning of the next line.
 

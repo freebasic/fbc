@@ -27,14 +27,14 @@ Print "Program is "; a
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #Define]]##
-	- ##[[KeyPgPpmacro #Macro]]##
-	- ##[[KeyPgPpif #If]]##
-	- ##[[KeyPgPpelseif #ElseIf]]## 
-	- ##[[KeyPgPpendif #EndIf]]## 
-	- ##[[KeyPgPpifdef #IfDef]]##
-	- ##[[KeyPgPpifndef #IfNDef]]##
-	- ##[[KeyPgPpundef #UnDef]]##
-	- ##[[KeyPgDefined Defined]]##
+	- ##[[KeyPgPpdefine #define]]##
+	- ##[[KeyPgPpmacro #macro]]##
+	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgPpelseif #elseif]]## 
+	- ##[[KeyPgPpendif #endif]]## 
+	- ##[[KeyPgPpifdef #ifdef]]##
+	- ##[[KeyPgPpifndef #ifndef]]##
+	- ##[[KeyPgPpundef #undef]]##
+	- ##[[KeyPgDefined defined]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

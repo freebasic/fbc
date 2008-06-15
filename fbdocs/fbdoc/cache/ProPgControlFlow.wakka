@@ -7,7 +7,7 @@ Statements that direct the flow of execution
 	Control flow statements come in three flavors: transferring, branching and looping. Transferring control flow statements transfer execution to different parts of code. Branching control flow statements execute certain statements blocks based on a condition, while looping control flow statements execute code repeatedly while or until a condition is met.
 
 {{fbdoc item="section" value="Transferring Statements"}}
-	These statements are used for either unconditional or conditional, temporary or permanent transfer of execution. The "ON" variants provide the condition that is to be met. !!!what about transfering across scope blocks?!!!
+	These statements are used for either unconditional or conditional, temporary or permanent transfer of execution. The "ON" variants provide the condition that is to be met. !!!what about transferring across scope blocks?!!!
 
 	=={{fbdoc item="keyword" value="KeyPgGoto|GOTO"}}==
 		Unconditionally transfers execution to another point in code defined by a text label. Execution resumes with the first statement after the label.
@@ -37,7 +37,7 @@ Statements that direct the flow of execution
 		Executes a block of statements while some expression evaluates to true (the condition). The expression is evaluated and checked before the block of statements is executed.
 
 	=={{fbdoc item="keyword" value="KeyPgFornext|FOR..NEXT"}}==
-		Like ##[[KeyPgWhilewend WHILE..WEND]]##, but more suited to loop a certain number of times. This loop initializes a so-called iterator with an initial value that is checked against a test expression. If the iterator compares less than or equal to the test expression (the condition), the block of statements is executed and the iterator gets incremented. The loop can also be setup so that the iterator gets decremented after every loop, in which case it is compared greater than or equal to the test expression. Iterators can be numeric datatypes like ##[[KeyPgInteger INTEGER]]## or ##[[KeyPgSingle DOUBLE]]##, or user-defined types. User-defined types must implement ##[[KeyPgOpFor operator for]]##.
+		Like ##[[KeyPgWhilewend WHILE..WEND]]##, but more suited to loop a certain number of times. This loop initializes a so-called iterator with an initial value that is checked against a test expression. If the iterator compares less than or equal to the test expression (the condition), the block of statements is executed and the iterator gets incremented. The loop can also be setup so that the iterator gets decremented after every loop, in which case it is compared greater than or equal to the test expression. Iterators can be numeric data types like ##[[KeyPgInteger INTEGER]]## or ##[[KeyPgSingle DOUBLE]]##, or user-defined types. User-defined types must implement ##[[KeyPgOpFor operator for]]##.
 	
 	=={{fbdoc item="keyword" value="KeyPgDoloop|DO..LOOP"}}==
 		The most versatile of the looping control flow statements, this loop can execute a block of statements while or until an expression evaluates to true (the condition). It can also delay the checking of the expression until after the block has executed the first time, useful when a block of statements needs to be executed //at least once//. Finally, this loop can have no condition at all, and merely loop indefinitely.

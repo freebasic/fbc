@@ -20,7 +20,7 @@ Standard data type: 16 bit signed
 	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- The name "short" is new to FreeBasic, however they are the same as integers in QB
+	- The name "short" is new to FreeBASIC, however they are the same as integers in QB
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgUshort Ushort]]##

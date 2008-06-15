@@ -31,7 +31,7 @@ Graphics statement to draw a circle
 
 	The center of the shape will be placed on the destination surface at ##(//X//,//Y//)##. Radius denotes the radius of the shape. 
 
-	##//Color//## denotes the colour attribute, which is mode specific (see ##[[KeyPgColor Color]]## and ##[[KeyPgScreengraphics Screen (Graphics)]]## for details). If omitted, the current foreground color as set by the ##[[KeyPgColor Color]]## statement is used.
+	##//Color//## denotes the color attribute, which is mode specific (see ##[[KeyPgColor Color]]## and ##[[KeyPgScreengraphics Screen (Graphics)]]## for details). If omitted, the current foreground color as set by the ##[[KeyPgColor Color]]## statement is used.
 
 	The ##STEP## option specifies that ##//X//## and ##//Y//## are offsets relative to the current graphics cursor position.
 
@@ -66,7 +66,7 @@ sleep
 {{image class="center" title="Circle example output" url="http://img183.imageshack.us/img183/8964/keypgcircleexamplefm3.png" link="http://img183.imageshack.us/my.php?image=keypgcircleexamplefm3.png"}}
 
 {{fbdoc item="diff"}}
-	- As the FB implementation obviously uses a different algorithm for ellipse/arc drawing than QB, the result may not be equal to QB for every pixel.
+	- As the FreeBASIC implementation obviously uses a different algorithm for ellipse/arc drawing than QB, the result may not be equal to QB for every pixel.
 	- The F flag to draw filled circles/ellipses is new in FreeBASIC.
 	- ##//target//## new to FreeBASIC
 

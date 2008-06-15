@@ -14,7 +14,7 @@ Returns the address of a string literal, variable, object or procedure
 		Any [[CatPgStdDataTypes standard]], [[CatPgUserDefTypes user-defined]] or procedure type.
 
 {{fbdoc item="ret"}}
-	Returns the address of the right-hand side (//rhs//) operand.
+	Returns the address of the right-hand side (##//rhs//##) operand.
 
 {{fbdoc item="desc"}}
 	**##Operator @## (Address of)** returns the memory address of it's operand.
@@ -73,7 +73,7 @@ End Sub
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

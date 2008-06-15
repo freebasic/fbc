@@ -24,9 +24,9 @@ Returns a lower case copy of a string
 {{fbdoc item="filename" value="examples/manual/strings/lcase.bas"}}%%(freebasic)
 print lcase("AbCdEfG")
 %%
-	will produce the output:
-
-%%abcdefg
+Output:
+%%
+abcdefg
 %%
 
 {{fbdoc item="see"}}

@@ -14,7 +14,7 @@ Variable initializers are supported for initializing Arrays, variables and UDTs.
 {{fbdoc item="filename" value="examples/manual/proguide/init/array.bas"}}%%(freebasic)
 DIM array(1 to 2, 1 to 5) as Integer => {{1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}}
 %%
-	In this declaration, the values for the left-most dimension are given as 5-index arrays.  Nesting allows for arrays of any dimension to be intialized.
+	In this declaration, the values for the left-most dimension are given as 5-index arrays.  Nesting allows for arrays of any dimension to be initialized.
 
 	UDTs and arrays can be nested within each other as well.  For instance, the following code declares and initializes an array of UDTs
 

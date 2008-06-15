@@ -18,14 +18,14 @@ Restarts a thread suspended by a call to ##[[KeyPgCondWait Condwait]]##
 	See ##[[KeyPgCondCreate Condcreate]]##
 
 {{fbdoc item="lang"}}
-	- Threading is not allowed in -lang qb
+	- Threading is not allowed in //[[ProPgCompOptlang -lang qb]]//
 
 {{fbdoc item="target"}}
 	- **Condsignal** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.
-	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FB issue. 
+	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FreeBASIC issue. 
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCondCreate Condcreate]]##

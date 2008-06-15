@@ -13,12 +13,12 @@ Control flow statement for looping
 
 	If an ##[[KeyPgExit Exit]]## ##**While**## statement is encountered inside the //statement block//, the loop is terminated, and execution resumes immediately following the enclosing ##**Wend**## statement. If a ##[[KeyPgContinue Continue]]## ##**While**## statement is encountered, the rest of the //statement block// is skipped and execution resumes at the ##**While**## statement.
 
-	Like all control flow statements, the ##**While**## statement can be nested, ie., it can be used in a statement block of another WHILE statement.
+	Like all control flow statements, the ##**While**## statement can be nested, that is, it can be used in a statement block of another ##[[KeyPgWhile While]]## statement.
 
 	//**note**: the ##**While**## //keyword// is also used in the ##[[KeyPgDoloop Do...Loop]]## statement to indicate the type of comparison. Used in this way, the DO statement becomes functionally equivalent to the WHILE statement, so do not confuse their enclosing keywords ##Loop## and ##**Wend**##, respectively.//
 
 {{fbdoc item="ex"}}
-	In this example, a ##**While**## loop is used to reverse a string by iterating through it backwards. The loop stops if index is less than 0 //(0 being the first index in the string)//.
+	In this example, a ##**While**## loop is used to reverse a string by iterating through it backward. The loop stops if index is less than 0 //(0 being the first index in the string)//.
 {{fbdoc item="filename" value="examples/manual/control/while-wend.bas"}}%%(freebasic)
 dim as string sentence                          '' string to reverse
 sentence = "The quick brown fox jumps over the lazy dog."
@@ -38,8 +38,8 @@ end 0
 %%
 
 {{fbdoc item="lang"}}
-	- In //-lang qb//, variables declared inside a WHILE..WEND block have a function-wide [[ProPgVariableScope scope]]  as in QB 
-	- In //-lang fb// or //-lang deprecated//, variables declared inside a WHILE..WEND block are visible only inside the block, and can't be accessed outside it.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, variables declared inside a WHILE..WEND block have a function-wide [[ProPgVariableScope scope]]  as in QB 
+	- In the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, variables declared inside a WHILE..WEND block are visible only inside the block, and can't be accessed outside it.
 
 {{fbdoc item="diff"}}
 	- None

@@ -17,7 +17,7 @@ Queries for and retrieves system events
 {{fbdoc item="desc"}}
 	This function returns the latest available system event from the internal GfxLib events queue. By "event" we mean any mouse or keyboard activity for example.
 
-	The event data if available will be copied into the buffer pointed to by the ##//event//## parameter; this buffer must currently be at least 5 integers long (20 bytes). The first integer will contain the event type ID, while the remaining 4 integers will hold sensitive data to the event type. The fbgfx.bi header file contains a definition of the ##EVENT## user datatype, whose memory layout is compatible with the event data returned by this function; this can be used to ease the interpretation of the event data. Here we report the ##EVENT## structure for clarity:
+	The event data if available will be copied into the buffer pointed to by the ##//event//## parameter; this buffer must currently be at least 5 integers long (20 bytes). The first integer will contain the event type ID, while the remaining 4 integers will hold sensitive data to the event type. The fbgfx.bi header file contains a definition of the ##EVENT## user data type, whose memory layout is compatible with the event data returned by this function; this can be used to ease the interpretation of the event data. Here we report the ##EVENT## structure for clarity:
 		
 	{{fbdoc item="filename" value="examples/manual/check/KeyPgScreenevent_1.bas"}}%%(freebasic)
 Type EVENT Field = 1
@@ -42,7 +42,7 @@ End Type
 	__Event types__
 		The event type is identified by an ID number returned into the first integer of the ##//event//## buffer (the ##.type## field in the ##EVENT## structure). Known event type IDs are:
 
-	- EVENT_KEY_PRESS (1) A key was pressed on the keyboard. The ##.scancode## field contains the platform indipendent scancode value for the key; if the key has an ascii representation, it is held into the ##.ascii## field, which otherwise has a value of 0.
+	- EVENT_KEY_PRESS (1) A key was pressed on the keyboard. The ##.scancode## field contains the platform independent scancode value for the key; if the key has an ascii representation, it is held into the ##.ascii## field, which otherwise has a value of 0.
 	- EVENT_KEY_RELEASE (2) A key was released on the keyboard. The ##.scancode## and ##.ascii## fields have the same meaning as with the EVENT_KEY_PRESS event.
 	- EVENT_KEY_REPEAT (3) A key is being held down repeatedly. The ##.scancode## and ##.ascii## fields have the same meaning as with the EVENT_KEY_PRESS event.
 	- EVENT_MOUSE_MOVE (4) The mouse was moved while it was on the program window. The ##.x## and ##.y## fields contain the new mouse position relative to the upper-left corner of the screen, while the ##.dx## and ##.dy## fields contain the motion deltas.

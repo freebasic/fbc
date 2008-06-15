@@ -8,7 +8,7 @@ Converts an expression to signed
 	//variable// = **Csign** ( //expression// )
 ##
 {{fbdoc item="desc"}}
-	Converts an unsigned ##//expression//## to a signed one, useful to force signed behaviour of division or multiplication (including with ##[[KeyPgOpShiftLeft Shl]]## and ##[[KeyPgOpShiftRight Shr]]##).
+	Converts an unsigned ##//expression//## to a signed one, useful to force signed behavior of division or multiplication (including with ##[[KeyPgOpShiftLeft Shl]]## and ##[[KeyPgOpShiftRight Shr]]##).
 
 	This is the opposite of ##[[KeyPgCunsg Cunsg]]##.
 

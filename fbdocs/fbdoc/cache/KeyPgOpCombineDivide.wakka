@@ -13,7 +13,7 @@ Divides and assigns a value to a variable
 	##//T1//##
 		Any numeric type.
 	##//rhs//##
-		The value to divide //lhs// by.
+		The value to divide ##//lhs//## by.
 	##//T2//##
 		Any numeric type.
 
@@ -22,7 +22,7 @@ Divides and assigns a value to a variable
 ##
 		//lhs// = //lhs// [[KeyPgOpDivide /]] //rhs//
 ##
-	The right-hand side expression (//rhs//) will be converted to the left-hand side type (//T1//).
+	The right-hand side expression (##//rhs//##) will be converted to the left-hand side type (##//T1//##).
 
 	This operator can be overloaded for user-defined types.
 
@@ -40,7 +40,7 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

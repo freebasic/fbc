@@ -21,13 +21,13 @@ Opens the console directly for input and output as a file
 {{fbdoc item="desc"}}
 	This command opens the console for both input and output as a file, allowing to read/write from/to it with normal file commands.
 
-	This comand may use direct access to the console for speed in some implementations, so  it should not be used when the input / output is required to be redirected or piped with OS commands.    
+	This command may use direct access to the console for speed in some implementations, so  it should not be used when the input / output is required to be redirected or piped with OS commands.    
 
 	The normal console commands, such as ##[[KeyPgColor Color]]## and ##[[KeyPgLocate Locate]]##, do not work in this mode, because they do not accept a file number.
 
 	The ##[For Input|Output]## clause is allowed for compatibility, but is ignored.
 
-	//filenum// is an unused file number.
+	##//filenum//## is an unused file number.
 
 	An unused file number can be found using ##[[KeyPgFreefile FreeFile]]##.
 

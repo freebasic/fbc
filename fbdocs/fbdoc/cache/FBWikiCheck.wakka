@@ -1,12 +1,12 @@
-chklinks: 2007/11/04 16:23:00
+chklinks: 2007/12/12 09:01:42
 
-Loaded 897 page names from 'PageIndex.txt'
+Loaded 900 page names from 'PageIndex.txt'
 scanning pages:
 
-Found 13772 links
-Saved 13772 links to 'linklist.csv'
-Saved 771 page names to 'DocPages.txt'
-Saved 705 file names to 'samplist.csv'
+Found 14158 links
+Saved 14158 links to 'linklist.csv'
+Saved 773 page names to 'DocPages.txt'
+Saved 710 file names to 'samplist.csv'
 
 Checking missing pages:
 No missing pages
@@ -39,7 +39,8 @@ Checking invalid backlinks:
 Found 7 invalid backlinks
 
 Checking headers:
-Found 0 invalid headers
+'TutConstQualifiers' has invalid horzline
+Found 1 invalid headers
 
 Checking mismatched name case in links:
 No mismatched name case in links
@@ -110,4 +111,4 @@ Missing 'fblogoto9.png', but is not on a DOC page
 Found 1 references to missing image files
 
 
-Execution time: 28 seconds.
+Execution time: 29 seconds.

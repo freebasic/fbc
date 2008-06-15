@@ -17,7 +17,7 @@ Statement to store data at compile time
 	
 	##[[KeyPgRestore Restore]]## //label// makes the first  ##Data## item after the //label// the next item to be read, thus altering the order in which the items are ##Read##.
 
-	##Data## is normally used to initialize variables. FB also allows the initialization of static variables in their declarations; see [[ProPgInitialization Variable Initializers]] for more information.
+	##Data## is normally used to initialize variables. FreeBASIC also allows the initialization of static variables in their declarations; see [[ProPgInitialization Variable Initializers]] for more information.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/data/data.bas"}}%%(freebasic)
@@ -56,14 +56,14 @@ END
 
 DATA 3, 234, 435/4, 23+433, 87643,"Good"+ "Bye!"
 %%
+
 {{fbdoc item="lang"}}
-	- //-lang fb// and //-lang deprecated// considers  data items as constant expresions that are evaluated during compilation and its result stored in the program.
-	- //-lang qb// considers data items as literals and stores then wihout change, as in QB.  
+	- //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// considers  data items as constant expressions that are evaluated during compilation and its result stored in the program.
+	- //[[ProPgCompOptlang -lang qb]]// considers data items as literals and stores then without change, as in QB.  
 
 {{fbdoc item="diff"}}
 	- Alphabetic string literals now must be enclosed within quotation marks.
-	- Empty items were evaluated in QB to number 0 or to empty strings. In FB they give a compile error. A comma after the last item of a line of data makes an empty item (between the comma and the carry return) evaluated to 0 in QB. In FB that's an error.
-	
+	- Empty items were evaluated in QB to number 0 or to empty strings. In FreeBASIC they give a compile error. A comma after the last item of a line of data makes an empty item (between the comma and the carry return) evaluated to 0 in QB. In FreeBASIC that's an error.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgRead Read]]##

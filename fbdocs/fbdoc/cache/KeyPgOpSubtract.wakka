@@ -22,11 +22,11 @@ Subtracts two expressions
 	//result// = //lhs// **##-##** //rhs//
 ##
 {{fbdoc item="param"}}
-	//lhs//
+	##//lhs//##
 		The left-hand side expression to subtract from.
-	//rhs//
+	##//rhs//##
 		The right-hand side expression to subtract.
-	//T//
+	##//T//##
 		Any pointer type.
 
 {{fbdoc item="ret"}}
@@ -55,7 +55,7 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None

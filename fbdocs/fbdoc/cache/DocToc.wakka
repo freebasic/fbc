@@ -8,7 +8,7 @@ FreeBASIC Manual Table of Contents
 {{anchor name="PROGRAM|Programming Reference"}}
 	Programming references on how to write programs with FreeBASIC.
 {{anchor name="LANGUAGE|Language Reference"}}
-	Quick reference to the supported datatypes, control flow statements and more.
+	Quick reference to the supported data types, control flow statements and more.
 {{anchor name="INDEX|Indexes"}}
 	Indexes.
 {{anchor name="RTLIB|Runtime Library Reference"}}
@@ -20,7 +20,7 @@ FreeBASIC Manual Table of Contents
 {{anchor name="MISC|Miscellaneous"}}
 	Miscellaneous topics.
 {{anchor name="TABLES|Tables"}}
-	Various tables including ASCII codes and datatype information.
+	Various tables including ASCII codes and data type information.
 {{anchor name="CONTRIB|Contributing"}}
 	How and what to contribute to this wiki, and who is contributing now.
 >>::c::
@@ -49,7 +49,7 @@ FreeBASIC Manual Table of Contents
 
 {{anchor name="LANGUAGE"}}{{fbdoc item="section" value="Language Reference"}}
 
-	{{fbdoc item="subsect" value="Variables and Datatypes"}}
+	{{fbdoc item="subsect" value="Variables and Data Types"}}
 		{{fbdoc item="keyword" value="CatPgVariables|Variable Declarations"}}
 		{{fbdoc item="keyword" value="CatPgStdDataTypes|Standard Data Types"}}
 		{{fbdoc item="keyword" value="CatPgCasting|Converting Between Data Types"}}

@@ -9,7 +9,7 @@ Returns the amount of free memory available
 ##
 {{fbdoc item="param"}}
 	##//value//##
-		Unused dummy parameter kept for backward compatibilty; can be ignored.
+		Unused dummy parameter kept for backward compatibility; can be ignored.
 
 {{fbdoc item="ret"}}
 	Returns the amount of free memory, in bytes.

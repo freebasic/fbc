@@ -14,7 +14,7 @@ Keyword template.
 		Parameter description.
 
 {{fbdoc item="ret"}}
-	Returns a value of zero (0) if sucessful, and a non-zero error code on failure.
+	Returns a value of zero (0) if successful, and a non-zero error code on failure.
 
 {{fbdoc item="desc"}}
 	This topic can be copied and pasted in to a newly created keyword.
@@ -32,8 +32,9 @@ Output:
 sample output
 sample output
 %%
+
 {{fbdoc item="lang"}}
-	- Supported only with //-lang fb//.
+	- Supported only with //[[ProPgCompOptlang -lang fb]]//.
 
 {{fbdoc item="target"}}
 	- None

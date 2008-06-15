@@ -17,13 +17,13 @@ Increments the iterator of a ##[[KeyPgFornext For...Next]]## loop
 	##//typename//##
 		name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgUnion Union]]##
 	##//stp//##, ##//step_value//##
-		a //typename// object used as an incremental value
+		a ##//typename//## object used as an incremental value
 	##//iterator//##
-		a //typename// object used as an iterator
+		a ##//typename//## object used as an iterator
 	##//end_value//##
-		a //typename// object used as a loop-terminating value
+		a ##//typename//## object used as a loop-terminating value
 	##//start_value//##
-		a //typename// object used to copy construct or assign to the iterator initially
+		a ##//typename//## object used to copy construct or assign to the iterator initially
 
 {{fbdoc item="desc"}}
 	##[[KeyPgOpFor Operator For]]##, ##[[KeyPgOpNext Operator Next]]## and ##**Operator Step**## can be overloaded in user-defined type definitions to allow objects of that type to be used as iterators and step values in ##[[KeyPgFornext For...Next]]## loops.
@@ -36,7 +36,7 @@ Increments the iterator of a ##[[KeyPgFornext For...Next]]## loop
 	See ##[[KeyPgOpFor Operator For]]## for an example of ##**Operator Step**##.
 
 {{fbdoc item="lang"}}
-	- Supported only with //-lang fb//.
+	- Only available in the //[[ProPgCompOptlang -lang fb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpFor Operator For]]##

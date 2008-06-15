@@ -2,12 +2,14 @@
 Statements and procedures for working with files, directories and the system
 
 {{fbdoc item="desc"}}
-	The statements and procedures listed here provide acces to the operating system environment. They transfer execution to external programs, get information about files and directories, manipulate the file system and send commands to the command shell.
+	The statements and procedures listed here provide access to the operating system environment. They transfer execution to external programs, get information about files and directories, manipulate the file system and send commands to the command shell.
 
 **{{anchor name="FILES|Working with Files"}}**
 	Procedures that deal with files.
 **{{anchor name="DIRS|Working with Directories"}}**
 	Various directory management procedures.
+**{{anchor name="FILEPROPS|File Properties"}}**
+	Get information about files.
 **{{anchor name="SYSPROCS|System Procedures"}}**
 	Procedures for working with the environment.
 
@@ -20,18 +22,6 @@ Statements and procedures for working with files, directories and the system
 		Deletes an existing file.
 	=={{fbdoc item="keyword" value="KeyPgName|NAME"}}==
 		Renames an existing file.
-
-	{{fbdoc item="subsect" value="Visual Basic-compatible procedures"}}
-		=={{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}==
-			Gets information about a file bound to a file number.
-		=={{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}==
-			Copies a file.
-		=={{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}==
-			Gets the last modified date and time of a file.
-		=={{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}==
-			Tests for the existence of a file.
-		=={{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}==
-			Gets the length (in bytes) of a file.
 
 {{anchor name="DIRS"}}{{fbdoc item="section" value="Working with Directories"}}
 	=={{fbdoc item="keyword" value="KeyPgCurdir|CURDIR"}}==
@@ -46,7 +36,19 @@ Statements and procedures for working with files, directories and the system
 		Creates a new directory.
 	=={{fbdoc item="keyword" value="KeyPgRmdir|RMDIR"}}==
 		Deletes an existing directory.
-<<>>{{anchor name="SYSPROCS"}}{{fbdoc item="section" value="System Procedures"}}
+<<>>{{anchor name="FILEPROPS"}}{{fbdoc item="section" value="File Properties"}}
+	=={{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}==
+		Gets information about a file bound to a file number.
+	=={{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}==
+		Copies a file.
+	=={{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}==
+		Gets the last modified date and time of a file.
+	=={{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}==
+		Tests for the existence of a file.
+	=={{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}==
+		Gets the length (in bytes) of a file.
+
+{{anchor name="SYSPROCS"}}{{fbdoc item="section" value="System Procedures"}}
 	=={{fbdoc item="keyword" value="KeyPgFre|FRE"}}==
 		Gets the amount of free memory (in bytes) available.
 	=={{fbdoc item="keyword" value="KeyPgCommand|COMMAND"}}==

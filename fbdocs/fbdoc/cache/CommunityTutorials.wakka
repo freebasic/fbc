@@ -48,6 +48,7 @@ Tutorials submitted by the FreeBASIC community:
 	-[[TutIntroExtType Introduction to the Extended Type]] //by [[WikiRick rdc]]//
 	-[[TutSimPolymorphism Simulating Polymorphism]] //by [[WikiRick rdc]]//
 	-[[TutOOPInNonOOPLanguages OOP in non-OOP languages]] //by KevinWhitefoot//
+	-[[TutConstQualifiers Const Qualifiers and You]] //by notthecheatr//
 
 {{fbdoc item="section" value="FBgfx"}}
 	-[[TutFBgfxImgAndFontBuf Creating and Understanding Your FBgfx Img and Font Buffer]] //by ""The FB Community""//

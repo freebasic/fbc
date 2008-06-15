@@ -11,7 +11,7 @@ Exponentiates and assigns a value to a variable
 	##//lhs//##
 		The variable to assign to.
 	##//rhs//##
-		The value to exponentiate //lhs// by.
+		The value to exponentiate ##//lhs//## by.
 
 {{fbdoc item="desc"}}
 	This operator exponentiates and assigns a value to a variable. It is functionally equivalent to:
@@ -34,7 +34,7 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

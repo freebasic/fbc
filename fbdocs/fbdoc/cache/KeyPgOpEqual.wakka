@@ -57,13 +57,13 @@ end if
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- none
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpNotEqual Operator <>]]## (Inequality)
-	- ##[[KeyPgOpAssignment Operator Let]]##
+	- ##[[KeyPgOpAssignment Operator = ]]## (Assignment)
  
 {{fbdoc item="back" value="CatPgOpConditional|Relational Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -2,12 +2,12 @@
 Declares or defines a property in a type or class
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgType Type]] //typename//
+	{ [[KeyPgType Type]] | [[KeyPgClass Class]] } //typename//
 		[[KeyPgDeclare declare]] **Property** //fieldname// () [[KeyPgAs as]] [[DataType datatype]]
 		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
 		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
 		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
-	End Type
+	End { [[KeyPgType Type]] | [[KeyPgClass Class]] }
 
 	**Property** //typename//.//fieldname// () [[KeyPgAs as]] [[DataType datatype]]
 		//statements//
@@ -135,7 +135,7 @@ End Property
 Dim as BitNum Foo
 
 
-Print "Testing property indexing with datatypes:"
+Print "Testing property indexing with data types:"
 Print "FOO Number's Value: " & Foo.Num
 
   '' Set the bit in the number as true.
@@ -150,7 +150,7 @@ Print ""
 %%
 Output:
 %%
-Testing property indexing with datatypes:
+Testing property indexing with data types:
 FOO Number's Value: 0
 Set the 31st bit of FOO
 FOO Number's Value: 2147483648

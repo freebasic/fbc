@@ -11,7 +11,7 @@ Starts a user-defined procedure in a separate execution thread
 	##//proc//##
 		A pointer to the ##[[KeyPgSub Sub]]## intended to work as a thread.
 	##//param//##
-		Optional [[KeyPgAny any]] [[KeyPgPtr ptr]] argument for the ##[[KeyPgSub Sub]]## pointed to by //proc// (it can be a pointer to a structure or an array if more arguments are needed).
+		Optional [[KeyPgAny any]] [[KeyPgPtr ptr]] argument for the ##[[KeyPgSub Sub]]## pointed to by ##//proc//## (it can be a pointer to a structure or an array if more arguments are needed).
 	##//stack_size//##
 		Optional number of bytes to reserve for this thread's stack.
 
@@ -23,9 +23,9 @@ Starts a user-defined procedure in a separate execution thread
 
 	Before closing, a program must wait for the termination of all the threads it has launched; see ##[[KeyPgThreadWait Threadwait]]##.
 
-	To avoid simultaneous access to shared resources from different threads, FB implements mutexes, mutual exclusion locks that can be "owned" by a single thread when doing critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##.
+	To avoid simultaneous access to shared resources from different threads, FreeBASIC implements mutexes, mutual exclusion locks that can be "owned" by a single thread when doing critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##.
 
-	On some systems, the stack automatically grows beyond ##//stack_size//## if more space is needed; on others, this is the fixed maximum allowed. Behavior is undefined when more stack is used than the reserved size on systems where stacks are not growable.
+	On some systems, the stack automatically grows beyond ##//stack_size//## if more space is needed; on others, this is the fixed maximum allowed. Behavior is undefined when more stack is used than the reserved size on systems where stacks are not able to grow.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/threads/threadcreate.bas"}}%%(freebasic)
@@ -76,7 +76,7 @@ sleep
 
 {{fbdoc item="target"}}
 	- **Threadcreate** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.
-	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FB issue. 
+	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FreeBASIC issue. 
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

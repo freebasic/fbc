@@ -16,7 +16,7 @@ Called automatically when a class or user defined type goes out of scope or is d
 		name of the ##[[KeyPgType Type]]## of ##[[KeyPgClass Class]]##
 
 {{fbdoc item="desc"}}
-	The destructor method is called when a user defined ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## variable goes out of scope or is destroyed explicity with the ##[[KeyPgOpDelete Delete]]## operator.
+	The destructor method is called when a user defined ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## variable goes out of scope or is destroyed explicitly with the ##[[KeyPgOpDelete Delete]]## operator.
 
 	The ##**Destructor**## method is passed a hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//##.
 
@@ -65,7 +65,7 @@ Destroying: A.x
 Destroying: main.x
 %%
 {{fbdoc item="lang"}}
-	- Object-related features are supported only in the //-lang fb// option
+	- Object-related features are supported only in the //[[ProPgCompOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

@@ -31,25 +31,24 @@ Open a printer device
 
 	Any printer attached to the system may be opened with **Open Lpt**
 
-	**Open Lpt** "LPT:" ... will try to open the default printer on Windows and Linux, and "LPT1:" on DOS.
+	##**Open Lpt** "LPT:" ...## will try to open the default printer on Windows and Linux, and "LPT1:" on DOS.
 
-	##[[KeyPgLprint Lprint]]## will automatically try to open the default printer on Windows and Linux, and "LPT1:" on DOS.
+	##[[KeyPgLprint Lprint]]## will automatically try to open the default printer on Windows and Linux, and ##"LPT1:"## on DOS.
 
 Platform specific notes:
 
 	==Windows==
-		The argument EMU=TTY assumes printable ASCII or Unicode text, and applies printer driver text imaging to the input.  EMU=TTY also allows the usage of CR, LF, BS, TAB, FF, etc., for virtual print-head movement...even when the printer is a GDI printer and therefore doesn't itself understand these special characters.  If ",EMU=TTY" is omited, the data must be sent in the printer's language (ESC/P, HPGL, PostScript, etc...).  Other useful emulation modes aren't supported yet.
+		The argument EMU=TTY assumes printable ASCII or Unicode text, and applies printer driver text imaging to the input.  EMU=TTY also allows the usage of CR, LF, BS, TAB, FF, etc., for virtual print-head movement...even when the printer is a GDI printer and therefore doesn't itself understand these special characters.  If ",EMU=TTY" is omitted, the data must be sent in the printer's language (ESC/P, HPGL, PostScript, etc...).  Other useful emulation modes aren't supported yet.
 
 	==Linux==
-		A printer spooler available through 'lp' must be installed to access printers by name or a default printer.  Spooler access was tested only with CUPS, but other spoolers may work that are invoked through 'lp'.  Port are zero based on linux.  "LPT1:"  corresponds with "/dev/lp0"
+		A printer spooler available through ##lp## must be installed to access printers by name or a default printer.  Spooler access was tested only with CUPS, but other spoolers may work that are invoked through ##lp##.  Port are zero based on linux. ##"LPT1:"## corresponds with ##"/dev/lp0"##.
 
-		The data must be sent in the printer's language (ESC/P, HPGL, PostScript, etc...).  Emulation modes aren't supported yet.
+		The data must be sent in the printer's language (ESC/P, HPGL, PostScript, etc...). Emulation modes aren't supported yet.
 
 	==DOS==
-		FreeBASIC does not support print spoolers on DOS.  Printers must be accessable through "LPTx:".
+		FreeBASIC does not support print spoolers on DOS.  Printers must be accessible through ##"LPTx:"##.
 
 		The data must be sent in the printer's language (ESC/P, HPGL, PostScript, etc...).  Emulation modes aren't supported yet.
-
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/openlpt1.bas"}}%%(freebasic)
@@ -84,6 +83,7 @@ GetKey
 
 End
 %%
+
 {{fbdoc item="filename" value="examples/manual/fileio/openlpt.bas"}}%%(freebasic)
 'This simple program will print a PostScript file to a PostScript compatible printer.
 Dim As UByte FFI, PPO
@@ -103,8 +103,9 @@ Close #PPO
 
 Print "Printing Completed!"
 %%
+
 {{fbdoc item="lang"}}
-	- In the -lang qb dialect the old syntax is supported OPEN "LPT:..." . This syntax used in the other dialects will open a regular file.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect the old syntax is supported OPEN "LPT:..." . This syntax used in the other dialects will open a regular file.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLprint Lprint]]##

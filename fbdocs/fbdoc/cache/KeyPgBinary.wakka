@@ -15,12 +15,12 @@ Specifies file or device to be opened for binary mode
 		unused file number to associate with the open file
 
 {{fbdoc item="desc"}}
-	Opens a file or device for reading and/or writing binary data in the file //filenum//, with free format.
+	Opens a file or device for reading and/or writing binary data in the file ##//filenum//##, with free format.
 	If the file does not exist, a new file will be created. The file pointer is initialized by ##[[KeyPgOpen Open]]## at byte no. 1. 
 	##[[KeyPgGetfileio Get #]]## and ##[[KeyPgPutfileio Put #]]## file operations move the file pointer according to the size of the data, the pointer can be set to any byte in the file.
 	The data existing in the file is preserved by ##[[KeyPgOpen Open]]##. 
 	This file mode can use any buffer variable to read/write data in the file.   
-	The data is saved in binary mode, in the same internal format FB uses, by means of ##[[KeyPgGetfileio Get #]]## and ##[[KeyPgPutfileio Put #]]##.
+	The data is saved in binary mode, in the same internal format FreeBASIC uses, by means of ##[[KeyPgGetfileio Get #]]## and ##[[KeyPgPutfileio Put #]]##.
 	
 	##//filename//## must be a string expression resulting in a legal file name in the target OS, without wildcards. The file will be sought for in the present directory, unless a path is given.
 			
@@ -43,30 +43,39 @@ Specifies file or device to be opened for binary mode
 {{fbdoc item="filename" value="examples/manual/fileio/binary-write.bas"}}%%(freebasic)
 '' Create a binary data file with one number in it
 Dim x As Single = 17.164
+
 Open "MyFile.Dat" For Binary As #1
-Put #1, , x
+  '' put without a position setting will put from the last known file position
+  '' in this case, the very beginning of the file.
+  Put #1, , x
 Close #1
 %%
 
 {{fbdoc item="filename" value="examples/manual/fileio/binary-read.bas"}}%%(freebasic)
 '' Now read the number from the file
 Dim x As Single = 0
+
 Open "MyFile.Dat" For Binary As #1
-Get #1, , x
+  Get #1, , x
 Close #1
+
 Print x
 %%
 
 {{fbdoc item="filename" value="examples/manual/fileio/binary-text.bas"}}%%(freebasic)
 '' Read entire contents of a file to a string
-  Dim txt As String
-  Open "myfile.txt" For Binary Access Read As #1
+Dim txt As String
+
+Open "myfile.txt" For Binary Access Read As #1
   If Lof(1) > 0 Then
+	'' our string has as many characters as the file has in bytes
 	txt = String(Lof(1), 0)
+	'' size of txt is known.  entire string filled with file data
 	Get #1, , txt
   End If
-  Close #1
-  Print txt
+Close #1
+
+Print txt
 %%
 
 {{fbdoc item="diff"}}

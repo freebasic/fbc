@@ -10,9 +10,9 @@ Waits until a specified time has elapsed, or a key is pressed
 ##
 {{fbdoc item="param"}}
 	##//msecs//##
-		Optional number of milliseconds to wait (default is to wait for a keypress).
+		Optional number of milliseconds to wait (default is to wait for a key press).
 	##//kind//##
-		Optional flag; give it a value of 1 to specify that the wait cannot be interrupted by a keypress.
+		Optional flag; give it a value of 1 to specify that the wait cannot be interrupted by a key press.
 
 {{fbdoc item="desc"}}
 	##**Sleep**## will wait until ##//msecs//## 'milliseconds' given elapsed (if any value was passed) or until the user presses a key. If ##//msecs//## is below 100 ms then ##**Sleep**## will always wait the full requested amount (key presses are ignored).

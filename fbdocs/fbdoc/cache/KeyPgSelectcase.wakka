@@ -20,7 +20,7 @@ Conditional statement block
 
 	Select Case executes specific code depending on the value of an expression. The expression is compared against each Case, in order, until a matching expression is found. The code inside the matching Case branch is executed, and the program skips down to the end of the Select Case block. Case Else matches any Case not already matched, so if there is a Case Else, at least one Case is guaranteed to be executed. If no Cases match, the whole Select Case block will be skipped.
 	
-	For C users: FB's ##**Select Case**## works as a switch where all cases have a "break;" at the end. As there is no fall-through, multiple options must be put in an expression list in a single ##**Case**##.
+	For C users: In FreeBASIC, ##**Select Case**## works as a switch where all cases have a "break;" at the end. As there is no fall-through, multiple options must be put in an expression list in a single ##**Case**##.
 	
 	##**End Select**## can be used to exit the ##**Select Case...End Select**## block
 	

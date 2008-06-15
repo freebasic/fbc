@@ -6,7 +6,7 @@
 
 	{{table columns="2" cellpadding="1" cells="-lang option;description;fb;FreeBASIC compatibility (default);qb;qbasic compatibility;deprecated;previous fbc version compatibility"}}
 
-	The //[[ProPgCompOptlang -lang]]// option was needed to allow FB to support object-orientation and other features in the future, without crippling the ""QuickBASIC"" support or breaking compatibility with old FB sources, and without making FB difficult to maintain with many different versions of very similiar packages. The ""QuickBASIC"" support can continue to be improved, if needed, without breaking the sources written specifically for FB.
+	The //[[ProPgCompOptlang -lang]]// option was needed to allow FreeBASIC to support object-orientation and other features in the future, without crippling the ""QuickBASIC"" support or breaking compatibility with old FreeBASIC sources, and without making FreeBASIC difficult to maintain with many different versions of very similar packages. The ""QuickBASIC"" support can continue to be improved, if needed, without breaking the sources written specifically for FreeBASIC.
 
 	To compile old GW-BASIC or ""QuickBASIC/QBasic"" sources without too many changes, use the ##-lang qb## option on the command-line when running ##fbc##. This option will evolve into a better compatibility with ""QuickBASIC/QBasic"" code.
 
@@ -87,7 +87,7 @@
 
 {{fbdoc item="section" value="-lang qb"}}
 	
-	**Supported:** //Everything not supported/allowed in the fb mode, plus..//
+	**Supported:** //Everything not supported/allowed in the //[[ProPgCompOptlang -lang fb]]// dialect, plus..//
 
 	""1"") ##[[KeyPgCall Call]]## can be used with forward-referenced functions.
 

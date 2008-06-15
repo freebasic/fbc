@@ -31,7 +31,7 @@ Returns a binary (base 2) string representation of an integer
 
 	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (32 for an ##[[KeyPgInteger integer]]##, 64 for a ##[[KeyPgLongint Longint]])##.
 
-	If you want to convert a binary string back into a number, the easiest way to do it is to prepend the string with ##"&B"##, and convert it as a normal numeric string, using ##[[KeyPgValint Valint]]##.
+	If you want to convert a binary string back into a number, the easiest way to do it is to prefix the string with ##"&B"##, and convert it as a normal numeric string, using ##[[KeyPgValint Valint]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/bin.bas"}}%%(freebasic)

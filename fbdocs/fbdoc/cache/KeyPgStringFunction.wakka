@@ -32,7 +32,7 @@ end 0
 %%
 
 {{fbdoc item="diff"}}
-	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FreeBASIC.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgString String]] (data type)##

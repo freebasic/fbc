@@ -1,25 +1,23 @@
 {{fbdoc item="title" value="ALLOCATE"}}----
-Allocates a certain number of bytes from the free store
+Allocates a block of memory from the free store
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Allocate**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Allocate** ( //size// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Allocate**( //count// )
+	//result// = **Allocate**( //size// )
 ##
 {{fbdoc item="param"}}
-	##//count//##
-		An integer specifying the number of bytes to be allocated.
+	##//size//##
+		The size, in bytes, of the block of memory to allocate.
 
 {{fbdoc item="ret"}}
-	The address of the newly allocated memory. A null (0) pointer is returned if the requested memory could not be allocated, or if ##//count//## < 0.
+	If successful, the address of the start of the allocated memory is returned. Otherwise, if the requested block size could not be allocated, or if ##//count// < 0##, then the null pointer (##0##) is returned.
 
 {{fbdoc item="desc"}}
 	Attempts to allocate, or reserve, ##//count//## number of bytes from the free store (heap). The initial value of newly allocated memory is unspecified. The pointer that is returned is an [[KeyPgAny any]] [[KeyPgPtr ptr]] and points to the start of the allocated memory. This pointer is guaranteed to be unique, even if ##//count//## is zero.
 
 	Allocated memory must be deallocated, or returned back to the free store, with ##[[KeyPgDeallocate Deallocate]]## when no longer needed.
-
-~&##**Allocate**## is an alias for the C runtime library's ##**malloc**## function, which is not guaranteed to be thread safe in all platforms.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/allocate.bas"}}%%(freebasic)
@@ -77,13 +75,17 @@ end sub
    end 0
 %%
 
+{{fbdoc item="target"}}
+	- This procedure is not guaranteed to be thread-safe.
+
 {{fbdoc item="lang"}}
 	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgCallocate Callocate]]##
 	- ##[[KeyPgReallocate Reallocate]]##
 	- ##[[KeyPgDeallocate Deallocate]]##
 

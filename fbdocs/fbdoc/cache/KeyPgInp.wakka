@@ -15,8 +15,7 @@ Returns a value at a hardware port
 	The value at the specified port
 
 {{fbdoc item="desc"}}
-	This function retrieves the value at 'port' and returns inmediately.
-	
+	This function retrieves the value at 'port' and returns immediately.
 	
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/hardware/inp.bas"}}%%(freebasic)

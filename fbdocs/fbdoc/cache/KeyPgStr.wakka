@@ -41,14 +41,14 @@ print a, b
 %%
 
 {{fbdoc item="lang"}}
-	- For //-lang qb//, ##**Str**## will left pad a positive number with a space.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, ##**Str**## will left pad a positive number with a space.
 
 {{fbdoc item="target"}}
-	- DOS version/target of FB does not support the wide-character string version of ##**Str**##.
+	- DOS version/target of FreeBASIC does not support the wide-character string version of ##**Str**##.
 
 {{fbdoc item="diff"}}
 	- QB does not support the wide-character string version of ##**Str**##.
-	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FreeBASIC.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgVal Val]]##

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="STOP"}}----
-Halts program execution, and waits for a keypress before ending the program
+Halts program execution, and waits for a key press before ending the program
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Stop** ( [[KeyPgByval byval]] //retval// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )

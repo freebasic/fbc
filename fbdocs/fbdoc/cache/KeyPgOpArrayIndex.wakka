@@ -10,11 +10,11 @@ Returns a reference to an element in an array
 	//result// = //lhs// **(** //rhs// [, ...] **)**
 ##
 {{fbdoc item="param"}}
-	//lhs//
+	##//lhs//##
 		An array.
-	//rhs//
+	##//rhs//##
 		An index of an element in the array.
-	//T//
+	##//T//##
 		Any data type.
 
 {{fbdoc item="desc"}}

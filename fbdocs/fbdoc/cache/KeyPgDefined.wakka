@@ -38,22 +38,20 @@ dim c as single
 #if defined(d)
  print "d is defined"
 #endif
-
-
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #Define]]##
-	- ##[[KeyPgPpmacro #Macro]]##
-	- ##[[KeyPgPpif #If]]##
-	- ##[[KeyPgPpelse #Else]]## 
-	- ##[[KeyPgPpelseif #ElseIf]]## 
-	- ##[[KeyPgPpendif #EndIf]]## 
-	- ##[[KeyPgPpifdef #IfDef]]##
-	- ##[[KeyPgPpifndef #IfNDef]]##
-	- ##[[KeyPgPpundef #UnDef]]##
+	- ##[[KeyPgPpdefine #define]]##
+	- ##[[KeyPgPpmacro #macro]]##
+	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgPpelse #else]]## 
+	- ##[[KeyPgPpelseif #elseif]]## 
+	- ##[[KeyPgPpendif #endif]]## 
+	- ##[[KeyPgPpifdef #ifdef]]##
+	- ##[[KeyPgPpifndef #ifndef]]##
+	- ##[[KeyPgPpundef #undef]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

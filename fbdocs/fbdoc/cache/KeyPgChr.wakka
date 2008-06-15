@@ -12,12 +12,12 @@ Returns a string of characters from one or more ASCII integer values
 		The [[CptAscii ASCII]] integer value of a character.
 
 {{fbdoc item="ret"}}
-	Returns a string contaning the character(s).
+	Returns a string containing the character(s).
 
 {{fbdoc item="desc"}}
 	##**Chr**## returns a string containing the character(s) represented by the [[CptAscii ASCII]] values passed to it.
 
-	When ##**Chr**## is used with numerical constants or literals, the result is evalutated at compile-time, so it can be used in variable initializers.
+	When ##**Chr**## is used with numerical constants or literals, the result is evaluated at compile-time, so it can be used in variable initializers.
 
 	##[[KeyPgAsc ASC]]## performs the opposite function, returning the [[CptAscii ASCII]] code of a character represented by a string.
 
@@ -35,9 +35,9 @@ print s
 %%
 
 {{fbdoc item="diff"}}
-	- FB accepts multiple integer values as arguments, QB accepted only one.
-	- FB evaluates the CHR function at compile time when used with constants or literals.
-	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
+	- FreeBASIC accepts multiple integer values as arguments, QB accepted only one.
+	- FreeBASIC evaluates the CHR function at compile time when used with constants or literals.
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FreeBASIC.
 
 {{fbdoc item="see"}}
 	- [[CptAscii ASCII Character Codes]]

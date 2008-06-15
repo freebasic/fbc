@@ -1,23 +1,23 @@
 {{fbdoc item="title" value="RND"}}----
-Returns a random [[KeyPgDouble double]] precision number in the range [0, 1)
+Returns a random [[KeyPgDouble double]] precision number in the range ##[0, 1)##
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rnd** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rnd** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgSingle single]] = 1.0 ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = Rnd ( //number// )
+	//result// = **Rnd** ( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		Optional ##[[KeyPgInteger integer]]## argument. If //number// has a value of 0, the last random number generated is repeated, for any other number a new random number is returned. The default for no argument is to return a new random number.
+		Optional ##[[KeyPgInteger integer]]## argument. If ##//number//## has a value of 0, the last random number generated is repeated, for any other number a new random number is returned. With the QB-compatible algorithm, a negative number fully reseeds the generator.  The default for no argument is to return a new random number.
 
 {{fbdoc item="ret"}}
 	Returns the random number generated.
 
 {{fbdoc item="desc"}}
-	Returns a number of type ##[[KeyPgDouble double]]## in the range [0, 1), that is, zero (0) and everything between zero (0) and one (1) - but not including one - based off of a random seed (see ##[[KeyPgRandomize Randomize]]##).
+	Returns a number of type ##[[KeyPgDouble double]]## in the range ##[0, 1)## (i.e. ##0 <= **Rnd** < 1##), based on a random seed (see ##[[KeyPgRandomize Randomize]]##).
 
-	##**Rnd**## can use a variety of different algorithms.  (See ##[[KeyPgRandomize Randomize]]##) for details of the default and selectable algorithms
+	##**Rnd**## can use a variety of different algorithms - see ##[[KeyPgRandomize Randomize]]## for details of the default and selectable algorithms.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/rnd.bas"}}%%(freebasic)
@@ -46,15 +46,15 @@ end function
 %%
 
 {{fbdoc item="lang"}}
-	- The algorithm used by default depends on the current lang mode. 
-	- With //-lang fb//, a 32 bit Mersenne Twister function with 32 bits granularity is used.
-	- With //-lang qb//, a function giving the same output as QB's RND is used. The granularity is 24 bits.
-	- With //-lang deprecated// the function in the C runtime available in the system is used. The function available in Win32 has a granularity of 15 bits, and 32 bits in Linux and DOS.
-	- ##[[KeyPgRandomize Randomize]]## accepts an additional parameter allowing to select the algorithm used in RND.
+	The default algorithm used depends on the current dialect in use:
+		- With the //[[ProPgCompOptlang -lang fb]]// dialect, a 32 bit Mersenne Twister function with a granularity of 32 bits is used.
+		- With the //[[ProPgCompOptlang -lang qb]]// dialect, a function giving the same output as ##**Rnd**## in QB is used. The granularity is 24 bits.
+		- With the //[[ProPgCompOptlang -lang deprecated]]// dialect, the function in the C runtime available in the system is used. The function available in Win32 has a granularity of 15 bits, and 32 bits in Linux and DOS.
+		- ##[[KeyPgRandomize Randomize]]## accepts an additional parameter, allowing to select the algorithm used in ##**Rnd**##.
 
 {{fbdoc item="diff"}}
-	- If the optional argument is less than 0, it has the same meaning as passing an argument of 1.
 	- None, if compiled in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- For the non-QB-compatible algorithms, if the optional argument is less than 0, it has the same meaning as passing an argument of 1.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgRandomize Randomize]]##

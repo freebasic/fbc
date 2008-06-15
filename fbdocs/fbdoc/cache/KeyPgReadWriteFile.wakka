@@ -5,7 +5,7 @@ File access specifier
 	Open //filename// As String For Binary Access **Read Write** As #//filenum// As Integer
 ##
 {{fbdoc item="desc"}}
-	Specifier for the ##[[KeyPgAccess Access]]## clause in the ##[[KeyPgOpen Open]]## statement.  ##**Read Write**## specfies that the file is accessible for both input and output.
+	Specifier for the ##[[KeyPgAccess Access]]## clause in the ##[[KeyPgOpen Open]]## statement.  ##**Read Write**## specifies that the file is accessible for both input and output.
 
 {{fbdoc item="ex"}}
 	See example at ##[[KeyPgAccess Access]]##

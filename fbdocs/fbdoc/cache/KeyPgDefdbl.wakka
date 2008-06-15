@@ -11,10 +11,10 @@ Specifies a default data type for a range of variable names
 		the last letter in the range
 
 {{fbdoc item="desc"}}
-	##**Defdbl**## specifies that variables and arrays which aren't declared with a datatype - or not declared at all - are implicitly declared of type ##[[KeyPgDouble Double]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
+	##**Defdbl**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgDouble Double]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make 'aNum' a ##[[KeyPgDouble Double]]##-precision decimal number since it is in the range of a-d:
+	This will make ##aNum## a ##[[KeyPgDouble Double]]##-precision decimal number since it is in the range of a-d:
 {{fbdoc item="filename" value="examples/manual/switches/defdbl.bas"}}%%(freebasic)
 '' Compile with -lang deprecated or qb
 defdbl a-d
@@ -22,8 +22,9 @@ dim aNum 'implicit: As Double
 
 print len(aNum) ' Prints 8, the number of bytes in a double.
 %%
+
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
+	- Only available in the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None

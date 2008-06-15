@@ -13,7 +13,7 @@ Performs a bitwise-and (conjunction) and assigns the result to a variable
 	##//T1//##
 		Any numeric type.
 	##//rhs//##
-		The value to perform a bitwise-and (conjunction) with //lhs//.
+		The value to perform a bitwise-and (conjunction) with ##//lhs//##.
 	##//T2//##
 		Any numeric type.
 
@@ -43,7 +43,7 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

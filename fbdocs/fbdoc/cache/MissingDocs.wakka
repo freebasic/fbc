@@ -6,7 +6,6 @@ Please edit this page to remove items when they are written.
 	Differences between versions (windows, linux, DOS)
 	Cross compiling
 	Function calling overview
-	Source and Include Files
 	Statements and Statement blocks
 	Expressions
 	See [[CatPgProgrammer Programmer's Guide]] (W.I.P.)
@@ -15,10 +14,7 @@ Please edit this page to remove items when they are written.
 	ProPgControlFlow
 
 {{fbdoc item="section" value="Pages/topics with incomplete documentation"}}
-	syntax of iterator operators (for,step,next) in [[KeyPgOperator Operators]]
-	static members
-	all overloaded ops documented? (need to check this)
-	[[OpPrecedence Operator Precedence]] table needs everything @[[CatPgOperators Operators]] plus [[KeyPgCast Operator Cast]]
+	Const Qualifiers
 
 {{fbdoc item="section" value="Pages with missing examples"}}
 	[[KeyPgPmap Pmap]]
@@ -26,8 +22,6 @@ Please edit this page to remove items when they are written.
 	[[KeyPgOpStep Operator Step]]
 	[[KeyPgOpNext Operator Next]]
 	[[KeyPgOpDelete Operator Delete]]
-	[[KeyPgLet Let]] - Let Operator ( need new page? )
-	[[KeyPgLet Let]] - UDT to variable list assignment ( need new page? )
 	[[KeyPgReset Reset]] - need Reset(streamno) stdio example
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

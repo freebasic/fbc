@@ -41,7 +41,7 @@ Sleep
 %%
 
 {{fbdoc item="diff"}}
-	- QB used the special pointer keyword VARPTR$ with the Xp command.
+	- QB used the special pointer keyword VARPTR$ with the ##Xp## command.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##

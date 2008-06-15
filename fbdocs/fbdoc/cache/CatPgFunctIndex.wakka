@@ -164,13 +164,6 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgWritePp|WRITE #"}}
 	- {{fbdoc item="keyword" value="KeyPgWriteFile|WRITE (File Access)"}}	
 
-{{fbdoc item="section" value="Extended library (file.bi)"}}
-	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}
-	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}
-	- {{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}
-	- {{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}
-	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
-
 {{fbdoc item="section" value="Graphics"}}
 	- {{fbdoc item="keyword" value="KeyPgAddGfx|ADD (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgAlphaGfx|ALPHA (Graphics PUT)"}}
@@ -265,7 +258,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgMetaDynamic|$DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaInclude|$INCLUDE"}}
-<<>>
+
 {{fbdoc item="section" value="Miscellaneous"}}
 	- {{fbdoc item="keyword" value="KeyPgAsm|ASM"}}
 	- {{fbdoc item="keyword" value="KeyPgData|DATA"}}
@@ -279,7 +272,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgSizeof|SIZEOF"}}
 	- {{fbdoc item="keyword" value="KeyPgSwap|SWAP"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeof|TYPEOF"}}
-
+<<>>
 {{fbdoc item="section" value="Modularizing"}}
 	- {{fbdoc item="keyword" value="KeyPgCommon|COMMON"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibfree|DYLIBFREE"}}
@@ -317,6 +310,11 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgEnviron|ENVIRON"}}
 	- {{fbdoc item="keyword" value="KeyPgExec|EXEC"}}
 	- {{fbdoc item="keyword" value="KeyPgExepath|EXEPATH"}}
+	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}
+	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}
+	- {{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}
+	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
 	- {{fbdoc item="keyword" value="KeyPgKill|KILL"}}
 	- {{fbdoc item="keyword" value="KeyPgMkdir|MKDIR"}}
 	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}

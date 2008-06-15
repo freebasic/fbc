@@ -11,10 +11,10 @@ Specifies a default data type for a range of variable names
 		the last letter in the range
 
 {{fbdoc item="desc"}}
-	##**Defshort**## specifies that variables and arrays which aren't declared with a datatype - or not declared at all - are implicitly declared of type ##[[KeyPgShort Short]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
+	##**Defshort**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgShort Short]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make 'sNumber' a ##[[KeyPgShort Short]]## number since it's first letter starts with s.
+	This will make ##sNumber## a ##[[KeyPgShort Short]]## number since it's first letter starts with s.
 {{fbdoc item="filename" value="examples/manual/switches/defshort.bas"}}%%(freebasic)
 '' Compile with -lang deprecated or qb
 defshort s
@@ -22,7 +22,7 @@ dim sNumber
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
+	- Only available in the //[[ProPgCompOptlang -lang deprecated]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

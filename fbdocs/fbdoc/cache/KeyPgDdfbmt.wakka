@@ -5,7 +5,7 @@ Intrinsic define (macro value) set by the compiler
 	""__FB_MT__""
 ##
 {{fbdoc item="desc"}}
-	##""__FB_MT__""## indicates if the the multithreaded option '-mt' was specified on the command line at the time of compilation.
+	##""__FB_MT__""## indicates if the the multithreaded option //[[ProPgCompOptmt -mt]]// was specified on the command line at the time of compilation.
 
 	Returns non-zero (-1) if the option was specified.  Returns zero (0) otherwise.
 

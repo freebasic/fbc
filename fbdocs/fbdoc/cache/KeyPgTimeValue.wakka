@@ -19,7 +19,7 @@ Gets a [[ProPgDates Date Serial]] from a time string
 	
 	The time string must be in the format ##"23:59:59"## or  ##"11:59:59PM"##
 
-	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/dates/timevalue.bas"}}%%(freebasic)

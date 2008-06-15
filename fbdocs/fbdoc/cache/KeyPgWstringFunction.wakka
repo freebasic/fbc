@@ -34,7 +34,7 @@ end 0
    IIIII<<
    ::c::
 {{fbdoc item="target"}}
-	- Unicode (w)strings are not suported in the DOS port of FreeBASIC
+	- Unicode (w)strings are not supported in the DOS port of FreeBASIC
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.

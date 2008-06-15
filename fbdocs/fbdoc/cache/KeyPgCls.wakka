@@ -31,7 +31,7 @@ Locate 12, 35
 Print "Hello Universe!"
 %%
 
-Using C's memset instead of CLS might give you a speed boost:
+Using C's ##memset## instead of CLS might give you a speed boost:
 
 {{fbdoc item="filename" value="examples/manual/gfx/cls-memset.bas"}}%%(freebasic)
 #include "crt.bi"

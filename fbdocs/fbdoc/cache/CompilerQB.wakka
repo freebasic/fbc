@@ -5,9 +5,9 @@
 
 
 ==Microsoft and BASIC Products==
-	Microsoft and BASIC extend far prior to QuickBASIC.  In fact, Microsoft's first product was a small BASIC interpreter for Altair computers released in 1975, and until the early 1980s Microsoft was known only as a language vender.  They ported their BASIC software to several different personal computers at the time and made decent business doing it.
+	Microsoft and BASIC extend far prior to QuickBASIC.  In fact, Microsoft's first product was a small BASIC interpreter for Altair computers released in 1975, and until the early 1980s Microsoft was known only as a language vendor.  They ported their BASIC software to several different personal computers at the time and made decent business doing it.
 
-	In August of 1981 Microsoft released the next major step in its BASIC line, "Advanced BASIC", as part of a comission for IBM's PC-DOS, and is more often called by its executable name, BASICA.EXE.  For Microsoft's new MS-DOS, they released GW-BASIC, which was, for the most part, a port of BASICA that did not require IBM's Basic ROM included with its systems.
+	In August of 1981 Microsoft released the next major step in its BASIC line, "Advanced BASIC", as part of a commission for IBM's PC-DOS, and is more often called by its executable name, BASICA.EXE.  For Microsoft's new MS-DOS, they released GW-BASIC, which was, for the most part, a port of BASICA that did not require IBM's Basic ROM included with its systems.
 
 	BASICA and GW-BASIC are interpreters.  Interpreters read source code and "interpret" it into computer code as it is read.  This is useful, but slow.  Microsoft, in 1983, released BASCOM for MS-DOS.  BASCOM compiled BASIC code into native machine code, which ran much faster than interpreted code.  This was repackaged with an IDE and released as QuickBasic in 1985.
 
@@ -23,7 +23,7 @@
 ==The Internet and QBasic's Second Wind==
 	Because the "QBasic 1.1" interpreter was packaged with MS-DOS, it was released with every copy of DOS until its dying days, Windows 3.1, and even Windows 95, 98 and ME.  With the wild success of Windows, QBasic became the most widely available programming tool available for Microsoft operating systems.  
 
-	When the World Wide Web became popular in the mid-90s, many hobbyist programmers made websites dedicated to QuickBASIC not as an application tool, but as a platform for their demos and games.  Many assembly libraries were created for it after Microsoft dropped support, and as these demos and games became more elaborate, so did the "QB Community".  From the mid-90s, through the new millenium to today, QuickBASIC has enjoyed a small but present cult following.  
+	When the World Wide Web became popular in the mid-90s, many hobbyist programmers made websites dedicated to QuickBASIC not as an application tool, but as a platform for their demos and games.  Many assembly libraries were created for it after Microsoft dropped support, and as these demos and games became more elaborate, so did the "QB Community".  From the mid-90s, through the new millennium to today, QuickBASIC has enjoyed a small but present cult following.  
 
 	Andre Victor, FreeBASIC's creator, was first known over the internet as the author of several extensions to QuickBASIC in the form of libraries.  He created routines to improve the speed of floating point operations, access the internet, use SVGA graphics, and provide powerful QBasic language programming features.  In the late summer of 2004, he began work on a 32-bit compiler using Visual Basic for DOS.
 

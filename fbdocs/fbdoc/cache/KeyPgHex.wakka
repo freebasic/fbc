@@ -31,7 +31,7 @@ Returns the hexadecimal of the given number
 
 	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (8 for an ##[[KeyPgInteger integer]]##, 16 for a ##[[KeyPgLongint Longint]])##.
 
-	If you want to convert a hexadecimal string back into a number, the easiest way to do it is to prepend the string with ##"&H"##, and convert it as a normal numeric string, using ##[[KeyPgValint Valint]]##.
+	If you want to convert a hexadecimal string back into a number, the easiest way to do it is to prefix the string with ##"&H"##, and convert it as a normal numeric string, using ##[[KeyPgValint Valint]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/hex.bas"}}%%(freebasic)
@@ -49,7 +49,7 @@ Print Hex(54321, 5)
 
 {{fbdoc item="diff"}}
 	- In QBASIC, there was no way to specify the number of digits returned.
-	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FreeBASIC.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgBin Bin]]##

@@ -17,7 +17,7 @@ Returns a string representing the first key waiting in the keyboard buffer
 
 	The ""Shift"", ""Ctrl"", ""Alt"", and ""AltGr"" keys can't be read independently by this function as they never enter the keyboard buffer (although, perhaps obviously, Shift-A will be reported by ##**Inkey**## differently than Control-A et cetera; Alt-A is an extended key a la the above).
 	
-	To wait for a keypress ##**Inkey**## can be polled in a loop. See also ##[[KeyPgInputnum Input]]## or ##[[KeyPgGetkey Getkey]]##.
+	To wait for a key press, ##**Inkey**## can be polled in a loop. See also ##[[KeyPgInputnum Input]]## or ##[[KeyPgGetkey Getkey]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/inkey.bas"}}%%(freebasic)

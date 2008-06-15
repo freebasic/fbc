@@ -13,7 +13,7 @@ Standard data type: 8 bit signed
   bytevar = 100
   PRINT "bytevar= ", bytevar
 %%
-{{fbdoc item="ex"}}
+
 {{fbdoc item="filename" value="examples/manual/datatype/byte.bas"}}%%(freebasic)
 Dim x As Byte = Cbyte(&H80)
 Dim y As Byte = CByte(&H7F)
@@ -26,7 +26,7 @@ Print "Byte Range = "; x; " to "; y
 	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgUbyte Ubyte]]##

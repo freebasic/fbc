@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="POINT"}}----
-Returns the colour attribute of a specified pixel coordinate
+Returns the color attribute of a specified pixel coordinate
 
 {{fbdoc item="syntax"}}##
 	//result// = **Point**( //coord_x//, //coord_y// [,//buffer//] )
@@ -17,7 +17,7 @@ Returns the colour attribute of a specified pixel coordinate
 
 {{fbdoc item="desc"}}
 	GfxLib Function that reads the color of the pixel at the coordinate ##//coord_x//##, ##//coord_y//## of the screen, or of ##//buffer//##, if supplied.
-The value return is a color index in a 256 or less color ##[[KeyPgScreengraphics Screen]]##, and a RGB value in true color modes. If the coordinates are offscreen, -1 is returned
+The value return is a color index in a 256 or less color ##[[KeyPgScreengraphics Screen]]##, and a RGB value in true color modes. If the coordinates are off-screen, -1 is returned
 
 	The function ##**Point**## does not work in text modes.
 

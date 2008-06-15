@@ -1,5 +1,5 @@
 {{fbdoc item="title" value=" #PRINT"}}----
-Preprocessor diagnositc directive
+Preprocessor diagnostic directive
 
 {{fbdoc item="syntax"}}##
 	**#print** //text//

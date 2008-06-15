@@ -23,9 +23,9 @@ Returns command line parameters used to call the program
 
 	When the command line is parsed for arguments, everything between double quotes in the parameter list will be considered as a single parameter, and is returned with the double quotes.
 
-	By default, filename globbing for arguments (expansion of wildcards to filenames) is used on all ports of FreeBASIC for compatibility.  Arguments on the commandline containing wildcards are typically not expanded if when no file is matched or if properly quoted.  Other special characters for redirection are typically not returned unless properly quoted.  Consult the documentation on the shell being used for more information on the proper quoting of command line arguments.
+	By default, filename globbing for arguments (expansion of wildcards to filenames) is used on all ports of FreeBASIC for compatibility.  Arguments on the command line containing wildcards are typically not expanded if when no file is matched or if properly quoted.  Other special characters for redirection are typically not returned unless properly quoted.  Consult the documentation on the shell being used for more information on the proper quoting of command line arguments.
 
-~&//**WARNING**: By nature of FreeBASIC's constructor precedence and main() intialization, calling ##**Command**## within a global constructor is not safe. At the moment your app will not crash, but you will only recieve the null string (##"####"##). This *may* be able to be fixed in the future, but it would be wise not to rely on that.//
+~&//**WARNING**: By nature of constructor precedence in FreeBASIC and main() initialization, calling ##**Command**## within a global constructor is not safe. At the moment your app will not crash, but you will only receive the null string (##"####"##). This *may* be able to be fixed in the future, but it would be wise not to rely on that.//
 
 	__Disabling filename globbing under Win32__
 		For mingw32 and cygwin builds, link the FreeBASIC program with CRT_noglob.o or define the following somewhere in the source:
@@ -75,9 +75,9 @@ End Function
 %%
 
 {{fbdoc item="diff"}}
-	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FreeBASIC.
 	- The numeric argument was not supported in QB.
-	- QB converted the parameter list to uppercase before returning it, FB doesn't.
+	- QB converted the parameter list to uppercase before returning it, FreeBASIC doesn't.
 	- By default arguments containing wildcard characters are expanded (filename globbing)
 
 {{fbdoc item="see"}}

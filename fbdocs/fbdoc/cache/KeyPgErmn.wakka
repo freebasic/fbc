@@ -8,9 +8,9 @@ Error reporting function
 	//result// = **Ermn** ( ) 
 ##
 {{fbdoc item="ret"}}
-	Returns a pointer to the string identifying the module where the error occured.
+	Returns a pointer to the string identifying the module where the error occurred.
 
-	Returns NULL if the source is not compiled with the '-exx' compiler option.
+	Returns NULL if the source is not compiled with the //[[ProPgCompOptexx -exx]]// compiler option.
 
 {{fbdoc item="desc"}}
 	An error reporting function returning a pointer to the name of the module.

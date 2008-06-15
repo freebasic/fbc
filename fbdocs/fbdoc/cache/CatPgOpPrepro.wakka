@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Preprocessor Operators"}}----
 Operators that are executed by the preprocessor
 
-These operators control how text is interpretted by the preprocessor.
+These operators control how text is interpreted by the preprocessor.
 
 <<=={{fbdoc item="keyword" value="KeyPgOpPpStringize|Operator # (Stringize)"}}==
 	Returns a text operand converted to a [[KeyPgString String]] literal.

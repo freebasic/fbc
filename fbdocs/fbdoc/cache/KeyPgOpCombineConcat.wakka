@@ -12,12 +12,12 @@ Appends and assigns a string onto another string
 	##//lhs//##
 		The string to assign to.
 	##//rhs//##
-		The value to append to //lhs//.
+		The value to append to ##//lhs//##.
 	##//T2//##
 		Any numeric, string or user-defined type that can be converted to a string.
 
 {{fbdoc item="desc"}}
-	This operator appends one string onto another. The right-hand side expression (//rhs//) is converted to a string before concatenation. It is functionally equivalent to,
+	This operator appends one string onto another. The right-hand side expression (##//rhs//##) is converted to a string before concatenation. It is functionally equivalent to,
 ##
 		//lhs// = //lhs// [[KeyPgOpAdd &]] //rhs//
 ##
@@ -38,7 +38,7 @@ Hello, world!
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

@@ -12,7 +12,7 @@ Defines or resizes a variable-length array
 		When used with an existing array, the contents of the array will be preserved during the resize. Note that ##[[KeyPgPreserve Preserve]]## will not work with multi-dimensional arrays.
 	##//symbolname//##
 		A new or existing array id.
-	##//subscript//##: [ //lowerbound// TO ] //upperbound//
+	##//subscript//##: [ ##//lowerbound//## TO ] ##//upperbound//##
 		The lower and upper bound range for a dimension of the array. Lower bound defaults to zero (0) if not specified.
 	##[[DataType datatype]]##
 		The type of elements contained in the array.
@@ -20,7 +20,7 @@ Defines or resizes a variable-length array
 {{fbdoc item="desc"}}
 	##**Redim**## can be used to define new variable-length arrays, or resize existing variable-length arrays. ##**Redim**## always produces variable-length arrays, so, unlike ##[[KeyPgDim Dim]]##, variable-length arrays can be defined with constant subscripts.
 
-	When defining a new variable-length array, its elements are default constructed. For simple datatypes like ##[[KeyPgInteger Integer]]## or ##[[KeyPgDouble Double]]##, the elements are initialized to zero (0). For user-defined types with a default constructor, that will be called.
+	When defining a new variable-length array, its elements are default constructed. For simple data types like ##[[KeyPgInteger Integer]]## or ##[[KeyPgDouble Double]]##, the elements are initialized to zero (0). For user-defined types with a default constructor, that will be called.
 
 	When a variable-length array is resized without the ##[[KeyPgPreserve Preserve]]## clause, it's elements are destroyed, and new elements are default constructed. The ##[[KeyPgPreserve Preserve]]## clause does not destroy existing elements unless the new size of the variable-length array is smaller than it was previously. When resizing an array larger, the new elements are default constructed at the end of the array.
 

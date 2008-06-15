@@ -17,7 +17,7 @@ Control flow statement for conditional branching
 {{fbdoc item="desc"}}
 	##**If...Then**## is a way to make decisions. It is a mechanism to execute code only if a condition is true, and can provide alternative code to execute based on more conditions.
 
-	The expresion is always evaluated completely (no short-circuit evaluation), so it is necessary to separate potentially unsafe expressions with extra levels of if's.
+	The expression is always evaluated completely (no short-circuit evaluation), so it is necessary to separate potentially unsafe expressions with extra levels of ##**If**## blocks.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/if-then.bas"}}%%(freebasic)
@@ -45,7 +45,7 @@ LOOP 'Go back to the start of the loop
 %%
 
 {{fbdoc item="diff"}}
-	- END IF must be used in single line IF's if a colon comes right after the THEN. That colon is unneeded so it's always possible to use the QB syntax.
+	- END IF must be used with a single line ##**If**##, if a colon comes right after the THEN. That colon is unneeded so it's always possible to use the QB syntax.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDoloop Do...Loop]]##

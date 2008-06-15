@@ -21,11 +21,11 @@ Reallocates storage for an existing reserved block of memory
 
 	If ##//pointer//## is null (0), then ##""ReAllocate""## behaves identically to ##[[KeyPgAllocate Allocate]]##.
 
-	Rellocated memory must be deallocated, or freed, with ##[[KeyPgDeallocate Deallocate]]## when no longer needed.
+	Reallocated memory must be deallocated, or freed, with ##[[KeyPgDeallocate Deallocate]]## when no longer needed.
 
-	This function is not part of the FB runtime library, it is an alias for the C runtime library's //realloc//, so it's not garanteed to be thread safe in all platforms.
+	This function is not part of the FreeBASIC runtime library, it is an alias for the C runtime library's ##//realloc//##, so it's not guaranteed to be thread safe in all platforms.
 	
-	**NOTE**: Reallocate'ing a pointer inside an object function, when that pointer contains the parent object of the function, is undefined, and will likely result in horrible crashes.
+	**NOTE**: Reallocating a pointer inside an object function, when that pointer contains the parent object of the function, is undefined, and will likely result in horrible crashes.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/reallocate.bas"}}%%(freebasic)

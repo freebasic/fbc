@@ -13,7 +13,7 @@ Performs a bitwise-xor (exclusive disjunction) and assigns the result to a varia
 	##//T1//##
 		Any numeric type.
 	##//rhs//##
-		The value to perform a bitwise-xor (exclusive or) with //lhs//.
+		The value to perform a bitwise-xor (exclusive or) with ##//lhs//##.
 	##//T2//##
 		Any numeric type.
 
@@ -36,7 +36,7 @@ print bin(a)
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

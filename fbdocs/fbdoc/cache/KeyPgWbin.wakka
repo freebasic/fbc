@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="WBIN"}}----
-Returns the binary wstring (unicode) representation of a number
+Returns the binary wstring (Unicode) representation of a number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
@@ -46,7 +46,7 @@ PRINT WBIN(54321, 20)
 00001101010000110001
 %%
 {{fbdoc item="target"}}
-	- Unicode (w)strings are not suported in the DOS port of FB
+	- Unicode (w)strings are not supported in the DOS port of FreeBASIC.
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.

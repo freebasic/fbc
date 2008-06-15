@@ -13,13 +13,15 @@ Fills an area delimited by a border of a specified color
 		coordinates of the pixel on which to start the flood fill (paint)
 	##//paint//##
 		the color attribute or fill pattern
-		a numberic value indicates a color, while a string indicates a fill pattern
+		a numeric value indicates a color, while a string indicates a fill pattern
 	##//border_color//##
 		boundary color for the fill
 
 {{fbdoc item="desc"}}
 	Graphics command to fill an area delimited by a border of specified color. Also known as 'flood-fill' or 'paint bucket'.
+
 	##**Paint**## can operate on the current work page as set by the ##[[KeyPgScreenset Screenset]]## statement or on the target ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer, if specified.
+
 	Filling starts at specified ##(//x//,//y//)## coordinates; if ##STEP## is specified, these are relative to the last graphics cursor position. Coordinates are also affected by custom coordinates system set up by ##[[KeyPgWindow Window]]## and/or ##[[KeyPgViewgraphics View (Graphics)]]## statements; clipping set by ##[[KeyPgViewgraphics View]]## also applies.
 	
 	If the ##//paint//## argument is a number, it is assumed a color in the same format used by the ##[[KeyPgColor Color]]## statement, and the region is flood-filled using that color. If ##//paint//## is a ##[[KeyPgString String]]##, the region will be filled using a pattern; the pattern is always 8*8 pixels, and the passed string must hold pixels data in a format dependent on the current color depth. The string holds pattern pixels row by row, and its size should be as follows:
@@ -124,8 +126,8 @@ sleep
 
 {{fbdoc item="diff"}}
 	- The QB version could not draw onto a ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer.
-	- QB's fill pattern was always 8-bits wide, and the height was the length of the string (up to 64).  FB's fill pattern is 8 pixels wide, independent of the color depth, and the height is always 8.
-	- The background color parameter supported by QB is not supported by the FB version.
+	- In QB, the fill pattern was always 8-bits wide, and the height was the length of the string (up to 64). In FreeBASIC, the fill pattern is 8 pixels wide, independent of the color depth, and the height is always 8.
+	- The background color parameter supported by QB is not supported by the FreeBASIC version.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen]]##

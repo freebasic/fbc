@@ -15,7 +15,7 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects a
 {{fbdoc item="desc"}}
 	##**Custom**## selects a custom user defined function as the method for blitting an image buffer.
 
-	The ##Custom## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will recieve the source and destination pixel values, and a data pointer passed by the ##[[KeyPgPutgraphics Put]]## function. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
+	The ##Custom## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will receive the source and destination pixel values, and a data pointer passed by the ##[[KeyPgPutgraphics Put]]## function. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
 
 	##[[KeyPgDeclare declare]] [[KeyPgFunction function]] //identifier// ( [[KeyPgByval byval]] //source_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //destination_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //parameter// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]##
 

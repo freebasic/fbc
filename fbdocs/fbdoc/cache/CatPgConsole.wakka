@@ -38,7 +38,7 @@ Procedures that work with the console
 	=={{fbdoc item="keyword" value="KeyPgWrite|WRITE"}}==
 		Writes a list of items to the console.
 	=={{fbdoc item="keyword" value="KeyPgSpc|SPC"}}==
-		Skips a nmber of spaces when writing text.
+		Skips a number of spaces when writing text.
 	=={{fbdoc item="keyword" value="KeyPgTab|TAB"}}==
 		Skips to a certain column when writing text.
 >>::c::

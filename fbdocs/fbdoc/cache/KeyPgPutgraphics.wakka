@@ -14,7 +14,7 @@ Copies an image on to another image or screen
 	##//source//##
 		is the address of the buffer of the image to be drawn. See below.
 	##(//x1//, //y1//)-[ STEP ](//x2//, //y2//)##
-		specify a rectangular area in the source buffer to draw. If omitted, the entire buffer is drawn. STEP indicates that x2 and y2 are relative to x1 and y1, respectively.
+		specify a rectangular area in the source buffer to draw. If omitted, the entire buffer is drawn. ##STEP## indicates that ##//x2//## and ##//y2//## are relative to ##//x1//## and ##//y1//##, respectively.
 	##//method//##
 		specifies the method used to draw the image to the destination buffer, and can be any one of the following (the default method is ##XOR##):
 
@@ -47,7 +47,7 @@ Copies an image on to another image or screen
 		Depending on the method used, the existing pixel values in the destination buffer are used to calculate the pixel values that are actually drawn. The ##PSET##, ##PRESET## and ##TRANS## methods do not use the destination buffer for calculating final pixel values, while the ##AND##, ##OR##, ##XOR##, ##ALPHA## and ##ADD## methods do. Images that are drawn with these latter methods will look differently depending on the content of the destination buffer.
 
 	**Different pixel formats**
-		The pixel format of an image buffer must be compatible with the current gfx mode color depth; that is, if you acquire an image using ##[[KeyPgGetgraphics Get]]## and you later change screen mode via the ##[[KeyPgScreengraphics Screen]]## statement, the image data may not be valid in the new gfx mode, and you may not be able to draw it on the screen. You should note however that you will always be able to draw image buffers onto other image buffers via ##**Put**## as long as these buffers were created with the same depth.
+		The pixel format of an image buffer must be compatible with the current graphics mode color depth; that is, if you acquire an image using ##[[KeyPgGetgraphics Get]]## and you later change screen mode via the ##[[KeyPgScreengraphics Screen]]## statement, the image data may not be valid in the new graphics mode, and you may not be able to draw it on the screen. You should note however that you will always be able to draw image buffers onto other image buffers via ##**Put**## as long as these buffers were created with the same depth.
 
 		The ##AND##, ##OR## and ##XOR## methods produce different results depending on the current color depth, as pixels are stored in different formats; see [[GfxInternalFormats Internal pixel formats]] for details. 
 
@@ -62,7 +62,7 @@ Copies an image on to another image or screen
 		Normally ##**Put**## only allows to draw image buffers onto targets with the same depth, but there is an exception. When drawing an 8 bpp image buffer onto a 32 bpp target and the ##ALPHA## method is used, the 8 bpp source image is drawn into the alpha channel of the 32 bpp target. This allows to easily set the whole alpha channel of an image without having to deal with low level access of its pixel data.
 
 	**Custom Blend Function**
-		The ##CUSTOM## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will recieve the source and destination pixel values, and a data pointer passed by the ##**Put**## function. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
+		The ##CUSTOM## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will receive the source and destination pixel values, and a data pointer passed by the ##**Put**## function. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
 
 		##[[KeyPgDeclare declare]] [[KeyPgFunction function]] //identifier// ( [[KeyPgByval byval]] //source_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //destination_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //parameter// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]##
 
@@ -72,7 +72,7 @@ Copies an image on to another image or screen
 			##//parameter//## is the parameter that is passed by the ##**Put**## command.  It should be a data ##[[KeyPgPtr Pointer]]##.  If omitted, its value will be zero.
 
 {{fbdoc item="ex"}}
-	The following program gives a simple example of how to ##**Put**## an image to the screen, including setting up an image buffer, and freeing its memory afterwards.
+	The following program gives a simple example of how to ##**Put**## an image to the screen, including setting up an image buffer, and freeing its memory after.
 	{{fbdoc item="filename" value="examples/manual/gfx/put.bas"}}%%(freebasic)
 '' set up the screen and fill the background with a color
 screenres 320, 200, 32
@@ -94,6 +94,7 @@ imagedestroy img
 '' wait for a keypress
 sleep
 %%
+
 {{image class="center" title="Simple Put example output" url="http://img112.imageshack.us/img112/8348/simpleputexample2jg3.png" link="http://img112.imageshack.us/my.php?image=simpleputexample2jg3.png"}}
 
 
@@ -158,6 +159,7 @@ function checkered_blend( byval src as uinteger, byval dest as uinteger, byval p
    return pixel
 end function
 %%
+
 {{image class="center" title="Put example output" url="http://img297.imageshack.us/img297/3752/keypgputgraphicsputexamgh6.png" link="http://img297.imageshack.us/my.php?image=keypgputgraphicsputexamgh6.png"}}
 
 {{fbdoc item="diff"}}

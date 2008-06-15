@@ -5,7 +5,7 @@ Preprocessor directive
 	**#inclib** //"filename"//
 ##
 {{fbdoc item="desc"}}
-	Includes a library (.a file) in the linking process, making it easier for the user to compile, since the user doesn't have to explicitly type at the command line: "fbc sourcefile -a libfile".
+	Includes a library (.a file) in the linking process, making it easier for the user to compile, since the user doesn't have to explicitly type at the command line: ##"fbc sourcefile -a libfile"##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/inclib.bas"}}%%(freebasic)

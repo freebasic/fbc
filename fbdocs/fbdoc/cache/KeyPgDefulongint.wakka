@@ -11,18 +11,18 @@ Specifies a default data type for a range of variable names
 		the last letter in the range
 
 {{fbdoc item="desc"}}
-	##**Defulongint**## specifies that variables and arrays which aren't declared with a datatype - or not declared at all - are implicitly declared of type ##[[KeyPgUlongint Ulongint]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
+	##**Defulongint**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgUlongint Ulongint]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make 'lNumber' a ##[[KeyPgUlongint Ulongint]]## number since it's first letter starts with l.
-{{fbdoc item="filename" value="examples/manual/switches/defulngint.bas"}}%%(freebasic)
+	This will make ##lNumber## a ##[[KeyPgUlongint Ulongint]]## number since it's first letter starts with l.
+{{fbdoc item="filename" value="examples/manual/switches/defulongint.bas"}}%%(freebasic)
 '' Compile with -lang deprecated or qb
 defulongint l
 dim lNumber
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerDialects deprecated dialect]]//.
+	- Only available in the //[[ProPgCompOptlang -lang deprecated]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

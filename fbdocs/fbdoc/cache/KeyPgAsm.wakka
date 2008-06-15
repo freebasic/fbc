@@ -22,10 +22,10 @@ Code block that allows the use of architecture-specific instructions
 	[[x86 x86]] Specific:
 
 		==Syntax==
-			The syntax of the inline assembler is a simplified form of Intel syntax.  Intel syntax is used by the majority of x86 assemblers, such as MASM, TASM, NASM, YASM and FASM. In general, the destination of an instruction is placed first, followed by the source. Variables and functions defined by a program may be referenced in an Asm block.  The assembler used by FreeBASIC is GAS, using the ##.intel_syntax noprefix## directive, and ASM blocks are passed through unmodified, except for the substitution of local variable names for stack frame references, and commenting removal - use FB-like " ' " comments, not " ; " as usual in ASM. 
+			The syntax of the inline assembler is a simplified form of Intel syntax.  Intel syntax is used by the majority of x86 assemblers, such as MASM, TASM, NASM, YASM and FASM. In general, the destination of an instruction is placed first, followed by the source. Variables and functions defined by a program may be referenced in an Asm block.  The assembler used by FreeBASIC is GAS, using the ##.intel_syntax noprefix## directive, and ASM blocks are passed through unmodified, except for the substitution of local variable names for stack frame references, and commenting removal - use FreeBASIC-like " ' " comments, not " ; " as usual in ASM. 
 		
 		==Register Preservation==
-			When an ASM block is opened, the registers ebx, esi, and edi are pushed to the stack, when the block is closed, these registers are popped back from the stack.  This is because these registers are required to be preserved by most or all OS's using the x86 CPU.  You can therefore use these registers without explicitly preserving them yourself.
+			When an ASM block is opened, the registers ##ebx##, ##esi##, and ##edi## are pushed to the stack, when the block is closed, these registers are popped back from the stack.  This is because these registers are required to be preserved by most or all OS's using the x86 CPU.  You can therefore use these registers without explicitly preserving them yourself.
 
 		==Register Names==
 		~The names of the registers for the x86 architecture are written as follows in an ##Asm## block:
@@ -92,8 +92,8 @@ Print "4 + 5 ="; AddFive(i)
 
 ##%%4 + 5 = 9%%##
 
-	FB's Assembler is AS, the GCC assembler, so an external program. Some quirks apply:
-		The error lines  returned by FBC for asm / end asm blocks are not related the source file. As FBC simply displays the errors returned by AS , the lines are related to the assembly file. To make FB preserve it, the compiler must be invoked with the -r option.
+	FreeBASIC's Assembler is AS, the GCC assembler, so an external program. Some quirks apply:
+		The error lines  returned by FBC for asm / end asm blocks are not related the source file. As FBC simply displays the errors returned by AS , the lines are related to the assembly file. To make FreeBASIC preserve it, the compiler must be invoked with the //[[ProPgCompOptr -r]]// option.
 		The label names are case sensitive inside asm /end asm blocks.
 
 {{fbdoc item="lang"}}

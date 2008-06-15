@@ -11,10 +11,10 @@ Specifies a default data type for a range of variable names
 		the last letter in the range
 
 {{fbdoc item="desc"}}
-	##**Deflng**## specifies that variables and arrays which aren't declared with a datatype - or not declared at all - are implicitly declared of type ##[[KeyPgLong Long]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
+	##**Deflng**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgLong Long]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make 'lNumber' a ##[[KeyPgLong Long]]## integer number since it starts with l.
+	This will make ##lNumber## a ##[[KeyPgLong Long]]## integer number since it starts with l.
 {{fbdoc item="filename" value="examples/manual/switches/deflng.bas"}}%%(freebasic)
 '' Compile with -lang deprecated or qb
 deflng l
@@ -22,8 +22,9 @@ dim lNumber ' implicit: As Long
 
 print len(lNumber) ' Displays 4, the number of bytes in a long.
 %%
+
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
+	- Only available in the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None

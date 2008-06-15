@@ -23,7 +23,7 @@ Assigns a value to a location in memory
 			or
 		##*cast(//datatype// ptr, //address//) = //value//##
 
-	When ##//datatype//## is a user-defined type, ##**Poke**## assigns ##//value//## using the type's ##[[KeyPgOpAssignment operator let]]##.
+	When ##//datatype//## is a user-defined type, ##**Poke**## assigns ##//value//## using the type's ##[[KeyPgOpLet Operator Let]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/poke.bas"}}%%(freebasic)
@@ -40,7 +40,7 @@ Print Peek(Integer, p)
 
 {{fbdoc item="diff"}}
 	- Only the byte form were supported in QB.
-	- DEF SEG isn't needed anymore because the address space is 32-bit flat in FreeBASIC.
+	- ##DEF SEG## isn't needed anymore because the address space is 32-bit flat in FreeBASIC.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPeek Peek]]##

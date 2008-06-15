@@ -13,7 +13,7 @@ Procedures for working with multithreaded applications
 
 <<{{anchor name="THREADS"}}{{fbdoc item="section" value="Threads"}}
 	=={{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}==
-		Starts a procedure in a seperate thread of execution.
+		Starts a procedure in a separate thread of execution.
 	=={{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}==
 		Waits until a threaded procedure has finished.
 

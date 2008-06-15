@@ -142,7 +142,7 @@ print "  x3 = "; x3
 print "  x4 = "; x4
 %%
 {{fbdoc item="lang"}}
-	- Object-related features are supported only in the //-lang fb// option
+	- Object-related features are supported only in the //[[ProPgCompOptlang -lang fb]]// option
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

@@ -30,6 +30,7 @@ During the program compilation three types of errors can arise:
 	- //23 Deleting ANY pointers is undefined//
 	- //24 Array too large for stack, consider making it var-len or SHARED//
 	- //25 Overflow in constant conversion//
+	- //26 Variable following NEXT is meaningless//
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
@@ -222,7 +223,7 @@ During the program compilation three types of errors can arise:
 	- //186 This operator cannot be STATIC//
 	- //187 Parameter must be an integer//
 	- //188 Parameter must be a pointer//
-	- //189 VAR requires an initializer//
+	- //189 Expected initializer//
 	- //190 Fields cannot be named as keywords in TYPE's that contain member functions or in CLASS'es//
 	- //191 Illegal outside a FOR compound statement//
 	- //192 Illegal outside a DO compound statement//
@@ -254,6 +255,10 @@ During the program compilation three types of errors can arise:
 	- //218 COMMON variables cannot be object instances of CLASS/TYPE's with cons/destructors//
 	- //219 Cloning operators (LET, Copy constructors) can't take a byval arg of the parent's type//
 	- //220 Local symbols can't be referenced//
+	- //221 Expected 'PTR' or 'POINTER'//
+	- //222 Too many levels of pointer indirection//
+	- //223 Dynamic arrays can't be const//
+	- //224 Non-const UDT cannot invoke const method//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.

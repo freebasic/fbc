@@ -10,7 +10,7 @@ Default color values for FreeBASIC graphics and text screen modes
 **{{anchor name="SCRN7_8_9_12_CON|Screen modes 7, 8, 9, 12, and Console"}}**
 	Two sets of 8 colors: normal and intense (bright)
 **{{anchor name="SCRN13_8BIT|Screen 13 and 8-bit modes"}}**
-	Multiple color and greyscale bands
+	Multiple color and grayscale bands
 
 <<{{anchor name="SCRN1"}}{{fbdoc item="section" value="Screen mode 1"}}
 
@@ -37,8 +37,8 @@ Default color values for FreeBASIC graphics and text screen modes
 	
 		Colors 0 through 15 are the same as screen 12 mode.
 
-	{{fbdoc item="subsect" value="Greyscale band"}}
-		Colors 16 through 31 are greyscale from black to white.
+	{{fbdoc item="subsect" value="Grayscale band"}}
+		Colors 16 through 31 are grayscale from black to white.
 
 	{{fbdoc item="subsect" value="Brightness/saturation bands"}}
 		3 bands of decreasing brightness, each containing 3 bands of decreasing saturation, each containing 24 hues of color starting and ending at blue.

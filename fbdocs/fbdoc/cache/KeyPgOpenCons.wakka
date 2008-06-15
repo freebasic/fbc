@@ -16,7 +16,7 @@ Opens the console's standard input (//stdin//) or output (//stdout//) streams fo
 		An available //file number// to bind to the //stdin// or //stdout// stream, which can be found with ##[[KeyPgFreefile Freefile]]##.
 
 {{fbdoc item="ret"}}
-	In the first usage, ##**Open Cons**## returns zero (0) on success and a non-zero errorcode otherwise.
+	In the first usage, ##**Open Cons**## returns zero (0) on success and a non-zero error code otherwise.
 
 {{fbdoc item="desc"}}
 	##**Open Cons**## opens the console's //stdin// or //stdout// streams for reading or writing. A //file number// is bound to the stream, which is used in subsequent file operations, such as ##[[KeyPgInputPp Input #]]##. An available //file number// can be retrieved with ##[[KeyPgFreefile Freefile]]##.
@@ -43,7 +43,7 @@ Sleep
 %%
 
 {{fbdoc item="diff"}}
-	- In QB the syntax was OPEN "CON:" FOR INPUT|OUTPUT AS [#] //filenum// 
+	- In QB the syntax was ##OPEN "CON:" FOR INPUT|OUTPUT AS [#] //filenum//##
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpenScrn Open Scrn]]##

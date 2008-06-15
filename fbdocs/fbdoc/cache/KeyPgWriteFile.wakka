@@ -5,7 +5,7 @@ File access specifier
 	Open //filename// As String For Binary Access **Write** As #//filenum// As Integer
 ##
 {{fbdoc item="desc"}}
-	Specifier for the ##[[KeyPgAccess Access]]## clause in the ##[[KeyPgOpen Open]]## statement.  ##**Write**## specfies that the file is accessible for output.
+	Specifier for the ##[[KeyPgAccess Access]]## clause in the ##[[KeyPgOpen Open]]## statement.  ##**Write**## specifies that the file is accessible for output.
 
 {{fbdoc item="ex"}}
 	See example at ##[[KeyPgAccess Access]]##

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ERL"}}----
-Error handling function to return the line where the error occured
+Error handling function to return the line where the error occurred
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Erl** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -8,7 +8,7 @@ Error handling function to return the line where the error occured
 	//result// = **Erl**
 ##
 {{fbdoc item="ret"}}
-	An [[KeyPgInteger integer]] return value containing the line number where the last error occured.
+	An [[KeyPgInteger integer]] return value containing the line number where the last error occurred.
 
 {{fbdoc item="desc"}}
 	##**Erl**## will return the line number where the last error occurred. If no error has occurred, ##**Erl**## will return 0.

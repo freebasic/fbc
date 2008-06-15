@@ -13,7 +13,7 @@ Control flow statement for looping
 {{fbdoc item="desc"}}
 	The ##**Do**## statement executes the statements in the following //statement block// until/while the //condition//, if any,  evaluates to true.
 
-	If ##**Until**## is used, the ##**Do**## statement stops repetition of the //statement block// when //condition// evaluates to true. The ##**While**## keyword has opposite effect, stopping the loop if //condition// evaluates to false. If both //condition// and either ##**Until**## or ##**While**## are ommitted, the ##**Do**## statement loops indefinitely.
+	If ##**Until**## is used, the ##**Do**## statement stops repetition of the //statement block// when //condition// evaluates to true. The ##**While**## keyword has opposite effect, stopping the loop if //condition// evaluates to false. If both //condition// and either ##**Until**## or ##**While**## are omitted, the ##**Do**## statement loops indefinitely.
 
 	If an ##[[KeyPgExit Exit]]## ##**Do**## statement is encountered inside the //statement block//, the loop is terminated, and execution resumes immediately following the enclosing ##**Loop**## statement. If a ##[[KeyPgContinue Continue]]## ##**Do**## statement is encountered, the rest of the //statement block// is skipped and execution resumes at the ##**Do**## statement.
 
@@ -51,8 +51,8 @@ end 0
 %%
 
 {{fbdoc item="lang"}}
-	- In //-lang qb//, variables declared inside a DO..LOOP block have a function-wide [[ProPgVariableScope scope]]  as in QB 
-	- In //-lang fb// or //-lang deprecated//, variables declared inside a FOR..NEXT block are visible only inside the block, and can't be accessed outside it.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, variables declared inside a DO..LOOP block have a function-wide [[ProPgVariableScope scope]]  as in QB 
+	- In the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, variables declared inside a FOR..NEXT block are visible only inside the block, and can't be accessed outside it.
 
 
 {{fbdoc item="diff"}}

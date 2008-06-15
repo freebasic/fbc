@@ -26,7 +26,7 @@ Locates the first occurrence of a substring or character within a string
 	
 	Zero (0) is returned if ##//substring//## is not found, either ##//str//## or ##//substring//## are empty strings, or ##//start//## < 0.
 
-	If the ##**Any**## keyword is specified, ##**Instr**## returns the first occurance of any character in ##//substring//##.
+	If the ##**Any**## keyword is specified, ##**Instr**## returns the first occurrence of any character in ##//substring//##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/instr.bas"}}%%(freebasic)

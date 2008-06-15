@@ -1,11 +1,16 @@
 {{fbdoc item="title" value=" #ERROR"}}----
-Preprocessor diagnositc directive
+Preprocessor diagnostic directive
 
 {{fbdoc item="syntax"}}##
-	**#error**  error_text
+	**#error** //error_text//
 ##
+{{fbdoc item="param"}}
+	##//error_text//##
+		The display message
+
 {{fbdoc item="desc"}}
-	##**#error**## stops compiling and displays error_text when compiler finds it. 
+	##**#error**## stops compiling and displays ##//error_text//## when compiler finds it. 
+
 	This keyword must be surrounded by an ##[[KeyPgPpif #if]]## <condition> ...##[[KeyPgPpendif #endif]]## so compiler can reach ##**#error**## only if <condition> is meet.
 
 {{fbdoc item="ex"}}
@@ -18,7 +23,7 @@ Preprocessor diagnositc directive
 %%
 
 {{fbdoc item="diff"}}
-	- Did not exist in QB
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpif #if]]##

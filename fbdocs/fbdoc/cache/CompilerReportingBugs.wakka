@@ -9,7 +9,7 @@ Currently, it is assumed that users are testing with at least the latest stable 
 
 	Before reporting a bug, try to make sure it's a bug in the FreeBASIC compiler or runtime libraries and not a bug in your own code by,
 	
-		- //reading any relavent documentation that pertains to your problem.// Note the expected results or behavior and compare that to the actual results or behavior you are experiencing.
+		- //reading any relevant documentation that pertains to your problem.// Note the expected results or behavior and compare that to the actual results or behavior you are experiencing.
 		- //looking in the compiler or runtime library sources if no such documentation exists.// Once the compiler and runtime library sources are documented, this will be easier to do. Just remember that documentation can be incorrect as well, so the FreeBASIC source code is the only way to be completely sure of what results or behavior you should be expecting.
 		- //making a testcase for your problem.// Often, by creating a small test program with enough (but no more) code to reproduce the 'bug', problems in your own code become easier to see.
 

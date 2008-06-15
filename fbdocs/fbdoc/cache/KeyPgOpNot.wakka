@@ -57,7 +57,7 @@ IF NOT numeric_value2 = 25 THEN PRINT "Numeric_Value2 is not equal to 25"
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None

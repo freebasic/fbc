@@ -11,7 +11,7 @@ Declares a namespace block
 
 	For example, if you used the "Forms" library, it might define the Point type for describing an X and Y coordinate, and you might also define it for another purpose. This can be resolved by creating the namespace Forms for the library, and then referring to its Point type as Forms.Point, and yours as just Point. 
 
-	To access duplicated symbols defined in the global namespace use: .""SomeSymbol"" (or ..""SomeSymbol"" if inside a [[KeyPgWith With..End With]] block).
+	To access duplicated symbols defined in the global namespace use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith With..End With]] block).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/namespace.bas"}}%%(freebasic)
@@ -44,8 +44,9 @@ AdjustPoint( pt1, 1, 1, 1 )
 Dim pt2 As Forms.Point
 Forms.AdjustPoint( pt2, 1, 1 )
 %%
+
 {{fbdoc item="lang"}}
-	- Namespaces are not supported in the //-lang qb// option.
+	- Namespaces are not supported in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

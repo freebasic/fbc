@@ -15,9 +15,9 @@ Sets the current cursor position
 	##//cursorstate//##
 		the state of the cursor. 0 is off, 1 is on (console-mode only).
 	##//start//##
-		Ignored.  Allowed for -lang qb compatibilty only.
+		Ignored. Allowed for //[[ProPgCompOptlang -lang qb]]// dialect compatibility only.
 	##//stop//##
-		Ignored.  Allowed for -lang qb compatibilty only.
+		Ignored. Allowed for //[[ProPgCompOptlang -lang qb]]// dialect compatibility only.
 
 {{fbdoc item="desc"}}
 	Sets the text cursor in both graphics and console modes.

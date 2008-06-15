@@ -23,7 +23,7 @@ Gets a [[ProPgDates Date Serial]] for the specified hours, minutes, and seconds
 
 	##//hours//## must be specified in the range 0-23
 
-	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/dates/timeserial.bas"}}%%(freebasic)

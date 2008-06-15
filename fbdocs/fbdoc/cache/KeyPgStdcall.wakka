@@ -15,7 +15,7 @@ Specifies a //stdcall//-style calling convention in a procedure declaration
 	[[KeyPgEnd End]] [[KeyPgFunction Function]]
 ##
 {{fbdoc item="desc"}}
-	In procedure declarations, ##**Stdcall**## specifies that a procedure will use the //stdcall// calling convention. In the //stdcall// calling convention, any parameters are to be passed (pushed onto the stack) in the reverse order in which they are listed, that is, from right to left. The procedures need not preserve the EAX, ECX or EDX registers, and must clean up the stack (pop any parameters) before it returns.
+	In procedure declarations, ##**Stdcall**## specifies that a procedure will use the //stdcall// calling convention. In the //stdcall// calling convention, any parameters are to be passed (pushed onto the stack) in the reverse order in which they are listed, that is, from right to left. The procedures need not preserve the ##EAX##, ##ECX## or ##EDX## registers, and must clean up the stack (pop any parameters) before it returns.
 	
 	##**Stdcall**## is not allowed to be used with variadic procedure declarations (those with the last parameter listed as "##[[KeyPgDots ...]]##").
 
@@ -44,7 +44,7 @@ End Function
 	- On Linux systems, //stdcall// procedures are the same as //cdecl// procedures (//see [[KeyPgCdecl Cdecl]], [[KeyPgExternBlock Extern "C"]]//), except that variadic procedures are still not allowed.
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- [[KeyPgPascal Pascal]], [[KeyPgCdecl Cdecl]]

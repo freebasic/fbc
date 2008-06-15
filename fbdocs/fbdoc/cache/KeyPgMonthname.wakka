@@ -10,7 +10,7 @@ Gets the name of a month from it's integral representation
 ##
 {{fbdoc item="param"}}
 	##//month//##
-		the number of the month of the year - 1:january through 12:december
+		the number of the month of the year - 1:January through 12:December
 	##//abbreviate//##
 		flag to indicate that name should be abbreviated
 
@@ -19,9 +19,9 @@ Gets the name of a month from it's integral representation
 
 {{fbdoc item="desc"}}
 
-	If ##//abbreviate//## is true, the month name abbreviation  is returned. If omited or false, the whole name is returned.
+	If ##//abbreviate//## is true, the month name abbreviation  is returned. If omitted or false, the whole name is returned.
  
-	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/dates/monthname.bas"}}%%(freebasic)

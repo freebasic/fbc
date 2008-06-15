@@ -18,9 +18,9 @@ Multiplies two numeric expressions
 	//result// = //lhs// **##*##** //rhs//
 ##
 {{fbdoc item="param"}}
-	//lhs//
+	##//lhs//##
 		The left-hand side multiplicand expression.
-	//rhs//
+	##//rhs//##
 		The right-hand side multiplicand expression.
 
 {{fbdoc item="ret"}}
@@ -46,7 +46,7 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None

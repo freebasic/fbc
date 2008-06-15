@@ -26,7 +26,7 @@ End Function
 Compile the library with:
 	##fbc -lib mylib.bas##
 
-The ##-lib## option tells the compiler to take the source code, ##mylib.bas##, and turn it in to an object file ##mylib.o##, then store the object file in to a library file, also called an archive, ##libmylib.a##.  A library might contain many modules (source files) each with many functions, but for this simple example, it is just one each.
+The //[[ProPgCompOptlib -lib]]// option tells the compiler to take the source code, ##mylib.bas##, and turn it in to an object file ##mylib.o##, then store the object file in to a library file, also called an archive, ##libmylib.a##.  A library might contain many modules (source files) each with many functions, but for this simple example, it is just one each.
 
 To make use of the library in some other source code, we need some way of telling the compiler what exactly is in the library.  A good way to do this is to put the declarations ( also called an interface, or API ) for the library in to a header file.
 
@@ -55,7 +55,7 @@ Then when we run the ##mytest## executable, we should get the result of:
 
 More than one source module can be used when making a library.  And basic programs can use more than one library by including each needed header.  Some libraries are so large that they might use several headers.  On very large projects, making libraries out of some code modules that seldom change can improve compile times dramatically.
 
-Libraries can optionally contain debugging information specified with the '-g' option.
+Libraries can optionally contain debugging information specified with the //[[ProPgCompOptg -g]]// command line option.
 
 Object files, and therefore libraries, are platform specific and in some cases specific to a particular version of the compiler and FreeBASIC run-time library.
 
@@ -63,5 +63,6 @@ Object files, and therefore libraries, are platform specific and in some cases s
 	- [[ProPgSharedLibraries Shared Libraries]]
 	- ##[[KeyPgInclib #inclib]]##
 	- ##[[KeyPgInclude #include]]##
+	- [[ProPgCompOptlib Compiler Option: -lib]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

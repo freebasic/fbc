@@ -5,7 +5,7 @@ Intrinsic define set by the compiler
 	""__FB_LINUX__""
 ##
 {{fbdoc item="desc"}}
-	Define without a value created at compile time in the Linux version of the compiler, or when the //-target linux// command line option is used. It can be used to compile parts of the program only if the target is Linux.
+	Define without a value created at compile time in the Linux version of the compiler, or when the //[[ProPgCompOpttarget -target linux]]// command line option is used. It can be used to compile parts of the program only if the target is Linux.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fblinux.bas"}}%%(freebasic)
@@ -22,5 +22,6 @@ Intrinsic define set by the compiler
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfbdos __FB_DOS__]]##
 	- ##[[KeyPgDdfbwin32 __FB_WIN32__]]##
+	- [[ProPgCompOpttarget Compiler Option: -target]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

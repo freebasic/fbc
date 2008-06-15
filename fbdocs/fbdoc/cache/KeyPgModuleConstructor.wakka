@@ -7,7 +7,7 @@ Specifies execution of a procedure before module-level code
 	[[KeyPgEndblock End]] [[KeyPgSub Sub]]
 ##
 {{fbdoc item="desc"}}
-	The ##**Constructor**## keyword is used in ##[[KeyPgSub Sub]]## definitions to force execution of the procedure prior to that of module-level code. Procedures defined as constructors may be used the same way as ordinary procedures, ie., they may be called from within module-level code, as well as other procedures.
+	The ##**Constructor**## keyword is used in ##[[KeyPgSub Sub]]## definitions to force execution of the procedure prior to that of module-level code. Procedures defined as constructors may be used the same way as ordinary procedures, that is, they may be called from within module-level code, as well as other procedures.
 
 	The procedure must have an empty parameter list.  A compile-time error will be generated if the ##**Constructor**## keyword is used in a Sub definition having one or more parameters. In a set of overloaded procedures, only one (1) constructor may be defined because of the ambiguity of having multiple Subs which take no arguments.
 
@@ -48,13 +48,13 @@ end sub
 	'' ----------------------
 %%
 	**Output:**
-##%%
+%%
 Constructor1() called
 Constructor2() called
 module-level code
 Destructor1() called
 Destructor2() called
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

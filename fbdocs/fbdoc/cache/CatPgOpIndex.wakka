@@ -19,6 +19,8 @@ Listing of operators
 	- {{fbdoc item="keyword" value="KeyPgOpCombineXor|XOR= (Exclusive Disjunction and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpCombineShiftLeft|SHL= (Shift Left and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpCombineShiftRight|SHR= (Shift Right and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpLet|LET (Assignment)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpLetlist|LET() (Assignment)"}}
 
 {{fbdoc item="section" value="Arithmetic Operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpAdd|+ (Add)"}}

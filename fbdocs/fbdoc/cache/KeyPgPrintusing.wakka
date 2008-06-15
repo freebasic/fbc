@@ -48,7 +48,7 @@ Number sign is # and its ASCII code is  35
 The last day in the year is 31 Dec%%
 
 {{fbdoc item="diff"}}
-	- In QB a not-to-be-formatted //expressionlist// could be entered before the USING clause;
+	- In QB a not-to-be-formatted ##//expressionlist//## could be entered before the USING clause;
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPrint Print]]##

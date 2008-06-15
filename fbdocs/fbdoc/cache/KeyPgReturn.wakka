@@ -9,9 +9,9 @@ Control flow statement to return from a procedure or Gosub
 	
 	##**Return**## can also be used inside a ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## to exit the ##Sub## or ##[[KeyPgFunction Function]]##. In a ##Sub##, ##Return## cannot specify a return value.  In a ##Function##, ##Return## must specify its return value. It is equivalent to the ##Function = //return value// : [[KeyPgExit Exit]] Function## idiom.
 
-	A ##[[KeyPgGosub Gosub]]## call must always have a matching ##**Return**## statement, to avoid stack corruption. Thus, it is often preferrable to use a ##[[KeyPgSub Sub]]## rather than ##[[KeyPgGosub Gosub]]##/##Return##.
+	A ##[[KeyPgGosub Gosub]]## call must always have a matching ##**Return**## statement, to avoid stack corruption. Thus, it is often preferable to use a ##[[KeyPgSub Sub]]## rather than ##[[KeyPgGosub Gosub]]##/##Return##.
 
-	When compiling with the -lang qb switch, ##**Return**## can only be used to return from a ##[[KeyPgGosub Gosub]]##.
+	When compiling with in the //[[ProPgCompOptlang -lang qb]]// dialect, ##**Return**## can only be used to return from a ##[[KeyPgGosub Gosub]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/return.bas"}}%%(freebasic)
@@ -58,12 +58,14 @@ print str( r3.numerator ) ; "/" ; str( r3.denominator )
 sleep 
 end 0
 %%
+
 {{fbdoc item="lang"}}
-	- In //-lang qb// return can be used only to return from a [[KeyPgGosub GOSUB]]
-	- In //-lang deprecated// and //-lang fb// RETURN cann be used only to set the return value of a function and exit it.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, ##**Return**## can be used only to return from a ##[[KeyPgGosub Gosub]]##
+	- In the //[[ProPgCompOptlang -lang depracted]]// and //[[ProPgCompOptlang -lang fb]]// dialects, ##**Return**## can be used only to set the return value of a function and exit it.
 
 {{fbdoc item="diff"}}
-	- None if using the //-lang qb// switch.
+	- None in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgFunction Function]]##

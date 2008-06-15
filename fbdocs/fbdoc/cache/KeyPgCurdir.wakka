@@ -20,7 +20,7 @@ print curdir
 	output will vary.
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen Open]]##

@@ -10,7 +10,7 @@ An index of header files distributed with FreeBASIC for use with external librar
 	{{fbdoc item="keyword" value="ExtLibwxc|wx-c"}} - Cross-platform Graphical User Interface Library
 	{{fbdoc item="keyword" value="ExtLibfreeimage|FreeImage"}} - Open Source library to support popular graphics image formats
 	{{fbdoc item="keyword" value="ExtLibjpeglib|jpeglib"}} - Cross-platform library for reading/writing jpeg images
-	{{fbdoc item="keyword" value="ExtLibjpgalleg|jpgalleg"}} - JPGalleg is a small addon for Allegro that adds JPG images handling capabilities to the library
+	{{fbdoc item="keyword" value="ExtLibjpgalleg|jpgalleg"}} - JPGalleg is a small add-on for Allegro that adds JPG images handling capabilities to the library
 	{{fbdoc item="keyword" value="ExtLibgiflib|gif_lib"}} - GIFLIB is a package of portable tools and library routines for working with GIF images
 	{{fbdoc item="keyword" value="ExtLibpdflib|pdflib"}} - PDFlib is a development tool for PDF-enabling your software
 	{{fbdoc item="keyword" value="ExtLiblibpng|libpng"}} - Allows reading and writing PNG images.
@@ -35,8 +35,8 @@ An index of header files distributed with FreeBASIC for use with external librar
 {{fbdoc item="section" value="Music / Sound"}}
 	{{fbdoc item="keyword" value="ExtLibbass|BASS"}} - Audio library for use in Windows.
 	{{fbdoc item="keyword" value="ExtLibbassmod|BASSMOD"}} - BASSMOD is a MOD only (XM, IT, S3M, MOD, MTM, UMX) version of BASS
-	{{fbdoc item="keyword" value="ExtLibfbsound|FBSOUND"}} - Audio and DSP library for Windows and Linux (free for comercial apps too).
-	{{fbdoc item="keyword" value="ExtLibfmod|FMOD"}} - Auido library supporting just about any format.
+	{{fbdoc item="keyword" value="ExtLibfbsound|FBSOUND"}} - Audio and DSP library for Windows and Linux (free for commercial apps too).
+	{{fbdoc item="keyword" value="ExtLibfmod|FMOD"}} - Audio library supporting just about any format.
 	{{fbdoc item="keyword" value="ExtLibal|OpenAL"}} - Cross-platform 3D audio API
 
 {{fbdoc item="section" value="Develpment Helpers"}}
@@ -78,7 +78,7 @@ An index of header files distributed with FreeBASIC for use with external librar
 {{fbdoc item="section" value="Compression"}}
 	{{fbdoc item="keyword" value="ExtLibLzo|LZO"}} - Offers fast compression and very fast decompression.
 	{{fbdoc item="keyword" value="ExtLibquicklz|QuickLZ"}} - Very fast Compression Library
-	{{fbdoc item="keyword" value="ExtLibzlib|zlib"}} - Loseless data compression library unencumbered by patents.
+	{{fbdoc item="keyword" value="ExtLibzlib|zlib"}} - Lossless data compression library unencumbered by patents.
 
 {{fbdoc item="section" value="System Specific"}}
 	{{fbdoc item="keyword" value="ExtLibCRT|C Runtime Library"}}

@@ -15,7 +15,7 @@ Invoking the compiler after installation
 	and a ##hello.exe## executable file will be created in the ##examples## directory.
 
 {{fbdoc item="section" value="Linux"}}
-	If the install script ##install.sh## was successfully executed with enough priviledges, a link to the compiler binary should have been created at ##/usr/bin/fbc##, allowing any user access to the compiler from any directory. If it was not possible to create the link, you may want to alter your ##PATH## environmental variable to be able to invoke the compiler from any directory. Navigate to the directory where FreeBASIC was installed.
+	If the install script ##install.sh## was successfully executed with enough privileges, a link to the compiler binary should have been created at ##/usr/bin/fbc##, allowing any user access to the compiler from any directory. If it was not possible to create the link, you may want to alter your ##PATH## environmental variable to be able to invoke the compiler from any directory. Navigate to the directory where FreeBASIC was installed.
 
 	From the prompt, type,
 

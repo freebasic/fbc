@@ -16,7 +16,7 @@ Unlocks work page's framebuffer
 {{fbdoc item="desc"}}
 	##**Screenunlock**## unlocks the current work page assuming it was previously locked by calling ##[[KeyPgScreenlock Screenlock]]##.  ##**Screenunlock**## must not be called without a previous call to ##[[KeyPgScreenlock Screenlock]]##. This function lets the system restart updating the screen regularly, and when called produces the immediate update of the screen region marked by the given start and end lines. 
 
-	After ##**Screenunlock**## is called, all GFX statements may be safely used.  Accessing the work page framebuffer directly via ##[[KeyPgScreenptr Screenptr]]## may only used after locking the screen again with ##[[KeyPgScreenlock Screenlock]]##.
+	After ##**Screenunlock**## is called, all graphics statements may be safely used.  Accessing the work page framebuffer directly via ##[[KeyPgScreenptr Screenptr]]## may only used after locking the screen again with ##[[KeyPgScreenlock Screenlock]]##.
 
 {{fbdoc item="ex"}}
 	See ##[[KeyPgScreenptr Screenptr]]## example.

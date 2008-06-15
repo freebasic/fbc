@@ -18,6 +18,7 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects a
 	
 	##**Alpha**## also has another mode which allows an 8-bit image to be ##[[KeyPgPutgraphics Put]]## on top of a 32-bit image.  In this case, it will replace the alpha channel of the 32-bit image with the contents of the 8-bit image.
 
+	    Alpha values range between 0 and 255.  An alpha value of 0 will not draw the image at all.  All other alpha values are incremented by 1 to get a range between 2 and 256, and the result is then divided by 256 to get a value between 1/128 and 1, which is used to calculate the exact value of each pixel from the source and destination pixels.  Thus, 255 is practically equivalent to drawing using Put with Trans blitting mode, 0 is equivalent to doing nothing at all, and all the other alpha values blend is expected.
 
 {{fbdoc item="ex"}}
 	This example compares the two different ##**Alpha**## modes, including how they react to the mask color

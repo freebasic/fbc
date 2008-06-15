@@ -10,17 +10,17 @@ Returns a reference to a member from a pointer to an object
 	//result// = //lhs// **->** //rhs//
 ##
 {{fbdoc item="param"}}
-	//lhs//
+	##//lhs//##
 		The address of an object.
-	//T//
+	##//T//##
 		A pointer to a user-defined type.
-	//rhs//
+	##//rhs//##
 		The name of a member to access.
-	//U//
-		The type that //rhs// refers to.
+	##//U//##
+		The type that ##//rhs//## refers to.
 
 {{fbdoc item="ret"}}
-	Returns a reference to the member specified by //rhs//.
+	Returns a reference to the member specified by ##//rhs//##.
 
 {{fbdoc item="desc"}}
 	**##Operator ->## (Pointer to member access)** returns a reference to a member of an object through a pointer to that object. It has the effect of dereferencing a pointer to an object, then using ##[[KeyPgOpMemberAccess Operator . (Member access)]]##. For example, ##"//p//**->**//member//"## is equivalent to ##"//x//.//member//"##, if //x// is an object of user-defined type and //p// is a pointer to an object of the same type.

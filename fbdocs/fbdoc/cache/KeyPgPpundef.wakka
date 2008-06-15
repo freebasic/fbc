@@ -23,14 +23,14 @@ Print ADD2(1, 2)
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #Define]]##
-	- ##[[KeyPgPpmacro #Macro]]##
-	- ##[[KeyPgPpif #If]]##
-	- ##[[KeyPgPpelse #Else]]## 
-	- ##[[KeyPgPpelseif #ElseIf]]## 
-	- ##[[KeyPgPpendif #EndIf]]## 
-	- ##[[KeyPgPpifdef #IfDef]]##
-	- ##[[KeyPgPpifndef #IfNDef]]##
-	- ##[[KeyPgDefined Defined]]##
+	- ##[[KeyPgPpdefine #define]]##
+	- ##[[KeyPgPpmacro #macro]]##
+	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgPpelse #else]]## 
+	- ##[[KeyPgPpelseif #elseif]]## 
+	- ##[[KeyPgPpendif #endif]]## 
+	- ##[[KeyPgPpifdef #ifdef]]##
+	- ##[[KeyPgPpifndef #ifndef]]##
+	- ##[[KeyPgDefined defined]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

@@ -14,10 +14,10 @@ Shifts left and assigns a value to a variable
 	##//lhs//##
 		The variable to assign to.
 	##//rhs//##
-		The value to shift //lhs// left by.
+		The value to shift ##//lhs//## left by.
 
 {{fbdoc item="desc"}}
-	This operator shifts the bits in its left-hand side (//lhs//) parameter a number of times specified by its right-hand side (//rhs//) parameter, and assigns the result to //lhs//. It is functionally equivalent to:
+	This operator shifts the bits in its left-hand side (##//lhs//##) parameter a number of times specified by its right-hand side (##//rhs//##) parameter, and assigns the result to ##//lhs//##. It is functionally equivalent to:
 ##
 		//lhs// = //lhs// [[KeyPgOpShiftLeft Shl]] //rhs//
 ##

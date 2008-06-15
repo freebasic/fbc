@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="Variable-length Arrays"}}----
-Resizable homogenous data structures
+Resizable homogeneous data structures
 
 {{fbdoc item="section" value="Overview"}}
 	Variable-length arrays are [[ProPgArrays arrays]] that can, during program execution, either be resized to hold more or less elements, or have their dimension[s] use a different subscript range. The memory used by a variable-length array to store its elements is allocated at runtime, in the free store (the heap), as opposed to fixed-length arrays whose data is either allocated on the program stack or in the ##.BSS## or ##.DATA## sections of the executable, depending on whether they were defined with ##[[KeyPgStatic Static]]##.
 
 {{fbdoc item="section" value="Declaration and definition"}}
-	A variable-length array is declared with the ##[[KeyPgExtern Extern]]## keyword, followed by a variable identifier, a parenthesized list of zero (0) or more subscript ranges and an element [[CatPgStdDataTypes datatype]]. For an array to be declared variable-length, either an empty subscript range list can be used, or one or more of the subscript ranges must have non-constant values - ie., the ranges must be specified by variables or objects convertible to ##[[KeyPgInteger Integer]]##.
+	A variable-length array is declared with the ##[[KeyPgExtern Extern]]## keyword, followed by a variable identifier, a parenthesized list of zero (0) or more subscript ranges and an element [[CatPgStdDataTypes datatype]]. For an array to be declared variable-length, either an empty subscript range list can be used, or one or more of the subscript ranges must have non-constant values - that is, the ranges must be specified by variables or objects convertible to ##[[KeyPgInteger Integer]]##.
 
 {{fbdoc item="filename" value="examples/manual/proguide/arrays/varlen_1.bas"}}%%(freebasic)
 dim maxLowerBound as integer = -5

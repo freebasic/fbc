@@ -14,6 +14,7 @@
 	==- {{anchor name="item10|What should go in the keyword reference pages?"}}==
 	==- {{anchor name="item11|What should go in the Programmer's Guide?"}}==
 	==- {{anchor name="item12|What should go in the Community Tutorials?"}}==
+	==- {{anchor name="item13|Which English dialect is the manual written with?"}}==
 
 ----
 @@**FB Wiki questions**@@
@@ -30,7 +31,7 @@
 
 
 {{anchor name="item3"}}==Who should I contact when I find a mistake in the documentation?==
-	We would prefer that if an error or ommission is found in the wiki that you either leave a comment on the page where it was found, or help improve the wiki by updating the page yourself.  The FreeBASIC documentation is a community effort and is only improved by its members.  If it is something you think should be discussed first, you can make a post about it on the [[http://www.freebasic.net FreeBASIC forums]], or as a last resort, contact one of the [[http://sourceforge.net/project/memberlist.php?group_id=122342 FreeBASIC developers]].
+	We would prefer that if an error or omission is found in the wiki that you either leave a comment on the page where it was found, or help improve the wiki by updating the page yourself.  The FreeBASIC documentation is a community effort and is only improved by its members.  If it is something you think should be discussed first, you can make a post about it on the [[http://www.freebasic.net FreeBASIC forums]], or as a last resort, contact one of the [[http://sourceforge.net/project/memberlist.php?group_id=122342 FreeBASIC developers]].
 
 {{anchor name="item4"}}==How do I add my tutorial to the community tutorials?==
 	A tutorial might be a work that is already written or it might be a work in progress.  In both cases you can add the tutorial as follows:
@@ -59,14 +60,14 @@
 
 {{anchor name="item7"}}==How can I help with the documentation?==
 	A few ideas:
-		- A good place to start is by reading the topics and fixing any errors or ommissions as you go.
+		- A good place to start is by reading the topics and fixing any errors or omissions as you go.
 		- Check the MissingDocs page.  This page lists a wide range items that need work.  It's the wiki's TODO list.
 		- Check the WantedPages page.  These are pages that have been linked but not yet written.
 		- Before making major changes, or if you are unsure what to do, post your idea on the FreeBASIC forums to discuss it or to get more information from the community.
 
 
 {{anchor name="item8"}}==When should new content get added or updated?==
-	Content should be added whenever possible.  Until such a time that FreeBASIC has a major version release, like 1.0, the documentation will always be lagging behind the compiler develpoment.  We would like to minimize that lag whenever possible.  Ideally we would like to be able to offer documentation that is as up to date with the compiler.
+	Content should be added whenever possible.  Until such a time that FreeBASIC has a major version release, like 1.0, the documentation will always be lagging behind the compiler development.  We would like to minimize that lag whenever possible.  Ideally we would like to be able to offer documentation that is as up to date with the compiler.
 
 
 {{anchor name="item9"}}==How do I rename an existing page?==
@@ -78,15 +79,19 @@
 
 
 {{anchor name="item10"}}==What should go in the keyword reference pages?==
-	The keyword reference pages which should begin with ""KeyPg"", are for compiler keywords and run-time library functions.  Anything and everything about how the keyword or function is used should be documented.  The only thing that shouldn't go in here is any personal comment on if the keyword is "good" or "bad".  It's okay to describe the alternatives, but not okay to pass any judgment on the choices.  If it's a valid keyword or construct in the language, it should be up to the programmer to choose to use it or not.  For example, [[KeyPgEnum Enum]], [[KeyPgConst Const]], [[KeyPgPpdefine #define]]. are all valid ways for introducing constants in to a source program, and each have their strengths and weaknesses.
+	The keyword reference pages which should begin with ""KeyPg"", are for compiler keywords and run-time library functions.  Anything and everything about how the keyword or function is used should be documented.  The only thing that shouldn't go in here is any personal comment on if the keyword is "good" or "bad".  It's OK to describe the alternatives, but not OK to pass any judgment on the choices.  If it's a valid keyword or construct in the language, it should be up to the programmer to choose to use it or not.  For example, [[KeyPgEnum Enum]], [[KeyPgConst Const]], [[KeyPgPpdefine #define]]. are all valid ways for introducing constants in to a source program, and each have their strengths and weaknesses.
 
 
 {{anchor name="item11"}}==What should go in the Programmer's Guide?==
-	The programmer's guide pages which should begin with ""ProPg"", are for concepts, ideas, and general information on how to use different aspects of the langauge.  For example, a single page could describe how to use [[KeyPgEnum Enum]], [[KeyPgConst Const]], [[KeyPgPpdefine #define]].  This would be the perfect place to describe the pros and cons, tips and traps, for using one over the other with links to each of the keyword pages for more information.  The programmer's guide should not only provide information on how to make use of the language to write programs but also offer advice on best practices.
+	The programmer's guide pages which should begin with ""ProPg"", are for concepts, ideas, and general information on how to use different aspects of the language.  For example, a single page could describe how to use [[KeyPgEnum Enum]], [[KeyPgConst Const]], [[KeyPgPpdefine #define]].  This would be the perfect place to describe the pros and cons, tips and traps, for using one over the other with links to each of the keyword pages for more information.  The programmer's guide should not only provide information on how to make use of the language to write programs but also offer advice on best practices.
 
 
 {{anchor name="item12"}}==What should go in the Community Tutorials?==
 	The community tutorials are a good place to put anything that doesn't fit in the language reference or the programmer's guide.  These are "How to" guides that may include several aspects of the language, external libraries, or specific algorithms.
+
+
+{{anchor name="item12"}}==Which English dialect is the manual written with?==
+	From time to time the wiki is checked for spelling using a the GNU Aspell "en_US" dictionary.  This dialect was chosen only because something needed to be chosen, and at the time of writing, statiscally, most users were from the U.S.A.  However, contributions to the wiki have been made by users from all over the world.
 
 
 {{fbdoc item="back" value="FBWikiHelp|FB Wiki - Help"}}

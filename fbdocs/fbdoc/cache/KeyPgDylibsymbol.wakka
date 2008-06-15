@@ -20,14 +20,14 @@ Returns the address of a function or variable in a dll
 	If the function fails, the return value is 0.
 
 {{fbdoc item="desc"}}
-	##**Dylibsymbol**## returns a pointer to the variable or function named 'symbol' , in the dll pointed by 'libhandle'. ##//libhandle//## is obtained by loading the dll with ##[[KeyPgDylibload Dylibload]]##. The symbol must have been ##[[KeyPgExport Export]]##ed in the dll.
-	If 'libhandle' is 0, the symbol is searched in the current executable or dll.
+	##**Dylibsymbol**## returns a pointer to the variable or function named ##//symbol//## , in the dll pointed by ##//libhandle//##. ##//libhandle//## is obtained by loading the dll with ##[[KeyPgDylibload Dylibload]]##. The symbol must have been ##[[KeyPgExport Export]]##ed in the dll.
+	If ##//libhandle//## is 0, the symbol is searched in the current executable or dll.
 
-	If using CDECL functions, only the name of the proc needs to be specified. If dynamically linking to a function created using STDCALL (default in windows), then the function must be decorated. To decorate a function, use its name, '@', then the number of bytes passed as arguments. For instance if the function 'FOO' takes 3 integer arguments, the decorated function would be 'FOO@12'. Remember, without an explicit ##[[KeyPgAlias alias]]##, the proc name will be uppercase.
+	If using ##[[KeyPgCdecl Cdecl]]## functions, only the name of the procedure needs to be specified. If dynamically linking to a function created using STDCALL (default in windows), then the function must be decorated. To decorate a function, use its name, '@', then the number of bytes passed as arguments. For instance if the function ##FOO## takes 3 integer arguments, the decorated function would be 'FOO@12'. Remember, without an explicit ##[[KeyPgAlias alias]]##, the procedure name will be uppercase.
 
-	If linking to a dll created in Visual C""++""(tm), decoration need not be used. For gcc, decoration is needed.
+	If linking to a dll created in Visual C""++""(tm), decoration need not be used. For GCC, decoration is needed.
 
-	**Note:** The dylibsymbol, if failing, will attempt to automatically decorate the proc, from @0 to @256, in 4 byte increments.
+	**Note:** The dylibsymbol, if failing, will attempt to automatically decorate the procedure, from @0 to @256, in 4 byte increments.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/mydll2.bas"}}%%(freebasic)
@@ -55,7 +55,7 @@ Dim hndl As Any Ptr
 
 hndl=DyLibLoad("mydll.dll")
 
-'' find the proc address (case matters!)
+'' find the procedure address (case matters!)
 AddNumbers = DyLibSymbol( hndl, "AddNumbers" )
 
 '' then call it..

@@ -45,7 +45,7 @@ Opens a disk file for reading or writing using file operations
 		The size, in bytes, of each record read from or written to the disk file. The default is 128.
 
 {{fbdoc item="ret"}}
-	In the first usage, ##**Open**## returns zero (0) on success and a non-zero errorcode otherwise.
+	In the first usage, ##**Open**## returns zero (0) on success and a non-zero error code otherwise.
 
 {{fbdoc item="desc"}}
 	Opens a disk file for reading and/or writing. A //file number// is bound to the file on disk, which is used in subsequent file operations, such as ##[[KeyPgInputPp Input #]]## and ##[[KeyPgLock Lock]]##. An available //file number// can be retrieved with ##[[KeyPgFreefile Freefile]]##.
@@ -54,7 +54,7 @@ Opens a disk file for reading or writing using file operations
 
 	The ##[[KeyPgInputfilemode Input]]##, ##[[KeyPgOutput Output]]## and ##[[KeyPgAppend Append]]## //file modes// also allow selection of a character encoding to be used when reading from or writing text to the disk file. ASCII or a Unicode encoding may be specified (see the description of the ##//encoding_type//## parameter above).
 
-	The ##[[KeyPgBinary Binary]]## and ##[[KeyPgRandom Random]]## //file modes// open disk files for random-access reading or writing of arbitrary sized binary data. The ##[[KeyPgBinary Binary]]## //file mode// allows reading and writing of simple datatype values, like ##[[KeyPgByte Byte]]## or ##[[KeyPgLongint Longint]]##, using binary read or write operations, like ##[[KeyPgGetfileio Get #]]##. ##[[KeyPgLoc Loc]]## and ##[[KeyPgSeekreturn Seek]]## are among the procedures used for reading and writing to arbitraty locations in the disk file. The ##[[KeyPgRandom Random]]## //file mode// is similar to ##[[KeyPgBinary Binary]]##, except that file I/O operations always use a constant data size when reading or writing.
+	The ##[[KeyPgBinary Binary]]## and ##[[KeyPgRandom Random]]## //file modes// open disk files for random-access reading or writing of arbitrary sized binary data. The ##[[KeyPgBinary Binary]]## //file mode// allows reading and writing of simple data type values, like ##[[KeyPgByte Byte]]## or ##[[KeyPgLongint Longint]]##, using binary read or write operations, like ##[[KeyPgGetfileio Get #]]##. ##[[KeyPgLoc Loc]]## and ##[[KeyPgSeekreturn Seek]]## are among the procedures used for reading and writing to arbitrary locations in the disk file. The ##[[KeyPgRandom Random]]## //file mode// is similar to ##[[KeyPgBinary Binary]]##, except that file I/O operations always use a constant data size when reading or writing.
 
 	By default, the ##[[KeyPgBinary Binary]]## and ##[[KeyPgRandom Random]]## //file modes// allow both reading and writing operations on the opened disk file, but this can be changed by specifying an //access type// (see the description for the ##//access_type//## parameter above).
 
@@ -101,14 +101,15 @@ END IF
 %%
 
 {{fbdoc item="target"}}
-	- Linux requires the //filename// case matches the real name of the file. Windows and DOS are case insensitive. 
-	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+	- Linux requires the ##//filename//## case matches the real name of the file. Windows and DOS are case insensitive. 
+	- Path separators in Linux are forward slashes /. Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward \ slashes. 
 
 {{fbdoc item="diff"}}
-	- Using MS-DOS device names to open streams or hardware devices (##"LPT:"##, ##"SCR:"##, etc.) is  supported only with the -lang qb switch; for other modes FreeBASIC's new composite keywords must be used: see ##[[KeyPgOpenCom Open Com]]##,  ##[[KeyPgOpenCons Open Cons]]##,  ##[[KeyPgOpenErr Open Err]]##,  ##[[KeyPgOpenPipe Open Pipe]]##,  ##[[KeyPgOpenLpt Open Lpt]]##,  ##[[KeyPgOpenScrn Open Scrn]]##.
-	- ##**OPEN**## can now be used as a procedure that returns an error code.
+	- Using MS-DOS device names to open streams or hardware devices (##"LPT:"##, ##"SCR:"##, etc.) is  supported only in the //[[ProPgCompOptlang -lang qb]]// dialect; for other modes FreeBASIC's new composite keywords must be used: see ##[[KeyPgOpenCom Open Com]]##,  ##[[KeyPgOpenCons Open Cons]]##,  ##[[KeyPgOpenErr Open Err]]##,  ##[[KeyPgOpenPipe Open Pipe]]##,  ##[[KeyPgOpenLpt Open Lpt]]##,  ##[[KeyPgOpenScrn Open Scrn]]##.
+	- ##**Open**## can be called as a procedure that returns an error code.
+
 {{fbdoc item="lang"}}
-	- The -lang qb mode supports the old GW-BASIC-style syntax OPEN mode_string, #filenum, filename [length] with mode_string being "I" for input, "O" for output , "A" for append, "R" for random, "B" for binary. 
+	- The //[[ProPgCompOptlang -lang qb]]// dialect supports the old GW-BASIC-style syntax ##OPEN mode_string, #filenum, filename [length]## with mode_string being "I" for input, "O" for output , "A" for append, "R" for random, "B" for binary. 
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgClose Close]]##

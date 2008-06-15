@@ -5,7 +5,7 @@ Intrinsic define (macro string) set by the compiler
 	""__FB_BUILD_DATE__""
 ##
 {{fbdoc item="desc"}}
-	Substituted with the quoted string containing the date (MM-DD-YYYY) the compiler was built on.
+	Substituted with the quoted string containing the date (##MM-DD-YYYY##) the compiler was built on.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbbuilddate.bas"}}%%(freebasic)
@@ -13,6 +13,6 @@ Intrinsic define (macro string) set by the compiler
 %%
 
 {{fbdoc item="diff"}}
-	- Did not exist in QB
+	- New to FreeBASIC
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

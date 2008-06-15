@@ -13,7 +13,7 @@ Preprocessor statement to include contents of another source file
 
 	##[[KeyPgMetaInclude $Include]]## is a deprecated form of ##**include**##, it exists for compatibility with QuickBasic. It is recommended to use ##**#include**## instead.
 
-	The compiler will automaticallly convert path seperator characters ( '**/**' and '**\**' ) as needed to properly load the file.  The filename name may be an absolute or relative path.  
+	The compiler will automatically convert path separator characters ( '**/**' and '**\**' ) as needed to properly load the file.  The filename name may be an absolute or relative path.  
 
 	For relative paths, or where no path is given at all, the include file is search for in the following order:
 	- Relative from the directory of the source file

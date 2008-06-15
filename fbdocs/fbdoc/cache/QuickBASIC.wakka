@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Microsoft QuickBASIC"}}----
-A BASIC compiler, interpretter and IDE
+A BASIC compiler, interpreter and IDE
 
-QuickBASIC is a twenty year old interpeter/compiler upon which FreeBASIC is modelled. It runs in 16-bit MS-DOS.
+QuickBASIC is a twenty year old interpreter/compiler upon which FreeBASIC is modeled. It runs in 16-bit MS-DOS.
 
 More information from [[http://en.wikipedia.org Wikipedia]]:
 

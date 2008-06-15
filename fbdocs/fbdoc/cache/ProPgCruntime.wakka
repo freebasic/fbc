@@ -28,7 +28,7 @@ This is a list of function prototypes in the standard C library in alphabetical 
 		- The parameters required for the function in parenthesis, together with the data-type of the parameters; 
 		- The data-type of the value returned by the function. 
 
-	For example **atoi(a as zstring ptr) as integer** means that the function **atoi** returns a value of type **integer** and requires a character **zstring ptr** as its argument. 
+	For example **##atoi(a as zstring ptr) as integer##** means that the function **##atoi##** returns a value of type **integer** and requires a character **zstring ptr** as its argument. 
 
 {{anchor name="ALPHA"}}{{fbdoc item="section" value="Alphabetical List"}}
 
@@ -98,7 +98,7 @@ This is a list of function prototypes in the standard C library in alphabetical 
 {{anchor name="SORTING"}}{{fbdoc item="section" value="Searching and Sorting"}}
 
 	##**#include "crt/stdlib.bi"**##
-			    **Note:** The compare callback function required by bsearch and qsort must be declared as [[KeyPgCdecl cdecl]] . It must return a value <0 if its first argument is smaller than the second one, >0 if the first argument is bigger than the second one, and zero if both are equal.
+			    **Note:** The compare callback function required by ##bsearch## and ##qsort## must be declared as ##[[KeyPgCdecl cdecl]]##. It must return a value <0 if its first argument is smaller than the second one, >0 if the first argument is bigger than the second one, and zero if both are equal.
 	{{table columns="2" cellpadding="1" cells="Prototype (with parameters);Comments;bsearch(key as any ptr, base as any ptr, num as size_t, width as size_t, compare as function(elem1 as any ptr, elem2 as any ptr) as integer) as any ptr;Perform binary search.;qsort(base as any ptr, num as size_t, width as size_t, compare as function(elem1 as any ptr, elem2 as any ptr) as integer);Use the quicksort algorithm to sort an array."}}
 
 {{anchor name="STRING"}}{{fbdoc item="section" value="String Manipulation"}}

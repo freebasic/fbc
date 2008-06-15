@@ -9,7 +9,7 @@ Defines a location in a program.
 {{fbdoc item="desc"}}
 	Defines a place in a program where ##[[KeyPgGoto Goto]]## or ##[[KeyPgGosub Gosub]]## can jump to.
 
-	A label can be a positive integer line number or a //symbolname//. In both cases, the label must start at the first column of line. A //symbolname// label must end with a colon (:) character.
+	A label can be a positive integer line number or a ##//symbolname//##. In both cases, the label must start at the first column of line. A ##//symbolname//## label must end with a colon (:) character.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/proguide/labels/labels_1.bas"}}%%(freebasic)
@@ -38,14 +38,13 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- Line numbers with decimals is available only in //-lang qb//.
+	- Line numbers with decimals is available only in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- None if compiled with //-lang qb//
+	- None if compiled in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGosub Gosub]]##
 	- ##[[KeyPgGoto Goto]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-   

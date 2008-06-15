@@ -13,7 +13,7 @@ Commands that control the preprocessor
 **{{anchor name="CONTROL|Control Directives"}}**
 	Commands that set compile options, control compilation, and report compile time information.
 **{{anchor name="DEPRECATED|Deprecated Directives"}}**
-	Commands that are kept for backward compatilibity reasons, and may be removed at a future time.
+	Commands that are kept for backward compatibility reasons, and may be removed at a future time.
 
 <<{{anchor name="CONDCOMP"}}{{fbdoc item="section" value="Conditional Compilation"}}
 	=={{fbdoc item="keyword" value="KeyPgPpif|#IF"}}==

@@ -5,7 +5,7 @@ Intrinsic define (macro value) set by the compiler
 	""__FB_LANG__""
 ##
 {{fbdoc item="desc"}}
-	##""__FB_LANG__""## indicates which language compatibility option was set using the '-lang' option as specified on the compiler command line at the time of compilation of a module.
+	##""__FB_LANG__""## indicates which language compatibility option was set using the //[[ProPgCompOptlang -lang]]// option as specified on the compiler command line at the time of compilation of a module.
 
 	Returns a lower case string with one of the following values:
 		{{table columns="2" cellpadding="1" cells="value;description;''fb'';FreeBASIC compatibility (default);''qb'';qbasic compatibility;''deprecated'';previous fbc version compatibility"}}

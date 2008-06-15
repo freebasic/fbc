@@ -13,7 +13,7 @@ Returns a reference to memory offset from an address
 	##//lhs//##
 		The base address.
 	##//rhs//##
-		A signed offset from //lhs//.
+		A signed offset from ##//lhs//##.
 	##//T//##
 		Any data type.
 

@@ -42,6 +42,8 @@ svn co https://fbc.svn.sourceforge.net/svnroot/fbc/trunk/FreeBASIC
 
 		{{anchor name="making2"}}==Make rtlib==
 			%%
+cd ~/fbcSVN/FreeBASIC/src/rtlib/
+autoconf
 cd ~/fbcSVN/FreeBASIC/src/rtlib/obj/linux
 ../../configure
 make && make MULTITHREADED=1

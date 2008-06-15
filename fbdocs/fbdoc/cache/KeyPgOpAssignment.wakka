@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="Operator Let (Assign)"}}----
+{{fbdoc item="title" value="Operator = (Assign)"}}----
 Assigns a value to a variable
 
 {{fbdoc item="syntax"}}##
@@ -17,9 +17,9 @@ Assigns a value to a variable
 	##//T1//##
 		Any numeric, string or pointer type.
 	##//rhs//##
-		The value to assign to //lhs//.
+		The value to assign to ##//lhs//##.
 	##//T2//##
-		Any type convertible to //T2//.
+		Any type convertible to ##//T2//##.
 
 {{fbdoc item="desc"}}
 	This operator assigns the value of its right-hand side operand (##//rhs//##) to its left-hand side operand (##//lhs//##). The right-hand side operand must be implicitly convertible to the left-hand side type (##//T1//##). For example, you cannot assign a numeric value to a string type; to do that, first convert the numeric value to a string using ##[[KeyPgStr Str]]## or ##[[KeyPgWstr Wstr]]##.
@@ -49,13 +49,14 @@ LET i = 300 ' <-alternate syntax
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
-	- In the //QB// dialect, an assignment expression can be preceded by the ##[[KeyPgLet Let]]## keyword.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, an assignment expression can be preceded by the ##[[KeyPgLet Let]]## keyword.
 
 {{fbdoc item="diff"}}
-	- none
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpEqual Operator = (Equal)]]##
+	- ##[[KeyPgOpLet Operator Let (Assignment)]]##
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

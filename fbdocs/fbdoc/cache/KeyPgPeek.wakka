@@ -5,7 +5,7 @@ Gets the value of an arbitrary type at an address in memory
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Peek** ( [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgUbyte ubyte]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Peek** ( //datatype//, [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] //datatype//
 ##
-~&//Note: ##**Peek**## returns a reference to the value at the specified address. As of version 0.17b, there is no way to specify returning a reference, although this will change in future versions. At that time, this syntax should be changed to accomodate returning a reference.//
+~&//Note: ##**Peek**## returns a reference to the value at the specified address. As of version 0.17b, there is no way to specify returning a reference, although this will change in future versions. At that time, this syntax should be changed to accommodate returning a reference.//
 
 {{fbdoc item="usage"}}##
 	**Peek**( [ //datatype//, ] //address// )
@@ -35,10 +35,10 @@ Print Peek(Integer, p)
 
 %%420
 %%
+
 {{fbdoc item="diff"}}
 	- Only the byte form were supported in QB.
-	- DEF SEG isn't needed anymore because the address space is 32-bit flat in FreeBASIC.
-	
+	- ##DEF SEG## isn't needed anymore because the address space is 32-bit flat in FreeBASIC.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPoke Poke]]##

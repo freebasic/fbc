@@ -17,14 +17,14 @@ Destroys a multi-threading conditional variable when it is no more needed
 {{fbdoc item="ex"}}
 	See ##[[KeyPgCondCreate Condcreate]]##
 
-{{fbdoc item="lang"}}
-	- Threading is not allowed in ##-lang qb##
-
 {{fbdoc item="target"}}
 	- **Conddestroy** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.
 
+{{fbdoc item="lang"}}
+	- Threading is not allowed in //[[ProPgCompOptlang -lang qb]]//
+
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCondCreate Condcreate]]##

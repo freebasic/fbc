@@ -28,7 +28,7 @@ Gets the name of a week day from its integral representation
 
 		{{table columns="3" cellpadding="1" cells="value;first day of week;constant;omitted;sunday;###;0;local settings;fbUseSystem;1;sunday;fbSunday;2;monday;fbMonday;3;tuesday;fbTuesday;4;wednesday;fbWednesday;5;thursday;fbThursday;6;friday;fbFriday;7;saturday;fbSaturday"}}
   
-	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/dates/weekdayname.bas"}}%%(freebasic)
@@ -40,7 +40,7 @@ Print Format(a, "yyyy/mm/dd hh:mm:ss "); WeekDayName(WeekDay(a))
 %%
 
 {{fbdoc item="diff"}}
-	- Did not exist in QB. This function appeared in VBWin
+	- Did not exist in QB. This function appeared in Visual Basic.
 
 {{fbdoc item="see"}}
 	- [[ProPgDates Date Serials]]

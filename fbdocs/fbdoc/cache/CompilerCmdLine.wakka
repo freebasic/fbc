@@ -31,7 +31,7 @@ fbc command-line usage
 		**##-o < //output file// >##**
 			Set the output file name of a compiled source file, or object file (.o). The "-o" switch needs to follow immediately after source files specified with the "-b" switch. This switch only has an effect when used with the "-c" switch, as object files are not saved otherwise. If "-o" is not specified for a given file, the output file name will be the same as the source file name with an ".o" extension.
 		**##-i < //include path// >##**
-			Add a path to search for include files. If mutliple ##-i## switches are used, the order that they are listed determines the order in which directories are searched.
+			Add a path to search for include files. If multiple ##-i## switches are used, the order that they are listed determines the order in which directories are searched.
 		**##-include < //include file// >##**
 			Specifies a file to be ###include##d before processing source files. If multiple ##-include## switches are used, the order that they are listed determines the order in which the files are ###include##d.
 		**##-d < //name//=//value// >##**
@@ -39,9 +39,9 @@ fbc command-line usage
 		**##-c##**
 			Compile only (make an object file), do not link.
 		**##-lang < "fb"|"qb"|"deprecated" >##**
-			Select language compatibility dialect. The default dialect is "fb". See [[CompilerDialects Compiler Dialects]] or the ##migrating.txt## included with the distribution for more details on the differences between FreeBASIC dialects.
+			Select language compatibility dialect. The default dialect is ##"fb"##. See [[CompilerDialects Compiler Dialects]] or the ##migrating.txt## included with the distribution for more details on the differences between FreeBASIC dialects.
 		**##-{ m|entry } < //source file// >##**
-			Determines a main entry point for a source file; the argument is the name of a source file minus its extension. If "-m" or "-entry" is not specified, the frst source file listed is given a main entry point. When using the "-c" switch, "-m" or "-entry" must be specified when compiling a main source file.
+			Determines a main entry point for a source file; the argument is the name of a source file minus its extension. If "-m" or "-entry" is not specified, the first source file listed is given a main entry point. When using the "-c" switch, "-m" or "-entry" must be specified when compiling a main source file.
 
 	{{fbdoc item="subsect" value="Error checking and Debugging"}}
 		**##-w < "0"|"1"|"all"|"pedantic" >##**
@@ -55,7 +55,7 @@ fbc command-line usage
 		**##-g##**
 			Insert debugging symbols into output files, to use with GDB-compatible debuggers.
 		**##-noerrline##**
-			Do not show the place in source where error occured. Useful if an IDE is parsing the error messages.
+			Do not show the place in source where error occurred. Useful if an IDE is parsing the error messages.
 		**##-profile##**
 			Enable function profiling. After running an executable compiled with this option, a gmon.out file will be created in the program directory, allowing use of GPROF for analysis of the program's execution.
 		**##-maxerr < //value//|"inf" >##**
@@ -65,9 +65,9 @@ fbc command-line usage
 		**##-arch < //architecture// >##**
 			Set the target CPU architecture (defaults to 486 if not specified, can be 386, 486, 586, 686).
 		**##-target < "dos"|"linux"|"win32"|"xbox"|"cygwin"|"freebsd" >##**
-			Used with (typically the Windows version) of the compiler to create an executable for a platform that is different from platform on which the source is being compiled and linked. The bin and lib folders must have the /dos, /linux or /xbox subfolders from the appropiate distribution.  This option is only available if the fbc compiler was built with cross compilation targets enabled.
+			Used with (typically the Windows version) of the compiler to create an executable for a platform that is different from platform on which the source is being compiled and linked. The bin and lib folders must have the ##/dos##, ##/linux## or ##/xbox## sub-folders from the appropriate distribution.  This option is only available if the fbc compiler was built with cross compilation targets enabled.
 		**##-s < //subsystem// >##**
-			( Windows ) Specifies the executable subsystem. Allowed subsystems are ##gui## and ##console## (by default, ##console## is used). Specifying a gui subsystem prevents the console window from appearing behind the program window.
+			( Windows ) Specifies the executable subsystem. Allowed subsystems are ##gui## and ##console## (by default, ##console## is used). Specifying a ##gui## subsystem prevents the console window from appearing behind the program window.
 		**##-t < //stack size// >##**
 			( Windows/DOS ) Set stack size in kilobytes (defaults to 1024 KBytes). The local arrays are created in the stack, so 1MB of stack is not always enough.
 
@@ -85,7 +85,7 @@ fbc command-line usage
 <<>>{{fbdoc item="section" value="Linking options"}}
 	{{fbdoc item="subsect" value="Object code"}}
 		**##[ -a ] < //object file// >##**
-			Add a pre-compiled object file to linker's list. The "-a" is optional.
+			Add a compiled object file to linker's list. The "-a" is optional.
 		**##-l < //library file// >##**
 			Add a library file to linker's list.
 		**##-x < //name// >##**
@@ -101,7 +101,7 @@ fbc command-line usage
 		**##-dll, -dylib##**
 			Create a dynamic link library. This creates a DLL under Windows (including the import library), and creates a .so under Linux.
 		**##-mt##**
-			Force linking with thread-safe runtime library for multithreaded apps. Normally the thread-safe version is always used automatically if the FreeBASIC built-in threading functions are used, so you only need to specify this option if using your own threading routines.
+			Force linking with thread-safe runtime library for multi-threaded apps. Normally the thread-safe version is always used automatically if the FreeBASIC built-in threading functions are used, so you only need to specify this option if using your own threading routines.
 		**##-nodeflibs##**
 			Do not include the default libraries when linking.
 	

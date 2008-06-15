@@ -136,7 +136,7 @@
 
 {{fbdoc item="section" value="Language Reference"}}
 
-	{{fbdoc item="subsect" value="Variables and Datatypes"}}
+	{{fbdoc item="subsect" value="Variables and Data Types"}}
 		[[CatPgVariables Variable Declarations]]
 		[[CatPgStdDataTypes Standard Data Types]]
 		[[CatPgCasting Converting Between Data Types]]
@@ -151,6 +151,8 @@
 		[[KeyPgOpCombineDivide Operator /= (Divide and Assign)]]
 		[[KeyPgOpCombineIntegerDivide Operator \= (Integer Divide and Assign)]]
 		[[KeyPgOpCombineExponentiate Operator ^= (Exponentiate and Assign)]]
+		[[KeyPgOpLet Operator Let (Assignment)]]
+		[[KeyPgOpLetlist Operator Let() (Assignment)]]
 		[[KeyPgOpCombineModulus Operator Mod= (Modulus and Assign)]]
 		[[KeyPgOpCombineAnd Operator And= (Conjunction and Assign)]]
 		[[KeyPgOpCombineEqv Operator Eqv= (Equivalence and Assign)]]
@@ -683,8 +685,8 @@
 		[[KeyPgStaticMember STATIC (Member)]]
 		[[KeyPgStdcall STDCALL]]
 		[[KeyPgStep STEP]]
-		[[KeyPgStop STOP]]
 		[[KeyPgStick STICK]]
+		[[KeyPgStop STOP]]
 		[[KeyPgStr STR]]
 		[[KeyPgStrig STRIG]]
 		[[KeyPgStringFunction STRING (Function)]]

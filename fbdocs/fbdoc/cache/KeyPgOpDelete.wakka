@@ -17,7 +17,7 @@ Operator to delete data allocated with the ##[[KeyPgOpNew New]]## operator
 		An address of memory to free.
 
 {{fbdoc item="desc"}}
-	##**Delete**## is used to destroy and free the memory of an object created with [[KeyPgOpNew New]]. When deleting a TYPE, its destructor will be called. ##**Delete**## should only be used with addresses returned from [[KeyPgOpNew New]].
+	##**Delete**## is used to destroy and free the memory of an object created with [[KeyPgOpNew New]]. When deleting a TYPE, its destructor will be called. ##**Delete**## should only be used with addresses returned from ##[[KeyPgOpNew New]]##.
 
 	The array version of ##**Delete**##, ##**Delete[]**##, is used to destroy an array of objects previously created with [[KeyPgOpNew New]][]. Destructors will be called here as well.
 
@@ -27,7 +27,7 @@ Operator to delete data allocated with the ##[[KeyPgOpNew New]]## operator
 	See ##[[KeyPgOpNew New]]## for an example of ##**Delete**##.
 
 {{fbdoc item="lang"}}
-	- Suported only in the //-lang fb// option
+	- Only available in the //[[ProPgCompOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

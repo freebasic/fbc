@@ -13,7 +13,7 @@ Integer divides and assigns a value to a variable
 	##//T1//##
 		Any numeric type.
 	##//rhs//##
-		The value to divide //lhs// by.
+		The value to divide ##//lhs//## by.
 	##//T2//##
 		Any numeric type.
 
@@ -38,7 +38,7 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

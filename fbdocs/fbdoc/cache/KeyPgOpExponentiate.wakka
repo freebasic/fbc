@@ -8,16 +8,16 @@ Raises a numeric expression to some power
 	//result// = //lhs// **##^##** //rhs//
 ##
 {{fbdoc item="param"}}
-	//lhs//
+	##//lhs//##
 		The left-hand side base expression.
-	//rhs//
+	##//rhs//##
 		The right-hand side exponent expression.
 
 {{fbdoc item="ret"}}
-	Returns the exponentation of a base expression raised to some exponent.
+	Returns the exponentiation of a base expression raised to some exponent.
 
 {{fbdoc item="desc"}}
-	**##Operator ^## (Exponentiate)** returns the result of a base expression (//lhs//) raised to some exponent expression (//rhs//). If the exponent is a fractional value, a root is taken. For example, 2 **^** (1/3) is the cubed root of 2.
+	**##Operator ^## (Exponentiate)** returns the result of a base expression (##//lhs//##) raised to some exponent expression (##//rhs//##). If the exponent is a fractional value, a root is taken. For example, 2 **^** (1/3) is the cubed root of 2.
 
 	Neither of the operands are modified in any way.
 
@@ -41,7 +41,7 @@ The fifth root of 3.4 is 1.27730844458754
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None

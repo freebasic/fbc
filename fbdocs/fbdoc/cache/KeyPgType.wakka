@@ -10,8 +10,8 @@ Declares a user-defined type
 		[[KeyPgDeclare declare]] [[KeyPgDestructor destructor]]  [ () ]
 		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember Static]] ] [[KeyPgMemberSub sub]] //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgStatic Static]] ]
 		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember Static]] ] [[KeyPgMemberFunction function]] //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ] [ [[KeyPgStatic Static]] ]
-		//fieldname// [ ( //array subscripts// ) | : //bits// ] [[KeyPgAs as]] //[[DataType DataType]]//
-		[[KeyPgAs as]] [[DataType DataType]] //fieldname// [ ( //array subscripts// ) | : //bits// ], ...
+		//fieldname// [ ( //array subscripts// ) | : //bits// ] [[KeyPgAs as]] //[[DataType DataType]]// [ = //initializer// ]
+		[[KeyPgAs as]] [[DataType DataType]] //fieldname// [ ( //array subscripts// ) | : //bits// ] [ = //initializer// ], ...
 		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] //operatorname//[ ( [ //parameters// ] ) ]
 		[[KeyPgDeclare declare]] [[KeyPgProperty property]] //fieldname//[ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ]
 		...
@@ -30,6 +30,8 @@ Declares a user-defined type
 		subscripts to declare a fixed-length array
 	##//bits//##
 		number of bits a data field occupies
+	##//initializer//##
+		default initializer for the data field
 	##//operatorname//##
 		the name of the operator to be overloaded
 	##//calling convention specifier//##
@@ -49,6 +51,8 @@ Declares a user-defined type
 	##**Type**## can be used to return a temporary type variable.  See ##[[KeyPgTypeTemp Type()]]##.
 
 	##**Type**## can be used to declare a type definition ( i.e. an alias or alternative name ) for an already declared or yet to be declared type.  See ##[[KeyPgTypeAlias Type (Alias)]]##
+
+	Data fields may have an optional default ##//initializer//## value.  This default value initializes the data field immediately before any constructor is called.
 
 {{fbdoc item="ex"}}
 This is an example of a QB-style type, not including procedure definitions

@@ -9,20 +9,21 @@ Computes a valid color value for hi/truecolor modes
 ##
 {{fbdoc item="param"}}
 	##//red//##
-		red colour component value
+		red color component value
 	##//green//##
-		green colour component value
+		green color component value
 	##//blue//##
-		blue colour component value
+		blue color component value
 
 {{fbdoc item="ret"}}
-	The combined colour.
+	The combined color.
 
 {{fbdoc item="desc"}}
 	##//Red//##, ##//green//## and ##//blue//## are components ranging 0-255.
 
 	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an unsigned integer  in the format &hAARRGGBB, where RR, GG and BB equals the values passed to this function, in hexadecimal format. AA is the implicit alpha value and is automatically set to &hFF (opaque).
 
+	**Note for Windows API programmers**: The macro named RGB in the Windows references has been renamed BGR in the FB headers for Windows to avoid collisions. 
 Example:
 	See ##[[KeyPgPutgraphics Put (Graphics)]]## example in addition.
 

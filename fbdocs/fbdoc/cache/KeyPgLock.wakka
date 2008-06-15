@@ -11,7 +11,7 @@ Restricts read/write access to a file or portion of a file
 	##//record//##
 		The record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) to lock. If omitted, the entire file is locked.
 	##//start//##
-		The first record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) to lock from. If omitted, the current record/byte position (##[[KeyPgSeekreturn Seek]]##(//filenum//)) is used.
+		The first record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) to lock from. If omitted, the current record/byte position (##[[KeyPgSeekreturn Seek]]##(##//filenum//##)) is used.
 	##//end//##
 		The last record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) to lock to.
 

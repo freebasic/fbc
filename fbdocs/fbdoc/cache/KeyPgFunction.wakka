@@ -33,7 +33,7 @@ Defines a procedure returning a value
 	
 	//Calling Convention// : Calling convention, or the order in which arguments are pushed and popped from the stack during function calls, is specified with the ##[[KeyPgCdecl CDecl]]##, ##[[KeyPgPascal Pascal]]## and ##[[KeyPgStdcall StdCall]]## keywords. If none is given, the function uses the standard convention by default (##[[KeyPgStdcall StdCall]]##).
 	
-	//Passing Arguments// : Functions may recieve one or more variables, or arguments, when called. These arguments are listed as ##//parameters//## in the ##//parameter_list//##. The ##[[KeyPgByref ByRef]]## and ##[[KeyPgByval ByVal]]## keywords specify whether the argument will be passed by reference or by value, respectively. The argument's type is given by "##[[KeyPgAs As]] //type//##" following the ##//parameter//##. If a parameter in the declaration is given a default value, the parameter is optional.  Array parameters are specified by following an identifier with an empty parenthesis.  Note that array parameters are always ##[[KeyPgByref ByRef]]## and the ##[[KeyPgByref ByRef]]## keyword is neither required nor allowed for array parameters.  When calling a functon with an array argument the parenthesis must be supplied there too; see the examples.
+	//Passing Arguments// : Functions may receive one or more variables, or arguments, when called. These arguments are listed as ##//parameters//## in the ##//parameter_list//##. The ##[[KeyPgByref ByRef]]## and ##[[KeyPgByval ByVal]]## keywords specify whether the argument will be passed by reference or by value, respectively. The argument's type is given by "##[[KeyPgAs As]] //type//##" following the ##//parameter//##. If a parameter in the declaration is given a default value, the parameter is optional.  Array parameters are specified by following an identifier with an empty parenthesis.  Note that array parameters are always ##[[KeyPgByref ByRef]]## and the ##[[KeyPgByref ByRef]]## keyword is neither required nor allowed for array parameters.  When calling a function with an array argument the parenthesis must be supplied there too; see the examples.
 
 	//Overloaded Functions// : An overloaded function may share the same name (##//identifier//##) as another with a different signature. The ##[[KeyPgOverload Overload]]## keyword specifies that a function may be overloaded. A function must be defined - or declared - using the ##[[KeyPgOverload Overload]]## keyword prior to any functions that overload them.
 	
@@ -118,11 +118,10 @@ Print x(c())
 %%
 
 {{fbdoc item="lang"}}
-	- In //-lang fb// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString String]]##; String and user-defined ##[[KeyPgType Type]]##s are passed ##[[KeyPgByref Byref]]## by default.
-	- In //-lang qb// and //-lang deprecated// dialect, ##**Byref**## is the default parameter passing convention.
-	- In //-lang qb//, the name of the function must be used in an assignment to specify the return value.  Using ##function## or ##return## to specify the return value may not be used.
-
-	- In the //-lang fb// option the parameters are passed ##[[KeyPgByval ByVal]]## by default. //-lang qb// and //-lang deprecated// keep the QB convention: parameters are ##[[KeyPgByref ByRef]]## by default.
+	- In the //[[ProPgCompOptlang -lang fb]]// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString String]]##; String and user-defined ##[[KeyPgType Type]]##s are passed ##[[KeyPgByref Byref]]## by default.
+	- In the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, ##**Byref**## is the default parameter passing convention.
+	- In the //[[ProPgCompOptlang -lang qb]]//, the name of the function must be used in an assignment to specify the return value.  Using ##function## or ##return## to specify the return value may not be used.
+	- In the //[[ProPgCompOptlang -lang fb]]// dialect the parameters are passed ##[[KeyPgByval ByVal]]## by default. //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects keep the QB convention: parameters are ##[[KeyPgByref ByRef]]## by default.
 
 {{fbdoc item="diff"}}
 	- Parameters can be optional in FreeBASIC.

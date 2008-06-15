@@ -9,7 +9,7 @@ Returns the offset of a field within a type
 ##
 {{fbdoc item="param"}}
 	##//typename//##
-		Name of the type as defined using the ##[[KeyPgType Type...End Type]]## statments.
+		Name of the type as defined using the ##[[KeyPgType Type...End Type]]## statements.
 	##//fieldname//##
 		Name of the field as defined within the type.
 

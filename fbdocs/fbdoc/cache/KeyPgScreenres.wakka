@@ -23,7 +23,7 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 
 	##**Screenres**## tells the compiler to link the GfxLib and initializes a QB-only, QB-on-GUI or OpenGL graphics mode, depending on the ##//flags//## setting
 
-	In non-fullscreen modes, the resolution does not have to match any resolution of the gfx card. Resolutions like ##555x111## are possible, GfxLib will create a window of such size. See Platform differences for DOS issues.
+	In non-fullscreen modes, the resolution does not have to match any resolution of the graphics card. Resolutions like ##555x111## are possible, GfxLib will create a window of such size. See Platform differences for DOS issues.
 
 	In QB-only modes a dumb window or fullscreen resolution is set, one or more buffers in standard memory are created,  console commands are redirected to their graphic versions, a [[GfxDefPalettes default palette]] is set and an automatic screen refresh thread is started. QB-like  graphics and console statements can be used.  
 
@@ -52,10 +52,10 @@ End
 %%
 
 {{fbdoc item="target"}}
-	- In DOS the resolution must match one supported by the gfx card. GfxLib will try to find an appropriate mode from VGA modes, ""ModeX"" or VESA, prefering VESA LFB interface if available, or banked VESA otherwise. Windowing and OpenGL related switches are not available. Unsupported resolutions can crash the program by now, in future GfxLib could pick the next best higher mode instead. For optimal compatibility, you should support safe resolutions like 640x480 and 800x600, and maybe 1024x768. There are various additional modes like 768x576 around, but they are vendor specific and lacking on most cards. Also modes 1024x768 and above are not available on older cards and laptops. 
+	- In DOS the resolution must match one supported by the graphics card. GfxLib will try to find an appropriate mode from VGA modes, ""ModeX"" or VESA, preferring VESA LFB interface if available, or banked VESA otherwise. Windowing and OpenGL related switches are not available. Unsupported resolutions can crash the program by now, in future GfxLib could pick the next best higher mode instead. For optimal compatibility, you should support safe resolutions like 640x480 and 800x600, and maybe 1024x768. There are various additional modes like 768x576 around, but they are vendor specific and lacking on most cards. Also modes 1024x768 and above are not available on older cards and laptops. 
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen]]##

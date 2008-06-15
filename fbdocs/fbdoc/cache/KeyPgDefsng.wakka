@@ -11,10 +11,10 @@ Specifies a default data type for a range of variable names
 		the last letter in the range
 
 {{fbdoc item="desc"}}
-	##**Defsng**## specifies that variables and arrays which aren't declared with a datatype - or not declared at all - are implicitly declared of type ##[[KeyPgSingle Single]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
+	##**Defsng**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgSingle Single]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make 'sNumber' and 'yNumber' a ##[[KeyPgSingle Single]]##-precision decimal number since it is in the range of s-z.
+	This will make ##sNumber## and ##yNumber## a ##[[KeyPgSingle Single]]##-precision decimal number since it is in the range of s-z.
 {{fbdoc item="filename" value="examples/manual/switches/defsng.bas"}}%%(freebasic)
 '' Compile with -lang deprecated or qb
 defsng s-z
@@ -22,7 +22,7 @@ dim sNumber, yNumber
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
+	- Only available in the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None

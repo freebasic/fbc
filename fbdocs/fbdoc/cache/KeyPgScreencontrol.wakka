@@ -26,7 +26,7 @@ Sets or gets internal graphics library settings
 
 	__Supported operations__
 		
-		Note: * denotes operations that are allowed while a gfx mode has not yet been set via [[KeyPgScreengraphics Screen (Graphics)]] or [[KeyPgScreenres ScreenRes]]. For all other operations, return values are zero(0) or the empty string and the operation has no effect if a gfx mode is not available at call time.
+		Note: * denotes operations that are allowed while a graphics mode has not yet been set via [[KeyPgScreengraphics Screen (Graphics)]] or [[KeyPgScreenres ScreenRes]]. For all other operations, return values are zero(0) or the empty string and the operation has no effect if a graphics mode is not available at call time.
 		
 		**Get operations**
 	- ##GET_WINDOW_POS## (0) Returns the current window position, in desktop coordinates.
@@ -35,34 +35,34 @@ Sets or gets internal graphics library settings
 	- * ##GET_WINDOW_TITLE## (1) Returns the title of the program window.
 		[OUT] ##//param//## title
 	- ##GET_WINDOW_HANDLE## (2) Returns a handle to the program window.
-		[OUT] ##//param1//## handle; this is a HWND in Windows, a "Window" XID in X11
+		[OUT] ##//param1//## handle; this is a ##HWND## in Windows, a "Window" XID in X11
 	- * ##GET_DESKTOP_SIZE## (3) Returns the desktop size, in pixels.
 		[OUT] ##//param1//## width
 		[OUT] ##//param2//## height
 	- ##GET_SCREEN_SIZE## (4) Returns the current screen size in pixels.
 		[OUT] ##//param1//## width
 		[OUT] ##//param2//## height
-	- ##GET_SCREEN_DEPTH## (5) Returns current gfx mode screen depth.
+	- ##GET_SCREEN_DEPTH## (5) Returns current graphics mode screen depth.
 		[OUT] ##//param1//## bits per pixel
-	- ##GET_SCREEN_BPP## (6) Returns current gfx mode BPP.
+	- ##GET_SCREEN_BPP## (6) Returns current graphics mode BPP.
 		[OUT] ##//param1//## bytes per pixel
-	- ##GET_SCREEN_PITCH## (7) Returns the current gfx mode framebuffer pitch, in bytes.
+	- ##GET_SCREEN_PITCH## (7) Returns the current graphics mode framebuffer pitch, in bytes.
 		[OUT] ##//param1//## pitch
-	- ##GET_SCREEN_REFRESH## (8) Returns the current gfx mode refresh rate, in hertz.
+	- ##GET_SCREEN_REFRESH## (8) Returns the current graphics mode refresh rate, in hertz.
 		[OUT] ##//param1//## rate
-	- ##GET_DRIVER_NAME## (9) Returns the current gfx mode driver name.
+	- ##GET_DRIVER_NAME## (9) Returns the current graphics mode driver name.
 		[OUT] ##//param//## name
-	- ##GET_TRANSPARENT_COLOR## (10) Returns the transparent color value for the current gfx mode depth.
+	- ##GET_TRANSPARENT_COLOR## (10) Returns the transparent color value for the current graphics mode depth.
 		[OUT] ##//param1//## value
 	- ##GET_VIEWPORT## (11) Returns the current viewport as set by the [[KeyPgViewgraphics View (Graphics)]] statement, in screen coordinates.
 		[OUT] ##//param1//## x1
 		[OUT] ##//param2//## y1
 		[OUT] ##//param3//## x2
 		[OUT] ##//param4//## y2
-	- ##GET_PEN_POS## (12) Returns the last graphical pen position, in screen coordinates. This position is used in gfx functions supporting relative coordinates using the [[KeyPgStep Step]] keyword.
+	- ##GET_PEN_POS## (12) Returns the last graphical pen position, in screen coordinates. This position is used in graphics functions supporting relative coordinates using the [[KeyPgStep Step]] keyword.
 		[OUT] ##//param1//## x
 		[OUT] ##//param2//## y
-	- ##GET_COLOR## (13) Returns the current gfx mode color.
+	- ##GET_COLOR## (13) Returns the current graphics mode color.
 		[OUT] ##//param1//## foreground
 		[OUT] ##//param2//## background
 	- ##GET_ALPHA_PRIMITIVES## (14) Returns if primitives drawing support for alpha channel is enabled.
@@ -76,10 +76,10 @@ Sets or gets internal graphics library settings
 		[IN] ##//param2//## y
 	- * ##SET_WINDOW_TITLE## (101) Sets the current program window title. This is equivalent to calling ##[[KeyPgWindowtitle WindowTitle]]( //param// )##.
 		[IN] ##//param//## title
-	- ##SET_PEN_POS## (102) Sets the current graphical pen position, in screen coordinates. This position is used in gfx functions supporting relative coordinates using the [[KeyPgStep Step]] keyword.
+	- ##SET_PEN_POS## (102) Sets the current graphical pen position, in screen coordinates. This position is used in graphics functions supporting relative coordinates using the [[KeyPgStep Step]] keyword.
 		[IN] ##//param1//## x
 		[IN] ##//param2//## y
-	- * ##SET_DRIVER_NAME## (103) Sets the name of the internal gfx driver to be used in subsequent calls to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres ScreenRes]]##.
+	- * ##SET_DRIVER_NAME## (103) Sets the name of the internal graphics driver to be used in subsequent calls to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres ScreenRes]]##.
 		[IN] ##//param//## driver name
 	- ##SET_ALPHA_PRIMITIVES## (104) Sets if primitives drawing should honor alpha channel.
 		[IN] ##//param1//## enabled

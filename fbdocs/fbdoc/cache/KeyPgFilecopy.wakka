@@ -34,7 +34,7 @@ FILECOPY "source.txt", "destination.txt"
 
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic.  Existed in Visual Basic.
+	- New to FreeBASIC.  Existed in Visual Basic.
 
 {{fbdoc item="see"}}
 

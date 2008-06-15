@@ -24,7 +24,7 @@ another_one = 2
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- [[CatPgPreProcess Preprocessor]]

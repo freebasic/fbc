@@ -19,15 +19,15 @@ Stops execution of current thread until some other thread signals that execution
 {{fbdoc item="ex"}}
 	See ##[[KeyPgCondCreate Condcreate]]##
 
-{{fbdoc item="diff"}}
-	- New to FreeBasic
-
-{{fbdoc item="lang"}}
-	- Threading is not allowed in -lang qb
-
 {{fbdoc item="target"}}
 	- **Condwait** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.
-	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FB issue. 
+	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FreeBASIC issue. 
+
+{{fbdoc item="lang"}}
+	- Threading is not allowed in //[[ProPgCompOptlang -lang qb]]//
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCondCreate Condcreate]]##

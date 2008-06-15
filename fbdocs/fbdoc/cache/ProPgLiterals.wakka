@@ -77,7 +77,6 @@ Dim d as double = 743.1d-13
 Dim e as double = 743.1e13
 %%
 
-
 	A suffix of "f" or "F" on a fixed point number indicates a single precision (32 bit total) floating point value.
 	(Note that an exponent cannot follow this suffix, nor can this suffix follow a number with an exponent.  For floating point literals, the type may be forced using ##[[KeyPgCsng CSng]]##.)
 {{fbdoc item="filename" value="examples/manual/proguide/literals/singsuff.bas"}}%%(freebasic)
@@ -100,7 +99,8 @@ print "See the ""word"" contained in double quotes."
 print !"Hello\nWorld!"
 %%
 
-	If the compilation mode of the compiler is to consider all string literals as escaped, a string may be explicity specified as unescaped when prefixed by the dollar sign character ($)
+	If the compilation mode of the compiler is to consider all string literals as escaped, a string may be explicitly specified as non-escaped when prefixed by the dollar sign character ($)
+
 {{fbdoc item="filename" value="examples/manual/proguide/literals/noescape.bas"}}%%(freebasic)
 print $"C:\temp"
 %%

@@ -15,7 +15,7 @@ Sets or gets the number of rows and columns of the display
 	##//filenum//##
 		file number to apply to
 	##//devicename//##
-		devicenemt to apply to
+		device name to apply to
 
 {{fbdoc item="ret"}}
 	Returns a 32 bit ##[[KeyPgInteger Integer]]## where the ##[[KeyPgHiword HIWORD]]## is the number of rows and the ##[[KeyPgLoWord LOWORD]]## is the number of columns currently set.

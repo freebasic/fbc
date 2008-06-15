@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Variable and Procedure Linkage"}}----
-Name visiblity within and between modules
+Name visibility within and between modules
 
-	//Linkage// refers to the visibility of the name of a variable, object or procedure amongst one or more modules of a program. In other words, a linkage dictates how a name is shared between modules. There are two main types of linkage a name can have: //internal// and //external//.
+	//Linkage// refers to the visibility of the name of a variable, object or procedure between one or more modules of a program. In other words, a linkage dictates how a name is shared between modules. There are two main types of linkage a name can have: //internal// and //external//.
 
 {{fbdoc item="section" value="Internal linkage"}}
 

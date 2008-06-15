@@ -16,7 +16,7 @@ Dereferences a pointer
 		Any [[CatPgStdDataTypes standard]], [[CatPgUserDefTypes user-defined]] or procedure type.
 
 {{fbdoc item="ret"}}
-	Returns a reference to the value stored at the address //rhs//.
+	Returns a reference to the value stored at the address ##//rhs//##.
 
 {{fbdoc item="desc"}}
 	**##Operator *## (Value of)** returns a reference to the value stored at an address, and is often called the dereference operator. The operand is not modified in any way.
@@ -48,7 +48,7 @@ The new value of 'a' is 1
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

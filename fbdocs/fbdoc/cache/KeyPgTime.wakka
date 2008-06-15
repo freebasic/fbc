@@ -8,10 +8,10 @@ Returns the current system time as a string
 	//result// = **Time**
 ##
 {{fbdoc item="ret"}}
-	Returns the current system time in the format hh:mm:ss.
+	Returns the current system.
 
 {{fbdoc item="desc"}}
-	
+	Returns the current system time in the format ##hh:mm:ss##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/dates/time.bas"}}%%(freebasic)

@@ -27,9 +27,9 @@ Retrieves the status of the mouse pointing device
 	
 	If in console mode, the ##//x//## and ##//y//## coordinates are the character cell coordinates the mouse is currently on; the upper left corner of the screen is at coordinates 0, 0. If the mouse moves out of the console window, ##**Getmouse**## returns the last coordinate on the window that the mouse was on. 
 	
-	If in gfx mode, ##//x//## and ##//y//## will always be returned in pixel coordinates still relative to the upper left corner of the screen, which is at 0,0 in this case; custom coordinates system set via ##[[KeyPgViewgraphics View]]## or ##[[KeyPgWindow Window]]## do not affect the coordinates returned by ##**Getmouse**##. If the mouse runs off the window, all values are set to -1.
+	If in graphics mode, ##//x//## and ##//y//## will always be returned in pixel coordinates still relative to the upper left corner of the screen, which is at 0,0 in this case; custom coordinates system set via ##[[KeyPgViewgraphics View]]## or ##[[KeyPgWindow Window]]## do not affect the coordinates returned by ##**Getmouse**##. If the mouse runs off the window, all values are set to -1.
 	
-	##//Wheel//## is the mouse wheel counter; rotating the wheel away from you makes the count to increase, rotating towards you makes it to decrease. At program startup or when a new gfx mode is set via ##[[KeyPgScreengraphics Screen]]##, wheel position is reset to 0. FreeBASIC may not always support mouse wheels, in which case 0 is always returned.
+	##//Wheel//## is the mouse wheel counter; rotating the wheel away from you makes the count to increase, rotating the wheel toward you makes it to decrease. At program startup or when a new graphics mode is set via ##[[KeyPgScreengraphics Screen]]##, wheel position is reset to 0. FreeBASIC may not always support mouse wheels for a given platform, in which case 0 is always returned.
 	
 	##//Buttons//## stores the buttons status as a bitmask: bit 0 is set if left mouse button is down; bit 1 is set if right mouse button is down; bit 2 is set if middle mouse button is down.
 

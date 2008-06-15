@@ -1,50 +1,47 @@
 {{fbdoc item="title" value="CALLOCATE"}}----
-Allocates a certain number of bytes from the free store and clears the contents
+Allocates memory for a certain number of elements from the free store and clears the contents
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Callocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //num_elements// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Callocate**( //bytes// )
+	//result// = **Callocate**( //bytes// [, //size// ] )
 ##
 {{fbdoc item="param"}}
 	##//num_elements//##
-		Number of elements to return
+		The number of elements to allocate memory for.
 	##//size//##
-		Length in bytes of each element.
+		The size, in bytes, of each element.
 
 {{fbdoc item="ret"}}
-	Returns a pointer to memory allocated.
+	If successful, the address of the start of the allocated memory is returned. Otherwise, the null pointer (##0##) is returned.
 
 {{fbdoc item="desc"}}
-	The same as ##[[KeyPgAllocate Allocate]]##, but clears the contents.
-	This function is not part of the FB RTLib, it is an alias for the C lib's //calloc//, so it's not garanteed to be thread safe in all platforms.
+	Similar to ##[[KeyPgAllocate Allocate]]##, ##**Callocate**## initializes the allocated memory with zeros.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/callocate.bas"}}%%(freebasic)
-' Create an integer pointer.
-Dim p As Integer Ptr
-dim fill_p as integer
-dim show_p as integer
+' Allocate and initialize space for 10 integer elements.
+dim p as integer ptr = callocate(10, sizeof(integer))
 
-' Allocate cleared space for 10 integers.
-p = cAllocate(10, Len(Integer))
+' Fill the memory with integer values.
+for index as integer = 0 to 9
+	p[index] = (index + 1) * 10
+next
 
-' Fill the array with numbers.
-For fill_p = 0 To 9
-  p[fill_p] = fill_p
-Next
+' Display the integer values.
+for index as integer = 0 to 9
+	print p[index] ;
+next
 
-' Display the values.
-For show_p = 0 To 9
-  print p[show_p]
-Next
-
-' Await a keypress.
-Sleep
-
-' Exit program.
-End
+' Free the memory.
+deallocate(p)
 %%
+Outputs:
+%% 10 20 30 40 50 60 70 80 90 100%%
+
+{{fbdoc item="target"}}
+	- This procedure is not guaranteed to be thread-safe.
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.

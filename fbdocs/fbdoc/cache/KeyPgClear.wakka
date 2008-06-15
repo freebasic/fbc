@@ -25,11 +25,11 @@ clear array(1), 0, len(array(1)) * ubound(array)
 %%
 
 {{fbdoc item="diff"}}
-~-New to FB
-~-The keyword CLEAR was used in QB to erase all variables, close all files, and optionally change the stack size. This use is not supported in FB.
+	-New to FreeBASIC
+	-The keyword ##CLEAR## was used in QB to erase all variables, close all files, and optionally change the stack size. This use is not supported in FreeBASIC.
 
 {{fbdoc item="see"}}
-~- ##[[KeyPgErase Erase]]##
-~- ##[[KeyPgReset Reset]]##
+	- ##[[KeyPgErase Erase]]##
+	- ##[[KeyPgReset Reset]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

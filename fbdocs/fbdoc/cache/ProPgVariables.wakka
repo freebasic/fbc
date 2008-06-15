@@ -1,13 +1,16 @@
 {{fbdoc item="title" value="Variables"}}----
+Symbols representing data in memory
 
 {{fbdoc item="desc"}}
-	Variables are values which can be manipulated. They are referenced using names composed of letters, numbers, and character "_". These reference names cannot contain most other symbols because such symbols are part of the FreeBASIC programming language. They also cannot contain spaces. 
+	Variables are name symbols which can be manipulated. They are declared and referenced using names composed of letters, numbers, and character "_". These reference names cannot contain most other symbols because such symbols are part of the FreeBASIC programming language. They also cannot contain spaces.  See //[[ProPgIdentifierRules Indentifier Rules]]//.
 	
-	In FreeBASIC, variable names can defined using the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command. 
+	In FreeBASIC, variables can be defined using the ##[[KeyPgDim Dim]]## statement. 
 
-	Where the variables are available depends on where and how you invoke the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command. This is called the {{fbdoc item="keyword" value="ProPgVariableScope|Variable Scope"}}. Depending on the Scope of a variable, a value you define can be available within the main area of a program, within a {{fbdoc item="keyword" value="KeyPgSub|SUB"}} or {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}, or anywhere within your program.. 
+	Variables are available for later access depending on where and how the ##[[KeyPgDim Dim]]## declaration for that variable is given.  Depending on the [[ProPgVariableScope scope]] of a variable, a defined variable can be available within the main area of a program, within a procedure, through an entire module, or through out an entire program.  See //[[ProPgVariableScope Variable Scope]]//.
 
-	After being defined with the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command, variables can be altered and used as variables wherever their [[CatPgStdDataTypes Standard Data Types]] are similar.
+	Variables are also made available when they are passed as parameters to a procedure such as ##[[KeyPgFunction Function]]## or ##[[KeyPgSub Sub]]##.
+
+	After a variable is declared with the ##[[KeyPgDim Dim]]## statement, they can be assigned, passed to procedures, and used in expressions wherever their [[CatPgStdDataTypes Standard Data Type]] is similar.  Sometimes variables are automatically converted to other data types before being used in expressions, or passed as parameters to procedures.  See //[[ProPgDataConversion Coercion and Conversion]]//.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/proguide/variables/variables.bas"}}%%(freebasic)
@@ -31,8 +34,9 @@ END SUB
 %%
 
 {{fbdoc item="see"}}
-	- [[ProPgVariableScope Variable Scope]]
-	- [[ProPgIdentifierRules Standard Identifier Rules]]
+	- [[ProPgDataConversion Coercion and Conversion]]
 	- ##[[KeyPgDim Dim]]##
+	- [[ProPgIdentifierRules Identifier Rules]]
+	- [[ProPgVariableScope Variable Scope]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

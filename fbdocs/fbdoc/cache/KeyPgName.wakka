@@ -8,9 +8,9 @@ Renames a file on disk
 	//result// = **Name**( //oldname//, //newname// )
 ##
 {{fbdoc item="param"}}
-	//oldname//
+	##//oldname//##
 		Name of an existing file.
-	//newname//
+	##//newname//##
 		New name of the file.
 
 {{fbdoc item="ret"}}

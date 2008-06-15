@@ -17,7 +17,7 @@ Declares a union user defined type
 		Any of the supported member functions
 
 {{fbdoc item="desc"}}
-	Unions are similiar to a ##[[KeyPgType Type]]## structure, except that the elements of a union occupy the same space in memory. The size of the Union is the size of the largest data item. Since they occupy the same space, only a single element can be used. 
+	Unions are similar to a ##[[KeyPgType Type]]## structure, except that the elements of a union occupy the same space in memory. The size of the Union is the size of the largest data item. Since they occupy the same space, only a single element can be used. 
 
 	Unions can be nested inside a type structure. See Example.
 
@@ -71,7 +71,7 @@ end if
 sleep
 %%
 {{fbdoc item="lang"}}
-	- Object-related features as functions defined inside the UNION block are supported only in the //-lang fb// option
+	- Object-related features as functions defined inside the ##**Union**## block are supported only in the //[[ProPgCompOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

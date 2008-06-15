@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="__FB_MIN_VERSION__"}}----
-Builtin macro function to test minimum compiler version
+Macro function to test minimum compiler version
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **""__FB_MIN_VERSION__""**( //major//, //minor//, //patch//) _
@@ -19,15 +19,15 @@ Builtin macro function to test minimum compiler version
 		minimum patch version to test
 
 {{fbdoc item="ret"}}
-	returns zero (0) if the compiler version is less than the specified version, or non-zero (-1) if the compiler version is greater than or equal to specified version
+	Returns zero (0) if the compiler version is less than the specified version, or non-zero (-1) if the compiler version is greater than or equal to specified version
 
 {{fbdoc item="desc"}}
 	##""__FB_MIN_VERSION__""## tests for a minimum version of the compiler.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbminversion.bas"}}%%(freebasic)
-#if Not __FB_MIN_VERSION__(0, 17, 0)
-  #error fbc must be at least version 0.17 to compiler this module
+#if Not __FB_MIN_VERSION__(0, 18, 2)
+ 	#error fbc must be at least version 0.18.2 to compile this module
 #endif
 %%
 

@@ -18,7 +18,7 @@ Adds and assigns a value to a variable
 	##//T1//##
 		Any numeric type.
 	##//rhs//##
-		The value to add to //lhs//.
+		The value to add to ##//lhs//##.
 	##//T2//##
 		Any numeric type.
 	##//T//##
@@ -29,7 +29,7 @@ Adds and assigns a value to a variable
 ##
 		//lhs// = //lhs// [[KeyPgOpAdd +]] //rhs//
 ##
-	For numeric types, the right-hand side expression (//rhs//) will be converted to the left-hand side type (//T1//).
+	For numeric types, the right-hand side expression (##//rhs//##) will be converted to the left-hand side type (##//T1//##).
 
 	For string types, this operator is functionally equivalent to ##[[KeyPgOpCombineConcat Operator &= (Concatenate and assign)]]##.
 
@@ -49,7 +49,7 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

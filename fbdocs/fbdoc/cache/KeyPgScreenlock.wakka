@@ -10,9 +10,9 @@ Locks the working page's framebuffer
 {{fbdoc item="desc"}}
 	The ##**Screenlock**## function locks the current work page framebuffer for direct memory access. 
 
-	Framebuffer memory may be freely accessed (read/write) and primitive gfx statements may  be called during the time a screen is locked.
+	Framebuffer memory may be freely accessed (read/write) and primitive graphics statements may  be called during the time a screen is locked.
 
-	The screen remains locked until the use of ##[[KeyPgScreenunlock Screenunlock]]## statement.  ##**Screenlock**## must only be used on a screen that is unlocked - or in otherwords, a screen that is not already locked with ##**Screenlock**##. 
+	The screen remains locked until the use of ##[[KeyPgScreenunlock Screenunlock]]## statement.  ##**Screenlock**## must only be used on a screen that is unlocked - or in other words, a screen that is not already locked with ##**Screenlock**##. 
 
 	It is strongly recommended that the lock on a page be held for as short a time as possible.
 

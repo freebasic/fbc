@@ -11,17 +11,18 @@ Specifies a default data type for a range of variable names
 		the last letter in the range
 
 {{fbdoc item="desc"}}
-	##**Defint**## specifies that variables and arrays which aren't declared with a datatype - or not declared at all - are implicitly declared of type ##[[KeyPgInteger Integer]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
+	##**Defint**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgInteger Integer]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make 'iNumber' an ##[[KeyPgInteger Integer]]## number since it's first letter starts with i.
+	This will make ##iNumber## an ##[[KeyPgInteger Integer]]## number since it's first letter starts with i.
 {{fbdoc item="filename" value="examples/manual/switches/defint.bas"}}%%(freebasic)
 '' Compile with -lang deprecated or qb
 defint i
 dim iNumber
 %%
+
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
+	- Only available in the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None

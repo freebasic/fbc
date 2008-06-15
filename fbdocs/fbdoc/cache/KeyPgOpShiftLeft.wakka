@@ -11,16 +11,16 @@ Shifts the bits of a numeric expression to the left
 	//result// = //lhs// **Shl** //rhs//
 ##
 {{fbdoc item="param"}}
-	//lhs//
+	##//lhs//##
 		The left-hand side expression.
-	//rhs//
+	##//rhs//##
 		The right-hand side shift expression.
 
 {{fbdoc item="ret"}}
-	Returns the result of //lhs// being shifted left //rhs// number of times.
+	Returns the result of ##//lhs//## being shifted left ##//rhs//## number of times.
 
 {{fbdoc item="desc"}}
-	**##Operator Shl## (Shift left)** shifts all of the bits in the left-hand side expression (//lhs//) left a number of times specified by the right-hand side expression (//rhs//). This has the effect of multiplying //lhs// by two for each shift. For example, ##"&b0101 **Shl** 1"## returns the binary number ##&b01010##, and ##"5 **Shl** 1"## returns ##10##.
+	**##Operator Shl## (Shift left)** shifts all of the bits in the left-hand side expression (##//lhs//##) left a number of times specified by the right-hand side expression (##//rhs//##). This has the effect of multiplying ##//lhs//## by two for each shift. For example, ##"&b0101 **Shl** 1"## returns the binary number ##&b01010##, and ##"5 **Shl** 1"## returns ##10##.
 
 	If the left-hand side expression is signed, the sign bit is recopied into its place after the shift.
 

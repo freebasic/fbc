@@ -13,7 +13,7 @@ Writes a list of values to a file or device
 {{fbdoc item="desc"}}
 	##**Print #**## outputs a list of values to a file or device. Numeric values are converted to their string representation, with left padding for the sign. Objects of user-defined types must overload ##Operator Cast () As String##.
 
-	Consecutive values in the expression list are seperated either by a comma (,) or semicolon (;). A comma indicates printing should take place at the next 14 column boundary, while a semicolon indicates values are printed with no space between them.
+	Consecutive values in the expression list are separated either by a comma (,) or semicolon (;). A comma indicates printing should take place at the next 14 column boundary, while a semicolon indicates values are printed with no space between them.
 
 	Note that the comma (,) following the file number is still necessary, even if no expression list is given.
 

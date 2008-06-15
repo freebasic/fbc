@@ -9,16 +9,16 @@ Computes a valid color value including alpha (transparency) for hi/truecolor mod
 ##
 {{fbdoc item="param"}}
 	##//red//##
-		red colour component value
+		red color component value
 	##//green//##
-		green colour component value
+		green color component value
 	##//blue//##
-		blue colour component value
+		blue color component value
 	##//alpha//##
 		alpha component value
 
 {{fbdoc item="ret"}}
-	the combined colour
+	the combined color
 
 {{fbdoc item="desc"}}
 	##//Red//##, ##//green//##, ##//blue//## and ##//alpha//## are components ranging 0-255.

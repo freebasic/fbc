@@ -14,7 +14,7 @@ Gets the current system time as a [[ProPgDates Date Serial]]
 {{fbdoc item="desc"}}
 	As the time is the decimal part of a date serial, if the value of **Now** is saved to an integer, the time in it will be reset to 00:00:00
 	
-	The compiler will not recognise this function unless "vbcompat.bi" is included.
+	The compiler will not recognize this function unless ##vbcompat.bi## is included.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/dates/now.bas"}}%%(freebasic)

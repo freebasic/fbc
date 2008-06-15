@@ -12,7 +12,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="ProPgCompOptd|-d < name=val >"}}
 		- Add a preprocessor's define
 	{{fbdoc item="keyword" value="ProPgCompOptdll|-dll"}}
-		- Create a DLL, including the import library.  (Same as -dylib)
+		- Create a DLL, including the import library.  (Same as ##-dylib##)
 	{{fbdoc item="keyword" value="ProPgCompOptdylib|-dylib"}}
 		- Create a DLL, including the import library
 	{{fbdoc item="keyword" value="ProPgCompOptentry|-entry < name >"}}
@@ -34,7 +34,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="ProPgCompOptl|-l < name >"}}
 		- Add a library file to linker's list
 	{{fbdoc item="keyword" value="ProPgCompOptlang|-lang < name >"}}
-		- Select language compatibility: deprecated, qb
+		- Select language compatibility: ##deprecated##, ##qb##, ##fb##
 	{{fbdoc item="keyword" value="ProPgCompOptlib|-lib"}}
 		- Create a static library
 	{{fbdoc item="keyword" value="ProPgCompOptm|-m < name >"}}
@@ -48,7 +48,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="ProPgCompOptnodeflibs|-nodeflibs"}}
 		- Do not include the default libraries
 	{{fbdoc item="keyword" value="ProPgCompOptnoerrline|-noerrline"}}
-		- Do not show source line where error occured
+		- Do not show source line where error occurred
 	{{fbdoc item="keyword" value="ProPgCompOpto|-o < name >"}}
 		- Set object file path/name (must be passed after the .bas file)
 	{{fbdoc item="keyword" value="ProPgCompOptp|-p < name >"}}
@@ -60,7 +60,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="ProPgCompOptr|-r"}}
 		- Do not delete the asm file(s)
 	{{fbdoc item="keyword" value="ProPgCompOpts|-s < name >"}}
-		- Set subsystem (gui, console)
+		- Set subsystem (##gui##, ##console##)
 	{{fbdoc item="keyword" value="ProPgCompOpttarget|-target < platform >"}}
 		- Set the target platform for cross compilation
 	{{fbdoc item="keyword" value="ProPgCompOptt|-t < value >"}}

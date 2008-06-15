@@ -2,7 +2,7 @@
 An array index is the number used to access an [[ProPgArrays Array]] of [[ProPgVariables Variables]] created using the ##[[KeyPgDim Dim]]## command.
 
 {{fbdoc item="desc"}}
-	The best way to illustrate the use of array elements is by example. If we have an array myArray with elements of 1 to 10, filled with random data
+	The best way to illustrate the use of array elements is by example. If we have an array ##myArray## with elements of 1 to 10, filled with random data
 %%
 Index        Data
 1              5
@@ -17,21 +17,21 @@ Index        Data
 10             7
 %%
 
-	One can access each piece of data seperately by pointing to the Index of the array element.
+	One can access each piece of data separately by pointing to the Index of the array element.
 	If you were to: 
-	%% 
+	%%(freebasic)
 	Print myArray(5)
 	%%
-	you'd print the data contained in the fifth element of myArray, which would result in an output of:
+	you'd print the data contained in the fifth element of ##myArray##, which would result in an output of:
 	%%
 	9
 	%%
 	If you wanted to change the contents of an array, you'd use it like any other [[ProPgVariables Variable]], by typing, for example
-	%%
+	%%(freebasic)
 	myArray(3) = 0
 	%%
-	now, if you wanted to look at the contents of myArray(3), you'd use the command:
-	%%
+	now, if you wanted to look at the contents of ##myArray(3)##, you'd use the command:
+	%%(freebasic)
 	Print myArray(3)
 	%%
 	Which would result in an output of:
@@ -40,14 +40,14 @@ Index        Data
 	%%
 	
 	In reality, array elements are usually indexed using another [[ProPgVariables Variable]]. For example, if you wanted to set all the elements in our above array to zero, you could go
-	%%
+	%%(freebasic)
 	Dim a As Integer
 	for a = 1 to 10
 	 myArray(a) = 0
 	next a
 	%%
 	which would set the entire array to zero. If you then wanted to change a random element to a random value, you could go
-	%%
+	%%(freebasic)
 	Dim Index As Integer
 	Dim Value As Integer
 	index = int(rnd(1) * 10) + 1 'This line will simply return a random value between 1 and 10

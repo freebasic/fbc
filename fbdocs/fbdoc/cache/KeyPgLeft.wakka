@@ -40,7 +40,7 @@ print left(text, 6) 'displays "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;"
 	- DOS does not support the wide-character string version of **##Right##**.
 
 {{fbdoc item="diff"}}
-	- QB does not support unicode
+	- QB does not support Unicode.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgRight Right]]##

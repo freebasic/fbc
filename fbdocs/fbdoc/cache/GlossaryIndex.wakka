@@ -258,6 +258,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **parameter list**
 	The parenthesized comma-separated list of parameters in a procedure declaration or definition.
 
+**pitch**
+	The number of bytes per row, in an image or screen buffer.  If there is no padding between rows, then this can be calculated by ##width * bytes_per_pixel##, but this is not necessarily safe to assume.  The screen's pitch can be found using ##[[KeyPgScreeninfo Screeninfo]]##, and an image buffer's pitch can be found by checking the ##pitch## value in the image's header.
+
 **pointer**
 	A data type used to hold addresses. The kind of pointer determines how the data at the address is interpreted when the pointer is dereferenced, or when used with ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]##. See ##[[ProPgPointers Pointers]]##.
 

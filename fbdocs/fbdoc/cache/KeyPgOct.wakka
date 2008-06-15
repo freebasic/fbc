@@ -33,7 +33,7 @@ Converts a number to octal representation
 
 	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//number//## (3 characters for ##[[KeyPgByte Byte]]##, 6 for ##[[KeyPgShort Short]]##, 11 for ##[[KeyPgInteger Integer]]##, and 22 for ##[[KeyPgLongint Longint]]##)
 
-	If you want to convert an octal string back into a number, the easiest way to do it is to prepend the string with ##"&O"##, and convert it as a normal numeric string, using ##[[KeyPgValint Valint]]##.
+	If you want to convert an octal string back into a number, the easiest way to do it is to prefix the string with ##"&O"##, and convert it as a normal numeric string, using ##[[KeyPgValint Valint]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/oct.bas"}}%%(freebasic)
@@ -50,7 +50,7 @@ Print Oct(54321, 8)
 
 {{fbdoc item="diff"}}
 	- In QBASIC, there was no way to specify the number of digits returned.
-	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
+	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FreeBASIC.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgBin Bin]]##

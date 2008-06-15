@@ -20,7 +20,7 @@ Creates a [[ProPgDates date serial]]
 	Returns a [[ProPgDates date serial]] containing the date formed by the values in the ##//year//##, ##//month//## and ##//day//## parameters.The date serial returned has no decimal part.
 
 {{fbdoc item="desc"}}
-	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/dates/dateserial.bas"}}%%(freebasic)

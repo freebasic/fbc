@@ -9,9 +9,9 @@ Provides ""QuickBASIC"" or backward compatibility
 		The dialect to use in compilation, one of ##**fb**## (default), ##**qb**## or ##**deprecated**##.
 
 {{fbdoc item="desc"}}
-	The ##-lang## compiler option changes the way source code is interpretted, and is meant as a tool to users wanting traditional QuickBASIC-like behavior, or behavior deprecated from pervious versions of ""FreeBASIC"".
+	The ##-lang## compiler option changes the way source code is interpreted, and is meant as a tool to users wanting traditional QuickBASIC-like behavior, or behavior deprecated from previous versions of ""FreeBASIC"".
 
-	The intrinsic macro ##[[KeyPgDdfblang __FB_LANG__]]## is set to the string name of the dialect specified on the command line, or "fb" by default.
+	The intrinsic macro ##[[KeyPgDdfblang __FB_LANG__]]## is set to the string name of the dialect specified on the command line, or ##"fb"## by default.
 
 	To learn more about the differences between each of these language dialects, see [[CompilerDialects Compiler Dialects]].
 

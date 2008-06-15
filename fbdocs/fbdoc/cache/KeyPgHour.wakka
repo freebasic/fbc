@@ -13,11 +13,11 @@ Gets the hour of day from a [[ProPgDates Date Serial]]
 		the date serial
 
 {{fbdoc item="ret"}}
-	Returns the hour from a variable containing a date in  [[ProPgDates Date Serial]]  format.
+	Returns the hour from a variable containing a date in [[ProPgDates Date Serial]] format.
 
 {{fbdoc item="desc"}}
 . 
-	The compiler will not recognise this function unless "vbcompat.bi" is included.
+	The compiler will not recognize this function unless ##vbcompat.bi## is included.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/dates/hour.bas"}}%%(freebasic)

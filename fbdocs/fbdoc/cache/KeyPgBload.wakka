@@ -22,10 +22,10 @@ Graphics statement to load a block of binary data or a BMP from a file
 	##//addr//## is a memory address of where to load data. If omitted or 0 (NULL), data is loaded on the current screen work page.
 
 	##**Bload**## can be used in several ways:
-		-If ##//addr//## is specified and the file is not a bmp it loads a block of ##[[KeyPgBsave Bsave]]##'d binary data into an array
-		-If ##//addr//## is 0 or not specified and the file is not a bmp it loads raw pixel data (##[[KeyPgBsave Bsave]]## format) to the screen
-		-If ##//addr//## is specified and the file is a bmp, it loads the bmp, and the array is made a ##[[KeyPgPutgraphics Put]]## buffer.
-		-If ##//addr//## is not specified or 0 and the file is a bmp, the image is loaded to the current work page.
+		-If ##//addr//## is specified and the file is not a BMP it loads a block of ##[[KeyPgBsave Bsave]]##'d binary data into an array
+		-If ##//addr//## is 0 or not specified and the file is not a BMP it loads raw pixel data (##[[KeyPgBsave Bsave]]## format) to the screen
+		-If ##//addr//## is specified and the file is a BMP, it loads the BMP, and the array is made a ##[[KeyPgPutgraphics Put]]## buffer.
+		-If ##//addr//## is not specified or 0 and the file is a BMP, the image is loaded to the current work page.
 
 	A raw pixel image must only be ##**Bload**##'d to the same ##[[KeyPgScreengraphics Screen]]## mode as it was set when the ##[[KeyPgBsave Bsave]]## was used.
 	##**Bload**## supports loading BMPs as long as they are not RLE compressed; the BMP pixels data will be automatically converted to the proper pixel format for the current color depth. The BMP is displayed with its top left corner in the top left corner of the screen or buffer. If the BMP has an attached palette and ##//pal//## is not specified, the palette is loaded and it'll become the current palette immediately. If ##//pal//## is specified, the palette will be loaded there, in the same format as supported by [[KeyPgPalette Palette Using]], and not applied automatically.
@@ -59,7 +59,7 @@ sleep
 	- ##//addr//## must be an array in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- loads bitmaps (.bmp) to screen or buffer in addition to ##[[KeyPgBsave Bsave]]##'d files
+	- loads bitmaps (##.bmp##) to screen or buffer in addition to ##[[KeyPgBsave Bsave]]##'d files
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgBsave Bsave]]##

@@ -30,12 +30,13 @@ Resume Next ' execution jumps to 'Print "ending..."' line, but j is now in an un
 %%
 
 {{fbdoc item="lang"}}
-	-  ON ERROR is not supported in //-lang fb//. Statements can be used in its function form to return an error code
+	-  ON ERROR is not supported in the //[[ProPgCompOptlang -lang fb]]// dialect. Statements can be used in its function form to return an error code
 {{fbdoc item="filename" value="examples/manual/check/KeyPgResumenext_1.bas"}}%%(freebasic)
 If Open( "text" For Input As #1 ) <> 0 Then
   Print "Unable to open file"
 End If
 %% 
+
 {{fbdoc item="diff"}}
 	- Must compile with -ex option
 

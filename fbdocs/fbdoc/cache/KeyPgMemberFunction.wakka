@@ -2,9 +2,9 @@
 Declares or defines a member procedure returning a value.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgType Type]] //typename//
+	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] } //typename//
 		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember static]] ] **Function** //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgStatic Static]] ]
-	End Type
+	End { [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] }
 
 	**Function** //typename//.//fieldname// ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]]
 		//statements//
@@ -20,8 +20,8 @@ Declares or defines a member procedure returning a value.
 	##//parameters//## 
 		the parameters to be passed to the procedure
 	##//calling convention specifier//##	
-		can be one of: [[KeyPgCdecl CDECL]], [[KeyPgStdcall STDCALL]] or [[KeyPgPascal PASCAL]]
-		
+		can be one of: ##[[KeyPgCdecl Cdecl]]##, ##[[KeyPgStdcall Stdcall]]## or ##[[KeyPgPascal Pascal]]##
+
 {{fbdoc item="desc"}}
 	##**Function**## members are accessed with ##[[KeyPgOpMemberAccess Operator . (Member access)]]## or ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]## to call a member procedure that returns a value.  The procedure may optionally accept parameters either ##[[KeyPgByval byval]]## or ##[[KeyPgByref byref]]##.  ##//typename//## be overloaded  without explicit use of the ##[[KeyPgOverload Overload]]## keyword.
 
@@ -72,7 +72,7 @@ print "Day   = "; d.Day
 %%
 
 {{fbdoc item="lang"}}
-	- Supported only with //-lang fb//.
+	- Only available in the //[[ProPgCompOptlang -lang fb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgClass Class]]##

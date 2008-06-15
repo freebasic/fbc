@@ -26,7 +26,7 @@ Dim result As Integer = Kill( filename )
 If result <> 0 Then Print "error trying to kill " ; filename ; " !"
 %%
 {{fbdoc item="diff"}}
-	- KILL can optionally be used as function in FB.
+	- KILL can optionally be used as function in FreeBASIC.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgShell Shell]]##
