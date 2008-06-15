@@ -10,12 +10,25 @@ Invoking the compiler after installation.
 
 	to see a list of options. To compile the "Hello, world!" example program type,
 
-		##fbc examples\hello.bas##
+		##fbc examples\misc\hello.bas##
 
-	and a ##hello.exe## executable file will be created in the ##examples## directory.
+	and a ##hello.exe## executable file will be created in the ##examples\misc## directory.
 
 {{fbdoc item="section" value="Linux"}}
-	If the install script ##install.sh## was successfully executed with enough privileges, a link to the compiler binary should have been created at ##/usr/bin/fbc##, allowing any user access to the compiler from any directory. If it was not possible to create the link, you may want to alter your ##PATH## environmental variable to be able to invoke the compiler from any directory. Navigate to the directory where FreeBASIC was installed.
+	If the install.sh script was successfully executed with enough priviledges, the compiler binary should have been copied ##/usr/local/bin/fbc##, allowing any user access to the compiler from any directory.
+	
+	From the prompt, type,
+
+		 ##fbc##
+
+	to see a list of options.  To compile the "Hello, world!" example program, navigate to the directory where the FreeBASIC examples were installed (/usr/local/share/freebasic), and type,
+
+		##fbc examples/misc/hello.bas##
+
+	and a ##./hello## executable file will be created in the ##examples/misc## directory.
+
+{{fbdoc item="section" value="Linux (standalone)"}}
+	If the install script ##install-standalone.sh## was successfully executed with enough privileges, a link to the compiler binary should have been created at ##/usr/bin/fbc##, allowing any user access to the compiler from any directory. If it was not possible to create the link, you may want to alter your ##PATH## environmental variable to be able to invoke the compiler from any directory. Navigate to the directory where FreeBASIC was installed.
 
 	From the prompt, type,
 
@@ -23,10 +36,9 @@ Invoking the compiler after installation.
 
 	to see a list of options. To compile the "Hello, world!" example program type,
 
-		##fbc examples/hello.bas##
+		##fbc examples/misc/hello.bas##
 
-	and a ##./hello## executable file will be created in the ##examples## directory.
-
+	and a ##./hello## executable file will be created in the ##examples/misc## directory.
 
 {{fbdoc item="section" value="DOS"}}
 	Navigate to the directory where FreeBASIC was installed. For example, if FreeBASIC is installed in the directory ##C:\FB##, type,
@@ -42,9 +54,9 @@ Invoking the compiler after installation.
 
 	to see a list of options. To compile the "Hello, world!" example program type,
 
-		##fbc examples\hello.bas##
+		##fbc examples\misc\hello.bas##
 
-	and a ##hello.exe## executable file will be created in the ##examples## directory.
+	and a ##hello.exe## executable file will be created in the ##examples\misc## directory.
 
 {{fbdoc item="see"}}
 	- [[CompilerInstalling Installing FreeBASIC]]

@@ -18,18 +18,35 @@ FreeBASIC installation.
 		##cd freebasic##
 			//(change to the root installation directory)//
 
-	Run the installation script ##install.sh## with the "-i" switch, specifying the installation directory.  For example, to install FreeBASIC into the default directory type,
+	Run the installation script ##install.sh## with the "-i" switch, optionally specifying the installation directory.  For example, to install FreeBASIC into the default directory type,
 
 		##sudo ./install.sh -i##
 			//(the default installation)//
 
-	Run the installation script with no arguments for more info on command-line options.
-
-	In FreeBASIC version 0.18.4, ##install.sh## will install FreeBASIC ##/usr/local## by default.
-
-	In FreeBASIC version 0.18.3 and earlier, ##install.sh## will install FreeBASIC to ##/usr/share/freebasic## by default.  And a symlink to the compiler binary will be created at ##/usr/bin/fbc## if run with root permission. 
+	Run the installation script with no arguments for more info on command-line options.  ##install.sh## will install FreeBASIC ##/usr/local## by default.
 
 	To uninstall FreeBASIC, you can run "install.sh -u"
+
+{{fbdoc item="section" value="Linux (standalone)"}}
+	Unpack the archive to a temporary folder and navigate to the root FreeBASIC installation directory. For example, if the FreeBASIC package you downloaded was called ##""FreeBASIC-vX.XX.Xb-linux-standalone.tar.gz""## and was in your home directory, type,
+
+		##cd##
+			//(change to your home directory)//
+		##mkdir -p tmp && cd tmp##
+			//(attempt to create a temporary directory and change to it)//
+		##tar -xzf ""../FreeBASIC-vX.XX.Xb-linux-standalone.tar.gz""##
+			//(unpack the archive)//
+		##cd freebasic##
+			//(change to the root installation directory)//
+
+	Run the installation script ##install-standalone.sh## with the "-i" switch, optionally specifying the installation directory.  For example, to install FreeBASIC into the default directory type,
+
+		##sudo ./install-standalone.sh -i##
+			//(the default installation)//
+
+	Run the installation script with no arguments for more info on command-line options.  ##install-standalone.sh## will install FreeBASIC to ##/usr/share/freebasic## by default and a symlink to the compiler binary will be created at ##/usr/bin/fbc## if run with root permission. 
+
+	To uninstall FreeBASIC, you can run "install-standalone.sh -u"
 
 {{fbdoc item="section" value="DOS"}}
 	- Find a place for FreeBASIC with at least 13 MiB free space.
