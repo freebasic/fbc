@@ -56,10 +56,12 @@ print str( r3.numerator ) ; "/" ; str( r3.denominator )
 sleep 
 end 0
 %%
+{{fbdoc item="lang"}}
+	- In //-lang qb// return can be used only to return from a [[KeyPgGosub GOSUB]]
+	- In //-lang deprecated// and //-lang fb// RETURN cann be used only to set the return value of a function and exit it.
 
 {{fbdoc item="diff"}}
-	- Return can't be used to exit a procedure in QB.
-
+	- None if using the //-lang qb// switch.
 {{fbdoc item="see"}}
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgFunction Function]]##

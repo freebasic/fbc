@@ -28,6 +28,9 @@ End Scope
 Print "x ="; x; ", "; "y ="; y
 %%
 
+{{fbdoc item="lang"}}
+	- SCOPE..END SCOPE blocks are not allowed with the //-lang qb// option.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

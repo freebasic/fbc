@@ -6,11 +6,14 @@
 
 	The ##-lang## option was needed to allow FB to support object-orientation and other features in the future, without crippling the QuickBASIC support or breaking compatibility with old FB sources, and without making FB difficult to maintain with many different versions of very similiar packages. The QB support can continue to be improved, if needed, without breaking the sources written specifically for FB.
 
-	To compile old GW-BASIC and QB(ASIC) sources without too many changes, use the ##-lang qb## option on the command-line when running ##fbc##.
+	To compile old GW-BASIC and QB(ASIC) sources without too many changes, use the ##-lang qb## option on the command-line when running ##fbc##. This option will evolve into a better compatibility with qb code.
 
-	To compile FreeBASIC 0.16 or below sources, use the ##-lang deprecated## option.
+	To compile FreeBASIC 0.16 or below sources, use the ##-lang deprecated## option. This option is maintained for compatibility and will not evolve in the future, and it's likely to disappear when FB reaches a non-beta release.
 
-==##fb## (the default mode)==
+	It is recommended to use -lang fb for new projects, as new features (Objects, inheritance,...) will be added exclusively to this option.
+	
+	
+===-lang fb (the default mode)===
 	
 	**Not supported:**
 
@@ -58,7 +61,7 @@
 	""12"") numeric labels
 		- No comment.
 
-==##deprecated##==
+===-lang deprecated===
 	 
 	**Supported: anything allowed in version 0.16, but:**
 
@@ -77,8 +80,9 @@
 		- Periods allowed in symbol names make it too difficult and/or ambiguous.
 
 
-==##qb##==
-	 
+===-lang qb===
+	With this option the memory use is limited to 4.7 Mb
+	
 	**Supported: Everything not supported/allowed in the fb mode, plus:**
 
 	""1"") ##CALL## can be used with forward-referenced functions. (W.I.P.)
@@ -107,10 +111,6 @@
 
 	""7"") Variable initializers
 		- All variables are moved to the function scope (as in QB), making local initializers too difficult to support.
-
-The ##-lang qb## option will always be supported in future versions.
-
-The ##-lang deprecated## option is provided to ease upgrading source code from one development version to the next and may be removed in a major version release like FreeBASIC 1.0.
 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

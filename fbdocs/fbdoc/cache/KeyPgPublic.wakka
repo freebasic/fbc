@@ -17,6 +17,7 @@ public sub i_am_public
 end sub
 %%
 
+
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 

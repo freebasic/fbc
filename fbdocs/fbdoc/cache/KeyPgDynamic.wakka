@@ -22,6 +22,8 @@ Dim a(100)
 '......
 ReDim a(200)
 %%
+{{fbdoc item="lang"}}
+	- $DYNAMIC and OPTION DYNAMIC can't be used with //-lang fb//. To declare arrays as Dynamic use REDIM or do its first declaration with empty indexes DIM x().
 
 {{fbdoc item="diff"}}
 	- When used inside comments it must be the first token

@@ -5,7 +5,12 @@ Input function to retrieve status of the mouse pointing device.
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getmouse** ( [[KeyPgByref byref]] //x// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByref byref]] //y// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByref byref]] //wheel// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByref byref]] //buttons// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
+
 	**Getmouse** //x//, //y//[, [//wheel//][, [//buttons//]]]
+##
+//or//
+##
+	//result// = **Getmouse** ( //x//, //y//[, [//wheel//][, [//buttons//]]] )
 ##
 {{fbdoc item="param"}}
 	##//x//##
@@ -36,13 +41,14 @@ Input function to retrieve status of the mouse pointing device.
 
 ' Set video mode and enter loop
 DIM x AS INTEGER, y AS INTEGER, buttons AS INTEGER
+DIM res AS INTEGER
 SCREEN 13
 DO
 	' Get mouse x, y and buttons. Discard wheel position.
-	GETMOUSE x, y,, buttons
+	res = GETMOUSE (x, y, , buttons)
 	    'buttons
 	LOCATE 1, 1
-	IF x < 0 THEN
+	IF res <> 0 THEN
 		PRINT "Mouse not available or not on window"
 	ELSE
 		PRINT USING "Mouse position: ###:###  Buttons: "; x; y;

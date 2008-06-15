@@ -28,7 +28,11 @@ i = 2
 Resume ' execution jumps back to 'j = 1 / i' line, which does not cause an error this time
 %%
 
-As of FreeBASIC version .17, 'On Error' is disabled by default, and must be enabled by the compiler option [[ProPgCompOptlang -lang qb or -lang deprecated]].
+{{fbdoc item="lang"}}
+	-  ON ERROR is not supported in //-lang fb//. Statements can be used in its function form to return an error code
+%%(qbasic)
+IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN handle_error
+%% 
 
 {{fbdoc item="diff"}}
 	- Does not accept line numbers or labels

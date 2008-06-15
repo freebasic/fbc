@@ -42,9 +42,7 @@ select case MyVar
 	case option3
 		print "Option 3"
 end select
-
 %%
-
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

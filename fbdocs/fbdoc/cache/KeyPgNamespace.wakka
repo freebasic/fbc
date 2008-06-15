@@ -1,12 +1,11 @@
-{{fbdoc item="title" value="NAMESPACE"}}
-----
+{{fbdoc item="title" value="NAMESPACE"}}----
 Namespaces are used to organize code in distinguishable groups.
 
-{{fbdoc item="syntax"}}
-	##**Namespace** //identifier//
+{{fbdoc item="syntax"}}##
+	**Namespace** //identifier//
 		//statements//
-	**End Namespace**##
-
+	**End Namespace**
+##
 {{fbdoc item="desc"}}
 	Namespaces are commonly used in libraries where you don't want all the symbols from that library to crowd the user's space (called the Global Namespace). 
 
@@ -45,9 +44,13 @@ AdjustPoint( pt1, 1, 1, 1 )
 dim pt2 as Forms.Point
 Forms.AdjustPoint( pt2, 1, 1 )
 %%
+{{fbdoc item="lang"}}
+	- Namespaces are not supported in the //-lang qb// option.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- [[KeyPgUsing Using (Namespaces)]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

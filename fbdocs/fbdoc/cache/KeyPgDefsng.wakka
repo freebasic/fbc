@@ -17,6 +17,9 @@ Sets a default data type for variables
 defsng s-z
 dim sNumber, yNumber
 %%
+{{fbdoc item="lang"}}
+	- With //-lang fb// every variable must be [[KeyPgDim DIM]]med with its type, the use of //DEFxxx// is signaled as an error by the compiler.
+
 
 {{fbdoc item="diff"}}
 	- 
@@ -29,3 +32,4 @@ dim sNumber, yNumber
 	- ##[[KeyPgSingle Single]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+   

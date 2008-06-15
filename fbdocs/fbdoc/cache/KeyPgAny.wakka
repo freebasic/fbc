@@ -18,31 +18,66 @@ Built-in pseudo data type used in declarations and initializers.
 	dim //identifier// as //datatype// = **Any**
 ##
 {{fbdoc item="desc"}}
-	##**Any**## is a pseudo data type which specifies that a variable or parameter has an unknown type and therefore an unknown size.  It can be used with pointers to represent a pointer to an untyped memory address.
-
-	No type checking is done for pointer variables passed to or assigned to an ##**Any**## pointer.
-
+	##**Any**## can be used in three contexts: pointers,variable initializers, pointer arguments of functions and function declarations to indicate an unknown data type.
+	
+	 A pointer defined as an **Any**ptr  disables the compiler checking for the type of data it points to. It is useful as it can point to different types of data. Before dereferencing it (accessing to the data it ponts to) it must be [[KeyPgCast CAST]] to a known data type.
 	This should not be confused with ##Variant##, a Visual Basic data type which can contain any type of variable, which is not intrinsically supported by FreeBASIC.
 	
-	**##Any##** can be used without ##[[KeyPgPtr Ptr]]## in function prototypes (in a ##[[KeyPgDeclare Declare]]## statement) with ##[[KeyPgByref ByRef]]## arguments, to be compatible with QB.
-
-	##**Any**## can be used as an initializer to indicate that the variable is not initialzed to a specific value.
+	##**Any**## can be used as a  fake initializer to disable the default initialization to 0 of the variables. This may save time in critical sections of the programs. Is up to the program to fill the variables with significant data.
+	
+	**##Any##** can be used  in function  parameter lists with PTR arguments to allow the passing of any type of pointers. In this case the function must [[KeyPgCast CAST]] the pointer argument to a known data rype before accessing it.
+	
+	**##Any##** can be used  in function prototypes (in a ##[[KeyPgDeclare Declare]]## statement) with ##[[KeyPgByref ByRef]]## arguments to  disable the compiler checking for the correct type of the variable passed. This use of ANY is deprecated and it'¡s only there for compatibility with QB, where it was the only way of passing arrays as arguments.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-declare sub echo (byref a as any)
+declare sub echo(x as any ptr) 'echo will accept any pointer type
 
-dim x as integer
-x = 15
-echo x
+Dim as integer a(9) = ANY  'this variable is not initialized
+dim as double  d(4)
 
-sub echo (byref a as integer)
-  print a
+dim p as any ptr
+
+dim pa as integer ptr=@a(0)
+print "Not initialized ";
+echo pa       'pass to echo a pointer to integer
+
+dim pd as double ptr=@d(0)
+Print "Initialized ";
+echo pd       'pass to echo a pointer to double
+
+p=pa     'assign to p a pointer to integer
+p=pd     'assign to p a pointer to double      
+
+sleep
+
+sub echo (x as any ptr)
+dim as integer i
+for i=0 to 39
+  'echo interprets the data in the pointer as bytes
+  print cast(ubyte ptr, x)[i] & " ";
+next
+print
 end sub
 %%
 
+%%(qbasic)
+'Example of ANY disabling the variable type checking
+declare sub echo (byref a as ANY) 'ANY disables the checking for the type of data passed to the function
+
+dim x as single
+x = -15
+echo x                  'Passing a single to a function that expects an integer. The compiler does not complain!!             
+sleep
+
+sub echo (byref a as integer)
+  print hex(a)         
+end sub
+
+%%
+
 {{fbdoc item="diff"}}
-	- Pointers did not exist in QB.
+	- Pointers and initializers did not exist in QB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDim Dim]]##

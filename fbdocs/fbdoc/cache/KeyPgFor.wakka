@@ -1,13 +1,16 @@
 {{fbdoc item="title" value="FOR"}}----
-Control flow statement or open statement clause depending on usage
+Control flow statement, open statement clause, or operator depending on context.
 
-{{fbdoc item="syntax"}}
+{{fbdoc item="syntax"}}##
 	**For** //iterator// = //startvalue// To //endvalue// [ Step //increment// ]
 //or//
 	Open [ //device// ] "//filename//" **For** //filemode// As #handle
-
+//or//
+	declare operator **For** ( byref stp as [[DataType datatype]] )
+##
 {{fbdoc item="see"}}
 	- ##[[KeyPgFornext For...Next]]##
 	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgOperator Operator]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

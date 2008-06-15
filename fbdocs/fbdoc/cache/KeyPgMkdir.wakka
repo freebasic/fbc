@@ -18,6 +18,10 @@ Makes a folder/directory on the local file system.
 %%(qbasic)
 mkdir "data" ''creates a folder called 'data' in the current path.
 %%
+{{fbdoc item="target"}}
+	- Linux requires the //filename// case matches the real name of the file. Windows and DOS  are case insensitive. 
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+
 
 {{fbdoc item="diff"}}
 	- None

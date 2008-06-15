@@ -31,6 +31,8 @@ DIM Foo as FooType
 Foo.Bar = 1
 Foo.Barbeque = 2
 %%
+{{fbdoc item="lang"}}
+	- The '$INCLUDE  variant is not allowed in //-lang fb//
 
 {{fbdoc item="diff"}}
 	- Only ##'$INCLUDE:## was allowed in QB

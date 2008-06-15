@@ -2,7 +2,8 @@
 Work in Progress: **New pages created for this guide should use the ""ProPg""* prefix.**
 <<
 {{fbdoc item="section" value="Getting Started"}}
-	- Hello World
+	- [[ProPgHelloWorld Hello World]]
+	- [[ProPgPrimer1 FreeBASIC Primer #1]]
 
 {{fbdoc item="section" value="Source Files"}}
 	- Module Files (.bas)
@@ -34,16 +35,17 @@ Work in Progress: **New pages created for this guide should use the ""ProPg""* p
 {{fbdoc item="section" value="User Defined Types"}}
 	- Overview
 	- Simple User Defined Types
-	- Nested Types
 	- {{fbdoc item="keyword" value="KeyPgTypeDef|Type Aliasing"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeTemp|Anonymous Types"}}
-	- [[ProPgTypeObjects Types as Objects]]
-		- Properties
-		- Methods
-		- Constructors and Destructors
-		- Operator Overloading
-		- Member Access
-		- Using New and Delete
+	- Complex User Defined Types
+	- Constructors and Destructors
+	- Properties
+	- Methods
+	- Operator Overloading
+	- Iterators
+	- Member Access Control
+	- New and Delete
+	- Static Member Functions
 
 <<>>
 {{fbdoc item="section" value="Statements and Expressions"}}

@@ -1,10 +1,17 @@
-{{fbdoc item="title" value="LET"}}
-----
-{{fbdoc item="syntax"}}
-	[LET]variable = value
+{{fbdoc item="title" value="LET"}}----
+Indicates the assignment operator.
 
+{{fbdoc item="syntax"}}##
+	**Let** //variable// = //value//
+//or//
+	[[KeyPgOperator operator]] //typename//.**Let** ( [ [[KeyPgByref byref]] | [[KeyPgByval byva]]l ] rhs [[KeyPgAs as]] [[DataType datatype]] )
+		//statements//
+	end operator
+##
 {{fbdoc item="desc"}}
-	Command intended to help the programmer to distinguish an assignment ( LET a=1 ) from an equality test ( IF a=1 THEN.. ). As the compiler does not require it, it's normally omitted. 
+	Command intended to help the programmer to distinguish an assignment statement ( ##**Let** a=1## ) from an equality test ( ##If a=1 then ... ## ).  As the compiler does not require it, it is usually omitted.
+
+	**Let** is used with operator overloading to refer the assignment operator.
 
 {{fbdoc item="ex"}}
 %%(qbasic)'' Compile with -lang deprecated or qb
@@ -14,10 +21,15 @@ let x = 100
 x = 100
 %%
 
+{{fbdoc item="lang"}}
+	- The use of LET to indicate an assignment statement is not allowed in //-lang fb//.
+	- Overloading of operators is not allowed with //-lang qb// and //-lang deprecated//.
+
 {{fbdoc item="diff"}}
-	- 
+	- None with //-lang qb//
 
 {{fbdoc item="see"}}
-	- 
+	- {{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}
+	- ##[[KeyPgOperator Operator]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

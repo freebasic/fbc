@@ -13,10 +13,14 @@ option explicit
 a = 1 '' this will fail with variable not declared
 %%
 	
-{{fbdoc item="diff"}}
-	- New to FreeBasic
+{{fbdoc item="lang"}}
+	-With -lang fb, the declaration of variables is always enforced.  The compiler will reject OPTION EXPLICIT as an error.
+	-With -lang qb or deprecated, OPTION EXPLICIT is supported.  The compiler doesn't enforce the declaration of the variables unless OPTION EXPLICIT is used.
 
 {{fbdoc item="diff"}}
+	-New to FreeBASIC
+
+{{fbdoc item="see"}}
 	- ##[[KeyPgDdfboptionexplicit __FB_OPTION_EXPLICIT__]]##
 	- ##[[KeyPgDim Dim]]##
 

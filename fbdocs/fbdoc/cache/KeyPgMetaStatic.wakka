@@ -21,6 +21,9 @@ option STATIC
 dim b(100)   '<<this array will be static
 %%
 
+{{fbdoc item="lang"}} 
+	- $STATIC and OPTION STATIC can't be used in //-lang fb// as [[KeyPgDynamic $Dynamic]] is not allowed. 
+
 {{fbdoc item="diff"}}
 	- When used inside comments it must be the first token
 

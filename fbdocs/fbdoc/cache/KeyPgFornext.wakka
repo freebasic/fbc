@@ -12,14 +12,14 @@ Control flow statement for looping
 	##//startvalue//##
 		an expression that denotes the starting value of the iterator
 	##//endvalue//##
-		an expression used to compare with the value of the iterator
+			an expression used to compare with the value of the iterator
 	##//stepvalue//##
 		an expression that is added to the iterator after every iteration
 
 {{fbdoc item="desc"}}
 	A ##**For...Next**## loop initializes //iterator// to //startvalue//, then executes the //statement block//'s, incrementing //iterator// by //stepvalue// until it reaches //endvalue//. If //stepvalue// is not explicitly given it will set to 1.
 
-	The //iterator// may be defined having the same scope as the ##**For**## statement by using the ##[[KeyPgAs as]] [[DataType datatype]]## syntax.  With this syntax, //iterator// is created and destroyed within the ##**For...Next**## scope. In -lang qb, if the variable is already declared, a duplicate definition error is generated.  With -lang fb or deprecated, a new variable will be allocated, making an outer variable of the same name inaccessible. (normal scope rules).
+	The //iterator// may be defined having the same scope as the ##**For**## statement by using the ##[[KeyPgAs as]] [[DataType datatype]]## syntax.  With this syntax, //iterator// is created and destroyed within the ##**For...Next**## scope. See dialect differnces below.
 
 	The ##**For**## statement causes the execution of the statements in the //statement block// until //iterator// compares **greater than** //endvalue//. //iterator// will be incremented the amount of //stepvalue// following each execution of the //statement block//. If an increment is not given, //iterator// will be implicitly incremented by 1.
 
@@ -42,6 +42,10 @@ FOR i = 3 TO 0 STEP -1
 NEXT
 %%
 
+{{fbdoc item="lang"}}
+	- In //-lang qb//, variables declared inside a FOR..NEXT loop have a function-wide [[ProPgVariableScope scope]]  as in QB 
+	- In //-lang fb// or //-lang deprecated//, variables declared inside a FOR..NEXT block are visible only inside the block, and can't be accessed outside it.
+	
 {{fbdoc item="diff"}}
 	- BYREF arguments cannot be used as counters.
 

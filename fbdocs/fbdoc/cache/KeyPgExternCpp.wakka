@@ -32,6 +32,9 @@ end namespace
 print Ns1.theFunction( 1 )
 print Ns2.theFunction( 1 )
 %%
+{{fbdoc item="lang"}}
+	- EXTERN..END EXTERN blocks are not allowed with the //-lang qb// option.
+
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

@@ -32,6 +32,8 @@ PRINT WBIN(54321)     '' displays 1101010000110001
 PRINT WBIN(54321, 5)  '' displays 10001
 PRINT WBIN(54321, 20) '' displays 00001101010000110001
 %%
+{{fbdoc item="target"}}
+	- Unicode (w)strings are not suported in the DOS port of FB
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic

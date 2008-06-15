@@ -61,6 +61,8 @@ scope
 
 end scope
 %%
+{{fbdoc item="lang"}}
+	- Supported only with //-lang fb//.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

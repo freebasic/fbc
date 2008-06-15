@@ -39,6 +39,11 @@ else
 end if
 %%
 
+{{fbdoc item="target"}}
+	- Linux requires the //filename// case matches the real name of the file. Windows and DOS are case insensitive. 
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
@@ -46,3 +51,4 @@ end if
 	- ##[[KeyPgDir Dir]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}
+   

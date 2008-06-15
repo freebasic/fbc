@@ -48,6 +48,11 @@ end 0
    end 0
 %%
 
+{{fbdoc item="lang"}}
+	- In //-lang qb//, variables declared inside a DO..LOOP block have a function-wide [[ProPgVariableScope scope]]  as in QB 
+	- In //-lang fb// or //-lang deprecated//, variables declared inside a FOR..NEXT block are visible only inside the block, and can't be accessed outside it.
+
+
 {{fbdoc item="diff"}}
 	- None
 

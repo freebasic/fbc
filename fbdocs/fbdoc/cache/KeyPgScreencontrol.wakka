@@ -83,6 +83,32 @@ Function to set or get internal graphics library settings
 		[IN] ##//param//## driver name
 	- ##SET_ALPHA_PRIMITIVES## (104) Sets if primitives drawing should honor alpha channel.
 		[IN] ##//param1//## enabled
+	- * ##SET_GL_COLOR_BITS## (105) Sets the number of bits dedicated to the OpenGL color buffer
+		[IN] ##//param1//## bits
+	- * ##SET_GL_COLOR_RED_BITS## (106) Sets the number of bits dedicated to the red component of the OpenGL color buffer
+		[IN] ##//param1//## bits
+	- * ##SET_GL_COLOR_GREEN_BITS## (107) Sets the number of bits dedicated to the green component of the OpenGL color buffer
+		[IN] ##//param1//## bits
+	- * ##SET_GL_COLOR_BLUE_BITS## (108) Sets the number of bits dedicated to the blue component of the OpenGL color buffer
+		[IN] ##//param1//## bits
+	- * ##SET_GL_COLOR_ALPHA_BITS## (109) Sets the number of bits dedicated to the alpha component of the OpenGL color buffer
+		[IN] ##//param1//## bits
+	- * ##SET_GL_DEPTH_BITS## (110) Sets the number of bits dedicated to the OpenGL depth buffer
+		[IN] ##//param1//## bits
+	- * ##SET_GL_STENCIL_BITS## (111) Sets the number of bits dedicated to the OpenGL stencil buffer
+		[IN] ##//param1//## bits
+	- * ##SET_GL_ACCUM_BITS## (112) Sets the number of bits dedicated to the OpenGL accumulation buffer
+		[IN] ##//param1//## bits
+	- * ##SET_GL_ACCUM_RED_BITS## (113) Sets the number of bits dedicated to the red component of the OpenGL accumulation buffer
+		[IN] ##//param1//## bits
+	- * ##SET_GL_ACCUM_GREEN_BITS## (114) Sets the number of bits dedicated to the green component of the OpenGL accumulation buffer
+		[IN] ##//param1//## bits
+	- * ##SET_GL_ACCUM_BLUE_BITS## (115) Sets the number of bits dedicated to the blue component of the OpenGL accumulation buffer
+		[IN] ##//param1//## bits
+	- * ##SET_GL_ACCUM_ALPHA_BITS## (116) Sets the number of bits dedicated to the alpha component of the OpenGL accumulation buffer
+		[IN] ##//param1//## bits
+	- * ##SET_GL_NUM_SAMPLES## (117) Sets the number of samples to be used for OpenGL multisampling
+		[IN] ##//param1//## samples
 
 {{fbdoc item="ex"}}
 %%(qbasic)'' include fbgfx.bi for some useful definitions

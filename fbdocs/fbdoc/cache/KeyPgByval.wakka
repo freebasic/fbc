@@ -14,7 +14,7 @@ Declaration specifier to explicitly pass a parameter by value
 
 	For string arguments, ##**Byval**## has a special meaning: it passes a pointer to the string, while BYREF passes the Basic string descriptor. This behavior allows passing a ##[[KeyPgStringtype String]]## to C procedures. The string passed this way should not be changed by the calling ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]##, as the string descriptor would not be updated. Passing ##[[KeyPgStringtype String]]## ##**Byval**## should be avoided,  ##[[KeyPgZstring Zstring]]## is more suited for this purpose.
 
-	In -lang fb dialect, ##**Byval**## is the default parameter passing convention.
+	
 
 	Opposite of ##[[KeyPgByref ByRef]]##.
 
@@ -33,7 +33,10 @@ Print "MyVar: "; MyVar 'output = 1, because byval won't change the values passed
 Sleep
 End
 %%
-
+{{fbdoc item="lang"}}
+	- In //-lang fb// dialect, ##**Byval**## is the default parameter passing convention.
+	- In //-lang qb// and //-lang deprecated// dialect, ##**Byref**## is the default parameter passing convention.
+	- 
 {{fbdoc item="diff"}}
 	- QB only used BYVAL in declarations to non-Basic subroutines
 

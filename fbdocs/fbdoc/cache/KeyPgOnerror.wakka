@@ -32,6 +32,11 @@ print "Error #"; err; "!"
 end
 %%
 
+{{fbdoc item="lang"}}
+	-  ON ERROR is not supported in //-lang fb//. Statements can be used in its function form to return an error code
+%%(qbasic)
+IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN handle_error
+%% 
 {{fbdoc item="diff"}}
 	- QB has no LOCAL clause and requires the label to be in the main part of the module. 
 
@@ -41,4 +46,3 @@ end
 	- ##[[KeyPgErr Err]]##
 
 {{fbdoc item="back" value="CatPgError|ERROR"}}
-

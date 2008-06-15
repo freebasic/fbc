@@ -44,7 +44,7 @@ LOOP 'Go back to the start of the loop
 %%
 
 {{fbdoc item="diff"}}
-	- END IF must be used in single line IF's if a colon comes right after the THEN
+	- END IF must be used in single line IF's if a colon comes right after the THEN. That colon is unneeded so it's always possible to use the QB syntax.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDoloop Do...Loop]]##

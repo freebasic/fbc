@@ -1,9 +1,9 @@
 {{fbdoc item="title" value="__FB_MT__"}}----
 Intrinsic define (macro value) set by the compiler.
 
-{{fbdoc item="syntax"}}
-	##""__FB_MT__""##
-
+{{fbdoc item="syntax"}}##
+	""__FB_MT__""
+##
 {{fbdoc item="desc"}}
 	##""__FB_MT__""## indicates if the the multithreaded option '-mt' was specified on the command line at the time of compilation.
 

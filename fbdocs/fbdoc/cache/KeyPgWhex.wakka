@@ -32,6 +32,8 @@ PRINT WHEX(54321)    '' will display D431
 PRINT WHEX(54321, 2) '' will display 31
 PRINT WHEX(54321, 5) '' will display 0D431
 %%
+{{fbdoc item="target"}}
+	- Unicode (w)strings are not suported in the DOS port of FB
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC.

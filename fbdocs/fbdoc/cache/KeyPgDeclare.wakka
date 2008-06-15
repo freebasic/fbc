@@ -12,27 +12,29 @@
 {{fbdoc item="desc"}}
 	The DECLARE statement declares a [[KeyPgSub SUB]] or [[KeyPgFunction FUNCTION]]. This means that the sub or function can be referred to in code without seeing its definition, although it must be defined somewhere. Essentially, the DECLARE statement introduces a sub or function, and states that its definition is elsewhere. For example, a function can be declared at the top of a source module, called, then defined at the bottom of the source file, as shown below the example.
 
-	A sub or function declaration is identical to its definition, except the declaration is preceded by the DECLARE keyword and has no body.
+	A sub or function declaration is identical to the first line of its definition, except the declaration is preceded by the DECLARE keyword and has no body.
 
-	DECLARE statements are typically used in [[KeyPgInclude INCLUDE]] files, with the accompanying sub or function definitions in seperate modules. This allows your main module (and all your other modules) to be trim and clear.
-
-	You cannot DECLARE a sub or function after its definition, unless it is contained in a library. !!!WRITE ME !!!
+	FB, as QB, does not require the declaration of the functions unless they are defined in a different source file or in the same file past the point where they are called.
+	
+	 As every file using a function must have its declaration, declarations are usually kept in one or more //include files// that are [[KeyPgInclude INCLUDE]]d in every module having access to the function. 
 
 {{fbdoc item="ex"}}
 %%(qbasic)'' declare the function sum which takes two integers and returns an integer
 declare function sum( as integer, as integer ) as integer
 
-   print "the sum of 420 and 69 is: " ; sum( 420,69 )    '' call the function sum
-   sleep : end 0
+   print "the sum of 420 and 69 is: " & sum( 420, 69 )    '' call the function sum
 
 '' define the function sum which takes two integers and returns an integer
 function sum( a as integer, b as integer ) as integer
    return a + b
 end function
 %%
+{{fbdoc item="lang"}}
+	- In //-lang fb// dialect, ##**Byval**## is the default parameter passing convention.
+	- In the //-lang qb// and //-lang deprecated// dialects, ##**Byref**## is the default parameter passing convention.
 
 {{fbdoc item="diff"}}
-	- none
+	- In FreeBASIC, the parameter names are optional.
 
 {{fbdoc item="see"}}
 	- [[KeyPgSub SUB]]

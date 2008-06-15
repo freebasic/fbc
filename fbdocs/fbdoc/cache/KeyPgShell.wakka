@@ -23,6 +23,11 @@ shell "dir c:*.*"
 shell "ls"
 %%
 
+{{fbdoc item="target"}}
+	- Linux requires the //command// case matches the real name of the command. Windows and DOS  are case insensitive. The program being shelled may be case sensitive for its command line parameters. 
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+
+
 {{fbdoc item="diff"}}
 	- QB allowed SHELL on its own without a "command" argument which caused a default command shell to be started.  Execution in the main program would suspend until exit from the command shell.
 

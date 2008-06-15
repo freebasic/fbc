@@ -113,7 +113,10 @@ Print x(a())
 Dim c(10 To 20) As Double 
 Print x(c())
 %%
-
+{{fbdoc item="lang"}}
+	- In the -lang fb option the parameters are passed [[KeyPgByval BYVAL]] by default. -lang qb and -lang deprecated keep the QB convention: parameters are [[KeyPgByref BYREF]] by default.
+	 
+	
 {{fbdoc item="diff"}}
 	- Parameters can be optional in FreeBASIC.
 	- Return value can now be specified by a [[KeyPgReturn RETURN]] statement

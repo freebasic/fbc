@@ -41,6 +41,8 @@ Print Woct(54321)    '' will display 152061
 Print Woct(54321, 4) '' will display 2061
 Print Woct(54321, 8) '' will display 00152061
 %%
+{{fbdoc item="target"}}
+	- Unicode (w)strings are not suported in the DOS port of FB
 
 {{fbdoc item="diff"}}
 	- In QBASIC Unicode was not supported.

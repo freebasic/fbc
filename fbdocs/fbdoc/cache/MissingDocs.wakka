@@ -15,8 +15,8 @@ Please edit this page to remove items when they are written.
 
 ==Undocumented keywords== 
 
-	Work in progress for fbc 0.17b
-	[[KeyPgClass Class]]
+	[[KeyPgVar Var]]
+	
 
 ==Incomplete Documentation==
 
@@ -47,26 +47,18 @@ It's not a 100% accurate test, but fairly close.
 KeyPgBinary
 KeyPgChr
 KeyPgCustomgfx
-KeyPgDdfbdebug
-KeyPgDdfbmt
 KeyPgDeclare
 KeyPgDim
 KeyPgEncoding
-KeyPgErfn
-KeyPgErmn
 KeyPgExtern
 KeyPgField
-KeyPgFor
 KeyPgFunction
 KeyPgInputfilemode
-KeyPgLen
-KeyPgLet
 KeyPgLock
 KeyPgLset
 KeyPgLtrim
 KeyPgMidfunction
 KeyPgMidstatement
-KeyPgNamespace
 KeyPgOpenCom
 KeyPgOpenErr
 KeyPgOpenScrn
@@ -81,7 +73,6 @@ KeyPgReadFile
 KeyPgRtrim
 KeyPgScreenCons
 KeyPgSeekset
-KeyPgStatic
 KeyPgSub
 KeyPgSwap
 KeyPgTransGfx

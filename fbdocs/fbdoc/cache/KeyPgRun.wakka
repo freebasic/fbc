@@ -27,6 +27,10 @@ Transfers execution to an external program.
 run "file.exe"
 %%
 
+{{fbdoc item="target"}}
+	- Linux requires the //program// case matches the real name of the file. Windows and DOS  are case insensitive. The program being run may be case sensitive for its command line parameters.
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+
 {{fbdoc item="diff"}}
 	- Run needs the full executable name, including extension (.exe) on platforms that have one (Win32, DOS).
 	- Second form of the syntax is new to FreeBasic
@@ -37,3 +41,4 @@ run "file.exe"
 	- ##[[KeyPgExec Exec]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}
+   

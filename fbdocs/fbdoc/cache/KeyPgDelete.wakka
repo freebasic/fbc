@@ -20,6 +20,9 @@ Operator to delete data allocated with the ##[[KeyPgNew New]]## operator.
 {{fbdoc item="ex"}}
 	See [[KeyPgNew New]] for an example of ##**Delete**##.
 
+{{fbdoc item="lang"}}
+	- Suported only in the -lang fb option
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

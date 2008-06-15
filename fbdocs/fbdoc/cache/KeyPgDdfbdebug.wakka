@@ -1,9 +1,9 @@
 {{fbdoc item="title" value="__FB_DEBUG__"}}----
 Intrinsic define (macro value) set by the compiler.
 
-{{fbdoc item="syntax"}}
-	##""__FB_DEBUG__""##
-
+{{fbdoc item="syntax"}}##
+	""__FB_DEBUG__""
+##
 {{fbdoc item="desc"}}
 	##""__FB_DEBUG__""## indicates if the the generate debug information option '-g' was specified on the command line at the time of compilation.
 

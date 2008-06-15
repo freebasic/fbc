@@ -62,7 +62,7 @@ Dim b as double = -123.0
 Dim b as double = -123.0e
 %%
 
-	A suffix of "f" or "F" on the number portion indicates a double precision (64 bit total) floating point value.  An exponent may immediately follow the suffix.
+	A suffix of "f" or "F" on the number portion indicates a single precision (32 bit total) floating point value.  An exponent may immediately follow the suffix.
 		%%(qbasic)Dim a as single = -123.456f
 %%
 

@@ -4,7 +4,7 @@
 
 {{fbdoc item="desc"}}
 	This command opens a serial port of the PC, allowing to send and receive data by using the normal file commands as PRINT #, INPUT#, GET #,...
-	As of version 0.17 it is implemented only in the Win32  and  Linux version
+	
 	    
 	//baudrate// = 300, 1200, etc ..., default = 300
 
@@ -41,7 +41,7 @@
 	ME    Ignore all errors
 	IRn    IRQ number for COM (only supported on DOS)
 
- All options are optional. The order of baudrate, parity, data_bits, stop_bits is fixed. Any skipped (fixed) option (baudrate, etc...) must be empty.
+ All items are optional. The order of baudrate, parity, data_bits, stop_bits is fixed. Any skipped fixed item (baudrate, etc...) must be empty.
 
 	//n// is a file handle  that must be free
 
@@ -55,6 +55,9 @@ OPEN COM "COM1:9600,N,,2" as 1
 OPEN COM "COM1:115200" as 1
 %%
 	Opens COM1 with 115200 baud, "even" parity, 7 data bits and 1 stop bits. 
+
+{{fbdoc item="target"}}
+	- As of version 0.17 it is implemented only in the Win32  and  Linux versions
 
 {{fbdoc item="diff"}}
 	- In QB the syntax was  OPEN  "COMx:[baudrate] [,parity, [data_bits, [stop_bits, [extended_options]]]]"  FOR INPUT|OUTPUT|RANDOM AS [#] n

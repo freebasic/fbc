@@ -21,8 +21,6 @@
 {{fbdoc item="desc"}}
 	The user function is started as a thread executes in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or using the waiting times in the main program.
 
-	NOTE: The DOS version of FreeBasic does not allow for threads, as the OS does not support them.
-
 	Before closing, a program must wait for the termination of all the threads it has launched; see ##[[KeyPgThreadWait Threadwait]]##.
 
 	To avoid simultaneous access to shared resources from different threads, FB implements mutexes, mutual exclusion locks that can be "owned" by a single thread when doing critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##.
@@ -70,8 +68,15 @@ print "Thread terminated"
 sleep
 %%
 
+{{fbdoc item="lang"}}
+	- Threading is not allowed in -lang qb
+
+{{fbdoc item="target"}}
+	- The DOS version of FreeBASIC does not allow for threads, as the OS does not support them.
+	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FB issue. 
+
 {{fbdoc item="diff"}}
-	- New to Freebasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgThreadWait Threadwait]]##

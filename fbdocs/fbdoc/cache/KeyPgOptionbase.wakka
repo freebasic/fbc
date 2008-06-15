@@ -19,8 +19,12 @@ option base 1
 dim foo(10)
 %%
 
+{{fbdic item="lang"}}
+	- The use of OPTION BASE is allowed only in the //-lang qb// and //-lang deprecated//. 
+	- With the //-lang fb// option, the lower index of the arrays must be specified with the [[KeyPgTo TO]] clause if different from 0.
+
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDim Dim]]##

@@ -133,6 +133,9 @@ do
 	end if
 loop%%
 
+{{fbdoc item="target"}}
+	- SCREENEVENT does not work in the DOS version of FB as this OS does'nt have an event queue.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

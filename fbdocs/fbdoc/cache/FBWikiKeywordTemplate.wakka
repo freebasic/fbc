@@ -32,6 +32,11 @@ Output:
 sample output
 sample output
 %%
+{{fbdoc item="lang"}}
+	- Supported only with //-lang fb//.
+
+{{fbdoc item="target"}}
+	- None
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

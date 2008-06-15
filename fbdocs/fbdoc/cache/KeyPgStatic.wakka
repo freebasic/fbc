@@ -1,12 +1,35 @@
-{{fbdoc item="title" value="STATIC"}}
-----
-{{fbdoc item="syntax"}}
-	    STATIC //symbolname//[( //subscripts// )] [AS [[DataType DataType]]] [, ...]
+{{fbdoc item="title" value="STATIC"}}----
+Variable and proecedure declaration modifier depending on context
+
+{{fbdoc item="syntax"}}##
+	**Static** //symbol//[( //subscripts// )] [ [[KeyPgAs as]] [[DataType DataType]]] [, ...]
+//or//
+	[[KeyPgSub sub]] //proc_header// **Static**
+//or//
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] **Static** //membertype// //membername// ...
+	End Type
+
+	**Static** //membertype// //typename//.//membername// ...
+##
+{{fbdoc item="param"}}
+	##//symbol//##
+		variable or array symbol name
+	##//proc_header//##
+		procedure header for a procedure body.
+	##//typename//##
+		name of a user defined data type			
+	##//membertype//##
+		##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgOperator Operator]]##, or ##[[KeyPgProperty Property]]##.
+	##//membername// ...##
+		Name of the member to declare or define with parameter list or return value following.
 
 {{fbdoc item="desc"}}
-	Declares variables and arrays which become local to a procedure and preserves values between procedure calls (the values are not destroyed when the procedure is ended).
-	The keyword static can be used too at the end of a FUNCTION /SUB header. This is a shortcut that makes STATIC all local variables defined in the function.
+	Declares local variables and arrays in a procedure so that values are preserved between procedure calls (the values are not destroyed when the procedure is ended).  See ##[[KeyPgDim Dim]]##.
 
+	##**Static**## is used at the end of a ##[[KeyPgFunction Function]]## or ##[[KeyPgSub sub]]## header to indicate that all local variables are ##**Static**## in a procedure and preserved between calls to the procedure.
+
+	##**Static**## is used at the beginning of a member declaration or definition to indicate that the member is a static member function.  Static member functions are not passed a hidden ##[[KeyPgThis this]]## parameter.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -31,16 +54,9 @@ end sub
 	- STATIC can be used with arrays too, the same way as DIM or REDIM.
 
 {{fbdoc item="see"}}
-	- [[KeyPgCommon COMMON]]
-	- [[KeyPgDim DIM]]
-	- [[KeyPgErase ERASE]]
-	- [[KeyPgExtern EXTERN]]
-	- [[KeyPgLbound LBOUND]]
-	- [[KeyPgRedim REDIM]]
-	- [[KeyPgPreserve PRESERVE]]
-	- [[KeyPgShared SHARED]]
-	- [[KeyPgDynamic $DYNAMIC]]
-	- [[KeyPgStatic STATIC]]
-	- [[KeyPgUbound UBOUND]]
+	- ##[[KeyPgDeclare Declare]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgType Type]]##
 
 {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

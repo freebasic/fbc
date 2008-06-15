@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="EXPORT"}}----
-Declaration specifier to indicate that a procedure should be visible from a DLL.
+Declaration specifier to indicate that a procedure in a DLL should be visible from other programs.
 
 {{fbdoc item="syntax"}}##
 	{ [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc_name// ( //argumentlist// ) [ [[KeyPgAs as]] [[DataType datatype]] ] **Export**
@@ -18,17 +18,20 @@ END FUNCTION
 
 %%(qbasic)
 'main program
-' create a function pointer, arguments must be the same as in the original function
-dim AddNumbers as function ( byval operand1 as integer, byval operand2 as integer ) as integer
+' create a function pointer, arguments must be the same type as in the original function
+dim AddNumbers as function ( byval as integer, byval as integer ) as integer
 dim hndl as any ptr
 '
 hndl=DYLIBLOAD("mydll.dll")
 ' find the proc address (case matters!)
 AddNumbers = DYLIBSYMBOL( hndl, "AddNumbers" )
 ' call it..
-print "1 + 2 ="; AddNumbers( 1, 2 )
+print "1 + 2 = " & AddNumbers( 1, 2 )
 sleep
 %%
+
+{{fbdoc item="target"}}
+	- Dynamic link libraries are not available in DOS, as the OS doesn't support them.
 
 {{fbdoc item="diff"}}
 	- New to Freebasic

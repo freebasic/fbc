@@ -39,7 +39,16 @@ Where ##//item//## and ##//value//## are used as follows:
 		Inserts a **Description:** section header on a page
 
 	item="**ex**"
-		Inserts a **Examples:** section header on a page
+		Inserts an **Examples:** section header on a page
+
+	item="**lang**"
+		Inserts a **Dialect Differences:** section header on a page
+
+	item="**target**"
+		Inserts a **Platform Differences:** section header on a page
+
+	item="**diff**"
+		Inserts a **Differences from QB:** section header on a page
 
 	item="**see**"
 		Inserts a **See Also:** section header on a page
@@ -79,6 +88,15 @@ Where ##//item//## and ##//value//## are used as follows:
 ##""{{fbdoc item="ex"}}""##
 {{fbdoc item="ex"}}
 ----
+##""{{fbdoc item="lang"}}""##
+{{fbdoc item="lang"}}
+----
+##""{{fbdoc item="target"}}""##
+{{fbdoc item="target"}}
+----
+##""{{fbdoc item="diff"}}""##
+{{fbdoc item="diff"}}
+----
 ##""{{fbdoc item="see"}}""##
 {{fbdoc item="see"}}
 ----
@@ -87,3 +105,5 @@ Where ##//item//## and ##//value//## are used as follows:
 ----
 
 {{fbdoc item="back" value="FBWikiHelp|FB Wiki - Help"}}
+
+   

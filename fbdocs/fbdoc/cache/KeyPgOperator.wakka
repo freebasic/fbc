@@ -76,6 +76,8 @@ print "b = "; b
 print "a + b = "; a + b
 
 %%
+{{fbdoc item="lang"}}
+	- Supported only with //-lang fb//.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgClass Class]]##

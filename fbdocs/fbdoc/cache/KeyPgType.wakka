@@ -47,17 +47,23 @@ c.blue = 64
 
 	The third syntax allows to create a new type name with the properties of a previously existant type. 
 %%(qbasic)
-TYPE BOOLEAN as integer
+TYPE BOOLEAN AS INTEGER
 %%
 
+{{fbdoc item="version"]
+	- Object-related features as functions defined inside the TYPE blocks are supported since version 0.17b
 	
-
+{{fbdoc item="lang"}}
+	- Object-related features as functions defined inside the TYPE block are supported only in the //-lang fb// option
+	- The fields are aligned to 32bit doubleword boundaries if -lang fb or -lang deprecated is used. To force byte alignment use //FIELD=1//
+	- With the -lang qb option the fields are aligned to byte boundaries. 
 
 {{fbdoc item="diff"}}
 	- None, if the compiler switch "-lang qb" is used.
 
 {{fbdoc item="see"}}
 	- [[KeyPgUnion UNION...END UNION]]
+	-  [[KeyPgEnum ENUM...END ENUM]]
 	- [[KeyPgOffsetof OFFSETOF]]
 	- [[KeyPgTypeTemp TYPE()]]
 	- [[KeyPgTypeDef TYPE AS]]

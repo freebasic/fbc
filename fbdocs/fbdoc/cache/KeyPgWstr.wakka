@@ -34,6 +34,9 @@ ws = wstr(zs)
 MessageBox(null, ws, wstr("Unicode 'Hello World'"), MB_OK or MB_ICONINFORMATION)
 %%
 
+{{fbdoc item="target"}}
+	- Unicode (w)strings are not suported in the DOS port of FB
+	- 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

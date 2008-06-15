@@ -16,7 +16,10 @@ Compiler switch to indicate all string literals are to be processed for escape c
 	
 	##**Option Escape**## is useful when the C-style formatted print functions in crt.bi (as printf) are to be used.
 	
-	A literal string can be prefixed with "!" to make it expand escape sequences.  It can be prefixed with "$" to prevent it expanding them.  These work regardless of whether or not ##**Option Escape**## is used, and can be used to override the default behaviour.
+	
+{{fbdoc item="lang"}}
+	- The use of OPTION ESCAPE is not allowed in the -lang fb option. In there a literal string can be prefixed with "!" to make it expand escape sequences, and can be prefixed with "$" to prevent it expanding them.  
+	
 
 {{fbdoc item="ex"}}
 	%%(qbasic)' compile with -lang deprecated

@@ -13,7 +13,7 @@ Output statement to write text to screen or file.
 {{fbdoc item="desc"}}
 	Writes ##//expressionlist//## to screen or to a text file (if **#**##//filenum//## is used). The values are separed with commas, and the text strings are enclosed in double quotes. The resulting format can be read by ##[[KeyPgInputPp Input #]]##. ##**Write** # ## provides an easy way to save data to file in a both human and machine readable way, with comma delimiting for multiple data.
 
-	The ##//expressionlist//## can be separed by commas as with ##[[KeyPgPrint Print]]##, but the output formatting is not tabbed as in PRINT style, it's comma delimited.
+	The ##//expressionlist//## can be separed by commas  or by semicolons, the output will not be altered.
 
 {{fbdoc item="ex"}}
 %%(qbasic)dim a as integer, b as string, c as single

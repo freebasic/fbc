@@ -29,6 +29,9 @@ end function
 call f ' execute function f, but ignore the answer
 %%
 
+{{fbdoc item="lang"}}
+	- The use of CALL is not allowed in the //lang fb// option
+
 {{fbdoc item="diff"}}
 	- The procedure must have already been declared.
 	- CALL in QB will make a copy of all parameters, so passing [[KeyPgByref BYREF]] won't ever change the argument inside the callee.

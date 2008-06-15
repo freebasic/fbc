@@ -100,7 +100,7 @@ Again the syntax is somewhat similar to normal functions.  Note that this time I
 
 **Methods**
 
-You can also have regular ##Sub##s and ##Function##s inside your ##Type##; in some terminology, these are refered to as methods.  We'll carry on our example:
+You can also have regular ##Sub##s and ##Function##s inside your ##Type##; in some terminology, these are referred to as methods.  We'll carry on our example:
 
 %%(qbasic)
 Type bar
@@ -289,7 +289,7 @@ z = x + y
 Print z
 %%
 
-You need to have seperate lets and casts for each data type you want to support. The operators that need declaring within the type are known as nonstatic, and the ones that don't are known as global.  There is a technical reason for this; the nonstatic ones need to know which instance (in the technical jargon, in our example above, we would say that ##x## is an instance of ##bar##) of the ##Type## they are referring to, and this is accomplished by a hidden '##this##' reference.  This hidden '##this##' reference is how the other members like operators and methods know which instance of the ##Type## the call refers to.  Most operators can be overloaded; here's a list of the ones that currently can be:
+You need to have separate lets and casts for each data type you want to support. The operators that need declaring within the type are known as non-static, and the ones that don't are known as global.  There is a technical reason for this; the non-static ones need to know which instance (in the technical jargon, in our example above, we would say that ##x## is an instance of ##bar##) of the ##Type## they are referring to, and this is accomplished by a hidden '##this##' reference.  This hidden '##this##' reference is how the other members like operators and methods know which instance of the ##Type## the call refers to.  Most operators can be overloaded; here's a list of the ones that currently can be:
 
 Assignment ops:
   ##let##, ##+=##, ##-=##, ##*=##, ##/=##, ##\=##, ##mod=##, ##shl=##, ##shr=##, ##and=##, ##or=##, ##xor=##, ##imp=##, ##eqv=##, ##^=##

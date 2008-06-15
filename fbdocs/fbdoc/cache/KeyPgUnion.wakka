@@ -70,6 +70,8 @@ end if
 
 sleep
 %%
+{{fbdoc item="lang"}}
+	- Object-related features as functions defined inside the UNION block are supported only in the //-lang fb// option
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

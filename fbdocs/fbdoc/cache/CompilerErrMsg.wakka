@@ -25,6 +25,8 @@ During the program compilation three types of errors can arise:
 	- //18 The type length is too large, consider passing BYREF//
 	- //19 The length of the parameters list is too large, consider passing UDT's BYREF//
 	- //20 The ANY initializer has no effect on UDT's with default constructors//
+	- //21 Object files or libraries with mixed multithreading (-mt) options//
+	- //22 Object files or libraries with mixed language (-lang) options//
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
@@ -160,58 +162,63 @@ During the program compilation three types of errors can arise:
 	- //129 Both parameters can't be of the same type//
 	- //130 Parameter and result can't be of the same type//
 	- //131 Invalid result type for this operator//
-	- //132 Vararg parameters are not allowed in overloaded functions//
-	- //133 Illegal outside an OPERATOR block//
-	- //134 Parameter cannot be optional//
-	- //135 Only valid in -lang//
-	- //136 Default types or suffixes are only valid in -lang//
-	- //137 Suffixes are only valid in -lang//
-	- //138 Implicit variables are only valid in -lang//
-	- //139 Invalid array index//
-	- //140 Operator must be a member function//
-	- //141 Operator cannot be a member function//
-	- //142 Member function not allowed in anonymous UDT's//
-	- //143 Expected operator//
-	- //144 Declaration outside the original namespace or class//
-	- //145 A destructor should not have any parameters//
-	- //146 Expected class or UDT identifier//
-	- //147 Dynamic strings cannot be part of UNION's or nested TYPE's//
-	- //148 Fields with constructors cannot be part of UNION's or nested TYPE's//
-	- //149 Fields with destructors cannot be part of UNION's or nested TYPE's//
-	- //150 Illegal outside a constructor//
-	- //151 UDT's with methods must have unique names//
-	- //152 Parent is not a class or UDT//
-	- //153 Call to another constructor must be the first statement//
-	- //154 The constructor or destructor calling convention must be CDECL//
-	- //155 This symbol cannot be undefined//
-	- //156 Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors//
-	- //157 Invalid assignment/conversion//
-	- //158 Invalid array subscript//
-	- //159 TYPE or CLASS has no default constructor//
-	- //160 Invalid priority attribute//
-	- //161 PROPERTY GET should have no parameter, or just one if indexed//
-	- //162 PROPERTY SET should have one parameter, or just two if indexed//
-	- //163 Expected 'PROPERTY'//
-	- //164 Illegal outside a PROPERTY block//
-	- //165 PROPERTY has no GET method/accessor//
-	- //166 PROPERTY has no SET method/accessor//
-	- //167 PROPERTY has no indexed GET method/accessor//
-	- //168 PROPERTY has no indexed SET method/accessor//
-	- //169 UDT in FOR needs numeric overloaded operators: //
-	- //170 The NEW[] operator does not allow explicit calls to constructors//
-	- //171 The NEW[] operator only supports the { ANY } initialization//
-	- //172 The NEW operator cannot be used with strings//
-	- //173 Illegal member access//
-	- //174 Expected ':'//
-	- //175 The default constructor has no public access//
-	- //176 Constructor has no public access//
-	- //177 Destructor has no public access//
-	- //178 Illegal non-static member access//
-	- //179 Member cannot be static//
-	- //180 Member isn't static//
-	- //181 Only static members can be accessed from static functions//
-	- //182 The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN//
-	- //183 The function prototype wasn't declared as STATIC//
+	- //132 Invalid parameter type, it must be the same as the parent TYPE/CLASS//
+	- //133 Vararg parameters are not allowed in overloaded functions//
+	- //134 Illegal outside an OPERATOR block//
+	- //135 Parameter cannot be optional//
+	- //136 Only valid in -lang//
+	- //137 Default types or suffixes are only valid in -lang//
+	- //138 Suffixes are only valid in -lang//
+	- //139 Implicit variables are only valid in -lang//
+	- //140 Invalid array index//
+	- //141 Operator must be a member function//
+	- //142 Operator cannot be a member function//
+	- //143 Member function not allowed in anonymous UDT's//
+	- //144 Expected operator//
+	- //145 Declaration outside the original namespace or class//
+	- //146 A destructor should not have any parameters//
+	- //147 Expected class or UDT identifier//
+	- //148 Dynamic strings cannot be part of UNION's or nested TYPE's//
+	- //149 Fields with constructors cannot be part of UNION's or nested TYPE's//
+	- //150 Fields with destructors cannot be part of UNION's or nested TYPE's//
+	- //151 Illegal outside a constructor//
+	- //152 UDT's with methods must have unique names//
+	- //153 Parent is not a class or UDT//
+	- //154 Call to another constructor must be the first statement//
+	- //155 The constructor or destructor calling convention must be CDECL//
+	- //156 This symbol cannot be undefined//
+	- //157 Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors//
+	- //158 Invalid assignment/conversion//
+	- //159 Invalid array subscript//
+	- //160 TYPE or CLASS has no default constructor//
+	- //161 Invalid priority attribute//
+	- //162 PROPERTY GET should have no parameter, or just one if indexed//
+	- //163 PROPERTY SET should have one parameter, or just two if indexed//
+	- //164 Expected 'PROPERTY'//
+	- //165 Illegal outside a PROPERTY block//
+	- //166 PROPERTY has no GET method/accessor//
+	- //167 PROPERTY has no SET method/accessor//
+	- //168 PROPERTY has no indexed GET method/accessor//
+	- //169 PROPERTY has no indexed SET method/accessor//
+	- //170 Missing overloaded operator: //
+	- //171 The NEW[] operator does not allow explicit calls to constructors//
+	- //172 The NEW[] operator only supports the { ANY } initialization//
+	- //173 The NEW operator cannot be used with strings//
+	- //174 Illegal member access//
+	- //175 Expected ':'//
+	- //176 The default constructor has no public access//
+	- //177 Constructor has no public access//
+	- //178 Destructor has no public access//
+	- //179 Illegal non-static member access//
+	- //180 Member cannot be static//
+	- //181 Member isn't static//
+	- //182 Only static members can be accessed from static functions//
+	- //183 The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN//
+	- //184 The function prototype wasn't declared as STATIC//
+	- //185 This operator cannot be STATIC//
+	- //186 Parameter must be an integer//
+	- //187 Parameter must be a pointer//
+	- //188 VAR requires an initializer//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.

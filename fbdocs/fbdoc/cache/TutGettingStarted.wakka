@@ -62,9 +62,9 @@ Another nice feature of the graphics library in FreeBASIC is that you can do pag
 '''''There is no exit in this program so you must close the console window to exit the program. This will work for any locked up or otherwise unexitable FreeBASIC program.'''''
 %%
 
- DIM page
- DIM notpage
- DIM a,b
+ DIM as integer page
+ DIM as integer notpage
+ DIM as integer a, b
 
 
  screen 12, , 2 'This sets the screen for 2 pages
@@ -94,8 +94,8 @@ This works for any mode, so you can use the high resolution modes for your progr
 I wouldn't be saying this if it wasn't true. Using ASM in BASIC to increase the functionality of your program is dead. Ignoring SDL, Allegro, DirectX, OpenGL, et. al. for a minute, you've got the above page flipping and advanced graphics modes at your disposal, as well as inkey$, which we've all grown to love or hate, but there are also two new input commands which do things QBers have had to resort to assembly code to do since the dawn of time:
 
 %%
- DIM x,y,buttons
- CONST escapeKey = 1
+ DIM as integer x, y, buttons
+ CONST as integer escapeKey = 1
  SCREEN 12
 
  WHILE NOT MULTIKEY(escapeKey) 'this checks the escape key every frame

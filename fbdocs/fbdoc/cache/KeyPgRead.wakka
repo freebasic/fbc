@@ -53,11 +53,14 @@ END
 DATA 3, 234, 4354, 23433, 87643, "Bye!"
 %%
 
+{{fbdoc item="lang"}}
+	- //-lang fb// and //-lang deprecated// considers  data items as constant expresions that are evaluated during compilation and its result stored in the program.
+	- //-lang qb// considers data items as literals and stores then wihout change, as in QB.  
+
 {{fbdoc item="diff"}}
 	- Alphabetic string literals now MUST be enclosed within quotation marks  
 	- Empty constant expressions were evaluated in QB to number 0 or to empty strings. In FB they give a compile error.
-	- Constant expressions are allowed in FB's DATA. They are evaluated before storing. QB allowed only constant values	
-
+	
 {{fbdoc item="see"}}
 	- ##[[KeyPgData Data]]##
 	- ##[[KeyPgRestore Restore]]##

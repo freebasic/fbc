@@ -17,6 +17,8 @@ __Components of a Topic:__
 	- **Return Value** - description of the return value if any
 	- **Description** - all other information about the function, data tables, special notes, etc.
 	- **Examples**
+	- **Dialect Differences**
+	- **Platform Differences**
 	- **Differences with QBasic**
 	- **See Also** (cross referenced links)
 	- Back links - Table of Contents, Alphabetical list, or Parent Category
@@ -95,6 +97,16 @@ sample output
 sample output
 sample output
 %%
+
+{{fbdoc item="lang"}}
+	- Supported only with //-lang fb//.
+	- With //-lang qb// ...
+	- etc
+
+{{fbdoc item="target"}}
+	- Not supported on DOS
+	- Win32 does not ...
+	- etc
 
 {{fbdoc item="diff"}}
 	- List any differences between FreeBASIC and other basics (primarily QBasic)

@@ -23,6 +23,9 @@ print WCHR(933, 934, 935)
 %%
 <<&#933;&#934;&#935;<<
 ::c::
+{{fbdoc item="target"}}
+	- Unicode (w)strings are not suported in the DOS port of FB
+
 {{fbdoc item="diff"}}
 	- New to Freebasic
 

@@ -64,8 +64,12 @@ Print "archive files:"
 list_files "*", attrib_archive
 %%
 
+{{fbdoc item="target"}}
+	- Linux requires the //filename// case matches the real name of the file. Windows and DOS are case insensitive. 
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+
 {{fbdoc item="diff"}}
-	- The //attrib_mask// parameter is new to FreeBASIC
+	- The //attrib_mask// and //out_attrib// parameters are new to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen Open]]##

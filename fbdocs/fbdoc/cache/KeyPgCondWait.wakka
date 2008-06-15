@@ -23,6 +23,14 @@ Stops execution of current thread until some other thread signals that execution
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
+	- 
+{{fbdoc item="lang"}}
+	- Threading is not allowed in -lang qb
+
+{{fbdoc item="target"}}
+	- The DOS version of FreeBASIC does not allow for threads, as the OS does not support them.
+	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FB issue. 
+
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCondCreate Condcreate]]##

@@ -34,6 +34,10 @@ ELSE
 	PRINT "Exit code:"; result
 END IF
 %%
+{{fbdoc item="target"}}
+	- Linux requires the //program// case matches the real name of the file. Windows and DOS  are case insensitive. The program being executed may be case sensitive for its command line parameters.
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic

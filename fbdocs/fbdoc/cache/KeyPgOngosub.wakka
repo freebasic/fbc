@@ -32,6 +32,9 @@ print "choice c"
 return
 %%
 
+{{fbdoc item="lang"}}
+	- ON x GOSUB can be used only with the //-lang qb// option.  
+
 {{fbdoc item="diff"}}
 	- None
 

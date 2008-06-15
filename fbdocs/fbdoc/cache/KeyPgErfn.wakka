@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="ERFN"}}----
 Error reporting function.
 
-{{fbdoc item="syntax"}}	##
+{{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Erfn** ( ) [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##

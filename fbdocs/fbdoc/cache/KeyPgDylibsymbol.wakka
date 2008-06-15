@@ -44,6 +44,8 @@ print "1 + 2 ="; AddNumbers( 1, 2 )
 dylibfree hndl
 sleep
 %%
+{{fbdoc item="target"}}
+	- Dynamic link libraries are not available in DOS ,as the OS does'nt support them.
 
 {{fbdoc item="diff"}}
 	- New to Freebasic

@@ -89,6 +89,10 @@ IF openerror THEN
 END IF
 %%
 
+{{fbdoc item="target"}}
+	- Linux requires the //filename// case matches the real name of the file. Windows and DOS are case insensitive. 
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+
 {{fbdoc item="diff"}}
 	- Using MS-DOS device names to open hardware devices is no more allowed, check the description section for the alternatives.
 	- OPEN can now be used as a function.

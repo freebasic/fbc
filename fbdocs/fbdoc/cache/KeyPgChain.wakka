@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CHAIN"}}----
-Runs another program, and waits until that program ends before resuming execution.
+Runs another FreeBASIC program, and waits until that program ends before resuming execution.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Chain** ( [[KeyPgByref byref]] //exename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -15,7 +15,7 @@ Runs another program, and waits until that program ends before resuming executio
 	    The return value is the program's exit code if called successfully, (-1) otherwise.
 
 {{fbdoc item="desc"}}
-	Runs another program and transfers control to that program. After called program has ended the original program will gain the control again.
+	Runs another FreeBASIC program and transfers control to that program. After called program has ended the original program will gain the control again.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -33,6 +33,10 @@ Runs another program, and waits until that program ends before resuming executio
 
 	sleep
 %%
+{{fbdoc item="target"}}
+	- Linux requires the //exename// case matches the real name of the file. Windows and DOS  are case insensitive. The program  chained may be case sensitive for its command line parameters.
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+
 
 {{fbdoc item="diff"}}
 	-

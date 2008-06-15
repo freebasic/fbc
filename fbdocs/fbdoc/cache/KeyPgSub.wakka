@@ -46,7 +46,7 @@ The second syntax defines either a constructor or destructor using the [[KeyPgMo
 {{fbdoc item="ex"}}
 %%(qbasic)'' Example of writing colored text using a sub:
 
-sub PrintColoredText( colour as integer, text as string )
+sub PrintColoredText( byval colour as integer, byref text as string )
    color colour
    print text
 end sub
@@ -56,12 +56,10 @@ end sub
    PrintColoredText( 4, "red" )
    print
    
-   dim i as integer = 0
-   while( i<16 )                        '' all 16 colors
-	  PrintColoredText( i, "color " + str$(i) )
-   wend
-
-   end 0
+   dim i as integer
+   for i = 0 to 15                        '' all 16 colors
+	  PrintColoredText( i, ("color " & i) )
+   next i
 %%
 %%(qbasic)
 ' The following demonstrates optional parameters.
@@ -73,6 +71,9 @@ End Sub
 TestSub "Testing:"
 TestSub
 %%
+{{fbdoc item="lang"}}
+	- In the -lang fb option the parameters are passed [[KeyPgByval BYVAL]] by default. -lang qb and -lang deprecated keep the QB convention: parameters are [[KeyPgByref BYREF]] by default.
+	 	
 
 {{fbdoc item="diff"}}
 	- Public and Private access specifiers are new to FreeBASIC

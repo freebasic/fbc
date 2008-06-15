@@ -28,8 +28,11 @@ ErrHandler:
 Resume Next ' execution jumps to 'Print "ending..."' line, but j is now in an undefined state
 %%
 
-As of FreeBASIC version .17, 'On Error' is disabled by default, and must be enabled by the compiler option [[ProPgCompOptlang -lang qb or -lang deprecated]].
-
+{{fbdoc item="lang"}}
+	-  ON ERROR is not supported in //-lang fb//. Statements can be used in its function form to return an error code
+%%(qbasic)
+IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN handle_error
+%% 
 {{fbdoc item="diff"}}
 	- Must compile with -ex option
 
