@@ -2,7 +2,7 @@
 Statements that affect how code is compiled.
 
 {{fbdoc item="desc"}}
-	These statements affect how the compiler declares variables, arrays and procedures, parses string literals, passes procedure parameters and more. They are kept for backwards compatibility with Microsoft ""QuickBASIC"" and previous development versions of ""FreeBASIC"" within the //[[CompilerDialects QB and deprecated dialects]]//.
+	These statements affect how the compiler declares variables, arrays and procedures, parses string literals, passes procedure parameters and more.
 
 <<
 {{fbdoc item="section" value="Metacommands"}}
@@ -39,8 +39,8 @@ Statements that affect how code is compiled.
 >>
 ::c::
 {{fbdoc item="lang"}}
-	- ##[[KeyPgDeflongint DEFLONGINT]]## and ##[[KeyPgDefulongint DEFULONGINT]]## only available in the //[[CompilerDialects QB and deprecated dialects]]//.
-	- The various ##OPTION## statements only available in the //[[CompilerDialects deprecated dialect]]// except for ##[[KeyPgOptionbase OPTION BASE]]## and ##[[KeyPgOptionexplicit OPTION EXPLICIT]]## which are also available in the //[[CompilerDialects QB dialect]]//.
+	- ##[[KeyPgDeflongint DEFLONGINT]]## and ##[[KeyPgDefulongint DEFULONGINT]]## available only in the //[[CompilerOptlang -lang fblite]]// dialect.
+	- ##OPTION## statements available only in the //[[CompilerOptlang -lang fblite]]// dialect except for ##[[KeyPgOptionbase OPTION BASE]]## and ##[[KeyPgOptionexplicit OPTION EXPLICIT]]## which are also available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="see"}}
 	- [[CatPgPreProcess Preprocessor]]

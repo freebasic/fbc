@@ -17,7 +17,7 @@ Standard data type: 32 bit signed
 	%%Integer Range = -2147483648 to  2147483647%%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, the ##**Integer**## data type is 32-bit.
+	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the ##**Integer**## data type is 32-bit.
 	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##**Long**## data type is 16-bit.
 
 {{fbdoc item="diff"}}

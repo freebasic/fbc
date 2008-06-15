@@ -17,21 +17,21 @@ Returns a binary (base 2) string representation of an integer
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		Number to convert to binary representation.
+		A number or expression evaluating to a number.  A floating-point number will be converted to a ##[[KeyPgLongint longint]]##.
 	##//digits//##
 		Desired number of digits in the returned string.
 
 {{fbdoc item="ret"}}
-	A string containing the binary representation of ##//number//##.
+	A string containing the unsigned binary representation of ##//number//##.
 
 {{fbdoc item="desc"}}
-	Returns a string representing the binary value of the integer ##//number//##. Binary digits range from 0 to 1.
+	Returns a string representing the unsigned binary value of the integer ##//number//##. Binary digits range from 0 to 1.
 
 	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
 
 	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (32 for an ##[[KeyPgInteger integer]]##, 64 for a ##[[KeyPgLongint Longint]])##.
 
-	If you want to convert a binary string back into a number, the easiest way to do it is to prefix the string with ##"&B"##, and convert it as a normal numeric string, using ##[[KeyPgValint Valint]]##.
+	If you want to do the opposite, i.e. convert an binary string back into a number, the easiest way to do it is to prepend the string with ##"&B"##, and convert it using ##[[KeyPgValint Valint]]## or ##[[KeyPgVallng Vallng]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgValint Valint]]("&B101")##
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/bin.bas"}}%%(freebasic)
@@ -52,7 +52,9 @@ Print Bin(54321, 20)
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgHex Hex]]##
 	- ##[[KeyPgOct Oct]]##
+	- ##[[KeyPgHex Hex]]##
+	- ##[[KeyPgValint Valint]]##
+	- ##[[KeyPgVallng Vallng]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

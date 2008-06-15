@@ -48,6 +48,8 @@ Statements and procedures for working with 2D graphics.
 		Frees an image buffer resource.
 	=={{fbdoc item="keyword" value="KeyPgImageConvertRow|IMAGECONVERTROW"}}==
 		Converts a row of pixels in an image buffer to a different color depth.
+	=={{fbdoc item="keyword" value="KeyPgImageInfo|IMAGEINFO"}}==
+		Retrieves useful information about an image buffer
 	=={{fbdoc item="keyword" value="KeyPgBload|BLOAD"}}==
 		Creates an image buffer from a file.
 	=={{fbdoc item="keyword" value="KeyPgBsave|BSAVE"}}==

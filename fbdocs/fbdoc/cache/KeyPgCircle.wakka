@@ -29,7 +29,9 @@ Graphics statement to draw a circle
 
 	##//target//## specifies buffer to draw on.  ##//target//## may be an image created with ##[[KeyPgImagecreate Imagecreate]]## or ##[[KeyPgGetgraphics Get (Graphics)]]##.  If omitted, ##//target//## defaults to the screen's current work page.  (See ##[[KeyPgScreenset Screenset]]##)
 
-	The center of the shape will be placed on the destination surface at ##(//X//,//Y//)##. Radius denotes the radius of the shape. 
+	The center of the shape will be placed on the destination surface at ##(//X//,//Y//)##. 
+	
+	##//Radius//## denotes the radius of the shape. If aspect ratio is used, the biggest radius must be given here.
 
 	##//Color//## denotes the color attribute, which is mode specific (see ##[[KeyPgColor Color]]## and ##[[KeyPgScreengraphics Screen (Graphics)]]## for details). If omitted, the current foreground color as set by the ##[[KeyPgColor Color]]## statement is used.
 

@@ -9,7 +9,7 @@ Reverts to default array declaration behavior
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/switches/option-static.bas"}}%%(freebasic)
-'' Compile with the "-lang deprecated" compiler switch
+'' Compile with the "-lang fblite" compiler switch
 
 option dynamic
 
@@ -21,7 +21,7 @@ dim bar(100) as integer			' declares a fixed-length array
 %%
 
 {{fbdoc item="lang"}} 
-	- Only available in the //[[CompilerDialects deprecated dialect]]//.
+	- Only available in the //[[CompilerOptlang -lang fblite]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

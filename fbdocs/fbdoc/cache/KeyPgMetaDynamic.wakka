@@ -11,14 +11,14 @@ Metacommand to change the way arrays are allocated
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/meta/dynamic.bas"}}%%(freebasic)
-' compile with -lang deprecated or qb
+' compile with -lang fblite or qb
 '$DYNAMIC
 Dim a(100)
 '......
 ReDim a(200)
 %%
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
+	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- When used inside comments it must be the first token

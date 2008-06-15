@@ -23,7 +23,7 @@ Error handling function to return the error number of the last error
 {{fbdoc item="ex"}}
 An example using QBasic style error handling (compile with -ex option)
 {{fbdoc item="filename" value="examples/manual/error/err1.bas"}}%%(freebasic)
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite or qb
 on error goto Error_Handler
 error 150
 end

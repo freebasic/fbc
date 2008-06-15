@@ -2,20 +2,20 @@
 Waits until a specified time has elapsed, or a key is pressed.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //msecs// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** ( [[KeyPgByval byval]] //msecs// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //kind// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //amount// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** ( [[KeyPgByval byval]] //amount// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //keyflag// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	**Sleep** [ //msecs// [, //kind//]]
+	**Sleep** [ //amount// [, //keyflag// ]]
 ##
 {{fbdoc item="param"}}
-	##//msecs//##
+	##//amount//##
 		Optional number of milliseconds to wait (default is to wait for a key press).
-	##//kind//##
+	##//keyflag//##
 		Optional flag; give it a value of 1 to specify that the wait cannot be interrupted by a key press.
 
 {{fbdoc item="desc"}}
-	##**Sleep**## will wait until ##//msecs//## 'milliseconds' given elapsed (if any value was passed) or until the user presses a key. If ##//msecs//## is below 100 ms then ##**Sleep**## will always wait the full requested amount (key presses are ignored).
+	##**Sleep**## will wait until ##//amount//## milliseconds (can be seconds in //[[CompilerOptlang -lang qb]]//, see below) given elapsed (if any value was passed) or until the user presses a key. If ##//amount//## is below 100 ms then ##**Sleep**## will always wait the full requested amount (key presses are ignored).
 
 	Include the second parameter, ##1##, for a "deep" sleep, which cannot be interrupted by pressing a key.
 
@@ -35,12 +35,12 @@ sleep 500
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, the ##//msecs//## value is in **milliseconds**.
-	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##//msecs//## value is in milliseconds only when the second parameter ##//kind//## is given, otherwise it is in **seconds**.
+	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the ##//amount//## value is in **milliseconds**.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##//amount//## value is in **milliseconds** only when the second parameter ##//keyflag//## is given, otherwise it is in **seconds**.
 
 {{fbdoc item="diff"}}
 	- None in the //[[CompilerOptlang -lang qb]]// dialect.
-	- In QB, the delay is given in whole seconds only and does not support the ##//kind//## parameter.
+	- In QB, the delay is given in whole seconds only and does not support the ##//keyflag//## parameter.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgTimer Timer]]##

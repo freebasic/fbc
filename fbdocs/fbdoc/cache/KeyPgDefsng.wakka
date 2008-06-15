@@ -16,13 +16,13 @@ Specifies a default data type for a range of variable names
 {{fbdoc item="ex"}}
 	This will make ##sNumber## and ##yNumber## a ##[[KeyPgSingle Single]]##-precision decimal number since it is in the range of s-z.
 {{fbdoc item="filename" value="examples/manual/switches/defsng.bas"}}%%(freebasic)
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite or qb
 defsng s-z
 dim sNumber, yNumber
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects.
+	- Only available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None

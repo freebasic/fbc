@@ -11,7 +11,7 @@ Variable declaration modifier specifying visibility throughout a module
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/variable/shared.bas"}}%%(freebasic)
-'' Compile with -lang qb or deprecated
+'' Compile with -lang qb or fblite
 declare sub MySub
 dim shared x as integer
 dim y as integer

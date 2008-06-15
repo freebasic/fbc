@@ -51,7 +51,7 @@ Print _ ' line
 	Metacommands, such as ##[[KeyPgMetaStatic $static]]## and ##[[KeyPgMetaInclude $include]]##, can be placed in single-line comments.  The ##**$**## sign and the keyword must be the first two things in the statement, not including white space.
 
 	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment6.bas"}}%%(freebasic)
-Rem compile with -lang deprecated or qb
+Rem compile with -lang fblite or qb
 Rem $Static
 ' $include: 'vbcompat.bi'
 %%

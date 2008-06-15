@@ -16,13 +16,13 @@ Specifies a default data type for a range of variable names
 {{fbdoc item="ex"}}
 	This will make ##lNumber## a ##[[KeyPgUlongint Ulongint]]## number since it's first letter starts with l.
 {{fbdoc item="filename" value="examples/manual/switches/defulongint.bas"}}%%(freebasic)
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite
 defulongint l
 dim lNumber
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang deprecated]]// dialect.
+	- Only available in the //[[CompilerOptlang -lang fblite]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

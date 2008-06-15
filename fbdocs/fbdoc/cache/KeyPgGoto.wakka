@@ -22,7 +22,7 @@ there:
 %%
 
 {{fbdoc item="filename" value="examples/manual/control/gotonum.bas"}}%%(freebasic)
-'' Compile with -lang qb or deprecated
+'' Compile with -lang qb or fblite
 1 goto 3
 2 end
 3 print "Welcome!"

@@ -16,7 +16,7 @@ Specifies a default data type for a range of variable names
 {{fbdoc item="ex"}}
 	This will make ##lNumber## a ##[[KeyPgLong Long]]## integer number since it starts with l.
 {{fbdoc item="filename" value="examples/manual/switches/deflng.bas"}}%%(freebasic)
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite or qb
 deflng l
 dim lNumber ' implicit: As Long
 
@@ -24,7 +24,7 @@ print len(lNumber) ' Displays 4, the number of bytes in a long.
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects.
+	- Only available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None

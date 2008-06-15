@@ -11,7 +11,7 @@ Metacommand to change the way arrays are allocated
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/meta/static.bas"}}%%(freebasic)
-' compile with -lang deprecated or qb
+' compile with -lang fblite or qb
 '$dynamic
 Dim a(100)   '<<this array will be variable-length
 '$static
@@ -19,7 +19,7 @@ Dim b(100)   '<<this array will be fixed-length
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
+	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- When used inside comments it must be the first token

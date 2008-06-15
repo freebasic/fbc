@@ -5,9 +5,7 @@ Converts a row of image data into another color depth
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageConvertRow""** ( [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //src_bpp// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //dst_bpp// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //isrgb// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 )
 ##
 {{fbdoc item="usage"}}##
-	**""ImageConvertRow""**( //src//, //src_bpp//, //dst//, //dst_bpp//, //width// )
-		##//or//##
-	**""ImageConvertRow""**( //src//, //src_bpp//, //dst//, //dst_bpp//, //width//, //isrgb// )
+	**""ImageConvertRow""**( //src//, //src_bpp//, //dst//, //dst_bpp//, //width// [, //isrgb// ] )
 ##
 {{fbdoc item="param"}}
 	##//src//##
@@ -29,30 +27,36 @@ Converts a row of image data into another color depth
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/imageconvertrow.bas"}}%%(freebasic)
 #include "fbgfx.bi"
+#if __fb_lang__ = "fb"
 Using FB
+#endif
 
 Const As Integer w = 64, h = 64
 Dim As IMAGE Ptr img8, img32
-Dim As Integer i, y
+Dim As Integer x, y
+
 
 '' create a 32-bit image, size w*h:
-Screenres 320, 200, 32, , GFX_NULL
+Screenres 1, 1, 32, , GFX_NULL
 img32 = ImageCreate(w, h)
 
 If img32 = 0 Then Print "Imagecreate failed on img32!": Sleep: End
-If img32->Type <> PUT_HEADER_NEW Then Print "img32 wrong format!": imagedestroy img32: Sleep: End
+
 
 '' create an 8-bit image, size w*h:
-Screenres 320, 200, 8, , GFX_NULL
+Screenres 1, 1, 8, , GFX_NULL
 img8 = ImageCreate(w, h)
 
 If img8 = 0 Then Print "Imagecreate failed on img8!": Sleep: End
-If img8->Type <> PUT_HEADER_NEW Then Print "img8 wrong format!": imagedestroy img8: Sleep: End
 
-'' spatter some random dots into the image:
-For i = 1 To 1000
-	Pset img8, ( Int(Rnd * w), Int(Rnd * h) ), Int(Rnd * 256)
-Next i
+
+'' fill 8-bit image with a pattern
+for y = 0 to h - 1
+	for x = 0 to w - 1
+	    pset img8, (x, y), 56 + (x + y) mod 24
+	next x
+next y
+
 
 '' open a graphics window in 8-bit mode, and PUT the image into it:
 Screenres 320, 200, 8
@@ -61,15 +65,19 @@ Put (10, 10), img8
 
 Sleep
 
+
 '' copy the image data into a 32-bit image
-Dim As Ubyte Ptr p8 = Cptr(Ubyte Ptr, img8) + Sizeof(IMAGE)
-Dim As Ubyte Ptr p32 = Cptr(Ubyte Ptr, img32) + Sizeof(IMAGE)
-Dim As Uinteger pitch8 = img8->pitch, pitch32 = img32->pitch
+Dim As Byte Ptr p8, p32
+Dim As Integer pitch8, pitch32
+ImageInfo( img8,  , , , pitch8,  p8  )
+ImageInfo( img32, , , , pitch32, p32 )
+
 For y = 0 To h - 1
-	ImageConvertRow(p8  + y * pitch8 ,  8, _
-	                p32 + y * pitch32, 32, _
+	ImageConvertRow(@p8 [ y * pitch8 ],  8, _
+	                @p32[ y * pitch32], 32, _
 	                w)
 Next y
+
 
 '' open a graphics window in 32-bit mode and PUT the image into it:
 Screenres 320, 200, 32
@@ -78,7 +86,8 @@ Put (10, 10), img32
 
 Sleep
 
-'' remove the images from memory:
+
+'' free the images from memory:
 ImageDestroy img8
 ImageDestroy img32
 %%
@@ -95,5 +104,6 @@ ImageDestroy img32
 	- ##[[KeyPgPutgraphics Put (Graphics)]]##
 	- ##[[KeyPgImagecreate ImageCreate]]##
 	- ##[[KeyPgImageDestroy ImageDestroy]]##
+	- ##[[KeyPgImageInfo ImageInfo]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

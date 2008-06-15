@@ -19,7 +19,7 @@ Indicates the assignment operator.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/let.bas"}}%%(freebasic)
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite or qb
 
 ' these two lines have the same effect:
 Let x = 100
@@ -29,7 +29,7 @@ x = 100
 {{fbdoc item="lang"}}
 	- The use of LET to indicate an assignment statement (##//LET variable = expr//##) is not allowed in the //[[CompilerOptlang -lang fb]]// dialect.
 	- The UDT to multi-variable Let assignment is only available in the //[[CompilerOptlang -lang fb]]// dialect.
-	- Overloading of operators is not available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects.
+	- Overloading of operators is not available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None in the //[[CompilerOptlang -lang fb]]// dialect.

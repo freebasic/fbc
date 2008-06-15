@@ -13,7 +13,7 @@
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/switches/option-nokeyword.bas"}}%%(freebasic)
-'' Compile with the "-lang deprecated" compiler switch
+'' Compile with the "-lang fblite" compiler switch
 
 option nokeyword int        ' remove the keyword 'int' from the internal
 	                        ' symbol table
@@ -22,7 +22,7 @@ dim int as integer          ' declare a variable with the name 'int'
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerDialects deprecated dialect]]//.
+	- Only available in the //[[CompilerOptlang -lang fblite]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

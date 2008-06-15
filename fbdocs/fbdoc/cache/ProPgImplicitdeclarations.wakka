@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Implicit Declarations"}}----
 Lazy declaration of variables.
 
-	The //[[CompilerOptlang QB]]// and //[[CompilerOptlang Deprecated]]// ""FreeBASIC"" language dialects allow variable names to be used without declaring them first. This is called implicit or lazy declaration since the actual declaration is inferred from how the name is first used.
+	The //[[CompilerOptlang qb]]// and //[[CompilerOptlang fblite]]// ""FreeBASIC"" language dialects allow variable names to be used without declaring them first. This is called implicit or lazy declaration since the actual declaration is inferred from how the name is first used.
 
 {{fbdoc item="section" value="Variable Type"}}
 
@@ -9,7 +9,7 @@ Lazy declaration of variables.
 
 	{{fbdoc item="subsect" value="Default type"}}
 
-		In the //QB// dialect, implicitly declared variables default to ##[[KeyPgSingle Single]]## type, while in the //Deprecated// dialect they default to ##[[KeyPgInteger Integer]]## type.
+		In the //[[CompilerOptlang qb]]// dialect, implicitly declared variables default to ##[[KeyPgSingle Single]]## type, while in the //[[CompilerOptlang fblite]]// dialect they default to ##[[KeyPgInteger Integer]]## type.
 
 	{{fbdoc item="subsect" value="Default implicit type directives"}}
 		

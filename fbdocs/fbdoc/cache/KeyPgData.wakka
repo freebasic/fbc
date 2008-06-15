@@ -58,12 +58,12 @@ DATA 3, 234, 435/4, 23+433, 87643,"Good"+ "Bye!"
 %%
 
 {{fbdoc item="lang"}}
-	- //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// considers  data items as constant expressions that are evaluated during compilation and its result stored in the program.
+	- //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// considers data items as constant expressions that are evaluated during compilation and its result stored in the program.
 	- //[[CompilerOptlang -lang qb]]// considers data items as literals and stores then without change, as in QB.  
 
 {{fbdoc item="diff"}}
-	- Alphabetic string literals now must be enclosed within quotation marks.
-	- Empty items were evaluated in QB to number 0 or to empty strings. In FreeBASIC they give a compile error. A comma after the last item of a line of data makes an empty item (between the comma and the carry return) evaluated to 0 in QB. In FreeBASIC that's an error.
+	- Alphabetic string literals now **must** be enclosed within quotation marks, in QB this was optional.
+	- In QB empty items evaluated to number 0 or to empty strings, in FreeBASIC they give a compile error. In QB a comma after the last item of a line of data made an empty item (between the comma and the carry return) and evaluated to 0 or empty string. In FreeBASIC that's an error.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgRead Read]]##

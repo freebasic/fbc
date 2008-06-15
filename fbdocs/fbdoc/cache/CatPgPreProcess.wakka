@@ -12,8 +12,8 @@ Commands that control the preprocessor.
 	Commands that indicate to the compiler how other files relate to the source file.
 **{{anchor name="CONTROL|Control Directives"}}**
 	Commands that set compile options, control compilation, and report compile time information.
-**{{anchor name="DEPRECATED|Deprecated Directives"}}**
-	Commands that are kept for backward compatibility reasons, and may be removed at a future time.
+**{{anchor name="METACOMMAND|Metacommands"}}**
+	Commands that are kept for backward compatibility.
 
 <<{{anchor name="CONDCOMP"}}{{fbdoc item="section" value="Conditional Compilation"}}
 	=={{fbdoc item="keyword" value="KeyPgPpif|#IF"}}==
@@ -60,13 +60,15 @@ Commands that control the preprocessor.
 	=={{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}==
 		Sets the current line number and file name.
 
-{{anchor name="DEPRECATED"}}{{fbdoc item="section" value="Deprecated Directives"}}
+{{anchor name="METACOMMAND"}}{{fbdoc item="section" value="Metacommands"}}
 	=={{fbdoc item="keyword" value="KeyPgInclude|'$INCLUDE"}}==
-		Deprecated form of the [[KeyPgInclude #INCLUDE]] directive.
+		Alternate form of the [[KeyPgInclude #INCLUDE]] directive.
 	=={{fbdoc item="keyword" value="KeyPgMetaDynamic|'$DYNAMIC"}}==
-		Deprecated form of the [[KeyPgOptiondynamic OPTION DYNAMIC]] statement.
+		Alternate form of the [[KeyPgOptiondynamic OPTION DYNAMIC]] statement.
 	=={{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}==
-		Deprecated form of the [[KeyPgOptionstatic OPTION STATIC]] statement.
+		Alternate form of the [[KeyPgOptionstatic OPTION STATIC]] statement.
+
+
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

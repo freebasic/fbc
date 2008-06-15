@@ -180,6 +180,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgImageConvertRow|IMAGECONVERTROW"}}
 	- {{fbdoc item="keyword" value="KeyPgImagecreate|IMAGECREATE"}}
 	- {{fbdoc item="keyword" value="KeyPgImageDestroy|IMAGEDESTROY"}}
+	- {{fbdoc item="keyword" value="KeyPgImageInfo|IMAGEINFO"}}
 	- {{fbdoc item="keyword" value="KeyPgLinegraphics|LINE"}}
 	- {{fbdoc item="keyword" value="KeyPgOrGfx|OR (GRAPHICS PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgPaint|PAINT"}}

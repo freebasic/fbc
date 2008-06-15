@@ -24,7 +24,7 @@ Dim Foo As FooType
 %%
 
 {{fbdoc item="filename" value="examples/manual/meta/include.bas"}}%%(freebasic)
-'' compile with -lang deprecated or qb
+'' compile with -lang fblite or qb
 '' main.bas file
 
 '$INCLUDE: "header.bi"
@@ -33,7 +33,7 @@ Foo.Bar = 1
 Foo.Barbeque = 2
 %%
 {{fbdoc item="lang"}}
-	- Not supported in the //[[CompilerOptlang -lang fb]]//
+	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None

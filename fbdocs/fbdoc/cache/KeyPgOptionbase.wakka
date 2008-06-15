@@ -13,7 +13,7 @@ Specifies a default lower bound for array declarations
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/check/KeyPgOptionbase_1.bas"}}%%(freebasic)
-'' Compile with the "-lang qb" or "-lang deprecated" compiler switches
+'' Compile with the "-lang qb" or "-lang fblite" compiler switches
 
 dim foo(10) as integer      ' declares an array with indices 0-10
 
@@ -24,7 +24,7 @@ dim baz(0 to 4) as integer  ' declares an array with indices 0-4
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
+	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None

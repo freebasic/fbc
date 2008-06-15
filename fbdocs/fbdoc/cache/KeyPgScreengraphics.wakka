@@ -8,7 +8,7 @@ Initializes a graphics mode using QB-like mode numbers
 	##//mode//## 
 		is a QB style graphics screen mode number (see below).  If ##//mode//## is 0, then any currently set graphics mode is closed, and all functions resume their normal console-mode functionality.  See below for available modes.
 	##//depth//##
-		is the color depth in bits per pixel.  If you omit this argument, the default depth for the given mode is set.  Values of 8, 15, 16, 24, 32 bits are allowed.
+		is the color depth in bits per pixel.  This only has an effect for modes 14 and higher.  Values of 8, 16 and 32 are allowed.  15 and 24 are also allowed as aliases for 16 and 32, respectively.  If omitted, it defaults to 8.
 	##//num_pages//##
 		is the number of video pages you want, see below.  If omitted, it defaults to 1.
 	##//flags//##
@@ -17,7 +17,7 @@ Initializes a graphics mode using QB-like mode numbers
 		requests a refresh rate.  If it is not available in the present card or the parameter is omitted, FreeBASIC chooses the rate automatically.
 
 {{fbdoc item="desc"}}
-	##**Screen**## tells the compiler to link the GfxLib and initializes a QB-only, QB-on-GUI or OpenGL graphics mode, depending on the //flags// setting.
+	##**Screen**## tells the compiler to link the GfxLib and initializes a QB-only, QB-on-GUI or OpenGL graphics mode, depending on the ##//flags//## setting.
 
 	In QB-only modes a dumb window or fullscreen resolution is set, one or more buffers in standard memory are created, console commands are redirected to their graphic versions, a [[GfxDefPalettes default palette]] is set and an automatic screen refresh thread is started.  QB-like graphics and console statements can be used.
 
@@ -99,15 +99,15 @@ END IF
 	- In DOS, linear framebuffer or banked VESA VBE modes are used whenever possible; if not available, drivers for the standard VGA modes or a 320x240x8 ""ModeX"" driver are used if possible. Windowing and OpenGL related switches are not available. 
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, the usage is:
+	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the usage is:
 		##**Screen** //mode// [, [ //depth// ] [, [ //num_pages// ] [, [ //flags// ] [, [ //refresh_rate// ]]]]]##
 	- In the //[[CompilerOptlang -lang qb]]// dialect, the usage is:
-		##**Screen** [//mode//] [,[//colormode//][,[//active_page//][,[//visible_page//]]]]##
+		##**Screen** [//mode//] [,[//active_page//][,[//visible_page//]]]##
 
 {{fbdoc item="diff"}}
 	- None in the //[[CompilerOptlang -lang qb]]// dialect.
 	- In QB the syntax was ##**Screen** //mode//,//colormode//,//active_page//,//visible_page//##. Of those parameters FreeBASIC supports only //mode// and redefines the rest. The use of ##**Screen** ,,apage,vpage## to swap screen pages is only available in the //[[CompilerOptlang -lang qb]]// dialect. 
-	- ##[[KeyPgScreenset Screenset]]## should be used in the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects.
+	- ##[[KeyPgScreenset Screenset]]## should be used in the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreenCons Screen (Console)]]##

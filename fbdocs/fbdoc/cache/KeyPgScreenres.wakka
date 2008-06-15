@@ -11,7 +11,7 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 	##//width//##, ##//height//##
 		The display width and height, respectively. For fullscreen mode, the user should check the availability of the resolution using ##[[KeyPgScreenlist Screenlist]]##.
 	##//depth//##
-		The color depth in bits per pixel, defaults to 8 bits per pixel. Valid color depths are 8, 15,16 ,24, 32.
+		The color depth in bits per pixel. Valid color depths are: 1, 2, 4, 8, 16 and 32.  Values of 15 and 24 are also allowed as aliases for 16 and 32, respectively.  If omitted, the default is 8 bits per pixel.  8 bits and below will give a palette image.  The default palette will be the first ##2^//depth//## colors of the 256-color palette used in ##[[KeyPgScreengraphics Screen]] 13##.
 	##//num_pages//##
 		The number of video pages to create, defaults to 1. (see below)
 	##//flags//##
@@ -52,7 +52,7 @@ End
 %%
 
 {{fbdoc item="target"}}
-	- In DOS the resolution must match one supported by the graphics card. GfxLib will try to find an appropriate mode from VGA modes, ""ModeX"" or VESA, preferring VESA LFB interface if available, or banked VESA otherwise. Windowing and OpenGL related switches are not available. Unsupported resolutions can crash the program by now, in future GfxLib could pick the next best higher mode instead. For optimal compatibility, you should support safe resolutions like 640x480 and 800x600, and maybe 1024x768. There are various additional modes like 768x576 around, but they are vendor specific and lacking on most cards. Also modes 1024x768 and above are not available on older cards and laptops. 
+	- In DOS the resolution must match one supported by the graphics card. GfxLib will try to find an appropriate mode from VGA modes, ""ModeX"" or VESA, preferring VESA LFB interface if available, or banked VESA otherwise. Windowing and OpenGL related switches are not available. Unsupported resolutions may currently crash the program, though in future GfxLib may try to find a close match instead. For optimal compatibility, you should support safe resolutions like 640x480 and 800x600, and maybe 1024x768. There are various additional modes like 768x576 around, but they are vendor specific and lacking on most cards. Also modes 1024x768 and above are not available on older cards and laptops. 
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

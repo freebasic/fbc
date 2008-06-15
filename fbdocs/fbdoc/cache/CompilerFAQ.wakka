@@ -153,10 +153,10 @@
 
 {{anchor name="item23"}}==What's the idea behind the FB dialects?==
 	The idea is to allow improvements in the language while maintaining backwards compatibility with QB code. The quirks of the QB syntax are not compatible with the more rigid style required by OOP. The new FB keywords often clashed with variable names in old QB programs. QB allowed to use freely dots in variable names and procedures not being UDT's.
-	The three dialects  (-lang fb, -lang qb,-lang deprecated) allow to combine the best of two worlds. 
+	The three dialects  (-lang fb, -lang qb, -lang fblite) allow to combine the best of two worlds. 
 	-##lang fb## provides the framework required for OOP programming . Other dialects don't give access to OOP.
-	-##lang qb## will allow the developers to keep increasing the compatibility with qb programs. Newer keywords in FB can be used by preceding them with an underscore.
-	-##lang deprecated## maintains the loose syntax FB was once famous for.
+	-##lang qb## will allow the developers to keep increasing the compatibility with qb programs. Newer keywords in FB can be used by preceding them with two underscores.  For example, ##Getmouse## can be called by using ##_####_Getmouse##
+	-##lang fblite## offers FreeBASIC language compatibility, with a more QBASIC-compatible coding style.
 
 	See [[http://www.freebasic.net/wiki/wikka.php?wakka=CompilerDialects Compiler Dialects]] for details.
 

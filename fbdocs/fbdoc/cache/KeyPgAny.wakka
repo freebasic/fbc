@@ -27,7 +27,7 @@ Built-in pseudo data type used in declarations and initializers
 	
 	**##Any##** can be used  in function parameter lists with ##[[KeyPgPtr Ptr]]## arguments to allow the passing of any type of pointers. In this case the function must ##[[KeyPgCast Cast]]## the pointer argument to a known data type before accessing it.
 	
-	**##Any##** can be used  in function prototypes (in a ##[[KeyPgDeclare Declare]]## statement) with ##[[KeyPgByref ByRef]]## arguments to  disable the compiler checking for the correct type of the variable passed. This use of ##**Any**## is deprecated and it ¡s only there for compatibility with QB, where it was the only way of passing arrays as arguments.
+	**##Any##** can be used  in function prototypes (in a ##[[KeyPgDeclare Declare]]## statement) with ##[[KeyPgByref ByRef]]## arguments to  disable the compiler checking for the correct type of the variable passed. This use of ##**Any**## is deprecated and it is only there for compatibility with QB, where it was the only way of passing arrays as arguments.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/any.bas"}}%%(freebasic)

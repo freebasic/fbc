@@ -34,7 +34,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOptl|-l < name >"}}
 		- Add a library file to linker's list
 	{{fbdoc item="keyword" value="CompilerOptlang|-lang < name >"}}
-		- Select language compatibility: ##deprecated##, ##qb##, ##fb##
+		- Select language compatibility: ##fb##, ##fblite##, ##qb##, ##deprecated##
 	{{fbdoc item="keyword" value="CompilerOptlib|-lib"}}
 		- Create a static library
 	{{fbdoc item="keyword" value="CompilerOptm|-m < name >"}}

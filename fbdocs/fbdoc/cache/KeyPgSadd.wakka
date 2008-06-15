@@ -21,7 +21,7 @@ Returns a pointer to a string variable's data
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/sadd.bas"}}%%(freebasic)
-'' Compile with -lang qb or deprecated
+'' Compile with -lang qb or fblite
 Print SAdd(s$)
 s$ = "hello"
 Print SAdd(s$)

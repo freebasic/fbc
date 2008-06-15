@@ -9,7 +9,7 @@ Specifies parameters are to be passed by value by default in procedure declarati
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/switches/option-byval.bas"}}%%(freebasic)
-'' compile with the "-lang deprecated" compiler switch
+'' compile with the "-lang fblite" compiler switch
 
 sub TestDefaultByref( a as integer )
   '' change the value
@@ -36,7 +36,7 @@ print
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerDialects deprecated dialect]]//.
+	- Only available in the //[[CompilerOptlang -lang fblite]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

@@ -10,7 +10,7 @@ Declaration specifier to explicitly pass a parameter by reference
 {{fbdoc item="desc"}}
 	Passes a variable by reference, that is its address, to a subroutine or function. When a variable is passed by reference, the contents of the variable can be changed by the target subroutine or function.
 	
-	In //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, ##**Byref**## is the default parameter passing convention, unless ##[[KeyPgOptionbyval Option ByVal]]## is in effect.
+	In //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, ##**Byref**## is the default parameter passing convention, unless ##[[KeyPgOptionbyval Option ByVal]]## is in effect.
 
 	Opposite of ##[[KeyPgByval ByVal]]##.
 
@@ -32,7 +32,7 @@ end
 
 {{fbdoc item="lang"}}
 	- In //[[CompilerOptlang -lang fb]]// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString String]]##; String and user-defined ##[[KeyPgType Type]]##s are passed ##[[KeyPgByref Byref]]## by default.
-	- In //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, ##**Byref**## is the default parameter passing convention.
+	- In //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, ##**Byref**## is the default parameter passing convention.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

@@ -1,12 +1,12 @@
-chklinks: 2008/02/29 21:37:04
+chklinks: 2008/04/13 12:09:12
 
-Loaded 913 page names from 'PageIndex.txt'
+Loaded 916 page names from 'PageIndex.txt'
 scanning pages:
 
-Found 14502 links
-Saved 14502 links to 'linklist.csv'
-Saved 783 page names to 'DocPages.txt'
-Saved 731 file names to 'samplist.csv'
+Found 14635 links
+Saved 14635 links to 'linklist.csv'
+Saved 785 page names to 'DocPages.txt'
+Saved 734 file names to 'samplist.csv'
 
 Checking missing pages:
 No missing pages
@@ -26,7 +26,8 @@ Checking missing backlinks:
 	Ignoring missing backlinks to 'catpgopindex'
 	Ignoring missing backlinks to 'catpgcompopt'
 'KeyPgConstMember' does not have backlink to 'CatPgProcedures'
-Found 1 missing backlinks
+'KeyPgErr' does not have backlink to 'DocToc'
+Found 2 missing backlinks
 
 Checking invalid backlinks:
 'DocToc' should be removed from 'FreeBASIC'
@@ -106,4 +107,4 @@ Checking Image References:
 No references to missing image files
 
 
-Execution time: 33 seconds.
+Execution time: 35 seconds.

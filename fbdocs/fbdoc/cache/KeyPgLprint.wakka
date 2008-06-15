@@ -23,7 +23,7 @@ Writes text to the default printer.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/hardware/lprint.bas"}}%%(freebasic)
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite or qb
 
 '' new-line
 LPRINT "Hello World!"

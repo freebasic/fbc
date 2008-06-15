@@ -31,7 +31,7 @@ sleep
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang qb]]// dialect, ##**Mki**## returns a 2-byte-string, since a QB integer is only 16 bits.
 	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang deprecated]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCvi Cvi]]##

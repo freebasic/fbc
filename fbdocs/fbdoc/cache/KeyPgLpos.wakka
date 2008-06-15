@@ -19,7 +19,7 @@ Returns the number of characters sent to the printer port in the last ##[[KeyPgL
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/hardware/lpos.bas"}}%%(freebasic)
-' compile with -lang deprecated or qb
+' compile with -lang fblite or qb
 DIM test AS STRING = "LPrint Example test"
 
 PRINT "Sending '" + test + "' to LPT1 (default)"

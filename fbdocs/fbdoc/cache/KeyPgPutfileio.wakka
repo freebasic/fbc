@@ -13,7 +13,7 @@ Writes data from a buffer to a file
 	##//filenum//##
 		The value passed to ##[[KeyPgOpen Open]]## when the file was opened.
 	##//position//##
-		Is the position where ##Put## must start in the file. If the file was opened ##For Random##, the position is in records, else it is given in bytes. If omitted, writing starts at the present file pointer position. The file position numbering for ##Get## and ##Put## doesn't start from 0, but from 1 - like in QB does, but **unlike most OS'es do** in their file positioning functions.
+		Is the position where ##Put## must start in the file. If the file was opened ##For Random##, the position is in records, else it is given in bytes. If omitted, writing starts at the present file pointer position.  The position is 1 based: the first record or byte of a file is at position 1.
 	##//data//##
 		Is the buffer where data is written from. It can be a numeric variable, a string, an array or a user-defined type. The operation will try to transfer to disk the complete variable, unless ##//amount//## is given.  When putting arrays, ##//data//## should be followed by an empty pair of brackets: "()".  Put will write all of the data in the array.  ##//amount//## is not allowed.
 	##//amount//##

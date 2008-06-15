@@ -13,7 +13,7 @@ Defines a location in a program.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/proguide/labels/labels_1.bas"}}%%(freebasic)
-'' Compile with -lang deprecated or qb
+'' Compile with -lang fblite or qb
 beginning:
 3 print "Hello World!"
 goto beginning

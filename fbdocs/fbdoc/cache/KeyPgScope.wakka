@@ -29,7 +29,8 @@ Print "x ="; x; ", "; "y ="; y
 %%
 
 {{fbdoc item="lang"}}
-	- SCOPE..END SCOPE blocks are not allowed with the //[[CompilerOptlang -lang qb]]// dialect.
+	- Explicit SCOPE..END SCOPE blocks are available only in the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects.
+	- Explicit SCOPE..END SCOPE blocks are not available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

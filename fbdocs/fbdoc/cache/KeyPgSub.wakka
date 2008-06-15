@@ -75,7 +75,7 @@ TestSub
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang fb]]// dialect the parameters are passed ##[[KeyPgByval Byval]]## by default. 
-	- The //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects keep the QB convention: parameters are ##[[KeyPgByref Byref]]## by default.
+	- The //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects keep the QB convention: parameters are ##[[KeyPgByref Byref]]## by default.
 
 {{fbdoc item="diff"}}
 	- Public and Private access specifiers are new to FreeBASIC

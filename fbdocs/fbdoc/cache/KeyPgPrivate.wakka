@@ -13,7 +13,7 @@ Specifies a procedure having internal linkage
 {{fbdoc item="desc"}}
 	In procedure definitions, ##**Private**## specifies that a procedure has internal linkage, meaning it's name is not visible to external modules.
 
-	The deprecated ##[[KeyPgOptionprivate Option Private]]## statement allows procedures to be defined with internal linkage by default.
+	The ##[[KeyPgOptionprivate Option Private]]## statement allows procedures to be defined with internal linkage by default.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/sub-private.bas"}}%%(freebasic)

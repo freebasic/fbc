@@ -251,6 +251,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgImageConvertRow|IMAGECONVERTROW"}}
 	- {{fbdoc item="keyword" value="KeyPgImagecreate|IMAGECREATE"}}
 	- {{fbdoc item="keyword" value="KeyPgImageDestroy|IMAGEDESTROY"}}
+	- {{fbdoc item="keyword" value="KeyPgImageInfo|IMAGEINFO"}}
 	- {{fbdoc item="keyword" value="KeyPgOpImp|IMP"}}
 	- {{fbdoc item="keyword" value="KeyPgImport|IMPORT"}}
 	- {{fbdoc item="keyword" value="KeyPgInkey|INKEY"}}

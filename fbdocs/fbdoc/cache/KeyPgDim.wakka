@@ -18,7 +18,7 @@ Declares a variable
 {{fbdoc item="desc"}}
 	Declares a variable by name and reserves memory to accommodate it.
 
-	Variables must be declared before they can be used in the //[[CompilerOptlang -lang fb]]// dialect or when using ##[[KeyPgOptionexplicit Option Explicit]]## in the other dialects.  Only in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects may variables be used without first declaring them.  Variables that are used without first declaring them are called implicit variables.
+	Variables must be declared before they can be used in the //[[CompilerOptlang -lang fb]]// dialect or when using ##[[KeyPgOptionexplicit Option Explicit]]## in the other dialects.  Only in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects may variables be used without first declaring them.  Variables that are used without first declaring them are called implicit variables.
 
 	##**Dim**## can be used to declare and assign variables of any of the supported data types, user defined types, or enumerations.
 
@@ -47,7 +47,7 @@ dim px as double ptr = @x
 %%
 
 {{fbdoc item="section" value="Explicit Variables with Implicit Data Types"}}
-	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, even if the variable is declared explicitly, it will be given a default data type if the data type is not explicitly given either by name or by type suffix.  The default data type is ##[[KeyPgSingle Single]]## in the //[[CompilerOptlang -lang qb]]// dialect and ##[[KeyPgInteger Integer]]## in the //[[CompilerOptlang -lang deprecated]]// dialect.  The default data type can be changed throughout a source listing by use of the ##**Def""###""**## statements. (for example, ##[[KeyPgDefint DefInt]]##, ##[[KeyPgDefstr DefStr]]##, ##[[KeyPgDefsng DefSng]]##)
+	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, even if the variable is declared explicitly, it will be given a default data type if the data type is not explicitly given either by name or by type suffix.  The default data type is ##[[KeyPgSingle Single]]## in the //[[CompilerOptlang -lang qb]]// dialect and ##[[KeyPgInteger Integer]]## in the //[[CompilerOptlang -lang fblite]]// dialect.  The default data type can be changed throughout a source listing by use of the ##**Def""###""**## statements. (for example, ##[[KeyPgDefint DefInt]]##, ##[[KeyPgDefstr DefStr]]##, ##[[KeyPgDefsng DefSng]]##)
 
 	{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_2.bas"}}%%(freebasic)
 '' Compile with -lang qb
@@ -100,7 +100,7 @@ Dim array(1 To 2, 6, 3 To 5) As Single
 
 	To avoid the overhead of initializing the variables the ##**Any**## initializer can be used with ##**Dim**## to tell the compiler to only reserve the place for the variable in memory but don't initialize it, so the variable will contain garbage. In this case the programmer should not make assumptions about the initial values.
 
-	Fixed-length arrays, variables, zstrings and UDTs may be given a value at the time of their declaration by following the variable declaration with an initializer.  Note the difference between initializing different types. Arrays, variables and UDTs are initialized as they would in a normal assignment, using an equal ( ##=## ) sign.  The ##=>## sign can be used with fixed length strings to avoid the declaration ressembling an expression.
+	Fixed-length arrays, variables, zstrings and UDTs may be given a value at the time of their declaration by following the variable declaration with an initializer.  Note the difference between initializing different types. Arrays, variables and UDTs are initialized as they would in a normal assignment, using an equal ( ##=## ) sign.  The ##=>## sign can be used with fixed length strings to avoid the declaration resembling an expression.
 
 	 Array values are given in comma-delimited values enclosed by curly brackets, and UDT values are given in comma delimited values enclosed by parenthesis.  These methods of initializing variables can be nested within one another for complex assignments. Nesting allows for arrays of any dimension to be initialized.
 
@@ -126,10 +126,10 @@ Dim myvar(0 To 2) As mytype => {(1.0, 1), (2.0, 2)}
 	Note: Initializing UDT's with strings is not supported at this time.
 
 {{fbdoc item="section" value="Explicit Variables with Type Suffixes"}}
-	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, the data type of a variable may be indicated with a type suffix ( $ % # ! & ).
+	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the data type of a variable may be indicated with a type suffix ( $ % # ! & ).
 
 	{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_7.bas"}}%%(freebasic)
-'' Compile with -lang qb or deprecated
+'' Compile with -lang qb or fblite
 
 '' A string variable using the $ type suffix
 Dim strVariable$
@@ -190,8 +190,8 @@ Deallocate(s3)
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, variable [[ProPgVariableScope scope]] is for the procedure if the variable is defined inside a procedure, and for the entire module if the variable is defined with ##**Dim Shared**##.
-	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialect, variables defined inside compound block statements (##[[KeyPgFornext For..Next]]##, ##[[KeyPgWhilewend While..Wend]]##, ##[[KeyPgDoloop Do..Loop]]##, ##[[KeyPgScope Scope..End Scope]]##) have local [[ProPgVariableScope scopes]], and are visible only within these blocks.
+	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, variables have procedure scope if the variable is defined inside a procedure, and for the entire module if the variable is defined with ##**Dim Shared**##.
+	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, variables defined inside compound block statements (##[[KeyPgFornext For..Next]]##, ##[[KeyPgWhilewend While..Wend]]##, ##[[KeyPgDoloop Do..Loop]]##, ##[[KeyPgScope Scope..End Scope]]##) have local [[ProPgVariableScope scopes]], and are visible only within these blocks.
 	- In the //[[CompilerOptlang -lang fb]]// dialect, ##**Option**## statements (e.g. ##[[KeyPgOptionbase Option Base]]##, ##[[KeyPgOptiondynamic Option Dynamic]]##), metacommands(e.g. ##[[KeyPgMetaStatic $Static]]##) and ##**Def""###""**## statements (e.g. ##[[KeyPgDefint DefInt]]##) are not allowed.
 
 {{fbdoc item="diff"}}

@@ -36,13 +36,26 @@ Returns a wide-character string representation of a number or ASCII character st
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/wstr.bas"}}%%(freebasic)
+#if defined( __FB_WIN32__ )
 #include "windows.bi"
-dim zs as zstring * 20
-dim ws as wstring * 20
+#endif
+
+Dim zs As ZString * 20
+Dim ws As WString * 20
 
 zs = "Hello World"
-ws = wstr(zs)
-MessageBox(null, ws, wstr("Unicode 'Hello World'"), MB_OK or MB_ICONINFORMATION)
+ws = WStr(zs)
+
+#if defined( __FB_WIN32__ )
+
+MessageBox(null, ws, WStr("Unicode 'Hello World'"), MB_OK Or MB_ICONINFORMATION)
+
+#else
+
+print ws
+print WStr("Unicode 'Hello World'")
+
+#endif
 %%
 
 {{fbdoc item="target"}}

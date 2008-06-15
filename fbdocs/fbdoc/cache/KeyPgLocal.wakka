@@ -18,7 +18,7 @@ Error handling statement to set the current error handler
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/error/local.bas"}}%%(freebasic)
-'' compile with -lang deprecated or qb
+'' compile with -lang fblite or qb
 declare sub foo
 
 foo

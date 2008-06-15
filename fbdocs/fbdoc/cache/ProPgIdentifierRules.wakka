@@ -8,7 +8,7 @@ Naming conventions for FreeBASIC symbols.
 
 	Identifiers are case-insensitive: ##FOO## and ##foo## (and all other permutations of uppercase and lowercase) refer to the same symbol.
 
-	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, identifiers may have a type suffix at the end indicating one of the standard data types:
+	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, identifiers may have a type suffix at the end indicating one of the standard data types:
 
 	- ##%## for ##[[KeyPgInteger Integer]]##
 	- ##&## for ##[[KeyPgLong Long]]##
@@ -20,10 +20,10 @@ Naming conventions for FreeBASIC symbols.
 
 	The alternative is to be explicit - for example, ##Dim As Integer foo## or ##Dim foo As Integer## instead of ##Dim foo%##.
 
-	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, identifiers may contain one or more periods (##.##).
+	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, identifiers may contain one or more periods (##.##).
 
 {{fbdoc item="lang"}}
-	- Periods in symbol names are only supported in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects.
+	- Periods in symbol names are only supported in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
 
 {{fbdoc item="diff"}}
 	- Support for the underscore character (##_##) in symbol names is new to FreeBASIC.

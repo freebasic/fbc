@@ -14,7 +14,7 @@ Symbols representing data in memory.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/proguide/variables/variables.bas"}}%%(freebasic)
-' compile with -lang qb or deprecated
+' compile with -lang qb or fblite
 DECLARE SUB PrintConstants()
 
 DIM FirstNumber AS INTEGER

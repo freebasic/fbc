@@ -60,6 +60,50 @@ Print "archive files:"
 list_files "*", fbArchive
 %%
 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/dirretat.bas"}}%%(freebasic)
+'' Example of using DIR function and retrieving attributes
+
+#include "dir.bi" '' provides constants to match the attributes against
+
+Dim As Integer out_attr '' integer to hold retrieved attributes (must currently be a signed int)
+
+Dim As String fname '' file/directory name returned with 
+dim as integer filecount, dircount
+
+fname = Dir("*.*", 55, @out_attr) '' 55 - Input ATTR mask - all files and subdirs
+
+Print "File listing in " & curdir & ":"
+
+Do until len(fname) = 0 '' loop until Dir returns empty string
+	
+	If (fname <> ".") And (fname <> "..") Then '' ignore current and parent directory entries
+	    
+	    print fname,
+	    
+	    if out_attr and fbDirectory then
+	        print "- directory";
+	        dircount += 1
+	    else
+	        print "- file";
+	        filecount += 1
+	    end if
+	    if out_attr and fbReadOnly then print ", read-only";
+	    if out_attr and fbHidden then print ", hidden";
+	    if out_attr and fbSystem then print ", system";
+	    if out_attr and fbArchive then print ", archived";
+	    print
+	    
+	End If
+	
+	fname = Dir(@out_attr) '' find next name
+	
+Loop
+
+print
+print "Found " & filecount & " files and " & dircount & " subdirs"
+%%
+
 {{fbdoc item="target"}}
 	- Linux requires the //filename// case matches the real name of the file. Windows and DOS are case insensitive. 
 	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 

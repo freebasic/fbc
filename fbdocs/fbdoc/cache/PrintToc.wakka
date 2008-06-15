@@ -458,6 +458,7 @@
 		[[KeyPgImageConvertRow IMAGECONVERTROW]]
 		[[KeyPgImagecreate IMAGECREATE]]
 		[[KeyPgImageDestroy IMAGEDESTROY]]
+		[[KeyPgImageInfo IMAGEINFO]]
 		[[KeyPgOpImp IMP]]
 		[[KeyPgImport IMPORT]]
 		[[KeyPgInkey INKEY]]
@@ -930,6 +931,7 @@
 	[[TblVarTypes Variable Types]]
 	[[GfxDefPalettes Default Palettes]]
 	[[ProPgLiterals Escape codes for strings]]
+	[[KeyPgErr Runtime error numbers]]
 
 {{fbdoc item="section" value="Contributing"}}
 	[[CompilerContacting How to contact the developers]]

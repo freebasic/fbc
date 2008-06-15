@@ -13,7 +13,7 @@ Statement to invoke a subroutine
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/callsub.bas"}}%%(freebasic)
-'' Compile with -lang qb or -lang deprecated
+'' Compile with -lang qb or -lang fblite
 
 declare sub foobar(byval x as integer, byval y as integer)
 call foobar(35, 42)
@@ -24,7 +24,7 @@ end sub
 %%
 
 {{fbdoc item="filename" value="examples/manual/procs/callfunc.bas"}}%%(freebasic)
-'' Compile with -lang qb or -lang deprecated
+'' Compile with -lang qb or -lang fblite
 
 function f ( ) as integer
 f = 42
@@ -47,7 +47,7 @@ end sub
 
 {{fbdoc item="lang"}}
 	- The use of ##**Call**## is not allowed in the //[[CompilerOptlang -lang fb]]// dialect.
-	- The //[[CompilerOptlang -lang deprecated]]// dialect does not allow you to call functions that have not been previously declared.
+	- The //[[CompilerOptlang -lang fblite]]// dialect does not allow you to call functions that have not been previously declared.
 
 {{fbdoc item="diff"}}
 	- The procedure must have already been declared.

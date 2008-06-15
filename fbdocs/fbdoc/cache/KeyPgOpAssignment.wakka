@@ -43,7 +43,7 @@ end 0
 %%
 
 {{fbdoc item="filename" value="examples/manual/operator/assign-let.bas"}}%%(freebasic)
-' compile with -lang deprecated or qb
+' compile with -lang fblite or qb
 dim i as integer
 LET i = 300 ' <-alternate syntax
 %%

@@ -55,14 +55,21 @@ OPEN COM "COM1:115200" as 1
 	Opens COM1 with 115200 baud, "even" parity, 7 data bits and 1 stop bits. 
 
 {{fbdoc item="target"}}
-	- As of version 0.18.2 it is implemented only in the Win32 and Linux versions, not in DOS, experimental support in DOS with 0.18.3
+	- On the Windows platform ##"COM:"## maps to ##"COM1:"##
 	- On the Linux platform
 		##"COM:"## maps to ##"/dev/modem"##
 		##"COM1:"## maps to ##"/dev/ttyS0"##
 		##"COM2:"## maps to ##"/dev/ttyS1"##, etc 
 		##"/dev/xyz:"## maps to ##"/dev/xyz"##, etc
-	- On the [DOS]/Windows platforms, ##"COM:"## maps to ##"COM1:"##
-
+	- The DOS serial driver is experimental and can access COM ports 1 to 4 
+		It uses the following base io and IRQ's as default: 
+		COM1 - &h3f8 - IRQ4 
+		COM2 - &h2f8 - IRQ3 
+		COM3 - &h3e8 - IRQ4 
+		COM4 - &h2e8 - IRQ3 
+		Since fbc-0.18.4, an alternate IRQ can be specified using the the "IRn" protocol option where "n" is 3 through 7.
+		Currently not supported: IRQ's on the slave PIC, alternate base I/O addresses, Timeouts and most errors as detected in QB, hardware flow control, FIFO's.
+		##"COM:"## maps to ##"COM1:"##
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang qb]]// dialect the old syntax ##OPEN "COMx:...## is supported. 
 
