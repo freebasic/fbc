@@ -8,7 +8,7 @@ Returns a string representing the first key waiting in the keyboard buffer.
 	//result// = **Inkey**[$]
 ##
 {{fbdoc item="ret"}}
-	the first character, if any, found in the keyboard buffer.
+	The first character found in the keyboard buffer, or the null string (##"####"##) if none found.
 
 {{fbdoc item="desc"}}
 	Peeks into the keyboard buffer and returns a ##[[KeyPgString String]]## representation of the first character, if any, found. The key is then removed from the buffer, and is not echoed to the screen. If the keyboard buffer is empty, the NULL string (##"####"##) is immediately returned without waiting for keys.

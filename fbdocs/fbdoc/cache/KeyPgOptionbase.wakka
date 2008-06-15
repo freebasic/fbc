@@ -11,16 +11,17 @@ Compiler switch to set the default base index for arrays
 dim foo(10)
 	%%
 
-	foo is now an array that ranges from ##foo(1)## to ##foo(10)##. This is the same as ##dim foo(1 to 10)##. If ##**Option Base** 0## is used, foo would range from 0 to 10.
+	foo is now an array that ranges from ##foo(1)## to ##foo(10)##. This is the same as ##dim foo(1 to 10)##. If ##**Option Base** 0## were used or there were no preceding ##**Option Base**## statement, foo would range from 0 to 10.
 
 {{fbdoc item="ex"}}
 	%%(qbasic)'' Compile with -lang deprecated or qb
 option base 1
 dim foo(10)
+print "foo contains elements between " & lbound(foo) & " and " & ubound(foo)
 %%
 
-{{fbdic item="lang"}}
-	- The use of OPTION BASE is allowed only in the //-lang qb// and //-lang deprecated//. 
+{{fbdoc item="lang"}}
+	- The use of OPTION BASE is allowed only in the //-lang qb// and //-lang deprecated//.
 	- With the //-lang fb// option, the lower index of the arrays must be specified with the [[KeyPgTo TO]] clause if different from 0.
 
 {{fbdoc item="diff"}}
@@ -29,5 +30,6 @@ dim foo(10)
 {{fbdoc item="see"}}
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgLbound LBound]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

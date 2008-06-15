@@ -28,11 +28,11 @@ Statements and Procedures that work with strings
 	=={{fbdoc item="keyword" value="KeyPgWspace|WSPACE"}}==
 		Returns a [[KeyPgWstring WString]] consisting of spaces.
 	=={{fbdoc item="keyword" value="KeyPgLen|LEN"}}==
-		Returns the length of a [[KeyPgStringtype String]] or [[KeyPgWstring WString]] in characters.
+		Returns the length of a string in characters.
 
 {{anchor name="CHRCONVT"}}{{fbdoc item="section" value="Character Conversion"}}
 	=={{fbdoc item="keyword" value="KeyPgAsc|ASC"}}==
-		Returns an [[KeyPgInteger Integer]] representation of an ASCII character.
+		Returns an [[KeyPgInteger Integer]] representation of an character.
 	=={{fbdoc item="keyword" value="KeyPgChr|CHR"}}==
 		Returns a string of one or more characters from their ASCII [[KeyPgInteger Integer]] representation.
 	=={{fbdoc item="keyword" value="KeyPgWchr|WCHR"}}==
@@ -60,15 +60,15 @@ Statements and Procedures that work with strings
 
 {{anchor name="STRNUMCONV"}}{{fbdoc item="section" value="String to Numeric Conversions"}}
 	=={{fbdoc item="keyword" value="KeyPgVal|VAL"}}==
-		Returns the [[KeyPgDouble Double]] conversion of a numeric [[KeyPgStringtype String]].
+		Returns the [[KeyPgDouble Double]] conversion of a numeric string.
 	=={{fbdoc item="keyword" value="KeyPgValint|VALINT"}}==
-		Returns the [[KeyPgInteger Integer]] conversion of a numeric [[KeyPgStringtype String]].
+		Returns the [[KeyPgInteger Integer]] conversion of a numeric string.
 	=={{fbdoc item="keyword" value="KeyPgVallng|VALLNG"}}==
-		Returns the [[KeyPgLong Long]] conversion of a numeric [[KeyPgStringtype String]].
+		Returns the [[KeyPgLong Long]] conversion of a numeric string.
 	=={{fbdoc item="keyword" value="KeyPgValuint|VALUINT"}}==
-		Returns the [[KeyPgUinteger uInteger]] conversion of a numeric [[KeyPgStringtype String]].
+		Returns the [[KeyPgUinteger uInteger]] conversion of a numeric string.
 	=={{fbdoc item="keyword" value="KeyPgValulng|VALULNG"}}==
-		Returns the [[KeyPgUlong ULong]] conversion of a numeric [[KeyPgStringtype String]].
+		Returns the [[KeyPgUlong ULong]] conversion of a numeric string.
 
 <<>>{{anchor name="NUMSERIAL"}}{{fbdoc item="section" value="Numeric Serialization"}}
 	=={{fbdoc item="keyword" value="KeyPgMkd|MKD"}}==
@@ -98,25 +98,25 @@ Statements and Procedures that work with strings
 
 {{anchor name="SUBSTRING"}}{{fbdoc item="section" value="Working with Substrings"}}
 	=={{fbdoc item="keyword" value="KeyPgLeft|LEFT"}}==
-		Returns a substring of the leftmost characters in a [[KeyPgStringtype String]].
+		Returns a substring of the leftmost characters in a string.
 	=={{fbdoc item="keyword" value="KeyPgMidfunction|MID (Function)"}}==
-		Returns a substring of a [[KeyPgStringtype String]].
+		Returns a substring of a string.
 	=={{fbdoc item="keyword" value="KeyPgRight|RIGHT"}}==
-		Returns a substring of the rightmost characters in a [[KeyPgStringtype String]].
+		Returns a substring of the rightmost characters in a string.
 	=={{fbdoc item="keyword" value="KeyPgLcase|LCASE"}}==
 		Returns a copy of a string converted to lowercase alpha characters.
 	=={{fbdoc item="keyword" value="KeyPgUcase|UCASE"}}==
 		Returns a copy of a string converted to uppercase alpha characters.
 	=={{fbdoc item="keyword" value="KeyPgLtrim|LTRIM"}}==
-		Removes surrounding substrings or characters on the left side of a [[KeyPgStringtype String]].
+		Removes surrounding substrings or characters on the left side of a string.
 	=={{fbdoc item="keyword" value="KeyPgRtrim|RTRIM"}}==
-		Removes surrounding substrings or characters on the right side of a [[KeyPgStringtype String]].
+		Removes surrounding substrings or characters on the right side of a string.
 	=={{fbdoc item="keyword" value="KeyPgTrim|TRIM"}}==
-		Removes surrounding substrings or characters on the left and right side of a [[KeyPgStringtype String]].
+		Removes surrounding substrings or characters on the left and right side of a string.
 	=={{fbdoc item="keyword" value="KeyPgInstr|INSTR"}}==
-		Returns the first occurance of a substring or character within a [[KeyPgStringtype String]].
+		Returns the first occurance of a substring or character within a string.
 	=={{fbdoc item="keyword" value="KeyPgMidstatement|MID (Statement)"}}==
-		Copies a substring to a substring of a [[KeyPgStringtype String]].
+		Copies a substring to a substring of a string.
 
 >>::c::
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

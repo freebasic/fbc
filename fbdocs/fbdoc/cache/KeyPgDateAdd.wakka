@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="DateAdd"}}----
-Date function to offset a date wit a specified interval
+Offset a date with a specified interval
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateAdd""** ( //interval// [[KeyPgAs as]] [[KeyPgStringtype string]] , [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] , [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateAdd""** ( //interval// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//date_serial//= **""DateAdd""**(//interval//,//number//,//date_serial//)
+	//result// = **""DateAdd""**( //interval//, //number//, //date_serial// )
 ##
 {{fbdoc item="param"}}
 	##//interval//##

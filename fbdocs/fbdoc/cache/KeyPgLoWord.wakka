@@ -2,10 +2,10 @@
 Macro to return the low word of an expression
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **LOWORD**( //x// ) ( [[KeyPgCuint CUint]]( x ) [[KeyPgAnd and]] &h0000FFFF )
+	[[KeyPgPpdefine #define]] **Loword**( //x// ) ([[KeyPgCuint CUint]](//x//) [[KeyPgAnd and]] &h0000FFFF)
 ##
 {{fbdoc item="usage"}}##
-	//result// = **LOWORD**( //x// )
+	//result// = **Loword**(//x//)
 ##
 {{fbdoc item="param"}}
 	##//x//##
@@ -48,8 +48,8 @@ The Binary representation of the LSW Is    1111111111111111
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgHiword HIWORD]]##
-	- ##[[KeyPgHibyte HIBYTE]]##
-	- ##[[KeyPgLoByte LOBYTE]]##
+	- ##[[KeyPgHiword Hiword]]##
+	- ##[[KeyPgHibyte Hibyte]]##
+	- ##[[KeyPgLoByte Lobyte]]##
 
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

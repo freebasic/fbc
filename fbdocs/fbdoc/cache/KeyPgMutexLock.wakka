@@ -5,7 +5,7 @@ Acquires a mutex.
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Mutexlock** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
-	**Mutexlock** //id//
+	**Mutexlock**( //id// )
 ##
 {{fbdoc item="param"}}
 	##//id//##

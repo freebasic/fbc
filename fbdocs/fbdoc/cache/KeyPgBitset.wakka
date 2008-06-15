@@ -2,10 +2,10 @@
 Macro that sets a bit in an integer.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **BITSET**( //value//, //bit_number// ) ((//value//) [[KeyPgOr or]] (1 [[KeyPgShl shl]] (//bit_number//)))
+	[[KeyPgPpdefine #define]] **Bitset**( //value//, //bit_number// ) ((//value//) [[KeyPgOr or]] (1 [[KeyPgShl shl]] (//bit_number//)))
 ##
 {{fbdoc item="usage"}}##
-	//result// = **BITSET**( //value//, //bit_number// )
+	//result// = **Bitset**(//value//, //bit_number//)
 ##
 {{fbdoc item="param"}}
 	##//value//##
@@ -18,22 +18,18 @@ Macro that sets a bit in an integer.
 
 {{fbdoc item="desc"}}
 	Macro returning ##//value//## with the bit ##//bit_number//## set to 1.
-	##foo = **BITSET**( bar, 5 )##  does the same as ##foo = bar or (1 shl 5)##.
+	##foo = **Bitset**( bar, 5 )##  does the same as ##foo = bar or (1 shl 5)##.
 
 	To set the bit on a 64 bit integer, pass the ##//bit_number//## as a 64 bit integer.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-PRINT BITSET(4,0)
+print bitset(4, 0)
+print bitset(0, 63LL)
 %%
-%%
-5
-%%
+	will produce the output:
 
-%%(qbasic)
-PRINT BITSET(0,63LL)
-%%
-%%
+%%5
 8000000000000000
 %%
 
@@ -41,7 +37,7 @@ PRINT BITSET(0,63LL)
 	- New to FreeBasic.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgBit BIT]]##
-	- ##[[KeyPgBitreset BITRESET]]##
+	- ##[[KeyPgBit Bit]]##
+	- ##[[KeyPgBitreset Bitreset]]##
 	
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

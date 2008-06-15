@@ -2,12 +2,12 @@
 Statement to define new physical coordinates mapping and clipping region.
 
 {{fbdoc item="syntax"}}##
-	**View** [SCREEN] (//x1//, //y1//)-(//x2//, //y2//)[,[ //color//][, //border//]]]
+	**View** [SCREEN] ( //x1//, //y1// )-( //x2//, //y2// )[, [ //color// ] [, //border// ]]]
 ##
 {{fbdoc item="param"}}
 	##SCREEN##
 		When specified, any x,y coordinate will be relative to the top-left corner of the screen, and not to the left-top corner of the viewport.
-	##(//x1//,//y1//)-(//x2//,//y2//)##
+	##( //x1//, //y1// )-( //x2//, //y2// )##
 		Coordinates of the top-left and bottom-right corners of the new viewport in screen pixels.
 	##//color//##
 		Color with which to clear the new viewport; if omitted, the viewport will not be cleared.
@@ -44,7 +44,7 @@ imagedestroy(ip)
 %%
 
 {{fbdoc item="diff"}}
-	- 
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
@@ -52,4 +52,4 @@ imagedestroy(ip)
 	- ##[[KeyPgPmap Pmap]]##
 	- ##[[KeyPgViewtext View Print]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

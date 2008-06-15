@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="TIMEVALUE"}}----
-Date function to return a [[DtDateSer Date Serial]] from the specified time string
+Gets a [[DtDateSer Date Serial]] from a time string
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeValue""** ( [[KeyPgByref byref]] //timestring// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//result// = **""TimeValue""**(//timestring//)
+	//result// = **""TimeValue""**( //timestring// )
 ##
 {{fbdoc item="param"}}
 	##//timestring//##
@@ -24,8 +24,9 @@ Date function to return a [[DtDateSer Date Serial]] from the specified time stri
 {{fbdoc item="ex"}}
 %%(qbasic)
 #include "vbcompat.bi"
-Dim ds As Double
-ds = TimeValue("07:12:28AM")
+
+Dim ds As Double = TimeValue("07:12:28AM")
+
 Print Format(ds, "hh:mm:ss")
 %%
 

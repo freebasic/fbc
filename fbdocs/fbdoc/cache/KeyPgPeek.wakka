@@ -1,29 +1,44 @@
-{{fbdoc item="title" value="PEEK"}}
-----
-{{fbdoc item="syntax"}}
-	PEEK( //address// )
-	PEEK( DataType, //address// )
+{{fbdoc item="title" value="PEEK"}}----
+Gets the value of an arbitrary type at an address in memory
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Peek** ( [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgUbyte ubyte]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Peek** ( //datatype//, [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] //datatype//
+##
+~&//Note: ##**Peek**## returns a reference to the value at the specified address. As of version 0.17b, there is no way to specify returning a reference, although this will change in future versions. At that time, this syntax should be changed to accomodate returning a reference.//
+
+{{fbdoc item="usage"}}##
+	**Peek**( [ //datatype//, ] //address// )
+##
+{{fbdoc item="param"}}
+	##//address//##
+		The address in memory to get the value from.
+	##//datatype//##
+		The type of value to get.
 
 {{fbdoc item="desc"}}
-	PEEK returns the value in memory given by a memory address. This was how pointer features were coded in the old BASIC dialects. Without a type specification it will return a single byte.
+	This procedure returns a reference to the value in memory given by a memory address, and is equivalent to
+
+		##*cast(ubyte ptr, //address//)##
+			or
+		##*cast(//datatype// ptr, //address//)##
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-'Getting the address of a variable and reading its contents by its address:
+%%(qbasic)dim i as integer, p as integer ptr = @i
 
-Dim x As INTEGER, addr As Integer
-addr = Varptr(x)
-x = 5
-Print x
-Print Peek( INTEGER, addr )
+poke(integer, p, 420)
+print peek(integer, p)
 %%
+	will produce the output:
 
+%%420
+%%
 {{fbdoc item="diff"}}
 	- Only the byte form were supported in QB.
 	- DEF SEG isn't needed anymore because the address space is 32-bit flat in FreeBASIC.
 	
 
 {{fbdoc item="see"}}
-	- [[KeyPgPoke POKE]]
+	- ##[[KeyPgPoke Poke]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

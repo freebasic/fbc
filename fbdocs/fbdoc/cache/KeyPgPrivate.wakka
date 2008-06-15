@@ -1,13 +1,13 @@
-{{fbdoc item="title" value="PRIVATE"}}
-----
-{{fbdoc item="syntax"}}
-	PRIVATE //sub/function name//
+{{fbdoc item="title" value="PRIVATE"}}----
+Specifies procedure visibility to other modules.
 
+{{fbdoc item="syntax"}}##
+	**Private** //procedure_definition// ...
+##
 {{fbdoc item="desc"}}
-	Explicitly sets an individual sub/function to be private (instead of [[KeyPgPublic PUBLIC]] by default). This means the sub/function is only accessible within the module and is hidden to other modules. This means two subs/functions can have the same name, as long as they are private and are in seperate modules.
+	Explicitly sets an individual sub/function to be private (instead of ##[[KeyPgPublic Public]]## by default). This means the sub/function is only accessible within the module and is hidden to other modules. This means two subs/functions can have the same name, as long as they are private and are in seperate modules.
 
-	Subs/functions are private by default if the command [[KeyPgOptionprivate OPTION PRIVATE]] is used, otherwise they are public by default.
-
+	Subs/functions are private by default if the command ##[[KeyPgOptionprivate Option Private]]## is used, otherwise they are public by default.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -21,12 +21,12 @@ end sub
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- [[KeyPgPublic PUBLIC]]
-	- [[KeyPgOptionprivate OPTION PRIVATE]]
-	- [[KeyPgSub SUB]]
-	- [[KeyPgFunction FUNCTION]]
+	- ##[[KeyPgPublic Public]]##
+	- ##[[KeyPgOptionprivate Option Private]]##
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgFunction Function]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

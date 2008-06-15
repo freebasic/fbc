@@ -5,7 +5,7 @@ Frees memory associated with an image buffer.
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageDestroy""**( //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
-	""ImageDestroy""( //pointer// )
+	**""ImageDestroy""**( //pointer// )
 ##
 {{fbdoc item="param"}}
 	##//pointer//##
@@ -18,10 +18,10 @@ Frees memory associated with an image buffer.
 	See the ##[[KeyPgImagecreate ImageCreate]]## function for an example on using ##**""ImageDestroy""**##.
 
 {{fbdoc item="diff"}}
-	- New to FB
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGetgraphics Get (Graphics)]]##
 	- ##[[KeyPgImagecreate ImageCreate]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

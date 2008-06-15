@@ -2,12 +2,12 @@
 Graphics statement to define new view coordinates mapping for current viewport.
 
 {{fbdoc item="syntax"}}##
-	**Window** [[SCREEN] (//x1//, //y1//)-(//x2//, //y2//)]
+	**Window** [ [SCREEN] ( //x1//, //y1// )-( //x2//, //y2// ) ]
 ##
 {{fbdoc item="param"}}
 	##SCREEN##
 		Optional argument specifying y coordinates increase from top to bottom.
-	##(//x1//, //y1//)-(//x2//, //y2//)##
+	##( //x1//, //y1// )-( //x2//, //y2// )##
 		New floating point values corresponding to the opposite corners of the current viewport.
 
 {{fbdoc item="desc"}}
@@ -62,4 +62,4 @@ sleep
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
 	- ##[[KeyPgPmap PMap]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

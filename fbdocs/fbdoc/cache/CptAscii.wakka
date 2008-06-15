@@ -11,7 +11,7 @@ FreeBasic supports in all versions the same "ASCII extended" character set the o
 <colgroup span=3 style='padding:0,3px,0,3px;'>
 <tr>
 <td>000<td>00<td>&nbsp;
-<td>032<td>20<td>&nbsp;
+<td>032<td>20<td>sp
 <td>064<td>40<td>@
 <td>096<td>60<td>`
 <td>128<td>80<td>Ç

@@ -1,26 +1,30 @@
 {{fbdoc item="title" value="KILL"}}----
-Deletes a disk file.
+Deletes a file from disk
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Kill** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	**Kill** //filename//
+	//result// = **Kill**( //filename// )
 ##
 {{fbdoc item="param"}}
 	##//filename//##
 		The //filename// is the name of the disk file to delete. If the file is not in the current directory, a the path must also be given //[path]file$//.
 
+{{fbdoc item="ret"}}
+	Returns zero (0) on success, or non-zero on error.
+
 {{fbdoc item="desc"}}
 	Deletes a file from the disk drive.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-kill "file.ext"
-%%
+%%(qbasic)dim filename as string = "file.ext"
+dim result as integer = kill( filename )
 
+if 0 <> result then print "error trying to kill " & filename" & "."
+%%
 {{fbdoc item="diff"}}
-	-
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgShell Shell]]##

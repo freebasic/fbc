@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="Radian system of measuring angles"}}
-
+{{fbdoc item="title" value="Radian system of measuring angles"}}----
 All of the built-in trigonometric functions in FreeBASIC express angles in radians.
 
 A full circle is divided into 2 * pi radians or 360 degrees, which leads to the following conversions:

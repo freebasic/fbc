@@ -5,7 +5,7 @@ Macro to return the low byte of an expression
 	[[KeyPgPpdefine #define]] **LOBYTE**( //x// ) ( [[KeyPgCuint CUint]]( x ) [[KeyPgAnd and]] &h000000FF )
 ##
 {{fbdoc item="usage"}}##
-	//result// = **LOBYTE**( //x// )
+	//result// = **LOBYTE**(//x//)
 ##
 {{fbdoc item="param"}}
 	##//x//##

@@ -34,45 +34,39 @@ The documents listed and linked below need to be updated or enhanced in some way
 	[[KeyPgFlip Flip]]
 	[[KeyPgPmap Pmap]]
 	[[KeyPgEncoding Encoding]]
+	KeyPgAlphagfx
+	KeyPgTransgfx
+	KeyPgCustomgfx
 
 ==Examples to be reviewed==
 	None
 
 ==Pages that are no longer needed and can be deleted==
-	None
+	""gtksignalconnect""
+	""gtkmainquit""
+	""gtkmain""
+	""gtkinit""
+	""TutIndexGTK""
+	""CatPgGfx""
 
 ==Pages requiring new style update==
 Generated from any ""KeyPg*"" pages not having the following **exact** text:
 	""{{fbdoc item="syntax"}}##""
 It's not a 100% accurate test, but fairly close.
 
-KeyPgBinary
-KeyPgChr
-KeyPgCustomgfx
 KeyPgDeclare
 KeyPgDim
 KeyPgExtern
-KeyPgField
-KeyPgFunction
 KeyPgLset
-KeyPgLtrim
 KeyPgOpenCom
-KeyPgPeek
-KeyPgPoke
 KeyPgPrintPp
 KeyPgPrivate
 KeyPgPublic
-KeyPgRandom
-KeyPgRtrim
 KeyPgScreenCons
-KeyPgSub
 KeyPgSwap
-KeyPgTransGfx
-KeyPgTrim
 KeyPgType
 KeyPgTypeDef
 KeyPgUsing
 KeyPgVar
-KeyPgWchr
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

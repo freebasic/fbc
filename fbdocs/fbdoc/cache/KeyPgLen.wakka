@@ -2,14 +2,29 @@
 Returns the length of a variable or data type.
 
 {{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Len** ( [[KeyPgByref byref]] //variable// [[KeyPgAs as]] [[KeyPgAny any]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]	
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Len** ( //datatype// ) [[KeyPgAs as]] [[KeyPgInteger integer]]	
+##
+{{fbdoc item="usage"}}##
 	//result// = **Len**( //variable// )
-//or//
+		##//or//##
 	//result// = **Len**( [[DataType DataType]] )
 ##
-{{fbdoc item="desc"}}
-	##**Len**## returns the length of a ##//variable//## or [[DataType DataType]].  If the ##//variable//## is a string, it will return the length in characters. Otherwise, it will return the number of bytes. 
+{{fbdoc item="param"}}
+	##//variable//##
+		A variable of any type.
+	##//datatype//##
+		A [[DataType DataType]].
 
-	 ##**Len**( wstring )##  returns the number of bytes taken  by a wstring character in the current platform.
+{{fbdoc item="ret"}}
+	Returns the size of a variable or [[DataType DataType]] in bytes.
+
+{{fbdoc item="desc"}}
+	##**Len**## returns the length of a variable or [[DataType DataType]], in bytes.
+
+	In the first form, if ##//variable//## is of type ##[[KeyPgStringtype String]]##, ##[[KeyPgWstring Wstring]]## or ##[[KeyPgZstring Zstring]]##, the length of the string in characters will be returned. Otherwise, the size of ##//variable//##'s type in bytes is returned.
+
+	In the second form, if ##//datatype//## is ##[[KeyPgZstring Zstring]]## or ##[[KeyPgWstring Wstring]]##, the size of an ASCII or Unicode character is returned, respectively. If ##//datatype//## is ##[[KeyPgString String]]##, the size of the string descriptor type is returned.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

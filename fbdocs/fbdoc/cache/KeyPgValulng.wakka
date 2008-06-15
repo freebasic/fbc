@@ -45,4 +45,4 @@ print a, b
 	- ##[[KeyPgChr Chr]]##
 	- ##[[KeyPgAsc Asc]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

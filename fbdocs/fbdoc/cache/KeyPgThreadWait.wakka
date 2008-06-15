@@ -5,7 +5,7 @@ Waits until the designated thread has been completed before returning.
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Threadwait** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
-	**Threadwait** ( //id// )
+	**Threadwait**( //id// )
 ##
 {{fbdoc item="param"}}
 	##//id//##
@@ -14,13 +14,9 @@ Waits until the designated thread has been completed before returning.
 {{fbdoc item="desc"}}
 	##Threadwait## doesn't return until the thread designated by ##//id//## ends. ##Threadwait## does not force the thread to end; if a thread requires a signal to force its end, a mechanism such as shared variables must be used.
 
-	NOTE: The DOS version of FreeBasic does not allow for threads, as the OS does not support them.
-
 	Threads are launched by the ##[[KeyPgThreadCreate Threadcreate]]## function.
 
 	To avoid simultaneous access to shared resources from different threads, FB implements mutexes, mutual exclusion locks that can be "owned" by a single thread when doing critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##
-
-
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -85,10 +81,8 @@ print "All done."
 	- The DOS version of FreeBASIC does not allow for threads, as the OS does not support them.
 	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FB issue. 
 
-
 {{fbdoc item="diff"}}
 	- New to Freebasic
-
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgThreadCreate Threadcreate]]##

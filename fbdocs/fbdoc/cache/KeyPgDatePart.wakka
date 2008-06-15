@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="DatePart"}}----
-Date function to return a specified part of a [[DtDateSer Date Serial]]
+Gets an interval from a date
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DatePart""** ( //interval// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByval byval]] //firstdayofweek// [[KeyPgAs as]] [[KeyPgInteger integer]] = ""fbUseSystem"", [[KeyPgByval byval]] //firstdayofyear// [[KeyPgAs as]] [[KeyPgInteger integer]] = fbUseSystem ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DatePart""** ( //interval// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByval byval]] //firstdayofweek// [[KeyPgAs as]] [[KeyPgInteger integer]] = fbUseSystem, [[KeyPgByval byval]] //firstdayofyear// [[KeyPgAs as]] [[KeyPgInteger integer]] = fbUseSystem ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//integer_var// = ""DatePart"" (//interval// , //date_serial// , //first_dayofWeek// [, //first_week_of_year// ] )
+	//result// = **""DatePart""**( //interval//, //date_serial//, //first_dayofWeek// [, //first_week_of_year// ] )
 ##
 {{fbdoc item="param"}}
 	##//interval//##
@@ -19,7 +19,7 @@ Date function to return a specified part of a [[DtDateSer Date Serial]]
 		first day of the year
 
 {{fbdoc item="ret"}}
-	Return an integer representing  the ##//interval//## in the [[DtDateSer Date Serial]] .
+	Return an integer representing  the ##//interval//## in the [[DtDateSer Date Serial]].
 
 {{fbdoc item="desc"}}
 

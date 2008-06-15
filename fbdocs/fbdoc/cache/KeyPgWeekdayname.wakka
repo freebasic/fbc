@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="WEEKDAYNAME"}}----
-Date function to return the name of a week day for a specified number
+Gets the name of a week day from its integral representation
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""WeekdayName""** ( [[KeyPgByval byval]] //weekday// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //abbreviate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByval byval]] //firstdayofweek// [[KeyPgAs as]] [[KeyPgInteger integer]] = ""fbUseSystem"" ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""WeekdayName""** ( [[KeyPgByval byval]] //weekday// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //abbreviate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByval byval]] //firstdayofweek// [[KeyPgAs as]] [[KeyPgInteger integer]] = fbUseSystem ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//result// = **""WeekdayName""**(//weekday//[, //abbreviate//[, //firstdayofweek// ] ] )
+	//result// = **""WeekdayName""**( //weekday// [, //abbreviate// [, //firstdayofweek// ] ] )
 ##
 {{fbdoc item="param"}}
 	##//weekday//##
@@ -33,9 +33,10 @@ Date function to return the name of a week day for a specified number
 {{fbdoc item="ex"}}
 %%(qbasic)
 #include "vbcompat.bi"
-Dim a As Double
-a = DateSerial(2005,11,28) + TimeSerial(7,30,50)
-Print Format(a,"yyyy/mm/dd hh:mm:ss "); WeekDayName(WeekDay(a))
+
+Dim a As Double = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)
+
+Print Format(a, "yyyy/mm/dd hh:mm:ss "); WeekDayName(WeekDay(a))
 %%
 
 {{fbdoc item="diff"}}

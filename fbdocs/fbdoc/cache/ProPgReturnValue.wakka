@@ -1,29 +1,50 @@
-{{fbdoc item="title" value="Returning Values"}}
-----
+{{fbdoc item="title" value="Returning Values"}}----
+**Returning Values** refers to the ability of a ##[[KeyPgFunction Function]]## to have a value when the function finishes such that the value can be used in an expression or assigned to a variable.
 
-{{fbdoc item="desc"}}
-**Returning Values** refers to the ability of a [[KeyPgFunction function]] to send a value back to the spot from which they were first executed.
+The value of a function can be returned in three ways:
 
-
+Using the name of the function to set the return value and continue executing the function:
 %%(qbasic)
-'This program demonstrates a function returning a value.
-Option Explicit 'This will ensure that all variables must be declared.
+function myfunc() as integer
+  myfunc = 1
+end function
+%%
+
+Using the keyword ##**Function**## to set the return value and continue executing the function:
+%%(qbasic)
+function myfunc() as integer
+  function = 2
+end function
+%%
+
+Using the keyword ##**Return**## to set the return value and immediately exit the function:
+%%(qbasic)
+function myfunc() as integer
+  function = 3
+end function
+%%
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' This program demonstrates a function returning a value.
 
 Declare Function myFunction () As Integer
 
 Dim a As Integer
 
-a = myFunction() + 10 'Here we take what myFunction returns and add 10.
+'Here we take what myFunction returns and add 10.
+a = myFunction() + 10
 
-Print a 'knowing that myFunction returns 10, we get 10+10=20 and will print 20.
+'knowing that myFunction returns 10, we get 10+10=20 and will print 20.
+Print a 
 
 Function myFunction () As Integer
-	Return 10 'Here we tell myFunction to return 10.
+  'Here we tell myFunction to return 10.
+  function = 10 
 End Function
 %%
 
-
 {{fbdoc item="see"}}
-	- [[KeyPgFunction FUNCTION]]
+	- ##[[KeyPgFunction Function]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

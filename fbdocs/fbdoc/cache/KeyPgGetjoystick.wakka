@@ -2,27 +2,27 @@
 Input function to read buttons and axis information from attached gaming devices.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getjoystick** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByref byref]] //buttons// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByref byref]] //a1// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a2// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a3// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a4// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a5// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a6// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a7// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a8// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getjoystick** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //buttons// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //a1// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a2// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a3// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a4// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a5// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a6// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a7// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a8// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Getjoystick** (//id//, //buttons//, //x//, //y//[, //z//[, //r//[, //u//[, //v//[, //a7//[, //a8//]]]]]])
+	//result// = **Getjoystick** (//id//[, //buttons//[, //a1//[, //a2//[, //a3//[, //a4//[, //a5//[, //a6//[, //a7//[, //a8//]]]]]]]]])
 ##
 {{fbdoc item="param"}}
 	##//id//##
 		the device id number (0 - 15)
 	##//buttons//##
 		the button status
-	##//x//##
+	##//a1//##
 		first axis value
-	##//y//##
+	##//a2//##
 		second axis value
-	##//z//##
+	##//a3//##
 		third axis value
-	##//r//##
+	##//a4//##
 		fourth axis value
-	##//u//##
+	##//a5//##
 		fifth axis value
-	##//v//##
+	##//a6//##
 		sixth axis value
 	##//a7//##
 		seventh axis value
@@ -89,4 +89,4 @@ loop
 	- ##[[KeyPgGetmouse Getmouse]]##
 	- ##[[KeyPgMultikey Multikey]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}

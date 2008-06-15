@@ -1,4 +1,8 @@
-%%(qbasic)'' here we define the image buffer header structure
+{{fbdoc item="title" value="GET/PUT image header example"}}----
+Example showing the two different headers used for image buffers.
+
+%%(qbasic)
+'' here we define the image buffer header structure
 type _OLD_HEADER field = 1
 	bpp : 3 as ushort
 	width : 13 as ushort
@@ -52,4 +56,6 @@ sleep%%
 
 NOTE: To use this code with an array, pass your array to the function, like this:
 
-%%(qbasic)show_image_info( varptr( myarray( 0 ) ) )%%
+%%(qbasic)
+show_image_info( varptr( myarray( 0 ) ) )
+%%

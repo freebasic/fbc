@@ -6,9 +6,9 @@
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch// [[KeyPgAs as]] [[KeyPgString wstring]] ) [[KeyPgAs as]] [[KeyPgString wstring]]
 ##
 {{fbdoc item="usage"}}##
-		//result// = Wstring( //count//, //ch_code// )
+		//result// = **Wstring**[$]( //count//, //ch_code// )
 			##//or//##
-		//result// = Wstring( //count//, //ch// )
+		//result// = **Wstring**[$]( //count//, //ch// )
 ##
 {{fbdoc item="param"}}
 	##//count//##
@@ -38,7 +38,7 @@ end 0
 	- QBasic does not support [[Unicode Unicode]]
 
 {{fbdoc item="see"}}
-	- [[KeyPgStringtype STRING]] (data type)
-	- [[KeyPgWspace WSPACE]]
+	- ##[[KeyPgStringtype String]] (data type)##
+	- ##[[KeyPgWspace Wspace]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

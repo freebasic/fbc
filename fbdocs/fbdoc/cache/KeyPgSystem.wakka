@@ -5,11 +5,11 @@ Closes all open files and ends the program.
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **System** ( [[KeyPgByval byval]] //retval// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
 ##
 {{fbdoc item="usage"}}##
-	SYSTEM
+	**System**( [ //retval// ] )
 ##
 {{fbdoc item="param"}}
 	##//retval//##
-		Error code returned to system
+		Error code returned to system.
 
 {{fbdoc item="desc"}}
 	Closes all open files and returns to the system. An optional return value, an integer, can be specified to return an error code to the system. If no return value is given, a value of 0 is automatically returned. This is the same as ##[[KeyPgEnd End]]## and is here for compatibility between older BASIC dialects. It is recommended to use ##[[KeyPgEnd End]]## instead.

@@ -1,33 +1,35 @@
 {{fbdoc item="title" value="CHDIR"}}----
-Changes drive and directory to that specified.
+Changes the current drive and directory
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Chdir** ( [[KeyPgByref byref]] //path// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-CHDIR //path//
+	//result// = **Chdir**( //path// )
 ##
 {{fbdoc item="param"}}
 	##//path//##
 		A ##[[KeyPgStringtype string]]## argument specifying the path to change to.
 
+{{fbdoc item="ret"}}
+	Returns zero (0) on success and negative one (-1) on failure.
+
 {{fbdoc item="desc"}}
-	Changes the current  drive and directory to that specified.
+	Changes the current drive and directory to that specified.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
- DIM myString as String
- myString = "c:\windows"
- CHDIR myString
+%%(qbasic)dim pathname as string = "x:\folder"
+dim result as integer = chdir(pathname)
+
+if 0 <> result then print "error changing current directory to " & pathname" & "."
 %%
 
 {{fbdoc item="target"}}
 	- Linux requires the //filename// case matches the real name of the file. Windows and DOS are case insensitive. 
 	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
 
-
 {{fbdoc item="diff"}}
-	- In QB, CHDIR could not change drives.
+	- In QB, the drive could not be specified.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgMkdir Mkdir]]##

@@ -1,1 +1,14 @@
 I am SirMud or sir_mud on the forums.
+I have written a couple programs:
+=====Recipe Database - Get it [[http://recipedatabase.org here]]=====
+	Store, search and organize your recipe collection. Works great for small, large and in-between collections.
+=====BombSquad!=====
+	A very simple game, but provides minutes and minutes of fun. Defuse the bomb or the world will explode.
+
+I've also created a simple library for managing INI files. Every concievable function for INI files is in there. The code is
+very well documented and licensed under the LGPL. Get it at [[http://hmcsoft.org/p/libini.php http://hmcsoft.org/p/libini.php]]
+
+=====Contact Info:=====
+You can usually find me in the IRC room #freebasic on the FreeNode network.
+
+You can also instant message me on Yahoo! at imadirtypr0nbot

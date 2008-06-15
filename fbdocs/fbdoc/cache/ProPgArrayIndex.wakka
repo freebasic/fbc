@@ -1,9 +1,7 @@
-{{fbdoc item="title" value="Array Index"}}
-----
+{{fbdoc item="title" value="Array Index"}}----
+An array index is the number used to access an [[DtArrays Array]] of [[DtVariables Variables]] created using the ##[[KeyPgDim Dim]]## command.
 
 {{fbdoc item="desc"}}
-	An Array Index is the number used to access an [[DtArrays Arrays]] of [[DtVariables Variables]] created using the 	{{fbdoc item="keyword" value="KeyPgDim|DIM"}} command.
-
 	The best way to illustrate the use of array elements is by example. If we have an array myArray with elements of 1 to 10, filled with random data
 %%
 Index        Data
@@ -94,15 +92,14 @@ SUB PrintArray ()
   print otherNumbers(a)
  next a
 END SUB
-
 %%
 
 {{fbdoc item="see"}}
 	- [[DtArrays Arrays]]
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgSub Sub]]##
 	- [[DtVariables Variables]] 
 	- [[ProPgVariableScope Variable Scope]]
-	- [[KeyPgDim DIM]]
-	- [[KeyPgSub SUB]]
-	- [[KeyPgFunction FUNCTION]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

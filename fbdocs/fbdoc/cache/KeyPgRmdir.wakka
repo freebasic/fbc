@@ -6,25 +6,28 @@ Removes a folder/directory from the file system.
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rmdir** ( [[KeyPgByref byref]] //folder// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	RMDIR //folder//
+	//result// = **Mkdir**( //folder// )
 ##
 {{fbdoc item="param"}}
 	##//folder//##
 		The folder/directory to be removed.
 
+{{fbdoc item="ret"}}
+	Returns zero (0) on success, and negative one (-1) on failure.
+
 {{fbdoc item="desc"}}
 	Removes a folder from the file system. The function will fail if the folder is not empty.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-'' if a folder called "foo" exists and you want it removed:
-rmdir "foo"
+%%(qbasic)dim pathname as string = "foo\bar\baz"
+dim result as integer = rmdir( pathname )
+
+if 0 <> result then print "error: unable to remove folder " & pathname & " in the current path."
 %%
 
 {{fbdoc item="target"}}
 	- Linux requires the //folder// case matches the real name of the file. Windows and DOS are case insensitive. 
 	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
-
 
 {{fbdoc item="diff"}}
 	- None

@@ -1,21 +1,39 @@
-{{fbdoc item="title" value="POKE"}}
-----
-{{fbdoc item="syntax"}}
-	POKE //address//, //expression//
-	POKE DataType, //address//, //expression//
+{{fbdoc item="title" value="POKE"}}----
+Assigns a value to a location in memory
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Poke** ( [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //value// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Poke** ( //datatype//, [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //value// [[KeyPgAs as]] //datatype// )
+##
+{{fbdoc item="usage"}}##
+	**Poke**( [ //datatype//, ] //address//, //value// )
+##
+{{fbdoc item="param"}}
+	##//datatype//##
+		The type of data at the specified address.
+	##//address//##
+		The location in memory to assign to.
+	##//value//##
+		The value to assign.
 
 {{fbdoc item="desc"}}
-	POKE writes the //expression// in memory given by a memory //address//. This was how pointer features were coded in the old BASIC dialects. Without the DataType specification it will write a single byte.
+	##**Poke**## assigns a value to a location in memory. It is equivalent to
+
+		##*cast(ubyte ptr, //address//) = //value//##
+			or
+		##*cast(//datatype// ptr, //address//) = //value//##
+
+	When ##//datatype//## is a user-defined type, ##**Poke**## assigns ##//value//## using the type's ##[[KeyPgOpLet operator let]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-'e.g. of getting the address of a variable and changing its contents by its address:
+%%(qbasic)dim i as integer, p as integer ptr = @i
 
-dim x as integer, addr as integer
-addr = varptr(x)
-x = 5
-poke integer, addr, 10
-print x
+poke(integer, p, 420)
+print peek(integer, p)
+%%
+	will produce the output:
+
+%%420
 %%
 
 {{fbdoc item="diff"}}
@@ -23,6 +41,6 @@ print x
 	- DEF SEG isn't needed anymore because the address space is 32-bit flat in FreeBASIC.
 
 {{fbdoc item="see"}}
-	- [[KeyPgPeek PEEK]]
+	- ##[[KeyPgPeek Peek]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

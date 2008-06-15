@@ -1,28 +1,26 @@
 {{fbdoc item="title" value="2D Drawing Functions"}}----
 Statements and procedures for working with 2D graphics
 
-**{{anchor name="IMGBUF|Image Buffer Creation"}}**
-	Procedures that create, free and save image buffers.
-**{{anchor name="DRAWING|Drawing to Image Buffers"}}**
-	Procedures that draw shapes and text onto image buffers or to the screen.
-**{{anchor name="BLITTING|Blitting Image Buffers"}}**
-	Procedures that draw image buffers onto other image buffers or to the screen.
 **{{anchor name="COLOR|Working with Color"}}**
 	Procedures that control the color used by other drawing procedures.
-**{{anchor name="OTHER|Other Procedures"}}**
-	Miscellaneous procedures.
+**{{anchor name="DRAWING|Drawing to Image Buffers"}}**
+	Procedures that draw shapes and text onto image buffers or to the screen.
+**{{anchor name="IMGBUF|Image Buffer Creation"}}**
+	Procedures that create, free and save image buffers.
+**{{anchor name="BLITTING|Blitting Image Buffers"}}**
+	Procedures that draw image buffers onto other image buffers or to the screen.
 
-<<{{anchor name="IMGBUF"}}{{fbdoc item="section" value="Image Buffer Creation"}}
-	=={{fbdoc item="keyword" value="KeyPgGetgraphics|GET (GRAPHICS)"}}==
-		Creates an image buffer from a portion of another image buffer or screen.
-	=={{fbdoc item="keyword" value="KeyPgImagecreate|IMAGECREATE"}}==
-		Creates an image buffer of a certain size and pixel depth.
-	=={{fbdoc item="keyword" value="KeyPgImageDestroy|IMAGEDESTROY"}}==
-		Frees an image buffer resource.
-	=={{fbdoc item="keyword" value="KeyPgBload|BLOAD"}}==
-		Creates an image buffer from a file.
-	=={{fbdoc item="keyword" value="KeyPgBsave|BSAVE"}}==
-		Saves an image buffer to a file.
+<<{{anchor name="COLOR"}}{{fbdoc item="section" value="Working with Color"}}
+	=={{fbdoc item="keyword" value="KeyPgColor|COLOR"}}==
+		Sets the foreground and background color to use with the drawing procedures.
+	=={{fbdoc item="keyword" value="KeyPgPalette|PALETTE"}}==
+		Gets or sets color table information in paletted modes.
+	=={{fbdoc item="keyword" value="KeyPgRgb|RGB"}}==
+		Returns a color value for hi/truecolor modes.
+	=={{fbdoc item="keyword" value="KeyPgRgba|RGBA"}}==
+		Returns a color value including alpha (translucency) for hi/truecolor modes.
+	=={{fbdoc item="keyword" value="KeyPgPoint|POINT"}}==
+		Gets a pixel value from an image buffer or screen.
 
 {{anchor name="DRAWING"}}{{fbdoc item="section" value="Drawing to Image Buffers"}}
 	=={{fbdoc item="keyword" value="KeyPgPset|PSET"}} and {{fbdoc item="keyword" value="KeyPgPreset|PRESET"}}==
@@ -37,7 +35,22 @@ Statements and procedures for working with 2D graphics
 		Writes text to an image buffer or screen.
 	=={{fbdoc item="keyword" value="KeyPgPaint|PAINT"}}==
 		Fills an area with color on an image buffer or screen.
-<<>>{{anchor name="BLITTING"}}{{fbdoc item="section" value="Blitting Image Buffers"}}
+
+<<>>{{anchor name="IMGBUF"}}{{fbdoc item="section" value="Image Buffer Creation"}}
+	=={{fbdoc item="keyword" value="KeyPgGetgraphics|GET (GRAPHICS)"}}==
+		Creates an image buffer from a portion of another image buffer or screen.
+	=={{fbdoc item="keyword" value="KeyPgImagecreate|IMAGECREATE"}}==
+		Creates an image buffer of a certain size and pixel depth.
+	=={{fbdoc item="keyword" value="KeyPgImageDestroy|IMAGEDESTROY"}}==
+		Frees an image buffer resource.
+	=={{fbdoc item="keyword" value="KeyPgImageConvertRow|IMAGECONVERTROW"}}==
+		Converts a row of pixels in an image buffer to a different color depth.
+	=={{fbdoc item="keyword" value="KeyPgBload|BLOAD"}}==
+		Creates an image buffer from a file.
+	=={{fbdoc item="keyword" value="KeyPgBsave|BSAVE"}}==
+		Saves an image buffer to a file.
+
+{{anchor name="BLITTING"}}{{fbdoc item="section" value="Blitting Image Buffers"}}
 	=={{fbdoc item="keyword" value="KeyPgPutgraphics|PUT (GRAPHICS)"}}==
 		Blits an image buffer to another image buffer or screen.
 
@@ -49,17 +62,6 @@ Statements and procedures for working with 2D graphics
 		=={{fbdoc item="keyword" value="KeyPgCustomgfx|CUSTOM"}}==
 			Allows a custom blending procedure to be used.
 
-{{anchor name="COLOR"}}{{fbdoc item="section" value="Working with Color"}}
-	=={{fbdoc item="keyword" value="KeyPgColor|COLOR"}}==
-		Sets the foreground and background color to use with the drawing procedures.
-	=={{fbdoc item="keyword" value="KeyPgPalette|PALETTE"}}==
-		Gets or sets color table information in paletted modes.
-
-{{anchor name="OTHER"}}{{fbdoc item="section" value="Other Procedures"}}
-	=={{fbdoc item="keyword" value="KeyPgPoint|POINT"}}==
-		Gets a pixel value from an image buffer or screen.
-	=={{fbdoc item="keyword" value="KeyPgImageConvertRow|IMAGECONVERTROW"}}==
-		Converts a row of pixels in an image buffer to a different color depth.
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

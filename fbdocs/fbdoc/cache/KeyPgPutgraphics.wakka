@@ -145,4 +145,4 @@ end function
 	- ##[[KeyPgAlphaGfx Alpha]]##
 	- [[GfxInternalFormats Internal pixel formats]]
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

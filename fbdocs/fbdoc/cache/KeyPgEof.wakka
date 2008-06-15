@@ -12,7 +12,7 @@ Checks to see if the end of an open file has been reached.
 		An ##[[KeyPgInteger integer]]## file number of an open file.
 
 {{fbdoc item="ret"}}
-	An ##[[KeyPgInteger integer]]## set to -1 if end-of-file has been reached, 0 otherwise.
+	Returns true (-1) if end-of-file has been reached, zero (0) otherwise.
 
 {{fbdoc item="desc"}}
 	When reading from files opened for ##[[KeyPgInputfilemode Input (File Mode)]]##, it is useful to know when the end of the file has been reached, thus avoiding errors caused by reading past the ends of files. Use EOF to determine this. EOF expects a valid file number from an already opened file. Use ##[[KeyPgFreefile Freefile]]## to retrieve an available file file number.

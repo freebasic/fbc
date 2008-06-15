@@ -8,7 +8,7 @@ Statements and procedures that work with the graphics display
 **{{anchor name="MEMORY|Working video memory"}}**
 	Procedures that provide direct access to framebuffer memory.
 **{{anchor name="METRICS|Screen Metrics"}}**
-	Procedures that control the way coordinates are intepretted.
+	Procedures that control the way coordinates are interpreted.
 
 <<{{anchor name="MODES"}}{{fbdoc item="section" value="Working with screen modes"}}
 	=={{fbdoc item="keyword" value="KeyPgScreenlist|SCREENLIST"}}==
@@ -17,6 +17,14 @@ Statements and procedures that work with the graphics display
 		Sets a new graphics display mode.
 	=={{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}==
 		Gets information about the system desktop or current display mode.
+	=={{fbdoc item="keyword" value="KeyPgScreencontrol|SCREENCONTROL"}}==
+		Gets or Sets internal graphics library settings.
+	=={{fbdoc item="keyword" value="KeyPgScreenevent|SCREENEVENT"}}==
+		Gets system events.
+	=={{fbdoc item="keyword" value="KeyPgScreenglproc|SCREENGLPROC"}}==
+		Returns the address of an OpenGL procedure.
+	=={{fbdoc item="keyword" value="KeyPgWindowtitle|WINDOWTITLE"}}==
+		Sets the running program's window caption.
 
 {{anchor name="PAGES"}}{{fbdoc item="section" value="Working with pages"}}
 	=={{fbdoc item="keyword" value="KeyPgScreenset|SCREENSET"}}==
@@ -43,3 +51,4 @@ Statements and procedures that work with the graphics display
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
+   

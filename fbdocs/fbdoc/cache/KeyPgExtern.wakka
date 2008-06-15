@@ -1,15 +1,15 @@
-{{fbdoc item="title" value="EXTERN"}}
-----
+{{fbdoc item="title" value="EXTERN"}}----
+Declares a symbol defined in another module.
 
-{{fbdoc item="syntax"}}
-	EXTERN [[[KeyPgImport IMPORT]]] //symbolname//[( //subscripts//)] [ALIAS "//aliasname//"] [AS [[DataType DataType]]] [, ...]
-
+{{fbdoc item="syntax"}}##
+	**Extern** [ [[KeyPgImport import]] ] //symbolname//[( //subscripts//)] [ [[KeyPgAlias alias]] "//aliasname//" ] [ [[KeyPgAs as]] [[DataType DataType]] ] [, ...]
+##
 {{fbdoc item="desc"}}
-	Declares //symbolname// as extern, without allocating any space for it (different from [[KeyPgCommon COMMON]]).
+	Declares ##//symbolname//## as ##**Extern**##, without allocating any space for it (different from ##[[KeyPgCommon Common]]##).
 
-	If the //aliasname// is given, it will be used to reference the variable or array when emitting the code. 
+	If the ##//aliasname//## is given, it will be used to reference the variable or array when emitting the code. 
 
-	If IMPORT is used, the symbol will be added to the dynamic library import list so its address can be fixed at run-time.
+	If ##[[KeyPgImport import]]## is used, the symbol will be added to the dynamic library import list so its address can be fixed at run-time.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -47,4 +47,4 @@ Output:
 	- ##[[KeyPgStatic Static]]##
 	- ##[[KeyPgVar Var]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}
+{{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

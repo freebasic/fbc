@@ -5,11 +5,11 @@ Creates and initializes storage for an image.
 	[[KeyPgDeclare declare]] [[KeyPgSub function]] **""ImageCreate""**( //width// [[KeyPgAs as]] [[KeyPgInteger integer]], //height// [[KeyPgAs as]] [[KeyPgInteger integer]] [, [ //color// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ] [, //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] ]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//buffer// = ""ImageCreate""( //width//, //height// )
+	//buffer// = **""ImageCreate""**( //width//, //height// )
 		##//or//##
-	//buffer// = ""ImageCreate""( //width//, //height//, //color// )
+	//buffer// = **""ImageCreate""**( //width//, //height//, //color// )
 		##//or//##
-	//buffer// = ""ImageCreate""( //width//, //height//, [//color//], //depth// )
+	//buffer// = **""ImageCreate""**( //width//, //height//, [//color//], //depth// )
 ##
 {{fbdoc item="param"}}
 	##//width//##
@@ -61,4 +61,4 @@ imagedestroy( image_buffer )
 	- ##[[KeyPgImageDestroy ImageDestroy]]##
 	- [[GfxInternalFormats Internal pixel formats]]
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

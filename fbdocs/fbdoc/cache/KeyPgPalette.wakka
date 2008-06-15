@@ -85,7 +85,5 @@ sleep
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 	- ##[[KeyPgColor Color]]##
-	- ##[[KeyPgOut Out]]##
-	- ##[[KeyPgInp Inp]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

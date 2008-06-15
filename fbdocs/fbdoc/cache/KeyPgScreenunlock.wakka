@@ -2,10 +2,10 @@
 Graphics statement to unlock work page framebuffer.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenunlock** ( [[KeyPgByval byval]] //startline// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 , [[KeyPgByval byval]] //endline// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenunlock** ( [[KeyPgByval byval]] //startline// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //endline// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
 ##
 {{fbdoc item="usage"}}##
-	**Screenunlock** [//start_line//][, //end_line//]
+	**Screenunlock** [ //start_line// ] [, //end_line// ]
 ##
 {{fbdoc item="param"}}
 	##//startline//##
@@ -22,11 +22,11 @@ Graphics statement to unlock work page framebuffer.
 	See ##[[KeyPgScreenptr Screenptr]]## example.
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 	- ##[[KeyPgScreenlock Screenlock]]##
 	- ##[[KeyPgScreenptr Screenptr]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

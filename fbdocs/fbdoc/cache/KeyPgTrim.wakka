@@ -1,54 +1,57 @@
 {{fbdoc item="title" value="TRIM"}}----
+Removes surrounding substrings or characters on the left and right side of a string
 
-{{fbdoc item="syntax"}}
-	TRIM[$]( //expression// [, [ANY] //trimset//]] )
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Trim** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]], [ ANY ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgString string]] = " " ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Trim** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [ ANY ] [[KeyPgByval byval]] //trimset// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] = @[[KeyPgWstr WSTR]](" ") ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Trim**( //str// [, [ ANY ] //trimset// ] )
+##
+{{fbdoc item="param"}}
+	##//str//##
+		The source string.
+	##//trimset//##
+		The substring to trim.
+	##ANY##
+		If specified, will trim any characters matched in ##//trimset//##.
+
+{{fbdoc item="ret"}}
+	Returns the trimmed string.
 
 {{fbdoc item="desc"}}
-	The function has three forms as follows:
+	This procedure trims surrounding characters from the left (beginning) and right (end) of a source string. Substrings matching ##//trimset//## will be trimmed if specified, otherwise spaces ([[CptAscii ASCII]] code 32) are trimmed.
+
+	If the ##ANY## keyword is used, any character matching a character in ##//trimset//## will be trimmed.
 	
-	TRIM[$](//expression//)
-		Trims spaces (ASCII #32) from the left and right hand side of //expression// and returns the result.
-
-	TRIM[$](//expression//, //trimset//)
-		Trims characters from the left and right hand side of //expression// if they exactly match //trimset//.  Comparisons are case sensitive.  If //trimset// is a zero (0) length string, then no characters will be trimmed from //expression//.
-
-	TRIM[$](//expression//, ANY //trimset//)
-		Trims any character found in //trimset// from the left and right hand side of //expression// and returns the result.  Comparisons are case sensitive.  If //trimset// is a zero (0) length string, then no characters will be trimmed from //expression//.
+	All comparisons are case-sensitive.
 
 {{fbdoc item="ex"}}
-~Example #1:
-~~%%(qbasic)
-Dim s as String
+%%(qbasic)dim s1 as string = " ... Stuck in the middle ... "
+print "'" + trim(s1) + "'"
+print "'" + trim(s1, any " .") + "'"
 
-s = " ... Stuck in the middle ... "
-
-Print "'" + Trim(s) + "'"
-Print "'" + Trim(s, ANY " .") + "'"
+dim s2 as string = "BaaBaaaaB With You aaBBaaBaa"
+Print "'" + trim(s2, "Baa") + "'"
+Print "'" + trim(s2, any "Ba") + "'"
 %%
-~Output
-~~%%
+	will produce the output:
+
+%%
 '... Stuck in the middle ...'
 'Stuck in the middle'
-%%
-~Example #2
-~~%%(qbasic)
-Dim t as String
-t = "BaaBaaaaB With You aaBBaaBaa"
-
-Print "'" + Trim(t, "Baa") + "'"
-Print "'" + Trim(t, ANY "Ba") + "'"
-%%
-~Output
-~~%%
 'aaB With You aaB'
 ' With You '		
 %%
+
+{{fbdoc item="lang"}}
+	- DOS does not support the wide-character version of ##**Trim**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic.
 
 {{fbdoc item="see"}}
-	- [[KeyPgLtrim LTRIM]] 
-	- [[KeyPgRtrim RTRIM]]
+	- [[KeyPgLtrim Ltrim]] 
+	- [[KeyPgRtrim Rtrim]]
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

@@ -2,13 +2,13 @@
 Datatypes whose values are addresses in memory
 
 {{fbdoc item="desc"}}
-	Pointers are [[DtVariables Variables]] whose values are addresses in memory, and they are said to 'point' to this memory. The type of data that is pointed to depends on the type of pointer (an [[KeyPgInteger Integer]] [[KeyPgPointer Pointer]] points to [[KeyPgInteger Integer]] data). Pointers are defined using [[KeyPgDim Dim]], like other variables, with the suffix "pointer" or "ptr" following the type name. The following,
+	Pointers are [[DtVariables Variables]] whose values are addresses in memory, and they are said to 'point' to this memory. The type of data that is pointed to depends on the type of pointer (an [[KeyPgInteger Integer]] [[KeyPgPointer Pointer]] points to [[KeyPgInteger Integer]] data). Pointers are declared and defined with [[KeyPgExtern EXTERN]] and [[KeyPgDim DIM]] respectively, like all other variables, with the suffix "pointer" or "ptr" following the type name. The following,
 
 %%(qbasic)
 Dim myInteger As Integer = 10
 Dim myPointer As Integer Pointer = @myInteger
 %%
-	defines an integer and an integer pointer that points to it. The [[KeyPgAt address-of operator]] (@) is used to retrieve the address of myInteger.
+	defines an integer and an integer pointer that points to the location in memory where the integer is stored. The [[KeyPgAt address-of operator]] (@) is used to retrieve the address of the integer.
 
 ==Accessing the pointed to data==
 	The data pointed to by a pointer can be accessed with the [[KeyPgValOf dereference operator]] (*). This operator returns a reference to the data that is pointed to, that matches the type of pointer. The following,
@@ -17,7 +17,7 @@ Dim myPointer As Integer Pointer = @myInteger
 *myPointer = 20
 Print myInteger
 %%
-	assigns the value of 20 to the location	at which myPointer points (which is the address of myInteger, or @myInteger). Changes to this location in memory directly affect the value of myInteger (myInteger is the same thing as *myPointer).
+	assigns the value of 20 to the location	at which myPointer points (which is the address of myInteger, or @myInteger). Changes to *myPointer directly affect the value of myInteger (the expression *myPointer is the same thing as myInteger).
 
 ==Working with pointers to user-defined types==
 	Pointers to user-defined types are defined and used like all other pointers. Accessing a member of a [[KeyPgType Type]] or [[KeyPgClass Class]] requires one of the following two methods:
@@ -48,7 +48,5 @@ Print p->b
 	- ##[[KeyPgVarptr VARPTR]]##
 	- ##[[KeyPgStrptr STRPTR]]##
 	- ##[[KeyPgProcptr PROCPTR]]##
-	- ##[[KeyPgDim DIM]]##
-
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

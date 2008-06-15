@@ -1,31 +1,30 @@
-{{fbdoc item="title" value="COMMAND$"}}----
+{{fbdoc item="title" value="COMMAND"}}----
 Returns command line parameters used to call the program.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Command** ( [[KeyPgByval byval]] //index// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-	//args// = COMMAND$
-	//args// = COMMAND$( //index// )
+	//result// = **Command**[$]( [ //index// ] )
 ##
 {{fbdoc item="param"}}
 	##//index//##
-		Optional ##[[KeyPgInteger integer]]## argument specifying the index of the command line parameter to return.
+		Zero-based index for a particular command-line argument.
 {{fbdoc item="ret"}}
-	##//args//##
-	    A ##[[KeyPgStringtype string]]## to be set to the command line parameter.
+	  Returns the command-line arguments(s).
 
 {{fbdoc item="desc"}}
-	If the ##//index//## argument is omitted, COMMAND$ returns the full string of parameters (excluding the name of the executable).
+	##**Command**## returns a space-seperated list of the command-line arguments passed to the program when executed.
 
-	If used with an ##//Index//## number, ##//Index 0//## returns the name of the executable; ##//Index 1//## and greater return each argument from the command line.  If ##//Index//## is greater than the number of arguments on the command line, a null string is returned.
+	If ##//index//## is specified, a single argument is returned. A value of zero (0) returns the name of the executable; and values of one (1) and greater return each command-line argument.
+	
+	If ##//index//## is greater than the number of arguments on the command line, the null string (##"####"##) is returned.
 
 	When the command line is parsed for arguments, everthing between double quotes in the parameter list will be considered as a single parameter, and is returned with the double quotes.
 
 	By default, filename globbing for arguments (expansion of wildcards to filenames) is used on all ports of FreeBASIC for compatibility.  Arguments on the commandline containing wildcards are typically not expanded if when no file is matched or if properly quoted.  Other special characters for rediection are typically not returned unless properly quoted.  Consult the documentation on the shell being used for more information on the proper quoting of command line arguments.
 
-	**WARNING**: By nature of FreeBASIC's constructor precedence and main() intialization, calling COMMAND$ within a global constructor is NOT SAFE. At the moment your app will not crash, but you will recieve only a null string. This *may* be able to be fixed in the future, but it would be wise to not rely on that.
-
+~&//**WARNING**: By nature of FreeBASIC's constructor precedence and main() intialization, calling ##**Command**## within a global constructor is not safe. At the moment your app will not crash, but you will only recieve the null string (##"####"##). This *may* be able to be fixed in the future, but it would be wise not to rely on that.//
 
 	__Disabling filename globbing under Win32__
 		For mingw32 and cygwin builds, link the FreeBASIC program with CRT_noglob.o or define the following somewhere in the source:
@@ -51,13 +50,13 @@ end function
 '' command-line arguments example
 ''
 
- 	print "exe name= "; command$( 0 )
+ 	print "exe name= "; command( 0 )
 
  	dim argc as integer, argv as string
 
  	argc = 1
  	do
- 		argv = command$( argc )
+ 		argv = command( argc )
 
  		if( len( argv ) = 0 ) then
  			exit do
@@ -71,9 +70,7 @@ end function
  	if( argc = 1 ) then
  		print "(no arguments)"
  	end if
- 	print "The complete list: ";command$
-
-	sleep
+ 	print "The complete list: ";command
 %%
 
 {{fbdoc item="diff"}}
@@ -83,5 +80,6 @@ end function
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgExec Exec]]##
+	- ##[[KeyPgRun Run]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

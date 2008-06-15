@@ -42,7 +42,7 @@ ErrorHandler:
 	- FreeBASIC returns the source code line number and ignores the values of all explicit line numbers, where as QB returns the last encountered explicit line number, and will return zero (0) when explicit line numbers are not used.
 
 {{fbdoc item="see"}}
-	-{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
-	-{{fbdoc item="keyword" value="KeyPgErr|ERR"}}
+	- {{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
+	- ##{{fbdoc item="keyword" value="KeyPgErr|Err"}}##
 
 {{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

@@ -9,7 +9,7 @@ Stops execution of current thread until some other thread signals that execution
 ##
 {{fbdoc item="param"}}
 	##//handle//##
-		The handle of a conditional variable.
+		The handle of a conditional variable, or the null pointer (0) on failure.
 
 {{fbdoc item="desc"}}
 	Function that stops the thread where it is called until some other thread  ##[[KeyPgCondSignal Condsignal]]##s or ##[[KeyPgCondBroadcast Condbroadcast]]##s  the handle.

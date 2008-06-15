@@ -12,7 +12,7 @@ Items discussed in this wiki:
 
 ----
 ~&{{anchor name="item1"}}==={{color c="blue" text="[item 1] What is an operator?"}}===
-An operator is just a procedure, like most others. Some operators, like [[KeyPgCast operator cast]], even look like procedures. Others, like [[KeyPgLessThanOrEqual operator <=]], have a different syntax //(as of the time of this writing, calling these operators by name is not supported, but may be in the future)//. However they are called, the result is the same: some procedure is envoked based on the types of operands - the arguments of an operator call - that are passed to it.
+An operator is just a procedure, like most others. Some operators, like [[KeyPgCast operator cast]], even look like procedures. Others, like [[KeyPgLessThanOrEqual operator <=]], have a different syntax //(as of the time of this writing, calling these operators by name is not supported, but may be in the future)//. However they are called, the result is the same: some procedure is invoked based on the types of operands - the arguments of an operator call - that are passed to it.
 
 [ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
 ----
@@ -185,8 +185,8 @@ end operator
 '' global operator * is protected from changes to Rational.operator *=:
 operator * (byref lhs as Rational, byref rhs as Rational) as Rational
 	dim result as Rational = lhs
-	lhs *= rhs
-	return lhs
+	result *= rhs
+	return result
 end operator
 %%
 

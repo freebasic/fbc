@@ -2,15 +2,10 @@
 Input function to retrieve status of the mouse pointing device.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getmouse** ( [[KeyPgByref byref]] //x// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByref byref]] //y// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByref byref]] //wheel// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByref byref]] //buttons// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getmouse** ( [[KeyPgByref byref]] //x// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //y// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //wheel// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //buttons// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-
-	**Getmouse** //x//, //y//[, [//wheel//][, [//buttons//]]]
-##
-//or//
-##
-	//result// = **Getmouse** ( //x//, //y//[, [//wheel//][, [//buttons//]]] )
+	//result// = **Getmouse** (//x//, //y// [, [ //wheel// ] [, [ //buttons// ]]])
 ##
 {{fbdoc item="param"}}
 	##//x//##
@@ -57,7 +52,7 @@ DO
 		IF buttons AND 4 THEN PRINT "M";
 		PRINT "   "
 	END IF
-LOOP WHILE INKEY$ = ""
+LOOP WHILE INKEY = ""
 END
 %%
 
@@ -70,4 +65,4 @@ END
 	- ##[[KeyPgMultikey Multikey]]##
 	- ##[[KeyPgGetjoystick Getjoystick]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}

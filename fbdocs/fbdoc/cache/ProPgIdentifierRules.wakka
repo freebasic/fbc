@@ -1,7 +1,4 @@
-{{fbdoc item="title" value="Identifier Rules"}}
-----
-
-{{fbdoc item="desc"}}
+{{fbdoc item="title" value="Identifier Rules"}}----
 All identifiers must follow certain rules.  An identifier is a name which uniquely identifies a [[DtVariables variable]], ##[[KeyPgType Type]]##, ##[[KeyPgUnion Union]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgSub Sub]]##, or ##[[KeyPgProperty Property]]##.
 
 Identifiers may contain only letters (specifically, the upper- and lower-case Latin characters ##a##-##z## and ##A##-##Z##), digits (##0##-##9##), and the underscore character (##_##). The first character of an identifier may only be a letter or underscore, not a digit.

@@ -18,19 +18,16 @@
 	- {{fbdoc item="keyword" value="KeyPgIs|IS"}}
 
 {{fbdoc item="section" value="Uncategorized"}}
+	- {{fbdoc item="keyword" value="KeyPgInp|INP"}}
+	- {{fbdoc item="keyword" value="KeyPgOut|OUT"}}
+	- {{fbdoc item="keyword" value="KeyPgWait|WAIT"}}
 	- {{fbdoc item="keyword" value="KeyPgSwap|SWAP"}}
 	- {{fbdoc item="keyword" value="KeyPgLet|LET"}}
 	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}}
-	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
-	- {{fbdoc item="keyword" value="KeyPgExternCpp|EXTERN...END EXTERN"}}
-	- {{fbdoc item="keyword" value="KeyPgCommon|COMMON"}}
 	- {{fbdoc item="keyword" value="KeyPgShared|SHARED"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenCons|SCREENCONS"}}
 	- {{fbdoc item="keyword" value="KeyPgLprint|LPRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgLpos|LPOS"}}
-	- {{fbdoc item="keyword" value="KeyPgDylibsymbol|DYLIBSYMBOL"}}
-	- {{fbdoc item="keyword" value="KeyPgDylibfree|DYLIBFREE"}}
-	- {{fbdoc item="keyword" value="KeyPgDylibload|DYLIBLOAD"}}
 	- {{fbdoc item="keyword" value="KeyPgScope|SCOPE"}}
 	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgRem|REM"}}
@@ -61,7 +58,6 @@
 	- {{fbdoc item="keyword" value="KeyPgOptionnokeyword|OPTION NOKEYWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionprivate|OPTION PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|OPTION STATIC"}}
-
 >>
 
 ::c::

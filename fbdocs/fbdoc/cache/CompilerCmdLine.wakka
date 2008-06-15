@@ -1,87 +1,129 @@
-{{fbdoc item="title" value="Using the command line"}}----
+{{fbdoc item="title" value="fbc command-line"}}----
+fbc command-line usage
 
-	FreeBASIC is a command line compiler. This means it will require the user to manually launch it from a console (be it plain DOS, the Windows command prompt or a Linux shell) in order to work. The compiler will take any source file passed to the command line and produce an executable out of them.
+	The official FreeBASIC distribution comes with **fbc**, FreeBASIC's flagship compiler. **fbc** is a command line compiler, and can be launched from the console - from DOS, the Windows command prompt or a Linux shell. Running **fbc** from the console without any arguments displays a list of available options, or command-line switches, that can be used to adjust the behavior of the compiler.
+
+	At it's simplest, **fbc** takes a source file as a command-line argument and produces an executable file. It does this by compiling the source file (.bas) into an object file (.o) and linking this object file to other object files and libraries it needs to run, producing the final executable file. The compiled object file is deleted at this point. For example, the following command,
+
+		##fbc foo.bas##
+
+	produces the executable ##foo.exe## in DOS and Windows, and ##./foo## in Linux. **fbc** can accept multiple source files at once, compile and link them all into one executable. For example, the following command,
+
+		##fbc foo.bas bar.bas baz.bas##
+
+	produces the executable ##foo.exe## in DOS and Windows, and ##./foo## in Linux. Since ##foo.bas## was listed first, it will be the main entry point into the executable, and also provide its name. To specify a different entry point or executable name, use the "-m" and "-x" switches, respectively. To have, for example, ##baz.bas## provide the main entry point into an executable called ##foobar.exe##, you would use
+
+		##fbc -x foobar.exe -m baz foo.bas bar.bas baz.bas##
+
+	The "-x" switch names the executable verbatim, so in Linux, the executable produced from the above command would be called ##./foobar.exe##.
 
 {{fbdoc item="syntax"}}
 	##fbc [ //options// ] [ //input_list// ]##
 
 	Where //input_list// is a list of filenames. Accepted files are:
-	{{table columns="2" cellpadding="1" cells="File extension;Description;.bas;FreeBASIC source file;.a;Library;.o;Object file;.rc;Resource script (Windows only);.res;Compiled resource (Windows only);.xpm;X icon pixmap (Linux only)"}}
 
-	If no options are given, fbc tries to compile the source(s) given and makes an executable from it. If more than one source is given, the executable gets the name of the first source. 
+		{{table columns="2" cellpadding="1" cells="File extension;Description;.bas;FreeBASIC source file;.a;Library;.o;Object file;.rc;Resource script (Windows only);.res;Compiled resource (Windows only);.xpm;X icon pixmap (Linux only)"}}
 
-	If no input list or options are given, a help screen is displayed.
+<<{{fbdoc item="section" value="Compiling options"}}
+	{{fbdoc item="subsect" value="Source code"}}
+		**##[ -b ] < //source file// >##**
+			Add a source file to compilation. The "-b" is optional.
+		**##-o < //output file// >##**
+			Set the output file name of a compiled source file, or object file (.o). The "-o" switch needs to follow immediately after source files specified with the "-b" switch. This switch only has an effect when used with the "-c" switch, as object files are not saved otherwise. If "-o" is not specified for a given file, the output file name will be the same as the source file name with an ".o" extension.
+		**##-i < //include path// >##**
+			Add a path to search for include files.
+		**##-include < //include file// >##**
+			Set a file to be #INCLUDEd in all the modules.
+		**##-d < //name//=//value// >##**
+			Add a preprocessor's define. The same as adding #define name value in the source.
+		**##-c##**
+			Compile only (make an object file), do not link.
+		**##-lang < "fb"|"qb"|"deprecated" >##**
+			Select language compatibility dialect. fbc defaults to the "fb" dialect. For the most QuickBASIC compatibility, use "qb". See [[CompilerDialects Compiler Dialects]] or the ##migrating.txt## included with the distribution for more details on the differences between FreeBASIC dialects.
+		**##-{ m|entry } < //source file// >##**
+			Determines a main entry point for a source file; the argument is the name of a source file minus its extension. If "-m" or "-entry" is not specified, the frst source file listed is given a main entry point. When using the "-c" switch, "-m" or "-entry" must be specified when compiling a main source file.
 
-**Compiling Options:**
-	//source code//
-		- **##[ -b ] < //source file// >##** : Add a source file to compilation. The "-b" is optional.
-		- **##-o < //output file// >##** : Set output (executable, library or object) file name. Should be specified one for each source file passed on the command line.
-		- **##-i < //include path// >##** :	Add a path to search for include files.
-		- **##-include < //include file// >##** :	Set a file to be #INCLUDEd in all the modules.
-		- **##-d < //name//=//value// >##** :	Add a preprocessor's define. The same as adding #define name value in the source.
-		- **##-c##** :	Compile only (make an object file), do not link.
-		- **##-lang < //name// >##** :  Select language compatibility: deprecated, qb, fb (default). ##-lang fb## does not support line numbers variable suffixes (!,#), or dotted variable names. Specify ##-lang qb## if any of the former is required. ##-lang deprecated## allows to compile old fb sources. See ##migrating.txt## included with the distribution for more details. 
-		- **##{ -m|-entry } < //source file// >##** : Main file without extension. This sets specified file as the program entry point (defaults to the first .bas file passed to the compiler). If compiling sources separately it must be specified when compiling the main source.
+	{{fbdoc item="subsect" value="Error checking and Debugging"}}
+		**##-w < "0"|"1"|"all"|"pedantic" >##**
+			Set minimum warning level. "-w 0" shows all compiler warnings, while "-w 1" hides them. The default behavior is "-w 0".
+		**##-e##**
+			Add Qb-like error checking. See Error Handling.
+		**##-ex##**
+			The same as -ex plus RESUME support. See Error Handling.
+		**##-exx##**
+			The same as -ex plus array bounds and null-pointer checking. See Error Handling.
+		**##-noerrline##**
+			Do not show the place in source where error occured. Useful if an IDE is parsing the error messages.
+		**##-profile##**
+			Enable function profiling. After running an executable compiled with this option, a gmon.out file will be created in the program directory, allowing use of GPROF for analysis of the program's execution.
+		**##-maxerr < //value//|"inf" >##**
+			Sets the number of errors the compiler must find before stopping. The default is 10. If **inf**, for infinite, is specified the compiler continues until it finds the end of the source. Useful if an IDE is parsing the error messages.
 
-	//error checking/debugging//
-		- **##-w < //0|1|all|pedantic// >##** : Set minimum warning level. "-w 0" (or just "-w") shows all compiler warnings, while "-w 1" hides them.  By default, FBC shows all warnings.
-		- **##-e##** : Add Qb-like error checking. See Error Handling.
-		- **##-ex##** : Add QB-like error handling with RESUME support. See Error Handling.
-		- **##-exx##** : The same as -ex plus array bounds and null-pointer checking.
-		- **##-noerrline##** : Do not show the place in source where error occured. Useful if an IDE is parsing the error messages.
-		- **##-profile##** : Enable function profiling. After running an executable compiled with this option, a gmon.out file will be created in the program directory, allowing use of GPROF for analysis of the program's execution.
-		-**##-maxerr<//value|inf//>##** Sets the number of errors the compiler must find before stopping. The default is 10. If **inf**, for infinite, is specified the compiler continues until it finds the end of the source. Useful if an IDE is parsing the error messages.
+	{{fbdoc item="subsect" value="Platform specific"}}
+		**##-arch < //architecture// >##**
+			Set the target CPU architecture (defaults to 486 if not specified, can be 386, 486, 586, 686).
+		**##-target < "dos"|"linux"|"win32"|"xbox"|"cygwin" >##**
+			( Windows ) Used with the Windows version of the compiler to create DOS32, Linux or XBOX executables . The bin and lib folders must have the /dos, /linux or /xbox subfolders from the appropiate distribution.
+		**##-s < //subsystem// >##**
+			( Windows ) Specifies the executable subsystem. Allowed subsystems are ##gui## and ##console## (by default, ##console## is used). Specifying a gui subsystem prevents the console window from appearing behind the program window.
+		**##-t < //stack size// >##**
+			( Windows/DOS ) Set stack size in kilobytes (defaults to 1024 KBytes). The local arrays are created in the stack, so 1MB of stack is not always enough.
 
-	//platform specific//
-		- **##-arch < //CPU// >##** : Set target CPU architecture (defaults to 486 if not specified, can be 386, 486, 586, 686).
-		- **##-target < dos|linux|win32|xbox|cygwin >##** : Used with the Windows version of the compiler to create DOS32, Linux or XBOX executables . The bin and lib folders must have the /dos, /linux or /xbox subfolders from the appropiate distribution.
-		- **##-s < //subsystem// >##** : ( Windows ) Specifies the executable subsystem. Allowed subsystems are ##gui## and ##console## (by default, ##console## is used). Specifying a gui subsystem prevents the console window from appearing behind the program window.
-		- **##-t < //stack size// >##** : ( Windows/DOS ) Set stack size in kilobytes (defaults to 1024 KBytes). The local arrays are created in the stack, so 1MB of stack is not always enough.
+	{{fbdoc item="subsect" value="Miscellaneous"}}
+		**##-r##**
+			Do not delete the asm file(s) that are generated during the compile process. Preprocessor macros are expanded in these files.
+		**##-v##**
+			Activate verbose mode. In this mode the compiler shows its actions step by step.
+		**##-version##**
+			Show compiler version.
+		**##-Wa < //options// >##**
+			Pass options to GAS, the assembler.  Options must be separated by commas only.
+<<>>{{fbdoc item="section" value="Linking options"}}
+	{{fbdoc item="subsect" value="Object code"}}
+		**##[ -a ] < //object file// >##**
+			Add a pre-compiled object file to linker's list. The "-a" is optional.
+		**##-l < //library file// >##**
+			Add a library file to linker's list.
+		**##-x < //name// >##**
+			Set the executable/library name, with extension. Defaults to the name of the first source file passed on the command line. When compiling libraries, be sure to add the "lib" prefix to your file name, otherwise the linker will not be able to find it. If compiling and linking separately, this option must be set only in the linker.
+		**##-p < //library path// >##**
+			Add a path to search for libraries. By default, libraries are looked for in the system FreeBASIC libraries directory and in the current directory.
+		**##-Wl < options >##**
+			Pass options to LD, the linker.  Options must be separated by commas only.
 
-	//misc//
-		- **##-r##** : Do not delete the asm file(s) that are generated by FreeBASIC during the compile process. With -g is useful to check the macro expansion.
-		- **##-v##** : Activate verbose mode. In this mode the compiler shows its actions step by step.
-		- **##-version##** : Show compiler version.
-		- **##-Wa <opt>##** : Pass options to GAS, the assembler.  Options must be separated by commas only.
-
-**Linking Options:**
-	//object code//
-		- **##[ -a ] < //object file// >##** : Add a pre-compiled object file to linker's list. The "-a" is optional.
-		- **##-l < //library file// >##** : Add a library file to linker's list.
-		- **##-x < //name// >##** : Set executable/library name, with extension. Defaults to the name of the first source file passed on the command line. When compiling libraries, be sure to add the lib prefix to your file name, otherwise the linker will not be able to find it. If compiling and linking separately, this option must be set only in the linker.
-		- **##-p < //library path// >##** : Add a path to search for libraries. By default, libraries are looked for in the system FreeBASIC libraries directory and in the current directory.
-		- **##-Wl <opt>##** : Pass options to LD, the linker.  Options must be separated by commas only.
-
-	//run-time//
-		- **##-lib##** : Create a static library.
-		- **##-dll, -dylib##** : Create a dynamic link library. This creates a DLL under Windows (including the import library), and creates a .so under Linux.
-		- **##-mt##** : Force linking with thread-safe runtime library for multithreaded apps. Normally the thread-safe version is always used automatically if the FreeBASIC built-in threading functions are used, so you only need to specify this option if using your own threading routines.
-		- **##-nodeflibs##** : Do not include the default libraries when linking.
+	{{fbdoc item="subsect" value="Runtime"}}
+		**##-lib##**
+			Create a static library.
+		**##-dll, -dylib##**
+			Create a dynamic link library. This creates a DLL under Windows (including the import library), and creates a .so under Linux.
+		**##-mt##**
+			Force linking with thread-safe runtime library for multithreaded apps. Normally the thread-safe version is always used automatically if the FreeBASIC built-in threading functions are used, so you only need to specify this option if using your own threading routines.
+		**##-nodeflibs##**
+			Do not include the default libraries when linking.
 	
-	//misc//
-		- **##-export##** : Export symbols for dynamic linkage. See EXPORT.
-		- **##-g##** : Create an exe with debug info, to use with GNU compatible debuggers (GDB, Insight).
+	{{fbdoc item="subsect" value="Miscellaneous"}}
+		**##-export##**
+			Export symbols for dynamic linkage. See EXPORT.
+		**##-g##**
+			Create an exe with debug info, to use with GNU compatible debuggers (GDB, Insight).
+>>::c::
 
-
-==Examples==
-	##fbc##
-		Will display a help screen.
-
-	##fbc myfile.bas##
-		Will create an executable with the name myfile.exe.
-
+{{fbdoc item="ex"}}
 	##fbc -s gui myfile.bas##
-		Will create a myfile.exe Win32 executable. Running the program will not show the console (a.k.a. DOS Box).
+		//(Compile and link a Windows executable ##myfile.exe##. Running the program will not show the console - MS-DOS Prompt, DOS box, etc.)//
 
 	##fbc -lib module1.bas module2.bas module3.bas -x libmylib.a##
-		Will create a libmylib.a static library out of the passed module source files.
-		
-	##fbc -m main_module -c main_module.bas##
-	##fbc -c sub_module.bas##
-	##fbc -x application.exe main_module.o sub_module.o##
-		Will set //main_module.bas// as the program's entry point, and compile (create an object file) //main_module.bas//.
-		The file //sub_module.bas// is then compiled to object code as well.
-		Lastly, the executable name is set to "application.exe", and the two object file are linked together.
+		//(Compile and link a static library ##libmylib.a## from the three source files)//
 
+	##fbc -m main_module -c main_module.bas##
+		//(Compile an object file ##main_module.o## and mark it as an entry point)//
+	##fbc -c sub_module.bas##
+		//(Compile an object file ##sub_module.o##)//
+	##fbc -x application.exe main_module.o sub_module.o##
+		//(Link an executable ##application.exe##)//
+
+{{fbdoc item="see"}}
+	- [[CompilerInstalling Installing FreeBASIC]]
+	- [[CompilerRunning Invoking the FreeBASIC compiler]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

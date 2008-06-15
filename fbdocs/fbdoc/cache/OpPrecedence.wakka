@@ -3,7 +3,7 @@
 	
 	The following table gives the operator precedence for each operator in each category. Operators lower on the list have a lower operator precedence. Parentheses can be used to override operator precedence. Operations within parentheses are performed before other operation. However, within the parentheses operator precedence is used.
 
-	{{table columns="3" cellpadding="2" cells="Arithmetic;Comparison;Logical;^ (Exponentiation);= (Equality);NOT;- (Negation); <> (Inequality);AND;*, / (Multiplication and division); < (Less than); OR; \ (Integer division); > (Greater than); XOR, IMP, EQV; MOD (Modulus Operator); <= (Less than or equal to); ; SHL, SHR (Shift Bit Left and Shift Bit Right); >= (Greater than or equal to); ; +, - (Addition and subtraction);###;###"}} 
+	{{table columns="3" cellpadding="2" cells="Arithmetic;Comparison;Logical;^ (Exponentiation);= (Equality);NOT;- (Negation); <> (Inequality);AND;*, / (Multiplication and division); < (Less than); OR; \ (Integer division); > (Greater than); XOR, IMP, EQV; MOD (Modulus Operator); <= (Less than or equal to);###; SHL, SHR (Shift Bit Left and Shift Bit Right); >= (Greater than or equal to);###; +, - (Addition and subtraction);###;###"}} 
 
 {{fbdoc item="see"}}
 	- [[CatPgOperators Operators]]

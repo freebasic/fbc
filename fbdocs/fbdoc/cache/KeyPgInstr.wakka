@@ -2,30 +2,31 @@
 Locates the first occurrence of a substring or character within a string.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instr**( [//start// [[KeyPgAs as]] [[KeyPgInteger integer]],] //string// [[KeyPgAs as]] [[KeyPgString string]], [any] //substring// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instr** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByval byval]] [any] //substring// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instr** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring ptr]], [[KeyPgByval byval]] [any] //substring// [[KeyPgAs as]] [[KeyPgWstring wstring ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instr** ( [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByval byval]] [any] //substring// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instr** ( [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring ptr]], [[KeyPgByval byval]] [any] //substring// [[KeyPgAs as]] [[KeyPgWstring wstring ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	//first// = Instr( //string//, //substring// )
-		##//or//##
-	//first// = Instr( //start//, //string//, //substring// )
+	//first// = **Instr**( [ //start//, ] //str//, //substring// )
 ##
 {{fbdoc item="param"}}
-	##//string//##
+	##//str//##
 		The string to be searched.
 	##//substring//##
 		The substring to find.
 	##//start//##
-		The position in ##//string//## at which the search will begin.
+		The position in ##//str//## at which the search will begin.
 
 {{fbdoc item="ret"}}
-	The position of the first occurrence of ##//substring//## in ##//string//##. Zero (0) is returned if ##//substring//## is not found, either ##//string//## or ##//substring//## are empty strings, or ##//start//## < 0.
-
-	If the [[KeyPgAny Any]] keyword is specified, **Instr** returns the first occurance of any character in ##//substring//##.
+	The position of the first occurrence of ##//substring//## in ##//str//##.
 
 {{fbdoc item="desc"}}
-	Locates the position of the first occurrence of a substring or character within a string. If //start// is omitted, the search will begin with the first character of //string//.
+	Locates the position of the first occurrence of a substring or character within a string. In the first form of ##**Instr**##, the search begins at the first character.
 	
-	The //string// and //substring// expressions can be [[KeyPgWstring WString]] (Unicode). The DOS version does not support Unicode.
+	Zero (0) is returned if ##//substring//## is not found, either ##//str//## or ##//substring//## are empty strings, or ##//start//## < 0.
+
+	If the ##ANY## keyword is specified, ##**Instr**## returns the first occurance of any character in ##//substring//##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -51,13 +52,15 @@ loop
 dim text as wstring*20
 text = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;!"
 print instr(text,"&#1077;&#1090;") ' displays 5
-<<
-::c::
+<<::c::
+{{fbdoc item="target"}}
+	- DOS does not support the wide-character string versions of ##**Instr**##.
 
 {{fbdoc item="diff"}}
 	- QB returns //start// if //search// is a zero length string.
-	- QB did not support Unicode
+	- QB does not support Unicode.
+
 {{fbdoc item="see"}}
-	- [[KeyPgMidfunction MID (Function)]]
+	- ##[[KeyPgMidfunction Mid (Function)]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

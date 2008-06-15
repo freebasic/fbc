@@ -1,8 +1,5 @@
-{{fbdoc item="title" value="Passing variables by Value"}}
-----
-
-{{fbdoc item="desc"}}
-**Passing by value** refers to the method of communicating variables to the function; Passing by value using the [[KeyPgByval BYVAL]] keyword will cause the compiler to pass a copy of the value in a variable to the function, which means that any changes made to the passed variable will stay within the function, and dissapear when the function exits.
+{{fbdoc item="title" value="Passing variables by Value"}}----
+**Passing by value** refers to the method of communicating variables to the function; Passing by value using the ##[[KeyPgByval Byval]]## keyword will cause the compiler to pass a copy of the value in a variable to the function, which means that any changes made to the passed variable will stay within the function, and dissapear when the function exits.
 
 
 %%(qbasic)
@@ -47,15 +44,13 @@ X is now equal to 15
 
 Setting to 20 in mySubByVal passing the variable by value.
 X is now equal to 15
-
 %%
-
 
 {{fbdoc item="see"}}
 	- [[ProPgPassByRef Passing Variables by Reference]]
 	- [[DtVariables Variables]] 
-	- [[KeyPgDim DIM]]
-	- [[KeyPgSub SUB]]
-	- [[KeyPgFunction FUNCTION]]
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgFunction Function]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

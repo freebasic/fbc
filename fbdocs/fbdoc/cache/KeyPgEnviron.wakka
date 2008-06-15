@@ -5,14 +5,14 @@ Returns the value of a system environment variable.
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Environ** ( [[KeyPgByref byref]] //varname// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Environ**(//varname//)
+	//result// = **Environ**( //varname// )
 ##
 {{fbdoc item="param"}}
 	##//varname//##
 		A ##[[KeyPgStringtype string]]## containing the environemental variable to return.
 
 {{fbdoc item="ret"}}
-	A ##[[KeyPgStringtype string]]## set to the value of the environemental variable to requested.
+	Returns the value of the environmental variable requested.
 
 {{fbdoc item="desc"}}
 	Returns the value of a system environment variable.
@@ -21,11 +21,11 @@ Returns the value of a system environment variable.
 %%(qbasic)
 'e.g. to show the system variable "path":
 
-print environ$("path")
+print environ("path")
 %%
 
 {{fbdoc item="diff"}}
-	- The ENVIRON statement is now called ##[[KeyPgSetenviron Setenviron]]##.
+	- The ##**ENVIRON**## statement is now called ##[[KeyPgSetenviron Setenviron]]##.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgSetenviron Setenviron]]##

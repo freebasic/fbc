@@ -7,16 +7,18 @@ Statements and procedures for working with arrays
 	Procedures that work with array memory.
 **{{anchor name="SIZE|Retrieving Array Size"}}**
 	Procedures that return bounds of an array's dimension.
+**{{anchor name="DEPRECATED|Deprecated Statements"}}**
+	Deprecated statements kept for backward compatibility reasons, and may be removed at a future time.
 
 <<{{anchor name="DEFINE"}}{{fbdoc item="section" value="Defining Arrays"}}
-	=={{fbdoc item="keyword" value="KeyPgDynamic|'$DYNAMIC"}} and {{fbdoc item="keyword" value="KeyPgDynamic|OPTION DYNAMIC"}}==
+	=={{fbdoc item="keyword" value="KeyPgDynamic|OPTION DYNAMIC"}}==
 		Forces arrays to be defined as dynamic arrays.
-	=={{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}} and {{fbdoc item="keyword" value="KeyPgMetaStatic|OPTION STATIC"}}==
-		Reverts a previous {{fbdoc item="keyword" value="KeyPgDynamic|'$DYNAMIC"}} or {{fbdoc item="keyword" value="KeyPgDynamic|OPTION DYNAMIC"}} command.
+	=={{fbdoc item="keyword" value="KeyPgMetaStatic|OPTION STATIC"}}==
+		Reverts a previous [[KeyPgDynamic OPTION DYNAMIC]] command.
 	=={{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}==
 		Defines and resizes dynamic arrays.
 	=={{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}==
-		Preserves array contents when used with {{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}.
+		Preserves array contents when used with [[KeyPgRedim REDIM]].
 
 {{anchor name="CLEAR"}}{{fbdoc item="section" value="Clearing Array Data"}}
 	=={{fbdoc item="keyword" value="KeyPgClear|CLEAR"}}==
@@ -28,6 +30,12 @@ Statements and procedures for working with arrays
 		Returns the lower bound of an array's dimension.
 	=={{fbdoc item="keyword" value="KeyPgUbound|UBOUND"}}==
 		Returns the upper bound of an array's dimension.
->>::c::
+
+{{anchor name="DEPRECATED"}}{{fbdoc item="section" value="Deprecated Statements"}}
+	=={{fbdoc item="keyword" value="KeyPgDynamic|'$DYNAMIC"}}==
+		Deprecated form of the [[KeyPgDynamic OPTION DYNAMIC]] statement.
+	=={{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}==
+		Deprecated form of the [[KeyPgMetaStatic OPTION STATIC]] statement.
+ >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

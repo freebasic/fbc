@@ -1,7 +1,8 @@
+{{fbdoc item="title" value="BLOAD/BSAVE text mode work-around"}}----
 These functions allow you to use BSAVE and BLOAD in a text mode.
 
-%%(qbasic)Sub _bsave( file As String, p As Any Ptr, sz As Integer ) 
-
+%%(qbasic)
+Sub _bsave( file As String, p As Any Ptr, sz As Integer ) 
 
   Dim As Integer ff 
   ff = FreeFile 
@@ -10,13 +11,10 @@ These functions allow you to use BSAVE and BLOAD in a text mode.
 	fb_fileput( ff, 0, ByVal p, sz ) 
 	
   Close 
-
   
 End Sub 
 
-
 Sub _bload( file As String, p As Any Ptr ) 
-
 
   Dim As Integer ff 
   ff = FreeFile 
@@ -25,6 +23,5 @@ Sub _bload( file As String, p As Any Ptr )
 	fb_fileget( ff, 0, ByVal p, Lof( ff ) ) 
 	
   Close 
-
   
 End Sub%%

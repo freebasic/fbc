@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="MINUTE"}}----
-Date function to return the miutes for a specified [[DtDateSer Date Serial]] 
+Gets the minute of the hour from a [[DtDateSer Date Serial]] 
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Minute** ( [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//result// = **Minute**(//date_serial//)
+	//result// = **Minute**( //date_serial// )
 ##
 {{fbdoc item="param"}}
 	##//date_serial//##
@@ -22,8 +22,9 @@ Date function to return the miutes for a specified [[DtDateSer Date Serial]]
 {{fbdoc item="ex"}}
 %%(qbasic)
 #include "vbcompat.bi"
-Dim ds As Double
-ds = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)
+
+Dim ds As Double = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)
+
 Print Format(ds, "yyyy/mm/dd hh:mm:ss "); Minute(ds)
 %%
 

@@ -5,7 +5,7 @@ Fills a certain length of a  wstring with spaces (" ").
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wspace**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-		//wString// = Wspace( //count// )
+		//result// = **Wspace**[$]( //count// )
 ##
 {{fbdoc item="param"}}
 	##//count//##
@@ -15,7 +15,7 @@ Fills a certain length of a  wstring with spaces (" ").
 	The created wstring. An empty string will be returned if ##//count//## <= 0.
 
 {{fbdoc item="desc"}}
-	**Wspace** creates a wstring (wide character string- Unicode) with the specified number of spaces.
+	##**Wspace**## creates a wstring (wide character string- Unicode) with the specified number of spaces.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -31,6 +31,6 @@ A="x"+wspace(10)+"x"  'prints x             x
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSpace Space ]]##
+	- ##[[KeyPgSpace Space]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

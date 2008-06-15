@@ -2,10 +2,10 @@
 Statement to retrieve information about current video mode or the desktop.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screeninfo** ( [[KeyPgByref byref]] //w// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByref byref]] //h// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByref byref]] //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByref byref]] //bpp// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByref byref]] //pitch// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByref byref]] //rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByref byref]] //driver// [[KeyPgAs as]] [[KeyPgStringtype string]] = "" )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screeninfo** ( [[KeyPgByref byref]] //w// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //h// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //bpp// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //pitch// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //driver// [[KeyPgAs as]] [[KeyPgStringtype string]] = "" )
 ##
 {{fbdoc item="usage"}}##
-	**Screeninfo** [//w//][,[//h//][,[//depth//][,[//bpp//][,[//pitch//][,[//rate//][,//driver//]]]]]
+	**Screeninfo** [ //w// ] [, [ //h// ] [, [ //depth// ] [ , [ //bpp// ] [ , [ //pitch// ] [ , [ //rate// ] [, //driver// ]]]]]
 ##
 {{fbdoc item="param"}}
 	##//w//##
@@ -26,7 +26,7 @@ Statement to retrieve information about current video mode or the desktop.
 {{fbdoc item="desc"}}
 	This function can be useful to get current mode informations like gfx driver name, color depth, screen size and more.
 
-	If SCREENINFO is called when no graphics mode is set, it returns the information about the desktop.
+	If ##**Screeninfo**## is called when no graphics mode is set, it returns the information about the desktop.
 
 	Here's a description of available fields:
 
@@ -47,13 +47,12 @@ SLEEP
 SCREEN 0 
 SCREENINFO w, h, depth 
 PRINT "Desktop running at " + STR(w) + "x" + STR(h) + "x" + STR(depth); 
-
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

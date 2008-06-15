@@ -2,10 +2,10 @@
 Creates a string of a certain length filled with spaces spaces (" ").
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Space**[$]( //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Space**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
-	//String// = **Space**( //count// )
+	//result// = **Space**[$]( //count// )
 ##
 {{fbdoc item="param"}}
 	##//count//##
@@ -15,7 +15,7 @@ Creates a string of a certain length filled with spaces spaces (" ").
 	The created string. An empty string will be returned if ##//count//## <= 0.
 
 {{fbdoc item="desc"}}
-	**Space** creates a string with the specified number of spaces.
+	##**Space**## creates a string with the specified number of spaces.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

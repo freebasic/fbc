@@ -111,3 +111,4 @@ cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/win32/*.a /FBbin/lib/win32%%
 	http://www.freebasic.net/forum/viewtopic.php?p=32260
 
 {{fbdoc item="back" value="CVSCompile|Compiling from CVS"}}
+   

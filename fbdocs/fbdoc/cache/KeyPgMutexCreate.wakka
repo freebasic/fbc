@@ -8,7 +8,7 @@ Creates a mutex used for synchronizing the execution of threads.
 	//result// = **Mutexcreate**
 ##
 {{fbdoc item="ret"}}
-	The ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle of the mutex created.
+	The ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle of the mutex created, or the null pointer (0) on failure.
 
 {{fbdoc item="desc"}}
 	Mutexes, short for "Mutually Exclusive", are a way of synchronizing shared data within threads.  If there is a global variable used by multiple threads (or a local variable used by a single thread, called multiple times), it should be "locked" during its use with a mutex.  This halts all threads using ##[[KeyPgMutexLock Mutexlock]]## with that mutex, until it is unlocked with ##[[KeyPgMutexUnlock Mutexunlock]]##.

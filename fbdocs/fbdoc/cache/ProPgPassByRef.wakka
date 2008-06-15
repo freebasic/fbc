@@ -1,9 +1,5 @@
-{{fbdoc item="title" value="Passing variables by Reference"}}
-----
-
-{{fbdoc item="desc"}}
-**Passing by reference** refers to the method of communicating variables to the function; Passing by reference using the [[KeyPgByref BYREF]] keyword will cause the compiler to pass a direct pointer to the original variable to the function, which means that any changes made to the passed variable will remain when the function exits.
-
+{{fbdoc item="title" value="Passing variables by Reference"}}----
+**Passing by reference** refers to the method of communicating variables to the function; Passing by reference using the ##[[KeyPgByref Byref]]## keyword will cause the compiler to pass a direct pointer to the original variable to the function, which means that any changes made to the passed variable will remain when the function exits.
 
 %%(qbasic)
 'This program demonstrates passing by reference and passing by value.
@@ -47,15 +43,13 @@ X is now equal to 15
 
 Setting to 20 in mySubByVal passing the variable by value.
 X is now equal to 15
-
 %%
-
 
 {{fbdoc item="see"}}
 	- [[ProPgPassByVal Passing by Value]]
 	- [[DtVariables Variables]]
-	- [[KeyPgDim DIM]]
-	- [[KeyPgSub SUB]]
-	- [[KeyPgFunction FUNCTION]]
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgFunction Function]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

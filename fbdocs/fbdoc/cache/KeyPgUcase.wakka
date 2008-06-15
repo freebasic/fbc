@@ -3,31 +3,38 @@ Returns an upper case copy of a string.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ucase** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ucase** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ucase** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = UCASE[$]( //str// )
+	//result// = **Ucase**[$]( //str// )
 ##
 {{fbdoc item="param"}}
 	##//str//##
-		A ##[[KeyPgStringtype String]]## expression.
+		String to convert to uppercase.
 
 {{fbdoc item="ret"}}
-	Returns an uppercase copy of the ##[[KeyPgStringtype String]]##.
+	Uppercase copy of ##//str//##.
 
 {{fbdoc item="desc"}}
-	Returns the input //expression// string with all letters upper cased.
+	Returns a copy of ##//str//## with all of the letters converted to upper case.
+
+	If ##//str//## is empty, the null string (##"####"##) is returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-print ucase("Hello World abCDefGH") '' displays "HELLO WORLD ABCDEFGH"
+%%(qbasic)print ucase("AbCdEfG")
+%%
+	will produce the output:
+
+%%ABCDEFG
 %%
 
+{{fbdoc item="see"}}
+	- DOS does not support the wide-character string version of ##**Ucase**##.
+
 {{fbdoc item="diff"}}
-	- None
+	- QB does not support Unicode.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLcase Lcase]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}
-   

@@ -1,9 +1,7 @@
-{{fbdoc item="title" value="Frequently Asked FB Run-Time Library Questions"}}
-{{anchor name="item0"}}
-----
+{{fbdoc item="title" value="Frequently Asked FB Run-Time Library Questions"}}----
 
+{{anchor name="item0"}}
 **FreeBASIC Run-Time Library questions:**
-	==- {{anchor name="item1|Why is BSAVE/BLOAD crashing?"}}==
 	==- {{anchor name="item2|How do I play sound?"}}==
 	==- {{anchor name="item3|FreeBASIC gives me an error 'ld: can't find -lX11' or something similar!"}}==
 	==- {{anchor name="item5|How do I access the serial ports?"}}==
@@ -15,11 +13,6 @@
 
 ----
 @@**FreeBASIC Run-Time Library questions**@@
-
-{{anchor name="item1"}}==Why is BSAVE/BLOAD crashing?==
-	BSAVE/BLOAD can only be used to load and save graphics screens in FB. It can't be used to save a Textmode screen. To load and save an array check this   [[FaqPgbloadworkaround snippet using file GET/PUT]]
-
-{{anchor name="item0|Back to top"}}
 
 {{anchor name="item2"}}== How do I play sound?==
 	Of the QB's sound keywords only BEEP is implemented in FB. 

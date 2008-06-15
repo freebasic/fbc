@@ -2,7 +2,7 @@
 Clause of the ##[[KeyPgOpen Open]]## statement to specify requested privileges.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgOpen open]] //file// [[KeyPgAs as]] [[KeyPgStringtype string]] for [[KeyPgBinary binary]] **Access** {**Read** | **Write** | **Read Write**} as #//filenum// [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgOpen open]] //filename// for [[KeyPgBinary binary]] **Access** {**Read** | **Write** | **Read Write**} as [#]//filenum//
 ##
 {{fbdoc item="usage"}}##
 	open //filename// for binary **Access Read** as #//filenum//

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ON ERROR"}}
-----
+{{fbdoc item="title" value="ON ERROR"}}----
 Error handling statement to set the current error handler.
 
 {{fbdoc item="syntax"}}##
@@ -45,4 +44,4 @@ IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN handle_error
 	- ##[[KeyPgLocal Local]]##
 	- ##[[KeyPgErr Err]]##
 
-{{fbdoc item="back" value="CatPgError|ERROR"}}
+{{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

@@ -5,7 +5,7 @@ Destroys a mutex.
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Mutexdestroy** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
-	**Mutexdestroy** //id//
+	**Mutexdestroy**( //id// )
 ##
 {{fbdoc item="param"}}
 	##//id//##

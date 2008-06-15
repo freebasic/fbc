@@ -1,12 +1,11 @@
-{{fbdoc item="title" value="CAST"}}
-----
+{{fbdoc item="title" value="CAST"}}----
 Converts an expression to a specified data type.
 
 {{fbdoc item="syntax"}}##
 	Cast( [[DataType DataType]], //expression// )
 ##
 {{fbdoc item="desc"}}
-	Converts ##//expression//## to a DataType. Usefull to be used in macros when [[DataType DataType]] is unknown and also when converting to ##[[KeyPgTypeDef Type Aliasing]]##.
+	Converts ##//expression//## to a DataType. Usefull to be used in macros when [[DataType DataType]] is unknown and also when converting to [[KeyPgTypeDef Type Aliasing]].
   
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -22,3 +21,4 @@ print cast( byte, &h0080 )
 	- ##[[KeyPgCint Cint]]##
 	 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}
+   

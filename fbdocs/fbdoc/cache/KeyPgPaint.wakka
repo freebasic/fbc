@@ -49,4 +49,4 @@ sleep 3000
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

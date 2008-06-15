@@ -4,6 +4,9 @@ Statement to initialize a graphics mode by specifying horizontal and vertical re
 {{fbdoc item="syntax"}}##
 	**Screenres** //width// [[KeyPgAs as]] [[KeyPgInteger integer]], //height// [[KeyPgAs as]] [[KeyPgInteger integer]], //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 8, //num_pages// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1, //flags// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, //refresh_rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0
  ##
+{{fbdoc item="usage"}}##
+	**Screenres** //width//, //height// [, [//depth//] [, [//num_pages//] [, [//flags//] [, //refresh_rate// ]]]]
+##
 {{fbdoc item="param"}}
 	##//width//##, ##//height//##
 		The display width and height, respectively. For fullscreen mode, the user should check the availability of the resolution using ##[[KeyPgScreenlist Screenlist]]##.
@@ -51,4 +54,4 @@ End
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

@@ -1,27 +1,38 @@
 {{fbdoc item="title" value="WSTR"}}----
-String function to convert number or ASCII to ##[[KeyPgWstring]]##
+Returns a wide-character string representation of a number or ASCII character string
 
 {{fbdoc item="syntax"}}##
-	**Wstr** (//numerical_expression//) 
-	**Wstr** (//ASCII_String_variable//)
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Wstr** (//numerical_expression//) 
-	//result// = **Wstr** (//ASCII_String_variable//)
+	//result// = **Wstr**[$]( //number// )
+		//##or##//
+	//result// = **Wstr**[$]( //string// )
 ##
 {{fbdoc item="param"}}
-	##//numerical_expression//##
-		numeric expression to convert to a ##[[KeyPgWstring]]##
-	##//ASCII_String_variable//##
-		ASCII string or expression to convert to a ##[[KeyPgWstring]]##
+	##//number//##
+		Numeric expression to convert to a wide-character string.
+	##//string//##
+		String expression to convert to a wide-character string.
 
 {{fbdoc item="ret"}}
-	Returns the ##[[KeyPgWstring]]## representation of the numeric or ASCII expression.
+	Returns the wide-character representation of the numeric or string expression.
 
 {{fbdoc item="desc"}}
-	The ##**Wstr**## function converts numerical variables to their Unicode representation. In this use it matches the ##[[KeyPgStr Str]]## function.
+	##**Wstr**## converts numeric variables to their wide-character string representation. It is the wide-character equivalent to ##[[KeyPgStr Str]]##.
 
-	It can be used to convert ASCII strings to Unicode strings.  
+	##**Wstr**## also converts ASCII character strings to Unicode character strings. If a wide-character string is given, that string is returned unmodified.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -35,8 +46,8 @@ MessageBox(null, ws, wstr("Unicode 'Hello World'"), MB_OK or MB_ICONINFORMATION)
 %%
 
 {{fbdoc item="target"}}
-	- Unicode (w)strings are not suported in the DOS port of FB
-	- 
+	- DOS does not support ##**Wstr**##.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
@@ -44,4 +55,4 @@ MessageBox(null, ws, wstr("Unicode 'Hello World'"), MB_OK or MB_ICONINFORMATION)
 	- ##[[KeyPgStr Str]]##
 	- ##[[KeyPgWstring Wstring]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

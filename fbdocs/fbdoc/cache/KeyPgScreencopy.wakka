@@ -2,10 +2,10 @@
 Statement to copy the contents of a graphical page into another graphical page.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screencopy** ( [[KeyPgByval byval]] //frompage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 , [[KeyPgByval byval]] //topage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screencopy** ( [[KeyPgByval byval]] //frompage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //topage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
 ##
 {{fbdoc item="usage"}}##
-	**Screencopy** [//from_page//][, //to_page//]
+	**Screencopy** [ //from_page// ] [, //to_page// ]
 ##
 {{fbdoc item="param"}}
 	##//frompage//##
@@ -72,11 +72,11 @@ loop
 %%
 
 {{fbdoc item="diff"}}
-	- New to FB. QB had PCOPY, doing the same function.
+	- New to FreeBASIC. QB had ##[[KeyPgPcopy Pcopy]]## to do the same function.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 	- ##[[KeyPgScreenres Screenres]]##
 	- ##[[KeyPgScreenset Screenset]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

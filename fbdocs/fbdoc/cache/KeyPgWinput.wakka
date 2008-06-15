@@ -1,25 +1,30 @@
 {{fbdoc item="title" value="WINPUT()"}}----
-Read a number of characters from console or file
+Read a number of wide-characters from console or file
 
 {{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( [[KeyPgByval byval]] //num// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype wstring]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( [[KeyPgByval byval]] //num// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgStringtype wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Winput**( //num//, //filenum// )
-//or//
-	//result// = **Winput**( //num// )
+	//result// = **Winput**[$]( //num// [, [#]//filenum// } )
 ##
 {{fbdoc item="param"}}
 	##//num//##
-		number of characters to read
+		Number of characters to read.
 	##//filenum//##
-		file number of an open file
+		File number of bound file or device.
+
+{{fbdoc item="ret"}}
+	Returns a [[KeyPgWstring Wstring]] of the characters read.
 
 {{fbdoc item="desc"}}
-	The first version reads ##//num//## characters from a text file, updating the file position accordingly, and returns them in a wstring.
+	Reads a number of wide-characters from the console, or a bound file/device specified by ##//filenum//##.
 
-	The second version waits for the user to input ##//num//## characters at the keyboard and returns them in a wstring. Extended keys are not read. The characters are not echoed to the screen.
-	This version currently doesn't work, as FreeBASIC doesn't yet support reading wide-characters from the console.
+	The first version waits for and reads ##//n//## wide characters from the keyboard buffer. Extended keys are not read. The characters are not echoed to the screen.
+
+	The second version waits for and reads ##//n//## wide characters from a file or device. The file position is updated.
+
+~&//Note: FreeBASIC does not currently support reading wide-characters from the console.//
 
 {{fbdoc item="ex"}}
 %%(qbasic)dim char as wstring * 2

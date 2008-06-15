@@ -2,10 +2,10 @@
 Graphics function to map coordinates between view and physical mapping.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **PMap** ( [[KeyPgByval byval]] //coord// [[KeyPgAs as]] [[KeyPgSingle single]] , [[KeyPgByval byval]] //func// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **PMap** ( [[KeyPgByval byval]] //coord// [[KeyPgAs as]] [[KeyPgSingle single]], [[KeyPgByval byval]] //func// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
 ##
 {{fbdoc item="usage"}}##
-	**PMap**(//coord//, //func//)
+	//result// = **PMap**( //coord//, //func// )
 ##
 {{fbdoc item="param"}}
 	##//coord//##
@@ -27,10 +27,10 @@ Graphics function to map coordinates between view and physical mapping.
 %%
 
 {{fbdoc item="diff"}}
-	- 
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgWindow Window]]##
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

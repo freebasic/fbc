@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="COMMON"}}
-----
+{{fbdoc item="title" value="COMMON"}}----
 Variable declaration and scope modifier
 
 {{fbdoc item="syntax"}}##
@@ -51,4 +50,4 @@ Output:
 	- ##[[KeyPgUbound Ubound]]##
 	- ##[[KeyPgVar Var]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}
+{{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

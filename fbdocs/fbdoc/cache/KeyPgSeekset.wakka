@@ -2,7 +2,7 @@
 Sets the position of the next read/write operation on a file.
 
 {{fbdoc item="syntax"}}##
-	**Seek** #//filenum//, //position//
+	**Seek** [#]//filenum//, //position//
 ##
 {{fbdoc item="param"}}
 	##//filenum//##

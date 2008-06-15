@@ -17,7 +17,7 @@ Graphics function to return the colour attribute of a specified pixel coordinate
 
 {{fbdoc item="desc"}}
 	GfxLib Function that reads the color of the pixel at the coordinate ##//coord_x//##, ##//coord_y//## of the screen, or of ##//buffer//##, if supplied.
-The value return is a color index in 256 or less colors ##[[KeyPgScreengraphics Screen]]##s, and a RGB value in true color modes. If the coordinates are offscreen, -1 is returned
+The value return is a color index in a 256 or less color ##[[KeyPgScreengraphics Screen]]##, and a RGB value in true color modes. If the coordinates are offscreen, -1 is returned
 
 	The function ##**Point**## does not work in text modes.
 
@@ -27,10 +27,10 @@ screen 13
 line (10,10)-(100,100),12
 print point(20,20)
 %%
-Will print
-<<12>>
-::c::
-
+**Output:**
+%%
+12
+%%
 {{fbdoc item="diff"}}
 	- None, in the VGA compatible SCREEN modes. In SVGA modes, it returns a RGB value
 
@@ -41,4 +41,4 @@ Will print
 	- ##[[KeyPgViewgraphics View (Grpahics)]]##
 	- ##[[KeyPgWindow Window]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

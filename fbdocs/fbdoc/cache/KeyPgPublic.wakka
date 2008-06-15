@@ -1,13 +1,13 @@
-{{fbdoc item="title" value="PUBLIC"}}
-----
-{{fbdoc item="syntax"}}
-	PUBLIC //sub/function name//
+{{fbdoc item="title" value="PUBLIC"}}----
+Specifies procedure visibility to other modules.
 
+{{fbdoc item="syntax"}}##
+	**Public** //procedure_definition// ...
+##
 {{fbdoc item="desc"}}
 	Explicitly sets an individual sub/function to be public. This means the sub/function is freely accessible between other modules.
 
-	The only reason one needs to use the public prefix on subs/functions is if they are private by default (using [[KeyPgOptionprivate OPTION PRIVATE]]), because subs/functions are public by default normally.
-
+	The only reason one needs to use the public prefix on subs/functions is if they are private by default (using ##[[KeyPgOptionprivate Option Private]]##), because subs/functions are public by default normally.
 
 {{fbdoc item="ex"}}
 %%(qbasic)private sub i_am_private
@@ -17,14 +17,13 @@ public sub i_am_public
 end sub
 %%
 
-
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- [[KeyPgPrivate PRIVATE]]
-	- [[KeyPgOptionprivate OPTION PRIVATE]]
-	- [[KeyPgSub SUB]]
-	- [[KeyPgFunction FUNCTION]]
+	- ##[[KeyPgPrivate Private]]##
+	- ##[[KeyPgOptionprivate Option Private]]##
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgFunction Function]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

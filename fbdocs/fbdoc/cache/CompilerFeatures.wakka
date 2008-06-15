@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="Most Important Features"}}----
 
 ==BASIC Compatibility==
-	- FreeBASIC is not a "new" BASIC language. You don't need to learn anything new if you are familiar with any Microsoft-BASIC variant.
-	- FreeBASIC is case-insensitive; scalar variables don't need to be dimensioned and suffixes can be used; line numbers are supported; MAIN function is not required; most of the graphic and console statements and functions found in MS-QuickBASIC were implemented, et cetera.
+	- FreeBASIC is not a "new" BASIC language. You don't need to learn much new if you are familiar with any Microsoft-BASIC variant. You can use either "-lang qb" for compatibility, or (default) "-lang fb"  for some of the new features, but it also brings some restrictions and some similarity with the "C" programming language. See also [[CompilerDialects]].
+	- FreeBASIC is case-insensitive; with "-lang qb" scalar variables don't need to be dimensioned and suffixes can be used; line numbers are supported; MAIN function is not required; most of the graphic and console statements and functions found in MS-QuickBASIC were implemented, et cetera.
 
 ==Clean Syntax==
 	- Only a small number of keywords have been added. All functions are implemented as libraries, so for the most part, there are no new intrinsic routines, and therefore there is a low chance of having name duplication with old code.
@@ -15,7 +15,7 @@
 	- SDL - Simple DirectMedia Layer: multimedia library for audio, user input, 3D and 2D gfx (including the sub-libraries such as SDL_Net, SDL_TTF, etc)
 	- OpenGL: portable library for developing interactive 2D and 3D graphics games and applications (including support for frameworks such as GLUT and GLFW, plus the GL Extensions)
 	- Allegro: game programming library (graphics, sounds, player input, etc)
-	- GD, DevIL, FreeImage, GRX and other graphic-related libraries
+	- [[GD GD]], DevIL, FreeImage, GRX and other graphic-related libraries
 	- OpenAL, Fmod, BASS: 2D and 3D sound systems, with support for mod, mp3, ogg, etc
 	- ODE and Newton - dynamics engines: rigid body dynamics simulation
 	- cgi-util and FastCGI: web development

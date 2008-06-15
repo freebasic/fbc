@@ -2,10 +2,10 @@
 Macro to return the high word of an expression
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **HIWORD**(//x//) ([[KeyPgCuint CUint]](//x//) [[KeyPgShr shr]] 16)
+	[[KeyPgPpdefine #define]] **Hiword**( //x// ) ([[KeyPgCuint CUint]](//x//) [[KeyPgShr shr]] 16)
 ##
 {{fbdoc item="usage"}}##
-	//result// = **HIWORD**(//x//)
+	//result// = **Hiword**(//x//)
 ##
 {{fbdoc item="param"}}
 	##//x//##
@@ -48,8 +48,8 @@ The Binary representation of the LSW Is    1111111111111111
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLoWord LOWORD]]##
-	- ##[[KeyPgHibyte HIBYTE]]##
-	- ##[[KeyPgLoByte LOBYTE]]##
+	- ##[[KeyPgLoWord Loword]]##
+	- ##[[KeyPgHibyte Hibyte]]##
+	- ##[[KeyPgLoByte Lobyte]]##
 
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

@@ -1,25 +1,25 @@
 {{fbdoc item="title" value="FRE"}}----
-Returns the amount of free memory available.
+Returns the amount of free memory available
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fre** ( [[KeyPgByval byval]] //value// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Fre**[( //value// )]
+	//result// = **Fre**( [ //value// ] )
 ##
 {{fbdoc item="param"}}
 	##//value//##
-		Optional and unused dummy ##[[KeyPgInteger integer]]## for backward compatibility.
+		Unused dummy parameter kept for backward compatibilty; can be ignored.
 
 {{fbdoc item="ret"}}
-	An ##[[KeyPgUinteger uinteger]]## amount of free memory in bytes
+	Returns the amount of free memory, in bytes.
 
 {{fbdoc item="desc"}}
-	Returns the free memory (ram) available in bytes.
+	Returns the free memory (ram) available, in bytes.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim mem as integer
-mem = fre
+%%(qbasic)dim mem as integer = fre
+
 print "Free memory:"
 print
 print mem; " bytes"

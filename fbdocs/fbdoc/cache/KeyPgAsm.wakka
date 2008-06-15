@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ASM"}}
-----
+{{fbdoc item="title" value="ASM"}}----
 Code block that allows the use of architecture-specific instructions.
 
 {{fbdoc item="syntax"}}##
@@ -19,7 +18,6 @@ Code block that allows the use of architecture-specific instructions.
 	The return value of a function may be set by using the ##[[KeyPgFunction Function]]## keyword within brackets as shown in the example below.
 
 	##Asm## block comments have the same syntax as usual ""FreeBASIC"" [[KeyPgRem comments]].
-
 
 	[[x86 x86]] Specific:
 
@@ -45,7 +43,7 @@ Code block that allows the use of architecture-specific instructions.
 		~- [[http://nasm.sourceforge.net/doc/html/nasmdocb.html NASM x86 Instruction Reference]] (Please note that NASM is not the assembler used by FreeBASIC, but this page provides a good overview of x86 instructions)
 		
 		==Disallowed Instructions==
-		~Note that the FreeBASIC compiler produces 32-bit protected-mode code for the x86 which usually runs in an unpriveleged user level; therefore, privileged and sensitive instructions will assemble correctly but are likely to cause a runtime 'Illegal instruction', or SIGILL error.  The only known exception to this is rdtsc (Read Time Stamp Counter), which has been shown to be allowed by most, or all OS's.  However the usefulness of rdtsc has been diminished with the advent of multi-core and hibernating CPUs.  The following are the priveleged and sensitive instructions as of the Intel Pentium 4 and Xeon:
+		~Note that the FreeBASIC compiler produces 32-bit protected-mode code for the x86 which usually runs in an unpriveleged user level; therefore, privileged and sensitive instructions will assemble correctly but are likely to cause a runtime 'Illegal instruction', or SIGILL error.  The only known exceptions to this are RDTSC (Read Time Stamp Counter), which has been shown to be allowed by most, or all OS'es, and IN and OUT instructions, usable and useful in DOS (only).  However the usefulness of rdtsc has been diminished with the advent of multi-core and hibernating CPUs.  The following are the priveleged and sensitive instructions as of the Intel Pentium 4 and Xeon:
 		
 		~- ##cli##
 		~- ##clts##
@@ -105,7 +103,6 @@ Print "4 + 5 ="; AddFive(i)
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
-
+	- ##[[KeyPgFunction Function]]##
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

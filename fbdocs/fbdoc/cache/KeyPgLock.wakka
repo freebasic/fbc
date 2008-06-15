@@ -2,7 +2,7 @@
 Restricts read/write access to a file or portion of a file.
 
 {{fbdoc item="syntax"}}##
-	**Lock** #//filenum//[, //record// ]
+	**Lock** #//filenum// [, //record// ]
 	**Lock** #//filenum//, [ //start// ] To //end//
 ##
 {{fbdoc item="param"}}

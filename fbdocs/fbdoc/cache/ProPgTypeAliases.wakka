@@ -28,7 +28,7 @@ dim foobar as float = 1.23
 ~&{{anchor name="item2"}}==={{color c="blue" text="[item 2] Why would I want to use it?"}}===
 That's great, but what's the point? Type aliases are an abstraction - in this case, an abstraction for types (just like variables are abstractions for values). In general, abstractions provide you with the freedom of choice.
 
-Consider the code in the previous item where a type alias for [[KeyPgSingle Single]] was created, called "float". The type alias seems silly here, but imagine if you suddenly needed to use [[KeyPgDouble Double]]s instead of [[KeyPgSingle Single]]s for more precision, and that instead of one float the code contained hundreds (let's not forget procedure parameters, too). The utility of the type alias is most apparent here, since all that needs to modified is a single line - the declaration of "float".
+Consider the code in the previous item where a type alias for [[KeyPgSingle Single]] was created, called "float". The type alias seems silly here, but imagine if you suddenly needed to use [[KeyPgDouble Double]]s instead of [[KeyPgSingle Single]]s for more precision, and that instead of one float the code contained hundreds (let's not forget procedure parameters, too). The utility of the type alias is most apparent here, since all that needs to be modified is a single line - the declaration of "float".
 
 Another useful, {{anchor name="item3|oftentimes necessary"}}, use of the type alias is for procedure pointers. Rather than type a possibly long procedure pointer definition more than once, or in the midts of a parameter list, a shortened name can be given to the type using a type alias:
 
@@ -49,12 +49,12 @@ declare sub proc (pf1 as pf_alias, pf2 as pf_alias)
 Pointers to procedure pointers are just like any other pointer type, except they point to procedure pointers. Useful if, for example, you were iterating through an array of procedure pointers. Consider the following attempt at trying to declare a pointer to procedure pointer, and the inevitable solution:
 
 %%(qbasic)
-'' Tries to define a pointer to procedure that returns an integer,
+'' Tries to define a pointer to procedure pointer that returns an integer,
 '' actually is declaring a pointer to procedure that returns an
 '' integer pointer. :)
 dim ppf1 as function() as integer ptr
 
-'' Using a type alias, correctly defines a pointer to procedure that
+'' Using a type alias, correctly defines a pointer to procedure pointer that
 '' returns as integer.
 type pf_alias as function() as integer
 dim ppf2 as pf_alias ptr

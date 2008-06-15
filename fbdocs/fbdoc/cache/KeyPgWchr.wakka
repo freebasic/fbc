@@ -1,36 +1,44 @@
-{{fbdoc item="title" value="WCHR"}}
-----
-{{fbdoc item="syntax"}}
-//wstring//=WCHR( //expression// [, ...] )
+{{fbdoc item="title" value="WCHR"}}----
+Returns a wide-character string containing one or more Unicode characters
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] Wchr ( [[KeyPgByval byval]] //ch// [[KeyPgAs as]] [[KeyPgInteger integer]] [, ... ] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Wchr**[$]( //ch0// [, //ch1// ... //chN// ] )
+##
+{{fbdoc item="param"}}
+	##//ch//##
+		The Unicode integer value of a character.
+
+{{fbdoc item="ret"}}
+	Returns a wide-character string.
 
 {{fbdoc item="desc"}}
-	WCHR returns an Unicode string containing the character(s) represented by the Unicodes passed to it. For example, WCHR(934) returns "&#934;".
+	##**WCHR**## returns a wide-character string containing the character(s) represented by the Unicode values passed to it.
 
-	When WCHR is used with constants or literals which can be evaluated at compile time, it can be used in initializers.
+	When ##**WCHR**## is used with numerical constants or literals, the result is evalutated at compile-time, so it can be used in variable initializers.
 
-	Not all Unicode characters can be displayed on any machine, the characters available depend on the font presently in use in the console. Graphics modes can't display Unicode chars, as the GfxLib built-in font is not Unicode.
-	FB for DOS and fullscreen Windows consoles do not support Unicode.
-	 
+	Not all Unicode characters can be displayed on any machine, the characters available depend on the font presently in use in the console. Graphics modes can't display Unicode characterss, as the GfxLib built-in font is not Unicode.
+ 
 {{fbdoc item="ex"}}
 %%(qbasic)
-#define unicode
-print "the character represented by the ASCII code of 934 is:"; WCHR(934)
+print "the character represented by the UNICODE code of 934 is:"; WCHR(934)
+print "multiple UNICODE characters:"; WCHR(933, 934, 935)
 %%
-<<&#934;<<
-::c::
-%%(qbasic)
-print WCHR(933, 934, 935)  
-%%
-<<&#933;&#934;&#935;<<
-::c::
+	will produce the output:
+
+<<&#934;
+&#933;&#934;&#935;<<::c::
+
 {{fbdoc item="target"}}
-	- Unicode (w)strings are not suported in the DOS port of FB
+	- DOS does not support ##**Wchr**##.
 
 {{fbdoc item="diff"}}
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-	- [[KeyPgChr CHR]]
-	- [[KeyPgWstr WSTR]]
+	- ##[[KeyPgChr Chr]]##
+	- ##[[KeyPgWstr Wstr]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

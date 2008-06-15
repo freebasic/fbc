@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DYLIBSYMBOL"}}
-----
+{{fbdoc item="title" value="DYLIBSYMBOL"}}----
 Returns the address of a function or variable in a dll.
 
 {{fbdoc item="syntax"}}##
@@ -13,11 +12,11 @@ Returns the address of a function or variable in a dll.
 	##//library//##
 		The [[KeyPgAny any]] [[KeyPgPtr ptr]] handle of a DLL returned by ##[[KeyPgDylibload Dylibload]]##
 	##//symbol//##
-		A [[KeyPgStringtype string]] containing name of the function, or variable in the library to return the address of.
-		__Windows Only:__ Can also be a [[KeyPgShort short]] containing the ordinal of the function/variable.
+		A [[KeyPgStringtype string]] containing name of the function, or variable in the library to return the address of.  In Windows only, can also be a ##[[KeyPgShort short]]## containing the ordinal of the function/variable.
 
 {{fbdoc item="ret"}}
 	A ##[[KeyPgPtr pointer]]## to the function or variable in the library.
+
 	If the function fails, the return value is 0.
 
 {{fbdoc item="desc"}}
@@ -29,7 +28,6 @@ Returns the address of a function or variable in a dll.
 	If linking to a dll created in Visual C""++""(tm), decoration need not be used. For gcc, decoration is needed.
 
 	**Note:** The dylibsymbol, if failing, will attempt to automatically decorate the proc, from @0 to @256, in 4 byte increments.
-
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -54,15 +52,16 @@ print "1 + 2 ="; AddNumbers( 1, 2 )
 dylibfree hndl
 sleep
 %%
+
 {{fbdoc item="target"}}
 	- Dynamic link libraries are not available in DOS ,as the OS doesn't support them.
 	- Ordinals are not supported on Linux, 0 is always returned.
 
 {{fbdoc item="diff"}}
-	- New to Freebasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-~- ##[[KeyPgDylibload Dylibload]]##
-~- ##[[KeyPgExport Export]]##
+	- ##[[KeyPgDylibload Dylibload]]##
+	- ##[[KeyPgExport Export]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

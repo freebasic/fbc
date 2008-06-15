@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="CURDIR$"}}----
+{{fbdoc item="title" value="CURDIR"}}----
 Returns the current directory/folder.
 
 {{fbdoc item="syntax"}}##
@@ -11,20 +11,20 @@ Returns the current directory/folder.
 	A ##[[KeyPgStringtype string]]## which is set to the name of the current directory/folder.
 
 {{fbdoc item="desc"}}
-Returns the current directory/folder.
+	Returns the current directory/folder.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-print curdir$
-sleep
+print curdir
 %%
+	output will vary.
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgDir Dir$]]##
+	- ##[[KeyPgDir Dir]]##
 	- ##[[KeyPgMkdir Mkdir]]##
 	- ##[[KeyPgRmdir Rmdir]]##
 

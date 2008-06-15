@@ -1,36 +1,46 @@
 {{fbdoc item="title" value="Pointer Arithmetics"}}----
-Usage of addition or subtraction on a pointer
+Performs mathematical operations on pointers
 
 {{fbdoc item="syntax"}}##
-	pointer_variable + integer_expression 
-	pointer_variable - integer_expression
+	//pointer// + //expression//
+	//pointer// - //expression//
+	//pointer// - //pointer//
 ##
+{{fbdoc item="param"}}
+	##//pointer//##
+		A pointer.
+	##//expression//##
+		A distance expressed as an integer expression.
+
 {{fbdoc item="desc"}}
-	Pointer addition / substraction allows to move the place where a pointer points to . The resulting memory position will be pointer_variable +/- (integer_value* SIZEOF(pointed variable))
+	The first form evaluates to an address that is ##(//expression// * sizeof(pointed to type))## bytes from ##//pointer//##. The seecond form is virtually the same, although the direction is reversed - remember that ##x - y = x + -y##.
+
+	The third form evaluates to the distance from two addresses expressed as an integer. If ##a## and ##b## are pointers of the same type, then ##a = b + (a - b)##.
 
 	Is up to the user to ensure the resulting pointer points to meaningful data.
 
 {{fbdoc item="ex"}}
-%%(qbasic)Dim a(10) As Integer
-Dim pa As Integer Ptr
-Dim i As Integer
+%%(qbasic)dim array(4) as integer
 
-For i = 0 To 10
-	a(i) = i 'Here we place the numbers 0 through 10 into our integer array.
-Next i
+'' point to the first element
+dim p as integer ptr = @array(0)
 
-pa = @a(0) 'Here we set our pointer pa to look at the first element of a.
+'' assign some values to the elements in the array
+for index as integer = 0 to 4
+	*(p + index) = index
+next
 
-For i = 0 To 10
-	Print *pa;  'Here we print the current value at the memory address pa is looking at.
-	pa += 1     'Here we tell the memory address to move ahead by one.
-	'Therefore we will move pa 11 times
-	'and we will print pa(0),pa(1),pa(2) etc...
-Next i
+'' output elements of the array
+for index as integer = 0 to 4
+	print *p ;
+	'' combination assignment operators can be used too,
+	'' same as p = p + 1
+	p += 1
+next
 %%
-Output:
-%%
-012345678910
+	Will give the output,
+
+%%0 1 2 3 4
 %%
 
 {{fbdoc item="diff"}}

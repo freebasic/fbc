@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="STATIC"}}----
-Variable and proecedure declaration modifier depending on context
+Declares variables and object having static storage
 
 {{fbdoc item="syntax"}}##
 	**Static** //symbol//[( //subscripts// )] [ [[KeyPgAs as]] [[DataType DataType]]] [, ...]
@@ -25,35 +25,41 @@ Variable and proecedure declaration modifier depending on context
 		Name of the member to declare or define with parameter list or return value following.
 
 {{fbdoc item="desc"}}
-	Declares local variables and arrays in a procedure so that values are preserved between procedure calls (the values are not destroyed when the procedure is ended).  See ##[[KeyPgDim Dim]]##.
+	Specifies static storage for variables and objects; they are allocated at program startup and deallocated upon exit. Objects are only constructed when execution reaches their defintion however, and destructed upon program exit.
 
-	##**Static**## is used at the end of a ##[[KeyPgFunction Function]]## or ##[[KeyPgSub sub]]## header to indicate that all local variables are ##**Static**## in a procedure and preserved between calls to the procedure.
+	In iterative blocks, like looping [[CatPgControlFlow control flow statements]] or non-recursive procedures, static variables and objects are guaranteed to occupy the same storage throughout multiple instantiations of the block. For example, it's safe for a procedure to return the address of one of its static variables or objects, as it will always occupy the same storage, and will not be destroyed until the program ends.
 
-	##**Static**## is used at the beginning of a member declaration or definition to indicate that the member is a static member function.  Static member functions are not passed a hidden ##[[KeyPgThis this]]## parameter.
+	In recursive blocks, where multiple instantiations of the block occur, static variables and objects are guaranteed to occupy the same storage across all of the blocks. For example, procedures that call themselves - either directly or indirectly - share the same instances of their static variables or objects. 
+
+	When modifying a module-level procedure declaration, ##**STATIC**## specifies all variables and objects declared in the procedure to have static storage.
+
+	When modifying a member procedure declaration, ##**STATIC**## specifies that the member procedure not have an implicit instance argument passed to it, and thus can only access other static members.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-declare sub IsStatic
-'Call the sub the first time
-IsStatic
-'Call it again.
-IsStatic
-
-sub IsStatic
-	static var as integer
-	var += 1
-	Print "In sub ";var;" times."
+%%(qbasic)sub f
+	'' static variables are initialized to 0 by default
+	static i as integer
+	i += 1
+	Print "Number of times called: " & i
 end sub
 
-'output
-'In sub  1 times.
-'In sub  2 times.
+'' the static variable in f() retains its value between
+'' multiple procedure calls.
+f()
+f()
+%%
+	Will output:
+
+%%
+Number of times called: 1
+Number of times called: 2
 %%
 
 {{fbdoc item="diff"}}
-	- STATIC can be used with arrays too, the same way as DIM or REDIM.
+	- ##STATIC## can declare arrays, too.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgMetaStatic Option Static]]##
 	- ##[[KeyPgDeclare Declare]]##
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgSub Sub]]##

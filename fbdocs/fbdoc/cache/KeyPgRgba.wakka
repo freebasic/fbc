@@ -5,7 +5,7 @@ Function to compute valid color value including alpha (translucency) for hi/true
 	[[KeyPgPpdefine #define]] **RGBA**(//r//,//g//,//b//,//a//) (([[KeyPgCuint cuint]](r) [[KeyPgShl shl]] 16) [[KeyPgOr or]] ([[KeyPgCuint cuint]](g) [[KeyPgShl shl]] 8) [[KeyPgOr or]] [[KeyPgCuint cuint]](b) [[KeyPgOr or]] ([[KeyPgCuint cuint]](a) [[KeyPgShl shl]] 24))
 ##
 {{fbdoc item="usage"}}##
-	**RGBA**(//red//, //green//, //blue//, //alpha//)
+	//result// = **RGBA**(//red//, //green//, //blue//, //alpha//)
 ##
 {{fbdoc item="param"}}
 	##//red//##
@@ -74,4 +74,4 @@ imagedestroy img
 	- ##[[KeyPgColor Color]]##
 	- ##[[KeyPgRgb RGB]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

@@ -2,35 +2,37 @@
 Returns a substring of a string.
 
 {{fbdoc item="syntax"}}##
-	**MID**[$](//text//, //start//[, //length//])
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **MID** ( [[KeyPgByref byref]] //str// as [[KeyPgStringtype string]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **MID** ( [[KeyPgByval byval]] //str// as [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **MID** ( [[KeyPgByref byref]] //str// as [[KeyPgStringtype string]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **MID** ( [[KeyPgByval byval]] //str// as [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-		//result// = **Mid**[$]( //text//, //start// )
-			##//or//##
-		//result// = **Mid**[$]( //text//, //start//, //length// )
+		//result// = **Mid**[$]( //str//, //start// [, //n// ] )
 ##
 {{fbdoc item="param"}}
-	##//text//##
-		The string to get a substring from.
+	##//str//##
+		The source string.
 	##//start//##
-		The start position in ##//text//## of the substring.
-	##//length//##
-		The number of characters of substring to get.
+		The start position in ##//str//## of the substring.
+	##//n//##
+		The substring length, in characters.
 
 {{fbdoc item="desc"}}
-	**MID** returns a substring of the string expression //text//, starting at position //start//, //length// characters long.
-
-	If //length// is omitted, then all remaining characters from //start// are returned.
-
-	If the string expression is a [[KeyPgWstring WString]] (Unicode string), **MID** returns a [[KeyPgWstring WString]]. The DOS version does not support Unicode.
+	Returns a substring starting from ##//start//## in ##//str//##. If ##//str//## is empty then the null string (##"####"##) is returned. If ##//start// <= 0## then the null string (##"####"##) is returned.
+	
+	In the first form of ##**Mid**##, all of the remaining characters are returned. In the second form, if ##//n// < 0## or ##//n// >= len(//str//)## then all of the remaining characters are returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-PRINT MID("abcdefg", 3, 2) ' returns "cd"
-PRINT MID("abcdefg", 3)    ' returns "cdefg"
-PRINT MID("abcdefg", 2, 1) ' returns "b"
+%%(qbasic)PRINT MID("abcdefg", 3, 2)
+PRINT MID("abcdefg", 3)
+PRINT MID("abcdefg", 2, 1)
 %%
-
+	will produce the output:
+%%cd
+cdefg
+b
+%%
 A Unicode example:
 ~&Wiki: code rendered this way to allow display of the Unicode characters.
 
@@ -38,11 +40,14 @@ A Unicode example:
 	text = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;!"
 	print mid(text, 6, 4) ' displays "&#1090;, &#1084;"<<::c::
 
+{{fbdoc item="target"}}
+	- DOS does not support the wide-character string versions of **##Mid##**.
+
 {{fbdoc item="diff"}}
-	- QB does not support Unicode
+	- QB does not support Unicode.
 
 {{fbdoc item="see"}}
-	- [[KeyPgInstr INSTR]]
-	- [[KeyPgMidstatement MID (Statement)]]
+	- ##[[KeyPgInstr Instr]]##
+	- ##[[KeyPgMidstatement Mid (Statement)]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

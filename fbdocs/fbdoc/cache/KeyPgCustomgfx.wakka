@@ -1,19 +1,34 @@
 {{fbdoc item="title" value="CUSTOM"}}----
-{{fbdoc item="syntax"}}
-PUT (X,Y),array,CUSTOM,custom_function_ptr
+Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects a custom method.
+
+{{fbdoc item="syntax"}}##
+	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ], **Custom** [, //custom_function_ptr// ]
+##
+{{fbdoc item="param"}}
+	##**Custom**##
+		Required.
+	##//custom_function_ptr//##
+		name of the custom user defined function.
 
 {{fbdoc item="desc"}}
-CUSTOM selects an user custom function as the method for PUT'ting images
+	##**Custom**## selects a custom user defined function as the method for blitting an image buffer.
 
+	The ##Custom## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will recieve the source and destination pixel values, and a data pointer passed by the PUT function. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
+
+	##[[KeyPgDeclare declare]] [[KeyPgFunction function]] //identifier// ( [[KeyPgByval byval]] //source_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //destination_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //parameter// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]##
+
+	##//identifier//## is the name of the function. Can be anything.
+	##//source_pixel//## is the current pixel value of the source image.
+	##//destination_pixel//## is the current pixel value of the destination image.
+	##//parameter//## is the parameter that is passed by the PUT command.  If it was omitted, its value will be zero.
 
 {{fbdoc item="ex"}}
-	         For an example see ##[[KeyPgPutgraphics Put (Graphics)]]##.
+	For an example see ##[[KeyPgPutgraphics Put (Graphics)]]##.
 
 {{fbdoc item="diff"}}
-	- New to Freebasic
-	- 
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- [[KeyPgPutgraphics PUT]]
-	
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+	- ##[[KeyPgPutgraphics Put (Graphics)]]##
+
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

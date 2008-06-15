@@ -4,12 +4,17 @@ Graphics function to query for and retrieve system events.
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ScreenEvent""** ( [[KeyPgByval byval]] event [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
+{{fbdoc item="usage"}}##
+	//result// = **""ScreenEvent""**( [ //event// ] )
+##
 {{fbdoc item="param"}}
 	##//event//##
 		specifies the buffer where the function should store the event data
 
-{{fbdoc item="desc"}}
+{{fbdoc item="ret"}}
+	Returns -1 if there are pending events to be retrieved, 0 otherwise.
 
+{{fbdoc item="desc"}}
 	This function returns the latest available system event from the internal GfxLib events queue. By "event" we mean any mouse or keyboard activity for example.
 
 	The event data if available will be copied into the buffer pointed to by the ##//event//## parameter; this buffer must currently be at least 5 integers long (20 bytes). The first integer will contain the event type ID, while the remaining 4 integers will hold sensitive data to the event type. The fbgfx.bi header file contains a definition of the ##EVENT## user datatype, whose memory layout is compatible with the event data returned by this function; this can be used to ease the interpretation of the event data. Here we report the ##EVENT## structure for clarity:
@@ -134,7 +139,7 @@ do
 loop%%
 
 {{fbdoc item="target"}}
-	- SCREENEVENT does not work in the DOS version of FB as this OS does'nt have an event queue.
+	- ##**Screenevent**## does not return window related events in the DOS version, but does return input events.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
@@ -144,4 +149,4 @@ loop%%
 	- ##[[KeyPgMultikey Multikey]]##
 	- ##[[KeyPgGetmouse Getmouse]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

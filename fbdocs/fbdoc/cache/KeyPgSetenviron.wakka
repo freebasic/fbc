@@ -5,7 +5,7 @@ Sets a system environemental variable.
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setenviron** ( [[KeyPgByref byref]] //varname// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	SETENVIRON //varname//
+	//result// = **Setenviron**( //varname// )
 ##
 {{fbdoc item="param"}}
 	##//varname//##
@@ -24,7 +24,7 @@ shell "set path" 'shows the new value of path
 %%
 
 {{fbdoc item="diff"}}
-	- It was called just ENVIRON in QB
+	- In QB, ##**Setenviron**## was called ##**Environ**##.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgEnviron Environ]]##

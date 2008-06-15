@@ -1,13 +1,13 @@
 {{fbdoc item="title" value="FIELD"}}
 ----
-{{fbdoc item="syntax"}}
-TYPE typename FIELD= 1,2,4
- .....
-END TYPE
-
+{{fbdoc item="syntax"}}##
+[[KeyPgType Type]] //typename// **Field** = { 1 | 2 | 4 }
+	...
+End [[KeyPgType Type]]
+##
 {{fbdoc item="desc"}}
-~~A TYPE variable has its fields aligned to the word length of the system, 4 bytes presently. FIELD modifies the default alignment
-to byte (FIELD 1) or two bytes (FIELD 2). This allows to use a TYPE variable to read/write files with packed data.
+~~A ##[[KeyPgType Type]]## variable has its fields aligned to the word length of the system, 4 bytes presently. ##**Field**## modifies the default alignment
+to one byte (##**Field**## 1) or two bytes (##**Field**## 2). This helps ""FreeBASIC"" maintain compatibility with structures created in other languages.
 
 {{fbdoc item="ex"}}
 %%(qbasic)type bitmap_header field = 1
@@ -31,11 +31,11 @@ end type
 
 dim bmp_header as bitmap_header
 
-'Open up bmp.bmp and get it's header data:
+'Open up bmp.bmp and get its header data:
 'Note: Will not work without a bmp.bmp to load . . .
 open "bmp.bmp" for binary as #1
 
-	get #1,,bmp_header
+	get #1, , bmp_header
 	
 close #1
 
@@ -45,8 +45,8 @@ sleep
 
 %%
 
-{{fbdoc item="diff"}}
-~-In -lang qb, the FIELD is always one, no padding is ever done, as in QB.
+{{fbdoc item="lang"}}
+~-In //-lang qb//, the ##**Field**## is always one, no padding is ever done, as in QB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgType Type]]##

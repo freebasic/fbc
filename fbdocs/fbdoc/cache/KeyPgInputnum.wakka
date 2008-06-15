@@ -2,46 +2,45 @@
 Read a number of characters from console or file
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Input**( //num// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Input**( //num// [[KeyPgAs as]] [[KeyPgInteger integer]], [#]filenum [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Input** [[KeyPgOverload overload]] ( //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Input** ( //n// [[KeyPgAs as]] [[KeyPgInteger integer]], //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Input**[$]( //num// )
-//or//
-	//result// = **Input**[$]( //num//, [#]//filenum// )
+	//result// = **Input**[$]( //n// [, [#]//filenum// ] )
 ##
 {{fbdoc item="param"}}
-	##//num//##
-		number of bytes to read
+	##//n//##
+		Number of bytes to read.
 	##//filenum//##
-		file number of an open file
+		File number of a bound file or device.
 
 {{fbdoc item="ret"}}
-	Returns the item read
+	Returns a [[KeyPgStringtype String]] of the characters read.
 
 {{fbdoc item="desc"}}
-	Num must be a number 0 to 255 and filenum must be the slot of a file currently open for ##**Input**##
-The first version waits for the user to input 'num' characters at the keyboard and returns them in a string. Extended keys are not read. The characters are not echoed to the screen.
+	Reads a number of characters from the console, or a bound file/device specified by ##//filenum//##.
 
-	The second version reads two characters from a file and updates the pointer
+	The first version waits for and reads ##//n//## characters from the keyboard buffer. Extended keys are not read. The characters are not echoed to the screen.
+
+	The second version waits for and reads ##//n//## characters from a file or device. The file position is updated.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as string
-PRINT "Select a color number" 
-PRINT "1.-BLUE"
-PRINT "2.-RED"
-PRINT "3.-GREEN"
+%%(qbasic)print "Select a color by number" 
+print "1. blue"
+print "2. red"
+print "3. green"
+dim choice as string
 do
- a=input(1)
-loop until a>="1" and a<="3"
+   choice = input(1)
+loop until choice >= "1" and choice <= "3"
 %%
 
 {{fbdoc item="diff"}}
-	- None
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInput Input]]##
-	- ##[[KeyPgGetkey  Getkey]]##
+	- ##[[KeyPgWinput Winput()]]##
+	- ##[[KeyPgGetkey Getkey]]##
 	- ##[[KeyPgInkey Inkey]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}{{fbdoc item="back" value="CatPgInput|User Input"}}

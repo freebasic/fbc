@@ -1,52 +1,56 @@
-{{fbdoc item="title" value="ASC"}}
-----
-Function that returns the corresponding integer representation of a character.
+{{fbdoc item="title" value="ASC"}}----
+Returns the corresponding ASCII or Unicode integer representation of a character
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Asc** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //string// [[KeyPgAs as]] [[KeyPgString string]] [ , [[KeyPgByval byval]] //position// [[KeyPgAs as]] [[KeyPgInteger integer]] ] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Asc** ( [[KeyPgByval byval]] //string// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] [ , [[KeyPgByval byval]] //position// [[KeyPgAs as]] [[KeyPgInteger integer]] ] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Asc** ( [[KeyPgByval byval]] //string// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] [ , [[KeyPgByval byval]] //position// [[KeyPgAs as]] [[KeyPgInteger integer]] ] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Asc** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByval byval]] //position// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Asc** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //position// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Asc** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //position// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Asc**( //string// [, //position// ] )
+	//result// = **Asc**( //str// [, //position// ] )
 ##
 {{fbdoc item="param"}}
-	##//string//##
-		A ##[[KeyPgString String]]##, ##[[KeyPgZstring ZString]]##, or ##[[KeyPgWstring WString]]## with at least one character.
+	##//str//##
+		The source string.
 	##//position//##
-		Optional one-based offset from the beginning of the string, in the range [1..##[[KeyPgLen Len]](//string//)##].
+		The position in the string of a character.
 
 {{fbdoc item="ret"}}
-	The ASCII or Unicode integer representation of the first character of ##//string//##, or the character at ##//position//##, if specified.
+	The ASCII or Unicode integer representation of the character at ##//position//## in ##//str//##.
 
 {{fbdoc item="desc"}}
-	If ##//string//## is a ##[[KeyPgString String]]## or a ##[[KeyPgZstring ZString]]##, ##Asc## returns the [[CptAscii ASCII]] code value for the first character in ##//string//##.
-	If ##//string//## is a ##[[KeyPgWstring WString]]##, ##Asc## returns the [[CptAscii Unicode]] value for the first character in ##//string//##.
-	
-	By default, the function will return the code of the first character in the string.  Using the ##//position//## parameter, the  code for any character in the string may be returned.  
+	If ##//str//## is a ##[[KeyPgString String]]## or a ##[[KeyPgZstring ZString]]##, an [[CptAscii ASCII]] code value is returned.
 
-	The function returns zero (0) if the string is a zero length string, ##//position//## is less than one (1), or ##//position//## is greater than the number of characters in ##//string//##.
+	If ##//str//## is a ##[[KeyPgWstring WString]]##, a [[CptAscii Unicode]] code value is returned.
+	
+	The function returns zero (0) if the string is a zero length string, ##//position//## is less than one (1), or ##//position//## is greater than the number of characters in ##//str//##.
 	
 	##[[KeyPgChr Chr]]## performs the opposite function for ASCII strings, while ##[[KeyPgWchr WChr]]## is the opposite for Unicode strings, returning a string containing the character represented by the code passed as an argument.
 
 {{fbdoc item="ex"}}
-~%%(qbasic)
-print "the ascii code of 'a' is:"; asc("a") '' displays "the ascii code of 'a' is: 97".
-%%
-
-~%%(qbasic)
+%%(qbasic)print "the ascii code of 'a' is:"; asc("a")
 print "the ascii code of 'b' is:"; asc("abc", 2)
+%%
+	will produce the output:
+
+%%the ascii code of 'a' is: 97
+the ascii code of 'b' is: 98
 %%
 
 Unicode example (Note to documentation editors: don't put inside ""%%(qbasic)"" markers or the Russian text will disappear!)
 
-	##dim a as wstring * 11
-	a="&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;"
-	print "the Unicode of the first char of " & a & " is: " & asc(a) ' displays "the ascii code of 'a' is: 1055"
-##
+<<##dim a as wstring * 11
+a = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;"
+print "the Unicode of the second char of " & a & " is: " & asc(a)
+##<<::c::	will produce the output:
+<<##the Unicode of the second char of &#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088; is: 1088
+##<<::c::
+{{fbdoc item="target"}}
+	- DOS does not support the wide-character string version of ##**ASC**##.
+
 {{fbdoc item="diff"}}
 	- The optional ##//position//## argument is new to FreeBasic.
-	- QBasic did not support Unicode strings.
+	- QB does not support the wide-character string version of ##**ASC**##
 
 {{fbdoc item="see"}}
 	- [[CptAscii ASCII Character Codes]]

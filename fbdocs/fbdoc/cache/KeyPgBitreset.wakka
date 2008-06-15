@@ -2,10 +2,10 @@
 Macro that clears a bit in an integer.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **BITRESET**( //value//, //bit_number// ) ((//value//) [[KeyPgAnd and]] [[KeyPgNot not]] (1 [[KeyPgShl shl]] (//bit_number//)))
+	[[KeyPgPpdefine #define]] **Bitreset**( //value//, //bit_number// ) ((//value//) [[KeyPgAnd and]] [[KeyPgNot not]] (1 [[KeyPgShl shl]] (//bit_number//)))
 ##
 {{fbdoc item="usage"}}##
-	//result// = **BITRESET**( //value//, //bit_number// )
+	//result// = **Bitreset**(//value//, //bit_number//)
 ##
 {{fbdoc item="param"}}
 	##//value//##
@@ -18,22 +18,18 @@ Macro that clears a bit in an integer.
 
 {{fbdoc item="desc"}}
 	Macro returning ##//value//## with the bit ##//bit_number//## reset to 0.
-	##foo = **BITRESET**( bar, 5 )##  does the same as ##foo = bar and not (1 shl 5)##.
+	##foo = **Bitreset**( bar, 5 )##  does the same as ##foo = bar and not (1 shl 5)##.
 
 	To reset the bit on a 64 bit integer, pass the ##//bit_number//## as a 64 bit integer.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-PRINT BITRESET(5,0)
+print bitreset(5,0)
+print hex(bitreset(&h8000000000000000,63LL))
 %%
-%%
-4
-%%
+	will produce the output:
 
-%%(qbasic)
-PRINT Hex(BITRESET(&h8000000000000000,63LL))
-%%
-%%
+%%4
 0
 %%
 
@@ -41,7 +37,7 @@ PRINT Hex(BITRESET(&h8000000000000000,63LL))
 	- New to FreeBasic.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgBit BIT]]##
-	- ##[[KeyPgBitset BITSET]]##
+	- ##[[KeyPgBit Bit]]##
+	- ##[[KeyPgBitset Bitset]]##
 	
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

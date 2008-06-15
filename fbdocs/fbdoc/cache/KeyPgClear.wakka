@@ -2,10 +2,10 @@
 Clears or initializes the contents of an array.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Clear** [[KeyPgCdecl cdecl]] ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //value// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByval byval]] //bytes// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Clear** [[KeyPgCdecl cdecl]] ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //value// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByval byval]] //bytes// [[KeyPgAs as]] [[KeyPgInteger integer]] )
 ##
 {{fbdoc item="usage"}}##
-	CLEAR( //dst// , //value// , //bytes// )
+	**Clear**( //dst//, //value//, //bytes// )
 ##
 {{fbdoc item="param"}}
 	##//dst//##

@@ -1,17 +1,23 @@
 {{fbdoc item="title" value="TRANS"}}----
-{{fbdoc item="syntax"}}
-PUT (X,Y),array,TRANS
+Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects transparent background as the blitting method.
+
+{{fbdoc item="syntax"}}##
+	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ], **Trans**
+##
+{{fbdoc item="param"}}
+	##**Trans**##
+		Required.
 
 {{fbdoc item="desc"}}
-TRANS selects transparent background as the method for PUT'ting images
+	##**Trans**## selects transparent background as the method for blitting an image buffer.
 
 {{fbdoc item="ex"}}
-	         For an example see ##[[KeyPgPutgraphics Put (Graphics)]]##.
+	For an example see ##[[KeyPgPutgraphics Put (Graphics)]]##.
 
 {{fbdoc item="diff"}}
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-	- [[KeyPgPutgraphics PUT]]
-	
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+	- ##[[KeyPgPutgraphics Put (Graphics)]]##
+
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="YEAR"}}----
-Date function to return the year for a specified [[DtDateSer Date Serial]]
+Gets the year from a [[DtDateSer Date Serial]]
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Year** ( [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//result// = **Year**(//date_serial//)
+	//result// = **Year**( //date_serial// )
 ##
 {{fbdoc item="param"}}
 	##//date_serial//##
@@ -21,9 +21,10 @@ Date function to return the year for a specified [[DtDateSer Date Serial]]
 
 {{fbdoc item="ex"}}
 %%(qbasic)#include "vbcompat.bi"
-dim a as double
-a=dateserial (2005,11,28)+timeserial(7,30,50)
-print format(a,"yyyy/mm/dd hh:mm:ss ") ;year(a)
+
+dim a as double = dateserial (2005, 11, 28) + timeserial(7, 30, 50)
+
+print format(a, "yyyy/mm/dd hh:mm:ss "); year(a)
 %%
 
 {{fbdoc item="diff"}}

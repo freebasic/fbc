@@ -2,10 +2,17 @@
 Statement to erase arrays
 
 {{fbdoc item="syntax"}}##
-	**Erase** //array// [, //array//...]
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Erase** ( array [[KeyPgAs as]] [[KeyPgAny any]] [, ... ] )
 ##
+{{fbdoc item="usage"}}##
+	**Erase**( //array0// [, //array1// ... //arrayN// ] )
+##
+{{fbdoc item="param"}}
+	##//array//##
+		An array to be erase.
+
 {{fbdoc item="desc"}}
-	Erases dynamic arrays from memory, or clears all elements in a static array.
+	Erases one or more dynamic arrays from memory, or clears all elements in a static array.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

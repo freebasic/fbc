@@ -5,7 +5,7 @@ Statement to set the current system time
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Settime** ( [[KeyPgByref byref]] //newtime// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	**Settime** //newtime//
+	//result// = **Settime**( //newtime// )
 ##
 {{fbdoc item="param"}}
 	##//newtime//##

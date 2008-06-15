@@ -2,10 +2,10 @@
 Macro to return the high byte of an expression
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **HIBYTE**(//x//) (([[KeyPgCuint CUint]](//x//) [[KeyPgAnd and]] &h0000FF00) [[KeyPgShr shr]] 8)
+	[[KeyPgPpdefine #define]] **Hibyte**( //x// ) (([[KeyPgCuint CUint]](//x//) [[KeyPgAnd and]] &h0000FF00) [[KeyPgShr shr]] 8)
 ##
 {{fbdoc item="usage"}}##
-	//result// = **HIBYTE**(//x//)
+	//result// = **Hibyte**(//x//)
 ##
 {{fbdoc item="param"}}
 	##//x//##

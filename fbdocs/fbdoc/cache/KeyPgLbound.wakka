@@ -2,7 +2,10 @@
 Returns the lower bound of an array's dimension
 
 {{fbdoc item="syntax"}}##
-	**Lbound**(//array//[, //dimension//])
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Lbound** ( array [[KeyPgAs as]] [[KeyPgAny any]] )
+##
+{{fbdoc item="usage"}}##
+	**Lbound**( //array// [, //dimension// ] )
 ##
 {{fbdoc item="param"}}
 	##//array//##

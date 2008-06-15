@@ -1,16 +1,35 @@
 {{fbdoc item="title" value="STR"}}----
-Converts a numeric expression to a ##[[KeyPgStringtype String]]##.
+Returns a string representation of a number or Unicode character string
 
 {{fbdoc item="syntax"}}##
-	**Str** ( //number// )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Str** ( //number// )
+	//result// = **Str**[$]( //number// )
+		//##or##//
+	//result// = **Str**[$]( //string// )
 ##
-{{fbdoc item="desc"}}
-	##**Str**## will convert a //number// into a string. 
+{{fbdoc item="param"}}
+	##//number//##
+		Numeric expression to convert to a string.
+	##//string//##
+		String expression to convert to a string.
 
-	For example, ##**Str**(3)## will become "3", or ##**Str**(3.33)## will become "3.33".
+{{fbdoc item="desc"}}
+	##**Str**## converts numeric variables to their string representation. It is the ##[[KeyPgString String]]## equivalent to ##[[KeyPgWstr Wstr]]##.
+
+	##**Str**## also converts Unicode character strings to ASCII character strings. If an ASCII character string is given, that string is returned unmodified.
 
 	##**Str**## is the opposite of the ##[[KeyPgVal Val]]## function, which converts a string into a number.
 
@@ -23,13 +42,18 @@ b = str(a)
 print a, b
 %%
 
+{{fbdoc item="lang"}}
+	- For -lang qb, ##**Str**## will left pad a positive number with a space.
+
+{{fbdoc item="target"}}
+	- DOS does not support the wide-character string version of ##**Str**##.
+
 {{fbdoc item="diff"}}
-	- For -lang qb, none.  STR will pad a positive number with a space, as in QB.
-	- For -lang fb or deprecated, STR will not return a space in front of a positive number.
+	- QB does not support the wide-character string version of ##**Str**##.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgVal Val]]##
 	- ##[[KeyPgChr Chr]]##
 	- ##[[KeyPgAsc Asc]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

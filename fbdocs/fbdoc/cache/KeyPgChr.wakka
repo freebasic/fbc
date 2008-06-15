@@ -1,18 +1,25 @@
-{{fbdoc item="title" value="CHR"}}
-----
-Function that returns a string of characters from integer values
+{{fbdoc item="title" value="CHR"}}----
+Returns a string of characters from one or more ASCII integer values
 
-{{fbdoc item="syntax"}}
-	**Chr** [$]( //expression// [, ...] )
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] Chr ( [[KeyPgByval byval]] //ch// [[KeyPgAs as]] [[KeyPgInteger integer]] [, ... ] ) [[KeyPgAs as]] [[KeyPgString string]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Chr**[$]( //ch0// [, //ch1// ... //chN// ] )
+##
+{{fbdoc item="param"}}
+	##//ch//##
+		The [[CptAscii ASCII]] integer value of a character.
+
+{{fbdoc item="ret"}}
+	Returns a string contaning the character(s).
 
 {{fbdoc item="desc"}}
-	**Chr** returns a string containing the character represented by the [[CptAscii ASCII]] code passed to it. For example, ##**Chr**(97)## returns "a".
+	##**Chr**## returns a string containing the character(s) represented by the [[CptAscii ASCII]] values passed to it.
 
-	**Chr** with multiple arguments produces a string with all of the characters represented by the [[CptAscii ASCII]] codes passed to it, in order.
+	When ##**Chr**## is used with numerical constants or literals, the result is evalutated at compile-time, so it can be used in variable initializers.
 
-	When **Chr** is used with constants or literals which can be evaluated at compile time, it can be used in initializers.
-
-	##[[KeyPgAsc Asc]]## performs the opposite function, returning a number containing the [[CptAscii ASCII]] code represented by a string.
+	##[[KeyPgAsc ASC]]## performs the opposite function, returning the [[CptAscii ASCII]] code of a character represented by a string.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -28,8 +35,8 @@ dim s as string = chr(97, 98, 99)
 %%
 
 {{fbdoc item="diff"}}
-	- Accepts multiple arguments
-	- Evaluated at compile time when used with constants
+	- Accepts multiple integer values as arguments.
+	- Evaluated at compile time when used with constants or literals.
 
 {{fbdoc item="see"}}
 	- [[CptAscii ASCII Character Codes]]

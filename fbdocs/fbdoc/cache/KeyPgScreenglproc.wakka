@@ -9,7 +9,6 @@ Function to get the address of an OpenGL procedure
 		name of the procedure to retrieve the address of
 
 {{fbdoc item="desc"}}
-
 	This function can be used to get the address of any OpenGL procedure, to be used to retrieve the pointers to new functions associated with OpenGL extensions. If given procedure named ##//procname//## cannot be found, ##**screenglproc**## will return NULL (0).
 
 {{fbdoc item="ex"}}
@@ -40,4 +39,4 @@ end if
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 	- ##[[KeyPgScreencontrol ScreenControl]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

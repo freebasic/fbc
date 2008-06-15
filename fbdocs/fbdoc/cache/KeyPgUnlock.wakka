@@ -2,8 +2,8 @@
 Removes a previous access restriction (lock) on a file.
 
 {{fbdoc item="syntax"}}##
-	**Unlock** #//filenum//[, //record// ]
-	**Unlock** #//filenum//,[ //start// ] TO //end//
+	**Unlock** #//filenum// [, //record// ]
+	**Unlock** #//filenum//, [ //start// ] TO //end//
 ##
 {{fbdoc item="param"}}
 	##//filenum//##

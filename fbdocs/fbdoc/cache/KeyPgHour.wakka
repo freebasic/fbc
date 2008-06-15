@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="HOUR"}}----
-Date function to return the hours for a specified [[DtDateSer Date Serial]] 
+Gets the hour of day from a [[DtDateSer Date Serial]] 
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hour** ( [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//result// = **Hour**(//dateserial//)
+	//result// = **Hour**( //dateserial// )
 ##
 {{fbdoc item="param"}}
 	##//date_serial//##
@@ -22,9 +22,10 @@ Date function to return the hours for a specified [[DtDateSer Date Serial]]
 {{fbdoc item="ex"}}
 %%(qbasic)
 #include "vbcompat.bi"
-Dim ds As Double
-ds = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)
-Print Format(ds, "yyyy/mm/dd hh:mm:ss "); Hour(ds)
+
+dim ds as double = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)
+
+print format(ds, "yyyy/mm/dd hh:mm:ss "); Hour(ds)
 %%
 
 {{fbdoc item="diff"}}

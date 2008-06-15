@@ -2,7 +2,7 @@
 Stream I/O function to terminate access to a device.
 
 {{fbdoc item="syntax"}}##
-	**Close** [[#]//filenum//][, [#]//filenum//]....
+	**Close** [[#]//filenum// ] [, [#]//filenum// ...]
 ##
 {{fbdoc item="param"}}
 	##//filenum//##

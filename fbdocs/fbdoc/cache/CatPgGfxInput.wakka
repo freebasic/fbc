@@ -9,6 +9,8 @@ Procedures for working with mice, gaming devices and keyboards.
 <<{{anchor name="MOUSEJOY"}}{{fbdoc item="section" value="Mouse and Joystick Input"}}
 	=={{fbdoc item="keyword" value="KeyPgGetmouse|GETMOUSE"}}==
 		Gets button and axis information for the mouse.
+	=={{fbdoc item="keyword" value="KeyPgSetmouse|SETMOUSE"}}==
+		Sets position and visibility of the mouse cursor.
 	=={{fbdoc item="keyword" value="KeyPgGetjoystick|GETJOYSTICK"}}==
 		Gets button and axis information for gaming devices.
 <<>>{{anchor name="KEYBOARD"}}{{fbdoc item="section" value="Keyboard Input"}}

@@ -5,9 +5,7 @@
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Threadcreate** ( [[KeyPgByval byval]] //proc// [[KeyPgAs as]] [[KeyPgSub sub]] ( [[KeyPgByval byval]] [[KeyPgAs as]] [[KeyPgInteger integer]] ), [[KeyPgByval byval]] //param// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Threadcreate** ( //proc// )
-		##//Or//##
-	//result// = **Threadcreate** ( //proc//, //param// )
+	//result// = **Threadcreate** ( //proc// [, //param// ] )
 ##
 {{fbdoc item="param"}}
 	##//proc//##
@@ -16,7 +14,7 @@
 		Optional integer argument for the ##[[KeyPgSub Sub]]## pointed to by //proc// (it can be an integer, or a pointer to a structure or an array if more arguments are needed). //param// is passed ##[[KeyPgByval Byval]]## so it can't be used to return a result.
 
 {{fbdoc item="ret"}}
-	**Threadcreate** returns an ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle to the thread created. If the handle is 0, the thread creation has failed.
+	**Threadcreate** returns an ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle to the thread created, or the null pointer (0) on failure.
 
 {{fbdoc item="desc"}}
 	The user function is started as a thread executes in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or using the waiting times in the main program.

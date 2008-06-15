@@ -1,12 +1,11 @@
-{{fbdoc item="title" value="ALLOCATE"}}
-----
+{{fbdoc item="title" value="ALLOCATE"}}----
 Allocates a certain number of bytes from the free store.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Allocate**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-		//storage// = Allocate( //count// )
+	//result// = **Allocate**( //count// )
 ##
 {{fbdoc item="param"}}
 	##//count//##
@@ -20,7 +19,7 @@ Allocates a certain number of bytes from the free store.
 
 	Allocated memory must be deallocated, or returned back to the free store, with ##[[KeyPgDeallocate Deallocate]]## when no longer needed.
 
-~&**##Allocate##** is an alias for the C runtime library's **##malloc##** function, which is not guaranteed to be thread safe in all platforms.
+~&##**Allocate**## is an alias for the C runtime library's ##**malloc**## function, which is not guaranteed to be thread safe in all platforms.
 
 {{fbdoc item="ex"}}
 %%(qbasic)'' This program uses the ALLOCATE(...) function to create a buffer of 15 integers that is

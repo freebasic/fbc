@@ -53,6 +53,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **compiler directives**
 	These are instructions included in the text of the program that affect the way the compiler behaves.  For instance the compiler might be directed to include one section of code or another of depending on the target operating system.
 
+**compound statement**
+	A statement composed one or more additional statements. Typically, a compound statement has a beginning (opening statement), a middle (a statement block) and an end (closing or ending statement), while some have additional parts. Examples of compound statements would be ##[[KeyPgIfthen IF]]## and ##[[KeyPgFunction FUNCTION]]##.
+
 **constant**
 	A symbol that retains a consistent value throughout the execution of the program. See ##[[KeyPgConst Const]]##.
 
@@ -216,7 +219,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **object code**
 
 **operand**
-	One of the arguments to an operator.  For example in ##a = b + c##, a,b, and c are operands.  + and = are operators.
+	One of the arguments passed to an operator.  For example, in the expression ##a = b + c##, the operands are ##a##, ##b## and ##c##, while the operators are ##=## and ##+##.
 
 **operator**
 	A function taking one or more operands (arguments) and returning a value.  Operators can work on built-in data types, or can be overloaded to work on user defined types.  See ##[[CatPgOperators Operators]]##.
@@ -281,6 +284,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **stack (FreeBASIC memory)**
 	The place in memory where FB puts all the variables your program uses, apart from shared variables, string data and dynamic arrays.  Each time you call a procedure, FB puts all its variables on the stack, and when the procedure exits, it takes them all off again.
 	It is quite small compared to the amount of system memory, and its size is fixed at compile time - the default size is 1024 kilobytes.  If a program runs out of stack space, it exits abruptly.
+
+**statement block**
+	One or more lines of code bookended by a compound statement.
 
 **static library**
 	A library that is linked into a program at link time. There is one copy of the library for each executable that links to it. All data is executable specific. See ##[[ProPgStaticLibraries Static Libraries]]##.

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="VARIABLE INITIALIZERS"}}
-----
+{{fbdoc item="title" value="Variable Initializers"}}----
 Variable initializers are supported for initializing Arrays, variables and UDTs.
 
 {{fbdoc item="syntax"}}##

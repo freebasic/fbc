@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="TIMESERIAL"}}----
-Date function to return a [[DtDateSer Date Serial]] for the specified hours, minutes, and seconds
+Gets a [[DtDateSer Date Serial]] for the specified hours, minutes, and seconds
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeSerial""** ( [[KeyPgByval byval]] //hour// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //minute// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //second// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//result// = **""TimeSerial""**(//hours//, //minutes//, //seconds//)
+	//result// = **""TimeSerial""**( //hours//, //minutes//, //seconds// )
 ##
 {{fbdoc item="param"}}
 	##//hour//##
@@ -28,9 +28,10 @@ Date function to return a [[DtDateSer Date Serial]] for the specified hours, min
 {{fbdoc item="ex"}}
 %%(qbasic)
 #include "vbcompat.bi"
-Dim ds As Double
-ds = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)
-Print Format(ds, "yyyy/mm/dd hh:mm:ss ")
+
+Dim ds As Double = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)
+
+Print Format(ds, "yyyy/mm/dd hh:mm:ss")
 %%
 
 {{fbdoc item="diff"}}

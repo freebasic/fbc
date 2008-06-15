@@ -2,15 +2,13 @@
 Returns files and/or directories that match //file_spec// and //attrib_mask//.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByref byref]] //file_spec// [[KeyPgAs as]] [[KeyPgStringtype string]] = "" , [[KeyPgByval byval]] //attrib_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = &h21,  [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0) [[KeyPgAs as]] [[KeyPgStringtype string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByref byref]] //file_spec// [[KeyPgAs as]] [[KeyPgStringtype string]] = "", [[KeyPgByval byval]] //attrib_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = &h21,  [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-	//retstr// = DIR( //file_spec//, //attrib_mask//, //out_attrib// )
-
-	or
-
-	//retstr// = DIR( //out_attrib// )
+	//result// = **Dir**( //file_spec//, //attrib_mask//, //out_attrib// )
+		##//or//##
+	//result// = **Dir**( //out_attrib// )
 ##
 {{fbdoc item="param"}}
 	##//file_spec//##
@@ -21,8 +19,7 @@ Returns files and/or directories that match //file_spec// and //attrib_mask//.
 		Optional ##[[KeyPgInteger integer]] [[KeyPgPtr ptr]]## which is set to the attributes of the file or directory returned.
 
 {{fbdoc item="ret"}}
-	##//retstr//##
-		A ##[[KeyPgStringtype string]]## containing the name of file or directory returned.
+	A ##[[KeyPgStringtype string]]## containing the name of the file or directory returned.
 
 {{fbdoc item="desc"}}
 	Returns files and/or directories that match //file_spec// and //attrib_mask//. The //file_spec// parameter can include wildcards ("*" and/or "?") and paths.
@@ -32,6 +29,8 @@ Returns files and/or directories that match //file_spec// and //attrib_mask//.
 	Constants can be used by including ##"dir.bi"##
 
 	By default //attrib_mask// is set to &h21 (ie.: search for files with the archive or read-only flags set).
+
+	    The value 63 returns all files and directories, incl. "." and "..", but no Volume, the value 8 returns the Volume, even if current directory is not the main directory. 
 
 	The //out_attrib// optional parameter if passed will be loaded with the attributes of the file been returned.
 

@@ -1,20 +1,18 @@
-{{fbdoc item="title" value="DYLIBFREE"}}
-----
+{{fbdoc item="title" value="DYLIBFREE"}}----
 Unloads a dynamic link library from memory.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Dylibfree** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] Any [[KeyPgPointer pointer]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Dylibfree** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPointer pointer]] )
 ##
 {{fbdoc item="usage"}}##
-	DYLIBFREE ( //library// )
+	**Dylibfree**( //library// )
 ##
-
 {{fbdoc item="param"}}
 	##//library//##
 		The handle of a library to unload.
 
 {{fbdoc item="desc"}}
-	DYLIBFREE is used to release at runtime libraries previously linked to your program with DYLIBLOAD. The argument is the handle to the library returned by DYLIBLOAD.
+	##**Dylibfree**## is used to release at runtime libraries previously linked to your program with ##[[KeyPgDylibload Dylibload]]##. The argument is the handle to the library returned by ##[[KeyPgDylibload Dylibload]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -24,6 +22,7 @@ hndl=DYLIBLOAD("MYLIB.DLL")
 DYLIBFREE(hndl)
 
 %%
+
 {{fbdoc item="target"}}
 	- Dynamic link libraries are not available in DOS ,as the OS does'nt support them.
 
@@ -31,8 +30,8 @@ DYLIBFREE(hndl)
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-~- ##[[KeyPgDylibsymbol Dylibsymbol]]##
-~- ##[[KeyPgDylibload Dylibload]]##
-~- ##[[KeyPgExport Export]]##
+	- ##[[KeyPgDylibsymbol Dylibsymbol]]##
+	- ##[[KeyPgDylibload Dylibload]]##
+	- ##[[KeyPgExport Export]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

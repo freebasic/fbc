@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="IMPORT"}}
-----
+{{fbdoc item="title" value="IMPORT"}}----
 External linkage attribute for public data located in DLL's
 
 {{fbdoc item="syntax"}}##
@@ -38,3 +37,4 @@ print "&h" + hex( MyDll_Data )
 {{fbdoc item="see"}}
 	- ##[[KeyPgExtern Extern]]##
 
+{{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

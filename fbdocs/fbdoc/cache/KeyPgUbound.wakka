@@ -2,7 +2,10 @@
 Returns the upper bound of an array's dimension
 
 {{fbdoc item="syntax"}}##
-	**Ubound**(//array//[, //dimension//])
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Ubound** ( array [[KeyPgAs as]] [[KeyPgAny any]] )
+##
+{{fbdoc item="usage"}}##
+	**Ubound**( //array// [, //dimension// ] )
 ##
 {{fbdoc item="param"}}
 	##//array//##

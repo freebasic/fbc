@@ -15,7 +15,7 @@ Returns the ascii code of the first key in the keyboard buffer.
 
 	The key read is not echoed to the screen.
 
-	For a keyword not stopping the program if no key is at the buffer see INKEY$ or GfxLib's ##[[KeyPgMultikey Multikey]]##.
+	For a keyword not stopping the program if no key is at the buffer see ##[[KeyPgInkey Inkey]]## or GfxLib's ##[[KeyPgMultikey Multikey]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)dim a as integer
@@ -31,7 +31,7 @@ loop until a=27
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInkey Inkey$]]##
+	- ##[[KeyPgInkey Inkey]]##
 	- ##[[KeyPgInputnum Input()]]##
 	- ##[[KeyPgMultikey Multikey]]##
 

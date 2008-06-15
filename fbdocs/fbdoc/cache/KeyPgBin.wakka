@@ -2,22 +2,20 @@
 Function that returns a binary (base 2) string representation of an integer.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin**[$] [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin**[$] ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgByte byte]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin**[$] ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin**[$] ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgShort short]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin**[$] ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin**[$] ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin**[$] ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin**[$] ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]	
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]	
 ##
 {{fbdoc item="usage"}}##
-	//result// = ""Bin""[$]( //number// )
-		##//or//##
-	//result// = ""Bin""[$]( //number//, //digits// )
+	//result// = **Bin**[$]( //number// [, //digits// ] )
 ##
 {{fbdoc item="param"}}
 	##//number//##
@@ -34,10 +32,15 @@ Function that returns a binary (base 2) string representation of an integer.
 	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//number//## (8 characters for ##[[KeyPgByte byte]]##, 16 for ##[[KeyPgShort short]]##, 32 for ##[[KeyPgInteger integer]]##, and 64 for ##[[KeyPgLongint longint]]##).
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-PRINT BIN(54321)     '' displays 1101010000110001
-PRINT BIN(54321, 5)  '' displays 10001
-PRINT BIN(54321, 20) '' displays 00001101010000110001
+%%(qbasic)PRINT BIN(54321)
+PRINT BIN(54321, 5)
+PRINT BIN(54321, 20)
+%%
+	will produce the output:
+
+%%1101010000110001
+10001
+00001101010000110001
 %%
 {{fbdoc item="diff"}}
 	- New to FreeBasic

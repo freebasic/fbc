@@ -299,7 +299,6 @@
 	- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
 
 ==MODULARIZING==
-	- {{fbdoc item="keyword" value="KeyPgChain|CHAIN"}}
 	- {{fbdoc item="keyword" value="KeyPgCommon|COMMON"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibfree|DYLIBFREE"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibload|DYLIBLOAD"}}
@@ -327,6 +326,7 @@
 	- {{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}
 
 ==OS / SHELL==
+	- {{fbdoc item="keyword" value="KeyPgChain|CHAIN"}}
 	- {{fbdoc item="keyword" value="KeyPgChdir|CHDIR"}}
 	- {{fbdoc item="keyword" value="KeyPgCommand|COMMAND"}}
 	- {{fbdoc item="keyword" value="KeyPgCurdir|CURDIR"}}

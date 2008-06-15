@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="Getting help with FreeBASIC"}}----
+There are several options available for getting help with FreeBASIC.
+
+==The Manual==
+	This huge user's manual is full of information that can help you learn to write programs using FreeBASIC.  
+
+	The manual is available on-line at [[http://www.freebasic.net/wiki http://www.freebasic.net/wiki]].  And there is a search box at the bottom of every page to help you find what you're looking for.
+
+	If you are unfamiliar with FreeBASIC or the documentation, you may find these pages a good place to start:
+		- [[DocToc Table of Contents]]
+		- [[CatPgProgrammer Programmer's Guide]]
+		- [[GlossaryIndex Glossary]]
+		- [[CompilerFAQ Compiler FAQ]]
+		- [[FaqPggfxlib2 Graphics Library FAQ]]
+		- [[FaqPgrtlib Run-Time Library FAQ]]
+
+	A downloadable CHM format is available from the sourceforge project page at [[http://sourceforge.net/projects/fbc http://sourceforge.net/projects/fbc]] which features a full table of contents, searching capabilities, an index, plus all the same content as the on-line version.
+
+	Searching the manual on or off line would be an excellent place to start in finding help about how to write and use FreeBASIC programs.
+
+==Tutorials==
+	Community created tutorials about FreeBASIC can be found at [[http://www.freebasic.net/wiki/wikka.php?wakka=CommunityTutorials http://www.freebasic.net/wiki/wikka.php?wakka=CommunityTutorials]].  Some selected tutorials are included in this manual.
+
+==""FreeBASIC"" Forum==
+	An active community forum can be found at [[http://www.freebasic.net/forum http://www.freebasic.net/forum]] with several sub-forums.  The forum has a search feature that can help you find help with questions that may have already been asked and answered.  First do a search for your problem, if you can't find anything then post a message in one of the sub-forums.
+
+==Chat==
+	IRC or Internet Relay Chat is a great way to chat with the developers and other very knowledgeable persons.  There are several ways to connect to IRC, if you know what you're doing simply join #freebasic on FreeNode.
+
+	If you haven't the foggiest what IRC is and you have Java installed, you can simply go [[http://www.freebasic.net/index.php/chat here]].
+
+	If you're trying to get help, the most important thing is to be patient, sometimes you won't get a reply right away. But just stick around or check back and the Community will try and assist you.
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

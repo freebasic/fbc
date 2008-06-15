@@ -5,7 +5,7 @@ Function to compute valid color value for hi/truecolor modes.
 	[[KeyPgPpdefine #define]] **RGB**(//r//,//g//,//b//) (([[KeyPgCuint cuint]](r) [[KeyPgShl shl]] 16) [[KeyPgOr or]] ([[KeyPgCuint cuint]](g) [[KeyPgShl shl]] 8) [[KeyPgOr or]] [[KeyPgCuint cuint]](b) [[KeyPgOr or]] &hFF000000)
 ##
 {{fbdoc item="usage"}}##
-	**RGB**(//red//, //green//, //blue//)
+	//result// = **RGB**(//red//, //green//, //blue//)
 ##
 {{fbdoc item="param"}}
 	##//red//##
@@ -16,7 +16,7 @@ Function to compute valid color value for hi/truecolor modes.
 		blue colour component value
 
 {{fbdoc item="ret"}}
-	the combined colour
+	The combined colour.
 
 {{fbdoc item="desc"}}
 	##//Red//##, ##//green//## and ##//blue//## are components ranging 0-255.
@@ -42,4 +42,4 @@ Sleep 'wait before exiting
 	- ##[[KeyPgRgba RGBA]]##
 	- ##[[KeyPgColor Color]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

@@ -1,17 +1,31 @@
 {{fbdoc item="title" value="Installing"}}----
+FreeBASIC installation
 
-==Windows version==
-	- Follow the installer instructions, don't forget to select which external libraries to install, some are not selected by default. FreeBASIC uses the NSIS installer having a strong compression, the download size is cca 5 MB, after extraction the total size is cca 50 MB.
+{{fbdoc item="section" value="Windows"}}
+	Open and run the installer executable, and follow its instructions. Don't forget to check which external libraries are being installed, as some are not selected by default. FreeBASIC uses the NSIS installer having a strong compression. The download size is cca 5 MB, and after extraction the total size is cca 50 MB.
 
+	If successful, FreeBASIC will be installed in ##C:\Program Files\FreeBASIC##, or if you chose a different installation directory, in your chosen directory. Desktop and Start Menu shortcuts will be installed by default as well.
 
-==Linux version==
-	- Unpack the tar gzip archive to any folder.
-	- Run **"sudo ./install.sh -i"** (without quotes) from that directory to install the binaries, libraries and include files into the system as root, at the default location of /usr/share/freebasic. A link to the compiler binary will be created at /usr/bin/fbc. If you don't have root priviledges, you can also install into a custom directory; run the install.sh script with no arguments for more info. Be warned though that installing with no root priviledges will prevent the script from installing a link to the binary into /usr/bin/fbc.
+{{fbdoc item="section" value="Linux"}}
+	Unpack the archive to a temporary folder and navigate to the root FreeBASIC installation directory. For example, if the FreeBASIC package you downloaded was called ##""FreeBASIC-v0.16b-linux.tar.gz""## and was in your home directory, type,
 
-	(Note: to uninstall FreeBASIC, you can run "install.sh -u")
+		##cd##
+			//(change to your home directory)//
+		##mkdir -p tmp && cd tmp##
+			//(attempt to create a temporary directory and change to it)//
+		##tar -xzf ""../FreeBASIC-v0.16b-linux.tar.gz""##
+			//(unpack the archive)//
+		##cd freebasic##
+			//(change to the root installation directory)//
 
+	Run the install script ##install.sh## with the "-i" switch, specifying the installation directory (##/usr/share/freebasic## by default). A symlink to the compiler binary will be created at ##/usr/bin/fbc## if run with root permission. //(Run the install script with no arguments for more info on command-line options)// For example, to install FreeBASIC into the default directory and have a symlink created, type,
 
-==DOS==
+		##sudo ./install.sh -i##
+			//(the default installation)//
+
+	//(Note: to uninstall FreeBASIC, you can run "install.sh -u")//
+
+{{fbdoc item="section" value="DOS"}}
 	- Find a place for FreeBASIC with at least 10 MB free space.
 	- Unpack the ZIP archive, making sure that the directory structure as used inside the archive is preserved ("PKUNZIP -d" for example). 
 	- The top-level directory is named FreeBASIC (will be truncated to "FREEBASI" in DOS without full  LFN support), so you might want to rename it then to a convenient DOS-compliant name not longer than 8 characters and containing no white-spaces, like "FB".
@@ -19,5 +33,8 @@
 
 	(Note: if you are installing the DOS version over the Windows one or vice-versa, rename the fbc.exe file of the previous installation to fbc-win.exe or such, or it will be overwritten by the new one.)
 
+{{fbdoc item="see"}}
+	- [[CompilerRunning Invoking the Compiler]]
+	- [[CompilerCmdLine Compiler Command Line Options]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

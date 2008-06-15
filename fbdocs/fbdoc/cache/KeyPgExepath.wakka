@@ -14,16 +14,14 @@ Returns the path of the running program.
 	Returns the path (the location) of the calling program. This is not necessarily the same as ##[[KeyPgCurdir Curdir]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-DIM A AS STRING
-A = EXEPATH
-PRINT "The exe path is: "; A
+%%(qbasic)dim pathname as string = Exepath
+print "This program's initial directory is: " & pathname
 %%
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCurdir Curdir$]]##
+	- ##[[KeyPgCurdir Curdir]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

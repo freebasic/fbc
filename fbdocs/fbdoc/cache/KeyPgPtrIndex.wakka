@@ -1,34 +1,34 @@
 {{fbdoc item="title" value="[] Pointer Indexing"}}----
-Operator to use a pointer as it were a zero based array
+Operator to use a pointer as if it were a zero based array
 
 {{fbdoc item="syntax"}}##
-	//pointer_variable//[//expression//]  
+	//pointer//**[** //expression// **]**
 ##
-{{fbdoc item="desc"}}
-	Pointer indexing operator [] allows to adress the places contiguous to where a pointer points to. The memory position pointed to is ##//pointer_variable// +/- (//expression// * [[KeyPgSizeof Sizeof]](*//pointed_variable//))##. The pointer itself is not changed.
+{{fbdoc item="param"}}
+	##//pointer//##
+		A variable of pointer type to index.
+	##//expression//##
+		An index as a signed integral value.
 
-	Is up to the user to ensure the resulting pointer points to meaningful data.
+{{fbdoc item="desc"}}
+	This operator returns a reference to a value some distance in memory from a starting address. It is essentially shorthand for **##*(//pointer// + //expression//)##**; both do exactly the same thing. Like pointer arithmetic, any type of ##[[KeyPgPointer POINTER]]## can be indexed except for an ##[[KeyPgAny ANY]]## ##[[KeyPgPointer POINTER]]##. Also, like pointer arithmetic, it is up to the user to make sure meaningful data is being accessed.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-Dim a(10) As Integer
-Dim pa As Integer Ptr
-Dim i as integer
+%%(qbasic)'' initialize a 5-element array
+dim array(4) as integer = { 0, 1, 2, 3, 4 }
 
-For i = 0 To 10
-	a(i)=i 'Here, we'll place the numbers 0 through 10 into the array.
-Next i
-pa=@a(0)
+'' point to the first element
+dim p as integer ptr = @array(0)
 
-For i=0 To 10
-	Print pa[i];'Here, we will print the contents of pa[i] without a 
-	            'carriage return at the end of each print.
-Next i
+'' use pointer indexing to output array elements
+for index as integer = 0 to 4
+	print p[index]
+next
 %%
 
-Will print
-%%
-0 1 2 3 4 5 6 7 8 9 10
+	Will give the output,
+
+%%0 1 2 3 4
 %%
 
 {{fbdoc item="diff"}}

@@ -2,11 +2,11 @@
 Date function to return a [[DtDateSer Date Serial]] from a string.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateValue""** ( //stringdate// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateValue""** ( //stringdate// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgDoubledouble]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//result// = **""DateValue""**(//stringdate//)
+	//result// = **""DateValue""**( //stringdate// )
 ##
 {{fbdoc item="param"}}
 	##//stringdate//##

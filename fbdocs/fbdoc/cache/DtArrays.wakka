@@ -9,17 +9,75 @@ Multi-dimensional container types
 	- See ##[[KeyPgExtern Extern]]## for declaring arrays
 	- See ##[[KeyPgDim Dim]]## and ##[[KeyPgRedim Redim]]## for defining arrays
 
-	Arrays come in two flavors: static and dynamic. Static arrays are allocated at compile-time, on the stack, while dynamic (non-static) arrays are allocated at run-time, on the free store (the heap). FreeBASIC reserves a limited amount of stack space by default (1,024 KB), which may not be enough memory if you have many large static arrays. Dynamic arrays, on the other hand, have the entire free store available to them, and so can potentially be much larger.
+	Arrays come in two flavors: static and dynamic. Static arrays are allocated at compile-time, on the stack, while dynamic (non-static) arrays are allocated at run-time, on the free store (the heap). FreeBASIC reserves a limited amount of stack space by default (1024 KB), which may not be enough memory if you have many large static arrays. Dynamic arrays, on the other hand, have the entire free store available to them, and so can potentially be much larger.
 
-	Wherever an array's memory is located, it's always allocated in a single block. The elements of an array are stored contiguously in memory, that is, one after the other. More specifically, elements are stored in row-major order. So for multi-dimensional arrays, elements with the same highest dimension are next to one another. These elements can be accessed using array notation, or, because they're stored contiguously, pointer notation. !!!WRITEME a brief about the math involved in using pointer notation with multidimensional arrays? WRITEME!!!
+	Whenever an array is defined and allocated, its memory is always allocated in a single block. The elements of an array are stored contiguously in memory, that is, one after the other. More specifically, elements are stored in row-major order - i.e. for multi-dimensional arrays, elements whose positions only differ in their last index are stored next to one another. These elements can be accessed using array notation or, because they're stored contiguously, using pointer notation.
+	Here's an example of how to access a multi-dimensional array using pointer notation:
+	%%(qbasic)
+type arraytype as integer
+
+'set up bounds for a 4d array'
+
+const as integer lb1 = 0, ub1 = 1, _
+	             lb2 = 1, ub2 = 3, _
+	             lb3 = 2, ub3 = 7, _
+	             lb4 = 3, ub4 = 15
+
+dim as arraytype array(lb1 to ub1, _
+	                   lb2 to ub2, _
+	                   lb3 to ub3, _
+	                   lb4 to ub4)
+
+
+'Find the multiplier for each dimension in the array.
+'
+'The last index (mult4) doesn't need to be multiplied by anything
+'
+'The multiplier for the other dimensions is the product of all the sizes of
+'the subsequent array dimensions
+'
+'mult0 is not needed (there is no 0th dimension); it just gives the number of 
+'elements in the array
+
+const as integer mult4 = 1
+const as integer mult3 = (ub4 - lb4 + 1) ' * mult4
+const as integer mult2 = (ub3 - lb3 + 1) * mult3
+const as integer mult1 = (ub2 - lb2 + 1) * mult2
+const as integer mult0 = (ub1 - lb1 + 1) * mult1
+
+
+'get address of first element in array
+dim as arraytype ptr arrayptr = @array(lb1, lb2, lb3, lb4)
+
+dim as integer i1 = 1, i2 = 2, i3 = 3, i4 = 4
+
+'set a value using array notation
+array(i1, i2, i3, i4) = 5
+
+'set the next contiguous value in the array
+array(i1, i2, i3, i4 + 1) = 6
+
+'calculate the pointer index of position in the array - this will automatically 
+'be multiplied by the size of arraytype when you index the pointer
+
+dim i as integer = (i1 - lb1) * mult1 + _
+	               (i2 - lb2) * mult2 + _
+	               (i3 - lb3) * mult3 + _
+	               (i4 - lb4) ' * mult4
+
+
+'sanity check - make sure we're not taken outside the memory of the array
+assert( (i + 1) < mult0)
+
+'find the values we set, using pointer notation
+print arrayptr[i]
+print arrayptr[i + 1]
+%%
 
 	- See [[ProPgArrayIndex Array Indexing]] for accessing elements with array notation
 	- See [[KeyPgPtrIndex Pointer Indexing]] for accessing elements with pointer notation
 
 {{fbdoc item="see"}}
-	- [[ProPgArrayIndex Array Index]]
 	- [[ProPgVariableScope Variable Scope]]
-	- [[KeyPgDim DIM]]
-	- [[KeyPgRedim REDIM]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,31 +1,38 @@
-{{fbdoc item="title" value="LCASE"}}
-----
-Returns a lower case copy of a string.
+{{fbdoc item="title" value="LCASE"}}----
+Returns a lower case copy of a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lcase** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //expression// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lcase** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lcase** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lcase** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Lcase**( //expression// )
+	//result// = **Lcase**( //str// )
 ##
 {{fbdoc item="param"}}
-	##//expression//##
+	##//str//##
 		String to convert to lowercase.
 
 {{fbdoc item="ret"}}
-	Lowercase copy of ##//expression//##.
+	Lowercase copy of ##//str//##.
 
 {{fbdoc item="desc"}}
-	Returns the //expression// string with all letters lower cased.
+	Returns a copy of ##//str//## with all of the letters converted to lower case.
+
+	If ##//str//## is empty, the null string (##"####"##) is returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-print lcase$("Hello World abCDefGH") '' displays "hello world abcdefgh"
+%%(qbasic)print lcase("AbCdEfG")
+%%
+	will produce the output:
+
+%%abcdefg
 %%
 
+{{fbdoc item="see"}}
+	- DOS does not support the wide-character string version of ##**Lcase**##.
+
 {{fbdoc item="diff"}}
-	- None
+	- QB does not support Unicode.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgUcase Ucase]]##

@@ -5,7 +5,7 @@
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Reallocate**( //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-		//storage// = **Reallocate**( //pointer//, //count// )
+		//result// = **Reallocate**( //pointer//, //count// )
 ##
 {{fbdoc item="param"}}
 	##//pointer//##
@@ -59,4 +59,3 @@ Deallocate b   ' Clean up
 	- ##[[KeyPgDeallocate Deallocate]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}
-

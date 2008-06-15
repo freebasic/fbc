@@ -2,24 +2,22 @@
 Temporarily transfers execution to an external program.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Exec**( //program// [[KeyPgAs as]] [[KeyPgString string]], //arguments// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString integer]]
+	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Exec** ( [[KeyPgByref byref]] //program// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //arguments// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-		Exec( //program//, //arguments// )
-			##//or//##
-		//result// = Exec( //program//, //arguments// )
+	//result// = **Exec**( //program//, //arguments// )
 ##
 {{fbdoc item="param"}}
 	##//program//##
-		The program (executable) to transfer control to.
+		The file name (including file path) of the program (executable) to transfer control to.
 	##//arguments//##
-		The command-line arguments to be passed to the program. (Requires at least version 0.16)
+		The command-line arguments to be passed to the program.
 
 {{fbdoc item="ret"}}
 	The exit status of the program, or negative one (-1) if the program could not be executed.
 
 {{fbdoc item="desc"}}
-	Transfers control over to an external program. When the program exits, execution resumes immediately after the call to **Exec**.
+	Transfers control over to an external program. When the program exits, execution resumes immediately after the call to ##**Exec**##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -43,6 +41,8 @@ END IF
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- [[KeyPgCommand COMMAND$]]
+	- ##[[KeyPgChain Chain]]##
+	- ##[[KeyPgRun Run]]##
+	- ##[[KeyPgCommand Command]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

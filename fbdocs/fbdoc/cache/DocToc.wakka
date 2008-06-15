@@ -1,116 +1,128 @@
-{{image class="center" alt="FB Logo" title="FB Logo" url="/images/fblogo.gif" link="RecentChanges"}}{{fbdoc item="title" value="Table of Contents"}}
-<<
-{{fbdoc item="section" value="The Compiler"}}
-	[[CompilerAbout About]]
-	[[CompilerFeatures Main Features]]
-	[[CompilerCredits Credits]]
+{{image class="center" alt="FB Logo" title="FB Logo" url="/images/fblogo.gif" link="RecentChanges"}}{{fbdoc item="title" value="Table of Contents"}}----
+FreeBASIC Manual Table of Contents
 
-	[[CompilerRequirements Requirements]]
-	[[CompilerInstalling Installing]]
-	[[CompilerRunning Running]]
-	[[CompilerCmdLine Using the Command Line]]
-	[[CompilerErrMsg Compiler Error Messages]]
+<<{{anchor name="COMPILER|The Compiler"}}
+	FreeBASIC history, system requirements and comparisons to other languages.
+{{anchor name="LANGUAGE|Language Reference"}}
+	Quick reference to the supported datatypes, control flow statements and more.
+{{anchor name="RTLIB|Runtime Library Reference"}}
+	Procedures and macros that are a part of the FreeBASIC run-time library.
+{{anchor name="GFXLIB|Graphics Library Reference"}}
+	Procedures and macros that are a part of the FreeBASIC graphics library.
+<<>>{{anchor name="FAQS|FAQs"}}
+	Frequently asked questions about FreeBASIC, its compiler and libraries.
+{{anchor name="MISC|Miscellaneous"}}
+	Miscellaneous topics.
+{{anchor name="TABLES|Tables"}}
+	Various tables including ASCII codes and datatype information.
+{{anchor name="CONTRIB|Contributing"}}
+	How and what to contribute to this wiki, and who is contributing now.
+>>::c::
+<<{{anchor name="COMPILER"}}{{fbdoc item="section" value="The Compiler"}}
+	{{fbdoc item="keyword" value="CompilerAbout|About"}}
+	{{fbdoc item="keyword" value="CompilerFeatures|Main Features"}}
+	{{fbdoc item="keyword" value="CompilerCredits|Credits"}}
 
-	[[CompilerQB FreeBasic and Qbasic]]
-	[[CompilerDialects FreeBasic Dialects]]
-	[[LangQB Differences from QB]]
+	{{fbdoc item="keyword" value="CompilerRequirements|Requirements"}}
+	{{fbdoc item="keyword" value="CompilerInstalling|Installing"}}
+	{{fbdoc item="keyword" value="CompilerRunning|Running"}}
+	{{fbdoc item="keyword" value="CompilerCmdLine|Using the Command Line"}}
+	{{fbdoc item="keyword" value="CompilerErrMsg|Compiler Error Messages"}}
 
-{{fbdoc item="section" value="The Language"}}
+	{{fbdoc item="keyword" value="CompilerQB|FreeBASIC and Qbasic"}}
+	{{fbdoc item="keyword" value="CompilerDialects|FreeBASIC Dialects"}}
+	{{fbdoc item="keyword" value="LangQB|Differences from QB"}}
 
-	[[CatPgProgrammer Programmer's Guide]] (W.I.P.)
+	{{fbdoc item="keyword" value="CompilerHelp|Getting Help with FreeBASIC"}}
 
-	[[CatPgFullIndex Alphabetical Keywords List]]
-	[[CatPgFunctIndex Functional Keywords List]]
+{{anchor name="LANGUAGE"}}{{fbdoc item="section" value="Language Reference"}}
+	{{fbdoc item="keyword" value="CatPgProgrammer|Programmer's Guide"}} (W.I.P.)
+
+	{{fbdoc item="keyword" value="CatPgFullIndex|Alphabetical Keywords List"}}
+	{{fbdoc item="keyword" value="CatPgFunctIndex|Functional Keywords List"}}
 
 	{{fbdoc item="subsect" value="Data Types"}}
-		[[CatPgStdDataTypes Standard Data Types]]
-		[[DtConstants Constants]]
-		[[DtVariables Variables]]
-		[[DtArrays Arrays]]
-		[[DtPointers Pointers]]
-		[[CatPgUserDefTypes User Defined Types]]
-		[[CatPgCasting Converting Data Types]]
+		{{fbdoc item="keyword" value="CatPgStdDataTypes|Standard Data Types"}}
+		{{fbdoc item="keyword" value="DtConstants|Constants"}}
+		{{fbdoc item="keyword" value="DtVariables|Variables"}}
+		{{fbdoc item="keyword" value="DtArrays|Arrays"}}
+		{{fbdoc item="keyword" value="DtPointers|Pointers"}}
+		{{fbdoc item="keyword" value="CatPgUserDefTypes|User Defined Types"}}
+		{{fbdoc item="keyword" value="CatPgCasting|Converting Between Data Types"}}
 	
 	{{fbdoc item="subsect" value="Operators"}}
-		[[CatPgOperators Operators List]]
-		[[OpPrecedence Operator Precedence]]
+		{{fbdoc item="keyword" value="CatPgOperators|Operators List"}}
+		{{fbdoc item="keyword" value="OpPrecedence|Operator Precedence"}}
 		
 	{{fbdoc item="subsect" value="Statements"}}
-		[[KeyPgDoloop Do...Loop]]
-		[[KeyPgFornext For...Next]]
-		[[KeyPgIfthen If...Then]]
-		[[KeyPgSelectcase Select Case]]
-		[[KeyPgWhilewend While...Wend]]
-		[[KeyPgScope Scope...End Scope]]
-		[[KeyPgNamespace Namespace...End Namespace]]	
+		{{fbdoc item="keyword" value="KeyPgDoloop|Do...Loop"}}
+		{{fbdoc item="keyword" value="KeyPgFornext|For...Next"}}
+		{{fbdoc item="keyword" value="KeyPgIfthen|If...Then"}}
+		{{fbdoc item="keyword" value="KeyPgSelectcase|Select Case"}}
+		{{fbdoc item="keyword" value="KeyPgWhilewend|While...Wend"}}
+		{{fbdoc item="keyword" value="KeyPgScope|Scope...End Scope"}}
+		{{fbdoc item="keyword" value="KeyPgNamespace|Namespace...End Namespace"}}	
 
 	{{fbdoc item="subsect" value="Procedures""}}
-		[[KeyPgCall Call]]
-		[[KeyPgDeclare Declare]]
-		[[KeyPgFunction Function]]
-		[[KeyPgSub Subroutine]]
-		[[CatPgVarArg Variable Arguments]]
+		{{fbdoc item="keyword" value="KeyPgDeclare|Declare"}}
+		{{fbdoc item="keyword" value="KeyPgFunction|Function"}}
+		{{fbdoc item="keyword" value="KeyPgSub|Subroutine"}}
+		{{fbdoc item="keyword" value="CatPgVarArg|Variable Arguments"}}
+		{{fbdoc item="keyword" value="KeyPgCall|Call"}}
 
 	{{fbdoc item="subsect" value="Other"}}
-		[[KeyPgAsm Inline ASM]]
-		[[ProPgErrorHandling Error Handling]]
-		[[CatPgPreProcess Preprocessor]]
-		[[CatPgDddefines Intrinsic Defines]]
+		{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
+		{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
+		{{fbdoc item="keyword" value="CatPgPreProcess|Preprocessor"}}
+		{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}
+<<>>{{anchor name="RTLIB"}}{{fbdoc item="section" value="Runtime Library Reference"}}
+	{{fbdoc item="keyword" value="CatPgArray|Array Functions"}}
+	{{fbdoc item="keyword" value="CatPgBits|Bit Manipulation"}}
+	{{fbdoc item="keyword" value="CatPgConsole|Console Functions"}}
+	{{fbdoc item="keyword" value="CatPgDate|Date and Time Functions"}}
+	{{fbdoc item="keyword" value="CatPgError|Error Handling Functions"}}
+	{{fbdoc item="keyword" value="CatPgFile|File IO Functions"}}
+	{{fbdoc item="keyword" value="CatPgMath|Mathematical Functions"}}
+	{{fbdoc item="keyword" value="CatPgMemory|Memory Functions"}}
+	{{fbdoc item="keyword" value="CatPgOpsys|Operating System Functions"}}
+	{{fbdoc item="keyword" value="CatPgString|String Functions"}}
+	{{fbdoc item="keyword" value="CatPgThreading|Threading Support Functions"}}
+	{{fbdoc item="keyword" value="CatPgInput|User Input Functions"}}
 
-<<>>
-{{fbdoc item="section" value="Runtime Library"}}
-	[[CatPgArray Array Functions]]
-	[[CatPgBits Bit Manipulation]]
-	[[CatPgConsole Console Functions]]
-	[[CatPgDate Date and Time Functions]]
-	[[CatPgError Error Handling Functions]]
-	[[CatPgFile File IO Functions]]
-	[[CatPgMath Mathematical Functions]]
-	[[CatPgMemory Memory Functions]]
-	[[CatPgOpsys Operating System Functions]]
-	[[CatPgString String Functions]]
-	[[CatPgThreading Threading Support Functions]]
-	[[CatPgInput User Input Functions]]
+{{anchor name="GFXLIB"}}{{fbdoc item="section" value="Graphics Library Reference"}}
+	{{fbdoc item="keyword" value="CatPgGfx2D|2D Drawing Functions"}}
+	{{fbdoc item="keyword" value="CatPgGfxInput|User Input Functions"}}
+	{{fbdoc item="keyword" value="CatPgGfxScreen|Screen Functions"}}
 
+{{anchor name="FAQS"}}{{fbdoc item="section" value="FAQs"}}
+	{{fbdoc item="keyword" value="CompilerFAQ|Compiler FAQ"}}
+	{{fbdoc item="keyword" value="FaqPggfxlib2|Graphics Library FAQ"}}
+	{{fbdoc item="keyword" value="FaqPgrtlib|Run-Time Library FAQ"}}
+	{{fbdoc item="keyword" value="FaqPgxbox|XBox port FAQ"}}
+	{{fbdoc item="keyword" value="FaqDOS|DOS related FAQ"}}
 
-{{fbdoc item="section" value="Graphics Library"}}
-	[[CatPgGfx Graphics Function Index]]
-	[[CatPgGfx2D 2D Drawing Functions]]
-	[[CatPgGfxFile File IO Functions]]
-	[[CatPgGfxInput User Input Functions]]
-	[[CatPgGfxScreen Screen Functions]]
+{{anchor name="MISC"}}{{fbdoc item="section" value="Miscellaneous"}}
+	{{fbdoc item="keyword" value="CVSCompile|Compiling from CVS"}}
+	{{fbdoc item="keyword" value="DtDateSer|Date Serials"}}
+	{{fbdoc item="keyword" value="DebuggerRunning|Debugging"}}
+	{{fbdoc item="keyword" value="GnuLicenses|Licenses"}}
+	{{fbdoc item="keyword" value="ObsoletedKwds|Obsoleted keywords"}}
+	{{fbdoc item="keyword" value="GlossaryIndex|Glossary"}}
 
-{{fbdoc item="section" value="FAQs"}}
-	[[CompilerFAQ Compiler FAQ]]
-	[[FaqPggfxlib2 Graphics Library FAQ]]
-	[[FaqPgrtlib Run-Time Library FAQ]]
-	[[FaqPgxbox XBox port FAQ]]
-	[[FaqDOS DOS related FAQ]]
+{{anchor name="TABLES"}}{{fbdoc item="section" value="Tables"}}
+	{{fbdoc item="keyword" value="CptAscii|ASCII Character Codes"}}
+	{{fbdoc item="keyword" value="TblTruth|Bitwise Operators"}}
+	{{fbdoc item="keyword" value="GfxScancodes|Keyboard Scan Codes"}}
+	{{fbdoc item="keyword" value="OpPrecedence|Operator Precedence"}}
+	{{fbdoc item="keyword" value="TblVarTypes|Variable Types"}}
+	{{fbdoc item="keyword" value="GfxDefPalettes|Default Palettes"}}
 
-{{fbdoc item="section" value="Miscellaneous"}}
-	[[CVSCompile Compiling from CVS]]
-	[[DtDateSer  Date Serials]]
-	[[DebuggerRunning Debugging]]
-	[[GnuLicenses Licenses]]
-	[[ObsoletedKwds Obsoleted keywords]]
-	[[GlossaryIndex Glossary]]
+{{anchor name="CONTRIB"}}{{fbdoc item="section" value="Contributing"}}
+	{{fbdoc item="keyword" value="CompilerContacting|How to contact the developers"}}
+	{{fbdoc item="keyword" value="CompilerReportingBugs|How to report a bug"}}
+	{{fbdoc item="keyword" value="MissingDocs|Docs pages that need to be written"}}
 
-{{fbdoc item="section" value="Tables"}}
-	[[CptAscii ASCII Character Codes]]
-	[[TblTruth Bitwise Operators]]
-	[[GfxScancodes Keyboard Scan Codes]]
-	[[OpPrecedence Operator Precedence]]
-	[[TblVarTypes Variable Types]]
-	[[GfxDefPalettes Default Palettes]]
+	{{fbdoc item="keyword" value="ContributorList|Documentation Contributors"}}
+>>::c::
 
-{{fbdoc item="section" value="Contributing"}}
-	[[CompilerContacting How to contact the developers]]
-	[[CompilerReportingBugs How to report a bug]]
-	[[MissingDocs Docs pages that need to be written]]
-
-	[[ContributorList Documentation Contributors]]
- 	
->>
-
-::c::
 {{fbdoc item="back" value="FBWiki|Main Page"}}

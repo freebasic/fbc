@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="DAY"}}----
-Date function to return the day of the month from a [[DtDateSer Date Serial]]
+Gets the day of the month from a [[DtDateSer Date Serial]]
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Day** ( [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//result// = day(//date_serial//)
+	//result// = **Day**( //date_serial// )
 ##
 {{fbdoc item="param"}}
 	##//date_serial//##
@@ -22,9 +22,10 @@ Date function to return the day of the month from a [[DtDateSer Date Serial]]
 {{fbdoc item="ex"}}
 %%(qbasic)
 #include "vbcompat.bi"
-Dim ds As Double
-ds = DateSerial(2005, 11, 28)
-Print Format(ds, "yyyy/mm/dd "); Day(ds)
+
+dim ds as double = dateserial(2005, 11, 28)
+
+print format(ds, "yyyy/mm/dd "); day(ds)
 %%
 
 {{fbdoc item="diff"}}

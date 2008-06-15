@@ -5,7 +5,7 @@ Graphics statement to load a block of binary data or a BMP from a file.
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bload** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByval byval]] //addr// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0, [[KeyPgByval byval]] //pal// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	**Bload** //filename// [, //addr//]
+	//result// = **Bload**( //filename// [, //addr//] )
 ##
 {{fbdoc item="param"}}
 	##//filename//##
@@ -17,8 +17,7 @@ Graphics statement to load a block of binary data or a BMP from a file.
 
 {{fbdoc item="ret"}}
 	Zero is returned if ##**Bload**## completed successfully, otherwise a non-zero value is returned to indicate failure.
-	
-		
+
 {{fbdoc item="desc"}}
 	##//addr//## is a memory address of where to load data. If omitted or 0 (NULL), data is loaded on the current screen work page.
 
@@ -59,4 +58,4 @@ imagedestroy( myImage )
 	- ##[[KeyPgBsave Bsave]]##
 	- ##[[KeyPgVarptr Varptr]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

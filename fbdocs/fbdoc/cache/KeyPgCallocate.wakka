@@ -3,10 +3,10 @@
 Allocates a certain number of bytes from the free store and clears the contents.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Callocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //num_elements// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Callocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //num_elements// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//ptr_var// = CALLOCATE(//bytes//)
+	//result// = **Callocate**( //bytes// )
 ##
 {{fbdoc item="param"}}
 	##//num_elements//##
@@ -15,8 +15,7 @@ Allocates a certain number of bytes from the free store and clears the contents.
 		Length in bytes of each element.
 
 {{fbdoc item="ret"}}
-	##//ptr_var//##
-	Pointer to memory allocated.
+	Returns a pointer to memory allocated.
 
 {{fbdoc item="desc"}}
 	The same as ##[[KeyPgAllocate Allocate]]##, but clears the contents.

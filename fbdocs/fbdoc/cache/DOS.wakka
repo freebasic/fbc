@@ -1,7 +1,0 @@
-=====DOS=====
-
-The FreeBASIC port to DOS is based on the [[http://www.delorie.com/djgpp/ DJGPP]] port of the GNU toolchain to 32-bit protected-mode DOS.
-
-The current maintainer of this port is [[DrV DrV]].
-
-//To be written: platform-specific information, differences from Win32/Linux, differences from QB?, tutorials, etc. //

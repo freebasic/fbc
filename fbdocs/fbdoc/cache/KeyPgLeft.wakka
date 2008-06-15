@@ -1,38 +1,42 @@
 {{fbdoc item="title" value="LEFT"}}----
-Returns the left most characters of a string of the requested length.
+Returns the leftmost substring of a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Left** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //expression// [[KeyPgAs as]] [[KeyPgStringtype string]] , [[KeyPgByval byval]] //characters// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Left** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //characters// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Left** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] , [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Left** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = LEFT[$]( //expression//, //characters//)
+	//result// = **Left**[$]( //str//, //n// )
 ##
 {{fbdoc item="param"}}
-	##//expression//##
-		The source ##[[KeyPgStringtype string]]##.
-	##//characters//##
-		The number of characters to return from the source ##[[KeyPgStringtype string]]##.
+	##//str//##
+		The source string..
+	##//n//##
+		The number of characters to return from the source string.
 
 {{fbdoc item="ret"}}
-	Returns the leftmost number of characters specified from the source ##[[KeyPgStringtype string]]##.
+	Returns the leftmost substring from ##//str//##.
 
 {{fbdoc item="desc"}}
-	Returns n-//characters// starting from the left of string //expression//.
-	The expression can be a wstring (Unicode string), in this case LEFT returns a wstring.The DOS version does not support Unicode.
+	Returns the leftmost ##//n//## characters starting from the left (beginning) of ##//str//##. If ##//str//## is empty, then the null string (##"####"##) is returned. If ##//n// <= 0## then the null string ("") is returned. If ##//n// > len(//str//)## then the entire source string is returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim text as string
-text = "hello world"
-print left(text, 5) 'displays "hello"
+%%(qbasic)dim text as string = "hello world"
+print left(text, 5)
+%%
+	will produce the output:
+
+%%hello
 %%
 An Unicode example:
 <<
 dim text as wstring*20
 text = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;!"
 print left(text, 6) 'displays "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;"
-<<
-::c::
+<<::c::
+
+{{fbdoc item="target"}}
+	- DOS does not support the wide-character string version of **##Right##**.
 
 {{fbdoc item="diff"}}
 	- QB does not support unicode

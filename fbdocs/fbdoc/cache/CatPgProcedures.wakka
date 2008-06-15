@@ -10,15 +10,12 @@
 	- {{fbdoc item="keyword" value="KeyPgModuleConstructor|CONSTRUCTOR (Module)"}}
 	- {{fbdoc item="keyword" value="KeyPgModuleDestructor|DESTRUCTOR (Module)"}}
 	- {{fbdoc item="keyword" value="KeyPgDeclare|DECLARE"}}
-	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
 	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
 	- {{fbdoc item="keyword" value="KeyPgLib|LIB"}}
 	- {{fbdoc item="keyword" value="KeyPgOverload|OVERLOAD"}}
 
 <<>>
 	- {{fbdoc item="keyword" value="KeyPgPascal|PASCAL"}}
-	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}
-	- {{fbdoc item="keyword" value="KeyPgPublic|PUBLIC"}}
 	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgSub|SUB"}}
 	- {{fbdoc item="keyword" value="KeyPgStdcall|STDCALL"}}

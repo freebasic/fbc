@@ -1,11 +1,11 @@
-{{fbdoc item="title" value="Frequently Asked FB Graphics Library Questions"}}
-{{anchor name="item0"}}
-----
+{{fbdoc item="title" value="Frequently Asked FB Graphics Library Questions"}}----
 
+{{anchor name="item0"}}
 **FreeBASIC Graphics Library questions:**
 	==- {{anchor name="item5|How can I link/use Gfxlib?"}}==
 	==- {{anchor name="item6|What about the fbgfx.bi header file?"}}==
 	==- {{anchor name="item1|How are GET/PUT arrays managed?"}}==
+	==- {{anchor name="item7|Why is BSAVE/BLOAD crashing?"}}==
 	==- {{anchor name="item2|Can I get rid of the 'DOS' screen?"}}==
 	==- {{anchor name="item3|How can I get the red, green, blue, or alpha component of a colour?"}}==
 	==- {{anchor name="item4|How can I make the 'x' close my application?"}}==
@@ -39,6 +39,11 @@
 	All gfx primitives can work with both old-style and new-style image chunks. For more informations on the GET/PUT structure, please refer to [[FaqPggetputstructure this example]].
 
 	{{anchor name="item0|Back to top"}}
+
+{{anchor name="item7"}}==Why is BSAVE/BLOAD crashing?==
+	BSAVE/BLOAD can only be used to load and save graphics screens in FB. It can't be used to save a Textmode screen. To load and save an array check this   [[FaqPgbloadworkaround snippet using file GET/PUT]]
+
+{{anchor name="item0|Back to top"}}
 
 {{anchor name="item2"}}==Can I get rid of the 'DOS' screen?==
 	Definitely. You have to give FB the right command for it when you compile your program.

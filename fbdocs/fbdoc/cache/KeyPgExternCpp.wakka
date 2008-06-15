@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="EXTERN...END EXTERN""}}
-----
+{{fbdoc item="title" value="EXTERN...END EXTERN""}}----
 Statement block to specify calling convention for declarations.
 
 {{fbdoc item="syntax"}}##
@@ -45,4 +44,4 @@ print Ns2.theFunction( 1 )
 	- ##[[KeyPgExtern Extern]]##
 	- ##[[KeyPgNamespace Namespace]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}
+{{fbdoc item="back" value="CatPgModularizing|Modularizing"}}
