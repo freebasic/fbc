@@ -16,7 +16,7 @@ Returns a [[KeyPgDouble double]] precision random number between 0 and 1.
 
 {{fbdoc item="desc"}}
 	Returns a number of type ##[[KeyPgDouble double]]## in the range [0, 1), that is, zero (0) and everything between zero (0) and one (1) - but not including one - based off of a random seed (see ##[[KeyPgRandomize Randomize]]##).
-	RND uses the C runtime function ##rand## internally. Because of the different C runtimes provided by each system, RND's resolution can vary. //(Currently, the resolution of RND for the DOS and Linux versions is 31-bits while Windows offers 15-bits. Compare this with the 24-bit resolution of QB or VB's RND function.//
+	RND can use a variety of different algorithms.  (See ##[[KeyPgRandomize Randomize]]##) for details of the default and selectable algorithms
 
 {{fbdoc item="ex"}}
 %%(qbasic)'' Returns a random number in the range [first, last), or {first <= x < last}.
@@ -44,20 +44,8 @@ end function
 %%
 
 {{fbdoc item="diff"}}
-	- A different algorithm finds the random number than QB, so the random numbers will be different for a given RANDOMIZEd seed.
+	- The algorithm used depends on the current lang mode, if using lang qb, a qb compatible function is used, and it can also be selected in other lang modes.  (See ##[[KeyPgRandomize Randomize]]##) for more details.
 	- If the optional argument is less than 0, it has the same meaning as passing an argument of 1.
-	- QB's RND resolution is approx 24 bits, while FB for Win32 gives 15 bits, FB for DOS and Linux give 31 bits.
-
-{{fbdoc item="subsect" value="Tip:"}}
-%%(qbasic)' Return a OS independent random number
-function WinLinDosRND() as double
-  static as integer seed=any
-  seed = (513 * seed + 29741096258473LL) mod 2^31
-  return  cdbl(seed / 2^31)
-end function
-
-? WinLinDosRND():Sleep
-%%
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgRandomize Randomize]]##

@@ -1,18 +1,11 @@
-{{fbdoc item="title" value="Operator Precedence"}}
-----
-{{fbdoc item="desc"}}
+{{fbdoc item="title" value="Operator Precedence"}}----
 	When several operations occur in a single expression, each operation is evaluated and resolved in a predetermined order. This called the order of operation or operator precedence. There are three main categories of operators; arithmetic, comparison, and logical. If an expression contains operators from more than one category, arithmetic operators are evaluated first, comparison operators next, and finally logical operators are evaluated last. If operators have equal precedence, they then are evaluated in the order in which they appear in the expression from left to right. Comparison operators all have equal precedence.
 	
 	The following table gives the operator precedence for each operator in each category. Operators lower on the list have a lower operator precedence. Parentheses can be used to override operator precedence. Operations within parentheses are performed before other operation. However, within the parentheses operator precedence is used.
 
-
-	{{table columns="3" cellpadding="2" cells="Arithmetic;Comparison;Logical;^ (Exponentiation);= (Equality);NOT;- (Negation); <> (Inequality);AND;*, / (Multiplication and division); < (Less than); OR; \ (Integer division); > (Greater than); XOR; MOD (Modulus Operator); <= (Less than or equal to);EQV; SHL, SHR (Shift Bit Left and Shift Bit Right); >= (Greater than or equal to);IMP; +, - (Addition and subtraction);###;###"}} 
-
+	{{table columns="3" cellpadding="2" cells="Arithmetic;Comparison;Logical;^ (Exponentiation);= (Equality);NOT;- (Negation); <> (Inequality);AND;*, / (Multiplication and division); < (Less than); OR; \ (Integer division); > (Greater than); XOR, IMP, EQV; MOD (Modulus Operator); <= (Less than or equal to); ; SHL, SHR (Shift Bit Left and Shift Bit Right); >= (Greater than or equal to); ; +, - (Addition and subtraction);###;###"}} 
 
 {{fbdoc item="see"}}
-	- [[CatPgOpArithmetic Arithmetic Operators]]
-	- [[CatPgOpConditional Conditional Operators]]
-	- [[CatPgOpLogical Logical Operators]]
-
+	- [[CatPgOperators Operators]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,5 +1,6 @@
-{{fbdoc item="title" value="SINGLE"}}
-----
+{{fbdoc item="title" value="SINGLE"}}----
+Standard data type: 32 bit floating point
+
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Single**
 ##

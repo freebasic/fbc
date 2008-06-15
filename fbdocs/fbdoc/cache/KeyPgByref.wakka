@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="BYREF"}}----
-Declaration specifier to explicitly pass a parameter by reference
+Declaration specifier to explicitly pass a parameter by reference.
 
 {{fbdoc item="syntax"}}##
 	**Byref** //param// [[KeyPgAs as]] [[DataType datatype]]
@@ -10,9 +10,9 @@ Declaration specifier to explicitly pass a parameter by reference
 {{fbdoc item="desc"}}
 	Passes a variable by reference, that is its address, to a subroutine or function. When a variable is passed by reference, the contents of the variable can be changed by the target subroutine or function.
 	
-	In -lang qb and -lang deprecated dialects, ##**Byref**## is the default parrameter passing convention, unless ##[[KeyPgOptionbyval Option Byval]]## is in effect.
+	In -lang qb and -lang deprecated dialects, ##**Byref**## is the default parrameter passing convention, unless ##[[KeyPgOptionbyval Option ByVal]]## is in effect.
 
-	Opposite of ##[[KeyPgByval Byval]]##.
+	Opposite of ##[[KeyPgByval ByVal]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -34,7 +34,8 @@ end
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
+	- ##[[ProPgPassByRef Passing Variables by Reference]]##
 	- ##[[KeyPgDeclare Declare]]##
-	- ##[[KeyPgByval Byval]]##
+	- ##[[KeyPgByval ByVal]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

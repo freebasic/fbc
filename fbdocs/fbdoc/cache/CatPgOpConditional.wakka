@@ -1,14 +1,13 @@
-{{fbdoc item="title" value="Conditional Operators"}}----
+{{fbdoc item="title" value="Relational Operators"}}----
 <<
-	- {{fbdoc item="keyword" value="KeyPgEqual|(=) Equality"}}
-	- {{fbdoc item="keyword" value="KeyPgInequality|(<>) Inequality"}}
-	- {{fbdoc item="keyword" value="KeyPgLessThan|(<) Less than"}}
-	- {{fbdoc item="keyword" value="KeyPgLessThanOrEqual|(<=) Less than or equal to"}}
-	- {{fbdoc item="keyword" value="KeyPgGreaterThan|(>) Greater than"}}
-	- {{fbdoc item="keyword" value="KeyPgGreaterThanOrEqual|(>=) Greater than or equal to"}}
+	- {{fbdoc item="keyword" value="KeyPgInequality|<> (Inequality)"}}
+	- {{fbdoc item="keyword" value="KeyPgLessThan|< (Less than)"}}
+	- {{fbdoc item="keyword" value="KeyPgLessThanOrEqual|<= (Less than or equal)"}}
+	- {{fbdoc item="keyword" value="KeyPgEqual|= (Equality)"}}
+	- {{fbdoc item="keyword" value="KeyPgGreaterThanOrEqual|>= (Greater than or equal)"}}
+	- {{fbdoc item="keyword" value="KeyPgGreaterThan|> (Greater than)"}}
 
 >>
-
 ::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

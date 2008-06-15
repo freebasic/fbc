@@ -11,14 +11,22 @@ Called automatically when a class or user defined type is created
 		//statements//
 	**End Constructor**
 ##
+{{fbdoc item="param"}}
+	##//typename//## 
+		name of the ##[[KeyPgType Type]]## of ##[[KeyPgClass Class]]##
+
 {{fbdoc item="desc"}}
-	##**Constructor**## methods are called when a user defined ##[[KeyPgType Type]]## or CLASS variable is created.  ##//typename//## is the name of the type for which the ##**Constructor**## method is declared and defined.  The ##//typename//## is resolved similiar to the way function names are resolved when used in a ##[[KeyPgNamespace Namespace]]##.  The ##//typename//## may be resolved by prefixing the name of the namespace, or by using the ##[[KeyPgUsing Using]]## statement.
+	##**Constructor**## methods are called when a user defined ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## variable is created.
 
-	More than one **Constructor** may exist for a type or class.  The exact constructor called depends on the ##//parameter//## signature matched where used.  More than one ##//parameter//## may exist in a constructor method declaration.
+	##//typename//## is the name of the type for which the ##**Constructor**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace Namespace]]##.
 
-	A Constructor method is similiar to overloaded functions in most respects, except there is a hidden ##//this//## parameter having the same type as ##//typename//##.  ##//this//## is used to access the fields of the ##[[KeyPgType Type]]## or CLASS which is to be initialized in the ##**Constructor**## method.
+	More than one constructor may exist for a type or class.  The exact constructor method called depends on the ##//parameter//## signature matched when the variable is initialized.  More than one ##//parameter//## may exist in a constructor method declaration.
 
-	Any fields that have their own default constructor are called first.
+	A constructor method is passed a hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//##.  ##[[KeyPgThis this]]## is optionally used to access the fields of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## which is to be initialized in the ##**Constructor**## method.
+
+	Chaining of constructors in nested types is supported.  Any fields that have their own default constructor are called first.
+
+	Constructors are called when declaring global or local static instances of ##//typename//## and when allocating ##//typename//## dynamically using the ##[[KeyPgNew New]]## operator.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -90,9 +98,10 @@ print "  x4 = "; x4
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgType Class]]##
 	- ##[[KeyPgModuleConstructor Constructor (Module)]]##
+	- ##[[KeyPgNew New]]##
 	- ##[[KeyPgDestructor Destructor]]##
-	- ##[[KeyPgNamespace Namespace]]##
 	- ##[[KeyPgType Type]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

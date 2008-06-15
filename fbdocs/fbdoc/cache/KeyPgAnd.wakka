@@ -66,11 +66,7 @@ SLEEP
 	- None
 
 {{fbdoc item="see"}}
+	- [[CatPgOpLogical Logical Operators]]
 	- [[TblTruth Operator Truth Tables]]
-	- ##[[KeyPgOr Or]]##
-	- ##[[KeyPgXor Xor]]##
-	- ##[[KeyPgNot Not]]##
-	- ##[[KeyPgEqv Eqv]]##
-	- ##[[KeyPgImp Imp]]##
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

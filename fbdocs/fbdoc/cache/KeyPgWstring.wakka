@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="WSTRING"}}
-----
+{{fbdoc item="title" value="WSTRING"}}----
 Standard data type: wide character string
 
 {{fbdoc item="syntax"}}##
@@ -41,7 +40,6 @@ print len(*str2)      'returns 12, the length of the string it points to
 {{fbdoc item="see"}}
 	- ##[[KeyPgStringtype String]]##
 	- ##[[KeyPgZstring Zstring]]##
-
 	- ##[[KeyPgFunWstring Wstring]]## (function)
 	- ##[[KeyPgWspace Wspace]]##
 	- ##[[KeyPgWstr Wstr]]##

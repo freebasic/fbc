@@ -32,6 +32,6 @@ The [[KeyPgGreaterThanOrEqual >= (Greater-than Or Equal) Operator]] is complemen
 	- none
 
 {{fbdoc item="see"}}
-	- [[CatPgOperators Operators]]
+	- [[CatPgOpConditional Relational Operators]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

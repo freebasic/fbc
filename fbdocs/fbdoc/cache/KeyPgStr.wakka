@@ -12,7 +12,7 @@ Converts a numeric expression to a ##[[KeyPgStringtype String]]##.
 
 	For example, ##**Str**(3)## will become "3", or ##**Str**(3.33)## will become "3.33".
 
-	Incidentally, this is the opposite of the ##[[KeyPgVal Val]]## function, which converts a string into a number.
+	##**Str**## is the opposite of the ##[[KeyPgVal Val]]## function, which converts a string into a number.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -24,7 +24,8 @@ print a, b
 %%
 
 {{fbdoc item="diff"}}
-	- STR will not return a space in front of a positive number. In QB, STR(1) would return " 1", but in FB, it will return "1".
+	- For -lang qb, none.  STR will pad a positive number with a space, as in QB.
+	- For -lang fb or deprecated, STR will not return a space in front of a positive number.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgVal Val]]##

@@ -1,15 +1,14 @@
 {{fbdoc item="title" value="Pointer Arithmetics"}}----
 Usage of addition or subtraction on a pointer
 
-{{fbdoc item="syntax"}}
+{{fbdoc item="syntax"}}##
 	pointer_variable + integer_expression 
 	pointer_variable - integer_expression
-
+##
 {{fbdoc item="desc"}}
-~Pointer addition / substraction allows to move the place where a pointer points to . The resulting memory position will be pointer_variable +/- (integer_value* SIZEOF(pointed variable))
+	Pointer addition / substraction allows to move the place where a pointer points to . The resulting memory position will be pointer_variable +/- (integer_value* SIZEOF(pointed variable))
 
-~Is up to the user to ensure the resulting pointer points to meaningful data.
-
+	Is up to the user to ensure the resulting pointer points to meaningful data.
 
 {{fbdoc item="ex"}}
 %%(qbasic)Dim a(10) As Integer
@@ -29,11 +28,10 @@ For i = 0 To 10
 	'and we will print pa(0),pa(1),pa(2) etc...
 Next i
 %%
-
-<<
+Output:
+%%
 012345678910
-<<
-::c::
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
@@ -41,5 +39,6 @@ Next i
 {{fbdoc item="see"}}
 	- [[KeyPgAt (@) Address of]]
 	- [[KeyPgValOf (*) Value of]]
+	- [[CatPgOpPoint Pointer Operators]]
 	
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

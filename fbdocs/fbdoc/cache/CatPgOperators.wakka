@@ -1,7 +1,8 @@
 {{fbdoc item="title" value="Operators"}}----
-<<==Assignment Operators==
+<<
+==Assignment Operators==
 	- {{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineConcat|+= (Append and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgCombineConcat|+= (Concatenate and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgCombineAdd|+= (Add and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgCombineSub|-= (Subtract and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgCombineMulti|*= (Multiply and Assign)"}}
@@ -25,21 +26,6 @@
 	- {{fbdoc item="keyword" value="KeyPgExponentiation|^ (Exponentiation)"}}
 	- {{fbdoc item="keyword" value="KeyPgMod|MOD (Integer modulo)"}}
 	- {{fbdoc item="keyword" value="KeyPgNegation|- (Negation)"}}
-
-==Relational Operators==
-	- {{fbdoc item="keyword" value="KeyPgInequality|<> (Inequality)"}}
-	- {{fbdoc item="keyword" value="KeyPgLessThan|< (Less than)"}}
-	- {{fbdoc item="keyword" value="KeyPgLessThanOrEqual|<= (Less than or equal)"}}
-	- {{fbdoc item="keyword" value="KeyPgEqual|= (Equality)"}}
-	- {{fbdoc item="keyword" value="KeyPgGreaterThanOrEqual|>= (Greater than or equal)"}}
-	- {{fbdoc item="keyword" value="KeyPgGreaterThan|> (Greater than)"}}
-<<>>==Bitwise Operators==
-	- {{fbdoc item="keyword" value="KeyPgAnd|AND (Conjunction)"}}
-	- {{fbdoc item="keyword" value="KeyPgEqv|EQV (Equivalence)"}}
-	- {{fbdoc item="keyword" value="KeyPgImp|IMP (Implication)"}}
-	- {{fbdoc item="keyword" value="KeyPgNot|NOT (Complement)"}}
-	- {{fbdoc item="keyword" value="KeyPgOr|OR (Disjunction, Inclusive Or)"}}
-	- {{fbdoc item="keyword" value="KeyPgXor|XOR (Exclusive Or)"}}
 	- {{fbdoc item="keyword" value="KeyPgShl|SHL (Shift-left)"}}
 	- {{fbdoc item="keyword" value="KeyPgShr|SHR (Shift-right)"}}
 
@@ -47,6 +33,23 @@
 	- {{fbdoc item="keyword" value="KeyPgConcat|+ (String concatenation)"}}
 	- {{fbdoc item="keyword" value="KeyPgConcatConv|& (String concatenation with conversion)"}}
 	- {{fbdoc item="keyword" value="KeyPgStrIndex|[] (String indexing)"}}
+
+<<>>
+==Relational Operators==
+	- {{fbdoc item="keyword" value="KeyPgInequality|<> (Inequality)"}}
+	- {{fbdoc item="keyword" value="KeyPgLessThan|< (Less than)"}}
+	- {{fbdoc item="keyword" value="KeyPgLessThanOrEqual|<= (Less than or equal)"}}
+	- {{fbdoc item="keyword" value="KeyPgEqual|= (Equality)"}}
+	- {{fbdoc item="keyword" value="KeyPgGreaterThanOrEqual|>= (Greater than or equal)"}}
+	- {{fbdoc item="keyword" value="KeyPgGreaterThan|> (Greater than)"}}
+
+==Logical Operators==
+	- {{fbdoc item="keyword" value="KeyPgAnd|AND (Conjunction)"}}
+	- {{fbdoc item="keyword" value="KeyPgEqv|EQV (Equivalence)"}}
+	- {{fbdoc item="keyword" value="KeyPgImp|IMP (Implication)"}}
+	- {{fbdoc item="keyword" value="KeyPgNot|NOT (Complement)"}}
+	- {{fbdoc item="keyword" value="KeyPgOr|OR (Disjunction, Inclusive Or)"}}
+	- {{fbdoc item="keyword" value="KeyPgXor|XOR (Exclusive Or)"}}
 
 ==Preprocessor Operators==
 	- {{fbdoc item="keyword" value="KeyPgStringize|# (Argument stringize)"}}
@@ -62,10 +65,9 @@
 	- {{fbdoc item="keyword" value="KeyPgDot|. (Field access)"}}
 	- {{fbdoc item="keyword" value="KeyPgPtrField|-> (Field pointer access)"}}
 
-
-
-
-
+==Memory Operators==
+	- {{fbdoc item="keyword" value="KeyPgNew|New"}}
+	- {{fbdoc item="keyword" value="KeyPgDelete|Delete"}}
 
 >>	
 ::c::

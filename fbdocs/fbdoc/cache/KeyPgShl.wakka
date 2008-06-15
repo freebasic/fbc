@@ -20,8 +20,7 @@ FOR i = 1 TO 10
 NEXT i
 SLEEP
 %%
-
-The output would look like:
+Output:
 %%
 2
 4
@@ -39,7 +38,8 @@ The output would look like:
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgShr Shr]]##
 	- [[CatPgOpArithmetic Arithmetic Operators]]
+	- [[CatPgMath Mathematical Functions]]
+	- ##[[KeyPgShr Shr]]##
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

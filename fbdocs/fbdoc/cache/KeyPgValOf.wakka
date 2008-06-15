@@ -1,17 +1,16 @@
 {{fbdoc item="title" value="(*) Value of (dereference)"}}----
 Operator to dereference a pointer
 
-{{fbdoc item="syntax"}}
+{{fbdoc item="syntax"}}##
 	*{//variable// | //function//} = //expression//
 	//variable// = *//variable//
-
+##
 {{fbdoc item="desc"}}
 	The ***** operator  refer to a value stored at the memory address referred to by a pointer. It can be used  in both sides of an assignment to refer to the value stored in, or to assign the result or an expresion. ***** is often called the dereference operator.
 
 	The indirection levels can be infinite (e.g., pointer to pointer to ...).
 
 	To be useful, any pointer one utilizes with the ***** operator must point to a useful memory address. Attempting to read and write random memory addresses will be unpredictable.
-
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -29,19 +28,18 @@ Print "The value of 'a' is";*pa 'Here, we display the value of 'a' using a point
 *pa = 1 'Here we use our pointer to change the value of 'a'
 Print "The new value of 'a' is";a 'Here we display the new value of 'a'.
 %%
-
-The output of the above should be:
+Output:
 %%
 The value of 'a' is 9
 The new value of 'a' is 1
 %%
-::c::
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
 	- [[KeyPgAt (@) Address of]]
+	- [[CatPgOpPoint Pointer Operators]]
 	- [[DtPointers Pointers]]
 	
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

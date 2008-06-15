@@ -15,9 +15,20 @@
 '' This example only uses byref and type T
 '' where ever possible.
 
+'' The type 'DataType' is included to show where
+'' any data type might be used
+type DataType as integer
+
+'' The type 'UDT' is included to show where only 
+'' a UDT data type can be used
+type UDT
+  value as DataType
+end type
+
+'' Our main type
 type T
-  value as integer
-  value_array( 0 ) as integer
+  value as DataType
+  value_array( 0 ) as DataType
 
   '' let, cast, combined assignment operators,
   '' constructors, and the destructor, must be
@@ -62,37 +73,41 @@ type T
   '' Assignment
 
   declare operator let ( byref rhs as T )
-  declare operator let ( byref rhs as integer )
+  declare operator let ( byref rhs as DataType )
 
   '' Cast can be overloaded to return multiple types
 
   declare operator cast () as string
-  declare operator cast () as integer
+  declare operator cast () as DataType
 
   '' Combined assignment
 
   declare operator += ( byref rhs as T )
-  declare operator += ( byref rhs as integer )
+  declare operator += ( byref rhs as DataType )
 
-  declare operator -= ( byref rhs as T )
-  declare operator *= ( byref rhs as T )
-  declare operator /= ( byref rhs as T )
-  declare operator \= ( byref rhs as T )
-  declare operator mod= ( byref rhs as T )
-  declare operator shl= ( byref rhs as T )
-  declare operator shr= ( byref rhs as T )
-  declare operator and= ( byref rhs as T )
-  declare operator or= ( byref rhs as T )
-  declare operator xor= ( byref rhs as T )
-  declare operator imp= ( byref rhs as T )
-  declare operator eqv= ( byref rhs as T )
-  declare operator ^= ( byref rhs as T )
+  declare operator -= ( byref rhs as DataType )
+  declare operator *= ( byref rhs as DataType )
+  declare operator /= ( byref rhs as DataType )
+  declare operator \= ( byref rhs as DataType )
+  declare operator mod= ( byref rhs as DataType )
+  declare operator shl= ( byref rhs as DataType )
+  declare operator shr= ( byref rhs as DataType )
+  declare operator and= ( byref rhs as DataType )
+  declare operator or= ( byref rhs as DataType )
+  declare operator xor= ( byref rhs as DataType )
+  declare operator imp= ( byref rhs as DataType )
+  declare operator eqv= ( byref rhs as DataType )
+  declare operator ^= ( byref rhs as DataType )
+
+  '' Address of
+
+  declare operator @ () as DataType ptr
 
   '' Constructors can be overloaded
 
   declare constructor()
   declare constructor( byref rhs as T )
-  declare constructor( byref rhs as integer )
+  declare constructor( byref rhs as DataType )
 
   '' There can be only one destructor
 
@@ -101,57 +116,61 @@ type T
   '' Nonstatic member functions and subs
   '' overloaded procs must have different parameters
 
-  declare function f( ) as T
-  declare function f( byref arg1 as T ) as integer
+  declare function f( ) as DataType
+  declare function f( byref arg1 as DataType ) as DataType
 
   declare sub s( )
   declare sub s( byref arg1 as T )
-  declare sub s( byref arg1 as integer )
+  declare sub s( byref arg1 as DataType )
 
   '' Properties
 
-  declare property p () as integer
-  declare property p ( byref new_value as integer )
+  declare property p () as DataType
+  declare property p ( byref new_value as DataType )
 
-  declare property pidx ( byval index as integer ) as integer
-  declare property pidx ( byval index as integer, byref new_value as integer )
+  declare property pidx ( byval index as DataType ) as DataType
+  declare property pidx ( byval index as DataType, byref new_value as DataType )
 
 end type
 
 '' These must be global procedures
 '' Globals are not prefixed with the the TYPE name
 
-declare operator - ( byref rhs as T ) as T
-declare operator not ( byref rhs as T ) as T
-declare operator + ( byref lhs as T , byref rhs as T ) as T 
-declare operator - ( byref lhs as T , byref rhs as T ) as T 
-declare operator * ( byref lhs as T, byref rhs as T ) as T
-declare operator / ( byref lhs as T, byref rhs as T ) as T
-declare operator \ ( byref lhs as T, byref rhs as T ) as T
-declare operator mod ( byref lhs as T, byref rhs as T ) as T
-declare operator shl ( byref lhs as T, byref rhs as T ) as T
-declare operator shr ( byref lhs as T, byref rhs as T ) as T
-declare operator and ( byref lhs as T, byref rhs as T ) as T
-declare operator or ( byref lhs as T, byref rhs as T ) as T
-declare operator xor ( byref lhs as T, byref rhs as T ) as T
-declare operator imp ( byref lhs as T, byref rhs as T ) as T
-declare operator eqv ( byref lhs as T, byref rhs as T ) as T
-declare operator ^ ( byref lhs as T, byref rhs as T ) as T
-declare operator = ( byref lhs as T, byref rhs as T ) as integer
-declare operator <> ( byref lhs as T, byref rhs as T ) as integer
-declare operator < ( byref lhs as T, byref rhs as T ) as integer
-declare operator > ( byref lhs as T, byref rhs as T ) as integer
-declare operator <= ( byref lhs as T, byref rhs as T ) as integer
-declare operator >= ( byref lhs as T, byref rhs as T ) as integer
+'' At least one parameter must be of Type 'T'
+'' For simplicity, type 'T' is always given first for binary ops
+'' in this example
+
+declare operator - ( byref rhs as T ) as DataType
+declare operator not ( byref rhs as T ) as DataType
+
+declare operator -> ( byref rhs as T ) as UDT
+declare operator * ( byref rhs as T ) as DataType
+
+declare operator + ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator - ( byref lhs as T, byref rhs as DataType ) as DataType 
+declare operator * ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator / ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator \ ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator mod ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator shl ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator shr ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator and ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator or ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator xor ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator imp ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator eqv ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator ^ ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator = ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator <> ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator < ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator > ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator <= ( byref lhs as T, byref rhs as DataType ) as DataType
+declare operator >= ( byref lhs as T, byref rhs as DataType ) as DataType
 
 '' Global procedures (subs and funcs) can also accept the TYPE
 '' as a parameter or return it as a value, as could be done
 '' in previous versions of FreeBASIC.
-
-  '' No example given.
-  '' See function or sub in the manual.
-
-
+'' No example given. See function or sub in the manual.
 
 '' All TYPE members are defined outside the TYPE
 
@@ -165,7 +184,7 @@ operator T.let ( byref rhs as T )
   value = rhs.value  
 end operator
 
-operator T.let ( byref rhs as integer )
+operator T.let ( byref rhs as DataType )
   value = rhs  
 end operator
 
@@ -173,7 +192,7 @@ operator T.cast ( ) as string
   return str( value )
 end operator
 
-operator T.cast ( ) as integer
+operator T.cast ( ) as DataType
   return value
 end operator
 
@@ -181,60 +200,64 @@ operator T.+= ( byref rhs as T )
   value += rhs.value
 end operator
 
-operator T.+= ( byref rhs as integer )
+operator T.+= ( byref rhs as DataType )
   value += rhs
 end operator
 
-operator T.-= ( byref rhs as T )
-  value -= rhs.value
+operator T.-= ( byref rhs as DataType )
+  value -= rhs
 end operator
 
-operator T.*= ( byref rhs as T )
-  value *= rhs.value
+operator T.*= ( byref rhs as DataType )
+  value *= rhs
 end operator
 
-operator T./= ( byref rhs as T )
-  value /= rhs.value
+operator T./= ( byref rhs as DataType )
+  value /= rhs
 end operator
 
-operator T.\= ( byref rhs as T )
-  value \= rhs.value
+operator T.\= ( byref rhs as DataType )
+  value \= rhs
 end operator
 
-operator T.mod= ( byref rhs as T )
-  value mod= rhs.value
+operator T.mod= ( byref rhs as DataType )
+  value mod= rhs
 end operator
 
-operator T.shl= ( byref rhs as T )
-  value shl= rhs.value
+operator T.shl= ( byref rhs as DataType )
+  value shl= rhs
 end operator
 
-operator T.shr= ( byref rhs as T )
-  value shr= rhs.value
+operator T.shr= ( byref rhs as DataType )
+  value shr= rhs
 end operator
 
-operator T.and= ( byref rhs as T )
-  value and= rhs.value
+operator T.and= ( byref rhs as DataType )
+  value and= rhs
 end operator
 
-operator T.or= ( byref rhs as T )
-  value or= rhs.value
+operator T.or= ( byref rhs as DataType )
+  value or= rhs
 end operator
 
-operator T.xor= ( byref rhs as T )
-  value xor= rhs.value
+operator T.xor= ( byref rhs as DataType )
+  value xor= rhs
 end operator
 
-operator T.imp= ( byref rhs as T )
-  value imp= rhs.value
+operator T.imp= ( byref rhs as DataType )
+  value imp= rhs
 end operator
 
-operator T.eqv= ( byref rhs as T )
-  value eqv= rhs.value
+operator T.eqv= ( byref rhs as DataType )
+  value eqv= rhs
 end operator
 
-operator T.^= ( byref rhs as T )
-  value ^= rhs.value
+operator T.^= ( byref rhs as DataType )
+  value ^= rhs
+end operator
+
+operator T.@ () as DataType ptr
+  return( cast( DataType ptr, @this ))
 end operator
 
 
@@ -248,7 +271,7 @@ constructor T( byref rhs as T )
   value = rhs.value
 end constructor
 
-constructor T( byref rhs as integer )
+constructor T( byref rhs as DataType )
   value = rhs
 end constructor
 
@@ -262,105 +285,112 @@ end destructor
 
 '' Globals must specify all arguments and return type
 
-operator - ( byref rhs as T ) as T
-  return type<T>(-rhs.value)
+operator - ( byref rhs as T ) as DataType
+  return (-rhs.value)
 end operator
 
-operator not ( byref rhs as T ) as T
-  return type<T>(not rhs.value)
+operator not ( byref rhs as T ) as DataType
+  return (not rhs.value)
 end operator
 
-operator + ( byref lhs as T , byref rhs as T ) as T 
-  return type<T>(lhs.value + rhs.value)
+operator -> ( byref rhs as T ) as UDT
+  return type(4)
 end operator
 
-operator - ( byref lhs as T , byref rhs as T ) as T 
-  return type<T>(lhs.value - rhs.value)
+operator * ( byref rhs as T ) as DataType
+  return 5
 end operator
 
-operator * ( byref lhs as T, byref rhs as T ) as T
-  return type<T>(lhs.value * rhs.value)
+operator + ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value + rhs)
 end operator
 
-operator / ( byref lhs as T, byref rhs as T ) as T
-  return type<T>(lhs.value / rhs.value)
+operator - ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value - rhs)
 end operator
 
-operator \ ( byref lhs as T, byref rhs as T ) as T
-  return type<T>(lhs.value \ rhs.value)
+operator * ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value * rhs)
 end operator
 
-operator mod ( byref lhs as T, byref rhs as T ) as T
-  return type<T>(lhs.value mod rhs.value)
+operator / ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value / rhs)
 end operator
 
-operator shl ( byref lhs as T, byref rhs as T ) as T
-  return type<T>(lhs.value shl rhs.value)
+operator \ ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value \ rhs)
 end operator
 
-operator shr ( byref lhs as T, byref rhs as T ) as T
-  return type<T>(lhs.value shr rhs.value)
+operator mod ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value mod rhs)
 end operator
 
-operator and ( byref lhs as T, byref rhs as T ) as T
-  return type<T>(lhs.value and rhs.value)
+operator shl ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value shl rhs)
 end operator
 
-operator or ( byref lhs as T, byref rhs as T ) as T
-  return type<T>(lhs.value or rhs.value)
+operator shr ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value shr rhs)
 end operator
 
-operator xor ( byref lhs as T, byref rhs as T ) as T
-  return type<T>(lhs.value xor rhs.value)
+operator and ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value and rhs)
 end operator
 
-operator imp ( byref lhs as T, byref rhs as T ) as T
-  return type<T>(lhs.value imp rhs.value)
+operator or ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value or rhs)
 end operator
 
-operator eqv ( byref lhs as T, byref rhs as T ) as T
-  return type<T>(lhs.value eqv rhs.value)
+operator xor ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value xor rhs)
 end operator
 
-operator ^ ( byref lhs as T, byref rhs as T ) as T
-  return type<T>(lhs.value ^ rhs.value)
+operator imp ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value imp rhs)
 end operator
 
-operator = ( byref lhs as T, byref rhs as T ) as integer
-  return lhs.value = rhs.value
+operator eqv ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value eqv rhs)
 end operator
 
-operator <> ( byref lhs as T, byref rhs as T ) as integer
-  return lhs.value <> rhs.value
+operator ^ ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value ^ rhs)
 end operator
 
-operator < ( byref lhs as T, byref rhs as T ) as integer
-  return lhs.value < rhs.value
+operator = ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value = rhs)
 end operator
 
-operator > ( byref lhs as T, byref rhs as T ) as integer
-  return lhs.value > rhs.value
+operator <> ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value <> rhs)
 end operator
 
-operator <= ( byref lhs as T, byref rhs as T ) as integer
-  return lhs.value <= rhs.value
+operator < ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value < rhs)
 end operator
 
-operator >= ( byref lhs as T, byref rhs as T ) as integer
-  return lhs.value >= rhs.value
+operator > ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value > rhs)
+end operator
+
+operator <= ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value <= rhs)
+end operator
+
+operator >= ( byref lhs as T, byref rhs as DataType ) as DataType
+  return (lhs.value >= rhs)
 end operator
 
 
 '' Nonstatic member methods
 
-function T.f( ) as T
-  dim x as T = this
-  '' Just return a copy
+function T.f( ) as DataType
+  dim x as DataType
   return x
 end function
 
-function T.f( byref arg1 as T ) as integer
-  arg1.value = this.value
+function T.f( byref arg1 as DataType ) as DataType
+  arg1 = this.value
   return value
 end function
 
@@ -384,29 +414,44 @@ sub T.s( byref arg1 as T )
   value = arg1.value
 end sub
 
-sub T.s( byref arg1 as integer )
+sub T.s( byref arg1 as DataType )
   value = arg1
 end sub
 
-property T.p () as integer
+property T.p () as DataType
   '' GET property
   return value
 end property
 
-property T.p ( byref new_value as integer )
+property T.p ( byref new_value as DataType )
   '' SET property
   value = new_value
 end property
 
-property T.pidx ( byval index as integer ) as integer
+property T.pidx ( byval index as DataType ) as DataType
   '' GET indexed property
   return value_array( index )
 end property
 
-property T.pidx ( byval index as integer, byref new_value as integer )
+property T.pidx ( byval index as DataType, byref new_value as DataType )
   '' SET indexed property
   value_array( index ) = new_value
 end property
+
+
+'' new, delete, delete[]
+
+'' Allocate object
+dim X as T ptr = new T
+
+'' Deallocate object
+delete X
+
+'' Allocate object vector
+dim Xlist as T ptr = new T[10]
+
+'' Deallocate object vector
+delete[] Xlist
 %%
 
 {{fbdoc item="see"}}

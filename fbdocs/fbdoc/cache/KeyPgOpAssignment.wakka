@@ -5,7 +5,7 @@ Operator to assign a value to a variable.
 	[ [[KeyPgLet Let]] ] //variable// **=** //value//
 ##
 {{fbdoc item="desc"}}
-	The asignment operator assigns the variable its left the value of the expression on its right. 
+	The assignment operator assigns the variable its left the value of the expression on its right. 
 
 	The equal sign symbol is used both for assignment, and  ##[[KeyPgEqual = (Equality) Operator]]##. To avoid confusion the optional ##[[KeyPgLet Let]]## keyword may be used.
 
@@ -33,7 +33,7 @@ LET i = 300 ' <-alternate syntax
 	- none
 
 {{fbdoc item="see"}}
-	- [[CatPgOperators Operators]]
 	- [[KeyPgEqual = (Equality) Operator]]
+	- [[CatPgOpAssignment Assignment Operators]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

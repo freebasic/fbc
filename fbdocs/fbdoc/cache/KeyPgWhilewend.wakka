@@ -44,4 +44,4 @@ end 0
 	- ##[[KeyPgContinue Continue]]##
 	- ##[[KeyPgDoloop Do...Loop]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

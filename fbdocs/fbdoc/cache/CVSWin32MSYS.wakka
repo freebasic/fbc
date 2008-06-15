@@ -99,7 +99,7 @@ cp -rfv ~/fbccvs/FreeBASIC/inc/* /FBbin/inc%%
 			
 			%%cp -fv ~/fbccvs/FreeBASIC/src/compiler/obj/win32/fbc_new.exe /FBbin/fbc.exe
 cp -fv ~/fbccvs/FreeBASIC/src/rtlib/obj/win32/*.a /FBbin/lib/win32
-cp -fv ~/fbccvs/FreeBASIC/src/rtlib/obj/win32/libfb_ctor.o /FBbin/lib/win32
+cp -fv ~/fbccvs/FreeBASIC/src/rtlib/obj/win32/fbrt0.o /FBbin/lib/win32
 cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/win32/*.a /FBbin/lib/win32%%
 		
 		{{anchor name="updating3"}}==Copy MSYS/""MinGW""-specific library to FB linker library directory if it's not included already==

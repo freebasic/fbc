@@ -14,30 +14,30 @@ During the program compilation three types of errors can arise:
 	- //7 Identifier's name too big, truncated//
 	- //8 Literal number too big, truncated//
 	- //9 Literal string too big, truncated//
-	-//10 UDT with pointer or dynamic string fields// 
-	-//11 UDT with dynamic string fields//
-	-//12 Implicit variable allocation//
-	-//13 Missing closing quote in literal string//
-	-//14 Function result was not explicitly set//
-	-//15 Branch crossing local variable definition//
-	-//16 No explicit BYREF or BYVAL//
-	-//17 Possible escape sequence found in//
-	-//18 The type length is too large, consider passing BYREF//
-	-//19 The length of the parameters list is too large, consider passing UDT's BYREF//
-	-//20 The ANY initializer has no effect on UDT's with default constructors//
+	- //10 UDT with pointer or dynamic string fields//
+	- //11 UDT with dynamic string fields//
+	- //12 Implicit variable allocation//
+	- //13 Missing closing quote in literal string//
+	- //14 Function result was not explicitly set//
+	- //15 Branch crossing local variable definition//
+	- //16 No explicit BYREF or BYVAL//
+	- //17 Possible escape sequence found in//
+	- //18 The type length is too large, consider passing BYREF//
+	- //19 The length of the parameters list is too large, consider passing UDT's BYREF//
+	- //20 The ANY initializer has no effect on UDT's with default constructors//
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
 
-	- //1  Argument count mismatch//
-	- //2  Expected End-of-File//
-	- //3  Expected End-of-Line//
-	- //4  Duplicated definition//
-	- //5  Expected 'AS'//
-	- //6  Expected '('//
-	- //7  Expected ')'//
-	- //8  Undefined symbol//
-	- //9  Expected expression//
+	- //1 Argument count mismatch//
+	- //2 Expected End-of-File//
+	- //3 Expected End-of-Line//
+	- //4 Duplicated definition//
+	- //5 Expected 'AS'//
+	- //6 Expected '('//
+	- //7 Expected ')'//
+	- //8 Undefined symbol//
+	- //9 Expected expression//
 	- //10 Expected '='//
 	- //11 Expected constant//
 	- //12 Expected 'TO'//
@@ -57,13 +57,13 @@ During the program compilation three types of errors can arise:
 	- //26 Invalid data types//
 	- //27 Invalid character//
 	- //28 File access error//
-	- //29 Recursion level too depth//
+	- //29 Recursion level too deep//
 	- //30 Expected pointer//
 	- //31 Expected 'LOOP'//
 	- //32 Expected 'WEND'//
 	- //33 Expected 'THEN'//
 	- //34 Expected 'END IF'//
-	- //35 'END' without IF, SELECT, SUB or FUNCTION//
+	- //35 Illegal 'END'//
 	- //36 Expected 'CASE'//
 	- //37 Expected 'END SELECT'//
 	- //38 Wrong number of dimensions//
@@ -74,20 +74,20 @@ During the program compilation three types of errors can arise:
 	- //43 Variable required//
 	- //44 Illegal outside a compound statement//
 	- //45 Expected 'END ASM'//
-	- //46 SUB or FUNCTION not declared//
+	- //46 Function not declared//
 	- //47 Expected ';'//
 	- //48 Undefined label//
 	- //49 Too many array dimensions//
 	- //50 Expected scalar counter//
-	- //51 Illegal outside a SUB or FUNCTION//
+	- //51 Illegal outside a function block//
 	- //52 Expected dynamic array//
-	- //53 Cannot return fixed-len strings from functions//
+	- //53 Fixed-len strings cannot be returned from functions//
 	- //54 Array already dimensioned//
 	- //55 Illegal without the -ex option//
 	- //56 Type mismatch//
 	- //57 Illegal specification//
 	- //58 Expected 'END WITH'//
-	- //59 Illegal inside a SUB or FUNCTION//
+	- //59 Illegal inside functions//
 	- //60 Expected array//
 	- //61 Expected '{'//
 	- //62 Expected '}'//
@@ -99,12 +99,12 @@ During the program compilation three types of errors can arise:
 	- //68 Array not dimensioned//
 	- //69 Array access, index expected//
 	- //70 Expected 'END ENUM'//
-	- //71 Cannot initialize dynamic arrays//
+	- //71 Dynamic arrays cannot be initialized//
 	- //72 Invalid bitfield//
 	- //73 Too many parameters//
 	- //74 Macro text too long//
 	- //75 Invalid command-line option//
-	- //76 Cannot initialize dynamic strings//
+	- //76 Dynamic strings cannot be initialized//
 	- //77 Recursive TYPE or UNION not allowed//
 	- //78 Recursive DEFINE not allowed//
 	- //79 Array fields cannot be redimensioned//
@@ -115,16 +115,16 @@ During the program compilation three types of errors can arise:
 	- //84 Math overflow//
 	- //85 Expected 'ANY'//
 	- //86 Expected 'END SCOPE'//
-	- //87 Illegal inside a SCOPE block//
+	- //87 Illegal inside a compound statement or scoped block//
 	- //88 UDT function results cannot be passed by reference//
 	- //89 Ambiguous call to overloaded function//
 	- //90 No matching overloaded function//
 	- //91 Division by zero//
 	- //92 Cannot pop stack, underflow//
 	- //93 UDT's containing dynamic string fields cannot be initialized//
-	- //94 Branching to scope blocks containing local variables//
-	- //95 Branching to other SUB's/FUNCTION's or to module-level//
-	- //96 Branch crossing local array or object definition//
+	- //94 Branching to scope block containing local variables//
+	- //95 Branching to other functions or to module-level//
+	- //96 Branch crossing local array, var-len string or object definition//
 	- //97 LOOP without DO//
 	- //98 NEXT without FOR//
 	- //99 WEND without WHILE//
@@ -142,64 +142,80 @@ During the program compilation three types of errors can arise:
 	- //111 Expected period ('.')//
 	- //112 Expected END NAMESPACE//
 	- //113 Illegal inside a NAMESPACE block//
-	- //114 Symbols defined in other namespaces cannot be removed//
+	- //114 Symbols defined inside namespaces cannot be removed//
 	- //115 Expected END EXTERN//
 	- //116 Expected 'END SUB'//
 	- //117 Expected 'END FUNCTION'//
 	- //118 Expected 'END CONSTRUCTOR'//
 	- //119 Expected 'END DESTRUCTOR'//
 	- //120 Expected 'END OPERATOR'//
-	- //121 Declaration outside the original namespace//
-	- //122 No end of multi-line comment, expected //
-	- //123 Too many errors, exiting//
-	- //124 Expected 'ENDMACRO'//
-	- //125 EXTERN or COMMON variables cannot be initialized//
-	- //126 At least one parameter must be a user-defined type//
-	- //127 Parameter or result must be a user-defined type//
-	- //128 Both parameters can't be of the same type//
-	- //129 Parameter and result can't be of the same type//
-	- //130 Invalid result type for this operator//
-	- //131 Vararg parameters are not allowed in overloaded functions//
-	- //132 Illegal outside an OPERATOR function//
-	- //133 Parameter cannot be optional//
-	- //134 Only valid in -lang//
-	- //135 Default types or suffixes are only valid in -lang//
-	- //136 Suffixes are only valid in -lang//
-	- //137 Implicit variables are only valid in -lang//
-	- //138 Operator must be a member function//
-	- //139 Operator cannot be a member function//
-	- //140 Member function not allowed in anonymous UDT's//
-	- //141 Expected operator//
-	- //142 Declaration outside the original namespace or class//
-	- //143 A destructor should not have any parameters//
-	- //144 Expected class or UDT identifier//
-	- //145 Dynamic strings cannot be part of UNION's//
-	- //146 Fields with constructors cannot be part of UNION's//
-	- //147 Fields with destructors cannot be part of UNION's//
-	- //148 Illegal outside a constructor//
-	- //149 UDT's with methods must have unique names//
-	- //150 Parent is not a class or UDT//
-	- //151 Call to another constructor must be the first statement//
-	- //152 The constructor or destructor calling convention must be CDECL//
-	- //153 This symbol cannot be undefined//
-	- //154 Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors//
-	- //155 Invalid assignment/conversion//
-	- //156 Invalid assignment/conversion//
-	- //157 Invalid array subscript//
-	- //158 TYPE or CLASS has no default constructor//
-	- //159 Invalid priority attribute//
-	- //160 PROPERTY GET should have no parameter, or just one if indexed//
-	- //161 PROPERTY SET should have one parameter, or just two if indexed//
-	- //162 Expected 'PROPERTY'//
-	- //163 Illegal outside a PROPERTY block//
-	- //164 PROPERTY has no GET method/accessor//
-	- //165 PROPERTY has no SET method/accessor//
-	- //166 PROPERTY has no indexed GET method/accessor//
-	- //167 PROPERTY has no indexed SET method/accessor//
+	- //121 Expected 'END PROPERTY'//
+	- //122 Declaration outside the original namespace//
+	- //123 No end of multi-line comment, expected "'/"//
+	- //124 Too many errors, exiting//
+	- //125 Expected 'ENDMACRO'//
+	- //126 EXTERN or COMMON variables cannot be initialized//
+	- //127 At least one parameter must be a user-defined type//
+	- //128 Parameter or result must be a user-defined type//
+	- //129 Both parameters can't be of the same type//
+	- //130 Parameter and result can't be of the same type//
+	- //131 Invalid result type for this operator//
+	- //132 Vararg parameters are not allowed in overloaded functions//
+	- //133 Illegal outside an OPERATOR block//
+	- //134 Parameter cannot be optional//
+	- //135 Only valid in -lang//
+	- //136 Default types or suffixes are only valid in -lang//
+	- //137 Suffixes are only valid in -lang//
+	- //138 Implicit variables are only valid in -lang//
+	- //139 Invalid array index//
+	- //140 Operator must be a member function//
+	- //141 Operator cannot be a member function//
+	- //142 Member function not allowed in anonymous UDT's//
+	- //143 Expected operator//
+	- //144 Declaration outside the original namespace or class//
+	- //145 A destructor should not have any parameters//
+	- //146 Expected class or UDT identifier//
+	- //147 Dynamic strings cannot be part of UNION's or nested TYPE's//
+	- //148 Fields with constructors cannot be part of UNION's or nested TYPE's//
+	- //149 Fields with destructors cannot be part of UNION's or nested TYPE's//
+	- //150 Illegal outside a constructor//
+	- //151 UDT's with methods must have unique names//
+	- //152 Parent is not a class or UDT//
+	- //153 Call to another constructor must be the first statement//
+	- //154 The constructor or destructor calling convention must be CDECL//
+	- //155 This symbol cannot be undefined//
+	- //156 Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors//
+	- //157 Invalid assignment/conversion//
+	- //158 Invalid array subscript//
+	- //159 TYPE or CLASS has no default constructor//
+	- //160 Invalid priority attribute//
+	- //161 PROPERTY GET should have no parameter, or just one if indexed//
+	- //162 PROPERTY SET should have one parameter, or just two if indexed//
+	- //163 Expected 'PROPERTY'//
+	- //164 Illegal outside a PROPERTY block//
+	- //165 PROPERTY has no GET method/accessor//
+	- //166 PROPERTY has no SET method/accessor//
+	- //167 PROPERTY has no indexed GET method/accessor//
+	- //168 PROPERTY has no indexed SET method/accessor//
+	- //169 UDT in FOR needs numeric overloaded operators: //
+	- //170 The NEW[] operator does not allow explicit calls to constructors//
+	- //171 The NEW[] operator only supports the { ANY } initialization//
+	- //172 The NEW operator cannot be used with strings//
+	- //173 Illegal member access//
+	- //174 Expected ':'//
+	- //175 The default constructor has no public access//
+	- //176 Constructor has no public access//
+	- //177 Destructor has no public access//
+	- //178 Illegal non-static member access//
+	- //179 Member cannot be static//
+	- //180 Member isn't static//
+	- //181 Only static members can be accessed from static functions//
+	- //182 The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN//
+	- //183 The function prototype wasn't declared as STATIC//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.
+
 	If an IDE or a make utility are been used, additional errors can arise. These errors are outside the scope of this help.
- 
- 
+
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

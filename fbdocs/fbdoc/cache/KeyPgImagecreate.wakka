@@ -9,7 +9,7 @@ Creates and initializes storage for an image.
 		##//or//##
 	//buffer// = ""ImageCreate""( //width//, //height//, //color// )
 		##//or//##
-	//buffer// = ""ImageCreate""( //width//, //height//, //color//, //depth// )
+	//buffer// = ""ImageCreate""( //width//, //height//, [//color//], //depth// )
 ##
 {{fbdoc item="param"}}
 	##//width//##
@@ -25,30 +25,33 @@ Creates and initializes storage for an image.
 	The address of the image buffer, or NULL (0) if the buffer could not be created.
 
 {{fbdoc item="desc"}}
-	Allocates and initializes a memory buffer for an image. If ##//color//## is omitted, a value of zero (&H0) will be used for paletted (8-bit or less) modes, or &HF81F and &HFF00FF for 16-bit and 24/32-bit modes, respectively. The latter two are special mask colors.
+	Allocates and initializes a memory buffer for an image. If ##//color//## is omitted, a value of 0 will be used for paletted (8-bit or less) modes, or [[KeyPgRgb RGB]](255, 0, 255) for higher color depth modes (this translates to &hF81F and &hFFFF00FF for 15/16-bit and 24/32-bit modes, respectively - see the [[GfxInternalFormats internal gfx formats]] reference for more info). These are special mask colors, which will be transparent when using ##[[KeyPgPutgraphics Put]]## with the ##[[KeyPgTransGfx Trans]]## method.
 	
-	##**""ImageCreate""**## can be used to create an image buffer with a color depth that differs from the current color depth, but only after setting a gfx mode with the ##[[KeyPgScreengraphics Screen]]## statement or ##[[KeyPgScreenres ScreenRes]]## statement.  An image buffer can be passed to graphics functions across mode changes as long as the different modes use the same color depth.  Images can be deleted with ##[[KeyPgImageDestroy ImageDestroy]]##.
+	##**""ImageCreate""**## can be used to create an image buffer with a color depth that differs from the current color depth, but only after setting a gfx mode with the ##[[KeyPgScreengraphics Screen]]## statement or ##[[KeyPgScreenres ScreenRes]]## statement.  An image buffer can be passed to graphics functions across mode changes as long as the different modes use the same color depth.
+	
+	Images should be deleted with ##[[KeyPgImageDestroy ImageDestroy]]## when they are no longer needed, in order to prevent memory leaks.
 
 	The ##**""ImageCreate""**## function is an alternative to using the ##[[KeyPgGetgraphics Get (Graphics)]]## statement to create a buffer, and can ease the creation of an image buffer for use 2D drawing functions. It is recommended that you always use ##**""ImageCreate""**## though, as it automatically allocates the correct size for the buffer, given its dimensions and the current color depth; the image header may vary in size in future FB releases, so using ##[[KeyPgGetgraphics Get (Graphics)]]## with a buffer allocated on the stack may result in corrupted data, as the static buffer size may have been manually computed using a formula that is no longer valid.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' set screen mode
+%%(qbasic)'' set screen mode (400 * 300, 32 bits per pixel)
 screen 15, 32
 
 '' allocate and draw to an image buffer
 dim image_buffer as any ptr
-image_buffer = ImageCreate( 64, 64, RGBA( 64, 160, 0, 255 ) )
+image_buffer = imagecreate( 64, 64, RGBA( 64, 160, 0, 255 ) )
 circle image_buffer, ( 32, 32 ), 28, RGBA( 255, 0, 0, 128 ),,,,F
 
 '' blit image buffer to screen
 put( 160, 120 ), image_buffer, pset
-put( 180, 140 ), image_buffer, ALPHA
+put( 180, 140 ), image_buffer, alpha
+
+sleep
 
 '' free image buffer memory
-ImageDestroy( image_buffer )
-
-end 0
+imagedestroy( image_buffer )
 %%
+{{image class="center" title="Imagecreate example output" url="http://img246.imageshack.us/img246/6854/keypgimagecreateexampleec3.png" link="http://img246.imageshack.us/my.php?image=keypgimagecreateexampleec3.png"}}
 
 {{fbdoc item="diff"}}
 	- New to FB
@@ -56,5 +59,6 @@ end 0
 {{fbdoc item="see"}}
 	- ##[[KeyPgGetgraphics Get (Graphics)]]##
 	- ##[[KeyPgImageDestroy ImageDestroy]]##
+	- [[GfxInternalFormats Internal pixel formats]]
 
 {{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

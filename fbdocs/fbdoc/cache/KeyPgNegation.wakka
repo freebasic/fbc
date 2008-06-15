@@ -19,8 +19,7 @@ n = - n
 PRINT n
 SLEEP
 %%
-
-The output would look like:
+Output:
 %%
 -5
 -65432568459
@@ -30,6 +29,7 @@ The output would look like:
 	- None
 
 {{fbdoc item="see"}}
+	- [[CatPgOpArithmetic Arithmetic Operators]]
 	- [[CatPgMath Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

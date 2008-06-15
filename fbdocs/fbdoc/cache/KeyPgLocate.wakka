@@ -2,7 +2,7 @@
 Console/Graphics statement to set the current cursor position.
 
 {{fbdoc item="syntax"}}##
-	**Locate** [//row// [[KeyPgAs as]] [[KeyPgInteger integer]] ][, [//column// [[KeyPgAs as]] [[KeyPgInteger integer]] ][, [//cursorstate// [[KeyPgAs as]] [[KeyPgInteger integer]] ]]
+	**Locate** [//row// [[KeyPgAs as]] [[KeyPgInteger integer]] ][, [//column// [[KeyPgAs as]] [[KeyPgInteger integer]] ][, [//cursorstate// [[KeyPgAs as]] [[KeyPgInteger integer]] ]][, [//start// [[KeyPgAs as]] [[KeyPgInteger integer]] ][, [//stop// [[KeyPgAs as]] [[KeyPgInteger integer]] ]
 ##
 {{fbdoc item="usage"}}##
 	**Locate** [//row//][, [//column//][, [//cursorstate//]]
@@ -14,6 +14,10 @@ Console/Graphics statement to set the current cursor position.
 		the 1-based horizontal character position in the console.
 	##//cursorstate//##
 		the state of the cursor. 0 is off, 1 is on (console-mode only).
+	##//start//##
+		Ignored.  Allowed for -lang qb compatibilty only.
+	##//stop//##
+		Ignored.  Allowed for -lang qb compatibilty only.
 
 {{fbdoc item="desc"}}
 	Sets the text cursor in both graphics and console modes.
@@ -25,7 +29,7 @@ print "Current line:"; CSRLIN
 %%
 
 {{fbdoc item="diff"}}
-	- There are no start and stop optional arguments to control the size of the blinking cursor.
+	- The ##//start//## and ##//stop//## arguments have no effect in FreeBASIC.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCsrlin Csrlin]]##

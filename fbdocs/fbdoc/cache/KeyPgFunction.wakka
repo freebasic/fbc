@@ -13,7 +13,7 @@
 		//external_identifier// = externally visible (to the linker) name enclosed in quotes
 		//parameter_list// = parameter[, parameter[, ...]]
 		//parameter// = [[[KeyPgByref ByRef]]|[[KeyPgByval ByVal]]] //identifier// [[[KeyPgAs As]] //type//] [= //default_value//]
-			//identifier// = the name of the variable referenced in the function
+			//identifier// = the name of the variable referenced in the function.  If the argument is an array then the identifier must be followed by an empty parenthesis. 
 			//type// = the type of variable
 			//default_value// = the value of the argument if none is specified in the call
 		//return_type// = the type of variable returned by the function
@@ -32,7 +32,7 @@
 	
 	//Calling Convention// : Calling convention, or the order in which arguments are pushed and popped from the stack during function calls, is specified with the [[KeyPgCdecl CDecl]], [[KeyPgPascal Pascal]] and [[KeyPgStdcall StdCall]] keywords. If none are given, the function uses the standard convention by default ([[KeyPgStdcall StdCall]]).
 	
-	//Passing Arguments// : Functions may recieve one or more variables, or arguments, when called. These arguments are listed as //parameters// in the //parameter_list//. The [[KeyPgByref ByRef]] and [[KeyPgByval ByVal]] keywords specify whether the argument will be passed by reference or by value, respectively. The argument's type is given by [[KeyPgAs As]] //type// following the //parameter//. If a parameter in the declaration is given a default value, the parameter is optional.
+	//Passing Arguments// : Functions may recieve one or more variables, or arguments, when called. These arguments are listed as //parameters// in the //parameter_list//. The [[KeyPgByref ByRef]] and [[KeyPgByval ByVal]] keywords specify whether the argument will be passed by reference or by value, respectively. The argument's type is given by [[KeyPgAs As]] //type// following the //parameter//. If a parameter in the declaration is given a default value, the parameter is optional.  Array parameters are specified by following an identifier with an empty parenthesis.  Note that array parameters are always [[KeyPgByref ByRef]] and the [[KeyPgByref ByRef]] keyword is neither required nor allowed for array parameters.  When calling a functon with an array argument the parenthesis must be supplied there too; see the examples.
 
 	//Overloaded Functions// : An overloaded function may share the same name (//identifier//) as another with a different signature. The [[KeyPgOverload Overload]] keyword specifies that a function may be overloaded. A function must be defined - or declared - using the [[KeyPgOverload Overload]] keyword prior to any functions that overload them.
 	
@@ -100,6 +100,18 @@ End Function
 
 Print TestFunc("Testing:")
 Print TestFunc
+%%
+
+This example shows how to declare and call functions that take array arguments.
+%%(qbasic)
+Function x(b() As Double) As Integer
+  x = UBound(b)-LBound(b)+1
+End Function
+
+Dim a(1 To 10) As Double
+Print x(a())
+Dim c(10 To 20) As Double 
+Print x(c())
 %%
 
 {{fbdoc item="diff"}}

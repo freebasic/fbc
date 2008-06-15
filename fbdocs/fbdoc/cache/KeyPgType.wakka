@@ -2,6 +2,12 @@
 ----
 {{fbdoc item="syntax"}}
 	TYPE //typename// [FIELD=//number//]
+		[PRIVATE:]
+		[PUBLIC:]
+		DECLARE CONSTRUCTOR identifier [([parameter_list])]
+		DECLARE DESTRUCTOR identifier [()]
+		DECLARE SUB identifier [Alias external_identifier] [([parameter_list])]
+		DECLARE FUNCTION identifier [Alias external_identifier] [([parameter_list])] [As return_type]
 		//fieldname// [( //static array dimensions// ) | : //bits//] AS //[[DataType DataType]]//
 		...
 	END TYPE
@@ -18,9 +24,11 @@
 {{fbdoc item="desc"}}
 	TYPE is used to define custom data types containing one or more bit, scalar, array or other TYPE fields.
 
+	TYPE's may contain constructors, a destructor, and member FUNCTIONs and SUBs. For more information on how to use these features, see [[TutBeginnersGuideToTypesAsObjects The Beginners Guide To Types As Objects]]
+
 	Anonymous [[KeyPgUnion UNION]]s can be also nested in TYPEs.
 
-	The optional FIELD=//number// when given will change the default field alignment. FIELD=1 will disable any alignment, making the TYPE packed.
+	The optional FIELD=//number// when given will change the default field alignment. FIELD=1 will disable any alignment, making the TYPE contiguous in memory. 
 
 
 {{fbdoc item="ex"}}
@@ -46,7 +54,7 @@ TYPE BOOLEAN as integer
 
 
 {{fbdoc item="diff"}}
-	- Fields are aligned to the natural boundary, depending on the platform.
+	- None, if the compiler switch "-lang qb" is used.
 
 {{fbdoc item="see"}}
 	- [[KeyPgUnion UNION...END UNION]]

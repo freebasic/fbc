@@ -7,8 +7,8 @@
 	[[CompilerRequirements Requirements]]
 	[[CompilerInstalling Installing]]
 	[[CompilerRunning Running]]
-	[[CompileCmdLine Using the Command Line]]
-	[[CompileErrMsg Compiler Error Messages]]
+	[[CompilerCmdLine Using the Command Line]]
+	[[CompilerErrMsg Compiler Error Messages]]
 	[[CompilerQB FreeBasic and Qbasic]]
 	[[CompilerDialects FreeBasic Dialects]]
 	[[LangQB Differences from QB]]
@@ -40,6 +40,7 @@
 {{fbdoc item="section" value="Making Binaries"}}
 	[[ProPgStaticLibraries Static Libraries]]
 	[[ProPgSharedLibraries Shared Libraries (DLLs)]]
+	[[ProPgProfiling Profiling]]
 
 {{fbdoc item="section" value="Other Topics"}}
 	[[ProPgRadians Radians]]
@@ -96,7 +97,7 @@
 	{{fbdoc item="subsect" value="String Operators"}}
 		[[KeyPgConcat + (String concatenation)]]
 		[[KeyPgConcatConv & (String concatenation with conversion)]]
-		[[KeyPgStrIndex [] (String indexing)]]
+		{{fbdoc item="keyword" value="KeyPgStrIndex|[] (String indexing)"}}
 	{{fbdoc item="subsect" value="Preprocessor Operators"}}
 		[[KeyPgStringize # (Argument stringize)]]
 		[[KeyPgPreConcat ## (Argument concatenation)]]
@@ -104,10 +105,13 @@
 		[[KeyPgAt @ (Address of)]]
 		[[KeyPgValOf * (Value of)]]
 		[[KeyPgPtrAddSub + - (Pointer arithmetics)]]
-		[[KeyPgPtrIndex [] (Pointer indexing)]]
+		{{fbdoc item="keyword" value="KeyPgPtrIndex|[] (Pointer indexing)"}}
 	{{fbdoc item="subsect" value="Type Operators"}}
 		[[KeyPgDot . (Field access)]]
 		[[KeyPgPtrField -> (Field pointer access)]]
+	{{fbdoc item="subsect" value="Memory Operators"}}
+		[[KeyPgNew New]]
+		[[KeyPgDelete Delete]]
 
 {{fbdoc item="section" value="Keywords"}}
 
@@ -203,7 +207,7 @@
 		[[KeyPgCall CALL]]
 		[[KeyPgCallocate CALLOCATE]]
 		[[KeyPgCase CASE]]
-		-  [[KeyPgCast CAST]]
+		[[KeyPgCast CAST]]
 		[[KeyPgCbyte CBYTE]]
 		[[KeyPgCdbl CDBL]]
 		[[KeyPgCdecl CDECL]]
@@ -212,6 +216,7 @@
 		[[KeyPgChr CHR]]
 		[[KeyPgCint CINT]]
 		[[KeyPgCircle CIRCLE]]
+		[[KeyPgClass CLASS]]
 		[[KeyPgClear CLEAR]]
 		[[KeyPgClng CLNG]]
 		[[KeyPgClngint CLNGINT]]
@@ -407,7 +412,7 @@
 		[[KeyPgNext NEXT]]
 		[[KeyPgResumenext NEXT (RESUME)]]
 		[[KeyPgNot NOT]]
-		-  [[KeyPgNow NOW]]
+		[[KeyPgNow NOW]]
 	{{fbdoc item="subsect" value="O"}}
 		[[KeyPgOct OCT]]
 		[[KeyPgOffsetof OFFSETOF]]
@@ -452,11 +457,14 @@
 		[[KeyPgPrintPp PRINT #]]
 		[[KeyPgPrintusing PRINT USING]]
 		[[KeyPgPrivate PRIVATE]]
+		[[KeyPgVisPrivate PRIVATE: (Access Control)]]
 		[[KeyPgProcptr PROCPTR]]
 		[[KeyPgProperty PROPERTY]]
+		[[KeyPgVisProtected PROTECTED: (Access Control)]]
 		[[KeyPgPset PSET]]
 		[[KeyPgPtr PTR]]
 		[[KeyPgPublic PUBLIC]]
+		[[KeyPgVisPublic PUBLIC: (Access Control)]]
 		[[KeyPgPutgraphics PUT (Graphics)]]
 		[[KeyPgPutfileio PUT # (File I/O)]]
 	{{fbdoc item="subsect" value="R"}}
@@ -548,6 +556,7 @@
 		[[KeyPgUbyte UBYTE]]
 		[[KeyPgUcase UCASE]]
 		[[KeyPgUinteger UINTEGER]]
+		[[KeyPgUlong ULONG]]
 		[[KeyPgUlongint ULONGINT]]
 		[[KeyPgUnion UNION]]
 		[[KeyPgUnlock UNLOCK]]
@@ -625,6 +634,7 @@
 {{fbdoc item="section" value="Selected Tutorials and Source Code"}}
 	[[TutMathAngles Different ways angles are measured]]
 	[[TutMathIntroTrig A Brief Introduction To Trigonometry]]
+	[[TutBeginnersGuideToTypesAsObjects Beginners Guide to Types as Objects]]
 	[[FaqPggetputstructure Get Put Structure]]
 	[[FaqPgbloadworkaround Bload Work-around]]
 	[[SrcPgGfxNull SrcPgGfxNull]]

@@ -27,5 +27,6 @@ another_one = 2
 
 {{fbdoc item="see"}}
 	- [[CatPgPreProcess Preprocessor]]
-::c::
+	- [[CatPgOpPrepro Preprocessor Operators]]
+
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

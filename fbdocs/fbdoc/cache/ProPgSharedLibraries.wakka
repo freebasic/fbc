@@ -19,7 +19,7 @@ Our library will be a single module providing a single function:
 '' compile with: fbc -dll mylib.bas
 
 '' Add two numbers together and return the result
-public function Add2( byval x as integer, byval y as integer ) as integer
+public function Add2( byval x as integer, byval y as integer ) as integer export
   return( x + y )
 end function
 %%
@@ -27,6 +27,8 @@ Compile the library with:
 	##fbc -dll mylib.bas##
 
 The ##-dll## option tells the compiler to take the source code, ##mylib.bas##, and turn it in to an object file ##mylib.o##, then store the object file in to a shared library.  The name of the shared library will have a ##.so## extension or ##.dll## extension depending on if the platform is the linux or windows version.  A library might contain many modules (source files) each with many functions, but for this simple example, it is just one each.
+
+Making a shared library is almost identical to making a static library except for the addition of ##[[KeyPgExport Export]]## declaration specifier.  ##**Export**## tells the compiler to make the function visible to other executables loading the shared library.
 
 To make use of the library in some other source code, we need some way of telling the compiler what exactly is in the library.  A good way to do this is to put the declarations ( also called an interface, or API ) for the library in to a header file.
 

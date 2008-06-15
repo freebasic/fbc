@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OPTION NOKEYWORD"}}----
-Statement used to undefine a keyword
+Statement used to undefine a keyword in deprecated mode.
 
 {{fbdoc item="syntax"}}##
 	**Option Nokeyword** //keyword//

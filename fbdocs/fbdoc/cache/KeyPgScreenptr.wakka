@@ -5,29 +5,41 @@ Graphics function to return a pointer to the current work page framebuffer memor
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screenptr** ( ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//ret// = **Screenptr**
+	//result// = **Screenptr**
 ##
 {{fbdoc item="ret"}}
 	a pointer to the current work page framebuffer memory, or NULL (0) if no gfx mode is set.
 
 {{fbdoc item="desc"}}
-	It can be used either to test if a call to ##[[KeyPgScreengraphics Screen (Graphics)]]## is successful, either to do read/write operations directly to the work page memory, providing the page is first locked and later unlocked via the ##[[KeyPgScreenlock Screenlock]]## and ##[[KeyPgScreenunlock Screenunlock]]## statements. The pointer returned by **Screenptr** is only valid after a successful call to ##[[KeyPgScreengraphics Screen (Graphics)]]##, and is invalidated by subsequent calls to ##[[KeyPgScreengraphics Screen (Graphics)]]##.
+	**Screenptr** provides a way to directly read/write the working page's framebuffer. [[KeyPgScreenlock Screenlock]] should be used before any read or writes are attempted. The pointer returned is valid up until any subsequent call to [[KeyPgScreengraphics Screen]] or [[KeyPgScreenres Screenres]], which invalidates it.
+
+	**Screenptr** can also be used to test if a call to [[KeyPgScreengraphics Screen]] or [[KeyPgScreenres Screenres]] was successful, indicated by a non-NULL (<> 0) return value.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-' Set good old 320x200 in 8bpp mode
-' No pages specified so we have one work page = visible page
-SCREEN 13
-' We're in an 8bpp mode, so a BYTE PTR is needed for framebuffer access
-DIM framebuffer AS BYTE PTR
-framebuffer = SCREENPTR
-' We need to lock current work page before access is possible
-SCREENLOCK
-' Plot a white pixel at coordinates 160,100 on the work page
-POKE framebuffer + (100 * 320) + 160, 15
-' Unlock work page so our change is made visible
-SCREENUNLOCK
-SLEEP
+const w as integer = 800
+const h as integer = 600
+
+screenres w, h, 32
+
+' Get the address of the 32 bit/pixel frame buffer. An
+' uinteger ptr is used to simplify 32-bit pointer arithmetic.
+dim buffer as uinteger ptr = screenptr()
+if (0 = buffer) then
+	print "error: graphics screen not initialized."
+	end -1
+end if
+
+' Lock the screen to allow direct framebuffer access.
+screenlock()
+
+' Plot a green pixel at (400, 300).
+buffer[400 + w * 300] = RGB(0, 255, 0)
+
+' Unlock the screen.
+screenunlock()
+
+sleep
 %%
 
 {{fbdoc item="diff"}}
@@ -35,9 +47,8 @@ SLEEP
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgScreenres Screenres]]##
 	- ##[[KeyPgScreenlock Screenlock]]##
 	- ##[[KeyPgScreenunlock Screenunlock]]##
-	- ##[[KeyPgPtr Ptr]]##
-	- ##[[KeyPgPointer Pointer]]##
 
 {{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

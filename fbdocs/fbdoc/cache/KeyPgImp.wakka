@@ -22,11 +22,7 @@ c = a imp b '' c = &b11110101
 	- None
 
 {{fbdoc item="see"}}
+	- [[CatPgOpLogical Logical Operators]]
 	- [[TblTruth Operator Truth Tables]]
-	- ##[[KeyPgAnd And]]##
-	- ##[[KeyPgOr Or]]##
-	- ##[[KeyPgXor Xor]]##
-	- ##[[KeyPgNot Not]]##
-	- ##[[KeyPgEqv Eqv]]##
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

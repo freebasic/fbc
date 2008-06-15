@@ -1,11 +1,11 @@
-{{fbdoc item="title" value="+= (Combined Concatenation)"}}----
+{{fbdoc item="title" value="+= (Concatenate and Assign)"}}----
 Operator to append and assign a string onto another string
 
 {{fbdoc item="syntax"}}##
 	//string1// **+=** //string2//
 ##
 {{fbdoc item="desc"}}
-	The combined concatenation operator is a shortcut method of writing concatenation expressions. The expression ##s += t## is the equivalent of writing ##s = s + t##.
+	The concatenation assignment operator is a shortcut method of writing concatenation expressions. The expression ##s += t## is the equivalent of writing ##s = s + t##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -14,8 +14,7 @@ s = "Hello"
 s += " world"
 PRINT s
 %%
-
-The output would look like:
+Output:
 %%
 Hello world
 %%
@@ -24,10 +23,9 @@ Hello world
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineAdd|+= (Combined Addition) "}}
+	- {{fbdoc item="keyword" value="KeyPgCombineAdd|+= (Add and Assign) "}}
 	- {{fbdoc item="keyword" value="KeyPgConcat|+ (String concatenation) "}}
 	- {{fbdoc item="keyword" value="KeyPgConcat|& (String concatenation with conversion) "}}
-	- [[CatPgOperators Operators]]
-	- [[CatPgOpString String Operators]]
+	- [[CatPgOpAssignment Assignment Operators]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

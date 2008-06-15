@@ -51,10 +51,10 @@ Graphics statement to copy an image on to another image or screen
 	**Different pixel formats**
 		The pixel format of an image buffer must be compatible with the current gfx mode color depth; that is, if you acquire an image using ##[[KeyPgGetgraphics Get]]## and you later change screen mode via the ##[[KeyPgScreengraphics Screen]]## statement, the image data may not be valid in the new gfx mode, and may produce undesired results.
 
-		The ##AND##, ##OR## and ##XOR## methods produce different results depending on the current color depth, as pixels are stored in different formats; see Internal pixel formats for details. 
+		The ##AND##, ##OR## and ##XOR## methods produce different results depending on the current color depth, as pixels are stored in different formats; see [[GfxInternalFormats Internal pixel formats]] for details. 
 
 	**Mask Color**
-		The ##TRANS##, ##ALPHA## and ##ADD## methods do not draw pixels in the source image that use the mask color. The mask color depends on the current color depth: in paletted modes (up to 8 bpp) it is equal to color index 0, while in hi/truecolor modes (15, 16, 24 and 32 bpp) it is equal to color &HFF00FF (bright pink). 
+		The ##TRANS##, ##ALPHA## and ##ADD## methods do not draw pixels in the source image that use the mask color. The mask color depends on the current color depth: in paletted modes (up to 8 bpp) it is equal to color index 0, while in hi/truecolor modes (15, 16, 24 and 32 bpp) it is equal to color &hFF00FF (bright pink) or the value returned by [[KeyPgRgb RGB]](255, 0, 255). Note that in 24/32 bpp modes the alpha value of a color does not affect the identification of the transparent color; only the lower 24 bits are used to identify it. See [[GfxInternalFormats Internal pixel formats]] for details. 
 
 	**Alpha drawing**
 		The ##ALPHA## method can be used in two modes. If the ##//alpha//## parameter is specified, this is used to specify the level of translucency for the whole image to be drawn; a value of 0 will draw a completely transparent image, whereas a value of 255 will draw a completely solid one. This mode works only in hi/truecolor modes (15, 16, 24 and 32 bpp). If the ##//alpha//## parameter is omitted, the ##ALPHA## method will take the alpha level value on a per-pixel basis, allowing to draw images with an alpha channel (certain parts of the image can be made more or less translucent than others). This mode works only in 32 bpp mode, as this is the only color depth that allows for an embedded alpha value in each pixel.
@@ -140,8 +140,9 @@ end function
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGetgraphics Get (Graphics)]]##
-	- ##[[KeyPgPutfileio Put (File I/O)]]##
+	- ##[[KeyPgPutgraphics Put (Graphics)]]##
 	- ##[[KeyPgImagecreate ImageCreate]]##
 	- ##[[KeyPgAlphaGfx Alpha]]##
+	- [[GfxInternalFormats Internal pixel formats]]
 
 {{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

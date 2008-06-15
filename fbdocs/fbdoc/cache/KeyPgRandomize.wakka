@@ -2,17 +2,24 @@
 Seeds the random number generator.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Randomize** ( [[KeyPgByval byval]] //seed// [[KeyPgAs as]] [[KeyPgDouble double]] = -1 )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Randomize** ( [[KeyPgByval byval]] //seed// [[KeyPgAs as]] [[KeyPgDouble double]] = -1,  [[KeyPgByval byval]] //algorithm// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
 ##
 {{fbdoc item="usage"}}##
-	**Randomize** [ //seed// ]
+	**Randomize** [ //seed, algorithm// ]
 ##
 {{fbdoc item="param"}}
 	##//seed//##
 		A ##[[KeyPgDouble double]]## seed value for the random number generator.
+	##//algorithm//##
+		An ##[[KeyPgInteger integer]]## value to select the algorithm used.
 
 {{fbdoc item="desc"}}
-	Sets the random seed that helps rnd generate random numbers. For good results, using a seed that is not quite predictable provides good results for random numbers.
+	Sets the random seed that helps rnd generate random numbers, and selects the algorithm to use. For good results, using a seed that is not quite predictable provides good results for random numbers.  The algorithm choices are
+	  0 - Default for current mode.  This is algorithm 4 for -lang qb , 1 for lang deprecated , and 3 for lang fb.
+	  1 - Uses the CRT rand() function.  This will give different results depending on the platform.
+	  2 - Uses a fast implementation.  This should be stable across all platforms, and provides 32-bit granularity, reasonable degree of randomness.
+	  3 - Uses the Marsenne Twister.  This should be stable across all platforms, provides 32-bit granularity, and gives a high degree of randomness.
+	  4 - Uses a QB compatible function.  This should be stable across all platforms, and provides 24-bit precision, with a low degree of randomness.
 
 	An good example of a non-predictable seed is the ##[[KeyPgDouble double]]## precision number returned by (##[[KeyPgTimer Timer]]##).
 
@@ -23,7 +30,7 @@ randomize timer
 %%
 
 {{fbdoc item="diff"}}
-	- None
+	- Optional parameter to choose algorithm used.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgRnd Rnd]]##

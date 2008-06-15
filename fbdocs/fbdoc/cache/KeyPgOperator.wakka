@@ -28,26 +28,26 @@ Declares or defines an overloaded operator
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
-		name of the TYPE of CLASS
+		name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgEnum Enum]]##
 	##//assignment_op//## 
-		let += -= *= /= \= mod= shl= shr= and= or= xor= imp= eqv=^=
+		let += -= *= /= \= mod= shl= shr= and= or= xor= imp= eqv= ^=
 	##//unary_op//##
-		""-"" not
+		""-"" not @ * ->
 	##//binary_op//##
 		+ - * / \ mod shl shr and or xor imp eqv ^ = <> < > <= >=
 
 {{fbdoc item="desc"}}
-	The built in operators like ##=##, ##+##, and ##cast## have predefined behaviours when used in expressions.  These operators can be overloaded to do something other than predefined operations when at least one of the arguments to the operator is a ##[[KeyPgType Type]]## or CLASS data type.
+	The built in operators like ##=##, ##+##, and ##cast## have predefined behaviours when used in expressions.  These operators can be overloaded to do something other than predefined operations when at least one of the arguments to the operator is a ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgEnum Enum]]## data type.
 
 	Operators can be overloaded to accept different data types as parameters.  Only the ##[[KeyPgCast Cast]]## Operator can be overloaded to return different types.
 
-	Nonstatic operator members are declared inside the ##[[KeyPgType Type]]## or CLASS.  Global operators are declared outside.  All operator definitions (procedure bodies) must appear outside.
+	Nonstatic operator members are declared inside the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.  Global operators are declared outside.  All operator definitions (procedure bodies) must appear outside.
 
-	let, cast, and combined assignment operators must be declared inside the TYPE or CLASS.  The implicitly have a hidden ##//this//## parameter and a return data type of the TYPE or CLASS they are declared in.
+	##**Let**##, ##**Cast**##, and other assignment operators must be declared inside the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.  They are passed a hidden ##[[KeyPgThis this]]## parameter and have a return data type same as the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## they are declared in.
 
-	Unary and binary operators must be declared outside the TYPE or CLASS and have the return data type explicity declared.
+	Unary operators must be declared outside the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgEnum Enum]]## and have a return data type explicity declared.  Unary operators can be overloaded to return any valid data type, except for the pointer member access operator ##[[KeyPgPtrField ->]]## which must return a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## data type.
 
-	An ##**Operator**## method is similiar to overloaded functions in most respects, except there is a hidden ##//this//## parameter having the same type as ##//typename//## for all nonstatic members (operators declared inside the TYPE or CLASS).  ##//this//## is optionally used to access the fields of the ##[[KeyPgType Type]]## or CLASS inside the operator procedure.
+	Binary operators must be declared outside the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgEnum Enum]]## and have a return data type explicity declared.  Binary operators can be overloaded with valid data types, except for relational operators, which must return ##[[KeyPgInteger Integer]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -78,6 +78,8 @@ print "a + b = "; a + b
 %%
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgClass Class]]##
+	- ##[[KeyPgClass Enum]]##
 	- ##[[KeyPgType Type]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

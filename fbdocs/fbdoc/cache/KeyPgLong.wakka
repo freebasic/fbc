@@ -1,13 +1,13 @@
-{{fbdoc item="title" value="LONG"}}
-----
-Standard data type: 32 bit signed
+{{fbdoc item="title" value="LONG"}}----
+Standard data type: signed integer having same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Long**##
-
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Long**
+##
 {{fbdoc item="desc"}}
-Same as ##[[KeyPgInteger Integer]]##. A 32-bit signed whole-number data type.
+	Depending on the platform, same as ##[[KeyPgInteger Integer]]## or ##[[KeyPgLongint Longint]]##. A 32-bit or 64-bit signed whole-number data type.
 
+	##**Long**## has the same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -18,12 +18,12 @@ Same as ##[[KeyPgInteger Integer]]##. A 32-bit signed whole-number data type.
 	**Output:**
 	%%Long Range = -2147483648 to  2147483647%%
 
-
 {{fbdoc item="diff"}}
-	- None
+	- In QB, LONG is always 32-bit.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgInteger Integer]]##
+	- ##[[KeyPgLongint Longint]]##
+	- ##[[KeyPgUlong Ulong]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
-

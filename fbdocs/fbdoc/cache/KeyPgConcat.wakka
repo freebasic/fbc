@@ -19,12 +19,11 @@ C=A+B
 PRINT C 
 SLEEP
 %%
-
-The output would look like:
+Output:
 %%
 Hello, World!
 %%
-::c::
+
 {{fbdoc item="diff"}}
 	- None
 

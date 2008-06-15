@@ -1,11 +1,10 @@
 {{fbdoc item="title" value="String Operators"}}----
 <<
-	- {{fbdoc item="keyword" value="KeyPgConcat|(+) String concatenation"}}
-	- {{fbdoc item="keyword" value="KeyPgConcatConv|(&) String concatenation with conversion"}}
-	- {{fbdoc item="keyword" value="KeyPgStrIndex| ([]) String indexing"}}
+	- {{fbdoc item="keyword" value="KeyPgConcat|+ (String concatenation)"}}
+	- {{fbdoc item="keyword" value="KeyPgConcatConv|& (String concatenation with conversion)"}}
+	- {{fbdoc item="keyword" value="KeyPgStrIndex|[] (String indexing)"}}
 
 >>
-
 ::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

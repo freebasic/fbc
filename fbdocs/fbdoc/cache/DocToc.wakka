@@ -8,8 +8,8 @@
 	[[CompilerRequirements Requirements]]
 	[[CompilerInstalling Installing]]
 	[[CompilerRunning Running]]
-	[[CompileCmdLine Using the Command Line]]
-	[[CompileErrMsg Compiler Error Messages]]
+	[[CompilerCmdLine Using the Command Line]]
+	[[CompilerErrMsg Compiler Error Messages]]
 
 	[[CompilerQB FreeBasic and Qbasic]]
 	[[CompilerDialects FreeBasic Dialects]]
@@ -35,16 +35,15 @@
 		[[CatPgOperators Operators List]]
 		[[OpPrecedence Operator Precedence]]
 		
-	{{fbdoc item="subsect" value="Compound Statements"}}
+	{{fbdoc item="subsect" value="Statements"}}
 		[[KeyPgDoloop Do...Loop]]
 		[[KeyPgFornext For...Next]]
 		[[KeyPgIfthen If...Then]]
 		[[KeyPgSelectcase Select Case]]
 		[[KeyPgWhilewend While...Wend]]
-		[[KeyPgWith With...End With]]
 		[[KeyPgScope Scope...End Scope]]
-		[[KeyPgNamespace NameSpace...End NameSpace]]
-	
+		[[KeyPgNamespace NameSpace...End NameSpace]]	
+
 	{{fbdoc item="subsect" value="Procedures""}}
 		[[KeyPgCall Call]]
 		[[KeyPgDeclare Declare]]

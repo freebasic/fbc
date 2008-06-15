@@ -17,8 +17,7 @@ n = 4.54 + 5.46
 PRINT n
 SLEEP
 %%
-
-The output would look like:
+Output:
 %%
 10
 %%
@@ -28,6 +27,7 @@ The output would look like:
 
 {{fbdoc item="see"}}
 	- {{fbdoc item="keyword" value="KeyPgSubtraction|- (Subtraction)"}}
+	- [[CatPgOpArithmetic Arithmetic Operators]]
 	- [[CatPgMath Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

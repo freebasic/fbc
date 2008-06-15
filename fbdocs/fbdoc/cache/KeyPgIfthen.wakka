@@ -51,4 +51,4 @@ LOOP 'Go back to the start of the loop
 	- ##[[KeyPgPpif #if]]##
 	- ##[[KeyPgSelectcase Select Case]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

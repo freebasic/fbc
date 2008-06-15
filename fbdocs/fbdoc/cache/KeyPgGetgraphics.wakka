@@ -32,7 +32,7 @@
 	For color depths 24 and 32:
 	##size = 32 + ((((w * 4) + &hF) and not &hF) * h)##
 
-	Where w and h are the width and height of the graphics block you want to save. Pixel data starts at the 33th byte in the buffer, and pixel rows are byte-aligned on the paragraph size (16 bytes).
+	Where w and h are the width and height of the graphics block you want to save. Pixel data starts at the 33th byte in the buffer, and pixel rows are byte-aligned on the paragraph size (16 bytes). Data is stored in the current pixel format.
 	Note that the ##size## formula was changed in FB 0.17 to allow for extended sprite header capabilities. Previously the correct formula, which was compatible with QB, was:
 
 	##size = 4 + (w * h * bpp)##
@@ -50,5 +50,6 @@
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 	- ##[[KeyPgWindow Window]]##
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
+	- [[GfxInternalFormats Internal pixel formats]]
 
 {{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

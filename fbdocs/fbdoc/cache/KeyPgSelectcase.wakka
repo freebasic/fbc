@@ -59,4 +59,4 @@ end select
 {{fbdoc item="see"}}
 	- ##[[KeyPgIfthen If...Then]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

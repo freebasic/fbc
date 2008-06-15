@@ -20,6 +20,6 @@ The [[KeyPgLessThanOrEqual <= (Less-than Or Equal) Operator]] is complement to t
 	- none
 
 {{fbdoc item="see"}}
-	- [[CatPgOperators Operators]]
+	- [[CatPgOpConditional Relational Operators]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

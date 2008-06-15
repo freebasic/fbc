@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Assignment Operators"}}----
 <<
 	- {{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineConcat|+= (Append and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgCombineConcat|+= (Concatentate and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgCombineAdd|+= (Add and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgCombineSub|-= (Subtract and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgCombineMulti|*= (Multiply and Assign)"}}

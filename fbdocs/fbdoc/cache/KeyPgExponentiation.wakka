@@ -4,7 +4,7 @@ Operator to raise a number to a power.
 {{fbdoc item="syntax"}}##
 	//number// **^** //exponent//
 ##
-{{fbdoc item="syntax"}}##
+{{fbdoc item="usage"}}##
 	//result// = //number// **^** //exponent//
 ##
 {{fbdoc item="desc"}}
@@ -19,8 +19,7 @@ PRINT n;" squared is"; n ^ 2
 PRINT "The fifth root of"; n;" is"; n ^ 0.2
 SLEEP
 %%
-
-The output would look like:
+Output:
 %%
 Please enter a positive number: 3.4
 
@@ -32,6 +31,7 @@ The fifth root of 3.4 is 1.27730844458754
 	- None
 
 {{fbdoc item="see"}}
+	- [[CatPgOpArithmetic Arithmetic Operators]]
 	- [[CatPgMath Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

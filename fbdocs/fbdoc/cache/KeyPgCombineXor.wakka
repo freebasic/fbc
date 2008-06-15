@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="XOR= (Combined XOR)"}}----
+{{fbdoc item="title" value="XOR= (Exclusive Or and Assign)"}}----
 Operator that finds the bitwise ##**Xor**## (exclusion) of two integers and assign the result to the a first operand.
 
 {{fbdoc item="syntax"}}##
@@ -8,7 +8,7 @@ Operator that finds the bitwise ##**Xor**## (exclusion) of two integers and assi
 	//variable// **Xor=** //number//
 ##
 {{fbdoc item="desc"}}
-	The combined ##**Xor=**## operator is a shortcut method of writing ##**Xor**## expressions. The expression ##n **Xor**= m## is the equivalent of writing ##n = n **Xor** m##.
+	The ##**Xor=**## assignment operator is a shortcut method of writing ##**Xor**## expressions. The expression ##n **Xor**= m## is the equivalent of writing ##n = n **Xor** m##.
 
 	##**Xor=**## compares each bit of its operands, //variable// and //number//, and both bits are the same (both 1 or both 0), then the corresponding bit in the first operand, //variable//, is set to 0, otherwise it is set to 1.
 
@@ -26,5 +26,6 @@ print bin(a)
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgImp Xor]]##
+	- [[CatPgOpAssignment Assignment Operators]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

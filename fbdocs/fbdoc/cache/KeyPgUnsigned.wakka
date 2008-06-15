@@ -1,8 +1,9 @@
-{{fbdoc item="title" value="UNSIGNED"}}
-----
-{{fbdoc item="syntax"}}
-	as UNSIGNED {integer-based data type}
+{{fbdoc item="title" value="UNSIGNED"}}----
+Integer data type modifier
 
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Unsigned** //{integer-based data type}//
+##
 {{fbdoc item="desc"}}
 	Forces an integer-based data type to be unsigned (cannot contain negative numbers, but has it's maximum value doubled).
 
@@ -12,13 +13,14 @@
 
 dim x as unsigned integer
 x = -1
-print x 'output is 4294967295
-%%
+print x 
 
+'output is 4294967295
+%%
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- 
+	- ##[[KeyPgUinteger Uinteger]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

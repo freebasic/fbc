@@ -18,8 +18,7 @@ n = 6 / 2.3
 PRINT n
 SLEEP
 %%
-
-The output would look like:
+Output:
 %%
 0
 2.608695652173913
@@ -31,6 +30,7 @@ The output would look like:
 {{fbdoc item="see"}}
 	- {{fbdoc item="keyword" value="KeyPgIntegerDivision|\ (Integer Division)"}}
 	- {{fbdoc item="keyword" value="KeyPgMultiplication|* (Multiplication)"}}
+	- [[CatPgOpArithmetic Arithmetic Operators]]
 	- [[CatPgMath Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

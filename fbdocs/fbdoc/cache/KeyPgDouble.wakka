@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DOUBLE"}}
-----
+{{fbdoc item="title" value="DOUBLE"}}----
 Standard data type: 64 bit floating point
 
 {{fbdoc item="syntax"}}##
@@ -29,4 +28,3 @@ sleep
 	- ##[[KeyPgCdbl Cdbl]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
-

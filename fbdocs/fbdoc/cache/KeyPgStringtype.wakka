@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="STRING"}}
-----
+{{fbdoc item="title" value="STRING"}}----
 Standard data type: 8 bit character string
 
 {{fbdoc item="syntax"}}##
@@ -40,4 +39,3 @@ c = "Hello World"
 	- ##[[KeyPgVarptr Varptr]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
-

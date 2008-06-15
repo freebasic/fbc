@@ -38,18 +38,18 @@ Work in Progress: **New pages created for this guide should use the ""ProPg""* p
 	- {{fbdoc item="keyword" value="KeyPgTypeDef|Type Aliasing"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeTemp|Anonymous Types"}}
 	- [[ProPgTypeObjects Types as Objects]]
-	- Methods
-	- Properties
-	- Constructors and Destructors
-	- Using New and Delete
-	- Operator Overloading
+		- Properties
+		- Methods
+		- Constructors and Destructors
+		- Operator Overloading
+		- Member Access
+		- Using New and Delete
 
 <<>>
 {{fbdoc item="section" value="Statements and Expressions"}}
 	- [[CatPgOperators Operators List]]
 	- [[OpPrecedence Operator Precedence]]
-	- [[CatPgCompound Compound Statements]]
-	- [[CatPgControlFlow Control Flow]]
+	- [[CatPgControlFlow Control Flow Statements]]
 
 {{fbdoc item="section" value="Procedures"}}
 	- Overview
@@ -57,8 +57,8 @@ Work in Progress: **New pages created for this guide should use the ""ProPg""* p
 	- [[ProPgPassByVal Passing Variables by Value]]
 	- [[ProPgReturnValue Returning a Value]]
 	- Procedure Scopes
-	- Namespaces
 	- Function Pointers
+	- Namespaces
 	- Visibility and External Linkage
 	- [[CatPgVarArg Variable Arguments]]
 	- Macros as Functions
@@ -67,15 +67,15 @@ Work in Progress: **New pages created for this guide should use the ""ProPg""* p
 	- Executables
 	- [[ProPgStaticLibraries Static Libraries]]
 	- [[ProPgSharedLibraries Shared Libraries (DLLs)]]
+	- [[ProPgProfiling Profiling]]
 
 {{fbdoc item="section" value="Other Topics"}}
 (And topics that need to get placed elsewhere)
 	- [[CptAscii ASCII]]
 	- [[ProPgRadians Radians]]
 	- [[ProPgErrorHandling Error Handling]]
-	- [[ProPgCompOpt Compiler Options]]
 	- External Graphics File Formats
-	- Internal Graphics Formats
+	- [[GfxInternalFormats Internal Graphics Formats]]
 	- [[KeyPgAsm Inline ASM]]
 	- [[ProPgErrorHandling Error Handling]]
 	- [[CatPgPreProcess Preprocessor]]

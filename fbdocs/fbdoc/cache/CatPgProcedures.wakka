@@ -7,19 +7,15 @@
 	- {{fbdoc item="keyword" value="KeyPgByval|BYVAL"}}
 	- {{fbdoc item="keyword" value="KeyPgCall|CALL"}}
 	- {{fbdoc item="keyword" value="KeyPgCdecl|CDECL"}}
-	- {{fbdoc item="keyword" value="KeyPgConstructor|CONSTRUCTOR"}}
 	- {{fbdoc item="keyword" value="KeyPgModuleConstructor|CONSTRUCTOR (Module)"}}
-	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}
 	- {{fbdoc item="keyword" value="KeyPgModuleDestructor|DESTRUCTOR (Module)"}}
 	- {{fbdoc item="keyword" value="KeyPgDeclare|DECLARE"}}
 	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
 	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
 	- {{fbdoc item="keyword" value="KeyPgLib|LIB"}}
-	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
+	- {{fbdoc item="keyword" value="KeyPgOverload|OVERLOAD"}}
 
 <<>>
-	- {{fbdoc item="keyword" value="KeyPgProperty|PROPERTY"}}
-	- {{fbdoc item="keyword" value="KeyPgOverload|OVERLOAD"}}
 	- {{fbdoc item="keyword" value="KeyPgPascal|PASCAL"}}
 	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgPublic|PUBLIC"}}

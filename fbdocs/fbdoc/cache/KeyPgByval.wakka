@@ -16,7 +16,7 @@ Declaration specifier to explicitly pass a parameter by value
 
 	In -lang fb dialect, ##**Byval**## is the default parameter passing convention.
 
-	Opposite of ##[[KeyPgByref Byref]]##.
+	Opposite of ##[[KeyPgByref ByRef]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -38,7 +38,8 @@ End
 	- QB only used BYVAL in declarations to non-Basic subroutines
 
 {{fbdoc item="see"}}
+	- ##[[ProPgPassByVal Passing Variables by Value]]##
 	- ##[[KeyPgDeclare Declare]]##
-	- ##[[KeyPgByref Byref]]##
+	- ##[[KeyPgByref ByRef]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

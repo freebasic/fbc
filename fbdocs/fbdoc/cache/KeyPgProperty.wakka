@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="PROPERTY"}}----
-Declares or defines a Type or Class property
+Declares or defines a property in a type or class
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgType Type]] //typename//
@@ -27,7 +27,7 @@ Declares or defines a Type or Class property
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
-		name of the TYPE of CLASS
+		name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
 	##//fieldname//## 
 		name of the property
 	##//new_value//## 
@@ -36,13 +36,13 @@ Declares or defines a Type or Class property
 		the property index value
 
 {{fbdoc item="desc"}}
-	##**Property**## fields are used to get and set values of a ##[[KeyPgType Type]]## or CLASS in the same way as other data fields except instead of a simple assignment to a field or a value retrieved from field, a procedure is executed.
+	##**Property**## fields are used to get and set values of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## in the same way as other data fields except instead of a simple assignment to a field or a value retrieved from field, a procedure is executed.
 
-	##//typename//## is the name of the type for which the ##**Property**## method is declared and defined.  The ##//typename//## is resolved similiar to the way function names are resolved when used in a ##[[KeyPgNamespace Namespace]]##.  The ##//typename//## may be resolved by prefixing the name of the namespace, or by using the ##[[KeyPgUsing Using]]## statement.
+	##//typename//## is the name of the type for which the ##**Property**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace Namespace]]##.
 
 	A **Property** may optionally have one index parameter.
 
-	A hidden ##//this//## parameter having the same type as ##//typename//## is passed to the property procedure.  ##//this//## is used to access the fields of the ##[[KeyPgType Type]]## or CLASS.
+	A hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//## is passed to the property procedure.  ##[[KeyPgThis this]]## is used to access the fields of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -90,6 +90,7 @@ a = (6, 8)
 a.length =  10
 %%
 {{fbdoc item="see"}}
+	- ##[[KeyPgType Class]]##
 	- ##[[KeyPgType Type]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

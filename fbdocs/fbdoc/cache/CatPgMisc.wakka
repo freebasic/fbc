@@ -25,6 +25,7 @@
 	- {{fbdoc item="keyword" value="KeyPgLet|LET"}}
 	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}}
 	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
+	- {{fbdoc item="keyword" value="KeyPgExternCpp|EXTERN...END EXTERN"}}
 	- {{fbdoc item="keyword" value="KeyPgCommon|COMMON"}}
 	- {{fbdoc item="keyword" value="KeyPgShared|SHARED"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenCons|SCREENCONS"}}
@@ -33,6 +34,7 @@
 	- {{fbdoc item="keyword" value="KeyPgDylibsymbol|DYLIBSYMBOL"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibfree|DYLIBFREE"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibload|DYLIBLOAD"}}
+	- {{fbdoc item="keyword" value="KeyPgScope|SCOPE"}}
 	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgRem|REM"}}
 	- {{fbdoc item="keyword" value="KeyPgDim|DIM"}}

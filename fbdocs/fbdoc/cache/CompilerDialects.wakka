@@ -73,19 +73,21 @@
 	""2"") Operator overloading
 		- Periods allowed in symbol names make it too difficult and/or ambiguous.
 
+	""3"") Constructors, destructors and methods in TYPE's.
+		- Periods allowed in symbol names make it too difficult and/or ambiguous.
+
 
 ==qb==
 	 
 	**Supported: Everything not supported/allowed in the fb mode, plus:**
 
-	""1"") CALL can be used with forward-referenced functions. 
-		- (W.I.P.)
+	""1"") CALL can be used with forward-referenced functions. (W.I.P.)
 
-	""2"") SHARED can be used inside functions.   
-		- (W.I.P.)
+	""2"") SHARED can be used inside functions. (W.I.P.)
 
-	""3"") Variable scope
-		- All variables, implicit or explicit, are always allocated in the function scope, as in QB.
+	""3"") All variables, implicit or explicit, are always allocated in the function scope, as in QB.
+
+	""4"") the DATA statement won't look up symbols, every token is assumed to be a literal string even without quotes (as in QB)
 
 
 	**Not supported:**
@@ -97,11 +99,13 @@
 
 	""3"") Function and operator overloading
 
-	""4"") SCOPE blocks
+	""4"") Constructors, destructors and methods in TYPE's
 
-	""5"") EXTERN blocks
+	""5"") SCOPE blocks
 
-	""6"") Variable initializers
+	""6"") EXTERN blocks
+
+	""7"") Variable initializers
 		- All variables are moved to the function scope (as in QB), making local initializers too difficult to support.
 
 The -lang qb option will always be supported in future versions.

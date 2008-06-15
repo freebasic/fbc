@@ -50,11 +50,7 @@ IF NOT numeric_value2 = 25 THEN PRINT "Numeric_Value2 is not equal to 25"
 	- None
 
 {{fbdoc item="see"}}
+	- [[CatPgOpLogical Logical Operators]]
 	- [[TblTruth Operator Truth Tables]]
-	- ##[[KeyPgAnd And]]##
-	- ##[[KeyPgOr Or]]##
-	- ##[[KeyPgXor Xor]]##
-	- ##[[KeyPgEqv Eqv]]##
-	- ##[[KeyPgImp Imp]]##
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

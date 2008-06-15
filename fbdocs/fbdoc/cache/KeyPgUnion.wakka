@@ -1,13 +1,30 @@
-{{fbdoc item="title" value="UNION"}}
-----
-{{fbdoc item="syntax"}}
-	UNION unionName 
-	~symbolName AS DataType
-	~...
-	END UNION
+{{fbdoc item="title" value="UNION"}}----
+Declares a union user defined type
+
+{{fbdoc item="syntax"}}##
+	**Union** //typename//
+		//fieldname// as [[DataType datatype]]
+		[[KeyPgDeclare declare]] //member function declaration// ...
+		...
+	End Union
+##
+{{fbdoc item="param"}}
+	##//typename//##
+		Name of the ##**Union**##
+	##//fieldname//##
+		Name of a data field member
+	##//member function declaration//##
+		Any of the supported member functions
 
 {{fbdoc item="desc"}}
-	Unions are similiar to a Type-End Type structure, except that the elements of a union occupy the same space in memory. The size of the Union is the size of the largest data item. Since they occupy the same space, only a single element can be used. Unions can be nested inside a type structure. See Example.
+	Unions are similiar to a ##[[KeyPgType Type]]## structure, except that the elements of a union occupy the same space in memory. The size of the Union is the size of the largest data item. Since they occupy the same space, only a single element can be used. 
+
+	Unions can be nested inside a type structure. See Example.
+
+	Unions support member functions including ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgOperator Operator]]##, ##[[KeyPgProperty Property]]## and ##[[KeyPgSub Sub]]##.  All members of a union are public and access control is not supported.
+
+	A ##**Union**## can be passed as a user defined type to overloaded operator functions.
+
 {{fbdoc item="ex"}}
 %%(qbasic)
 'define our union
@@ -58,6 +75,6 @@ sleep
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- [[KeyPgType TYPE...END TYPE]]
+	- ##[[KeyPgType Type]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

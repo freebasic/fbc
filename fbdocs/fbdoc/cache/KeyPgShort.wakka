@@ -1,13 +1,11 @@
-{{fbdoc item="title" value="SHORT"}}
-----
+{{fbdoc item="title" value="SHORT"}}----
 Standard data type: 16 bit signed
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Short**##
-
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Short**
+##
 {{fbdoc item="desc"}}
-16-bit signed whole-number data type. Can hold values from -32768 to 32767.
-
+	16-bit signed whole-number data type. Can hold values from -32768 to 32767.
 
 {{fbdoc item="ex"}}
 %%(qbasic)  Dim x As Short = CShort(&H8000)
@@ -25,4 +23,3 @@ Standard data type: 16 bit signed
 	- ##[[KeyPgCshort Cshort]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
-

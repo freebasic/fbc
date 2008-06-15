@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="Functional Keywords List"}}
+{{fbdoc item="title" value="Functional Keywords List"}}----
 <<
 ==ARRAYS==
 	- {{fbdoc item="keyword" value="KeyPgErase|ERASE"}}
@@ -72,6 +72,7 @@
 	- {{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}}
 	- {{fbdoc item="keyword" value="KeyPgLong|LONG"}}
 	- {{fbdoc item="keyword" value="KeyPgLongint|LONGINT"}}
+	- {{fbdoc item="keyword" value="KeyPgScope|SCOPE"}}
 	- {{fbdoc item="keyword" value="KeyPgShared|SHARED"}}
 	- {{fbdoc item="keyword" value="KeyPgShort|SHORT"}}
 	- {{fbdoc item="keyword" value="KeyPgStringtype|STRING"}}
@@ -79,10 +80,12 @@
 	- {{fbdoc item="keyword" value="KeyPgType|TYPE"}}
 	- {{fbdoc item="keyword" value="KeyPgUbyte|UBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgUinteger|UINTEGER"}}
+	- {{fbdoc item="keyword" value="KeyPgUlong|ULONG"}}
 	- {{fbdoc item="keyword" value="KeyPgUlongint|ULONGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgUnion|UNION"}}
 	- {{fbdoc item="keyword" value="KeyPgUnsigned|UNSIGNED"}}
 	- {{fbdoc item="keyword" value="KeyPgUshort|USHORT"}}
+	- {{fbdoc item="keyword" value="KeyPgWith|WITH"}}
 	- {{fbdoc item="keyword" value="KeyPgWstring|WSTRING"}}
 	- {{fbdoc item="keyword" value="KeyPgZstring|ZSTRING"}}
 
@@ -259,6 +262,7 @@
 	- {{fbdoc item="keyword" value="KeyPgCos|COS"}}
 	- {{fbdoc item="keyword" value="KeyPgExp|EXP"}}
 	- {{fbdoc item="keyword" value="KeyPgFix|FIX"}}
+	- {{fbdoc item="keyword" value="KeyPgFrac|FRAC"}}
 	- {{fbdoc item="keyword" value="KeyPgInt|INT"}}
 	- {{fbdoc item="keyword" value="KeyPgLog|LOG"}}
 	- {{fbdoc item="keyword" value="KeyPgMod|MOD"}}
@@ -423,7 +427,6 @@
 	- {{fbdoc item="keyword" value="KeyPgOngosub|ON...GOSUB"}}
 	- {{fbdoc item="keyword" value="KeyPgOngoto|ON...GOTO"}}
 	- {{fbdoc item="keyword" value="KeyPgReturn|RETURN"}}
-	- {{fbdoc item="keyword" value="KeyPgScope|SCOPE"}}
 	- {{fbdoc item="keyword" value="KeyPgSelectcase|SELECT CASE"}}
 	- {{fbdoc item="keyword" value="KeyPgSleep|SLEEP"}}
 	- {{fbdoc item="keyword" value="KeyPgStep|STEP"}}
@@ -432,7 +435,6 @@
 	- {{fbdoc item="keyword" value="KeyPgWend|WEND"}}
 	- {{fbdoc item="keyword" value="KeyPgWhile|WHILE"}}
 	- {{fbdoc item="keyword" value="KeyPgWhilewend|WHILE...WEND"}}
-	- {{fbdoc item="keyword" value="KeyPgWith|WITH"}}
 
 ==STRING FUNCTIONS==
 	- {{fbdoc item="keyword" value="KeyPgInstr|INSTR"}}

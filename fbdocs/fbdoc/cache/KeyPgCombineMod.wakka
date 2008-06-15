@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="Mod= (Combined Mod)"}}
-----
+{{fbdoc item="title" value="Mod= (Modulus and Assign)"}}----
 Operator to divide two variables and assign the remainder to the a variable
 
 {{fbdoc item="syntax"}}##
@@ -9,7 +8,7 @@ Operator to divide two variables and assign the remainder to the a variable
 	//variable// **Mod=** //number//
 ##
 {{fbdoc item="desc"}}
-	The combined ##**Mod=**## operator is a shortcut method of writing ##**Mod**## expressions. The expression ##n Mod= m## is the equivalent of writing ##n = n Mod m##. The result of ##**Mod**## is the integer remainder of ##//variable//## divided by ##//number//##. If either ##//variable//## or ##//number//## is not an integer value then it is rounded to the nearest whole number.
+	The modulus assignment operator is a shortcut method of writing ##**Mod**## expressions. The expression ##n Mod= m## is the equivalent of writing ##n = n Mod m##. The result of ##**Mod**## is the integer remainder of ##//variable//## divided by ##//number//##. If either ##//variable//## or ##//number//## is not an integer value then it is rounded to the nearest whole number.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -26,5 +25,6 @@ SLEEP
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgMod Mod]]##
+	- [[CatPgOpAssignment Assignment Operators]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

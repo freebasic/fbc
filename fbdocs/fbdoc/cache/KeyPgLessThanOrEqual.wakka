@@ -20,6 +20,6 @@ The [[KeyPgGreaterThan > (Greater-than) Operator]] is complement to the <= (Less
 	- none
 
 {{fbdoc item="see"}}
-	- [[CatPgOperators Operators]]
+	- [[CatPgOpConditional Relational Operators]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

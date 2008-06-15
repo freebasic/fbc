@@ -1,0 +1,56 @@
+{{fbdoc item="title" value="PRIVATE: (Access Control)"}}----
+Specifies private member access control in a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType Type]] //typename//
+		**Private:**
+			//member declarations//
+	End Type
+##
+{{fbdoc item="param"}}
+	##//typename//##
+		name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
+	##//member declarations//##
+		declarations for fields, functions, or enumerations
+
+{{fbdoc item="desc"}}
+	##**Private:**## indicates that ##//member declarations//## following it have private access.  Private members are accessible only from inside a member function for the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
+	
+	##//member declarations//## following ##**Private:**## are private until a different access control specifier is given, like ##[[KeyPgVisPublic Public:]]## or ##[[KeyPgVisProtected Protected:]]##.
+
+	Members in a ##[[KeyPgType Type]]## declaration are ##**Public:**## by default if no member access control specifier is given.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+'' NOTE: This example code will not compile, to demonstrate the compiler checks.
+TYPE testing
+  number as integer
+  PRIVATE:
+	nome as string
+  declare sub setNome( byref newnome as string )
+END TYPE
+
+sub testing.setnome( byref newnome as string )
+  '' This is OK. We're inside a member function for the type
+  this.nome = newnome
+end sub
+
+dim as testing myVariable
+
+'' This is OK, number is public
+myVariable.number = 69
+
+'' compile error - nome is private and we're trying to access it 
+'' outside any of this TYPE's member functions
+myVariable.nome = "FreeBASIC"
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgVisPublic Public:]]## (Access Control)
+	- ##[[KeyPgVisProtected Protected:]]## (Access Control)
+	- ##[[KeyPgType Type]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

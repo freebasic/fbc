@@ -3,11 +3,11 @@ Operator to access fields in a user defined type variable
 
 {{fbdoc item="syntax"}}##
 	//UDTvariable//**.**//fieldname//
-	    
-	[[KeyPgWith with]]  //UDTvariable//
+
+	[[KeyPgWith With]]  //UDTvariable//
 		.//fieldname// =  //expression//
-	...
-	end with
+		...
+	End With
 ##
 {{fbdoc item="desc"}}
 	The dot (field operator) selects a field of a variable defined as an user defined type.

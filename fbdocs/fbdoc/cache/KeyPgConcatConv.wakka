@@ -20,18 +20,17 @@ C=A & B
 PRINT C
 SLEEP
 %%
-
-The output would look like:
+Output:
 %%
 The result is: 124.3
 %%
-::c::
+
 {{fbdoc item="diff"}}
-	- New to FB. It's a Visual Basic function
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- {{fbdoc item="keyword" value="KeyPgConcat|+ String Concatenation"}}
+	- ##[[KeyPgStr Str]]##
 	- [[CatPgOpString String Operators]]
-	- [[KeyPgStr STR$]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

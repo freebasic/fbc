@@ -20,7 +20,8 @@ Statement to initialize a graphics mode using QB-like mode numbers.
 	##**Screen**## tells the compiler to link the GfxLib and initializes a QB-only, QB-on-GUI or OpenGl graphics mode, depending on the //flags// setting.
 	In QB-only modes a dumb window or fullscreen resolution is set, one or more buffers in standard memory are created, console commands are redirected to their graphic versions, a [[GfxDefPalettes default palette]] is set and an automatic screen refresh thread is started.  QB-like graphics and console statements can be used.
 	 In QB-on-GUI modes one or more buffers in standard memory are created, console commands are redirected to their graphic versions and a [[GfxDefPalettes default palette]] is set.  QB-like graphics and console statements can be used.  Is up to the user to create a window and to refresh it with the contents of the graphics buffers.
-	In OpenGl modes a dumb window or fullscreen resolution is set, one or more buffers in standard memory are created, and the OS's OpenGL library is initialized.  From here OpenGL only openGL commands can be used.  QB-like and console commands are forbidden.  This allows to initialize OpenGL in a portable way.
+	In OpenGl modes a dumb window or fullscreen resolution is set, one or more buffers in standard memory are created, and the OS's OpenGL library is initialized.  From here OpenGL only openGL commands can be used; QB-like and console commands are forbidden.  This allows to initialize OpenGL in a portable way; you can then also use [[KeyPgScreenControl ScreenControl]] to retrieve the list of supported OpenGL extensions, and [[KeyPgScreenglproc ScreenGLProc]] to obtain extension function pointers.
+	Any buffer that is created in standard memory uses one of three supported internal pixel formats, depending on the desired color depth; see [[GfxInternalFormats Internal pixel formats]] for details.
 	
 	If ##**Screen**## fails to set the required mode, an "Illegal function call" error is issued and the screen pointer is set to 0. Thus ##**Screen**## failures can be detected using standard ON ERROR processing or retrieving the screen pointer with ##[[KeyPgScreenptr Screenptr]]##.
 	Before setting a fullscreen mode the program should check if that mode is available in the graphics card using ##[[KeyPgScreenlist Screenlist]]##.
@@ -103,5 +104,7 @@ END IF%%
 	- ##[[KeyPgScreenset Screenset]]##
 	- ##[[KeyPgScreencopy Screencopy]]##
 	- ##[[KeyPgScreeninfo Screeninfo]]##
+	- ##[[KeyPgScreenglproc Screenglproc]]##
+	- [[GfxInternalFormats Internal pixel formats]]
 
 {{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

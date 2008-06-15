@@ -1,4 +1,5 @@
-====Community Tutorials:====
+{{fbdoc item="title" value="Community Tutorials"}}----
+Tutorials submitted by the FreeBASIC community:
 
 	-**Getting Started**
 		-[[TutGettingStarted Getting Started with FreeBASIC]] //by [[JasonFirth SJ Zero]]//
@@ -6,6 +7,8 @@
 		-[[TutUsingMouse Using the Mouse in FreeBASIC]] //by MystikShadows//
 		-[[TutBasicInput Get Information into your program]] //by [[TekRat TekRat]]//
 		-[[TutDynamicArrays Using Dynamic Arrays in FreeBASIC]] //by [[SephKnows]]//
+		-[[TutBeginnersGuideToTypesAsObjects Beginners Guide to Types as Objects]] //by ""YetiFoot""//
+		-[[TutBeginnersGuideToTypesAsObjects2 Beginners Guide to Types as Objects (Part 2)]] //by ""YetiFoot""//
 	-**Pre Processor**
 		-[[TutConditionalCompilation Conditional Compilation And You]] //by AetherFox//
 	-**Memory Management**
@@ -23,8 +26,9 @@
 		-[[TutIndexGTK GTK Reference]] //by Joseph Cohen//
 	-**Libraries**
 		-[[TutInterfacingWithC Interfacing with C]] //by ""UtenNavn""//
-		-[[TutIndexSDLNET SDL_NET]] //by Paragon//
-
+		-[[TutIndexSDLNet SDL_NET]] //by Paragon//
+	-**Miscellaneous**
+		-[[TutOOPInNonOOPLanguages OOP in non-OOP languages]] //by KevinWhitefoot//
 
 
 {{fbdoc item="back" value="FBWiki|Main Page"}}

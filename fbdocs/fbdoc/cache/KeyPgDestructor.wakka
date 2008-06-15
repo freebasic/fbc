@@ -11,12 +11,16 @@ Called automatically when a class or user defined type goes out of scope or is d
 		//statements//
 	**End Destructor**
 ##
+{{fbdoc item="param"}}
+	##//typename//## 
+		name of the ##[[KeyPgType Type]]## of ##[[KeyPgClass Class]]##
+
 {{fbdoc item="desc"}}
-	The destructor method is called when a user defined ##[[KeyPgType]]## or CLASS variable goes out of scope or is destroyed.
+	The destructor method is called when a user defined ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## variable goes out of scope or is destroyed explicity with the ##[[KeyPgDelete Delete]]## operator.
 
-	The ##**Destructor**## method is passed a hidden ##//this//## parameter having the same type as //typename//.
+	The ##**Destructor**## method is passed a hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//##.
 
-	The destructor on a type is called before the destructors on any of its fields.  Therefore, all fields are accessible with the hidden //this// parameter in the destructor body.
+	The destructor in a type is called before the destructors on any of its fields.  Therefore, all fields are accessible with the hidden ##[[KeyPgThis this]]## parameter in the destructor body.
 
 	Only one destructor may be declared and defined per type.
 
@@ -62,9 +66,10 @@ Destroying: main.x
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgClass Class]]##
 	- ##[[KeyPgConstructor Constructor]]##
+	- ##[[KeyPgDelete Delete]]##
 	- ##[[KeyPgModuleDestructor Destructor (Module)]]##
-	- ##[[KeyPgNamespace Namespace]]##
 	- ##[[KeyPgType Type]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

@@ -2,7 +2,7 @@
 ----
 
 {{fbdoc item="desc"}}
-**Passing by value** refers to the method of communicating variables to the function; Passing by reference using the [[KeyPgByref BYVAL]] keyword will cause the compiler to pass a copy of the value in a variable to the function, which means that any changes made to the passed variable will stay within the function, and dissapear when the function exits.
+**Passing by value** refers to the method of communicating variables to the function; Passing by value using the [[KeyPgByval BYVAL]] keyword will cause the compiler to pass a copy of the value in a variable to the function, which means that any changes made to the passed variable will stay within the function, and dissapear when the function exits.
 
 
 %%(qbasic)

@@ -104,6 +104,7 @@
 	- {{fbdoc item="keyword" value="KeyPgChr|CHR"}}
 	- {{fbdoc item="keyword" value="KeyPgCint|CINT"}}
 	- {{fbdoc item="keyword" value="KeyPgCircle|CIRCLE"}}
+	- {{fbdoc item="keyword" value="KeyPgClass|CLASS"}}
 	- {{fbdoc item="keyword" value="KeyPgClear|CLEAR"}}
 	- {{fbdoc item="keyword" value="KeyPgClng|CLNG"}}
 	- {{fbdoc item="keyword" value="KeyPgClngint|CLNGINT"}}
@@ -164,6 +165,7 @@
 	- {{fbdoc item="keyword" value="KeyPgDefuint|DEFUINT"}}
 	- {{fbdoc item="keyword" value="KeyPgDefulngint|DEFULNGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgDefushort|DEFUSHORT"}}
+	- {{fbdoc item="keyword" value="KeyPgDelete|DELETE"}}
 	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}
 	- {{fbdoc item="keyword" value="KeyPgModuleDestructor|DESTRUCTOR (Module)"}}
 	- {{fbdoc item="keyword" value="KeyPgDim|DIM"}}
@@ -211,6 +213,7 @@
 	- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}
 	- {{fbdoc item="keyword" value="KeyPgFornext|FOR...NEXT"}}
 	- {{fbdoc item="keyword" value="KeyPgFormat|FORMAT"}}
+	- {{fbdoc item="keyword" value="KeyPgFrac|FRAC"}}
 	- {{fbdoc item="keyword" value="KeyPgFre|FRE"}}
 	- {{fbdoc item="keyword" value="KeyPgFreefile|FREEFILE"}}
 	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
@@ -297,6 +300,7 @@
 	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
 	- {{fbdoc item="keyword" value="KeyPgNamespace|NAMESPACE"}}
 	- {{fbdoc item="keyword" value="KeyPgNext|NEXT"}}
+	- {{fbdoc item="keyword" value="KeyPgNew|NEW"}}
 	- {{fbdoc item="keyword" value="KeyPgResumenext|NEXT (RESUME)"}}
 	- {{fbdoc item="keyword" value="KeyPgNot|NOT"}}
 	-  {{fbdoc item="keyword" value="KeyPgNow|NOW"}}
@@ -344,11 +348,14 @@
 	- {{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintusing|PRINT USING"}}
 	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}
+	- {{fbdoc item="keyword" value="KeyPgVisPrivate|PRIVATE: (Access Control)"}}
 	- {{fbdoc item="keyword" value="KeyPgProcptr|PROCPTR"}}
 	- {{fbdoc item="keyword" value="KeyPgProperty|PROPERTY"}}
+	- {{fbdoc item="keyword" value="KeyPgVisProtected|PROTECTED: (Access Control)"}}
 	- {{fbdoc item="keyword" value="KeyPgPset|PSET"}}
 	- {{fbdoc item="keyword" value="KeyPgPtr|PTR"}}
 	- {{fbdoc item="keyword" value="KeyPgPublic|PUBLIC"}}
+	- {{fbdoc item="keyword" value="KeyPgVisPublic|PUBLIC: (Access Control)"}}
 	- {{fbdoc item="keyword" value="KeyPgPutgraphics|PUT (Graphics)"}}
 	- {{fbdoc item="keyword" value="KeyPgPutfileio|PUT # (File I/O)"}}
 ====R====
@@ -440,6 +447,7 @@
 	- {{fbdoc item="keyword" value="KeyPgUbyte|UBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgUcase|UCASE"}}
 	- {{fbdoc item="keyword" value="KeyPgUinteger|UINTEGER"}}
+	- {{fbdoc item="keyword" value="KeyPgUlong|ULONG"}}
 	- {{fbdoc item="keyword" value="KeyPgUlongint|ULONGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgUnion|UNION"}}
 	- {{fbdoc item="keyword" value="KeyPgUnlock|UNLOCK"}}

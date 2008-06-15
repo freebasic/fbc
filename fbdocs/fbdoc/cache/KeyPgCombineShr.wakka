@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="SHR= (Combined SHR)"}}----
+{{fbdoc item="title" value="SHR= (Shift Right and Assign)"}}----
 Operator that shifts the bits of an integer right and assign the result to the a first operand.
 
 {{fbdoc item="syntax"}}##
@@ -8,7 +8,7 @@ Operator that shifts the bits of an integer right and assign the result to the a
 	//variable// **Shr=** //number//
 ##
 {{fbdoc item="desc"}}
-	The combined ##**Shr=**## shifts all bits in the argument ##//variable//## integer to the right by argument ##//number//##, and assignes the result to ##//variable//##. This has the effect of dividing the argument ##//variable//## by two for each shift given in the argument ##//number//##. Both arguments, ##//variable//## and ##//number//## are integers.
+	The shift right and assignment operator shifts all bits in the argument ##//variable//## integer to the right by argument ##//number//##, and assignes the result to ##//variable//##. This has the effect of dividing the argument ##//variable//## by two for each shift given in the argument ##//number//##. Both arguments, ##//variable//## and ##//number//## are integers.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -25,5 +25,6 @@ SLEEP
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgShr Shr]]##
+	- [[CatPgOpAssignment Assignment Operators]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

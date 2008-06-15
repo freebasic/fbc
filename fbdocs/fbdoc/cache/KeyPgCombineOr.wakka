@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="OR= (Combined OR)"}}----
+{{fbdoc item="title" value="OR= (Inclusive Or and Assign)"}}----
 Operator that finds the bitwise ##**Or**## (disjunction) of two integers and assign the result to the a first operand.
 
 {{fbdoc item="syntax"}}##
@@ -8,7 +8,7 @@ Operator that finds the bitwise ##**Or**## (disjunction) of two integers and ass
 	//variable// **Or=** //number//
 ##
 {{fbdoc item="desc"}}
-	The combined ##**Or=**## operator is a shortcut method of writing ##**Or**## expressions. The expression ##n **Or**= m## is the equivalent of writing ##n = n **Or** m##. ##**Or=**## compares each bit of its operands, //variable// and //number//, and either bits are 1, then the corresponding bit in the first operand, //variable//, is set to 1, otherwise it is set to 0.
+	The ##**Or=**## assignment operator is a shortcut method of writing ##**Or**## expressions. The expression ##n **Or**= m## is the equivalent of writing ##n = n **Or** m##. ##**Or=**## compares each bit of its operands, //variable// and //number//, and either bits are 1, then the corresponding bit in the first operand, //variable//, is set to 1, otherwise it is set to 0.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -24,5 +24,6 @@ print bin(a)
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOr Or]]##
+	- [[CatPgOpAssignment Assignment Operators]]
 	
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

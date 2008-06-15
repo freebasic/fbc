@@ -1,13 +1,11 @@
-{{fbdoc item="title" value="ULONGINT"}}
-----
+{{fbdoc item="title" value="ULONGINT"}}----
 Standard data type: 64 bit unsigned
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Ulongint**##
-
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Ulongint**
+##
 {{fbdoc item="desc"}}
-A 64-bit unsigned whole-number data type. Can hold values from 0 to 18 446 744 073 709 551 615
-
+	A 64-bit unsigned whole-number data type. Can hold values from 0 to 18 446 744 073 709 551 615
 
 {{fbdoc item="ex"}}
 %%(qbasic)Dim x As ULongInt = 0
@@ -24,8 +22,4 @@ Print "ULongInt Range = "; x; " to "; y
 	- ##[[KeyPgLongint Longint]]##
 	- ##[[KeyPgCulngint Culngint]]##
 	
-
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
-
-
-   

@@ -1,11 +1,35 @@
 {{fbdoc item="title" value="User Defined Types"}}----
 <<
-	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
+{{fbdoc item="section" value="Declaration"}}
+	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM...END ENUM"}}
 	- {{fbdoc item="keyword" value="KeyPgType|TYPE...END TYPE"}}
+	- {{fbdoc item="keyword" value="KeyPgUnion|UNION...END UNION"}}
+
+	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
+
+{{fbdoc item="section" value="Referencing"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeTemp|Anonymous Types"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeDef|Type Aliasing"}}
-	- {{fbdoc item="keyword" value="KeyPgUnion|UNION...END UNION"}}
-	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM...END ENUM"}}
+	- {{fbdoc item="keyword" value="KeyPgWith|WITH"}}
+
+
+
+
+<<>>
+{{fbdoc item="section" value="Member Access Control"}}
+	- {{fbdoc item="keyword" value="KeyPgVisPublic|PUBLIC: (Access Control)"}}
+	- {{fbdoc item="keyword" value="KeyPgVisPrivate|PRIVATE: (Access Control)"}}
+	- {{fbdoc item="keyword" value="KeyPgVisProtected|PROTECTED: (Access Control)"}}
+
+{{fbdoc item="section" value="Member Functions"}}
+	- {{fbdoc item="keyword" value="KeyPgConstructor|CONSTRUCTOR...END CONSTRUCTOR"}}
+	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR...END DESTRUCTOR"}}
+	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION...END FUNCTION"}}
+	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR...END OPERATOR"}}
+	- {{fbdoc item="keyword" value="KeyPgProperty|PROPERTY...END PROPERTY"}}
+	- {{fbdoc item="keyword" value="KeyPgSub|SUB...END SUB"}}
+
+
 
 >>
 

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="COS"}}
-----
+{{fbdoc item="title" value="COS"}}----
 Function that returns the cosine of a number.
 
 {{fbdoc item="syntax"}}##
@@ -29,8 +28,7 @@ PRINT ""
 PRINT "The cosine of a" ; a; " degree angle is"; COS ( r ) 
 SLEEP
 %%
-
-The output would look like:
+Output:
 %%
 Please enter an angle in degrees: 30
 The cosine of a 30 degree angle Is 0.8660254037844387

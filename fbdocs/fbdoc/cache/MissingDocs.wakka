@@ -6,7 +6,6 @@ Please edit this page to remove items when they are written.
 	- Differences between versions (windows, linux, DOS)
 	- Cross compiling
 	- Function calling overview
-	- Graphics library internal formats
 	- Source and Include Files
 	- Statements and Statement blocks
 	- Expressions
@@ -17,17 +16,11 @@ Please edit this page to remove items when they are written.
 ==Undocumented keywords== 
 
 	Work in progress for fbc 0.17b
-	[[KeyPgNew New]]
-	[[KeyPgDelete Delete]]
 	[[KeyPgClass Class]]
-	[[KeyPgProtected Protected]]
 
 ==Incomplete Documentation==
 
 	[[KeyPgExternCpp Extern...End Extern]]
-	[[KeyPgProperty Property]]
-	[[KeyPgPrivate Private]]
-	[[KeyPgPublic Public]]
 		
 	Pages that have '!!!'
 	
@@ -41,14 +34,68 @@ The documents listed and linked below need to be updated or enhanced in some way
 ==Missing examples==
 	[[KeyPgOpenLpt]] needs more examples, or non-specific platform example.
 	[[KeyPgFlip Flip]]
-	[[KeyPgPcopy Pcopy]]
 	[[KeyPgPmap Pmap]]
 
 ==Examples to be reviewed==
-	[[KeyPgOptionnokeyword Option NoKeyword]] - won't compile - error - bug, can't undef overloaded funcs.  (Example changed so it compiles.  Does a bug report need to be made?)
+	None
+
+==Pages requiring new style update==
+Generated from any ""KeyPg*"" pages not having the following **exact** text:
+	""{{fbdoc item="syntax"}}##""
+It's not a 100% accurate test, but fairly close.
+
+KeyPgBinary
+KeyPgChr
+KeyPgCustomgfx
+KeyPgDdfbdebug
+KeyPgDdfbmt
+KeyPgDeclare
+KeyPgDim
+KeyPgEncoding
+KeyPgErfn
+KeyPgErmn
+KeyPgExtern
+KeyPgField
+KeyPgFor
+KeyPgFunction
+KeyPgInputfilemode
+KeyPgLen
+KeyPgLet
+KeyPgLock
+KeyPgLset
+KeyPgLtrim
+KeyPgMidfunction
+KeyPgMidstatement
+KeyPgNamespace
+KeyPgOpenCom
+KeyPgOpenErr
+KeyPgOpenScrn
+KeyPgOutput
+KeyPgPeek
+KeyPgPoke
+KeyPgPrintPp
+KeyPgPrivate
+KeyPgPublic
+KeyPgRandom
+KeyPgReadFile
+KeyPgRtrim
+KeyPgScreenCons
+KeyPgSeekset
+KeyPgStatic
+KeyPgSub
+KeyPgSwap
+KeyPgTransGfx
+KeyPgTrim
+KeyPgType
+KeyPgTypeDef
+KeyPgUnlock
+KeyPgUsing
+KeyPgWchr
+KeyPgWriteFile
+
 ----
 
 ==To be deleted==
-None
+	None
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

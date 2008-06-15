@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="SHL= (Combined SHL)"}}----
+{{fbdoc item="title" value="SHL= (Shift Left and Assign)"}}----
 Operator that shifts the bits of an integer left and assign the result to the a first operand.
 
 {{fbdoc item="syntax"}}##
@@ -8,7 +8,7 @@ Operator that shifts the bits of an integer left and assign the result to the a 
 	//variable// **Shl=** //number//
 ##
 {{fbdoc item="desc"}}
-	The combined ##**Shl=**## shifts all bits in the argument ##//variable//## integer to the left by argument ##//number//##, and assignes the result to ##//variable//##. This has the effect of multiplying the argument ##//variable//## by two for each shift given in the argument ##//number//##. Both arguments, ##//variable//## and ##//number//## are integers. 
+	The shift left and assignment operator shifts all bits in the argument ##//variable//## integer to the left by argument ##//number//##, and assignes the result to ##//variable//##. This has the effect of multiplying the argument ##//variable//## by two for each shift given in the argument ##//number//##. Both arguments, ##//variable//## and ##//number//## are integers. 
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -25,5 +25,6 @@ SLEEP
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgShl Shl]]##
+	- [[CatPgOpAssignment Assignment Operators]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

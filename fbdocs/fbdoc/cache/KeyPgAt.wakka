@@ -68,8 +68,10 @@ End Sub
 
 {{fbdoc item="see"}}
 	- [[KeyPgValOf (*) Value of]]
-	- ##[[KeyPgVarptr VarPtr]]##
+	- [[CatPgOpPoint Pointer Operators]]
+	- [[DtPointers Pointers]]
 	- ##[[KeyPgProcptr ProcPtr]]##
 	- ##[[KeyPgStrptr StrPtr]]##
-	- [[DtPointers Pointers]]
+	- ##[[KeyPgVarptr VarPtr]]##
+
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

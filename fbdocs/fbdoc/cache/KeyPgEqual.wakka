@@ -33,7 +33,7 @@ The [[KeyPgInequality <> (Inequality) Operator]] is complement to the = (Equalit
 	- none
 
 {{fbdoc item="see"}}
-	- [[CatPgOperators Operators]]
-	- ##[[KeyPgOpAssignment = Asignment Operator]]##
+	- [[CatPgOpConditional Relational Operators]]
+	- [[KeyPgOpAssignment = Asignment Operator]]
  
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -65,6 +65,10 @@ Function to set or get internal graphics library settings
 	- ##GET_COLOR## (13) Returns the current gfx mode color.
 		[OUT] ##//param1//## foreground
 		[OUT] ##//param2//## background
+	- ##GET_ALPHA_PRIMITIVES## (14) Returns if primitives drawing support for alpha channel is enabled.
+		[OUT] ##//param1//## TRUE (-1) if alpha primitives is enabled, FALSE (0) otherwise
+	- ##GET_GL_EXTENSIONS## (15) Returns a string holding all supported GL extensions, or the empty string if not in OpenGL mode.
+		[OUT] ##//param//## supported GL extensions
 
 		**Set operations**
 	- ##SET_WINDOW_POS## (100) Sets the current program window position, in desktop coordinates.
@@ -75,6 +79,10 @@ Function to set or get internal graphics library settings
 	- ##SET_PEN_POS## (102) Sets the current graphical pen position, in screen coordinates. This position is used in gfx functions supporting relative coordinates using the [[KeyPgStep Step]] keyword.
 		[IN] ##//param1//## x
 		[IN] ##//param2//## y
+	- * ##SET_DRIVER_NAME## (103) Sets the name of the internal gfx driver to be used in subsequent calls to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres ScreenRes]]##.
+		[IN] ##//param//## driver name
+	- ##SET_ALPHA_PRIMITIVES## (104) Sets if primitives drawing should honor alpha channel.
+		[IN] ##//param1//## enabled
 
 {{fbdoc item="ex"}}
 %%(qbasic)'' include fbgfx.bi for some useful definitions

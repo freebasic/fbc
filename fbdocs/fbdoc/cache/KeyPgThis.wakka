@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="This"}}----
-Hidden instance parameter passed to nonstatic member functions in a ##[[KeyPgType Type]]## or CLASS
+Hidden instance parameter passed to nonstatic member functions in a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
 
 {{fbdoc item="syntax"}}##
 	**this**.//fieldname//
@@ -9,9 +9,9 @@ Hidden instance parameter passed to nonstatic member functions in a ##[[KeyPgTyp
 	End With
 ##
 {{fbdoc item="desc"}}
-	##**This**## is a hidden parameter passed to all nonstatic member functions of a ##[[KeyPgType Type]]## or CLASS.  Nonstatic member functions are procedures declared inside the body of a ##[[KeyPgType Type]]## or CLASS and include ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, assignment or cast ##[[KeyPgOperator Operator]]##, and ##[[KeyPgProperty Property]]## procedures.
+	##**This**## is a hidden parameter passed to all nonstatic member functions of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.  Nonstatic member functions are procedures declared inside the body of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## and include ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, assignment or cast ##[[KeyPgOperator Operator]]##, and ##[[KeyPgProperty Property]]## procedures.
 
-	The ##**This**## parameter has the same data type as the ##[[KeyPgType Type]]## or CLASS in which the procedure is declared.
+	The ##**This**## parameter has the same data type as the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## in which the procedure is declared.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -42,6 +42,7 @@ END SUB
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgType Type...End Type]]##
+	- ##[[KeyPgClass Class]]##
+	- ##[[KeyPgType Type]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

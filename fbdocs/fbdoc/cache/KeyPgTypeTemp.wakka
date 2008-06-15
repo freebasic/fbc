@@ -1,11 +1,26 @@
-{{fbdoc item="title" value="Anonymous Types"}}
-----
-{{fbdoc item="syntax"}}
-	TYPE( a, b, c, ... )
-	TYPE<//typename//>( a, b, c, ... )
+{{fbdoc item="title" value="Anonymous Types"}}----
+Creates a temporary copy of a user defined type
+
+{{fbdoc item="syntax"}}##
+	//result// = **Type**( //initializers//, ... )
+//or//
+	//result// = **Type**<//typename//>( //initializers//, ... )
+##
+{{fbdoc item="param"}}
+	##//initializers//##
+		Initial values for the type
+	##//typename//##
+		The name of the ##[[KeyPgType Type]]## or ##[[KeyPgUnion Union]]##
+
+{{fbdoc item="ret"}}
+	A temporary copy of the type.
 
 {{fbdoc item="desc"}}
-	Used to create an anonymous type. It can also be used as an even shorter shortcut than WITH (see below) if you are changing all the records.
+	Used to create an anonymous and temporary type.  If ##//typename//## is not explicitly given, it will be inferred from its usage.  Usage of the temporary copy may include assigning it to a variable, passing it as a parameter to a procedure, or returning it as a value from a procedure.
+
+	The ##[[KeyPgConstructor Constructor]]## for the type, if there is one, will be called when the temporary copy is created.  And the ##[[KeyPgDestructor Destructor]]## for the type, if there is one, will be called immediately after its use.
+
+	It can also be used as an even shorter shortcut than ##[[KeyPgWith With]]## (see below) if you are changing all the records.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -28,15 +43,13 @@ end with
 
 '' Third method, using anonymous types
 ex = type( 1, 2 )
-'' This can also be expressed in the following way, if you want your code to be more readable
-ex = type <Example>( 1, 2 )
 %%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- [[KeyPgType TYPE...END TYPE]]
-	- [[KeyPgTypeDef TYPE AS]]
+	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgTypeDef Type ... As]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

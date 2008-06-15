@@ -37,6 +37,6 @@ The [[KeyPgEqual = (Equality) Operator]] is complement to the <> (Inequality) Op
 	- none
 
 {{fbdoc item="see"}}
-	- [[CatPgOperators Operators]]
+	- [[CatPgOpConditional Relational Operators]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

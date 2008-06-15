@@ -15,7 +15,7 @@ Sets the display foreground / background color that is used with console output 
 		the background color to set
 
 {{fbdoc item="ret"}}
-	Returns a 32 bit ##[[KeyPgInteger Integer]]## containing the current foreground color in the [[KeyPgLoword low word]] and the current background color in the [[KeyPgHiword high word]].
+	Returns a 32 bit ##[[KeyPgInteger Integer]]## containing the current foreground color in the [[KeyPgLoWord low word]] and the current background color in the [[KeyPgHiword high word]].
 
 {{fbdoc item="desc"}}
 	The ##**Color**## statement sets the current foreground and/or background colors. ##[[KeyPgCircle Circle]]##, ##[[KeyPgDraw Draw]]##, ##[[KeyPgLinegraphics Line (Graphics)]]##, ##[[KeyPgCls Cls]]##, ##[[KeyPgPaint Paint]]##, ##[[KeyPgPrint Print]]##, ##[[KeyPgPreset PReset]]## and ##[[KeyPgPset PSet]]## all use the last colors set by this function when you don't specify a color to them, where applicable. The color values COLOR accepts depend on the current gfx mode.

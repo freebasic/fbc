@@ -6,24 +6,24 @@ Waits until a specified time has elapsed, or a key is pressed.
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** ( [[KeyPgByval byval]] //msecs// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //kind// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	SLEEP [ //msecs// [, //kind//]]
+	**Sleep** [ //msecs// [, //kind//]]
 ##
 {{fbdoc item="param"}}
 	##//msecs//##
 		Optional number of milliseconds to wait (default is to wait for a keypress).
 	##//kind//##
-		Optional flag with a value of 1, to specify if the wait can be interupted by a keypress.
+		Optional flag with a value of 1, to specify that the wait can not be interupted by a keypress.
 
 {{fbdoc item="desc"}}
-	SLEEP will wait until //msecs// 'milliseconds' given elapsed (if any value was passed) or until the user presses a key. If //msecs// is below 100 ms then SLEEP will always wait the full requested amount (key presses are ignored).
+	##**Sleep**## will wait until ##//msecs//## 'milliseconds' given elapsed (if any value was passed) or until the user presses a key. If //msecs// is below 100 ms then SLEEP will always wait the full requested amount (key presses are ignored).
 
 	Include the second parameter, "1", for a "deep" sleep, which cannot be interrupted by pressing a key.
 
-	The accuracy of SLEEP is variable depending on the OS cycle time (Windows NT/2K/XP: 15 ms,  9x/Me: 50 ms, Linux 10ms, DOS 55 ms).
+	The accuracy of ##**Sleep**## is variable depending on the OS cycle time (Windows NT/2K/XP: 15 ms,  9x/Me: 50 ms, Linux 10ms, DOS 55 ms).
 
-	Call SLEEP with 25ms or less to release time-slice when waiting for user input or looping inside a thread.
+	Call ##**Sleep**## with 25ms or less to release time-slice when waiting for user input or looping inside a thread.
 
-	SLEEP does not clear the keyboard buffer and any keys pressed during a call to SLEEP are retained and can be read using [[KeyPgInkey Inkey$]].  In order to wait for a key press, and remove the key from the buffer, GETKEY can be used instead.
+	##**Sleep**## does not clear the keyboard buffer and any keys pressed during a call to ##**Sleep**## are retained and can be read using ##[[KeyPgInkey Inkey]]##.  In order to wait for a key press, and remove the key from the buffer, ##[[KeyPgGetkey Getkey]]## can be used instead.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -35,10 +35,10 @@ sleep 500
 %%
 
 {{fbdoc item="diff"}}
-	- The delay had to be given in seconds in QB
+	- In QB, the delay is given in whole seconds only and does not support the ##//kind//## parameter.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgTimer Timer]]##
-	- ##[[KeyPgInkey Inkey$]]##
+	- ##[[KeyPgInkey Inkey]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

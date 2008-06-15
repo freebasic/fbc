@@ -16,8 +16,7 @@ PRINT 47 MOD 7
 PRINT 5.6 MOD 2.1
 PRINT 5.1 MOD 2.8
 %%
-
-The output would look like:
+Output:
 %%
 5
 0
@@ -34,5 +33,7 @@ This is because:
 
 {{fbdoc item="see"}}
 	- [[KeyPgIntegerDivision \ (Integer Division)]]
+	- [[CatPgOpArithmetic Arithmetic Operators]]
+	- [[CatPgMath Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

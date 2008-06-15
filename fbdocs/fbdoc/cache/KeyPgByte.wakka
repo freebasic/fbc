@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="BYTE"}}
-----
+{{fbdoc item="title" value="BYTE"}}----
 Standard data type: 8 bit signed
 
 {{fbdoc item="syntax"}}##
@@ -14,7 +13,6 @@ Standard data type: 8 bit signed
   bytevar = 100
   PRINT "bytevar= ", bytevar
 %%
-
 {{fbdoc item="ex"}}
 %%(qbasic)Dim x As Byte = Cbyte(&H80)
 Dim y As Byte = CByte(&H7F)
@@ -22,7 +20,6 @@ Print "Byte Range = "; x; " to "; y
 %%
 	**Output:**
 	%%Byte Range = -128 to  127%%
-
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
@@ -32,4 +29,3 @@ Print "Byte Range = "; x; " to "; y
 	- ##[[KeyPgCbyte Cbyte]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
-

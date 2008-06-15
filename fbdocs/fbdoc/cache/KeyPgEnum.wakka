@@ -1,13 +1,26 @@
-{{fbdoc item="title" value="ENUM"}}
-----
-{{fbdoc item="syntax"}}
-	enum [//symbolname//]
+{{fbdoc item="title" value="ENUM"}}----
+Declares an enumerated type
+
+{{fbdoc item="syntax"}}##
+	**Enum** [//typename//]
 		//symbolname// [= //expression//] [, ...]
 		...
-	end enum
+	End Enum
+##
+{{fbdoc item="param"}}
+	##//typename//##
+		Name of the ##**Enum**##
+	##//symbolname//##
+		Name of the constant
+	##//expression//##
+		A constant expression
 
 {{fbdoc item="desc"}}
-	Enum (short for enumeration) creates a numbered list with items that correspond to discrete values. If no initial value is given, the first item will be set to 0.
+	##**Enum**##, short for enumeration, declares a list of symbol names that correspond to discrete values. If no initial value is given, the first item will be set to 0.  Each subsequent symbol has a value one more than the previous unless ##//expression//## is given.
+
+	Symbols may be each on their own line, or seperated on a single line by commas.
+
+	An ##**Enum**## can be passed as a user defined type to overloaded operator functions.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -33,9 +46,10 @@ end select
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}}
+	- ##[[KeyPgConst Const]]##
+	- ##[[KeyPgOperator Operator]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}
