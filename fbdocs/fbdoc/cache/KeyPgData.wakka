@@ -20,11 +20,10 @@ Statement to store data at compile time
 	##Data## is normally used to initialize variables. FB also allows the initialization of static variables in their declarations; see [[ProPgInitialization Variable Initializers]] for more information.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-
-' Create an array of 5 integers and a string to hold the data.
+%%(qbasic)' Create an array of 5 integers and a string to hold the data.
 DIM h(4) AS INTEGER
 DIM hs AS STRING
+dim read_data as integer
 
 ' Set up to loop 5 times (for 5 numbers... check the data)
 FOR read_data = 0 TO 4
@@ -46,21 +45,15 @@ READ hs
 ' Print it.
 PRINT  "String = " + hs
 
-
 ' Await a keypress.
 SLEEP
 
 ' Exit program.
 END
 
-
-
 ' Block of data.
 
 DATA 3, 234, 435/4, 23+433, 87643,"Good"+ "Bye!"
-
-
-
 %%
 
 {{fbdoc item="diff"}}

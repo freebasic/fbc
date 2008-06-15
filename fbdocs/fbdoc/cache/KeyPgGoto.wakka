@@ -10,7 +10,7 @@ Control flow statement to jump to another part of the program
 	For better source code readability, overuse of ##**Goto**## should be avoided in favor of more modern structures such as ##[[KeyPgDoloop Do...Loop]]##, ##[[KeyPgFornext For...Next]]##, ##[[KeyPgSub Sub]]##, and ##[[KeyPgFunction Function]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 1 goto 3
 2 end
 3 print "Welcome!

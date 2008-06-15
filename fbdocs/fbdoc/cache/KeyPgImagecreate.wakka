@@ -28,25 +28,23 @@ Creates and initializes storage for an image.
 	The ##**""ImageCreate""**## function is an alternative to using the ##[[KeyPgGetgraphics Get (Graphics)]]## statement to create a buffer, and can ease the creation of an image buffer for use 2D drawing functions. It is recommended that you always use ##**""ImageCreate""**## though, as it automatically allocates the correct size for the buffer, given its dimensions and the current color depth; the image header may vary in size in future FB releases, so using ##[[KeyPgGetgraphics Get (Graphics)]]## with a buffer allocated on the stack may result in corrupted data, as the static buffer size may have been manually computed using a formula that is no longer valid.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)option explicit
+%%(qbasic)'' set screen mode
+screen 15, 32
 
-   '' set screen mode
-   screen 15, 32
-   
-   '' allocate and draw to an image buffer
-   dim image_buffer as any ptr
-   image_buffer = ImageCreate( 64, 64, RGBA( 64, 160, 0, 255 ) )
-   circle image_buffer, ( 32, 32 ), 28, RGBA( 255, 0, 0, 128 ),,,,F
-   
-   '' blit image buffer to screen
-   put( 160, 120 ), image_buffer, pset
-   put( 180, 140 ), image_buffer, ALPHA
-   
-   '' free image buffer memory
-   ImageDestroy( image_buffer )
-   
-   end 0
-%%##
+'' allocate and draw to an image buffer
+dim image_buffer as any ptr
+image_buffer = ImageCreate( 64, 64, RGBA( 64, 160, 0, 255 ) )
+circle image_buffer, ( 32, 32 ), 28, RGBA( 255, 0, 0, 128 ),,,,F
+
+'' blit image buffer to screen
+put( 160, 120 ), image_buffer, pset
+put( 180, 140 ), image_buffer, ALPHA
+
+'' free image buffer memory
+ImageDestroy( image_buffer )
+
+end 0
+%%
 
 {{fbdoc item="diff"}}
 	- New to FB

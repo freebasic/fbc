@@ -20,7 +20,7 @@ Unloads a dynamic link library from memory.
 %%(qbasic)
 dim hndl as any ptr
 hndl=DYLIBLOAD("MYLIB.DLL")
-.....
+' ...
 DYLIBFREE(hndl)
 
 %%

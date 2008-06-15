@@ -22,11 +22,10 @@ Date function to return the month of the year from a specified [[DtDateSer Date 
 	The compiler will not recognise this function unless "vbcompat.bi" is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-#include "vbcompat.bi"
+%%(qbasic)#include "vbcompat.bi"
 Dim a As Double
 a = DateSerial(2005,11,28) + TimeSerial(7,30,50)
-Print Format(a!, "yyyy/mm/dd hh:mm:ss "); Month(a)
+Print Format(a, "yyyy/mm/dd hh:mm:ss "); Month(a)
 %%
 
 {{fbdoc item="diff"}}

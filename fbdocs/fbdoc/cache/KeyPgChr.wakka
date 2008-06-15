@@ -23,8 +23,8 @@ print "the character represented by the ASCII code of 97 is: "; CHR(97)
 print chr(97, 98, 99) ' prints abc
 %%
 
-%%(qbasic)
-dim s as string * 3 = chr(97, 98, 99) ' s initially has the value "abc"
+%%(qbasic)' s initially has the value "abc"
+dim s as string = chr(97, 98, 99)
 %%
 
 {{fbdoc item="diff"}}

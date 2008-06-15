@@ -5,7 +5,7 @@
 
 {{fbdoc item="desc"}}
 	LEN will return the length of a //variable// or [[DataType DataType]]. If the //variable// is a string, it will return the length in characters. Otherwise, it will return the number of bytes. 
-	 //len( wstring )//  returns the number of bytes taken  bt a wstring character in the current platform.
+	 //len( wstring )//  returns the number of bytes taken  by a wstring character in the current platform.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

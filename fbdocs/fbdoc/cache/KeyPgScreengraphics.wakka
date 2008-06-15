@@ -57,15 +57,17 @@ __flags details:__
 ~~-GFX_NO_SWITCH (&h04) prevents the user from changing to fullscreen or to windowed mode by pressing Alt-Enter.
 ~~-GFX_NO_FRAME (&h08) creates a window without a border.
 ~~-GFX_SHAPED_WINDOW (&h10) creates transparent regions wherever RGBA(255, 0, 255, 0) is drawn on the screen.
+~~-GFX_ALWAYS_ON_TOP (&h20) creates a window that stays always on top.
 	
 ~__option flags__
 ~~Flags working in any mode, they activate special behaviours
-~~-GFX_ALPHA_PRIMITIVES (&h20) Tells the graphics library to enable alpha channel support for all drawing primitives. This means the alpha specified in a color value (via either the [[KeyPgRgba RGBA]] macro or direct color in the form &hAARRGGBB) will always be used by all primitives.
+~~-GFX_ALPHA_PRIMITIVES (&h40) Tells the graphics library to enable alpha channel support for all drawing primitives. This means the alpha specified in a color value (via either the [[KeyPgRgba RGBA]] macro or direct color in the form &hAARRGGBB) will always be used by all primitives.
 
 ~__OpenGl Buffer flags__
 ~~These flags work only in OpenGL graphics mode, must be combined with GFX_OPENGL
 ~~-GFX_STENCIL_BUFFER  (&h10000) Forces OpenGl to use Stencil buffer 
 ~~-GFX_ACCUMULATION_BUFFER  (&h20000) Forces OpenGl to use Accumulation buffer
+~~-GFX_MULTISAMPLE (&h40000) Requests fullscreen antialiasing thru the ARB_multisample extension
 
 
 
@@ -82,7 +84,7 @@ __Other details__
 %%(qbasic)
 ' Sets fullscreen 640x480 with 32bpp color depth and 4 pages
 SCREEN 18, 32, 4, 1
-IF SCREENPTR=FALSE THEN
+IF SCREENPTR = 0 THEN
 	PRINT "Error setting video mode!"
 	END
 END IF%%
@@ -94,6 +96,7 @@ END IF%%
 	- ##[[KeyPgScreenCons Screen (Console)]]##
 	- ##[[KeyPgScreenres Screenres]]##
 	- ##[[KeyPgScreenlist Screenlist]]##
+	- ##[[KeyPgScreencontrol Screencontrol]]##
 	- ##[[KeyPgScreenlock Screenlock]]##
 	- ##[[KeyPgScreenunlock Screenunlock]]##
 	- ##[[KeyPgScreenptr Screenptr]]##

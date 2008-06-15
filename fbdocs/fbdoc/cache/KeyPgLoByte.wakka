@@ -1,6 +1,5 @@
-{{fbdoc item="title" value="LOBYTE"}}
-----
-MACRO that calculates the lo-byte of a variable.
+{{fbdoc item="title" value="LOBYTE"}}----
+Macro to return the low byte of an expression
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **LOBYTE**( //x// ) ( [[KeyPgCuint CUint]]( x ) [[KeyPgAnd and]] &h000000FF )
@@ -19,7 +18,7 @@ MACRO that calculates the lo-byte of a variable.
 	Calculates the least significant byte (lo-byte) of a variable.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 DIM N AS UINTEGER
 
 'Note there are 16 bits
@@ -31,17 +30,17 @@ PRINT "The least significant byte (LSB) of N is   "; LOBYTE(N)
 PRINT "The binary representation of the MSB is    "; BIN$(HIBYTE(N))
 PRINT "The binary representation of the LSB is    "; BIN$(LOBYTE(N))
 SLEEP
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
-N is                                       43905
-The binary representation of N is          1010101110000001
-The most significant byte (MSB) of N is    171
-The least significant byte (LSB) of N is   129
-The binary representation of the MSB is    10101011
-The binary representation of the LSB is    10000001
-%%##
+%%
+N Is                                       43905
+The Binary representation of N Is          1010101110000001
+The most significant Byte (MSB) of N Is    171
+The least significant Byte (LSB) of N Is   129
+The Binary representation of the MSB Is    10101011
+The Binary representation of the LSB Is    10000001
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
@@ -51,4 +50,4 @@ The binary representation of the LSB is    10000001
 	- ##[[KeyPgShl Shl]]##
 	- ##[[KeyPgHibyte HIBYTE]]##
 
-{{fbdoc item="back" value="CatPgMath|Math"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgMath|Math"}}

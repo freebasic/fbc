@@ -2,10 +2,11 @@
 <<
 	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
 	- {{fbdoc item="keyword" value="KeyPgType|TYPE...END TYPE"}}
-	- {{fbdoc item="keyword" value="KeyPgTypeTemp|Temporary Types"}}
+	- {{fbdoc item="keyword" value="KeyPgTypeTemp|Anonymous Types"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeDef|Type Aliasing"}}
 	- {{fbdoc item="keyword" value="KeyPgUnion|UNION...END UNION"}}
 	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM...END ENUM"}}
+
 >>
 
 ::c::

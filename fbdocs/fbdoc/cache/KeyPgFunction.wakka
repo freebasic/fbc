@@ -45,51 +45,48 @@
 %%(qbasic)
 'This program demonstrates the declaration of a function and said function returning a value.
 
-Declare Function ReturnTen ()
+Declare Function ReturnTen () as integer
 
 Print ReturnTen () 'ReturnTen returns an integer by default.
 
-Function ReturnTen()
+Function ReturnTen() as integer
 	Return 10
 End Function
 
 %%
 
-%%(qbasic)
-'This program demonstrates the declaration of a function and said function returning a value.
+%%(qbasic)'This program demonstrates the declaration of a function and said function returning a value.
 
-Declare Function ReturnTen ()
+Declare Function ReturnTen () as integer
 
 Print ReturnTen () 'ReturnTen returns an integer by default.
 
-Function ReturnTen()
+Function ReturnTen() as integer
 	ReturnTen = 10
 End Function
 
 %%
 
-%%(qbasic)
-'This program demonstrates function overloading.
+%%(qbasic)'This program demonstrates function overloading.
 
-Declare Function ReturnTen Overload (a As Double) 'The overloaded functions must be FIRST.
-Declare Function ReturnTen Overload (a As String) 
-Declare Function ReturnTen (a)
-
+'The overloaded functions must be FIRST.
+Declare Function ReturnTen Overload (a As Double) as integer
+Declare Function ReturnTen Overload (a As String) as integer
+Declare Function ReturnTen (a as integer) as integer
 
 Print ReturnTen (10.000!)   'ReturnTen will take a double and return an int.
 Print ReturnTen (10)        'ReturnTen will take an int and return an int.
 Print ReturnTen ("10")      'ReturnTen will take a string and return an int.
 
-
-Function ReturnTen Overload (a As Double)
+Function ReturnTen Overload (a As Double) as integer
 	Return Int(a)
 End Function
 
-Function ReturnTen Overload (a As String)
+Function ReturnTen Overload (a As String) as integer
 	Return Val(a)
 End Function
 
-Function ReturnTen (a As Integer)
+Function ReturnTen (a As Integer) as integer
 	Return a
 End Function
 %%

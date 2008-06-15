@@ -17,6 +17,7 @@ type rect_type
 end type
 
 dim the_rectangle as rect_type
+dim as integer temp, t
 
 with the_rectangle
 	temp = .x
@@ -36,7 +37,7 @@ dim the_rectangle as rect_type ptr
 
 the_rectangle = callocate( 5 * len( rect_type ) )
 
-dim as integer loopvar
+dim as integer loopvar, temp, t
 
 for loopvar = 0 to 4
 

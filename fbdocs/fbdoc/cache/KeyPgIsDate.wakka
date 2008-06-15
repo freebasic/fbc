@@ -53,8 +53,8 @@ loop
 
 {{fbdoc item="see"}}
 	- [[DtDateSer Date Serials]]
-	- ##[[KeyPgDateserial DateSerial]]##
-	- ##[[KeyPgTimevalue TimeValue]]##
-	- ##[[KeyPgDatevalue DateValue]]##
+	- ##[[KeyPgDateSerial DateSerial]]##
+	- ##[[KeyPgTimeValue TimeValue]]##
+	- ##[[KeyPgDateValue DateValue]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

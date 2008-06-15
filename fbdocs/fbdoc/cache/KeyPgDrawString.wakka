@@ -62,11 +62,11 @@ DRAW STRING TextBuffer, (0, 0),"Hello World",&H00FFFF
 PUT (100, 100), TextBuffer, PSET
 SLEEP
 %%
-%%(qbasic)
-#DEFINE FIRST    32
+%%(qbasic)#DEFINE FIRST    32
 #DEFINE LAST    128
 DIM AS UBYTE PTR p, myFont
 DIM AS single w,ws
+DIM as INTEGER value, i
 ws=6.28/255
 SCREENRES 320, 200, 32, 2
 ' Create custom font into GET/PUT buffer

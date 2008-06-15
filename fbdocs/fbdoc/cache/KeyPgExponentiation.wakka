@@ -21,7 +21,7 @@ SLEEP
 %%
 
 The output would look like:
-%%(qbasic)
+%%
 Please enter a positive number: 3.4
 
  3.4 squared is 11.56

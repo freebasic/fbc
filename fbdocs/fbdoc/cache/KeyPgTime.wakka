@@ -15,8 +15,7 @@ Returns the current system time as a string.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-t$ = time$
-print "the current time is: "; time$
+print "the current time is: "; time
 %%
 
 {{fbdoc item="diff"}}

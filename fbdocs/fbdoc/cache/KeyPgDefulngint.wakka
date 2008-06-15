@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DEFULNGINT"}}
-----
+{{fbdoc item="title" value="DEFULNGINT"}}----
 Sets a default data type for variables
 
 {{fbdoc item="syntax"}}##
@@ -12,7 +11,7 @@ Sets a default data type for variables
 	This will make 'lNumber' a ##[[KeyPgUlongint Ulongint]]## number since it's first letter starts with l.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 defulongint l
 dim lNumber
 %%
@@ -24,5 +23,4 @@ dim lNumber
 	- ##[[KeyPgDefint Defint]]##
 	- ##[[KeyPgDeflngint Deflngint]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
-
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

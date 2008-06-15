@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DEFUBYTE"}}
-----
+{{fbdoc item="title" value="DEFUBYTE"}}----
 Sets a default data type for variables
 
 {{fbdoc item="syntax"}}##
@@ -14,7 +13,7 @@ Sets a default data type for variables
 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 defubyte u
 dim uNumber
 %%
@@ -25,4 +24,4 @@ dim uNumber
 {{fbdoc item="see"}}
 	- ##[[KeyPgDefint Defint]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

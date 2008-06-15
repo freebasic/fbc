@@ -28,25 +28,26 @@
 	To avoid simultaneous access to shared resources from different threads, FB implements mutexes, mutual exclusion locks that can be "owned" by a single thread when doing critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-dim shared terminate=0
+%%(qbasic)dim shared terminate as integer =0
 
-sub mythread (i)
-while 1
-  b=0
-  while b<80
-	print "*";
-	a=0
-	 while a<&h7ffffff
-	   a+=1
+sub mythread (i as integer)
+  dim a as integer, b as integer
+  while 1
+	b=0
+	while b<80
+	  print "*";
+	  a=0
+	   while a<&h7ffffff
+	     a+=1
+	  wend
+	  b+=1
 	wend
-	b+=1
+	if terminate=1 then exit sub
   wend
-  if terminate=1 then exit sub
-wend
 end sub
 
 dim thread as any ptr
+dim a as integer, b as integer
 
 print "Main program prints dots"
 print "Thread prints asterisks"

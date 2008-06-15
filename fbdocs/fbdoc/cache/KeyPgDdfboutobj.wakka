@@ -12,11 +12,10 @@ Intrinsic define (macro value) set by the compiler.
 	Only one of ##[[KeyPgDdfboutdll __FB_OUT_DLL__]]##, ##[[KeyPgDdfboutexe __FB_OUT_EXE__]]##, ##[[KeyPgDdfboutlib __FB_OUT_LIB__]]##, or ##""__FB_OUT_OBJ__""##, will evaluate to non-zero (-1).  All others will evaluate to zero (0).
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-#if __FB_OUT_OBJ__ 
-	    ... specific instructions when compiling to an object file only
+%%(qbasic)#if __FB_OUT_OBJ__ 
+	    '... specific instructions when compiling to an object file only
 #else
-	    ... specific instructions when not compiling to an object file only
+	    '... specific instructions when not compiling to an object file only
 #endif
 %%
 

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DEFSHORT"}}
-----
+{{fbdoc item="title" value="DEFSHORT"}}----
 Sets a default data type for variables
 
 {{fbdoc item="syntax"}}##
@@ -13,7 +12,7 @@ Sets a default data type for variables
 	This will make 'sNumber' a ##[[KeyPgShort Short]]## number since it's first letter starts with s.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 defshort s
 dim sNumber
 %%
@@ -34,4 +33,4 @@ dim sNumber
 	- ##[[KeyPgDefushort Defushort]]##
 	- ##[[KeyPgInteger Integer]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

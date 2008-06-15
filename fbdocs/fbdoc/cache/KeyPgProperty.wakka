@@ -1,0 +1,95 @@
+{{fbdoc item="title" value="PROPERTY"}}----
+Declares or defines a Type or Class property
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] **Property** //fieldname// () [[KeyPgAs as]] [[DataType datatype]]
+		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
+		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
+	End Type
+
+	**Property** //typename//.//fieldname// () [[KeyPgAs as]] [[DataType datatype]]
+		//statements//
+	**End Property**
+
+	**Property** //typename//.//fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
+		//statements//
+	**End Property**
+
+	**Property** //typename//.//fieldname// (  [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+		//statements//
+	**End Property**
+
+	**Property** //typename//.//fieldname// (  [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
+		//statements//
+	**End Property**
+##
+{{fbdoc item="param"}}
+	##//typename//## 
+		name of the TYPE of CLASS
+	##//fieldname//## 
+		name of the property
+	##//new_value//## 
+		the value passed to property to be assigned
+	##//index//## 
+		the property index value
+
+{{fbdoc item="desc"}}
+	##**Property**## fields are used to get and set values of a ##[[KeyPgType Type]]## or CLASS in the same way as other data fields except instead of a simple assignment to a field or a value retrieved from field, a procedure is executed.
+
+	##//typename//## is the name of the type for which the ##**Property**## method is declared and defined.  The ##//typename//## is resolved similiar to the way function names are resolved when used in a ##[[KeyPgNamespace Namespace]]##.  The ##//typename//## may be resolved by prefixing the name of the namespace, or by using the ##[[KeyPgUsing Using]]## statement.
+
+	A **Property** may optionally have one index parameter.
+
+	A hidden ##//this//## parameter having the same type as ##//typename//## is passed to the property procedure.  ##//this//## is used to access the fields of the ##[[KeyPgType Type]]## or CLASS.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+type Vector2D
+  as single x, y
+  declare operator cast() as string
+  declare property Length() as single
+  declare property Length( byval new_length as single )
+end type
+
+operator Vector2D.cast () as string
+  return "(" + str(x) + ", " + str(y) + ")"
+end operator
+
+property Vector2D.Length() as single
+  Length = sqr( x * x + y * y )
+end property
+
+property Vector2D.Length( byval new_length as single )
+  dim m as single = Length
+  if m <> 0 then
+	'' new vector = old / length * new_length
+	x *= new_length / m
+	y *= new_length / m
+  end if
+end property
+
+Dim a as Vector2D = ( 3, 4 )
+
+print "a = "; a
+print "a.length = "; a.length
+print
+
+a.length = 10
+
+print "a = "; a
+print "a.length = "; a.length
+%%
+Output:
+%%
+a = (3, 4)
+a.length =  5
+
+a = (6, 8)
+a.length =  10
+%%
+{{fbdoc item="see"}}
+	- ##[[KeyPgType Type]]##
+
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}

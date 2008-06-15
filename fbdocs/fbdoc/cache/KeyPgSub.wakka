@@ -44,11 +44,7 @@ Sub is the same as [[KeyPgFunction FUNCTION]], except it does not allow a value 
 The second syntax defines either a constructor or destructor using the [[KeyPgModuleConstructor Constructor]] and [[KeyPgModuleDestructor Destructor]] keywords, respectively.  Constructor subroutines are executed before the first line of code in the module, while destructors execute on module exit. Note the public access specifier and empty parameter list for both constructors and destructors.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-'' Example of writing colored text using a sub:
-
-option explicit
-option byval
+%%(qbasic)'' Example of writing colored text using a sub:
 
 sub PrintColoredText( colour as integer, text as string )
    color colour
@@ -63,7 +59,7 @@ end sub
    dim i as integer = 0
    while( i<16 )                        '' all 16 colors
 	  PrintColoredText( i, "color " + str$(i) )
-   next
+   wend
 
    end 0
 %%

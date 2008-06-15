@@ -184,6 +184,18 @@ During the program compilation three types of errors can arise:
 	- //153 This symbol cannot be undefined//
 	- //154 Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors//
 	- //155 Invalid assignment/conversion//
+	- //156 Invalid assignment/conversion//
+	- //157 Invalid array subscript//
+	- //158 TYPE or CLASS has no default constructor//
+	- //159 Invalid priority attribute//
+	- //160 PROPERTY GET should have no parameter, or just one if indexed//
+	- //161 PROPERTY SET should have one parameter, or just two if indexed//
+	- //162 Expected 'PROPERTY'//
+	- //163 Illegal outside a PROPERTY block//
+	- //164 PROPERTY has no GET method/accessor//
+	- //165 PROPERTY has no SET method/accessor//
+	- //166 PROPERTY has no indexed GET method/accessor//
+	- //167 PROPERTY has no indexed SET method/accessor//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.

@@ -9,15 +9,15 @@ Control flow statement to use a section of code and return
 	
 	The line label where ##**Gosub**## jumps must be in the same main/function/sub block where ##**Gosub**## is. All the variables in the subroutine are shared with the block, no arguments can be used. For this reason Gosub is considered bad programming practice as it can generate unreadable and untracable code. It is better to use ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## instead.
 
-	##**Gosub**## may only be used inside procedures when compiling with the -lang qb switch.
+	##**Gosub**## may only be used when compiling with the -lang qb switch.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang qb
 gosub message
 end
 
 message:
-print "Welcome!
+print "Welcome!"
 return
 %%
 

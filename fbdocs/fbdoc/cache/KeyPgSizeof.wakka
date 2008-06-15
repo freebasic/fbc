@@ -1,5 +1,6 @@
-{{fbdoc item="title" value="SIZEOF"}}
-----
+{{fbdoc item="title" value="SIZEOF"}}----
+Returns the size of a variable or type in bytes
+
 {{fbdoc item="syntax"}}##
 	**Sizeof** ( //variable// | [[DataType DataType]] )
 ##
@@ -27,4 +28,4 @@ print sizeof(foo)
 {{fbdoc item="see"}}
 	- ##[[KeyPgLen Len]]##
 
-{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -26,15 +26,6 @@ Graphics statement to load a block of binary data or a BMP from a file.
 		-If ##//addr//## is specified and the file is a bmp, it loads the bmp, and the array is made a ##[[KeyPgPutgraphics Put]]## buffer.
 		-If ##//addr//## is not specified or 0 and the file is a bmp, the image is loaded to the current work page.
 
-%%(qbasic)
-	BLOAD "image.bsv", 0
-%%
-	is in fact equivalent to:
-%%(qbasic)
-	SCREENLOCK
-	BLOAD "image.bsv", SCREENPTR
-	SCREENUNLOCK
-%%
 
 	A raw pixel image must only be ##**Bload**##'d to the same ##[[KeyPgScreengraphics Screen]]## mode as it was set when the ##[[KeyPgBsave Bsave]]## was used.
 	##**Bload**## supports loading BMPs as long as they are not RLE compressed; the BMP pixels data will be automatically converted to the proper pixel format for the current color depth. The bmp is displayed with its top left corner in the top left corner of the screen or buffer.
@@ -54,9 +45,10 @@ bload "picture.bmp"
 
 'Load a 48x48 bitmap into an array
 SCREEN 18, 32
-dim garray(4 * (48 * 48) + 4) as byte
-bload "picture.bmp", @garray(0)
-put (10,10),garray(0)
+dim myImage as any ptr = imagecreate( 48, 48 )
+bload "picture.bmp", myImage
+put (10,10), myImage
+imagedestroy( myImage )
 %%
 
 {{fbdoc item="diff"}}

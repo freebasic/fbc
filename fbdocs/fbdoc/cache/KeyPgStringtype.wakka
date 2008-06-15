@@ -15,17 +15,18 @@ Standard data type: 8 bit character string
 	String variable names need not end in a dollar sign as in other dialects of BASIC.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 '' Variable-length
 dim a as string
 a = "Hello"
+
 '' Or
-dim a$
-a$ = "World"
+dim b$
+b$ = "World"
 
 '' Fixed-length
-dim a as string * 32
-a = "Hello World"
+dim c as string * 32
+c = "Hello World"
 %%
 
 {{fbdoc item="diff"}}

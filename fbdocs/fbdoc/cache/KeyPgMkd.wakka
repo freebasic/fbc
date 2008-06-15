@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="MKD"}}
-----
+{{fbdoc item="title" value="MKD"}}----
 Does a binary copy from a ##[[KeyPgDouble double]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 8 bytes.
 
 {{fbdoc item="syntax"}}##
@@ -40,4 +39,4 @@ print n, cvd(e)
 	- ##[[KeyPgCvl Cvl]]##
 	- ##[[KeyPgCvs Cvs]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

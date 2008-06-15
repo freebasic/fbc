@@ -26,7 +26,8 @@ Draw "BM160,100"
 
 '' Draw a box
 Draw "U10 R5 D10 L5"
-Sleep%%
+Sleep
+%%
 
 %%(qbasic)Screen 13
 Draw "BM160,100"
@@ -34,7 +35,8 @@ Draw "BM160,100"
 '' Draw a box
 Dim As String drawbox = "U10R5D10L5"
 Draw "X" & Varptr(drawbox)
-Sleep%%
+Sleep
+%%
 
 {{fbdoc item="diff"}}
 	- QB used the special pointer keyword VARPTR$ with the Xp command.

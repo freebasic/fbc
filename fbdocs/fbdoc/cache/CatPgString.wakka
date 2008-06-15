@@ -9,6 +9,7 @@
 	- {{fbdoc item="keyword" value="KeyPgCvlongint|CVLONGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgCvs|CVS"}}
 	- {{fbdoc item="keyword" value="KeyPgCvshort|CVSHORT"}}
+	- {{fbdoc item="keyword" value="KeyPgFormat|FORMAT"}}
 	- {{fbdoc item="keyword" value="KeyPgHex|HEX"}}
 	- {{fbdoc item="keyword" value="KeyPgInstr|INSTR"}}
 	- {{fbdoc item="keyword" value="KeyPgLcase|LCASE"}}
@@ -21,10 +22,10 @@
 	- {{fbdoc item="keyword" value="KeyPgMki|MKI"}}
 	- {{fbdoc item="keyword" value="KeyPgMkl|MKL"}}
 	- {{fbdoc item="keyword" value="KeyPgMklongint|MKLONGINT"}}
-	- {{fbdoc item="keyword" value="KeyPgMks|MKS"}}
-	- {{fbdoc item="keyword" value="KeyPgMkshort|MKSHORT"}}
 
 <<>>
+	- {{fbdoc item="keyword" value="KeyPgMks|MKS"}}
+	- {{fbdoc item="keyword" value="KeyPgMkshort|MKSHORT"}}
 	- {{fbdoc item="keyword" value="KeyPgOct|OCT"}}
 	- {{fbdoc item="keyword" value="KeyPgRight|RIGHT"}}
 	- {{fbdoc item="keyword" value="KeyPgRtrim|RTRIM"}}
@@ -41,13 +42,10 @@
 	- {{fbdoc item="keyword" value="KeyPgWbin|WBIN"}}
 	- {{fbdoc item="keyword" value="KeyPgWchr|WCHR"}}
 	- {{fbdoc item="keyword" value="KeyPgWhex|WHEX"}}
-	- {{fbdoc item="keyword" value="KeyPgWinput|WINPUT"}}
 	- {{fbdoc item="keyword" value="KeyPgWoct|WOCT"}}
 	- {{fbdoc item="keyword" value="KeyPgWspace|WSPACE"}}
 	- {{fbdoc item="keyword" value="KeyPgWstr|WSTR"}}
 	- {{fbdoc item="keyword" value="KeyPgFunWstring|WSTRING(Function)"}}
-
-
 
 >>
 

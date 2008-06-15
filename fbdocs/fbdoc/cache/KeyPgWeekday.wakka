@@ -28,10 +28,10 @@ Date function to return the number of day of the week
 	The compiler will not recognise this function unless "vbcompat.bi" is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-#include "vbcompat.bi"
-a!=dateserial (2005,11,28)+timeserial(7,30,50)
-print format(a!,"yyyy/mm/dd hh:mm:ss ") ;weekday(a!)
+%%(qbasic)#include "vbcompat.bi"
+dim a as double
+a=dateserial (2005,11,28)+timeserial(7,30,50)
+print format(a,"yyyy/mm/dd hh:mm:ss ") ;weekday(a)
 %%
 
 {{fbdoc item="diff"}}

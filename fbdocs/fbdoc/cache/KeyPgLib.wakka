@@ -2,7 +2,7 @@
 Specifies the DLL where a sub or function can be found as part of a declaration.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc name// **Lib** "//dllname//" [[KeyPgAlias alias]] "//symbol_name//" ( //arguments list// ) [[KeyPgAs as]] //return_type//
+	[[KeyPgDeclare declare]] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc_name// **Lib** "//dllname//" [[KeyPgAlias alias]] "//symbol_name//" ( //arguments list// ) [[KeyPgAs as]] //return_type//
 ##
 {{fbdoc item="desc"}}
 	In ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## declarations, ##**Lib**## indicates the dll containing the function. Libraries specified in this way are linked as if the library had been specified with ##[[KeyPgInclib #inclib]]##.
@@ -33,4 +33,4 @@ Print "GetValue = &h"; hex(GetValue())
 	- ##[[KeyPgDeclare Declare]]##
 	- ##[[KeyPgInclib #inclib]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

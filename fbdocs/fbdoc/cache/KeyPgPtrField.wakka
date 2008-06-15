@@ -21,7 +21,8 @@ rp->x = 4
 rp->y = 2
 
 Print "x = " & rp->x & ", y = " & rp->y
-Sleep%%
+Sleep
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

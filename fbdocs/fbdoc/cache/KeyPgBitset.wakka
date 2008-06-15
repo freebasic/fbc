@@ -1,12 +1,11 @@
-{{fbdoc item="title" value="BITSET"}}
-----
+{{fbdoc item="title" value="BITSET"}}----
 Macro that sets a bit in an integer.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **BITSET**( //value//, //bit_number// ) ((//value//) [[KeyPgOr or]] (1 [[KeyPgShl shl]] (//bit_number//)))
 ##
 {{fbdoc item="usage"}}##
-	//result// = BITSET( //value//, //bit_number// )
+	//result// = **BITSET**( //value//, //bit_number// )
 ##
 {{fbdoc item="param"}}
 	##//value//##
@@ -19,7 +18,7 @@ Macro that sets a bit in an integer.
 
 {{fbdoc item="desc"}}
 	Macro returning ##//value//## with the bit ##//bit_number//## set to 1.
-	##foo = BITSET( bar, 5 )##  does the same as ##foo = bar or (1 shl 5)##.
+	##foo = **BITSET**( bar, 5 )##  does the same as ##foo = bar or (1 shl 5)##.
 
 	To set the bit on a 64 bit integer, pass the ##//bit_number//## as a 64 bit integer.
 
@@ -46,4 +45,4 @@ PRINT BITSET(0,63LL)
 	- ##[[KeyPgBitreset BITRESET]]##
 	
 
-{{fbdoc item="back" value="CatPgMisc|MISC"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

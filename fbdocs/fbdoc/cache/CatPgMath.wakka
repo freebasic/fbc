@@ -11,11 +11,13 @@
 	- {{fbdoc item="keyword" value="KeyPgHibyte|HIBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgInt|INT"}}
 	- {{fbdoc item="keyword" value="KeyPgHiword|HIWORD"}}
+
 <<>>
 	- {{fbdoc item="keyword" value="KeyPgLoByte|LOBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgLog|LOG"}}
 	- {{fbdoc item="keyword" value="KeyPgLoWord|LOWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgMod|MOD"}}
+	- {{fbdoc item="keyword" value="KeyPgRnd|RND"}}
 	- {{fbdoc item="keyword" value="KeyPgSgn|SGN"}}
 	- {{fbdoc item="keyword" value="KeyPgShl|SHL"}}
 	- {{fbdoc item="keyword" value="KeyPgShr|SHR"}}
@@ -23,9 +25,9 @@
 	- {{fbdoc item="keyword" value="KeyPgSqr|SQR"}}
 	- {{fbdoc item="keyword" value="KeyPgTan|TAN"}}
 
+
 >>
 
 ::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-

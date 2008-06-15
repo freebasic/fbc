@@ -14,10 +14,9 @@ If you want the very latest version of ""FreeBASIC"" on ""Win32"", it can be com
 		- {{anchor name="making4|Make fbc"}}
 
 	=={{anchor name="updating|Updating the FreeBASIC software installed in MSYS"}}==
-		- {{anchor name="updating1|Replace the old .bi files with the new ones from the source folder"}}
+		- {{anchor name="updating1|Replace old files with new ones from the source folder"}}
 		- {{anchor name="updating2|Replace the old compiler and library files with the new ones you've just made"}}
 		- {{anchor name="updating3|Copy MSYS/MinGW-specific library to FB linker library directory if it's not included already"}}
-		- {{anchor name="updating4|Optional: Stripping the debug information of the new libs"}}
 
 
 	{{anchor name="setup"}}===Setting up the MSYS/""MinGW"" environment===
@@ -78,7 +77,7 @@ make CFLAGS=-O2 && make CFLAGS=-O2 MULTITHREADED=1%%
 			
 			%%cd ~/fbccvs/FreeBASIC/src/gfxlib2/obj/win32
 ../../configure
-make%%
+make CFLAGS=-O2%%
 		
 		{{anchor name="making4"}}==Make fbc==
 			
@@ -91,9 +90,9 @@ make%%
 		The following steps will update the copy of ""FreeBASIC"" you installed in /FBbin
 		(Again, the commands should be typed into an MSYS terminal)
 		
-		{{anchor name="updating1"}}==Replace the old .bi files with the new ones from the source folder==
+		{{anchor name="updating1"}}==Replace old files with new ones from the source folder==
 			
-			%%rm -rfv /FBbin/inc/*
+			%%cp -fv ~/fbccvs/FreeBASIC/bin/win32/* /FBbin/bin/win32
 cp -rfv ~/fbccvs/FreeBASIC/inc/* /FBbin/inc%%
 		
 		{{anchor name="updating2"}}==Replace the old compiler and library files with the new ones you've just made==
@@ -106,17 +105,7 @@ cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/win32/*.a /FBbin/lib/win32%%
 		{{anchor name="updating3"}}==Copy MSYS/""MinGW""-specific library to FB linker library directory if it's not included already==
 			
 			%%cp /mingw/lib/libmingwex.a /FBbin/lib/win32%%
-
-		
-		{{anchor name="updating4"}}==Optional: Stripping the debug information of the new libs==
-		
-		You may recognize, that after a successful build, the compiled libs can be very big, (many megabytes, in fact bigger than the whole compiler package), if this bothers you, you can strip the debug information with the strip command. strip.exe should be located in  "C:\MinGW\bin\strip.exe"
-			
-			%%'examples:
-strip -g libfbgfx.a 
-strip -g libfbmt.a 
-strip -g libfb.a%%
-
+	
 	And you're ready to roll! The newest FB is now in your MSYS /FBbin.
 	
 	Note: recently it has come to light that although the above often works, there can be chicken-and-egg-related problems. Please see this forum thread for info:

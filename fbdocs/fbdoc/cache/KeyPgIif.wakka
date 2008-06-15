@@ -21,10 +21,14 @@ Conditional function to return one of two values
 	##**IIf**## only evaluates the expression that it needs to return.  This saves time, and can also be useful to prevent evaluating expressions that might be invalid depending on the ##//condition//##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)a = (x + y + iif(b > 0, 4, 7)) / z%%
+%%(qbasic)dim as integer a, b, x, y, z
+a = (x + y + iif(b > 0, 4, 7)) \ z
+%%
 is equivalent to:
-%%(qbasic)if b > 0 then temp = 4 else temp = 7
-a = (x + y + temp) / z%%
+%%(qbasic)dim as integer a, b, x, y, z, temp
+if b > 0 then temp = 4 else temp = 7
+a = (x + y + temp) \ z
+%%
 {{fbdoc item="diff"}}
 	- New to Freebasic
 

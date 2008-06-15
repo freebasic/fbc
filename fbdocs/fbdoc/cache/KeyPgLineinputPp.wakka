@@ -16,11 +16,11 @@ Reads one line of text from a file.
 	A line of text does not include the end of line characters.  An end of line character may be the LF character (##[[KeyPgChr Chr]]##(10)) or the CRLF character pair (##[[KeyPgChr Chr]]##(13,10)).
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)' compile with -lang qb
 Dim Filehandle As Integer
 Dim txt As String
 	
-On Local Error Goto HandleErrors
+On Error Goto HandleErrors
 	
 Filehandle = Freefile
 Open "test_text_file.txt" For Input As #filehandle
@@ -37,13 +37,14 @@ print txt
 	
 HandleErrors:
 print "Error."
-Return ""
+Resume Next
+
 %%
 
 {{fbdoc item="diff"}}
-	- 
+	- None
 
 {{fbdoc item="see"}}
-	- 
+	- ##[[KeyPgInputPp Input #]]##
 
-{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}{{fbdoc item="back" value="CatPgInput|User Input"}}

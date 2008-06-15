@@ -17,10 +17,10 @@ Date function to return the current system time as a [[DtDateSer Date Serial]]
 	The compiler will not recognise this function unless "vbcompat.bi" is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-#include "vbcompat.bi"
-a!=now
-print format(a!,"yyyy/mm/dd hh:mm:ss") 
+%%(qbasic)#include "vbcompat.bi"
+dim a as double
+a = now
+print format(a,"yyyy/mm/dd hh:mm:ss") 
 %%
 
 {{fbdoc item="diff"}}

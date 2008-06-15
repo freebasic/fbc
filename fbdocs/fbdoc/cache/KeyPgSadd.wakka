@@ -1,25 +1,26 @@
-{{fbdoc item="title" value="SADD"}}
-----
-{{fbdoc item="syntax"}}
-sadd (stringvar$)
+{{fbdoc item="title" value="SADD"}}----
+Returns a pointer to a string variable's data
 
+{{fbdoc item="syntax"}}##
+	//result// = **Sadd** (//string_variable//)
+##
 {{fbdoc item="desc"}}
-Returns the memory offset of the string data in the string variable.
+	Returns the memory offset of the string data in the string variable.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 print sadd(s$)
 s$ = "hello"
 print sadd(s$)
 s$ = "abcdefg, 1234567, 54321"
 print sadd(s$)
 sleep
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- 
 
 {{fbdoc item="see"}}
-	- [[KeyPgVarptr VARPTR]]
+	- ##[[KeyPgVarptr Varptr]]##
 
-{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

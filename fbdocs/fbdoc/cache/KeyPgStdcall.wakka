@@ -1,11 +1,11 @@
-{{fbdoc item="title" value="STDCALL"}}
-----
-{{fbdoc item="syntax"}}
-declare {function | sub} procName stdcall alias "procAliasName" (parameterlist...) [as type]
+{{fbdoc item="title" value="STDCALL"}}----
+Procedure calling convention specifier
 
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] { [[KeyPgFunction function]] | [[KeyPgSub sub]] } //proc_name// **stdcall** ( [ //parameterlist// ) [ [[KeyPgAs as]] //return_type// ]
+##
 {{fbdoc item="desc"}}
-
-STDCALL is the standard calling convention used in BASIC languages. In the STDCALL convention, arguments are pushed onto the stack in the order which they are received. The return value is stored in the register EAX. Most of the Windows API uses the STDCALL method. Functions that use variable parameters (...) cannot be written with the STDCALL method, or rather, they can, but the function wouldn't know which is the first parameter, and wouldn't work correctly.
+	##**stdcall**## is the standard calling convention used in BASIC languages. In the ##**stdcall**## convention, arguments are pushed onto the stack in the order which they are received. The return value is stored in the register EAX. Most of the Windows API uses the ##**stdcall**## method. Functions that use variable parameters (...) cannot be written with the ##**stdcall**## method, or rather, they can, but the function wouldn't know which is the first parameter, and wouldn't work correctly.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -18,7 +18,7 @@ function Example (param1 as integer, param2 as integer) as integer
 	return param1 mod param2
 end function
 
-function Example2 (param1 as integer, param2 as integer) as integer
+function Example2 cdecl (param1 as integer, param2 as integer) as integer
 	' This is a CDECL function, the first parameter on the stack is param1, since it was pushed last.
 	print param1, param2
 	return param1 mod param2
@@ -29,9 +29,8 @@ end function
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- [[KeyPgDeclare DECLARE]]
-	- [[KeyPgCdecl CDECL]]
-	- [[KeyPgPascal PASCAL]]
+	- ##[[KeyPgDeclare declare]]##
+	- ##[[KeyPgCdecl cdecl]]##
+	- ##[[KeyPgPascal pascal]]##
 
-{{fbdoc item="back" value="CatPgCallingconvention|CALLING CONVENTION"}}
-
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

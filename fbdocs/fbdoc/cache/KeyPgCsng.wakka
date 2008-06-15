@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CSNG"}}
-----
+{{fbdoc item="title" value="CSNG"}}----
 Converts numeric or string expression to ##[[KeyPgSingle Single]]## precision floating point.
 
 {{fbdoc item="syntax"}}##

@@ -21,7 +21,7 @@ SLEEP
 %%
 
 The output would look like:
-%%(qbasic)
+%%
 -5
 -65432568459
 %%

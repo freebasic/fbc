@@ -8,25 +8,25 @@ Operator to append and assign a string onto another string
 	The combined concatenation operator is a shortcut method of writing concatenation expressions. The expression ##s += t## is the equivalent of writing ##s = s + t##.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 DIM s AS STRING
 s = "Hello"
 s += " world"
 PRINT s
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%
 Hello world
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- {{fbdoc item="keyword" value="KeyPgCombineAdd|+= (Combined Addition) "}}
-	- {{fbdoc item="keyword" value="KeyPgConCat|+ (String concatenation) "}}
-	- {{fbdoc item="keyword" value="KeyPgConCat|& (String concatenation with conversion) "}}
+	- {{fbdoc item="keyword" value="KeyPgConcat|+ (String concatenation) "}}
+	- {{fbdoc item="keyword" value="KeyPgConcat|& (String concatenation with conversion) "}}
 	- [[CatPgOperators Operators]]
 	- [[CatPgOpString String Operators]]
 

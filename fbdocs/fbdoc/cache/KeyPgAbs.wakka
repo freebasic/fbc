@@ -21,7 +21,7 @@ Function that calculates the absolute value of a number.
 	The absolute value of a number is its unsigned magnitude. For example, ##Abs(-1)## and ##Abs(1)## both return ##1##. The required ##//number//## argument can be any valid numeric expression. ##Abs## returns its value as the same data type as the argument ##//number//##.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 dim n as integer
 
 print Abs( -1 )
@@ -32,16 +32,16 @@ print Abs( n )
 n = -69
 
 print Abs( n )
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%
 1
 3.1415
 42
 0
 69
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- None
@@ -49,5 +49,4 @@ The output would look like:
 {{fbdoc item="see"}}
 	- ##[[KeyPgSgn Sgn]]##
 
-
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgMath|Math"}}

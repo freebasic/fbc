@@ -8,10 +8,7 @@ Intrinsic define (macro value) set by the compiler.
 	""__FB_VER_MINOR__"" will return the minor version of FreeBASIC currently being used. For Freebasic 0.15, for example, the minor version is 15.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-Option Explicit
-
-Dim fbMajorVersion As Integer
+%%(qbasic)Dim fbMajorVersion As Integer
 Dim fbMinorVersion As Integer
 
 fbMajorVersion = __FB_VER_MAJOR__

@@ -16,10 +16,10 @@ Function that returns the cosine of a number.
 	Returns the cosine of the argument ##//number//## as a ##[[KeyPgDouble Double]]## within the range of -1 to 1.
 
 {{fbdoc item="desc"}}
-	The argument ##//number//## is measured in [[TutMathAngles radians]] (not [[TutMathAngles degrees]]). The required ##//number//## argument can be any valid numeric expression. If ##//number//## is an uninitialized variable, zero is returned.
+	The argument ##//number//## is measured in [[TutMathAngles radians]] (not [[TutMathAngles degrees]]). The required ##//number//## argument can be any valid numeric expression.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 CONST PI AS DOUBLE = 3.1415926535897932
 DIM a AS DOUBLE
 DIM r AS DOUBLE
@@ -28,14 +28,13 @@ r = a * PI / 180	'Convert the degrees to Radians
 PRINT ""
 PRINT "The cosine of a" ; a; " degree angle is"; COS ( r ) 
 SLEEP
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%
 Please enter an angle in degrees: 30
-
-The cosine of a 30 degree angle is 0.8660254037844387
-%%##
+The cosine of a 30 degree angle Is 0.8660254037844387
+%%
 
 {{fbdoc item="diff"}}
 	- None

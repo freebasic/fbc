@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CUSHORT"}}
-----
+{{fbdoc item="title" value="CUSHORT"}}----
 Converts numeric or string expression to an unsigned integer (##[[KeyPgUshort Ushort]]##)
 
 {{fbdoc item="syntax"}}##

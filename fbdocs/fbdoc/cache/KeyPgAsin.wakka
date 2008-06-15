@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ASIN"}}
-----
+{{fbdoc item="title" value="ASIN"}}----
 Function that returns the arcsine of a number.
 
 {{fbdoc item="syntax"}}##
@@ -31,10 +30,9 @@ SLEEP
 %%
 
 The output would look like:
-%%(qbasic)
+%%
 Please enter the length of the hypotenuse of a triangle: 5
 Please enter the length of the opposite side of the triangle: 3
-
 The angle between the sides is 0.6435011087932844
 %%
 
@@ -45,4 +43,4 @@ The angle between the sides is 0.6435011087932844
 	- ##[[KeyPgSin Sin]]##
 	- [[TutMathIntroTrig A Brief Introduction To Trigonometry]]
 
-{{fbdoc item="back" value="CatPgMath|Math"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgMath|Math"}}

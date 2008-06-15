@@ -2,17 +2,24 @@
 Control flow statement for looping
 
 {{fbdoc item="syntax"}}##
-	**For** //iterator// = //startvalue// **To** //endvalue// [ **Step** //stepvalue// ]
+	**For** //iterator// [ [[KeyPgAs as]] [[DataType datatype]] ] = //startvalue// **To** //endvalue// [ **Step** //stepvalue// ]
 		[ //statement block// ]
 	**Next** [ //iterator// ]
 ##
-{{fbdoc item="desc"}}
-	A ##**For...Next**## loop initializes //counter// to //startvalue//, then executes the //statement block//'s, incrementing //counter// by //stepvalue// until it reaches //endvalue//. If //stepvalue// is not explicitly given it will set to 1.
+{{fbdoc item="param"}}
+	##//iterator//##
+		a variable identifier that is used to iterate from an initial value to an end value
+	##//startvalue//##
+		an expression that denotes the starting value of the iterator
+	##//endvalue//##
+		an expression used to compare with the value of the iterator
+	##//stepvalue//##
+		an expression that is added to the iterator after every iteration
 
-	//iterator//: a variable identifier that is used to iterate from an initial value to an end value
-	//startvalue//: an expression that denotes the starting value of the iterator
-	//endvalue//: an expression used to compare with the value of the iterator
-	//stepvalue//: an expression that is added to the iterator after every iteration
+{{fbdoc item="desc"}}
+	A ##**For...Next**## loop initializes //iterator// to //startvalue//, then executes the //statement block//'s, incrementing //iterator// by //stepvalue// until it reaches //endvalue//. If //stepvalue// is not explicitly given it will set to 1.
+
+	The //iterator// may be defined having the same scope as the ##**For**## statement by using the ##[[KeyPgAs as]] [[DataType datatype]]## syntax.  With this syntax, //iterator// is created and destroyed within the ##**For...Next**## scope. In -lang qb, if the variable is already declared, a duplicate definition error is generated.  With -lang fb or deprecated, a new variable will be allocated, making an outer variable of the same name inaccessible. (normal scope rules).
 
 	The ##**For**## statement causes the execution of the statements in the //statement block// until //iterator// compares **greater than** //endvalue//. //iterator// will be incremented the amount of //stepvalue// following each execution of the //statement block//. If an increment is not given, //iterator// will be implicitly incremented by 1.
 
@@ -36,7 +43,7 @@ NEXT
 %%
 
 {{fbdoc item="diff"}}
-	- [[KeyPgByref ByRef]] Arguments cannot be used as counters.
+	- BYREF arguments cannot be used as counters.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgContinue Continue]]##

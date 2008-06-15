@@ -1,15 +1,16 @@
-{{fbdoc item="title" value="STRPTR"}}
-----
-{{fbdoc item="syntax"}}
-Strptr( string )
+{{fbdoc item="title" value="STRPTR"}}----
+Returns a pointer to a string variable's data
 
+{{fbdoc item="syntax"}}##
+	//result// = **Strptr** ( //string_variable// )
+##
 {{fbdoc item="desc"}}
-~Returns a C-compatible {{fbdoc item="keyword" value="KeyPgZstring|ZSTRING"}} pointer.  Strptr is the proper method for aquiring the [[DtPointers pointer]] to the data portion of a string variable.
+	Returns a C-compatible ##[[KeyPgZstring Zstring]]##.  Strptr is the proper method for aquiring the [[DtPointers pointer]] to the data portion of a string variable.
 
-~The related {{fbdoc item="keyword" value="KeyPgVarptr|VARPTR"}} function (and the abbreviated form, @), when used with a string, returns a pointer to the internal string descriptor.
+	The related ##[[KeyPgVarptr Varptr]]## function (and the abbreviated form, @), when used with a string, returns a pointer to the internal string descriptor.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 ' This example uses Strptr to demonstrate using pointers with strings
 Dim myString as String
 Dim toMyString as ZString Ptr
@@ -33,14 +34,12 @@ myString = "MyString has now changed"
 print myString
 print *toMyString
 print
-
-
-%%##
+%%
 
 {{fbdoc item="see"}}
-	- {{fbdoc item="keyword" value="KeyPgStringtype|STRING"}}
-	- {{fbdoc item="keyword" value="KeyPgSadd|SADD"}}
-	- {{fbdoc item="keyword" value="KeyPgVarptr|VARPTR"}}
+	- ##[[KeyPgStringtype String]]##
+	- ##[[KeyPgSadd Sadd]]##
+	- ##[[KeyPgVarptr Varptr]]##
 	- [[DtPointers Pointers]]
 
-{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

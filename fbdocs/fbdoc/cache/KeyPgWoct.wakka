@@ -39,7 +39,8 @@ Converts a number to a Unicode octal representation.
 %%(qbasic)
 Print Woct(54321)    '' will display 152061
 Print Woct(54321, 4) '' will display 2061
-Print Woct(54321, 8) '' will display 00152061%%
+Print Woct(54321, 8) '' will display 00152061
+%%
 
 {{fbdoc item="diff"}}
 	- In QBASIC Unicode was not supported.

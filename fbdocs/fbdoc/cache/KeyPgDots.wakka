@@ -1,26 +1,24 @@
-{{fbdoc item="title" value="... (Ellipsis)"}}
-----
-{{fbdoc item="syntax"}}
-	DECLARE FUNCTION functionname [[KeyPgCdecl CDECL]] ( varname AS vartype, ... )
+{{fbdoc item="title" value="... (Ellipsis)"}}----
+Used in place of procedure parameter to pass a variable number of arguments.
 
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc_name// [[KeyPgCdecl cdecl]] ( //param// [[KeyPgAs as ]] AS [[DataType datatype]], **...** )
+##
 {{fbdoc item="desc"}}
-	The keyword is three dots (not two or four) . It's used in function declarations and definitions to indicate a variable argument list. A first argument must always be specified and the function must be called with the C calling convention [[KeyPgCdecl CDECL]].
-	
-
+The ellipsis (three dots "...") is used in procedure declarations and definitions to indicate a variable argument list. A first argument must always be specified and the function must be called with the C calling convention ##[[KeyPgCdecl cdecl]]##.
 
 {{fbdoc item="ex"}}
-	%%(qbasic)
-	DECLARE FUNCTION FOO CDECL (X AS INTEGER, ...)
-	%%
+%%(qbasic)
+DECLARE FUNCTION FOO CDECL (X AS INTEGER, ...) AS INTEGER
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- [[KeyPgVaArg VA_ARG]]
-	- [[KeyPgVaFirst VA_FIRST]]
-	- [[KeyPgVaNext VA_NEXT]]
-	- [[KeyPgCdecl CDECL]]
+	- ##[[KeyPgCdecl cdecl]]##
+	- ##[[KeyPgVaArg va_arg]]##
+	- ##[[KeyPgVaFirst va_first]]##
+	- ##[[KeyPgVaNext va_next]]##
 
-
-{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}  {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}

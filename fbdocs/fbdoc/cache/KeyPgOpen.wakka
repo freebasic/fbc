@@ -53,9 +53,8 @@ File Input/Output function for getting a handle to a disk file or device.
 	OPEN can be used as a function which returns the error code that the operation sets in [[KeyPgErr ERR]].
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-' Create a string and fill it.
-Dim buffer As String
+%%(qbasic)' Create a string and fill it.
+Dim buffer As String, f as integer
 buffer = "Hello World within a file."
 
 ' Find the first free file handle.

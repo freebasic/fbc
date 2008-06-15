@@ -14,7 +14,8 @@
 %%(qbasic)
 PRINT MID("abcdefg", 3, 2) ' returns "cd"
 PRINT MID("abcdefg", 3)     ' returns "cdefg"
-PRINT MID("abcdefg", 2, 1) ' returns "b"%%
+PRINT MID("abcdefg", 2, 1) ' returns "b"
+%%
 
 A Unicode example:
 <<

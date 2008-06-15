@@ -3,7 +3,7 @@
 	- {{fbdoc item="keyword" value="KeyPgConstructor|CONSTRUCTOR...END CONSTRUCTOR"}}
 	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR...END DESTRUCTOR"}}
 	- {{fbdoc item="keyword" value="KeyPgDoloop|DO...LOOP"}}
-	- {{fbdoc item="keyword" value="KeyPgExterncpp|EXTERN...END EXTERN"}}
+	- {{fbdoc item="keyword" value="KeyPgExternCpp|EXTERN...END EXTERN"}}
 	- {{fbdoc item="keyword" value="KeyPgFornext|FOR...NEXT"}}
 	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION...END FUNCTION"}}
 	- {{fbdoc item="keyword" value="KeyPgIfthen|IF...THEN"}}
@@ -13,6 +13,7 @@
 	- {{fbdoc item="keyword" value="KeyPgWhilewend|WHILE...WEND"}}
 	- {{fbdoc item="keyword" value="KeyPgWith|WITH...END WITH"}}
 	- {{fbdoc item="keyword" value="KeyPgNamespace|NAMESPACE...END NAMESPACE"}}
+	- {{fbdoc item="keyword" value="KeyPgProperty|PROPERTY...END PROPERTY"}}
 	- {{fbdoc item="keyword" value="KeyPgSub|SUB...END SUB"}}
 
 <<

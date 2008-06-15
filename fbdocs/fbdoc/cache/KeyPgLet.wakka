@@ -7,9 +7,9 @@
 	Command intended to help the programmer to distinguish an assignment ( LET a=1 ) from an equality test ( IF a=1 THEN.. ). As the compiler does not require it, it's normally omitted. 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-'e.g. these two lines have the same effect:
+%%(qbasic)'' Compile with -lang deprecated or qb
 
+' these two lines have the same effect:
 let x = 100
 x = 100
 %%

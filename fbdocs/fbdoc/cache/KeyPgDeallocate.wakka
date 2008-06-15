@@ -22,9 +22,7 @@ Frees previously allocated memory.
 {{fbdoc item="ex"}}
 The following example shows how to free previously allocated memory. Note that the pointer is set to null following the deallocation:
 
-%%(qbasic)option explicit
-
-function DeallocateExample1()
+%%(qbasic)sub DeallocateExample1()
    dim as integer ptr integerPtr = allocate( len( integer ) )  '' initialize pointer to
 	                                                           '' new memory address
 
@@ -33,7 +31,7 @@ function DeallocateExample1()
 
    deallocate( integerPtr )                              '' free memory back to system
    integerPtr = 0                                        '' and zero the pointer
-end function
+end sub
 
    DeallocateExample1()
    end 0
@@ -43,9 +41,7 @@ Although in this case it is unnecessary - since 1. the pointer is not a referenc
 
 In the following example, a different pointer is used to free previously allocated memory.
 
-%%(qbasic)option explicit
-
-function DeallocateExample2()
+%%(qbasic)sub DeallocateExample2()
    dim as integer ptr integerPtr = allocate( len( integer ) )  '' initialize pointer to
 	                                                           '' new memory
 
@@ -60,7 +56,7 @@ function DeallocateExample2()
 
 '' *integerPtr = 420                                     '' undefined bahavior; original
 	                                                     '' pointer is invalid
-end function
+end sub
 
    DeallocateExample2()
    end 0
@@ -68,19 +64,16 @@ end function
 
 Note that after the deallocation, //both// pointers are rendered invalid. This illustrates another one of the ways that bugs can arise when working with pointers. As a general rule, only deallocate memory previously allocated when you know that there is only one (1) pointer currently pointing at it.
 
-%%(qbasic)option explicit
-option byval
-
-function createInteger() as integer ptr
+%%(qbasic)function createInteger() as integer ptr
    return allocate( len( integer ) )                     '' return pointer to newly
 end function                                             '' allocated memory
 
-function destroyInteger( byref someIntegerPtr as integer ptr )
+sub destroyInteger( byref someIntegerPtr as integer ptr )
    deallocate( someIntegerPtr )                          '' free memory back to system
    someIntegerPtr = 0                                    '' null original pointer
-end function
+end sub
 
-function DeallocateExample3()
+sub DeallocateExample3()
    dim as integer ptr integerPtr = createInteger()       '' initialize pointer to
 	                                                     '' new memory address
 
@@ -89,7 +82,7 @@ function DeallocateExample3()
 
    destroyInteger( integerPtr )                          '' pass pointer by reference
    assert( integerPtr = 0 )                              '' pointer should now be null
-end function
+end sub
 
    DeallocateExample3()
    end 0

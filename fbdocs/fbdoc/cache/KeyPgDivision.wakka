@@ -20,9 +20,9 @@ SLEEP
 %%
 
 The output would look like:
-%%(qbasic)
- 0
- 2.608695652173913
+%%
+0
+2.608695652173913
 %%
 
 {{fbdoc item="diff"}}

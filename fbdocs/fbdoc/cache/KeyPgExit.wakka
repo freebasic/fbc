@@ -5,7 +5,7 @@ Control flow statement to exit a compound statement block
 	**Exit** {[[KeyPgSub Sub]] | [[KeyPgFunction Function]] | [[KeyPgDoloop Do]] | [[KeyPgFornext For]] | [[KeyPgWhilewend While]] | [[KeyPgSelectcase Select]] }
 ##
 {{fbdoc item="desc"}}
-	Leaves a code block such as a ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgDoloop Do...Loop]]##, ##[[KeyPgFornext For...Next]]##, ##[[KeyPgWhilewend While...Wend]]##, or a  ##[[KeyPgSelectCase Select Case]]## block. The execution skips the rest of the block and goes to the line after its end.
+	Leaves a code block such as a ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgDoloop Do...Loop]]##, ##[[KeyPgFornext For...Next]]##, ##[[KeyPgWhilewend While...Wend]]##, or a  ##[[KeyPgSelectcase Select Case]]## block. The execution skips the rest of the block and goes to the line after its end.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

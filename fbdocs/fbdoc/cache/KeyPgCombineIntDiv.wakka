@@ -9,18 +9,18 @@ Operator to divide a variable and assign the integer result to the same variable
 	The combined integer division operator is a shortcut method of writing integer division expressions. The expression ##n \= 2## is the equivalent of writing ##n = n \ 2##. 
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 DIM n AS DOUBLE
 n = 6
 n \= 2.2
 PRINT n
 SLEEP
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%
 3
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

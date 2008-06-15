@@ -28,26 +28,26 @@
 	//slot// Is a valid FB file slot number (in the range 1-255) not being used for any other file presently open. The slot identifies the file for the rest of file operations. A free slot can be found using the [[KeyPgFreefile FREEFILE]] function.
 	
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 '' Create a binary data file with one number in it
 Dim x As Single = 17.164
 Open "MyFile.Dat" For Binary As #1
 Put #1,,x
 Close #1
-%%##
+%%
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 '' Now read the number from the file
 Dim x As Single = 0
 Open "MyFile.Dat" For Binary As #1
 Get #1,,x
 Close #1
 Print x
-%%##
+%%
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 '' Read entire contents of a file to a string
   Dim txt As String
   Open "myfile.txt" For Binary Access Read As #1
@@ -57,7 +57,7 @@ Print x
   End If
   Close #1
   Print txt
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- None

@@ -24,10 +24,10 @@
 {{fbdoc item="desc"}}
 	WSTRING generates a temporal wstring filled with //count// copies of an [[Unicode Unicode]] character. This string can be printed or assigned to a previously DIMed wstring.
 {{fbdoc item="ex"}}
-##%%(qbasic)
-   PRINT WSTRING( 4, 934 )         
-   PRINT WSTRING( 5, "Indeed" )   
-   end 0%%##
+%%(qbasic)PRINT WSTRING( 4, 934 )         
+PRINT WSTRING( 5, Wstr("Indeed") )   
+end 0
+%%
    <<&#934;&#934;&#934;&#934;
    IIII<<
    ::c::

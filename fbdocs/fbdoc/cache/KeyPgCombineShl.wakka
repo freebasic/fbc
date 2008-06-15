@@ -11,14 +11,14 @@ Operator that shifts the bits of an integer left and assign the result to the a 
 	The combined ##**Shl=**## shifts all bits in the argument ##//variable//## integer to the left by argument ##//number//##, and assignes the result to ##//variable//##. This has the effect of multiplying the argument ##//variable//## by two for each shift given in the argument ##//number//##. Both arguments, ##//variable//## and ##//number//## are integers. 
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 DIM i AS INTEGER
 i = &b00000011   '' = 3
 i shl= 3         '' = i*2^3
 '' Result: 11000          24            24
 print bin(i), i, 3*2^3
 SLEEP
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

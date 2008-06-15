@@ -30,7 +30,10 @@ DIM foo As Integer = 0
 SetFoo
 Print Foo
 %%
-
+Output:
+%%
+ 1234
+%%
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

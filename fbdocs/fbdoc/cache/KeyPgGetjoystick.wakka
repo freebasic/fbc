@@ -35,19 +35,20 @@ Input function to read buttons and axis information from attached gaming devices
 {{fbdoc item="desc"}}
 	##**Getjoystick**## will retrieves the button state, and the axis positions for up to 8 axes, for the joystick determined by ##//id//##, a number between 0 and 15. Buttons are stored in a similar manner to ##[[KeyPgGetmouse Getmouse]]##, with each bit in ##//buttons//## representing a button.
 
+	A single precision value between ##-1.0## and ##1.0## is returned for each valid axis.  If the axis does not exist for the controller, a value of ##-1000.00## is returned.
+
 	##**Getjoystick**## will return 0 upon successful completion; It will return 1 upon failure. Failure can be caused by specifying an illegal joystick number, specifying a joystick which doesn't exist, or a failure in the joystick API.
 
 	##**Getjoystick**## will only function after a video mode has been set using the ##[[KeyPgScreengraphics Screen]]## command.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-
-screen 12
+%%(qbasic)screen 12
 
 dim x as single
 dim y as single
 dim buttons as integer
 dim result as integer
+dim a as integer
 
 const JoystickID = 0
 
@@ -68,7 +69,6 @@ do
 	locate 1,1
 	print ;"result:";result;" x:" ;x;" y:";y;" Buttons:";buttons,"","",""
 	
-	
 	'This tests to see which buttons from 1 to 27 are pressed. 
 	for a = 0 to 26 
 	    if (buttons AND (1 shl a)) then 
@@ -78,8 +78,6 @@ do
 	    end if
 	next a
 loop
-
-
 %%
 
 {{fbdoc item="diff"}}

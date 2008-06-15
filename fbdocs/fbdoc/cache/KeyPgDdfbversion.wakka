@@ -8,11 +8,9 @@ Intrinsic define (macro string) set by the compiler.
 	 Substituted by the version number of the compiler where used.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-#IF __FB_VERSION__ >"0.13" 
-#ERROR  Please compile it with FB below version 0.13 
-#ENDIF 
-sleep 
+%%(qbasic)#if __FB_VERSION__ < "0.17" 
+#error  Please compile with FB version 0.17 or above 
+#endif
 %%
 	This will stop the compilation if the compiler version is not below 0.13
 

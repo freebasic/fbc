@@ -23,10 +23,10 @@ Date function to return [[DtDateSer Date Serial]] for the specified year, month,
 	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-#include "vbcompat.bi"
-a!=dateserial (2005,11,28)
-print format(a!,"yyyy/mm/dd hh:mm:ss") 
+%%(qbasic)#include "vbcompat.bi"
+dim a as double
+a=dateserial (2005,11,28)
+print format(a,"yyyy/mm/dd hh:mm:ss") 
 %%
 
 {{fbdoc item="diff"}}
@@ -34,8 +34,8 @@ print format(a!,"yyyy/mm/dd hh:mm:ss")
 
 {{fbdoc item="see"}}
 	- [[DtDateSer Date Serials]]
-	- ##[[KeyPgDateserial DateSerial]]##
-	- ##[[KeyPgTimevalue TimeValue]]##
-	- ##[[KeyPgDatevalue DateValue]]##
+	- ##[[KeyPgDateSerial DateSerial]]##
+	- ##[[KeyPgTimeValue TimeValue]]##
+	- ##[[KeyPgDateValue DateValue]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

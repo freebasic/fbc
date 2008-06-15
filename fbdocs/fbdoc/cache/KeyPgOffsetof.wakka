@@ -1,22 +1,23 @@
-{{fbdoc item="title" value="OFFSETOF"}}
-----
-{{fbdoc item="syntax"}}
-	OFFSETOF( //typename//, //fieldname// )
+{{fbdoc item="title" value="OFFSETOF"}}----
+Returns the offset of a field within a type
 
-	//typename//
-		Name of the type as defined using the [[KeyPgType TYPE...END TYPE]] statments.
-
-	//fieldname//
+{{fbdoc item="syntax"}}##
+	[[KeyPgPpdefine #define]] **Offsetof**(//typename//, //fieldname//) [[KeyPgCint cint]]( @[[KeyPgCast cast]]( //typename// [[KeyPgPtr ptr]], 0 )->//fieldname// )	
+##
+{{fbdoc item="usage"}}##
+	//result// = **Offsetof**( //typename//, //fieldname// )
+##
+{{fbdoc item="param"}}
+	##//typename//##
+		Name of the type as defined using the ##[[KeyPgType Type...End Type]]## statments.
+	##//fieldname//##
 		Name of the field as defined within the type.
 
 {{fbdoc item="desc"}}
-	OFFSETOF will return the location //fieldname// as offset in bytes from the beginning of //typename//.
+	##**Offsetof**## will return the location ##//fieldname//## as offset in bytes from the beginning of ##//typename//##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-Option Explicit
-
-Type MyType
+%%(qbasic)Type MyType
   x as Single
   y As Single
   Union
@@ -42,7 +43,7 @@ OffsetOf i =  8
 	- New to FreeBasic.
 
 {{fbdoc item="see"}}
-	- [[KeyPgType TYPE...END TYPE]]
-	- [[KeyPgSizeof SIZEOF]]
+	- ##[[KeyPgType Type...End Type]]##
+	- ##[[KeyPgSizeof Sizeof]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -23,7 +23,7 @@ Waits until a specified time has elapsed, or a key is pressed.
 
 	Call SLEEP with 25ms or less to release time-slice when waiting for user input or looping inside a thread.
 
-	SLEEP does not clear the keyboard buffer and any keys pressed during a call to SLEEP are retained and can be read using [[KeyPgInkey Inkey$]].
+	SLEEP does not clear the keyboard buffer and any keys pressed during a call to SLEEP are retained and can be read using [[KeyPgInkey Inkey$]].  In order to wait for a key press, and remove the key from the buffer, GETKEY can be used instead.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

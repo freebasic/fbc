@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DEFSNG"}}
-----
+{{fbdoc item="title" value="DEFSNG"}}----
 Sets a default data type for variables
 
 {{fbdoc item="syntax"}}##
@@ -14,7 +13,7 @@ Sets a default data type for variables
 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 defsng s-z
 dim sNumber, yNumber
 %%
@@ -29,4 +28,4 @@ dim sNumber, yNumber
 	- ##[[KeyPgDefstr Defstr]]##
 	- ##[[KeyPgSingle Single]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -10,19 +10,23 @@ Operator to assign a value to a variable.
 	The equal sign symbol is used both for assignment, and  ##[[KeyPgEqual = (Equality) Operator]]##. To avoid confusion the optional ##[[KeyPgLet Let]]## keyword may be used.
 
 {{fbdoc item="ex"}}
+%%(qbasic)
+dim i as integer
+i = 420    ' <- this is the assignment operator
+
+if  i = 69 then   '<-this is the equivalence operator 
+  print "ERROR: i should equal 420"
+  end -1
+end if
+
+print "All is good."
+end 0
+%%
 
 %%(qbasic)
-  dim i as integer
-   i = 420    ' <- this is the assignment operator
-  LET i=300 ' <-alternate syntax
-  
-   if  i = 69 then   '<-this is the equivalence operator 
-	  print "ERROR: i should equal 420"
-	  end -1
-   end if
-
-   print "All is good."
-   end 0
+' compile with -lang deprecated or qb
+dim i as integer
+LET i = 300 ' <-alternate syntax
 %%
 
 {{fbdoc item="diff"}}

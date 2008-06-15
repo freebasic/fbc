@@ -14,7 +14,7 @@ Control flow statement to return from a procedure or Gosub
 	When compiling with the -lang qb switch, ##**Return**## can only be used to return from a ##[[KeyPgGosub Gosub]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang qb
 print "Let's Gosub!"
 gosub MyGosub
 print "Back from Gosub!"
@@ -26,11 +26,7 @@ print "In Gosub!"
 return
 %%
 
-%%(qbasic)
-option byval
-option explicit
-
-type rational_number                   '' simple rational number type
+%%(qbasic)type rational_number                   '' simple rational number type
    numerator as integer
    denominator as integer
 end type
@@ -57,7 +53,7 @@ print str( r1.numerator ) ; "/" ; str( r1.denominator ) ; " * " ;
 print str( r2.numerator ) ; "/" ; str( r2.denominator ) ; " = " ;
 print str( r3.numerator ) ; "/" ; str( r3.denominator )
 
-sleep
+sleep 
 end 0
 %%
 

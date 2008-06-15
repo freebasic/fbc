@@ -20,10 +20,10 @@ Converts an four byte string to an integer (long) variable.
 	This function is useful to read numeric values from buffers without using a ##[[KeyPgType Type]]## definition.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim a as integer, b as string
 a=4534
-b$=mki$(a)
-print a, cvi(b$)
+b=mki(a)
+print a, cvi(b)
 sleep
 %%
 

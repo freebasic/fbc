@@ -11,7 +11,7 @@ Operator to compare expressions.
 
 Equality comparisons should not be confused with [[ProPgInitialization Initializations]] or [[CatPgOpAssignment Assignments]], both of which also use the "=" symbol:
 
-##%%(qbasic)   dim i as integer = 0    '' initialisation: create and initialise i
+%%(qbasic)   dim i as integer = 0    '' initialisation: create and initialise i
    i = 420                 '' assignment: assign the value of i as 420
 
    if( i = 69 ) then       '' equation: compare the equality of the value of i and 69
@@ -20,14 +20,14 @@ Equality comparisons should not be confused with [[ProPgInitialization Initializ
    end if
 
    end 0
-%%##
+%%
 
 The [[KeyPgInequality <> (Inequality) Operator]] is complement to the = (Equality) Operator, and is functionally identical when combined with the [[KeyPgNot Not (Bit-wise Complement) Operator]]:
 
-##%%(qbasic)
+%%(qbasic)
    if( 420 = 420 ) then print "( 420 = 420 ) is true."
    if not( 69 <> 69 ) then print "not( 69 <> 69 ) is true."
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- none

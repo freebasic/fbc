@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CUNSG"}}
-----
+{{fbdoc item="title" value="CUNSG"}}----
 Converts an expression to unsigned.
 
 {{fbdoc item="syntax"}}##
@@ -24,5 +23,4 @@ print cunsg(value)  '' will print 65535
 {{fbdoc item="see"}}
 	- ##[[KeyPgCsign Csign]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
-
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

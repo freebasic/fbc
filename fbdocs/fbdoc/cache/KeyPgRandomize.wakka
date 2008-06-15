@@ -1,12 +1,11 @@
-{{fbdoc item="title" value="RANDOMIZE"}}
-----
+{{fbdoc item="title" value="RANDOMIZE"}}----
 Seeds the random number generator.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Randomize** ( [[KeyPgByval byval]] //seed// [[KeyPgAs as]] [[KeyPgDouble double]] = -1 )
 ##
 {{fbdoc item="usage"}}##
-	RANDOMIZE [ //seed// ]
+	**Randomize** [ //seed// ]
 ##
 {{fbdoc item="param"}}
 	##//seed//##
@@ -29,4 +28,4 @@ randomize timer
 {{fbdoc item="see"}}
 	- ##[[KeyPgRnd Rnd]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

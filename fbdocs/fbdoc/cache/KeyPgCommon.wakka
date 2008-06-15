@@ -31,7 +31,10 @@ sub initme()
   foo(2) = foo(1)*2
 end sub
 %%
-
+Output:
+%%
+ 3.141592653589793           1.047197551196598           2.094395102393195
+%%
 {{fbdoc item="diff"}}
 	- The arrays will be always dynamic.
 	- /blockname/ is not needed and must be removed because the order of declaration no longer matters, only the symbol names.

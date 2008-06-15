@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CSIGN"}}
-----
+{{fbdoc item="title" value="CSIGN"}}----
 Converts an expression to signed.
 
 {{fbdoc item="syntax"}}##
@@ -25,5 +24,4 @@ print csign(value)  '' will print -1
 {{fbdoc item="see"}}
 	- ##[[KeyPgCunsg Cunsg]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
-
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

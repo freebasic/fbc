@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="POINTER"}}
-----
+{{fbdoc item="title" value="POINTER"}}----
 A variable declaration type modifier
 
 {{fbdoc item="syntax"}}##
@@ -25,4 +24,4 @@ print *p
 {{fbdoc item="see"}}
 	- ##[[KeyPgPtr Ptr]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

@@ -22,7 +22,7 @@ Temporarily transfers execution to an external program.
 	Transfers control over to an external program. When the program exits, execution resumes immediately after the call to **Exec**.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 'A Windows based example but the same idea applies to Linux
 CONST exename = "NoSuchProgram.exe"
 CONST cmdline = "arg1 arg2 arg3"
@@ -33,7 +33,7 @@ IF result = -1 THEN
 ELSE
 	PRINT "Exit code:"; result
 END IF
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic

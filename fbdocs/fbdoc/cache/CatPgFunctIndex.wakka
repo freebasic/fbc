@@ -181,10 +181,12 @@
 	- {{fbdoc item="keyword" value="KeyPgLib|LIB"}}
 	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
 	- {{fbdoc item="keyword" value="KeyPgOverload|OVERLOAD"}}
+	- {{fbdoc item="keyword" value="KeyPgProperty|PROPERTY"}}
 	- {{fbdoc item="keyword" value="KeyPgPascal|PASCAL"}}
 	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgSub|SUB"}}
 	- {{fbdoc item="keyword" value="KeyPgStdcall|STDCALL"}}
+	- {{fbdoc item="keyword" value="KeyPgThis|THIS"}}
 	- {{fbdoc item="keyword" value="KeyPgVaArg|VA_ARG"}}
 	- {{fbdoc item="keyword" value="KeyPgVaFirst|VA_FIRST"}}
 	- {{fbdoc item="keyword" value="KeyPgVaNext|VA_NEXT"}}
@@ -199,9 +201,9 @@
 	- {{fbdoc item="keyword" value="KeyPgDrawString|DRAW STRING"}}
 	- {{fbdoc item="keyword" value="KeyPgFlip|FLIP"}}
 	- {{fbdoc item="keyword" value="KeyPgGetgraphics|GET (Graphics)"}}
-	- {{fbdoc item="keyword" value="KeyPgImageconvertrow|IMAGECONVERTROW"}}
+	- {{fbdoc item="keyword" value="KeyPgImageConvertRow|IMAGECONVERTROW"}}
 	- {{fbdoc item="keyword" value="KeyPgImagecreate|IMAGECREATE"}}
-	- {{fbdoc item="keyword" value="KeyPgImagedestroy|IMAGEDESTROY"}}
+	- {{fbdoc item="keyword" value="KeyPgImageDestroy|IMAGEDESTROY"}}
 	- {{fbdoc item="keyword" value="KeyPgLinegraphics|LINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPaint|PAINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPalette|PALETTE"}}
@@ -214,6 +216,7 @@
 	- {{fbdoc item="keyword" value="KeyPgRgb|RGB"}}
 	- {{fbdoc item="keyword" value="KeyPgRgba|RGBA"}}
 	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN"}}
+	- {{fbdoc item="keyword" value="KeyPgScreencontrol|SCREENCONTROL"}}
 	- {{fbdoc item="keyword" value="KeyPgScreencopy|SCREENCOPY"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenevent|SCREENEVENT"}}
 	- {{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}
@@ -319,14 +322,15 @@
 
 ==OS / SHELL==
 	- {{fbdoc item="keyword" value="KeyPgChdir|CHDIR"}}
-	- {{fbdoc item="keyword" value="KeyPgDir|DIR"}}
 	- {{fbdoc item="keyword" value="KeyPgCommand|COMMAND"}}
+	- {{fbdoc item="keyword" value="KeyPgCurdir|CURDIR"}}
+	- {{fbdoc item="keyword" value="KeyPgDir|DIR"}}
 	- {{fbdoc item="keyword" value="KeyPgEnviron|ENVIRON"}}
 	- {{fbdoc item="keyword" value="KeyPgExec|EXEC"}}
 	- {{fbdoc item="keyword" value="KeyPgExepath|EXEPATH"}}
 	- {{fbdoc item="keyword" value="KeyPgKill|KILL"}}
-	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
 	- {{fbdoc item="keyword" value="KeyPgMkdir|MKDIR"}}
+	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
 	- {{fbdoc item="keyword" value="KeyPgRmdir|RMDIR"}}
 	- {{fbdoc item="keyword" value="KeyPgRun|RUN"}}
 	- {{fbdoc item="keyword" value="KeyPgSetenviron|SETENVIRON"}}
@@ -344,6 +348,8 @@
 
 ==PREDEFINED SYMBOLS==
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}} 
+	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}
@@ -475,7 +481,7 @@
 	- {{fbdoc item="keyword" value="KeyPgWbin|WBIN"}}
 	- {{fbdoc item="keyword" value="KeyPgWchr|WCHR"}}
 	- {{fbdoc item="keyword" value="KeyPgWhex|WHEX"}}
-	- {{fbdoc item="keyword" value="KeyPgWoct|OCT"}}
+	- {{fbdoc item="keyword" value="KeyPgWoct|WOCT"}}
 	- {{fbdoc item="keyword" value="KeyPgWstr|WSTR"}}
 
 ==TYPE CASTING/CONVERSION==
@@ -493,7 +499,6 @@
 	- {{fbdoc item="keyword" value="KeyPgCuint|CUINT"}}
 	- {{fbdoc item="keyword" value="KeyPgCulngint|CULNGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgCunsg|CUNSG"}}
-	- {{fbdoc item="keyword" value="KeyPgCurdir|CURDIR"}}
 	- {{fbdoc item="keyword" value="KeyPgCushort|CUSHORT"}}
 
 ==USER INPUT==

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="GETKEY"}}
-----
+{{fbdoc item="title" value="GETKEY"}}----
 Returns the ascii code of the first key in the keyboard buffer.
 
 {{fbdoc item="syntax"}}##
@@ -19,7 +18,7 @@ Returns the ascii code of the first key in the keyboard buffer.
 	For a keyword not stopping the program if no key is at the buffer see INKEY$ or GfxLib's ##[[KeyPgMultikey Multikey]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim a as integer
 'it returns the getkey value for each key pressed
 print "press ESC to end"
 do
@@ -36,4 +35,4 @@ loop until a=27
 	- ##[[KeyPgInputnum Input()]]##
 	- ##[[KeyPgMultikey Multikey]]##
 
-{{fbdoc item="back" value="CatPgInput|INPUT"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgInput|User Input"}}

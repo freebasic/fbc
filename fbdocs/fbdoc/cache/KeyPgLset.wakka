@@ -9,10 +9,10 @@ For compatibility with QBasic, LSET can too copy an user defined variable into a
 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-buffer$ = space$(10)
-lset buffer$, "91.5"
-print "-["; buffer$; "]-"
+%%(qbasic)dim buffer as string
+buffer = space$(10)
+lset buffer, "91.5"
+print "-["; buffer; "]-"
 %%
 
 %%(qbasic)

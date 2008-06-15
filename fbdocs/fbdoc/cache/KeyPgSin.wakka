@@ -19,7 +19,7 @@ Function that returns the sine of a number.
 	 The argument ##//number//## is measured in [[TutMathAngles radians]] (not [[TutMathAngles degrees]]). The required ##//number//## argument can be any valid numeric expression. If ##//number//## is an uninitialized variable, zero is returned.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 CONST PI AS DOUBLE = 3.1415926535897932
 DIM a AS DOUBLE
 DIM r AS DOUBLE
@@ -28,14 +28,13 @@ r = a * PI / 180	'Convert the degrees to Radians
 PRINT ""
 PRINT "The sine of a" ; a; " degree angle is"; SIN ( r ) 
 SLEEP
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%
 Please enter an angle in degrees: 30
-
-The sine of a 30 degree angle is 0.5
-%%##
+The sine of a 30 degree angle Is 0.5
+%%
 
 {{fbdoc item="diff"}}
 	- None

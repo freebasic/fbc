@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="STR"}}
-----
+{{fbdoc item="title" value="STR"}}----
 Converts a numeric expression to a ##[[KeyPgStringtype String]]##.
 
 {{fbdoc item="syntax"}}##
@@ -32,5 +31,4 @@ print a, b
 	- ##[[KeyPgChr Chr]]##
 	- ##[[KeyPgAsc Asc]]##
 
-{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}
-
+{{fbdoc item="back" value="CatPgString|String Functions"}}

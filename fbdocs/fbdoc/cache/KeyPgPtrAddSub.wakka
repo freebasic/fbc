@@ -12,13 +12,9 @@ Usage of addition or subtraction on a pointer
 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-Option Explicit 'This ensures we can only have declared variables
-
-Dim a(10) As Integer
+%%(qbasic)Dim a(10) As Integer
 Dim pa As Integer Ptr
 Dim i As Integer
-
 
 For i = 0 To 10
 	a(i) = i 'Here we place the numbers 0 through 10 into our integer array.

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="MKS"}}
-----
+{{fbdoc item="title" value="MKS"}}----
 Does a binary copy from a ##[[KeyPgSingle single]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes.
 
 {{fbdoc item="syntax"}}##
@@ -22,10 +21,10 @@ Does a binary copy from a ##[[KeyPgSingle single]]## variable to a ##[[KeyPgStri
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-dim n as single
+dim n as single, e as string
 n = 1.2345
-e$ = mks(n)
-print n,cvs(n)
+e = mks(n)
+print n, cvs(e)
 %%
 
 {{fbdoc item="diff"}}
@@ -40,4 +39,4 @@ print n,cvs(n)
 	- ##[[KeyPgCvl Cvl]]##
 	- ##[[KeyPgCvs Cvs]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

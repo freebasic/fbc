@@ -12,11 +12,11 @@
 	//n// is a FB file handle that must be free.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)Dim a as string
 OPEN ERR for input  AS #1
 print #1,"Please write something and press ENTER"
-line input #1,a$
-PRINT #1, "You wrote";a$
+line input #1, a 
+PRINT #1, "You wrote"; a
 CLOSE
 sleep
 %%

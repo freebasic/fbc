@@ -22,10 +22,10 @@ Converts an four byte string to an integer variable.
 	This function can also be used to convert 32 bit integer values from a memory or file buffer without the need for a ##[[KeyPgType ]]## structure.  However, just as with the type structure, special care should be taken when using ##**Cvi**## to convert strings that have been read from a buffer.  The ##[[KeyPgCvi Cvi]]## and ##[[KeyPgMki Mki$]]## functions are processor dependent.  That is, they will return different results depending on the endianness of the processor.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim a as integer, b as string
 a=4534
-b$=mki$(a)
-print a, cvi(b$)
+b=mki$(a)
+print a, cvi(b)
 sleep
 %%
 

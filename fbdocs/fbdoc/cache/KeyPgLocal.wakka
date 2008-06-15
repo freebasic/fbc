@@ -17,20 +17,23 @@ Error handling statement to set the current error handler.
 	Notice the program must be compiled with -e or -ex option for the QB-like error handling to work.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' compile with -lang deprecated or qb
 declare sub foo
+
 foo
 print "ok"
 sleep
 
 sub foo
-on local error goto fail
-open "xzxwz.zwz" for input as #1
-on local error goto 0
-exit sub
-fail:                  'here starts the error handler
-print "Error "err   'just print the error number
-sleep
+  dim errno as integer
+  on local error goto fail
+  open "xzxwz.zwz" for input as #1
+  on local error goto 0
+  exit sub
+fail:                  ' here starts the error handler
+  errno = err
+  print "Error "; errno      ' just print the error number
+  sleep
 end sub
 %%
 {{fbdoc item="diff"}}

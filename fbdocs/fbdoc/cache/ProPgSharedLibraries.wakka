@@ -1,0 +1,67 @@
+{{fbdoc item="title" value="Shared Libraries"}}----
+A shared library is compiled code that can loaded and used later used when running an executable.
+
+When the compiler makes an executable, the basic source files are first turned in to object files.  The object files are then linked together to make an executable.  A shared library is much like a static library in that it contains object files.  But a shared library is also like an executable in that it only gets loaded when the executable is running.  
+
+The library is referred to as shared, because the code in the library is loaded by an executable at runtime and can be loaded by more than one executable, even though there might only be one copy of the shared library.
+
+Once the library is made, we can then use the code that it contains just as if we were compiling the source directly with our program.
+
+Following is a simple example of creating a shared library using these three files:
+	- ##mylib.bas## - the source for the library
+	- ##mylib.bi## - the header for the library
+	- ##mytest.bas## - a test program
+
+Our library will be a single module providing a single function:
+
+%%(qbasic)
+'' mylib.bas
+'' compile with: fbc -dll mylib.bas
+
+'' Add two numbers together and return the result
+public function Add2( byval x as integer, byval y as integer ) as integer
+  return( x + y )
+end function
+%%
+Compile the library with:
+	##fbc -dll mylib.bas##
+
+The ##-dll## option tells the compiler to take the source code, ##mylib.bas##, and turn it in to an object file ##mylib.o##, then store the object file in to a shared library.  The name of the shared library will have a ##.so## extension or ##.dll## extension depending on if the platform is the linux or windows version.  A library might contain many modules (source files) each with many functions, but for this simple example, it is just one each.
+
+To make use of the library in some other source code, we need some way of telling the compiler what exactly is in the library.  A good way to do this is to put the declarations ( also called an interface, or API ) for the library in to a header file.
+
+%%(qbasic)
+'' mylib.bi
+#inclib "mylib"
+declare function Add2( byval x as integer, byval y as integer ) as integer
+%%
+There is no need to compile the header.  We want this in its source form so it can be included with other source files.  The ##[[KeyPgInclib #inclib]]## statement will tell the compiler the name of a shared library that we need to link with at runtime running an executable that needs it.
+
+With our library (.dll / .so file) and a header (.bi file) we can try them out in a test program:
+
+%%(qbasic)
+'' mytest.bas
+'' compile with: fbc mytest.bas
+#include once "mylib.bi"
+print Add2(1,2)
+%%
+The ##[[KeyPgInclude #include]]## statement tells the compiler to include the source code from ##mylib.bi## just as if we had typed it in to the original source.  With the way we have written our include file, it tells the compiler everything it needs to know about the library.
+
+We compile this with:
+	##fbc mytest.bas##
+
+Then when we run the ##mytest## executable, we should get the result of:
+	##3##
+
+More than one source module can be used when making a library.  And basic programs can use more than one library by including each needed header.  Some libraries are so large that they might use several headers.  On very large projects, making shared libraries out of some code modules that seldom change can improve compile times and link times dramatically.
+
+Shared libraries can optionally contain debugging information specified with the '-g' option.
+
+Object files, and therefore shared libraries, are platform specific and in some cases specific to a particular version of the compiler and FreeBASIC run-time library.
+
+{{fbdoc item="see"}}
+	- [[ProPgStaticLibraries Static Libraries]]
+	- ##[[KeyPgInclib #inclib]]##
+	- ##[[KeyPgInclude #include]]##
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -11,7 +11,7 @@
 	After being defined with the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command, variables can be altered and used as variables wherever their [[CatPgStdDataTypes Standard Data Types]] are similar.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)' compile with -lang qb or deprecated
 DECLARE SUB PrintConstants()
 
 DIM FirstNumber AS INTEGER
@@ -23,13 +23,11 @@ SecondNumber = 2
 PrintConstants ()
 print FirstNumber, SecondNumber, ThirdNumber 'This will print 1 2 0
 
-
 SUB PrintConstants ()
 	dim ThirdNumber AS INTEGER
 	ThirdNumber = 3
 	print FirstNumber, SecondNumber, ThirdNumber 'This will print 0 2 3
 END SUB
-
 %%
 
 {{fbdoc item="see"}}

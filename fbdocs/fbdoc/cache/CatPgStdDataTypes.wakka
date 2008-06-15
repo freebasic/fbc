@@ -24,6 +24,11 @@
 	- {{fbdoc item="keyword" value="KeyPgZstring|ZSTRING (Null-terminated strings)"}}
 	- {{fbdoc item="keyword" value="KeyPgWstring|WSTRING (Wide-character strings)"}}
 
+==Pointers==
+	- {{fbdoc item="keyword" value="KeyPgPointer|POINTER"}}
+	- {{fbdoc item="keyword" value="KeyPgPtr|PTR"}}
+
+
 >>
 
 ::c::

@@ -1,19 +1,20 @@
-{{fbdoc item="title" value="BYVAL"}}
-----
+{{fbdoc item="title" value="BYVAL"}}----
 Declaration specifier to explicitly pass a parameter by value
 
 {{fbdoc item="syntax"}}##
-	**Byval** //param1// [[KeyPgAs as]] [[DataType DataType]]
+	**Byval** //param// [[KeyPgAs as]] [[DataType datatype]]
 ##
 {{fbdoc item="usage"}}##
-	[ [[KeyPgDeclare declare]] ] [[KeyPgSub sub]] | [[KeyPgFunction function]] //Name// ( **Byval** //param1// [[KeyPgAs as]] [[DataType DataType]]  )
+	[ [[KeyPgDeclare declare]] ] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc_name// ( **Byval** //param// [[KeyPgAs as]] [[DataType datatype]]  )
 ##
 {{fbdoc item="desc"}}
-	##**Byval**## in a parameter list of a declare statement causes a copy of the variable to be passed to the procedure (either sub or function) by its value rather than the usual way by sending the address to the value.
+	##**Byval**## in a parameter list of a declare statement causes a copy of the variable to be passed to the procedure (for example, a sub or function) by its value.
 
 	This means that if you pass say the value of the variable 'x' then x cannot be modified in anyway, where as if you send the address the procedure could modify the value of 'x' to anything.
 
 	For string arguments, ##**Byval**## has a special meaning: it passes a pointer to the string, while BYREF passes the Basic string descriptor. This behavior allows passing a ##[[KeyPgStringtype String]]## to C procedures. The string passed this way should not be changed by the calling ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]##, as the string descriptor would not be updated. Passing ##[[KeyPgStringtype String]]## ##**Byval**## should be avoided,  ##[[KeyPgZstring Zstring]]## is more suited for this purpose.
+
+	In -lang fb dialect, ##**Byval**## is the default parameter passing convention.
 
 	Opposite of ##[[KeyPgByref Byref]]##.
 
@@ -34,10 +35,10 @@ End
 %%
 
 {{fbdoc item="diff"}}
-	- 
+	- QB only used BYVAL in declarations to non-Basic subroutines
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDeclare Declare]]##
 	- ##[[KeyPgByref Byref]]##
 
-{{fbdoc item="back" value="CatPgClause|CLAUSE"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

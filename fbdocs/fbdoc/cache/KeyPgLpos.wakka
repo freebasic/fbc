@@ -19,13 +19,16 @@ Returns the number of characters sent to the printer port in the last ##[[KeyPgL
 	Used to determine, from the last ##[[KeyPgLprint Lprint]]##, how many characters were sent to the printer port.
 
 {{fbdoc item="ex"}}
-%%(qbasic) DIM test AS STRING = "LPrint Example test"
+%%(qbasic)' compile with -lang deprecated or qb
+DIM test AS STRING = "LPrint Example test"
 
 PRINT "Sending '" + test + "' to LPT1 (default)"
 LPRINT test
-PRINT "LPT1 last recieved " + LPOS(1) + " characters" + chr$(10) + chr$(13) + "String sent was " + len(test) + " characters long"
+PRINT "LPT1 last recieved " + Str(LPOS(1)) + " characters"
+PRINT "String sent was " + Str(len(test)) + " characters long"
 
-SLEEP%%
+SLEEP
+%%
 
 {{fbdoc item="diff"}}
 	- None

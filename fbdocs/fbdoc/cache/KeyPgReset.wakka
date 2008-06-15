@@ -5,11 +5,11 @@ Closes all open files.
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Reset** ( )
 ##
 {{fbdoc item="usage"}}##
-	reset
+	**Reset**
 ##
 
 {{fbdoc item="desc"}}
-Closes all disk files.
+	Closes all disk files.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -19,7 +19,7 @@ reset
 %%
 
 {{fbdoc item="diff"}}
-	-
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen Open]]##

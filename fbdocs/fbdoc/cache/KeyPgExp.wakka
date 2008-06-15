@@ -1,6 +1,5 @@
-{{fbdoc item="title" value="EXP"}}
-----
-Returns e raised to the power of a given number.
+{{fbdoc item="title" value="EXP"}}----
+Returns //**e**// raised to the power of a given number.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Exp** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
@@ -19,7 +18,7 @@ Returns e raised to the power of a given number.
 	The mathematical constant //e// is the base of the ##[[KeyPgLog Log]]## and is a transcendental number. The value of //e//, to twenty places is. 2.7182818284590452354. The required ##//number//## argument can be any valid numeric expression within range of the function. If ##//number//## is too large, FreeBASIC returns infinity. If ##//number//## is too small, FreeBASIC returns zero. The exact limit on //number// is based on processer. If ##//number//## is an uninitialized variable, 1 is returned.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 'Compute Continuous Compound Interest
 DIM r AS DOUBLE
 DIM p AS DOUBLE
@@ -33,16 +32,15 @@ INPUT "Please enter the number of years to invest: "; t
 a = p * EXP ( r * t )
 PRINT ""
 PRINT "After";t;" years, at an interest rate of"; r * 100; "%, your initial investment of"; p; " would be worth";a
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%
 Please enter the initial investment (principal amount): 100
-Please enter the annual interest rate (as a decimal): .08
-Please enter the number of years to invest: 20
-
+Please enter the annual interest rate (As a decimal): .08
+Please enter the number of years To invest: 20
 After 20 years, at an interest rate of 8%, your initial investment of 100 would be worth 495.3032424395115
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- None
@@ -50,4 +48,4 @@ After 20 years, at an interest rate of 8%, your initial investment of 100 would 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLog Log]]##
 
-{{fbdoc item="back" value="CatPgMath|Math"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgMath|Math"}}

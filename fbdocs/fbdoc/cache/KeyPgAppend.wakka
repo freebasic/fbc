@@ -37,7 +37,7 @@ Specifies file to be opened for append mode.
 	##//slot//## Is a valid FB file slot number (in the range 1-255) not being used for any other file presently open. The slot identifies the file for the rest of file operations. A free slot can be found using the ##[[KeyPgFreefile Freefile]]## function.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim i as integer
 FOR i = 1 to 10
 	OPEN "test.txt" FOR APPEND as #1
 	PRINT #1, "extending test.txt"

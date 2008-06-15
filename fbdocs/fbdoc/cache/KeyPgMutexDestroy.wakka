@@ -17,7 +17,7 @@ Destroys a mutex.
 	    See ##[[KeyPgMutexCreate Mutexcreate]]## for more general information on mutexes.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 '' Threading synchronization using Mutexes
 '' If you comment out the lines containing "MutexLock" and "MutexUnlock",
 '' the threads will not be in sync and some of the data may be printed
@@ -71,7 +71,7 @@ END SUB
 
 '' Teletype unfurls some text across the screen at a given location
 SUB teletype (BYVAL text AS STRING, BYVAL x AS INTEGER, BYVAL y AS INTEGER)
-	DIM i AS INTEGER
+	DIM i AS INTEGER, a AS INTEGER
 	DIM text_length AS INTEGER
 
 	text_length = LEN(text)
@@ -89,7 +89,7 @@ SUB teletype (BYVAL text AS STRING, BYVAL x AS INTEGER, BYVAL y AS INTEGER)
 	    SLEEP 25
    NEXT a
 END SUB
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- This statement is new to FreeBASIC

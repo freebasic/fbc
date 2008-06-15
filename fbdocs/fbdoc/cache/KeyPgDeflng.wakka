@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DEFLNG"}}
-----
+{{fbdoc item="title" value="DEFLNG"}}----
 Sets a default data type for variables
 
 {{fbdoc item="syntax"}}##
@@ -13,7 +12,7 @@ Sets a default data type for variables
 	This will make 'lNumber' a ##[[KeyPgLong Long]]## integer number since it starts with l.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 deflng l
 dim lNumber ' implicit: As Long
 
@@ -34,5 +33,4 @@ print len(lNumber) ' Displays 4, the number of bytes in a long.
 	- ##[[KeyPgDefuint Defuint]]##
 	- ##[[KeyPgDefushort Defushort]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
-
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

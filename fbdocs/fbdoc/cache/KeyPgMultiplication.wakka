@@ -19,8 +19,8 @@ SLEEP
 %%
 
 The output would look like:
-%%(qbasic)
- 20
+%%
+20
 %%
 
 {{fbdoc item="diff"}}

@@ -23,7 +23,7 @@ Function to return a square root of a number.
 	This is the same as raising the argument //number// to the one-half power ( ^ 1/2). The required ##//number//## argument can be any valid numeric expression greater than zero.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 DIM a AS SINGLE
 DIM b AS SINGLE
 
@@ -32,15 +32,15 @@ INPUT "Please enter another side of a right triangle: ",b
 PRINT ""
 PRINT "The hypotenuse of the triangle has a length of"; SQR ( a * a + b * b )
 
-SLEEP%%##
+SLEEP
+%%
 
 The output would look like:
-##%%(qbasic)
-Please enter one side of a right triangle: 3
-Please enter another side of a right triangle: 4
-
+%%
+Please enter one side of a Right triangle: 3
+Please enter another side of a Right triangle: 4
 The hypotenuse of the triangle has a length of 5
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- None

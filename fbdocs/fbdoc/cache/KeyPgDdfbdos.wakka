@@ -10,15 +10,10 @@ Intrinsic define set by the compiler.
 	It can be used to compile parts of the program only if the target is DOS
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-#IFDEF __FB_DOS__
-
-  ...instructions only for DOS...
-
+%%(qbasic)#IFDEF __FB_DOS__
+  '...instructions only for DOS...
 #ELSE
-  
- ...instructions not for DOS...
-
+  '...instructions not for DOS...
 #ENDIF 
 %%
 

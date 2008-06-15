@@ -12,7 +12,7 @@ Statement to set the current system time
 		the new time to set
 
 {{fbdoc item="ret"}}
-	Returns zero on success or non-zero on failure
+	Returns zero on success or non-zero on failure on all ports except DOS.
 
 {{fbdoc item="desc"}}
 	To set the time, format the date and send to ##Settime## in one of the following formats: "hh:mm:ss",  "hh:mm", or "hh" (hh is the hour, mm is the minute, and ss is the second).

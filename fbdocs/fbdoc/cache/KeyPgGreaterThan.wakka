@@ -11,10 +11,10 @@ Operator to compare expressions.
 
 The [[KeyPgLessThanOrEqual <= (Less-than Or Equal) Operator]] is complement to the > (Greater-than) Operator, and is functionally identical when combined with the [[KeyPgNot Not (Bit-wise Complement) Operator]]:
 
-##%%(qbasic)
+%%(qbasic)
    if( 420 > 69 ) then print "( 420 > 69 ) is true."
    if not( 420 <= 69 ) then print "not( 420 <= 69 ) is true."
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- none

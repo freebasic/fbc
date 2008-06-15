@@ -1,0 +1,47 @@
+{{fbdoc item="title" value="This"}}----
+Hidden instance parameter passed to nonstatic member functions in a ##[[KeyPgType Type]]## or CLASS
+
+{{fbdoc item="syntax"}}##
+	**this**.//fieldname//
+//or//
+	[[KeyPgWith With]] **this**
+		.//fieldname//
+	End With
+##
+{{fbdoc item="desc"}}
+	##**This**## is a hidden parameter passed to all nonstatic member functions of a ##[[KeyPgType Type]]## or CLASS.  Nonstatic member functions are procedures declared inside the body of a ##[[KeyPgType Type]]## or CLASS and include ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, assignment or cast ##[[KeyPgOperator Operator]]##, and ##[[KeyPgProperty Property]]## procedures.
+
+	The ##**This**## parameter has the same data type as the ##[[KeyPgType Type]]## or CLASS in which the procedure is declared.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+TYPE sometype
+	DECLARE SUB MyCall()
+	value AS INTEGER
+END TYPE
+
+DIM example AS sometype
+
+'' Set element test to 0
+example.value = 0
+print example.value
+
+example.MyCall()
+
+'' Output should now be 10
+print example.value
+
+END 0
+
+SUB sometype.MyCall()
+	This.value = 10
+END SUB
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgType Type...End Type]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

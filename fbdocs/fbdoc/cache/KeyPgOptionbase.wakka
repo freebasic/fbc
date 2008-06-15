@@ -1,26 +1,29 @@
-{{fbdoc item="title" value="OPTION BASE"}}
-----
-{{fbdoc item="syntax"}}
-	OPTION BASE {0 | 1}
+{{fbdoc item="title" value="OPTION BASE"}}----
+Compiler switch to set the default base index for arrays
 
+{{fbdoc item="syntax"}}##
+	**Option Base** {0 | 1}
+##
 {{fbdoc item="desc"}}
 	Sets the default lower bound of an array subscript. For example:
 
-	option base 1
-	dim foo(10)
-
-	foo is now an array that ranges from foo(1) to foo(10). This is the same as dim foo(1 to 10). If option base 0 is used, foo would range from 0 to 10.
-
-{{fbdoc item="ex"}}
-	%%(qbasic)
-	option base 1
-	dim foo(10)
+	%%(qbasic)option base 1
+dim foo(10)
 	%%
 
+	foo is now an array that ranges from ##foo(1)## to ##foo(10)##. This is the same as ##dim foo(1 to 10)##. If ##**Option Base** 0## is used, foo would range from 0 to 10.
+
+{{fbdoc item="ex"}}
+	%%(qbasic)'' Compile with -lang deprecated or qb
+option base 1
+dim foo(10)
+%%
+
 {{fbdoc item="diff"}}
-	- 
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- 
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgRedim Redim]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}  {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

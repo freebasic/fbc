@@ -65,20 +65,22 @@ Work in Progress: **New pages created for this guide should use the ""ProPg""* p
 
 {{fbdoc item="section" value="Making Binaries"}}
 	- Executables
-	- Static Libraries
-	- Shared Libraries (DLLs)
+	- [[ProPgStaticLibraries Static Libraries]]
+	- [[ProPgSharedLibraries Shared Libraries (DLLs)]]
 
 {{fbdoc item="section" value="Other Topics"}}
+(And topics that need to get placed elsewhere)
 	- [[CptAscii ASCII]]
 	- [[ProPgRadians Radians]]
 	- [[ProPgErrorHandling Error Handling]]
+	- [[ProPgCompOpt Compiler Options]]
 	- External Graphics File Formats
 	- Internal Graphics Formats
-	- [[ProPgCompOpt Compiler Options]]
 	- [[KeyPgAsm Inline ASM]]
 	- [[ProPgErrorHandling Error Handling]]
 	- [[CatPgPreProcess Preprocessor]]
 	- [[CatPgDddefines Intrinsic Defines]]
+	- [[CatPgProcedures Procedures]]
 
 	
 >>

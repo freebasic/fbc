@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="WBIN"}}
-----
+{{fbdoc item="title" value="WBIN"}}----
 Returns the binary wstring (unicode) representation of the integer //number//.
 
 {{fbdoc item="syntax"}}##
@@ -42,4 +41,4 @@ PRINT WBIN(54321, 20) '' displays 00001101010000110001
 	- ##[[KeyPgWhex Whex]]##
 	- ##[[KeyPgWoct Woct]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

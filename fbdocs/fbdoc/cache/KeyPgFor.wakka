@@ -7,7 +7,7 @@ Control flow statement or open statement clause depending on usage
 	Open [ //device// ] "//filename//" **For** //filemode// As #handle
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgForNext For...Next]]##
+	- ##[[KeyPgFornext For...Next]]##
 	- ##[[KeyPgOpen Open]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

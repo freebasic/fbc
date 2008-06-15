@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="INT"}}
-----
+{{fbdoc item="title" value="INT"}}----
 Function to return the integer part of a number
 
 {{fbdoc item="syntax"}}##
@@ -31,4 +30,4 @@ Print int(-1.9) '' will print -2
 	- ##[[KeyPgFix Fix]]##
 	- ##[[KeyPgCint Cint]]##
 
-{{fbdoc item="back" value="CatPgMath|Math"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgMath|Math"}}

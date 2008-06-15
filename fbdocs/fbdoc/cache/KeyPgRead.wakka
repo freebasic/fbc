@@ -18,12 +18,10 @@ Statement to read values stored with the ##[[KeyPgData Data]]## statement
 	The ##[[KeyPgRestore Restore]]## statement resets the next-element pointer to the start of the ##[[KeyPgData Data]]## following the label. This allows to alter the order in which the data is read. 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-
-
-' Create an array of 5 integers and a string to hold the data.
+%%(qbasic)' Create an array of 5 integers and a string to hold the data.
 DIM h(4) AS INTEGER
 DIM hs AS STRING
+DIM read_data as INTEGER
 
 ' Set up to loop 5 times (for 5 numbers... check the data)
 FOR read_data = 0 TO 4
@@ -53,7 +51,6 @@ END
 
 ' Block of data.
 DATA 3, 234, 4354, 23433, 87643, "Bye!"
-
 %%
 
 {{fbdoc item="diff"}}

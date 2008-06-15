@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DEFSTR"}}
-----
+{{fbdoc item="title" value="DEFSTR"}}----
 Sets a default data type for variables
 
 {{fbdoc item="syntax"}}##
@@ -13,13 +12,13 @@ Sets a default data type for variables
 	This will make 'sMessage' a ##[[KeyPgStringtype String]]## since it starts with s.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 defstr s
 dim sMessage
 %%
 
 {{fbdoc item="diff"}}
-	- 
+	- None known
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDefint Defint]]##
@@ -28,4 +27,4 @@ dim sMessage
 	- ##[[KeyPgDefdbl Defdbl]]##
 	- ##[[KeyPgDouble Double]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -22,7 +22,7 @@ Error handling function to return the error number of the last error.
 
 {{fbdoc item="ex"}}
 An example using qbasic style error handling (compile with -ex option)
-%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 on error goto Error_Handler
 error 150
 end
@@ -33,11 +33,11 @@ Error_Handler:
   resume next
 %%
 An example using online error handling 
-%%(qbasic)
+%%(qbasic)dim a as string
 do
-input "Input filename ";a$
-if a$="" then exit do
-open a$ for input as #1
+input "Input filename ";a
+if a="" then exit do
+open a for input as #1
 loop until err=0
 %%
 {{fbdoc item="diff"}}

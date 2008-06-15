@@ -1,13 +1,22 @@
 {{fbdoc item="title" value="LBOUND"}}----
-{{fbdoc item="syntax"}}
-Lbound(array[, dimension])
+Returns the lower bound of an array's dimension
 
+{{fbdoc item="syntax"}}##
+	**Lbound**(//array//[, //dimension//])
+##
+{{fbdoc item="param"}}
+	##//array//##
+		the array to get lower bound of
+	##//dimension//##
+		the dimension to get lower bound of
+
+{{fbdoc item="ret"}}
+	Returns the lowest index that can be used in an array.
+ 
 {{fbdoc item="desc"}}
-Lbound returns the lowest index that can be used in an array.
+	If the second parameter is included, it will determine the dimension of the array to check for the lowest bound.
 
-If the second parameter is included, it will determine the dimension of the array to check for the lowest bound.
-
-Optionally Dimension says what dimension to check the lowest bound. 1 for first dimension, and 2 for second dimension etc.
+	Optionally Dimension says what dimension to check the lowest bound. 1 for first dimension, and 2 for second dimension etc.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -22,15 +31,9 @@ print Lbound(array, 3) 'returns 1
 	- None
 
 {{fbdoc item="see"}}
-	- [[KeyPgCommon COMMON]]
-	- [[KeyPgDim DIM]]
-	- [[KeyPgErase ERASE]]
-	- [[KeyPgExtern EXTERN]]
-	- [[KeyPgLbound LBOUND]]
-	- [[KeyPgRedim REDIM]]
-	- [[KeyPgPreserve PRESERVE]]
-	- [[KeyPgShared SHARED]]
-	- [[KeyPgStatic STATIC]]
-	- [[KeyPgUbound UBOUND]]
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgPreserve Preserve]]##
+	- ##[[KeyPgUbound Ubound]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}

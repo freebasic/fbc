@@ -1,12 +1,11 @@
-{{fbdoc item="title" value="BIT"}}
-----
+{{fbdoc item="title" value="BIT"}}----
 Macro that returns the value of one bit of an integer.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **BIT**( //value//, //bit_number// ) (((//value//) [[KeyPgAnd and]] (1 [[KeyPgShl shl]] (//bit_number//))) > 0)
 ##
 {{fbdoc item="usage"}}##
-	//result// = BIT( //value//, //bit_number// )
+	//result// = **BIT**( //value//, //bit_number// )
 ##
 {{fbdoc item="param"}}
 	##value##
@@ -18,12 +17,12 @@ Macro that returns the value of one bit of an integer.
 	""-1"" if bit ##//bit_number//## is set in ##//value//##, else 0.
 
 {{fbdoc item="desc"}}
-	##BIT## returns -1 if the bit ##//bit_number//## of ##//value//## is 1, returns 0 if bit is 0. ##foo = BIT( bar, 10 )##  is the same as ##foo = (bar and 10 shl 10) > 0##.
+	##**BIT**## returns -1 if the bit ##//bit_number//## of ##//value//## is 1, returns 0 if bit is 0. ##foo = **BIT**( bar, 10 )##  is the same as ##foo = (bar and 10 shl 10) > 0##.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 PRINT BIT(4,2)
-%%##
+%%
 ##%%
 -1
 %%##
@@ -35,4 +34,4 @@ PRINT BIT(4,2)
 	- ##[[KeyPgBitset BITSET]]##
 	- ##[[KeyPgBitreset BITRESET]]##
 
-{{fbdoc item="back" value="CatPgMisc|MISC"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

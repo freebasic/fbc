@@ -10,15 +10,10 @@ Intrinsic define set by the compiler.
 	It can be used to compile parts of the program only if the target is Win32
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-#IFDEF __FB_WIN32__
-
-  ...instructions only for Win32...
-
+%%(qbasic)#IFDEF __FB_WIN32__
+  '...instructions only for Win32...
 #ELSE
-  
- ...instructions not for Win32...
-
+  '...instructions not for Win32...
 #ENDIF 
 %%
 

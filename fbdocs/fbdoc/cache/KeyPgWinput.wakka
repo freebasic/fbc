@@ -1,29 +1,42 @@
 {{fbdoc item="title" value="WINPUT()"}}----
-{{fbdoc item="syntax"}}
-//wstring//=WINPUT(num)
-//wstring//=WINPUT(num,[#]filenum)
+Read a number of characters from console or file
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( //num// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( //num// [[KeyPgAs as]] [[KeyPgInteger integer]], [#]filenum [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype wstring]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Winput**( //num// )
+//or//
+	//result// = **Winput**( //num//, [#]//filenum// )
+##
+{{fbdoc item="param"}}
+	##//num//##
+		number of characters to read
+	##//filenum//##
+		file number of an open file
 
 {{fbdoc item="desc"}}
-Num must be a number 0 to 255 and filenum must be the slot of a file currently open for INPUT 
-The first version waits for the user to input 'num' characters at the keyboard and returns them in a wstring. Extended keys are not read. The characters are not echoed to the screen.
-The second version reads //num// characters from a  text file and updates the pointer
+	The first version waits for the user to input ##//num//## characters at the keyboard and returns them in a wstring. Extended keys are not read. The characters are not echoed to the screen.
+
+	The second version reads ##//num//## characters from a text file and updates the pointer
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-dim a as wstring
+%%(qbasic)dim a as wstring * 1
+
 PRINT "Select a color number" 
 PRINT "1.-BLUE"
 PRINT "2.-RED"
 PRINT "3.-GREEN"
 do
- a$=winput(1)
-loop until a>="1" and a<="3"
+ a=winput(1)
+loop until a>=wstr("1") and a<=wstr("3")
 %%
 
 {{fbdoc item="diff"}}
 	- QB does not support Unicode
 
 {{fbdoc item="see"}}
-~- [[KeyPgInput INPUT]]
+	- ##[[KeyPgInput Input]]##
 
-{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}{{fbdoc item="back" value="CatPgInput|User Input"}}

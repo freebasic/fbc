@@ -7,8 +7,8 @@
 	Swaps the value of two variables.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-' e.g. using swap to order 2 numbers:
+%%(qbasic)' using swap to order 2 numbers:
+dim a as integer, b as integer
 
 input "input a number: "; a
 input "input another number: "; b

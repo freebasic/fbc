@@ -20,11 +20,10 @@ Does a binary copy from a ##[[KeyPgLongint longint]]## variable to a ##[[KeyPgSt
 	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-dim a as longint
-a=4534
-b$=mklongint$(a)
-print a, cvlongint(b$)
+%%(qbasic)dim a as longint, b as string
+a = 4534
+b = mklongint$(a)
+print a, cvlongint(b)
 sleep
 %%
 

@@ -71,19 +71,21 @@ Graphics statement to copy an image on to another image or screen
 
 {{fbdoc item="ex"}}
 	The following example shows how to allocate memory for an image, draw that image using various methods including a custom blender, and free the memory for the image:
-##%%(qbasic)option explicit
-declare function checkered_blend( byval src as uinteger, byval dest as uinteger, byval param as any ptr ) as uinteger
+%%(qbasic)declare function checkered_blend( byval src as uinteger, byval dest as uinteger, byval param as any ptr ) as uinteger
 
-   screen 14, 16                                   '' set 320x240x16 gfx mode
+   screen 14, 32                                   '' set 320x240x32 gfx mode
    
    dim as any ptr sprite
+   dim as integer counter = 0
+   
    sprite = ImageCreate( 32, 32 )                  '' allocate memory for 32x32 sprite
    
-   line sprite, ( 0, 0 )-( 31, 31 ), &HFF0000, BF  '' draw a sprite ...
-   line sprite, ( 0, 0 )-( 31, 31 ), &H00FF00, B
-   line sprite, ( 8, 8 )-( 23, 23 ), &HFF00FF, BF
-   line sprite, ( 1, 1 )-( 30, 30 ), &H0000FF
-   line sprite, ( 30, 1 )-( 1, 30 ), &H0000FF
+   line sprite, ( 0, 0 )-( 31, 31 ), rgba(255, 0, 0, 64), bf  '' draw a sprite ...
+   line sprite, ( 4, 4 )-( 27, 27 ), rgba(255, 0, 0, 192), bf
+   line sprite, ( 0, 0 )-( 31, 31 ), rgb(0, 255, 0), b
+   line sprite, ( 8, 8 )-( 23, 23 ), rgba(255, 0, 255, 64), bf
+   line sprite, ( 1, 1 )-( 30, 30 ), rgba(0, 0, 255, 192)
+   line sprite, ( 30, 1 )-( 1, 30 ), rgba(0, 0, 255, 192)
    
    cls
    dim as integer i : for i = 0 to 63              '' draw the background
@@ -91,26 +93,46 @@ declare function checkered_blend( byval src as uinteger, byval dest as uinteger,
    next i
    
    '' demonstrate all drawing methods ...
-   Put( 8,8 ), sprite, Pset : Locate 3,12 : Print "<- pset"
-   Put Step( 16,24 ), sprite, Preset : Locate 6,12 : Print "<- preset"
-   Put Step( -16,24 ), sprite, And : Locate 9,12 : Print "<- and"
-   Put Step( 16,24 ), sprite, Or : Locate 12,12 : Print "<- or"
-   Put Step( -16,24 ), sprite, Xor : Locate 15,12 : Print "<- xor"
-   Put Step( 16,24 ), sprite, TRANS : Locate 18,12 : Print "<- trans"
-   Put Step( -16,24 ), sprite, ALPHA, 96 : Locate 21,12 : Print "<- alpha"
-   Put Step( 16,24 ), sprite, ADD, 192 : Locate 24,12 : Print "<- add"
-   Put Step( -16,24 ), sprite, CUSTOM, @checkered_blend : Locate 27,12 : Print "<- custom"
+   put( 8,14 ), sprite, pset
+   put step( 16,20 ), sprite, preset
+   put step( -16,20 ), sprite, and
+   put step( 16,20 ), sprite, or
+   put step( -16,20 ), sprite, xor
+   put step( 16,20 ), sprite, trans
+   put step( -16,20 ), sprite, alpha, 96
+   put step( 16,20 ), sprite, alpha
+   put step( -16,20 ), sprite, add, 192
+   put step( 16,20 ), sprite, custom, @checkered_blend, @counter
+   
+   '' print a description near each demo
+   draw string (100, 26), "<- pset"
+   draw string step (0, 20), "<- preset"
+   draw string step (0, 20), "<- and"
+   draw string step (0, 20), "<- or"
+   draw string step (0, 20), "<- xor"
+   draw string step (0, 20), "<- trans"
+   draw string step (0, 20), "<- alpha (uniform)"
+   draw string step (0, 20), "<- alpha (per pixel)"
+   draw string step (0, 20), "<- add"
+   draw string step (0, 20), "<- custom"
    
    ImageDestroy( sprite )                          '' free allocated memory for sprite
    sleep : end 0
 
 '' custom blender function: chequered put
 function checkered_blend( byval src as uinteger, byval dest as uinteger, byval param as any ptr ) as uinteger
-   static CNT
-   dim as uinteger pixel = iif(((CNT and 4)shr 2) XOR ((CNT and 128)shr 7),src,dest) 
-   CNT += 1
+   dim as integer ptr counter
+   dim as uinteger pixel
+   
+   counter = cast(integer ptr, param)
+   pixel = iif(((*counter and 4) shr 2) xor ((*counter and 128) shr 7), src, dest)
+   *counter += 1
    return pixel
-end function%%##
+end function
+%%
+	When run, the code should produce the following image:
+	
+@@{{image url="http://img525.imageshack.us/img525/69/putexampleym6.png"}}@@
 
 {{fbdoc item="diff"}}
 	- The ##TRANS##, ##ALPHA##, ##ADD## and ##CUSTOM## methods are new to FreeBASIC.

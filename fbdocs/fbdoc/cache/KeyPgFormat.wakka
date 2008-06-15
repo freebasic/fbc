@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="FORMAT$"}}
-----
+{{fbdoc item="title" value="FORMAT"}}----
 String function to format a number in a specified format
 
 {{fbdoc item="syntax"}}##
@@ -30,11 +29,11 @@ String function to format a number in a specified format
 		{{table columns="2" cellpadding="1" cells="Symbol ; Description;d; Display the day as a number without leading zeros (1-31);dd; Display the day as a number with leading zeros (01-31);ddd; Display the day as an abbreviation (Sun-Sat);dddd; Display the day as a full name (Sunday-Saturday);ddddd;  Display a serial date number as a complete date (including day, month, and year);m; Display the month as a number without leading zeros (1-12)  if used immediately following h or hh, the minute rather than the month is displayed;mm ; Display the month as a number with leading zeros (01-12) if used immediately following h or hh, the minute rather than the month is displayed;mmm; Display the month as an abbreviation (Jan-Dec);mmmm; Display the month as a full name (January-December);y;Display the year as a two-digit number (00-99);yyyy; Display the year as a four-digit number (1900-2040);h; Display the hour as a number without leading zeros (0-23);hh;Display the hour as a number with leading zeros (00-23);m; Display the minute as a number without leading zeros (0-59) if not used immediately following h or hh, the month rather than the minute is displayed;mm; Display the minute as a number with leading zeros (00-59) if not used immediately following h or hh, the month rather  than the minute is displayed.;s; Display the second as a number without leading zeros (0-59);ss;  Display the second as a number with leading zeros (00-59);ttttt; Display a time serial number as a complete time, including hour, minute, and second;AM/PM (Default) am/pm; Use the 12-hour clock displaying AM or am with am/pm  any hour before noon, PM or pm with any hour between noon  and 11:59;A/P a/p;  Use the 12-hour clock displaying A or a with any hour before noon, P or p with any hour between noon and 11:59 "}}
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%
 Sample numeric formats
-FORMAT (fmt$)                 5             -5            .5
+Format (fmt$)                 5             -5            .5
 	    
-	    Null string                   5             -5            0.5
+	    Null String                   5             -5            0.5
 	    0                             5             -5            1
 	    0.00                          5.00          -5.00         0.50
 	    #,##0                         5             -5            1
@@ -45,13 +44,9 @@ FORMAT (fmt$)                 5             -5            .5
 	    0.00%                         500.00%       -500.00%      50.00%
 	    0.00E+00                      5.00E+00      -5.00E+00     5.00E-01
 	    0.00E-00                      5.00E00       -5.00E00      5.00E-01
-
- Sample Date and Time Formats
-
-The following are examples of date and time formats:
-
-	     FORMAT$ Expression     Display
-
+ Sample Date And Time Formats
+The following are examples of Date And Time formats:
+	     Format$ Expression     Display
 	     m/d/yy                 12/7/58
 	     d-mmmm-yy              7-December-58
 	     d-mmmm                 7-December
@@ -70,4 +65,4 @@ The following are examples of date and time formats:
 	- ##[[KeyPgPrintusing Print Using]]##
 	- ##[[KeyPgStr Str]]##
 
-{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

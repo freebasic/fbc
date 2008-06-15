@@ -15,12 +15,16 @@
 	{{table columns="2" cellpadding="1" cells="value;color;0;BLACK;1;BLUE;2;GREEN;3;CYAN ;4;RED;5;MAGENTA;6;BROWN;7;WHITE;8;GRAY;9;BRIGHT BLUE;10;BRIGHT GREEN ;11; BrIGHT RCYAN;12;BRIGHT RED;13;PINK;14;YELLOW;15;BRIGHT WHITE"}}
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-Example :
+%%(qbasic)dim character_ascii_value as integer
+dim attribute as integer
+dim background as integer
+dim cell_color as integer
+dim row as integer, col as integer
+
 character_ascii_value = SCREEN( row, col )
 attribute = SCREEN( row, col, 1 )
-background=attribute shr 4
-cell_color= attribute and &hf
+background = attribute shr 4
+cell_color = attribute and &hf
 %%
 
 {{fbdoc item="diff"}}

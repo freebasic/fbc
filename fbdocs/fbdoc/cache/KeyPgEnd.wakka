@@ -2,12 +2,12 @@
 Control flow statement to end the program or end a statement block
 
 {{fbdoc item="syntax"}}##
-	**End** { [[KeyPgSub Sub]] | [[KeyPgFunction Function]] | [[KeyPgIfthen If]]  | [[KeyPgSelectcase Select]]  | [[KeyPgType Type]]  | [[KeyPgEnum Enum]]  | [[KeyPgScope Scope]]  | [[KeyPgWith With]]  | [[KeyPgNamespace Namespace]]  | [[KeyPgExtern Extern]]  | [[KeyPgConstructor Constructor]]  | [[KeyPgDestructor Destructor]]  | [[KeyPgOperator Operator]] }
+	**End** { [[KeyPgSub Sub]] | [[KeyPgFunction Function]] | [[KeyPgIfthen If]]  | [[KeyPgSelectcase Select]]  | [[KeyPgType Type]]  | [[KeyPgEnum Enum]]  | [[KeyPgScope Scope]]  | [[KeyPgWith With]]  | [[KeyPgNamespace Namespace]]  | [[KeyPgExtern Extern]]  | [[KeyPgConstructor Constructor]]  | [[KeyPgDestructor Destructor]]  | [[KeyPgOperator Operator]] | [[KeyPgProperty Property]] }
 //or//
 	**End** [ //return_value// ]
 ##
 {{fbdoc item="desc"}}
-	The first syntax is used to signify the end of the most recent code block. The type of the block must be included in the command, one of ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgIfthen If]]##, ##[[KeyPgSelectcase Select]]##, ##[[KeyPgType Type]]##, ##[[KeyPgEnum Enum]]##, ##[[KeyPgScope Scope]]##, ##[[KeyPgWith With]]##, ##[[KeyPgNamespace Namespace]]##, ##[[KeyPgExterncpp Extern]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgOperator Operator]]##.
+	The first syntax is used to signify the end of the most recent code block. The type of the block must be included in the command, one of ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgIfthen If]]##, ##[[KeyPgSelectcase Select]]##, ##[[KeyPgType Type]]##, ##[[KeyPgEnum Enum]]##, ##[[KeyPgScope Scope]]##, ##[[KeyPgWith With]]##, ##[[KeyPgNamespace Namespace]]##, ##[[KeyPgExternCpp Extern]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgOperator Operator]]##, ##[[KeyPgProperty Property]]##.
 
 	The second syntax is used to terminate the program, and return to the OS. An optional return value, an integer, can be specified to return an error code to the system. If no return value is given, a value of 0 is automatically returned.
 
@@ -16,17 +16,13 @@ Control flow statement to end the program or end a statement block
 '' This program stores input from the user in a string, checks the strings length,
 '' by calling valid_string, and either displays the string, or an error message
 
-option explicit   '' force explicit variable declarations
-option byval      '' default passing arguments by value
-option escape     '' allow C string literal escape sequences
-
 function valid_string( s as string ) as integer
    return len( s )
 end function
 
 '' assign input to text string (a string of spaces will input as an empty string)
 dim as string text
-print "Type in some text ( try \"abc\" ): " ;
+print "Type in some text ( try ""abc"" ): " ;
 input text
 
 '' check if string is valid (not empty). If so, print an error message and return
@@ -54,9 +50,10 @@ sleep : end 0
 	- ##[[KeyPgScope Scope]]##
 	- ##[[KeyPgWith With]]##
 	- ##[[KeyPgNamespace Namespace]]##
-	- ##[[KeyPgExterncpp Extern]]##
+	- ##[[KeyPgExternCpp Extern]]##
 	- ##[[KeyPgConstructor Constructor]]##
 	- ##[[KeyPgDestructor Destructor]]##
 	- ##[[KeyPgOperator Operator]]##
+	- ##[[KeyPgProperty Property]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

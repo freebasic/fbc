@@ -11,7 +11,9 @@ Operator to use a string as if it were a zero based array
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-dim a as string="Hello, world!"
+dim a as string = "Hello, world!"
+dim i as integer
+
 for i=0 to len(a)-1
 	print chr(a[i]);
 next

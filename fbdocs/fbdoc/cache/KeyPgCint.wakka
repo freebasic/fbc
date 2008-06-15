@@ -19,7 +19,7 @@ Converts numeric or string expression to an ##[[KeyPgInteger Integer]]##
 ' Using the CINT function to convert a numeric value
 
 'Create an INTEGER variable
-DIM numeric_value AS INTEGER, a$
+DIM numeric_value AS INTEGER
 
 'Convert a numeric value
 numeric_value = CINT(-300.23)

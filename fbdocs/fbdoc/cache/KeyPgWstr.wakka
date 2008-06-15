@@ -1,10 +1,9 @@
-{{fbdoc item="title" value="WSTR"}}
-----
+{{fbdoc item="title" value="WSTR"}}----
 String function to convert number or ASCII to ##[[KeyPgWstring]]##
 
 {{fbdoc item="syntax"}}##
 	**Wstr** (//numerical_expression//) 
-	**Wstr** (//ASCII_String_variable// )
+	**Wstr** (//ASCII_String_variable//)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Wstr** (//numerical_expression//) 
@@ -43,4 +42,3 @@ MessageBox(null, ws, wstr("Unicode 'Hello World'"), MB_OK or MB_ICONINFORMATION)
 	- ##[[KeyPgWstring Wstring]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}
-

@@ -10,9 +10,10 @@ Intrinsic define (macro string) set by the compiler.
 	An example of normal use is to report wrong values in debugging.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-
-If a<0 Then Print "Error: a = " & a & " in " & __FILE__ & " (" & __FUNCTION__ & ") line " & __LINE__
+%%(qbasic)dim a as integer
+if a<0 then
+	Print "Error: a = " & a & " in " & __FILE__ & " (" & __FUNCTION__ & ") line " & __LINE__
+end if
 %%
 
 %%

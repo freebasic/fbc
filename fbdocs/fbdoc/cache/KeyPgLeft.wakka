@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="LEFT"}}
-----
+{{fbdoc item="title" value="LEFT"}}----
 Returns the left most characters of a string of the requested length.
 
 {{fbdoc item="syntax"}}##
@@ -23,9 +22,9 @@ Returns the left most characters of a string of the requested length.
 	The expression can be a wstring (Unicode string), in this case LEFT returns a wstring.The DOS version does not support Unicode.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-text$ = "hello world"
-print left(text$, 5) 'displays "hello"
+%%(qbasic)dim text as string
+text = "hello world"
+print left(text, 5) 'displays "hello"
 %%
 An Unicode example:
 <<
@@ -42,4 +41,4 @@ print left(text, 6) 'displays "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;"
 	- ##[[KeyPgRight Right]]##
 	- ##[[KeyPgMidfunction Mid (Function)]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

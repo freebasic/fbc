@@ -9,9 +9,9 @@
 	- {{fbdoc item="keyword" value="KeyPgDraw|DRAW"}}
 	- {{fbdoc item="keyword" value="KeyPgDrawString|DRAW STRING"}}
 	- {{fbdoc item="keyword" value="KeyPgFlip|FLIP"}}
-	- {{fbdoc item="keyword" value="KeyPgImageconvertrow|IMAGECONVERTROW"}}
+	- {{fbdoc item="keyword" value="KeyPgImageConvertRow|IMAGECONVERTROW"}}
 	- {{fbdoc item="keyword" value="KeyPgImagecreate|IMAGECREATE"}}
-	- {{fbdoc item="keyword" value="KeyPgImagedestroy|IMAGEDESTROY"}}
+	- {{fbdoc item="keyword" value="KeyPgImageDestroy|IMAGEDESTROY"}}
 	- {{fbdoc item="keyword" value="KeyPgGetgraphics|GET (GRAPHICS)"}}
 	- {{fbdoc item="keyword" value="KeyPgGetjoystick|GETJOYSTICK"}}
 	- {{fbdoc item="keyword" value="KeyPgGetmouse|GETMOUSE"}}
@@ -32,6 +32,7 @@
 	- {{fbdoc item="keyword" value="KeyPgRgb|RGB"}}
 	- {{fbdoc item="keyword" value="KeyPgRgba|RGBA"}}
 	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN (GRAPHICS)"}}
+	- {{fbdoc item="keyword" value="KeyPgScreencontrol|SCREENCONTROL"}}
 	- {{fbdoc item="keyword" value="KeyPgScreencopy|SCREENCOPY"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenevent|SCREENEVENT"}}
 	- {{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}

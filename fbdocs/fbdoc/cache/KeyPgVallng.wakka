@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="VALLNG"}}
-----
+{{fbdoc item="title" value="VALLNG"}}----
 Converts a string to a long integer.
 
 {{fbdoc item="syntax"}}##
@@ -48,4 +47,4 @@ print a, b
 	- ##[[KeyPgChr Chr]]##
 	- ##[[KeyPgAsc Asc]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

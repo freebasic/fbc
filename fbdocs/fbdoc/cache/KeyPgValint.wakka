@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="VALINT"}}
-----
+{{fbdoc item="title" value="VALINT"}}----
 Converts a string to an integer number.
 
 {{fbdoc item="syntax"}}##
@@ -46,4 +45,4 @@ print a, b
 	- ##[[KeyPgChr Chr]]##
 	- ##[[KeyPgAsc Asc]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

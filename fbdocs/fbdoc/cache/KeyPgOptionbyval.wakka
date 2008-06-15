@@ -1,6 +1,5 @@
-{{fbdoc item="title" value="OPTION BYVAL"}}
-----
-Compiler option to set default method for passing parameters.
+{{fbdoc item="title" value="OPTION BYVAL"}}----
+Compiler switch to set default method for passing parameters.
 
 {{fbdoc item="syntax"}}##
 	**Option Byval**
@@ -15,8 +14,7 @@ Compiler option to set default method for passing parameters.
 	##**Option Byval**## not allowed when '-lang qb' is used for compilation where the default method for passing arguments is ##[[KeyPgByref Byref]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-'' Compile with -lang vb or deprecated
+%%(qbasic)' compile with -lang deprecated
 
 sub TestDefaultByref( a as integer )
   '' change the value
@@ -48,4 +46,4 @@ print
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfboptionbyval __FB_OPTION_BYVAL__]]##
 
-{{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

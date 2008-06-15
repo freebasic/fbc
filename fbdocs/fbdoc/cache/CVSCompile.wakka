@@ -13,7 +13,9 @@ Windows users should use MSYS to compile the CVS. Linux users will usually have 
 	[[CVSLinux Compiling from CVS for Linux]]
 	[[CVSDOSWin32 Compiling from CVS for DOS on Win32]]
 
-For Windows only, Pritchard is regularly compiling the latest and making it available for download.  His files must be added carefully to the current stable distribution, to replace certain originals.  The web page is here:  
-@@ [[http://www.qbasic.com/wbb/filebase_entry.php?entryid=77&sid= http://www.qbasic.com/wbb/filebase_entry.php?entryid=77&sid=]] @@
+100101 and ikkejw have kindly set up web pages that compile the FreeBASIC sources for Windows and Linux, and make them available for download to the public.  You can find these pages here:
+
+1000101's daily Windows build: http://ecowles.dyndns.org/fbdu/
+ikkejw's daily Linux build: 	http://ikkejw.homelinux.com/
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,10 +1,11 @@
-{{fbdoc item="title" value="EXPORT"}}
-----
-{{fbdoc item="syntax"}}
-FUNCTION foo ( arguments ) AS output_type EXPORT
+{{fbdoc item="title" value="EXPORT"}}----
+Declaration specifier to indicate that a procedure should be visible from a DLL.
 
+{{fbdoc item="syntax"}}##
+	{ [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc_name// ( //argumentlist// ) [ [[KeyPgAs as]] [[DataType datatype]] ] **Export**
+##
 {{fbdoc item="desc"}}
-If a function is declared with this clause in a DLL, it is added to the public export table, so external programs can dynamically link to it using DYLIBSYMBOL. Be sure to use the -export [[CompileCmdLine command line]] option when compiling; otherwise, the function will not be exported at all.
+	If a function is declared with this clause in a DLL, it is added to the public export table, so external programs can dynamically link to it using [[KeyPgDylibsymbol Dylibsymbol]].
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -19,6 +20,7 @@ END FUNCTION
 'main program
 ' create a function pointer, arguments must be the same as in the original function
 dim AddNumbers as function ( byval operand1 as integer, byval operand2 as integer ) as integer
+dim hndl as any ptr
 '
 hndl=DYLIBLOAD("mydll.dll")
 ' find the proc address (case matters!)
@@ -32,8 +34,8 @@ sleep
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-~- [[KeyPgDylibload DYLIBLOAD]]
-~- [[KeyPgDylibsymbol DYLIBSYMBOL]]
-~- [[KeyPgAlias ALIAS]]
+	- ##[[KeyPgDylibload Dylibload]]##
+	- ##[[KeyPgDylibsymbol Dylibsymbol]]##
+	- ##[[KeyPgAlias Alias]]##
 
-{{fbdoc item="back" value=""}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

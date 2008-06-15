@@ -38,7 +38,8 @@ Converts a number to octal representation.
 %%(qbasic)
 Print Oct(54321)    '' will display 152061
 Print Oct(54321, 4) '' will display 2061
-Print Oct(54321, 8) '' will display 00152061%%
+Print Oct(54321, 8) '' will display 00152061
+%%
 
 {{fbdoc item="diff"}}
 	- In QBASIC, there was no way to specify the number of digits returned.

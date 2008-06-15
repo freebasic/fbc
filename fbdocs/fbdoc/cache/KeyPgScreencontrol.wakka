@@ -1,0 +1,130 @@
+{{fbdoc item="title" value="SCREENCONTROL"}}----
+Function to set or get internal graphics library settings
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ScreenControl""** ( [[KeyPgByval byval]] what [[KeyPgAs as]] [[KeyPgInteger integer]] [, [[KeyPgByref byref]] param1 [[KeyPgAs as]] [[KeyPgInteger integer]] [, [[KeyPgByref byref]] param2 [[KeyPgAs as]] [[KeyPgInteger integer]] [, [[KeyPgByref byref]] param3 [[KeyPgAs as]] [[KeyPgInteger integer]] [, [[KeyPgByref byref]] param4 [[KeyPgAs as]] [[KeyPgInteger integer]]]]]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ScreenControl""** ( [[KeyPgByval byval]] what [[KeyPgAs as]] [[KeyPgInteger integer]] [, [[KeyPgByref byref]] param [[KeyPgAs as]] [[KeyPgString string]]] )
+##
+{{fbdoc item="param"}}
+	##//what//##
+		specifies the function to perform
+	##//param1//##
+		optional first integer parameter, contains value to be set on entry or value got on exit
+	##//param2//##
+		optional second integer parameter, contains value to be set on entry or value got on exit
+	##//param3//##
+		optional third integer parameter, contains value to be set on entry or value got on exit
+	##//param4//##
+		optional fourth integer parameter, contains value to be set on entry or value got on exit
+	##//param//##
+		optional string parameter, contains text to be set on entry or text got on exit
+
+{{fbdoc item="desc"}}
+
+	This function can be used to set or get internal GfxLib states. The ##//what//## parameter specifies which operation to perform. On operations that set states, the ##//param*//## parameters must contain the values to be set. On operations that get states, ##//param*//## will hold the values returned by GfxLib when the function returns.
+	The meaning of the ##//param*//## parameters depend on the ##//what//## parameter, whose possible values are defined as constants in fbgfx.bi; below is a list of the supported ##//what//## values, along with the parameters associated with them.
+
+	__Supported operations__
+		
+		Note: * denotes operations that are allowed while a gfx mode has not yet been set via [[KeyPgScreengraphics Screen (Graphics)]] or [[KeyPgScreenres ScreenRes]]. For all other operations, return values are zero(0) or the empty string and the operation has no effect if a gfx mode is not available at call time.
+		
+		**Get operations**
+	- ##GET_WINDOW_POS## (0) Returns the current window position, in desktop coordinates.
+		[OUT] ##//param1//## x
+		[OUT] ##//param2//## y
+	- * ##GET_WINDOW_TITLE## (1) Returns the title of the program window.
+		[OUT] ##//param//## title
+	- ##GET_WINDOW_HANDLE## (2) Returns a handle to the program window.
+		[OUT] ##//param1//## handle; this is a HWND in Windows, a "Window" XID in X11
+	- * ##GET_DESKTOP_SIZE## (3) Returns the desktop size, in pixels.
+		[OUT] ##//param1//## width
+		[OUT] ##//param2//## height
+	- ##GET_SCREEN_SIZE## (4) Returns the current screen size in pixels.
+		[OUT] ##//param1//## width
+		[OUT] ##//param2//## height
+	- ##GET_SCREEN_DEPTH## (5) Returns current gfx mode screen depth.
+		[OUT] ##//param1//## bits per pixel
+	- ##GET_SCREEN_BPP## (6) Returns current gfx mode BPP.
+		[OUT] ##//param1//## bytes per pixel
+	- ##GET_SCREEN_PITCH## (7) Returns the current gfx mode framebuffer pitch, in bytes.
+		[OUT] ##//param1//## pitch
+	- ##GET_SCREEN_REFRESH## (8) Returns the current gfx mode refresh rate, in hertz.
+		[OUT] ##//param1//## rate
+	- ##GET_DRIVER_NAME## (9) Returns the current gfx mode driver name.
+		[OUT] ##//param//## name
+	- ##GET_TRANSPARENT_COLOR## (10) Returns the transparent color value for the current gfx mode depth.
+		[OUT] ##//param1//## value
+	- ##GET_VIEWPORT## (11) Returns the current viewport as set by the [[KeyPgViewgraphics View (Graphics)]] statement, in screen coordinates.
+		[OUT] ##//param1//## x1
+		[OUT] ##//param2//## y1
+		[OUT] ##//param3//## x2
+		[OUT] ##//param4//## y2
+	- ##GET_PEN_POS## (12) Returns the last graphical pen position, in screen coordinates. This position is used in gfx functions supporting relative coordinates using the [[KeyPgStep Step]] keyword.
+		[OUT] ##//param1//## x
+		[OUT] ##//param2//## y
+	- ##GET_COLOR## (13) Returns the current gfx mode color.
+		[OUT] ##//param1//## foreground
+		[OUT] ##//param2//## background
+
+		**Set operations**
+	- ##SET_WINDOW_POS## (100) Sets the current program window position, in desktop coordinates.
+		[IN] ##//param1//## x
+		[IN] ##//param2//## y
+	- * ##SET_WINDOW_TITLE## (101) Sets the current program window title. This is equivalent to calling ##[[KeyPgWindowtitle WindowTitle]]( //param// )##.
+		[IN] ##//param//## title
+	- ##SET_PEN_POS## (102) Sets the current graphical pen position, in screen coordinates. This position is used in gfx functions supporting relative coordinates using the [[KeyPgStep Step]] keyword.
+		[IN] ##//param1//## x
+		[IN] ##//param2//## y
+
+{{fbdoc item="ex"}}
+%%(qbasic)'' include fbgfx.bi for some useful definitions
+#include "fbgfx.bi"
+
+dim e as EVENT
+dim as integer x, y, pressed, col
+dim as any ptr img
+
+screenres 384, 64, 32,, GFX_SHAPED_WINDOW
+
+'' create a fancy window shape
+img = imagecreate(48,8)
+draw string img, (0, 0), "GfxLib"
+for y = 0 to 63
+	for x = 0 to 383
+		col = point(x \ 8, y \ 8, img)
+		if (col <> rgb(255, 0, 255)) then
+			col = rgb((x + y) and &hFF, (x + y) and &hFF, (x + y) and &hFF)
+		end if
+		pset (x, y), col
+	next x
+next y
+
+pressed = 0
+do
+	if (screenevent(@e)) then
+		select case e.type
+		case EVENT_MOUSE_BUTTON_PRESS
+			pressed = -1
+		case EVENT_MOUSE_BUTTON_RELEASE
+			pressed = 0
+		case EVENT_MOUSE_MOVE
+			if (pressed) then
+				screencontrol GET_WINDOW_POS, x, y
+				screencontrol SET_WINDOW_POS, x + e.dx, y + e.dy
+			end if
+		end select
+	end if
+	sleep 5
+loop while not multikey(1)%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgScreenevent ScreenEvent]]##
+	- ##[[KeyPgScreeninfo ScreenInfo]]##
+	- ##[[KeyPgWindowtitle WindowTitle]]##
+	- ##[[KeyPgViewgraphics View (Graphics)]]##
+
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

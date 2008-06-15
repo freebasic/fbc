@@ -33,15 +33,12 @@ Converts a row of image data into a different bit depth.
 	Copies the row of an image from one address to another, converting the number of bits per pixel to match the destination image.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)option explicit
-dim as any ptr img8, img32
+%%(qbasic)dim as any ptr img8, img32
 dim as integer i, y
-
 
 '' create a 32-bit image, size 100*100:
 screenres 320, 200, 32, , -1
 img32 = imagecreate(100, 100)
-
 
 '' create an 8-bit image, size 100*100:
 screenres 320, 200, 8, , -1
@@ -73,16 +70,17 @@ sleep
 
 '' deallocate the images:
 imagedestroy img8
-imagedestroy img32%%##
+imagedestroy img32
+%%
 
 {{fbdoc item="diff"}}
 	- New to FB
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreenRes ScreenRes]]##
+	- ##[[KeyPgScreenres ScreenRes]]##
 	- ##[[KeyPgGetgraphics Get (Graphics)]]##
 	- ##[[KeyPgPutgraphics Put (Graphics)]]##
-	- ##[[KeyPgImageCreate ImageCreate]]##
+	- ##[[KeyPgImagecreate ImageCreate]]##
 	- ##[[KeyPgImageDestroy ImageDestroy]]##
 
 {{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

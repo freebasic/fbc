@@ -12,17 +12,17 @@ Statement to set the current system date
 		the new date to set
 
 {{fbdoc item="ret"}}
-	Return zero on sucess or non-zero on failure/
+	Returns zero on success or non-zero on failure on all ports except DOS.
 
 {{fbdoc item="desc"}}
 	To set the date you just format ##//newdate//## and send to ##**Setdate**## in a valid format following one of the following: "mm-dd-yy",  "mm-dd-yyyy", "mm/dd/yy", or "mm/dd/yyyy" (mm is the month, dd is the day, yy and yyyy is the year.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-month$ = "03" 'march
-day$ = "13" 'the 13th
-year$ = "1994" 'good ol' days
-SETDATE month$ + "/" + day$ + "/" + year$
+%%(qbasic)dim m as string, d as string, y as string
+m = "03" 'march
+d = "13" 'the 13th
+y = "1994" 'good ol' days
+SETDATE m + "/" + d + "/" + y
 %%
 
 {{fbdoc item="diff"}}

@@ -16,7 +16,7 @@ Output statement to write text to screen or file.
 		list of items to print
 
 {{fbdoc item="desc"}}
-	Print to screen or to a file (if **#**##//filenum//## is used), various expressions using a format determined by the ##//"formatstring"//## parameter.
+	Print to screen or to a file (if **#**##//filenum//## is used), various expressions using a format determined by the ##//"formatstring"//## parameter.  Internally Print Using uses a buffer size of 2048 bytes, while it is highly unlikely that this buffer would be filled, it should be noted that output would be truncated should this limit be reached.
 
 	{{table columns="2" cellpadding="1" cells="marker; formatting;###;string formats;!; prints only the first char. of a string;\   \; prints as many chars. of a string as occuppied by the pair \ \;&; prints the whole string;###;numeric formats;#; placeholder for a digit. Spaces at left are filled with blanks; .; placed near # indicates place for the decimal point;+; at the left of a num.format always prints the sign;^^^^; four carets at the right of a numeric format request exponential notation.;###;	If there are not enough # to print a value, format is ignored and the value is printed preceeded by a %;_x; an underscore before a formatting char 'escapes' it and prints it as a regular character;###;All other chars or misplaced format chars are interpreted as regular chars and printed."}}    
 
@@ -29,7 +29,8 @@ Output statement to write text to screen or file.
 %%(qbasic)
 Print Using "The value is #.## seconds"; 1.019
 Print Using "Number sign is _# and its ASCII code is ### "; asc("#")
-Print Using "The last day in the year is ## \ \"; 31, "December"%%
+Print Using "The last day in the year is ## \ \"; 31, "December"
+%%
 
 %%The value is 1.02 seconds
 Number sign is # and its ASCII code is  35

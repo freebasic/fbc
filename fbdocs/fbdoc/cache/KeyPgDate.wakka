@@ -8,7 +8,7 @@ Function to return the current system date as a string
 	//result// = **Date**[$]
 ##
 {{fbdoc item="ret"}}
-	Returns the current system date.
+	Returns the current system date, in the format mm-dd-yyyy
 
 {{fbdoc item="desc"}}
 	None

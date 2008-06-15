@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="FIX"}}
-----
+{{fbdoc item="title" value="FIX"}}----
 Function to return the integer part of a number.
 
 {{fbdoc item="syntax"}}##
@@ -32,4 +31,4 @@ Print fix(-1.9) '' will print -1
 	- ##[[KeyPgInt Int]]##
 	- ##[[KeyPgCint Cint]]##
 
-{{fbdoc item="back" value="CatPgMath|Math"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgMath|Math"}}

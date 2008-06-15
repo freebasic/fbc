@@ -20,10 +20,7 @@ Checks to see if the end of an open file has been reached.
 	For file handles bound to files opened for ##[[KeyPgOutput Output]]##, EOF always returns 0.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-option explicit
-
-'' This code finds a free file handle to use and attempts to open the file
+%%(qbasic)'' This code finds a free file handle to use and attempts to open the file
 '' "file.ext" and if successful, binds our file handle to the opened file. It
 '' reads the file line by line, outputting it to the screen. We loop until eof()
 '' returns true, in this case we ignore the loop if file is empty.
@@ -48,7 +45,8 @@ loop
 
 close #file_handle                        '' close file via our file handle
 
-end 0%%
+end 0
+%%
 
 
 {{fbdoc item="diff"}}

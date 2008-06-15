@@ -25,9 +25,7 @@ Cls
 
 **View Print** can be used in graphics mode to avoid the text output overwriting graphics.
 {{fbdoc item="ex"}}
-%%(qbasic)
-screen 12
-defsng a-z 
+%%(qbasic)screen 12
 dim as integer R,Y,x,y1
 dim as single y2
 view print 20 to 27
@@ -42,7 +40,7 @@ do
 	PSET (x, y + 100), CINT((319 - x) * y2) AND 15 XOR y1 
   NEXT x,y
  if r=0 then color int(rnd*16): print "blah"
-loop until len(inkey$)
+loop until len(inkey)
 %%
 
 

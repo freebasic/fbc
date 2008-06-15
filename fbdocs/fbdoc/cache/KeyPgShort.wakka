@@ -10,9 +10,8 @@ Standard data type: 16 bit signed
 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-  Dim x As Short = &H8000
-  Dim y As Short = &H7FFF
+%%(qbasic)  Dim x As Short = CShort(&H8000)
+  Dim y As Short = CShort(&H7FFF)
   Print "Short Range = "; x; " to "; y
 %%
 	**Output:**

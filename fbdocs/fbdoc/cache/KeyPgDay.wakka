@@ -22,8 +22,9 @@ Date function to return the day of the month from a [[DtDateSer Date Serial]]
 {{fbdoc item="ex"}}
 %%(qbasic)
 #include "vbcompat.bi"
-a!=dateserial (2005,11,28)
-print format(a!,"yyyy/mm/dd hh:mm:ss ") ;day(a!)
+Dim ds As Double
+ds = DateSerial(2005, 11, 28)
+Print Format(ds, "yyyy/mm/dd "); Day(ds)
 %%
 
 {{fbdoc item="diff"}}

@@ -1,24 +1,22 @@
 {{fbdoc item="title" value="$DYNAMIC"}}----
-{{fbdoc item="syntax"}}
-	OPTION DYNAMIC
+Compiler switch to change the way arrays are allocated
 
-	Or
-
-	'$DYNAMIC
-
+{{fbdoc item="syntax"}}##
+	**Option Dynamic**
+//or//
+	**'$Dynamic**
+##
 {{fbdoc item="desc"}}
-	OPTION DYNAMIC allocates any arrays into dynamic memory by default.  When this option is turned off, the [[KeyPgRedim REDIM]] keyword must be used to allocate a Dynamic array.
+	##**Option Dynamic**## allocates any arrays into dynamic memory by default.  When this option is turned off, the ##[[KeyPgRedim Redim]]## keyword must be used to allocate a dynamic array.
 
-	Dynamic memory is memory that is allocated during the course of program execution, as the program needs it.  Static memory, or the memory DIM uses by default, is set aside at the start of program execution.  This type of memory is faster, but it is less flexible and cannot be reallocated or freed.  With the OPTION DYNAMIC switch on, DIM effectively acts like REDIM, using dynamic memory.
+	Dynamic memory is memory that is allocated during the course of program execution, as the program needs it.  Static memory, or the memory ##[[KeyPgDim Dim]]## uses by default, is set aside at the start of program execution.  This type of memory is faster, but it is less flexible and cannot be reallocated or freed.  With the ##**Option Dynamic**## switch on, ##[[KeyPgDim Dim]]## effectively acts like ##[[KeyPgRedim Redim]]##, using dynamic memory.
 
-	If an array is DIMmed using variables to specify dimensions, the array is implicitly declared as dynamic, even if the keyword DYNAMIC is not used.
+	If an array is defined using ##[[KeyPgDim Dim]]## using variables to specify dimensions, the array is implicitly declared as dynamic, even if the keyword ##**Option Dynamic**## is not used.
 
-	The deprecated  '$DYNAMIC form exists for compatibility with QuickBasic.
-
-e.g.
+	The deprecated  ##**'$Dynamic**## form exists for compatibility with QuickBasic.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)' compile with -lang deprecated
 Option Dynamic
 Dim a(100)
 '......
@@ -29,9 +27,9 @@ ReDim a(200)
 	- When used inside comments it must be the first token
 
 {{fbdoc item="see"}}
-	- [[KeyPgMetaStatic $STATIC]]
-	- [[KeyPgDim DIM]]
-	- [[KeyPgRedim REDIM]]
-	- [[KeyPgErase ERASE]]
+	- ##[[KeyPgMetaStatic $Static]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgErase Erase]]##
 
-{{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

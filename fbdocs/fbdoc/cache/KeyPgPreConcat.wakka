@@ -15,6 +15,8 @@ Preprocessor operator to concatenate strings.
 #define Concat(t,n) t##n
 
 Print concat (12,34)
+
+Dim Concat (hello,world) as integer
 Concat (hello,world)=99
 print helloworld
 %%

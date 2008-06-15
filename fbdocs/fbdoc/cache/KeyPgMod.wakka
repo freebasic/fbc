@@ -18,7 +18,7 @@ PRINT 5.1 MOD 2.8
 %%
 
 The output would look like:
-%%(qbasic)
+%%
 5
 0
 2

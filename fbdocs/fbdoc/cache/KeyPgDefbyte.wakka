@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DEFBYTE"}}
-----
+{{fbdoc item="title" value="DEFBYTE"}}----
 Sets a default data type for variables
 
 {{fbdoc item="syntax"}}##
@@ -13,7 +12,7 @@ Sets a default data type for variables
 	This will make 'bNumber' a ##[[KeyPgByte Byte]]## number since it's first letter starts with b:
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 defbyte b
 dim bNumber
 %%
@@ -32,7 +31,4 @@ dim bNumber
 	- ##[[KeyPgDefuint Defuint]]##
 	- ##[[KeyPgDefushort Defushort]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
-
-
-
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -8,18 +8,18 @@ Operator to add and assign a number to a variable
 	The combined addition operator is a shortcut method of writing addition expressions. The expression ##n += 2## is the equivalent of writing ##n = n + 2##.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 DIM n AS DOUBLE
 n = 6
 n += 1
 PRINT n
 SLEEP
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%
 7
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

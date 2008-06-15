@@ -1,33 +1,43 @@
 {{fbdoc item="title" value="ANY"}}----
-Pseudo-data type that turns off type checking for a parameter.
+Built-in pseudo data type used in declarations and initializers.
 
 {{fbdoc item="syntax"}}##
 	//identifier// [[KeyPgAs as]] **Any** [[KeyPgPtr ptr]]
-
+//or//
 	[[KeyPgDeclare declare]] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //identifier// ( [ ..., ] [[KeyPgByref byref]] //identifier// [[KeyPgAs as]] **Any** [ , ... ] )
+//or//
+	[[KeyPgDim dim]] //identifier// [[KeyPgAs as]] [[DataType datatype]] = **Any**
 ##
 {{fbdoc item="usage"}}##
 	dim //identifier// as **Any** ptr
-		##//Or//##
+//or//
 	declare sub //identifier// ( byref //identifier// as **Any** )
-		##//Or//##
+//or//
 	declare sub //identifier// ( [ byval | byref ] //identifier// as **Any** ptr )
+//or//
+	dim //identifier// as //datatype// = **Any**
 ##
 {{fbdoc item="desc"}}
-	##Any## is a data type which accepts data of any type because no type checking is done.  It is used mainly in pointers to represent an untyped memory address.
+	##**Any**## is a pseudo data type which specifies that a variable or parameter has an unknown type and therefore an unknown size.  It can be used with pointers to represent a pointer to an untyped memory address.
 
-	This should not be confused with ##Variant##, a Visual Basic data type which can contain any type of variable, which is not supported by FB.
+	No type checking is done for pointer variables passed to or assigned to an ##**Any**## pointer.
+
+	This should not be confused with ##Variant##, a Visual Basic data type which can contain any type of variable, which is not intrinsically supported by FreeBASIC.
 	
-	The only place ##Any## can be used without ##[[KeyPgPtr Ptr]]## is in function prototypes (in a ##[[KeyPgDeclare Declare]]## statement) with ##[[KeyPgByref ByRef]]## arguments, to be compatible with QB.
+	**##Any##** can be used without ##[[KeyPgPtr Ptr]]## in function prototypes (in a ##[[KeyPgDeclare Declare]]## statement) with ##[[KeyPgByref ByRef]]## arguments, to be compatible with QB.
+
+	##**Any**## can be used as an initializer to indicate that the variable is not initialzed to a specific value.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
 declare sub echo (byref a as any)
+
 dim x as integer
 x = 15
 echo x
-declare sub echo (byref a as integer)
- print a
+
+sub echo (byref a as integer)
+  print a
 end sub
 %%
 
@@ -38,4 +48,4 @@ end sub
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgDeclare Declare]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

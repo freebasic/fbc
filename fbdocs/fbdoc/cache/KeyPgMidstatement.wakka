@@ -9,11 +9,13 @@
 	If //length// is not specified, all of value is taken. The size of the string //text// is not modified, the copy is ended if it goes past the end. 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-text$ = "abc 123"
-print text$ 'returns "abc 123"
-mid(text$, 5, 3) = "456" 
-print text$ 'displays "abc 456"
+%%(qbasic)dim text as string
+
+text = "abc 123"
+print text 'returns "abc 123"
+
+mid(text, 5, 3) = "456" 
+print text 'displays "abc 456"
 %%
 
 {{fbdoc item="diff"}}

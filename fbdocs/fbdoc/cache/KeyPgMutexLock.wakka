@@ -71,7 +71,7 @@ END SUB
 
 '' Teletype unfurls some text across the screen at a given location
 SUB teletype (BYVAL text AS STRING, BYVAL x AS INTEGER, BYVAL y AS INTEGER)
-	DIM i AS INTEGER
+	DIM i AS INTEGER, a as INTEGER
 	DIM text_length AS INTEGER
 
 	text_length = LEN(text)

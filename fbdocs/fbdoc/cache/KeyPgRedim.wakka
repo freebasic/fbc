@@ -1,17 +1,19 @@
 {{fbdoc item="title" value="REDIM"}}----
-{{fbdoc item="syntax"}}
-	REDIM [[[KeyPgShared SHARED]]] [PRESERVE] //symbolname//(//subscripts//) AS [[DataType DataType]] [, ...]
+Defines an array variable
 
+{{fbdoc item="syntax"}}##
+	**Redim** [ [[KeyPgShared shared]] ] [ [[KeyPgPreserve preserve]] ] //symbolname//(//subscripts//) AS [[DataType datatype]] [, ...]
+##
 {{fbdoc item="desc"}}
-	Using REDIM to declare an array creates it at run time so forces it to be a dynamic array, where as [[KeyPgDim DIM]] forces an array to be static unless the metacommand [[KeyPgDynamic $DYNAMIC]] is used.
+	Using ##**Redim**## to declare an array creates it at run time so forces it to be a dynamic array, where as ##[[KeyPgDim Dim]]## forces an array to be static unless the metacommand ##[[KeyPgDynamic $Dynamic]]## is used.
 
-	REDIM is used also to change the size of an array declared as dynamic (upper and lower bounds). The contents of a redimmed array is not preserved unless the clause PRESERVE is used.
+	##**Redim**## is used also to change the size of an array declared as dynamic (upper and lower bounds). The contents of a redimmed array is not preserved unless the clause ##[[KeyPgPreserve Preserve]]## is used.
 
-	"REDIM SHARED" cannot be used within a sub or function.  However, if an array is set up as [[KeyPgShared COMMON]] [[KeyPgShared SHARED]], and is REDIM'd inside a sub or function without the SHARED word specified, the array does not lose its SHARED attribute.
+	##**Redim Shared**## cannot be used within a sub or function.  However, if an array is set up as ##[[KeyPgShared Common]]## ##[[KeyPgShared Shared]]##, and is ##**Redim**##'d inside a sub or function without the ##[[KeyPgShared Shared]]## word specified, the array does not lose its ##[[KeyPgShared Shared]]## attribute.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-'e.g. on using dynamic arrays:
+%%(qbasic)' compile with -lang deprecated
+' e.g. on using dynamic arrays:
 
 OPTION DYNAMIC
 DIM x(10) AS INTEGER
@@ -25,15 +27,15 @@ PRINT UBOUND(x)
 	- PRESERVE wasn't supported in QB.
 
 {{fbdoc item="see"}}
-	- [[KeyPgCommon COMMON]]
-	- [[KeyPgDim DIM]]
-	- [[KeyPgErase ERASE]]
-	- [[KeyPgExtern EXTERN]]
-	- [[KeyPgLbound LBOUND]]
-	- [[KeyPgRedim REDIM]]
-	- [[KeyPgPreserve PRESERVE]]
-	- [[KeyPgShared SHARED]]
-	- [[KeyPgStatic STATIC]]
-	- [[KeyPgUbound UBOUND]]
+	- ##[[KeyPgCommon Common]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgErase Erase]]##
+	- ##[[KeyPgExtern Extern]]##
+	- ##[[KeyPgLbound Lbound]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgPreserve Preserve]]##
+	- ##[[KeyPgShared Shared]]##
+	- ##[[KeyPgStatic Static]]##
+	- ##[[KeyPgUbound Ubound]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}

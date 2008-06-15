@@ -1,17 +1,16 @@
-{{fbdoc item="title" value="VARPTR"}}
-----
-{{fbdoc item="syntax"}}
-varptr(variable)
-@variable
+{{fbdoc item="title" value="VARPTR"}}----
+Returns a pointer to a variable
 
+{{fbdoc item="syntax"}}##
+	//result// = **Varptr** ( //variable// )
+##
 {{fbdoc item="desc"}}
-~Returns the memory address of a variable. This was used for pointer features in older basic dialects, and is still useful for pointer arithmetic in FreeBasic.
+	Returns the memory address of a variable. This was used for pointer features in older basic dialects, and is still useful for pointer arithmetic in FreeBasic.
 
-~When used with a string, VARPTR returns a pointer to the internal string descriptor, use [[KeyPgStrptr STRPTR]] instead to get a pointer to the string data.
+	When used with a string, ##**Varptr**## returns a pointer to the internal string descriptor, use ##[[KeyPgStrptr Strptr]]## instead to get a pointer to the string data.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-dim a as integer, addr as integer
+%%(qbasic)dim a as integer, addr as integer
 a = 10
 addr = varptr(a) ' place the address of a in addr
 POKE integer, addr, -1000 ' change all 4 bytes (size of INTEGER) of a
@@ -24,9 +23,9 @@ print PEEK( addr ) 'print the least or most significant byte, depending on the C
 	- 
 
 {{fbdoc item="see"}}
-	- [[KeyPgPoke PEEK]]
-	- [[KeyPgPoke POKE]]
-	- [[KeyPgStrptr STRPTR]]
+	- [[KeyPgAt (@) Address of]]
+	- ##[[KeyPgPoke Peek]]##
+	- ##[[KeyPgPoke Poke]]##
+	- ##[[KeyPgStrptr Strptr]]##
 
-{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}
-
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

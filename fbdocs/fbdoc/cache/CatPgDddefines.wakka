@@ -5,6 +5,8 @@
 
 <<
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}
@@ -19,9 +21,9 @@
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionescape|__FB_OPTION_ESCAPE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionexplicit|__FB_OPTION_EXPLICIT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionprivate|__FB_OPTION_PRIVATE__"}}
-	- {{fbdoc item="keyword" value="KeyPgDdfboutdll|__FB_OUT_DLL__"}}
 
 <<>>
+	- {{fbdoc item="keyword" value="KeyPgDdfboutdll|__FB_OUT_DLL__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutexe|__FB_OUT_EXE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutlib|__FB_OUT_LIB__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}

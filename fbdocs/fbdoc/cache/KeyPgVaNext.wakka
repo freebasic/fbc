@@ -1,13 +1,14 @@
-{{fbdoc item="title" value="VA_NEXT"}}
-----
-{{fbdoc item="syntax"}}
-	//Argument Pointer// = VA_NEXT (//Argument List//, //Argument Type// )
+{{fbdoc item="title" value="VA_NEXT"}}----
+Returns a pointer to the next argument in a variable argument list
 
+{{fbdoc item="syntax"}}##
+	//Argument_Pointer// = **va_next** (//Argument_List//, [[DataType datatype]] )
+##
 {{fbdoc item="desc"}}
-	The VA_NEXT macro points to the next argument within the list //Argument List// of the type //Argument Type//.
+	The ##**va_next**## macro points to the next argument within the list //Argument_List// of the type //datatype//.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 FUNCTION Avg cdecl (Count as INTEGER, ... ) AS DOUBLE
 	DIM ARG AS ANY PTR 
 	DIM SUM AS DOUBLE = 0
@@ -26,20 +27,20 @@ PRINT AVG (4, 3.4,5.0,3.2,4.1)
 PRINT AVG (2, 65.2,454.65481)
 
 SLEEP
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%
 3.925
 259.927405
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- [[KeyPgDots ...]]
-	- [[KeyPgVaArg VA_ARG]]
-	- [[KeyPgVaFirst VA_FIRST]]
+	- [[KeyPgDots ... (Ellipsis)]]
+	- ##[[KeyPgVaArg va_arg]]##
+	- ##[[KeyPgVaFirst va_first]]##
 
-{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}  {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}

@@ -41,13 +41,13 @@ Declares or defines an overloaded operator
 
 	Operators can be overloaded to accept different data types as parameters.  Only the ##[[KeyPgCast Cast]]## Operator can be overloaded to return different types.
 
-	Some operators are static members: they are declared inside the ##[[KeyPgType Type]]## or CLASS.  Other operators are declared outside.  All operator definitions (procedure bodies) must appear outside.
+	Nonstatic operator members are declared inside the ##[[KeyPgType Type]]## or CLASS.  Global operators are declared outside.  All operator definitions (procedure bodies) must appear outside.
 
 	let, cast, and combined assignment operators must be declared inside the TYPE or CLASS.  The implicitly have a hidden ##//this//## parameter and a return data type of the TYPE or CLASS they are declared in.
 
 	Unary and binary operators must be declared outside the TYPE or CLASS and have the return data type explicity declared.
 
-	An ##**Operator**## method is similiar to overloaded functions in most respects, except there is a hidden ##//this//## parameter having the same type as ##//typename//## for all static members (operators declared inside the TYPE or CLASS).  ##//this//## is optionally used to access the fields of the ##[[KeyPgType Type]]## or CLASS inside the operator procedure.
+	An ##**Operator**## method is similiar to overloaded functions in most respects, except there is a hidden ##//this//## parameter having the same type as ##//typename//## for all nonstatic members (operators declared inside the TYPE or CLASS).  ##//this//## is optionally used to access the fields of the ##[[KeyPgType Type]]## or CLASS inside the operator procedure.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

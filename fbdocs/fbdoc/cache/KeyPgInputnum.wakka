@@ -1,32 +1,47 @@
-{{fbdoc item="title" value="INPUT()"}}
-----
-{{fbdoc item="syntax"}}
-INPUT[$](num)
-input[$](num,[#]filenum)
+{{fbdoc item="title" value="INPUT()"}}----
+Read a number of characters from console or file
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Input**( //num// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Input**( //num// [[KeyPgAs as]] [[KeyPgInteger integer]], [#]filenum [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Input**[$]( //num// )
+//or//
+	//result// = **Input**[$]( //num//, [#]//filenum// )
+##
+{{fbdoc item="param"}}
+	##//num//##
+		number of bytes to read
+	##//filenum//##
+		file number of an open file
+
+{{fbdoc item="ret"}}
+	Returns the item read
 
 {{fbdoc item="desc"}}
-Num must be a number 0 to 255 and filenum must be the slot of a file currently open for INPUT
+	Num must be a number 0 to 255 and filenum must be the slot of a file currently open for ##**Input**##
 The first version waits for the user to input 'num' characters at the keyboard and returns them in a string. Extended keys are not read. The characters are not echoed to the screen.
-The second version reads two characters from a file and updates the pointer
+
+	The second version reads two characters from a file and updates the pointer
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim a as string
 PRINT "Select a color number" 
 PRINT "1.-BLUE"
 PRINT "2.-RED"
 PRINT "3.-GREEN"
 do
- a$=input$(1)
-loop until a$>="1" and a$<="3"
+ a=input(1)
+loop until a>="1" and a<="3"
 %%
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-~- [[KeyPgInput INPUT]]
-~- [[KeyPgGetkey  GETKEY]]
-~- [[KeyPgInput INKEY$]]
+	- ##[[KeyPgInput Input]]##
+	- ##[[KeyPgGetkey  Getkey]]##
+	- ##[[KeyPgInput Inkey]]##
 
-
-{{fbdoc item="back" value="CatPgInput|INPUT"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}{{fbdoc item="back" value="CatPgInput|User Input"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="WHEX"}}
-----
+{{fbdoc item="title" value="WHEX"}}----
 Returns the hexadecimal wstring (unicode) representation of the integer //number//.
 
 {{fbdoc item="syntax"}}##
@@ -42,4 +41,4 @@ PRINT WHEX(54321, 5) '' will display 0D431
 	- ##[[KeyPgWbin Wbin]]##
 	- ##[[KeyPgWoct Woct]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

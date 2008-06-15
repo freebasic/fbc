@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="Procedures"}}----
+
+<<
+	- {{fbdoc item="keyword" value="KeyPgAlias|ALIAS"}}
+	- {{fbdoc item="keyword" value="KeyPgAny|ANY"}}
+	- {{fbdoc item="keyword" value="KeyPgByref|BYREF"}}
+	- {{fbdoc item="keyword" value="KeyPgByval|BYVAL"}}
+	- {{fbdoc item="keyword" value="KeyPgCall|CALL"}}
+	- {{fbdoc item="keyword" value="KeyPgCdecl|CDECL"}}
+	- {{fbdoc item="keyword" value="KeyPgConstructor|CONSTRUCTOR"}}
+	- {{fbdoc item="keyword" value="KeyPgModuleConstructor|CONSTRUCTOR (Module)"}}
+	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}
+	- {{fbdoc item="keyword" value="KeyPgModuleDestructor|DESTRUCTOR (Module)"}}
+	- {{fbdoc item="keyword" value="KeyPgDeclare|DECLARE"}}
+	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
+	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
+	- {{fbdoc item="keyword" value="KeyPgLib|LIB"}}
+	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgProperty|PROPERTY"}}
+	- {{fbdoc item="keyword" value="KeyPgOverload|OVERLOAD"}}
+	- {{fbdoc item="keyword" value="KeyPgPascal|PASCAL"}}
+	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}
+	- {{fbdoc item="keyword" value="KeyPgPublic|PUBLIC"}}
+	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
+	- {{fbdoc item="keyword" value="KeyPgSub|SUB"}}
+	- {{fbdoc item="keyword" value="KeyPgStdcall|STDCALL"}}
+
+{{fbdoc item="section" value="Variable Arguments"}}
+	- {{fbdoc item="keyword" value="KeyPgDots|... (Ellipsis)"}}
+	- {{fbdoc item="keyword" value="KeyPgVaFirst|VA_FIRST"}}
+	- {{fbdoc item="keyword" value="KeyPgVaArg|VA_ARG"}}
+	- {{fbdoc item="keyword" value="KeyPgVaNext|VA_NEXT"}}
+
+
+>>
+
+
+
+
+
+::c::
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

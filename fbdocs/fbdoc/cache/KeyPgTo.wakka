@@ -23,7 +23,6 @@ Statement modifier to specify a range
 {{fbdoc item="ex"}}
 %%(qbasic)'' this program uses bound variables along with the TO keyword to create an array, store random
 '' temperatures inside the array, and to determine output based upon the value of the temperatures
-option explicit
 randomize timer
 
 '' define minimum and maximum number of temperatures we will create

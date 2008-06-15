@@ -18,15 +18,12 @@ Function that creates a conditional variable to be used in synchronizing threads
 	Multihtreading is not implemented as a service in MSDOS so this function doesn't exist in FB for DOS32.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-option explicit
-
-declare sub mythread( byval id as integer )
+%%(qbasic)declare sub mythread( byval id as integer )
 
   dim i as integer
   dim shared hcondready as any ptr
   dim shared hcondstart as any ptr
-  dim threads(1 to 9) as integer
+  dim threads(1 to 9) as any ptr
 
   '' create conditionals
   hcondready = Condcreate()

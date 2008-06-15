@@ -1,6 +1,4 @@
-===={{fbdoc item="title" value="Missing Documentation"}}====
-
-----
+{{fbdoc item="title" value="Missing Documentation"}}----
 Please edit this page to remove items when they are written.
 
 ==Language and non-keyword related texts==
@@ -12,17 +10,13 @@ Please edit this page to remove items when they are written.
 	- Source and Include Files
 	- Statements and Statement blocks
 	- Expressions
-
 	- Unnamed udt (TYPE)
-
-	- restructure of table of contents to provide more organization for top-level concepts and keyword categories.
 	- Finish formatting the style change that was started beginning of 2006.
-
+	- See [[CatPgProgrammer Programmer's Guide]] (W.I.P.)
 
 ==Undocumented keywords== 
 
 	Work in progress for fbc 0.17b
-	[[KeyPgProperty Property]]
 	[[KeyPgNew New]]
 	[[KeyPgDelete Delete]]
 	[[KeyPgClass Class]]
@@ -30,32 +24,25 @@ Please edit this page to remove items when they are written.
 ==Incomplete Documentation==
 
 	[[KeyPgExternCpp Extern...End Extern]]
-	[[KeyPgOperator Operator]]
-	[[KeyPgConstructor Constructor]]
-	[[KeyPgDestructor Destructor]]
+	[[KeyPgProperty Property]]
 	
 	Pages that have '!!!'
 	
 	1. MissingDocs
-	2. KeyPgFileattr
-	3. KeyPgOpenLpt
-	4. KeyPgDeclare
+	2. ProPgTypeObjects
+	3. KeyPgDeclare
 ----
 
 The documents listed and linked below need to be updated or enhanced in some way.
 
-==Platform specific==
-
-==Missing example==
-Needs Code Examples:
-
+==Missing examples==
 	[[KeyPgOpenLpt]] needs more examples, or non-specific platform example.
 	[[KeyPgFlip Flip]]
 	[[KeyPgPcopy Pcopy]]
 	[[KeyPgPmap Pmap]]
-	[[KeyPgWait Wait]]
 
-
+==Examples to be reviewed==
+	[[KeyPgOptionnokeyword Option NoKeyword]] - won't compile - error - bug, can't undef overloaded funcs.
 ----
 
 ==To be deleted==

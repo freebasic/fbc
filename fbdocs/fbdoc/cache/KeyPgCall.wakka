@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CALL"}}
-----
+{{fbdoc item="title" value="CALL"}}----
 Statement to invoke a subroutine
 
 {{fbdoc item="syntax"}}##
@@ -11,20 +10,24 @@ Statement to invoke a subroutine
 	A holdover from earlier dialects of BASIC, but can be a useful syntatical convention to show that the return value from a function is being discarded intentionally.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang qb
+
 declare sub foobar(x, y)
 call foobar(35, 42)
 
 sub foobar(x, y)
 print x; y
-end sub%%
+end sub
+%%
 
-%%(qbasic)
+%%(qbasic)'' Compile with -lang qb
+
 function f ( ) as integer
 f = 42
 end function
 
-call f ' execute function f, but ignore the answer%%
+call f ' execute function f, but ignore the answer
+%%
 
 {{fbdoc item="diff"}}
 	- The procedure must have already been declared.
@@ -34,4 +37,4 @@ call f ' execute function f, but ignore the answer%%
 	- ##[[KeyPgDeclare Declare]]##
 	- ##[[KeyPgSub Sub]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

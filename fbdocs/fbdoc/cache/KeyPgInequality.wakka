@@ -8,21 +8,30 @@ Operator to compare expressions.
 	The <> (Inequality) Operator evaluates two expressions, compares them for inequality and returns the resulting condition. The condition is false (0) if the left-hand side expression and the right-hand side expression are equal, or true (-1) if they are unequal.
 
 {{fbdoc item="ex"}}
+%%(qbasic)
+dim a as string, b as string
+dim i as integer, d as double
 
-In a number guessing game, the <> (Inequality Operator) can be used to check the player's guess with the secret number:
+a = "Hello"
+b = "World"
+i = 1
+d = 1.5
 
-##%%(qbasic)   dim as integer guess = 0
-	  ...                     '' <- get number from user and store in guess
-   if( guess <> secret_number ) then print "Sorry, you guessed wrong. Try again."
-	  ...
-%%##
+if a <> b then
+  print a; " not equal to "; b
+end if
+
+if i <> d then
+  print i; " not equal to "; d
+end if
+%%
 
 The [[KeyPgEqual = (Equality) Operator]] is complement to the <> (Inequality) Operator, and is functionally identical when combined with the [[KeyPgNot Not (Bit-wise Complement) Operator]]:
 
-##%%(qbasic)
+%%(qbasic)
    if( 420 <> 69 ) then print "( 420 <> 69 ) is true."
    if not( 420 = 69 ) then print "not( 420 = 69 ) is true."
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- none

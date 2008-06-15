@@ -2,7 +2,7 @@
 Date function to return a [[DtDateSer Date Serial]] from the specified time string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeValue""** ( //timestring// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeValue""** ( [[KeyPgByref byref]] //timestring// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -24,8 +24,9 @@ Date function to return a [[DtDateSer Date Serial]] from the specified time stri
 {{fbdoc item="ex"}}
 %%(qbasic)
 #include "vbcompat.bi"
-a!=timevalue (07:12:28AM)
-print format(a!," hh:mm:ss ") )
+Dim ds As Double
+ds = TimeValue("07:12:28AM")
+Print Format(ds, "hh:mm:ss")
 %%
 
 {{fbdoc item="diff"}}
@@ -33,8 +34,8 @@ print format(a!," hh:mm:ss ") )
 
 {{fbdoc item="see"}}
 	- [[DtDateSer Date Serials]]
-	- ##[[KeyPgDateserial DateSerial]]##
-	- ##[[KeyPgTimevalue TimeValue]]##
-	- ##[[KeyPgDatevalue DateValue]]##
+	- ##[[KeyPgDateSerial DateSerial]]##
+	- ##[[KeyPgTimeValue TimeValue]]##
+	- ##[[KeyPgDateValue DateValue]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

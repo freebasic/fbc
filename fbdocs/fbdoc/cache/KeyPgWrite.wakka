@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="WRITE"}}
-----
+{{fbdoc item="title" value="WRITE"}}----
 Output statement to write text to screen or file. 
 
 {{fbdoc item="syntax"}}##
@@ -17,15 +16,16 @@ Output statement to write text to screen or file.
 	The ##//expressionlist//## can be separed by commas as with ##[[KeyPgPrint Print]]##, but the output formatting is not tabbed as in PRINT style, it's comma delimited.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim a as integer, b as string, c as single
+
 open "myfile.txt" for output as #1
 write #1, 1, "Hello, World", 34.5
 close #1
 
 open "myfile.txt" for input as #1
-input #1, a, b$, c!
+input #1, a, b, c
 close #1
-write a, b$, c!
+write a, b, c
 %%
 
 %%

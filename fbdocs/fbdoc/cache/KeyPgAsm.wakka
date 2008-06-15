@@ -79,7 +79,7 @@ Code block that allows the use of architecture-specific instructions.
 
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 '' This is an example for the x86 architecture.
 Function AddFive(ByVal num As Integer) As Integer
 	ASM
@@ -92,7 +92,7 @@ End Function
 Dim i As Integer = 4
 
 Print "4 + 5 ="; AddFive(i)
-%%##
+%%
 
 ##%%4 + 5 = 9%%##
 

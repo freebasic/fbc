@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="LOG"}}
-----
+{{fbdoc item="title" value="LOG"}}----
 Returns the natural logarithm of a given number.
 
 {{fbdoc item="syntax"}}##
@@ -33,7 +32,7 @@ SLEEP
 %%
 
 The output would look like:
-%%(qbasic)
+%%
 The log base 10 of 20 is: 1.301029995663981
 The log base 2 of 16 is: 4
 %%
@@ -44,4 +43,4 @@ The log base 2 of 16 is: 4
 {{fbdoc item="see"}}
 	- ##[[KeyPgExp Exp]]##
 
-{{fbdoc item="back" value="CatPgMath|Math"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgMath|Math"}}

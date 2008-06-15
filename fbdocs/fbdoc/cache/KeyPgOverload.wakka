@@ -1,11 +1,13 @@
-{{fbdoc item="title" value="OVERLOAD"}}
-----
-{{fbdoc item="syntax"}}
-~DECLARE FUNCTION foo OVERLOAD (arguments) as outputtype
-~DECLARE SUB bar OVERLOAD (arguments)
+{{fbdoc item="title" value="OVERLOAD"}}----
+Declaration specifier to overload number and types of parameters passed to procedures.
 
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] //proc_name// **Overload** ( //argumentlist// ) [[KeyPgAs as]] [[DataType datatype]]
+//or//
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] //proc_name// **Overload** ( [ //argumentlist// ] )
+##
 {{fbdoc item="desc"}}
-~When declaring overloaded functions, this is: functions with the same name and different argument sets, the first declared function must have the keyword OVERLOAD, to avoid a "Symbol already defined" error. You may use the OVERLOAD specifier on SUBs and FUNCTIONs. It is not necessary to use the OVERLOAD specifier on every declaration of a given proc, but it is allowed, so making macros to build overloaded procs is simple.
+	When declaring overloaded functions, this is: functions with the same name and different argument sets, the first declared function must have the keyword ##**Overload**##, to avoid a "Symbol already defined" error. ##**Overload**## specifier may be used on ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## procedures. It is not necessary to use the ##**Overload**## specifier on every declaration of a given proc, but it is allowed, so making macros to build overloaded procs is simple.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -17,7 +19,7 @@ END FUNCTION
 FUNCTION SUM  (A AS SINGLE,B AS SINGLE) AS SINGLE
    FUNCTION=A+B
 END FUNCTION   
-DIM A,B
+DIM AS INTEGER A,B
 DIM AS SINGLE A1,B1
 A=2
 B=3
@@ -32,7 +34,6 @@ SLEEP
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	
-	
+	- ##[[KeyPgDeclare declare]]##
 
-{{fbdoc item="back" value="|"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

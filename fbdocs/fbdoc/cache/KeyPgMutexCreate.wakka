@@ -34,6 +34,8 @@ DECLARE SUB teletype (BYVAL text AS STRING, BYVAL x AS INTEGER, BYVAL y AS INTEG
 
 DIM SHARED threadsync AS any ptr
 
+dim i as integer
+
 DIM handleTb(0 to MAX_THREADS-1) AS any ptr
 
 '' Create a mutex to syncronize the threads
@@ -82,7 +84,8 @@ SUB teletype (BYVAL text AS STRING, BYVAL x AS INTEGER, BYVAL y AS INTEGER)
 
 	    SLEEP 25
    NEXT
-END SUB%%
+END SUB
+%%
 
 {{fbdoc item="diff"}}
 	- This function is new to FreeBASIC

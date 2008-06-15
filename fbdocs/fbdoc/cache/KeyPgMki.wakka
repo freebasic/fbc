@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="MKI"}}
-----
+{{fbdoc item="title" value="MKI"}}----
 Does a binary copy from a ##[[KeyPgInteger integer]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes.
 
 {{fbdoc item="syntax"}}##
@@ -21,11 +20,10 @@ Does a binary copy from a ##[[KeyPgInteger integer]]## variable to a ##[[KeyPgSt
 	This function is useful to write numeric values to buffers without using a TYPE definition.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-dim a as integer
+%%(qbasic)dim a as integer, b as string
 a=4534
-b$=mki(a)
-print a, cvi(b$)
+b=mki(a)
+print a, cvi(b)
 sleep
 %%
 
@@ -35,5 +33,4 @@ sleep
 {{fbdoc item="see"}}
 	- ##[[KeyPgCvi Cvi]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
-   
+{{fbdoc item="back" value="CatPgString|String Functions"}}

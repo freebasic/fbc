@@ -34,6 +34,7 @@ end function
 'main program
 ' create a function pointer, arguments must be the same as in the original function
 dim AddNumbers as function ( byval operand1 as integer, byval operand2 as integer ) as integer
+dim hndl as any ptr
 '
 hndl=dylibload("mydll.dll")
 ' find the proc address (case matters!)

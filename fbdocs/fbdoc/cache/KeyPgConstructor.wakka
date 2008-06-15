@@ -77,7 +77,7 @@ print "Creating x3"
 dim x3 as sample = 99.9
 
 print "Creating x4"
-dim x4 as sample = type<sample>( "aaa", 1 )
+dim x4 as sample = sample( "aaa", 1 )
 
 print "Values:"
 print "  x1 = "; x1

@@ -10,26 +10,26 @@ Control flow statement to mark the end of a ##[[KeyPgFornext For...Next]]## loop
 	There should be exactly one ##**Next**## statement (or one item in the identifier list) for every ##[[KeyPgFornext For]]## statement.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim i as integer, j as integer
 for i=1 to 10
 for j=1 to 2
-   ...
+   ' ...
 next
 next
 %%
 
-%%(qbasic)
+%%(qbasic)dim i as integer, j as integer
 for i=1 to 10
 for j=1 to 2
-   ...
+   ' ...
 next j
 next i
 %%
 
-%%(qbasic)
+%%(qbasic)dim i as integer, j as integer
 for i=1 to 10
 for j=1 to 2
-   ...
+   ' ...
 next j,i
 %%
 

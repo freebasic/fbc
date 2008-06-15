@@ -33,17 +33,20 @@ Statement to retrieve information about current video mode or the desktop.
 	{{table columns="2" cellpadding="1" cells="w;Width of the screen in pixels;h;Height of the screen in pixels;depth;Current pixel format bits per pixel: this can be 1, 2, 4, 8, 16, or 32;pitch;Size of a framebuffer row in bytes;rate;Current refresh rate, or 0 if unknown;driver;Name of current gfx driver in use, like "DirectX" or "X11"}}
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim w as integer, h as integer
+dim depth as integer
+dim driver_name as string
+
 SCREEN 15, 32 
 ' Obtain info about current mode 
-SCREENINFO w, h, depth,,,,driver_name$ 
-PRINT STR$(w) + "x" + STR$(h) + "x" + STR$(depth); 
-PRINT " using " + driver_name$ + " driver" 
+SCREENINFO w, h, depth,,,,driver_name
+PRINT STR(w) + "x" + STR(h) + "x" + STR(depth); 
+PRINT " using " + driver_name + " driver" 
 SLEEP 
 ' Quit gfx mode and obtain info about desktop 
 SCREEN 0 
 SCREENINFO w, h, depth 
-PRINT "Desktop running at " + STR$(w) + "x" + STR$(h) + "x" + STR$(depth); 
+PRINT "Desktop running at " + STR(w) + "x" + STR(h) + "x" + STR(depth); 
 
 %%
 

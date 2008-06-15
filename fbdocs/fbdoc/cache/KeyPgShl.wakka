@@ -22,7 +22,7 @@ SLEEP
 %%
 
 The output would look like:
-##%%(qbasic)
+%%
 2
 4
 8
@@ -33,7 +33,7 @@ The output would look like:
 256
 512
 1024
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

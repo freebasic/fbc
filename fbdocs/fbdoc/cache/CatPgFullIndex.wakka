@@ -7,6 +7,8 @@
 	- {{fbdoc item="keyword" value="KeyPgDots|..."}}
 ====_====
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfberr|__FB_ERR__"}}
@@ -228,9 +230,9 @@
 ====I====
 	- {{fbdoc item="keyword" value="KeyPgIfthen|IF...THEN"}}
 	- {{fbdoc item="keyword" value="KeyPgIif|IIF"}}
-	- {{fbdoc item="keyword" value="KeyPgImageconvertrow|IMAGECONVERTROW"}}
+	- {{fbdoc item="keyword" value="KeyPgImageConvertRow|IMAGECONVERTROW"}}
 	- {{fbdoc item="keyword" value="KeyPgImagecreate|IMAGECREATE"}}
-	- {{fbdoc item="keyword" value="KeyPgImagedestroy|IMAGEDESTROY"}}
+	- {{fbdoc item="keyword" value="KeyPgImageDestroy|IMAGEDESTROY"}}
 	- {{fbdoc item="keyword" value="KeyPgImp|IMP"}}
 	- {{fbdoc item="keyword" value="KeyPgImport|IMPORT"}}
 	- {{fbdoc item="keyword" value="KeyPgInkey|INKEY"}}
@@ -343,6 +345,7 @@
 	- {{fbdoc item="keyword" value="KeyPgPrintusing|PRINT USING"}}
 	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgProcptr|PROCPTR"}}
+	- {{fbdoc item="keyword" value="KeyPgProperty|PROPERTY"}}
 	- {{fbdoc item="keyword" value="KeyPgPset|PSET"}}
 	- {{fbdoc item="keyword" value="KeyPgPtr|PTR"}}
 	- {{fbdoc item="keyword" value="KeyPgPublic|PUBLIC"}}
@@ -375,6 +378,7 @@
 	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenCons|SCREEN (Console)"}}
 	- {{fbdoc item="keyword" value="KeyPgScreencopy|SCREENCOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgScreencontrol|SCREENCONTROL"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenevent|SCREENEVENT"}}
 	- {{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenlist|SCREENLIST"}}
@@ -420,6 +424,7 @@
 	- {{fbdoc item="keyword" value="KeyPgTab|TAB"}}
 	- {{fbdoc item="keyword" value="KeyPgTan|TAN"}}
 	- {{fbdoc item="keyword" value="KeyPgThen|THEN"}}
+	- {{fbdoc item="keyword" value="KeyPgThis|THIS"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}
 	- {{fbdoc item="keyword" value="KeyPgTime|TIME"}}

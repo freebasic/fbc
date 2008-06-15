@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DEFDBL"}}
-----
+{{fbdoc item="title" value="DEFDBL"}}----
 Sets a default data type for variables
 
 {{fbdoc item="syntax"}}##
@@ -12,7 +11,7 @@ Sets a default data type for variables
 	This will make 'aNum' a ##[[KeyPgDouble Double]]##-precision decimal number since it is in the range of a-d:
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 defdbl a-d
 dim aNum 'implicit: As Double
 
@@ -33,7 +32,4 @@ print len(aNum) ' Prints 8, the number of bytes in a double.
 	- ##[[KeyPgDefuint Defuint]]##
 	- ##[[KeyPgDefushort Defushort]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
-
-
-
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

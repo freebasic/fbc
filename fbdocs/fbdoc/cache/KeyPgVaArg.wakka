@@ -1,13 +1,14 @@
-{{fbdoc item="title" value="VA_ARG"}}
-----
-{{fbdoc item="syntax"}}
-	//Current Argument// = VA_ARG ( //argument list//, //type// )
+{{fbdoc item="title" value="VA_ARG"}}----
+Returns the current argument from a variable argument list
 
+{{fbdoc item="syntax"}}##
+	//variable// = **va_arg** ( //argument_list//, [[DataType datatype]] )
+##
 {{fbdoc item="desc"}}
-	The VA_ARG macro allows the use of a variable number of arguments within a function. VA_ARG returns the current argument in the list, //argument list//, with an expected data type of //type//. Before VA_ARG can be used, it must be Initialized with the command [[KeyPgVaFirst VA_FIRST]]. Unlike the C macro with the same name, VA_ARG does not automatically increment //argument list// to the next argument within the list. The command [[KeyPgVaNext VA_NEXT]] must be used for this purpose.
+	The ##**va_arg**## macro allows the use of a variable number of arguments within a function. ##**va_arg**## returns the current argument in the list, ##//argument_list//##, with an expected data type of //datatype//. Before ##**va_arg**## can be used, it must be Initialized with the command ##[[KeyPgVaFirst va_first]]##. Unlike the C macro with the same name, ##**va_arg**## does not automatically increment //argument_list// to the next argument within the list. The command ##[[KeyPgVaNext va_next]]## must be used for this purpose.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 FUNCTION Avg cdecl (Count as INTEGER, ... ) AS DOUBLE
 	DIM ARG AS ANY PTR 
 	DIM SUM AS DOUBLE = 0
@@ -26,20 +27,20 @@ PRINT AVG (4, 3.4,5.0,3.2,4.1)
 PRINT AVG (2, 65.2,454.65481)
 
 SLEEP
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%
 3.925
 259.927405
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- [[KeyPgDots ...]]
-	- [[KeyPgVaFirst VA_FIRST]]
-	- [[KeyPgVaNext VA_NEXT]]
+	- ##[[KeyPgDots ... (Ellipsis)]]##
+	- ##[[KeyPgVaFirst va_first]]##
+	- ##[[KeyPgVaNext va_next]]##
 
-{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}  {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}

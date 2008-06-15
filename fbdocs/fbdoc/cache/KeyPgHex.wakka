@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="HEX"}}
-----
+{{fbdoc item="title" value="HEX"}}----
 Returns the hexadecimal of the given number.
 
 {{fbdoc item="syntax"}}##
@@ -41,4 +40,4 @@ PRINT HEX(54321, 5) '' will display 0D431
 	- ##[[KeyPgBin Bin]]##
 	- ##[[KeyPgOct Oct]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

@@ -1,14 +1,12 @@
-{{fbdoc item="title" value="OPTION PRIVATE"}}
-----
-{{fbdoc item="syntax"}}
-	OPTION PRIVATE 
-
+{{fbdoc item="title" value="OPTION PRIVATE"}}----
+{{fbdoc item="syntax"}}##
+	**Option Private**
+##
 {{fbdoc item="desc"}}
-	Sets subs/functions to be private by default (instead of [[KeyPgPublic PUBLIC]] by default). This means subs/functions are only accessible within the module and is hidden to other modules, unless they have 'public' before them. This means two subs/functions can have the same name, as long as they are private and are in seperate modules.
-
+	Sets subs/functions to be private by default (instead of ##[[KeyPgPublic Public]]## by default). This means subs/functions are only accessible within the module and is hidden to other modules, unless they have 'public' before them. This means two subs/functions can have the same name, as long as they are private and are in seperate modules.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)' compile with -lang deprecated
 option private
 
 sub I_am_private()
@@ -22,10 +20,7 @@ end sub
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- [[KeyPgPrivate PRIVATE]]
-	- [[KeyPgPublic PUBLIC]]
-	- [[KeyPgSub SUB]]
-	- [[KeyPgFunction FUNCTION]]
-	- [[KeyPgOptionbase OPTION BASE]]
+	- ##[[KeyPgPrivate Private]]##
+	- ##[[KeyPgPublic Public]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

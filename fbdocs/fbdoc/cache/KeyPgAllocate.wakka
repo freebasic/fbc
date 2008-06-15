@@ -22,15 +22,13 @@ Allocates a certain number of bytes from the free store.
 	This function is not part of the FB RTLib, it is an alias for the C lib's //malloc//, so it's not garanteed to be thread safe in all platforms.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)'' This program uses the ALLOCATE(...) function to create a buffer of 15 integers that is
+%%(qbasic)'' This program uses the ALLOCATE(...) function to create a buffer of 15 integers that is
 '' then filled with the first 15 numbers of the Fibonacci Sequence. Note the call to
 '' DEALLOCATE(...) at the end of the program.
-option explicit
 
    const integerCount as integer = 15                    '' try to allocate memory for
    dim as integer ptr buffer                             '' 15 integers; get the address
    buffer = allocate( integerCount * len( integer ) )    '' of the first integer
-
 
    if( buffer = 0 ) then                                 '' allocation failed if the
 	  print "Error: unable to allocate memory"           '' pointer returned is 0
@@ -49,19 +47,16 @@ option explicit
 	  print buffer[ i ] ;                                '' display the sequence
    next
    
-   deallocate( buffer )                                  '' free the memory back
-   end 0                                                 '' to the system
-   
-%%##
+   deallocate( buffer )                                  '' free the memory
+   end 0
+%%
 	Output is:
 	<<  0 1 1 2 3 5 8 13 21 34 55 89 144 233 377>>
 	::c::
 
 There are some things to be aware of when allocating memory. Take a look at the following example, which makes use of a single pointer to point to 2 different newly allocated memory locations.
 
-%%(qbasic)option explicit
-
-function AllocateExample2()
+%%(qbasic)sub AllocateExample2()
    dim as integer ptr integerPtr = 0                     '' initialize a pointer to null
 
 '' first_allocation:
@@ -71,10 +66,10 @@ function AllocateExample2()
    integerPtr = allocate( len( integer ) )               '' reassign pointer to different
 	                                                     '' memory
    deallocate( integerPtr )
-end function
+end sub
 
    AllocateExample2()
-   sleep : end 0
+   end 0
 %%
 
 The above example leaks memory, since the first block of allocated memory is never deallocated. As a general rule, only reassign a pointer if you know that there is more than one reference to that memory location. If there isn't, then the first allocated memory block must be deallocated before reassigning the pointer.

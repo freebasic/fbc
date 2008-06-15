@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="RIGHT"}}
-----
+{{fbdoc item="title" value="RIGHT"}}----
 Returns the right most characters of the source string of the length specified.
 
 {{fbdoc item="syntax"}}##
@@ -23,9 +22,9 @@ Returns the right most characters of the source string of the length specified.
 	The expression can be a wstring (Unicode string), in this case RIGHT returns a wstring.The DOS version does not support Unicode.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-text$ = "hello world"
-print right(text$, 5) 'displays "world"
+%%(qbasic)dim text as string
+text = "hello world"
+print right(text, 5) 'displays "world"
 %%
 
 An Unicode example:
@@ -43,4 +42,4 @@ print right(text, 5) 'displays " &#1084;&#1080;&#1088;!"
 	- ##[[KeyPgLeft Left]]##
 	- ##[[KeyPgMidfunction Mid (Function)]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

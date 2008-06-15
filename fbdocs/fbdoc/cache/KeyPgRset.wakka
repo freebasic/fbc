@@ -18,10 +18,10 @@ Right justifies a string in a string buffer.
 	RSET right justifies text into the string buffer //dst//, filling the right part of the string with //src// and the left part with spaces.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-buffer$ = space$(10)
-rset buffer$, "91.5"
-print "-["; buffer$; "]-"
+%%(qbasic)dim buffer as string
+buffer = space(10)
+rset buffer, "91.5"
+print "-["; buffer; "]-"
 %%
 
 {{fbdoc item="diff"}}

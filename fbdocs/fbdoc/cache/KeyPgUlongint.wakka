@@ -10,10 +10,9 @@ A 64-bit unsigned whole-number data type. Can hold values from 0 to 18 446 744 0
 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-  Dim x As ULongInt = 0
-  Dim y As ULongInt = &HFFFFFFFFFFFFFFFF
-  Print "ULongInt Range = "; x; " to "; y
+%%(qbasic)Dim x As ULongInt = 0
+Dim y As ULongInt = &HFFFFFFFFFFFFFFFFull
+Print "ULongInt Range = "; x; " to "; y
 %%
 	**Output:**
 	%%ULongInt Range = 0 to 18446744073709551615%%

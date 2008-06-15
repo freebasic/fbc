@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="PTR"}}
-----
+{{fbdoc item="title" value="PTR"}}----
 A variable declaration type modifier
 
 {{fbdoc item="syntax"}}##
@@ -37,4 +36,4 @@ Print p
 	- ##[[KeyPgPointer Pointer]]##
 	- ##[[KeyPgAllocate Allocate]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

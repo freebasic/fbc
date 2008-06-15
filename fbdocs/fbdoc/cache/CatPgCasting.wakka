@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="Converting Data Types"}}
-----
+{{fbdoc item="title" value="Converting Data Types"}}----
 <<
 ==Generic==
 	- {{fbdoc item="keyword" value="KeyPgCast|CAST"}}
@@ -17,6 +16,8 @@
 	- {{fbdoc item="keyword" value="KeyPgCint|CINT"}}
 	- {{fbdoc item="keyword" value="KeyPgClngint|CLNGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgCulngint|CULNGINT"}}
+	- {{fbdoc item="keyword" value="KeyPgCsign|CSIGN"}}
+	- {{fbdoc item="keyword" value="KeyPgCunsg|CUNSG"}}
 
 <<>>
 ==To Floating-point==
@@ -31,6 +32,12 @@
 	- {{fbdoc item="keyword" value="KeyPgValuint|VALUINT"}}
 	- {{fbdoc item="keyword" value="KeyPgValulng|VALULNG"}}
 	- {{fbdoc item="keyword" value="KeyPgWstr|WSTR"}}
+
+==Pointer Conversion==
+	- {{fbdoc item="keyword" value="KeyPgProcptr|PROCPTR"}}
+	- {{fbdoc item="keyword" value="KeyPgSadd|SADD"}}
+	- {{fbdoc item="keyword" value="KeyPgStrptr|STRPTR"}}
+	- {{fbdoc item="keyword" value="KeyPgVarptr|VARPTR"}}
 
 >>
 

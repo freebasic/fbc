@@ -8,7 +8,7 @@ Implicit declarations are supported for backward compatibility with QBASIC.
 	For full debugging support, all variables must be explicitly declared and suffixes should not be used. The use of ##[[KeyPgOptionexplicit OPTION EXPLICIT]]## is recommended to turn of support for implicit declarations, so that mistyped variable names are caught at compile time by the compiler.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' compile with -lang deprecated or qb
 a = 6 + 3.14
 '' The variable a is implicitly declared as an integer so the result is 9
 print a

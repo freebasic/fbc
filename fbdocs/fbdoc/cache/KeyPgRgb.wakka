@@ -21,7 +21,7 @@ Function to compute valid color value for hi/truecolor modes.
 {{fbdoc item="desc"}}
 	##//Red//##, ##//green//## and ##//blue//## are components ranging 0-255.
 
-	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an integer  in the format &hAARRGGBB, where RR, GG and BB equals the values passed to this function, in hexadecimal format. AA is the implicit alpha value and is automatically set to &hFF.
+	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an unsigned integer  in the format &hAARRGGBB, where RR, GG and BB equals the values passed to this function, in hexadecimal format. AA is the implicit alpha value and is automatically set to &hFF.
 
 Example:
 	See ##[[KeyPgPutgraphics Put (Graphics)]]## example in addition.

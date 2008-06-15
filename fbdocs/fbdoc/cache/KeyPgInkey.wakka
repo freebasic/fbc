@@ -1,12 +1,11 @@
-{{fbdoc item="title" value="INKEY$"}}
-----
+{{fbdoc item="title" value="INKEY$"}}----
 Returns a string representing the first key waiting the keyboard buffer.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Inkey$** ( ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Inkey** ( ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Inkey$**
+	//result// = **Inkey**[$]
 ##
 {{fbdoc item="ret"}}
 	The character (or characters) returned.
@@ -16,11 +15,11 @@ Returns a string representing the first key waiting the keyboard buffer.
 
 	If the key  is an "extended" one (numeric pad, cursors, functions) it returns two characters: the first one is ##[[KeyPgChr Chr]]##(255).
 
-	##**Inkey$**## does not stop the program if no key is available. For a keyword that waits for a key, see ##[[KeyPgInputnum Input()]]## or ##[[KeyPgGetkey Getkey]]## or poll ##**Inkey$**## in a loop.
+	##**Inkey**## does not stop the program if no key is available. For a keyword that waits for a key, see ##[[KeyPgInputnum Input()]]## or ##[[KeyPgGetkey Getkey]]## or poll ##**Inkey**## in a loop.
 
 	The ""Shift"", ""Ctrl"", ""Alt"", and ""AltGr"" keys can't be read independently by this function as they never enter the keyboard buffer (although, perhaps obviously, Shift-A will reported by Inkey differently than Control-A et cetera; and Alt-A is an extended key a la the above).
 	
-The key read is not echoed to the console.
+	The key read is not echoed to the console.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -37,4 +36,4 @@ loop until inkey$ = "q"
 	- ##[[KeyPgInputnum Input()]]##
 	- ##[[KeyPgMultikey Multikey]]##
 
-{{fbdoc item="back" value="CatPgInput|INPUT"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgInput|User Input"}}

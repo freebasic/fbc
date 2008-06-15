@@ -11,7 +11,7 @@ Operator to concatenate two strings, converting non-strings to strings as needed
 	The concatenation returns a string made of sticking both variables together. If some of the variables are not strings, the ##[[KeyPgStr Str]]## function is called automatically to convert the variable to a string.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 DIM AS STRING A,C
 DIM AS SINGLE B
 A="The result is: "
@@ -19,7 +19,7 @@ B=124.3
 C=A & B
 PRINT C
 SLEEP
-%%##
+%%
 
 The output would look like:
 %%

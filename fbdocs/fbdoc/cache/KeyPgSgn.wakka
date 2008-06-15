@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SGN"}}
-----
+{{fbdoc item="title" value="SGN"}}----
 Function to return the sign part of a number.
 
 {{fbdoc item="syntax"}}##
@@ -22,22 +21,22 @@ Function to return the sign part of a number.
 	The required ##//number//## argument can be any valid numeric expression. If ##//number//## is an uninitialized variable, zero is returned.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 DIM N AS INTEGER
 
 PRINT SGN ( -1.87 )
 PRINT SGN ( 0 )
 PRINT SGN ( 42.658 )
 PRINT SGN ( N )
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%
 -1
 0
 1
 0
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- None
@@ -45,4 +44,4 @@ The output would look like:
 {{fbdoc item="see"}}
 	- ##[[KeyPgAbs Abs]]##
 
-{{fbdoc item="back" value="CatPgMath|Math"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgMath|Math"}}

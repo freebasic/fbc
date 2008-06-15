@@ -18,7 +18,7 @@ Returns the amount of free memory available.
 	Returns the free memory (ram) available in bytes.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim mem as integer
 mem = fre
 print "Free memory:"
 print

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ZSTRING"}}
-----
+{{fbdoc item="title" value="ZSTRING"}}----
 Standard data type: 8 bit character string
 
 {{fbdoc item="syntax"}}##
@@ -41,5 +40,4 @@ print sizeof(*str2)  'returns len(zstring), the size of the variable
 	- ##[[KeyPgStringtype String]]##
 	- ##[[KeyPgWstring Wstring]]##
 
-{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
-
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

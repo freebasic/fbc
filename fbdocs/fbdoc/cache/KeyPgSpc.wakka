@@ -16,8 +16,7 @@ Output function to skip spaces when writing to screen or file
 	##**Spc**## skips n-//columns// when ##[[KeyPgPrint Print]]##ing to screen or to a file.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
-DIM AS STRING A, B, N, M
+%%(qbasic)DIM AS STRING A, B, N, M
 
 A = "Jane"
 B = "DOE"
@@ -25,10 +24,10 @@ N = "Bob"
 M = "Smith"
 
 PRINT "FIRST NAME"; SPC(25); "LAST NAME"
-PRINT "----------";SPC(25);"----------"
-PRINT A; SPC(25+LEN(F)-LEN(A));B
-PRINT N; SPC(25+LEN(F)-LEN(N)); M
-%%##
+PRINT "----------"; SPC(25); "----------"
+PRINT A; SPC(35-LEN(A)); B
+PRINT N; SPC(35-LEN(N)); M
+%%
 
 The output would look like:
 ##%%

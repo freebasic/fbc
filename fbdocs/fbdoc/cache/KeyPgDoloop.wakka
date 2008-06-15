@@ -23,23 +23,19 @@ Control flow statement for looping
 
 {{fbdoc item="ex"}}
 	In this example, a ##**Do**## loop is used to count the total number of odd numbers from 1 to 10. It will repeat //until// it's //n > 10// condition is met:
-%%(qbasic)option explicit                              '' force explicit variable declarations
+%%(qbasic)dim as integer n = 1                            '' number to check
+dim as integer total_odd = 0                    '' running total of odd numbers
+do until( n > 10 )
+  if( ( n MOD 2 ) > 0 ) then total_odd += 1    '' add to total if n is odd (has remainder from division by 2)
+  n += 1
+loop
+print "total odd numbers: " ; total_odd         '' prints '5'
 
-   dim as integer n = 1                            '' number to check
-   dim as integer total_odd = 0                    '' running total of odd numbers
-   do until( n > 10 )
-	  if( ( n MOD 2 ) > 0 ) then total_odd += 1    '' add to total if n is odd (has remainder from division by 2)
-	  n += 1
-   loop
-   print "total odd numbers: " ; total_odd         '' prints '5'
-
-   end 0
+end 0
 %%
 
 	Here, an infinite DO loop is used to count the total number of evens. We place the conditional check inside the loop via an ##[[KeyPgIfthen If...Then]]## statement, which exits the loop if and when //n > 10// becomes true:
-%%(qbasic)option explicit                              '' force explicit variable declarations
-
-   dim as integer n = 1                            '' number to check
+%%(qbasic)   dim as integer n = 1                            '' number to check
    dim as integer total_even = 0                   '' running total of even numbers
    do
 	  if( n > 10 ) then exit do                    '' exit if we've scanned our 10 numbers

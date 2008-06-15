@@ -14,6 +14,7 @@ Operator to use a pointer as it were a zero based array
 %%(qbasic)
 Dim a(10) As Integer
 Dim pa As Integer Ptr
+Dim i as integer
 
 For i = 0 To 10
 	a(i)=i 'Here, we'll place the numbers 0 through 10 into the array.

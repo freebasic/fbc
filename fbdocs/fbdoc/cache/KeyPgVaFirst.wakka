@@ -1,13 +1,14 @@
-{{fbdoc item="title" value="VA_FIRST"}}
-----
-{{fbdoc item="syntax"}}
-	//Argument Pointer// = VA_FIRST ()
+{{fbdoc item="title" value="VA_FIRST"}}----
+Returns the first argument in a variable argument list
 
+{{fbdoc item="syntax"}}##
+	//pointer_variable// = **va_first**()
+##
 {{fbdoc item="desc"}}
-	The VA_FIRST function initializes a [[DtPointers pointer]], //Argument Pointer//, to point to the first variable argument passed to a function.
+	The ##**va_first**## function initializes a [[DtPointers pointer]], //pointer_variable//, to point to the first variable argument passed to a function.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 FUNCTION Avg cdecl (Count as INTEGER, ... ) AS DOUBLE
 	DIM ARG AS ANY PTR 
 	DIM SUM AS DOUBLE = 0
@@ -26,20 +27,20 @@ PRINT AVG (4, 3.4,5.0,3.2,4.1)
 PRINT AVG (2, 65.2,454.65481)
 
 SLEEP
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%
 3.925
 259.927405
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- [[KeyPgDots ...]]
-	- [[KeyPgVaArg VA_ARG]]
-	- [[KeyPgVaNext VA_NEXT]]
+	- [[KeyPgDots ... (Ellipsis)]]
+	- ##[[KeyPgVaArg va_arg]]##
+	- ##[[KeyPgVaNext va_next]]##
 
-{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}  {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}

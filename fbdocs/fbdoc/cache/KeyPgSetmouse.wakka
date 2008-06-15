@@ -22,12 +22,22 @@ Graphics function to set the position and visibility of the mouse cursor.
 	##**Setmouse**## will set the ##//X//,//Y//## coordinates of the mouse pointer, as well as setting it's visibility.  Mouse position is set using the X and Y parameters.  The mouse will be visible if visibility is set to 1, and invisible if visibility is set to 0.  ##**Setmouse**## is intended for graphics modes initiated using the ##[[KeyPgScreengraphics Screen (Graphics)]]## statement only.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-screen 19, 32, 1                         'creates a screen 800x600, 32-bit color, 1 video page
+%%(qbasic)dim x as integer, y as integer, buttons as integer
+
+' create a screen 800x600, 32-bit color, 1 video page
+screen 19, 32, 1                         
+
 do
-	getmouse x, y , , buttons                     'get mouse x, y and button state
-	if buttons = 1 then setmouse 400, 300    'on left mouse click, center mouse
-loop until multikey(1)                                    'do loop until esc is pressed
+	' get mouse x, y and button state
+	getmouse x, y , , buttons                     
+
+	if buttons = 1 then 
+		' on left mouse click, center mouse
+		setmouse 400, 300
+	end if
+
+	' do loop until esc is pressed
+loop until multikey(1)                                  
 %%
 
 {{fbdoc item="diff"}}

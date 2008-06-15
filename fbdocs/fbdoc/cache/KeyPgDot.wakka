@@ -16,7 +16,7 @@ Operator to access fields in a user defined type variable
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)
+%%(qbasic)' compile with -lang deprecated or qb
   type rect
   x as integer
   y as integer
@@ -28,7 +28,7 @@ Operator to access fields in a user defined type variable
   .y=2
   end with
  fake.dot=1
-  print "x= " r.x, "y="  r.y
+  print "x= "; r.x, "y=";  r.y
   print fake.dot
   sleep
 %%

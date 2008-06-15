@@ -19,23 +19,21 @@ Control flow statement for looping
 
 {{fbdoc item="ex"}}
 	In this example, a ##**While**## loop is used to reverse a string by iterating through it backwards. The loop stops if index is less than 0 //(0 being the first index in the string)//.
-%%(qbasic)option explicit                              '' force explicit variable declarations
+%%(qbasic)dim as string sentence                          '' string to reverse
+sentence = "The quick brown fox jumps over the lazy dog."
 
-   dim as string sentence                          '' string to reverse
-   sentence = "The quick brown fox jumps over the lazy dog."
-   
-   dim as string ecnetnes
-   dim as integer index
-   index = len( sentence ) - 1                     '' point to last character
-   while( index >= 0 )                             '' stop after first character
-	  ecnetnes += chr( sentence[index] )           '' append character to new string
-	  index -= 1
-   wend
-   
-   print "original: """ ; sentence ; """"
-   print "reversed: """ ; ecnetnes ; """"
-   
-   end 0
+dim as string ecnetnes
+dim as integer index
+index = len( sentence ) - 1                     '' point to last character
+while( index >= 0 )                             '' stop after first character
+  ecnetnes += chr( sentence[index] )           '' append character to new string
+  index -= 1
+wend
+
+print "original: """ ; sentence ; """"
+print "reversed: """ ; ecnetnes ; """"
+
+end 0
 %%
 
 {{fbdoc item="diff"}}

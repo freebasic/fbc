@@ -8,13 +8,13 @@ Changes the next read location for values stored with the ##[[KeyPgData Data]]##
 	Sets the next-data-to-read pointer to the first element of the first ##[[KeyPgData Data]]## statement after the label.  The label must be contained in the same module as the currently-executing code.  ##Restore## alters the normal top to bottom order in which ##Data## are ##[[KeyPgRead Read]]##. It allows re-reading some ##Data## or using multiple sets of ##Data## in a single module.	
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-
-' Create an 2 arrays of integers and a 2 strings to hold the data.
+%%(qbasic)' Create an 2 arrays of integers and a 2 strings to hold the data.
 Dim h(4) As Integer
 Dim h2(4) As Integer
 Dim hs As String
 Dim hs2 As String
+Dim read_data1 as integer
+Dim read_data2 as integer
 
 ' Set the data read to the label 'dat2:'
 Restore dat2

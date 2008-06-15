@@ -10,7 +10,7 @@ Error handling statement to resume execution after a jump to an error handler.
 	##**Resume Next**## resets the ##[[KeyPgErr Err]]## value to 0
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)'' Compile with -lang deprecated or qb
 Dim As Single i, j
 
 On Error Goto ErrHandler

@@ -8,16 +8,18 @@ Statement modifier
 
 	[[KeyPgCircle Circle]] [ //target,// ] **Step** ( //x//, //y// ), //radius// [, [ //color// ][, [ //start// ][, [ //end// ][, [ //aspect// ][, F] ] ] ] ]
 
-	[[keyPgPaint Paint]] [ //target//, ] STEP ( //x//, //y// ) [, [ //paint// ][, [ //border_color// ] ] ]
+	[[KeyPgPaint Paint]] [ //target//, ] STEP ( //x//, //y// ) [, [ //paint// ][, [ //border_color// ] ] ]
 ##
 {{fbdoc item="desc"}}
-	In a ##[[KeyPgForNext For]]## statement, ##**Step**## specifies the increment of the loop iterator with each loop.
+	In a ##[[KeyPgFornext For]]## statement, ##**Step**## specifies the increment of the loop iterator with each loop.
 
 	In a ##[[KeyPgLinegraphics Line]]##, ##[[KeyPgCircle Circle]]## or ##[[KeyPgPaint Paint]]## statement, ##**Step**## indicates that the following coordinate has values relative to the graphics cursor.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim i as integer
 FOR I=10 TO 1 STEP -1
+NEXT
+
 %%
 
 %%(qbasic)

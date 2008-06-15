@@ -12,10 +12,12 @@
 	After modifying the data, an [[KeyPgUnlock UNLOCK]] with the same parameters as the LOCK should be issued .
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-''e.g. locking a file, reading 100 bytes, and unlocking it. To run, make sure there exists a file called 'file.ext' in the current directory that is at least 100 bytes.
+%%(qbasic)'' e.g. locking a file, reading 100 bytes, and unlocking it. 
+'' To run, make sure there exists a file called 'file.ext' 
+'' in the current directory that is at least 100 bytes.
 
-dim array(1 to 100)
+dim array(1 to 100) as integer
+dim f as integer, i as integer
 f = freefile
 open "file.ext" for binary as #f
 lock #f, 1 to 100

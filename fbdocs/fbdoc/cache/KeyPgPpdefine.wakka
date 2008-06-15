@@ -13,10 +13,10 @@ Preprocessor directive to define a macro.
 		- Defines with parameters are substituted by the //macro_text//, that will contain all the arguments passed replaced. **Note:** The open parentheses character ('(') must immediately follow the //identifier//, there should be no white-spaces between them.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 #define DEBUGGING
 #ifdef DEBUGGING
-...
+  ' ... statements
 #endif
 
 #define FALSE 0
@@ -27,7 +27,7 @@ print hex( MyRGB(&hff, &h00, &hff) )
 
 #define printval(bar) _
 	print #bar; " ="; bar
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to Freebasic

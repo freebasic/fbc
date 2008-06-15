@@ -11,14 +11,14 @@ Operator that shifts the bits of an integer right and assign the result to the a
 	The combined ##**Shr=**## shifts all bits in the argument ##//variable//## integer to the right by argument ##//number//##, and assignes the result to ##//variable//##. This has the effect of dividing the argument ##//variable//## by two for each shift given in the argument ##//number//##. Both arguments, ##//variable//## and ##//number//## are integers.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 DIM i AS INTEGER
 i = &b00011000   '' = 24
 i shr= 3         '' = i\2^3
 '' Result: 11          3            3
 print bin(i), i, 24\2^3
 SLEEP
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

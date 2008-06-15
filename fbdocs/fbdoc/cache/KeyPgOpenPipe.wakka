@@ -39,7 +39,7 @@ Open a sub process and allow input to be read from or output to be written to th
 	##//filenum//## is a FB file handle that must be unused.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim text as string
 open pipe "fbc.exe" for input as #1
 print "Output of fbc:"
 do while not eof(1)

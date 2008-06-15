@@ -29,7 +29,7 @@ Statement to initialize a graphics mode by specifying horizontal and vertical re
 	See the details in ##[[KeyPgScreengraphics Screen (Graphics)]]## keyword.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim a as integer, b as integer
 
 ScreenRes 640, 480, 8       'This line will set the screen mode to 640x480x8.
 	                        'The following code block will draw diagonal lines over the whole screen.
@@ -43,7 +43,6 @@ Print "Hello world!!"
 
 Sleep
 End
-
 %%
 
 {{fbdoc item="diff"}}

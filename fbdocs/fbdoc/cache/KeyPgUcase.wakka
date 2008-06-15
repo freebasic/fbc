@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="UCASE"}}
-----
+{{fbdoc item="title" value="UCASE"}}----
 Returns an upper case copy of a string.
 
 {{fbdoc item="syntax"}}##
@@ -30,4 +29,4 @@ print ucase("Hello World abCDefGH") '' displays "HELLO WORLD ABCDEFGH"
 {{fbdoc item="see"}}
 	- ##[[KeyPgLcase Lcase]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ACOS"}}
-----
+{{fbdoc item="title" value="ACOS"}}----
 Function that finds the arccosine of an angle.
 
 {{fbdoc item="syntax"}}##
@@ -28,13 +27,13 @@ PRINT ""
 PRINT "The angle between the sides is"; ACOS ( a / h )
 SLEEP
 %%
-
 The output would look like:
-<<Please enter the length of the hypotenuse of a triangle: 5
+%%
+Please enter the length of the hypotenuse of a triangle: 5
 Please enter the length of the adjacent side of the triangle: 4
 
-The angle between the sides is 0.6435011087932843<<
-::c::
+The angle between the sides is 0.6435011087932843
+%%
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
@@ -42,4 +41,4 @@ The angle between the sides is 0.6435011087932843<<
 	- ##[[KeyPgCos Cos]]##
 	- [[TutMathIntroTrig A Brief Introduction To Trigonometry]]
 
-{{fbdoc item="back" value="CatPgMath|Math"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgMath|Math"}}

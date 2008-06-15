@@ -17,6 +17,7 @@
 
 type T
   value as integer
+  value_array( 0 ) as integer
 
   '' let, cast, combined assignment operators,
   '' constructors, and the destructor, must be
@@ -40,21 +41,23 @@ type T
   '' compiler will convert the T += datatype
   '' to T = T + datatype.
 
-  '' Static members must be declared inside the
+  '' Nonstatic members must be declared inside the
   '' type.
   ''
-  '' All static members are implicitly
+  '' All Nonstatic members are implicitly
   '' passed a hidden **this** parameter having
   '' the same type as the TYPE in which they are
   '' declared.
   ''
-  '' Static member overloaded operators do not
-  '' return a type.  All operation is done on the
+  '' Nonstatic member overloaded operators do not
+  '' return a type.  All operations are done on the
   '' hidden this parameter.
+  ''
+  '' Properties: Can be value properties or single
+  '' indexed value properties
+  '' GET/SET methods must be each delcared if used.
 
-
-
-  '' Static Member Declarations:
+  '' Nonstatic Member Declarations:
 
   '' Assignment
 
@@ -95,7 +98,7 @@ type T
 
   declare destructor()
 
-  '' Static member functions and subs
+  '' Nonstatic member functions and subs
   '' overloaded procs must have different parameters
 
   declare function f( ) as T
@@ -104,6 +107,14 @@ type T
   declare sub s( )
   declare sub s( byref arg1 as T )
   declare sub s( byref arg1 as integer )
+
+  '' Properties
+
+  declare property p () as integer
+  declare property p ( byref new_value as integer )
+
+  declare property pidx ( byval index as integer ) as integer
+  declare property pidx ( byval index as integer, byref new_value as integer )
 
 end type
 
@@ -144,7 +155,7 @@ declare operator >= ( byref lhs as T, byref rhs as T ) as integer
 
 '' All TYPE members are defined outside the TYPE
 
-'' Static members must be prefixed with type name
+'' Nonstatic members must be prefixed with type name
 '' in this case 'T'
 
 '' Name resolution in a NAMESPACE is same as other
@@ -340,7 +351,7 @@ operator >= ( byref lhs as T, byref rhs as T ) as integer
 end operator
 
 
-'' Static member methods
+'' Nonstatic member methods
 
 function T.f( ) as T
   dim x as T = this
@@ -377,6 +388,25 @@ sub T.s( byref arg1 as integer )
   value = arg1
 end sub
 
+property T.p () as integer
+  '' GET property
+  return value
+end property
+
+property T.p ( byref new_value as integer )
+  '' SET property
+  value = new_value
+end property
+
+property T.pidx ( byval index as integer ) as integer
+  '' GET indexed property
+  return value_array( index )
+end property
+
+property T.pidx ( byval index as integer, byref new_value as integer )
+  '' SET indexed property
+  value_array( index ) = new_value
+end property
 %%
 
 {{fbdoc item="see"}}

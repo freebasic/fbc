@@ -3,7 +3,7 @@
 	- {{fbdoc item="keyword" value="KeyPgInkey|INKEY$"}}
 	- {{fbdoc item="keyword" value="KeyPgInput|INPUT"}}
 	- {{fbdoc item="keyword" value="KeyPgInputPp|INPUT #"}}
-	- {{fbdoc item="keyword" value="KeyPgInputNum|INPUT()"}}
+	- {{fbdoc item="keyword" value="KeyPgInputnum|INPUT()"}}
 
 <<>>
 	- {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}}

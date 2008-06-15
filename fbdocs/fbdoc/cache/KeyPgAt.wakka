@@ -19,10 +19,7 @@ Operator that returns the address of its operand.
 	When used with an array variable, ##@## returns a pointer to the element indexed by the array subscripts.  For example, @myarray(0) returns a pointer to myarray(0).
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
-'This program demonstrates the use of the @ operator.
-Option Explicit     'Here we ensure only declared variables may be used.
-
+%%(qbasic)'This program demonstrates the use of the @ operator.
 
 Dim a As Integer
 Dim b As Integer
@@ -47,15 +44,12 @@ Print "The pointer addr is now pointing at the memory address to a, value: ";*ad
 addr = @b
 
 Print "The pointer addr is now pointing at the memory address to b, value: ";*addr
-%%##
+%%
 
-##%%(qbasic)
-'This program demonstrates how the @ symbol can be used
+%%(qbasic)'This program demonstrates how the @ symbol can be used
 'to create pointers to subroutines.
 
 Declare Sub mySubroutine ()
-
-Option Explicit 'Here we ensure that all variables have to be dimensioned.
 
 Dim say_Hello As Sub() 
 
@@ -67,7 +61,7 @@ say_Hello() 'Now we can run say_Hello just like mySubroutine.
 Sub mySubroutine
 	Print "hi"
 End Sub
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="VAL"}}
-----
+{{fbdoc item="title" value="VAL"}}----
 Converts a string to a floating point number.
 
 {{fbdoc item="syntax"}}##
@@ -45,4 +44,4 @@ print a, b
 	- ##[[KeyPgChr Chr]]##
 	- ##[[KeyPgAsc Asc]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

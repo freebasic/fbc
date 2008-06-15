@@ -9,15 +9,10 @@ Intrinsic define set by the compiler.
 	It can be used to compile parts of the program only if the target is Linux
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-#IFDEF __FB_LINUX__
-
-  ...instructions only for linux...
-
+%%(qbasic)#IFDEF __FB_LINUX__
+  '...instructions only for linux...
 #ELSE
-  
- ...instructions not for Linux...
-
+  '...instructions not for Linux...
 #ENDIF 
 %%
 

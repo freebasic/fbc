@@ -34,10 +34,10 @@ Print "Hello Universe!"
 
 Using C's memset instead of CLS might give you a speed boost:
 
-%%(qbasic)
-#include "crt.bi"
+%%(qbasic)#include "crt.bi"
 const x_res = 640, y_res = 480, bpp = 32
 dim scrbuf as any ptr, scrsize as integer
+dim i as integer, j as integer
 
 screenres x_res, y_res, bpp, 2
 screenset 1, 0
@@ -59,7 +59,6 @@ do
 	    if i <= 0 then j = 1
 	end if
 loop while inkey$=""
-system
 %%
 
 {{fbdoc item="diff"}}

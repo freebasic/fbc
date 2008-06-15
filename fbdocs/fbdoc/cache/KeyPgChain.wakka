@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CHAIN"}}----
-Runs another program, and waits until that program ends before resumeing execution.
+Runs another program, and waits until that program ends before resuming execution.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Chain** ( [[KeyPgByref byref]] //exename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -10,6 +10,9 @@ Runs another program, and waits until that program ends before resumeing executi
 {{fbdoc item="param"}}
 	##//exename//##
 		Name of program to run.
+
+{{fbdoc item="ret"}}
+	    The return value is the program's exit code if called successfully, (-1) otherwise.
 
 {{fbdoc item="desc"}}
 	Runs another program and transfers control to that program. After called program has ended the original program will gain the control again.

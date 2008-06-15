@@ -1,20 +1,29 @@
 {{fbdoc item="title" value="SEEK (Function)"}}----
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Seek** ([[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgInteger integer]]) [[KeyPgAs as]] [[KeyPgLongint longint]]##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Seek** ([[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]]) [[KeyPgAs as]] [[KeyPgLongint longint]]
+##
+{{fbdoc item="param"}}
+	##//filenum//##
+		file number of an open file
+
+{{fbdoc item="ret"}}
+	The position of the next read or write operation in the file ##//filenum//##. 
+
+	The position is given in record lengths if the file was opened ##FOR RANDOM##, in bytes in any other case.
 
 {{fbdoc item="desc"}}
-	Returns the position  of the next read/write in the file //handle//. 
-	The position is given in record lengths if the file was opened FOR RANDOM, in bytes in any other case.
-	In FB the position is 1 based, the first record of a file is at position 1.
-	The [[KeyPgSeekset SEEK ]] statement is used to set the position of the next read/write
-	
+	In FreeBASIC the position is 1 based, the first record of a file is at position 1.
+
+	The ##[[KeyPgSeekset Seek]]## statement is used to set the position of the next read/write
+
 {{fbdoc item="ex"}}
-%%(qbasic)
+%%(qbasic)dim f as integer, position as integer
+
 f = freefile
 open "file.ext" for binary as #f
-...
+
 position = seek(f)
-...
+
 close #f
 %%
 
@@ -22,8 +31,8 @@ close #f
 	- None
 
 {{fbdoc item="see"}}
-	- [[KeyPgSeekset SEEK (Statement)]]
-	- [[KeyPgLoc LOC]]
-	- [[KeyPgOpen OPEN]]
+	- ##[[KeyPgSeekset Seek (Statement)]]##
+	- ##[[KeyPgLoc Loc]]##
+	- ##[[KeyPgOpen Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

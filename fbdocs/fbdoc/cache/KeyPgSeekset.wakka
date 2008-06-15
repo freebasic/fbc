@@ -8,13 +8,15 @@
 	In FB the position is 1 based, the first record of a file is at position 1.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-'e.g. if you want to skip to the 100th byte in the file for reading/writing:
+%%(qbasic)' e.g. if you want to skip to the 100th byte in the file for reading/writing:
+
+dim f as integer
+
 f = freefile
 open "file.ext" for binary as #f
-...
+
 seek f, 100
-...
+
 close #f
 %%
 

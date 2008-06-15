@@ -64,6 +64,7 @@ DECLARE SUB PrintArray()
 
 DIM Numbers(1 to 10) AS INTEGER
 DIM SHARED OtherNumbers(1 to 10) as INTEGER
+dim a as integer
 
 Numbers(1) = 1
 Numbers(2) = 2

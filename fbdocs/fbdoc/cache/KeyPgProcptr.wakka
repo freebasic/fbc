@@ -1,30 +1,31 @@
-{{fbdoc item="title" value="PROCPTR"}}
-----
-{{fbdoc item="syntax"}}
-variable = Procptr( function_name )
+{{fbdoc item="title" value="PROCPTR"}}----
+Returns a pointer to function or subroutine
 
+{{fbdoc item="syntax"}}##
+	//result// = **Procptr**( //proc_name// )
+##
 {{fbdoc item="desc"}}
-Returns the memory [[DtPointers pointer]] to a function or subroutine, specified by function_name.  Function pointers allow functions to be called from variables, structures, and allow for the creation of pseudo-objects.
+	Returns the memory [[DtPointers pointer]] to a function or subroutine, specified by function_name.  Function pointers allow functions to be called from variables, structures, and allow for the creation of pseudo-objects.
 
 When declaring function pointers, they must contain the same parameters as any function they are assigned to, and they must return an explicit type.  For instance:
-##%%(qbasic)
+%%(qbasic)
 ' This line will not cause an error
 Dim myFunction as Function( myArg as Integer ) as Integer
 
 ' However, this code will
 Dim myFunction as Function( myArg as Integer )
-%%##
-Also, Procptr provides the same function as standard pointer notation.  This code:
-##%%(qbasic)
+%%
+Also, ##**Procptr**## provides the same function as standard pointer notation.  This code:
+%%(qbasic)
 ' This code
 myFunction = ProcPtr( myFunctionName )
 
 ' Is equivalent to
 myFunction = @myFunctionName
-%%##
+%%
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 ' This example uses ProcPtr to demonstrate function pointers
 Declare Function Subtract( x as Integer, y as Integer) as Integer
 Declare Function Add( x as Integer, y as Integer) as Integer
@@ -45,12 +46,12 @@ end function
 Function Subtract( x as Integer, y as Integer) as Integer
 	return x - y
 end function
-%%##
+%%
 
 {{fbdoc item="see"}}
-	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
+	- ##[[KeyPgFunction Function]]##
 	- [[DtPointers Pointers]]
-	- {{fbdoc item="keyword" value="KeyPgSub|SUB"}}
-	- {{fbdoc item="keyword" value="KeyPgVarptr|VARPTR"}}
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgVarptr Varptr]]##
 
-{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

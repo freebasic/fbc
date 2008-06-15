@@ -16,10 +16,7 @@ Operator to dereference a pointer
 {{fbdoc item="ex"}}
 %%(qbasic)
 'This program demonstrates the use of * to utilize the value a pointer points to.
-Option Explicit 'This ensures that all variables used must be dimensioned.
-
 Dim a As Integer
-
 Dim pa As Integer Ptr
 
 pa=@a 'Here, we use the @ operator to point our integer ptr at 'a'.

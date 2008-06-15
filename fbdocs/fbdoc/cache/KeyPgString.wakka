@@ -25,11 +25,10 @@
 	A list of [[CptAscii ASCII character codes]].
 
 {{fbdoc item="ex"}}
-##%%(qbasic)option explicit
-
-   PRINT STRING( 4, 69 )         '' prints "EEEE"
-   PRINT STRING( 5, "Indeed" )   '' prints "IIIII"
-   end 0%%##
+%%(qbasic)PRINT STRING( 4, 69 )         '' prints "EEEE"
+PRINT STRING( 5, "Indeed" )   '' prints "IIIII"
+end 0
+%%
 
 {{fbdoc item="diff"}}
 	- None

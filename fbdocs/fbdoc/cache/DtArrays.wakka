@@ -24,11 +24,11 @@ Index        Data
 	Arrays are available based on the rules of {{fbdoc item="keyword" value="ProPgVariableScope|Variable Scope"}}. Depending on the Scope of a variable, an array you define can be available within the main area of a program, within a {{fbdoc item="keyword" value="KeyPgSub|SUB"}} or {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}, or anywhere within your program.. 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-DECLARE SUB PrintArray()
+%%(qbasic)DECLARE SUB PrintArray()
 
 DIM Numbers(1 to 10) AS INTEGER
 DIM SHARED OtherNumbers(1 to 10) as INTEGER
+dim a as integer
 
 Numbers(1) = 1
 Numbers(2) = 2
@@ -58,7 +58,6 @@ SUB PrintArray ()
   print otherNumbers(a)
  next a
 END SUB
-
 %%
 
 {{fbdoc item="see"}}

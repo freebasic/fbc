@@ -19,19 +19,17 @@
 	You cannot DECLARE a sub or function after its definition, unless it is contained in a library. !!!WRITE ME !!!
 
 {{fbdoc item="ex"}}
-%%(qbasic)option explicit
-option byval
-
-'' declare the function sum which takes two integers by value and returns an integer
+%%(qbasic)'' declare the function sum which takes two integers and returns an integer
 declare function sum( as integer, as integer ) as integer
 
    print "the sum of 420 and 69 is: " ; sum( 420,69 )    '' call the function sum
    sleep : end 0
 
-'' define the function sum which takes two integers by value and returns an integer
+'' define the function sum which takes two integers and returns an integer
 function sum( a as integer, b as integer ) as integer
    return a + b
-end function%%
+end function
+%%
 
 {{fbdoc item="diff"}}
 	- none

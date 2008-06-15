@@ -303,6 +303,6 @@ Many of the standard ASCII characters cannot be PRINTed in FB, because the conso
 
 UNICODE is a newer standard of character sets involving two or more bytes per character, and may be used to print other characters to a unicode-enabled console.
 
-In graphics modes, ##[[KeyPgDrawstring Draw String]]## does not give special meaning to control characters allowing an alternative to display all characters in the set. 
+In graphics modes, ##[[KeyPgDrawString Draw String]]## does not give special meaning to control characters allowing an alternative to display all characters in the set. 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

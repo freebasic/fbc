@@ -47,12 +47,13 @@ Platform specific notes:
 %%(qbasic)
 ' Send some text to the Windows printer on LPT1:, using driver text imaging.
 Open LPT "LPT1:EMU=TTY" For Output  As #1
-Print #1, "Testing!!!" 
+Print #1, "Testing!" 
 Close
 %%
 %%(qbasic)
 ' Sends contents of text file test.txt to Windows printer named "ReceiptPrinter"
 Dim RptInput As String
+Dim Printhandle as integer, RptFilehandle as integer
 
 RptFilehandle = Freefile
 Open "test.txt" For Input As #RptFilehandle

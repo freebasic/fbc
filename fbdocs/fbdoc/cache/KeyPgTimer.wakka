@@ -18,12 +18,12 @@ Returns the number of seconds passed since starting the computer.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-e.g.
-print "wait 0.03 seconds"
-now = timer
-do
-loop until timer > (now + 0.03)
-print "done."
+Dim Start As Double
+Print "Wait 2.5 seconds."
+Start = Timer
+Do
+Loop Until (Timer - Start) > 2.5
+Print "Done."
 %%
 
 {{fbdoc item="diff"}}

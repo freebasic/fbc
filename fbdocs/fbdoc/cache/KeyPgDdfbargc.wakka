@@ -1,0 +1,24 @@
+{{fbdoc item="title" value="__FB_ARGC__"}}----
+Intrinsic define (macro value) set by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_ARGC__""
+##
+{{fbdoc item="desc"}}
+	Substituted with the number of arguments passed in on the command line.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+dim i as integer
+for i = 0 to __FB_ARGC__ - 1
+	    print "arg "; i; " = '"; command(i); "'"
+next i
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfbargv __FB_ARGV__]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
